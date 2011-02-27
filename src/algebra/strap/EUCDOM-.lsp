@@ -36,11 +36,10 @@
                 |EUCDOM-;multiEuclidean;LSU;11|)) 
 
 (DEFUN |EUCDOM-;sizeLess?;2SB;1| (|x| |y| $)
-  (COND
-    ((SPADCALL |y| (|shellEntry| $ 8)) NIL)
-    ((SPADCALL |x| (|shellEntry| $ 8)) T)
-    (T (< (SPADCALL |x| (|shellEntry| $ 12))
-          (SPADCALL |y| (|shellEntry| $ 12)))))) 
+  (AND (NOT (SPADCALL |y| (|shellEntry| $ 8)))
+       (OR (SPADCALL |x| (|shellEntry| $ 8))
+           (< (SPADCALL |x| (|shellEntry| $ 12))
+              (SPADCALL |y| (|shellEntry| $ 12)))))) 
 
 (DEFUN |EUCDOM-;quo;3S;2| (|x| |y| $)
   (CAR (SPADCALL |x| |y| (|shellEntry| $ 16)))) 

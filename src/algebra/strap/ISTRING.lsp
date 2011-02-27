@@ -242,22 +242,23 @@
     (SEQ (SETQ |startpos| (- |startpos| (SVREF $ 6)))
          (EXIT (COND
                  ((MINUSP |startpos|) (|error| "index out of bounds"))
-                 ((< (- |nw| |startpos|) |np|) NIL)
-                 (T (SEQ (LET ((|ip| 0) (#0=#:G1514 (- |np| 1))
-                               (|iw| |startpos|))
-                           (LOOP
-                             (COND
-                               ((> |ip| #0#) (RETURN NIL))
-                               (T (COND
-                                    ((NOT
-                                      (CHAR= (CHAR |part| |ip|)
-                                       (CHAR |whole| |iw|)))
-                                     (RETURN-FROM
-                                      |ISTRING;substring?;2$IB;17|
-                                       NIL)))))
-                             (SETQ |ip| (+ |ip| 1))
-                             (SETQ |iw| (+ |iw| 1))))
-                         (EXIT T)))))))) 
+                 (T (AND (NOT (< (- |nw| |startpos|) |np|))
+                         (SEQ (LET ((|ip| 0) (#0=#:G1514 (- |np| 1))
+                                    (|iw| |startpos|))
+                                (LOOP
+                                  (COND
+                                    ((> |ip| #0#) (RETURN NIL))
+                                    (T
+                                     (COND
+                                       ((NOT
+                                         (CHAR= (CHAR |part| |ip|)
+                                          (CHAR |whole| |iw|)))
+                                        (RETURN-FROM
+                                         |ISTRING;substring?;2$IB;17|
+                                          NIL)))))
+                                  (SETQ |ip| (+ |ip| 1))
+                                  (SETQ |iw| (+ |iw| 1))))
+                              (EXIT T))))))))) 
 
 (DEFUN |ISTRING;position;2$2I;18| (|s| |t| |startpos| $)
   (PROG (|r|)
@@ -314,10 +315,9 @@
 (DEFUN |ISTRING;suffix?;2$B;21| (|s| |t| $)
   (LET ((|m| (SPADCALL |s| (|shellEntry| $ 47)))
         (|n| (SPADCALL |t| (|shellEntry| $ 47))))
-    (COND
-      ((< |n| |m|) NIL)
-      (T (|ISTRING;substring?;2$IB;17| |s| |t|
-             (- (+ (SVREF $ 6) |n|) |m|) $))))) 
+    (AND (NOT (< |n| |m|))
+         (|ISTRING;substring?;2$IB;17| |s| |t|
+             (- (+ (SVREF $ 6) |n|) |m|) $)))) 
 
 (DEFUN |ISTRING;split;$CL;22| (|s| |c| $)
   (PROG (|l| |j|)
@@ -543,79 +543,88 @@
              (EXIT (COND
                      ((EQL |p| (- |m| 1))
                       (NOT (NULL (STRING= |pattern| |target|))))
-                     ((AND (SPADCALL |p| |m| (|shellEntry| $ 88))
-                           (NOT (SPADCALL
-                                    (|ISTRING;elt;$Us$;31| |pattern|
-                                     (SPADCALL |m| (- |p| 1)
-                                      (|shellEntry| $ 24))
-                                     $)
-                                    |target| (|shellEntry| $ 89))))
-                      NIL)
-                     (T (SEQ (LETT |i| |p| |ISTRING;match?;2$CB;34|)
-                             (LETT |q|
-                                   (LET
-                                    ((#1=#:G1502
-                                      (|ISTRING;position;C$2I;19|
-                                       |dontcare| |pattern| (+ |p| 1)
-                                       $)))
-                                     (|check-subtype|
-                                      (NOT (MINUSP #1#))
-                                      '(|NonNegativeInteger|) #1#))
-                                   |ISTRING;match?;2$CB;34|)
-                             (LOOP
-                               (COND
-                                 ((NOT (SPADCALL |q| (- |m| 1)
-                                        (|shellEntry| $ 88)))
-                                  (RETURN NIL))
-                                 (T (SEQ
-                                     (LETT |s|
-                                      (|ISTRING;elt;$Us$;31| |pattern|
-                                       (SPADCALL (+ |p| 1) (- |q| 1)
-                                        (|shellEntry| $ 24))
-                                       $)
-                                      |ISTRING;match?;2$CB;34|)
-                                     (SETQ |i|
-                                      (LET
-                                       ((#2=#:G1503
-                                         (|ISTRING;position;2$2I;18|
-                                          |s| |target| |i| $)))
-                                        (|check-subtype|
-                                         (NOT (MINUSP #2#))
-                                         '(|NonNegativeInteger|) #2#)))
-                                     (EXIT
-                                      (COND
-                                        ((EQL |i| (- |m| 1))
-                                         (RETURN-FROM
-                                          |ISTRING;match?;2$CB;34|
-                                           NIL))
-                                        (T
-                                         (SEQ
-                                          (SETQ |i|
-                                           (+ |i| (LENGTH |s|)))
-                                          (SETQ |p| |q|)
-                                          (EXIT
-                                           (SETQ |q|
-                                            (LET
-                                             ((#3=#:G1504
-                                               (|ISTRING;position;C$2I;19|
-                                                |dontcare| |pattern|
-                                                (+ |q| 1) $)))
-                                              (|check-subtype|
-                                               (NOT (MINUSP #3#))
-                                               '(|NonNegativeInteger|)
-                                               #3#))))))))))))
-                             (COND
-                               ((AND (SPADCALL |p| |n|
-                                      (|shellEntry| $ 88))
-                                     (NOT
-                                      (|ISTRING;suffix?;2$B;21|
-                                       (|ISTRING;elt;$Us$;31| |pattern|
-                                        (SPADCALL (+ |p| 1) |n|
-                                         (|shellEntry| $ 24))
-                                        $)
-                                       |target| $)))
-                                (EXIT NIL)))
-                             (EXIT T)))))))))) 
+                     (T (AND (NOT (AND (SPADCALL |p| |m|
+                                        (|shellEntry| $ 88))
+                                       (NOT
+                                        (SPADCALL
+                                         (|ISTRING;elt;$Us$;31|
+                                          |pattern|
+                                          (SPADCALL |m| (- |p| 1)
+                                           (|shellEntry| $ 24))
+                                          $)
+                                         |target| (|shellEntry| $ 89)))))
+                             (SEQ (LETT |i| |p|
+                                        |ISTRING;match?;2$CB;34|)
+                                  (LETT |q|
+                                        (LET
+                                         ((#1=#:G1502
+                                           (|ISTRING;position;C$2I;19|
+                                            |dontcare| |pattern|
+                                            (+ |p| 1) $)))
+                                          (|check-subtype|
+                                           (NOT (MINUSP #1#))
+                                           '(|NonNegativeInteger|) #1#))
+                                        |ISTRING;match?;2$CB;34|)
+                                  (LOOP
+                                    (COND
+                                      ((NOT
+                                        (SPADCALL |q| (- |m| 1)
+                                         (|shellEntry| $ 88)))
+                                       (RETURN NIL))
+                                      (T
+                                       (SEQ
+                                        (LETT |s|
+                                         (|ISTRING;elt;$Us$;31|
+                                          |pattern|
+                                          (SPADCALL (+ |p| 1) (- |q| 1)
+                                           (|shellEntry| $ 24))
+                                          $)
+                                         |ISTRING;match?;2$CB;34|)
+                                        (SETQ |i|
+                                         (LET
+                                          ((#2=#:G1503
+                                            (|ISTRING;position;2$2I;18|
+                                             |s| |target| |i| $)))
+                                           (|check-subtype|
+                                            (NOT (MINUSP #2#))
+                                            '(|NonNegativeInteger|)
+                                            #2#)))
+                                        (EXIT
+                                         (COND
+                                           ((EQL |i| (- |m| 1))
+                                            (RETURN-FROM
+                                             |ISTRING;match?;2$CB;34|
+                                              NIL))
+                                           (T
+                                            (SEQ
+                                             (SETQ |i|
+                                              (+ |i| (LENGTH |s|)))
+                                             (SETQ |p| |q|)
+                                             (EXIT
+                                              (SETQ |q|
+                                               (LET
+                                                ((#3=#:G1504
+                                                  (|ISTRING;position;C$2I;19|
+                                                   |dontcare| |pattern|
+                                                   (+ |q| 1) $)))
+                                                 (|check-subtype|
+                                                  (NOT (MINUSP #3#))
+                                                  '(|NonNegativeInteger|)
+                                                  #3#))))))))))))
+                                  (COND
+                                    ((AND
+                                      (SPADCALL |p| |n|
+                                       (|shellEntry| $ 88))
+                                      (NOT
+                                       (|ISTRING;suffix?;2$B;21|
+                                        (|ISTRING;elt;$Us$;31|
+                                         |pattern|
+                                         (SPADCALL (+ |p| 1) |n|
+                                          (|shellEntry| $ 24))
+                                         $)
+                                        |target| $)))
+                                     (EXIT NIL)))
+                                  (EXIT T))))))))))) 
 
 (DEFUN |IndexedString| (#0=#:G1519)
   (DECLARE (SPECIAL |$ConstructorCache|))

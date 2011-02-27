@@ -41,10 +41,11 @@
   (COND
     ((SPADCALL |x| (|shellEntry| $ 13))
      (SPADCALL |y| (|shellEntry| $ 13)))
-    ((OR (SPADCALL |y| (|shellEntry| $ 13))
-         (EQL (CAR (SPADCALL |x| |y| (|shellEntry| $ 15))) 1))
-     NIL)
-    (T (NOT (EQL (CAR (SPADCALL |y| |x| (|shellEntry| $ 15))) 1))))) 
+    (T (AND (NOT (SPADCALL |y| (|shellEntry| $ 13)))
+            (AND (NOT (EQL (CAR (SPADCALL |x| |y| (|shellEntry| $ 15)))
+                           1))
+                 (NOT (EQL (CAR (SPADCALL |y| |x| (|shellEntry| $ 15)))
+                           1))))))) 
 
 (DEFUN |IntegralDomain&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

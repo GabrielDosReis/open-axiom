@@ -115,25 +115,29 @@
              (EXIT |e|)))))) 
 
 (DEFUN |FFIELDC-;primitive?;SB;9| (|a| $)
-  (COND
-    ((SPADCALL |a| (|shellEntry| $ 16)) NIL)
-    (T (LET ((|explist| (SPADCALL (|shellEntry| $ 56)))
-             (|q| (- (SPADCALL (|shellEntry| $ 40)) 1))
-             (|equalone| NIL))
-         (SEQ (LET ((#0=#:G1488 |explist|) (|exp| NIL))
-                (LOOP
-                  (COND
-                    ((OR (ATOM #0#) (PROGN (SETQ |exp| (CAR #0#)) NIL)
-                         (NOT (NOT |equalone|)))
-                     (RETURN NIL))
-                    (T (SETQ |equalone|
-                             (SPADCALL
-                                 (SPADCALL |a|
-                                     (TRUNCATE |q| (CAR |exp|))
-                                     (|shellEntry| $ 58))
-                                 (|shellEntry| $ 59)))))
-                  (SETQ #0# (CDR #0#))))
-              (EXIT (NOT |equalone|))))))) 
+  (PROG (|explist| |q| |equalone|)
+    (RETURN
+      (AND (NOT (SPADCALL |a| (|shellEntry| $ 16)))
+           (SEQ (LETT |explist| (SPADCALL (|shellEntry| $ 56))
+                      |FFIELDC-;primitive?;SB;9|)
+                (LETT |q| (- (SPADCALL (|shellEntry| $ 40)) 1)
+                      |FFIELDC-;primitive?;SB;9|)
+                (LETT |equalone| NIL |FFIELDC-;primitive?;SB;9|)
+                (LET ((#0=#:G1488 |explist|) (|exp| NIL))
+                  (LOOP
+                    (COND
+                      ((OR (ATOM #0#)
+                           (PROGN (SETQ |exp| (CAR #0#)) NIL)
+                           (NOT (NOT |equalone|)))
+                       (RETURN NIL))
+                      (T (SETQ |equalone|
+                               (SPADCALL
+                                   (SPADCALL |a|
+                                    (TRUNCATE |q| (CAR |exp|))
+                                    (|shellEntry| $ 58))
+                                   (|shellEntry| $ 59)))))
+                    (SETQ #0# (CDR #0#))))
+                (EXIT (NOT |equalone|))))))) 
 
 (DEFUN |FFIELDC-;order;SPi;10| (|e| $)
   (PROG (|primeDivisor| |a| |goon|)
