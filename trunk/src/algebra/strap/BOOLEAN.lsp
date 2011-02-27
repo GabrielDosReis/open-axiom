@@ -50,6 +50,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;nor;3$;11|)) 
 
+(PUT '|BOOLEAN;nor;3$;11| '|SPADreplace|
+     '(XLAM (|a| |b|) (|%and| (|%not| |a|) (|%not| |b|)))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;nand;3$;12|)) 
 
@@ -125,7 +128,9 @@
 
 (DEFUN |BOOLEAN;xor;3$;10| (|a| |b| $) (COND (|a| (NOT |b|)) (T |b|))) 
 
-(DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $) (COND (|a| NIL) (T (NOT |b|)))) 
+(DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (AND (NOT |a|) (NOT |b|))) 
 
 (DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $)
   (DECLARE (IGNORE $))

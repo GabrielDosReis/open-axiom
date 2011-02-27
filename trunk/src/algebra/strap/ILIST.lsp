@@ -251,19 +251,17 @@
                                     (|shellEntry| $ 45)))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
-  (COND
-    ((EQ |x| |y|) T)
-    (T (SEQ (LOOP
-              (COND
-                ((NOT (COND ((NULL |x|) NIL) (T (NOT (NULL |y|)))))
-                 (RETURN NIL))
-                (T (COND
-                     ((SPADCALL (CAR |x|) (CAR |y|)
-                          (|shellEntry| $ 53))
-                      (RETURN-FROM |ILIST;=;2$B;22| NIL))
-                     (T (SEQ (SETQ |x| (CDR |x|))
-                             (EXIT (SETQ |y| (CDR |y|)))))))))
-            (EXIT (AND (NULL |x|) (NULL |y|))))))) 
+  (OR (EQ |x| |y|)
+      (SEQ (LOOP
+             (COND
+               ((NOT (AND (NOT (NULL |x|)) (NOT (NULL |y|))))
+                (RETURN NIL))
+               (T (COND
+                    ((SPADCALL (CAR |x|) (CAR |y|) (|shellEntry| $ 53))
+                     (RETURN-FROM |ILIST;=;2$B;22| NIL))
+                    (T (SEQ (SETQ |x| (CDR |x|))
+                            (EXIT (SETQ |y| (CDR |y|)))))))))
+           (EXIT (AND (NULL |x|) (NULL |y|)))))) 
 
 (DEFUN |ILIST;latex;$S;23| (|x| $)
   (LET ((|s| "\\left["))
@@ -353,7 +351,7 @@
                           (EXIT (SETQ |q| (CDR |q|))))))
                 (LOOP
                   (COND
-                    ((NOT (COND ((NULL |p|) NIL) (T (NOT (NULL |q|)))))
+                    ((NOT (AND (NOT (NULL |p|)) (NOT (NULL |q|))))
                      (RETURN NIL))
                     (T (COND
                          ((SPADCALL (CAR |p|) (CAR |q|) |f|)

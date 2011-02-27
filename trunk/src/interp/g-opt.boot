@@ -303,6 +303,8 @@ optCond (x is ['%when,:l]) ==
   l is [[p1,['%when,[p2,c2]]]] => optCond ['%when,[['%and,p1,p2],c2]]
   l is [[p1,c1],['%otherwise,'%false]] => optAnd ['%and,p1,c1]
   l is [[p1,c1],['%otherwise,'%true]] => optOr ['%or,optNot ['%not,p1],c1]
+  l is [[p1,'%false],['%otherwise,c2]] => optAnd ['%and,optNot ['%not,p1],c2]
+  l is [[p1,'%true],['%otherwise,c2]] => optOr ['%or,p1,c2]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%otherwise =>
     EqualBarGensym(c1,c3) =>
       optCond ['%when,[['%or,p1,optNot ['%not,p2]],:c1],['%otherwise,:c2]]

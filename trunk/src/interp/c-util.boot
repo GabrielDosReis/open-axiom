@@ -43,7 +43,6 @@ module c_-util where
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: %Code -> %Code
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
-  getFunctionReplacement: %Symbol -> %Form
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
   giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env

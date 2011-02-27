@@ -48,7 +48,7 @@
         (#2=#:G1403 (SPADCALL |c| (|shellEntry| $ 15))))
     (LOOP
       (COND
-        ((ATOM #2#) (RETURN (COND (#1# NIL) (T #0#))))
+        ((ATOM #2#) (RETURN (AND (NOT #1#) #0#)))
         (T (LET ((|x| (CAR #2#)))
              (LET ((#3=#:G1379 (SPADCALL |x| |f|)))
                (COND (#1# (SETQ #0# #3#)) (T (SETQ #0# (OR #0# #3#))))
@@ -60,7 +60,7 @@
         (#2=#:G1404 (SPADCALL |c| (|shellEntry| $ 15))))
     (LOOP
       (COND
-        ((ATOM #2#) (RETURN (COND (#1# T) (T #0#))))
+        ((ATOM #2#) (RETURN (OR #1# #0#)))
         (T (LET ((|x| (CAR #2#)))
              (LET ((#3=#:G1384 (SPADCALL |x| |f|)))
                (COND
@@ -95,8 +95,7 @@
              (#3=#:G1407 (SPADCALL |y| (|shellEntry| $ 15))))
          (LOOP
            (COND
-             ((OR (ATOM #2#) (ATOM #3#))
-              (RETURN (COND (#1# T) (T #0#))))
+             ((OR (ATOM #2#) (ATOM #3#)) (RETURN (OR #1# #0#)))
              (T (LET ((|a| (CAR #2#)) (|b| (CAR #3#)))
                   (LET ((#4=#:G1393
                             (SPADCALL |a| |b| (|shellEntry| $ 34))))
