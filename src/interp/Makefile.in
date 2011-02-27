@@ -94,8 +94,8 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
 	i-output.$(FASLEXT)	\
-	i-spec1.$(FASLEXT)				\
-	i-spec2.$(FASLEXT)	i-syscmd.$(FASLEXT)	\
+	i-special.$(FASLEXT)				\
+	                    	i-syscmd.$(FASLEXT)	\
 	i-toplev.$(FASLEXT)	i-util.$(FASLEXT)	\
 	incl.$(FASLEXT)	int-top.$(FASLEXT)	\
 	intfile.$(FASLEXT)	c-util.$(FASLEXT)	\
@@ -328,8 +328,7 @@ int-top.$(FASLEXT): incl.$(FASLEXT) i-toplev.$(FASLEXT) unlisp.$(FASLEXT)
 i-toplev.$(FASLEXT): i-analy.$(FASLEXT)
 i-syscmd.$(FASLEXT): i-object.$(FASLEXT)
 i-output.$(FASLEXT): sys-macros.$(FASLEXT)
-i-spec2.$(FASLEXT): i-spec1.$(FASLEXT)
-i-spec1.$(FASLEXT): i-analy.$(FASLEXT)
+i-special.$(FASLEXT): i-analy.$(FASLEXT)
 i-funsel.$(FASLEXT): i-coerfn.$(FASLEXT)
 i-map.$(FASLEXT): i-object.$(FASLEXT)
 i-eval.$(FASLEXT): i-analy.$(FASLEXT)

@@ -1,5 +1,12 @@
 2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.in (OBJS): Remove i-spec1.$(FASLEXT) and
+	i-spec2.$(FASLEXT).  Add i-special.$(FASLEXT).
+	* interp/i-spec1.boot, interp/i-spec2.boot: Move content to
+	i-special.boot.  Remove.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/outform.spad.pamphlet (OutputForm) [infix?]: Rewrite.
 
 2011-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
