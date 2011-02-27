@@ -260,31 +260,35 @@ bottomUp t ==
             pushDownTargetInfo(opName,tar,argl)
             argModeSetList:= [bottomUp x for x in argl]
 
-    ms := bottomUpForm(t,op,opName,argl,argModeSetList)
-    -- If this is a type producing form, then we don't want
-    -- to store the representation object in the environment.
-    -- Rather, we want to record the reified canonical form.
-    if ms is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e))
-    then putValue(t,objNew(devaluate objValUnwrap getValue t, m))
-
-    -- given no target or package calling, force integer constants to
-    -- belong to tightest possible subdomain
-
-    op := first t              -- may have changed in bottomUpElt
-    $useIntegerSubdomain and null tar and null dol and
-      isEqualOrSubDomain(first ms,$Integer) =>
-        val := objVal getValue op
-        isWrapped val =>       -- constant if wrapped
-          val := unwrap val
-          bm := getBasicMode val
-          putValue(op,objNewWrap(val,bm))
-          putModeSet(op,[bm])
-        ms
-    ms
+    bottomUpWithArgModesets(t,op,opName,argl,argModeSetList)
   m := getBasicMode t => [m]
   IDENTP (id := getUnname t) =>
     putModeSet(t,bottomUpIdentifier(t,id))
   keyedSystemError("S2GE0016",['"bottomUp",'"unknown object form"])
+
+bottomUpWithArgModesets(t,op,opName,args,argModeSetList) ==
+  ms := bottomUpForm(t,op,opName,args,argModeSetList)
+  -- If this is a type producing form, then we don't want
+  -- to store the representation object in the environment.
+  -- Rather, we want to record the reified canonical form.
+  if ms is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e))
+  then putValue(t,objNew(devaluate objValUnwrap getValue t, m))
+
+  -- given no target or package calling, force integer constants to
+  -- belong to tightest possible subdomain
+  pcall? := getAtree(op,'dollar) and (opName ~= 'construct)
+  op := t.op -- may have changed in bottomUpElt
+  $useIntegerSubdomain and getTarget op = nil and not pcall? and
+    isEqualOrSubDomain(first ms,$Integer) =>
+      val := objVal getValue op
+      isWrapped val =>       -- constant if wrapped
+        val := unwrap val
+        bm := getBasicMode val
+        putValue(op,objNewWrap(val,bm))
+        putModeSet(op,[bm])
+      ms
+  ms
+
 
 computeTypeWithVariablesTarget(p, q) ==
     polyVarlist(p) or polyVarlist(q) =>
