@@ -1,5 +1,9 @@
 2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-code.boot: Move content to i-coerce.boot.  Delete.
+
+2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (PropositionalFormula): 
 	Implement true and false.  Fix thinko in notFormula.
 

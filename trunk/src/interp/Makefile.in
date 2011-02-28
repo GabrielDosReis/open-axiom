@@ -88,7 +88,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	ggreater.$(FASLEXT)				\
 	hypertex.$(FASLEXT)	\
 	i-object.$(FASLEXT)	i-analy.$(FASLEXT)	\
-	i-code.$(FASLEXT)	i-resolv.$(FASLEXT)	\
+	                  	i-resolv.$(FASLEXT)	\
 	i-coerce.$(FASLEXT)	\
 	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
 	i-funsel.$(FASLEXT)	\
@@ -337,7 +337,6 @@ i-coerce.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
 i-resolv.$(FASLEXT): i-object.$(FASLEXT)
 i-analy.$(FASLEXT): i-object.$(FASLEXT)
 i-intern.$(FASLEXT): i-object.$(FASLEXT) ptrees.$(FASLEXT)
-i-code.$(FASLEXT): i-object.$(FASLEXT)
 i-object.$(FASLEXT): g-util.$(FASLEXT)
 i-util.$(FASLEXT): g-util.$(FASLEXT)
 format.$(FASLEXT): macros.$(FASLEXT)
