@@ -1,5 +1,12 @@
 2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-analy.boot (elaborateTree): New.
+	* interp/i-special.boot (bottomUpProposition): Likewise.  
+	(upand): Use  it to handle propositional formula.
+	(upor): Likewise.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (bottomUpWithArgModesets): Split out of
 	bottomUp.
 	(bottomUp): Call it.
