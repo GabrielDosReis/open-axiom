@@ -243,6 +243,17 @@ eq2AlgExtension eq ==
 
 --% Handlers for booleans
 
+++ `t' is a VAT that represents a propositional formula syntax.
+++ Attempt to elaborate the whole tree into a `PropositionalFormula mode'
+++ object.
+bottomUpProposition(t,mode) ==
+  -- FIXME: we should not hard code here the expected types of
+  -- FIXME: the domain.
+  not ofCategory(mode,$SetCategory) => nil
+  mode := ['PropositionalFormula,mode]
+  argModeSets := [elaborateTree(arg,mode) for arg in t.args]
+  bottomUpWithArgModesets(t,t.op,getUnname t.op,t.args,argModeSets)
+
 upand x ==
   -- generates code for  and  forms. The second argument is only
   -- evaluated if the first argument is true.
@@ -252,7 +263,7 @@ upand x ==
   putTarget(term2,$Boolean)
   putCallInfo(term2,"and",2,2)
   ms := bottomUp term1
-  ms isnt [=$Boolean] => nil   -- use general modemap
+  ms isnt [=$Boolean] => bottomUpProposition(x,first ms)
   $genValue =>
     -- ??? we should find a way to check whether the
     -- ??? the type of the second operand matters or not.
@@ -266,7 +277,7 @@ upand x ==
     putModeSet(x,ms)
 
   ms := bottomUp term2
-  ms isnt [=$Boolean] => nil  -- use general modemap
+  ms isnt [=$Boolean] => bottomUpProposition(x,first ms)
   -- generate an IF expression and let the rest of the code handle it
   -- ??? In full generality, this is still incorrect.  We should be
   -- ??? looking up modemaps to see whether the interpretation is
@@ -289,7 +300,7 @@ upor x ==
   putTarget(term2,$Boolean)
   putCallInfo(term2,"or",2,2)
   ms := bottomUp term1
-  ms isnt [=$Boolean] => nil
+  ms isnt [=$Boolean] => bottomUpProposition(x,first ms)
   $genValue =>
     objValUnwrap(getValue term1) =>  -- first operand is true, we are done.
         putValue(x,getValue term1)
@@ -301,7 +312,7 @@ upor x ==
     putModeSet(x,ms)
 
   ms := bottomUp term2
-  ms isnt [=$Boolean] => nil
+  ms isnt [=$Boolean] => bottomUpProposition(x,first ms)
   -- generate an IF expression and let the rest of the code handle it
   cond := [mkAtreeNode "=",mkAtree "true",term1]
   putTarget(cond,$Boolean)

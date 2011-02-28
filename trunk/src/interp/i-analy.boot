@@ -213,6 +213,11 @@ elaborateForm pf ==
   bottomUp t
   t
 
+++ Elaborate a VAT with specified target type.
+elaborateTree(t,mode) ==
+  putTarget(t,mode)
+  bottomUp t
+
 bottomUp t ==
   -- bottomUp takes an attributed tree, and returns the modeSet for it.
   -- As a side-effect it also evaluates the tree.
