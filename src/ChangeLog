@@ -1,3 +1,8 @@
+2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalFormula): 
+	Implement true and false.  Fix thinko in notFormula.
+
 2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (elaborateTree): New.

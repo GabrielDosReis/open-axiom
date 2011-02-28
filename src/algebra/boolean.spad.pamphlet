@@ -56,7 +56,7 @@ PropositionalLogic(): Category == Join(BooleanLogic,SetCategory) with
 )abbrev domain PROPFRML PropositionalFormula
 ++ Author: Gabriel Dos Reis
 ++ Date Created: Januray 14, 2008
-++ Date Last Modified: May 11, 2009
+++ Date Last Modified: February, 2011
 ++ Description: This domain implements propositional formula build
 ++ over a term domain, that itself belongs to PropositionalLogic
 PropositionalFormula(T: SetCategory): Public == Private where
@@ -101,9 +101,12 @@ PropositionalFormula(T: SetCategory): Public == Private where
     Rep == Union(T, Kernel %)
     import Kernel %
     import BasicOperator
+    import KernelFunctions2(Identifier,%)
     import List %
 
     -- Local names for proposition logical operators
+    macro FALSE == '%false
+    macro TRUE == '%true
     macro NOT == '%not
     macro AND == '%and
     macro OR == '%or
@@ -119,6 +122,9 @@ PropositionalFormula(T: SetCategory): Public == Private where
     -- A term is a formula
     coerce(t: T): % == 
       per t
+
+    false == per constantKernel FALSE
+    true == per constantKernel TRUE
 
     not p ==
       per kernel(operator(NOT, 1::Arity), [p], 1 + level p)
@@ -232,7 +238,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
 
     notFormula(p: %): OutputForm ==
       case isNot p is
-        f@% => elt(outputForm 'not, [formula f])$OutputForm
+        f@% => elt(outputForm 'not, [notFormula f])$OutputForm
         otherwise => primaryFormula p
 
     andFormula(f: %): OutputForm ==
