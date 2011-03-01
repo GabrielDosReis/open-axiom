@@ -133,7 +133,7 @@ INOBJS=	setvart.$(FASLEXT) interop.$(FASLEXT) patches.$(FASLEXT)
 
 # Main compiler files.
 OCOBJS=	\
-	info.$(FASLEXT)		modemap.$(FASLEXT)	\
+	                  	modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
 	                    	compiler.$(FASLEXT)	\
 	c-doc.$(FASLEXT)	\
@@ -439,8 +439,7 @@ trace.$(FASLEXT): debug.$(FASLEXT)
 termrw.$(FASLEXT): macros.$(FASLEXT)
 showimp.$(FASLEXT): macros.$(FASLEXT)
 sfsfun.$(FASLEXT): macros.$(FASLEXT)
-modemap.$(FASLEXT): c-util.$(FASLEXT) info.$(FASLEXT)
-info.$(FASLEXT): g-util.$(FASLEXT)
+modemap.$(FASLEXT): c-util.$(FASLEXT) 
 slam.$(FASLEXT): g-timer.$(FASLEXT)
 clammed.$(FASLEXT): g-timer.$(FASLEXT)
 clam.$(FASLEXT): g-timer.$(FASLEXT)
