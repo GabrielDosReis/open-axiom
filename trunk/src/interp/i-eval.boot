@@ -55,6 +55,8 @@ mkEvalable form ==
     op="Union"  => mkEvalableUnion  form
     op="Mapping"=> mkEvalableMapping form
     op="Enumeration" => form
+    -- a niladic constructor instantiation goes by itself
+    constructor? op and argl = nil => form
     loadIfNecessary op
     kind:= getConstructorKindFromDB op
     cosig := getDualSignatureFromDB op =>

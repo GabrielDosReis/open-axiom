@@ -752,6 +752,10 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if null argl then
       evalAndRwriteLispForm('NILADIC,
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])
+    -- Functors are incomplete during bootstrap
+    if $bootStrapMode then
+      evalAndRwriteLispForm('%incomplete,
+            ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'%incomplete], true])
     [fun,['Mapping,:signature'],originale]
 
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code

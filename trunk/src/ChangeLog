@@ -1,3 +1,11 @@
+2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (mkEvalable): Exit early on niladic constructors.
+	* interp/define.boot (compDefineFunctor1): If bootstrapping, mark
+	functor as incomplete.
+	* interp/c-util.boot (lookupDefiningFunction): Don't look into
+	incomplete domains.
+
 2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/info.boot: Move content to modemap.boot.  Delete.
