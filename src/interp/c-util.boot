@@ -1747,8 +1747,11 @@ lookupInheritedDefiningFunction(op,sig,shell,args,slot) ==
 ++       and that is unambiguous is returned.  In particular, this
 ++       function defaulting packages.
 lookupDefiningFunction(op,sig,dc) ==
-  -- 1. Read domain information, if available.
+  -- 1. Read domain information, if available.  Silently give up if
+  -- the constructor is just not there
   [ctor,:args] := dc
+  loadLibIfNotLoaded ctor
+  property(ctor,'%incomplete) => nil
   -- 1.1. Niladic constructors don't need approximation.
   --      FIXME: However, there may be cylic dependencies
   --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
@@ -1757,8 +1760,6 @@ lookupDefiningFunction(op,sig,dc) ==
     compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
-  -- 1.2. Silently give up if the constructor is just not there
-  loadLibIfNotLoaded ctor
   infovec := property(ctor,'infovec) or return nil
   -- 1.3. We need information about the original domain template
   shell := first infovec               -- domain template
