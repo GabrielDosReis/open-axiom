@@ -1,5 +1,10 @@
 2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nrungo.boot: Move content to buildom.boot, i-map.boot,
+	i-special.boot, nrunfast.boot.  Delete.
+
+2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-eval.boot (mkEvalable): Exit early on niladic constructors.
 	* interp/define.boot (compDefineFunctor1): If bootstrapping, mark
 	functor as incomplete.

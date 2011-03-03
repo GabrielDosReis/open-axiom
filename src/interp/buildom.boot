@@ -60,6 +60,234 @@ $commonCategoryDefaults ==
 $FirstParamSlot == 
   6
 
+--% Monitoring functions
+
+lookupDisplay(op,sig,vectorOrForm,suffix) ==
+  not $NRTmonitorIfTrue => nil
+  prefix := (suffix = '"" => ">"; "<")
+  sayBrightly
+    concat(prefix,formatOpSignature(op,sig),
+        '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
+
+isInstantiated [op,:argl] ==
+  u:= lassocShiftWithFunction(argl,HGET($ConstructorCache,op),'domainEqualList)
+    => CDRwithIncrement u
+  nil
+
+--=======================================================
+--                       Predicates
+--=======================================================
+lookupPred(pred,dollar,domain) ==
+  pred = true => true
+  pred is [op,:pl] and op in '(AND and %and) =>
+    and/[lookupPred(p,dollar,domain) for p in pl]
+  pred is [op,:pl] and op in '(OR or %or) =>
+    or/[lookupPred(p,dollar,domain) for p in pl]
+  pred is [op,p] and op in '(NOT not %not) => not lookupPred(p,dollar,domain)
+  pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
+  pred is ["has",a,b] =>
+    vector? a =>
+      keyedSystemError("S2GE0016",['"lookupPred",
+        '"vector as  first argument to has"])
+    a := eval mkEvalable substDollarArgs(dollar,domain,a)
+    b := substDollarArgs(dollar,domain,b)
+    HasCategory(a,b)
+  keyedSystemError("S2NR0002",[pred])
+
+substDollarArgs(dollar,domain,object) ==
+    form := devaluate domain
+    SUBLISLIS([devaluate dollar,:rest form],
+                ["$",:$FormalMapVariableList],object)
+
+compareSig(sig,tableSig,dollar,domain) ==
+  not (#sig = #tableSig) => false
+  null (target := first sig)
+   or lazyCompareSigEqual(target,first tableSig,dollar,domain) =>
+     and/[lazyCompareSigEqual(s,t,dollar,domain)
+              for s in rest sig for t in rest tableSig]
+
+lazyCompareSigEqual(s,tslot,dollar,domain) ==
+  tslot = '$ => s = "$" or s = devaluate dollar
+  integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
+      lazyt is [.,.,.,[.,item,.]] and
+        item is [.,[functorName,:.]] and functorName = first s =>
+          compareSigEqual(s,(evalDomain lazyt).0,dollar,domain)
+      nil
+  compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
+
+
+compareSigEqual(s,t,dollar,domain) ==
+  s = t => true
+  atom t =>
+    u :=
+      t='$ => dollar
+      isSharpVar t =>
+        vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
+        rest(domain).(POSN1(t,$FormalMapVariableList))
+      string? t and IDENTP s => (s := symbolName s; t)
+      nil
+    s = '$ => compareSigEqual(dollar,u,dollar,domain)
+    u => compareSigEqual(s,u,dollar,domain)
+    s = u
+  s='$ => compareSigEqual(dollar,t,dollar,domain)
+  atom s => nil
+  #s ~= #t => nil
+  match := true
+  for u in s for v in t repeat
+    not compareSigEqual(u,v,dollar,domain) => return(match:=false)
+  match
+
+--=======================================================
+--             Lookup From Interpreter
+--=======================================================
+
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+compiledLookup(op,sig,dollar) ==
+--called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
+--  getFunctionFromDomain, optDeltaEntry, retractByFunction
+  if not vector? dollar then dollar := evalDomain dollar
+  -- "^" is an alternate name for "**" in OpenAxiom libraries.
+  -- ??? When, we get to support Aldor libraries and the equivalence
+  -- ??? does not hold, we may want to do the reverse lookup too.
+  -- ??? See compiledLookupCheck below.
+  if op = "^" then op := "**"
+  basicLookup(op,sig,dollar,dollar)
+
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+basicLookup(op,sig,domain,dollar) ==
+  item := domain.1
+  cons? item and first item in '(lookupInDomain lookupInTable) => 
+    lookupInDomainVector(op,sig,domain,dollar)
+  ----------new world code follows------------
+  u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
+  lookupInDomainAndDefaults(op,sig,domain,dollar,true)
+
+compiledLookupCheck(op,sig,dollar) ==
+  fn := compiledLookup(op,sig,dollar)
+
+  -- NEW COMPILER COMPATIBILITY ON
+  if (fn = nil)  and (op = "**") then
+    fn := compiledLookup("^",sig,dollar)
+  -- NEW COMPILER COMPATIBILITY OFF
+
+  fn = nil =>
+    keyedSystemError("S2NR0001",[op,formatSignature sig,dollar.0])
+  fn
+
+--=======================================================
+--                 Lookup From Compiled Code
+--=======================================================
+goGet(:l) ==
+  [:arglist,env] := l
+  arglist is ['goGet,:.] => stop()
+  [[.,[op,initSig,:code]],thisDomain] := env
+  domainSlot := code quo 8192
+  code1 := code rem 8192
+  if QSODDP code1 then isConstant := true
+  code2 := code1 quo 2
+  if QSODDP code2 then explicitLookupDomainIfTrue := true
+  index := code2 quo 2
+  kind := (isConstant = true => 'CONST; 'ELT)
+  sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
+  sig := substDomainArgs(thisDomain,sig)
+  lookupDomain :=
+     domainSlot = 0 => thisDomain
+     thisDomain.domainSlot -- where we look for the operation
+  if cons? lookupDomain then lookupDomain := evalDomain lookupDomain
+  dollar :=                             -- what matches $ in signatures
+    explicitLookupDomainIfTrue => lookupDomain
+    thisDomain
+  if cons? dollar then dollar := evalDomain dollar
+  fn:= basicLookup(op,sig,lookupDomain,dollar)
+  fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
+  val:= apply(first fn,[:arglist,rest fn])
+  vectorRef(thisDomain,index) := fn
+  val
+
+NRTreplaceLocalTypes(t,dom) ==
+   atom t =>
+     not integer? t => t
+     t:= dom.t
+     if cons? t then t:= evalDomain t
+     t.0
+   first t in '(Mapping Union Record _:) =>
+      [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
+   t
+
+substDomainArgs(domain,object) ==
+    form := devaluate domain
+    SUBLISLIS([form,:rest form],["$$",:$FormalMapVariableList],object)
+
+--=======================================================
+--       Category Default Lookup (from goGet or lookupInAddChain)
+--=======================================================
+lookupInCategories(op,sig,dom,dollar) ==
+  catformList := dom.4.0
+  varList := ["$",:$FormalMapVariableList]
+  nsig := MSUBST(dom.0,dollar.0,sig)
+  -- the following lines don't need to check for predicates because
+  -- this code (the old runtime scheme) is used only for
+  -- builtin constructors -- their predicates are always true.
+  r := or/[lookupInDomainVector(op,nsig,
+              eval EQSUBSTLIST(valueList,varList,catform),dollar)
+        for catform in catformList | not null catform] where
+           valueList() ==
+              [MKQ dom,:[MKQ dom.(5+i) for i in 1..(#rest catform)]]
+  r or lookupDisplay(op,sig,'"category defaults",'"-- not found")
+
+--=======================================================
+--       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
+--=======================================================
+defaultingFunction op ==
+  not(op is [.,:dom]) => false
+  not vector? dom => false
+  not (#dom > 0) => false
+  not (dom.0 is [packageName,:.]) => false
+  not IDENTP packageName => false
+  isDefaultPackageName packageName
+
+lookupInAddChain(op,sig,addFormDomain,dollar) ==
+  addFunction:=lookupInDomain(op,sig,addFormDomain,dollar,5)
+  defaultingFunction addFunction =>
+     lookupInCategories(op,sig,addFormDomain,dollar) or addFunction
+  addFunction or lookupInCategories(op,sig,addFormDomain,dollar)
+
+--=======================================================
+--       Lookup Function in Slot 1 (via SPADCALL)
+--=======================================================
+lookupInTable(op,sig,dollar,[domain,table]) ==
+  table = "derived" => lookupInAddChain(op,sig,domain,dollar)
+  success := false
+  someMatch := false
+  while not success for [sig1,:code] in LASSQ(op,table) repeat
+    success :=
+      not compareSig(sig,sig1,dollar.0,domain) => false
+      code is ['subsumed,a] =>
+            subsumptionSig :=
+               EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
+            someMatch:=true
+            false
+      predIndex := code quo 8192
+      predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
+        => false
+      loc := (code rem 8192) quo 2
+      loc = 0 =>
+        someMatch := true
+        nil
+      slot := domain.loc
+      slot is ["goGet",:.] =>
+        lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
+        lookupInAddChain(op,sig,domain,dollar) or 'failed
+      null slot =>
+        lookupDisplay(op,sig,domain,'" !! null slot entry, continuing")
+        lookupInAddChain(op,sig,domain,dollar) or 'failed
+      lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
+      slot
+  NE(success,'failed) and success => success
+  subsumptionSig and (u:= SPADCALL(op,subsumptionSig,dollar,domain.1)) => u
+  someMatch => lookupInAddChain(op,sig,domain,dollar)
+  nil
+
 --% Record
 --  Want to eventually have the elts and setelts.
 --  Record is a macro in BUILDOM LISP. It takes out the colons.

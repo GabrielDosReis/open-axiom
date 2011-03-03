@@ -41,6 +41,7 @@ $mapTarget := nil
 $mapReturnTypes := nil
 $mapName := 'noMapName
 $mapThrowCount := 0 -- times a "return" occurs in map
+$insideCompileBodyIfTrue := false
 
 --% Generating internal names for functions
 

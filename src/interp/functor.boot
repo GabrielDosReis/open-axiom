@@ -33,7 +33,7 @@
 
 
 import lisplib
-import nrungo
+import interop
 import category
 namespace BOOT
 
