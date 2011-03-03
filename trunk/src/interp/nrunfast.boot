@@ -244,6 +244,33 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
  
  
 --=======================================================
+--   Lookup In Domain (from lookupInAddChain)
+--=======================================================
+lookupInDomain(op,sig,addFormDomain,dollar,index) ==
+  addFormCell := addFormDomain.index =>
+    integer? KAR addFormCell =>
+      or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
+    if not vector? addFormCell then addFormCell := eval addFormCell
+    lookupInDomainVector(op,sig,addFormCell,dollar)
+  nil
+
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+lookupInDomainVector(op,sig,domain,dollar) ==
+  slot1 := domain.1
+  SPADCALL(op,sig,dollar,slot1)
+
+
+++ same as lookupInDomainVector except that the use of defaults
+++ (either in category packages or add-chains) is controlled
+++ by `useDefaults'.
+lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
+  savedLookupDefaults := $lookupDefaults
+  $lookupDefaults := useDefaults
+  fun := lookupInDomainVector(op,sig,domain,dollar)
+  $lookupDefaults := savedLookupDefaults
+  fun
+
+--=======================================================
 --       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
 --=======================================================
 newLookupInAddChain(op,sig,addFormDomain,dollar) ==

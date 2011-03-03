@@ -2083,6 +2083,31 @@ uppretend t ==
 
 --% Handlers for REDUCE
 
+-----------------------Compiler for Interpreter---------------------------------
+NRTcompileEvalForm(opName,sigTail,dcVector) ==
+  u := NRTcompiledLookup(opName,sigTail,dcVector)
+  not ($insideCompileBodyIfTrue = true) => MKQ u
+  k := NRTgetMinivectorIndex(u,opName,sigTail,dcVector)
+  ['ELT,"$$$",k]  --$$$ denotes minivector
+
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+NRTcompiledLookup(op,sig,dom) ==
+  if CONTAINED('_#,sig) then
+      sig := [NRTtypeHack t for t in sig]
+  compiledLookupCheck(op,sig,dom)
+
+NRTtypeHack t ==
+  atom t => t
+  first t = '_# => # second t
+  [first t,:[NRTtypeHack tt for tt in rest t]]
+
+NRTgetMinivectorIndex(u,op,sig,domVector) ==
+  s := # $minivector
+  k := or/[k for k in 0..(s-1)
+        for x in $minivector | EQ(x,u)] => k
+  $minivector := [:$minivector,u]
+  s
+
 getReduceFunction(op,type,result, locale) ==
   -- return the function cell for operation with the signature
   --  (type,type) -> type, possible from locale

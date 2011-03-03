@@ -105,7 +105,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
 	nrunfast.$(FASLEXT)	\
-	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
+	                  	nrunopt.$(FASLEXT)	\
 	osyscmd.$(FASLEXT)	\
 	packtran.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	\
@@ -357,7 +357,7 @@ define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 	nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) nrungo.$(FASLEXT) lisplib.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
 category.$(FASLEXT): g-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
