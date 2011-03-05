@@ -261,6 +261,66 @@ $attributeDispatch :=
           [function attributeNthParent]) -- 1 indexed
 
 
+--=======================================================================
+--             Generate Category Level Alist
+--=======================================================================
+orderCatAnc x ==
+  nreverse ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
+ 
+depthAssocList u == 
+  u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
+  removeDuplicates ("append"/[depthAssoc(y) for y in u])
+ 
+depthAssoc x ==
+  y := HGET($depthAssocCache,x) => y
+  x is ['Join,:u] or (u := getCatAncestors x) =>
+    v := depthAssocList u
+    HPUT($depthAssocCache,x,[[x,:n],:v])
+      where n() == 1 + "MAX"/[rest y for y in v]
+  HPUT($depthAssocCache,x,[[x,:0]])
+ 
+getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
+ 
+listOfEntries form ==
+  atom form => form
+  form is [op,:l] =>
+    op = 'Join => "append"/[listOfEntries x for x in l]
+    op = 'CATEGORY => listOfCategoryEntries rest l
+    op = 'PROGN => listOfCategoryEntries l
+    op = 'ATTRIBUTE and first l is [f,:.] and constructor? f => [first l]
+    op in '(ATTRIBUTE SIGNATURE) => nil
+    [form]
+  categoryFormatError()
+ 
+listOfCategoryEntries l ==
+  null l => nil
+  l is [[op,:u],:v] =>
+    firstItemList:=
+      op = 'ATTRIBUTE and first u is [f,:.] and constructor? f =>
+        [first u]
+      op in '(ATTRIBUTE SIGNATURE) => nil
+      op = 'IF and u is [pred,conseq,alternate] =>
+          listOfCategoryEntriesIf(pred,conseq,alternate)
+      categoryFormatError()
+    [:firstItemList,:listOfCategoryEntries v]
+  l is ['PROGN,:l] => listOfCategoryEntries l
+  l is '(NIL) => nil
+  sayBrightly '"unexpected category format encountered:"
+  pp l
+ 
+listOfCategoryEntriesIf(pred,conseq,alternate) ==
+  alternate in '(%noBranch NIL) =>
+    conseq is ['IF,p,c,a] => listOfCategoryEntriesIf(makePrefixForm([pred,p],'AND),c,a)
+    [fn for x in listOfEntries conseq] where fn() ==
+      x is ['IF,a,b] => ['IF,makePrefixForm([pred,a],'AND),b]
+      ['IF,pred,x]
+  notPred := makePrefixForm(pred,'NOT)
+  conseq is ['IF,p,c,a] =>
+    listOfCategoryEntriesIf(makePrefixForm([notPred,p],'AND),c,a)
+  [gn for x in listOfEntries conseq] where gn() ==
+    x is ['IF,a,b] => ['IF,makePrefixForm([notPred,a],'AND),b]
+    ['IF,notPred,x]
+ 
 orderedDefaults(conform,domform) ==
   $depthAssocCache : local := hashTable 'EQ
   conList := [x for x in orderCatAnc (op := opOf conform) | hasDefaultPackage op]

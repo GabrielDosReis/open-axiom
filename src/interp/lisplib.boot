@@ -43,6 +43,160 @@ module lisplib
 ++
 $functionLocations := []
 
+--=======================================================================
+--                Generate Slot 2 Attribute Alist
+--=======================================================================
+NRTgenInitialAttributeAlist attributeList ==
+  --alist has form ((item pred)...) where some items are constructor forms
+  alist := [x for x in attributeList | -- throw out constructors
+    not MEMQ(opOf first x,allConstructors())]
+  $lisplibAttributes := simplifyAttributeAlist
+    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ~= 'nothing]
+
+simplifyAttributeAlist al ==
+  al is [[a,:b],:r] =>
+    u := [x for x in r | x is [=a,:b]] 
+    null u => [first al,:simplifyAttributeAlist rest al]
+    pred := simpBool makePrefixForm([b,:ASSOCRIGHT u],'OR)
+    $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
+    s := [x for x in r | x isnt [=a,:b]]
+    [[a,:pred],:simplifyAttributeAlist s]
+  nil
+ 
+NRTgenFinalAttributeAlist() ==
+  [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ~= -1]
+ 
+predicateBitIndex x == 
+  pn(x,false) where
+    pn(x,flag) ==
+      u := simpBool transHasCode x
+      u = 'T  =>  0
+      u = nil => -1
+      p := POSN1(u,$NRTslot1PredicateList) => p + 1
+      not flag => pn(predicateBitIndexRemop x,true)
+      systemError nil
+
+predicateBitIndexRemop p==
+--transform attribute predicates taken out by removeAttributePredicates
+  p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
+    simpBool makePrefixForm([predicateBitIndexRemop x for x in argl],op)
+  p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
+  p
+ 
+predicateBitRef x ==
+  x = 'T => 'T
+  ['testBitVector,'pv_$,predicateBitIndex x]
+ 
+makePrefixForm(u,op) ==
+  u := MKPF(u,op)
+  u = ''T => 'T
+  u
+
+--=======================================================================
+--               Generate Slot 3 Predicate Vector
+--=======================================================================
+makePredicateBitVector pl ==   --called by buildFunctor
+  if $insideCategoryPackageIfTrue then
+    pl := union(pl,$categoryPredicateList)
+  $predGensymAlist := nil --bound by buildFunctor, used by optHas
+  for p in removeAttributePredicates pl repeat
+    pred := simpBool transHasCode p
+    atom pred => 'skip                --skip over T and NIL
+    if isHasDollarPred pred then 
+      lasts := insert(pred,lasts)
+      for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
+    else 
+      firsts := insert(pred,firsts)
+  firstPl := SUBLIS($pairlis,nreverse orderByContainment firsts)
+  lastPl  := SUBLIS($pairlis,nreverse orderByContainment lasts)
+  firstCode:= 
+    ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
+  lastCode := augmentPredCode(# firstPl,lastPl)
+  $lisplibPredicates := [:firstPl,:lastPl] --what is stored under 'predicates
+  [$lisplibPredicates,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
+
+augmentPredCode(n,lastPl) ==
+  ['%list,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
+  delta := 2 ** n
+  l := [(u := MKPF([x,['augmentPredVector,"$",delta]],'AND); 
+         delta:=2 * delta; u) for x in pl]
+
+augmentPredVector(dollar,value) ==
+  vectorRef(dollar,3) := value + vectorRef(dollar,3)
+
+isHasDollarPred pred ==
+  pred is [op,:r] =>
+    op in '(AND and %and OR or %or NOT not %not) => 
+      or/[isHasDollarPred x for x in r]
+    op in '(HasCategory HasAttribute) => first r = '$
+  false
+
+stripOutNonDollarPreds pred ==
+  pred is [op,:r] and op in '(AND and %and OR or %or NOT not %not) => 
+    "append"/[stripOutNonDollarPreds x for x in r]
+  not isHasDollarPred pred => [pred]
+  nil
+
+removeAttributePredicates pl ==
+  [fn p for p in pl] where
+    fn p ==
+      p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
+          makePrefixForm(fnl argl,op)
+      p is ["has",'$,['ATTRIBUTE,a]] =>
+        sayBrightlyNT '"Predicate: "
+        PRINT p
+        sayBrightlyNT '"  replaced by: "
+        PRINT LASSOC(a,$NRTattributeAlist)
+      p
+    fnl p == [fn x for x in p]
+ 
+transHasCode x ==
+  atom x => x
+  op := x.op
+  op in '(HasCategory HasAttribute) => x
+  op="has" => compHasFormat x
+  [transHasCode y for y in x]
+ 
+mungeAddGensyms(u,gal) ==
+  ['%list,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
+    atom x => x
+    g := LASSOC(x,gal) =>
+      n = 0 => ["%LET",g,x]
+      g
+    [first x,:[fn(y,gal,n + 1) for y in rest x]]
+ 
+orderByContainment pl ==
+  null pl or null rest pl => pl
+  max := first pl
+  for x in rest pl repeat
+    if (y := CONTAINED(max,x)) then
+      if null assoc(max,$predGensymAlist)
+      then $predGensymAlist := [[max,:gensym()],:$predGensymAlist]
+    else if CONTAINED(x,max)
+         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:gensym()],:$predGensymAlist]
+    if y then max := x
+  [max,:orderByContainment delete(max,pl)]
+ 
+buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
+  null l => n
+  n := n + n
+  if first l then n := n + 1
+  fn(rest l,n)
+ 
+buildPredVector(init,n,l) == fn(init,2 ** n,l) where fn(acc,n,l) ==
+  null l => acc
+  if first l then acc := acc + n
+  fn(acc,n + n,rest l)
+
+testBitVector(vec,i) ==
+--bit vector indices are always 1 larger than position in vector
+  i = 0 => true
+  LOGBITP(i - 1,vec)
+ 
+bitsOf n ==
+  n = 0 => 0
+  1 + bitsOf(n quo 2)
+ 
 --% Standard Library Creation Functions
  
 readLib(fn,ft) == readLib1(fn,ft,"*")
