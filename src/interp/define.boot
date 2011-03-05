@@ -819,7 +819,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
-      $lisplibAbbreviation := constructor? $op
+      $lisplibAbbreviation := getConstructorAbbreviationFromDB $op
       form':=[op',:sargl]
       augLisplibModemapsFromCategory(form',formalBody,signature')
     [fun,$Category,e]
@@ -991,7 +991,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
-      $lisplibAbbreviation := constructor? $op
+      $lisplibAbbreviation := getConstructorAbbreviationFromDB $op
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       $lisplibKind:=

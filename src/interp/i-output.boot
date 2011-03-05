@@ -1641,7 +1641,7 @@ getOutputAbbreviatedForm form ==
   form is [op,:argl] =>
     op in '(Union Record) => outputDomainConstructor form
     op is "Mapping" => formatMapping argl
-    u:= constructor? op or op
+    u:= getConstructorAbbreviationFromDB op or op
     null argl => u
     ml:= getPartialConstructorModemapSig(op)
     argl:= [fn for x in argl for m in ml] where fn() ==

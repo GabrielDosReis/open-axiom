@@ -410,7 +410,7 @@ makeConstructorsAutoLoad() ==
     if niladicConstructorFromDB cnam
      then PUT(cnam,'NILADIC,'T)
      else REMPROP(cnam,'NILADIC)
-    systemDependentMkAutoload(constructor? cnam,cnam)
+    systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP(cnam) => "next"
@@ -432,9 +432,9 @@ autoLoad(abb,cname) ==
   symbolFunction cname
 
 setAutoLoadProperty(name) ==
---  abb := constructor? name
+--  abb := getConstructorAbbreviationFromDB name
   REMPROP(name,'LOADED)
-  symbolFunction(name) := mkAutoLoad(constructor? name, name)
+  symbolFunction(name) := mkAutoLoad(getConstructorAbbreviationFromDB name, name)
 
 unloadOneConstructor(cnam,fn) ==
     REMPROP(cnam,'LOADED)

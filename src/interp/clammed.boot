@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ isValidType form ==
   form = '(Complex (AlgebraicNumber)) => NIL
   form is ['Expression, ['Kernel, . ]] => NIL
   form is [op,:argl] =>
-    null constructor? op => nil
+    not constructor? op => nil
     cosig := getDualSignatureFromDB op
     cosig and null rest cosig => -- niladic constructor
         null argl => true

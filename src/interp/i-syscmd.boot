@@ -2511,7 +2511,8 @@ reportOpsFromUnitDirectly unitForm ==
   NIL
 
 reportOpsFromLisplib(op,u) ==
-  null(fn:= constructor? op) => sayKeyedMsg("S2IZ0054",[u])
+  null(fn:= getConstructorAbbreviationFromDB op) =>
+    sayKeyedMsg("S2IZ0054",[u])
   argml :=
     (s := getConstructorSignature op) => KDR s
     NIL

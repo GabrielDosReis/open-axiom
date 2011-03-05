@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -639,7 +639,7 @@ updateDatabase(fname,cname,systemdir?) ==
  -- for now in NRUNTIME do database update only if forced
   not $forceDatabaseUpdate => nil
   -- these modemaps are never needed in the old scheme
-  if oldFname := constructor? cname then
+  if oldFname := getConstructorAbbreviationFromDB cname then
     clearClams()
     clearAllSlams []
     if GETL(cname, 'LOADED) then

@@ -941,7 +941,7 @@ dbShowCons(htPage,key,:options) ==
     abbrev? := htpProperty(htPage,'exclusion) = 'abbrs
     u := [x for x in cAlist | test] where test() ==
       conname := CAAR x
-      subject := (abbrev? => constructor? conname; conname)
+      subject := (abbrev? => getConstructorAbbreviationFromDB conname; conname)
       superMatch?(filter,DOWNCASE STRINGIMAGE subject)
     null u => emptySearchPage('"constructor",filter)
     htPage := htInitPageNoScroll(htCopyProplist htPage)

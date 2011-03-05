@@ -156,10 +156,10 @@ abbreviate u ==
   u is ['Union,:arglist] =>
     ['Union,:[abbreviate a for a in arglist]]
   u is [op,:arglist] =>
-    abb := constructor?(op) =>
+    abb := getConstructorAbbreviationFromDB(op) =>
       [abb,:condAbbrev(arglist,getPartialConstructorModemapSig(op))]
     u
-  constructor?(u) or u
+  getConstructorAbbreviationFromDB(u) or u
  
 unabbrev u == unabbrev1(u,nil)
  

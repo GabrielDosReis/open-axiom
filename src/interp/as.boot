@@ -754,7 +754,7 @@ asySplit(name,end) ==
 
 createAbbreviation s ==
   if string? s then s := makeSymbol s
-  a := constructor? s
+  a := getConstructorAbbreviationFromDB s
   a ~= s => a
   nil
 
