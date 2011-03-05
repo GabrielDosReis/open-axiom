@@ -113,6 +113,281 @@ compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
 DomainSubstitutionFunction: (%List,%Form) -> %Form 
 
 
+--%
+
+--=======================================================================
+--            Generate Code to Create Infovec
+--=======================================================================
+getInfovecCode() == 
+--Function called by compDefineFunctor1 to create infovec at compile time
+  ['LIST,
+    MKQ makeDomainTemplate $template,
+      MKQ makeCompactDirect $NRTslot1Info,
+        MKQ NRTgenFinalAttributeAlist(),
+          NRTmakeCategoryAlist(),
+            MKQ $lookupFunction]
+
+--=======================================================================
+--         Generation of Domain Vector Template (Compile Time)
+--=======================================================================
+makeDomainTemplate vec ==   
+--NOTES: This function is called at compile time to create the template
+--  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
+  newVec := newShell # vec
+  for index in 0..MAXINDEX vec repeat
+    item := vec.index
+    null item => nil
+    newVec.index :=
+      atom item => item
+      cons? first item => makeGoGetSlot(item,index)
+      item   
+  $byteVec := "append"/nreverse $byteVec
+  newVec
+ 
+makeGoGetSlot(item,index) ==
+--NOTES: creates byte vec strings for LATCH slots
+--these parts of the $byteVec are created first; see also makeCompactDirect
+  [sig,whereToGo,op,:flag] := item
+  n := #sig - 1
+  newcode := [n,whereToGo,:makeCompactSigCode sig,index]
+  $byteVec := [newcode,:$byteVec]
+  curAddress := $byteAddress
+  $byteAddress := $byteAddress + n + 4
+  [curAddress,:op]
+ 
+--=======================================================================
+--                Generate OpTable at Compile Time
+--=======================================================================
+--> called by getInfovecCode (see top of this file) from compDefineFunctor1
+makeCompactDirect u ==
+  $predListLength :local := # $NRTslot1PredicateList
+  $byteVecAcc: local := nil
+  [nam,[addForm,:opList]] := u
+  --pp opList 
+  d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(op,items)]
+  $byteVec := [:$byteVec,:"append"/nreverse $byteVecAcc]
+  LIST2VEC ("append"/d)
+ 
+makeCompactDirect1(op,items) ==
+--NOTES: creates byte codes for ops implemented by the domain
+    curAddress := $byteAddress
+    $op: local := op  --temp hack by RDJ 8/90 (see orderBySubsumption)
+    newcodes :=
+      "append"/[u for y in orderBySubsumption items | u := fn y] or return nil
+    $byteVecAcc := [newcodes,:$byteVecAcc]
+    curAddress
+ where fn y ==
+  [sig,:r] := y
+  r = ['Subsumed] =>
+    n := #sig - 1
+    $byteAddress := $byteAddress + n + 4
+    [n,0,:makeCompactSigCode sig,0]  --always followed by subsuming signature
+    --identified by a 0 in slot position
+  if r is [n,:s] then
+    slot :=
+      n is [p,:.] => p  --the rest is linenumber of function definition
+      n
+    predCode :=
+      s is [pred,:.] => predicateBitIndex pred
+      0
+  --> drop items which are not present (predCode = -1)
+  predCode = -1 => return nil
+  --> drop items with NIL slots if lookup function is incomplete
+  if null slot then
+     $lookupFunction = 'lookupIncomplete => return nil
+     slot := 1   --signals that operation is not present
+  n := #sig - 1
+  $byteAddress := $byteAddress + n + 4
+  res := [n,predCode,:makeCompactSigCode sig,slot]
+  res
+ 
+orderBySubsumption items ==
+  acc := subacc := nil
+  for x in items repeat
+    not $op in '(Zero One) and x is [.,.,.,'Subsumed] => subacc := [x,:subacc]
+    acc := [x,:acc]
+  y := z := nil
+  for [a,b,:.] in subacc | b repeat   
+  --NOTE: b = nil means that the signature a will appear in acc, that this
+  --  entry is be ignored (e.g. init: -> $ in ULS)
+    while (u := assoc(b,subacc)) repeat b := second u
+    u := assoc(b,acc) or systemError nil
+    if null second u then u := [first u,1] --mark as missing operation
+    y := [[a,'Subsumed],u,:y] --makes subsuming signature follow one subsumed
+    z := insert(b,z)  --mark a signature as already present
+  [:y,:[w for (w := [c,:.]) in acc | not member(c,z)]] --add those not subsuming
+ 
+makeCompactSigCode sig == [fn for x in sig] where 
+  fn() == 
+    x = "$$" => 2
+    x = "$" => 0
+    not integer? x => 
+      systemError ['"code vector slot is ",x,'"; must be number"]
+    x
+  
+--=======================================================================
+--               Generate Slot 4 Constructor Vectors
+--=======================================================================
+NRTmakeCategoryAlist() ==
+  $depthAssocCache: local := hashTable 'EQ
+  $catAncestorAlist: local := NIL
+  pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
+  $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
+  opcAlist := nreverse SORTBY(function NRTcatCompare,pcAlist)
+  newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
+  slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
+                   | (k := predicateBitIndex b) ~= -1]
+  slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
+  sixEtc := [5 + i for i in 1..#$pairlis]
+  formals := ASSOCRIGHT $pairlis
+  for x in slot1 repeat
+       x.first := EQSUBSTLIST(["$$",:sixEtc],['$,:formals],first x)
+  -----------code to make a new style slot4 -----------------
+  predList := ASSOCRIGHT slot1  --is list of predicate indices
+  maxPredList := "MAX"/predList
+  catformvec := ASSOCLEFT slot1
+  maxElement := "MAX"/$byteVec
+  ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
+    ['CONS, MKQ LIST2VEC slot0,
+      ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
+        ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
+  --NOTE: this is new form: old form satisfies vector? CDDR form
+
+encodeCatform x ==
+  k := NRTassocIndex x => k
+  atom x or atom rest x => x
+  [first x,:[encodeCatform y for y in rest x]]
+ 
+NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
+ 
+hasDefaultPackage catname ==
+  defname := makeSymbol strconc(catname,'"&")
+  constructor? defname => defname
+  nil
+ 
+ 
+--=======================================================================
+--              Compute the lookup function (complete or incomplete)
+--=======================================================================
+NRTgetLookupFunction(domform,exCategory,addForm) ==
+  domform := SUBLIS($pairlis,domform)
+  addForm := SUBLIS($pairlis,addForm)
+  $why: local := nil
+  atom addForm => 'lookupComplete
+  extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
+  if null extends then 
+    [u,msg,:v] := $why
+    SAY '"--------------non extending category----------------------"
+    sayPatternMsg('"%1p of category %2p", [domform,u])
+    if v ~= nil then
+      sayPatternMsg('"%1b %2p",[msg,first v])
+    else
+      sayPatternMsg('"%1b",[msg])
+    SAY '"----------------------------------------------------------"
+  extends => 'lookupIncomplete
+  'lookupComplete
+
+getExportCategory form ==
+  [op,:argl] := form
+  op = 'Record => ['RecordCategory,:argl]
+  op = 'Union => ['UnionCategory,:argl]
+  functorModemap := getConstructorModemapFromDB op
+  [[.,target,:tl],:.] := functorModemap
+  EQSUBSTLIST(argl,$FormalMapVariableList,target)
+ 
+NRTextendsCategory1(domform,exCategory,addForm) ==
+  addForm is ["%Comma",:r] => 
+    and/[extendsCategory(domform,exCategory,x) for x in r]
+  extendsCategory(domform,exCategory,addForm)
+
+--=======================================================================
+--         Compute if a domain constructor is forgetful functor
+--=======================================================================
+extendsCategory(dom,u,v) ==
+  --does category u extend category v (yes iff u contains everything in v)
+  --is dom of category u also of category v?
+  u=v => true
+  v is ["Join",:l] => and/[extendsCategory(dom,u,x) for x in l]
+  v is ["CATEGORY",.,:l] => and/[extendsCategory(dom,u,x) for x in l]
+  v is ["SubsetCategory",cat,d] => extendsCategory(dom,u,cat) and isSubset(dom,d,$e)
+  v := substSlotNumbers(v,$template,$functorForm)
+  extendsCategoryBasic0(dom,u,v) => true
+  $why :=
+    v is ['SIGNATURE,op,sig] => [u,['"  has no ",:formatOpSignature(op,sig)]]
+    [u,'" has no",v]
+  nil
+ 
+extendsCategoryBasic0(dom,u,v) ==
+  v is ['IF,p,['ATTRIBUTE,c],.] =>
+    uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
+    cons? c and isCategoryForm(c,nil) =>
+      slot4 := uVec.4
+      LASSOC(c,second slot4) is [=p,:.]
+    slot2 := uVec.2
+    LASSOC(c,slot2) is [=p,:.]
+  extendsCategoryBasic(dom,u,v)
+ 
+extendsCategoryBasic(dom,u,v) ==
+  u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v) for x in l]
+  u = v => true
+  uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
+  isCategoryForm(v,nil) => catExtendsCat?(u,v,uVec)
+  v is ['SIGNATURE,op,sig] =>
+    or/[uVec.i is [[=op,=sig],:.] for i in 6..MAXINDEX uVec]
+  u is ['CATEGORY,.,:l] =>
+    v is ['IF,:.] => member(v,l)
+    nil
+  nil
+ 
+catExtendsCat?(u,v,uvec) ==
+  u = v => true
+  uvec := uvec or (compMakeCategoryObject(u,$EmptyEnvironment)).expr
+  slot4 := uvec.4
+  prinAncestorList := first slot4
+  member(v,prinAncestorList) => true
+  vOp := KAR v
+  if similarForm := assoc(vOp,prinAncestorList) then
+    PRINT u
+    sayBrightlyNT '"   extends "
+    PRINT similarForm
+    sayBrightlyNT '"   but not "
+    PRINT v
+  or/[catExtendsCat?(x,v,nil) for x in ASSOCLEFT second slot4]
+ 
+substSlotNumbers(form,template,domain) ==
+  form is [op,:.] and
+    MEMQ(op,allConstructors()) => expandType(form,template,domain)
+  form is ['SIGNATURE,op,sig] =>
+    ['SIGNATURE,op,[substSlotNumbers(x,template,domain) for x in sig]]
+  form is ['CATEGORY,k,:u] =>
+    ['CATEGORY,k,:[substSlotNumbers(x,template,domain) for x in u]]
+  expandType(form,template,domain)
+ 
+expandType(lazyt,template,domform) ==
+  atom lazyt => expandTypeArgs(lazyt,template,domform)
+  [functorName,:argl] := lazyt
+  functorName in '(Record Union) and first argl is [":",:.] =>
+     [functorName,:[['_:,tag,expandTypeArgs(dom,template,domform)]
+                                 for [.,tag,dom] in argl]]
+  lazyt is ['local,x] =>
+    n := POSN1(x,$FormalMapVariableList)
+    domform.(1 + n)
+  [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
+ 
+expandTypeArgs(u,template,domform) ==
+  u = '$ => u --template.0      -------eliminate this as $ is rep by 0
+  integer? u => expandType(templateVal(template, domform, u), template,domform)
+  u is ['NRTEVAL,y] => y  --eval  y
+  u is ['QUOTE,y] => y
+  atom u => u
+  expandType(u,template,domform)
+ 
+templateVal(template,domform,index) ==
+--returns a domform or a lazy slot
+  index = 0 => BREAK() --template
+  template.index
+
+
 --% Subdomains
 
 ++ We are defining a functor with head given by `form', as a subdomain

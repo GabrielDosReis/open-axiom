@@ -1,3 +1,8 @@
+2011-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunopt.boot: Move content to define.boot, interop.boot,
+	lisplib.boot, nruncomp.boot, showimp.boot.  Delete.
+
 2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nrungo.boot: Move content to buildom.boot, i-map.boot,

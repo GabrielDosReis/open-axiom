@@ -105,7 +105,6 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
 	nrunfast.$(FASLEXT)	\
-	                  	nrunopt.$(FASLEXT)	\
 	osyscmd.$(FASLEXT)	\
 	packtran.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	\
@@ -348,10 +347,8 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
 wi1.$(FASLEXT): macros.$(FASLEXT)
 compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
-nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
-nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) \
-	simpbool.$(FASLEXT) functor.$(FASLEXT)
+nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 	nruncomp.$(FASLEXT) database.$(FASLEXT)

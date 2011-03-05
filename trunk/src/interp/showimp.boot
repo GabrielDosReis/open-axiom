@@ -254,3 +254,350 @@ formatLazyDomainForm(dom,x) ==
  
 
 
+--=======================================================================
+--                     Display Template
+--=======================================================================
+dc(:r) ==
+  con := KAR r
+  options := KDR r
+  ok := MEMQ(con,allConstructors()) or (con := abbreviation? con)
+  null ok =>
+    sayBrightly '"Format is: dc(<constructor name or abbreviation>,option)"
+    sayBrightly 
+      '"options are: all (default), slots, atts, cats, data, ops, optable"
+  option := KAR options
+  option = 'all or null option => dcAll con
+  option = 'slots   =>  dcSlots con
+  option = 'atts    =>  dcAtts  con
+  option = 'cats    =>  dcCats  con
+  option = 'data    =>  dcData  con
+  option = 'ops     =>  dcOps   con
+  option = 'size    =>  dcSize( con,'full)
+  option = 'optable =>  dcOpTable con
+
+dcSlots con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  template := $infovec.0
+  for i in 5..MAXINDEX template repeat
+    sayBrightlyNT bright i
+    item := template.i
+    item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
+    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
+    atom item => sayBrightly ['"fun  ",item]
+    item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
+    sayBrightly concat('"lazy ",form2String formatSlotDomain i)
+ 
+dcOpLatchPrint(op,index) ==
+  numvec := getCodeVector()
+  numOfArgs := numvec.index
+  whereNumber := numvec.(index := index + 1)
+  signumList := dcSig(numvec,index + 1,numOfArgs)
+  index := index + numOfArgs + 1
+  namePart := concat(bright "from",
+    dollarPercentTran form2String formatSlotDomain whereNumber)
+  sayBrightly ['"latch",:formatOpSignature(op,signumList),:namePart]
+ 
+getInfovec name ==
+  u := GETL(name,'infovec) => u
+  GETL(name,'LOADED) => nil
+  fullLibName := getConstructorModuleFromDB name or return nil
+  startTimingProcess 'load
+  loadLibNoUpdate(name, name, fullLibName)
+  GETL(name,'infovec)
+ 
+getOpSegment index ==
+  numOfArgs := (vec := getCodeVector()).index
+  [vec.i for i in index..(index + numOfArgs + 3)]
+
+getCodeVector() ==
+  proto4 := $infovec.3
+  u := CDDR proto4
+  vector? u => u           --old style
+  rest u                 --new style
+
+formatSlotDomain x ==
+  x = 0 => ["$"]
+  x = 2 => ["$$"]
+  integer? x =>
+    val := $infovec.0.x
+    null val => [strconc('"#",STRINGIMAGE (x  - 5))]
+    formatSlotDomain val
+  atom x => x
+  x is ['NRTEVAL,y] => (atom y => [y]; y)
+  [first x,:[formatSlotDomain y for y in rest x]]
+ 
+--=======================================================================
+--                     Display OpTable
+--=======================================================================
+dcOpTable con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  template := $infovec.0
+  $predvec: local := getConstructorPredicatesFromDB con
+  opTable := $infovec.1
+  for i in 0..MAXINDEX opTable repeat
+    op := opTable.i
+    i := i + 1
+    startIndex := opTable.i
+    stopIndex :=
+      i + 1 > MAXINDEX opTable => MAXINDEX getCodeVector()
+      opTable.(i + 2)
+    curIndex := startIndex
+    while curIndex < stopIndex repeat
+      curIndex := dcOpPrint(op,curIndex)
+ 
+dcOpPrint(op,index) ==
+  numvec := getCodeVector()
+  segment := getOpSegment index
+  numOfArgs := numvec.index
+  index := index + 1
+  predNumber := numvec.index
+  index := index + 1
+  signumList := dcSig(numvec,index,numOfArgs)
+  index := index + numOfArgs + 1
+  slotNumber := numvec.index
+  suffix :=
+    predNumber = 0 => nil
+    [:bright '"if",:pred2English $predvec.(predNumber - 1)]
+  namePart := bright
+    slotNumber = 0 => '"subsumed by next entry"
+    slotNumber = 1 => '"missing"
+    name := $infovec.0.slotNumber
+    atom name => name
+    name is ["CONS","IDENTITY",
+              ["FUNCALL", ["dispatchFunction", impl],"$"]] => impl
+    '"looked up"
+  sayBrightly [:formatOpSignature(op,signumList),:namePart, :suffix]
+  index + 1
+ 
+dcSig(numvec,index,numOfArgs) ==
+  [formatSlotDomain numvec.(index + i) for i in 0..numOfArgs]
+ 
+dcPreds con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  $predvec:= getConstructorPredicatesFromDB con
+  for i in 0..MAXINDEX $predvec repeat
+    sayBrightlyNT bright (i + 1)
+    sayBrightly pred2English $predvec.i
+ 
+dcAtts con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  $predvec:= getConstructorPredicatesFromDB con
+  attList := $infovec.2
+  for [a,:predNumber] in attList for i in 0.. repeat
+    sayBrightlyNT bright i
+    suffix :=
+      predNumber = 0 => nil
+      [:bright '"if",:pred2English $predvec.(predNumber - 1)]
+    sayBrightly [a,:suffix]
+ 
+dcCats con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  u := $infovec.3
+  vector? CDDR u => dcCats1 con    --old style slot4
+  $predvec:= getConstructorPredicatesFromDB con
+  catpredvec := first u
+  catinfo := second u
+  catvec := third u
+  for i in 0..MAXINDEX catvec repeat
+    sayBrightlyNT bright i
+    form := catvec.i
+    predNumber := catpredvec.i
+    suffix :=
+      predNumber = 0 => nil
+      [:bright '"if",:pred2English $predvec.(predNumber - 1)]
+    extra :=
+      null (info := catinfo.i) => nil
+      IDENTP info => bright '"package"
+      bright '"instantiated"
+    sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
+ 
+dcCats1 con ==
+  $predvec:= getConstructorPredicatesFromDB con
+  u := $infovec.3
+  catvec := second u
+  catinfo := first u
+  for i in 0..MAXINDEX catvec repeat
+    sayBrightlyNT bright i
+    [form,:predNumber] := catvec.i
+    suffix :=
+      predNumber = 0 => nil
+      [:bright '"if",:pred2English $predvec.(predNumber - 1)]
+    extra :=
+      null (info := catinfo.i) => nil
+      IDENTP info => bright '"package"
+      bright '"instantiated"
+    sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
+ 
+dcData con ==
+  name := abbreviation? con or con
+  $infovec: local := getInfovec name
+  sayBrightly '"Operation data from slot 1"
+  PRINT_-FULL $infovec.1
+  vec := getCodeVector()
+  vec := (cons? vec => rest vec; vec)
+  sayBrightly ['"Information vector has ",# vec,'" entries"]
+  dcData1 vec
+
+dcData1 vec ==
+  n := MAXINDEX vec
+  tens := n quo 10
+  for i in 0..tens repeat
+    start := 10*i
+    sayBrightlyNT rightJustifyString(STRINGIMAGE start,6)
+    sayBrightlyNT '"  |"
+    for j in start..MIN(start + 9,n) repeat
+      sayBrightlyNT rightJustifyString(STRINGIMAGE vec.j,6)
+    sayNewLine()
+  vec
+
+dcSize(:options) ==
+  con := KAR options
+  options := rest options
+  null con => dcSizeAll()
+  quiet := 'quiet in options
+  full := 'full in options
+  name := abbreviation? con or con
+  infovec := getInfovec name
+  template := infovec.0
+  maxindex := MAXINDEX template
+  latch := 0  --# of go get slots
+  lazy  := 0  --# of lazy domain slots
+  fun   := 0  --# of function slots
+  lazyNodes := 0 --# of nodes needed for lazy domain slots
+  for i in 5..maxindex repeat
+    atom (item := template.i) =>   fun := fun + 1
+    integer? first item    => latch := latch + 1
+    'T                 =>  
+       lazy := lazy + 1
+       lazyNodes := lazyNodes + numberOfNodes item
+  tSize := sum(vectorSize(1 + maxindex),nodeSize(lazyNodes + latch))
+  -- functions are free in the template vector
+  oSize := vectorSize(# infovec.1)
+  aSize := numberOfNodes infovec.2
+  slot4 := infovec.3
+  catvec := 
+    vector? CDDR slot4 => second slot4
+    third slot4
+  n := MAXINDEX catvec
+  cSize := sum(nodeSize(2),vectorSize(# first slot4),vectorSize(n + 1),
+               nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
+  codeVector :=
+    vector? CDDR slot4 => CDDR slot4
+    CDDDR slot4
+  vSize := halfWordSize(# codeVector)
+  itotal := sum(tSize,oSize,aSize,cSize,vSize)
+  if null quiet then sayBrightly ['"infovec total = ",itotal,'" BYTES"]
+  if null quiet then
+    lookupFun := getLookupFun infovec
+    suffix := (lookupFun = 'lookupIncomplete => '"incomplete"; '"complete")
+    sayBrightly ['"template    = ",tSize]
+    sayBrightly ['"operations  = ",oSize,'" (",suffix,'")"]
+    sayBrightly ['"attributes  = ",aSize]
+    sayBrightly ['"categories  = ",cSize]
+    sayBrightly ['"data vector = ",vSize]
+  if null quiet then
+    sayBrightly ['"number of function slots (one extra node) = ",fun]
+    sayBrightly ['"number of latch slots (2 extra nodes) = ",latch]
+    sayBrightly ['"number of lazy slots (no extra nodes) = ",lazy]
+    sayBrightly ['"size of domain vectors = ",1 + maxindex,'" slots"]
+  vtotal := itotal + nodeSize(fun)       --fun   slot is ($ . function)
+  vtotal := vtotal + nodeSize(2 * latch) --latch slot is (newGoGet $ . code)
+  --NOTE: lazy slots require no cost     --lazy  slot is lazyDomainForm
+  if null quiet then sayBrightly ['"domain size = ",vtotal,'" BYTES"] 
+  etotal := nodeSize(fun + 2 * latch) + vectorSize(1 + maxindex)
+  if null quiet then sayBrightly ['"cost per instantiation = ",etotal,'" BYTES"]
+  vtotal
+
+dcSizeAll() ==
+  count := 0
+  total := 0
+  for x in allConstructors() | cons? GETL(x,'infovec) repeat
+    count := count + 1
+    s := dcSize(x,'quiet)
+    sayBrightly [s,'" : ",x]
+    total := total + s
+  sayBrightly '"------------total-------------"
+  sayBrightly [count," constructors; ",total," BYTES"]  
+    
+sum(:l) == +/l
+
+nodeSize(n) == 12 * n
+
+vectorSize(n) == 4 * (1 + n)
+
+halfWordSize(n) == 
+  n < 128 => n quo 2
+  n < 256 => n
+  2 * n
+
+numberOfNodes(x) ==
+  atom x => 0
+  1 + numberOfNodes first x + numberOfNodes rest x
+
+template con ==
+  con := abbreviation? con or con
+  ppTemplate getInfovec(con).0
+
+ppTemplate vec ==
+  for i in 0..MAXINDEX vec repeat
+    sayBrightlyNT bright i
+    pp vec.i
+
+infovec con == 
+  con := abbreviation? con or con
+  u := getInfovec con
+  sayBrightly '"---------------slot 0 is template-------------------"
+  ppTemplate u.0
+  sayBrightly '"---------------slot 1 is op table-------------------"
+  PRINT_-FULL u.1
+  sayBrightly '"---------------slot 2 is attribute list-------------"
+  PRINT_-FULL u.2
+  sayBrightly '"---------------slot 3.0 is catpredvec---------------"
+  PRINT_-FULL u.3.0
+  sayBrightly '"---------------slot 3.1 is catinfovec---------------"
+  PRINT_-FULL u.3.1
+  sayBrightly '"---------------slot 3.2 is catvec-------------------"
+  PRINT_-FULL u.3.2
+  sayBrightly '"---------------tail of slot 3 is datavector---------"
+  dcData1 CDDDR u.3
+  'done
+
+dcAll con ==
+  con := abbreviation? con or con
+  $infovec : local := getInfovec con
+  complete? := 
+    #$infovec = 4 => false
+    $infovec.4 = 'lookupComplete
+  sayBrightly '"----------------Template-----------------"
+  dcSlots con
+  sayBrightly
+    complete? => '"----------Complete Ops----------------"
+    '"----------Incomplete Ops---------------"
+  dcOpTable con
+  sayBrightly '"----------------Atts-----------------"
+  dcAtts con
+  sayBrightly '"----------------Preds-----------------"
+  dcPreds con
+  sayBrightly '"----------------Cats-----------------"
+  dcCats con
+  sayBrightly '"----------------Data------------------"
+  dcData con
+  sayBrightly '"----------------Size------------------"
+  dcSize(con,'full)
+  'done
+
+dcOps conname ==
+  for [op,:u] in reverse getConstructorOperationsFromDB conname repeat
+    for [sig,slot,pred,key,:.] in u repeat
+      suffix := 
+        atom pred => nil
+        concat('" if ",pred2English pred)
+      key = 'Subsumed =>
+        sayBrightly [:formatOpSignature(op,sig),'" subsumed by ",:formatOpSignature(op,slot),:suffix]
+      sayBrightly [:formatOpSignature(op,sig),:suffix]
+  
