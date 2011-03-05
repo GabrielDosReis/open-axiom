@@ -244,7 +244,7 @@ dbAugmentConstructorDataTable() ==
 
 dbHasExamplePage conname ==
   sname    := STRINGIMAGE conname
-  abb      := constructor? conname
+  abb      := getConstructorAbbreviationFromDB conname
   ucname   := UPCASE STRINGIMAGE abb
   pathname :=strconc(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
   isExistingFile pathname => makeSymbol strconc(sname,'"XmpPage")

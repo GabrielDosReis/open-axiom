@@ -589,7 +589,7 @@ formatDEF0(["DEF",form,tlist,sclist,body],$DEFdepth) ==
       form
   con := opOf $form
   $comments: local := SUBST('_$,'_%,getConstructorDocumentationFromDB con)
-  $abb :local := constructor? opOf $form
+  $abb :local := getConstructorAbbreviationFromDB opOf $form
   if $DEFdepth < 2 then
     condoc := (u := LASSOC('constructor,$comments)) and KDR KAR u or ['""]
     $numberOfSpills := -1

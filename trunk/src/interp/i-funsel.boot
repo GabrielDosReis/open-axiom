@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1584,7 +1584,7 @@ hasSig(dom,foo,sig,SL) ==
   -- tests whether domain dom has function foo with signature sig
   -- under substitution SL
   $domPvar: local := nil
-  fun:= constructor? first dom =>
+  fun:= getConstructorAbbreviationFromDB first dom =>
     S0:= constructSubst dom
     p := ASSQ(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until not (S='failed) repeat

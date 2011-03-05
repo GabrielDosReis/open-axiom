@@ -398,7 +398,7 @@ form2String1 u ==
     -- string literals (e.g. "failed") masquerading as constructors
     stringImage op
   op='Join or op= 'mkCategory => formJoin1(op,argl)
-  $InteractiveMode and IDENTP op and (u:= constructor? op) =>
+  $InteractiveMode and IDENTP op and (u:= getConstructorAbbreviationFromDB op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
     op = "NTuple"  => [ form2String1 first argl, '"*"]
     op = "Map"     => ['"(",:formatSignature0 [argl.1,argl.0],'")"]

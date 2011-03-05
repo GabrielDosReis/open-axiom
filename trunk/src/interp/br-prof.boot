@@ -253,7 +253,7 @@ hasNewInfoText u ==
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
   if cat? then conname := makeSymbol strconc(STRINGIMAGE conname,'"&")
-  abb := constructor? conname or return '"not a constructor"
+  abb := getConstructorAbbreviationFromDB conname or return '"not a constructor"
   fs  := strconc(PNAME abb,'".NRLIB/info")
   inStream :=
     PROBE_-FILE fs => OPEN fs

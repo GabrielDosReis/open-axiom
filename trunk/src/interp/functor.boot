@@ -906,7 +906,7 @@ getCaps x ==
  
 getAbbreviation(name,c) ==
   --returns abbreviation of name with c arguments
-  x := constructor? name
+  x := getConstructorAbbreviationFromDB name
   X := ASSQ(x,$abbreviationTable) =>
     N:= ASSQ(name,rest X) =>
       C:= ASSQ(c,rest N) => rest C --already there

@@ -63,12 +63,14 @@ getOfCategoryArgument pred ==
   nil
 
 getDocForCategory(name,op,sig) ==
-  getOpDoc(constructor? name,op,sig) or
-    or/[getOpDoc(constructor? x,op,sig) for x in whatCatCategories name]
+  getOpDoc(getConstructorAbbreviationFromDB name,op,sig) or
+    or/[getOpDoc(getConstructorAbbreviationFromDB x,op,sig)
+         for x in whatCatCategories name]
 
 getDocForDomain(name,op,sig) ==
-  getOpDoc(constructor? name,op,sig) or
-    or/[getOpDoc(constructor? x,op,sig) for x in whatCatExtDom name]
+  getOpDoc(getConstructorAbbreviationFromDB name,op,sig) or
+    or/[getOpDoc(getConstructorAbbreviationFromDB x,op,sig)
+          for x in whatCatExtDom name]
 
 ++ returns the documentation, known to the global DB, for a operator
 ++ `op' and given signature `sigPart'.  The operator `op' is assumed
