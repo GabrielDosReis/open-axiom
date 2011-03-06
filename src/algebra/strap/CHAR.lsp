@@ -124,8 +124,7 @@
 
 (PUT '|CHAR;latex;$S;30| '|SPADreplace|
      '(XLAM (|c|)
-            (|%strconc| "\\mbox{`"
-                (|%strconc| (MAKE-FULL-CVEC 1 |c|) "'}")))) 
+            (|%strconc| "\\mbox{`" (|%strconc| (|%c2s| |c|) "'}")))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Char|)
                 |CHAR;char;S$;31|)) 
@@ -233,7 +232,7 @@
 
 (DEFUN |CHAR;latex;$S;30| (|c| $)
   (DECLARE (IGNORE $))
-  (STRCONC "\\mbox{`" (STRCONC (MAKE-FULL-CVEC 1 |c|) "'}"))) 
+  (STRCONC "\\mbox{`" (STRCONC (STRING |c|) "'}"))) 
 
 (DEFUN |CHAR;char;S$;31| (|s| $)
   (DECLARE (IGNORE $))
@@ -260,7 +259,7 @@
 
 (DEFUN |Character;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((|dv$| '(|Character|)) ($ (|newShell| 62))
+  (LET ((|dv$| '(|Character|)) ($ (|newShell| 61))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (SETF (|shellEntry| $ 0) |dv$|)
     (SETF (|shellEntry| $ 3) |pv$|)
@@ -315,19 +314,19 @@
              |CHAR;upperCase?;$B;26| (43 . |lowerCase|)
              |CHAR;lowerCase?;$B;27| (47 . |alphabetic|)
              |CHAR;alphabetic?;$B;28| (51 . |alphanumeric|)
-             |CHAR;alphanumeric?;$B;29| (|String|) (55 . |new|)
-             (61 . |concat|) |CHAR;latex;$S;30| |CHAR;char;S$;31|
+             |CHAR;alphanumeric?;$B;29| (|String|) (55 . |concat|)
+             |CHAR;latex;$S;30| |CHAR;char;S$;31|
              |CHAR;upperCase;2$;32| |CHAR;lowerCase;2$;33|
              (|SingleInteger|))
-          '#(~= 67 |verticalTab| 73 |upperCase?| 77 |upperCase| 82
-             |underscore| 87 |space| 91 |size| 95 |random| 99 |quote|
-             103 |ord| 107 |newline| 112 |min| 116 |max| 126
-             |lowerCase?| 136 |lowerCase| 141 |lookup| 146 |linefeed|
-             151 |latex| 155 |index| 160 |horizontalTab| 165
-             |hexDigit?| 169 |hash| 174 |formfeed| 179 |escape| 183
-             |digit?| 187 |coerce| 192 |char| 197 |carriageReturn| 207
-             |before?| 211 |backspace| 217 |alphanumeric?| 221
-             |alphabetic?| 226 >= 231 > 237 = 243 <= 249 < 255)
+          '#(~= 61 |verticalTab| 67 |upperCase?| 71 |upperCase| 76
+             |underscore| 81 |space| 85 |size| 89 |random| 93 |quote|
+             97 |ord| 101 |newline| 106 |min| 110 |max| 120
+             |lowerCase?| 130 |lowerCase| 135 |lookup| 140 |linefeed|
+             145 |latex| 149 |index| 154 |horizontalTab| 159
+             |hexDigit?| 163 |hash| 168 |formfeed| 173 |escape| 177
+             |digit?| 181 |coerce| 186 |char| 191 |carriageReturn| 201
+             |before?| 205 |backspace| 211 |alphanumeric?| 215
+             |alphabetic?| 220 >= 225 > 231 = 237 <= 243 < 249)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL |SetCategory&| |OrderedType&|
@@ -336,23 +335,23 @@
                                (|Finite|) (|SetCategory|)
                                (|OrderedType|) (|BasicType|) (|Type|)
                                (|CoercibleTo| 37))
-                            (|makeByteWordVec2| 61
+                            (|makeByteWordVec2| 60
                                 '(0 14 0 15 0 12 0 16 2 17 0 0 0 18 2
                                   12 0 0 0 22 1 12 0 0 24 0 39 0 40 2
                                   39 6 41 0 42 0 39 0 44 0 39 0 46 0 39
-                                  0 48 0 39 0 50 0 39 0 52 2 54 0 12 41
-                                  55 2 54 0 0 0 56 2 0 6 0 0 1 0 0 0 35
-                                  1 0 6 0 47 1 0 0 0 59 0 0 0 28 0 0 0
-                                  26 0 0 12 13 0 0 0 25 0 0 0 27 1 0 12
-                                  0 21 0 0 0 29 0 0 0 1 2 0 0 0 0 1 0 0
-                                  0 1 2 0 0 0 0 1 1 0 6 0 49 1 0 0 0 60
-                                  1 0 14 0 23 0 0 0 31 1 0 54 0 57 1 0
-                                  0 14 20 0 0 0 34 1 0 6 0 45 1 0 61 0
-                                  1 0 0 0 32 0 0 0 36 1 0 6 0 43 1 0 37
-                                  0 38 1 0 0 54 58 1 0 0 12 19 0 0 0 30
-                                  2 0 6 0 0 1 0 0 0 33 1 0 6 0 53 1 0 6
-                                  0 51 2 0 6 0 0 11 2 0 6 0 0 9 2 0 6 0
-                                  0 7 2 0 6 0 0 10 2 0 6 0 0 8)))))
+                                  0 48 0 39 0 50 0 39 0 52 2 54 0 0 0
+                                  55 2 0 6 0 0 1 0 0 0 35 1 0 6 0 47 1
+                                  0 0 0 58 0 0 0 28 0 0 0 26 0 0 12 13
+                                  0 0 0 25 0 0 0 27 1 0 12 0 21 0 0 0
+                                  29 0 0 0 1 2 0 0 0 0 1 0 0 0 1 2 0 0
+                                  0 0 1 1 0 6 0 49 1 0 0 0 59 1 0 14 0
+                                  23 0 0 0 31 1 0 54 0 56 1 0 0 14 20 0
+                                  0 0 34 1 0 6 0 45 1 0 60 0 1 0 0 0 32
+                                  0 0 0 36 1 0 6 0 43 1 0 37 0 38 1 0 0
+                                  54 57 1 0 0 12 19 0 0 0 30 2 0 6 0 0
+                                  1 0 0 0 33 1 0 6 0 53 1 0 6 0 51 2 0
+                                  6 0 0 11 2 0 6 0 0 9 2 0 6 0 0 7 2 0
+                                  6 0 0 10 2 0 6 0 0 8)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Character| 'NILADIC T) 

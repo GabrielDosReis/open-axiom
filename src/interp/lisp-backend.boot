@@ -456,6 +456,7 @@ for x in [
     ['%cdown,  :'CHAR_-DOWNCASE],
     ['%c2i,    :'CHAR_-CODE],
     ['%i2c,    :'CODE_-CHAR],
+    ['%c2s,    :'STRING],
 
     -- byte operations
     ['%beq, :'byteEqual],

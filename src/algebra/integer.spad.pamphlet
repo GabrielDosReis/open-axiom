@@ -102,6 +102,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %igt: (%,%) -> Boolean    from Foreign Builtin
       import %ige: (%,%) -> Boolean    from Foreign Builtin
       import %ilength: % -> %          from Foreign Builtin
+      import %i2s: % -> String         from Foreign Builtin
 
       x,y: %
       n: NonNegativeInteger
@@ -175,11 +176,11 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       convert(x:%):Float       == coerce(x)$Float
       convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
       convert(x:%):InputForm   == convert(x)$InputForm
-      convert(x:%):String      == string(x)$String
+      convert(x:%):String      == %i2s x
 
       latex(x:%):String ==
-        s : String := string(x)$String
-        (-1 < (x pretend Integer)) and ((x  pretend Integer) < 10) => s
+        s : String := convert x
+        -1 < x and x < 10 => s
         concat("{", concat(s, "}")$String)$String
 
       positiveRemainder(a, b) ==

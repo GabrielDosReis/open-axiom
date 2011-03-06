@@ -445,7 +445,7 @@ $VMsideEffectFreeOperators ==
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
     %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
     %lreverse %lempty? %hash %ismall? %string? %f2s
-    %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
+    %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown %sname
     %strlength %streq %i2s %schar %strlt %strconc %strcopy
     %aref %vref %vlength
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
