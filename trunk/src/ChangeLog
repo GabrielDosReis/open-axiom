@@ -1,4 +1,11 @@
-2011-03-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (mkEvalable): Simplify.
+	(mkEvalableMapping): Remove.
+	(mkEvalableRecord): Likewise.
+	(mkEvalableUnion): Likewise.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %c2s.
 	* interp/lisp-backend.boot: Translate it.

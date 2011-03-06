@@ -49,12 +49,12 @@ evalDomain form ==
 
 mkEvalable form ==
   form is [op,:argl] =>
-    op="QUOTE" => form
-    op="WRAPPED" => mkEvalable devaluate argl
-    op="Record" => mkEvalableRecord form
-    op="Union"  => mkEvalableUnion  form
-    op="Mapping"=> mkEvalableMapping form
-    op="Enumeration" => form
+    op is "QUOTE" => form
+    op is ":" => [op,second form,mkEvalable third form]
+    op is "WRAPPED" => mkEvalable devaluate argl
+    op in '(Record Union Mapping) =>
+      [op,:[mkEvalable arg for arg in argl]]
+    op is 'Enumeration => form
     -- a niladic constructor instantiation goes by itself
     constructor? op and argl = nil => form
     loadIfNecessary op
@@ -74,17 +74,6 @@ mkEvalable form ==
   IDENTP form and constructor?(form) => [form]
   FBPIP form => BPINAME form
   form
-
-mkEvalableMapping form ==
-  [first form,:[mkEvalable d for d in rest form]]
-
-mkEvalableRecord form ==
-  [first form,:[[":",n,mkEvalable d] for [":",n,d] in rest form]]
-
-mkEvalableUnion form ==
-  isTaggedUnion form =>
-    [first form,:[[":",n,mkEvalable d] for [":",n,d] in rest form]]
-  [first form,:[mkEvalable d for d in rest form]]
 
 evaluateType0 form ==
   -- Takes a parsed, unabbreviated type and evaluates it, replacing
