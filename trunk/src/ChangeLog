@@ -1,3 +1,11 @@
+2011-03-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %c2s.
+	* interp/lisp-backend.boot: Translate it.
+	* algebra/integer.spad.pamphlet (Integer) [convert]: Tidy.
+	[latex]: Likewise.
+	* algebra/string.spad.pamphlet (Character)[latex]: Likewise.
+
 2011-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Use getConstructorAbbreviationFromDB.

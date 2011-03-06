@@ -100,6 +100,7 @@ Character: OrderedFinite() with
         import %i2c: NNI -> %         from Foreign Builtin
         import %ccst: String -> %     from Foreign Builtin
         import %s2c: String -> %      from Foreign Builtin
+        import %c2s: % -> String      from Foreign Builtin
 
 	a = b		       == %ceq(a,b)
 	a < b		       == %clt(a,b)
@@ -132,7 +133,7 @@ Character: OrderedFinite() with
 	alphanumeric? c	       == member?(c, alphanumeric())
 
 	latex c ==
-	  concat("\mbox{`", concat(new(1,c)$String, "'}")$String)$String
+	  concat("\mbox{`", concat(%c2s c, "'}")$String)$String
 
 	char(s: String) ==
           %s2c s
