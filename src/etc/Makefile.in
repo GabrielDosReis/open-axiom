@@ -34,7 +34,7 @@ DRIVER = ../driver/open-axiom$(EXEEX)
 INTERPSYS = \
 	$(DRIVER) --execpath=../interp/interpsys$(EXEEXT) \
 		--system="$(AXIOM)" \
-		--sysalg="$(axiom_src_datadir)/algebra/"
+		--sysdb="$(axiom_src_datadir)/algebra/"
 
 openaxiom_databases = \
 	$(addprefix $(axiom_targetdir)/algebra/, \

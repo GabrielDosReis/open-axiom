@@ -103,6 +103,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %ige: (%,%) -> Boolean    from Foreign Builtin
       import %ilength: % -> %          from Foreign Builtin
       import %i2s: % -> String         from Foreign Builtin
+      import %strconc: (String,String) -> String from Foreign Builtin
 
       x,y: %
       n: NonNegativeInteger
@@ -181,7 +182,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       latex(x:%):String ==
         s : String := convert x
         -1 < x and x < 10 => s
-        concat("{", concat(s, "}")$String)$String
+        %strconc("{", %strconc(s, "}"))
 
       positiveRemainder(a, b) ==
         negative?(r := a rem b) =>

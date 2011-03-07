@@ -46,7 +46,7 @@ $globalExposureGroupAlist := []
 --% 
 
 pathToDatabase name ==
-  if dbdir := systemAlgebraDirectory() then
+  if dbdir := systemDatabaseDirectory() then
     path := strconc(dbdir,name)
     if $verbose then
       FORMAT(true,'"   Using local database ~a..",path)

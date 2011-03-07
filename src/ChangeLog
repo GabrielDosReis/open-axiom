@@ -1,5 +1,25 @@
 2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (getSystemModulePath): Use
+	systemAlgebraDirectory. 
+	* interp/database.boot (pathToDatabase): Use systemDatabaseDirectory. 
+	* algebra/integer.spad.pamphlet (Integer) [latex]: Tidy.
+	* algebra/string.spad.pamphlet (Character) [latex]: Likewise.
+	* algebra/Makefile.in: Rework bootstrapping set up.
+	(COMPILE_LISP): Remove.
+	(axiom_algebra_layer_strap): Likewise.
+	(axiom_algebra_layer_strap_objects): Likewise.
+	(axiom_algebra_bootstrap): Likewise.
+	(oa_strap_0_fasls): New.
+	(oa_strap_1_fasls): Likewise.
+	(oa_strap_2_fasls): Likewise.
+	(oa_strap_0_sources): Likewise.
+	(oa_strap_1_sources): Likewise.
+	(oa_strap_2_sources): Likewise.
+	* src/algerab/strap: Remove.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/si.spad.pamphlet (SingleInteger): Logic is indirectly
 	included through BooleanLogic.
 

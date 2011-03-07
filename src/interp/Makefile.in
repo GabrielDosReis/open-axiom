@@ -243,7 +243,7 @@ ${SAVESYS}: database.date \
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" --system-algebra \
-		--sysalg="$(axiom_src_datadir)/algebra/" \
+		--sysdb="$(axiom_src_datadir)/algebra/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)

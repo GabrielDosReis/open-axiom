@@ -227,6 +227,7 @@ checkMkdir path ==
 
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
+  d := systemAlgebraDirectory() => strconc(d,m,'".",$faslType)
   strconc(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
 ++ load module in `path' that supposedly will define the function 
