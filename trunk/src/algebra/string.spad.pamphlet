@@ -101,6 +101,7 @@ Character: OrderedFinite() with
         import %ccst: String -> %     from Foreign Builtin
         import %s2c: String -> %      from Foreign Builtin
         import %c2s: % -> String      from Foreign Builtin
+        import %strconc: (String,String) -> String from Foreign Builtin
 
 	a = b		       == %ceq(a,b)
 	a < b		       == %clt(a,b)
@@ -133,7 +134,7 @@ Character: OrderedFinite() with
 	alphanumeric? c	       == member?(c, alphanumeric())
 
 	latex c ==
-	  concat("\mbox{`", concat(%c2s c, "'}")$String)$String
+	  %strconc("\mbox{`", %strconc(%c2s c, "'}"))
 
 	char(s: String) ==
           %s2c s
