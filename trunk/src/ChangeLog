@@ -1,5 +1,10 @@
 2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/si.spad.pamphlet (SingleInteger): Logic is indirectly
+	included through BooleanLogic.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-eval.boot (mkEvalable): Simplify.
 	(mkEvalableMapping): Remove.
 	(mkEvalableRecord): Likewise.
