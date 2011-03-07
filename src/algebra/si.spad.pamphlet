@@ -187,7 +187,7 @@ IntegerNumberSystem(): Category ==
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
-SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenMath) with
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
    canonicalsClosed
