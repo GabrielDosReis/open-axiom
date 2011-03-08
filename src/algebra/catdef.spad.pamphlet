@@ -224,7 +224,7 @@ BasicType(): Category == Type with
       ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
       before?: (%,%) -> Boolean
         ++ \spad{before?(x,y)} holds if the system representation
-        ++ of \spad{x} is comes before that of \spad{y} in a
+        ++ of \spad{x} comes before that of \spad{y} in a
         ++ an implementation defined manner.
    add
       x = y == not before?(x,y) and not before?(y,x)
@@ -1794,6 +1794,24 @@ PrincipalIdealDomain(): Category == GcdDomain with
 ++   \spad{ (x+y)*x = (x*a)+(y*a) }
 RightModule(R:Rng):Category == Join(AbelianGroup, RightLinearSet R)
 
+@
+
+\section{category SRING SemiRing}
+<<category SRING SemiRing>>=
+)abbrev category SRING SemiRing
+++ Author: Gabriel Dos Reis
+++ Date Created: March 7, 2011
+++ Date Last Modified: March 7, 2011
+++ Description:
+++   The category of all semiring structures, e.g. triples (D,+,*)
+++   such that (D,+) is an Abelian monoid and (D,*) is a monoid
+++   with the following laws:
+++ Axioms:
+++    a * (b + c) = (a * b) + (a * c)
+++    (b + c) * a = (b * a) + (c * a)
+++    0 * a = 0
+++    a * 0 = 0
+SemiRing(): Category == Join(AbelianMonoid,Monoid)
 @
 
 \section{category RING Ring}

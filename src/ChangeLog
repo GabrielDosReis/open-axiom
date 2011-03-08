@@ -1,3 +1,7 @@
+2011-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (SemiRing): New category.
+
 2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (getSystemModulePath): Use

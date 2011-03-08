@@ -782,6 +782,7 @@
   (|SegmentCategory| . SEGCAT)
   (|SegmentExpansionCategory| . SEGXCAT)
   (|SemiGroup| . SGROUP)
+  (|SemiRing| . SRING)
   (|SetAggregate| . SETAGG)
   (|SetCategory| . SETCAT)
   (|SExpressionCategory| . SEXCAT)
