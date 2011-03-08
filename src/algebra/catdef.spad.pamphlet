@@ -683,7 +683,6 @@ DivisionRing(): Category ==
 ++ Axioms:
 ++   \spad{ab=0 => a=0 or b=0}  -- known as noZeroDivisors
 ++   \spad{not(1=0)}
---EntireRing():Category == Join(Ring,BiModule(%:Ring,%:Ring)) with
 EntireRing():Category == Join(Ring,BiModule(%,%)) with
       noZeroDivisors  ++ if a product is zero then one of the factors
                       ++ must be zero.
