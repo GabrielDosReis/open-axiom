@@ -1,5 +1,12 @@
 2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (EuclideanDomain)
+	[expressIdealMember]:  Now returns Maybe List %.
+	* algebra/Makefile.in: Tidy.
+	(axiom_algebra_bootstrap_last_layer): Remove.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot: %pair, %list, %vector, %bitvector are now
 	considered side-effect free functions.
 	* algebra/boolean.spad.pamphlet: Reflect change.

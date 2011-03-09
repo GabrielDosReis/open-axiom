@@ -689,28 +689,11 @@ TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
 
 subdir = src/algebra/
 
+$(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
+$(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
+$(OUT)/PI.$(FASLEXT): $(OUT)/NNI.$(FASLEXT)
 
-axiom_algebra_bootstrap_last_layer = \
-           DFLOAT                     \
-  DIVRING  DIVRING-                   \
-           EUCDOM   EUCDOM-  FFIELDC  \
-  FFIELDC- FPS      FPS-              \
-  INS      INS-     INT               \
-           MTSCAT   NNI               \
-                    OUTFORM  PI       \
-           POLYCAT  POLYCAT-          \
-           QFCAT    QFCAT-            \
-           RNS      RNS-              \
-                             SINT     \
-                    SYMBOL            \
-  VECTOR
-
-
-axiom_algebra_bootstrap_last_layer_objects = \
-	$(addprefix $(OUT)/, \
-	   $(addsuffix .$(FASLEXT), $(axiom_algebra_bootstrap_last_layer)))
-
-
+$(OUT)/TYPE.$(FASLEXT): $(OUT)/SINT.$(FASLEXT)
 $(OUT)/IEVALAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/EVALAB.$(FASLEXT): $(OUT)/IEVALAB.$(FASLEXT)
 $(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -791,8 +774,8 @@ $(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT)
 $(OUT)/LOGIC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BOOLE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
-
-$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
+	$(OUT)/PI.$(FASLEXT)
 $(OUT)/ABELSG.$(FASLEXT) $(OUT)/ABELSG-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	$(OUT)/LLINSET.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
@@ -858,7 +841,11 @@ axiom_algebra_layer_0 = \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
   DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT          \
-  BOOLE    BOOLE-   REF      ALIST    PRIMARR  SRING
+  BOOLE    BOOLE-   REF      ALIST    PRIMARR  SRING    \
+  INS      INS-     DIVRING  DIVRING- EUCDOM   EUCDOM-  \
+                    FPS      FPS-     RNS      RNS-     \
+  POLYCAT  POLYCAT- QFCAT    QFCAT-                     \
+  INT      NNI      PI       SINT     SYMBOL   DFLOAT
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -1156,7 +1143,7 @@ axiom_algebra_layer_11 = \
   TS       TUPLE    UPSCAT   UPSCAT-  \
                     XDPOLY   XEXPPKG  \
   XF       XF-               XPOLY    \
-  XRPOLY   
+  XRPOLY   FFIELDC  FFIELDC- MTSCAT
 
 axiom_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_11))
@@ -1190,7 +1177,7 @@ axiom_algebra_layer_13 = \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
   PFECAT   PFECAT-  POINT    PSEUDLIN \
   PTPACK   REP2     SETMN             \
-  SYMFUNC  VECTOR2     CHAR  \
+  SYMFUNC  VECTOR2  VECTOR   CHAR  \
   INBCON   INBCON-  OUTBCON  OUTBCON-
 
 axiom_algebra_layer_13_nrlibs = \
@@ -1683,7 +1670,6 @@ $(axiom_algebra_layer_20_objects): 19-stamp
 $(axiom_algebra_layer_21_objects): 20-stamp
 $(axiom_algebra_layer_22_objects): 21-stamp
 $(axiom_algebra_layer_23_objects): 22-stamp
-$(axiom_algebra_bootstrap_last_layer_objects): 23-stamp
 $(axiom_algebra_layer_user_objects): bootstrap-stamp
 
 .PHONY: all-algstrap
@@ -1864,7 +1850,7 @@ strap-stamp: strap-2/.finished
 	@ echo === layer 23 of 23 complete ======
 	@ echo ==================================
 
-bootstrap-stamp: 23-stamp $(axiom_algebra_bootstrap_last_layer_objects)
+bootstrap-stamp: 23-stamp
 	@ rm -f bootstrap-stamp
 	@ $(STAMP) bootstrap-stamp
 	@ echo ==================================
