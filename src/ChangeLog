@@ -1,5 +1,12 @@
 2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot: %pair, %list, %vector, %bitvector are now
+	considered side-effect free functions.
+	* algebra/boolean.spad.pamphlet: Reflect change.
+	* algebra/Makefile.in (oa_strap_0_sources): Include MAYBE.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (semiSimpleRelativeTo?): Consider conditionals.
 
 2011-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
