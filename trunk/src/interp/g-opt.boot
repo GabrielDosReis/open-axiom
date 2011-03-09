@@ -463,8 +463,11 @@ $simpleVMoperators ==
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
   atomic? form => true
-  form isnt [op,:args] or not symbol? op or not MEMQ(op,ops) => false
-  and/[semiSimpleRelativeTo?(f,ops) for f in args]
+  not symbol?(form.op) or not MEMQ(form.op,ops) => false
+  form.op is '%when =>
+    and/[sideEffectFree? p and semiSimpleRelativeTo?(c,ops)
+           for [p,c] in form.args]
+  and/[semiSimpleRelativeTo?(f,ops) for f in form.args]
 
 ++ Return true if `form' os a side-effect free form.  
 sideEffectFree? form ==

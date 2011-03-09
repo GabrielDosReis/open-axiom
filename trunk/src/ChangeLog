@@ -1,3 +1,7 @@
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (semiSimpleRelativeTo?): Consider conditionals.
+
 2011-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (SemiRing): New category.
