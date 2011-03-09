@@ -443,11 +443,12 @@ $VMsideEffectFreeOperators ==
     %val2z %z2val %zlit %zreal %zimag
     %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
-    %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+    %nil %pair %list %pair? %lconcat %llength %lfirst %lsecond %lthird
     %lreverse %lempty? %hash %ismall? %string? %f2s
     %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown %sname
     %strlength %streq %i2s %schar %strlt %strconc %strcopy
-    %aref %vref %vlength
+    %vector %aref %vref %vlength
+    %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref)
@@ -455,9 +456,8 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,'%pair,'%list,
-      '%strstc,'%makebitvec,'%makevector,'%vector,
-        "MAKE-FULL-CVEC","BVEC-MAKE-FULL"])
+    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
+      '%strstc,"MAKE-FULL-CVEC","BVEC-MAKE-FULL"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
@@ -495,6 +495,7 @@ isVMConstantForm: %Code -> %Boolean
 isVMConstantForm form ==
   integer? form or string? form => true
   form isnt [op,:args] => false
+  op in '(%list %pair %vector) => false
   MEMQ(op,$VMsideEffectFreeOperators) and 
     "and"/[isVMConstantForm arg for arg in args]
 

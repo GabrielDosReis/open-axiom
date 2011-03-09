@@ -354,7 +354,7 @@ expandBitveceq ['%bitveceq,x,y] ==
 expandBitveclt ['%bitveclt,x,y] ==
   ['BVEC_-GREATER,expandToVMForm y,expandToVMForm x]
 
-expandMakebitvec ['%makebitvec,x,y] ==
+expandBitvector ['%bitvector,x,y] ==
   ['MAKE_-ARRAY,['LIST,expandToVMForm x],
      KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
        KEYWORD::INITIAL_-ELEMENT,expandToVMForm y]
@@ -651,7 +651,7 @@ for x in [
    ['%bitveceq,     :function expandBitveceq],
    ['%bitveclt,     :function expandBitveclt],
    ['%bitvecref,   :function expandBitvecref],
-   ['%makebitvec,   :function expandMakebitvec],
+   ['%bitvector,   :function expandBitvector],
 
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],

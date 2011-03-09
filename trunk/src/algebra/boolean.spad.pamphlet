@@ -564,7 +564,7 @@ IndexedBits(mn:Integer): BitAggregate() with
         import %bitvecand: (%,%) -> %                 from Foreign Builtin
         import %bitvecor: (%,%) -> %                  from Foreign Builtin
         import %bitvecxor: (%,%) -> %                 from Foreign Builtin
-        import %makebitvec: (NonNegativeInteger,NonNegativeInteger) -> %
+        import %bitvector: (NonNegativeInteger,NonNegativeInteger) -> %
                                                       from Foreign Builtin
 
         minIndex u  == mn
@@ -582,8 +582,8 @@ IndexedBits(mn:Integer): BitAggregate() with
               s.i := if v.j then t else f
             s::OutputForm
 
-        new(n, b)       == %makebitvec(n, %2bit(b)$Foreign(Builtin))
-        empty()         == %makebitvec(0,0)
+        new(n, b)       == %bitvector(n, %2bit(b)$Foreign(Builtin))
+        empty()         == %bitvector(0,0)
         copy v          == %bitveccopy v
         #v              == %bitveclength v
         v = u           == %bitveceq(v,u)
