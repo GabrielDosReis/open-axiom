@@ -176,10 +176,10 @@ PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
        while true repeat
           tempAns:=factorSFBRlcUnitInner(pp,val)
           not (tempAns case "failed") => return tempAns
-          val1:=nextItem val
-          val1 case "failed" =>
+          val1 := nextItem val
+          val1 case nothing =>
             error "at this point, we know we have a finite field"
-          val:=val1
+          val := val1
    else
      factorSFBRlcUnit(pp) ==
        val:R := randomR()
@@ -191,7 +191,7 @@ PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
       randomCount:R:= init()
       randomR() ==
         v:=nextItem(randomCount)
-        v case "failed" =>
+        v case nothing =>
           SAY$Lisp "Taking another set of random values"
           randomCount:=init()
           randomCount
@@ -404,7 +404,7 @@ PolynomialFactorizationByRecursion(R,E, VarSet:OrderedSet, S): public ==
           tempAns:=factorSFBRlcUnitInner(lvpp,pp,val)
           not (tempAns case "failed") => return tempAns
           val1:=nextItem val
-          val1 case "failed" =>
+          val1 case nothing =>
             error "at this point, we know we have a finite field"
           val:=val1
    else

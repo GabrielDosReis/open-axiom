@@ -173,10 +173,10 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
        init() == init()$S / 1$S
 
        nextItem(n) ==
-         m:= nextItem(numer(n))
-         m case "failed" =>
+         m:= nextItem numer n
+         m case nothing =>
            error "We seem to have a Fraction of a finite object"
-         m / 1
+         just(m / 1)
 
     map(fn, x)                         == (fn numer x) / (fn denom x)
     reducedSystem(m:Matrix %):Matrix S == clearDenominator m

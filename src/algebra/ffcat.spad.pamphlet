@@ -585,9 +585,10 @@ FiniteFieldCategory() : Category ==_
 
     differentiate x          == 0
     init() == 0
-    nextItem(a) ==
-      zero?(a:=index(lookup(a)+1)) => "failed"
-      a
+    nextItem a ==
+      a := index(lookup(a)+1)
+      zero? a => nothing
+      just a
     order(e):OnePointCompletion(PositiveInteger) ==
       (order(e)@PI)::OnePointCompletion(PositiveInteger)
 
