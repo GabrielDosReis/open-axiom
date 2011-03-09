@@ -78,7 +78,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
     noetherian
       ++ ascending chain condition on ideals.
     infinite
-      ++ nextItem never returns "failed".
+      ++ nextItem never returns \spad{nothing}.
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer

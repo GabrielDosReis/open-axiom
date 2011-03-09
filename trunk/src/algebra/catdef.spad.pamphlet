@@ -1963,13 +1963,14 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
 ++ starting from any initial element.
 ++
 ++ Conditional attributes:
-++   infinite\tab{15}repeated \spad{nextItem}'s are never "failed".
+++   infinite\tab{15}repeated \spad{nextItem}'s are never \spad{nothing}.
 StepThrough(): Category == SetCategory with
     --operations
       init:             %
         ++ init() chooses an initial object for stepping.
-      nextItem: % -> Union(%,"failed")
-        ++ nextItem(x) returns the next item, or "failed" if domain is exhausted.
+      nextItem: % -> Maybe %
+        ++ \spad{nextItem(x)} returns the next item, or \spad{failed}
+        ++ if domain is exhausted.
 
 @
 \section{category UFD UniqueFactorizationDomain}

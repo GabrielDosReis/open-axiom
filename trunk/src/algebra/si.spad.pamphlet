@@ -109,10 +109,10 @@ IntegerNumberSystem(): Category ==
    init() == 0
 
    -- iterates in order 0,1,-1,2,-2,3,-3,...
-   nextItem(n) ==
-     zero? n => 1
-     n>0 => -n
-     1-n
+   nextItem n ==
+     zero? n => just 1
+     n > 0 => just(-n)
+     just(1-n)
 
    patternMatch(x, p, l) ==
      patternMatch(x, p, l)$PatternMatchIntegerNumberSystem(%)

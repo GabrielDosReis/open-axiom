@@ -1,5 +1,17 @@
 2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (StepThrough) [nextItem]: Now
+	return Maybe %.
+	* algebra/ffcat.spad.pamphlet: Propagate change.
+	* algebra/fmod.spad.pamphlet: Likewise.
+	* algebra/fraction.spad.pamphlet: Likewise.
+	* algebra/integer.spad.pamphlet: Likewise.
+	* algebra/pfbr.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (EuclideanDomain)
 	[expressIdealMember]:  Now returns Maybe List %.
 	* algebra/Makefile.in: Tidy.

@@ -842,25 +842,25 @@ UnivariatePolynomialCategory(R:Ring): Category ==
 
     if R has StepThrough then
        init() == init()$R::%
-       nextItemInner: % -> Union(%,"failed")
+       nextItemInner: % -> Maybe %
        nextItemInner(n) ==
-         zero? n => nextItem(0$R)::R::% -- assumed not to fail
+         zero? n => just(nextItem(0$R)::R::%) -- assumed not to fail
          zero? degree n =>
            nn:=nextItem leadingCoefficient n
-           nn case "failed" => "failed"
-           nn::R::%
+           nn case nothing => nothing
+           just(nn::R::%)
          n1:=reductum n
          n2:=nextItemInner n1 -- try stepping the reductum
-         n2 case % => monomial(leadingCoefficient n,degree n) + n2
+         n2 case % => just(monomial(leadingCoefficient n,degree n) + n2)
          1+degree n1 < degree n => -- there was a hole between lt n and n1
-           monomial(leadingCoefficient n,degree n)+
-             monomial(nextItem(init()$R)::R,1+degree n1)
+           just(monomial(leadingCoefficient n,degree n)+
+             monomial(nextItem(init()$R)::R,1+degree n1))
          n3:=nextItem leadingCoefficient n
-         n3 case "failed" => "failed"
-         monomial(n3,degree n)
+         n3 case nothing => nothing
+         just monomial(n3,degree n)
        nextItem(n) ==
          n1:=nextItemInner n
-         n1 case "failed" => monomial(nextItem(init()$R)::R,1+degree(n))
+         n1 case nothing => just monomial(nextItem(init()$R)::R,1+degree(n))
          n1
 
     if R has GcdDomain then

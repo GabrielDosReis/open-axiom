@@ -40,10 +40,10 @@ IntegerMod(p:PositiveInteger):
   0 == per(0$Rep)
   1 == per(1$Rep)
   init == 0
-  nextItem(n) ==
+  nextItem n ==
     m := n+1
-    m = 0 => "failed"
-    m
+    m = 0 => nothing
+    just m
 
   zero? x == rep x = 0
   one? x == rep x = 1
