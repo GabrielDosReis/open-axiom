@@ -1,5 +1,10 @@
 2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (equalFormTemplate): Tidy comparison of value
+	argument to constructors.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (mutateArgumentList): New.
 	(inlineDirectCall): Break out of replaceSimpleFunctions.
 	(resolveIndirectCall): Break out of foldSpadcall.
