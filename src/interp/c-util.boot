@@ -1137,6 +1137,17 @@ eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
 
+++ Attempt to resolve the indirect reference to a constant form
+++ `[spadConstant,$,n]' to a simpler expression
+resolveConstantForm form ==
+  fun := getCapsuleDirectoryEntry third form or return form
+  -- Conservatively preserve object identity and storage 
+  -- consumption by not folding non-atomic constant forms.
+  getFunctionReplacement fun isnt ['XLAM,=nil,body] => form
+  atomic? body or isVMConstantForm body => body
+  form
+
+
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   atomic? form => form
@@ -1144,14 +1155,7 @@ replaceSimpleFunctions form ==
     mutateConditionalFormWithUnaryFunction(form,function replaceSimpleFunctions)
   form.op is "LET" =>
     optLET mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
-  form is ["spadConstant","$",n] =>
-    op := getCapsuleDirectoryEntry n
-    op = nil => form
-    -- Conservatively preserve object identity and storage 
-    -- consumption by not folding non-atomic constant forms.
-    getFunctionReplacement op isnt ['XLAM,=nil,body] => form
-    atomic? body or isVMConstantForm body => body
-    form
+  form is ['spadConstant,'$,.] => resolveConstantForm form
   -- 1. process argument first.
   for args in tails rest form repeat
     arg := first args
@@ -1243,6 +1247,7 @@ foldSpadcall form ==
     mutateConditionalFormWithUnaryFunction(form,function foldSpadcall)
   for x in form repeat
     foldSpadcall x
+  form is ['spadConstant,'$,.] => resolveConstantForm form
   form.op isnt 'SPADCALL => form
   fun := lastNode form
   fun isnt [['%tref,'$,slot]] => form
