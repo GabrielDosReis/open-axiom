@@ -881,7 +881,7 @@ UnivariatePolynomialSquareFree(RC:IntegralDomain,P):C == T
       else if RC has CharacteristicNonZero then
          BumInSepFFE(ffe:FF) ==
             np := multiplyExponents(ffe.fctr,characteristic$P:NonNegativeInteger)
-            (nthrp := charthRoot(np)) case "failed" =>
+            (nthrp := charthRoot(np)) case nothing =>
                ["nil", np, ffe.xpnt]
             ["sqfr", nthrp, characteristic$P*ffe.xpnt]
 
@@ -1010,7 +1010,7 @@ PolynomialSquareFree(VarSet:OrderedSet,E,RC:GcdDomain,P):C == T where
       pthPower(f:P) : Factored P ==
         proot : P := 0
         isSq  : Boolean := false
-        if (g:=charthRoot f) case "failed" then proot:=pPolRoot(f)
+        if (g:=charthRoot f) case nothing then proot:=pPolRoot(f)
         else
           proot := g :: P
           isSq  := true

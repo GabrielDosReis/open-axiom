@@ -349,8 +349,8 @@ FiniteAlgebraicExtensionField(F : Field) : Category == _
         v:=first nullSpace transpose matrix(l)$(Matrix F)
         +/[monomial(v.(i+1),i::NNI) for i in 0..(#v-1)]
 
-      charthRoot(x):Union($,"failed") ==
-        (charthRoot(x)@$)::Union($,"failed")
+      charthRoot(x): Maybe % ==
+        just(charthRoot(x)@%)
       -- norm(e) == norm(e,1) pretend F
       -- trace(e) == trace(e,1) pretend F
       minimalPolynomial(a,n) ==
@@ -597,8 +597,8 @@ FiniteFieldCategory() : Category ==_
       empty? l or every?(zero?, first l) => "failed"
       map(charthRoot,first l)
     charthRoot(x:$):$ == x**(size()$% quo characteristic$%)
-    charthRoot(x:%):Union($,"failed") ==
-        (charthRoot(x)@$)::Union($,"failed")
+    charthRoot(x:%): Maybe % ==
+        just(charthRoot(x)@%)
     createPrimitiveElement() ==
       sm1  : PositiveInteger := (size()$%-1) pretend PositiveInteger
       start : Integer :=

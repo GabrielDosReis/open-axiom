@@ -377,7 +377,7 @@ CancellationAbelianMonoid(): Category == AbelianMonoid with
 ++ Description:
 ++ Rings of Characteristic Non Zero
 CharacteristicNonZero():Category == Ring with
-    charthRoot: % -> Union(%,"failed")
+    charthRoot: % -> Maybe %
        ++ charthRoot(x) returns the pth root of x
        ++ where p is the characteristic of the ring.
 
@@ -1706,9 +1706,9 @@ PolynomialFactorizationExplicit(): Category == Definition where
               ++ whose \spad{p}-th powers (p is the characteristic of the domain)
               ++ are a solution of the homogenous linear system represented
               ++ by m, or "failed" is there is no such vector.
-         charthRoot: % -> Union(%,"failed")
-              ++ charthRoot(r) returns the \spad{p}-th root of r, or "failed"
-              ++ if none exists in the domain.
+         charthRoot: % -> Maybe %
+              ++ charthRoot(r) returns the \spad{p}-th root of r, or
+              ++ \spad{nothing} if none exists in the domain.
               -- this is a special case of conditionP, but often the one we want
       add
         gcdPolynomial(f,g) ==
@@ -1725,11 +1725,13 @@ PolynomialFactorizationExplicit(): Category == Definition where
              -- to take p'th root of f, solve the system X-fY=0,
              -- so solution is [x,y]
              -- with x^p=X and y^p=Y, then (x/y)^p = f
-             zero? f => 0
+             zero? f => just 0
              m:Matrix % := matrix [[1,-f]]
              ans:= conditionP m
-             ans case "failed" => "failed"
-             (ans.1) exquo (ans.2)
+             ans case "failed" => nothing
+             r := (ans.1) exquo (ans.2)
+             r case "failed" => nothing
+             just r
         if % has Field then
           solveLinearPolynomialEquation(lf,g) ==
             multiEuclidean(lf,g)$P

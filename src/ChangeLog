@@ -1,5 +1,17 @@
 2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (CharacteristicNonZero)
+	[charthRoot]:  Now return Maybe %.
+	(PolynomialFactorizationExplicit) [charthRoot]: Likewise.
+	* algebra/ffcat.spad.pamphlet (FiniteAlgebraicExtensionField):
+	Propagate change.
+	* algebra/fraction.spad.pamphlet (Fraction) [charthRoot]: Likewise.
+	* algebra/poly.spad.pamphlet (UnivariatePolynomialSquareFree):
+	Likewise. 
+	* algebra/polycat.spad.pamphlet (PolynomialCategory): Likewise.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (equalFormTemplate): Tidy comparison of value
 	argument to constructors.
 

@@ -551,18 +551,18 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
           if S has canonicalUnitNormal and S has GcdDomain then
              charthRoot x ==
                n:= charthRoot x.num
-               n case "failed" => "failed"
+               n case nothing => nothing
                d:=charthRoot x.den
-               d case "failed" => "failed"
-               n/d
+               d case nothing => nothing
+               just(n/d)
           else
              charthRoot x ==
                -- to find x = p-th root of n/d
                -- observe that xd is p-th root of n*d**(p-1)
                ans:=charthRoot(x.num *
                       (x.den)**(characteristic$%-1)::NonNegativeInteger)
-               ans case "failed" => "failed"
-               ans / x.den
+               ans case nothing => nothing
+               just(ans / x.den)
           clear: List % -> List S
           clear l ==
              d:="lcm"/[x.den for x in l]

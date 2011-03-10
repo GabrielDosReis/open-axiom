@@ -520,36 +520,36 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
               for mons in monslist]
 
     if R has CharacteristicNonZero then
-          charthRootlv: (%,List VarSet,NonNegativeInteger) -> Union(%,"failed")
+          charthRootlv: (%,List VarSet,NonNegativeInteger) -> Maybe %
           charthRoot p ==
             vars:= variables p
             empty? vars =>
               ans := charthRoot ground p
-              ans case "failed" => "failed"
-              ans::R::%
+              ans case nothing => nothing
+              just(ans::R::%)
             ch:=characteristic$%
             charthRootlv(p,vars,ch)
           charthRootlv(p,vars,ch) ==
             empty? vars =>
               ans := charthRoot ground p
-              ans case "failed" => "failed"
-              ans::R::%
+              ans case nothing => nothing
+              just(ans::R::%)
             v:=first vars
             vars:=rest vars
             d:=degree(p,v)
             ans:% := 0
             while (d>0) repeat
                (dd:=(d::Integer exquo ch::Integer)) case "failed" =>
-                      return "failed"
+                      return nothing
                cp:=coefficient(p,v,d)
                p:=p-monomial(cp,v,d)
                ansx:=charthRootlv(cp,vars,ch)
-               ansx case "failed" => return "failed"
+               ansx case nothing => return nothing
                d:=degree(p,v)
                ans:=ans+monomial(ansx,v,dd::Integer::NonNegativeInteger)
             ansx:=charthRootlv(p,vars,ch)
-            ansx case "failed" => return "failed"
-            return ans+ansx
+            ansx case nothing => return nothing
+            return just(ans+ansx)
 
     monicDivide(p1,p2,mvar) ==
        result:=monicDivide(univariate(p1,mvar),univariate(p2,mvar))
