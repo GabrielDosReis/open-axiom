@@ -1,5 +1,15 @@
 2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (mutateArgumentList): New.
+	(inlineDirectCall): Break out of replaceSimpleFunctions.
+	(resolveIndirectCall): Break out of foldSpadcall.
+	(replaceSimpleFunctions): Use them.
+	(foldSpadcall): Remove.
+	(usesVariablesLinearly?): Tidy.
+	(foldExportedFunctionReferences): Don't call foldSpadcall.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (resolveConstantForm): New.  Split out of
 	replaceSimpleFunctions.
 	(foldSpadcall): Use it too.

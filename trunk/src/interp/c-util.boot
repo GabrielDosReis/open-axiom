@@ -1147,46 +1147,60 @@ resolveConstantForm form ==
   atomic? body or isVMConstantForm body => body
   form
 
+mutateArgumentList(args,fun) ==
+  for x in tails args repeat
+    arg := first x
+    atomic? arg => nil
+    x.first := apply(fun,[arg])
+  args
 
+inlineDirectCall call ==
+  fun := getFunctionReplacement call.op or return call
+  -- the renaming case
+  symbol? fun =>
+    call.op := fun
+    NBUTLAST call
+  -- the substitution case.
+  fun is ["XLAM",parms,body] =>
+    -- almost constant function
+    parms = nil => body
+    -- identity function too
+    parms is [=body] => first call.args
+    -- conservatively approximate eager semantics
+    and/[sideEffectFree? arg for arg in call.args] =>
+      -- alpha rename before substitution.
+      newparms := [gensym() for p in parms]
+      body := eqSubstAndCopy(newparms,parms,body)
+      eqSubst(call.args,newparms,body)
+    -- get cute later.
+    call
+  call
+
+resolveIndirectCall form ==
+  fun := lastNode form
+  fun isnt [['%tref,'$,n]] => form
+  op := getCapsuleDirectoryEntry n or return form
+  form.op := op
+  fun.first := '$
+  inlineDirectCall form
+    
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   atomic? form => form
+  form.op is 'DECLARE => form 
   form.op is '%when =>
     mutateConditionalFormWithUnaryFunction(form,function replaceSimpleFunctions)
-  form.op is "LET" =>
-    optLET mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
+  form.op in '(LET %bind) =>
+    mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
   form is ['spadConstant,'$,.] => resolveConstantForm form
-  -- 1. process argument first.
-  for args in tails rest form repeat
-    arg := first args
-    arg' := replaceSimpleFunctions arg
-    not EQ(arg',arg) => args.first := arg'
-  -- 2. see if we know something about this function.
+  -- process argument first.
+  mutateArgumentList(form.args,function replaceSimpleFunctions)
+  form.op is 'SPADCALL => resolveIndirectCall form
+  -- see if we know something about this function.
   [fun,:args] := form
-  atom fun =>
-    fun' := getFunctionReplacement fun
-    fun' = nil => form
-    -- 2.1. the renaming case.
-    atom fun' =>
-      form.first := fun'
-      NBUTLAST form
-    -- 2.2. the substitution case.
-    fun' is ["XLAM",parms,body] =>
-      -- Inline almost constant functions.
-      null parms => body
-      -- Identity function toos.
-      parms is [=body] => first args
-      -- conservatively approximate eager semantics
-      and/[atomic? first as for as in tails args] =>
-        -- alpha rename before substitution.
-	newparms := [gensym() for p in parms]
-	body := eqSubstAndCopy(newparms,parms,body)
-	eqSubst(args,newparms,body)
-      -- get cute later.
-      form
-    form
-  fun' := replaceSimpleFunctions fun
-  not EQ(fun',fun) => form.first := fun'
+  symbol? fun => inlineDirectCall form
+  not cons? fun => form
+  form.first := replaceSimpleFunctions fun
   form
 
 
@@ -1201,6 +1215,9 @@ forwardingCall?(vars,body) ==
 ++ Return true if `form' has a linear usage of all variables in `vars'.
 usesVariablesLinearly?(form,vars) ==
   atomic? form => true
+  form.op is '%when =>
+    and/[sideEffectFree? p and usesVariablesLinearly?(c,vars)
+           for [p,c] in form.args]
   and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
 
 ++ List of builtin operators we should not attempt to promote
@@ -1235,28 +1252,6 @@ expandableDefinition?(vars,body) ==
     ['XLAM,vars',body]
   nil
 
-++ Replace all SPADCALLs to operations defined in the current
-++ domain.  Conditional operations are not folded.
-foldSpadcall: %Form -> %Form
-foldSpadcall form ==
-  atomic? form => form             -- leave atomic forms alone
-  form.op is 'DECLARE => form      -- don't walk declarations
-  form.op in '(LET %bind) =>
-    mutateBindingFormWithUnaryFunction(form,function foldSpadcall)
-  form.op is '%when =>
-    mutateConditionalFormWithUnaryFunction(form,function foldSpadcall)
-  for x in form repeat
-    foldSpadcall x
-  form is ['spadConstant,'$,.] => resolveConstantForm form
-  form.op isnt 'SPADCALL => form
-  fun := lastNode form
-  fun isnt [['%tref,'$,slot]] => form
-  op := getCapsuleDirectoryEntry slot
-  op = nil => form
-  fun.first := "$"
-  form.first := op
-
-
 ++ `defs' is a list of function definitions from the current domain.
 ++ Walk that list and replace references to unconditional operations
 ++ with their corresponding linkage names.  
@@ -1264,7 +1259,7 @@ foldExportedFunctionReferences defs ==
   for fun in defs repeat
     fun isnt [name,lamex] => nil
     lamex isnt ["LAM",vars,body] => nil
-    body := replaceSimpleFunctions foldSpadcall body
+    body := replaceSimpleFunctions body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
       fun.rest.first := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
