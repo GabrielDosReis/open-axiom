@@ -1699,7 +1699,7 @@ equalFormTemplate(shell,args,slot,form) ==
     equalFormTemplate(shell,args,args.n,form)
   slot is ["NTREVAL",val] => form = val
   slot is ["QUOTE",val] => 
-     string? val => val = form
+     string? val or symbol? val or integer? val => val = form
      slot = form
   atom slot or atom form => form = slot
   #slot ~= #form => false
