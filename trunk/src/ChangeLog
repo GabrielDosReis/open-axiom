@@ -1,3 +1,9 @@
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (resolveConstantForm): New.  Split out of
+	replaceSimpleFunctions.
+	(foldSpadcall): Use it too.
+
 2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (StepThrough) [nextItem]: Now
