@@ -1,6 +1,11 @@
 2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* src/algebra/: Systematically use negative? when comparing for
+	 equality with 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use negative? when comparing for
 	greater than 0.
 
 2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
