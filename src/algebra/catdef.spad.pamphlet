@@ -1271,7 +1271,7 @@ Monoid(): Category == SemiGroup with
 )abbrev category OAGROUP OrderedAbelianGroup
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: March 10, 2011
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1283,9 +1283,26 @@ Monoid(): Category == SemiGroup with
 ++ the ordering.
 
 OrderedAbelianGroup(): Category ==
-        Join(OrderedCancellationAbelianMonoid, AbelianGroup)
-
+    Join(OrderedCancellationAbelianMonoid, AbelianGroup) with
+      negative?: % -> Boolean
+        ++ \spad{negative?(x)} holds when \spad{x} is less than \spad{0}.
+      sign: % -> Integer
+        ++ \spad{sign(x)} is \spad{1} if \spad{x} is positive,
+        ++ \spad{-1} if \spad{x} is negative, and \spad{0} otherwise.
+      abs: % -> %
+        ++ \spad{abs(x)} returns the absolute value of \spad{x}.
+  add
+    negative? x == x < 0
+    sign x ==
+      positive? x => 1
+      negative? x => -1
+      0
+    abs x ==
+      positive? x => x
+      negative? x => -x
+      0
 @
+
 \section{category OAMON OrderedAbelianMonoid}
 <<category OAMON OrderedAbelianMonoid>>=
 )abbrev category OAMON OrderedAbelianMonoid
@@ -1303,7 +1320,12 @@ OrderedAbelianGroup(): Category ==
 ++ preserves the ordering.
 
 OrderedAbelianMonoid(): Category ==
-        Join(OrderedAbelianSemiGroup, AbelianMonoid)
+    Join(OrderedAbelianSemiGroup, AbelianMonoid) with
+      positive?: % -> Boolean
+        ++ \spad{positive?(x)} holds when \spad{x} is greater
+        ++ than \spad{0}.
+  add    
+    positive? x == 0 < x
 
 @
 \section{category OAMONS OrderedAbelianMonoidSup}
@@ -1456,7 +1478,7 @@ OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 )abbrev category ORDRING OrderedRing
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: March 10, 2011
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1470,28 +1492,7 @@ OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 ++ Axiom:
 ++   \spad{0<a and b<c => ab< ac}
 
-OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid) with
-     positive?: % -> Boolean
-       ++ positive?(x) tests whether x is strictly greater than 0.
-     negative?: % -> Boolean
-       ++ negative?(x) tests whether x is strictly less than 0.
-     sign     : % -> Integer
-       ++ sign(x) is 1 if x is positive, -1 if x is negative, 0 if x equals 0.
-     abs      : % -> %
-       ++ abs(x) returns the absolute value of x.
-  add
-     positive? x == x>0
-     negative? x == x<0
-     sign x ==
-       positive? x => 1
-       negative? x => -1
-       zero? x => 0
-       error "x satisfies neither positive?, negative? or zero?"
-     abs x ==
-       positive? x => x
-       negative? x => -x
-       zero? x => 0
-       error "x satisfies neither positive?, negative? or zero?"
+OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid)
 
 @
 

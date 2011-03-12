@@ -1,3 +1,10 @@
+2011-03-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (OrderedAbelianGroup): Export
+	negative?, abs, sign, with default implementations.
+	(OrderedAbelianMonoid): Export positive?, with default.
+	(OrderedRing): Don't export them.
+
 2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (CharacteristicNonZero)
