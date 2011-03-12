@@ -1091,7 +1091,7 @@ Stream(S): Exports == Implementation where
       setrestt!(rst x,n-1,y)
 
     setrest!(x,n,y) ==
-      n < 0 or empty? x => error "setrest!: no such rest"
+      negative? n or empty? x => error "setrest!: no such rest"
       x := expand!(x,n+1)
       setrestt!(x,n,y)
 

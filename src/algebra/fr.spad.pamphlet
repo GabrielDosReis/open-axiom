@@ -444,7 +444,7 @@ which causes wrong results as soon as units are involved, for example in
       v1 := u * reciprocal v
       goodQuotient:Boolean := true
       while (goodQuotient and (not empty? x1)) repeat
-        if x1.first.xpnt < 0
+        if negative? x1.first.xpnt
           then goodQuotient := false
           else x1 := rest x1
       goodQuotient => v1
@@ -457,7 +457,7 @@ which causes wrong results as soon as units are involved, for example in
       for x in factorList u repeat
         ucar := unitNormal(x.fctr)
         e := abs(x.xpnt)::NonNegativeInteger
-        if x.xpnt < 0
+        if negative? x.xpnt
           then  --  associate is recip of unit
             un := un * (ucar.associate ** e)
             as := as * (ucar.unit ** e)

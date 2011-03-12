@@ -275,12 +275,12 @@ Float():
    atan(x,y) ==
       x = 0 =>
          y > 0 => pi()/2
-         y < 0 => -pi()/2
+         negative? y => -pi()/2
          0
       -- Only count on first quadrant being on principal branch.
       theta := atan abs(y/x)
-      if x < 0 then theta := pi() - theta
-      if y < 0 then theta := - theta
+      if negative? x then theta := pi() - theta
+      if negative? y then theta := - theta
       theta
 
    atan x ==
@@ -466,7 +466,7 @@ Float():
       zero? x => error "log 0 generated"
       p := bits(); inc 5
       -- apply  log(x) = n log 2 + log(x/2**n)  so that  1/2 < x < 2
-      if (n := order x) < 0 then n := n+1
+      if negative?(n := order x) then n := n+1
       l := if n = 0 then 0 else (x := shift(x,-n); n * log2())
       -- speed the series convergence by finding m and k such that
       -- | exp(m/2**k) x - 1 |  <  1 / 2 ** O(sqrt p)
@@ -635,7 +635,7 @@ Float():
    x = y ==
       order x = order y and sign x = sign y and zero? (x - y)
    x < y ==
-      y.mantissa = 0 => x.mantissa < 0
+      y.mantissa = 0 => negative? x.mantissa
       x.mantissa = 0 => y.mantissa > 0
       negative? x and positive? y => true
       negative? y and positive? x => false
@@ -650,7 +650,7 @@ Float():
    wholePart x == shift2(x.mantissa,x.exponent)
    floor x == if negative? x then -ceiling(-x) else truncate x
    round x == (half := [sign x,-1]; truncate(x + half))
-   sign x == if x.mantissa < 0 then -1 else 1
+   sign x == if negative? x.mantissa then -1 else 1
    truncate x ==
       if x.exponent >= 0 then return x
       normalize [shift2(x.mantissa,x.exponent),0]
@@ -711,7 +711,7 @@ Float():
    x:% ** y:% ==
       x = 0 =>
          y = 0 => error "0**0 is undefined"
-         y < 0 => error "division by 0"
+         negative? y => error "division by 0"
          0
       y = 0 => 1
       y = 1 => x
@@ -723,7 +723,7 @@ Float():
    x:% ** r:RN ==
       x = 0 =>
          r = 0 => error "0**0 is undefined"
-         r < 0 => error "division by 0"
+         negative? r => error "division by 0"
          0
       r = 0 => 1
       r = 1 => x
@@ -744,7 +744,7 @@ Float():
    x:% ** n:I ==
       x = 0 =>
          n = 0 => error "0**0 is undefined"
-         n < 0 => error "division by 0"
+         negative? n => error "division by 0"
          0
       n = 0 => 1
       n = 1 => x
@@ -752,7 +752,7 @@ Float():
       p := bits()
       bits(p + LENGTH n + 2)
       y := power(x,abs n)
-      if n < 0 then y := dvide(1,y)
+      if negative? n then y := dvide(1,y)
       bits p
       normalize y
 
@@ -775,7 +775,7 @@ Float():
       -- compute 2**e = b**q * r
       h := power10([b,0],q,d+5)
       h := chop10([r*h.mantissa,h.exponent],d+5)
-      if e < 0 then h := quotient10([m,0],h,d)
+      if negative? e then h := quotient10([m,0],h,d)
       else times10([m,0],h,d)
 
    ceilLength10 n == 146 * LENGTH n quo 485 + 1
@@ -811,7 +811,7 @@ Float():
    times10(x,y,p) == normalize10(times(x,y),p)
    quotient10(x,y,p) ==
       ew := floorLength10 y.mantissa - ceilLength10 x.mantissa + p + 2
-      if ew < 0 then ew := 0
+      if negative? ew then ew := 0
       mw := (x.mantissa * 10**ew::N) quo y.mantissa
       ew := x.exponent - y.exponent - ew
       normalize10([mw,ew],p)

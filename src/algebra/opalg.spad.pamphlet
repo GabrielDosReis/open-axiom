@@ -173,7 +173,7 @@ ModuleOperator(R: Ring, M:LeftModule(R)): Exports == Implementation where
         g := rec.gen
         e > 0 =>
           for i in 1..e repeat r := opeval(g, r)
-        e < 0 =>
+        negative? e =>
           for i in 1..(-e) repeat r := opInvEval(g, r)
       r
 

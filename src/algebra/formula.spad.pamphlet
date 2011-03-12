@@ -402,7 +402,7 @@ ScriptFormulaFormat(): public == private where
         str := stringify expr
         %integer?(expr)$Foreign(Builtin) =>
           i := expr : Integer
-          if (i < 0) or (i > 9) then group str else str
+          if negative? i or (i > 9) then group str else str
         (i := position(str,specialStrings)) > 0 =>
           specialStringsInFormula.i
         str

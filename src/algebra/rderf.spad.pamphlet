@@ -91,7 +91,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
 -- where h' + B h = C and h has degree at most m
     SPDE(aa, bb, cc, d, derivation) ==
       zero? cc => [0, 0, 0, 0, 0]
-      d < 0 => "failed"
+      negative? d => "failed"
       (u := cc exquo (g := gcd(aa, bb))) case "failed" => "failed"
       aa := (aa exquo g)::UP
       bb := (bb exquo g)::UP
@@ -117,7 +117,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
       db := (degree bb)::Z
       lb := leadingCoefficient bb
       while cc ~= 0 repeat
-        d < 0 or (n := (degree cc)::Z - db) < 0 or n > d => return [q, true]
+        negative? d or negative?(n := (degree cc)::Z - db) or n > d => return [q, true]
         r := monomial((leadingCoefficient cc) / lb, n::N)
         cc := cc - bb * r - derivation r
         d := n - 1
@@ -130,7 +130,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
     SPDEnocancel2(bb, cc, d, dtm1, lt, derivation) ==
       q:UP := 0
       while cc ~= 0 repeat
-        d < 0 or (n := (degree cc)::Z - dtm1) < 0 or n > d => return [[q, true]]
+        negative? d or negative?(n := (degree cc)::Z - dtm1) or n > d => return [[q, true]]
         if n > 0 then
           r  := monomial((leadingCoefficient cc) / (n * lt), n::N)
           cc := cc - bb * r - derivation r

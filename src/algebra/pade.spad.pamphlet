@@ -181,7 +181,7 @@ PadeApproximants(R,PS,UP): Exports == Implementation where
         d0 := coefficient(d,0)
         d := (1/d0) * d; g := (1/d0) * g
         p : UP := 0; s := g
-        if l-m+1 < 0 then error "Internal pade error"
+        if negative?(l-m+1) then error "Internal pade error"
         degbd := (l-m+1) :: NNI
         for k in 1..degbd repeat
           pk := coefficient(s,0)

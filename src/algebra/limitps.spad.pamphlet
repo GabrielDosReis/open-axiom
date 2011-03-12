@@ -711,13 +711,13 @@ ElementaryFunctionSign(R,F): Exports == Implementation where
           "failed"
         "failed"
       is?(op,"log" :: SY) =>
-        s::Z < 0 => "failed"
+        negative?(s::Z) => "failed"
         sign(first arg - 1)
       is?(op,"tanh" :: SY) or is?(op,"sinh" :: SY) or
                      is?(op,"csch" :: SY) or is?(op,"coth" :: SY) => s
       is?(op,"nthRoot" :: SY) =>
         even?(retract(second arg)@Z) =>
-          s::Z < 0 => "failed"
+          negative?(s::Z) => "failed"
           s
         s
       "failed"

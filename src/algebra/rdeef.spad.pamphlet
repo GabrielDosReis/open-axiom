@@ -467,7 +467,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
       answr:UP := 0
       repeat
         zero? c => return answr
-        (n < 0) or ((m := degree c)::Z > n) => return "failed"
+        negative? n or ((m := degree c)::Z > n) => return "failed"
         u := rischDE(1, f, leadingCoefficient c, x, limitedint, extint)
         ~u.sol? => return "failed"
         zero? m => return(answr + u.ans::UP)
@@ -502,7 +502,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
       answr:UP := 0
       repeat
         zero? c => return answr
-        (n < 0) or ((m := degree c)::Z > n) => return "failed"
+        negative? n or ((m := degree c)::Z > n) => return "failed"
         u := rischDE(1, f + m * eta, leadingCoefficient c, x,limitedint,extint)
         ~u.sol? => return "failed"
         zero? m => return(answr + u.ans::UP)

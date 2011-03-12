@@ -322,10 +322,10 @@ NumericalQuadrature(): Exports == Implementation where
       if (a = b) then
          output("romberg: integration limits are equal  = ",a::E)
          return([0.0,0.0,1,true])
-      if (epsrel < 0.0) then
+      if negative? epsrel then
          output("romberg: eps_r < 0.0            eps_r  = ",epsrel::E)
          return([0.0,0.0,0,false])
-      if (epsabs < 0.0) then
+      if negative? epsabs then
          output("romberg: eps_a < 0.0            eps_a  = ",epsabs::E)
          return([0.0,0.0,0,false])
       for n in 1..nmax repeat
@@ -373,10 +373,10 @@ NumericalQuadrature(): Exports == Implementation where
       if (a = b) then
          output("simpson: integration limits are equal  = ",a::E)
          return([0.0,0.0,1,true])
-      if (epsrel < 0.0) then
+      if negative? epsrel then
          output("simpson: eps_r < 0.0 : eps_r = ",epsrel::E)
          return([0.0,0.0,0,false])
-      if (epsabs < 0.0) then
+      if negative? epsabs then
          output("simpson: eps_a < 0.0 : eps_a = ",epsabs::E)
          return([0.0,0.0,0,false])
       for n in 1..nmax repeat
@@ -415,10 +415,10 @@ NumericalQuadrature(): Exports == Implementation where
       if (a = b) then
          output("trapezoidal: integration limits are equal  = ",a::E)
          return([0.0,0.0,1,true])
-      if (epsrel < 0.0) then
+      if negative? epsrel then
          output("trapezoidal: eps_r < 0.0 : eps_r = ",epsrel::E)
          return([0.0,0.0,0,false])
-      if (epsabs < 0.0) then
+      if negative? epsabs then
          output("trapezoidal: eps_a < 0.0 : eps_a = ",epsabs::E)
          return([0.0,0.0,0,false])
       for n in 1..nmax repeat

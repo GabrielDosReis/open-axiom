@@ -318,7 +318,7 @@ Automorphism(R:Ring): Join(Group, Eltable(R, R)) with
       apply(f, r, n) == (g := f pretend ((R, Integer) -> R); g(r, n))
  
       iterat(f, g, n, r) ==
-          n < 0 => iter(g, (-n)::NonNegativeInteger, r)
+          negative? n => iter(g, (-n)::NonNegativeInteger, r)
           iter(f, n::NonNegativeInteger, r)
  
       iter(f, n, r) ==

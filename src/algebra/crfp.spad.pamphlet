@@ -494,7 +494,7 @@ ComplexRootFindingPackage(R, UP): public == private where
 
      absC c == nthRoot(norm(c)$C,2)
      absR r ==
-       r < 0 => -r
+       negative? r => -r
        r
      min(fae1,fae2) ==
        fae2.error <  fae1.error => fae2

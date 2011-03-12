@@ -277,7 +277,7 @@ ElementaryFunction(R, F): Exports == Implementation where
     acsch x == opacsch x
     kernel x == retract(x)@K
 
-    posrem(n, m)    == ((r := n rem m) < 0 => r + m; r)
+    posrem(n, m)    == (negative?(r := n rem m) => r + m; r)
     valueOrPole rec == (rec.pole => INV; rec.func)
     belong? op      == has?(op, 'elem)
 

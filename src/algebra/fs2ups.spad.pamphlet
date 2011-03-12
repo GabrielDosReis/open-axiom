@@ -345,7 +345,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
         -- series involves complex numbers
         return stateProblem("atan","logarithmic singularity")
       cc : FE :=
-        ord < 0 =>
+        negative? ord =>
           atanFlag = "complex" =>
             return stateProblem("atan","essential singularity")
           (rn := ratIfCan(ord :: FE)) case "failed" =>
@@ -612,7 +612,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       -- check to see if lowest order coefficient is a negative rational
       negRat? : Boolean :=
         ((rat := ratIfCan coef) case RN) =>
-          (rat :: RN) < 0 => true
+          negative?(rat :: RN) => true
           false
         false
       logTerm : FE :=
@@ -634,7 +634,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       -- If the series has order zero and the constant term a0 of the
       -- series involves x, the function tries to expand exp(a0) as
       -- a power series.
-      (deg := order(ups,1)) < 0 =>
+      negative?(deg := order(ups,1)) =>
         stateProblem("exp","essential singularity")
       deg > 0 => [exp ups]
       lc := coefficient(ups,0); xOpList := opsInvolvingX lc
@@ -661,7 +661,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
         yCoef := coefficient(y,-1)
         [monomial(log yCoef,0) + integrate(y - monomial(yCoef,-1)$UPS)]
       cc : FE :=
-        ord < 0 =>
+        negative? ord =>
           atanFlag = "complex" =>
             return stateProblem("atan","essential singularity")
           (rn := ratIfCan(ord :: FE)) case "failed" =>
@@ -696,7 +696,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       (series := iExprToGenUPS(arg,posCheck?,atanFlag)) case %problem =>
         series
       ups := series.%series
-      (deg := order(ups,1)) < 0 =>
+      negative?(deg := order(ups,1)) =>
         stateProblem(fcnName,"essential singularity")
       deg > 0 => [fcn(ups) :: UPS]
       lc := coefficient(ups,0); xOpList := opsInvolvingX lc

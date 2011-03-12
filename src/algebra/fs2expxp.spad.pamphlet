@@ -342,7 +342,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       -- If the series has order zero and the constant term a0 of the
       -- series involves x, the function tries to expand exp(a0) as
       -- a power series.
-      (deg := order(ups,1)) < 0 =>
+      negative?(deg := order(ups,1)) =>
         -- this "can't happen"
         error "exp of function with sigularity"
       deg > 0 => [exp(ups)]
@@ -385,7 +385,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       -- check to see if lowest order coefficient is a negative rational
       negRat? : Boolean :=
         ((rat := ratIfCan coef) case RN) =>
-          (rat :: RN) < 0 => true
+          negative?(rat :: RN) => true
           false
         false
       logTerm : FE :=
@@ -423,7 +423,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       (f := retractIfCan(xxp)@Union(UPXS,"failed")) case "failed" =>
         stateProblem(fcnName,"multiply nested exponential")
       upxs := f :: UPXS
-      (deg := order(upxs,1)) < 0 =>
+      negative? (deg := order(upxs,1)) =>
         stateProblem(fcnName,"essential singularity")
       deg > 0 => [fcn(upxs) :: UPXS :: XXP]
       lc := coefficient(upxs,0); xOpList := opsInvolvingX lc
@@ -532,7 +532,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
         yCoef := coefficient(y,-1)
         [(monomial(log yCoef,0)+integrate(y - monomial(yCoef,-1)$UPXS)) :: XXP]
       cc : FE :=
-        ord < 0 =>
+        negative? ord =>
           (rn := ratIfCan(ord :: FE)) case "failed" =>
             -- this condition usually won't occur because exponents will
             -- be integers or rational numbers

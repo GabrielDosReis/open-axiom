@@ -747,10 +747,10 @@ TrigonometricManipulations(R, F): Exports == Implementation where
       is?(k, 'nthRoot) =>
         arg := argument k
         even?(retract(n := second arg)@Z) and ((u := sign(first arg)) case Z)
-          and (u::Z < 0) => op(s1, n / 2::F) * op(- first arg, n)
+          and negative?(u::Z) => op(s1, n / 2::F) * op(- first arg, n)
         "failed"
       is?(k, 'log) and ((u := sign(a := first argument k)) case Z)
-          and (u::Z < 0) => op(- a) + ipi
+          and negative?(u::Z) => op(- a) + ipi
       "failed"
 
     complexForm f ==

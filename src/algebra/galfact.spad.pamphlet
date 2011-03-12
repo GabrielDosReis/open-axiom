@@ -506,7 +506,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       brillhartIrreducible? f or 
        (useeisensteincriterion => eisensteinIrreducible?(f) ; false) =>
         if reverse? then [ reverse f ] else [ f ]
-      if leadingCoefficient(f)<0 then
+      if negative? leadingCoefficient(f) then
         f := -f
         negativelc? := true
       cf: Union(LR,"failed")
@@ -548,7 +548,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
           r := max(2,r-#lfg)::N
       if reverse? then lf := [ reverse(fact) for fact in lf ]
       for i in 1..#lf repeat
-        if leadingCoefficient(lf.i)<0 then lf.i := -lf.i
+        if negative? leadingCoefficient(lf.i) then lf.i := -lf.i
         -- because we assume f with positive leading coefficient
       lf
 
@@ -597,7 +597,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       f := (f exquo c)::UP
 
       -- make the leading coefficient positive
-      if leadingCoefficient f < 0 then
+      if negative? leadingCoefficient f then
         c := -c
         f := -f
 
@@ -627,7 +627,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       odd?(d) and (lcPol = reductum(f)) =>
         for sfac in cyclotomicDecomposition(d)$CYC repeat
            fac := subMinusX sfac
-           if leadingCoefficient fac < 0 then fac := -fac
+           if negative? leadingCoefficient fac then fac := -fac
            factorlist := cons([fac,1]$ParFact,factorlist)
         [c,factorlist]$FinalFact
 
@@ -667,7 +667,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       f := (f exquo c)::UP
 
       -- make the leading coefficient positive
-      if leadingCoefficient f < 0 then
+      if negative? leadingCoefficient f then
         c := -c
         f := -f
 
@@ -698,7 +698,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       odd?(d) and (lcPol = reductum(f)) =>
         for sfac in cyclotomicDecomposition(d)$CYC repeat
            fac := subMinusX sfac
-           if leadingCoefficient fac < 0 then fac := -fac
+           if negative? leadingCoefficient fac then fac := -fac
            factorlist := cons([fac,1]$ParFact,factorlist)
         [c,factorlist]$FinalFact
 

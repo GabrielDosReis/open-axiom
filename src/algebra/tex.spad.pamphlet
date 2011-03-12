@@ -585,7 +585,7 @@ TexFormat(): public == private where
         len := #str
         %integer?(expr)$Foreign(Builtin) =>
           i := expr pretend Integer
-          if (i < 0) or (i > 9)
+          if negative? i or (i > 9)
             then
               group
                  nstr : String := ""

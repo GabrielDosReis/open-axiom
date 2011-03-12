@@ -93,7 +93,7 @@ LaurentPolynomial(R, UP): Exports == Implementation where
       reduce("+", l)
  
     coefficient(p, n) ==
-      (m := n - order p) < 0 => 0
+      negative?(m := n - order p) => 0
       coefficient(poly p, m::N)
  
     differentiate(p:%, derivation:UP -> UP) ==
@@ -121,7 +121,7 @@ LaurentPolynomial(R, UP): Exports == Implementation where
       zero? p => q
       (d := order p - order q) > 0 =>
                       gpol(poly(p) * monomial(1, d::N) + poly q, order q)
-      d < 0 => gpol(poly(p) + poly(q) * monomial(1, (-d)::N), order p)
+      negative? d => gpol(poly(p) + poly(q) * monomial(1, (-d)::N), order p)
       mkgpol(order p, poly(p) + poly q)
  
     mkgpol(n, p) ==
@@ -134,7 +134,7 @@ LaurentPolynomial(R, UP): Exports == Implementation where
       check0(order p - order q, r::UP)
  
     retractIfCan(p:%):Union(UP, "failed") ==
-      order(p) < 0 => error "Not retractable"
+      negative? order(p) => error "Not retractable"
       poly(p) * monomial(1, order(p)::N)$UP
  
     retractIfCan(p:%):Union(R, "failed") ==

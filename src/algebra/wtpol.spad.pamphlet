@@ -71,7 +71,7 @@ WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
         l:=l.rest
       0
    innercoerce(p,z) ==
-      z<0 => 0
+      negative? z => 0
       zero? p => 0
       mv:= mainVariable p
       mv case "failed" => monomial(p,0)

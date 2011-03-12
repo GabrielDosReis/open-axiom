@@ -55,7 +55,7 @@ RandomNumberSource(): with
  
         randnum() ==
             t := (271828183 * x1 - 314159269 * x0) rem ranbase
-            if t < 0 then t := t + ranbase
+            if negative? t then t := t + ranbase
             x0:= x1
             x1:= t
  

@@ -1335,7 +1335,7 @@ have to be switched by swapping names.
         -- this bit seems to deal with integers
         %integer?(expr)$Foreign(Builtin) =>
           i := expr pretend Integer
-          if (i < 0) or (i > 9)
+          if negative? i or (i > 9)
             then
               group
                  nstr : String := ""

@@ -97,7 +97,7 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
    
     iClipParametric(pointLists,fraction,scale) ==
       -- error checks and special cases
-      (fraction < 0) or (fraction > 1) =>
+      negative? fraction or (fraction > 1) =>
         error "clipDraw: fraction should be between 0 and 1"
       empty? pointLists => [nil(),segment(0,0),segment(0,0)]
       -- put all points together , sort them according to norm
@@ -207,7 +207,7 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
  
     clip(plot,fraction,scale) ==
 --      sayBrightly(["   clip: "::OutputForm]$List(OutputForm))$Lisp
-      (fraction < 0) or (fraction > 1/2) =>
+      negative? fraction or (fraction > 1/2) =>
         error "clipDraw: fraction should be between 0 and 1/2"
       xVals := xRange plot
       empty?(pointLists := listBranches plot) =>

@@ -80,7 +80,7 @@ OrderedCompletion(R:SetCategory): Exports == Implementation where
       n:Integer * x:% ==
         x case inf =>
           n > 0 => x
-          n < 0 => [not(x.inf)]
+          negative? n => [not(x.inf)]
           error "Undefined product"
         [n * x.fin]
 
@@ -104,7 +104,7 @@ OrderedCompletion(R:SetCategory): Exports == Implementation where
 
       fininf(b, r) ==
         r > 0 => [b]
-        r < 0 => [not b]
+        negative? r => [not b]
         error "Undefined product"
 
       x:% * y:% ==

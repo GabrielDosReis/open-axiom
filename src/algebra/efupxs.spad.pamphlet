@@ -168,7 +168,7 @@ ElementaryFunctionsUnivariatePuiseuxSeries(Coef,ULS,UPXS,EFULS):_
     acothIfCan upxs == applyIfCan(acothIfCan,upxs)
 
     asinIfCan upxs ==
-      order(upxs,0) < 0 => "failed"
+      negative? order(upxs,0) => "failed"
       (coef := coefficient(upxs,0)) = 0 =>
         integrate((1 - upxs*upxs)**(-1/2) * (differentiate upxs))
       TRANSFCN =>
@@ -177,14 +177,14 @@ ElementaryFunctionsUnivariatePuiseuxSeries(Coef,ULS,UPXS,EFULS):_
       "failed"
 
     acosIfCan upxs ==
-      order(upxs,0) < 0 => "failed"
+      negative? order(upxs,0) => "failed"
       TRANSFCN =>
         cc := acos(coefficient(upxs,0)) :: UPXS
         cc + integrate(-(1 - upxs*upxs)**(-1/2) * (differentiate upxs))
       "failed"
 
     asecIfCan upxs ==
-      order(upxs,0) < 0 => "failed"
+      negative? order(upxs,0) => "failed"
       TRANSFCN =>
         cc := asec(coefficient(upxs,0)) :: UPXS
         f := (upxs*upxs - 1)**(-1/2) * (differentiate upxs)
@@ -193,7 +193,7 @@ ElementaryFunctionsUnivariatePuiseuxSeries(Coef,ULS,UPXS,EFULS):_
       "failed"
 
     acscIfCan upxs ==
-      order(upxs,0) < 0 => "failed"
+      negative? order(upxs,0) => "failed"
       TRANSFCN =>
         cc := acsc(coefficient(upxs,0)) :: UPXS
         f := -(upxs*upxs - 1)**(-1/2) * (differentiate upxs)
@@ -202,27 +202,27 @@ ElementaryFunctionsUnivariatePuiseuxSeries(Coef,ULS,UPXS,EFULS):_
       "failed"
 
     asinhIfCan upxs ==
-      order(upxs,0) < 0 => "failed"
+      negative? order(upxs,0) => "failed"
       TRANSFCN or (coefficient(upxs,0) = 0) =>
         log(upxs + (1 + upxs*upxs)**(1/2))
       "failed"
 
     acoshIfCan upxs ==
       TRANSFCN =>
-        order(upxs,0) < 0 => "failed"
+        negative? order(upxs,0) => "failed"
         log(upxs + (upxs*upxs - 1)**(1/2))
       "failed"
 
     asechIfCan upxs ==
       TRANSFCN =>
-        order(upxs,0) < 0 => "failed"
+        negative? order(upxs,0) => "failed"
         (rec := recip upxs) case "failed" => "failed"
         log((1 + (1 - upxs*upxs)*(1/2)) * (rec :: UPXS))
       "failed"
 
     acschIfCan upxs ==
       TRANSFCN =>
-        order(upxs,0) < 0 => "failed"
+        negative? order(upxs,0) => "failed"
         (rec := recip upxs) case "failed" => "failed"
         log((1 + (1 + upxs*upxs)*(1/2)) * (rec :: UPXS))
       "failed"

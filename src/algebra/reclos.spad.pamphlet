@@ -244,7 +244,7 @@ RealRootCharacterizationCategory(TheField, ThePols ) : Category == PUB where
           sign(toTest, rootChar) = 0
                 
         negative?(toTest, rootChar) == 
-          sign(toTest, rootChar) < 0              
+          negative? sign(toTest, rootChar)
         
         positive?(toTest, rootChar) == 
           sign(toTest, rootChar) > 0
@@ -703,7 +703,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
     null(l) => false
     f := sign(first(l))
     for term in rest(l) repeat
-      if f*term < 0 then return(true)
+      if negative?(f*term) then return(true)
     false
     
    hasVars(p:P) ==
@@ -743,7 +743,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
 <<performance problem>>
     res :$ := [left,right,leadingMonomial(pol)+reductum(pol)]$Rep -- safe copy
     while zero?(pol.(res.high)) repeat refine!(res)
-    while (res.high * res.low < 0 ) repeat refine!(res)
+    while negative?(res.high * res.low) repeat refine!(res)
     zero?(pol.(res.low)) => [res.low,res.high,monomial(1,1)-(res.low)::P]
     res
 
@@ -862,7 +862,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
           rootChar.low := int
           rootChar.defPol := monomial(1,1) - int::P
           rootChar
-        if (s1*s2 < 0)
+        if negative?(s1*s2)
         then 
           rootChar.high := int
         else 
@@ -874,7 +874,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
         int := middle(rootChar)
         s:= (rootChar.defPol).int * (rootChar.defPol).(rootChar.high)
         zero?(s) => [int,rootChar.high,monomial(1,1)-int::P]
-        if s < 0 
+        if negative? s 
         then 
           [int,rootChar.high,rootChar.defPol]
         else 

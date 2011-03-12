@@ -498,7 +498,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
        internalAugment(s,newts)
 
      next(lambda:Z):Z == 
-       if lambda < 0 then lambda := - lambda + 1 else lambda := - lambda
+       if negative? lambda then lambda := - lambda + 1 else lambda := - lambda
 
      makeLinearAndMonic(p: P, xi: V, ts: TS, univ?:B, check?: B, info?: B): List TS ==
        -- if check? THEN some VERIFICATIONS are performed

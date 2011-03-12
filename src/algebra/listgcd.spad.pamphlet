@@ -71,7 +71,7 @@ HeuGcd (BP):C == T
     constNotZero(f : BP ) : Boolean == (degree f = 0) and not (zero? f)
 
     negShiftz(n:Z,Modulus:PI):Z ==
-      n < 0 => n:= n+Modulus
+      negative? n => n:= n+Modulus
       n > (Modulus quo 2) => n-Modulus
       n
 

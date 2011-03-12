@@ -68,7 +68,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
       -- p(n) = sum (-1)**k p(n-j) where 0 < j := (3*k**2+-k) quo 2 <= n
       minIndex(P) ~= 0 => error "Partition: must have minIndex of 0"
       m := #P
-      n < 0 => error "partition is not defined for negative integers"
+      negative? n => error "partition is not defined for negative integers"
       n < m::I => P(convert(n)@Z)
       concat!(P, new((convert(n+1)@Z - m)::N,0)$IndexedFlexibleArray(I,0))
       for i in m..convert(n)@Z repeat
@@ -87,7 +87,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
  
    factorial n ==
       s,f,t : I
-      n < 0 => error "factorial not defined for negative integers"
+      negative? n => error "factorial not defined for negative integers"
       if n <= F.Fn then s := f := 1 else (s, f) := F
       for k in convert(s+1)@Z .. convert(n)@Z by 2 repeat
          if k::I = n then t := n else t := k::I * (k+1)::I
@@ -97,7 +97,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
  
    binomial(n, m) ==
       s,b:I
-      n < 0 or m < 0 or m > n => 0
+      negative? n or negative? m or m > n => 0
       m = 0 => 1
       n < 2*m => binomial(n, n-m)
       (s,b) := (0,1)
@@ -115,7 +115,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
       B.Bv := b
  
    multinomial(n, m) ==
-      for t in m repeat t < 0 => return 0
+      for t in m repeat negative? t => return 0
       n < _+/m => 0
       s:I := 1
       for t in m repeat s := s * factorial t
@@ -123,7 +123,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
  
    permutation(n, m) ==
       t:I
-      m < 0 or n < m => 0
+      negative? m or n < m => 0
       m := n-m
       p:I := 1
       for k in convert(m+1)@Z .. convert(n)@Z by 2 repeat
@@ -134,7 +134,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
    stirling1(n, m) ==
       -- Definition: (-1)**(n-m) S[n,m] is the number of
       -- permutations of n symbols which have m cycles.
-      n < 0 or m < 1 or m > n => 0
+      negative? n or m < 1 or m > n => 0
       m = n => 1
       S.Sn = n => coefficient(S.Sp, convert(m)@Z :: N)
       x := monomial(1, 1)$SUP(I)
@@ -146,7 +146,7 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
    stirling2(n, m) ==
       -- definition: SS[n,m] is the number of ways of partitioning
       -- a set of n elements into m non-empty subsets
-      n < 0 or m < 1 or m > n => 0
+      negative? n or m < 1 or m > n => 0
       m = 1 or n = m => 1
       s:I := if odd? m then -1 else 1
       t:I := 0
