@@ -822,14 +822,14 @@ EuclideanDomain(): Category == PrincipalIdealDomain with
          u:= extendedEuclidean(first l,v.generator)
          [[u.coef1,:[u.coef2*vv for vv in v.coef]],u.generator]
       expressIdealMember(l,z) ==
-         z = 0 => just [0 for v in l]
+         zero? z => just [0 for v in l]
          pid := principalIdeal l
          (q := z exquo (pid.generator)) case "failed" => nothing
          just [q*v for v in pid.coef]
       multiEuclidean(l,z) ==
          n := #l
          zero? n => error "empty list passed to multiEuclidean"
-         n = 1 => [z]
+         one? n => [z]
          l1 := copy l
          l2 := split!(l1, n quo 2)
          u:= extendedEuclidean(*/l1, */l2, z)
@@ -883,7 +883,7 @@ Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
       unitCanonical(x) == if zero? x then x else 1
       associates?(x,y) == if zero? x then zero? y else not(zero? y)
       inv x ==((u:=recip x) case "failed" => error "not invertible"; u)
-      x exquo y == (y=0 => "failed"; x / y)
+      x exquo y == (zero? y => "failed"; x / y)
       gcd(x,y) == 1
       euclideanSize(x) == 0
       prime? x == false
@@ -1001,8 +1001,8 @@ GcdDomain(): Category == IntegralDomain with
 	    ++ univariate polynomials over the domain
     add
       lcm(x: %,y: %) ==
-        y = 0 => 0
-        x = 0 => 0
+        zero? y => 0
+        zero? x => 0
         LCM : Union(%,"failed") := y exquo gcd(x,y)
         LCM case % =>  x * LCM
         error "bad gcd in lcm computation"
@@ -1021,9 +1021,9 @@ GcdDomain(): Category == IntegralDomain with
           p2:=(p2 exquo monomial(1,e2))::SUP %
         e1:=min(e1,e2); c1:=gcd(c1,c2)
         p1:=
-           degree p1 = 0 or degree p2 = 0 => monomial(c1,0)
+           zero? degree p1 or zero? degree p2 => monomial(c1,0)
            p:= subResultantGcd(p1,p2)
-           degree p = 0 => monomial(c1,0)
+           zero? degree p => monomial(c1,0)
            c2:= gcd(leadingCoefficient p1,leadingCoefficient p2)
            unitCanonical(c1 * primitivePart(((c2*p) exquo leadingCoefficient p)::SUP %))
         zero? e1 => p1
@@ -2014,7 +2014,7 @@ UniqueFactorizationDomain(): Category == GcdDomain with
   squareFreePart x ==
     unit(s := squareFree x) * _*/[f.factor for f in factors s]
 
-  prime? x == # factorList factor x = 1
+  prime? x == one?(# factorList factor x)
 
 @
 

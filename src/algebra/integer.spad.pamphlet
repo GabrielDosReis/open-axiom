@@ -88,6 +88,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %iabs: % -> %             from Foreign Builtin
       import %irandom: % -> %          from Foreign Builtin
       import %iodd?: % -> Boolean      from Foreign Builtin
+      import %ieven?: % -> Boolean     from Foreign Builtin
       import %hash: % -> SingleInteger from Foreign Builtin
       import %iadd: (%,%) -> %         from Foreign Builtin
       import %isub: (%,%) -> %         from Foreign Builtin
@@ -152,17 +153,17 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
         if wholeObj then
           OMputEndObject(dev)
 
-      zero? x == x = 0@%
-      one? x == x = 1@%
+      zero? x == x = %icst0
+      one? x == x = %icst1
       0 == %icst0
       1 == %icst1
       base()  == 2 pretend %
       copy x  == x
-      inc  x  == x + 1@%
-      dec  x  == x - 1@%
+      inc  x  == x + %icst1
+      dec  x  == x - %icst1
       hash x == %hash x
-      negative? x == x < 0@%
-      positive? x == 0 < x
+      negative? x == x < %icst0
+      positive? x == %icst0 < x
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
@@ -183,7 +184,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 
       latex(x:%):String ==
         s : String := convert x
-        -1 < x and x < 10 => s
+        -%icst1 < x and x < 10 => s
         %strconc("{", %strconc(s, "}"))
 
       positiveRemainder(a, b) ==
@@ -214,6 +215,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
       x ** n == %ipow(x,n)$Foreign(Builtin)
       odd? x == %iodd? x
+      even? x == %ieven? x
       max(x,y) == %imax(x,y)
       min(x,y) == %imin(x,y)
       divide(x,y) == %idivide(x,y)$Foreign(Builtin)
@@ -224,8 +226,8 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       gcd(x,y) == %igcd(x,y)
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==
-         negative? x => [-1@%,-x,-1@%]$UCA
-         [1@%,x,1@%]$UCA
+         negative? x => [-%icst1,-x,-%icst1]$UCA
+         [%icst1,x,%icst1]$UCA
       unitCanonical x == abs x
       solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
          solveLinearPolynomialEquation(lp pretend List ZZP,

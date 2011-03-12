@@ -226,6 +226,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    import %hash: % -> SingleInteger from Foreign Builtin
    import %ilength: % -> %          from Foreign Builtin
    import %iodd?: % -> Boolean      from Foreign Builtin
+   import %ieven?: % -> Boolean      from Foreign Builtin
    import %ieq: (%,%) -> Boolean    from Foreign Builtin
    import %ilt: (%,%) -> Boolean    from Foreign Builtin
    import %ile: (%,%) -> Boolean    from Foreign Builtin
@@ -319,6 +320,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    gcd(x,y)  == %igcd(x,y)
    abs(x)    == %iabs x
    odd?(x)   == %iodd? x
+   even?(x)   == %ieven? x
    zero?(x)  == %ieq(x,%icst0)
    one?(x)   == %ieq(x,%icst1)
    max(x,y)  == %imax(x,y)
@@ -334,7 +336,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
      (%icstmax - %icstmin + %icst1)  pretend NonNegativeInteger
    index i == per(i + rep %icstmin - rep %icst1)
    lookup x ==
-     (x - %icstmin + %icst1) pretend PositiveInteger
+     (rep x - rep %icstmin + rep %icst1) pretend PositiveInteger
 
 
    reducedSystem(m: Matrix %, v: Vector %) ==
@@ -353,9 +355,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
 
    UCA ==> Record(unit:%,canonical:%,associate:%)
    unitNormal x ==
-      negative? x => [-1@%,-x,-1@%]$UCA
-      [1@%,x,1@%]$UCA
-   positive? x == 0 < x
+      negative? x => [-%icst1,-x,-%icst1]$UCA
+      [%icst1,x,%icst1]$UCA
+   positive? x == %icst0 < x
 
 @
 
