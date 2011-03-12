@@ -97,7 +97,7 @@ LaplaceTransform(R, F): Exports == Implementation where
     atn(f, t) ==
       if ((v := isExpt f) case Record(var:K, exponent:Integer)) then
         w := v::Record(var:K, exponent:Integer)
-        (w.exponent > 0) and
+        positive?(w.exponent) and
           ((vv := symbolIfCan(w.var)) case SE) and (vv::SE = t) =>
             return [1, w.exponent::PI]
       (u := isTimes f) case List(F) =>

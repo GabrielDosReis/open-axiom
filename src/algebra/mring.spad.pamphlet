@@ -106,7 +106,7 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
             p:Integer := size()$R
             n:Integer := size()$M
             ans:% := 0
-            for j in 0.. while i > 0 repeat
+            for j in 0.. while positive? i repeat
               h := i rem p
               -- we use index(p) = 0$R
               if h ~= 0 then

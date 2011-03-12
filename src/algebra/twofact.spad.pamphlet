@@ -176,7 +176,7 @@ TwoFactorize(F) : C == T
        ll:=[]
        unitPart:P
        cont:=content m
-       if degree(cont)>0 then 
+       if positive? degree(cont) then 
           m1:=m exquo cont
           m1 case "failed" => error "content doesn't divide"
           m:=m1

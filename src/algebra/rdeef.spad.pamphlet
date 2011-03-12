@@ -272,7 +272,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
       else data := data1::Data
       f'  := nfprime := n * differentiate(f, x)
       p:P := 1
-      for v in data | (m := n * v.coeff) > 0 repeat
+      for v in data | positive?(m := n * v.coeff) repeat
         p  := p * v.argument ** (m::N)
         f' := f' - m * differentiate(v.argument::F, x) / (v.argument::F)
       rec := baseRDE(univariate(f', k), univariate(p::F * g, k))
@@ -286,7 +286,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
         tab.f := data := makeData(f, x, k)
       else data := data1::Data
       p:P := 1
-      for v in data | (m := n * v.coeff) > 0 repeat
+      for v in data | positive?(m := n * v.coeff) repeat
         p  := p * v.argument ** (m::N)
         f  := f - v.coeff * log(v.argument::F)
         nfp := nfp - m * differentiate(v.argument::F, x) / (v.argument::F)
@@ -318,9 +318,9 @@ ElementaryRischDE(R, F): Exports == Implementation where
            one?(degree(num := univariate(fnum, u))) then
             cf := (leadingCoefficient num) / fden
             if (n := retractIfCan(cf)@Union(Z, "failed")) case Z then
-              if degree(numer logand, k) > 0 then
+              if positive? degree(numer logand, k) then
                 disasters := concat([n::Z, numer logand], disasters)
-              if degree(denom logand, k) > 0 then
+              if positive? degree(denom logand, k) then
                 disasters := concat([-(n::Z), denom logand], disasters)
       disasters
 
@@ -343,7 +343,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
         (u := cc exquo aa) case "failed" => "failed"
         primintfldpoly(u::UP, extint(#1, t'), t')
       n := degree(cc)::Z - (db := degree(bb)::Z)
-      if ((da := degree(aa)::Z) = db) and (da > 0) then
+      if ((da := degree(aa)::Z) = db) and positive? da then
         lk0 := tower(f0 :=
                       - (leadingCoefficient bb) / (leadingCoefficient aa))
         lk1 := logdiff(twr, lk0)

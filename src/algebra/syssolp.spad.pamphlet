@@ -130,7 +130,7 @@ SystemSolvePackage(R): Cat == Cap where
        newInF(n: Integer):F==varInF new()$SE
 
        testDegree(f :P R , lv :L SE) : Boolean ==
-         "or"/[degree(f,vv)>0 for vv in lv]
+         "or"/[positive? degree(f,vv) for vv in lv]
                     ---- Exported Functions ----
 
        -- solve a system of rational functions

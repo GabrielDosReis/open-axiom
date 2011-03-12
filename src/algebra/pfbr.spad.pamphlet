@@ -149,7 +149,7 @@ PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
         substns:= randomR()
         zero? elt(leadingCoefficient pp,substns ) => "next"
         ppR:=map( elt(#1,substns),pp)
-        degree gcd(ppR,differentiate ppR)>0 => "next"
+        positive? degree gcd(ppR,differentiate ppR) => "next"
         leave
      [substns,ppR]
    raise(supR) == map(#1:R::S,supR)
@@ -160,7 +160,7 @@ PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
       -- returns "failed" if the substitution is bad, else a factorization
       ppR:=map(elt(#1,r),pp)
       degree ppR < degree pp => "failed"
-      degree gcd(ppR,differentiate ppR) >0 => "failed"
+      positive? degree gcd(ppR,differentiate ppR) => "failed"
       factors:=
         fDown:=factorSquareFreePolynomial ppR
         [raise (unit fDown * factorList(fDown).first.fctr),
@@ -384,7 +384,7 @@ PolynomialFactorizationByRecursion(R,E, VarSet:OrderedSet, S): public ==
       -- returns "failed" if the substitution is bad, else a factorization
       ppR:=map(eval(#1,first lvpp,r),pp)
       degree ppR < degree pp => "failed"
-      degree gcd(ppR,differentiate ppR) >0 => "failed"
+      positive? degree gcd(ppR,differentiate ppR) => "failed"
       factors:=
          empty? rest lvpp =>
             fDown:=factorSquareFreePolynomial map(retract(#1)::R,ppR)
@@ -434,7 +434,7 @@ PolynomialFactorizationByRecursion(R,E, VarSet:OrderedSet, S): public ==
         substns:= [randomR() for v in lvpp]
         zero? eval(leadingCoefficient pp,lvpp,substns ) => "next"
         ppR:=map((retract eval(#1,lvpp,substns))::R,pp)
-        degree gcd(ppR,differentiate ppR)>0 => "next"
+        positive? degree gcd(ppR,differentiate ppR) => "next"
         leave
      [substns,ppR]
    chooseSLPEViableSubstitutions(lvpolys,lpolys,pp) ==
@@ -450,7 +450,7 @@ PolynomialFactorizationByRecursion(R,E, VarSet:OrderedSet, S): public ==
                   for u in lpolys]
         uu:=lpolysR
         while not empty? uu repeat
-          "or"/[ degree(gcd(uu.first,v))>0 for v in uu.rest] => leave
+          "or"/[positive? degree(gcd(uu.first,v)) for v in uu.rest] => leave
           uu:=rest uu
         not empty? uu => "next"
         leave

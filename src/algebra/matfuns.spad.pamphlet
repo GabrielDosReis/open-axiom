@@ -114,7 +114,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
           transpose x
         copy x
       y := rowEchelon y; i := maxRowIndex y
-      while rk > 0 and rowAllZeroes?(y,i) repeat
+      while positive? rk and rowAllZeroes?(y,i) repeat
         i := i - 1
         rk := (rk - 1) :: NonNegativeInteger
       rk :: NonNegativeInteger
@@ -131,7 +131,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
         basis : List Col := nil()
         rk := nrow; row := maxR
         -- compute rank = # rows - # rows of all zeroes
-        while rk > 0 and rowAllZeroes?(x,row) repeat
+        while positive? rk and rowAllZeroes?(x,row) repeat
           rk := (rk - 1) :: NonNegativeInteger
           row := (row - 1) :: NonNegativeInteger
         -- if maximal rank, return zero vector
@@ -681,7 +681,7 @@ MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
           copy x
         y := fractionFreeGauss! y
         i := maxRowIndex y
-        while rk > 0 and rowAllZeroes?(y,i) repeat
+        while positive? rk and rowAllZeroes?(y,i) repeat
           i := i - 1
           rk := (rk - 1) :: NonNegativeInteger
         rk :: NonNegativeInteger
@@ -694,7 +694,7 @@ MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
             normalizedDivide(n:R, d:R):Record(quotient:R, remainder:R) ==
                qr := divide(n, d)
                qr.remainder >= 0 => qr
-               d > 0 =>
+               positive? d =>
                   qr.remainder := qr.remainder + d
                   qr.quotient := qr.quotient - 1
                   qr

@@ -83,7 +83,7 @@ PrimitiveElement(F): Exports == Implementation where
 
     findUniv(l, v, opt) ==
       for p in l repeat
-        degree(p, v) > 0 and incl?(variables p, [v, opt]) => return p
+        positive? degree(p, v) and incl?(variables p, [v, opt]) => return p
       "failed"
 
     triangularLinearIfCan(l, lv, w) ==

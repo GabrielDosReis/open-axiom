@@ -353,7 +353,7 @@ AlgebraicManipulations(R, F): Exports == Implementation where
         n := (retract(second arg)@Integer)::NonNegativeInteger
         ans:F := 0
         q := univariate(p, k)
-        while (d := degree q) > 0 repeat
+        while positive?(d := degree q) repeat
           term :=
             one?(g := gcd(d, n)) => monomial(1, k, d)
             monomial(1, kernel(operator k, [a,(n quo g)::F], height k), d quo g)

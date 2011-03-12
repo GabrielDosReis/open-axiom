@@ -160,7 +160,7 @@ FiniteLinearAggregateSort(S, V): Exports == Implementation where
       g := 1
       while g <= (n-m) repeat g := 3*g+1
       g := g quo 3
-      while g > 0 repeat
+      while positive? g repeat
          for i in m+g..n repeat
             j := i-g
             while j >= m and l(qelt(r, j+g), qelt(r, j)) repeat

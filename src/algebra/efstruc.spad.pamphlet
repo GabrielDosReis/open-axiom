@@ -481,11 +481,11 @@ ElementaryFunctionStructurePackage(R,F): Exports == Implementation where
 
       factdeprel(l, k) ==
         ((r := retractIfCan(n := first argument k)@Union(Z, "failed"))
-          case Z) and (r::Z > 0) => [factorial(r::Z)::F]
+          case Z) and positive?(r::Z) => [factorial(r::Z)::F]
         for x in l repeat
           m := first argument x
           ((r := retractIfCan(n - m)@Union(Z, "failed")) case Z) and
-            (r::Z > 0) => return([*/[(m + i::F) for i in 1..r] * x::F])
+            positive?(r::Z) => return([*/[(m + i::F) for i in 1..r] * x::F])
         [true]
 
     else

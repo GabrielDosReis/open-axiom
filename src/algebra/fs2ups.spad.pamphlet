@@ -273,7 +273,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
     powerToUPS(fcn,n,posCheck?,atanFlag) ==
       -- converts an integral power to a power series
       (b := exprToUPS(fcn,posCheck?,atanFlag)) case %problem => b
-      n > 0 => [(b.%series) ** n]
+      positive? n => [(b.%series) ** n]
       -- check lowest order coefficient when n < 0
       ups := b.%series; deg := degree ups
       if (coef := coefficient(ups,deg)) = 0 then
@@ -545,7 +545,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       -- (b) the lowest order coefficient is a product of exponentials
       --     and functions not involving x
       (b := exprToGenUPS(fcn,posCheck?,atanFlag)) case %problem => b
-      n > 0 => [(b.%series) ** n]
+      positive? n => [(b.%series) ** n]
       -- check lowest order coefficient when n < 0
       ups := b.%series; deg := degree ups
       if (coef := coefficient(ups,deg)) = 0 then
@@ -636,7 +636,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       -- a power series.
       negative?(deg := order(ups,1)) =>
         stateProblem("exp","essential singularity")
-      deg > 0 => [exp ups]
+      positive? deg => [exp ups]
       lc := coefficient(ups,0); xOpList := opsInvolvingX lc
       not opInOpList?("log" :: SY,xOpList) => [exp ups]
       -- try to fix exp(lc) if necessary
@@ -698,7 +698,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       ups := series.%series
       negative?(deg := order(ups,1)) =>
         stateProblem(fcnName,"essential singularity")
-      deg > 0 => [fcn(ups) :: UPS]
+      positive? deg => [fcn(ups) :: UPS]
       lc := coefficient(ups,0); xOpList := opsInvolvingX lc
       null xOpList => [fcn(ups) :: UPS]
       opInOpList?("log" :: SY,xOpList) =>

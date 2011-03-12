@@ -698,12 +698,12 @@ Stream(S): Exports == Implementation where
       getm(x,le,n) ==
         explicitlyEmpty? x => le
         lazy? x =>
-          n > 0 =>
+          positive? n =>
             empty? x => le
             getm(rst x,concat(frst(x) :: OUT,le),n - 1)
           concat(message("..."),le)
         eq?(x,rst x) => concat(overbar(frst(x) :: OUT),le)
-        n > 0 => getm(rst x,concat(frst(x) :: OUT,le),n - 1)
+        positive? n => getm(rst x,concat(frst(x) :: OUT,le),n - 1)
         concat(message("..."),le)
 
       streamCountCoerce x ==
@@ -731,7 +731,7 @@ Stream(S): Exports == Implementation where
       listm(x,le,n) ==
         explicitlyEmpty? x => le
         lazy? x =>
-          n > 0 =>
+          positive? n =>
             empty? x => le
             listm(rst x, concat(frst(x) :: OUT,le),n-1)
           concat(message("..."),le)
@@ -1082,7 +1082,7 @@ Stream(S): Exports == Implementation where
     if S has SetCategory then
 
       output(n,x) ==
-        (not(n>0))or empty? x => void()
+        (not(positive? n)) or empty? x => void()
         mathPrint(frst(x)::OUT)$Lisp
         output(n-1, rst x)
 

@@ -344,7 +344,7 @@ FreeMonoid(S: SetCategory): FreeMonoidCategory(S) == FMdefinition where
             lb := listOfMonoms b
             na: Integer := #la
             nb: Integer := #lb
-            while na > 0 and nb > 0 repeat
+            while positive? na and positive? nb repeat
                 la.first.gen > lb.first.gen => return false
                 la.first.gen < lb.first.gen => return true
                 if la.first.exp = lb.first.exp then
@@ -504,8 +504,8 @@ InnerFreeAbelianMonoid(S: SetCategory, E:CancellationAbelianMonoid, un:E):
 
         if E has OrderedAbelianMonoid then
           highCommonTerms(f, g) ==
-            makeMulti [[x.gen, min(x.exp, n)] for x in listOfMonoms f |
-                                       (n := coefficient(x.gen, g)) > 0]
+            makeMulti [[x.gen, min(x.exp, n)] for x in listOfMonoms f
+                          | positive?(n := coefficient(x.gen, g))]
 
 @
 \section{domain FAMONOID FreeAbelianMonoid}
@@ -555,12 +555,12 @@ FreeAbelianGroup(S:SetCategory): Exports == Implementation where
       a < b ==
         zero? a  =>
           zero? b => false
-          (inmax terms b).exp > 0
+          positive?((inmax terms b).exp)
         ta := inmax terms a
         zero? b => negative? ta.exp
         ta := inmax terms a
         tb := inmax terms b
-        ta.gen < tb.gen => tb.exp > 0
+        ta.gen < tb.gen => positive? tb.exp
         ta.gen > tb.gen => negative? ta.exp
         ta.exp < tb.exp => true
         ta.exp > tb.exp => false

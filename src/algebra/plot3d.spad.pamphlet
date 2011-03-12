@@ -343,7 +343,7 @@ Plot3D(): Exports == Implementation where
           todo2 := concat!(todo2, p)
           todo1 := rest todo1; todo2 := rest todo2
           if not null todo1 then (t := first(todo1); p := first(todo2))
-      if n > 0 then
+      if positive? n then
         NUMFUNEVALS := NUMFUNEVALS + n
         t := curve.knots; p := curve.points
         xRg := select(p,xCoord,min) .. select(p,xCoord,max)

@@ -199,8 +199,8 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
 
     growAdding(r, b, s) ==
        b = 0 => r
-       #r > 0 => growAndFill(r, b, (r.f).0)
-       #s > 0 => growAndFill(r, b, (s.f).0)
+       positive?(#r) => growAndFill(r, b, (r.f).0)
+       positive?(#s) => growAndFill(r, b, (s.f).0)
        error "no default filler element"
 
     growAndFill(r, b, x) ==

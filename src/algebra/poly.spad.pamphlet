@@ -142,7 +142,7 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
           0$R
        recip(p) ==
            null p => "failed"
-           p.first.k > 0$E => "failed"
+           positive? p.first.k => "failed"
            (u:=recip(p.first.c)) case "failed" => "failed"
            (u::R)::%
 
@@ -499,7 +499,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
    multivariate(supp:SparseUnivariatePolynomial(%),v:SingletonAsOrderedSet) ==
      zero? supp => 0
      lc:=leadingCoefficient supp
-     degree lc > 0 => error "bad form polynomial"
+     positive? degree lc => error "bad form polynomial"
      monomial(leadingCoefficient lc,degree supp) +
          multivariate(reductum supp,v)
    if R has FiniteFieldCategory and R has PolynomialFactorizationExplicit then
@@ -907,7 +907,7 @@ UnivariatePolynomialSquareFree(RC:IntegralDomain,P):C == T
               di:=(di exquo pi)::P - differentiate(ci)
               pi:=gcd(ci,di)
               i:=i+1
-              degree(pi) > 0 =>
+              positive? degree(pi) =>
                  lcp:=(lcp exquo (leadingCoefficient(pi)**i))::RC
                  lffe:=[["sqfr",pi,i],:lffe]
            makeFR(lcp::P,lffe)

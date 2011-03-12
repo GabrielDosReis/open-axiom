@@ -152,7 +152,7 @@ SystemODESolver(F, LO): Exports == Implementation where
         r := r - 1
         c := c - 1
         firstnonzero(m, r) ~= c => error "backsolve: undetermined system"
-        degree(eq := m(r, c)) > 0 => error "backsolve: pivot of order > 0"
+        positive? degree(eq := m(r, c)) => error "backsolve: pivot of order > 0"
         a := leadingCoefficient(eq)::F
         if part? then
            part(r + offset) := (v(r + offset) - applyLodo(m, r, part, n)) / a

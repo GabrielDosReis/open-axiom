@@ -181,7 +181,8 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
       i case halfinf =>
         empty?(l := realZeros p) => empty()
         bounds:REC :=
-          i.halfinf.dir > 0 => [i.halfinf.endpoint, "max"/[t.right for t in l]]
+          positive?(i.halfinf.dir) =>
+            [i.halfinf.endpoint, "max"/[t.right for t in l]]
           ["min"/[t.left for t in l], i.halfinf.endpoint]
         l := [u::REC for t in l | (u := refine(p, t, bounds)) case REC]
         incl? => l
@@ -227,7 +228,7 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
       (ea := infeval(p, a)) case "failed" => "failed"
       (eb := infeval(p, b)) case "failed" => "failed"
       (s := sign(ea::F * eb::F)) case "failed" => "failed"
-      s::Z > 0
+      positive?(s::Z)
 
 -- returns true if p has a positive root. Include 0 is incl0? is true
     posRoot(p, incl0?) ==

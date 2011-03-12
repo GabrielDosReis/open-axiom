@@ -342,7 +342,7 @@ UnivariatePuiseuxSeriesWithExponentialSingularity(R,FE,var,cen):_
       domTerm := termInfo.%term
       (type := termInfo.%type) = "series" =>
         -- find limit of series term
-        (ord := order(pSeries := coeff domTerm,1)) > 0 => 0
+        positive?(ord := order(pSeries := coeff domTerm,1)) => 0
         coef := coefficient(pSeries,ord)
         member?(var,variables coef) => "failed"
         ord = 0 => coef :: OFE
@@ -447,7 +447,7 @@ ExponentialExpansion(R,FE,var,cen): Exports == Implementation where
     seriesQuotientLimit(num,den) ==
       -- limit of the quotient of two series
       series := num / den
-      (ord := order(series,1)) > 0 => 0
+      positive?(ord := order(series,1)) => 0
       coef := coefficient(series,ord)
       member?(var,variables coef) => "failed"
       ord = 0 => coef :: OFE

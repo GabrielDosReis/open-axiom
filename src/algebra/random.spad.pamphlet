@@ -198,7 +198,7 @@ RandomIntegerDistributions(): with
 
             n  := 0
             mq := m  -- m quo w**n
-            while (mqnext := mq quo w) > 0 repeat
+            while positive?(mqnext := mq quo w) repeat
                 n  := n + 1
                 mq := mqnext
             ridHack1(mq, n, w, l)

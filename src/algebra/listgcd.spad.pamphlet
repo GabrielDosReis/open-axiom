@@ -118,7 +118,7 @@ HeuGcd (BP):C == T
       empty? lind =>
         member?(1,listdeg) => lincase(listdeg,listf)
         localgcd listf
-      or/[n>0 for n in listdeg] => cons(1$BP,listf)
+      or/[positive? n for n in listdeg] => cons(1$BP,listf)
       lclistf:List(Z):= [leadingCoefficient f for f in listf]
       d:=lintgcd(lclistf)
       d=1 =>  cons(1$BP,listf)
@@ -181,7 +181,7 @@ HeuGcd (BP):C == T
       minpol:=1$BP
       -- extract a monomial gcd
       mdeg:= "min"/[minimumDegree f for f in listf]
-      if mdeg>0 then
+      if positive? mdeg then
         minpol1:= monomial(1,mdeg)
         listf:= [(f exquo minpol1)::BP for f in listf]
         minpol:=minpol*minpol1

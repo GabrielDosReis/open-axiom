@@ -154,10 +154,10 @@ Multiset(S: SetCategory): MultisetAggregate S with
             ((n := t.e) <= max) =>
               remove!(e,t)
               ms.count := ms.count-n
-            max > 0 =>
+            positive? max =>
               t.e := n-max
               ms.count := ms.count-max
-            (n := n+max) > 0 =>
+            positive?(n := n+max) =>
               t.e := -max
               ms.count := ms.count-n
           ms
@@ -169,10 +169,10 @@ Multiset(S: SetCategory): MultisetAggregate S with
             ((n := t.e) <= max) =>
               remove!(e,t)
               ms.count := ms.count-n
-            max > 0 =>
+            positive? max =>
               t.e := n-max
               ms.count := ms.count-max
-            (n := n+max) > 0 =>
+            positive?(n := n+max) =>
               t.e := -max
               ms.count := ms.count-n
           ms
@@ -245,7 +245,7 @@ Multiset(S: SetCategory): MultisetAggregate S with
             n := 0
             for e in keys t1 repeat
               m := min(t1.e,t2.e)
-              m > 0 =>
+              positive? m =>
                 m := t1.e + t2.e
                 t.e := m
                 n := n + m
@@ -259,7 +259,7 @@ Multiset(S: SetCategory): MultisetAggregate S with
             for e in keys t1 repeat
               k1 := t1.e
               k2 := t2.e
-              k1 > 0 and k2 = 0 =>
+              positive? k1 and k2 = 0 =>
                 t.e := k1
                 n := n + k1
             n = 0 => empty()

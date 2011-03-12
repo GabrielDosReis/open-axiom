@@ -1565,17 +1565,17 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
 
   less?(l, n) ==
     i := n::Integer
-    while i > 0 and not empty? l repeat (l := rest l; i := i - 1)
-    i > 0
+    while positive? i and not empty? l repeat (l := rest l; i := i - 1)
+    positive? i
 
   more?(l, n) ==
     i := n::Integer
-    while i > 0 and not empty? l repeat (l := rest l; i := i - 1)
+    while positive? i and not empty? l repeat (l := rest l; i := i - 1)
     zero?(i) and not empty? l
 
   size?(l, n) ==
     i := n::Integer
-    while not empty? l and i > 0 repeat (l := rest l; i := i - 1)
+    while not empty? l and positive? i repeat (l := rest l; i := i - 1)
     empty? l and zero? i
 
   #x ==

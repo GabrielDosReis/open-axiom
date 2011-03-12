@@ -281,11 +281,11 @@ PermutationGroup(S:SetCategory): public == private where
       randomElement : V NNI := group.randomInteger
       words                 := nil()$(L NNI)
       if wordProblem then words := word.(randomInteger::NNI)
-      if maxLoops > 0 then
+      if positive? maxLoops then
         numberOfLoops : I  := 1 + (random()$Integer rem maxLoops)
       else
         numberOfLoops : I := maxLoops
-      while numberOfLoops > 0 repeat
+      while positive? numberOfLoops repeat
         randomInteger : I := 1 + (random()$Integer rem numberOfGenerators)
         randomElement := times ( group.randomInteger , randomElement )
         if wordProblem then words := append ( word.(randomInteger::NNI) , words)
@@ -331,7 +331,7 @@ PermutationGroup(S:SetCategory): public == private where
       word         := nil()$(L NNI)
       oorb         := o.orb
       osvc         := o.svc
-      while degree > 0 repeat
+      while positive? degree repeat
         p := osvc.ppt
         negative? p => return [ xelt , word ]
         x    := group.p
@@ -368,7 +368,7 @@ PermutationGroup(S:SetCategory): public == private where
       group2 := nil()$(L V NNI)
       words3 := nil()$(L L NNI)
       j : I  := 15
-      while j > 0 repeat
+      while positive? j repeat
         -- find generators for the stabilizer
         ran := ranelt ( group , words , maxLoops )
         str := strip ( ran.elt , ort , group , words )
@@ -520,7 +520,7 @@ PermutationGroup(S:SetCategory): public == private where
               for j in (i-1)..1 by -1 while noresult repeat
                 s := gporb.j.svc
                 p := gporb.j.orb.1
-                while ( degree > 0 ) and noresult repeat
+                while positive? degree and noresult repeat
                   entry := s.(z.p)
                   if negative? entry then
                     if entry = -1 then leave
@@ -567,7 +567,7 @@ PermutationGroup(S:SetCategory): public == private where
       group2 := brace()$(FSET PERM S)
       gp : L PERM S := group.gens
       for gen in gp repeat
-        if degree gen > 0 then insert!(gen, group2)
+        if positive? degree gen then insert!(gen, group2)
       group2
 
     knownGroup? (gp : %) : Void ==
@@ -659,7 +659,7 @@ PermutationGroup(S:SetCategory): public == private where
       randomInteger : I  := 1 + (random()$Integer rem numberOfGenerators)
       randomElement      := gp.randomInteger
       numberOfLoops : I  := 1 + (random()$Integer rem maximalNumberOfFactors)
-      while numberOfLoops > 0 repeat
+      while positive? numberOfLoops repeat
         randomInteger : I  := 1 + (random()$Integer rem numberOfGenerators)
         randomElement := gp.randomInteger * randomElement
         numberOfLoops := numberOfLoops - 1
@@ -710,7 +710,7 @@ PermutationGroup(S:SetCategory): public == private where
     orbits ( gp ) ==
       spp    := support gp
       orbits := nil()$(L FSET S)
-      while cardinality spp > 0 repeat
+      while positive? cardinality spp repeat
         el       := extract! spp
         orbitSet := orbit ( gp , el )
         orbits   := cons ( orbitSet , orbits )

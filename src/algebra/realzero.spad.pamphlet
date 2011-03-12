@@ -112,7 +112,7 @@ RealZeroPackage(Pol): T == C where
          F = 0 => error "ReZeroSqfr: zero polynomial"
          L : isoList := []
          degree(F) = 0 => L
-         if (r := minimumDegree(F)) > 0 then
+         if positive?(r := minimumDegree(F)) then
               L := [[0,0]$Interval]
               tempF := F exquo monomial(1, r)
               if not (tempF case "failed") then
@@ -140,7 +140,7 @@ RealZeroPackage(Pol): T == C where
          v = 1 => L := [[0,1]$Interval]
          G : Pol := transMultInv(2, F)
          H : Pol := transAdd1(G)
-         if minimumDegree H > 0 then
+         if positive? minimumDegree H then
                  -- H has a root at 0 => F has one at 1/2, and G at 1
               L := [[1/2,1/2]$Interval]
               Q : Pol := monomial(1, 1)
@@ -277,7 +277,7 @@ RealZeroPackage(Pol): T == C where
              F := (F exquo (monomial(bd,1)-monomial(bn,0)))::Pol
              v:=elt(transMultInv(bd, F), bn)
              u:=elt(transMultInv(ad, F), an)
-         if u > 0 then (F:=-F;v:=-v)
+         if positive? u then (F:=-F;v:=-v)
          if negative? v then
             error [int, "is not a valid isolation interval for", F]
          if eps <= 0 then error "precision must be positive"
@@ -289,7 +289,7 @@ RealZeroPackage(Pol): T == C where
                    a := mid
                    an := midn
                    ad := midd
-              v > 0 =>
+              positive? v =>
                    b := mid
                    bn := midn
                    bd := midd

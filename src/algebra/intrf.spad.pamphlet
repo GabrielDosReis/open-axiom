@@ -70,7 +70,7 @@ SubResultantPackage(R, UP): Exports == Implementation where
          -- Hum it seems that Lionel returns [] when min(|p1|,|p2|) = 0
          zero?(degree(p1)) =>
            res.degree(p2) := p2
-           if degree(p2) > 0
+           if positive? degree(p2)
            then
              res.((degree(p2)-1)::NonNegativeInteger) := p1
              res.0 := (leadingCoefficient(p1)**(degree p2)) :: UP
@@ -79,7 +79,7 @@ SubResultantPackage(R, UP): Exports == Implementation where
              res.0 := 1
            res
          zero?(degree(p2)) =>
-           if degree(p1) > 0
+           if positive? degree(p1)
            then
              res.((degree(p1)-1)::NonNegativeInteger) := p2
              res.0 := (leadingCoefficient(p2)**(degree p1)) :: UP
@@ -264,7 +264,7 @@ TranscendentalHermiteIntegration(F, UP): Exports == Implementation where
       p:UP    := 0
       mult:UP := 1
       qhat := (q exquo (g0 := g := gcd(q, differentiate q)))::UP
-      while(degree(qbar := g) > 0) repeat
+      while positive? degree(qbar := g) repeat
         qbarhat := (qbar exquo (g := gcd(qbar, differentiate qbar)))::UP
         qtil:= - ((qhat * (derivation qbar)) exquo qbar)::UP
         bc :=
@@ -457,7 +457,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
         error "monomIntPoly: monomial must have degree 2 or more"
       l := leadingCoefficient dt
       ans:UP := 0
-      while (n := 1 + degree(p)::Z - d) > 0 repeat
+      while positive?(n := 1 + degree(p)::Z - d) repeat
         ans := ans + (term := monomial(leadingCoefficient(p) / (n * l), n::N))
         p   := p - derivation term      -- degree(p) must drop here
       [ans, p]
@@ -598,7 +598,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
     explimintfrac(f, derivation, lu) ==
       zero? f => [0, empty()]
       degree numer f >= degree denom f => error "Not a proper fraction"
-      order(denom f, monomial(1,1)) > 0 => error "Not integral at t = 0"
+      positive? order(denom f, monomial(1,1)) => error "Not integral at t = 0"
       r  := HermiteIntegrate(f, derivation)
       zero?(r.logpart) => [r.answer, empty()]
       eta' := coefficient(derivation monomial(1, 1), 1)
@@ -669,7 +669,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
                    gqr.remainder / (denom g))) case "failed" => "failed"
       zero?(gqr.remainder) =>
       -- the following FAIL cannot occur if the primitives are all logs
-         degree(gqr.quotient) > 0 => FAIL
+         positive? degree(gqr.quotient) => FAIL
          (u3 := primintegratepoly(fqr.quotient, extendedint,
                retract derivation monomial(1, 1))) case UPUP => "failed"
          [u1.ratpart + u3.answer::RF, u3.a0]
@@ -701,7 +701,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
     primintegratepoly(p, extendedint, t') ==
       zero? p => [0, 0$F]
       ans:UP := 0
-      while (d := degree p) > 0 repeat
+      while positive?(d := degree p) repeat
         (ans1 := extendedint leadingCoefficient p) case "failed" =>
           return([ans, p])
         p   := reductum p - monomial(d * t' * ans1.ratpart, (d - 1)::N)

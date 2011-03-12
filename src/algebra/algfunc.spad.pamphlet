@@ -222,25 +222,25 @@ AlgebraicallyClosedFunctionSpace(R: IntegralDomain):
 
     zeroOf(p:$, x:Symbol) ==
       n := numer(f := univariate(p, kernel(x)$Kernel($)))
-      degree denom f > 0 => error "zeroOf: variable appears in denom"
+      positive? degree denom f => error "zeroOf: variable appears in denom"
       degree n = 0 => error "zeroOf: constant expression"
       zeroOf(n, x)
 
     rootOf(p:$, x:Symbol) ==
       n := numer(f := univariate(p, kernel(x)$Kernel($)))
-      degree denom f > 0 => error "roofOf: variable appears in denom"
+      positive? degree denom f => error "roofOf: variable appears in denom"
       degree n = 0 => error "rootOf: constant expression"
       rootOf(n, x)
 
     zerosOf(p:$, x:Symbol) ==
       n := numer(f := univariate(p, kernel(x)$Kernel($)))
-      degree denom f > 0 => error "zerosOf: variable appears in denom"
+      positive? degree denom f => error "zerosOf: variable appears in denom"
       degree n = 0 => empty()
       zerosOf(n, x)
 
     rootsOf(p:$, x:Symbol) ==
       n := numer(f := univariate(p, kernel(x)$Kernel($)))
-      degree denom f > 0 => error "roofsOf: variable appears in denom"
+      positive? degree denom f => error "roofsOf: variable appears in denom"
       degree n = 0 => empty()
       rootsOf(n, x)
 
@@ -358,7 +358,7 @@ AlgebraicFunction(R, F): Exports == Implementation where
       (r := retractIfCan(p)@Union(F, "failed")) case "failed" =>
         inrootof(p, k::F)
       n := numer(f := univariate(r::F, k))
-      degree denom f > 0 => error "roofOf: variable appears in denom"
+      positive? degree denom f => error "roofOf: variable appears in denom"
       inrootof(n, k::F)
 
     dvalg(l, x) ==
@@ -368,7 +368,7 @@ AlgebraicFunction(R, F): Exports == Implementation where
 
     ialg l ==
       f := univariate(p := first l, retract(x := second l)@K)
-      degree denom f > 0 => error "roofOf: variable appears in denom"
+      positive? degree denom f => error "roofOf: variable appears in denom"
       inrootof(numer f, x)
 
     operator op ==

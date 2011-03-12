@@ -274,7 +274,7 @@ Float():
 
    atan(x,y) ==
       x = 0 =>
-         y > 0 => pi()/2
+         positive? y => pi()/2
          negative? y => -pi()/2
          0
       -- Only count on first quadrant being on principal branch.
@@ -338,7 +338,7 @@ Float():
       -- the running time is O( sqrt p M(p) ) assuming |x| < 1
       k := ISQRT (bits()-100)::I quo 4
       k := max(0,2 + k + order x)
-      if k > 0 then (inc k; x := x / 3**k::N)
+      if positive? k then (inc k; x := x / 3**k::N)
       r := sinSeries x
       for i in 1..k repeat r := itimes(3,r)-shift(r**3,2)
       bits p
@@ -373,7 +373,7 @@ Float():
       -- need to increase precision by more than k, otherwise recursion
       -- causes loss of accuracy.
       -- Michael Monagan suggests adding a factor of log(k)
-     if k > 0 then (inc(k+length(k)**2); x := shift(x,-k))
+     if positive? k then (inc(k+length(k)**2); x := shift(x,-k))
      r := cosSeries x
      for i in 1..k repeat r := shift(r*r,1)-1
      bits p
@@ -543,9 +543,9 @@ Float():
       -- results in an overall running time of O( sqrt p M(p) )
       k := ISQRT (p-100)::I quo 3
       k := max(0,2 + k + order x)
-      if k > 0 then (inc k; x := shift(x,-k))
+      if positive? k then (inc k; x := shift(x,-k))
       e := expSeries x
-      if k > 0 then e := square(e,k)
+      if positive? k then e := square(e,k)
       bits p
       e * e1
 
@@ -609,7 +609,7 @@ Float():
 
    chop(x,p) ==
       e : I := LENGTH x.mantissa - p
-      if e > 0 then x := [shift2(x.mantissa,-e),x.exponent+e]
+      if positive? e then x := [shift2(x.mantissa,-e),x.exponent+e]
       x
    float(m,e) == normalize [m,e]
    float(m,e,b) ==
@@ -620,10 +620,10 @@ Float():
       m := x.mantissa
       m = 0 => 0
       e : I := LENGTH m - bits()
-      if e > 0 then
+      if positive? e then
          y := shift2(m,1-e)
          if odd? y then
-            y := (if y>0 then y+1 else y-1) quo 2
+            y := (if positive? y then y+1 else y-1) quo 2
             if LENGTH y > bits() then
                y := y quo 2
                e := e+1
@@ -636,7 +636,7 @@ Float():
       order x = order y and sign x = sign y and zero? (x - y)
    x < y ==
       y.mantissa = 0 => negative? x.mantissa
-      x.mantissa = 0 => y.mantissa > 0
+      x.mantissa = 0 => positive? y.mantissa
       negative? x and positive? y => true
       negative? y and positive? x => false
       order x < order y => positive? x
@@ -794,13 +794,13 @@ Float():
 
    chop10(x,p) ==
       e : I := floorLength10 x.mantissa - p
-      if e > 0 then x := [x.mantissa quo 10**e::N,x.exponent+e]
+      if positive? e then x := [x.mantissa quo 10**e::N,x.exponent+e]
       x
    normalize10(x,p) ==
       ma := x.mantissa
       ex := x.exponent
       e : I := length10 ma - p
-      if e > 0 then
+      if positive? e then
          ma := ma quo 10**(e-1)::N
          ex := ex + e
          (ma,r) := divide(ma, 10)
@@ -926,7 +926,7 @@ Float():
       s := convert(m)@S; n := #s; o := n + e
       -- Note: at least one digit is displayed after the decimal point
       -- and trailing zeroes after the decimal point are dropped
-      if o > 0 and o <= max(n,d) then
+      if positive? o and o <= max(n,d) then
          -- fixed format: add trailing zeroes before the decimal point
          if o > n then s := concat(s, new((o-n)::N,zero))
          t := rightTrim(s(o + minIndex s .. n + minIndex s - 1), zero)
@@ -960,7 +960,7 @@ Float():
         OUTMODE() = "floating" => floating f
         OUTMODE() = "general" => general f
         empty()$String
-      if b > 0 then bits(b::PositiveInteger)
+      if positive? b then bits(b::PositiveInteger)
       s = empty()$String => error "bad output mode"
       s
 

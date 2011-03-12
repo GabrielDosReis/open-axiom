@@ -109,7 +109,7 @@ ComplexCategory(R:CommutativeRing): Category ==
           factorSquareFreePolynomial pp ==
               pnorm:=normPolynomial pp
               k:R:=0
-              while degree gcd(pnorm,differentiate pnorm)>0 repeat
+              while positive? degree gcd(pnorm,differentiate pnorm) repeat
                  k:=k+1
                  pnorm:=normPolynomial
                           elt(pp,monomial(1,1)-monomial(complex(0,k),0))

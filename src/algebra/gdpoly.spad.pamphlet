@@ -74,7 +74,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
          zero?(p) => "failed"
          for v in vl repeat
            vv := variable(v)::OV
-           if degree(p,vv)>0 then return vv
+           if positive? degree(p,vv) then return vv
          "failed"
 
       ground?(p) == mainVariable(p) case "failed"

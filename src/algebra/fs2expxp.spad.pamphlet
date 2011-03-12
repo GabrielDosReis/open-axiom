@@ -236,7 +236,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       -- converts an integral power to an exponential expansion
       (b := iExprToXXP(fcn,posCheck?)) case %problem => b
       xxp := b.%expansion
-      n > 0 => [xxp ** n]
+      positive? n => [xxp ** n]
       -- a Puiseux series will be reciprocated only if n < 0 and
       -- numerator of 'xxp' has exactly one monomial
       numberOfMonomials(num := numer xxp) > 1 => [xxp ** n]
@@ -345,7 +345,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       negative?(deg := order(ups,1)) =>
         -- this "can't happen"
         error "exp of function with sigularity"
-      deg > 0 => [exp(ups)]
+      positive? deg => [exp(ups)]
       lc := coefficient(ups,0); varOpList := opsInvolvingX lc
       not opInOpList?("log" :: Symbol,varOpList) => [exp(ups)]
       -- try to fix exp(lc) if necessary
@@ -425,7 +425,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       upxs := f :: UPXS
       negative? (deg := order(upxs,1)) =>
         stateProblem(fcnName,"essential singularity")
-      deg > 0 => [fcn(upxs) :: UPXS :: XXP]
+      positive? deg => [fcn(upxs) :: UPXS :: XXP]
       lc := coefficient(upxs,0); xOpList := opsInvolvingX lc
       null xOpList => [fcn(upxs) :: UPXS :: XXP]
       opInOpList?("log" :: SY,xOpList) =>

@@ -178,7 +178,7 @@ InputForm():
       conv [convert("*"::Symbol), s1, s2]$List(%)
 
     s1:% ** n:Integer ==
-      s1 = 0 and n > 0 => 0
+      s1 = 0 and positive? n => 0
       s1 = 1 or zero? n => 1
       one? n => s1
       conv [convert("**"::Symbol), s1, convert n]$List(%)

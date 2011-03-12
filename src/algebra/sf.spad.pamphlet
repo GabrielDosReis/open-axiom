@@ -448,7 +448,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 
    atan(x,y) ==
       zero? x =>
-         y > 0 => pi()/2
+         positive? y => pi()/2
          negative? y => -pi()/2
          0
       -- Only count on first quadrant being on principal branch.

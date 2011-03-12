@@ -299,7 +299,7 @@ IntegerRoots(I:IntegerNumberSystem): Exports == Implementation where
       z:I := 1
       n1:= (n-1)::NNI
       x: I
-      while z > 0 repeat
+      while positive? z repeat
         x := y
         xn:= x**n1
         y := (n1*x*xn+a) quo (n*xn)
@@ -459,7 +459,7 @@ IntegerFactorizationPackage(I): Exports == Implementation where
              return makeFR(1, ls)
           m : Integer
           for m in 0.. while zero?(n rem d) repeat n := n quo d
-          if m>0 then ls := concat!(ls, ["prime",d,convert m]$FFE)
+          if positive? m then ls := concat!(ls, ["prime",d,convert m]$FFE)
           d := d+s
 
     BasicMethod n ==

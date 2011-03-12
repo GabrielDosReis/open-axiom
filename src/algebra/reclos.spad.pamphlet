@@ -118,7 +118,7 @@ RealPolynomialUtilitiesPackage(TheField,ThePols) : PUB == PRIV where
        while (p2 ~= 0) repeat
          res := cons(p2 , res)
          (p1 , p2) := (p2 , -(p1 rem p2))
-       if degree(p1) > 0
+       if positive? degree(p1)
        then
          p1 := unitCanonical(p1)
          res := [ term quo p1 for term in res ]
@@ -247,7 +247,7 @@ RealRootCharacterizationCategory(TheField, ThePols ) : Category == PUB where
           negative? sign(toTest, rootChar)
         
         positive?(toTest, rootChar) == 
-          sign(toTest, rootChar) > 0
+          positive? sign(toTest, rootChar)
 
         rootOf(pol,n) ==
           liste:List($):= allRootsOf(pol)
@@ -633,7 +633,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
         lt := cons(t.int , lt)
     vi := sturmVariationsOf(reverse! lt)$UTIL
     o :Z := n - vl + vi
-    if o > 0
+    if positive? o
     then 
        sturmNthRoot(lp,int,r,vi,vr,o::N)
     else
@@ -815,7 +815,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
                inv(leadingCoefficient(toTest))*reductum(toTest)
      delta := gcd(toTest,rootChar.defPol)
      newChar := [rootChar.low,rootChar.high,rootChar.defPol]$Rep
-     if degree(delta) > 0
+     if positive? degree(delta)
      then
        if sign(delta.(rootChar.low) * delta.(rootChar.high)) <= 0
        then

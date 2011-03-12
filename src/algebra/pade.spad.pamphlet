@@ -145,7 +145,7 @@ PadeApproximants(R,PS,UP): Exports == Implementation where
       zero? gps => constInner 0
       -- Normalize so numerator or denominator has constant term.
       ldeg:= min(order dps,order gps)
-      if ldeg > 0 then
+      if positive? ldeg then
         dps := divOutDegree(dps,ldeg)
         gps := divOutDegree(gps,ldeg)
       padeInner(l,m,gps,dps)

@@ -498,7 +498,7 @@ Remarks:
 integer, we won't get a Taylor expansion and thus raise an error.
 
 <<package STTAYLOR StreamTaylorSeriesOperations>>=
-        if ord > 0 and negative? rn then
+        if positive? ord and negative? rn then
            error "**: negative power does not exist"
 @
 
