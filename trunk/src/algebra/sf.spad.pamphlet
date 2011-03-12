@@ -473,9 +473,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 
    sign(x) == retract FLOAT_-SIGN(x,1)$Lisp
    abs x   == %fabs x
-
-
-   
+   positive? x == 0 < x
    manexp(x) ==
       zero? x => [0,0]
       s := sign x

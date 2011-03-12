@@ -86,6 +86,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %icst1: %                 from Foreign Builtin
       import %ineg: % -> %             from Foreign Builtin
       import %iabs: % -> %             from Foreign Builtin
+      import %irandom: % -> %          from Foreign Builtin
       import %iodd?: % -> Boolean      from Foreign Builtin
       import %hash: % -> SingleInteger from Foreign Builtin
       import %iadd: (%,%) -> %         from Foreign Builtin
@@ -161,6 +162,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       dec  x  == x - 1@%
       hash x == %hash x
       negative? x == x < 0@%
+      positive? x == 0 < x
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
@@ -199,7 +201,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 
       abs(x) == %iabs x
       random() == random()$Lisp
-      random(x) == RANDOM(x)$Lisp
+      random(x) == %irandom x
       x = y == %ieq(x,y)
       x < y == %ilt(x,y)
       x > y == %igt(x,y)

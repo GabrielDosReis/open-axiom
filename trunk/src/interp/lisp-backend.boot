@@ -462,6 +462,9 @@ for x in [
     ['%beq, :'byteEqual],
     ['%blt, :'byteLessThan],
 
+    -- integer constants
+    ['%icstmin, :'_$ShortMinimum],
+    ['%icstmax, :'_$ShortMaximum],
     -- unary integer operations.
     ['%iabs,    :'ABS],
     ['%ieven?,  :'EVENP],
@@ -471,6 +474,7 @@ for x in [
     ['%i2s,   :'WRITE_-TO_-STRING],
     ['%ilength, :'INTEGER_-LENGTH],
     ['%ibit,    :'INTEGER_-BIT],
+    ['%irandom, :'RANDOM],
     -- binary integer operations.
     ['%iadd,    :"+"],
     ['%igcd,    :'GCD],
