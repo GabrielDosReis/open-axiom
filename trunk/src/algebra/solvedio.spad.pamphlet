@@ -119,10 +119,10 @@ DiophantineSolutionPackage(): Cat == Capsule where
       -- create vertices from node ind to other nodes
       v := zero(k)$VI
       for i in 1..k repeat
-        ind > 0 =>
+        positive? ind =>
           negative? coeffs.i =>
             v.i := zeroNode + ind + coeffs.i
-        coeffs.i > 0 =>
+        positive? coeffs.i =>
           v.i := zeroNode + ind + coeffs.i
       [v, true]
  
@@ -136,7 +136,7 @@ DiophantineSolutionPackage(): Cat == Capsule where
         k := if ind < graph.zeroNode then m else n
         for i in k..graph.dim repeat
           x := sol.i
-          v.i > 0 =>  -- vertex exists to other node
+          positive? v.i =>  -- vertex exists to other node
             sol.i := x + 1
             v.i = graph.zeroNode =>  -- solution found
               verifyMinimality(sol, graph, flag) =>
@@ -174,7 +174,7 @@ DiophantineSolutionPackage(): Cat == Capsule where
       k := if ind < graph.zeroNode then m else n
       for i in k..graph.dim while flag repeat
         x := sol.i
-        x > 0 and v.i > 0 =>  -- vertex exists to other node
+        positive? x and positive? v.i =>  -- vertex exists to other node
           sol.i := (x - 1) :: NI
           v.i = graph.zeroNode =>  -- solution found
             flag := false

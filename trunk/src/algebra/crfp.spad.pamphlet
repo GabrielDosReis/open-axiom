@@ -306,7 +306,7 @@ ComplexRootFindingPackage(R, UP): public == private where
        -- next we check if one of these centers is a root
        centerIsRoot : Boolean := false
        for i in 1..maxIndex lp repeat
-         if (mD := minimumDegree lp.i) > 0 then
+         if positive? (mD := minimumDegree lp.i) then
            pp : UP := monomial(1,1)-monomial(listOfCenters.i-u,0)
            centerIsRoot := true
            fp := fp * irreducibleFactor(pp,mD)
@@ -418,7 +418,7 @@ ComplexRootFindingPackage(R, UP): public == private where
 
      divisorCascade(p, tp, info) ==
        lfae : L FAE :=  nil()
-       for i in 1..degree tp while (degree tp > 0)  repeat
+       for i in 1..degree tp while positive? degree tp  repeat
          -- USE monicDivide !!!
          qr  : Record(quotient: UP, remainder: UP)  :=  divide(p,tp)
          factor1 : UP := tp

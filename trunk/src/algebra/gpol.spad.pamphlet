@@ -119,7 +119,7 @@ LaurentPolynomial(R, UP): Exports == Implementation where
     p + q ==
       zero? q => p
       zero? p => q
-      (d := order p - order q) > 0 =>
+      positive?(d := order p - order q) =>
                       gpol(poly(p) * monomial(1, d::N) + poly q, order q)
       negative? d => gpol(poly(p) + poly(q) * monomial(1, (-d)::N), order p)
       mkgpol(order p, poly(p) + poly q)

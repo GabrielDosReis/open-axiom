@@ -118,7 +118,7 @@ ElementaryFunctionDefiniteIntegration(R, F): Exports == Implementation where
 -- returns true if a > b, false if a < b, "failed" if can't decide
     moreThan(a, b) ==
       (r := retractIfCan(a)@Union(F, "failed")) case "failed" =>  -- infinite
-        whatInfinity(a) > 0
+        positive? whatInfinity(a)
       (u := retractIfCan(r::F)@Union(Fraction Z, "failed")) case "failed" =>
         "failed"
       u::Fraction(Z) > b
@@ -171,11 +171,11 @@ ElementaryFunctionDefiniteIntegration(R, F): Exports == Implementation where
       z :=
         (r := retractIfCan(a)@Union(F, "failed")) case "failed" => sign(f, x, a)
         sign(f, x, r::F, "right")
-      (b1 := z case Z) and z::Z > 0 => true
+      (b1 := z case Z) and positive?(z::Z) => true
       z :=
         (r := retractIfCan(b)@Union(F, "failed")) case "failed" => sign(f, x, b)
         sign(f, x, r::F, "left")
-      (b2 := z case Z) and z::Z > 0 => true
+      (b2 := z case Z) and positive?(z::Z) => true
       b1 and b2 =>
         ((w := checkFor0(numer f, k, a, b)) case "failed") or (w::B) => "failed"
         false

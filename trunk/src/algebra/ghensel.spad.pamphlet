@@ -127,7 +127,7 @@ GeneralHenselPackage(RP,TP):C == T where
       dfn :NonNegativeInteger := nm
       lcm1 := leadingCoefficient m
       mm := lcm1*m
-      while dfn>0 and (factlist := genFact(fln,factlist))~=[] repeat
+      while positive? dfn and (factlist := genFact(fln,factlist))~=[] repeat
         auxfl := []
         while factlist~=[] repeat
           auxl := factlist.first
@@ -153,7 +153,7 @@ GeneralHenselPackage(RP,TP):C == T where
             factlist := [term for term in factlist | not member?(poly,term)]
           fln := aux
         factlist := auxfl
-      if dfn > 0 then finallist := cons(m,finallist)
+      if positive? dfn then finallist := cons(m,finallist)
       finallist
 
 @

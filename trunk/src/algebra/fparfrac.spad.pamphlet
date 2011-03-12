@@ -141,7 +141,7 @@ FullPartialFractionExpansion(F, UP): Exports == Implementation where
         lvar := concat(makeVariable(u, m), lvar)
         lval := concat(inv((m+1)::F) * q, lval)
         qq   := q0 quo gcd(pp, q0)                    -- new center
-        if (degree(qq) > 0) then
+        if positive? degree(qq) then
           ans  := concat([(n + 1 - m)::N, qq, (pp * bm * cn * cm) rem qq], ans)
         cm   := (c * cm) rem q0     -- cm = c**m modulo q now
         um   := u1 * um             -- um = u**m now

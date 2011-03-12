@@ -462,7 +462,7 @@ RationalLODE(F, UP): Exports == Implementation where
 
     ratDsolve0(op, g) ==
       zero? degree op => [inv(leadingCoefficient(op)::RF) * g, empty()]
-      minimumDegree op > 0 =>
+      positive? minimumDegree op =>
         sol := ratDsolve0(monicRightDivide(op, monomial(1, 1)).quotient, g)
         b:List(RF) := [1]
         for f in sol.basis repeat

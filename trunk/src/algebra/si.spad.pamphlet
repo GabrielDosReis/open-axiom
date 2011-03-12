@@ -110,7 +110,7 @@ IntegerNumberSystem(): Category ==
    -- iterates in order 0,1,-1,2,-2,3,-3,...
    nextItem n ==
      zero? n => just 1
-     n > 0 => just(-n)
+     positive? n => just(-n)
      just(1-n)
 
    patternMatch(x, p, l) ==
@@ -126,7 +126,7 @@ IntegerNumberSystem(): Category ==
       r := x rem n
       r = 0 => r
       if negative? n then n:=-n
-      r > 0 =>
+      positive? r =>
          2 * r > n => r - n
          r
       2*r + n <= 0 => r + n

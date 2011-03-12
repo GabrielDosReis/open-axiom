@@ -253,7 +253,7 @@ UnivariateFactorize(ZP) : public == private where
         m := -m
 
       -- is x**d factor of m?
-      if (d := minimumDegree m) >0 then
+      if positive?(d := minimumDegree m) then
         m := (monicDivide(m,monomial(1,d))).quotient
         factorlist := [[monomial(1,1),d]$ParFact]
 

@@ -192,7 +192,7 @@ MPolyCatRationalFunctionFactorizer(E,OV,R,PRF) : C == T
       ----  push x back from the coefficient domain ----
      pushuconst(r:F,x:OV):PRF ==
        xs:SE:=convert x
-       degree(denom r,xs)>0 => error "bad polynomial form"
+       positive? degree(denom r,xs) => error "bad polynomial form"
        inv((denom r)::F)*pushucoef(univariate(numer r,xs),x)
 
 

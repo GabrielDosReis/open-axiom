@@ -977,7 +977,7 @@ RegularTriangularSetGcdPackage(R,E,V,P,TS): Exports == Implementation where
          ts := lpwt.tower
          lbwt := toseInvertible?(leadingCoefficient(p2,v),ts)@(List BWT)
          for bwt in lbwt repeat
-           (bwt.val = true) and (degree(p2,v) > 0) =>
+           (bwt.val = true) and positive? degree(p2,v) =>
              p3 := prem(p1, -p2)
              s: P := init(p2)**(mdeg(p1) - mdeg(p2))::N
              toSave := cons([[p2,p3,s],bwt.tower]$LpWT,toSave)

@@ -387,7 +387,7 @@ Plot(): Exports == Implementation where
           todo1 := rest todo1
           todo2 := rest todo2
           if not null todo1 then (t := first(todo1); p := first(todo2))
-      n > 0 =>
+      positive? n =>
         NUMFUNEVALS := NUMFUNEVALS + n
         t := curve.knots; p := curve.points
         xRange := select(p,xCoord,min) .. select(p,xCoord,max)

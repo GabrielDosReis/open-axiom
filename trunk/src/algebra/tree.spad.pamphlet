@@ -103,7 +103,7 @@ Tree(S: SetCategory): T==C where
       t1 = t2 => 0
       t2 case empty => -1
       u := [n for t in children t2 | (n := distance1(t1,t)) >= 0]
-      #u > 0 => 1 + "min"/u 
+      positive?(#u) => 1 + "min"/u 
       -1 
     distance(t1,t2) == 
       n := distance1(t1, t2)
@@ -199,7 +199,7 @@ Tree(S: SetCategory): T==C where
           multipleOverbar((".")::OutputForm,eqMemberIndex(t, pl,0),pl)
         empty? children t => value t::OutputForm
         nodeForm := (value t)::OutputForm
-        if (k := eqMemberIndex(t, pl, 0)) > 0 then
+        if positive?(k := eqMemberIndex(t, pl, 0)) then
            nodeForm := multipleOverbar(nodeForm, k, pl)
         prefix(nodeForm, 
           [coerce1(br,cons(t,parents),pl) for br in children t])

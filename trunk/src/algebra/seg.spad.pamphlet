@@ -153,7 +153,7 @@ Segment(S:Type): SegmentCategory(S) with
           h := hi s
           inc := (incr s)::S
           zero? inc => error "Cannot expand a segment with an increment of zero"
-          if inc > 0 then
+          if positive? inc then
             while l <= h repeat
               lr := concat(l, lr)
               l := l + inc
@@ -169,7 +169,7 @@ Segment(S:Type): SegmentCategory(S) with
         l := lo s
         h := hi s
         inc := (incr s)::S
-        if inc > 0 then
+        if positive? inc then
           while l <= h repeat
             lr := concat(f l, lr)
             l := l + inc
@@ -225,7 +225,7 @@ SegmentFunctions2(R:Type, S:Type): public == private where
        l := lo r
        h := hi r
        inc := (incr r)::R
-       if inc > 0 then
+       if positive? inc then
          while l <= h repeat
            lr := concat(f(l), lr)
            l := l + inc

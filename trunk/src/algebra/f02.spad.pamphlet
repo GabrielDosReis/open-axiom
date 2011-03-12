@@ -489,7 +489,7 @@ NagEigenPackage(): Exports == Implementation where
           zero? ncolbArg and not wantqArg and not wantpArg => 2*tem
           zero? ncolbArg and wantpArg and not wantqArg => 3*tem
           not wantpArg =>
-            ncolbArg >0 or wantqArg => 3*tem
+            positive? ncolbArg or wantqArg => 3*tem
           5*tem
 	cLen : Integer :=
           mArg >= nArg =>

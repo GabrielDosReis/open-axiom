@@ -90,7 +90,7 @@ AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Intege
       if not (% has Ring) then
         n:Integer * x:% ==
           zero? n => 0
-          n>0 => double(n pretend PositiveInteger,x)
+          positive? n => double(n pretend PositiveInteger,x)
           double((-n) pretend PositiveInteger,-x)
 
 @
@@ -1015,8 +1015,10 @@ GcdDomain(): Category == IntegralDomain with
         c1:= content(p1); c2:= content(p2)
         p1:= (p1 exquo c1)::SUP %
         p2:= (p2 exquo c2)::SUP %
-        if (e1:=minimumDegree p1) > 0 then p1:=(p1 exquo monomial(1,e1))::SUP %
-        if (e2:=minimumDegree p2) > 0 then p2:=(p2 exquo monomial(1,e2))::SUP %
+        if positive?(e1:=minimumDegree p1) then
+          p1:=(p1 exquo monomial(1,e1))::SUP %
+        if positive?(e2:=minimumDegree p2) then
+          p2:=(p2 exquo monomial(1,e2))::SUP %
         e1:=min(e1,e2); c1:=gcd(c1,c2)
         p1:=
            degree p1 = 0 or degree p2 = 0 => monomial(c1,0)

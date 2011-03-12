@@ -1400,7 +1400,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                    if ground?(tpol)
                      then
                        n := retract(ground(tpol))@INT
-                       if n > 0
+                       if positive? n
                          then
                            stpol :=  concat(" +",convert(n)@String)$String
                          else

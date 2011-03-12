@@ -111,7 +111,7 @@ TranscendentalRischDESystem(F, UP): Exports == Implementation where
       h := (h exquo g)::UP
       c1 := u1::UP
       c2 := u2::UP
-      (da := degree a) > 0 =>
+      positive?(da := degree a) =>
         (u := diophant(a, h, b, c1, c2)) case "failed" => "failed"
         rec := u::REC
         v := SPDEsys(a, b, h + derivation a, rec.z1 - derivation(rec.r1),

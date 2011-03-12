@@ -186,7 +186,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
     numberOfImproperPartitionsInternal(n,m,cm) ==
       n = 0 => binomial(m,cm)$ICF
-      cm = 0 and n > 0 => 0
+      cm = 0 and positive? n => 0
       s := 0
       for i in 0..n-1 repeat
         s := s + numberOfImproperPartitionsInternal(i,m,cm-1)

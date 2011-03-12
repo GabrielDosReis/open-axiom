@@ -73,7 +73,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
       (~b0?) and (baseCase? or degree(u.b) > max(0, n)) =>
           answ := SPDEnocancel1(u.b, u.c, u.m, derivation)
           [[u.alpha * answ.ans + u.beta, answ.nosol]]
-      (n > 0) and (b0? or degree(u.b) < n) =>
+      positive? n and (b0? or degree(u.b) < n) =>
           uansw := SPDEnocancel2(u.b,u.c,u.m,n,leadingCoefficient dt,derivation)
           uansw case ans=> [[u.alpha * uansw.ans.ans + u.beta, uansw.ans.nosol]]
           [[uansw.eq.b, uansw.eq.c, uansw.eq.m,
@@ -131,7 +131,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
       q:UP := 0
       while cc ~= 0 repeat
         negative? d or negative?(n := (degree cc)::Z - dtm1) or n > d => return [[q, true]]
-        if n > 0 then
+        if positive? n then
           r  := monomial((leadingCoefficient cc) / (n * lt), n::N)
           cc := cc - bb * r - derivation r
           d  := n - 1

@@ -305,7 +305,7 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
 
     infValue f ==
       zero? f => 0
-      (n := infOrder f) > 0 => 0
+      positive?(n := infOrder f) => 0
       zero? n =>
         (leadingCoefficient numer f) / (leadingCoefficient denom f)
       error "f not locally integral at infinity"

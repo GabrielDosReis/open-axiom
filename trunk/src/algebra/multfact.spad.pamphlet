@@ -117,7 +117,7 @@ InnerMultFact(OV,E,R,P) : C == T
       factorlist:L SUParFact :=empty()
 
       mdeg :=minimumDegree um     ---- is the Mindeg > 0? ----
-      if mdeg>0 then
+      if positive? mdeg then
         f1:USP:=monomial(1,mdeg)
         um:=(um exquo f1)::USP
         factorlist:=cons([monomial(1,1),mdeg],factorlist)
@@ -383,7 +383,7 @@ InnerMultFact(OV,E,R,P) : C == T
       factorlist:L MParFact :=empty()
 
       lmdeg :=minimumDegree(m,lvar)     ---- is the Mindeg > 0? ----
-      or/[n>0 for n in lmdeg] => simplify(m,lvar,lmdeg,ufactor)
+      or/[positive? n for n in lmdeg] => simplify(m,lvar,lmdeg,ufactor)
 
       sqfacs := squareFree m
       lcont := unit sqfacs

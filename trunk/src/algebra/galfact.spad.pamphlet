@@ -602,7 +602,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
         f := -f
 
       -- is x**d factor of f
-      if (d := minimumDegree f) > 0 then
+      if positive?(d := minimumDegree f) then
         f := monicDivide(f,monomial(1,d)).quotient
         factorlist := [[monomial(1,1),d]$ParFact]
 
@@ -672,7 +672,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
         f := -f
 
       -- is x**d factor of f
-      if (maxd := minimumDegree f) > 0 then
+      if positive?(maxd := minimumDegree f) then
         f := monicDivide(f,monomial(1,maxd)).quotient
         factorlist := [[monomial(1,1),maxd]$ParFact]
         r := max(2,r-maxd)::N

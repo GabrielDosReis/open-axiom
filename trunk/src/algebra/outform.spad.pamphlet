@@ -157,7 +157,7 @@ NumberFormats(): NFexports == NFimplementation where
                 m0:String := concat(new(i,plen),concat("I",new(i,pren)))
                 mm := concat([m0 for j in 1..d]$List(String))
                 -- strictly speaking the blank is gratuitous
-                if #s > 0 then s := concat(" ", s)
+                if positive?(#s) then s := concat(" ", s)
                 s  := concat(mm, s)
             s
 

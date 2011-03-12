@@ -203,7 +203,7 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
 --compute the derivative
          derivs(dydx,y,x)
 --if overshoot, the set h accordingly
-         if (x + step.tryValue - x2) > 0.0 then
+         if positive?(x + step.tryValue - x2) then
             step.tryValue := x2 - x
 --find the correct scaling
          for i in 1..m repeat

@@ -538,7 +538,7 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
             vars:=rest vars
             d:=degree(p,v)
             ans:% := 0
-            while (d>0) repeat
+            while positive? d repeat
                (dd:=(d::Integer exquo ch::Integer)) case "failed" =>
                       return nothing
                cp:=coefficient(p,v,d)
@@ -880,7 +880,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
     if R has CommutativeRing then
       differentiate(x:%, deriv:R -> R, x':%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           lc := leadingCoefficient x
           d := d + x' * monomial(dg * lc, (dg - 1)::NonNegativeInteger)
                  + monomial(deriv lc, dg)
@@ -896,7 +896,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
 
       differentiate(x:%, deriv:R -> R, x':%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           lc := leadingCoefficient x
           d := d + monomial(deriv lc, dg) + lc * ncdiff(dg, x')
           x := reductum x
@@ -904,7 +904,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
     differentiate(x:%, deriv:R -> R) == differentiate(x, deriv, 1$%)$%
     differentiate(x:%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           d := d + monomial(dg * leadingCoefficient x, (dg - 1)::NonNegativeInteger)
           x := reductum x
         d

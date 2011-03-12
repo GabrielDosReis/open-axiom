@@ -79,7 +79,7 @@ OrderedCompletion(R:SetCategory): Exports == Implementation where
 
       n:Integer * x:% ==
         x case inf =>
-          n > 0 => x
+          positive? n => x
           negative? n => [not(x.inf)]
           error "Undefined product"
         [n * x.fin]
@@ -103,7 +103,7 @@ OrderedCompletion(R:SetCategory): Exports == Implementation where
       characteristic   == characteristic$R
 
       fininf(b, r) ==
-        r > 0 => [b]
+        positive? r => [b]
         negative? r => [not b]
         error "Undefined product"
 

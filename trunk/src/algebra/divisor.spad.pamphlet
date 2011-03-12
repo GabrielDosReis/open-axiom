@@ -349,7 +349,7 @@ ModularHermitianRowReduction(R): Exports == Implementation where
         normalizedDivide(n:R, d:R):Record(quotient:R, remainder:R) ==
             qr := divide(n, d)
             qr.remainder >= 0 => qr
-            d > 0 =>
+            positive? d =>
                 qr.remainder := qr.remainder + d
                 qr.quotient := qr.quotient - 1
                 qr

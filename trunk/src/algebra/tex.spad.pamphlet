@@ -301,7 +301,7 @@ TexFormat(): public == private where
     lineConcat( line : S, lines: L S ) : L S ==
       length := #line
 
-      if ( length > 0 ) then
+      if positive? length then
         -- If the last character is a backslash then split at "\ ".
         -- Reinstate the blank.
 
@@ -367,7 +367,7 @@ TexFormat(): public == private where
         ls := ls + lss + 1
         s := concat(s,concat(ss," ")$S)$S
 
-      if ls > 0 then l := lineConcat( s, l )
+      if positive? ls then l := lineConcat( s, l )
 
       reverse l
 
@@ -606,14 +606,14 @@ TexFormat(): public == private where
         len > 1 and str.1 = char "%" and str.2 = char "%" =>
           u : US := segment(3,len)$US
           concat(" \%\%",str.u)
-        len > 0 and str.1 = char "%" => concat(" \",str)
+        positive? len and str.1 = char "%" => concat(" \",str)
         len > 1 and digit? str.1 => group str -- should handle floats
-        len > 0 and str.1 = char "_"" =>
+        positive? len and str.1 = char "_"" =>
           concat(concat(" \mbox{\tt ",str),"} ")
         len = 1 and str.1 = char " " => "{\ }"
-        (i := position(str,specialStrings)) > 0 =>
+        positive?(i := position(str,specialStrings)) =>
           specialStringsInTeX.i
-        (i := position(char " ",str)) > 0 =>
+        positive?(i := position(char " ",str)) =>
           -- We want to preserve spacing, so use a roman font.
           concat(concat(" \mbox{\rm ",str),"} ")
         str

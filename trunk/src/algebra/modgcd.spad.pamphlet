@@ -77,7 +77,7 @@ InnerModularGcd(R,BP,pMod,nextMod):C == T
     modularGcdPrimitive(listf : List BP) :BP ==
       empty? listf => 0$BP
       g := first listf
-      for f in rest listf | not zero? f  while degree g > 0 repeat
+      for f in rest listf | not zero? f  while positive? degree g repeat
         g:=modGcdPrimitive(g,f)
       g		
 
@@ -89,7 +89,7 @@ InnerModularGcd(R,BP,pMod,nextMod):C == T
       minpol:=1$BP
       -- extract a monomial gcd
       mdeg:= "min"/[minimumDegree f for f in listf]
-      if mdeg>0 then
+      if positive? mdeg then
         minpol1:= monomial(1,mdeg)
         listf:= [(f exquo minpol1)::BP for f in listf]
         minpol:=minpol*minpol1

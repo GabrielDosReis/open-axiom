@@ -110,7 +110,7 @@ IntegrationResultToFunction(R, F): Exports == Implementation where
         sqrn := s.ans1 * rootSimp sqrt(-s.ans2)
         nn := lgp + d * sqrn * ilog(e, f * sqrn,
                    setUnion(setUnion(kernels a, kernels b), kernels p0))
-      sqr.sgn > 0 => [pp]
+      positive? sqr.sgn => [pp]
       negative? sqr.sgn => [nn]
       [pp, nn]
 

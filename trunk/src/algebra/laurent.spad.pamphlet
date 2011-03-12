@@ -211,7 +211,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
       (expDiff := getExpon(x) - getExpon(y)) = 0 =>
         getUTS(x) = getUTS(y)
       abs(expDiff) > _$streamCount$Lisp => false
-      expDiff > 0 =>
+      positive? expDiff =>
         getUTS(x) * monom(1,expDiff :: NNI) = getUTS(y)
       getUTS(y) * monom(1,(- expDiff) :: NNI) = getUTS(x)
 
@@ -381,7 +381,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
         zero? n =>
           zero? x => error "0 ** 0 is undefined"
           1
-        n > 0 => laurent(n * getExpon(x),getUTS(x) ** (n :: NNI))
+        positive? n => laurent(n * getExpon(x),getUTS(x) ** (n :: NNI))
         xInv := inv x; minusN := (-n) :: NNI
         laurent(minusN * getExpon(xInv),getUTS(xInv) ** minusN)
 

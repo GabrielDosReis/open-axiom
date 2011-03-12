@@ -101,7 +101,7 @@ FiniteFieldPolynomialPackage2(F,GF):Exports == Implementation where
           beta:=Frobenius(beta)
           trModp:=trModp +$(SUP F) beta *$(SUP F) map(coerce,qexp.i)$SUPF2
         -- if it is of degree 0, it doesn't help us finding a root
-        if degree(trModp)$(SUP F) > 0 then
+        if positive? degree(trModp)$(SUP F) then
           -- for all elements gf of GF do
           for j in 1..sizeGF repeat
             -- compute gcd(trace(beta * x) + gf,stillToFactor)

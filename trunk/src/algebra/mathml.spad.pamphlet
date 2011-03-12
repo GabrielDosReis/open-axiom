@@ -599,7 +599,7 @@ returning Void.  I really only need the one coerce function.
       nargs : I := #args
 --      sayTeX$Lisp concat ["1: ",stringify first le," : ",string(nargs)$S]
       s : S := concat ["{",sop]
-      if nargs > 0  then
+      if positive? nargs  then
         for a in args repeat
 --        sayTeX$Lisp concat ["2: ",stringify a]
           s1 : S := exprex a
@@ -679,7 +679,7 @@ returning Void.  I really only need the one coerce function.
       endS:S := concat ["</",name,">"]
       level:I := 1
       --sayTeX$Lisp "eltLimit: element name: "name
-      while (level > 0) repeat
+      while positive? level repeat
         startI := position(startS,mathML,pI)$String
 
         endI := position(endS,mathML,pI)$String
@@ -777,7 +777,7 @@ have to be switched by swapping names.
       len : I := #str
       plusminus : S := "<mo>+</mo><mo>-</mo>"
       pos : I := position(plusminus,str,1)
-      if pos > 0 then
+      if positive? pos then
         ustart:US := segment(1,pos-1)$US
         uend:US := segment(pos+20,len)$US
         str := concat [str.ustart,"<mo>-</mo>",str.uend]
@@ -943,7 +943,7 @@ have to be switched by swapping names.
         while k < #numLS + 1 repeat
           if numLS.k = string i then j := j + 1
           k := k+1
-        if j > 0 then
+        if positive? j then
           tmpS := stringify args.i
           if j = 1 then
             s := s"<mo>&#x02202;</mo><mi>"tmpS"</mi>"
@@ -1035,7 +1035,7 @@ have to be switched by swapping names.
       commaS : S := stringify first rest rest rest atomE
       commaTest : S := ","
       i : I := 0
-      while position(commaTest,commaS,1) > 0 repeat
+      while positive? position(commaTest,commaS,1) repeat
         i := i+1
         commaTest := commaTest","
       s : S := "<msup><mi>"funcS"</mi><mrow>"
@@ -1064,7 +1064,7 @@ have to be switched by swapping names.
       commaS : S := stringify first rest rest rest atomE
       commaTest : S := ","
       ndiffs : I := 0
-      while position(commaTest,commaS,1) > 0 repeat
+      while positive? position(commaTest,commaS,1) repeat
         ndiffs := ndiffs+1
         commaTest := commaTest","
       s : S := "<mfrac><mrow><msup><mo>&#x02146;</mo><mn>"string(ndiffs)"</mn></msup><mi>"funcS"</mi></mrow><mrow><mo>&#x02146;</mo><msup><mi>"formatMml(first args,minPrec)"</mi><mn>"string(ndiffs)"</mn></msup></mrow></mfrac><mo>&#x02061;</mo><mo>(</mo><mi>"formatMml(first args,minPrec)"</mi><mo>)</mo>"
@@ -1154,7 +1154,7 @@ have to be switched by swapping names.
         -- %A for the bound variable and puts the original variable used
         -- in the input command as a superscript on the integral sign.
         -- I'm assuming that the axiom variable is 2 characters.
-        while (i := position(varRS,integrand,i+1)) > 0 repeat
+        while positive?(i := position(varRS,integrand,i+1)) repeat
           u1 := segment(1,i-1)$US
           u2 := segment(i+2,#integrand)$US
           integrand := concat [integrand.u1,bvarS,integrand.u2]
@@ -1253,10 +1253,10 @@ have to be switched by swapping names.
       -- Note that since the resulting MathML <mfrac>s are nested we need
       -- to handle the whole continued fraction at once, i.e. we can't
       -- just look for, e.g., {{ZAG}{1}{6}}
-      (#args > 1) and (position("ZAG",stringify first rest args,1) > 0) =>
+      (#args > 1) and positive? position("ZAG",stringify first rest args,1) =>
            tmpS : S := stringify first args
-           position("ZAG",tmpS,1) > 0 => formatZag(args)
---         position("ZAG",tmpS,1) > 0 => formatZag1(args)
+           positive? position("ZAG",tmpS,1) => formatZag(args)
+--         positive? position("ZAG",tmpS,1) => formatZag1(args)
            concat [formatMml(first args,minPrec) "<mo>+</mo>" formatZag(rest args)]
       -- At least for the ops "*","+","-" we need to test to see if a sigma or pi
       -- is one of their arguments because we might need parentheses as indicated
@@ -1313,7 +1313,7 @@ have to be switched by swapping names.
       #args > 1 => "<mfrac>"formatMml(first rest tmpZag,minPrec)"<mrow><mn>"formatMml(first rest rest tmpZag,minPrec)"</mn><mo>+</mo>"formatZag(rest args)"</mrow></mfrac>"
       (first args = "...":: E)@Boolean => "<mo>&#x2026;</mo>"
       op:S := stringify first args
-      position("ZAG",op,1) > 0 =>
+      positive? position("ZAG",op,1) =>
         "<mfrac>"formatMml(first rest tmpZag,minPrec)formatMml(first rest rest tmpZag,minPrec)"</mfrac>"
       error "formatZag: Last argument in ZAG construct has unknown operator: "op
 
@@ -1356,15 +1356,15 @@ have to be switched by swapping names.
         -- ExponentialE
         str = "%i"  => "<mi>&#x02148;</mi>"
         -- ImaginaryI
-        len > 0 and str.1 = char "%" => concat(concat("<mi>",str),"</mi>")
+        positive? len and str.1 = char "%" => concat(concat("<mi>",str),"</mi>")
         len > 1 and digit? str.1 => concat ["<mn>",str,"</mn>"] -- should handle floats
         -- presumably this is a literal string
-        len > 0 and str.1 = char "_"" =>
+        positive? len and str.1 = char "_"" =>
           concat(concat("<mtext>",str),"</mtext>")
         len = 1 and str.1 = char " " => " "
-        (i := position(str,specialStrings)) > 0 =>
+        positive?(i := position(str,specialStrings)) =>
           specialStringsInMML.i
-        (i := position(char " ",str)) > 0 =>
+        positive?(i := position(char " ",str)) =>
           -- We want to preserve spacing, so use a roman font.
           -- What's this for?  Leave the \rm in for now so I can see
           -- where it arises.  Removed 2007-02-14
@@ -1378,10 +1378,10 @@ have to be switched by swapping names.
       nargs : I := #args
       -- need to test here in case first l is SUPERSUB case and then
       -- pass first l and args to formatSuperSub.
-      position("SUPERSUB",op,1) > 0 =>
+      positive? position("SUPERSUB",op,1) =>
         formatSuperSub(first l,args,minPrec)
       -- now test for SUB
-      position("SUB",op,1) > 0 =>
+      positive? position("SUB",op,1) =>
         formatSub1(first l,args,minPrec)
 
       -- special cases

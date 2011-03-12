@@ -231,7 +231,7 @@ ScriptFormulaFormat(): public == private where
         lss > len => l := concat(ss,l)$List(S)
         ls := ls + lss + 1
         s := concat(s,concat(ss," ")$S)$S
-      if ls > 0 then l := concat(s,l)$List(S)
+      if positive? ls then l := concat(s,l)$List(S)
       reverse l
 
     group str ==
@@ -403,7 +403,7 @@ ScriptFormulaFormat(): public == private where
         %integer?(expr)$Foreign(Builtin) =>
           i := expr : Integer
           if negative? i or (i > 9) then group str else str
-        (i := position(str,specialStrings)) > 0 =>
+        positive?(i := position(str,specialStrings)) =>
           specialStringsInFormula.i
         str
       l : L E := (expr pretend L E)

@@ -220,7 +220,7 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
               lc := coefficient(uls,ord)
               (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" =>
                 (1/2) * pi()
-              (rat :: RN) > 0 => (1/2) * pi()
+              positive?(rat :: RN) => (1/2) * pi()
               (-1/2) * pi()
             (1/2) * pi()
           return "failed"
@@ -238,7 +238,7 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
           RATS =>
             lc := coefficient(uls,ord)
             (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" => 0
-            (rat :: RN) > 0 => 0
+            positive?(rat :: RN) => 0
             TRANSFCN => pi()
             return "failed"
           0
@@ -321,7 +321,7 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
               lc := coefficient(uls,ord)
               (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" =>
                 (1/2) * pi()
-              (rat :: RN) > 0 => (1/2) * pi()
+              positive?(rat :: RN) => (1/2) * pi()
               (-1/2) * pi()
             (1/2) * pi()
           error "atan: series expansion involves transcendental constants"
@@ -342,7 +342,7 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
           RATS =>
             lc := coefficient(uls,ord)
             (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" => 0
-            (rat :: RN) > 0 => 0
+            positive?(rat :: RN) => 0
             TRANSFCN => pi()
             error "acot: series expansion involves transcendental constants"
           0
