@@ -84,7 +84,6 @@ IntegerNumberSystem(): Category ==
    characteristic == 0
    differentiate x          == 0
    even? x                  == not odd? x
-   positive? x              == x > 0
    copy x                   == x
    bit?(x, i)               == odd? shift(x, -i)
    mask n                   == dec shift(1, n)
@@ -181,10 +180,7 @@ IntegerNumberSystem(): Category ==
 
 
 -- Lisp dependencies
--- ABSVAL, TIMES,
--- QSLESSP, QSGREATERP, QSDIFFERENCE
--- QSNOT, QSAND
--- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
+-- QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
 SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) with
@@ -212,6 +208,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
 
    import %icst0: %                 from Foreign Builtin
    import %icst1: %                 from Foreign Builtin
+   import %icstmin: %               from Foreign Builtin
+   import %icstmax: %               from Foreign Builtin
    import %iadd: (%,%) -> %         from Foreign Builtin
    import %isub: (%,%) -> %         from Foreign Builtin
    import %imul: (%,%) -> %         from Foreign Builtin
@@ -221,6 +219,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    import %iinc: % -> %             from Foreign Builtin
    import %idec: % -> %             from Foreign Builtin
    import %iabs: % -> %             from Foreign Builtin
+   import %irandom: % -> %          from Foreign Builtin
    import %imax: (%,%) -> %         from Foreign Builtin
    import %imin: (%,%) -> %         from Foreign Builtin
    import %igcd: (%,%) -> %         from Foreign Builtin
@@ -236,13 +235,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    import %bitand: (%,%) -> %       from Foreign Builtin
    import %bitior: (%,%) -> %       from Foreign Builtin
    import %bitxor: (%,%) -> %       from Foreign Builtin
-
-   seed : % := %icst1               -- for random()
-   MAXINT ==> _$ShortMaximum$Lisp
-   MININT ==> _$ShortMinimum$Lisp
-   BASE ==> 67108864$Lisp           -- 2**26
-   MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
-   MODULUS ==> 2147483647$Lisp      -- 2**31-1
 
    writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
     if negative? x then
@@ -296,8 +288,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    0         == %icst0
    1         == %icst1
    base()    == per 2
-   max()     == MAXINT
-   min()     == MININT
+   max()     == %icstmax
+   min()     == %icstmin
    x = y     == %ieq(x,y)
    ~ x       == %bitnot x
    not(x)    == %bitnot x
@@ -339,10 +331,10 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == %ilt(x,%icst0)
    size() ==
-     (MAXINT - MININT + 1)  pretend NonNegativeInteger
-   index i == per(i + MININT - 1)
+     (%icstmax - %icstmin + %icst1)  pretend NonNegativeInteger
+   index i == per(i + rep %icstmin - rep %icst1)
    lookup x ==
-     (x - MININT + 1) pretend PositiveInteger
+     (x - %icstmin + %icst1) pretend PositiveInteger
 
 
    reducedSystem(m: Matrix %, v: Vector %) ==
@@ -356,17 +348,14 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
       r
 
    coerce(x:Integer):% == per x
-
-   random() ==
-      seed := TIMES(MULTIPLIER,seed)$Lisp rem MODULUS
-      seed rem BASE
-
-   random(n) == RANDOM(n)$Lisp
+   random() == random %icstmax
+   random(n) == %irandom n
 
    UCA ==> Record(unit:%,canonical:%,associate:%)
    unitNormal x ==
       negative? x => [-1@%,-x,-1@%]$UCA
       [1@%,x,1@%]$UCA
+   positive? x == 0 < x
 
 @
 

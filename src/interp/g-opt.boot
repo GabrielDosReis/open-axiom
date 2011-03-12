@@ -430,9 +430,9 @@ $VMsideEffectFreeOperators ==
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
-    %ilength %ibit %icst0 %icst1
+    %ilength %ibit %icst0 %icst1 %icstmin %icstmax
     %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-    %irem %iquo %idivide %idec
+    %irem %iquo %idivide %idec %irandom
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
     %fsqrt %fpowf %flog %flog2 %flog10 %fmanexp
