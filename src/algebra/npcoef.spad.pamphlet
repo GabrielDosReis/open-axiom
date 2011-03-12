@@ -63,7 +63,7 @@ NPCoef(BP,E,OV,R,P) : C == T where
     changed:Boolean:=true
     ltochange:List(NNI):=empty()
     ltodel:List(NNI):=empty()
-    while changed and ndet~=1 repeat
+    while changed and not one? ndet repeat
       changed :=false
       dt:=#tablecoef
       for i in 1..dt while not changed repeat

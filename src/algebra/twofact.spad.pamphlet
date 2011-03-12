@@ -159,7 +159,7 @@ TwoFactorize(F) : C == T
                               pfaclist)
              unitPart := unit(nfacs)**uexp * unitPart
           pfaclist := cons(u,pfaclist)
-       cont ~= 1 =>
+       not one? cont =>
            sqp := squareFree cont
            contlist:=[[w.flg,(w.fctr)::P,w.xpnt] for w in factorList sqp]
            pfaclist:= append(contlist, pfaclist)
@@ -274,7 +274,7 @@ TwoFactorize(F) : C == T
        while not empty? lfacth repeat
          ff := first lfacth
          lfacth := rest lfacth
-         if (c:=leadingCoefficient leadingCoefficient ff) ~=1 then
+         if not one?(c:=leadingCoefficient leadingCoefficient ff) then
            ff:=((inv c)::SUEx)* ff
          not ((ffu:= retractIfCan(ff)$Normp) case "failed") =>
                     lfactk := cons(ffu::P, lfactk)

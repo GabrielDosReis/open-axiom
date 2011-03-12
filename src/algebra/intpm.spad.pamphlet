@@ -117,7 +117,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
         [cc, nc]
       if (v := isPower f) case Record(val:F, exponent:Z) then
         vv := v::Record(val:F, exponent:Z)
-        (vv.exponent ~= 1) =>
+        not one?(vv.exponent) =>
           rec := splitConstant(vv.val, x)
           return [rec.const ** vv.exponent, rec.nconst ** vv.exponent]
       error "splitConstant: should not happen"
@@ -248,7 +248,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              rec.coef * sqrt(rec.radicand)
 
            pmintegrate(f, x) ==
-             (rc := splitConstant(f, x)).const ~= 1 =>
+             not one?((rc := splitConstant(f, x)).const) =>
                (u := pmintegrate(rc.nconst, x)) case "failed" => "failed"
                rec := u::ANS
                [rc.const * rec.special, rc.const * rec.integrand]
@@ -266,7 +266,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              "failed"
 
            pmComplexintegrate(f, x) ==
-             (rc := splitConstant(f, x)).const ~= 1 =>
+             not one?((rc := splitConstant(f, x)).const) =>
                (u := pmintegrate(rc.nconst, x)) case "failed" => "failed"
                rec := u::ANS
                [rc.const * rec.special, rc.const * rec.integrand]

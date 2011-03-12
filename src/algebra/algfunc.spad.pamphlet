@@ -277,7 +277,7 @@ test and give $$1/(-2)^(1/n) \ne (-1/2)^(1/n)$$
 <<hackroot(x, n)>>=
       hackroot(x, n) ==
         (n = 1) or (x = 1) => x
-        (((dx := denom x) ~= 1) and
+        (not one?(dx := denom x) and
            ((rx := retractIfCan(dx)@Union(Integer,"failed")) case Integer) and
            positive?(rx))
            => hackroot((numer x)::F, n)/hackroot(rx::Integer::F, n)

@@ -440,7 +440,7 @@ ModularHermitianRowReduction(R): Exports == Implementation where
             qsetelt!(x, k, j, 0)
           un := unitNormal qelt(x,i,j)
           qsetelt!(x,i,j,un.canonical)
-          if un.associate ~= 1 then for jj in (j+1)..ncols repeat
+          if not one?(un.associate) then for jj in (j+1)..ncols repeat
               qsetelt!(x,i,jj,un.associate * qelt(x,i,jj))
 
           xij := qelt(x,i,j)
@@ -720,7 +720,7 @@ HyperellipticFiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
       v::UP
 
     redpolyIfCan(h, a) ==
-      degree(p := lift h) ~= 1 => "failed"
+      not one? degree(p := lift h) => "failed"
       q := - coefficient(p, 0) / coefficient(p, 1)
       rec := extendedEuclidean(denom q, a)
       not ground?(rec.generator) => "failed"

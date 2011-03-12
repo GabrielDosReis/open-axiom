@@ -167,7 +167,7 @@ PowerSeriesLimitPackage(R,FE): Exports == Implementation where
       xkers := [k for k in tower fcn | member?(x,variables(k::FE))]
       # xkers ~= 2 => "failed"
       expKers := [k for k in xkers | is?(k, "exp" :: Symbol)]
-      # expKers ~= 1 => "failed"
+      not one?(# expKers) => "failed"
     -- fcn is a rational function of x and exp(g(x)) for some rational function g
       expKer := first expKers
       (fval := limitPlus(expKer::FE,x)) case "failed" => "failed"
@@ -188,7 +188,7 @@ PowerSeriesLimitPackage(R,FE): Exports == Implementation where
     specialLimit1(fcn,x) ==
       -- find the first interesting kernel in tower(fcn)
       xkers := [k for k in kernels fcn | member?(x,variables(k::FE))]
-      #xkers ~= 1 => "failed"
+      not one?(#xkers) => "failed"
       ker := first xkers
       vv := new()$SY; eq : EQ FE := equation(ker :: FE,vv :: FE)
       cc := eval(fcn,eq)

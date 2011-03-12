@@ -91,8 +91,8 @@ PolynomialCategoryQuotientFunctions(E, V, R, P, F):
       mymerge(variables numer f, variables denom f)
 
     isPower f ==
-      (den := denom f) ~= 1 =>
-        numer f ~= 1 => "failed"
+      not one?(den := denom f) =>
+        not one? numer f => "failed"
         (ur := isExpt den) case "failed" => [den::F, -1]
         r := ur::Record(var:V, exponent:NonNegativeInteger)
         [r.var::P::F, - (r.exponent::Integer)]
@@ -123,7 +123,7 @@ PolynomialCategoryQuotientFunctions(E, V, R, P, F):
       concat!(l::List(F), d)
 
     isPlus f ==
-      denom f ~= 1 => "failed"
+      not one? denom f => "failed"
       (s := isPlus numer f) case "failed" => "failed"
       [x::F for x in s]
 

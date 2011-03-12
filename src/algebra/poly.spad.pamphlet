@@ -618,7 +618,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
 
    monicDivide(p1:%,p2:%) ==
       null p2 => error "monicDivide: division by 0"
-      leadingCoefficient p2 ~= 1 => error "Divisor Not Monic"
+      not one? leadingCoefficient p2 => error "Divisor Not Monic"
       p2 = 1 => [p1,0]
       null p1 => [0,0]
       degree p1 < (n:=degree p2) => [0,p1]
@@ -1045,7 +1045,7 @@ PolynomialSquareFree(VarSet:OrderedSet,E,RC:GcdDomain,P):C == T where
            cont1:=cont1*((unit listfin1)**uexp)
            pfaclist:=append(flistfin1,pfaclist)
          cont:=cont*cont1
-         cont ~= 1 =>
+         not one? cont =>
            sqp := squareFree cont
            pfaclist:= append (factorList sqp,pfaclist)
            makeFR(unit(sqp)*coefficient(unit squf,0),pfaclist)
@@ -1062,7 +1062,7 @@ PolynomialSquareFree(VarSet:OrderedSet,E,RC:GcdDomain,P):C == T where
        pfaclist:List FF :=
          [[u.flg,multivariate(u.fctr,mv),u.xpnt]
                                             for u in factorList squp]
-       cont ~= 1 =>
+       not one? cont =>
          sqp := squareFree cont
          makeFR(unit(sqp)*coefficient(unit squp,0),
               append(factorList sqp, pfaclist))

@@ -269,13 +269,13 @@ GosperSummationMethod(E, V, R, P, Q): Exports == Impl where
 
       linearAndNNIntRoot(mp, v) ==
             p := univariate(mp, v)
-            degree p ~= 1 => "failed"
+            not one? degree p => "failed"
             (p1 := retractIfCan(coefficient(p, 1))@Union(RN,"failed"))
              case "failed" or
               (p0 := retractIfCan(coefficient(p, 0))@Union(RN,"failed"))
                case "failed" => "failed"
             rt := -(p0::RN)/(p1::RN)
-            negative? rt or denom rt ~= 1 => "failed"
+            negative? rt or not one? denom rt => "failed"
             numer rt
 
 @

@@ -1296,7 +1296,7 @@ SquareFreeRegularTriangularSet(R,E,V,P) : Exports == Implementation where
        not (mvar(ts) < mvar(p)) => "failed"::Union($,"failed")
        invertible?(init(p),ts)@Boolean => 
          lts: Split := augment(p,ts)
-         #lts ~= 1 => "failed"::Union($,"failed")
+         not one?(#lts) => "failed"::Union($,"failed")
          (first lts)::Union($,"failed")
        "failed"::Union($,"failed")
 

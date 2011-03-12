@@ -131,7 +131,7 @@ Using the half extended Euclidean algorithm we compute 1/a mod b.
       r:I := a-q*b
       (a,b):=(b,r)
       (c1,d1):=(d1,c1-q*d1)
-    a ~= 1 => error("moduli are not relatively prime")
+    not one? a => error("moduli are not relatively prime")
     positiveRemainder(c1,borg)
   
 @
@@ -155,11 +155,11 @@ inverse(a,b) ==
     print [a, "=", q, "*(", b, ")+", r]
     (a,b):=(b,r)
     (c1,d1):=(d1,c1-q*d1)
-  a ~= 1 => error("moduli are not relatively prime")
+  not one? a => error("moduli are not relatively prime")
   positiveRemainder(c1,borg)
 
-if ((inverse(26,15)*26)::IntegerMod(15) ~= 1) then print "DALY BUG"
-if ((inverse(15,26)*15)::IntegerMod(26) ~= 1) then print "DALY BUG"
+if not one?((inverse(26,15)*26)::IntegerMod(15)) then print "DALY BUG"
+if not one?((inverse(15,26)*15)::IntegerMod(26)) then print "DALY BUG"
 
 @
 \subsection{The Chinese Remainder Algorithm}
@@ -566,7 +566,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   MonicQuotient: (SUP(I),SUP(I)) -> SUP(I)
   MonicQuotient (a,b) ==
-    leadingCoefficient(b) ~= 1 => error "divisor must be monic"
+    not one? leadingCoefficient(b) => error "divisor must be monic"
     b = 1 => a
     da := degree a
     db := degree b            -- assertion: degree b > 0

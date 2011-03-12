@@ -1,5 +1,10 @@
 2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* src/algebra/: Systematically use not one? when comparing for
+	 equality with 1.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* src/algebra/: Systematically use negative? when comparing for
 	 equality with 0.
 

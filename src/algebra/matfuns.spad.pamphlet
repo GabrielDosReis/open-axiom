@@ -737,7 +737,7 @@ MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
 
             un := unitNormal qelt(x,i,j)
             qsetelt!(x,i,j,un.canonical)
-            if un.associate ~= 1 then for jj in (j+1)..maxC repeat
+            if not one?(un.associate) then for jj in (j+1)..maxC repeat
                 qsetelt!(x,i,jj,un.associate * qelt(x,i,jj))
 
             xij := qelt(x,i,j)
