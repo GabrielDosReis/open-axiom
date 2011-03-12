@@ -120,7 +120,7 @@ UnivariateFactorize(ZP) : public == private where
        false
 
      negShiftz(n: Z,Modulus:PI): Z ==
-       if n < 0 then n := n+Modulus
+       if negative? n then n := n+Modulus
        n > (Modulus quo 2) => n-Modulus
        n
 
@@ -147,7 +147,7 @@ UnivariateFactorize(ZP) : public == private where
          if cbound<j then cbound := j
        (2*cbound*lcm)::PI -- adjusted by lcm to prepare for exquo in ghensel
 
-     remp(t: Z,q:PI): Z == ((t := t rem q)<0 => t+q ;t)
+     remp(t: Z,q:PI): Z == (negative?(t := t rem q) => t+q ;t)
 
      numFactors(ddlist:DDList): Z ==
        ans: Z := 0
@@ -248,7 +248,7 @@ UnivariateFactorize(ZP) : public == private where
       m := (m exquo c)::ZP
 
       -- make the lc m positive
-      if leadingCoefficient m < 0 then
+      if negative? leadingCoefficient m then
         c := -c
         m := -m
 
@@ -281,7 +281,7 @@ UnivariateFactorize(ZP) : public == private where
       odd?(d) and (lcPol = reductum(m)) =>
         for sfac in cyclotomicDecomposition(degree m)$CYC repeat
            fac:=subMinusX sfac
-           if leadingCoefficient fac < 0 then fac := -fac
+           if negative? leadingCoefficient fac then fac := -fac
            factorlist := cons([fac,1]$ParFact,factorlist)
         [c,factorlist]$FinalFact
 

@@ -162,7 +162,7 @@ GosperSummationMethod(E, V, R, P, Q): Exports == Impl where
             --      sum(a(n), n) = q(n+1)/p(n) * a(n) * f(n).
 
             -- 4. Bound the degree of f(n).
-            (k := GosperDegBd(pn, qn, rn, n, newV)) < 0 => "failed"
+            negative?(k := GosperDegBd(pn, qn, rn, n, newV)) => "failed"
 
             -- 5. Find a polynomial f of degree at most k, satisfying
             --      p(n) = q(n+1)*f(n) - r(n)*f(n-1)
@@ -275,7 +275,7 @@ GosperSummationMethod(E, V, R, P, Q): Exports == Impl where
               (p0 := retractIfCan(coefficient(p, 0))@Union(RN,"failed"))
                case "failed" => "failed"
             rt := -(p0::RN)/(p1::RN)
-            rt < 0 or denom rt ~= 1 => "failed"
+            negative? rt or denom rt ~= 1 => "failed"
             numer rt
 
 @

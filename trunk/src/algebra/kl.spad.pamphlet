@@ -93,7 +93,7 @@ SortedCache(S:CachableSet): Exports == Implementation where
         zero?(n := triage(x, y := first scan)) =>
           setPosition(x, position y)
           return y
-        n<0 => return insertInCache(first(cache(),(i-1)::N),scan,x,pos)
+        negative? n => return insertInCache(first(cache(),(i-1)::N),scan,x,pos)
         scan := rest scan
         pos  := position y
       setPosition(x, pos + DIFF)

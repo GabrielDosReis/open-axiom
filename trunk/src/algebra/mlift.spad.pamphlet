@@ -161,7 +161,7 @@ MultivariateLifting(E,OV,R,P) : C == T
         -- PGCD may call with a smaller valure of degj
         idegj:Integer:=maxDegree(m,x)
         for term in plist repeat idegj:=idegj -maxDegree(term,x)
-        idegj < 0 => return "failed"
+        negative? idegj => return "failed"
       plist
         --There are not extraneous factors
  

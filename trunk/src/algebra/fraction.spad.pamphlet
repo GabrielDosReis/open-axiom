@@ -202,8 +202,8 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
              (numer x  * denom y) < (numer y * denom x)
          else
            x:% < y:% ==
-             if denom(x) < 0 then (x,y):=(y,x)
-             if denom(y) < 0 then (x,y):=(y,x)
+             if negative? denom(x) then (x,y):=(y,x)
+             if negative? denom(y) then (x,y):=(y,x)
              (numer x  * denom y) < (numer y * denom x)
     else if S has OrderedSet then
        x:% < y:% ==
@@ -345,12 +345,12 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
 
       floor x ==
         one?(x.den) => x.num
-        x < 0 => -ceiling(-x)
+        negative? x => -ceiling(-x)
         wholePart x
 
       ceiling x ==
         one?(x.den) => x.num
-        x < 0 => -floor(-x)
+        negative? x => -floor(-x)
         1 + wholePart x
 
       if S has OpenMath then

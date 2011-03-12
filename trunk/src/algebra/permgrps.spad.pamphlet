@@ -246,7 +246,7 @@ PermutationGroup(S:SetCategory): public == private where
       entryLessZero  : B := false
       while not entryLessZero repeat
         entry := schreierVector.(actelt.point)
-        entryLessZero  := (entry < 0)
+        entryLessZero  := negative? entry
         if  not entryLessZero then
           actelt := times(group.entry, actelt)
           if wordProblem then outlist := append ( words.(entry::NNI) , outlist )
@@ -333,7 +333,7 @@ PermutationGroup(S:SetCategory): public == private where
       osvc         := o.svc
       while degree > 0 repeat
         p := osvc.ppt
-        p < 0 => return [ xelt , word ]
+        negative? p => return [ xelt , word ]
         x    := group.p
         xelt := times ( x , xelt )
         if wordProblem then word := append ( wordlist.p , word )
@@ -384,7 +384,7 @@ PermutationGroup(S:SetCategory): public == private where
         j := j - 1
       -- this is for word length control
       if wordProblem then maxLoops    := maxLoops - diff
-      if ( null group2 ) or ( maxLoops < 0 ) then
+      if ( null group2 ) or negative? maxLoops then
         sizeOfGroup := k1
         baseOfGroup := [ i ]
         out         := [ gpsgs ]
@@ -522,7 +522,7 @@ PermutationGroup(S:SetCategory): public == private where
                 p := gporb.j.orb.1
                 while ( degree > 0 ) and noresult repeat
                   entry := s.(z.p)
-                  if entry < 0 then
+                  if negative? entry then
                     if entry = -1 then leave
                     basePoint := j::NNI
                     noresult := false

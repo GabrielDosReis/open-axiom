@@ -1,5 +1,10 @@
 2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* src/algebra/: Systematically use negative? when comparing for
+	less than 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/si.spad.pamphlet (IntegerNumberSystem) [positive?]:
 	Remove definition.
 	(SingleInteger): Simplify implementation of random.

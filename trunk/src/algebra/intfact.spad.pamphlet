@@ -311,7 +311,7 @@ IntegerRoots(I:IntegerNumberSystem): Exports == Implementation where
       "failed"
 
     perfectSqrt a ==
-      a < 0 or not member?(a rem (144::I), resMod144) => "failed"
+      negative? a or not member?(a rem (144::I), resMod144) => "failed"
       (s := approxSqrt a) * s = a => s
       "failed"
 
@@ -369,7 +369,7 @@ IntegerFactorizationPackage(I): Exports == Implementation where
 
     squareFree(n:I):FF ==
        u:I
-       if n<0 then (m := -n; u := -1)
+       if negative? n then (m := -n; u := -1)
               else (m := n; u := 1)
        (m > 1) and ((v := perfectSqrt m) case I) =>
           sv : FF
@@ -464,7 +464,7 @@ IntegerFactorizationPackage(I): Exports == Implementation where
 
     BasicMethod n ==
        u:I
-       if n<0 then (m := -n; u := -1)
+       if negative? n then (m := -n; u := -1)
               else (m := n; u := 1)
        x := BasicSieve(m, 1 + approxSqrt m)
        makeFR(u, factorList x)

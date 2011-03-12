@@ -654,9 +654,9 @@ DivisionRing(): Category ==
       x ** n: Integer ==
          zero? n => 1
          zero? x =>
-            n<0 => error "division by zero"
+            negative? n => error "division by zero"
             x
-         n<0 =>
+         negative? n =>
             expt(inv x,(-n) pretend PositiveInteger)
          expt(x,n pretend PositiveInteger)
 --    if % has CharacteristicZero() then
@@ -1066,7 +1066,7 @@ Group(): Category == Monoid with
       recip(x:%) == inv(x)
       x:% ** n:Integer ==
          zero? n => 1
-         n<0 => expt(inv(x),(-n) pretend PositiveInteger)
+         negative? n => expt(inv(x),(-n) pretend PositiveInteger)
          expt(x,n pretend PositiveInteger)
       conjugate(p,q) == inv(q) * p * q
       commutator(p,q) == inv(p) * inv(q) * p * q

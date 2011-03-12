@@ -98,7 +98,7 @@ BoundIntegerRoots(F, UP): Exports == Implementation where
 
 -- returns 0 if r is not a negative integer, r otherwise
     negint r ==
-      ((u := retractIfCan(r)@Union(Z, "failed")) case Z) and (u::Z < 0) => u::Z
+      ((u := retractIfCan(r)@Union(Z, "failed")) case Z) and negative?(u::Z) => u::Z
       0
 
     if F has ExpressionSpace then

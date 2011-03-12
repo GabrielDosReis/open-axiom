@@ -501,7 +501,7 @@ PatternMatchTools(S, R, P): Exports == Implementation where
       if R has OrderedSet then
 	for x in l repeat
 	  ((r := retractIfCan(x)@Union(R, "failed")) case R) and
-	    (r::R < 0) => return x
+	    (r::R) < 0 => return x
       "failed"
 
 -- tries to match the list of patterns lp to the list of subjects rc.s

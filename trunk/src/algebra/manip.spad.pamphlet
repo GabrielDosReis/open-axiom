@@ -108,7 +108,7 @@ PolynomialRoots(E, V, R, P, F):Exports == Implementation where
 
       czroot(x, n) ==
         rec := zroot(x, n)
-        rec.exponent = 2 and rec.radicand < 0 =>
+        rec.exponent = 2 and negative? rec.radicand =>
           [rec.exponent, rec.coef * imaginary()::P::F, (-rec.radicand)::F]
         [rec.exponent, rec.coef::F, rec.radicand::F]
 

@@ -90,7 +90,7 @@ IntegerNumberSystem(): Category ==
    rational? x              == true
    euclideanSize(x)         ==
         x=0 => error "euclideanSize called on zero"
-        x<0 => (-convert(x)@Integer)::NonNegativeInteger
+        negative? x => (-convert(x)@Integer)::NonNegativeInteger
         convert(x)@Integer::NonNegativeInteger
    convert(x:%):Float       == (convert(x)@Integer)::Float
    convert(x:%):DoubleFloat  == (convert(x)@Integer)::DoubleFloat
@@ -125,7 +125,7 @@ IntegerNumberSystem(): Category ==
    symmetricRemainder(x, n) ==
       r := x rem n
       r = 0 => r
-      if n < 0 then n:=-n
+      if negative? n then n:=-n
       r > 0 =>
          2 * r > n => r - n
          r

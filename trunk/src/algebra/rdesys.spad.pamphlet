@@ -148,7 +148,7 @@ TranscendentalRischDESystem(F, UP): Exports == Implementation where
       ans1 := ans2 := 0::UP
       repeat
         zero? c1 and zero? c2 => return [ans1, ans2]
-        n < 0 or (u := getlc(c1,c2,lb,lh,n::N)) case "failed" => return "failed"
+        negative? n or (u := getlc(c1,c2,lb,lh,n::N)) case "failed" => return "failed"
         lq := u::List(UP)
         q1 := first lq
         q2 := second lq

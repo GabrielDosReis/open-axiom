@@ -98,7 +98,7 @@ RealNumberSystem(): Category ==
    floor x ==
       x1 := (wholePart x) :: %
       x = x1 => x
-      x < 0 => (x1 - 1)
+      negative? x => (x1 - 1)
       x1
 
    ceiling x ==

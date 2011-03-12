@@ -113,7 +113,7 @@ RadixExpansion(bb): Exports == Implementation where
     coerce(a):RN == (wholePart a) :: RN + fractionPart a
     coerce(n):%  == n :: RN :: %
     coerce(q):%  ==
-      s := 1; if q < 0 then (s := -1; q := -q)
+      s := 1; if negative? q then (s := -1; q := -q)
       qr      := divide(numer q,denom q)
       whole   := radixInt (qr.quotient,bb)
       fractn  := radixFrac(qr.remainder,denom q,bb)
@@ -190,11 +190,11 @@ RadixExpansion(bb): Exports == Implementation where
       if not null a.int then le := concat(intgroup a.int,le)
       else le := concat(0 :: OUT,le)
       rex := exprgroup le
-      if a.sgn < 0 then -rex else rex
+      if negative? a.sgn then -rex else rex
 
     -- Construction utilities
     checkRagits li ==
-      for i in li repeat if i < 0 or i >= bb then
+      for i in li repeat if negative? i or i >= bb then
         error "Each ragit (digit) must be between 0 and base-1"
       true
 

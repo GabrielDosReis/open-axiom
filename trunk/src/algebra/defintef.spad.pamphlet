@@ -189,11 +189,11 @@ ElementaryFunctionDefiniteIntegration(R, F): Exports == Implementation where
       z :=
         (r := retractIfCan(a)@Union(F, "failed")) case "failed" => sign(f, x, a)
         sign(f, x, r::F, "right")
-      (b1 := z case Z) and z::Z < 0 => true
+      (b1 := z case Z) and negative?(z::Z) => true
       z :=
         (r := retractIfCan(b)@Union(F, "failed")) case "failed" => sign(f, x, b)
         sign(f, x, r::F, "left")
-      (b2 := z case Z) and z::Z < 0 => true
+      (b2 := z case Z) and negative?(z::Z) => true
       b1 and b2 =>
         ((w := checkFor0(numer f, k, a, b)) case "failed") or (w::B) => "failed"
         false

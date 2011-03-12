@@ -273,7 +273,7 @@ ComplexCategory(R:CommutativeRing): Category ==
                                               complex(0, - c.associate)]
              c := unitNormal real x
              x := c.associate * x
-             imag x < 0 =>
+             negative? imag x =>
                x := complex(- imag x, real x)
                [- c.unit * imaginary(), x, c.associate * imaginary()]
              [c.unit ::%, x, c.associate ::%]

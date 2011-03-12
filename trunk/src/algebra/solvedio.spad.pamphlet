@@ -120,7 +120,7 @@ DiophantineSolutionPackage(): Cat == Capsule where
       v := zero(k)$VI
       for i in 1..k repeat
         ind > 0 =>
-          coeffs.i < 0 =>
+          negative? coeffs.i =>
             v.i := zeroNode + ind + coeffs.i
         coeffs.i > 0 =>
           v.i := zeroNode + ind + coeffs.i

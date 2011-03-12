@@ -154,7 +154,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              da := differentiate(a := l.pma, x)
              d := a * (cc := l.pmc) / da
              zero? differentiate(d, x) => [EI, a, d]
-             comp? or (((u := sign a) case Z) and (u::Z) < 0) =>
+             comp? or (((u := sign a) case Z) and negative?(u::Z)) =>
                d := cc * (sa := insqrt(- a)) / da
                zero? differentiate(d, x) => [ERF, sa, - d * spi]
                [NONE, 0, 0]
@@ -283,7 +283,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              empty?(l := match1(f, x, t, cc)) => "failed"
              mw := first l
              zero?(ms := third l) or ((sgs := sign ms) case "failed")=> "failed"
-             ((sgz := sign(z := (mw + 1) / ms)) case "failed") or (sgz::Z < 0)
+             ((sgz := sign(z := (mw + 1) / ms)) case "failed") or negative?(sgz::Z)
                 => "failed"
              mmi := retract(mm := second l)@Z
              sgs * (last l) * ms**(- mmi - 1) *

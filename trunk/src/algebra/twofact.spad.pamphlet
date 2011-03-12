@@ -188,7 +188,7 @@ TwoFactorize(F) : C == T
        sqfrm:=squareFree m
        for u in factors sqfrm repeat
            expo:=u.exponent
-           if expo < 0 then error "negative exponent in a factorisation"
+           if negative? expo then error "negative exponent in a factorisation"
            expon:NonNegativeInteger:=expo::NonNegativeInteger
            fac:=u.factor
            degree fac = 1 => ll:=[["irred",fac,expon],:ll]

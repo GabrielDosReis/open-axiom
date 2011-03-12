@@ -420,7 +420,7 @@ ThreeDimensionalViewport(): Exports == Implementation where
         -- exist.
       sendI(VIEW,viewport.key)$Lisp
       i := getI(VIEW)$Lisp
-      (i < 0$I) => 
+      negative? i => 
         viewport.key := 0$I
         error "This viewport has already been closed!"
       true
@@ -839,7 +839,7 @@ ThreeDimensionalViewport(): Exports == Implementation where
           getI(VIEW)$Lisp          -- acknowledge
 
     intensity(viewport,Amount) ==
-      if (Amount < 0$F) or (Amount > 1$F) then
+      if negative? Amount or (Amount > 1$F) then
         error "The intensity must be a value between 0 and 1, inclusively."
       viewport.lighting.translucence := convert(Amount)@SF
       (key(viewport) ~= 0$I) =>
@@ -864,7 +864,7 @@ ThreeDimensionalViewport(): Exports == Implementation where
           sendSTR(VIEW,Filename)$Lisp
           m := minIndex(avail := viewWriteAvailable())
           for aTypeOfFile in thingsToWrite repeat
-            if (writeTypeInt:= position(upperCase aTypeOfFile,avail)-m) < 0 then
+            if negative?(writeTypeInt:= position(upperCase aTypeOfFile,avail)-m) then
               sayBrightly(["  > "::E,(concat(aTypeOfFile, _
                 " is not a valid file type for writing a 3D viewport"))::E]$List(E))$Lisp
             else

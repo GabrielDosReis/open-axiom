@@ -158,12 +158,12 @@ RealZeroPackage(Pol): T == C where
 
       rootBound(F : Pol) ==  --returns power of 2 that is a bound
                              --for the positive roots of F
-         if leadingCoefficient(F) < 0 then F := -F
+         if negative? leadingCoefficient(F) then F := -F
          lcoef := leadingCoefficient(F)
          F := reductum(F)
          i : Integer := 0
          while not (F = 0) repeat
-              if (an := leadingCoefficient(F)) < 0 then i := i - an
+              if negative?(an := leadingCoefficient(F)) then i := i - an
               F := reductum(F)
          b : Integer := 1
          while (b * lcoef) <= i repeat
@@ -241,9 +241,9 @@ RealZeroPackage(Pol): T == C where
          i : Integer := 0
          LastCoef : Boolean
          next : Boolean
-         LastCoef := leadingCoefficient(F) < 0
+         LastCoef := negative? leadingCoefficient(F)
          while not ((F := reductum(F)) = 0) repeat
-              next := leadingCoefficient(F) < 0
+              next := negative? leadingCoefficient(F)
               if ((not LastCoef) and next) or
                   ((not next) and LastCoef) then i := i+1
               LastCoef := next
@@ -251,7 +251,7 @@ RealZeroPackage(Pol): T == C where
 
       refine(F : Pol, int : Interval, bounds : Interval) ==
          lseg := min(int.right,bounds.right) - max(int.left,bounds.left)
-         lseg < 0 => "failed"
+         negative? lseg => "failed"
          lseg = 0 =>
             pt :=
                int.left = bounds.right => int.left
@@ -278,14 +278,14 @@ RealZeroPackage(Pol): T == C where
              v:=elt(transMultInv(bd, F), bn)
              u:=elt(transMultInv(ad, F), an)
          if u > 0 then (F:=-F;v:=-v)
-         if v < 0 then
+         if negative? v then
             error [int, "is not a valid isolation interval for", F]
          if eps <= 0 then error "precision must be positive"
          while (b - a) >= eps repeat
               mid : RN := (b + a) * (1/2)
               midn : Integer := numer(mid)
               midd : Integer := denom(mid)
-              (v := elt(transMultInv(midd, F), midn)) < 0 =>
+              negative?(v := elt(transMultInv(midd, F), midn)) =>
                    a := mid
                    an := midn
                    ad := midd

@@ -52,7 +52,7 @@ Arity(): Public == Private where
         error "arity is too large for OpenAxiom"
       per(n::SingleInteger)
     retractIfCan x ==
-      (n := rep x) < 0 => "failed"
+      negative?(n := rep x) => "failed"
       n@Integer::NonNegativeInteger
    
 @

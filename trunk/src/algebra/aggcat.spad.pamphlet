@@ -1742,12 +1742,13 @@ StreamAggregate(S:Type): Category ==
 
    elt(x:%, i:Integer) ==
      i := i - minIndex x
-     (i < 0) or empty?(x := rest(x, i::NonNegativeInteger)) => error "index out of range"
+     negative? i or empty?(x := rest(x, i::NonNegativeInteger)) =>
+       error "index out of range"
      first x
 
    elt(x:%, i:UniversalSegment(Integer)) ==
      l := lo(i) - minIndex x
-     l < 0 => error "index out of range"
+     negative? l => error "index out of range"
      not hasHi i => copy(rest(x, l::NonNegativeInteger))
      (h := hi(i) - minIndex x) < l => empty()
      first(rest(x, l::NonNegativeInteger), (h - l + 1)::NonNegativeInteger)
@@ -1773,11 +1774,12 @@ StreamAggregate(S:Type): Category ==
 
      setelt(x:%, i:Integer, s:S) ==
       i := i - minIndex x
-      (i < 0) or empty?(x := rest(x,i::NonNegativeInteger)) => error "index out of range"
+      negative? i or empty?(x := rest(x,i::NonNegativeInteger)) =>
+        error "index out of range"
       setfirst!(x, s)
 
      setelt(x:%, i:UniversalSegment(Integer), s:S) ==
-      (l := lo(i) - minIndex x) < 0 => error "index out of range"
+      negative?(l := lo(i) - minIndex x) => error "index out of range"
       h := if hasHi i then hi(i) - minIndex x else maxIndex x
       h < l => s
       y := rest(x, l::NonNegativeInteger)

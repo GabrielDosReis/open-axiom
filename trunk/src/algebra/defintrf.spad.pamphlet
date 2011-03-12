@@ -130,7 +130,7 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
 
     negative f ==
       (u := sign f) case "failed" => "failed"
-      u::Z < 0
+      negative?(u::Z)
 
     checkForZero(p, x, a, b, incl?) ==
       checkForZero(

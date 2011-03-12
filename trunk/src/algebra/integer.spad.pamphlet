@@ -300,7 +300,7 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
       shift(x:%, n:Integer):% == ASH(x,n)$Lisp
       subtractIfCan(x, y) ==
         c:Integer := rep x - rep y
-        c < 0 => "failed"
+        negative? c => "failed"
         per c
 
 @

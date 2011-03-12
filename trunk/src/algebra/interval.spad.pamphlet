@@ -129,7 +129,7 @@ Interval(R:Join(FloatingPointSystem,TranscendentalFunctionCategory)): IntervalCa
   contains?(u:%,f:R):Boolean == (f > inf(u)) and (f < sup(u))
 
   positive?(u:%):Boolean == inf(u) > 0
-  negative?(u:%):Boolean == sup(u) < 0
+  negative?(u:%):Boolean == negative? sup(u)
 
   a:% < b:% ==
     if inf(a) < inf(b) then
@@ -163,7 +163,7 @@ Interval(R:Join(FloatingPointSystem,TranscendentalFunctionCategory)): IntervalCa
   a:Integer * b:% == 
     if (a > 0) then 
       qinterval(a*inf(b),a*sup(b))
-    else if (a < 0) then
+    else if negative? a then
       qinterval(a*sup(b),a*inf(b))
     else
       0

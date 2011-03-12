@@ -322,7 +322,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	m := #s
 	n := #t
 	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	l < 0 or h >= m or h < l-1 => error "index out of range"
+	negative? l or h >= m or h < l-1 => error "index out of range"
 	r := new((m-(h-l+1)+n)::N, space$C)
         k: NonNegativeInteger := 0
 	for i in 0..l-1 repeat
@@ -344,26 +344,26 @@ IndexedString(mn:Integer): Export == Implementation where
     substring?(part, whole, startpos) ==
 	np:I := %strlength part
 	nw:I := %strlength whole
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
+	negative?(startpos := startpos - mn) => error "index out of bounds"
 	np > nw - startpos => false
 	for ip in 0..np-1 for iw in startpos.. repeat
 	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
 	true
 
     position(s:%, t:%, startpos:I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
+	negative?(startpos := startpos - mn) => error "index out of bounds"
 	startpos >= %strlength t => mn - 1
 	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
 	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
 	r + mn
     position(c: Character, t: %, startpos: I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
+	negative?(startpos := startpos - mn) => error "index out of bounds"
 	startpos >= %strlength t => mn - 1
 	for r in startpos..%strlength t - 1 repeat
 	    if %ceq(%schar(t, r), c) then return r + mn
 	mn - 1
     position(cc: CharacterClass, t: %, startpos: I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
+	negative?(startpos := startpos - mn) => error "index out of bounds"
 	startpos >= %strlength t => mn - 1
 	for r in startpos..%strlength t - 1 repeat
 	    if member?(%schar(t,r), cc) then return r + mn
@@ -433,7 +433,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	m := #x
 	n := #y
 	s := s - mn
-	s < 0 or s+m > n => error "index out of range"
+	negative? s or s+m > n => error "index out of range"
 	RPLACSTR(y, s, m, x, 0, m)$Lisp
 	y
 
@@ -444,7 +444,7 @@ IndexedString(mn:Integer): Export == Implementation where
     elt(s:%, sg:U) ==
 	l := lo(sg) - mn
 	h := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	l < 0 or h >= #s => error "index out of bound"
+	negative? l or h >= #s => error "index out of bound"
 	SUBSTRING(s, l, max(0, h-l+1))$Lisp
 
     hash s ==

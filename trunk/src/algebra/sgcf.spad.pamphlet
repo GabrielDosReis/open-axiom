@@ -196,7 +196,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
     -- definition of exported functions
  
     numberOfImproperPartitions(n,m) ==
-      if n < 0 or m < 1 then return 0
+      if negative? n or m < 1 then return 0
       if m = 1 or n = 0 then return 1
       s := 0
       for i in 0..n repeat
@@ -206,7 +206,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
     unrankImproperPartitions0(n,m,k) ==
       l : L I  := nil$(L I)
-      k < 0 => error"counting of partitions is started at 0"
+      negative? k => error"counting of partitions is started at 0"
       k >= numberOfImproperPartitions(n,m) =>
         error"there are not so many partitions"
       for t in 0..(m-2) repeat
@@ -234,7 +234,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       -- to be formeded. The remaining positions are filled by zeros.
       nonZeros   : L I := nil$(L I)
       partition  : V I :=  new(m::NNI,0$I)$(V I)
-      k < 0 => nonZeros
+      negative? k => nonZeros
       k >= numberOfImproperPartitions(n,m) => nonZeros
       cm : I := m    --cm gives the depth of the tree
       while n ~= 0 repeat
@@ -260,7 +260,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
  
     subSet(n,m,k) ==
-      k < 0 or n < 0 or m < 0 or m > n =>
+      negative? k or negative? n or negative? m or m > n =>
         error "improper argument to subSet"
       bin : I := binomial$ICF (n,m)
       k >= bin =>

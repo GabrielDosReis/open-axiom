@@ -213,7 +213,7 @@ or
 \[14\]
 <<chineseRemainder(x1,m1,x2,m2)>>=
   chineseRemainder(x1,m1,x2,m2) ==
-    m1 < 0 or m2 < 0 => error "moduli must be positive"
+    negative? m1 or negative? m2 => error "moduli must be positive"
     x1 := positiveRemainder(x1,m1)
     x2 := positiveRemainder(x2,m2)
     x1 + m1 * positiveRemainder(((x2-x1) * inverse(m1,m2)),m2)
@@ -325,7 +325,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
 
   harmonic n ==
     s:I; h:RN
-    n < 0 => error("harmonic not defined for negative integers")
+    negative? n => error("harmonic not defined for negative integers")
     if n >= H.Hn then (s,h) := H else (s := 0; h := 0)
     for k in s+1..n repeat h := h + 1/k
     H.Hn := n
@@ -334,7 +334,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
 
   fibonacci n ==
     n = 0 => 0
-    n < 0 => (odd? n => 1; -1) * fibonacci(-n)
+    negative? n => (odd? n => 1; -1) * fibonacci(-n)
     f1, f2 : I
     (f1,f2) := (0,1)
     for k in length(n)-2 .. 0 by -1 repeat
@@ -344,7 +344,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     f2
 
   euler n ==
-    n < 0 => error "euler not defined for negative integers"
+    negative? n => error "euler not defined for negative integers"
     odd? n => 0
     l := (#E) :: I
     n < l => E(n)
@@ -361,7 +361,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     E(n)
 
   bernoulli n ==
-    n < 0 => error "bernoulli not defined for negative integers"
+    negative? n => error "bernoulli not defined for negative integers"
     odd? n =>
       n = 1 => -1/2
       0
@@ -399,7 +399,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     -- then J(d/n) = chi(n) for n > 0.
     -- Reference: Hecke, Vorlesungen ueber die Theorie der Algebraischen
     -- Zahlen.
-    if b < 0 then b := -b
+    if negative? b then b := -b
     b = 0 => error "second argument of jacobi may not be 0"
     b = 1 => 1
     even? b and positiveRemainder(a,4) > 1 =>
@@ -581,7 +581,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
   cyclotomic n ==
     --++ cyclotomic polynomial denoted phi[n](x)
     p:I; q:I; r:I; s:I; m:NNI; c:SUP(I); t:SUP(I)
-    n < 0 => error "cyclotomic not defined for negative integers"
+    negative? n => error "cyclotomic not defined for negative integers"
     n = 0 => x
     k := n; s := p := 1
     c := x - 1
@@ -598,7 +598,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   euler n ==
     p : SUP(RN); t : SUP(RN); c : RN; s : I
-    n < 0 => error "euler not defined for negative integers"
+    negative? n => error "euler not defined for negative integers"
     if n < E.En then (s,p) := (0$I,1$SUP(RN)) else (s,p) := E
     -- (s,p) := if n < E.En then (0,1) else E
     for i in s+1 .. n repeat
@@ -611,7 +611,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   bernoulli n ==
     p : SUP RN; t : SUP RN; c : RN; s : I
-    n < 0 => error "bernoulli not defined for negative integers"
+    negative? n => error "bernoulli not defined for negative integers"
     if n < B.Bn then (s,p) := (0$I,1$SUP(RN)) else (s,p) := B
     -- (s,p) := if n < B.Bn then (0,1) else B
     for i in s+1 .. n repeat
@@ -631,7 +631,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   hermite n ==
     s : I; p : SUP(I); q : SUP(I)
-    n < 0 => error "hermite not defined for negative integers"
+    negative? n => error "hermite not defined for negative integers"
     -- (s,p,q) := if n < H.Hn then (0,1,x) else H
     if n < H.Hn then (s := 0; p := 1; q := x) else (s,p,q) := H
     for k in s+1 .. n repeat (p,q) := (2*x*p-2*(k-1)*q,p)
@@ -642,7 +642,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   legendre n ==
     s:I; t:I; p:SUP(RN); q:SUP(RN)
-    n < 0 => error "legendre not defined for negative integers"
+    negative? n => error "legendre not defined for negative integers"
     -- (s,p,q) := if n < P.Pn then (0,1,y) else P
     if n < P.Pn then (s := 0; p := 1; q := y) else (s,p,q) := P
     for k in s+1 .. n repeat
@@ -655,7 +655,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   laguerre n ==
     k:I; s:I; t:I; p:SUP(I); q:SUP(I)
-    n < 0 => error "laguerre not defined for negative integers"
+    negative? n => error "laguerre not defined for negative integers"
     -- (s,p,q) := if n < L.Ln then (0,1,x) else L
     if n < L.Ln then (s := 0; p := 1; q := x) else (s,p,q) := L
     for k in s+1 .. n repeat
@@ -668,7 +668,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   chebyshevT n ==
     s : I; p : SUP(I); q : SUP(I)
-    n < 0 => error "chebyshevT not defined for negative integers"
+    negative? n => error "chebyshevT not defined for negative integers"
     -- (s,p,q) := if n < CT.Tn then (0,1,x) else CT
     if n < CT.Tn then (s := 0; p := 1; q := x) else (s,p,q) := CT
     for k in s+1 .. n repeat (p,q) := ((2*x*p - q),p)
@@ -679,7 +679,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
 
   chebyshevU n ==
     s : I; p : SUP(I); q : SUP(I)
-    n < 0 => error "chebyshevU not defined for negative integers"
+    negative? n => error "chebyshevU not defined for negative integers"
     if n < U.Un then (s := 0; p := 1; q := 0) else (s,p,q) := U
     for k in s+1 .. n repeat (p,q) := ((2*x*p - q),p)
     U.Un := n

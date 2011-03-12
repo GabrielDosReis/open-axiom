@@ -131,7 +131,7 @@ HallBasis() : Export == Implement where
    Implement ==> add
 
      lfunc(d,n) ==
-        n < 0 => 0
+        negative? n => 0
         n = 0 => 1
         n = 1 => d
         sum:I := 0

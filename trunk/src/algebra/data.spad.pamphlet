@@ -113,7 +113,8 @@ SystemInteger(N: PositiveInteger): Public == Private where
   Public == OrderedFinite with
     sample: % ++ \spad{sample} gives a sample datum of this type.
   Private == SubDomain(Integer, length #1 <= N) add
-    sample == per(0@Integer)
+    import %icst0: % from Foreign Builtin
+    sample == %icst0
     min == per(-shift(1,N-1))
     max == per(shift(1,N-1)-1)
     size() == (rep max - rep min + 1)::NonNegativeInteger
@@ -195,11 +196,12 @@ SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
     sample: %
       ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, length #1 <= N) add
+    import %icst0: %           from Foreign Builtin
     import %bitand: (%,%) -> % from Foreign Builtin
     import %bitior: (%,%) -> % from Foreign Builtin
     import %bitnot: % -> %     from Foreign Builtin
 
-    min == per 0
+    min == %icst0
     max == per((shift(1,N)-1) : NonNegativeInteger)
     sample == min
     bitand(x,y) == %bitand(x,y)

@@ -101,7 +101,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
     i:I
 
     exptmod(u1,i,u2) ==
-      i < 0 => error("negative exponentiation not allowed for exptMod")
+      negative? i => error("negative exponentiation not allowed for exptMod")
       ans:= 1$EMR
       while i > 0 repeat
         if odd?(i) then ans:= (ans * u1) rem u2

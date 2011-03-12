@@ -111,7 +111,7 @@ IntegrationResultToFunction(R, F): Exports == Implementation where
         nn := lgp + d * sqrn * ilog(e, f * sqrn,
                    setUnion(setUnion(kernels a, kernels b), kernels p0))
       sqr.sgn > 0 => [pp]
-      sqr.sgn < 0 => [nn]
+      negative? sqr.sgn => [nn]
       [pp, nn]
 
 -- returns 2 atan(a/b) or 2 atan(-b/a) whichever looks better
@@ -194,7 +194,7 @@ IntegrationResultToFunction(R, F): Exports == Implementation where
       empty? ly => true
       for x in lx repeat
         for y in ly repeat
-          ((s := sign(x*y)) case Z) and (s::Z < 0) => return false
+          ((s := sign(x*y)) case Z) and negative?(s::Z) => return false
       true
 
     pairsum(lx, ly) ==

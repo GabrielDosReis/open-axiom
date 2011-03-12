@@ -150,9 +150,9 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
 
     taylorIfCan uls ==
       n := getExpon uls
-      n < 0 =>
+      negative? n =>
         uls := removeZeroes(-n,uls)
-        getExpon(uls) < 0 => "failed"
+        negative? getExpon(uls) => "failed"
         getUTS uls
       n = 0 => getUTS uls
       getUTS(uls) * monom(1,n :: NNI)
@@ -218,7 +218,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
     pole? x ==
       (n := degree x) >= 0 => false
       x := removeZeroes(-n,x)
-      degree x < 0
+      negative? degree x
 
 --% arithmetic
 
@@ -254,8 +254,8 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
       uts2 := uts :: UTS
       not zero? coefficient(uts2,0) =>
         error "elt: second argument must have positive order"
-      if (deg := getExpon uls1) < 0 then uls1 := removeZeroes(-deg,uls1)
-      (deg := getExpon uls1) < 0 =>
+      if negative?(deg := getExpon uls1) then uls1 := removeZeroes(-deg,uls1)
+      negative?(deg := getExpon uls1) =>
         (recipr := recip(uts2 :: %)) case "failed" =>
           error "elt: second argument not invertible"
         uts1 := taylor(uls1 * monomial(1,-deg))
@@ -263,9 +263,9 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
       elt(taylor uls1,uts2) :: %
 
     eval(uls:%,r:Coef) ==
-      if (n := getExpon uls) < 0 then uls := removeZeroes(-n,uls)
+      if negative?(n := getExpon uls) then uls := removeZeroes(-n,uls)
       uts := getUTS uls
-      (n := getExpon uls) < 0 =>
+      negative?(n := getExpon uls) =>
         zero? r => error "eval: 0 raised to negative power"
         (recipr := recip r) case "failed" =>
           error "eval: non-unit raised to negative power"
@@ -289,21 +289,21 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
 
     order x == getExpon x + order getUTS x
     order(x,n) ==
-      (m := n - (e := getExpon x)) < 0 => n
+      negative?(m := n - (e := getExpon x)) => n
       e + order(getUTS x,m :: NNI)
 
     truncate(x,n) ==
-      (m := n - (e := getExpon x)) < 0 => 0
+      negative?(m := n - (e := getExpon x)) => 0
       laurent(e,truncate(getUTS x,m :: NNI))
 
     truncate(x,n1,n2) ==
       if n2 < n1 then (n1,n2) := (n2,n1)
-      (m1 := n1 - (e := getExpon x)) < 0 => truncate(x,n2)
+      negative?(m1 := n1 - (e := getExpon x)) => truncate(x,n2)
       laurent(e,truncate(getUTS x,m1 :: NNI,(n2 - e) :: NNI))
 
     if Coef has IntegralDomain then
       rationalFunction(x,n) ==
-        (m := n - (e := getExpon x)) < 0 => 0
+        negative?(m := n - (e := getExpon x)) => 0
         poly := polynomial(getUTS x,m :: NNI) :: RF
         zero? e => poly
         v := variable(x) :: RF; c := center(x) :: P :: RF
@@ -312,7 +312,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
 
       rationalFunction(x,n1,n2) ==
         if n2 < n1 then (n1,n2) := (n2,n1)
-        (m1 := n1 - (e := getExpon x)) < 0 => rationalFunction(x,n2)
+        negative?(m1 := n1 - (e := getExpon x)) => rationalFunction(x,n2)
         poly := polynomial(getUTS x,m1 :: NNI,(n2 - e) :: NNI) :: RF
         zero? e => poly
         v := variable(x) :: RF; c := center(x) :: P :: RF
@@ -341,7 +341,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
       if Coef has "**": (Coef,I) -> Coef then
 
         approximate(x,n) ==
-          (m := n - (e := getExpon x)) < 0 => 0
+          negative?(m := n - (e := getExpon x)) => 0
           app := approximate(getUTS x,m :: NNI)
           zero? e => app
           app * ((variable(x) :: Coef) - center(x)) ** e
@@ -349,7 +349,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
     complete x == laurent(getExpon x,complete getUTS x)
     extend(x,n) ==
       e := getExpon x
-      (m := n - e) < 0 => x
+      negative?(m := n - e) => x
       laurent(e,extend(getUTS x,m :: NNI))
 
     map(f:Coef -> Coef,x:%) == laurent(getExpon x,map(f,getUTS x))

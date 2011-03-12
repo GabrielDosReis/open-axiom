@@ -261,7 +261,7 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
       concat(s,rpSt(z-1,s))
 
     monom(s,z) ==
-      z < 0 => error "monom: cannot create monomial of negative degree"
+      negative? z => error "monom: cannot create monomial of negative degree"
       concat(rpSt(z,0),concat(s,zro()))
 
 --% some streams of integers
@@ -498,7 +498,7 @@ Remarks:
 integer, we won't get a Taylor expansion and thus raise an error.
 
 <<package STTAYLOR StreamTaylorSeriesOperations>>=
-        if ord > 0 and rn < 0 then
+        if ord > 0 and negative? rn then
            error "**: negative power does not exist"
 @
 

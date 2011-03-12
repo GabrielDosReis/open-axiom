@@ -179,7 +179,7 @@ NumberFormats(): NFexports == NFimplementation where
                 c := s.i; i := i-1
                 n := romval ord c
                 -- (I)=1000, ((I))=10000, (((I)))=100000, etc
-                if n < 0 then
+                if negative? n then
                     c ~= pren =>
                        error ["Improper character in Roman numeral: ",c]
                     nprens: PI := 1
@@ -198,7 +198,7 @@ NumberFormats(): NFexports == NFimplementation where
                 else
                     tot := tot + n
                     Max := n
-            tot < 0 => error ["Improper Roman numeral: ", tot]
+            negative? tot => error ["Improper Roman numeral: ", tot]
             tot::PI
 
 @
