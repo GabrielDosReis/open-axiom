@@ -1023,7 +1023,7 @@ have to be switched by swapping names.
       atomE : L E := atomize(expr)      
       op : S := stringify first atomE
       op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB1</mtext>"
-      #args ~= 1 => "<mtext>Mistake in SuperSub1: #args <> 1</mtext>"
+      not one?(#args) => "<mtext>Mistake in SuperSub1: #args <> 1</mtext>"
       var : E := first args
       -- should be looking at something like {{SUPERSUB}{var}{ }{,,...,}} for
       -- example here's the second derivative of y w.r.t. x
@@ -1052,7 +1052,7 @@ have to be switched by swapping names.
       atomE : L E := atomize(expr)      
       op : S := stringify first atomE
       op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB</mtext>"
-      #args ~= 1 => "<mtext>Mistake in SuperSub: #args <> 1</mtext>"
+      not one?(#args) => "<mtext>Mistake in SuperSub: #args <> 1</mtext>"
       var : E := first args
       -- should be looking at something like {{SUPERSUB}{var}{ }{,,...,}} for
       -- example here's the second derivative of y w.r.t. x

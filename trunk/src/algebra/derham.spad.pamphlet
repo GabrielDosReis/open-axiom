@@ -87,7 +87,8 @@ ExtAlgBasis(): Export == Implement where
 
      coerce(li:(L I)) == 
        for x in li repeat
-         if x ~= 1 and x ~= 0 then error "coerce: values can only be 0 and 1"
+         if not one? x and not zero? x then
+           error "coerce: values can only be 0 and 1"
        li
 
      degree x         == (_+/x)::NNI

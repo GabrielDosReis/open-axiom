@@ -111,13 +111,13 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
      exp0:Z:=0
      unitsq:P:=1
      lcf:P:=leadingCoefficient f
-     if ctf~=1 then
+     if not one? ctf then
        f0:=ctf*f0
        f:=(ctf::P)*f
        lcf:=ctf*lcf
      sqlead:List FFEP:= empty()
      sqlc:Factored P:=1
-     if lcf~=1$P then
+     if not one? lcf then
        leadpol:=true
        sqlc:=squareFree lcf
        unitsq:=unitsq*(unit sqlc)
@@ -132,7 +132,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
          gg := unitNormal leadingCoefficient f
          sqdec:=cons([gg.associate*f,exp0],sqdec)
          return  [gg.unit, sqdec]$squareForm
-       if ctf~=1 then g0:=ctf*g0
+       if not one? ctf then g0:=ctf*g0
        npol:=consnewpol(f,f0,exp0)
        (d,d0):=(npol.pol,npol.polval)
        if leadpol then lcoef:=coefChoose(exp0,sqlc)
@@ -147,8 +147,8 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        f:=h::SUP
        f0:=completeEval(h,lvar,lval)
        lcr:P:=leadingCoefficient result0
-       if leadpol and lcr~=1$P then
-         for lpfact in sqlead  while lcr~=1 repeat
+       if leadpol and not one? lcr then
+         for lpfact in sqlead  while not one? lcr repeat
            ground? lcr =>
              unitsq:=(unitsq exquo lcr)::P
              lcr:=1$P
@@ -195,7 +195,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        y:=lvar.im
        p:=p*monomial(1$P,y,n)
        result1:=cons(["sqfr",y::P,n],result1)
-     if p~=1$P then
+     if not one? p then
        f := (f exquo p)::P
        if ground? f then return makeFR(f, result1)
        lvar:=variables(f)

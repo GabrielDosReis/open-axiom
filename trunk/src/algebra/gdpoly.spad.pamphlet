@@ -254,7 +254,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
             t.k.i = 1 => l := cons(vl1.i,l)
             l := cons(vl1.i ** t.k.i ::OutputForm,l)
           l := reverse l
-          if (t.c ~= 1) or (null l) then l := cons(t.c :: OutputForm,l)
+          if not one? t.c or (null l) then l := cons(t.c :: OutputForm,l)
           1 = #l => lt := cons(first l,lt)
           lt := cons(reduce("*",l),lt)
         1 = #lt => first lt

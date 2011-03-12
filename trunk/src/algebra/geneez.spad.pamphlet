@@ -146,7 +146,7 @@ GenExEuclid(R,BP) : C == T
              rpol := first redListPol
              redListPol := rest redListPol
              for rpol2 in redListPol repeat
-                gcd(rpol, rpol2) ~= 1 => return false
+                not one? gcd(rpol, rpol2) => return false
          true
 
     if R has Field then

@@ -372,7 +372,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             lengthRankOrElse n
 
         elt(x) ==
-            #x ~= 1    => error "Index error (the rank is not 0)"
+            not one?(#x)    => error "Index error (the rank is not 0)"
             get(x,0)
         elt(x, i: I) ==
             #x ~= dim  => error "Index error (the rank is not 1)"

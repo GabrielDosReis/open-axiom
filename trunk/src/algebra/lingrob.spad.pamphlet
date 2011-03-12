@@ -115,7 +115,7 @@ LinGroebnerPackage(lv,F) : C == T
       ofirstmon:DPoly:=1$DPoly
       orecfmon:Record(poly:HDPoly, mult:F) := [1,1]
       i:NNI:=2
-      while (firstmon:=choosemon(firstmon,ltresult))~=1 repeat
+      while not one?(firstmon:=choosemon(firstmon,ltresult)) repeat
         if (v:=firstmon exquo ofirstmon) case "failed" then
           recfmon:=rRedPol(transform firstmon,B)
         else
@@ -274,7 +274,7 @@ LinGroebnerPackage(lv,F) : C == T
       ofirstmon:DPoly:=1$DPoly
       orecfmon:Record(poly:HDPoly, mult:F) := [1,1]
       lx:= lvar.last
-      while (firstmon:=choosemon(firstmon,ltresult))~=1 repeat
+      while not one?(firstmon:=choosemon(firstmon,ltresult)) repeat
         if (v:=firstmon exquo ofirstmon) case "failed" then
           recfmon:=rRedPol(transform(eval(firstmon,lx,nval)),B)
         else

@@ -267,7 +267,7 @@ FreeModule1(R:Ring,S:OrderedSet): FMcat == FMdef where
       monomials x == [ monom (t.k, t.c) for t in x]
 
       retractIfCan x ==
-         numberOfMonomials(x) ~= 1 => "failed"
+         not one? numberOfMonomials(x) => "failed"
          x.first.c = 1 => x.first.k
          "failed"
 
@@ -574,7 +574,7 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
        constant? p == (p = 0) or (maxdeg(p) = 1$E)
        constant  p == coef(p,1$E)
 
-       quasiRegular? p == (p=0) or (last p).k ~= 1$E
+       quasiRegular? p == (p=0) or not one?((last p).k)
        quasiRegular  p == 
           quasiRegular?(p) => p
           [t for t in p | not(t.k = 1$E)]

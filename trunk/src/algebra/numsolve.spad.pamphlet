@@ -148,7 +148,7 @@ InnerNumericFloatSolvePackage(K,F,Par): Cat == Cap where
           p0 := primitivePart multivariate(vec.0, mainvar)
           p1 := primitivePart(multivariate(vec.1, mainvar),mainvar)
           zero? p1 or
-            gcd(p0, leadingCoefficient(univariate(p1,mainvar))) ~=1 =>
+            not one? gcd(p0, leadingCoefficient(univariate(p1,mainvar))) =>
               innerSolve(cons(0,lp),empty(),lv,eps)
           findGenZeros([p1, p0], reverse lv, eps)
 
@@ -286,12 +286,12 @@ FloatingRealPackage(Par): Cat == Cap where
        -- real zeros of the system of polynomial lp --
        realRoots(lp:L RFI,lv:L SE,eps: Par) : L L Par ==
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          innerSolve(lnum,lden,lv,eps)$INFSP(I,Par,Par)
 
        solve(lp:L RFI,eps : Par) : L L EQ  P Par ==
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          lv:="setUnion"/[variables np for np in lnum]
          if lden~=[] then
           lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
@@ -301,7 +301,7 @@ FloatingRealPackage(Par): Cat == Cap where
        solve(le:L EQ RFI,eps : Par) : L L EQ  P Par ==
          lp:=[lhs ep - rhs ep for ep in le]
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          lv:="setUnion"/[variables np for np in lnum]
          if lden~=[] then
           lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
@@ -406,12 +406,12 @@ FloatingComplexPackage(Par): Cat == Cap where
        -- find the complex zeros of an univariate polynomial --
        complexRoots(lp:L FPK,lv:L SE,eps:Par) : L L C Par ==
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          innerSolve(lnum,lden,lv,eps)$INFSP(K,C Par,Par)
 
        complexSolve(lp:L FPK,eps : Par) : L L EQ  P C Par ==
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          lv:="setUnion"/[variables np for np in lnum]
          if lden~=[] then
           lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
@@ -421,7 +421,7 @@ FloatingComplexPackage(Par): Cat == Cap where
        complexSolve(le:L EQ FPK,eps : Par) : L L EQ  P C Par ==
          lp:=[lhs ep - rhs ep for ep in le]
          lnum:=[numer p for p in lp]
-         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lden:=[dp for p in lp |not one?(dp:=denom p)]
          lv:="setUnion"/[variables np for np in lnum]
          if lden~=[] then
           lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])

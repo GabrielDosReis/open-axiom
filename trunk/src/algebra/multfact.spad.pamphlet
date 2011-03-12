@@ -325,7 +325,7 @@ InnerMultFact(OV,E,R,P) : C == T
         lpol:= dist.polfac
         dd := dist.correct
         unifact:=dist.corrfact
-      if dd~=1 then
+      if not one? dd then
 --        if polcase then lpol := [unitCanonical lp for lp in lpol]
 --        dd:=unitCanonical(dd)
         unifact := [dd * unif for unif in unifact]
@@ -334,7 +334,7 @@ InnerMultFact(OV,E,R,P) : C == T
       (ffin:=lifting(umd,lvar,unifact,lval,lpol,ldeg,pmod))
         case "failed" => intfact(um,lvar,ldeg,tleadpol,ltry,ufactor)
       factfin: L USP:=ffin :: L USP
-      if dd~=1 then
+      if not one? dd then
         factfin:=[primitivePart ff for ff in factfin]
       factfin
 
@@ -425,7 +425,7 @@ InnerMultFact(OV,E,R,P) : C == T
           x := lvar.first
           lvar := lvar.rest
         pc:= gcd coefficients um
-        if pc~=1 then
+        if not one? pc then
             um:=(um exquo pc)::USP
             ffactor:=multivariate(um,x)
             for lcterm in mFactor(pc,ufactor).factors repeat

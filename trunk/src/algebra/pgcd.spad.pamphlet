@@ -322,7 +322,7 @@ PolynomialGcdPackage(E,OV,R,P):C == T where
         df:=degree f
         leadlist:List(P):=[]
  
-        if lgcd~=1 then
+        if not one? lgcd then
           leadpol:=true
           f:=lgcd*f
           ldeg:=[n0+n1 for n0 in ldeg for n1 in degree(lgcd,lvar)]

@@ -114,7 +114,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
       ans::U
 
     ddfactor(u) ==
-      if (c:= lc(u)) ~= 1$I then u:= makeMonic(u)
+      if not one?(c:= lc(u)) then u:= makeMonic(u)
       ans:= sepfact(ddfact(u))
       cons(c::EMR,[makeMonic(f) for f in ans | positive? degree(f)])
 
@@ -133,7 +133,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
       w:= reduce(monomial(1,1)$U,p)
       m:= w
       d:I:= 1
-      if (c:= lc(u)) ~= 1$I then u:= makeMonic u
+      if not one?(c:= lc(u)) then u:= makeMonic u
       ans:DDList:= []
       repeat
         w:= exptmod(w,p,u)
@@ -173,7 +173,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
       u:= f.factor
       p:=modulus u
       (d := f.degree) = 0 => [u]
-      if (c:= lc(u)) ~= 1$I then u:= makeMonic(u)
+      if not one?(c:= lc(u)) then u:= makeMonic(u)
       d = (du := degree(u)) => [u]
       ans:L EMR:= []
       x:U:= monomial(1,1)

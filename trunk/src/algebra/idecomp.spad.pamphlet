@@ -145,7 +145,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        lf:=Id.first
        pv:DPoly:=0
        pw:DPoly:=0
-       while degree(lf,y)~=1 repeat
+       while not one? degree(lf,y) repeat
          val:=random()$Z rem 23
          pv:=px+val*py
          pw:=px-val*py
@@ -296,7 +296,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
      is0dimprimary(J:FIdeal,truelist:List OV) : Boolean ==
        element?(1,J) => true
        Jd:=generators(groebner J)
-       #(factors factor Jd.last)~=1 => return false
+       not one?(#(factors factor Jd.last)) => return false
        i:=subtractIfCan(#truelist,1)
        (i case "failed") => return true
        JR:=(reverse Jd);JM:=groebnerIdeal([JR.first]);JP:List(DPoly):=[]
@@ -356,7 +356,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        #Jd~=n => false
        for f in Jd repeat
          if not ismonic(f,lvint.i) then return false
-	 if i<n and (degree univariate(f,lvint.i))~=1 then return false
+	 if i<n and not one?(degree univariate(f,lvint.i)) then return false
          i:=i+1
        g:=Jd.n
        #(lfact:=factors(factor g)) >1 => false

@@ -73,7 +73,7 @@ ModMonic(R,Rep): C == T
       setPoly (mon : Rep) ==
         mon =$Rep m => mon
         oldm := m
-        leadingCoefficient mon ~= 1 => error "polynomial must be monic"
+        not one? leadingCoefficient mon => error "polynomial must be monic"
         -- following copy code needed since FFPOLY can modify mon
         copymon:Rep:= 0
         while not zero? mon repeat

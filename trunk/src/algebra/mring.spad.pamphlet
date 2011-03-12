@@ -186,13 +186,13 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
           if M has Group then
             recip a ==
               lt := terms a
-              #lt ~= 1 => "failed"
+              not one?(#lt) => "failed"
               (u := recip lt.first.Cf) case "failed" => "failed"
               --(u::R) * inv lt.first.Mn
               monomial((u::R), inv lt.first.Mn)$%
           else
             recip a ==
-              #a ~= 1 or a.first.Mn ~= 1 => "failed"
+              not one?(#a) or not one?(a.first.Mn) => "failed"
               (u := recip a.first.Cf) case "failed" => "failed"
               u::R::%
 

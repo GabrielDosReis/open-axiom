@@ -136,7 +136,7 @@ UnivariateFactorize(ZP) : public == private where
        nm := (degree m)::NNI
        nmq2:NNI := nm quo 2
        norm: Z := sqroot(+/[coefficient(m,k)**2 for k in 0..nm])
-       if nmq2~=1 then nm := (nmq2-1):NNI
+       if not one? nmq2 then nm := (nmq2-1):NNI
        else nm := nmq2
        bin0 := nm
        cbound := (bin0*norm+lcm)::PI
@@ -219,7 +219,7 @@ UnivariateFactorize(ZP) : public == private where
        alpha: Z := coefficient(m,1)+d2
        beta: Z := 2*coefficient(m,2)
        d := gcd(alpha,beta)
-       if d ~=1 then
+       if not one? d then
          alpha := alpha quo d
          beta := beta quo d
        m0: ZP := monomial(beta,1)+monomial(alpha,0)

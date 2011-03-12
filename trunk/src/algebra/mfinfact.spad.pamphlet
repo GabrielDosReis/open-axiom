@@ -218,7 +218,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
           x := lvar.1
           lvar:=lvar.rest
           pc:= gcd coefficients um
-          if pc~=1 then
+          if not one? pc then
             um:=(um exquo pc)::SUP P
             ffactor:=multivariate(um,x)
             for lcterm in mFactor(pc,dx).factors repeat
@@ -228,7 +228,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
         -- should be unitNormal if unified, but for now it is easier
         lcum:F:= leadingCoefficient leadingCoefficient
                 leadingCoefficient um
-        if lcum ~=1  then
+        if not one? lcum  then
           um:=((inv lcum)::R::P) * um
           flead.contp := (lcum::R) *flead.contp
 
@@ -286,13 +286,13 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
         lpol:= dist.polfac
         dd := dist.correct
         unifact:=dist.corrfact
-      if dd~=1 then
+      if not one? dd then
         unifact := [dd*unifact.i for i in 1..nfact]
         um := ((dd**(nfact-1)::NNI)::P)*um
       (ffin:= lifting(um,lvar,unifact,lval,lpol,ldeg,pM(unifact)))
            case "failed" => intfact(um,lvar,ldeg,tleadpol,ltry)
       factfin: L SUP P:=ffin :: L SUP P
-      if dd~=1 then
+      if not one? dd then
         factfin:=[primitivePart ff  for ff in  factfin]
       factfin
 
@@ -397,7 +397,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
       -- else
        lcnm:F:=1
         -- should be unitNormal if unified, but for now it is easier
-       if (lcnm:=leadingCoefficient leadingCoefficient newm)~=1 then
+       if not one?(lcnm:=leadingCoefficient leadingCoefficient newm) then
          newm:=((inv lcnm)::R)*newm
        dx:="max"/[degree uc  for uc in coefficients newm]
        luniv:=generalTwoFactor(newm)$TwoFactorize(F)

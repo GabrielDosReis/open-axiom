@@ -104,7 +104,7 @@ IntegrationResult(F:Field): Exports == Implementation where
         cc::O * logandp
       coeffp:O := (outputForm(rec.coeff, alpha) = 0::Z::O)@O
       logandp := alpha * prefix('log::O, [outputForm(rec.logand, alpha)])
-      if (cc := Q2F(rec.scalar)) ~= 1 then
+      if not one?(cc := Q2F(rec.scalar)) then
         logandp := cc::O * logandp
       sum(logandp, coeffp)
 
