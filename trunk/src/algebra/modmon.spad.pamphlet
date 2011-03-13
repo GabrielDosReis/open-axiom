@@ -139,7 +139,7 @@ ModMonic(R,Rep): C == T
 
           frobenius(a:%):% ==
             aq:% := 0
-            while a~=0 repeat
+            while not zero? a repeat
               aq:= aq + leadingCoefficient(a)*frobeniusPower(degree a)
               a := reductum a
             aq

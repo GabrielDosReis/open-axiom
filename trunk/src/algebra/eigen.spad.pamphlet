@@ -137,7 +137,7 @@ EigenPackage(R) : C == T
      tff(p:SUF,x:SE) : F ==
        degree p=0 => leadingCoefficient p
        r:F:=0$F
-       while p~=0 repeat
+       while not zero? p repeat
          r:=r+fft(p,x)
          p := reductum p
        r

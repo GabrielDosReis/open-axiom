@@ -153,7 +153,7 @@ SystemSolvePackage(R): Cat == Cap where
            if lq~=[] then
              gb:=GroebnerInternalPackage(P R,DirectProduct(#lv,NNI),OV,dmp)
              parRes:=[pr for pr in parRes|
-                       and/[(redPol(fq,pr pretend List(dmp))$gb) ~=0
+                       and/[not zero?(redPol(fq,pr pretend List(dmp))$gb)
                          for fq in lq]]
            [[retract pushdown(pf,lvv)$push for pf in pr] for pr in parRes]
 

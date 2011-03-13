@@ -180,7 +180,7 @@ GaussianFactorizationPackage() : C == T
         prime?(n)$IntegerPrimesPackage(Z)  => true
         re : Z := real a
         im : Z := imag a
-        re~=0 and im~=0 => false
+        not zero? re and not zero? im => false
         p : Z := abs(re+im)     -- a is of the form p, -p, %i*p or -%i*p
         p rem 4 ~= 3 => false
         -- return-value true, if p is a rational prime,

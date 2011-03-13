@@ -153,7 +153,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
          lf:=Id.first
        ris:= generators(zeroRadComp(groebnerIdeal(Id.rest),truelist.rest))
        ris:=cons(lf,ris)
-       if pv~=0 then
+       if not zero? pv then
 	 ris:=[(univariate(h,x)).pw for h in ris]
        groebnerIdeal(groebner ris)
 
@@ -246,7 +246,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
      pushdown(g:DPoly,x:OV) : DPoly ==
        rf:DPoly:=0$DPoly
        i:=position(x,lvint)
-       while g~=0 repeat
+       while not zero? g repeat
 	 g1:=reductum g
          rf:=rf+pushdterm(g-g1,x,i)
          g := g1
@@ -266,11 +266,11 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        rf:DPoly:=0$DPoly
        g := f
        xp := convert(x)@SE
-       while g~=0 repeat
+       while not zero? g repeat
          h:=lcm(trueden(denom leadingCoefficient g,xp),h)
          g:=reductum g
        f:=(h::F)*f
-       while f~=0 repeat
+       while not zero? f repeat
 	 g:=reductum f
          rf:=rf+pushuterm(f-g,xp,x)
          f:=g

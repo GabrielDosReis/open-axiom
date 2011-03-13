@@ -206,7 +206,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        makeFR(unit result,append(result1,factorList result))
  
      ldeg:=degree(f,lvar)          ---  general case ---
-     m:="min"/[j for j in ldeg|j~=0]
+     m:="min"/[j for j in ldeg| not zero? j]
      i:Z:=1
      for j in ldeg while j>m repeat i:=i+1
      x:=lvar.i

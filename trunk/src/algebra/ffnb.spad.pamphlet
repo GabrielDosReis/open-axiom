@@ -236,7 +236,7 @@ InnerNormalBasisFieldFunctions(GF): Exports == Implementation where
                     else erg:VGF:=plist.(first(l))
       i:SI:=k
       for j in rest(l) repeat
-        if j~=0 then erg:=erg *$$ qPot(plist.j,i)$$
+        if not zero? j then erg:=erg *$$ qPot(plist.j,i)$$
         i:=i+k
       erg
 

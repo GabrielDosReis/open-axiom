@@ -97,7 +97,7 @@ GroebnerSolve(lv,F,R) : C == T
            then return "failed"
            newlpol :=concat(redPol(g::DPoly,newlpol),newlpol)
            rlvar:=rest rlvar
-         else if redPol(f,newlpol)~=0 then return"failed"
+         else if not zero? redPol(f,newlpol) then return"failed"
        newlpol
 
 

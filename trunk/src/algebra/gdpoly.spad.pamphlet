@@ -148,7 +148,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
             p := reductum p
             for i in 1..n repeat
               maxdeg.i := max(maxdeg.i, tdeg.i)
-         [index(i:PositiveInteger) for i in 1..n | maxdeg.i~=0]
+         [index(i:PositiveInteger) for i in 1..n | not zero? maxdeg.i]
 
       reorder(p: %,perm: List Integer):% ==
          #perm ~= n => error "must be a complete permutation of all vars"
