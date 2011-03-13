@@ -157,7 +157,7 @@ SmithNormalForm(R,Row,Col,M) : Exports == Implementation where
     lastStep(sf : SmithForm) : SmithForm ==
       m:=sf.Smith
       m1:=min(nrows m,ncols m)
-      for i in 1..m1 while (mii:=m(i,i)) ~=0 repeat
+      for i in 1..m1 while not zero?(mii:=m(i,i)) repeat
         for j in i+1..m1 repeat
           if (m(j,j) exquo mii) case "failed" then return
              lastStep(ijDivide(sf,i,j))

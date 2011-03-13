@@ -63,7 +63,7 @@ GeneralHenselPackage(RP,TP):C == T where
      exactquo(u:TP,v:TP,p:RP):Union(TP,"failed") ==
         invlcv:=modInverse(leadingCoefficient v,p)
         r:=monicDivide(u,reduction(invlcv*v,p))
-        reduction(r.remainder,p) ~=0 => "failed"
+        not zero? reduction(r.remainder,p) => "failed"
         reduction(invlcv*r.quotient,p)
 
      FP:=EuclideanModularRing(RP,TP,RP,reduction,merge,exactquo)
@@ -112,7 +112,7 @@ GeneralHenselPackage(RP,TP):C == T where
            fln = nfln and zero?(err:=poly-*/fln) => leave "finished"
            fln := nfln
            Modulus := prime*Modulus
-        if constp~=0 then fln:=cons(constp,fln)
+        if not zero? constp then fln:=cons(constp,fln)
         [fln,Modulus]
 
      completeHensel(m:TP,tl1:List TP,prime:RP,bound:PI) ==

@@ -151,7 +151,7 @@ QuasiAlgebraicSet(R, Var,Expon,Dpoly) : C == T
        q=0$newPoly => 0$Dpoly
        dq:newExpon:=degree q
        n:NNI:=selectfirst (dq)
-       n~=0 => "failed"
+       not zero? n => "failed"
        ((g:=oldpoly reductum q) case "failed") => "failed"
        monomial(leadingCoefficient q,selectsecond dq)$Dpoly + (g::Dpoly)
  

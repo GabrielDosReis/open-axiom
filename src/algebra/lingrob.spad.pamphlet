@@ -215,7 +215,7 @@ LinGroebnerPackage(lv,F) : C == T
       part:List HDPoly :=[]
       for f in lr repeat
         g:=x::HDPoly * f
-        if redPo(g,mB).poly~=0 then part:=concat(g,part)
+        if not zero?(redPo(g,mB).poly) then part:=concat(g,part)
       concat(part,intcompBasis(x,part,mB))
 
 ----- coordinate of f with respect to the basis B -----
@@ -223,7 +223,7 @@ LinGroebnerPackage(lv,F) : C == T
     coord(f:HDPoly,B:List HDPoly) : VF ==
       ndim := #B
       vv:VF:=new(ndim,0$F)$VF
-      while f~=0 repeat
+      while not zero? f repeat
         rf := reductum f
         lf := f-rf
         lcf := leadingCoefficient f

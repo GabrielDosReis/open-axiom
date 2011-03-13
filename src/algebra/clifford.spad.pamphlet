@@ -389,7 +389,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
             c = 1 => be
             c::Ex * be
         coerce(x): Ex ==
-            tl := [coerceMonom(x.i,i) for i in 0..dim-1 | x.i~=0]
+            tl := [coerceMonom(x.i,i) for i in 0..dim-1 | not zero? x.i]
             null tl => "0"::Ex
             reduce("+", tl)
 

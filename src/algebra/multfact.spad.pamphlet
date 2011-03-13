@@ -182,7 +182,7 @@ InnerMultFact(OV,E,R,P) : C == T
         "max"/[numberOfMonomials ff for ff in lum]
 
       "max"/[+/[euclideanSize cc for i in 0..degree ff|
-                (cc:= coefficient(ff,i))~=0] for ff in lum]
+                not zero? (cc:= coefficient(ff,i))] for ff in lum]
 
           ---  Choose the integer to reduce to univariate case  ---
     intChoose(um:USP,lvar:L OV,clc:R,plist:L P,ltry:L L R,
@@ -220,12 +220,12 @@ InnerMultFact(OV,E,R,P) : C == T
        leadcomp1:=[retract eval(pol,lvar,lval) for pol in plist]
        testp and or/[unit? epl for epl in leadcomp1] => range:=2*range
        newm:BP:=completeEval(um,lvar,lval)
-       degum ~= degree newm or minimumDegree newm ~=0 => range:=2*range
+       degum ~= degree newm or not zero? minimumDegree newm => range:=2*range
        lffc1:=content newm
        newm:=(newm exquo lffc1)::BP
        testp and leadtest and not polCase(lffc1*clc,#plist,leadcomp1)
                              => range:=2*range
-       degree(gcd [newm,differentiate(newm)])~=0 => range:=2*range
+       not zero? degree(gcd [newm,differentiate(newm)]) => range:=2*range
        luniv:=ufactor(newm)
        lunivf:= factors luniv
        lffc1:R:=retract(unit luniv)@R * lffc1

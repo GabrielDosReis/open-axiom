@@ -902,7 +902,7 @@ UnivariatePolynomialSquareFree(RC:IntegralDomain,P):C == T
              makeFR(u,[["sqfr",c,1]])
            i:NonNegativeInteger:=0; lffe:List FF:=[]
            lcp := leadingCoefficient p
-           while degree(ci)~=0 repeat
+           while not zero? degree(ci) repeat
               ci:=(ci exquo pi)::P
               di:=(di exquo pi)::P - differentiate(ci)
               pi:=gcd(ci,di)
@@ -924,7 +924,7 @@ UnivariatePolynomialSquareFree(RC:IntegralDomain,P):C == T
            di := (p exquo ci)::P
            i:NonNegativeInteger:=0; lffe:List FF:=[]
            dunit : P := 1
-           while degree(di)~=0 repeat
+           while not zero? degree(di) repeat
               diprev := di
               di := gcd(ci,di)
               ci:=(ci exquo di)::P
@@ -1054,7 +1054,7 @@ PolynomialSquareFree(VarSet:OrderedSet,E,RC:GcdDomain,P):C == T where
     squareFree(p:P) ==
        mv:=mainVariable p
        mv case "failed" => makeFR(p,[])$Factored(P)
-       characteristic$RC ~=0 => finSqFr(p,variables p)
+       not zero?(characteristic$RC) => finSqFr(p,variables p)
        up:=univariate(p,mv)
        cont := content up
        up := (up exquo cont)::SUP

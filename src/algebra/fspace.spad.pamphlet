@@ -691,14 +691,14 @@ FunctionSpace(R: SetCategory): Category == Definition where
         u   := third l
         arg := argument k
         ans:% := 0
-        if (not member?(u,done)) and (ans := differentiate(u,x))~=0 then
+        if (not member?(u,done)) and not zero?(ans := differentiate(u,x)) then
           ans := ans * kernel(opdiff,
                [subst(expr, [kd], [kernel(opdiff, [first l, gg, gg])]),
                              gg, u])
         done := concat(gg, done)
         is?(k, opdiff) => ans + diffdiff0(arg, x, expr, k, done)
         for i in minIndex arg .. maxIndex arg for b in arg repeat
-          if (not member?(b,done)) and (bp:=differentiate(b,x))~=0 then
+          if (not member?(b,done)) and not zero?(bp:=differentiate(b,x)) then
             g   := symsub(gendiff, i)::%
             ans := ans + bp * kernel(opdiff, [subst(expr, [kd],
              [kernel(opdiff, [substArg(op, arg, i, g), gg, u])]), g, b])

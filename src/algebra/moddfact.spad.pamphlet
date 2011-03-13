@@ -79,7 +79,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
     exactquo(u:U,v:U,p:I):Union(U,"failed") ==
         invlcv:=modInverse(leadingCoefficient v,p)
         r:=monicDivide(u,reduction(invlcv*v,p))
-        reduction(r.remainder,p) ~=0 => "failed"
+        not zero? reduction(r.remainder,p) => "failed"
         reduction(invlcv*r.quotient,p)
     EMR := EuclideanModularRing(Integer,U,Integer,
                                 reduction,merge,exactquo)

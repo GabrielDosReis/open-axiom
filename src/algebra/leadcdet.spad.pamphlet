@@ -109,7 +109,7 @@ LeadingCoefDetermination(OV,E,Z,P) : C == T
         for k in 1..(# lpol) repeat
           lexp.k=0 => "next factor"
           h:= checkpow(vl.k,c)
-          if h ~=0 then
+          if not zero? h then
            if h>lexp.k then return "failed"
            lexp.k:=lexp.k-h
            aux.i := aux.i*(lpol.k ** h)

@@ -301,7 +301,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
     pushup(f:P,x:OV) :PG ==
        ground? f => pushupconst((retract f)@R,x)
        rr:PG:=0
-       while f~=0 repeat
+       while not zero? f repeat
          lf:=leadingMonomial f
          cf:=pushupconst(leadingCoefficient f,x)
          lvf:=variables lf
@@ -314,7 +314,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
        ground? g => ((retract g)@F)::R::P
        rf:P:=0$P
        ug:=univariate(g,x)
-       while ug~=0 repeat
+       while not zero? ug repeat
          cf:=monomial(1,degree ug)$R
          rf:=rf+cf*pushdcoef(leadingCoefficient ug)
          ug := reductum ug
@@ -324,7 +324,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
     pushupconst(r:R,x:OV):PG ==
        ground? r => (retract r)@F ::PG
        rr:PG:=0
-       while r~=0 repeat
+       while not zero? r repeat
          rr:=rr+monomial((leadingCoefficient r)::PG,x,degree r)$PG
          r:=reductum r
        rr
@@ -385,14 +385,14 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
        leadcomp1:=[retract eval(pol,lvar,lval) for pol in plist]
        testp and or/[unit? epl for epl in leadcomp1] => range:=range+1
        newm:SUP R:=completeEval(um,lvar,lval)
-       degum ~= degree newm or minimumDegree newm ~=0 => range:=range+1
+       degum ~= degree newm or not zero? minimumDegree newm => range:=range+1
        lffc1:=content newm
        newm:=(newm exquo lffc1)::SUP R
        testp and leadtest and not polCase(lffc1*clc,#plist,leadcomp1)
                            => range:=range+1
        Dnewm := differentiate newm
        D2newm := map(differentiate, newm)
-       degree(gcd [newm,Dnewm,D2newm])~=0 => range:=range+1
+       not zero? degree(gcd [newm,Dnewm,D2newm]) => range:=range+1
       -- if R has Integer then luniv:=henselFact(newm,false)$
       -- else
        lcnm:F:=1
