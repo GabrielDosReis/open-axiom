@@ -59,7 +59,7 @@ all: all-ax
 
 all-ax all-utils: stamp
 
-stamp: $(oa_target_oalib) hammer$(EXEEXT)
+stamp: $(oa_target_oalib) $(bin_PROGRAMS)
 	-rm -f stamp
 	$(STAMP) stamp
 
