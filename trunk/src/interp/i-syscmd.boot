@@ -783,8 +783,6 @@ compileSpad2Cmd args ==
       report
         )
 
-    translateOldToNew        := nil
-
     $scanIfTrue              : local := false
     $compileOnlyCertainItems : local := nil
     $f                       : local := nil  -- compiler
@@ -803,7 +801,6 @@ compileSpad2Cmd args ==
 
         fullopt = 'new         => error "Internal error: compileSpad2Cmd got )new"
         fullopt = 'old         => NIL     -- no opt
-        fullopt = 'translate   => translateOldToNew := true
 
         fullopt = 'library     => fun.1 := 'lib
         fullopt = 'nolibrary   => fun.1 := 'nolib
@@ -836,11 +833,7 @@ compileSpad2Cmd args ==
     $InteractiveMode : local := nil
     -- avoid Boolean semantics transformations based on syntax only
     $normalizeTree: local := false
-    if translateOldToNew then
-        spad2AsTranslatorAutoloadOnceTrigger()
-        sayKeyedMsg("S2IZ0085", nil)
-        convertSpadToAsFile path
-    else if $compileOnlyCertainItems then
+    if $compileOnlyCertainItems then
         null constructor => sayKeyedMsg("S2IZ0040",NIL)
         compilerDoitWithScreenedLisplib(constructor, fun)
     else
@@ -850,36 +843,6 @@ compileSpad2Cmd args ==
     terminateSystemCommand()
     -- reset compiler optimization options
     setCompilerOptimizations 0
-
-convertSpadToAsFile path ==
-    -- can assume path has type = .spad
-    $globalMacroStack : local := nil       -- for spad -> as translator
-    $abbreviationStack: local := nil       -- for spad -> as translator
-    $macrosAlreadyPrinted: local := nil    -- for spad -> as translator
-    $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
-    $convertingSpadFile : local := true
-    $options: local := '((nolib))      -- translator shouldn't create nrlibs
-    SETQ(HT,hashTable 'EQUAL)
-
-    newName := fnameMake(pathnameDirectory path, pathnameName path, '"as")
-    canDoIt := true
-    if not fnameWritable? newName then
-        sayKeyedMsg("S2IZ0086", [NAMESTRING newName])
-        newName := fnameMake('".", pathnameName path, '"as")
-        if not fnameWritable? newName then
-            sayKeyedMsg("S2IZ0087", [NAMESTRING newName])
-            canDoIt := false
-    not canDoIt => 'failure
-
-    sayKeyedMsg("S2IZ0088", [NAMESTRING newName])
-
-    $outStream :local := MAKE_-OUTSTREAM newName
-    markSay('"#include _"axiom.as_"")
-    markTerpri()
-    CATCH($SpadReaderTag,compiler [path])
-    SHUT $outStream
-    mkCheck()
-    'done
 
 compilerDoit(constructor, fun) ==
     $byConstructors : local := []

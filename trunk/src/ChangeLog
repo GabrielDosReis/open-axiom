@@ -1,3 +1,21 @@
+2011-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-syscmd.boot (compileSpad2Cmd): Remove experimental
+	support for Spad to Aldor translation.
+	(convertSpasToAsFile): Remove.
+	* interp/mark.boot: Remove.
+	* interp/nspadux.lisp: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/spad.lisp: Don't register removed formatters.
+	* interp/util.lisp: (TRANSLATE-FUNCTIONS): Remove.
+	(BUILD-INTERPSYS): Now take only one argument.
+	* src/share/doc/msgs/s2-us.msgs: Remove diagnostic S2IZ0085.
+	* interp/Makefile.in: Remove rules for building wi1.boot,
+	wi2.boot, mark.boot, pspad1.boot pspad2.boot.
+
 2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* src/algebra/: Systematically use not zero? when comparing for

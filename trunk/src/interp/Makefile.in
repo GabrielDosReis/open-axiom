@@ -155,13 +155,6 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 
 autoload_objects += $(BFOBJS)
 
-# Translator from `old Spad' to `new spad (Aldor)' code.
-# FIXME: is this still relevant?
-TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT) \
-	  ${AUTO}/pspad2.$(FASLEXT) ${AUTO}/mark.$(FASLEXT) ${AUTO}/nspadaux.$(FASLEXT)
-
-autoload_objects += $(TRANOBJS)
-
 ASCOMP= as.$(FASLEXT) axext_l.$(FASLEXT)
 
 ASAUTO= ${AUTO}/ax.$(FASLEXT)
@@ -231,7 +224,7 @@ makeint.lisp: Makefile
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
+	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
@@ -239,7 +232,7 @@ makeint.lisp: Makefile
 ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
+		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" --system-algebra \
@@ -256,7 +249,7 @@ all-axiomsys: ${AXIOMSYS}
 ${AXIOMSYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
+		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" \
@@ -344,8 +337,6 @@ record.$(FASLEXT): nlib.$(FASLEXT) pathname.$(FASLEXT)
 setvart.$(FASLEXT): macros.$(FASLEXT)
 
 ## OpenAxiom's compiler
-wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
-wi1.$(FASLEXT): macros.$(FASLEXT)
 compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
@@ -386,7 +377,6 @@ server.$(FASLEXT): macros.$(FASLEXT)
 ## The old parser component roughtly is:
 ##
 spad-parser.$(FASLEXT): parse.$(FASLEXT)
-mark.$(FASLEXT): macros.$(FASLEXT)
 parse.$(FASLEXT): metalex.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
@@ -430,7 +420,6 @@ debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)
 property.$(FASLEXT): sys-macros.$(FASLEXT)
-nspadaux.$(FASLEXT): sys-macros.$(FASLEXT)
 sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
 trace.$(FASLEXT): debug.$(FASLEXT)
 termrw.$(FASLEXT): macros.$(FASLEXT)
@@ -447,8 +436,6 @@ g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)
 hashcode.$(FASLEXT): g-util.$(FASLEXT)
-pspad2.$(FASLEXT): pspad1.$(FASLEXT)
-pspad1.$(FASLEXT): macros.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) sys-utility.$(FASLEXT)
 g-cndata.$(FASLEXT): sys-macros.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)

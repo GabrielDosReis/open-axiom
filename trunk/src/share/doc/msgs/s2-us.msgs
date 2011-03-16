@@ -1022,11 +1022,6 @@ S2IZ0083
  ".ao".
 S2IZ0084
  The )library system command was not called after compilation.
-S2IZ0085
- Warning: translation of an old-style source code ".spad" file to a new-style
- ".as" file changes the old system compiler. If you wish to use the old
- system compiler for regular compilation, you must exit and re-enter
- OpenAxiom.
 S2IZ0086
  Cannot write to file with name %b %1  %d .
 S2IZ0087
