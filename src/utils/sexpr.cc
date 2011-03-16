@@ -424,6 +424,11 @@ namespace OpenAxiom {
       // used templates floating around.
       Allocator::~Allocator() { }
 
+      const Character*
+      Allocator::make_character(const Token& t) {
+         return chars.allocate(t);
+      }
+
       const Integer*
       Allocator::make_integer(const Token& t) {
          return ints.allocate(t);
