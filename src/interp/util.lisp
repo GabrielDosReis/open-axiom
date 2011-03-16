@@ -243,14 +243,6 @@
 ;; directory from the current {\bf AXIOM} shell variable.
 (defvar $relative-library-directory-list '("/algebra/"))
 
-;; This is a little used subsystem to generate {\bf ALDOR} code
-;; from {\bf Spad} code. Frankly, I'd be amazed if it worked.
-(defparameter translate-functions '(
-;; .spad to .as translator, in particular
-;;      loadtranslate
-        |spad2AsTranslatorAutoloadOnceTrigger|
-        ))
-
 ;; This is part of the {\bf ALDOR subsystem}. These will be loaded
 ;; if you compile a {\bf .as} file rather than a {\bf .spad} file.
 ;; {\bf ALDOR} is an external compiler that gets automatically called
@@ -356,7 +348,7 @@
 ;; loads the databases, sets up autoload triggers and clears out hash tables.
 ;; After this function is called the image is clean and can be saved.
 
-(defun build-interpsys (translate-files asauto-files)
+(defun build-interpsys (asauto-files)
   (reroot)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
@@ -368,7 +360,6 @@
   (create-initializers)
   (|start| :fin)
   (setq *load-verbose* nil)
-  (|setBootAutloadProperties| translate-functions translate-files)
   (|setBootAutloadProperties| asauto-functions asauto-files)
   (|fillDatabasesInCore|) ; the databases into core, then close the streams
   (|closeAllDatabaseStreams|)
