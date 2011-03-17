@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ namespace OpenAxiom {
    // Objects of (type derived from) this type are used to report
    // error orignating from the OpenAxiom core system.
    struct SystemError {
-      explicit SystemError(std::string);
+      explicit SystemError(const std::string&);
       virtual ~SystemError();
       // Return the text of the diagnostic message.
       virtual const std::string& message() const;
@@ -61,7 +61,7 @@ namespace OpenAxiom {
    };
 
    // Report a file system error
-   void filesystem_error(std::string);
+   void filesystem_error(const std::string&);
    
    namespace Memory {
       // Datatype for the unit of storage.
@@ -99,44 +99,28 @@ namespace OpenAxiom {
       // This class is a low-level abstraction intented for use
       // to implement higher level storage abstraction.
       struct Storage {
-         // Acquire storage chunk of at least `n' bytes, and align
-         // the first allocatable address to `a' boundary.
-         // The result is a pointer to a storage object.  That object
-         // `result' is constructed such that `result->free' points
-         // to the next allocatable address, with alignment `a'.
-         // After allocation, the real capacity of the allocated
-         // object is reported by `result->capacity()'.
-         static Storage* acquire(size_t a, size_t n);
+         // Objects of this sbstract datatype holds storage objects.
+         struct Handle;
          
+         // Acquire storage chunk of at least `n' bytes.
+         // The result is a pointer to a storage object.  That object
+         // `result' is constructed such that `begin(result)' points
+         // to the next allocatable address.
+         static Handle* acquire(size_t n);
+
          // Return the storage pointed to by the operand.  It
          // must be a pointer value previously returned by `acquire'.
          // Otherwise, the result is undefined.
-         static void release(Storage*);
+         static void release(Handle*);
+         
+         // Return the start address of storage area.
+         // Note: this should not be confused with the address of
+         // the handle object.
+         static Pointer begin(Handle*);
 
-         // Count of bytes that can fit in this storage.
-         size_t capacity() const { return limit_bot - limit_top; }
-
-         // Count of available allocatable bytes in this storage.
-         size_t room() const { return limit_bot - free; }
-
-         // Count of used bytes in this storage.
-         size_t occupancy() const { return free - limit_top; }
-
-         // Align next allocatable address to boundary given by operand.
-         // Return true on success, otherwise false.
-         bool align_to(size_t);
-
-         // Allocate `n' bytes from this storage.  It is assumed that prior
-         // to calling this function, `n' is less than `room()'.
-         // The allocated storage is guaranteed to contain only zeros.
-         void* allocate(size_t);
-
-         // Next unused address
-         void* next_available() { return free; }
-
-         // address at offset `off' from the first allocatable address.
-         void* at_offset(size_t off) {
-            return limit_top + off;
+         // Courtesy conversion function from pointer to byte address.
+         static Byte* byte_address(Pointer h) {
+            return static_cast<Byte*>(h);
          }
 
          // Round up `n' to a multiple of `a', a power of 2.
@@ -144,35 +128,41 @@ namespace OpenAxiom {
          round_up(size_t n, size_t a) {
             return (n + a - 1) & ~(a - 1);
          }
+      };
 
-         // Next address after `p' in this storage that has alignment `a'.
-         void*
-         round_up(void* p, size_t a) {
-            return base() + round_up(base() - static_cast<Byte*>(p), a);
-         }
+      // -------------------------
+      // -- SinglyLinkedStorage --
+      // -------------------------
+      // This class implements a simple single-linked list of storage
+      // objects.
+      struct SinglyLinkedStorage : Storage {
+         // Same as Storage::acquire, except begin(h) returns an address
+         // that satisfies the alignment requirement `a'.
+         static Handle* acquire(size_t n, size_t a);
          
-      protected:
-         Byte* limit_top;       // first allocatable address
-         Byte* limit_bot;       // one-past-the-end of valid allocatable
-                                // address in this storage.
-         Byte* free;            // first allocatable address suitably
-                                // aligned at boundary specified at
-                                // construction time.
+         // Return the previous handle in the link chain.
+         static Handle*& previous(Handle*);
+      };
 
-         Storage() { }
+      // ------------------
+      // -- BlockStorage --
+      // ------------------
+      // This class implements a simple single-linked list of block storage.
+      // Each block maintains information about the next allocatable
+      // address within that block.
+      struct BlockStorage : SinglyLinkedStorage {
+         // Same as SinglyLinkedStorage::acquire(); initialize internal
+         // bookkeepking machinery.
+         static Handle* acquire(size_t n, size_t a);
 
-         // Address of the host OS page holding this storage.
-         Byte* base() {
-            return reinterpret_cast<Byte*>(this);
-         }
+         // Return the next allocatable address within the given block.
+         static Pointer next_address(Handle*);
 
-         size_t extent() {
-            return size_t(limit_bot - base());
-         }
+         // Return the amount of allocatable byte in the given block.
+         static size_t room(Handle*);
 
-      private:
-         Storage(const Storage&); // not implemented
-         Storage& operator=(const Storage&); // idem.
+         // Set `n' bytes aside with the given storage block.
+         static Pointer book(Handle*, size_t);
       };
 
       // -----------
@@ -184,7 +174,7 @@ namespace OpenAxiom {
       // it is guaranteed that objects allocated in a single call
       // to `allocate()' occupy a contiguous block of storage.
       template<typename T>
-      struct Arena {
+      struct Arena : protected BlockStorage {
          // Acquire storage capable of holding `n' objects of type `T'.
          explicit Arena(size_t);
          // Release all storage acquired by this object, upon end of life.
@@ -196,39 +186,29 @@ namespace OpenAxiom {
 
       protected:
          // Address of the first object of type `T' in a storage.
-         static T* first_object(Storage* s) {
-            return static_cast<T*>
-               (s->round_up(&previous(s) + 1, openaxiom_alignment(T)));
+         static T* first_object(Handle* h) {
+            return static_cast<T*>(BlockStorage::begin(h));
          }
 
          // Address of one-past-the-end object of type `T' in this storage.
-         static T* last_object(Storage* s) {
-            return static_cast<T*>(s->next_available());
+         static T* last_object(Handle* h) {
+            return static_cast<T*>(BlockStorage::next_address(h));
          }
 
          // Number of objects allocated in a storage.
-         static size_t object_count(Storage* s) {
-            return last_object(s) - first_object(s);
+         static size_t object_count(Handle* h) {
+            return last_object(h) - first_object(h);
          }
 
-         // The `previous' link in the chain of storage.
-         static Storage*& previous(Storage* s) {
-            return *static_cast<Storage**>(s->at_offset(0));
-         }
-
-         Storage* store;        // active storage to allocate from
-
-      private:
-         // Acquire storage large enough to hold `n' objects of type `T'.
-         static Storage* acquire(size_t);
+         BlockStorage::Handle* store; // active storage to allocate from
       };
 
       template<typename T>
       size_t
       Arena<T>::population() const {
          size_t n = 0;
-         for (Storage* s = store; s != 0; s = previous(s))
-            n += object_count(s);
+         for (Handle* h = store; h != 0; h = previous(h))
+            n += object_count(h);
          return n;
       }
 
@@ -236,41 +216,32 @@ namespace OpenAxiom {
       T*
       Arena<T>::allocate(size_t n) {
          const size_t sz = n * sizeof(T);
-         if (store->room() < sz) {
-            Storage* s = acquire(std::max(n, object_count(store)));
-            previous(s) = store;
-            store = s;
+         if (BlockStorage::room(store) < sz) {
+            // Not enough room left.  Make sure we allocate storage
+            // at least as big as the current.
+            Handle* h = acquire(std::max(n, object_count(store)),
+                                openaxiom_alignment(T));
+            previous(h) = store;
+            store = h;
          }
-         return static_cast<T*>(store->allocate(sz));
+         return static_cast<T*>(BlockStorage::book(store, sz));
       }
 
       template<typename T>
-      Arena<T>::Arena(size_t n) : store(acquire(n)) { }
+      Arena<T>::Arena(size_t n)
+            : store(BlockStorage::acquire(n * sizeof (T),
+                                          openaxiom_alignment (T)))
+      { }
       
       template<typename T>
       Arena<T>::~Arena() {
          // Release storage in the reverse order of their
          // their allocation.
          while (store != 0) {
-            Storage* current = store;
-            store = previous(store);
-            Storage::release(current);
+            Handle* current = store;
+            store = BlockStorage::previous(store);
+            BlockStorage::release(current);
          }
-      }
-
-      template<typename T>
-      Storage*
-      Arena<T>::acquire(size_t n) {
-         // We build single-linked list of Storage objects, so 
-         // don't forget to account for the additional pointer,
-         // and necessary padding.
-         const size_t sz = n * sizeof(T)
-            + Storage::round_up(sizeof(Storage*), openaxiom_alignment(T));
-         Storage* s = Storage::acquire(openaxiom_alignment(Storage*), sz);
-         s->allocate(sizeof(Storage*));
-         previous(s) = 0;
-         s->align_to(openaxiom_alignment(T));
-         return s;
       }
 
       // -------------
@@ -278,6 +249,8 @@ namespace OpenAxiom {
       // -------------
       template<typename T>
       struct Factory : Arena<T> {
+         typedef typename Arena<T>::Handle Handle;
+
          Factory() : Arena<T>(nominal_population()) { }
          ~Factory();
 
@@ -307,21 +280,17 @@ namespace OpenAxiom {
       private:
          // Return 1 or the number of objects that can fit in a page unit.
          static size_t nominal_population() {
-            const size_t overhead =
-               Storage::round_up(sizeof(Storage),
-                                  openaxiom_alignment(Storage*))
-               + Storage::round_up(sizeof(Storage*), openaxiom_alignment(T));
             const size_t psz = page_size();
-            if (overhead + sizeof (T) > psz)
+            if (sizeof (T) > psz)
                return 1;
-            return (psz - overhead) / sizeof(T);
+            return psz / sizeof(T);
          }
       };
 
       // Destroy objects in the reverse order of their construction.
       template<typename T>
       Factory<T>::~Factory() {
-         for (Storage* s = this->store; s != 0; s = Arena<T>::previous(s)) {
+         for (Handle* s = this->store; s != 0; s = Arena<T>::previous(s)) {
             T* last = Arena<T>::last_object(s);
             for (--last; last >= Arena<T>::first_object(s); --last)
                last->~T();

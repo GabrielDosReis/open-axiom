@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ namespace OpenAxiom {
    // ----------------
    // -- SystemError --
    // ----------------
-   SystemError::SystemError(std::string s) : text(s) { }
+   SystemError::SystemError(const std::string& s) : text(s) { }
 
    SystemError::~SystemError() { }
 
@@ -72,7 +72,7 @@ namespace OpenAxiom {
    }
 
    void
-   filesystem_error(std::string s) {
+   filesystem_error(const std::string& s) {
       throw SystemError(s);
    }
 
@@ -130,43 +130,100 @@ namespace OpenAxiom {
       // -------------
       // -- Storage --
       // -------------
-      Storage*
-      Storage::acquire(size_t alignment, size_t byte_count) {
-         // Adjust for overhead, and page boundary.
-         byte_count = round_up(byte_count + sizeof(Storage), page_size());
-         Storage* mem = new(os_acquire_raw_memory(byte_count)) Storage;
-         mem->limit_top = mem->base() + round_up(sizeof(Storage), alignment);
-         mem->limit_bot = mem->base() + byte_count;
-         mem->free = mem->limit_top;
-         return mem;
+      struct Storage::Handle {
+         size_t extent;
+         void* start;
+      };
+
+      static inline Pointer
+      storage_end(Storage::Handle* h) {
+         return Storage::byte_address(h) + h->extent;
+      }
+
+      Storage::Handle*
+      Storage::acquire(size_t n) {
+         // Adjust for overhead, and to page boundary.
+         n = round_up(n + sizeof(Handle), page_size());
+         Handle* h = static_cast<Handle*>(os_acquire_raw_memory(n));
+         h->extent = n;
+         h->start = h + 1;
+         return h;
       }
 
       void
-      Storage::release(Storage* store) {
-         os_release_raw_memory(store, store->extent());
+      Storage::release(Handle* h) {
+         os_release_raw_memory(h, h->extent);
       }
 
-      void*
-      Storage::allocate(size_t n) {
-         void* result = free;
-         free += n;
-         return memset(result, 0, n);
+      Pointer
+      Storage::begin(Handle* h) {
+         return h->start;
       }
 
-      bool
-      Storage::align_to(size_t alignment) {
-         if (alignment == 0)    // protect against nuts
-            return true;
-         if (alignment == 1)    // no preferred alignment at all
-            return true;
-         Byte* b = base();
-         const size_t offset = round_up(free - b, alignment);
-         if (offset < size_t(limit_bot - b)) {
-            free = b + offset;
-            return true;
-         }
-         return false;          // not enough room left
+      // -------------------------
+      // -- SinglyLinkedStorage --
+      // -------------------------
+      struct SingleLinkHeader : Storage::Handle {
+         Handle* previous;
+      };
+      
+      SinglyLinkedStorage::Handle*&
+      SinglyLinkedStorage::previous(Handle* h) {
+         return static_cast<SingleLinkHeader*>(h)->previous;
       }
+
+      SinglyLinkedStorage::Handle*
+      SinglyLinkedStorage::acquire(size_t n, size_t a) {
+         const size_t overhead = round_up(sizeof (SingleLinkHeader), a);
+         Handle* h = Storage::acquire(overhead + n);
+         h->start = byte_address (h) + overhead;
+         previous(h) = 0;
+         return h;
+      }
+
+      // ------------------
+      // -- BlockStorage --
+      // ------------------
+      struct BlockHeader : SingleLinkHeader {
+         Byte* available;
+      };
+
+      static inline BlockHeader*
+      block_header(BlockStorage::Handle* h) {
+         return static_cast<BlockHeader*>(h);
+      }
+
+      BlockStorage::Handle*
+      BlockStorage::acquire(size_t n, size_t a) {
+         const size_t overhead = round_up(sizeof (BlockHeader), a);
+         // Tell SinglyLinkedStorage not to align; we do that here.
+         BlockHeader* h = block_header
+            (SinglyLinkedStorage::acquire(overhead + n, 1));
+         // Remember the next available address to allocate from.
+         h->available = byte_address(h) + overhead;
+         // That is also where the actual object storage starts.
+         h->start = h->available;
+         return h;
+      }
+
+      Pointer
+      BlockStorage::next_address(Handle* h) {
+         return block_header(h)->available;
+      }
+
+      size_t
+      BlockStorage::room(Handle* h) {
+         return byte_address(storage_end(h)) - block_header(h)->available;
+      }
+
+      Pointer
+      BlockStorage::book(Handle* h, size_t n) {
+         BlockHeader* block = block_header(h);
+         void* const p = block->available;
+         block->available += n;
+         return p;
+      }
+      
 
       // -----------------
       // -- FileMapping --

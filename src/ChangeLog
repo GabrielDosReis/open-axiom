@@ -1,3 +1,8 @@
+2011-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/storage.H: Rework.
+	* utils/storage.cc: Likewise.
+
 2011-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-syscmd.boot (compileSpad2Cmd): Remove experimental
