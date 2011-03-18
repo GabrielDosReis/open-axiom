@@ -87,7 +87,7 @@ stamp-headers: $(libOpenAxiom_HEADERS) Makefile
 	done ; \
 	$(STAMP) stamp-headers
 
-hammer$(EXEEXT): $(bin_PROGRAMS) libOpenAxiom.$(LIBEXT)
+hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
 	$(CXXLINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
 
 libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
