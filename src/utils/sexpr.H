@@ -53,12 +53,20 @@
 
 namespace OpenAxiom {
    namespace Sexpr {
+      struct BasicError {
+         explicit BasicError(const std::string& s) : msg(s) { }
+         const std::string& message() const { return msg; }
+      protected:
+         std::string msg;
+      };
+
       // -----------
       // -- Token --
       // -----------
       struct Token {
          enum Type {
             unknown,                 // unidentified token
+            semicolon        = OPENAXIOM_SEXPR_TOKEN1(';'), // comment
             dot              = OPENAXIOM_SEXPR_TOKEN1('.'),      // "."
             comma            = OPENAXIOM_SEXPR_TOKEN1(','),      // ","
             open_paren       = OPENAXIOM_SEXPR_TOKEN1('('),      // "("
@@ -69,6 +77,10 @@ namespace OpenAxiom {
             sharp_open_paren = OPENAXIOM_SEXPR_TOKEN2('#','('),  // "#("
             sharp_apostrophe = OPENAXIOM_SEXPR_TOKEN2('#','\''), // "#'"
             sharp_colon      = OPENAXIOM_SEXPR_TOKEN2('#',':'),  // "#:"
+            sharp_plus       = OPENAXIOM_SEXPR_TOKEN2('#','+'),  // "#+"
+            sharp_minus      = OPENAXIOM_SEXPR_TOKEN2('#','-'),  // "#-"
+            sharp_dot        = OPENAXIOM_SEXPR_TOKEN2('#','.'),  // "#."
+            comma_at         = OPENAXIOM_SEXPR_TOKEN2(',','@'),  // ",@"
             digraph_end      = OPENAXIOM_SEXPR_TOKEN2(256,256),
             integer,                // integer literal
             character,              // character literal
@@ -100,6 +112,9 @@ namespace OpenAxiom {
                : strings(pool), tokens(toks) { }
 
          const char* tokenize(const char*, const char*);
+         BasicString intern(const char* s, size_t n) {
+            return strings.intern(s, n);
+         }
 
       private:
          StringPool& strings;        // where to allocate lexemes from
@@ -109,6 +124,7 @@ namespace OpenAxiom {
       // ------------
       // -- Syntax --
       // ------------
+      // Base class of syntax object classes.
       struct Syntax {
          struct Visitor;        // base class of syntax visitors
          virtual void accept(Visitor&) const = 0;
@@ -132,6 +148,7 @@ namespace OpenAxiom {
       // -------------
       // -- Integer --
       // -------------
+      // Integer literal syntax objects
       struct Integer : Atom {
          explicit Integer(const Token&);
          void accept(Visitor&) const;
@@ -140,6 +157,7 @@ namespace OpenAxiom {
       // ---------------
       // -- Character --
       // ---------------
+      // Character literal syntax objects.
       struct Character : Atom {
          explicit Character(const Token&);
          void accept(Visitor&) const;
@@ -148,6 +166,7 @@ namespace OpenAxiom {
       // ------------
       // -- String --
       // ------------
+      // Striing literal syntax objjects.
       struct String : Atom {
          explicit String(const Token&);
          void accept(Visitor&) const;
@@ -172,6 +191,7 @@ namespace OpenAxiom {
       // ---------------
       // -- Reference --
       // ---------------
+      // Back reference object to a syntax object.
       struct Reference : Atom {
          Reference(const Token&, size_t);
          size_t tag() const { return pos; }
@@ -183,6 +203,7 @@ namespace OpenAxiom {
       // ------------
       // -- Anchor --
       // ------------
+      // Base anchor syntax object.
       struct Anchor : Syntax {
          Anchor(size_t, const Syntax*);
          size_t ref() const { return tag; }
@@ -193,43 +214,94 @@ namespace OpenAxiom {
          const Syntax* const val;
       };
 
+      // -- Abstract over common implementation of unary special operators.
+      template<typename T>
+      struct unary_form : Syntax {
+         const Syntax* body() const { return form; }
+         void accept(Visitor&) const;
+      protected:
+         unary_form(const Syntax* f) : form(f) { }
+      private:
+         const Syntax* const form;
+      };
+
       // -----------
       // -- Quote --
       // -----------
-      struct Quote : Syntax {
+      // Quotation syntax object.
+      struct Quote : unary_form<Quote> {
          explicit Quote(const Syntax*);
-         const Syntax* body() const { return form; }
-         void accept(Visitor&) const;
-      private:
-         const Syntax* const form;
+      };
+      
+      // ---------------
+      // -- Antiquote --
+      // ---------------
+      // Quasi-quotation syntax object.
+      struct Antiquote : unary_form<Antiquote> {
+         explicit Antiquote(const Syntax*);
+      };
+      
+      // ------------
+      // -- Expand --
+      // ------------
+      // Expansion request inside a quasi-quotation.
+      struct Expand : unary_form<Expand> {
+         explicit Expand(const Syntax*);
+      };
+      
+      // ----------
+      // -- Eval --
+      // ----------
+      // Read-time evaluation request syntax object.
+      struct Eval : unary_form<Eval> {
+         explicit Eval(const Syntax*);
+      };
+      
+      // ------------
+      // -- Splice --
+      // ------------
+      // Splice request syntax object inside a quasi-quotation.
+      struct Splice : unary_form<Splice> {
+         explicit Splice(const Syntax*);
       };
       
       // --------------
       // -- Function --
       // --------------
-      struct Function : Syntax {
+      // Function literal syntax object.
+      struct Function : unary_form<Function> {
          explicit Function(const Syntax*);
-         const Syntax* code() const { return form; }
-         void accept(Visitor&) const;
-      private:
-         const Syntax* const form;
       };
 
-      // ----------
-      // -- Pair --
-      // ----------
-      struct Pair : Syntax {
-         Pair(const Syntax*, const Syntax*);
-         const Syntax* first() const { return elts.first; }
-         const Syntax* second() const { return elts.second; }
-         void accept(Visitor&) const;
-      private:
-         const std::pair<const Syntax*, const Syntax*> elts;
+      // -------------
+      // -- DotTail --
+      // -------------
+      // Objects of this type represents the tail of syntactic
+      // objects denoting dotted pair syntax `(a . b)'.
+      struct DotTail : unary_form<DotTail> {
+         explicit DotTail(const Syntax*);
+      };
+
+      // -------------
+      // -- Include --
+      // -------------
+      // Conditional inclusion syntax object
+      struct Include : unary_form<Include> {
+         explicit Include(const Syntax*);
+      };
+
+      // -------------
+      // -- Exclude --
+      // -------------
+      // Conditional exclusion syntax object
+      struct Exclude : unary_form<Exclude> {
+         explicit Exclude(const Syntax*);
       };
 
       // ----------
       // -- List --
       // ----------
+      // List syntax objects.
       struct List : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
          using base::const_iterator;
@@ -247,6 +319,7 @@ namespace OpenAxiom {
       // ------------
       // -- Vector --
       // ------------
+      // Vector syntax objects.
       struct Vector : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
          using base::const_iterator;
@@ -274,11 +347,23 @@ namespace OpenAxiom {
          virtual void visit(const Reference&);
          virtual void visit(const Anchor&) = 0;
          virtual void visit(const Quote&) = 0;
+         virtual void visit(const Antiquote&) = 0;
+         virtual void visit(const Expand&) = 0;
+         virtual void visit(const Eval&) = 0;
+         virtual void visit(const Splice&) = 0;
          virtual void visit(const Function&) = 0;
-         virtual void visit(const Pair&) = 0;
+         virtual void visit(const Include&) = 0;
+         virtual void visit(const Exclude&) = 0;
+         virtual void visit(const DotTail&) = 0;
          virtual void visit(const List&) = 0;
          virtual void visit(const Vector&) = 0;
       };
+
+      template<typename T>
+      void
+      unary_form<T>::accept(Visitor& v) const {
+         v.visit(static_cast<const T&>(*this));
+      }
 
       // ---------------
       // -- Allocator --
@@ -295,25 +380,14 @@ namespace OpenAxiom {
             return std::less<BasicString>()(lhs.lexeme(), rhs.lexeme());
          }
 
-         bool operator()(const Quote& lhs, const Quote& rhs) const {
+         template<typename T>
+         bool
+         operator()(const unary_form<T>& lhs, const unary_form<T>& rhs) const {
             return std::less<const void*>()(lhs.body(), rhs.body());
          }
 
          bool operator()(const Anchor& lhs, const Anchor& rhs) const {
             return std::less<size_t>()(lhs.ref(), rhs.ref());
-         }
-
-         bool operator()(const Function& lhs, const Function& rhs) const {
-            return std::less<const void*>()(lhs.code(), rhs.code());
-         }
-
-         bool operator()(const Pair& lhs, const Pair& rhs) const {
-            std::less<const void*> cmp;
-            if (cmp(lhs.first(), rhs.first()))
-               return true;
-            if (cmp(rhs.first(), lhs.first()))
-               return false;
-            return cmp(lhs.second(), rhs.second());
          }
       };
 
@@ -345,8 +419,14 @@ namespace OpenAxiom {
          const Reference* make_reference(const Token&, size_t);
          const Anchor* make_anchor(size_t, const Syntax*);
          const Quote* make_quote(const Syntax*);
+         const Antiquote* make_antiquote(const Syntax*);
+         const Expand* make_expand(const Syntax*);
+         const Eval* make_eval(const Syntax*);
+         const Splice* make_splice(const Syntax*);
          const Function* make_function(const Syntax*);
-         const Pair* make_pair(const Syntax*, const Syntax*);
+         const Include* make_include(const Syntax*);
+         const Exclude* make_exclude(const Syntax*);
+         const DotTail* make_dot_tail(const Syntax*);
          const List* make_list(const std::vector<const Syntax*>&);
          const Vector* make_vector(const std::vector<const Syntax*>&);
          
@@ -358,8 +438,14 @@ namespace OpenAxiom {
          UniqueAllocator<Anchor> ancs;
          UniqueAllocator<Reference> refs;
          UniqueAllocator<Quote> quotes;
+         UniqueAllocator<Antiquote> antis;
+         UniqueAllocator<Expand> exps;
          UniqueAllocator<Function> funs;
-         UniqueAllocator<Pair> pairs;
+         UniqueAllocator<Include> incs;
+         UniqueAllocator<Exclude> excs;
+         UniqueAllocator<Eval> evls;
+         UniqueAllocator<Splice> spls;
+         UniqueAllocator<DotTail> tails;
          Memory::Factory<List> lists;
          Memory::Factory<Vector> vectors;
          List empty_list;
@@ -388,9 +474,28 @@ namespace OpenAxiom {
          const Symbol* parse_uninterned(const Token*&, const Token*);
          const Function* parse_function(const Token*&, const Token*);
          const Quote* parse_quote(const Token*&, const Token*);
+         const Antiquote* parse_antiquote(const Token*&, const Token*);
+         const Include* parse_include(const Token*&, const Token*);
+         const Exclude* parse_exclude(const Token*&, const Token*);
+         const Expand* parse_expand(const Token*&, const Token*);
+         const Eval* parse_eval(const Token*&, const Token*);
+         const Splice* parse_splice(const Token*&, const Token*);
          const Vector* parse_vector(const Token*&, const Token*);
-         const Syntax* parse_list_or_pair(const Token*&, const Token*);
+         const List* parse_list(const Token*&, const Token*);
          const Syntax* parse_syntax(const Token*&, const Token*);
+      };
+
+      // ------------
+      // -- Module --
+      // ------------
+      // Entire s-expression input file.
+      struct Module : std::vector<const Syntax*> {
+         explicit Module(const std::string&);
+         const std::string& name() const { return nm; }
+      private:
+         const std::string nm;
+         StringPool raw_strs;
+         Allocator allocator;
       };
    }
 }
