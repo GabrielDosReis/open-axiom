@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,9 +38,28 @@
 
 namespace OpenAxiom {
    namespace Sexpr {
+      template<typename T, int N>
+      static inline int
+      length(const T(&)[N]) {
+         return N;
+      }
+
+      template<typename Sequence>
+      static inline typename Sequence::const_pointer
+      begin_ptr(const Sequence& s) {
+         return &*s.begin();
+      }
+
+      template<typename Sequence>
+      static inline typename Sequence::const_pointer
+      end_ptr(const Sequence& s) {
+         return s.empty() ? 0 : &*s.begin() + s.size();
+      }
+
       std::ostream&
       operator<<(std::ostream& os, const Token& t) {
          switch (t.type) {
+         case Token::semicolon: os << "SEMICOLON"; break;
          case Token::dot: os << "DOT"; break;
          case Token::comma: os << "COMMA"; break;
          case Token::open_paren: os << "OPEN_PAREN"; break;
@@ -51,6 +70,10 @@ namespace OpenAxiom {
          case Token::sharp_open_paren: os << "SHARP_OPEN_PAREN"; break;
          case Token::sharp_apostrophe: os << "SHARP_APOSTROPHE"; break;
          case Token::sharp_colon: os << "SHARP_COLON"; break;
+         case Token::sharp_plus: os << "SHARP_PLUS"; break;
+         case Token::sharp_minus: os << "SHARP_MINUS"; break;
+         case Token::sharp_dot: os << "SHARP_DOT"; break;
+         case Token::comma_at: os << "COMMA_AT"; break;
          case Token::integer: os << "INTEGER"; break;
          case Token::character: os << "CHARACTER"; break;
          case Token::string: os << "STRING"; break;
@@ -73,6 +96,14 @@ namespace OpenAxiom {
          return os << ')';
       }
 
+      // -----------
+      // -- Lexer --
+      // -----------
+      static void
+      syntax_error(const std::string& s) {
+         throw BasicError(s);
+      }
+
       // Return true if character `c' introduces a blank.
       static bool
       is_blank(char c) {
@@ -85,7 +116,7 @@ namespace OpenAxiom {
       is_delimiter(char c) {
          return is_blank(c)
             or c == '(' or c == ')' or c == '\''
-            or c == '`' or c == '\\' or c == '#';
+            or c == '`' or c == '#';
       }
 
       // Move `cur' past all consecutive blank characters, and
@@ -97,11 +128,27 @@ namespace OpenAxiom {
          return cur;
       }
 
+      // Move `cur' to end-of-line marker.
+      static const char*
+      skip_to_eol(const char*& cur, const char* end) {
+         // FIXME: properly handle CR+LF.
+         while (cur < end and *cur != '\n')
+            ++cur;
+         return cur;
+      }
+
       // Move `cur' until a word boundary is reached.
       static const char*
       skip_to_word_boundary(const char*& cur, const char* end) {
-         while (cur < end and not is_delimiter(*cur))
-            ++cur;
+         bool saw_escape = false;
+         for (; cur < end; ++cur) {
+            if (saw_escape)
+               saw_escape = false;
+            else if (*cur == '\\')
+               saw_escape = true;
+            else if (is_delimiter(*cur))
+               break;
+         }
          return cur;
       }
 
@@ -109,19 +156,17 @@ namespace OpenAxiom {
       // Return true if the character was seen.
       static bool
       skip_to_nonescaped_char(const char*& cur, const char* end, char c) {
+         bool saw_escape = false;
          for (; cur < end; ++cur)
-            if (cur[0] == c and cur[-1] != '\\') {
+            if (saw_escape)
+               saw_escape = false;
+            else if (*cur == '\\')
+               saw_escape = true;
+            else if (*cur == c) {
                ++cur;
                return true;
             }
          return false;
-      }
-
-      // Move `cur' past the closing fence of an absolute identifier.
-      // Return true if the closing fence was effectively seen.
-      static inline bool
-      skip_to_fence(const char*& cur, const char* end) {
-         return skip_to_nonescaped_char(cur, end, '|');
       }
 
       // Move `cur' past the closing quote of string literal.
@@ -137,8 +182,9 @@ namespace OpenAxiom {
       identifier_part(char c) {
          switch (c) {
          case '+': case '-': case '*': case '/': case '%': case '^':
-         case '~': case '@': case '$': case '&': case ':': case '=':
+         case '~': case '@': case '$': case '&': case '=':
          case '<': case '>': case '?': case '!': case '_':
+         case '[': case ']': case '{': case '}':
             return true;
          default:
             return isalnum(c);
@@ -149,7 +195,8 @@ namespace OpenAxiom {
       // the sharp character.
       static bool
       special_after_sharp(char c) {
-         return c == '(' or c == '\'' or c == ':';
+         return c == '(' or c == '\'' or c == ':'
+            or c == '+' or c == '-' or c == '.';
       }
 
       // Return true if the sequence `[cur, end)' has a prefix that is 
@@ -175,50 +222,101 @@ namespace OpenAxiom {
             t.type = Token::integer;
       }
 
+      // Returns true if the first characters in the range
+      // [cur, last) start an identifier.
+      static bool
+      start_symbol(const char* cur, const char* last) {
+         if (cur >= last)
+            return false;
+         return identifier_part(*cur)
+            or *cur == '|' or *cur == ':';
+      }
+
+      // We are processing a symbol token.  Accumulate all
+      // legitimate characters till the end of the token.
+      static void
+      skip_to_end_of_symbol(const char*& cur, const char* end) {
+         const char c = *cur;
+         if (*cur == '|') 
+            skip_to_nonescaped_char(++cur, end, c);
+         else
+            skip_to_word_boundary(cur, end);
+         if (cur < end and *cur == ':')
+            skip_to_end_of_symbol(cur, end);
+      }
+
+      static Token
+      match_maybe_symbol(Lexer* lexer, const char*& cur, const char* end) {
+         Token t = { Token::identifier, 0 };
+         const char* start = cur;
+         skip_to_end_of_symbol(cur, end);
+         t.lexeme = lexer->intern(start, cur - start);
+         maybe_reclassify(t);
+         return t;
+      }
+
       const char*
       Lexer::tokenize(const char* cur, const char* end) {
          while (skip_blank(cur, end) < end) {
             Token t = { Token::unknown, 0 };
             switch (*cur) {
-            case '.': case ',': case '(': case ')':
-            case '\'': case '\\':
+            case ';': {
+               const char* start = cur;
+               t.type = Token::semicolon;
+               skip_to_eol(cur, end);
+               t.lexeme = intern(start, cur - start);
+               break;
+            }
+               
+            case '.': case '(': case ')': case '\'': case '`':
                t.type = Token::Type(OPENAXIOM_SEXPR_TOKEN1(*cur));
-               t.lexeme = strings.intern(cur, 1);
+               t.lexeme = intern(cur, 1);
                ++cur;
+               break;
+
+            case ',': {
+               const char* start = cur;
+               if (++cur < end and *cur == '@') {
+                  t.type = Token::comma_at;
+                  ++cur;
+               }
+               else
+                  t.type = Token::comma;
+               t.lexeme = intern(start, cur - start);
+               break;
+            }
+
+            case '\\':
+               t = match_maybe_symbol(this, cur, end);
                break;
 
             case '#': {
                const char* start = cur;
                if (cur + 1 < end and special_after_sharp(cur[1])) {
                   t.type = Token::Type(OPENAXIOM_SEXPR_TOKEN2(cur[0], cur[1]));
-                  t.lexeme = strings.intern(cur, 2);
+                  t.lexeme = intern(cur, 2);
                   cur += 2;
+               }
+               else if (cur + 1 < end and cur[1] == '\\') {
+                  start = cur += 2;
+                  if (not isalnum(*cur))
+                     ++cur;
+                  else
+                     skip_to_word_boundary(cur, end);
+                  t.type = Token::character;
+                  t.lexeme = intern(start, cur - start);
                }
                else if (only_digits_before_equal_or_shap(++cur, end)) {
                   t.type = *cur == '#'
                      ? Token::sharp_integer_sharp
                      : Token::sharp_integer_equal;
-                  t.lexeme = strings.intern(start, cur - start + 1);
+                  t.lexeme = intern(start, cur - start + 1);
                   ++cur;
-               }
-               else if (cur + 1 < end and cur[1] == '\\') {
-                  start = cur += 2;
-                  skip_to_word_boundary(cur, end);
-                  t.type = Token::character;
-                  t.lexeme = strings.intern(start, cur - start);
                }
                else {
                   skip_to_word_boundary(cur, end);
-                  t.lexeme = strings.intern(start, cur - start);
+                  t.lexeme = intern(start, cur - start);
                }
-               break;
-            }
-
-            case '|': {
-               const char* start = cur;
-               skip_to_fence(++cur, end);
-               t.type = Token::identifier;
-               t.lexeme = strings.intern(start, cur - start);
                break;
             }
 
@@ -226,22 +324,17 @@ namespace OpenAxiom {
                const char* start = cur;
                skip_to_quote(++cur, end);
                t.type = Token::string;
-               t.lexeme = strings.intern(start, cur - start);
+               t.lexeme = intern(start, cur - start);
                break;
             }
 
             default:
-               if (identifier_part(*cur)) {
-                  const char* start = cur;
-                  skip_to_word_boundary(++cur, end);
-                  t.type = Token::identifier;
-                  t.lexeme = strings.intern(start, cur - start);
-                  maybe_reclassify(t);
-               }
+               if (start_symbol(cur, end))
+                  t = match_maybe_symbol(this, cur, end);
                else {
                   const char* start = cur;
                   skip_to_word_boundary(++cur, end);
-                  t.lexeme = strings.intern(start, cur - start);
+                  t.lexeme = intern(start, cur - start);
                }
                break;
             }
@@ -323,32 +416,45 @@ namespace OpenAxiom {
       // -----------
       // -- Quote --
       // -----------
-      Quote::Quote(const Syntax* s) : form(s) { }
+      Quote::Quote(const Syntax* s) : unary_form<Quote>(s) { }
 
-      void
-      Quote::accept(Visitor& v) const {
-         v.visit(*this);
-      }
+      // ---------------
+      // -- Antiquote --
+      // ---------------
+      Antiquote::Antiquote(const Syntax* s) : unary_form<Antiquote>(s) { }
+
+      // ------------
+      // -- Expand --
+      // ------------
+      Expand::Expand(const Syntax* s) : unary_form<Expand>(s) { }
+
+      // ----------
+      // -- Eval --
+      // ----------
+      Eval::Eval(const Syntax* s) : unary_form<Eval>(s) { }
+
+      // ------------
+      // -- Splice --
+      // ------------
+      Splice::Splice(const Syntax* s) : unary_form<Splice>(s) { }
 
       // --------------
       // -- Function --
       // --------------
-      Function::Function(const Syntax* s) : form(s) { }
+      Function::Function(const Syntax* s) : unary_form<Function>(s) { }
 
-      void
-      Function::accept(Visitor& v) const {
-         v.visit(*this);
-      }
+      // -------------
+      // -- Include --
+      Include::Include(const Syntax* s) : unary_form<Include>(s) { }
 
-      // ----------
-      // -- Pair --
-      // ----------
-      Pair::Pair(const Syntax* f, const Syntax* s) : elts(f, s) { }
+      // -------------
+      // -- Exclude --
+      Exclude::Exclude(const Syntax* s) : unary_form<Exclude>(s) { }
 
-      void
-      Pair::accept(Visitor& v) const {
-         v.visit(*this);
-      }
+      // -------------
+      // -- DotTail --
+      // -------------
+      DotTail::DotTail(const Syntax* f) : unary_form<DotTail>(f) { }
 
       // ----------
       // -- List --
@@ -459,14 +565,44 @@ namespace OpenAxiom {
          return quotes.allocate(s);
       }
 
+      const Antiquote*
+      Allocator::make_antiquote(const Syntax* s) {
+         return antis.allocate(s);
+      }
+
+      const Expand*
+      Allocator::make_expand(const Syntax* s) {
+         return exps.allocate(s);
+      }
+
+      const Eval*
+      Allocator::make_eval(const Syntax* s) {
+         return evls.allocate(s);
+      }
+
+      const Splice*
+      Allocator::make_splice(const Syntax* s) {
+         return spls.allocate(s);
+      }
+
       const Function*
       Allocator::make_function(const Syntax* s) {
          return funs.allocate(s);
       }
 
-      const Pair*
-      Allocator::make_pair(const Syntax* f, const Syntax* s) {
-         return pairs.allocate(f, s);
+      const Include*
+      Allocator::make_include(const Syntax* s) {
+         return incs.allocate(s);
+      }
+
+      const Exclude*
+      Allocator::make_exclude(const Syntax* s) {
+         return excs.allocate(s);
+      }
+
+      const DotTail*
+      Allocator::make_dot_tail(const Syntax* f) {
+         return tails.allocate(f);
       }
 
       const List*
@@ -490,7 +626,7 @@ namespace OpenAxiom {
       // Signal a parse error
       static void
       parse_error(const std::string& s) {
-         throw SystemError(s);
+         throw BasicError(s);
       }
 
       // Signal that an expected syntax object was missing
@@ -531,10 +667,34 @@ namespace OpenAxiom {
          return alloc.make_symbol(*cur++, kind);
       }
 
+      // List of lower case character names
+      static const char* charname[] = {
+         "newline", "space", "page", "tab",
+         "backspace", "return", "linefeed"
+      };
+
+      static bool
+      equal_character_name(BasicString lhs, const char* rhs) {
+         if (lhs->size() != strlen(rhs))
+            return false;
+         for (const char* cur = lhs->begin(); cur != lhs->end(); ++cur)
+            if (tolower(*cur) != *rhs++)
+               return false;
+         return true;
+      }
+
+      static bool
+      valid_character_name(BasicString s) {
+         for (int i = 0; i < length(charname); ++i)
+            if (equal_character_name(s, charname[i]))
+               return true;
+         return false;
+      }
+
       const Character*
       Parser::parse_character(const Token*& cur, const Token* last) {
-         // NOTE: For the time being, accept only simple characters.
-         if (cur->lexeme->size() != 1)
+         if (cur->lexeme->size() != 1
+             and not valid_character_name(cur->lexeme))
             parse_error("invalid literal character syntax");
          return alloc.make_character(*cur++);
       }
@@ -582,11 +742,71 @@ namespace OpenAxiom {
          return alloc.make_quote(parse_syntax(cur, last));
       }
 
+      // Parse an antiquotation
+      const Antiquote*
+      Parser::parse_antiquote(const Token*& cur, const Token* last) {
+         if (cur == last)
+            unexpected_end_of_input("backquote sign");
+         return alloc.make_antiquote(parse_syntax(cur, last));
+      }
+
+      // Parse an expansion request form
+      const Expand*
+      Parser::parse_expand(const Token*& cur, const Token* last) {
+         const Syntax* s = parse_syntax(cur, last);
+         if (s == 0)
+            unexpected_end_of_input("comma sign");
+         return alloc.make_expand(s);
+      }
+
+      // Parse conditional inclusions
+      const Include*
+      Parser::parse_include(const Token*& cur, const Token* last) {
+         const Syntax* s = parse_syntax(cur, last);
+         if (s == 0)
+            unexpected_end_of_input("sharp-plus sign");
+         return alloc.make_include(s);
+      }
+
+      const Exclude*
+      Parser::parse_exclude(const Token*& cur, const Token* last) {
+         const Syntax* s = parse_syntax(cur, last);
+         if (s == 0)
+            unexpected_end_of_input("sharp-minus sign");
+         return alloc.make_exclude(s);
+      }
+
+      const Eval*
+      Parser::parse_eval(const Token*& cur, const Token* last) {
+         const Syntax* s = parse_syntax(cur, last);
+         if (s == 0)
+            unexpected_end_of_input("sharp-dot sign");
+         return alloc.make_eval(s);
+      }
+
+      const Splice*
+      Parser::parse_splice(const Token*& cur, const Token* last) {
+         const Syntax* s = parse_syntax(cur, last);
+         if (s == 0)
+            unexpected_end_of_input("comma-at sign");
+         return alloc.make_splice(s);
+      }
+
+      // Skip tokens that are semantically blanks, e.g. comments.
+      // Return true if not at end of tokens.
+      static bool
+      skip_ignorable_tokens(const Token*& cur, const Token* last) {
+         while (cur < last and cur->type == Token::semicolon)
+            ++cur;
+         return cur != last;
+      }
+
       // Parse a vector of syntax objects: #(s .. s)
       const Vector*
       Parser::parse_vector(const Token*& cur, const Token* last) {
          std::vector<const Syntax*> elts;
-         while (cur < last and cur->type != Token::close_paren)
+         while (skip_ignorable_tokens(cur, last)
+                and cur->type != Token::close_paren)
             elts.push_back(parse_syntax(cur, last));
          if (cur == last)
             missing_closer_for("vector");
@@ -595,31 +815,23 @@ namespace OpenAxiom {
       }
 
       // Constructs a pair or a list syntax object.
-      // This function is hairy for three reasons: (a) it is not known
-      // whether we list or a pair until after we have seen the
-      // enclosed tokens; (b) a dot is allowed at most once; (c) Lisp-style
-      // improper lists are not allowed.
-      const Syntax*
-      Parser::parse_list_or_pair(const Token*& cur, const Token* last) {
+      const List*
+      Parser::parse_list(const Token*& cur, const Token* last) {
          std::vector<const Syntax*> elts;
-         bool saw_dot = false;
-         while (cur < last and cur->type != Token::close_paren) {
+         while (skip_ignorable_tokens(cur, last)
+                and cur->type != Token::close_paren) {
             if (cur->type == Token::dot) {
-               if (elts.size() != 1)
-                  parse_error("unexpected dot sign");
-               saw_dot = true;
-               ++cur;
-               continue;
+               skip_ignorable_tokens(++cur, last);
+               if (const Syntax* s = parse_syntax(cur, last)) {
+                  elts.push_back(alloc.make_dot_tail(s));
+                  break;
+               }
             }
             elts.push_back(parse_syntax(cur, last));
-            if (saw_dot && elts.size() == 2)
-               break;
          }
          if (cur == last or cur->type != Token::close_paren)
-            missing_closer_for(saw_dot ? "pair" : "list");
+            missing_closer_for("list");
          ++cur;
-         if (saw_dot)
-            return alloc.make_pair(elts.front(), elts.back());
          return alloc.make_list(elts);
       }
 
@@ -628,6 +840,9 @@ namespace OpenAxiom {
 
       const Syntax*
       Parser::parse_syntax(const Token*& cur, const Token* last) {
+         if (not skip_ignorable_tokens(cur, last))
+            return 0;
+
          switch (cur->type) {
          case Token::integer:
             return alloc.make_integer(*cur++);
@@ -660,7 +875,25 @@ namespace OpenAxiom {
             return parse_quote(++cur, last);
 
          case Token::open_paren:
-            return parse_list_or_pair(++cur, last);
+            return parse_list(++cur, last);
+
+         case Token::sharp_plus:
+            return parse_include(++cur, last);
+
+         case Token::sharp_minus:
+            return parse_exclude(++cur, last);
+
+         case Token::sharp_dot:
+            return parse_eval(++cur, last);
+
+         case Token::backquote:
+            return parse_antiquote(++cur, last);
+
+         case Token::comma:
+            return parse_expand(++cur, last);
+
+         case Token::comma_at:
+            return parse_splice(++cur, last);
 
          default:
             parse_error(std::string("parse error before ")
@@ -671,9 +904,23 @@ namespace OpenAxiom {
 
       const Token*
       Parser::parse(const Token* cur, const Token* last) {
-         while (cur < last) 
-            syns.push_back(parse_syntax(cur, last));
+         while (cur < last)
+            if (const Syntax* s = parse_syntax(cur, last))
+               syns.push_back(s);
          return cur;
+      }
+
+      Module::Module(const std::string& s) : nm(s) {
+         std::vector<Token> tokens;
+         Memory::FileMapping input(s);
+         Lexer lexer(raw_strs, tokens);
+         const char* rest = lexer.tokenize(input.begin(), input.end());
+         if (rest != input.end())
+            syntax_error("syntax error");
+         Parser parser(allocator, *this);
+         const Token* tok = parser.parse(begin_ptr(tokens), end_ptr(tokens));
+         if (tok != end_ptr(tokens))
+            parse_error("parse error");
       }
    }
 }
