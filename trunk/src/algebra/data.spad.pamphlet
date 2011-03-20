@@ -301,25 +301,29 @@ import Byte
 ++   Note: a value of type ByteBuffer is 0-based indexed, as opposed
 ++         Vector, but not unlike PrimitiveArray Byte.
 ByteBuffer(): Public == Private where
+  macro NNI == NonNegativeInteger
   Public == Join(OneDimensionalArrayAggregate Byte,_
               CoercibleTo PrimitiveArray Byte,CoercibleTo String) with
-    byteBuffer: NonNegativeInteger -> %
+    byteBuffer: NNI -> %
       ++ byteBuffer(n) creates a buffer of capacity n, and length 0.
-    capacity: % -> NonNegativeInteger
+    capacity: % -> NNI
       ++ capacity(buf) returns the pre-allocated maximum size of `buf'.
-    setLength!: (%,NonNegativeInteger) -> NonNegativeInteger
+    setLength!: (%,NNI) -> NNI
       ++ setLength!(buf,n) sets the number of active bytes in the
       ++ `buf'.  Error if `n' is more than the capacity.
     finiteAggregate  ++ A ByteBuffer object is a finite aggregate
   Private == add
+    import %bytevec2str: (PrimitiveArray Byte,NNI) -> String
+      from Foreign Builtin
+
     -- A buffer object is a pair of a simple array, and the count
     -- of active number in the array.  Note that we cannot use
     -- Lisp-level fill pointers because that would not guarantee that
     -- the implementation uses a simple representation, therefore
     -- complicating FFI interface.
-    Rep == Record(ary: PrimitiveArray Byte, sz: NonNegativeInteger)
+    Rep == Record(ary: PrimitiveArray Byte, sz: NNI)
 
-    makeByteBuffer(n: NonNegativeInteger): % ==
+    makeByteBuffer(n: NNI): % ==
       per [makeByteBuffer(n)$Foreign(Builtin),n]$Rep
 
     byteBuffer n == makeByteBuffer n
@@ -359,11 +363,8 @@ ByteBuffer(): Public == Private where
     coerce(buf: %): PrimitiveArray Byte ==
       rep(buf).ary
 
-    coerce(buf: %): String == 
-      s: String := MAKE_-STRING(#buf)$Foreign(Builtin)
-      for i in 0..maxIndex buf repeat
-        qsetelt!(s,i + 1,qelt(buf,i)::Character)$String
-      s
+    coerce(buf: %): String ==
+      %bytevec2str(rep(buf).ary,#buf)
 
     construct l ==
       buf := makeByteBuffer(#l)

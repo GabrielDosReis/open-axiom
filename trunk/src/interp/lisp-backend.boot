@@ -317,6 +317,12 @@ expandStrlt ['%strlt,x,y] ==
 expandStrstc ['%strstc,x,y,z] ==
   expandToVMForm ['%store,['%schar,x,y],z]
 
+expandBytevec2str ['%bytevec2str,x,y] ==
+  ['COERCE,['SUBSEQ,expandToVMForm x,0,expandToVMForm y],quoteForm '%String]
+
+expandStr2bytevec ['%str2bytevec,x] ==
+  ['COERCE,expandToVMForm x,quoteForm ['%Vector,'%Byte]]
+
 -- bit vector operations
 expandBitvecnot ['%bitvecnot,x] ==
   ['BIT_-NOT,expandToVMForm x]
@@ -447,7 +453,7 @@ for x in [
     ['%or,    :'OR],
 
     -- character operations
-    ['%ccstmax,:'_$CharCodeMax],
+    ['%ccstmax,:'_$CharCodeMaximum],
     ['%ceq,    :'CHAR_=],
     ['%clt,    :'CHAR_<],
     ['%cle,    :'CHAR_<_=],
@@ -643,6 +649,8 @@ for x in [
    ['%streq,   :function expandStreq],
    ['%strlt,   :function expandStrlt],
    ['%strstc,  :function expandStrstc],
+   ['%bytevec2str, :function expandBytevec2str],
+   ['%str2bytevec, :function expandStr2bytevec],
 
    ['%bitvecnot,    :function expandBitvecnot],
    ['%bitvecand,    :function expandBitvecand],

@@ -448,7 +448,7 @@ $VMsideEffectFreeOperators ==
     %ccst %ccstmax %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown
     %sname
     %strlength %streq %i2s %schar %strlt %strconc %strcopy
-    %vector %aref %vref %vlength
+    %vector %aref %vref %vlength %bytevec2str %str2bytevec
     %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
