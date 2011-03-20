@@ -60,8 +60,8 @@
              (T T)))))))
 
 (DEFUN |shoeLineToks| (|s|)
-  (PROG (|$linepos| |$floatok| |$sz| |$n| |$ln| |$r| |$f| |toks| |a|
-            |dq| |command|)
+  (PROG (|$linepos| |$floatok| |$sz| |$n| |$ln| |$r| |$f| |toks| |dq|
+            |command|)
     (DECLARE (SPECIAL |$floatok| |$f| |$sz| |$linepos| |$ln| |$r| |$n|))
     (RETURN
       (PROGN
@@ -85,13 +85,6 @@
               (CONS (LIST |dq|) |$r|))
              ((SETQ |command| (|shoeLisp?| |$ln|))
               (|shoeLispToken| |$r| |command|))
-             ((SETQ |command| (|shoePackage?| |$ln|))
-              (SETQ |a| (CONCAT "(IN-PACKAGE " |command| ")"))
-              (SETQ |dq|
-                    (|dqUnit|
-                        (|shoeConstructToken| |$ln| |$linepos|
-                            (|shoeLeafLisp| |a|) 0)))
-              (CONS (LIST |dq|) |$r|))
              (T (|shoeLineToks| |$r|))))
           (T (SETQ |toks| NIL)
              (LOOP

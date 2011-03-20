@@ -1069,79 +1069,24 @@
                        |stream| |a|))))
             (SETQ |bfVar#23| (CDR |bfVar#23|))))))))
 
-(DEFUN FBO (|name| |fn|) (|shoeGeneralFC| #'BO |name| |fn|))
-
-(DEFUN FEV (|name| |fn|)
-  (|shoeGeneralFC| #'EVAL-BOOT-FILE |name| |fn|))
-
-(DEFUN |shoeGeneralFC| (|f| |name| |fn|)
-  (PROG (|filename| |a| |infn|)
-    (DECLARE (SPECIAL |$GenVarCounter| |$bfClamming|))
-    (RETURN
-      (PROGN
-        (SETQ |$bfClamming| NIL)
-        (SETQ |$GenVarCounter| 0)
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (SETQ |a|
-              (|shoeOpenInputFile| |a| |infn|
-                  (|shoeFindName2| |fn| |name| |a|)))
-        (SETQ |filename|
-              (COND
-                ((< 8 (LENGTH |name|)) (|subString| |name| 0 8))
-                (T |name|)))
-        (COND (|a| (FUNCALL |f| (CONCAT "/tmp/" |filename|))) (T NIL))))))
-
-(DEFUN |shoeFindName2| (|fn| |name| |a|)
-  (PROG (|filename| |lines|)
-    (RETURN
-      (PROGN
-        (SETQ |lines| (|shoeFindLines| |fn| |name| |a|))
-        (COND
-          (|lines| (SETQ |filename|
-                         (COND
-                           ((< 8 (LENGTH |name|))
-                            (|subString| |name| 0 8))
-                           (T |name|)))
-                   (SETQ |filename|
-                         (CONCAT "/tmp/" |filename| ".boot"))
-                   (|shoeOpenOutputFile| |stream| |filename|
-                       (LET ((|bfVar#24| |lines|) (|line| NIL))
-                         (LOOP
-                           (COND
-                             ((OR (ATOM |bfVar#24|)
-                                  (PROGN
-                                    (SETQ |line| (CAR |bfVar#24|))
-                                    NIL))
-                              (RETURN NIL))
-                             (T (|shoeFileLine| |line| |stream|)))
-                           (SETQ |bfVar#24| (CDR |bfVar#24|)))))
-                   T)
-          (T NIL))))))
-
-(DEFUN |shoeTransform2| (|str|)
-  (|bNext| #'|shoeItem|
-           (|streamTake| 1
-               (|bNext| #'|shoePileInsert|
-                        (|bNext| #'|shoeLineToks| |str|)))))
-
 (DEFUN |shoeItem| (|str|)
   (PROG (|dq|)
     (RETURN
       (PROGN
         (SETQ |dq| (CAR |str|))
-        (CONS (LIST (LET ((|bfVar#26| NIL)
-                          (|bfVar#25| (|shoeDQlines| |dq|))
+        (CONS (LIST (LET ((|bfVar#25| NIL)
+                          (|bfVar#24| (|shoeDQlines| |dq|))
                           (|line| NIL))
                       (LOOP
                         (COND
-                          ((OR (ATOM |bfVar#25|)
+                          ((OR (ATOM |bfVar#24|)
                                (PROGN
-                                 (SETQ |line| (CAR |bfVar#25|))
+                                 (SETQ |line| (CAR |bfVar#24|))
                                  NIL))
-                           (RETURN (NREVERSE |bfVar#26|)))
-                          (T (SETQ |bfVar#26|
-                                   (CONS (CAR |line|) |bfVar#26|))))
-                        (SETQ |bfVar#25| (CDR |bfVar#25|)))))
+                           (RETURN (NREVERSE |bfVar#25|)))
+                          (T (SETQ |bfVar#25|
+                                   (CONS (CAR |line|) |bfVar#25|))))
+                        (SETQ |bfVar#24| (CDR |bfVar#24|)))))
               (CDR |str|))))))
 
 (DEFUN |stripm| (|x| |pk| |bt|)
@@ -1176,23 +1121,6 @@
                                 T))))))
            (COMPILE |name| (CONS 'LAMBDA (CONS |bv| |body|))))
           (T (EVAL |fn|)))))))
-
-(DEFUN FC (|name| |fn|)
-  (PROG (|infn|)
-    (DECLARE (SPECIAL |$GenVarCounter|))
-    (RETURN
-      (PROGN
-        (SETQ |$GenVarCounter| 0)
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (|shoeOpenInputFile| |a| |infn|
-            (|shoeFindName| |fn| |name| |a|))))))
-
-(DEFUN |shoeFindName| (|fn| |name| |a|)
-  (PROG (|lines|)
-    (RETURN
-      (PROGN
-        (SETQ |lines| (|shoeFindLines| |fn| |name| |a|))
-        (|shoePCompileTrees| (|shoeTransformString| |lines|))))))
 
 (DEFUN |shoePCompileTrees| (|s|)
   (LOOP

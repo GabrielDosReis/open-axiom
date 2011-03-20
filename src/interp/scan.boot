@@ -279,7 +279,7 @@ lineoftoks(s)==
     [[[b,s]],:$r]
   while $n<$sz repeat
     toks := dqAppend(toks,scanToken())
-  null toks => [[],:$r]
+  null toks => [nil,:$r]
   [[[toks,s]],:$r]
 
 
@@ -312,7 +312,6 @@ scanToken() ==
 
 -- to pair badge and badgee
 
--- lfid x== ["id",makeSymbol x]
 lfid x ==
   ["id",makeSymbol(x, '"BOOT")]
 
@@ -320,12 +319,7 @@ lfkey x ==
   ["key",keyword x]
 
 lfinteger x==
-           ["integer",x]
---     if x = '"0"
---     then ["id",makeSymbol x]
---     else if x = '"1"
---          then ["id",makeSymbol x]
---          else ["integer",x]
+  ["integer",x]
 
 lfrinteger (r,x)==
   ["integer",strconc (r,strconc('"r",x))]
@@ -352,15 +346,14 @@ lfspaces x ==
   ["spaces",x]
 
 constoken(ln,lp,b,n)==
---  [b.0,b.1,[lp,:n]]
   a := [b.0,:b.1]
   ncPutQ(a,"posn",[lp,:n])
   a
 
 scanEscape()==
   $n := $n+1
-  a := scanEsc()
-  if a then scanWord true else nil
+  scanEsc() => scanWord true
+  nil
 
 scanEsc()==
   $n >= $sz =>
@@ -379,7 +372,7 @@ scanEsc()==
     false
   $n = n1 => true
   stringChar($ln,n1) = char "__" =>
-    $n:=n1+1
+    $n := n1+1
     scanEsc()
     false
   $n := n1
@@ -432,7 +425,7 @@ scanKeyTr w==
   lfkey w
 
 scanPossFloat (w)==
-  $n>=$sz or not digit? $ln.$n => lfkey w
+  $n >= $sz or not digit? $ln.$n => lfkey w
   w := spleI(function digit?)
   scanExponent('"0",w)
 

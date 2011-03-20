@@ -620,36 +620,6 @@ shoeXReport stream==
       a := strconc(PNAME i,'" is used in ")
       bootOutLines( SSORT GETHASH(i,$bootUsed),stream,a)
  
-FBO (name,fn)== 
-  shoeGeneralFC(function BO,name,fn)
- 
-FEV(name,fn)== 
-  shoeGeneralFC(function EVAL_-BOOT_-FILE,name,fn)
- 
-shoeGeneralFC(f,name,fn)==
-   $bfClamming :=false
-   $GenVarCounter  := 0
-   infn:=shoeAddbootIfNec fn
-   a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
-   filename:= if # name > 8 then subString(name,0,8) else name
-   a =>  FUNCALL(f, strconc('"/tmp/",filename))
-   nil
- 
-shoeFindName2(fn,name,a)==
-  lines:=shoeFindLines(fn,name,a)
-  lines =>
-    filename:= if # name > 8 then subString(name,0,8) else name
-    filename := strconc('"/tmp/",filename,'".boot")
-    shoeOpenOutputFile(stream, filename,
-	 for line in lines repeat shoeFileLine (line,stream))
-    true
-  false
- 
-shoeTransform2 str==
-    bNext(function shoeItem,
-      streamTake(1, bNext(function shoePileInsert,
-           bNext(function shoeLineToks, str))))
- 
 shoeItem (str)==
   dq:=first str
   [[[first line for line in  shoeDQlines dq]],:rest str]
@@ -667,15 +637,6 @@ shoePCompile  fn==
     fn is ['DEFUN,name,bv,:body]=>
           COMPILE (name,['LAMBDA,bv,:body])
     EVAL fn
- 
-FC(name,fn)==
-   $GenVarCounter  := 0
-   infn:=shoeAddbootIfNec fn
-   shoeOpenInputFile(a,infn,shoeFindName(fn,name, a))
- 
-shoeFindName(fn,name,a)==
-  lines:=shoeFindLines(fn,name,a)
-  shoePCompileTrees shoeTransformString lines
  
 shoePCompileTrees s==
   while not bStreamNull s repeat

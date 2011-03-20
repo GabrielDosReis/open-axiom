@@ -249,6 +249,7 @@ for i in [ _
   ["atom",        "ATOM"]  , _
   ["bitmask",   "SBIT"] , _
   ["canonicalFilename", "PROBE-FILE"], _
+  ["charByName", "NAME-CHAR"] , _
   ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
   ["codePoint", "CHAR-CODE"], _
