@@ -1,3 +1,10 @@
+2011-03-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include
+	%bytevec2str and %str2bytevec opcode.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/data.spad.pamphlet (ByteBuffer): Tidy.
+
 2011-03-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot (FC): Remove.
