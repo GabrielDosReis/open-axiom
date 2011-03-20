@@ -109,27 +109,20 @@
 
 (DEFUN |bMap| (|f| |x|) (|bDelay| #'|bMap1| (LIST |f| |x|)))
 
-(DEFUN |bMap1| (&REST |z|)
-  (PROG (|x| |f|)
-    (RETURN
-      (PROGN
-        (SETQ |f| (CAR |z|))
-        (SETQ |x| (CADR |z|))
-        (COND
-          ((|bStreamNull| |x|) |$bStreamNil|)
-          (T (CONS (APPLY |f| (LIST (CAR |x|))) (|bMap| |f| (CDR |x|)))))))))
+(DEFUN |bMap1| (|f| |x|)
+  (COND
+    ((|bStreamNull| |x|) |$bStreamNil|)
+    (T (CONS (APPLY |f| (LIST (CAR |x|))) (|bMap| |f| (CDR |x|))))))
 
 (DEFUN |bDelay| (|f| |x|) (CONS '|nonnullstream| (CONS |f| |x|)))
 
 (DEFUN |bAppend| (|x| |y|) (|bDelay| #'|bAppend1| (LIST |x| |y|)))
 
-(DEFUN |bAppend1| (&REST |z|)
+(DEFUN |bAppend1| (|x| |y|)
   (COND
-    ((|bStreamNull| (CAR |z|))
-     (COND
-       ((|bStreamNull| (CADR |z|)) (LIST '|nullstream|))
-       (T (CADR |z|))))
-    (T (CONS (CAAR |z|) (|bAppend| (CDAR |z|) (CADR |z|))))))
+    ((|bStreamNull| |x|)
+     (COND ((|bStreamNull| |y|) (LIST '|nullstream|)) (T |y|)))
+    (T (CONS (CAR |x|) (|bAppend| (CDR |x|) |y|)))))
 
 (DEFUN |bNext| (|f| |s|) (|bDelay| #'|bNext1| (LIST |f| |s|)))
 
@@ -143,34 +136,29 @@
 
 (DEFUN |bRgen| (|s|) (|bDelay| #'|bRgen1| (LIST |s|)))
 
-(DEFUN |bRgen1| (&REST |s|)
+(DEFUN |bRgen1| (|s|)
   (PROG (|a|)
     (RETURN
       (PROGN
-        (SETQ |a| (|shoeReadLine| (CAR |s|)))
+        (SETQ |a| (|shoeReadLine| |s|))
         (COND
           ((|shoePLACEP| |a|) (LIST '|nullstream|))
-          (T (CONS |a| (|bRgen| (CAR |s|)))))))))
+          (T (CONS |a| (|bRgen| |s|))))))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
 
-(DEFUN |bIgen1| (&REST |n|)
-  (PROGN (SETQ |n| (+ (CAR |n|) 1)) (CONS |n| (|bIgen| |n|))))
+(DEFUN |bIgen1| (|n|)
+  (PROGN (SETQ |n| (+ |n| 1)) (CONS |n| (|bIgen| |n|))))
 
 (DEFUN |bAddLineNumber| (|f1| |f2|)
   (|bDelay| #'|bAddLineNumber1| (LIST |f1| |f2|)))
 
-(DEFUN |bAddLineNumber1| (&REST |f|)
-  (PROG (|f2| |f1|)
-    (RETURN
-      (PROGN
-        (SETQ |f1| (CAR |f|))
-        (SETQ |f2| (CADR |f|))
-        (COND
-          ((|bStreamNull| |f1|) (LIST '|nullstream|))
-          ((|bStreamNull| |f2|) (LIST '|nullstream|))
-          (T (CONS (CONS (CAR |f1|) (CAR |f2|))
-                   (|bAddLineNumber| (CDR |f1|) (CDR |f2|)))))))))
+(DEFUN |bAddLineNumber1| (|f1| |f2|)
+  (COND
+    ((|bStreamNull| |f1|) (LIST '|nullstream|))
+    ((|bStreamNull| |f2|) (LIST '|nullstream|))
+    (T (CONS (CONS (CAR |f1|) (CAR |f2|))
+             (|bAddLineNumber| (CDR |f1|) (CDR |f2|))))))
 
 (DEFUN |shoePrefixLisp| (|x|) (CONCAT ")lisp" |x|))
 

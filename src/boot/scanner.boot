@@ -64,7 +64,7 @@ dqToList s ==
   s = nil => nil
   first s
  
-shoeConstructToken(ln,lp,b,n) == 
+shoeConstructToken(lp,b,n) == 
   [b.0,b.1,:[lp,:n]]
 
 shoeTokType x == 
@@ -108,8 +108,7 @@ shoeLineToks(s)==
   $n = nil => shoeLineToks $r
   stringChar($ln,0) = char ")" =>
     command:=shoeLine? $ln=>
-      dq:=dqUnit shoeConstructToken
-	       ($ln,$linepos,shoeLeafLine command,0)
+      dq := dqUnit shoeConstructToken($linepos,shoeLeafLine command,0)
       [[dq],:$r]
     command:=shoeLisp? $ln=> shoeLispToken($r,command)
     shoeLineToks $r
@@ -119,13 +118,12 @@ shoeLineToks(s)==
   [[toks],:$r]
  
 shoeLispToken(s,string)==
-  string:=
-    #string = 0 or stringChar(string,0) = char ";" => '""
-    string
-  ln:=$ln
+  if #string = 0 or stringChar(string,0) = char ";" then
+    string := '""
+  ln := $ln
   linepos:=$linepos
   [r,:st]:=shoeAccumulateLines(s,string)
-  dq:=dqUnit shoeConstructToken(ln,linepos,shoeLeafLisp st,0)
+  dq := dqUnit shoeConstructToken(linepos,shoeLeafLisp st,0)
   [[dq],:r]
  
 shoeAccumulateLines(s,string)==
@@ -150,7 +148,6 @@ shoeCloser t ==
   shoeKeyWord t in '(CPAREN CBRACK)
  
 shoeToken () ==
-  ln := $ln
   linepos := $linepos
   n := $n
   ch := stringChar($ln,$n)
@@ -175,7 +172,7 @@ shoeToken () ==
       []
     shoeError()
   b = nil => nil
-  dqUnit shoeConstructToken(ln,linepos,b,n)
+  dqUnit shoeConstructToken(linepos,b,n)
  
 -- to pair badge and badgee
 shoeLeafId x ==  

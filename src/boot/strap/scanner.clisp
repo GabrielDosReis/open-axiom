@@ -28,7 +28,7 @@
 
 (DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) (T (CAR |s|))))
 
-(DEFUN |shoeConstructToken| (|ln| |lp| |b| |n|)
+(DEFUN |shoeConstructToken| (|lp| |b| |n|)
   (CONS (ELT |b| 0) (CONS (ELT |b| 1) (CONS |lp| |n|))))
 
 (DEFUN |shoeTokType| (|x|) (CAR |x|))
@@ -80,7 +80,7 @@
              ((SETQ |command| (|shoeLine?| |$ln|))
               (SETQ |dq|
                     (|dqUnit|
-                        (|shoeConstructToken| |$ln| |$linepos|
+                        (|shoeConstructToken| |$linepos|
                             (|shoeLeafLine| |command|) 0)))
               (CONS (LIST |dq|) |$r|))
              ((SETQ |command| (|shoeLisp?| |$ln|))
@@ -100,12 +100,10 @@
     (DECLARE (SPECIAL |$linepos| |$ln|))
     (RETURN
       (PROGN
-        (SETQ |string|
-              (COND
-                ((OR (EQL (LENGTH |string|) 0)
-                     (CHAR= (SCHAR |string| 0) (|char| '|;|)))
-                 "")
-                (T |string|)))
+        (COND
+          ((OR (EQL (LENGTH |string|) 0)
+               (CHAR= (SCHAR |string| 0) (|char| '|;|)))
+           (SETQ |string| "")))
         (SETQ |ln| |$ln|)
         (SETQ |linepos| |$linepos|)
         (SETQ |LETTMP#1| (|shoeAccumulateLines| |s| |string|))
@@ -113,8 +111,8 @@
         (SETQ |st| (CDR |LETTMP#1|))
         (SETQ |dq|
               (|dqUnit|
-                  (|shoeConstructToken| |ln| |linepos|
-                      (|shoeLeafLisp| |st|) 0)))
+                  (|shoeConstructToken| |linepos| (|shoeLeafLisp| |st|)
+                      0)))
         (CONS (LIST |dq|) |r|)))))
 
 (DEFUN |shoeAccumulateLines| (|s| |string|)
@@ -145,11 +143,10 @@
 (DEFUN |shoeCloser| (|t|) (MEMQ (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
 
 (DEFUN |shoeToken| ()
-  (PROG (|b| |ch| |n| |linepos| |ln|)
-    (DECLARE (SPECIAL |$n| |$linepos| |$ln|))
+  (PROG (|b| |ch| |n| |linepos|)
+    (DECLARE (SPECIAL |$ln| |$n| |$linepos|))
     (RETURN
       (PROGN
-        (SETQ |ln| |$ln|)
         (SETQ |linepos| |$linepos|)
         (SETQ |n| |$n|)
         (SETQ |ch| (SCHAR |$ln| |$n|))
@@ -168,7 +165,7 @@
                 (T (|shoeError|))))
         (COND
           ((NULL |b|) NIL)
-          (T (|dqUnit| (|shoeConstructToken| |ln| |linepos| |b| |n|))))))))
+          (T (|dqUnit| (|shoeConstructToken| |linepos| |b| |n|))))))))
 
 (DEFUN |shoeLeafId| (|x|) (LIST 'ID (INTERN |x|)))
 

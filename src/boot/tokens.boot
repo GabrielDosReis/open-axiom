@@ -285,6 +285,7 @@ for i in [ _
   ["readByte", "READ-BYTE"], _
   ["readInteger", "PARSE-INTEGER"], _
   ["readLine", "READ-LINE"], _
+  ["readLispFromString", "READ-FROM-STRING"] , _
   ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
