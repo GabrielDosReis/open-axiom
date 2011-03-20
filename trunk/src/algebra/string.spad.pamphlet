@@ -89,6 +89,7 @@ Character: OrderedFinite() with
 	CC ==> CharacterClass()
         NNI ==> NonNegativeInteger
 	import CC
+        import %ccstmax: NonNegativeInteger from Foreign Builtin
         import %ceq: (%,%) -> Boolean from Foreign Builtin
         import %clt: (%,%) -> Boolean from Foreign Builtin
         import %cle: (%,%) -> Boolean from Foreign Builtin
@@ -108,7 +109,7 @@ Character: OrderedFinite() with
 	a > b		       == %cgt(a,b)
 	a <= b		       == %cle(a,b)
 	a >= b		       == %cge(a,b)
-	size()		       == 256
+	size()		       == %ccstmax
 	index n		       == char((n - 1)::NNI)
 	lookup c	       == (1 + ord c)::PositiveInteger
 	char(n: NNI)	       == %i2c n

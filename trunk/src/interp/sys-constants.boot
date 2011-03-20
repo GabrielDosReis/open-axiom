@@ -44,6 +44,10 @@ namespace BOOT
 --% Numeric limits
 --%
 
+++ Maximum value of character code point values
+$CharCodeMaximum ==
+  CHAR_-CODE_-LIMIT
+
 ++ Minimum for %Short values.
 $ShortMinimum ==
   MOST_-NEGATIVE_-FIXNUM
