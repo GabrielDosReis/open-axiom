@@ -25,7 +25,7 @@ import OutputForm
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
-  Public == Join(OrderedFinite, HomotopicTo Character,Logic) with
+  Public == Join(OrderedFinite,Logic) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
@@ -36,6 +36,7 @@ Byte(): Public == Private where
     sample: %
       ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, #1 < 256) add
+    import %icst0: %              from Foreign Builtin
     import %beq: (%,%) -> Boolean from Foreign Builtin
     import %blt: (%,%) -> Boolean from Foreign Builtin
     import %bgt: (%,%) -> Boolean from Foreign Builtin
@@ -46,15 +47,13 @@ Byte(): Public == Private where
     import %bcompl: % -> %        from Foreign Builtin
 
     byte(x: NonNegativeInteger): % == per x
-    sample = 0$Foreign(Builtin)
-    coerce(c: Character) == per ord c
-    coerce(x: %): Character == char rep x
+    sample = %icst0
     x = y == %beq(x,y)
     x < y == %blt(x,y)
     x > y == %bgt(x,y)
     x <= y == %ble(x,y)
     x >= y == %bge(x,y)
-    min() == per 0
+    min() == %icst0
     max() == per 255
     size() == 256
     index n == byte((n - 1) pretend NonNegativeInteger)

@@ -447,6 +447,7 @@ for x in [
     ['%or,    :'OR],
 
     -- character operations
+    ['%ccstmax,:'_$CharCodeMax],
     ['%ceq,    :'CHAR_=],
     ['%clt,    :'CHAR_<],
     ['%cle,    :'CHAR_<_=],
