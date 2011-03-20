@@ -171,8 +171,8 @@ buildLibOp(op,sig,pred) ==
 --operations      OKop  \#\sig \conname\pred\comments (K is U or C)
   nsig := SUBLISLIS(rest $conform,$FormalMapVariableList,sig)
   pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
-  nsig := substitute('T,"T$",nsig)   --this ancient artifact causes troubles!
-  pred := substitute('T,"T$",pred)
+  nsig := substitute("T","T$",nsig)   --this ancient artifact causes troubles!
+  pred := substitute("T","T$",pred)
   sigpart:= form2LispString ['Mapping,:nsig]
   predString := (pred = 'T => '""; form2LispString pred)
   sop :=
