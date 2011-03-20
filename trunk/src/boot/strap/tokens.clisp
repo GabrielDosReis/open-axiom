@@ -203,6 +203,7 @@
                   (LIST '|apply| 'APPLY) (LIST '|arrayRef| 'AREF)
                   (LIST '|atom| 'ATOM) (LIST '|bitmask| 'SBIT)
                   (LIST '|canonicalFilename| 'PROBE-FILE)
+                  (LIST '|charByName| 'NAME-CHAR)
                   (LIST '|charString| 'STRING)
                   (LIST '|char?| 'CHARACTERP)
                   (LIST '|codePoint| 'CHAR-CODE) (LIST '|cons?| 'CONSP)

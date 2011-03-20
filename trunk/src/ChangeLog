@@ -1,3 +1,28 @@
+2011-03-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (FC): Remove.
+	(FBO): Likewise.
+	(FEV): Likewise.
+	(shoeGeneralFC): Likewise.
+	(shoeFindName): Likewise.
+	(shoeFindName2): Likewise.
+	(shoeTransform2): Likewise.
+	* boot/scanner.boot (shoeLineToks): Don't support `)package' line
+	anymore. 
+	* boot/includer.boot: Remove support for `)package', `)include',
+	`)includelisp', `)includelines' lines.
+	(shorPackageStartsAt): Remove.
+	(shorFindLines): Likewise.
+	(shoeFileInput): Likewise.
+	(shoeLispFileInput): Likewise.
+	(shoeLineFileInput): Likewise.
+	(shoeFunctionFileInput): Likewise.
+	(shoePlainLine?): Reflect removal.
+	(shoeSimpleLine): Likewise.
+	* boot/tokens.boot (charByName): New builtin library function.
+	* algebra/sf.spad.pamphlet (RealNumberSystem): Don't re-export
+	abs.  It is already exported by OrderedRing.
+
 2011-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/storage.H: Rework.

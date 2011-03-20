@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,14 +53,7 @@ module includer
 --        )eval line |           evaluates the boot line
 --                                 nothing included
 --        )line line |           line is reproduced as is in lisp output
---        )lisp line |           line is read by lisp READ
---        )package line |        produces (IN-PACKAGE line) in lisp
---                                     output
---        )include filename |    includes the file as boot code
---        )includelisp filename |  includes the file as lisp code
---                                   read by lisp READ
---        )includelines  filename |  includes the file as is
---                                     in lisp output
+--        )lisp line             line is read by lisp READ
 --
 -- If ::= )if SimpleLine* ElseLines )endif
 --
@@ -140,38 +133,14 @@ lineString p ==
 lineCharacter p == 
   rest p
  
-shoePackageStartsAt (lines,sz,name,stream)==
-  bStreamNull stream => [[],['nullstream]]
-  a := CAAR stream
-  #a >= 8 and subString(a,0,8)='")package" =>
-    shoePackageStartsAt([CAAR stream,:lines],sz,name,rest stream)
-  #a < sz =>
-    shoePackageStartsAt(lines, sz,name,rest stream)
-  subString(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
-    [lines,stream]
-  shoePackageStartsAt(lines,sz,name,rest stream)
- 
-shoeFindLines(fn,name,a)==
-  a = nil =>
-    shoeNotFound fn
-    []
-  [lines,b]:=shoePackageStartsAt([],#name,name, shoeInclude
-		    bAddLineNumber(bRgen a,bIgen 0))
-  b:=shoeTransform2 b
-  bStreamNull b =>
-       shoeConsole strconc (name,'" not found in ",fn)
-       []
-  lines = nil => shoeConsole '")package not found"
-  append(reverse lines,first b)
-
 -- Lazy inclusion support.
 
-$bStreamNil:=["nullstream"]
+$bStreamNil == ["nullstream"]
  
-bStreamNull x==
+bStreamNull x ==
   x = nil or x is ["nullstream",:.] => true
-  while x is ["nonnullstream",:.] repeat
-    st:=apply(second x,CDDR x)
+  while x is ["nonnullstream",op,:args] repeat
+    st := apply(op,args)
     x.first := first st
     x.rest := rest st
   x is ["nullstream",:.]
@@ -180,20 +149,10 @@ bMap(f,x) ==
   bDelay(function bMap1, [f,x])
  
 bMap1(:z)==
-     [f,x]:=z
-     if bStreamNull x
-     then $bStreamNil
-     else [FUNCALL(f,first x),:bMap(f,rest x)]
+  [f,x] := z
+  bStreamNull x => $bStreamNil
+  [apply(f,[first x]),:bMap(f,rest x)]
 
-shoeFileMap(f, fn)==
-  a:=shoeInputFile fn
-  a = nil =>
-    shoeConsole strconc(fn,'" NOT FOUND")
-    $bStreamNil
-  shoeConsole strconc('"READING ",fn)
-  shoeInclude  bAddLineNumber(bMap(f,bRgen a),bIgen 0)
-
- 
 bDelay(f,x) ==
   ["nonnullstream",:[f,:x]]
  
@@ -239,22 +198,12 @@ bAddLineNumber1(:f)==
   [[first f1,:first f2],:bAddLineNumber(rest f1,rest f2)]
 
 
- 
-shoeFileInput fn ==
-  shoeFileMap(function IDENTITY,fn)
- 
 shoePrefixLisp x == 
   strconc('")lisp",x)
 
-shoeLispFileInput fn==
-  shoeFileMap(function shoePrefixLisp,fn)
- 
 shoePrefixLine x== 
   strconc('")line",x)
 
-shoeLineFileInput fn== 
-  shoeFileMap(function shoePrefixLine,fn)
- 
 shoePrefix?(prefix,whole) ==
   #prefix > #whole => false
   good:=true
@@ -269,18 +218,13 @@ shoePlainLine?(s) ==
  
 shoeSay?          s  == shoePrefix?('")say",         s)
 shoeEval?         s  == shoePrefix?('")eval",        s)
-shoeInclude?      s  == shoePrefix?('")include",     s)
 shoeFin?          s  == shoePrefix?('")fin",         s)
 shoeIf?           s  == shoePrefix?('")if",          s)
 shoeEndIf?        s  == shoePrefix?('")endif",       s)
 shoeElse?         s  == shoePrefix?('")else",        s)
 shoeElseIf?       s  == shoePrefix?('")elseif",      s)
-shoePackage?      s  == shoePrefix?('")package",     s)
 shoeLisp?         s  == shoePrefix?('")lisp",        s)
-shoeIncludeLisp?  s  == shoePrefix?('")includelisp" ,s)
 shoeLine?         s  == shoePrefix?('")line",        s)
-shoeIncludeLines? s  == shoePrefix?('")includelines",s)
-shoeIncludeFunction? s  == shoePrefix?('")includefunction",s)
  
 shoeBiteOff x==
   n:=STRPOSL('" ",x,0,true)
@@ -303,10 +247,6 @@ shoeFnFileName x==
   c = nil =>  [first a,'""]
   [first a, c]
  
-shoeFunctionFileInput [fun,fn]==
-  shoeOpenInputFile (a,fn,
-    shoeInclude bAddLineNumber( shoeFindLines(fn,fun,a),bIgen 0))
- 
 shoeInclude s == 
   bDelay(function shoeInclude1,[s])
 
@@ -322,15 +262,7 @@ shoeSimpleLine(h) ==
   string  :=first h
   shoePlainLine? string=> [h]
   command:=shoeLisp? string => [h]
-  command:=shoeIncludeLisp? string => 
-    shoeLispFileInput shoeFileName command
-  command:=shoeIncludeFunction? string =>
-    shoeFunctionFileInput shoeFnFileName command
   command:=shoeLine? string => [h]
-  command:=shoeIncludeLines? string =>
-    shoeLineFileInput shoeFileName command
-  command:=shoeInclude? string => shoeFileInput shoeFileName command
-  command:=shoePackage? string => [h]
   command:=shoeSay? string =>
     shoeConsole command
     nil

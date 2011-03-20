@@ -112,11 +112,6 @@ shoeLineToks(s)==
 	       ($ln,$linepos,shoeLeafLine command,0)
       [[dq],:$r]
     command:=shoeLisp? $ln=> shoeLispToken($r,command)
-    command:=shoePackage? $ln=>
-      a := strconc('"(IN-PACKAGE ",command,'")")
-      dq:=dqUnit shoeConstructToken
-	       ($ln,$linepos,shoeLeafLisp a,0)
-      [[dq],:$r]
     shoeLineToks $r
   toks:=[]
   while $n<$sz repeat toks:=dqAppend(toks,shoeToken())
