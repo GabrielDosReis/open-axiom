@@ -275,7 +275,7 @@ lineoftoks(s)==
   a := incPrefix?('"command",1,$ln)
   a =>
     $ln := subString($ln,8)
-    b := dqUnit constoken($ln,$linepos,["command",$ln],0)
+    b := dqUnit constoken($linepos,["command",$ln],0)
     [[[b,s]],:$r]
   while $n<$sz repeat
     toks := dqAppend(toks,scanToken())
@@ -284,7 +284,6 @@ lineoftoks(s)==
 
 
 scanToken() ==
-  ln := $ln
   linepos := $linepos
   n := $n
   ch := stringChar($ln,$n)
@@ -308,7 +307,7 @@ scanToken() ==
     ch = char "__" => scanEscape()
     scanError()
   null b => nil
-  dqUnit constoken(ln,linepos,b,n+lnExtraBlanks linepos)
+  dqUnit constoken(linepos,b,n+lnExtraBlanks linepos)
 
 -- to pair badge and badgee
 
@@ -345,7 +344,7 @@ lferror x ==
 lfspaces x ==
   ["spaces",x]
 
-constoken(ln,lp,b,n)==
+constoken(lp,b,n)==
   a := [b.0,:b.1]
   ncPutQ(a,"posn",[lp,:n])
   a

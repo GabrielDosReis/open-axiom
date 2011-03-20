@@ -226,6 +226,7 @@
                   (LIST '|readByte| 'READ-BYTE)
                   (LIST '|readInteger| 'PARSE-INTEGER)
                   (LIST '|readLine| 'READ-LINE)
+                  (LIST '|readLispFromString| 'READ-FROM-STRING)
                   (LIST '|readOnly?| 'CONSTANTP)
                   (LIST '|removeDuplicates| 'REMDUP)
                   (LIST '|rest| 'CDR) (LIST '|reverse| 'REVERSE)
