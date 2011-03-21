@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 #ifndef OPENAXIOM_STRING_POOL_INCLUDED
 #define OPENAXIOM_STRING_POOL_INCLUDED
 
-#include <string.h>
 #include <open-axiom/hash-table>
 
 // --% Author: Gabriel Dos Reis.
@@ -62,17 +61,15 @@ namespace OpenAxiom {
    // ----------------
    // -- StringPool --
    // ----------------
-   // A stringpool object is a repository of long-living string objects.
-   // It contains no duplicates, therefore allowing fast string
-   // object comparison for equality.
+   // A string-pool object is a repository of long-living string objects.
+   // It contains no duplicates, therefore allows  fast equality 
+   // comparison of string objects.
    struct StringPool : private BasicHashTable<StringItem> {
       using BasicHashTable<StringItem>::EntryType;
 
       StringPool();
       // Intern a NUL-terminated sequence of characters.
-      EntryType* intern(const char* s) {
-         return intern(s, strlen(s));
-      }
+      EntryType* intern(const char*);
 
       // Intern a sequence of characters given by its start and length.
       EntryType* intern(const char*, size_t);
