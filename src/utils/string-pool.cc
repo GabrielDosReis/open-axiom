@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2010-2011, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 
 // --% Author: Gabriel Dos Reis
 
+#include <string.h>
 #include <open-axiom/string-pool>
 
 namespace OpenAxiom {
@@ -92,5 +93,10 @@ namespace OpenAxiom {
       e->length = sz;
       e->hash = h;
       return e;
+   }
+
+   StringPool::EntryType*
+   StringPool::intern(const char* s) {
+      return intern(s, strlen(s));
    }
 }

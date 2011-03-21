@@ -32,6 +32,7 @@
 // --% Author: Gabriel Dos Reis.
 
 #include <ctype.h>
+#include <string.h>
 #include <iostream>
 #include <iterator>
 #include <open-axiom/sexpr>
