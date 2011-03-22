@@ -343,7 +343,7 @@ Pattern(R:SetCategory): Exports == Implementation where
       p.ker.tag = PAT_ZERO => 0::Integer::O
       p.ker.tag = PAT_ONE  => 1::Integer::O
       l := [x::O for x in p.ker.arg]$List(O)
-      (u:=display(p.ker.op)) case "failed" =>prefix(name(p.ker.op)::O,l)
+      (u:=display(p.ker.op)) case nothing =>prefix(name(p.ker.op)::O,l)
       (u::(List O -> O)) l
  
     patcopy p ==
