@@ -1,3 +1,11 @@
+2011-03-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/op.spad.pamphlet (BasicOperator) [display]: Now return a
+	Maybe (List O -> O) value.
+	[input]: Now return a Maybe(List SEX -> SEX).
+	* algebra/kl.spad.pamphlet (Kernel): Adjust.
+	* algebra/pattern.spad.pamphlet (Pattern): Likewise.
+
 2011-03-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include

@@ -204,7 +204,7 @@ Kernel(S: SetCategory): Exports == Implementation where
       (f := property(o := operator k, SPECIALDISP)) case None =>
         ((f@None) pretend (List S -> OutputForm)) (argument k)
       l := [x::OutputForm for x in argument k]$List(OutputForm)
-      (u := display o) case "failed" => prefix(name(o)::OutputForm, l)
+      (u := display o) case nothing => prefix(name(o)::OutputForm, l)
       (u::(List OutputForm -> OutputForm)) l
 
     triage(k1, k2) ==
@@ -223,7 +223,7 @@ Kernel(S: SetCategory): Exports == Implementation where
         (f := property(o := operator k, SPECIALINPUT)) case None =>
           ((f@None) pretend (List S -> InputForm)) (argument k)
         l := [convert x for x in argument k]$List(InputForm)
-        (u := input operator k) case "failed" =>
+        (u := input operator k) case nothing =>
           convert concat(convert name operator k, l)
         (u::(List InputForm -> InputForm)) l
 

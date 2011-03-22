@@ -59,9 +59,9 @@ BasicOperator(): Exports == Implementation where
       ++ to op. If op1 and op2 have the same name, and one of them
       ++ has a "%less?" property f, then \spad{f(op1, op2)} is called to
       ++ decide whether \spad{op1 < op2}.
-    display    : $ -> Union(List O -> O, "failed")
+    display    : $ -> Maybe(List O -> O)
       ++ display(op) returns the "%display" property of op if
-      ++ it has one attached, and "failed" otherwise.
+      ++ it has one attached, and \spad{nothing} otherwise.
     display    : ($, List O -> O)      -> $
       ++ display(op, foo) attaches foo as the "%display" property
       ++ of op. If op has a "%display" property f, then \spad{op(a1,...,an)}
@@ -75,9 +75,9 @@ BasicOperator(): Exports == Implementation where
       ++ input(op, foo) attaches foo as the "%input" property
       ++ of op. If op has a "%input" property f, then \spad{op(a1,...,an)}
       ++ gets converted to InputForm as \spad{f(a1,...,an)}.
-    input      : $ -> Union(List SEX -> SEX, "failed")
+    input      : $ -> Maybe(List SEX -> SEX)
       ++ input(op) returns the "%input" property of op if
-      ++ it has one attached, "failed" otherwise.
+      ++ it has one attached, \spad{nothing} otherwise.
     has?       : (%, Identifier) -> Boolean
       ++ \spad{has?(op,p)} tests if property \spad{s} is attached to \spad{op}.
     assert     : (%, Identifier) -> $
@@ -157,12 +157,10 @@ BasicOperator(): Exports == Implementation where
     display(op:$, f:List O -> O)   == setProperty(op, DISPLAY, f pretend None)
 
     display op ==
-      (u := property(op, DISPLAY)) case nothing => "failed"
-      (u@None) pretend (List O -> O)
+      property(op, DISPLAY) pretend Maybe(List O -> O)
 
     input op ==
-      (u := property(op, SEXPR)) case nothing => "failed"
-      (u@None) pretend (List SEX -> SEX)
+      property(op, SEXPR) pretend Maybe(List SEX -> SEX)
 
     arity op == rep(op).narg
 
