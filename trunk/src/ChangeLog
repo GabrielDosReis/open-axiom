@@ -1,3 +1,8 @@
+2011-04-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (compileLispFile): Tell ECL that the linker is 
+	a C++ compiler.
+
 2011-03-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/op.spad.pamphlet (BasicOperator) [display]: Now return a

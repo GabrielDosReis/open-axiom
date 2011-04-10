@@ -1274,7 +1274,7 @@ sock_accept_connection(int purpose)
     rd = server_mask;
     ret_val = sselect(FD_SETSIZE, (fd_set *)&rd, (fd_set *)0, (fd_set *)0, NULL);
     if (ret_val == -1) {
-      /* perror ("Select"); */
+      perror ("Select");
       return -1;
     }
     for(i=0; i<2; i++) {

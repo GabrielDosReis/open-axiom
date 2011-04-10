@@ -853,11 +853,13 @@
 		    (compile-file file :output-file out-file :system-p t
 				  :c-file t :h-file t)
 		  (compile-file file :output-file out-file :system-p t))
-	 #+:ecl (if (and result (not failure-p)
-			 (null (c::build-fasl (compile-file-pathname out-file)
-					      :lisp-files `(,out-file)
-					      :ld-flags (extra-runtime-libs))))
-		    (setq result nil))
+	 #+:ecl 
+	 (let ((compiler::*ld* oa-cxx))
+	   (if (and result (not failure-p)
+		    (null (c::build-fasl (compile-file-pathname out-file)
+					 :lisp-files `(,out-file)
+					 :ld-flags (extra-runtime-libs))))
+	       (setq result nil)))
 	 (cond ((null result) 
 		(|coreError| "compilation of Lisp code failed"))
 	       (failure-p
