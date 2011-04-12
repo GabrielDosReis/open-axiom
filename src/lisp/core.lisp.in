@@ -151,6 +151,10 @@
 ;; Enablig profiling of generated Lisp codes.
 (defconstant |$EnableLispProfiling| @oa_enable_profiling@)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (when |$EnableLispProfiling|
+	     (progn #+sbcl (require :sb-sprof))))
+
 ;; Return true if the full OpenAxiom algebra system is completed
 ;; built.
 (defun |%algebraSystemIsComplete| nil
