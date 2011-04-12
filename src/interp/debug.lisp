@@ -290,8 +290,6 @@
             (compile (EVAL DEF))))
         ( DEF
           (FUNCALL OP (LIST DEF)) ) )
-      #+Lucid(system::compiler-options :messages nil :warnings nil)
-      #+Lucid(TERPRI)
       (COND
         ( TRACEFLAG
           (/TRACE-2 /FN NIL) ) )

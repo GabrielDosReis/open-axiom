@@ -241,13 +241,7 @@
 (defun |sort| (seq spadfn)
     (sort (copy-seq seq) (function (lambda (x y) (SPADCALL X Y SPADFN)))))
 
-#-Lucid
 (defun DIVIDE2 (X Y) (multiple-value-call #'cons (TRUNCATE X Y)))
-
-#+Lucid
-(defun DIVIDE2 (X Y)
-  (if (zerop y) (truncate 1 Y)
-    (multiple-value-call #'cons (TRUNCATE X Y))))
 
 (define-function '|not| #'NOT)
 
@@ -425,9 +419,7 @@
 
 (defun |hashable| (dom)
   (memq (|knownEqualPred| dom)
-        #-Lucid '(EQ EQL EQUAL)
-        #+Lucid '(EQ EQL EQUAL EQUALP)
-        ))
+        '(EQ EQL EQUAL)))
 
 ;; simpler interpface to RDEFIOSTREAM
 (defun RDEFINSTREAM (&rest fn)

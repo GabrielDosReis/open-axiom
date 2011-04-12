@@ -44,8 +44,7 @@
                      ((EQ ID) #'eq)
                      (CVEC #'equal)
                      (EQL #'eql)
-                     #+Lucid ((UEQUAL EQUALP) #'EQUALP)
-                     #-Lucid ((UEQUAL EQUAL) #'equal)
+                     ((UEQUAL EQUAL) #'equal)
                      (otherwise (error "bad arg to make-hashtable")))))     
       (make-hash-table :test test)))
 
@@ -59,9 +58,6 @@
       (maphash
         #'(lambda (key val) (declare (ignore val)) (push key keys)) table)
         keys))
-
-#+Lucid
-(define-function 'HASHTABLE-CLASS #'system::hash-table-test)
 
 #+AKCL
 (clines "int mem_value(x ,i)object x;int i; { return ((short *)x)[i];}")

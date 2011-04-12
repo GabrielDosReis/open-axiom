@@ -77,7 +77,6 @@
 (defmacro applx (&rest args)
  `(apply ,@args))
 
-#-(or LispM Lucid)
 (defmacro assq (a b)
  `(assoc ,a ,b :test #'eq))
 
@@ -205,7 +204,6 @@
 (defmacro maxindex (x)
  `(the fixnum (1- (the fixnum (length ,x)))))
 
-#-(or LispM Lucid)
 (defmacro memq (a b)
  `(member ,a ,b :test #'eq))
 
@@ -550,8 +548,7 @@
     (setq args (remove-fluids (cadr lamda)))
     (cond ((and (eq ltype 'lambda) (simple-arglist args)) (setq nargs args))
           (t (setq nargs (gensym))
-     #+LispM (setq body `((dsetq ,args (copy-list ,nargs)) ,@body))
-     #-LispM (setq body `((dsetq ,args  ,nargs) ,@body))
+             (setq body `((dsetq ,args  ,nargs) ,@body))
              (cond ((eq ltype 'lambda) (setq nargs `(&rest ,nargs &aux ,@*vars*)))
                    ((eq ltype 'mlambda)
                     (setq nargs `(&whole ,nargs &rest ,(gensym) &aux ,@*vars*)))
@@ -620,20 +617,13 @@
 
 ; 9.13 Streams
 
-#+Lucid
-(defun IS-CONSOLE (stream)
-    (and (streamp stream)
-         (or (not (consp (pathname-directory stream)))
-             (equal (qcar (pathname-directory stream)) "dev")
-             (null (pathname-name stream) ))))
-
 #+KCL
 (defun IS-CONSOLE (stream)
   (and (streamp stream) (output-stream-p stream)
        (eq (system:fp-output-stream stream)
            (system:fp-output-stream *terminal-io*))))
 
-#-(OR Lucid KCL)
+#-KCL
 (defun IS-CONSOLE (stream)
   (cond ((not (streamp stream))
 	 nil)
@@ -1548,14 +1538,6 @@
         (LIST "in the expression:" MESSAGE))
       ())
 
-#+Lucid
-(defun numberofargs (x)
-  (setq x (system::arglist x))
-  (let ((nx (- (length x) (length (memq '&aux x)))))
-    (if (memq '&rest x) (setq nx (- (1- nx))))
-    (if (memq '&optional x) (setq nx (- (1- (abs nx)))))
-    nx))
-
 ; 98.0 Stuff Not In The VMLisp Manual That We Like
 
 ; A version of GET that works with lists
@@ -1603,9 +1585,6 @@
   (read-line st nil eofval))
 
 (defun gcmsg (x)
-  #+Lucid
-  (prog1 (not system::*gc-silence*) 
-    (setq system::*gc-silence* (not x)))
   #+(OR IBCL KCL)
   (prog1 system:*gbc-message* 
     (setq system:*gbc-message* x))
@@ -1615,13 +1594,6 @@
   )
 
 (defun bpiname (func)
-  #+Lucid (if (functionp func)
-	      (if (symbolp func) func
-		(let ((name (svref func 0)))
-		  (if (and (consp name) (eq (car name) 'SYSTEM::NAMED-LAMBDA))
-		      (cadr name)
-		    name))))
-
   #+(OR IBCL KCL) (if (functionp func)
 		      (cond ((symbolp func) func)
 			    ((and (consp func) (eq (car func) 'LAMBDA-BLOCK))
@@ -1639,7 +1611,6 @@
 		 (system::%primitive header-ref func
 				     system::%function-name-slot))
 		('else func)))
-  #+:allegro func
   #+(or :SBCL :clisp :ecl :clozure) (if (symbolp func)
 			       func
 			     (multiple-value-bind (l c n)
