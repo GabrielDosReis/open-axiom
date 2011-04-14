@@ -245,6 +245,7 @@ for i in [ _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
+  ["array?",    "ARRAYP"]  , _
   ["arrayRef",    "AREF"]  , _
   ["atom",        "ATOM"]  , _
   ["bitmask",   "SBIT"] , _
@@ -301,6 +302,7 @@ for i in [ _
   ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
+  ["symbolEqual?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _
   ["symbolName", "SYMBOL-NAME"], _
   ["symbolValue", "SYMBOL-VALUE"], _

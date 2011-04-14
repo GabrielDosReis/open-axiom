@@ -163,10 +163,10 @@ SigListUnion(extra,original) ==
     -- the extra list would like to add ** with PositiveIntegers.
     -- The PI map is therefore gives an implementation of "Subsumed"
     for x in SigListOpSubsume(o,extra) repeat
-      [[xfn,xsig,:.],xpred,:.]:=x
-      xfn=ofn and xsig=osig =>
+      [[xfn,xsig,:.],xpred,:.] := x
+      symbolEqual?(xfn,ofn) and xsig = osig =>
               --checking name and signature, but not a 'constant' marker
-        xpred=opred => extra:= delete(x,extra)
+        xpred = opred => extra:= delete(x,extra)
              --same signature and same predicate
         opred = true => extra:= delete(x,extra)
    -- PRETTYPRINT ("we ought to subsume",x,o)
@@ -297,17 +297,16 @@ SigListOpSubsume([[name1,sig1,:.],:.],list) ==
         --see "operator subsumption" in SYSTEM SCRIPT
         --if it does, returns the subsumed member
   lsig1 := #sig1
-  ans:=[]
-  for (n:=[[name2,sig2,:.],:.]) in list repeat
-    name1=name2 and lsig1 = #sig2 and sig1 = sig2 =>
-      ans:=[n,:ans]
+  ans := []
+  for (n:=[[name2,sig2,:.],:.]) in list | symbolEqual?(name1,name2) repeat
+    lsig1 = #sig2 and sig1 = sig2 => ans := [n,:ans]
   return ans
  
 MachineLevelSubsume([name1,[out1,:in1],:flag1],[name2,[out2,:in2],:flag2]) ==
   -- Checks for machine-level subsumption in the sense of SYSTEM SCRIPT
   --  true if the first signature subsumes the second
   --  flag1 = flag2 and: this really should be checked, but
-  name1=name2 and MachineLevelSubset(out1,out2) and
+  symbolEqual?(name1,name2) and MachineLevelSubset(out1,out2) and
     (and/[MachineLevelSubset(inarg2,inarg1) for inarg1 in in1 for inarg2 in in2]
       )
  
