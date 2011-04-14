@@ -100,15 +100,16 @@ string2Words l ==
 
 wordFrom(l,i) ==
   maxIndex := MAXINDEX l
-  k := or/[j for j in i..maxIndex | l.j ~= char ('_ ) ] or return nil
+  k := or/[j for j in i..maxIndex | stringChar(l,j) ~= char " "] or return nil
   buf := '""
-  while k < maxIndex and (c := l.k) ~= char ('_ ) repeat
+  while k < maxIndex and (c := stringChar(l,k)) ~= char " " repeat
     ch :=
-      c = char '__   => l.(k := 1+k)  --this may exceed bounds
+      c = char "__" => stringChar(l,k := 1+k)  --this may exceed bounds
       c
     buf := strconc(buf,ch)
     k := k + 1
-  if k = maxIndex and (c := l.k) ~= char ('_ ) then buf := strconc(buf,c)
+  if k = maxIndex and (c := stringChar(l,k)) ~= char " " then
+    buf := strconc(buf,c)
   [buf,k+1]
 
 getKeyedMsg key == fetchKeyedMsg(key,false)
@@ -174,26 +175,26 @@ substituteSegmentedMsg(msg,args) ==
     -- x is a list
     cons? x =>
       l := [substituteSegmentedMsg(x,args),:l]
-    c := x.0
+    c := stringChar(x,0)
     n := # x
 
     -- x is a special case
-    (n > 2) and c = char "%" and x.1 = char "k" =>
-        l := NCONC(nreverse pkey subString(x,2),l)
+    (n > 2) and c = char "%" and stringChar(x,1) = char "k" =>
+        l := nconc(nreverse pkey subString(x,2),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
-    (x.0 = char "?") and n > 1 and (v := pushOrTypeFuture(makeSymbol x,nil)) =>
-      l := NCONC(nreverse v,l)
+    stringChar(x,0) = char "?" and n > 1 and
+      (v := pushOrTypeFuture(makeSymbol x,nil)) => l := nconc(nreverse v,l)
 
     -- x requires parameter substitution
-    (x.0 = char "%") and (n > 1) and (digit? x.1) =>
-      a := DIG2FIX x.1
+    stringChar(x,0) = char "%" and n > 1 and digit? stringChar(x,1) =>
+      a := DIG2FIX stringChar(x,1)
       arg :=
         a <= nargs => args.(a-1)
         '"???"
       -- now pull out qualifiers
       q := NIL
-      for i in 2..(n-1) repeat q := [x.i,:q]
+      for i in 2..(n-1) repeat q := [stringChar(x,i),:q]
       -- Note 'f processing must come first.
       if char 'f in q then
           arg :=
@@ -228,8 +229,9 @@ substituteSegmentedMsg(msg,args) ==
       for ch in '(_. _, _! _: _; _?) repeat
         if char ch in q then l := [ch,:l]
 
-    c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
-      l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
+    c = char "%" and n > 1 and stringChar(x,1) = char "x" and
+      digit? stringChar(x,2) =>
+        l := [fillerSpaces(DIG2FIX stringChar(x,2), '" "),:l]
     --x is a plain word
     l := [x,:l]
   addBlanks nreverse l
@@ -268,8 +270,9 @@ noBlankBeforeP word==
     integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
     if string? word and # word > 1 then
-       word.0 = char '% and word.1 = char 'x => return true
-       word.0 = char " " => return true
+       stringChar(word,0) = char "%" and stringChar(word,1) = char "x" =>
+         return true
+       stringChar(word,0) = char " " => return true
     (cons? word) and member(first word,$msgdbListPrims) => true
     false
 
@@ -280,8 +283,9 @@ noBlankAfterP word==
     integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
     if string? word and (s := # word) > 1 then
-       word.0 = char '% and word.1 = char 'x => return true
-       word.(s-1) = char " " => return true
+      stringChar(word,0) = char "%" and stringChar(word,1) = char "x" =>
+        return true
+      stringChar(word,s-1) = char " " => return true
     (cons? word) and member(first word, $msgdbListPrims) => true
     false
 
@@ -580,7 +584,7 @@ brightPrint0(x,out == $OutputStream) ==
   -- don't try to give the token any special interpretation. Just print
   -- it without the backslash.
 
-  # x > 1 and x.0 = char "\" and x.1 = char "%" =>
+  # x > 1 and stringChar(x,0) = char "\" and stringChar(x,1) = char "%" =>
     sayString(subString(x,1),out)
   x = '"%l" =>
     sayNewLine(out)
@@ -641,7 +645,7 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 blankIndicator x ==
   if IDENTP x then x := symbolName x
   not string? x or MAXINDEX x < 1 => nil
-  stringChar(x,0) = char '% and stringChar(x,1) = char 'x =>
+  stringChar(x,0) = char "%" and stringChar(x,1) = char "x" =>
     MAXINDEX x > 1 => readInteger subString(x,2)
     1
   nil
@@ -794,8 +798,8 @@ sayBrightlyLength1 x ==
     null $highlightAllowed => 1
     1
   member(x,'("%l" %l)) => 0
-  string? x and # x > 2 and x.0 = char "%" and x.1 = char "x" =>
-    readInteger subString(x,2)
+  string? x and # x > 2 and stringChar(x,0) = char "%"
+    and stringChar(x,1) = char "x" => readInteger subString(x,2)
   string? x => # x
   IDENTP x => # symbolName x
   -- following line helps find certain bugs that slip through

@@ -1,3 +1,7 @@
+2011-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot: Use stringChar more often.
+
 2011-04-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in: Include SB-SPROF when profiling SBCL-based build.
