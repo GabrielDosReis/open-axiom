@@ -132,8 +132,8 @@ CONTAINED(x,y) == main where
     symbol? x => eq(x,y)
     equal(x,y)
   eq(x,y) ==
-    atom y => EQ(x,y)
-    eq(x, first y) or eq(x, rest y)
+    cons? y => eq(x, first y) or eq(x, rest y)
+    symbolEqual?(x,y)
   equal(x,y) ==
     atom y => x = y
     equal(x, first y) or equal(x, rest y)
