@@ -501,7 +501,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       cons? slot =>
         slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
-        --if EQ(QCAR slot,'newGoGet) then
+        --if sameObject?(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
         --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)

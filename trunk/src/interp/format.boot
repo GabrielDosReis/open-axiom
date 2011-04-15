@@ -288,7 +288,7 @@ dollarPercentTran x ==
     x is [y,:z] =>
         y1 := dollarPercentTran y
         z1 := dollarPercentTran z
-        EQ(y, y1) and EQ(z, z1) => x
+        sameObject?(y, y1) and sameObject?(z, z1) => x
         [y1, :z1]
     x is "$" or x is '"$" => "%%"
     x is "T$" or x is '"T$" => "T"
@@ -476,7 +476,7 @@ formDecl2String(left,right) ==
   whereBefore := $whereList
   ls:= form2StringLocal left
   rs:= form2StringLocal right
-  NE($whereList,whereBefore) and $permitWhere => ls
+  not sameObject?($whereList,whereBefore) and $permitWhere => ls
   concat(ls,'": ",rs)
 
 formJoin1(op,u) ==

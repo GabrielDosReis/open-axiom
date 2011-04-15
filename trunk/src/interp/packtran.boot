@@ -43,7 +43,7 @@ packageTran sex ==
 -- destructively translate all the symbols in the given s-expression to the 
 -- current package
   symbol? sex =>
-    EQ(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
+    sameObject?(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
     makeSymbol symbolName sex
   cons? sex =>
     sex.first := packageTran first sex

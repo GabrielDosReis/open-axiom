@@ -84,7 +84,7 @@ getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
   res := nil
   for i in 0..max by 2 repeat
-    EQ(vectorRef(vec,i),op) => return (res := i + 1)
+    sameObject?(vectorRef(vec,i),op) => return (res := i + 1)
   res
 
 evalSlotDomain(u,dollar) ==
@@ -204,7 +204,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       i := start
       numArgs ~= (numTableArgs :=numvec.i) => nil
       predIndex := numvec.(i := i + 1)
-      NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
+      predIndex ~= 0 and not testBitVector(predvec,predIndex) => nil
       loc := newCompareSig(sig,numvec,(i := i + 1),dollar,domain)
       null loc => nil  --signifies no match
       loc = 1 => (someMatch := true)
@@ -223,7 +223,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       cons? slot =>
         slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
-        --if EQ(QCAR slot,'newGoGet) then
+        --if sameObject?(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
         --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
@@ -232,7 +232,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
     start := QSPLUS(start,QSPLUS(numTableArgs,4))
-  NE(success,'failed) and success =>
+  success ~= 'failed and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
         cons? success => [first success,:devaluate rest success]
@@ -393,7 +393,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..MAXINDEX packageVec | (entry := packageVec.i)
       and (vector? entry or (predIndex := rest (node := catVec.i)) and
-          (EQ(predIndex,0) or testBitVector(predvec,predIndex))) repeat
+          (predIndex = 0 or testBitVector(predvec,predIndex))) repeat
     package :=
       vector? entry =>
          if $monitorNewWorld then
@@ -558,11 +558,11 @@ lookupInDomainByName(op,domain,arg) ==
     i := start
     numberOfArgs :=numvec.i
     predIndex := numvec.(i := i + 1)
-    NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
+    predIndex ~= 0 and not testBitVector(predvec,predIndex) => nil
     slotIndex := numvec.(i + 2 + numberOfArgs)
     newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
     slot := domain.slotIndex
-    cons? slot and EQ(first slot,first arg) and EQ(rest slot,rest arg) => return (success := true)
+    cons? slot and sameObject?(first slot,first arg) and sameObject?(rest slot,rest arg) => return (success := true)
     start := QSPLUS(start,QSPLUS(numberOfArgs,4))
   success
  

@@ -260,7 +260,7 @@ evalForm(op,opName,argl,mmS) ==
           NRTcompileEvalForm(opName,fun,dcVector)
         null fun0 => throwKeyedMsg("S2IE0008",[opName])
         [bpi,:domain] := fun0
-        EQ(bpi,function Undef) =>
+        sameObject?(bpi,function Undef) =>
          sayKeyedMsg("S2IE0009",[opName,formatSignature rest sig,first sig])
          NIL
         if $NRTmonitorIfTrue = true then

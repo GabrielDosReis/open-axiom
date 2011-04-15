@@ -2104,7 +2104,7 @@ NRTtypeHack t ==
 NRTgetMinivectorIndex(u,op,sig,domVector) ==
   s := # $minivector
   k := or/[k for k in 0..(s-1)
-        for x in $minivector | EQ(x,u)] => k
+        for x in $minivector | sameObject?(x,u)] => k
   $minivector := [:$minivector,u]
   s
 

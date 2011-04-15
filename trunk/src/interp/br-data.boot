@@ -749,7 +749,7 @@ sublisFormal(args,exp,:options) == main where
         nd.rest := sublisFormal1(args,y,n)
       r
     IDENTP x =>
-      j := or/[i for f in $formals for i in 0..n | EQ(f,x)] =>
+      j := or/[i for f in $formals for i in 0..n | sameObject?(f,x)] =>
           args.j
       x
     x

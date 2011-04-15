@@ -168,7 +168,7 @@ optimizeFunctionDef(def) ==
 
 resetTo(x,y) ==
   atom y => x := y
-  EQ(x,y) => x
+  sameObject?(x,y) => x
   x.first := y.first
   x.rest := y.rest
   x

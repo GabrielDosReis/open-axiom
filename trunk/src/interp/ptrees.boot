@@ -783,7 +783,7 @@ pfMapParts(f, pform) ==
     parts1 := [FUNCALL(f, p) for p in parts0]
     -- Return the original if no changes.
     same := true
-    for p0 in parts0 for p1 in parts1 while same repeat same := EQ(p0,p1)
+    for p0 in parts0 for p1 in parts1 while same repeat same := sameObject?(p0,p1)
     same => pform
     pfTree(pfAbSynOp pform, parts1)
  

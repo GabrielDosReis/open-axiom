@@ -1849,7 +1849,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   item.op := '%when
   item.rest := [[p',x,:x'],['%otherwise,y,:y']]
  where localExtras(oldFLP) ==
-   EQ(oldFLP,$functorLocalParameters) => nil
+   sameObject?(oldFLP,$functorLocalParameters) => nil
    flp1:=$functorLocalParameters
    oldFLP':=oldFLP
    n:=0

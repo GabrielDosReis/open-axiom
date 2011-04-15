@@ -529,7 +529,7 @@ CONTAINEDisDomain(symbol,cond) ==
    cond.op in '(AND OR and or %and %or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in cond.args]
    cond.op = 'isDomain =>
-       EQ(symbol,second cond) and cons?(dom:=third cond) and
+       sameObject?(symbol,second cond) and cons?(dom:=third cond) and
          dom in '(PositiveInteger NonNegativeInteger)
    false
 
@@ -882,7 +882,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   maxargs := -1
   impls := nil
   for [a,b,d] in funlist repeat
-    not EQ(a,op) => nil
+    not sameObject?(a,op) => nil
     d is ['XLAM,xargs,:.] =>
       if cons?(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)

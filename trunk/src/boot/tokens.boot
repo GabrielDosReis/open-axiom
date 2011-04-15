@@ -291,6 +291,7 @@ for i in [ _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
+  ["sameObject?",  "EQ" ] , _
   ["second",      "CADR"] , _
   ["setDifference", "SETDIFFERENCE"]  , _
   ["setIntersection", "INTERSECTION"]  , _

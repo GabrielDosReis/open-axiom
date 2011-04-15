@@ -109,7 +109,7 @@ retract1 object ==
   type = $NonNegativeInteger => objNew(val,$Integer)
   type = $Integer and SINTP unwrap val => objNew(val, $SingleInteger)
   type' := equiType(type)
-  if not EQ(type,type') then object := objNew(val,type')
+  if not sameObject?(type,type') then object := objNew(val,type')
   (1 = #type') or (type' is ['Union,:.]) or
     (type' is ['FunctionCalled,.])
      or (type' is ['OrderedVariableList,.]) or (type is ['Variable,.]) =>
@@ -489,7 +489,7 @@ canCoerceTopMatching(t1,t2,tt1,tt2) ==
   -- returns true, nil or maybe
   -- for example, if t1 = P[x] D1 and t2 = P[y] D2 and x = y then
   -- canCoerce will only be true if D1 = D2
-  not EQ(tt1,tt2) => 'maybe
+  not sameObject?(tt1,tt2) => 'maybe
   doms := '(Polynomial List Matrix FiniteSet Vector Stream Gaussian)
   MEMQ(tt1,doms) => canCoerce(second t1, second t2)
   not (MEMQ(tt1,$univariateDomains) or MEMQ(tt2,$multivariateDomains)) =>
@@ -791,9 +791,9 @@ coerceInt0(triple,t2) ==
       intCodeGenCOERCE(triple,t2)
   t1 = $Any and t2 ~= $OutputForm and ([t1',:val'] := unwrap val) and
     (ans := coerceInt0(objNewWrap(val',t1'),t2)) => ans
-  if not EQ(s1,t1) then triple := objNew(val,s1)
+  if not sameObject?(s1,t1) then triple := objNew(val,s1)
   x := coerceInt(triple,s2) =>
-    EQ(s2,t2) => x
+    sameObject?(s2,t2) => x
     objSetMode(x,t2)
     x
   NIL
@@ -902,7 +902,7 @@ coerceInt1(triple,t2) ==
       NIL
     NIL
 
-  EQ(first(t1),'Variable) and cons?(t2) and
+  sameObject?(first(t1),'Variable) and cons?(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
       (t2 = [$QuotientField, $Integer]) or MEMQ(first(t2),
         '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL

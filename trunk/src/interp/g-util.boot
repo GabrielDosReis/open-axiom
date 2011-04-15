@@ -251,7 +251,7 @@ putIntSymTab: (%Thing,%Symbol,%Form,%Env) -> %Env
 addIntSymTabBinding: (%Thing,%List,%Env) -> %Env
 
 put(x,prop,val,e) ==
-  $InteractiveMode and not EQ(e,$CategoryFrame) =>
+  $InteractiveMode and not sameObject?(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
   cons? x => put(first x,prop,val,e)
@@ -276,7 +276,7 @@ putIntSymTab(x,prop,val,e) ==
     u := [[prop,:val]]
     lp.rest := u
     pl
-  EQ(pl0,pl) => e
+  sameObject?(pl0,pl) => e
   addIntSymTabBinding(x,pl,e)
 
 addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
@@ -420,7 +420,7 @@ REMALIST(alist,prop) ==
 
 deleteLassoc(x,y) ==
   y is [[a,:.],:y'] =>
-    EQ(x,a) => y'
+    sameObject?(x,a) => y'
     [first y,:deleteLassoc(x,y')]
   y
 
@@ -657,12 +657,12 @@ sublisNQ(al,e) ==
   fn(al,e) where fn(al,e) ==
     atom e =>
       for x in al repeat
-        EQ(first x,e) => return (e := rest x)
+        sameObject?(first x,e) => return (e := rest x)
       e
-    EQ(a := first e,'QUOTE) => e
+    sameObject?(a := first e,'QUOTE) => e
     u := fn(al,a)
     v := fn(al,rest e)
-    EQ(a,u) and EQ(rest e,v) => e
+    sameObject?(a,u) and sameObject?(rest e,v) => e
     [u,:v]
 
 opOf: %Thing -> %Thing
@@ -723,7 +723,7 @@ semchkProplist(x,proplist,prop,val) ==
     LASSOC("isLiteral",proplist) => warnLiteral x
 
 addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
-  EQ(proplist,getProplist(var,e)) => e
+  sameObject?(proplist,getProplist(var,e)) => e
   $InteractiveMode => addBindingInteractive(var,proplist,e)
   if curContour is [[ =var,:.],:.] then curContour:= rest curContour
                  --Previous line should save some space

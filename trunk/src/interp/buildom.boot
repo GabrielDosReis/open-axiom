@@ -283,7 +283,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
       slot
-  NE(success,'failed) and success => success
+  success ~= 'failed and success => success
   subsumptionSig and (u:= SPADCALL(op,subsumptionSig,dollar,domain.1)) => u
   someMatch => lookupInAddChain(op,sig,domain,dollar)
   nil
@@ -467,7 +467,7 @@ Mapping(:args) ==
   vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   dom
 
-MappingEqual(x, y, dom) == EQ(x,y)
+MappingEqual(x, y, dom) == sameObject?(x,y)
 MappingPrint(x, dom) == coerceMap2E(x)
 
 coerceMap2E(x) ==

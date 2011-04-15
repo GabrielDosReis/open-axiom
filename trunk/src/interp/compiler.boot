@@ -609,7 +609,7 @@ compFormWithModemap(form,m,e,modemap) ==
         op = "elt" and f is ['XLAM,:.] and IDENTP(z := first argl) and
           (c := get(z,'condition,e)) and
             c is [["case",=z,c1]] and
-              (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
+              (c1 is [":",=(second argl),=m] or sameObject?(c1,second argl) ) =>
       -- first is a full tag, as placed by getInverseEnvironment
       -- second is what getSuccessEnvironment will place there
                 ['%tail,z]

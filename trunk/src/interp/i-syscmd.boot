@@ -2074,8 +2074,8 @@ writify ob ==
                 THROW('writifyTag, 'writifyFailed)
             -- Default case: return the object itself.
             string? ob =>
-                EQ(ob, $NullStream) => ['WRITIFIED_!_!, 'NULLSTREAM]
-                EQ(ob, $NonNullStream) => ['WRITIFIED_!_!, 'NONNULLSTREAM]
+                sameObject?(ob, $NullStream) => ['WRITIFIED_!_!, 'NULLSTREAM]
+                sameObject?(ob, $NonNullStream) => ['WRITIFIED_!_!, 'NONNULLSTREAM]
                 ob
             FLOATP ob =>
                 ob = READ_-FROM_-STRING STRINGIMAGE ob => ob
@@ -2644,7 +2644,7 @@ diffAlist(new,old) ==
       for (propval := [prop,:val]) in proplist repeat
         null (oldPropval := assoc(prop,oldProplist)) => --missing property
           deltas := [[prop],:deltas]
-        EQ(rest oldPropval,val) => 'skip
+        sameObject?(rest oldPropval,val) => 'skip
         deltas := [oldPropval,:deltas]
       deltas => acc := [[name,:nreverse deltas],:acc]
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]

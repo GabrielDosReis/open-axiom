@@ -436,7 +436,7 @@ assocCache(x,cacheName,fn) ==
   al:= eval cacheName
   forwardPointer:= al
   val:= nil
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn,CAAR forwardPointer,x) => return (val:= first forwardPointer)
     backPointer:= forwardPointer
     forwardPointer:= rest forwardPointer
@@ -449,9 +449,9 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
   al:= eval cacheName
   forwardPointer:= al
   val:= nil
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
-      if not EQ(forwardPointer,al) then   --shift referenced entry to front
+      if not sameObject?(forwardPointer,al) then   --shift referenced entry to front
         forwardPointer.first := first al
         al.first := y
       return (val:= y)
@@ -469,7 +469,7 @@ assocCacheShiftCount(x,al,fn) ==
   forwardPointer:= al
   val:= nil
   minCount:= 10000 --preset minCount but not newFrontPointer here
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
       y.rest.first := second y + 1         --increment use count
@@ -478,7 +478,7 @@ assocCacheShiftCount(x,al,fn) ==
       minCount := c
       newFrontPointer := forwardPointer   --CAR is slot replaced on failure
     forwardPointer:= rest forwardPointer
-  if not EQ(newFrontPointer,al) then       --shift referenced entry to front
+  if not sameObject?(newFrontPointer,al) then       --shift referenced entry to front
     temp:= first newFrontPointer           --or entry with smallest count
     newFrontPointer.first := first al
     al.first := temp
@@ -506,7 +506,7 @@ clamStats() ==
  
 numberOfEmptySlots cache==
   count:= (CAAR cache ='$failed => 1; 0)
-  for x in tails rest cache while NE(x,cache) repeat
+  for x in tails rest cache while not sameObject?(x,cache) repeat
     if CAAR x='$failed then count:= count+1
   count
  
@@ -624,7 +624,7 @@ lassocShift(x,l) ==
     x = first first y => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -636,7 +636,7 @@ lassocShiftWithFunction(x,l,fn) ==
     FUNCALL(fn,x,first first y) => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -645,10 +645,10 @@ lassocShiftWithFunction(x,l,fn) ==
 lassocShiftQ(x,l) ==
   y:= l
   while cons? y repeat
-    EQ(x,first first y) => return (result := first y)
+    sameObject?(x,first first y) => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -657,10 +657,10 @@ lassocShiftQ(x,l) ==
 -- rassocShiftQ(x,l) ==
 --   y:= l
 --   while cons? y repeat
---     EQ(x,rest first y) => return (result := first y)
+--     sameObject?(x,rest first y) => return (result := first y)
 --     y:= rest y
 --   result =>
---     if not EQ(y,l) then
+--     if not sameObject?(y,l) then
 --       y.first := first l
 --       l.first := result
 --     first result
