@@ -137,7 +137,7 @@ segmentedMsgPreprocess x ==
     [head1,:segmentedMsgPreprocess tail]
   head1 := segmentedMsgPreprocess head
   tail1 := segmentedMsgPreprocess tail
-  EQ(head,head1) and EQ(tail,tail1) => x
+  sameObject?(head,head1) and sameObject?(tail,tail1) => x
   [head1,:tail1]
 
 removeAttributes msg ==

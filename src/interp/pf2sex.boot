@@ -200,7 +200,7 @@ pfLiteral2Sex pf ==
       ["QUOTE", pfLeafToken pf]
   keyedSystemError('"S2GE0017", ['"pfLiteral2Sex: unexpected form"])
 
-symEqual(sym, sym2) == EQ(sym, sym2)
+symEqual(sym, sym2) == sameObject?(sym, sym2)
 
 SymMemQ(sy, l) == MEMQ(sy, l)
 

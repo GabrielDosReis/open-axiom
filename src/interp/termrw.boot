@@ -38,18 +38,18 @@ termRW(t,R) ==
   -- reduce t by rewrite system R
   until b repeat
     t0:= termRW1(t,R)
-    b:= EQ(t,t0)
+    b:= sameObject?(t,t0)
     t:= t0
   t
  
 termRW1(t,R) ==
   -- tries to do one reduction on the leftmost outermost subterm of t
   t0:= term1RW(t,R)
-  not EQ(t0,t) or atom t => t0
+  not sameObject?(t0,t) or atom t => t0
   [t1,:t2]:= t
   tt1:= termRW1(t1,R)
   tt2:= t2 and termRW1(t2,R)
-  EQ(t1,tt1) and EQ(t2,tt2) => t
+  sameObject?(t1,tt1) and sameObject?(t2,tt2) => t
   [tt1,:tt2]
  
 term1RW(t,R) ==
@@ -65,7 +65,7 @@ term1RWall(t,R) ==
   -- same as term1RW, but returns a list
   [vars,:varRules]:= R
   [not (SL='failed) and subCopy(copy rest r,SL) for r in varRules |
-    not EQ(SL:= termMatch(first r,t,NIL,vars),'failed)]
+    not sameObject?(SL:= termMatch(first r,t,NIL,vars),'failed)]
  
 termMatch(tp,t,SL,vars) ==
   -- t is a term pattern, t a term
@@ -91,7 +91,7 @@ termMatch(tp,t,SL,vars) ==
 -- isContained(v,t) ==
 --   -- tests (by EQ), whether v occurs in term t
 --   -- v must not be NIL
---   EQ(v,t) => 'T
+--   sameObject?(v,t) => 'T
 --   atom t => NIL
 --   isContained(v,first t) or isContained(v,rest t)
  

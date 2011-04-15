@@ -690,7 +690,7 @@ expandToVMForm x ==
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
   args' := expandToVMForm args
-  EQ(op,op') and EQ(args,args') => x
+  sameObject?(op,op') and sameObject?(args,args') => x
   [op',:args']
   
 

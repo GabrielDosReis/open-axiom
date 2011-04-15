@@ -289,9 +289,9 @@ minimalise x ==
       y => y
       cons? x =>
         z := min(first x,ht)
-        if not EQ(z,first x) then x.first := z
+        if not sameObject?(z,first x) then x.first := z
         z := min(rest x,ht)
-        if not EQ(z,rest x) then x.rest := z
+        if not sameObject?(z,rest x) then x.rest := z
         hashCheck(x,ht)
       vector? x =>
         for i in 0..MAXINDEX x repeat

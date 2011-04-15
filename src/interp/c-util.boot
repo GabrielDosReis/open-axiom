@@ -304,10 +304,10 @@ intersectionEnvironment(e,e') ==
   ce
  
 deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
-  not EQ(el,el') => systemError '"deltaContour" --a cop out for now
+  not sameObject?(el,el') => systemError '"deltaContour" --a cop out for now
   eliminateDuplicatePropertyLists contourDifference(c,c') where
     contourDifference(c,c') ==
-      [first x for x in tails c while not EQ(x,c')]
+      [first x for x in tails c while not sameObject?(x,c')]
     eliminateDuplicatePropertyLists contour ==
       contour is [[x,:.],:contour'] =>
         LASSOC(x,contour') =>
@@ -397,15 +397,15 @@ addContour(c,E is [cur,:tail]) ==
 makeCommonEnvironment(e,e') ==
   interE makeSameLength(e,e') where
     interE [e,e'] ==
-      EQ(rest e,rest e') =>
+      sameObject?(rest e,rest e') =>
         [interLocalE makeSameLength(first e,first e'),:rest e]
       interE [rest e,rest e']
     interLocalE [le,le'] ==
-      EQ(rest le,rest le') =>
+      sameObject?(rest le,rest le') =>
         [interC makeSameLength(first le,first le'),:rest le]
       interLocalE [rest le,rest le']
     interC [c,c'] ==
-      EQ(c,c') => c
+      sameObject?(c,c') => c
       interC [rest c,rest c']
     makeSameLength(x,y) ==
       fn(x,y,#x,#y) where
@@ -953,7 +953,7 @@ sublisV(p,e) ==
       atom e => (y:= ASSQ(e,p) => rest y; e)
       u:= suba(p,first e)
       v:= suba(p,rest e)
-      EQ(first e,u) and EQ(rest e,v) => e
+      sameObject?(first e,u) and sameObject?(rest e,v) => e
       [u,:v]
 
 --% DEBUGGING PRINT ROUTINES used in breaks
@@ -1103,7 +1103,7 @@ middleEndExpand x ==
     middleEndExpand MACROEXPAND_-1 x
   a := middleEndExpand op
   b := middleEndExpand args
-  EQ(a,op) and EQ(b,args) => x
+  sameObject?(a,op) and sameObject?(b,args) => x
   [a,:b]
 
 

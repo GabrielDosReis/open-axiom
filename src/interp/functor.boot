@@ -149,7 +149,7 @@ DomainPrintSubst(item,Sublis) ==
   item is [a,:b] =>
     c1:= DomainPrintSubst(a,Sublis)
     c2:= DomainPrintSubst(b,Sublis)
-    EQ(c1,a) and EQ(c2,b) => item
+    sameObject?(c1,a) and sameObject?(c2,b) => item
     [c1,:c2]
   l:= ASSQ(item,Sublis)
   l => rest l
@@ -355,7 +355,7 @@ sublisProp(subst,props) ==
       cp
   not a' => sublisProp(subst,props')
   props' := sublisProp(subst,props')
-  EQ(a',cp) and EQ(props',rest props) => props
+  sameObject?(a',cp) and sameObject?(props',rest props) => props
   [a',:props']
  
 setVector3(name,instantiator) ==

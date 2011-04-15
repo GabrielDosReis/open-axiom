@@ -379,12 +379,12 @@ npQuantified f ==
 -- peek for keyword s, no advance of token stream
 
 npEqPeek s ==
-  $stok.first.first = "key" and EQ(s,$ttok)
+  $stok.first.first = "key" and sameObject?(s,$ttok)
 
 -- test for keyword s, if found advance token stream
 
 npEqKey s ==
-  $stok.first.first = "key" and EQ(s,$ttok) and npNext()
+  $stok.first.first = "key" and sameObject?(s,$ttok) and npNext()
 
 $npTokToNames ==
   ["~","#","[]","{}", "[||]","{||}"]

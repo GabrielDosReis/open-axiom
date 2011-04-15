@@ -62,7 +62,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   for [p,c] in pcl repeat
     p is ['SPADCALL,sharpVar,n1,
       ["ELT",["%dynval",=MKQ minivectorName],slot]]
-        and EQ(iequalSlot,$minivector.slot) =>
+        and sameObject?(iequalSlot,$minivector.slot) =>
           initList:= [[n1,:c],:initList]
           sharpList := insert(sharpVar,sharpList)
           n:=n1
@@ -89,15 +89,15 @@ isRecurrenceRelation(op,body,minivectorName) ==
     generalPred = '%true => true
     generalPred is ['SPADCALL,m,=sharpArg,
       ["ELT",["%dynval",=MKQ minivectorName],slot]]
-        and EQ(lesspSlot,$minivector.slot)=> m+1
+        and sameObject?(lesspSlot,$minivector.slot)=> m+1
     generalPred is ['SPADCALL,['SPADCALL,=sharpArg,m,
       ["ELT",["%dynval",=MKQ minivectorName],slot]],
         ["ELT",["%dynval",=MKQ minivectorName],notSlot]]
-          and EQ(lesspSlot,$minivector.slot)
-            and EQ(notpSlot,$minivector.notSlot) => m
+          and sameObject?(lesspSlot,$minivector.slot)
+            and sameObject?(notpSlot,$minivector.notSlot) => m
     generalPred is ['NOT,['SPADCALL,=sharpArg,m,
       ["ELT",["%dynval",=MKQ minivectorName], =lesspSlot]]]
-        and EQ(lesspSlot,$minivector.slot) => m
+        and sameObject?(lesspSlot,$minivector.slot) => m
     return nil
   integer? predOk and predOk ~= n =>
     sayKeyedMsg("S2IX0006",[n,m])
@@ -105,7 +105,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
 
   --Check general term for references to just the k previous values
   diffCell:=compiledLookupCheck("-",'($ $ $),integer)
-  diffSlot := or/[i for i in 0.. for x in $minivector | EQ(x,diffCell)]
+  diffSlot := or/[i for i in 0.. for x in $minivector | sameObject?(x,diffCell)]
                 or return nil
   --Check general term for references to just the k previous values
   sharpPosition := readInteger subString(sharpArg,1)
@@ -253,7 +253,7 @@ predCircular(al,n) ==
 assocCircular(x,al) ==  --like ASSOC except that al is circular
   forwardPointer:= al
   val:= nil
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     CAAR forwardPointer = x => return (val:= first forwardPointer)
     forwardPointer:= rest forwardPointer
   val

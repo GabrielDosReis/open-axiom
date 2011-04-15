@@ -1749,7 +1749,7 @@ sublisMatAlist(m,m1,u) ==
 charyTrouble1(u,v,start,linelength) ==
   integer? u => outputNumber(start,linelength,atom2String u)
   atom u => outputString(start,linelength,atom2String u)
-  EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
+  sameObject?(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
   x='EQUATNUM => charyEquatnum(u,v,start,linelength)
   d := GETL(x,'INFIXOP) => charyBinary(d,u,v,start,linelength)
@@ -1771,14 +1771,14 @@ charyTrouble1(u,v,start,linelength) ==
     concatTrouble(rest v,d,start,linelength,true)
   GETL(x,'INFIXOP) => charySplit(u,v,start,linelength)
   x='PAREN and
-    (EQ(keyp u.1,'AGGLST) and (v:= ",") or EQ(keyp u.1,'AGGSET) and
+    (sameObject?(keyp u.1,'AGGLST) and (v:= ",") or sameObject?(keyp u.1,'AGGSET) and
       (v:= ";")) => bracketagglist(rest u.1,start,linelength,v,"_(","_)")
-  x='PAREN and EQ(keyp u.1,'CONCATB) =>
+  x='PAREN and sameObject?(keyp u.1,'CONCATB) =>
     bracketagglist(rest u.1,start,linelength," ","_(","_)")
-  x='BRACKET and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
+  x='BRACKET and (sameObject?(keyp u.1,'AGGLST) and (v:= ",")) =>
     bracketagglist(rest u.1,start,linelength,v,
                    specialChar 'lbrk, specialChar 'rbrk)
-  x='BRACE and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
+  x='BRACE and (sameObject?(keyp u.1,'AGGLST) and (v:= ",")) =>
     bracketagglist(rest u.1,start,linelength,v,
                    specialChar 'lbrc, specialChar 'rbrc)
   x='EXT => longext(u,start,linelength)
@@ -1988,7 +1988,7 @@ apphor(x1,x2,y,d,char) ==
 
 syminusp x ==
   integer? x => MINUSP x
-  cons? x and EQ(keyp x,'_-)
+  cons? x and sameObject?(keyp x,'_-)
 
 appsum(u, x, y, d) ==
   null u => d
@@ -2347,7 +2347,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
              null rest x => return(s := -1)
     nil or
        s = -1 => (nextu := nil)
-       EQ(lastx, u) => ((nextu := rest u); u.rest := nil)
+       sameObject?(lastx, u) => ((nextu := rest u); u.rest := nil)
        true => ((nextu := lastx); PREDECESSOR(lastx, u).rest := nil)
     for x in tails u repeat
            x.first := ['CONCAT, first x, tchr]

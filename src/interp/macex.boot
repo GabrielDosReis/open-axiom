@@ -130,7 +130,7 @@ mac0GetName body ==
     for [sy,st,bd] in $pfMacros while not name repeat
         if st = 'mlambda then
             bd := pfMLambdaBody bd
-        EQ(bd, body) => name := [sy,st]
+        sameObject?(bd, body) => name := [sy,st]
     name
  
 macId pf ==

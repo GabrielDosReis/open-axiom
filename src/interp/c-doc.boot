@@ -268,7 +268,7 @@ escapePercent x ==
   x is [y, :z] =>
     y1 := escapePercent y
     z1 := escapePercent z
-    EQ(y, y1) and EQ(z, z1) => x
+    sameObject?(y, y1) and sameObject?(z, z1) => x
     [y1, :z1]
   x = "%" => "%%"
   x

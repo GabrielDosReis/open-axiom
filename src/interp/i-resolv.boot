@@ -305,8 +305,8 @@ resolveTTRed(t1,t2) ==
 resolveTTRed1(t1,t2,TL) ==
   -- tries to apply a reduction rule on (Resolve t1 t2)
   -- then it creates a type using the result and TL
-  EQ(t,term1RW(t := ['Resolve,t1,t2],$Res)) and
-    EQ(t,term1RW(t := ['Resolve,t2,t1],$Res)) => NIL
+  sameObject?(t,term1RW(t := ['Resolve,t1,t2],$Res)) and
+    sameObject?(t,term1RW(t := ['Resolve,t2,t1],$Res)) => NIL
   [c2,:arg2] := deconstructT t2
   [c2,arg2,:TL] := bubbleType [c2,arg2,:TL]
   t2 := constructM(c2,arg2)
@@ -664,7 +664,7 @@ resolveTMRed(t,m) ==
   TL := NIL
   until b or not t repeat
     [ct,:argt] := deconstructT t
-    b := not EQ(t,term1RW(['Resolve,t,m],$ResMode)) and
+    b := not sameObject?(t,term1RW(['Resolve,t,m],$ResMode)) and
       [c0,arg0,:TL0] := bubbleType [ct,argt,:TL]
       null TL0 and
         l := term1RWall(['Resolve,constructM(c0,arg0),m],$ResMode)

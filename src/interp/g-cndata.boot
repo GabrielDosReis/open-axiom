@@ -58,8 +58,8 @@ getCDTEntry(info,isName) ==
   not IDENTP info => NIL
   (entry := HGET($lowerCaseConTb,info)) =>
     [name,abb,:.] := entry
-    isName and EQ(name,info) => entry
-    not isName and EQ(abb,info) => entry
+    isName and sameObject?(name,info) => entry
+    not isName and sameObject?(abb,info) => entry
     NIL
   entry
  
@@ -255,7 +255,7 @@ isConstructorName op ==
 nAssocQ(x,l,n) ==
   repeat
     if atom l then return nil
-    if EQ(x,first(l).n) then return first l
+    if sameObject?(x,first(l).n) then return first l
     l:= rest l
  
 

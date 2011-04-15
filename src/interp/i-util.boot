@@ -130,7 +130,7 @@ Undef(:u) ==
   u':= last u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  not EQ(first domain'.slot, function Undef) =>
+  not sameObject?(first domain'.slot, function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then

@@ -191,7 +191,7 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
     mc=mc' or isSubset(mc,mc',e) =>
       newmm:= nil
       mm:= modemapList
-      while (not EQ(mm,mmtail)) repeat (newmm:= [first mm,:newmm]; mm:= rest mm)
+      while (not sameObject?(mm,mmtail)) repeat (newmm:= [first mm,:newmm]; mm:= rest mm)
       if (mc=mc') and (sig=sig') then
         --We only need one of these, unless the conditions are hairy
         not $forceAdd and TruthP pred' =>
