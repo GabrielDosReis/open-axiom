@@ -586,8 +586,8 @@ numOfSpadArguments id ==
 linearFormatForm(op,argl) ==
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
-    (digit? (d:= s.(maxIndex:= i)))]
-  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
+    (digit? (d:= s.(idxmax:= i)))]
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..MAXINDEX s])
   fnArgs:=
     indexList.0 > 0 =>
       concat('"(",formatArgList take(-indexList.0,argl),'")")

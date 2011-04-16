@@ -205,9 +205,10 @@ commandAmbiguityError(kind,x,u) ==
 getSystemCommandLine() ==
   p := STRPOS('")",$currentLine,0,NIL)
   line := if p then subString($currentLine,p) else $currentLine
-  maxIndex:= MAXINDEX line
-  for i in 0..maxIndex while (line.i ~= " ") repeat index:= i
-  if index=maxIndex then line := '""
+  idxmax:= MAXINDEX line
+  for i in 0..idxmax while stringChar(line,i) ~= char " " repeat
+    index:= i
+  if index=idxmax then line := '""
   else line := subString(line,index+2)
   line
 
@@ -2579,9 +2580,9 @@ processSynonymLine line ==
       line := dropLeadingBlanks line
       mx := MAXINDEX line
       for i in 0..mx repeat
-        line.i = " " =>
+        stringChar(line,i) = char " " =>
           return (for j in (i+1)..mx repeat
-            line.j ~= " " => return (subString(line, j)))
+            stringChar(line,j) ~= char " " => return (subString(line, j)))
   [key, :value]
 
 
@@ -3194,10 +3195,10 @@ dumbTokenize str ==
   tokenStart := 0
   previousSpace := false
   for i in 0..#str-1 repeat
-    str.i = char "_"" =>
+    stringChar(str,i) = char "_"" =>
       inString := not inString
       previousSpace := false
-    str.i = char " " and not inString =>
+    stringChar(str,i) = char " " and not inString =>
       previousSpace => nil
       token := stripSpaces subSequence(str, tokenStart, i)
       tokenList := [token, :tokenList]

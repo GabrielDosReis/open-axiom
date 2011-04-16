@@ -747,8 +747,8 @@ mkSuperSub(op,argl) ==
 --  strconc/l
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
-    (digit? (d:= s.(maxIndex:= i)))]
-  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
+    (digit? (d:= s.(idxmax:= i)))]
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
     subPart:= ['SUB,cleanOp,:take(indexList.1,argl)]

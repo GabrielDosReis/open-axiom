@@ -99,16 +99,16 @@ string2Words l ==
   [w while wordFrom(l,i) is [w,i]]
 
 wordFrom(l,i) ==
-  maxIndex := MAXINDEX l
-  k := or/[j for j in i..maxIndex | stringChar(l,j) ~= char " "] or return nil
+  idxmax := MAXINDEX l
+  k := or/[j for j in i..idxmax | stringChar(l,j) ~= char " "] or return nil
   buf := '""
-  while k < maxIndex and (c := stringChar(l,k)) ~= char " " repeat
+  while k < idxmax and (c := stringChar(l,k)) ~= char " " repeat
     ch :=
       c = char "__" => stringChar(l,k := 1+k)  --this may exceed bounds
       c
     buf := strconc(buf,ch)
     k := k + 1
-  if k = maxIndex and (c := stringChar(l,k)) ~= char " " then
+  if k = idxmax and (c := stringChar(l,k)) ~= char " " then
     buf := strconc(buf,c)
   [buf,k+1]
 

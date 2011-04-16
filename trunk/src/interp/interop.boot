@@ -463,12 +463,12 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
-  maxIndex := MAXINDEX numvec
+  idxmax := MAXINDEX numvec
   start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
-    maxIndex
-  if QSGREATERP(finish,maxIndex) then systemError '"limit too large"
+    idxmax
+  if QSGREATERP(finish,idxmax) then systemError '"limit too large"
   numArgs := if hashCode? sig then -1 else (#sig)-1
   success := nil
   $isDefaultingPackage: local :=
