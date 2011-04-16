@@ -741,7 +741,7 @@ currentSP () ==
   $currentSubprogram or "MAIN"
  
 updateSymbolTable(name,type) ==
-    fun := ['$elt,'SYMS,'declare_!]
+    fun := ['$elt,'SYMS,'declare!]
     coercion := ['_:_:,STRING type,'FST]
     $insideCompileBodyIfTrue: local := false
     interpret([fun,["QUOTE",name],coercion])

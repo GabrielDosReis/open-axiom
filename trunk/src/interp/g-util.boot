@@ -836,7 +836,7 @@ $charComma     == char '_,
 $charPeriod    == char '_.
 $checkPrenAlist := [[char '_(,:char '_)],[char '_{,:char '_}],[char '_[,:char '_]]]
 $charEscapeList:= [char '_%,char '_#,$charBack]
-$charIdentifierEndings := [char '__, char '_!, char '_?]
+$charIdentifierEndings := [char '__, char "!", char '_?]
 $charSplitList := [$charComma,$charPeriod,char '_[, char '_],$charLbrace, $charRbrace, char '_(, char '_), char '_$, char '_%]
 $charDelimiters := [$charBlank, char '_(, char '_), $charBack]
 $HTspadmacros := '("\spadtype" "\spadcommand" "\spadop" "\spadfun" "\spadatt" "\spadsyscom" "\spad" "\s")

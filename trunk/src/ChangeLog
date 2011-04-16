@@ -1,3 +1,7 @@
+2011-04-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot (shoeIdChar): Accept "!" too.
+
 2011-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/msgdb.boot: Use stringChar more often.

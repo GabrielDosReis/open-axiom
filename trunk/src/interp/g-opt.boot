@@ -457,7 +457,7 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
+    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse!,
       '%strstc,"MAKE-FULL-CVEC","BVEC-MAKE-FULL"])
 
 ++ Return true if the `form' is semi-simple with respect to
@@ -620,7 +620,7 @@ optBind form ==
     usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
     body := third form
     canInlineVarDefinition(var,expr,body) and isSimpleVMForm expr =>
-      third(form) := substitute_!(expr,var,body)
+      third(form) := substitute!(expr,var,body)
       inits := rest inits
     ok := false
   null inits => third form                        -- no local var left

@@ -2017,7 +2017,7 @@ writify ob ==
                 qcdr := rest ob
                 (name := spadClosure? ob) =>
                    d := writifyInner rest ob
-                   nob := ['WRITIFIED_!_!, 'SPADCLOSURE, d, name]
+                   nob := ['WRITIFIED!!, 'SPADCLOSURE, d, name]
                    HPUT($seen, ob, nob)
                    HPUT($seen, nob, nob)
                    nob
@@ -2034,7 +2034,7 @@ writify ob ==
             vector? ob =>
                 isDomainOrPackage ob =>
                     d := mkEvalable devaluate ob
-                    nob := ['WRITIFIED_!_!, 'DEVALUATED, writifyInner d]
+                    nob := ['WRITIFIED!!, 'DEVALUATED, writifyInner d]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2045,15 +2045,15 @@ writify ob ==
                 for i in 0..n repeat
                     vectorRef(nob, i) := writifyInner vectorRef(ob,i)
                 nob
-            ob = 'WRITIFIED_!_! =>
-                ['WRITIFIED_!_!, 'SELF]
+            ob = 'WRITIFIED!! =>
+                ['WRITIFIED!!, 'SELF]
             -- In CCL constructors are also compiled functions, so we 
             -- need this line:
             constructor? ob => ob
             COMPILED_-FUNCTION_-P ob =>
                 THROW('writifyTag, 'writifyFailed)
             HASHTABLEP ob =>
-                nob := ['WRITIFIED_!_!]
+                nob := ['WRITIFIED!!]
                 HPUT($seen, ob,  nob)
                 HPUT($seen, nob, nob)
                 keys := HKEYS ob
@@ -2064,7 +2064,7 @@ writify ob ==
                               [writifyInner HGET(ob,k) for k in keys]]
                 nob
             PLACEP ob =>
-                nob := ['WRITIFIED_!_!, 'PLACE]
+                nob := ['WRITIFIED!!, 'PLACE]
                 HPUT($seen, ob,  nob)
                 HPUT($seen, nob, nob)
                 nob
@@ -2074,12 +2074,12 @@ writify ob ==
                 THROW('writifyTag, 'writifyFailed)
             -- Default case: return the object itself.
             string? ob =>
-                sameObject?(ob, $NullStream) => ['WRITIFIED_!_!, 'NULLSTREAM]
-                sameObject?(ob, $NonNullStream) => ['WRITIFIED_!_!, 'NONNULLSTREAM]
+                sameObject?(ob, $NullStream) => ['WRITIFIED!!, 'NULLSTREAM]
+                sameObject?(ob, $NonNullStream) => ['WRITIFIED!!, 'NONNULLSTREAM]
                 ob
             FLOATP ob =>
                 ob = READ_-FROM_-STRING STRINGIMAGE ob => ob
-                ['WRITIFIED_!_!, 'FLOAT, ob,:
+                ['WRITIFIED!!, 'FLOAT, ob,:
                    MULTIPLE_-VALUE_-LIST INTEGER_-DECODE_-FLOAT ob]
             ob
 
@@ -2110,7 +2110,7 @@ spadClosure? ob ==
 
 dewritify ob ==
     (not ScanOrPairVec(function is?, ob)
-            where  is? a == a = 'WRITIFIED_!_!) => ob
+            where  is? a == a = 'WRITIFIED!!) => ob
  
     $seen:     local := hashTable 'EQ
  
@@ -2119,10 +2119,10 @@ dewritify ob ==
             null ob => nil
             e := HGET($seen, ob) => e
  
-            cons? ob and first ob = 'WRITIFIED_!_! =>
+            cons? ob and first ob = 'WRITIFIED!! =>
                 type := ob.1
                 type = 'SELF =>
-                    'WRITIFIED_!_!
+                    'WRITIFIED!!
                 type = 'BPI =>
                     oname := ob.2
                     f :=

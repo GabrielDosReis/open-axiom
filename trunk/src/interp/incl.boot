@@ -118,7 +118,7 @@ incCommands :=
 $inputLineNumber := nil 
 
 incClassify(s) ==
-  $inputLineNumber = 0 and incPrefix?('"#_!",0,s) =>
+  $inputLineNumber = 0 and incPrefix?('"#!",0,s) =>
     [true,0,'"magicNumber"]
   not incCommand? s => [false,0, '""]
   i := 1; n := #s

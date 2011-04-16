@@ -13,7 +13,8 @@
 
 (DEFUN |shoeIdChar| (|x|)
   (OR (ALPHANUMERICP |x|)
-      (MEMBER |x| (LIST (|char| '|'|) (|char| '?) (|char| '%)))))
+      (MEMBER |x|
+              (LIST (|char| '|'|) (|char| '?) (|char| '%) (|char| '!)))))
 
 (DEFUN |subString| (|s| |f| &OPTIONAL (|n| NIL))
   (COND
@@ -211,11 +212,12 @@
                   (LIST '|copy| 'COPY) (LIST '|croak| 'CROAK)
                   (LIST '|digit?| 'DIGIT-CHAR-P) (LIST '|drop| 'DROP)
                   (LIST '|exit| 'EXIT) (LIST '|false| 'NIL)
-                  (LIST '|first| 'CAR) (LIST '|fourth| 'CADDDR)
-                  (LIST '|function| 'FUNCTION) (LIST '|gensym| 'GENSYM)
-                  (LIST '|genvar| 'GENVAR) (LIST '|integer?| 'INTEGERP)
-                  (LIST '|lastNode| 'LAST) (LIST 'LAST '|last|)
-                  (LIST '|list| 'LIST)
+                  (LIST '|first| 'CAR) (LIST '|float?| 'FLOATP)
+                  (LIST '|fourth| 'CADDDR) (LIST '|function| 'FUNCTION)
+                  (LIST '|function?| 'FUNCTIONP)
+                  (LIST '|gensym| 'GENSYM) (LIST '|genvar| 'GENVAR)
+                  (LIST '|integer?| 'INTEGERP) (LIST '|lastNode| 'LAST)
+                  (LIST 'LAST '|last|) (LIST '|list| 'LIST)
                   (LIST '|lowerCase?| 'LOWER-CASE-P)
                   (LIST '|makeSymbol| 'INTERN) (LIST '|mkpf| 'MKPF)
                   (LIST '|nconc| 'NCONC)
@@ -231,7 +233,8 @@
                   (LIST '|readOnly?| 'CONSTANTP)
                   (LIST '|removeDuplicates| 'REMDUP)
                   (LIST '|rest| 'CDR) (LIST '|reverse| 'REVERSE)
-                  (LIST '|sameObject?| 'EQ) (LIST '|second| 'CADR)
+                  (LIST '|sameObject?| 'EQ) (LIST '|scalarEqual?| 'EQL)
+                  (LIST '|second| 'CADR)
                   (LIST '|setDifference| 'SETDIFFERENCE)
                   (LIST '|setIntersection| 'INTERSECTION)
                   (LIST '|setPart| 'SETELT) (LIST '|setUnion| 'UNION)

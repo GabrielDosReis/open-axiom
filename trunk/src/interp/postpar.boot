@@ -305,7 +305,7 @@ postForm u ==
     u:= postTranList u
     if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
-        '"is illegal because tuples cannot be applied_!",'"%l",
+        '"is illegal because tuples cannot be applied!",'"%l",
           '"   Did you misuse infix dot?"]
     u
   x is [.,["%Comma",:y]] => [first x,:y]

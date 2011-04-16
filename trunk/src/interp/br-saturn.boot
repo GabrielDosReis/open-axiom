@@ -319,7 +319,7 @@ isBreakSegment?(line, k, n) ==
       line.k = char "{" => 6
       substring?('"table",line,k - 3) => 5
       nil
-  char2 = (char '_!) => 7
+  char2 = char "!" => 7
   char2 = char 'b =>
     substring?('"begin",line,k) => 8
     nil

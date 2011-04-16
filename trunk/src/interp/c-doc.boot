@@ -642,7 +642,7 @@ newWordFrom(l,i,m) ==
 checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   m := MAXINDEX s
   lastChar := s . m
-  lastChar = char '_! or lastChar = char '_? or lastChar = char '_. => s
+  lastChar = char "!" or lastChar = char '_? or lastChar = char '_. => s
   lastChar = char '_, or lastChar = char '_; =>
     s . m := (char '_.)
     s
