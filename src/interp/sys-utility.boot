@@ -114,14 +114,14 @@ macrop f ==
 functionp: %Thing -> %Boolean
 functionp f ==
   IDENTP f => FBOUNDP f and null MACRO_-FUNCTION f
-  FUNCTIONP f
+  function? f
 
 ++ remove `item' from `sequence'.
 delete: (%Thing,%Sequence) -> %Sequence
 delete(item,sequence) ==
   symbol? item => 
-    REMOVE(item,sequence,KEYWORD::TEST,function EQ)
-  atom item and not ARRAYP item =>
+    REMOVE(item,sequence,KEYWORD::TEST,function sameObject?)
+  atom item and not array? item =>
     REMOVE(item,sequence)
   REMOVE(item,sequence,KEYWORD::TEST,function EQUALP)
 
@@ -274,8 +274,8 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
 
 hashTable cmp ==
   testFun :=
-    cmp in '(ID EQ) => function EQ
-    cmp = 'EQL => function EQL
+    cmp in '(ID EQ) => function sameObject?
+    cmp = 'EQL => function scalarEqual?
     cmp = 'EQUAL => function EQUAL
     error '"bad arg to hashTable"
   MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
