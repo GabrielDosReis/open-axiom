@@ -35,7 +35,7 @@ import macros
 namespace BOOT
 
 $topicsDefaults := '(
-  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map_! qsetelt_!)
+  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map! qsetelt!)
   (conversion coerce convert retract)
   (hidden retractIfCan Zero One)
   (predicate _< _=)
@@ -44,7 +44,7 @@ $topicsDefaults := '(
   (hyperbolic acosh acoth acsch asech asinh atanh cosh coth csch sech sinh tanh)
   (destructive setelt qsetelt)
   (extraction xRange yRange zRange elt qelt)
-  (transformation map map_!))
+  (transformation map map!))
 
 $topicSynonyms := '(
   (b . basic)
@@ -146,7 +146,7 @@ string2OpAlist s ==
 getDefaultProps name ==
   u := HGET($defaultsHash,name)
   if (s := PNAME name).(m := MAXINDEX s) = char '? then u := ['p,:u]
-  if s.m = char '_! then u := ['destructive,:u]
+  if s.m = char "!" then u := ['destructive,:u]
   u
   
 skipBlanks(u,i,m) ==

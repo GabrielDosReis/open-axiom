@@ -277,7 +277,7 @@ evalForm(op,opName,argl,mmS) ==
 
 sideEffectedArg?(t,sig,opName) ==
   opString := symbolName opName
-  (opName ~= 'setelt) and (opString.(#opString-1) ~= char '_!) => nil
+  (opName ~= 'setelt) and (opString.(#opString-1) ~= char "!") => nil
   dc := first sig
   t = dc
 
