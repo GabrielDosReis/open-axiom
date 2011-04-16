@@ -240,13 +240,13 @@ bpBacksetElse()==
   bpEqKey "ELSE"
  
 bpEqPeek s == 
-  $stok is ["KEY",:.] and EQ(s,$ttok)
+  $stok is ["KEY",:.] and sameObject?(s,$ttok)
  
 bpEqKey s ==
-  $stok is ["KEY",:.] and EQ(s,$ttok) and bpNext()
+  $stok is ["KEY",:.] and sameObject?(s,$ttok) and bpNext()
 
 bpEqKeyNextTok s ==   
-  $stok is ["KEY",:.] and EQ(s,$ttok) and bpNextToken()
+  $stok is ["KEY",:.] and sameObject?(s,$ttok) and bpNextToken()
  
 bpPileTrap()   == bpMissing  "BACKTAB"
 bpBrackTrap(x) == bpMissingMate("]",x)

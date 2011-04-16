@@ -485,7 +485,7 @@ bfSUBLIS(p,e)==
 bfSUBLIS1(p,e)==
    p = nil => e
    f := first p
-   EQ(first f,e) => bfSUBLIS(p, rest f)
+   sameObject?(first f,e) => bfSUBLIS(p, rest f)
    bfSUBLIS1(rest p,e)
  
 defSheepAndGoats(x)==
@@ -540,7 +540,7 @@ bfLET1(lhs,rhs) ==
   bfMKPROGN [rhs1,:let1,g]
  
 bfCONTAINED(x,y)==
-    EQ(x,y) => true
+    sameObject?(x,y) => true
     atom y=> false
     bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
  
@@ -1146,7 +1146,7 @@ bfCase(x,y)==
     atom x => x 
     bfGenSymbol()
   body := ["CASE",["CAR", g], :bfCaseItems(g,y)]
-  EQ(g,x) => body
+  sameObject?(g,x) => body
   ["LET",[[g,x]],body]
 
 bfCaseItems: (%Thing,%List) -> %List 

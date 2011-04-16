@@ -262,8 +262,10 @@ for i in [ _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
   ["first",        "CAR"]  , _
+  ["float?",   "FLOATP"] , _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
+  ["function?","FUNCTIONP"] , _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
   ["integer?","INTEGERP"]  , _
@@ -292,6 +294,7 @@ for i in [ _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
   ["sameObject?",  "EQ" ] , _
+  ["scalarEqual?","EQL" ] , _
   ["second",      "CADR"] , _
   ["setDifference", "SETDIFFERENCE"]  , _
   ["setIntersection", "INTERSECTION"]  , _

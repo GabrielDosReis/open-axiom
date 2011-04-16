@@ -472,7 +472,7 @@ MappingPrint(x, dom) == coerceMap2E(x)
 
 coerceMap2E(x) ==
   -- nrlib domain
-  ARRAYP rest x => ["theMap", BPINAME first x,
+  array? rest x => ["theMap", BPINAME first x,
     if $testingSystem then 0 else HASHEQ(rest x) rem 1000]
   -- aldor 
   ["theMap", BPINAME first x  ]

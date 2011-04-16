@@ -1583,7 +1583,7 @@ output(expr,domain) ==
       mathprintWithNumber(x,domain)
     if $texFormat     then texFormat x
     if $mathmlFormat  then mathmlFormat x
-  (FUNCTIONP(opOf domain)) and
+  (function?(opOf domain)) and
     (printfun := compiledLookup("<<",'(TextWriter TextWriter $), evalDomain domain))
        and (textwrit := compiledLookup("print", '($), TextWriter())) =>
      sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
