@@ -699,12 +699,12 @@ dbString2Words l ==
 $dbDelimiters := [char " " , char "(", char ")"]
 
 dbWordFrom(l,i) ==
-  maxIndex := MAXINDEX l
-  while maxIndex >= i and l.i = char " " repeat i := i + 1
-  if maxIndex >= i and member(l.i, $dbDelimiters) then return [l.i, i + 1]
-  k := or/[j for j in i..maxIndex | not member(l.j, $dbDelimiters)] or return nil
+  idxmax := MAXINDEX l
+  while idxmax >= i and l.i = char " " repeat i := i + 1
+  if idxmax >= i and member(l.i, $dbDelimiters) then return [l.i, i + 1]
+  k := or/[j for j in i..idxmax | not member(l.j, $dbDelimiters)] or return nil
   buf := '""
-  while k <= maxIndex and not member(c := l.k, $dbDelimiters) repeat
+  while k <= idxmax and not member(c := l.k, $dbDelimiters) repeat
     ch :=
       c = char '__   => l.(k := 1+k)  --this may exceed bounds
       c
