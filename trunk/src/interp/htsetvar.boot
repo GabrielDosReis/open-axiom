@@ -271,7 +271,7 @@ htCheck(checker,value) ==
 
 parseWord x ==
   string? x =>
-    and/[digit? x.i for i in 0..maxIndex x] => readInteger x
+    and/[digit? stringChar(x,i) for i in 0..maxIndex x] => readInteger x
     makeSymbol x
   x
 

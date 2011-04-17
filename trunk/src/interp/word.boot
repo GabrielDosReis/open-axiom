@@ -108,7 +108,7 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter s.i] =>
+  k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
     tailWords:=
       isBreakCharacter s.(k+1) =>
         n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not isBreakCharacter s.i]
@@ -196,7 +196,7 @@ bootSearch word ==
   list :=
     hasWildCard? key =>
       pattern := patternTran key -- converts * to &
-      pattern.0 ~= '_& =>
+      pattern.0 ~= char "&" =>
         [x for [x,:.] in HGET($functionTable,UPCASE pattern.0)|
           match?(pattern,COPY x)]
       "append"/[[x for [x,:.] in HGET($functionTable,k)| match?(pattern,COPY x)]

@@ -629,11 +629,11 @@ newWordFrom(l,i,m) ==
   while i <= m and l.i = char " " repeat i := i + 1
   i > m => NIL
   buf := '""
-  ch := l.i
+  ch := stringChar(l,i)
   ch = $charFauxNewline => [$stringFauxNewline, i+ 1]
   done := false
   while i <= m and not done repeat
-    ch := l.i
+    ch := stringChar(l,i)
     ch = $charBlank or ch = $charFauxNewline => done := true
     buf := strconc(buf, charString ch)
     i := i + 1
@@ -641,10 +641,10 @@ newWordFrom(l,i,m) ==
 
 checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   m := maxIndex s
-  lastChar := s . m
+  lastChar := stringChar(s,m)
   lastChar = char "!" or lastChar = char "?" or lastChar = char "." => s
   lastChar = char "," or lastChar = char ";" =>
-    s . m := char "."
+    stringChar(s,m) := char "."
     s
   s
 
@@ -657,7 +657,7 @@ checkGetArgs u ==
     k := getMatchingRightPren(u,6,char "{",char "}") or m
     checkGetArgs subString(u,6,k-6)
   (i := charPosition(char "(",u,0)) > m => nil
-  (u . m) ~= char ")" => nil
+  stringChar(u,m) ~= char ")" => nil
   while (k := charPosition($charComma,u,i + 1)) < m repeat
     acc := [trimString subString(u,i + 1,k - i - 1),:acc]
     i := k
@@ -677,7 +677,7 @@ firstNonBlankPosition(x,:options) ==
   start := IFCAR options or 0
   k := -1
   for i in start..maxIndex x repeat
-    if x.i ~= $charBlank then return (k := i)
+    if stringChar(x,i) ~= $charBlank then return (k := i)
   k
 
 checkAddIndented(x,margin) ==
@@ -691,7 +691,7 @@ checkAddSpaceSegments(u,k) ==
   i := charPosition($charBlank,u,k)
   m < i => u
   j := i
-  while (j := j + 1) < m and u.j = char " " repeat 'continue
+  while (j := j + 1) < m and stringChar(u,j) = char " " repeat 'continue
   n := j - i   --number of blanks
   n > 1 => strconc(subString(u,0,i),'"\space{",
              STRINGIMAGE n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
@@ -716,7 +716,7 @@ checkTrim($x,lines) == main where
     return subString(s,k + 2)
     m := maxIndex s
     n := k + 2
-    for j in (k + 2)..m while s.j = $charBlank repeat (n := n + 1)
+    for j in (k + 2)..m while stringChar(s,j) = $charBlank repeat (n := n + 1)
     subString(s,n)
 
 checkExtract(header,lines) ==
@@ -740,7 +740,7 @@ checkExtract(header,lines) ==
       m := #line
       (k := firstNonBlankPosition line) = -1 => 'skip  --include if blank
       k > margin                             => 'skip  --include if idented
-      not upperCase? line.k                  => 'skip  --also if not upcased
+      not upperCase? stringChar(line,k)      => 'skip  --also if not upcased
       (j := charPosition(char ":",line,k)) = m   => 'skip  --or if not colon, or
       (i := charPosition(char " ",line,k+1)) < j => 'skip  --blank before colon
       return nil
@@ -835,8 +835,8 @@ checkDecorate u ==
 
 hasNoVowels x ==
   max := maxIndex x
-  x.max = char "y" => false
-  and/[not isVowel(x.i) for i in 0..max]
+  stringChar(x,max) = char "y" => false
+  and/[not isVowel stringChar(x,i) for i in 0..max]
 
 isVowel c ==
   c=char "a" or c=char "e" or c=char "i" or c=char "o" or c=char "u" or
@@ -852,7 +852,7 @@ checkAddBackSlashes s ==
   insertIndex := nil
   while k <= m repeat
     do
-      char := s.k
+      char := stringChar(s,k)
       char = $charBack => k := k + 2
       MEMQ(char,$charEscapeList) => return (insertIndex := k)
     k := k + 1
@@ -962,14 +962,15 @@ checkSplitPunctuation x ==
   m := maxIndex x
   m < 1 => [x]
   lastchar := x.m
-  lastchar = $charPeriod and x.(m - 1) = $charPeriod =>
+  lastchar = $charPeriod and stringChar(x,m - 1) = $charPeriod =>
     m = 1 => [x]
-    m > 3 and x.(m-2) = $charPeriod =>
+    m > 3 and stringChar(x,m-2) = $charPeriod =>
       [:checkSplitPunctuation subString(x,0,m-2),'"..."]
     [:checkSplitPunctuation subString(x,0,m-1),'".."]
   lastchar = $charPeriod or lastchar = $charSemiColon or lastchar = $charComma
     => [subString(x,0,m),lastchar]
-  m > 1 and x.(m - 1) = $charQuote => [subString(x,0,m - 1),subString(x,m-1)]
+  m > 1 and stringChar(x,m - 1) = $charQuote =>
+    [subString(x,0,m - 1),subString(x,m-1)]
   (k := charPosition($charBack,x,0)) < m =>
     k = 0 =>
       m = 1 or HGET($htMacroTable,x) or alphabetic? x.1 => [x]
@@ -990,7 +991,7 @@ checkSplitOn(x) ==
   while l repeat
     char := first l
     do
-      m = 0 and x.0 = char => return (k := -1)  --special exit
+      m = 0 and stringChar(x,0) = char => return (k := -1)  --special exit
       k := charPosition(char,x,0)
       k > 0 and x.(k - 1) = $charBack => [x]
       k <= m => return k
@@ -1111,7 +1112,7 @@ checkLookForRightBrace(u) ==  --return line beginning with right brace
 checkInteger s ==
   CHARP s => false
   s = '"" => false
-  and/[digit? s.i for i in 0..maxIndex s]
+  and/[digit? stringChar(s,i) for i in 0..maxIndex s]
 
 checkTransformFirsts(opname,u,margin) ==
 --case 1: \spad{...
@@ -1127,11 +1128,11 @@ checkTransformFirsts(opname,u,margin) ==
     strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))
   m := maxIndex u
   m < 2 => u
-  u.0 = $charBack => u
+  stringChar(u,0) = $charBack => u
   alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
     j := checkSkipBlanks(u,i,m) or return u
-    open := u.j
+    open := stringChar(u,j)
     open = char "[" and (close := char "]") or
           open = char "("  and (close := char ")") =>
       k := getMatchingRightPren(u,j + 1,open,close)
@@ -1185,7 +1186,7 @@ getMatchingRightPren(u,j,open,close) ==
   count := 0
   m := maxIndex u
   for i in j..m repeat
-    c := u . i
+    c := stringChar(u,i)
     do
       c = close =>
         count = 0 => return (found := i)
@@ -1194,12 +1195,12 @@ getMatchingRightPren(u,j,open,close) ==
   found
 
 checkSkipBlanks(u,i,m) ==
-  while i < m and u.i = $charBlank repeat i := i + 1
+  while i < m and stringChar(u,i) = $charBlank repeat i := i + 1
   i = m => nil
   i
 
 checkSkipToken(u,i,m) ==
-  alphabetic?(u.i) => checkSkipIdentifierToken(u,i,m)
+  alphabetic? stringChar(u,i) => checkSkipIdentifierToken(u,i,m)
   checkSkipOpToken(u,i,m)
 
 checkSkipOpToken(u,i,m) ==
@@ -1309,7 +1310,7 @@ checkDecorateForHt u ==
 --      not spadflag and string? x and (member(x,$argl) or #x = 1
 --        and alphabetic? x.0) and not (x in '("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(maxIndex x))or x in '("true" "false"))
+--      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit? stringChar(x,maxIndex x) or x in '("true" "false"))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

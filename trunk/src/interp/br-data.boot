@@ -106,21 +106,20 @@ buildLibdbConEntry conname ==
     null $conform => nil
     $exposed? := (isExposedConstructor conname => '"x"; '"n")
     $doc      := getConstructorDocumentationFromDB conname
-    pname := PNAME conname
     kind  := getConstructorKindFromDB conname
     if kind = 'domain
       and getConstructorModemapFromDB conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
-      pname.(maxIndex pname) = char "&" => 'x
-      DOWNCASE PNAME(kind).0
+      isDefaultPackageName conname => 'x
+      DOWNCASE symbolName(kind).0
     argl := rest $conform
     conComments :=
       LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
       '""
     argpart:= subString(form2HtString ['f,:argl],1)
     sigpart:= libConstructorSig $conform
-    header := strconc($kind,PNAME conname)
+    header := strconc($kind,symbolName conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
 
 dbMkForm x == atom x and [x] or x
@@ -190,13 +189,13 @@ libdbTrim s ==
   k := maxIndex s
   k < 0 => s
   for i in 0..k repeat
-    s.i = $Newline => s.i := char " "
+    stringChar(s,i) = $Newline => stringChar(s,i) := char " "
   trimString s
 
 checkCommentsForBraces(kind,sop,sigpart,comments) ==
   count := 0
   for i in 0..maxIndex comments repeat
-    c := comments.i
+    c := stringChar(comments,i)
     c = char "{" => count := count + 1
     c = char "}" =>
       count := count - 1
@@ -435,7 +434,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
 getDefaultPackageClients con ==  --called by mkUsersHashTable
   catname := makeSymbol subString(s := PNAME con,0,maxIndex s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := makeSymbol strconc(PNAME catAncestor,'"&")
+    pakname := makeDefaultPackageName symbolName catAncestor
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)

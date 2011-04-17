@@ -97,9 +97,9 @@ bcString2WordList s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => nil
     k := or/[j for j in i..n | s.j ~= char " "]
-    null integer? k => nil
+    not integer? k => nil
     l := bcFindString(s,k + 1,n,char " ")
-    null integer? l => [subString(s,k)]
+    not integer? l => [subString(s,k)]
     [subString(s,k,l-k),:fn(s,l + 1,n)]
 
 

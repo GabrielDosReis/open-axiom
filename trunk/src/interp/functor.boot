@@ -929,7 +929,8 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  alphabetic?((s:= STRINGIMAGE u).(maxIndex s)) => 
+  s:= STRINGIMAGE u
+  alphabetic? stringChar(s,maxIndex s) => 
     makeSymbol strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

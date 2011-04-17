@@ -60,7 +60,7 @@ grepConstruct1(s,key) ==
 --returns the name of file (WITHOUT .text.$SPADNUM on the end)
   $key     : local := key
   if key = 'k and          --convert 'k to 'y if name contains an "&"
-    or/[s . i = char "&" for i in 0..maxIndex s] then key := 'y
+    or/[stringChar(s,i) = char "&" for i in 0..maxIndex s] then key := 'y
   filter := pmTransFilter STRINGIMAGE s  --parses and-or-not form
   filter is ['error,:.] => filter        --exit on parser error
   pattern := mkGrepPattern(filter,key)  --create string to pass to "grep"
@@ -92,7 +92,7 @@ grepForAbbrev(s,key) ==
   someLowerCaseChar := false
   someUpperCaseChar := false
   for i in 0..maxIndex s repeat
-    c := s . i
+    c := stringChar(s,i)
     lowerCase? c => return (someLowerCaseChar := true)
     upperCase? c => someUpperCaseChar := true
   someLowerCaseChar or not someUpperCaseChar => false

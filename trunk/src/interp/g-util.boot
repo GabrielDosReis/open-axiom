@@ -45,6 +45,7 @@ module g_-util where
   isSubDomain: (%Mode,%Mode) -> %Form
   usedSymbol?: (%Symbol,%Code) -> %Boolean
   isDefaultPackageName: %Symbol -> %Boolean
+  makeDefaultPackageName: %String -> %Symbol
 
 --%  
 
@@ -667,9 +668,8 @@ sublisNQ(al,e) ==
 
 opOf: %Thing -> %Thing
 opOf x ==
-  atom x => x
-  first x
-
+  cons? x => x.op
+  x
 
 getProplist: (%Thing,%Env) -> %List
 search: (%Thing,%Env) -> %List
@@ -768,16 +768,16 @@ trimString s ==
 leftTrim s ==
   k := maxIndex s
   k < 0 => s
-  s.0 = $blank =>
-    for i in 0..k while s.i = $blank repeat (j := i)
+  stringChar(s,0) = $blank =>
+    for i in 0..k while stringChar(s,i) = $blank repeat (j := i)
     subString(s,j + 1)
   s
 
 rightTrim s ==  -- assumed a non-empty string
   k := maxIndex s
   k < 0 => s
-  s.k = $blank =>
-    for i in k..0 by -1 while s.i = $blank repeat (j := i)
+  stringChar(s,k) = $blank =>
+    for i in k..0 by -1 while stringChar(s,i) = $blank repeat (j := i)
     subString(s,0,j)
   s
 
@@ -791,7 +791,7 @@ pr x ==
 
 intern x ==
   string? x =>
-    digit? x.0 => string2Integer x
+    digit? stringChar(x,0) => string2Integer x
     makeSymbol x
   x
 
@@ -878,13 +878,16 @@ isDefaultPackageName x ==
 isDefaultPackageForm? x ==
   x is [op,:.] and IDENTP op and isDefaultPackageName op
 
+makeDefaultPackageName x ==
+  makeSymbol strconc(x,'"&")
+
 -- gensym utils
 
 charDigitVal c ==
   digits := '"0123456789"
   n := -1
-  for i in 0..#digits-1 while n < 0 repeat
-      if c = digits.i then n := i
+  for i in 0..maxIndex digits while n < 0 repeat
+      if c = stringChar(digits,i) then n := i
   n < 0 => error '"Character is not a digit"
   n
 
@@ -892,7 +895,7 @@ gensymInt g ==
   not GENSYMP g => error '"Need a GENSYM"
   p := symbolName g
   n := 0
-  for i in 2..#p-1 repeat
+  for i in 2..maxIndex p repeat
     n := 10 * n + charDigitVal stringChar(p,i)
   n
 

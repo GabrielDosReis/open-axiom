@@ -261,7 +261,7 @@ encodeCatform x ==
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
 hasDefaultPackage catname ==
-  defname := makeSymbol strconc(catname,'"&")
+  defname := makeDefaultPackageName symbolName catname
   constructor? defname => defname
   nil
  
@@ -706,7 +706,7 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
-  packageName:= makeSymbol(strconc(symbolName op,'"&"))
+  packageName:= makeDefaultPackageName symbolName op
   packageAbb := makeSymbol(strconc(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused

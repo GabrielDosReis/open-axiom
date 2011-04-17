@@ -280,7 +280,7 @@ mkLineList lines ==
 nonBlank str ==
   value := false
   for i in 0..maxIndex str repeat
-    str.i ~= char " " =>
+    stringChar(str,i) ~= char " " =>
       value := true
       return value
   value
@@ -294,10 +294,10 @@ ncloopCommand (line,n) ==
 ncloopEscaped x==
      esc :=false
      done:=false
-     for i in (# x) - 1 .. 0 by -1 while not done repeat
+     for i in maxIndex x .. 0 by -1 while not done repeat
          done:=
-              x.i = char " " => false
-              x.i = char "__" =>
+              stringChar(x,i) = char " " => false
+              stringChar(x,i) = char "__" =>
                        esc:=true
                        true
               true
