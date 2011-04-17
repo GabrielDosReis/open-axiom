@@ -236,7 +236,7 @@ htMakeErrorPage htPage ==
 
 writeSaturnLines lines ==
   for line in lines repeat
-   if line ~= '"" and line.0 = char '_\ then saturnTERPRI()
+   if line ~= '"" and line.0 = char "\" then saturnTERPRI()
    saturnPRINTEXP line
 
 writeSaturn(line) ==
@@ -244,7 +244,7 @@ writeSaturn(line) ==
   n := maxIndex line
   while  --advance k if true
       k > n => false
-      line.k ~= char '_\ => true
+      line.k ~= char "\" => true
       code := isBreakSegment?(line, k + 1,n) => false
       true
     repeat (k := k + 1)
@@ -268,7 +268,7 @@ writeSaturn(line) ==
     $marg := $marg + 3
     writeSaturnTable subString(line,k + 7)
   code = 6 =>
-    i := charPosition(char '_},line,k + 4)
+    i := charPosition(char "}",line,k + 4)
     tabCode := subString(line,k, i - k + 1)
     writeSaturnPrint tabCode
     line := subString(line,i + 1)
@@ -280,9 +280,9 @@ writeSaturn(line) ==
     i :=
       substring?('"\beginmenu",  line,k) => k + 9
       substring?('"\beginscroll",line,k) => k + 11
-      charPosition(char '_},line,k)
-    if char '_[ = line.(i + 1) then
-      i := charPosition(char '_], line, i + 2)
+      charPosition(char "}",line,k)
+    if char "[" = line.(i + 1) then
+      i := charPosition(char "]", line, i + 2)
     beginCode := subString(line,k, i - k + 1)
     writeSaturnPrint(beginCode)
     line := subString(line,i + 1)
@@ -291,7 +291,7 @@ writeSaturn(line) ==
     i :=
       substring?('"\endmenu",line,k)   => k + 7
       substring?('"\endscroll",line,k) => k + 9
-      charPosition(char '_},line,k)
+      charPosition(char "}",line,k)
     endCode := subString(line,k, i - k + 1)
     writeSaturnPrint(endCode)
     line := subString(line,i + 1)
@@ -302,28 +302,28 @@ writeSaturn(line) ==
 isBreakSegment?(line, k, n) ==
   k > n => nil
   char2 := line . k
-  char2 = (char '_\) => 1
-  char2 = (char '_&) =>
+  char2 = (char "\") => 1
+  char2 = (char "&") =>
     substring?('"&\&", line, k) => 2
     nil
-  char2 = char 'i =>
+  char2 = char "i" =>
     substring?('"item",line,k) => 3
     nil
-  char2 = char 'n =>
+  char2 = char "n" =>
     substring?('"newline",line,k) => 4
     nil
-  char2 = char 't =>
+  char2 = char "t" =>
     (k := k + 2) > n => nil
-    line.(k - 1) = char 'a and line.k = char 'b =>
+    line.(k - 1) = char "a" and line.k = char "b" =>
       (k := k + 1) > n => nil
       line.k = char "{" => 6
       substring?('"table",line,k - 3) => 5
       nil
   char2 = char "!" => 7
-  char2 = char 'b =>
+  char2 = char "b" =>
     substring?('"begin",line,k) => 8
     nil
-  char2 = (char 'e)  =>
+  char2 = (char "e")  =>
     substring?('"end",line,k) => 9
     nil
   nil
@@ -355,8 +355,8 @@ writeSaturnTable line ==
 findBalancingBrace(s,k,n,level) ==
   k > n => nil
   c := s . k
-  c = char '_{ => findBalancingBrace(s, k + 1, n, level + 1)
-  c = char '_} =>
+  c = char "{" => findBalancingBrace(s, k + 1, n, level + 1)
+  c = char "}" =>
     level = 0 => k
     findBalancingBrace(s, k + 1, n, level - 1)
   findBalancingBrace(s, k + 1, n, level)
@@ -1499,7 +1499,7 @@ unTab s ==
   [unTab1 first s, :rest s]
 
 unTab1 s ==
-  ('"\tab{" < s) = 5 and (k := charPosition(char '_}, s, 4)) =>
+  ('"\tab{" < s) = 5 and (k := charPosition(char "}", s, 4)) =>
       subString(s, k + 1)
   s
 
@@ -1635,7 +1635,7 @@ bcConform1 form == main where
         s := 
           string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
-        (s.0 = char '_#) =>
+        (s.0 = char "#") =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>
               htSay form2HtString ($FormalMapVariableList . n)
            htSay '"\"
@@ -1718,9 +1718,9 @@ purgeNewConstructorLines(lines, conlist) ==
 screenLocalLine(line, conlist) ==
   k := dbKind line
   con := makeSymbol
-    k = char 'o or k = char 'a =>
+    k = char "o" or k = char "a" =>
       s := dbPart(line,5,1)
-      k := charPosition(char '_(,s,1)
+      k := charPosition(char "(",s,1)
       subString(s,1,k - 1)
     dbName line
   MEMQ(con, conlist)

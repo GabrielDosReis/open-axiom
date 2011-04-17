@@ -565,13 +565,13 @@ $funnyQuote := abstractChar 127
 $funnyBacks := abstractChar 128
 
 htEscapeString str ==
-  str := SUBSTITUTE($funnyQuote, char '_", str)
-  SUBSTITUTE($funnyBacks, char '_\, str)
+  str := SUBSTITUTE($funnyQuote, char "_"", str)
+  SUBSTITUTE($funnyBacks, char "\", str)
 
 unescapeStringsInForm form ==
   string? form =>
-    str := NSUBSTITUTE(char '_", $funnyQuote, form)
-    NSUBSTITUTE(char '_\, $funnyBacks, str)
+    str := NSUBSTITUTE(char "_"", $funnyQuote, form)
+    NSUBSTITUTE(char "\", $funnyBacks, str)
   cons? form =>
     unescapeStringsInForm first form
     unescapeStringsInForm rest form

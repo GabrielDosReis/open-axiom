@@ -1039,7 +1039,7 @@ aggregateApp(u,x,y,d,s) ==
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
   string? u =>
     u = $EmptyString => 0
-    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char "b") or (u.1 = char "d")) => 1
     #u
   atom u => # atom2String u
   WIDTH COPY u
@@ -1047,7 +1047,7 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
 WIDTH u ==
   string? u =>
     u = $EmptyString => 0
-    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char "b") or (u.1 = char "d")) => 1
     #u
   integer? u => 
     if (u < 1) then 

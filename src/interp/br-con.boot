@@ -76,7 +76,7 @@ conPage(a,:b) ==
 conPageFastPath x == --called by conPage and constructorSearch
 --gets line quickly for constructor name or abbreviation
   s := STRINGIMAGE x
-  charPosition(char '_*,s,0) < #s => nil     --quit if name has * in it
+  charPosition(char "*",s,0) < #s => nil     --quit if name has * in it
   name := (string? x => makeSymbol x; x)
   entry := HGET($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>

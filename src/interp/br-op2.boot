@@ -544,7 +544,7 @@ opPageFast opAlist == --called by oSearch
 opPageFastPath opstring ==
 --return nil
   x := STRINGIMAGE opstring
-  charPosition(char '_*,x,0) < #x => nil     --quit if name has * in it
+  charPosition(char "*",x,0) < #x => nil     --quit if name has * in it
   op := (string? x => makeSymbol x; x)
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
   opAlist := [[op,:[item for mm in mmList]]] where item() ==

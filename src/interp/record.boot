@@ -59,7 +59,7 @@ namespace BOOT
 --=======================================================================
 --                      Global Variables
 --=======================================================================
-$backslash := char '_\
+$backslash := char "\"
 $testOutputLineFlag := nil   -- referenced by charyTop, prnd to stash lines
 $testOutputLineStack := nil  -- saves lines to be printed (needed to convert
                              -- lines for use in hypertex)
@@ -237,15 +237,15 @@ htFile2InputFile(pathname,:option) ==
  
 htCommandToInputLine s == fn(s,0) where fn(s,init) ==
 --similar to htTrimAtBackSlash except removes all \
-  k := or/[i for i in init..maxIndex s | s.i = char '_\] =>
-    member(s.(k + 1),[char 'f,char 'b]) => subString(s,init,k - init)
+  k := or/[i for i in init..maxIndex s | s.i = char "\"] =>
+    member(s.(k + 1),[char "f",char "b"]) => subString(s,init,k - init)
     strconc(subString(s,init,k - init),fn(s,k + 1))
   subString(s,init)
  
 htTrimAtBackSlash s ==
-  backslash := char '_\
+  backslash := char "\"
   k := or/[i for i in 0..maxIndex s | s.i = backslash 
-          and member(s.(i + 1),[char 'f,char 'b])] => subString(s,0,k - 1)
+          and member(s.(i + 1),[char "f",char "b"])] => subString(s,0,k - 1)
   s
  
 htMkPath(directory,name,typ) ==
@@ -267,7 +267,7 @@ recordAndPrintTest md ==  --called by recordAndPrint
     string? $currentLine => [$currentLine]
     fn $currentLine where fn x ==
       x is [y,:r] =>     
-        y.(k := maxIndex y) = char '__ => 
+        y.(k := maxIndex y) = char "__" => 
           u := fn r
           [strconc(subString(y,0,k),'" ",first u),:rest u]
         [y,:fn r]

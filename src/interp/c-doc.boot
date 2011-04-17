@@ -257,7 +257,7 @@ checkExtractItemList l ==  --items are separated by commas or end of line
   acc := nil               --l is list of remaining lines
   while l repeat           --stop when you get to a line with a colon
     m := maxIndex first l
-    k := charPosition(char '_:,first l,0)
+    k := charPosition(char ":",first l,0)
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
@@ -377,7 +377,7 @@ checkRecordHash u ==
           HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
       else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
-          if s.0 = char '_) then s := subString(s,1)
+          if s.0 = char ")" then s := subString(s,1)
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
@@ -441,8 +441,8 @@ checkIsValidType form == main where
 
 checkGetLispFunctionName s ==
   n := #s
-  (k := charPosition(char '_|,s,1)) and k < n and
-    (j := charPosition(char '_|,s,k + 1)) and j < n => subString(s,k + 1,j-k-1)
+  (k := charPosition(char "|",s,1)) and k < n and
+    (j := charPosition(char "|",s,k + 1)) and j < n => subString(s,k + 1,j-k-1)
   checkDocError ['"Ill-formed lisp expression : ",s]
   'illformed
 
@@ -527,11 +527,11 @@ checkRemoveComments lines ==
 ++ percent character (%%).
 checkTrimCommented line ==
   n := #line
-  k := htcharPosition(char '_%,line,0)
+  k := htcharPosition(char "%",line,0)
   --line beginning with % is a comment
   k = 0 => '""
   --remarks beginning with %% are comments
-  k >= n - 1 or line.(k + 1) ~= char '_% => line
+  k >= n - 1 or line.(k + 1) ~= char "%" => line
   k < #line => subString(line,0,k)
   line
 
@@ -642,9 +642,9 @@ newWordFrom(l,i,m) ==
 checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   m := maxIndex s
   lastChar := s . m
-  lastChar = char "!" or lastChar = char '_? or lastChar = char '_. => s
-  lastChar = char '_, or lastChar = char '_; =>
-    s . m := (char '_.)
+  lastChar = char "!" or lastChar = char "?" or lastChar = char "." => s
+  lastChar = char "," or lastChar = char ";" =>
+    s . m := char "."
     s
   s
 
@@ -654,10 +654,10 @@ checkGetArgs u ==
   k := firstNonBlankPosition(u)
   k > 0 => checkGetArgs subString(u,k)
   stringPrefix?('"\spad{",u) =>
-    k := getMatchingRightPren(u,6,char '_{,char '_}) or m
+    k := getMatchingRightPren(u,6,char "{",char "}") or m
     checkGetArgs subString(u,6,k-6)
-  (i := charPosition(char '_(,u,0)) > m => nil
-  (u . m) ~= char '_) => nil
+  (i := charPosition(char "(",u,0)) > m => nil
+  (u . m) ~= char ")" => nil
   while (k := charPosition($charComma,u,i + 1)) < m repeat
     acc := [trimString subString(u,i + 1,k - i - 1),:acc]
     i := k
@@ -691,7 +691,7 @@ checkAddSpaceSegments(u,k) ==
   i := charPosition($charBlank,u,k)
   m < i => u
   j := i
-  while (j := j + 1) < m and u.j = (char '_  ) repeat 'continue
+  while (j := j + 1) < m and u.j = char " " repeat 'continue
   n := j - i   --number of blanks
   n > 1 => strconc(subString(u,0,i),'"\space{",
              STRINGIMAGE n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
@@ -727,7 +727,7 @@ checkExtract(header,lines) ==
     lines := rest lines
   null lines => nil
   u := first lines
-  j := charPosition(char '_:,u,k)
+  j := charPosition(char ":",u,k)
   margin := k
   firstLines :=
     (k := firstNonBlankPosition(u,j + 1)) ~= -1 =>
@@ -741,8 +741,8 @@ checkExtract(header,lines) ==
       (k := firstNonBlankPosition line) = -1 => 'skip  --include if blank
       k > margin                             => 'skip  --include if idented
       not upperCase? line.k                  => 'skip  --also if not upcased
-      (j := charPosition(char '_:,line,k)) = m   => 'skip  --or if not colon, or
-      (i := charPosition(char '_ ,line,k+1)) < j => 'skip  --blank before colon
+      (j := charPosition(char ":",line,k)) = m   => 'skip  --or if not colon, or
+      (i := charPosition(char " ",line,k+1)) < j => 'skip  --blank before colon
       return nil
     acc := [line,:acc]
   nreverse acc
@@ -808,9 +808,9 @@ checkDecorate u ==
           =>
             u := v
             acc
-      char? x and x = char '_$ or x is '"$"  => ['"\$",:acc]
-      char? x and x = char '_% or x is '"%"  => ['"\%",:acc]
-      char? x and x = char '_, or x is '","  => 
+      char? x and x = char "$" or x is '"$"  => ['"\$",:acc]
+      char? x and x = char "%" or x is '"%"  => ['"\%",:acc]
+      char? x and x = char "," or x is '","  => 
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x is '"\spad" => ['"\spad",:acc]
@@ -821,11 +821,11 @@ checkDecorate u ==
       not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(maxIndex x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := (string? x => # x; 0)
-      xcount = 3 and x.1 = char 't and x.2 = char 'h =>
+      xcount = 3 and x.1 = char "t" and x.2 = char "h" =>
         ['"th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
-      xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>
+      xcount = 4 and x.1 = char "-" and x.2 = char "t" and x.3 = char "h" =>
         ['"-th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
-      not spadflag and (xcount = 2 and x.1 = char 'i or  --wrap ei, xi, hi
+      not spadflag and (xcount = 2 and x.1 = char "i" or  --wrap ei, xi, hi
          xcount > 0 and xcount < 4 and not x in '("th" "rd" "st") and
            hasNoVowels x) =>                    --wrap words with no vowels
              [$charRbrace,x,$charLbrace,'"\spad",:acc]
@@ -835,12 +835,12 @@ checkDecorate u ==
 
 hasNoVowels x ==
   max := maxIndex x
-  x.max = char 'y => false
+  x.max = char "y" => false
   and/[not isVowel(x.i) for i in 0..max]
 
 isVowel c ==
-  c=char 'a or c=char 'e or c=char 'i or c=char 'o or c=char 'u or
-    c=char 'A or c=char 'E or c=char 'I or c=char 'O or c=char 'U
+  c=char "a" or c=char "e" or c=char "i" or c=char "o" or c=char "u" or
+    c=char "A" or c=char "E" or c=char "I" or c=char "O" or c=char "U"
 
 
 checkAddBackSlashes s ==
@@ -905,8 +905,8 @@ checkIeEgfun x ==
   m := maxIndex x
   for k in 0..(m - 3) repeat
     x.(k + 1) = $charPeriod and x.(k + 3) = $charPeriod and
-     (x.k = char 'i and x.(k + 2) = char 'e and (key := '"that is")
-       or x.k = char 'e and x.(k + 2) = char 'g and (key := '"for example")) =>
+     (x.k = char "i" and x.(k + 2) = char "e" and (key := '"that is")
+       or x.k = char "e" and x.(k + 2) = char "g" and (key := '"for example")) =>
           firstPart := (k > 0 => [subString(x,0,k)]; nil)
           result := [:firstPart,'"\spadignore{",subString(x,k,4),'"}",
                      :checkIeEgfun subString(x,k+4)]
@@ -1028,8 +1028,8 @@ checkBalance u ==
 ++    brace   ::= '{' | '}'
 ++    bracket ::= '[' | ']'
 checkSayBracket x ==
-  x = char '_( or x = char '_) => '"pren"
-  x = char '_{ or x = char '_} => '"brace"
+  x = char "(" or x = char ")" => '"pren"
+  x = char "{" or x = char "}" => '"brace"
   '"bracket"
 
 checkBeginEnd u ==
@@ -1132,14 +1132,14 @@ checkTransformFirsts(opname,u,margin) ==
     i := checkSkipToken(u,0,m) or return u
     j := checkSkipBlanks(u,i,m) or return u
     open := u.j
-    open = char '_[ and (close := char '_]) or
-          open = char '_(  and (close := char '_)) =>
+    open = char "[" and (close := char "]") or
+          open = char "("  and (close := char ")") =>
       k := getMatchingRightPren(u,j + 1,open,close)
       namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
       null k =>
-         if open = char '_[
+         if open = char "["
            then checkDocError ['"Missing close bracket on first line: ", u]
            else checkDocError ['"Missing close parenthesis on first line: ", u]
          u
@@ -1171,8 +1171,8 @@ checkTransformFirsts(opname,u,margin) ==
     not GETL(prefixOp,'Nud) =>
       u ---what could this be?
     j := checkSkipBlanks(u,i,m) or return u
-    u.j = char '_( =>                                            --case 4
-      j := getMatchingRightPren(u,j + 1,char '_(,char '_))
+    u.j = char "(" =>                                            --case 4
+      j := getMatchingRightPren(u,j + 1,char "(",char ")")
       j > m => u
       strconc('"\spad{",subString(u,0,j + 1),'"}",subString(u,j + 1))
     k := checkSkipToken(u,j,m) or return u
@@ -1242,7 +1242,7 @@ whoOwns(con) ==
   null $exposeFlag => nil
 --con=constructor name (id beginning with a capital), returns owner as a string
   filename := getConstructorSourceFileFromDB con
-  quoteChar := char '_"
+  quoteChar := char "_""
   runCommand strconc('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
   value :=

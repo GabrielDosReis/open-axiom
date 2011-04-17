@@ -60,7 +60,7 @@ isInternalMapName name ==
   -- this only returns true or false as a "best guess"
   (not IDENTP(name)) or (name = "*") or (name = "**") => false
   sz := # (name' := symbolName name)
-  (sz < 7) or (char("*") ~= name'.0) => false
+  (sz < 7) or (char "*" ~= name'.0) => false
   not digit? name'.1 => false
   null STRPOS('"_;",name',1,NIL) => false
   -- good enough
