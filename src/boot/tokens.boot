@@ -274,6 +274,7 @@ for i in [ _
   ["list",        "LIST"]  , _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["makeSymbol", "INTERN"] , _
+  ["maxIndex", "MAXINDEX"] , _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["newString", "MAKE-STRING"], _

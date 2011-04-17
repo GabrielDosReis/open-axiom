@@ -94,11 +94,11 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   while not EOFP instream repeat
     line := READLINE instream
     while blankLine? line repeat line := READLINE instream
-    m := MAXINDEX line                        --file "topics.data" has form:
+    m := maxIndex line                        --file "topics.data" has form:
     m = -1 => 'skip                           --1   ConstructorName:
     line.0 = char '_- => 'skip                --2      constructorName or operation name
     line := trimString line                   --3-n    ...
-    m := MAXINDEX line                        --     (blank line) ...
+    m := maxIndex line                        --     (blank line) ...
     line.m ~= (char '_:) => systemError('"wrong heading")
     con := makeSymbol subString(line,0,m)
     alist := [lst while not EOFP instream and 
@@ -129,7 +129,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
 blankLine? line ==
-  MAXINDEX line = -1 or and/[line . j = (char '_ ) for j in 0..MAXINDEX line]
+  maxIndex line = -1 or and/[line . j = (char '_ ) for j in 0..maxIndex line]
 
 string2OpAlist s ==
   m := #s
@@ -145,7 +145,7 @@ string2OpAlist s ==
 
 getDefaultProps name ==
   u := HGET($defaultsHash,name)
-  if (s := PNAME name).(m := MAXINDEX s) = char '? then u := ['p,:u]
+  if (s := PNAME name).(m := maxIndex s) = char '? then u := ['p,:u]
   if s.m = char "!" then u := ['destructive,:u]
   u
   

@@ -81,7 +81,7 @@ showImp(dom,:options) ==
   u := SORTBY('CDDR,defexports)
   while u repeat
     [.,.,:key] := first u
-    defop := makeSymbol(subString((s := PNAME first key),0,MAXINDEX s))
+    defop := makeSymbol(subString((s := PNAME first key),0,maxIndex s))
     domainForm := [defop,:CDDR key]
     sayBrightly ["Default functions from",:bright form2String domainForm,'":"]
     u := showDomainsOp1(u,key)
@@ -164,7 +164,7 @@ devaluateSlotDomain(u,dollar) ==
 getCategoriesOfDomain domain ==
   predkeyVec := domain.4.0
   catforms := second domain.4
-  [fn for i in 0..MAXINDEX predkeyVec | test] where 
+  [fn for i in 0..maxIndex predkeyVec | test] where 
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
      fn() ==
@@ -230,7 +230,7 @@ showAttributes dom ==
 
 showGoGet dom ==
   numvec := CDDR dom.4
-  for i in 6..MAXINDEX dom | (slot := dom.i) is ['newGoGet,dol,index,:op] repeat
+  for i in 6..maxIndex dom | (slot := dom.i) is ['newGoGet,dol,index,:op] repeat
     numOfArgs := numvec.index
     whereNumber := numvec.(index := index + 1)
     signumList := 
@@ -279,7 +279,7 @@ dcSlots con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   template := $infovec.0
-  for i in 5..MAXINDEX template repeat
+  for i in 5..maxIndex template repeat
     sayBrightlyNT bright i
     item := template.i
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
@@ -336,12 +336,12 @@ dcOpTable con ==
   template := $infovec.0
   $predvec: local := getConstructorPredicatesFromDB con
   opTable := $infovec.1
-  for i in 0..MAXINDEX opTable repeat
+  for i in 0..maxIndex opTable repeat
     op := opTable.i
     i := i + 1
     startIndex := opTable.i
     stopIndex :=
-      i + 1 > MAXINDEX opTable => MAXINDEX getCodeVector()
+      i + 1 > maxIndex opTable => maxIndex getCodeVector()
       opTable.(i + 2)
     curIndex := startIndex
     while curIndex < stopIndex repeat
@@ -378,7 +378,7 @@ dcPreds con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   $predvec:= getConstructorPredicatesFromDB con
-  for i in 0..MAXINDEX $predvec repeat
+  for i in 0..maxIndex $predvec repeat
     sayBrightlyNT bright (i + 1)
     sayBrightly pred2English $predvec.i
  
@@ -403,7 +403,7 @@ dcCats con ==
   catpredvec := first u
   catinfo := second u
   catvec := third u
-  for i in 0..MAXINDEX catvec repeat
+  for i in 0..maxIndex catvec repeat
     sayBrightlyNT bright i
     form := catvec.i
     predNumber := catpredvec.i
@@ -421,7 +421,7 @@ dcCats1 con ==
   u := $infovec.3
   catvec := second u
   catinfo := first u
-  for i in 0..MAXINDEX catvec repeat
+  for i in 0..maxIndex catvec repeat
     sayBrightlyNT bright i
     [form,:predNumber] := catvec.i
     suffix :=
@@ -444,7 +444,7 @@ dcData con ==
   dcData1 vec
 
 dcData1 vec ==
-  n := MAXINDEX vec
+  n := maxIndex vec
   tens := n quo 10
   for i in 0..tens repeat
     start := 10*i
@@ -464,7 +464,7 @@ dcSize(:options) ==
   name := abbreviation? con or con
   infovec := getInfovec name
   template := infovec.0
-  maxindex := MAXINDEX template
+  maxindex := maxIndex template
   latch := 0  --# of go get slots
   lazy  := 0  --# of lazy domain slots
   fun   := 0  --# of function slots
@@ -483,7 +483,7 @@ dcSize(:options) ==
   catvec := 
     vector? CDDR slot4 => second slot4
     third slot4
-  n := MAXINDEX catvec
+  n := maxIndex catvec
   cSize := sum(nodeSize(2),vectorSize(# first slot4),vectorSize(n + 1),
                nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
   codeVector :=
@@ -544,7 +544,7 @@ template con ==
   ppTemplate getInfovec(con).0
 
 ppTemplate vec ==
-  for i in 0..MAXINDEX vec repeat
+  for i in 0..maxIndex vec repeat
     sayBrightlyNT bright i
     pp vec.i
 

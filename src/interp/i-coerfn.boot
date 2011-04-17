@@ -1651,21 +1651,21 @@ V2M(u,[.,D],[.,R]) ==
     canCoerce(D,R)
   -- first see if we are coercing a vector of vectors
   D is ['Vector,E] and
-    isRectangularVector(u,MAXINDEX u,MAXINDEX u.0) =>
+    isRectangularVector(u,maxIndex u,maxIndex u.0) =>
       LIST2VEC
         [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-           for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+           for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   -- if not, try making it into a 1 by n matrix
   coercionFailure()
 --LIST2VEC [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(u.i,D),R))
---  for i in 0..MAXINDEX(u)]]
+--  for i in 0..maxIndex(u)]]
 
 V2Rm(u,[.,D],[.,n,m,R]) ==
   u = '_$fromCoerceable_$ => nil
   D is [.,E,:.] and isRectangularVector(u,n-1,m-1) =>
     LIST2VEC
       [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-         for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+         for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
 V2Sm(u,[.,D],[.,n,R]) ==
@@ -1673,12 +1673,12 @@ V2Sm(u,[.,D],[.,n,R]) ==
   D is [.,E,:.] and isRectangularVector(u,n-1,n-1) =>
     LIST2VEC
       [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-         for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+         for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
 isRectangularVector(x,p,q) ==
-  MAXINDEX x = p =>
-    and/[q=MAXINDEX x.i for i in 0..p]
+  maxIndex x = p =>
+    and/[q=maxIndex x.i for i in 0..p]
 
 -- Polynomial and Expression to Univariate series types
 

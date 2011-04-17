@@ -587,7 +587,7 @@ linearFormatForm(op,argl) ==
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
     (digit? (d:= s.(idxmax:= i)))]
-  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..MAXINDEX s])
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..maxIndex s])
   fnArgs:=
     indexList.0 > 0 =>
       concat('"(",formatArgList take(-indexList.0,argl),'")")

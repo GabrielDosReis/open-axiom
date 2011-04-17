@@ -536,7 +536,7 @@ isLoaded? conform ==
   property(getConstructorAbbreviationFromDB opOf conform,'LOADED)
 
 string2Integer s ==
-  and/[digit? (s.i) for i in 0..MAXINDEX s] => readInteger s
+  and/[digit? (s.i) for i in 0..maxIndex s] => readInteger s
   nil
 
 dbGetInputString htPage ==

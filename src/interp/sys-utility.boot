@@ -294,7 +294,7 @@ minimalise x ==
         if not sameObject?(z,rest x) then x.rest := z
         hashCheck(x,ht)
       vector? x =>
-        for i in 0..MAXINDEX x repeat
+        for i in 0..maxIndex x repeat
           x.i := min(x.i,ht)
         hashCheck(x,ht)
       string? x => hashCheck(x,ht)

@@ -76,7 +76,7 @@ getDomainCategoriesVector dom ==
 getDomainCompleteCategories dom ==
   vec := getDomainCategoriesVector dom
   cats := nil
-  for i in 0..MAXINDEX vec repeat
+  for i in 0..maxIndex vec repeat
     cats := [newExpandLocalType(vec.i,dom,dom), :cats]
   nreverse cats
  
@@ -184,11 +184,11 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   someMatch := false
   numvec := getDomainByteVector domain
   predvec := domain.3
-  max := MAXINDEX opvec
+  max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
-  idxmax := MAXINDEX numvec
+  idxmax := maxIndex numvec
   start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
@@ -313,7 +313,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
-  for i in 0..MAXINDEX packageVec |
+  for i in 0..maxIndex packageVec |
        (entry := packageVec.i) and entry ~= 'T repeat
     package :=
       vector? entry =>
@@ -329,7 +329,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
           --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
-            max := MAXINDEX opvec
+            max := maxIndex opvec
             code := getOpCode(op,opvec,max)
             null code => nil
             byteVector := CDDDR infovec.3
@@ -391,7 +391,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
-  for i in 0..MAXINDEX packageVec | (entry := packageVec.i)
+  for i in 0..maxIndex packageVec | (entry := packageVec.i)
       and (vector? entry or (predIndex := rest (node := catVec.i)) and
           (predIndex = 0 or testBitVector(predvec,predIndex))) repeat
     package :=
@@ -407,7 +407,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
         success :=
           vector? infovec =>
             opvec := infovec.1
-            max := MAXINDEX opvec
+            max := maxIndex opvec
             code := getOpCode(op,opvec,max)
             null code => nil
             byteVector := CDDR infovec.3
@@ -545,9 +545,9 @@ lookupInDomainByName(op,domain,arg) ==
   opvec := domain . 1 . 2
   numvec := getDomainByteVector domain
   predvec := domain.3
-  max := MAXINDEX opvec
+  max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return nil
-  idxmax := MAXINDEX numvec
+  idxmax := maxIndex numvec
   start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
@@ -709,13 +709,13 @@ newHasTest(domform,catOrAtt) ==
   newHasAttribute(eval mkEvalable domform,catOrAtt)
  
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
-  n := MAXINDEX catvec
+  n := maxIndex catvec
   xop := first x
   or/[auxvec.i for i in 0..n |
     xop = first (lazyt := vectorRef(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
-  n  := MAXINDEX vec
+  n  := maxIndex vec
   xop := first x
   or/[rest vectorRef(vec,i) for i in 0..n |
     xop = first (lazyt := first vectorRef(vec,i)) and lazyMatch(x,lazyt,domain,domain)]

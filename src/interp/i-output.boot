@@ -447,7 +447,7 @@ atom2String x ==
 appChar(string,x,y,d) ==
   if CHARP string then string := PNAME string
   line:= LASSOC(y,d) =>
-    if MAXINDEX string = 1 and string.0 = char "%" then
+    if maxIndex string = 1 and string.0 = char "%" then
       string.1 = char "b" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
@@ -497,7 +497,7 @@ outputTran x ==
     strconc('"_"",x,'"_"")
   string? x => x
   vector? x =>
-    outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
+    outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..maxIndex x]]]
   integer? x =>
     MINUSP x => ["-",MINUS x]
     x
@@ -733,12 +733,12 @@ outputTranMatrix x ==
     ["MATRIX",:x]
     --keyedSystemError("S2GE0016",['"outputTranMatrix",
     -- '"improper internal form for matrix found in output routines"])
-  ["MATRIX",nil,:[outtranRow x.i for i in 0..MAXINDEX x]] where
+  ["MATRIX",nil,:[outtranRow x.i for i in 0..maxIndex x]] where
     outtranRow x ==
       not vector? x =>
         keyedSystemError("S2GE0016",['"outputTranMatrix",
           '"improper internal form for matrix found in output routines"])
-      ["ROW",:[outputTran x.i for i in 0..MAXINDEX x]]
+      ["ROW",:[outputTran x.i for i in 0..maxIndex x]]
 
 mkSuperSub(op,argl) ==
   $linearFormatScripts => linearFormatForm(op,argl)
@@ -748,7 +748,7 @@ mkSuperSub(op,argl) ==
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
     (digit? (d:= s.(idxmax:= i)))]
-  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..MAXINDEX s])
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in idxmax..maxIndex s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
     subPart:= ['SUB,cleanOp,:take(indexList.1,argl)]

@@ -65,7 +65,7 @@ charPosition(c,t,startpos) ==
     k := k+1
   k
 
-rightCharPosition(c,t,startpos) == --startpos often equals MAXINDEX t (rightmost)
+rightCharPosition(c,t,startpos) == --startpos often equals maxIndex t (rightmost)
   k := startpos
   for i in startpos..0 by -1 while c ~= ELT(t,i) repeat (k := k - 1)
   k
@@ -119,7 +119,7 @@ patternCheck pattern == main where
     subString(s,i)
   pos(c,s) ==
     i := 0
-    n := MAXINDEX s
+    n := maxIndex s
     acc := nil
     repeat
       k := charPosition(c,s,i)
@@ -127,12 +127,12 @@ patternCheck pattern == main where
       acc := [k,:acc]
       i := k + 1
   equal(p,n,c) ==
-    n > MAXINDEX p => false
+    n > maxIndex p => false
     p.n = c
   wild(p,u) ==
     for id in u repeat
       c := char id
-      not(or/[p.i = c for i in 0..MAXINDEX(p)]) => return c
+      not(or/[p.i = c for i in 0..maxIndex(p)]) => return c
 
 match?(pattern,subject) ==  --returns index of first character that matches
   basicMatch?(pattern,DOWNCASE subject)

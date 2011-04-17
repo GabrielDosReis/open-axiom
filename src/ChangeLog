@@ -1,3 +1,7 @@
+2011-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Translate maxIndex to MAXINDEX.
+
 2011-04-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot (shoeIdChar): Accept "!" too.

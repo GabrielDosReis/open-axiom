@@ -134,7 +134,7 @@ makeDomainTemplate vec ==
 --NOTES: This function is called at compile time to create the template
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
   newVec := newShell # vec
-  for index in 0..MAXINDEX vec repeat
+  for index in 0..maxIndex vec repeat
     item := vec.index
     null item => nil
     newVec.index :=
@@ -333,7 +333,7 @@ extendsCategoryBasic(dom,u,v) ==
   uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
   isCategoryForm(v,nil) => catExtendsCat?(u,v,uVec)
   v is ['SIGNATURE,op,sig] =>
-    or/[uVec.i is [[=op,=sig],:.] for i in 6..MAXINDEX uVec]
+    or/[uVec.i is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => member(v,l)
     nil

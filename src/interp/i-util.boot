@@ -143,7 +143,7 @@ makeInitialModemapFrame() ==
   COPY $InitialModemapFrame
  
 isCapitalWord x ==
-  (y := PNAME x) and and/[upperCase? y.i for i in 0..MAXINDEX y]
+  (y := PNAME x) and and/[upperCase? y.i for i in 0..maxIndex y]
  
 mkPredList listOfEntries ==
   [['%ieq,['%head,"#1"],i] for arg in listOfEntries for i in 0..]

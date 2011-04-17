@@ -256,7 +256,7 @@ transDoc(conname,doclist) ==
 checkExtractItemList l ==  --items are separated by commas or end of line
   acc := nil               --l is list of remaining lines
   while l repeat           --stop when you get to a line with a colon
-    m := MAXINDEX first l
+    m := maxIndex first l
     k := charPosition(char '_:,first l,0)
     k <= m => return nil
     acc := [first l,:acc]
@@ -620,7 +620,7 @@ checkIndentedLines(u, margin) ==
 
 newString2Words l ==
   not string? l => [l]
-  m := MAXINDEX l
+  m := maxIndex l
   m = -1 => NIL
   i := 0
   [w while newWordFrom(l,i,m) is [w,i]]
@@ -640,7 +640,7 @@ newWordFrom(l,i,m) ==
   [buf,i]
 
 checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
-  m := MAXINDEX s
+  m := maxIndex s
   lastChar := s . m
   lastChar = char "!" or lastChar = char '_? or lastChar = char '_. => s
   lastChar = char '_, or lastChar = char '_; =>
@@ -650,7 +650,7 @@ checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
 
 checkGetArgs u ==
   NOT string? u => nil
-  m := MAXINDEX u
+  m := maxIndex u
   k := firstNonBlankPosition(u)
   k > 0 => checkGetArgs subString(u,k)
   stringPrefix?('"\spad{",u) =>
@@ -676,7 +676,7 @@ checkGetMargin lines ==
 firstNonBlankPosition(x,:options) ==
   start := IFCAR options or 0
   k := -1
-  for i in start..MAXINDEX x repeat
+  for i in start..maxIndex x repeat
     if x.i ~= $charBlank then return (k := i)
   k
 
@@ -687,7 +687,7 @@ checkAddIndented(x,margin) ==
   strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(subString(x,k),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
-  m := MAXINDEX u
+  m := maxIndex u
   i := charPosition($charBlank,u,k)
   m < i => u
   j := i
@@ -714,7 +714,7 @@ checkTrim($x,lines) == main where
   trim(s) ==
     k := wherePP(s)
     return subString(s,k + 2)
-    m := MAXINDEX s
+    m := maxIndex s
     n := k + 2
     for j in (k + 2)..m while s.j = $charBlank repeat (n := n + 1)
     subString(s,n)
@@ -818,7 +818,7 @@ checkDecorate u ==
       not spadflag and
         (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(MAXINDEX x))) or x in '("true" "false")) =>
+      not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(maxIndex x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := (string? x => # x; 0)
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
@@ -834,7 +834,7 @@ checkDecorate u ==
   nreverse acc
 
 hasNoVowels x ==
-  max := MAXINDEX x
+  max := maxIndex x
   x.max = char 'y => false
   and/[not isVowel(x.i) for i in 0..max]
 
@@ -848,7 +848,7 @@ checkAddBackSlashes s ==
     MEMQ(s,$charEscapeList) => strconc($charBack,c)
     s
   k := 0
-  m := MAXINDEX s
+  m := maxIndex s
   insertIndex := nil
   while k <= m repeat
     do
@@ -902,7 +902,7 @@ checkIeEg u ==
 checkIeEgfun x ==
   CHARP x => nil
   x is '"" => nil
-  m := MAXINDEX x
+  m := maxIndex x
   for k in 0..(m - 3) repeat
     x.(k + 1) = $charPeriod and x.(k + 3) = $charPeriod and
      (x.k = char 'i and x.(k + 2) = char 'e and (key := '"that is")
@@ -934,7 +934,7 @@ checkSplitBrace x ==
   #x = 1 => [x.0]
   (u := checkSplitBackslash x)
      and rest u  => "append"/[checkSplitBrace y for y in u]
-  m := MAXINDEX x
+  m := maxIndex x
   (u := checkSplitOn x)
      and rest u  => "append"/[checkSplitBrace y for y in u]
   (u := checkSplitPunctuation x)
@@ -943,7 +943,7 @@ checkSplitBrace x ==
 
 checkSplitBackslash x ==
   not string? x => [x]
-  m := MAXINDEX x
+  m := maxIndex x
   (k := charPosition($charBack,x,0)) < m =>
     m = 1 or alphabetic?(x . (k + 1)) =>        --starts with a backslash so..
       (k := charPosition($charBack,x,1)) < m => --..see if there is another
@@ -959,7 +959,7 @@ checkSplitBackslash x ==
 
 checkSplitPunctuation x ==
   not string? x => [x]
-  m := MAXINDEX x
+  m := maxIndex x
   m < 1 => [x]
   lastchar := x.m
   lastchar = $charPeriod and x.(m - 1) = $charPeriod =>
@@ -986,7 +986,7 @@ checkSplitPunctuation x ==
 checkSplitOn(x) ==
   not string? x => [x]
   l := $charSplitList
-  m := MAXINDEX x
+  m := maxIndex x
   while l repeat
     char := first l
     do
@@ -998,7 +998,7 @@ checkSplitOn(x) ==
   null l => [x]
   k = -1 => [char]
   k = 0 => [char,subString(x,1)]
-  k = MAXINDEX x => [subString(x,0,k),char]
+  k = maxIndex x => [subString(x,0,k),char]
   [subString(x,0,k),char,:checkSplitOn subString(x,k + 1)]
 
 
@@ -1111,7 +1111,7 @@ checkLookForRightBrace(u) ==  --return line beginning with right brace
 checkInteger s ==
   CHARP s => false
   s = '"" => false
-  and/[digit? s.i for i in 0..MAXINDEX s]
+  and/[digit? s.i for i in 0..maxIndex s]
 
 checkTransformFirsts(opname,u,margin) ==
 --case 1: \spad{...
@@ -1125,7 +1125,7 @@ checkTransformFirsts(opname,u,margin) ==
   margin > 0 =>
     s := leftTrim u
     strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))
-  m := MAXINDEX u
+  m := maxIndex u
   m < 2 => u
   u.0 = $charBack => u
   alphabetic? u.0 =>
@@ -1153,7 +1153,7 @@ checkTransformFirsts(opname,u,margin) ==
       #(p := symbolName infixOp) = 1 and (open := p.0) and
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
-          if l > MAXINDEX u then l := k - 1
+          if l > maxIndex u then l := k - 1
           strconc('"\spad{",subString(u,0,l + 1),'"}",subString(u,l + 1))
       strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
     l := checkSkipBlanks(u,k,m) or return u
@@ -1183,7 +1183,7 @@ checkTransformFirsts(opname,u,margin) ==
 
 getMatchingRightPren(u,j,open,close) ==
   count := 0
-  m := MAXINDEX u
+  m := maxIndex u
   for i in j..m repeat
     c := u . i
     do
@@ -1309,7 +1309,7 @@ checkDecorateForHt u ==
 --      not spadflag and string? x and (member(x,$argl) or #x = 1
 --        and alphabetic? x.0) and not (x in '("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or x in '("true" "false"))
+--      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(maxIndex x))or x in '("true" "false"))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

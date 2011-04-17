@@ -241,7 +241,7 @@ writeSaturnLines lines ==
 
 writeSaturn(line) ==
   k := 0
-  n := MAXINDEX line
+  n := maxIndex line
   while  --advance k if true
       k > n => false
       line.k ~= char '_\ => true
@@ -345,7 +345,7 @@ writeSaturnTable line ==
   open := charPosition(char "{",line,0)
   close:= charPosition(char "}",line,0)
   open < close =>
-    close := findBalancingBrace(line,open + 1,MAXINDEX line,0) or error '"no balancing brace"
+    close := findBalancingBrace(line,open + 1,maxIndex line,0) or error '"no balancing brace"
     writeSaturnPrint subString(line,0,close + 1)
     writeSaturnTable subString(line,close + 1)
   $marg := $marg - 3
@@ -454,7 +454,7 @@ saturnTranText x ==
   error nil
 
 isMenuItemStyle? s ==
-  15 = ('"\menuitemstyle{" < s) => subString(s,15,(MAXINDEX s) - 15)
+  15 = ('"\menuitemstyle{" < s) => subString(s,15,(maxIndex s) - 15)
   nil
 
 getCallBack callTail ==

@@ -107,7 +107,7 @@ getHtMacroItem line ==
     i = m => 0
     j := charPosition(char '_],line,i + 1)
     digitString := subString(line,i + 1,j - i - 1)
-    and/[digit? digitString.i for i in 0..MAXINDEX digitString]
+    and/[digit? digitString.i for i in 0..maxIndex digitString]
       => readInteger digitString
     return nil
   [command,:numOfArgs]

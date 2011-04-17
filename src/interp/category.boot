@@ -76,7 +76,7 @@ CategoryPrint(D,$e) ==
     SAY("This has an alternate view: slot ",rest u," corresponds to ",first u)
   for u in third D.4 repeat
     SAY("This has a local domain: slot ",rest u," corresponds to ",first u)
-  for j in 6..MAXINDEX D repeat
+  for j in 6..maxIndex D repeat
     u:= D.j
     null u => SAY "another domain"
     atom first u => SAY("Alternate View corresponding to: ",u)

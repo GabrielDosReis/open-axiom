@@ -99,7 +99,7 @@ string2Words l ==
   [w while wordFrom(l,i) is [w,i]]
 
 wordFrom(l,i) ==
-  idxmax := MAXINDEX l
+  idxmax := maxIndex l
   k := or/[j for j in i..idxmax | stringChar(l,j) ~= char " "] or return nil
   buf := '""
   while k < idxmax and (c := stringChar(l,k)) ~= char " " repeat
@@ -644,9 +644,9 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 
 blankIndicator x ==
   if IDENTP x then x := symbolName x
-  not string? x or MAXINDEX x < 1 => nil
+  not string? x or maxIndex x < 1 => nil
   stringChar(x,0) = char "%" and stringChar(x,1) = char "x" =>
-    MAXINDEX x > 1 => readInteger subString(x,2)
+    maxIndex x > 1 => readInteger subString(x,2)
     1
   nil
 

@@ -279,7 +279,7 @@ mkLineList lines ==
 
 nonBlank str ==
   value := false
-  for i in 0..MAXINDEX str repeat
+  for i in 0..maxIndex str repeat
     str.i ~= char " " =>
       value := true
       return value

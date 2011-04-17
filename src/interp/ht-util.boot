@@ -134,7 +134,7 @@ htpLabelFilteredInputString(htPage, label) ==
     replacePercentByDollar props.0
   nil
 
-replacePercentByDollar s == fn(s,0,MAXINDEX s) where
+replacePercentByDollar s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => '""
     (m := charPosition(char "%",s,i)) > n => subString(s,i)

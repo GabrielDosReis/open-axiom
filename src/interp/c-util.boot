@@ -949,7 +949,7 @@ sublisV(p,e) ==
     suba(p,e) ==
       string? e => e
       -- no need to descend vectors unless they are categories
-      categoryObject? e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
+      categoryObject? e => LIST2VEC [suba(p,e.i) for i in 0..maxIndex e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
       u:= suba(p,first e)
       v:= suba(p,rest e)

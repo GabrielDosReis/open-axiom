@@ -332,12 +332,12 @@ getDefaultingOps catname ==
   $infovec: local := getInfovec name
   opTable := $infovec.1
   $opList:local  := nil
-  for i in 0..MAXINDEX opTable repeat
+  for i in 0..maxIndex opTable repeat
     op := opTable.i
     i := i + 1
     startIndex := opTable.i
     stopIndex :=
-      i + 1 > MAXINDEX opTable => MAXINDEX getCodeVector()
+      i + 1 > maxIndex opTable => maxIndex getCodeVector()
       opTable.(i + 2)
     curIndex := startIndex
     while curIndex < stopIndex repeat
