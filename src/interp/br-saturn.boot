@@ -244,7 +244,7 @@ writeSaturn(line) ==
   n := maxIndex line
   while  --advance k if true
       k > n => false
-      line.k ~= char "\" => true
+      stringChar(line,k) ~= char "\" => true
       code := isBreakSegment?(line, k + 1,n) => false
       true
     repeat (k := k + 1)

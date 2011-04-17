@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [makeSymbol strconc(PNAME conname,'"&"),"$",:rest conform]
+      [makeDefaultPackageName symbolName conname,"$",:rest conform]
     conform
   faTypes  := CDDAR getConstructorModemapFromDB conname
 
@@ -252,7 +252,7 @@ hasNewInfoText u ==
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
-  if cat? then conname := makeSymbol strconc(STRINGIMAGE conname,'"&")
+  if cat? then conname := makeDefaultPackageName symbolName conname
   abb := getConstructorAbbreviationFromDB conname or return '"not a constructor"
   fs  := strconc(PNAME abb,'".NRLIB/info")
   inStream :=

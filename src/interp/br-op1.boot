@@ -566,7 +566,7 @@ dbShowKind conform ==
   conname := first conform
   kind := getConstructorKindFromDB conname
   kind = "domain" =>
-    (s := PNAME conname).(maxIndex s) = '_& => '"default package"
+    isDefaultPackageName conname => '"default package"
     '"domain"
   PNAME kind
 

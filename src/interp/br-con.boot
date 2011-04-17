@@ -175,7 +175,8 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{2}"
   if nargs > 0 then kPageArgs(conform,signature)
   htSayStandard '"\indentrel{-2}"
-  if name.(#name-1) = char "&" then name := subSequence(name, 0, #name-1)
+  if isDefautPackageName makeSymbol name then
+    name := subSequence(name, 0, #name-1)
 --sourceFileName := dbSourceFile makeSymbol name
   sourceFileName := getConstructorSourceFileFromDB makeSymbol name
   filename := extractFileNameFromPath sourceFileName
@@ -427,7 +428,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(strconc(name,'"&"),'"")
+    bcCon(symbolName makeDefaultPackageName name,'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -583,7 +584,7 @@ kcdePage(htPage,junk) ==
     kind ~= '"default package" => ncParseFromString constring
     [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
---  kind = '"category" => makeSymbol strconc(name,'"&")
+--  kind = '"category" => makeDefaultPackageName name
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -599,7 +600,7 @@ kcuPage(htPage,junk) ==
     kind ~= '"default package" => ncParseFromString constring
     [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
-    kind = '"category" => makeSymbol strconc(name,'"&")
+    kind = '"category" => makeDefaultPackageName name
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,7 +621,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => makeSymbol strconc(PNAME name,'"&")
+    kind = '"category" => makeDefaultPackageName PNAME name
     opOf conform
   domList := getImports pakname
   if domname then
@@ -1309,13 +1310,14 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:makeSymbol digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..maxIndex s]]
+     | (s := PNAME arg) and
+         "or"/[digit? stringChar(s,i) for i in 0..maxIndex s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer
   str := '""
   for i in 0..maxIndex s repeat
-    c := s.i
+    c := stringChar(s,i)
     segment :=
       n := digit? c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
