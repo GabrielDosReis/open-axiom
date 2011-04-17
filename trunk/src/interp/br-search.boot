@@ -60,7 +60,7 @@ grepConstruct1(s,key) ==
 --returns the name of file (WITHOUT .text.$SPADNUM on the end)
   $key     : local := key
   if key = 'k and          --convert 'k to 'y if name contains an "&"
-    or/[s . i = char '_& for i in 0..MAXINDEX s] then key := 'y
+    or/[s . i = char '_& for i in 0..maxIndex s] then key := 'y
   filter := pmTransFilter STRINGIMAGE s  --parses and-or-not form
   filter is ['error,:.] => filter        --exit on parser error
   pattern := mkGrepPattern(filter,key)  --create string to pass to "grep"
@@ -91,7 +91,7 @@ grepForAbbrev(s,key) ==
   s := STRINGIMAGE s
   someLowerCaseChar := false
   someUpperCaseChar := false
-  for i in 0..MAXINDEX s repeat
+  for i in 0..maxIndex s repeat
     c := s . i
     lowerCase? c => return (someLowerCaseChar := true)
     upperCase? c => someUpperCaseChar := true
@@ -139,11 +139,11 @@ grepf(pattern,s,not?) ==  --s=sourceFile or list of strings
 pmTransFilter s ==
 --result is either a string or (op ..) where op= and,or,not and arg are results
   if $browseMixedCase = true then s := DOWNCASE s
-  or/[isFilterDelimiter? s.i or s.i = $charUnderscore for i in 0..MAXINDEX s]
+  or/[isFilterDelimiter? s.i or s.i = $charUnderscore for i in 0..maxIndex s]
     => (parse := pmParseFromString s) and checkPmParse parse or
         ['error,'"Illegal search string",'"\vspace{3}\center{{\em Your search string} ",escapeSpecialChars s,'" {\em has incorrect syntax}}"]
   or/[s . i = char '_* and s.(i + 1) = char '_*
-      and (i=0 or s . (i - 1) ~= char $charUnderscore) for i in 0..(MAXINDEX s - 1)]
+      and (i=0 or s . (i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
        => ['error,'"Illegal search string",'"\vspace{3}\center{Consecutive {\em *}'s are not allowed in search patterns}"]
   s
 
@@ -199,8 +199,8 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       strconc(subString(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
     subString(s,i,j - i + 1)
 
-firstNonDelim(s,n) ==  or/[k for k in n..MAXINDEX s | not isFilterDelimiter? s.k]
-firstDelim(s,n) ==  or/[k for k in n..MAXINDEX s | isFilterDelimiter? s.k]
+firstNonDelim(s,n) ==  or/[k for k in n..maxIndex s | not isFilterDelimiter? s.k]
+firstDelim(s,n) ==  or/[k for k in n..maxIndex s | isFilterDelimiter? s.k]
 
 isFilterDelimiter? c == MEMQ(c,$pmFilterDelimiters)
 
@@ -260,7 +260,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
     g s  ==    --remove "*"s around pattern for text match
       not ('w in $options) => s
       if s.0 = char '_* then s := subString(s,1)
-      if s.(k := MAXINDEX s) = char '_* then s := subString(s,0,k)
+      if s.(k := maxIndex s) = char '_* then s := subString(s,0,k)
       s
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
@@ -270,12 +270,12 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
         else if res is [.,p,:r] and p = $wild1 then res := r
       strconc/nreverse res
     remUnderscores s ==
-      (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
+      (k := charPosition(char $charUnderscore,s,0)) < maxIndex s =>
         strconc(subString(s,0,k),'"[",s.(k + 1),'"]",
                 remUnderscores(subString(s,k + 2)))
       s
     split(s,char) ==
-      max := MAXINDEX s + 1
+      max := maxIndex s + 1
       f := -1
       [subString(s,i,f-i)
         while ((i := f + 1) <= max) and (f := charPosition(char,s,i))]
@@ -571,7 +571,7 @@ docSearch1(filter,doc) ==
 removeSurroundingStars filter ==
   key := STRINGIMAGE filter
   if key.0 = char '_* then key := subString(key,1)
-  if key.(max := MAXINDEX key) = char '_* then key := subString(key,0,max)
+  if key.(max := maxIndex key) = char '_* then key := subString(key,0,max)
   key
 
 showNamedDoc([kind,:lines],index) ==
@@ -581,7 +581,7 @@ sayDocMessage message ==
   htSay('"{\em ")
   if message is [leftEnd,left,middle,right,rightEnd] then
     htSay(leftEnd,left,'"}")
-    if left ~= '"" and left.(MAXINDEX left) = $blank then htBlank()
+    if left ~= '"" and left.(maxIndex left) = $blank then htBlank()
     htSay middle
     if right ~= '"" and right.0 = $blank then htBlank()
     htSay('"{\em ",right,rightEnd)
@@ -602,7 +602,7 @@ stripOffSegments(s,n) ==
 
 replaceTicksBySpaces s ==
   n := -1
-  max := MAXINDEX s
+  max := maxIndex s
   while (n := charPosition(char '_`,s,n + 1)) <= max repeat 
     s.n := char " "
   s
@@ -699,7 +699,7 @@ dbString2Words l ==
 $dbDelimiters := [char " " , char "(", char ")"]
 
 dbWordFrom(l,i) ==
-  idxmax := MAXINDEX l
+  idxmax := maxIndex l
   while idxmax >= i and l.i = char " " repeat i := i + 1
   if idxmax >= i and member(l.i, $dbDelimiters) then return [l.i, i + 1]
   k := or/[j for j in i..idxmax | not member(l.j, $dbDelimiters)] or return nil
@@ -880,7 +880,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     b = '"[^`]*" or b = char '_. => a
     strconc(a,$tick,b)
   simp a ==
-    m := MAXINDEX a
+    m := maxIndex a
     m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
       and     a.(m-3) = $tick    and a.(m-2) = char '_]
           and a.(m-1) = char '_* and a.m = $tick
@@ -889,7 +889,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
 
 replaceGrepStar s ==
   s = "" => s
-  final := MAXINDEX s
+  final := maxIndex s
   i := charPosition(char '_*,s,0)
   i > final => s
   strconc(subString(s,0,i),'"[^`]*",replaceGrepStar subString(s,i + 1))
@@ -900,7 +900,7 @@ standardizeSignature(s) == underscoreDollars
   s.(k - 1) = char '_) => strconc('"(",s)
   strconc('"(",subString(s,0,k),'")",subString(s,k))
 
-underscoreDollars(s) == fn(s,0,MAXINDEX s) where
+underscoreDollars(s) == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => '""
     (m := charPosition(char '_$,s,i)) > n => subString(s,i)

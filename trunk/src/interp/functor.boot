@@ -86,7 +86,7 @@ DomainPrint1(D,brief,$e) ==
     if i=1 and vector? uu.5 then
       vv:= COPY_-SEQ uu.5
       uu.5:= vv
-      for j in 0..MAXINDEX vv repeat
+      for j in 0..maxIndex vv repeat
         if vector? vv.j then
           l:= ASSQ(keyItem vv.j,Sublis)
           if l
@@ -99,7 +99,7 @@ DomainPrint1(D,brief,$e) ==
           vv.j:= name
     if i>1 then
       uu.1:= uu.2:= uu.5:= '"As in first view"
-    for i in 6..MAXINDEX uu repeat
+    for i in 6..maxIndex uu repeat
       uu.i:= DomainPrintSubst(uu.i,Sublis)
       if vector? uu.i then
         name:=DPname()
@@ -122,7 +122,7 @@ DPname() ==
  
 PacPrint v ==
   vv:= COPY_-SEQ v
-  for j in 0..MAXINDEX vv repeat
+  for j in 0..maxIndex vv repeat
     if vector? vv.j then
       l:= ASSQ(keyItem vv.j,Sublis)
       if l
@@ -231,7 +231,7 @@ compCategories1(u,v) ==
 NewbFVectorCopy(u,domName) ==
   v:= newShell # u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | cons? u.i repeat
+  for i in 6..maxIndex v | cons? u.i repeat
     v.i:= [function Undef,[domName,i],:first u.i]
   v
  
@@ -442,7 +442,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       --we match signatures
   cat:= (compMakeCategoryObject(target,e)).expr
   instantiatedBase:= genvar()
-  n:=MAXINDEX cat
+  n:=maxIndex cat
   code:=
     [u
       for i in 6..n | cons? cat.i and cons? (sig:= first cat.i)
@@ -822,7 +822,7 @@ getViewsConditions u ==
 DescendCodeVarAdd(base,flag) ==
    princview := first $catvecList
    [SetFunctionSlots(sig,substitute('ELT,'CONST,implem),flag,'adding) repeat
-       for i in 6..MAXINDEX princview |
+       for i in 6..maxIndex princview |
          princview.i is [sig:=[op,types],:.] and
            LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
                   [[pred,implem]]]
@@ -898,7 +898,7 @@ encodeItem x ==
  
 getCaps x ==
   s:= STRINGIMAGE x
-  clist:= [c for i in 0..MAXINDEX s | upperCase? (c:= s.i)]
+  clist:= [c for i in 0..maxIndex s | upperCase? (c:= s.i)]
   null clist => '"__"
   strconc/[first clist,:[L_-CASE u for u in rest clist]]
  
@@ -929,7 +929,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  alphabetic?((s:= STRINGIMAGE u).(MAXINDEX s)) => 
+  alphabetic?((s:= STRINGIMAGE u).(maxIndex s)) => 
     makeSymbol strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

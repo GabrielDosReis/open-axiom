@@ -93,7 +93,7 @@ bcOptional s ==
 
 bcvspace() == bcHt '"\vspace{1}\newline "
 
-bcString2WordList s == fn(s,0,MAXINDEX s) where
+bcString2WordList s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => nil
     k := or/[j for j in i..n | s.j ~= char '_  ]

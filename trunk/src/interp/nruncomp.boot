@@ -426,7 +426,7 @@ stuffDomainSlots dollar ==
     function lookupComplete
   template := infovec.0
   if template.5 then stuffSlot(dollar,5,template.5)
-  for i in (6 + # rest domname)..MAXINDEX template | item := template.i repeat
+  for i in (6 + # rest domname)..maxIndex template | item := template.i repeat
     stuffSlot(dollar,i,item)
   dollar.1 := LIST(lookupFunction,dollar,infovec.1)
   dollar.2 := infovec.2
@@ -436,13 +436,13 @@ stuffDomainSlots dollar ==
     bitVector := dollar.3
     predvec := first proto4
     packagevec := second proto4
-    auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn() ==
+    auxvec := LIST2VEC [fn for i in 0..maxIndex predvec] where fn() ==
       not testBitVector(bitVector,predvec.i) => nil
       packagevec.i or true
     [auxvec,:CDDR proto4]
 
 getLookupFun infovec ==
-  MAXINDEX infovec = 4 => infovec.4
+  maxIndex infovec = 4 => infovec.4
   'lookupIncomplete
 
 makeSpadConstant [fn,dollar,slot] ==
@@ -565,7 +565,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 NRTcheckVector domainShell ==
 --RETURNS: an alist (((op,sig),:pred) ...) of missing functions
   alist := nil
-  for i in $NRTbase..MAXINDEX domainShell repeat
+  for i in $NRTbase..maxIndex domainShell repeat
 --Vector elements can be one of
 -- (a) T           -- item was marked
 -- (b) NIL         -- ???

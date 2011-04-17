@@ -69,13 +69,13 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | upperCase? s.i] =>
+  k := or/[i for i in j..(maxIndex(s)-1) | upperCase? s.i] =>
     tailWords:=
       upperCase? s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not upperCase? s.i]
+        n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not upperCase? s.i]
         null n => [subString(s,k)]
         n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | upperCase? s.i] =>
+      m := or/[i for i in (k+2)..(maxIndex(s)-1) | upperCase? s.i] =>
         [subString(s,k,m-k),:wordsOfString1(s,m)]
       [subString(s,k)]
     k > j+1 => [subString(s,j,k-j),:tailWords]
@@ -83,7 +83,7 @@ wordsOfString1(s,j) ==
   nil
 
 wordKeys s == 
-  removeDuplicates [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [UPCASE s.0,:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
     upperCase? s.i =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])
@@ -283,7 +283,7 @@ deltaWordEntry(word,entry) ==
 --+ Note these are optimized definitions below-- see commented out versions
 --+   to understand the algorithm
 canForgeWord(word,entry) ==
-  forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0)
+  forge(word,0,maxIndex word,entry,0,maxIndex entry,0)
  
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
@@ -314,7 +314,7 @@ forge(word,w,W,entry,e,E,n) ==
  
 --+ DO NOT REMOVE DEFINITIONS BELOW which explain the algorithm
 --+ canForgeWord(word,entry) ==--
---+ [d,i,s,t] := forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0,0,0,0)
+--+ [d,i,s,t] := forge(word,0,maxIndex word,entry,0,maxIndex entry,0,0,0,0)
 --+ --d=deletions, i=insertions, s=substitutions, t=transpositions
 --+ --list is formed only for tuning purposes-- remove later on
 --+ d + i + s + t

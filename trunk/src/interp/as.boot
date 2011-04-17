@@ -319,7 +319,7 @@ asyExtractDescription str ==
 
 trimComments str ==
   str = nil or str = '"" => '""
-  m := MAXINDEX str
+  m := maxIndex str
   str := subString(str,0,m)
   trimString str
 
@@ -702,7 +702,7 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     a := createAbbreviation id => a
     name := PNAME id
 --  #name < 8 => makeSymbol UPCASE name
-    parts := asySplit(name,MAXINDEX name)
+    parts := asySplit(name,maxIndex name)
     newname := strconc/[asyShorten x for x in parts]
     #newname < 8 => makeSymbol newname
     tryname := subString(name,0,7)

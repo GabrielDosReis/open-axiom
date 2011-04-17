@@ -393,7 +393,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   catpredvec := first u
   catinfo    := second u
   catvec     := third u
-  catforms := [[pakform,:pred] for i in 0..MAXINDEX catvec | test ] where
+  catforms := [[pakform,:pred] for i in 0..maxIndex catvec | test ] where
     test() ==
       pred := simpCatPredicate
         p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
@@ -1309,12 +1309,12 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:makeSymbol digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..maxIndex s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer
   str := '""
-  for i in 0..MAXINDEX s repeat
+  for i in 0..maxIndex s repeat
     c := s.i
     segment :=
       n := digit? c =>

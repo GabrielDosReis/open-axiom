@@ -112,7 +112,7 @@ buildLibdbConEntry conname ==
       and getConstructorModemapFromDB conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
-      pname.(MAXINDEX pname) = char '_& => 'x
+      pname.(maxIndex pname) = char '_& => 'x
       DOWNCASE PNAME(kind).0
     argl := rest $conform
     conComments :=
@@ -187,7 +187,7 @@ buildLibOp(op,sig,pred) ==
     buildLibdbString [header,# rest sig,$exposed?,sigpart,conform,predString,comments]
 
 libdbTrim s ==
-  k := MAXINDEX s
+  k := maxIndex s
   k < 0 => s
   for i in 0..k repeat
     s.i = $Newline => s.i := char " "
@@ -195,7 +195,7 @@ libdbTrim s ==
 
 checkCommentsForBraces(kind,sop,sigpart,comments) ==
   count := 0
-  for i in 0..MAXINDEX comments repeat
+  for i in 0..maxIndex comments repeat
     c := comments.i
     c = char '_{ => count := count + 1
     c = char '_} =>
@@ -265,7 +265,7 @@ dbReadComments(n) ==
   k := dbTickIndex(line,1,1)
   line := subString(line,k + 1)
   while not EOFP instream and (x := READLINE instream) and
-    (k := MAXINDEX x) and (j := dbTickIndex(x,1,1)) and (j < k) and
+    (k := maxIndex x) and (j := dbTickIndex(x,1,1)) and (j < k) and
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [subString(x,j + 1),:xtralines]
   SHUT instream
@@ -313,7 +313,7 @@ dbSplit(line,n,k) ==
 dbSpreadComments(line,n) ==
   line = '"" => nil
   k := charPosition(char '_-,line,n + 2)
-  k >= MAXINDEX line => [subString(line,n)]
+  k >= maxIndex line => [subString(line,n)]
   line.(k + 1) ~= char '_- =>
     u := dbSpreadComments(line,k)
     [strconc(subString(line,n,k - n),first u),:rest u]
@@ -380,7 +380,7 @@ spreadGlossText(line) ==
 --where XXX is the file position of key1
 --this is because grepping will only pick up the first 512 characters
   line = '"" => nil
-  MAXINDEX line > 500 => [subString(line,0,500),:spreadGlossText(subString(line,500))]
+  maxIndex line > 500 => [subString(line,0,500),:spreadGlossText(subString(line,500))]
   [line]
 
 getGlossLines instream ==
@@ -399,12 +399,12 @@ getGlossLines instream ==
     #line = 0 => 'skip
     n := charPosition($tick,line,0)
     last := IFCAR text
-    n > MAXINDEX line =>  --this line is continuation of previous line; concat it
+    n > maxIndex line =>  --this line is continuation of previous line; concat it
       fill :=
         #last = 0 =>
           lastLineHadTick => '""
           '"\blankline "
-        #last > 0 and last.(MAXINDEX last) ~= $charBlank => $charBlank
+        #last > 0 and last.(maxIndex last) ~= $charBlank => $charBlank
         '""
       lastLineHadTick := false
       text := [strconc(last,fill,line),:rest text]
@@ -433,7 +433,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
-  catname := makeSymbol subString(s := PNAME con,0,MAXINDEX s)
+  catname := makeSymbol subString(s := PNAME con,0,maxIndex s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
     pakname := makeSymbol strconc(PNAME catAncestor,'"&")
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
@@ -472,7 +472,7 @@ getImports conname == --called by mkUsersHashTable
   infovec := dbInfovec conname or return nil
   template := infovec.0
   u := [doImport(i,template)
-          for i in 5..(MAXINDEX template) | test]  where
+          for i in 5..(maxIndex template) | test]  where
     test() == template.i is [op,:.] and IDENTP op
               and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==

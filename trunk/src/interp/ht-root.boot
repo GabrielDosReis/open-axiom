@@ -145,7 +145,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     ['"Glossary items matching {\em ",pattern,'"}"]
   null lines =>
     tryAgain? and #pattern > 0 =>
-      (pattern.(k := MAXINDEX(pattern))) = char 's =>
+      (pattern.(k := maxIndex(pattern))) = char 's =>
         htGlossPage(htPage,subString(pattern,0,k),true)
       upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
@@ -269,12 +269,12 @@ htTutorialSearch pattern ==
 
 mkUnixPattern s ==
   u := mkUpDownPattern s
-  starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
+  starPositions := reverse [i for i in 1..(-1 + maxIndex u) | u.i = $wild]
   for i in starPositions repeat
     u := strconc(subString(u,0,i),'".*",subString(u,i + 1))
   if u.0 ~= $wild then u := strconc('"[^a-zA-Z]",u)
                   else u := subString(u,1)
-  if u.(k := MAXINDEX u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
+  if u.(k := maxIndex u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
                                   else u := subString(u,0,k)
   u
 

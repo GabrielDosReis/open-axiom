@@ -205,7 +205,7 @@ commandAmbiguityError(kind,x,u) ==
 getSystemCommandLine() ==
   p := STRPOS('")",$currentLine,0,NIL)
   line := if p then subString($currentLine,p) else $currentLine
-  idxmax:= MAXINDEX line
+  idxmax:= maxIndex line
   for i in 0..idxmax while stringChar(line,i) ~= char " " repeat
     index:= i
   if index=idxmax then line := '""
@@ -2039,7 +2039,7 @@ writify ob ==
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
-                n   := QVMAXINDEX ob
+                n   := maxIndex ob
                 nob := newVector(n+1)
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
@@ -2182,7 +2182,7 @@ dewritify ob ==
                 nob.rest := dewritifyInner qcdr
                 nob
             vector? ob =>
-                n   := QVMAXINDEX ob
+                n   := maxIndex ob
                 nob := newVector(n+1)
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
@@ -2578,7 +2578,7 @@ processSynonymLine line ==
   value := removeKeyFromLine line where
     removeKeyFromLine line ==
       line := dropLeadingBlanks line
-      mx := MAXINDEX line
+      mx := maxIndex line
       for i in 0..mx repeat
         stringChar(line,i) = char " " =>
           return (for j in (i+1)..mx repeat
@@ -2769,7 +2769,7 @@ removeUndoLines u == --called by writeInputLines
         if s1 ~= '")redo" then
           m := charPosition(char '_),s1,0)
           code :=
-            m < MAXINDEX s1 => s1.(m + 1)
+            m < maxIndex s1 => s1.(m + 1)
             char 'a
           s2 := trimString subString(s1,0,m)
         n :=

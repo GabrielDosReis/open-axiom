@@ -566,7 +566,7 @@ dbShowKind conform ==
   conname := first conform
   kind := getConstructorKindFromDB conname
   kind = "domain" =>
-    (s := PNAME conname).(MAXINDEX s) = '_& => '"default package"
+    (s := PNAME conname).(maxIndex s) = '_& => '"default package"
     '"domain"
   PNAME kind
 
@@ -846,7 +846,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       packageSymbol := false
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
-         catname := intern subString(s := PNAME opOf domform,0,MAXINDEX s)
+         catname := intern subString(s := PNAME opOf domform,0,maxIndex s)
          packageSymbol := second domform
          domform := [catname,:rest rest domform]  --skip first argument ($)
       docTable:= dbDocTable domform

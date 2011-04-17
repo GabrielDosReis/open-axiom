@@ -108,13 +108,13 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
+  k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter s.i] =>
     tailWords:=
       isBreakCharacter s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not isBreakCharacter s.i]
+        n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not isBreakCharacter s.i]
         null n => [subString(s,k)]
         n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
+      m := or/[i for i in (k+2)..(maxIndex(s)-1) | isBreakCharacter s.i] =>
         [subString(s,k,m-k),:wordsOfString1(s,m)]
       [subString(s,k)]
     k > j+1 => [subString(s,j,k-j),:tailWords]
@@ -274,7 +274,7 @@ findApproximateWords(word,table) ==
   for [x,:.] in alist repeat
     k := deltaWordEntry(upperWord,UPCASE COPY x)
     k < lastThreshold => vec.k := [x,:vec.k]
-  or/[vec.k for k in 0..MAXINDEX vec]
+  or/[vec.k for k in 0..maxIndex vec]
  
 guessFromList(key,stringList) ==
   threshold := MAX(3,(# key)/2)
@@ -282,7 +282,7 @@ guessFromList(key,stringList) ==
   for x in stringList repeat
     k := deltaWordEntry(key,x)
     k < threshold => vec.k := [x,:vec.k]
-  or/[vec.k for k in 0..MAXINDEX vec]
+  or/[vec.k for k in 0..maxIndex vec]
  
 deltaWordEntry(word,entry) ==
   word = entry => 0
@@ -292,7 +292,7 @@ deltaWordEntry(word,entry) ==
 --+ Note these are optimized definitions below-- see commented out versions
 --+   to understand the algorithm
 canForgeWord(word,entry) ==
-  forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0)
+  forge(word,0,maxIndex word,entry,0,maxIndex entry,0)
  
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
@@ -323,7 +323,7 @@ forge(word,w,W,entry,e,E,n) ==
  
 --+ DO NOT REMOVE DEFINITIONS BELOW which explain the algorithm
 --+ canForgeWord(word,entry) ==--
---+ [d,i,s,t] := forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0,0,0,0)
+--+ [d,i,s,t] := forge(word,0,maxIndex word,entry,0,maxIndex entry,0,0,0,0)
 --+ --d=deletions, i=insertions, s=substitutions, t=transpositions
 --+ --list is formed only for tuning purposes-- remove later on
 --+ d + i + s + t
@@ -368,13 +368,13 @@ patternTran pattern ==
   maskConvert DOWNCASE pattern
  
 hasWildCard? str ==
-  or/[str.i = '_? and (i=0 or not(str.(i-1) = '__ )) for i in 0..MAXINDEX str]
+  or/[str.i = '_? and (i=0 or not(str.(i-1) = '__ )) for i in 0..maxIndex str]
  
 maskConvert str ==
 --replace all ? not preceded by an underscore by &
   buf:= GETSTR(#str)
   j:= 0  --index into res
-  final := MAXINDEX str
+  final := maxIndex str
   for i in 0..final repeat
     c := str.i
     if c = char "__" and i < final then
@@ -397,6 +397,6 @@ suffix?(s,t) ==
 obSearch x ==
   vec:= OBARRAY()
   pattern:= PNAME x
-  [y for i in 0..MAXINDEX OBARRAY() |
+  [y for i in 0..maxIndex OBARRAY() |
     (IDENTP (y := vec.i) or CVEC y) and match?(pattern,COPY y)]
  

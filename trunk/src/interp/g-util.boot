@@ -766,7 +766,7 @@ trimString s ==
   leftTrim rightTrim s
 
 leftTrim s ==
-  k := MAXINDEX s
+  k := maxIndex s
   k < 0 => s
   s.0 = $blank =>
     for i in 0..k while s.i = $blank repeat (j := i)
@@ -774,7 +774,7 @@ leftTrim s ==
   s
 
 rightTrim s ==  -- assumed a non-empty string
-  k := MAXINDEX s
+  k := maxIndex s
   k < 0 => s
   s.k = $blank =>
     for i in k..0 by -1 while s.i = $blank repeat (j := i)
@@ -873,7 +873,7 @@ $beginEndList := '(
 
 isDefaultPackageName x ==
   s := symbolName x
-  stringChar(s,MAXINDEX s) = char '_&
+  stringChar(s,maxIndex s) = char '_&
 
 isDefaultPackageForm? x ==
   x is [op,:.] and IDENTP op and isDefaultPackageName op

@@ -459,11 +459,11 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   someMatch := false
   numvec := getDomainByteVector domain
   predvec := domain.3
-  max := MAXINDEX opvec
+  max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
-  idxmax := MAXINDEX numvec
+  idxmax := maxIndex numvec
   start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
@@ -536,7 +536,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
-  for i in 0..MAXINDEX packageVec |
+  for i in 0..maxIndex packageVec |
        (entry := packageVec.i) and entry ~= true repeat
     package :=
       vector? entry =>
@@ -552,7 +552,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
           --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
-            max := MAXINDEX opvec
+            max := maxIndex opvec
             code := getOpCode(op,opvec,max)
             null code => nil
             byteVector := CDDDR infovec.3

@@ -310,7 +310,7 @@ whoUses(opSigList,conform) ==
     template := $infovec . 0
     found := false
     opacc := nil
-    for i in 7..MAXINDEX template repeat
+    for i in 7..maxIndex template repeat
       item := template . i
       item isnt [n,:op] or not MEMQ(op,opList) => 'skip
       index := n
