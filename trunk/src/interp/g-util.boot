@@ -760,7 +760,7 @@ after(u,v) ==
   r
 
 
-$blank == char ('_ )
+$blank == char " "
 
 trimString s ==
   leftTrim rightTrim s
@@ -816,12 +816,12 @@ $exposeFlag        := false     --if true, messages go to $outStream
 $exposeFlagHeading := false     --see htcheck.boot
 $checkingXmptex? := false       --see htcheck.boot
 $exposeDocHeading:= nil         --see htcheck.boot
-$charPlus == char '_+
-$charBlank == (char '_ )
-$charLbrace == char '_{
-$charRbrace == char '_}
-$charBack == char '_\
-$charDash == char '_-
+$charPlus == char "+"
+$charBlank == char " "
+$charLbrace == char "{"
+$charRbrace == char "}"
+$charBack == char "\"
+$charDash == char "-"
 
 $charTab            == abstractChar 9
 $charNewline        == abstractChar 10
@@ -829,16 +829,16 @@ $charFauxNewline    == abstractChar 25
 $stringNewline      == charString abstractChar 10
 $stringFauxNewline  == charString abstractChar 25
 
-$charExclusions == [char 'a, char 'A]
-$charQuote == char '_'
-$charSemiColon == char '_;
-$charComma     == char '_,
-$charPeriod    == char '_.
-$checkPrenAlist := [[char '_(,:char '_)],[char '_{,:char '_}],[char '_[,:char '_]]]
-$charEscapeList:= [char '_%,char '_#,$charBack]
-$charIdentifierEndings := [char '__, char "!", char '_?]
-$charSplitList := [$charComma,$charPeriod,char '_[, char '_],$charLbrace, $charRbrace, char '_(, char '_), char '_$, char '_%]
-$charDelimiters := [$charBlank, char '_(, char '_), $charBack]
+$charExclusions == [char "a", char "A"]
+$charQuote == char "'"
+$charSemiColon == char ";"
+$charComma     == char ","
+$charPeriod    == char "."
+$checkPrenAlist := [[char "(",:char ")"],[char "{",:char "}"],[char "[",:char "]"]]
+$charEscapeList:= [char "%",char "#",$charBack]
+$charIdentifierEndings := [char "__", char "!", char "?"]
+$charSplitList := [$charComma,$charPeriod,char "[", char "]",$charLbrace, $charRbrace, char "(", char ")", char "$", char "%"]
+$charDelimiters := [$charBlank, char "(", char ")", $charBack]
 $HTspadmacros := '("\spadtype" "\spadcommand" "\spadop" "\spadfun" "\spadatt" "\spadsyscom" "\spad" "\s")
 $HTmacs := [
   ['"\beginmenu",$charRbrace,'"menu",$charLbrace,'"\begin"],
@@ -873,7 +873,7 @@ $beginEndList := '(
 
 isDefaultPackageName x ==
   s := symbolName x
-  stringChar(s,maxIndex s) = char '_&
+  stringChar(s,maxIndex s) = char "&"
 
 isDefaultPackageForm? x ==
   x is [op,:.] and IDENTP op and isDefaultPackageName op

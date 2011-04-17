@@ -342,7 +342,7 @@ dbGatherData(htPage,opAlist,which,key) ==
       while alist repeat
         item := first alist
         isExposed? :=
-          string? item => dbExposed?(item,char 'o)   --unexpanded case
+          string? item => dbExposed?(item,char "o")   --unexpanded case
           null (r := rest rest item) => true      --assume true if unexpanded
           r . 1                                   --expanded case
         if isExposed? then return (exposureFlag := true)
@@ -689,7 +689,7 @@ dbChooseDomainOp(htPage,which,index) ==
 htSayExpose(op,flag) ==
   $includeUnexposed? =>
     flag => htBlank()
-    op.0 = char '_* => htSay '"{\em *} "
+    op.0 = char "*" => htSay '"{\em *} "
     htSayUnexposed()
   htSay '""
 --============================================================================
@@ -831,7 +831,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
             else sig := rest sig
           conname := intern dbNewConname line
           origin := [conname,:getConstructorArgs conname]
-          exposeFlag := dbExposed?(line,char 'o)
+          exposeFlag := dbExposed?(line,char "o")
           acc := [[sig,predicate,origin,exposeFlag,comments],:acc]
         --always store the fruits of our labor:
         pair.rest := nreverse acc             --at least partially expand it

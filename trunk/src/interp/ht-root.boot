@@ -129,7 +129,7 @@ htSetSystemVariable(htPage,[name,value]) ==
 htGloss(pattern) == htGlossPage(nil,dbNonEmptyPattern pattern or '"*",true)
 
 htGlossPage(htPage,pattern,tryAgain?) ==
-  $wildCard: local := char '_*
+  $wildCard: local := char "*"
   pattern = '"*" => downlink 'GlossaryPage
   filter := pmTransFilter pattern
   grepForm := mkGrepPattern(filter,'none)
@@ -145,7 +145,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     ['"Glossary items matching {\em ",pattern,'"}"]
   null lines =>
     tryAgain? and #pattern > 0 =>
-      (pattern.(k := maxIndex(pattern))) = char 's =>
+      (pattern.(k := maxIndex(pattern))) = char "s" =>
         htGlossPage(htPage,subString(pattern,0,k),true)
       upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)

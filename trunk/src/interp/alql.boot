@@ -45,17 +45,17 @@ stringMatches?(pattern,subject) ==
   false
 
 alqlGetKindString(x) ==
-  x.0 = char 'a or x.0 = char 'o => subString(dbPart(x,5,1),0,1)
+  x.0 = char "a" or x.0 = char "o" => subString(dbPart(x,5,1),0,1)
   subString(x,0,1)
 
 alqlGetOrigin(x) ==
   field :=dbPart(x,5,1)
-  k := charPosition(char '_(,field,2)
+  k := charPosition(char "(",field,2)
   subString(field,1,k-1)
 
 alqlGetParams(x) ==
   field :=dbPart(x,5,1)
-  k := charPosition(char '_(,field,2)
+  k := charPosition(char "(",field,2)
   subString(field,k)
 
 

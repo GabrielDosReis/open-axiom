@@ -76,8 +76,8 @@ htShowCount s == --# discounting {\em .. }
   i := 0
   count := 0
   while i < m - 7 repeat
-    s.i = char '_{ and  s.(i+1) = char '_\ and s.(i+2) = char 'e
-      and s.(i+3) = char 'm => i := i + 6     --discount {\em }
+    s.i = char "{" and  s.(i+1) = char "\" and s.(i+2) = char "e"
+      and s.(i+3) = char "m" => i := i + 6     --discount {\em }
     i := i + 1
     count := count + 1
   count + (m - i)

@@ -96,14 +96,14 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     while blankLine? line repeat line := READLINE instream
     m := maxIndex line                        --file "topics.data" has form:
     m = -1 => 'skip                           --1   ConstructorName:
-    line.0 = char '_- => 'skip                --2      constructorName or operation name
+    line.0 = char "-" => 'skip                --2      constructorName or operation name
     line := trimString line                   --3-n    ...
     m := maxIndex line                        --     (blank line) ...
-    line.m ~= (char '_:) => systemError('"wrong heading")
+    line.m ~= char ":" => systemError('"wrong heading")
     con := makeSymbol subString(line,0,m)
     alist := [lst while not EOFP instream and 
        not (blankLine? (line := READLINE instream)) and
-         line.0 ~= char '_- for i in 1..
+         line.0 ~= char "-" for i in 1..
            | lst := string2OpAlist line]
     alist => HPUT($conTopicHash,con,alist)
   --initialize table of topic classes
@@ -129,7 +129,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
 blankLine? line ==
-  maxIndex line = -1 or and/[line . j = (char '_ ) for j in 0..maxIndex line]
+  maxIndex line = -1 or and/[line . j = char " " for j in 0..maxIndex line]
 
 string2OpAlist s ==
   m := #s
@@ -137,7 +137,7 @@ string2OpAlist s ==
   upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
-    acc := [makeSymbol subString(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
+    acc := [makeSymbol subString(s,k,-k + (k := charPosition(char " ",s,k + 1))),:acc]
   acc := nreverse acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]
@@ -145,7 +145,7 @@ string2OpAlist s ==
 
 getDefaultProps name ==
   u := HGET($defaultsHash,name)
-  if (s := PNAME name).(m := maxIndex s) = char '? then u := ['p,:u]
+  if (s := PNAME name).(m := maxIndex s) = char "?" then u := ['p,:u]
   if s.m = char "!" then u := ['destructive,:u]
   u
   

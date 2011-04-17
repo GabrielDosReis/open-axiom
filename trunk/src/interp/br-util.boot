@@ -52,7 +52,7 @@ browserAutoloadOnceTrigger() == nil
 
 ----------------------> Global Variables <-----------------------
 $includeUnexposed? := true   --default setting
-$tick := char '_`            --field separator for database files
+$tick := char "`"            --field separator for database files
 $charUnderscore := ('__)     --needed because of parser bug
 $wild1 := '"[^`]*"           --phrase used to convert keys to grep strings
 $browseCountThreshold := 10  --the maximum number of names that will display
@@ -75,11 +75,11 @@ $docTableHash := hashTable 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------
-$pmFilterDelimiters := [char '_(,char '_),char '_ ]
+$pmFilterDelimiters := [char "(",char ")",char " "]
 $dbKindAlist :=
-  [[char 'a,:'"attribute"],[char 'o,:'"operation"],
-    [char 'd,:'"domain"],[char 'p,:'"package"],
-      [char 'c,:'"category"],[char 'x,:'"default_ package"]]
+  [[char "a",:'"attribute"],[char "o",:'"operation"],
+    [char "d",:'"domain"],[char "p",:'"package"],
+      [char "c",:'"category"],[char "x",:'"default_ package"]]
 $OpViewTable := '(
   (names           "Name"      "Names"           dbShowOpNames)
   (documentation   "Name"      "Names"           dbShowOpDocumentation)
@@ -348,7 +348,7 @@ bcStarSpaceOp(op,exposed?) ==
   null $includeUnexposed? => nil
   not exposed? =>
     htSayUnexposed()
-    if op.0 = char '_* then htSay '" "
+    if op.0 = char "*" then htSay '" "
   htBlank()
 
 bcStarConform form ==
@@ -371,7 +371,7 @@ asharpConstructors() ==
 
 extractFileNameFromPath s == fn(s,0,#s) where
   fn(s,i,m) ==
-    k := charPosition(char '_/,s,i)
+    k := charPosition(char "/",s,i)
     k = m => subString(s,i)
     fn(s,k + 1,m)
 
@@ -604,7 +604,7 @@ dbNotAvailablePage(:options) ==
 --=======================================================================
 --       Utility Functions for Manipulating Browse Datalines
 --=======================================================================
-dbpHasDefaultCategory? s ==  #s > 1 and s.1 = char 'x  --s is part 3 of line
+dbpHasDefaultCategory? s ==  #s > 1 and s.1 = char "x"  --s is part 3 of line
 
 dbKind line == line.0
 
@@ -632,9 +632,9 @@ dbConname(line) == dbPart(line,5,1)
 dbComments line ==  dbReadComments(string2Integer dbPart(line,7,1))
 
 dbNewConname(line) == --dbName line unless kind is 'a or 'o => name in 5th pos.
-  (kind := line.0) = char 'a or kind = char 'o =>
+  (kind := line.0) = char "a" or kind = char "o" =>
     conform := dbPart(line,5,1)
-    k := charPosition(char '_(,conform,1)
+    k := charPosition(char "(",conform,1)
     subString(conform,1,k - 1)
   dbName line
 

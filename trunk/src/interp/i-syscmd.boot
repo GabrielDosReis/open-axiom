@@ -2763,14 +2763,14 @@ removeUndoLines u == --called by writeInputLines
   savedIOindex := $IOindex  --save value
   $IOindex := 1
   for y in tails u repeat
-    (x := first y).0 = char '_) =>
+    (x := first y).0 = char ")" =>
       stringPrefix?('")undo",s := trimString x) => --parse "undo )option"
         s1 := trimString subString(s,5)
         if s1 ~= '")redo" then
-          m := charPosition(char '_),s1,0)
+          m := charPosition(char ")",s1,0)
           code :=
             m < maxIndex s1 => s1.(m + 1)
-            char 'a
+            char "a"
           s2 := trimString subString(s1,0,m)
         n :=
            s1 = '")redo" => 0
@@ -2781,17 +2781,17 @@ removeUndoLines u == --called by writeInputLines
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
   for y in tails nreverse u repeat
-    (x := first y).0 = char '_> =>
+    (x := first y).0 = char ">" =>
       code := x . 1                                 --code = a,b, or r
       n := readInteger subString(x,2)               --n = number of undo steps
       y := rest y                                   --kill >n line
       while y repeat
         c := first y
-        c.0 = char '_) or c.0 = char '_> => y := rest y  --kill system commands
+        c.0 = char ")" or c.0 = char ">" => y := rest y  --kill system commands
         n = 0 => return nil                              --including undos
         n := n - 1
         y := rest y                                 --kill command
-      y and code ~= char 'b => acc := [c,:acc]       --add last unless )before
+      y and code ~= char "b" => acc := [c,:acc]       --add last unless )before
     acc := [x,:acc]
   $IOindex := savedIOindex
   acc
@@ -3243,7 +3243,7 @@ getFirstWord string ==
 ltrace l == trace l
 
 stripSpaces str ==
-  STRING_-TRIM([char '" "], str)
+  STRING_-TRIM('" ", str)
 
 npProcessSynonym(str) ==
   if str = '"" then printSynonyms(NIL)

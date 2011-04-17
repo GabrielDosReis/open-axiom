@@ -60,7 +60,7 @@ grepConstruct1(s,key) ==
 --returns the name of file (WITHOUT .text.$SPADNUM on the end)
   $key     : local := key
   if key = 'k and          --convert 'k to 'y if name contains an "&"
-    or/[s . i = char '_& for i in 0..maxIndex s] then key := 'y
+    or/[s . i = char "&" for i in 0..maxIndex s] then key := 'y
   filter := pmTransFilter STRINGIMAGE s  --parses and-or-not form
   filter is ['error,:.] => filter        --exit on parser error
   pattern := mkGrepPattern(filter,key)  --create string to pass to "grep"
@@ -77,13 +77,13 @@ grepConstructDo(x, key) ==
 
 dbExposed?(line,kind) == -- does line come from an unexposed constructor?
   conname := makeSymbol
-    kind = char 'a or kind = char 'o => dbNewConname line --get conname from middle
+    kind = char "a" or kind = char "o" => dbNewConname line --get conname from middle
     dbName line
   isExposedConstructor conname
 
 dbScreenForDefaultFunctions lines == [x for x in lines | not isDefaultOpAtt x]
 
-isDefaultOpAtt x == x.(1 + dbTickIndex(x,4,0)) = char 'x
+isDefaultOpAtt x == x.(1 + dbTickIndex(x,4,0)) = char "x"
 
 grepForAbbrev(s,key) ==
 --checks that filter s is not * and is all uppercase; if so, look for abbrevs
@@ -142,7 +142,7 @@ pmTransFilter s ==
   or/[isFilterDelimiter? s.i or s.i = $charUnderscore for i in 0..maxIndex s]
     => (parse := pmParseFromString s) and checkPmParse parse or
         ['error,'"Illegal search string",'"\vspace{3}\center{{\em Your search string} ",escapeSpecialChars s,'" {\em has incorrect syntax}}"]
-  or/[s . i = char '_* and s.(i + 1) = char '_*
+  or/[s . i = char "*" and s.(i + 1) = char "*"
       and (i=0 or s . (i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
        => ['error,'"Illegal search string",'"\vspace{3}\center{Consecutive {\em *}'s are not allowed in search patterns}"]
   s
@@ -190,8 +190,8 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
     middle :=
       t in '("and" "or" "not") => t
       --the following 2 lines make commutative("*") parse correctly!!!!
-      t.0 = char '_" => t
-      j < siz - 1 and s.j = char '_( => t
+      t.0 = char "_"" => t
+      j < siz - 1 and s.j = char "(" => t
       strconc('"_"",t,'"_"")
     strconc(subString(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
@@ -216,15 +216,15 @@ grepSplit(lines,doc?) ==
            line := READLINE instream2
     kind := dbKind line
     not $includeUnexposed? and not dbExposed?(line,kind) => 'skip
-    (kind = char 'a or kind = char 'o) and isDefaultOpAtt line => 'skip
+    (kind = char "a" or kind = char "o") and isDefaultOpAtt line => 'skip
     PROGN
-      kind = char 'c => cats := insert(line,cats)
-      kind = char 'd => doms := insert(line,doms)
-      kind = char 'x => defs := insert(line,defs)
-      kind = char 'p => paks := insert(line,paks)
-      kind = char 'a => atts := insert(line,atts)
-      kind = char 'o => ops :=  insert(line,ops)
-      kind = char '_- => 'skip                --for now
+      kind = char "c" => cats := insert(line,cats)
+      kind = char "d" => doms := insert(line,doms)
+      kind = char "x" => defs := insert(line,defs)
+      kind = char "p" => paks := insert(line,paks)
+      kind = char "a" => atts := insert(line,atts)
+      kind = char "o" => ops :=  insert(line,ops)
+      kind = char "-" => 'skip                --for now
       systemError 'kind
   if doc? then CLOSE instream2
   [['"attribute",:nreverse atts],
@@ -253,14 +253,14 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
   $options : local := options
   s := STRINGIMAGE x
 --s := DOWNCASE STRINGIMAGE x
-  addOptions remUnderscores addWilds split(g s,char '_*) where
+  addOptions remUnderscores addWilds split(g s,char "*") where
     addWilds sl ==    --add wild cards (sl is list of parts between *'s)
       IFCAR sl = '"" => h(IFCDR sl,[$wild1])
       h(sl,nil)
     g s  ==    --remove "*"s around pattern for text match
       not ('w in $options) => s
-      if s.0 = char '_* then s := subString(s,1)
-      if s.(k := maxIndex s) = char '_* then s := subString(s,0,k)
+      if s.0 = char "*" then s := subString(s,1)
+      if s.(k := maxIndex s) = char "*" then s := subString(s,0,k)
       s
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
@@ -369,7 +369,7 @@ looksLikeDomainForm x ==
 
 spadSys(x) ==   --called by \spadsyscom{x}
   s := PNAME x
-  if s.0 = char '_) then s := subString(s,1)
+  if s.0 = char ")" then s := subString(s,1)
   form := ncParseFromString s or
            systemError ['"Argument: ",s,'" to spadType won't parse"]
   htSystemCommands PNAME opOf form
@@ -392,7 +392,7 @@ genSearch(filter,:options) == --"Complete" from HD (see man0.ht) and aokSearch
   if includeDoc? then
     docSearchAlist := grepConstruct(key,'w,true)
     docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-    docSearchAlist := [x for x in docSearchAlist | x.0 ~= char 'x]--drop defaults
+    docSearchAlist := [x for x in docSearchAlist | x.0 ~= char "x"]--drop defaults
   genSearch1(filter,genSearchTran regSearchAlist,genSearchTran docSearchAlist)
 
 genSearchTran alist == [[x,y,:y] for [x,:y] in alist]
@@ -546,7 +546,7 @@ docSearch filter ==  --"Documentation" from HD (see man0.ht)
   key := removeSurroundingStars filter
   docSearchAlist := grepConstruct(filter,'w,true)
   docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-  docSearchAlist := [x for x in docSearchAlist | x.0 ~= char 'x] --drop defaults
+  docSearchAlist := [x for x in docSearchAlist | x.0 ~= char "x"] --drop defaults
   docSearch1(filter,genSearchTran docSearchAlist)
 
 docSearch1(filter,doc) ==
@@ -570,8 +570,8 @@ docSearch1(filter,doc) ==
 
 removeSurroundingStars filter ==
   key := STRINGIMAGE filter
-  if key.0 = char '_* then key := subString(key,1)
-  if key.(max := maxIndex key) = char '_* then key := subString(key,0,max)
+  if key.0 = char "*" then key := subString(key,1)
+  if key.(max := maxIndex key) = char "*" then key := subString(key,0,max)
   key
 
 showNamedDoc([kind,:lines],index) ==
@@ -593,7 +593,7 @@ stripOffSegments(s,n) ==
   progress := true
   while n > 0 and progress = true repeat
     n := n - 1
-    k := charPosition(char '_`,s,0)
+    k := charPosition(char "`",s,0)
     new := subString(s,k + 1)
     #new < #s => s := new
     progress := false
@@ -603,7 +603,7 @@ stripOffSegments(s,n) ==
 replaceTicksBySpaces s ==
   n := -1
   max := maxIndex s
-  while (n := charPosition(char '_`,s,n + 1)) <= max repeat 
+  while (n := charPosition(char "`",s,n + 1)) <= max repeat 
     s.n := char " "
   s
 
@@ -660,9 +660,9 @@ constructorSearch(filter,key,kind) ==
   line := conPageFastPath DOWNCASE filter =>
     code := dbKind line
     newkind :=
-      code = char 'p => '"package"
-      code = char 'd => '"domain"
-      code = char 'c => '"category"
+      code = char "p" => '"package"
+      code = char "d" => '"domain"
+      code = char "c" => '"category"
       nil
     kind = '"constructor" or kind = newkind => kPage line
     page := htInitPage('"Query Page",nil)
@@ -706,7 +706,7 @@ dbWordFrom(l,i) ==
   buf := '""
   while k <= idxmax and not member(c := l.k, $dbDelimiters) repeat
     ch :=
-      c = char '__   => l.(k := 1+k)  --this may exceed bounds
+      c = char "__"   => l.(k := 1+k)  --this may exceed bounds
       c
     buf := strconc(buf,ch)
     k := k + 1
@@ -831,8 +831,8 @@ generalSearchDo(htPage,flag) ==
   nargs:= generalSearchString(htPage,selectors.1)
   npat := standardizeSignature generalSearchString(htPage,selectors.2)
   kindCode :=
-    which = 'ops => char 'o
-    which = 'attrs => char 'a
+    which = 'ops => char "o"
+    which = 'attrs => char "a"
     acc := '""
     if htButtonOn?(htPage,'cats) then acc := strconc('"c",acc)
     if htButtonOn?(htPage,'doms) then acc := strconc('"d",acc)
@@ -873,37 +873,37 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     name := replaceGrepStar name
     firstPart := strconc('"^",kind,name)
     nargsPart := replaceGrepStar nargs
-    exposedPart := char '_.   --always get exposed/unexposed
+    exposedPart := char "."   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
     simp strconc(conc(firstPart,conc(nargsPart,conc(exposedPart, patPart))),$tick)
   conc(a,b) ==
-    b = '"[^`]*" or b = char '_. => a
+    b = '"[^`]*" or b = char "." => a
     strconc(a,$tick,b)
   simp a ==
     m := maxIndex a
-    m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
-      and     a.(m-3) = $tick    and a.(m-2) = char '_]
-          and a.(m-1) = char '_* and a.m = $tick
+    m > 6 and a.(m-5) = char "[" and a.(m-4) = char "^"
+      and     a.(m-3) = $tick    and a.(m-2) = char "]"
+          and a.(m-1) = char "*" and a.m = $tick
             => simp subString(a,0,m-5)
     a
 
 replaceGrepStar s ==
   s = "" => s
   final := maxIndex s
-  i := charPosition(char '_*,s,0)
+  i := charPosition(char "*",s,0)
   i > final => s
   strconc(subString(s,0,i),'"[^`]*",replaceGrepStar subString(s,i + 1))
 
 standardizeSignature(s) == underscoreDollars
-  s.0 = char '_( => s
+  s.0 = char "(" => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
-  s.(k - 1) = char '_) => strconc('"(",s)
+  s.(k - 1) = char ")" => strconc('"(",s)
   strconc('"(",subString(s,0,k),'")",subString(s,k))
 
 underscoreDollars(s) == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char '_$,s,i)) > n => subString(s,i)
+    (m := charPosition(char "$",s,i)) > n => subString(s,i)
     strconc(subString(s,i,m - i),'"___$",fn(s,m + 1,n))
 
 --=======================================================================
@@ -982,7 +982,7 @@ grepFile(pattern,:options) ==
   dbUnpatchLines lines
 
 dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
-  dash := char '_-
+  dash := char "-"
   acc := nil
   while lines is [line, :lines] repeat
     #line = 0 => 'skip     --skip blank lines

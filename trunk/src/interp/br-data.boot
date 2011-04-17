@@ -112,7 +112,7 @@ buildLibdbConEntry conname ==
       and getConstructorModemapFromDB conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
-      pname.(maxIndex pname) = char '_& => 'x
+      pname.(maxIndex pname) = char "&" => 'x
       DOWNCASE PNAME(kind).0
     argl := rest $conform
     conComments :=
@@ -197,8 +197,8 @@ checkCommentsForBraces(kind,sop,sigpart,comments) ==
   count := 0
   for i in 0..maxIndex comments repeat
     c := comments.i
-    c = char '_{ => count := count + 1
-    c = char '_} =>
+    c = char "{" => count := count + 1
+    c = char "}" =>
       count := count - 1
       count < 0 => missingLeft := true
   if count < 0 or missingLeft then
@@ -266,7 +266,7 @@ dbReadComments(n) ==
   line := subString(line,k + 1)
   while not EOFP instream and (x := READLINE instream) and
     (k := maxIndex x) and (j := dbTickIndex(x,1,1)) and (j < k) and
-      x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
+      x.(j := j + 1) = char "-" and x.(j := j + 1) = char "-" repeat
         xtralines := [subString(x,j + 1),:xtralines]
   SHUT instream
   strconc(line, strconc/nreverse xtralines)
@@ -312,9 +312,9 @@ dbSplit(line,n,k) ==
 
 dbSpreadComments(line,n) ==
   line = '"" => nil
-  k := charPosition(char '_-,line,n + 2)
+  k := charPosition(char "-",line,n + 2)
   k >= maxIndex line => [subString(line,n)]
-  line.(k + 1) ~= char '_- =>
+  line.(k + 1) ~= char "-" =>
     u := dbSpreadComments(line,k)
     [strconc(subString(line,n,k - n),first u),:rest u]
   [subString(line,n,k - n),:dbSpreadComments(subString(line,k),0)]

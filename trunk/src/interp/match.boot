@@ -94,7 +94,7 @@ patternCheck pattern == main where
  --checks for escape characters, maybe new $wildCard
   main() ==
 --  pattern := pmTransFilter pattern   --should no longer need this (rdj:10/1/91)
-    u := pos(char '__,pattern)
+    u := pos(char "__",pattern)
     null u => pattern
     not(and/[equal(pattern,i + 1,$wildCard) for i in u]) =>
       sayBrightly ['"Invalid use of underscores in pattern: ",pattern]

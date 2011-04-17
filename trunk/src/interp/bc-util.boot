@@ -50,7 +50,7 @@ bcMkFunction(name,arg,args) ==
   strconc(name,'"(",arg,strconc/[strconc('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
-  (string? s) and (s.0 = char '_")  =>
+  (string? s) and (s.0 = char "_"")  =>
     len := #s
     strconc('"\_"", subString(s, 1, len-2), '"\_"")
   s
@@ -96,9 +96,9 @@ bcvspace() == bcHt '"\vspace{1}\newline "
 bcString2WordList s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => nil
-    k := or/[j for j in i..n | s.j ~= char '_  ]
+    k := or/[j for j in i..n | s.j ~= char " "]
     null integer? k => nil
-    l := bcFindString(s,k + 1,n,char '_  )
+    l := bcFindString(s,k + 1,n,char " ")
     null integer? l => [subString(s,k)]
     [subString(s,k,l-k),:fn(s,l + 1,n)]
 

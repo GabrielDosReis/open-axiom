@@ -196,36 +196,36 @@ substituteSegmentedMsg(msg,args) ==
       q := NIL
       for i in 2..(n-1) repeat q := [stringChar(x,i),:q]
       -- Note 'f processing must come first.
-      if char 'f in q then
+      if char "f" in q then
           arg :=
               cons? arg => apply(first arg, rest arg)
               arg
-      if char 'm in q then arg := [['"%m",:arg]]
-      if char 's in q then arg := [['"%s",:arg]]
-      if char 'p in q then 
+      if char "m" in q then arg := [['"%m",:arg]]
+      if char "s" in q then arg := [['"%s",:arg]]
+      if char "p" in q then 
           $texFormatting => arg := prefix2StringAsTeX arg
           arg := prefix2String arg 
-      if char 'P in q then
+      if char "P" in q then
         arg := applyPrefix2String arg
-      if char 'o in  q and $texFormatting then
+      if char "o" in  q and $texFormatting then
         arg := operationLink(arg)
 
-      if char 'c in q then arg := [['"%ce",:arg]]
-      if char 'r in q then arg := [['"%rj",:arg]]
+      if char "c" in q then arg := [['"%ce",:arg]]
+      if char "r" in q then arg := [['"%rj",:arg]]
 
-      if char 'l in q then l := ['"%l",:l]
-      if char 'b in q then l := ['"%b",:l]
+      if char "l" in q then l := ['"%l",:l]
+      if char "b" in q then l := ['"%b",:l]
       --we splice in arguments that are lists
       --if y is not specified, then the adding of blanks is
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
          arg is [head,:tail] =>
-           char 'y in q or (head is '"%y") or (tail = nil)  =>
+           char "y" in q or (head is '"%y") or (tail = nil)  =>
              append(reverse arg, l)
            ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
          [arg,:l]
-      if char 'b in q then l := ['"%d",:l]
+      if char "b" in q then l := ['"%d",:l]
       for ch in '(_. _, _! _: _; _?) repeat
         if char ch in q then l := [ch,:l]
 
