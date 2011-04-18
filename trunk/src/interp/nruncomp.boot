@@ -85,9 +85,9 @@ NRTaddDeltaCode() ==
   kvec := first $catvecList
   for i in $NRTbase.. for item in reverse $NRTdeltaList
     for compItem in reverse $NRTdeltaListComp
-      |null (s:=kvec.i) repeat
-        $template.i:= deltaTran(item,compItem)
-  $template.5 :=
+      | null vectorRef(kvec,i) repeat
+        vectorRef($template,i) := deltaTran(item,compItem)
+  vectorRef($template,5) :=
     $NRTaddForm =>
       $NRTaddForm is ["%Comma",:y] => nreverse y
       NRTencode($NRTaddForm,$addForm)
@@ -407,7 +407,7 @@ washFunctorBody form == main form where
 --              Instantiation Code (Stuffslots)
 --=======================================================================
 stuffSlot(dollar,i,item) ==
-  dollar.i :=
+  vectorRef(dollar,i) :=
     atom item => [symbolFunction item,:dollar]
     item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
@@ -425,13 +425,15 @@ stuffDomainSlots dollar ==
     lookupFunction = 'lookupIncomplete => function lookupIncomplete
     function lookupComplete
   template := infovec.0
-  if template.5 then stuffSlot(dollar,5,template.5)
-  for i in (6 + # rest domname)..maxIndex template | item := template.i repeat
-    stuffSlot(dollar,i,item)
-  dollar.1 := LIST(lookupFunction,dollar,infovec.1)
-  dollar.2 := infovec.2
+  if vectorRef(template,5) then
+    stuffSlot(dollar,5,vectorRef(template,5))
+  for i in (6 + # rest domname)..maxIndex template
+    | item := vectorRef(template,i) repeat
+      stuffSlot(dollar,i,item)
+  vectorRef(dollar,1) := LIST(lookupFunction,dollar,infovec.1)
+  vectorRef(dollar,2) := infovec.2
   proto4 := infovec.3
-  dollar.4 := 
+  vectorRef(dollar,4) := 
     vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
     bitVector := dollar.3
     predvec := first proto4
@@ -447,7 +449,7 @@ getLookupFun infovec ==
 
 makeSpadConstant [fn,dollar,slot] ==
   val := FUNCALL(fn,dollar)
-  u:= dollar.slot
+  u := vectorRef(dollar,slot)
   u.first := function IDENTITY
   u.rest := val
   val
@@ -502,7 +504,8 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
   domainShell := newShell($NRTbase + $NRTdeltaLength)
-  for i in 0..4 repeat domainShell.i := $domainShell.i
+  for i in 0..4 repeat
+    vectorRef(domainShell,i) := vectorRef($domainShell,i)
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template := newShell ($NRTbase + $NRTdeltaLength)
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
@@ -571,13 +574,13 @@ NRTcheckVector domainShell ==
 -- (b) NIL         -- ???
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
-    v := domainShell.i
+    v := vectorRef(domainShell,i)
     v=true => nil  --item is marked; ignore
     v=nil => nil
     atom v => systemErrorHere '"CheckVector"
     atom first v => nil  --category form; ignore
     assoc(first v,alist) => nil
-    alist := [[first v,:$SetFunctions.i],:alist]
+    alist := [[first v,:vectorRef($SetFunctions,i)],:alist]
   alist
 
 mkDomainCatName id == makeSymbol strconc(id,'";CAT")
@@ -684,7 +687,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
                            COPY_-LIST $lisplibOperationAlist,function second)
   $lastPred: local := false
   $newEnv: local := $e
-  $domainShell.1 := [fn entry for entry in sortedOplist] where
+  vectorRef($domainShell,1) := [fn entry for entry in sortedOplist] where
     fn [[op,sig],pred,fnsel] ==
        if $lastPred ~= pred then
             $newEnv := deepChaseInferences(pred,$e)

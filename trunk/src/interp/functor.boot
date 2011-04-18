@@ -229,10 +229,10 @@ compCategories1(u,v) ==
   error 'compCategories1
  
 NewbFVectorCopy(u,domName) ==
-  v:= newShell # u
-  for i in 0..5 repeat v.i:= u.i
-  for i in 6..maxIndex v | cons? u.i repeat
-    v.i:= [function Undef,[domName,i],:first u.i]
+  v := newShell # u
+  for i in 0..5 repeat vectorRef(v,i) := vectorRef(u,i)
+  for i in 6..maxIndex v | cons? vectorRef(u,i) repeat
+    vectorRef(v,i) := [function Undef,[domName,i],:first vectorRef(u,i)]
   v
  
 optFunctorBody x ==
@@ -328,12 +328,12 @@ setVector12 args ==
          false
  
 SetDomainSlots124(vec,names,vals) ==
-  l:= pairList(names,vals)
-  vec.1:= sublisProp(l,vec.1)
-  vec.2:= sublisProp(l,vec.2)
+  l := pairList(names,vals)
+  vec.1 := sublisProp(l,vec.1)
+  vec.2 := sublisProp(l,vec.2)
   l:= [[a,:devaluate b] for a in names for b in vals]
-  vec.4:= SUBLIS(l,vec.4)
-  vec.1:= SUBLIS(l,vec.1)
+  vec.4 := SUBLIS(l,vec.4)
+  vec.1 := SUBLIS(l,vec.1)
  
 sublisProp(subst,props) ==
   null props => nil
@@ -592,13 +592,13 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
       body:= ['%store,['%tref,'$,index],body]
       not vector? $SetFunctions => nil --packages don't set it
       if TruthP flag then             -- unconditionally defined function
-        u.index := true
-      TruthP $SetFunctions.index =>   -- the function was already assigned
+        vectorRef(u,index) := true
+      TruthP vectorRef($SetFunctions,index) =>   -- the function was already assigned
         return body := nil
-      $SetFunctions.index :=
+      vectorRef($SetFunctions,index) :=
         TruthP flag => true
-        not $SetFunctions.index => flag
-        ['_or,$SetFunctions.index,flag]
+        not vectorRef($SetFunctions,index) => flag
+        ['_or,vectorRef($SetFunctions,index),flag]
     catImplem is ['Subsumed,:truename] =>
       mode='original =>
         truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90

@@ -248,7 +248,7 @@ displayDatabase x == main where
 zeroOneConversion opAlist == opAlist
 --   for u in opAlist repeat
 --     [op,:.] := u
---     digit? (PNAME op).0 => u.first := string2Integer PNAME op
+--     digit? stringChar(PNAME op,0) => u.first := string2Integer PNAME op
 --   opAlist
 
 asyDisplay(con,alist) ==
@@ -900,7 +900,7 @@ asyTypeJoinPartPred x ==
 
 asyTypeJoinItem x ==
   result := asyTypeUnit x
-  isLowerCaseLetter PNAME(opOf result).0 =>
+  isLowerCaseLetter stringChar(symbolName opOf result,0) =>
     $opStack := [[['ATTRIBUTE,result],:$predlist],:$opStack]
   $conStack := [[result,:$predlist],:$conStack]
 

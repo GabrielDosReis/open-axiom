@@ -213,7 +213,7 @@ dbInfoChoose1(htPage,con,alist) ==
   opAlist := [pair for x in koOps(con,nil) | pair:=dbInfoSigMatch(x,alist)]
   page := htInitPage(nil,nil)
   htpSetProperty(page,'conform,con)
-  htpSetProperty(page,'kind,PNAME getConstructorKindFromDB opOf con)
+  htpSetProperty(page,'kind,symbolName getConstructorKindFromDB opOf con)
   dbShowOperationsFromConform(page,'"operation",opAlist)
 
 dbInfoSigMatch(x,alist) ==
@@ -254,10 +254,10 @@ getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
   if cat? then conname := makeDefaultPackageName symbolName conname
   abb := getConstructorAbbreviationFromDB conname or return '"not a constructor"
-  fs  := strconc(PNAME abb,'".NRLIB/info")
+  fs  := strconc(symbolName abb,'".NRLIB/info")
   inStream :=
     PROBE_-FILE fs => OPEN fs
-    filename := strconc('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
+    filename := strconc('"/spad/int/algebra/",symbolName abb,'".NRLIB/info")
     PROBE_-FILE filename => OPEN filename
     return nil
   alist := mySort READ inStream

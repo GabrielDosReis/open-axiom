@@ -385,7 +385,7 @@ expandTypeArgs(u,template,domform) ==
 templateVal(template,domform,index) ==
 --returns a domform or a lazy slot
   index = 0 => BREAK() --template
-  template.index
+  vectorRef(template,index)
 
 
 --% Subdomains

@@ -95,7 +95,7 @@ recordSignatureDocumentation(opSig,lineno) ==
 
 recordAttributeDocumentation(['Attribute,att],lineno) ==
   name := opOf att
-  upperCase? PNAME(name).0 => nil
+  upperCase? stringChar(symbolName name,0) => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)
 
 recordDocumentation(key,lineno) ==
@@ -351,7 +351,7 @@ checkTexht u ==
 checkRecordHash u ==
   while u repeat
     x := first u
-    if string? x and x.0 = $charBack then
+    if string? x and stringChar(x,0) = $charBack then
       if member(x,$HTlinks) and (u := checkLookForLeftBrace IFCDR u)
            and (u := checkLookForRightBrace IFCDR u)
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
@@ -377,7 +377,7 @@ checkRecordHash u ==
           HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
       else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
-          if s.0 = char ")" then s := subString(s,1)
+          if stringChar(s,0) = char ")" then s := subString(s,1)
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
@@ -626,7 +626,7 @@ newString2Words l ==
   [w while newWordFrom(l,i,m) is [w,i]]
 
 newWordFrom(l,i,m) ==
-  while i <= m and l.i = char " " repeat i := i + 1
+  while i <= m and stringChar(l,i) = char " " repeat i := i + 1
   i > m => NIL
   buf := '""
   ch := stringChar(l,i)
@@ -649,7 +649,7 @@ checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   s
 
 checkGetArgs u ==
-  NOT string? u => nil
+  not string? u => nil
   m := maxIndex u
   k := firstNonBlankPosition(u)
   k > 0 => checkGetArgs subString(u,k)
@@ -814,7 +814,7 @@ checkDecorate u ==
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x is '"\spad" => ['"\spad",:acc]
-      string? x and digit? x.0 => [x,:acc]
+      string? x and digit? stringChar(x,0) => [x,:acc]
       not spadflag and
         (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
@@ -1120,9 +1120,10 @@ checkTransformFirsts(opname,u,margin) ==
 --case 3: form arg
 --case 4: op arg
 --case 5: arg op arg
-  namestring := PNAME opname
-  if namestring = '"Zero" then namestring := '"0"
-  else if namestring = '"One" then namestring := '"1"
+  namestring :=
+    opname is ['Zero] => '"0"
+    opname is ['One] => '"1"
+    symbolName opname
   margin > 0 =>
     s := leftTrim u
     strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))

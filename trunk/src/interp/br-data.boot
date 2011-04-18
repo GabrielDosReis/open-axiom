@@ -112,7 +112,7 @@ buildLibdbConEntry conname ==
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
       isDefaultPackageName conname => 'x
-      DOWNCASE symbolName(kind).0
+      DOWNCASE stringChar(symbolName kind,0)
     argl := rest $conform
     conComments :=
       LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
@@ -313,7 +313,7 @@ dbSpreadComments(line,n) ==
   line = '"" => nil
   k := charPosition(char "-",line,n + 2)
   k >= maxIndex line => [subString(line,n)]
-  line.(k + 1) ~= char "-" =>
+  stringChar(line,k + 1) ~= char "-" =>
     u := dbSpreadComments(line,k)
     [strconc(subString(line,n,k - n),first u),:rest u]
   [subString(line,n,k - n),:dbSpreadComments(subString(line,k),0)]
@@ -403,7 +403,8 @@ getGlossLines instream ==
         #last = 0 =>
           lastLineHadTick => '""
           '"\blankline "
-        #last > 0 and last.(maxIndex last) ~= $charBlank => $charBlank
+        #last > 0 and stringChar(last,maxIndex last) ~= $charBlank =>
+          $charBlank
         '""
       lastLineHadTick := false
       text := [strconc(last,fill,line),:rest text]
@@ -432,7 +433,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
-  catname := makeSymbol subString(s := PNAME con,0,maxIndex s)
+  catname := makeSymbol subString(s := symbolName con,0,maxIndex s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
     pakname := makeDefaultPackageName symbolName catAncestor
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]

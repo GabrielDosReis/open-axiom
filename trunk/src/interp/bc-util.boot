@@ -50,7 +50,7 @@ bcMkFunction(name,arg,args) ==
   strconc(name,'"(",arg,strconc/[strconc('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
-  (string? s) and (s.0 = char "_"")  =>
+  string? s and stringChar(s,0) = char "_""  =>
     len := #s
     strconc('"\_"", subString(s, 1, len-2), '"\_"")
   s
