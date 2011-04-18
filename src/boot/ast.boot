@@ -641,8 +641,7 @@ bfISReverse(x,a) ==
 bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
   bfString? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
-  bfChar? rhs => bfAND [['CHARACTERP,lhs],["CHAR=",lhs,rhs]]
-  integer? rhs => ['EQL,lhs,rhs]
+  bfChar? rhs or integer? rhs => ['EQL,lhs,rhs]
   atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs is ['QUOTE,a] =>
     symbol? a => ['EQ,lhs,rhs]
@@ -745,10 +744,11 @@ defQuoteId x==
   x is ["QUOTE",:.] and symbol? second x
  
 bfChar? x ==
-  char? x or cons? x and first x in '(char CODE_-CHAR SCHAR)
+  char? x or cons? x and x.op in '(char CODE_-CHAR SCHAR)
  
 bfSmintable x==
-  integer? x or cons? x and first x in '(SIZE LENGTH CHAR_-CODE)
+  integer? x or cons? x and
+    x.op in '(SIZE LENGTH CHAR_-CODE MAXINDEX _+ _-)
 
 bfString? x ==
   string? x

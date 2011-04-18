@@ -135,9 +135,9 @@ makeDomainTemplate vec ==
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
   newVec := newShell # vec
   for index in 0..maxIndex vec repeat
-    item := vec.index
+    item := vectorRef(vec,index)
     null item => nil
-    newVec.index :=
+    vectorRef(newVec,index) :=
       atom item => item
       cons? first item => makeGoGetSlot(item,index)
       item   
@@ -321,9 +321,9 @@ extendsCategoryBasic0(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
     uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
     cons? c and isCategoryForm(c,nil) =>
-      slot4 := uVec.4
+      slot4 := vectorRef(uVec,4)
       LASSOC(c,second slot4) is [=p,:.]
-    slot2 := uVec.2
+    slot2 := vectorRef(uVec,2)
     LASSOC(c,slot2) is [=p,:.]
   extendsCategoryBasic(dom,u,v)
  
@@ -333,7 +333,7 @@ extendsCategoryBasic(dom,u,v) ==
   uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
   isCategoryForm(v,nil) => catExtendsCat?(u,v,uVec)
   v is ['SIGNATURE,op,sig] =>
-    or/[uVec.i is [[=op,=sig],:.] for i in 6..maxIndex uVec]
+    or/[vectorRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => member(v,l)
     nil
@@ -342,7 +342,7 @@ extendsCategoryBasic(dom,u,v) ==
 catExtendsCat?(u,v,uvec) ==
   u = v => true
   uvec := uvec or (compMakeCategoryObject(u,$EmptyEnvironment)).expr
-  slot4 := uvec.4
+  slot4 := vectorRef(uvec,4)
   prinAncestorList := first slot4
   member(v,prinAncestorList) => true
   vOp := KAR v
@@ -720,7 +720,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     x is ['DEF,y,:.] => [y,:oplist]
     fn(x.args,fn(x.op,oplist))
   catvec := eval mkEvalableCategoryForm form
-  fullCatOpList:=(JoinInner([catvec],$e)).1
+  fullCatOpList := vectorRef(JoinInner([catvec],$e),1)
   catOpList :=
     [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
         | assoc(op1,capsuleDefAlist)]
@@ -926,9 +926,10 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $implicitParameters: local := inferConstructorImplicitParameters(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
-    $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)
+    $compileExportsOnly =>
+      compDefineExports(form, vectorRef(ds,1), signature',$e)
     $domainShell: local := COPY_-SEQ ds
-    attributeList := ds.2 --see below under "loadTimeAlist"
+    attributeList := vectorRef(ds,2) --see below under "loadTimeAlist"
     $condAlist: local := nil
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
@@ -998,7 +999,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         $functorTarget is ["CATEGORY",key,:.] and key~="domain" => 'package
         'domain
       $lisplibForm:= form
-      if null $bootStrapMode then
+      if not $bootStrapMode then
         $NRTslot1Info := NRTmakeSlot1Info()
         $isOpPackageName: local := isCategoryPackageName $op
         if $isOpPackageName then lisplibWrite('"slot1DataBase",
@@ -1160,18 +1161,20 @@ genDomainViewList(id,catlist) ==
  
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
-  substargs:= [['$,:dom.0],:pairList($FormalMapVariableList,rest dom.0)]
+  substargs := [['$,:vectorRef(dom,0)],
+                  :pairList($FormalMapVariableList,rest vectorRef(dom,0))]
   oplist:= getConstructorOperationsFromDB opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops := newVector #siglist
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat
     u:= ASSQ(op,oplist)
-    assoc(sig,u) is [.,n,.,'ELT] => ops.i := dom.n
+    assoc(sig,u) is [.,n,.,'ELT] =>
+      vectorRef(ops,i) := vectorRef(dom,n)
     noplist:= SUBLIS(substargs,u)
   -- following variation on assoc needed for GENSYMS in Mutable domains
     AssocBarGensym(substitute(dom.0,'$,sig),noplist) is [.,n,.,'ELT] =>
-                   ops.i := dom.n
-    ops.i := [function Undef,[dom.0,i],:opSig]
+      vectorRef(ops,i) := vectorRef(dom,n)
+    vectorRef(ops,i) := [function Undef,[dom.0,i],:opSig]
   ops
  
 
@@ -1359,7 +1362,7 @@ candidateSignatures(op,nmodes,slot1) ==
 ++ is exported.  Return the complete signature if yes; otherwise
 ++ return nil, with diagnostic in ambiguity case.
 hasSigInTargetCategory(argl,form,opsig,e) ==
-  sigs := candidateSignatures($op,#form,$domainShell.1)
+  sigs := candidateSignatures($op,#form,vectorRef($domainShell,1))
   cc := checkCallingConvention(sigs,#argl)
   mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
             for x in argl for i in 0..]
@@ -1501,18 +1504,18 @@ compile u ==
   -- If just updating certain functions, check for previous existence.
   -- Deduce old sequence number and use it (items have been skipped).
   if $LISPLIB and $compileOnlyCertainItems then
-    parts := splitEncodedFunctionName(u.0, ";")
+    parts := splitEncodedFunctionName(u.op, ";")
   --  Next line JHD/SMWATT 7/17/86 to deal with inner functions
-    parts='inner => $savableItems:=[u.0,:$savableItems]
+    parts='inner => $savableItems:=[u.op,:$savableItems]
     unew  := nil
     for [s,t] in $splitUpItemsAlreadyThere repeat
        if parts.0=s.0 and parts.1=s.1 and parts.2=s.2 then unew := t
     null unew =>
       sayBrightly ['"   Error: Item did not previously exist"]
-      sayBrightly ['"   Item not saved: ", :bright u.0]
+      sayBrightly ['"   Item not saved: ", :bright u.op]
       sayBrightly ['"   What's there is: ", $lisplibItemsAlreadyThere]
       nil
-    sayBrightly ['"   Renaming ", u.0, '" as ", unew]
+    sayBrightly ['"   Renaming ", u.op, '" as ", unew]
     u := [unew, :rest u]
     $savableItems := [unew, :$saveableItems] -- tested by embedded RWRITE
   optimizedBody:= optimizeFunctionDef u

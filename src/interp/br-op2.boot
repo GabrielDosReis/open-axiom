@@ -148,7 +148,7 @@ dbGetFormFromDocumentation(op,sig,x) ==
   string? doc and
      (stringPrefix?('"\spad{",doc) and (k := 6) or
        stringPrefix?('"\s{",doc) and (k := 3)) =>
-    n := charPosition($charRbrace,doc,k)
+    n := charPosition(char "}",doc,k)
     s := subString(doc,k,n - k)
     parse := ncParseFromString s
     parse is [=op,:.] and #parse = #sig => parse

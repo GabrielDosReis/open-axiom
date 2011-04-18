@@ -190,8 +190,8 @@ comp3(x,m,$e) ==
   atom x => compAtom(x,m,e)
   op:= x.op
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
-  op=":" => compColon(x,m,e)
-  op="::" => compCoerce(x,m,e)
+  op is ":" => compColon(x,m,e)
+  op is "::" => compCoerce(x,m,e)
   not ($insideCompTypeOf=true) and stringPrefix?('"TypeOf",PNAME op) =>
     compTypeOf(x,m,e)
   t:= compExpression(x,m,e)
@@ -216,7 +216,7 @@ emitLocalCallInsn(op,args,e) ==
   [op',:args,"$"]   
 
 applyMapping([op,:argl],m,e,ml) ==
-  #argl~=#ml-1 => nil
+  #argl ~= #ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
     pairlis:= pairList($FormalMapVariableList,argl)
@@ -230,7 +230,7 @@ applyMapping([op,:argl],m,e,ml) ==
   argl':=
     [T.expr for x in argl for m' in rest ml] where
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
-  if argl'="failed" then return nil
+  if argl' is "failed" then return nil
   form:=
     atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
       emitLocalCallInsn(op,argl',e)
@@ -347,13 +347,13 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
 
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
-  e:= oldE
+  e := oldE
   isFunctor x =>
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
   x is ["+->",:.] => compLambda(x,m,oldE)
-  if string? x then x:= makeSymbol x
+  if string? x then x := makeSymbol x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
@@ -392,10 +392,10 @@ compAtomWithModemap(x,m,e,mmList) ==
   CATCH("compUniquely", compForm3([x],m,e,mmList))
 
 compAtom(x,m,e) ==
-  x = "break" => compBreak(x,m,e)
-  x = "iterate" => compIterate(x,m,e)
-  T:= IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
-  t:=
+  x is "break" => compBreak(x,m,e)
+  x is "iterate" => compIterate(x,m,e)
+  T := IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
+  t :=
     IDENTP x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
     string? x => [x,x,e]
@@ -406,23 +406,23 @@ primitiveType x ==
   x is nil => $EmptyMode
   string? x => $String
   integer? x =>
-    x=0 => $NonNegativeInteger
-    x>0 => $PositiveInteger
+    x = 0 => $NonNegativeInteger
+    x > 0 => $PositiveInteger
     $Integer
   FLOATP x => $DoubleFloat
   nil
 
 compSymbol(s,m,e) ==
-  s="$NoValue" => ["$NoValue",$NoValueMode,e]
+  s is "$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
-  s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
+  sameObject?(s,m) or isLiteral(s,e) => [["QUOTE",s],s,e]
   v := get(s,"value",e) =>
     MEMQ(s,$functorLocalParameters) =>
         NRTgetLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
     [s,v.mode,e] --s has been SETQd
-  m':= getmode(s,e) =>
+  m' := getmode(s,e) =>
     if not MEMQ(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
@@ -437,12 +437,12 @@ compSymbol(s,m,e) ==
 hasUniqueCaseView(x,m,e) ==
   props := getProplist(x,e)
   for [p,:v] in props repeat
-    p = "condition" and v is [["case",.,t],:.] => return modeEqual(t,m)
-    p = "value" => return false
+    p is "condition" and v is [["case",.,t],:.] => return modeEqual(t,m)
+    p is "value" => return false
 
 
 convertOrCroak(T,m) ==
-  u:= convert(T,m) => u
+  u := convert(T,m) => u
   userError ['"CANNOT CONVERT: ",T.expr,"%l",'" OF MODE: ",T.mode,"%l",
     '" TO MODE: ",m,"%l"]
 
@@ -450,7 +450,7 @@ convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
 
 mkUnion(a,b) ==
-  b="$" and $Rep is ["Union",:l] => b
+  b is "$" and $Rep is ["Union",:l] => b
   a is ["Union",:l] =>
     b is ["Union",:l'] => ["Union",:union(l,l')]
     ["Union",:union([b],l)]
@@ -467,7 +467,7 @@ hasType(x,e) ==
 --% General Forms
 
 compForm(form,m,e) ==
-  T:=
+  T :=
     compForm1(form,m,e) or compArgumentsAndTryAgain(form,m,e) or return
       stackMessageIfNone ["cannot compile","%b",form,"%d"]
   T
@@ -478,8 +478,8 @@ compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
   -- modemap with selector b
   form is ["elt",a,.] =>
     ([.,.,e]:= comp(a,$EmptyMode,e) or return nil; compForm1(form,m,e))
-  u:= for x in argl repeat [.,.,e]:= comp(x,$EmptyMode,e) or return "failed"
-  u="failed" => nil
+  u := for x in argl repeat [.,.,e]:= comp(x,$EmptyMode,e) or return "failed"
+  u is "failed" => nil
   compForm1(form,m,e)
 
 outputComp(x,e) ==
@@ -633,10 +633,10 @@ getFormModemaps(form is [op,:argl],e) ==
   -- current domain. 
   if $insideCategoryPackageIfTrue then
     modemapList := [x for x in modemapList | x.mmDC isnt '$]
-  if op="elt"
+  if op is "elt"
      then modemapList:= eltModemapFilter(last argl,modemapList,e) or return nil
      else
-      if op="setelt" then modemapList:=
+      if op is "setelt" then modemapList:=
         seteltModemapFilter(second argl,modemapList,e) or return nil
   nargs := #argl
   finalModemapList:= [mm for mm in modemapList 
@@ -660,10 +660,11 @@ checkCallingConvention(sigs,nargs) ==
     for t in rest sig 
       for i in 0.. repeat
          isQuasiquote t => 
-           v.i < 0 => userError '"flag argument restriction violation"
-           v.i := v.i + 1
-         v.i > 0 => userError '"flag argument restriction violation"
-         v.i := v.i - 1
+           arrayRef(v,i) < 0 =>
+             userError '"flag argument restriction violation"
+           arrayRef(v,i) := arrayRef(v,i) + 1
+         arrayRef(v,i) > 0 => userError '"flag argument restriction violation"
+         arrayRef(v,i) := arrayRef(v,i) - 1
   v
 
 
@@ -699,12 +700,12 @@ compApplication(op,argl,m,T) ==
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
       ['%call, ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
-  op = 'elt => nil
+  op is 'elt => nil
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
 
 compToApply(op,argl,m,e) ==
-  T:= compNoStacking(op,$EmptyMode,e) or return nil
+  T := compNoStacking(op,$EmptyMode,e) or return nil
   T.expr is ["QUOTE", =T.mode] => nil
   compApplication(op,argl,m,T)
 
@@ -783,8 +784,8 @@ compSetq1(form,val,m,E) ==
     [.,.,E']:= compMakeDeclaration(x,y,E)
     compSetq1(x,val,m,E')
   form is [op,:l] =>
-    op="CONS"  => setqMultiple(uncons form,val,m,E)
-    op="%Comma" => setqMultiple(l,val,m,E)
+    op is "CONS"  => setqMultiple(uncons form,val,m,E)
+    op is "%Comma" => setqMultiple(l,val,m,E)
     setqSetelt(form,val,m,E)
 
 compMakeDeclaration: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -930,7 +931,7 @@ compWhere([.,form,:exprList],m,eInit) ==
     for item in exprList repeat
       recordDeclarationInSideCondition(item,e)
       [.,.,e]:= comp(item,$EmptyMode,e) or return "failed"
-  u="failed" => return nil
+  u is "failed" => return nil
   $insideWhereIfTrue := false
   [x,m,eAfter] := comp(macroExpand(form,eBefore := e),m,e) or return nil
   eFinal :=
@@ -969,13 +970,13 @@ compList: (%Form,%Mode,%Env) -> %Maybe %Triple
 compList(l,m is ["List",mUnder],e) ==
   null l => ['%nil,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
-  Tl="failed" => nil
-  T:= [['%list,:[T.expr for T in Tl]],["List",mUnder],e]
+  Tl is "failed" => nil
+  T := [['%list,:[T.expr for T in Tl]],["List",mUnder],e]
 
 compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
-  Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
-  Tl="failed" => nil
+  Tl := [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
+  Tl is "failed" => nil
   [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quoteForm getVMType mUnder,
      KEYWORD::INITIAL_-CONTENTS, ['%list, :[T.expr for T in Tl]]],m,e]
 
@@ -1100,7 +1101,7 @@ jumpFromLoop(kind,key) ==
 
 compBreak: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compBreak(x,m,e) ==
-  x ~= "break" or not jumpFromLoop("REPEAT",x) => nil
+  x isnt "break" or not jumpFromLoop("REPEAT",x) => nil
   index:= #$exitModeStack-1-$leaveLevelStack.0
   $breakCount := $breakCount + 1
   u := coerce(["$NoValue",$Void,e],$exitModeStack.index) or return nil
@@ -1110,7 +1111,7 @@ compBreak(x,m,e) ==
 
 compIterate: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compIterate(x,m,e) ==
-  x ~= "iterate" or not jumpFromLoop("REPEAT",x) => nil
+  x isnt "iterate" or not jumpFromLoop("REPEAT",x) => nil
   index := #$exitModeStack - 1 - ($leaveLevelStack.0 + 1)
   $iterateCount := $iterateCount + 1
   u := coerce(['%nil,'$Void,e],$exitModeStack.index) or return nil
@@ -1165,9 +1166,9 @@ compTry(['%Try,x,ys,z],m,e) ==
 ++ `op' supposedly designate an external entity with language linkage
 ++ `lang'.  Return the mode of its local declaration (import).
 getExternalSymbolMode(op,lang,e) ==
-  lang = 'Builtin => "%Thing"      -- for the time being
-  lang = 'Lisp => "%Thing"         -- for the time being
-  lang ~= "C" =>
+  lang is 'Builtin => "%Thing"      -- for the time being
+  lang is 'Lisp => "%Thing"         -- for the time being
+  lang is "C" =>
     stackAndThrow('"Sorry: %b Foreign %1b %d is invalid at the moment",[lang])
   get(op,"%Lang",e) ~= lang =>
     stackAndThrow('"%1bp is not known to have language linkage %2bp",[op,lang])
@@ -1176,7 +1177,7 @@ getExternalSymbolMode(op,lang,e) ==
 compElt: (%Form,%Mode,%Env) -> %Maybe %Triple
 compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
-  aDomain="Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
+  aDomain is "Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
     [anOp',m,E] where anOp'() == (anOp = $Zero => 0; anOp = $One => 1; anOp)
   lang ~= nil =>
     opMode := getExternalSymbolMode(anOp,lang,E)
@@ -1251,12 +1252,12 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
   op := expr.op
   op in '(QUOTE CLOSEDFN) => ValueFlag and level=exitCount
-  op="TAGGEDexit" =>
+  op is "TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
-  op="SEQ" => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
-  op="TAGGEDreturn" => nil
-  op="CATCH" =>
+  op is "SEQ" => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
+  op is "TAGGEDreturn" => nil
+  op is "CATCH" =>
     [.,gs,data]:= expr
     (findThrow(gs,data,level,exitCount,ValueFlag) => true) where
       findThrow(gs,expr,level,exitCount,ValueFlag) ==
@@ -1267,12 +1268,12 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
         or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)
-  op = '%when =>
+  op is '%when =>
     level = exitCount =>
       or/[canReturn(last u,level,exitCount,ValueFlag) for u in rest expr]
     or/[or/[canReturn(u,level,exitCount,ValueFlag) for u in v]
                 for v in rest expr]
-  op="IF" =>
+  op is "IF" =>
     expr is [.,a,b,c]
     if not canReturn(a,0,0,true) then
       SAY "IF statement can not cause consequents to be executed"
@@ -1302,7 +1303,7 @@ compPredicate(p,E) ==
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
 
 compFromIf(a,m,E) ==
-  a="%noBranch" => ["%noBranch",m,E]
+  a is "%noBranch" => ["%noBranch",m,E]
   comp(a,m,E)
 
 compImport: (%Form,%Mode,%Env) -> %Triple
@@ -1617,9 +1618,9 @@ tryCourtesyCoercion(T,m) ==
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
     T.rest.first := MSUBST("$",$Rep,second T)
-  T':= coerceEasy(T,m) => T'
-  T':= coerceSubset(T,m) => T'
-  T':= coerceHard(T,m) => T'
+  T' := coerceEasy(T,m) => T'
+  T' := coerceSubset(T,m) => T'
+  T' := coerceHard(T,m) => T'
   nil
 
 coerce(T,m) ==
@@ -1691,7 +1692,7 @@ coerceHard(T,m) ==
       $bootStrapMode = true => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
       coerceExtraHard(T,m)
-  (m' = "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>
+  (m' is "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>
     [T.expr,m,$e]
   coerceExtraHard(T,m)
 
@@ -1754,7 +1755,7 @@ compCoerce(["::",x,m'],m,e) ==
 ++ checked courtesy coercion to `sub'.
 coerceSuperset: (%Triple, %Mode) -> %Maybe %Triple
 coerceSuperset(T,sub) ==
-  sub = "$" =>
+  sub is "$" =>
     T' := coerceSuperset(T,$functorForm) or return nil
     T'.rest.first := "$"
     T'
@@ -2273,7 +2274,7 @@ numberize x ==
 
 ++ If there is a local reference to mode `m', return it.  
 localReferenceIfThere m ==
-  m = "$" => m
+  m is "$" => m
   idx := NRTassocIndex m => ['%tref,'$,idx]
   quoteForm m
 
