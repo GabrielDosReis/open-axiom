@@ -907,7 +907,7 @@
                        CDAAR CDDAR CDADR CDDDR))
            (SETQ |p| (|bfPosition| (CAR |expr|) |funs|))
            (COND
-             ((EQUAL |p| (- 1)) (LIST |acc| |expr|))
+             ((EQL |p| (- 1)) (LIST |acc| |expr|))
              (T (SETQ |funsA|
                       '(CAAR CADR CAAAR CADAR CAADR CADDR CAAAAR CAADAR
                              CAAADR CAADDR CADAAR CADDAR CADADR CADDDR))
@@ -963,10 +963,8 @@
         ((|bfString?| |rhs|)
          (|bfAND| (LIST (LIST 'STRINGP |lhs|)
                         (LIST 'STRING= |lhs| |rhs|))))
-        ((|bfChar?| |rhs|)
-         (|bfAND| (LIST (LIST 'CHARACTERP |lhs|)
-                        (LIST 'CHAR= |lhs| |rhs|))))
-        ((INTEGERP |rhs|) (LIST 'EQL |lhs| |rhs|))
+        ((OR (|bfChar?| |rhs|) (INTEGERP |rhs|))
+         (LIST 'EQL |lhs| |rhs|))
         ((ATOM |rhs|) (LIST 'PROGN (|bfLetForm| |rhs| |lhs|) 'T))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'QUOTE)
               (PROGN
@@ -1211,7 +1209,8 @@
 
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
-      (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH CHAR-CODE)))))
+      (AND (CONSP |x|)
+           (MEMQ (CAR |x|) '(SIZE LENGTH CHAR-CODE MAXINDEX + -)))))
 
 (DEFUN |bfString?| (|x|)
   (OR (STRINGP |x|)

@@ -109,7 +109,8 @@ isSharpVarWithNum x ==
 
 ++ Returns true if `x' is either an atom or a quotation.
 atomic? x ==
-  not cons? x or x.op = 'QUOTE
+  cons? x => x.op is 'QUOTE
+  true
 
 --% Sub-domains information handlers
 
