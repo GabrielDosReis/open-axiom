@@ -101,7 +101,7 @@ grepForAbbrev(s,key) ==
     for x in allConstructors() | test]] where test() ==
          not $includeUnexposed? and not isExposedConstructor x => false
          a := getConstructorAbbreviationFromDB x
-         match?(pattern,PNAME a) and not HGET($defaultPackageNamesHT,x)
+         match?(pattern,symbolName a) and not HGET($defaultPackageNamesHT,x)
 
 applyGrep(x,filename) ==
   atom x => grepFile(x,filename,'i)
@@ -139,11 +139,11 @@ grepf(pattern,s,not?) ==  --s=sourceFile or list of strings
 pmTransFilter s ==
 --result is either a string or (op ..) where op= and,or,not and arg are results
   if $browseMixedCase = true then s := DOWNCASE s
-  or/[isFilterDelimiter? s.i or s.i = $charUnderscore for i in 0..maxIndex s]
+  or/[isFilterDelimiter? stringChar(s,i) or stringChar(s,i) = $charUnderscore for i in 0..maxIndex s]
     => (parse := pmParseFromString s) and checkPmParse parse or
         ['error,'"Illegal search string",'"\vspace{3}\center{{\em Your search string} ",escapeSpecialChars s,'" {\em has incorrect syntax}}"]
   or/[s . i = char "*" and s.(i + 1) = char "*"
-      and (i=0 or s . (i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
+      and (i=0 or stringChar(s,i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
        => ['error,'"Illegal search string",'"\vspace{3}\center{Consecutive {\em *}'s are not allowed in search patterns}"]
   s
 
@@ -190,7 +190,7 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
     middle :=
       t in '("and" "or" "not") => t
       --the following 2 lines make commutative("*") parse correctly!!!!
-      t.0 = char "_"" => t
+      stringChar(t,0) = char "_"" => t
       j < siz - 1 and s.j = char "(" => t
       strconc('"_"",t,'"_"")
     strconc(subString(s,n,i - n),middle,fn(s,j,siz))
@@ -199,8 +199,11 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       strconc(subString(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
     subString(s,i,j - i + 1)
 
-firstNonDelim(s,n) ==  or/[k for k in n..maxIndex s | not isFilterDelimiter? s.k]
-firstDelim(s,n) ==  or/[k for k in n..maxIndex s | isFilterDelimiter? s.k]
+firstNonDelim(s,n) ==
+  or/[k for k in n..maxIndex s | not isFilterDelimiter? stringChar(s,k)]
+
+firstDelim(s,n) ==
+  or/[k for k in n..maxIndex s | isFilterDelimiter? stringChar(s,k)]
 
 isFilterDelimiter? c == MEMQ(c,$pmFilterDelimiters)
 
@@ -259,8 +262,8 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       h(sl,nil)
     g s  ==    --remove "*"s around pattern for text match
       not ('w in $options) => s
-      if s.0 = char "*" then s := subString(s,1)
-      if s.(k := maxIndex s) = char "*" then s := subString(s,0,k)
+      if stringChar(s,0) = char "*" then s := subString(s,1)
+      if stringChar(s,k := maxIndex s) = char "*" then s := subString(s,0,k)
       s
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
@@ -369,7 +372,7 @@ looksLikeDomainForm x ==
 
 spadSys(x) ==   --called by \spadsyscom{x}
   s := PNAME x
-  if s.0 = char ")" then s := subString(s,1)
+  if stringChar(s,0) = char ")" then s := subString(s,1)
   form := ncParseFromString s or
            systemError ['"Argument: ",s,'" to spadType won't parse"]
   htSystemCommands PNAME opOf form
@@ -392,7 +395,8 @@ genSearch(filter,:options) == --"Complete" from HD (see man0.ht) and aokSearch
   if includeDoc? then
     docSearchAlist := grepConstruct(key,'w,true)
     docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-    docSearchAlist := [x for x in docSearchAlist | x.0 ~= char "x"]--drop defaults
+    docSearchAlist := [x for x in docSearchAlist
+                         | stringChar(x,0) ~= char "x"]--drop defaults
   genSearch1(filter,genSearchTran regSearchAlist,genSearchTran docSearchAlist)
 
 genSearchTran alist == [[x,y,:y] for [x,:y] in alist]
@@ -546,7 +550,8 @@ docSearch filter ==  --"Documentation" from HD (see man0.ht)
   key := removeSurroundingStars filter
   docSearchAlist := grepConstruct(filter,'w,true)
   docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-  docSearchAlist := [x for x in docSearchAlist | x.0 ~= char "x"] --drop defaults
+  docSearchAlist := [x for x in docSearchAlist
+                       | stringChar(x,0) ~= char "x"] --drop defaults
   docSearch1(filter,genSearchTran docSearchAlist)
 
 docSearch1(filter,doc) ==
@@ -570,8 +575,9 @@ docSearch1(filter,doc) ==
 
 removeSurroundingStars filter ==
   key := STRINGIMAGE filter
-  if key.0 = char "*" then key := subString(key,1)
-  if key.(max := maxIndex key) = char "*" then key := subString(key,0,max)
+  if stringChar(key,0) = char "*" then key := subString(key,1)
+  if stringChar(key,max := maxIndex key) = char "*" then
+    key := subString(key,0,max)
   key
 
 showNamedDoc([kind,:lines],index) ==
@@ -581,9 +587,9 @@ sayDocMessage message ==
   htSay('"{\em ")
   if message is [leftEnd,left,middle,right,rightEnd] then
     htSay(leftEnd,left,'"}")
-    if left ~= '"" and left.(maxIndex left) = $blank then htBlank()
+    if left ~= '"" and stringChar(left,maxIndex left) = $blank then htBlank()
     htSay middle
-    if right ~= '"" and right.0 = $blank then htBlank()
+    if right ~= '"" and stringChar(right,0) = $blank then htBlank()
     htSay('"{\em ",right,rightEnd)
   else
     htSay message
@@ -604,7 +610,7 @@ replaceTicksBySpaces s ==
   n := -1
   max := maxIndex s
   while (n := charPosition(char "`",s,n + 1)) <= max repeat 
-    s.n := char " "
+    stringChar(s,n) := char " "
   s
 
 checkFilter filter ==
@@ -700,11 +706,11 @@ $dbDelimiters := [char " " , char "(", char ")"]
 
 dbWordFrom(l,i) ==
   idxmax := maxIndex l
-  while idxmax >= i and l.i = char " " repeat i := i + 1
-  if idxmax >= i and member(l.i, $dbDelimiters) then return [l.i, i + 1]
-  k := or/[j for j in i..idxmax | not member(l.j, $dbDelimiters)] or return nil
+  while idxmax >= i and stringChar(l,i) = char " " repeat i := i + 1
+  if idxmax >= i and member(stringChar(l,i), $dbDelimiters) then return [l.i, i + 1]
+  k := or/[j for j in i..idxmax | not member(stringChar(l,j), $dbDelimiters)] or return nil
   buf := '""
-  while k <= idxmax and not member(c := l.k, $dbDelimiters) repeat
+  while k <= idxmax and not member(c := stringChar(l,k), $dbDelimiters) repeat
     ch :=
       c = char "__"   => l.(k := 1+k)  --this may exceed bounds
       c
@@ -881,9 +887,9 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     strconc(a,$tick,b)
   simp a ==
     m := maxIndex a
-    m > 6 and a.(m-5) = char "[" and a.(m-4) = char "^"
-      and     a.(m-3) = $tick    and a.(m-2) = char "]"
-          and a.(m-1) = char "*" and a.m = $tick
+    m > 6 and stringChar(a,m-5) = char "[" and stringChar(a,m-4) = char "^"
+      and     stringChar(a,m-3) = $tick    and stringChar(a,m-2) = char "]"
+          and stringChar(a,m-1) = char "*" and stringChar(a,m) = $tick
             => simp subString(a,0,m-5)
     a
 
@@ -895,9 +901,9 @@ replaceGrepStar s ==
   strconc(subString(s,0,i),'"[^`]*",replaceGrepStar subString(s,i + 1))
 
 standardizeSignature(s) == underscoreDollars
-  s.0 = char "(" => s
+  stringChar(s,0) = char "(" => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
-  s.(k - 1) = char ")" => strconc('"(",s)
+  stringChar(s,k - 1) = char ")" => strconc('"(",s)
   strconc('"(",subString(s,0,k),'")",subString(s,k))
 
 underscoreDollars(s) == fn(s,0,maxIndex s) where
@@ -987,7 +993,7 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
   while lines is [line, :lines] repeat
     #line = 0 => 'skip     --skip blank lines
     acc :=
-      line.0 = dash and line.1 = dash =>
+      stringChar(line,0) = dash and line.1 = dash =>
         [strconc(first acc,subString(line,2)),:rest acc]
       [line,:acc]
   -- following call to nreverse needed to keep lines properly sorted

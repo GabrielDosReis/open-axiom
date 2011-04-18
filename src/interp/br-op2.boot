@@ -176,7 +176,7 @@ dbChooseOperandName(typ) ==
   kind :=
     name = "$" => 'domain
     getConstructorKindFromDB name
-  s := PNAME opOf typ
+  s := symbolName opOf typ
   kind ~= 'category =>
     anySubstring?('"Integer",s,0) or anySubstring?('"Number",s,0) =>
       x := first $NumberList

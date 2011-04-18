@@ -106,7 +106,7 @@ capitalize s ==
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
-    res.0 := UPCASE res.0
+    stringChar(res,0) := UPCASE stringChar(res,0)
     res
 
 escapeSpecialIds u ==   --very expensive function
@@ -150,7 +150,7 @@ htPred2English(x,:options) ==
         gn(x,op,l,prec)
         if prec < 5 then htSay '")"
       x = 'etc => htSay '"..."
-      IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds PNAME x
+      IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds symbolName x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
       op in '(NOT not) =>
@@ -182,7 +182,7 @@ unMkEvalable u ==
  u
 
 lisp2HT u == ['"_'",:fn u] where fn u ==
-  IDENTP u => escapeSpecialIds PNAME u
+  IDENTP u => escapeSpecialIds symbolName u
   string? u => escapeString u
   atom u => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]
@@ -348,7 +348,7 @@ bcStarSpaceOp(op,exposed?) ==
   null $includeUnexposed? => nil
   not exposed? =>
     htSayUnexposed()
-    if op.0 = char "*" then htSay '" "
+    if stringChar(op,0) = char "*" then htSay '" "
   htBlank()
 
 bcStarConform form ==

@@ -579,7 +579,7 @@ linearFormat x ==
   [linearFormat y for y in x]
 
 numOfSpadArguments id ==
-  char "*" = (s:= PNAME id).0 =>
+  char "*" = stringChar(s:= PNAME id,0) =>
       +/[n for i in 1.. while integer? (n:=readInteger PNAME s.i)]
   keyedSystemError("S2IF0012",[id])
 

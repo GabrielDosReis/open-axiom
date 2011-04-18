@@ -39,13 +39,13 @@ $maxThreshold := 7
 --                        Build Directories
 --=======================================================================
 buildOperationWordTable() ==
-  $opWordTable := buildWordTable [PNAME x for x in allOperations()]
+  $opWordTable := buildWordTable [symbolName x for x in allOperations()]
  
 buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
     words := wordsOfString s
-    key := UPCASE s.0
+    key := UPCASE stringChar(s,0)
     HPUT(table,key,[[s,:words],:HGET(table,key)])
   for key in HKEYS table repeat
     HPUT(table,key,
@@ -71,7 +71,7 @@ wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
 wordsOfString1(s,j) ==
   k := or/[i for i in j..(maxIndex(s)-1) | upperCase? stringChar(s,i)] =>
     tailWords:=
-      upperCase? s.(k+1) =>
+      upperCase? stringChar(s,k+1) =>
         n:= or/[i for i in (k+2)..(maxIndex(s)-1)| not upperCase? stringChar(s,i)]
         null n => [subString(s,k)]
         n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
@@ -83,7 +83,7 @@ wordsOfString1(s,j) ==
   nil
 
 wordKeys s == 
-  removeDuplicates [UPCASE s.0,:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [UPCASE stringChar(s,0),:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
     upperCase? stringChar(s,i) =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])

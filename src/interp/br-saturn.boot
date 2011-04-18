@@ -236,7 +236,7 @@ htMakeErrorPage htPage ==
 
 writeSaturnLines lines ==
   for line in lines repeat
-   if line ~= '"" and line.0 = char "\" then saturnTERPRI()
+   if line ~= '"" and stringChar(line,0) = char "\" then saturnTERPRI()
    saturnPRINTEXP line
 
 writeSaturn(line) ==
@@ -1635,7 +1635,7 @@ bcConform1 form == main where
         s := 
           string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
-        (s.0 = char "#") =>
+        stringChar(s,0) = char "#" =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>
               htSay form2HtString ($FormalMapVariableList . n)
            htSay '"\"

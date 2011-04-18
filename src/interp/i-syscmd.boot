@@ -107,7 +107,7 @@ systemCommand [[op,:argl],:options] ==
   $options: local:= options
   $e:local := $CategoryFrame
   fun := selectOptionLC(op,$SYSCOMMANDS,'commandError)
-  argl and (argl.0 = '_?) and fun ~= 'synonym =>
+  argl and (first argl = '_?) and fun ~= 'synonym =>
     helpSpad2Cmd [fun]
   fun := selectOption(fun,commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -3157,14 +3157,13 @@ tokTran tok ==
   string? tok =>
     #tok = 0 => nil
     isIntegerString tok => READ_-FROM_-STRING tok
-    tok.0 = char "_"" =>
-      subSequence(tok, 1, #tok-1)
+    stringChar(tok,0) = char "_"" => subSequence(tok, 1, #tok-1)
     makeSymbol tok
   tok
 
 isIntegerString tok ==
-  for i in 0..#tok-1 repeat
-    val := digit? tok.i
+  for i in 0..maxIndex tok repeat
+    val := digit? stringChar(tok,i)
     not val => return nil
   val
 

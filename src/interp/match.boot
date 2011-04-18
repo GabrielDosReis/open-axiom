@@ -67,7 +67,7 @@ charPosition(c,t,startpos) ==
 
 rightCharPosition(c,t,startpos) == --startpos often equals maxIndex t (rightmost)
   k := startpos
-  for i in startpos..0 by -1 while c ~= ELT(t,i) repeat (k := k - 1)
+  for i in startpos..0 by -1 while c ~= stringChar(t,i) repeat (k := k - 1)
   k
 
 stringPosition(s,t,startpos) ==

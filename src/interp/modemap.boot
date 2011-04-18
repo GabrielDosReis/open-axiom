@@ -48,8 +48,8 @@ addDomain(domain,e) ==
   atom domain =>
     domain="$EmptyMode" => e
     domain="$NoValueMode" => e
-    not IDENTP domain or 2<#(s:= STRINGIMAGE domain) and
-      char "#" = s.0 and char "#" = s.1 => e
+    not IDENTP domain or 2 < #(s:= STRINGIMAGE domain) and
+      char "#" = stringChar(s,0) and char "#" = stringChar(s,1) => e
     MEMQ(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e
     addNewDomain(domain,e)

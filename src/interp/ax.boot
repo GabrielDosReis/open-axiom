@@ -177,7 +177,7 @@ axFormatType(typeform) ==
         SUBLISLIS($FormalMapVariableList, $TriangleVariableList, typeform)
      MEMQ(typeform, $FormalMapVariableList) => typeform
      axAddLiteral('string, 'Symbol, 'Literal)
-     ['RestrictTo, ['LitString, PNAME typeform], 'Symbol]
+     ['RestrictTo, ['LitString, symbolName typeform], 'Symbol]
   typeform is ['construct,: args] =>
       axAddLiteral('bracket, ['Apply, 'List, 'Symbol], [ 'Apply, 'Tuple, 'Symbol])
       axAddLiteral('string, 'Symbol, 'Literal)

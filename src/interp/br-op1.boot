@@ -196,7 +196,7 @@ fromHeading htPage ==
     dnFence := form2Fence  dnForm
 --  upString:= form2StringList updomain
     upFence := form2Fence  updomain
-    upOp    := PNAME opOf  updomain
+    upOp    := symbolName opOf  updomain
     ['" {\em from} ",:dbConformGen dnForm,'" {\em under} \ops{",upOp,'"}{",:$pn,:upFence,'"}"]
   domname  := htpProperty(htPage,'domname)
   numberOfUnderlyingDomains := #[x for x in rest getDualSignatureFromDB(opOf domname) | x]
@@ -309,7 +309,8 @@ dbConformGen1(form,opButton?) ==
 
 unAbbreviateIfNecessary op == IFCAR HGET($lowerCaseConTb, op) or op
 
-conname2StringList form == [PNAME unAbbreviateIfNecessary opOf form]
+conname2StringList form ==
+  [PNAME unAbbreviateIfNecessary opOf form]
 
 --===========================================================================
 --               Data Gathering Code
@@ -568,9 +569,10 @@ dbShowKind conform ==
   kind = "domain" =>
     isDefaultPackageName conname => '"default package"
     '"domain"
-  PNAME kind
+  symbolName kind
 
-dbShowOpSignatures(htPage,opAlist,which,data) == dbShowOpSigList(which,data,0)
+dbShowOpSignatures(htPage,opAlist,which,data) ==
+  dbShowOpSigList(which,data,0)
 
 dbShowOpSigList(which,dataItems,count) ==
 --dataItems is (((op,sig,:.),exposureFlag,...)
@@ -689,7 +691,7 @@ dbChooseDomainOp(htPage,which,index) ==
 htSayExpose(op,flag) ==
   $includeUnexposed? =>
     flag => htBlank()
-    op.0 = char "*" => htSay '"{\em *} "
+    stringChar(op,0) = char "*" => htSay '"{\em *} "
     htSayUnexposed()
   htSay '""
 --============================================================================
@@ -846,7 +848,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       packageSymbol := false
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
-         catname := intern subString(s := PNAME opOf domform,0,maxIndex s)
+         catname := intern subString(s := symbolName opOf domform,0,maxIndex s)
          packageSymbol := second domform
          domform := [catname,:rest rest domform]  --skip first argument ($)
       docTable:= dbDocTable domform

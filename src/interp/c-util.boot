@@ -633,7 +633,7 @@ isConstantId(name,e) ==
 isFalse() == nil
  
 isFluid s ==
-  atom s and char "$" = PNAME(s).0
+  atom s and char "$" = stringChar(PNAME s,0)
  
 isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [

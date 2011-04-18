@@ -101,7 +101,7 @@ incPrefix?(prefix, start, whole) ==
   good
  
 incCommand?(s) ==
-  #s > 0 and s.0 = char ")"
+  #s > 0 and stringChar(s,0) = char ")"
  
 incCommands :=
   ['"say"    , _

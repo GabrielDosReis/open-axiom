@@ -621,7 +621,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => makeDefaultPackageName PNAME name
+    kind = '"category" => makeDefaultPackageName symbolName name
     opOf conform
   domList := getImports pakname
   if domname then

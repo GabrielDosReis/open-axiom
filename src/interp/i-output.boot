@@ -447,15 +447,15 @@ atom2String x ==
 appChar(string,x,y,d) ==
   if CHARP string then string := PNAME string
   line:= LASSOC(y,d) =>
-    if maxIndex string = 1 and string.0 = char "%" then
-      string.1 = char "b" =>
+    if maxIndex string = 1 and stringChar(string,0) = char "%" then
+      stringChar(string,1) = char "b" =>
         bumpDeltaIfTrue:= true
-        string.0:= EBCDIC 29
-        string.1:= EBCDIC 200
-      string.1 = char "d" =>
+        stringChar(string,0) := EBCDIC 29
+        stringChar(string,1) := EBCDIC 200
+      stringChar(string,1) = char "d" =>
         bumpDeltaIfTrue:= true
-        string.0:= EBCDIC 29
-        string.1:= EBCDIC 65
+        stringChar(string,0) := EBCDIC 29
+        stringChar(string,1) := EBCDIC 65
     shiftedX:= (y=0 => x+$highlightDelta; x)
       --shift x for brightening characters -- presently only if y=0
     RPLACSTR(line,shiftedX,n:=#string,string,0,n)
@@ -607,8 +607,8 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (symbolName op).0 =>
-    mkSuperSub(op,l)
+  IDENTP op and not (op in '(_* _*_*) ) and
+    char "*" = stringChar(symbolName op,0) => mkSuperSub(op,l)
   [outputTran op,:l]
 
 -- The next two functions are designed to replace successive instances of
@@ -1039,7 +1039,8 @@ aggregateApp(u,x,y,d,s) ==
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
   string? u =>
     u = $EmptyString => 0
-    u.0 = char "%" and ((u.1 = char "b") or (u.1 = char "d")) => 1
+    stringChar(u,0) = char "%" and
+      (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
     #u
   atom u => # atom2String u
   WIDTH COPY u
@@ -1047,7 +1048,8 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
 WIDTH u ==
   string? u =>
     u = $EmptyString => 0
-    u.0 = char "%" and ((u.1 = char "b") or (u.1 = char "d")) => 1
+    stringChar(u,0) = char "%" and
+      (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
     #u
   integer? u => 
     if (u < 1) then 

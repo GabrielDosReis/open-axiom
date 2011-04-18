@@ -45,7 +45,8 @@ stringMatches?(pattern,subject) ==
   false
 
 alqlGetKindString(x) ==
-  x.0 = char "a" or x.0 = char "o" => subString(dbPart(x,5,1),0,1)
+  stringChar(x,0) = char "a" or stringChar(x,0) = char "o" =>
+    subString(dbPart(x,5,1),0,1)
   subString(x,0,1)
 
 alqlGetOrigin(x) ==

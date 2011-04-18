@@ -45,7 +45,7 @@ shoeIntern (s)==
    StreamNull s => nil
    f:=first s
    # f < 8 => shoeIntern rest s
-   f.0=char " " =>shoeIntern rest s
+   stringChar(f,0) = char " " =>shoeIntern rest s
    a:=makeSymbol subString(f,0,8)
    [b,c]:= shoeStrings rest s
    GET(a,"MSGS") := b
@@ -54,7 +54,7 @@ shoeIntern (s)==
 shoeStrings (stream)==
    StreamNull stream => ['"",stream]
    a:=first stream
-   if a.0 ~= char " "
+   if stringChar(a,0) ~= char " "
    then ['"",stream]
    else
        [h,t]:=shoeStrings(rest stream)

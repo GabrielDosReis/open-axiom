@@ -111,10 +111,10 @@ wordsOfString1(s,j) ==
   k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
     tailWords:=
       isBreakCharacter s.(k+1) =>
-        n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not isBreakCharacter s.i]
+        n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not isBreakCharacter stringChar(s,i)]
         null n => [subString(s,k)]
         n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(maxIndex(s)-1) | isBreakCharacter s.i] =>
+      m := or/[i for i in (k+2)..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
         [subString(s,k,m-k),:wordsOfString1(s,m)]
       [subString(s,k)]
     k > j+1 => [subString(s,j,k-j),:tailWords]
@@ -368,7 +368,8 @@ patternTran pattern ==
   maskConvert DOWNCASE pattern
  
 hasWildCard? str ==
-  or/[str.i = '_? and (i=0 or not(str.(i-1) = '__ )) for i in 0..maxIndex str]
+  or/[stringChar(str,i) = char "?" and
+        (i=0 or stringChar(str,i-1) ~= char"__" ) for i in 0..maxIndex str]
  
 maskConvert str ==
 --replace all ? not preceded by an underscore by &
@@ -376,10 +377,10 @@ maskConvert str ==
   j:= 0  --index into res
   final := maxIndex str
   for i in 0..final repeat
-    c := str.i
+    c := stringChar(str,i)
     if c = char "__" and i < final then
       i := i+1
-      c := str.i
+      c := stringChar(str,i)
      else if c = char "?" then c := char "&"
     SUFFIX(c,buf)
   buf
