@@ -1,6 +1,6 @@
 ## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ## All rights reserved.
-## Copyright (C) 2007-2010, Gabriel Dos Reis.
+## Copyright (C) 2007-2011, Gabriel Dos Reis.
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
 
 ## FASLs that comprises `bootsys'
 boot_SOURCES = initial-env.lisp $(boot_sources)
-boot_sources = tokens.boot includer.boot scanner.boot \
+boot_sources = utility.boot tokens.boot includer.boot scanner.boot \
 	pile.boot ast.boot parser.boot  translator.boot
 boot_clisp = $(boot_sources:.boot=.clisp)
 boot_objects = initial-env.$(LNKEXT) $(boot_sources:.boot=.$(LNKEXT))
@@ -189,6 +189,9 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 
 %/initial-env.$(LNKEXT): initial-env.lisp %/.started
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --compile --output=$@ $<
+
+%/utility.$(LNKEXT): %/utility.clisp %/initial-env.$(LNKEXT)
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/tokens.$(LNKEXT): %/tokens.clisp %/initial-env.$(LNKEXT)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<

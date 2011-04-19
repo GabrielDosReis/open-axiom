@@ -253,6 +253,7 @@ for i in [ _
   ["charByName", "NAME-CHAR"] , _
   ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
+  ["charEq?",   "CHAR=" ], _
   ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
@@ -295,6 +296,7 @@ for i in [ _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
   ["sameObject?",  "EQ" ] , _
+  ["scalarEq?",   "EQL" ] , _
   ["scalarEqual?","EQL" ] , _
   ["second",      "CADR"] , _
   ["setDifference", "SETDIFFERENCE"]  , _
@@ -304,6 +306,7 @@ for i in [ _
   ["strconc",  "CONCAT"]  , _
   ["stringChar", "SCHAR"] , _
   ["string?",  "STRINGP"]  ,_
+  ["stringEq?","STRING="] , _
   ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _

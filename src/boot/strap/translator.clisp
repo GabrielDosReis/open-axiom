@@ -582,7 +582,9 @@
           (T (|shoeEVALANDFILEACTQ| |expr'|)))))))
 
 (DEFUN |exportNames| (|ns|)
-  (COND ((NULL |ns|) NIL) (T (LIST (CONS 'EXPORT |ns|)))))
+  (COND
+    ((NULL |ns|) NIL)
+    (T (LIST (LIST 'EXPORT (LIST 'QUOTE |ns|))))))
 
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |xs|)

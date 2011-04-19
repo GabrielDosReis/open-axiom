@@ -36,16 +36,7 @@
   #+:common-lisp (:use "COMMON-LISP")
   #-:common-lisp (:use "LISP")
   #+:SBCL (:use "SB-ALIEN")
-  (:use "AxiomCore")
-  (:import-from "BOOTTRAN" 
-		"systemRootDirectory"
-		"systemLibraryDirectory"
-		"loadNativeModule"
-		"loadSystemRuntimeCore"
-		"loadFileIfPresent"
-                "$InteractiveMode"
-		"string2BootTree"
-		"genImportDeclaration"))
+  (:use "AxiomCore" "BOOTTRAN"))
 
 (in-package "BOOT")
   

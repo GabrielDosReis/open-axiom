@@ -372,8 +372,9 @@ formatAsFortranExpression x ==
 
  
 dispfortexp x ==
-  if atom(x) or x is [op,:.] and not object2Identifier op in
-    '(_= MATRIX construct ) then
+  if atom(x) or x is [op,:.] and
+    not (object2Identifier op in '(_= MATRIX construct ))
+  then
       var := makeSymbol strconc('"R",object2String $IOindex)
       x := ['"=",var,x]
   dispfortexp1 x
