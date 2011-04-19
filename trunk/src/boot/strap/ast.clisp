@@ -180,7 +180,8 @@
 
 (DEFUN |bfColonColon| (|package| |name|)
   (COND
-    ((AND (|%hasFeature| :CLISP) (MEMQ |package| '(EXT FFI)))
+    ((AND (|%hasFeature| :CLISP)
+          (|symbolMember?| |package| '(EXT FFI)))
      (FIND-SYMBOL (PNAME |name|) |package|))
     (T (INTERN (PNAME |name|) |package|))))
 
@@ -1127,7 +1128,7 @@
              (|sequence?| |seq| #'INTEGERP))
          (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'EQL)))
         ((OR (|defQuoteId| |var|) (|sequence?| |seq| #'SYMBOLP))
-         (LIST 'MEMQ |var| |seq|))
+         (LIST '|symbolMember?| |var| |seq|))
         ((OR (STRINGP |var|) (|sequence?| |seq| #'STRINGP))
          (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'STRING=)))
         (T (LIST 'MEMBER |var| |seq|))))))
@@ -1205,17 +1206,20 @@
 
 (DEFUN |bfChar?| (|x|)
   (OR (CHARACTERP |x|)
-      (AND (CONSP |x|) (MEMQ (CAR |x|) '(|char| CODE-CHAR SCHAR)))))
+      (AND (CONSP |x|)
+           (|symbolMember?| (CAR |x|) '(|char| CODE-CHAR SCHAR)))))
 
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
       (AND (CONSP |x|)
-           (MEMQ (CAR |x|) '(SIZE LENGTH CHAR-CODE MAXINDEX + -)))))
+           (|symbolMember?| (CAR |x|)
+               '(SIZE LENGTH CHAR-CODE MAXINDEX + -)))))
 
 (DEFUN |bfString?| (|x|)
   (OR (STRINGP |x|)
       (AND (CONSP |x|)
-           (MEMQ (CAR |x|) '(STRING SYMBOL-NAME |subString|)))))
+           (|symbolMember?| (CAR |x|)
+               '(STRING SYMBOL-NAME |subString|)))))
 
 (DEFUN |bfQ| (|l| |r|)
   (COND
@@ -1533,8 +1537,10 @@
         ((ATOM |body|) NIL)
         (T (SETQ |op| (CAR |body|)) (SETQ |args| (CDR |body|))
            (COND
-             ((MEMQ |op| '(RETURN RETURN-FROM)) T)
-             ((MEMQ |op| '(LET PROG LOOP BLOCK DECLARE LAMBDA)) NIL)
+             ((|symbolMember?| |op| '(RETURN RETURN-FROM)) T)
+             ((|symbolMember?| |op|
+                  '(LET PROG LOOP BLOCK DECLARE LAMBDA))
+              NIL)
              ((LET ((|bfVar#115| NIL) (|bfVar#114| |body|) (|t| NIL))
                 (LOOP
                   (COND
@@ -1637,7 +1643,8 @@
                          (T (CONS (CADR |l|) |$fluidVars|))))
                  (RPLACA (CDR |x|) (CADR |l|)))))
              ((EQ U '|%Leave|) (RPLACA |x| 'RETURN))
-             ((MEMQ U '(PROG LAMBDA)) (SETQ |newbindings| NIL)
+             ((|symbolMember?| U '(PROG LAMBDA))
+              (SETQ |newbindings| NIL)
               (LET ((|bfVar#116| (CADR |x|)) (|y| NIL))
                 (LOOP
                   (COND
@@ -2279,7 +2286,7 @@
                (LIST |t'| :EXTERNAL-FORMAT :ASCII :ELEMENT-TYPE
                      'BASE-CHAR))
               (T |t'|)))
-           ((MEMQ |t| '(|byte| |uint8|))
+           ((|symbolMember?| |t| '(|byte| |uint8|))
             (COND
               ((|%hasFeature| :SBCL)
                (LIST (|bfColonColon| 'SB-ALIEN 'UNSIGNED) 8))
@@ -2383,10 +2390,11 @@
         (T (SETQ |m| (CAR |t|)) (SETQ |c| (CAADR . #0=(|t|)))
            (SETQ |t'| (CADADR . #0#))
            (COND
-             ((NOT (MEMQ |m| '(|readonly| |writeonly| |readwrite|)))
+             ((NOT (|symbolMember?| |m|
+                       '(|readonly| |writeonly| |readwrite|)))
               (|coreError|
                   "missing modifier for argument type for a native function"))
-             ((NOT (MEMQ |c| '(|buffer| |pointer|)))
+             ((NOT (|symbolMember?| |c| '(|buffer| |pointer|)))
               (|coreError|
                   "expected 'buffer' or 'pointer' type instance"))
              ((NOT (MEMBER |t'| |$NativeSimpleDataTypes|))
@@ -2397,7 +2405,7 @@
   (PROG (|m|)
     (RETURN
       (AND (CONSP |t|) (PROGN (SETQ |m| (CAR |t|)) T)
-           (MEMQ |m| '(|readonly| |writeonly| |readwrite|))))))
+           (|symbolMember?| |m| '(|readonly| |writeonly| |readwrite|))))))
 
 (DEFUN |coerceToNativeType| (|a| |t|)
   (PROG (|y| |c|)

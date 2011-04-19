@@ -703,7 +703,7 @@ bfMember(var,seq) ==
   integer? var or var is ["char",.] or sequence?(seq,function integer?) =>
     ["MEMBER",var,seq,KEYWORD::TEST, ["FUNCTION", "EQL"]]
   defQuoteId var or sequence?(seq,function symbol?) =>
-    ["MEMQ",var,seq]
+    ["symbolMember?",var,seq]
   string? var or sequence?(seq,function string?) =>
     ["MEMBER",var,seq,KEYWORD::TEST,["FUNCTION", "STRING="]]
   ["MEMBER",var,seq]

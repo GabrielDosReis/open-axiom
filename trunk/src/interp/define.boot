@@ -204,7 +204,8 @@ makeCompactDirect1(op,items) ==
 orderBySubsumption items ==
   acc := subacc := nil
   for x in items repeat
-    not $op in '(Zero One) and x is [.,.,.,'Subsumed] => subacc := [x,:subacc]
+    not ($op in '(Zero One)) and x is [.,.,.,'Subsumed] =>
+      subacc := [x,:subacc]
     acc := [x,:acc]
   y := z := nil
   for [a,b,:.] in subacc | b repeat   

@@ -1,5 +1,17 @@
 2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/newfort.boot: Likewise.
+	* interp/define.boot (orderBySubsumption): Fix thinko.
+	* interp/boot-pkg.lisp: Use BOOTTRAN package.  Don't import names
+	individually.
+	* boot/utility.boot: New.
+	* boot/translator.boot (exportNames): Fix thinko.
+	* boot/tokens.boot: Add charEq? and scalarEq? builtiin functions.
+	* boot/ast.boot (bfMember): Generate call to symbolMember? for
+	membership tests for symbols.
+
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (%Module): Now take three arguments.
 	* boot/parser.boot (bpModuleInterface): Rename from bpExports.
 	(bpModuleExports): New.

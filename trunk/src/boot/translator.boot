@@ -405,7 +405,7 @@ translateToplevelExpression expr ==
 
 exportNames ns ==
   ns = nil => nil
-  [["EXPORT",:ns]]
+  [["EXPORT",["QUOTE",ns]]]
 
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.

@@ -426,8 +426,8 @@
 (DEFUN |bpConstTok| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
   (COND
-    ((MEMQ (|shoeTokType| |$stok|) '(INTEGER FLOAT)) (|bpPush| |$ttok|)
-     (|bpNext|))
+    ((|symbolMember?| (|shoeTokType| |$stok|) '(INTEGER FLOAT))
+     (|bpPush| |$ttok|) (|bpNext|))
     ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'LISP))
      (AND (|bpPush| (|%Lisp| |$ttok|)) (|bpNext|)))
     ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'LISPEXP))
@@ -576,7 +576,8 @@
                (|bpTrap|))
            (|bpPush| (- |$ttok|)) (|bpNext|))
       (|bpSexpKey|)
-      (AND (MEMQ (|shoeTokType| |$stok|) '(ID INTEGER STRING FLOAT))
+      (AND (|symbolMember?| (|shoeTokType| |$stok|)
+               '(ID INTEGER STRING FLOAT))
            (|bpPush| |$ttok|) (|bpNext|))))
 
 (DEFUN |bpSexp| ()
