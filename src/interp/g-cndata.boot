@@ -169,9 +169,8 @@ isNameOfType x ==
   $doNotAddEmptyModeIfTrue:local:= true
   (val := get(x,'value,$InteractiveFrame)) and
     (domain := objMode val) and
-      member(domain,$LangSupportTypes) => true
-  y := opOf unabbrev x
-  constructor? y
+      listMember?(domain,$LangSupportTypes) => true
+  constructor? opOf unabbrev x
  
 unabbrev1(u,modeIfTrue) ==
   atom u =>

@@ -174,7 +174,7 @@ addModemap1(op,mc,sig,pred,fn,e) ==
  
 mkNewModemapList(mc,sig,pred,fn,curModemapList,e,filenameOrNil) ==
   entry:= [map:= [mc,:sig],[pred,fn],:filenameOrNil]
-  member(entry,curModemapList) => curModemapList
+  listMember?(entry,curModemapList) => curModemapList
   (oldMap:= assoc(map,curModemapList)) and oldMap is [.,[opred, =fn],:.] =>
     $forceAdd => mergeModemap(entry,curModemapList,e)
     opred=true => curModemapList
@@ -226,9 +226,9 @@ addNewDomain(domain,e) ==
   augModemapsFromDomain(domain,domain,e)
 
 augModemapsFromDomain(name,functorForm,e) ==
-  member(KAR name or name,$DummyFunctorNames) => e
+  symbolMember?(KAR name or name,$DummyFunctorNames) => e
   name=$Category or isCategoryForm(name,e) => e
-  member(name,curDomainsInScope:= getDomainsInScope e) => e
+  listMember?(name,curDomainsInScope:= getDomainsInScope e) => e
   if super := superType functorForm then
     e := addNewDomain(super,e)
   if innerDom:= listOrVectorElementMode name then e:= addDomain(innerDom,e)
@@ -370,7 +370,7 @@ getDomainsInScope e ==
  
 putDomainsInScope(x,e) ==
   l:= getDomainsInScope e
-  if $verbose and member(x,l) then 
+  if $verbose and listMember?(x,l) then 
     sayBrightly ['" Note: Domain ",x," already in scope"]
   newValue:= [x,:delete(x,l)]
   $insideCapsuleFunctionIfTrue => ($CapsuleDomainsInScope:= newValue; e)
@@ -475,13 +475,13 @@ chaseInferences(pred,$e) ==
         u is ['%when,:l] =>
           for [ante,:conseq] in l repeat
             ante=pred => [foo w for w in conseq]
-            ante is ["and",:ante'] and member(pred,ante') =>
+            ante is ["and",:ante'] and listMember?(pred,ante') =>
               ante':= delete(pred,ante')
               v':=
                 # ante'=1 => first ante'
                 ["and",:ante']
               v':= ['%when,[v',:conseq]]
-              member(v',get("$Information","special",$e)) => nil
+              listMember?(v',get("$Information","special",$e)) => nil
               $e:=
                 put("$Information","special",[v',:
                   get("$Information","special",$e)],$e)
@@ -502,7 +502,7 @@ infoToHas a ==
 ++ denotated by `pred' is derivable from the current environment. 
 knownInfo pred ==
   pred=true => true
-  member(pred,get("$Information","special",$e)) => true
+  listMember?(pred,get("$Information","special",$e)) => true
   pred is ["OR",:l] => or/[knownInfo u for u in l]
   pred is ["AND",:l] => and/[knownInfo u for u in l]
   pred is ["or",:l] => or/[knownInfo u for u in l]
@@ -512,8 +512,8 @@ knownInfo pred ==
           stackAndThrow('"can't find category of %1pb",[name])
     [vv,.,.]:= compMakeCategoryObject(second v,$e) or return
                  stackAndThrow('"can't make category of %1pb",[name])
-    member(attr,vv.2) => true
-    x:= assoc(attr,vv.2) => knownInfo second x
+    listMember?(attr,vv.2) => true
+    x := assoc(attr,vv.2) => knownInfo second x
           --format is a list of two elements: information, predicate
     false
   pred is ["has",name,cat] =>
@@ -529,11 +529,11 @@ knownInfo pred ==
           stackAndThrow('"can't find category of %1pb",[name])
     vmode := v.mode
     cat = vmode => true
-    vmode is ["Join",:l] and member(cat,l) => true
+    vmode is ["Join",:l] and listMember?(cat,l) => true
     [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return
                  stackAndThrow('"cannot find category %1pb",[vmode])
     catlist := vv.4
-    member(cat,first catlist) => true  --checks princ. ancestors
+    listMember?(cat,first catlist) => true  --checks princ. ancestors
     (u:=assoc(cat,second catlist)) and knownInfo second u => true
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
@@ -560,7 +560,7 @@ actOnInfo(u,$e) ==
   u is ['%when,:l] =>
       --there is nowhere %else that this sort of thing exists
     for [ante,:conseq] in l repeat
-      if member(hasToInfo ante,Info) then for v in conseq repeat
+      if listMember?(hasToInfo ante,Info) then for v in conseq repeat
         $e:= actOnInfo(v,$e)
     $e
   u is ["ATTRIBUTE",name,att] =>
@@ -595,7 +595,7 @@ actOnInfo(u,$e) ==
       [ocatvec,.,$e]:= compMakeCategoryObject(vmode,$e)
  
       --we are adding a principal descendant of what was already known
-      member(cat,first ocatvec.4) or
+      listMember?(cat,first ocatvec.4) or
          assoc(cat,second ocatvec.4) is [.,"T",.] => $e
              --what was being asserted is an ancestor of what was known
       if name="$"

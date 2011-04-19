@@ -654,7 +654,7 @@ InvestigateConditions catvecListMaker ==
       if not TruthP(cond:=second u) then
         new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,first u], '%noBranch]]
         $principal is ['Join,:l] =>
-          not member(new,l) =>
+          not listMember?(new,l) =>
             $principal:=['Join,:l,new]
         $principal:=['Join,$principal,new]
   principal' :=
@@ -663,7 +663,8 @@ InvestigateConditions catvecListMaker ==
         atom a => a
         a is ['SIGNATURE,:.] => a
         a is ['IF,cond,:.] =>
-          if not member(cond,$Conditions) then $Conditions:= [cond,:$Conditions]
+          if not listMember?(cond,$Conditions) then
+            $Conditions:= [cond,:$Conditions]
           nil
         [pessimise first a,:pessimise rest a]
   null $Conditions => [true,:[true for u in secondaries]]
@@ -671,7 +672,7 @@ InvestigateConditions catvecListMaker ==
   MinimalPrimary:= first first PrincipalSecondaries
   MaximalPrimary:= CAAR $domainShell.4
   necessarySecondaries:= [first u for u in PrincipalSecondaries | rest u=true]
-  and/[member(u,necessarySecondaries) for u in secondaries] =>
+  and/[listMember?(u,necessarySecondaries) for u in secondaries] =>
     [true,:[true for u in secondaries]]
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
@@ -696,11 +697,9 @@ InvestigateConditions catvecListMaker ==
   masterSecondaries:= secondaries
   for u in partList repeat
     for [v,:.] in u repeat
-      if not member(v,secondaries) then secondaries:= [v,:secondaries]
-  (list:= [mkNilT member(u,necessarySecondaries) for u in secondaries]) where
-    mkNilT u ==
-      u => true
-      nil
+      if not listMember?(v,secondaries) then
+        secondaries:= [v,:secondaries]
+  list:= [listMember?(u,necessarySecondaries) for u in secondaries]
   for u in $Conditions for newS in partList repeat
     --newS is a list of secondaries and conditions (over and above
     --u) for which they apply
@@ -737,15 +736,16 @@ InvestigateConditions catvecListMaker ==
                              ['delete,['QUOTE,first u],'(CAAR TrueDomain)]]]]
   $supplementaries:=
     [u
-      for u in list | not member(first u,masterSecondaries)
-        and not (true=rest u) and not member(first u,pv)]
+      for u in list | not listMember?(first u,masterSecondaries)
+        and not (true=rest u) and not listMember?(first u,pv)]
   [true,:[LASSOC(ms,list) for ms in masterSecondaries]]
  
 ICformat u ==
       atom u => u
       u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
-        l:= removeDuplicates [ICformat v for [v,:l'] in tails l | not member(v,l')]
+        l:= removeDuplicates [ICformat v for [v,:l'] in tails l
+                                | not listMember?(v,l')]
              -- we could have duplicates after, even if not before
         # l=1 => first l
         l1:= first l
@@ -782,7 +782,7 @@ ICformat u ==
       for u in l | u is ['AND,:.] or u is ['and,:.] repeat
                             --check that B causes (and A B) to go
         for v in l | not (v=u) repeat
-          if member(v,u) or (and/[member(w,u) for w in v]) then l:=
+          if listMember?(v,u) or (and/[member(w,u) for w in v]) then l:=
             delete(u,l)
                  --v subsumes u
                      --Note that we are ignoring AND as a component.
@@ -792,7 +792,7 @@ ICformat u ==
 partPessimise(a,trueconds) ==
   atom a => a
   a is ['SIGNATURE,:.] => a
-  a is ['IF,cond,:.] => (member(cond,trueconds) => a; nil)
+  a is ['IF,cond,:.] => (listMember?(cond,trueconds) => a; nil)
   [partPessimise(first a,trueconds),:partPessimise(rest a,trueconds)]
  
 getPossibleViews u ==

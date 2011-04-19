@@ -183,7 +183,7 @@ augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
       isCategoryForm(m,$EmptyEnvironment)]
   catPredList:= [['ofCategory,:u] for u in [["*1",form],:domainList]]
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
-    member(sig,LASSOC(op,nonCategorySigAlist)) repeat
+    listMember?(sig,LASSOC(op,nonCategorySigAlist)) repeat
       pred':= MKPF([pred,:catPredList],'AND)
       modemap:= [["*1",:sig],[pred',sel]]
       $lisplibModemapAlist:=
@@ -201,7 +201,7 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps first signature or return nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
-    or/[member(sig,catSig) for catSig in
+    or/[listMember?(sig,catSig) for catSig in
       allLASSOCs(op,nonCategorySigAlist)] repeat
         skip:=
           argl and CONTAINED("$",rest sig) => 'SKIP
@@ -692,7 +692,8 @@ getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
 --% Exposure Group Code
 
 dropPrefix(fn) ==
-  member(fn.0,[char "?",char "-",char "+"]) => subString(fn,1)
+  charMember?(stringChar(fn,0),[char "?",char "-",char "+"]) =>
+    subString(fn,1)
   fn
 
 --moved to util.lisp

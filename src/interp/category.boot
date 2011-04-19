@@ -221,10 +221,10 @@ mkOr(a,b) ==
       DescendantP(acat,bcat) => [b]
       DescendantP(bcat,acat) => [a]
       [a,b]
-    a is ['AND,:a'] and member(b,a') => [b]
-    b is ['AND,:b'] and member(a,b') => [a]
-    a is ["and",:a'] and member(b,a') => [b]
-    b is ["and",:b'] and member(a,b') => [a]
+    a is ['AND,:a'] and listMember?(b,a') => [b]
+    b is ['AND,:b'] and listMember?(a,b') => [a]
+    a is ["and",:a'] and listMember?(b,a') => [b]
+    b is ["and",:b'] and listMember?(a,b') => [a]
     [a,b]
   #l = 1 => first l
   ["OR",:l]
@@ -232,7 +232,7 @@ mkOr(a,b) ==
 mkOr2: (%Form,%Form) -> %Form
 mkOr2(a,b) ==
   --a is a condition, "b" a list of them
-  member(a,b) => b
+  listMember?(a,b) => b
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
@@ -264,7 +264,7 @@ mkAnd(a,b) ==
 mkAnd2: (%Form,%Form) -> %Form
 mkAnd2(a,b) ==
   --a is a condition, "b" a list of them
-  member(a,b) => b
+  listMember?(a,b) => b
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
@@ -313,7 +313,7 @@ MachineLevelSubsume([name1,[out1,:in1],:flag1],[name2,[out2,:in2],:flag2]) ==
 MachineLevelSubset(a,b) ==
   --true if a is a machine-level subset of b
   a=b => true
-  b is ["Union",:blist] and member(a,blist) and
+  b is ["Union",:blist] and listMember?(a,blist) and
     (and/[string? x for x in blist | x~=a]) => true
            --all other branches must be distinct objects
   not null isSubDomain(a,b)
@@ -364,9 +364,9 @@ CatEval x ==
 AncestorP: (%Form, %List) -> %Form
 AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
-  member(xname,leaves) => xname
+  listMember?(xname,leaves) => xname
   for y in leaves repeat
-    member(xname,first CatEval(y).4) => return y
+    listMember?(xname,first CatEval(y).4) => return y
  
 CondAncestorP(xname,leaves,condition) ==
   -- checks for being a principal ancestor of one of the leaves
@@ -375,7 +375,7 @@ CondAncestorP(xname,leaves,condition) ==
     ucond:=
       null rest u => true
       second u
-    xname = u' or member(xname,first CatEval(u').4) =>
+    xname = u' or listMember?(xname,first CatEval(u').4) =>
       PredImplies(ucond,condition) => return u'
 
 
@@ -389,7 +389,7 @@ DescendantP(a,b) ==
   a:= CatEval a
   b is ["ATTRIBUTE",b'] =>
     (l:=assoc(b',a.2)) => TruthP second l
-  member(b,first a.4) => true
+  listMember?(b,first a.4) => true
   AncestorP(b,[first u for u in second a.4]) => true
   false
  
@@ -410,12 +410,13 @@ JoinInner(l,$e) ==
         nil
       pred:= second at
         -- The predicate under which this category is conditional
-      member(pred,get("$Information","special",$e)) => l:= [:l,CatEval at2]
+      listMember?(pred,get("$Information","special",$e)) =>
+        l:= [:l,CatEval at2]
           --It's true, so we add this as unconditional
       not (pred is ["and",:.]) => CondList:= [[CatEval at2,pred],:CondList]
       pred':=
         [u
-          for u in rest pred | not member(u,get("$Information","special",$e))
+          for u in rest pred | not listMember?(u,get("$Information","special",$e))
             and not (u=true)]
       null pred' => l:= [:l,CatEval at2]
       # pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
@@ -450,7 +451,7 @@ JoinInner(l,$e) ==
                --Principal Ancestors of b
       reallynew:= true
       for anc in FundamentalAncestors repeat
-        if member(first anc,PrinAncb) then
+        if listMember?(first anc,PrinAncb) then
                   --This is the check for "Category Subsumption"
           if rest anc
              then (anccond:= second anc; ancindex:= third anc)
@@ -467,7 +468,7 @@ JoinInner(l,$e) ==
                then
                      --the new 'b' is less often true
                 newentry:=[bname,condition,ancindex]
-                if not member(newentry,FundamentalAncestors) then
+                if not listMember?(newentry,FundamentalAncestors) then
                   FundamentalAncestors:= [newentry,:FundamentalAncestors]
              else ancindex:= nil
           if not copied then
@@ -496,13 +497,13 @@ JoinInner(l,$e) ==
              -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
                 for u in $NewCatVec.1 repeat
-                  if not member(u,sigl) then
+                  if not listMember?(u,sigl) then
                     [s,c,i]:= u
                     if c=true
                        then sigl:= [[s,condition,i],:sigl]
                        else sigl:= [[s,["and",condition,c],i],:sigl]
                 for u in $NewCatVec.2 repeat
-                  if not member(u,attl) then
+                  if not listMember?(u,attl) then
                     [a,c]:= u
                     if c=true
                        then attl:= [[a,condition],:attl]
@@ -554,7 +555,7 @@ JoinInner(l,$e) ==
                --strip out the pointer to Principal Ancestor
   c:= first $NewCatVec.4
   pName:= $NewCatVec.0
-  if pName and not member(pName,c) then c:= [pName,:c]
+  if pName and not listMember?(pName,c) then c:= [pName,:c]
   $NewCatVec.4:= [c,FundamentalAncestors,third $NewCatVec.4]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
 

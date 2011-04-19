@@ -368,7 +368,7 @@ intersectionContour(c,c') ==
         m2 is ["Union",:.] => ["Union",:S_+(rest m2,[m1])]
         ["Union",m1,m2]
       for u in getDomainsInScope $e repeat
-        if u is ["Union",:u'] and (and/[member(v,u') for v in rest m]) then
+        if u is ["Union",:u'] and (and/[listMember?(v,u') for v in rest m]) then
           return m
         --this loop will return NIL if not satisfied
  
@@ -455,7 +455,7 @@ unionLike?(m,e) ==
   T.mode is ['UnionCategory,:.] => T.mode
   T.mode is ['UnionType] => ['UnionCategory]
   T.mode isnt ['Join,:cats,['CATEGORY,.,:sigs]] => nil
-  member(['UnionType],cats) =>
+  listMember?(['UnionType],cats) =>
     ['UnionCategory,
       :[b for ['SIGNATURE,"case",[=$Boolean,'$,["[||]",b]]] in sigs]]
   nil
@@ -470,7 +470,7 @@ getInverseEnvironment(a,e) ==
   a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
-    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
+    (get(x,"condition",e) is [["OR",:oldpred]]) and listMember?(a,oldpred) =>
       put(x,"condition",[MKPF(delete(a,oldpred),"OR")],e)
     unionProperty(x,e) is ['UnionCategory,:l] =>
       l':= delete(m,l)
@@ -524,7 +524,7 @@ prModemaps E ==
   listOfOperatorsSeenSoFar:= nil
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
-      for z in y | null member(first z,listOfOperatorsSeenSoFar) and
+      for z in y | not member(first z,listOfOperatorsSeenSoFar) and
         (modemap:= LASSOC("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           TERPRI()
@@ -696,7 +696,7 @@ isSimple x ==
 isSideEffectFree op ==
   op is ["elt",.,op'] => isSideEffectFree op'
   not IDENTP op => false
-  member(op,$SideEffectFreeFunctionList) or constructor? op
+  listMember?(op,$SideEffectFreeFunctionList) or constructor? op
  
 isAlmostSimple x ==
   --returns (<new predicate> . <list of assignments>) or nil
@@ -804,7 +804,7 @@ stackSemanticError(msg,expr) ==
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
   if atom msg then msg:= [msg]
   entry:= [msg,expr]
-  if not member(entry,$semanticErrorStack) then $semanticErrorStack:=
+  if not listMember?(entry,$semanticErrorStack) then $semanticErrorStack:=
     [entry,:$semanticErrorStack]
   $scanIfTrue and $insideCapsuleFunctionIfTrue=true and #$semanticErrorStack-
     $initCapsuleErrorCount>3 => THROW("compCapsuleBody",nil)
@@ -813,7 +813,8 @@ stackSemanticError(msg,expr) ==
 stackWarning(msg,args == nil) ==
   msg := buildMessage(msg, args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  if not member(msg,$warningStack) then $warningStack:= [msg,:$warningStack]
+  if not listMember?(msg,$warningStack) then
+    $warningStack:= [msg,:$warningStack]
   nil
  
 unStackWarning(msg,args) ==
@@ -884,7 +885,7 @@ extendsCategoryForm(domain,form,form') ==
     extendsCategoryForm(domain,form,cat) and isSubset(domain,dom,$e)
   form is ["Join",:l] => or/[extendsCategoryForm(domain,x,form') for x in l]
   form is ["CATEGORY",.,:l] =>
-    member(form',l) or
+    listMember?(form',l) or
       stackWarning('"not known that %1 is of mode %2p",[form',form]) or true
   -- if we are compiling the category `form', then we should look at
   -- the body as provided in the current definition, not a version
@@ -908,8 +909,8 @@ extendsCategoryForm(domain,form,form') ==
     -- Are we dealing with an Aldor category?  If so use the "has" function ...
     # formVec = 1 => newHasTest(form,form')
     catvlist:= formVec.4
-    member(form',first catvlist) or
-     member(form',SUBSTQ(domain,"$",first catvlist)) or
+    listMember?(form',first catvlist) or
+     listMember?(form',SUBSTQ(domain,"$",first catvlist)) or
       (or/
         [extendsCategoryForm(domain,SUBSTQ(domain,"$",cat),form')
           for [cat,:.] in second catvlist])
@@ -1001,7 +1002,7 @@ displayModemaps E ==
   listOfOperatorsSeenSoFar:= nil
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
-      for z in y | null member(first z,listOfOperatorsSeenSoFar) and
+      for z in y | not member(first z,listOfOperatorsSeenSoFar) and
         (modemaps:= LASSOC("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           displayOpModemaps(first z,modemaps)
