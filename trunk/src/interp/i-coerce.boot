@@ -491,8 +491,8 @@ canCoerceTopMatching(t1,t2,tt1,tt2) ==
   -- canCoerce will only be true if D1 = D2
   not sameObject?(tt1,tt2) => 'maybe
   doms := '(Polynomial List Matrix FiniteSet Vector Stream Gaussian)
-  MEMQ(tt1,doms) => canCoerce(second t1, second t2)
-  not (MEMQ(tt1,$univariateDomains) or MEMQ(tt2,$multivariateDomains)) =>
+  symbolMember?(tt1,doms) => canCoerce(second t1, second t2)
+  not (symbolMember?(tt1,$univariateDomains) or symbolMember?(tt2,$multivariateDomains)) =>
     'maybe
   u2 := deconstructT t2
   1 = #u2 => NIL
@@ -692,35 +692,35 @@ absolutelyCannotCoerce(t1,t2) ==
   int2 := isEqualOrSubDomain(t2,$Integer)
   scalars := '(BigFloat NewFloat Float DoubleFloat RationalNumber)
 
-  MEMQ(n1,scalars) and int2 => true
+  symbolMember?(n1,scalars) and int2 => true
   (t1 = QFI) and int2       => true
 
-  num2 := int2 or MEMQ(n2,scalars) or (t2 = QFI)
+  num2 := int2 or symbolMember?(n2,scalars) or (t2 = QFI)
   isVar1 := n1 in '(Variable Symbol)
 
   num2 and isVar1 => true
-  num2 and MEMQ(n1,$univariateDomains) => true
-  num2 and MEMQ(n1,$multivariateDomains) => true
+  num2 and symbolMember?(n1,$univariateDomains) => true
+  num2 and symbolMember?(n1,$multivariateDomains) => true
   miscpols :=  '(Polynomial ElementaryFunction SimpleAlgebraicExtension)
-  num2 and MEMQ(n1,miscpols) => true
+  num2 and symbolMember?(n1,miscpols) => true
 
   aggs :=  '(
     Matrix List Vector Stream Array RectangularMatrix FiniteSet
        )
   u1 := underDomainOf t1
   u2 := underDomainOf t2
-  MEMQ(n1,aggs) and (u1 = t2) => true
-  MEMQ(n2,aggs) and (u2 = t1) => true
+  symbolMember?(n1,aggs) and (u1 = t2) => true
+  symbolMember?(n2,aggs) and (u2 = t1) => true
 
   algs :=  '(
     SquareMatrix Gaussian RectangularMatrix Quaternion
        )
   nonpols := append(aggs,algs)
-  num2 and MEMQ(n1,nonpols) => true
-  isVar1 and MEMQ(n2,nonpols) and
+  num2 and symbolMember?(n1,nonpols) => true
+  isVar1 and symbolMember?(n2,nonpols) and
     absolutelyCannotCoerce(t1,u2) => true
 
-  (MEMQ(n1,scalars) or (t1 = QFI)) and (t2 = '(Polynomial (Integer))) =>
+  (symbolMember?(n1,scalars) or (t1 = QFI)) and (t2 = '(Polynomial (Integer))) =>
     true
 
   v2 := deconstructT t2
@@ -904,7 +904,7 @@ coerceInt1(triple,t2) ==
 
   sameObject?(first(t1),'Variable) and cons?(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
-      (t2 = [$QuotientField, $Integer]) or MEMQ(first(t2),
+      (t2 = [$QuotientField, $Integer]) or symbolMember?(first(t2),
         '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL
 
   ans := coerceRetract(triple,t2) or coerceIntTower(triple,t2) or
@@ -1071,7 +1071,7 @@ valueArgsEqual?(t1, t2) ==
   constrSig := rest getConstructorSignature first t1
   tl1 := replaceSharps(constrSig, t1)
   tl2 := replaceSharps(constrSig, t2)
-  not MEMQ(NIL, coSig) => true
+  not symbolMember?(NIL, coSig) => true
   done := false
   value := true
   for a1 in rest t1 for a2 in rest t2 for cs in coSig

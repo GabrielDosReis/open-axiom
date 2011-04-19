@@ -357,7 +357,7 @@ catExtendsCat?(u,v,uvec) ==
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and
-    MEMQ(op,allConstructors()) => expandType(form,template,domain)
+    symbolMember?(op,allConstructors()) => expandType(form,template,domain)
   form is ['SIGNATURE,op,sig] =>
     ['SIGNATURE,op,[substSlotNumbers(x,template,domain) for x in sig]]
   form is ['CATEGORY,k,:u] =>
@@ -455,7 +455,7 @@ $reservedNames == '(per rep _$)
 
 ++ Check that `var' (a variable of parameter name) is not a reversed name.
 checkVariableName var ==
-  MEMQ(var,$reservedNames) =>
+  symbolMember?(var,$reservedNames) =>
     stackAndThrow('"You cannot use reserved name %1b as variable",[var])
   var
 
@@ -546,7 +546,7 @@ compDefine1(form,m,e) ==
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
      => [lhs,m,putMacro(lhs.op,rhs,e)]
   checkParameterNames lhs.args
-  null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
+  null signature.target and not symbolMember?(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
       compDefine1(['DEF,lhs,[sig.target,:signature.source],specialCases,rhs],m,e)
@@ -592,7 +592,7 @@ hasFullSignature(argl,[target,:ml],e) ==
  
 addEmptyCapsuleIfNecessary: (%Form,%Form) -> %Form
 addEmptyCapsuleIfNecessary(target,rhs) ==
-  MEMQ(KAR rhs,$SpecialDomainNames) => rhs
+  symbolMember?(KAR rhs,$SpecialDomainNames) => rhs
   ['add,rhs,['CAPSULE]]
 
 getTargetFromRhs: (%Form, %Form, %Env) -> %Form 
@@ -657,7 +657,7 @@ mkEvalableCategoryForm c ==
     op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
     op is "DomainSubstitutionMacro" => mkEvalableCategoryForm second argl
     op is "mkCategory" => c
-    MEMQ(op,$CategoryNames) =>
+    symbolMember?(op,$CategoryNames) =>
       ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
     --loadIfNecessary op
     getConstructorKindFromDB op = 'category or
@@ -912,7 +912,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $pairlis: local := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
-       isCategoryPackageName $op or MEMQ($op,$mutableDomains)
+       isCategoryPackageName $op or symbolMember?($op,$mutableDomains)
                                     --true if domain has mutable state
     signature':=
       [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
@@ -1241,8 +1241,8 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
  
 orderByDependency(vl,dl) ==
   -- vl is list of variables, dl is list of dependency-lists
-  selfDependents:= [v for v in vl for d in dl | MEMQ(v,d)]
-  for v in vl for d in dl | MEMQ(v,d) repeat
+  selfDependents:= [v for v in vl for d in dl | symbolMember?(v,d)]
+  for v in vl for d in dl | symbolMember?(v,d) repeat
     (SAY(v," depends on itself"); fatalError:= true)
   fatalError => userError '"Parameter specification error"
   until (null vl) repeat
@@ -1766,7 +1766,7 @@ doIt(item,$predl) ==
       item.rest := rest code
     lhs:= lhs'
     if not member(KAR rhs,$NonMentionableDomainNames) and
-      not MEMQ(lhs, $functorLocalParameters) then
+      not symbolMember?(lhs, $functorLocalParameters) then
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
       if lhs="Rep" then
@@ -1925,7 +1925,7 @@ makeCategoryForm(c,e) ==
 mustInstantiate: %Form -> %Thing 
 mustInstantiate D ==
   D is [fn,:.] and 
-    not (MEMQ(fn,$DummyFunctorNames) or GET(fn,"makeFunctionList"))
+    not (symbolMember?(fn,$DummyFunctorNames) or GET(fn,"makeFunctionList"))
 
 wrapDomainSub: (%List, %Form) -> %Form 
 wrapDomainSub(parameters,x) ==
@@ -1951,7 +1951,7 @@ DomainSubstitutionFunction(parameters,body) ==
     (body:= Subst(parameters,body)) where
       Subst(parameters,body) ==
         atom body =>
-          MEMQ(body,parameters) => MKQ body
+          symbolMember?(body,parameters) => MKQ body
           body
         member(body,parameters) =>
           g:=gensym()

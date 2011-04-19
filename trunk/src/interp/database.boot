@@ -194,7 +194,7 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   opAlist:= formal2Pattern opAlist
   signature:= formal2Pattern signature
   for u in form for v in signature repeat
-    if MEMQ(u,$PatternVariableList) then
+    if symbolMember?(u,$PatternVariableList) then
       -- we are going to be EVALing categories containing these
       -- pattern variables
       $e:=put(u,'mode,v,$e)
@@ -211,11 +211,11 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
         --get relevant predicates
         predList:=
           [[a,m] for a in argl for m in rest signature
-            | MEMQ(a,$PatternVariableList)]
+            | symbolMember?(a,$PatternVariableList)]
         sig:= substitute(form,"$",sig)
         pred':= MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
         l:=listOfPatternIds predList
-        if "OR"/[null MEMQ(u,l) for u in argl] then
+        if "OR"/[null symbolMember?(u,l) for u in argl] then
           sayMSG ['"cannot handle modemap for",:bright op,
                           '"by pattern match" ]
           skip:= 'SKIP
@@ -384,7 +384,7 @@ isDomainSubst u == main where
     u
   fn(x,alist) ==
     atom x =>
-      IDENTP x and MEMQ(x,$PatternVariableList) and (s := findSub(x,alist)) => s
+      IDENTP x and symbolMember?(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
     [first x,:[fn(y,alist) for y in rest x]]
   findSub(x,alist) ==
@@ -448,7 +448,7 @@ substVars(pred,patternAlist,patternVarList) ==
     pred := MSUBST(patVar,value,pred)
     patternAlist := nsubst(patVar,value,patternAlist)
     domainPredicates := MSUBST(patVar,value,domainPredicates)
-    if not MEMQ(value,$FormalMapVariableList) then
+    if not symbolMember?(value,$FormalMapVariableList) then
       domainPredicates := [["isDomain",patVar,value],:domainPredicates]
   everything := [pred,patternAlist,domainPredicates]
   for var in $FormalMapVariableList repeat
@@ -744,9 +744,9 @@ isExposedConstructor name ==
   --   slot 2: list of constructors explicitly hidden
   -- check if it is explicitly hidden
   name in '(Union Record Mapping) => true
-  MEMQ(name,$localExposureData.2) => false
+  symbolMember?(name,$localExposureData.2) => false
   -- check if it is explicitly exposed
-  MEMQ(name,$localExposureData.1) => true
+  symbolMember?(name,$localExposureData.1) => true
   -- check if it is in an exposed group
   found := NIL
   for g in $localExposureData.0 while not found repeat

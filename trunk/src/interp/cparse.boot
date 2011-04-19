@@ -315,7 +315,7 @@ npInfixOperator() ==
 
 ++ Parse any infix keyword in the list `s'.    
 npInfKey s ==
-  $stok.first.first = "key" and MEMQ($ttok,s) and npPushId()
+  $stok.first.first = "key" and symbolMember?($ttok,s) and npPushId()
 
 ++ Parse any infix keyword in the list `s', either in plain syntax
 ++ or quoted form.
@@ -393,7 +393,7 @@ npId() ==
   $stok.first.first = "id" =>
      npPush $stok
      npNext()
-  $stok.first.first = "key" and MEMQ($ttok,$npTokToNames) =>
+  $stok.first.first = "key" and symbolMember?($ttok,$npTokToNames) =>
      npPush tokConstruct("id",$ttok,tokPosn $stok)
      npNext()
   false

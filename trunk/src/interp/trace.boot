@@ -262,7 +262,7 @@ pcounters() ==
 transOnlyOption l ==
   l is [n,:y] =>
     integer? n => [n,:transOnlyOption y]
-    MEMQ(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
+    symbolMember?(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
     stackTraceOptionError ["S2IT0006",[n]]
     transOnlyOption y
   nil
@@ -320,7 +320,7 @@ removeTracedMapSigs untraceList ==
     REMPROP(name,$tracedMapSignatures)
 
 coerceTraceArgs2E(traceName,subName,args) ==
-  MEMQ(name:= subName,$mathTraceList) =>
+  symbolMember?(name:= subName,$mathTraceList) =>
     SPADSYSNAMEP PNAME name => coerceSpadArgs2E(reverse rest reverse args)
     [["=",name,objValUnwrap coerceInteractive(objNewWrap(arg,type),$OutputForm)]
       for name in '(arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16 arg17 arg18 arg19 )
@@ -343,7 +343,7 @@ subTypes(mm,sublist) ==
   [subTypes(m,sublist) for m in mm]
 
 coerceTraceFunValue2E(traceName,subName,value) ==
-  MEMQ(name:= subName,$mathTraceList) =>
+  symbolMember?(name:= subName,$mathTraceList) =>
     SPADSYSNAMEP PNAME traceName => coerceSpadFunValue2E(value)
     (u:=LASSOC(subName,$tracedMapSignatures)) =>
       objValUnwrap coerceInteractive(objNewWrap(value,first u),$OutputForm)
@@ -372,7 +372,7 @@ getPreviousMapSubNames(traceNames) ==
   subs:= nil
   for mapName in ASSOCLEFT CAAR $InteractiveFrame repeat
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
-      MEMQ(CADAR lmm,traceNames) =>
+      symbolMember?(CADAR lmm,traceNames) =>
         for mm in lmm repeat
           subs:= [[mapName,:second mm],:subs]
   subs
@@ -404,12 +404,12 @@ augmentTraceNames(l,mapSubNames) ==
 isSubForRedundantMapName(subName) ==
   mapName:= rassocSub(subName,$mapSubNameAlist) =>
     tail:=member([mapName,:subName],$mapSubNameAlist) =>
-      MEMQ(mapName,rest ASSOCLEFT tail)
+      symbolMember?(mapName,rest ASSOCLEFT tail)
 
 untraceMapSubNames traceNames ==
   null($mapSubNameAlist:local:= getPreviousMapSubNames traceNames) => nil
   for name in (subs:= ASSOCRIGHT $mapSubNameAlist)
-    | MEMQ(name,_/TRACENAMES) repeat
+    | symbolMember?(name,_/TRACENAMES) repeat
       _/UNTRACE_,2(name,nil)
       $lastUntraced:= SETDIFFERENCE($lastUntraced,subs)
 
@@ -447,7 +447,7 @@ spadTrace(domain,options) ==
     [triple
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
       for [op,sig,n,.,kind] in opStructureList | kind = 'ELT
-        and (anyifTrue or MEMQ(op,listOfOperations)) and
+        and (anyifTrue or symbolMember?(op,listOfOperations)) and
          integer? n and
           isTraceable(triple:= [op,sig,n],domain)] where
             isTraceable(x is [.,.,n,:.],domain) ==
@@ -498,7 +498,7 @@ traceDomainLocalOps(dom,lops,options) ==
 --  l := NIL
 --  for lop in lops repeat
 --    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
---    not MEMQ(internalName,actualLops) =>
+--    not symbolMember?(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
 --    l := [internalName,:l]
@@ -518,7 +518,7 @@ untraceDomainLocalOps(dom,lops) ==
 --  l := NIL
 --  for lop in lops repeat
 --    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
---    not MEMQ(internalName,actualLops) =>
+--    not symbolMember?(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
 --    l := [internalName,:l]
@@ -587,14 +587,14 @@ mapLetPrint(x,val,currentFunction) ==
 letPrint(x,val,currentFunction) ==
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          sayBrightlyNT [:bright x,": "]
          PRIN1 shortenForPrinting val
          TERPRI()
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+        (y="all" or symbolMember?(x,y) and
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               shortenForPrinting val]
   val
@@ -605,15 +605,15 @@ letPrint2(x,printform,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,printform],flag)
          if flag='letPrint2 then print printform
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+        (y="all" or symbolMember?(x,y) and
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,":= ",
               printform]
   x
@@ -625,14 +625,14 @@ letPrint3(x,xval,printfn,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,SPADCALL(xval,printfn)],flag)
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
+        (y="all" or symbolMember?(x,y) and
           (not (PNAME(x).0 in '($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
@@ -646,7 +646,7 @@ getAliasIfTracedMapParameter(x,currentFunction) ==
 
 getBpiNameIfTracedMap(name) ==
   lmm:= get(name,'localModemap,$InteractiveFrame) =>
-    MEMQ(bpiName:= CADAR lmm,_/TRACENAMES) => bpiName
+    symbolMember?(bpiName:= CADAR lmm,_/TRACENAMES) => bpiName
   name
 
 hasPair(key,l) ==
@@ -701,7 +701,7 @@ spadUntrace(domain,options) ==
       :bright prefix2String domainId,'"are now traced."]
   sigSlotNumberAlist:= rest pair
   for (pair:= [op,sig,n,lv,bpiPointer,traceName,alias]) in sigSlotNumberAlist |
-    anyifTrue or MEMQ(op,listOfOperations) repeat
+    anyifTrue or symbolMember?(op,listOfOperations) repeat
       BPIUNTRACE(traceName,alias)
       domain.n.first := bpiPointer
       pair.rest.rest.rest := nil
@@ -793,7 +793,7 @@ tracelet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $TRACELETFLAG : local := true
   $QuickLet : local := false
-  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
+  not symbolMember?(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
        $traceletFunctions:= delete(fn,$traceletFunctions) )
@@ -814,7 +814,7 @@ breaklet(fn,vars) ==
     pair => (pair.rest := vars; $letAssoc)
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
-  not MEMQ(fn,$traceletFunctions) and not stupidIsSpadFunction fn
+  not symbolMember?(fn,$traceletFunctions) and not stupidIsSpadFunction fn
     and not GENSYMP fn =>
       $traceletFunctions:= [fn,:$traceletFunctions]
       compileBoot fn

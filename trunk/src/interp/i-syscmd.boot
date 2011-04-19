@@ -1139,7 +1139,7 @@ displayProperties(option,l) ==
             displayMacro v
         sayMSG '"   none"
       propsSeen:= nil
-      for [prop,:val] in pl | not MEMQ(prop,propsSeen) and val repeat
+      for [prop,:val] in pl | not symbolMember?(prop,propsSeen) and val repeat
         prop in '(alias generatedCode IS_-GENSYM mapBody localVars) =>
           nil
         prop = 'condition =>
@@ -1639,7 +1639,7 @@ writeInputLines(fn,initial) ==
   null fn =>
     throwKeyedMsg("S2IH0038", nil)          -- missing file name
   maxn := 72
-  breakChars := [" ","+"]
+  breakChars := [char " ",char "+"]
   for i in initial..$IOindex - 1 repeat
     vecl := first readHiFi i
     if string? vecl then vecl := [vecl]
@@ -1650,7 +1650,7 @@ writeInputLines(fn,initial) ==
         done := nil
         for j in 1..maxn while not done repeat
           k := 1 + maxn - j
-          MEMQ(vec.k,breakChars) =>
+          charMember?(stringChar(vec,k),breakChars) =>
             svec := strconc(subString(vec,0,k+1),UNDERBAR)
             lineList := [svec,:lineList]
             done := true

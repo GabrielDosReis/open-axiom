@@ -156,7 +156,7 @@ asMakeAlist con ==
     SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
   filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
   constantPart := HGET($constantHash,con) and [['constant,:true]]
-  niladicPart := MEMQ(con,$niladics) and [['NILADIC,:true]]
+  niladicPart := symbolMember?(con,$niladics) and [['NILADIC,:true]]
   falist :=  TAKE(#KDR form,$FormalMapVariableList)
   constructorCategory :=
     kind = 'category =>
@@ -391,7 +391,7 @@ asyAncestors x ==
   x is [op,y,:.] and op in '(PretendTo RestrictTo) => asyAncestors y
   atom x =>
     x = '_% => '_$
-    MEMQ(x, $niladics)       => [x]
+    symbolMember?(x, $niladics)       => [x]
     niladicConstructorFromDB x => [x]
     x
   asyAncestorList x
@@ -975,7 +975,7 @@ asyFindAttrs l ==
   for x in l repeat 
     x0 := x
     while cons? x repeat x := first x
-    if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
+    if symbolMember?(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]
 

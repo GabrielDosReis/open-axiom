@@ -323,7 +323,7 @@ setVector12 args ==
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['%list,:args2]]]
  where freeof(a,b) ==
-         atom a => null MEMQ(a,b)
+         atom a => null symbolMember?(a,b)
          freeof(first a,b) => freeof(rest a,b)
          false
  

@@ -404,7 +404,7 @@ JoinInner(l,$e) ==
       if atom at2 then at2:=[at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      MEMQ(first at2,$Attributes) => nil
+      symbolMember?(first at2,$Attributes) => nil
       null isCategoryForm(at2,$e) =>
         $Attributes:=[first at2,:$Attributes]
         nil
@@ -482,8 +482,8 @@ JoinInner(l,$e) ==
                 FundamentalAncestors:= [[bname],:second $NewCatVec.4]
                          --bname is Principal, so comes first
                 reallynew:= nil
-                MEMQ(b,l) =>
-                       --MEMQ since category vectors are guaranteed unique
+                objectMember?(b,l) =>
+                  --objectMember? since category vectors are guaranteed unique
                   (sigl:= $NewCatVec.1; attl:= $NewCatVec.2; l:= delete(b,l))
              --     SAY("domain ",bname," subsumes")
              --     SAY("adding a conditional domain ",
@@ -526,8 +526,8 @@ JoinInner(l,$e) ==
     sigl:= SigListUnion([DropImplementations u for u in b.1],sigl)
     attl:=
 -- next two lines are merely performance improvements
-      MEMQ(attl,b.2) => b.2
-      MEMQ(b.2,attl) => attl
+      symbolMember?(attl,b.2) => b.2
+      symbolMember?(b.2,attl) => attl
       S_+(b.2,attl)
     globalDomains:= [:globalDomains,:S_-(b.5,globalDomains)]
   for b in CondList repeat

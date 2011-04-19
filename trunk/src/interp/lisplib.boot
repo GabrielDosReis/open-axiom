@@ -49,7 +49,7 @@ $functionLocations := []
 NRTgenInitialAttributeAlist attributeList ==
   --alist has form ((item pred)...) where some items are constructor forms
   alist := [x for x in attributeList | -- throw out constructors
-    not MEMQ(opOf first x,allConstructors())]
+    not symbolMember?(opOf first x,allConstructors())]
   $lisplibAttributes := simplifyAttributeAlist
     [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ~= 'nothing]
 
@@ -637,7 +637,7 @@ Operators u ==
   atom u => []
   atom first u =>
     answer:="union"/[Operators v for v in rest u]
-    MEMQ(first u,answer) => answer
+    symbolMember?(first u,answer) => answer
     [first u,:answer]
   "union"/[Operators v for v in u]
  
@@ -778,7 +778,7 @@ getSlotFromCategoryForm ([op,:argl],index) ==
  
 isDomainForm(D,e) ==
   --added for MPOLY 3/83 by RDJ
-  MEMQ(KAR D,$SpecialDomainNames) or isFunctor D or
+  symbolMember?(KAR D,$SpecialDomainNames) or isFunctor D or
     -- ((D is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
      ((getmode(D,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
        isCategoryForm(getmode(D,e),e) or isDomainConstructorForm(D,e)
@@ -792,7 +792,7 @@ isFunctor x ==
   op:= opOf x
   not IDENTP op => false
   $InteractiveMode =>
-    MEMQ(op,$DomainNames) => true
+    symbolMember?(op,$DomainNames) => true
     getConstructorKindFromDB op in '(domain package)
   u:= get(op,'isFunctor,$CategoryFrame)
     or op in '(SubDomain Union Record Enumeration) => u

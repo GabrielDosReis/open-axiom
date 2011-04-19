@@ -64,7 +64,7 @@ profileRecord(label,name,info) ==  --name: info is var: type or op: sig
     op := 'constructor
     argl := nil
     opSig := [op]
-  if label = 'locals and MEMQ(name,argl) then label := 'arguments
+  if label = 'locals and symbolMember?(name,argl) then label := 'arguments
   alist1        := LASSOC(opSig,$profileAlist)
   alist2        := LASSOC(label,alist1)
   newAlist2     := insertAlist(name,info,alist2)

@@ -438,7 +438,7 @@ compileInteractive fn ==
 clearAllSlams x ==
   fn(x,nil) where
     fn(thoseToClear,thoseCleared) ==
-      for x in thoseToClear | not MEMQ(x,thoseCleared) repeat
+      for x in thoseToClear | not symbolMember?(x,thoseCleared) repeat
         slamListName:= mkCacheName x
         setDynamicBinding(slamListName,nil)
         thoseCleared:= ADJOIN(x,thoseCleared)

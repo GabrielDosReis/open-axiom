@@ -702,7 +702,7 @@ checkTrim($x,lines) == main where
     s := [wherePP first lines]
     for x in rest lines repeat
       j := wherePP x
-      if not MEMQ(j,s) then
+      if not scalarMember?(j,s) then
         checkDocError [$x,'" has varying indentation levels"]
         s := [j,:s]
     [trim y for y in lines]
@@ -816,7 +816,7 @@ checkDecorate u ==
       x is '"\spad" => ['"\spad",:acc]
       string? x and digit? stringChar(x,0) => [x,:acc]
       not spadflag and
-        (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
+        (char? x and alphabetic? x and not charMember?(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
       not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(maxIndex x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
@@ -844,17 +844,17 @@ isVowel c ==
 
 
 checkAddBackSlashes s ==
-  (CHARP s and (c := s)) or (#s = 1 and (c := s.0)) =>
-    MEMQ(s,$charEscapeList) => strconc($charBack,c)
+  (char? s and (c := s)) or (#s = 1 and (c := stringChar(s,0))) =>
+    charMember?(s,$charEscapeList) => strconc($charBack,charString c)
     s
   k := 0
   m := maxIndex s
   insertIndex := nil
   while k <= m repeat
     do
-      char := stringChar(s,k)
-      char = $charBack => k := k + 2
-      MEMQ(char,$charEscapeList) => return (insertIndex := k)
+      c := stringChar(s,k)
+      c = $charBack => k := k + 2
+      charMember?(c,$charEscapeList) => return (insertIndex := k)
     k := k + 1
   insertIndex => checkAddBackSlashes strconc(subString(s,0,insertIndex),$charBack,s.k,subString(s,insertIndex + 1))
   s
@@ -1218,7 +1218,7 @@ checkSkipIdentifierToken(u,i,m) ==
 
 ++ returns true if character `c' is alphabetic.
 checkAlphabetic c ==
-  alphabetic? c or digit? c or MEMQ(c,$charIdentifierEndings)
+  alphabetic? c or digit? c or charMember?(c,$charIdentifierEndings)
 
 --=======================================================================
 --        Code for creating a personalized report for ++ comments

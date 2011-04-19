@@ -450,7 +450,7 @@ isKeyQualityP (key,qual)  ==
 --% these functions handle the attributes
  
 initImPr msg  ==
-    $erMsgToss or MEMQ (getMsgTag msg,$imPrTagGuys) =>
+    $erMsgToss or symbolMember? (getMsgTag msg,$imPrTagGuys) =>
         setMsgUnforcedAttr (msg,'$imPrGuys,'imPr)
  
 initToWhere msg  ==

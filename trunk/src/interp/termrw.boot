@@ -72,7 +72,7 @@ termMatch(tp,t,SL,vars) ==
   -- then the result is the augmented substitution SL or 'failed
   tp=t => SL
   atom tp =>
-    MEMQ(tp,vars) =>
+    symbolMember?(tp,vars) =>
       p:= ASSOC(tp,SL) => ( rest p=t )
       [[tp,:t],:SL]
     'failed
