@@ -1245,7 +1245,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   $conargs   : local := rest conform
   if which = '"operation" then
     $signature : local :=
-      MEMQ(conname,$DomainNames) => nil
+      symbolMember?(conname,$DomainNames) => nil
       CDAR getConstructorModemapFromDB conname
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
@@ -1723,7 +1723,7 @@ screenLocalLine(line, conlist) ==
       k := charPosition(char "(",s,1)
       subString(s,1,k - 1)
     dbName line
-  MEMQ(con, conlist)
+  symbolMember?(con, conlist)
 
 purgeLocalLibdb() ==   --called by the user through a clear command?
   $newConstructorList := nil

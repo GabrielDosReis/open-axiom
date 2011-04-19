@@ -50,7 +50,7 @@ addDomain(domain,e) ==
     domain="$NoValueMode" => e
     not IDENTP domain or 2 < #(s:= STRINGIMAGE domain) and
       char "#" = stringChar(s,0) and char "#" = stringChar(s,1) => e
-    MEMQ(domain,getDomainsInScope e) => e
+    symbolMember?(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e
     addNewDomain(domain,e)
   (name:= first domain)='Category => e
@@ -604,7 +604,7 @@ actOnInfo(u,$e) ==
           genDomainView(name,name,cat,"HasCategory")
           -- a domain upgrade at function level is local to that function.
           if not $insideCapsuleFunctionIfTrue and 
-            not MEMQ(name,$functorLocalParameters) then
+            not symbolMember?(name,$functorLocalParameters) then
               $functorLocalParameters:=[:$functorLocalParameters,name]
       compilerMessage('"augmenting %1: %2p", [name,cat])
       $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)

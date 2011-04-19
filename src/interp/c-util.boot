@@ -603,7 +603,7 @@ diagnoseUnknownType(t,e) ==
       stackSemanticError(['"Enumerators must be symbols."], nil)
     -- Make sure we don't have repeated symbolic values
     for [sym,:syms] in tails args repeat
-      MEMQ(sym,syms) => 
+      symbolMember?(sym,syms) => 
         stackSemanticError(['"Symbolic value ", :bright sym, 
           '"is listed twice"], nil)
     t
@@ -679,7 +679,7 @@ isSubset(x,y,e) ==
 isDomainInScope(domain,e) ==
   domainList:= getDomainsInScope e
   atom domain =>
-    MEMQ(domain,domainList) => true
+    symbolMember?(domain,domainList) => true
     not IDENTP domain or isSomeDomainVariable domain => true
     false
   (name:= first domain)="Category" => true

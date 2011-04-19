@@ -447,7 +447,7 @@ dbReduceByOpSignature(opAlist,datalist) ==
 --    (((op,sig,:implementor),:stuff),...)
   ops := [CAAR x for x in datalist] --x is [[op,sig,:implementor],:.]
   acc := nil
-  for [op,:alist] in opAlist | MEMQ(op,ops) repeat
+  for [op,:alist] in opAlist | symbolMember?(op,ops) repeat
     entryList := [entry for (entry := [sig,:.]) in alist | test] where test() ==
       or/[x for x in datalist | x is [[=op,=sig,:.],:.]]
     entryList => acc := [[op,:nreverse entryList],:acc]
@@ -941,9 +941,9 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
               | key ~= 'Subsumed and ((null ops and (op1 := op)) or (op1 := memq(op,ops)))]
                  for [op,:u] in opAlist] where
     memq(op,ops) ==   --dirty trick to get 0 and 1 instead of Zero and One
-      MEMQ(op,ops) => op
-      op = 'One  => MEMQ(1,ops) and 1
-      op = 'Zero => MEMQ(0,ops) and 0
+      symbolMember?(op,ops) => op
+      op = 'One  => symbolMember?("1",ops) and "1"
+      op = 'Zero => symbolMember?("0",ops) and "0"
       false
     fn() ==
       sig1 := sublisFormal(rest domname,sig)

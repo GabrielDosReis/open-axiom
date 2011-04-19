@@ -49,7 +49,7 @@ displayCategoryTable(:options) ==
   SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
     HPUT($ct,a,[[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)])
-  for id in HKEYS $ct | null conList or MEMQ(id,conList) repeat
+  for id in HKEYS $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
     PRINT HGET($ct,id)
 
@@ -279,7 +279,7 @@ isFormalArgumentList argl ==
 mkCategoryExtensionAlist cform ==
   not cons? cform => nil
   cop := first cform
-  MEMQ(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
+  symbolMember?(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))
   extendsList:= nil
   for [cat,:pred] in catlist repeat
@@ -488,11 +488,11 @@ clearCategoryTable1(key,val) ==
 
 clearTempCategoryTable(catNames) ==
   for key in HKEYS(_*ANCESTORS_-HASH_*) repeat
-    MEMQ(key,catNames) => nil
+    symbolMember?(key,catNames) => nil
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
-        MEMQ(first catForm,catNames) => nil
+        symbolMember?(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
     HPUT(_*ANCESTORS_-HASH_*,key,extensions)
 

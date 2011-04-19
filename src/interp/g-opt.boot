@@ -464,7 +464,7 @@ $simpleVMoperators ==
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
   atomic? form => true
-  not symbol?(form.op) or not MEMQ(form.op,ops) => false
+  not symbol?(form.op) or not symbolMember?(form.op,ops) => false
   form.op is '%when =>
     and/[sideEffectFree? p and semiSimpleRelativeTo?(c,ops)
            for [p,c] in form.args]
@@ -485,7 +485,7 @@ isFloatableVMForm: %Code -> %Boolean
 isFloatableVMForm form ==
   atom form => form ~= "$"
   form is ["QUOTE",:.] => true
-  MEMQ(form.op, $simpleVMoperators) and
+  symbolMember?(form.op, $simpleVMoperators) and
     "and"/[isFloatableVMForm arg for arg in form.args]
     
 
@@ -497,7 +497,7 @@ isVMConstantForm form ==
   integer? form or string? form => true
   form isnt [op,:args] => false
   op in '(%list %pair %vector) => false
-  MEMQ(op,$VMsideEffectFreeOperators) and 
+  symbolMember?(op,$VMsideEffectFreeOperators) and 
     "and"/[isVMConstantForm arg for arg in args]
 
 ++ Return the set of free variables in the VM form `form'.
@@ -523,7 +523,7 @@ varIsAssigned(var,form) ==
 dependentVars expr == main(expr,nil) where
   main(x,vars) ==
     IDENTP x =>
-      MEMQ(x,vars) => vars
+      symbolMember?(x,vars) => vars
       [x,:vars]
     atomic? x => vars
     x' :=
@@ -601,10 +601,10 @@ optLET u ==
       continue := false
     continue => body
     u
-  not MEMQ(op,$simpleVMoperators) => u
+  not symbolMember?(op,$simpleVMoperators) => u
   not(and/[atomic? arg for arg in args]) => u
   -- Inline only if all parameters are used.  Get cute later.
-  not(and/[MEMQ(x,args) for [x,.] in inits]) => u
+  not(and/[symbolMember?(x,args) for [x,.] in inits]) => u
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
   for defs in tails inits repeat
     def := first defs

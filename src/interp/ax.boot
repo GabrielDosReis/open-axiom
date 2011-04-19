@@ -173,9 +173,9 @@ axFormatType(typeform) ==
         axAddLiteral('integer, 'PositiveInteger, 'Literal)
         ['RestrictTo, ['LitInteger, STRINGIMAGE typeform ], 'PositiveInteger]
      FLOATP typeform => ['LitFloat, STRINGIMAGE typeform]
-     MEMQ(typeform,$TriangleVariableList) =>
+     symbolMember?(typeform,$TriangleVariableList) =>
         SUBLISLIS($FormalMapVariableList, $TriangleVariableList, typeform)
-     MEMQ(typeform, $FormalMapVariableList) => typeform
+     symbolMember?(typeform, $FormalMapVariableList) => typeform
      axAddLiteral('string, 'Symbol, 'Literal)
      ['RestrictTo, ['LitString, symbolName typeform], 'Symbol]
   typeform is ['construct,: args] =>

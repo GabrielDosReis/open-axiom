@@ -304,7 +304,7 @@ whoUses(opSigList,conform) ==
   $conname : local := first conform
   domList := getUsersOfConstructor $conname
   hash := MAKE_-HASH_-TABLE()
-  for name in allConstructors() | MEMQ(name,domList) repeat
+  for name in allConstructors() | symbolMember?(name,domList) repeat
     $infovec : local := dbInfovec name
     null $infovec => 'skip           --category
     template := $infovec . 0
@@ -312,7 +312,7 @@ whoUses(opSigList,conform) ==
     opacc := nil
     for i in 7..maxIndex template repeat
       item := template . i
-      item isnt [n,:op] or not MEMQ(op,opList) => 'skip
+      item isnt [n,:op] or not symbolMember?(op,opList) => 'skip
       index := n
       numvec := getCodeVector()
       numOfArgs := numvec . index

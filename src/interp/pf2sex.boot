@@ -202,7 +202,7 @@ pfLiteral2Sex pf ==
 
 symEqual(sym, sym2) == sameObject?(sym, sym2)
 
-SymMemQ(sy, l) == MEMQ(sy, l)
+SymMemQ(sy, l) == symbolMember?(sy, l)
 
 pmDontQuote? sy ==
    SymMemQ(sy, '(_+ _- _* _*_* _^ _/ log exp pi sqrt ei li erf ci si dilog _

@@ -153,7 +153,7 @@ evaluateType form ==
         IDENTP arg => nil
         throwKeyedMsg("S2IL0031",nil)
       for [arg,:args] in tails argl repeat
-        MEMQ(arg,args) => throwKeyedMsg("S2IL0032",[arg])
+        symbolMember?(arg,args) => throwKeyedMsg("S2IL0032",[arg])
       form
     evaluateFormAsType form
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]

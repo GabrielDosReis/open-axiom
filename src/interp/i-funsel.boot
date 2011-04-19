@@ -443,7 +443,7 @@ defaultTarget(opNode,op,nargs,args) ==
 mkRationalFunction D ==  ['Fraction, ['Polynomial, D]]
 
 defaultTargetFE(a,:options) ==
-  a is ['Variable,.] or a = $RationalNumber or MEMQ(a.op,
+  a is ['Variable,.] or a = $RationalNumber or symbolMember?(a.op,
     [$Symbol.op, 'RationalRadicals,
      'Pi]) or typeIsASmallInteger(a) or isEqualOrSubDomain(a, $Integer) or
        a = $AlgebraicNumber =>
@@ -1289,7 +1289,7 @@ evalMmDom(st) ==
       string? d => SL:= 'failed
       p:= ASSQ(v,SL) and not (d=rest p) => SL:= 'failed
       d1:= subCopy(d,SL)
-      cons?(d1) and MEMQ(v,d1) => SL:= 'failed
+      cons?(d1) and symbolMember?(v,d1) => SL:= 'failed
       SL:= augmentSub(v,d1,SL)
     mmC is ['isFreeFunction,v,fun] =>
       SL:= augmentSub(v,subCopy(fun,SL),SL)
@@ -1307,7 +1307,7 @@ orderMmCatStack st ==
     cat := third s
     mem := nil
     for v in vars while not mem repeat
-      if MEMQ(v,cat) then
+      if symbolMember?(v,cat) then
         mem := true
         havevars := [s,:havevars]
     if not mem then haventvars := [s,:haventvars]

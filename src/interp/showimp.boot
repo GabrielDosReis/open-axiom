@@ -124,7 +124,8 @@ getDomainSigs(D,:option) ==
   getDomainSigs1(D,first option)
   
 getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
-  u() == [x for x in getDomainOpTable(D,nil) | null ops or MEMQ(first x,ops)]
+  u() == [x for x in getDomainOpTable(D,nil)
+            | null ops or symbolMember?(first x,ops)]
  
 getDomainDocs(D,:option) ==
   domname := D.0
@@ -260,7 +261,7 @@ formatLazyDomainForm(dom,x) ==
 dc(:r) ==
   con := KAR r
   options := KDR r
-  ok := MEMQ(con,allConstructors()) or (con := abbreviation? con)
+  ok := symbolMember?(con,allConstructors()) or (con := abbreviation? con)
   null ok =>
     sayBrightly '"Format is: dc(<constructor name or abbreviation>,option)"
     sayBrightly 

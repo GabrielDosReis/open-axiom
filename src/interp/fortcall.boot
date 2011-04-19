@@ -120,7 +120,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   writeLine('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
   for a in argList repeat
     if LISTP second a then writeMalloc(first a,first second a,rest second a,fp)
-    not MEMQ(first a,[:dummies,:asps]) => writeXDR(a,'"&xdrs",fp)
+    not symbolMember?(first a,[:dummies,:asps]) => writeXDR(a,'"&xdrs",fp)
   -- now call the Library routine.  FORTRAN names may have an underscore
   -- appended.
   if returnType then
@@ -309,7 +309,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
   nilLst := MAKE_-LIST(#args+1)
   decPar := [["$elt","Lisp","construct"],:makeLispList decls]
   fargNames := [makeSymbol strconc(STRINGIMAGE(u),'"__arg") for u in args |
-                 not (MEMQ(u,dummies) or MEMQ(u,asps)) ]
+                 not (symbolMember?(u,dummies) or symbolMember?(u,asps)) ]
   for u in asps repeat
     fargNames := delete(makeSymbol strconc(STRINGIMAGE(u),'"__arg"),fargNames)
   resPar := ["construct",["@",["construct",:fargNames],_
@@ -489,7 +489,7 @@ spadify(l,results,decls,names,actual) ==
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       -- Check to see whether we are dealing with a dummy (0-dimensional) array.
-      if MEMQ(0,dims) then
+      if scalarMember?(0,dims) then
         els := [[]]
       else if #dims=1 then
         els := [makeVector([fort.i for i in 0..(first(dims)-1)],nil)]
@@ -514,7 +514,7 @@ spadify(l,results,decls,names,actual) ==
           els := [makeVector(nreverse middleEls,nil),:els]
       else
          error ['"Can't cope with output dimensions higher than 3"]
-      if not MEMQ(0,dims) then els := makeVector(nreverse els,nil)
+      if not scalarMember?(0,dims) then els := makeVector(nreverse els,nil)
       spadForms := [makeResultRecord(name,ty,els), :spadForms]
     -- Result is a Boolean Scalar
     atom fort and ty="logical" =>

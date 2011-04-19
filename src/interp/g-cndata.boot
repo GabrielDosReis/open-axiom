@@ -69,7 +69,7 @@ putConstructorProperty(name,prop,val) ==
   true
 
 attribute? name == 
-        MEMQ(name, $BuiltinAttributes)
+  symbolMember?(name, $BuiltinAttributes)
  
 abbreviation? abb ==
   -- if it is an abbreviation, return the corresponding name
@@ -90,7 +90,7 @@ packageForm? d ==
 categoryFrom?: %Form -> %Boolean
 categoryForm? c ==
   op := opOf c
-  MEMQ(op, $CategoryNames) => true
+  symbolMember?(op, $CategoryNames) => true
   getConstructorKindFromDB op = "category" => true
   false
 

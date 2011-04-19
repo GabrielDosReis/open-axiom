@@ -129,7 +129,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     -- to be encoded.
     op = "Enumeration" => x
     ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE simplifyVMForm compForm]
-  MEMQ(x,$formalArgList) =>
+  symbolMember?(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
     firstTime => ["local",v]
     v
@@ -248,7 +248,7 @@ NRTgetLocalIndex item ==
   k := NRTassocIndex item => k
   item = "$" => 0
   item = "$$" => 2
-  atom item and not MEMQ(item,$formalArgList) =>  --give slots to atoms
+  atom item and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
     $NRTdeltaList:= [["%domain",NRTaddInner item],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     index := $NRTbase + $NRTdeltaLength      -- slot number to return
@@ -529,7 +529,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
     argStuffCode :=
       [['%store,['%tref,'$,i],v] for i in $NRTbase.. for v in $FormalMapVariableList
 	for arg in args]
-    if MEMQ($NRTaddForm,$locals) then
+    if symbolMember?($NRTaddForm,$locals) then
        addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
        argStuffCode := [['%store,['%tref,'$,5],addargname],:argStuffCode]
     [['stuffDomainSlots,'$],:argStuffCode,

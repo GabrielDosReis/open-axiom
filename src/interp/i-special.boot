@@ -808,10 +808,10 @@ checkForFreeVariables(v,locals) ==
   null v => v
   symbol? v =>
     v="$$$" => v -- Placeholder for mini-vector
-    MEMQ(v,$boundVariables) => v
+    symbolMember?(v,$boundVariables) => v
     p := POSITION(v,$freeVariables) =>
       ["getSimpleArrayEntry","envArg",positionInVec(p,#($freeVariables))]
-    (locals = "ALL") or MEMQ(v,locals) =>
+    (locals = "ALL") or symbolMember?(v,locals) =>
       $freeVariables := [v,:$freeVariables]
       ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
     v

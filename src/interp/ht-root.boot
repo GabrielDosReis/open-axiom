@@ -105,7 +105,7 @@ htSystemVariables() == main where
       fn(rest t,gn(first t,al),firstTime)
     gn(t,al) ==
       [.,.,class,key,.,options,:.] := t
-      not MEMQ(class,$levels) => al
+      not symbolMember?(class,$levels) => al
       key = 'LITERALS or key = 'INTEGER or key = 'STRING => [[$heading,:t],:al]
       key = 'TREE => fn(options,al,false)
       key = 'FUNCTION => [[$heading,:t],:al]

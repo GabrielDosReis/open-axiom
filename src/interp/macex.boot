@@ -167,7 +167,7 @@ mac0MLambdaApply(mlambda, args, opf, $pfMacros) ==
     mac0ExpandBody( body , opf, $macActive, $posActive)
  
 mac0ExpandBody(body, opf, $macActive, $posActive) ==
-    MEMQ(body,$macActive) =>
+    symbolMember?(body,$macActive) =>
         [.,pf] := $posActive
         posn   := pfSourcePosition pf
         mac0InfiniteExpansion(posn, body, $macActive)

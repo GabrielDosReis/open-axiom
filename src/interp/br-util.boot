@@ -150,7 +150,8 @@ htPred2English(x,:options) ==
         gn(x,op,l,prec)
         if prec < 5 then htSay '")"
       x = 'etc => htSay '"..."
-      IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds symbolName x
+      IDENTP x and not symbolMember?(x,$emList) =>
+        htSay escapeSpecialIds symbolName x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
       op in '(NOT not) =>
@@ -202,9 +203,10 @@ form2HtString(x,:options) ==
   fn(x) where
     fn x ==
       atom x =>
-        MEMQ(x,$FormalMapVariableList) => strconc('"\",STRINGIMAGE x)
+        symbolMember?(x,$FormalMapVariableList) =>
+          strconc('"\",symbolName x)
         u := escapeSpecialChars STRINGIMAGE x
-        MEMQ(x,$emList) => strconc('"{\em ",u,'"}")
+        symbolMember?(x,$emList) => strconc('"{\em ",u,'"}")
         string? x => strconc('"_"",u,'"_"")
         u
       first x = 'QUOTE => strconc('"'",sexpr2HtString second x)
@@ -236,8 +238,8 @@ sexpr2HtString x ==
 form2LispString(x) ==
   atom x =>
     x = '_$ => '"__$"
-    MEMQ(x,$FormalMapVariableList) => strconc(STRINGIMAGE '__, STRINGIMAGE x)
-    string? x => strconc('"_"",STRINGIMAGE x,'"_"")
+    symbolMember?(x,$FormalMapVariableList) => strconc('"__", symbolName x)
+    string? x => strconc('"_"",x,'"_"")
     STRINGIMAGE x
   x is ['QUOTE,a] => strconc('"'",sexpr2LispString a)
   x is [":",a,b] => strconc(form2LispString a,'":",form2LispString b)

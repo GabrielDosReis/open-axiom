@@ -205,7 +205,8 @@ firstNonDelim(s,n) ==
 firstDelim(s,n) ==
   or/[k for k in n..maxIndex s | isFilterDelimiter? stringChar(s,k)]
 
-isFilterDelimiter? c == MEMQ(c,$pmFilterDelimiters)
+isFilterDelimiter? c ==
+  charMember?(c,$pmFilterDelimiters)
 
 grepSplit(lines,doc?) ==
   if doc? then

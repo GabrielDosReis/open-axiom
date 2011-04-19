@@ -256,7 +256,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --   if argl'="failed" then return nil
 --   mappingHasCategoryTarget => convert([form,first ml,e],m)
 --   form:=
---     not MEMQ(op,$formalArgList) and atom op =>
+--     not symbolMember?(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
 --         op':= makeSymbol strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ['%call,["applyFun",op],:argl']
@@ -267,7 +267,7 @@ hasFormalMapVariable(x, vl) ==
   $formalMapVariables: local := vl
   null vl => false
   ScanOrPairVec(function hasone?,x) where
-     hasone? x == MEMQ(x,$formalMapVariables)
+     hasone? x == symbolMember?(x,$formalMapVariables)
 
 
 ++ Return the usage list of free variables in a lambda expresion.
@@ -277,7 +277,7 @@ freeVarUsage([.,vars,body],env) ==
     freeList(u,bound,free,e) ==
       atom u =>
         not IDENTP u => free
-        MEMQ(u,bound) => free
+        symbolMember?(u,bound) => free
         v := ASSQ(u,free) =>
           v.rest := 1 + rest v
           free
@@ -417,16 +417,16 @@ compSymbol(s,m,e) ==
   isFluid s => [s,getmode(s,e) or return nil,e]
   sameObject?(s,m) or isLiteral(s,e) => [["QUOTE",s],s,e]
   v := get(s,"value",e) =>
-    MEMQ(s,$functorLocalParameters) =>
+    symbolMember?(s,$functorLocalParameters) =>
         NRTgetLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
     [s,v.mode,e] --s has been SETQd
   m' := getmode(s,e) =>
-    if not MEMQ(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
+    if not symbolMember?(s,$formalArgList) and not symbolMember?(s,$FormalMapVariableList) and
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
-  MEMQ(s,$FormalMapVariableList) => 
+  symbolMember?(s,$FormalMapVariableList) => 
     stackMessage('"no mode found for %1b",[s])
   member(m,$IOFormDomains) or member(m,[$Identifier,$Symbol]) =>
     [['QUOTE,s],m,e]
@@ -529,8 +529,8 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
            if not PredImplies(ncond,cond) then
              newList := [[first u,[cond,['ELT,dc,nil]]],:newList]
   if deleteList ~= nil then 
-    modemapList := [u for u in modemapList | not MEMQ(u,deleteList)]
-  -- We can use MEMQ since deleteList was built out of members of modemapList
+    modemapList := [u for u in modemapList | not objectMember?(u,deleteList)]
+  -- We can use objectMember? since deleteList was built out of members of modemapList
   -- its important that subsumed ops (newList) be considered last
   if newList then 
     modemapList := append(modemapList,newList)
@@ -695,7 +695,7 @@ compApplication(op,argl,m,T) ==
     argTl = "failed" => nil
     form:=
       atom T.expr and 
-        not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) and
+        not (symbolMember?(op,$formalArgList) or symbolMember?(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
       ['%call, ['applyFun, T.expr], :[a.expr for a in argTl]]

@@ -430,7 +430,7 @@ scanPossFloat (w)==
 
 scanCloser == [")","}","]","|)","|}","|]"]
 
-scanCloser? w== MEMQ(keyword w,scanCloser)
+scanCloser? w== symbolMember?(keyword w,scanCloser)
 
 scanSpace()==
   n := $n

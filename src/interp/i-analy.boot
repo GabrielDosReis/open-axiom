@@ -69,14 +69,14 @@ getMinimalVariableTower(var,t) ==
     NIL
   t is ['Polynomial,.] => t
   t is ['RationalFunction,D] => ['Polynomial,D]
-  t is [up,t',u,.] and MEMQ(up,$univariateDomains) =>
+  t is [up,t',u,.] and symbolMember?(up,$univariateDomains) =>
     -- power series have one more arg and different ordering
     u = var => t
     getMinimalVariableTower(var,t')
-  t is [up,u,t'] and MEMQ(up,$univariateDomains) =>
+  t is [up,u,t'] and symbolMember?(up,$univariateDomains) =>
     u = var => t
     getMinimalVariableTower(var,t')
-  t is [mp,u,t'] and MEMQ(mp,$multivariateDomains) =>
+  t is [mp,u,t'] and symbolMember?(mp,$multivariateDomains) =>
     var in u => t
     getMinimalVariableTower(var,t')
   null (t' := underDomainOf t) => NIL
@@ -167,7 +167,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
   -- tries to push appropriate target information onto variable
   -- occurring in arithmetic expressions
   cons?(target) and first(target) = 'Variable => NIL
-  not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
+  not symbolMember?(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
     vector?(x) =>   -- leaf
