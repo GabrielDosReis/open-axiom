@@ -33,30 +33,28 @@
 import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
-  charMember?, scalarMember?)
+  charMember?, scalarMember?, listMember?)
 
 objectMember?(x,l) ==
   cons? l => sameObject?(x,first l) or objectMember?(x,rest l)
   sameObject?(x,l)
 
-symbolMember?(x,l) ==
+genericMember?(x,l,p) ==
   l = nil => false
-  cons? l => sameObject?(x,first l) or symbolMember?(x,rest l)
-  sameObject?(x,l)
+  cons? l => apply(p,x,first l,nil) or genericMember?(x,rest l,p)
+  apply(p,x,l,nil)
+
+symbolMember?(x,l) ==
+  genericMember?(x,l,function symbolEq?)
 
 stringMember?(s,l) ==
-  l = nil => false
-  cons? l => stringEq?(s,first l) or stringMember?(s,rest l)
-  stringEq?(s,l)
+  genericMember?(s,l,function stringEq?)
 
-charMember?(x,l) ==
-  l = nil => false
-  cons? l => charEq?(x,first l) or charMember?(x,rest l)
-  charEq?(x,l)
+charMember?(c,l) ==
+  genericMember?(c,l,function charEq?)
 
 scalarMember?(x,l) ==
-  l = nil => false
-  cons? l => scalarEq?(x,first l) or scalarMember?(x,rest l)
-  scalarEq?(x,l)
+  genericMember?(x,l,function scalarEq?)
 
-  
+listMember?(x,l) ==
+  genericMember?(x,l,function listEq?)

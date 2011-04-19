@@ -134,7 +134,7 @@ constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   if typ = "category" and siz > 7
     then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
   if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
-  if s ~= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
+  if s ~= stringUpcase s then throwKeyedMsg("S2IL0006",NIL)
   abb := getConstructorAbbreviationFromDB c
   name:= getConstructorFullNameFromDB a
   type := getConstructorKindFromDB c

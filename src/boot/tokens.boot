@@ -251,9 +251,11 @@ for i in [ _
   ["bitmask",   "SBIT"] , _
   ["canonicalFilename", "PROBE-FILE"], _
   ["charByName", "NAME-CHAR"] , _
+  ["charDowncase", "CHAR-DOWNCASE"], _
+  ["charEq?",   "CHAR=" ], _
+  ["charUpcase", "CHAR-UPCASE"], _
   ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
-  ["charEq?",   "CHAR=" ], _
   ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
@@ -273,6 +275,7 @@ for i in [ _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
+  ["listEq?",    "EQUAL"] , _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["makeSymbol", "INTERN"] , _
   ["maxIndex", "MAXINDEX"] , _
@@ -305,12 +308,14 @@ for i in [ _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
   ["stringChar", "SCHAR"] , _
+  ["stringDowncase", "STRING-DOWNCASE"] , _
   ["string?",  "STRINGP"]  ,_
   ["stringEq?","STRING="] , _
+  ["stringUpcase", "STRING-UPCASE"] , _
   ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
-  ["symbolEqual?", "EQ"], _
+  ["symbolEq?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _
   ["symbolName", "SYMBOL-NAME"], _
   ["symbolValue", "SYMBOL-VALUE"], _
@@ -320,6 +325,7 @@ for i in [ _
   ["toString", "WRITE-TO-STRING"], _
   ["true",           "T"]  , _
   ["upperCase?", "UPPER-CASE-P"], _
+  ["valueEq?",    "EQUAL"] , _
   ["vector?", "SIMPLE-VECTOR-P"], _
   ["vectorRef", "SVREF"] , _
   ["writeByte", "WRITE-BYTE"], _

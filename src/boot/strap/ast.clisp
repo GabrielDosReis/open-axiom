@@ -1117,20 +1117,57 @@
                (SETQ |bfVar#95| (CDR |bfVar#95|))))))))
 
 (DEFUN |bfMember| (|var| |seq|)
-  (PROG (|ISTMP#1|)
+  (PROG (|x| |ISTMP#2| |ISTMP#1|)
     (RETURN
       (COND
-        ((OR (INTEGERP |var|)
-             (AND (CONSP |var|) (EQ (CAR |var|) '|char|)
-                  (PROGN
-                    (SETQ |ISTMP#1| (CDR |var|))
-                    (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
-             (|sequence?| |seq| #'INTEGERP))
-         (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'EQL)))
+        ((OR (INTEGERP |var|) (|sequence?| |seq| #'INTEGERP))
+         (COND
+           ((AND (CONSP |seq|) (EQ (CAR |seq|) 'QUOTE)
+                 (PROGN
+                   (SETQ |ISTMP#1| (CDR |seq|))
+                   (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                        (PROGN
+                          (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                          (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                               (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
+            (LIST 'EQL |var| |x|))
+           (T (LIST '|scalarMember?| |var| |seq|))))
         ((OR (|defQuoteId| |var|) (|sequence?| |seq| #'SYMBOLP))
-         (LIST '|symbolMember?| |var| |seq|))
-        ((OR (STRINGP |var|) (|sequence?| |seq| #'STRINGP))
-         (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'STRING=)))
+         (COND
+           ((AND (CONSP |seq|) (EQ (CAR |seq|) 'QUOTE)
+                 (PROGN
+                   (SETQ |ISTMP#1| (CDR |seq|))
+                   (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                        (PROGN
+                          (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                          (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                               (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
+            (LIST 'EQ |var| (LIST 'QUOTE |x|)))
+           (T (LIST '|symbolMember?| |var| |seq|))))
+        ((OR (|bfChar?| |var|) (|sequence?| |seq| #'CHARACTERP))
+         (COND
+           ((AND (CONSP |seq|) (EQ (CAR |seq|) 'QUOTE)
+                 (PROGN
+                   (SETQ |ISTMP#1| (CDR |seq|))
+                   (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                        (PROGN
+                          (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                          (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                               (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
+            (LIST 'CHAR= |var| |x|))
+           (T (LIST '|charMember?| |var| |seq|))))
+        ((OR (|bfString?| |var|) (|sequence?| |seq| #'STRINGP))
+         (COND
+           ((AND (CONSP |seq|) (EQ (CAR |seq|) 'QUOTE)
+                 (PROGN
+                   (SETQ |ISTMP#1| (CDR |seq|))
+                   (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                        (PROGN
+                          (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                          (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                               (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
+            (LIST 'STRING= |var| |x|))
+           (T (LIST '|stringMember?| |var| |seq|))))
         (T (LIST 'MEMBER |var| |seq|))))))
 
 (DEFUN |bfInfApplication| (|op| |left| |right|)

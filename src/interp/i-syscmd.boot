@@ -2310,7 +2310,7 @@ readSpad2Cmd l ==
     throwKeyedMsg("S2IL0003",[namestring l])
   ll := pathname ll
   ft := pathnameType ll
-  upft := UPCASE ft
+  upft := stringUpcase ft
   null member(upft,fileTypes) =>
     fs := namestring l
     member(upft,devFTs) => throwKeyedMsg("S2IZ0033",[fs])

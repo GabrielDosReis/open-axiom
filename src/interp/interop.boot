@@ -200,7 +200,7 @@ quoteCatOp cat ==
 
 oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    [catform,hash, pack,:.] := catenv
-   opIsHasCat op => if scalarEqual?(sig, hash) then [self] else nil
+   opIsHasCat op => if scalarEq?(sig, hash) then [self] else nil
    null(pack) => nil
    if not vector? pack then
        pack:=apply(pack, [self, :rest catform])
@@ -236,7 +236,7 @@ attributeDevaluate(attrObj, env) ==
 
 attributeLookupExport(attrObj, self, op, sig, box, env) ==
    [name, hash] := attrObj
-   opIsHasCat op => if scalarEqual?(hash, sig) then [self] else nil
+   opIsHasCat op => if scalarEq?(hash, sig) then [self] else nil
 
 attributeHashCode(attrObj, env) ==
    [name, hash] := attrObj
@@ -363,13 +363,13 @@ oldAxiomDomainLookupExport _
   (domenv, self, op, sig, box, skipdefaults, env) ==
      domainVec := rest domenv
      if hashCode? op then
-         scalarEqual?(op, $hashOp1) => op := 'One
-         scalarEqual?(op, $hashOp0) => op := 'Zero
-         scalarEqual?(op, $hashOpApply) => op := 'elt
-         scalarEqual?(op, $hashOpSet) => op := 'setelt
-         scalarEqual?(op, $hashSeg) => op := 'SEGMENT
+         scalarEq?(op, $hashOp1) => op := 'One
+         scalarEq?(op, $hashOp0) => op := 'Zero
+         scalarEq?(op, $hashOpApply) => op := 'elt
+         scalarEq?(op, $hashOpSet) => op := 'setelt
+         scalarEq?(op, $hashSeg) => op := 'SEGMENT
      constant := nil
-     if hashCode? sig and self and scalarEqual?(sig, getDomainHash self) then
+     if hashCode? sig and self and scalarEq?(sig, getDomainHash self) then
        sig := '($)
        constant := true
      val :=
@@ -419,7 +419,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
 
 $hasCatOpHash := hashString '"%%"
 opIsHasCat op ==
-  hashCode? op => scalarEqual?(op, $hasCatOpHash)
+  hashCode? op => scalarEq?(op, $hasCatOpHash)
   op = "%%"
 
 -- has cat questions lookup up twice if false
@@ -440,12 +440,12 @@ oldCompLookupNoDefaults(op, sig, domvec, dollar) ==
 hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   opIsHasCat op =>
       HasCategory(domain, sig)
-  if hashCode? op and scalarEqual?(op, $hashOp1) then op := 'One
-  if hashCode? op and scalarEqual?(op, $hashOp0) then op := 'Zero
+  if hashCode? op and scalarEq?(op, $hashOp1) then op := 'One
+  if hashCode? op and scalarEq?(op, $hashOp0) then op := 'Zero
   hashPercent :=
     vector? dollar => hashType(dollar.0,0)
     hashType(dollar,0)
-  if hashCode? sig and scalarEqual?(sig, hashPercent) then 
+  if hashCode? sig and scalarEq?(sig, hashPercent) then 
          sig := hashType('(Mapping $), hashPercent)
   dollar = nil => systemError()
   $lookupDefaults = true =>

@@ -45,7 +45,7 @@ buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
     words := wordsOfString s
-    key := UPCASE stringChar(s,0)
+    key := charUpcase stringChar(s,0)
     HPUT(table,key,[[s,:words],:HGET(table,key)])
   for key in HKEYS table repeat
     HPUT(table,key,
@@ -64,7 +64,7 @@ removeDupOrderedAlist u ==
     (y := rest x) and first first x = first first y => x.rest := rest y
   u
  
-wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
+wordsOfString(s) == [stringUpcase x for x in wordsOfStringKeepCase s]
  
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
@@ -83,7 +83,7 @@ wordsOfString1(s,j) ==
   nil
 
 wordKeys s == 
-  removeDuplicates [UPCASE stringChar(s,0),:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [charUpcase stringChar(s,0),:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
     upperCase? stringChar(s,i) =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])

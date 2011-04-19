@@ -133,7 +133,7 @@ CONTAINED(x,y) == main where
     equal(x,y)
   eq(x,y) ==
     cons? y => eq(x, first y) or eq(x, rest y)
-    symbolEqual?(x,y)
+    symbolEq?(x,y)
   equal(x,y) ==
     atom y => x = y
     equal(x, first y) or equal(x, rest y)
@@ -275,7 +275,7 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
 hashTable cmp ==
   testFun :=
     cmp in '(ID EQ) => function sameObject?
-    cmp = 'EQL => function scalarEqual?
+    cmp = 'EQL => function scalarEq?
     cmp = 'EQUAL => function EQUAL
     error '"bad arg to hashTable"
   MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)

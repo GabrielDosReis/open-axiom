@@ -662,7 +662,7 @@ fortFormatHead(returnType,name,args) ==
   changeExprLength(-l)
 
 checkType ty ==
-  ty := STRING_-UPCASE STRINGIMAGE ty
+  ty := stringUpcase STRINGIMAGE ty
   $fortranPrecision = "double" =>
     ty = '"REAL" => '"DOUBLE PRECISION"
     ty = '"COMPLEX" => '"DOUBLE COMPLEX"
