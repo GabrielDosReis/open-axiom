@@ -700,12 +700,18 @@ sequence?(x,pred) ==
 ++ Generate code for a membership test `x in seq' where `seq'
 ++ is a sequence (e.g. a list)
 bfMember(var,seq) ==
-  integer? var or var is ["char",.] or sequence?(seq,function integer?) =>
-    ["MEMBER",var,seq,KEYWORD::TEST, ["FUNCTION", "EQL"]]
+  integer? var or sequence?(seq,function integer?) =>
+    seq is ["QUOTE",[x]] => ["EQL",var,x]
+    ["scalarMember?",var,seq]
   defQuoteId var or sequence?(seq,function symbol?) =>
+    seq is ["QUOTE",[x]] => ["EQ",var,["QUOTE",x]]
     ["symbolMember?",var,seq]
-  string? var or sequence?(seq,function string?) =>
-    ["MEMBER",var,seq,KEYWORD::TEST,["FUNCTION", "STRING="]]
+  bfChar? var or sequence?(seq,function char?) =>
+    seq is ["QUOTE",[x]] => ["CHAR=",var,x]
+    ["charMember?",var,seq]
+  bfString? var or sequence?(seq,function string?) =>
+    seq is ["QUOTE",[x]] => ["STRING=",var,x]
+    ["stringMember?",var,seq]
   ["MEMBER",var,seq]
   
 bfInfApplication(op,left,right)==

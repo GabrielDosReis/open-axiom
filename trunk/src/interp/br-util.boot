@@ -106,7 +106,7 @@ capitalize s ==
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
-    stringChar(res,0) := UPCASE stringChar(res,0)
+    stringChar(res,0) := charUpcase stringChar(res,0)
     res
 
 escapeSpecialIds u ==   --very expensive function

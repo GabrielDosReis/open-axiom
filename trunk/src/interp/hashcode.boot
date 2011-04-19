@@ -63,7 +63,7 @@ hashType(type, percentHash) ==
                 for arg in mapArgs repeat
                         hash := hashCombine(hashType(arg, percentHash), hash)
                 retCode := hashType(retType, percentHash)
-                scalarEqual?(retCode, $VoidHash) => hash
+                scalarEq?(retCode, $VoidHash) => hash
                 hashCombine(retCode, hash)
         op = 'Enumeration =>
                 for arg in args repeat

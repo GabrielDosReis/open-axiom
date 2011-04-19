@@ -1,5 +1,11 @@
 2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: charUpcase, charDowncase, stringUpcase,
+	singDowncase, valueEq? are new builtin functions.
+	* boot/ast.boot (bfMembr): Tidy.
+
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/newfort.boot: Likewise.
 	* interp/define.boot (orderBySubsumption): Fix thinko.
 	* interp/boot-pkg.lisp: Use BOOTTRAN package.  Don't import names

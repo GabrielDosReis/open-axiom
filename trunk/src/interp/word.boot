@@ -42,7 +42,7 @@ buildFunctionTable(dicts) ==
 buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
-    key := UPCASE s.0
+    key := charUpcase stringChar(s,0)
     HPUT(table,key,[[s,:wordsOfString s],:HGET(table,key)])
   for key in HKEYS table repeat
     HPUT(table,key,
@@ -103,7 +103,8 @@ getListOfFunctionNames(fnames) ==
     SHUT stream
   res
  
-wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
+wordsOfString(s) ==
+  [stringUpcase x for x in wordsOfStringKeepCase s]
  
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  

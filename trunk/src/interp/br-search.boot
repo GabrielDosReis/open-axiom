@@ -244,7 +244,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
     strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
     alphabetic? c =>
-      strconc('"[",CHAR_-UPCASE c,CHAR_-DOWNCASE c,'"]")
+      strconc('"[",charUpdate c,charDowncase c,'"]")
     c
 
 mkGrepPattern(s,key) ==

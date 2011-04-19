@@ -701,12 +701,12 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
   main() ==
     a := createAbbreviation id => a
     name := PNAME id
---  #name < 8 => makeSymbol UPCASE name
+--  #name < 8 => makeSymbol stringUpcase name
     parts := asySplit(name,maxIndex name)
     newname := strconc/[asyShorten x for x in parts]
     #newname < 8 => makeSymbol newname
     tryname := subString(name,0,7)
-    not createAbbreviation tryname => makeSymbol UPCASE tryname
+    not createAbbreviation tryname => makeSymbol stringUpcase tryname
     nil
   chk(conname,abb) ==
     (xx := asyGetAbbrevFromComments conname) => xx
