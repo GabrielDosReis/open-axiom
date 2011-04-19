@@ -581,6 +581,9 @@
           (|$InteractiveMode| |expr'|)
           (T (|shoeEVALANDFILEACTQ| |expr'|)))))))
 
+(DEFUN |exportNames| (|ns|)
+  (COND ((NULL |ns|) NIL) (T (LIST (CONS 'EXPORT |ns|)))))
+
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |xs|)
     (DECLARE (SPECIAL |$activeNamespace| |$InteractiveMode|
@@ -600,25 +603,34 @@
                        (|body| (CADDDR |b|)))
                    (CDR (|bfDef| |op| |args| |body|))))
              (|%Module|
-                 (LET ((|m| (CADR |b|)) (|ds| (CADDR |b|)))
+                 (LET ((|m| (CADR |b|)) (|ns| (CADDR |b|))
+                       (|ds| (CADDDR |b|)))
                    (PROGN
                      (SETQ |$currentModuleName| |m|)
                      (SETQ |$foreignsDefsForCLisp| NIL)
                      (CONS (LIST 'PROVIDE (SYMBOL-NAME |m|))
-                           (LET ((|bfVar#11| NIL) (|bfVar#10| |ds|)
-                                 (|d| NIL))
-                             (LOOP
-                               (COND
-                                 ((OR (ATOM |bfVar#10|)
-                                      (PROGN
-                                        (SETQ |d| (CAR |bfVar#10|))
-                                        NIL))
-                                  (RETURN (NREVERSE |bfVar#11|)))
-                                 (T (SETQ |bfVar#11|
-                                     (CONS
-                                      (CAR (|translateToplevel| |d| T))
-                                      |bfVar#11|))))
-                               (SETQ |bfVar#10| (CDR |bfVar#10|))))))))
+                           (APPEND (|exportNames| |ns|)
+                                   (LET
+                                    ((|bfVar#11| NIL) (|bfVar#10| |ds|)
+                                     (|d| NIL))
+                                     (LOOP
+                                       (COND
+                                         ((OR (ATOM |bfVar#10|)
+                                           (PROGN
+                                             (SETQ |d|
+                                              (CAR |bfVar#10|))
+                                             NIL))
+                                          (RETURN
+                                            (NREVERSE |bfVar#11|)))
+                                         (T
+                                          (SETQ |bfVar#11|
+                                           (CONS
+                                            (CAR
+                                             (|translateToplevel| |d|
+                                              T))
+                                            |bfVar#11|))))
+                                       (SETQ |bfVar#10|
+                                        (CDR |bfVar#10|)))))))))
              (|%Import|
                  (LET ((|m| (CADR |b|)))
                    (PROGN

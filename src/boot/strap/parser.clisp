@@ -461,19 +461,26 @@
 
 (DEFUN |bpExportItemList| () (|bpListAndRecover| #'|bpExportItem|))
 
-(DEFUN |bpExports| () (|bpPileBracketed| #'|bpExportItemList|))
+(DEFUN |bpModuleInterface| ()
+  (COND
+    ((|bpEqKey| 'WHERE)
+     (OR (|bpPileBracketed| #'|bpExportItemList|)
+         (AND (|bpExportItem|) (|bpPush| (LIST (|bpPop1|))))
+         (|bpTrap|)))
+    (T (|bpPush| NIL))))
+
+(DEFUN |bpModuleExports| ()
+  (COND
+    ((|bpParenthesized| #'|bpIdList|)
+     (|bpPush| (|bfUntuple| (|bpPop1|))))
+    (T (|bpPush| NIL))))
 
 (DEFUN |bpModule| ()
   (COND
-    ((|bpEqKey| 'MODULE)
-     (IDENTITY
-         (PROGN
-           (OR (|bpName|) (|bpTrap|))
-           (COND
-             ((|bpEqKey| 'WHERE)
-              (AND (|bpExports|)
-                   (|bpPush| (|%Module| (|bpPop2|) (|bpPop1|)))))
-             (T (|bpPush| (|%Module| (|bpPop1|) NIL)))))))))
+    ((|bpEqKey| 'MODULE) (OR (|bpName|) (|bpTrap|)) (|bpModuleExports|)
+     (|bpModuleInterface|)
+     (|bpPush| (|%Module| (|bpPop3|) (|bpPop2|) (|bpPop1|))))
+    (T NIL)))
 
 (DEFUN |bpImport| ()
   (PROG (|a|)

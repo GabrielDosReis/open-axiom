@@ -1,3 +1,10 @@
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (%Module): Now take three arguments.
+	* boot/parser.boot (bpModuleInterface): Rename from bpExports.
+	(bpModuleExports): New.
+	(bpModule): Now allow specification of exported names.
+
 2011-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Translate maxIndex to MAXINDEX.
