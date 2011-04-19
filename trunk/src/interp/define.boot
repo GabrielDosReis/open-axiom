@@ -216,12 +216,12 @@ orderBySubsumption items ==
     if null second u then u := [first u,1] --mark as missing operation
     y := [[a,'Subsumed],u,:y] --makes subsuming signature follow one subsumed
     z := insert(b,z)  --mark a signature as already present
-  [:y,:[w for (w := [c,:.]) in acc | not member(c,z)]] --add those not subsuming
+  [:y,:[w for (w := [c,:.]) in acc | not listMember?(c,z)]] --add those not subsuming
  
 makeCompactSigCode sig == [fn for x in sig] where 
   fn() == 
-    x = "$$" => 2
-    x = "$" => 0
+    x is "$$" => 2
+    x is "$" => 0
     not integer? x => 
       systemError ['"code vector slot is ",x,'"; must be number"]
     x
@@ -336,7 +336,7 @@ extendsCategoryBasic(dom,u,v) ==
   v is ['SIGNATURE,op,sig] =>
     or/[vectorRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
-    v is ['IF,:.] => member(v,l)
+    v is ['IF,:.] => listMember?(v,l)
     nil
   nil
  
@@ -345,7 +345,7 @@ catExtendsCat?(u,v,uvec) ==
   uvec := uvec or (compMakeCategoryObject(u,$EmptyEnvironment)).expr
   slot4 := vectorRef(uvec,4)
   prinAncestorList := first slot4
-  member(v,prinAncestorList) => true
+  listMember?(v,prinAncestorList) => true
   vOp := KAR v
   if similarForm := assoc(vOp,prinAncestorList) then
     PRINT u
@@ -415,7 +415,7 @@ $capsuleFunctions := nil
 ++ `pred' is defined in the current capsule of the current domain
 ++ being compiled.
 noteCapsuleFunctionDefinition(op,sig,pred) ==
-  member([op,sig,pred],$capsuleFunctions) =>
+  listMember?([op,sig,pred],$capsuleFunctions) =>
     stackAndThrow('"redefinition of %1b: %2 %3",
       [op,formatUnabbreviated ["Mapping",:sig],formatIf pred])
   $capsuleFunctions := [[op,sig,pred],:$capsuleFunctions]
@@ -435,7 +435,7 @@ noteExport(form,pred) ==
   -- them when defining the category.  Plus, we might actually
   -- get indirect duplicates, which is OK.
   $insideCategoryPackageIfTrue => nil
-  member([form,pred],$exports) =>
+  listMember?([form,pred],$exports) =>
     stackAndThrow('"redeclaration of %1 %2",
       [form,formatIf pred])
   $exports := [[form,pred],:$exports]
@@ -1075,7 +1075,7 @@ displayMissingFunctions() ==
   loc := nil              -- list of local operation signatures
   exp := nil              -- list of exported operation signatures
   for [[op,sig,:.],:pred] in $CheckVectorList  | not pred repeat
-    not member(op,$formalArgList) and getmode(op,$e) is ['Mapping,:.] =>
+    not symbolMember?(op,$formalArgList) and getmode(op,$e) is ['Mapping,:.] =>
       loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
@@ -1139,7 +1139,7 @@ genDomainOps(viewName,dom,cat) ==
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
   for [opsig,cond,:.] in oplist for i in 0.. repeat
-    if member(opsig,$ConditionalOperators) then cond:=nil
+    if listMember?(opsig,$ConditionalOperators) then cond:=nil
     [op,sig]:=opsig
     $e:= addModemap(op,dom,sig,cond,['ELT,viewName,i],$e)
   viewName
@@ -1151,7 +1151,7 @@ genDomainView(viewName,originalName,c,viewSelector) ==
     c
   $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
   cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
-  if not member(cd,$getDomainCode) then
+  if not listMember?(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
 
@@ -1250,9 +1250,10 @@ orderByDependency(vl,dl) ==
       [v for v in vl for d in dl | null intersection(d,vl)] or return nil
     orderedVarList:= [:newl,:orderedVarList]
     vl':= setDifference(vl,newl)
-    dl':= [setDifference(d,newl) for x in vl for d in dl | member(x,vl')]
-    vl:= vl'
-    dl:= dl'
+    dl':= [setDifference(d,newl) for x in vl for d in dl
+             | symbolMember?(x,vl')]
+    vl := vl'
+    dl := dl'
   removeDuplicates nreverse orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
@@ -1315,7 +1316,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     rettype:= resolve(signature'.target,$returnMode)
  
     localOrExported :=
-      not member($op,$formalArgList) and
+      not symbolMember?($op,$formalArgList) and
         getmode($op,e) is ['Mapping,:.] => 'local
       'exported
  
@@ -1323,7 +1324,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     -- could be moved closer to the top
     formattedSig := formatUnabbreviated ['Mapping,:signature']
     $compileOnlyCertainItems and _
-      not member($op, $compileOnlyCertainItems) =>
+      not symbolMember?($op, $compileOnlyCertainItems) =>
         sayBrightly ['"   skipping ", localOrExported,:bright $op]
         [nil,['Mapping,:signature'],$e]
     sayBrightly ['"   compiling ",localOrExported,
@@ -1499,7 +1500,7 @@ compile u ==
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
        isLocalFunction op ==
-         null member(op,$formalArgList) and
+         null symbolMember?(op,$formalArgList) and
            getmode(op,$e) is ['Mapping,:.]
     u:= [op',lamExpr]
   -- If just updating certain functions, check for previous existence.
@@ -1765,7 +1766,7 @@ doIt(item,$predl) ==
       item.first := first code
       item.rest := rest code
     lhs:= lhs'
-    if not member(KAR rhs,$NonMentionableDomainNames) and
+    if not symbolMember?(KAR rhs,$NonMentionableDomainNames) and
       not symbolMember?(lhs, $functorLocalParameters) then
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
@@ -1953,7 +1954,7 @@ DomainSubstitutionFunction(parameters,body) ==
         atom body =>
           symbolMember?(body,parameters) => MKQ body
           body
-        member(body,parameters) =>
+        listMember?(body,parameters) =>
           g:=gensym()
           $extraParms:=PUSH([g,:body],$extraParms)
            --Used in SetVector12 to generate a substitution list

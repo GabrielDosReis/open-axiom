@@ -302,7 +302,7 @@ redundant(msg,thisPosMsgs) ==
         for item in $noRepList repeat
             sameMsg?(msg,item) => return (found := true)
         $noRepList := [msg,$noRepList]
-    found or member(msg,thisPosMsgs)
+    found or listMember?(msg,thisPosMsgs)
  
 sameMsg? (msg1,msg2) ==
     (getMsgKey   msg1 = getMsgKey  msg2) and _

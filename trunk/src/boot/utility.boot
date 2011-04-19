@@ -39,22 +39,27 @@ objectMember?(x,l) ==
   cons? l => sameObject?(x,first l) or objectMember?(x,rest l)
   sameObject?(x,l)
 
-genericMember?(x,l,p) ==
+symbolMember?(s,l) ==
   l = nil => false
-  cons? l => apply(p,x,first l,nil) or genericMember?(x,rest l,p)
-  apply(p,x,l,nil)
-
-symbolMember?(x,l) ==
-  genericMember?(x,l,function symbolEq?)
+  cons? l => symbolEq?(s,first l) or symbolMember?(s,rest l)
+  symbolEq?(s,l)
 
 stringMember?(s,l) ==
-  genericMember?(s,l,function stringEq?)
+  l = nil => false
+  cons? l => stringEq?(s,first l) or stringMember?(s,rest l)
+  stringEq?(s,l)
 
 charMember?(c,l) ==
-  genericMember?(c,l,function charEq?)
+  l = nil => false
+  cons? l => charEq?(c,first l) or charMember?(c,rest l)
+  charEq?(c,l)
 
 scalarMember?(x,l) ==
-  genericMember?(x,l,function scalarEq?)
+  l = nil => false
+  cons? l => scalarEq?(x,first l) or scalarMember?(x,rest l)
+  charEq?(x,l)
 
 listMember?(x,l) ==
-  genericMember?(x,l,function listEq?)
+  l = nil => false
+  cons? l => listEq?(x,first l) or listMember?(x,rest l)
+  listEq?(x,l)

@@ -195,7 +195,7 @@ comp3(x,m,$e) ==
   not ($insideCompTypeOf=true) and stringPrefix?('"TypeOf",PNAME op) =>
     compTypeOf(x,m,e)
   t:= compExpression(x,m,e)
-  t is [x',m',e'] and not member(m',getDomainsInScope e') =>
+  t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
     [x',m',addDomain(m',e')]
   t
 
@@ -397,7 +397,7 @@ compAtom(x,m,e) ==
   T := IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   t :=
     IDENTP x => compSymbol(x,m,e) or return nil
-    member(m,$IOFormDomains) and primitiveType x => [x,m,e]
+    listMember?(m,$IOFormDomains) and primitiveType x => [x,m,e]
     string? x => [x,x,e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
@@ -428,7 +428,7 @@ compSymbol(s,m,e) ==
     [s,m',e] --s is a declared argument
   symbolMember?(s,$FormalMapVariableList) => 
     stackMessage('"no mode found for %1b",[s])
-  member(m,$IOFormDomains) or member(m,[$Identifier,$Symbol]) =>
+  listMember?(m,$IOFormDomains) or member(m,[$Identifier,$Symbol]) =>
     [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
 
@@ -962,7 +962,7 @@ compQuote(expr,m,e) ==
   expr is ["QUOTE",x] and IDENTP x => 
     -- Ideally, Identifier should be the default type.  However, for
     -- historical reasons we cannot afford that luxury yet.
-    m = $Identifier or member(m,$IOFormDomains) => [expr,m,e]
+    m = $Identifier or listMember?(m,$IOFormDomains) => [expr,m,e]
     coerce([expr,$Symbol,e],m)
   stackAndThrow('"%1b is not a literal symbol.",[x])
 
@@ -1355,7 +1355,7 @@ getFFIDatatype: %Mode -> %Form
 getFFIDatatype t ==
   x := getBasicFFIType t => x
   t is [m,["PrimitiveArray",t']] and m in $FFITypeModifier and
-    member(t',$FFIAggregableDataType) =>
+    listMember?(t',$FFIAggregableDataType) =>
       m' := 
         m = "ReadOnly" => bootDenotation "readonly"
         m = "WriteOnly" => bootDenotation "writeonly"
@@ -1538,7 +1538,7 @@ compColon([":",f,t],m,e) ==
   t:=
     atom t and (t':= assoc(t,getDomainsInScope e)) => t'
     isDomainForm(t,e) and not $insideCategoryIfTrue =>
-      (if not member(t,getDomainsInScope e) then e:= addDomain(t,e); t)
+      (if not listMember?(t,getDomainsInScope e) then e:= addDomain(t,e); t)
     isDomainForm(t,e) or isCategoryForm(t,e) => t
     t is ["Mapping",m',:r] => t
     string? t => t              -- literal flag types are OK
@@ -1662,7 +1662,7 @@ commonSuperType(m,m') ==
     lineage := [t,:lineage]
     m' := t
   while m ~= nil repeat
-    member(m,lineage) => return m
+    listMember?(m,lineage) => return m
     m := superType m
 
 ++ Coerce value `x' of mode `m' to mode `m'', if m is a subset of
@@ -1700,12 +1700,12 @@ coerceExtraHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceExtraHard(T is [x,m',e],m) ==
   -- Allow implicit injection into Union, if that is
   -- clear from the context
-  isUnionMode(m,e) is ['Union,:l] and member(m',l) =>
+  isUnionMode(m,e) is ['Union,:l] and listMember?(m',l) =>
     autoCoerceByModemap(T,m)
   -- For values from domains satisfying Union-like properties, apply
   -- implicit retraction if clear from context.
   (t := hasType(x,e)) and unionLike?(m',e) is ['UnionCategory,:l]
-     and member(t,l) =>
+     and listMember?(t,l) =>
        T' := autoCoerceByModemap(T,t) => coerce(T',m)
        nil
   -- Give it one last chance.
@@ -1793,7 +1793,7 @@ autoCoerceByModemap([x,source,e],target) ==
           and modeEqual(s,source)] or return nil
   fn := (or/[mm for mm in u | mm.mmCondition=true]) or return nil
 
-  source is ["Union",:l] and member(target,l) =>
+  source is ["Union",:l] and listMember?(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
        => [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
     x="$fromCoerceable$" => nil
@@ -1930,7 +1930,7 @@ compMapCond'(cexpr,dc) ==
         --stackSemanticError(("not known that",'"%b",name,
         -- '"%d","has",'"%b",cat,'"%d"),nil)
   --now it must be an attribute
-  member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
+  listMember?(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
@@ -2369,7 +2369,7 @@ compRepeatOrCollect(form,m,e) ==
 --  [['%call,fn,x],target,e]
  
 listOrVectorElementMode x ==
-  x is [a,b,:.] and member(a,'(PrimitiveArray Vector List)) => b
+  x is [a,b,:.] and symbolMember?(a,'(PrimitiveArray Vector List)) => b
 
 ++ Return the least Integer subdomain that can represent values
 ++ of both Integer subdomains denoted by the forms `x' and `y.
