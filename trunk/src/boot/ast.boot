@@ -85,7 +85,7 @@ structure %Name ==
 structure %Ast ==
   %Command(%String)                     -- includer command
   %Lisp(%String)                        -- )lisp command
-  %Module(%Name,%List)                  -- module declaration
+  %Module(%Name,%List,%List)            -- module declaration
   %Namespace(%Name)                     -- namespace AxiomCore
   %Import(%String)                      -- import module
   %ImportSignature(%Name,%Signature)    -- import function declaration

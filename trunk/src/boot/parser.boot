@@ -415,20 +415,31 @@ bpExportItem() ==
 bpExportItemList() ==
   bpListAndRecover function bpExportItem
 
-++ Exports:
-++   pile-bracketed ExporItemList
-bpExports() ==
-  bpPileBracketed function bpExportItemList
+++ ModuleInterface:
+++   WHERE pile-bracketed ExporItemList
+bpModuleInterface() ==
+  bpEqKey "WHERE" =>
+    bpPileBracketed function bpExportItemList
+      or (bpExportItem() and bpPush [bpPop1()])
+        or bpTrap()
+  bpPush nil
+
+++ ModuleExports:
+++   OPAREN IdList CPAREN
+bpModuleExports() ==
+  bpParenthesized function bpIdList => bpPush bfUntuple bpPop1()
+  bpPush nil
 
 ++ Parse a module definitoin
 ++   Module:
-++     MODULE QUOTE String
+++     MODULE Name OptionalModuleExports OptionalModuleInterface
 bpModule() ==
   bpEqKey "MODULE" => 
     bpName() or bpTrap()
-    bpEqKey "WHERE" =>
-      bpExports() and bpPush %Module(bpPop2(), bpPop1())
-    bpPush %Module(bpPop1(),nil)
+    bpModuleExports()
+    bpModuleInterface()
+    bpPush %Module(bpPop3(),bpPop2(),bpPop1())
+  nil
 
 ++ Parse a module import, or a import declaration for a foreign entity.
 ++ Import:

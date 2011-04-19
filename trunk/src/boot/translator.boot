@@ -403,6 +403,10 @@ translateToplevelExpression expr ==
   $InteractiveMode => expr'
   shoeEVALANDFILEACTQ expr'
 
+exportNames ns ==
+  ns = nil => nil
+  [["EXPORT",:ns]]
+
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
@@ -410,10 +414,10 @@ translateToplevel(b,export?) ==
     %Signature(op,t) => [genDeclaration(op,t)]
     %Definition(op,args,body) => rest bfDef(op,args,body)
 
-    %Module(m,ds) =>
+    %Module(m,ns,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      [["PROVIDE", symbolName m],
+      [["PROVIDE", symbolName m], :exportNames ns,
         :[first translateToplevel(d,true) for d in ds]]
 
     %Import(m) => 
