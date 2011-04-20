@@ -165,7 +165,7 @@ addModemap1(op,mc,sig,pred,fn,e) ==
   if mc="Rep" then sig := substituteDollarIfRepHack sig
   currentProplist:= getProplist(op,e) or nil
   newModemapList:=
-    mkNewModemapList(mc,sig,pred,fn,LASSOC('modemap,currentProplist),e,nil)
+    mkNewModemapList(mc,sig,pred,fn,symbolLassoc('modemap,currentProplist),e,nil)
   newProplist:= augProplist(currentProplist,'modemap,newModemapList)
   newProplist':= augProplist(newProplist,"FLUID",true)
   unErrorRef op

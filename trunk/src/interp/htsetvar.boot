@@ -430,7 +430,7 @@ htCacheSet htPage ==
     num := chkAllNonNegativeInteger
              htpLabelInputString(htPage,htMakeLabel('"c",i))
     $cacheAlist := ADDASSOC(makeSymbol name,num,$cacheAlist)
-  if (n := LASSOC('all,$cacheAlist)) then
+  if (n := symbolLAssoc('all,$cacheAlist)) then
     $cacheCount := n
     $cacheAlist := deleteAssoc('all,$cacheAlist)
   htInitPage('"Cache Summary",nil)

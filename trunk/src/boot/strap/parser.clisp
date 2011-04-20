@@ -747,13 +747,14 @@
   (AND (|bpBracket| |f|) (|bpPush| (|bfConstruct| (|bpPop1|)))))
 
 (DEFUN |bpCompare| ()
-  (AND (|bpIs|)
-       (OR (AND (|bpInfKey| '(SHOEEQ SHOENE LT LE GT GE IN))
-                (OR (|bpIs|) (|bpTrap|))
-                (|bpPush|
-                    (|bfInfApplication| (|bpPop2|) (|bpPop2|)
-                        (|bpPop1|))))
-           T)))
+  (OR (AND (|bpIs|)
+           (OR (AND (|bpInfKey| '(SHOEEQ SHOENE LT LE GT GE IN))
+                    (OR (|bpIs|) (|bpTrap|))
+                    (|bpPush|
+                        (|bfInfApplication| (|bpPop2|) (|bpPop2|)
+                            (|bpPop1|))))
+               T))
+      (|bpLeave|) (|bpThrow|)))
 
 (DEFUN |bpAnd| () (|bpLeftAssoc| '(AND) #'|bpCompare|))
 

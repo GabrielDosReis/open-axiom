@@ -405,7 +405,7 @@ interactiveModemapForm mm ==
   mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
   [pattern:=[dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
-    x is [a,b,c] and a ~= 'isFreeFunction and atom c => [a,b,[c]]
+    x is [a,b,c] and a isnt 'isFreeFunction and atom c => [a,b,[c]]
     x
 --pp pred
   [mmpat, patternAlist, partial, patvars] :=
@@ -683,7 +683,7 @@ getOplistForConstructorForm (form := [op,:argl]) ==
 
 getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
   alist:= nil
-  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind ~= 'Subsumed repeat
+  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind isnt 'Subsumed repeat
     alist:= insertAlist(SUBLIS(pairlis,[op,sig]),
                 SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
                 alist)

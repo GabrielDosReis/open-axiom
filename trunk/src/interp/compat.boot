@@ -52,7 +52,7 @@ rwrite(key,val,stream) ==
 system() ==
   -- VM version of system command
   string := getSystemCommandLine()
-  if string = '"" then string := '"sh"
+  if string is '"" then string := '"sh"
   sayMessage ['"   Return Code = ", runCommand string]
   terminateSystemCommand()
 

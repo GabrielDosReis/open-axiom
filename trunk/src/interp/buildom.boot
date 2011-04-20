@@ -64,7 +64,7 @@ $FirstParamSlot ==
 
 lookupDisplay(op,sig,vectorOrForm,suffix) ==
   not $NRTmonitorIfTrue => nil
-  prefix := (suffix = '"" => ">"; "<")
+  prefix := (suffix is '"" => ">"; "<")
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),
         '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
@@ -107,7 +107,7 @@ compareSig(sig,tableSig,dollar,domain) ==
               for s in rest sig for t in rest tableSig]
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
-  tslot = '$ => s = "$" or s = devaluate dollar
+  tslot is '$ => s is "$" or s = devaluate dollar
   integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = first s =>
@@ -126,7 +126,7 @@ compareSigEqual(s,t,dollar,domain) ==
         rest(domain).(POSN1(t,$FormalMapVariableList))
       string? t and IDENTP s => (s := symbolName s; t)
       nil
-    s = '$ => compareSigEqual(dollar,u,dollar,domain)
+    s is '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
     s = u
   s='$ => compareSigEqual(dollar,t,dollar,domain)
@@ -283,7 +283,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
       slot
-  success ~= 'failed and success => success
+  success isnt 'failed and success => success
   subsumptionSig and (u:= SPADCALL(op,subsumptionSig,dollar,domain.1)) => u
   someMatch => lookupInAddChain(op,sig,domain,dollar)
   nil

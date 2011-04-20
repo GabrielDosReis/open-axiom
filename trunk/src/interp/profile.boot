@@ -73,19 +73,19 @@ profileRecord(label,name,info) ==  --name: info is var: type or op: sig
   $profileAlist
 
 profileDisplay() ==
-  profileDisplayOp('constructor,LASSOC('constructor,$profileAlist) )
+  profileDisplayOp('constructor,symbolLassoc('constructor,$profileAlist) )
   for [op,:alist1] in $profileAlist | op ~= 'constructor repeat
     profileDisplayOp(op,alist1)
 
 profileDisplayOp(op,alist1) ==
   sayBrightly op
-  if LASSOC('arguments,alist1) then
+  if symbolLassoc('arguments,alist1) then
     sayBrightly '"  arguments"
-    for [x,:t] in MSORT LASSOC('arguments,alist1) repeat 
+    for [x,:t] in MSORT symbolLAssoc('arguments,alist1) repeat 
       sayBrightly concat('"     ",x,": ",prefix2String t)
-  if LASSOC('locals,alist1) then
+  if symbolLassoc('locals,alist1) then
     sayBrightly '"  locals"
-    for [x,:t] in MSORT LASSOC('locals,alist1) repeat 
+    for [x,:t] in MSORT symbolLassoc('locals,alist1) repeat 
       sayBrightly concat('"     ",x,": ",prefix2String t)
   for [con,:alist2] in alist1 | not (con in '(locals arguments)) repeat
     sayBrightly concat('"  ",prefix2String con)

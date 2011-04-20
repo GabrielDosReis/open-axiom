@@ -14,21 +14,38 @@
      (OR (EQ |x| (CAR |l|)) (|objectMember?| |x| (CDR |l|))))
     (T (EQ |x| |l|))))
 
-(DEFUN |genericMember?| (|x| |l| |p|)
+(DEFUN |symbolMember?| (|s| |l|)
   (COND
     ((NULL |l|) NIL)
     ((CONSP |l|)
-     (OR (APPLY |p| |x| (CAR |l|) NIL)
-         (|genericMember?| |x| (CDR |l|) |p|)))
-    (T (APPLY |p| |x| |l| NIL))))
+     (OR (EQ |s| (CAR |l|)) (|symbolMember?| |s| (CDR |l|))))
+    (T (EQ |s| |l|))))
 
-(DEFUN |symbolMember?| (|x| |l|) (|genericMember?| |x| |l| #'EQ))
+(DEFUN |stringMember?| (|s| |l|)
+  (COND
+    ((NULL |l|) NIL)
+    ((CONSP |l|)
+     (OR (STRING= |s| (CAR |l|)) (|stringMember?| |s| (CDR |l|))))
+    (T (STRING= |s| |l|))))
 
-(DEFUN |stringMember?| (|s| |l|) (|genericMember?| |s| |l| #'STRING=))
+(DEFUN |charMember?| (|c| |l|)
+  (COND
+    ((NULL |l|) NIL)
+    ((CONSP |l|)
+     (OR (CHAR= |c| (CAR |l|)) (|charMember?| |c| (CDR |l|))))
+    (T (CHAR= |c| |l|))))
 
-(DEFUN |charMember?| (|c| |l|) (|genericMember?| |c| |l| #'CHAR=))
+(DEFUN |scalarMember?| (|x| |l|)
+  (COND
+    ((NULL |l|) NIL)
+    ((CONSP |l|)
+     (OR (EQL |x| (CAR |l|)) (|scalarMember?| |x| (CDR |l|))))
+    (T (CHAR= |x| |l|))))
 
-(DEFUN |scalarMember?| (|x| |l|) (|genericMember?| |x| |l| #'EQL))
-
-(DEFUN |listMember?| (|x| |l|) (|genericMember?| |x| |l| #'EQUAL))
+(DEFUN |listMember?| (|x| |l|)
+  (COND
+    ((NULL |l|) NIL)
+    ((CONSP |l|)
+     (OR (EQUAL |x| (CAR |l|)) (|listMember?| |x| (CDR |l|))))
+    (T (EQUAL |x| |l|))))
 

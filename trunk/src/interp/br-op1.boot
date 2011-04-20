@@ -612,10 +612,10 @@ dbShowOpParameters(htPage,opAlist,which,data) ==
     htSayExpose(ops,exposeFlag)
     n := #opform
     do
-      n = 2 and LASSOC('Nud,PROPLIST op) =>
+      n = 2 and symbolLassoc('Nud,PROPLIST op) =>
         dbShowOpParameterJump(ops,which,count,single?)
         htSay('" {\em ",KAR args,'"}")
-      n = 3 and LASSOC('Led,PROPLIST op) =>
+      n = 3 and symbolLassoc('Led,PROPLIST op) =>
         htSay('"{\em ",KAR args,'"} ")
         dbShowOpParameterJump(ops,which,count,single?)
         htSay('" {\em ",KAR KDR args,'"}")

@@ -194,7 +194,7 @@ makeCompactDirect1(op,items) ==
   predCode = -1 => return nil
   --> drop items with NIL slots if lookup function is incomplete
   if null slot then
-     $lookupFunction = 'lookupIncomplete => return nil
+     $lookupFunction is 'lookupIncomplete => return nil
      slot := 1   --signals that operation is not present
   n := #sig - 1
   $byteAddress := $byteAddress + n + 4
@@ -290,8 +290,8 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
 
 getExportCategory form ==
   [op,:argl] := form
-  op = 'Record => ['RecordCategory,:argl]
-  op = 'Union => ['UnionCategory,:argl]
+  op is 'Record => ['RecordCategory,:argl]
+  op is 'Union => ['UnionCategory,:argl]
   functorModemap := getConstructorModemapFromDB op
   [[.,target,:tl],:.] := functorModemap
   EQSUBSTLIST(argl,$FormalMapVariableList,target)
@@ -376,7 +376,7 @@ expandType(lazyt,template,domform) ==
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  
 expandTypeArgs(u,template,domform) ==
-  u = '$ => u --template.0      -------eliminate this as $ is rep by 0
+  u is '$ => u --template.0      -------eliminate this as $ is rep by 0
   integer? u => expandType(templateVal(template, domform, u), template,domform)
   u is ['NRTEVAL,y] => y  --eval  y
   u is ['QUOTE,y] => y
@@ -578,7 +578,7 @@ compDefine1(form,m,e) ==
 
 compDefineAddSignature([op,:argl],signature,e) ==
   (sig:= hasFullSignature(argl,signature,e)) and
-   not assoc(['$,:sig],LASSOC('modemap,getProplist(op,e))) =>
+   null assoc(['$,:sig],symbolLassoc('modemap,getProplist(op,e))) =>
      declForm:=
        [":",[op,:[[":",x,m] for x in argl for m in sig.source]],signature.target]
      [.,.,e]:= comp(declForm,$EmptyMode,e)

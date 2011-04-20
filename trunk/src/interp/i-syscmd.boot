@@ -2732,7 +2732,7 @@ undoSingleStep(changes,env) ==
 --  pp '"----Undoing 1 step--------"
 --  pp changes
   for (change := [name,:changeList]) in changes repeat
-    if LASSOC('localModemap,changeList) then
+    if symbolLassoc('localModemap,changeList) then
       changeList := undoLocalModemapHack changeList
     pairlist := ASSQ(name,env) =>
       proplist := rest pairlist =>

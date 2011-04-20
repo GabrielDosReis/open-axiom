@@ -347,15 +347,15 @@ intersectionContour(c,c') ==
       --3. property="mode" is covered by modeCompare
       prop="mode" => nil
     modeCompare(p,p') ==
-      pair:= assoc("mode",p) =>
-        pair':= assoc("mode",p') =>
+      pair := symbolAssoc("mode",p) =>
+        pair' := symbolAssoc("mode",p') =>
           m'':= unifiable(rest pair,rest pair') => [["mode",:m'']]
           stackSemanticError(['"%b",$var,'"%d","has two modes: "],nil)
        --stackWarning ("mode for",'"%b",$var,'"%d","introduced conditionally")
         [["conditionalmode",:rest pair]]
         --LIST pair
        --stackWarning ("mode for",'"%b",$var,'"%d","introduced conditionally")
-      pair':= assoc("mode",p') => [["conditionalmode",:rest pair']]
+      pair' := symbolAssoc("mode",p') => [["conditionalmode",:rest pair']]
         --LIST pair'
     unifiable(m1,m2) ==
       m1=m2 => m1
@@ -384,7 +384,7 @@ addContour(c,E is [cur,:tail]) ==
                    if p="conditionalmode" then
                      pv.first := "mode"
                      --check for conflicts with earlier mode
-                     if vv:=LASSOC("mode",e) then
+                     if vv := symbolLassoc("mode",e) then
                         if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
@@ -509,7 +509,7 @@ prEnv E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       SAY('"******CONTOUR ",j,'", LEVEL ",i,'":******")
-      for z in y | not LASSOC("modemap",rest z) repeat
+      for z in y | null symbolLassoc("modemap",rest z) repeat
         TERPRI()
         SAY("Properties Of: ",first z)
         for u in rest z repeat
@@ -525,7 +525,7 @@ prModemaps E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       for z in y | not member(first z,listOfOperatorsSeenSoFar) and
-        (modemap:= LASSOC("modemap",rest z)) repeat
+        (modemap := symbolLassoc("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           TERPRI()
           PRIN1 first z
@@ -626,7 +626,7 @@ diagnoseUnknownType(t,e) ==
 isConstantId(name,e) ==
   IDENTP name =>
     pl:= getProplist(name,e) =>
-      (LASSOC("value",pl) or LASSOC("mode",pl) => false; true)
+      (symbolLassoc("value",pl) or symbolLassoc("mode",pl) => false; true)
     true
   false
  
@@ -1003,7 +1003,7 @@ displayModemaps E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       for z in y | not member(first z,listOfOperatorsSeenSoFar) and
-        (modemaps:= LASSOC("modemap",rest z)) repeat
+        (modemaps := symbolLassoc("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           displayOpModemaps(first z,modemaps)
  
@@ -1094,7 +1094,7 @@ $middleEndMacroList ==
 
 --middleEndExpand: %Form -> %Code
 middleEndExpand x ==
-  x = '%false or x = '%nil => 'NIL
+  x is '%false or x is '%nil => 'NIL
   IDENTP x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
@@ -1476,7 +1476,7 @@ massageBackendCode x ==
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
-    if u ~= 'DCQ and u ~= 'SETQ then
+    if u isnt 'DCQ and u isnt 'SETQ then
       nconc(x,$FUNNAME__TAIL)
       x.first := "LETT"
     massageBackendCode CDDR x
@@ -1489,7 +1489,7 @@ massageBackendCode x ==
     -- Even if user used Lisp-level instructions to assign to
     -- this variable, we still want to note that it is a Lisp-level
     -- special variable.
-    u = 'SETQ and isLispSpecialVariable second x =>
+    u is 'SETQ and isLispSpecialVariable second x =>
       noteSpecialVariable second x
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
@@ -1557,7 +1557,7 @@ simplifySEQ form ==
 needsPROG? form ==
   atomic? form => false
   op := form.op
-  op = 'RETURN => true
+  op is 'RETURN => true
   op in '(LOOP PROG) => false
   form is ['BLOCK,=nil,:.] => false
   or/[needsPROG? x for x in form]

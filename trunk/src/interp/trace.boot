@@ -138,8 +138,8 @@ trace1 l ==
     ADDASSOC(x,$options,$optionAlist)
   optionList:= getTraceOptions $options
   argument:=
-    domainList:= LASSOC("of",optionList) =>
-      LASSOC("ops",optionList) =>
+    domainList := symbolLassoc("of",optionList) =>
+      symbolLAssoc("ops",optionList) =>
         throwKeyedMsg("S2IT0004",NIL)
       opList:=
         traceList => [["ops",:traceList]]
@@ -586,7 +586,7 @@ mapLetPrint(x,val,currentFunction) ==
 
 letPrint(x,val,currentFunction) ==
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          sayBrightlyNT [:bright x,": "]
@@ -604,7 +604,7 @@ letPrint(x,val,currentFunction) ==
 letPrint2(x,printform,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLAssoc("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
@@ -624,7 +624,7 @@ letPrint2(x,printform,currentFunction) ==
 letPrint3(x,xval,printfn,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
@@ -807,7 +807,7 @@ breaklet(fn,vars) ==
   fn = "Undef" => nil
   fnEntry:= LASSOC(fn,$letAssoc)
   vars:=
-    pair:= ASSOC("BREAK",fnEntry) => union(vars,rest pair)
+    pair := symbolLassoc("BREAK",fnEntry) => union(vars,rest pair)
     vars
   $letAssoc:=
     null fnEntry => [[fn,:[["BREAK",:vars]]],:$letAssoc]

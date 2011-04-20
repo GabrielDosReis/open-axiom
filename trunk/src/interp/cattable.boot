@@ -96,21 +96,22 @@ simpHasPred(pred,:options) == main where
   simp pred ==
     pred is [op,:r] =>
       op = "has" => simpHas(pred,first r,second r)
-      op = 'HasCategory => simp ["has",first r,simpDevaluate second r]
-      op = 'HasSignature =>
+      op is 'HasCategory => simp ["has",first r,simpDevaluate second r]
+      op is 'HasSignature =>
          [op,sig] := simpDevaluate second r
          ["has",first r,['SIGNATURE,op,sig]]
-      op = 'HasAttribute =>
+      op is 'HasAttribute =>
         form := ["has",a := first r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
-        u = '%true or u is '(QUOTE T) => true
+        u is '%true or u is '(QUOTE T) => true
         simpBool u
-      op = 'hasArgs => ($hasArgs => $hasArgs = r; pred)
+      op is 'hasArgs => ($hasArgs => $hasArgs = r; pred)
       null r and opOf op = "has" => simp first pred
-      pred = '%true or pred is '(QUOTE T) => true
-      op1 := LASSOC(op,'((and . AND)(or . OR)(not . NOT))) => simp [op1,:r]
+      pred is '%true or pred is '(QUOTE T) => true
+      op1 := symbolLassoc(op,'((and . AND)(or . OR)(not . NOT))) =>
+        simp [op1,:r]
       simp first pred   --REMOVE THIS HACK !!!!
     pred in '(T etc) => pred
     null pred => nil
@@ -134,7 +135,7 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
   IDENTP conform => pred
   [conname,:args] := conform
   n := #sig
-  u := LASSOC(op,getConstructorOperationsFromDB conname)
+  u := symbolLassoc(op,getConstructorOperationsFromDB conname)
   candidates := [x for (x := [sig1,:.]) in u | #sig1 = #sig]  or return false
   match := or/[x for (x := [sig1,:.]) in candidates
                 | sig = sublisFormal(args,sig1)] or return false
@@ -168,9 +169,9 @@ simpCatHasAttribute(domform,attr) ==
 
 hasIdent pred ==
   pred is [op,:r] =>
-    op = 'QUOTE => false
+    op is 'QUOTE => false
     or/[hasIdent x for x in r]
-  pred = '_$ => false
+  pred is '_$ => false
   IDENTP pred => true
   false
 
@@ -232,7 +233,7 @@ encodeUnion(id,new:=[a,:b],alist) ==
   [new,:alist]
 
 moreGeneralCategoryPredicate(id,new,old) ==
-  old = 'T or new = 'T => 'T
+  old is 'T or new is 'T => 'T
   old is ["has",a,b] and new is ["has",=a,c] =>
     tempExtendsCat(b,c) => new
     tempExtendsCat(c,b) => old
@@ -285,7 +286,7 @@ mkCategoryExtensionAlist cform ==
   for [cat,:pred] in catlist repeat
     newList := getCategoryExtensionAlist0 cat
     finalList :=
-      pred = 'T => newList
+      pred is 'T => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
     extendsList:= catPairUnion(extendsList,finalList,cop,cat)
   extendsList
@@ -301,7 +302,7 @@ mkCategoryExtensionAlistBasic cform ==
   for [cat,pred,:.] in category.4.1 repeat
     newList := getCategoryExtensionAlist0 cat
     finalList :=
-      pred = 'T => newList
+      pred is 'T => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
     extendsList:= catPairUnion(extendsList,finalList,cop,cat)
   extendsList
@@ -392,7 +393,7 @@ categoryParts(conform,category,:options) == main where
       constructor? opOf attr =>
         $conslist := [[attr,:pred],:$conslist]
         nil
-      opOf attr = 'nothing => 'skip
+      opOf attr is 'nothing => 'skip
       $attrlist := [[opOf attr,IFCDR attr,:pred],:$attrlist]
     item is ['TYPE,op,type] =>
         $oplist := [[op,[type],:pred],:$oplist]
@@ -455,12 +456,12 @@ squeeze1(l) ==
 
 updateCategoryTable(cname,kind) ==
   $updateCatTableIfTrue =>
-    kind = 'package => nil
-    kind = 'category => updateCategoryTableForCategory(cname)
+    kind is 'package => nil
+    kind is 'category => updateCategoryTableForCategory(cname)
     updateCategoryTableForDomain(cname,getConstrCat(
       getConstructorCategoryFromDB cname))
 --+
-  kind = 'domain =>
+  kind is 'domain =>
     updateCategoryTableForDomain(cname,getConstrCat(
       getConstructorCategoryFromDB cname))
 

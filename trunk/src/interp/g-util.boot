@@ -232,7 +232,7 @@ get1(x,prop,e) ==
     --this is the old get
   cons? x => get(x.op,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
-    LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
+    symbolLassoc("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
   LASSOC(prop,getProplist(x,e)) or get2(x,prop)
 
@@ -719,9 +719,10 @@ augProplistOf(var,prop,val,e) ==
 
 semchkProplist(x,proplist,prop,val) ==
   prop="isLiteral" =>
-    LASSOC("value",proplist) or LASSOC("mode",proplist) => warnLiteral x
+    symbolLassoc("value",proplist) or symbolLassoc("mode",proplist) =>
+      warnLiteral x
   prop in '(mode value) =>
-    LASSOC("isLiteral",proplist) => warnLiteral x
+    symbolLassoc("isLiteral",proplist) => warnLiteral x
 
 addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
   sameObject?(proplist,getProplist(var,e)) => e

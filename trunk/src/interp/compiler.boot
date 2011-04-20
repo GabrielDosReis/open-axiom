@@ -1046,7 +1046,7 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
-          if opFlag = 'TAGGEDreturn then
+          if opFlag is 'TAGGEDreturn then
             x.op := '%return
           else 
             x.op := "THROW"
@@ -1399,7 +1399,7 @@ checkExternalEntity(id,type,lang,e) ==
   get(id,"modemap",e) =>
     stackAndThrow('"%1b already names exported operations in scope",[id])
   -- We don't type check builtin declarations at the moment.
-  lang = 'Builtin or lang = 'Lisp => id
+  lang is 'Builtin or lang is 'Lisp => id
   -- Only functions are accepted at the moment.  And all mentioned
   -- types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 

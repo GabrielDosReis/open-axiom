@@ -51,7 +51,7 @@ NRTgenInitialAttributeAlist attributeList ==
   alist := [x for x in attributeList | -- throw out constructors
     not symbolMember?(opOf first x,allConstructors())]
   $lisplibAttributes := simplifyAttributeAlist
-    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ~= 'nothing]
+    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a isnt 'nothing]
 
 simplifyAttributeAlist al ==
   al is [[a,:b],:r] =>
@@ -70,7 +70,7 @@ predicateBitIndex x ==
   pn(x,false) where
     pn(x,flag) ==
       u := simpBool transHasCode x
-      u = 'T  =>  0
+      u is 'T  =>  0
       u = nil => -1
       p := POSN1(u,$NRTslot1PredicateList) => p + 1
       not flag => pn(predicateBitIndexRemop x,true)
@@ -84,12 +84,12 @@ predicateBitIndexRemop p==
   p
  
 predicateBitRef x ==
-  x = 'T => 'T
+  x is 'T => 'T
   ['testBitVector,'pv_$,predicateBitIndex x]
  
 makePrefixForm(u,op) ==
   u := MKPF(u,op)
-  u = ''T => 'T
+  u is ''T => 'T
   u
 
 --=======================================================================
@@ -128,7 +128,7 @@ isHasDollarPred pred ==
   pred is [op,:r] =>
     op in '(AND and %and OR or %or NOT not %not) => 
       or/[isHasDollarPred x for x in r]
-    op in '(HasCategory HasAttribute) => first r = '$
+    op in '(HasCategory HasAttribute) => first r is '$
   false
 
 stripOutNonDollarPreds pred ==
@@ -301,7 +301,7 @@ findModule cname ==
 loadLibIfNotLoaded libName ==
   -- replaces old SpadCondLoad
   -- loads is library is not already loaded
-  $PrintOnly = 'T => NIL
+  $PrintOnly => NIL
   GETL(libName,'LOADED) => NIL
   loadLib libName
  
@@ -360,14 +360,14 @@ loadIfNecessary u == loadLibIfNecessary(u,true)
 loadIfNecessaryAndExists u == loadLibIfNecessary(u,nil)
  
 loadLibIfNecessary(u,mustExist) ==
-  u = '$EmptyMode => u
+  u is '$EmptyMode => u
   cons? u => loadLibIfNecessary(first u,mustExist)
   value:=
     functionp(u) or macrop(u) => u
     GETL(u,'LOADED) => u
     loadLib u => u
   null $InteractiveMode and ((null (y:= getProplist(u,$CategoryFrame)))
-    or (null LASSOC('isFunctor,y)) and (null LASSOC('isCategory,y))) =>
+    or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
       y:= getConstructorKindFromDB u =>
          y = "category" =>
             updateCategoryFrameForCategory u
@@ -419,7 +419,7 @@ systemDependentMkAutoload(fn,cnam) ==
          cosig := getDualSignatureFromDB cnam
          file := getConstructorModuleFromDB cnam
          SET_-LIB_-FILE_-GETTER(file, cnam)
-         kind = 'category =>
+         kind is 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
     symbolFunction(cnam) := mkAutoLoad(fn, cnam)
@@ -562,7 +562,7 @@ initializeLisplib libName ==
   resetErrorCount()
   $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
   ADDOPTIONS('FILE,$libFile)
-  if pathnameTypeId(_/EDITFILE) = 'SPAD
+  if pathnameTypeId(_/EDITFILE) is 'SPAD
     then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
 
 ++ If compilation produces an error, issue inform user and
@@ -692,10 +692,10 @@ transformOperationAlist operationAlist ==
     kind:=
       implementation is [eltEtc,.,n] and eltEtc in '(CONST ELT) => eltEtc
       implementation is [impOp,:.] =>
-        impOp = 'XLAM => implementation
+        impOp is 'XLAM => implementation
         impOp in '(CONST Subsumed) => impOp
         keyedSystemError("S2IL0025",[impOp])
-      implementation = 'mkRecord => 'mkRecord
+      implementation is 'mkRecord => 'mkRecord
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
@@ -830,7 +830,7 @@ getAllAldorObjectFiles dir ==
   -- only sensical .asy files.
   dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
   [asys,[f for f in asos 
-          | PATHNAME_-NAME f = '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+          | PATHNAME_-NAME f is '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
     
 
 
@@ -869,7 +869,7 @@ compDefineExports(form,ops,sig,e) ==
       fixupSigloc entry where
         fixupSigloc entry ==
           [opsig,pred,funsel] := entry
-          if pred ~= 'T then 
+          if pred isnt 'T then 
             entry.rest.first := simpBool pred
           funsel is [op,a,:.] and op in '(ELT CONST) =>
             entry.rest.rest.first := [op,a,nil]
