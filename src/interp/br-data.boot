@@ -115,7 +115,8 @@ buildLibdbConEntry conname ==
       DOWNCASE stringChar(symbolName kind,0)
     argl := rest $conform
     conComments :=
-      LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
+      symbolLassoc('constructor,$doc) is [[=nil,:r]] =>
+        libdbTrim concatWithBlanks r
       '""
     argpart:= subString(form2HtString ['f,:argl],1)
     sigpart:= libConstructorSig $conform

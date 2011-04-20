@@ -722,7 +722,7 @@ pred2English x ==
     concat(pred2English a,'": ",form2String abbreviate b)
   x is [op,a,b] and op in '(isDomain domainEqual) =>
     concat(pred2English a,'" = ",form2String abbreviate b)
-  x is [op,:.] and (translation := LASSOC(op,'(
+  x is [op,:.] and (translation := symbolLassoc(op,'(
     (_< . " < ") (_<_= . " <= ")
       (_> . " > ") (_>_= . " >= ") (_=  . " = ") (_~_= . " _~_= ")))) =>
         concat(pred2English a,translation,pred2English b)

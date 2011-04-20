@@ -359,15 +359,18 @@ bfReduce(op,y)==
  
 bfReduceCollect(op,y)==
   y is ["COLLECT",:.] => 
-    body := y.1
-    itl := y.2
+    body := second y
+    itl := third y
     a :=
       op is ["QUOTE",:.] => second op
       op
     op := bfReName a
     init := a has SHOETHETA or op has SHOETHETA
     bfOpReduce(op,init,body,itl)
-  bfReduce(op,bfTupleConstruct (y.1))
+  seq :=
+    y = nil => bfTuple nil
+    second y
+  bfReduce(op,bfTupleConstruct seq)
  
 -- delayed collect
  

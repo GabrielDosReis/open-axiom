@@ -109,11 +109,11 @@ bcDefiniteIntegrateGen htPage ==
   integrand := htpLabelInputString(htPage,'integrand)
   var := htpLabelInputString(htPage,'symbol)
   lowerLimit :=
-    htpButtonValue(htPage,'fromButton) = 'fromPoint =>
+    htpButtonValue(htPage,'fromButton) is 'fromPoint =>
       htpLabelInputString(htPage,'from)
     '"%minusInfinity"
   upperLimit :=
-    htpButtonValue(htPage,'toButton) = 'toPoint =>
+    htpButtonValue(htPage,'toButton) is 'toPoint =>
       htpLabelInputString(htPage,'to)
     '"%plusInfinity"
   varpart := strconc(var,'" = ",lowerLimit,'"..",upperLimit)
@@ -287,7 +287,7 @@ bcDraw2DfunGen htPage ==
   from1 := htpLabelInputString(htPage,'from1)
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
-  if (title ~= '"") then
+  if (title isnt '"") then
     titlePart := strconc('"{}",'"title ==_"",title,'"_"")
     bcFinish('"draw",fun,bcDrawIt2(ind,from1,to1),titlePart)
   else
@@ -334,8 +334,8 @@ bcDraw2DparGen htPage ==
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
   curvePart := strconc('"curve(",'"{}",fun1,'",{}",fun2,'")")
-  if (title ~= '"") then
-    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
+  if (title isnt '"") then
+    titlePart := (title is '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),titlePart)
   else
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1))
@@ -384,8 +384,8 @@ bcDraw2DSolveGen htPage ==
   to2 := htpLabelInputString(htPage,'to2)
   title := htpLabelInputString(htPage,'title)
   clipPart := strconc('"{}",'"range==[{}",from1,'"..",to1,",{}",from2,'"..",to2,'"]")
-  if (title ~= '"") then
-    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
+  if (title isnt '"") then
+    titlePart := (title is '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",strconc(fun,'" = 0 "),ind1,ind2,clipPart,titlePart)
   else
     bcFinish('"draw",strconc(fun,'" = 0 "),ind1,ind2,clipPart)

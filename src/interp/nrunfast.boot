@@ -221,18 +221,18 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         nil
       slot := vectorRef(domain,loc)
       cons? slot =>
-        slot.op = 'newGoGet => someMatch:=true
+        slot.op is 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if sameObject?(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
         --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
-        --      if domain.loc = 'skip then domain.loc := slot)
+        --      if domain.loc is 'skip then domain.loc := slot)
         return (success := slot)
-      slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
+      slot is 'skip =>       --recursive call from above 'replaceGoGetSlot
         return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
     start := QSPLUS(start,QSPLUS(numTableArgs,4))
-  success ~= 'failed and success =>
+  success isnt 'failed and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
         cons? success => [first success,:devaluate rest success]
@@ -316,7 +316,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..maxIndex packageVec |
-       (entry := vectorRef(packageVec,i)) and entry ~= 'T repeat
+       (entry := vectorRef(packageVec,i)) and entry isnt 'T repeat
     package :=
       vector? entry =>
          if $monitorNewWorld then
@@ -665,7 +665,7 @@ resolveNiladicConstructors form ==
 newHasTest(domform,catOrAtt) ==
   domform is [dom,:.] and dom in '(Union Record Mapping Enumeration) =>
     ofCategory(domform, catOrAtt)
-  catOrAtt = '(Type) => true
+  catOrAtt is '(Type) => true
   asharpConstructorFromDB opOf domform => fn(domform,catOrAtt) where
   -- atom (infovec := getInfovec opOf domform) => fn(domform,catOrAtt) where
     fn(a,b) ==
@@ -674,11 +674,11 @@ newHasTest(domform,catOrAtt) ==
       b is ["SIGNATURE",:opSig] =>
         HasSignature(evalDomain a,opSig)
       b is ["ATTRIBUTE",attr] => HasAttribute(evalDomain a,attr)
-      hasCaty(a,b,NIL) ~= 'failed
+      hasCaty(a,b,NIL) isnt 'failed
       HasCategory(evalDomain a,b) => true -- for asharp domains: must return Boolean
   op := opOf catOrAtt
   isAtom := atom catOrAtt
-  not isAtom and op = 'Join =>
+  not isAtom and op is 'Join =>
     and/[newHasTest(domform,x) for x in rest catOrAtt]
 -- we will refuse to say yes for 'Cat has Cat'
 --getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",NIL)

@@ -374,3 +374,20 @@ subString(s,f,n == nil) ==
 
 quoteForm t ==
   ["QUOTE",t]
+
+--% assoc
+
+symbolAssoc(s,l) ==
+  or/[symbolEq?(s,first x) and leave x for x in l | cons? x] or nil
+
+scalarAssoc(c,l) ==
+  or/[scalarEq?(c,first x) and leave x for x in l | cons? x] or nil
+
+stringAssoc(s,l) ==
+  or/[stringEq?(s,first x) and leave x for x in l | cons? x] or nil
+
+--% lassoc
+
+symbolLassoc(s,l) ==
+  p := symbolAssoc(s,l) => rest p
+  nil

@@ -691,6 +691,8 @@ bpCompare()==
      and (bpIs() or bpTrap())
 	and bpPush bfInfApplication(bpPop2(),bpPop2(),bpPop1())
 	    or true)
+              or bpLeave()
+                or bpThrow()
  
 bpAnd() == 
   bpLeftAssoc('(AND),function bpCompare)

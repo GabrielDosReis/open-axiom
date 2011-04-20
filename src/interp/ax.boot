@@ -151,7 +151,7 @@ optcomma [op,:args] ==
    [op,:args]
 
 axFormatDecl(sym, type) ==
-   if sym = '$ then sym := '%
+   if sym is '$ then sym := '%
    opOf type in '(StreamAggregate FiniteLinearAggregate) =>
         ['Declare, sym, 'Type]
    ['Declare, sym, axFormatType type]
@@ -165,7 +165,7 @@ axFormatAttrib(typeform) ==
 
 axFormatType(typeform) ==
   atom typeform =>
-     typeform = '$ => '%
+     typeform is '$ => '%
      string? typeform =>
         ['Apply,'Enumeration, makeSymbol typeform]
      integer? typeform =>
@@ -185,8 +185,8 @@ axFormatType(typeform) ==
                         :[axFormatType a for a in args]],
                           ['Apply, 'List, 'Symbol] ]
   typeform is [op] =>
-    op = '$ => '%
-    op = 'Void => ['Comma]
+    op is '$ => '%
+    op is 'Void => ['Comma]
     op
   typeform is ['local, val] => axFormatType val
   typeform is ['QUOTE, val] => axFormatType val
@@ -243,14 +243,14 @@ axFormatOpList ops == ['Sequence,:[axFormatOp o for o in ops]]
 
 axOpTran(name) ==
    atom name =>
-      name = 'elt => 'apply
-      name = 'setelt => 'set!
-      name = 'SEGMENT => ".."
-      name = 1 => '_1
-      name = 0 => '_0
+      name is 'elt => 'apply
+      name is 'setelt => 'set!
+      name is 'SEGMENT => ".."
+      name is 1 => '_1
+      name is 0 => '_0
       name
-   opOf name = 'Zero => '_0
-   opOf name = 'One => '_1
+   opOf name is 'Zero => '_0
+   opOf name is 'One => '_1
    error "bad op name"
 
 axFormatOpSig(name, [result,:argtypes]) ==
@@ -264,19 +264,19 @@ axFormatConstantOp(name, [result]) ==
 axFormatPred pred ==
    atom pred => pred
    [op,:args] := pred
-   op = 'IF => axFormatOp pred
+   op is 'IF => axFormatOp pred
    op = "has" =>
       [name,type] := args
-      if name = '$ then name := '%
+      if name is '$ then name := '%
       else name := axFormatOp name
       ftype := axFormatOp type
       if ftype is ['Declare,:.] then
            ftype := ['With, [], ftype]
       ['Test,['Has,name, ftype]]
    axArglist := [axFormatPred arg for arg in args]
-   op = 'AND => ['And,:axArglist]
-   op = 'OR  => ['Or,:axArglist]
-   op = 'NOT => ['Not,:axArglist]
+   op is 'AND => ['And,:axArglist]
+   op is 'OR  => ['Or,:axArglist]
+   op is 'NOT => ['Not,:axArglist]
    error "unknown predicate"
 
 
@@ -350,7 +350,7 @@ axFormatDefaultOpSig(op, sig, catops) ==
   #sig > 1 => axFormatOpSig(op,sig)
   nsig := MSUBST('$,'($), sig) -- dcSig listifies '$ ??
   (catsigs := LASSOC(op, catops)) and
-    (catsig := assoc(nsig, catsigs)) and last(catsig) = 'CONST =>
+    (catsig := assoc(nsig, catsigs)) and last(catsig) is 'CONST =>
        axFormatConstantOp(op, sig)
   axFormatOpSig(op,sig)
 

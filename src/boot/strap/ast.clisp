@@ -472,11 +472,11 @@
              (|bfLp| |it| |body|)))))))
 
 (DEFUN |bfReduceCollect| (|op| |y|)
-  (PROG (|init| |a| |itl| |body|)
+  (PROG (|seq| |init| |a| |itl| |body|)
     (RETURN
       (COND
         ((AND (CONSP |y|) (EQ (CAR |y|) 'COLLECT))
-         (SETQ |body| (ELT |y| 1)) (SETQ |itl| (ELT |y| 2))
+         (SETQ |body| (CADR |y|)) (SETQ |itl| (CADDR |y|))
          (SETQ |a|
                (COND
                  ((AND (CONSP |op|) (EQ (CAR |op|) 'QUOTE))
@@ -485,7 +485,9 @@
          (SETQ |op| (|bfReName| |a|))
          (SETQ |init| (OR (GET |a| 'SHOETHETA) (GET |op| 'SHOETHETA)))
          (|bfOpReduce| |op| |init| |body| |itl|))
-        (T (|bfReduce| |op| (|bfTupleConstruct| (ELT |y| 1))))))))
+        (T (SETQ |seq|
+                 (COND ((NULL |y|) (|bfTuple| NIL)) (T (CADR |y|))))
+           (|bfReduce| |op| (|bfTupleConstruct| |seq|)))))))
 
 (DEFUN |bfDCollect| (|y| |itl|) (LIST 'COLLECT |y| |itl|))
 

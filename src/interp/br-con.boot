@@ -768,7 +768,7 @@ conOpPage1(conform,:options) ==
   htpSetProperty(page,'domname,domname)         --> !!note!! <--
   htpSetProperty(page,'conform,conform)
   htpSetProperty(page,'signature,signature)
-  if selectedOperation := LASSOC('selectedOperation,IFCDR options) then
+  if selectedOperation := symbolLAssoc('selectedOperation,IFCDR options) then
     htpSetProperty(page,'selectedOperation,selectedOperation)
   for [a,:b] in bindingsAlist repeat htpSetProperty(page,a,b)
   koPage(page,'"operation")
@@ -1076,7 +1076,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   --NOTE that we pass conform is as "origin"
 
 getConstructorDocumentation conname ==
-  LASSOC('constructor,getConstructorDocumentationFromDB conname)
+  symbolLassoc('constructor,getConstructorDocumentationFromDB conname)
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==
