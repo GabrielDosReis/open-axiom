@@ -283,7 +283,7 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
   for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
     for [sig0, pred] in itemlist repeat
       sig := substitute(dc,"$",sig0)
-      pred:= subtitute(dc,"$",pred)
+      pred:= substitute(dc,"$",pred)
       sig := SUBLISLIS(rpvl,KDR oform,sig)
       pred:= SUBLISLIS(rpvl,KDR oform,pred)
       pred := pred or 'T

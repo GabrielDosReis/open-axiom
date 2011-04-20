@@ -1,3 +1,11 @@
+2011-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (substitute): Define.
+	(substitute!): Likewise.
+	* boot/utility.boot: Do not rely on tail recursion removal.
+	* boot/tokens.boot: Don't translate substitute and substitute!.
+	* boot/ast.boot (bfLp1): Tidy.
+
 2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: charUpcase, charDowncase, stringUpcase,

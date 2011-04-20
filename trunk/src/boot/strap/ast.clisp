@@ -551,9 +551,11 @@
                 (T (|bfAND| (APPEND |filters| (CONS |body| NIL))))))
         (SETQ |value| (COND ((NULL |value|) 'NIL) (T (CAR |value|))))
         (SETQ |exits|
-              (LIST 'COND
-                    (LIST (|bfOR| |exits|) (LIST 'RETURN |value|))
-                    (LIST 'T |nbody|)))
+              (COND
+                ((NULL |exits|) |nbody|)
+                (T (LIST 'COND
+                         (LIST (|bfOR| |exits|) (LIST 'RETURN |value|))
+                         (LIST 'T |nbody|)))))
         (SETQ |loop| (CONS 'LOOP (CONS |exits| |sucs|)))
         (COND
           (|vars| (SETQ |loop|

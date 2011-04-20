@@ -15,37 +15,50 @@
     (T (EQ |x| |l|))))
 
 (DEFUN |symbolMember?| (|s| |l|)
-  (COND
-    ((NULL |l|) NIL)
-    ((CONSP |l|)
-     (OR (EQ |s| (CAR |l|)) (|symbolMember?| |s| (CDR |l|))))
-    (T (EQ |s| |l|))))
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND ((EQ |s| (CAR |l|)) (RETURN T)) (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (EQ |s| |l|))))))
 
 (DEFUN |stringMember?| (|s| |l|)
-  (COND
-    ((NULL |l|) NIL)
-    ((CONSP |l|)
-     (OR (STRING= |s| (CAR |l|)) (|stringMember?| |s| (CDR |l|))))
-    (T (STRING= |s| |l|))))
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND
+         ((STRING= |s| (CAR |l|)) (RETURN T))
+         (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (STRING= |s| |l|))))))
 
 (DEFUN |charMember?| (|c| |l|)
-  (COND
-    ((NULL |l|) NIL)
-    ((CONSP |l|)
-     (OR (CHAR= |c| (CAR |l|)) (|charMember?| |c| (CDR |l|))))
-    (T (CHAR= |c| |l|))))
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND
+         ((CHAR= |c| (CAR |l|)) (RETURN T))
+         (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (CHAR= |c| |l|))))))
 
-(DEFUN |scalarMember?| (|x| |l|)
-  (COND
-    ((NULL |l|) NIL)
-    ((CONSP |l|)
-     (OR (EQL |x| (CAR |l|)) (|scalarMember?| |x| (CDR |l|))))
-    (T (CHAR= |x| |l|))))
+(DEFUN |scalarMember?| (|s| |l|)
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND
+         ((EQL |s| (CAR |l|)) (RETURN T))
+         (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (EQL |s| |l|))))))
 
 (DEFUN |listMember?| (|x| |l|)
-  (COND
-    ((NULL |l|) NIL)
-    ((CONSP |l|)
-     (OR (EQUAL |x| (CAR |l|)) (|listMember?| |x| (CDR |l|))))
-    (T (EQUAL |x| |l|))))
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND
+         ((EQUAL |x| (CAR |l|)) (RETURN T))
+         (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (EQUAL |x| |l|))))))
 
