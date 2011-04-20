@@ -411,7 +411,9 @@ bfLp1(iters,body)==
   value :=
     value = nil => "NIL"
     first value
-  exits := ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
+  exits :=
+    exits = nil => nbody
+    ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
   loop := ["LOOP",exits,:sucs]
   if vars then loop := 
     ["LET",[[v, i] for v in vars for i in inits], loop]

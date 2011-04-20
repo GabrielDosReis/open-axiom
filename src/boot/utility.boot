@@ -40,26 +40,41 @@ objectMember?(x,l) ==
   sameObject?(x,l)
 
 symbolMember?(s,l) ==
-  l = nil => false
-  cons? l => symbolEq?(s,first l) or symbolMember?(s,rest l)
-  symbolEq?(s,l)
+  repeat
+    l = nil => return false
+    cons? l =>
+      symbolEq?(s,first l) => return true
+      l := rest l
+    return symbolEq?(s,l)
 
 stringMember?(s,l) ==
-  l = nil => false
-  cons? l => stringEq?(s,first l) or stringMember?(s,rest l)
-  stringEq?(s,l)
+  repeat
+    l = nil => return false
+    cons? l =>
+      stringEq?(s,first l) => return true
+      l := rest l
+    return stringEq?(s,l)
 
 charMember?(c,l) ==
-  l = nil => false
-  cons? l => charEq?(c,first l) or charMember?(c,rest l)
-  charEq?(c,l)
+  repeat
+    l = nil => return false
+    cons? l =>
+      charEq?(c,first l) => return true
+      l := rest l
+    return charEq?(c,l)
 
-scalarMember?(x,l) ==
-  l = nil => false
-  cons? l => scalarEq?(x,first l) or scalarMember?(x,rest l)
-  charEq?(x,l)
+scalarMember?(s,l) ==
+  repeat
+    l = nil => return false
+    cons? l =>
+      scalarEq?(s,first l) => return true
+      l := rest l
+    return scalarEq?(s,l)
 
 listMember?(x,l) ==
-  l = nil => false
-  cons? l => listEq?(x,first l) or listMember?(x,rest l)
-  listEq?(x,l)
+  repeat
+    l = nil => return false
+    cons? l =>
+      listEq?(x,first l) => return true
+      l := rest l
+    return listEq?(x,l)

@@ -313,8 +313,6 @@ for i in [ _
   ["stringEq?","STRING="] , _
   ["stringUpcase", "STRING-UPCASE"] , _
   ["subSequence", "SUBSEQ"] , _
-  ["substitute",  "SUBST"]  , _
-  ["substitute!", "NSUBST"]  , _
   ["symbolEq?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _
   ["symbolName", "SYMBOL-NAME"], _
