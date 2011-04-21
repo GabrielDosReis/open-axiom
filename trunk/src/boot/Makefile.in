@@ -193,7 +193,7 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 %/utility.$(LNKEXT): %/utility.clisp %/initial-env.$(LNKEXT)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
-%/tokens.$(LNKEXT): %/tokens.clisp %/initial-env.$(LNKEXT)
+%/tokens.$(LNKEXT): %/tokens.clisp %/utility.$(LNKEXT)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/includer.$(LNKEXT): %/includer.clisp %/tokens.$(LNKEXT)

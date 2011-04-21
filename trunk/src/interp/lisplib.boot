@@ -107,8 +107,8 @@ makePredicateBitVector pl ==   --called by buildFunctor
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
     else 
       firsts := insert(pred,firsts)
-  firstPl := SUBLIS($pairlis,nreverse orderByContainment firsts)
-  lastPl  := SUBLIS($pairlis,nreverse orderByContainment lasts)
+  firstPl := SUBLIS($pairlis,reverse! orderByContainment firsts)
+  lastPl  := SUBLIS($pairlis,reverse! orderByContainment lasts)
   firstCode:= 
     ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
   lastCode := augmentPredCode(# firstPl,lastPl)

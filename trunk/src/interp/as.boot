@@ -95,7 +95,7 @@ asyParents(conform) ==
 --  x := SUBLISLIS(IFCDR conform,formalParams,x)
 --  x := SUBST('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 asySubstMapping u ==
   u is [op,:r] =>
@@ -294,7 +294,7 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
       pred' := MKPF([pred,:catPredList],'AND)
       mm := [[dc,:sig],[pred']]
       acc := [[op,:interactiveModemapForm mm],:acc]
-  nreverse acc
+  reverse! acc
 
 asIsCategoryForm m ==
   m = "BasicType" or getConstructorKindFromDB opOf m = "category"
@@ -608,7 +608,7 @@ asytranCategory(form,levels,predlist,local?) ==
       HPUT(catTable,id,[asyWrap(record,predlist),:HGET(catTable,id)])
     catList := [asyWrap(dform,predlist),:catList]
   keys := listSort(function GLESSEQP,HKEYS catTable)
-  right1 := nreverse catList
+  right1 := reverse! catList
   right2 := [[key,:HGET(catTable,key)] for key in keys]
   right :=
     right2 => [:right1,['Exports,:right2]]

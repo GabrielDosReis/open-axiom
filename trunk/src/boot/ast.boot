@@ -394,13 +394,13 @@ bf0COLLECT(y,itl) ==
 bf0APPEND(y,itl)==
   g := bfGenSymbol()
   body := ['SETQ,g,['APPEND,['REVERSE,y],g]]
-  extrait := [[[g],[nil],[],[],[],[['NREVERSE,g]]]]
+  extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
   bfLp2(extrait,itl,body)
  
 bfListReduce(op,y,itl)==
   g := bfGenSymbol()
   body := ['SETQ,g,[op,y,g]]
-  extrait := [[[g],[nil],[],[],[],[['NREVERSE,g]]]]
+  extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
   bfLp2(extrait,itl,body)
  
 bfLp1(iters,body)==
@@ -580,8 +580,8 @@ bfLET2(lhs,rhs) ==
     var1 = "DOT" => [['L%T,g,rev],:l2]
     last l2 is ['L%T, =var1, val1] =>
       [['L%T,g,rev],:REVERSE rest REVERSE l2,
-       bfLetForm(var1,['NREVERSE,val1])]
-    [['L%T,g,rev],:l2,bfLetForm(var1,['NREVERSE,var1])]
+       bfLetForm(var1,['reverse!,val1])]
+    [['L%T,g,rev],:l2,bfLetForm(var1,['reverse!,var1])]
   lhs is ["EQUAL",var1] => ['COND,[bfQ(var1,rhs),var1]]
   -- The original expression may be one that involves literals as 
   -- sub-patterns, e.g.
@@ -680,7 +680,7 @@ bfIS1(lhs,rhs) ==
     l2 := bfIS1(g,patrev)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
     a = "DOT" => bfAND [rev,:l2]
-    bfAND [rev,:l2,['PROGN,bfLetForm(a,['NREVERSE,a]),'T]]
+    bfAND [rev,:l2,['PROGN,bfLetForm(a,['reverse!,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
   bpTrap()
 
@@ -1185,7 +1185,7 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
   main(n,e,hs,xs) ==
     hs = nil =>
       ["COND",
-        :nreverse
+        :reverse!
           [[true,["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,n]],:xs]]
     hs is [['%Catch,['%Signature,v,t],s],:hs'] =>
       t := 
@@ -1521,7 +1521,7 @@ genECLnativeTranslation(op,s,t,op') ==
   args := reverse args
   rettype := nativeReturnType t
   [["DEFUN",op, args,
-    [bfColonColon("FFI","C-INLINE"),args, nreverse argtypes,
+    [bfColonColon("FFI","C-INLINE"),args, reverse! argtypes,
       rettype, callTemplate(op',#args,s), 
         KEYWORD::ONE_-LINER, true]]] where
 	  callTemplate(op,n,s) ==
@@ -1639,10 +1639,10 @@ genSBCLnativeTranslation(op,s,t,op') ==
 	[makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), op',
 	  ["FUNCTION",rettype,:argtypes]], :args]]]
   [["DEFUN",op,args,
-    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), nreverse unstableArgs,
+    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), reverse! unstableArgs,
       [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
 	[makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), op',
-	  ["FUNCTION",rettype,:argtypes]], :nreverse newArgs]]]]
+	  ["FUNCTION",rettype,:argtypes]], :reverse! newArgs]]]]
 
 
 

@@ -56,7 +56,7 @@ htSystemVariables() == main where
     $levels : local := '(compiler development interpreter)
     $heading  : local := nil
     while classlevel ~= first $levels repeat $levels := rest $levels
-    table := nreverse fn($setOptions,nil,true)
+    table := reverse! fn($setOptions,nil,true)
     htInitPage('"System Variables",nil)
     htSay '"\beginmenu"
     lastHeading := nil
@@ -180,7 +180,7 @@ gatherGlossLines(results,defstream) ==
       (j := charPosition($tick,x,1)) and (nextPointer := subString(x,0,j))
         and (nextPointer = pointer) repeat
           xtralines := [subString(x,j + 1),:xtralines]
-    acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
+    acc := [strconc(keyAndTick,def, strconc/reverse! xtralines),:acc]
   reverse acc
 
 htGlossSearch(htPage,junk) ==  htGloss htpLabelInputString(htPage,'filter)
@@ -198,8 +198,8 @@ htGreekSearch(filter) ==
   for x in names repeat
     superMatch?(filter,PNAME x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := nreverse matches
-  nonmatches := nreverse nonmatches
+  matches    := reverse! matches
+  nonmatches := reverse! nonmatches
   htInitPage('"Greek Names",nil)
   null matches =>
     htInitPage(['"Greek names matching search string {\em ",ss,'"}"],nil)
@@ -231,8 +231,8 @@ htTextSearch(filter) ==
   for x in lines repeat
     superMatch?(filter,x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := nreverse matches
-  nonmatches := nreverse nonmatches
+  matches    := reverse! matches
+  nonmatches := reverse! nonmatches
   htInitPage('"Text Matches",nil)
   null matches =>
     htInitPage(['"Lines matching search string {\em ",s,'"}"],nil)

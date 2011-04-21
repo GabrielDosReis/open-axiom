@@ -459,7 +459,7 @@ splitConTable cons ==
     null pred => 'skip
     pred = 'T or pred is ['hasArgs,:.]  => uncond := [pair,:uncond]
     cond := [pair,:cond]
-  [nreverse uncond,:nreverse cond]
+  [reverse! uncond,:reverse! cond]
 
 bcNameTable(u,fn,:option) ==   --option if * prefix
   htSay '"\newline"

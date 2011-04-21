@@ -1,3 +1,10 @@
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't rename nreverse.
+	* boot/utility.boot (reverse!): Define.
+	* boot/parser.boot: Use reverse! instead of NREVERSE.
+	* boot/ast.boot: Generate reverse! forms instead of NREVERSE.
+
 2011-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (substitute): Define.

@@ -195,7 +195,7 @@ evaluateType1 (form is [op,:argl]) ==
 	      throwKeyedMsgCannotCoerceWithValue(zv,zt,m)
       if x = $EmptyMode then x := $quadSymbol
       throwEvalTypeMsg("S2IE0006",[makeOrdinal argnum,m,form])
-  [op,:nreverse typeList]
+  [op,:reverse! typeList]
 
 throwEvalTypeMsg(msg, args) ==
   $noEvalTypeMsg => spadThrow()

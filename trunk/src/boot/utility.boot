@@ -33,7 +33,9 @@
 import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
-  charMember?, scalarMember?, listMember?)
+  charMember?, scalarMember?, listMember?, reverse!)
+
+--% membership operators
 
 objectMember?(x,l) ==
   cons? l => sameObject?(x,first l) or objectMember?(x,rest l)
@@ -78,3 +80,16 @@ listMember?(x,l) ==
       listEq?(x,first l) => return true
       l := rest l
     return listEq?(x,l)
+
+--% list reversal
+
+reverse! l ==
+  l1 := nil
+  repeat
+    cons? l =>
+      l2 := rest l
+      l.rest := l1
+      l1 := l
+      l := l2
+    return l1
+    

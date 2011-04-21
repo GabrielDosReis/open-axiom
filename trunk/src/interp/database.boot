@@ -439,7 +439,7 @@ modemapPattern(mmPattern,sig) ==
     patvars := rest patvars
     mmpat := [patvar,:mmpat]
     patternAlist := [[patvar,:x],:patternAlist]
-  [nreverse mmpat,patternAlist,partial,patvars]
+  [reverse! mmpat,patternAlist,partial,patvars]
 
 substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
@@ -725,15 +725,15 @@ dropPrefix(fn) ==
 --++       egFiles := [[n,:object2Identifier x],:egFiles]
 --++    -- have a new group name
 --++    if egName then $globalExposureGroupAlist :=
---++      [[egName,:nreverse egFiles],:$globalExposureGroupAlist]
+--++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
 --++    egFiles := NIL
 --++    STRPOS('" ",x,1,NIL) =>
 --++      throwKeyedMsg("S2IZ0069C",[namestring egFile,x])
 --++    egName := object2Identifier x
 --++  if egFiles then $globalExposureGroupAlist :=
---++      [[egName,:nreverse egFiles],:$globalExposureGroupAlist]
+--++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
 --++  SHUT stream
---++  $globalExposureGroupAlist := nreverse $globalExposureGroupAlist
+--++  $globalExposureGroupAlist := reverse! $globalExposureGroupAlist
 --++  'done
 
 isExposedConstructor name ==

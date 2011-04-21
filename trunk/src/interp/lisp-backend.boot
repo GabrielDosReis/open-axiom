@@ -163,7 +163,7 @@ expandCollect ['%collect,:iters,body] ==
   -- Initialize the variable holding the result; expand as 
   -- if ordinary loop.  But don't forget we built the result
   -- in reverse order.
-  expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
+  expandLoop ['%loop,:iters,["%init",val,nil],body,["reverse!",val]]
 
 expandList(x is ['%list,:args]) ==
   args := [expandToVMForm arg for arg in args]
@@ -563,7 +563,7 @@ for x in [
     ['%lfirst,    :'CAR],
     ['%llength,   :'LIST_-LENGTH],
     ['%lreverse,  :'REVERSE],
-    ['%lreverse!, :'NREVERSE],
+    ['%lreverse!, :'reverse!],
     ['%lsecond,   :'CADR],
     ['%lthird,    :'CADDR],
     ['%pair?,     :'CONSP],

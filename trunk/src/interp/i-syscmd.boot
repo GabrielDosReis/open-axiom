@@ -101,7 +101,7 @@ initializeSystemCommands() ==
   while l repeat
     $SYSCOMMANDS := [CAAR l,:$SYSCOMMANDS]
     l := rest l
-  $SYSCOMMANDS := nreverse $SYSCOMMANDS
+  $SYSCOMMANDS := reverse! $SYSCOMMANDS
 
 systemCommand [[op,:argl],:options] ==
   $options: local:= options
@@ -1158,7 +1158,7 @@ displayProperties(option,l) ==
                   '"   The following functions or rules depend on this:"
                 msg := ["%b",'"     "]
                 for y in dependents repeat msg := ['" ",y,:msg]
-                sayMSG [:nreverse msg,"%d"]
+                sayMSG [:reverse! msg,"%d"]
               if dependees := GETALIST($dependeeAlist,x) then
                 null rest dependees =>
                   sayMSG ['"   This depends on the following function ",
@@ -1167,7 +1167,7 @@ displayProperties(option,l) ==
                   '"   This depends on the following functions or rules:"
                 msg := ["%b",'"     "]
                 for y in dependees repeat msg := ['" ",y,:msg]
-                sayMSG [:nreverse msg,"%d"]
+                sayMSG [:reverse! msg,"%d"]
         prop = 'isInterpreterRule =>
           sayMSG '"   This is an interpreter rule."
           sayFunctionDeps v
@@ -1388,7 +1388,7 @@ closeInterpreterFrame(name) ==
       found := true
     not found => throwKeyedMsg("S2IZ0022",[name])
     _$ERASE makeHistFileName(name)
-    $interpreterFrameRing := nreverse ifr
+    $interpreterFrameRing := reverse! ifr
   updateFromCurrentInterpreterFrame()
 
 previousInterpreterFrame() ==
@@ -1662,7 +1662,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines nreverse lineList repeat writeLine(x,inp)
+  for x in removeUndoLines reverse! lineList repeat writeLine(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -2647,7 +2647,7 @@ diffAlist(new,old) ==
           deltas := [[prop],:deltas]
         sameObject?(rest oldPropval,val) => 'skip
         deltas := [oldPropval,:deltas]
-      deltas => acc := [[name,:nreverse deltas],:acc]
+      deltas => acc := [[name,:reverse! deltas],:acc]
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
 --record properties absent on new list (say, from a )cl all)
   for (oldPair := [name,:r]) in old repeat
@@ -2659,7 +2659,7 @@ diffAlist(new,old) ==
     --     (b) if the old world does not, record nothing
     -- (2) if the new world has a proplist for that variable, it has
     --     been handled by the first loop.
-  res := nreverse acc
+  res := reverse! acc
   if $reportUndo then reportUndo res
   res
 
@@ -2780,7 +2780,7 @@ removeUndoLines u == --called by writeInputLines
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
-  for y in tails nreverse u repeat
+  for y in tails reverse! u repeat
     (x := first y).0 = char ">" =>
       code := x . 1                                 --code = a,b, or r
       n := readInteger subString(x,2)               --n = number of undo steps
@@ -3185,7 +3185,7 @@ splitIntoOptionBlocks str ==
       blockStart := i+1
       parenCount := 0
   blockList := [stripSpaces subSequence(str, blockStart), :blockList]
-  nreverse blockList
+  reverse! blockList
 
 dumbTokenize str ==
   -- split into tokens delimted by spaces, taking quoted strings into account
@@ -3205,7 +3205,7 @@ dumbTokenize str ==
       previousSpace := true
     previousSpace := false
   tokenList := [stripSpaces subSequence(str, tokenStart), :tokenList]
-  nreverse tokenList
+  reverse! tokenList
 
 handleParsedSystemCommands(unabr, optionList) ==
   restOptionList := [dumbTokenize opt for opt in rest optionList]

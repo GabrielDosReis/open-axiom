@@ -261,7 +261,7 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
   for [op,:alist] in opAlist repeat
     for [sig,:.] in alist repeat
       opl := [[op,:SUBLISLIS($FormalMapVariableList,rest conform,sig)],:opl]
-  opl := nreverse opl
+  opl := reverse! opl
   u := whoUses(opl,conform)
   prefix := pluralSay(#u,'"constructor uses",'"constructors use")
   suffix :=
@@ -378,7 +378,7 @@ koOps(conform,domname,:options) == main where
 --      for x in relatives repeat
 --      or/[y for y in CDAR x | isSharpVar y] => 'skip
 --      acc := [x,:acc]
---      relatives := nreverse acc
+--      relatives := reverse! acc
 --      for (pair := [pakform,:.]) in relatives repeat
 --      $packageItem := sublisFormal(rest conform,pair)
 --      ours := merge(fn(pakform,nil),ours)
@@ -525,7 +525,7 @@ koaPageFilterByCategory1(htPage,i) ==
         newOpAlist := insertAlist(op,newEntry,newOpAlist)
   falist := nil
   for [op,:alist] in newOpAlist repeat
-    falist := [[op,:nreverse alist],:falist]
+    falist := [[op,:reverse! alist],:falist]
   htpSetProperty(htPage,'fromcat,['" from category {\sf ",form2HtString ancestor,'"}"])
   dbShowOperationsFromConform(htPage,which,falist)
 

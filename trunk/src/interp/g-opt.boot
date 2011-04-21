@@ -132,7 +132,7 @@ groupVariableDefinitions form ==
   expr :=
     stmts = nil => val
     ['SEQ,:stmts,['EXIT,val]]
-  ['%bind,nreverse defs,expr]
+  ['%bind,reverse! defs,expr]
 
 optimizeFunctionDef(def) ==
   if $reportOptimization then
@@ -667,7 +667,7 @@ optCollectVector form ==
   -- get the actual size of the vector.
   vecSize :=
     vecSize is [hi] => hi
-    ["MIN",:nreverse vecSize]
+    ["MIN",:reverse! vecSize]
   -- if no suitable loop index was found, introduce one.
   if index = nil then
     index := gensym()

@@ -695,7 +695,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (if (> eol bol) 
          (setq line-list (cons (subseq str bol eol) line-list)))
      (setq bol (+ eol 1)))
-    (nreverse line-list)))
+    (|reverse!| line-list)))
 
 ; part of the old spad to new spad translator
 ; these are here because they need to be in depsys

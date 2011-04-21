@@ -161,7 +161,7 @@ getTraceOptions options ==
       [key,parms] := first $traceErrorStack
       throwKeyedMsg(key,['"",:parms])
     throwListOfKeyedMsgs("S2IT0017",[# $traceErrorStack],
-      nreverse $traceErrorStack)
+      reverse! $traceErrorStack)
   optionList
 
 saveMapSig(funNames) ==

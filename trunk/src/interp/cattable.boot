@@ -352,7 +352,7 @@ getConstrCat(x) ==
     y is ['CATEGORY,.,:z] =>
       for zz in z repeat cats := makeCatPred(zz, cats, true)
     cats:= [y,:cats]
-  cats:= nreverse cats
+  cats:= reverse! cats
   cats
 
 

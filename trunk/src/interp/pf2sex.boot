@@ -296,7 +296,7 @@ hasOptArgs? argSex ==
       opt := [[lhs, rhs], :opt]
     nonOpt := [arg, :nonOpt]
   null opt => nil
-  NCONC (nreverse nonOpt, [["construct", :nreverse opt]])
+  NCONC (reverse! nonOpt, [["construct", :reverse! opt]])
 
 pfDefinition2Sex pf ==
   $insideApplication > $insideQuasiquotation =>
@@ -332,11 +332,11 @@ pfLambdaTran pf ==
           argTypeList := [nil, :argTypeList]
         argTypeList := [pf2Sex1 pfTypedType arg, :argTypeList]
       systemError '"definition args should be typed"
-    argList := nreverse argList
+    argList := reverse! argList
     retType :=
       pfNothing? pfLambdaRets pf => nil
       pf2Sex1 pfLambdaRets pf
-    argTypeList := [retType, :nreverse argTypeList]
+    argTypeList := [retType, :reverse! argTypeList]
     [argList, :[argTypeList, [nil for arg in argTypeList],
       pf2Sex1 pfLambdaBody pf]]
   ['id, :['(()), '(()), pf2Sex1 pf]]
@@ -380,7 +380,7 @@ pfSequence2Sex0 seqList ==
     seqTranList := [item ,:seqTranList]
     seqList := rest seqList
   #seqTranList = 1 => first seqTranList
-  ["SEQ", :nreverse seqTranList]
+  ["SEQ", :reverse! seqTranList]
 
 float2Sex num ==
   eIndex := SEARCH('"e", num)
@@ -413,7 +413,7 @@ loopIters2Sex iterList ==
     sex is ['IN, var, ['SEGMENT, i, j]] =>
       result := [['STEP, var, i, 1, j], :result]
     result := [sex, :result]
-  nreverse result
+  reverse! result
 
 pfCollect2Sex pf ==
   sex := ["COLLECT", :loopIters2Sex pfParts pfCollectIterators pf,

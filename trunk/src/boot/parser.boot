@@ -167,7 +167,7 @@ bpListof(f,str1,g)==
       a:=$stack
       $stack:=nil
       while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
-      $stack:=[NREVERSE $stack,:a]
+      $stack:=[reverse! $stack,:a]
       bpPush FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()])
     true
   false
@@ -180,7 +180,7 @@ bpListofFun(f,h,g)==
       a:=$stack
       $stack:=nil
       while apply(h,nil) and (apply(f,nil) or bpTrap()) repeat 0
-      $stack:=[NREVERSE $stack,:a]
+      $stack:=[reverse! $stack,:a]
       bpPush FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()])
     true
   false
@@ -191,7 +191,7 @@ bpList(f,str1)==
       a:=$stack
       $stack:=nil
       while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
-      $stack:=[NREVERSE $stack,:a]
+      $stack:=[reverse! $stack,:a]
       bpPush [bpPop3(),bpPop2(),:bpPop1()]
     bpPush [bpPop1()]
   bpPush nil
@@ -201,7 +201,7 @@ bpOneOrMore f==
     a:=$stack
     $stack:=nil
     while apply(f,nil) repeat 0
-    $stack:=[NREVERSE $stack,:a]
+    $stack:=[reverse! $stack,:a]
     bpPush [bpPop2(),:bpPop1()]
   false
  
@@ -310,7 +310,7 @@ bpListAndRecover(f)==
 	       c := $inputStream
     b := [bpPop1(),:b]
   $stack := a
-  bpPush NREVERSE b
+  bpPush reverse! b
  
 bpMoveTo n==
    $inputStream = nil  => true
@@ -717,9 +717,9 @@ bpTry() ==
       cs := [bpPop1(),:cs]
     bpHandler "FINALLY" =>
       bpFinally() and
-        bpPush bfTry(bpPop2(),nreverse [bpPop1(),:cs])
+        bpPush bfTry(bpPop2(),reverse! [bpPop1(),:cs])
     cs = nil => bpTrap() -- missing handlers
-    bpPush bfTry(bpPop1(),nreverse cs)
+    bpPush bfTry(bpPop1(),reverse! cs)
   nil            
 
 bpCatchItem() ==

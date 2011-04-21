@@ -775,8 +775,8 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     putValue(x,object)
     putModeSet(x,[objMode(object)])
   --insert pulled-back items
-  a := nreverse a
-  ms := nreverse ms
+  a := reverse! a
+  ms := reverse! ms
 
   -- check that we haven't seen these types before
   typesHad := getAtree(t, 'typesHad)
@@ -817,7 +817,7 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := [x,:a]
-  b and bottomUpForm(t,op,opName,nreverse a,amsl)
+  b and bottomUpForm(t,op,opName,reverse! a,amsl)
 
 bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
   -- see if we have a Union with no tags, if so retract all such guys
@@ -840,7 +840,7 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := [x,:a]
-  b and bottomUpForm(t,op,opName,nreverse a,amsl)
+  b and bottomUpForm(t,op,opName,reverse! a,amsl)
 
 bottomUpElt (form:=[op,:argl]) ==
   -- this transfers expressions that look like function calls into

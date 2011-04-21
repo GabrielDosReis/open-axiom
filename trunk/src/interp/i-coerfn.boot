@@ -168,7 +168,7 @@ coerceDmpCoeffs(u,S,T) ==
     null (c' := coerceInt(objNewWrap(c,S),T)) => return (bad := true)
     u' := [[e,:objValUnwrap(c')],:u']
   bad => 'failed
-  nreverse u'
+  reverse! u'
 
 sortAndReorderDmpExponents(u,vl) ==
   vl' := reverse MSORT vl
@@ -287,7 +287,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
 
   -- only one variable in DMP case
   null vl' =>
-    u' := nreverse SORTBY('CAR,[[e.0,:c] for [e,:c] in u])
+    u' := reverse! SORTBY('CAR,[[e.0,:c] for [e,:c] in u])
     (u' := coerceInt(objNewWrap(u',[up,var,S]),target)) or
       coercionFailure()
     objValUnwrap u'
@@ -308,7 +308,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
         p.rest := c'
       zero = objValUnwrap(y) => 'iterate
       x := [[exp,:objValUnwrap(y)],:x]
-  y => nreverse SORTBY('CAR,x)
+  y => reverse! SORTBY('CAR,x)
   coercionFailure()
 
 removeVectorElt(v,pos) ==
@@ -1267,7 +1267,7 @@ SUP2Up(u,source is [.,S],target is [.,x,T]) ==
         coercionFailure())
       c' = zero => 'iterate
       u' := [[e,:c'],:u']
-    nreverse u'
+    reverse! u'
   [[0,:objValUnwrap u']]
 
 --% SquareMatrix
@@ -1497,7 +1497,7 @@ Up2SUP(u,source is [.,x,S],target is [.,T]) ==
         coercionFailure())
       c' = zero => 'iterate
       u' := [[e,:c'],:u']
-    nreverse u'
+    reverse! u'
   [[0,:objValUnwrap u']]
 
 Up2Up(u,source is [.,v1,S], target is [.,v2,T]) ==

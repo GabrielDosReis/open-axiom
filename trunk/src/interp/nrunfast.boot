@@ -78,7 +78,7 @@ getDomainCompleteCategories dom ==
   cats := nil
   for i in 0..maxIndex vec repeat
     cats := [newExpandLocalType(vectorRef(vec,i),dom,dom), :cats]
-  nreverse cats
+  reverse! cats
  
 getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise

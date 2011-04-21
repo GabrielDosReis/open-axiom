@@ -189,7 +189,7 @@
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
                 (T 0)))
-            (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
+            (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
                          (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
@@ -211,7 +211,7 @@
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
                 (T 0)))
-            (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
+            (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
                          (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
@@ -233,7 +233,7 @@
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
                 (T 0)))
-            (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
+            (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
             (|bpPush| (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|)))))
            (T (|bpPush| (LIST (|bpPop1|))))))
         (T (|bpPush| NIL))))))
@@ -245,7 +245,7 @@
       (COND
         ((APPLY |f| NIL) (SETQ |a| |$stack|) (SETQ |$stack| NIL)
          (LOOP (COND ((NOT (APPLY |f| NIL)) (RETURN NIL)) (T 0)))
-         (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
+         (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
          (|bpPush| (CONS (|bpPop2|) (|bpPop1|))))
         (T NIL)))))
 
@@ -388,7 +388,7 @@
                         (T (|bpNext|) (SETQ |c| |$inputStream|)))))
                  (SETQ |b| (CONS (|bpPop1|) |b|))))))
         (SETQ |$stack| |a|)
-        (|bpPush| (NREVERSE |b|))))))
+        (|bpPush| (|reverse!| |b|))))))
 
 (DEFUN |bpMoveTo| (|n|)
   (DECLARE (SPECIAL |$bpParenCount| |$bpCount| |$inputStream|))
@@ -783,9 +783,9 @@
             (AND (|bpFinally|)
                  (|bpPush|
                      (|bfTry| (|bpPop2|)
-                              (NREVERSE (CONS (|bpPop1|) |cs|))))))
+                              (|reverse!| (CONS (|bpPop1|) |cs|))))))
            ((NULL |cs|) (|bpTrap|))
-           (T (|bpPush| (|bfTry| (|bpPop1|) (NREVERSE |cs|))))))
+           (T (|bpPush| (|bfTry| (|bpPop1|) (|reverse!| |cs|))))))
         (T NIL)))))
 
 (DEFUN |bpCatchItem| ()

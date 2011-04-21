@@ -115,7 +115,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   body:= generalTerm
   for [a,:b] in al repeat
     body:= substitute(b,a,body)
-  result:= [body,sharpArg,n-1,:nreverse [LASSOC(i,initList) or
+  result:= [body,sharpArg,n-1,:reverse! [LASSOC(i,initList) or
       systemErrorHere('"isRecurrenceRelation")
         for i in minIndex..(n-1)]]
 

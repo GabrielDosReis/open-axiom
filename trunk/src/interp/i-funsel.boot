@@ -201,7 +201,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     -- any Unions, Mapping or Records
 
     a' := nil
-    a := nreverse removeDuplicates a
+    a := reverse! removeDuplicates a
     for x in a repeat
       null x => 'iterate
       x = '(RationalRadicals) => a' := [$RationalNumber,:a']
@@ -502,7 +502,7 @@ getOpArgTypes1(opname, args) ==
       v.i = 0 => first getModeSet x
       first getModeSetUseSubdomain x
     mss := [ms,:mss]
-  nreverse mss
+  reverse! mss
 
 argCouldBelongToSubdomain(op, nargs) ==
   -- this returns a vector containing 0 or ^0 for each argument.
@@ -559,7 +559,7 @@ selectLocalMms(op,name,types,tar) ==
 --    [., targ, :.] := mm
 --    if tar = targ then matchingMms := [mm,:matchingMms]
 --  -- if we got some exact matchs on the target, return them
---  matchingMms => nreverse matchingMms
+--  matchingMms => reverse! matchingMms
 --
 --  obj := getValue op
 --  obj and (objVal obj is ["%Map",:mapDef]) and
@@ -587,7 +587,7 @@ getLocalMms(name,types,tar) ==
       dc = 'interpOnly and not($Coerce)=> mmS := [mm,:mmS]
       NIL
     mmS := [mm,:mmS]
-  nreverse mmS
+  reverse! mmS
 
 mmCost(name, sig,cond,tar,args1,args2) ==
   cost := mmCost0(name, sig,cond,tar,args1,args2)
@@ -681,7 +681,7 @@ getFunctionFromDomain(op,dc,args) ==
 --+
     --sig := [NIL,:args]
     domain := evalDomain dc
-    for mm in nreverse p until b repeat
+    for mm in reverse! p until b repeat
       [[.,:osig],nsig,:.] := mm
       b := compiledLookup(op,nsig,domain)
     b or  throwKeyedMsg("S2IS0023",[op,dc])
@@ -860,10 +860,10 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
       y := 'ELT      -- if subsumed fails try it again
       not $SubDom and first sig isnt ['Union,:.] and slot is [tar,:args] and
         (f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
-    y='ELT => [[[dc,:sig],osig,nreverse $RTC]]
-    y='CONST => [[[dc,:sig],osig,nreverse $RTC]]
-    y='ASCONST => [[[dc,:sig],osig,nreverse $RTC]]
-    y is ['XLAM,:.] => [[[dc,:sig],y,nreverse $RTC]]
+    y='ELT => [[[dc,:sig],osig,reverse! $RTC]]
+    y='CONST => [[[dc,:sig],osig,reverse! $RTC]]
+    y='ASCONST => [[[dc,:sig],osig,reverse! $RTC]]
+    y is ['XLAM,:.] => [[[dc,:sig],y,reverse! $RTC]]
     sayKeyedMsg("S2IF0006",[y])
     NIL
 
@@ -889,7 +889,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       impls := [[b,nil,true,d],:impls]
     d isnt [k,"$",n] => systemErrorHere ["findFunctionInCategory",d]
     impls := [[b,n,true,k],:impls]
-  impls := nreverse impls
+  impls := reverse! impls
   if maxargs ~= -1 then
     SL:= NIL
     for i in 1..maxargs repeat
@@ -1312,7 +1312,7 @@ orderMmCatStack st ==
         havevars := [s,:havevars]
     if not mem then haventvars := [s,:haventvars]
   null havevars => st
-  st := nreverse nconc(haventvars,havevars)
+  st := reverse! nconc(haventvars,havevars)
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==

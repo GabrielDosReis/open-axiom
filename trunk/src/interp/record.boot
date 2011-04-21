@@ -176,7 +176,7 @@ testInput2Output(lines,n) ==
   evaluateLines lines
   null n => nil     --return from reading trailing system commands
   typ := $mkTestOutputType
-  output := nreverse $mkTestOutputStack
+  output := reverse! $mkTestOutputStack
   [prefix2String typ,:output]
 
 evaluateLines lines ==
@@ -272,7 +272,7 @@ recordAndPrintTest md ==  --called by recordAndPrint
           [strconc(subString(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
-  output := nreverse $mkTestOutputStack -- set by maPrin
+  output := reverse! $mkTestOutputStack -- set by maPrin
   PRINT(writify [input,prefix2String md,:output],$testStream)
   $mkTestInputStack := nil
   $mkTestOutputStack := nil

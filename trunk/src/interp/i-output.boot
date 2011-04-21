@@ -1185,7 +1185,7 @@ maprinChk x ==
 maprinRows matrixList ==
   newlineIfDisplaying()
   while matrixList repeat
-    y:=nreverse matrixList
+    y := reverse! matrixList
     --Makes the matrices come out in order, since CONSed on backwards
     matrixList:=nil
     firstName := first first y

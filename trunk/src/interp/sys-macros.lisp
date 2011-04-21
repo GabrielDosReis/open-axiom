@@ -668,9 +668,9 @@
        (DO ((X SPL (CDR X)))
 	   ((ATOM X)
 	    (LIST 'spadDO 
-		  (NREVERSE IL) 
-		  (LIST (MKPF (NREVERSE XCL) 'OR) XV)
-		  (SEQOPT (CONS 'SEQ (NCONC (NREVERSE RSL)
+		  (|reverse!| IL) 
+		  (LIST (MKPF (|reverse!| XCL) 'OR) XV)
+		  (SEQOPT (CONS 'SEQ (NCONC (|reverse!| RSL)
 					    (LIST (LIST 'EXIT BD)))))))
 	   (COND ((ATOM (CAR X)) 
 		  (FAIL)))
@@ -805,7 +805,7 @@
 		    '(EXIT RESET IN ON GSTEP ISTEP STEP 
 			   GENERAL UNTIL WHILE SUCHTHAT EXIT))
 	    (REPEAT-TRAN (CDR L) (CONS (CAR L) LP)))
-	   ((CONS (NREVERSE LP) (MKPF L 'PROGN)))))
+	   ((CONS (|reverse!| LP) (MKPF L 'PROGN)))))
    
    (defun MK_LEFORM (U)
      (COND ((IDENTP U) 
@@ -892,7 +892,7 @@
 
    (defun NREVERSE-N (X AXIS)
      (COND ((EQL AXIS 0)
-	    (NREVERSE X))
+	    (|reverse!| X))
 	   ((MAPCAR #'(LAMBDA (Y) (NREVERSE-N Y (1- AXIS))) X))))
  
 
@@ -911,7 +911,7 @@
 		       (PROG (L BOD1 ITL)
 			     (SETQ L (REVERSE (CDR BOD)))
 			     (SETQ BOD1 (CAR L))
-			     (SETQ ITL (NREVERSE (CDR L)))
+			     (SETQ ITL (|reverse!| (CDR L)))
 			     (RETURN (-REDUCE OP1 AXIS IDEN BOD1 ITL)) )
 		     (progn 
 		       (SETQ U (-REDUCE-OP OP1 AXIS))
@@ -925,9 +925,9 @@
    (defun REDUCE-N (OP RIGHT L ACC)
      (COND (RIGHT 
 	    (PROG (U L1)
-		  (SETQ L1 (NREVERSE L))
+		  (SETQ L1 (|reverse!| L))
 		  (SETQ U (REDUCE-N-1 OP 'T L1 ACC))
-		  (NREVERSE L1)
+		  (|reverse!| L1)
 		  (RETURN U) ))
 	   ((REDUCE-N-1 OP NIL L ACC))))
 
@@ -1169,8 +1169,8 @@
 		 (if (SETQ U (GET (CAR L) 'THETA))
 		     (CAR U)
 		   (MOAN "NO THETA PROPERTY"))
-		 (CAR (SETQ L (NREVERSE (CDR L))))
-		 (NREVERSE (CDR L)))))))
+		 (CAR (SETQ L (|reverse!| (CDR L))))
+		 (|reverse!| (CDR L)))))))
 
 (defmacro THETA1 (&rest LL)
   (let (U (L (copy-list LL)))
@@ -1181,8 +1181,8 @@
 	       (if (SETQ U (GET (CAR L) 'THETA))
 		   (CAR U)
 		 (MOAN "NO THETA PROPERTY"))
-	       (CAR (SETQ L (NREVERSE (CDR L))))
-	       (NREVERSE (CDR L))))))
+	       (CAR (SETQ L (|reverse!| (CDR L))))
+	       (|reverse!| (CDR L))))))
 
 (defmacro SPADREDUCE (OP AXIS BOD)
   (REDUCE-1 OP AXIS BOD))

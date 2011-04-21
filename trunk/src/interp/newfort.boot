@@ -170,12 +170,12 @@ exp2FortOptimize e ==
   atom e => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
-    nreverse [e1,:$exprStack]
+    reverse! [e1,:$exprStack]
   e := minimalise e
   for e1 in exp2FortOptimizeCS  e repeat
     e2 := exp2FortOptimizeArray e1
     $exprStack := [e2,:$exprStack]
-  nreverse $exprStack
+  reverse! $exprStack
 
  
 exp2FortOptimizeCS e ==
@@ -184,7 +184,7 @@ exp2FortOptimizeCS e ==
   $fortCsExprStack : local := NIL
   $fortCsFuncStack : local := NIL
   f := exp2FortOptimizeCS1 e
-  nreverse [f,:$fortCsList]
+  reverse! [f,:$fortCsList]
  
 -- bug fix to beenHere 
 -- Thu Nov 05 12:01:46 CUT 1992 , Author: TTT
@@ -290,9 +290,9 @@ fortran2Lines f ==
       fs := [ff,:fs]
       f := rest f
     if f and first(f) = '"%l" then f := rest f
-    lines := append(fortran2Lines1 nreverse fs,lines)
+    lines := append(fortran2Lines1 reverse! fs,lines)
     fs := nil
-  nreverse lines
+  reverse! lines
  
 fortran2Lines1 f ==
   -- f is a list of strings making up 1 FORTRAN statement
@@ -362,7 +362,7 @@ fortexp0 x ==
   while p < 0 repeat
     [t,:f] := f
     l := [t,:l]
-  nreverse ['"...",:l]
+  reverse! ['"...",:l]
 
 ++ This formatting routine is essentially used to print
 ++ values/expressions used to instantiate constructors.
@@ -599,19 +599,19 @@ fortFormatIfGoto(switch,label) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
   if first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"IF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"IF(",:r]
 
 fortFormatLabelledIfGoto(switch,label1,label2) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label2]
   while r and not(first(r) = '"%l") repeat
@@ -619,7 +619,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
     r := rest(r)
   labString := STRINGIMAGE label1
   for i in #(labString)..5 repeat labString := strconc(labString,'" ")
-  lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
+  lines := fortran2Lines reverse! [:reverse! l,'"IF(",:r]
   lines := [strconc(labString,subSequence(first lines,6)),:rest lines]
   checkLines lines
 
@@ -627,26 +627,26 @@ fortFormatIf(switch) ==
   changeExprLength(-8) -- Leave room for IF( ... )THEN
   $fortError : fluid := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")THEN"]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"IF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"IF(",:r]
 
 fortFormatElseIf(switch) ==
   -- Leave room for IF( ... )THEN
   changeExprLength(-12)
   $fortError : fluid := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(12)
   l := ['")THEN"]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"ELSEIF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"ELSEIF(",:r]
 
 fortFormatHead(returnType,name,args) ==
   $fortError : fluid := nil

@@ -1,5 +1,5 @@
 (PROCLAIM '(OPTIMIZE SPEED))
-(IMPORT-MODULE "initial-env")
+(IMPORT-MODULE "utility")
 
 (IN-PACKAGE "BOOTTRAN")
 
@@ -228,10 +228,9 @@
                   (LIST '|nconc| 'NCONC)
                   (LIST '|newString| 'MAKE-STRING)
                   (LIST '|newVector| 'MAKE-ARRAY) (LIST '|nil| NIL)
-                  (LIST '|not| 'NOT) (LIST '|nreverse| 'NREVERSE)
-                  (LIST '|null| 'NULL) (LIST '|or| 'OR)
-                  (LIST '|otherwise| 'T) (LIST '|property| 'GET)
-                  (LIST '|readByte| 'READ-BYTE)
+                  (LIST '|not| 'NOT) (LIST '|null| 'NULL)
+                  (LIST '|or| 'OR) (LIST '|otherwise| 'T)
+                  (LIST '|property| 'GET) (LIST '|readByte| 'READ-BYTE)
                   (LIST '|readInteger| 'PARSE-INTEGER)
                   (LIST '|readLine| 'READ-LINE)
                   (LIST '|readLispFromString| 'READ-FROM-STRING)

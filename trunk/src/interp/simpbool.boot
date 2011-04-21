@@ -45,7 +45,7 @@ reduceDnf u ==
       x = y => 'skip
       dnfContains(x,y) => return (ok := false)
     ok = true => acc := [x,:acc]
-  nreverse acc
+  reverse! acc
  
 dnfContains([a,b],[c,d]) == fn(a,c) and fn(b,d) where
   fn(x,y) == and/[member(u,x) for u in y]
