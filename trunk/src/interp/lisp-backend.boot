@@ -562,7 +562,7 @@ for x in [
     ['%lempty?,   :'NULL],
     ['%lfirst,    :'CAR],
     ['%llength,   :'LIST_-LENGTH],
-    ['%lreverse,  :'REVERSE],
+    ['%lreverse,  :'reverse],
     ['%lreverse!, :'reverse!],
     ['%lsecond,   :'CADR],
     ['%lthird,    :'CADDR],

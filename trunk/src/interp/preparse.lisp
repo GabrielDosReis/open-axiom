@@ -209,7 +209,7 @@
 ;; NCBLOCK is the current comment block
 (DEFUN FINCOMBLOCK (NUM OLDNUMS OLDLOCS NCBLOCK linelist)
   (PUSH
-    (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (REVERSE (CDR NCBLOCK))))
+    (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (|reverse| (CDR NCBLOCK))))
               ;; comment for constructor itself paired with 1st line -1
           ('T
            (COND ($EchoLineStack
@@ -225,7 +225,7 @@
                 (if (and (numberp (car olocs))
                          (<= (car olocs) sloc))
                     (return (car onums))))
-            (REVERSE (CDR NCBLOCK)))))
+            (|reverse| (CDR NCBLOCK)))))
     $COMBLOCKLIST))
  
 (defun PARSEPRINT (L)
@@ -342,7 +342,7 @@
 ;;                    LINE)))))
  
 (defun PREPARSE-ECHO (linelist)
-  (if |$Echo| (REPEAT (IN X (REVERSE $EchoLineStack))
+  (if |$Echo| (REPEAT (IN X (|reverse| $EchoLineStack))
                         (format out-stream "~&;~A~%" X)))
   (setq $EchoLineStack ()))
  

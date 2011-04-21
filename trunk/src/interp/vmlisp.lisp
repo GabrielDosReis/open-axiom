@@ -216,13 +216,6 @@
 
 (defmacro ne (a b) `(not (equal ,a ,b)))
 
-(defmacro nreverse0 (x)
-  (if (atom x)
-      `(if (atom ,x) ,x (|reverse!| ,x))
-    (let ((xx (gensym)))
-      `(let ((,xx ,x))
-         (if (atom ,xx) ,xx (|reverse!| ,xx))))))
-
 (defmacro nump (n)
  `(numberp ,n))
 
@@ -406,7 +399,7 @@
   `(,(dcqexp pattern '=) ,exp))
 
 (defmacro seq (&rest form)
-  (let* ((body (reverse form))
+  (let* ((body (|reverse| form))
          (val `(return-from seq ,(pop body))))
     (nsubstitute '(progn) nil body) ;don't treat NIL as a label
     `(block seq (tagbody ,@(|reverse!| body) ,val))))

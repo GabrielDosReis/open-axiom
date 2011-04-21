@@ -977,7 +977,7 @@
 			(LIST 'THETACHECK G (MKQ G)(MKQ OP)))
 		       (G) ))
 	   (COND ((EQ OP 'CONS)
-		  (SETQ EXIT (LIST 'NREVERSE0 EXIT))))
+		  (SETQ EXIT (LIST '|reverse!| EXIT))))
 	   ;; CONSCODE= code which conses a member onto the list
 	   (SETQ VALUE 
 		 (COND ((EQ Y 'NO_THETA_PROPERTY)
