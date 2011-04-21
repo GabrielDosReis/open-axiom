@@ -1,5 +1,10 @@
 2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Don't translate lastNode anymore.
+	* boot/utility.boot (lastNode): Define.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/utility.boot (objectMember?): Don't rely non tail recursion
 	removal. 
 	(reverse): Define.

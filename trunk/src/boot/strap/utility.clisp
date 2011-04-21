@@ -6,7 +6,8 @@
 (PROVIDE "utility")
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
-             |scalarMember?| |listMember?| |reverse| |reverse!|))
+             |scalarMember?| |listMember?| |reverse| |reverse!|
+             |lastNode|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -85,4 +86,16 @@
             ((CONSP |l|) (SETQ |l2| (CDR |l|)) (RPLACD |l| |l1|)
              (SETQ |l1| |l|) (SETQ |l| |l2|))
             (T (RETURN |l1|))))))))
+
+(DEFUN |lastNode| (|l|)
+  (PROG (|l'|)
+    (RETURN
+      (PROGN
+        (LOOP
+          (COND
+            ((NOT (AND (CONSP |l|) (PROGN (SETQ |l'| (CDR |l|)) T)
+                       (CONSP |l'|)))
+             (RETURN NIL))
+            (T (SETQ |l| |l'|))))
+        |l|))))
 
