@@ -132,7 +132,7 @@ segmentedMsgPreprocess x ==
       [t,:tail] := tail
       member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
       y := [segmentedMsgPreprocess t,:y]
-    head1 := [(center => '"%ce"; '"%rj"),:nreverse y]
+    head1 := [(center => '"%ce"; '"%rj"),:reverse! y]
     null tail => [head1]
     [head1,:segmentedMsgPreprocess tail]
   head1 := segmentedMsgPreprocess head
@@ -180,11 +180,11 @@ substituteSegmentedMsg(msg,args) ==
 
     -- x is a special case
     (n > 2) and c = char "%" and stringChar(x,1) = char "k" =>
-        l := nconc(nreverse pkey subString(x,2),l)
+        l := nconc(reverse! pkey subString(x,2),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
     stringChar(x,0) = char "?" and n > 1 and
-      (v := pushOrTypeFuture(makeSymbol x,nil)) => l := nconc(nreverse v,l)
+      (v := pushOrTypeFuture(makeSymbol x,nil)) => l := nconc(reverse! v,l)
 
     -- x requires parameter substitution
     stringChar(x,0) = char "%" and n > 1 and digit? stringChar(x,1) =>
@@ -234,7 +234,7 @@ substituteSegmentedMsg(msg,args) ==
         l := [fillerSpaces(DIG2FIX stringChar(x,2), '" "),:l]
     --x is a plain word
     l := [x,:l]
-  addBlanks nreverse l
+  addBlanks reverse! l
 
 addBlanks msg ==
   -- adds proper blanks
@@ -257,7 +257,7 @@ addBlanks msg ==
     else
        msg1 := [y,blank,:msg1]
     x := y
-  nreverse msg1
+  reverse! msg1
 
 
 $msgdbPrims =='( %b %d %l %i %u %U %n %x %ce %rj "%U" "%b" "%d" "%l" "%i" "%u" "%U" "%n" "%x" "%ce" "%rj")
@@ -492,7 +492,7 @@ flowSegmentedMsg(msg, len, offset) ==
           lnl := -1 + offset + sbl
         nl := [f,off,'"%l",:nl]
         lnl := offset + sbl
-    concat nreverse nl
+    concat reverse! nl
   concat('"%l",off,msg)
 
 --% Other handy things
@@ -729,7 +729,7 @@ brightPrintCenter(x,out == $OutputStream) ==
     if member(first(x),'(%l "%l")) then ok := NIL
     else y := [first x, :y]
     x := rest x
-  y := nreverse y
+  y := reverse! y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
@@ -753,7 +753,7 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
       lst := rest lst
     if lst then lst := rest lst
     sayString('"\centerline{",out)
-    words := nreverse words
+    words := reverse! words
     for zz in words repeat
       brightPrint0(zz,out)
     sayString('"}",out)
@@ -776,7 +776,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
     if member(first(x),'(%l "%l")) then ok := NIL
     else y := [first x, :y]
     x := rest x
-  y := nreverse y
+  y := reverse! y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     y := [fillerSpaces($LINELENGTH-wid,'" "),:y]
@@ -840,7 +840,7 @@ say2Split(l,short,long,width) ==
   l is [x,:l'] =>
     sayWidth x < width => say2Split(l',[x,:short],long,width)
     say2Split(l',short,[x,:long],width)
-  [nreverse short,nreverse long]
+  [reverse! short,reverse! long]
 
 sayLongOperation x ==
   sayWidth x > $LINELENGTH and (splitListOn(x,"if") is [front,back]) =>
@@ -854,7 +854,7 @@ splitListOn(x,key) ==
     while first x ~= key repeat
       y:= [first x,:y]
       x:= rest x
-    [nreverse y,x]
+    [reverse! y,x]
   nil
 
 say2PerLineThatFit l ==
@@ -944,14 +944,14 @@ splitSayBrightly u ==
   while u and (width:= width + sayWidth first u) < $LINELENGTH repeat
     segment:= [first u,:segment]
     u := rest u
-  null u => nreverse segment
-  segment => [:nreverse segment,"%l",:splitSayBrightly(u)]
+  null u => reverse! segment
+  segment => [:reverse! segment,"%l",:splitSayBrightly(u)]
   u
 
 splitSayBrightlyArgument u ==
   atom u => nil
   while splitListSayBrightly u is [head,:u] repeat result:= [head,:result]
-  result => [:nreverse result,u]
+  result => [:reverse! result,u]
   [u]
 
 splitListSayBrightly u ==

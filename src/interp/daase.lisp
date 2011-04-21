@@ -1044,19 +1044,19 @@
 				    ".ao")))
 	   (push (namestring file) asos))
 	  ('else (format t "   )library cannot find the file ~a.~%" filename)))))
-     (dolist (file (nreverse nrlibs))
+     (dolist (file (|reverse!| nrlibs))
        (setq key (pathname-name (first (last (pathname-directory file)))))
        (setq object (concatenate 'string 
 				 (directory-namestring file) 
 				 "code." |$faslType|))
        (localnrlib key file object make-database? noexpose))
-     (dolist (file (nreverse asys))
+     (dolist (file (|reverse!| asys))
        (setq object
 	     (concatenate 'string 
 			  (directory-namestring file)
 			  (pathname-name file)))
        (localasy (|astran| file) object only make-database? noexpose))
-     (dolist (file (nreverse asos))
+     (dolist (file (|reverse!| asos))
        (setq object
 	     (concatenate 'string 
 			  (directory-namestring file)

@@ -138,7 +138,7 @@ string2OpAlist s ==
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
     acc := [makeSymbol subString(s,k,-k + (k := charPosition(char " ",s,k + 1))),:acc]
-  acc := nreverse acc
+  acc := reverse! acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]
   acc

@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
-import initial_-env
+import utility
 namespace BOOTTRAN
 module tokens
 
@@ -285,7 +285,6 @@ for i in [ _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _
-  ["nreverse", "NREVERSE"]  , _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _

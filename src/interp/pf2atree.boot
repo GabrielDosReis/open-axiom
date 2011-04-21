@@ -197,7 +197,7 @@ pf2Atree1 pf ==
             idList, pf2Atree1 (pfAssignRhs)(pf)]
         decls =>
             [mkAtreeNodeWithSrcPos("SEQ",pf),
-                :[pf2Atree1 decl for decl in nreverse decls], x]
+                :[pf2Atree1 decl for decl in reverse! decls], x]
         x
 
 --  (pfDefinition?)(pf) =>
@@ -364,11 +364,11 @@ pfApplication2Atree pf ==
 --            argTypeList := [nil, :argTypeList]
 --          argTypeList := [pf2Atree1 pfTypedType arg, :argTypeList]
 --        systemError '"definition args should be typed"
---      argList := nreverse argList
+--      argList := reverse! argList
 --      retType :=
 --        pfNothing? pfLambdaRets pf => nil
 --        pf2Atree1 pfLambdaRets pf
---      argTypeList := [retType, :nreverse argTypeList]
+--      argTypeList := [retType, :reverse! argTypeList]
 --      [argList, :[argTypeList, [nil for arg in argTypeList],
 --        pf2Atree1 pfLambdaBody pf]]
 --    ['id, :['(()), '(()), pf2Atree1 pf]]
@@ -411,7 +411,7 @@ pfSequence2Atree0(seqList, pf) ==
         seqTranList := [item ,:seqTranList]
         seqList := rest seqList
     #seqTranList = 1 => first seqTranList
-    [mkAtreeNodeWithSrcPos("SEQ",pf), :nreverse seqTranList]
+    [mkAtreeNodeWithSrcPos("SEQ",pf), :reverse! seqTranList]
 
 --
 --  float2Atree num ==
@@ -455,7 +455,7 @@ loopIters2Atree iterList ==
             newIter := ["IN", var, mkAtree1 s]
             result := [newIter, :result]
         result := [pf2Atree1(iter), :result]
-    nreverse result
+    reverse! result
 
 pfCollect2Atree pf ==
     atree := [mkAtree1WithSrcPos("COLLECT",pf),

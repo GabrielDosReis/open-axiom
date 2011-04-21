@@ -89,7 +89,7 @@ NRTaddDeltaCode() ==
         vectorRef($template,i) := deltaTran(item,compItem)
   vectorRef($template,5) :=
     $NRTaddForm =>
-      $NRTaddForm is ["%Comma",:y] => nreverse y
+      $NRTaddForm is ["%Comma",:y] => reverse! y
       NRTencode($NRTaddForm,$addForm)
     nil
 

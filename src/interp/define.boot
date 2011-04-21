@@ -141,7 +141,7 @@ makeDomainTemplate vec ==
       atom item => item
       cons? first item => makeGoGetSlot(item,index)
       item   
-  $byteVec := "append"/nreverse $byteVec
+  $byteVec := "append"/reverse! $byteVec
   newVec
  
 makeGoGetSlot(item,index) ==
@@ -165,7 +165,7 @@ makeCompactDirect u ==
   [nam,[addForm,:opList]] := u
   --pp opList 
   d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(op,items)]
-  $byteVec := [:$byteVec,:"append"/nreverse $byteVecAcc]
+  $byteVec := [:$byteVec,:"append"/reverse! $byteVecAcc]
   LIST2VEC ("append"/d)
  
 makeCompactDirect1(op,items) ==
@@ -234,7 +234,7 @@ NRTmakeCategoryAlist() ==
   $catAncestorAlist: local := NIL
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
-  opcAlist := nreverse SORTBY(function NRTcatCompare,pcAlist)
+  opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
   slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
                    | (k := predicateBitIndex b) ~= -1]
@@ -1042,7 +1042,7 @@ compFunctorBody(body,m,e,parForm) ==
     [bootStrapError($functorForm, _/EDITFILE),m,e]
   clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
-  $capsuleFunctionStack := nreverse $capsuleFunctionStack
+  $capsuleFunctionStack := reverse! $capsuleFunctionStack
   -- ??? Don't resolve default definitions, yet.
   if $insideCategoryPackageIfTrue then
     backendCompile $capsuleFunctionStack
@@ -1254,7 +1254,7 @@ orderByDependency(vl,dl) ==
              | symbolMember?(x,vl')]
     vl := vl'
     dl := dl'
-  removeDuplicates nreverse orderedVarList --ordered so ith is indep. of jth if i < j
+  removeDuplicates reverse! orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
   m,$e,$prefix,$formalArgList) ==
@@ -1875,8 +1875,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
          ans:=[["%LET",gv,u],:ans]
          nils:=[gv,:nils]
      n:=n+1
-   $functorLocalParameters:=[:oldFLP,:nreverse nils]
-   nreverse ans
+   $functorLocalParameters:=[:oldFLP,:reverse! nils]
+   reverse! ans
  
 --% CATEGORY AND DOMAIN FUNCTIONS
 

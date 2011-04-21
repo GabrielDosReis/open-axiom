@@ -157,7 +157,7 @@ bcHt line ==
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
   cons? line =>
-    $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := NCONC(reverse! mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 --=======================================================================
@@ -173,21 +173,21 @@ htShowPageNoScroll() ==
 -- show the page which has been computed
   htSayStandard '"\autobuttons"
   if $standard then
-    htpSetPageDescription($curPage, nreverse htpPageDescription $curPage)
+    htpSetPageDescription($curPage, reverse! htpPageDescription $curPage)
   if $saturn then
-    htpSetPageDescription($saturnPage, nreverse htpPageDescription $saturnPage)
+    htpSetPageDescription($saturnPage, reverse! htpPageDescription $saturnPage)
   $newPage := false
   ----------------------
   if $standard then
     $htLineList := nil
     htMakePage htpPageDescription $curPage
-    if $htLineList then line := apply(function strconc, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, reverse! $htLineList)
     issueHTStandard line
   ----------------------
   if $saturn then
     $htLineList := nil
     htMakePage htpPageDescription $saturnPage
-    if $htLineList then line := apply(function strconc, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, reverse! $htLineList)
     issueHTSaturn line
   ----------------------
   endHTPage()
@@ -212,7 +212,7 @@ writeSaturnPrefix() ==
       STRINGIMAGE ($saturnContextMenuIndex := $saturnContextMenuIndex + 1)
     writeSaturnLines
       ['"\newmenu{BCM", index,
-          '"}{",:nreverse $saturnContextMenuLines,
+          '"}{",:reverse! $saturnContextMenuLines,
             '"}\usemenu{BCM", index,'"}{\vbox{"]
 
 writeSaturnSuffix() ==
@@ -230,7 +230,7 @@ htMakeErrorPage htPage ==
   if $standard then $curPage := htPage
   if $saturn then $saturnPage := htPage
   htMakePage htpPageDescription htPage
-  line := apply(function strconc, nreverse $htLineList)
+  line := apply(function strconc, reverse! $htLineList)
   issueHT line
   endHTPage()
 
@@ -549,7 +549,7 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
     string? pageDescrip => [pageDescrip, :htPage.7]
-    nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
+    nconc(reverse! COPY_-LIST pageDescrip, htPage.7)
   htPage.7 := newDescript
 
 
@@ -885,7 +885,7 @@ dbShowConsKinds cAlist ==
     kind = 'domain    => doms := [x,:doms]
     kind = 'package   => paks := [x,:paks]
     defs := [x,:defs]
-  lists := [nreverse cats,nreverse doms,nreverse paks,nreverse defs]
+  lists := [reverse! cats,reverse! doms,reverse! paks,reverse! defs]
   htBeginMenu 'description
   htSayStandard '"\indent{1}"
   kinds := +/[1 for x in lists | #x > 0]

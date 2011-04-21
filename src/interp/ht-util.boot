@@ -211,7 +211,7 @@ iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
   cons? line =>
-    $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := NCONC(reverse! mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
@@ -377,7 +377,7 @@ computeDomainVariableAlist() ==
     htpDomainPvarSubstList $curPage]
 
 pvarCondList pvar ==
-  nreverse pvarCondList1([pvar], nil, htpDomainConditions $curPage)
+  reverse! pvarCondList1([pvar], nil, htpDomainConditions $curPage)
 
 pvarCondList1(pvarList, activeConds, condList) ==
   null condList => activeConds
@@ -543,7 +543,7 @@ makeSpadCommand(:l) ==
   argList := nil
   for arg in l while arg ~= lastArg repeat
     argList := [strconc(arg, '", "), :argList]
-  argList := nreverse [lastArg, :argList]
+  argList := reverse! [lastArg, :argList]
   strconc(opForm, apply(function strconc, argList), '")")
 
 htMakeInputList stringList ==
@@ -552,7 +552,7 @@ htMakeInputList stringList ==
   argList := nil
   for arg in stringList while arg ~= lastArg repeat
     argList := [strconc(arg, '", "), :argList]
-  argList := nreverse [lastArg, :argList]
+  argList := reverse! [lastArg, :argList]
   bracketString apply(function strconc, argList)
 
 

@@ -215,7 +215,7 @@ down() == displayComp ($level:= $level+1)
 displaySemanticErrors() ==
   n:= #($semanticErrorStack:= removeDuplicates $semanticErrorStack)
   n=0 => nil
-  l:= nreverse $semanticErrorStack
+  l:= reverse! $semanticErrorStack
   $semanticErrorStack:= nil
   sayBrightly bright '"  Semantic Errors:"
   displaySemanticError(l,$OutputStream)
@@ -230,7 +230,7 @@ displayWarnings() ==
   n:= #($warningStack:= removeDuplicates $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
-  l := nreverse $warningStack
+  l := reverse! $warningStack
   displayWarning(l,$OutputStream)
   $warningStack:= nil
   sayBrightly '" "
@@ -546,8 +546,8 @@ TrimCF() ==
       uold:= rest u
       unew:= nil
       for v in uold repeat if not ASSQ(first v,unew) then unew:= [v,:unew]
-      new:= [[first u,:nreverse unew],:new]
-  $CategoryFrame:= [[nreverse new]]
+      new:= [[first u,:reverse! unew],:new]
+  $CategoryFrame:= [[reverse! new]]
   nil
 
 --%
@@ -1590,8 +1590,8 @@ transformToBackendCode x ==
           or not CONTAINED("EXIT",stmt)) =>
             body
     [simplifySEQ ["SEQ",:body]]
-  $FluidVars := removeDuplicates nreverse $FluidVars
-  $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),
+  $FluidVars := removeDuplicates reverse! $FluidVars
+  $LocalVars := S_-(S_-(removeDuplicates reverse! $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)

@@ -269,7 +269,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char "-" and x.(j := j + 1) = char "-" repeat
         xtralines := [subString(x,j + 1),:xtralines]
   SHUT instream
-  strconc(line, strconc/nreverse xtralines)
+  strconc(line, strconc/reverse! xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -512,7 +512,7 @@ getParentsFor(cname,formalParams,constructorCategory) ==
     x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
     x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 $parentsCache := nil
 
@@ -538,7 +538,7 @@ getParentsForDomain domname  == --called by parentsOf
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 explodeIfs x == main where  --called by getParents, getParentsForDomain
   main() ==
@@ -625,7 +625,7 @@ computeAncestorsOf(conform,domform) ==
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
     for pair in HGET($if,op) repeat acc := [pair,:acc]
-  nreverse acc
+  reverse! acc
 
 ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   op      := opOf conform
@@ -696,7 +696,7 @@ transKCatAlist(conform,domname,s) == main where
             null match? => 'skip
             npred := sublisFormal(KDR leftForm,pred)
             acc := [[leftForm,:npred],:acc]
-        nreverse acc
+        reverse! acc
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
         leftForm := getConstructorForm first pair or systemError nil
@@ -719,7 +719,7 @@ transKCatAlist(conform,domname,s) == main where
               ['hasArgs,:subargs]
             npred := quickAnd(hpred,npred)
           acc := [[leftForm,:npred],:acc]
-      nreverse acc
+      reverse! acc
     for pair in s repeat --pair has form [con,:pred]
       leftForm := getConstructorForm first pair
       pair.first := leftForm
@@ -744,7 +744,7 @@ sublisFormal(args,exp,:options) == main where
       while cons? y repeat
         acc := [sublisFormal1(args,first y,n),:acc]
         y := rest y
-      r := nreverse acc
+      r := reverse! acc
       if y then
         nd := lastNode r
         nd.rest := sublisFormal1(args,y,n)

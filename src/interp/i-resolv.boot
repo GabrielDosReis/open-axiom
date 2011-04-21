@@ -48,7 +48,7 @@ resolveTypeList u ==
             nil
     allVars =>
         null rest allVars => ['Variable, first allVars]
-        ['OrderedVariableList,nreverse allVars]
+        ['OrderedVariableList,reverse! allVars]
 
     for md in tail repeat
       a := resolveTT(md,a)
@@ -282,7 +282,7 @@ resolveTTEq1(c1,arg1,TL is [c2,arg2,:.]) ==
         arg1 := rest arg1
         arg2 := rest arg2
     t and null arg1 and null arg2 and
-      t0 := constructM(c1,nreverse arg)
+      t0 := constructM(c1,reverse! arg)
       constructTowerT(t0,TL)
 
 resolveTTEq2(c1,arg1,TL is [c,arg,:.]) ==
@@ -516,7 +516,7 @@ resolveTMRecord(tr,mr) ==
     null ra => ok := NIL
     tt := [[first ta,second ta,ra],:tt]
   not ok => NIL
-  ['Record,nreverse tt]
+  ['Record,reverse! tt]
 
 resolveTMUnion(t, m is ['Union,:ums]) ==
   isTaggedUnion m => resolveTMTaggedUnion(t,m)
@@ -656,7 +656,7 @@ resolveTMEq2(cm,argm,TL) ==
       argm := rest argm
       tt := resolveTM1(x1,x2) =>
         arg := [tt,:arg]
-    null argt and null argm and tt and constructM(ct,nreverse arg)
+    null argt and null argm and tt and constructM(ct,reverse! arg)
 
 resolveTMRed(t,m) ==
   -- looks for an applicable rewrite rule at any level of t and tries
@@ -750,7 +750,7 @@ constructM(c,A) ==
 
 replaceLast(A,t) ==
   -- replaces the last element of the nonempty list A by t (constructively
-  nreverse (reverse(A).first := t)
+  reverse! (reverse(A).first := t)
 
 destructT(functor)==
   -- provides a list of booleans, which indicate whether the arguments

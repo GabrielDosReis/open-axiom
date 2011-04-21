@@ -249,7 +249,7 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
   "Makes output listings."
   (if Read-Quietly (stack-push (copy-tree string) Printer-Line-Stack)
       (progn (mapc #'(lambda (x) (format strm "; ~A~%" x) (terpri))
-                   (nreverse (stack-store Printer-Line-Stack)))
+                   (|reverse!| (stack-store Printer-Line-Stack)))
              (stack-clear Printer-Line-Stack)
              (format strm "~&; ~A~%" string))))
 

@@ -6,7 +6,7 @@
 (PROVIDE "utility")
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
-             |scalarMember?| |listMember?|))
+             |scalarMember?| |listMember?| |reverse!|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (COND
@@ -61,4 +61,15 @@
          ((EQUAL |x| (CAR |l|)) (RETURN T))
          (T (SETQ |l| (CDR |l|)))))
       (T (RETURN (EQUAL |x| |l|))))))
+
+(DEFUN |reverse!| (|l|)
+  (PROG (|l2| |l1|)
+    (RETURN
+      (PROGN
+        (SETQ |l1| NIL)
+        (LOOP
+          (COND
+            ((CONSP |l|) (SETQ |l2| (CDR |l|)) (RPLACD |l| |l1|)
+             (SETQ |l1| |l|) (SETQ |l| |l2|))
+            (T (RETURN |l1|))))))))
 

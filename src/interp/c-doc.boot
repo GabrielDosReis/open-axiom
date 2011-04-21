@@ -251,7 +251,7 @@ transDoc(conname,doclist) ==
         transformAndRecheckComments('constructor,v or u)
       transformAndRecheckComments($x,u)
     acc := [[$x,longline],:acc]  --processor assumes a list of lines
-  nreverse acc
+  reverse! acc
 
 checkExtractItemList l ==  --items are separated by commas or end of line
   acc := nil               --l is list of remaining lines
@@ -261,7 +261,7 @@ checkExtractItemList l ==  --items are separated by commas or end of line
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
-  strconc/[x for x in nreverse acc]
+  strconc/[x for x in reverse! acc]
 
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
@@ -346,7 +346,7 @@ checkTexht u ==
         x :=  IFCAR (u := rest u)  --forget right brace: move to next char
     acc := [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkRecordHash u ==
   while u repeat
@@ -450,7 +450,7 @@ checkGetStringBeforeRightBrace u ==
   acc := nil
   while u repeat
     x := first u
-    x = $charRbrace => return strconc/(nreverse acc)
+    x = $charRbrace => return strconc/(reverse! acc)
     acc := [x,:acc]
     u := rest u
 
@@ -464,7 +464,7 @@ checkGetStringBeforeRightBrace u ==
 --      if x is '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    nreverse acc
+--    reverse! acc
 --
 --  checkTranVerbatimMiddle u ==
 --      (y := IFCAR (v := IFCDR u)) = $charLbrace and
@@ -504,7 +504,7 @@ checkGetStringBeforeRightBrace u ==
 --      if x is '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    nreverse acc
+--    reverse! acc
 
 appendOver [head,:tail] ==
  acc := lastNode head
@@ -520,7 +520,7 @@ checkRemoveComments lines ==
       line := checkTrimCommented first lines
       if firstNonBlankPosition line >= 0 then acc := [line,:acc]
     lines := rest lines
-  nreverse acc
+  reverse! acc
 
 ++ return the part of `line' that is not a comment.  A comment
 ++ is introduced by a leading percent character (%), or a double
@@ -560,7 +560,7 @@ checkAddMacros u ==
       y := LASSOC(x,$HTmacs) => [:y,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkComments(nameSig,lines) == main where
   main() ==
@@ -661,7 +661,7 @@ checkGetArgs u ==
   while (k := charPosition($charComma,u,i + 1)) < m repeat
     acc := [trimString subString(u,i + 1,k - i - 1),:acc]
     i := k
-  nreverse [subString(u,i + 1,m - i - 1),:acc]
+  reverse! [subString(u,i + 1,m - i - 1),:acc]
 
 checkGetMargin lines ==
   while lines repeat
@@ -745,7 +745,7 @@ checkExtract(header,lines) ==
       (i := charPosition(char " ",line,k+1)) < j => 'skip  --blank before colon
       return nil
     acc := [line,:acc]
-  nreverse acc
+  reverse! acc
 
 checkFixCommonProblem u ==
   acc := nil
@@ -758,7 +758,7 @@ checkFixCommonProblem u ==
       u := rest rest u
     acc := [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkDecorate u ==
   count := 0           -- number of enclosing opening braces
@@ -831,7 +831,7 @@ checkDecorate u ==
              [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 hasNoVowels x ==
   max := maxIndex x
@@ -894,10 +894,10 @@ checkIeEg u ==
       x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkIeEgfun x => [:nreverse z,:acc]
+      z := checkIeEgfun x => [:reverse! z,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkIeEgfun x ==
   CHARP x => nil
@@ -924,10 +924,10 @@ checkSplit2Words u ==
       x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkSplitBrace x => [:nreverse z,:acc]
+      z := checkSplitBrace x => [:reverse! z,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkSplitBrace x ==
   CHARP x => [x]
@@ -1020,7 +1020,7 @@ checkBalance u ==
         checkDocError ['"Missing left ",checkSayBracket open]
     u := rest u
   if stack then
-    for x in nreverse stack repeat
+    for x in reverse! stack repeat
       checkDocError ['"Missing right ",checkSayBracket x]
   u
 

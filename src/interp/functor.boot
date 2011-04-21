@@ -497,7 +497,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
-      nreverse [v for u in reverse codelist |
+      reverse! [v for u in reverse codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))~=nil]]
   code is ['%when,:condlist] =>
     c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
@@ -517,7 +517,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     while (c and (last c is [c1] or last c is [c1,[]]) and
             (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
-        c:=nreverse rest nreverse c
+        c:=reverse! rest reverse! c
     null c => '(LIST)
     ['%when,:c]
   code is ["%LET",name,body,:.] =>

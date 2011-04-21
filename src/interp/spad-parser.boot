@@ -89,5 +89,5 @@ parseSpadFile sourceFile ==
   IN_-STREAM := savedInStream
   $InteractiveMode := savedInteractiveMode
   -- we accumulated the parse trees in reverse order
-  nreverse asts
+  reverse! asts
 

@@ -265,7 +265,7 @@ $attributeDispatch :=
 --             Generate Category Level Alist
 --=======================================================================
 orderCatAnc x ==
-  nreverse ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
+  reverse! ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
@@ -328,7 +328,7 @@ orderedDefaults(conform,domform) ==
   ancestors := ancestorsOf(conform,domform)
   for x in conList repeat
     for y in ancestors | x = CAAR y repeat acc := [y,:acc]
-  nreverse acc
+  reverse! acc
 
 instantiate domenv ==
    -- following is a patch for a bug in runtime.as

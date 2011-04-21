@@ -135,7 +135,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
       mapmode := [d',:mapmode]
     else allDecs := false
   if allDecs then
-    mapmode := nreverse mapmode
+    mapmode := reverse! mapmode
     putHist(op,'mode,mapmode,$e)
     if not defineeIsConstant then
       sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
@@ -177,7 +177,7 @@ addMap(lhs,rhs,pred) ==
         if x is ["SUCHTHAT",s,p] then (predList:= [p,:predList]; x:= s)
         x
   mkMapAlias(op,argl)
-  argPredList:= nreverse predList
+  argPredList:= reverse! predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
     MKPF((pred and (pred ~= 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
@@ -286,7 +286,7 @@ mkMapAlias(op,argl) ==
   $e:= putHist(op,"alias",newAlias,$e)
 
 mkAliasList l == fn(l,nil) where fn(l,acc) ==
-  null l => nreverse acc
+  null l => reverse! acc
   not IDENTP first l or first l in acc => fn(rest l,[nil,:acc])
   fn(rest l,[first l,:acc])
 

@@ -231,12 +231,12 @@ grepSplit(lines,doc?) ==
       kind = char "-" => 'skip                --for now
       systemError 'kind
   if doc? then CLOSE instream2
-  [['"attribute",:nreverse atts],
-     ['"operation",:nreverse ops],
-       ['"category",:nreverse cats],
-         ['"domain",:nreverse doms],
-           ['"package",:nreverse paks]
---           ['"default_ package",:nreverse defs]   -- drop defaults
+  [['"attribute",:reverse! atts],
+     ['"operation",:reverse! ops],
+       ['"category",:reverse! cats],
+         ['"domain",:reverse! doms],
+           ['"package",:reverse! paks]
+--           ['"default_ package",:reverse! defs]   -- drop defaults
                ]
 
 mkUpDownPattern s == recurse(s,0,#s) where
@@ -272,7 +272,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       if not ('w in $options) then
         if first res ~= '"" then res := ['"`",:res]
         else if res is [.,p,:r] and p = $wild1 then res := r
-      strconc/nreverse res
+      strconc/reverse! res
     remUnderscores s ==
       (k := charPosition(char $charUnderscore,s,0)) < maxIndex s =>
         strconc(subString(s,0,k),'"[",s.(k + 1),'"]",
@@ -997,8 +997,8 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
       stringChar(line,0) = dash and line.1 = dash =>
         [strconc(first acc,subString(line,2)),:rest acc]
       [line,:acc]
-  -- following call to nreverse needed to keep lines properly sorted
-  nreverse acc  ------> added by BMT 12/95
+  -- following call to reverse! needed to keep lines properly sorted
+  reverse! acc  ------> added by BMT 12/95
 
 
 

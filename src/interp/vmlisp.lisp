@@ -218,10 +218,10 @@
 
 (defmacro nreverse0 (x)
   (if (atom x)
-      `(if (atom ,x) ,x (nreverse ,x))
+      `(if (atom ,x) ,x (|reverse!| ,x))
     (let ((xx (gensym)))
       `(let ((,xx ,x))
-         (if (atom ,xx) ,xx (nreverse ,xx))))))
+         (if (atom ,xx) ,xx (|reverse!| ,xx))))))
 
 (defmacro nump (n)
  `(numberp ,n))
@@ -409,7 +409,7 @@
   (let* ((body (reverse form))
          (val `(return-from seq ,(pop body))))
     (nsubstitute '(progn) nil body) ;don't treat NIL as a label
-    `(block seq (tagbody ,@(nreverse body) ,val))))
+    `(block seq (tagbody ,@(|reverse!| body) ,val))))
 
 (defmacro sintp (n)
  `(typep ,n 'fixnum))
@@ -810,11 +810,11 @@
 
 (defun QSORT (l)
  (declare (special sortgreaterp))
-  (NREVERSE (sort (copy-seq l) SORTGREATERP)))
+  (|reverse!| (sort (copy-seq l) SORTGREATERP)))
 
 (defun SORTBY (keyfn l)
  (declare (special sortgreaterp))
-  (nreverse (sort (copy-seq l) SORTGREATERP :key keyfn)))
+  (|reverse!| (sort (copy-seq l) SORTGREATERP :key keyfn)))
 
 ; 16.0 Operations on Vectors
 

@@ -123,8 +123,8 @@
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (FINCOMBLOCK NIL NUMS LOCS NCOMBLOCK NIL)))
-                (RETURN (PAIR (NREVERSE NUMS)
-                              (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES))))))
+                (RETURN (PAIR (|reverse!| NUMS)
+                              (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
                 (PREPARSE-ECHO LineList)
@@ -184,9 +184,9 @@
                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
              (IF (NOT (IS-CONSOLE in-stream))
                  (setq $preparse-last-line
-                       (nreverse $echolinestack)))
-             (RETURN (PAIR (NREVERSE NUMS)
-                        (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES)))))
+                       (|reverse!| $echolinestack)))
+             (RETURN (PAIR (|reverse!| NUMS)
+                        (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
          (COND (NCOMBLOCK
                 (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist)
@@ -198,8 +198,8 @@
          (setq PARENLEV (+ PARENLEV PCOUNT))
          (when (and (is-console in-stream) (not continue))
             (setq $preparse-last-line nil)
-             (RETURN (PAIR (NREVERSE NUMS)
-                           (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES)))))
+             (RETURN (PAIR (|reverse!| NUMS)
+                           (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))
  

@@ -339,8 +339,8 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
       slist => SUBLISNQ(slist,CDDR expandedFunction)
       CDDR expandedFunction
     if scode ~= nil then
-      body := [['%bind,nreverse scode,:body]]
-    vec := ['%vector,:nreverse vec]
+      body := [['%bind,reverse! scode,:body]]
+    vec := ['%vector,:reverse! vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
   ["CONS",fname,vec]
@@ -2088,7 +2088,7 @@ compMatchScrutinee(form,e) ==
       [x,m,e] := compOrCroak(expr,$EmptyMode,e)
       Xs := [x,:Xs]
       Ms := [m,:Ms]
-    [["%Comma",:nreverse Xs], ["%Cross",:nreverse Ms],e]
+    [["%Comma",:reverse! Xs], ["%Cross",:reverse! Ms],e]
   compOrCroak(form,$EmptyMode,e)
 
 ++ Subroutine of compMatch.  We just finished semantics analysis of
@@ -2145,7 +2145,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
         guards := [guard,:guards]
         inits := [init,:inits]
       ok := false
-    ok => [['%and,:nreverse guards],append/nreverse inits,e,originalEnv]
+    ok => [['%and,:reverse! guards],append/reverse! inits,e,originalEnv]
     nil
   compAlternativeGuardItem(sn,sm,pat,e)
 
@@ -2188,9 +2188,9 @@ compMatch(["%Match",subject,altBlock],m,env) ==
   $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
-    IDENTP sn => ['%bind,[[sn,se]],['%when,:nreverse altsCode]]
+    IDENTP sn => ['%bind,[[sn,se]],['%when,:reverse! altsCode]]
     ["%bind",[[n,e] for n in sn for e in rest se], 
-       ['%when,:nreverse altsCode]]
+       ['%when,:reverse! altsCode]]
   [code,m,savedEnv]
 
 ++ Compile the form scheme `x'.
@@ -2542,7 +2542,7 @@ compUnnamedMapping(parms,source,target,body,env) ==
 
 gatherParameterList vars == main(vars,nil,nil) where
   main(vars,parms,source) ==
-    vars = nil => [nreverse parms,nreverse source]
+    vars = nil => [reverse! parms,reverse! source]
     atom vars or vars is [":",:.] => [[x] for x in check vars]
     [v,s] := check first vars
     main(rest vars,[v,:parms],[s,:source])

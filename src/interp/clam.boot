@@ -363,7 +363,7 @@ clearCategoryCache catName ==
   setDynamicBinding(mkCacheName catName,nil)
  
 displayHashtable x ==
-  l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
+  l:= reverse! SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
   for [a,b] in l repeat
     sayBrightlyNT ['"%b",a,'"%d"]
     pp b
@@ -386,7 +386,7 @@ reportCircularCacheStats(fn,n) ==
   TERPRI()
  
 displayCacheFrequency al ==
-  al := nreverse SORTBY('CAR,al)
+  al := reverse! SORTBY('CAR,al)
   sayBrightlyNT "    #hits/#occurrences: "
   for [a,:b] in al repeat sayBrightlyNT [a,"/",b,"  "]
   TERPRI()
@@ -577,7 +577,7 @@ reportInstantiations() ==
     sayBrightly ['"# instantiated/# dropped/domain name",
       "%l",'"------------------------------------"]
     nTotal:= mTotal:= rTotal := nForms:= 0
-    for [n,m,form] in nreverse SORTBY('CADDR,conList) repeat
+    for [n,m,form] in reverse! SORTBY('CADDR,conList) repeat
       nTotal:= nTotal+n; mTotal:= mTotal+m
       if n > 1 then rTotal:= rTotal + n-1
       nForms:= nForms + 1
@@ -676,7 +676,7 @@ globalHashtableStats(x,sortFn) ==
       argList1:= [constructor2ConstructorForm x for x in argList]
       reportList:= [[n,key,argList1],:reportList]
   sayBrightly ["%b","  USE  NAME ARGS","%d"]
-  for [n,fn,args] in nreverse SORTBY(sortFn,reportList) repeat
+  for [n,fn,args] in reverse! SORTBY(sortFn,reportList) repeat
     sayBrightlyNT [:rightJustifyString(n,6),"  ",fn,": "]
     pp args
  

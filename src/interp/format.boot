@@ -105,7 +105,7 @@ canRemoveIsDomain? pred ==
 findSubstitutionOrder? alist == fn(alist,nil) where
   -- returns NIL or an appropriate substituion order
   fn(alist,res) ==
-    null alist => nreverse res
+    null alist => reverse! res
     choice := or/[x for (x:=[a,:b]) in alist | null containedRight(a,alist)] =>
       fn(delete(choice,alist),[choice,:res])
     nil
