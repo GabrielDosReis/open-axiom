@@ -272,7 +272,6 @@ for i in [ _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
   ["integer?","INTEGERP"]  , _
-  ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
   ["listEq?",    "EQUAL"] , _

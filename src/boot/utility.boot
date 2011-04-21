@@ -33,7 +33,7 @@
 import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
-  charMember?, scalarMember?, listMember?, reverse, reverse!)
+  charMember?, scalarMember?, listMember?, reverse, reverse!, lastNode)
 
 --% membership operators
 
@@ -106,3 +106,9 @@ reverse! l ==
       l := l2
     return l1
     
+--% return a pointer to the last cons-cell in the list `l'.
+
+lastNode l ==
+  while l is [.,:l'] and cons? l' repeat
+    l := l'
+  l
