@@ -6,13 +6,15 @@
 (PROVIDE "utility")
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
-             |scalarMember?| |listMember?| |reverse!|))
+             |scalarMember?| |listMember?| |reverse| |reverse!|))
 
 (DEFUN |objectMember?| (|x| |l|)
-  (COND
-    ((CONSP |l|)
-     (OR (EQ |x| (CAR |l|)) (|objectMember?| |x| (CDR |l|))))
-    (T (EQ |x| |l|))))
+  (LOOP
+    (COND
+      ((NULL |l|) (RETURN NIL))
+      ((CONSP |l|)
+       (COND ((EQ |x| (CAR |l|)) (RETURN T)) (T (SETQ |l| (CDR |l|)))))
+      (T (RETURN (EQ |x| |l|))))))
 
 (DEFUN |symbolMember?| (|s| |l|)
   (LOOP
@@ -61,6 +63,17 @@
          ((EQUAL |x| (CAR |l|)) (RETURN T))
          (T (SETQ |l| (CDR |l|)))))
       (T (RETURN (EQUAL |x| |l|))))))
+
+(DEFUN |reverse| (|l|)
+  (PROG (|r|)
+    (RETURN
+      (PROGN
+        (SETQ |r| NIL)
+        (LOOP
+          (COND
+            ((CONSP |l|) (SETQ |r| (CONS (CAR |l|) |r|))
+             (SETQ |l| (CDR |l|)))
+            (T (RETURN |r|))))))))
 
 (DEFUN |reverse!| (|l|)
   (PROG (|l2| |l1|)

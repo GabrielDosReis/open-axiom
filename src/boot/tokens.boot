@@ -296,7 +296,6 @@ for i in [ _
   ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
-  ["reverse",  "REVERSE"]  , _
   ["sameObject?",  "EQ" ] , _
   ["scalarEq?",   "EQL" ] , _
   ["scalarEqual?","EQL" ] , _

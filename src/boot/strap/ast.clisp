@@ -516,7 +516,7 @@
       (PROGN
         (SETQ |g| (|bfGenSymbol|))
         (SETQ |body|
-              (LIST 'SETQ |g| (LIST 'APPEND (LIST 'REVERSE |y|) |g|)))
+              (LIST 'SETQ |g| (LIST 'APPEND (LIST '|reverse| |y|) |g|)))
         (SETQ |extrait|
               (LIST (LIST (LIST |g|) (LIST NIL) NIL NIL NIL
                           (LIST (LIST '|reverse!| |g|)))))
@@ -846,7 +846,7 @@
                        (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |var2| (CAR |ISTMP#2|)) T))))))
          (SETQ |patrev| (|bfISReverse| |var2| |var1|))
-         (SETQ |rev| (LIST 'REVERSE |rhs|))
+         (SETQ |rev| (LIST '|reverse| |rhs|))
          (SETQ |g|
                (INTERN (CONCAT "LETTMP#"
                                (WRITE-TO-STRING |$letGenVarCounter|))))
@@ -872,7 +872,7 @@
                                    (SETQ |val1| (CAR |ISTMP#3|))
                                    T)))))))
             (CONS (LIST 'L%T |g| |rev|)
-                  (APPEND (REVERSE (CDR (REVERSE |l2|)))
+                  (APPEND (|reverse| (CDR (|reverse| |l2|)))
                           (CONS (|bfLetForm| |var1|
                                     (LIST '|reverse!| |val1|))
                                 NIL))))
@@ -905,7 +905,7 @@
       (COND
         ((ATOM |expr|) (LIST |acc| |expr|))
         ((AND (EQ |acc| 'CAR) (CONSP |expr|)
-              (EQ (CAR |expr|) 'REVERSE))
+              (EQ (CAR |expr|) '|reverse|))
          (LIST 'CAR (CONS 'LAST (CDR |expr|))))
         (T (SETQ |funs|
                  '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
@@ -1066,7 +1066,7 @@
                (|bfAND| (LIST (LIST 'CONSP |lhs|)
                               (LIST 'PROGN
                                     (LIST 'L%T |g|
-                                     (LIST 'REVERSE |lhs|))
+                                     (LIST '|reverse| |lhs|))
                                     'T))))
          (SETQ |l2| (|bfIS1| |g| |patrev|))
          (COND
@@ -1222,7 +1222,7 @@
                         (PROGN (SETQ |c| (CAR |bfVar#97|)) NIL))
                     (RETURN (|reverse!| |bfVar#98|)))
                    (T (SETQ |bfVar#98|
-                            (APPEND (REVERSE (|bfFlatten| 'OR |c|))
+                            (APPEND (|reverse| (|bfFlatten| 'OR |c|))
                                     |bfVar#98|))))
                  (SETQ |bfVar#97| (CDR |bfVar#97|))))))))
 
@@ -1238,7 +1238,7 @@
                         (PROGN (SETQ |c| (CAR |bfVar#99|)) NIL))
                     (RETURN (|reverse!| |bfVar#100|)))
                    (T (SETQ |bfVar#100|
-                            (APPEND (REVERSE (|bfFlatten| 'AND |c|))
+                            (APPEND (|reverse| (|bfFlatten| 'AND |c|))
                                     |bfVar#100|))))
                  (SETQ |bfVar#99| (CDR |bfVar#99|))))))))
 
@@ -1345,7 +1345,7 @@
                          (PROGN (SETQ |d| (CAR |bfVar#107|)) NIL))
                      (RETURN (|reverse!| |bfVar#108|)))
                     (T (SETQ |bfVar#108|
-                             (APPEND (REVERSE
+                             (APPEND (|reverse|
                                       (|shoeComps| (|bfDef1| |d|)))
                                      |bfVar#108|))))
                   (SETQ |bfVar#107| (CDR |bfVar#107|)))))))))
@@ -1425,7 +1425,7 @@
                           (PROGN (SETQ |d| (CAR |bfVar#110|)) NIL))
                       (RETURN (|reverse!| |bfVar#111|)))
                      (T (SETQ |bfVar#111|
-                              (APPEND (REVERSE
+                              (APPEND (|reverse|
                                        (|shoeComps| (|bfDef1| |d|)))
                                       |bfVar#111|))))
                    (SETQ |bfVar#110| (CDR |bfVar#110|))))))))))
@@ -1600,7 +1600,7 @@
     (RETURN
       (COND
         ((NULL |b|) (LIST (LIST 'PROG |v|)))
-        (T (SETQ |LETTMP#1| (REVERSE |b|))
+        (T (SETQ |LETTMP#1| (|reverse| |b|))
            (SETQ |blast| (CAR |LETTMP#1|))
            (SETQ |blist| (|reverse!| (CDR |LETTMP#1|)))
            (LIST (CONS 'PROG
@@ -1810,7 +1810,7 @@
                   (COND
                     ((ATOM |c|) (RETURN (|reverse!| |bfVar#119|)))
                     (T (SETQ |bfVar#119|
-                             (APPEND (REVERSE (|bfFlattenSeq| |c|))
+                             (APPEND (|reverse| (|bfFlattenSeq| |c|))
                                      |bfVar#119|))))
                   (SETQ |c| (CDR |c|)))))
         (COND
@@ -1860,7 +1860,7 @@
               (PROGN
                 (SETQ |ISTMP#1| (CDR |a|))
                 (AND (CONSP |ISTMP#1|)
-                     (PROGN (SETQ |ISTMP#2| (REVERSE |ISTMP#1|)) T)
+                     (PROGN (SETQ |ISTMP#2| (|reverse| |ISTMP#1|)) T)
                      (CONSP |ISTMP#2|)
                      (PROGN
                        (SETQ |ISTMP#3| (CAR |ISTMP#2|))
@@ -2225,7 +2225,8 @@
       (PROGN
         (SETQ |g| (GENSYM))
         (COND
-          ((AND (CONSP |cs|) (PROGN (SETQ |ISTMP#1| (REVERSE |cs|)) T)
+          ((AND (CONSP |cs|)
+                (PROGN (SETQ |ISTMP#1| (|reverse| |cs|)) T)
                 (CONSP |ISTMP#1|)
                 (PROGN
                   (SETQ |f| (CAR |ISTMP#1|))
@@ -2650,7 +2651,7 @@
                          (CONS (|nativeArgumentType| |x|) |argtypes|))
                    (SETQ |args| (CONS (GENSYM) |args|)))))
             (SETQ |bfVar#146| (CDR |bfVar#146|))))
-        (SETQ |args| (REVERSE |args|))
+        (SETQ |args| (|reverse| |args|))
         (SETQ |rettype| (|nativeReturnType| |t|))
         (LIST (LIST 'DEFUN |op| |args|
                     (LIST (|bfColonColon| 'FFI 'C-INLINE) |args|
@@ -3103,7 +3104,7 @@
                                         (T
                                          (SETQ |bfVar#187|
                                           (APPEND
-                                           (REVERSE
+                                           (|reverse|
                                             (LIST |x|
                                              (COND
                                                ((SETQ |p'|

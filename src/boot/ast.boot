@@ -393,7 +393,7 @@ bf0COLLECT(y,itl) ==
  
 bf0APPEND(y,itl)==
   g := bfGenSymbol()
-  body := ['SETQ,g,['APPEND,['REVERSE,y],g]]
+  body := ['SETQ,g,['APPEND,['reverse,y],g]]
   extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
   bfLp2(extrait,itl,body)
  
@@ -572,14 +572,14 @@ bfLET2(lhs,rhs) ==
     [:l1,:l2]
   lhs is ['APPEND,var1,var2] =>
     patrev := bfISReverse(var2,var1)
-    rev := ['REVERSE,rhs]
+    rev := ['reverse,rhs]
     g := makeSymbol strconc('"LETTMP#", toString $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
     var1 = "DOT" => [['L%T,g,rev],:l2]
     last l2 is ['L%T, =var1, val1] =>
-      [['L%T,g,rev],:REVERSE rest REVERSE l2,
+      [['L%T,g,rev],:reverse rest reverse l2,
        bfLetForm(var1,['reverse!,val1])]
     [['L%T,g,rev],:l2,bfLetForm(var1,['reverse!,var1])]
   lhs is ["EQUAL",var1] => ['COND,[bfQ(var1,rhs),var1]]
@@ -602,7 +602,7 @@ bfLET(lhs,rhs) ==
  
 addCARorCDR(acc,expr) ==
   atom expr => [acc,expr]
-  acc = 'CAR and expr is ["REVERSE",:.] =>
+  acc = 'CAR and expr is ["reverse",:.] =>
       ["CAR",["LAST",:rest expr]]
  --   ['last,:rest expr]
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
@@ -676,7 +676,7 @@ bfIS1(lhs,rhs) ==
     patrev := bfISReverse(b,a)
     g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
-    rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
+    rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['reverse,lhs]],'T]]
     l2 := bfIS1(g,patrev)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
     a = "DOT" => bfAND [rev,:l2]

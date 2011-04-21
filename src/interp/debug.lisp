@@ -1014,7 +1014,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                            (PRIN1 /CALLER CURSTRM)))
                   (MONITOR-PRINARGS
                     (if (SPADSYSNAMEP NAME)
-                        (|reverse!| (REVERSE  (|coerceTraceArgs2E|
+                        (|reverse!| (|reverse|  (|coerceTraceArgs2E|
                                               (INTERN NAME1)
                                               (INTERN NAME)
                                               /ARGS)))
