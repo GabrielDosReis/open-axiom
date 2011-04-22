@@ -184,7 +184,7 @@ evaluateType1 (form is [op,:argl]) ==
   for x in argl for m in ml for argnum in 1.. repeat
     typeList := [v,:typeList] where v() ==
       categoryForm?(m) =>
-	m := evaluateType MSUBSTQ(x,'_$,m)
+	m := evaluateType substitute(x,'_$,m)
 	evalCategory(x' := (evaluateType x), m) => x'
 	throwEvalTypeMsg("S2IE0004",[form])
       m := evaluateType m

@@ -168,9 +168,6 @@
 (DEFUN STRINGSUFFIX (TARGET SOURCE) "Suffix source to target if enough room else nil."
   (concatenate 'string target source))
  
-(defun NSTRCONC (s1 s2) (concatenate 'string (string s1) (string s2)))
- 
- 
 (defun THETACHECK (VAL VAR OP) (if (EQL VAL VAR) (THETA_ERROR OP) val))
  
 ; 15 LISTS
@@ -180,7 +177,7 @@
  
 (defmacro TL (&rest L) `(tail . ,L))
  
-(DEFUN LASTELEM (X) (car (last X)))
+(DEFUN LASTELEM (X) (car (|lastNode| X)))
  
 (defun LISTOFATOMS (X)
   (COND ((NULL X) NIL)
@@ -188,8 +185,6 @@
         ((|append!| (LISTOFATOMS (CAR X)) (LISTOFATOMS (CDR X))))))
  
 (DEFUN LASTATOM (L) (if (ATOM L) L (LASTATOM (CDR L))))
- 
-(define-function 'LASTTAIL #'last)
  
 (defun DROP (N X &aux m)
   "Return a pointer to the Nth cons of X, counting 0 as the first cons."

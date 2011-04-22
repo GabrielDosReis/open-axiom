@@ -54,6 +54,6 @@ packageTran sex ==
 zeroOneTran sex ==
 -- destructively translate the symbols |0| and |1| to their 
 -- integer counterparts
-  NSUBST("$EmptyMode", "?", sex)
+  substitute!("$EmptyMode", "?", sex)
   sex
 

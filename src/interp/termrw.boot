@@ -100,7 +100,7 @@ augmentSub(v,t,SL) ==
   -- t doesn't contain any of the variables of SL
   q := [v,:t]
   null SL => [q]
---  for p in SL repeat p.rest := SUBSTQ(t,v,rest p)
+--  for p in SL repeat p.rest := substitute(t,v,rest p)
   [q,:SL]
  
 mergeSubs(S1,S2) ==

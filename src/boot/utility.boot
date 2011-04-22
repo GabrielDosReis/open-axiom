@@ -34,7 +34,7 @@ import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
-  lastNode, append!, copyList)
+  lastNode, append!, copyList, substitute, substitute!)
 
 --% membership operators
 
@@ -133,3 +133,24 @@ append!(x,y) ==
   y = nil => x
   lastNode(x).rest := y
   x
+
+--% substitution
+
+substitute!(y,x,s) ==
+  s = nil => nil
+  sameObject?(x,s) => y
+  if cons? s then
+    s.first := substitute!(y,x,first s)
+    s.rest := substitute!(y,x,rest s)
+  s
+
+substitute(y,x,s) ==
+  s = nil => nil
+  sameObject?(x,s) => y
+  cons? s =>
+    h := substitute(y,x,first s)
+    t := substitute(y,x,rest s)
+    sameObject?(h,first s) and sameObject?(t,rest s) => s
+    [h,:t]
+  s
+  

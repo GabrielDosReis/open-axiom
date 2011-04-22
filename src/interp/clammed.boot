@@ -119,7 +119,7 @@ isValidType form ==
     cl:= replaceSharps(cl,form)
     and/[isValid for x in argl for c in cl] where isValid() ==
       categoryForm?(c) =>
-        evalCategory(x,MSUBSTQ(x,'_$,c)) and isValidType x
+        evalCategory(x,substitute(x,'_$,c)) and isValidType x
       -- Arguments to constructors are general expressions.  Below
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x

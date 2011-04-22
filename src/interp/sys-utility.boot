@@ -392,24 +392,3 @@ symbolLassoc(s,l) ==
   p := symbolAssoc(s,l) => rest p
   nil
 
-
---% substitute
-
-substitute(new,old,tree) ==
-  sameObject?(old,tree) => new
-  cons? tree =>
-    h := substitute(new,old,first tree)
-    t := substitute(new,old,rest tree)
-    sameObject?(h,first tree) and sameObject?(t,rest tree) => tree
-    [h,:t]
-  tree
-
-substitute!(new,old,tree) ==
-  sameObject?(old,tree) => new
-  cons? tree =>
-    h := substitute!(new,old,first tree)
-    t := substitute!(new,old,rest tree)
-    tree.first := h
-    tree.rest := t
-  tree
-    

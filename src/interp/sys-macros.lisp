@@ -374,7 +374,7 @@
 
 (defmacro SPADCALL (&rest L)
   (let ((args (butlast l))
-	(fn (car (last l)))
+	(fn (car (|lastNode| l)))
 	(gi (gensym)))
     ;; (values t) indicates a single return value
     `(let ((,gi ,fn)) 

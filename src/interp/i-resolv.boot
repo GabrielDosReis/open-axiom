@@ -466,7 +466,7 @@ resolveTM(t,m) ==
   $Subst : local := NIL
   $Coerce : local := 'T
   t := eqType t
-  m := eqType SUBSTQ("**",$EmptyMode,m)
+  m := eqType substitute("**",$EmptyMode,m)
   tt := resolveTM1(t,m)
   result := tt and isValidType tt and eqType tt
   stopTimingProcess 'resolve

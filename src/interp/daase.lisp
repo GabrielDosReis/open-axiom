@@ -1566,7 +1566,7 @@
   (flat expr)
   (dolist (leaf leaves)
    (when (setq pos (position leaf *compressvector*))
-     (nsubst (- pos) leaf expr)))
+     (|substitute!| (- pos) leaf expr)))
   expr)))
 
 (defun write-operationdb ()
