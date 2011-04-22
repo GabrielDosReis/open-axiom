@@ -39,7 +39,7 @@ import pile
 import parser
 import ast
 namespace BOOTTRAN
-module translator
+module translator (evalBootFile)
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
@@ -163,7 +163,7 @@ shoeMc(a,fn)==
   shoePCompileTrees shoeTransformStream a
   shoeConsole strconc(fn,'" COMPILED AND LOADED")
  
-EVAL_-BOOT_-FILE fn ==
+evalBootFile fn ==
    b := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn

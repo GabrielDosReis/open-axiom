@@ -13,6 +13,8 @@
 
 (PROVIDE "translator")
 
+(EXPORT '|evalBootFile|)
+
 (DEFPARAMETER |$currentModuleName| NIL)
 
 (DEFPARAMETER |$foreignsDefsForCLisp| NIL)
@@ -228,7 +230,7 @@
     (T (|shoePCompileTrees| (|shoeTransformStream| |a|))
        (|shoeConsole| (CONCAT |fn| " COMPILED AND LOADED")))))
 
-(DEFUN EVAL-BOOT-FILE (|fn|)
+(DEFUN |evalBootFile| (|fn|)
   (PROG (|outfn| |infn| |b|)
     (RETURN
       (PROGN

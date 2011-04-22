@@ -336,17 +336,17 @@ orderPredTran(oldList,sig,skip) ==
 --  pp oldList
 
   --(3b) newList= list of ofCat/isDom entries that don't depend on
-  while oldList repeat
+  while oldList ~= nil repeat
     for x in oldList repeat
       if (x is ['ofCategory,v,body]) or (x is ['isDomain,v,body]) then
-        indepvl:=listOfPatternIds v
-        depvl:=listOfPatternIds body
+        indepvl := listOfPatternIds v
+        depvl := listOfPatternIds body
       else
         indepvl := listOfPatternIds x
         depvl := nil
       (INTERSECTIONQ(indepvl,dependList) = nil) =>
-        dependList:= setDifference(dependList,depvl)
-        newList:= [:newList,x]
+        dependList := setDifference(dependList,depvl)
+        newList := [:newList,x]
 --  sayBrightlyNT "newList="
 --  pp newList
 

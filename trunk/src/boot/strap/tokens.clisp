@@ -237,7 +237,6 @@
                   (LIST '|rest| 'CDR) (LIST '|sameObject?| 'EQ)
                   (LIST '|scalarEq?| 'EQL) (LIST '|scalarEqual?| 'EQL)
                   (LIST '|second| 'CADR)
-                  (LIST '|setDifference| 'SETDIFFERENCE)
                   (LIST '|setIntersection| 'INTERSECTION)
                   (LIST '|setPart| 'SETELT) (LIST '|setUnion| 'UNION)
                   (LIST '|strconc| 'CONCAT) (LIST '|stringChar| 'SCHAR)

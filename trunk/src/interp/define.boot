@@ -1245,12 +1245,12 @@ orderByDependency(vl,dl) ==
   for v in vl for d in dl | symbolMember?(v,d) repeat
     (SAY(v," depends on itself"); fatalError:= true)
   fatalError => userError '"Parameter specification error"
-  until (null vl) repeat
+  until vl = nil repeat
     newl:=
       [v for v in vl for d in dl | null intersection(d,vl)] or return nil
     orderedVarList:= [:newl,:orderedVarList]
-    vl':= setDifference(vl,newl)
-    dl':= [setDifference(d,newl) for x in vl for d in dl
+    vl' := setDifference(vl,newl)
+    dl' := [setDifference(d,newl) for x in vl for d in dl
              | symbolMember?(x,vl')]
     vl := vl'
     dl := dl'

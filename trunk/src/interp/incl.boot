@@ -166,11 +166,11 @@ fileNameStrings fn==
  
 ifCond(s, info) ==
   word := makeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
-  ListMemberQ?(word, $inclAssertions)
+  symbolMember?(word,$inclAssertions)
  
 assertCond(s, info) ==
   word := makeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
-  if not ListMemberQ?(word, $inclAssertions) then
+  if not symbolMember?(word,$inclAssertions) then
     $inclAssertions := [word, :$inclAssertions]
  
  

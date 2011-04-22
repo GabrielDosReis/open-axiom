@@ -7,8 +7,8 @@
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
              |scalarMember?| |listMember?| |reverse| |reverse!|
-             |lastNode| |append!| |copyList| |substitute|
-             |substitute!|))
+             |lastNode| |append!| |copyList| |substitute| |substitute!|
+             |setDifference|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -141,4 +141,24 @@
            ((AND (EQ |h| (CAR |s|)) (EQ |t| (CDR |s|))) |s|)
            (T (CONS |h| |t|))))
         (T |s|)))))
+
+(DEFUN |setDifference| (|x| |y|)
+  (PROG (|a| |l| |p|)
+    (RETURN
+      (COND
+        ((NULL |x|) NIL)
+        ((NULL |y|) |x|)
+        (T (SETQ |l| (SETQ |p| (LIST NIL)))
+           (LET ((|bfVar#1| |x|))
+             (LOOP
+               (COND
+                 ((ATOM |bfVar#1|) (RETURN NIL))
+                 (T (AND (CONSP |bfVar#1|)
+                         (PROGN (SETQ |a| (CAR |bfVar#1|)) T)
+                         (NOT (|objectMember?| |a| |y|))
+                         (PROGN
+                           (RPLACD |p| (LIST |a|))
+                           (SETQ |p| (CDR |p|))))))
+               (SETQ |bfVar#1| (CDR |bfVar#1|))))
+           (CDR |l|))))))
 

@@ -298,7 +298,6 @@ for i in [ _
   ["scalarEq?",   "EQL" ] , _
   ["scalarEqual?","EQL" ] , _
   ["second",      "CADR"] , _
-  ["setDifference", "SETDIFFERENCE"]  , _
   ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
