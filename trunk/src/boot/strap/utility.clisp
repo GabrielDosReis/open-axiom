@@ -7,7 +7,8 @@
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
              |scalarMember?| |listMember?| |reverse| |reverse!|
-             |lastNode| |append!| |copyList|))
+             |lastNode| |append!| |copyList| |substitute|
+             |substitute!|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -118,4 +119,26 @@
     ((NULL |x|) |y|)
     ((NULL |y|) |x|)
     (T (RPLACD (|lastNode| |x|) |y|) |x|)))
+
+(DEFUN |substitute!| (|y| |x| |s|)
+  (COND
+    ((NULL |s|) NIL)
+    ((EQ |x| |s|) |y|)
+    (T (COND
+         ((CONSP |s|) (RPLACA |s| (|substitute!| |y| |x| (CAR |s|)))
+          (RPLACD |s| (|substitute!| |y| |x| (CDR |s|)))))
+       |s|)))
+
+(DEFUN |substitute| (|y| |x| |s|)
+  (PROG (|t| |h|)
+    (RETURN
+      (COND
+        ((NULL |s|) NIL)
+        ((EQ |x| |s|) |y|)
+        ((CONSP |s|) (SETQ |h| (|substitute| |y| |x| (CAR |s|)))
+         (SETQ |t| (|substitute| |y| |x| (CDR |s|)))
+         (COND
+           ((AND (EQ |h| (CAR |s|)) (EQ |t| (CDR |s|))) |s|)
+           (T (CONS |h| |t|))))
+        (T |s|)))))
 

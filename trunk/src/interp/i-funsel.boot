@@ -825,7 +825,7 @@ allOrMatchingMms(mms,args1,tar,dc) ==
   x := NIL
   for mm in mms repeat
     [sig,:.] := mm
-    [res,:args] := MSUBSTQ(dc,"$",sig)
+    [res,:args] := substitute(dc,"$",sig)
     args ~= args1 => nil
     x := [mm,:x]
   if x then x
@@ -849,7 +849,7 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
 
   [sig,slot,cond,y] := mm
   [osig,:.]  := omm
-  osig := subCopy(osig, SUBSTQ(['$,:'$], dollarPair, SL))
+  osig := subCopy(osig, substitute(['$,:'$], dollarPair, SL))
   if CONTAINED('_#, sig) or CONTAINED('construct,sig) then
     sig := [replaceSharpCalls t for t in sig]
   matchMmCond cond and matchMmSig(mm,tar,args1,args2) and
@@ -893,7 +893,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   if maxargs ~= -1 then
     SL:= NIL
     for i in 1..maxargs repeat
-      impls := SUBSTQ(gensym(),INTERNL('"#",STRINGIMAGE i),impls)
+      impls := substitute(gensym(),INTERNL('"#",STRINGIMAGE i),impls)
   impls and
     SL:= constructSubst dc
     for mm in impls repeat

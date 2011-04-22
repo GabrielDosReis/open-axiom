@@ -94,7 +94,7 @@ getMinimalVarMode(id,m) ==
     $Symbol
   null m => defaultMode
   (vl := polyVarlist m) and ((id in vl) or 'all in vl) =>
-    SUBSTQ($Integer,$EmptyMode,m)
+    substitute($Integer,$EmptyMode,m)
   (um := underDomainOf m) => getMinimalVarMode(id,um)
   defaultMode
 

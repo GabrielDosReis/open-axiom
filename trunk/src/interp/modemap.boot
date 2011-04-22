@@ -332,14 +332,11 @@ getOperationAlist(name,functorForm,form) ==
   stackMessage('"not a category form: %1bp",[form])
  
 substNames(domainName,viewName,functorForm,opalist) ==
-  functorForm := SUBSTQ("$$","$", functorForm)
+  functorForm := substitute("$$","$", functorForm)
   nameForDollar :=
     isCategoryPackageName functorForm => second functorForm
     domainName
-    
-       -- following calls to SUBSTQ must copy to save RPLAC's in
-       -- putInLocalDomainReferences
-  [[:SUBSTQ("$","$$",SUBSTQ(nameForDollar,"$",modemapform)),
+  [[:substitute("$","$$",substitute(nameForDollar,"$",modemapform)),
        [sel, viewName,if domainName = "$" then pos else
                                          modemapform.mmTarget]]
      for [:modemapform,[sel,"$",pos]] in

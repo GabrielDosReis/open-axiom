@@ -490,13 +490,13 @@ pfCollect2Atree pf ==
 --      [name, predLhs, :predRhs] := pred
 --      vars := patternVarsOf predRhs
 --      rest vars =>  -- if there is more than one patternVariable
---        ruleLhs := NSUBST(predLhs, name, ruleLhs)
+--        ruleLhs := substitute!(predLhs, name, ruleLhs)
 --        $multiVarPredicateList := [pred, :$multiVarPredicateList]
 --      predicate :=
 --        [., var] := predLhs
 --        ["suchThat", predLhs, ["ADEF", [var],
 --          '((Boolean) (Expression (Integer))), '(() ()), predRhs]]
---      ruleLhs := NSUBST(predicate, name, ruleLhs)
+--      ruleLhs := substitute!(predicate, name, ruleLhs)
 --    ruleLhs
 --
 --  rulePredicateTran rule ==
@@ -516,7 +516,7 @@ pfCollect2Atree pf ==
 --
 --  pvarPredTran(rhs, varList) ==
 --    for var in varList for i in 1.. repeat
---      rhs := NSUBST(['elt, 'predicateVariable, i], var, rhs)
+--      rhs := substitute!(['elt, 'predicateVariable, i], var, rhs)
 --    rhs
 --
 --  patternVarsOf expr ==

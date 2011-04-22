@@ -900,19 +900,19 @@ extendsCategoryForm(domain,form,form') ==
             --Must be $e to pick up locally bound domains
     form' is ["SIGNATURE",op,args,:.] =>
         assoc([op,args],formVec.1) or
-            assoc(SUBSTQ(domain,"$",[op,args]),
-                  SUBSTQ(domain,"$",formVec.1))
+            assoc(substitute(domain,"$",[op,args]),
+                  substitute(domain,"$",formVec.1))
     form' is ["ATTRIBUTE",at] =>
          assoc(at,formVec.2) or
-            assoc(SUBSTQ(domain,"$",at),SUBSTQ(domain,"$",formVec.2))
+            assoc(substitute(domain,"$",at),substitute(domain,"$",formVec.2))
     form' is ["IF",:.] => true --temporary hack so comp won't fail
     -- Are we dealing with an Aldor category?  If so use the "has" function ...
     # formVec = 1 => newHasTest(form,form')
     catvlist:= formVec.4
     listMember?(form',first catvlist) or
-     listMember?(form',SUBSTQ(domain,"$",first catvlist)) or
+     listMember?(form',substitute(domain,"$",first catvlist)) or
       (or/
-        [extendsCategoryForm(domain,SUBSTQ(domain,"$",cat),form')
+        [extendsCategoryForm(domain,substitute(domain,"$",cat),form')
           for [cat,:.] in second catvlist])
   nil
  

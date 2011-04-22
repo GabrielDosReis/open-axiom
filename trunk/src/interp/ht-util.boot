@@ -570,8 +570,9 @@ htEscapeString str ==
 
 unescapeStringsInForm form ==
   string? form =>
-    str := NSUBSTITUTE(char "_"", $funnyQuote, form)
-    NSUBSTITUTE(char "\", $funnyBacks, str)
+    for i in 0..maxIndex form repeat
+      stringChar(form,i) = $funnyQuote => stringChar(form,i) := char "_""
+      stringChar(form,i) = $funnyBacks => stringChar(form,i) := char "\"
   cons? form =>
     unescapeStringsInForm first form
     unescapeStringsInForm rest form

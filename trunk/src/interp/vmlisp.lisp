@@ -398,7 +398,7 @@
 (defmacro seq (&rest form)
   (let* ((body (|reverse| form))
          (val `(return-from seq ,(pop body))))
-    (nsubstitute '(progn) nil body) ;don't treat NIL as a label
+    (|substitute!| '(progn) nil body) ;don't treat NIL as a label
     `(block seq (tagbody ,@(|reverse!| body) ,val))))
 
 (defmacro sintp (n)
@@ -985,8 +985,6 @@
 (defun MSUBST (new old tree) (subst new old tree :test #'equal))
 ; note subst isn't guaranteed to copy
 (defun |nsubst| (new old tree) (nsubst new old tree :test #'equal))
-(define-function 'MSUBSTQ #'subst) ;default test is eql
-(define-function 'SUBSTQ #'SUBST) ;default test is eql subst is not guaranteed to copy
 
 (defun copy (x) (copy-tree x)) ; not right since should descend vectors
 

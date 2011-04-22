@@ -816,7 +816,7 @@ checkForFreeVariables(v,locals) ==
       ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
     v
   LISTP v =>
-    rest(LASTTAIL v) => -- Must be a better way to check for a genuine list?
+    rest(lastNode v) => -- Must be a better way to check for a genuine list?
       v
     [op,:args] := v
     LISTP op => 
