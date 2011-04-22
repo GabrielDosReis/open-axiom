@@ -127,7 +127,7 @@ makeLazyOldAxiomDispatchDomain domform ==
   getConstructorKindFromDB opOf domform = "category" =>
       [$oldAxiomPreCategoryDispatch,: domform]
   dd := [$lazyOldAxiomDomainDispatch, hashTypeForm(domform,0), domform]
-  NCONC(dd,dd) -- installs back pointer to head of domain.
+  append!(dd,dd) -- installs back pointer to head of domain.
   dd
 
 makeOldAxiomDispatchDomain dom ==

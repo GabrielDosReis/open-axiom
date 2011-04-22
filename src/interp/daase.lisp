@@ -1702,7 +1702,7 @@
         #'(lambda () func) ;; constant domain
         #'(lambda (&rest args)
             (apply (|ClosFun| func)
-                   (nconc
+                   (|append!|
                     (mapcar #'wrapDomArgs args (cdr cosig))
                     (list (|ClosEnv| func)))))))
       (apply cname args)))))
@@ -1720,7 +1720,7 @@
         #'(lambda (self &rest args)
             (let ((precat
                    (apply (|ClosFun| func)
-                          (nconc
+                          (|append!|
                            (mapcar #'wrapDomArgs args (cdr cosig))
                            (list (|ClosEnv| func))))))
               (|CCall| (elt (car precat) 5) (cdr precat) (wrapDomArgs self t))))))

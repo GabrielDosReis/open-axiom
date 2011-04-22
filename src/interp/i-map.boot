@@ -244,7 +244,7 @@ getUserIdentifiersIn body ==
       "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
       cons? op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
-        NCONC(getUserIdentifiersIn op, argIdList)
+        append!(getUserIdentifiersIn op, argIdList)
       argIdList
     removeDuplicates bodyIdList
 
@@ -858,8 +858,8 @@ saveDependentMapInfo(op,opList) ==
     gcl := [[op, :get(op, 'generatedCode, $e)]]
     for [dep1,dep2] in getFlag("$dependencies") | dep1=op repeat
       [lmml', :gcl'] := saveDependentMapInfo(dep2, [op, :opList])
-      lmms := nconc(lmml', lmml)
-      gcl := nconc(gcl', gcl)
+      lmms := append!(lmml', lmml)
+      gcl := append!(gcl', gcl)
     [lmms, :gcl]
   nil
 

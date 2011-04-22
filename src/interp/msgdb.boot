@@ -180,11 +180,11 @@ substituteSegmentedMsg(msg,args) ==
 
     -- x is a special case
     (n > 2) and c = char "%" and stringChar(x,1) = char "k" =>
-        l := nconc(reverse! pkey subString(x,2),l)
+        l := append!(reverse! pkey subString(x,2),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
     stringChar(x,0) = char "?" and n > 1 and
-      (v := pushOrTypeFuture(makeSymbol x,nil)) => l := nconc(reverse! v,l)
+      (v := pushOrTypeFuture(makeSymbol x,nil)) => l := append!(reverse! v,l)
 
     -- x requires parameter substitution
     stringChar(x,0) = char "%" and n > 1 and digit? stringChar(x,1) =>

@@ -461,7 +461,7 @@ appChar(string,x,y,d) ==
     RPLACSTR(line,shiftedX,n:=#string,string,0,n)
     if bumpDeltaIfTrue=true then $highlightDelta:= $highlightDelta+1
     d
-  appChar(string,x,y,nconc(d,[[y,:GETFULLSTR(10+$LINELENGTH+$MARGIN," ")]]))
+  appChar(string,x,y,append!(d,[[y,:GETFULLSTR(10+$LINELENGTH+$MARGIN," ")]]))
 
 print(x,domain) ==
   dom:= devaluate domain
@@ -943,7 +943,7 @@ appInfix(e,x,y,d) ==
     [d,x]:= appInfixArg(arg,x,y,d,rightPrec,"left",opString) --app in right arg
   d
 
-appconc(d,x,y,w) == NCONC(d,[[[x,:y],:w]])
+appconc(d,x,y,w) == append!(d,[[[x,:y],:w]])
 
 infixArgNeedsParens(arg, prec, leftOrRight) ==
   prec > getBindingPowerOf(leftOrRight, arg) + 1

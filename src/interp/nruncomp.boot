@@ -684,7 +684,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
           [opsig,pred,[op,a,vectorLocation(first opsig,second opsig)]]
         [opsig,pred,fnsel]
   sortedOplist := listSort(function GLESSEQP,
-                           COPY_-LIST $lisplibOperationAlist,function second)
+                           copyList $lisplibOperationAlist,function second)
   $lastPred: local := false
   $newEnv: local := $e
   vectorRef($domainShell,1) := [fn entry for entry in sortedOplist] where

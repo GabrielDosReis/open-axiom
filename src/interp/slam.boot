@@ -445,7 +445,7 @@ clearAllSlams x ==
         someMoreToClear:=
           setDifference(LASSOC(x,$functorDependencyAlist),[:thoseToClear,:
             thoseCleared])
-        NCONC(thoseToClear,someMoreToClear)
+        append!(thoseToClear,someMoreToClear)
  
 clearSlam("functor")==
   setDynamicBinding(mkCacheName functor,nil)

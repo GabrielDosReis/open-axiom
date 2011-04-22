@@ -86,9 +86,6 @@
 (defmacro closedfn (form)
  `(function ,form))
 
-(defmacro |copyList| (x) 
- `(copy-list ,x))
-
 (defmacro dcq (&rest args)
  (cons 'setqp args))
 
@@ -501,8 +498,8 @@
                (DEQUOTE (cdr BV))))))
 
 (defun lotsof (&rest items)
-  (setq items (copy-list items))
-  (nconc items items))
+  (setq items (|copyList| items))
+  (|append!| items items))
 
 ; 7.4 Using Macros
 
@@ -797,8 +794,6 @@
 
 (defun EFFACE (item list) (delete item list :count 1 :test #'equal))
 
-(defun NCONC2 (x y) (NCONC x y)) ;NCONC with exactly two arguments
-
 ; 14.6 Miscellaneous
 
 (defun QSORT (l)
@@ -1034,7 +1029,7 @@
              (COND ((AND (NULL W) (OR (consp A) (simple-vector-p A)))
                     (COND ((consp AVL) (setq W (car (RESETQ AVL (cdr AVL)))))
                           ((setq PVL (CONS (setq W (GENSYM)) PVL))))))
-             (setq C (NCONC (COND ((IDENTP A) `((setq ,a (ELT ,sv ,i))))
+             (setq C (|append!| (COND ((IDENTP A) `((setq ,a (ELT ,sv ,i))))
                                   ((OR (consp A) (simple-vector-p A))
                                    `((setq ,w (ELT ,sv ,i))
                                      ,@(dcqgenexp w a eqtag qflag))))
@@ -1066,7 +1061,7 @@
                           (DCQGENEXP (LIST 'CAR SV) A EQTAG QFLAG) )
                          (`((setq ,(or w sv) (CAR ,sv))
                             ,@(DCQGENEXP (OR W SV) A EQTAG QFLAG)))))))
-    (setq C (NCONC C (COND ((IDENTP D) `((setq ,d (CDR ,sv))))
+    (setq C (|append!| C (COND ((IDENTP D) `((setq ,d (CDR ,sv))))
                            ((OR (consp D) (simple-vector-p D))
                             (COND
                               ((OR W (IDENTP SV)) )
@@ -1131,7 +1126,7 @@
               (if (AND (NULL W) (OR (consp A) (simple-vector-p A)))
                   (push (setq W (GENSYM)) PVL))
               (setq C
-                    (NCONC
+                    (|append!|
                       (COND
                         ( (OR
                             (IDENTP A)
@@ -1169,7 +1164,7 @@
                  `((setq ,w (CAR ,sv))
                    ,@(ECQGENEXP W A QFLAG)))))
         (setq C
-              (NCONC
+              (|append!|
                 C
                 (COND
                   ( (OR (IDENTP D) (NUMP D) (AND (consp D)
@@ -1232,7 +1227,7 @@
                            (simple-vector-p A)))
                 (setq PVL (CONS (setq W (GENSYM)) PVL)) ) )
             (setq C
-              (NCONC
+              (|append!|
                 (COND
                   ( (OR
                       (IDENTP A)
@@ -1273,7 +1268,7 @@
             `((setq ,w (CAR ,sv))
               ,@(RCQGENEXP W A QFLAG)))))
       (setq C
-        (NCONC
+        (|append!|
           C
           (COND
             ( (OR (IDENTP D) (NUMP D) (AND (consp D) (EQ (car D) 'QUOTE)))
@@ -1453,7 +1448,7 @@
           ( (AND (NOT (consp TMP1)) (NOT (simple-vector-p TMP1)))
             (FLAT-BV-LIST (QCDR BV-LIST)) )
           ( 'T
-            (NCONC (FLAT-BV-LIST TMP1) (FLAT-BV-LIST (QCDR BV-LIST))) ) )) ))
+            (|append!| (FLAT-BV-LIST TMP1) (FLAT-BV-LIST (QCDR BV-LIST))) ) )) ))
 
 (defun VARP (TEST-ITEM)
     (COND

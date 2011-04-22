@@ -373,7 +373,7 @@ intersectionContour(c,c') ==
         --this loop will return NIL if not satisfied
  
 addContour(c,E is [cur,:tail]) ==
-  [NCONC(fn(c,E),cur),:tail] where
+  [append!(fn(c,E),cur),:tail] where
     fn(c,e) ==
         for [x,:proplist] in c repeat
            fn1(x,proplist,getProplist(x,e)) where
@@ -1477,7 +1477,7 @@ massageBackendCode x ==
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u isnt 'DCQ and u isnt 'SETQ then
-      nconc(x,$FUNNAME__TAIL)
+      append!(x,$FUNNAME__TAIL)
       x.first := "LETT"
     massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then

@@ -7,7 +7,7 @@
 
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
              |scalarMember?| |listMember?| |reverse| |reverse!|
-             |lastNode|))
+             |lastNode| |append!| |copyList|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -98,4 +98,24 @@
              (RETURN NIL))
             (T (SETQ |l| |l'|))))
         |l|))))
+
+(DEFUN |copyList| (|l|)
+  (PROG (|l'| |t|)
+    (RETURN
+      (COND
+        ((NOT (CONSP |l|)) |l|)
+        (T (SETQ |l'| (SETQ |t| (LIST (CAR |l|))))
+           (LOOP
+             (PROGN
+               (SETQ |l| (CDR |l|))
+               (COND
+                 ((CONSP |l|) (RPLACD |t| (LIST (CAR |l|)))
+                  (SETQ |t| (CDR |t|)))
+                 (T (RPLACD |t| |l|) (RETURN |l'|))))))))))
+
+(DEFUN |append!| (|x| |y|)
+  (COND
+    ((NULL |x|) |y|)
+    ((NULL |y|) |x|)
+    (T (RPLACD (|lastNode| |x|) |y|) |x|)))
 

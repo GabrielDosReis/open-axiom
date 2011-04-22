@@ -353,8 +353,8 @@
 (defun PARSEPILES (LOCS LINES)
   "Add parens and semis to lines to aid parsing."
   (mapl #'add-parens-and-semis-to-line 
-	(NCONC LINES '(" ")) 
-	(nconc locs '(nil)))
+	(|append!| LINES '(" ")) 
+	(|append!| locs '(nil)))
   LINES)
  
 (defun add-parens-and-semis-to-line (slines slocs)

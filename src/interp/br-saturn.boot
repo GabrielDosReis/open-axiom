@@ -157,7 +157,7 @@ bcHt line ==
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
   cons? line =>
-    $htLineList := NCONC(reverse! mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := append!(reverse! mapStringize copyList line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 --=======================================================================
@@ -549,7 +549,7 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
     string? pageDescrip => [pageDescrip, :htPage.7]
-    nconc(reverse! COPY_-LIST pageDescrip, htPage.7)
+    append!(reverse! copyList pageDescrip, htPage.7)
   htPage.7 := newDescript
 
 

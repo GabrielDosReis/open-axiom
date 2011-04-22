@@ -296,7 +296,7 @@ hasOptArgs? argSex ==
       opt := [[lhs, rhs], :opt]
     nonOpt := [arg, :nonOpt]
   null opt => nil
-  NCONC (reverse! nonOpt, [["construct", :reverse! opt]])
+  append!(reverse! nonOpt, [["construct", :reverse! opt]])
 
 pfDefinition2Sex pf ==
   $insideApplication > $insideQuasiquotation =>

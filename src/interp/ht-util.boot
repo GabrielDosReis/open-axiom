@@ -211,7 +211,7 @@ iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
   cons? line =>
-    $htLineList := NCONC(reverse! mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := append!(reverse! mapStringize copyList line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
@@ -383,7 +383,7 @@ pvarCondList1(pvarList, activeConds, condList) ==
   null condList => activeConds
   [cond, : restConds] := condList
   cond is [., pv, pattern] and pv in pvarList =>
-    pvarCondList1(nconc(pvarList, pvarsOfPattern pattern),
+    pvarCondList1(append!(pvarList, pvarsOfPattern pattern),
                   [cond, :activeConds], restConds)
   pvarCondList1(pvarList, activeConds, restConds)
 

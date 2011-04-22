@@ -601,13 +601,13 @@ listSort(pred,list,:optional) ==
    mergeSort(pred,key,list,# list)
 
 -- non-destructive merge sort using NOT GGREATERP as predicate
-MSORT list == listSort(function GLESSEQP, COPY_-LIST list)
+MSORT list == listSort(function GLESSEQP, copyList list)
 
 -- destructive merge sort using NOT GGREATERP as predicate
 NMSORT list == listSort(function GLESSEQP, list)
 
 -- non-destructive merge sort using ?ORDER as predicate
-orderList l == listSort(function _?ORDER, COPY_-LIST l)
+orderList l == listSort(function _?ORDER, copyList l)
 
 -- dummy defn until clean-up
 -- order     l == orderList l

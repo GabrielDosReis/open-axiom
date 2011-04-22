@@ -805,13 +805,13 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         else r := [mm,:r]
       q := allOrMatchingMms(q,args1,tar,dc)
       for mm in q repeat
-        fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
+        fun:= append!(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
       r := reverse r
     else r := rest p
     r := allOrMatchingMms(r,args1,tar,dc)
     if not fun then    -- consider remaining modemaps
       for mm in r repeat
-        fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
+        fun:= append!(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
   if not fun and $reportBottomUpFlag then
     sayMSG concat
       ['"   -> no appropriate",:bright op,'"found in",
@@ -897,7 +897,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   impls and
     SL:= constructSubst dc
     for mm in impls repeat
-      fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
+      fun:= append!(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
   if not fun and $reportBottomUpFlag then
     sayMSG concat
       ['"   -> no appropriate",:bright op,'"found in",
@@ -1111,7 +1111,7 @@ selectMmsGen(op,tar,args1,args2) ==
       [c,t,:a] := sig
       if a then matchTypes(a,args1,args2)
       $Subst ~= 'failed =>
-        mmS := nconc(evalMm(op,tar,sig,mmC),mmS)
+        mmS := append!(evalMm(op,tar,sig,mmC),mmS)
     mmS
 
 matchTypes(pm,args1,args2) ==
@@ -1148,11 +1148,11 @@ evalMm(op,tar,sig,mmC) ==
       sig:= [subCopy(deepSubCopy(x,SL),$Subst) for x in sig]
       not containsVars sig =>
         isFreeFunctionFromMmCond mmC and (m := evalMmFreeFunction(op,tar,sig,mmC)) =>
-           mS:= nconc(m,mS)
+           mS:= append!(m,mS)
         "or"/[not isValidType(arg) for arg in sig] => nil
         [dc,t,:args]:= sig
         $Coerce or null tar or tar=t =>
-          mS:= nconc(findFunctionInDomain(op,dc,t,args,args,NIL,'T),mS)
+          mS:= append!(findFunctionInDomain(op,dc,t,args,args,NIL,'T),mS)
   mS
 
 evalMmFreeFunction(op,tar,sig,mmC) ==
@@ -1166,7 +1166,7 @@ evalMmFreeFunction(op,tar,sig,mmC) ==
 evalMmStack(mmC) ==
   -- translates the modemap condition mmC into a list of stacks
   mmC is [op,:a] and op in '(AND and %and) =>
-    ["NCONC"/[evalMmStackInner cond for cond in a]]
+    ["append!"/[evalMmStackInner cond for cond in a]]
   mmC is [op,:args] and op in '(OR or %or) => 
     [:evalMmStack a for a in args]
   mmC is ['partial,:mmD] => evalMmStack mmD
@@ -1312,7 +1312,7 @@ orderMmCatStack st ==
         havevars := [s,:havevars]
     if not mem then haventvars := [s,:haventvars]
   null havevars => st
-  st := reverse! nconc(haventvars,havevars)
+  st := reverse! append!(haventvars,havevars)
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==

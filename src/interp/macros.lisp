@@ -185,7 +185,7 @@
 (defun LISTOFATOMS (X)
   (COND ((NULL X) NIL)
         ((ATOM X) (LIST X))
-        ((NCONC (LISTOFATOMS (CAR X)) (LISTOFATOMS (CDR X))))))
+        ((|append!| (LISTOFATOMS (CAR X)) (LISTOFATOMS (CDR X))))))
  
 (DEFUN LASTATOM (L) (if (ATOM L) L (LASTATOM (CDR L))))
  

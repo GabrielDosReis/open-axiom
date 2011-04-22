@@ -1997,7 +1997,7 @@ SETANDFILEQ($CoerceTable, '(                                          _
     ))_
   ))
 
-SETANDFILEQ($CoerceTable,NCONC($CoerceTable,'( _
+SETANDFILEQ($CoerceTable,append!($CoerceTable,'( _
   (Matrix . ( _
     (List                                 indeterm   M2L) _
     (RectangularMatrix                    partial    M2Rm) _

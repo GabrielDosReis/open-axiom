@@ -168,7 +168,7 @@ processChPosesForOneLine msgList ==
         setMsgPrefix (msg,strconc(oldPre,_
                      MAKE_-FULL_-CVEC ($preLength - 4 - # oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
-    NCONC(msgList,[leaderMsg])  --a back cons
+    append!(msgList,[leaderMsg])  --a back cons
  
 posPointers msgList ==
 --gets all the char posns for msgs on one line
@@ -291,9 +291,9 @@ queueUpErrors(globalNumOfLine,msgList)==
        msgList := rest msgList
     if thisPosMsgs then
         thisPosMsgs := processChPosesForOneLine  thisPosMsgs
-        $outputList := NCONC(thisPosMsgs,$outputList)
+        $outputList := append!(thisPosMsgs,$outputList)
     if notThisPosMsgs then
-        $outputList := NCONC(notThisPosMsgs,$outputList)
+        $outputList := append!(notThisPosMsgs,$outputList)
     msgList
  
 redundant(msg,thisPosMsgs) ==
