@@ -472,7 +472,7 @@ spadTrace(domain,options) ==
     alias:= spadTraceAlias(domainId,op,n)
     $tracedModemap:= subTypes(mm,constructSubst(domain.0))
     traceName:= BPITRACE(first domain.n,alias, options)
-    NCONC(pair,[listOfVariables,first domain.n,traceName,alias])
+    append!(pair,[listOfVariables,first domain.n,traceName,alias])
     domain.n.first := traceName
   sigSlotNumberAlist:= [x for x in sigSlotNumberAlist | CDDDR x]
   if $reportSpadTrace then

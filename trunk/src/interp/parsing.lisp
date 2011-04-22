@@ -358,7 +358,7 @@ the stack, then stack a NIL. Return the value of prod."
   (loop
      (let ((m (length /gensymlist)))
        (if (< m n)
-           (setq /gensymlist (nconc /gensymlist `(,(intern (format nil "G~D" (1+ m))))))
+           (setq /gensymlist (|append!| /gensymlist `(,(intern (format nil "G~D" (1+ m))))))
            (return (nth (1- n) /gensymlist))))))
 
 ; 3 D.  Managing rule sets

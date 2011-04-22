@@ -775,7 +775,7 @@
                               (AND (|PARSE-GlyphTok| ".")
                                    (MUST (|PARSE-Sexpr1|))
                                    (PUSH-REDUCTION '|PARSE-Sexpr1|
-                                    (NCONC (POP-STACK-2) (POP-STACK-1))))))))
+                                    (|append!| (POP-STACK-2) (POP-STACK-1))))))))
            (MUST (MATCH-ADVANCE-STRING ")"))))) 
 
 

@@ -268,7 +268,7 @@ formatAttribute x ==
   atom x => ["  ",x]
   x is [op,:argl] =>
     for x in argl repeat
-      argPart:= NCONC(argPart,concat('",",formatAttributeArg x))
+      argPart:= append!(argPart,concat('",",formatAttributeArg x))
     argPart => concat('"  ",op,'"(",rest argPart,'")")
     ["  ",op]
 
@@ -763,7 +763,7 @@ pkey keyStuff ==
             keyStuff  := IFCDR keyStuff
             next      := IFCAR keyStuff
         oneMsg  := returnStLFromKey(key,argL,dbN)
-        allMsgs := ['" ", :NCONC (oneMsg,allMsgs)]
+        allMsgs := ['" ", :append! (oneMsg,allMsgs)]
     allMsgs
 
 string2Float s ==

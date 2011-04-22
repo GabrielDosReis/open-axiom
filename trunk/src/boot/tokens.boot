@@ -225,10 +225,10 @@ for i in [ _
       ["CONS",    nil] , _
       ["APPEND",  nil] , _
       ["append",  nil] , _
+      ["append!", nil] , _
       ["UNION",   nil] , _
       ["UNIONQ",  nil] , _
       ["union",   nil] , _
-      ["NCONC",   nil] , _
       ["and",    true] , _
       ["or",    false] , _
       ["AND",    true] , _
@@ -279,7 +279,6 @@ for i in [ _
   ["makeSymbol", "INTERN"] , _
   ["maxIndex", "MAXINDEX"] , _
   ["mkpf",        "MKPF"]  , _
-  ["nconc",      "NCONC"]  , _
   ["newString", "MAKE-STRING"], _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _

@@ -1,5 +1,11 @@
 2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (copyList): Define.
+	(append!): Likewise.
+	* boot/tokens.boot: Do not translate nconc.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Don't translate lastNode anymore.
 	* boot/utility.boot (lastNode): Define.
 

@@ -1079,7 +1079,7 @@ bfWhere (context,expr)==
   a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
                for d in defs]
   $wheredefs:=append(a,$wheredefs)
-  bfMKPROGN bfSUBLIS(opassoc,nconc(nondefs,[expr]))
+  bfMKPROGN bfSUBLIS(opassoc,append!(nondefs,[expr]))
  
 --shoeReadLispString(s,n)==
 --    n>= # s => nil

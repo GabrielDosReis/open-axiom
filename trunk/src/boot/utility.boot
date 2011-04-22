@@ -33,7 +33,8 @@
 import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
-  charMember?, scalarMember?, listMember?, reverse, reverse!, lastNode)
+  charMember?, scalarMember?, listMember?, reverse, reverse!,
+  lastNode, append!, copyList)
 
 --% membership operators
 
@@ -112,3 +113,23 @@ lastNode l ==
   while l is [.,:l'] and cons? l' repeat
     l := l'
   l
+
+--% list copying
+copyList l ==
+  not cons? l => l
+  l' := t := [first l]
+  repeat
+    l := rest l
+    cons? l =>
+      t.rest := [first l]
+      t := rest t
+    t.rest := l
+    return l'
+
+--% append
+
+append!(x,y) ==
+  x = nil => y
+  y = nil => x
+  lastNode(x).rest := y
+  x

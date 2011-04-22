@@ -1975,7 +1975,7 @@
                   (SETQ |bfVar#124| (CDR |bfVar#124|)))))
         (SETQ |$wheredefs| (APPEND |a| |$wheredefs|))
         (|bfMKPROGN|
-            (|bfSUBLIS| |opassoc| (NCONC |nondefs| (LIST |expr|))))))))
+            (|bfSUBLIS| |opassoc| (|append!| |nondefs| (LIST |expr|))))))))
 
 (DEFUN |bfCompHash| (|op| |argl| |body|)
   (PROG (|computeFunction| |auxfn|)

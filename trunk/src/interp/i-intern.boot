@@ -470,7 +470,7 @@ transformCollect [:itrl,body] ==
     it is ["UNTIL",:.] => nil
     throwKeyedMsg("S2IS0061",nil)
   bodyTree:=mkAtree1 body
-  iterList:=nconc(iterList,[:iterTran2 for it in itrl]) where
+  iterList:=append!(iterList,[:iterTran2 for it in itrl]) where
     iterTran2() ==
       it is ["STEP",:.] => nil
       it is ["IN",:.] => nil

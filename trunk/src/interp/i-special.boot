@@ -2162,7 +2162,7 @@ transformREPEAT [:itrl,body] ==
       [["SUCHTHAT",mkAtree1 pred]]
     it is [op,:.] and (op in '(VALUE UNTIL)) => nil
   bodyTree:=mkAtree1 body
-  iterList:=NCONC(iterList,[:iterTran2 for it in itrl]) where iterTran2() ==
+  iterList:=append!(iterList,[:iterTran2 for it in itrl]) where iterTran2() ==
     it is ["STEP",:.] => nil
     it is ["IN",:.] => nil
     it is ["ON",:.] => nil

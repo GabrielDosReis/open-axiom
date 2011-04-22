@@ -1395,14 +1395,14 @@ previousInterpreterFrame() ==
   updateCurrentInterpreterFrame()
   null rest $interpreterFrameRing => NIL  -- nothing to do
   [:b,l] := $interpreterFrameRing
-  $interpreterFrameRing := NCONC2([l],b)
+  $interpreterFrameRing := append!([l],b)
   updateFromCurrentInterpreterFrame()
 
 nextInterpreterFrame() ==
   updateCurrentInterpreterFrame()
   null rest $interpreterFrameRing => NIL  -- nothing to do
   $interpreterFrameRing :=
-    NCONC2(rest $interpreterFrameRing,[first $interpreterFrameRing])
+    append!(rest $interpreterFrameRing,[first $interpreterFrameRing])
   updateFromCurrentInterpreterFrame()
 
 

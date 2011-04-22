@@ -670,7 +670,7 @@
 	    (LIST 'spadDO 
 		  (|reverse!| IL) 
 		  (LIST (MKPF (|reverse!| XCL) 'OR) XV)
-		  (SEQOPT (CONS 'SEQ (NCONC (|reverse!| RSL)
+		  (SEQOPT (CONS 'SEQ (|append!| (|reverse!| RSL)
 					    (LIST (LIST 'EXIT BD)))))))
 	   (COND ((ATOM (CAR X)) 
 		  (FAIL)))
@@ -873,7 +873,7 @@
 	   (UNIONQ NIL)
 	   (|gcd| (|Zero|))
 	   (|union| NIL)
-	   (NCONC NIL)
+	   (|append!| NIL)
 	   (|and| |true|)
 	   (|or| |false|)
 	   (AND 'T)
@@ -1137,7 +1137,7 @@
 	(RETURN (COND
 		 ((AND $NEWSPAD)
 		  (CONS 'SEQ
-			(NCONC (DO_LET VARS INITS)
+			(|append!| (DO_LET VARS INITS)
 			       (LIST 'G190 
 				     ENDTEST 
 				     BODYFORMS 
@@ -1159,7 +1159,7 @@
 	(ERROR (FORMAT NIL "BAD DO FORMAT~%~A" OL))))
 
 (defmacro THETA (&rest LL)
-  (let (U (L (copy-list LL)))
+  (let (U (L (|copyList| LL)))
     (if (EQ (KAR L) '\,) 
 	`(theta CONS . ,(CDR L))
       (progn
@@ -1173,7 +1173,7 @@
 		 (|reverse!| (CDR L)))))))
 
 (defmacro THETA1 (&rest LL)
-  (let (U (L (copy-list LL)))
+  (let (U (L (|copyList| LL)))
     (if (EQ (KAR L) '\,)
         (LIST 'NREVERSE-N (CONS 'THETA1 (CONS 'CONS (CDR L))) 1)
       (-REDUCE (CAR L) 
@@ -1210,7 +1210,7 @@
  
 (defmacro COLLECT (&rest L)
   (let ((U (REPEAT-TRAN L NIL)))
-    (CONS 'THETA (CONS '\, (NCONC (CAR U) (LIST (CDR U)))))))
+    (CONS 'THETA (CONS '\, (|append!| (CAR U) (LIST (CDR U)))))))
 
 ;; 
 ;; -*- Non-Local Gotos -*-
