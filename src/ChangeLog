@@ -1,3 +1,13 @@
+2011-04-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't translate setDifference.
+	* boot/initial-env.lisp (SETDIFFERNECE): Remove.
+	* boot/translator.boot (evalBootFile): Rename form EVAL-BOOT-FILE.
+	* boot/utility.boot (setDifference): Define.
+	* interp/unlisp.lisp (ListMemberQ?): Remove.
+	(ListRemoveQ): Likewise.
+	(AlistAssocQ): Likewise.
+
 2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/utility.boot (copyList): Define.

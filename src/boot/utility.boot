@@ -34,7 +34,7 @@ import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
-  lastNode, append!, copyList, substitute, substitute!)
+  lastNode, append!, copyList, substitute, substitute!, setDifference)
 
 --% membership operators
 
@@ -45,7 +45,6 @@ objectMember?(x,l) ==
       sameObject?(x,first l) => return true
       l := rest l
     return sameObject?(x,l)
-
 
 symbolMember?(s,l) ==
   repeat
@@ -154,3 +153,13 @@ substitute(y,x,s) ==
     [h,:t]
   s
   
+--% set operations
+
+setDifference(x,y) ==
+  x = nil => nil
+  y = nil => x
+  l := p := [nil]
+  for [a,:.] in tails x | not objectMember?(a,y) repeat
+    p.rest := [a]
+    p := rest p
+  rest l

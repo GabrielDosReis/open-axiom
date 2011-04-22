@@ -1542,7 +1542,8 @@
         (SETQ |$dollarVars| NIL)
         (|shoeCompTran1| |body|)
         (SETQ |$locVars|
-              (SETDIFFERENCE (SETDIFFERENCE |$locVars| |$fluidVars|)
+              (|setDifference|
+                  (|setDifference| |$locVars| |$fluidVars|)
                   (|shoeATOMs| |args|)))
         (SETQ |body|
               (PROGN

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -124,22 +124,8 @@
     'string )) )
 
 ;;;
-;;; Lists
-;;;
-
-
-(defun |ListMemberQ?| (ob l)
-  (member ob l :test #'eq) )
-
-(defun |ListRemoveQ| (ob l)
-  (remove ob l :test #'eq :count 1) )
-
-;;;
 ;;; Association lists
 ;;;
-
-(defun |AlistAssocQ| (key l)
-  (assoc key l :test #'eq) )
 
 (defun |AlistRemoveQ| (key l)
   (let ((pr (assoc key l :test #'eq)))
