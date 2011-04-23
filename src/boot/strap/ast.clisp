@@ -494,7 +494,7 @@
 (DEFUN |bfDTuple| (|x|) (LIST 'DTUPLE |x|))
 
 (DEFUN |bfCollect| (|y| |itl|)
-  (PROG (|newBody| |a| |ISTMP#1|)
+  (PROG (|a| |ISTMP#1|)
     (RETURN
       (COND
         ((AND (CONSP |y|) (EQ (CAR |y|) 'COLON)
@@ -502,25 +502,11 @@
                 (SETQ |ISTMP#1| (CDR |y|))
                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
-         (|bf0APPEND| |a| |itl|))
+         (|bfListReduce| 'APPEND (LIST '|reverse| |a|) |itl|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'TUPLE))
-         (SETQ |newBody| (|bfConstruct| |y|))
-         (|bf0APPEND| |newBody| |itl|))
-        (T (|bf0COLLECT| |y| |itl|))))))
-
-(DEFUN |bf0COLLECT| (|y| |itl|) (|bfListReduce| 'CONS |y| |itl|))
-
-(DEFUN |bf0APPEND| (|y| |itl|)
-  (PROG (|extrait| |body| |g|)
-    (RETURN
-      (PROGN
-        (SETQ |g| (|bfGenSymbol|))
-        (SETQ |body|
-              (LIST 'SETQ |g| (LIST 'APPEND (LIST '|reverse| |y|) |g|)))
-        (SETQ |extrait|
-              (LIST (LIST (LIST |g|) (LIST NIL) NIL NIL NIL
-                          (LIST (LIST '|reverse!| |g|)))))
-        (|bfLp2| |extrait| |itl| |body|)))))
+         (|bfListReduce| 'APPEND (LIST '|reverse| (|bfConstruct| |y|))
+             |itl|))
+        (T (|bfListReduce| 'CONS |y| |itl|))))))
 
 (DEFUN |bfListReduce| (|op| |y| |itl|)
   (PROG (|extrait| |body| |g|)

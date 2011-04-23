@@ -368,21 +368,10 @@ bfDTuple x ==
   ["DTUPLE",x]
  
 bfCollect(y,itl) ==
-  y is ["COLON",a] => bf0APPEND(a,itl)
+  y is ["COLON",a] => bfListReduce('APPEND,['reverse,a],itl)
   y is ["TUPLE",:.] =>
-    newBody := bfConstruct y
-    bf0APPEND(newBody,itl)
-  bf0COLLECT(y,itl)
- 
-bf0COLLECT(y,itl) == 
+    bfListReduce('APPEND,['reverse,bfConstruct y],itl)
   bfListReduce('CONS,y,itl)
- 
- 
-bf0APPEND(y,itl)==
-  g := bfGenSymbol()
-  body := ['SETQ,g,['APPEND,['reverse,y],g]]
-  extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
-  bfLp2(extrait,itl,body)
  
 bfListReduce(op,y,itl)==
   g := bfGenSymbol()
