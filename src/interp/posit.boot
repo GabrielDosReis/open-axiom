@@ -35,10 +35,10 @@ import sys_-macros
 import astr
 namespace BOOT
 module posit where
-  %Position <=> %List
-  tokType: %List -> %Symbol
-  tokPart: %List -> %Thing
-  tokPosn: %List -> %Position
+  %Position <=> %List %Form
+  tokType: %List %Form -> %Symbol
+  tokPart: %List %Form -> %Thing
+  tokPosn: %List %Form -> %Position
 
 $nopos ==
   ['noposition]

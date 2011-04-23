@@ -505,9 +505,9 @@ knownInfo pred ==
   pred is ["or",:l] => or/[knownInfo u for u in l]
   pred is ["and",:l] => and/[knownInfo u for u in l]
   pred is ["ATTRIBUTE",name,attr] =>
-    v:= compForMode(name,$EmptyMode,$e) or return
+    v := compForMode(name,$EmptyMode,$e) or return
           stackAndThrow('"can't find category of %1pb",[name])
-    [vv,.,.]:= compMakeCategoryObject(second v,$e) or return
+    [vv,.,.] := compMakeCategoryObject(v.mode,$e) or return
                  stackAndThrow('"can't make category of %1pb",[name])
     listMember?(attr,vv.2) => true
     x := assoc(attr,vv.2) => knownInfo second x
@@ -517,7 +517,7 @@ knownInfo pred ==
     cat is ["ATTRIBUTE",:a] => knownInfo ["ATTRIBUTE",name,:a]
     cat is ["SIGNATURE",:a] => knownInfo ["SIGNATURE",name,:a]
     -- unnamed category expressions imply structural checks.
-    cat is ["Join",:.] => and/[knownInfo ["has",name,c] for c in rest cat]
+    cat is ["Join",:.] => and/[knownInfo ["has",name,c] for c in cat.args]
     cat is ["CATEGORY",.,:atts] =>
       and/[knownInfo hasToInfo ["has",name,att] for att in atts]
     name is ['Union,:.] => false
@@ -563,8 +563,12 @@ actOnInfo(u,$e) ==
   u is ["ATTRIBUTE",name,att] =>
     [vval,vmode,.]:= GetValue name
     compilerMessage('"augmenting %1: %2p", [name,["ATTRIBUTE",att]])
-    key:= if CONTAINED("$",vmode) then "domain" else name
-    cat:= ["CATEGORY",key,["ATTRIBUTE",att]]
+    key :=
+      -- FIXME: there should be a better to tell whether name
+      --        designates a domain, as opposed to a package
+      CONTAINED("$",vmode) => 'domain
+      'package
+    cat := ["CATEGORY",key,["ATTRIBUTE",att]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
       --there is nowhere %else that this sort of thing exists
   u is ["SIGNATURE",name,operator,modemap,:q] =>
@@ -580,7 +584,11 @@ actOnInfo(u,$e) ==
     [vval,vmode,.]:= GetValue name
     compilerMessage('"augmenting %1: %2p", 
        [name,["SIGNATURE",operator,modemap,:q]])
-    key:= if CONTAINED("$",vmode) then "domain" else name
+    key :=
+      -- FIXME: there should be a better to tell whether name
+      --        designates a domain, as opposed to a package
+      CONTAINED("$",vmode) => 'domain
+      'package
     cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap,:q]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
   u is ["has",name,cat] =>

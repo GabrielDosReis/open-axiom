@@ -477,7 +477,7 @@ bpTypeAliasDefition() ==
 ++  Signature:
 ++    Name COLON Mapping
 bpSignature() ==
-  bpName() and bpEqKey "COLON" and bpMapping()
+  bpName() and bpEqKey "COLON" and bpTyping()
     and bpPush %Signature(bpPop2(), bpPop1())
 
 ++ SimpleMapping:
@@ -486,7 +486,7 @@ bpSignature() ==
 bpSimpleMapping() ==
   bpApplication() =>
     bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
-      bpPush %Mapping(bpPop1(), bfUntuple bpPop1())
+      bpPush %Mapping(bpPop1(), [bpPop1()])
     true
   false
 
@@ -501,12 +501,10 @@ bpArgtypeList() ==
 ++ Parse a mapping expression
 ++   Mapping:
 ++     ArgtypeList -> Application
-++     SimpleMapping
 bpMapping() ==
   bpParenthesized function bpArgtypeList and 
      bpEqKey "ARROW" and bpApplication() and 
        bpPush %Mapping(bpPop1(), bfUntuple bpPop1())
-         or bpSimpleMapping()
 
 bpCancel()==
   a := bpState()
@@ -601,9 +599,7 @@ bpApplication()==
 ++   SimpleType
 ++   Mapping
 bpTyping() ==
-  bpApplication() and
-    (bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
-      bpPush %Mapping(bpPop1(), bfUntuple bpPop1()) or true) or bpMapping()
+  bpMapping() or bpSimpleMapping()
 
 ++ Tagged:
 ++   Name : Typing
@@ -791,8 +787,11 @@ bpWhile()==bpAndOr ("WHILE",function bpLogical,function bfWhile)
  
 bpUntil()==bpAndOr ("UNTIL",function bpLogical,function bfUntil)
  
+bpFormal() ==
+  bpVariable() or bpDot()
+
 bpForIn()==
-  bpEqKey "FOR" and (bpVariable() or bpTrap()) and (bpCompMissing "IN")
+  bpEqKey "FOR" and (bpFormal() or bpTrap()) and (bpCompMissing "IN")
       and ((bpSeg()  or bpTrap()) and
        (bpEqKey "BY" and (bpArith() or bpTrap()) and
         bpPush bfForInBy(bpPop3(),bpPop2(),bpPop1())) or

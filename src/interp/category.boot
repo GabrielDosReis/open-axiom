@@ -82,12 +82,12 @@ CategoryPrint(D,$e) ==
     atom first u => SAY("Alternate View corresponding to: ",u)
     PRETTYPRINT u
 
-++ Returns a fresly built category object for a domain or package
+++ Returns a freshly built category object for a domain or package
 ++ (as indicated by `domainOrPackage'), with signature list
 ++ designated by `sigList', attribute list designated by `attList',
 ++ used domains list designated by `domList', and a princical ancestor
 ++ category object designated by `PrincipalAncestor'.
-mkCategory: (%Symbol,%List,%List,%List, %Maybe %Shell) -> %Shell
+mkCategory: (%ConstructorKind,%List %Sig,%List %Form,%List %Instantiation, %Maybe %Shell) -> %Shell
 mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   NSigList := nil
   -- Unless extending a principal ancestor (from the end), start
@@ -102,10 +102,12 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
          -- ??? Should we not check for predicate subsumption too?
          or/[x is [[ =sig,.,:impl],:num] for x in NSigList] => [sig,pred,:impl]
                  --only needed for multiple copies of sig
-         num:= if domainOrPackage="domain" then count else count-5
-         nsig:= mkOperatorEntry(sig,pred,num)
-         NSigList:= [[nsig,:count],:NSigList]
-         count:= count+1
+         num :=
+           domainOrPackage is "domain" => count
+           count-5
+         nsig := mkOperatorEntry(sig,pred,num)
+         NSigList := [[nsig,:count],:NSigList]
+         count := count+1
          nsig
      else s for s in sigList]
   NewLocals:= nil
@@ -361,7 +363,7 @@ CatEval x ==
 --               --remove the slot pointers
 --  [x for x in l | not AncestorP(x.0,leaves)]
  
-AncestorP: (%Form, %List) -> %Form
+AncestorP: (%Form, %List %Instantiation) -> %Form
 AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
   listMember?(xname,leaves) => xname

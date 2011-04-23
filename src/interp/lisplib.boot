@@ -809,7 +809,7 @@ getIndexPathname: %String -> %String
 getIndexPathname dir ==
   strconc(ensureTrailingSlash dir, $IndexFilename)
 
-getAllIndexPathnames: %String -> %List
+getAllIndexPathnames: %String -> %List %Form
 getAllIndexPathnames dir ==
   -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
   -- rest of everybody else' semantics.  Namely, GCL would return a
@@ -822,7 +822,7 @@ getAllIndexPathnames dir ==
 )endif
   
 
-getAllAldorObjectFiles: %String -> %List
+getAllAldorObjectFiles: %String -> %List %Form
 getAllAldorObjectFiles dir ==
   asys := DIRECTORY strconc(dir,'"*.asy")
   asos := DIRECTORY strconc(dir,'"*.ao")

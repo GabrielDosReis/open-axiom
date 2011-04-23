@@ -109,8 +109,8 @@ $subdomain := false
 
 --%
 
-compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
-DomainSubstitutionFunction: (%List,%Form) -> %Form 
+compDefineAddSignature: (%Form,%Sig,%Env) -> %Env
+DomainSubstitutionFunction: (%List %Symbol,%Form) -> %Form 
 
 
 --%
@@ -473,7 +473,7 @@ compDefine(form,m,e) ==
 ++     per: Rep -> %
 ++     rep: % -> Rep
 ++ as local inline functions.
-checkRepresentation: (%Form,%List,%Env) -> %Env
+checkRepresentation: (%Form,%List %Form,%Env) -> %Env
 checkRepresentation(addForm,body,env) ==
   domainRep := nil
   hasAssignRep := false        -- assume code does not assign to Rep.
@@ -853,7 +853,7 @@ compMakeCategoryObject(c,$e) ==
   u:= mkEvalableCategoryForm c => [eval u,$Category,$e]
   nil
 
-predicatesFromAttributes: %List -> %List
+predicatesFromAttributes: %List %Form -> %List %Form
 predicatesFromAttributes attrList ==
   removeDuplicates [second x for x in attrList]
 
@@ -1155,7 +1155,7 @@ genDomainView(viewName,originalName,c,viewSelector) ==
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
 
-genDomainViewList: (%Symbol,%List) -> %List 
+genDomainViewList: (%Symbol,%List %Form) -> %List %Code
 genDomainViewList(id,catlist) ==
   [genDomainView(id,id,cat,"getDomainView") 
      for cat in catlist | isCategoryForm(cat,$EmptyEnvironment)]
@@ -1928,7 +1928,7 @@ mustInstantiate D ==
   D is [fn,:.] and 
     not (symbolMember?(fn,$DummyFunctorNames) or GET(fn,"makeFunctionList"))
 
-wrapDomainSub: (%List, %Form) -> %Form 
+wrapDomainSub: (%List %Form, %Form) -> %Form 
 wrapDomainSub(parameters,x) ==
    ["DomainSubstitutionMacro",parameters,x]
  

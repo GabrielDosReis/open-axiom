@@ -705,7 +705,7 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
 ++ Returns the `conceptual' type of `type', e.g., the type of type in
 ++ the abstract semantics, not necessarily the one from implementation
 ++ point of view.
-conceptualType: %Thing -> %List
+conceptualType: %Thing -> %Mode
 conceptualType type ==
   isPartialMode type => $Mode
   member(type,[$Mode,$Domain,$Category]) => $Type
