@@ -82,15 +82,15 @@ getVMType d ==
     IntegerMod => "%Integer"
     DoubleFloat => "%DoubleFloat"
     String => "%String"
-    List => "%List"
+    List => ["%List",getVMType second d']
     Vector => ["%Vector",getVMType second d']
     PrimitiveArray => ["%SimpleArray", getVMType second d']
-    Pair => "%Pair"
-    Union => "%Pair"
+    Pair => ["%Pair",getVMType second d',getVMType third d']
+    Union => ["%Pair",'%Thing,'%Thing]
     Record =>
       #rest d' > 2 => "%Shell"
-      "%Pair"
-    IndexedList => "%List"
+      ["%Pair",'%Thing,'%Thing]
+    IndexedList => ["%List", getVMType second d']
     Int8 => ["SIGNED-BYTE", 8]
     Int16 => ["SIGNED-BYTE", 16]
     Int32 => ["SIGNED-BYTE", 32]
@@ -117,7 +117,6 @@ functionp f ==
   function? f
 
 ++ remove `item' from `sequence'.
-delete: (%Thing,%Sequence) -> %Sequence
 delete(item,sequence) ==
   symbol? item => 
     REMOVE(item,sequence,KEYWORD::TEST,function sameObject?)
@@ -154,7 +153,7 @@ ASSOCRIGHT x ==
 
 ++ Put the association list pair `(x . y)' into `l', erasing any 
 ++ previous association for `x'.
-ADDASSOC: (%Thing,%Thing,%List) -> %List
+ADDASSOC: (%Thing,%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 ADDASSOC(x,y,l) ==
   atom l => [[x,:y],:l]
   x = first first l => [[x,:y],:rest l]
@@ -162,7 +161,7 @@ ADDASSOC(x,y,l) ==
 
 
 ++ Remove any assocation pair `(u . x)' from list `v'.
-DELLASOS: (%Thing,%List) -> %List
+DELLASOS: (%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 DELLASOS(u,v) ==
   atom v => nil
   u = first first v => rest v
@@ -171,14 +170,14 @@ DELLASOS(u,v) ==
 
 ++ Return the datum associated with key `x' in association list `y'.
 -- ??? Should not this be named `alistValue'?
-LASSOC: (%Thing,%List) -> %Thing
+LASSOC: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 LASSOC(x,y) ==
   atom y => nil
   x = first first y => rest first y
   LASSOC(x,rest y)
 
 ++ Return the key associated with datum `x' in association list `y'.
-rassoc: (%Thing,%List) -> %Thing
+rassoc: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 rassoc(x,y) ==
   atom y => nil
   x = rest first y => first first y

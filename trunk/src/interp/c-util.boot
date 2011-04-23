@@ -39,7 +39,7 @@ namespace BOOT
 module c_-util where
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
-  foldExportedFunctionReferences: %List -> %List
+  foldExportedFunctionReferences: %List %Form -> %List %Form
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: %Code -> %Code
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
@@ -143,7 +143,7 @@ isTupleInstance t ==
 
 ++ Returns true if the signature `sig' describes a function that can
 ++ accept a homogeneous variable length argument list.
-isHomoegenousVarargSignature: %Signature -> %Boolean
+isHomoegenousVarargSignature: %Sig -> %Boolean
 isHomoegenousVarargSignature sig ==
   #sig = 1 and isTupleInstance first sig
 
@@ -151,13 +151,13 @@ isHomoegenousVarargSignature sig ==
 ++ parameter type list `sig'.  This means that either the number
 ++ of arguments is exactly the number of parameters, or that the
 ++ signature describes a homogeneous vararg operation.
-enoughArguments: (%List,%Signature) -> %Boolean
+enoughArguments: (%List %Form,%Sig) -> %Boolean
 enoughArguments(args,sig) ==
   #args = #sig or isHomoegenousVarargSignature sig
 
 ++ Returns true if the operation described by the signature `sig'
 ++ wants its arguments as a Tuple object.
-wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
+wantArgumentsAsTuple: (%List %Form,%Sig) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
@@ -1129,11 +1129,11 @@ clearReplacement name ==
 registerFunctionReplacement(name,body) ==
   LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
 
-eqSubstAndCopy: (%List, %List, %Form) -> %Form
+eqSubstAndCopy: (%List %Form, %List %Symbol, %Form) -> %Form
 eqSubstAndCopy(args,parms,body) ==
   SUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
-eqSubst: (%List, %List, %Form) -> %Form
+eqSubst: (%List %Form, %List %Symbol, %Form) -> %Form
 eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
@@ -1319,7 +1319,7 @@ proclaimCapsuleFunction(op,sig) ==
         [first d, :[normalize(first args,false) for args in tails rest d]]
 
 ++ Lisp back end compiler for ILAM with `name', formal `args', and `body'.
-backendCompileILAM: (%Symbol,%List, %Code) -> %Symbol
+backendCompileILAM: (%Symbol,%List %Symbol, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
   args' := NLIST(#args, ["GENSYM"])
   body' := eqSubst(args',args,body)
@@ -1351,7 +1351,7 @@ backendCompileNEWNAM x ==
 ++ its values are cached, so that equal lists of argument values
 ++ yield equal values.  The arguments-value pairs are stored
 ++ as alists.
-backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
+backendCompileSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
   al := mkCacheName name        -- name of the cache alist.
   auxfn := INTERNL(name,'";")   -- name of the worker function.
@@ -1383,7 +1383,7 @@ backendCompileSLAM(name,args,body) ==
 
 ++ Same as backendCompileSLAM, except that the cache is a hash
 ++ table.  This backend compiler is used to compile constructors.
-backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
+backendCompileSPADSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
   al := mkCacheName name       -- name of the cache hash table.
   auxfn := INTERNL(name,'";")  -- name of the worker function.
@@ -1450,7 +1450,7 @@ $SpecialVars := []
 
 
 ++ push `x' into the list of local variables.
-pushLocalVariable: %Symbol -> %List
+pushLocalVariable: %Symbol -> %List %Symbol
 pushLocalVariable x ==
   p := symbolName x
   x ~= "$" and stringChar(p,0) = char "$" and
@@ -1519,21 +1519,21 @@ massageBackendCode x ==
   massageBackendCode rest x
 
 
-skipDeclarations: %List -> %List
+skipDeclarations: %List %Code -> %List %Code
 skipDeclarations form ==
   while first form is ["DECLARE",:.] repeat
     form := rest form
   form
 
 ++ return the last node containing a declaration in form, otherwise nil.
-lastDeclarationNode: %List -> %List
+lastDeclarationNode: %List %Code -> %List %Code
 lastDeclarationNode form ==
   while second form is ["DECLARE",:.] repeat
      form := rest form
   first form is ["DECLARE",:.] => form
   nil
 
-declareGlobalVariables: %List -> %List
+declareGlobalVariables: %List %Symbol -> %Code
 declareGlobalVariables vars ==
   ["DECLARE",["SPECIAL",:vars]]
 

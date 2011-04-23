@@ -55,64 +55,37 @@ $constantIdentifiers := nil
 ++ namespace definition.
 $activeNamespace := nil
 
---% Basic types used in Boot codes.
-
-%Thing <=> true
-
-%Boolean <=> BOOLEAN
-
-%String <=> STRING
-
-%Symbol <=> SYMBOL
-
-%Short <=> FIXNUM
-
-++ Ideally, we would like to say that a List T if either nil or a 
-++ cons of a T and List of T. 
-%List <=> LIST
-
-%Vector <=> VECTOR
-
-%Sequence <=> SEQUENCE
-
-++ Currently, the Boot processor uses Lisp symbol datatype for names.
-++ That causes the BOOTTRAN package to contain more symbols than we would
-++ like.  In the future, we want to intern `on demand'.  How that
-++ interacts with renaming is to be worked out.
-structure %Name == 
-  %Name(%Symbol)
-
 structure %Ast ==
   %Command(%String)                     -- includer command
   %Lisp(%String)                        -- )lisp command
-  %Module(%Name,%List,%List)            -- module declaration
-  %Namespace(%Name)                     -- namespace AxiomCore
-  %Import(%String)                      -- import module
-  %ImportSignature(%Name,%Signature)    -- import function declaration
+  %Module(%Symbol,%List,%List)          -- module declaration
+  %Namespace(%Symbol)                   -- namespace AxiomCore
+  %Import(%Symbol)                      -- import module
+  %ImportSignature(%Symbol,%Signature)  -- import function declaration
   %TypeAlias(%Head, %List)              -- type alias definition
-  %Signature(%Name,%Mapping)            -- op: S -> T
+  %Signature(%Symbol,%Mapping)          -- op: S -> T
   %Mapping(%Ast, %List)                 -- (S1, S2) -> T
   %SuffixDot(%Ast)                      -- x . 
   %Quote(%Ast)                          -- 'x
-  %EqualName(%Name)                     -- =x        -- patterns
-  %Colon(%Name)                         -- :x
-  %QualifiedName(%Name,%Name)           -- m::x
-  %DefaultValue(%Name,%Ast)             -- opt. value for function param.
+  %EqualPattern(%Ast)                   -- =x        -- patterns
+  %Colon(%Symbol)                       -- :x
+  %QualifiedName(%Symbol,%Symbol)       -- m::x
+  %DefaultValue(%Symbol,%Ast)           -- opt. value for function param.
   %Bracket(%Ast)                        -- [x, y]
   %UnboundedSegment(%Ast)               -- 3..
   %BoundedSgement(%Ast,%Ast)            -- 2..4
-  %Tuple(%List)                         -- comma-separated expression sequence
+  %Tuple(%List)                         -- a, b, c, d
   %ColonAppend(%Ast,%Ast)               -- [:y] or [x, :y]
   %Pretend(%Ast,%Ast)                   -- e : t     -- hard coercion
   %Is(%Ast,%Ast)                        -- e is p    -- patterns
   %Isnt(%Ast,%Ast)                      -- e isnt p  -- patterns
   %Reduce(%Ast,%Ast)                    -- +/[...]
-  %PrefixExpr(%Name,%Ast)               -- #v
+  %PrefixExpr(%Symbol,%Ast)             -- #v
   %Call(%Ast,%Sequence)                 -- f(x, y , z)
-  %InfixExpr(%Name,%Ast,%Ast)           -- x + y
-  %ConstantDefinition(%Name,%Ast)       -- x == y
-  %Definition(%Name,%Ast,%Ast)          -- f x == y
-  %Macro(%Name,%List,%Ast)              -- m x ==> y
+  %InfixExpr(%Symbol,%Ast,%Ast)         -- x + y
+  %ConstantDefinition(%Symbol,%Ast)     -- x == y
+  %Definition(%Symbol,%Ast,%Ast)        -- f x == y
+  %Macro(%Symbol,%List,%Ast)            -- m x ==> y
   %Lambda(%List,%Ast)                   -- x +-> x**2
   %SuchThat(%Ast)                       -- | p
   %Assignment(%Ast,%Ast)                -- x := y
@@ -151,7 +124,7 @@ bfGenSymbol()==
     $GenVarCounter := $GenVarCounter+1
     makeSymbol strconc('"bfVar#",toString $GenVarCounter)
 
-bfColon: %Thing -> %List
+bfColon: %Thing -> %Form
 bfColon x== 
   ["COLON",x]
 
@@ -171,11 +144,11 @@ bfDot: () -> %Symbol
 bfDot() == 
   "DOT"
  
-bfSuffixDot: %Thing -> %List
+bfSuffixDot: %Form -> %Form
 bfSuffixDot x ==
   [x,"DOT"]
 
-bfEqual: %Thing -> %List 
+bfEqual: %Form -> %Form
 bfEqual(name) == 
   ["EQUAL",name]
 
@@ -183,15 +156,15 @@ bfBracket: %Thing -> %Thing
 bfBracket(part) == 
   part
  
-bfPile: %List -> %List
+bfPile: %List %Form -> %List %Form
 bfPile(part) == 
   part
  
-bfAppend: %List -> %List
+bfAppend: %List %Form -> %Form
 bfAppend x== 
   apply(function append,x)
  
-bfColonAppend: (%List,%Thing) -> %List
+bfColonAppend: (%List %Form,%Form) -> %Form
 bfColonAppend(x,y) ==
   x = nil => 
     y is ["BVQUOTE",:a] => ["&REST",["QUOTE",:a]]
@@ -305,16 +278,30 @@ bfINON x==
  
 bfIN(x,E)==
   g := bfGenSymbol()
-  [[[g,x],[E,nil],[['SETQ,g,['CDR, g]]],[],
-      [['OR,['ATOM,g],['PROGN,['SETQ,x,['CAR,g]] ,'NIL]]],[]]]
+  vars := [g]
+  inits := [E]
+  exitCond := ['ATOM,g]
+  if x isnt "DOT" then
+    vars := [:vars,x]
+    inits := [:inits,nil]
+    exitCond := ['OR,exitCond,['PROGN,['SETQ,x,['CAR,g]] ,'NIL]]
+  [[vars,inits,[['SETQ,g,['CDR, g]]],[],[exitCond],[]]]
  
 bfON(x,E)==
-  [[[x],[E],[['SETQ,x,['CDR, x]]],[],
-      [['ATOM,x]],[]]]
+  if x is "DOT" then
+    x := bfGenSymbol()
+  -- allow a list variable to iterate over its own tails.
+  var := init := nil
+  if not symbol? E or not symbolEq?(x,E) then
+    var := [x]
+    init := [E]
+  [[var,init,[['SETQ,x,['CDR, x]]],[],[['ATOM,x]],[]]]
  
-bfSuchthat p== [[[],[],[],[p],[],[]]]
+bfSuchthat p ==
+  [[[],[],[],[p],[],[]]]
  
-bfWhile p== [[[],[],[],[],[bfNOT p],[]]]
+bfWhile p ==
+  [[[],[],[],[],[bfNOT p],[]]]
  
 bfUntil p==
      g:=bfGenSymbol()
@@ -1126,29 +1113,29 @@ bfMain(auxfn,op)==
            ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]]]
 
 
-bfNameOnly: %Thing -> %List 
+bfNameOnly: %Thing -> %Form
 bfNameOnly x==
   x="t" => ["T"]
   [x]
 
-bfNameArgs: (%Thing,%Thing) -> %List 
+bfNameArgs: (%Thing,%Thing) -> %List %Form
 bfNameArgs (x,y)==
   y :=
     y is ["TUPLE",:.] => rest y
     [y]
   [x,:y]
  
-bfCreateDef: %Thing -> %List
+bfCreateDef: %Thing -> %Form
 bfCreateDef x==
   x is [f] => ["DEFCONSTANT",f,["LIST",["QUOTE",f]]]
   a := [bfGenSymbol() for i in rest x]
   ["DEFUN",first x,a,["CONS",["QUOTE",first x],["LIST",:a]]]
 
-bfCaseItem: (%Thing,%Thing) -> %List 
+bfCaseItem: (%Thing,%Thing) -> %Form
 bfCaseItem(x,y) ==
   [x,y]
 
-bfCase: (%Thing,%Thing) -> %List
+bfCase: (%Thing,%Thing) -> %Form
 bfCase(x,y)==
   -- Introduce a temporary to hold the value of the scrutinee.
   -- To minimize the number of GENSYMS and assignments, we want
@@ -1160,11 +1147,11 @@ bfCase(x,y)==
   sameObject?(g,x) => body
   ["LET",[[g,x]],body]
 
-bfCaseItems: (%Thing,%List) -> %List 
+bfCaseItems: (%Thing,%List %Form) -> %List %Form
 bfCaseItems(g,x) ==  
   [bfCI(g,i,j) for [i,j] in x]
 
-bfCI: (%Thing,%Thing,%Thing) -> %List 
+bfCI: (%Thing,%Thing,%Thing) -> %Form
 bfCI(g,x,y)==
   a := rest x
   a = nil => [first x,y]
@@ -1172,7 +1159,7 @@ bfCI(g,x,y)==
   b = nil => [first x,y]
   [first x,["LET",b,y]]
 
-bfCARCDR: (%Short,%Thing) -> %List 
+bfCARCDR: (%Short,%Thing) -> %Form
 bfCARCDR(n,g) ==
   [makeSymbol strconc('"CA",bfDs n,'"R"),g]
 
@@ -1201,7 +1188,7 @@ codeForCatchHandlers(g,e,cs) ==
     ["COND",[ehTest,bfHandlers(g,["CDR",g],cs)],[true,g]]]
 
 ++ Generate code for try-catch expressions.
-bfTry: (%Thing,%List) -> %Thing
+bfTry: (%Thing,%List %Form) -> %Thing
 bfTry(e,cs) ==
   g := gensym()
   cs is [:cs',f] and f is ['%Finally,s] =>

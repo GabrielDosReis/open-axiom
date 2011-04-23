@@ -40,8 +40,8 @@ namespace BOOT
 module g_-util where
   atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
-  pairList: (%List,%List) -> %List
-  mkList: %List -> %List
+  pairList: (%List %Form,%List %Form) -> %List %Pair(%Form.%Form)
+  mkList: %List %Form -> %Form
   isSubDomain: (%Mode,%Mode) -> %Form
   usedSymbol?: (%Symbol,%Code) -> %Boolean
   isDefaultPackageName: %Symbol -> %Boolean
@@ -212,9 +212,9 @@ ScanOrPairVec(f, ob) ==
 
 
 ++ Query properties for an entity in a given environment.
-get: (%Thing,%Symbol,%List) -> %Thing
-get0: (%Thing,%Symbol,%List) -> %Thing
-get1: (%Thing,%Symbol,%List) -> %Thing
+get: (%Thing,%Symbol,%Env) -> %Thing
+get0: (%Thing,%Symbol,%Env) -> %Thing
+get1: (%Thing,%Symbol,%Env) -> %Thing
 get2: (%Thing,%Symbol) -> %Thing
 
 get(x,prop,e) ==
@@ -244,13 +244,13 @@ get2(x,prop) ==
 
 ++ Update properties of an entity in an environment.
 put: (%Thing,%Symbol,%Thing,%Env) -> %Env
-addBinding: (%Thing,%List,%Env) -> %Env
-addBindingInteractive: (%Thing, %List, %Env) -> %Env
-augProplistOf: (%Thing,%Symbol,%Thing,%Env) -> %List
-augProplist: (%List,%Symbol,%Thing) -> %List
-augProplistInteractive: (%List,%Symbol,%Thing) -> %List
+addBinding: (%Thing,%List %Thing,%Env) -> %Env
+addBindingInteractive: (%Thing, %List %Thing, %Env) -> %Env
+augProplistOf: (%Thing,%Symbol,%Thing,%Env) -> %List %Thing
+augProplist: (%List %Thing,%Symbol,%Thing) -> %List %Thing
+augProplistInteractive: (%List %Thing,%Symbol,%Thing) -> %List %Thing
 putIntSymTab: (%Thing,%Symbol,%Form,%Env) -> %Env
-addIntSymTabBinding: (%Thing,%List,%Env) -> %Env
+addIntSymTabBinding: (%Thing,%List %Thing,%Env) -> %Env
 
 put(x,prop,val,e) ==
   $InteractiveMode and not sameObject?(e,$CategoryFrame) =>
@@ -672,10 +672,10 @@ opOf x ==
   cons? x => x.op
   x
 
-getProplist: (%Thing,%Env) -> %List
-search: (%Thing,%Env) -> %List
-searchCurrentEnv: (%Thing,%List) -> %List
-searchTailEnv: (%Thing,%Env) -> %List
+getProplist: (%Thing,%Env) -> %List %Thing
+search: (%Thing,%Env) -> %List %Thing
+searchCurrentEnv: (%Thing,%List %Thing) -> %List %Thing
+searchTailEnv: (%Thing,%Env) -> %List %Thing
 
 getProplist(x,E) ==
   cons? x => getProplist(first x,E)

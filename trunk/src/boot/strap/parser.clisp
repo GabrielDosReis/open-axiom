@@ -506,24 +506,23 @@
        (|bpLogical|) (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSignature| ()
-  (AND (|bpName|) (|bpEqKey| 'COLON) (|bpMapping|)
+  (AND (|bpName|) (|bpEqKey| 'COLON) (|bpTyping|)
        (|bpPush| (|%Signature| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSimpleMapping| ()
   (COND
     ((|bpApplication|)
      (AND (|bpEqKey| 'ARROW) (OR (|bpApplication|) (|bpTrap|))
-          (|bpPush| (|%Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
+          (|bpPush| (|%Mapping| (|bpPop1|) (LIST (|bpPop1|)))))
      T)
     (T NIL)))
 
 (DEFUN |bpArgtypeList| () (|bpTuple| #'|bpApplication|))
 
 (DEFUN |bpMapping| ()
-  (OR (AND (|bpParenthesized| #'|bpArgtypeList|) (|bpEqKey| 'ARROW)
-           (|bpApplication|)
-           (|bpPush| (|%Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
-      (|bpSimpleMapping|)))
+  (AND (|bpParenthesized| #'|bpArgtypeList|) (|bpEqKey| 'ARROW)
+       (|bpApplication|)
+       (|bpPush| (|%Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|))))))
 
 (DEFUN |bpCancel| ()
   (PROG (|a|)
@@ -633,15 +632,7 @@
                 (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
            T)))
 
-(DEFUN |bpTyping| ()
-  (OR (AND (|bpApplication|)
-           (OR (AND (|bpEqKey| 'ARROW)
-                    (OR (|bpApplication|) (|bpTrap|))
-                    (|bpPush|
-                        (|%Mapping| (|bpPop1|)
-                            (|bfUntuple| (|bpPop1|)))))
-               T))
-      (|bpMapping|)))
+(DEFUN |bpTyping| () (OR (|bpMapping|) (|bpSimpleMapping|)))
 
 (DEFUN |bpTagged| ()
   (AND (|bpApplication|)
@@ -852,8 +843,10 @@
 
 (DEFUN |bpUntil| () (|bpAndOr| 'UNTIL #'|bpLogical| #'|bfUntil|))
 
+(DEFUN |bpFormal| () (OR (|bpVariable|) (|bpDot|)))
+
 (DEFUN |bpForIn| ()
-  (AND (|bpEqKey| 'FOR) (OR (|bpVariable|) (|bpTrap|))
+  (AND (|bpEqKey| 'FOR) (OR (|bpFormal|) (|bpTrap|))
        (|bpCompMissing| 'IN)
        (OR (AND (OR (|bpSeg|) (|bpTrap|)) (|bpEqKey| 'BY)
                 (OR (|bpArith|) (|bpTrap|))

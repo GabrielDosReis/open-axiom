@@ -35,9 +35,9 @@ import vmlisp
 namespace BOOT
 module astr where
   ncTag: %Thing -> %Symbol
-  ncAlist: %Thing -> %List
-  ncEltQ: (%List,%Thing) -> %Thing
-  ncPutQ: (%List,%Thing,%Thing) -> %Thing
+  ncAlist: %Thing -> %List %Thing
+  ncEltQ: (%List %Thing,%Thing) -> %Thing
+  ncPutQ: (%List %Thing,%Thing,%Thing) -> %Thing
 
 --% Attributed Structures (astr)
 -- For objects which are pairs where the first field is either just a tag

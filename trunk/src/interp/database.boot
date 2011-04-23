@@ -57,109 +57,109 @@ pathToDatabase name ==
 
 --%
 
-getConstructorAbbreviationFromDB: %Symbol -> %Symbol
+getConstructorAbbreviationFromDB: %Constructor -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
   GETDATABASE(ctor,"ABBREVIATION")
 
-getConstructorCategoryFromDB: %Symbol -> %Form
+getConstructorCategoryFromDB: %Constructor -> %Form
 getConstructorCategoryFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
 
-getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
+getConstructorKindFromDB: %Constructor -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORKIND")
 
-getConstructorAncestorsFromDB: %Symbol -> %List
+getConstructorAncestorsFromDB: %Constructor -> %List %Constructor
 getConstructorAncestorsFromDB ctor ==
   GETDATABASE(ctor,"ANCESTORS")
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
-getConstructorModemapFromDB: %Symbol -> %Mode
+getConstructorModemapFromDB: %Constructor -> %Mode
 getConstructorModemapFromDB form ==
   GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
  
-getConstructorFormFromDB: %Symbol -> %Form
+getConstructorFormFromDB: %Constructor -> %Form
 getConstructorFormFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORFORM")
 
-getConstructorSourceFileFromDB: %Symbol -> %Maybe %String
+getConstructorSourceFileFromDB: %Constructor -> %Maybe %String
 getConstructorSourceFileFromDB ctor ==
   GETDATABASE(ctor,"SOURCEFILE")
 
-getConstructorModuleFromDB: %Symbol -> %Maybe %String
+getConstructorModuleFromDB: %Constructor -> %Maybe %String
 getConstructorModuleFromDB ctor ==
   GETDATABASE(ctor,"OBJECT")
 
-getConstructorDocumentationFromDB: %Symbol -> %List
+getConstructorDocumentationFromDB: %Constructor -> %List %Form
 getConstructorDocumentationFromDB ctor ==
   GETDATABASE(ctor,"DOCUMENTATION")
 
-getConstructorOperationsFromDB: %Symbol -> %List
+getConstructorOperationsFromDB: %Constructor -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
   GETDATABASE(ctor,"OPERATIONALIST")
 
-getConstructorFullNameFromDB: %Symbol -> %Symbol
+getConstructorFullNameFromDB: %Symbol -> %Constructor
 getConstructorFullNameFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTOR")
 
-getConstructorArgsFromDB: %Symbol -> %List
+getConstructorArgsFromDB: %Constructor -> %List %Symbol
 getConstructorArgsFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORARGS")
 
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
-getDualSignatureFromDB: %Symbol -> %Form
+getDualSignatureFromDB: %Constructor -> %Form
 getDualSignatureFromDB ctor ==
   GETDATABASE(ctor,"COSIG")
 
-getConstructorPredicatesFromDB: %Symbol -> %Thing
+getConstructorPredicatesFromDB: %Constructor -> %Thing
 getConstructorPredicatesFromDB ctor ==
   GETDATABASE(ctor,"PREDICATES")
 
-getConstructorParentsFromDB: %Symbol -> %List
+getConstructorParentsFromDB: %Constructor -> %List %Constructor
 getConstructorParentsFromDB ctor ==
   GETDATABASE(ctor,"PARENTS")
 
-getSuperDomainFromDB: %Symbol -> %Form
+getSuperDomainFromDB: %Constructor -> %Form
 getSuperDomainFromDB ctor ==
   GETDATABASE(ctor,"SUPERDOMAIN")
 
-getConstructorAttributesFromDB: %Symbol -> %Form
+getConstructorAttributesFromDB: %Constructor -> %Form
 getConstructorAttributesFromDB ctor ==
   GETDATABASE(ctor,"ATTRIBUTES")
 
-niladicConstructorFromDB: %Symbol -> %Boolean
+niladicConstructorFromDB: %Constructor -> %Boolean
 niladicConstructorFromDB ctor ==
   GETDATABASE(ctor,"NILADIC")
 
-asharpConstructorFromDB: %Symbol -> %Maybe %Symbol
+asharpConstructorFromDB: %Constructor -> %Maybe %Symbol
 asharpConstructorFromDB ctor ==
   GETDATABASE(ctor,"ASHARP?")
 
-constructorHasCategoryFromDB: %Pair -> %Thing
+constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
 constructorHasCategoryFromDB p ==
   GETDATABASE(p,"HASCATEGORY")
 
-getConstructorDefaultFromDB: %Symbol -> %Maybe %Symbol
+getConstructorDefaultFromDB: %Constructor -> %Maybe %Symbol
 getConstructorDefaultFromDB ctor ==
   GETDATABASE(ctor,"DEFAULTDOMAIN")
 
-getOperationFromDB: %Symbol -> %List
+getOperationFromDB: %Symbol -> %List %Sig
 getOperationFromDB op ==
   GETDATABASE(op,"OPERATION")
 
-getOperationModemapsFromDB: %Symbol -> %List
+getOperationModemapsFromDB: %Symbol -> %List %Modemap
 getOperationModemapsFromDB op ==
   GETDATABASE(op,"MODEMAPS")
 
 
-getConstructorArity: %Symbol -> %Short
+getConstructorArity: %Constructor -> %Short
 getConstructorArity ctor ==
   sig := getConstructorSignature ctor => #rest sig
   -1
 
-getConstructorKind: %Symbol -> %Maybe %ConstructorKind
+getConstructorKind: %Constructor -> %Maybe %ConstructorKind
 getConstructorKind ctor ==
   kind := getConstructorKindFromDB ctor =>
     kind = "domain" and isDefaultPackageName ctor => "package"
@@ -785,12 +785,12 @@ displayHiddenConstructors() ==
 
 ++ Return the list of modemaps exported by the category object `c'.
 ++ The format of modemap is as found in category objects.
-getCategoryExports: %Shell -> %List
+getCategoryExports: %Shell -> %List %Modemap
 getCategoryExports c == c.1
 
 ++ Return the list of category attribute info for the category object `c'.
 ++ A category attribute info is pair of attribute-predicate.
-getCategoryAttributes: %Shell -> %List
+getCategoryAttributes: %Shell -> %List %Form
 getCategoryAttributes c == c.2
 
 
@@ -800,7 +800,7 @@ getCategoryParents c == c.4.1
 
 
 --%
-squeezeAll: %List -> %List
+squeezeAll: %List %Code -> %List %Code
 squeezeAll x ==
   [SQUEEZE t for t in x]
 

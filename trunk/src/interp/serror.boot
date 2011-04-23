@@ -37,20 +37,20 @@ namespace BOOT
 --% Functions to handle specific errors (mostly syntax)
  
 
-syGeneralErrorHere: () -> %Thing
+syGeneralErrorHere: () -> %Void
 syGeneralErrorHere() ==
    sySpecificErrorHere('S2CY0002, [])
  
-sySpecificErrorHere: (%Symbol,%List) -> %Thing
+sySpecificErrorHere: (%Symbol,%List %Form) -> %Void
 sySpecificErrorHere(key,args) ==
    sySpecificErrorAtToken($stok, key, args)
  
-sySpecificErrorAtToken: (%Thing,%Symbol,%List) -> %Thing
+sySpecificErrorAtToken: (%Thing,%Symbol,%List %Form) -> %Void
 sySpecificErrorAtToken(tok,key,args) ==
    pos := tokPosn tok
    ncSoftError(pos, key, args)
  
-syIgnoredFromTo: (%List,%List) -> %Thing
+syIgnoredFromTo: (%List %Form,%List %Form) -> %Void
 syIgnoredFromTo(pos1, pos2) ==
   if pfGlobalLinePosn pos1 = pfGlobalLinePosn pos2 then
       ncSoftError(FromTo(pos1,pos2), 'S2CY0005, [])
@@ -58,7 +58,7 @@ syIgnoredFromTo(pos1, pos2) ==
       ncSoftError(From pos1, 'S2CY0003, [])
       ncSoftError(To   pos2, 'S2CY0004, [])
  
-npTrapForm: %Thing -> %Thing
+npTrapForm: %Thing -> %Void
 npTrapForm(x)==
    a:=pfSourceStok x
    a='NoToken =>

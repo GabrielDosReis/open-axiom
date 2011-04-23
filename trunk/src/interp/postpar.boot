@@ -39,11 +39,11 @@ module postpar
 
 ++ The type of parse trees.
 %ParseTree <=> 
-  %Number or %Symbol or %String or %Pair
+  %Number or %Symbol or %String or %Pair(%Thing,%Thing)
 
 ++ The result of processing a parse tree.
 %ParseForm <=>
-  %Number or %Symbol or %String or %Pair
+  %Number or %Symbol or %String or %Pair(%Thing,%Thing)
 
 $postStack := []
 
@@ -92,7 +92,7 @@ postTran x ==
   op ~= (y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
-postTranList: %List -> %List
+postTranList: %List %ParseTree -> %List %ParseForm
 postTranList x == 
   [postTran y for y in x]
 
@@ -187,7 +187,7 @@ postBlock t ==
   t isnt ["%Block",:l,x] => systemErrorHere ["postBlock",t]
   ["SEQ",:postBlockItemList l,["exit",postTran x]]
 
-postBlockItemList: %List -> %List
+postBlockItemList: %List %ParseTree -> %List %ParseTree
 postBlockItemList l == 
   [postBlockItem x for x in l]
 
@@ -241,7 +241,7 @@ postDef t ==
   specialCaseForm := [nil for x in form]
   ["DEF",newLhs,typeList,specialCaseForm,postTran rhs]
 
-postDefArgs: %List -> %List
+postDefArgs: %List %ParseTree -> %List %ParseForm
 postDefArgs argl ==
   null argl => argl
   argl is [[":",a],:b] =>
@@ -316,7 +316,7 @@ postQuote [.,a] ==
   ["QUOTE",a]
 
 
-postScriptsForm: (%ParseTree,%List) -> %ParseForm
+postScriptsForm: (%ParseTree,%List %ParseTree) -> %ParseForm
 postScriptsForm(t,argl) ==
   t isnt ["Scripts",op,a] => systemErrorHere ["postScriptsForm",t]
   [getScriptName(op,a,#argl),:postTranScripts a,:argl]
@@ -416,7 +416,7 @@ postTupleCollect t ==
   t isnt [constructOp,:m,x] => systemErrorHere ["postTupleCollect",t]
   postCollect [constructOp,:m,["construct",x]]
 
-postIteratorList: %List -> %List
+postIteratorList: %List %ParseTree -> %List %ParseForm
 postIteratorList x ==
   x is [p,:l] =>
     (p:= postTran p) is ["IN",y,u] =>

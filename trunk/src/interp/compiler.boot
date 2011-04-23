@@ -44,13 +44,13 @@ module compiler where
   comp: (%Form,%Mode,%Env) -> %Maybe %Triple
   compOrCroak: (%Form,%Mode,%Env) -> %Maybe %Triple
   compCompilerPredicate: (%Form,%Env) -> %Maybe %Triple
-  checkCallingConvention: (%List,%Short) -> %SimpleArray %Short
+  checkCallingConvention: (%List %Sig,%Short) -> %SimpleArray %Short
 
 
 --% 
 compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
 compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
-compNoStacking1: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compNoStacking1: (%Form,%Mode,%Env,%List %Thing) -> %Maybe %Triple
 compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -60,22 +60,22 @@ compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm2: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
-compForm3: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compForm2: (%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
+compForm3: (%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
 compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
-compWithMappingMode: (%Form,%Mode,%List) -> %List
-compFormMatch: (%Modemap,%List) -> %Boolean
+compWithMappingMode: (%Form,%Mode,%Env) -> %Maybe %Triple
+compFormMatch: (%Modemap,%List %Mode) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
-compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
-compApplication: (%Form,%List,%Mode,%Triple) -> %Maybe %Triple
+compToApply: (%Form,%List %Form,%Mode,%Env) -> %Maybe %Triple
+compApplication: (%Form,%List %Form,%Mode,%Triple) -> %Maybe %Triple
 
-primitiveType: %Thing -> %Mode
+primitiveType: %Form -> %Mode
 modeEqual: (%Form,%Form) -> %Boolean
 hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
-getFormModemaps: (%Form,%Env) -> %List
-reshapeArgumentList: (%Form,%Signature) -> %Form
-applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+getFormModemaps: (%Form,%Env) -> %List %Modemap
+reshapeArgumentList: (%Form,%Sig) -> %Form
+applyMapping: (%Form,%Mode,%Env,%List %Mode) -> %Maybe %Triple
 
 
 ++ A list of routines for diagnostic reports.  These functions, in an
@@ -208,7 +208,7 @@ compTypeOf(x:=[op,:argl],m,e) ==
 ++ We just determined that `op' is called with argument list `args', where
 ++  `op' is either a local capsule function, or an external function 
 ++ with a local signature-import declaration.  Emit insn for the call.
-emitLocalCallInsn: (%Symbol,%List,%Env) -> %Code
+emitLocalCallInsn: (%Symbol,%List %Code,%Env) -> %Code
 emitLocalCallInsn(op,args,e) ==
   op' :=          -- Find out the linkage name for `op'.
     get(op,"%Link",e) or encodeLocalFunctionName op
@@ -382,7 +382,7 @@ compExpression(x,m,e) ==
 
 ++ Subroutine of compAtom.
 ++ Elaborate use of an overloaded constant.
-compAtomWithModemap: (%Symbol,%Mode,%Env,%List) -> %Maybe %Triple
+compAtomWithModemap: (%Symbol,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,mmList) ==
   -- 1. Get out of here f `x' cannot possibly be a constant.
   mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
@@ -772,8 +772,8 @@ compCons1(["CONS",x,y],m,e) ==
 
 --% SETQ
 
-compSetq: (%List,%Thing,%List) -> %List
-compSetq1: (%Form,%Thing,%Mode,%List) -> %List
+compSetq: (%Instantiation,%Mode,%Env) -> %Maybe %Triple
+compSetq1: (%Form,%Form,%Mode,%Env) -> %Maybe %Triple
 
 compSetq(["%LET",form,val],m,E) == 
   compSetq1(form,val,m,E)
@@ -901,7 +901,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 ++ ??? based on the meta operator, e.g. (DEF ...) would be a
 ++ DefinitionAst, etc.  That however requires that we have a full
 ++ fledged AST algebra -- which we don't have yet in mainstream.
-compileQuasiquote: (%List,%Thing,%List) -> %List
+compileQuasiquote: (%Instantiation,%Mode,%Env) -> %Maybe %Triple
 compileQuasiquote(["[||]",:form],m,e) ==
   null form => nil
   coerce([["QUOTE", :form],$Syntax,e], m)
@@ -1012,8 +1012,8 @@ compMacro(form,m,e) ==
 --% SEQ
 
 compSeq: (%Form,%Mode,%Env) -> %Maybe %Triple
-compSeq1: (%Form,%List,%Env) -> %Maybe %Triple
-compSeqItem: (%Thing,%Thing,%List) -> %List
+compSeq1: (%Form,%List %Thing,%Env) -> %Maybe %Triple
+compSeqItem: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 compSeq(["SEQ",:l],m,e) == 
   compSeq1(l,[m,:$exitModeStack],e)
@@ -1231,7 +1231,7 @@ compHasFormat (pred is ["has",olda,b]) ==
 --% IF
 
 compIf: (%Form,%Mode,%Env) -> %Maybe %Triple
-compPredicate: (%Form,%Env) -> %List
+compPredicate: (%Form,%Env) -> %Code
 compFromIf: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 compIf(["IF",a,b,c],m,E) ==
@@ -1935,7 +1935,7 @@ compMapCond'(cexpr,dc) ==
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
 
-compMapCond: (%Mode,%List) -> %Code
+compMapCond: (%Mode,%List %Code) -> %Code
 compMapCond(dc,[cexpr,fnexpr]) ==
   compMapCond'(cexpr,dc) => fnexpr
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])

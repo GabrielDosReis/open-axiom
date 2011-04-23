@@ -1,3 +1,15 @@
+2011-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Export basic types and compiler data types.
+	* interp/modemap.boot (knownInfo): Fix latent bug uncovered by
+	type declarations.
+	* boot/ast.boot: Remove type definitions.
+	(bfIN): Handle DOT as loop variable.
+	(bfON): Likewise.  Allow a loop variable to iterator over its own
+	tails. 
+	* boot/parser.boot (bfTyping): Simplify.
+	(bpSimpleMapping): Fix thinko.
+
 2011-04-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Don't translate setDifference.

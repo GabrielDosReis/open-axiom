@@ -3,7 +3,7 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,39 @@
   ;; Clozure CL sequesters most of its useful extensions, in particular
   ;; threads, in the CCL package.
   #+:clozure (:use "CCL")
-  (:export "coreQuit"
+  (:export "%Thing"
+	   "%Void"
+	   "%Boolean"
+	   "%String"
+	   "%Symbol"
+	   "%Short"
+	   "%Bit"
+	   "%Byte"
+	   "%Char"
+	   "%Bignum"
+	   "%Integer"
+	   "%Number"
+	   "%IntegerSection"
+	   "%SingleFloat"
+	   "%DoubleFloat"
+	   "%Atom"
+	   "%Maybe"
+	   "%Pair"
+	   "%List"
+	   "%Vector"
+	   "%BitVector"
+	   "%SimpleArray"
+
+	   ;; compiler data structures
+	   "%Mode"
+	   "%Sig"
+	   "%Code"
+	   "%Env"
+	   "%Form"
+	   "%Triple"
+	   "%Shell"
+
+	   "coreQuit"
            "fatalError"
            "internalError"
            "coreError"
@@ -119,6 +151,84 @@
 (in-package "AxiomCore")
 
 ;; 
+;; -*- Basic data types -*-
+;; 
+
+;; Type of nothing.  Bottom of the abstract machine type lattice.
+;; Since Lisp functions always returns something, we cannot
+;; use the `nil' type specifier (the ideal answer).  Second
+;; best possibility is to have Void-returning functions
+;; systematically return `nil'.  However, until the Lisp
+;; backend is fixed, we will use the interpretation that a
+;; Void-returning function may return anything, but nobody cares.
+;; Hence, the choice below which contradicts the very first line
+;; of this description.
+(deftype |%Void| () 't)
+
+(deftype |%Thing| () 't)
+
+(deftype |%Boolean| () 'boolean)
+
+(deftype |%String| () 'string)
+
+(deftype |%Symbol| () 'symbol)
+
+(deftype |%Short| () 'fixnum)
+
+(deftype |%Bit| () 'bit)
+
+(deftype |%Byte| () '(unsigned-byte 8))
+
+(deftype |%Char| () 'character)
+
+(deftype |%Bignum| () 'bignum)
+
+(deftype |%Integer| () 'integer)
+
+(deftype |%IntegerSection| (n) `(integer ,n))
+
+(deftype |%SingleFloat| ()
+  #+ :gcl 'short-float
+  #- :gcl 'single-float)
+
+(deftype |%DoubleFloat| () 'double-float)
+
+(deftype |%Number| () 'number)
+
+(deftype |%Atom| () 'atom)
+
+(deftype |%Maybe| (s) `(or null ,s))
+
+(deftype |%Pair| (u v)
+  (declare (ignore u v))
+  'cons)
+
+(deftype |%List| (s)
+  (declare (ignore s))
+  'list)
+
+(deftype |%SimpleArray| (s) `(simple-array ,s))
+
+(deftype |%Vector| (s) `(vector ,s))
+
+(deftype |%BitVector| () '(simple-array bit))
+
+(deftype |%Shell| () 'simple-vector)
+
+(deftype |%Mode| () '(or symbol string cons))
+
+(deftype |%Sig| () '(or symbol cons))
+
+(deftype |%Code| () '(or |%Form| |%Char|))
+
+(deftype |%Env| () '(or null cons))
+
+(deftype |%Form| () '(or number symbol string cons))
+
+(deftype |%Triple| () 
+  '(cons |%Code| (cons |%Mode| (cons |%Env| null))))
+
+;; 
 ;; -*- Configuration Constants -*-
 ;; 
 
@@ -149,7 +259,8 @@
 (proclaim '(optimize @oa_optimize_options@))
 
 ;; Enablig profiling of generated Lisp codes.
-(defconstant |$EnableLispProfiling| @oa_enable_profiling@)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (defconstant |$EnableLispProfiling| @oa_enable_profiling@))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
 	   (when |$EnableLispProfiling|

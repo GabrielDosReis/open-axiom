@@ -87,7 +87,7 @@ parseTypeList l ==
   l = nil => nil
   [parseType first l, :parseTypeList rest l]
 
-parseTranList: %List -> %List
+parseTranList: %List %Form -> %List %Form
 parseTranList l ==
   atom l => parseTran l
   [parseTran first l,:parseTranList rest l]
@@ -358,13 +358,13 @@ makeSimplePredicateOrNil p ==
   wrapSEQExit [["%LET",g:= gensym(),p],g]
  
 
-parseWhere: %List -> %Form
+parseWhere: %List %Form -> %Form
 parseWhere t == 
   t isnt ["where",:l] => systemErrorHere ["parseWhere",t]
   ["where",:parseTranList l]
  
  
-parseSeq: %List -> %Form
+parseSeq: %List %Form -> %Form
 parseSeq t ==
   t isnt ["SEQ",:l] => systemErrorHere ["parseSeq",t]
   l isnt [:.,["exit",:.]] =>
@@ -372,7 +372,7 @@ parseSeq t ==
   transSeq parseTranList l
  
 
-transSeq: %List -> %Form
+transSeq: %List %Form -> %Form
 transSeq l ==
   l = nil => nil
   l is [x] => decExitLevel x
@@ -412,7 +412,7 @@ transCategoryItem x ==
   [x]
  
 
-superSub: (%Symbol, %List) -> %Form
+superSub: (%Symbol, %List %Form ) -> %Form
 superSub(name,x) ==
   for u in x repeat y:= [:y,:u]
   code:=
@@ -420,22 +420,22 @@ superSub(name,x) ==
     strconc('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
   [INTERNL(symbolName name,"$",code),:y]
  
-scriptTran: %List -> %String
+scriptTran: %List %Form -> %String
 scriptTran x ==
   x = nil => '""
   strconc('";",scriptTranRow first x,scriptTran rest x)
  
-scriptTranRow: %List -> %String
+scriptTranRow: %List %Form -> %String
 scriptTranRow x ==
   x = nil => '""
   strconc($quadSymbol,scriptTranRow1 rest x)
 
-scriptTranRow1: %List -> %String 
+scriptTranRow1: %List %Form -> %String 
 scriptTranRow1 x ==
   x = nil => '""
   strconc('",",$quadSymbol,scriptTranRow1 rest x)
  
-parseVCONS: %List -> %Form
+parseVCONS: %List %Form -> %Form
 parseVCONS l == 
   ["VECTOR",:parseTranList rest l]
 
