@@ -1,5 +1,11 @@
 2011-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bf0APPEND): Remove.
+	(bf0COLLECT): Likewise.
+	(bfCollect): Tidy.
+
+2011-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Export basic types and compiler data types.
 	* interp/modemap.boot (knownInfo): Fix latent bug uncovered by
 	type declarations.
