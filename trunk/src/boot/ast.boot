@@ -371,7 +371,7 @@ bfCollect(y,itl) ==
   y is ["COLON",a] => bfListReduce('APPEND,['reverse,a],itl)
   y is ["TUPLE",:.] =>
     bfListReduce('APPEND,['reverse,bfConstruct y],itl)
-  bfListReduce('CONS,y,itl)
+  bfDoCollect(['CONS,y,'NIL],itl,'CDR)
  
 bfListReduce(op,y,itl)==
   g := bfGenSymbol()
@@ -379,6 +379,15 @@ bfListReduce(op,y,itl)==
   extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
   bfLp2(extrait,itl,body)
  
+bfDoCollect(expr,itl,adv) ==
+  head := bfGenSymbol()            -- pointer to the result
+  prev := bfGenSymbol()            -- pointer to the previous cell
+  body :=
+    ['COND,[['NULL,head],['SETQ,head,['SETQ,prev,expr]]],
+      ["T",bfMKPROGN [['RPLACD,prev,expr],['SETQ,prev,[adv,prev]]]]]
+  extrait := [[[head,prev],['NIL,'NIL],nil,nil,nil,[head]]]
+  bfLp2(extrait,itl,body)
+
 bfLp1(iters,body)==
   [vars,inits,sucs,filters,exits,value] := bfSep bfAppend iters
   nbody :=
