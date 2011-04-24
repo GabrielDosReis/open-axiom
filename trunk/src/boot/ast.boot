@@ -371,7 +371,7 @@ bfCollect(y,itl) ==
   y is ["COLON",a] => bfListReduce('APPEND,['reverse,a],itl)
   y is ["TUPLE",:.] =>
     bfListReduce('APPEND,['reverse,bfConstruct y],itl)
-  bfDoCollect(['CONS,y,'NIL],itl,'CDR)
+  bfDoCollect(['CONS,y,'NIL],itl,'CDR,nil)
  
 bfListReduce(op,y,itl)==
   g := bfGenSymbol()
@@ -379,12 +379,19 @@ bfListReduce(op,y,itl)==
   extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
   bfLp2(extrait,itl,body)
  
-bfDoCollect(expr,itl,adv) ==
+bfMakeCollectInsn(expr,prev,head,adv) ==
+  bfIf(['NULL,head],['SETQ,head,['SETQ,prev,expr]],
+        bfMKPROGN [['RPLACD,prev,expr],['SETQ,prev,[adv,prev]]])
+
+bfDoCollect(expr,itl,adv,k) ==
   head := bfGenSymbol()            -- pointer to the result
   prev := bfGenSymbol()            -- pointer to the previous cell
   body :=
-    ['COND,[['NULL,head],['SETQ,head,['SETQ,prev,expr]]],
-      ["T",bfMKPROGN [['RPLACD,prev,expr],['SETQ,prev,[adv,prev]]]]]
+    k is 'skipNil =>
+      x := bfGenSymbol()
+      ['LET,[[x,expr]],
+         bfIf(['NULL,x],'NIL,bfMakeCollectInsn(x,prev,head,adv))]
+    bfMakeCollectInsn(expr,prev,head,adv)
   extrait := [[[head,prev],['NIL,'NIL],nil,nil,nil,[head]]]
   bfLp2(extrait,itl,body)
 
@@ -398,7 +405,7 @@ bfLp1(iters,body)==
     first value
   exits :=
     exits = nil => nbody
-    ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
+    bfIf(bfOR exits,["RETURN",value],nbody)
   loop := ["LOOP",exits,:sucs]
   if vars then loop := 
     ["LET",[[v, i] for v in vars for i in inits], loop]

@@ -443,9 +443,8 @@
           (LOOP
             (COND
               ((> |i| |bfVar#1|) (RETURN NIL))
-              (T (PROGN
-                   (SETQ |d| (|shoeOrdToNum| (SCHAR |s| |i|)))
-                   (SETQ |ival| (+ (* 10 |ival|) |d|)))))
+              (T (SETQ |d| (|shoeOrdToNum| (SCHAR |s| |i|)))
+                 (SETQ |ival| (+ (* 10 |ival|) |d|))))
             (SETQ |i| (+ |i| 1))))
         |ival|))))
 
@@ -536,24 +535,21 @@
           (LOOP
             (COND
               ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
-              (T (PROGN
-                   (SETQ |s| (ELT |u| |j|))
-                   (SETQ |ls| (LENGTH |s|))
-                   (SETQ |done|
-                         (COND
-                           ((< |ll| (+ |ls| |i|)) NIL)
-                           (T (SETQ |eql| T)
-                              (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
-                                (LOOP
-                                  (COND
-                                    ((OR (> |k| |bfVar#3|) (NOT |eql|))
-                                     (RETURN NIL))
-                                    (T
-                                     (SETQ |eql|
+              (T (SETQ |s| (ELT |u| |j|)) (SETQ |ls| (LENGTH |s|))
+                 (SETQ |done|
+                       (COND
+                         ((< |ll| (+ |ls| |i|)) NIL)
+                         (T (SETQ |eql| T)
+                            (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
+                              (LOOP
+                                (COND
+                                  ((OR (> |k| |bfVar#3|) (NOT |eql|))
+                                   (RETURN NIL))
+                                  (T (SETQ |eql|
                                       (CHAR= (SCHAR |s| |k|)
                                        (SCHAR |l| (+ |k| |i|))))))
-                                  (SETQ |k| (+ |k| 1))))
-                              (COND (|eql| (SETQ |s1| |s|) T) (T NIL))))))))
+                                (SETQ |k| (+ |k| 1))))
+                            (COND (|eql| (SETQ |s1| |s|) T) (T NIL)))))))
             (SETQ |j| (+ |j| 1))))
         |s1|))))
 
