@@ -571,7 +571,8 @@ bfLET2(lhs,rhs) ==
     g := makeSymbol strconc('"LETTMP#", toString $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
-    if cons? l2 and atom first l2 then l2 := [l2,:nil]
+    if cons? l2 and atom first l2 then
+      l2 := [l2,:nil]
     var1 = "DOT" => [['L%T,g,rev],:l2]
     last l2 is ['L%T, =var1, val1] =>
       [['L%T,g,rev],:reverse rest reverse l2,
@@ -598,8 +599,7 @@ bfLET(lhs,rhs) ==
 addCARorCDR(acc,expr) ==
   atom expr => [acc,expr]
   acc = 'CAR and expr is ["reverse",:.] =>
-      ["CAR",["LAST",:rest expr]]
- --   ['last,:rest expr]
+      ["CAR",["lastNode",:rest expr]]
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
             CDAAR CDDAR CDADR CDDDR)
   p := bfPosition(first expr,funs)
@@ -871,22 +871,20 @@ bfInsertLet1(y,body)==
     otherwise => [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
  
 shoeCompTran x==
-  lamtype:=first x
-  args   :=second x
-  body   :=CDDR x
-  $fluidVars:local:=nil
-  $locVars:local:=nil
-  $dollarVars:local:=nil
+  [lamtype,args,:body] := x
+  $fluidVars: local := nil
+  $locVars: local := nil
+  $dollarVars: local :=nil
   shoeCompTran1 body
-  $locVars:=setDifference(setDifference($locVars,
-				 $fluidVars),shoeATOMs args)
-  body:=
-    lvars:=append($fluidVars,$locVars)
-    $fluidVars:=UNION($fluidVars,$dollarVars)
+  $locVars := setDifference(setDifference($locVars,$fluidVars),shoeATOMs args)
+  body :=
+    lvars := append($fluidVars,$locVars)
+    $fluidVars := UNION($fluidVars,$dollarVars)
     body' := body
-    if $typings then body' := [["DECLARE",:$typings],:body']
+    if $typings then
+      body' := [["DECLARE",:$typings],:body']
     if $fluidVars then
-      fvars:=["DECLARE",["SPECIAL",:$fluidVars]]
+      fvars := ["DECLARE",["SPECIAL",:$fluidVars]]
       body' := [fvars,:body']
     lvars or needsPROG body => shoePROG(lvars,body')
     body'
@@ -896,15 +894,14 @@ shoeCompTran x==
       fvs:=["DECLARE",["SPECIAL",:fl]]
       [fvs,:body]
     body
-  [lamtype,args, :body]
+  [lamtype,args,:body]
 
 needsPROG body ==
   atom body => false
   [op,:args] := body
   op in '(RETURN RETURN_-FROM) => true
   op in '(LET PROG LOOP BLOCK DECLARE LAMBDA) => false
-  or/[needsPROG t for t in body] => true
-  false
+  or/[needsPROG t for t in body]
 
 shoePROG(v,b)==
   b = nil => [["PROG", v]]
@@ -927,7 +924,7 @@ shoeATOMs x ==
 ++ dynamic (e.g. Lisp special) variable.  
 isDynamicVariable x ==
   symbol? x and bfBeginsDollar x =>
-    MEMQ(x,$constantIdentifiers) => false
+    symbolMember?(x,$constantIdentifiers) => false
     CONSTANTP x => false
     BOUNDP x or $activeNamespace = nil => true
     y := FIND_-SYMBOL(symbolName x,$activeNamespace) => not CONSTANTP y
@@ -938,7 +935,7 @@ shoeCompTran1 x==
   atom x=>
     isDynamicVariable x =>
       $dollarVars:=
-	 MEMQ(x,$dollarVars)=>$dollarVars
+	 symbolMember?(x,$dollarVars)=>$dollarVars
 	 [x,:$dollarVars]
     nil
   U:=first x
@@ -949,25 +946,25 @@ shoeCompTran1 x==
     symbol? l =>
       not bfBeginsDollar l=>
 	$locVars:=
-	   MEMQ(l,$locVars)=>$locVars
+	   symbolMember?(l,$locVars)=>$locVars
 	   [l,:$locVars]
       $dollarVars:=
-	 MEMQ(l,$dollarVars)=>$dollarVars
+	 symbolMember?(l,$dollarVars)=>$dollarVars
 	 [l,:$dollarVars]
     l is ["FLUID",:.] =>
       $fluidVars:=
-	 MEMQ(second l,$fluidVars)=>$fluidVars
+	 symbolMember?(second l,$fluidVars)=>$fluidVars
 	 [second l,:$fluidVars]
       x.rest.first := second l
   U = "%Leave" => x.first := "RETURN"
   U in '(PROG LAMBDA) =>
     newbindings:=nil
     for y in second x repeat
-      not MEMQ(y,$locVars)=>
+      not symbolMember?(y,$locVars)=>
 	$locVars := [y,:$locVars]
 	newbindings := [y,:newbindings]
     res := shoeCompTran1 CDDR x
-    $locVars := [y for y in $locVars | not MEMQ(y,newbindings)]
+    $locVars := [y for y in $locVars | not symbolMember?(y,newbindings)]
   shoeCompTran1 first x
   shoeCompTran1 rest x
  

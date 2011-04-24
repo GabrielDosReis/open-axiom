@@ -1,5 +1,13 @@
 2011-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/initial-env.lisp (MEMQ): Remove.
+	* boot/ast.boot (shoeATOMs): Don't use it.
+	(isDynamicVariable): Likewise.
+	(shoeCompTran1): Likewise.
+	* boot/translator.boot (defuse1): Likewise.
+
+2011-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfMakeCollectInsn): New.
 	(bfDoCollect): Tidy.
 

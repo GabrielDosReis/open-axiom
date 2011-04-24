@@ -546,8 +546,8 @@ defuse1(e,y)==
   atom y =>
       symbol? y =>
 	 $used:=
-	      MEMQ(y,e)=>$used
-	      MEMQ(y,$used)=>$used
+	      symbolMember?(y,e)=>$used
+	      symbolMember?(y,$used)=>$used
 	      defusebuiltin y =>$used
 	      UNION([y],$used)
       []
