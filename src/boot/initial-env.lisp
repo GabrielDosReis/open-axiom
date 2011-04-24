@@ -67,9 +67,6 @@
 ;; is called interactively.
 (defparameter |$InteractiveMode| nil)
 
-(defmacro memq (a b) 
-  `(member ,a ,b :test #'eq))
-
 (defvar *lisp-bin-filetype* "o")
 
 (defvar *lisp-source-filetype* "lisp")

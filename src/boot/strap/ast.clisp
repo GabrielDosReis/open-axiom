@@ -927,7 +927,7 @@
         ((ATOM |expr|) (LIST |acc| |expr|))
         ((AND (EQ |acc| 'CAR) (CONSP |expr|)
               (EQ (CAR |expr|) '|reverse|))
-         (LIST 'CAR (CONS 'LAST (CDR |expr|))))
+         (LIST 'CAR (CONS '|lastNode| (CDR |expr|))))
         (T (SETQ |funs|
                  '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
                        CDAAR CDDAR CDADR CDDDR))
@@ -1571,8 +1571,8 @@
     (RETURN
       (PROGN
         (SETQ |lamtype| (CAR |x|))
-        (SETQ |args| (CADR |x|))
-        (SETQ |body| (CDDR |x|))
+        (SETQ |args| (CADR . #0=(|x|)))
+        (SETQ |body| (CDDR . #0#))
         (SETQ |$fluidVars| NIL)
         (SETQ |$locVars| NIL)
         (SETQ |$dollarVars| NIL)
@@ -1619,17 +1619,15 @@
              ((|symbolMember?| |op|
                   '(LET PROG LOOP BLOCK DECLARE LAMBDA))
               NIL)
-             ((LET ((|bfVar#119| NIL) (|bfVar#118| |body|) (|t| NIL))
-                (LOOP
-                  (COND
-                    ((OR (ATOM |bfVar#118|)
-                         (PROGN (SETQ |t| (CAR |bfVar#118|)) NIL))
-                     (RETURN |bfVar#119|))
-                    (T (SETQ |bfVar#119| (|needsPROG| |t|))
-                       (COND (|bfVar#119| (RETURN |bfVar#119|)))))
-                  (SETQ |bfVar#118| (CDR |bfVar#118|))))
-              T)
-             (T NIL)))))))
+             (T (LET ((|bfVar#119| NIL) (|bfVar#118| |body|) (|t| NIL))
+                  (LOOP
+                    (COND
+                      ((OR (ATOM |bfVar#118|)
+                           (PROGN (SETQ |t| (CAR |bfVar#118|)) NIL))
+                       (RETURN |bfVar#119|))
+                      (T (SETQ |bfVar#119| (|needsPROG| |t|))
+                         (COND (|bfVar#119| (RETURN |bfVar#119|)))))
+                    (SETQ |bfVar#118| (CDR |bfVar#118|)))))))))))
 
 (DEFUN |shoePROG| (|v| |b|)
   (PROG (|blist| |blast| |LETTMP#1|)
@@ -1665,7 +1663,7 @@
       (COND
         ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|))
          (COND
-           ((MEMQ |x| |$constantIdentifiers|) NIL)
+           ((|symbolMember?| |x| |$constantIdentifiers|) NIL)
            ((CONSTANTP |x|) NIL)
            ((OR (BOUNDP |x|) (NULL |$activeNamespace|)) T)
            ((SETQ |y|
@@ -1684,7 +1682,7 @@
            ((|isDynamicVariable| |x|)
             (SETQ |$dollarVars|
                   (COND
-                    ((MEMQ |x| |$dollarVars|) |$dollarVars|)
+                    ((|symbolMember?| |x| |$dollarVars|) |$dollarVars|)
                     (T (CONS |x| |$dollarVars|)))))
            (T NIL)))
         (T (SETQ U (CAR |x|))
@@ -1707,16 +1705,19 @@
                    ((NOT (|bfBeginsDollar| |l|))
                     (SETQ |$locVars|
                           (COND
-                            ((MEMQ |l| |$locVars|) |$locVars|)
+                            ((|symbolMember?| |l| |$locVars|)
+                             |$locVars|)
                             (T (CONS |l| |$locVars|)))))
                    (T (SETQ |$dollarVars|
                             (COND
-                              ((MEMQ |l| |$dollarVars|) |$dollarVars|)
+                              ((|symbolMember?| |l| |$dollarVars|)
+                               |$dollarVars|)
                               (T (CONS |l| |$dollarVars|)))))))
                 ((AND (CONSP |l|) (EQ (CAR |l|) 'FLUID))
                  (SETQ |$fluidVars|
                        (COND
-                         ((MEMQ (CADR |l|) |$fluidVars|) |$fluidVars|)
+                         ((|symbolMember?| (CADR |l|) |$fluidVars|)
+                          |$fluidVars|)
                          (T (CONS (CADR |l|) |$fluidVars|))))
                  (RPLACA (CDR |x|) (CADR |l|)))))
              ((EQ U '|%Leave|) (RPLACA |x| 'RETURN))
@@ -1728,7 +1729,7 @@
                     ((OR (ATOM |bfVar#120|)
                          (PROGN (SETQ |y| (CAR |bfVar#120|)) NIL))
                      (RETURN NIL))
-                    ((NOT (MEMQ |y| |$locVars|))
+                    ((NOT (|symbolMember?| |y| |$locVars|))
                      (IDENTITY
                          (PROGN
                            (SETQ |$locVars| (CONS |y| |$locVars|))
@@ -1746,7 +1747,8 @@
                                  (SETQ |y| (CAR |bfVar#121|))
                                  NIL))
                            (RETURN |bfVar#122|))
-                          (T (AND (NOT (MEMQ |y| |newbindings|))
+                          (T (AND (NOT (|symbolMember?| |y|
+                                        |newbindings|))
                                   (COND
                                     ((NULL |bfVar#122|)
                                      (SETQ |bfVar#122|

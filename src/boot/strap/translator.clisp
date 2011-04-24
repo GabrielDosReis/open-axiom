@@ -962,8 +962,8 @@
            ((SYMBOLP |y|)
             (SETQ |$used|
                   (COND
-                    ((MEMQ |y| |e|) |$used|)
-                    ((MEMQ |y| |$used|) |$used|)
+                    ((|symbolMember?| |y| |e|) |$used|)
+                    ((|symbolMember?| |y| |$used|) |$used|)
                     ((|defusebuiltin| |y|) |$used|)
                     (T (UNION (LIST |y|) |$used|)))))
            (T NIL)))
