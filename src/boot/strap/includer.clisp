@@ -101,10 +101,8 @@
                                    (SETQ |args| (CDR |ISTMP#1|))
                                    T)))))
                 (RETURN NIL))
-               (T (PROGN
-                    (SETQ |st| (APPLY |op| |args|))
-                    (RPLACA |x| (CAR |st|))
-                    (RPLACD |x| (CDR |st|))))))
+               (T (SETQ |st| (APPLY |op| |args|))
+                  (RPLACA |x| (CAR |st|)) (RPLACD |x| (CDR |st|)))))
            (AND (CONSP |x|) (EQ (CAR |x|) '|nullstream|)))))))
 
 (DEFUN |bMap| (|f| |x|) (|bDelay| #'|bMap1| (LIST |f| |x|)))

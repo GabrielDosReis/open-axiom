@@ -52,19 +52,15 @@
                                                     (CAR |bfVar#1|))
                                                    NIL))
                                                 (RETURN |bfVar#2|))
+                                               ((NULL |bfVar#2|)
+                                                (SETQ |bfVar#2|
+                                                 (SETQ |bfVar#3|
+                                                  #0=(CONS (CADR |d|)
+                                                      NIL))))
                                                (T
-                                                (COND
-                                                  ((NULL |bfVar#2|)
-                                                   (SETQ |bfVar#2|
-                                                    (SETQ |bfVar#3|
-                                                     #0=(LIST
-                                                         (CADR |d|)))))
-                                                  (T
-                                                   (PROGN
-                                                     (RPLACD |bfVar#3|
-                                                      #0#)
-                                                     (SETQ |bfVar#3|
-                                                      (CDR |bfVar#3|)))))))
+                                                (RPLACD |bfVar#3| #0#)
+                                                (SETQ |bfVar#3|
+                                                 (CDR |bfVar#3|))))
                                              (SETQ |bfVar#1|
                                               (CDR |bfVar#1|))))))
                                        (LET
@@ -81,21 +77,16 @@
                                                   (CAR |bfVar#4|))
                                                  NIL))
                                               (RETURN |bfVar#5|))
-                                             (T
-                                              (COND
-                                                ((NULL |bfVar#5|)
-                                                 (SETQ |bfVar#5|
-                                                  (SETQ |bfVar#6|
-                                                   #1=(LIST
-                                                       (LIST 'EVAL
-                                                        (LIST 'QUOTE
-                                                         |d|))))))
-                                                (T
-                                                 (PROGN
-                                                   (RPLACD |bfVar#6|
-                                                    #1#)
-                                                   (SETQ |bfVar#6|
-                                                    (CDR |bfVar#6|)))))))
+                                             ((NULL |bfVar#5|)
+                                              (SETQ |bfVar#5|
+                                               (SETQ |bfVar#6|
+                                                #1=(CONS
+                                                    (LIST 'EVAL
+                                                     (LIST 'QUOTE |d|))
+                                                    NIL))))
+                                             (T (RPLACD |bfVar#6| #1#)
+                                              (SETQ |bfVar#6|
+                                               (CDR |bfVar#6|))))
                                            (SETQ |bfVar#4|
                                             (CDR |bfVar#4|)))))))))
               (REALLYPRETTYPRINT |init| |stream|))))
@@ -358,7 +349,7 @@
   (LOOP
     (COND
       ((|bStreamNull| |s|) (RETURN NIL))
-      (T (PROGN (|shoeCompile| (CAR |s|)) (SETQ |s| (CDR |s|)))))))
+      (T (|shoeCompile| (CAR |s|)) (SETQ |s| (CDR |s|))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Ast|) |%Thing|) |shoeCompile|))
 
@@ -482,13 +473,12 @@
       (LOOP
         (COND
           ((|bStreamNull| |s|) (RETURN NIL))
-          (T (PROGN
-               (SETQ |a| (CAR |s|))
-               (COND
-                 ((AND (CONSP |a|) (EQ (CAR |a|) '+LINE))
-                  (|shoeFileLine| (CADR |a|) |st|))
-                 (T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
-               (SETQ |s| (CDR |s|)))))))))
+          (T (SETQ |a| (CAR |s|))
+             (COND
+               ((AND (CONSP |a|) (EQ (CAR |a|) '+LINE))
+                (|shoeFileLine| (CADR |a|) |st|))
+               (T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
+             (SETQ |s| (CDR |s|))))))))
 
 (DEFUN |shoePPtoFile| (|x| |stream|)
   (PROGN (SHOENOTPRETTYPRINT |x| |stream|) |x|))
@@ -499,12 +489,10 @@
       (LOOP
         (COND
           ((|bStreamPackageNull| |s|) (RETURN NIL))
-          (T (PROGN
-               (SETQ |fn|
-                     (|stripm| (CAR |s|) *PACKAGE*
-                         (FIND-PACKAGE "BOOTTRAN")))
-               (REALLYPRETTYPRINT |fn|)
-               (SETQ |s| (CDR |s|)))))))))
+          (T (SETQ |fn|
+                   (|stripm| (CAR |s|) *PACKAGE*
+                       (FIND-PACKAGE "BOOTTRAN")))
+             (REALLYPRETTYPRINT |fn|) (SETQ |s| (CDR |s|))))))))
 
 (DEFUN |shoeAddComment| (|l|) (CONCAT "; " (CAR |l|)))
 
@@ -589,9 +577,8 @@
               ((OR (ATOM |bfVar#11|)
                    (PROGN (SETQ |t| (CAR |bfVar#11|)) NIL))
                (RETURN NIL))
-              (T (COND
-                   ((AND (CONSP |t|) (EQ (CAR |t|) 'DECLARE))
-                    (IDENTITY (RPLACA |t| 'DECLAIM))))))
+              ((AND (CONSP |t|) (EQ (CAR |t|) 'DECLARE))
+               (IDENTITY (RPLACA |t| 'DECLAIM))))
             (SETQ |bfVar#11| (CDR |bfVar#11|))))
         (SETQ |expr'|
               (COND
@@ -643,20 +630,17 @@
                                               (CAR |bfVar#12|))
                                              NIL))
                                           (RETURN |bfVar#13|))
-                                         (T
-                                          (COND
-                                            ((NULL |bfVar#13|)
-                                             (SETQ |bfVar#13|
-                                              (SETQ |bfVar#14|
-                                               #0=(LIST
-                                                   (CAR
-                                                    (|translateToplevel|
-                                                     |d| T))))))
-                                            (T
-                                             (PROGN
-                                               (RPLACD |bfVar#14| #0#)
-                                               (SETQ |bfVar#14|
-                                                (CDR |bfVar#14|)))))))
+                                         ((NULL |bfVar#13|)
+                                          (SETQ |bfVar#13|
+                                           (SETQ |bfVar#14|
+                                            #0=(CONS
+                                                (CAR
+                                                 (|translateToplevel|
+                                                  |d| T))
+                                                NIL))))
+                                         (T (RPLACD |bfVar#14| #0#)
+                                          (SETQ |bfVar#14|
+                                           (CDR |bfVar#14|))))
                                        (SETQ |bfVar#12|
                                         (CDR |bfVar#12|)))))))))
              (|%Import|
@@ -735,14 +719,13 @@
                                 (SETQ |alt| (CAR |bfVar#15|))
                                 NIL))
                           (RETURN |bfVar#16|))
-                         (T (COND
-                              ((NULL |bfVar#16|)
-                               (SETQ |bfVar#16|
-                                     (SETQ |bfVar#17|
-                                      #1=(LIST (|bfCreateDef| |alt|)))))
-                              (T (PROGN
-                                   (RPLACD |bfVar#17| #1#)
-                                   (SETQ |bfVar#17| (CDR |bfVar#17|)))))))
+                         ((NULL |bfVar#16|)
+                          (SETQ |bfVar#16|
+                                (SETQ |bfVar#17|
+                                      #1=(CONS (|bfCreateDef| |alt|)
+                                          NIL))))
+                         (T (RPLACD |bfVar#17| #1#)
+                            (SETQ |bfVar#17| (CDR |bfVar#17|))))
                        (SETQ |bfVar#15| (CDR |bfVar#15|))))))
              (|%Namespace|
                  (LET ((|n| (CADR |b|)))
@@ -826,10 +809,10 @@
                             (COND
                               ((NULL |bfVar#19|)
                                (SETQ |bfVar#19|
-                                     (SETQ |bfVar#20| #0=(LIST |i|))))
-                              (T (PROGN
-                                   (RPLACD |bfVar#20| #0#)
-                                   (SETQ |bfVar#20| (CDR |bfVar#20|))))))))
+                                     (SETQ |bfVar#20|
+                                      #0=(CONS |i| NIL))))
+                              (T (RPLACD |bfVar#20| #0#)
+                                 (SETQ |bfVar#20| (CDR |bfVar#20|)))))))
                   (SETQ |bfVar#18| (CDR |bfVar#18|)))))
         (|bootOut| (SSORT |a|) |stream|)
         (|shoeFileLine| "             " |stream|)
@@ -849,10 +832,10 @@
                             (COND
                               ((NULL |bfVar#22|)
                                (SETQ |bfVar#22|
-                                     (SETQ |bfVar#23| #1=(LIST |i|))))
-                              (T (PROGN
-                                   (RPLACD |bfVar#23| #1#)
-                                   (SETQ |bfVar#23| (CDR |bfVar#23|))))))))
+                                     (SETQ |bfVar#23|
+                                      #1=(CONS |i| NIL))))
+                              (T (RPLACD |bfVar#23| #1#)
+                                 (SETQ |bfVar#23| (CDR |bfVar#23|)))))))
                   (SETQ |bfVar#21| (CDR |bfVar#21|)))))
         (LET ((|bfVar#24| (SSORT |a|)) (|i| NIL))
           (LOOP
@@ -860,17 +843,16 @@
               ((OR (ATOM |bfVar#24|)
                    (PROGN (SETQ |i| (CAR |bfVar#24|)) NIL))
                (RETURN NIL))
-              (T (PROGN
-                   (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
-                   (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
-                       |stream| |b|))))
+              (T (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
+                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                     |stream| |b|)))
             (SETQ |bfVar#24| (CDR |bfVar#24|))))))))
 
 (DEFUN |shoeDefUse| (|s|)
   (LOOP
     (COND
       ((|bStreamPackageNull| |s|) (RETURN NIL))
-      (T (PROGN (|defuse| NIL (CAR |s|)) (SETQ |s| (CDR |s|)))))))
+      (T (|defuse| NIL (CAR |s|)) (SETQ |s| (CDR |s|))))))
 
 (DEFUN |defuse| (|e| |x|)
   (PROG (|niens| |nee| |LETTMP#1| |exp| |ISTMP#5| |id| |ISTMP#4|
@@ -1120,10 +1102,9 @@
               ((OR (ATOM |bfVar#29|)
                    (PROGN (SETQ |i| (CAR |bfVar#29|)) NIL))
                (RETURN NIL))
-              (T (PROGN
-                   (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
-                   (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
-                       |stream| |a|))))
+              (T (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
+                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                     |stream| |a|)))
             (SETQ |bfVar#29| (CDR |bfVar#29|))))))))
 
 (DEFUN |shoeItem| (|str|)
@@ -1141,14 +1122,12 @@
                                  (SETQ |line| (CAR |bfVar#30|))
                                  NIL))
                            (RETURN |bfVar#31|))
-                          (T (COND
-                               ((NULL |bfVar#31|)
-                                (SETQ |bfVar#31|
-                                      (SETQ |bfVar#32|
-                                       #0=(LIST (CAR |line|)))))
-                               (T (PROGN
-                                    (RPLACD |bfVar#32| #0#)
-                                    (SETQ |bfVar#32| (CDR |bfVar#32|)))))))
+                          ((NULL |bfVar#31|)
+                           (SETQ |bfVar#31|
+                                 (SETQ |bfVar#32|
+                                       #0=(CONS (CAR |line|) NIL))))
+                          (T (RPLACD |bfVar#32| #0#)
+                             (SETQ |bfVar#32| (CDR |bfVar#32|))))
                         (SETQ |bfVar#30| (CDR |bfVar#30|)))))
               (CDR |str|))))))
 
@@ -1189,9 +1168,8 @@
   (LOOP
     (COND
       ((|bStreamNull| |s|) (RETURN NIL))
-      (T (PROGN
-           (REALLYPRETTYPRINT (|shoePCompile| (CAR |s|)))
-           (SETQ |s| (CDR |s|)))))))
+      (T (REALLYPRETTYPRINT (|shoePCompile| (CAR |s|)))
+         (SETQ |s| (CDR |s|))))))
 
 (DEFUN |bStreamPackageNull| (|s|)
   (PROG (|b| |a|)

@@ -142,9 +142,8 @@
               ((OR (ATOM |bfVar#6|)
                    (PROGN (SETQ |k| (CAR |bfVar#6|)) NIL))
                (RETURN NIL))
-              (T (COND
-                   ((|shoeStartsId| (ELT |k| 0)) NIL)
-                   (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1)))))
+              ((|shoeStartsId| (ELT |k| 0)) NIL)
+              (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1)))
             (SETQ |bfVar#6| (CDR |bfVar#6|))))
         |a|))))
 
