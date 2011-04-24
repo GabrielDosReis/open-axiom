@@ -368,7 +368,10 @@ bfDTuple x ==
   ["DTUPLE",x]
  
 bfCollect(y,itl) ==
-  y is ["COLON",a] => bfListReduce('APPEND,['reverse,a],itl)
+  y is ["COLON",a] =>
+    a is ['CONS,:.] or a is ['LIST,:.] =>
+      bfDoCollect(a,itl,'lastNode,nil)
+    bfListReduce('APPEND,['reverse,a],itl)
   y is ["TUPLE",:.] =>
     bfListReduce('APPEND,['reverse,bfConstruct y],itl)
   bfDoCollect(['CONS,y,'NIL],itl,'CDR,nil)
