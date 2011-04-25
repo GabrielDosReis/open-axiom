@@ -445,8 +445,10 @@ bpModule() ==
 ++ Import:
 ++    IMPORT Signature FOR Name
 ++    IMPORT Name
+++    IMPORT Namespace
 bpImport() ==
   bpEqKey "IMPORT" =>
+    bpNamespace() => bpPush %Import bpPop1()
     a := bpState()
     bpName() or bpTrap()
     bpEqPeek "COLON" =>
