@@ -484,15 +484,18 @@
   (PROG (|a|)
     (RETURN
       (COND
-        ((|bpEqKey| 'IMPORT) (SETQ |a| (|bpState|))
-         (OR (|bpName|) (|bpTrap|))
+        ((|bpEqKey| 'IMPORT)
          (COND
-           ((|bpEqPeek| 'COLON) (|bpRestore| |a|)
-            (AND (OR (|bpSignature|) (|bpTrap|))
-                 (OR (|bpEqKey| 'FOR) (|bpTrap|))
-                 (OR (|bpName|) (|bpTrap|))
-                 (|bpPush| (|%ImportSignature| (|bpPop1|) (|bpPop1|)))))
-           (T (|bpPush| (|%Import| (|bpPop1|))))))
+           ((|bpNamespace|) (|bpPush| (|%Import| (|bpPop1|))))
+           (T (SETQ |a| (|bpState|)) (OR (|bpName|) (|bpTrap|))
+              (COND
+                ((|bpEqPeek| 'COLON) (|bpRestore| |a|)
+                 (AND (OR (|bpSignature|) (|bpTrap|))
+                      (OR (|bpEqKey| 'FOR) (|bpTrap|))
+                      (OR (|bpName|) (|bpTrap|))
+                      (|bpPush|
+                          (|%ImportSignature| (|bpPop1|) (|bpPop1|)))))
+                (T (|bpPush| (|%Import| (|bpPop1|))))))))
         (T NIL)))))
 
 (DEFUN |bpNamespace| ()

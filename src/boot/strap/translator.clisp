@@ -593,8 +593,12 @@
     ((NULL |ns|) NIL)
     (T (LIST (LIST 'EXPORT (LIST 'QUOTE |ns|))))))
 
+(DEFUN |inAllContexts| (|x|)
+  (LIST 'EVAL-WHEN (LIST :COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+        |x|))
+
 (DEFUN |translateToplevel| (|b| |export?|)
-  (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |xs|)
+  (PROG (|lhs| |t| |ISTMP#2| |sig| |n| |ISTMP#1| |xs|)
     (DECLARE (SPECIAL |$activeNamespace| |$InteractiveMode|
                       |$constantIdentifiers| |$foreignsDefsForCLisp|
                       |$currentModuleName|))
@@ -645,12 +649,20 @@
                                         (CDR |bfVar#12|)))))))))
              (|%Import|
                  (LET ((|m| (CADR |b|)))
-                   (PROGN
-                     (COND
-                       ((NOT (STRING= (|getOptionValue| '|import|)
-                                      "skip"))
-                        (|bootImport| (SYMBOL-NAME |m|))))
-                     (LIST (LIST 'IMPORT-MODULE (SYMBOL-NAME |m|))))))
+                   (COND
+                     ((AND (CONSP |m|) (EQ (CAR |m|) '|%Namespace|)
+                           (PROGN
+                             (SETQ |ISTMP#1| (CDR |m|))
+                             (AND (CONSP |ISTMP#1|)
+                                  (NULL (CDR |ISTMP#1|))
+                                  (PROGN (SETQ |n| (CAR |ISTMP#1|)) T))))
+                      (LIST (|inAllContexts|
+                                (LIST 'USE-PACKAGE (SYMBOL-NAME |n|)))))
+                     (T (COND
+                          ((NOT (STRING= (|getOptionValue| '|import|)
+                                         "skip"))
+                           (|bootImport| (SYMBOL-NAME |m|))))
+                        (LIST (LIST 'IMPORT-MODULE (SYMBOL-NAME |m|)))))))
              (|%ImportSignature|
                  (LET ((|x| (CADR |b|)) (|sig| (CADDR |b|)))
                    (|genImportDeclaration| |x| |sig|)))

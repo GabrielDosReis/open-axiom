@@ -407,6 +407,11 @@ exportNames ns ==
   ns = nil => nil
   [["EXPORT",["QUOTE",ns]]]
 
+inAllContexts x ==
+  ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
+                  KEYWORD::LOAD_-TOPLEVEL,
+                    KEYWORD::EXECUTE], x]
+
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
@@ -420,7 +425,9 @@ translateToplevel(b,export?) ==
       [["PROVIDE", symbolName m], :exportNames ns,
         :[first translateToplevel(d,true) for d in ds]]
 
-    %Import(m) => 
+    %Import(m) =>
+      m is ['%Namespace,n] =>
+        [inAllContexts ["USE-PACKAGE",symbolName n]]
       if getOptionValue "import" ~= '"skip" then
         bootImport symbolName m
       [["IMPORT-MODULE", symbolName m]]

@@ -60,7 +60,7 @@ structure %Ast ==
   %Lisp(%String)                        -- )lisp command
   %Module(%Symbol,%List,%List)          -- module declaration
   %Namespace(%Symbol)                   -- namespace AxiomCore
-  %Import(%Symbol)                      -- import module
+  %Import(%Ast)                         -- import module; import namespace foo
   %ImportSignature(%Symbol,%Signature)  -- import function declaration
   %TypeAlias(%Head, %List)              -- type alias definition
   %Signature(%Symbol,%Mapping)          -- op: S -> T
