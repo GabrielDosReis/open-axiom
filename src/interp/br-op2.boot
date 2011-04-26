@@ -35,8 +35,6 @@
 import br_-op1
 namespace BOOT
 
---====================> WAS br-op2.boot <================================
-
 --=======================================================================
 --                   Operation Description
 --=======================================================================
@@ -46,13 +44,13 @@ htSayConstructor(key,u) ==
   u is ['CATEGORY,kind,:r] =>
     htSay('"a ",kind,'" ")
     htSayExplicitExports(r)
-  key = 'is =>
+  key is "is" =>
     htSay '"the domain "
     bcConform(u,true)
   htSay
-    key = 'is => '"the domain "
+    key is "is" => '"the domain "
     kind := getConstructorKindFromDB opOf u
-    kind = "domain" => '"an element of "
+    kind is "domain" => '"an element of "
     '"a domain of "
   u is ['Join,:middle,r] =>
     rest middle =>
@@ -104,7 +102,7 @@ htSayValue t ==
       htSayTuple source
       htSay '" to "
       htSayArgument target
-  t = '(Category) => htSay('"a category")
+  t is '(Category) => htSay('"a category")
   t is [op,:.] and op in '(Join CATEGORY) or constructor? opOf t =>
     htSayConstructor(nil,t)
   htSay('"an element of domain ")
@@ -163,8 +161,8 @@ dbMakeContrivedForm(op,sig,:options) ==
   dbGetContrivedForm(op,sig)
 
 dbGetContrivedForm(op,sig) ==
-  op = '"0" => [0]
-  op = '"1" => [1]
+  op is '"0" => [0]
+  op is '"1" => [1]
   [op,:[dbChooseOperandName s for s in rest sig]]
 
 dbChooseOperandName(typ) ==
@@ -174,10 +172,10 @@ dbChooseOperandName(typ) ==
     x
   name := opOf typ
   kind :=
-    name = "$" => 'domain
+    name is "$" => 'domain
     getConstructorKindFromDB name
   s := symbolName opOf typ
-  kind ~= 'category =>
+  kind isnt 'category =>
     anySubstring?('"Integer",s,0) or anySubstring?('"Number",s,0) =>
       x := first $NumberList
       $NumberList := rest $NumberList
@@ -253,7 +251,7 @@ getSubstInsert(x,candidates) ==
 --                      Who Uses
 --=======================================================================
 whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
-  key = 'filter => koaPageFilterByName(htPage,'whoUsesOperation)
+  key is 'filter => koaPageFilterByName(htPage,'whoUsesOperation)
   opAlist := htpProperty(htPage,'opAlist)
   conform := htpProperty(htPage,'conform)
   conargs := rest conform
@@ -303,7 +301,6 @@ whoUses(opSigList,conform) ==
   acc  := nil
   $conname : local := first conform
   domList := getUsersOfConstructor $conname
-  hash := MAKE_-HASH_-TABLE()
   for name in allConstructors() | symbolMember?(name,domList) repeat
     $infovec : local := dbInfovec name
     null $infovec => 'skip           --category
@@ -311,14 +308,14 @@ whoUses(opSigList,conform) ==
     found := false
     opacc := nil
     for i in 7..maxIndex template repeat
-      item := template . i
+      item := vectorRef(template,i)
       item isnt [n,:op] or not symbolMember?(op,opList) => 'skip
       index := n
       numvec := getCodeVector()
-      numOfArgs := numvec . index
-      null member(numOfArgs,numOfArgsList) => 'skip
-      whereNumber := numvec.(index := index + 1)
-      template . whereNumber isnt [= $conname,:.] => 'skip
+      numOfArgs := arrayRef(numvec,index)
+      not scalarMember?(numOfArgs,numOfArgsList) => 'skip
+      whereNumber := arrayRef(numvec,index := index + 1)
+      vectorRef(template,whereNumber) isnt [= $conname,:.] => 'skip
       signumList := dcSig(numvec,index + 1,numOfArgs)
       opsig := or/[pair for (pair := [op1,:sig]) in opSigList | op1 = op and whoUsesMatch?(signumList,sig,nil)]
         => opacc := [opsig,:opacc]
@@ -333,7 +330,7 @@ whoUsesMatch1?(signumList,sig,al) ==
     x := LASSOC(pattern,al) =>
       x = subject => whoUsesMatch1?(r,s,al)
       false
-    pattern = '_$ =>
+    pattern is '_$ =>
       subject is [= $conname,:.] => whoUsesMatch1?(r,s,[['_$,:subject],:al])
       false
     whoUsesMatch1?(r,s,[[pattern,:subject],:al])
@@ -350,9 +347,9 @@ koAttrs(conform,domname) ==
       koCatAttrs(conform,domname)
   $infovec: local := dbInfovec conname or return nil
   $predvec: local :=
-    $domain => $domain . 3
+    $domain => vectorRef($domain,3)
     getConstructorPredicatesFromDB conname
-  u := [[a,:pred] for [a,:i] in $infovec . 2 | a ~= 'nil and (pred := sublisFormal(args,kTestPred i))]
+  u := [[a,:pred] for [a,:i] in $infovec . 2 | a isnt 'nil and (pred := sublisFormal(args,kTestPred i))]
                                                ---------  CHECK for a = nil
   listSort(function GLESSEQP,fn u) where fn u ==
     alist := nil
@@ -415,18 +412,18 @@ koOps(conform,domname,:options) == main where
     alist
 
 zeroOneConvert x ==
-  x = 'Zero => 0
-  x = 'One  => 1
+  x is 'Zero => 0
+  x is 'One  => 1
   x
 
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   atom x => x
-  (op := first x) = '_$ => '_$
-  op = 'local => second x
-  op = ":" => [":",second x,fn third x]
+  (op := first x) is '_$ => '_$
+  op is 'local => second x
+  op is ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
   integer? op => op
-  op = 'QUOTE and atom second x => second x
+  op is 'QUOTE and atom second x => second x
   x
 
 koCatOps(conform,domname) ==
@@ -594,9 +591,9 @@ getDcForm(dc, condlist) ==
   [ofWord,id,cform] := or/[x for x in condlist | x is [k,=dc,:.]
      and k in '(ofCategory isDomain)] or return nil
   conform := getConstructorForm opOf cform
-  ofWord = 'ofCategory =>
+  ofWord is 'ofCategory =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]
-  ofWord = 'isDomain =>
+  ofWord is 'isDomain =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]
   systemError()
 
@@ -606,10 +603,10 @@ getSigSubst(u, pl, vl, fl) ==
        [pl, vl, fl] := getSigSubst(s, pl, vl, fl)
        getSigSubst(r, pl, vl, fl)
     [key, v, f] := item
-    key = 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
-    key = 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
-    key = 'ofType    => getSigSubst(r, pl, vl, fl)
-    key = "has" => getSigSubst(r, [item, :pl], vl, fl)
-    key = 'not => getSigSubst(r, [item, :pl], vl, fl)
+    key is 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
+    key is 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
+    key is 'ofType    => getSigSubst(r, pl, vl, fl)
+    key is "has" => getSigSubst(r, [item, :pl], vl, fl)
+    key is 'not => getSigSubst(r, [item, :pl], vl, fl)
     systemError()
   [pl, vl, fl]
