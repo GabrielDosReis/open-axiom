@@ -43,7 +43,7 @@ namespace BOOT
 
 hashCode? x == integer? x
 
-$domainTypeTokens := ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
+$domainTypeTokens == ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
            'oldAxiomCategory, 0]
 
 -- The name game.
@@ -55,10 +55,10 @@ $domainTypeTokens := ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory
 -- NB: (c) is for tuple-ish constructors, 
 --     and (d) is for dependent types.
 
-DNameStringID := 0
-DNameApplyID  := 1
-DNameTupleID  := 2
-DNameOtherID  := 3
+DNameStringID == 0
+DNameApplyID  == 1
+DNameTupleID  == 2
+DNameOtherID  == 3
 
 DNameToSExpr1 dname ==
   null dname => error "unexpected domain name"
@@ -66,16 +66,16 @@ DNameToSExpr1 dname ==
     makeSymbol(CompStrToString rest dname)
   name0 := DNameToSExpr1 second dname
   args  := rest rest dname
-  name0 = '_-_> => 
+  name0 is '_-_> => 
     froms := first args
     froms := MAPCAR(function DNameToSExpr, rest froms)
     ret   := second args -- a tuple
     ret   := DNameToSExpr second ret -- contents
     ['Mapping,:[ret,:froms]]
-  name0 = 'Union or name0 = 'Record =>
+  name0 is 'Union or name0 is 'Record =>
     sxs := MAPCAR(function DNameToSExpr, rest first args)
     [name0,:sxs]
-  name0 = 'Enumeration =>
+  name0 is 'Enumeration =>
     [name0,:MAPCAR(function DNameFixEnum, rest first args)]
   [name0,:MAPCAR(function DNameToSExpr, args)]
 
@@ -90,16 +90,16 @@ DNameFixEnum arg == CompStrToString rest arg
   
 SExprToDName(sexpr, cosigVal) == 
   -- is it a non-type valued object?
-  NOT cosigVal => [DNameOtherID, :sexpr]
-  if first sexpr = '_: then sexpr := third sexpr
-  first sexpr = 'Mapping =>
+  not cosigVal => [DNameOtherID, :sexpr]
+  if first sexpr is '_: then sexpr := third sexpr
+  first sexpr is 'Mapping =>
     args := [ SExprToDName(sx,true) for sx in rest sexpr]
     [DNameApplyID,
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : rest args],
                  [DNameTupleID, first args]]
   name0 :=   [DNameStringID, : StringToCompStr symbolName first sexpr]
-  first sexpr = 'Union or first sexpr = 'Record =>
+  first sexpr is 'Union or first sexpr is 'Record =>
     [DNameApplyID, name0, 
         [DNameTupleID,: [ SExprToDName(sx,true) for sx in rest sexpr]]]
   newCosig := rest getDualSignatureFromDB first sexpr
@@ -116,7 +116,7 @@ CompStrToString(str) ==
 
 runOldAxiomFunctor(:allArgs) ==
   [:args,env] := allArgs
-  getConstructorKindFromDB env = "category" =>
+  getConstructorKindFromDB env is "category" =>
       [$oldAxiomPreCategoryDispatch,: [env, :args]]
   dom:=apply(env, args)
   makeOldAxiomDispatchDomain dom
@@ -124,7 +124,7 @@ runOldAxiomFunctor(:allArgs) ==
 makeLazyOldAxiomDispatchDomain domform ==
   attribute? domform =>
       [$attributeDispatch, domform, hashString(symbolName domform)]
-  getConstructorKindFromDB opOf domform = "category" =>
+  getConstructorKindFromDB opOf domform is "category" =>
       [$oldAxiomPreCategoryDispatch,: domform]
   dd := [$lazyOldAxiomDomainDispatch, hashTypeForm(domform,0), domform]
   append!(dd,dd) -- installs back pointer to head of domain.
@@ -284,10 +284,10 @@ getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
 listOfEntries form ==
   atom form => form
   form is [op,:l] =>
-    op = 'Join => "append"/[listOfEntries x for x in l]
-    op = 'CATEGORY => listOfCategoryEntries rest l
-    op = 'PROGN => listOfCategoryEntries l
-    op = 'ATTRIBUTE and first l is [f,:.] and constructor? f => [first l]
+    op is 'Join => "append"/[listOfEntries x for x in l]
+    op is 'CATEGORY => listOfCategoryEntries rest l
+    op is 'PROGN => listOfCategoryEntries l
+    op is 'ATTRIBUTE and first l is [f,:.] and constructor? f => [first l]
     op in '(ATTRIBUTE SIGNATURE) => nil
     [form]
   categoryFormatError()
@@ -296,10 +296,10 @@ listOfCategoryEntries l ==
   null l => nil
   l is [[op,:u],:v] =>
     firstItemList:=
-      op = 'ATTRIBUTE and first u is [f,:.] and constructor? f =>
+      op is 'ATTRIBUTE and first u is [f,:.] and constructor? f =>
         [first u]
       op in '(ATTRIBUTE SIGNATURE) => nil
-      op = 'IF and u is [pred,conseq,alternate] =>
+      op is 'IF and u is [pred,conseq,alternate] =>
           listOfCategoryEntriesIf(pred,conseq,alternate)
       categoryFormatError()
     [:firstItemList,:listOfCategoryEntries v]
@@ -352,12 +352,12 @@ instantiate domenv ==
 hashTypeForm([fn,: args], percentHash) == 
    hashType([fn,:devaluateList args], percentHash)
 
-$hashOp1 := hashString '"1"
-$hashOp0 := hashString '"0"
-$hashOpApply := hashString '"apply"
-$hashOpSet := hashString '"set!"
-$hashSeg := hashString '".."
-$hashPercent := hashString '"%"
+$hashOp1 == hashString '"1"
+$hashOp0 == hashString '"0"
+$hashOpApply == hashString '"apply"
+$hashOpSet == hashString '"set!"
+$hashSeg == hashString '".."
+$hashPercent == hashString '"%"
 
 oldAxiomDomainLookupExport _
   (domenv, self, op, sig, box, skipdefaults, env) ==
@@ -417,7 +417,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
        first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
   first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 
-$hasCatOpHash := hashString '"%%"
+$hasCatOpHash == hashString '"%%"
 opIsHasCat op ==
   hashCode? op => scalarEq?(op, $hasCatOpHash)
   op = "%%"

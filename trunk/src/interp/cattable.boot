@@ -37,12 +37,12 @@ import g_-util
 namespace BOOT
 
 hasCat(domainOrCatName,catName) ==
-  catName="Type"  -- every domain is a Type
+  catName is "Type"  -- every domain is a Type
     or constructorHasCategoryFromDB [domainOrCatName,:catName]
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
-     | a = con and (val := HGET(_*HASCATEGORY_-HASH_*,key))]
+     | symbolEq?(a,con) and (val := HGET(_*HASCATEGORY_-HASH_*,key))]
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
@@ -59,7 +59,7 @@ genCategoryTable() ==
   genTempCategoryTable()
   domainList:=
     [con for con in allConstructors()
-      | getConstructorKindFromDB con = "domain"]
+      | getConstructorKindFromDB con is "domain"]
   domainTable:= [addDomainToTable(con,getConstrCat catl) for con
     in domainList | catl := getConstructorCategoryFromDB con]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
@@ -95,7 +95,7 @@ simpHasPred(pred,:options) == main where
     simp pred
   simp pred ==
     pred is [op,:r] =>
-      op = "has" => simpHas(pred,first r,second r)
+      op is "has" => simpHas(pred,first r,second r)
       op is 'HasCategory => simp ["has",first r,simpDevaluate second r]
       op is 'HasSignature =>
          [op,sig] := simpDevaluate second r
@@ -143,8 +143,8 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
 
 simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   IDENTP conform => pred
-  conname := opOf conform
-  getConstructorKindFromDB conname = "category" =>
+  conname := conform.op
+  getConstructorKindFromDB conname is "category" =>
       simpCatHasAttribute(conform,attr)
   asharpConstructorName? conname =>
     p := LASSOC(attr,getConstructorAttributesFromDB conname) =>
@@ -153,7 +153,7 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   k := LASSOC(attr,infovec.2) or return nil --if not listed then false
   k = 0 => true
   $domain => kTestPred k    --from koOps
-  predvec := $predvec or sublisFormal(rest conform,
+  predvec := $predvec or sublisFormal(conform.args,
       getConstructorPredicatesFromDB conname)
   simpHasPred predvec.(k - 1)
 
@@ -195,7 +195,7 @@ genTempCategoryTable() ==
   --           "IF pred THEN ofCategory(key,form)"
   --  where form can involve #1, #2, ... the parameters of key
   for con in allConstructors()  repeat
-    getConstructorKindFromDB con = "category" =>
+    getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     item := HGET(_*ANCESTORS_-HASH_*, id) 
@@ -372,7 +372,7 @@ getConstructorExports(conform,:options) == categoryParts(conform,
 
 categoryParts(conform,category,:options) == main where
   main() ==
-    cons? := IFCAR options  --means to include constructors as well
+    addCtor? := IFCAR options  --means to include constructors as well
     $attrlist: local := nil
     $oplist  : local := nil
     $conslist: local := nil
@@ -381,8 +381,9 @@ categoryParts(conform,category,:options) == main where
     $attrlist := listSort(function GLESSEQP,$attrlist)
     $oplist   := listSort(function GLESSEQP,$oplist)
     res := [$attrlist,:$oplist]
-    if cons? then res := [listSort(function GLESSEQP,$conslist),:res]
-    if getConstructorKindFromDB conname = "category" then
+    if addCtor? then
+      res := [listSort(function GLESSEQP,$conslist),:res]
+    if getConstructorKindFromDB conname is "category" then
       tvl := TAKE(#rest conform,$TriangleVariableList)
       res := SUBLISLIS($FormalMapVariableList,tvl,res)
     res
@@ -401,7 +402,7 @@ categoryParts(conform,category,:options) == main where
       build(s1,quickAnd(pred,pred1))
       s2 => build(s2,quickAnd(pred,['NOT,pred1]))
     null item => 'ok
-    item = "%noBranch" => 'ok
+    item is "%noBranch" => 'ok
     item is ['PROGN,:r] => for x in r repeat build(x,pred)
     systemError '"build error"
   exportsOf(target) ==
@@ -496,11 +497,3 @@ clearTempCategoryTable(catNames) ==
         symbolMember?(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
     HPUT(_*ANCESTORS_-HASH_*,key,extensions)
-
-
-
-
-
-
-
-
