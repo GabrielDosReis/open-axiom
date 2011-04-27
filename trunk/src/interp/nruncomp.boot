@@ -419,7 +419,7 @@ stuffSlot(dollar,i,item) ==
 
 stuffDomainSlots dollar ==
   domname := devaluate dollar
-  infovec := GETL(opOf domname,'infovec)
+  infovec := property(opOf domname,'infovec)
   lookupFunction := getLookupFun infovec
   lookupFunction :=
     lookupFunction is 'lookupIncomplete => function lookupIncomplete

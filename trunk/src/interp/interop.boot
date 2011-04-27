@@ -337,7 +337,7 @@ instantiate domenv ==
   callForm := second domenv
   oldDom := CDDR domenv
   [functor,:args] := callForm
---  if null(fn := GETL(functor,'instantiate)) then
+--  if null(fn := property(functor,'instantiate)) then
 --     ofn := symbolFunction functor
 --     loadFunctor functor
 --     fn := symbolFunction functor
@@ -458,15 +458,15 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       '"----> searching op table for:","%l","  "),op,sig,dollar)
   someMatch := false
   numvec := getDomainByteVector domain
-  predvec := domain.3
+  predvec := vectorRef(domain,3)
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   idxmax := maxIndex numvec
-  start := opvec.k
+  start := vectorRef(opvec,k)
   finish :=
-    QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
+    QSGREATERP(max,k) => vectorRef(opvec,QSPLUS(k,2))
     idxmax
   if QSGREATERP(finish,idxmax) then systemError '"limit too large"
   numArgs := if hashCode? sig then -1 else (#sig)-1
@@ -477,27 +477,27 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   while finish > start repeat
     PROGN
       i := start
-      numTableArgs :=numvec.i
-      predIndex := numvec.(i := i + 1)
+      numTableArgs := arrayRef(numvec,i)
+      predIndex := arrayRef(numvec,i := i + 1)
       (predIndex ~= 0) and null testBitVector(predvec,predIndex) => nil
       exportSig :=
           [newExpandTypeSlot(numvec.(i + j + 1),
             dollar,domain) for j in 0..numTableArgs]
       sig ~= hashType(['Mapping,: exportSig],hashPercent) => nil --signifies no match
-      loc := numvec.(i + numTableArgs + 2)
+      loc := arrayRef(numvec,i + numTableArgs + 2)
       loc = 1 => (someMatch := true)
       loc = 0 =>
         start := QSPLUS(start,QSPLUS(numTableArgs,4))
         i := start + 2
         someMatch := true --mark so that if subsumption fails, look for original
         subsumptionSig :=
-          [newExpandTypeSlot(numvec.(QSPLUS(i,j)),
+          [newExpandTypeSlot(arrayRef(numvec,QSPLUS(i,j)),
             dollar,domain) for j in 0..numTableArgs]
         if $monitorNewWorld then
           sayBrightly [formatOpSignature(op,sig),'"--?-->",
             formatOpSignature(op,subsumptionSig)]
         nil
-      slot := domain.loc
+      slot := vectorRef(domain,loc)
       cons? slot =>
         slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
@@ -506,7 +506,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
         return (success := slot)
-      slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
+      slot is 'skip =>       --recursive call from above 'replaceGoGetSlot
         return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
     start := QSPLUS(start,QSPLUS(numTableArgs,4))
@@ -521,7 +521,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   nil
 
 hashNewLookupInCategories(op,sig,dom,dollar) ==
-  slot4 := dom.4
+  slot4 := vectorRef(dom,4)
   catVec := second slot4
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR catVec.0 =>
@@ -533,7 +533,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
+  valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..maxIndex packageVec |
@@ -546,8 +546,8 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
       IDENTP entry =>
         cat := catVec.i
         packageForm := nil
-        if not GETL(entry,'LOADED) then loadLib entry
-        infovec := GETL(entry,'infovec)
+        if not property(entry,'LOADED) then loadLib entry
+        infovec := property(entry,'infovec)
         success :=
           --vector? infovec =>  ----new world
           true =>  ----new world
@@ -558,7 +558,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             byteVector := CDDDR infovec.3
             endPos :=
               code+2 > max => # byteVector
-              opvec.(code+2)
+              vectorRef(opvec,code+2)
             --not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
             --numOfArgs ~= #sig.source => nil

@@ -113,7 +113,7 @@ getDualSignatureFromDB: %Constructor -> %Form
 getDualSignatureFromDB ctor ==
   GETDATABASE(ctor,"COSIG")
 
-getConstructorPredicatesFromDB: %Constructor -> %Thing
+getConstructorPredicatesFromDB: %Constructor -> %List %Thing
 getConstructorPredicatesFromDB ctor ==
   GETDATABASE(ctor,"PREDICATES")
 
@@ -642,7 +642,7 @@ updateDatabase(fname,cname,systemdir?) ==
   if oldFname := getConstructorAbbreviationFromDB cname then
     clearClams()
     clearAllSlams []
-    if GETL(cname, 'LOADED) then
+    if property(cname, 'LOADED) then
       clearConstructorCaches()
   if $forceDatabaseUpdate or not systemdir? then
     clearClams()

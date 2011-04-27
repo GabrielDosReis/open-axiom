@@ -108,7 +108,7 @@ npPush x ==
 ++ name on the parsing tree stack, otherwise treat the token
 ++ has a name.
 npPushId() ==
-  a := GETL($ttok,'INFGENERIC)
+  a := property($ttok,'INFGENERIC)
   $ttok := if a then a else $ttok
   $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
   npNext()
@@ -296,8 +296,8 @@ npLeftAssoc(operations,parser) ==
 
 ++ Parse an infix operator name.
 npInfixOp() ==
-  $stok.first.first = "key" and
-    GETL($ttok,"INFGENERIC") and npPushId()
+  $stok.first.first is "key" and
+    property($ttok,"INFGENERIC") and npPushId()
 
 ++ Parse an infix operator, either quoted or backquoted.    
 npInfixOperator() ==

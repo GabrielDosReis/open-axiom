@@ -325,8 +325,8 @@ newLookupInCategories(op,sig,dom,dollar) ==
       IDENTP entry =>
         cat := vectorRef(catVec,i)
         packageForm := nil
-        if not GETL(entry,'LOADED) then loadLib entry
-        infovec := GETL(entry,'infovec)
+        if not property(entry,'LOADED) then loadLib entry
+        infovec := property(entry,'infovec)
         success :=
           --vector? infovec =>  ----new world
           true =>  ----new world
@@ -404,8 +404,8 @@ newLookupInCategories1(op,sig,dom,dollar) ==
       IDENTP entry =>
         cat := first node
         packageForm := nil
-        if not GETL(entry,'LOADED) then loadLib entry
-        infovec := GETL(entry,'infovec)
+        if not property(entry,'LOADED) then loadLib entry
+        infovec := property(entry,'infovec)
         success :=
           vector? infovec =>
             opvec := infovec.1

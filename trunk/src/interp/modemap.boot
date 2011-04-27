@@ -237,7 +237,7 @@ augModemapsFromDomain(name,functorForm,e) ==
   augModemapsFromDomain1(name,functorForm,e)
 
 augModemapsFromDomain1(name,functorForm,e) ==
-  GETL(KAR functorForm,"makeFunctionList") =>
+  property(KAR functorForm,"makeFunctionList") =>
     addConstructorModemaps(name,functorForm,e)
   atom functorForm and (catform:= getmode(functorForm,e)) =>
     augModemapsFromCategory(name,name,functorForm,catform,e)
@@ -345,7 +345,7 @@ substNames(domainName,viewName,functorForm,opalist) ==
 addConstructorModemaps(name,form is [functorName,:.],e) ==
   $InteractiveMode: local:= nil
   e:= putDomainsInScope(name,e) --frame
-  fn := GETL(functorName,"makeFunctionList")
+  fn := property(functorName,"makeFunctionList")
   [funList,e]:= FUNCALL(fn,name,form,e)
   for [op,sig,opcode] in funList repeat
     if opcode is [sel,dc,n] and sel='ELT then

@@ -516,12 +516,6 @@ nothingFoundPage(:options) ==
 
 htCopyProplist htPage == [[x,:y] for [x,:y] in htpPropertyList htPage]
 
-dbInfovec name ==
-  "category" = getConstructorKindFromDB name => nil
-  asharpConstructorFromDB name => nil
-  loadLibIfNotLoaded(name)
-  u := GETL(name,'infovec) => u
-
 emptySearchPage(kind,filter,:options) ==
   skipNamePart := IFCAR options
   heading := ['"No ",capitalize kind,'" Found"]

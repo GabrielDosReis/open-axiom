@@ -83,7 +83,7 @@ postTran x ==
   atom x =>
     postAtom x
   op := first x
-  symbol? op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
+  symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
