@@ -45,9 +45,9 @@ printTimeIfTrue := false
 $printStorageIfTrue := false
  
 printNamedStatsByProperty(listofnames, prop) ==
-  total := +/[GETL(name,prop) for [name,:.] in listofnames]
+  total := +/[property(name,prop) for [name,:.] in listofnames]
   for [name,:.] in listofnames repeat
-    n := GETL(name, prop)
+    n := property(name, prop)
     strname := STRINGIMAGE name
     strval  := STRINGIMAGE n
     sayBrightly concat(bright strname,
@@ -60,12 +60,12 @@ makeLongStatStringByProperty _
  (listofnames, listofclasses, prop, classprop, units, flag) ==
   total := 0
   str := '""
-  otherStatTotal := GETL('other, prop)
+  otherStatTotal := property('other, prop)
   for [name,class,:ab] in listofnames repeat
     name = 'other => 'iterate
     cl := first LASSOC(class,listofclasses)
-    n := GETL( name, prop)
-    PUT(cl,classprop, n + GETL(cl,classprop))
+    n := property(name, prop)
+    PUT(cl,classprop, n + property(cl,classprop))
     total := total + n
     if n >= 0.01
       then timestr := normalizeStatAndStringify n
@@ -80,12 +80,12 @@ makeLongStatStringByProperty _
     total := total + otherStatTotal
     cl := first symbolLassoc('other,listofnames)
     cl := first LASSOC(cl,listofclasses)
-    PUT(cl,classprop, otherStatTotal + GETL(cl,classprop))
+    PUT(cl,classprop, otherStatTotal + property(cl,classprop))
   if flag ~= 'long then
     total := 0
     str := '""
     for [class,name,:ab] in listofclasses repeat
-      n := GETL(name, classprop)
+      n := property(name, classprop)
       n = 0.0 => 'iterate
       total := total + n
       timestr := normalizeStatAndStringify n
@@ -199,7 +199,7 @@ initializeTimedNames(listofnames,listofclasses) ==
   NIL
  
 updateTimedName name ==
-  count := (GETL(name,'TimeTotal) or 0) + computeElapsedTime()
+  count := (property(name,'TimeTotal) or 0) + computeElapsedTime()
   PUT(name,'TimeTotal, count) 
  
 printNamedStats listofnames ==
@@ -225,7 +225,7 @@ computeElapsedTime() ==
   gcDelta := currentGCTime - $oldElapsedGCTime
   elapsedSeconds:=
      1.* (currentTime-$oldElapsedTime-gcDelta)/$timerTicksPerSecond
-  PUT('gc, 'TimeTotal,GETL('gc,'TimeTotal) +
+  PUT('gc, 'TimeTotal,property('gc,'TimeTotal) +
                    1.*QUOTIENT(gcDelta,$timerTicksPerSecond))
   $oldElapsedTime := elapsedUserTime()
   $oldElapsedGCTime := elapsedGcTime()

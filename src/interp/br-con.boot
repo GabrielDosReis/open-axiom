@@ -1060,7 +1060,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   [conname,:conargs] := conform
   symbolMember?(conname,$DomainNames) =>
     conname := htpProperty(htPage,'conname)
-    [["constructor",["NIL",doc]],:.] := GETL(conname,'documentation)
+    [["constructor",["NIL",doc]],:.] := property(conname,'documentation)
     sig := '((CATEGORY domain) (SetCategory) (SetCategory))
     displayDomainOp(htPage,'"constructor",conform,conname,sig,true,doc,indexOrNil,'dbSelectCon,nil,nil)
   exposeFlag := isExposedConstructor conname
@@ -1171,7 +1171,7 @@ dbSpecialDescription(conname) ==
 dbSpecialOperations(conname) ==
   page := htInitPage(nil,nil)
   conform := getConstructorForm conname
-  opAlist := dbSpecialExpandIfNecessary(conform,rest GETL(conname,'documentation))
+  opAlist := dbSpecialExpandIfNecessary(conform,rest property(conname,'documentation))
   fromHeading := ['" from domain {\sf ",form2HtString conform,'"}"]
   htpSetProperty(page,'fromHeading,fromHeading)
   htpSetProperty(page,'conform,conform)
@@ -1183,7 +1183,7 @@ dbSpecialOperations(conname) ==
 dbSpecialExports(conname) ==
   conform := getConstructorForm conname
   page := htInitPage(['"Exports of {\sf ",form2HtString conform,'"}"],nil)
-  opAlist := dbSpecialExpandIfNecessary(conform,rest GETL(conname,'documentation))
+  opAlist := dbSpecialExpandIfNecessary(conform,rest property(conname,'documentation))
   kePageDisplay(page,'"operation",opAlist)
   htShowPage()
 

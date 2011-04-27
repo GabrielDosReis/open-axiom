@@ -1866,7 +1866,7 @@ modeEqualSubst(m1,m,e) ==
 --% Categories
 
 compCat(form is [functorName,:argl],m,e) ==
-  fn:= GETL(functorName,"makeFunctionList") or return nil
+  fn := property(functorName,"makeFunctionList") or return nil
   diagnoseUnknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
   catForm:=
@@ -2257,7 +2257,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
 ++ returns the identity element of the `reduction' operation `x'
 ++ over a list -- a monoid homomorphism.   
 getIdentity(x,e) ==
-  GETL(x,"THETA") is [y] =>
+  property(x,"THETA") is [y] =>
     y = 0 => $Zero
     y = 1 => $One
     -- The empty list should be indicated by name, not  by its

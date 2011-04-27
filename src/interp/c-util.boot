@@ -46,12 +46,22 @@ module c_-util where
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
   giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
-
+  -- functor data manipulation
+  dbInfovec: %Constructor -> %Maybe %FunctorData
 
 --%
 $SetCategory ==
   '(SetCategory)
   
+--%
+
+dbInfovec name ==
+  getConstructorKindFromDB name is "category" => nil
+  asharpConstructorFromDB name => nil
+  loadLibIfNotLoaded(name)
+  u := property(name,'infovec) => u
+  nil
+
 --% 
 
 ++ Token to indicate that a function body should be ignored.

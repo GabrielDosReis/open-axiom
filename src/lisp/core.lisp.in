@@ -89,6 +89,17 @@
 	   "%Form"
 	   "%Triple"
 	   "%Shell"
+	   ;; functor data structures
+	   "%FunctorData"
+	   "%FunctorCoreData"
+	   "%FunctorBytecode"
+	   "%FunctorTemplate"
+	   "%FunctorPredicateIndexTable"
+	   "%FunctorOperatorDirectory"
+	   "%FunctorCategoryTable"
+	   "%FunctorAttributeTable"
+	   "%FunctorDefaultTable"
+	   "%FunctorLookupFunction"
 
 	   "coreQuit"
            "fatalError"
@@ -227,6 +238,56 @@
 
 (deftype |%Triple| () 
   '(cons |%Code| (cons |%Mode| (cons |%Env| null))))
+
+;; Functor templates
+(deftype |%FunctorTemplate| ()
+  'simple-vector)
+
+;; operator directory for functors.
+(deftype |%FunctorOperatorDirectory| ()
+  '(simple-array (or symbol fixnum)))
+
+;; List of (attribute . predicate-index) pairs for functors.
+(deftype |%FunctorAttributeTable| ()
+  'list)
+
+;; Lookup-function for functors.  For most functors, they are
+;; either lookupIncomplete or lookupComplete.
+;; Historical functors have lookupInTable.
+(deftype |%FunctorLookupFunction| ()
+  '|%Symbol|)
+
+;; Functor predicate index table
+(deftype |%FunctorPredicateIndexTable| ()
+  '(simple-array fixnum))
+
+;; vector of categories a functor instantiation may belong to.
+(deftype |%FunctorCategoryTable| ()
+  '(simple-array |%Form|))
+
+;; vector of default category packages that a functor may implicitly use.
+(deftype |%FunctorDefaultTable| ()
+  '(simple-array (|%Maybe| |%Constructor|)))
+
+;; sequence of `byte codes' for a functor
+(deftype |%FunctorBytecode| ()
+  '(simple-array fixnum))
+
+;; PredicateIndex + DefaultTable + CategoryTable + Bytecode
+(deftype |%FunctorCoreData| ()
+  '(cons |%FunctorPredicateIndexTable|
+	 (cons |%FunctorDefaultTable|
+	       (cons |%FunctorCategoryTable| |%FunctorBytecode|))))
+		     
+
+;; The essential of what is needed to instantiate a functor.
+;; This is the type of `infovec' properties of functors.
+(deftype |%FunctorData| ()
+  '(cons |%FunctorTemplate|
+	 (cons |%FunctorOperatorDirectory|
+	       (cons |%FunctorAttributeTable|
+		     (cons |%Thing|
+			   (cons |%FunctorLookupFunction| null))))))
 
 ;; 
 ;; -*- Configuration Constants -*-

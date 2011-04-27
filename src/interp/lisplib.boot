@@ -302,7 +302,7 @@ loadLibIfNotLoaded libName ==
   -- replaces old SpadCondLoad
   -- loads is library is not already loaded
   $PrintOnly => NIL
-  GETL(libName,'LOADED) => NIL
+  property(libName,'LOADED) => NIL
   loadLib libName
  
 loadLib cname ==
@@ -364,7 +364,7 @@ loadLibIfNecessary(u,mustExist) ==
   cons? u => loadLibIfNecessary(first u,mustExist)
   value:=
     functionp(u) or macrop(u) => u
-    GETL(u,'LOADED) => u
+    property(u,'LOADED) => u
     loadLib u => u
   null $InteractiveMode and ((null (y:= getProplist(u,$CategoryFrame)))
     or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
@@ -428,7 +428,7 @@ autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
   cname in $BuiltinConstructorNames => cname
-  if not GETL(cname,'LOADED) then loadLib cname
+  if not property(cname,'LOADED) then loadLib cname
   symbolFunction cname
 
 setAutoLoadProperty(name) ==

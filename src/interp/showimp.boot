@@ -52,15 +52,15 @@ showImp(dom,:options) ==
   domainForm := devaluate dom
   [nam,:$domainArgs] := domainForm
   $predicateList: local := getConstructorPredicatesFromDB nam
-  predVector := dom.3
+  predVector := vectorRef(dom,3)
   u := getDomainOpTable(dom,true)
   --sort into 4 groups: domain exports, unexports, default exports, others
   for (x := [.,.,:key]) in u repeat
     key = domainForm => domexports := [x,:domexports]
     integer? key => unexports := [x,:unexports]
     isDefaultPackageForm? key => defexports := [x,:defexports]
-    key = 'nowhere => nowheres := [x,:nowheres]
-    key = 'constant => constants := [x,:constants]
+    key is 'nowhere => nowheres := [x,:nowheres]
+    key is 'constant => constants := [x,:constants]
     others := [x,:others]   --add chain domains go here
   sayBrightly
     nowheres => ['"Functions exported but not implemented by",
@@ -209,8 +209,8 @@ getDomainSeteltForm ['%store,.,form] ==
  
 showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
-  conname := first dom.0
-  predvector := dom.3
+  conname := vectorRef(dom,0).op
+  predvector := vectorRef(dom,3)
   predicateList := getConstructorPredicatesFromDB conname
   for i in 1.. for p in predicateList repeat
     prefix := 
@@ -220,22 +220,22 @@ showPredicates dom ==
  
 showAttributes dom ==
   sayBrightly '"--------------------Attribute summary-------------------"
-  conname := first dom.0
+  conname := vectorRef(dom,0).op
   abb := getConstructorAbbreviation conname
-  predvector := dom.3
-  for [a,:p] in dom.2 repeat
+  predvector := vectorRef(dom,3)
+  for [a,:p] in vectorRef(dom,2) repeat
     prefix :=
       testBitVector(predvector,p) => '"true : "
       '"false: "
     sayBrightly concat(prefix,form2String a)
 
 showGoGet dom ==
-  numvec := CDDR dom.4
-  for i in 6..maxIndex dom | (slot := dom.i) is ['newGoGet,dol,index,:op] repeat
-    numOfArgs := numvec.index
-    whereNumber := numvec.(index := index + 1)
+  numvec := CDDR vectorRef(dom,4)
+  for i in 6..maxIndex dom | (slot := vectorRef(dom,i)) is ['newGoGet,dol,index,:op] repeat
+    numOfArgs := arrayRef(numvec,index)
+    whereNumber := arrayRef(numvec,index := index + 1)
     signumList := 
-      [formatLazyDomainForm(dom,numvec.(index + i)) for i in 0..numOfArgs]
+      [formatLazyDomainForm(dom,arrayRef(numvec,index + i)) for i in 0..numOfArgs]
     index := index + numOfArgs + 1
     namePart := 
       concat(bright "from",form2String formatLazyDomainForm(dom,whereNumber))
@@ -300,12 +300,12 @@ dcOpLatchPrint(op,index) ==
   sayBrightly ['"latch",:formatOpSignature(op,signumList),:namePart]
  
 getInfovec name ==
-  u := GETL(name,'infovec) => u
-  GETL(name,'LOADED) => nil
+  u := property(name,'infovec) => u
+  property(name,'LOADED) => nil
   fullLibName := getConstructorModuleFromDB name or return nil
   startTimingProcess 'load
   loadLibNoUpdate(name, name, fullLibName)
-  GETL(name,'infovec)
+  property(name,'infovec)
  
 getOpSegment index ==
   numOfArgs := (vec := getCodeVector()).index
@@ -517,7 +517,7 @@ dcSize(:options) ==
 dcSizeAll() ==
   count := 0
   total := 0
-  for x in allConstructors() | cons? GETL(x,'infovec) repeat
+  for x in allConstructors() | cons? property(x,'infovec) repeat
     count := count + 1
     s := dcSize(x,'quiet)
     sayBrightly [s,'" : ",x]
