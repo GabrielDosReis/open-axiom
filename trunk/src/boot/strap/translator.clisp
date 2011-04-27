@@ -54,9 +54,10 @@
                                                 (RETURN |bfVar#2|))
                                                ((NULL |bfVar#2|)
                                                 (SETQ |bfVar#2|
-                                                 (SETQ |bfVar#3|
-                                                  #0=(CONS (CADR |d|)
-                                                      NIL))))
+                                                 #0=(CONS (CADR |d|)
+                                                     NIL))
+                                                (SETQ |bfVar#3|
+                                                 |bfVar#2|))
                                                (T
                                                 (RPLACD |bfVar#3| #0#)
                                                 (SETQ |bfVar#3|
@@ -79,11 +80,12 @@
                                               (RETURN |bfVar#5|))
                                              ((NULL |bfVar#5|)
                                               (SETQ |bfVar#5|
-                                               (SETQ |bfVar#6|
-                                                #1=(CONS
-                                                    (LIST 'EVAL
-                                                     (LIST 'QUOTE |d|))
-                                                    NIL))))
+                                               #1=(CONS
+                                                   (LIST 'EVAL
+                                                    (LIST 'QUOTE |d|))
+                                                   NIL))
+                                              (SETQ |bfVar#6|
+                                               |bfVar#5|))
                                              (T (RPLACD |bfVar#6| #1#)
                                               (SETQ |bfVar#6|
                                                (CDR |bfVar#6|))))
@@ -636,12 +638,12 @@
                                           (RETURN |bfVar#13|))
                                          ((NULL |bfVar#13|)
                                           (SETQ |bfVar#13|
-                                           (SETQ |bfVar#14|
-                                            #0=(CONS
-                                                (CAR
-                                                 (|translateToplevel|
-                                                  |d| T))
-                                                NIL))))
+                                           #0=(CONS
+                                               (CAR
+                                                (|translateToplevel|
+                                                 |d| T))
+                                               NIL))
+                                          (SETQ |bfVar#14| |bfVar#13|))
                                          (T (RPLACD |bfVar#14| #0#)
                                           (SETQ |bfVar#14|
                                            (CDR |bfVar#14|))))
@@ -733,9 +735,8 @@
                           (RETURN |bfVar#16|))
                          ((NULL |bfVar#16|)
                           (SETQ |bfVar#16|
-                                (SETQ |bfVar#17|
-                                      #1=(CONS (|bfCreateDef| |alt|)
-                                          NIL))))
+                                #1=(CONS (|bfCreateDef| |alt|) NIL))
+                          (SETQ |bfVar#17| |bfVar#16|))
                          (T (RPLACD |bfVar#17| #1#)
                             (SETQ |bfVar#17| (CDR |bfVar#17|))))
                        (SETQ |bfVar#15| (CDR |bfVar#15|))))))
@@ -820,9 +821,8 @@
                     (T (AND (NOT (GETHASH |i| |$bootUsed|))
                             (COND
                               ((NULL |bfVar#19|)
-                               (SETQ |bfVar#19|
-                                     (SETQ |bfVar#20|
-                                      #0=(CONS |i| NIL))))
+                               (SETQ |bfVar#19| #0=(CONS |i| NIL))
+                               (SETQ |bfVar#20| |bfVar#19|))
                               (T (RPLACD |bfVar#20| #0#)
                                  (SETQ |bfVar#20| (CDR |bfVar#20|)))))))
                   (SETQ |bfVar#18| (CDR |bfVar#18|)))))
@@ -843,9 +843,8 @@
                     (T (AND (NOT (GETHASH |i| |$bootDefined|))
                             (COND
                               ((NULL |bfVar#22|)
-                               (SETQ |bfVar#22|
-                                     (SETQ |bfVar#23|
-                                      #1=(CONS |i| NIL))))
+                               (SETQ |bfVar#22| #1=(CONS |i| NIL))
+                               (SETQ |bfVar#23| |bfVar#22|))
                               (T (RPLACD |bfVar#23| #1#)
                                  (SETQ |bfVar#23| (CDR |bfVar#23|)))))))
                   (SETQ |bfVar#21| (CDR |bfVar#21|)))))
@@ -1135,9 +1134,8 @@
                                  NIL))
                            (RETURN |bfVar#31|))
                           ((NULL |bfVar#31|)
-                           (SETQ |bfVar#31|
-                                 (SETQ |bfVar#32|
-                                       #0=(CONS (CAR |line|) NIL))))
+                           (SETQ |bfVar#31| #0=(CONS (CAR |line|) NIL))
+                           (SETQ |bfVar#32| |bfVar#31|))
                           (T (RPLACD |bfVar#32| #0#)
                              (SETQ |bfVar#32| (CDR |bfVar#32|))))
                         (SETQ |bfVar#30| (CDR |bfVar#30|)))))

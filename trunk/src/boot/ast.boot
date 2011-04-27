@@ -383,8 +383,10 @@ bfListReduce(op,y,itl)==
   bfLp2(extrait,itl,body)
  
 bfMakeCollectInsn(expr,prev,head,adv) ==
-  bfIf(['NULL,head],['SETQ,head,['SETQ,prev,expr]],
-        bfMKPROGN [['RPLACD,prev,expr],['SETQ,prev,[adv,prev]]])
+  firstTime := bfMKPROGN
+    [['SETQ,head,expr],['SETQ,prev,(adv is 'CDR => head; [adv,head])]]
+  otherTime := bfMKPROGN [['RPLACD,prev,expr],['SETQ,prev,[adv,prev]]]
+  bfIf(['NULL,head],firstTime,otherTime)
 
 bfDoCollect(expr,itl,adv,k) ==
   head := bfGenSymbol()            -- pointer to the result
