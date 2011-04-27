@@ -1,5 +1,9 @@
 2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfMakeCollectInsn): Fix thinko.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-util.boot (dbInfovec): Move to c-util.boot
 
 2011-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
