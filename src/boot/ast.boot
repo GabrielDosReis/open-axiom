@@ -370,17 +370,11 @@ bfDTuple x ==
 bfCollect(y,itl) ==
   y is ["COLON",a] =>
     a is ['CONS,:.] or a is ['LIST,:.] =>
-      bfDoCollect(a,itl,'lastNode,nil)
-    bfListReduce('APPEND,['reverse,a],itl)
+      bfDoCollect(a,itl,'lastNode,'skipNil)
+    bfDoCollect(['copyList,a],itl,'lastNode,'skipNil)
   y is ["TUPLE",:.] =>
-    bfListReduce('APPEND,['reverse,bfConstruct y],itl)
+    bfDoCollect(bfConstruct y,itl,'lastNode,'skipNil)
   bfDoCollect(['CONS,y,'NIL],itl,'CDR,nil)
- 
-bfListReduce(op,y,itl)==
-  g := bfGenSymbol()
-  body := ['SETQ,g,[op,y,g]]
-  extrait := [[[g],[nil],[],[],[],[['reverse!,g]]]]
-  bfLp2(extrait,itl,body)
  
 bfMakeCollectInsn(expr,prev,head,adv) ==
   firstTime := bfMKPROGN

@@ -1,5 +1,10 @@
 2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfCollect): Use bfDoCollect.
+	(bfListReduce): Remove.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfMakeCollectInsn): Fix thinko.
 
 2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
