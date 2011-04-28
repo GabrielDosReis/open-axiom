@@ -1,5 +1,10 @@
 2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfReduceCollect): Delegate to bfDoCollect if
+	op is append or append!.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfCollect): Use bfDoCollect.
 	(bfListReduce): Remove.
 
