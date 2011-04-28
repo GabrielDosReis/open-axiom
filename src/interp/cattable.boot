@@ -57,11 +57,9 @@ genCategoryTable() ==
   SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
   SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
   genTempCategoryTable()
-  domainList:=
-    [con for con in allConstructors()
-      | getConstructorKindFromDB con is "domain"]
-  domainTable:= [addDomainToTable(con,getConstrCat catl) for con
-    in domainList | catl := getConstructorCategoryFromDB con]
+  domainTable :=
+    [addDomainToTable(con,getConstrCat getConstructorCategoryFromDB con)
+      for con in allConstructors() | getConstructorKindFromDB con is "domain"]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := SETDIFFERENCE($nonLisplibDomains,$noCategoryDomains)
   domainTable:= [:[addDomainToTable(id, getConstrCat eval([id]).3)

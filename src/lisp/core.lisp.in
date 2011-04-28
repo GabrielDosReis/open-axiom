@@ -81,6 +81,10 @@
 	   "%BitVector"
 	   "%SimpleArray"
 
+	   ;; IO
+	   "inputBinaryFile"
+	   "outputBinaryFile"
+
 	   ;; compiler data structures
 	   "%Mode"
 	   "%Sig"
@@ -432,6 +436,15 @@
   #+:ecl (let ((ver (find-symbol "+ECL-VERSION-NUMBER+" "EXT")))
 	   (cond (ver (symbol-value ver))
 		 (t -1))))
+
+;; -*- File IO -*-
+(defun |inputBinaryFile| (f)
+  (open f :direction :input :element-type 'unsigned-byte
+	:if-does-not-exist nil))
+
+(defun |outputBinaryFile| (f)
+  (open f :direction :output :element-type 'unsigned-byte
+	:if-exists :supersede))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-

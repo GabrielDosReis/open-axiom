@@ -273,7 +273,7 @@ bfSTEP(id,fst,step,lst)==
  
 bfINON x==
   [op,id,whole] := x
-  op = "ON" => bfON(id,whole)
+  op is "ON" => bfON(id,whole)
   bfIN(id,whole)
  
 bfIN(x,E)==
@@ -420,9 +420,9 @@ bfLp2(extrait,itl,body)==
 bfOpReduce(op,init,y,itl)==
   g := bfGenSymbol()
   body:=
-    op = "AND" =>
+    op is "AND" =>
       bfMKPROGN [["SETQ",g,y], ['COND, [['NOT,g],['RETURN,'NIL]]]]
-    op = "OR" => bfMKPROGN [["SETQ",g,y], ['COND, [g,['RETURN,g]]]]
+    op is "OR" => bfMKPROGN [["SETQ",g,y], ['COND, [g,['RETURN,g]]]]
     ['SETQ,g,[op,g,y]]
   init = nil =>
     g1 := bfGenSymbol()
@@ -450,9 +450,9 @@ bfForin(lhs,U)==
   bfFor(lhs,U,1)
  
 bfLocal(a,b)==
-  b = "FLUID" =>  compFluid a
-  b = "fluid" =>  compFluid a
-  b = "local" =>  compFluid a
+  b is "FLUID" =>  compFluid a
+  b is "fluid" =>  compFluid a
+  b is "local" =>  compFluid a
   a
  
 bfTake(n,x)==
@@ -553,10 +553,10 @@ bfLET2(lhs,rhs) ==
     cons? first b => [a,:b]
     [a,b]
   lhs is ['CONS,var1,var2] =>
-    var1 = "DOT" or var1 is ["QUOTE",:.] =>
+    var1 is "DOT" or var1 is ["QUOTE",:.] =>
       bfLET2(var2,addCARorCDR('CDR,rhs))
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
-    var2 = nil or var2 = "DOT" =>l1
+    var2 = nil or var2 is "DOT" =>l1
     if cons? l1 and atom first l1 then l1 := [l1,:nil]
     symbol? var2 =>
       [:l1,bfLetForm(var2,addCARorCDR('CDR,rhs))]
@@ -571,7 +571,7 @@ bfLET2(lhs,rhs) ==
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then
       l2 := [l2,:nil]
-    var1 = "DOT" => [['L%T,g,rev],:l2]
+    var1 is "DOT" => [['L%T,g,rev],:l2]
     last l2 is ['L%T, =var1, val1] =>
       [['L%T,g,rev],:reverse rest reverse l2,
        bfLetForm(var1,['reverse!,val1])]
@@ -596,7 +596,7 @@ bfLET(lhs,rhs) ==
  
 addCARorCDR(acc,expr) ==
   atom expr => [acc,expr]
-  acc = 'CAR and expr is ["reverse",:.] =>
+  acc is 'CAR and expr is ["reverse",:.] =>
       ["CAR",["lastNode",:rest expr]]
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
             CDAAR CDDAR CDADR CDDDR)
@@ -606,7 +606,7 @@ addCARorCDR(acc,expr) ==
              CAADDR CADAAR CADDAR CADADR CADDDR)
   funsR := '(CDAR CDDR CDAAR CDDAR CDADR CDDDR CDAAAR CDADAR CDAADR
              CDADDR CDDAAR CDDDAR CDDADR CDDDDR)
-  acc = 'CAR => [funsA.p,:rest expr]
+  acc is 'CAR => [funsA.p,:rest expr]
   [funsR.p,:rest expr]
  
 bfPosition(x,l) ==  bfPosn(x,l,0)
@@ -618,8 +618,8 @@ bfPosn(x,l,n) ==
 --% IS
  
 bfISApplication(op,left,right)==
-  op = "IS"      => bfIS(left,right)
-  op = "ISNT"    => bfNOT bfIS(left,right)
+  op is "IS"      => bfIS(left,right)
+  op is "ISNT"    => bfNOT bfIS(left,right)
   [op ,left,right]
  
 bfIS(left,right)==
@@ -654,12 +654,12 @@ bfIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
-    a = "DOT" =>
+    a is "DOT" =>
       b = nil => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
       bfAND [['CONSP,lhs],bfIS1(['CDR,lhs],b)]
     b = nil =>
       bfAND [['CONSP,lhs],['NULL,['CDR,lhs]],bfIS1(['CAR,lhs],a)]
-    b = "DOT" => bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
+    b is "DOT" => bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
     a1 := bfIS1(['CAR,lhs],a)
     b1 := bfIS1(['CDR,lhs],b)
     a1 is ['PROGN,c,'T] and b1 is ['PROGN,:cls] =>
@@ -672,7 +672,7 @@ bfIS1(lhs,rhs) ==
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['reverse,lhs]],'T]]
     l2 := bfIS1(g,patrev)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
-    a = "DOT" => bfAND [rev,:l2]
+    a is "DOT" => bfAND [rev,:l2]
     bfAND [rev,:l2,['PROGN,bfLetForm(a,['reverse!,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
   bpTrap()
@@ -713,15 +713,15 @@ bfMember(var,seq) ==
   ["MEMBER",var,seq]
   
 bfInfApplication(op,left,right)==
-   op = "EQUAL" => bfQ(left,right)
-   op = "/="    => bfNOT bfQ(left,right)
-   op = ">"     => bfLessp(right,left)
-   op = "<"     => bfLessp(left,right)
-   op = "<="    => bfNOT bfLessp(right,left)
-   op = ">="    => bfNOT bfLessp(left,right)
-   op = "OR"    => bfOR [left,right]
-   op = "AND"   => bfAND [left,right]
-   op = "IN"    => bfMember(left,right)
+   op is "EQUAL" => bfQ(left,right)
+   op is "/="    => bfNOT bfQ(left,right)
+   op is ">"     => bfLessp(right,left)
+   op is "<"     => bfLessp(left,right)
+   op is "<="    => bfNOT bfLessp(right,left)
+   op is ">="    => bfNOT bfLessp(left,right)
+   op is "OR"    => bfOR [left,right]
+   op is "AND"   => bfAND [left,right]
+   op is "IN"    => bfMember(left,right)
    [op,left,right]
  
 bfNOT x==
@@ -798,7 +798,7 @@ bfMDef (op,args,body) ==
 bfGargl argl==
   argl = nil => [[],[],[],[]]
   [a,b,c,d] := bfGargl rest argl
-  first argl="&REST" =>
+  first argl is "&REST" =>
     [[first argl,:b],b,c,
        [["CONS",["QUOTE","LIST"],first d],:rest d]]
   f := bfGenSymbol()
@@ -929,17 +929,17 @@ isDynamicVariable x ==
     true
   false
  
-shoeCompTran1 x==
-  atom x=>
+shoeCompTran1 x ==
+  atom x =>
     isDynamicVariable x =>
       $dollarVars:=
 	 symbolMember?(x,$dollarVars)=>$dollarVars
 	 [x,:$dollarVars]
     nil
-  U:=first x
-  U = "QUOTE" => nil
+  U := first x
+  U is "QUOTE" => nil
   x is ["L%T",l,r] =>
-    x.first := "SETQ"
+    x.op := "SETQ"
     shoeCompTran1 r
     symbol? l =>
       not bfBeginsDollar l=>
@@ -954,24 +954,27 @@ shoeCompTran1 x==
 	 symbolMember?(second l,$fluidVars)=>$fluidVars
 	 [second l,:$fluidVars]
       x.rest.first := second l
-  U = "%Leave" => x.first := "RETURN"
+  U is "%Leave" => x.op := "RETURN"
   U in '(PROG LAMBDA) =>
-    newbindings:=nil
+    newbindings := nil
     for y in second x repeat
       not symbolMember?(y,$locVars)=>
 	$locVars := [y,:$locVars]
 	newbindings := [y,:newbindings]
     res := shoeCompTran1 CDDR x
     $locVars := [y for y in $locVars | not symbolMember?(y,newbindings)]
+  -- literal vectors.
+  x is ['vector,['LIST,:args]] => (x.op := 'VECTOR; x.args := args)
+  x is ['vector,'NIL] => (x.op := 'VECTOR; x.args := nil)
   shoeCompTran1 first x
   shoeCompTran1 rest x
  
 bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
   symbol? a =>
-    b = "FLUID" =>  bfLET(compFluid a,nil)
-    b = "fluid" =>  bfLET(compFluid a,nil)
-    b = "local" =>  bfLET(compFluid a,nil)
+    b is "FLUID" =>  bfLET(compFluid a,nil)
+    b is "fluid" =>  bfLET(compFluid a,nil)
+    b is "local" =>  bfLET(compFluid a,nil)
     $typings := [["TYPE",b,a],:$typings]
     a
   ["THE",b,a]
@@ -996,8 +999,8 @@ defSETELT(var,sel,expr)==
   y := symbol? sel and sel has SHOESELFUNCTION
   y =>
     integer? y => ["SETF",["ELT",var,y],expr]
-    y = "CAR" => ["RPLACA",var,expr]
-    y = "CDR" => ["RPLACD",var,expr]
+    y is "CAR" => ["RPLACA",var,expr]
+    y is "CDR" => ["RPLACD",var,expr]
     ["SETF",[y,var],expr]
   ["SETF",["ELT",var,sel],expr]
  
@@ -1118,7 +1121,7 @@ bfMain(auxfn,op)==
 
 bfNameOnly: %Thing -> %Form
 bfNameOnly x==
-  x="t" => ["T"]
+  x is "t" => ["T"]
   [x]
 
 bfNameArgs: (%Thing,%Thing) -> %List %Form
@@ -1158,7 +1161,7 @@ bfCI: (%Thing,%Thing,%Thing) -> %Form
 bfCI(g,x,y)==
   a := rest x
   a = nil => [first x,y]
-  b := [[i,bfCARCDR(j,g)] for i in a for j in 1.. | i ~= "DOT"]
+  b := [[i,bfCARCDR(j,g)] for i in a for j in 1.. | i isnt "DOT"]
   b = nil => [first x,y]
   [first x,["LET",b,y]]
 
@@ -1334,7 +1337,7 @@ nativeType t ==
 	%hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
 	t'
       -- ??? decree we have not discovered Unicode yet.
-      t = "string" and %hasFeature KEYWORD::SBCL =>
+      t is "string" and %hasFeature KEYWORD::SBCL =>
 	[t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
 	   KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
       t'
@@ -1344,51 +1347,51 @@ nativeType t ==
       %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::CLOZURE =>
         KEYWORD::UNSIGNED_-BYTE
       nativeType "char"           -- approximate by 'char' for GCL
-    t = "int16" =>
+    t is "int16" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),16]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT16")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
          KEYWORD::INT16_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-HALFWORD
       unknownNativeTypeError t
-    t = "uint16" =>
+    t is "uint16" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT16")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
          KEYWORD::UINT16_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-HALFWORD
       unknownNativeTypeError t
-    t = "int32" =>
+    t is "int32" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),32]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
          KEYWORD::INT32_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-FULLWORD
       unknownNativeTypeError t
-    t = "uint32" =>
+    t is "uint32" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
          KEYWORD::UINT32_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-FULLWORD
       unknownNativeTypeError t
-    t = "int64" =>
+    t is "int64" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),64]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT64")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
          KEYWORD::INT64_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-DOUBLEWORD
       unknownNativeTypeError t
-    t = "uint64" =>
+    t is "uint64" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),64]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT64")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
          KEYWORD::UINT64_-T
       %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-DOUBLEWORD
       unknownNativeTypeError t
-    t = "float32" => nativeType "float"
-    t = "float64" => nativeType "double"
-    t = "pointer" =>
+    t is "float32" => nativeType "float"
+    t is "float64" => nativeType "double"
+    t is "pointer" =>
       %hasFeature KEYWORD::GCL => "fixnum"
       %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
       %hasFeature KEYWORD::SBCL => ["*",bfColonColon("SB-ALIEN","VOID")]
@@ -1397,14 +1400,14 @@ nativeType t ==
       unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
-  first t = "buffer" =>
+  first t is "buffer" =>
     %hasFeature KEYWORD::GCL => "OBJECT"
     %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
     %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
     %hasFeature KEYWORD::CLOZURE => [KEYWORD::_*, nativeType second t]
     unknownNativeTypeError t
-  first t = "pointer" =>
+  first t is "pointer" =>
     -- we don't bother looking at what the pointer points to.
     nativeType "pointer"
   unknownNativeTypeError t
@@ -1421,7 +1424,7 @@ nativeReturnType t ==
 nativeArgumentType t ==
   t in $NativeSimpleDataTypes => nativeType t
   -- Allow 'string'  for `pass-by-value'
-  t = "string" => nativeType t
+  t is "string" => nativeType t
   -- anything else must use a modified reference type.
   atom t or #t ~= 2 => 
      coreError '"invalid argument type for a native function"
@@ -1449,8 +1452,8 @@ coerceToNativeType(a,t) ==
   %hasFeature KEYWORD::SBCL =>
     not needsStableReference? t => a
     [.,[c,y]] := t
-    c = "buffer" => [bfColonColon("SB-SYS","VECTOR-SAP"),a]
-    c = "pointer" => [bfColonColon("SB-SYS","ALIEN-SAP"),a]
+    c is "buffer" => [bfColonColon("SB-SYS","VECTOR-SAP"),a]
+    c is "pointer" => [bfColonColon("SB-SYS","ALIEN-SAP"),a]
     needsStableReference? t =>
       fatalError strconc('"don't know how to coerce argument for native type",
         PNAME c)
@@ -1472,7 +1475,7 @@ genGCLnativeTranslation(op,s,t,op') ==
     ccode := 
       "strconc"/[gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
-	   '") { ", (t ~= "void" => '"return "; ""),
+	   '") { ", (t isnt "void" => '"return "; ""),
 	     PNAME op', '"(",
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]
@@ -1483,20 +1486,20 @@ genGCLnativeTranslation(op,s,t,op') ==
 	(rest x => '", "; '""))
     gclTypeInC x ==
       x in $NativeSimpleDataTypes => PNAME x
-      x = "void" => '"void"
-      x = "string" => '"char*"
+      x is "void" => '"void"
+      x is "string" => '"char*"
       x is [.,["pointer",.]] => "fixnum"
       '"object" 
     gclArgInC(x,a) ==
       x in $NativeSimpleDataTypes => a
-      x = "string" => a   -- GCL takes responsability for the conversion
+      x is "string" => a   -- GCL takes responsability for the conversion
       [.,[c,y]] := x
-      c = "pointer" => a
-      y = "char" => strconc(a,'"->st.st__self")
-      y = "byte" => strconc(a,'"->ust.ust__self")
-      y = "int" => strconc(a,'"->fixa.fixa__self")
-      y = "float" => strconc(a,'"->sfa.sfa__self")
-      y = "double" => strconc(a,'"->lfa.lfa__self")
+      c is "pointer" => a
+      y is "char" => strconc(a,'"->st.st__self")
+      y is "byte" => strconc(a,'"->ust.ust__self")
+      y is "int" => strconc(a,'"->fixa.fixa__self")
+      y is "float" => strconc(a,'"->sfa.sfa__self")
+      y is "double" => strconc(a,'"->lfa.lfa__self")
       coreError '"unknown argument type"
     gclArgsInC(x,a) ==
       strconc(gclArgInC(first x, first a),
@@ -1523,16 +1526,16 @@ genECLnativeTranslation(op,s,t,op') ==
 	  selectDatum x ==
 	    isSimpleNativeType x => '""
 	    [.,[c,y]] := x
-            c = "buffer" => 
-	      y = "char" or y = "byte" => 
+            c is "buffer" => 
+	      y is "char" or y is "byte" => 
                 AxiomCore::$ECLVersionNumber < 90100 => '"->vector.self.ch"
-                y = "char" => '"->vector.self.i8"
+                y is "char" => '"->vector.self.i8"
                 '"->vector.self.b8"
-	      y = "int" => '"->vector.self.fix"
-	      y = "float" => '"->vector.self.sf"
-	      y = "double" => '"->vector.self.df"
+	      y is "int" => '"->vector.self.fix"
+	      y is "float" => '"->vector.self.sf"
+	      y is "double" => '"->vector.self.df"
 	      coreError '"unknown argument to buffer type constructor"
-            c = "pointer" => '""
+            c is "pointer" => '""
             coreError '"unknown type constructor"
 
 genCLISPnativeTranslation(op,s,t,op') ==
@@ -1651,7 +1654,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   strPairs := nil 
   aryPairs := nil
   for p in parms for x in s repeat
-    x = "string" => strPairs := [[p,:gensym '"loc"], :strPairs]
+    x is "string" => strPairs := [[p,:gensym '"loc"], :strPairs]
     x is [.,["buffer",.]] => aryPairs := [[p,:gensym '"loc"], :aryPairs]
 
   -- Build the actual foreign function call.
@@ -1669,7 +1672,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
 
   -- If the foreign call returns a C-string, turn it into a Lisp string.
   -- Note that if the C-string was malloc-ed, this will leak storage.
-  if t = "string" then
+  if t is "string" then
     call := [bfColonColon("CCL","GET-CSTRING"), call]
 
   -- If we have array arguments from Boot, bind pointers to initial data.
