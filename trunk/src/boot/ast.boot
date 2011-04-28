@@ -351,6 +351,8 @@ bfReduceCollect(op,y)==
     a :=
       op is ["QUOTE",:.] => second op
       op
+    a is "append!" => bfDoCollect(body,itl,'lastNode,'skipNil)
+    a is "append" => bfDoCollect(['copyList,body],itl,'lastNode,'skipNil)
     op := bfReName a
     init := a has SHOETHETA or op has SHOETHETA
     bfOpReduce(op,init,body,itl)

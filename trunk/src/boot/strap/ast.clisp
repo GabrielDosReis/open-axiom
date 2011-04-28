@@ -484,9 +484,16 @@
                  ((AND (CONSP |op|) (EQ (CAR |op|) 'QUOTE))
                   (CADR |op|))
                  (T |op|)))
-         (SETQ |op| (|bfReName| |a|))
-         (SETQ |init| (OR (GET |a| 'SHOETHETA) (GET |op| 'SHOETHETA)))
-         (|bfOpReduce| |op| |init| |body| |itl|))
+         (COND
+           ((EQ |a| '|append!|)
+            (|bfDoCollect| |body| |itl| '|lastNode| '|skipNil|))
+           ((EQ |a| '|append|)
+            (|bfDoCollect| (LIST '|copyList| |body|) |itl| '|lastNode|
+                '|skipNil|))
+           (T (SETQ |op| (|bfReName| |a|))
+              (SETQ |init|
+                    (OR (GET |a| 'SHOETHETA) (GET |op| 'SHOETHETA)))
+              (|bfOpReduce| |op| |init| |body| |itl|))))
         (T (SETQ |seq|
                  (COND ((NULL |y|) (|bfTuple| NIL)) (T (CADR |y|))))
            (|bfReduce| |op| (|bfTupleConstruct| |seq|)))))))
