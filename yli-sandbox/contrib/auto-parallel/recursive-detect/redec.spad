@@ -1,0 +1,920 @@
+)abbrev package REDEC ReduceDetectionPackage
+++ Author: Yue Li
+++ Date Created: Jan 24, 2010
+++ Date Last Updated: Jan 24, 2010
+++ Description:  
+++ This package provides analyze functions for extracting and transforming 
+++ reductions with three different implementations
+ReduceDetectionPackage(): ProgramAnalysisCategory == add
+    macro PROPTY == Record(propname: Identifier, propval: Syntax, proptype: Syntax)
+    macro TENV   == Table(Syntax, Syntax)
+    macro OPR == Record(funname: Identifier, origin: Syntax, signature: Signature,_
+                        props: List PROPTY, tenv: Table(Syntax, Syntax))
+    macro ACREC == Record(accVar: VariableIr, accOp: OperatorIr,_
+                          assoc: Integer, acclet: LetIr)
+    macro ACLP == Record(iterVar: VariableIr,_
+                         iterSeq: List ExpressionIr, accstat: List ACREC)
+    import CheckAssumption
+    import SyntaxHelper
+    import SpadIrGenerator
+    import LightTypeChecker
+    import ExpressionIr
+    import SequenceIr
+    import TypeIr
+    import ValueIr
+    import VariableIr
+    import TypeConstructorIr
+    import OperatorIr
+    import InIteratorIr
+    import TypeIrUtility
+    import StepIteratorIr
+    import SuchThatIr
+    import CaseIr
+    import ReturnIr
+    import ColonIr
+    import FunctionDeclarationIr
+    import CollectIr
+    import CoerceIr
+    import ConstructIr
+    import LispCallIr
+    import PretendIr
+    import ReduceIr
+    import RepeatIr
+    import StatementIr
+    import ExpressionWithOperatorIr
+    import SpadIrToSpad
+    import FiniteLinearAggregateFunctions2(ACLP, List ACLP,_
+                                       List StatementIr, List List StatementIr)
+
+    -- global variable indicating number of futures to be generated
+    processNumber: Integer := 2
+
+    -- global variable storing associative operator information extracted
+    -- from assumption checker
+    associativeOperators : List OPR := collectAssociativeOperator()
+
+    -- create the IR for domain Integer
+    makeIntegerTypeIr(): TypeIr == buildTypeIr(makeIntegerType(), "domain")
+      
+    -- create the IR node for the value of processor numbers
+    getValIrOfP(): StatementIr == 
+      tir := buildTypeIr(makeIntegerType(), "domain")
+      tree := processNumber::Syntax
+      buildValIr(tree, tir)::ExpressionIr::StatementIr
+
+    -- determine whether an operator matches an entry 
+    -- of the associative operator entries.
+    -- this is done via matching both function name and types
+    matchRecord?(rec: OPR, op: OperatorIr): Boolean == 
+      (rec.funname = getName op) and_
+      #(source (sig := rec.signature)) = getArity op =>
+        recTypes      : List Syntax := getTypesFromSignature sig
+        recTypeVarEnv : TENV        := copy rec.tenv
+        realTypes     : List Syntax := getIOTypesFromMappingInSyntax typeOf op
+        realTypeVarEnv: TENV        := copy getTypeEnv().ttvar
+        for reft in recTypes for realt in realTypes repeat
+          if not typeChecks?(reft, recTypeVarEnv, realt, realTypeVarEnv) then
+            return false
+        true
+      false
+
+    -- checks whether an operator is associative
+    -- by looking at user assumption summary
+    isAssociative?(op: OperatorIr): Boolean ==
+      for rec in associativeOperators repeat
+        if matchRecord?(rec, op) then
+          return true
+      false
+
+    -- checks whether an OperatorIr represents a reduce operator
+    -- we check the following
+    -- function name is ``reduce"
+    -- 1 < arity < 5
+    -- it has to have one operand whose type is a mapping, and should be binary
+    --   The output type of the mapping above has to be the same of the 
+    --   return type of the reduce operator
+    -- FIXME: 
+    -- for now, we only check homogeneous binary operator: (T, T) -> T
+    -- since our preduce only accepts homogeneous function
+    verifyReduceOperator(op: OperatorIr): Boolean ==
+      arity := getArity op
+      getName op = 'reduce::Identifier and_
+      (arity = 2 or arity = 3 or arity = 4) =>
+        sig : TypeIr := typeOf op
+        inputTypes: List TypeIr := getInputTypesFromMapping sig
+        outputType: TypeIr := getOutputTypeFromMapping sig
+
+        -- FIXME: this is a temporary fix. need to be rewritten
+        -- FIXED
+        inputTypes := [t for t in inputTypes]
+
+        #(maps: List TypeIr := [t for t in inputTypes|isMappingTypeIr? t])=1 =>
+          optype : TypeIr := first maps
+          #(opintypes := getInputTypesFromMapping optype) = 2 and_
+          (getOutputTypeFromMapping optype) = outputType --and_
+
+          -- FIXME: need to loose this condition 
+          -- once a new version of preduce is implemented
+          --opintypes.1 = opintypes.2 and_
+          --opintypes.1 = outputType
+        false
+      false
+
+    -- obtain the binary operator and list
+    -- if the resulting list contains two elements, it's normal
+    getOpandList(oprs: List StatementIr): List StatementIr ==
+      result : List StatementIr := []
+      op : StatementIr := first [opr for opr in oprs | isMappingTypeIr? typeOf opr]
+      inputTypes : List TypeIr := getInputTypesFromMapping typeOf op
+      for opr in oprs | not isMappingTypeIr? typeOf opr repeat
+        s := getTree typeOf opr
+        if compound? s and #(getOperands s) = 1 then
+          if member?(buildTypeIr(first getOperands s, "domain"), inputTypes) then
+            result := concat(result, opr)
+      cons(op, result)
+
+    -- create ir for ParallelMapReduce(T)
+    buildParallelMapReduceTypeIr(t: TypeIr): TypeIr ==
+      packname := 'ParallelMapReduce::Identifier
+      t' := getTree t
+      tree := buildSyntax(packname, [t'])
+      buildTypeIr(tree, "package")
+
+    -- create operator ir node for preduce operator
+    createPreduceOpIr(opt: TypeIr, seqt: TypeIr, t: TypeIr): OperatorIr ==
+      tir : TypeIr := buildTypeIrForMapping_
+                       [getTree opt, getTree seqt, makeIntegerType(), getTree t]
+      srcir : TypeIr := buildParallelMapReduceTypeIr t
+      tree : Syntax := 'preduce::Identifier::Syntax
+      buildOperatorIr(tree, tir, 3, srcir)
+
+    -- FIXME: a temporary fix:
+    getOpFromExp(binop: VariableIr): OperatorIr ==
+      tir := typeOf binop
+      inputTypes : List TypeIr :=[t for t in getInputTypesFromMapping tir]
+      outputType : TypeIr := getOutputTypeFromMapping tir
+      newtir := buildTypeIrForMapping([getTree ir for ir in concat(inputTypes,_
+                                                     outputType)]::List(Syntax))
+      buildOperatorIr(getTree binop, newtir, buildTypeIr(makeUnknown(), "unknown"))
+
+    -- Check if this is a reduce call resolved
+    -- if so, transform the to use the preduce function call
+    analyze(e: ExpressionWithOperatorIr, updateParent: StatementIr -> Void) : Void ==
+      op   : OperatorIr := operator e
+      oprs : List StatementIr := operands e
+      verifyReduceOperator op =>   -- pattern matching syntax
+        #(x := getOpandList oprs) = 2 => -- pattern matching types
+          -- FIXME: a temporary fix
+          binop : OperatorIr
+          binop' := (first x)::ExpressionIr
+          if binop' case VariableIr then
+            binop := getOpFromExp(binop'::VariableIr)
+          else
+            binop := (first x)::ExpressionIr::OperatorIr
+          sequence := second x
+          isAssociative? binop =>           -- verify its property
+            -- start creating IRs for each components of preduce call
+            -- we still keep the old tree, but it should never be used
+            tree : Syntax := getTree e  
+            tir  : TypeIr := typeOf e
+            opir : OperatorIr := createPreduceOpIr(typeOf binop, typeOf sequence, tir)
+            oprir : List StatementIr := concat(x, getValIrOfP())
+            updateParent_
+             (buildExpressionWithOperatorIr(tree, opir,_
+                                        oprir, tir)::ExpressionIr::StatementIr)
+
+    -- Transform reduce form to parallel reduce function call
+    analyze(r: ReduceIr, updateParent: StatementIr -> Void) : Void ==
+      opir : OperatorIr  := operator r
+      seq: StatementIr := sequence r
+      tir: TypeIr      := typeOf r
+      tree : Syntax := getTree r
+      isAssociative? opir =>
+        preduceOpIr : OperatorIr := createPreduceOpIr(typeOf opir, typeOf seq, tir)
+        oprir : List StatementIr := [opir::ExpressionIr::StatementIr, seq, getValIrOfP()]
+        updateParent(buildExpressionWithOperatorIr(tree,_
+                            preduceOpIr, oprir, tir)::ExpressionIr::StatementIr)
+
+    -- match the iterator of an atomic loop
+    -- verifying requirement:
+    -- 1. only one iterator, step-iterator or in-iterator
+    matchIterator(l: RepeatIr): Maybe ExpressionIr ==
+      #(iters := iterators l) = 1 => 
+        iter := first iters
+        iter case InIteratorIr or iter case StepIteratorIr =>
+          just iter
+      nothing()
+
+    -- match a sequence
+    -- verifying requirement: all the statements are assignments
+    -- the last one can be exit, but the statement being wrapped by 
+    -- exit is an assignment
+    -- note: the returned statement is a SequenceIr, where the last statement
+    -- has been unpacked to a let-statement instead of the original exit 
+    -- statement
+    matchSequence(s: SequenceIr): Maybe StatementIr ==
+      b : List StatementIr := body s
+      end: StatementIr := last s
+      end case ExitIr and (end' := body (end::ExitIr)) case LetIr =>
+        b.last := end'
+        for e in b repeat
+          if not(e case LetIr) then return nothing()
+        -- the tree is the original tree, should never be used later
+        return just (buildSequenceIr(getTree s, b, typeOf s)::StatementIr)
+      nothing()
+
+    -- for sequence in branches, we don't replace the last exit 
+    -- statement with let statement
+    matchBranch(branch: StatementIr, i: IfIr): Maybe StatementIr ==
+      branch case LetIr => just(i::StatementIr)
+      branch case SequenceIr => 
+        (x := matchSequence(branch::SequenceIr)) case StatementIr => 
+          just(i::StatementIr)
+        nothing()
+      nothing()
+
+    -- match an if statement, verifying the following requirement:
+    -- sequences from both branches should contain only let-statements
+    matchIf(i: IfIr): Maybe StatementIr ==
+      withThenBranch? i =>
+        matchBranch(thenBranch i, i)
+      withElseBranch? i =>
+        matchBranch(elseBranch i, i)
+      withBothBranches? i =>
+        x := matchBranch(thenBranch i, i)
+        y := matchBranch(elseBranch i, i)
+        x case StatementIr and y case StatementIr =>
+          just(i::StatementIr)
+        nothing()
+      nothing()
+
+    -- match the body of an atomic loop
+    matchBody(l: RepeatIr): Maybe StatementIr ==
+      b := body l
+      b case LetIr      => just b
+      b case SequenceIr => matchSequence(b::SequenceIr)
+      b case IfIr       => matchIf(b::IfIr)
+      nothing()
+
+    -- check whether the current loop is an atomic loop. There are several
+    -- requirements for atomic loop
+    -- 1. only one iterator, step-iterator or in-iterator
+    -- 2. the body can be
+    --   2.1 a single assignment
+    --   2.2 a sequence of assignment (note the last one maybe an exit expression)
+    --   2.3 an if-statement with both branch contains a sequence of statement
+    isAtomic?(l: RepeatIr): Maybe RepeatIr ==
+      (i := matchIterator l) case ExpressionIr and_
+      (b := matchBody l) case StatementIr =>
+        just buildRepeatIr(getTree l, [i::ExpressionIr], b::StatementIr, typeOf l)
+      nothing()
+
+    -- this function obtains the iterator variable from a for-loop
+    -- there are two kinds of for-iterator:
+    -- 1. StepIteratorIr: for v in 1..10 repeat
+    -- 2. InIteratorIr: for v in l repeat
+    getIterationVariable(l: RepeatIr): VariableIr ==
+      iters : List ExpressionIr := iterators l
+      -- there should be only one iterator in the list
+      -- note: we currently don't support SuchThatAst
+      #iters ~= 1 => 
+        userError "bug in atomic loop verifier: more than 2 iterators are found"
+      iter : ExpressionIr := first iters
+      iter case StepIteratorIr => 
+        iterationVar(iter::StepIteratorIr)
+      iter case InIteratorIr =>
+        iterationVar(iter::InIteratorIr)
+      userError "bug:for-loop iterator is neither an in-iterator or a step-iterator"      
+
+    -- this function obtains the iteration sequence from a for-loop IR
+    -- the result is a list of ExpressionIr
+    -- 1. for StepIteratorIr: we return [low, high, step]
+    -- 2. for InIteratorIr: we return [s] where s is the sequence
+    getIterationSequence(l: RepeatIr): List ExpressionIr ==
+      iters : List ExpressionIr := iterators l
+      result: List ExpressionIr := []
+      -- there should be only one iterator in the list
+      -- note: we currently don't support SuchThatAst
+      #iters ~= 1 => 
+        userError "bug in atomic loop verifier: more than 2 iterators are found"
+      iter : ExpressionIr := first iters
+      iter case StepIteratorIr =>
+        iter' := iter::StepIteratorIr
+        low : ExpressionIr := lowerBound(iter')::ExpressionIr
+        high : ExpressionIr := upperBound(iter')::ExpressionIr
+        stp : ExpressionIr := step(iter')::ExpressionIr
+        [low, high, stp]
+      iter case InIteratorIr =>
+        [sequence(iter::InIteratorIr)]
+      userError "bug:for-loop iterator is neither an in-iterator or a step-iterator"
+
+    -- obtain the statement(s) in a loop body.
+    getLoopBody(l: RepeatIr): List StatementIr ==
+      b : StatementIr := body l
+      b case SequenceIr => body(b::SequenceIr)
+      [b]
+
+    -- check that v occurs linearly on the right hand side expression 
+    -- of an assignment
+    checkLinearOccurrence(v: VariableIr, e: ExpressionWithOperatorIr): Boolean ==
+      esyn : Syntax := getTree e
+      vsyn : Syntax := getTree v
+      flate : List Syntax := flatten esyn
+      counter : Integer := 0
+      for i in flate repeat
+        if vsyn = i then
+          counter := inc counter
+      counter = 1
+
+    -- position of the accmulation variable in a binary function application
+    oprposition : Integer := 0
+
+    -- traverse the an expression IR tree
+    -- collecting the operator used in the path to the accumulation variable
+    dfs(v: VariableIr, e: ExpressionWithOperatorIr,_
+                       ops: List OperatorIr): Pair(Boolean, List OperatorIr) ==
+      operands: List StatementIr := operands e
+      op : OperatorIr := operator e
+      ops := cons(op, ops)
+      oprposition := 0
+      for opr in operands repeat
+        oprposition := inc oprposition
+        if opr case ExpressionIr then
+          opr' := opr::ExpressionIr
+          if opr' case VariableIr then
+            v' := opr'::VariableIr
+            if v' = v then
+              return pair(true, ops)
+      -- otherwise recur for each operands
+      -- when a path does not lead to accumulation variable
+      -- unroll the content of ops
+      opsbackup := copy ops
+      for opr in operands repeat
+        if opr case ExpressionIr then
+          opr' := opr::ExpressionIr 
+          if opr' case ExpressionWithOperatorIr then
+            opr'' := opr'::ExpressionWithOperatorIr
+            result := dfs(v, opr'', ops)
+            if first result then
+              return pair(true, ops)
+            else
+              ops := copy opsbackup
+      return pair(false, ops)
+
+    -- checks whether the operators in the list are the same ones.
+    sameOperators?(ops: List OperatorIr): Boolean ==
+      (size := #ops) = 0 => userError "bug in dfs, empty operator list"
+      op := ops.1
+      getArity(op) ~= 2 => false
+      for e in ops repeat
+        if not(getName(e) = getName(op) and_ 
+           getArity(e) = getArity(op) and_
+           typeOf(e) = typeOf(op)) then
+          return false
+      true
+
+    -- this function checks the consistent use of the accumulation operator
+    -- in the right hand side expression of a let-statement
+    -- note: we are working at the IR-level
+    -- this function returns the operator and the associativity of 
+    -- the reduction
+    -- 1. left associative
+    -- 2. right associative
+    -- 3. unknown
+    checkOperatorConsistency(v: VariableIr, e: ExpressionWithOperatorIr):_
+                                    Pair(Boolean, Pair(OperatorIr, Integer)) ==
+      ops : List OperatorIr := empty()
+      result := dfs(v, e, ops)
+      ops := second result
+      if first(result) and sameOperators?(ops) then
+        return pair(true, pair(first ops, oprposition))
+      pair(false, pair(first ops, oprposition))
+
+    -- check whether an assignment is an accumulation assignment
+    isAccumulationAssignment?(s: StatementIr): Maybe ACREC ==
+      s' : LetIr := s::LetIr
+      v  : StatementIr := lhs(s')
+      -- take out the variable at lhs
+      not(v case ExpressionIr) => nothing()
+      v' := v::ExpressionIr
+      not(v' case VariableIr) => nothing()
+      var : VariableIr := v'::VariableIr
+      -- take out the expression at rhs
+      e : StatementIr := rhs(s') 
+      not(e case ExpressionIr) => nothing()
+      e' : ExpressionIr := e::ExpressionIr
+      not(e' case ExpressionWithOperatorIr) => nothing()
+      exp := e'::ExpressionWithOperatorIr
+      -- check the linear occurence of the lhs variable in the right hand side
+      not checkLinearOccurrence(var, exp) => nothing()
+      -- check the consistent use of the accumulation operator
+      not first(result := checkOperatorConsistency(var, exp)) => nothing()
+      r : ACREC := [var, first second result, second second result, s']
+      just r
+
+    -- checks whether the value of expression e depends on v
+    dependsOn(e: ExpressionIr, v: VariableIr): Boolean ==
+      esyn : Syntax := getTree e
+      vsyn : Syntax := getTree v
+      within?(vsyn, esyn)
+
+    -- verify that an accumulation variable does not appear on the 
+    -- right hand sides of other accumulation assignments whose accumulation 
+    -- variables are different with the current variable.
+    checkDependence(lets: List ACREC, seq: List ExpressionIr): Boolean ==
+      counter : Integer := 1
+      for a in lets repeat
+        -- check dependence between current variable and other accumulation statement
+        expLst: List ExpressionIr :=_
+          [rhs(lets.i.acclet)::ExpressionIr for i in 1..#lets | i~= counter]
+        for exp in expLst repeat
+          if dependsOn(exp, a.accVar) then
+            return false
+
+        -- check dependence between current variable and iteration sequence
+        for exp in seq repeat
+          if dependsOn(exp, a.accVar) then
+            return false
+        counter := inc counter
+      true
+
+    -- check whether a loop is an accumulation loop
+    isParallelAccumLoop?(l: RepeatIr): Maybe ACLP ==
+      not((r := isAtomic? l) case RepeatIr) => nothing()
+      l' := retract r 
+
+      -- the forward substitution pass is disabled temporarily.
+      -- will be enabled after we are able to handle the whole
+      -- domain or category
+      v : VariableIr := getIterationVariable(l')
+      seq : List ExpressionIr := getIterationSequence(l')
+      b : List StatementIr := getLoopBody(l')      
+      -- stores the list of accumulation statement records
+      accassign : List ACREC := empty()
+      -- check each individual assignment
+      for s in b repeat      
+        if (rec := isAccumulationAssignment?(s)) case nothing then
+          return nothing()
+        else
+          accassign := concat(accassign, retract rec)
+      not checkDependence(accassign, seq) => nothing()
+      for acc in accassign repeat
+        if not isAssociative?(acc.accOp) then
+          return nothing()
+      result : ACLP := [v, seq, accassign]
+      just result
+
+
+   -- this function preprocesses a loop by splitting 
+   -- an accumulation loop into subloops. Each split loop only has 
+   -- one accumulation statement in the body
+    fission(r: ACLP): List ACLP ==
+      result : List ACLP := []
+      v : VariableIr := r.iterVar
+      s : List ExpressionIr := r.iterSeq
+      for e in r.accstat repeat
+        t : ACLP := [v, s, [e]]
+        result := concat(result, t)
+      result
+
+    -- generate the sequence used in the iteration
+    -- 1. for e in l repeat, we just generate l
+    -- 2. for e in 1..5 by 2 repeat, we generate collect:[id for id in 1..5 by 2]
+    genIterationSequence(s: List ExpressionIr): ExpressionIr ==
+      #s = 1 => first s
+      l   := (s.1)::StatementIr
+      h   := (s.2)::StatementIr
+      stp := (s.3)::StatementIr
+      i   : VariableIr   := buildVarIr((gensym()$Identifier)::Syntax, typeOf l)
+      bd  : StatementIr := i::ExpressionIr::StatementIr
+      iter: StepIteratorIr := buildStepIteratorIr(makeUnknown(), i, [l], [h], stp)
+      typeOfColl : TypeIr := buildTypeIr(buildSyntax(makeList(),_
+                                                  [getTree typeOf l]), "domain")
+      collir : CollectIr := buildCollectIr(makeUnknown(),_
+                              bd, [iter::ExpressionIr::StatementIr], typeOfColl)
+      collir::ExpressionIr
+
+    -- generates an assignment used in the target code
+    genLet(v: VariableIr, r: ExpressionIr): LetIr ==
+      t : TypeIr     := typeOf r
+      buildLetIr(makeUnknown(), v::ExpressionIr::StatementIr, r::StatementIr,  t)
+
+    -- the source type of the reduction
+    -- i.e., v := f(v, x), the variable stores the type of x
+    sourceType : TypeIr := buildTypeIr(makeUnknown())
+
+    -- substitute the combination form f(v, x) with x
+    substituteAccumVar(v: VariableIr, e: ExpressionIr): ExpressionIr ==
+      if (e case ExpressionWithOperatorIr) then
+        e' := e::ExpressionWithOperatorIr
+        -- base case
+        if #(oprs := operands e') = 2 then
+          left  : StatementIr := oprs.1
+          right : StatementIr := oprs.2
+          if (left case ExpressionIr) then
+            left' := left::ExpressionIr
+            if left' case VariableIr and (left'::VariableIr = v) then
+              sourceType := typeOf right
+              return (right::ExpressionIr)
+          if (right case ExpressionIr) then
+            right' := right::ExpressionIr
+            if right' case VariableIr and (right'::VariableIr = v) then
+              sourceType := typeOf left
+              return (left::ExpressionIr)
+
+        -- recur
+        syn : Syntax := getTree e'
+        op  : OperatorIr := operator e'
+        newOperands : List StatementIr := empty()
+        tp  : TypeIr := typeOf e'
+        for opr in oprs repeat
+          if opr case ExpressionIr then
+            newOperands := concat(newOperands,_
+                          substituteAccumVar(v, opr::ExpressionIr)::StatementIr)
+          else
+            newOperands := concat(newOperands, opr)
+        return buildExpressionWithOperatorIr(syn, op, newOperands, tp)::ExpressionIr
+      e
+
+    -- substitute all the iteration variables with the specified parameter of 
+    -- the newly generated anonymous function
+    substituteIterVar(v: VariableIr, iv: VariableIr, e: ExpressionIr):  ExpressionIr ==
+      -- base case
+      (e case VariableIr) and (e::VariableIr = iv) => v::ExpressionIr
+      if (e case ExpressionWithOperatorIr) then
+        e' := e::ExpressionWithOperatorIr
+        oprs := operands e'
+        -- recur
+        syn : Syntax := getTree e'
+        op  : OperatorIr := operator e'
+        newOperands : List StatementIr := empty()
+        tp  : TypeIr := typeOf e'
+        for opr in oprs repeat
+          if opr case ExpressionIr then
+            newOperands := concat(newOperands,_
+                      substituteIterVar(v, iv, opr::ExpressionIr)::StatementIr)
+          else
+            newOperands := concat(newOperands, opr)
+        return buildExpressionWithOperatorIr(syn, op, newOperands, tp)::ExpressionIr
+      e
+
+    -- generates the anonymous function used in the target code
+    genAnonymousFunction(b: ACREC, iterv: VariableIr): AnonymousFunctionIr ==
+      -- take out the rhs of the let-assignment
+      e : ExpressionIr := rhs(b.acclet)::ExpressionIr
+      funpar: VariableIr := buildVarIr((gensym()$Identifier)::Syntax, typeOf iterv)
+      e := substituteAccumVar(b.accVar, e)
+      e := substituteIterVar(funpar, iterv, e)
+      --sig : TypeIr := buildTypeIrForMapping([getTree typeOf iterv,_
+      --                                       getTree sourceType])
+
+      buildAnonyFunIr(makeUnknown(), [funpar], sourceType, e::StatementIr)
+
+    -- computes the resultant type of a parallel map
+    getResultTypeOfMap(g: AnonymousFunctionIr): TypeIr ==
+      t := buildSyntax(makeList(), [getTree(getResultType(typeOf g))])
+      buildTypeIr(t)
+
+    -- generates the parallel mapping used in the second assignment
+    genParallelMap(g: AnonymousFunctionIr, s: ExpressionIr): ExpressionIr ==
+      -- the resultant type of the anonymous function g
+      resultType : TypeIr := typeOf g
+      sigofg     : TypeIr := buildTypeIrForMapping([typeOf first parameters g,_
+                                                                     typeOf g])
+
+      -- the resultant type of parallel mapping
+      typeOfMap  : TypeIr := buildTypeIrForMapping [sigofg, typeOf s,_
+                                               makeIntegerTypeIr(), resultType]
+
+      opname     : Syntax := 'parallelMap::Identifier::Syntax
+      oprs       : List StatementIr := [g::ExpressionIr::StatementIr,_
+                                                s::StatementIr, getValIrOfP()]
+      -- FIXME: the ParallelMapReduce needs to be parameterized by two types
+      typeanot   : TypeIr :=  buildParallelMapReduceTypeIr(typeOf g)
+
+      pmapop     : OperatorIr := buildOperatorIr(opname, resultType, 3, typeanot)
+      result := buildExpressionWithOperatorIr(makeUnknown(), pmapop, oprs, typeOfMap)
+      result::ExpressionIr
+
+   --  macro ACREC == Record(accVar: VariableIr, accOp: OperatorIr, assoc: Integer, acclet: LetIr)
+   --  macro ACLP == Record(iterVar: VariableIr, iterSeq: List ExpressionIr, accstat: List ACREC)
+
+    -- create operator ir node for parallelLeftReduce operator
+    createParallelLeftReduce(opt: TypeIr, seqt: TypeIr,_
+                             idt: TypeIr, t: TypeIr): OperatorIr ==
+      tir : TypeIr := buildTypeIrForMapping_
+         [getTree opt, getTree seqt, getTree idt, makeIntegerType(), getTree t]
+      -- FIXME: the parallel map reduce package needs to be parameterized by 
+      -- two types
+      srcir : TypeIr := buildParallelMapReduceTypeIr t
+      tree : Syntax := 'parallelLeftReduce::Identifier::Syntax
+      buildOperatorIr(tree, tir, 4, srcir)
+
+    -- generates left associative parallel reduction
+    genLeftParallelReduce(f: OperatorIr, s: ExpressionIr,_
+                          a: VariableIr, id: ExpressionIr): ExpressionIr ==
+      op : OperatorIr := createParallelLeftReduce(typeOf f, typeOf s,_
+                                                  typeOf id, typeOf a)
+      oprs: List StatementIr := [f::ExpressionIr::StatementIr,_
+                   s::StatementIr, id::StatementIr, getValIrOfP()]
+      buildExpressionWithOperatorIr(makeUnknown(), op, oprs, typeOf a)::ExpressionIr
+
+    -- create operator ir node for parallelRightReduce operator
+    createParallelRightReduce(opt: TypeIr, seqt: TypeIr,_
+                             idt: TypeIr, t: TypeIr): OperatorIr ==
+      tir : TypeIr := buildTypeIrForMapping_
+         [getTree opt, getTree seqt, getTree idt, makeIntegerType(), getTree t]
+      -- FIXME: the parallel map reduce package needs to be parameterized by 
+      -- two types
+      srcir : TypeIr := buildParallelMapReduceTypeIr t
+      tree : Syntax := 'parallelRightReduce::Identifier::Syntax
+      buildOperatorIr(tree, tir, 4, srcir)
+
+    -- generates right associative parallel reduction
+    genRightParallelReduce(f: OperatorIr, s: ExpressionIr,_
+                          a: VariableIr, id: ExpressionIr): ExpressionIr ==
+      op : OperatorIr := createParallelRightReduce(typeOf f, typeOf s,_
+                                                   typeOf id, typeOf a)
+      oprs: List StatementIr := [f::ExpressionIr::StatementIr,_
+                   s::StatementIr, id::StatementIr, getValIrOfP()]
+      buildExpressionWithOperatorIr(makeUnknown(), op, oprs, typeOf a)::ExpressionIr
+
+    -- generate the combination form used in the last assignment
+    genFunCall(f: OperatorIr, a: VariableIr,_
+                              e: ExpressionIr, assoc: Integer): ExpressionIr ==
+      oprs : List StatementIr := []
+      if assoc = 1 then  -- left associative
+        oprs := [a::ExpressionIr::StatementIr, e::StatementIr]
+      else if assoc = 2 then
+        oprs := [e::StatementIr, a::ExpressionIr::StatementIr]
+      else
+        userError "bug: unknown associativity"
+      buildExpressionWithOperatorIr(makeUnknown(), f, oprs, typeOf a)::ExpressionIr
+
+    -- retrieves the neutral element of an operator
+    -- FIXME: neutral value whose value is given by a common function call
+    -- (not constant construction) can not be well represented
+    -- this can be fixed by adding more typechecking at assumption checking phase
+    -- then pass those type information to this function so that we can create
+    -- complete IR nodes with correct type information and function resolution
+    -- information
+    getNeutralValue(op: OperatorIr, tp: TypeIr): ExpressionIr ==
+      ps : List PROPTY := []
+      for rec in associativeOperators repeat
+       if matchRecord?(rec, op) then
+         ps := rec.props  
+         break
+      prop := first ps
+      tree : Syntax := prop.propval 
+      id : ValueIr := buildValIr(tree, tp)
+      id::ExpressionIr
+
+    -- Transform an accumulation loop to parallel reduction
+    -- we have manually applied the forward substitution in this implementation
+    transformAccumLoop(l: ACLP): List StatementIr ==
+      v : VariableIr        := l.iterVar
+      s : ExpressionIr      := genIterationSequence(l.iterSeq)
+      b : ACREC             := first l.accstat
+      a : VariableIr        := b.accVar
+      f : OperatorIr        := b.accOp
+      alpha : Syntax  := first freshVariables(1)
+      g : AnonymousFunctionIr := genAnonymousFunction(b, v)
+      pmapir : ExpressionIr := genParallelMap(g, s)
+      -- the neutral value should have the same type as 
+      -- the accumulation variable does
+      id : ExpressionIr := getNeutralValue(b.accOp, typeOf a)
+      theta3 : ExpressionIr
+      if b.assoc = 1 then
+        theta3 := genLeftParallelReduce(f, pmapir, a, id)
+      else if b.assoc = 2 then
+        theta3 := genRightParallelReduce(f, pmapir, a, id)
+      else
+        userError "bug: doesn't know the associativity of the current reduction"
+      let : LetIr := genLet(a, genFunCall(f, a, theta3, b.assoc))
+      [let::StatementIr]
+
+    -- Transform accumulation loop to parallel reduce function call
+    -- note: we only verify THIS loop, we don't go into the sequence or 
+    -- loop which are nested inside because our visiting framework will do that
+    analyze(l: RepeatIr, updateParent: StatementIr -> Void): Void ==
+      -- reduction detection
+      (r := isParallelAccumLoop?(l)) case nothing => void()
+      r' := retract r
+      -- start program transformation
+      subloops : List ACLP := fission(r')
+      letseqlst: List List StatementIr := map(transformAccumLoop, subloops)
+      sequence : List StatementIr := reduce(concat, letseqlst)
+      lastInSeq : StatementIr := last sequence
+      tofseq : TypeIr := typeOf lastInSeq
+      targetCode : StatementIr
+      if #subloops > 1 then
+        sequenceIr : SequenceIr := buildSequenceIr(makeUnknown(),_
+                                               sequence, tofseq)
+        targetCode := sequenceIr::StatementIr
+      else
+        targetCode := lastInSeq
+      updateParent(targetCode)
+
+    macro BCASE  == Pair(StatementIr, StatementIr)
+    macro RCASE  == Pair(StatementIr, StatementIr)
+    macro RECPAT == Pair(BCASE, RCASE)
+
+    -- checks whether an expression contains a recursive call
+    -- the pattern is: a(b, f(x)) where f is the function being defined
+    containRecursiveCall?(e: ExpressionIr, fname: Identifier): Boolean ==
+      not (e case ExpressionWithOperatorIr) => false
+      oprs : List StatementIr := operands(e::ExpressionWithOperatorIr)
+      not (#oprs = 2) => false
+      opr1 : StatementIr := oprs.1
+      opr2 : StatementIr := oprs.2
+      -- right now we assume recursive operator is always in the second element
+      not(opr2 case ExpressionIr) => false
+      opr2' := opr2::ExpressionIr 
+      not(opr2' case ExpressionWithOperatorIr) => false
+      call := opr2'::ExpressionWithOperatorIr
+      -- FIXME: we need to check more information here
+      getName(operator(call)) = fname
+
+    -- checks whether an expression contains a recursive call
+    -- the pattern is: a(b, f(x)) where f is the function being defined
+    getRecursiveCall(e: ExpressionIr, fname: Identifier): ExpressionWithOperatorIr ==
+      oprs : List StatementIr := operands(e::ExpressionWithOperatorIr)
+      opr1 : StatementIr := oprs.1
+      opr2 : StatementIr := oprs.2
+      -- right now we assume recursive operator is always in the second element
+      opr2' := opr2::ExpressionIr 
+      call := opr2'::ExpressionWithOperatorIr
+      -- FIXME: we need to check more information here
+      call
+
+    -- check whether an expression has the form of the base case
+    -- for a recursion pattern
+    isBaseCase(e: ExpressionIr): Boolean ==
+      e case VariableIr => true
+      e case ValueIr    => true
+      e case ExpressionWithOperatorIr =>
+        name := getName(operator(e::ExpressionWithOperatorIr)) 
+        (name = 'Zero::Identifier) or (name = 'One::Identifier)
+      false
+
+    -- check whether it has the most basic recursive reduction pattern
+    hasSimpleReducePattern?(f: FunctionDeclarationIr): Maybe RECPAT ==
+      fname: Identifier  := getName f
+      fbody: StatementIr := getBody f
+      fbody case SequenceIr => 
+        --print("level1"::OutputForm)
+        stmts : List StatementIr := body(fbody::SequenceIr)
+        #stmts = 2 =>
+          --print("level2"::OutputForm)
+          fst : StatementIr := first stmts
+          snd : StatementIr := second stmts
+          --print(fst::OutputForm)
+          --print(snd::OutputForm)
+          if snd case ExitIr then
+            snd := body snd
+          (fst case LetIr) and (snd case IfIr) =>
+            --print("level3"::OutputForm)
+            lhs  : StatementIr := lhs(fst::LetIr)
+            rhs  : StatementIr := rhs(fst::LetIr)
+            cond : StatementIr := condition(snd::IfIr)
+            --print(lhs::OutputForm)
+            --print(cond::OutputForm)
+            --not (cond case ExpressionIr) =>
+            --  print("here"::OutputForm)
+            --  nothing()
+            (not (cond case ExpressionIr)) or (not (lhs case ExpressionIr)) => nothing()
+            cond' := cond::ExpressionIr
+            lhs'  := lhs ::ExpressionIr
+            (not (cond' case VariableIr)) or (not (lhs' case VariableIr)) => nothing()
+            cond1 := cond'::VariableIr
+            lhs1  := lhs'::VariableIr
+            not((getName(cond1) = getName(lhs1))@Boolean) => nothing()
+            true =>
+              --print("level4"::OutputForm)
+              tbranch : StatementIr := thenBranch(snd)
+              ebranch : StatementIr := elseBranch(snd)
+              (tbranch case ExpressionIr) and (ebranch case ExpressionIr) =>
+                --print("level5"::OutputForm)
+              -- we currently assume tbranch is the base case 
+              -- and ebranch is the recursive case
+                isBaseCase(tbranch::ExpressionIr) and_
+                 (containRecursiveCall?(ebranch::ExpressionIr, fname)) =>
+                  --print("level6"::OutputForm)
+                  just(pair(pair(rhs, tbranch), pair(rhs, ebranch))) 
+                nothing() 
+              nothing()
+            nothing()
+          nothing()
+        nothing()
+      nothing()
+
+    -- preprocess the function body
+    preprocessing(f: FunctionDeclarationIr): Void ==
+      void()
+
+    -- for now a sequence is only a list
+    isSequence?(v: VariableIr): Boolean ==
+      t : TypeIr := typeOf v
+      (getKind t = "domain") and_
+      isList?(getTree t)
+
+    -- obtain sequence from parameters
+    getSequenceParameter(pars: List VariableIr): VariableIr ==
+      seqs := [p for p in pars | isSequence? p]            
+      not(#seqs = 1) => error "bug in getSeqPar: not the only list parameter"
+      first seqs
+
+    -- check base case condition
+    -- since we are reducing over a sequence, we check
+    -- whether the base condition is empty?(seq)
+    checkBaseCondition(cond: StatementIr, l: VariableIr): Boolean ==
+      cond1 := cond::ExpressionIr
+      cond1 case ExpressionWithOperatorIr => 
+        cond' := cond1::ExpressionWithOperatorIr
+        op    := operator cond'
+        oprs  := operands cond'
+        (getName(op) = 'empty?::Identifier) and (#oprs = 1) =>
+          not (oprs.1 case ExpressionIr) => false
+          opr := (first oprs)::ExpressionIr
+          not (opr case VariableIr) => false
+          opr' := opr::VariableIr
+          opr' = l
+        false
+      false
+
+    -- verify whether the incremental provided by the rest function over list
+    verifyIncremental(vbefore: VariableIr, eafter: ExpressionIr): Boolean ==
+      true
+
+    genIterativeLoop(resultVar: VariableIr, binOp: OperatorIr, lst: VariableIr): StatementIr ==
+      itVar : VariableIr   := buildVarIr((gensym()$Identifier)::Syntax, typeOf(resultVar))
+      iter  : InIteratorIr := buildInIteratorIr(makeNil(), itVar, lst::ExpressionIr, makeVoidTypeIr()$TypeIrUtility)
+      rhs   : ExpressionIr := buildExpressionWithOperatorIr(makeNil(), binOp, [resultVar::ExpressionIr::StatementIr, itVar::ExpressionIr::StatementIr], typeOf(resultVar))::ExpressionIr
+      acc   : StatementIr  := buildLetIr(makeNil(), resultVar::ExpressionIr::StatementIr, rhs::StatementIr, typeOf(resultVar))::StatementIr
+      buildRepeatIr(makeNil(), [iter::ExpressionIr], acc, makeVoidTypeIr()$TypeIrUtility)::StatementIr
+
+    genIterativeBody(f: FunctionDeclarationIr, baseValue: ExpressionWithOperatorIr, binOp: OperatorIr, lst: VariableIr): StatementIr ==
+      resultType    : TypeIr     := typeOf f
+      resultVar     : VariableIr := buildVarIr((gensym()$Identifier)::Syntax, resultType)
+      initResultVar : StatementIr := buildLetIr(makeNil(),_
+                                               resultVar::ExpressionIr::StatementIr,_
+                                               baseValue::ExpressionIr::StatementIr, resultType)::StatementIr
+      iterativeLoop : StatementIr := genIterativeLoop(resultVar, binOp, lst)
+      returnStmt    : StatementIr := buildReturnIr(makeNil(), resultVar::ExpressionIr::StatementIr, resultType)::StatementIr
+      buildSequenceIr(makeNil(), [initResultVar, iterativeLoop, returnStmt], resultType)::StatementIr
+
+    -- checks whether a function decl ir has recursive reduction pattern
+    hasRecursivePattern?(f: FunctionDeclarationIr): Void ==
+      preprocessing(f)
+      (p := hasSimpleReducePattern?(f)) case RECPAT => 
+        pat  := p::RECPAT
+        cond := first(first p)
+        fpars : List VariableIr := parameters f
+        not checkBaseCondition(cond, getSequenceParameter(fpars)) => void()
+        baseValue := second(first p)::ExpressionIr::ExpressionWithOperatorIr
+        recValue := second(second p)::ExpressionIr
+        reccall := getRecursiveCall(recValue, getName(f))
+        verifyIncremental(getSequenceParameter(fpars), (operands(reccall).1)::ExpressionIr)
+        binOp : OperatorIr := operator(recValue::ExpressionWithOperatorIr)
+        isAssociative?(binOp) =>
+          lst := getSequenceParameter(fpars)
+          iterativeBody := genIterativeBody(f, baseValue, binOp, lst)
+          updateBody!(f, iterativeBody)
+        print(pat::OutputForm)
+        print("success!"::OutputForm)
+        void()
+      void()
+
+    -- checks whether the function declaration implements a recursive reduction
+    -- if it is, rewrite it to its iterative version
+    -- we assume there's only one parameter to the function definition
+    analyze(f: FunctionDeclarationIr, updateParent: StatementIr -> Void): Void ==
+      hasRecursivePattern?(f)
+
+      --print("The function declaration IR: "::OutputForm)
+      --print(f::OutputForm)
+      void()
+
+    -- for other langauge syntax, we do nothing
+    analyze(s: SequenceIr, updateParent:  StatementIr -> Void): Void == void()
+    analyze(i: IfIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(c: ColonIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(l: LetIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(e: ExitIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(c: CaseIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(r: ReturnIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(v: ValueIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(v: VariableIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(i: InIteratorIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(w: WhileIteratorIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(s: StepIteratorIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(s: SuchThatIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(c: CollectIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(c: CoerceIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(p: PretendIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(c: ConstructIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(l: LispCallIr, updateParent: StatementIr -> Void): Void == void()
+    analyze(o: OperatorIr, updateParent: StatementIr -> Void): Void == void()
+
+
+
