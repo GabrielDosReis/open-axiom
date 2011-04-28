@@ -1708,7 +1708,7 @@
         (T NIL)))))
 
 (DEFUN |shoeCompTran1| (|x|)
-  (PROG (|res| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
+  (PROG (|args| |res| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
     (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
     (RETURN
       (COND
@@ -1793,6 +1793,18 @@
                                      (SETQ |bfVar#131|
                                       (CDR |bfVar#131|)))))))
                         (SETQ |bfVar#129| (CDR |bfVar#129|))))))
+             ((AND (CONSP |x|) (EQ (CAR |x|) '|vector|)
+                   (PROGN
+                     (SETQ |ISTMP#1| (CDR |x|))
+                     (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                          (PROGN
+                            (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                            (AND (CONSP |ISTMP#2|)
+                                 (EQ (CAR |ISTMP#2|) 'LIST)
+                                 (PROGN
+                                   (SETQ |args| (CDR |ISTMP#2|))
+                                   T))))))
+              (CONS 'VECTOR |args|))
              (T (|shoeCompTran1| (CAR |x|))
                 (|shoeCompTran1| (CDR |x|)))))))))
 
