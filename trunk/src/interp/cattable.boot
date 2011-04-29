@@ -35,10 +35,12 @@
 import simpbool
 import g_-util
 namespace BOOT
+module cattable where
+  hasCat: (%Instantiation,%Instantiation) -> %Code
 
-hasCat(domainOrCatName,catName) ==
-  catName is "Type"  -- every domain is a Type
-    or constructorHasCategoryFromDB [domainOrCatName,:catName]
+hasCat(dom,cat) ==
+  cat.op is "Type"  -- every domain is a Type
+    or constructorHasCategoryFromDB [dom.op,:cat.op]
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
@@ -123,7 +125,7 @@ simpHasPred(pred,:options) == main where
     IDENTP npred or null hasIdent npred => npred
     pred
   evalHas (pred := ["has",d,cat]) ==
-    x := hasCat(first d,first cat)
+    x := hasCat(d,cat)
     y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
       false  --if not there, it is false
