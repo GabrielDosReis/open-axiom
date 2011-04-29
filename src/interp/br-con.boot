@@ -246,7 +246,7 @@ reportAO(kind,oplist) ==
   htSay '"\newline "
 
 mkDomTypeForm(typeForm,conform,domname) == --called by kargPage
-  domname => SUBLISLIS(rest domname,rest conform,typeForm)
+  domname => applySubst(pairList(conform.args,domname.args),typeForm)
   typeForm is ['Join,:r] => ['Join,:[mkDomTypeForm(t,conform,domname) for t in r]]
   null hasIdent typeForm => typeForm
   nil
@@ -397,10 +397,11 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   catforms := [[pakform,:pred] for i in 0..maxIndex catvec | test ] where
     test() ==
       pred := simpCatPredicate
-        p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
+        p := applySubst(pairList($FormalMapVariableList,conform.args),kTestPred catpredvec.i)
         $domain => eval p
         p
-      if domname and CONTAINED('$,pred) then pred := substitute(domname,'$,pred)
+      if domname and CONTAINED('$,pred) then
+        pred := substitute(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
       (pak := catinfo . i) and pred   --only those with default packages
     pakform() ==
@@ -502,7 +503,8 @@ kcpPage(htPage,junk) ==
   conname := opOf conform
   page := htInitPage(['"Parents of ",:heading],htCopyProplist htPage)
   parents := parentsOf conname --was listSort(function GLESSEQP, =this)
-  if domname then parents := SUBLISLIS(rest domname,rest conform,parents)
+  if domname then
+    parents := applySubst(pairList(conform.args,domname.args),parents)
   htpSetProperty(htPage,'cAlist,parents)
   htpSetProperty(htPage,'thing,'"parent")
   choice :=
@@ -511,7 +513,7 @@ kcpPage(htPage,junk) ==
   dbShowCons(htPage,choice)
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
-  alist := SUBLISLIS(rest domform,rest conform,alist)
+  alist := applySubst(pairList(conform.args,domform.args),alist)
   for pair in alist repeat 
     pair.rest := simpHasPred(rest pair,domform)
   [pair for (pair := [.,:pred]) in alist | pred]
@@ -625,7 +627,7 @@ kcnPage(htPage,junk) ==
     opOf conform
   domList := getImports pakname
   if domname then
-    domList := SUBLISLIS([domname,:rest domname],['$,:rest conform],domList)
+    domList := applySubst(pairList(['$,:conform.args],[domname,:domname.args]),domList)
   cAlist := [[x,:true] for x in domList]
   htpSetProperty(htPage,'cAlist,cAlist)
   htpSetProperty(htPage,'thing,'"benefactor")
@@ -836,7 +838,7 @@ dbConstructorDoc(conform,$op,$sig) == fn conform where
   gn([op,:alist]) ==
     op = $op and "or"/[doc or '("") for [sig,:doc] in alist | hn sig]
   hn sig ==
-    #$sig = #sig and $sig = SUBLISLIS($args,$FormalMapVariableList,sig)
+    #$sig = #sig and $sig = applySubst(pairList($FormalMapVariableList,$args),sig)
 
 dbDocTable conform ==
 --assumes $docTableHash bound --see dbExpandOpAlistIfNecessary
@@ -860,9 +862,9 @@ originsInOrder conform ==  --domain = nil or set to live domain
 
 dbAddDocTable conform ==
   conname := opOf conform
-  storedArgs := rest getConstructorForm conname
-  for [op,:alist] in SUBLISLIS(["$",:rest conform],
-    ["%",:storedArgs],getConstructorDocumentationFromDB opOf conform)
+  storedArgs := getConstructorForm(conname).args
+  for [op,:alist] in applySubst(pairList(["%",:storedArgs],["$",:conform.args]),
+    getConstructorDocumentationFromDB opOf conform)
       repeat
        op1 :=
          op = '(Zero) => 0
@@ -895,7 +897,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
   hn [sig,:doc] ==
     $which = '"attribute" => sig is ['attribute,: =$sig] and doc
     pred := #$sig = #sig and
-      alteredSig := SUBLISLIS(KDR $conform,$FormalMapVariableList,sig)
+      alteredSig := applySubst(pairList($FormalMapVariableList,KDR $conform),sig)
       alteredSig = $sig
     pred =>
       doc =>
@@ -1068,7 +1070,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   signature := getConstructorSignature conname
   sig :=
     getConstructorKindFromDB conname = "category" =>
-      SUBLISLIS(conargs,$TriangleVariableList,signature)
+      applySubst(pairList($TriangleVariableList,conargs),signature)
     sublisFormal(conargs,signature)
   htSaySaturn '"\begin{description}"
   displayDomainOp(htPage,'"constructor",conform,conname,sig,true,doc,indexOrNil,'dbSelectCon,null exposeFlag,nil)

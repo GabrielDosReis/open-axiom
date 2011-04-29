@@ -107,7 +107,7 @@ modemapToAx(modemap) ==
   resultType :=  axFormatType stripType target
   categoryForm? constructor =>
       categoryInfo := getConstructorCategoryFromDB constructor
-      categoryInfo := SUBLISLIS($FormalMapVariableList, $TriangleVariableList,
+      categoryInfo := applySubst(pairList($TriangleVariableList,$FormalMapVariableList), 
                        categoryInfo)
       null args =>
           ['Define,['Declare, constructor,'Category],
@@ -174,7 +174,7 @@ axFormatType(typeform) ==
         ['RestrictTo, ['LitInteger, STRINGIMAGE typeform ], 'PositiveInteger]
      FLOATP typeform => ['LitFloat, STRINGIMAGE typeform]
      symbolMember?(typeform,$TriangleVariableList) =>
-        SUBLISLIS($FormalMapVariableList, $TriangleVariableList, typeform)
+       applySubst(pairList($TriangleVariableList, $FormalMapVariableList), typeform)
      symbolMember?(typeform, $FormalMapVariableList) => typeform
      axAddLiteral('string, 'Symbol, 'Literal)
      ['RestrictTo, ['LitString, symbolName typeform], 'Symbol]
@@ -364,7 +364,7 @@ get1defaultOp(op,index) ==
   signumList :=
  -- following substitution fixes the problem that default packages
  -- have $ added as a first arg, thus other arg counts are off by 1.
-    SUBLISLIS($FormalMapVariableList, rest $FormalMapVariableList,
+    applySubst(pairList(rest $FormalMapVariableList,$FormalMapVariableList), 
              dcSig(numvec,index,numOfArgs))
   index := index + numOfArgs + 1
   slotNumber := numvec.index

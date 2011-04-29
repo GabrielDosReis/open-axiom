@@ -407,7 +407,7 @@ form2String1 u ==
       application2String(constructorName op,[form2String1(a) for a in argl], u1)
     ml := rest conSig
     if not freeOfSharpVars ml then
-      ml:=SUBLIS([[pvar,:val] for pvar in $FormalMapVariableList
+      ml := applySubst([[pvar,:val] for pvar in $FormalMapVariableList
         for val in argl], ml)
     argl:= formArguments2String(argl,ml)
       -- extra null check to handle mutable domain hack.

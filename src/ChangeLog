@@ -1,5 +1,22 @@
 2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (assocSymbol): New.
+	(applySubst): Likewise.  Export.
+	* boot/ast.boot: Use it.  Remove SUBLIS and SUBLISLIS.
+	* interp/ax.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cattable.boot (hasCat): Add type.  Accept only
 	instantiation forms.
 	(simpHasPred): Adjust call to hasCat.

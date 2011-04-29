@@ -261,7 +261,7 @@ optCall (x is ['%call,:u]) ==
   u is [['XLAM,vars,body],:args] =>
     atom vars => body
     #vars > #args => systemErrorHere ['optCall,x]
-    resetTo(x,optXLAMCond SUBLIS(pairList(vars,args),body))
+    resetTo(x,optXLAMCond applySubst(pairList(vars,args),body))
   [fn,:a] := u
   atom fn =>
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
@@ -595,9 +595,9 @@ optLET u ==
       clause isnt [test,stmt] => continue := false
       -- Stop inlining at least one test is not simple
       not isSimpleVMForm test => continue := false
-      clause.first := SUBLIS(substPairs,test)
+      clause.first := applySubst(substPairs,test)
       isSimpleVMForm stmt =>
-        clause.rest.first := SUBLIS(substPairs,stmt)
+        clause.rest.first := applySubst(substPairs,stmt)
       continue := false
     continue => body
     u
@@ -610,7 +610,7 @@ optLET u ==
     def := first defs
     atom def => systemErrorHere ["optLET",def] -- cannot happen
     def.rest := second def
-  SUBLIS(inits,body)
+  applySubst(inits,body)
 
 optBind form ==
   form isnt ['%bind,inits,.] => form           -- accept only simple bodies

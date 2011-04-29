@@ -258,7 +258,7 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
   opl := nil
   for [op,:alist] in opAlist repeat
     for [sig,:.] in alist repeat
-      opl := [[op,:SUBLISLIS($FormalMapVariableList,rest conform,sig)],:opl]
+      opl := [[op,:applySubst(pairList(conform.args,$FormalMapVariableList),sig)],:opl]
   opl := reverse! opl
   u := whoUses(opl,conform)
   prefix := pluralSay(#u,'"constructor uses",'"constructors use")
@@ -370,7 +370,7 @@ koOps(conform,domname,:options) == main where
 --    if relatives? then
 --      relatives := relativesOf(conform,domname)
 --      if domname then relatives :=
---      SUBLISLIS([domname,:rest domname],['_$,:rest conform],relatives)
+--      applySubst(pairList(['_$,:conform.args],[domname,:domname.args]),relatives)
 --      --kill all relatives that have a sharp variable remaining in them
 --      for x in relatives repeat
 --      or/[y for y in CDAR x | isSharpVar y] => 'skip
@@ -559,7 +559,7 @@ modemap2Sig(op,mm) ==
     false
   condlist := modemap2SigConds conds
   [origin, vlist, flist] := getDcForm(dc, condlist) or return nil
-  subcondlist := SUBLISLIS(flist, vlist, condlist)
+  subcondlist := applySubst(pairList(vlist,flist),condlist)
   [predList,vlist, flist] := getSigSubst(subcondlist, nil, vlist, flist)
   if partial? then
     target := dcSig . 1

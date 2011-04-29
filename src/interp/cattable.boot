@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -165,7 +165,7 @@ simpCatHasAttribute(domform,attr) ==
     u := LASSOC(attr,catval . 2) => first u
     return false                            --exit: not there
   pred = true => true
-  eval SUBLISLIS(rest domform,rest conform,pred)
+  eval applySubst(pairList(conform.args,domform.args),pred)
 
 hasIdent pred ==
   pred is [op,:r] =>
@@ -385,7 +385,7 @@ categoryParts(conform,category,:options) == main where
       res := [listSort(function GLESSEQP,$conslist),:res]
     if getConstructorKindFromDB conname is "category" then
       tvl := TAKE(#rest conform,$TriangleVariableList)
-      res := SUBLISLIS($FormalMapVariableList,tvl,res)
+      res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
   build(item,pred) ==
     item is ['SIGNATURE,op,sig,:.] => $oplist   := [[opOf op,sig,:pred],:$oplist]

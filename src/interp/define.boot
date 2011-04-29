@@ -236,7 +236,7 @@ NRTmakeCategoryAlist() ==
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
-  slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
+  slot1 := [[a,:k] for [a,:b] in applySubst($pairlis,opcAlist)
                    | (k := predicateBitIndex b) ~= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..#$pairlis]
@@ -271,8 +271,8 @@ hasDefaultPackage catname ==
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
 NRTgetLookupFunction(domform,exCategory,addForm) ==
-  domform := SUBLIS($pairlis,domform)
-  addForm := SUBLIS($pairlis,addForm)
+  domform := applySubst($pairlis,domform)
+  addForm := applySubst($pairlis,addForm)
   $why: local := nil
   atom addForm => 'lookupComplete
   extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
@@ -644,7 +644,7 @@ macroExpand(x,e) ==   --not worked out yet
       nil
     msg => (stackMessage(strconc(msg,'" to macro %1bp"),[op]); x)
     args' := macroExpandList(args,e)
-    SUBLISLIS(args',parms,body)
+    applySubst(pairList(parms,args'),body)
   macroExpandList(x,e)
  
 macroExpandList(l,e) ==
@@ -726,8 +726,9 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
         | assoc(op1,capsuleDefAlist)]
   null catOpList => nil
-  packageCategory := ['CATEGORY,'domain,
-                     :SUBLISLIS(argl,$FormalMapVariableList,catOpList)]
+  packageCategory :=
+    ['CATEGORY,'domain,
+       :applySubst(pairList($FormalMapVariableList,argl),catOpList)]
   nils:= [nil for x in argl]
   packageSig := [packageCategory,form,:nils]
   $categoryPredicateList := substitute(nameForDollar,'$,$categoryPredicateList)
@@ -761,8 +762,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     aList := pairList(argl,sargl)
-    formalBody:= SUBLIS(aList,body)
-    signature' := SUBLIS(aList,signature')
+    formalBody:= applySubst(aList,body)
+    signature' := applySubst(aList,signature')
     --Begin lines for category default definitions
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
@@ -793,8 +794,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(argl,$FormalMapVariableList)
-    parSignature:= SUBLIS(pairlis,signature')
-    parForm:= SUBLIS(pairlis,form)
+    parSignature:= applySubst(pairlis,signature')
+    parForm:= applySubst(pairlis,form)
     -- If we are only interested in the defaults, there is no point
     -- in writing out compiler info and load-time stuff for 
     -- the category which is assumed to have already been translated.
@@ -949,8 +950,8 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if not $insideCategoryPackageIfTrue  then
       $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
-    parSignature:= SUBLIS($pairlis,signature')
-    parForm:= SUBLIS($pairlis,form)
+    parSignature:= applySubst($pairlis,signature')
+    parForm:= applySubst($pairlis,form)
  
     --  (3.1) now make a list of the functor's local parameters; for
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
@@ -978,9 +979,9 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
  
     body':= T.expr
     lamOrSlam:= if $mutableDomain then 'LAM else 'SPADSLAM
-    fun:= compile SUBLIS($pairlis, [op',[lamOrSlam,argl,body']])
+    fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
-    operationAlist := SUBLIS($pairlis,$lisplibOperationAlist)
+    operationAlist := applySubst($pairlis,$lisplibOperationAlist)
     if $LISPLIB then
       augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
@@ -1005,7 +1006,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         $isOpPackageName: local := isCategoryPackageName $op
         if $isOpPackageName then lisplibWrite('"slot1DataBase",
           ['updateSlot1DataBase,MKQ $NRTslot1Info],$libFile)
-        $lisplibFunctionLocations := SUBLIS($pairlis,$functionLocations)
+        $lisplibFunctionLocations := applySubst($pairlis,$functionLocations)
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
             NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)
@@ -1163,7 +1164,7 @@ genDomainViewList(id,catlist) ==
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
   substargs := [['$,:vectorRef(dom,0)],
-                  :pairList($FormalMapVariableList,rest vectorRef(dom,0))]
+                  :pairList($FormalMapVariableList,vectorRef(dom,0).args)]
   oplist:= getConstructorOperationsFromDB opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops := newVector #siglist
@@ -1171,7 +1172,7 @@ mkOpVec(dom,siglist) ==
     u:= ASSQ(op,oplist)
     assoc(sig,u) is [.,n,.,'ELT] =>
       vectorRef(ops,i) := vectorRef(dom,n)
-    noplist:= SUBLIS(substargs,u)
+    noplist := applySubst(substargs,u)
   -- following variation on assoc needed for GENSYMS in Mutable domains
     AssocBarGensym(substitute(dom.0,'$,sig),noplist) is [.,n,.,'ELT] =>
       vectorRef(ops,i) := vectorRef(dom,n)

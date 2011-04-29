@@ -83,7 +83,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   faTypes  := CDDAR getConstructorModemapFromDB conname
 
   conArgTypes :=
-    SUBLISLIS(IFCDR conform,TAKE(#faTypes,$FormalMapVariableList),faTypes)
+    applySubst(pairList(TAKE(#faTypes,$FormalMapVariableList),IFCDR conform),faTypes)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
 --argTypes := reverse ASSOCRIGHT symbolLassoc('arguments,alist)

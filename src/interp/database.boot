@@ -172,10 +172,10 @@ getConstructorKind ctor ==
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
   sl := [["$",:"*1"],:pairList(argl,rest $PatternVariableList)]
-  form:= SUBLIS(sl,form)
-  body:= SUBLIS(sl,body)
-  signature:= SUBLIS(sl,signature)
-  opAlist:= SUBLIS(sl,$domainShell.(1)) or return nil
+  form:= applySubst(sl,form)
+  body:= applySubst(sl,body)
+  signature:= applySubst(sl,signature)
+  opAlist:= applySubst(sl,vectorRef($domainShell,1)) or return nil
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
   domainList:=
@@ -633,7 +633,7 @@ mkDatabasePred [a,t] ==
   ['ofType,a,t]
 
 formal2Pattern x ==
-  SUBLIS(pairList($FormalMapVariableList,rest $PatternVariableList),x)
+  applySubst(pairList($FormalMapVariableList,rest $PatternVariableList),x)
 
 updateDatabase(fname,cname,systemdir?) ==
  -- for now in NRUNTIME do database update only if forced
@@ -684,8 +684,8 @@ getOplistForConstructorForm (form := [op,:argl]) ==
 getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
   alist:= nil
   for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind isnt 'Subsumed repeat
-    alist:= insertAlist(SUBLIS(pairlis,[op,sig]),
-                SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
+    alist:= insertAlist(applySubst(pairlis,[op,sig]),
+                applySubst(pairlis,[pred,[kind,nil,slotNumber]]),
                 alist)
   alist
 

@@ -309,7 +309,7 @@ signatureFromModemap m ==
   pred = true => rest sig
   pred.op in '(AND %and) =>
     sl := [[a,:b] for [.,a,b] in rest pred]
-    rest SUBLIS(sl,sig)
+    rest applySubst(sl,sig)
   
 collectDefTypesAndPreds args ==
   -- given an arglist to a DEF-like form, this function returns

@@ -131,11 +131,11 @@ buildLibdbString [x,:u] ==
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemapFromDB conname
   formals := TAKE(#argl,$FormalMapVariableList)
-  sig := SUBLISLIS(formals,$TriangleVariableList,sig)
+  sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
     g(x,u,i) ==  --does x appear in any but i-th element of u?
       or/[CONTAINED(x,y) for y in u for j in 1.. | j ~= i]
-  sig := fn SUBLISLIS(argl,$FormalMapVariableList,sig) where
+  sig := fn applySubst(pairList($FormalMapVariableList,argl),sig) where
     fn x ==
       atom x => x
       x is ['Join,a,:r] => ['Join,fn a,'etc]
@@ -169,8 +169,8 @@ buildLibOps oplist == for [op,sig,:pred] in oplist repeat buildLibOp(op,sig,pred
 
 buildLibOp(op,sig,pred) ==
 --operations      OKop  \#\sig \conname\pred\comments (K is U or C)
-  nsig := SUBLISLIS(rest $conform,$FormalMapVariableList,sig)
-  pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
+  nsig := applySubst(pairList($FormalMapVariableList,$conform.args),sig)
+  pred := applySubst(pairList($FormalMapVariableList,$conform.args),pred)
   nsig := substitute("T","T$",nsig)   --this ancient artifact causes troubles!
   pred := substitute("T","T$",pred)
   sigpart:= form2LispString ['Mapping,:nsig]
@@ -217,7 +217,7 @@ buildLibAttr(name,argl,pred) ==
 --attributes      AKname\#\args\conname\pred\comments (K is U or C)
   header := strconc('"a",STRINGIMAGE name)
   argPart:= subString(form2LispString ['f,:argl],1)
-  pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
+  pred := applySubst(pairList($FormalMapVariableList,$conform.args),pred)
   predString := (pred = 'T => '""; form2LispString pred)
   header := strconc('"a",STRINGIMAGE name)
   conname := strconc($kind,form2LispString $conname)
@@ -496,7 +496,7 @@ getImports conname == --called by mkUsersHashTable
       x = "$$" => "$$"
       string? x => x
       systemError '"bad argument in template"
-  listSort(function GLESSEQP,SUBLISLIS(rest conform,$FormalMapVariableList,u))
+  listSort(function GLESSEQP,applySubst(pairList($FormalMapVariableList,conform.args),u))
 
 
 --============================================================================
@@ -508,8 +508,8 @@ getParentsFor(cname,formalParams,constructorCategory) ==
   formals := TAKE(#formalParams,$TriangleVariableList)
   constructorForm := getConstructorFormFromDB cname
   for x in folks constructorCategory repeat
-    x := SUBLISLIS(formalParams,formals,x)
-    x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
+    x := applySubst(pairList(formals,formalParams),x)
+    x := applySubst(pairList(formalParams,IFCDR constructorForm),x)
     x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
   reverse! acc
@@ -528,7 +528,7 @@ parentsOfForm [op,:argl] ==
   parents := parentsOf op
   null argl or argl = (newArgl := rest getConstructorFormFromDB op) =>
     parents
-  SUBLISLIS(argl, newArgl, parents)
+  applySubst(pairList(newArgl,argl),parents)
 
 getParentsForDomain domname  == --called by parentsOf
   acc := nil
@@ -572,7 +572,7 @@ descendantsOf(conform,domform) ==  --called by kcdPage
     [op,:argl] := conform
     null argl or argl = (newArgl := rest getConstructorFormFromDB op)
         => cats
-    SUBLISLIS(argl, newArgl, cats)
+    applySubst(pairList(newArgl,argl),cats)
   'notAvailable
 
 childrenOf conform ==
@@ -638,11 +638,11 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) => $form
     getConstructorForm op
   if conform ~= originalConform then
-    parents := SUBLISLIS(IFCDR conform,IFCDR originalConform,parents)
+    parents := applySubst(pairList(IFCDR originalConform,IFCDR conform),parents)
   for [newform,:p] in parents repeat
     if domform and rest domform then
-      newdomform := SUBLISLIS(rest domform,rest conform,newform)
-      p          := SUBLISLIS(rest domform,rest conform,p)
+      newdomform := applySubst(pairList(conform.args,domform.args),newform)
+      p          := applySubst(pairList(conform.args,domform.args),p)
     newPred := quickAnd(pred,p)
     ancestorsAdd(simpHasPred newPred,newdomform or newform)
     ancestorsRecur(newform,newdomform,newPred,false)

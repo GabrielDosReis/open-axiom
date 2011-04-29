@@ -219,9 +219,9 @@ applyMapping([op,:argl],m,e,ml) ==
   #argl ~= #ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
-    pairlis:= pairList($FormalMapVariableList,argl)
-    ml' := SUBLIS(pairlis, ml)
-    argl':=
+    pairlis := pairList($FormalMapVariableList,argl)
+    ml' := applySubst(pairlis,ml)
+    argl' :=
       [T.expr for x in argl for m' in rest ml'] where
         T() == [.,.,e]:= comp(x,m',e) or return "failed"
     if argl'="failed" then return nil
@@ -238,7 +238,7 @@ applyMapping([op,:argl],m,e,ml) ==
     u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
     ['%call,['applyFun,op],:argl']
   pairlis := pairList($FormalMapVariableList,argl')
-  convert([form,SUBLIS(pairlis,first ml),e],m)
+  convert([form,applySubst(pairlis,first ml),e],m)
 
 -- This version tends to give problems with #1 and categories
 -- applyMapping([op,:argl],m,e,ml) ==
@@ -247,7 +247,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --     isCategoryForm(first ml,e) => --is op a functor?
 --       form:= [op,:argl']
 --       pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
---       ml:= SUBLIS(pairlis,ml)
+--       ml:= applySubst(pairlis,ml)
 --       true
 --     false
 --   argl':=
@@ -261,7 +261,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --         op':= makeSymbol strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ['%call,["applyFun",op],:argl']
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
---   convert([form,SUBLIS(pairlis,first ml),e],m)
+--   convert([form,applySubst(pairlis,first ml),e],m)
 
 hasFormalMapVariable(x, vl) ==
   $formalMapVariables: local := vl
@@ -516,7 +516,7 @@ compForm1(form is [op,:argl],m,e) ==
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
   aList := pairList($TriangleVariableList,argl)
-  modemapList := SUBLIS(aList,modemapList)
+  modemapList := applySubst(aList,modemapList)
   deleteList := []
   newList := []
   -- now delete any modemaps that are subsumed by something else, 
@@ -723,11 +723,11 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
       '"Incompatible maps"])
   #argl=#sig.source =>
                         --here, we actually have a functor form
-    sig:= EQSUBSTLIST(argl,dc.args,sig)
+    sig := applySubst(pairList(dc.args,argl),sig)
       --make new modemap, subst. actual for formal parametersinto modemap
     Tl:= [[.,.,e]:= compOrCroak(a,m,e) for a in argl for m in rest sig]
     substitutionList:= [[x,:T.expr] for x in dc.args for T in Tl]
-    [SUBLIS(substitutionList,modemap),e]
+    [applySubst(substitutionList,modemap),e]
   nil
 
 --% SPECIAL EVALUATION FUNCTIONS
@@ -1216,9 +1216,9 @@ compHas(pred is ["has",a,b],m,$e) ==
 compHasFormat (pred is ["has",olda,b]) ==
   argl := rest $form
   formals := TAKE(#argl,$FormalMapVariableList)
-  a := SUBLISLIS(argl,formals,olda)
+  a := applySubst(pairList(formals,argl),olda)
   [a,:.] := comp(a,$EmptyMode,$e) or return nil
-  a := SUBLISLIS(formals,argl,a)
+  a := applySubst(pairList(argl,formals),a)
   b is ["ATTRIBUTE",c] => ["HasAttribute",a,["QUOTE",c]]
   b is ["SIGNATURE",op,sig,:.] =>
      ["HasSignature",a,
