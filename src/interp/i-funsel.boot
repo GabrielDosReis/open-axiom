@@ -1480,9 +1480,9 @@ hasCaty(d,cat,SL) ==
     for c in cat.args while SL isnt "failed" repeat
       SL := hasCaty(d,c,SL)
     SL
-  x:= hasCat(opOf d,opOf cat) =>
-    y:= KDR cat =>
-      S  := constructSubst d
+  x := (cons? d and cons? cat and hasCat(d,cat)) =>
+    y := KDR cat =>
+      S := constructSubst d
       for [z,:cond] in x until S1 isnt 'failed repeat
         S' := [[p, :mkDomPvar(p, d, z, y)] for [p,:d] in S]
         if $domPvar then

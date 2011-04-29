@@ -1,3 +1,10 @@
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cattable.boot (hasCat): Add type.  Accept only
+	instantiation forms.
+	(simpHasPred): Adjust call to hasCat.
+	* interp/i-funsel.boot (hasCaty): Likewise.
+
 2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfReduceCollect): Delegate to bfDoCollect if
