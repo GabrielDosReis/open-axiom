@@ -79,7 +79,7 @@ domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]
 getModemap(x is [op,:.],e) ==
   for modemap in get(op,'modemap,e) repeat
     if u:= compApplyModemap(x,modemap,e) then return
-      ([.,.,sl]:= u; SUBLIS(sl,modemap))
+      ([.,.,sl]:= u; applySubst(sl,modemap))
  
 getUniqueSignature(form,e) ==
   [[.,:sig],:.]:= getUniqueModemap(first form,#rest form,e) or return nil
@@ -251,7 +251,7 @@ augModemapsFromDomain1(name,functorForm,e) ==
 substituteCategoryArguments(argl,catform) ==
   argl:= substitute("$$","$",argl)
   arglAssoc:= [[INTERNL("#",STRINGIMAGE i),:a] for i in 1.. for a in argl]
-  SUBLIS(arglAssoc,catform)
+  applySubst(arglAssoc,catform)
  
          --Called, by compDefineFunctor, to add modemaps for $ that may
          --be equivalent to those of Rep. We must check that these
@@ -308,7 +308,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
 --  --this is particularly dirty and should be cleaned up, say, by wrapping
 --  -- an appropriate lambda expression around mapping forms
 --  domainForm is [op,:l] and l =>
---    get(op,'modemap,e) is [[[mc,:.],:.]] => SUBLIS(PAIR(rest mc,l),catForm)
+--    get(op,'modemap,e) is [[[mc,:.],:.]] => applySubst(PAIR(rest mc,l),catForm)
 --  catForm
  
 evalAndSub(domainName,viewName,functorForm,form,$e) ==

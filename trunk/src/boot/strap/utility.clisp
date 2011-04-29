@@ -8,7 +8,7 @@
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
              |scalarMember?| |listMember?| |reverse| |reverse!|
              |lastNode| |append!| |copyList| |substitute| |substitute!|
-             |setDifference|))
+             |setDifference| |applySubst|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -120,6 +120,18 @@
     ((NULL |y|) |x|)
     (T (RPLACD (|lastNode| |x|) |y|) |x|)))
 
+(DEFUN |assocSymbol| (|s| |al|)
+  (PROG (|x|)
+    (RETURN
+      (LOOP
+        (COND
+          ((AND (CONSP |al|)
+                (PROGN (SETQ |x| (CAR |al|)) (SETQ |al| (CDR |al|)) T))
+           (COND
+             ((AND (CONSP |x|) (EQ |s| (CAR |x|)))
+              (IDENTITY (RETURN |x|)))))
+          (T (RETURN NIL)))))))
+
 (DEFUN |substitute!| (|y| |x| |s|)
   (COND
     ((NULL |s|) NIL)
@@ -141,6 +153,21 @@
            ((AND (EQ |h| (CAR |s|)) (EQ |t| (CDR |s|))) |s|)
            (T (CONS |h| |t|))))
         (T |s|)))))
+
+(DEFUN |applySubst| (|sl| |t|)
+  (PROG (|tl| |hd| |p|)
+    (RETURN
+      (COND
+        ((SYMBOLP |t|)
+         (COND
+           ((SETQ |p| (|assocSymbol| |t| |sl|)) (CDR |p|))
+           (T |t|)))
+        ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
+         (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
+         (COND
+           ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+           (T (CONS |hd| |tl|))))
+        (T |t|)))))
 
 (DEFUN |setDifference| (|x| |y|)
   (PROG (|a| |l| |p|)

@@ -403,12 +403,12 @@ transCategoryItem x ==
       $transCategoryAssoc:= [[lhs,:rhs],:$transCategoryAssoc]
       postError ['"  Invalid signature: ",x]
     [op,:argl]:= lhs
-    extra:= nil
+    extra := nil
     if rhs is ["Mapping",:m] then
       if rest m then extra:= rest m
                  --should only be 'constant' or 'variable'
       rhs:= first m
-    [["SIGNATURE",op,[rhs,:SUBLIS($transCategoryAssoc,argl)],:extra]]
+    [["SIGNATURE",op,[rhs,:applySubst($transCategoryAssoc,argl)],:extra]]
   [x]
  
 

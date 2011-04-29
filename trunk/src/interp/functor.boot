@@ -329,11 +329,11 @@ setVector12 args ==
  
 SetDomainSlots124(vec,names,vals) ==
   l := pairList(names,vals)
-  vec.1 := sublisProp(l,vec.1)
-  vec.2 := sublisProp(l,vec.2)
+  vectorRef(vec,1) := sublisProp(l,vectorRef(vec,1))
+  vectorRef(vec,2) := sublisProp(l,vectorRef(vec,2))
   l:= [[a,:devaluate b] for a in names for b in vals]
-  vec.4 := SUBLIS(l,vec.4)
-  vec.1 := SUBLIS(l,vec.1)
+  vectorRef(vec,4) := applySubst(l,vectorRef(vec,4))
+  vectorRef(vec,1) := applySubst(l,vectorRef(vec,1))
  
 sublisProp(subst,props) ==
   null props => nil
@@ -368,7 +368,7 @@ setVector3(name,instantiator) ==
 mkDomainFormer x ==
   if x is ['DomainSubstitutionMacro,parms,body] then
     x:=DomainSubstitutionFunction(parms,body)
-    x:=SUBLIS($extraParms,x)
+    x := applySubst($extraParms,x)
     --The next line ensures that only one copy of this structure will
     --appear in the BPI being generated, thus saving (some) space
   x is ['Join,:.] => ['eval,['QUOTE,x]]
@@ -428,10 +428,10 @@ DescendCodeAdd(base,flag) ==
   ans
  
 DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
-  slist:= pairList(formalArgs,rest $addFormLhs)
+  slist := pairList(formalArgs,rest $addFormLhs)
          --base = comp $addFormLhs-- bound in compAdd
   e:= $e
-  newModes:= SUBLIS(slist,formalArgModes)
+  newModes := applySubst(slist,formalArgModes)
   or/[not comp(u,m,e) for u in rest $addFormLhs for m in newModes] =>
     return nil
       --I should check that the actual arguments are of the right type
@@ -448,7 +448,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       for i in 6..n | cons? cat.i and cons? (sig:= first cat.i)
          and
           (u:=
-            SetFunctionSlots(SUBLIS(slist,sig),['ELT,instantiatedBase,i],flag,
+            SetFunctionSlots(applySubst(slist,sig),['ELT,instantiatedBase,i],flag,
               'adding))~=nil]
      --The code from here to the end is designed to replace repeated LOAD/STORE
      --combinations (SETELT ...(ELT ..)) by MVCs where this is practicable
@@ -565,7 +565,7 @@ ConstantCreator u ==
   true
  
 ProcessCond cond ==
-  ncond := SUBLIS($pairlis,cond)
+  ncond := applySubst($pairlis,cond)
   integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
   cond
 
@@ -627,7 +627,7 @@ SigSlotsMatch(sig,pattern,implem) ==
   sig' = pat'
  
 makeMissingFunctionEntry(alist,i) ==
-  tran SUBLIS(alist,$SetFunctions.i) where
+  tran applySubst(alist,$SetFunctions.i) where
     tran x ==
       x is ["HasCategory",a,["QUOTE",b]] => ["has",a,b]
       x is [op,:l] and op in '(AND OR NOT) => [op,:[tran y for y in l]]
@@ -828,8 +828,8 @@ DescendCodeVarAdd(base,flag) ==
                   [[pred,implem]]]
  
 resolvePatternVars(p,args) ==
-  p := SUBLISLIS(args, $TriangleVariableList, p)
-  SUBLISLIS(args, $FormalMapVariableList, p)
+  p := applySubst(pairList($TriangleVariableList,args),p)
+  applySubst(pairList($FormalMapVariableList,args),p)
 
 --% Code Processing Packages
 

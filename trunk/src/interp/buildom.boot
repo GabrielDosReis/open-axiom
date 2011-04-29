@@ -95,9 +95,9 @@ lookupPred(pred,dollar,domain) ==
   keyedSystemError("S2NR0002",[pred])
 
 substDollarArgs(dollar,domain,object) ==
-    form := devaluate domain
-    SUBLISLIS([devaluate dollar,:rest form],
-                ["$",:$FormalMapVariableList],object)
+  form := devaluate domain
+  applySubst(pairList(["$",:$FormalMapVariableList],[devaluate dollar,:rest form]),
+                object)
 
 compareSig(sig,tableSig,dollar,domain) ==
   not (#sig = #tableSig) => false
@@ -215,8 +215,8 @@ NRTreplaceLocalTypes(t,dom) ==
    t
 
 substDomainArgs(domain,object) ==
-    form := devaluate domain
-    SUBLISLIS([form,:rest form],["$$",:$FormalMapVariableList],object)
+  form := devaluate domain
+  applySubst(pairList(["$$",:$FormalMapVariableList],[form,:rest form]),object)
 
 --=======================================================
 --       Category Default Lookup (from goGet or lookupInAddChain)

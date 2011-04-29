@@ -632,13 +632,14 @@ NRTmakeSlot1Info() ==
       [:argl,dollarName] := rest $form
       [[dollarName,:'_$],:mkSlot1sublis argl]
     mkSlot1sublis rest $form
-  $lisplibOpAlist := transformOperationAlist SUBLIS(pairlis,$domainShell.1)
+  $lisplibOpAlist :=
+    transformOperationAlist applySubst(pairlis,vectorRef($domainShell,1))
   opList :=
     $NRTderivedTargetIfTrue => 'derived
     $insideCategoryPackageIfTrue => slot1Filter $lisplibOpAlist
     $lisplibOpAlist
-  addList := SUBLIS(pairlis,$NRTaddForm)
-  [first $form,[addList,:opList]]
+  addList := applySubst(pairlis,$NRTaddForm)
+  [$form.op,[addList,:opList]]
 
 mkSlot1sublis argl ==
   pairList(argl,$FormalMapVariableList)

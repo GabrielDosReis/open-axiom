@@ -737,7 +737,7 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
     pair.rest := [test for item in rest pair | test] where test() ==
       [head,:tail] := item
       first tail = true => item
-      pred := simpHasPred SUBLISLIS(form1,form2,first tail)
+      pred := simpHasPred applySubst(pairList(form2,form1),first tail)
       null pred => false
       item.rest := [pred]
       item
@@ -858,8 +858,8 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           u :=
             tail is [.,origin,:.] and origin =>
 --  must change any % into $ otherwise we will not pick up comments properly
---  delete the SUBLISLIS when we fix on % or $ 
-              dbGetDocTable(op,SUBLISLIS(['$],['%],sig),dbDocTable origin,which,nil)
+--  delete the substitute when we fix on % or $ 
+              dbGetDocTable(op,substitute('%,'$,sig),dbDocTable origin,which,nil)
             if packageSymbol then sig := substitute('_$,packageSymbol,sig)
             dbGetDocTable(op,sig,docTable,which,nil)
           origin := IFCAR u or origin

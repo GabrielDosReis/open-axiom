@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -942,7 +942,7 @@ addParameterTemplates(page, conform) ==
     htSaySaturn '" = }"
     htSaySaturnAmpersand()
     htSaySaturn '"\colorbuttonbox{lightgray}{\inputbox[2.5in]{\"
-    htSaySaturn SUBLIS(argSublis,par)
+    htSaySaturn applySubst(argSublis,par)
     htSaySaturn '"}{"
     htSaySaturn argstring
     htSaySaturn '"}}"
@@ -1251,7 +1251,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.
     tvarlist := TAKE(# $conargs,$TriangleVariableList)
-    $signature := SUBLISLIS($FormalMapVariableList,tvarlist,$signature)
+    $signature := applySubst(pairList(tvarlist,$FormalMapVariableList),$signature)
   $sig :=
     which = '"attribute" or which = '"constructor" => sig
     $conkind ~= '"package" => sig

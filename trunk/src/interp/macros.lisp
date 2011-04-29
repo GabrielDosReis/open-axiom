@@ -212,21 +212,6 @@
  
 ; 15.4 Substitution of Expressions
  
-(DEFUN SUBSTEQ (NEW OLD FORM)
-  "Version of SUBST that uses EQ rather than EQUAL on the world."
-  (PROG (NFORM HNFORM ITEM)
-        (SETQ HNFORM (SETQ NFORM (CONS () ())))
-     LP    (RPLACD NFORM
-                   (COND ((EQ FORM OLD) (SETQ FORM ()) NEW )
-                         ((NOT (PAIRP FORM)) FORM )
-                         ((EQ (SETQ ITEM (CAR FORM)) OLD) (CONS NEW ()) )
-                         ((PAIRP ITEM) (CONS (SUBSTEQ NEW OLD ITEM) ()) )
-                         ((CONS ITEM ()))))
-        (if (NOT (PAIRP FORM)) (RETURN (CDR HNFORM)))
-        (SETQ NFORM (CDR NFORM))
-        (SETQ FORM (CDR FORM))
-        (GO LP)))
- 
 (DEFUN SUBLISNQ (KEY E) (declare (special KEY)) (if (NULL KEY) E (SUBANQ E)))
  
 (DEFUN SUBANQ (E)
@@ -240,9 +225,6 @@
         ((EQ (CAAR X) E) (CDAR X))
         ((SUBB (CDR X) E))))
  
-(defun SUBLISLIS (newl oldl form)
-   (sublis (mapcar #'cons oldl newl) form))
-
 ; 15.5 Using Lists as Sets
 
 (DEFUN PREDECESSOR (TL L)

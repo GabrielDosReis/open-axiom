@@ -91,9 +91,9 @@ asyParents(conform) ==
   modemap := LASSOC(con,$mmAlist)
   $constructorCategory :local := asySubstMapping modemap.mmTarget
   for x in folks $constructorCategory repeat
---  x := SUBLISLIS(formalParams,formals,x)
---  x := SUBLISLIS(IFCDR conform,formalParams,x)
---  x := SUBST('Type,'Object,x)
+--  x := applySubst(pairList(formals,formalParams),x)
+--  x := applySubst(pairList(formalParams,IFCDR conform),x)
+--  x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
   reverse! acc
 
@@ -148,12 +148,13 @@ asMakeAlist con ==
   parents := mySort HGET($parentsHash,con)
 --children:= mySort HGET($childrenHash,con)
   alists  := HGET($opHash,con)
-  opAlist := SUBLISLIS($FormalMapVariableList,KDR form,CDDR alists)
-  ancestorAlist:= SUBLISLIS($FormalMapVariableList,KDR form,first alists)
+  opAlist := applySubst(pairList(KDR form,$FormalMapVariableList),CDDR alists)
+  ancestorAlist :=
+    applySubst(pairList(KDR form,$FormalMapVariableList),first alists)
   catAttrs := [[x,:true] for x in getAttributesFromCATEGORY $constructorCategory]
   attributeAlist := removeDuplicates [:second alists,:catAttrs]
   documentation :=
-    SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
+    applySubst(pairList(KDR form,$FormalMapVariableList),LASSOC(con,$docAlist))
   filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
   constantPart := HGET($constantHash,con) and [['constant,:true]]
   niladicPart := symbolMember?(con,$niladics) and [['NILADIC,:true]]
@@ -161,11 +162,11 @@ asMakeAlist con ==
   constructorCategory :=
     kind is 'category =>
       talist := TAKE(#KDR form, $TriangleVariableList)
-      SUBLISLIS(talist, falist, $constructorCategory)
-    SUBLISLIS(falist,KDR form,$constructorCategory)
+      applySubst(pairList(falist,talist),$constructorCategory)
+    applySubst(pairList(KDR form,falist),$constructorCategory)
   if constructorCategory='Category then kind := 'category
   exportAlist := asGetExports(kind, form, constructorCategory)
-  constructorModemap  := SUBLISLIS(falist,KDR form,modemap)
+  constructorModemap := applySubst(pairList(KDR form,falist),modemap)
 --TTT fix a niladic category constructormodemap (remove the joins)
   if kind is 'category then
      constructorModemap.mmTarget := $Category
@@ -277,15 +278,15 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
   catPredList:=
     kind is 'function => [["isFreeFunction","*1",opOf form]]
     [['ofCategory,:u] for u in [:pred1,:domainList]]
---  for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
+--  for [op,:itemlist] in applySubst(pairList($FormalMapVariableList,rpvl),opAlist) repeat
 --  the code seems to oscillate between generating $FormalMapVariableList 
 --  and generating $TriangleVariableList
-  for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
+  for [op,:itemlist] in applySubst(pairList($FormalMapVariableList,rpvl),opAlist) repeat
     for [sig0, pred] in itemlist repeat
       sig := substitute(dc,"$",sig0)
       pred:= substitute(dc,"$",pred)
-      sig := SUBLISLIS(rpvl,KDR oform,sig)
-      pred:= SUBLISLIS(rpvl,KDR oform,pred)
+      sig := applySubst(pairList(KDR oform,rpvl),sig)
+      pred:= applySubst(pairList(KDR oform,rpvl),pred)
       pred := pred or 'T
   ----------> Constants change <--------------
       if IDENTP sig0 then
@@ -772,7 +773,7 @@ asyConstructorModemap con ==
   signature := asySignature(sig,false)
   formals := ['_$,:TAKE(#$constructorArgs,$FormalMapVariableList)]
   mm := [[[con,:$constructorArgs],:signature],['T,con]]
-  SUBLISLIS(formals,['_%,:$constructorArgs],mm)
+  applySubst(pairList(['_%,:$constructorArgs],formals),mm)
 
 asySignature(sig,names?) ==
   sig is ['Join,:.] => [asySig(sig,nil)]
@@ -1119,7 +1120,7 @@ asCategoryParts(kind,conform,category,:options) == main where
     if cons? then res := [listSort(function GLESSEQP,$conslist),:res]
     if kind is 'category then
       tvl := TAKE(#rest conform,$TriangleVariableList)
-      res := SUBLISLIS($FormalMapVariableList,tvl,res)
+      res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
    where
     build(item,pred) ==

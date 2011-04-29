@@ -51,7 +51,7 @@ NRTgenInitialAttributeAlist attributeList ==
   alist := [x for x in attributeList | -- throw out constructors
     not symbolMember?(opOf first x,allConstructors())]
   $lisplibAttributes := simplifyAttributeAlist
-    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a isnt 'nothing]
+    [[a,:b] for [a,b] in applySubst($pairlis,alist) | a isnt 'nothing]
 
 simplifyAttributeAlist al ==
   al is [[a,:b],:r] =>
@@ -107,8 +107,8 @@ makePredicateBitVector pl ==   --called by buildFunctor
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
     else 
       firsts := insert(pred,firsts)
-  firstPl := SUBLIS($pairlis,reverse! orderByContainment firsts)
-  lastPl  := SUBLIS($pairlis,reverse! orderByContainment lasts)
+  firstPl := applySubst($pairlis,reverse! orderByContainment firsts)
+  lastPl  := applySubst($pairlis,reverse! orderByContainment lasts)
   firstCode:= 
     ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
   lastCode := augmentPredCode(# firstPl,lastPl)
@@ -857,9 +857,9 @@ compDefineExports(form,ops,sig,e) ==
   not $LISPLIB => systemErrorHere "compDefineExports"
   op := first form
   -- Ensure constructor parameters appear as formals
-  sig := SUBLIS($pairlis, sig)
-  ops := SUBLIS($pairlis,ops)
-  form := SUBLIS($pairlis,form)
+  sig := applySubst($pairlis, sig)
+  ops := applySubst($pairlis,ops)
+  form := applySubst($pairlis,form)
   -- In case we are not compiling the capsule, the slot numbers are
   -- most likely bogus.  Nullify them so people don't think they
   -- bear any meaningful semantics (well, they should not think

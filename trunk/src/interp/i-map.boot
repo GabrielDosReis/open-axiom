@@ -429,13 +429,13 @@ simplifyMapPattern (x,alias) ==
   lhs is ["|",y,pred] =>
     pred:= predTran pred
     sl:= getEqualSublis pred =>
-      y':= SUBLIS(sl,y)
-      pred:= unTrivialize SUBLIS(sl,pred) where unTrivialize x ==
+      y' := applySubst(sl,y)
+      pred:= unTrivialize applySubst(sl,pred) where unTrivialize x ==
         x is [op,:l] and op in '(and or) =>
           MKPF([unTrivialize y for y in l],op)
         x is [op,a,=a] and op in '(_= is)=> true
         x
-      rhs':= SUBLIS(sl,rhs)
+      rhs':= applySubst(sl,rhs)
       pred=true => [y',:rhs']
       [["PAREN",["|",y',pred]],:rhs']
     pred=true => [y,:rhs]
@@ -473,7 +473,7 @@ predTran x ==
   x
 
 getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
-  (x:= SUBLIS(sl,x)) is [op,:l] and op in '(and or) =>
+  (x:= applySubst(sl,x)) is [op,:l] and op in '(and or) =>
     for y in l repeat sl:= fn(y,sl)
     sl
   x is ["is",a,b] => [[a,:b],:sl]

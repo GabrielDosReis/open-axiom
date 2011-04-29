@@ -1217,9 +1217,10 @@
 		     (unless make-database?
 		       (if (eq kind '|category|)
 			   (setf (database-ancestors dbstruct)
-				 (SUBLISLIS |$FormalMapVariableList| 
-					    (cdr constructorform)
-					    (fetchdata alist in "ancestors"))))
+				 (|applySubst| 
+                                      (|pairList| (cdr constructorform) 
+				      |$FormalMapVariableList|)
+				      (fetchdata alist in "ancestors"))))
 		       (|updateDatabase| key key systemdir?) ;makes many hashtables???
 		       (|installConstructor| key kind) ;used to be key cname ...
 		       (|updateCategoryTable| key kind)

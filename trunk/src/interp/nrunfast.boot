@@ -685,7 +685,7 @@ newHasTest(domform,catOrAtt) ==
 -- on second thoughts we won't!
   categoryForm? domform =>
       domform = catOrAtt => 'T
-      for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
+      for [aCat,:cond] in [:ancestorsOf(domform,NIL),:applySubst(pairList($FormalMapVariableList,rest domform),getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
              atom x => x

@@ -292,7 +292,8 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
 putMacro(lhs,rhs,e) ==
   atom lhs => put(lhs,'macro,rhs,e)
   parms := [gensym() for p in lhs.args]
-  put(lhs.op,'macro,['%mlambda,parms,SUBLISLIS(parms,lhs.args,rhs)],e)
+  put(lhs.op,'macro,
+    ['%mlambda,parms,applySubst(pairList(lhs.args,parms),rhs)],e)
 
 --% Syntax manipulation
 

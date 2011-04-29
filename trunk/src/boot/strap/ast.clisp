@@ -1804,7 +1804,13 @@
                                  (PROGN
                                    (SETQ |args| (CDR |ISTMP#2|))
                                    T))))))
-              (CONS 'VECTOR |args|))
+              (RPLACA |x| 'VECTOR) (RPLACD |x| |args|))
+             ((AND (CONSP |x|) (EQ (CAR |x|) '|vector|)
+                   (PROGN
+                     (SETQ |ISTMP#1| (CDR |x|))
+                     (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                          (EQ (CAR |ISTMP#1|) 'NIL))))
+              (RPLACA |x| 'VECTOR) (RPLACD |x| NIL))
              (T (|shoeCompTran1| (CAR |x|))
                 (|shoeCompTran1| (CDR |x|)))))))))
 

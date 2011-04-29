@@ -46,10 +46,10 @@ getDoc(conName,op,modemap) ==
   sig := [target,:sl]
   cons? dc =>
     sig := MSUSBT('$,dc,sig)
-    sig := SUBLISLIS($FormalMapVariableList,rest dc,sig)
+    sig := applySubst(pairList(dc.args,$FormalMapVariableList),sig)
     getDocForDomain(conName,op,sig)
   if argList := IFCDR getOfCategoryArgument pred then
-     SUBLISLIS($FormalMapArgumentList,argList,sig)
+     applySubst(pairList(argList,$FormalMapArgumentList),sig)
   sig := MSUBST('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
@@ -179,7 +179,7 @@ finalizeDocumentation() ==
     fn(x,e) ==
       atom x => [x,nil]
       if #x > 2 then x := TAKE(2,x)
-      SUBLISLIS($FormalMapVariableList,rest $lisplibForm,
+      applySubst(pairList($lisplibForm.args,$FormalMapVariableList),
         macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)

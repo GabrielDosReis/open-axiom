@@ -951,7 +951,7 @@ substituteOp(op',op,x) ==
   [(op=(f:= first x) => op'; f),:[substituteOp(op',op,y) for y in rest x]]
  
 --substituteForFormalArguments(argl,expr) ==
---  SUBLIS([[v,:a] for a in argl for v in $FormalMapVariableList],expr)
+--  applySubst([[v,:a] for a in argl for v in $FormalMapVariableList],expr)
  
  -- following is only intended for substituting in domains slots 1 and 4
  -- signatures and categories
@@ -1141,7 +1141,7 @@ registerFunctionReplacement(name,body) ==
 
 eqSubstAndCopy: (%List %Form, %List %Symbol, %Form) -> %Form
 eqSubstAndCopy(args,parms,body) ==
-  SUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
+  applySubst(pairList(parms,args),body)
 
 eqSubst: (%List %Form, %List %Symbol, %Form) -> %Form
 eqSubst(args,parms,body) ==
