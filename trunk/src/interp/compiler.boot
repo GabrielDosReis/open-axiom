@@ -1846,8 +1846,8 @@ modeEqual(x,y) ==
     for x1 in xl repeat
       for y1 in yl repeat
         modeEqual(x1,y1) =>
-          xl := delete(x1,xl)
-          yl := delete(y1,yl)
+          xl := remove(xl,x1)
+          yl := remove(yl,y1)
           return nil
     xl or yl => nil
     true

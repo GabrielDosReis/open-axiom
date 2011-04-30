@@ -311,7 +311,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
   fargNames := [makeSymbol strconc(STRINGIMAGE(u),'"__arg") for u in args |
                  not (symbolMember?(u,dummies) or symbolMember?(u,asps)) ]
   for u in asps repeat
-    fargNames := delete(makeSymbol strconc(STRINGIMAGE(u),'"__arg"),fargNames)
+    fargNames := removeSymbol(fargNames,makeSymbol strconc(STRINGIMAGE(u),'"__arg"))
   resPar := ["construct",["@",["construct",:fargNames],_
              ["List",["Any"]]]]
   call := [["$elt","Lisp","invokeFortran"],strconc(file,'".spadexe"),_

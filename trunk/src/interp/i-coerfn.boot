@@ -925,7 +925,7 @@ Mp2Up(u,source is [mp,vl,S],target is [up,x,T]) ==
   u = '_$fromCoerceable_$ =>
     member(x,vl) =>
       vl = [x] => canCoerce(S,T)
-      canCoerce([mp,delete(x,vl),S],T)
+      canCoerce([mp,remove(vl,x),S],T)
     canCoerce(source,T)
 
   u is [ =0,:c] =>      -- constant polynomial?

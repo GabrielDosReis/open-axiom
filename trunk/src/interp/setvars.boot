@@ -559,7 +559,7 @@ setExposeAddConstr arg ==
       sayKeyedMsg("S2IZ0049K",[x,$interpreterFrameName])
     -- if the constructor is explicitly hidden, then remove that
     if member(x,$localExposureData.2) then
-      $localExposureData.2 := delete(x,$localExposureData.2)
+      $localExposureData.2 := remove($localExposureData.2,x)
     $localExposureData.1 := MSORT [x,:$localExposureData.1]
     clearClams()
     sayKeyedMsg("S2IZ0049P",[x,$interpreterFrameName])
@@ -599,7 +599,7 @@ setExposeDropGroup arg ==
       displayHiddenConstructors()
       clearClams()
     member(x,$localExposureData.0) =>
-      $localExposureData.0 := delete(x,$localExposureData.0)
+      $localExposureData.0 := remove($localExposureData.0,x)
       clearClams()
       sayKeyedMsg("S2IZ0049S",[x,$interpreterFrameName])
     GETALIST($globalExposureGroupAlist,x) =>
@@ -625,7 +625,7 @@ setExposeDropConstr arg ==
     member(x,$localExposureData.2) =>
       sayKeyedMsg("S2IZ0049O",[x,$interpreterFrameName])
     if member(x,$localExposureData.1) then
-      $localExposureData.1 := delete(x,$localExposureData.1)
+      $localExposureData.1 := remove($localExposureData.1,x)
     $localExposureData.2 := MSORT [x,:$localExposureData.2]
     clearClams()
     sayKeyedMsg("S2IZ0049Q",[x,$interpreterFrameName])

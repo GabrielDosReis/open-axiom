@@ -1155,12 +1155,12 @@ maprin0 x ==
 maprinChk x ==
   null $MatrixList => maPrin x
   atom x and (u:= assoc(x,$MatrixList)) =>
-    $MatrixList := delete(u,$MatrixList)
+    $MatrixList := remove($MatrixList,u)
     maPrin deMatrix rest u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
     u:=assoc(y,$MatrixList) =>
       -- we don't want to print matrix1 = matrix2 ...
-      $MatrixList := delete(u,$MatrixList)
+      $MatrixList := remove($MatrixList,u)
       maPrin ["=",arg, deMatrix rest u]
     maPrin x
   x is ['EQUATNUM,n,y] =>
@@ -1175,7 +1175,7 @@ maprinChk x ==
       u := assoc(y,$MatrixList)
       --$MatrixList := deleteAssoc(first u,$MatrixList)
       -- deleteAssoc no longer exists
-      $MatrixList := delete(u,$MatrixList)
+      $MatrixList := remove($MatrixList,u)
       maPrin ['EQUATNUM,n,rest u]
       newlineIfDisplaying()
     maPrin x

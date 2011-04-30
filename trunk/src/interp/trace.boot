@@ -124,7 +124,7 @@ trace1 l ==
     throwKeyedMsg("S2IT0002",NIL)
   a:= hasOption($options,'restore) =>
     null(oldL:= $lastUntraced) => nil
-    newOptions:= delete(a,$options)
+    newOptions:= remove($options,a)
     null l => trace1 oldL
     for x in l repeat
       x is [domain,:opList] and vector? domain =>
@@ -568,7 +568,7 @@ untraceDomainConstructor domainConstructor ==
   innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then UNEMBED innerDomainConstructor
     else UNEMBED domainConstructor
-  SETQ(_/TRACENAMES,delete(domainConstructor,_/TRACENAMES))
+  SETQ(_/TRACENAMES,removeSymbol(_/TRACENAMES,domainConstructor))
 
 flattenOperationAlist(opAlist) ==
    res:= nil
@@ -796,7 +796,7 @@ tracelet(fn,vars) ==
   not symbolMember?(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
-       $traceletFunctions:= delete(fn,$traceletFunctions) )
+       $traceletFunctions:= remove($traceletFunctions,fn) )
 
 breaklet(fn,vars) ==
                        --vars is "all" or a list of variables
@@ -818,7 +818,7 @@ breaklet(fn,vars) ==
     and not GENSYMP fn =>
       $traceletFunctions:= [fn,:$traceletFunctions]
       compileBoot fn
-      $traceletFunctions:= delete(fn,$traceletFunctions)
+      $traceletFunctions:= removeSymbol($traceletFunctions,fn)
 
 stupidIsSpadFunction fn ==
   -- returns true if the function pname has a semi-colon in it

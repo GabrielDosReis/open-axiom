@@ -830,7 +830,7 @@ checkForFreeVariables(v,locals) ==
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
        r := [op,:[checkForFreeVariables(a,locals) for a in args]]
-       $boundVariables := delete(var,$boundVariables)
+       $boundVariables := removeSymbol($boundVariables,var)
        r
       [op,:[checkForFreeVariables(a,locals) for a in args]]
     op = "%LET" =>

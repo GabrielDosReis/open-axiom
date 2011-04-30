@@ -268,7 +268,7 @@ orderCatAnc x ==
   reverse! ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
  
 depthAssocList u == 
-  u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
+  u := removeSymbol(u,'DomainSubstitutionMacro)  --hack by RDJ 8/90
   removeDuplicates ("append"/[depthAssoc(y) for y in u])
  
 depthAssoc x ==
