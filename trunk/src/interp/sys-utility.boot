@@ -39,7 +39,8 @@ import hash
 namespace BOOT
 
 module sys_-utility where
-  probleReadableFile : %String -> %Maybe %String
+  probeReadableFile : %String -> %Maybe %String
+  remove!: (%List %Thing,%Thing) -> %List %Thing
 
 --%
 $COMBLOCKLIST := nil
@@ -379,3 +380,15 @@ symbolLassoc(s,l) ==
   p := symbolAssoc(s,l) => rest p
   nil
 
+--%
+remove!(l,x) ==
+  l = nil => nil
+  valueEq?(first l,x) => rest l
+  p := l
+  repeat
+    p isnt [.,.,:.] => return l
+    valueEq?(second p,x) =>
+      p.rest := p.rest.rest
+      return l
+    p := rest p
+      

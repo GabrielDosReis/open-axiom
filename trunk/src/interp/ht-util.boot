@@ -53,7 +53,7 @@ $activePageList := nil
 htpDestroyPage(pageName) ==
   pageName in $activePageList =>
     setDynamicBinding(pageName, nil)
-    $activePageList := NREMOVE($activePageList, pageName)
+    $activePageList := remove!($activePageList,pageName)
 
 htpName htPage ==
 -- a symbol whose value is the page

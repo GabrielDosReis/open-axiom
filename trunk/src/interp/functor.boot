@@ -692,7 +692,7 @@ InvestigateConditions catvecListMaker ==
       code is ['CATEGORY,:l] => "union"/[Conds(u,previous) for u in l]
       code is ['Join,:l] => "union"/[Conds(u,previous) for u in l]
       [previous]
-  $Conditions:= EFFACE(nil,[EFFACE(nil,u) for u in $Conditions])
+  $Conditions := remove!([remove!(u,nil) for u in $Conditions],nil)
   partList:=
     [getViewsConditions partPessimise($principal,cond) for cond in $Conditions]
   masterSecondaries:= secondaries
