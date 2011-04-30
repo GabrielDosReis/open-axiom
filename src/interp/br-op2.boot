@@ -187,7 +187,7 @@ dbChooseOperandName(typ) ==
           member(y,$ElementList) => y
           first $ElementList
       first $ElementList
-    $ElementList := delete(x,$ElementList)
+    $ElementList := remove($ElementList,x)
     x
   x := first $DomainList
   $DomainList := rest $DomainList

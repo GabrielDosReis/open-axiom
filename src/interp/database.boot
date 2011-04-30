@@ -299,7 +299,7 @@ orderPredTran(oldList,sig,skip) ==
     ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
        and pvar=first sig and not (pvar in rest sig)) or
         (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
-          oldList:=delete(pred,oldList)
+          oldList := remove(oldList,pred)
           lastPreds:=[pred,:lastPreds]
 --sayBrightlyNT "lastPreds="
 --pp lastPreds
@@ -328,7 +328,7 @@ orderPredTran(oldList,sig,skip) ==
         and INTERSECTIONQ(indepvl,lastDependList) =>
       somethingDone := true
       lastPreds := [:lastPreds,x]
-      oldList := delete(x,oldList)
+      oldList := remove(oldList,x)
 --if somethingDone then
 --  sayBrightlyNT "Again lastPreds="
 --  pp lastPreds

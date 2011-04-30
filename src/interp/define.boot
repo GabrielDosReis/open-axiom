@@ -1222,7 +1222,7 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
         [[x,:dependencies] for [x,:y] in argSigAlist] where
           dependencies() ==
             union(listOfIdentifiersIn y,
-              delete(x,listOfIdentifiersIn LASSOC(x,$predAlist)))
+              remove(listOfIdentifiersIn LASSOC(x,$predAlist),x))
           argSigAlist := [:$sigAlist,:pairList(argList,sigList)]
  
   -- 4. construct a WhereList which declares and/or defines the xi's in

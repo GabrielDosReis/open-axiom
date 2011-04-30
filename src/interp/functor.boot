@@ -454,7 +454,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
      --combinations (SETELT ...(ELT ..)) by MVCs where this is practicable
   copyvec := newShell (1+n)
   (for u in code repeat
-      if update(u,copyvec,[]) then code:=delete(u,code))
+      if update(u,copyvec,[]) then code := remove(code,u))
     where update(code,copyvec,sofar) ==
       atom code => nil
       code.op in '(%tref ELT) =>
@@ -470,7 +470,8 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
              --Maximum length of an MVC is 64 words
       j:=j-1
       j > i+2 =>
-        for k in i..j repeat copyvec.k:=delete([name,:count+k-i],copyvec.k)
+        for k in i..j repeat
+          copyvec.k := remove(copyvec.k,[name,:count+k-i])
         code:=[["REPLACE", name, instantiatedBase,
                  KEYWORD::START1, count,
                   KEYWORD::START2, i,
@@ -764,14 +765,16 @@ ICformat u ==
               cond] repeat
                                   --check that v causes descendants to go
                 for v in l | not (v=u) and v is ['HasCategory, =name,['QUOTE,
-                  cond2]] repeat if DescendantP(cond,cond2) then l:= delete(u,l)
+                  cond2]] repeat
+                       if DescendantP(cond,cond2) then l:= remove(l,u)
                        --v subsumes u
             for u in l | u is ['AND,:l'] or u is ['and,:l'] repeat
               for u' in l' | u' is ['HasCategory,name,cond] and cond is ['QUOTE,
                 cond] repeat
                                     --check that v causes descendants to go
                   for v in l | v is ['HasCategory, =name,['QUOTE,
-                    cond2]] repeat if DescendantP(cond,cond2) then l:= delete(u,l)
+                    cond2]] repeat
+                        if DescendantP(cond,cond2) then l:= remove(l,u)
                          --v subsumes u
             l
         # l=1 => first l
@@ -783,7 +786,7 @@ ICformat u ==
                             --check that B causes (and A B) to go
         for v in l | not (v=u) repeat
           if listMember?(v,u) or (and/[member(w,u) for w in v]) then l:=
-            delete(u,l)
+            remove(l,u)
                  --v subsumes u
                      --Note that we are ignoring AND as a component.
                      --Convince yourself that this code still works

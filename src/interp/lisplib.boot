@@ -175,7 +175,7 @@ orderByContainment pl ==
     else if CONTAINED(x,max)
          then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:gensym()],:$predGensymAlist]
     if y then max := x
-  [max,:orderByContainment delete(max,pl)]
+  [max,:orderByContainment remove(pl,max)]
  
 buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
   null l => n

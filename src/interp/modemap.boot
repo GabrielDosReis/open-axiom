@@ -369,7 +369,7 @@ putDomainsInScope(x,e) ==
   l:= getDomainsInScope e
   if $verbose and listMember?(x,l) then 
     sayBrightly ['" Note: Domain ",x," already in scope"]
-  newValue:= [x,:delete(x,l)]
+  newValue := [x,:remove(l,x)]
   $insideCapsuleFunctionIfTrue => ($CapsuleDomainsInScope:= newValue; e)
   put("$DomainsInScope","special",newValue,e)
  
@@ -473,7 +473,7 @@ chaseInferences(pred,$e) ==
           for [ante,:conseq] in l repeat
             ante=pred => [foo w for w in conseq]
             ante is ["and",:ante'] and listMember?(pred,ante') =>
-              ante':= delete(pred,ante')
+              ante':= remove(ante',pred)
               v':=
                 # ante'=1 => first ante'
                 ["and",:ante']

@@ -157,7 +157,7 @@ axFormatDecl(sym, type) ==
    ['Declare, sym, axFormatType type]
 
 makeTypeSequence l ==
-   ['Sequence,: delete('Type, l)]
+   ['Sequence,: removeSymbol(l,'Type)]
 
 axFormatAttrib(typeform) ==
   atom typeform => typeform

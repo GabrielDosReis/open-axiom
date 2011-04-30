@@ -2965,7 +2965,7 @@ workfilesSpad2Cmd args ==
     type1 = 'delete => nil
     for file in flist repeat
       fl := pathname [file,type1,'"*"]
-      deleteFlag => SETQ($sourceFiles,delete(fl,$sourceFiles))
+      deleteFlag => SETQ($sourceFiles,remove($sourceFiles,fl))
       null (MAKE_-INPUT_-FILENAME fl) => sayKeyedMsg("S2IZ0035",[namestring fl])
       updateSourceFiles fl
   SAY " "

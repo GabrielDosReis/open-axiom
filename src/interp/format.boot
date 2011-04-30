@@ -107,7 +107,7 @@ findSubstitutionOrder? alist == fn(alist,nil) where
   fn(alist,res) ==
     null alist => reverse! res
     choice := or/[x for (x:=[a,:b]) in alist | null containedRight(a,alist)] =>
-      fn(delete(choice,alist),[choice,:res])
+      fn(remove(alist,choice),[choice,:res])
     nil
 
 containedRight(x,alist)== or/[CONTAINED(x,y) for [.,:y] in alist]
@@ -120,7 +120,7 @@ removeIsDomainD pred ==
     for p in preds while not D repeat
       p is ['isDomain,'D,D1] =>
         D := D1
-        npreds := delete(['isDomain,'D,D1],preds)
+        npreds := remove(preds,['isDomain,'D,D1])
     D =>
       1 = #npreds => [D,first npreds]
       [D,['AND,:npreds]]

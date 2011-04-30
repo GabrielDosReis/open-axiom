@@ -114,12 +114,6 @@
        (READSPADEXPR))
       (t (|parseTransform| (|postTransform| (|string2SpadTree| line)))))))
 
-#+(and :lucid (not :ibm/370))
- (define-function 'RUN-AIX-PROGRAM #'SYS:RUN-AIX-PROGRAM)
-;; following should be no longer necessary
-;; (eval-when (eval load compile) (shadow 'delete))
-;; (define-function 'boot::delete #'|delete|)
-
 ;; following are defined in spadtest.boot and stantest.boot
 (defun |installStandardTestPackages| () ())
 (defun |spadtestValueHook| (val type) ())

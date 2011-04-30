@@ -193,7 +193,7 @@ ordIntersection(a,b) ==
   ordIntersection(t,b)
 ordSetDiff(a,b) ==
   b isnt [h,:t] => a
-  member(h,a) => ordSetDiff(delete(h,a),t)
+  member(h,a) => ordSetDiff(remove(a,h),t)
   ordSetDiff(a,t)
 -------------
 testPredList u ==
