@@ -770,14 +770,6 @@
                         ((EQUAL (CAAR Y) X) (RETURN (CAR Y))) )
                (SETQ Y (CDR Y))
                (GO A)))))
-; 14.5 Updating
-
-(defun NREMOVE (list item &optional (count 1))
-  (if (integerp count)
-      (delete item list :count count :test #'equal)
-      (delete item list :test #'equal)))
-
-(defun EFFACE (item list) (delete item list :count 1 :test #'equal))
 
 ; 14.6 Miscellaneous
 

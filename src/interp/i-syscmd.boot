@@ -1454,7 +1454,7 @@ changeToNamedInterpreterFrame(name) ==
   updateCurrentInterpreterFrame()
   frame := findFrameInRing(name)
   null frame => NIL
-  $interpreterFrameRing := [frame,:NREMOVE($interpreterFrameRing, frame)]
+  $interpreterFrameRing := [frame,:remove!($interpreterFrameRing,frame)]
   updateFromCurrentInterpreterFrame()
 
 findFrameInRing(name) ==

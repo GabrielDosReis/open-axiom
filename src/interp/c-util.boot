@@ -830,7 +830,7 @@ stackWarning(msg,args == nil) ==
 unStackWarning(msg,args) ==
   msg := buildMessage(msg,args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  $warningStack:= EFFACE(msg,$warningStack)
+  $warningStack := remove!($warningStack,msg)
   nil
  
 stackMessage(msg,args == nil) ==
