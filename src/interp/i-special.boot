@@ -44,7 +44,7 @@ $specialOps == '(
     pretend QUOTE REDUCE REPEAT _return SEQ TARGET tuple typeOf _where 
      _[_|_|_] %Macro %MLambda %Import %Export %Inline %With %Add %Match)
 
-$repeatLabel := NIL
+$repeatLabel := nil
 $anonymousMapCounter := 0
 
 ++ List of free variables in the current function
@@ -60,12 +60,12 @@ voidValue() == '"()"
 --% Handlers for Anonymous Function Definitions
 
 upADEF t ==
-  t isnt [.,[vars,types,.,body],pred,.] => NIL
+  t isnt [.,[vars,types,.,body],pred,.] => nil
   -- do some checking on what we got
   for var in vars repeat
     if not IDENTP(var) then throwKeyedMsg("S2IS0057",[var])
   -- unabbreviate types
-  types := [(if t then evaluateType unabbrev t else NIL) for t in types]
+  types := [(if t then evaluateType unabbrev t else nil) for t in types]
   -- we do not allow partial types
   if isPartialMode(m := first types) then throwKeyedMsg("S2IS0058",[m])
 
@@ -78,7 +78,7 @@ upADEF t ==
     types' := rest types
   for type in types' repeat
     if (type and null m) or (m and null type) then
-      throwKeyedMsg("S2IS0059",NIL)
+      throwKeyedMsg("S2IS0059",nil)
     if isPartialMode type  then throwKeyedMsg("S2IS0058",[type])
 
 --  $localVars: local := nil
@@ -135,7 +135,7 @@ evalTargetedADEF(t,vars,types,body) ==
 
 mkInterpTargetedADEF(t,vars,types,oldBody) ==
   null first types =>
-    throwKeyedMsg("S2IS0056",NIL)
+    throwKeyedMsg("S2IS0056",nil)
     throwMessage '"   map result type needed but not present."
   arglCode := ["LIST",:[argCode for type in rest types for var in vars]]
     where argCode() == ['putValueValue,['mkAtreeNode,MKQ var],
@@ -199,7 +199,7 @@ upAlgExtension t ==
   --  to be a simple algebraic extension, with respect to the given
   --  polynomial, and given the value "a" in this type.
   t isnt [op,var,eq] => nil
-  null $genValue => throwKeyedMsg("S2IS0001",NIL)
+  null $genValue => throwKeyedMsg("S2IS0001",nil)
   a := getUnname var
   clearCmdParts ['propert,a]  --clear properties of a
   algExtension:= eq2AlgExtension eq
@@ -221,14 +221,14 @@ upAlgExtension t ==
   sae:= ['SimpleAlgebraicExtension,field,pd,objValUnwrap canonicalAE]
   saeTypeSynonym := makeSymbol strconc('"SAE",STRINGIMAGE a)
   saeTypeSynonymValue := objNew(sae,$Domain)
-  fun := getFunctionFromDomain('generator,sae,NIL)
+  fun := getFunctionFromDomain('generator,sae,nil)
   expr:= wrap SPADCALL(fun)
   putHist(saeTypeSynonym,'value,saeTypeSynonymValue,$e)
   putHist(a,'mode,sae,$e)
   putHist(a,'value,T2:= objNew(expr,sae),$e)
   clearDependencies(a,true)
   if $printTypeIfTrue then
-    sayKeyedMsg("S2IS0003",NIL)
+    sayKeyedMsg("S2IS0003",nil)
     sayMSG concat ['"%l",'"   ",saeTypeSynonym,'" := ",
       :prefix2String objVal saeTypeSynonymValue]
     sayMSG concat ['"   ",a,'" : ",saeTypeSynonym,'" := ",a]
@@ -257,7 +257,7 @@ bottomUpProposition(t,mode) ==
 upand x ==
   -- generates code for  and  forms. The second argument is only
   -- evaluated if the first argument is true.
-  x isnt [op,term1,term2] => NIL
+  x isnt [op,term1,term2] => nil
   putTarget(term1,$Boolean)
   putCallInfo(term1,"and",1,2)
   putTarget(term2,$Boolean)
@@ -294,7 +294,7 @@ upand x ==
 upor x ==
   -- generates code for  or  forms. The second argument is only
   -- evaluated if the first argument is false.
-  x isnt [op,term1,term2] => NIL
+  x isnt [op,term1,term2] => nil
   putTarget(term1,$Boolean)
   putCallInfo(term1,"or",1,2)
   putTarget(term2,$Boolean)
@@ -385,9 +385,9 @@ upTARGET t ==
   -- do not (yet) support local variables on the rhs
   (not $genValue) and or/[CONTAINED(var,rhs) for var in $localVars] =>
     keyedMsgCompFailure("S2IC0010",[rhs])
-  $declaredMode: local := NIL
+  $declaredMode: local := nil
   m:= evaluateType unabbrev rhs
-  not isLegitimateMode(m,NIL,NIL) => throwKeyedMsg("S2IE0004",[m])
+  not isLegitimateMode(m,nil,nil) => throwKeyedMsg("S2IE0004",[m])
   categoryForm?(m) => throwKeyedMsg("S2IE0014",[m])
   $declaredMode:= m
   cons? lhs and putTarget(lhs,m)
@@ -410,9 +410,9 @@ upCOERCE t ==
   -- do not (yet) support local variables on the rhs
   (not $genValue) and or/[CONTAINED(var,rhs) for var in $localVars] =>
     keyedMsgCompFailure("S2IC0006",[rhs])
-  $declaredMode: local := NIL
+  $declaredMode: local := nil
   m := evaluateType unabbrev rhs
-  not isLegitimateMode(m,NIL,NIL) => throwKeyedMsg("S2IE0004",[m])
+  not isLegitimateMode(m,nil,nil) => throwKeyedMsg("S2IE0004",[m])
   categoryForm?(m) => throwKeyedMsg("S2IE0014",[m])
   $declaredMode:= m
   -- 05/16/89 (RSS) following line commented out to give correct
@@ -487,7 +487,7 @@ upLoopIters itrl ==
     iter is ["SUCHTHAT",pred] =>
       bottomUpCompilePredicate(pred,'"|")
     iter is ["UNTIL",:.] =>
-      NIL      -- handle after body is analyzed
+      nil      -- handle after body is analyzed
     iter is ["IN",index,s] =>
       upLoopIterIN(iter,index,s)
     iter is ["STEP",index,lower,step,:upperList] =>
@@ -518,7 +518,7 @@ upLoopIterIN(iter,index,s) ==
     step := [mkAtreeNode 'incr, s]
     upperList :=
       CAAR(iterMs) = 'Segment => [[mkAtreeNode 'hi,s]]
-      NIL
+      nil
     upLoopIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
     iter.first := first newIter
@@ -535,7 +535,7 @@ upLoopIterSTEP(index,lower,step,upperList) ==
     throwKeyedMsg("S2IS0007",['"lower"])
   stype := IFCAR bottomUpUseSubdomain(step)
   not (typeIsASmallInteger(stype) or isEqualOrSubDomain(stype,$Integer))=>
-    throwKeyedMsg("S2IS0008",NIL)
+    throwKeyedMsg("S2IS0008",nil)
   types := [ltype]
   utype := nil
   for upper in upperList repeat
@@ -574,9 +574,9 @@ evalLoopIter itr ==
 
 interpCOLLECT(op,itrl,body) ==
   -- interpret-code mode COLLECT handler
-  $collectTypeList: local := NIL
-  $indexVars: local := NIL
-  $indexTypes: local := NIL
+  $collectTypeList: local := nil
+  $indexVars: local := nil
+  $indexTypes: local := nil
   emptyAtree op
   emptyAtree itrl
   emptyAtree body
@@ -640,7 +640,7 @@ interpCOLLECTbodyIter(exp,indexList,indexVals,indexTypes) ==
   $collectTypeList:=
     null $collectTypeList => [rm:=m]
     [:$collectTypeList,rm:=resolveTT(m,last $collectTypeList)]
-  null rm => throwKeyedMsg("S2IS0010",NIL)
+  null rm => throwKeyedMsg("S2IS0010",nil)
   value:=
     rm ~= m => coerceInteractive(getValue exp,rm)
     getValue exp
@@ -663,11 +663,11 @@ isStreamCollect itrl ==
 
 collectStream(t,op,itrl,body) ==
   v := CATCH('loopCompiler,collectStream1(t,op,itrl,body))
-  v = 'tryInterpOnly => throwKeyedMsg("S2IS0011",NIL)
+  v = 'tryInterpOnly => throwKeyedMsg("S2IS0011",nil)
   v
 
 collectStream1(t,op,itrl,body) ==
-  $indexVars:local := NIL
+  $indexVars:local := nil
   upStreamIters itrl
   if #$indexVars = 1 then mode:=collectOneStream(t,op,itrl,body)
   else mode:=collectSeveralStreams(t,op,itrl,body)
@@ -690,7 +690,7 @@ upStreamIterIN(iter,index,s) ==
     step := [mkAtreeNode 'incr, s]
     upperList :=
       CAAR(iterMs) = 'Segment => [[mkAtreeNode 'hi,s]]
-      NIL
+      nil
     upStreamIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
     iter.first := first newIter
@@ -714,7 +714,7 @@ upStreamIterSTEP(index,lower,step,upperList) ==
   null isEqualOrSubDomain(ltype := IFCAR bottomUpUseSubdomain(lower),
     $Integer) => throwKeyedMsg("S2IS0007",['"lower"])
   null isEqualOrSubDomain(stype := IFCAR bottomUpUseSubdomain(step),
-    $Integer) => throwKeyedMsg("S2IS0008",NIL)
+    $Integer) => throwKeyedMsg("S2IS0008",nil)
   for upper in upperList repeat
     null isEqualOrSubDomain(IFCAR bottomUpUseSubdomain(upper),
       $Integer) => throwKeyedMsg("S2IS0007",['"upper"])
@@ -989,7 +989,7 @@ upconstruct t ==
   dol and dol is [topType,:.] and not (topType in aggs) =>
     (mmS:= selectMms(op,l,tar)) and (mS:= evalForm(op,getUnname op,l,mmS)) =>
       putModeSet(op,mS)
-    NIL
+    nil
   (tar and tar is [topType,:.] and not (topType in aggs)) and
     (mmS:= modemapsHavingTarget(selectMms(op,l,tar),tar)) and
         (mS:= evalForm(op,getUnname op,l,mmS)) =>
@@ -1064,7 +1064,7 @@ upNullList(op,l,tar) ==
     tar and tar is [a,b] and (a in '(Stream Vector List)) and
       not isPartialMode(b) => ['List,b]
     '(List (None))
-  val := objNewWrap(NIL,defMode)
+  val := objNewWrap(nil,defMode)
   tar and not isPartialMode(tar) =>
     null (val' := coerceInteractive(val,tar)) =>
       throwKeyedMsg("S2IS0013",[tar])
@@ -1108,7 +1108,7 @@ upDeclare t ==
   (not $genValue) and or/[CONTAINED(var,rhs) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0014",[lhs])
   mode := evaluateType unabbrev rhs
-  mode = $Void => throwKeyedMsgSP("S2IS0015",NIL,op)
+  mode = $Void => throwKeyedMsgSP("S2IS0015",nil,op)
   not isLegitimateMode(mode,nil,nil) => throwKeyedMsgSP("S2IE0004",[mode],op)
   categoryForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'category],op)
   packageForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'package],op)
@@ -1148,7 +1148,7 @@ declare(var,mode) ==
     mapval := objVal get(var,'value,$e)
     -- mapval looks like '(%Map (args . defn))
     margs := CAADR mapval
-    -- if one args, margs is not a pair, just #1 or NIL
+    -- if one args, margs is not a pair, just #1 or nil
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
@@ -1164,7 +1164,7 @@ declare(var,mode) ==
     --   - value already has given type
     --   - new mode is same as old declared mode
     objMode(v) = mode => putHist(var,'mode,mode,$e)
-    mode = get(var,'mode,$e) => NIL   -- nothing to do
+    mode = get(var,'mode,$e) => nil   -- nothing to do
     throwKeyedMsg("S2IS0052",[var,mode])
   putHist(var,'mode,mode,$e)
 
@@ -1172,7 +1172,7 @@ declareMap(var,mode) ==
   -- declare a Mapping property
   (v:=get(var,'value,$e)) and objVal(v) isnt ["%Map",:.] =>
     throwKeyedMsg("S2IS0019",[var])
-  isPartialMode mode => throwKeyedMsg("S2IM0004",NIL)
+  isPartialMode mode => throwKeyedMsg("S2IM0004",nil)
   putHist(var,'mode,mode,$e)
 
 getAndEvalConstructorArgument tree ==
@@ -1186,11 +1186,11 @@ getAndEvalConstructorArgument tree ==
 replaceSharps(x,d) ==
   -- replaces all sharps in x by the arguments of domain d
   -- all replaces the triangle variables
-  SL:= NIL
+  SL:= nil
   for e in rest d for var in $FormalMapVariableList repeat
     SL:= [[var,:e],:SL]
   x := subCopy(x,SL)
-  SL:= NIL
+  SL:= nil
   for e in rest d for var in $TriangleVariableList repeat
     SL:= [[var,:e],:SL]
   subCopy(x,SL)
@@ -1246,18 +1246,18 @@ isPolynomialMode m ==
     op = 'Variable       => [a]
     op in '(MultivariatePolynomial DistributedMultivariatePolynomial
       HomogeneousDistributedMultivariatePolynomial) => a
-    NIL
-  NIL
+    nil
+  nil
 
 containsPolynomial m ==
-  atom m => NIL
+  atom m => nil
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains or
     d in '(Polynomial RationalFunction) => true
   (m' := underDomainOf m) and containsPolynomial m'
 
 containsVariables m ==
-  atom m => NIL
+  atom m => nil
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains => true
   (m' := underDomainOf m) and containsVariables m'
@@ -1344,7 +1344,7 @@ constantInDomain?(form,domainForm) ==
 ++ Constant `c' of `type' is referenced from domain `d'; return its value
 ++ in the VAT `op'.
 findConstantInDomain(op,c,type,d) ==
-  isPartialMode d => throwKeyedMsg("S2IS0020",NIL)
+  isPartialMode d => throwKeyedMsg("S2IS0020",nil)
   val := 
     $genValue => wrap getConstantFromDomain([c],d)
     ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
@@ -1357,7 +1357,7 @@ upDollar t ==
   t isnt [op,D,form] => nil
   t2 := t
   (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
-    keyedMsgCompFailure("S2IS0032",NIL)
+    keyedMsgCompFailure("S2IS0032",nil)
   D="Lisp" => upLispCall(op,form)
   if vector? D and (# D > 0) then D := D.0
   t := evaluateType unabbrev D
@@ -1393,18 +1393,18 @@ upDollar t ==
 
 upDollarTuple(op, f, t, t2, args, nargs) ==
   -- this function tries to find a tuple function to use
-  -- nargs = 1 and getUnname first args = "Tuple" => NIL
-  -- nargs = 1 and (ms := bottomUp first args) and ms is [["Tuple",.]] => NIL
-  null (singles := isOpInDomain(f,t,1)) => NIL
-  tuple := NIL
+  -- nargs = 1 and getUnname first args = "Tuple" => nil
+  -- nargs = 1 and (ms := bottomUp first args) and ms is [["Tuple",.]] => nil
+  null (singles := isOpInDomain(f,t,1)) => nil
+  tuple := nil
   for [[.,arg], :.] in singles while null tuple repeat
     if arg is ['Tuple,.] then tuple := arg
-  null tuple => NIL
+  null tuple => nil
   [.,D,form] := t2
   newArg := [mkAtreeNode "tuple",:args]
   putTarget(newArg, tuple)
   ms := bottomUp newArg
-  first ms ~= tuple => NIL
+  first ms ~= tuple => nil
   form := [first form, newArg]
   putAtree(first form,"dollar",t)
   ms := bottomUp form
@@ -1429,9 +1429,9 @@ upLispCall(op,t) ==
 upequation tree ==
   -- only handle this if there is a target of Boolean
   -- this should speed things up a bit
-  tree isnt [op,lhs,rhs] => NIL
-  $Boolean ~= getTarget(op) => NIL
-  not vector? op => NIL
+  tree isnt [op,lhs,rhs] => nil
+  $Boolean ~= getTarget(op) => nil
+  not vector? op => nil
   -- change equation into '='
   op.0 := "="
   bottomUp tree
@@ -1441,10 +1441,10 @@ upequation tree ==
 uperror t ==
   -- when compiling a function, this merely inserts another argument
   -- which is the name of the function.
-  not $compilingMap => NIL
-  t isnt [op,msg] => NIL
+  not $compilingMap => nil
+  t isnt [op,msg] => nil
   msgMs := bottomUp putCallInfo(msg,"error",1,1)
-  msgMs isnt [=$String] => NIL
+  msgMs isnt [=$String] => nil
   t.rest := [mkAtree object2String $mapName,msg]
   bottomUp t
 
@@ -1536,10 +1536,10 @@ evalIF(op,[cond,a,b],m) ==
   elseCode:=
     b="%noMapVal" =>
       [[MKQ true, ["throwKeyedMsg",MKQ "S2IM0018",
-        ["CONS",MKQ object2Identifier $mapName,NIL]]]]
+        ["CONS",MKQ object2Identifier $mapName,nil]]]]
     b='%noBranch =>
       $lastLineInSEQ => [[MKQ true,["voidValue"]]]
-      NIL
+      nil
     [[MKQ true,genIFvalCode(b,m)]]
   code:=['%when,[getArgValue(cond,$Boolean),
     genIFvalCode(a,m)],:elseCode]
@@ -1576,7 +1576,7 @@ interpIF(op,cond,a,b) ==
     objValUnwrap(val) => upIFgenValue(op,a)
     b="%noBranch" => setValueToVoid op
     upIFgenValue(op,b)
-  throwKeyedMsg("S2IS0031",NIL)
+  throwKeyedMsg("S2IS0031",nil)
 
 upIFgenValue(op,tree) ==
   -- evaluates tree and transfers the results to op
@@ -1608,7 +1608,7 @@ upisAndIsnt(t:=[op,a,pattern]) ==
 
 putPvarModes(pattern,m) ==
   -- Puts the modes for the pattern variables into $env
-  m isnt ["List",um] => throwKeyedMsg("S2IS0030",NIL)
+  m isnt ["List",um] => throwKeyedMsg("S2IS0030",nil)
   for pvar in pattern repeat
     IDENTP pvar => (not (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
     pvar is ['_:,var] =>
@@ -1639,7 +1639,7 @@ isLocalPred pattern ==
 compileIs(val,pattern) ==
   -- produce code for compiled "is" predicate.  makes pattern variables
   --  into local variables of the function
-  vars:= NIL
+  vars:= nil
   for pat in rest pattern repeat
     IDENTP(pat) and isLocallyBound pat => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
@@ -1679,7 +1679,7 @@ removeConstruct pat ==
 
 isPatternMatch(l,pats) ==
   -- perform the actual pattern match
-  $subs: local := NIL
+  $subs: local := nil
   isPatMatch(l,pats)
   $subs
 
@@ -1740,7 +1740,7 @@ up%LET t ==
   -- analyzes and evaluates the righthand side, and does the variable
   -- binding
   t isnt [op,lhs,rhs] => nil
-  $declaredMode: local := NIL
+  $declaredMode: local := nil
   cons? lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
@@ -1878,8 +1878,8 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
   lhs' := getUnnameIfCan lhs
   rhs' := getUnnameIfCan rhs
   lhs' = "tuple" =>
-    rhs' ~= "tuple" => throwKeyedMsg("S2IS0039",NIL)
-    #(lhs) ~= #(rhs) => throwKeyedMsg("S2IS0038",NIL)
+    rhs' ~= "tuple" => throwKeyedMsg("S2IS0039",nil)
+    #(lhs) ~= #(rhs) => throwKeyedMsg("S2IS0038",nil)
     -- generate a sequence of assignments, using local variables
     -- to first hold the assignments so that things like
     -- (t1,t2) := (t2,t1) will work.
@@ -1902,35 +1902,35 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
     ms := bottomUp seq
     putValue(op,getValue seq)
     putModeSet(op,ms)
-  rhs' = "tuple" => throwKeyedMsg("S2IS0039",NIL)
+  rhs' = "tuple" => throwKeyedMsg("S2IS0039",nil)
   tree:= seteltable(lhs,rhs) => upSetelt(op,lhs,tree)
-  throwKeyedMsg("S2IS0060", NIL)
+  throwKeyedMsg("S2IS0060", nil)
 --  upTableSetelt(op,lhs,rhs)
 
 seteltable(lhs is [f,:argl],rhs) ==
   -- produces the setelt form for trees such as "l.2:= 3"
-  null (g := getUnnameIfCan f) => NIL
+  null (g := getUnnameIfCan f) => nil
   g="elt" => altSeteltable [:argl, rhs]
-  get(g,'value,$e) is [expr,:.] and isMapExpr expr => NIL
+  get(g,'value,$e) is [expr,:.] and isMapExpr expr => nil
   transferPropsToNode(g,f)
   getValue(lhs) or getMode(lhs) =>
     f is [f',:argl'] => altSeteltable [f',:argl',:argl,rhs]
     altSeteltable [:lhs,rhs]
-  NIL
+  nil
 
 altSeteltable args ==
     for x in args repeat bottomUp x
     newOps := [mkAtreeNode "setelt", mkAtreeNode "set!"]
-    form := NIL
+    form := nil
 
     -- first look for exact matches for any of the possibilities
     while null form for newOp in newOps  repeat
-        if selectMms(newOp, args, NIL) then form := [newOp, :args]
+        if selectMms(newOp, args, nil) then form := [newOp, :args]
 
     -- now try retracting arguments after the first
     while null form and ( "and"/[retractAtree(a) for a in rest args] ) repeat
         while null form for newOp in newOps  repeat
-            if selectMms(newOp, args, NIL) then form := [newOp, :args]
+            if selectMms(newOp, args, nil) then form := [newOp, :args]
 
     form
 
@@ -1949,7 +1949,7 @@ upSetelt(op,lhs,tree) ==
 upTableSetelt(op,lhs is [htOp,:args],rhs) ==
   -- called only for undeclared, uninitialized table setelts
   ("*" = (PNAME getUnname htOp).0) and (1 ~= # args) =>
-    throwKeyedMsg("S2IS0040",NIL)
+    throwKeyedMsg("S2IS0040",nil)
   # args ~= 1 =>
     throwKeyedMsg("S2IS0041",[[getUnname htOp,'".[",
       getUnname first args,
@@ -1984,15 +1984,15 @@ unVectorize body ==
 
 isType t ==
   -- Returns the evaluated type if t is a tree representing a type,
-  -- and NIL otherwise
+  -- and nil otherwise
    op:=opOf t
    vector? op =>
-     isMap(op:= getUnname op) => NIL
+     isMap(op:= getUnname op) => nil
      op = 'Mapping and cons? t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
-     isLocallyBound op => NIL
+     isLocallyBound op => nil
      d := isDomainValuedVariable op => d
      type:=
        -- next line handles subscripted vars
@@ -2001,7 +2001,7 @@ isType t ==
              unabbrev unVectorize t
      type and evaluateType type
    d := isDomainValuedVariable op => d
-   NIL
+   nil
 
 upLETtype(op,lhs,type) ==
   -- performs type assignment
@@ -2035,19 +2035,19 @@ getInterpMacroNames() ==
 
 isInterpMacro name ==
   -- look in local and then global environment for a macro
-  not IDENTP name => NIL
-  name in $specialOps => NIL
+  not IDENTP name => nil
+  name in $specialOps => nil
   (m := get("--macros--",name,$env)) => m
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := assoc(name,$InterpreterMacroAlist)) => [NIL,:rest sv]
-  NIL
+  (sv := assoc(name,$InterpreterMacroAlist)) => [nil,:rest sv]
+  nil
 
 --% Handlers for prefix QUOTE
 
 upQUOTE t ==
-  t isnt [op,expr] => NIL
+  t isnt [op,expr] => nil
   ms:= list
     m:= getBasicMode expr => m
     IDENTP expr =>
@@ -2074,7 +2074,7 @@ up_[_|_|_] t ==
 --% Handler for pretend
 
 uppretend t ==
-  t isnt [op,expr,type] => NIL
+  t isnt [op,expr,type] => nil
   mode := evaluateType unabbrev type
   not isValidType(mode) => throwKeyedMsg("S2IE0004",[mode])
   bottomUp expr
@@ -2194,7 +2194,7 @@ upREPEAT0 t ==
 upREPEAT1 t ==
   -- repeat loop handler with compiled body
   -- see if it has the expected form
-  t isnt [op,:itrl,body] => NIL
+  t isnt [op,:itrl,body] => nil
   -- determine the mode of the repeat loop. At the moment, if there
   -- there are no iterators and there are no "break" statements, then
   -- the return type is Exit, otherwise Void.
@@ -2243,8 +2243,8 @@ interpOnlyREPEAT t ==
 
 interpREPEAT(op,itrl,body,repeatMode) ==
   -- performs interpret-code repeat
-  $indexVars: local := NIL
-  $indexTypes: local := NIL
+  $indexVars: local := nil
+  $indexTypes: local := nil
   code :=
       -- we must insert a CATCH for the iterate clause
       ['%loop,:[interpIter itr for itr in itrl],
@@ -2280,9 +2280,9 @@ interpLoopIter(exp,indexList,indexVals,indexTypes,requiredType) ==
 
 upreturn t ==
   -- make sure we are in a user function
-  t isnt [op,val] => NIL
+  t isnt [op,val] => nil
   (null $compilingMap) and (null $interpOnly) =>
-    throwKeyedMsg("S2IS0047",NIL)
+    throwKeyedMsg("S2IS0047",nil)
   if $mapTarget then putTarget(val,$mapTarget)
   bottomUp val
   if $mapTarget
@@ -2305,7 +2305,7 @@ upreturn t ==
 upSEQ u ==
   -- assumes that exits were translated into if-then-elses
   -- handles flat SEQs and embedded returns
-  u isnt [op,:args] => NIL
+  u isnt [op,:args] => nil
   if (target := getTarget(op)) then putTarget(last args, target)
   for x in args repeat bottomUp x
   null (m := computedMode last args) =>
@@ -2375,7 +2375,7 @@ upNullTuple(op,l,tar) ==
     tar and tar is [a,b] and (a in '(Stream Vector List)) and
       not isPartialMode(b) => ['Tuple,b]
     '(Tuple (None))
-  val := objNewWrap(asTupleNew(getVMType second defMode,0,NIL), defMode)
+  val := objNewWrap(asTupleNew(getVMType second defMode,0,nil), defMode)
   tar and not isPartialMode(tar) =>
     null (val' := coerceInteractive(val,tar)) =>
       throwKeyedMsg("S2IS0013",[tar])
@@ -2387,7 +2387,7 @@ upNullTuple(op,l,tar) ==
 --% Handler for typeOf
 
 uptypeOf form ==
-  form isnt [op, arg] => NIL
+  form isnt [op, arg] => nil
   if vector? arg then transferPropsToNode(getUnname arg,arg)
   if m := isType(arg) then
     m := conceptualType m
@@ -2400,7 +2400,7 @@ uptypeOf form ==
 
 upwhere t ==
   -- upwhere does the puts in where into a local environment
-  t isnt [op,tree,clause] => NIL
+  t isnt [op,tree,clause] => nil
   -- since the "clause" might be a local macro, we now call mkAtree
   -- on the "tree" part (it is not yet a vat)
   not $genValue =>
@@ -2410,7 +2410,7 @@ upwhere t ==
   [env,:e] := upwhereClause(clause,$env,$e)
   tree := upwhereMkAtree(tree,env,e)
   if x := getAtree(op,'dollar) then
-    atom tree => throwKeyedMsg("S2IS0048",NIL)
+    atom tree => throwKeyedMsg("S2IS0048",nil)
     putAtree(first tree,'dollar,x)
   upwhereMain(tree,env,e)
   val := getValue tree

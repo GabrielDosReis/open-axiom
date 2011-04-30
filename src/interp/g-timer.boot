@@ -65,7 +65,7 @@ makeLongStatStringByProperty _
     name = 'other => 'iterate
     cl := first LASSOC(class,listofclasses)
     n := property(name, prop)
-    PUT(cl,classprop, n + property(cl,classprop))
+    property(cl,classprop) := n + property(cl,classprop)
     total := total + n
     if n >= 0.01
       then timestr := normalizeStatAndStringify n
@@ -74,13 +74,13 @@ makeLongStatStringByProperty _
         otherStatTotal := otherStatTotal + n
     str := makeStatString(str,timestr,ab,flag)
   otherStatTotal := otherStatTotal
-  PUT('other, prop, otherStatTotal)
+  property('other, prop) := otherStatTotal
   if otherStatTotal > 0 then
     str := makeStatString(str,normalizeStatAndStringify otherStatTotal,'O,flag)
     total := total + otherStatTotal
     cl := first symbolLassoc('other,listofnames)
     cl := first LASSOC(cl,listofclasses)
-    PUT(cl,classprop, otherStatTotal + property(cl,classprop))
+    property(cl,classprop) := otherStatTotal + property(cl,classprop)
   if flag ~= 'long then
     total := 0
     str := '""
@@ -187,20 +187,20 @@ $interpreterTimedClasses == '(
  
 initializeTimedNames(listofnames,listofclasses) ==
   for [name,:.] in listofnames repeat
-    PUT(name, 'TimeTotal, 0.0)
-    PUT(name, 'SpaceTotal,  0)
+    property(name, 'TimeTotal) := 0.0
+    property(name, 'SpaceTotal) := 0
   for [.,name,:.] in listofclasses repeat
-    PUT( name, 'ClassTimeTotal, 0.0)
-    PUT( name, 'ClassSpaceTotal,  0)
+    property(name, 'ClassTimeTotal) := 0.0
+    property(name, 'ClassSpaceTotal) := 0
   $timedNameStack := '(other)
   computeElapsedTime()
-  PUT('gc, 'TimeTotal, 0.0)
-  PUT('gc, 'SpaceTotal,  0)
-  NIL
+  property('gc, 'TimeTotal) := 0.0
+  property('gc, 'SpaceTotal) := 0
+  nil
  
 updateTimedName name ==
   count := (property(name,'TimeTotal) or 0) + computeElapsedTime()
-  PUT(name,'TimeTotal, count) 
+  property(name,'TimeTotal) := count
  
 printNamedStats listofnames ==
   printNamedStatsByProperty(listofnames, 'TimeTotal)
@@ -225,8 +225,8 @@ computeElapsedTime() ==
   gcDelta := currentGCTime - $oldElapsedGCTime
   elapsedSeconds:=
      1.* (currentTime-$oldElapsedTime-gcDelta)/$timerTicksPerSecond
-  PUT('gc, 'TimeTotal,property('gc,'TimeTotal) +
-                   1.*QUOTIENT(gcDelta,$timerTicksPerSecond))
+  property('gc, 'TimeTotal) := property('gc,'TimeTotal) +
+                   1.*QUOTIENT(gcDelta,$timerTicksPerSecond)
   $oldElapsedTime := elapsedUserTime()
   $oldElapsedGCTime := elapsedGcTime()
   elapsedSeconds
@@ -245,7 +245,7 @@ timedAlgebraEvaluation(code) ==
  
 timedOptimization(code) ==
   startTimingProcess 'optimization
-  $getDomainCode : local := NIL
+  $getDomainCode : local := nil
   r := simplifyVMForm code
   if $reportOptimization then
     sayBrightlyI bright '"Optimized intermediate code:"

@@ -656,7 +656,7 @@ outputTranIf ['IF,x,y,z] ==
     ['SC,['CONCATB,'then,y'],['CONCATB,'else,z']]]
 
 outputMapTran l ==
-  null l => NIL         -- should not happen
+  null l => nil         -- should not happen
 
   -- display subscripts linearly
   $linearFormatScripts : local := true
@@ -702,7 +702,7 @@ outputTranIterate x ==
       final =>
         LISTP first final => [['PAREN,outputTran first final]]
         [outputTran first final]
-      NIL
+      nil
     ['STEP,outputTran n,init',outputTran step,:final']
   x is ["IN",n,s] => ["IN",outputTran n,outputTran s]
   x is [op,p] and op in '(_| UNTIL WHILE) =>
@@ -755,7 +755,7 @@ mkSuperSub(op,argl) ==
     l:= drop(indexList.1,argl) => [subPart,:l]
     subPart
   -- otherwise use the SUPERSUB form
-  superSubPart := NIL
+  superSubPart := nil
   for i in rest indexList repeat
     scripts :=
       this:= take(i,argl)
@@ -1203,7 +1203,7 @@ deMatrix m ==
 LargeMatrixp(u,width, dist) ==
   --  sees if there is a matrix wider than 'width' in the next 'dist'
   --  part of u, a sized charybdis structure.
-  --  NIL if not, first such matrix if there is one
+  --  nil if not, first such matrix if there is one
   atom u => nil
   CDAR u <= width => nil
        --CDAR is the width of a charybdis structure
@@ -1531,7 +1531,7 @@ formulaFormat expr ==
   if not $collectOutput then
     TERPRI $algebraOutputStream
     FORCE_-OUTPUT $formulaOutputStream
-  NIL
+  nil
 
 texFormat expr ==
   tf := $TexFormat
@@ -1541,7 +1541,7 @@ texFormat expr ==
   SPADCALL(SPADCALL(expr,$IOindex,formatFn),displayFn)
   TERPRI $texOutputStream
   FORCE_-OUTPUT $texOutputStream
-  NIL
+  nil
 
 texFormat1 expr ==
   tf := $TexFormat
@@ -1550,7 +1550,7 @@ texFormat1 expr ==
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
   TERPRI $texOutputStream
   FORCE_-OUTPUT $texOutputStream
-  NIL
+  nil
 
 mathmlFormat expr ==
   mml := $MathMLFormat
@@ -1560,7 +1560,7 @@ mathmlFormat expr ==
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
   TERPRI $mathmlOutputStream
   FORCE_-OUTPUT $mathmlOutputStream
-  NIL
+  nil
 
 output(expr,domain) ==
   if isWrapped expr then expr := unwrap expr
@@ -1612,7 +1612,7 @@ outputNumber(start,linelength,num) ==
     if firsttime then 
          blnks:=strconc(blnks,'" ")
          linelength:=linelength-1
-         firsttime:=NIL
+         firsttime:=nil
   if $collectOutput then
     $outputLines := [strconc(blnks, num), :$outputLines]
   else
@@ -2594,7 +2594,7 @@ maPrin u ==
   $highlightDelta := 0
   c := CATCH('outputFailure,charybdis(u, $MARGIN, $LINELENGTH))
   c ~= 'outputFailure => c
-  sayKeyedMsg("S2IX0009",NIL)
+  sayKeyedMsg("S2IX0009",nil)
   u is ['EQUATNUM,num,form] or u is [['EQUATNUM,:.],num,form] =>
     charybdis(['EQUATNUM,num], $MARGIN, $LINELENGTH)
     if not $collectOutput then

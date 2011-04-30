@@ -97,7 +97,7 @@ $options := nil
 
 initializeSystemCommands() ==
   l := $systemCommands
-  $SYSCOMMANDS := NIL
+  $SYSCOMMANDS := nil
   while l repeat
     $SYSCOMMANDS := [CAAR l,:$SYSCOMMANDS]
     l := rest l
@@ -123,11 +123,11 @@ synonymsForUserLevel l ==
   -- l is a list of synonyms, and this returns a sublist of applicable
   -- synonyms at the current user level.
   $UserLevel = 'development => l
-  nl := NIL
+  nl := nil
   for syn in reverse l repeat
     cmd := STRING2ID_-N(rest syn,1)
     null selectOptionLC(cmd,commandsForUserLevel
-      $systemCommands,NIL) => nil
+      $systemCommands,nil) => nil
     nl := [syn,:nl]
   nl
 
@@ -149,7 +149,7 @@ unAbbreviateKeyword x ==
 
 hasOption(al,opt) ==
   optPname:= PNAME opt
-  found := NIL
+  found := nil
   for pair in al while not found repeat
     stringPrefix?(PNAME first pair,optPname) => found := pair
   found
@@ -203,7 +203,7 @@ commandAmbiguityError(kind,x,u) ==
 --% Utility for access to original command line
 
 getSystemCommandLine() ==
-  p := STRPOS('")",$currentLine,0,NIL)
+  p := STRPOS('")",$currentLine,0,nil)
   line := if p then subString($currentLine,p) else $currentLine
   idxmax:= maxIndex line
   for i in 0..idxmax while stringChar(line,i) ~= char " " repeat
@@ -249,12 +249,12 @@ abbreviationsSpad2Cmd l ==
   nil
 
 listConstructorAbbreviations() ==
-  x := UPCASE queryUserKeyedMsg("S2IZ0056",NIL)
+  x := UPCASE queryUserKeyedMsg("S2IZ0056",nil)
   STRING2ID_-N(x,1) in '(Y YES) =>
     whatSpad2Cmd '(categories)
     whatSpad2Cmd '(domains)
     whatSpad2Cmd '(packages)
-  sayKeyedMsg("S2IZ0057",NIL)
+  sayKeyedMsg("S2IZ0057",nil)
 
 --% )cd
 
@@ -279,7 +279,7 @@ clearSpad2Cmd l ==
   null l =>
     optList:= "append"/[['"%l",'"       ",x] for x in $clearOptions]
     sayKeyedMsg("S2IZ0010",[optList])
-  arg := selectOptionLC(first l,'(all completely scaches),NIL)
+  arg := selectOptionLC(first l,'(all completely scaches),nil)
   arg = 'all          => clearCmdAll()
   arg = 'completely   => clearCmdCompletely()
   arg = 'scaches      => clearCmdSortedCaches()
@@ -296,15 +296,15 @@ clearCmdSortedCaches() ==
 clearCmdCompletely() ==
   clearCmdAll()
   $localExposureData := COPY_-SEQ $localExposureDataDefault
-  -- $functionTable := NIL
-  sayKeyedMsg("S2IZ0013",NIL)
+  -- $functionTable := nil
+  sayKeyedMsg("S2IZ0013",nil)
   clearClams()
   clearConstructorCaches()
   $existingFiles := hashTable 'EQUAL
-  sayKeyedMsg("S2IZ0014",NIL)
+  sayKeyedMsg("S2IZ0014",nil)
   RECLAIM()
-  sayKeyedMsg("S2IZ0015",NIL)
-  NIL
+  sayKeyedMsg("S2IZ0015",nil)
+  nil
 
 clearCmdAll() ==
   clearCmdSortedCaches()
@@ -313,17 +313,17 @@ clearCmdAll() ==
   $previousBindings := nil
   $variableNumberAlist := nil
   untraceMapSubNames _/TRACENAMES
-  $InteractiveFrame := [[NIL]]
+  $InteractiveFrame := [[nil]]
   resetInCoreHist()
   if $useInternalHistoryTable
-    then $internalHistoryTable := NIL
+    then $internalHistoryTable := nil
     else removeFile histFileName()
   $IOindex := 1
   updateCurrentInterpreterFrame()
   $currentLine := '")clear all"    --restored 3/94; needed for undo (RDJ)
   clearMacroTable()
   if $frameMessages then sayKeyedMsg("S2IZ0011",[$interpreterFrameName])
-  else sayKeyedMsg("S2IZ0012",NIL)
+  else sayKeyedMsg("S2IZ0012",nil)
 
 clearCmdExcept(l is [opt,:vl]) ==
   --clears elements of vl of all options EXCEPT opt
@@ -346,7 +346,7 @@ clearCmdParts(l is [opt,:vl]) ==
     option = 'values => 'value
     option
 
-  null vl => sayKeyedMsg("S2IZ0055",NIL)
+  null vl => sayKeyedMsg("S2IZ0055",nil)
   pmacs := getParserMacroNames()
   imacs := getInterpMacroNames()
   if vl='(all) then
@@ -364,16 +364,16 @@ clearCmdParts(l is [opt,:vl]) ==
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
             cons? lm => untraceMapSubNames [CADAR lm]
-          NIL
+          nil
         for p2 in rest p1 repeat
           prop:= first p2
           recordOldValue(x,prop,rest p2)
-          recordNewValue(x,prop,NIL)
+          recordNewValue(x,prop,nil)
         CAAR($InteractiveFrame) := deleteAssoc(x,CAAR $InteractiveFrame)
       p2:= assoc(option,rest p1) =>
         recordOldValue(x,option,rest p2)
-        recordNewValue(x,option,NIL)
-        p2.rest := NIL
+        recordNewValue(x,option,nil)
+        p2.rest := nil
   nil
 
 --% )close
@@ -392,7 +392,7 @@ close args ==
   numClients > 1 =>
     sockSendInt($SessionManager, $CloseClient)
     sockSendInt($SessionManager, $currentFrameNum)
-    closeInterpreterFrame(NIL)
+    closeInterpreterFrame(nil)
   for [opt,:.] in $options repeat
     fullopt := selectOptionLC(opt, '(quiet), 'optionError)
     fullopt = 'quiet   =>
@@ -400,7 +400,7 @@ close args ==
   quiet =>
     sockSendInt($SessionManager, $CloseClient)
     sockSendInt($SessionManager, $currentFrameNum)
-    closeInterpreterFrame(NIL)
+    closeInterpreterFrame(nil)
   x := UPCASE queryUserKeyedMsg('"S2IZ0072", nil)
   STRING2ID_-N(x,1) in '(YES Y) =>
     coreQuit()  -- ??? should be coreQuit errorCount()
@@ -410,7 +410,7 @@ close args ==
 
 constructor args ==
   sayMessage '"   Not implemented yet."
-  NIL
+  nil
 
 --% )compiler
 
@@ -535,8 +535,8 @@ compileAsharpCmd1 args ==
     doLibrary  := true       -- so a )library after compilation
     doCompileLisp := true    -- do compile generated lisp code
 
-    moreArgs := NIL
-    onlyArgs := NIL
+    moreArgs := nil
+    onlyArgs := nil
 
     for opt in $options repeat
         [optname,:optargs] := opt
@@ -562,7 +562,7 @@ compileAsharpCmd1 args ==
     tempArgs :=
         pathType = '"ao" =>
             -- want to strip out -Fao
-            (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, NIL)) =>
+            (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, nil)) =>
                 p = 0 => subString($asharpCmdlineFlags, 5)
                 strconc(subString($asharpCmdlineFlags, 0, p), '" ",
                     subString($asharpCmdlineFlags, p+5))
@@ -801,7 +801,7 @@ compileSpad2Cmd args ==
         fullopt := selectOptionLC(optname,optList,nil)
 
         fullopt = 'new         => error "Internal error: compileSpad2Cmd got )new"
-        fullopt = 'old         => NIL     -- no opt
+        fullopt = 'old         => nil     -- no opt
 
         fullopt = 'library     => fun.1 := 'lib
         fullopt = 'nolibrary   => fun.1 := 'nolib
@@ -835,7 +835,7 @@ compileSpad2Cmd args ==
     -- avoid Boolean semantics transformations based on syntax only
     $normalizeTree: local := false
     if $compileOnlyCertainItems then
-        null constructor => sayKeyedMsg("S2IZ0040",NIL)
+        null constructor => sayKeyedMsg("S2IZ0040",nil)
         compilerDoitWithScreenedLisplib(constructor, fun)
     else
         compilerDoit(constructor, fun)
@@ -1020,7 +1020,7 @@ displayMacros names ==
     macro in pmacs =>
         if first then
             sayBrightly ['"%l",'"User-defined macros:"]
-            first := NIL
+            first := nil
         displayParserMacro macro
     macro in imacs => 'iterate
     sayBrightly (["   ",'"%b", macro, '"%d", " is not a known OpenAxiom macro."])
@@ -1033,17 +1033,17 @@ displayMacros names ==
         macro in pmacs => 'iterate
         if first then
             sayBrightly ['"%l",'"System-defined macros:"]
-            first := NIL
+            first := nil
         displayMacro macro
     macro in pmacs => 'iterate
-  NIL
+  nil
 
 getParserMacroNames() ==
   removeDuplicates [first mac for mac in getParserMacros()]
 
 clearParserMacro(macro) ==
   -- first see if it is one
-  not IFCDR assoc(macro, $pfMacros) => NIL
+  not IFCDR assoc(macro, $pfMacros) => nil
   $pfMacros := REMALIST($pfMacros, macro)
 
 displayMacro name ==
@@ -1079,18 +1079,18 @@ getWorkspaceNames() ==
 
 displayOperations l ==
   null l =>
-    x := UPCASE queryUserKeyedMsg("S2IZ0058",NIL)
+    x := UPCASE queryUserKeyedMsg("S2IZ0058",nil)
     if STRING2ID_-N(x,1) in '(Y YES)
       then for op in allOperations() repeat reportOpSymbol op
-      else sayKeyedMsg("S2IZ0059",NIL)
+      else sayKeyedMsg("S2IZ0059",nil)
     nil
   for op in l repeat reportOpSymbol op
 
 interpFunctionDepAlists() ==
   $e : local := $InteractiveFrame
   deps := getFlag "$dependencies"
-  $dependentAlist := [[NIL,:NIL]]
-  $dependeeAlist := [[NIL,:NIL]]
+  $dependentAlist := [[nil,:nil]]
+  $dependeeAlist := [[nil,:nil]]
   for [dependee,dependent] in deps repeat
     $dependentAlist := PUTALIST($dependentAlist,dependee,
       [dependent,:GETALIST($dependentAlist,dependee)])
@@ -1114,7 +1114,7 @@ displayProperties(option,l) ==
     vl := MSORT append(getWorkspaceNames(),macros)
   if $frameMessages then sayKeyedMsg("S2IZ0065",[$interpreterFrameName])
   null vl =>
-    null $frameMessages => sayKeyedMsg("S2IZ0066",NIL)
+    null $frameMessages => sayKeyedMsg("S2IZ0066",nil)
     sayKeyedMsg("S2IZ0067",[$interpreterFrameName])
   interpFunctionDepAlists()
   for v in vl repeat
@@ -1213,7 +1213,7 @@ displayType($op,u,omitVariableNameIfTrue) ==
   type := prefix2String objMode(u)
   if atom type then type := [type]
   sayMSG concat ['"   Type of value of ",fixObjectForPrinting PNAME $op,'": ",:type]
-  NIL
+  nil
 
 displayValue($op,u,omitVariableNameIfTrue) ==
   null u => sayMSG ["   Value of ",fixObjectForPrinting PNAME $op,'":  (none)"]
@@ -1232,7 +1232,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
     outputFormat(expr,objMode(u))]
-  NIL
+  nil
 
 --% )edit
 
@@ -1272,7 +1272,7 @@ helpSpad2Cmd args ==
 newHelpSpad2Cmd args ==
   if null args then args := ["?"]
   # args > 1 =>
-    sayKeyedMsg("S2IZ0026",NIL)
+    sayKeyedMsg("S2IZ0026",nil)
     true
   sarg := PNAME first args
   if sarg = '"?" then args := ['help]
@@ -1285,7 +1285,7 @@ newHelpSpad2Cmd args ==
   -- see if new help file exists
 
   narg := PNAME arg
-  null (helpFile := MAKE_-INPUT_-FILENAME [narg,'HELPSPAD,'_*]) => NIL
+  null (helpFile := MAKE_-INPUT_-FILENAME [narg,'HELPSPAD,'_*]) => nil
 
   $useFullScreenHelp =>
     editFile helpFile
@@ -1319,12 +1319,12 @@ frameEnvironment fname ==
   -- is returned
   fname = frameName first $interpreterFrameRing => $InteractiveFrame
   ifr := rest $interpreterFrameRing
-  e := [[NIL]]
+  e := [[nil]]
   while ifr repeat
     [f,:ifr] := ifr
     if fname = frameName f   then
       e := second f
-      ifr := NIL
+      ifr := nil
   e
 
 frameSpad2Cmd args ==
@@ -1346,10 +1346,10 @@ frameSpad2Cmd args ==
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
 
-  NIL
+  nil
 
 addNewInterpreterFrame(name) ==
-  null name => throwKeyedMsg("S2IZ0018",NIL)
+  null name => throwKeyedMsg("S2IZ0018",nil)
   updateCurrentInterpreterFrame()
   -- see if we already have one by that name
   for f in $interpreterFrameRing repeat
@@ -1362,27 +1362,27 @@ addNewInterpreterFrame(name) ==
 
 emptyInterpreterFrame(name) ==
   [name,                                -- frame name
-       [[NIL]],                         -- environment
+       [[nil]],                         -- environment
        1,                               -- $IOindex
        $HiFiAccess,                     -- $HiFiAccess
        $HistList,                       -- $HistList
        $HistListLen,                    -- $HistListLen
        $HistListAct,                    -- $HistListAct
        $HistRecord,                     -- $HistRecord
-       NIL,                             -- $internalHistoryTable
+       nil,                             -- $internalHistoryTable
        COPY_-SEQ $localExposureDataDefault        -- $localExposureData
       ]
 
 closeInterpreterFrame(name) ==
-  -- if name = NIL then it means the current frame
+  -- if name = nil then it means the current frame
   null rest $interpreterFrameRing =>
     name and (name ~= $interpreterFrameName) =>
       throwKeyedMsg("S2IZ0020",[$interpreterFrameName])
-    throwKeyedMsg("S2IZ0021",NIL)
+    throwKeyedMsg("S2IZ0021",nil)
   if null name then $interpreterFrameRing := rest $interpreterFrameRing
   else   -- find the frame
     found := nil
-    ifr := NIL
+    ifr := nil
     for f in $interpreterFrameRing repeat
       found or (name ~= frameName(f)) => ifr := [f,:ifr]
       found := true
@@ -1393,14 +1393,14 @@ closeInterpreterFrame(name) ==
 
 previousInterpreterFrame() ==
   updateCurrentInterpreterFrame()
-  null rest $interpreterFrameRing => NIL  -- nothing to do
+  null rest $interpreterFrameRing => nil  -- nothing to do
   [:b,l] := $interpreterFrameRing
   $interpreterFrameRing := append!([l],b)
   updateFromCurrentInterpreterFrame()
 
 nextInterpreterFrame() ==
   updateCurrentInterpreterFrame()
-  null rest $interpreterFrameRing => NIL  -- nothing to do
+  null rest $interpreterFrameRing => nil  -- nothing to do
   $interpreterFrameRing :=
     append!(rest $interpreterFrameRing,[first $interpreterFrameRing])
   updateFromCurrentInterpreterFrame()
@@ -1435,30 +1435,30 @@ updateFromCurrentInterpreterFrame() ==
   if $frameMessages then
     sayMessage ['"   Current interpreter frame is called",:bright
       $interpreterFrameName]
-  NIL
+  nil
 
 
 updateCurrentInterpreterFrame() ==
   $interpreterFrameRing.first := createCurrentInterpreterFrame()
   updateFromCurrentInterpreterFrame()
-  NIL
+  nil
 
 initializeInterpreterFrameRing() ==
   $interpreterFrameName := 'initial
   $interpreterFrameRing := [emptyInterpreterFrame($interpreterFrameName)]
   updateFromCurrentInterpreterFrame()
-  NIL
+  nil
 
 
 changeToNamedInterpreterFrame(name) ==
   updateCurrentInterpreterFrame()
   frame := findFrameInRing(name)
-  null frame => NIL
+  null frame => nil
   $interpreterFrameRing := [frame,:remove!($interpreterFrameRing,frame)]
   updateFromCurrentInterpreterFrame()
 
 findFrameInRing(name) ==
-  val := NIL
+  val := nil
   for frame in $interpreterFrameRing repeat
     first frame = name =>
       val := frame
@@ -1473,17 +1473,17 @@ displayFrameNames() ==
 importFromFrame args ==
   -- args should have the form [frameName,:varNames]
   if args and atom args then args := [args]
-  null args => throwKeyedMsg("S2IZ0073",NIL)
+  null args => throwKeyedMsg("S2IZ0073",nil)
   [fname,:args] := args
   not member(fname,frameNames()) =>
     throwKeyedMsg("S2IZ0074",[fname])
   fname = frameName first $interpreterFrameRing =>
-    throwKeyedMsg("S2IZ0075",NIL)
+    throwKeyedMsg("S2IZ0075",nil)
   fenv := frameEnvironment fname
   null args =>
     x := UPCASE queryUserKeyedMsg("S2IZ0076",[fname])
     STRING2ID_-N(x,1) in '(Y YES) =>
-      vars := NIL
+      vars := nil
       for [v,:props] in CAAR fenv repeat
         v = "--macros" =>
           for [m,:.] in props repeat vars := [m,:vars]
@@ -1511,7 +1511,7 @@ $historyFileType := 'axh
 
 ++ vm/370 filename name component
 $oldHistoryFileName := 'last
-$internalHistoryTable := NIL
+$internalHistoryTable := nil
 
 ++ t means keep history in core
 $useInternalHistoryTable := true
@@ -1523,7 +1523,7 @@ $historyDirectory := "A"
 $HiFiAccess := true
 
 history l ==
-  l or null $options => sayKeyedMsg("S2IH0006",NIL) 
+  l or null $options => sayKeyedMsg("S2IH0006",nil) 
   historySpad2Cmd()
 
 
@@ -1557,12 +1557,12 @@ initHistList() ==
   -- creates $HistList as a circular list of length $HistListLen
   -- and $HistRecord
   $HistListLen:= 20
-  $HistList:= [NIL]
+  $HistList:= [nil]
   li:= $HistList
-  for i in 1..$HistListLen repeat li:= [NIL,:li]
+  for i in 1..$HistListLen repeat li:= [nil,:li]
   $HistList.rest := li
   $HistListAct:= 0
-  $HistRecord:= NIL
+  $HistRecord:= nil
 
 historySpad2Cmd() ==
   -- history is a system command which can call resetInCoreHist
@@ -1573,26 +1573,26 @@ historySpad2Cmd() ==
     for [opt,:optargs] in $options]
   for [opt,:optargs] in opts repeat
     opt in '(on yes) =>
-      $HiFiAccess => sayKeyedMsg("S2IH0007",NIL) 
+      $HiFiAccess => sayKeyedMsg("S2IH0007",nil) 
       $IOindex = 1 =>       -- haven't done anything yet
         $HiFiAccess:= true
         initHistList()
-        sayKeyedMsg("S2IH0008",NIL) 
-      x := UPCASE queryUserKeyedMsg("S2IH0009",NIL) 
+        sayKeyedMsg("S2IH0008",nil) 
+      x := UPCASE queryUserKeyedMsg("S2IH0009",nil) 
       STRING2ID_-N(x,1) in '(Y YES) =>
         histFileErase histFileName()
         $HiFiAccess:= true
         $options := nil
         clearSpad2Cmd '(all)
-        sayKeyedMsg("S2IH0008",NIL)
+        sayKeyedMsg("S2IH0008",nil)
         initHistList()
-      sayKeyedMsg("S2IH0010",NIL)
+      sayKeyedMsg("S2IH0010",nil)
     opt in '(off no) =>
-      null $HiFiAccess => sayKeyedMsg("S2IH0011",NIL)
+      null $HiFiAccess => sayKeyedMsg("S2IH0011",nil)
       $HiFiAccess:= false
       disableHist()
-      sayKeyedMsg("S2IH0012",NIL)
-    opt = 'file    => setHistoryCore NIL
+      sayKeyedMsg("S2IH0012",nil)
+    opt = 'file    => setHistoryCore nil
     opt = 'memory  => setHistoryCore true
     opt = 'reset   => resetInCoreHist()
     opt = 'save    => saveHistory optargs
@@ -1605,13 +1605,13 @@ historySpad2Cmd() ==
 
 setHistoryCore inCore ==
   inCore = $useInternalHistoryTable =>
-    sayKeyedMsg((inCore => "S2IH0030"; "S2IH0029"),NIL) 
+    sayKeyedMsg((inCore => "S2IH0030"; "S2IH0029"),nil) 
   not $HiFiAccess =>
     $useInternalHistoryTable := inCore
-    inCore => sayKeyedMsg("S2IH0032",NIL)
-    sayKeyedMsg("S2IH0031",NIL)
+    inCore => sayKeyedMsg("S2IH0032",nil)
+    sayKeyedMsg("S2IH0031",nil)
   inCore =>
-    $internalHistoryTable := NIL
+    $internalHistoryTable := nil
     if $IOindex ~= 0 then
       -- actually put something in there
       l := # RKEYIDS histFileName()
@@ -1620,7 +1620,7 @@ setHistoryCore inCore ==
         $internalHistoryTable := [[i,:vec],:$internalHistoryTable]
       histFileErase histFileName()
     $useInternalHistoryTable := true
-    sayKeyedMsg("S2IH0032",NIL)
+    sayKeyedMsg("S2IH0032",nil)
   $HiFiAccess:= false
   histFileErase histFileName()
   str := RDEFIOSTREAM ['(MODE . OUTPUT),['FILE,:histFileName()]]
@@ -1628,14 +1628,14 @@ setHistoryCore inCore ==
     SPADRWRITE(object2Identifier n,rec,str)
   RSHUT str
   $HiFiAccess:= true
-  $internalHistoryTable := NIL
-  $useInternalHistoryTable := NIL
-  sayKeyedMsg("S2IH0031",NIL)
+  $internalHistoryTable := nil
+  $useInternalHistoryTable := nil
+  sayKeyedMsg("S2IH0031",nil)
 
 
 writeInputLines(fn,initial) == 
   -- writes all input lines into file histInputFileName()
-  not $HiFiAccess => sayKeyedMsg("S2IH0013",NIL) -- history not on
+  not $HiFiAccess => sayKeyedMsg("S2IH0013",nil) -- history not on
   null fn =>
     throwKeyedMsg("S2IH0038", nil)          -- missing file name
   maxn := 72
@@ -1666,7 +1666,7 @@ writeInputLines(fn,initial) ==
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
-  NIL
+  nil
 
 
 resetInCoreHist() ==
@@ -1674,7 +1674,7 @@ resetInCoreHist() ==
   $HistListAct:= 0
   for i in 1..$HistListLen repeat
     $HistList:= rest $HistList
-    $HistList.first := NIL
+    $HistList.first := nil
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
@@ -1683,7 +1683,7 @@ changeHistListLen(n) ==
   $HistListLen:= n
   l:= rest $HistList
   if dif > 0 then
-    for i in 1..dif repeat l:= [NIL,:l]
+    for i in 1..dif repeat l:= [nil,:l]
   if dif < 0 then
     for i in 1..-dif repeat l:= rest l
     if $HistListAct > n then $HistListAct:= n
@@ -1697,7 +1697,7 @@ updateHist() ==
   updateInCoreHist()
   if $HiFiAccess then
     (try writeHiFi(); finally disableHist())
-    $HistRecord:= NIL
+    $HistRecord:= nil
   $IOindex:= $IOindex+1
   updateCurrentInterpreterFrame()
   $mkTestInputStack := nil
@@ -1707,7 +1707,7 @@ updateHist() ==
 updateInCoreHist() ==
   -- updates $HistList and $IOindex
   $HistList:= rest($HistList)
-  $HistList.first := NIL
+  $HistList.first := nil
   if $HistListAct < $HistListLen then $HistListAct:= $HistListAct+1
 
 putHist(x,prop,val,e) ==
@@ -1782,7 +1782,7 @@ undoFromFile(n) ==
       val =>
         if not (x='%) then recordOldValue(x,prop,val)
         if $HiFiAccess then recordNewValue(x,prop,val)
-        p.rest := NIL
+        p.rest := nil
   for i in 1..n repeat
     vec:= (try rest readHiFi(i); finally disableHist())
     for p1 in vec repeat
@@ -1795,9 +1795,9 @@ undoFromFile(n) ==
 
 saveHistory(fn) ==
   $seen: local := hashTable 'EQ
-  not $HiFiAccess => sayKeyedMsg("S2IH0016",NIL)
+  not $HiFiAccess => sayKeyedMsg("S2IH0016",nil)
   not $useInternalHistoryTable and
-    null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",NIL)
+    null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",nil)
   null fn => 
     throwKeyedMsg("S2IH0037", nil)
   savefile := makeHistFileName(fn)
@@ -1818,7 +1818,7 @@ saveHistory(fn) ==
 
 restoreHistory(fn) ==
   -- uses fn $historyFileType to recover an old session
-  -- if fn = NIL, then use $oldHistoryFileName
+  -- if fn = nil, then use $oldHistoryFileName
   if null fn then fn' := $oldHistoryFileName
   else if fn is [fn'] and IDENTP(fn') then fn' := fn'
        else throwKeyedMsg("S2IH0023",[fn'])
@@ -1837,8 +1837,8 @@ restoreHistory(fn) ==
   l:= # RKEYIDS curfile
   $HiFiAccess:= true
   oldInternal := $useInternalHistoryTable
-  $useInternalHistoryTable := NIL
-  if oldInternal then $internalHistoryTable := NIL
+  $useInternalHistoryTable := nil
+  if oldInternal then $internalHistoryTable := nil
   for i in 1..l repeat
     vec:= (try readHiFi(i); finally disableHist())
     if oldInternal then $internalHistoryTable :=
@@ -1866,10 +1866,10 @@ restoreHistory(fn) ==
 -- show history.
 showHistory(arg) ==
   -- arg can be of form
-  --    NIL          show at most last 20 input lines
+  --    nil          show at most last 20 input lines
   --    (n)          show at most last n input lines
   --    (lit)        where lit is an abbreviation for 'input or 'both
-  --                 if 'input, same as NIL
+  --                 if 'input, same as nil
   --                 if 'both, show last 5 input and outputs
   --    (n lit)      show last n input lines + last n output lines
   --                 if lit expands to 'both
@@ -1887,7 +1887,7 @@ showHistory(arg) ==
       n := arg1
       nset := true
       KDR arg => arg1 := second arg
-      arg1 := NIL
+      arg1 := nil
     arg1 =>
       arg2 := selectOptionLC(arg1,'(input both),nil)
       if arg2
@@ -1941,14 +1941,14 @@ fetchOutput(n) ==
       val:= rest ASSQ('value,rest Alist) => val
       throwKeyedMsg("S2IH0003",[n])
     throwKeyedMsg("S2IH0003",[n])
-  throwKeyedMsg("S2IH0004",NIL)
+  throwKeyedMsg("S2IH0004",nil)
 
 readHiFi(n) ==
   -- reads the file using index n
   if $useInternalHistoryTable
   then
     pair := assoc(n,$internalHistoryTable)
-    atom pair => keyedSystemError("S2IH0034",NIL)
+    atom pair => keyedSystemError("S2IH0034",nil)
     vec := rest pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
@@ -1971,7 +1971,7 @@ disableHist() ==
   -- disables the history mechanism if an error occurred in the protected
   -- piece of code
   not $HiFiAccess => histFileErase histFileName()
-  NIL
+  nil
 
 writeHistModesAndValues() ==
   for [a,:.] in CAAR $InteractiveFrame repeat
@@ -1979,7 +1979,7 @@ writeHistModesAndValues() ==
       putHist(a,'value,x,$InteractiveFrame)
     x := get(a,'mode,$InteractiveFrame) =>
       putHist(a,'mode,x,$InteractiveFrame)
-  NIL
+  nil
 
 SPADRREAD(vec, stream) ==
     dewritify rread(vec, stream, nil)
@@ -2157,7 +2157,7 @@ dewritify ob ==
                     HPUT($seen, nob, nob)
                     nob
                 type = 'PLACE =>
-                    nob := VMREAD MAKE_-INSTREAM NIL
+                    nob := VMREAD MAKE_-INSTREAM nil
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2201,7 +2201,7 @@ load args == loadSpad2Cmd args
 
 loadSpad2Cmd args ==
     sayKeyedMsg("S2IU0003", nil)
-    NIL
+    nil
 --  load1(args,$forceDatabaseUpdate)
 
 --load1(args,$forceDatabaseUpdate) ==  -- $ var is now local
@@ -2271,9 +2271,9 @@ quit() == quitSpad2Cmd()
 
 quitSpad2Cmd() ==
   $quitCommandType ~= 'protected => leaveScratchpad()
-  x := UPCASE queryUserKeyedMsg("S2IZ0031",NIL)
+  x := UPCASE queryUserKeyedMsg("S2IZ0031",nil)
   STRING2ID_-N(x,1) in '(Y YES) => leaveScratchpad()
-  sayKeyedMsg("S2IZ0032",NIL)
+  sayKeyedMsg("S2IZ0032",nil)
   TERSYSCOMMAND ()
 
 leaveScratchpad () ==
@@ -2335,7 +2335,7 @@ savesystem l ==
 show l == showSpad2Cmd l
 
 showSpad2Cmd l ==
-  l = [NIL] => helpSpad2Cmd '(show)
+  l = [nil] => helpSpad2Cmd '(show)
   $showOptions : local := '(attributes operations)
   if null $options then $options := '((operations))
   $e : local := $InteractiveFrame
@@ -2345,11 +2345,11 @@ showSpad2Cmd l ==
       constr = 'Record =>
         sayKeyedMsg("S2IZ0044R",[constr, '")show Record(a: Integer, b: String)"])
       constr = 'Mapping =>
-        sayKeyedMsg("S2IZ0044M",NIL)
+        sayKeyedMsg("S2IZ0044M",nil)
       sayKeyedMsg("S2IZ0045T",[constr, '")show Union(a: Integer, b: String)"])
       sayKeyedMsg("S2IZ0045U",[constr, '")show Union(Integer, String)"])
     constr is ['Mapping, :.] =>
-      sayKeyedMsg("S2IZ0044M",NIL)
+      sayKeyedMsg("S2IZ0044M",nil)
     reportOperations(constr,constr)
   reportOperations(l,l)
 
@@ -2363,12 +2363,12 @@ reportOperations(oldArg,u) ==
   u = $quadSymbol =>
      sayBrightly ['"   mode denotes", :bright '"any", "type"]
   u = "%" =>
-    sayKeyedMsg("S2IZ0063",NIL)
-    sayKeyedMsg("S2IZ0064",NIL)
+    sayKeyedMsg("S2IZ0063",nil)
+    sayKeyedMsg("S2IZ0064",nil)
   u isnt ['Record,:.] and u isnt ['Union,:.] and
     null(isNameOfType u) and u isnt ['typeOf,.] =>
       if atom oldArg then oldArg := [oldArg]
-      sayKeyedMsg("S2IZ0063",NIL)
+      sayKeyedMsg("S2IZ0063",nil)
       for op in oldArg repeat
         sayKeyedMsg("S2IZ0062",[opOf op])
   (v := isDomainValuedVariable u) =>  reportOpsFromUnitDirectly0 v
@@ -2449,7 +2449,7 @@ reportOpsFromUnitDirectly unitForm ==
       sayBrightly '""
       attList:= removeDuplicates MSORT [x for [x,:.] in unit.2]
       say2PerLine [formatAttribute x for x in attList]
-      NIL
+      nil
     opt = 'operations =>
       $commentedOps: local := 0
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
@@ -2472,14 +2472,14 @@ reportOpsFromUnitDirectly unitForm ==
           ['"Functions that are not yet implemented are preceded by",
             :bright '"--"]
       sayBrightly '""
-  NIL
+  nil
 
 reportOpsFromLisplib(op,u) ==
   null(fn:= getConstructorAbbreviationFromDB op) =>
     sayKeyedMsg("S2IZ0054",[u])
   argml :=
     (s := getConstructorSignature op) => KDR s
-    NIL
+    nil
   typ:= getConstructorKindFromDB op
   nArgs:= #argml
   argList:= KDR getConstructorFormFromDB op
@@ -2513,7 +2513,7 @@ reportOpsFromLisplib(op,u) ==
       null attList => sayBrightly
         concat('"%b",form2String functorForm,'"%d","has no attributes.",'"%l")
       say2PerLine [formatAttribute x for x in attList]
-      NIL
+      nil
     opt = 'operations => displayOperationsFromLisplib functorForm
     nil
 
@@ -2565,7 +2565,7 @@ synonym(:l) == synonymSpad2Cmd()  -- always passed a null list
 
 synonymSpad2Cmd() ==
   line := getSystemCommandLine()
-  if line = '"" then printSynonyms(NIL)
+  if line = '"" then printSynonyms(nil)
   else
     pair := processSynonymLine line
     if $CommandSynonymAlist then
@@ -2633,13 +2633,13 @@ diffAlist(new,old) ==
   for (pair := [name,:proplist]) in new repeat
     -- name has an entry both in new and old world
     -- (1) if the old world had no proplist for that variable, then
-    --     record NIL as the value of each new property
+    --     record nil as the value of each new property
     -- (2) if the old world does have a proplist for that variable, then
     --     a) for each property with a value: give the old value
-    --     b) for each property missing:      give NIL as the old value
+    --     b) for each property missing:      give nil as the old value
     oldPair := ASSQ(name,old) =>
       null (oldProplist := rest oldPair) =>
-      --record old values of new properties as NIL
+      --record old values of new properties as nil
         acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
       deltas := nil
       for (propval := [prop,:val]) in proplist repeat
@@ -2809,7 +2809,7 @@ whatSpad2Cmd l ==
   null l => reportWhatOptions()
   [key0,:args] := l
   key := selectOptionLC(key0,$whatOptions,nil)
-  null key => sayKeyedMsg("S2IZ0043",NIL)
+  null key => sayKeyedMsg("S2IZ0043",nil)
   args := [fixpat p for p in args] where
     fixpat x ==
       x is [x',:.] => DOWNCASE x'
@@ -2859,7 +2859,7 @@ apropos l ==
     sayAsManyPerLineAsPossible MSORT ops
     sayKeyedMsg("S2IF0011",[first ops])
   sayMessage '"   There are no operations containing those patterns"
-  NIL
+  nil
 
 
 printSynonyms(patterns) ==
@@ -2882,7 +2882,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
     sayMessage [label1,'"-defined ",label2,'" satisfying patterns:",
      '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
   for [syn,:comm] in ls repeat
-    if subString(syn,0,1) = '"|" then syn := subString(syn,1,NIL)
+    if subString(syn,0,1) = '"|" then syn := subString(syn,1,nil)
     if syn = '"%i" then syn := '"%i "
     wid := MAX(30 - (entryWidth syn),1)
     sayBrightly concat('"%b",prefix,syn,'"%d",
@@ -2905,7 +2905,7 @@ whatCommands(patterns) ==
     sayAsManyPerLineAsPossible l
     SAY " "
   patterns => nil  -- don't be so verbose
-  sayKeyedMsg("S2IZ0046",NIL)
+  sayKeyedMsg("S2IZ0046",nil)
   nil
 
 reportWhatOptions() ==
@@ -2920,7 +2920,7 @@ filterListOfStrings(patterns,names) ==
   -- returns: list of strings in names that contains any of the strings
   -- in patterns
   (null patterns) or (null names) => names
-  names' := NIL
+  names' := nil
   for name in reverse names repeat
     satisfiesRegularExpressions(name,patterns) =>
       names' := [name,:names']
@@ -2932,7 +2932,7 @@ filterListOfStringsWithFn(patterns,names,fn) ==
   -- returns: list of strings in names that contains any of the strings
   -- in patterns
   (null patterns) or (null names) => names
-  names' := NIL
+  names' := nil
   for name in reverse names repeat
     satisfiesRegularExpressions(FUNCALL(fn,name),patterns) =>
       names' := [name,:names']
@@ -2954,7 +2954,7 @@ satisfiesRegularExpressions(name,patterns) ==
 workfiles l == workfilesSpad2Cmd l
 
 workfilesSpad2Cmd args ==
-  args => throwKeyedMsg("S2IZ0047",NIL)
+  args => throwKeyedMsg("S2IZ0047",nil)
   deleteFlag := nil
   for [type,:.] in $options repeat
     type1 := selectOptionLC(type,'(boot lisp meta delete),nil)
@@ -2993,14 +2993,14 @@ zsystemdevelopment1(l,im) ==
     newopt := append(optargs,fromopt)
     opt1 := selectOptionLC(opt,'(from),nil)
     opt1 = 'from => nil
-    opt = "c"   => _/D_,1 (newopt ,_/COMP(),NIL,NIL)
-    opt = "d"   => _/D_,1 (newopt ,'DEFINE,NIL,NIL)
-    opt = "dt"  => _/D_,1 (newopt ,'DEFINE,NIL,true)
-    opt = "ct"  => _/D_,1 (newopt ,_/COMP(),NIL,true)
-    opt = "ctl"  => _/D_,1 (newopt ,_/COMP(),NIL,'TRACELET)
-    opt = "ec"  => _/D_,1 (newopt ,_/COMP(),true,NIL)
+    opt = "c"   => _/D_,1 (newopt ,_/COMP(),nil,nil)
+    opt = "d"   => _/D_,1 (newopt ,'DEFINE,nil,nil)
+    opt = "dt"  => _/D_,1 (newopt ,'DEFINE,nil,true)
+    opt = "ct"  => _/D_,1 (newopt ,_/COMP(),nil,true)
+    opt = "ctl"  => _/D_,1 (newopt ,_/COMP(),nil,'TRACELET)
+    opt = "ec"  => _/D_,1 (newopt ,_/COMP(),true,nil)
     opt = "ect" => _/D_,1 (newopt ,_/COMP(),true,true)
-    opt = "e"   => _/D_,1 (newopt ,NIL,true,NIL)
+    opt = "e"   => _/D_,1 (newopt ,nil,true,nil)
     opt = "version" => version()
     opt = "pause" =>
       conStream := DEFIOSTREAM ('((DEVICE . CONSOLE) (QUAL . V)),120,0)
@@ -3022,7 +3022,7 @@ zsystemdevelopment1(l,im) ==
 --% Synonym File Reader
 
 processSynonyms() ==
-  p := STRPOS('")",LINE,0,NIL)
+  p := STRPOS('")",LINE,0,nil)
   fill := '""
   if p
     then
@@ -3035,9 +3035,9 @@ processSynonyms() ==
   if to then to := to - 1
   synstr := subString(line, 1, to)
   syn := STRING2ID_-N (synstr, 1)
-  null (fun := LASSOC (syn, $CommandSynonymAlist)) => NIL
+  null (fun := LASSOC (syn, $CommandSynonymAlist)) => nil
   fun := eval fun              -- fun may have been a suspension
-  to := STRPOS('")",fun,1,NIL)
+  to := STRPOS('")",fun,1,nil)
   if to and to ~= #(fun)-1 then
     opt := strconc('" ",subString(fun,to))
     fun := subString(fun,0,to-1)
@@ -3086,17 +3086,17 @@ handleNoParseCommands(unab, string) ==
   spaceIndex := SEARCH('" ", string)
   unab = "lisp" =>
     if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
+      sayKeyedMsg("S2IV0005", nil)
       nil
     else nplisp(stripLisp string)
   unab = "boot" =>
     if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
+      sayKeyedMsg("S2IV0005", nil)
       nil
     else npboot(subSequence(string, spaceIndex+1))
   unab = "system" =>
     if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
+      sayKeyedMsg("S2IV0005", nil)
       nil
     else npsystem(unab, string)
   unab = "synonym" =>
@@ -3108,7 +3108,7 @@ handleNoParseCommands(unab, string) ==
              pquit    _
              credits  _
              copyright ) => 
-    sayKeyedMsg("S2IV0005", NIL)
+    sayKeyedMsg("S2IV0005", nil)
     nil
   funName := makeSymbol strconc('"np",STRING unab)
   FUNCALL(funName, subSequence(string, spaceIndex+1))
@@ -3245,7 +3245,7 @@ stripSpaces str ==
   STRING_-TRIM('" ", str)
 
 npProcessSynonym(str) ==
-  if str = '"" then printSynonyms(NIL)
+  if str = '"" then printSynonyms(nil)
   else
     pair := processSynonymLine str
     if $CommandSynonymAlist then

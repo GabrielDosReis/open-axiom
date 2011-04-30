@@ -308,7 +308,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
 --  --this is particularly dirty and should be cleaned up, say, by wrapping
 --  -- an appropriate lambda expression around mapping forms
 --  domainForm is [op,:l] and l =>
---    get(op,'modemap,e) is [[[mc,:.],:.]] => applySubst(PAIR(rest mc,l),catForm)
+--    get(op,'modemap,e) is [[[mc,:.],:.]] => applySubst(pairList(rest mc,l),catForm)
 --  catForm
  
 evalAndSub(domainName,viewName,functorForm,form,$e) ==

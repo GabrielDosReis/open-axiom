@@ -222,9 +222,6 @@
    #-:common-lisp (compile)
    (load ,filearg)))
 
-(defmacro pairp (x)
- `(consp ,x)) 
-
 (defmacro plus (&rest args)
  `(+ ,@ args))
 
@@ -467,7 +464,7 @@
 
 (defun WRAP (LIST-OF-ITEMS WRAPPER)
  (prog nil
-  (COND ((OR (NOT (PAIRP LIST-OF-ITEMS)) (not WRAPPER))
+  (COND ((OR (NOT (CONSP LIST-OF-ITEMS)) (not WRAPPER))
          (RETURN LIST-OF-ITEMS))
         ((NOT (consp WRAPPER))
          (SETQ WRAPPER (LOTSOF WRAPPER))))
@@ -1363,7 +1360,7 @@
                 (DCQ (OP BV . BODY) NEW-DEFINITION)
                 (OR (EQ OP 'LAMBDA) (EQ OP 'MLAMBDA)))
               (COND
-                ( (NOT (MEMQ CURRENT-BINDING (FLAT-BV-LIST BV)))
+                ( (NOT (|symbolMember?| CURRENT-BINDING (FLAT-BV-LIST BV)))
                  (eval `(,OP ,BV ((LAMBDA (,CURRENT-BINDING) . ,BODY)
 				  ',OLD-DEF)))
                    )

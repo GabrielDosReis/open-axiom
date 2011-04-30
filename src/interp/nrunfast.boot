@@ -670,22 +670,22 @@ newHasTest(domform,catOrAtt) ==
   -- atom (infovec := getInfovec opOf domform) => fn(domform,catOrAtt) where
     fn(a,b) ==
       categoryForm?(a) => assoc(b, ancestorsOf(a, nil))
-      isPartialMode a => throwKeyedMsg("S2IS0025",NIL)
+      isPartialMode a => throwKeyedMsg("S2IS0025",nil)
       b is ["SIGNATURE",:opSig] =>
         HasSignature(evalDomain a,opSig)
       b is ["ATTRIBUTE",attr] => HasAttribute(evalDomain a,attr)
-      hasCaty(a,b,NIL) isnt 'failed
+      hasCaty(a,b,nil) isnt 'failed
       HasCategory(evalDomain a,b) => true -- for asharp domains: must return Boolean
   op := opOf catOrAtt
   isAtom := atom catOrAtt
   not isAtom and op is 'Join =>
     and/[newHasTest(domform,x) for x in rest catOrAtt]
 -- we will refuse to say yes for 'Cat has Cat'
---getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",NIL)
+--getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",nil)
 -- on second thoughts we won't!
   categoryForm? domform =>
       domform = catOrAtt => 'T
-      for [aCat,:cond] in [:ancestorsOf(domform,NIL),:applySubst(pairList($FormalMapVariableList,rest domform),getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
+      for [aCat,:cond] in [:ancestorsOf(domform,nil),:applySubst(pairList($FormalMapVariableList,rest domform),getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
              atom x => x

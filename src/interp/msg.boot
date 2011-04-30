@@ -50,7 +50,7 @@ $LINELENGTH := 80
 $preLength := 11
 $LOGLENGTH := $LINELENGTH - 6
 $specificMsgTags := []
-$showKeyNum   :=        NIL
+$showKeyNum   :=        nil
 
 $compErrorPrefix :=    '"Error"
 $compBugPrefix :=      '"Bug!"
@@ -103,7 +103,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
  
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
     if cons? key then tag := 'old
-    msg := [tag,posWTag,key,argL,optPre,NIL]
+    msg := [tag,posWTag,key,argL,optPre,nil]
     if first optAttr then
         setMsgForcedAttrList(msg,first optAttr)
     putDatabaseStuff msg
@@ -143,7 +143,7 @@ getMsgInfoFromKey msg ==
  
  
 getErFromDbL (erMsgKey,dbL) ==
-    erMsg := NIL
+    erMsg := nil
     while null erMsg   repeat
         dbName := first dbL
         dbL    := rest dbL
@@ -296,7 +296,7 @@ queueUpErrors(globalNumOfLine,msgList)==
     msgList
  
 redundant(msg,thisPosMsgs) ==
-    found := NIL
+    found := nil
     if msgNoRep? msg then
         for item in $noRepList repeat
             sameMsg?(msg,item) => return (found := true)
@@ -309,11 +309,11 @@ sameMsg? (msg1,msg2) ==
  
  
 thisPosIsLess(pos,num) ==
-    poNopos? pos => NIL
+    poNopos? pos => nil
     poGlobalLinePosn pos < num
  
 thisPosIsEqual(pos,num) ==
-    poNopos? pos => NIL
+    poNopos? pos => nil
     poGlobalLinePosn pos = num
  
 --%outputting stuff
@@ -439,7 +439,7 @@ desiredMsg (erMsgKey,:optCatFlag) ==
     true
  
 isKeyQualityP (key,qual)  ==
-    --returns pair if found, else NIL
+    --returns pair if found, else nil
     found := false
     while not found and (qualPair := assoc(key,$specificMsgTags)) repeat
         if rest qualPair = qual then found := true
@@ -508,7 +508,7 @@ makeLeaderMsg chPosList ==
         st := strconc(st, _
             rep(char ".", (posNum - oldPos - 1)),posLetter)
         oldPos := posNum
-    ['leader,$nopos,'nokey,NIL,NIL,[st]]
+    ['leader,$nopos,'nokey,nil,nil,[st]]
  
 makeMsgFromLine line ==
     posOfLine  := getLinePos line
@@ -519,7 +519,7 @@ makeMsgFromLine line ==
         stNum := STRINGIMAGE i
         strconc(rep(char " ", ($preLength - 7 - # stNum)),_
          stNum)
-    ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
+    ['line,posOfLine,nil,nil, strconc('"Line", localNumOfLine),_
         textOfLine]
  
 getMsgTag msg == ncTag msg
@@ -551,7 +551,7 @@ getMsgKey? msg == IDENTP (val := getMsgKey msg) => val
 getMsgArgL msg == msg.3
  
 getMsgPrefix? msg ==
-    (pre := msg.4) = 'noPre => NIL
+    (pre := msg.4) = 'noPre => nil
     pre
  
 getMsgPrefix  msg == msg.4

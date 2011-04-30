@@ -191,7 +191,7 @@ getBasicObject x ==
     objNewWrap(x,t)
   string? x => objNewWrap(x,$String)
   FLOATP  x => objNewWrap(x,$DoubleFloat)
-  NIL
+  nil
 
 
 --%% Vectorized Attributed Trees
@@ -226,9 +226,9 @@ mkAtreeNode x ==
 emptyAtree expr ==
   vector? expr =>
     $immediateDataSymbol = expr.0 => nil
-    expr.1:= NIL
-    expr.2:= NIL
-    expr.3:= NIL
+    expr.1:= nil
+    expr.2:= nil
+    expr.3:= nil
     -- kill proplist too?
   atom expr => nil
   for e in expr repeat emptyAtree e
@@ -321,9 +321,9 @@ getModeOrFirstModeSetIfThere x ==
     y := x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) => m
       first y
-    NIL
+    nil
   m := getBasicMode x => m
-  NIL
+  nil
 
 getModeSetUseSubdomain x ==
   x and cons? x => getModeSetUseSubdomain first x
@@ -382,8 +382,8 @@ getAtree(x,prop) ==
     -- only willing to get property if op is a vector
     -- otherwise will be pushing to deeply into calling structure
     vector? op => getAtree(op,prop)
-    NIL
-  not vector? x => NIL     -- just ignore it
+    nil
+  not vector? x => nil     -- just ignore it
   n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n
   QLASSQ(prop,x.4)

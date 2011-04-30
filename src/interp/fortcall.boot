@@ -401,11 +401,11 @@ vec2Lists u == [vec2Lists1 u.i for i in 0..#u-1]
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
   first first(u)="Complex" =>
-    makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],NIL)
+    makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],nil)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
   first first(u)="Matrix" and first second first(u) = "Complex" =>
-    makeVector([makeVector(complexRows vec2Lists rest u,"%DoubleFloat")],NIL)
+    makeVector([makeVector(complexRows vec2Lists rest u,"%DoubleFloat")],nil)
   rest(u)
 
 invokeFortran(objFile,args,dummies,decls,results,actual) ==
@@ -425,7 +425,7 @@ invokeFortran(objFile,args,dummies,decls,results,actual) ==
 int2Bool u ==
   -- Return something which looks like an axiom boolean
   u=1 => "TRUE"
-  NIL
+  nil
 
 makeResultRecord(name,type,value) ==
   -- Take an object returned by the NAG routine and make it into an AXIOM
@@ -715,10 +715,10 @@ nagCall(objFiles,nfile,data,results,tmpFiled,tmpFiler) ==
 
 protectedNagCall(objFiles,nfile,data,results) ==
  errors :=true
- val:=NIL
+ val:=nil
  td:=generateDataName()
  tr:=generateResultsName()
- UNWIND_-PROTECT( (val:=nagCall(objFiles,nfile,data,results,td,tr) ;errors :=NIL),
+ UNWIND_-PROTECT( (val:=nagCall(objFiles,nfile,data,results,td,tr) ;errors :=nil),
         errors =>( resetStackLimits(); sendNagmanErrorSignal();cleanUpAfterNagman(td,tr,objFiles)))
  val
 

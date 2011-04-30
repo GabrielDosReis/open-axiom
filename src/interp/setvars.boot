@@ -138,22 +138,22 @@ resetWorkspaceVariables() ==
   -- this replaces def in DEBUG LISP
   -- this function resets many workspace variables to their default
   -- values. Some things are reset by start and not reset by restart.
-  SETQ(_/COUNTLIST                  , NIL)
-  SETQ(_/EDITFILE                   , NIL)
-  SETQ(_/SOURCEFILES                , NIL)
-  SETQ($sourceFiles                 , NIL)
-  SETQ(_/PRETTY                     , NIL)
-  SETQ(_/SPACELIST                  , NIL)
-  SETQ(_/TIMERLIST                  , NIL)
+  SETQ(_/COUNTLIST                  , nil)
+  SETQ(_/EDITFILE                   , nil)
+  SETQ(_/SOURCEFILES                , nil)
+  SETQ($sourceFiles                 , nil)
+  SETQ(_/PRETTY                     , nil)
+  SETQ(_/SPACELIST                  , nil)
+  SETQ(_/TIMERLIST                  , nil)
   SETQ($existingFiles               , hashTable 'EQUAL)
-  SETQ($functionTable               , NIL)
-  SETQ($echoLineStack               , NIL)
-  SETQ($slamFlag                    , NIL)
+  SETQ($functionTable               , nil)
+  SETQ($echoLineStack               , nil)
+  SETQ($slamFlag                    , nil)
   SETQ($CommandSynonymAlist         , COPY($InitialCommandSynonymAlist))
-  SETQ($UserAbbreviationsAlist      , NIL)
-  SETQ($msgAlist                    , NIL)
-  SETQ($msgDatabase                 , NIL)
-  SETQ($msgDatabaseName             , NIL)
+  SETQ($UserAbbreviationsAlist      , nil)
+  SETQ($msgAlist                    , nil)
+  SETQ($msgDatabase                 , nil)
+  SETQ($msgDatabaseName             , nil)
   SETQ($IOindex                     , 1  )
   SETQ($e                           , $EmptyEnvironment)
   SETQ($env                         , [[nil]])
@@ -211,7 +211,7 @@ set1(l,setTree) ==
       else sayMSG '"   Function not implemented."
     -- if so set, then show option information
     if $displaySetValue then displaySetOptionInformation(arg,setData)
-    NIL
+    nil
 
   st = 'STRING   =>
     arg2 := l.1
@@ -221,7 +221,7 @@ set1(l,setTree) ==
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
-    NIL
+    nil
 
   st = 'INTEGER  =>
     -- validate the option, allowing the user to set the default
@@ -238,7 +238,7 @@ set1(l,setTree) ==
       displaySetOptionInformation(arg,setData)
     null arg2 => sayMessage ['" Your value",:bright object2String l.1,
         '"is not among the valid choices."]
-    NIL
+    nil
 
   st = 'LITERALS =>
     -- validate the option, allowing the user to set the default
@@ -257,14 +257,14 @@ set1(l,setTree) ==
       displaySetOptionInformation(arg,setData)
     null arg2 => sayMessage ['" Your value",:bright object2String l.1,
         '"is not among the valid choices."]
-    NIL
+    nil
 
   -- for a sub-tree, we must recurse
   st = 'TREE =>
     set1(KDR l,setData.setLeaf)
-    NIL
+    nil
   sayMessage ['"Cannot handle set tree node type",:bright st,"yet"]
-  NIL
+  nil
 
 
 displaySetOptionInformation(arg,setData) ==
@@ -401,7 +401,7 @@ setInputLibrary arg ==
   arg is [act, filename] and (act := selectOptionLC(act,'(add drop),nil)) =>
     act = 'add => addInputLibrary TRUENAME STRINGIMAGE filename
     act = 'drop => dropInputLibrary TRUENAME STRINGIMAGE filename
-  setInputLibrary NIL
+  setInputLibrary nil
 
 
 setOutputLibrary arg ==
@@ -486,12 +486,12 @@ setExpose arg ==
     sayKeyedMsg("S2IZ0049D",[namestring pathname ["INTERP","EXPOSED"]])
 
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(add drop initialize),NIL)) =>
+    '(add drop initialize),nil)) =>
       fn = 'add  =>  setExposeAdd fnargs
       fn = 'drop =>  setExposeDrop fnargs
       fn = 'initialize => setExpose "%initialize%"
-      NIL
-  setExpose NIL
+      nil
+  setExpose nil
 
 
 setExposeAdd arg ==
@@ -503,13 +503,13 @@ setExposeAdd arg ==
     sayMSG '" "
     displayExposedConstructors()
     sayMSG '" "
-    sayKeyedMsg("S2IZ0049E",NIL)
+    sayKeyedMsg("S2IZ0049E",nil)
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(group constructor),NIL)) =>
+    '(group constructor),nil)) =>
       fn = 'group  =>  setExposeAddGroup fnargs
       fn = 'constructor =>  setExposeAddConstr fnargs
-      NIL
-  setExposeAdd NIL
+      nil
+  setExposeAdd nil
 
 
 setExposeAddGroup arg ==
@@ -526,8 +526,8 @@ setExposeAddGroup arg ==
     if cons? x then x := first x
     x = 'all =>
       $localExposureData.0 :=[first x for x in $globalExposureGroupAlist]
-      $localExposureData.1 :=NIL
-      $localExposureData.2 :=NIL
+      $localExposureData.1 :=nil
+      $localExposureData.2 :=nil
       displayExposedGroups()
       sayMSG '" "
       displayExposedConstructors()
@@ -571,27 +571,27 @@ setExposeDrop arg ==
     --  give msg about explicitly hidden constructors
     displayHiddenConstructors()
     sayMSG '" "
-    sayKeyedMsg("S2IZ0049F",NIL)
+    sayKeyedMsg("S2IZ0049F",nil)
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(group constructor),NIL)) =>
+    '(group constructor),nil)) =>
       fn = 'group  =>  setExposeDropGroup fnargs
       fn = 'constructor =>  setExposeDropConstr fnargs
-      NIL
-  setExposeDrop NIL
+      nil
+  setExposeDrop nil
 
 
 setExposeDropGroup arg ==
   (null arg) =>
     centerAndHighlight ("The group Option",$LINELENGTH,specialChar 'hbar)
-    sayKeyedMsg("S2IZ0049L",NIL)
+    sayKeyedMsg("S2IZ0049L",nil)
     sayMSG '" "
     displayExposedGroups()
   for x in arg repeat
     if cons? x then x := first x
     x = 'all =>
-      $localExposureData.0 := NIL
-      $localExposureData.1 := NIL
-      $localExposureData.2 := NIL
+      $localExposureData.0 := nil
+      $localExposureData.1 := nil
+      $localExposureData.2 := nil
       displayExposedGroups()
       sayMSG '" "
       displayExposedConstructors()
@@ -611,7 +611,7 @@ setExposeDropConstr arg ==
   (null arg) =>
     centerAndHighlight ("The constructor Option",$LINELENGTH,
       specialChar 'hbar)
-    sayKeyedMsg("S2IZ0049N",NIL)
+    sayKeyedMsg("S2IZ0049N",nil)
     sayMSG '" "
     displayExposedConstructors()
     sayMSG '" "
@@ -666,7 +666,7 @@ setFortTmpDir arg ==
 validateOutputDirectory x ==
   AND(PATHNAME_-DIRECTORY(PROBE_-FILE(first(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(first(x)))) =>
     first(x)
-  NIL
+  nil
 
 
 describeSetFortTmpDir() ==
@@ -751,10 +751,10 @@ describeSetLinkerArgs() ==
 
 
 setFunctionsCache arg ==
-  $options : local := NIL
+  $options : local := nil
   arg = "%initialize%" =>
     $cacheCount := 0
-    $cacheAlist := NIL
+    $cacheAlist := nil
   arg = "%display%" =>
     null $cacheAlist => object2String $cacheCount
     '"..."
@@ -867,7 +867,7 @@ setHistory arg ==
    (fn := DOWNCASE(fn)) in '(y n ye yes no on of off) =>
     $options := [[fn]]
     historySpad2Cmd()
-  setHistory NIL
+  setHistory nil
 
 -- 
 -- See the section kernel in setvart.boot
@@ -996,7 +996,7 @@ setOutputAlgebra arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(algebra algebra))
-    UPCASE(fn) in '(NO OFF)  => $algebraFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $algebraFormat := nil
     UPCASE(fn) in '(YES ON) => $algebraFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $algebraOutputStream
@@ -1020,7 +1020,7 @@ setOutputAlgebra arg ==
       $verbose and sayKeyedMsg("S2IV0004",['"Algebra",$algebraOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputAlgebra()
 
 
@@ -1107,7 +1107,7 @@ setOutputCharacters arg ==
     sayBrightly '" The current setting is indicated within the list.  This option determines "
     sayBrightly '" the special characters used for algebraic output.  This is what the"
     sayBrightly '" current choice of special characters looks like:"
-    l := NIL
+    l := nil
     for [char,:.] in $specialCharacterAlist repeat
       s := strconc('"   ",PNAME char,'" is shown as ",
         PNAME specialChar(char))
@@ -1117,8 +1117,8 @@ setOutputCharacters arg ==
   arg is [fn] and (fn := DOWNCASE(fn)) =>
     fn = 'default => $specialCharacters := $RTspecialCharacters
     fn = 'plain   => $specialCharacters := $plainRTspecialCharacters
-    setOutputCharacters NIL
-  setOutputCharacters NIL
+    setOutputCharacters nil
+  setOutputCharacters nil
 
 -- See the subsection output fortran in setvart.boot
 -- 
@@ -1166,7 +1166,7 @@ setOutputFortran arg ==
     $fortranOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $fortranOutputFile := '"CONSOLE"
-    $fortranFormat := NIL
+    $fortranFormat := nil
 
   arg = "%display%" =>
     if $fortranFormat then label := '"On:" else label := '"Off:"
@@ -1177,8 +1177,8 @@ setOutputFortran arg ==
 
   -- try to figure out what the argument is
 
-  append := NIL
-  quiet := NIL
+  append := nil
+  quiet := nil
   while LISTP arg and UPCASE(first arg) in '(APPEND QUIET) repeat
     if UPCASE first(arg) = 'APPEND then append := true
     else if UPCASE first(arg) = 'QUIET then quiet := true
@@ -1192,7 +1192,7 @@ setOutputFortran arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(FORTRAN fortran))
-    UPCASE(fn) in '(NO OFF)  => $fortranFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $fortranFormat := nil
     UPCASE(fn) in '(YES ON)  => $fortranFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $fortranOutputStream
@@ -1214,7 +1214,7 @@ setOutputFortran arg ==
       $fortranOutputFile := object2String filename
       if null quiet then sayKeyedMsg("S2IV0004",['FORTRAN,$fortranOutputFile])
     if null quiet then sayKeyedMsg("S2IV0003",[fn,ft,fm])
-  if null quiet then sayKeyedMsg("S2IV0005",NIL)
+  if null quiet then sayKeyedMsg("S2IV0005",nil)
   describeSetOutputFortran()
 
 
@@ -1284,7 +1284,7 @@ setOutputMathml arg ==
     $mathmlOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $mathmlOutputFile := '"CONSOLE"
-    $mathmlFormat := NIL 
+    $mathmlFormat := nil 
 
   arg = "%display%" =>
     if $mathmlFormat then label := '"On:" else label := '"Off:"
@@ -1303,7 +1303,7 @@ setOutputMathml arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(MathML mathml))
-    UPCASE(fn) in '(NO OFF) => $mathmlFormat := NIL
+    UPCASE(fn) in '(NO OFF) => $mathmlFormat := nil
     UPCASE(fn) in '(YES ON) => $mathmlFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $mathmlOutputStream
@@ -1326,7 +1326,7 @@ setOutputMathml arg ==
       sayKeyedMsg("S2IV0004",['"MathML",$mathmlOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputMathml()
  
 describeSetOutputMathml() ==
@@ -1393,7 +1393,7 @@ setOutputOpenMath arg ==
     $openMathOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $openMathOutputFile := '"CONSOLE"
-    $openMathFormat := NIL
+    $openMathFormat := nil
 
   arg = "%display%" =>
     if $openMathFormat then label := '"On:" else label := '"Off:"
@@ -1412,7 +1412,7 @@ setOutputOpenMath arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(OpenMath openmath))
-    UPCASE(fn) in '(NO OFF)  => $openMathFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $openMathFormat := nil
     UPCASE(fn) in '(YES ON) => $openMathFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $openMathOutputStream
@@ -1435,7 +1435,7 @@ setOutputOpenMath arg ==
       sayKeyedMsg("S2IV0004",['"OpenMath",$openMathOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputOpenMath()
 
 
@@ -1505,7 +1505,7 @@ setOutputFormula arg ==
     $formulaOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $formulaOutputFile := '"CONSOLE"
-    $formulaFormat := NIL
+    $formulaFormat := nil
 
   arg = "%display%" =>
     if $formulaFormat then label := '"On:" else label := '"Off:"
@@ -1524,7 +1524,7 @@ setOutputFormula arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(script script))
-    UPCASE(fn) in '(NO OFF)  => $formulaFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $formulaFormat := nil
     UPCASE(fn) in '(YES ON) => $formulaFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $formulaOutputStream
@@ -1547,7 +1547,7 @@ setOutputFormula arg ==
       sayKeyedMsg("S2IV0004",['"IBM Script formula",$formulaOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputFormula()
 
 
@@ -1616,7 +1616,7 @@ setOutputTex arg ==
     $texOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $texOutputFile := '"CONSOLE"
-    $texFormat := NIL
+    $texFormat := nil
 
   arg = "%display%" =>
     if $texFormat then label := '"On:" else label := '"Off:"
@@ -1635,7 +1635,7 @@ setOutputTex arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(TeX tex))
-    UPCASE(fn) in '(NO OFF)  => $texFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $texFormat := nil
     UPCASE(fn) in '(YES ON) => $texFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $texOutputStream
@@ -1658,7 +1658,7 @@ setOutputTex arg ==
       sayKeyedMsg("S2IV0004",['"TeX",$texOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputTex()
 
 

@@ -84,7 +84,7 @@ dnf2pf(x) ==
 be x == b2dnf x
 b2dnf x ==
   x = 'T => 'true
-  x = NIL => 'false
+  x = nil => 'false
   atom x => bassert x
   [op,:argl] := x
   op in '(AND and) => band argl

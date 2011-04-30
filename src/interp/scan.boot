@@ -479,7 +479,7 @@ scanTransform x ==
 --scanLetter x==
 --   if not char? x
 --   then false
---   else STRPOSL(scanTrTable,x,0,NIL)
+--   else STRPOSL(scanTrTable,x,0,nil)
 
 posend(line,n)==
   while n<#line and idChar? line.n repeat

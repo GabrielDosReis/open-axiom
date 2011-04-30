@@ -191,7 +191,7 @@ makeCompactDirect1(op,items) ==
       0
   --> drop items which are not present (predCode = -1)
   predCode = -1 => return nil
-  --> drop items with NIL slots if lookup function is incomplete
+  --> drop items with nil slots if lookup function is incomplete
   if null slot then
      $lookupFunction is 'lookupIncomplete => return nil
      slot := 1   --signals that operation is not present
@@ -230,7 +230,7 @@ makeCompactSigCode sig == [fn for x in sig] where
 --=======================================================================
 NRTmakeCategoryAlist() ==
   $depthAssocCache: local := hashTable 'EQ
-  $catAncestorAlist: local := NIL
+  $catAncestorAlist: local := nil
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
@@ -782,9 +782,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       for u in $extraParms repeat
         formals:=[first u,:formals]
         actuals:=[MKQ rest u,:actuals]
-      body := ['sublisV,['PAIR,['QUOTE,formals],['%list,:actuals]],body]
+      body := ['sublisV,['pairList,['QUOTE,formals],['%list,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
-        ['sublisV,['PAIR,['QUOTE,sargl],['%list,:
+        ['sublisV,['pairList,['QUOTE,sargl],['%list,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ["%bind",[[g:= gensym(),body]],

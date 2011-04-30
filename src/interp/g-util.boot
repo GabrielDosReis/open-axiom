@@ -406,7 +406,7 @@ PUTALIST(alist,prop,val) ==
 REMALIST(alist,prop) ==
   null alist => alist
   alist is [[ =prop,:.],:r] =>
-    null r => NIL
+    null r => nil
     alist.first := first r
     alist.rest := rest r
     alist
@@ -416,9 +416,9 @@ REMALIST(alist,prop) ==
   while ok repeat
     [.,[p,:.],:r] := l
     p = prop =>
-      ok := NIL
+      ok := nil
       l.rest := r
-    if null (l := rest l) or null rest l then ok := NIL
+    if null (l := rest l) or null rest l then ok := nil
   alist
 
 deleteLassoc(x,y) ==
@@ -476,29 +476,29 @@ centerString(text,width,fillchar) ==
 stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
-  not (string?(pref) and string?(str)) => NIL
+  not (string?(pref) and string?(str)) => nil
   (lp := # pref) = 0 => true
-  lp > # str => NIL
+  lp > # str => nil
   ok := true
   i := 0
   while ok and (i < lp) repeat
-    stringChar(pref,i) ~= stringChar(str,i) => ok := NIL
+    stringChar(pref,i) ~= stringChar(str,i) => ok := nil
     i := i + 1
   ok
 
 stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
-  -- in string str. Returns NIL if not a digit or other error.
+  -- in string str. Returns nil if not a digit or other error.
   if IDENTP str then str := symbolName str
   not (string?(str) and
-    integer?(pos) and (pos >= 0) and (pos < #str)) => NIL
-  not digit?(d := stringChar(str,pos)) => NIL
+    integer?(pos) and (pos >= 0) and (pos < #str)) => nil
+  not digit?(d := stringChar(str,pos)) => nil
   DIG2FIX d
 
 dropLeadingBlanks str ==
   str := object2String str
   l := # str
-  nb := NIL
+  nb := nil
   i := 0
   while (i < l) and nb = nil repeat
     if stringChar(str,i) ~= char " " then nb := i
@@ -631,14 +631,14 @@ mergeSort(f,g,p,n) ==
       t := p
       p := rest p
       p.rest := t
-      t.rest := NIL
+      t.rest := nil
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
    l := n quo 2
    t := p
    for i in 1..l-1 repeat t := rest t
    q := rest t
-   t.rest := NIL
+   t.rest := nil
    p := mergeSort(f,g,p,l)
    q := mergeSort(f,g,q,QSDIFFERENCE(n,l))
    mergeInPlace(f,g,p,q)

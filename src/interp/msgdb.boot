@@ -81,10 +81,10 @@ namespace BOOT
 
 --% Message Database Code and Message Utility Functions
 
-$msgDatabase := NIL
+$msgDatabase := nil
 $cacheMessages := 'T  -- for debugging purposes
-$msgAlist := NIL
-$msgDatabaseName := NIL
+$msgAlist := nil
+$msgDatabaseName := nil
 $testingErrorPrefix :=  '"Daly Bug"
 $testingSystem := false
 $MARG := 0
@@ -121,16 +121,16 @@ segmentKeyedMsg(msg) == string2Words msg
 segmentedMsgPreprocess x ==
   atom x => x
   [head,:tail] := x
-  center := rightJust := NIL
+  center := rightJust := nil
   if member(head, '(%ceon "%ceon")) then center := true
   if member(head, '(%rjon "%rjon")) then rightJust := true
   center or rightJust =>
     -- start collecting terms
-    y := NIL
+    y := nil
     ok := true
     while tail and ok repeat
       [t,:tail] := tail
-      member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
+      member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := nil
       y := [segmentedMsgPreprocess t,:y]
     head1 := [(center => '"%ce"; '"%rj"),:reverse! y]
     null tail => [head1]
@@ -144,7 +144,7 @@ removeAttributes msg ==
     --takes a segmented message and returns it with the attributes
     --separted.
     first msg ~= '"%atbeg" =>
-        [msg,NIL]
+        [msg,nil]
     attList := []
     until item = '"%atend" repeat
         msg     := rest  msg
@@ -169,7 +169,7 @@ applyPrefix2String args ==
 
 substituteSegmentedMsg(msg,args) ==
   -- this does substitution of the parameters
-  l := NIL
+  l := nil
   nargs := #args
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
@@ -193,7 +193,7 @@ substituteSegmentedMsg(msg,args) ==
         a <= nargs => args.(a-1)
         '"???"
       -- now pull out qualifiers
-      q := NIL
+      q := nil
       for i in 2..(n-1) repeat q := [stringChar(x,i),:q]
       -- Note 'f processing must come first.
       if char "f" in q then
@@ -294,16 +294,16 @@ cleanUpSegmentedMsg msg ==
   -- takes a reversed msg and puts it in the correct order
   atom msg => msg
   blanks := ['" "," "]
-  haveBlank := NIL
+  haveBlank := nil
   prims :=
     '(%b %d %l %i %u %m %ce %rj _
      "%b" "%d" "%l" "%i" "%m" "%u" "%ce" "%rj")
-  msg1 := NIL
+  msg1 := nil
   for x in msg repeat
     if haveBlank and (member(x,blanks) or member(x,prims)) then
       msg1 := rest msg1
     msg1 := [x,:msg1]
-    haveBlank := (member(x,blanks) => true; NIL)
+    haveBlank := (member(x,blanks) => true; nil)
   msg1
 
 operationLink name ==
@@ -386,7 +386,7 @@ breakKeyedMsg(key,args) ==
   handleLispBreakLoop($BreakMode)
 
 keyedSystemError(key,args) ==
-  sayKeyedMsg("S2GE0000",NIL)
+  sayKeyedMsg("S2GE0000",nil)
   breakKeyedMsg(key,args)
 
 systemErrorHere what ==
@@ -503,7 +503,7 @@ keyedMsgCompFailure(key,args) ==
   not $useCoerceOrCroak =>   THROW('coerceOrCroaker, 'croaked)
   if not($Coerce) and  $reportInterpOnly then
     sayKeyedMsg(key,args)
-    sayKeyedMsg("S2IB0009",NIL)
+    sayKeyedMsg("S2IB0009",nil)
   null $compilingMap => THROW('loopCompiler,'tryInterpOnly)
   THROW('mapCompiler,'tryInterpOnly)
 
@@ -516,7 +516,7 @@ keyedMsgCompFailureSP(key,args,atree) ==
         sayMSG '" "
         srcPosDisplay(sp)
     sayKeyedMsg(key,args)
-    sayKeyedMsg("S2IB0009",NIL)
+    sayKeyedMsg("S2IB0009",nil)
   null $compilingMap => THROW('loopCompiler,'tryInterpOnly)
   THROW('mapCompiler,'tryInterpOnly)
 
@@ -553,18 +553,18 @@ sayString(x,out == $OutputStream) ==
 
 spadStartUpMsgs() ==
   -- messages displayed when the system starts up
-  $LINELENGTH < 60 => NIL
+  $LINELENGTH < 60 => nil
   bar := fillerSpaces($LINELENGTH,char specialChar 'hbar)
   sayKeyedMsg("S2GL0001",[_*BUILD_-VERSION_*, _*YEARWEEK_*])
   sayMSG bar
-  sayKeyedMsg("S2GL0018C",NIL)
-  sayKeyedMsg("S2GL0018D",NIL)
+  sayKeyedMsg("S2GL0018C",nil)
+  sayKeyedMsg("S2GL0018D",nil)
   sayKeyedMsg("S2GL0003B",[$opSysName])
   sayMSG bar
-  $msgAlist := NIL    -- these msgs need not be saved
+  $msgAlist := nil    -- these msgs need not be saved
   sayMSG " "
 
-HELP() == sayKeyedMsg("S2GL0019",NIL)
+HELP() == sayKeyedMsg("S2GL0019",nil)
 
 version() == _*YEARWEEK_*
 
@@ -573,7 +573,7 @@ version() == _*YEARWEEK_*
 brightPrint(x,out == $OutputStream) ==
   $MARG : local := 0
   for y in x repeat brightPrint0(y,out)
-  NIL
+  nil
 
 brightPrint0(x,out == $OutputStream) ==
   $texFormatting => brightPrint0AsTeX(x,out)
@@ -654,7 +654,7 @@ brightPrint1(x, out == $OutputStream) ==
   if member(x,'(%l "%l")) then sayNewLine(out)
   else if string? x then sayString(x,out)
        else brightPrintHighlight(x,out)
-  NIL
+  nil
 
 brightPrintHighlight(x, out == $OutputStream) ==
   $texFormatting => brightPrintHighlightAsTeX(x,out)
@@ -722,11 +722,11 @@ brightPrintCenter(x,out == $OutputStream) ==
       f := DIVIDE($LINELENGTH - wid,2)
       x := [fillerSpaces(f.0,char " "),x]
     for y in x repeat brightPrint0(y,out)
-    NIL
-  y := NIL
+    nil
+  y := nil
   ok := true
   while x and ok repeat
-    if member(first(x),'(%l "%l")) then ok := NIL
+    if member(first(x),'(%l "%l")) then ok := nil
     else y := [first x, :y]
     x := rest x
   y := reverse! y
@@ -738,7 +738,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   if x then
     sayNewLine(out)
     brightPrintCenter(x,out)
-  NIL
+  nil
 
 brightPrintCenterAsTeX(x, out == $OutputStream) ==
   atom x =>
@@ -767,13 +767,13 @@ brightPrintRightJustify(x, out == $OutputStream) ==
     wid < $LINELENGTH =>
       x := [fillerSpaces($LINELENGTH-wid,char " "),x]
       for y in x repeat brightPrint0(y,out)
-      NIL
+      nil
     brightPrint0(x,out)
-    NIL
-  y := NIL
+    nil
+  y := nil
   ok := true
   while x and ok repeat
-    if member(first(x),'(%l "%l")) then ok := NIL
+    if member(first(x),'(%l "%l")) then ok := nil
     else y := [first x, :y]
     x := rest x
   y := reverse! y
@@ -784,7 +784,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   if x then
     sayNewLine(out)
     brightPrintRightJustify(x,out)
-  NIL
+  nil
 
 --% Message Formatting Utilities
 
@@ -815,7 +815,7 @@ sayAsManyPerLineAsPossible l ==
   -- w will be the field width in which we will display the elements
   m > $LINELENGTH =>
     for a in l repeat sayMSG a
-    NIL
+    nil
   w := MIN(m + 3,$LINELENGTH)
   -- p is the number of elements per line
   p := $LINELENGTH quo w
@@ -826,7 +826,7 @@ sayAsManyPerLineAsPossible l ==
     str := strconc(str,c,fillerSpaces(w - #c,char " "))
     (i+1) rem p = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
-  NIL
+  nil
 
 say2PerLine l == say2PerLineWidth(l, $LINELENGTH quo 2)
 

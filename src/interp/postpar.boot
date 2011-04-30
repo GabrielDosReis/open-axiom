@@ -257,7 +257,7 @@ postMDef(t) ==
   [.,lhs,rhs] := t
   $InteractiveMode =>
     lhs := postTran lhs
-    not IDENTP lhs => throwKeyedMsg("S2IP0001",NIL)
+    not IDENTP lhs => throwKeyedMsg("S2IP0001",nil)
     ["MDEF",lhs,nil,nil,postTran rhs]
   lhs:= postTran lhs
   [form,targetType]:=

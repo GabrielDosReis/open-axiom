@@ -58,11 +58,11 @@ canCoerce(t1, t2) ==
   nil
 
 coerceConvertMmSelection(funName,m1,m2) ==
-  -- calls selectMms with $Coerce=NIL and tests for required
+  -- calls selectMms with $Coerce=nil and tests for required
   -- target type. funName is either 'coerce or 'convert.
-  $declaredMode : local:= NIL
-  $reportBottomUpFlag : local:= NIL
-  l := selectMms1(funName,m2,[m1],[m1],NIL)
+  $declaredMode : local:= nil
+  $reportBottomUpFlag : local:= nil
+  l := selectMms1(funName,m2,[m1],[m1],nil)
   mmS := [[sig,[targ,arg],:pred] for x in l | x is [sig,[.,arg],:pred] and
     hasCorrectTarget(m2,sig) and sig is [dc,targ,oarg] and oarg = m1]
   mmS and first mmS
@@ -85,26 +85,26 @@ isValidType form ==
     ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
-    null mapargs => NIL
+    null mapargs => nil
     and/[isValidType type for type in mapargs]
   form is ['Union,:args] =>
     -- check for a tagged union
     args and first args is [":",:.] =>
       and/[isValidType type for [:.,type] in args]
-    null (and/[isValidType arg for arg in args]) => NIL
+    null (and/[isValidType arg for arg in args]) => nil
     ((# args) = (# removeDuplicates args)) => true
     sayKeyedMsg("S2IR0005",[form])
-    NIL
+    nil
 
   badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
-  form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
+  form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => nil
 
   form is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,$Field) => NIL
+    ofCategory(D,$Field) => nil
   form is ['UnivariatePolynomial, x, ['UnivariatePolynomial, y, .]] and x=y =>
-    NIL
-  form = '(Complex (AlgebraicNumber)) => NIL
-  form is ['Expression, ['Kernel, . ]] => NIL
+    nil
+  form = '(Complex (AlgebraicNumber)) => nil
+  form is ['Expression, ['Kernel, . ]] => nil
   form is [op,:argl] =>
     not constructor? op => nil
     cosig := getDualSignatureFromDB op
@@ -145,7 +145,7 @@ resolveTT(t1,t2) ==
   -- resolves two types
   -- this symmetric resolve looks for a type t to which both t1 and t2
   -- can be coerced
-  -- if resolveTT fails, the result will be NIL
+  -- if resolveTT fails, the result will be nil
   startTimingProcess 'resolve
   t1 := eqType t1
   t2 := eqType t2
@@ -210,9 +210,9 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
 underDomainOf t ==
   t = $RationalNumber => $Integer
-  atom t => NIL
+  atom t => nil
   d := deconstructT t
-  1 = #d => NIL
+  1 = #d => nil
   u := getUnderModeOf(t) => u
   last d
 

@@ -50,7 +50,7 @@ keyItem a ==
 --  invocation of DomainPrint1 to the next
  
 DomainPrint(D,brief) ==
-  -- If brief is non-NIL, %then only a summary is printed
+  -- If brief is non-nil, %then only a summary is printed
   $WhereList: local := nil
   $Sublis: local := nil
   $WhereCounter: local := 1
@@ -58,7 +58,7 @@ DomainPrint(D,brief) ==
   categoryObject? D => CategoryPrint(D,env)
   $Sublis:= [[keyItem D,:'original]]
   SAY '"-----------------------------------------------------------------------"
-  DomainPrint1(D,NIL,env)
+  DomainPrint1(D,nil,env)
   while ($WhereList) repeat
     s:= $WhereList
     $WhereList:= nil
@@ -549,7 +549,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
-  code is ['_:,:.] => (code.first := '%list; code.rest := NIL)
+  code is ['_:,:.] => (code.first := '%list; code.rest := nil)
       --Yes, I know that's a hack, but how else do you kill a line?
   code is ['%list,:.] => nil
   code is ['devaluate,:.] => nil
@@ -871,7 +871,7 @@ encodeLocalFunctionName op ==
   makeSymbol strconc(prefix,'";",encodeItem op)
  
 splitEncodedFunctionName(encodedName, sep) ==
-    -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or NIL
+    -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or nil
     -- sep0 is the separator used in "encodeFunctionName".
     sep0 := '";"
     if not string? encodedName then

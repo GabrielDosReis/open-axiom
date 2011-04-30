@@ -56,7 +56,7 @@ term1RW(t,R) ==
   -- tries to reduce t at the top node
   [vars,:varRules]:= R
   for r in varRules until not (SL='failed) repeat
-    SL:= termMatch(first r,t,NIL,vars)
+    SL:= termMatch(first r,t,nil,vars)
     not (SL='failed) =>
       t:= subCopy(copy rest r,SL)
   t
@@ -65,7 +65,7 @@ term1RWall(t,R) ==
   -- same as term1RW, but returns a list
   [vars,:varRules]:= R
   [not (SL='failed) and subCopy(copy rest r,SL) for r in varRules |
-    not sameObject?(SL:= termMatch(first r,t,NIL,vars),'failed)]
+    not sameObject?(SL:= termMatch(first r,t,nil,vars),'failed)]
  
 termMatch(tp,t,SL,vars) ==
   -- t is a term pattern, t a term
@@ -90,9 +90,9 @@ termMatch(tp,t,SL,vars) ==
  
 -- isContained(v,t) ==
 --   -- tests (by EQ), whether v occurs in term t
---   -- v must not be NIL
+--   -- v must not be nil
 --   sameObject?(v,t) => 'T
---   atom t => NIL
+--   atom t => nil
 --   isContained(v,first t) or isContained(v,rest t)
  
 augmentSub(v,t,SL) ==
@@ -115,7 +115,7 @@ mergeSubs(S1,S2) ==
 subCopy(t,SL) ==
   -- t is any LISP structure, SL a substitution list for sharp variables
   -- then t is substituted and copied if necessary
-  SL=NIL => t
+  SL=nil => t
   subCopy0(t,SL)
  
 subCopy0(t, SL) ==
@@ -123,21 +123,21 @@ subCopy0(t, SL) ==
   t
   
 subCopyOrNil(t,SL) ==
-  -- the same as subCopy, but the result is NIL if nothing was copied
+  -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => p
-  atom t => NIL
+  atom t => nil
   [t1,:t2]:= t
   t0:= subCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:subCopy0(t2,SL)]]
     [t,:[rest t0,:t2]]
   t2 and ( t0:= subCopyOrNil(t2,SL) ) => [t, :[t1,:rest t0]]
-  NIL
+  nil
  
  
 deepSubCopy(t,SL) ==
   -- t is any LISP structure, SL a substitution list for sharp variables
   -- then t is substituted and copied if necessary
-  SL=NIL => t
+  SL=nil => t
   deepSubCopy0(t,SL)
  
 deepSubCopy0(t, SL) ==
@@ -145,9 +145,9 @@ deepSubCopy0(t, SL) ==
   t
   
 deepSubCopyOrNil(t,SL) ==
-  -- the same as subCopy, but the result is NIL if nothing was copied
+  -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => [t,:deepSubCopy0(rest p, SL)]
-  atom t => NIL
+  atom t => nil
   [t1,:t2]:= t
   t0:= deepSubCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:deepSubCopy0(t2,SL)]]

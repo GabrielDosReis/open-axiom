@@ -114,32 +114,32 @@ newMKINFILENAM(infile) ==
       nfile := file
       if fn = '"*" or fn = '"NIL" then sayKeyedMsg("S2IL0016",NIL)
       else              sayKeyedMsg("S2IL0003",[namestring file])
-      ans := queryUserKeyedMsg("S2IL0017",NIL)
+      ans := queryUserKeyedMsg("S2IL0017",nil)
       if (#(ans) > 0) and ('")" = subString(ans,0,1)) then n := 2
       else n := 1
       nfn := stringUpcase STRING2ID_-N(ans,n)
       (nfn = 0) or (nfn = 'QUIT) =>
-        sayKeyedMsg("S2IL0018",NIL)
-        THROW('FILENAM,NIL)
+        sayKeyedMsg("S2IL0018",nil)
+        THROW('FILENAM,nil)
       nfn = 'CREATE => return 'fromThisLoop
       file := pathname ans
     return 'fromThisLoop
   if nfile then pathname nfile
-  else NIL
+  else nil
  
  
 getFunctionSourceFile fun ==
-  null (f := getFunctionSourceFile1 fun) => NIL
+  null (f := getFunctionSourceFile1 fun) => nil
   if MAKE_-INPUT_-FILENAME(f) then updateSourceFiles f
   f
  
 getFunctionSourceFile1 fun ==
-  -- returns NIL or [fn,ft,fm]
+  -- returns nil or [fn,ft,fm]
   (file := KDR GETL(fun,'DEFLOC)) => pathname file
   null ((fileinfo := FUNLOC fun) or
     (fileinfo := FUNLOC unabbrev fun)) =>
       u := bootFind fun => getFunctionSourceFile1 SETQ($FUNCTION,INTERN u)
-      NIL
+      nil
   3 = #fileinfo =>
     [fn,ft,$FUNCTION] := fileinfo
     newMKINFILENAM pathname [fn,ft]

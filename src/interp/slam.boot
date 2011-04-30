@@ -51,7 +51,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   -- gives k boundary values, one general term plus possibly an
   -- "out of domain" condition
   --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
-  --  CONTAINED('throwKeyedMsg,mess)) => NIL
+  --  CONTAINED('throwKeyedMsg,mess)) => nil
   pcl := [x for x in pcl | not (x is ['%otherwise,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]
@@ -398,7 +398,7 @@ reallyClearLocalModemaps x ==
 clearCache x ==
   get(x,'localModemap,$e) or get(x,'mapBody,$e) =>
     for [map,:sub] in $mapSubNameAlist repeat
-      map=x => _/UNTRACE_,2(sub,NIL)
+      map=x => _/UNTRACE_,2(sub,nil)
     $e := reallyClearLocalModemaps x
     $e:= putHist(x,'mapBody,nil,$e)
     $e:= putHist(x,'localVars,nil,$e)
@@ -407,14 +407,14 @@ clearCache x ==
 clearLocalModemaps x ==
   u := get(x,"localModemap",$e) =>
     for sub in ASSOCRIGHT $mapSubNameAlist repeat
-      _/UNTRACE_,2(sub,NIL)
+      _/UNTRACE_,2(sub,nil)
     $e:= reallyClearLocalModemaps x
     for mm in u repeat
       [.,fn,:.] := mm
       if def:= get(fn,'definition,$e) then
         $e:= putHist(x,'value,objNew(def,$EmptyMode),$e)
       if cacheVec:= get(fn,'cacheInfo,$e) then
-        setDynamicBinding(cacheVec.cacheName,NIL)
+        setDynamicBinding(cacheVec.cacheName,nil)
       -- now clear the property list of the identifier
       $e := addIntSymTabBinding(x,nil,$e)
     sayKeyedMsg("S2IX0007",[x])

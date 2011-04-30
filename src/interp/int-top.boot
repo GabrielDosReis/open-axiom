@@ -86,7 +86,7 @@ ncTopLevel() ==
 -- Top-level read-parse-eval-print loop for the interpreter.  Uses
 -- the Bill Burge's parser.
   IN_-STREAM: fluid := $InputStream
-  _*EOF_*: fluid := NIL
+  _*EOF_*: fluid := nil
   $InteractiveMode :fluid := true
   $NEWSPAD: fluid := true
   $SPAD: fluid := true
@@ -369,7 +369,7 @@ ncError() ==
 --% phParse: carrier[tokens,...] -> carrier[ptree, tokens,...]
 --)line (defun pretty (x) (boottran::reallyprettyprint x))
 --)line (defun packagetran (x) (boot::|packageTran|))
-$ncmParse :=      NIL
+$ncmParse :=      nil
 
 phParse(carrier,ptree) ==
     phBegin 'Parsing
@@ -426,7 +426,7 @@ ncloopPrefix?(prefix,whole) ==
                 good:= prefix.i = whole.j
      if good then subString(whole,#prefix) else good
 
-$ncmPhase :=      NIL
+$ncmPhase :=      nil
  
 phBegin id ==
     $convPhase := id

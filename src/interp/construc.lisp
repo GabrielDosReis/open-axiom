@@ -167,7 +167,7 @@
  (cond
   ((null p) p) 
   ((pathnamep p) p) 
-  ((null (pairp p)) (pathname p)) 
+  ((null (consp p)) (pathname p)) 
   ('else 
    (when (> (length p) 2) 
       (setq p (list (mergelib (first p)) (second p))))

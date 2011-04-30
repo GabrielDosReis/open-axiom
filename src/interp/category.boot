@@ -496,7 +496,7 @@ JoinInner(l,$e) ==
              --         first anc)
                 bCond:= ASSQ(b,CondList)
                 CondList := remove(CondList,bCond)
-             -- value of bCond not used and could be NIL
+             -- value of bCond not used and could be nil
              -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
                 for u in $NewCatVec.1 repeat

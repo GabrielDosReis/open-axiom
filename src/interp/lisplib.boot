@@ -101,7 +101,7 @@ makePredicateBitVector pl ==   --called by buildFunctor
   $predGensymAlist := nil --bound by buildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
     pred := simpBool transHasCode p
-    atom pred => 'skip                --skip over T and NIL
+    atom pred => 'skip                --skip over T and nil
     if isHasDollarPred pred then 
       lasts := insert(pred,lasts)
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
@@ -222,7 +222,7 @@ putFileProperty(fn,ft,id,val) ==
   val
  
 lisplibWrite(prop,val,filename) ==
-  -- this may someday not write NIL keys, but it will now
+  -- this may someday not write nil keys, but it will now
   if $LISPLIB then
      rwrite128(prop,val,filename)
  
@@ -256,7 +256,7 @@ hasFilePropertyNoCache(p,id,abbrev) ==
   -- it is assumed that the file exists and is a proper pathname
   -- startTimingProcess 'diskread
   fnStream:= readLibPathFast p
-  null fnStream => NIL
+  null fnStream => nil
   -- str:= object2String id
   val:= rread(id,fnStream, nil)
   RSHUT fnStream
@@ -301,8 +301,8 @@ findModule cname ==
 loadLibIfNotLoaded libName ==
   -- replaces old SpadCondLoad
   -- loads is library is not already loaded
-  $PrintOnly => NIL
-  property(libName,'LOADED) => NIL
+  $PrintOnly => nil
+  property(libName,'LOADED) => nil
   loadLib libName
  
 loadLib cname ==
@@ -324,14 +324,14 @@ loadLib cname ==
   coSig :=
       u =>
           [[.,:sig],:.] := u
-          [NIL,:[categoryForm?(x) for x in rest sig]]
-      NIL
-  -- in following, add property value false or NIL to possibly clear
+          [nil,:[categoryForm?(x) for x in rest sig]]
+      nil
+  -- in following, add property value false or nil to possibly clear
   -- old value
   if null rest getConstructorFormFromDB cname then
       property(cname,'NILADIC) := true
     else
-      REMPROP(cname,'NILADIC)
+      property(cname,'NILADIC) := nil
   property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
@@ -405,11 +405,11 @@ loadFunctor u ==
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
     cnam in $CategoryNames => nil
-    REMPROP(cnam,'LOADED)
+    property(cnam,'LOADED) := nil
 --    fn:=getConstructorAbbreviationFromDB cnam
     if niladicConstructorFromDB cnam
-     then PUT(cnam,'NILADIC,'T)
-     else REMPROP(cnam,'NILADIC)
+     then property(cnam,'NILADIC) := 'T
+     else property(cnam,'NILADIC) := nil
     systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
@@ -433,11 +433,11 @@ autoLoad(abb,cname) ==
 
 setAutoLoadProperty(name) ==
 --  abb := getConstructorAbbreviationFromDB name
-  REMPROP(name,'LOADED)
+  property(name,'LOADED) := nil
   symbolFunction(name) := mkAutoLoad(getConstructorAbbreviationFromDB name, name)
 
 unloadOneConstructor(cnam,fn) ==
-    REMPROP(cnam,'LOADED)
+    property(cnam,'LOADED) := nil
     symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 --% Compilation
@@ -458,22 +458,22 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
-  $lisplibAttributes: local := NIL
-  $lisplibPredicates: local := NIL
-  $lisplibForm: local := NIL
-  $lisplibAbbreviation: local := NIL
-  $lisplibParents: local := NIL
-  $lisplibAncestors: local := NIL
-  $lisplibKind: local := NIL
-  $lisplibModemap: local := NIL
-  $lisplibModemapAlist: local := NIL
-  $lisplibSlot1 : local := NIL   --used by NRT mechanisms
-  $lisplibOperationAlist: local := NIL
-  $lisplibOpAlist: local:= NIL
-  $lisplibSuperDomain: local := NIL
-  $libFile: local := NIL
-  $lisplibVariableAlist: local := NIL
-  $lisplibSignatureAlist: local := NIL
+  $lisplibAttributes: local := nil
+  $lisplibPredicates: local := nil
+  $lisplibForm: local := nil
+  $lisplibAbbreviation: local := nil
+  $lisplibParents: local := nil
+  $lisplibAncestors: local := nil
+  $lisplibKind: local := nil
+  $lisplibModemap: local := nil
+  $lisplibModemapAlist: local := nil
+  $lisplibSlot1 : local := nil   --used by NRT mechanisms
+  $lisplibOperationAlist: local := nil
+  $lisplibOpAlist: local:= nil
+  $lisplibSuperDomain: local := nil
+  $libFile: local := nil
+  $lisplibVariableAlist: local := nil
+  $lisplibSignatureAlist: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
@@ -491,23 +491,23 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   sayMSG fillerSpaces(72,char "-")
   $LISPLIB: local := 'T
   $op: local := op
-  $lisplibAttributes: local := NIL
-  $lisplibPredicates: local := NIL -- set by makePredicateBitVector
-  $lisplibForm: local := NIL
-  $lisplibKind: local := NIL
-  $lisplibAbbreviation: local := NIL
-  $lisplibParents: local := NIL
-  $lisplibAncestors: local := NIL
-  $lisplibModemap: local := NIL
-  $lisplibModemapAlist: local := NIL
-  $lisplibSlot1 : local := NIL   -- used by NRT mechanisms
-  $lisplibOperationAlist: local := NIL
+  $lisplibAttributes: local := nil
+  $lisplibPredicates: local := nil -- set by makePredicateBitVector
+  $lisplibForm: local := nil
+  $lisplibKind: local := nil
+  $lisplibAbbreviation: local := nil
+  $lisplibParents: local := nil
+  $lisplibAncestors: local := nil
+  $lisplibModemap: local := nil
+  $lisplibModemapAlist: local := nil
+  $lisplibSlot1 : local := nil   -- used by NRT mechanisms
+  $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local := nil  --operations alist for new runtime system
   $lisplibSignatureAlist: local := nil
-  $lisplibSuperDomain: local := NIL
-  $libFile: local := NIL
-  $lisplibVariableAlist: local := NIL
---  $lisplibRelatedDomains: local := NIL   --from ++ Related Domains: see c-doc
+  $lisplibSuperDomain: local := nil
+  $libFile: local := nil
+  $lisplibVariableAlist: local := nil
+--  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
   $lisplibCategory: local := nil        
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
@@ -535,7 +535,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],NIL)
+  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],nil)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
@@ -666,7 +666,7 @@ getSlot1 domainName ==
   p := pathname [fn,$spadLibFT,'"*"]
   not isExistingFile(p) =>
     sayKeyedMsg("S2IL0003",[namestring p])
-    NIL
+    nil
   (sig := getConstructorSignature domainName) =>
     [.,target,:argMml] := sig
     for a in $FormalMapVariableList for m in argMml repeat
@@ -675,7 +675,7 @@ getSlot1 domainName ==
       systemErrorHere ["getSlot1",domainName]
     t.expr.1
   sayKeyedMsg("S2IL0022",[namestring p,'"constructor modemap"])
-  NIL
+  nil
  
 transformOperationAlist operationAlist ==
   --  this transforms the operationAlist which is written out onto LISPLIBs.
@@ -685,7 +685,7 @@ transformOperationAlist operationAlist ==
   --      where signature-Alist has entries (<signature> . item)
   --        where item has form (<slotNumber> <condition> <kind>)
   --          where <kind> =
-  --             NIL  => function
+  --             nil  => function
   --             CONST => constant ... and others
   newAlist:= nil
   for [[op,sig,:.],condition,implementation] in operationAlist repeat
