@@ -36,7 +36,7 @@
 --                        Build Directories
 --=======================================================================
 buildFunctionTable(dicts) ==
-  sayKeyedMsg("S2GL0011",NIL)
+  sayKeyedMsg("S2GL0011",nil)
   buildWordTable getListOfFunctionNames dicts
  
 buildWordTable u ==
@@ -52,13 +52,13 @@ buildWordTable u ==
   table
  
 writeFunctionTables(filemode) ==
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADU,'(SPAD))
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADD,'(SPADSYS))
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADC,'(SPADSYS SCRATCHPAD_-COMPILER))
-  $functionTable := NIL
+  $functionTable := nil
   'done
  
 writeFunctionTable(filemode,name,dicts) ==
@@ -72,7 +72,7 @@ writeFunctionTable(filemode,name,dicts) ==
   'done
  
 readFunctionTable() ==
-  sayKeyedMsg("S2GL0011",NIL)
+  sayKeyedMsg("S2GL0011",nil)
   name :=
     $wordDictionary = 'user => 'SPADU
     $wordDictionary = 'development => 'SPADD
@@ -143,7 +143,7 @@ guess word ==
   nil
  
 bootFind word ==
-  not $useWordFacility => NIL
+  not $useWordFacility => nil
   list:= bootSearch word
   PNAME word in list => nil --mismatch of directories: pretend it was not found
   null list => centerAndHighlight('"no match found",80,'" ")

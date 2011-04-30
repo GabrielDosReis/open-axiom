@@ -953,7 +953,7 @@ dbShowCons(htPage,key,:options) ==
   if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
       key = 'exposureOn => 'T
-      NIL
+      nil
     key := htpProperty(htPage,'exclusion)
   dbShowCons1(htPage,cAlist,key)
 

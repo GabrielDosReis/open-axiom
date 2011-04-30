@@ -975,7 +975,7 @@ grepFile(pattern,:options) ==
   key := (x := IFCAR options => (options := rest options; x); nil)
   source := grepSource key
   lines :=
-    not PROBE_-FILE source => NIL
+    not PROBE_-FILE source => nil
     target := getTempPath 'target
     casepart :=
       'iv in options => '"-vi"

@@ -45,7 +45,7 @@ $insideCompileBodyIfTrue := false
 
 --% Generating internal names for functions
 
-$specialMapNameSuffix := NIL
+$specialMapNameSuffix := nil
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
   name := strconc('"*",STRINGIMAGE numArgs,'";",
@@ -62,7 +62,7 @@ isInternalMapName name ==
   sz := # (name' := symbolName name)
   (sz < 7) or (char "*" ~= name'.0) => false
   not digit? name'.1 => false
-  null STRPOS('"_;",name',1,NIL) => false
+  null STRPOS('"_;",name',1,nil) => false
   -- good enough
   true
 
@@ -117,7 +117,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   -- that are not numbers.
   parameters := [p for p in rest lhs | IDENTP(p)]
 
-  -- see if a signature has been given. if anything in mapsig is NIL,
+  -- see if a signature has been given. if anything in mapsig is nil,
   -- then declaration was omitted.
   someDecs := nil
   allDecs := true
@@ -129,7 +129,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
     if d then
       someDecs := true
       d' := evaluateType unabbrev d
-      isPartialMode d' => throwKeyedMsg("S2IM0004",NIL)
+      isPartialMode d' => throwKeyedMsg("S2IM0004",nil)
 --      tree := mkAtree d'
 --      null (d' := isType tree) => throwKeyedMsg("S2IM0005",[d])
       mapmode := [d',:mapmode]
@@ -152,8 +152,8 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   --step process as this should not include recursive calls to the map
   --itself, or the formal parameters
   userVariables1 := getUserIdentifiersIn rhs
-  $freeVars: local := NIL
-  $localVars: local := NIL
+  $freeVars: local := nil
+  $localVars: local := nil
   for parm in parameters repeat mkLocalVar($mapName,parm)
   userVariables2 := setDifference(userVariables1,findLocalVars(op,rhs))
   userVariables3 := setDifference(userVariables2, parameters)
@@ -184,7 +184,7 @@ addMap(lhs,rhs,pred) ==
   body:= SUBLISNQ($sl,rhs)
   oldMap :=
     (obj := get(op,'value,$InteractiveFrame)) => objVal obj
-    NIL
+    nil
   newMap := augmentMap(op,argList,finalPred,body,oldMap)
   null newMap =>
     sayRemoveFunctionOrValue op
@@ -218,7 +218,7 @@ deleteMap(op,pattern,map) ==
       true
     null rest newMap => nil
     newMap
-  NIL
+  nil
 
 getUserIdentifiersIn body ==
   null body => nil
@@ -499,7 +499,7 @@ analyzeMap(op,argTypes,mapDef, tar) ==
   $repeatLabel    : local := nil   -- for loops; see upREPEAT
   $breakCount     : local := 0     -- breaks from loops; ditto
   $mapTarget      : local := tar
-  $interpOnly: local := NIL
+  $interpOnly: local := nil
   $mapName : local := op.0
   if get($mapName,'recursive,$e) then
     argTypes := [f t for t in argTypes] where
@@ -524,7 +524,7 @@ analyzeMap(op,argTypes,mapDef, tar) ==
     if getMode op isnt ['Mapping,:sig] then
       sig := [nil,:[nil for type in argTypes]]
     $e:=putHist(opName,'localModemap,
-      [[['interpOnly,:sig],fun,NIL]],$e)
+      [[['interpOnly,:sig],fun,nil]],$e)
   x
 
 analyzeMap0(op,argTypes,mapDef) ==
@@ -628,7 +628,7 @@ rewriteMap1(opName,argl,sig) ==
   else
     tar:= nil
     argTypes:= nil
-  evArgl := NIL
+  evArgl := nil
   for arg in reverse argl repeat
     v := getValue arg
     evArgl := [objNew(objVal v, objMode v),:evArgl]
@@ -655,7 +655,7 @@ interpMap(opName,tar) ==
   $genValue : local:= true
   $interpMapTag : local := nil
   $interpOnly : local := true
-  $localVars : local := NIL
+  $localVars : local := nil
   for lvar in get(opName,'localVars,$e) repeat mkLocalVar(opName,lvar)
   $mapName : local := opName
   $mapTarget : local := tar
@@ -716,7 +716,7 @@ makeLocalModemap(op,sig) ==
   -- create a local modemap for op with sig, and put it into $e
   if (currentMms := get(op,'localModemap,$e)) then
     untraceMapSubNames [CADAR currentMms]
-  newName := makeInternalMapName(op,#sig-1,1+#currentMms,NIL)
+  newName := makeInternalMapName(op,#sig-1,1+#currentMms,nil)
   newMm := [['local,:sig],newName,nil]
   mms := [newMm,:currentMms]
   $e := putHist(op,'localModemap,mms,$e)
@@ -802,8 +802,8 @@ mapRecurDepth(opName,opList,body) ==
 
 analyzeUndeclaredMap(op,argTypes,mapDef,$mapList) ==
   -- Computes the signature of the map named op, and compiles the body
-  $freeVars: local := NIL
-  $localVars: local := NIL
+  $freeVars: local := nil
+  $localVars: local := nil
   $env: local:= [[nil]]
   $mapList := [op,:$mapList]
   parms:=[var for var in $FormalMapVariableList for m in argTypes]
@@ -1100,7 +1100,7 @@ listOfVariables pat ==
   -- return a list of the variables in pat, which is an "is" pattern
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
-    (var='_. => NIL ; [var])
+    (var='_. => nil ; [var])
   cons? pat => removeDuplicates [:listOfVariables p for p in pat]
   nil
 
@@ -1135,7 +1135,7 @@ getLocalVars(op,body) ==
 --  case, y can never contain embedded wrapped expressions.  The mode
 --  part m of the triple is the type of y in the wrapped case and is
 --  consistent with the declared mode if given.  The mode part of an
---  unwrapped value is always $EmptyMode.  The e part is usually NIL
+--  unwrapped value is always $EmptyMode.  The e part is usually nil
 --  but may be used to hold a partial closure.
 --
 --  Effect of changes.  A rule can be built up for a variable by

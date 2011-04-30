@@ -46,12 +46,12 @@ $intTopLevel ==
  
 inputPrompt str ==
   -- replaces older INPUT-PROMPT
-  atom (x := $SCREENSIZE()) => NIL
+  atom (x := $SCREENSIZE()) => nil
   p := first(x) - 2
   y := $OLDLINE
-  SETQ($OLDLINE,NIL)
+  SETQ($OLDLINE,nil)
   y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
-  0 = # str => NIL
+  0 = # str => nil
   _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==

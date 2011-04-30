@@ -107,7 +107,7 @@ evaluateType0 form ==
       [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
     op='Enumeration => form
     constructor? op => evaluateType1 form
-    NIL
+    nil
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
   IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
@@ -229,9 +229,9 @@ evalForm(op,opName,argl,mmS) ==
     #argl ~= #CDDR sig => 'skip ---> RDJ 6/95
     form:=
       $genValue or null cond =>
-        [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return NIL
+        [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return nil
          for x in argl for t in CDDR sig]
-      [getArgValueComp2(x,t,c,sideEffectedArg?(t,sig,opName),opName) or return NIL
+      [getArgValueComp2(x,t,c,sideEffectedArg?(t,sig,opName),opName) or return nil
         for x in argl for t in CDDR sig for c in cond]
     form or null argl =>
       dc:= first sig
@@ -239,7 +239,7 @@ evalForm(op,opName,argl,mmS) ==
         dc='local => --[fun,:form]
           atom fun =>
             isLocallyBound fun => ['SPADCALL,:form,fun]
-            [fun,:form,NIL]
+            [fun,:form,nil]
           ['SPADCALL,:form,fun]
         dc is ["__FreeFunction__",:freeFun] =>
           ['SPADCALL,:form,freeFun]
@@ -262,7 +262,7 @@ evalForm(op,opName,argl,mmS) ==
         [bpi,:domain] := fun0
         sameObject?(bpi,function Undef) =>
          sayKeyedMsg("S2IE0009",[opName,formatSignature rest sig,first sig])
-         NIL
+         nil
         if $NRTmonitorIfTrue = true then
           sayBrightlyNT ['"Applying ",first fun0,'" to:"]
           pp [devaluateDeeply x for x in form]
@@ -318,12 +318,12 @@ getMappingArgValue(a,t,m is ['Mapping,:ml]) ==
       mmS := selectLocalMms(a,name,rest ml, nil)
       or/[mm for mm in mmS |
         (mm is [[., :ml1],oldName,:.] and ml=ml1)] => MKQ [oldName]
-      NIL
+      nil
     una
   mmS := selectLocalMms(a,una,rest ml, nil)
   or/[mm for mm in mmS |
     (mm is [[., :ml1],oldName,:.] and ml=ml1)] => MKQ [oldName]
-  NIL
+  nil
 
 getArgValueComp2(arg, type, cond, se?, opName) ==
   se? and (objMode(getValue arg) ~= type) =>
@@ -357,7 +357,7 @@ failCheck x ==
     stopTimingProcess peekTimedName()
     THROW('interpreter,objNewWrap('"failed",$String))
   x = $coerceFailure =>
-    NIL
+    nil
   x
 
 --% Some Antique Comments About the Interpreter

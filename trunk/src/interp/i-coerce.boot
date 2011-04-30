@@ -156,9 +156,9 @@ retract2Specialization object ==
     val' is [ =1,x,:.] =>
       vl := removeDuplicates reverse varsInPoly val'
       1 = #vl => coerceInt(object,['UnivariatePolynomial,x,D])
-      NIL
+      nil
     val' is [ =0,:.] => coerceInt(object, D)
-    NIL
+    nil
   type is ['Matrix,D] =>
     n := # val'
     m := # val'.0
@@ -166,15 +166,15 @@ retract2Specialization object ==
     objNew(val,['RectangularMatrix,n,m,D])
   type is ['RectangularMatrix,n,m,D] =>
     n = m => objNew(val,['SquareMatrix,n,D])
-    NIL
+    nil
   (type is [agg,D]) and (agg in '(Vector Segment UniversalSegment)) =>
     D = $PositiveInteger => objNew(val,[agg,$NonNegativeInteger])
     D = $NonNegativeInteger => objNew(val,[agg,$Integer])
-    NIL
+    nil
   type is ['Array,bds,D] =>
     D = $PositiveInteger => objNew(val,['Array,bds,$NonNegativeInteger])
     D = $NonNegativeInteger => objNew(val,['Array,bds,$Integer])
-    NIL
+    nil
   type is ['List,D] =>
     D isnt ['List,D'] =>
       -- try to retract elements
@@ -190,14 +190,14 @@ retract2Specialization object ==
         (e' := retract objNewWrap(e,D)) = 'failed => bad := true
         vl := [objValUnwrap e',:vl]
         tl := [objMode e',:tl]
-      bad => NIL
-      (m := resolveTypeListAny tl) = D => NIL
-      D = equiType(m) => NIL
+      bad => nil
+      (m := resolveTypeListAny tl) = D => nil
+      D = equiType(m) => nil
       vl' := nil
       for e in vl for t in tl repeat
         t = m => vl' := [e,:vl']
         e' := coerceInt(objNewWrap(e,t),m)
-        null e' => return NIL
+        null e' => return nil
         vl' := [objValUnwrap e',:vl']
       objNewWrap(vl',['List,m])
     D' = $PositiveInteger =>
@@ -209,15 +209,15 @@ retract2Specialization object ==
 
     n := # val'
     m := # val'.0
-    null isRectangularList(val',n,m) => NIL
+    null isRectangularList(val',n,m) => nil
     coerceInt(object,['Matrix,D'])
   type is ['Expression,D] =>
     atom val' => nil          -- certainly not a fraction
     [num,:den] := val'
     ofCategory(type,$Field) =>
       -- coerceRetract already handles case where den = 1
-      num isnt [0,:num] => NIL
-      den isnt [0,:den] => NIL
+      num isnt [0,:num] => nil
+      den isnt [0,:den] => nil
       objNewWrap([num,:den],[$QuotientField, D])
     nil
   type is ['SimpleAlgebraicExtension,k,rep,.] =>
@@ -227,7 +227,7 @@ retract2Specialization object ==
     while (val' ~= 'failed) and
       (equiType(objMode val') ~= k) repeat
         val' := retract val'
-    val' = 'failed => NIL
+    val' = 'failed => nil
     val'
 
   type is ['UnivariatePuiseuxSeries, coef, var, cen] =>
@@ -236,10 +236,10 @@ retract2Specialization object ==
     coerceInt(object, ['UnivariateTaylorSeries, coef, var, cen])
 
   type is ['FunctionCalled,name] =>
-    null (m := get(name,'mode,$e)) => NIL
-    isPartialMode m => NIL
+    null (m := get(name,'mode,$e)) => nil
+    isPartialMode m => nil
     objNew(val,m)
-  NIL
+  nil
 
 coerceOrConvertOrRetract(T,m) ==
   $useConvertForCoercions : local := true
@@ -258,51 +258,51 @@ coerceOrRetract(T,m) ==
 
 coerceRetract(object,t2) ==
   -- tries to handle cases such as P I -> I
-  (val := objValUnwrap(object)) = "$fromCoerceable$" => NIL
+  (val := objValUnwrap(object)) = "$fromCoerceable$" => nil
   t1 := objMode object
-  t2 = $OutputForm => NIL
+  t2 = $OutputForm => nil
   isEqualOrSubDomain(t1,$Integer) and typeIsASmallInteger(t2) and SMINTP(val) =>
     objNewWrap(val,t2)
-  t1 = $Integer    => NIL
-  t1 = $Symbol     => NIL
-  t1 = $OutputForm => NIL
+  t1 = $Integer    => nil
+  t1 = $Symbol     => nil
+  t1 = $OutputForm => nil
   (c := retractByFunction(object, t2)) => c
   t1 is [D,:.] =>
     fun := GETL(D,'retract) or
            makeSymbol strconc('"retract",STRINGIMAGE D)
     functionp fun =>
-      PUT(D,'retract,fun)
+      property(D,'retract) := fun
       c := CATCH('coerceFailure,FUNCALL(fun,object,t2))
-      (c = $coerceFailure) => NIL
+      (c = $coerceFailure) => nil
       c
-    NIL
-  NIL
+    nil
+  nil
 
 retractByFunction(object,u) ==
   -- tries to retract by using function "retractIfCan"
   -- if the type belongs to the correct category.
-  $reportBottomUpFlag: local := NIL
+  $reportBottomUpFlag: local := nil
   t := objMode object
-  -- JHD/CRF not ofCategory(t,['RetractableTo,u]) => NIL
+  -- JHD/CRF not ofCategory(t,['RetractableTo,u]) => nil
   val := objValUnwrap object
 
   -- try to get and apply the function "retractable?"
   target := ['Union,u,'"failed"]
   funName := 'retractIfCan
   if $reportBottomUpFlag then
-    sayFunctionSelection(funName,[t],target,NIL,
+    sayFunctionSelection(funName,[t],target,nil,
       '"coercion facility (retraction)")
   -- JHD/CRF if (mms := findFunctionInDomain(funName,t,target,[t],[t],'T,'T))
-  -- MCD: changed penultimate variable to NIL.
-  if (mms := append(findFunctionInDomain(funName,t,target,[t],[t],NIL,'T),
-                    findFunctionInDomain(funName,u,target,[t],[t],NIL,'T)))
+  -- MCD: changed penultimate variable to nil.
+  if (mms := append(findFunctionInDomain(funName,t,target,[t],[t],nil,'T),
+                    findFunctionInDomain(funName,u,target,[t],[t],nil,'T)))
 -- The above two lines were:      (RDJ/BMT 6/95)
 --  if (mms := append(findFunctionInDomain(funName,t,target,[t],[t],'T,'T),
 --                    findFunctionInDomain(funName,u,target,[t],[t],'T,'T)))
     then mms := orderMms(funName,mms,[t],[t],target)
   if $reportBottomUpFlag then
     sayFunctionSelectionResult(funName,[t],mms)
-  null mms => NIL
+  null mms => nil
 
   -- [[dc,:.],slot,.]:= first mms
   dc := CAAAR mms
@@ -311,14 +311,14 @@ retractByFunction(object,u) ==
   fun :=
 --+
     compiledLookup(funName,[target,t],dcVector)
-  null fun => NIL
-  first(fun) = function Undef => NIL
+  null fun => nil
+  first(fun) = function Undef => nil
 --+
   $: fluid := dcVector
   object' := coerceUnion2Branch objNewWrap(SPADCALL(val,fun),target)
   u' := objMode object'
   u = u' => object'
-  NIL
+  nil
 
 --% Coercion utilities
 
@@ -327,7 +327,7 @@ retractByFunction(object,u) ==
 -- returns the representation of 1 in the domain S.
 
 getConstantFromDomain(form,domainForm) ==
-    isPartialMode domainForm => NIL
+    isPartialMode domainForm => nil
     opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := LASSOC(key,opAlist)
@@ -395,11 +395,11 @@ algEqual(object1, object2, domain) ==
 --   coerce D2D from s3 to s1
 -- finally we embed s1 into t2, which completes the coercion t1 to t2
 
--- the result of canCoerceFrom is TRUE or NIL
--- the result of coerceInteractive is a object or NIL (=failed)
+-- the result of canCoerceFrom is TRUE or nil
+-- the result of coerceInteractive is a object or nil (=failed)
 -- all boot coercion functions have the following result:
--- 1. if u=$fromCoerceable$, then TRUE or NIL
--- 2. if the coercion succeeds, the coerced value (this may be NIL)
+-- 1. if u=$fromCoerceable$, then TRUE or nil
+-- 2. if the coercion succeeds, the coerced value (this may be nil)
 -- 3. if the coercion fails, they throw to a catch point in
 --      coerceByFunction
 
@@ -407,12 +407,12 @@ algEqual(object1, object2, domain) ==
 
 canCoerce1(t1,t2) ==
   -- general test for coercion
-  -- the result is NIL if it fails
+  -- the result is nil if it fails
   t1 = t2 => true
   absolutelyCanCoerceByCheating(t1,t2) or t1 = $None or t2 = $Any or
     member(t1,'((Mode) (Category))) =>
       t2 = $OutputForm => true
-      NIL
+      nil
     -- next is for tagged union selectors for the time being
     t1 is ['Variable,=t2] or t2 is ['Variable,=t1] => true
     string? t1 =>
@@ -420,14 +420,14 @@ canCoerce1(t1,t2) ==
       t2 = $OutputForm => true
       t2 is ['Union,:.] => canCoerceUnion(t1,t2)
       t2 is ['Variable,v] and (t1 = PNAME(v)) => true
-      NIL
+      nil
     string? t2 =>
       t1 is ['Variable,v] and (t2 = PNAME(v)) => true
-      NIL
-    atom t1 or atom t2 => NIL
-    null isValidType(t2) => NIL
+      nil
+    atom t1 or atom t2 => nil
+    null isValidType(t2) => nil
 
-    absolutelyCannotCoerce(t1,t2) => NIL
+    absolutelyCannotCoerce(t1,t2) => nil
 
     nt1 := first t1
     nt2 := first t2
@@ -436,7 +436,7 @@ canCoerce1(t1,t2) ==
     nt2="Mapping" =>
       nt1="Variable" or nt1="FunctionCalled" =>
         canCoerceExplicit2Mapping(t1,t2)
-      NIL
+      nil
     nt1="Union" or nt2="Union" => canCoerceUnion(t1,t2)
 
     -- efficiency hack
@@ -468,11 +468,11 @@ canCoerceFrom0(t1,t2) ==
 
       -- make sure we are trying to coerce to a legal type
       -- in particular, polynomials are repeated, etc.
-      null isValidType(t2) => NIL
-      null isLegitimateMode(t2,nil,nil) => NIL
+      null isValidType(t2) => nil
+      null isLegitimateMode(t2,nil,nil) => nil
 
       t1 = $RationalNumber =>
-        isEqualOrSubDomain(t2,$Integer) => NIL
+        isEqualOrSubDomain(t2,$Integer) => nil
         canCoerce(t1,t2) or canCoerce(s1,s2)
       canCoerce(s1,s2)
   stopTimingProcess 'querycoerce
@@ -495,9 +495,9 @@ canCoerceTopMatching(t1,t2,tt1,tt2) ==
   not (symbolMember?(tt1,$univariateDomains) or symbolMember?(tt2,$multivariateDomains)) =>
     'maybe
   u2 := deconstructT t2
-  1 = #u2 => NIL
+  1 = #u2 => nil
   u1 := deconstructT t1
-  1 = #u1 => NIL                             -- no under domain
+  1 = #u1 => nil                             -- no under domain
   first(u1) ~= first(u2) => 'maybe
   canCoerce(underDomainOf t1, underDomainOf t2)
 
@@ -506,7 +506,7 @@ canCoerceExplicit2Mapping(t1,t is ['Mapping,target,:argl]) ==
   -- and target
   $useCoerceOrCroak: local := nil
   t1 is ['Variable,var] =>
-    null (mms :=selectMms1(var,target,argl,[NIL for a in argl],true)) => NIL
+    null (mms :=selectMms1(var,target,argl,[nil for a in argl],true)) => nil
     mm := CAAR mms
     mm is [., targ, :.] =>
       targ = target => true
@@ -523,8 +523,8 @@ canCoerceExplicit2Mapping(t1,t is ['Mapping,target,:argl]) ==
         targ = target => true
         false
       false
-    NIL
-  NIL
+    nil
+  nil
 
 canCoerceUnion(t1,t2) ==
   -- sees if one can coerce to or from a Union Domain
@@ -558,15 +558,15 @@ canCoerceByMap(t1,t2) ==
   -- map: (U1 -> U2, D U1) -> D U2.  If it exists, then answer true
   -- if canCoerceFrom(t1,t2).
   u2 := deconstructT t2
-  1 = #u2 => NIL
+  1 = #u2 => nil
   u1 := deconstructT t1
-  1 = #u1 => NIL                             -- no under domain
-  first(u1) ~= first(u2) => NIL
+  1 = #u1 => nil                             -- no under domain
+  first(u1) ~= first(u2) => nil
   top := CAAR u1
   u1 := underDomainOf t1
   u2 := underDomainOf t2
 
-  absolutelyCannotCoerce(u1,u2) => NIL
+  absolutelyCannotCoerce(u1,u2) => nil
 
   -- save some time for those we know about
   know := '(List Vector Segment Stream UniversalSegment Array
@@ -574,7 +574,7 @@ canCoerceByMap(t1,t2) ==
   top in know => canCoerce(u1,u2)
 
   null selectMms1('map,t2,[['Mapping,u2,u1],t1],
-    [['Mapping,u2,u1],u1],NIL) => NIL
+    [['Mapping,u2,u1],u1],nil) => nil
   -- don't bother checking for Undef, so avoid instantiation
   canCoerce(u1,u2)
 
@@ -585,7 +585,7 @@ canCoerceTower(t1,t2) ==
    canCoerceLocal(t1,t2) or canCoercePermute(t1,t2) or
     [c1,:arg1]:= deconstructT t1
     arg1 and
-      TL:= NIL
+      TL:= nil
       arg:= arg1
       until x or not arg repeat x:=
         t:= last arg
@@ -606,7 +606,7 @@ canCoerceLocal(t1,t2) ==
   -- test for coercion on top level
   p:= ASSQ(first t1,$CoerceTable)
   p and ASSQ(first t2,rest p) is [.,:[tag,fun]] =>
-    tag='partial => NIL
+    tag='partial => nil
     tag='total   => true
     (functionp(fun) and
        (v:=CATCH('coerceFailure,FUNCALL(fun,'_$fromCoerceable_$,t1,t2)))
@@ -628,14 +628,14 @@ newCanCoerceCommute(t1,t2) ==
 canCoercePermute(t1,t2) ==
   -- try to generate a sequence of transpositions that will convert
   -- t1 into t2
-  member(t2,'((Integer) (OutputForm))) => NIL
+  member(t2,'((Integer) (OutputForm))) => nil
   towers := computeTTTranspositions(t1,t2)
   -- at this point, first towers = t1 and last towers should be similar
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  null towers or null rest towers => NIL
-  null CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => nil
+  null CDDR towers and t2 = second towers => nil
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
@@ -644,23 +644,23 @@ canCoercePermute(t1,t2) ==
   ok
 
 canConvertByFunction(m1,m2) ==
-  null $useConvertForCoercions => NIL
+  null $useConvertForCoercions => nil
   canCoerceByFunction1(m1,m2,'convert)
 
 canCoerceByFunction(m1,m2) == canCoerceByFunction1(m1,m2,'coerce)
 
 canCoerceByFunction1(m1,m2,fun) ==
-  -- calls selectMms with $Coerce=NIL and tests for required target=m2
-  $declaredMode:local:= NIL
-  $reportBottomUpFlag:local:= NIL
+  -- calls selectMms with $Coerce=nil and tests for required target=m2
+  $declaredMode:local:= nil
+  $reportBottomUpFlag:local:= nil
   -- have to handle cases where we might have changed from RN to QF I
   -- make 2 lists of expanded and unexpanded types
   l1 := removeDuplicates [m1,eqType m1]
   l2 := removeDuplicates [m2,eqType m2]
-  ans  := NIL
+  ans  := nil
   for t1 in l1 while not ans repeat
     for t2 in l2 while not ans repeat
-      l := selectMms1(fun,t2,[t1],[t1],NIL)
+      l := selectMms1(fun,t2,[t1],[t1],nil)
       ans := [x for x in l | x is [sig,:.] and second sig=t2 and
        third sig=t1 and
         first(sig) isnt ['TypeEquivalence,:.]] and true
@@ -684,7 +684,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
 absolutelyCannotCoerce(t1,t2) ==
   -- response of true means "definitely cannot coerce"
   -- this is largely an efficiency hack
-  atom(t1) or atom(t2) => NIL
+  atom(t1) or atom(t2) => nil
   t2 = $None => true
   n1   := first t1
   n2   := first t2
@@ -724,10 +724,10 @@ absolutelyCannotCoerce(t1,t2) ==
     true
 
   v2 := deconstructT t2
-  1 = #v2 => NIL
+  1 = #v2 => nil
   v1 := deconstructT t1
-  1 = #v1 => NIL
-  first(v1) ~= first(v2) => NIL
+  1 = #v1 => nil
+  first(v1) ~= first(v2) => nil
   absolutelyCannotCoerce(u1,u2)
 
 typeIsASmallInteger x == (x = $SingleInteger)
@@ -740,7 +740,7 @@ coerceInteractive(triple,t2) ==
   -- (see recordInstantiation)
   t1 := objMode triple
   val := objVal triple
-  null(t2) or t2 = $EmptyMode => NIL
+  null(t2) or t2 = $EmptyMode => nil
   t2 = t1 => triple
   t2 = '$NoValueMode => objNew(val,t2)
   if t2 is ['SubDomain,x,.] then t2:= x
@@ -782,7 +782,7 @@ coerceInt0(triple,t2) ==
     s1 := equiType(t1)
     s2 := equiType(t2)
     s1 = s2 => return objNew(val,t2)
-  -- t1 is ['Mapping,:.] and t2 ~= $Any => NIL
+  -- t1 is ['Mapping,:.] and t2 ~= $Any => nil
   -- note: may be able to coerce TO mapping
   -- treat Exit like Any
   -- handle case where we must generate code
@@ -796,7 +796,7 @@ coerceInt0(triple,t2) ==
     sameObject?(s2,t2) => x
     objSetMode(x,t2)
     x
-  NIL
+  nil
 
 coerceInt(triple, t2) ==
   val := coerceInt1(triple, t2) => val
@@ -809,9 +809,9 @@ coerceInt(triple, t2) ==
 
 coerceInt1(triple,t2) ==
   -- general interactive coercion
-  -- the result is a new triple with type m2 or NIL (= failed)
+  -- the result is a new triple with type m2 or nil (= failed)
   $useCoerceOrCroak: local := true
-  t2 = $EmptyMode => NIL
+  t2 = $EmptyMode => nil
   t1 := objMode triple
   t1=t2 => triple
   val := objVal triple
@@ -826,7 +826,7 @@ coerceInt1(triple,t2) ==
 
   typeIsASmallInteger(t2) and isEqualOrSubDomain(t1, $Integer) and INTP val =>
     SINTP val => objNew(val,t2)
-    NIL
+    nil
 
   t2 = $Void => objNew(voidValue(),$Void)
   t2 = $Any => objNewWrap([t1,:unwrap val],$Any)
@@ -841,17 +841,17 @@ coerceInt1(triple,t2) ==
     t1 is ['Variable,v] and (t2 = PNAME(v)) => objNewWrap(t2,t2)
     val' := unwrap val
     (t2 = val') and ((val' = t1) or (t1 = $String)) => objNew(val,t2)
-    NIL
+    nil
   t1 is ['Union,:.] => coerceIntFromUnion(triple,t2)
   t2 is ['Union,:.] => coerceInt2Union(triple,t2)
   (string? t1) and (t2 = $String) => objNew(val,$String)
   (string? t1) and (t2 is ['Variable,v]) =>
     t1 = PNAME(v) => objNewWrap(v,t2)
-    NIL
+    nil
   (string? t1) and (t1 = unwrap val) =>
     t2 = $OutputForm => objNew(t1,$OutputForm)
-    NIL
-  atom t1 => NIL
+    nil
+  atom t1 => nil
 
   if t1 = $AnonymousFunction and (t2 is ['Mapping,target,:margl]) then
     $useCoerceOrCroak := nil
@@ -861,24 +861,24 @@ coerceInt1(triple,t2) ==
       vars is ["tuple",:.] => rest vars
       vars
     #margl ~= #vars => 'continue
-    tree := mkAtree ['ADEF,vars,[target,:margl],[NIL for x in rest t2],:body]
+    tree := mkAtree ['ADEF,vars,[target,:margl],[nil for x in rest t2],:body]
     CATCH('coerceOrCroaker, bottomUp tree) = 'croaked => nil
     return getValue tree
 
   (t1 = $Symbol) and (t2 is ['Mapping,target,:margl]) =>
-    null (mms := selectMms1(unwrap val,nil,margl,margl,target)) => NIL
+    null (mms := selectMms1(unwrap val,nil,margl,margl,target)) => nil
     [dc,targ,:argl] := CAAR mms
-    targ ~= target => NIL
+    targ ~= target => nil
     $genValue =>
       fun := getFunctionFromDomain(unwrap val,dc,argl)
       objNewWrap(fun,t2)
     val := NRTcompileEvalForm(unwrap val, rest CAAR mms, evalDomain dc)
     objNew(val, t2)
   (t1 is ['Variable,sym]) and (t2 is ['Mapping,target,:margl]) =>
-    null (mms := selectMms1(sym,target,margl,margl,NIL)) => 
-       null (mms := selectMms1(sym,target,margl,margl,true)) => NIL
+    null (mms := selectMms1(sym,target,margl,margl,nil)) => 
+       null (mms := selectMms1(sym,target,margl,margl,true)) => nil
     [dc,targ,:argl] := CAAR mms
-    targ ~= target => NIL
+    targ ~= target => nil
     dc is ["__FreeFunction__",:freeFun] => objNew( freeFun, t2 )
     $genValue => objNewWrap( getFunctionFromDomain(sym,dc,argl), t2 )
     val := NRTcompileEvalForm(sym, rest CAAR mms, evalDomain dc)
@@ -886,26 +886,26 @@ coerceInt1(triple,t2) ==
   (t1 is ['FunctionCalled,sym]) and (t2 is ['Mapping,target,:margl]) =>
     symNode := mkAtreeNode sym
     transferPropsToNode(sym,symNode)
-    null (mms := selectLocalMms(symNode,sym,margl,target)) => NIL
+    null (mms := selectLocalMms(symNode,sym,margl,target)) => nil
     [dc,targ,:argl] := CAAR mms
-    targ ~= target => NIL
+    targ ~= target => nil
     ml := [target,:margl]
     intName :=
       or/[mm for mm in mms | (mm is [[., :ml1],oldName,:.]
         and compareTypeLists(ml1,ml))] => [oldName]
-      NIL
-    null intName => NIL
+      nil
+    null intName => nil
     objNewWrap(intName,t2)
   (t1 is ['FunctionCalled,sym]) =>
     (t3 := get(sym,'mode,$e)) and t3 is ['Mapping,:.] =>
       (triple' := coerceInt(triple,t3)) => coerceInt(triple',t2)
-      NIL
-    NIL
+      nil
+    nil
 
   sameObject?(first(t1),'Variable) and cons?(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
       (t2 = [$QuotientField, $Integer]) or symbolMember?(first(t2),
-        '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL
+        '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => nil
 
   ans := coerceRetract(triple,t2) or coerceIntTower(triple,t2) or
     [.,:arg]:= deconstructT t2
@@ -939,16 +939,16 @@ coerceIntX(val,t1, t2) ==
     -- this will almost always be an empty list
     null unwrap val =>
       -- try getting a better flavor of List
-      null (t0 := underDomainOf(t2)) => NIL
+      null (t0 := underDomainOf(t2)) => nil
       coerceInt(objNewWrap(val,['List,t0]),t2)
-    NIL
-  NIL
+    nil
+  nil
 
 compareTypeLists(tl1,tl2) ==
   -- returns true if every type in tl1 is = or is a subdomain of
   -- the corresponding type in tl2
   for t1 in tl1 for t2 in tl2 repeat
-    not isEqualOrSubDomain(t1,t2) => return NIL
+    not isEqualOrSubDomain(t1,t2) => return nil
   true
 
 coerceIntAlgebraicConstant(object,t2) ==
@@ -961,7 +961,7 @@ coerceIntAlgebraicConstant(object,t2) ==
   ofCategory(t1,$AbelianMonoid) and ofCategory(t2,$AbelianMonoid) and
     val = getConstantFromDomain($Zero,t1) =>
       objNewWrap(getConstantFromDomain($Zero,t2),t2)
-  NIL
+  nil
 
 ++ returns true if `val' belongs to the Union branch guarded by `pred'.
 thisUnionBranch?: (%Code,%Thing) -> %Boolean
@@ -973,13 +973,13 @@ coerceUnion2Branch(object) ==
   predList:= mkPredList doms
   doms := stripUnionTags doms
   val' := objValUnwrap object
-  predicate := NIL
-  targetType:= NIL
+  predicate := nil
+  targetType:= nil
   for typ in doms for pred in predList while null targetType repeat
     thisUnionBranch?(pred,val') =>
       predicate := pred
       targetType := typ
-  null targetType => keyedSystemError("S2IC0013",NIL)
+  null targetType => keyedSystemError("S2IC0013",nil)
   predicate is ['%ieq,['%head,.],p] => objNewWrap(rest val',targetType)
   objNew(objVal object,targetType)
 
@@ -1010,7 +1010,7 @@ coerceInt2Union(object,union) ==
   for d in unionDoms while noCoerce repeat
     (val' := coerceInt(object,d)) => noCoerce := nil
   val' => coerceBranch2Union(val',union)
-  NIL
+  nil
 
 coerceIntFromUnion(object,t2) ==
   -- coerces from a Union type to something else
@@ -1024,12 +1024,12 @@ coerceIntByMap(triple,t2) ==
   t1 := objMode triple
   t2 = t1 => triple
   u2 := deconstructT t2    -- compute t2 first because of Expression
-  1 = #u2 => NIL           -- no under domain
+  1 = #u2 => nil           -- no under domain
   u1 := deconstructT t1
-  1 = #u1 => NIL
+  1 = #u1 => nil
   CAAR u1 ~= CAAR u2 => nil  -- constructors not equal
-  not valueArgsEqual?(t1, t2) => NIL
---  first u1 ~= first u2 => NIL
+  not valueArgsEqual?(t1, t2) => nil
+--  first u1 ~= first u2 => nil
   top := CAAR u1
   u1 := underDomainOf t1
   u2 := underDomainOf t2
@@ -1040,24 +1040,24 @@ coerceIntByMap(triple,t2) ==
 
   args := [['Mapping,u2,u1],t1]
   if $reportBottomUpFlag then
-    sayFunctionSelection('map,args,t2,NIL,
+    sayFunctionSelection('map,args,t2,nil,
       '"coercion facility (map)")
-  mms := selectMms1('map,t2,args,args,NIL)
+  mms := selectMms1('map,t2,args,args,nil)
   if $reportBottomUpFlag then
     sayFunctionSelectionResult('map,args,mms)
-  null mms => NIL
+  null mms => nil
 
   [[dc,:sig],slot,.]:= first mms
   fun := compiledLookup('map,sig,evalDomain(dc))
-  null fun => NIL
+  null fun => nil
   [fn,:d]:= fun
-  fn = function Undef => NIL
+  fn = function Undef => nil
   -- now compile a function to do the coercion
   code := ['SPADCALL,['CONS,["function","coerceIntByMapInner"],MKQ [u1,:u2]],
     getValueNormalForm triple,MKQ fun]
   -- and apply the function
   val := CATCH('coerceFailure,timedEvaluate code)
-  (val = $coerceFailure) => NIL
+  (val = $coerceFailure) => nil
   objNewWrap(val,t2)
 
 coerceIntByMapInner(arg,[u1,:u2]) == coerceOrThrowFailure(arg,u1,u2)
@@ -1071,7 +1071,7 @@ valueArgsEqual?(t1, t2) ==
   constrSig := rest getConstructorSignature first t1
   tl1 := replaceSharps(constrSig, t1)
   tl2 := replaceSharps(constrSig, t2)
-  not symbolMember?(NIL, coSig) => true
+  not symbolMember?(nil, coSig) => true
   done := false
   value := true
   for a1 in rest t1 for a2 in rest t2 for cs in coSig
@@ -1095,7 +1095,7 @@ coerceIntTower(triple,t2) ==
   t1 := objMode triple
   [c1,:arg1]:= deconstructT t1
   arg1 and
-    TL:= NIL
+    TL:= nil
     arg:= arg1
     until x or not arg repeat
       t:= last arg
@@ -1104,17 +1104,17 @@ coerceIntTower(triple,t2) ==
       x := arg and coerceIntTest(t,t2) =>
         CDDR TL =>
           s := constructT(c1,replaceLast(arg1,bubbleConstructor TL))
-          (null isValidType(s)) => (x := NIL)
+          (null isValidType(s)) => (x := nil)
           x := (coerceIntByMap(triple,s) or
             coerceIntTableOrFunction(triple,s)) =>
               [c2,:arg2]:= deconstructT last s
               s:= bubbleConstructor [c2,arg2,c1,arg1]
-              (null isValidType(s)) => (x := NIL)
+              (null isValidType(s)) => (x := nil)
               x:= coerceIntCommute(x,s) =>
                 x := (coerceIntByMap(x,t2) or
                   coerceIntTableOrFunction(x,t2))
         s:= bubbleConstructor [c,arg,c1,arg1]
-        (null isValidType(s)) => (x := NIL)
+        (null isValidType(s)) => (x := nil)
         x:= coerceIntCommute(triple,s) =>
           x:= (coerceIntByMap(x,t2) or
             coerceIntTableOrFunction(x,t2))
@@ -1123,15 +1123,15 @@ coerceIntTower(triple,t2) ==
 coerceIntSpecial(triple,t2) ==
   t1 := objMode triple
   t2 is ['SimpleAlgebraicExtension,R,U,.] and t1 = R =>
-    null (x := coerceInt(triple,U)) => NIL
+    null (x := coerceInt(triple,U)) => nil
     coerceInt(x,t2)
-  NIL
+  nil
 
 coerceIntTableOrFunction(triple,t2) ==
   -- this function does the actual coercion to t2, but not to an
   -- argument type of t2
-  null isValidType t2 => NIL  -- added 9-18-85 by RSS
-  null isLegitimateMode(t2,NIL,NIL) => NIL  -- added 6-28-87 by RSS
+  null isValidType t2 => nil  -- added 9-18-85 by RSS
+  null isLegitimateMode(t2,nil,nil) => nil  -- added 6-28-87 by RSS
   t1 := objMode triple
   p:= ASSQ(first t1,$CoerceTable)
   p and ASSQ(first t2,rest p) is [.,:[tag,fun]] =>
@@ -1139,20 +1139,20 @@ coerceIntTableOrFunction(triple,t2) ==
     fun='Identity => objNew(val,t2)
     tag='total =>
       coerceByTable(fun,val,t1,t2,'T) or coerceByFunction(triple,t2)
-    coerceByTable(fun,val,t1,t2,NIL) or coerceByFunction(triple,t2)
+    coerceByTable(fun,val,t1,t2,nil) or coerceByFunction(triple,t2)
   coerceByFunction(triple,t2)
 
 coerceCommuteTest(t1,t2) ==
-  null isLegitimateMode(t2,NIL,NIL) => NIL
+  null isLegitimateMode(t2,nil,nil) => nil
 
   -- sees whether t1 = D1 D2 R and t2 = D2 D1 S
-  null (u1 := underDomainOf t1) => NIL
-  null (u2 := underDomainOf t2) => NIL
+  null (u1 := underDomainOf t1) => nil
+  null (u2 := underDomainOf t2) => nil
 
   -- must have underdomains (ie, R and S must be there)
 
-  null (v1 := underDomainOf u1) => NIL
-  null (v2 := underDomainOf u2) => NIL
+  null (v1 := underDomainOf u1) => nil
+  null (v2 := underDomainOf u2) => nil
 
   -- now check that cross of constructors is correct
   (first(deconstructT t1) = first(deconstructT u2)) and
@@ -1161,55 +1161,55 @@ coerceCommuteTest(t1,t2) ==
 coerceIntCommute(obj,target) ==
   -- note that the value in obj may be $fromCoerceable$, for canCoerce
   source := objMode obj
-  null coerceCommuteTest(source,target) => NIL
+  null coerceCommuteTest(source,target) => nil
   S := underDomainOf source
   T := underDomainOf target
-  source = T => NIL      -- handle in other ways
+  source = T => nil      -- handle in other ways
 
   source is [D,:.] =>
     fun := GETL(D,'coerceCommute) or
            makeSymbol strconc('"commute",STRINGIMAGE D)
     functionp fun =>
-      PUT(D,'coerceCommute,fun)
+      property(D,'coerceCommute) := fun
       u := objValUnwrap obj
       c := CATCH('coerceFailure,FUNCALL(fun,u,source,S,target,T))
-      (c = $coerceFailure) => NIL
+      (c = $coerceFailure) => nil
       u = "$fromCoerceable$" => c
       objNewWrap(c,target)
-    NIL
-  NIL
+    nil
+  nil
 
 coerceIntPermute(object,t2) ==
-  member(t2,'((Integer) (OutputForm))) => NIL
+  member(t2,'((Integer) (OutputForm))) => nil
   t1 := objMode object
   towers := computeTTTranspositions(t1,t2)
   -- at this point, first towers = t1 and last towers should be similar
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  null towers or null rest towers => NIL
-  null CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => nil
+  null CDDR towers and t2 = second towers => nil
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
-    null (object := coerceInt(object,t)) => ok := NIL
+    null (object := coerceInt(object,t)) => ok := nil
   ok => object
-  NIL
+  nil
 
 computeTTTranspositions(t1,t2) ==
   -- decompose t1 into its tower parts
   tl1 := decomposeTypeIntoTower t1
   tl2 := decomposeTypeIntoTower t2
   -- if not at least 2 parts, don't bother working here
-  null (rest tl1 and rest tl2) => NIL
+  null (rest tl1 and rest tl2) => nil
   -- determine the relative order of the parts of t1 in t2
   p2 := [position(d1,tl2) for d1 in tl1]
-  member(-1,p2) => NIL            -- something not present
+  member(-1,p2) => nil            -- something not present
   -- if they are all ascending, this function will do nothing
   p2' := MSORT p2
-  p2 = p2' => NIL
+  p2 = p2' => nil
   -- if anything is repeated twice, leave
-  p2' ~= MSORT removeDuplicates p2' => NIL
+  p2' ~= MSORT removeDuplicates p2' => nil
   -- create a list of permutations that transform the tower parts
   -- of t1 into the order they are in in t2
   n1 := #tl1
@@ -1251,16 +1251,16 @@ permuteToOrder(p,n,start) ==
   -- of swaps of adjacent elements so that p will be in order. We only
   -- begin looking at index start
   r := n - start
-  r <= 0 => NIL
+  r <= 0 => nil
   r = 1 =>
-    p.r < p.(r+1) => NIL
+    p.r < p.(r+1) => nil
     [[r,:(r+1)]]
   p.start = start => permuteToOrder(p,n,start+1)
   -- bubble up element start to the top. Find out where it is
-  stpos := NIL
+  stpos := nil
   for i in start+1..n while not stpos repeat
     if p.i = start then stpos := i
-  perms := NIL
+  perms := nil
   while stpos ~= start repeat
     x := stpos - 1
     perms := [[x,:stpos],:perms]
@@ -1283,11 +1283,11 @@ coerceIntTest(t1,t2) ==
 
 coerceByTable(fn,x,t1,t2,isTotalCoerce) ==
   -- catch point for 'failure in boot coercions
-  t2 = $OutputForm and not (newType? t1) => NIL
+  t2 = $OutputForm and not (newType? t1) => nil
   isWrapped x =>
     x:= unwrap x
     c:= CATCH('coerceFailure,FUNCALL(fn,x,t1,t2))
-    c=$coerceFailure => NIL
+    c=$coerceFailure => nil
     objNewWrap(c,t2)
   isTotalCoerce => objNew([fn,x,MKQ t1,MKQ t2],t2)
   objNew(['catchCoerceFailure,MKQ fn,x,MKQ t1,MKQ t2],t2)
@@ -1307,8 +1307,8 @@ coerceByFunction(T,m2) ==
   -- using the new modemap selection without coercions
   -- should not be called by canCoerceFrom
   x := objVal T
-  x = '_$fromCoerceable_$ => NIL
-  m2 is ['Union,:.] => NIL
+  x = '_$fromCoerceable_$ => nil
+  m2 is ['Union,:.] => nil
   m1 := objMode T
   m2 is ['Boolean,:.] and m1 is ['Equation,ud] =>
     dcVector := evalDomain ud
@@ -1320,7 +1320,7 @@ coerceByFunction(T,m2) ==
     isWrapped x =>
       x:= unwrap x
       objNewWrap(SPADCALL(first x,rest x,fun),m2)
-    x isnt ['SPADCALL,a,b,:.] => keyedSystemError("S2IC0015",NIL)
+    x isnt ['SPADCALL,a,b,:.] => keyedSystemError("S2IC0015",nil)
     code := ['SPADCALL, a, b, fun]
     objNew(code,$Boolean)
   -- If more than one function is found, any should suffice, I think -scm
@@ -1335,12 +1335,12 @@ coerceByFunction(T,m2) ==
         NRTcompiledLookup(funName,slot,dcVector)
       NRTcompileEvalForm(funName,slot,dcVector)
     [fn,:d]:= fun
-    fn = function Undef => NIL
+    fn = function Undef => nil
     isWrapped x =>
 --+
       $: fluid := dcVector
       val := CATCH('coerceFailure, SPADCALL(unwrap x,fun))
-      (val = $coerceFailure) => NIL
+      (val = $coerceFailure) => nil
       objNewWrap(val,m2)
     env := fun
     code := ['failCheck, ['SPADCALL, x, env]]
@@ -1350,13 +1350,13 @@ coerceByFunction(T,m2) ==
   m1' := eqType m1
   m2' := eqType m2
   (m1 ~= m1') or (m2 ~= m2') => coerceByFunction(objNew(x,m1'),m2')
-  NIL
+  nil
 
 hasCorrectTarget(m,sig is [dc,tar,:.]) ==
   -- tests whether the target of signature sig is either m or a union
   -- containing m. It also discards TEQ as it is not meant to be
   -- used at top-level
-  dc is ['TypeEquivalence,:.] => NIL
+  dc is ['TypeEquivalence,:.] => nil
   m=tar => 'T
   tar is ['Union,t,'failed] => t=m
   tar is ['Union,'failed,t] and t=m
@@ -1366,7 +1366,7 @@ hasCorrectTarget(m,sig is [dc,tar,:.]) ==
 
 --Modified by JHD 9/9/93 to fix a problem with coerces inside
 --interpreter functions being used as mappings. They were being
---handled with $useCoerceOrCroak being NIL, and therefore internal
+--handled with $useCoerceOrCroak being nil, and therefore internal
 --coercions were not correctly handled. Fix: remove dependence
 --on $useCoerceOrCroak, and test explicitly for Mapping types.
 
@@ -1375,7 +1375,7 @@ hasCorrectTarget(m,sig is [dc,tar,:.]) ==
 intCodeGenCOERCE(triple,t2) ==
   -- NOTE: returns a triple
   t1 := objMode triple
-  t1 = $EmptyMode => NIL
+  t1 = $EmptyMode => nil
   t1 = t2 => triple
   val := objVal triple
 

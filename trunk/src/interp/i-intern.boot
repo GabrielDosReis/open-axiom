@@ -36,8 +36,8 @@ import i_-object
 import ptrees
 namespace BOOT
 
-$useParserSrcPos :=  NIL
-$transferParserSrcPos := NIL
+$useParserSrcPos :=  nil
+$transferParserSrcPos := nil
 
 --  Making Trees
 
@@ -100,7 +100,7 @@ mkAtree1 x ==
   vector? x => x
   atom x =>
     x in '(%noBranch %noMapVal) => x
-    x in '(nil true false) => mkAtree2([x],x,NIL)
+    x in '(nil true false) => mkAtree2([x],x,nil)
     x = '_/throwAway =>
       -- don't want to actually compute this
       tree := mkAtree1 '(void)
@@ -197,7 +197,7 @@ mkAtree3(x,op,argl) ==
     [mkAtreeNode "not",[mkAtreeNode "=",mkAtree1 lhs,mkAtree1 rhs]]
   op="in" and argl is [var ,["SEGMENT",lb,ul]] =>
     upTest:=
-      null ul => NIL
+      null ul => nil
       mkLessOrEqual(var,ul)
     lowTest:=mkLessOrEqual(lb,var)
     z :=
@@ -214,15 +214,15 @@ mkAtree3(x,op,argl) ==
     if funbody is [":",body,type] then
       types := [type]
       funbody := body
-    else types := [NIL]
+    else types := [nil]
     v := collectDefTypesAndPreds funargs
     types := [:types,:v.1]
-    [mkAtreeNode "ADEF",[v.0,types,[NIL for a in types],funbody],
+    [mkAtreeNode "ADEF",[v.0,types,[nil for a in types],funbody],
       if v.2 then v.2 else true, false]
   x is ['ADEF,arg,:r] =>
     r := mkAtreeValueOf r
     v :=
-      null arg => VECTOR(NIL,NIL,NIL)
+      null arg => VECTOR(nil,nil,nil)
       cons? arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
@@ -239,7 +239,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     a is [op,:arg] =>
       v :=
-        null arg => VECTOR(NIL,NIL,NIL)
+        null arg => VECTOR(nil,nil,nil)
         cons? arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
@@ -317,10 +317,10 @@ collectDefTypesAndPreds args ==
   --   slot 0: just the variables
   --   slot 1: the type declarations on the variables
   --   slot 2: a predicate for all arguments
-  pred := types := vars := NIL
+  pred := types := vars := nil
   junk :=
     IDENTP args =>
-      types := [NIL]
+      types := [nil]
       vars  := [args]
     args is [":",var,type] =>
       types := [type]
@@ -339,14 +339,14 @@ collectDefTypesAndPreds args ==
         types := [:types,:v.1]
         pred  := addPred(pred,v.2)
       vars := [var]
-      types := [NIL]
+      types := [nil]
     args is ["tuple",:args'] =>
       for a in args' repeat
         v := collectDefTypesAndPreds a
         vars  := [:vars,first v.0]
         types := [:types,first v.1]
         pred  := addPred(pred,v.2)
-    types := [NIL]
+    types := [nil]
     vars  := [args]
   VECTOR(vars,types,pred)
  where
@@ -438,7 +438,7 @@ rempropI(x,prop) ==
     atom x => x
     first x
   getI(id,prop) =>
-    recordNewValue(id,prop,NIL)
+    recordNewValue(id,prop,nil)
     recordOldValue(id,prop,getI(id,prop))
     $InteractiveFrame:= remprop(id,prop,$InteractiveFrame)
 

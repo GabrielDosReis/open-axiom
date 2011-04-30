@@ -81,7 +81,7 @@ displayTranModemap (mm is [[x,:sig],[pred,:y],:z]) ==
 
 listOfPredOfTypePatternIds p ==
   p is ['AND,:lp] or p is ['OR,:lp] =>
-    UNIONQ([:listOfPredOfTypePatternIds p1 for p1 in lp],NIL)
+    UNIONQ([:listOfPredOfTypePatternIds p1 for p1 in lp],nil)
   p is [op,a,.] and op = 'ofType =>
     isPatternVar a => [a]
     nil
@@ -103,7 +103,7 @@ canRemoveIsDomain? pred ==
   findSubstitutionOrder? alist
 
 findSubstitutionOrder? alist == fn(alist,nil) where
-  -- returns NIL or an appropriate substituion order
+  -- returns nil or an appropriate substituion order
   fn(alist,res) ==
     null alist => reverse! res
     choice := or/[x for (x:=[a,:b]) in alist | null containedRight(a,alist)] =>
@@ -188,7 +188,7 @@ reportOpSymbol op1 ==
     ok => apropos [op1]
   sayNewLine()
   -- filter modemaps on whether they are exposed
-  mmsE := mmsU := NIL
+  mmsE := mmsU := nil
   for mm in modemaps repeat
     isFreeFunctionFromMm(mm) or isExposedConstructor getDomainFromMm(mm) => mmsE := [mm,:mmsE]
     mmsU := [mm,:mmsU]
@@ -449,14 +449,14 @@ form2String1 u ==
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
   isBinaryInfix op => formatAsFortranExpression [op,:argl]
-  -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,NIL)
+  -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,nil)
   application2String(op,[form2String1 x for x in argl], u1)
 
 formWrapId id == 
   $formatSigAsTeX = 1 => PNAME id
   $formatSigAsTeX = 2 => 
     sep := '"`"
-    FORMAT(NIL,'"\verb~a~a~a",sep, id, sep)
+    FORMAT(nil,'"\verb~a~a~a",sep, id, sep)
   error '"Bad formatSigValue"
 
 formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
@@ -518,14 +518,14 @@ formJoin2 argl ==
 -- argl is a list of categories NOT containing a "with"
   null argl => '""
   1=#argl => form2StringLocal argl.0
-  application2String('Join,[form2StringLocal x for x in argl], NIL)
+  application2String('Join,[form2StringLocal x for x in argl],nil)
 
 formJoin2String (u:=[:argl,last]) ==
   last is ["CATEGORY",.,:atsigList] =>
     postString:= concat('"(",formTuple2String atsigList,'")")
     #argl=1 => concat(first argl,'" with ",postString)
-    concat(application2String('Join,argl, NIL)," with ",postString)
-  application2String('Join,u, NIL)
+    concat(application2String('Join,argl, nil)," with ",postString)
+  application2String('Join,u, nil)
 
 formCollect2String [:itl,body] ==
   ['"(",body,:"append"/[formIterator2String x for x in itl],'")"]
@@ -621,16 +621,16 @@ formTuple2String argl ==
   string
 
 isInternalFunctionName(op) ==
-  (not IDENTP(op)) or (op = "*") or (op = "**") => NIL
+  (not IDENTP(op)) or (op = "*") or (op = "**") => nil
   op' := symbolName op
-  1 = #op' or char "*" ~= stringChar(op',0) => NIL
+  1 = #op' or char "*" ~= stringChar(op',0) => nil
   -- if there is a semicolon in the name then it is the name of
   -- a compiled spad function
-  null (e := STRPOS('"_;",op',1,NIL)) => NIL
-  char " " = stringChar(op',1) or char "*" = stringChar(op',1) => NIL
-  table := MAKETRTTABLE('"0123456789",NIL)
+  null (e := STRPOS('"_;",op',1,nil)) => nil
+  char " " = stringChar(op',1) or char "*" = stringChar(op',1) => nil
+  table := MAKETRTTABLE('"0123456789",nil)
   s := STRPOSL(table,op',1,true)
-  null(s) or s > e => NIL
+  null(s) or s > e => nil
   subString(op',s,e-s)
 
 application2String(op,argl, linkInfo) ==
@@ -657,7 +657,7 @@ application2String(op,argl, linkInfo) ==
                         concat('"(",concat(tuple2String argl,'")")))
 
 app2StringConcat0(x,y) ==
-  FORMAT(NIL, '"~a ~a", x, y)
+  FORMAT(nil, '"~a ~a", x, y)
 
 app2StringWrap(string, linkInfo) ==
   not linkInfo => string
@@ -665,12 +665,12 @@ app2StringWrap(string, linkInfo) ==
   $formatSigAsTeX = 2 =>
     str2 :=  "app2StringConcat0"/form2Fence linkInfo
     sep := '"`"
-    FORMAT(NIL, '"\lispLink{\verb!(|conPage| '~a)!}{~a}", 
+    FORMAT(nil, '"\lispLink{\verb!(|conPage| '~a)!}{~a}", 
           str2, string)
   error "Bad value for $formatSigAsTeX"
 
 record2String x ==
-  argPart := NIL
+  argPart := nil
   for [":",a,b] in x repeat argPart:=
     concat(argPart,'",",a,'": ",form2StringLocal b)
   null argPart => '"Record()"
@@ -752,8 +752,8 @@ pkey keyStuff ==
     if atom keyStuff then keyStuff := [keyStuff]
     allMsgs := ['" "]
     while not null keyStuff repeat
-        dbN := NIL
-        argL := NIL
+        dbN := nil
+        argL := nil
         key := first keyStuff
         keyStuff := IFCDR keyStuff
         next := IFCAR keyStuff
@@ -787,14 +787,14 @@ form2Fence form ==
 form2Fence1 x ==
   x is [op,:argl] =>
     op = "QUOTE" => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
-    ['"(", FORMAT(NIL, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
+    ['"(", FORMAT(nil, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
   null x => '""
-  IDENTP x => FORMAT(NIL, '"|~a|", x)
+  IDENTP x => FORMAT(nil, '"|~a|", x)
   ['"  ", x]
 
 form2FenceQuote x ==
   integer? x => [STRINGIMAGE x]
-  symbol? x => [FORMAT(NIL, '"|~a|", x)]
+  symbol? x => [FORMAT(nil, '"|~a|", x)]
   string? x => ['"_"",x,'"_""]
   atom    x => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]

@@ -98,7 +98,7 @@
 (defun PREPARSE (Strm &aux (stack ()))
   (SETQ $COMBLOCKLIST NIL $skipme NIL)
   (when $preparse-last-line
-        (if (pairp $preparse-last-line)
+        (if (consp $preparse-last-line)
             (setq stack $preparse-last-line)
           (push $preparse-last-line stack))
         (setq $INDEX (- $INDEX (length stack))))
@@ -123,8 +123,8 @@
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (FINCOMBLOCK NIL NUMS LOCS NCOMBLOCK NIL)))
-                (RETURN (PAIR (|reverse!| NUMS)
-                              (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
+                (RETURN (|pairList| (|reverse!| NUMS)
+			 (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
                 (PREPARSE-ECHO LineList)
@@ -185,7 +185,7 @@
              (IF (NOT (IS-CONSOLE in-stream))
                  (setq $preparse-last-line
                        (|reverse!| $echolinestack)))
-             (RETURN (PAIR (|reverse!| NUMS)
+             (RETURN (|pairList| (|reverse!| NUMS)
                         (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
          (COND (NCOMBLOCK
@@ -198,7 +198,7 @@
          (setq PARENLEV (+ PARENLEV PCOUNT))
          (when (and (is-console in-stream) (not continue))
             (setq $preparse-last-line nil)
-             (RETURN (PAIR (|reverse!| NUMS)
+             (RETURN (|pairList| (|reverse!| NUMS)
                            (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))

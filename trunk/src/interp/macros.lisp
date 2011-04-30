@@ -235,15 +235,11 @@
  
 (defun remdup (l) (remove-duplicates l :test #'equalp))
  
-(DEFUN GETTAIL (X L) (member X L :test #'equal))
- 
 ; 15.6 Association Lists
  
 (defun QLASSQ (p a-list) (cdr (assq p a-list)))
 
 (define-function 'LASSQ #'QLASSQ)
- 
-(defun pair (x y) (mapcar #'cons x y))
  
 ;;; Operations on Association Sets (AS)
  

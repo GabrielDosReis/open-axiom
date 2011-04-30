@@ -52,7 +52,7 @@ serverReadLine(stream) ==
   not $SpadServer or not IS_-CONSOLE stream =>
     read_-line(stream)
   IN_-STREAM: fluid := stream
-  _*EOF_*: fluid := NIL
+  _*EOF_*: fluid := nil
   line :=
    while not $EndServerSession and not _*EOF_* repeat
      if $NeedToSignalSessionManager then
@@ -153,11 +153,11 @@ parseAndEvalStr string ==
 parseAndEvalStr1 string ==
   string.0 = char ")" =>
     doSystemCommand subSequence(string, 1)
-  processInteractive(ncParseFromString string, NIL)
+  processInteractive(ncParseFromString string, nil)
 
 protectedEVAL x ==
   error := true
-  val := NIL
+  val := nil
   try
     val := eval x
     error := false

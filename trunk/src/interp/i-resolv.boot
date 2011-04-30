@@ -54,7 +54,7 @@ resolveTypeList u ==
       a := resolveTT(md,a)
       null a => return nil
     a
-  throwKeyedMsg("S2IR0002",NIL)
+  throwKeyedMsg("S2IR0002",nil)
 
 -- resolveTT is in CLAMMED BOOT
 
@@ -73,7 +73,7 @@ resolveTT1(t1,t2) ==
   -- then it tries to use a rewrite rule
   -- and finally it builds up a tower
   t1=t2 => t1
-  (t1 = '$NoValueMode) or (t2 = '$NoValueMode) => NIL
+  (t1 = '$NoValueMode) or (t2 = '$NoValueMode) => nil
   (t1 = $Void) or (t2 = $Void) => $Void
   (t1 = $Any) or (t2 = $Any) => $Any
   t1 = $Exit => t2
@@ -82,11 +82,11 @@ resolveTT1(t1,t2) ==
   t2 is ['Union,:.] => resolveTTUnion(t2,t1)
   string?(t1) =>
     t2 = $String => t2
-    NIL
+    nil
   string?(t2) =>
     t1 = $String => t1
-    NIL
-  null acceptableTypesToResolve(t1,t2) => NIL
+    nil
+  null acceptableTypesToResolve(t1,t2) => nil
   if compareTT(t1,t2) then
      t := t1
      t1 := t2
@@ -115,12 +115,12 @@ acceptableTypesToResolve(t1,t2) ==
 
 acceptableTypesToResolve1(t1,t2) ==
   t1 = $Integer =>
-    t2 = $String => NIL
+    t2 = $String => nil
     true
   t1 = $DoubleFloat or t1 = $Float =>
-    t2 = $String => NIL
-    t2 = '(RationalNumber) => NIL
-    t2 = [$QuotientField, $Integer] => NIL
+    t2 = $String => nil
+    t2 = '(RationalNumber) => nil
+    t2 = [$QuotientField, $Integer] => nil
     true
   true
 
@@ -139,7 +139,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     tagged := false
     doms
   member(t2,unionDoms1) => t1
-  tagged => NIL
+  tagged => nil
   t2 isnt ['Union,:doms2] =>
     ud := nil
     bad := nil
@@ -147,7 +147,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
       d is '"failed" => ud := [d,:ud]
       null (d' := resolveTT(d,t2)) => bad := true
       ud := [d',:ud]
-    bad => NIL
+    bad => nil
     ['Union,:removeDuplicates reverse ud]
   ud := nil
   bad := nil
@@ -155,7 +155,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     d is '"failed" => ud := append(ud,[d])
     null (d' := resolveTTUnion(t1,d)) => bad := true
     ud := append(ud,rest d')
-  bad => NIL
+  bad => nil
   ['Union,:removeDuplicates ud]
 
 resolveTTSpecial(t1,t2) ==
@@ -213,9 +213,9 @@ resolveTTSpecial(t1,t2) ==
     ofCategory(t2, '(IntegerNumberSystem)) => resolveTT(['Polynomial, t2], t2)
     resolveTT(['Polynomial,$Integer],t2)
   t1 is ['FunctionCalled,f] and t2 is ['FunctionCalled,g] =>
-    null (mf := get(f,'mode,$e)) => NIL
-    null (mg := get(g,'mode,$e)) => NIL
-    mf ~= mg => NIL
+    null (mf := get(f,'mode,$e)) => nil
+    null (mg := get(g,'mode,$e)) => nil
+    mf ~= mg => nil
     mf
   t1 is ['UnivariatePolynomial,x,S] =>
     t2 is ["Variable",:.] => resolveTTSpecial(t2,t1)
@@ -253,7 +253,7 @@ resolveTTCC(t1,t2) ==
   gt21 := GGREATERP(t2,t1)
   (c12 := canCoerceFrom(t1,t2)) and gt21 => t2
   c21 := canCoerceFrom(t2,t1)
-  null (c12 or c21) => NIL
+  null (c12 or c21) => nil
   c12 and not c21 => t2
   c21 and not c12 => t1
   -- both are coerceable to each other
@@ -296,7 +296,7 @@ resolveTTEq2(c1,arg1,TL is [c,arg,:.]) ==
 resolveTTRed(t1,t2) ==
   -- the same function as resolveTTEq, but instead of testing for
   -- constructor equality, it looks whether a rewrite rule can be applied
-  t := resolveTTRed1(t1,t2,NIL) => t
+  t := resolveTTRed1(t1,t2,nil) => t
   [c1,:arg1] := deconstructT t1
   t := arg1 and resolveTTRed2(t2,last arg1,[c1,arg1]) => t
   [c2,:arg2] := deconstructT t2
@@ -306,7 +306,7 @@ resolveTTRed1(t1,t2,TL) ==
   -- tries to apply a reduction rule on (Resolve t1 t2)
   -- then it creates a type using the result and TL
   sameObject?(t,term1RW(t := ['Resolve,t1,t2],$Res)) and
-    sameObject?(t,term1RW(t := ['Resolve,t2,t1],$Res)) => NIL
+    sameObject?(t,term1RW(t := ['Resolve,t2,t1],$Res)) => nil
   [c2,:arg2] := deconstructT t2
   [c2,arg2,:TL] := bubbleType [c2,arg2,:TL]
   t2 := constructM(c2,arg2)
@@ -340,7 +340,7 @@ resolveTTRed3(t) ==
   t is ['SetEqual,a,b] =>
     (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
   [( atom x and x ) or ((not cs and x and not interpOp? x and x)
-    or resolveTTRed3 x) or return NIL
+    or resolveTTRed3 x) or return nil
       for x in t for cs in getDualSignatureFromDB first t ]
 
 interpOp?(op) ==
@@ -351,7 +351,7 @@ interpOp?(op) ==
 
 resolveTCat(t,c) ==
   -- this function attempts to find a type tc of category c such that
-  -- t can be coerced to tc. NIL returned for failure.
+  -- t can be coerced to tc. nil returned for failure.
   -- Example:  t = Integer, c = Field ==> tc = RationalNumber
 
   -- first check whether t already belongs to c
@@ -373,23 +373,23 @@ resolveTCat(t,c) ==
 
   sd := superType t => resolveTCat(sd,c)
 
-  #(td := deconstructT t) ~= 2=> NIL
-  #(tc := deconstructT c) ~= 2 => NIL
+  #(td := deconstructT t) ~= 2=> nil
+  #(tc := deconstructT c) ~= 2 => nil
   ut := underDomainOf t
-  null isValidType(uc := last tc) => NIL
-  null canCoerceFrom(ut,uc) => NIL
+  null isValidType(uc := last tc) => nil
+  null canCoerceFrom(ut,uc) => nil
   nt := constructT(first td,[uc])
   ofCategory(nt,c) => nt
-  NIL
+  nil
 
 resolveTCat1(t,c) ==
   -- does the hard work of looking at conditions on under domains
   -- if null (ut := getUnderModeOf(t)) then ut := last dt
-  null (conds := getConditionsForCategoryOnType(t,c)) => NIL
---rest(conds) => NIL   -- will handle later
+  null (conds := getConditionsForCategoryOnType(t,c)) => nil
+--rest(conds) => nil   -- will handle later
   cond := first conds
-  cond isnt [.,["has", pat, c1],:.] => NIL
-  rest(c1) => NIL      -- make it simple
+  cond isnt [.,["has", pat, c1],:.] => nil
+  rest(c1) => nil      -- make it simple
 
   argN := 0
   t1 := nil
@@ -400,20 +400,20 @@ resolveTCat1(t,c) ==
       argN := i
       t1 := ut
 
-  null t1 => NIL
-  null (t1' := resolveTCat(t1,c1)) => NIL
+  null t1 => nil
+  null (t1' := resolveTCat(t1,c1)) => nil
   t' := copy t
   t'.argN := t1'
   t'
 
 getConditionsForCategoryOnType(t,cat) ==
-  getConditionalCategoryOfType(t,[NIL],['ATTRIBUTE,cat])
+  getConditionalCategoryOfType(t,[nil],['ATTRIBUTE,cat])
 
 getConditionalCategoryOfType(t,conditions,match) ==
   if cons? t then t := first t
-  t in '(Union Mapping Record) => NIL
+  t in '(Union Mapping Record) => nil
   conCat := getConstructorCategoryFromDB t
-  removeDuplicates rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
+  removeDuplicates rest getConditionalCategoryOfType1(conCat,conditions,match,[nil])
 
 getConditionalCategoryOfType1(cat,conditions,match,seen) ==
   cat is ['Join,:cs] or cat is ['CATEGORY,:cs] =>
@@ -422,7 +422,7 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
      getConditionalCategoryOfType1(first cs,conditions,match,seen),
        match,seen)
   cat is ['IF,., cond,.] =>
-    matchUpToPatternVars(cond,match,NIL) =>
+    matchUpToPatternVars(cond,match,nil) =>
       conditions.rest := [cat,:rest conditions]
       conditions
     conditions
@@ -448,10 +448,10 @@ matchUpToPatternVars(pat,form,patAlist) ==
     patAlist := [[pat,:form],:patAlist]
     true
   cons?(pat) =>
-    atom form => NIL
+    atom form => nil
     matchUpToPatternVars(first pat, first form,patAlist) and
       matchUpToPatternVars(rest pat, rest form,patAlist)
-  NIL
+  nil
 
 --% Resolve Type with Mode
 
@@ -463,7 +463,7 @@ resolveTMOrCroak(t,m) ==
 resolveTM(t,m) ==
   -- resolves a type with a mode which may be partially specified
   startTimingProcess 'resolve
-  $Subst : local := NIL
+  $Subst : local := nil
   $Coerce : local := 'T
   t := eqType t
   m := eqType substitute("**",$EmptyMode,m)
@@ -487,14 +487,14 @@ resolveTM1(t,m) ==
       p := ASSQ(m,$Subst) =>
         $Coerce =>
           tt := resolveTT1(t,rest p) => (p.rest := tt) and tt
-          NIL
+          nil
         t=rest p and t
       $Subst := [[m,:t],:$Subst]
       t
-    atom(t) or atom(m) => NIL
+    atom(t) or atom(m) => nil
     (t is ['Record,:tr]) and (m is ['Record,:mr]) and
       (tt := resolveTMRecord(tr,mr)) => tt
-    t is ['Record,:.] or m is ['Record,:.] => NIL
+    t is ['Record,:.] or m is ['Record,:.] => nil
     t is ['Variable, .] and m is ['Mapping, :.] => m
     t is ['FunctionCalled, .] and m is ['Mapping, :.] => m
     if isEqualOrSubDomain(t, $Integer) then
@@ -506,16 +506,16 @@ resolveTM1(t,m) ==
   $Coerce and canCoerceFrom(t,m) and m
 
 resolveTMRecord(tr,mr) ==
-  #tr ~= #mr => NIL
+  #tr ~= #mr => nil
   ok := true
-  tt := NIL
+  tt := nil
   for ta in tr for ma in mr while ok repeat
     -- element is [':,tag,mode]
-    second(ta) ~= second(ma) => ok := NIL      -- match tags
+    second(ta) ~= second(ma) => ok := nil      -- match tags
     ra := resolveTM1(third ta, third ma)   -- resolve modes
-    null ra => ok := NIL
+    null ra => ok := nil
     tt := [[first ta,second ta,ra],:tt]
-  not ok => NIL
+  not ok => nil
   ['Record,reverse! tt]
 
 resolveTMUnion(t, m is ['Union,:ums]) ==
@@ -535,9 +535,9 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
     m' := ['Union,:removeDuplicates reverse ums']
     success =>
       null CONTAINED('_*_*,m') => m'
-      t = $Integer => NIL
+      t = $Integer => nil
       resolveTM1($Integer,m')
-    NIL
+    nil
   -- t is actually a Union if we got here
   ums := removeDuplicates spliceTypeListForEmptyMode(uts,ums)
   bad := nil
@@ -546,11 +546,11 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
     (m' := resolveTMUnion(ut,['Union,:ums])) =>
       doms := append(rest m',doms)
     bad := true
-  bad => NIL
+  bad => nil
   ['Union,:removeDuplicates doms]
 
 resolveTMTaggedUnion(t, m is ['Union,:ums]) ==
-  NIL
+  nil
 
 spliceTypeListForEmptyMode(tl,ml) ==
   -- splice in tl for occurrence of ** in ml
@@ -574,7 +574,7 @@ resolveTMEq(t,m) ==
   (res := resolveTMSpecial(t,m)) => res
   [cm,:argm] := deconstructT m
   c := containsVars cm
-  TL := NIL
+  TL := nil
   until b or not t repeat
     [ct,:argt] := deconstructT t
     b :=
@@ -596,28 +596,28 @@ resolveTMSpecial(t,m) ==
   t is ['Variable,x] and m is ['OrderedVariableList,le] =>
     isPatternVar le => ['OrderedVariableList,[x]]
     cons?(le) and member(x,le) => le
-    NIL
+    nil
   t is ['Fraction, ['Complex, t1]] and m is ['Complex, m1] =>
     resolveTM1(['Complex, ['Fraction, t1]], m)
   t is ['Fraction, ['Polynomial, ['Complex, t1]]] and m is ['Complex, m1] =>
     resolveTM1(['Complex, ['Fraction, ['Polynomial, t1]]], m)
   t is ['Mapping,:lt] and m is ['Mapping,:lm] =>
-    #lt ~= #lm => NIL
-    l := NIL
+    #lt ~= #lm => nil
+    l := nil
     ok := true
     for at in lt for am in lm while ok repeat
       (ok := resolveTM1(at,am)) => l := [ok,:l]
     ok and ['Mapping,:reverse l]
   t is ['Segment,u] and m is ['UniversalSegment,.] =>
     resolveTM1(['UniversalSegment, u], m)
-  NIL
+  nil
 
 resolveTMEq1(ct,cm) ==
   -- ct and cm are type constructors
   -- tests for a match from cm to ct
   -- the result is a substitution or 'failed
   not (first ct=first cm) => 'failed
-  SL := NIL
+  SL := nil
   ct := rest ct
   cm := rest cm
   b := 'T
@@ -647,8 +647,8 @@ resolveTMEq2(cm,argm,TL) ==
     TL
   null TL and
     null argm => constructM(ct,argt)
---  null argm => NIL
-    arg := NIL
+--  null argm => nil
+    arg := nil
     while argt and argm until not tt repeat
       x1 := first argt
       argt := rest argt
@@ -661,7 +661,7 @@ resolveTMEq2(cm,argm,TL) ==
 resolveTMRed(t,m) ==
   -- looks for an applicable rewrite rule at any level of t and tries
   --   to bubble this constructor up to the top to t
-  TL := NIL
+  TL := nil
   until b or not t repeat
     [ct,:argt] := deconstructT t
     b := not sameObject?(t,term1RW(['Resolve,t,m],$ResMode)) and
@@ -692,7 +692,7 @@ resolveTMRed1(t) ==
     "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
-  [( atom x and x ) or resolveTMRed1 x or return NIL for x in t]
+  [( atom x and x ) or resolveTMRed1 x or return nil for x in t]
 
 --% Type and Mode Representation
 
@@ -711,8 +711,8 @@ equiType(t) ==
   t
 
 getUnderModeOf d ==
-  not cons? d => NIL
---  n := LASSOC(first d,$underDomainAlist) => d.n ----> $underDomainAlist NOW always NIL
+  not cons? d => nil
+--  n := LASSOC(first d,$underDomainAlist) => d.n ----> $underDomainAlist NOW always nil
   for a in rest d for m in rest destructT d repeat
     if m then return a
 
@@ -724,7 +724,7 @@ getUnderModeOf d ==
 --    args := [ x for d in dt for y in t | ( x := d and y ) ]
 --    c := [ x for d in dt for y in t | ( x := not d and y ) ]
 --    [c,:args]
---  [t,:NIL]
+--  [t,:nil]
 
 deconstructT(t) ==
   -- M is a type, which may contain type variables
@@ -734,7 +734,7 @@ deconstructT(t) ==
     args := [ x for d in dt for y in t | ( x := d and y ) ]
     c := [ x for d in dt for y in t | ( x := not d and y ) ]
     [c,:args]
-  [t,:NIL]
+  [t,:nil]
 
 constructT(c,A) ==
   -- c is a type constructor, A a list of argument types
@@ -743,7 +743,7 @@ constructT(c,A) ==
 
 constructM(c,A) ==
   -- replaces top level RE's or QF's by equivalent types, if possible
-  containsVars(c) or containsVars(A) => NIL
+  containsVars(c) or containsVars(A) => nil
   -- collapses illegal FE's
   first(c) = $FunctionalExpression => eqType defaultTargetFE first A
   eqType constructT(c,A)
@@ -795,6 +795,6 @@ compareTT(t1,t2) ==
   -- 'T if type t1 is more nested than t2
   -- otherwise 'T if t1 is lexicographically greater than t2
   t1 is [=$QuotientField,:.] or
-    symbolMember?(opOf t2,[$QuotientField, 'SimpleAlgebraicExtension]) => NIL
+    symbolMember?(opOf t2,[$QuotientField, 'SimpleAlgebraicExtension]) => nil
     CGREATERP(PRIN2CVEC opOf t1,PRIN2CVEC opOf t2)
 

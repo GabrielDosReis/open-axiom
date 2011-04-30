@@ -119,11 +119,11 @@ macMacro pf ==
 mac0Define(sy, state, body) ==
     $pfMacros := [[sy, state, body],:$pfMacros]
  
--- Returns [state, body] or NIL.
+-- Returns [state, body] or nil.
 mac0Get sy ==
     IFCDR assoc(sy, $pfMacros)
  
--- Returns [sy, state] or NIL.
+-- Returns [sy, state] or nil.
 mac0GetName body ==
     name := nil
     for [sy,st,bd] in $pfMacros while not name repeat

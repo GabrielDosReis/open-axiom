@@ -569,7 +569,7 @@ bcSeries() ==
    (text .  "Create a series by: ")
    (text . "\beginmenu")
    (text . "\item ")
-   (bcLinks ("\menuitemstyle{Expansion}" "" bcSeriesExpansion NILl))
+   (bcLinks ("\menuitemstyle{Expansion}" "" bcSeriesExpansion NIL))
    (text . "\tab{11}Expand a function in a series around a point")
    (text . "\item ")
    (bcLinks ("\menuitemstyle{Formula}"  "" bcSeriesByFormula NIL))

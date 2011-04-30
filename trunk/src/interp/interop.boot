@@ -342,7 +342,7 @@ instantiate domenv ==
 --     loadFunctor functor
 --     fn := symbolFunction functor
 --     symbolFunction(functor) := ofn
---     PUT(functor, 'instantiate, fn)
+--     proprty(functor, 'instantiate) := fn
 --  domvec := apply(fn, args)
   domvec := apply(functor, args)
   oldDom.first := $oldAxiomDomainDispatch

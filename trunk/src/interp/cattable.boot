@@ -347,7 +347,7 @@ getConstrCat(x) ==
 -- gets a different representation of the constructorCategory from the
 -- lisplib, which is a list of named categories or conditions
   x:= if x is ['Join,:y] then y else [x]
-  cats:= NIL
+  cats:= nil
   for y in x repeat
     y is ['CATEGORY,.,:z] =>
       for zz in z repeat cats := makeCatPred(zz, cats, true)
@@ -435,7 +435,7 @@ compressSexpr(x,left,right) ==
 
 squeezeList(l) ==
 -- changes the list l, so that is has maximal sharing of cells
-  $found:local:= NIL
+  $found:local:= nil
   squeeze1 l
 
 squeeze1(l) ==

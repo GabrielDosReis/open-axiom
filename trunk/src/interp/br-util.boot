@@ -408,8 +408,8 @@ bcConTable u ==
 bcAbbTable u ==
   htBeginTable()
   firstTime := true
-  for x in removeDuplicates u repeat        --allow x to be NIL meaning "no abbreviation"
-  -- for x in u repeat    --allow x to be NIL meaning "no abbreviation"
+  for x in removeDuplicates u repeat        --allow x to be nil meaning "no abbreviation"
+  -- for x in u repeat    --allow x to be nil meaning "no abbreviation"
     if firstTime then firstTime := false
     else htSaySaturn '"&"
     if x is [con,abb,:.] then

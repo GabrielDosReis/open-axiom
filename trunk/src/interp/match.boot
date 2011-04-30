@@ -74,7 +74,7 @@ stringPosition(s,t,startpos) ==
   n := # t
   if startpos < 0 or startpos > n then error '"index out of range"
   if # s = 0 then return startpos -- bug in STRPOS
-  r := STRPOS(s,t,startpos,NIL)
+  r := STRPOS(s,t,startpos,nil)
   if r = nil then n else r
 
 superMatch?(opattern,subject) ==  --subject assumed to be DOWNCASEd
@@ -178,7 +178,7 @@ basicMatch?(pattern,target) ==
 matchSegment?(pattern,subject,k) ==
   matchAnySegment?(pattern,DOWNCASE subject,k,nil)
 
-matchAnySegment?(pattern,target,k,nc) ==  --k = start position; nc=#chars or NIL
+matchAnySegment?(pattern,target,k,nc) ==  --k = start position; nc=#chars or nil
   n := #pattern
   p := charPosition($wildCard,pattern,0)
   p = n =>

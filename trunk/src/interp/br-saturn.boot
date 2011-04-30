@@ -82,8 +82,8 @@ off()==
 --
 --protectedEVAL1 x ==
 --  error := true
---  val := NIL
---  UNWIND_-PROTECT((val := saturnEVAL x; error := NIL),
+--  val := nil
+--  UNWIND_-PROTECT((val := saturnEVAL x; error := nil),
 --                   error => (resetStackLimits(); sendHTErrorSignal()))
 --  val
 --
@@ -1157,7 +1157,7 @@ htShowPageStar() ==
   $saturn => htShowPageStarSaturn()
   htSayStandard '"\endscroll "
   if $exposedOnlyIfTrue then
-    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,NIL]]]
+    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,nil]]]
   else
     htMakePage [['bcLinks,['"Exposed Only",'"",'repeatSearch,'T]]]
   htShowPageNoScroll()
@@ -1166,7 +1166,7 @@ htShowPageStarSaturn() ==
   $newPage    : local := nil
   $htLineList : local := nil
   if $exposedOnlyIfTrue then
-    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,NIL]]]
+    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,nil]]]
   else
     htMakePage [['bcLinks,['"Exposed Only",'"",'repeatSearch,'T]]]
   $saturnContextMenuLines := $htLineList

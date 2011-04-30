@@ -142,7 +142,8 @@ asMakeAlist con ==
   if atom(form) then form:=[form]
   kind is 'function => asMakeAlistForFunction con
   abb := asyAbbreviation(con,#(KDR sig))
-  if null KDR form then PUT(opOf form,'NILADIC,'T)
+  if null KDR form then
+    property(opOf form,'NILADIC) := 'T
   modemap := asySubstMapping LASSOC(con,$mmAlist)
   $constructorCategory :local := modemap.mmTarget
   parents := mySort HGET($parentsHash,con)
@@ -349,7 +350,7 @@ asyMakeOperationAlist(con,proplist, key) ==
       u
     key is 'domain =>
       kind := 'domain
-      u := NIL
+      u := nil
     return nil
   ht := MAKE_-HASH_-TABLE()
   ancestorAlist := nil
@@ -728,10 +729,10 @@ asyGetAbbrevFromComments con ==
   --above "first" assumes only one entry
   x := asyExtractAbbreviation comments
   x => intern x
-  NIL
+  nil
 
 asyExtractAbbreviation str ==
-        not (k:= STRPOS('"Abbrev: ",str,0,nil)) => NIL
+        not (k:= STRPOS('"Abbrev: ",str,0,nil)) => nil
         str := subString(str, k+8)
         k := STRPOS($stringNewline, str,0,nil)
         k => subString(str, 0, k)

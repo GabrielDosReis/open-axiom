@@ -1735,7 +1735,7 @@ $setOptions := '(
  )
 
 --%
-$reportCoerceIfTrue := NIL
+$reportCoerceIfTrue := nil
 
 --%
 printLoadMessages u ==

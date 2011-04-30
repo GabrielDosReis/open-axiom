@@ -574,7 +574,7 @@ getModemapsFromDatabase(op,nargs) ==
 
 getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
-    mms := NIL
+    mms := nil
     for (x := [[.,:sig],.]) in mml repeat
       (integer? nargs) and (nargs ~= # sig.source) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
@@ -702,9 +702,9 @@ dropPrefix(fn) ==
 --++--  null MAKE_-INPUT_-FILENAME(egFile) =>
 --++--    throwKeyedMsg("S2IL0003",[namestring egFile])
 --++  stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,:egFile]],80,0)
---++  $globalExposureGroupAlist := NIL
---++  egName  := NIL
---++  egFiles := NIL
+--++  $globalExposureGroupAlist := nil
+--++  egName  := nil
+--++  egFiles := nil
 --++  while (not PLACEP (x:= readLine stream)) repeat
 --++    x := DROPTRAILINGBLANKS x
 --++    # x = 0 => 'iterate                         -- blank line
@@ -715,7 +715,7 @@ dropPrefix(fn) ==
 --++     throwKeyedMsg("S2IZ0069A",[namestring egFile,x])
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
---++       p := STRPOS('" ",x,1,NIL)
+--++       p := STRPOS('" ",x,1,nil)
 --++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier subString(x,0,p)
@@ -726,8 +726,8 @@ dropPrefix(fn) ==
 --++    -- have a new group name
 --++    if egName then $globalExposureGroupAlist :=
 --++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
---++    egFiles := NIL
---++    STRPOS('" ",x,1,NIL) =>
+--++    egFiles := nil
+--++    STRPOS('" ",x,1,nil) =>
 --++      throwKeyedMsg("S2IZ0069C",[namestring egFile,x])
 --++    egName := object2Identifier x
 --++  if egFiles then $globalExposureGroupAlist :=
@@ -749,7 +749,7 @@ isExposedConstructor name ==
   -- check if it is explicitly exposed
   symbolMember?(name,$localExposureData.1) => true
   -- check if it is in an exposed group
-  found := NIL
+  found := nil
   for g in $localExposureData.0 while not found repeat
     null (x := GETALIST($globalExposureGroupAlist,g)) => 'iterate
     if GETALIST(x,name) then found := true
@@ -763,7 +763,7 @@ displayExposedGroups() ==
       centerAndHighlight g
 
 displayExposedConstructors() ==
-  sayKeyedMsg("S2IZ0049B",NIL)
+  sayKeyedMsg("S2IZ0049B",nil)
   if null $localExposureData.1
     then centerAndHighlight
       '"there are no explicitly exposed constructors"
@@ -771,7 +771,7 @@ displayExposedConstructors() ==
       centerAndHighlight c
 
 displayHiddenConstructors() ==
-  sayKeyedMsg("S2IZ0049C",NIL)
+  sayKeyedMsg("S2IZ0049C",nil)
   if null $localExposureData.2
     then centerAndHighlight
       '"there are no explicitly hidden constructors"

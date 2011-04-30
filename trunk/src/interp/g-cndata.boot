@@ -55,16 +55,16 @@ augmentLowerCaseConTable x ==
   HPUT($lowerCaseConTb,y,item)
 
 getCDTEntry(info,isName) ==
-  not IDENTP info => NIL
+  not IDENTP info => nil
   (entry := HGET($lowerCaseConTb,info)) =>
     [name,abb,:.] := entry
     isName and sameObject?(name,info) => entry
     not isName and sameObject?(abb,info) => entry
-    NIL
+    nil
   entry
  
 putConstructorProperty(name,prop,val) ==
-  null (entry := getCDTEntry(name,true)) => NIL
+  null (entry := getCDTEntry(name,true)) => nil
   entry.rest.rest := PUTALIST(CDDR entry,prop,val)
   true
 
@@ -132,9 +132,9 @@ constructorNameConflict(name,kind) ==
 constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   siz := # (s := symbolName a)
   if typ = "category" and siz > 7
-    then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
-  if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
-  if s ~= stringUpcase s then throwKeyedMsg("S2IL0006",NIL)
+    then throwKeyedErrorMsg('precompilation,"S2IL0021",nil)
+  if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",nil)
+  if s ~= stringUpcase s then throwKeyedMsg("S2IL0006",nil)
   abb := getConstructorAbbreviationFromDB c
   name:= getConstructorFullNameFromDB a
   type := getConstructorKindFromDB c
@@ -150,7 +150,7 @@ abbreviationError(c,a,typ,abb,name,type,error) ==
     throwKeyedMsg("S2IL0011",[a,type])
   error='wrongType =>
     throwKeyedMsg("S2IL0012",[c,type])
-  NIL
+  nil
  
 abbreviate u ==
   u is ['Union,:arglist] =>

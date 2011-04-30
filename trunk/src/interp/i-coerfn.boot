@@ -103,7 +103,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
       li:= VEC2LIST e
       a:= [[LIST2VEC [if x then li.x else 0 for x in pat],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
-    NIL
+    nil
   z => x
   coercionFailure()
 
@@ -295,7 +295,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
   S1 := [dmp,vl',S]
   plusfunc:= getFunctionFromDomain('_+,T,[T,T])
   zero := getConstantFromDomain($Zero,T)
-  x := NIL
+  x := nil
   pos:= POSN1(var,vl)
   for [e,:c] in u until not y repeat
     exp:= e.pos
@@ -365,7 +365,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null v2 =>
         not (z := coerceInt(objNewWrap(u, source), T)) => coercionFailure()
-        [[LIST2VEC NIL, :objValUnwrap z]]
+        [[LIST2VEC nil, :objValUnwrap z]]
 
     obj := objNewWrap(u, source)
     univ := coerceInt(obj, ['UnivariatePolynomial, first v2, T])
@@ -740,10 +740,10 @@ Mp2Dmp(u, source is [., x, S], target is [dmp, y, T]) ==
 
 Mp2SimilarDmp(u,S,n,plus,mult,one,zero) ==
   u is [ =0,:c] =>
-    c = zero => NIL  -- zero for dmp
+    c = zero => nil  -- zero for dmp
     [[LIST2VEC LZeros n,:c]]
   u is [ =1,x,:terms] =>
-    u' := NIL  -- zero for dmp
+    u' := nil  -- zero for dmp
     for [e,:c] in terms repeat
       e' := LIST2VEC LZeros n
       e'.(x-1) := e
@@ -814,7 +814,7 @@ Mp2Mp(u,source is [mp,x,S], target is [.,y,T]) ==
   null y' =>    -- change source to MP[common] MP[x'] S
     univariate := getFunctionFromDomain('univariate,
       source,[source,['OrderedVariableList,x]])
-    u' := Mp2MpAux2(u,x,common,x',common,x',univariate,S,NIL)
+    u' := Mp2MpAux2(u,x,common,x',common,x',univariate,S,nil)
     (u' := coerceInt(objNewWrap(u', [mp,common,[mp,x',S]]),target)) or
       coercionFailure()
     objValUnwrap(u')
@@ -1139,7 +1139,7 @@ Qf2PF(u,source is [.,D],target) ==
   den':= coerceInt(objNewWrap(den,D),target) or
     coercionFailure()
   den' := objValUnwrap den'
-  equalZero(den', target) => throwKeyedMsg("S2IA0001",NIL)
+  equalZero(den', target) => throwKeyedMsg("S2IA0001",nil)
   SPADCALL(num',den', getFunctionFromDomain("/",target,[target,target]))
 
 Qf2F(u,source is [.,D,:.],target) ==
@@ -1260,7 +1260,7 @@ SUP2Up(u,source is [.,S],target is [.,x,T]) ==
   -- try to go underneath first
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
     -- must be careful in case any of the coeffs come back 0
-    u' := NIL
+    u' := nil
     zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or
@@ -1357,7 +1357,7 @@ Sy2Up(u,source,target is [up,x,S]) ==
   [[0,:objValUnwrap u]]
 
 Sy2Var(u,source,target is [.,x]) ==
-  u = '_$fromCoerceable_$ => NIL
+  u = '_$fromCoerceable_$ => nil
   u=x => u
   coercionFailure()
 
@@ -1490,7 +1490,7 @@ Up2SUP(u,source is [.,x,S],target is [.,T]) ==
   S = T => u
   -- try to go underneath first
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
-    u' := NIL
+    u' := nil
     zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or

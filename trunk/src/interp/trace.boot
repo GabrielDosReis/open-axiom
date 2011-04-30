@@ -40,13 +40,13 @@ namespace BOOT
 -- This code supports the )trace system command and allows the
 -- tracing of LISP, BOOT and SPAD functions and interpreter maps.
 
-$traceNoisely := NIL  -- give trace and untrace messages
+$traceNoisely := nil  -- give trace and untrace messages
 
-$reportSpadTrace := NIL  -- reports traced funs
+$reportSpadTrace := nil  -- reports traced funs
 
-$optionAlist := NIL
+$optionAlist := nil
 
-$tracedMapSignatures := NIL
+$tracedMapSignatures := nil
 
 $traceOptionList == '(
     after _
@@ -70,7 +70,7 @@ $traceOptionList == '(
     )
 
 
-$lastUntraced := NIL
+$lastUntraced := nil
 
 SETLETPRINTFLAG x == x
 
@@ -83,27 +83,27 @@ traceSpad2Cmd l ==
   traceReply()
 
 trace1 l ==
-  $traceNoisely: local := NIL
+  $traceNoisely: local := nil
   if hasOption($options,'nonquietly) then $traceNoisely := true
   hasOption($options,'off) =>
     (ops := hasOption($options,'ops)) or
       (lops := hasOption($options,'local)) =>
-        null l => throwKeyedMsg("S2IT0019",NIL)
+        null l => throwKeyedMsg("S2IT0019",nil)
         constructor := unabbrev
           atom l => l
           null rest l =>
             atom first l => first l
             first first l
-          NIL
-        not(isFunctor constructor) => throwKeyedMsg("S2IT0020",NIL)
+          nil
+        not(isFunctor constructor) => throwKeyedMsg("S2IT0020",nil)
         if ops then
           ops := getTraceOption ops
-          NIL
+          nil
         if lops then
           lops := rest getTraceOption lops
           untraceDomainLocalOps(constructor,lops)
     (1 < # $options) and not hasOption($options,'nonquietly) =>
-      throwKeyedMsg("S2IT0021",NIL)
+      throwKeyedMsg("S2IT0021",nil)
     untrace l
   hasOption($options,'stats) =>
     (1 < # $options) =>
@@ -121,7 +121,7 @@ trace1 l ==
     resetSpacers()
     resetTimers()
     resetCounters()
-    throwKeyedMsg("S2IT0002",NIL)
+    throwKeyedMsg("S2IT0002",nil)
   a:= hasOption($options,'restore) =>
     null(oldL:= $lastUntraced) => nil
     newOptions:= remove($options,a)
@@ -140,7 +140,7 @@ trace1 l ==
   argument:=
     domainList := symbolLassoc("of",optionList) =>
       symbolLAssoc("ops",optionList) =>
-        throwKeyedMsg("S2IT0004",NIL)
+        throwKeyedMsg("S2IT0004",nil)
       opList:=
         traceList => [["ops",:traceList]]
         nil
@@ -182,9 +182,9 @@ getTraceOption (x is [key,:l]) ==
   key in '(nonquietly timer nt) => x
   key='break =>
     null l => ['break,'before]
-    opts := [selectOptionLC(y,'(before after),NIL) for y in l]
+    opts := [selectOptionLC(y,'(before after),nil) for y in l]
     and/[IDENTP y for y in opts] => ['break,:opts]
-    stackTraceOptionError ["S2IT0008",NIL]
+    stackTraceOptionError ["S2IT0008",nil]
   key='restore =>
     null l => x
     stackTraceOptionError ["S2IT0009",[strconc('")",object2String key)]]
@@ -317,7 +317,7 @@ transTraceItem x ==
 
 removeTracedMapSigs untraceList ==
   for name in untraceList repeat
-    REMPROP(name,$tracedMapSignatures)
+    property(name,$tracedMapSignatures) := nil
 
 coerceTraceArgs2E(traceName,subName,args) ==
   symbolMember?(name:= subName,$mathTraceList) =>
@@ -488,14 +488,14 @@ spadTrace(domain,options) ==
 traceDomainLocalOps(dom,lops,options) ==
  sayMSG ['"  ",'"The )local option has been withdrawn"]
  sayMSG ['"  ",'"Use )ltr to trace local functions."]
- NIL
+ nil
 --  abb := abbreviate dom
 --  loadLibIfNotLoaded abb
 --  actualLops := getLocalOpsFromLisplib abb
 --  null actualLops =>
 --    sayMSG ['"  ",:bright abb,'"has no local functions to trace."]
 --  lops = 'all => _/TRACE_,1(actualLops,options)
---  l := NIL
+--  l := nil
 --  for lop in lops repeat
 --    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
 --    not symbolMember?(internalName,actualLops) =>
@@ -508,14 +508,14 @@ traceDomainLocalOps(dom,lops,options) ==
 untraceDomainLocalOps(dom,lops) ==
  abb := abbreviate dom
  sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
- NIL
+ nil
 --  lops = "all" => untraceAllDomainLocalOps(dom)
 --  abb := abbreviate dom
 --  loadLibIfNotLoaded abb
 --  actualLops := getLocalOpsFromLisplib abb
 --  null actualLops =>
 --    sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
---  l := NIL
+--  l := nil
 --  for lop in lops repeat
 --    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
 --    not symbolMember?(internalName,actualLops) =>
@@ -525,12 +525,12 @@ untraceDomainLocalOps(dom,lops) ==
 --  l => untrace l
 --  nil
 
-untraceAllDomainLocalOps(dom) == NIL
+untraceAllDomainLocalOps(dom) == nil
 --  abb := abbreviate dom
 --  actualLops := getLocalOpsFromLisplib abb
---  null (l := intersection(actualLops,_/TRACENAMES)) => NIL
---  _/UNTRACE_,1(l,NIL)
---  NIL
+--  null (l := intersection(actualLops,_/TRACENAMES)) => nil
+--  _/UNTRACE_,1(l,nil)
+--  nil
 
 traceDomainConstructor(domainConstructor,options) ==
   -- Trace all domains built with the given domain constructor,
@@ -541,7 +541,7 @@ traceDomainConstructor(domainConstructor,options) ==
   if listOfLocalOps then
     traceDomainLocalOps(domainConstructor,listOfLocalOps,
       [opt for opt in options | opt isnt ['LOCAL,:.]])
-  listOfLocalOps and not getOption("OPS",options) => NIL
+  listOfLocalOps and not getOption("OPS",options) => nil
   for [argl,.,:domain] in HGET($ConstructorCache,domainConstructor)
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
@@ -641,7 +641,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
 getAliasIfTracedMapParameter(x,currentFunction) ==
   isSharpVarWithNum x =>
     aliasList:= get(currentFunction,'alias,$InteractiveFrame) =>
-      aliasList.(STRING2PINT_-N(subString(PNAME x,1,NIL),1)-1)
+      aliasList.(STRING2PINT_-N(subString(PNAME x,1,nil),1)-1)
   x
 
 getBpiNameIfTracedMap(name) ==
@@ -667,11 +667,11 @@ getOption(opt,l) ==
 reportSpadTrace(header,[op,sig,n,:t]) ==
   null $traceNoisely => nil
   msg:= [header,'"%b",op,":",'"%d",rest sig," -> ",first sig," in slot ",n]
-  namePart:= nil --(t is (.,.,name,:.) => (" named ",name); NIL)
+  namePart:= nil --(t is (.,.,name,:.) => (" named ",name); nil)
   tracePart:=
     t is [y,:.] and not null y =>
       (y="all" => ['"%b","all",'"%d","vars"]; [" vars: ",y])
-    NIL
+    nil
   sayBrightly [:msg,:namePart,:tracePart]
 
 orderBySlotNumber l ==
@@ -823,7 +823,7 @@ breaklet(fn,vars) ==
 stupidIsSpadFunction fn ==
   -- returns true if the function pname has a semi-colon in it
   -- eventually, this will use isSpadFunction from luke boot
-  STRPOS('"_;",PNAME fn,0,NIL)
+  STRPOS('"_;",PNAME fn,0,nil)
 
 break msg ==
   condition:= MONITOR_,EVALTRAN(_/BREAKCONDITION,nil)

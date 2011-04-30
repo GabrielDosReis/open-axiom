@@ -101,7 +101,7 @@ recordAttributeDocumentation(['Attribute,att],lineno) ==
 recordDocumentation(key,lineno) ==
   recordHeaderDocumentation lineno
   u:= collectComBlock lineno
-  --record NIL to mean "there was no documentation"
+  --record nil to mean "there was no documentation"
   $maxSignatureLineNumber := lineno
   $docList := [[key,:u],:$docList]
   -- leave first of $docList alone as required by collectAndDeleteAssoc
@@ -143,7 +143,7 @@ finalizeDocumentation() ==
       signatures := [y,:signatures]
     name := first $lisplibForm
     if noHeading or signatures or attributes or unusedCommentLineNumbers then
-      sayKeyedMsg("S2CD0001",NIL)
+      sayKeyedMsg("S2CD0001",nil)
       bigcnt := 1
       if noHeading or signatures or attributes then
         sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),name])
@@ -621,13 +621,13 @@ checkIndentedLines(u, margin) ==
 newString2Words l ==
   not string? l => [l]
   m := maxIndex l
-  m = -1 => NIL
+  m = -1 => nil
   i := 0
   [w while newWordFrom(l,i,m) is [w,i]]
 
 newWordFrom(l,i,m) ==
   while i <= m and stringChar(l,i) = char " " repeat i := i + 1
-  i > m => NIL
+  i > m => nil
   buf := '""
   ch := stringChar(l,i)
   ch = $charFauxNewline => [$stringFauxNewline, i+ 1]

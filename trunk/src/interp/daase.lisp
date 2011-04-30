@@ -781,7 +781,7 @@
   (let (data table stream ignore struct)
     (declare (ignore ignore))
     (when (or (symbolp constructor)
-	      (and (eq key 'hascategory) (pairp constructor)))
+	      (and (eq key 'hascategory) (consp constructor)))
       (case key
 ; note that abbreviation, constructorkind and cosig are heavy hitters
 ; thus they occur first in the list of things to check

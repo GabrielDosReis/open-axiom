@@ -140,10 +140,10 @@
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
                      TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE))
-        (if (PAIRP FN) (SETQ FN (QCAR FN)))
+        (if (CONSP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
           ;; $FUNCTION is freely set in getFunctionSourceFile
-        (IF (PAIRP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
+        (IF (CONSP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
         (SETQ FN $FUNCTION)
         (SETQ /FN $FUNCTION)
    LOOP (SETQ SOURCEFILES
@@ -297,7 +297,7 @@
       (RETURN (LIST /FN)) ) )
  
 (DEFUN FUNLOC (func &aux file)
-  (if (PAIRP func) (SETQ func (CAR func)))
+  (if (CONSP func) (SETQ func (CAR func)))
   (setq file (ifcar (findtag func)))
   (if file (list (pathname-name file) (pathname-type file) func)
     nil))

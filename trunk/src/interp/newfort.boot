@@ -86,8 +86,8 @@ newFortranTempVar() ==
 fortranCleanUp l ==
   -- takes reversed list and cleans up a bit, putting it in
   -- correct order
-  oldTok := NIL
-  m := NIL
+  oldTok := nil
+  m := nil
   for e in l repeat
     if not (oldTok = '"-" and e = '"+") then m := [e,:m]
     oldTok := e
@@ -166,7 +166,7 @@ exp2FortOptimize e ==
   --   0         just extract arrays
   --   1         extract common subexpressions
   --   2         try to optimize computing of powers
-  $exprStack : local := NIL
+  $exprStack : local := nil
   atom e => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
@@ -179,10 +179,10 @@ exp2FortOptimize e ==
 
  
 exp2FortOptimizeCS e ==
-  $fortCsList : local := NIL
+  $fortCsList : local := nil
   $fortCsHash : local := hashTable 'EQ
-  $fortCsExprStack : local := NIL
-  $fortCsFuncStack : local := NIL
+  $fortCsExprStack : local := nil
+  $fortCsFuncStack : local := nil
   f := exp2FortOptimizeCS1 e
   reverse! [f,:$fortCsList]
  
@@ -232,12 +232,12 @@ exp2FortOptimizeCS1 e ==
       $fortCsFuncStack := rest $fortCsFuncStack
       $fortCsExprStack := rest $fortCsExprStack
     g := rest f
-    -- check to see of we have an non-NIL atomic CDR
+    -- check to see of we have an non-nil atomic CDR
     g and atom g =>
       pushCsStacks(f,'CDR)
       f.rest := exp2FortOptimizeCS1 g
       popCsStacks(0)
-      f := NIL
+      f := nil
     f := g
 
   object2Identifier first e in '(ROW AGGLST) => e
@@ -245,7 +245,7 @@ exp2FortOptimizeCS1 e ==
   -- see if we have already seen this expression
   n := HGET($fortCsHash,e)
   null n =>
-    n := VECTOR(1,NIL,$fortCsExprStack,$fortCsFuncStack)
+    n := VECTOR(1,nil,$fortCsExprStack,$fortCsFuncStack)
     HPUT($fortCsHash,e,n)
     e
   beenHere(e,n)
@@ -268,7 +268,7 @@ exp2FortOptimizeArray e ==
   op1 = 'MATRIX =>
     -- var := newFortranTempVar()
     var := $fortName
-    -- args looks like [NIL,[ROW,...],[ROW,...]]
+    -- args looks like [nil,[ROW,...],[ROW,...]]
     $exprStack := [[op,var,:exp2FortOptimizeArray args],:$exprStack]
     var
   [exp2FortOptimizeArray op,:exp2FortOptimizeArray args]
@@ -283,8 +283,8 @@ fortran2Lines f ==
  
   -- collect strings up to first %l or end of list. Then feed to
   -- fortran2Lines1.
-  fs := NIL
-  lines := NIL
+  fs := nil
+  lines := nil
   while f repeat
     while f and (ff := first(f)) ~= '"%l" repeat
       fs := [ff,:fs]
@@ -299,7 +299,7 @@ fortran2Lines1 f ==
   -- return: a reverse list of FORTRAN lines
   normPref := makeString $fortIndent
   contPref := strconc("     &",makeString($fortIndent-6))
-  lines := NIL
+  lines := nil
   ll := $fortIndent
   while f repeat
     ok := true
@@ -357,7 +357,7 @@ fortexp0 x ==
   f := expression2Fortran x
   p := position('"%l",f)
   p < 0 => f
-  l := NIL
+  l := nil
   while p < 0 repeat
     [t,:f] := f
     l := [t,:l]
@@ -467,13 +467,13 @@ exp2FortSpecial(op,args,nargs) ==
         $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
     fortError1 [op,:args]
   op in ["CONCAT","CONCATB"] =>
-    nargs = 0 => NIL
+    nargs = 0 => nil
     nargs = 1 => fortPre1 first args
     nargs = 2 and member(second args, ["!",'"!"]) =>
       mkFortFn("FACTORIAL",[first args],1)
     fortError1 [op,:args]
   member(op, ['"MATRIX","MATRIX"]) =>
-    args is [var, =NIL,:rows] =>
+    args is [var, =nil,:rows] =>
       var := object2String var
       nrows := #rows - 1
       ncols := #(rest first rows) - 1

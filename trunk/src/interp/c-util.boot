@@ -380,7 +380,7 @@ intersectionContour(c,c') ==
       for u in getDomainsInScope $e repeat
         if u is ["Union",:u'] and (and/[listMember?(v,u') for v in rest m]) then
           return m
-        --this loop will return NIL if not satisfied
+        --this loop will return nil if not satisfied
  
 addContour(c,E is [cur,:tail]) ==
   [append!(fn(c,E),cur),:tail] where
@@ -1133,7 +1133,7 @@ getFunctionReplacement name ==
 
 ++ remove any replacement info possibly associated with `name'.
 clearReplacement name ==
-  REMPROP(name,"SPADreplace")
+  property(name,"SPADreplace") := nil
 
 ++ Register the inlinable form of a function.
 registerFunctionReplacement(name,body) ==

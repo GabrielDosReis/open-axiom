@@ -571,7 +571,7 @@ NRTcheckVector domainShell ==
   for i in $NRTbase..maxIndex domainShell repeat
 --Vector elements can be one of
 -- (a) T           -- item was marked
--- (b) NIL         -- ???
+-- (b) nil         -- ???
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
     v := vectorRef(domainShell,i)
@@ -624,9 +624,9 @@ NRTsetVector4a(sig,form,cond) ==
 NRTmakeSlot1Info() ==
 -- 4 cases:
 -- a:T == b add c  --- slot1 directory has #s for entries defined in c
--- a:T == b        --- slot1 has all slot #s = NIL (see compFunctorBody)
+-- a:T == b        --- slot1 has all slot #s = nil (see compFunctorBody)
 -- a == b add c    --- not allowed (line 7 of getTargetFromRhs)
--- a == b          --- $NRTderivedTargetIfTrue = true; set directory to NIL
+-- a == b          --- $NRTderivedTargetIfTrue = true; set directory to nil
   pairlis :=
     $insideCategoryPackageIfTrue =>
       [:argl,dollarName] := rest $form

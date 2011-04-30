@@ -190,10 +190,10 @@ incHandleMessage(xl) ==
   inclHandleBug(incPos xl.0, xl.1.0)
  
 xlOK(eb, str, lno, ufo)  ==
-  [incLine(eb, str, -1, lno, ufo), [NIL, "none"]]
+  [incLine(eb, str, -1, lno, ufo), [nil, "none"]]
  
 xlOK1(eb, str,str1, lno, ufo)  ==
-  [incLine1(eb, str,str1, -1, lno, ufo), [NIL, "none"]]
+  [incLine1(eb, str,str1, -1, lno, ufo), [nil, "none"]]
  
 incLine1(eb, str,str1, gno, lno, ufo) ==
   ln := lnCreate(eb,str,gno,lno,ufo)
@@ -201,7 +201,7 @@ incLine1(eb, str,str1, gno, lno, ufo) ==
 
 xlSkip(eb, str, lno, ufo) ==
   str := strconc('"-- Omitting:", str)
-  [incLine(eb, str, -1, lno, ufo), [NIL, "none"]]
+  [incLine(eb, str, -1, lno, ufo), [nil, "none"]]
  
 xlMsg(eb, str, lno, ufo, mess) ==
   [incLine(eb, str, -1, lno, ufo), mess]

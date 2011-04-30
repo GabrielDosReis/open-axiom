@@ -46,7 +46,7 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP  (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (RETURN (QCDR H)) )
         ( (|member|
             (SETQ I (QCAR (RESETQ LIST-OF-ITEMS-1 (QCDR LIST-OF-ITEMS-1))))
@@ -65,12 +65,12 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP  (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (RETURN (QCDR H)) )
-        ( (MEMQ
+        ( (|symbolMember?|
             (SETQ I (QCAR (RESETQ LIST-OF-ITEMS-1 (QCDR LIST-OF-ITEMS-1))))
             (QCDR H)) )
-        ( (MEMQ I LIST-OF-ITEMS-2)
+        ( (|symbolMember?| I LIST-OF-ITEMS-2)
           (QRPLACD V (SETQ V (CONS I NIL))) ) )
       (GO LP) ) )
 
@@ -84,9 +84,9 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP1 (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (COND
-            ( (PAIRP LIST-OF-ITEMS-2)
+            ( (CONSP LIST-OF-ITEMS-2)
               (SETQ LIST-OF-ITEMS-1 (RESETQ LIST-OF-ITEMS-2 NIL)) )
             ( 'T
               (RETURN (QCDR H)) ) ) )
@@ -107,14 +107,14 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP1 (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (COND
-            ( (PAIRP LIST-OF-ITEMS-2)
+            ( (CONSP LIST-OF-ITEMS-2)
               (SETQ LIST-OF-ITEMS-1 (RESETQ LIST-OF-ITEMS-2 NIL)) )
             ( 'T
               (RETURN (QCDR H)) ) ) )
         ( (NOT
-            (MEMQ
+            (|symbolMember?|
               (SETQ I (QCAR (RESETQ LIST-OF-ITEMS-1 (QCDR LIST-OF-ITEMS-1))))
               (QCDR H)))
           (QRPLACD V (SETQ V (CONS I NIL))) ) )
@@ -130,7 +130,7 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP1 (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (RETURN (QCDR H)) )
         ( (|member|
             (SETQ I (QCAR (RESETQ LIST-OF-ITEMS-1 (QCDR LIST-OF-ITEMS-1))))
@@ -149,11 +149,11 @@
         ( (NOT (LISTP LIST-OF-ITEMS-2))
           (SETQ LIST-OF-ITEMS-2 (LIST LIST-OF-ITEMS-2)) ) )
   LP1 (COND
-        ( (NOT (PAIRP LIST-OF-ITEMS-1))
+        ( (NOT (CONSP LIST-OF-ITEMS-1))
           (RETURN (QCDR H)) )
-        ( (MEMQ
+        ( (|symbolMember?|
             (SETQ I (QCAR (RESETQ LIST-OF-ITEMS-1 (QCDR LIST-OF-ITEMS-1))))
             (QCDR H)) )
-        ( (NOT (MEMQ I LIST-OF-ITEMS-2))
+        ( (NOT (|symbolMember?| I LIST-OF-ITEMS-2))
           (QRPLACD V (SETQ V (CONS I NIL))) ) )
       (GO LP1) ) )

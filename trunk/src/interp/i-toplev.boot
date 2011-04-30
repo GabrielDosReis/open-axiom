@@ -45,11 +45,11 @@ $intRestart ==
 
 -- When $QuiteCommand is true Spad will not produce any output from
 --  a top level command
-$QuietCommand := NIL
+$QuietCommand := nil
 -- When $ProcessInteractiveValue is true, we don't want the value printed
 -- or recorded.
-$ProcessInteractiveValue := NIL
-$HTCompanionWindowID := NIL
+$ProcessInteractiveValue := nil
+$HTCompanionWindowID := nil
 
 ++ initialize the garbage collection timer
 statisticsInitialization() ==
@@ -85,7 +85,7 @@ start(:l) ==
   if not $ruleSetsInitialized then initializeRuleSets()
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"constructors"])
   makeConstructorsAutoLoad()
-  GCMSG(NIL)
+  GCMSG(nil)
   SETQ($IOindex,1)
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"history"])
   initHist()
@@ -101,11 +101,11 @@ start(:l) ==
     if $OLDLINE ~= 'END__UNIT
       then
         centerAndHighlight($OLDLINE,$LINELENGTH,'" ")
-        sayKeyedMsg("S2IZ0051",NIL)
-      else sayKeyedMsg("S2IZ0052",NIL)
+        sayKeyedMsg("S2IZ0051",nil)
+      else sayKeyedMsg("S2IZ0052",nil)
     SAY fillerSpaces($LINELENGTH,char "=")
     TERPRI()
-    $OLDLINE := NIL
+    $OLDLINE := nil
   $superHash := hashTable 'EQUAL
   if null l then runspad()
   'EndOfSpad
@@ -116,7 +116,7 @@ readSpadProfileIfThere() ==
   MAKE_-INPUT_-FILENAME file =>
     SETQ(_/EDITFILE,file)
     _/RQ ()
-  NIL
+  nil
 
 --% Parser Output --> Interpreter
 
@@ -128,18 +128,18 @@ processInteractive(form, posnForm) ==
   initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
 
   $op: local:= (form is [op,:.] => op; form) --name of operator
-  $Coerce: local := NIL
+  $Coerce: local := nil
   $compErrorMessageStack: local := nil
-  $freeVars : local := NIL
-  $mapList:local := NIL            --list of maps being type analyzed
-  $compilingMap:local:= NIL        --true when compiling a map
-  $compilingLoop:local:= NIL       --true when compiling a loop body
-  $interpOnly: local := NIL        --true when in interpret only mode
-  $whereCacheList: local := NIL    --maps compiled because of where
+  $freeVars : local := nil
+  $mapList:local := nil            --list of maps being type analyzed
+  $compilingMap:local:= nil        --true when compiling a map
+  $compilingLoop:local:= nil       --true when compiling a loop body
+  $interpOnly: local := nil        --true when in interpret only mode
+  $whereCacheList: local := nil    --maps compiled because of where
   $StreamFrame: local := nil       --used in printing streams
-  $declaredMode: local := NIL      --Weak type propagation for symbols
-  $localVars:local := NIL          --list of local variables in function
-  $analyzingMapList:local := NIL   --names of maps currently being
+  $declaredMode: local := nil      --Weak type propagation for symbols
+  $localVars:local := nil          --list of local variables in function
+  $analyzingMapList:local := nil   --names of maps currently being
                                    --analyzed
   $lastLineInSEQ: local := true    --see evalIF and friends
   $instantCoerceCount: local := 0
@@ -148,9 +148,9 @@ processInteractive(form, posnForm) ==
   $defaultFortVar:= 'X             --default FORTRAN variable name
   $fortVar : local :=              --variable name for FORTRAN output
      $defaultFortVar
-  $minivector: local := NIL
-  $domPvar: local := NIL
-  $inRetract: local := NIL
+  $minivector: local := nil
+  $domPvar: local := nil
+  $inRetract: local := nil
   object := processInteractive1(form, posnForm)
   --object := ERRORSET(['processInteractive1,LIST('QUOTE,form),['QUOTE,posnForm]],'t,'t)
   if not($ProcessInteractiveValue) then
