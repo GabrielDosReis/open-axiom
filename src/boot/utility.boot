@@ -35,7 +35,7 @@ namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append!, copyList, substitute, substitute!, setDifference,
-  applySubst)
+  applySubst, applySubst!,remove)
 
 --% membership operators
 
@@ -164,14 +164,21 @@ substitute(y,x,s) ==
   s
   
 applySubst(sl,t) ==
-  symbol? t =>
-    p := assocSymbol(t,sl) => rest p
-    t
   cons? t =>
     hd := applySubst(sl,first t)
     tl := applySubst(sl,rest t)
     sameObject?(hd,first t) and sameObject?(tl,rest t) => t
     [hd,:tl]
+  symbol? t and (p := assocSymbol(t,sl)) => rest p
+  t
+
+applySubst!(sl,t) ==
+  cons? t =>
+    hd := applySubst!(sl,first t)
+    tl := applySubst!(sl,rest t)
+    t.first := hd
+    t.rest := tl
+  symbol? t and (p := assocSymbol(t,sl)) => rest p
   t
 
 --% set operations
@@ -184,3 +191,37 @@ setDifference(x,y) ==
     p.rest := [a]
     p := rest p
   rest l
+
+--% removal
+
+removeSymbol(l,x) ==
+  before := nil
+  l' := l
+  repeat
+    not cons? l' => return l
+    [y,:l'] := l'
+    symbolEq?(x,y) => return append!(reverse! before,l')
+    before := [y,:before]
+
+removeScalar(l,x) ==
+  before := nil
+  l' := l
+  repeat
+    not cons? l' => return l
+    [y,:l'] := l'
+    scalarEq?(x,y) => return append!(reverse! before,l')
+    before := [y,:before]
+
+removeValue(l,x) ==
+  before := nil
+  l' := l
+  repeat
+    not cons? l' => return l
+    [y,:l'] := l'
+    valueEq?(x,y) => return append!(reverse! before,l')
+    before := [y,:before]
+
+remove(l,x) ==
+  symbol? x => removeSymbol(l,x)
+  char? x or integer? x => removeScalar(l,x)
+  removeValue(l,x)

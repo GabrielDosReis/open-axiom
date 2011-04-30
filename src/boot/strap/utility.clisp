@@ -8,7 +8,7 @@
 (EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
              |scalarMember?| |listMember?| |reverse| |reverse!|
              |lastNode| |append!| |copyList| |substitute| |substitute!|
-             |setDifference| |applySubst|))
+             |setDifference| |applySubst| |applySubst!| |remove|))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -155,18 +155,27 @@
         (T |s|)))))
 
 (DEFUN |applySubst| (|sl| |t|)
-  (PROG (|tl| |hd| |p|)
+  (PROG (|p| |tl| |hd|)
     (RETURN
       (COND
-        ((SYMBOLP |t|)
-         (COND
-           ((SETQ |p| (|assocSymbol| |t| |sl|)) (CDR |p|))
-           (T |t|)))
         ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
          (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
          (COND
            ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
            (T (CONS |hd| |tl|))))
+        ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|)))
+         (CDR |p|))
+        (T |t|)))))
+
+(DEFUN |applySubst!| (|sl| |t|)
+  (PROG (|p| |tl| |hd|)
+    (RETURN
+      (COND
+        ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
+         (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
+         (RPLACD |t| |tl|))
+        ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|)))
+         (CDR |p|))
         (T |t|)))))
 
 (DEFUN |setDifference| (|x| |y|)
@@ -188,4 +197,58 @@
                            (SETQ |p| (CDR |p|))))))
                (SETQ |bfVar#1| (CDR |bfVar#1|))))
            (CDR |l|))))))
+
+(DEFUN |removeSymbol| (|l| |x|)
+  (PROG (|y| |LETTMP#1| |l'| |before|)
+    (RETURN
+      (PROGN
+        (SETQ |before| NIL)
+        (SETQ |l'| |l|)
+        (LOOP
+          (COND
+            ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+               (SETQ |l'| (CDR |LETTMP#1|))
+               (COND
+                 ((EQ |x| |y|)
+                  (RETURN (|append!| (|reverse!| |before|) |l'|)))
+                 (T (SETQ |before| (CONS |y| |before|)))))))))))
+
+(DEFUN |removeScalar| (|l| |x|)
+  (PROG (|y| |LETTMP#1| |l'| |before|)
+    (RETURN
+      (PROGN
+        (SETQ |before| NIL)
+        (SETQ |l'| |l|)
+        (LOOP
+          (COND
+            ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+               (SETQ |l'| (CDR |LETTMP#1|))
+               (COND
+                 ((EQL |x| |y|)
+                  (RETURN (|append!| (|reverse!| |before|) |l'|)))
+                 (T (SETQ |before| (CONS |y| |before|)))))))))))
+
+(DEFUN |removeValue| (|l| |x|)
+  (PROG (|y| |LETTMP#1| |l'| |before|)
+    (RETURN
+      (PROGN
+        (SETQ |before| NIL)
+        (SETQ |l'| |l|)
+        (LOOP
+          (COND
+            ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+               (SETQ |l'| (CDR |LETTMP#1|))
+               (COND
+                 ((EQUAL |x| |y|)
+                  (RETURN (|append!| (|reverse!| |before|) |l'|)))
+                 (T (SETQ |before| (CONS |y| |before|)))))))))))
+
+(DEFUN |remove| (|l| |x|)
+  (COND
+    ((SYMBOLP |x|) (|removeSymbol| |l| |x|))
+    ((OR (CHARACTERP |x|) (INTEGERP |x|)) (|removeScalar| |l| |x|))
+    (T (|removeValue| |l| |x|))))
 

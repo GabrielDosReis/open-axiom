@@ -1362,7 +1362,7 @@
                        (SETQ |bfVar#109| (CDR |bfVar#109|))))
                   (SETQ |bfVar#106| (CDR |bfVar#106|))
                   (SETQ |bfVar#107| (CDR |bfVar#107|)))))
-        (SETQ |body| (SUBLIS |sb| |body|))
+        (SETQ |body| (|applySubst| |sb| |body|))
         (SETQ |sb2|
               (LET ((|bfVar#112| NIL) (|bfVar#113| NIL)
                     (|bfVar#110| |sgargl|) (|i| NIL)
@@ -1384,7 +1384,8 @@
                   (SETQ |bfVar#110| (CDR |bfVar#110|))
                   (SETQ |bfVar#111| (CDR |bfVar#111|)))))
         (SETQ |body|
-              (LIST 'SUBLIS (CONS 'LIST |sb2|) (LIST 'QUOTE |body|)))
+              (LIST '|applySubst| (CONS 'LIST |sb2|)
+                    (LIST 'QUOTE |body|)))
         (SETQ |lamex| (LIST 'MLAMBDA |gargl| |body|))
         (SETQ |def| (LIST |op| |lamex|))
         (CONS (|shoeComp| |def|)
