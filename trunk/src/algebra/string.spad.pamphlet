@@ -301,9 +301,9 @@ IndexedString(mn:Integer): Export == Implementation where
     c:	Character
     cc: CharacterClass
 
---  new n		   == MAKE_-FULL_-CVEC(n, space$C)$Lisp
-    new(n, c)		   == MAKE_-FULL_-CVEC(n, c)$Lisp
-    empty()		   == MAKE_-FULL_-CVEC(0@I)$Lisp
+--  new n		   == makeString(n, space$C)$Lisp
+    new(n, c)		   == makeString(n, c)$Lisp
+    empty()		   == makeString(0@I)$Lisp
     empty?(s)		   == %strlength s = 0
     #s			   == %strlength s
     s = t		   == %streq(s,t)

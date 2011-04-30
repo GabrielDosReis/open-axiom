@@ -52,7 +52,8 @@
            (COND
              ((NULL |$n|) T)
              ((CHAR= (SCHAR |$ln| |$n|) |shoeTAB|)
-              (SETQ |a| (MAKE-FULL-CVEC (- 7 (REM |$n| 8)) " "))
+              (SETQ |a|
+                    (|makeString| (- 7 (REM |$n| 8)) (|char| '| |)))
               (SETF (ELT |$ln| |$n|) (|char| '| |))
               (SETQ |$ln| (CONCAT |a| |$ln|))
               (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))

@@ -51,10 +51,10 @@ printNamedStatsByProperty(listofnames, prop) ==
     strname := STRINGIMAGE name
     strval  := STRINGIMAGE n
     sayBrightly concat(bright strname,
-      fillerSpaces(70-#strname-#strval,'"."),bright strval)
-  sayBrightly bright fillerSpaces(72,'"-")
+      fillerSpaces(70-#strname-#strval,char "."),bright strval)
+  sayBrightly bright fillerSpaces(72,char "-")
   sayBrightly concat(bright '"Total",
-    fillerSpaces(65-# STRINGIMAGE total,'"."),bright STRINGIMAGE total)
+    fillerSpaces(65-# STRINGIMAGE total,char "."),bright STRINGIMAGE total)
  
 makeLongStatStringByProperty _
  (listofnames, listofclasses, prop, classprop, units, flag) ==

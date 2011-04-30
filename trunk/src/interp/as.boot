@@ -44,9 +44,9 @@ $asyPrint := false
 asList() ==
   removeFile '"temp.text"
   OBEY '"ls as/*.asy > temp.text"
-  instream := OPEN '"temp.text"
+  instream := inputTextFile '"temp.text"
   lines := [READLINE instream while not EOFP instream]
-  CLOSE instream
+  closeFile instream
   lines
 
 asAll lines ==
@@ -416,7 +416,7 @@ asyAncestorList x == [asyAncestors y for y in x]
 asytran fn ==
 --put operations into table format for browser:
 --    <sig pred origin         exposed? comments>
-  inStream := OPEN fn
+  inStream := inputTextFile fn
   sayBrightly ['"   Reading ",fn]
   u := VMREAD inStream
   $niladics := mkNiladics u
@@ -428,7 +428,7 @@ asytran fn ==
     asytranDeclaration(d,'(top),nil,false)
     if null name then hohohoho()
     HPUT($docHash,name,$docHashLocal)
-  CLOSE inStream
+  closeFile inStream
   'done
 
 mkNiladics u ==

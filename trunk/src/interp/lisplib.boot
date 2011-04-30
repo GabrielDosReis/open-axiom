@@ -488,7 +488,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
  
 compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
-  sayMSG fillerSpaces(72,'"-")
+  sayMSG fillerSpaces(72,char "-")
   $LISPLIB: local := 'T
   $op: local := op
   $lisplibAttributes: local := NIL
@@ -533,7 +533,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
   RPACKFILE filearg
   FRESH_-LINE $algebraOutputStream
-  sayMSG fillerSpaces(72,'"-")
+  sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor(op,libName)
   LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
@@ -809,7 +809,7 @@ getIndexPathname: %String -> %String
 getIndexPathname dir ==
   strconc(ensureTrailingSlash dir, $IndexFilename)
 
-getAllIndexPathnames: %String -> %List %Form
+getAllIndexPathnames: %String -> %List %Thing
 getAllIndexPathnames dir ==
   -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
   -- rest of everybody else' semantics.  Namely, GCL would return a
@@ -822,7 +822,7 @@ getAllIndexPathnames dir ==
 )endif
   
 
-getAllAldorObjectFiles: %String -> %List %Form
+getAllAldorObjectFiles: %String -> %List %Thing
 getAllAldorObjectFiles dir ==
   asys := DIRECTORY strconc(dir,'"*.asy")
   asos := DIRECTORY strconc(dir,'"*.ao")
@@ -838,19 +838,20 @@ getAllAldorObjectFiles dir ==
 ++ in directory designated by 'dir'.
 openIndexFileIfPresent: %String -> %Thing
 openIndexFileIfPresent dir ==
-  OPEN(getIndexPathname dir,KEYWORD::DIRECTION,KEYWORD::INPUT,
-    KEYWORD::IF_-DOES_-NOT_-EXIST,nil)
+  inputTextFile getIndexPathname dir
 
 ++
 getIndexTable: %String -> %Thing
 getIndexTable dir ==
   indexFile := getIndexPathname dir
   existingFile? indexFile =>
-    WITH_-OPEN_-FILE(stream indexFile, 
-      GET_-INDEX_-TABLE_-FROM_-STREAM stream)
+    try
+      stream := inputTextFile indexFile
+      GET_-INDEX_-TABLE_-FROM_-STREAM stream
+    finally (if stream ~= nil then closeFile stream)
   -- index file doesn't exist but mark this directory as a Lisplib.
-  WITH_-OPEN_-FILE(stream(indexFile,KEYWORD::DIRECTION,KEYWORD::OUTPUT),
-    nil)
+  try stream := outputTextFile indexFile
+  finally (if stream ~= nil then closeFile stream)
 
 --%
 compDefineExports(form,ops,sig,e) ==

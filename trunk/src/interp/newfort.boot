@@ -297,9 +297,8 @@ fortran2Lines f ==
 fortran2Lines1 f ==
   -- f is a list of strings making up 1 FORTRAN statement
   -- return: a reverse list of FORTRAN lines
-  normPref := MAKE_-STRING($fortIndent)
-  --contPref := strconc(MAKE_-STRING($fortIndent-1),"&")
-  contPref := strconc("     &",MAKE_-STRING($fortIndent-6))
+  normPref := makeString $fortIndent
+  contPref := strconc("     &",makeString($fortIndent-6))
   lines := NIL
   ll := $fortIndent
   while f repeat
@@ -850,10 +849,24 @@ fix2FortranFloat e ==
 isFloat e ==
   FLOATP(e) or string?(e) and FIND(char ".",e)
  
+removeCharFromString(c,s) ==
+  -- find c's position in s.
+  k := nil
+  for i in 0..maxIndex s while k = nil repeat
+    stringChar(s,i) = c => k := i
+  k = nil => s
+  -- make a copy without c.
+  s' := makeString(#s - 1)
+  for i in 0..(k-1) repeat
+    stringChar(s',i) := stringChar(s,i)
+  for i in k..maxIndex s' repeat
+    stringChar(s',i) := stringChar(s,i+1)
+  s'
+
 checkPrecision e ==
   -- Do we have a string?
   string? e and codePoint stringChar(e,0) = 34 => e
-  e := delete(char " ",STRINGIMAGE e)
+  e := removeCharFromString(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
     iPart := subSequence(e,0,(period:=POSITION(char ".",e))+1)
     expt  := if ePos := POSITION(char "E",e) then subSequence(e,ePos+1) else "0"

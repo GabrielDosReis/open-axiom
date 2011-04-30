@@ -165,8 +165,8 @@
   (COND
     ((AND (|%hasFeature| :CLISP)
           (|symbolMember?| |package| '(EXT FFI)))
-     (FIND-SYMBOL (PNAME |name|) |package|))
-    (T (INTERN (PNAME |name|) |package|))))
+     (FIND-SYMBOL (SYMBOL-NAME |name|) |package|))
+    (T (INTERN (SYMBOL-NAME |name|) |package|))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfSymbol|))
 
@@ -215,7 +215,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
 
 (DEFUN |bfBeginsDollar| (|x|)
-  (CHAR= (SCHAR (PNAME |x|) 0) (|char| '$)))
+  (CHAR= (SCHAR (SYMBOL-NAME |x|) 0) (|char| '$)))
 
 (DEFUN |compFluid| (|id|) (LIST 'FLUID |id|))
 
@@ -721,8 +721,8 @@
                    (SETQ |opassoc| (LIST (CONS |op| |body|)))
                    (LIST |opassoc| NIL NIL))
                   (T (SETQ |op1|
-                           (INTERN (CONCAT (PNAME |$op|) ","
-                                    (PNAME |op|))))
+                           (INTERN (CONCAT (SYMBOL-NAME |$op|) ","
+                                    (SYMBOL-NAME |op|))))
                      (SETQ |opassoc| (LIST (CONS |op| |op1|)))
                      (SETQ |defstack|
                            (LIST (LIST |op1| |args| |body|)))
@@ -1453,7 +1453,7 @@
     (RETURN
       (PROGN
         (SETQ |margs| (|bfGenSymbol|))
-        (SETQ |innerfunc| (INTERN (CONCAT (PNAME |op|) '|,LAM|)))
+        (SETQ |innerfunc| (INTERN (CONCAT (SYMBOL-NAME |op|) '|,LAM|)))
         (LIST (LIST |innerfunc| (LIST 'LAMBDA |args| |body|))
               (LIST |op|
                     (LIST 'MLAMBDA (LIST '&REST |margs|)
@@ -2099,7 +2099,7 @@
   (PROG (|computeFunction| |auxfn|)
     (RETURN
       (PROGN
-        (SETQ |auxfn| (INTERN (CONCAT (PNAME |op|) ";")))
+        (SETQ |auxfn| (INTERN (CONCAT (SYMBOL-NAME |op|) ";")))
         (SETQ |computeFunction|
               (CONS 'DEFUN (CONS |auxfn| (CONS |argl| |body|))))
         (|bfTuple| (CONS |computeFunction| (|bfMain| |auxfn| |op|)))))))
@@ -2121,7 +2121,7 @@
         (SETQ |arg| (LIST '&REST |g1|))
         (SETQ |computeValue|
               (LIST 'APPLY (LIST 'FUNCTION |auxfn|) |g1|))
-        (SETQ |cacheName| (INTERN (CONCAT (PNAME |op|) ";AL")))
+        (SETQ |cacheName| (INTERN (CONCAT (SYMBOL-NAME |op|) ";AL")))
         (SETQ |g2| (|bfGenSymbol|))
         (SETQ |getCode| (LIST 'GETHASH |g1| |cacheName|))
         (SETQ |secondPredPair| (LIST (LIST 'SETQ |g2| |getCode|) |g2|))
@@ -2442,11 +2442,11 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Symbol|) |coreSymbol|))
 
-(DEFUN |coreSymbol| (|s|) (INTERN (PNAME |s|) '|AxiomCore|))
+(DEFUN |coreSymbol| (|s|) (INTERN (SYMBOL-NAME |s|) '|AxiomCore|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Symbol|) |bootSymbol|))
 
-(DEFUN |bootSymbol| (|s|) (INTERN (PNAME |s|)))
+(DEFUN |bootSymbol| (|s|) (INTERN (SYMBOL-NAME |s|)))
 
 (DEFUN |unknownNativeTypeError| (|t|)
   (|fatalError| (CONCAT "unsupported native type: " (PNAME |t|))))
@@ -2647,8 +2647,8 @@
                     (COND ((NOT |bfVar#161|) (RETURN NIL)))))
                (SETQ |bfVar#160| (CDR |bfVar#160|))))
            (LIST (LIST 'DEFENTRY |op| |argtypes|
-                       (LIST |rettype| (PNAME |op'|)))))
-          (T (SETQ |cop| (CONCAT (PNAME |op'|) "_stub"))
+                       (LIST |rettype| (SYMBOL-NAME |op'|)))))
+          (T (SETQ |cop| (CONCAT (SYMBOL-NAME |op'|) "_stub"))
              (SETQ |cargs|
                    (LET ((|bfVar#170| NIL) (|bfVar#171| NIL)
                          (|bfVar#169| (- (LENGTH |s|) 1)) (|i| 0))
@@ -2710,7 +2710,7 @@
                                            ((NOT (EQ |t| '|void|))
                                             "return ")
                                            (T '||))
-                                         (CONS (PNAME |op'|)
+                                         (CONS (SYMBOL-NAME |op'|)
                                           (CONS "("
                                            (APPEND
                                             (LET
@@ -2768,7 +2768,7 @@
   (PROG (|ISTMP#3| |ISTMP#2| |ISTMP#1|)
     (RETURN
       (COND
-        ((MEMBER |x| |$NativeSimpleDataTypes|) (PNAME |x|))
+        ((MEMBER |x| |$NativeSimpleDataTypes|) (SYMBOL-NAME |x|))
         ((EQ |x| '|void|) "void")
         ((EQ |x| '|string|) "char*")
         ((AND (CONSP |x|)
@@ -2834,7 +2834,7 @@
 (DEFUN |genECLnativeTranslation,callTemplate| (|op| |n| |s|)
   (LET ((|bfVar#177| "")
         (|bfVar#179|
-            (CONS (PNAME |op|)
+            (CONS (SYMBOL-NAME |op|)
                   (CONS "("
                         (APPEND (LET ((|bfVar#175| NIL)
                                       (|bfVar#176| NIL)
@@ -2928,7 +2928,7 @@
                     (T (RPLACD |bfVar#182| #0#)
                        (SETQ |bfVar#182| (CDR |bfVar#182|))))
                   (SETQ |bfVar#180| (CDR |bfVar#180|)))))
-        (SETQ |n| (INTERN (CONCAT (PNAME |op|) "%clisp-hack")))
+        (SETQ |n| (INTERN (CONCAT (SYMBOL-NAME |op|) "%clisp-hack")))
         (SETQ |parms|
               (LET ((|bfVar#184| NIL) (|bfVar#185| NIL)
                     (|bfVar#183| |s|) (|x| NIL))
@@ -2965,7 +2965,7 @@
             (SETQ |bfVar#188| (CDR |bfVar#188|))))
         (SETQ |foreignDecl|
               (LIST (|bfColonColon| 'FFI 'DEF-CALL-OUT) |n|
-                    (LIST :NAME (PNAME |op'|))
+                    (LIST :NAME (SYMBOL-NAME |op'|))
                     (CONS :ARGUMENTS
                           (LET ((|bfVar#191| NIL) (|bfVar#192| NIL)
                                 (|bfVar#189| |argtypes|) (|x| NIL)
@@ -3215,8 +3215,9 @@
             (SETQ |bfVar#213| (CDR |bfVar#213|))))
         (SETQ |op'|
               (COND
-                ((|%hasFeature| :WIN32) (CONCAT "_" (PNAME |op'|)))
-                (T (PNAME |op'|))))
+                ((|%hasFeature| :WIN32)
+                 (CONCAT "_" (SYMBOL-NAME |op'|)))
+                (T (SYMBOL-NAME |op'|))))
         (COND
           ((NULL |unstableArgs|)
            (LIST (LIST 'DEFUN |op| |args|

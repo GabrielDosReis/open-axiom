@@ -121,8 +121,8 @@ quote x ==
 
 bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
-    $GenVarCounter := $GenVarCounter+1
-    makeSymbol strconc('"bfVar#",toString $GenVarCounter)
+  $GenVarCounter := $GenVarCounter+1
+  makeSymbol strconc('"bfVar#",toString $GenVarCounter)
 
 bfColon: %Thing -> %Form
 bfColon x== 
@@ -131,13 +131,13 @@ bfColon x==
 bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
   %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
-    FIND_-SYMBOL(PNAME name,package)
-  makeSymbol(PNAME name, package)
+    FIND_-SYMBOL(symbolName name,package)
+  makeSymbol(symbolName name, package)
 
 bfSymbol: %Thing -> %Thing 
 bfSymbol x==
-   string? x=> x
-   ['QUOTE,x]
+  string? x=> x
+  ['QUOTE,x]
 
  
 bfDot: () -> %Symbol
@@ -173,7 +173,7 @@ bfColonAppend(x,y) ==
 
 bfBeginsDollar: %Thing -> %Boolean 
 bfBeginsDollar x ==  
-  stringChar(PNAME x,0) = char "$"
+  stringChar(symbolName x,0) = char "$"
  
 compFluid id == 
   ["FLUID",id]
@@ -229,18 +229,18 @@ bfFor(bflhs,U,step) ==
   bfForTree('IN, bflhs, U)
  
 bfForTree(OP,lhs,whole)==
-         whole :=
-	   bfTupleP whole => bfMakeCons rest whole
-	   whole
-         atom lhs => bfINON [OP,lhs,whole]
-         lhs :=
-	   bfTupleP lhs => second lhs
-	   lhs
-         lhs is ["L%T",:.] =>
-             G:=second lhs
-             [:bfINON [OP,G,whole],:bfSuchthat bfIS(G,third lhs)]
-         G:=bfGenSymbol()
-         [:bfINON [OP,G,whole],:bfSuchthat bfIS(G,lhs)]
+  whole :=
+    bfTupleP whole => bfMakeCons rest whole
+    whole
+  atom lhs => bfINON [OP,lhs,whole]
+  lhs :=
+    bfTupleP lhs => second lhs
+    lhs
+  lhs is ["L%T",:.] =>
+    G := second lhs
+    [:bfINON [OP,G,whole],:bfSuchthat bfIS(G,third lhs)]
+  G := bfGenSymbol()
+  [:bfINON [OP,G,whole],:bfSuchthat bfIS(G,lhs)]
  
  
 bfSTEP(id,fst,step,lst)==
@@ -495,7 +495,7 @@ defSheepAndGoats(x)==
       argl = nil =>
 	opassoc := [[op,:body]]
 	[opassoc,[],[]]
-      op1 := makeSymbol strconc(PNAME $op,'",",PNAME op)
+      op1 := makeSymbol strconc(symbolName $op,'",",symbolName op)
       opassoc := [[op,:op1]]
       defstack := [[op1,args,body]]
       [opassoc,defstack,[]]
@@ -538,9 +538,9 @@ bfLET1(lhs,rhs) ==
   bfMKPROGN [rhs1,:let1,g]
  
 bfCONTAINED(x,y)==
-    sameObject?(x,y) => true
-    atom y=> false
-    bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
+  sameObject?(x,y) => true
+  atom y=> false
+  bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
  
 bfLET2(lhs,rhs) ==
   lhs = nil => nil
@@ -623,9 +623,9 @@ bfISApplication(op,left,right)==
   [op ,left,right]
  
 bfIS(left,right)==
-    $isGenVarCounter:local :=1
-    $inDefIS :local :=true
-    bfIS1(left,right)
+  $isGenVarCounter: local :=1
+  $inDefIS:local :=true
+  bfIS1(left,right)
  
 bfISReverse(x,a) ==
   x is ['CONS,:.] =>
@@ -713,21 +713,21 @@ bfMember(var,seq) ==
   ["MEMBER",var,seq]
   
 bfInfApplication(op,left,right)==
-   op is "EQUAL" => bfQ(left,right)
-   op is "/="    => bfNOT bfQ(left,right)
-   op is ">"     => bfLessp(right,left)
-   op is "<"     => bfLessp(left,right)
-   op is "<="    => bfNOT bfLessp(right,left)
-   op is ">="    => bfNOT bfLessp(left,right)
-   op is "OR"    => bfOR [left,right]
-   op is "AND"   => bfAND [left,right]
-   op is "IN"    => bfMember(left,right)
-   [op,left,right]
+  op is "EQUAL" => bfQ(left,right)
+  op is "/="    => bfNOT bfQ(left,right)
+  op is ">"     => bfLessp(right,left)
+  op is "<"     => bfLessp(left,right)
+  op is "<="    => bfNOT bfLessp(right,left)
+  op is ">="    => bfNOT bfLessp(left,right)
+  op is "OR"    => bfOR [left,right]
+  op is "AND"   => bfAND [left,right]
+  op is "IN"    => bfMember(left,right)
+  [op,left,right]
  
 bfNOT x==
-   x is ["NOT",a]=> a
-   x is ["NULL",a]=> a
-   ["NOT",x]
+  x is ["NOT",a]=> a
+  x is ["NULL",a]=> a
+  ["NOT",x]
  
 bfFlatten(op, x) ==
   x is [=op,:.] => rest x
@@ -814,7 +814,7 @@ bfDef1 [op,args,body] ==
  
 shoeLAM (op,args,control,body)==
   margs :=bfGenSymbol()
-  innerfunc:= makeSymbol strconc(PNAME op,",LAM")
+  innerfunc:= makeSymbol strconc(symbolName op,",LAM")
   [[innerfunc,["LAMBDA",args,body]],
      [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
                     ["WRAP",margs, ["QUOTE", control]]]]]]
@@ -989,7 +989,7 @@ bfSetelt(e,l,r)==
   bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
-  y:=symbol? sel and sel has SHOESELFUNCTION
+  y := symbol? sel and sel has SHOESELFUNCTION
   y =>
     integer? y => ["ELT",expr,y]
     [y,expr]
@@ -1081,7 +1081,7 @@ bfWhere (context,expr)==
 --    [exp,:shoeReadLispString(s,ind)]
  
 bfCompHash(op,argl,body) ==
-  auxfn:= makeSymbol strconc(PNAME op,'";")
+  auxfn:= makeSymbol strconc(symbolName op,'";")
   computeFunction:= ["DEFUN",auxfn,argl,:body]
   bfTuple [computeFunction,:bfMain(auxfn,op)]
  
@@ -1092,14 +1092,14 @@ shoeEVALANDFILEACTQ x==
   ["EVAL-WHEN", [KEYWORD::EXECUTE, KEYWORD::LOAD_-TOPLEVEL], x]
  
 bfMain(auxfn,op)==
-  g1:= bfGenSymbol()
-  arg:=["&REST",g1]
+  g1 := bfGenSymbol()
+  arg :=["&REST",g1]
   computeValue := ['APPLY,["FUNCTION",auxfn],g1]
-  cacheName:= makeSymbol strconc(PNAME op,'";AL")
+  cacheName := makeSymbol strconc(symbolName op,'";AL")
   g2:= bfGenSymbol()
-  getCode:=   ['GETHASH,g1,cacheName]
-  secondPredPair:= [['SETQ,g2,getCode],g2]
-  putCode:=   ['SETF ,getCode,computeValue]
+  getCode := ['GETHASH,g1,cacheName]
+  secondPredPair := [['SETQ,g2,getCode],g2]
+  putCode := ['SETF ,getCode,computeValue]
   thirdPredPair:= ['T,putCode]
   codeBody:= ['PROG,[g2],
                ['RETURN,['COND,secondPredPair,thirdPredPair]]]
@@ -1317,11 +1317,11 @@ isSimpleNativeType t ==
 
 coreSymbol: %Symbol -> %Symbol
 coreSymbol s ==
-  makeSymbol(PNAME s, "AxiomCore")
+  makeSymbol(symbolName s, "AxiomCore")
 
 bootSymbol: %Symbol -> %Symbol
 bootSymbol s ==
-  makeSymbol PNAME s
+  makeSymbol symbolName s
 
 
 unknownNativeTypeError t ==
@@ -1468,15 +1468,15 @@ genGCLnativeTranslation(op,s,t,op') ==
   rettype := nativeReturnType t
   -- If a simpel DEFENTRY will do, go for it
   and/[isSimpleNativeType x for x in [t,:s]] =>
-    [["DEFENTRY", op, argtypes, [rettype, PNAME op']]]
+    [["DEFENTRY", op, argtypes, [rettype, symbolName op']]]
   -- Otherwise, do it the hard way.
   [["CLINES",ccode], ["DEFENTRY", op, argtypes, [rettype, cop]]] where
-    cop := strconc(PNAME op','"__stub")
+    cop := strconc(symbolName op','"__stub")
     ccode := 
       "strconc"/[gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
 	   '") { ", (t isnt "void" => '"return "; ""),
-	     PNAME op', '"(",
+	     symbolName op', '"(",
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]
                 where cargs := [mkCArgName i for i in 0..(#s - 1)]
@@ -1485,7 +1485,7 @@ genGCLnativeTranslation(op,s,t,op') ==
       strconc(gclTypeInC first x, '" ", first a,
 	(rest x => '", "; '""))
     gclTypeInC x ==
-      x in $NativeSimpleDataTypes => PNAME x
+      x in $NativeSimpleDataTypes => symbolName x
       x is "void" => '"void"
       x is "string" => '"char*"
       x is [.,["pointer",.]] => "fixnum"
@@ -1518,7 +1518,7 @@ genECLnativeTranslation(op,s,t,op') ==
       rettype, callTemplate(op',#args,s), 
         KEYWORD::ONE_-LINER, true]]] where
 	  callTemplate(op,n,s) ==
-	    "strconc"/[PNAME op,'"(",
+	    "strconc"/[symbolName op,'"(",
 	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
 	  sharpArg(i,x) == 
 	    i = 0 => strconc('"(#0)",selectDatum x)
@@ -1554,7 +1554,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- from the same class.  Consequently, we must allocate C-storage,
   -- copy data there, pass pointers to them, and possibly copy
   -- them back.  Ugh.  
-  n := makeSymbol strconc(PNAME op, '"%clisp-hack")
+  n := makeSymbol strconc(symbolName op, '"%clisp-hack")
   parms := [gensym '"parm" for x in s]  -- parameters of the forward decl.
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
@@ -1568,7 +1568,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- parameter of non-simple datatype are described as being pointers.
   foreignDecl := 
     [bfColonColon("FFI","DEF-CALL-OUT"),n,
-      [KEYWORD::NAME,PNAME op'],
+      [KEYWORD::NAME,symbolName op'],
 	[KEYWORD::ARGUMENTS,:[[a, x] for x in argtypes for a in parms]],
 	  [KEYWORD::RETURN_-TYPE, rettype],
 	      [KEYWORD::LANGUAGE,KEYWORD::STDC]]
@@ -1623,8 +1623,8 @@ genSBCLnativeTranslation(op,s,t,op') ==
       unstableArgs := [a,:unstableArgs]
   
   op' :=
-    %hasFeature KEYWORD::WIN32 => strconc('"__",PNAME op')
-    PNAME op'
+    %hasFeature KEYWORD::WIN32 => strconc('"__",symbolName op')
+    symbolName op'
     
   unstableArgs = nil =>
     [["DEFUN",op,args,

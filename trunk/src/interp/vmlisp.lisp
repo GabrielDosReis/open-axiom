@@ -843,11 +843,6 @@
 
 (define-function 'getstr #'make-cvec)
 
-(defun make-full-cvec (sint &optional (char #\space))
-  (make-string sint :initial-element (character char)))
-
-(define-function 'getfullstr #'make-full-cvec)
-
 ; 17.2 Accessing
 
 (defun string2id-n (cvec sint)

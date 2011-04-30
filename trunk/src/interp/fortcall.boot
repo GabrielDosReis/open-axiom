@@ -567,7 +567,7 @@ prepareResults(results,args,dummies,values,decls) ==
     type := getFortranType(u,decls)
     data := [defaultValue(type,inFirstNotSecond(args,dummies),values),:data]
       where defaultValue(type,argNames,actual) ==
-        LISTP(type) and first(type)="character" => MAKE_-STRING(1)
+        LISTP(type) and first(type)="character" => makeString 1
         LISTP(type) and first(type) in ["complex","double complex"] =>
           makeVector(  makeList(
             2*apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
@@ -583,7 +583,7 @@ prepareResults(results,args,dummies,values,decls) ==
         type = "double" => longZero
         type = "double precision" => longZero
         type = "logical" => 0
-        type = "character" => MAKE_-STRING(1)
+        type = "character" => makeString 1
         type = "complex" => makeVector([shortZero,shortZero],"%SingleFloat")
         type = "double complex" => makeVector([longZero,longZero],"%DoubleFloat")
         error ['"Unrecognised Fortran type: ",type]

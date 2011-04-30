@@ -58,7 +58,7 @@ incRgen1(:z)==
         [s]:=z
         a:=shoeread_-line s
         if null a
-        then (CLOSE s;StreamNil)
+        then (closeFile s;StreamNil)
 
         else [a,:incRgen s]
  

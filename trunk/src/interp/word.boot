@@ -174,15 +174,15 @@ pickANumber(word,list) ==
   secondList:= TAKE(-halfLength,short)
   secondStartIndex:= halfLength + extra
   shortList:=
-    "append"/[[[:bright i,fillerSpaces(xx-WIDTH i,'" "),x],
-      [:bright(i+secondStartIndex),fillerSpaces(xx-WIDTH (i+halfLength),'" "),y]]
+    "append"/[[[:bright i,fillerSpaces(xx-WIDTH i,char " "),x],
+      [:bright(i+secondStartIndex),fillerSpaces(xx-WIDTH (i+halfLength),char " "),y]]
         for i in 1.. for x in firstList for y in secondList]
   say2PerLineThatFit shortList
   i:= 1 + halfLength
   if extra=1 then
-    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,'" "),list.(i-1)]
+    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,char " "),list.(i-1)]
   for x in long for i in (1+length).. repeat
-    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,'" "),x]
+    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,char " "),x]
   center80 ['"If so: type a number between",:bright 1,'"and",:bright n,"and ENTER"]
   center80 ['"Anything else means",:bright 'no]
   y := queryUser nil

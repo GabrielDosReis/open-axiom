@@ -2240,14 +2240,14 @@ loadSpad2Cmd args ==
 reportCount () ==
   centerAndHighlight(" Current Count Settings ",$LINELENGTH,specialChar 'hbar)
   SAY " "
-  sayBrightly [:bright " cache",fillerSpaces(30,'".")," ",$cacheCount]
+  sayBrightly [:bright " cache",fillerSpaces(30,char ".")," ",$cacheCount]
   if $cacheAlist then
     for [a,:b] in $cacheAlist repeat
       aPart:= linearFormatName a
       n:= sayBrightlyLength aPart
-      sayBrightly concat("     ",aPart," ",fillerSpaces(32-n,'".")," ",b)
+      sayBrightly concat("     ",aPart," ",fillerSpaces(32-n,char ".")," ",b)
   SAY " "
-  sayBrightly [:bright " stream",fillerSpaces(29,'".")," ",$streamCount]
+  sayBrightly [:bright " stream",fillerSpaces(29,char ".")," ",$streamCount]
 
 --% )library
 library args ==
@@ -2886,7 +2886,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
     if syn = '"%i" then syn := '"%i "
     wid := MAX(30 - (entryWidth syn),1)
     sayBrightly concat('"%b",prefix,syn,'"%d",
-      fillerSpaces(wid,'"."),'" ",prefix,comm)
+      fillerSpaces(wid,char "."),'" ",prefix,comm)
   sayBrightly '""
 
 whatCommands(patterns) ==

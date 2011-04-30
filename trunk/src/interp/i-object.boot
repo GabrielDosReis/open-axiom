@@ -438,8 +438,8 @@ srcPosDisplay(sp) ==
   col  := srcPosColumn sp
   dots :=
       col = 0 => '""
-      fillerSpaces(col, '".")
-  sayBrightly [fillerSpaces(#s, '" "), dots, '"^"]
+      fillerSpaces(col, char ".")
+  sayBrightly [fillerSpaces(#s, char " "), dots, '"^"]
   true
 
 

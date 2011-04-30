@@ -66,10 +66,6 @@ PNAME x ==
   char? x => charString x
   nil
 
--- close STREAM.
-shoeCLOSE stream ==
-  CLOSE stream
-
 -- error out if file is not found. 
 shoeNotFound fn == 
   coreError [fn, '" not found"]
@@ -79,7 +75,7 @@ shoeNotFound fn ==
 shoeReadLispString(s,n) ==
   l := #s
   n >= l => nil
-  readLispFromString strconc ( "(", subString(s,n,l-n) ,")")
+  readLispFromString strconc( "(", subString(s,n,l-n) ,")")
 
 -- read a line from stream
 shoeReadLine stream ==
@@ -90,7 +86,7 @@ shoeConsole line ==
   writeLine(line, _*TERMINAL_-IO_*)
  
 shoeSpaces n  ==  
-  MAKE_-FULL_-CVEC(n, '".")
+  makeString(n,char ".")
  
 
 --%

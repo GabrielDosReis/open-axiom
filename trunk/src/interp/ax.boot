@@ -73,7 +73,7 @@ makeAxFile(filename, constructors) ==
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   st := MAKE_-OUTSTREAM(filename)
   PPRINT(axForm,st)
-  CLOSE st
+  closeFile st
 
 makeAxExportForm(filename, constructors) ==
   $defaultFlag : local := false

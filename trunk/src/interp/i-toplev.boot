@@ -96,14 +96,14 @@ start(:l) ==
     readSpadProfileIfThere()
   if $displayStartMsgs then spadStartUpMsgs()
   if $OLDLINE then
-    SAY fillerSpaces($LINELENGTH,'"=")
+    SAY fillerSpaces($LINELENGTH,char "=")
     sayKeyedMsg("S2IZ0050",[namestring ['axiom,'input]])
     if $OLDLINE ~= 'END__UNIT
       then
         centerAndHighlight($OLDLINE,$LINELENGTH,'" ")
         sayKeyedMsg("S2IZ0051",NIL)
       else sayKeyedMsg("S2IZ0052",NIL)
-    SAY fillerSpaces($LINELENGTH,'"=")
+    SAY fillerSpaces($LINELENGTH,char "=")
     TERPRI()
     $OLDLINE := NIL
   $superHash := hashTable 'EQUAL

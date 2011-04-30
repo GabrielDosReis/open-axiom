@@ -89,7 +89,7 @@ shoeNextLine(s)==
   $sz :=# $ln
   $n = nil => true
   stringChar($ln,$n) = shoeTAB =>
-    a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
+    a := makeString(7-REM($n,8),char " ")
     $ln.$n := char " "
     $ln := strconc(a,$ln)
     s1:=[[$ln,:rest $f],:$r]
