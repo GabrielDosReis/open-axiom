@@ -47,28 +47,28 @@ module parser
  
 
 bpFirstToken()==
-   $stok:=
-     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
-     first $inputStream
-   $ttok := shoeTokPart $stok
-   true
+  $stok:=
+    $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+    first $inputStream
+  $ttok := shoeTokPart $stok
+  true
  
 bpFirstTok()==
-   $stok:=
-     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
-     first $inputStream
-   $ttok:=shoeTokPart $stok
-   $bpParenCount>0 and $stok is ["KEY",:.] =>
-     $ttok = "SETTAB" =>
-       $bpCount:=$bpCount+1
-       bpNext()
-     $ttok = "BACKTAB" =>
-       $bpCount:=$bpCount-1
-       bpNext()
-     $ttok = "BACKSET" =>
-       bpNext()
-     true
-   true
+  $stok:=
+    $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+    first $inputStream
+  $ttok:=shoeTokPart $stok
+  $bpParenCount>0 and $stok is ["KEY",:.] =>
+    $ttok is "SETTAB" =>
+      $bpCount:=$bpCount+1
+      bpNext()
+    $ttok is "BACKTAB" =>
+      $bpCount:=$bpCount-1
+      bpNext()
+    $ttok is "BACKSET" =>
+      bpNext()
+    true
+  true
  
 bpNext() ==
   $inputStream := rest($inputStream)
@@ -214,8 +214,8 @@ bpAnyNo s==
  
 -- AndOr(k,p,f)= k p
 bpAndOr(keyword,p,f)==
-   bpEqKey keyword and (apply(p,nil) or bpTrap())
-          and bpPush FUNCALL(f, bpPop1())
+  bpEqKey keyword and (apply(p,nil) or bpTrap())
+    and bpPush FUNCALL(f, bpPop1())
  
 bpConditional f==
   bpEqKey "IF" and (bpWhere() or bpTrap()) and (bpEqKey "BACKSET" or true) =>
@@ -240,31 +240,31 @@ bpBacksetElse()==
   bpEqKey "ELSE"
  
 bpEqPeek s == 
-  $stok is ["KEY",:.] and sameObject?(s,$ttok)
+  $stok is ["KEY",:.] and symbolEq?(s,$ttok)
  
 bpEqKey s ==
-  $stok is ["KEY",:.] and sameObject?(s,$ttok) and bpNext()
+  $stok is ["KEY",:.] and symbolEq?(s,$ttok) and bpNext()
 
 bpEqKeyNextTok s ==   
-  $stok is ["KEY",:.] and sameObject?(s,$ttok) and bpNextToken()
+  $stok is ["KEY",:.] and symbolEq?(s,$ttok) and bpNextToken()
  
 bpPileTrap()   == bpMissing  "BACKTAB"
 bpBrackTrap(x) == bpMissingMate("]",x)
 bpParenTrap(x) == bpMissingMate(")",x)
  
 bpMissingMate(close,open)==
-   bpSpecificErrorAtToken(open, '"possibly missing mate")
-   bpMissing close
+  bpSpecificErrorAtToken(open, '"possibly missing mate")
+  bpMissing close
  
 bpMissing s==
-   bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
-   throw 'TRAPPED : BootParserException
+  bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
+  throw 'TRAPPED : BootParserException
  
 bpCompMissing s == bpEqKey s or bpMissing s
  
 bpTrap()==
-   bpGeneralErrorHere()
-   throw 'TRAPPED : BootParserException
+  bpGeneralErrorHere()
+  throw 'TRAPPED : BootParserException
  
 bpRecoverTrap()==
   bpFirstToken()
@@ -284,7 +284,7 @@ bpListAndRecover(f)==
     found :=
       try apply(f,nil)
       catch(e: BootParserException) => e
-    if found = "TRAPPED"
+    if found is "TRAPPED"
     then
        $inputStream:=c
        bpRecoverTrap()
@@ -547,16 +547,16 @@ bpAnyId()==
                       and  bpPush $ttok and  bpNext()
  
 bpSexp()==
-    bpAnyId() or
-        bpEqKey "QUOTE"  and  (bpSexp() or bpTrap())
-           and bpPush bfSymbol bpPop1() or
-               bpIndentParenthesized function bpSexp1
+  bpAnyId() or
+      bpEqKey "QUOTE"  and  (bpSexp() or bpTrap())
+         and bpPush bfSymbol bpPop1() or
+             bpIndentParenthesized function bpSexp1
  
 bpSexp1()== bpFirstTok() and
-    bpSexp() and
-     (bpEqKey "DOT" and bpSexp() and bpPush [bpPop2(),:bpPop1()] or
-           bpSexp1() and bpPush [bpPop2(),:bpPop1()]) or
-               bpPush nil
+  bpSexp() and
+   (bpEqKey "DOT" and bpSexp() and bpPush [bpPop2(),:bpPop1()] or
+         bpSexp1() and bpPush [bpPop2(),:bpPop1()]) or
+             bpPush nil
  
 bpPrimary1() ==
   bpParenthesizedApplication() or
@@ -637,7 +637,7 @@ bpLeftAssoc(operations,parser)==
   false
  
 bpString()==
-  shoeTokType $stok = "STRING" and
+  shoeTokType $stok is "STRING" and
     bpPush(["QUOTE",makeSymbol $ttok]) and bpNext()
  
 bpThetaName() ==
@@ -812,7 +812,8 @@ bpIteratorList()==
   bpOneOrMore function bpIterator
     and bpPush bfIterators bpPop1 ()
  
-bpCrossBackSet()== bpEqKey "CROSS" and (bpEqKey "BACKSET" or true)
+bpCrossBackSet()==
+  bpEqKey "CROSS" and (bpEqKey "BACKSET" or true)
  
 bpIterators()==
   bpListofFun(function bpIteratorList,
@@ -1063,7 +1064,7 @@ bpRegularBVItem() ==
         or bpBracketConstruct function bpPatternL
  
 bpBVString()==
-  shoeTokType $stok = "STRING" and
+  shoeTokType $stok is "STRING" and
       bpPush(["BVQUOTE",makeSymbol $ttok]) and bpNext()
  
 bpRegularBVItemL() ==
@@ -1170,7 +1171,7 @@ bpCaseItem()==
 bpOutItem()==
   $op := nil
   bpComma() or bpTrap()
-  b:=bpPop1()
+  b := bpPop1()
   bpPush 
     b is ["+LINE",:.] => [ b ]
     b is ["L%T",l,r] and symbol? l => 

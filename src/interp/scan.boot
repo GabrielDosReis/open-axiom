@@ -161,30 +161,29 @@ scanKeyTable:=scanKeyTableCons()
 scanInsert(s,d) ==
   l := #s
   h := codePoint stringChar(s,0)
-  u := d.h
+  u := vectorRef(d,h)
   n := #u
   k:=0
-  while l <= #(u.k) repeat
+  while l <= #vectorRef(u,k) repeat
     k := k+1
   v := newVector(n+1)
   for i in 0..k-1 repeat
-    vectorRef(v,i) := u.i
+    vectorRef(v,i) := vectorRef(u,i)
   vectorRef(v,k) := s
   for i in k..n-1 repeat
-    vectorRef(v,i+1) := u.i
+    vectorRef(v,i+1) := vectorRef(u,i)
   vectorRef(d,h) := v
   s
 
 scanDictCons()==
-  l:= HKEYS scanKeyTable
   d :=
     a := newVector 256
     b := newVector 1
-    vectorRef(b,0) := MAKE_-CVEC 0
+    vectorRef(b,0) := '""
     for i in 0..255 repeat
       vectorRef(a,i) := b
     a
-  for s in l repeat
+  for s in HKEYS scanKeyTable repeat
     scanInsert(s,d)
   d
 

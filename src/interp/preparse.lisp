@@ -156,7 +156,7 @@
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
-                  ('T (PUSH (STRCONC (GETFULLSTR N " ")
+                  ('T (PUSH (STRCONC (|makeString| N #\Space)
                                   (SUBSTRING A N ())) $LINELIST)
                       (SETQ $INDEX (1- $INDEX))
                       (SETQ A (SUBSEQ A 0 N))))

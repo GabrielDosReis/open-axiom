@@ -66,7 +66,7 @@ $COMBLOCKLIST := nil
 ++ the runtime system.
 getVMType d ==
   IDENTP d => 
-    d = "*" => d
+    d is "*" => d
     "%Thing"
   string? d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
@@ -86,7 +86,7 @@ getVMType d ==
     Vector => ["%Vector",getVMType second d']
     PrimitiveArray => ["%SimpleArray", getVMType second d']
     Pair => ["%Pair",getVMType second d',getVMType third d']
-    Union => ["%Pair",'%Thing,'%Thing]
+    Union => ["%Pair",'%Short,'%Thing]
     Record =>
       #rest d' > 2 => "%Shell"
       ["%Pair",'%Thing,'%Thing]
@@ -115,14 +115,6 @@ functionp: %Thing -> %Boolean
 functionp f ==
   IDENTP f => FBOUNDP f and null MACRO_-FUNCTION f
   function? f
-
-++ remove `item' from `sequence'.
-delete(item,sequence) ==
-  symbol? item => 
-    REMOVE(item,sequence,KEYWORD::TEST,function sameObject?)
-  atom item and not array? item =>
-    REMOVE(item,sequence)
-  REMOVE(item,sequence,KEYWORD::TEST,function EQUALP)
 
 ++ returns true if `x' is contained in `y'.
 CONTAINED: (%Thing,%Thing) -> %Boolean
@@ -329,10 +321,6 @@ readByteFromFile ifile ==
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
   writeByte(b,ofile)
-
-closeFile file ==
-  CLOSE file
-  nil
 
 --%
 stringImage x ==

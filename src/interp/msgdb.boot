@@ -231,7 +231,7 @@ substituteSegmentedMsg(msg,args) ==
 
     c = char "%" and n > 1 and stringChar(x,1) = char "x" and
       digit? stringChar(x,2) =>
-        l := [fillerSpaces(DIG2FIX stringChar(x,2), '" "),:l]
+        l := [fillerSpaces(DIG2FIX stringChar(x,2),char " "),:l]
     --x is a plain word
     l := [x,:l]
   addBlanks reverse! l
@@ -450,8 +450,8 @@ flowSegmentedMsg(msg, len, offset) ==
   potentialMarg := 0
   actualMarg    := 0
 
-  off := (offset <= 0 => '""; fillerSpaces(offset,'" "))
-  off1:= (offset <= 1 => '""; fillerSpaces(offset-1,'" "))
+  off := (offset <= 0 => '""; fillerSpaces(offset,char " "))
+  off1:= (offset <= 1 => '""; fillerSpaces(offset-1,char " "))
   firstLine := true
 
   cons? msg =>
@@ -554,7 +554,7 @@ sayString(x,out == $OutputStream) ==
 spadStartUpMsgs() ==
   -- messages displayed when the system starts up
   $LINELENGTH < 60 => NIL
-  bar := fillerSpaces($LINELENGTH,specialChar 'hbar)
+  bar := fillerSpaces($LINELENGTH,char specialChar 'hbar)
   sayKeyedMsg("S2GL0001",[_*BUILD_-VERSION_*, _*YEARWEEK_*])
   sayMSG bar
   sayKeyedMsg("S2GL0018C",NIL)
@@ -720,7 +720,7 @@ brightPrintCenter(x,out == $OutputStream) ==
     wid := # x
     if wid < $LINELENGTH then
       f := DIVIDE($LINELENGTH - wid,2)
-      x := [fillerSpaces(f.0,'" "),x]
+      x := [fillerSpaces(f.0,char " "),x]
     for y in x repeat brightPrint0(y,out)
     NIL
   y := NIL
@@ -733,7 +733,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
-    y := [fillerSpaces(f.0,'" "),:y]
+    y := [fillerSpaces(f.0,char " "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)
@@ -765,7 +765,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
     x := object2String x
     wid := # x
     wid < $LINELENGTH =>
-      x := [fillerSpaces($LINELENGTH-wid,'" "),x]
+      x := [fillerSpaces($LINELENGTH-wid,char " "),x]
       for y in x repeat brightPrint0(y,out)
       NIL
     brightPrint0(x,out)
@@ -779,7 +779,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   y := reverse! y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
-    y := [fillerSpaces($LINELENGTH-wid,'" "),:y]
+    y := [fillerSpaces($LINELENGTH-wid,char " "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)
@@ -823,7 +823,7 @@ sayAsManyPerLineAsPossible l ==
   str := '""
   for i in 0..(n-1) repeat
     [c,:l] := l
-    str := strconc(str,c,fillerSpaces(w - #c,'" "))
+    str := strconc(str,c,fillerSpaces(w - #c,char " "))
     (i+1) rem p = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
   NIL
@@ -861,7 +861,7 @@ say2PerLineThatFit l ==
   while l repeat
     sayBrightlyNT first l
     sayBrightlyNT
-      fillerSpaces(($LINELENGTH quo 2 - sayDisplayWidth first l),'" ")
+      fillerSpaces(($LINELENGTH quo 2 - sayDisplayWidth first l),char " ")
     (l:= rest l) =>
       sayBrightlyNT first l
       l:= rest l
@@ -898,7 +898,7 @@ pp2Cols(al) ==
   nil
 
 ppPair(abb,name) ==
-    sayBrightlyNT [:bright abb,fillerSpaces(8-entryWidth abb," "),name]
+    sayBrightlyNT [:bright abb,fillerSpaces(8-entryWidth abb,char " "),name]
 
 canFit2ndEntry(name,al) ==
   wid := $LINELENGTH quo 2 - 10

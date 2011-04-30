@@ -461,7 +461,7 @@ appChar(string,x,y,d) ==
     RPLACSTR(line,shiftedX,n:=#string,string,0,n)
     if bumpDeltaIfTrue=true then $highlightDelta:= $highlightDelta+1
     d
-  appChar(string,x,y,append!(d,[[y,:GETFULLSTR(10+$LINELENGTH+$MARGIN," ")]]))
+  appChar(string,x,y,append!(d,[[y,:makeString(10+$LINELENGTH+$MARGIN,char " ")]]))
 
 print(x,domain) ==
   dom:= devaluate domain
@@ -1595,7 +1595,7 @@ output(expr,domain) ==
   sayALGEBRA [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
 
 outputNumber(start,linelength,num) ==
-  if start > 1 then blnks := fillerSpaces(start-1,'" ")
+  if start > 1 then blnks := fillerSpaces(start-1,char " ")
   else blnks := '""
   under := '"__"
   firsttime:=(linelength>3)
@@ -1619,7 +1619,7 @@ outputNumber(start,linelength,num) ==
     sayALGEBRA [blnks, num]
 
 outputString(start,linelength,str) ==
-  if start > 1 then blnks := fillerSpaces(start-1,'" ")
+  if start > 1 then blnks := fillerSpaces(start-1,char " ")
   else blnks := '""
   while # str > linelength repeat
     if $collectOutput then

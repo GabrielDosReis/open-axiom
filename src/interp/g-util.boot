@@ -40,7 +40,7 @@ namespace BOOT
 module g_-util where
   atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
-  pairList: (%List %Form,%List %Form) -> %List %Pair(%Form.%Form)
+  pairList: (%List %Form,%List %Form) -> %List %Pair(%Form,%Form)
   mkList: %List %Form -> %Form
   isSubDomain: (%Mode,%Mode) -> %Form
   usedSymbol?: (%Symbol,%Code) -> %Boolean
@@ -458,9 +458,9 @@ insertWOC(x,y) ==
 
 --% Miscellaneous Functions for Working with Strings
 
-fillerSpaces(n,:charPart) ==
+fillerSpaces(n,charPart == char " ") ==
   n <= 0 => '""
-  MAKE_-FULL_-CVEC(n,IFCAR charPart or '" ")
+  makeString(n,charPart)
 
 centerString(text,width,fillchar) ==
   wid := entryWidth text
@@ -487,7 +487,6 @@ stringPrefix?(pref,str) ==
   ok
 
 stringChar2Integer(str,pos) ==
-  -- replaces GETSTRINGDIGIT in UT LISP
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := symbolName str

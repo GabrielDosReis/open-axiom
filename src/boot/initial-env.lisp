@@ -107,9 +107,6 @@
   (shoeprettyprin0 x stream) 
   (terpri stream))
 
-(defun make-full-cvec (sint &optional (char #\space))
-  (make-string sint :initial-element (character char)))
-
 (defun |shoePLACEP| (item) 
   (eq item nil))
 

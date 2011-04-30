@@ -110,7 +110,6 @@ $subdomain := false
 --%
 
 compDefineAddSignature: (%Form,%Sig,%Env) -> %Env
-DomainSubstitutionFunction: (%List %Symbol,%Form) -> %Form 
 
 
 --%
@@ -1950,14 +1949,14 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
 DomainSubstitutionFunction(parameters,body) ==
   --see definition of DomainSubstitutionMacro in SPAD LISP
   if parameters then
-    (body:= Subst(parameters,body)) where
+    (body := Subst(parameters,body)) where
       Subst(parameters,body) ==
         atom body =>
           symbolMember?(body,parameters) => MKQ body
           body
         listMember?(body,parameters) =>
-          g:=gensym()
-          $extraParms:=PUSH([g,:body],$extraParms)
+          g := gensym()
+          $extraParms := PUSH([g,:body],$extraParms)
            --Used in SetVector12 to generate a substitution list
            --bound in buildFunctor
            --For categories, bound and used in compDefineCategory
@@ -1968,13 +1967,13 @@ DomainSubstitutionFunction(parameters,body) ==
               body.op ~= $definition.op
           =>  ['QUOTE,simplifyVMForm body]
         [Subst(parameters,u) for u in body]
-  not (body is ["Join",:.]) => body
+  body isnt ["Join",:.] => body
   atom $definition => body
   null $definition.args => body 
            --should not bother if it will only be called once
-  name:= makeSymbol strconc(KAR $definition,";CAT")
+  name := makeSymbol strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
-  body:= ['%when,[name],['%otherwise,['%store,name,body]]]
+  body := ['%when,[name],['%otherwise,['%store,name,body]]]
   body
 
 

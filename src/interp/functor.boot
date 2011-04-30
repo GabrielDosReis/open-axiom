@@ -367,7 +367,7 @@ setVector3(name,instantiator) ==
  
 mkDomainFormer x ==
   if x is ['DomainSubstitutionMacro,parms,body] then
-    x:=DomainSubstitutionFunction(parms,body)
+    x := DomainSubstitutionFunction(parms,body)
     x := applySubst($extraParms,x)
     --The next line ensures that only one copy of this structure will
     --appear in the BPI being generated, thus saving (some) space

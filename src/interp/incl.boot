@@ -66,7 +66,7 @@ incStringStream s==
    incRenumber incLude(0,incRgen s,0,['"strings"] ,[Top])
  
 incFile fn==
-   incRenumber incLude(0,incRgen OPEN fn,0,[fn],[Top])
+   incRenumber incLude(0,incRgen inputTextFile fn,0,[fn],[Top])
  
 incStream(st, fn) ==
    incRenumber incLude(0,incRgen st,0,[fn],[Top])

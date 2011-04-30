@@ -210,7 +210,7 @@ isFilterDelimiter? c ==
 
 grepSplit(lines,doc?) ==
   if doc? then
-    instream2 := OPEN strconc(systemRootDirectory(),'"/algebra/libdb.text")
+    instream2 := inputTextFile strconc(systemRootDirectory(),'"/algebra/libdb.text")
   cons := atts := doms := nil
   while lines is [line, :lines] repeat
     if doc? then
@@ -230,7 +230,7 @@ grepSplit(lines,doc?) ==
       kind = char "o" => ops :=  insert(line,ops)
       kind = char "-" => 'skip                --for now
       systemError 'kind
-  if doc? then CLOSE instream2
+  if doc? then closeFile instream2
   [['"attribute",:reverse! atts],
      ['"operation",:reverse! ops],
        ['"category",:reverse! cats],
@@ -930,9 +930,9 @@ dbWriteLines(s, :options) ==
   pathname
 
 dbReadLines target == --AIX only--called by grepFile
-  instream := OPEN target
+  instream := inputTextFile target
   lines := [READLINE instream while not EOFP instream]
-  CLOSE instream
+  closeFile instream
   lines
 
 dbGetCommentOrigin line ==
@@ -942,10 +942,10 @@ dbGetCommentOrigin line ==
   firstPart := dbPart(line,1,-1)
   key := makeSymbol subString(firstPart,0,1)    --extract this and throw away
   address := subString(firstPart, 1)        --address in libdb
-  instream := OPEN grepSource key           --this always returns libdb now
+  instream := inputTextFile grepSource key   --this always returns libdb now
   FILE_-POSITION(instream,readInteger address)
   line := READLINE instream
-  CLOSE instream
+  closeFile instream
   line
 
 grepSource key ==

@@ -254,8 +254,8 @@ mkDomTypeForm(typeForm,conform,domname) == --called by kargPage
 domainDescendantsOf(conform,domform) == main where --called by kargPage
   main() ==
     conform is [op,:r] =>
-      op = 'Join => jfn(delete('(Type Object),r),delete('(Type Object),IFCDR domform))
-      op = 'CATEGORY => nil
+      op is 'Join => jfn(remove(r,'Object),remove(IFCDR domform,'Object))
+      op is 'CATEGORY => nil
       domainsOf(conform,domform)
     domainsOf(conform,domform)
   jfn([y,:r],domlist) ==  --keep only those domains that appear in ALL parts of Join

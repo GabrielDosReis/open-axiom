@@ -256,9 +256,9 @@ getInfoAlist conname ==
   abb := getConstructorAbbreviationFromDB conname or return '"not a constructor"
   fs  := strconc(symbolName abb,'".NRLIB/info")
   inStream :=
-    PROBE_-FILE fs => OPEN fs
+    PROBE_-FILE fs => inputTextFile fs
     filename := strconc('"/spad/int/algebra/",symbolName abb,'".NRLIB/info")
-    PROBE_-FILE filename => OPEN filename
+    PROBE_-FILE filename => inputTextFile filename
     return nil
   alist := mySort READ inStream
   if cat? then

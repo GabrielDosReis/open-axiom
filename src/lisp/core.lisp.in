@@ -84,6 +84,9 @@
 	   ;; IO
 	   "inputBinaryFile"
 	   "outputBinaryFile"
+	   "inputTextFile"
+	   "outputTextFile"
+	   "closeFile"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -118,6 +121,7 @@
            
 	   "%ByteArray"
 	   "makeByteArray"
+	   "makeString"
 
            "%hasFeature"
 	   "%systemOptions"
@@ -215,12 +219,10 @@
 (deftype |%Maybe| (s) `(or null ,s))
 
 (deftype |%Pair| (u v)
-  (declare (ignore u v))
-  'cons)
+  `(cons ,u ,v))
 
 (deftype |%List| (s)
-  (declare (ignore s))
-  'list)
+  `(or null (cons ,s)))
 
 (deftype |%SimpleArray| (s) `(simple-array ,s))
 
@@ -439,12 +441,29 @@
 
 ;; -*- File IO -*-
 (defun |inputBinaryFile| (f)
-  (open f :direction :input :element-type 'unsigned-byte
+  (open f
+	:direction :input
+	:element-type 'unsigned-byte
 	:if-does-not-exist nil))
 
 (defun |outputBinaryFile| (f)
-  (open f :direction :output :element-type 'unsigned-byte
+  (open f
+	:direction :output
+	:element-type 'unsigned-byte
 	:if-exists :supersede))
+
+(defun |inputTextFile| (f)
+  (open f
+	:direction :input
+	:if-does-not-exist nil))
+
+(defun |outputTextFile| (f)
+  (open f
+	:direction :output 
+	:if-exists :supersede))
+
+(defun |closeFile| (f)
+  (close f))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-
@@ -1247,6 +1266,9 @@
   (make-array n 
 	       :element-type '(unsigned-byte 8)
 	       :initial-element 0))
+
+(defun |makeString| (n &optional (c (code-char 0)))
+  (make-string n :initial-element c))
 
 ;; native data type translation table
 (defconstant |$NativeTypeTable|

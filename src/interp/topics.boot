@@ -90,7 +90,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     for item in items repeat 
       HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
   $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
-  instream := OPEN '"topics.data"           
+  instream := inputTextFile '"topics.data"           
   while not EOFP instream repeat
     line := READLINE instream
     while blankLine? line repeat line := READLINE instream
