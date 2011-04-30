@@ -1,5 +1,10 @@
 2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfAppend): Write in full.
+	* interp/ptrees.boot (pfAppend): Likewise.
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (NREMOVE): Remove.
 	(EFFACE): Likewise.
 	* interp/sys-utility.boot (remove!): New.

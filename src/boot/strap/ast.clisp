@@ -194,9 +194,32 @@
 
 (DEFUN |bfPile| (|part|) |part|)
 
-(DECLAIM (FTYPE (FUNCTION ((|%List| |%Form|)) |%Form|) |bfAppend|))
+(DECLAIM (FTYPE (FUNCTION ((|%List| (|%List| (|%List| |%Form|))))
+                    (|%List| |%Form|))
+                |bfAppend|))
 
-(DEFUN |bfAppend| (|x|) (APPLY #'APPEND |x|))
+(DEFUN |bfAppend| (|ls|)
+  (PROG (|p| |r| |l|)
+    (RETURN
+      (COND
+        ((NOT (AND (CONSP |ls|)
+                   (PROGN
+                     (SETQ |l| (CAR |ls|))
+                     (SETQ |ls| (CDR |ls|))
+                     T)))
+         NIL)
+        (T (SETQ |r| (|copyList| |l|)) (SETQ |p| |r|)
+           (LOOP
+             (COND
+               ((NOT (AND (CONSP |ls|)
+                          (PROGN
+                            (SETQ |l| (CAR |ls|))
+                            (SETQ |ls| (CDR |ls|))
+                            T)))
+                (RETURN |r|))
+               ((NULL |l|) NIL)
+               (T (RPLACD (|lastNode| |p|) (|copyList| |l|))
+                  (SETQ |p| (CDR |p|))))))))))
 
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Form|) |%Form|) |%Form|)
                 |bfColonAppend|))

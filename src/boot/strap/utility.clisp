@@ -11,8 +11,19 @@
              |setDifference| |applySubst| |applySubst!| |remove|
              |removeSymbol|))
 
-(DECLAIM (FTYPE (FUNCTION ((|%List| |%Symbol|) |%Symbol|)
-                    (|%List| |%Symbol|))
+(DECLAIM (FTYPE (FUNCTION ((|%List| (|%List| |%Thing|)))
+                    (|%List| |%Thing|))
+                |append!|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%List| |%Thing|))
+                |copyList|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|))
+                    (|%Maybe| (|%Node| |%Thing|)))
+                |lastNode|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|) |%Symbol|)
+                    (|%List| |%Thing|))
                 |removeSymbol|))
 
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|) |%Thing|)
