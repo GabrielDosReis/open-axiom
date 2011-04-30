@@ -1,5 +1,13 @@
 2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (remove): Remove.
+	(REMOVEQ, NREMOVEQ): Likewise.
+	* boot/utility.boot (removeSymbol, removeScalar, removeValue)
+	(remove):  New.
+	* boot/ast.boot (bfMDef): Use applySubst in lieu of SUBLIS.
+
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/utility.boot (assocSymbol): New.
 	(applySubst): Likewise.  Export.
 	* boot/ast.boot: Use it.  Remove SUBLIS and SUBLISLIS.

@@ -739,16 +739,6 @@
          ((and (atom item) (not (arrayp item))) (member item sequence))
          (T (member item sequence :test #'equalp))))
 
-(defun |remove| (list item &optional (count 1))
-  (if (integerp count)
-      (remove item list :count count :test #'equalp)
-      (remove item list :test #'equalp)))
-
-(defun REMOVEQ (list item &optional (count 1))
-  (if (integerp count)
-      (remove item list :count count :test #'eq)
-      (remove item list :test #'eq)))
-
 ; 14.2 Accessing
 
 (defun |last| (x) (car (lastpair x)))
@@ -786,11 +776,6 @@
   (if (integerp count)
       (delete item list :count count :test #'equal)
       (delete item list :test #'equal)))
-
-(defun NREMOVEQ (list item &optional (count 1))
-  (if (integerp count)
-      (delete item list :count count )
-      (delete item list )))
 
 (defun EFFACE (item list) (delete item list :count 1 :test #'equal))
 

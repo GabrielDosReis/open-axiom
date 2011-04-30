@@ -787,10 +787,10 @@ bfMDef (op,args,body) ==
     bfTupleP args => rest args
     [args]
   [gargl,sgargl,nargl,largl]:=bfGargl argl
-  sb:=[[i,:j] for i in nargl for j in sgargl]
-  body:= SUBLIS(sb,body)
+  sb := [[i,:j] for i in nargl for j in sgargl]
+  body := applySubst(sb,body)
   sb2 := [["CONS",["QUOTE",i],j] for i in sgargl for j in largl]
-  body := ["SUBLIS",["LIST",:sb2],["QUOTE",body]]
+  body := ["applySubst",["LIST",:sb2],["QUOTE",body]]
   lamex:= ["MLAMBDA",gargl,body]
   def:= [op,lamex]
   [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
