@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,15 @@ structure %Ast ==
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)
 pfListOf? x         == pfAbSynOp?(x,'listOf)
-pfAppend list       == apply(function append,list)
+pfAppend ls ==
+  ls isnt [l,:ls] => nil
+  r := copyList l
+  p := r
+  repeat
+    ls isnt [l,:ls] => return r
+    l = nil => nil
+    lastNode(p).rest := copyList l
+    p := rest p
 
 pfNothing ()        == pfTree('nothing, [])
 pfNothing? form     == pfAbSynOp?(form, 'nothing)

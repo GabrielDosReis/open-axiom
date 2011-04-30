@@ -160,9 +160,16 @@ bfPile: %List %Form -> %List %Form
 bfPile(part) == 
   part
  
-bfAppend: %List %Form -> %Form
-bfAppend x== 
-  apply(function append,x)
+bfAppend: %List %List %List %Form -> %List %Form
+bfAppend ls ==
+  ls isnt [l,:ls] => nil
+  r := copyList l
+  p := r
+  repeat
+    ls isnt [l,:ls] => return r
+    l = nil => nil
+    lastNode(p).rest := copyList l
+    p := rest p
  
 bfColonAppend: (%List %Form,%Form) -> %Form
 bfColonAppend(x,y) ==

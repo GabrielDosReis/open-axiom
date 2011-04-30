@@ -36,6 +36,9 @@ module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append!, copyList, substitute, substitute!, setDifference,
   applySubst, applySubst!,remove,removeSymbol) where
+    append!: %List %List %Thing -> %List %Thing
+    copyList: %List %Thing -> %List %Thing
+    lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) ->% List %Thing
 
