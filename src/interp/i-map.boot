@@ -180,8 +180,8 @@ addMap(lhs,rhs,pred) ==
   argPredList:= reverse! predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
-    MKPF((pred and (pred ~= 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
-  body:= SUBLISNQ($sl,rhs)
+    MKPF((pred and (pred ~= 'T) => [:argPredList,applySubstNQ($sl,pred)]; argPredList),"and")
+  body:= applySubstNQ($sl,rhs)
   oldMap :=
     (obj := get(op,'value,$InteractiveFrame)) => objVal obj
     nil

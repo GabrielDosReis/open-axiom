@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ mkAtreeExpandMacros x ==
         [args,:body] := m
         #args = #argl =>
           sl := [[a,:s] for a in args for s in argl]
-          x := SUBLISNQ(sl,body)
+          x := applySubstNQ(sl,body)
         null args => x := [body,:argl]
         x := [op,:argl]
       x := [mkAtreeExpandMacros op,:argl]

@@ -13,8 +13,8 @@ VPATH += @srcdir@
 
 ## Our headers
 HEADERS += main-window.h
-INCLUDEPATH += .  $$OA_INC
-DEPENDPATH += .
+INCLUDEPATH +=  @srcdir@
+DEPENDPATH += @srcdir@
 
 ## Source files
 SOURCES += main-window.C main.C

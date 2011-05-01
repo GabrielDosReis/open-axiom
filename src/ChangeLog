@@ -1,5 +1,13 @@
 2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (applySubstNQ): New.
+	* interp/compiler.boot (finishLambdaExpression): Use it.
+	* interp/i-intern.boot (mkAtreeExpandMacros): Likewise.
+	* interp/i-map.boot (addMap): Likewise.
+	* interp/vmlisp.lisp (SUBLISNQ, SUBANQ, SUBB): Remove.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (EQSUBSTLIST): Remove.
 	* interp/c-util.boot (eqSubstAndCopy, eqSubst): Likewise.  Adjust
 	callers. 
