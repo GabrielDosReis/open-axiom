@@ -395,8 +395,8 @@ templateVal(template,domform,index) ==
 ++ `pred' (a VM instruction form).  Emit appropriate info into the
 ++ databases.
 emitSubdomainInfo(form,super,pred) ==
-  pred := eqSubst($AtVariables,form.args,pred)
-  super := eqSubst($AtVariables,form.args,super)
+  pred := applySubst!(pairList(form.args,$AtVariables),pred)
+  super := applySubst!(pairList(form.args,$AtVariables),super)
   evalAndRwriteLispForm("evalOnLoad2",["noteSubDomainInfo",
      quoteForm form.op,quoteForm super, quoteForm pred])
 
@@ -739,7 +739,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
 compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
-    $insideCategoryIfTrue: local:= true
+    $insideCategoryIfTrue: local := true
     $definition: local := form   --used by DomainSubstitutionFunction
     $form: local := nil
     $op: local := nil

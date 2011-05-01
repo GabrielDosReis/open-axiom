@@ -163,11 +163,11 @@ devaluateSlotDomain(u,dollar) ==
   devaluate evalSlotDomain(u,dollar)
  
 getCategoriesOfDomain domain ==
-  predkeyVec := domain.4.0
-  catforms := second domain.4
+  predkeyVec := first vectorRef(domain,4)
+  catforms := second vectorRef(domain,4)
   [fn for i in 0..maxIndex predkeyVec | test] where 
-     test() == predkeyVec.i and 
-       (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
+     test() == arrayRef(predkeyVec,i) and 
+       (x := vectorRef(catforms,i)) isnt ['DomainSubstitutionMacro,:.]
      fn() ==
        vector? x => devaluate x
        devaluateSlotDomain(x,domain)
