@@ -35,7 +35,10 @@ namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
-  setDifference, applySubst, applySubst!,remove,removeSymbol) where
+  setDifference, applySubst, applySubst!, applySubstNQ,
+  remove,removeSymbol) where
+    substitute: (%Thing,%Thing,%Thing) -> %Thing
+    substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
     append!: (%List %Thing,%List %Thing) -> %List %Thing
     copyList: %List %Thing -> %List %Thing
@@ -187,6 +190,17 @@ applySubst!(sl,t) ==
     tl := applySubst!(sl,rest t)
     t.first := hd
     t.rest := tl
+  symbol? t and (p := assocSymbol(t,sl)) => rest p
+  t
+
+++ Like applySubst, but skip quoted materials.
+applySubstNQ(sl,t) ==
+  t is [hd,:tl] =>
+    hd is "QUOTE" => t
+    hd := applySubstNQ(sl,hd)
+    tl := applySubstNQ(sl,tl)
+    sameObject?(hd,first t) and sameObject?(tl,rest t) => t
+    [hd,:tl]
   symbol? t and (p := assocSymbol(t,sl)) => rest p
   t
 

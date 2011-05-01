@@ -687,7 +687,7 @@ all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-gui: all-driver
-	cd gui && $(MAKE) $(AM_MAKEFLAGS) $@
+	cd gui && $(MAKE) $(AM_MAKEFLAGS)
 
 all-hyper: all-lib
 	cd hyper && $(MAKE) $(AM_MAKEFLAGS) $@

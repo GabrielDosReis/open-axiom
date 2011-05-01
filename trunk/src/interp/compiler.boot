@@ -337,7 +337,7 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
       rest v = 1 => slist := [[first v,:val],:slist]
       scode := [[first v,val],:scode]
     body :=
-      slist => SUBLISNQ(slist,CDDR expandedFunction)
+      slist => applySubstNQ(slist,CDDR expandedFunction)
       CDDR expandedFunction
     if scode ~= nil then
       body := [['%bind,reverse! scode,:body]]

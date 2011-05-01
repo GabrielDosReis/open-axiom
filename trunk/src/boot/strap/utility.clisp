@@ -9,7 +9,13 @@
              |scalarMember?| |listMember?| |reverse| |reverse!|
              |lastNode| |append| |append!| |copyList| |substitute|
              |substitute!| |setDifference| |applySubst| |applySubst!|
-             |remove| |removeSymbol|))
+             |applySubstNQ| |remove| |removeSymbol|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
+                |substitute|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
+                |substitute!|))
 
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|))
                     (|%List| |%Thing|))
@@ -200,6 +206,23 @@
         ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
          (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
          (RPLACD |t| |tl|))
+        ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|)))
+         (CDR |p|))
+        (T |t|)))))
+
+(DEFUN |applySubstNQ| (|sl| |t|)
+  (PROG (|p| |tl| |hd|)
+    (RETURN
+      (COND
+        ((AND (CONSP |t|)
+              (PROGN (SETQ |hd| (CAR |t|)) (SETQ |tl| (CDR |t|)) T))
+         (COND
+           ((EQ |hd| 'QUOTE) |t|)
+           (T (SETQ |hd| (|applySubstNQ| |sl| |hd|))
+              (SETQ |tl| (|applySubstNQ| |sl| |tl|))
+              (COND
+                ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+                (T (CONS |hd| |tl|))))))
         ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|)))
          (CDR |p|))
         (T |t|)))))

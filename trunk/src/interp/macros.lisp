@@ -210,21 +210,6 @@
         ((EQL (CDR L) TL) (RPLACD L NIL))
         ((TRUNCLIST-1 (CDR L) TL))))
  
-; 15.4 Substitution of Expressions
- 
-(DEFUN SUBLISNQ (KEY E) (declare (special KEY)) (if (NULL KEY) E (SUBANQ E)))
- 
-(DEFUN SUBANQ (E)
-  (declare (special key))
-  (COND ((ATOM E) (SUBB KEY E))
-        ((EQCAR E (QUOTE QUOTE)) E)
-        ((MAPCAR #'(LAMBDA (J) (SUBANQ J)) E))))
- 
-(DEFUN SUBB (X E)
-  (COND ((ATOM X) E)
-        ((EQ (CAAR X) E) (CDAR X))
-        ((SUBB (CDR X) E))))
- 
 ; 15.5 Using Lists as Sets
 
 (DEFUN PREDECESSOR (TL L)
