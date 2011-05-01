@@ -1331,7 +1331,7 @@ proclaimCapsuleFunction(op,sig) ==
 ++ Lisp back end compiler for ILAM with `name', formal `args', and `body'.
 backendCompileILAM: (%Symbol,%List %Symbol, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
-  args' := NLIST(#args, ["GENSYM"])
+  args' := [gensym() for . in 1..#args]
   body' := eqSubst(args',args,body)
   property(name,'ILAM) := true
   setDynamicBinding(name,["LAMBDA",args',:body'])

@@ -241,7 +241,7 @@ NRTmakeCategoryAlist() ==
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
   for x in slot1 repeat
-       x.first := EQSUBSTLIST(["$$",:sixEtc],['$,:formals],first x)
+    x.first := applySubst(pairList(['$,:formals],["$$",:sixEtc]),first x)
   -----------code to make a new style slot4 -----------------
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
@@ -293,7 +293,7 @@ getExportCategory form ==
   op is 'Union => ['UnionCategory,:argl]
   functorModemap := getConstructorModemapFromDB op
   [[.,target,:tl],:.] := functorModemap
-  EQSUBSTLIST(argl,$FormalMapVariableList,target)
+  applySubst(pairList($FormalMapVariableList,argl),target)
  
 NRTextendsCategory1(domform,exCategory,addForm) ==
   addForm is ["%Comma",:r] => 
@@ -696,8 +696,10 @@ makeCategoryPredicates(form,u) ==
       fn(u,nil) where
         fn(u,pl) ==
           u is ['Join,:.,a] => fn(a,pl)
-          u is ["IF",p,:x] => fnl(x,insert(EQSUBSTLIST($mvl,$tvl,p),pl))
-          u is ["has",:.] => insert(EQSUBSTLIST($mvl,$tvl,u),pl)
+          u is ["IF",p,:x] =>
+            fnl(x,insert(applySubst(pairList($tvl,$mvl),p),pl))
+          u is ["has",:.] =>
+            insert(applySubst(pairList($tvl,$mvl),u),pl)
           u is [op,:.] and op in '(SIGNATURE ATTRIBUTE) => pl
           atom u => pl
           fnl(u,pl)
@@ -1354,7 +1356,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
 getSignatureFromMode(form,e) ==
   getmode(opOf form,e) is ['Mapping,:signature] =>
     #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
-    EQSUBSTLIST(form.args,take(# form.args,$FormalMapVariableList),signature)
+    applySubst(pairList($FormalMapVariableList,form.args),signature)
 
 candidateSignatures(op,nmodes,slot1) ==
   [sig for [[=op,sig,:.],:.] in slot1 | #sig = nmodes]

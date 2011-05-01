@@ -293,7 +293,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       endTest:=
         ['%when, [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
       newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
-        EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
+        applySubst(pairList(rest $TriangleVariableList,gsList),body))]
       ['%bind,decomposeBindings,
         ['%loop,["WHILE",true],["PROGN",endTest,advanceCode,
           newValueCode,:rotateCode],voidValue()]]

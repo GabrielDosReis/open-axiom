@@ -295,7 +295,7 @@ worthlessCode x ==
 cons5(p,l) ==
   l and (CAAR l = first p) => [p,: rest l]
   # l < 5 => [p,:l]
-  RPLACD(QCDDDDR l,nil)
+  QCDDDDR(l).rest := nil
   [p,:l]
  
 setVector0(catNames,definition) ==

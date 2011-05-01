@@ -161,7 +161,7 @@ bfPile: %List %Form -> %List %Form
 bfPile(part) == 
   part
  
-bfAppend: %List %List %List %Form -> %List %Form
+bfAppend: %List %List %Form -> %List %Form
 bfAppend ls ==
   ls isnt [l,:ls] => nil
   r := copyList l

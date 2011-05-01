@@ -272,7 +272,7 @@ getCategoryExtensionAlist cform ==
 
 formalSubstitute(form:=[.,:argl],u) ==
   isFormalArgumentList argl => u
-  EQSUBSTLIST(argl,$FormalMapVariableList,u)
+  applySubst(pairList($FormalMapVariableList,argl),u)
 
 isFormalArgumentList argl ==
   and/[x=fa for x in argl for fa in $FormalMapVariableList]

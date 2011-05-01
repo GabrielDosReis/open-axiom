@@ -786,7 +786,7 @@ isDomainForm(D,e) ==
 isDomainConstructorForm(D,e) ==
   D is [op,:argl] and (u:= get(op,"value",e)) and
     u is [.,["Mapping",target,:.],:.] and
-      isCategoryForm(EQSUBSTLIST(argl,$FormalMapVariableList,target),e)
+      isCategoryForm(applySubst(pairList($FormalMapVariableList,argl),target),e)
  
 isFunctor x ==
   op:= opOf x

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ createResolveTTRules() ==
   mps := '(MP DMP NDMP)
   mpRules := "append"/[substitute(mp,'mpoly1,$mpolyTTRules) for mp in mps]
   $Res := ['(t1 t2 x y),
-    :EQSUBSTLIST($nameList,$abList,append($generalTTRules,mpRules))]
+    :applySubst(pairList($abList,$nameList),append($generalTTRules,mpRules))]
   true
 
 --% resolveTM Rules
@@ -286,12 +286,12 @@ createResolveTMRules() ==
   mpRules0 := "append"/[substitute(mp,'mpoly1,$mpolyTMRules) for mp in mps]
   mpRules := "append"/[substitute(mp,'mpoly2,mpRules0) for mp in mps]
   $ResMode := ['(t1 t2 x y),
-    :EQSUBSTLIST($nameList,$abList,append(mpRules,$generalTMRules))]
+    :applySubst(pairList($abList,$nameList),append(mpRules,$generalTMRules))]
   true
 
 createTypeEquivRules() ==
   -- used by eqType, for example
-  $TypeEQ := ['(t1), :EQSUBSTLIST($nameList,$abList,'(
+  $TypeEQ := ['(t1), :applySubst(pairList($abList,$nameList),'(
     ((QF (P t1)) . (RF t1))
       ((QF (I)) . (RN))
         ((RE (RN)) . (RR)) ))]

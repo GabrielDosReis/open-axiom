@@ -2484,7 +2484,7 @@ reportOpsFromLisplib(op,u) ==
   nArgs:= #argml
   argList:= KDR getConstructorFormFromDB op
   functorForm:= [op,:argList]
-  argml:= EQSUBSTLIST(argList,$FormalMapVariableList,argml)
+  argml:= applySubst(pairList($FormalMapVariableList,argList),argml)
   functorFormWithDecl:= [op,:[[":",a,m] for a in argList for m in argml]]
   sayBrightly concat(bright form2StringWithWhere functorFormWithDecl,
                      '" is a",bright typ,'"constructor")
@@ -2524,7 +2524,8 @@ displayOperationsFromLisplib form ==
   opList:= getConstructorOperationsFromDB name
   null opList => 
     centerAndHighlight('"No exported operations",$LINELENGTH)
-  opl:=removeDuplicates MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
+  opl := removeDuplicates MSORT
+      applySubst(pairList($FormalMapVariableList,argl),opList)
   ops:= nil
   for x in opl repeat
     ops := [:ops,:formatOperationAlistEntry(x)]

@@ -82,7 +82,7 @@ hashType(type, percentHash) ==
                 else
                         hash := hashCombine(7, hash)
 --           !!!   If/when asharp hashes values using their type, use instead
---                      ctt := EQSUBSTLIST(args, $FormalMapVariableList, ct)
+--                      ctt := applySubst(pairList($FormalMapVariableList,args),ct)
 --                      hash := hashCombine(hashType(ctt, percentHash), hash)
 
 

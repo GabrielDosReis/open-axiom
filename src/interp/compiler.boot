@@ -201,7 +201,8 @@ comp3(x,m,$e) ==
 
 compTypeOf(x:=[op,:argl],m,e) ==
   $insideCompTypeOf: local := true
-  newModemap:= EQSUBSTLIST(argl,$FormalMapVariableList,get(op,'modemap,e))
+  newModemap :=
+    applySubst(pairList(argl,$FormalMapVariableList),get(op,'modemap,e))
   e:= put(op,'modemap,newModemap,e)
   comp3(x,m,e)
 
@@ -1549,7 +1550,7 @@ compColon([":",f,t],m,e) ==
   e:=
     f is [op,:argl] =>
       --for MPOLY--replace parameters by formal arguments: RDJ 3/83
-      newTarget:= EQSUBSTLIST(take(#argl,$FormalMapVariableList),
+      newTarget := EQSUBSTLIST(take(#argl,$FormalMapVariableList),
         [(x is [":",a,m] => a; x) for x in argl],t)
       signature:=
         ["Mapping",newTarget,:
