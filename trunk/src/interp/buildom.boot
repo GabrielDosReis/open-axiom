@@ -229,7 +229,7 @@ lookupInCategories(op,sig,dom,dollar) ==
   -- this code (the old runtime scheme) is used only for
   -- builtin constructors -- their predicates are always true.
   r := or/[lookupInDomainVector(op,nsig,
-              eval EQSUBSTLIST(valueList,varList,catform),dollar)
+              eval applySubst(pairList(varList,valueList),catform),dollar)
         for catform in catformList | not null catform] where
            valueList() ==
               [MKQ dom,:[MKQ dom.(5+i) for i in 1..(#rest catform)]]
@@ -264,8 +264,8 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
       not compareSig(sig,sig1,dollar.0,domain) => false
       code is ['subsumed,a] =>
             subsumptionSig :=
-               EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
-            someMatch:=true
+              applySubst(pairList($FormalMapVariableList,vectorRef(domain,0).args),a)
+            someMatch := true
             false
       predIndex := code quo 8192
       predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)

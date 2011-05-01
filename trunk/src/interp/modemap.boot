@@ -340,7 +340,7 @@ substNames(domainName,viewName,functorForm,opalist) ==
        [sel, viewName,if domainName = "$" then pos else
                                          modemapform.mmTarget]]
      for [:modemapform,[sel,"$",pos]] in
-          EQSUBSTLIST(KDR functorForm,$FormalMapVariableList, opalist)]
+       applySubst(pairList($FormalMapVariableList,KDR functorForm),opalist)]
  
 addConstructorModemaps(name,form is [functorName,:.],e) ==
   $InteractiveMode: local:= nil

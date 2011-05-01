@@ -1,5 +1,24 @@
 2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot: Replace use of EQSUBSTLIST with applySubst.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/hashcode.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/rulesets.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/sys-macros.lisp (APPLYR, TAILFN, TAIL, rplac): Remove as
+	unused. 
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Don't rename append.
 	* boot/parser.boot (bpTyping): Support universally quantified types.
 	* boot/ast.boot: Rewrite APPEND as append.

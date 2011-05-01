@@ -208,54 +208,15 @@
  #+:common-lisp (:compile-toplevel :load-toplevel :execute)
  #-:common-lisp (compile load eval)
  (progn
- 
-   (DEFUN APPLYR (L X)
-     (if (not L)
-	 X 
-       (LIST (CAR L) (APPLYR (CDR L) X))))
-
-   (defun PARTCODET (N)
-     (COND ((OR (NULL (INTEGERP N)) 
-		(LT N 1)) 
-	    (ERROR 'PARTCODET))
-	   ((EQL N 1) 
-	    '(CDR))
-	   ((EQL N 2)
-	    '(CDDR))
-	   ((EQL N 3)
-	    '(CDDDR))
-	   ((EQL N 4)
-	    '(CDDDDR))
-	   ((APPEND (PARTCODET (PLUS N -4)) '(CDDDDR)))))
-   
    (defun NLIST (N FN)
      "Returns a list of N items, each initialized to the value of an
  invocation of FN"
      (if (LT N 1)
 	 NIL 
        (CONS (EVAL FN) (NLIST (1- N) FN))))
-
-   (defun TAILFN (X N) 
-     (if (LT N 1) 
-	 X 
-       (TAILFN (CDR X) (1- N))))
     
    ))
 
-
-(defmacro TAIL (&rest L)
-  (let ((x (car L)) 
-	(n (if (cdr L) 
-	       (cadr L)
-	     1)))
-    (COND ((EQL N 0)
-	   X)
-          ((EQL N 1) 
-	   (LIST 'CDR X))
-          ((GT N 1) 
-	   (APPLYR (PARTCODET N) X))
-          ((LIST 'TAILFN X N)))))
- 
 
 ;; 
 ;; -*- Cons Cell Manipulators -*-
@@ -311,24 +272,6 @@
 	    ((EQCAR A 'CAR) (LIST 'RPLACA (CADR A) B))
 	    ((EQCAR A 'CDR) (LIST 'RPLACD (CADR A) B))
 	    ((ERROR 'RPLAC))))))
-
-(defmacro |rplac| (&rest L)
-  (let (a b s)
-    (cond
-      ((EQCAR (SETQ A (CAR L)) 'ELT)
-       (COND ((AND (INTEGERP (SETQ B (CADDR A))) (>= B 0))
-	      (SETQ S "CA")
-	      (do ((i 1 (1+ i))) ((> i b)) (SETQ S (STRCONC S "D")))
-	      (LIST 'RPLAC (LIST (INTERN (STRCONC S "R")) (CADR A)) (CADR L)))
-	     ((ERROR "rplac"))))
-      ((PROGN
-	 (SETQ A (CARCDREXPAND (CAR L) NIL))
-	 (SETQ B (CADR L))
-	 (COND
-	   ((CDDR L) (ERROR 'RPLAC))
-	   ((EQCAR A 'CAR) (LIST 'RPLACA (CADR A) B))
-	   ((EQCAR A 'CDR) (LIST 'RPLACD (CADR A) B))
-	   ((ERROR 'RPLAC))))))))
 
 ;; 
 ;; -*- Association Lists -*-

@@ -74,10 +74,10 @@ displayTranModemap (mm is [[x,:sig],[pred,:y],:z]) ==
     [b,:c]:=sig
     sig:=[['Union,b,'"failed"],:c]
     mm:=[[x,:sig],y,:z]
-  mm' := EQSUBSTLIST('(m n p q r s t i j k l),
-    MSORT listOfPredOfTypePatternIds pred,mm)
-  EQSUBSTLIST('(D D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14),
-    MSORT listOfPatternIds [sig,[pred,:y]],mm')
+  mm' := applySubst(pairList(MSORT listOfPredOfTypePatternIds pred,
+        '(m n p q r s t i j k l)), mm)
+  applySubst(pairList(MSORT listOfPatternIds [sig,[pred,:y]],
+              '(D D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14)),mm')
 
 listOfPredOfTypePatternIds p ==
   p is ['AND,:lp] or p is ['OR,:lp] =>
