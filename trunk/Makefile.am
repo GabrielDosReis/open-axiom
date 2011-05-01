@@ -1,4 +1,4 @@
-# Copyright (C) 2010, Gabriel Dos Reis.
+# Copyright (C) 2011, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,7 @@ OA_SRC_TARGETS = \
 	all-clef \
 	all-doc \
 	all-graph \
+	all-gui \
 	all-hyper \
 	all-input \
 	all-interpsys \

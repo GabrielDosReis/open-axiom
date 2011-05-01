@@ -52,10 +52,13 @@ if OA_BUILD_GRAPHICS
 OA_GRAPHICS_TARGETS = all-graph
 endif
 
+if OA_BUILD_GUI
+OA_GRAPHICS_TARGETS = all-gui
+endif
 
 all-local: all-src
 
-.PHONY: all-src
+.PHONY: all-src $(OA_GRAPHICS_TARGETS)
 all-src: all-lib all-utils all-driver all-lisp all-boot \
 	all-interpsys all-algebra all-axiomsys all-share \
 	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
@@ -84,6 +87,9 @@ all-clef: all-lib
 
 all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
+
+all-gui: all-driver
+	cd gui && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-hyper: all-lib
 	cd hyper && $(MAKE) $(AM_MAKEFLAGS) $@

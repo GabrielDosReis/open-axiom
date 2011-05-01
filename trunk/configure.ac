@@ -96,6 +96,7 @@ OPENAXIOM_CHECK_IO
 AM_CONDITIONAL([OA_BUILD_SMAN], [test $oa_use_sman = 1])
 OPENAXIOM_CHECK_GRAPHICS
 AM_CONDITIONAL([OA_BUILD_GRAPHICS], [test x$axiom_use_x = xyes])
+AM_CONDITIONAL([OA_BUILD_GUI], [test x$oa_has_qt = xyes])
 
 OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
@@ -124,8 +125,14 @@ OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
+AC_CONFIG_FILES([src/gui/gui.pro])
 
 AC_OUTPUT
+
+## Set up Makefile for QT-based gui
+if test x$oa_has_qt = xyes; then
+  (cd src/gui && $OA_QT_QMAKE -makefile gui.pro)
+fi
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.
 echo -n "extracting list of SPAD type definitions..."

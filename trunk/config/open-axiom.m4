@@ -905,6 +905,7 @@ dnl -- OPENAXIOM_CHECK_QT --
 dnl ------------------------
 AC_DEFUN([OPENAXIOM_CHECK_QT],[
 # Check for Qt utilities.
+oa_has_qt=no
 AC_CHECK_PROGS([OA_QT_MOC], [moc])
 AC_CHECK_PROGS([OA_QT_QMAKE], [qmake])
 if test -n "$OA_QT_MOC"; then
@@ -914,6 +915,9 @@ if test -n "$OA_QT_MOC"; then
   case $oa_qt_version in
     *[1-3]\.[0-9]+\.[0-9]+)
        AC_MSG_WARN([This version of Qt is too old for OpenAxiom.])
+       ;;
+    *) 
+       oa_has_qt=yes
        ;;
   esac
 fi
