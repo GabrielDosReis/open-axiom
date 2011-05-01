@@ -217,67 +217,6 @@
     
    ))
 
-
-;; 
-;; -*- Cons Cell Manipulators -*-
-;; 
-
-(eval-when
- #+:common-lisp (:compile-toplevel :load-toplevel :execute)
- #-:common-lisp (compile load eval)
- (progn
-   (MAPC #'(LAMBDA (J) (MAKEPROP (CAR J) 'SELCODE (CADR J)))
-	 '((CAR 2) (CDR 3) (CAAR 4) (CADR 5) (CDAR 6) (CDDR 7)
-	   (CAAAR 8) (CAADR 9) (CADAR 10) (CADDR 11) (CDAAR 12)
-	   (CDADR 13) (CDDAR 14) (CDDDR 15) (CAAAAR 16) (CAAADR 17)
-	   (CAADAR 18) (CAADDR 19) (CADAAR 20) (CADADR 21) (CADDAR 22)
-	   (CADDDR 23) (CDAAAR 24) (CDAADR 25) (CDADAR 26) (CDADDR 27)
-	   (CDDAAR 28) (CDDADR 29) (CDDDAR 30) (CDDDDR 31)))
-   
-   (DEFUN RENAME (U) 
-     (let (x)
-       (if (AND (IDENTP U) (SETQ X (GET U 'NEWNAM)))
-	   X 
-	 U)))
-   
-   (defun CARCDRX1 (X N FG)      ; FG = TRUE FOR CAR AND CDR
-     (COND ((< N 1)
-	    (fail))
-	   ((EQL N 1)
-	    X)
-	   ((let ((D (DIVIDE N 2)))
-	      (CARCDRX1 (LIST (if (EQL (CADR D) 0)
-				  (if FG 'CAR 'CAR) 
-				(if FG 'CDR 'CDR)) X)
-			(CAR D)
-			FG)))))
-   
-   (defun CARCDREXPAND (X FG)    ; FG = TRUE FOR CAR AND CDR
-     (let (n hx)
-       (COND ((ATOM X) 
-	      X)
-	     ((SETQ N 
-		    (GET (RENAME (SETQ HX (CARCDREXPAND (CAR X) FG)))
-			 'SELCODE))
-	      (CARCDRX1 (CARCDREXPAND (CADR X) FG) N FG))
-	     ((CONS HX (MAPCAR #'(LAMBDA (Y) (CARCDREXPAND Y FG)) (CDR X)))))))
-   ))
-
-
-(defmacro RPLAC (&rest L)
-  (if (EQCAR (CAR L) 'ELT)
-      (LIST 'SETELT (CADAR L) (CADDR (CAR L)) (CADR L))
-    (let ((A (CARCDREXPAND (CAR L) NIL)) (B (CADR L)))
-      (COND ((CDDR L) (ERROR 'RPLAC))
-	    ((EQCAR A 'CAR) (LIST 'RPLACA (CADR A) B))
-	    ((EQCAR A 'CDR) (LIST 'RPLACD (CADR A) B))
-	    ((ERROR 'RPLAC))))))
-
-;; 
-;; -*- Association Lists -*-
-;; 
-
-
 ;; 
 ;; -*- Simple Arrays -*-
 ;; 
@@ -1107,7 +1046,7 @@
 	`(theta CONS . ,(CDR L))
       (progn
 	(if (EQCAR (CAR L) 'QUOTE) 
-	    (RPLAC (CAR L) (CADAR L)))
+	    (RPLACA L (CADAR L)))
 	(-REDUCE (CAR L) 0
 		 (if (SETQ U (GET (CAR L) 'THETA))
 		     (CAR U)

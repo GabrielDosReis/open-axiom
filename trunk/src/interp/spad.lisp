@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -214,15 +214,6 @@
 
 (defun STREAM2UC (STRM)
   (LET ((X (ELT (LASTATOM STRM) 1))) (SETF (ELT X 0) (LC2UC (ELT X 0)))))
-
-(defun NEWNAMTRANS (X)
-  (COND
-    ((IDENTP X) (COND ( (GET X 'NEWNAM) (GET X 'NEWNAM)) ('T X)))
-    ((STRINGP X) X)
-    ((*VECP X) (MAPVWOC X (FUNCTION NEWNAMTRANS)))
-    ((ATOM X) X)
-    ((EQCAR X 'QUOTE))
-    (T (CONS (NEWNAMTRANS (FIRST X)) (NEWNAMTRANS (CDR X))))))
 
 (defun GP2COND (L)
   (COND ((NOT L) (ERROR "GP2COND"))

@@ -232,14 +232,14 @@
    ;; PF(item) x PF(item) x LIST(of pairs) -> LIST(of pairs with (A . B) added)
    ;; destructive on L; if (A . C) appears already, C is replaced by B
    (cond ((null l) (list (cons a b)))
-         ((equal a (caar l)) (rplac (cdar l) b) l)
+         ((equal a (caar l)) (rplacd (car l) b) l)
          ((?order a (caar l)) (cons (cons a b) l))
          (t (as-insert1 a b l) l)))
  
 (defun as-insert1 (a b l)
-   (cond ((null (cdr l)) (rplac (cdr l) (list (cons a b))))
-         ((equal a (caadr l)) (rplac (cdadr l) b))
-         ((?order a (caadr l)) (rplac (cdr l) (cons (cons a b) (cdr l))))
+   (cond ((null (cdr l)) (rplacd l (list (cons a b))))
+         ((equal a (caadr l)) (rplacd (cadr l) b))
+         ((?order a (caadr l)) (rplacd l (cons (cons a b) (cdr l))))
          (t (as-insert1 a b (cdr l)))))
  
  
@@ -655,76 +655,8 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (setq bol (+ eol 1)))
     (|reverse!| line-list)))
 
-; part of the old spad to new spad translator
-; these are here because they need to be in depsys
-; they were in nspadaux.lisp
-
-(defmacro wi (a b) b)
-
-(defmacro |tryLine| (X)
-  `(LET ((|$autoLine|))
-        (declare (special |$autoLine|))
-        (|tryToFit| (|saveState|) ,X)))
-
-(defmacro |embrace| (X) `(|wrapBraces| (|saveC|) ,X (|restoreC|)))
-(defmacro |indentNB| (X) `(|wrapBraces| (|saveD|) ,X (|restoreD|)))
-
-(defmacro |tryBreak| (a b c d) 
-; Try to format <a b> by:
-; (1) with no line breaking ($autoLine = nil)
-; (2) with possible line breaks within a;
-; (3) otherwise use a brace
-  `(LET
-    ((state))
-    (setq state (|saveState| 't))
-    (or
-      (LET ((|$autoLine|))
-         (declare (special |$autoLine|))
-         (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (|restoreState| state)
-      (and (eqcar ,b (quote seq))
-               (|embrace| (and 
-                  ,a
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))
-      (|restoreState| state)
-      (|embrace| (and ,a 
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))))
-
-(defmacro |tryBreakNB| (a b c d) 
-; Try to format <a b> by:
-; (1) with no line breaking ($autoLine = nil)
-; (2) with possible line breaks within a;
-; (3) otherwise display without a brace
-  `(LET
-    ((state))
-    (setq state (|saveState| 't))
-    (or
-      (markhash ,b 0)
-      (LET ((|$autoLine|))
-         (declare (special |$autoLine|))
-         (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (|restoreState| state)
-      (markhash ,b 1)
-      (and (eqcar ,b (quote seq))
-               (|embrace| (and 
-                  ,a
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))
-      (markhash ,b 2)
-      (|restoreState| state)
-      (|indentNB| (and ,a 
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (markhash ,b 3)
-
-)))   
 
 (defvar HT nil)
-
-(defun markhash (key n) (progn (cond
-  ((equal n 3) (remhash key ht))
-  ('t (hput ht key n)) ) nil))
 
 ;; 
 ;; -*- Record Structures -*-
