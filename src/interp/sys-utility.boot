@@ -135,14 +135,14 @@ CONTAINED(x,y) == main where
 ASSOCLEFT: %Thing -> %Thing
 ASSOCLEFT x ==
   atom x => x
-  MAPCAR(function first,x)
+  [first p for p in x]
 
 ++ Returns all the datums of association list `x'.
 -- ??? Should not this be named `alistAllValues'?
 ASSOCRIGHT: %Thing -> %Thing
 ASSOCRIGHT x ==
   atom x => x
-  MAPCAR(function rest,x)
+  [rest p for p in x]
 
 ++ Put the association list pair `(x . y)' into `l', erasing any 
 ++ previous association for `x'.

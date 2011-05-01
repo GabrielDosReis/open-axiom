@@ -492,7 +492,7 @@ mkMat(args) ==
  
 mkFortFn(op,args,nargs) ==
   [fortranifyFunctionName(STRINGIMAGE op,nargs), 
-   :MAPCAR(function fortPre1 , args) ]
+   :[fortPre1 x for x in args]]
  
 fortranifyFunctionName(op,nargs) ==
   op = '"<" => '".LT."
@@ -889,19 +889,19 @@ fortExpSize e ==
   -- (+ x (+ y z)) will be printed as "x+(y+z)" rather than "x+y+z"
   -- which is the actual case.
   atom e => # STRINGIMAGE e
-  #e > 3 => 2+fortSize MAPCAR(function fortExpSize, e)
-  #e < 3 => 2+fortSize MAPCAR(function fortExpSize, e)
+  #e > 3 => 2+fortSize [fortExpSize x for x in e]
+  #e < 3 => 2+fortSize [fortExpSize x for x in e]
   [op,arg1,arg2] := e
   op := STRINGIMAGE op
   op = '"CMPLX" => 3+fortSize [fortExpSize arg1,fortExpSize arg2]
   narys := ['"+",'"*"] -- those nary ops we changed to binary
   member(op,narys) =>
     LISTP arg1 and not(op=STRINGIMAGE first arg1) =>
-      2+fortSize MAPCAR(function fortExpSize, e)
+      2+fortSize [fortExpSize x for x in e]
     LISTP arg2 and not(op=STRINGIMAGE first arg2) =>
-      2+fortSize MAPCAR(function fortExpSize, e)
+      2+fortSize [fortExpSize x for x in e]
     1+fortSize [fortExpSize arg1,fortExpSize arg2]
-  2+fortSize MAPCAR(function fortExpSize, e)
+  2+fortSize [fortExpSize x for x in e]
  
 fortSize e ==
   +/[elen u for u in e] where

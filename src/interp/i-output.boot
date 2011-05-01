@@ -2385,7 +2385,7 @@ qTWidth(u) ==
 remWidth(x) ==
   atom x => x
   true => [(atom first x => first x; true => CAAR x),
-              :MMAPCAR(function remWidth, rest x)]
+              :[remWidth y for y in rest x]]
 
 subSub(u) ==
   height CDDR u
