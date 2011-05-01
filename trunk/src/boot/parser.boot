@@ -600,7 +600,13 @@ bpApplication()==
 ++ Typing:
 ++   SimpleType
 ++   Mapping
+++   FORALL Variable DOT Typing
 bpTyping() ==
+  bpEqKey "FORALL" =>
+    bpVariable() or bpTrap()
+    (bpDot() and bpPop1()) or bpTrap()
+    bpTyping() or bpTrap()
+    bpPush %Forall(bpPop2(), bpPop1())
   bpMapping() or bpSimpleMapping()
 
 ++ Tagged:
@@ -612,9 +618,9 @@ bpTagged()==
  
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
  
-bpInfKey s==
+bpInfKey s ==
  $stok is ["KEY",:.] and
-   MEMBER($ttok,s) and bpPushId() and bpNext()
+   symbolMember?($ttok,s) and bpPushId() and bpNext()
  
 bpInfGeneric s==
   bpInfKey s and  (bpEqKey "BACKSET" or true)

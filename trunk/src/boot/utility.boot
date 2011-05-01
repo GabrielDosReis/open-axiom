@@ -34,9 +34,10 @@ import initial_-env
 namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
-  lastNode, append!, copyList, substitute, substitute!, setDifference,
-  applySubst, applySubst!,remove,removeSymbol) where
-    append!: %List %List %Thing -> %List %Thing
+  lastNode, append, append!, copyList, substitute, substitute!,
+  setDifference, applySubst, applySubst!,remove,removeSymbol) where
+    append: (%List %Thing,%List %Thing) -> %List %Thing
+    append!: (%List %Thing,%List %Thing) -> %List %Thing
     copyList: %List %Thing -> %List %Thing
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
@@ -138,6 +139,9 @@ append!(x,y) ==
   y = nil => x
   lastNode(x).rest := y
   x
+
+append(x,y) ==
+  append!(copyList x,y)
 
 --% a-list
 

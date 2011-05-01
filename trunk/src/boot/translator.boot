@@ -379,8 +379,12 @@ genDeclaration(n,t) ==
     if argTypes ~= nil and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
+  t is ["%Forall",vars,t'] =>
+    vars = nil => genDeclaration(n,t')
+    if symbol? vars then
+      vars := [vars]
+    genDeclaration(n,applySubst([[v,:"*"] for v in vars],t'))
   ["DECLAIM",["TYPE",t,n]]
-
 
 ++ Translate the signature declaration `d' to its Lisp equivalent.
 translateSignatureDeclaration d ==
