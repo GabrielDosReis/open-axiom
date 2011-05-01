@@ -62,6 +62,7 @@ shoeKeyWords == [  _
             ['"else", "ELSE"] , _
             ['"finally", "FINALLY"], _
             ['"for",  "FOR"] , _
+            ['"forall", "FORALL"] , _
             ['"has", "HAS"] , _
             ['"if", "IF"], _
             ['"import", "IMPORT"], _
@@ -223,7 +224,6 @@ for i in [ _
       ["*",         1] , _
       ["times",     1] , _
       ["CONS",    nil] , _
-      ["APPEND",  nil] , _
       ["append",  nil] , _
       ["append!", nil] , _
       ["UNION",   nil] , _
@@ -243,7 +243,6 @@ for i in [ _
   ["alphabetic?", "ALPHA-CHAR-P"], _
   ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
-  ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["array?",    "ARRAYP"]  , _
   ["arrayRef",    "AREF"]  , _

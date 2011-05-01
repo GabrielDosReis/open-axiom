@@ -1,5 +1,13 @@
 2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Don't rename append.
+	* boot/parser.boot (bpTyping): Support universally quantified types.
+	* boot/ast.boot: Rewrite APPEND as append.
+	(%Forall): New AST node.
+	* boot/translator.boot: Translate it.
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfAppend): Write in full.
 	* interp/ptrees.boot (pfAppend): Likewise.
 

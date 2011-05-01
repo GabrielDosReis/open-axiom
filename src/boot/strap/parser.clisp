@@ -120,8 +120,8 @@
               (COND
                 ((EQL |$bpCount| 0) T)
                 (T (SETQ |$inputStream|
-                         (APPEND (|bpAddTokens| |$bpCount|)
-                                 |$inputStream|))
+                         (|append| (|bpAddTokens| |$bpCount|)
+                             |$inputStream|))
                    (|bpFirstToken|)
                    (COND
                      ((EQL |$bpParenCount| 0) (|bpCancel|) T)
@@ -633,7 +633,13 @@
                 (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
            T)))
 
-(DEFUN |bpTyping| () (OR (|bpMapping|) (|bpSimpleMapping|)))
+(DEFUN |bpTyping| ()
+  (COND
+    ((|bpEqKey| 'FORALL) (OR (|bpVariable|) (|bpTrap|))
+     (OR (AND (|bpDot|) (|bpPop1|)) (|bpTrap|))
+     (OR (|bpTyping|) (|bpTrap|))
+     (|bpPush| (|%Forall| (|bpPop2|) (|bpPop1|))))
+    (T (OR (|bpMapping|) (|bpSimpleMapping|)))))
 
 (DEFUN |bpTagged| ()
   (AND (|bpApplication|)
@@ -645,8 +651,8 @@
 
 (DEFUN |bpInfKey| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (MEMBER |$ttok| |s|)
-       (|bpPushId|) (|bpNext|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY)
+       (|symbolMember?| |$ttok| |s|) (|bpPushId|) (|bpNext|)))
 
 (DEFUN |bpInfGeneric| (|s|)
   (AND (|bpInfKey| |s|) (OR (|bpEqKey| 'BACKSET) T)))
@@ -1068,18 +1074,18 @@
                         (PROGN
                           (OR (AND (|bpPatternTail|)
                                    (|bpPush|
-                                    (APPEND (|bpPop2|) (|bpPop1|))))
+                                    (|append| (|bpPop2|) (|bpPop1|))))
                               (|bpTrap|))
                           NIL))))
           (RETURN NIL))
-         (T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
+         (T (|bpPush| (|append| (|bpPop2|) (|bpPop1|))))))
      T)
     (T (|bpPatternTail|))))
 
 (DEFUN |bpPatternTail| ()
   (AND (|bpPatternColon|)
        (OR (AND (|bpEqKey| 'COMMA) (OR (|bpRegularList|) (|bpTrap|))
-                (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))
+                (|bpPush| (|append| (|bpPop2|) (|bpPop1|))))
            T)))
 
 (DEFUN |bpRegularBVItemTail| ()
@@ -1123,7 +1129,7 @@
                               (|bpTrap|))
                           NIL))))
           (RETURN NIL))
-         (T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
+         (T (|bpPush| (|append| (|bpPop2|) (|bpPop1|))))))
      T)
     (T (AND (|bpColonName|)
             (|bpPush| (|bfColonAppend| NIL (|bpPop1|)))))))

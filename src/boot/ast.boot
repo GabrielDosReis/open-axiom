@@ -65,6 +65,7 @@ structure %Ast ==
   %TypeAlias(%Head, %List)              -- type alias definition
   %Signature(%Symbol,%Mapping)          -- op: S -> T
   %Mapping(%Ast, %List)                 -- (S1, S2) -> T
+  %Forall(%List,%Ast)                   -- forall a . a -> a
   %SuffixDot(%Ast)                      -- x . 
   %Quote(%Ast)                          -- 'x
   %EqualPattern(%Ast)                   -- =x        -- patterns
@@ -226,7 +227,7 @@ bfConstruct b ==
 bfMakeCons l ==
   l = nil => nil
   l is [["COLON",a],:l1] =>
-    l1 => ['APPEND,a,bfMakeCons l1]
+    l1 => ['append,a,bfMakeCons l1]
     a
   ['CONS,first l,bfMakeCons rest l]
  
@@ -570,7 +571,7 @@ bfLET2(lhs,rhs) ==
     l2 := bfLET2(var2,addCARorCDR('CDR,rhs))
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
     [:l1,:l2]
-  lhs is ['APPEND,var1,var2] =>
+  lhs is ['append,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['reverse,rhs]
     g := makeSymbol strconc('"LETTMP#", toString $letGenVarCounter)
@@ -672,7 +673,7 @@ bfIS1(lhs,rhs) ==
     a1 is ['PROGN,c,'T] and b1 is ['PROGN,:cls] =>
       bfAND [['CONSP,lhs],bfMKPROGN [c,:cls]]
     bfAND [['CONSP,lhs],a1,b1]
-  rhs is ['APPEND,a,b] =>
+  rhs is ['append,a,b] =>
     patrev := bfISReverse(b,a)
     g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
@@ -1227,10 +1228,11 @@ bfThrow e ==
 
 --% Type alias definition
 
+backquote: (%Form,%List %Symbol) -> %Form
 backquote(form,params) ==
   params = nil => quote  form
   atom form =>
-    form in params => form
+    symbolMember?(form,params) => form
     quote form
   ["LIST",:[backquote(t,params) for t in form]]
 
@@ -1320,7 +1322,7 @@ $NativeSimpleReturnTypes ==
 
 ++ Returns true if `t' is a simple native data type.
 isSimpleNativeType t ==
-  t in $NativeSimpleReturnTypes
+  objectMember?(t,$NativeSimpleReturnTypes)
 
 coreSymbol: %Symbol -> %Symbol
 coreSymbol s ==
@@ -1422,14 +1424,14 @@ nativeType t ==
 ++ Check that `t' is a valid return type for a native function, and
 ++ returns its translation
 nativeReturnType t ==
-  t in $NativeSimpleReturnTypes => nativeType t
+  objectMember?(t,$NativeSimpleReturnTypes) => nativeType t
   coreError strconc('"invalid return type for native function: ", 
               PNAME t)
 
 ++ Check that `t' is a valid parameter type for a native function,
 ++ and returns its translation.
 nativeArgumentType t ==
-  t in $NativeSimpleDataTypes => nativeType t
+  objectMember?(t,$NativeSimpleDataTypes) => nativeType t
   -- Allow 'string'  for `pass-by-value'
   t is "string" => nativeType t
   -- anything else must use a modified reference type.
@@ -1442,7 +1444,7 @@ nativeArgumentType t ==
   -- Only 'pointer' and 'buffer' can be instantiated.
   not (c in '(buffer pointer)) =>
     coreError '"expected 'buffer' or 'pointer' type instance"
-  not (t' in $NativeSimpleDataTypes) =>
+  not objectMember?(t',$NativeSimpleDataTypes) =>
     coreError '"expected simple native data type"
   nativeType second t
   
@@ -1492,13 +1494,13 @@ genGCLnativeTranslation(op,s,t,op') ==
       strconc(gclTypeInC first x, '" ", first a,
 	(rest x => '", "; '""))
     gclTypeInC x ==
-      x in $NativeSimpleDataTypes => symbolName x
+      objectMember?(x,$NativeSimpleDataTypes) => symbolName x
       x is "void" => '"void"
       x is "string" => '"char*"
       x is [.,["pointer",.]] => "fixnum"
       '"object" 
     gclArgInC(x,a) ==
-      x in $NativeSimpleDataTypes => a
+      objectMember?(x,$NativeSimpleDataTypes) => a
       x is "string" => a   -- GCL takes responsability for the conversion
       [.,[c,y]] := x
       c is "pointer" => a

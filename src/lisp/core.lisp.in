@@ -76,6 +76,7 @@
 	   "%Atom"
 	   "%Maybe"
 	   "%Pair"
+	   "%Node"
 	   "%List"
 	   "%Vector"
 	   "%BitVector"
@@ -220,6 +221,9 @@
 
 (deftype |%Pair| (u v)
   `(cons ,u ,v))
+
+(deftype |%Node| (s)
+  `(cons ,s null))
 
 (deftype |%List| (s)
   `(or null (cons ,s)))
