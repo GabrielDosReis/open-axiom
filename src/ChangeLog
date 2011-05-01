@@ -1,5 +1,12 @@
 2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/macros.lisp (WI, tryLine, embrace indentNB, tryBreak)
+	(tryBreakNB, MARKHASH): Remove.
+	* interp/spad.lisp (NEWNAMTRANS): Likewise.
+	* interp/sys-macros.lisp: Remove more Lispy junk.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/utility.boot (applySubstNQ): New.
 	* interp/compiler.boot (finishLambdaExpression): Use it.
 	* interp/i-intern.boot (mkAtreeExpandMacros): Likewise.
