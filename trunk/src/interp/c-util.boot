@@ -1486,7 +1486,8 @@ massageBackendCode x ==
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
         x.rest.first := CADADR x
-      MAPC(function pushLocalVariable, LISTOFATOMS second x)
+      for v in LISTOFATOMS second x repeat
+        pushLocalVariable v
     -- Even if user used Lisp-level instructions to assign to
     -- this variable, we still want to note that it is a Lisp-level
     -- special variable.
@@ -1634,7 +1635,7 @@ backendCompile1 x ==
   [[fname,lamex],:$CLOSEDFNS]
 
 backendCompile l ==
-  MAPCAR(function backendCompile2, MAPCAN(function backendCompile1,l))
+  [backendCompile2 f2 for f2 in [:backendCompile1(f1) for f1 in l]]
 
 compileFileQuietly path ==
   quietlyIfInteractive COMPILE_-FILE path

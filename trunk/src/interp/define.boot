@@ -812,7 +812,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
               ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
  
     -- 6. put modemaps into InteractiveModemapFrame
-    $domainShell := eval [op',:MAPCAR('MKQ,sargl)]
+    $domainShell := eval [op',:[MKQ f for f in sargl]]
     $lisplibCategory:= formalBody
     if $LISPLIB then
       $lisplibForm:= form

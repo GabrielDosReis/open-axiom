@@ -111,10 +111,10 @@ $defaultMsgDatabaseName := nil
 ++
 REROOT: () -> %Thing
 REROOT() ==
-  $DIRECTORY_-LIST := MAPCAR(function makeAbsoluteFilename,
-    $RELATIVE_-DIRECTORY_-LIST)
-  $LIBRARY_-DIRECTORY_-LIST := MAPCAR(function makeAbsoluteFilename,
-    $RELATIVE_-LIBRARY_-DIRECTORY_-LIST)
+  $DIRECTORY_-LIST :=
+    [makeAbsoluteFilename d for d in $RELATIVE_-DIRECTORY_-LIST]
+  $LIBRARY_-DIRECTORY_-LIST :=
+      [makeAbsoluteFilename d for d in $RELATIVE_-LIBRARY_-DIRECTORY_-LIST]
   $defaultMsgDatabaseName := PATHNAME
     makeAbsoluteFilename '"share/msgs/s2-us.msgs"
   $msgDatabaseName := nil

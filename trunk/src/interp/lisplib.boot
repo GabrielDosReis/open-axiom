@@ -769,8 +769,8 @@ getConstructorSignature ctor ==
   -- Note: constructors are not overloadable.
   rest getmode(ctor,$e)
  
-getSlotFromCategoryForm ([op,:argl],index) ==
-  u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
+getSlotFromCategoryForm (x,index) ==
+  u:= eval [x.op,:[MKQ f for f in $FormalMapVariableList for . in 1..#x.args]]
   not vector? u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index

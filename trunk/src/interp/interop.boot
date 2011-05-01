@@ -68,16 +68,16 @@ DNameToSExpr1 dname ==
   args  := rest rest dname
   name0 is '_-_> => 
     froms := first args
-    froms := MAPCAR(function DNameToSExpr, rest froms)
+    froms := [DNameToSExpr x for x in rest froms]
     ret   := second args -- a tuple
     ret   := DNameToSExpr second ret -- contents
     ['Mapping,:[ret,:froms]]
   name0 is 'Union or name0 is 'Record =>
-    sxs := MAPCAR(function DNameToSExpr, rest first args)
+    sxs := [DNameToSExpr x for x in rest first args]
     [name0,:sxs]
   name0 is 'Enumeration =>
-    [name0,:MAPCAR(function DNameFixEnum, rest first args)]
-  [name0,:MAPCAR(function DNameToSExpr, args)]
+    [name0,:[DNameFixEnum x for x in rest first args]]
+  [name0,:[DNameToSExpr x for x in args]]
 
 DNameToSExpr dname ==
   first dname = DNameOtherID  =>
@@ -104,7 +104,7 @@ SExprToDName(sexpr, cosigVal) ==
         [DNameTupleID,: [ SExprToDName(sx,true) for sx in rest sexpr]]]
   newCosig := rest getDualSignatureFromDB first sexpr
   [DNameApplyID, name0,
-   : MAPCAR(function SExprToDName, rest sexpr, newCosig)]
+   :[SExprToDName(x,f) for x in rest sexpr for f in newCosig]]
 
 -- local garbage because Compiler strings are null terminated
 StringToCompStr(str) == 
