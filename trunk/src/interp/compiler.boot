@@ -1550,9 +1550,11 @@ compColon([":",f,t],m,e) ==
   e:=
     f is [op,:argl] =>
       --for MPOLY--replace parameters by formal arguments: RDJ 3/83
-      newTarget := EQSUBSTLIST(take(#argl,$FormalMapVariableList),
-        [(x is [":",a,m] => a; x) for x in argl],t)
-      signature:=
+      --FIXME: why?  -- gdr 2011-04-30
+      newTarget :=
+        applySubst(pairList([(x is [":",a,m] => a; x) for x in argl],
+                     $FormalMapVariableList),t)
+      signature :=
         ["Mapping",newTarget,:
           [(x is [":",a,m] => m;
               getmode(x,e) or systemErrorHere ['"compColon",x]) for x in argl]]

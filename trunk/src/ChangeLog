@@ -1,3 +1,9 @@
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (EQSUBSTLIST): Remove.
+	* interp/c-util.boot (eqSubstAndCopy, eqSubst): Likewise.  Adjust
+	callers. 
+
 2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot: Replace use of EQSUBSTLIST with applySubst.

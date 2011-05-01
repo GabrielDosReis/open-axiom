@@ -1139,15 +1139,6 @@ clearReplacement name ==
 registerFunctionReplacement(name,body) ==
   LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
 
-eqSubstAndCopy: (%List %Form, %List %Symbol, %Form) -> %Form
-eqSubstAndCopy(args,parms,body) ==
-  applySubst(pairList(parms,args),body)
-
-eqSubst: (%List %Form, %List %Symbol, %Form) -> %Form
-eqSubst(args,parms,body) ==
-  NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
-
-
 ++ Attempt to resolve the indirect reference to a constant form
 ++ `[spadConstant,$,n]' to a simpler expression
 resolveConstantForm form ==
@@ -1181,8 +1172,8 @@ inlineDirectCall call ==
     and/[sideEffectFree? arg for arg in call.args] =>
       -- alpha rename before substitution.
       newparms := [gensym() for p in parms]
-      body := eqSubstAndCopy(newparms,parms,body)
-      eqSubst(call.args,newparms,body)
+      body := applySubst(pairList(parms,newparms),body)
+      applySubst!(pairList(newparms,call.args),body)
     -- get cute later.
     call
   call
@@ -1332,7 +1323,7 @@ proclaimCapsuleFunction(op,sig) ==
 backendCompileILAM: (%Symbol,%List %Symbol, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
   args' := [gensym() for . in 1..#args]
-  body' := eqSubst(args',args,body)
+  body' := applySubst!(pairList(args,args'),body)
   property(name,'ILAM) := true
   setDynamicBinding(name,["LAMBDA",args',:body'])
   name

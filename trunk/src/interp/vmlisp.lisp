@@ -957,8 +957,6 @@
 
 (defun copy (x) (copy-tree x)) ; not right since should descend vectors
 
-(defun eqsubstlist (new old list) (sublis (mapcar #'cons old new) list))
-
 ; Gen code for SETQP expr
 
 (eval-when 
