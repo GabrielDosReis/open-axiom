@@ -1,0 +1,27 @@
+## Copyright (C) 2011 Gabriel Dos Reis
+## Autoconf template file for the benefit of QMake 
+## Written by Gabriel Dos Reis.
+
+OA_INC =
+OA_LIB =
+
+TEMPLATE = app
+TARGET = gui
+
+## Tell QT that sources are not in the build directory
+VPATH += @srcdir@
+
+## Our headers
+HEADERS += main-window.h
+INCLUDEPATH += .  $$OA_INC
+DEPENDPATH += .
+
+## Source files
+SOURCES += main-window.C main.C
+
+## Additional support libraries
+LIBS += $$OA_LIB
+
+## C++ compiler
+#QMAKE_CXX = @CXX@
+#QMAKE_CXXFLAGS += @CXXFLAGS@
