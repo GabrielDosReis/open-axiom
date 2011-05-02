@@ -571,7 +571,7 @@ canCoerceByMap(t1,t2) ==
   -- save some time for those we know about
   know := '(List Vector Segment Stream UniversalSegment Array
     Polynomial UnivariatePolynomial SquareMatrix Matrix)
-  top in know => canCoerce(u1,u2)
+  symbolMember?(top,know) => canCoerce(u1,u2)
 
   null selectMms1('map,t2,[['Mapping,u2,u1],t1],
     [['Mapping,u2,u1],u1],nil) => nil
@@ -617,8 +617,8 @@ canCoerceCommute(t1,t2) ==
 -- THIS IS OUT-MODED AND WILL GO AWAY SOON  RSS 2-87
 -- t1 is t2 with the two top level constructors commuted
 -- looks for the existence of a commuting function
-  first(t1) in (l := [$QuotientField, 'Gaussian]) and
-    first(t2) in l => true
+  symbolMember?(first(t1),(l := [$QuotientField, 'Gaussian])) and
+    symbolMember?(first(t2),l) => true
   p:= ASSQ(first t1,$CommuteTable)
   p and ASSQ(first t2,rest p) is [.,:['commute,.]]
 

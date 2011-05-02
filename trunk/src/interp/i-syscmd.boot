@@ -355,8 +355,8 @@ clearCmdParts(l is [opt,:vl]) ==
   $e : local := $InteractiveFrame
   for x in vl repeat
     clearDependencies(x,true)
-    if option='properties and x in pmacs then clearParserMacro(x)
-    if option='properties and x in imacs and not (x in pmacs) then
+    if option='properties and symbolMember?(x,pmacs) then clearParserMacro(x)
+    if option='properties and symbolMember?(x,imacs) and not symbolMember?(x,pmacs) then
         sayMessage ['"   You cannot clear the definition of the system-defined macro ",
             fixObjectForPrinting x,"."]
     p1 := assoc(x,CAAR $InteractiveFrame) =>
@@ -1017,25 +1017,25 @@ displayMacros names ==
 
   first := true
   for macro in macros repeat
-    macro in pmacs =>
+    symbolMember?(macro,pmacs) =>
         if first then
             sayBrightly ['"%l",'"User-defined macros:"]
             first := nil
         displayParserMacro macro
-    macro in imacs => 'iterate
+    symbolMember?(macro,imacs) => 'iterate
     sayBrightly (["   ",'"%b", macro, '"%d", " is not a known OpenAxiom macro."])
 
   -- now system ones
 
   first := true
   for macro in macros repeat
-    macro in imacs =>
+    symbolMember?(macro,imacs) =>
         macro in pmacs => 'iterate
         if first then
             sayBrightly ['"%l",'"System-defined macros:"]
             first := nil
         displayMacro macro
-    macro in pmacs => 'iterate
+    symbolMember?(macro,pmacs) => 'iterate
   nil
 
 getParserMacroNames() ==
@@ -1131,7 +1131,7 @@ displayProperties(option,l) ==
       v1 := fixObjectForPrinting(v)
       sayMSG ['"Properties of",:bright prefix2String v1,'":"]
       null pl =>
-        v in pmacs =>
+        symbolMember?(v,pmacs) =>
             sayMSG '"   This is a user-defined macro."
             displayParserMacro v
         isInterpMacro v =>
@@ -2420,7 +2420,7 @@ reportOpsFromLisplib1(unitForm,u)  ==
   editFile showFile
 
 reportOpsFromUnitDirectly unitForm ==
-  isRecordOrUnion := unitForm is [a,:.] and a in $DomainNames
+  isRecordOrUnion := unitForm is [a,:.] and symbolMember?(a,$DomainNames)
   unit:= evalDomain unitForm
   top:= first unitForm
   kind:= getConstructorKindFromDB top

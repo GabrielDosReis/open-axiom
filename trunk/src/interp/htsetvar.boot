@@ -280,7 +280,7 @@ htCheckList(checker,value) ==
   if value in '(n no N NO) then value := 'no
   checker is [n,m] and integer? n =>
     m = n + 1 =>
-      value in checker => value
+      scalarMember(value,checker) => value
       n
     null m =>
       integer? value and value >= n => value
@@ -288,7 +288,7 @@ htCheckList(checker,value) ==
     integer? m =>
       integer? value and value >= n and value <= m => value
       n
-  value in checker => value
+  membr(value,checker) => value
   first checker
 --  emlist := strconc/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
 --  strconc('"Please enter one of: ",emlist)

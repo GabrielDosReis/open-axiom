@@ -245,8 +245,8 @@ condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
 ++ are consulted.  Consequently, this functions is not appropriate
 ++ for use in the compiler.
 isConstructorName op ==
-  op in $BuiltinConstructorNames
-    or getConstructorAbbreviationFromDB op
+  getConstructorAbbreviationFromDB op
+    or builtinConstructor? op
 
  
 --% Code Being Phased Out

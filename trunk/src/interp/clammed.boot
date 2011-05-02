@@ -176,12 +176,12 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   t := equiType t
   vl := isPolynomialMode t =>
     if vl~='all then
-      var:= or/[(x in polyVarList => x;nil) for x in vl] => return false
+      var:= or/[(member(x,polyVarList) => x;nil) for x in vl] => return false
       listOfDuplicates vl => return false
       polyVarList:= union(vl,polyVarList)
     hasPolyMode => false
     con := first t
-    poly? := (con = 'Polynomial or con = 'Expression)
+    poly? := (con is 'Polynomial or con is 'Expression)
     isLegitimateMode(underDomainOf t,poly?,polyVarList)
 
   IDENTP(op := first t) and constructor? op =>

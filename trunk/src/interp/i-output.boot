@@ -2628,7 +2628,7 @@ callForm2String x ==
   atom x => primaryForm2String x
   [op,:args] := x
 
-  op in $allClassicOps => primaryForm2String x
+  member(op,$allClassicOps) => primaryForm2String x
 
   #args = 0 =>
     op = "Zero" => '"0"

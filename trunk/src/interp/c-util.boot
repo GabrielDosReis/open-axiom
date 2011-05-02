@@ -171,6 +171,9 @@ wantArgumentsAsTuple: (%List %Form,%Sig) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
+abstractionOperator? x ==
+  symbol? x and symbolMember?(x,$AbstractionOperator)
+
 ++ We are about to seal the (Lisp) definition of a function.
 ++ Augment the body of any function definition in the form `x'
 ++ with declarations for unused parameters.
@@ -178,7 +181,7 @@ wantArgumentsAsTuple(args,sig) ==
 declareUnusedParameters x == (augment x; x) where
   augment x == 
     atomic? x => nil
-    x is [op,parms,body] and op in $AbstractionOperator =>
+    x is [op,parms,body] and abstractionOperator? op =>
       augment body
       unused := [p for p in parms | not usedSymbol?(p,body)]
       null unused => [body]
@@ -587,17 +590,17 @@ diagnoseUnknownType(t,e) ==
     stackSemanticError(['"The identifier", :bright t, 
                          '"is not known to name a type"],nil)
   [ctor,:args] := t
-  ctor = "Mapping" => 
+  ctor is "Mapping" => 
     for t' in args repeat diagnoseUnknownType(t',e)
     t
-  ctor = "Record" =>
+  ctor is "Record" =>
     for [[.,n,t'],:fields] in tails args repeat 
       diagnoseUnknownType(t',e)
       for [.,=n,.] in fields repeat
         stackSemanticError(['"Field", :bright n, 
           '"declared more than once."], nil)
     t
-  ctor = "Union" =>
+  ctor is "Union" =>
     if args is [[":",:.],:.] then
       for [[.,n,t'],:fields] in tails args repeat 
         diagnoseUnknownType(t',e)
@@ -607,7 +610,7 @@ diagnoseUnknownType(t,e) ==
     else
       for t' in args repeat diagnoseUnknownType(t',e)
     t
-  ctor = "Enumeration" =>
+  ctor is "Enumeration" =>
     for t' in args repeat
       IDENTP t' => nil
       stackSemanticError(['"Enumerators must be symbols."], nil)
@@ -617,8 +620,8 @@ diagnoseUnknownType(t,e) ==
         stackSemanticError(['"Symbolic value ", :bright sym, 
           '"is listed twice"], nil)
     t
-  ctor = "[||]" => t
-  ctor in $BuiltinConstructorNames => t -- ??? check Record and Union fields
+  ctor is "[||]" => t
+  builtinConstructor? ctor => t
   -- ??? Ideally `e' should be a local extension of $CategoryFrame
   -- ??? so that we don't have to access it here as a global state.
   get(ctor,"isFunctor",$CategoryFrame) 
@@ -1110,7 +1113,7 @@ middleEndExpand x ==
   [op,:args] := x
   IDENTP op and (fun := getOpcodeExpander op) =>
     middleEndExpand apply(fun,x,nil)
-  op in $middleEndMacroList =>
+  symbol? op and symbolMember?(op,$middleEndMacroList) =>
     middleEndExpand MACROEXPAND_-1 x
   a := middleEndExpand op
   b := middleEndExpand args
@@ -1244,7 +1247,7 @@ expandableDefinition?(vars,body) ==
 
     atomic? body => true
     [op,:args] := body
-    not IDENTP op or op in $NonExpandableOperators => false
+    not IDENTP op or symbolMember?(op,$NonExpandableOperators) => false
     and/[atomic? x for x in args] 
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
@@ -1509,7 +1512,7 @@ massageBackendCode x ==
   u in '(PROG LAMBDA) =>
     newBindings := []
     for y in second x repeat
-      not (y in $LocalVars) =>
+      not symbolMember?(y,$LocalVars) =>
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
     res := massageBackendCode CDDR x
@@ -1759,7 +1762,7 @@ lookupDefiningFunction(op,sig,dc) ==
   --      FIXME: However, there may be cylic dependencies
   --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
   --      us from full evaluation.  
-  args = nil and ctor in $SystemInlinableConstructorNames =>
+  args = nil and symbolMember?(ctor,$SystemInlinableConstructorNames) =>
     compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil

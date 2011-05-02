@@ -287,7 +287,7 @@ mkMapAlias(op,argl) ==
 
 mkAliasList l == fn(l,nil) where fn(l,acc) ==
   null l => reverse! acc
-  not IDENTP first l or first l in acc => fn(rest l,[nil,:acc])
+  not symbol? first l or symbolMember?(first l,acc) => fn(rest l,[nil,:acc])
   fn(rest l,[first l,:acc])
 
 args2Tuple args ==
@@ -379,7 +379,7 @@ clearDependencies(x,clearLocalModemapsIfTrue) ==
   clearDep1(x,nil,nil,$dependencies)
 
 clearDep1(x,toDoList,doneList,depList) ==
-  x in doneList => nil
+  symbolMember?(x,doneList) => nil
   clearCache x
   newDone:= [x,:doneList]
   until null a repeat
@@ -791,7 +791,7 @@ mapRecurDepth(opName,opList,body) ==
       atom argl => 0
       argl => "MAX"/[mapRecurDepth(opName,opList,x) for x in argl]
       0
-    op in opList => argc
+    symbolMember?(op,opList) => argc
     op=opName => 1 + argc
     (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
       mapRecurDepth(opName,[op,:opList],getMapBody(op,mapDef))
@@ -853,7 +853,7 @@ analyzeRecursiveMap(op,argTypes,body,parms,n) ==
   tar
 
 saveDependentMapInfo(op,opList) ==
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     lmml := [[op, :get(op, 'localModemap, $e)]]
     gcl := [[op, :get(op, 'generatedCode, $e)]]
     for [dep1,dep2] in getFlag("$dependencies") | dep1=op repeat
@@ -864,7 +864,7 @@ saveDependentMapInfo(op,opList) ==
   nil
 
 restoreDependentMapInfo(op, opList, [lmml,:gcl]) ==
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     clearDependentMaps(op,opList)
     for [op, :lmm] in lmml repeat
       $e := putHist(op,'localModemap,lmm,$e)
@@ -873,7 +873,7 @@ restoreDependentMapInfo(op, opList, [lmml,:gcl]) ==
 
 clearDependentMaps(op,opList) ==
   -- clears the local modemaps of all the maps that depend on op
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     $e := putHist(op,'localModemap,nil,$e)
     $e := putHist(op,'generatedCode,nil,$e)
     for [dep1,dep2] in getFlag("$dependencies") | dep1=op repeat
@@ -900,7 +900,7 @@ expandRecursiveBody(alreadyExpanded, body) ==
       ((numMapArgs mapDef) = 0) => getMapBody(body,mapDef)
     body
   body is [op,:argl] =>
-    not (op in alreadyExpanded) =>
+    not symbolMember?(op,alreadyExpanded) =>
       (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
         newBody:= getMapBody(op,mapDef)
         for arg in argl for var in $FormalMapVariableList repeat

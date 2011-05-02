@@ -812,7 +812,7 @@ fortPre1 e ==
   specialOps  := '(BRACKET BRACE SUB AGGLST SUPERSUB MATRIX SEGMENT ALTSUPERSUB
                    PAREN CONCAT CONCATB QUOTE STRING SIGMA  STEP IN SIGMA2
                    INTSIGN  PI PI2 INDEFINTEGRAL)
-  op in specialOps => exp2FortSpecial(op,args,#args)
+  symbolMember?(op,specialOps) => exp2FortSpecial(op,args,#args)
   member(op,['"*", "*", '"+", "+", '"-", "-"]) and (#args > 2) =>
     binaryExpr := fortPre1 [op,first args, second args]
     for i in 3..#args repeat

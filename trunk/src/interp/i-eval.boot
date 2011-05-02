@@ -109,7 +109,7 @@ evaluateType0 form ==
     constructor? op => evaluateType1 form
     nil
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
+  IDENTP form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
 ++ Check for duplicate fields in a Union or Record domain form.
@@ -157,7 +157,7 @@ evaluateType form ==
       form
     evaluateFormAsType form
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
+  IDENTP form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
   evaluateFormAsType form
 

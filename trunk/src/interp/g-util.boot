@@ -57,8 +57,8 @@ usedSymbol?(s,x) ==
   symbol? x => s = x
   atom x => false
   x is ['QUOTE,:.] => false
-  x is [op,parms,:body] and op in $AbstractionOperator =>
-    s in parms => false
+  x is [op,parms,:body] and abstractionOperator? op =>
+    symbolMember?(s,parms) => false
     usedSymbol?(s,body)
   or/[usedSymbol?(s,x') for x' in x]
   

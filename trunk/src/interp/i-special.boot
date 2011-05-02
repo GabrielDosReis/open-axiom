@@ -975,7 +975,7 @@ upconstruct t ==
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
   if tar and cons?(tar) and not isPartialMode(tar) then
-    first(tar) in aggs =>
+    symbolMember?(first(tar),aggs) =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
         second tar
@@ -986,11 +986,11 @@ upconstruct t ==
   nargs := #l
   argModeSetList:= [bottomUp putCallInfo(x,"construct",i,nargs)
                       for x in l for i in 1..]
-  dol and dol is [topType,:.] and not (topType in aggs) =>
+  dol and dol is [topType,:.] and not symbolMember?(topType,aggs) =>
     (mmS:= selectMms(op,l,tar)) and (mS:= evalForm(op,getUnname op,l,mmS)) =>
       putModeSet(op,mS)
     nil
-  (tar and tar is [topType,:.] and not (topType in aggs)) and
+  (tar and tar is [topType,:.] and not symbolMember?(topType,aggs)) and
     (mmS:= modemapsHavingTarget(selectMms(op,l,tar),tar)) and
         (mS:= evalForm(op,getUnname op,l,mmS)) =>
           putModeSet(op,mS)
@@ -1252,19 +1252,19 @@ isPolynomialMode m ==
 containsPolynomial m ==
   atom m => nil
   [d,:.] := m
-  d in $univariateDomains or d in $multivariateDomains or
+  symbolMember?(d,$univariateDomains) or symbolMember?(d,$multivariateDomains) or
     d in '(Polynomial RationalFunction) => true
   (m' := underDomainOf m) and containsPolynomial m'
 
 containsVariables m ==
   atom m => nil
   [d,:.] := m
-  d in $univariateDomains or d in $multivariateDomains => true
+  symbolMember?(d,$univariateDomains) or symbolMember?(d,$multivariateDomains) => true
   (m' := underDomainOf m) and containsVariables m'
 
 listOfDuplicates l ==
   l is [x,:l'] =>
-    x in l' => [x,:listOfDuplicates deleteAll(x,l')]
+    member(x,l') => [x,:listOfDuplicates deleteAll(x,l')]
     listOfDuplicates l'
 
 -- The following function removes all occurrences of x from the list l
@@ -2036,7 +2036,7 @@ getInterpMacroNames() ==
 isInterpMacro name ==
   -- look in local and then global environment for a macro
   not IDENTP name => nil
-  name in $specialOps => nil
+  symbolMember?(name,$specialOps) => nil
   (m := get("--macros--",name,$env)) => m
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
@@ -2342,7 +2342,7 @@ uptuple t ==
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
   if tar and cons?(tar) and not isPartialMode(tar) then
-    first(tar) in aggs =>
+    symbolMember?(first(tar),aggs) =>
       ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
     first(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
