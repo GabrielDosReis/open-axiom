@@ -54,7 +54,7 @@ $commonCategoryAncestors ==
 ++ Default category packages for Record, Union, Mapping and 
 ++ Enumeration domains.
 $commonCategoryDefaults ==
-  ['(SetCategory_& $), '(BasicType_& $), nil]
+  ['(SetCategory& $), '(BasicType& $), nil]
 
 ++ The slot number in a domain shell that holds the first parameter to
 ++ a domain constructor.

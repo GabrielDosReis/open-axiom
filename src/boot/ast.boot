@@ -703,6 +703,15 @@ sequence?(x,pred) ==
   x is ["QUOTE",seq] and cons? seq and
     "and"/[apply(pred,y,nil) for y in seq]
 
+idList? x ==
+  x is ["LIST",:.] and "and"/[defQuoteId arg for arg in x.args]
+
+charList? x ==
+  x is ["LIST",:.] and "and"/[bfChar? arg for arg in x.args]
+
+stringList? x ==
+  x is ["LIST",:.] and "and"/[bfString? arg for arg in x.args]
+
 ++ Generate code for a membership test `x in seq' where `seq'
 ++ is a sequence (e.g. a list)
 bfMember(var,seq) ==
@@ -712,11 +721,26 @@ bfMember(var,seq) ==
   defQuoteId var or sequence?(seq,function symbol?) =>
     seq is ["QUOTE",[x]] => ["EQ",var,["QUOTE",x]]
     ["symbolMember?",var,seq]
+  idList? seq =>
+    seq.args is [.] => ["EQ",var,:seq.args]
+    symbol? var and seq.args is [x,y] =>
+      bfOR [["EQ",var,x],["EQ",var,y]]
+    ["symbolMember?",var,seq]
   bfChar? var or sequence?(seq,function char?) =>
     seq is ["QUOTE",[x]] => ["CHAR=",var,x]
     ["charMember?",var,seq]
+  charList? seq =>
+    seq.args is [.] => ["CHAR=",var,:seq.args]
+    symbol? var and seq.args is [x,y] =>
+      bfOR [["CHAR=",var,x],["CHAR=",var,y]]
+    ["charMember?",var,seq]
   bfString? var or sequence?(seq,function string?) =>
     seq is ["QUOTE",[x]] => ["STRING=",var,x]
+    ["stringMember?",var,seq]
+  stringList? seq =>
+    seq.args is [.] => ["STRING=",var,:seq.args]
+    symbol? var and seq.args is [x,y] =>
+      bfOR [["STRING=",var,x],["STRING=",var,y]]
     ["stringMember?",var,seq]
   ["MEMBER",var,seq]
   

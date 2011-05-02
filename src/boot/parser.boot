@@ -871,9 +871,6 @@ bpDefinition()==
     bpEqPeek "TDEF" =>
        bpRestore a
        bpTypeAliasDefition()
-    bpEqPeek "MDEF" =>
-       bpRestore a
-       bpMdef()
     true
   bpRestore a
   false
@@ -908,18 +905,6 @@ bpCompoundDefinitionTail f ==
 bpDefTail f ==
   bpSimpleDefinitionTail()
     or bpCompoundDefinitionTail f
- 
- 
-bpMDefTail()==
- --   bpEqKey "MDEF" and
- --   (bpWhere() or bpTrap())
- --     and bpPush bfMDefinition1(bpPop2(),bpPop1())
- --      or
-           (bpVariable() or bpTrap()) and
-             bpEqKey "MDEF" and (bpWhere() or bpTrap())
-                 and bpPush %Macro(bpPop3(),bpPop2(),bpPop1())
- 
-bpMdef()== bpName() and bpStoreName() and bpMDefTail()
  
 bpWhere()==
     bpDefinition() and

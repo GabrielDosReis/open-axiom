@@ -9,12 +9,13 @@
 
 (DEFUN |shoeStartsId| (|x|)
   (OR (ALPHA-CHAR-P |x|)
-      (MEMBER |x| (LIST (|char| '$) (|char| '?) (|char| '%)))))
+      (|charMember?| |x| (LIST (|char| '$) (|char| '?) (|char| '%)))))
 
 (DEFUN |shoeIdChar| (|x|)
   (OR (ALPHANUMERICP |x|)
-      (MEMBER |x|
-              (LIST (|char| '|'|) (|char| '?) (|char| '%) (|char| '!)))))
+      (|charMember?| |x|
+          (LIST (|char| '|'|) (|char| '?) (|char| '%) (|char| '!)
+                (|char| '&)))))
 
 (DEFUN |subString| (|s| |f| &OPTIONAL (|n| NIL))
   (COND
@@ -43,10 +44,10 @@
           (LIST "^=" 'SHOENERETIRED) (LIST "~=" 'SHOENE)
           (LIST ".." 'SEG) (LIST "#" 'LENGTH) (LIST "=>" 'EXIT)
           (LIST "->" 'ARROW) (LIST ":=" 'BEC) (LIST "+->" 'GIVES)
-          (LIST "==" 'DEF) (LIST "==>" 'MDEF) (LIST "<=>" 'TDEF)
-          (LIST "(" 'OPAREN) (LIST ")" 'CPAREN) (LIST "(|" 'OBRACK)
-          (LIST "|)" 'CBRACK) (LIST "[" 'OBRACK) (LIST "]" 'CBRACK)
-          (LIST "suchthat" 'BAR) (LIST "'" 'QUOTE) (LIST "|" 'BAR)))
+          (LIST "==" 'DEF) (LIST "<=>" 'TDEF) (LIST "(" 'OPAREN)
+          (LIST ")" 'CPAREN) (LIST "(|" 'OBRACK) (LIST "|)" 'CBRACK)
+          (LIST "[" 'OBRACK) (LIST "]" 'CBRACK) (LIST "suchthat" 'BAR)
+          (LIST "'" 'QUOTE) (LIST "|" 'BAR)))
 
 (DEFUN |shoeKeyTableCons| ()
   (PROG (|KeyTable|)

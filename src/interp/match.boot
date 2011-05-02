@@ -99,7 +99,7 @@ patternCheck pattern == main where
     not(and/[equal(pattern,i + 1,$wildCard) for i in u]) =>
       sayBrightly ['"Invalid use of underscores in pattern: ",pattern]
       '"!!!!!!!!!!!!!!"
-    c := wild(pattern,'(_$ _# _% _& _@))
+    c := wild(pattern,'($ _# % _& _@))
 --  sayBrightlyNT ['"Choosing new wild card"]
 --  pp c
     $oldWild  :local := $wildCard

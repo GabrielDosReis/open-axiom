@@ -44,7 +44,7 @@ shoeStartsId x ==
   alphabetic? x or x in [char "$", char "?", char "%"]
 
 shoeIdChar x ==
-  alphanumeric? x or x in [char "'", char "?", char "%", char "!"]
+  alphanumeric? x or x in [char "'", char "?", char "%", char "!",char "&"]
 
 ++ return the sub-string of `s' starting from `f'.
 ++ When non-nil, `n' designates the length of the sub-string.
@@ -111,7 +111,6 @@ shoeKeyWords == [  _
             ['":=", "BEC"], _
             ['"+->", "GIVES"], _
             ['"==", "DEF"], _
-            ['"==>","MDEF" ], _
             ['"<=>", "TDEF"], _
             ['"(", "OPAREN"], _
             ['")", "CPAREN"], _
