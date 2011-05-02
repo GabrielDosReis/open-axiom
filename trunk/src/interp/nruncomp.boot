@@ -320,7 +320,7 @@ NRTaddInner x ==
 
 
 NRTisExported? opSig ==
-  or/[u for u in $domainShell.1 | u.0 = opSig]
+  or/[u for u in categoryExports $domainShell | u.0 = opSig]
 
 consOpSig(op,sig,dc) ==
   if cons? op then
@@ -633,7 +633,7 @@ NRTmakeSlot1Info() ==
       [[dollarName,:'_$],:mkSlot1sublis argl]
     mkSlot1sublis rest $form
   $lisplibOpAlist :=
-    transformOperationAlist applySubst(pairlis,vectorRef($domainShell,1))
+    transformOperationAlist applySubst(pairlis,categoryExports $domainShell)
   opList :=
     $NRTderivedTargetIfTrue => 'derived
     $insideCategoryPackageIfTrue => slot1Filter $lisplibOpAlist
@@ -674,7 +674,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
   --  if called inside buildFunctor, $NRTdeltaLength gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
   --    $NRTdeltaList = nil  ===> all slot numbers become nil
-  $lisplibOperationAlist := [sigloc entry for entry in $domainShell.1] where
+  $lisplibOperationAlist := [sigloc entry for entry in categoryExports $domainShell] where
     sigloc [opsig,pred,fnsel] ==
         if pred isnt 'T then
           pred := simpBool pred
@@ -688,7 +688,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
                            copyList $lisplibOperationAlist,function second)
   $lastPred: local := false
   $newEnv: local := $e
-  vectorRef($domainShell,1) := [fn entry for entry in sortedOplist] where
+  categoryExports($domainShell) := [fn entry for entry in sortedOplist] where
     fn [[op,sig],pred,fnsel] ==
        if $lastPred ~= pred then
             $newEnv := deepChaseInferences(pred,$e)

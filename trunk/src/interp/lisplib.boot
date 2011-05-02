@@ -673,7 +673,7 @@ getSlot1 domainName ==
       $e:= put(a,'mode,m,$e)
     t := compMakeCategoryObject(target,$e) or
       systemErrorHere ["getSlot1",domainName]
-    t.expr.1
+    categoryExports t.expr
   sayKeyedMsg("S2IL0022",[namestring p,'"constructor modemap"])
   nil
  
@@ -713,11 +713,12 @@ sayNonUnique x ==
 --   [:[[op,:x] for x in y] for [op,:y] in operationAlist]
  
 findConstructorSlotNumber(domainForm,domain,op,sig) ==
-  null domain.1 => getSlotNumberFromOperationAlist(domainForm,op,sig)
+  null categoryExports domain =>
+    getSlotNumberFromOperationAlist(domainForm,op,sig)
   sayMSG ['"   using slot 1 of ",domainForm]
   constructorArglist:= rest domainForm
   nsig:=#sig
-  tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
+  tail:= or/[r for [[op1,sig1],:r] in categoryExports domain | op=op1 and nsig=#sig1 and
     "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
       integer? b => a=constructorArglist.b
@@ -755,7 +756,7 @@ sigsMatch(sig,sig1,domainForm) ==
  
 findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   nsig:=#sig
-  tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
+  tail:= or/[r for [[op1,sig1],:r] in categoryExports domain | op=op1 and nsig=#sig1 and
     "and"/[a=b or isSubset(bustUnion a,bustUnion b,$CategoryFrame)
       for a in sig for b in sig1]]
   tail is [.,["ELT",.,n]] => n

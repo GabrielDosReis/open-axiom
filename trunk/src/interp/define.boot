@@ -1366,7 +1366,7 @@ candidateSignatures(op,nmodes,slot1) ==
 ++ is exported.  Return the complete signature if yes; otherwise
 ++ return nil, with diagnostic in ambiguity case.
 hasSigInTargetCategory(argl,form,opsig,e) ==
-  sigs := candidateSignatures($op,#form,vectorRef($domainShell,1))
+  sigs := candidateSignatures($op,#form,categoryExports $domainShell)
   cc := checkCallingConvention(sigs,#argl)
   mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
             for x in argl for i in 0..]

@@ -313,7 +313,8 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
  
 evalAndSub(domainName,viewName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
-  categoryObject? form => [substNames(domainName,viewName,functorForm,form.1),$e]
+  categoryObject? form =>
+    [substNames(domainName,viewName,functorForm,categoryExports form),$e]
   --next lines necessary-- see MPOLY for which $ is actual arg. --- RDJ 3/83
   if CONTAINED("$$",form) then $e:= put("$$","mode",get("$","mode",$e),$e)
   opAlist:= getOperationAlist(domainName,functorForm,form)
@@ -327,8 +328,9 @@ getOperationAlist(name,functorForm,form) ==
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
   $insideFunctorIfTrue and name="$" =>
-    ($domainShell => $domainShell.1; systemError '"$ has no shell now")
-  T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; T.expr.1)
+    $domainShell => categoryExports $domainShell
+    systemError '"$ has no shell now"
+  T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; categoryExports T.expr)
   stackMessage('"not a category form: %1bp",[form])
  
 substNames(domainName,viewName,functorForm,opalist) ==

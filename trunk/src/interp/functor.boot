@@ -318,7 +318,7 @@ setVector12 args ==
             --as in DistributedMultivariatePolynomial
     args1:=[u.op,:args1]
     args2:=[u.args,:args2]
-  freeof($domainShell.1,args1) and
+  freeof(categoryExports $domainShell,args1) and
       freeof($domainShell.2,args1) and
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['%list,:args2]]]
@@ -586,7 +586,7 @@ TryGDC cond ==
 SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   null body => return nil
   u := first $catvecList
-  for catImplem in LookUpSigSlots(sig,u.1) repeat
+  for catImplem in LookUpSigSlots(sig,categoryExports u) repeat
     catImplem is [q,.,index] and (q='ELT or q='CONST) =>
       if q is 'CONST and body is ['CONS,a,b] then
          body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
