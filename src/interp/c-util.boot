@@ -143,7 +143,7 @@ substituteDollarIfRepHack m ==
 getRepresentation: %Env -> %Maybe %Mode
 getRepresentation e ==
   u := get('Rep,'value,e) => u.expr
-  get('Rep,'macro,e)
+  get('Rep,"macro",e)
 
 
 ++ Returns true if the form `t' is an instance of the Tuple constructor.

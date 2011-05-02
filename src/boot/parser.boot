@@ -860,7 +860,10 @@ bpExit()==
 	   or true)
 
 bpDefinition()==
-  a:=bpState()
+  bpEqKey "MACRO" =>
+    bpName() and bpStoreName() and bpCompoundDefinitionTail function %Macro
+      or bpTrap()
+  a := bpState()
   bpExit() =>
     bpEqPeek "DEF" =>
        bpRestore a
@@ -882,9 +885,9 @@ bpStoreName()==
   true
 
 bpDef() ==  
-  bpName() and bpStoreName() and bpDefTail()
+  bpName() and bpStoreName() and bpDefTail function %Definition
  
-bpDDef() ==  bpName() and bpDefTail()
+bpDDef() ==  bpName() and bpDefTail function %Definition
 
 ++ Parse the remaining of a simple definition.
 bpSimpleDefinitionTail() ==
@@ -893,18 +896,18 @@ bpSimpleDefinitionTail() ==
       and bpPush %ConstantDefinition(bpPop2(), bpPop1())
 
 ++ Parse the remaining of a compound definition.
-bpCompoundDefinitionTail() ==
+bpCompoundDefinitionTail f ==
   bpVariable() and 
     bpEqKey "DEF" and (bpWhere() or bpTrap()) and 
-      bpPush %Definition(bpPop3(),bpPop2(),bpPop1())
+      bpPush apply(f,[bpPop3(),bpPop2(),bpPop1()])
 
 
 ++ Parse the remainding of a definition.  When we reach this point
 ++ we know we must parse a definition and we have already parsed
 ++ the name of the main operator in the definition.
-bpDefTail() ==
+bpDefTail f ==
   bpSimpleDefinitionTail()
-    or bpCompoundDefinitionTail()
+    or bpCompoundDefinitionTail f
  
  
 bpMDefTail()==

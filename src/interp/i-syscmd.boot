@@ -1016,35 +1016,35 @@ displayMacros names ==
   -- first do user defined ones
 
   first := true
-  for macro in macros repeat
-    symbolMember?(macro,pmacs) =>
+  for m in macros repeat
+    symbolMember?(m,pmacs) =>
         if first then
             sayBrightly ['"%l",'"User-defined macros:"]
             first := nil
-        displayParserMacro macro
-    symbolMember?(macro,imacs) => 'iterate
-    sayBrightly (["   ",'"%b", macro, '"%d", " is not a known OpenAxiom macro."])
+        displayParserMacro m
+    symbolMember?(m,imacs) => 'iterate
+    sayBrightly (["   ",'"%b", m, '"%d", " is not a known OpenAxiom macro."])
 
   -- now system ones
 
   first := true
-  for macro in macros repeat
-    symbolMember?(macro,imacs) =>
-        macro in pmacs => 'iterate
+  for m in macros repeat
+    symbolMember?(m,imacs) =>
+        m in pmacs => 'iterate
         if first then
             sayBrightly ['"%l",'"System-defined macros:"]
             first := nil
-        displayMacro macro
-    symbolMember?(macro,pmacs) => 'iterate
+        displayMacro m
+    symbolMember?(m,pmacs) => 'iterate
   nil
 
 getParserMacroNames() ==
   removeDuplicates [first mac for mac in getParserMacros()]
 
-clearParserMacro(macro) ==
+clearParserMacro(m) ==
   -- first see if it is one
-  not IFCDR assoc(macro, $pfMacros) => nil
-  $pfMacros := REMALIST($pfMacros, macro)
+  not IFCDR assoc(m, $pfMacros) => nil
+  $pfMacros := REMALIST($pfMacros, m)
 
 displayMacro name ==
   m := isInterpMacro name

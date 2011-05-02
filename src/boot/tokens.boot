@@ -70,6 +70,7 @@ shoeKeyWords == [  _
             ['"is", "IS"], _
             ['"isnt", "ISNT"] , _
             ['"leave", "LEAVE"], _
+            ['"macro", "MACRO"], _
             ['"module", "MODULE"], _
             ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
