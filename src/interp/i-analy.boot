@@ -336,8 +336,8 @@ bottomUpCompilePredicate(pred, name) ==
 isUnambiguouslyConstructor(id,t) ==
   niladicConstructorFromDB id => nil
   k := getConstructorKindFromDB id or
-        symbolMember?(id,$DomainNames) => "domain"
-        symbolMember?(id,$CategoryNames) => "category"
+        builtinFunctorName? id => "domain"
+        builtinCategoryName? id => "category"
   k = nil => nil
   ms := 
     k = "category" => [$CategoryConstructor]

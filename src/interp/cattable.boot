@@ -33,7 +33,7 @@
 
 
 import simpbool
-import g_-util
+import c_-util
 namespace BOOT
 module cattable where
   hasCat: (%Instantiation,%Instantiation) -> %Code
@@ -280,7 +280,7 @@ isFormalArgumentList argl ==
 mkCategoryExtensionAlist cform ==
   not cons? cform => nil
   cop := first cform
-  symbolMember?(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
+  builtinCategoryName? cop => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))
   extendsList:= nil
   for [cat,:pred] in catlist repeat

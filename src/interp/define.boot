@@ -656,7 +656,7 @@ mkEvalableCategoryForm c ==
     op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
     op is "DomainSubstitutionMacro" => mkEvalableCategoryForm second argl
     op is "mkCategory" => c
-    symbolMember?(op,$CategoryNames) =>
+    builtinCategoryName? op =>
       ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
     --loadIfNecessary op
     getConstructorKindFromDB op = 'category or

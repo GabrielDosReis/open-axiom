@@ -741,7 +741,7 @@ conOpPage1(conform,:options) ==
 --constructors    Cname\#\E\sig \args   \abb \comments (C is C, D, P, X)
   bindingsAlist := IFCAR options
   conname       := opOf conform
-  symbolMember?(conname,$DomainNames) =>
+  builtinFunctorName? conname =>
      dbSpecialOperations conname
   domname         :=                        --> !!note!! <--
     cons? conform => conform
@@ -1058,7 +1058,7 @@ dbShowConsDoc(htPage,conlist) ==
 
 dbShowConsDoc1(htPage,conform,indexOrNil) ==
   [conname,:conargs] := conform
-  symbolMember?(conname,$DomainNames) =>
+  builtinFunctorName? conname =>
     conname := htpProperty(htPage,'conname)
     [["constructor",["NIL",doc]],:.] := property(conname,'documentation)
     sig := '((CATEGORY domain) (SetCategory) (SetCategory))

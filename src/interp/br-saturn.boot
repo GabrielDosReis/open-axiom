@@ -1244,7 +1244,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   $conargs   : local := rest conform
   if which = '"operation" then
     $signature : local :=
-      symbolMember?(conname,$DomainNames) => nil
+      builtinFunctorName? conname => nil
       CDAR getConstructorModemapFromDB conname
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
