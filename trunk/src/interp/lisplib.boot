@@ -404,7 +404,7 @@ loadFunctor u ==
  
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
-    symbolMember?(cnam,$CategoryNames) => nil
+    builtinCategoryName? cnam => nil
     property(cnam,'LOADED) := nil
 --    fn:=getConstructorAbbreviationFromDB cnam
     if niladicConstructorFromDB cnam
@@ -793,7 +793,7 @@ isFunctor x ==
   op:= opOf x
   not IDENTP op => false
   $InteractiveMode =>
-    symbolMember?(op,$DomainNames) => true
+    builtinFunctorName? op => true
     getConstructorKindFromDB op in '(domain package)
   u:= get(op,'isFunctor,$CategoryFrame)
     or op in '(SubDomain Union Record Enumeration) => u

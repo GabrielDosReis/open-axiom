@@ -37,7 +37,6 @@ namespace BOOT
 
 module nrunfast where
   getOpCode: (%Symbol, %Vector %Thing, %Short) -> %Maybe %Short
-  builtinConstructor?: %Symbol -> %Boolean
 
 ++
 $doNotCompressHashTableIfTrue := false
@@ -493,14 +492,6 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   lazyMatch(s,a,dollar,domain)
   --above line is temporarily necessary until system is compiled 8/15/90
 --s = a
-
-++ The collection of builtin category names and builtin domain names.
-$BuiltinConstructorNames ==
-  [:$CategoryNames,:$DomainNames]
-
-++ Return true if the symbol `s' designates a builtin constructor.
-builtinConstructor? s ==
-  symbolMember?(s,$BuiltinConstructorNames)
 
 ++ Return true if the symbol `s' designates a generalized builtin
 ++ constructor, that is a builtin constructor or any operator we

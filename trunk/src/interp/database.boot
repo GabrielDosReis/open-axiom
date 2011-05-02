@@ -163,10 +163,10 @@ getConstructorArity ctor ==
 getConstructorKind: %Constructor -> %Maybe %ConstructorKind
 getConstructorKind ctor ==
   kind := getConstructorKindFromDB ctor =>
-    kind = "domain" and isDefaultPackageName ctor => "package"
+    kind is "domain" and isDefaultPackageName ctor => "package"
     kind
-  symbolMember?(ctor,$DomainNames) => "domain"
-  symbolMember?(ctor,$CategoryNames) => "category"
+  builtinFunctorName? ctor => "domain"
+  builtinCategoryName? ctor => "category"
   nil
 
 --% Functions for manipulating MODEMAP DATABASE

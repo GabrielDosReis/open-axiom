@@ -539,28 +539,6 @@ $DomainConstructor ==
 $StringCategory ==
   '(StringCategory)
 
-
-++ List of category constructors that do not have entries in the 
-++ constructor database. So, they are mostly recognized by their names.
-$CategoryNames ==
-  '(CATEGORY _
-    RecordCategory _
-    Join _
-    EnumerationCategory _
-    SubsetCategory _
-    UnionCategory _
-    MappingCategory)
-
-++ List of domain constructors that do not have entries in the constructor
-++ database. So, they are mostly recognized by their names.
-++ See also $CategoryNames.
-$DomainNames ==
-  '(Mapping _
-    SubDomain _
-    Union _
-    Record _
-    Enumeration)
-
 ++ List of language support type forms.
 $LangSupportTypes ==
   '((Mode) (Domain) (Type) (Category))

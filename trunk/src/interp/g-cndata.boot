@@ -33,6 +33,7 @@
 
 
 import sys_-macros
+import c_-util
 namespace BOOT
 
 --% Manipulation of Constructor Datat
@@ -90,8 +91,8 @@ packageForm? d ==
 categoryFrom?: %Form -> %Boolean
 categoryForm? c ==
   op := opOf c
-  symbolMember?(op, $CategoryNames) => true
-  getConstructorKindFromDB op = "category" => true
+  builtinCategoryName? op => true
+  getConstructorKindFromDB op is "category" => true
   false
 
 -- probably will switch over to 'libName soon

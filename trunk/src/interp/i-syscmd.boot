@@ -2420,7 +2420,7 @@ reportOpsFromLisplib1(unitForm,u)  ==
   editFile showFile
 
 reportOpsFromUnitDirectly unitForm ==
-  isRecordOrUnion := unitForm is [a,:.] and symbolMember?(a,$DomainNames)
+  isRecordOrUnion := unitForm is [a,:.] and builtinFunctorName? a
   unit:= evalDomain unitForm
   top:= first unitForm
   kind:= getConstructorKindFromDB top
