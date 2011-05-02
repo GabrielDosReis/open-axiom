@@ -623,7 +623,7 @@ macroExpandInPlace(x,e) ==
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
   atom x =>
-    not IDENTP x or (u := get(x,'macro,e)) = nil => x
+    not IDENTP x or (u := get(x,"macro",e)) = nil => x
     -- Don't expand a functional macro name by itself.
     u is ['%mlambda,:.] => x
     macroExpand(u,e)
@@ -633,8 +633,8 @@ macroExpand(x,e) ==   --not worked out yet
   -- macros should override niladic props
   [op,:args] := x
   IDENTP op and args = nil and niladicConstructorFromDB op and
-    (u := get(op,'macro, e)) => macroExpand(u,e)
-  IDENTP op and (get(op,'macro,e) is ['%mlambda,parms,body]) =>
+    (u := get(op,"macro", e)) => macroExpand(u,e)
+  IDENTP op and (get(op,"macro",e) is ['%mlambda,parms,body]) =>
     nargs := #args
     nparms := #parms
     msg :=

@@ -217,7 +217,7 @@ postComma u ==
 postDef: %ParseTree -> %ParseForm
 postDef t ==
   t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
-  lhs is ['macro,name] => postMDef ["==>",name,rhs]
+  lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
   if $maxSignatureLineNumber ~= 0 then

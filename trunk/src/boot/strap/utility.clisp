@@ -5,11 +5,12 @@
 
 (PROVIDE "utility")
 
-(EXPORT '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
-             |scalarMember?| |listMember?| |reverse| |reverse!|
-             |lastNode| |append| |append!| |copyList| |substitute|
-             |substitute!| |setDifference| |applySubst| |applySubst!|
-             |applySubstNQ| |remove| |removeSymbol|))
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT '(|objectMember?| |symbolMember?| |stringMember?|
+               |charMember?| |scalarMember?| |listMember?| |reverse|
+               |reverse!| |lastNode| |append| |append!| |copyList|
+               |substitute| |substitute!| |setDifference| |applySubst|
+               |applySubst!| |applySubstNQ| |remove| |removeSymbol|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
                 |substitute|))

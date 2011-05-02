@@ -1,5 +1,17 @@
 2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot (bpDefinition): Accept macro definition
+	starting with the keyword "MACRO".
+	* boot/translator.boot (exportNames): Export them in all
+	evaluation contexts.
+	* interp/c-util.boot: "macro" is now a keyword.
+	* interp/define.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/macros.lisp (WI, tryLine, embrace indentNB, tryBreak)
 	(tryBreakNB, MARKHASH): Remove.
 	* interp/spad.lisp (NEWNAMTRANS): Likewise.

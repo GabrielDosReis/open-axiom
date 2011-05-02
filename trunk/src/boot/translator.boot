@@ -407,14 +407,14 @@ translateToplevelExpression expr ==
   $InteractiveMode => expr'
   shoeEVALANDFILEACTQ expr'
 
-exportNames ns ==
-  ns = nil => nil
-  [["EXPORT",["QUOTE",ns]]]
-
 inAllContexts x ==
   ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
                   KEYWORD::LOAD_-TOPLEVEL,
                     KEYWORD::EXECUTE], x]
+
+exportNames ns ==
+  ns = nil => nil
+  [inAllContexts ["EXPORT",["QUOTE",ns]]]
 
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.

@@ -914,17 +914,21 @@
 (DEFUN |bpDefinition| ()
   (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |a| (|bpState|))
-        (COND
-          ((|bpExit|)
+      (COND
+        ((|bpEqKey| 'MACRO)
+         (OR (AND (|bpName|) (|bpStoreName|)
+                  (|bpCompoundDefinitionTail| #'|%Macro|))
+             (|bpTrap|)))
+        (T (SETQ |a| (|bpState|))
            (COND
-             ((|bpEqPeek| 'DEF) (|bpRestore| |a|) (|bpDef|))
-             ((|bpEqPeek| 'TDEF) (|bpRestore| |a|)
-              (|bpTypeAliasDefition|))
-             ((|bpEqPeek| 'MDEF) (|bpRestore| |a|) (|bpMdef|))
-             (T T)))
-          (T (|bpRestore| |a|) NIL))))))
+             ((|bpExit|)
+              (COND
+                ((|bpEqPeek| 'DEF) (|bpRestore| |a|) (|bpDef|))
+                ((|bpEqPeek| 'TDEF) (|bpRestore| |a|)
+                 (|bpTypeAliasDefition|))
+                ((|bpEqPeek| 'MDEF) (|bpRestore| |a|) (|bpMdef|))
+                (T T)))
+             (T (|bpRestore| |a|) NIL)))))))
 
 (DEFUN |bpStoreName| ()
   (DECLARE (SPECIAL |$typings| |$wheredefs| |$op| |$stack|))
@@ -934,20 +938,21 @@
     (SETQ |$typings| NIL)
     T))
 
-(DEFUN |bpDef| () (AND (|bpName|) (|bpStoreName|) (|bpDefTail|)))
+(DEFUN |bpDef| ()
+  (AND (|bpName|) (|bpStoreName|) (|bpDefTail| #'|%Definition|)))
 
-(DEFUN |bpDDef| () (AND (|bpName|) (|bpDefTail|)))
+(DEFUN |bpDDef| () (AND (|bpName|) (|bpDefTail| #'|%Definition|)))
 
 (DEFUN |bpSimpleDefinitionTail| ()
   (AND (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
        (|bpPush| (|%ConstantDefinition| (|bpPop2|) (|bpPop1|)))))
 
-(DEFUN |bpCompoundDefinitionTail| ()
+(DEFUN |bpCompoundDefinitionTail| (|f|)
   (AND (|bpVariable|) (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|%Definition| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (APPLY |f| (LIST (|bpPop3|) (|bpPop2|) (|bpPop1|))))))
 
-(DEFUN |bpDefTail| ()
-  (OR (|bpSimpleDefinitionTail|) (|bpCompoundDefinitionTail|)))
+(DEFUN |bpDefTail| (|f|)
+  (OR (|bpSimpleDefinitionTail|) (|bpCompoundDefinitionTail| |f|)))
 
 (DEFUN |bpMDefTail| ()
   (AND (OR (|bpVariable|) (|bpTrap|)) (|bpEqKey| 'MDEF)

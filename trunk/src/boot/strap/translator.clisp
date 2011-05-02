@@ -13,7 +13,8 @@
 
 (PROVIDE "translator")
 
-(EXPORT '|evalBootFile|)
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT '|evalBootFile|))
 
 (DEFPARAMETER |$currentModuleName| NIL)
 
@@ -621,14 +622,14 @@
           (|$InteractiveMode| |expr'|)
           (T (|shoeEVALANDFILEACTQ| |expr'|)))))))
 
-(DEFUN |exportNames| (|ns|)
-  (COND
-    ((NULL |ns|) NIL)
-    (T (LIST (LIST 'EXPORT (LIST 'QUOTE |ns|))))))
-
 (DEFUN |inAllContexts| (|x|)
   (LIST 'EVAL-WHEN (LIST :COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
         |x|))
+
+(DEFUN |exportNames| (|ns|)
+  (COND
+    ((NULL |ns|) NIL)
+    (T (LIST (|inAllContexts| (LIST 'EXPORT (LIST 'QUOTE |ns|)))))))
 
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |sig| |n| |ISTMP#1| |xs|)
