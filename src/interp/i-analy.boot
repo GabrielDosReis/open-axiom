@@ -77,7 +77,7 @@ getMinimalVariableTower(var,t) ==
     u = var => t
     getMinimalVariableTower(var,t')
   t is [mp,u,t'] and symbolMember?(mp,$multivariateDomains) =>
-    var in u => t
+    member(var,u) => t
     getMinimalVariableTower(var,t')
   null (t' := underDomainOf t) => nil
   getMinimalVariableTower(var,t')
@@ -93,7 +93,7 @@ getMinimalVarMode(id,m) ==
   defaultMode :=
     $Symbol
   null m => defaultMode
-  (vl := polyVarlist m) and ((id in vl) or 'all in vl) =>
+  (vl := polyVarlist m) and (member(id,vl) or 'all in vl) =>
     substitute($Integer,$EmptyMode,m)
   (um := underDomainOf m) => getMinimalVarMode(id,um)
   defaultMode
@@ -109,13 +109,10 @@ polyVarlist m ==
         [., ., a, :.] := m
         a := removeQuote a
         [a]
-    op in '(Polynomial RationalFunction Expression) =>
-      '(all)
+    op in '(Polynomial RationalFunction Expression) => '(all)
     a := removeQuote a
-    op in '(UnivariatePolynomial) =>
-      [a]
-    op in $multivariateDomains =>
-          a
+    op in '(UnivariatePolynomial) => [a]
+    symbolMember?(op,$multivariateDomains) => a
   nil
 
 --% Pushing Down Target Information
@@ -339,13 +336,13 @@ bottomUpCompilePredicate(pred, name) ==
 isUnambiguouslyConstructor(id,t) ==
   niladicConstructorFromDB id => nil
   k := getConstructorKindFromDB id or
-        id in $DomainNames => "domain"
-        id in $CategoryNames => "category"
+        symbolMember?(id,$DomainNames) => "domain"
+        symbolMember?(id,$CategoryNames) => "category"
   k = nil => nil
   ms := 
     k = "category" => [$CategoryConstructor]
     [$DomainConstructor]
-  if not(id in $BuiltinConstructorNames) then 
+  if not builtinConstructor? id then 
     loadIfNecessary id
   putValue(t,objNewWrap(id,first ms))
   putModeSet(t,ms)
@@ -457,8 +454,8 @@ bottomUpDefaultEval(t,id,defaultMode,target,isSub) ==
   if isPartialMode target then
     -- this hackery will go away when Symbol is not the default type
     if defaultMode = $Symbol and (target is [D,x,.]) then
-      (D in $univariateDomains and (x = id)) or
-        (D in $multivariateDomains and (id in x)) =>
+      (symbolMember?(D,$univariateDomains) and (x = id)) or
+        (symbolMember?(D,$multivariateDomains) and member(id,x)) =>
            dmode := [D,x,$Integer]
            (val' := coerceInteractive(objNewWrap(id,
              ['Variable,id]),dmode)) =>

@@ -42,7 +42,7 @@ $optimizableConstructorNames := $SystemInlinableConstructorNames
 ++ Return true if the domain `dom' is an instance of a functor
 ++ that has been nominated for inlining.
 optimizableDomain? dom ==
-  opOf dom in $optimizableConstructorNames
+  symbolMember?(opOf dom,$optimizableConstructorNames)
 
 ++ Register the domain `dom' for inlining.
 nominateForInlining dom ==
@@ -73,7 +73,7 @@ changeVariableDefinitionToStore(form,vars) ==
   atomic? form or form.op is 'CLOSEDFN => vars
   form is ['%LET,v,expr] =>
     vars := changeVariableDefinitionToStore(expr,vars)
-    if v in vars then
+    if symbolMember?(v,vars) then
       form.op := '%store
     else
       vars := [v,:vars]
@@ -94,7 +94,7 @@ changeVariableDefinitionToStore(form,vars) ==
       vars' := [v,:vars']
     changeVariableDefinitionToStore(third form,vars')
     vars
-  form.op in $AbstractionOperator =>
+  abstractionOperator? form.op =>
     changeVariableDefinitionToStore(third form,[:second form,:vars])
     vars
   for x in form repeat
@@ -180,7 +180,7 @@ simplifyVMForm x ==
   atomic? x => x
   x.op is 'CLOSEDFN => x
   atom x.op =>
-    x is [op,vars,body] and op in $AbstractionOperator =>
+    x is [op,vars,body] and abstractionOperator? op =>
       third(x) := simplifyVMForm body
       x
     if x.op is 'IF then

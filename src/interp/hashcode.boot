@@ -57,7 +57,7 @@ hashType(type, percentHash) ==
         isDomain type => getDomainHash type
         [op, :args] := type
         hash := hashString symbolName op
-        op = 'Mapping =>
+        op is 'Mapping =>
                 hash := hashString '"->"
                 [retType, :mapArgs] := args
                 for arg in mapArgs repeat
@@ -65,11 +65,11 @@ hashType(type, percentHash) ==
                 retCode := hashType(retType, percentHash)
                 scalarEq?(retCode, $VoidHash) => hash
                 hashCombine(retCode, hash)
-        op = 'Enumeration =>
+        op is 'Enumeration =>
                 for arg in args repeat
                   hash := hashCombine(hashString(symbolName arg), hash)
                 hash
-        op in $DomainsWithoutLisplibs =>
+        symbolMember?(op,$DomainsWithoutLisplibs) =>
                 for arg in args repeat
                         hash := hashCombine(hashType(arg, percentHash), hash)
                 hash

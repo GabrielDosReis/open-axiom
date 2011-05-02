@@ -445,7 +445,7 @@ flowSegmentedMsg(msg, len, offset) ==
   -- that nothing needs to be done
   $texFormatting => msg
   -- msgs that are entirely centered are not flowed
-  msg is [[ce,:.]] and ListMember?(ce,'(%ce "%ce")) => msg
+  msg is [[ce,:.]] and listMember?(ce,'(%ce "%ce")) => msg
  
   potentialMarg := 0
   actualMarg    := 0

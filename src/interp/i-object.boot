@@ -464,7 +464,7 @@ transferPropsToNode(x,t) ==
       where
         transfer(x,node,prop) ==
           u := get(x,prop,$env) => putAtree(node,prop,u)
-          (not (x in $localVars)) and (u := get(x,prop,$e)) =>
+          (not member(x,$localVars)) and (u := get(x,prop,$e)) =>
             putAtree(node,prop,u)
   if not getMode(t) and (am := get(x,'automode,$env)) then
     putModeSet(t,[am])

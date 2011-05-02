@@ -51,7 +51,7 @@ $activePageList := nil
 --%
 
 htpDestroyPage(pageName) ==
-  pageName in $activePageList =>
+  symbolMember?(pageName,$activePageList) =>
     setDynamicBinding(pageName, nil)
     $activePageList := remove!($activePageList,pageName)
 
@@ -382,14 +382,14 @@ pvarCondList pvar ==
 pvarCondList1(pvarList, activeConds, condList) ==
   null condList => activeConds
   [cond, : restConds] := condList
-  cond is [., pv, pattern] and pv in pvarList =>
+  cond is [., pv, pattern] and symbolMember?(pv,pvarList) =>
     pvarCondList1(append!(pvarList, pvarsOfPattern pattern),
                   [cond, :activeConds], restConds)
   pvarCondList1(pvarList, activeConds, restConds)
 
 pvarsOfPattern pattern ==
   not LISTP pattern => nil
-  [pvar for pvar in rest pattern | pvar in $PatternVariableList]
+  [pvar for pvar in rest pattern | symbolMember?(pvar,$PatternVariableList)]
 
 htMakeTemplates(templateList, numLabels) ==
   templateList := [templateParts template for template in templateList]

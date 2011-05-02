@@ -176,4 +176,4 @@ extractCONDClauses clauses ==
 ++ Returns true if symbol `id' is either a local variable
 ++ or an iterator variable.
 isLocallyBound id ==
-  id in $localVars or id in $iteratorVars
+  symbolMember?(id,$localVars) or symbolMember?(id,$iteratorVars)

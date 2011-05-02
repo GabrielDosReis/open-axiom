@@ -233,7 +233,7 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl' is "failed" then return nil
   form:=
-    atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
+    symbol? op and not symbolMember?(op,$formalArgList) and null (u := get(op,"value",e)) =>
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
@@ -492,7 +492,7 @@ outputComp(x,e) ==
   [x,$OutputForm,e]
 
 compForm1(form is [op,:argl],m,e) ==
-  op in $coreDiagnosticFunctions =>
+  symbolMember?(op,$coreDiagnosticFunctions) =>
     [[op,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],m,e]
   op is ["elt",domain,op'] =>
     domain="Lisp" =>
@@ -590,11 +590,11 @@ compFormWithModemap(form,m,e,modemap) ==
     [modemap,e]:= substituteIntoFunctorModemap(argl,modemap,e) or return nil
     [map:= [.,target,:.],:cexpr]:= modemap
   sv := listOfSharpVars map
-  if sv then
+  if sv ~= nil then
      -- SAY [ "compiling ", op, " in compFormWithModemap,
      -- mode= ",map," sharp vars=",sv]
     for x in argl for ss in $FormalMapVariableList repeat
-      if ss in sv then
+      if symbolMember?(ss,sv) then
         [map:= [.,target,:.],:cexpr]:= modemap :=SUBST(x,ss,modemap)
         -- SAY ["new map is",map]
   not coerceable(target,m,e) => nil
@@ -817,7 +817,7 @@ setqSingle(id,val,m,E) ==
   if $profileCompiler = true then
     not IDENTP id => nil
     key :=
-      id in rest $form => "arguments"
+      symbolMember?(id,$form.args) => "arguments"
       "locals"
     profileRecord(key,id,T.mode)
   newProplist := 
@@ -1355,11 +1355,11 @@ $FFIAggregableDataType ==
 getFFIDatatype: %Mode -> %Form
 getFFIDatatype t ==
   x := getBasicFFIType t => x
-  t is [m,["PrimitiveArray",t']] and m in $FFITypeModifier and
+  t is [m,["PrimitiveArray",t']] and symbolMember?(m,$FFITypeModifier) and
     listMember?(t',$FFIAggregableDataType) =>
       m' := 
-        m = "ReadOnly" => bootDenotation "readonly"
-        m = "WriteOnly" => bootDenotation "writeonly"
+        m is "ReadOnly" => bootDenotation "readonly"
+        m is "WriteOnly" => bootDenotation "writeonly"
         bootDenotation "readwrite"
       [m',[bootDenotation "buffer",getBasicFFIType t']]
   nil
@@ -1415,7 +1415,7 @@ checkExternalEntity(id,type,lang,e) ==
 ++ Remove possible modifiers in the FFI type expression `t'.
 removeModifiers t ==
   for (ts := [x,:.]) in tails t repeat
-     x is [m,t'] and m in $FFITypeModifier =>
+     x is [m,t'] and symbolMember?(m,$FFITypeModifier) =>
        ts.first := t'
   t
 
@@ -2303,7 +2303,7 @@ massageLoop x == main x where
   containsNonLocalControl?(x,tags) ==
     atomic? x => false
     x is ['THROW,tag,x'] =>
-      not(tag in tags) or containsNonLocalControl?(x',tags)
+      not symbolMember?(tag,tags) or containsNonLocalControl?(x',tags)
     x is ['CATCH,tag,x'] =>
       containsNonLocalControl?(x',[tag,:tags])
     or/[containsNonLocalControl?(x',tags) for x' in x]

@@ -279,7 +279,7 @@ killNestedInstantiations(deps) ==
  
 isNestedInstantiation(form,deps) ==
   form is [op,:argl] =>
-    op in deps => true
+    symbolMember?(op,deps) => true
     or/[isNestedInstantiation(x,deps) for x in argl]
   false
  
@@ -404,7 +404,7 @@ loadFunctor u ==
  
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
-    cnam in $CategoryNames => nil
+    symbolMember?(cnam,$CategoryNames) => nil
     property(cnam,'LOADED) := nil
 --    fn:=getConstructorAbbreviationFromDB cnam
     if niladicConstructorFromDB cnam
@@ -427,7 +427,7 @@ systemDependentMkAutoload(fn,cnam) ==
 autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
-  cname in $BuiltinConstructorNames => cname
+  builtinConstructor? cname => cname
   if not property(cname,'LOADED) then loadLib cname
   symbolFunction cname
 

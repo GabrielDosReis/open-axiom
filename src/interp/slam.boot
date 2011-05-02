@@ -423,7 +423,7 @@ clearLocalModemaps x ==
  
 compileInteractive fn ==
   if $InteractiveMode then startTimingProcess 'compilation
-  if fn is [.,[bindOp,.,.]] and bindOp in $AbstractionOperator then
+  if fn is [.,[bindOp,.,.]] and abstractionOperator? bindOp then
     fn := [first fn,declareUnusedParameters second fn]
   if $reportCompilation then
     sayBrightlyI bright '"Generated LISP code for function:"

@@ -545,7 +545,7 @@ compDefine1(form,m,e) ==
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
      => [lhs,m,putMacro(lhs.op,rhs,e)]
   checkParameterNames lhs.args
-  null signature.target and not symbolMember?(KAR rhs,$BuiltinConstructorNames) and
+  null signature.target and symbol? KAR rhs and not builtinConstructor? KAR rhs and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
       compDefine1(['DEF,lhs,[sig.target,:signature.source],specialCases,rhs],m,e)
@@ -867,7 +867,7 @@ typeDependencyPath(m,path,e) ==
   atomic? m => nil
   [ctor,:args] := m
   -- We don't expect implicit parameters in builtin constructors.
-  ctor in $BuiltinConstructorNames => nil
+  builtinConstructor? ctor => nil
   -- FIXME: assume constructors cannot be parameters
   not constructor? ctor => nil
   [:typeDependencyPath(m',[i,:path],e) for m' in args for i in 0..]

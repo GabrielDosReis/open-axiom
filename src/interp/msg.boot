@@ -59,9 +59,6 @@ $ncMsgList := []
 
 --%
 
-ListMember?(ob, l) ==
-  MEMBER(ob, l, KEYWORD::TEST, function EQUAL)
-
 --%  Messages for the USERS of the compiler.
 -- The program being compiled has a minor error.
 -- Give a message and continue processing.
@@ -493,7 +490,8 @@ setMsgCatlessAttr(msg,attr) ==
 whichCat attr ==
     found := 'catless
     for cat in $attrCats repeat
-        if ListMember? (attr,eval cat) then
+        -- ??? a cat is a vector.
+        if listMember?(attr,eval cat) then
           found := cat
           return found
     found

@@ -117,7 +117,7 @@ modemapToAx(modemap) ==
            ['Lambda, argdecls, 'Category,
              ['Label, constructor,
                addDefaults(constructor, axFormatType categoryInfo)]]]
-  constructor in $extendedDomains =>
+  symbolMember?(constructor,$extendedDomains) =>
      null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
@@ -368,7 +368,7 @@ get1defaultOp(op,index) ==
              dcSig(numvec,index,numOfArgs))
   index := index + numOfArgs + 1
   slotNumber := numvec.index
-  if not([op,signumList] in $opList) then
+  if not listMember?([op,signumList],$opList) then
      $opList := [[op,signumList],:$opList]
   index + 1
 

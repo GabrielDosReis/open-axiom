@@ -561,10 +561,6 @@ $DomainNames ==
     Record _
     Enumeration)
 
-++ The union of the above two lists.
-$BuiltinConstructorNames ==
-  [:$CategoryNames,:$DomainNames]
-
 ++ List of language support type forms.
 $LangSupportTypes ==
   '((Mode) (Domain) (Type) (Category))

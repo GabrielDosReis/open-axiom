@@ -164,8 +164,8 @@ getConstructorKind ctor ==
   kind := getConstructorKindFromDB ctor =>
     kind = "domain" and isDefaultPackageName ctor => "package"
     kind
-  ctor in $DomainNames => "domain"
-  ctor in $CategoryNames => "category"
+  symbolMember?(ctor,$DomainNames) => "domain"
+  symbolMember?(ctor,$CategoryNames) => "category"
   nil
 
 --% Functions for manipulating MODEMAP DATABASE
@@ -297,8 +297,8 @@ orderPredTran(oldList,sig,skip) ==
   -----  (isDomain *1 ..)
   for pred in oldList repeat
     ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
-       and pvar=first sig and not (pvar in rest sig)) or
-        (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
+       and pvar=first sig and not symbolMember?(pvar,rest sig)) or
+        (not skip and pred is ['isDomain,pvar,.] and pvar is "*1")) =>
           oldList := remove(oldList,pred)
           lastPreds:=[pred,:lastPreds]
 --sayBrightlyNT "lastPreds="
@@ -362,7 +362,7 @@ orderPredTran(oldList,sig,skip) ==
   for pred in newList repeat
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
       ids:= listOfPatternIds y
-      if "and"/[id in fullDependList for id in ids] then
+      if "and"/[symbolMember?(id,fullDependList) for id in ids] then
         fullDependList:= insertWOC(x,fullDependList)
       fullDependList:= UNIONQ(fullDependList,ids)
 
