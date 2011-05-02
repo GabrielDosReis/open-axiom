@@ -1,5 +1,13 @@
 2011-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (idList?, charList?, stringLits?): New.
+	(bfMember): Use them for special cases.
+	* boot/parser.boot (bpDefinition): Stop support MDEF forms.
+	(bpMdef, bpMDefTail): Remove.
+	* boot/tokens.boot: "==>" is no longer a token.
+
+2011-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (categoryRef, domainRef, canonicalForm)
 	(instantiatorCtor, instantiatorArgs, categoryExports): New.
 

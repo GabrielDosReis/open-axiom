@@ -926,7 +926,6 @@
                 ((|bpEqPeek| 'DEF) (|bpRestore| |a|) (|bpDef|))
                 ((|bpEqPeek| 'TDEF) (|bpRestore| |a|)
                  (|bpTypeAliasDefition|))
-                ((|bpEqPeek| 'MDEF) (|bpRestore| |a|) (|bpMdef|))
                 (T T)))
              (T (|bpRestore| |a|) NIL)))))))
 
@@ -953,13 +952,6 @@
 
 (DEFUN |bpDefTail| (|f|)
   (OR (|bpSimpleDefinitionTail|) (|bpCompoundDefinitionTail| |f|)))
-
-(DEFUN |bpMDefTail| ()
-  (AND (OR (|bpVariable|) (|bpTrap|)) (|bpEqKey| 'MDEF)
-       (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|%Macro| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
-
-(DEFUN |bpMdef| () (AND (|bpName|) (|bpStoreName|) (|bpMDefTail|)))
 
 (DEFUN |bpWhere| ()
   (AND (|bpDefinition|)

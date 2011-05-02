@@ -44,7 +44,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     copyList: %List %Thing -> %List %Thing
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
-    remove: (%List %Thing, %Thing) ->% List %Thing
+    remove: (%List %Thing, %Thing) -> %List %Thing
 
 --% membership operators
 

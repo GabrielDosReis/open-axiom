@@ -38,7 +38,7 @@
                 |removeSymbol|))
 
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|) |%Thing|)
-                    (% (|List| |%Thing|)))
+                    (|%List| |%Thing|))
                 |remove|))
 
 (DEFUN |objectMember?| (|x| |l|)
