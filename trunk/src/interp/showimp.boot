@@ -52,7 +52,7 @@ showImp(dom,:options) ==
   domainForm := devaluate dom
   [nam,:$domainArgs] := domainForm
   $predicateList: local := getConstructorPredicatesFromDB nam
-  predVector := vectorRef(dom,3)
+  predVector := domainPredicates dom
   u := getDomainOpTable(dom,true)
   --sort into 4 groups: domain exports, unexports, default exports, others
   for (x := [.,.,:key]) in u repeat
@@ -207,7 +207,7 @@ getDomainSeteltForm ['%store,.,form] ==
 showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
   conname := instantiationCtor dom
-  predvector := vectorRef(dom,3)
+  predvector := domainPredicates dom
   predicateList := getConstructorPredicatesFromDB conname
   for i in 1.. for p in predicateList repeat
     prefix := 
@@ -219,7 +219,7 @@ showAttributes dom ==
   sayBrightly '"--------------------Attribute summary-------------------"
   conname := instantiationCtor dom
   abb := getConstructorAbbreviation conname
-  predvector := vectorRef(dom,3)
+  predvector := domainPredicates dom
   for [a,:p] in vectorRef(dom,2) repeat
     prefix :=
       testBitVector(predvector,p) => '"true : "

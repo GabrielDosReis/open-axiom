@@ -458,7 +458,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       '"----> searching op table for:","%l","  "),op,sig,dollar)
   someMatch := false
   numvec := getDomainByteVector domain
-  predvec := vectorRef(domain,3)
+  predvec := domainPredicates domain
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
@@ -529,7 +529,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
-  predvec := dom.3
+  predvec := domainPredicates dom
   packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
@@ -622,7 +622,7 @@ newHasAttribute(domain,attrib) ==
      LASSOC(attrib,domain.2)
   predIndex =>
     predIndex = 0 => true
-    predvec := domain.3
+    predvec := domainPredicates domain
     testBitVector(predvec,predIndex)
   false
 
@@ -638,7 +638,7 @@ newHasCategory(domain,catform) ==
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
     predIndex = 0 => true
-    predvec := vectorRef(domain,3)
+    predvec := domainPredicates domain
     testBitVector(predvec,predIndex)
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
