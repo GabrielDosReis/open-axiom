@@ -67,7 +67,7 @@ CategoryPrint(D,$e) ==
   SAY "Name (and arguments) of category:"
   PRETTYPRINT canonicalForm D
   SAY "operations:"
-  PRETTYPRINT D.1
+  PRETTYPRINT categoryExports D
   SAY "attributes:"
   PRETTYPRINT D.2
   SAY "This is a sub-category of"
@@ -136,7 +136,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   -- Build a fresh category object stuffed with all updated information
   v := newShell count
   canonicalForm(v) := nil
-  v.1 := sigList
+  categoryExports(v) := sigList
   v.2 := attList
   v.3 := $Category
   if PrincipalAncestor ~= nil then
@@ -428,7 +428,7 @@ JoinInner(l,$e) ==
   l':= [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
-  sigl:= $NewCatVec.1
+  sigl := categoryExports $NewCatVec
   attl:= $NewCatVec.2
   globalDomains:= $NewCatVec.5
   FundamentalAncestors:= second $NewCatVec.4
@@ -488,7 +488,7 @@ JoinInner(l,$e) ==
                 reallynew:= nil
                 objectMember?(b,l) =>
                   --objectMember? since category vectors are guaranteed unique
-                  (sigl:= $NewCatVec.1; attl:= $NewCatVec.2; l:= remove(l,b))
+                  (sigl:= categoryExports $NewCatVec; attl:= $NewCatVec.2; l:= remove(l,b))
              --     SAY("domain ",bname," subsumes")
              --     SAY("adding a conditional domain ",
              --         bname,
@@ -499,7 +499,7 @@ JoinInner(l,$e) ==
              -- value of bCond not used and could be nil
              -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
-                for u in $NewCatVec.1 repeat
+                for u in categoryExports $NewCatVec repeat
                   if not listMember?(u,sigl) then
                     [s,c,i]:= u
                     if c=true
@@ -527,7 +527,7 @@ JoinInner(l,$e) ==
     -- in case SigListUnion alters it while
     -- performing Operator Subsumption
   for b in l repeat
-    sigl:= SigListUnion([DropImplementations u for u in b.1],sigl)
+    sigl:= SigListUnion([DropImplementations u for u in categoryExports b],sigl)
     attl:=
 -- next two lines are merely performance improvements
       symbolMember?(attl,b.2) => b.2
@@ -549,7 +549,7 @@ JoinInner(l,$e) ==
         [[first u,mkOr(second v,mkAnd(newpred,second u))],:attl]
     sigl:=
       SigListUnion(
-        [AddPredicate(DropImplementations u,newpred) for u in (first b).1],sigl) where
+        [AddPredicate(DropImplementations u,newpred) for u in categoryExports(first b)],sigl) where
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
             newpred=true => op
             oldpred=true => [sig,newpred,:implem]

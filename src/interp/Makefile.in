@@ -330,7 +330,8 @@ nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 	nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
-		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
+		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
+		c-util.$(FASLEXT)
 functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
 category.$(FASLEXT): c-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)

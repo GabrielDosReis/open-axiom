@@ -940,9 +940,9 @@ extendsCategoryForm(domain,form,form') ==
     formVec:=(compMakeCategoryObject(form,$e)).expr
             --Must be $e to pick up locally bound domains
     form' is ["SIGNATURE",op,args,:.] =>
-        assoc([op,args],formVec.1) or
+        assoc([op,args],categoryExports formVec) or
             assoc(substitute(domain,"$",[op,args]),
-                  substitute(domain,"$",formVec.1))
+                  substitute(domain,"$",categoryExports formVec))
     form' is ["ATTRIBUTE",at] =>
          assoc(at,formVec.2) or
             assoc(substitute(domain,"$",at),substitute(domain,"$",formVec.2))

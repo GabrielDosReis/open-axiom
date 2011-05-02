@@ -403,7 +403,7 @@ Category(): Public == Private where
 
     exportedOperators c ==
       [%head(x)$Foreign(Builtin)@OperatorSignature 
-         for x in getCategoryExports(c)$Lisp@List(Syntax)]
+         for x in categoryExports(c)$Lisp@List(Syntax)]
     
     principalAncestors c == 
       getCategoryPrincipalAncestors(c)$Lisp

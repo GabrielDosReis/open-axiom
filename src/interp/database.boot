@@ -34,6 +34,7 @@
 
 import nlib
 import g_-cndata
+import c_-util
 import clam
 import cattable
 import compat
@@ -175,7 +176,7 @@ augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
   form:= applySubst(sl,form)
   body:= applySubst(sl,body)
   signature:= applySubst(sl,signature)
-  opAlist:= applySubst(sl,vectorRef($domainShell,1)) or return nil
+  opAlist:= applySubst(sl,categoryExports $domainShell) or return nil
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
   domainList:=
@@ -782,11 +783,6 @@ displayHiddenConstructors() ==
 
 --%
 
-
-++ Return the list of modemaps exported by the category object `c'.
-++ The format of modemap is as found in category objects.
-getCategoryExports: %Shell -> %List %Modemap
-getCategoryExports c == c.1
 
 ++ Return the list of category attribute info for the category object `c'.
 ++ A category attribute info is pair of attribute-predicate.
