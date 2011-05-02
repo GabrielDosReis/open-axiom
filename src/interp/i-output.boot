@@ -168,7 +168,8 @@ $plainRTspecialCharacters == [
 ++ Stream in lean mode.
 $RecordSeparator == abstractChar 30
 
-makeCharacter n ==> makeSymbol(charString abstractChar n)
+macro makeCharacter n ==
+  makeSymbol(charString abstractChar n)
 
 $RTspecialCharacters == [
     makeCharacter 218,      -- upper left corner   (+)
@@ -1331,7 +1332,7 @@ bigopWidth(bot,top,arg,kind) ==
   kindWidth := (kind = 'pi => 5; 3)
   MAX(kindWidth,WIDTH bot,(top => WIDTH top; 0)) + 2 + WIDTH arg
 
-half x ==>
+macro half x ==
   x quo 2
 
 bigopAppAux(bot,top,arg,x,y,d,kind) ==

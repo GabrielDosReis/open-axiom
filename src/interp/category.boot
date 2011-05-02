@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import g_-util
+import c_-util
 import g_-cndata
 namespace BOOT
 
@@ -65,7 +65,7 @@ isCategoryForm(x,e) ==
 CategoryPrint(D,$e) ==
   SAY "--------------------------------------"
   SAY "Name (and arguments) of category:"
-  PRETTYPRINT D.0
+  PRETTYPRINT canonicalForm D
   SAY "operations:"
   PRETTYPRINT D.1
   SAY "attributes:"
@@ -135,7 +135,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
     count := count+1
   -- Build a fresh category object stuffed with all updated information
   v := newShell count
-  v.0 := nil
+  canonicalForm(v) := nil
   v.1 := sigList
   v.2 := attList
   v.3 := $Category
@@ -329,7 +329,7 @@ FindFundAncs l ==
   --also as two-lists with the appropriate conditions
   l=nil => nil
   f1:= CatEval CAAR l
-  f1.0=nil => FindFundAncs rest l
+  canonicalForm f1 = nil => FindFundAncs rest l
   ans:= FindFundAncs rest l
   for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
    for x in second f1.4] repeat

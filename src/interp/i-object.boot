@@ -31,7 +31,7 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import g_-util
+import i_-util
 namespace BOOT
 
 ++ true when the interpreter should evaluate forms to values, as

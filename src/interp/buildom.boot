@@ -41,6 +41,7 @@
 -- GDR, March 2008.
 
 import sys_-macros
+import c_-util
 namespace BOOT
 
 $noCategoryDomains == '(Mode SubDomain)
@@ -111,7 +112,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
   integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = first s =>
-          compareSigEqual(s,(evalDomain lazyt).0,dollar,domain)
+          compareSigEqual(s,canonicalForm evalDomain lazyt,dollar,domain)
       nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
 
@@ -122,8 +123,9 @@ compareSigEqual(s,t,dollar,domain) ==
     u :=
       t='$ => dollar
       isSharpVar t =>
-        vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
-        rest(domain).(POSN1(t,$FormalMapVariableList))
+        vector? domain =>
+          instantiationArgs(domain).(POSN1(t,$FormalMapVariableList))
+        domain.args.(POSN1(t,$FormalMapVariableList))
       string? t and IDENTP s => (s := symbolName s; t)
       nil
     s is '$ => compareSigEqual(dollar,u,dollar,domain)
@@ -171,7 +173,7 @@ compiledLookupCheck(op,sig,dollar) ==
   -- NEW COMPILER COMPATIBILITY OFF
 
   fn = nil =>
-    keyedSystemError("S2NR0001",[op,formatSignature sig,dollar.0])
+    keyedSystemError("S2NR0001",[op,formatSignature sig,canonicalForm dollar])
   fn
 
 --=======================================================
@@ -209,7 +211,7 @@ NRTreplaceLocalTypes(t,dom) ==
      not integer? t => t
      t:= dom.t
      if cons? t then t:= evalDomain t
-     t.0
+     canonicalForm t
    first t in '(Mapping Union Record _:) =>
       [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
    t
@@ -224,7 +226,7 @@ substDomainArgs(domain,object) ==
 lookupInCategories(op,sig,dom,dollar) ==
   catformList := dom.4.0
   varList := ["$",:$FormalMapVariableList]
-  nsig := MSUBST(dom.0,dollar.0,sig)
+  nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   -- the following lines don't need to check for predicates because
   -- this code (the old runtime scheme) is used only for
   -- builtin constructors -- their predicates are always true.
@@ -239,10 +241,10 @@ lookupInCategories(op,sig,dom,dollar) ==
 --       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
 --=======================================================
 defaultingFunction op ==
-  not(op is [.,:dom]) => false
+  op isnt [.,:dom] => false
   not vector? dom => false
   not (#dom > 0) => false
-  not (dom.0 is [packageName,:.]) => false
+  canonicalForm dom isnt [packageName,:.] => false
   not IDENTP packageName => false
   isDefaultPackageName packageName
 
@@ -261,10 +263,10 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
   someMatch := false
   while not success for [sig1,:code] in LASSQ(op,table) repeat
     success :=
-      not compareSig(sig,sig1,dollar.0,domain) => false
+      not compareSig(sig,sig1,canonicalForm dollar,domain) => false
       code is ['subsumed,a] =>
             subsumptionSig :=
-              applySubst(pairList($FormalMapVariableList,vectorRef(domain,0).args),a)
+              applySubst(pairList($FormalMapVariableList,canonicalForm(domain).args),a)
             someMatch := true
             false
       predIndex := code quo 8192
@@ -309,7 +311,7 @@ Record(:args) ==
   nargs := #args
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
-  vectorRef(dom,0) := ["Record", :srcArgs]
+  canonicalForm(dom) := ["Record", :srcArgs]
   vectorRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -317,7 +319,7 @@ Record(:args) ==
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
   vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["RecordCategory",:rest dom.0]
+  vectorRef(dom,3) := ["RecordCategory",:instantiationArgs dom]
   vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
   vectorRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
@@ -332,7 +334,7 @@ Record(:args) ==
   dom
 
 RecordEqual(x,y,dom) ==
-  nargs := #rest(dom.0)
+  nargs := #instantiationArgs dom
   cons? x =>
     b:=
        SPADCALL(first x, first y, first(dom.(nargs + 9)) or
@@ -381,7 +383,7 @@ Union(:args) ==
                  for a in args]
   nargs := #args
   dom := newShell (nargs + 9)
-  vectorRef(dom,0) := ["Union", :srcArgs]
+  canonicalForm(dom) := ["Union", :srcArgs]
   vectorRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -389,7 +391,7 @@ Union(:args) ==
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
   vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["UnionCategory",:rest dom.0]
+  vectorRef(dom,3) := ["UnionCategory",:instantiationArgs dom]
   vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
   vectorRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
@@ -400,7 +402,7 @@ Union(:args) ==
   dom
 
 UnionEqual(x, y, dom) ==
-  ["Union",:branches] := vectorRef(dom,0)
+  ["Union",:branches] := canonicalForm dom
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
@@ -411,7 +413,7 @@ UnionEqual(x, y, dom) ==
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
 
-UnionPrint(x, dom) == coerceUn2E(x, dom.0)
+UnionPrint(x, dom) == coerceUn2E(x, canonicalForm dom)
 
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
@@ -442,14 +444,14 @@ MappingCategory(:"sig") ==
                 ['mkCategory,quoteForm 'domain,
                    quoteForm [[['elt,[first sig,'$,:rest sig]],true]],
                      [], [], nil]]
-  vectorRef(cat,0) := ['MappingCategory,:sig]
+  canonicalForm(cat) := ['MappingCategory,:sig]
   cat
 
 Mapping(:args) ==
   srcArgs := [devaluate a for a in args]
   nargs := #args
   dom := newShell(nargs + 9)
-  vectorRef(dom,0) := ["Mapping", :srcArgs]
+  canonicalForm(dom) := ["Mapping", :srcArgs]
   vectorRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -483,7 +485,7 @@ Enumeration(:"args") ==
   nargs := #args
   dom := newShell(nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
-  vectorRef(dom,0) := ["Enumeration", :args]
+  canonicalForm(dom) := ["Enumeration", :args]
   vectorRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -493,7 +495,7 @@ Enumeration(:"args") ==
                 [["$", $Symbol], :oldSlotCode(nargs+2)]]
                   ]]
   vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["EnumerationCategory",:rest dom.0]
+  vectorRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
   vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
   vectorRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -506,10 +508,10 @@ EnumEqual(e1,e2,dom) ==
   e1=e2
 
 EnumPrint(enum, dom) == 
-  rest(vectorRef(dom,0)).enum
+  instantiationArgs(dom).enum
 
 createEnum(sym, dom) ==
-  args := vectorRef(dom,0).args
+  args := instantiationArgs dom
   val := -1
   for v in args for i in 0.. repeat
      sym=v => return(val:=i)
@@ -532,7 +534,7 @@ constructorCategory (title is [op,:.]) ==
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
-  vectorRef(cat,0) := title
+  canonicalForm(cat) := title
   cat
 
 --mkMappingFunList(nam,mapForm,e) == [[],e]

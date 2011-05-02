@@ -112,14 +112,12 @@ showFrom(D,:option) ==
 --               Functions implementing showFrom
 --=======================================================================
 getDomainOps D ==
-  domname := D.0
-  conname := first domname
+  conname := insantiationCtor D
   $predicateList: local := getConstructorPredicatesFromDB conname
   removeDuplicates listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
-  domname := D.0
-  conname := first domname
+  conname := instantiationCtor D
   $predicateList: local := getConstructorPredicatesFromDB conname
   getDomainSigs1(D,first option)
   
@@ -128,8 +126,7 @@ getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
             | null ops or symbolMember?(first x,ops)]
  
 getDomainDocs(D,:option) ==
-  domname := D.0
-  conname := first domname
+  conname := instantiationCtor D
   $predicateList: local := getConstructorPredicatesFromDB conname
   ops := KAR option
   [[op,sig,:getInheritanceByDoc(D,op,sig)] for [op,sig] in getDomainSigs1(D,ops)]
@@ -209,7 +206,7 @@ getDomainSeteltForm ['%store,.,form] ==
  
 showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
-  conname := vectorRef(dom,0).op
+  conname := instantiationCtor dom
   predvector := vectorRef(dom,3)
   predicateList := getConstructorPredicatesFromDB conname
   for i in 1.. for p in predicateList repeat
@@ -220,7 +217,7 @@ showPredicates dom ==
  
 showAttributes dom ==
   sayBrightly '"--------------------Attribute summary-------------------"
-  conname := vectorRef(dom,0).op
+  conname := instantiationCtor dom
   abb := getConstructorAbbreviation conname
   predvector := vectorRef(dom,3)
   for [a,:p] in vectorRef(dom,2) repeat

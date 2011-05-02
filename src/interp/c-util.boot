@@ -49,6 +49,34 @@ module c_-util where
   -- functor data manipulation
   dbInfovec: %Constructor -> %Maybe %FunctorData
 
+--% Accessors of domain and category objects
+
+++ Return thr i-th part of a category object
+macro categoryRef(c,i) ==
+  vectorRef(c,i)
+
+++ Return the i-th part of a domain object.
+macro domainRef(d,i) ==
+  vectorRef(d,i)
+
+++ Return the canonical form for a domain or category object
+macro canonicalForm d ==
+  vectorRef(d,0)
+
+++ Return the constructor that instantiates to the domain
+++ or category object
+macro instantiationCtor d ==
+  canonicalForm(d).op
+
+++ Return the canonical forms of the arguments used to instantiate
+++ a domain or a category object.
+macro instantiationArgs d ==
+  canonicalForm(d).args
+
+++ Return the list of operations exported by a category object
+macro categoryExports d ==
+  categoryRef(d,1)
+
 --%
 $SetCategory ==
   '(SetCategory)
@@ -191,9 +219,9 @@ declareUnusedParameters x == (augment x; x) where
 
 devaluate d ==
   not vector? d => d
-  QVSIZE d > 5 and vectorRef(d,3) is ['Category] => vectorRef(d,0)
+  QVSIZE d > 5 and vectorRef(d,3) is ['Category] => canonicalForm d
   QVSIZE d > 0 =>
-    d' := vectorRef(d,0)
+    d' := canonicalForm d
     isFunctor d' => d'
     d
   d

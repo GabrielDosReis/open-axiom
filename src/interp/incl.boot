@@ -257,7 +257,8 @@ xlIfSyntax(eb, str, lno,ufos,info,sts) ==
 incLude(eb, ss, ln, ufos, states) ==
   Delay(function incLude1,[eb, ss, ln, ufos, states])
  
-Rest s ==> incLude (eb,rest ss,lno,ufos,states)
+macro Rest s ==
+  incLude (eb,rest ss,lno,ufos,states)
  
 incLude1(eb,ss,ln,ufos,states) ==
   $inputLineNumber := ln

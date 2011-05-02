@@ -304,7 +304,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := vectorRef(dom,4)
   catVec := second slot4
   # catVec = 0 => nil                      --early exit if no categories
-  integer? KDR vectorRef(catVec,0) =>
+  integer? KDR canonicalForm catVec =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
@@ -315,7 +315,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
-  nsig := MSUBST(dom.0,dollar.0,sig)
+  nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   for i in 0..maxIndex packageVec |
        (entry := vectorRef(packageVec,i)) and entry isnt 'T repeat
     package :=
@@ -391,9 +391,9 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   catVec := second slot4
   --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(# rest dom.0)]]
+  valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(#instantiationArgs dom)]]
   valueList := [MKQ val for val in valueList]
-  nsig := MSUBST(dom.0,dollar.0,sig)
+  nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   for i in 0..maxIndex packageVec | (entry := vectorRef(packageVec,i))
       and (vector? entry or (predIndex := rest (node := catVec.i)) and
           (predIndex = 0 or testBitVector(predvec,predIndex))) repeat
@@ -586,7 +586,7 @@ newExpandTypeSlot(slot, dollar, domain) ==
  
  
 newExpandLocalType(lazyt,dollar,domain) ==
-  vector? lazyt => lazyt.0
+  vector? lazyt => canonicalForm lazyt
   atom lazyt => lazyt
   lazyt is [vec,.,:lazyForm] and vector? vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
@@ -611,7 +611,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
      vectorRef(domain,u)
   u is ['NRTEVAL,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
-  u is "$$" => vectorRef(domain,0)
+  u is "$$" => canonicalForm domain
   atom u => u   --can be first, rest, etc.
   newExpandLocalTypeForm(u,dollar,domain)
  

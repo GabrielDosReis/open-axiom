@@ -35,8 +35,6 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-search.boot <================================
-
 --=======================================================================
 --              Grepping Database libdb.text
 -- Redone 12/95 for Saturn; previous function grep renamed as grepFile
