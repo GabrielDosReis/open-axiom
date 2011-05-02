@@ -1164,9 +1164,9 @@ genDomainViewList(id,catlist) ==
  
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
-  substargs := [['$,:vectorRef(dom,0)],
-                  :pairList($FormalMapVariableList,vectorRef(dom,0).args)]
-  oplist:= getConstructorOperationsFromDB opOf dom.0
+  substargs := [['$,:canonicalForm dom],
+                  :pairList($FormalMapVariableList,instantiationArgs dom)]
+  oplist:= getConstructorOperationsFromDB instantiationCtor dom
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops := newVector #siglist
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat

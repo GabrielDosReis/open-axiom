@@ -675,7 +675,7 @@ mkParameterList l ==
       apply(function strconc,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
-nameLen n ==>
+macro nameLen n ==
  +/[1+#(u) for u in n]
 
 fortFormatTypes(typeName,names) ==

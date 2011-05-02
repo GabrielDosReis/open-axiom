@@ -65,62 +65,48 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
 	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
-	unlisp.$(FASLEXT)	\
-	astr.$(FASLEXT)	bits.$(FASLEXT)	\
+	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
+	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
+	astr.$(FASLEXT)		bits.$(FASLEXT)		\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
-	br-search.$(FASLEXT)	\
-	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
-	g-util.$(FASLEXT)	hashcode.$(FASLEXT) \
+	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
+	buildom.$(FASLEXT)	hashcode.$(FASLEXT)	\
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
-	cformat.$(FASLEXT)		\
-	clam.$(FASLEXT)	        \
+	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
-	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
-	pathname.$(FASLEXT)	\
-	compat.$(FASLEXT)	                    	\
+	comp.$(FASLEXT)	        foam_l.$(FASLEXT) 	\
+	pathname.$(FASLEXT)	compat.$(FASLEXT)      	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
 	g-cndata.$(FASLEXT)	database.$(FASLEXT)	\
 	debug.$(FASLEXT)	dq.$(FASLEXT)		\
 	fname.$(FASLEXT)	format.$(FASLEXT)	\
-	g-error.$(FASLEXT)	g-opt.$(FASLEXT)	\
-	ggreater.$(FASLEXT)				\
-	hypertex.$(FASLEXT)	\
-	i-object.$(FASLEXT)	i-analy.$(FASLEXT)	\
-	                  	i-resolv.$(FASLEXT)	\
-	i-coerce.$(FASLEXT)	\
-	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
-	i-funsel.$(FASLEXT)	\
+	g-error.$(FASLEXT)	ggreater.$(FASLEXT)	\
+	hypertex.$(FASLEXT)	i-object.$(FASLEXT)	\
+	i-analy.$(FASLEXT)	i-resolv.$(FASLEXT)	\
+	i-coerce.$(FASLEXT)	i-coerfn.$(FASLEXT)	\
+	i-eval.$(FASLEXT)	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
-	i-output.$(FASLEXT)	\
-	i-special.$(FASLEXT)				\
-	                    	i-syscmd.$(FASLEXT)	\
-	i-toplev.$(FASLEXT)	i-util.$(FASLEXT)	\
-	incl.$(FASLEXT)	int-top.$(FASLEXT)	\
-	intfile.$(FASLEXT)	c-util.$(FASLEXT)	\
+	i-output.$(FASLEXT)	i-special.$(FASLEXT)	\
+	i-syscmd.$(FASLEXT)	i-toplev.$(FASLEXT)	\
+	i-util.$(FASLEXT)	incl.$(FASLEXT)		\
+	int-top.$(FASLEXT)	intfile.$(FASLEXT)	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
-	match.$(FASLEXT)				\
-	monitor.$(FASLEXT)	msg.$(FASLEXT)		\
-	msgdb.$(FASLEXT)	\
+	match.$(FASLEXT)	monitor.$(FASLEXT)	\
+	msg.$(FASLEXT)		msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
-	nrunfast.$(FASLEXT)	\
-	osyscmd.$(FASLEXT)	\
-	packtran.$(FASLEXT)	\
-	pf2sex.$(FASLEXT)	\
+	nrunfast.$(FASLEXT)	osyscmd.$(FASLEXT)	\
+	packtran.$(FASLEXT)	pf2sex.$(FASLEXT)	\
 	scan.$(FASLEXT)		pile.$(FASLEXT)		\
-	property.$(FASLEXT)	\
-	postpar.$(FASLEXT)	parse.$(FASLEXT)	\
-	spad-parser.$(FASLEXT) \
-	record.$(FASLEXT)				\
-	rulesets.$(FASLEXT)	\
-	server.$(FASLEXT)				\
-	setvars.$(FASLEXT)	\
+	property.$(FASLEXT)	postpar.$(FASLEXT)	\
+	parse.$(FASLEXT)	spad-parser.$(FASLEXT) \
+	record.$(FASLEXT)	rulesets.$(FASLEXT)	\
+	server.$(FASLEXT)	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	slam.$(FASLEXT)		fnewmeta.$(FASLEXT)	\
 	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
-	spad.$(FASLEXT)	\
-	spaderror.$(FASLEXT)				\
+	spad.$(FASLEXT)		spaderror.$(FASLEXT)	\
 	                       	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
@@ -329,8 +315,8 @@ i-coerce.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
 i-resolv.$(FASLEXT): i-object.$(FASLEXT)
 i-analy.$(FASLEXT): i-object.$(FASLEXT)
 i-intern.$(FASLEXT): i-object.$(FASLEXT) ptrees.$(FASLEXT)
-i-object.$(FASLEXT): g-util.$(FASLEXT)
-i-util.$(FASLEXT): g-util.$(FASLEXT)
+i-object.$(FASLEXT): i-util.$(FASLEXT)
+i-util.$(FASLEXT): c-util.$(FASLEXT)
 format.$(FASLEXT): macros.$(FASLEXT)
 match.$(FASLEXT): sys-macros.$(FASLEXT)
 record.$(FASLEXT): nlib.$(FASLEXT) pathname.$(FASLEXT)
@@ -346,7 +332,7 @@ define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
 functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
-category.$(FASLEXT): g-util.$(FASLEXT) g-cndata.$(FASLEXT)
+category.$(FASLEXT): c-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): macros.$(FASLEXT)
@@ -442,7 +428,7 @@ msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 util.$(FASLEXT): parsing.$(FASLEXT)
 fname.$(FASLEXT): macros.$(FASLEXT)
 sys-macros.$(FASLEXT): diagnostics.$(FASLEXT) union.$(FASLEXT)
-buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
+buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 diagnostics.$(FASLEXT): sys-globals.$(FASLEXT) vmlisp.$(FASLEXT)
 sys-driver.$(FASLEXT): sys-driver.boot types.$(FASLEXT)
 sys-globals.$(FASLEXT): sys-constants.$(FASLEXT) hash.$(FASLEXT)

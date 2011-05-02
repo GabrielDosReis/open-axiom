@@ -35,8 +35,6 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-util.boot <================================
-
 --=======================================================================
 --                     AXIOM Browser
 -- Initial entry is from man0.ht page to one of these functions:

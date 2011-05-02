@@ -35,7 +35,6 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
 $aixTestSaturn := false
 --These will be set in patches.lisp:
