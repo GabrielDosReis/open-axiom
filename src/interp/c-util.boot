@@ -77,6 +77,11 @@ macro instantiationArgs d ==
 macro categoryExports d ==
   categoryRef(d,1)
 
+++ Return the predicate values associated with the domain object.
+++ This is an integer interpreted as bit vector
+macro domainPredicates d ==
+  domainRef(d,3)
+
 --%
 $SetCategory ==
   '(SetCategory)

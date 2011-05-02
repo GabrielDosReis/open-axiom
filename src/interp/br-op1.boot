@@ -393,7 +393,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
   which   := '"operation"
   [nam,:$domainArgs] := domainForm
   $predicateList: local := getConstructorPredicatesFromDB nam
-  predVector := vectorRef(dom,3)
+  predVector := domainPredicates dom
   u := getDomainOpTable(dom,true,ASSOCLEFT opAlist)
   --u has form ((op,sig,:implementor)...)
   --sort into 4 groups: domain exports, unexports, default exports, others
@@ -995,7 +995,7 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
         attPredIndex := LASSOC(a,dom.2)
         null attPredIndex  => nil
         attPredIndex = 0 => true
-        testBitVector(dom.3,attPredIndex)
+        testBitVector(domainPredicates dom,attPredIndex)
       nil
     pred is 'T => true
     systemError '"unknown atomic predicate form"

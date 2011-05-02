@@ -722,7 +722,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     x is ['DEF,y,:.] => [y,:oplist]
     fn(x.args,fn(x.op,oplist))
   catvec := eval mkEvalableCategoryForm form
-  fullCatOpList := vectorRef(JoinInner([catvec],$e),1)
+  fullCatOpList := categoryExports JoinInner([catvec],$e)
   catOpList :=
     [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
         | assoc(op1,capsuleDefAlist)]
@@ -930,7 +930,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $compileExportsOnly =>
-      compDefineExports(form, vectorRef(ds,1), signature',$e)
+      compDefineExports(form, categoryExports ds, signature',$e)
     $domainShell: local := COPY_-SEQ ds
     attributeList := vectorRef(ds,2) --see below under "loadTimeAlist"
     $condAlist: local := nil

@@ -444,21 +444,21 @@ modemapPattern(mmPattern,sig) ==
 
 substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
-  domainPredicates := nil
+  domPreds := nil
   for [[patVar,:value],:.] in tails patternAlist repeat
     pred := MSUBST(patVar,value,pred)
     patternAlist := nsubst(patVar,value,patternAlist)
-    domainPredicates := MSUBST(patVar,value,domainPredicates)
+    domPreds := MSUBST(patVar,value,domPreds)
     if not symbolMember?(value,$FormalMapVariableList) then
-      domainPredicates := [["isDomain",patVar,value],:domainPredicates]
-  everything := [pred,patternAlist,domainPredicates]
+      domPreds := [["isDomain",patVar,value],:domPreds]
+  everything := [pred,patternAlist,domPreds]
   for var in $FormalMapVariableList repeat
     CONTAINED(var,everything) =>
       replacementVar := first patternVarList
       patternVarList := rest patternVarList
       pred := substitute(replacementVar,var,pred)
-      domainPredicates := substitute(replacementVar,var,domainPredicates)
-  [pred, domainPredicates]
+      domPreds := substitute(replacementVar,var,domPreds)
+  [pred, domPreds]
 
 fixUpPredicate(predClause, domainPreds, partial, sig) ==
   --  merge the predicates in predClause and domainPreds into a

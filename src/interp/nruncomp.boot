@@ -435,7 +435,7 @@ stuffDomainSlots dollar ==
   proto4 := infovec.3
   vectorRef(dollar,4) := 
     vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
-    bitVector := dollar.3
+    bitVector := domainPredicates dollar
     predvec := first proto4
     packagevec := second proto4
     auxvec := LIST2VEC [fn for i in 0..maxIndex predvec] where fn() ==

@@ -62,7 +62,7 @@ initNewWorld() ==
   $doNotCompressHashTableIfTrue := true
  
 isNewWorldDomain domain == 
-  integer? vectorRef(domain,3)    --see HasCategory/Attribute
+  integer? domainRef(domain,3)    --see HasCategory/Attribute
  
 getDomainByteVector dom == 
   CDDR vectorRef(dom,4)
@@ -184,7 +184,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       '"----> searching op table for:","%l","  "),op,sig,dollar)
   someMatch := false
   numvec := getDomainByteVector domain
-  predvec := vectorRef(domain,3)
+  predvec := domainPredicates domain
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
@@ -309,7 +309,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
-  predvec := vectorRef(dom,3)
+  predvec := domainPredicates dom
   packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
@@ -385,7 +385,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
-  predvec := vectorRef(dom,3)
+  predvec := domainPredicates dom
   slot4 := vectorRef(dom,4)
   packageVec := first slot4
   catVec := second slot4
@@ -552,7 +552,7 @@ lookupInDomainByName(op,domain,arg) ==
   atom arg => nil
   opvec := domain . 1 . 2
   numvec := getDomainByteVector domain
-  predvec := vectorRef(domain,3)
+  predvec := domainPredicates domain
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return nil
   idxmax := maxIndex numvec
