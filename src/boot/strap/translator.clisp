@@ -150,12 +150,13 @@
   (BOOTTOCLLINES |lines| |fn| |out|))
 
 (DEFUN BOOTTOCLLINES (|lines| |fn| |outfn|)
-  (PROG (|infn|)
+  (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (|shoeOpenInputFile| |a| |infn|
-            (|shoeClLines| |a| |fn| |lines| |outfn|))))))
+      (UNWIND-PROTECT
+        (PROGN
+          (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+          (|shoeClLines| |a| |fn| |lines| |outfn|))
+        (|closeFile| |a|)))))
 
 (DEFUN |shoeClLines| (|a| |fn| |lines| |outfn|)
   (PROG (|$GenVarCounter|)
@@ -193,12 +194,13 @@
         (|endCompileDuration|)))))
 
 (DEFUN BOOTTOCLCLINES (|lines| |fn| |outfn|)
-  (PROG (|infn|)
+  (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (|shoeOpenInputFile| |a| |infn|
-            (|shoeClCLines| |a| |fn| |lines| |outfn|))))))
+      (UNWIND-PROTECT
+        (PROGN
+          (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+          (|shoeClCLines| |a| |fn| |lines| |outfn|))
+        (|closeFile| |a|)))))
 
 (DEFUN |shoeClCLines| (|a| |fn| |lines| |outfn|)
   (PROG (|$GenVarCounter|)
@@ -230,18 +232,20 @@
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BOOTTOMC))
 
 (DEFUN BOOTTOMC (|fn|)
-  (PROG (|$GenVarCounter| |result| |infn| |callingPackage|)
+  (PROG (|$GenVarCounter| |a| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (SETQ |result|
-              (|shoeOpenInputFile| |a| |infn| (|shoeMc| |a| |fn|)))
-        (|setCurrentPackage| |callingPackage|)
-        |result|))))
+        (UNWIND-PROTECT
+          (PROGN
+            (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+            (|shoeMc| |a| |fn|))
+          (PROGN
+            (|closeFile| |a|)
+            (|setCurrentPackage| |callingPackage|)))))))
 
 (DEFUN |shoeMc| (|a| |fn|)
   (COND
@@ -250,7 +254,7 @@
        (|shoeConsole| (CONCAT |fn| " COMPILED AND LOADED")))))
 
 (DEFUN |evalBootFile| (|fn|)
-  (PROG (|outfn| |infn| |b|)
+  (PROG (|a| |outfn| |infn| |b|)
     (RETURN
       (PROGN
         (SETQ |b| *PACKAGE*)
@@ -259,28 +263,31 @@
         (SETQ |outfn|
               (CONCAT (|shoeRemovebootIfNec| |fn|) "."
                       *LISP-SOURCE-FILETYPE*))
-        (|shoeOpenInputFile| |a| |infn|
+        (UNWIND-PROTECT
+          (PROGN
+            (SETQ |a| (|inputTextFile| |infn|))
             (|shoeClLines| |a| |infn| NIL |outfn|))
-        (|setCurrentPackage| |b|)
+          (PROGN (|closeFile| |a|) (|setCurrentPackage| |b|)))
         (LOAD |outfn|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BO))
 
 (DEFUN BO (|fn|)
-  (PROG (|$GenVarCounter| |infn| |b|)
+  (PROG (|$GenVarCounter| |a| |b|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |b| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (|shoeOpenInputFile| |a| |infn| (|shoeToConsole| |a| |fn|))
-        (|setCurrentPackage| |b|)))))
+        (UNWIND-PROTECT
+          (PROGN
+            (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+            (|shoeToConsole| |a| |fn|))
+          (PROGN (|closeFile| |a|) (|setCurrentPackage| |b|)))))))
 
 (DEFUN BOCLAM (|fn|)
-  (PROG (|$bfClamming| |$GenVarCounter| |result| |infn|
-            |callingPackage|)
+  (PROG (|$bfClamming| |$GenVarCounter| |a| |callingPackage|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -288,12 +295,13 @@
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
         (SETQ |$bfClamming| T)
-        (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-        (SETQ |result|
-              (|shoeOpenInputFile| |a| |infn|
-                  (|shoeToConsole| |a| |fn|)))
-        (|setCurrentPackage| |callingPackage|)
-        |result|))))
+        (UNWIND-PROTECT
+          (PROGN
+            (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+            (|shoeToConsole| |a| |fn|))
+          (PROGN
+            (|closeFile| |a|)
+            (|setCurrentPackage| |callingPackage|)))))))
 
 (DEFUN |shoeToConsole| (|a| |fn|)
   (COND
@@ -527,7 +535,7 @@
         (SETQ |$bpParenCount| 0)
         (|bpFirstTok|)
         (SETQ |found|
-              (LET ((#0=#:G1356
+              (LET ((#0=#:G1362
                         (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
                 (COND
                   ((AND (CONSP #0#)
@@ -806,11 +814,13 @@
         (COND ((NULL |n|) |s|) (T (|subString| |s| 0 |n|)))))))
 
 (DEFUN DEFUSE (|fn|)
-  (PROG (|infn|)
+  (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |infn| (CONCAT |fn| ".boot"))
-        (|shoeOpenInputFile| |a| |infn| (|shoeDfu| |a| |fn|))))))
+      (UNWIND-PROTECT
+        (PROGN
+          (SETQ |a| (|inputTextFile| (CONCAT |fn| ".boot")))
+          (|shoeDfu| |a| |fn|))
+        (|closeFile| |a|)))))
 
 (DEFPARAMETER |$bootDefined| NIL)
 
@@ -1113,11 +1123,13 @@
              (T (|bootOutLines| (CDR |l|) |outfn| (CONCAT |s| " " |a|)))))))))
 
 (DEFUN XREF (|fn|)
-  (PROG (|infn|)
+  (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |infn| (CONCAT |fn| ".boot"))
-        (|shoeOpenInputFile| |a| |infn| (|shoeXref| |a| |fn|))))))
+      (UNWIND-PROTECT
+        (PROGN
+          (SETQ |a| (|inputTextFile| (CONCAT |fn| ".boot")))
+          (|shoeXref| |a| |fn|))
+        (|closeFile| |a|)))))
 
 (DEFUN |shoeXref| (|a| |fn|)
   (PROG (|$bfClamming| |$GenVarCounter| |$bootUsed| |$bootDefined|

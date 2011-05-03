@@ -105,8 +105,10 @@ BOOTCLAMLINES(lines, fn, out) ==
    BOOTTOCLLINES(lines, fn, out)
 
 BOOTTOCLLINES(lines, fn, outfn)==
-   infn:=shoeAddbootIfNec fn
-   shoeOpenInputFile(a,infn, shoeClLines(a,fn,lines,outfn))
+   try
+     a := inputTextFile shoeAddbootIfNec fn
+     shoeClLines(a,fn,lines,outfn)
+   finally closeFile a
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
@@ -132,9 +134,10 @@ BOOTTOCLC(fn, out)==
   finally endCompileDuration()
  
 BOOTTOCLCLINES(lines, fn, outfn)==
-  infn:=shoeAddbootIfNec fn
-  shoeOpenInputFile(a,infn, shoeClCLines(a,fn,lines,outfn))
-  
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeClCLines(a,fn,lines,outfn)
+  finally closeFile a
  
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
@@ -154,10 +157,12 @@ BOOTTOMC fn==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter: local  := 0
-   infn:=shoeAddbootIfNec fn
-   result := shoeOpenInputFile(a,infn,shoeMc(a,fn))
-   setCurrentPackage callingPackage
-   result
+   try
+     a := inputTextFile shoeAddbootIfNec fn
+     shoeMc(a,fn)
+   finally
+     closeFile a
+     setCurrentPackage callingPackage
  
 shoeMc(a,fn)==
   a=nil => shoeNotFound fn
@@ -169,8 +174,12 @@ evalBootFile fn ==
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
    outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
-   shoeOpenInputFile(a,infn,shoeClLines(a,infn,[],outfn))
-   setCurrentPackage b
+   try
+     a := inputTextFile infn
+     shoeClLines(a,infn,[],outfn)
+   finally
+     closeFile a
+     setCurrentPackage b
    LOAD outfn
  
 ++ (boot "filename") translates the file "filename.boot"
@@ -180,19 +189,24 @@ BO fn==
   b := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
-  infn:=shoeAddbootIfNec fn
-  shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
-  setCurrentPackage b
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeToConsole(a,fn)
+  finally
+    closeFile a
+    setCurrentPackage b
  
 BOCLAM fn==
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
   $bfClamming: local := true
-  infn:=shoeAddbootIfNec fn
-  result := shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
-  setCurrentPackage callingPackage
-  result
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeToConsole(a,fn)
+  finally
+    closeFile a
+    setCurrentPackage callingPackage
  
 shoeToConsole(a,fn)==
   a=nil => shoeNotFound fn
@@ -492,8 +506,10 @@ shoeRemoveStringIfNec(str,s)==
 -- not defined in the input file and common lisp.
  
 DEFUSE fn==
-  infn := strconc(fn,'".boot")
-  shoeOpenInputFile(a,infn,shoeDfu(a,fn))
+  try
+    a := inputTextFile strconc(fn,'".boot")
+    shoeDfu(a,fn)
+  finally closeFile a
  
 --%
 $bootDefined := nil
@@ -612,8 +628,10 @@ bootOutLines(l,outfn,s)==
 -- used in "fn.boot", together with a list of functions that use it.
  
 XREF fn==
-  infn := strconc(fn,'".boot")
-  shoeOpenInputFile(a,infn,shoeXref(a,fn))
+  try
+    a := inputTextFile strconc(fn,'".boot")
+    shoeXref(a,fn)
+  finally closeFile a
  
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn

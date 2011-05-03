@@ -1,3 +1,8 @@
+2011-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (shoeOpenInputFile): Remove.  Adjust
+	callers to use inputTextFile with try/finally.
+
 2011-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (idList?, charList?, stringLits?): New.
