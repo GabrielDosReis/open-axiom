@@ -39,7 +39,8 @@ import pile
 import parser
 import ast
 namespace BOOTTRAN
-module translator (evalBootFile)
+module translator (evalBootFile, loadNativeModule, loadSystemRuntimeCore,
+  string2BootTree, genImportDeclaration)
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil

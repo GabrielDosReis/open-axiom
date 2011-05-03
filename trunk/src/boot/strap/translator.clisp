@@ -14,7 +14,8 @@
 (PROVIDE "translator")
 
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
-  (EXPORT '|evalBootFile|))
+  (EXPORT '(|evalBootFile| |loadNativeModule| |loadSystemRuntimeCore|
+               |string2BootTree| |genImportDeclaration|)))
 
 (DEFPARAMETER |$currentModuleName| NIL)
 
