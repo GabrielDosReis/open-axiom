@@ -63,11 +63,6 @@
 
 (defvar *lisp-source-filetype* "lisp")
 
-(defmacro |shoeOpenInputFile|
-  (stream fn prog)
-    `(with-open-file (,stream ,fn :direction :input
-       :if-does-not-exist nil) ,prog))
-
 (defmacro |shoeOpenOutputFile|
   (stream fn prog)
     `(with-open-file (,stream ,fn :direction :output
