@@ -46,11 +46,7 @@
   (:use "AxiomCore")
   #+:common-lisp  (:use "COMMON-LISP")
   #-:common-lisp  (:use "LISP")
-  (:export "loadNativeModule"
-	   "loadSystemRuntimeCore"
-           "$InteractiveMode"
-	   "string2BootTree"
-	   "genImportDeclaration"))
+  )
 
 (in-package "BOOTTRAN")
 
@@ -63,16 +59,9 @@
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)
 
-;; when true indicate that that the Boot translator
-;; is called interactively.
-(defparameter |$InteractiveMode| nil)
-
 (defvar *lisp-bin-filetype* "o")
 
 (defvar *lisp-source-filetype* "lisp")
-
-(defun |shoeInputFile| (filespec )
-  (open filespec :direction :input :if-does-not-exist nil))
 
 (defmacro |shoeOpenInputFile|
   (stream fn prog)

@@ -34,7 +34,10 @@
 
 import utility
 namespace BOOTTRAN
-module tokens
+module tokens ($InteractiveMode)
+
+++ If true, means the system is in interactive mode.
+$InteractiveMode := false
 
 ++ converts `x', a 1-length symbol, to a character.
 char x ==

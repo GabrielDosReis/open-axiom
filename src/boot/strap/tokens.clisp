@@ -5,6 +5,11 @@
 
 (PROVIDE "tokens")
 
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT '|$InteractiveMode|))
+
+(DEFPARAMETER |$InteractiveMode| NIL)
+
 (DEFUN |char| (|x|) (SCHAR (SYMBOL-NAME |x|) 0))
 
 (DEFUN |shoeStartsId| (|x|)
