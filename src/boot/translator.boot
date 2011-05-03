@@ -97,7 +97,7 @@ BOOTTOCL(fn, out) ==
 ++ a hash table to store previously computed values indexed by argument
 ++ list.
 BOOTCLAM(fn, out) == 
-  $bfClamming := true
+  $bfClamming: local := true
   BOOTCLAMLINES(nil,fn, out)
  
 BOOTCLAMLINES(lines, fn, out) ==
@@ -109,7 +109,7 @@ BOOTTOCLLINES(lines, fn, outfn)==
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   shoeOpenOutputFile(stream,outfn,_
     (genOptimizeOptions stream;
      (for line in lines repeat shoeFileLine(line,stream);
@@ -137,7 +137,7 @@ BOOTTOCLCLINES(lines, fn, outfn)==
  
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   shoeOpenOutputFile(stream,outfn,
     (genOptimizeOptions stream;
      for line in lines repeat shoeFileLine (line,stream);
@@ -152,7 +152,7 @@ BOOTTOMC: %String -> %Thing
 BOOTTOMC fn==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter  := 0
+   $GenVarCounter: local  := 0
    infn:=shoeAddbootIfNec fn
    result := shoeOpenInputFile(a,infn,shoeMc(a,fn))
    setCurrentPackage callingPackage
@@ -178,7 +178,7 @@ BO: %String -> %Thing
 BO fn==
   b := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   infn:=shoeAddbootIfNec fn
   shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
   setCurrentPackage b
@@ -186,8 +186,8 @@ BO fn==
 BOCLAM fn==
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
-  $bfClamming := true
+  $GenVarCounter: local := 0
+  $bfClamming: local := true
   infn:=shoeAddbootIfNec fn
   result := shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
   setCurrentPackage callingPackage
@@ -207,7 +207,7 @@ STOUT string ==
 string2BootTree string ==   
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   a := shoeTransformString [string]
   result :=
     bStreamNull a => nil
@@ -219,7 +219,7 @@ string2BootTree string ==
 STEVAL string==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter := 0
+   $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
@@ -234,7 +234,7 @@ STEVAL string==
 STTOMC string==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter := 0
+   $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
@@ -502,13 +502,13 @@ $lispWordTable := nil
 
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
-  $lispWordTable :=MAKE_-HASHTABLE ("EQ")
+  $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-  $bootDefined :=MAKE_-HASHTABLE "EQ"
-  $bootUsed :=MAKE_-HASHTABLE "EQ"
-  $bootDefinedTwice := nil
-  $GenVarCounter := 0
-  $bfClamming := false
+  $bootDefined: local :=MAKE_-HASHTABLE "EQ"
+  $bootUsed:local := MAKE_-HASHTABLE "EQ"
+  $bootDefinedTwice: local := nil
+  $GenVarCounter: local := 0
+  $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".defuse")
   shoeOpenOutputFile(stream,out,shoeReport stream)
@@ -616,12 +616,12 @@ XREF fn==
  
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
-  $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
+  $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-  $bootDefined  :=MAKE_-HASHTABLE "EQ"
-  $bootUsed  :=MAKE_-HASHTABLE "EQ"
-  $GenVarCounter  :=0
-  $bfClamming :=false
+  $bootDefined: local := MAKE_-HASHTABLE "EQ"
+  $bootUsed: local := MAKE_-HASHTABLE "EQ"
+  $GenVarCounter: local := 0
+  $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".xref")
   shoeOpenOutputFile(stream,out,shoeXReport stream)
@@ -666,7 +666,7 @@ bStreamPackageNull s==
   b
  
 PSTTOMC string==
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
@@ -700,7 +700,7 @@ BOOTPO() ==
 PSTOUT string==
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
+  $GenVarCounter: local := 0
   result := shoeConsoleTrees shoeTransformString string
   setCurrentPackage callingPackage
   result

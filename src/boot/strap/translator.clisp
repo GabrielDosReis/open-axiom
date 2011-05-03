@@ -140,8 +140,10 @@
         (|endCompileDuration|)))))
 
 (DEFUN BOOTCLAM (|fn| |out|)
-  (DECLARE (SPECIAL |$bfClamming|))
-  (PROGN (SETQ |$bfClamming| T) (BOOTCLAMLINES NIL |fn| |out|)))
+  (PROG (|$bfClamming|)
+    (DECLARE (SPECIAL |$bfClamming|))
+    (RETURN
+      (PROGN (SETQ |$bfClamming| T) (BOOTCLAMLINES NIL |fn| |out|)))))
 
 (DEFUN BOOTCLAMLINES (|lines| |fn| |out|)
   (BOOTTOCLLINES |lines| |fn| |out|))
@@ -155,24 +157,26 @@
             (|shoeClLines| |a| |fn| |lines| |outfn|))))))
 
 (DEFUN |shoeClLines| (|a| |fn| |lines| |outfn|)
-  (DECLARE (SPECIAL |$GenVarCounter|))
-  (COND
-    ((NULL |a|) (|shoeNotFound| |fn|))
-    (T (SETQ |$GenVarCounter| 0)
-       (|shoeOpenOutputFile| |stream| |outfn|
-           (PROGN
-             (|genOptimizeOptions| |stream|)
-             (LET ((|bfVar#7| |lines|) (|line| NIL))
-               (LOOP
-                 (COND
-                   ((OR (ATOM |bfVar#7|)
-                        (PROGN (SETQ |line| (CAR |bfVar#7|)) NIL))
-                    (RETURN NIL))
-                   (T (|shoeFileLine| |line| |stream|)))
-                 (SETQ |bfVar#7| (CDR |bfVar#7|))))
-             (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)
-             (|genModuleFinalization| |stream|)))
-       |outfn|)))
+  (PROG (|$GenVarCounter|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
+    (RETURN
+      (COND
+        ((NULL |a|) (|shoeNotFound| |fn|))
+        (T (SETQ |$GenVarCounter| 0)
+           (|shoeOpenOutputFile| |stream| |outfn|
+               (PROGN
+                 (|genOptimizeOptions| |stream|)
+                 (LET ((|bfVar#7| |lines|) (|line| NIL))
+                   (LOOP
+                     (COND
+                       ((OR (ATOM |bfVar#7|)
+                            (PROGN (SETQ |line| (CAR |bfVar#7|)) NIL))
+                        (RETURN NIL))
+                       (T (|shoeFileLine| |line| |stream|)))
+                     (SETQ |bfVar#7| (CDR |bfVar#7|))))
+                 (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)
+                 (|genModuleFinalization| |stream|)))
+           |outfn|)))))
 
 (DEFUN BOOTTOCLC (|fn| |out|)
   (PROG (|result| |callingPackage|)
@@ -196,33 +200,36 @@
             (|shoeClCLines| |a| |fn| |lines| |outfn|))))))
 
 (DEFUN |shoeClCLines| (|a| |fn| |lines| |outfn|)
-  (DECLARE (SPECIAL |$GenVarCounter|))
-  (COND
-    ((NULL |a|) (|shoeNotFound| |fn|))
-    (T (SETQ |$GenVarCounter| 0)
-       (|shoeOpenOutputFile| |stream| |outfn|
-           (PROGN
-             (|genOptimizeOptions| |stream|)
-             (LET ((|bfVar#8| |lines|) (|line| NIL))
-               (LOOP
-                 (COND
-                   ((OR (ATOM |bfVar#8|)
-                        (PROGN (SETQ |line| (CAR |bfVar#8|)) NIL))
-                    (RETURN NIL))
-                   (T (|shoeFileLine| |line| |stream|)))
-                 (SETQ |bfVar#8| (CDR |bfVar#8|))))
-             (|shoeFileTrees|
-                 (|shoeTransformToFile| |stream|
-                     (|shoeInclude|
-                         (|bAddLineNumber| (|bRgen| |a|) (|bIgen| 0))))
-                 |stream|)
-             (|genModuleFinalization| |stream|)))
-       |outfn|)))
+  (PROG (|$GenVarCounter|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
+    (RETURN
+      (COND
+        ((NULL |a|) (|shoeNotFound| |fn|))
+        (T (SETQ |$GenVarCounter| 0)
+           (|shoeOpenOutputFile| |stream| |outfn|
+               (PROGN
+                 (|genOptimizeOptions| |stream|)
+                 (LET ((|bfVar#8| |lines|) (|line| NIL))
+                   (LOOP
+                     (COND
+                       ((OR (ATOM |bfVar#8|)
+                            (PROGN (SETQ |line| (CAR |bfVar#8|)) NIL))
+                        (RETURN NIL))
+                       (T (|shoeFileLine| |line| |stream|)))
+                     (SETQ |bfVar#8| (CDR |bfVar#8|))))
+                 (|shoeFileTrees|
+                     (|shoeTransformToFile| |stream|
+                         (|shoeInclude|
+                             (|bAddLineNumber| (|bRgen| |a|)
+                                 (|bIgen| 0))))
+                     |stream|)
+                 (|genModuleFinalization| |stream|)))
+           |outfn|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BOOTTOMC))
 
 (DEFUN BOOTTOMC (|fn|)
-  (PROG (|result| |infn| |callingPackage|)
+  (PROG (|$GenVarCounter| |result| |infn| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -259,7 +266,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BO))
 
 (DEFUN BO (|fn|)
-  (PROG (|infn| |b|)
+  (PROG (|$GenVarCounter| |infn| |b|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -271,7 +278,8 @@
         (|setCurrentPackage| |b|)))))
 
 (DEFUN BOCLAM (|fn|)
-  (PROG (|result| |infn| |callingPackage|)
+  (PROG (|$bfClamming| |$GenVarCounter| |result| |infn|
+            |callingPackage|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -297,7 +305,7 @@
 (DEFUN STOUT (|string|) (PSTOUT (LIST |string|)))
 
 (DEFUN |string2BootTree| (|string|)
-  (PROG (|result| |a| |callingPackage|)
+  (PROG (|$GenVarCounter| |result| |a| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -314,7 +322,7 @@
         |result|))))
 
 (DEFUN STEVAL (|string|)
-  (PROG (|result| |fn| |a| |callingPackage|)
+  (PROG (|$GenVarCounter| |result| |fn| |a| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -333,7 +341,7 @@
         |result|))))
 
 (DEFUN STTOMC (|string|)
-  (PROG (|result| |a| |callingPackage|)
+  (PROG (|$GenVarCounter| |result| |a| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
@@ -812,7 +820,8 @@
 (DEFPARAMETER |$lispWordTable| NIL)
 
 (DEFUN |shoeDfu| (|a| |fn|)
-  (PROG (|out|)
+  (PROG (|$bfClamming| |$GenVarCounter| |$bootDefinedTwice| |$bootUsed|
+            |$bootDefined| |$lispWordTable| |out|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|
                       |$bootDefinedTwice| |$bootUsed| |$bootDefined|
                       |$lispWordTable|))
@@ -1110,7 +1119,8 @@
         (|shoeOpenInputFile| |a| |infn| (|shoeXref| |a| |fn|))))))
 
 (DEFUN |shoeXref| (|a| |fn|)
-  (PROG (|out|)
+  (PROG (|$bfClamming| |$GenVarCounter| |$bootUsed| |$bootDefined|
+            |$lispWordTable| |out|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter| |$bootUsed|
                       |$bootDefined| |$lispWordTable|))
     (RETURN
@@ -1220,10 +1230,12 @@
         |b|))))
 
 (DEFUN PSTTOMC (|string|)
-  (DECLARE (SPECIAL |$GenVarCounter|))
-  (PROGN
-    (SETQ |$GenVarCounter| 0)
-    (|shoePCompileTrees| (|shoeTransformString| |string|))))
+  (PROG (|$GenVarCounter|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
+    (RETURN
+      (PROGN
+        (SETQ |$GenVarCounter| 0)
+        (|shoePCompileTrees| (|shoeTransformString| |string|))))))
 
 (DEFUN BOOTLOOP ()
   (PROG (|stream| |b| |a|)
@@ -1256,7 +1268,7 @@
                (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
 
 (DEFUN PSTOUT (|string|)
-  (PROG (|result| |callingPackage|)
+  (PROG (|$GenVarCounter| |result| |callingPackage|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
