@@ -113,12 +113,15 @@ BOOTTOCLLINES(lines, fn, outfn)==
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
   $GenVarCounter: local := 0
-  shoeOpenOutputFile(stream,outfn,_
-    (genOptimizeOptions stream;
-     (for line in lines repeat shoeFileLine(line,stream);
-       shoeFileTrees(shoeTransformStream a,stream));
-      genModuleFinalization(stream)))
-  outfn
+  try
+    stream := outputTextFile outfn
+    genOptimizeOptions stream
+    for line in lines repeat
+      shoeFileLine(line,stream)
+    shoeFileTrees(shoeTransformStream a,stream)
+    genModuleFinalization stream
+    outfn
+  finally closeFile stream
  
 ++ (boottoclc "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" with the original boot
@@ -142,13 +145,16 @@ BOOTTOCLCLINES(lines, fn, outfn)==
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
   $GenVarCounter: local := 0
-  shoeOpenOutputFile(stream,outfn,
-    (genOptimizeOptions stream;
-     for line in lines repeat shoeFileLine (line,stream);
-      shoeFileTrees(shoeTransformToFile(stream,
-	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream);
-      genModuleFinalization(stream)))
-  outfn
+  try
+    stream := outputTextFile outfn
+    genOptimizeOptions stream
+    for line in lines repeat
+       shoeFileLine(line,stream)
+    shoeFileTrees(shoeTransformToFile(stream,
+      shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream)
+    genModuleFinalization(stream)
+    outfn
+  finally closeFile stream
  
 ++ (boottomc "filename") translates the file "filename.boot"
 ++ to machine code and loads it one item at a time
@@ -527,9 +533,10 @@ shoeDfu(a,fn)==
   $GenVarCounter: local := 0
   $bfClamming: local := false
   shoeDefUse shoeTransformStream a
-  out := strconc(fn,'".defuse")
-  shoeOpenOutputFile(stream,out,shoeReport stream)
-  out
+  try
+    stream := outputTextFile strconc(fn,'".defuse")
+    shoeReport stream
+  finally closeFile stream
  
 shoeReport stream==
   shoeFileLine('"DEFINED and not USED",stream)
@@ -643,8 +650,11 @@ shoeXref(a,fn)==
   $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".xref")
-  shoeOpenOutputFile(stream,out,shoeXReport stream)
-  out
+  try
+    out := outputTextFile out
+    shoeXReport stream
+    out
+  finally closeFile stream
  
  
 shoeXReport stream==
