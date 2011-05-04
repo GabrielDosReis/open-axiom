@@ -1,3 +1,8 @@
+2011-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (shoeOpenOutputFile): Remove.  Adjust
+	callers to use outputTextFile.
+
 2011-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/initial-env.lisp (shoeOpenInputFile): Remove.  Adjust

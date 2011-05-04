@@ -159,26 +159,28 @@
         (|closeFile| |a|)))))
 
 (DEFUN |shoeClLines| (|a| |fn| |lines| |outfn|)
-  (PROG (|$GenVarCounter|)
+  (PROG (|$GenVarCounter| |stream|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (COND
         ((NULL |a|) (|shoeNotFound| |fn|))
         (T (SETQ |$GenVarCounter| 0)
-           (|shoeOpenOutputFile| |stream| |outfn|
-               (PROGN
-                 (|genOptimizeOptions| |stream|)
-                 (LET ((|bfVar#7| |lines|) (|line| NIL))
-                   (LOOP
-                     (COND
-                       ((OR (ATOM |bfVar#7|)
-                            (PROGN (SETQ |line| (CAR |bfVar#7|)) NIL))
-                        (RETURN NIL))
-                       (T (|shoeFileLine| |line| |stream|)))
-                     (SETQ |bfVar#7| (CDR |bfVar#7|))))
-                 (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)
-                 (|genModuleFinalization| |stream|)))
-           |outfn|)))))
+           (UNWIND-PROTECT
+             (PROGN
+               (SETQ |stream| (|outputTextFile| |outfn|))
+               (|genOptimizeOptions| |stream|)
+               (LET ((|bfVar#7| |lines|) (|line| NIL))
+                 (LOOP
+                   (COND
+                     ((OR (ATOM |bfVar#7|)
+                          (PROGN (SETQ |line| (CAR |bfVar#7|)) NIL))
+                      (RETURN NIL))
+                     (T (|shoeFileLine| |line| |stream|)))
+                   (SETQ |bfVar#7| (CDR |bfVar#7|))))
+               (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)
+               (|genModuleFinalization| |stream|)
+               |outfn|)
+             (|closeFile| |stream|)))))))
 
 (DEFUN BOOTTOCLC (|fn| |out|)
   (PROG (|result| |callingPackage|)
@@ -203,31 +205,32 @@
         (|closeFile| |a|)))))
 
 (DEFUN |shoeClCLines| (|a| |fn| |lines| |outfn|)
-  (PROG (|$GenVarCounter|)
+  (PROG (|$GenVarCounter| |stream|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (COND
         ((NULL |a|) (|shoeNotFound| |fn|))
         (T (SETQ |$GenVarCounter| 0)
-           (|shoeOpenOutputFile| |stream| |outfn|
-               (PROGN
-                 (|genOptimizeOptions| |stream|)
-                 (LET ((|bfVar#8| |lines|) (|line| NIL))
-                   (LOOP
-                     (COND
-                       ((OR (ATOM |bfVar#8|)
-                            (PROGN (SETQ |line| (CAR |bfVar#8|)) NIL))
-                        (RETURN NIL))
-                       (T (|shoeFileLine| |line| |stream|)))
-                     (SETQ |bfVar#8| (CDR |bfVar#8|))))
-                 (|shoeFileTrees|
-                     (|shoeTransformToFile| |stream|
-                         (|shoeInclude|
-                             (|bAddLineNumber| (|bRgen| |a|)
-                                 (|bIgen| 0))))
-                     |stream|)
-                 (|genModuleFinalization| |stream|)))
-           |outfn|)))))
+           (UNWIND-PROTECT
+             (PROGN
+               (SETQ |stream| (|outputTextFile| |outfn|))
+               (|genOptimizeOptions| |stream|)
+               (LET ((|bfVar#8| |lines|) (|line| NIL))
+                 (LOOP
+                   (COND
+                     ((OR (ATOM |bfVar#8|)
+                          (PROGN (SETQ |line| (CAR |bfVar#8|)) NIL))
+                      (RETURN NIL))
+                     (T (|shoeFileLine| |line| |stream|)))
+                   (SETQ |bfVar#8| (CDR |bfVar#8|))))
+               (|shoeFileTrees|
+                   (|shoeTransformToFile| |stream|
+                       (|shoeInclude|
+                           (|bAddLineNumber| (|bRgen| |a|) (|bIgen| 0))))
+                   |stream|)
+               (|genModuleFinalization| |stream|)
+               |outfn|)
+             (|closeFile| |stream|)))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BOOTTOMC))
 
@@ -535,7 +538,7 @@
         (SETQ |$bpParenCount| 0)
         (|bpFirstTok|)
         (SETQ |found|
-              (LET ((#0=#:G1362
+              (LET ((#0=#:G1364
                         (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
                 (COND
                   ((AND (CONSP #0#)
@@ -832,7 +835,7 @@
 
 (DEFUN |shoeDfu| (|a| |fn|)
   (PROG (|$bfClamming| |$GenVarCounter| |$bootDefinedTwice| |$bootUsed|
-            |$bootDefined| |$lispWordTable| |out|)
+            |$bootDefined| |$lispWordTable| |stream|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|
                       |$bootDefinedTwice| |$bootUsed| |$bootDefined|
                       |$lispWordTable|))
@@ -847,10 +850,12 @@
            (SETQ |$bootDefinedTwice| NIL) (SETQ |$GenVarCounter| 0)
            (SETQ |$bfClamming| NIL)
            (|shoeDefUse| (|shoeTransformStream| |a|))
-           (SETQ |out| (CONCAT |fn| ".defuse"))
-           (|shoeOpenOutputFile| |stream| |out|
+           (UNWIND-PROTECT
+             (PROGN
+               (SETQ |stream|
+                     (|outputTextFile| (CONCAT |fn| ".defuse")))
                (|shoeReport| |stream|))
-           |out|)))))
+             (|closeFile| |stream|)))))))
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
@@ -1147,9 +1152,12 @@
            (SETQ |$GenVarCounter| 0) (SETQ |$bfClamming| NIL)
            (|shoeDefUse| (|shoeTransformStream| |a|))
            (SETQ |out| (CONCAT |fn| ".xref"))
-           (|shoeOpenOutputFile| |stream| |out|
-               (|shoeXReport| |stream|))
-           |out|)))))
+           (UNWIND-PROTECT
+             (PROGN
+               (SETQ |out| (|outputTextFile| |out|))
+               (|shoeXReport| |stream|)
+               |out|)
+             (|closeFile| |stream|)))))))
 
 (DEFUN |shoeXReport| (|stream|)
   (PROG (|a| |c|)
