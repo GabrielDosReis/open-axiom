@@ -580,7 +580,7 @@ bfLET2(lhs,rhs) ==
     if cons? l2 and atom first l2 then
       l2 := [l2,:nil]
     var1 is "DOT" => [['L%T,g,rev],:l2]
-    last l2 is ['L%T, =var1, val1] =>
+    first lastNode l2 is ['L%T, =var1, val1] =>
       [['L%T,g,rev],:reverse rest reverse l2,
        bfLetForm(var1,['reverse!,val1])]
     [['L%T,g,rev],:l2,bfLetForm(var1,['reverse!,var1])]

@@ -915,7 +915,7 @@
          (COND
            ((EQ |var1| 'DOT) (CONS (LIST 'L%T |g| |rev|) |l2|))
            ((PROGN
-              (SETQ |ISTMP#1| (|last| |l2|))
+              (SETQ |ISTMP#1| (CAR (|lastNode| |l2|)))
               (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'L%T)
                    (PROGN
                      (SETQ |ISTMP#2| (CDR |ISTMP#1|))
