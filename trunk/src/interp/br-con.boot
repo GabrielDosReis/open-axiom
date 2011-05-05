@@ -845,7 +845,7 @@ dbDocTable conform ==
   --process in reverse order so that closest cover up farthest
   for x in originsInOrder conform repeat dbAddDocTable x
   dbAddDocTable conform
-  HPUT($docTableHash,conform,$docTable)
+  tableValue($docTableHash,conform) := $docTable
   $docTable
 
 originsInOrder conform ==  --domain = nil or set to live domain
@@ -869,7 +869,7 @@ dbAddDocTable conform ==
          op = '(One) => 1
          op
        for [sig,doc] in alist repeat
-         HPUT($docTable,op1,[[conform,:alist],:HGET($docTable,op1)])
+         tableValue($docTable,op1) := [[conform,:alist],:HGET($docTable,op1)]
     --note opOf is needed!!! for some reason, One and Zero appear within prens
 
 dbGetDocTable(op,$sig,docTable,$which,aux) == main where

@@ -152,7 +152,7 @@ scanKeyWords == [ _
 scanKeyTableCons()==
   KeyTable := hashTable 'EQUAL
   for st in scanKeyWords repeat
-    HPUT(KeyTable,first st,second st)
+    tableValue(KeyTable,first st) := second st
   KeyTable
 
 scanKeyTable:=scanKeyTableCons()

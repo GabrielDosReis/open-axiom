@@ -930,7 +930,7 @@ getSubDomainPredicate(tSuper, tSub, pred) ==
   arg := gensym()
   [predfn] := compileInteractive
                 [gensym(),['LAM,[arg],substitute(arg,"#1", pred)]]
-  HPUT($superHash, [tSuper,:tSub], predfn)
+  tableValue($superHash, [tSuper,:tSub]) := predfn
   predfn
 
 coerceIntX(val,t1, t2) ==

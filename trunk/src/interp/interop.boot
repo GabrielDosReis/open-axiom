@@ -275,9 +275,9 @@ depthAssoc x ==
   y := HGET($depthAssocCache,x) => y
   x is ['Join,:u] or (u := getCatAncestors x) =>
     v := depthAssocList u
-    HPUT($depthAssocCache,x,[[x,:n],:v])
+    tableValue($depthAssocCache,x) := [[x,:n],:v]
       where n() == 1 + "MAX"/[rest y for y in v]
-  HPUT($depthAssocCache,x,[[x,:0]])
+  tableValue($depthAssocCache,x) := [[x,:0]]
  
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  

@@ -82,6 +82,9 @@
 	   "%BitVector"
 	   "%SimpleArray"
 
+	   ;; Some common data structures
+	   "tableValue"	 ; value associated with a key in a table
+
 	   ;; IO
 	   "$InputStream"
 	   "$OutputStream"
@@ -447,6 +450,10 @@
   #+:ecl (let ((ver (find-symbol "+ECL-VERSION-NUMBER+" "EXT")))
 	   (cond (ver (symbol-value ver))
 		 (t -1))))
+
+;; -*- Hash table -*-
+(defmacro |tableValue| (ht k)
+  `(gethash ,k ,ht))
 
 ;; -*- File IO -*-
 

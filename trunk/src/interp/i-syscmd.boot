@@ -2019,14 +2019,14 @@ writify ob ==
                 (name := spadClosure? ob) =>
                    d := writifyInner rest ob
                    nob := ['WRITIFIED!!, 'SPADCLOSURE, d, name]
-                   HPUT($seen, ob, nob)
-                   HPUT($seen, nob, nob)
+                   tableValue($seen, ob) := nob
+                   tableValue($seen, nob) := nob
                    nob
                 (ob is ['LAMBDA_-CLOSURE, ., ., x, :.]) and x =>
                   THROW('writifyTag, 'writifyFailed)
                 nob := [qcar,:qcdr]
-                HPUT($seen, ob, nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 qcar := writifyInner qcar
                 qcdr := writifyInner qcdr
                 nob.first := qcar
@@ -2036,13 +2036,13 @@ writify ob ==
                 isDomainOrPackage ob =>
                     d := mkEvalable devaluate ob
                     nob := ['WRITIFIED!!, 'DEVALUATED, writifyInner d]
-                    HPUT($seen, ob, nob)
-                    HPUT($seen, nob, nob)
+                    tableValue($seen, ob) := nob
+                    tableValue($seen, nob) := nob
                     nob
                 n   := maxIndex ob
                 nob := newVector(n+1)
-                HPUT($seen, ob, nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 for i in 0..n repeat
                     vectorRef(nob, i) := writifyInner vectorRef(ob,i)
                 nob
@@ -2055,8 +2055,8 @@ writify ob ==
                 THROW('writifyTag, 'writifyFailed)
             HASHTABLEP ob =>
                 nob := ['WRITIFIED!!]
-                HPUT($seen, ob,  nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 keys := HKEYS ob
                 nob.rest := 
                         ['HASHTABLE,
@@ -2066,8 +2066,8 @@ writify ob ==
                 nob
             PLACEP ob =>
                 nob := ['WRITIFIED!!, 'PLACE]
-                HPUT($seen, ob,  nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 nob
             -- The next three types cause an error on de-writifying.
             -- Create an object of the right shape, nonetheless.
@@ -2133,19 +2133,19 @@ dewritify ob ==
                         error '"A required BPI does not exist."
                     #ob > 3 and HASHEQ f ~= ob.3 =>
                         error '"A required BPI has been redefined."
-                    HPUT($seen, ob, f)
+                    tableValue($seen, ob) := f
                     f
                 type = 'HASHTABLE =>
                     nob := hashTable ob.2
-                    HPUT($seen, ob, nob)
-                    HPUT($seen, nob, nob)
+                    tableValue($seen, ob) := nob
+                    tableValue($seen, nob) := nob
                     for k in ob.3 for e in ob.4 repeat
-                        HPUT(nob, dewritifyInner k, dewritifyInner e)
+                      tableValue(nob, dewritifyInner k) := dewritifyInner e
                     nob
                 type = 'DEVALUATED =>
                     nob := eval dewritifyInner ob.2
-                    HPUT($seen, ob, nob)
-                    HPUT($seen, nob, nob)
+                    tableValue($seen, ob) := nob
+                    tableValue($seen, nob) := nob
                     nob
                 type = 'SPADCLOSURE =>
                     vec := dewritifyInner ob.2
@@ -2153,13 +2153,13 @@ dewritify ob ==
                     not FBOUNDP name => 
                        error strconc('"undefined function: ", symbolName name)
                     nob := [symbolFunction name,:vec]
-                    HPUT($seen, ob, nob)
-                    HPUT($seen, nob, nob)
+                    tableValue($seen, ob) := nob
+                    tableValue($seen, nob) := nob
                     nob
                 type = 'PLACE =>
                     nob := VMREAD MAKE_-INSTREAM nil
-                    HPUT($seen, ob, nob)
-                    HPUT($seen, nob, nob)
+                    tableValue($seen, ob) := nob
+                    tableValue($seen, nob) := nob
                     nob
                 type = 'READTABLE =>
                     error '"Cannot de-writify a read table."
@@ -2176,16 +2176,16 @@ dewritify ob ==
                 qcar := first ob
                 qcdr := rest ob
                 nob  := [qcar,:qcdr]
-                HPUT($seen, ob, nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 nob.first := dewritifyInner qcar
                 nob.rest := dewritifyInner qcdr
                 nob
             vector? ob =>
                 n   := maxIndex ob
                 nob := newVector(n+1)
-                HPUT($seen, ob, nob)
-                HPUT($seen, nob, nob)
+                tableValue($seen, ob) := nob
+                tableValue($seen, nob) := nob
                 for i in 0..n repeat
                     vectorRef(nob,i) := dewritifyInner vectorRef(ob,i)
                 nob

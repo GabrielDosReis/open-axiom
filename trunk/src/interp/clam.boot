@@ -533,7 +533,7 @@ haddProp(ht,op,prop,val) ==
     $op: local := op
     listTruncate(u,20)        --save at most 20 instantiations
     val
-  HPUT(ht,op,[[prop,:val]])
+  tableValue(ht,op) := [[prop,:val]]
   val
  
 recordInstantiation(op,prop,dropIfTrue) ==
@@ -567,7 +567,7 @@ recordInstantiation1(op,prop,dropIfTrue) ==
   val :=
     dropIfTrue => [0,:1]
     [1,:0]
-  HPUT($instantRecord,op,[[prop,:val]])
+  tableValue($instantRecord,op) := [[prop,:val]]
  
 reportInstantiations() ==
   --assumed to be a hashtable with reference counts

@@ -734,7 +734,8 @@ NRTsubstDelta(initSig) ==
 
 -----------------------------SLOT1 DATABASE------------------------------------
 
-updateSlot1DataBase [name,info] == HPUT($Slot1DataBase,name,info)
+updateSlot1DataBase [name,info] ==
+  tableValue($Slot1DataBase,name) := info
 
 NRTputInLocalReferences bod ==
   NRTputInHead bod

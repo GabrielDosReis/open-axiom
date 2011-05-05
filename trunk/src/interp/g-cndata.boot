@@ -51,9 +51,9 @@ mkLowerCaseConTable() ==
 augmentLowerCaseConTable x ==
   y:=getConstructorAbbreviationFromDB x
   item:=[x,y,nil]
-  HPUT($lowerCaseConTb,x,item)
-  HPUT($lowerCaseConTb,DOWNCASE x,item)
-  HPUT($lowerCaseConTb,y,item)
+  tableValue($lowerCaseConTb,x) := item
+  tableValue($lowerCaseConTb,DOWNCASE x) := item
+  tableValue($lowerCaseConTb,y) := item
 
 getCDTEntry(info,isName) ==
   not IDENTP info => nil
@@ -122,8 +122,8 @@ installConstructor(cname,type) ==
   (entry := getCDTEntry(cname,true)) => entry
   item := [cname,getConstructorAbbreviationFromDB cname,nil]
   if $lowerCaseConTb then
-    HPUT($lowerCaseConTb,cname,item)
-    HPUT($lowerCaseConTb,DOWNCASE cname,item)
+    tableValue($lowerCaseConTb,cname) := item
+    tableValue($lowerCaseConTb,DOWNCASE cname) := item
  
 constructorNameConflict(name,kind) ==
   userError

@@ -246,7 +246,7 @@ exp2FortOptimizeCS1 e ==
   n := HGET($fortCsHash,e)
   null n =>
     n := VECTOR(1,nil,$fortCsExprStack,$fortCsFuncStack)
-    HPUT($fortCsHash,e,n)
+    tableValue($fortCsHash,e) := n
     e
   beenHere(e,n)
 

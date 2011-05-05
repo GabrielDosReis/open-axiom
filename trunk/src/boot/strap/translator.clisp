@@ -844,7 +844,7 @@
         ((NULL |a|) (|shoeNotFound| |fn|))
         (T (SETQ |$lispWordTable| (MAKE-HASHTABLE 'EQ))
            (DO-SYMBOLS (|i| (FIND-PACKAGE 'LISP))
-             (HPUT |$lispWordTable| |i| T))
+             (SETF (|tableValue| |$lispWordTable| |i|) T))
            (SETQ |$bootDefined| (MAKE-HASHTABLE 'EQ))
            (SETQ |$bootUsed| (MAKE-HASHTABLE 'EQ))
            (SETQ |$bootDefinedTwice| NIL) (SETQ |$GenVarCounter| 0)
@@ -1004,7 +1004,7 @@
                  (COND
                    ((EQ |nee| 'TOP-LEVEL) |$bootDefinedTwice|)
                    (T (CONS |nee| |$bootDefinedTwice|)))))
-          (T (HPUT |$bootDefined| |nee| T)))
+          (T (SETF (|tableValue| |$bootDefined| |nee|) T)))
         (|defuse1| |e| |niens|)
         (LET ((|bfVar#28| |$used|) (|i| NIL))
           (LOOP
@@ -1012,8 +1012,8 @@
               ((OR (ATOM |bfVar#28|)
                    (PROGN (SETQ |i| (CAR |bfVar#28|)) NIL))
                (RETURN NIL))
-              (T (HPUT |$bootUsed| |i|
-                       (CONS |nee| (GETHASH |i| |$bootUsed|)))))
+              (T (SETF (|tableValue| |$bootUsed| |i|)
+                       (CONS |nee| (|tableValue| |$bootUsed| |i|)))))
             (SETQ |bfVar#28| (CDR |bfVar#28|))))))))
 
 (DEFUN |defuse1| (|e| |y|)
@@ -1056,7 +1056,7 @@
                ((OR (ATOM |bfVar#29|)
                     (PROGN (SETQ |i| (CAR |bfVar#29|)) NIL))
                 (RETURN NIL))
-               (T (HPUT |$bootDefined| |i| T)))
+               (T (SETF (|tableValue| |$bootDefined| |i|) T)))
              (SETQ |bfVar#29| (CDR |bfVar#29|))))
          (|defuse1| (|append| |ndol| |e|) |b|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)) (SETQ |a| (CDR |y|))
@@ -1146,7 +1146,7 @@
         ((NULL |a|) (|shoeNotFound| |fn|))
         (T (SETQ |$lispWordTable| (MAKE-HASHTABLE 'EQ))
            (DO-SYMBOLS (|i| (FIND-PACKAGE 'LISP))
-             (HPUT |$lispWordTable| |i| T))
+             (SETF (|tableValue| |$lispWordTable| |i|) T))
            (SETQ |$bootDefined| (MAKE-HASHTABLE 'EQ))
            (SETQ |$bootUsed| (MAKE-HASHTABLE 'EQ))
            (SETQ |$GenVarCounter| 0) (SETQ |$bfClamming| NIL)
