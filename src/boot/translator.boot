@@ -526,7 +526,7 @@ $lispWordTable := nil
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
   $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
+  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
   $bootDefined: local :=MAKE_-HASHTABLE "EQ"
   $bootUsed:local := MAKE_-HASHTABLE "EQ"
   $bootDefinedTwice: local := nil
@@ -572,10 +572,10 @@ defuse(e,x)==
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
 	    [nee,:$bootDefinedTwice]
-  else HPUT($bootDefined,nee,true)
+  else tableValue($bootDefined,nee) := true
   defuse1 (e,niens)
   for i in $used repeat
-     HPUT($bootUsed,i,[nee,:GETHASH(i,$bootUsed)])
+     tableValue($bootUsed,i) := [nee,:tableValue($bootUsed,i)]
  
 defuse1(e,y)==
   atom y =>
@@ -590,7 +590,7 @@ defuse1(e,y)==
   y is ["PROG",a,:b]=>
 	 [dol,ndol]:=defSeparate a
 	 for i in dol repeat
-	       HPUT($bootDefined,i,true)
+	       tableValue($bootDefined,i) := true
 	 defuse1 (append(ndol,e),b)
   y is ["QUOTE",:a] => []
   y is ["+LINE",:a] => []
@@ -643,7 +643,7 @@ XREF fn==
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
   $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
+  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
   $bootDefined: local := MAKE_-HASHTABLE "EQ"
   $bootUsed: local := MAKE_-HASHTABLE "EQ"
   $GenVarCounter: local := 0

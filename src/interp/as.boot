@@ -77,10 +77,10 @@ astran asyFile ==
 --$childrenHash: local := MAKE_-HASH_-TABLE()
   for con in conlist repeat
     parents := asyParents con
-    HPUT($parentsHash,con,asyParents con)
+    tableValue($parentsHash,con) := asyParents con
 --  for [parent,:pred] in parents repeat
 --    parentOp := opOf parent
---    HPUT($childrenHash,parentOp,insert([con,:pred],HGET($childrenHash,parentOp)))
+--    tableValue($childrenHash,parentOp) := insert([con,:pred],HGET($childrenHash,parentOp))
   $newConlist := union(conlist, $newConlist)
   [[x,:asMakeAlist x] for x in HKEYS $conHash]
 
@@ -376,10 +376,10 @@ asyMakeOperationAlist(con,proplist, key) ==
           [[sig],nil,true,'ASCONST]
       pred => [sig,nil,asyPredTran pred]
       [sig]
-    HPUT(ht,id,[entry,:HGET(ht,id)])
+    tableValue(ht,id) := [entry,:HGET(ht,id)]
   opalist := [[op,:removeDuplicates HGET(ht,op)] for op in HKEYS ht]
-  --HPUT($opHash,con,[ancestorAlist,attributeAlist,:opalist])
-  HPUT($opHash,con,[ancestorAlist,nil,:opalist])
+  --tableValue($opHash,con) := [ancestorAlist,attributeAlist,:opalist]
+  tableValue($opHash,con) := [ancestorAlist,nil,:opalist]
 
 hackToRemoveAnd p ==
 ---remove this as soon as .asy files do not contain forms (And pred) forms
@@ -428,7 +428,7 @@ asytran fn ==
     $docHashLocal: local := MAKE_-HASH_-TABLE()
     asytranDeclaration(d,'(top),nil,false)
     if null name then hohohoho()
-    HPUT($docHash,name,$docHashLocal)
+    tableValue($docHash,name) := $docHashLocal
   closeFile inStream
   'done
 
@@ -441,7 +441,7 @@ asytranDeclaration(dform,levels,predlist,local?) ==
   id is 'failed => id
   KAR dform isnt 'Declare => systemError '"asytranDeclaration"
   if levels is '(top) then
-    if form isnt ['Apply,"->",:.] then HPUT($constantHash,id,true)
+    if form isnt ['Apply,"->",:.] then tableValue($constantHash,id) := true
   comments := symbolLassoc('documentation,r) or '""
   idForm   :=
     levels is ['top,:.] =>
@@ -467,7 +467,7 @@ asytranDeclaration(dform,levels,predlist,local?) ==
     ht :=
       levels is '(top) => $conHash
       $docHashLocal
-    HPUT(ht,id,[record,:HGET(ht,id)])
+    tableValue(ht,id) := [record,:HGET(ht,id)]
   if levels is '(top) then asyMakeOperationAlist(id,r, key)
   ['Declare,id,newsig,r]
 
@@ -483,7 +483,7 @@ asyLooksLikeCatForm? x ==
 --  idForm   :=
 --    form is ['Apply,'_-_>,source,target] => [id,:asyArgs source]
 --    id
---  if form isnt ['Apply,"->",:.] then HPUT($constantHash,id,true)
+--  if form isnt ['Apply,"->",:.] then tableValue($constantHash,id) := true
 --  comments := symbolLassoc('documentation,r) or '""
 --  newsig  := asytranForm(form,[idForm,:levels],local?)
 --  key :=
@@ -497,7 +497,7 @@ asyLooksLikeCatForm? x ==
 --    ht :=
 --      levels is '(top) => $conHash
 --      $docHashLocal
---    HPUT(ht,id,[record,:HGET(ht,id)])
+--    tableValue(ht,id) := [record,:HGET(ht,id)]
 --  if levels is '(top) then asyMakeOperationAlist(id,r)
 --  ['Declare,id,newsig,r]
 
@@ -607,7 +607,7 @@ asytranCategory(form,levels,predlist,local?) ==
     dform := asytranCategoryItem(x,levels,predlist,local?)
     null dform => nil
     dform is ['Declare,id,record,r] =>
-      HPUT(catTable,id,[asyWrap(record,predlist),:HGET(catTable,id)])
+      tableValue(catTable,id) := [asyWrap(record,predlist),:HGET(catTable,id)]
     catList := [asyWrap(dform,predlist),:catList]
   keys := listSort(function GLESSEQP,HKEYS catTable)
   right1 := reverse! catList
@@ -1098,7 +1098,7 @@ asyComma? op == op in '(Comma Multi)
 
 hput(table,name,value) ==
   if null name then systemError()
-  HPUT(table,name,value)
+  tableValue(table,name) := value
 
 --============================================================================
 --               category parts

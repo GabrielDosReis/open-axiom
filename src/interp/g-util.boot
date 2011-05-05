@@ -198,12 +198,12 @@ ScanOrPairVec(f, ob) ==
         ScanOrInner(f, ob) ==
             HGET($seen, ob) => nil
             cons? ob =>
-                HPUT($seen, ob, true)
+                tableValue($seen, ob) := true
                 ScanOrInner(f, first ob)
                 ScanOrInner(f, rest ob)
                 nil
             vector? ob =>
-                HPUT($seen, ob, true)
+                tableValue($seen, ob) := true
                 for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
                 nil
             FUNCALL(f, ob) =>

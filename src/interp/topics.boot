@@ -88,7 +88,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
-      HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
+      tableValue($defaultsHash,item) := [kind,:HGET($defaultsHash,item)]
   $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := inputTextFile '"topics.data"           
   while not EOFP instream repeat
@@ -105,10 +105,10 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
        not (blankLine? (line := READLINE instream)) and
          stringChar(line,0) ~= char "-" for i in 1..
            | lst := string2OpAlist line]
-    alist => HPUT($conTopicHash,con,alist)
+    alist => tableValue($conTopicHash,con) := alist
   --initialize table of topic classes
   $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
-  for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
+  for [x,:c] in $groupAssoc repeat tableValue($topicHash,x) := c
   $topicIndex := rest last $groupAssoc
 
   --replace each property list by a topic code
@@ -118,13 +118,13 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     for pair in HGET($conTopicHash,con) repeat 
       pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
-    HPUT($conTopicHash,con,
-      [['constructor,:conCode],:HGET($conTopicHash,con)])      
+    tableValue($conTopicHash,con) := 
+      [['constructor,:conCode],:HGET($conTopicHash,con)]
   SHUT instream
 
 --reduce integers stored under names to 1 + its power of 2
   for key in HKEYS $topicHash repeat 
-    HPUT($topicHash,key,INTEGER_-LENGTH HGET($topicHash,key))
+    tableValue($topicHash,key) := INTEGER_-LENGTH HGET($topicHash,key)
 
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
@@ -166,7 +166,7 @@ topicCode lst ==
   for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
       k := HGET($topicHash,x) => k
-      HPUT($topicHash,x,$topicIndex := $topicIndex * 2)
+      tableValue($topicHash,x) := $topicIndex := $topicIndex * 2
       $topicIndex
   code := +/[i for i in bitIndexList]
 
@@ -199,7 +199,8 @@ tdAdd(con,hash) ==
   u := addTopic2Documentation(con,v)
 --u := getConstructorDocumentationFromDB con
   for pair in u | integer? (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
-    for x in (names := code2Classes code) repeat HPUT(hash,x,insert(op,HGET(hash,x)))
+    for x in (names := code2Classes code) repeat
+      tableValue(hash,x) := insert(op,HGET(hash,x))
 
 tdPrint hash ==
   for key in mySort HKEYS hash repeat 
@@ -216,7 +217,8 @@ topics con ==
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
-  for x in HKEYS hash repeat HPUT(hash,x,mySort HGET(hash,x))
+  for x in HKEYS hash repeat
+    tableValue(hash,x) := mySort HGET(hash,x)
   tdPrint hash 
 
 code2Classes cc ==

@@ -294,7 +294,7 @@ minimalise x ==
     hashCheck(x,ht) ==
       y := HGET(ht,x)
       y => y
-      HPUT(ht,x,x)
+      tableValue(ht,x) := x
       x
 
 --% File IO

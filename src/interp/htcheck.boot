@@ -91,8 +91,8 @@ buildHtMacroTable() ==
     while not EOFP instream repeat
       line := READLINE instream
       getHtMacroItem line is [string,:numOfArgs] =>
-        HPUT($htMacroTable,string,numOfArgs)
-    for [s,:n] in $primitiveHtCommands repeat HPUT($htMacroTable,s,n)
+        tableValue($htMacroTable,string) := numOfArgs
+    for [s,:n] in $primitiveHtCommands repeat tableValue($htMacroTable,s) := n
   else
     sayBrightly '"Warning: macro table not found"
   $htMacroTable

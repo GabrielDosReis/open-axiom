@@ -46,12 +46,12 @@ buildWordTable u ==
   for s in u repeat
     words := wordsOfString s
     key := charUpcase stringChar(s,0)
-    HPUT(table,key,[[s,:words],:HGET(table,key)])
+    tableValue(table,key) := [[s,:words],:HGET(table,key)]
   for key in HKEYS table repeat
-    HPUT(table,key,
+    tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
         listSort(function GLESSEQP, HGET(table,key),function first),
-          function second))
+          function second)
   table
 
 measureWordTable u ==
@@ -97,7 +97,7 @@ add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
     null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      HPUT($functionTable,key,[[s,:wordsOfString s],:HGET($functionTable,key)])
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:HGET($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name

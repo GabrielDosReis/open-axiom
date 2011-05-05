@@ -50,7 +50,7 @@ displayCategoryTable(:options) ==
   conList := IFCAR options
   SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
-    HPUT($ct,a,[[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)])
+    tableValue($ct,a) := [[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)]
   for id in HKEYS $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
     PRINT HGET($ct,id)
@@ -68,7 +68,7 @@ genCategoryTable() ==
     for id in specialDs], :domainTable]
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
-      HPUT(_*HASCATEGORY_-HASH_*,[id,:a],b)
+      tableValue(_*HASCATEGORY_-HASH_*,[id,:a]) := b
   simpTempCategoryTable()
   -- compressHashTable _*ANCESTORS_-HASH_*
   simpCategoryTable()
@@ -87,7 +87,7 @@ simpCategoryTable() == main where
       change :=
         atom opOf entry => simpHasPred entry
         [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
-      HPUT(_*HASCATEGORY_-HASH_*,key,change)
+      tableValue(_*HASCATEGORY_-HASH_*,key) := change
 
 simpHasPred(pred,:options) == main where
   main() ==
@@ -187,7 +187,7 @@ addDomainToTable(id,catl) ==
   [id,:alist]
 
 domainHput(table,key:=[id,:a],b) ==
-  HPUT(table,key,b)
+  tableValue(table,key) := b
 
 genTempCategoryTable() ==
   --generates hashtable with key=categoryName and value of the form
@@ -201,13 +201,13 @@ genTempCategoryTable() ==
     item := HGET(_*ANCESTORS_-HASH_*, id) 
     for (u:=[.,:b]) in item repeat
       u.rest := simpCatPredicate simpBool b
-    HPUT(_*ANCESTORS_-HASH_*,id,listSort(function GLESSEQP,item))
+    tableValue(_*ANCESTORS_-HASH_*,id) := listSort(function GLESSEQP,item)
 
 addToCategoryTable con ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
   u := CAAR getConstructorModemapFromDB con --domain
   alist := getCategoryExtensionAlist u
-  HPUT(_*ANCESTORS_-HASH_*,first u,alist)
+  tableValue(_*ANCESTORS_-HASH_*,first u) := alist
   alist
 
 encodeCategoryAlist(id,alist) ==
@@ -431,7 +431,7 @@ compressSexpr(x,left,right) ==
     nil
   compressSexpr(first x,x,nil)
   compressSexpr(rest x,nil,x)
-  HPUT($found,x,x)
+  tableValue($found,x) := x
 
 squeezeList(l) ==
 -- changes the list l, so that is has maximal sharing of cells
@@ -477,7 +477,7 @@ updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
   [cname,:domainEntry]:= addDomainToTable(cname,category)
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
-    HPUT(_*HASCATEGORY_-HASH_*,[cname,:a],b)
+    tableValue(_*HASCATEGORY_-HASH_*,[cname,:a]) := b
   $doNotCompressHashTableIfTrue = true => _*HASCATEGORY_-HASH_*
   -- compressHashTable _*HASCATEGORY_-HASH_*
 
@@ -496,4 +496,4 @@ clearTempCategoryTable(catNames) ==
       repeat
         symbolMember?(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
-    HPUT(_*ANCESTORS_-HASH_*,key,extensions)
+    tableValue(_*ANCESTORS_-HASH_*,key) := extensions

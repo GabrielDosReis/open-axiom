@@ -43,12 +43,12 @@ buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
     key := charUpcase stringChar(s,0)
-    HPUT(table,key,[[s,:wordsOfString s],:HGET(table,key)])
+    tableValue(table,key) := [[s,:wordsOfString s],:HGET(table,key)]
   for key in HKEYS table repeat
-    HPUT(table,key,
+    tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
         listSort(function GLESSEQP, HGET(table,key),function first),
-          function second))
+          function second)
   table
  
 writeFunctionTables(filemode) ==
@@ -80,7 +80,7 @@ readFunctionTable() ==
   stream:= readLib(name,'DATABASE)
   table:= hashTable 'EQ
   for key in RKEYIDS makePathname(name,'DATABASE,"*") repeat
-    HPUT(table,kk:=object2Identifier key, rread(kk,stream,nil))
+    tableValue(table,kk:=object2Identifier key) := rread(kk,stream,nil)
   RSHUT stream
   table
  
@@ -133,7 +133,7 @@ add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
     null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      HPUT($functionTable,key,[[s,:wordsOfString s],:HGET($functionTable,key)])
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:HGET($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name

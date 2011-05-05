@@ -130,7 +130,7 @@ shoeKeyWords == [  _
 shoeKeyTableCons()==
    KeyTable:=MAKE_-HASHTABLE("CVEC")
    for st in shoeKeyWords repeat
-      HPUT(KeyTable,first st,second st)
+      tableValue(KeyTable,first st) := second st
    KeyTable
  
 shoeKeyTable:=shoeKeyTableCons()

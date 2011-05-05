@@ -462,7 +462,7 @@ koCatAttrsAdd(catform,pred) ==
     if existingPred := LASSOC(argl,exists)_
         then npred := quickOr(npred,existingPred)
     if not (name in '(nil nothing)) _
-        then HPUT($if,name,[[argl,simpHasPred npred],:exists])
+        then tableValue($if,name) := [[argl,simpHasPred npred],:exists]
 
 --=======================================================================
 --            Filter by Category

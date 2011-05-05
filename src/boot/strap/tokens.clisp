@@ -65,7 +65,8 @@
               ((OR (ATOM |bfVar#2|)
                    (PROGN (SETQ |st| (CAR |bfVar#2|)) NIL))
                (RETURN NIL))
-              (T (HPUT |KeyTable| (CAR |st|) (CADR |st|))))
+              (T (SETF (|tableValue| |KeyTable| (CAR |st|))
+                       (CADR |st|))))
             (SETQ |bfVar#2| (CDR |bfVar#2|))))
         |KeyTable|))))
 

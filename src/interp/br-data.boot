@@ -422,11 +422,11 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
     for conform in getImports x repeat
       name := opOf conform
       if not (name in '(QUOTE)) then
-        HPUT($usersTb,name,insert(x,HGET($usersTb,name)))
+        tableValue($usersTb,name) := insert(x,HGET($usersTb,name))
   for k in HKEYS $usersTb repeat
-    HPUT($usersTb,k,listSort(function GLESSEQP,HGET($usersTb,k)))
+    tableValue($usersTb,k) := listSort(function GLESSEQP,HGET($usersTb,k))
   for x in allConstructors() | isDefaultPackageName x repeat
-    HPUT($usersTb,x,getDefaultPackageClients x)
+    tableValue($usersTb,x) := getDefaultPackageClients x
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
@@ -448,9 +448,9 @@ mkDependentsHashTable() == --called by buildDatabase (database.boot)
   $depTb := MAKE_-HASH_-TABLE()
   for nam in allConstructors() repeat
     for con in getArgumentConstructors nam repeat
-      HPUT($depTb,con,[nam,:HGET($depTb,con)])
+      tableValue($depTb,con) := [nam,:HGET($depTb,con)]
   for k in HKEYS $depTb repeat
-    HPUT($depTb,k,listSort(function GLESSEQP,HGET($depTb,k)))
+    tableValue($depTb,k) := listSort(function GLESSEQP,HGET($depTb,k))
   $depTb
 
 getArgumentConstructors con == --called by mkDependentsHashTable
@@ -517,7 +517,7 @@ parentsOf con == --called by kcpPage, ancestorsRecur
      $parentsCache := hashTable 'EQ
   HGET($parentsCache,con) or
     parents := getParentsForDomain con
-    HPUT($parentsCache,con,parents)
+    tableValue($parentsCache,con) := parents
     parents
 
 parentsOfForm [op,:argl] ==
@@ -594,12 +594,12 @@ childArgCheck(argl, nargl) ==
 --  hash := hashTable 'EQUAL
 --  for [child,:pred] in childrenOf cat repeat
 --    childForm := getConstructorForm child
---    HPUT(hash,childForm,pred)
+--    tableValue(hash,childForm) := pred
 --    for [form,:pred] in descendantsOf(childForm,nil) repeat
 --      newPred :=
 --        oldPred := HGET(hash,form) => quickOr(oldPred,pred)
 --        pred
---      HPUT(hash,form,newPred)
+--      tableValue(hash,form) := newPred
 --  mySort [[key,:HGET(hash,key)] for key in HKEYS hash]
 
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
@@ -642,7 +642,7 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
     newPred := quickAnd(pred,p)
     ancestorsAdd(simpHasPred newPred,newdomform or newform)
     ancestorsRecur(newform,newdomform,newPred,false)
-  HPUT($done,conform,pred)                  --mark as already processed
+  tableValue($done,conform) := pred            --mark as already processed
 
 ancestorsAdd(pred,form) == --called by ancestorsRecur
   null pred => nil
@@ -650,7 +650,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
   alist := HGET($if,op)
   existingNode := assoc(form,alist) =>
     existingNode.rest := quickOr(rest existingNode,pred)
-  HPUT($if,op,[[form,:pred],:alist])
+  tableValue($if,op) := [[form,:pred],:alist]
 
 domainsOf(conform,domname,:options) ==
   $hasArgList := IFCAR options
@@ -758,7 +758,7 @@ sublisFormal(args,exp,:options) == main where
 buildDefaultPackageNamesHT() ==
   $defaultPackageNamesHT := MAKE_-HASH_-TABLE()
   for nam in allConstructors() | isDefaultPackageName nam repeat
-    HPUT($defaultPackageNamesHT,nam,true)
+    tableValue($defaultPackageNamesHT,nam) := true
   $defaultPackageNamesHT
 
 $defaultPackageNamesHT := buildDefaultPackageNamesHT()

@@ -357,13 +357,13 @@ checkRecordHash u ==
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern IFCAR u
         entry := HGET($htHash,htname) or [nil]
-        HPUT($htHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+        tableValue($htHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if member(x,$HTlisplinks) and (u := checkLookForLeftBrace IFCDR u)
             and (u := checkLookForRightBrace IFCDR u)
               and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern checkGetLispFunctionName checkGetStringBeforeRightBrace u
         entry := HGET($lispHash,htname) or [nil]
-        HPUT($lispHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+        tableValue($lispHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if ((p := member(x,'("\gloss" "\spadglos")))
                  or (q := member(x,'("\glossSee" "\spadglosSee"))))
                     and (u := checkLookForLeftBrace IFCDR u)
@@ -374,7 +374,7 @@ checkRecordHash u ==
              u := IFCDR u
           htname := intern checkGetStringBeforeRightBrace u
           entry := HGET($glossHash,htname) or [nil]
-          HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+          tableValue($glossHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
           if stringChar(s,0) = char ")" then s := subString(s,1)
@@ -386,7 +386,7 @@ checkRecordHash u ==
           not spadSysChoose($setOptions,arg) =>
             checkDocError ['"Incorrect \spadsys: ",s]
             entry := HGET($sysHash,htname) or [nil]
-            HPUT($sysHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+            tableValue($sysHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if x is '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
           parse := checkGetParse s
