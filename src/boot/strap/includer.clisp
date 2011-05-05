@@ -135,11 +135,9 @@
 (DEFUN |bRgen1| (|s|)
   (PROG (|a|)
     (RETURN
-      (PROGN
-        (SETQ |a| (|shoeReadLine| |s|))
-        (COND
-          ((|shoePLACEP| |a|) (LIST '|nullstream|))
-          (T (CONS |a| (|bRgen| |s|))))))))
+      (COND
+        ((SETQ |a| (|shoeReadLine| |s|)) (CONS |a| (|bRgen| |s|)))
+        (T (LIST '|nullstream|))))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
 

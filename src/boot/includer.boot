@@ -174,9 +174,8 @@ bRgen s ==
   bDelay(function bRgen1,[s])
  
 bRgen1 s ==
-  a := shoeReadLine s
-  shoePLACEP a => ["nullstream"]
-  [a,:bRgen s]
+  a := shoeReadLine s => [a,:bRgen s]
+  ["nullstream"]
  
 bIgen n ==
   bDelay(function bIgen1,[n])

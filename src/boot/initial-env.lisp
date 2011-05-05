@@ -63,11 +63,6 @@
 
 (defvar *lisp-source-filetype* "lisp")
 
-(defmacro |shoeOpenOutputFile|
-  (stream fn prog)
-    `(with-open-file (,stream ,fn :direction :output
-       :if-exists :supersede) ,prog))
-
 (defun shoeprettyprin1 (x &optional (stream *standard-output*))
   (let ((*print-pretty* t)
         (*print-array* t)
@@ -90,9 +85,6 @@
 (defun shoenotprettyprint (x &optional (stream *terminal-io*))
   (shoeprettyprin0 x stream) 
   (terpri stream))
-
-(defun |shoePLACEP| (item) 
-  (eq item nil))
 
 (defun MAKE-HASHTABLE (id1)
   (let ((test (case id1
@@ -144,6 +136,3 @@
  
 (defun |shoeReadLisp| (s n)
   (multiple-value-list (read-from-string s nil nil :start n)))
-
-(defun |last| (x)
-  (car (last x)))
