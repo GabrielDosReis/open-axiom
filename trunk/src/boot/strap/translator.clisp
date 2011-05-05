@@ -1138,7 +1138,7 @@
 
 (DEFUN |shoeXref| (|a| |fn|)
   (PROG (|$bfClamming| |$GenVarCounter| |$bootUsed| |$bootDefined|
-            |$lispWordTable| |out|)
+            |$lispWordTable| |stream| |out|)
     (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter| |$bootUsed|
                       |$bootDefined| |$lispWordTable|))
     (RETURN
@@ -1154,7 +1154,7 @@
            (SETQ |out| (CONCAT |fn| ".xref"))
            (UNWIND-PROTECT
              (PROGN
-               (SETQ |out| (|outputTextFile| |out|))
+               (SETQ |stream| (|outputTextFile| |out|))
                (|shoeXReport| |stream|)
                |out|)
              (|closeFile| |stream|)))))))
