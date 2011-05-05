@@ -321,8 +321,8 @@ CDRwithIncrement x ==
   x.first := first x + 1
   rest x
  
-HGETandCount(hashTable,prop) ==
-  u:= HGET(hashTable,prop) or return nil
+HGETandCount(ht,prop) ==
+  u:= HGET(ht,prop) or return nil
   u.first := first u + 1
   u
  
@@ -402,8 +402,8 @@ mkCircularCountAlist(cl,len) ==
  
 reportHashCacheStats fn ==
   infovec:= property(fn,'cacheInfo)
-  hashTable:= eval infovec.cacheName
-  hashValues:= [HGET(hashTable,key) for key in HKEYS hashTable]
+  ht := eval infovec.cacheName
+  hashValues:= [HGET(ht,key) for key in HKEYS ht]
   sayBrightly [:bright fn,'"has",:bright(# hashValues),'"values cached."]
   displayCacheFrequency mkHashCountAlist hashValues
   TERPRI()

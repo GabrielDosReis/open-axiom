@@ -651,7 +651,7 @@ shoeXref(a,fn)==
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".xref")
   try
-    out := outputTextFile out
+    stream := outputTextFile out
     shoeXReport stream
     out
   finally closeFile stream

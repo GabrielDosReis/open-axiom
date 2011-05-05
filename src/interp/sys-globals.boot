@@ -449,15 +449,6 @@ $formulaOutputStream :=
 conOutStream := 
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-$InputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
-
-$OutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-$ErrorStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
 --%
 
 ++ True if we are building the system algebra.

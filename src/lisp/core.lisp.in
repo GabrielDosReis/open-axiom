@@ -83,11 +83,16 @@
 	   "%SimpleArray"
 
 	   ;; IO
+	   "$InputStream"
+	   "$OutputStream"
+	   "$ErrorStream"
+	   
 	   "inputBinaryFile"
 	   "outputBinaryFile"
 	   "inputTextFile"
 	   "outputTextFile"
 	   "closeFile"
+	   "prettyPrint"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -444,6 +449,11 @@
 		 (t -1))))
 
 ;; -*- File IO -*-
+
+(defparameter |$InputStream| (make-synonym-stream '*standard-input*))
+(defparameter |$OutputStream| (make-synonym-stream '*standard-output*))
+(defparameter |$ErrorStream| (make-synonym-stream '*standard-output*))
+
 (defun |inputBinaryFile| (f)
   (open f
 	:direction :input
@@ -468,6 +478,13 @@
 
 (defun |closeFile| (f)
   (close f))
+
+
+;; Pretty-print a lisp form on a given output stream.
+(defun |prettyPrint| (x &optional (s |$OutputStream|))
+  (let ((*print-pretty* t)
+	(*print-array* t))
+    (prin1 x s)))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-
