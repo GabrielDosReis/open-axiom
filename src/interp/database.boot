@@ -264,14 +264,14 @@ saveUsersHashTable() ==
   _$ERASE('USERS,'DATABASE,'a)
   stream:= writeLib1('USERS,'DATABASE,'a)
   for k in MSORT HKEYS $usersTb repeat
-    rwrite(k, HGET($usersTb, k), stream)
+    rwrite(k, tableValue($usersTb, k), stream)
   RSHUT stream
 
 saveDependentsHashTable() ==
   _$ERASE('DEPENDENTS,'DATABASE,'a)
   stream:= writeLib1('DEPENDENTS,'DATABASE,'a)
   for k in MSORT HKEYS $depTb repeat
-    rwrite(k, HGET($depTb, k), stream)
+    rwrite(k, tableValue($depTb, k), stream)
   RSHUT stream
 
 getUsersOfConstructor(con) ==

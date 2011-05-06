@@ -43,11 +43,11 @@ buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
     key := charUpcase stringChar(s,0)
-    tableValue(table,key) := [[s,:wordsOfString s],:HGET(table,key)]
+    tableValue(table,key) := [[s,:wordsOfString s],:tableValue(table,key)]
   for key in HKEYS table repeat
     tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function first),
+        listSort(function GLESSEQP, tableValue(table,key),function first),
           function second)
   table
  
@@ -67,7 +67,7 @@ writeFunctionTable(filemode,name,dicts) ==
   if not $functionTable then
     $functionTable:= buildFunctionTable dicts
   for key in HKEYS $functionTable repeat
-    rwrite(object2Identifier key,HGET($functionTable,key),stream)
+    rwrite(object2Identifier key,tableValue($functionTable,key),stream)
   RSHUT stream
   'done
  
@@ -132,8 +132,8 @@ isBreakCharacter x == null SMALL__LITER x
 add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
-    null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      tableValue($functionTable,key) := [[s,:wordsOfString s],:HGET($functionTable,key)]
+    null LASSOC(s := PNAME fn,tableValue($functionTable,(key := UPCASE s.0))) =>
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:tableValue($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name
@@ -198,9 +198,9 @@ bootSearch word ==
     hasWildCard? key =>
       pattern := patternTran key -- converts * to &
       pattern.0 ~= char "&" =>
-        [x for [x,:.] in HGET($functionTable,UPCASE pattern.0)|
+        [x for [x,:.] in tableValue($functionTable,UPCASE pattern.0)|
           match?(pattern,COPY x)]
-      "append"/[[x for [x,:.] in HGET($functionTable,k)| match?(pattern,COPY x)]
+      "append"/[[x for [x,:.] in tableValue($functionTable,k)| match?(pattern,COPY x)]
                   for k in HKEYS $functionTable]
     findApproximateWords(PNAME word,$functionTable)
   list
@@ -212,7 +212,7 @@ findApproximateWords(word,table) ==
   threshold:=
     n = 1 => 3
     4
-  alist:= HGET(table,UPCASE word.0)
+  alist:= tableValue(table,UPCASE word.0)
  
   --first try to break up as list of words
   firstTry := [x for [x,:wordList] in alist | p] where p ==

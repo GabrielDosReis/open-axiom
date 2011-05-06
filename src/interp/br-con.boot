@@ -76,7 +76,7 @@ conPageFastPath x == --called by conPage and constructorSearch
   s := STRINGIMAGE x
   charPosition(char "*",s,0) < #s => nil     --quit if name has * in it
   name := (string? x => makeSymbol x; x)
-  entry := HGET($lowerCaseConTb,name) or return nil
+  entry := tableValue($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
     dbRead lineNumber --read record for constructor from libdb.text
@@ -467,7 +467,7 @@ kcPage(htPage,junk) ==
    if kind ~= '"category" then
     satBreak()
     htMakePage [['bcLinks,['"\menuitemstyle{Clients}",'"\tab{12}Constructors",'kcuPage,nil]]]
-    if HGET($defaultPackageNamesHT,conname)
+    if tableValue($defaultPackageNamesHT,conname)
       then htSay('" which {\em may use} this default package")
 --  htMakePage [['bcLinks,['"files",'"",'kcuPage,true]]]
       else htSay('" which {\em use} this ",kind)
@@ -840,7 +840,7 @@ dbConstructorDoc(conform,$op,$sig) == fn conform where
 
 dbDocTable conform ==
 --assumes $docTableHash bound --see dbExpandOpAlistIfNecessary
-  table := HGET($docTableHash,conform) => table
+  table := tableValue($docTableHash,conform) => table
   $docTable : local := hashTable 'EQ
   --process in reverse order so that closest cover up farthest
   for x in originsInOrder conform repeat dbAddDocTable x
@@ -869,7 +869,7 @@ dbAddDocTable conform ==
          op = '(One) => 1
          op
        for [sig,doc] in alist repeat
-         tableValue($docTable,op1) := [[conform,:alist],:HGET($docTable,op1)]
+         tableValue($docTable,op1) := [[conform,:alist],:tableValue($docTable,op1)]
     --note opOf is needed!!! for some reason, One and Zero appear within prens
 
 dbGetDocTable(op,$sig,docTable,$which,aux) == main where
@@ -885,7 +885,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
         pred => ['ifp,:aux]
         first aux
       [origin,:doc]
-    or/[gn x for x in HGET(docTable,op)]
+    or/[gn x for x in tableValue(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
     $conform := first u              --origin
     if atom $conform then $conform := [$conform]

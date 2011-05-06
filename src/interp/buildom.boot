@@ -71,7 +71,7 @@ lookupDisplay(op,sig,vectorOrForm,suffix) ==
         '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
 
 isInstantiated [op,:argl] ==
-  u:= lassocShiftWithFunction(argl,HGET($ConstructorCache,op),'domainEqualList)
+  u:= lassocShiftWithFunction(argl,tableValue($ConstructorCache,op),'domainEqualList)
     => CDRwithIncrement u
   nil
 

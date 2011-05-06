@@ -219,7 +219,7 @@ exp2FortOptimizeCS1 e ==
 
   -- see if we have been here before
   not (object2Identifier first e in '(ROW AGGLST)) and
-    (n := HGET($fortCsHash,e)) => beenHere(e,n) -- where
+    (n := tableValue($fortCsHash,e)) => beenHere(e,n) -- where
 
   -- descend sucessive CARs of CDRs of e
   f := e
@@ -243,7 +243,7 @@ exp2FortOptimizeCS1 e ==
   object2Identifier first e in '(ROW AGGLST) => e
 
   -- see if we have already seen this expression
-  n := HGET($fortCsHash,e)
+  n := tableValue($fortCsHash,e)
   null n =>
     n := VECTOR(1,nil,$fortCsExprStack,$fortCsFuncStack)
     tableValue($fortCsHash,e) := n

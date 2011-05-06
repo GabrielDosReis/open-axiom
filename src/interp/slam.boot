@@ -218,7 +218,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
-  secondPredPair:= [['%store,g2,["HGET",['%dynval,MKQ cacheName],g1]],g2]
+  secondPredPair:= [['%store,g2,["tableValue",['%dynval,MKQ cacheName],g1]],g2]
   thirdPredPair:= ['%otherwise,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
@@ -237,7 +237,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   nam
  
 hashCount table ==
-  +/[ADD1 nodeCount HGET(table,key) for key in HKEYS table]
+  +/[ADD1 nodeCount tableValue(table,key) for key in HKEYS table]
  
 mkCircularAlist n ==
   l:= [[$failed,:$failed] for i in 1..n]
@@ -324,7 +324,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     initialResetCode :=
       null extraArguments => nil
       [["%LET",stateVar,['%or,
-         ["HGET",stateVar,extraArgumentCode],
+         ["tableValue",stateVar,extraArgumentCode],
           ["HPUT",stateVar,extraArgumentCode,tripleCode]]]]
  
     mbody :=

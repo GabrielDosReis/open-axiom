@@ -196,7 +196,7 @@ ScanOrPairVec(f, ob) ==
  
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==
-            HGET($seen, ob) => nil
+            tableValue($seen, ob) => nil
             cons? ob =>
                 tableValue($seen, ob) := true
                 ScanOrInner(f, first ob)

@@ -88,7 +88,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
-      tableValue($defaultsHash,item) := [kind,:HGET($defaultsHash,item)]
+      tableValue($defaultsHash,item) := [kind,:tableValue($defaultsHash,item)]
   $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := inputTextFile '"topics.data"           
   while not EOFP instream repeat
@@ -115,16 +115,16 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   --store under each construct an OR of all codes
   for con in HKEYS $conTopicHash repeat
     conCode := 0
-    for pair in HGET($conTopicHash,con) repeat 
+    for pair in tableValue($conTopicHash,con) repeat 
       pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
     tableValue($conTopicHash,con) := 
-      [['constructor,:conCode],:HGET($conTopicHash,con)]
+      [['constructor,:conCode],:tableValue($conTopicHash,con)]
   SHUT instream
 
 --reduce integers stored under names to 1 + its power of 2
   for key in HKEYS $topicHash repeat 
-    tableValue($topicHash,key) := INTEGER_-LENGTH HGET($topicHash,key)
+    tableValue($topicHash,key) := INTEGER_-LENGTH tableValue($topicHash,key)
 
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
@@ -144,7 +144,7 @@ string2OpAlist s ==
   acc
 
 getDefaultProps name ==
-  u := HGET($defaultsHash,name)
+  u := tableValue($defaultsHash,name)
   if stringChar(s := symbolName name,m := maxIndex s) = char "?" then u := ['p,:u]
   if stringChar(s,m) = char "!" then u := ['destructive,:u]
   u
@@ -165,7 +165,7 @@ topicCode lst ==
   bitIndexList := nil
   for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
-      k := HGET($topicHash,x) => k
+      k := tableValue($topicHash,x) => k
       tableValue($topicHash,x) := $topicIndex := $topicIndex * 2
       $topicIndex
   code := +/[i for i in bitIndexList]
@@ -175,7 +175,7 @@ topicCode lst ==
 --=======================================================================
 --called to modify DOCUMENTATION property for each "con"
 addTopic2Documentation(con,docAlist) ==
-  alist := HGET($conTopicHash,con) or return docAlist
+  alist := tableValue($conTopicHash,con) or return docAlist
   [y for x in docAlist] where y() ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
@@ -189,36 +189,36 @@ addTopic2Documentation(con,docAlist) ==
 --=======================================================================
 td con ==
   $topicClasses := ASSOCRIGHT mySort
-      [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
 
 tdAdd(con,hash) ==
-  v := HGET($conTopicHash,con)
+  v := tableValue($conTopicHash,con)
   u := addTopic2Documentation(con,v)
 --u := getConstructorDocumentationFromDB con
   for pair in u | integer? (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
     for x in (names := code2Classes code) repeat
-      tableValue(hash,x) := insert(op,HGET(hash,x))
+      tableValue(hash,x) := insert(op,tableValue(hash,x))
 
 tdPrint hash ==
   for key in mySort HKEYS hash repeat 
     sayBrightly [key,'":"]
     sayBrightlyNT '"   "
-    for x in HGET(hash,key) repeat sayBrightlyNT ['" ",x]
+    for x in tableValue(hash,key) repeat sayBrightlyNT ['" ",x]
     TERPRI()
 
 topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
-      [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
   for x in HKEYS hash repeat
-    tableValue(hash,x) := mySort HGET(hash,x)
+    tableValue(hash,x) := mySort tableValue(hash,x)
   tdPrint hash 
 
 code2Classes cc ==
@@ -248,7 +248,7 @@ transferCodeCon(con,opAlist) ==
 --=======================================================================
 
 filterByTopic(opAlist,topic) ==
-  bitNumber := HGET($topicHash,topic)
+  bitNumber := tableValue($topicHash,topic)
   [x for x in opAlist 
     | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
 
@@ -257,5 +257,5 @@ listOfTopics(conname) ==
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
 --not integer? code => nil
-  mySort [key for key in HKEYS($topicHash) | LOGBITP(HGET($topicHash,key),code)]
+  mySort [key for key in HKEYS($topicHash) | LOGBITP(tableValue($topicHash,key),code)]
 

@@ -68,7 +68,7 @@ astran asyFile ==
   $asyFile: local := asyFile
   $asFilename: local := strconc(PATHNAME_-NAME asyFile,'".as")
   asytran asyFile
-  conlist := [x for x in HKEYS $conHash | HGET($conHash,x) isnt [.,.,"function",:.]]
+  conlist := [x for x in HKEYS $conHash | tableValue($conHash,x) isnt [.,.,"function",:.]]
   $mmAlist : local :=
     [[con,:asyConstructorModemap con] for con in conlist]
   $docAlist : local :=
@@ -80,7 +80,7 @@ astran asyFile ==
     tableValue($parentsHash,con) := asyParents con
 --  for [parent,:pred] in parents repeat
 --    parentOp := opOf parent
---    tableValue($childrenHash,parentOp) := insert([con,:pred],HGET($childrenHash,parentOp))
+--    tableValue($childrenHash,parentOp) := insert([con,:pred],tableValue($childrenHash,parentOp))
   $newConlist := union(conlist, $newConlist)
   [[x,:asMakeAlist x] for x in HKEYS $conHash]
 
@@ -135,7 +135,7 @@ asyMkSignature(con,sig) ==
   ['SIGNATURE,con,sig]
 
 asMakeAlist con ==
-  record := HGET($conHash,con)
+  record := tableValue($conHash,con)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
 --TTT in case we put the wrong thing in for niladic catgrs
 --if atom(form) and kind='category then form:=[form]
@@ -146,9 +146,9 @@ asMakeAlist con ==
     property(opOf form,'NILADIC) := 'T
   modemap := asySubstMapping LASSOC(con,$mmAlist)
   $constructorCategory :local := modemap.mmTarget
-  parents := mySort HGET($parentsHash,con)
---children:= mySort HGET($childrenHash,con)
-  alists  := HGET($opHash,con)
+  parents := mySort tableValue($parentsHash,con)
+--children:= mySort tableValue($childrenHash,con)
+  alists  := tableValue($opHash,con)
   opAlist := applySubst(pairList(KDR form,$FormalMapVariableList),CDDR alists)
   ancestorAlist :=
     applySubst(pairList(KDR form,$FormalMapVariableList),first alists)
@@ -157,7 +157,7 @@ asMakeAlist con ==
   documentation :=
     applySubst(pairList(KDR form,$FormalMapVariableList),LASSOC(con,$docAlist))
   filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
-  constantPart := HGET($constantHash,con) and [['constant,:true]]
+  constantPart := tableValue($constantHash,con) and [['constant,:true]]
   niladicPart := symbolMember?(con,$niladics) and [['NILADIC,:true]]
   falist :=  TAKE(#KDR form,$FormalMapVariableList)
   constructorCategory :=
@@ -200,7 +200,7 @@ asGetExports(kind, conform, catform) ==
       [sig, nil, :pred]
 
 asMakeAlistForFunction fn ==
-  record := HGET($conHash,fn)
+  record := tableValue($conHash,fn)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
   modemap := LASSOC(fn,$mmAlist)
   newsig := asySignature(sig,nil)
@@ -302,14 +302,14 @@ asIsCategoryForm m ==
   m = "BasicType" or getConstructorKindFromDB opOf m = "category"
 
 asyDocumentation con ==
-  docHash := HGET($docHash,con)
+  docHash := tableValue($docHash,con)
   u := [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash
-           | rec := HGET(docHash,op)] where fn(x,op) ==
+           | rec := tableValue(docHash,op)] where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     ----------> Constants change <--------------
     if IDENTP sig then sig := [sig]
     [asySignature(sig,nil),trimComments comments]
-  [form,sig,pred,origin,where?,comments] := first HGET($conHash,con)
+  [form,sig,pred,origin,where?,comments] := first tableValue($conHash,con)
   --above "first" assumes only one entry
   comments := trimComments asyExtractDescription comments
   [:u,['constructor,[nil,comments]]]
@@ -330,8 +330,8 @@ asyExportAlist con ==
 --    <sig slotNumberOrNil optPred optELT>
 --    <sig sig'            predOrT "Subsumed">
 --!!! asyFile NEED: need to know if function is implemented by domain!!!
-  docHash := HGET($docHash,con)
-  [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash | rec := HGET(docHash,op)]
+  docHash := tableValue($docHash,con)
+  [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash | rec := tableValue(docHash,op)]
        where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     tail :=
@@ -376,8 +376,8 @@ asyMakeOperationAlist(con,proplist, key) ==
           [[sig],nil,true,'ASCONST]
       pred => [sig,nil,asyPredTran pred]
       [sig]
-    tableValue(ht,id) := [entry,:HGET(ht,id)]
-  opalist := [[op,:removeDuplicates HGET(ht,op)] for op in HKEYS ht]
+    tableValue(ht,id) := [entry,:tableValue(ht,id)]
+  opalist := [[op,:removeDuplicates tableValue(ht,op)] for op in HKEYS ht]
   --tableValue($opHash,con) := [ancestorAlist,attributeAlist,:opalist]
   tableValue($opHash,con) := [ancestorAlist,nil,:opalist]
 
@@ -467,7 +467,7 @@ asytranDeclaration(dform,levels,predlist,local?) ==
     ht :=
       levels is '(top) => $conHash
       $docHashLocal
-    tableValue(ht,id) := [record,:HGET(ht,id)]
+    tableValue(ht,id) := [record,:tableValue(ht,id)]
   if levels is '(top) then asyMakeOperationAlist(id,r, key)
   ['Declare,id,newsig,r]
 
@@ -497,7 +497,7 @@ asyLooksLikeCatForm? x ==
 --    ht :=
 --      levels is '(top) => $conHash
 --      $docHashLocal
---    tableValue(ht,id) := [record,:HGET(ht,id)]
+--    tableValue(ht,id) := [record,:tableValue(ht,id)]
 --  if levels is '(top) then asyMakeOperationAlist(id,r)
 --  ['Declare,id,newsig,r]
 
@@ -607,11 +607,11 @@ asytranCategory(form,levels,predlist,local?) ==
     dform := asytranCategoryItem(x,levels,predlist,local?)
     null dform => nil
     dform is ['Declare,id,record,r] =>
-      tableValue(catTable,id) := [asyWrap(record,predlist),:HGET(catTable,id)]
+      tableValue(catTable,id) := [asyWrap(record,predlist),:tableValue(catTable,id)]
     catList := [asyWrap(dform,predlist),:catList]
   keys := listSort(function GLESSEQP,HKEYS catTable)
   right1 := reverse! catList
-  right2 := [[key,:HGET(catTable,key)] for key in keys]
+  right2 := [[key,:tableValue(catTable,key)] for key in keys]
   right :=
     right2 => [:right1,['Exports,:right2]]
     right1
@@ -656,7 +656,7 @@ extendConstructorDataTable() ==
 --  tb := $constructorDataTable
   for x in listSort(function GLESSEQP,HKEYS $conHash) repeat
 --     if LASSOC(x,tb) then tb := DELLASOS(x,tb)
-     record := HGET($conHash,x)
+     record := tableValue($conHash,x)
      [form,sig,predlist,origin,exposure,comments,typeCode,:filename] := first record
      abb := asyAbbreviation(x,#(rest sig))
      kind := 'domain
@@ -718,14 +718,14 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     abb
 
 asyGetAbbrevFromComments con ==
-  docHash := HGET($docHash,con)
+  docHash := tableValue($docHash,con)
   u := [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash
-           | rec := HGET(docHash,op)] where fn(x,op) ==
+           | rec := tableValue(docHash,op)] where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     ----------> Constants change <--------------
     if IDENTP sig then sig := [sig]
     [asySignature(sig,nil),trimComments comments]
-  [form,sig,pred,origin,where?,comments] := first HGET($conHash,con)
+  [form,sig,pred,origin,where?,comments] := first tableValue($conHash,con)
   --above "first" assumes only one entry
   x := asyExtractAbbreviation comments
   x => intern x
@@ -766,7 +766,7 @@ createAbbreviation s ==
 --Note: modemap property is built when getConstructorModemapFromDB is called
 
 asyConstructorModemap con ==
-  HGET($conHash,con) isnt [record,:.] => nil   --not there
+  tableValue($conHash,con) isnt [record,:.] => nil   --not there
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := record
   $kind: local := kind
   --NOTE: sig has the form (-> source target) or simply (target)

@@ -44,16 +44,16 @@ hasCat(dom,cat) ==
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
-     | symbolEq?(a,con) and (val := HGET(_*HASCATEGORY_-HASH_*,key))]
+     | symbolEq?(a,con) and (val := tableValue(_*HASCATEGORY_-HASH_*,key))]
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
   SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
-    tableValue($ct,a) := [[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)]
+    tableValue($ct,a) := [[b,:tableValue(_*HASCATEGORY_-HASH_*,key)],:tableValue($ct,a)]
   for id in HKEYS $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
-    PRINT HGET($ct,id)
+    PRINT tableValue($ct,id)
 
 genCategoryTable() ==
   SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
@@ -82,7 +82,7 @@ simpTempCategoryTable() ==
 simpCategoryTable() == main where
   main() ==
     for key in HKEYS _*HASCATEGORY_-HASH_* repeat
-      entry := HGET(_*HASCATEGORY_-HASH_*,key)
+      entry := tableValue(_*HASCATEGORY_-HASH_*,key)
       null entry => HREM(_*HASCATEGORY_-HASH_*,key)
       change :=
         atom opOf entry => simpHasPred entry
@@ -198,7 +198,7 @@ genTempCategoryTable() ==
     getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
-    item := HGET(_*ANCESTORS_-HASH_*, id) 
+    item := tableValue(_*ANCESTORS_-HASH_*, id) 
     for (u:=[.,:b]) in item repeat
       u.rest := simpCatPredicate simpBool b
     tableValue(_*ANCESTORS_-HASH_*,id) := listSort(function GLESSEQP,item)
@@ -418,14 +418,14 @@ compressHashTable ht ==
 -- compresses hash table ht, to give maximal sharing of cells
   sayBrightlyNT '"compressing hash table..."
   $found: local := hashTable 'EQUAL
-  for x in HKEYS ht repeat compressSexpr(HGET(ht,x),nil,nil)
+  for x in HKEYS ht repeat compressSexpr(tableValue(ht,x),nil,nil)
   sayBrightly   "done"
   ht
 
 compressSexpr(x,left,right) ==
 -- recursive version of compressHashTable
   atom x => nil
-  u:= HGET($found,x) =>
+  u:= tableValue($found,x) =>
     left => left.first := u
     right => right.rest := u
     nil

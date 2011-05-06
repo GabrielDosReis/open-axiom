@@ -619,10 +619,10 @@ scanError()==
   lferror($ln.n)
 
 keyword st ==
-  HGET(scanKeyTable,st)
+  tableValue(scanKeyTable,st)
 
 keyword? st ==
-  not null HGET(scanKeyTable,st)
+  not null tableValue(scanKeyTable,st)
 
 subMatch(l,i) ==
   substringMatch(l,scanDict,i)
