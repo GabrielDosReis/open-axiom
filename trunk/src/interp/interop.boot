@@ -272,7 +272,7 @@ depthAssocList u ==
   removeDuplicates ("append"/[depthAssoc(y) for y in u])
  
 depthAssoc x ==
-  y := HGET($depthAssocCache,x) => y
+  y := tableValue($depthAssocCache,x) => y
   x is ['Join,:u] or (u := getCatAncestors x) =>
     v := depthAssocList u
     tableValue($depthAssocCache,x) := [[x,:n],:v]
@@ -567,7 +567,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             packageVec.i := package
             package
                            ----old world
-          table := HGET($Slot1DataBase,entry) or systemError nil
+          table := tableValue($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u]) =>
               packageForm := [entry,'$,:rest cat]

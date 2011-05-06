@@ -273,7 +273,7 @@ unInstantiate(clist) ==
 killNestedInstantiations(deps) ==
   for key in HKEYS($ConstructorCache)
     repeat
-      for [arg,count,:inst] in HGET($ConstructorCache,key) repeat
+      for [arg,count,:inst] in tableValue($ConstructorCache,key) repeat
         isNestedInstantiation(inst.0,deps) =>
           HREMPROP($ConstructorCache,key,arg)
  

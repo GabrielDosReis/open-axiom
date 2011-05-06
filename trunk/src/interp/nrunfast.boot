@@ -346,7 +346,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
             vectorRef(packageVec,i) := package
             package
                            ----old world
-          table := HGET($Slot1DataBase,entry) or systemError nil
+          table := tableValue($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u | #sig = #x.0]) =>
               packageForm := [entry,'$,:rest cat]
@@ -419,7 +419,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
             package := evalSlotDomain(packageForm,dom)
             vectorRef(packageVec,i) := package
             package
-          table := HGET($Slot1DataBase,entry) or systemError nil
+          table := tableValue($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u | #sig = #x.0]) =>
               packageForm := [entry,'$,:rest cat]

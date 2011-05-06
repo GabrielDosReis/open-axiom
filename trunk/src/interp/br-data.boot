@@ -422,9 +422,9 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
     for conform in getImports x repeat
       name := opOf conform
       if not (name in '(QUOTE)) then
-        tableValue($usersTb,name) := insert(x,HGET($usersTb,name))
+        tableValue($usersTb,name) := insert(x,tableValue($usersTb,name))
   for k in HKEYS $usersTb repeat
-    tableValue($usersTb,k) := listSort(function GLESSEQP,HGET($usersTb,k))
+    tableValue($usersTb,k) := listSort(function GLESSEQP,tableValue($usersTb,k))
   for x in allConstructors() | isDefaultPackageName x repeat
     tableValue($usersTb,x) := getDefaultPackageClients x
   $usersTb
@@ -448,9 +448,9 @@ mkDependentsHashTable() == --called by buildDatabase (database.boot)
   $depTb := MAKE_-HASH_-TABLE()
   for nam in allConstructors() repeat
     for con in getArgumentConstructors nam repeat
-      tableValue($depTb,con) := [nam,:HGET($depTb,con)]
+      tableValue($depTb,con) := [nam,:tableValue($depTb,con)]
   for k in HKEYS $depTb repeat
-    tableValue($depTb,k) := listSort(function GLESSEQP,HGET($depTb,k))
+    tableValue($depTb,k) := listSort(function GLESSEQP,tableValue($depTb,k))
   $depTb
 
 getArgumentConstructors con == --called by mkDependentsHashTable
@@ -515,7 +515,7 @@ $parentsCache := nil
 parentsOf con == --called by kcpPage, ancestorsRecur
   if null $parentsCache then 
      $parentsCache := hashTable 'EQ
-  HGET($parentsCache,con) or
+  tableValue($parentsCache,con) or
     parents := getParentsForDomain con
     tableValue($parentsCache,con) := parents
     parents
@@ -597,10 +597,10 @@ childArgCheck(argl, nargl) ==
 --    tableValue(hash,childForm) := pred
 --    for [form,:pred] in descendantsOf(childForm,nil) repeat
 --      newPred :=
---        oldPred := HGET(hash,form) => quickOr(oldPred,pred)
+--        oldPred := tableValue(hash,form) => quickOr(oldPred,pred)
 --        pred
 --      tableValue(hash,form) := newPred
---  mySort [[key,:HGET(hash,key)] for key in HKEYS hash]
+--  mySort [[key,:tableValue(hash,key)] for key in HKEYS hash]
 
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   "category" = getConstructorKindFromDB(conname := opOf conform) =>
@@ -620,12 +620,12 @@ computeAncestorsOf(conform,domform) ==
   ancestorsRecur(conform,domform,true,true)
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
-    for pair in HGET($if,op) repeat acc := [pair,:acc]
+    for pair in tableValue($if,op) repeat acc := [pair,:acc]
   reverse! acc
 
 ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   op      := opOf conform
-  pred = HGET($done,conform) => nil   --skip if already processed
+  pred = tableValue($done,conform) => nil   --skip if already processed
   parents :=
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) =>
       $lisplibParents
@@ -647,7 +647,7 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
 ancestorsAdd(pred,form) == --called by ancestorsRecur
   null pred => nil
   op := IFCAR form or form
-  alist := HGET($if,op)
+  alist := tableValue($if,op)
   existingNode := assoc(form,alist) =>
     existingNode.rest := quickOr(rest existingNode,pred)
   tableValue($if,op) := [[form,:pred],:alist]

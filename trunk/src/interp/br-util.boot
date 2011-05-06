@@ -267,7 +267,7 @@ dbConstructorKind x ==
   target := getConstructorModemapFromDB(x).mmTarget
   target = '(Category) => 'category
   target is ['CATEGORY,'package,:.] => 'package
-  HGET($defaultPackageNamesHT,x) => 'default_ package
+  tableValue($defaultPackageNamesHT,x) => 'default_ package
   'domain
 
 getConstructorForm name ==

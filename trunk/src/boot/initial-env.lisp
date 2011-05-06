@@ -102,9 +102,6 @@
     keys))
 
 
-(defun HPUT (table key value)
-  (setf (gethash key table) value))
- 
 (defun strpos (what in start dontcare)
   (setq what (string what) in (string in))
   (if dontcare

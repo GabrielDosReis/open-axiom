@@ -49,8 +49,8 @@ profileTran alist ==
   for [opSig,:info] in alist repeat 
     op := opOf opSig
     sig := KAR KDR opSig
-    tableValue($profileHash,op) := [[sig,:info],:HGET($profileHash,op)]
-  [[key,:HGET($profileHash,key)] for key in mySort HKEYS $profileHash]
+    tableValue($profileHash,op) := [[sig,:info],:tableValue($profileHash,op)]
+  [[key,:tableValue($profileHash,key)] for key in mySort HKEYS $profileHash]
 
 profileRecord(label,name,info) ==  --name: info is var: type or op: sig
 --$profileAlist is ((op . alist1) ...) where

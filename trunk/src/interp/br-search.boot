@@ -85,7 +85,7 @@ isDefaultOpAtt x == x.(1 + dbTickIndex(x,4,0)) = char "x"
 
 grepForAbbrev(s,key) ==
 --checks that filter s is not * and is all uppercase; if so, look for abbrevs
-  u := HGET($lowerCaseConTb,s) => ['Abbreviations,u]    --try cheap test first
+  u := tableValue($lowerCaseConTb,s) => ['Abbreviations,u]    --try cheap test first
   s := STRINGIMAGE s
   someLowerCaseChar := false
   someUpperCaseChar := false
@@ -99,7 +99,7 @@ grepForAbbrev(s,key) ==
     for x in allConstructors() | test]] where test() ==
          not $includeUnexposed? and not isExposedConstructor x => false
          a := getConstructorAbbreviationFromDB x
-         match?(pattern,symbolName a) and not HGET($defaultPackageNamesHT,x)
+         match?(pattern,symbolName a) and not tableValue($defaultPackageNamesHT,x)
 
 applyGrep(x,filename) ==
   atom x => grepFile(x,filename,'i)
@@ -661,7 +661,7 @@ constructorSearch(filter,key,kind) ==
   pageName := LASSOC(DOWNCASE filter,'(("union" . DomainUnion)("record" . DomainRecord)("mapping" . DomainMapping) ("enumeration" . DomainEnumeration))) =>
     downlink pageName
   name := (string? filter => makeSymbol filter; filter)
-  if u := HGET($lowerCaseConTb,name) then filter := STRINGIMAGE first u
+  if u := tableValue($lowerCaseConTb,name) then filter := STRINGIMAGE first u
   line := conPageFastPath DOWNCASE filter =>
     code := dbKind line
     newkind :=
@@ -718,16 +718,16 @@ dbWordFrom(l,i) ==
   [buf,k]
 
 conLowerCaseConTran x ==
-  IDENTP x => IFCAR HGET($lowerCaseConTb, x) or x
+  IDENTP x => IFCAR tableValue($lowerCaseConTb, x) or x
   atom x   => x
   [conLowerCaseConTran y for y in x]
 
 string2Constructor x ==
   not string? x => x
-  IFCAR HGET($lowerCaseConTb, makeSymbol DOWNCASE x) or x
+  IFCAR tableValue($lowerCaseConTb, makeSymbol DOWNCASE x) or x
 
 conLowerCaseConTranTryHarder x ==
-  IDENTP x => IFCAR HGET($lowerCaseConTb,DOWNCASE x) or x
+  IDENTP x => IFCAR tableValue($lowerCaseConTb,DOWNCASE x) or x
   atom x   => x
   [conLowerCaseConTranTryHarder y for y in x]
 

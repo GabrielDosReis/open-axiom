@@ -46,16 +46,16 @@ buildWordTable u ==
   for s in u repeat
     words := wordsOfString s
     key := charUpcase stringChar(s,0)
-    tableValue(table,key) := [[s,:words],:HGET(table,key)]
+    tableValue(table,key) := [[s,:words],:tableValue(table,key)]
   for key in HKEYS table repeat
     tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function first),
+        listSort(function GLESSEQP, tableValue(table,key),function first),
           function second)
   table
 
 measureWordTable u ==
-  +/[+/[#entry for entry in HGET(u,key)] for key in HKEYS u]
+  +/[+/[#entry for entry in tableValue(u,key)] for key in HKEYS u]
 
 removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
@@ -96,8 +96,8 @@ wordKeys s ==
 add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
-    null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      tableValue($functionTable,key) := [[s,:wordsOfString s],:HGET($functionTable,key)]
+    null LASSOC(s := PNAME fn,tableValue($functionTable,(key := UPCASE s.0))) =>
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:tableValue($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name
@@ -160,7 +160,7 @@ findApproximateWords(word,table) ==
   alist:= nil
   for i in 1..#words repeat
     $penalty :local := (i = 1 => 0; 1)
-    wordAlist:= HGET(table,UPCASE (first words).0)
+    wordAlist:= tableValue(table,UPCASE (first words).0)
     for [x,:wordList] in wordAlist repeat
       k := findApproxWordList(words,wordList,n,threshold,#wordList) 
       k =>

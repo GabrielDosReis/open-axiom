@@ -542,7 +542,7 @@ traceDomainConstructor(domainConstructor,options) ==
     traceDomainLocalOps(domainConstructor,listOfLocalOps,
       [opt for opt in options | opt isnt ['LOCAL,:.]])
   listOfLocalOps and not getOption("OPS",options) => nil
-  for [argl,.,:domain] in HGET($ConstructorCache,domainConstructor)
+  for [argl,.,:domain] in tableValue($ConstructorCache,domainConstructor)
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
   innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")

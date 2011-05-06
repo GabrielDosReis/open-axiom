@@ -356,13 +356,13 @@ checkRecordHash u ==
            and (u := checkLookForRightBrace IFCDR u)
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern IFCAR u
-        entry := HGET($htHash,htname) or [nil]
+        entry := tableValue($htHash,htname) or [nil]
         tableValue($htHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if member(x,$HTlisplinks) and (u := checkLookForLeftBrace IFCDR u)
             and (u := checkLookForRightBrace IFCDR u)
               and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern checkGetLispFunctionName checkGetStringBeforeRightBrace u
-        entry := HGET($lispHash,htname) or [nil]
+        entry := tableValue($lispHash,htname) or [nil]
         tableValue($lispHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if ((p := member(x,'("\gloss" "\spadglos")))
                  or (q := member(x,'("\glossSee" "\spadglosSee"))))
@@ -373,7 +373,7 @@ checkRecordHash u ==
              u := checkLookForLeftBrace IFCDR u
              u := IFCDR u
           htname := intern checkGetStringBeforeRightBrace u
-          entry := HGET($glossHash,htname) or [nil]
+          entry := tableValue($glossHash,htname) or [nil]
           tableValue($glossHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
@@ -385,7 +385,7 @@ checkRecordHash u ==
           atom parse or (parse isnt ['set,arg]) => 'ok  ---assume ok
           not spadSysChoose($setOptions,arg) =>
             checkDocError ['"Incorrect \spadsys: ",s]
-            entry := HGET($sysHash,htname) or [nil]
+            entry := tableValue($sysHash,htname) or [nil]
             tableValue($sysHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if x is '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
@@ -973,7 +973,7 @@ checkSplitPunctuation x ==
     [subString(x,0,m - 1),subString(x,m-1)]
   (k := charPosition($charBack,x,0)) < m =>
     k = 0 =>
-      m = 1 or HGET($htMacroTable,x) or alphabetic? x.1 => [x]
+      m = 1 or tableValue($htMacroTable,x) or alphabetic? x.1 => [x]
       v := subString(x,2)
       [subString(x,0,2),:checkSplitPunctuation v]
     u := subString(x,0,k)
@@ -1038,7 +1038,7 @@ checkBeginEnd u ==
   while u repeat
     IDENTITY
       x := first u
-      string? x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
+      string? x and x.0 = $charBack and #x > 2 and not tableValue($htMacroTable,x)
         and not (x is '"\spadignore") and IFCAR IFCDR u = $charLbrace
           and not
             (substring?('"\radiobox",x,0) or substring?('"\inputbox",x,0))=>
@@ -1073,7 +1073,7 @@ checkArguments u ==
   while u repeat
     do
       x := first u
-      null (k := HGET($htMacroTable,x)) => 'skip
+      null (k := tableValue($htMacroTable,x)) => 'skip
       k = 0 => 'skip
       k > 0 => checkHTargs(x,rest u,k,nil)
       checkHTargs(x,rest u,-k,true)

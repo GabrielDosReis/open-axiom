@@ -92,7 +92,7 @@ dbShowOps(htPage,which,key,:options) ==
 reduceByGroup(htPage,opAlist) ==
   not dbFromConstructor?(htPage) or null $groupChoice => opAlist
   dbExpandOpAlistIfNecessary(htPage,opAlist,'"operation",true,false)
-  bitNumber := HGET($topicHash,$groupChoice)
+  bitNumber := tableValue($topicHash,$groupChoice)
   res := [[op,:newItems] for [op,:items] in opAlist | newItems] where
     newItems() ==
       null bitNumber => items
@@ -215,7 +215,7 @@ conformString(form) ==
 conform2StringList(form,opFn,argFn,exception) ==
   exception := exception or '"%%%nothing%%%"
   [op1,:args] := form
-  op := IFCAR HGET($lowerCaseConTb,op1) or op1
+  op := IFCAR tableValue($lowerCaseConTb,op1) or op1
   null args => apply(opFn,[op])
   special := op in '(Union Record Mapping)
   cosig :=
@@ -305,7 +305,7 @@ dbConformGen1(form,opButton?) ==
   args => conform2StringList(form, opFunction,FUNCTION dbConformGen,nil)
   apply(opFunction,[form])
 
-unAbbreviateIfNecessary op == IFCAR HGET($lowerCaseConTb, op) or op
+unAbbreviateIfNecessary op == IFCAR tableValue($lowerCaseConTb, op) or op
 
 conname2StringList form ==
   [PNAME unAbbreviateIfNecessary opOf form]

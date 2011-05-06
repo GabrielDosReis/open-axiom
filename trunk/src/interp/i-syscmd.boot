@@ -289,7 +289,7 @@ clearSpad2Cmd l ==
 
 clearCmdSortedCaches() ==
   $lookupDefaults: local := false
-  for [.,.,:domain] in HGET($ConstructorCache,'SortedCache) repeat
+  for [.,.,:domain] in tableValue($ConstructorCache,'SortedCache) repeat
     pair := compiledLookupCheck('clearCache,[$Void],domain)
     SPADCALL pair
 
@@ -2011,7 +2011,7 @@ writify ob ==
     writifyInner ob where
         writifyInner ob ==
             null ob                => nil
-            (e := HGET($seen, ob)) => e
+            (e := tableValue($seen, ob)) => e
  
             cons? ob =>
                 qcar := first ob
@@ -2062,7 +2062,7 @@ writify ob ==
                         ['HASHTABLE,
                           HASHTABLE_-CLASS ob,
                             writifyInner keys,
-                              [writifyInner HGET(ob,k) for k in keys]]
+                              [writifyInner tableValue(ob,k) for k in keys]]
                 nob
             PLACEP ob =>
                 nob := ['WRITIFIED!!, 'PLACE]
@@ -2118,7 +2118,7 @@ dewritify ob ==
     dewritifyInner ob where
         dewritifyInner ob ==
             null ob => nil
-            e := HGET($seen, ob) => e
+            e := tableValue($seen, ob) => e
  
             cons? ob and first ob = 'WRITIFIED!! =>
                 type := ob.1

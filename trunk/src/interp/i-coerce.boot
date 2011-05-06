@@ -926,7 +926,7 @@ coerceSubDomain(val, tSuper, tSub) ==
   nil
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
-  predfn := HGET($superHash, [tSuper,:tSub]) => predfn
+  predfn := tableValue($superHash, [tSuper,:tSub]) => predfn
   arg := gensym()
   [predfn] := compileInteractive
                 [gensym(),['LAM,[arg],substitute(arg,"#1", pred)]]

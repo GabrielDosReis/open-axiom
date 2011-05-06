@@ -277,7 +277,7 @@ hashTable cmp ==
 minimalise x ==
   min(x,hashTable 'EQUAL) where
     min(x,ht) ==
-      y := HGET(ht,x)
+      y := tableValue(ht,x)
       y => y
       cons? x =>
         z := min(first x,ht)
@@ -292,7 +292,7 @@ minimalise x ==
       string? x => hashCheck(x,ht)
       x
     hashCheck(x,ht) ==
-      y := HGET(ht,x)
+      y := tableValue(ht,x)
       y => y
       tableValue(ht,x) := x
       x

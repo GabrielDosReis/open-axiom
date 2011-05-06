@@ -222,13 +222,13 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:=
-    null argl => ['HGET,cacheName,MKQ op]
+    null argl => ['tableValue,cacheName,MKQ op]
     cacheNameOrNil =>
       eqEtc ~= 'EQUAL =>
         ['lassocShiftWithFunction,cacheArgKey,
-          ['HGET,cacheNameOrNil,MKQ op],MKQ eqEtc]
-      ['lassocShift,cacheArgKey,['HGET,cacheNameOrNil,MKQ op]]
-    ['HGET,cacheName,g1]
+          ['tableValue,cacheNameOrNil,MKQ op],MKQ eqEtc]
+      ['lassocShift,cacheArgKey,['tableValue,cacheNameOrNil,MKQ op]]
+    ['tableValue,cacheName,g1]
   secondPredPair:= [g2,optSEQ ['SEQ,:hitCountCode,['EXIT,returnFoundValue]]]
   putCode:=
     null argl =>
@@ -297,7 +297,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   returnFoundValue:=
     countFl => ['CDRwithIncrement,g2]
     g2
-  getCode:= ['HGET,cacheName,cacheArgKey]
+  getCode:= ['tableValue,cacheName,cacheArgKey]
   secondPredPair:= [g2,returnFoundValue]
   putForm:= ['%pair,MKQ op,g1]
   putCode:=
@@ -322,7 +322,7 @@ CDRwithIncrement x ==
   rest x
  
 HGETandCount(ht,prop) ==
-  u:= HGET(ht,prop) or return nil
+  u:= tableValue(ht,prop) or return nil
   u.first := first u + 1
   u
  
@@ -363,7 +363,7 @@ clearCategoryCache catName ==
   setDynamicBinding(mkCacheName catName,nil)
  
 displayHashtable x ==
-  l:= reverse! SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
+  l:= reverse! SORTBY('CAR,[[opOf tableValue(x,key),key] for key in HKEYS x])
   for [a,b] in l repeat
     sayBrightlyNT ['"%b",a,'"%d"]
     pp b
@@ -403,7 +403,7 @@ mkCircularCountAlist(cl,len) ==
 reportHashCacheStats fn ==
   infovec:= property(fn,'cacheInfo)
   ht := eval infovec.cacheName
-  hashValues:= [HGET(ht,key) for key in HKEYS ht]
+  hashValues:= [tableValue(ht,key) for key in HKEYS ht]
   sayBrightly [:bright fn,'"has",:bright(# hashValues),'"values cached."]
   displayCacheFrequency mkHashCountAlist hashValues
   TERPRI()
@@ -526,7 +526,7 @@ haddProp(ht,op,prop,val) ==
     startTimingProcess 'debug
     recordInstantiation(op,prop,false)
     stopTimingProcess 'debug
-  u:= HGET(ht,op) =>     --hope that one exists most of the time
+  u:= tableValue(ht,op) =>     --hope that one exists most of the time
     assoc(prop,u) => val     --value is already there--must = val; exit now
     u.rest := [first u,:rest u]
     u.first := [prop,:val]
@@ -555,7 +555,7 @@ recordInstantiation1(op,prop,dropIfTrue) ==
       $instantMmCondCount:= $instantMmCondCount + 1
     typeTimePrin ["CONCAT",outputDomainConstructor [op,:prop],trailer,:xtra]
   null $reportInstantiations => nil
-  u:= HGET($instantRecord,op) =>     --hope that one exists most of the time
+  u:= tableValue($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
       dropIfTrue => v.rest := 1+rest v
       v.first := 1+first v
@@ -572,7 +572,7 @@ recordInstantiation1(op,prop,dropIfTrue) ==
 reportInstantiations() ==
   --assumed to be a hashtable with reference counts
     conList:=
-      [:[[n,m,[key,:argList]] for [argList,n,:m] in HGET($instantRecord,key)]
+      [:[[n,m,[key,:argList]] for [argList,n,:m] in tableValue($instantRecord,key)]
         for key in HKEYS $instantRecord]
     sayBrightly ['"# instantiated/# dropped/domain name",
       "%l",'"------------------------------------"]
@@ -670,7 +670,7 @@ globalHashtableStats(x,sortFn) ==
   --assumed to be a hashtable with reference counts
   keys:= HKEYS x
   for key in keys repeat
-    u:= HGET(x,key)
+    u:= tableValue(x,key)
     for [argList,n,:.] in u repeat
       not integer? n =>   keyedSystemError("S2GE0013",[x])
       argList1:= [constructor2ConstructorForm x for x in argList]

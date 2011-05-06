@@ -57,7 +57,7 @@ augmentLowerCaseConTable x ==
 
 getCDTEntry(info,isName) ==
   not IDENTP info => nil
-  (entry := HGET($lowerCaseConTb,info)) =>
+  (entry := tableValue($lowerCaseConTb,info)) =>
     [name,abb,:.] := entry
     isName and sameObject?(name,info) => entry
     not isName and sameObject?(abb,info) => entry
