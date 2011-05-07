@@ -84,6 +84,8 @@
 
 	   ;; Some common data structures
 	   "tableValue"	 ; value associated with a key in a table
+	   "tableLength" ; number of entries in the table.
+	   "tableRemove!" ; remove an entry from a table
 
 	   ;; IO
 	   "$InputStream"
@@ -454,6 +456,12 @@
 ;; -*- Hash table -*-
 (defmacro |tableValue| (ht k)
   `(gethash ,k ,ht))
+
+(defmacro |tableRemove!| (ht k)
+  `(remhash ,k ,ht))
+
+(defmacro |tableLength| (ht)
+  `(hash-table-count ,ht))
 
 ;; -*- File IO -*-
 
