@@ -74,8 +74,6 @@
         (2 'EQUAL)
         (t "error unknown hash table class")))
 
-(define-function 'HCOUNT #'hash-table-count)
-
 ;17.4 Searching and Updating
 
 (defun HPUT (table key value) (setf (gethash key table) value))

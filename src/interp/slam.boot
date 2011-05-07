@@ -218,8 +218,10 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
-  secondPredPair:= [['%store,g2,["tableValue",['%dynval,MKQ cacheName],g1]],g2]
-  thirdPredPair:= ['%otherwise,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
+  secondPredPair := [['%store,g2,['tableValue,['%dynval,MKQ cacheName],g1]],g2]
+  thirdPredPair := ['%otherwise,
+                      ['%store,['tableValue,['%dynval,MKQ cacheName],g1],
+                         computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
@@ -284,7 +286,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   newTripleCode := ['%list,sharpArg,:gsList]
   newStateCode :=
     null extraArguments => ["%store",["%dynval", MKQ stateNam],newTripleCode]
-    ["HPUT",["%dynval", MKQ stateNam],extraArgumentCode,newTripleCode]
+    ['store,['tableValue,["%dynval", MKQ stateNam],extraArgumentCode],
+       newTripleCode]
  
   computeFunction:= [auxfn,["LAM",cargl,cbody]] where
     cargl:= [:argl,lastArg]
@@ -325,7 +328,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       null extraArguments => nil
       [["%LET",stateVar,['%or,
          ["tableValue",stateVar,extraArgumentCode],
-          ["HPUT",stateVar,extraArgumentCode,tripleCode]]]]
+          ['%store,['tableValue,stateVar,extraArgumentCode],tripleCode]]]]
  
     mbody :=
       preset := [initialSetCode,:initialResetCode,["%LET",max,["ELT",stateVar,0]]]

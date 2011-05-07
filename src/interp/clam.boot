@@ -234,17 +234,18 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     null argl =>
       cacheNameOrNil =>
         countFl =>
-          ['CDDAR,['HPUT,cacheNameOrNil,MKQ op,
+          ['CDDAR,['%store,['tableValue,cacheNameOrNil,MKQ op],
             ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
-        ['HPUT,cacheNameOrNil,MKQ op,
+        ['%store,['tableValue,cacheNameOrNil,MKQ op],
           ['%list,['%pair,'%nil,computeValue]]]
       systemError '"unexpected"
     cacheNameOrNil => computeValue
-    countFl => ['%tail,['HPUT,cacheName,g1,['%pair,1,computeValue]]]
-    ['HPUT,cacheName,g1,computeValue]
+    countFl =>
+      ['%tail,['%store,['tableValue,cacheName,g1],['%pair,1,computeValue]]]
+    ['%store,['tableValue,cacheName,g1],computeValue]
   if cacheNameOrNil then putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
-                  ['%when,[['%not,g2],['HREM,cacheName,MKQ op]]]]
+                  ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
   thirdPredPair:= ['%otherwise,putCode]
   codeBody:= optSEQ
     ['SEQ,:callCountCode,
@@ -301,8 +302,9 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   secondPredPair:= [g2,returnFoundValue]
   putForm:= ['%pair,MKQ op,g1]
   putCode:=
-    countFl => ['HPUT,cacheName,putForm,['%pair,1,computeValue]]
-    ['HPUT,cacheName,putForm,computeValue]
+    countFl =>
+      ['%store,['tableValue,cacheName,putForm],['%pair,1,computeValue]]
+    ['%store,['tableValue,cacheName,putForm],computeValue]
   thirdPredPair := ['%otherwise,putCode]
   codeBody := ['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]
   lamex := ['LAM,arg,codeBody]
@@ -345,7 +347,7 @@ clearConstructorCaches() ==
 clearConstructorCache(cname) ==
   (kind := getConstructorKindFromDB cname) =>
     kind = "category" => clearCategoryCache cname
-    HREM($ConstructorCache,cname)
+    tableRemove!($ConstructorCache,cname)
  
 clearConstructorAndLisplibCaches() ==
   clearClams()
@@ -423,7 +425,7 @@ clearHashReferenceCounts() ==
  
 remHashEntriesWith0Count $hashTable ==
   MAPHASH(function fn,$hashTable) where fn(key,obj) ==
-    first obj = 0 => HREM($hashTable,key)  --free store
+    first obj = 0 => tableRemove!($hashTable,key)  --free store
     nil
  
 initCache n ==
@@ -497,7 +499,7 @@ clamStats() ==
       res
     postString:=
       cacheValue:= eval cacheVec.cacheName
-      kind = 'hash => [" (","%b",HASH_-TABLE_-COUNT cacheValue,"%d","entries)"]
+      kind = 'hash => [" (","%b",tableLength cacheValue,"%d","entries)"]
       empties:= numberOfEmptySlots eval cacheVec.cacheName
       empties = 0 => nil
       [" (","%b",kind-empties,"/",kind,"%d","slots used)"]

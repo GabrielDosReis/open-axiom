@@ -83,7 +83,7 @@ simpCategoryTable() == main where
   main() ==
     for key in HKEYS _*HASCATEGORY_-HASH_* repeat
       entry := tableValue(_*HASCATEGORY_-HASH_*,key)
-      null entry => HREM(_*HASCATEGORY_-HASH_*,key)
+      null entry => tableRemove!(_*HASCATEGORY_-HASH_*,key)
       change :=
         atom opOf entry => simpHasPred entry
         [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
@@ -485,7 +485,7 @@ clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)
 
 clearCategoryTable1(key,val) ==
-  (first key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
+  (first key=$cname)=> tableRemove!(_*HASCATEGORY_-HASH_*,key)
   nil
 
 clearTempCategoryTable(catNames) ==
