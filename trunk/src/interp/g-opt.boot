@@ -458,7 +458,7 @@ $VMsideEffectFreeOperators ==
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
     ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse!,
-      '%strstc,"MAKE-FULL-CVEC","BVEC-MAKE-FULL"])
+      '%strstc,"MAKE-FULL-CVEC"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.

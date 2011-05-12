@@ -128,7 +128,7 @@ shoeKeyWords == [  _
 
  
 shoeKeyTableCons()==
-   KeyTable:=MAKE_-HASHTABLE("CVEC")
+   KeyTable := makeTable function valueEq?
    for st in shoeKeyWords repeat
       tableValue(KeyTable,first st) := second st
    KeyTable
@@ -170,7 +170,7 @@ shoeDict:=shoeDictCons()
  
 shoePunCons()==
   listing := HKEYS shoeKeyTable
-  a := MAKE_-BVEC 256
+  a := makeBitVector 256
   for i in 0..255 repeat
     bitmask(a,i) := 0
   for k in listing repeat

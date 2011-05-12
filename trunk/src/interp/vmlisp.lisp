@@ -1578,7 +1578,3 @@
 (defun QUOREM (i j r) ; never used, refed in parini.boot
   (multiple-value-bind (x y) (truncate i j)
    (rplaca (the cons r) x) (rplacd (the cons r) y)))
-
-(defun MAKE-BVEC (n)
- (make-array (list n) :element-type 'bit :initial-element 0))
-

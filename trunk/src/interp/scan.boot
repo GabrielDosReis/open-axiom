@@ -192,8 +192,7 @@ scanDict:=scanDictCons()
 
 scanPunCons()==
   listing := HKEYS scanKeyTable
-  a := MAKE_-BVEC 256
---  SETSIZE(a,256)
+  a := makeBitVector 256
   for i in 0..255 repeat
     bitmask(a,i) := 0
   for k in listing repeat

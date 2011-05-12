@@ -315,9 +315,11 @@ bfUntil p==
      g:=bfGenSymbol()
      [[[g],[nil],[['SETQ,g,p]],[],[g],[]]]
  
-bfIterators x==["ITERATORS",:x]
+bfIterators x ==
+  ["ITERATORS",:x]
  
-bfCross x== ["CROSS",:x]
+bfCross x ==
+  ["CROSS",:x]
  
 bfLp(iters,body)==
   iters is ["ITERATORS",:.] => bfLp1(rest iters,body)
