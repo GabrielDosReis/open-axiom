@@ -83,8 +83,9 @@
 	   "%SimpleArray"
 
 	   ;; Some common data structures
-	   "tableValue"	 ; value associated with a key in a table
-	   "tableLength" ; number of entries in the table.
+	   "makeTable"	  ; construct a hash table with a given comp function
+	   "tableValue"	  ; value associated with a key in a table
+	   "tableLength"  ; number of entries in the table.
 	   "tableRemove!" ; remove an entry from a table
 
 	   ;; IO
@@ -132,6 +133,7 @@
            
 	   "%ByteArray"
 	   "makeByteArray"
+	   "makeBitVector"
 	   "makeString"
 
            "%hasFeature"
@@ -454,6 +456,9 @@
 		 (t -1))))
 
 ;; -*- Hash table -*-
+(defmacro |makeTable| (cmp)
+  `(make-hash-table :test ,cmp))
+
 (defmacro |tableValue| (ht k)
   `(gethash ,k ,ht))
 
@@ -1302,6 +1307,9 @@
   (make-array n 
 	       :element-type '(unsigned-byte 8)
 	       :initial-element 0))
+
+(defmacro |makeBitVector| (n)
+  `(make-array ,n :element-type 'bit :initial-element 0))
 
 (defun |makeString| (n &optional (c (code-char 0)))
   (make-string n :initial-element c))

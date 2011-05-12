@@ -58,7 +58,7 @@
   (PROG (|KeyTable|)
     (RETURN
       (PROGN
-        (SETQ |KeyTable| (MAKE-HASHTABLE 'CVEC))
+        (SETQ |KeyTable| (|makeTable| #'EQUAL))
         (LET ((|bfVar#2| |shoeKeyWords|) (|st| NIL))
           (LOOP
             (COND
@@ -136,7 +136,7 @@
     (RETURN
       (PROGN
         (SETQ |listing| (HKEYS |shoeKeyTable|))
-        (SETQ |a| (MAKE-BVEC 256))
+        (SETQ |a| (|makeBitVector| 256))
         (LET ((|i| 0))
           (LOOP
             (COND

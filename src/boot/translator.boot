@@ -525,10 +525,10 @@ $lispWordTable := nil
 
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
-  $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
+  $lispWordTable: local := makeTable function symbolEq?
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
-  $bootDefined: local :=MAKE_-HASHTABLE "EQ"
-  $bootUsed:local := MAKE_-HASHTABLE "EQ"
+  $bootDefined: local := makeTable function symbolEq?
+  $bootUsed:local := makeTable function symbolEq?
   $bootDefinedTwice: local := nil
   $GenVarCounter: local := 0
   $bfClamming: local := false
@@ -642,10 +642,10 @@ XREF fn==
  
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
-  $lispWordTable: local := MAKE_-HASHTABLE ("EQ")
+  $lispWordTable: local := makeTable function symbolEq?
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
-  $bootDefined: local := MAKE_-HASHTABLE "EQ"
-  $bootUsed: local := MAKE_-HASHTABLE "EQ"
+  $bootDefined: local := makeTable function symbolEq?
+  $bootUsed: local := makeTable function symbolEq?
   $GenVarCounter: local := 0
   $bfClamming: local := false
   shoeDefUse shoeTransformStream a

@@ -86,14 +86,6 @@
   (shoeprettyprin0 x stream) 
   (terpri stream))
 
-(defun MAKE-HASHTABLE (id1)
-  (let ((test (case id1
-                    ((EQ ID) #'eq)
-                    (CVEC #'equal)
-                    ((UEQUAL EQUAL) #'equal)
-                    (otherwise (error "bad arg to make-hashtable")))))
-    (make-hash-table :test test)))
-
 (defun HKEYS (table)
   (let (keys)
     (maphash #'(lambda (key val) 
@@ -122,14 +114,6 @@
     (position table cvec 
 	      :test-not #'(lambda (x y) (position y x))
               :start sint)))
-
-(defun  bvec-make-full (n x)
-  (make-array (list n) 
-	      :element-type 'bit
-	      :initial-element x))
-
-(defun make-bvec (n)
-  (bvec-make-full n 0))
  
 (defun |shoeReadLisp| (s n)
   (multiple-value-list (read-from-string s nil nil :start n)))

@@ -842,11 +842,11 @@
     (RETURN
       (COND
         ((NULL |a|) (|shoeNotFound| |fn|))
-        (T (SETQ |$lispWordTable| (MAKE-HASHTABLE 'EQ))
+        (T (SETQ |$lispWordTable| (|makeTable| #'EQ))
            (DO-SYMBOLS (|i| (FIND-PACKAGE 'LISP))
              (SETF (|tableValue| |$lispWordTable| |i|) T))
-           (SETQ |$bootDefined| (MAKE-HASHTABLE 'EQ))
-           (SETQ |$bootUsed| (MAKE-HASHTABLE 'EQ))
+           (SETQ |$bootDefined| (|makeTable| #'EQ))
+           (SETQ |$bootUsed| (|makeTable| #'EQ))
            (SETQ |$bootDefinedTwice| NIL) (SETQ |$GenVarCounter| 0)
            (SETQ |$bfClamming| NIL)
            (|shoeDefUse| (|shoeTransformStream| |a|))
@@ -1144,11 +1144,11 @@
     (RETURN
       (COND
         ((NULL |a|) (|shoeNotFound| |fn|))
-        (T (SETQ |$lispWordTable| (MAKE-HASHTABLE 'EQ))
+        (T (SETQ |$lispWordTable| (|makeTable| #'EQ))
            (DO-SYMBOLS (|i| (FIND-PACKAGE 'LISP))
              (SETF (|tableValue| |$lispWordTable| |i|) T))
-           (SETQ |$bootDefined| (MAKE-HASHTABLE 'EQ))
-           (SETQ |$bootUsed| (MAKE-HASHTABLE 'EQ))
+           (SETQ |$bootDefined| (|makeTable| #'EQ))
+           (SETQ |$bootUsed| (|makeTable| #'EQ))
            (SETQ |$GenVarCounter| 0) (SETQ |$bfClamming| NIL)
            (|shoeDefUse| (|shoeTransformStream| |a|))
            (SETQ |out| (CONCAT |fn| ".xref"))

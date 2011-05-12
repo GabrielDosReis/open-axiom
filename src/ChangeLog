@@ -1,3 +1,13 @@
+2011-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (MAKE-HASHTABLE): Remove.
+	(BEVC-MAKE-FULL): Likewise.
+	(MAKE-BVEC): Likewise.
+	* boot/tokens.boot (shoeKeyTableCons): Adjust.
+	(shoePunCons): Likewise.
+	(shoeDfu): Likewise.
+	(shoeXref): Likewise.
+
 2011-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/table.spad.pamphlet (HashTable): Use tableValue instead
