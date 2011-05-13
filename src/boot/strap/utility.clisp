@@ -302,3 +302,14 @@
     ((OR (CHARACTERP |x|) (INTEGERP |x|)) (|removeScalar| |l| |x|))
     (T (|removeValue| |l| |x|))))
 
+(DEFUN |charPosition| (|c| |s| |k|)
+  (PROG (|n|)
+    (RETURN
+      (PROGN
+        (SETQ |n| (LENGTH |s|))
+        (LOOP
+          (COND
+            ((NOT (< |k| |n|)) (RETURN NIL))
+            ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
+            (T (SETQ |k| (+ |k| 1)))))))))
+

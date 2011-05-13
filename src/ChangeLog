@@ -1,3 +1,9 @@
+2011-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (charPosition): New.
+	* boot/scanner.boot (shoeAccumulateLines): Use it.
+	(shoeS): Likewise.
+
 2011-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/initial-env.lisp (MAKE-HASHTABLE): Remove.

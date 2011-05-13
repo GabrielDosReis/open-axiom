@@ -131,13 +131,12 @@
             (COND
               ((CHAR= (SCHAR |command| 0) (|char| '|;|))
                (|shoeAccumulateLines| |$r| |string|))
-              (T (SETQ |a| (STRPOS ";" |command| 0 NIL))
-                 (COND
-                   (|a| (|shoeAccumulateLines| |$r|
-                            (CONCAT |string|
-                                    (|subString| |command| 0 (- |a| 1)))))
-                   (T (|shoeAccumulateLines| |$r|
-                          (CONCAT |string| |command|)))))))
+              ((SETQ |a| (|charPosition| (|char| '|;|) |command| 0))
+               (|shoeAccumulateLines| |$r|
+                   (CONCAT |string|
+                           (|subString| |command| 0 (- |a| 1)))))
+              (T (|shoeAccumulateLines| |$r|
+                     (CONCAT |string| |command|)))))
            (T (|shoeAccumulateLines| |$r| |string|))))
         (T (CONS |s| |string|))))))
 
@@ -347,8 +346,10 @@
         ((NOT (< |$n| |$sz|))
          (|SoftShoeError| (CONS |$linepos| |$n|) "quote added") "")
         (T (SETQ |n| |$n|)
-           (SETQ |strsym| (OR (STRPOS "\"" |$ln| |$n| NIL) |$sz|))
-           (SETQ |escsym| (OR (STRPOS "_" |$ln| |$n| NIL) |$sz|))
+           (SETQ |strsym|
+                 (OR (|charPosition| (|char| '|"|) |$ln| |$n|) |$sz|))
+           (SETQ |escsym|
+                 (OR (|charPosition| (|char| '_) |$ln| |$n|) |$sz|))
            (SETQ |mn| (MIN |strsym| |escsym|))
            (COND
              ((EQUAL |mn| |$sz|) (SETQ |$n| |$sz|)
