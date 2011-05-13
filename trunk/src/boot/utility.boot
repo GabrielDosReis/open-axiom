@@ -248,3 +248,14 @@ remove(l,x) ==
   symbol? x => removeSymbol(l,x)
   char? x or integer? x => removeScalar(l,x)
   removeValue(l,x)
+
+--% search
+
+++ Return the index of the character `c' in the string `s', if present.
+++ Otherwise, return nil.
+charPosition(c,s,k) ==
+  n := # s
+  repeat
+    k >= n => return nil
+    stringChar(s,k) = c => return k
+    k := k + 1

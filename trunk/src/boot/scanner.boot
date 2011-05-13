@@ -135,8 +135,7 @@ shoeAccumulateLines(s,string)==
     command and #command>0 =>
       stringChar(command,0) = char ";" =>
 		  shoeAccumulateLines($r,string)
-      a:=STRPOS('";",command,0,nil)
-      a=>
+      a := charPosition(char ";",command,0) =>
 	shoeAccumulateLines($r,
 	   strconc(string,subString(command,0,a-1)))
       shoeAccumulateLines($r,strconc(string,command))
@@ -314,8 +313,8 @@ shoeS()==
     SoftShoeError([$linepos,:$n],'"quote added")
     '""
   n := $n
-  strsym := STRPOS ('"_"",$ln,$n,nil) or $sz
-  escsym := STRPOS ('"__",$ln,$n,nil) or $sz
+  strsym := charPosition(char "_"",$ln,$n) or $sz
+  escsym := charPosition(char "__",$ln,$n) or $sz
   mn := MIN(strsym,escsym)
   mn=$sz =>
     $n:=$sz
