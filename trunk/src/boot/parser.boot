@@ -592,10 +592,17 @@ bpSelector()==
      and bpPush(bfElt(bpPop2(),bpPop1()))
 	or bpPush bfSuffixDot bpPop1() )
  
+++ NamedScope:
+++   NAMESPACE (Name | DOT)
+bpNamedScope() ==
+  bpEqKey "NAMESPACE" and (bpName() or bpDot() or bpTrap()) and
+    bpPush %Namespace bpPop1()
+
 bpApplication()==
    bpPrimary() and bpAnyNo function bpSelector and
       (bpApplication() and
             bpPush(bfApplication(bpPop2(),bpPop1())) or true)
+              or bpNamedScope()
  
 ++ Typing:
 ++   SimpleType
