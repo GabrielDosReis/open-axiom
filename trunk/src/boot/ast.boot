@@ -965,43 +965,43 @@ isDynamicVariable x ==
  
 shoeCompTran1 x ==
   atom x =>
-    isDynamicVariable x =>
-      $dollarVars:=
-	 symbolMember?(x,$dollarVars)=>$dollarVars
-	 [x,:$dollarVars]
-    nil
+    if isDynamicVariable x and not symbolMember?(x,$dollarVars) then
+      $dollarVars := [x,:$dollarVars]
+    x
   U := first x
-  U is "QUOTE" => nil
+  U is "QUOTE" => x
   x is ["L%T",l,r] =>
     x.op := "SETQ"
-    shoeCompTran1 r
+    third(x) := shoeCompTran1 r
     symbol? l =>
-      not bfBeginsDollar l=>
-	$locVars:=
-	   symbolMember?(l,$locVars)=>$locVars
-	   [l,:$locVars]
-      $dollarVars:=
-	 symbolMember?(l,$dollarVars)=>$dollarVars
-	 [l,:$dollarVars]
+      bfBeginsDollar l =>
+        if not symbolMember?(l,$dollarVars) then
+          $dollarVars := [l,:$dollarVars]
+        x
+      if not symbolMember?(l,$locVars) then
+        $locVars := [l,:$locVars]
+      x
     l is ["FLUID",:.] =>
-      $fluidVars:=
-	 symbolMember?(second l,$fluidVars)=>$fluidVars
-	 [second l,:$fluidVars]
+      if not symbolMember?(second l,$fluidVars) then
+        $fluidVars := [second l,:$fluidVars]
       x.rest.first := second l
-  U is "%Leave" => x.op := "RETURN"
+      x
+  U is "%Leave" => (x.op := "RETURN"; x)
   U in '(PROG LAMBDA) =>
     newbindings := nil
     for y in second x repeat
       not symbolMember?(y,$locVars)=>
 	$locVars := [y,:$locVars]
 	newbindings := [y,:newbindings]
-    res := shoeCompTran1 CDDR x
+    rest(x).rest := shoeCompTran1 CDDR x
     $locVars := [y for y in $locVars | not symbolMember?(y,newbindings)]
+    x
   -- literal vectors.
-  x is ['vector,['LIST,:args]] => (x.op := 'VECTOR; x.args := args)
-  x is ['vector,'NIL] => (x.op := 'VECTOR; x.args := nil)
-  shoeCompTran1 first x
-  shoeCompTran1 rest x
+  x is ['vector,['LIST,:args]] => (x.op := 'VECTOR; x.args := args; x)
+  x is ['vector,'NIL] => (x.op := 'VECTOR; x.args := nil; x)
+  x.first := shoeCompTran1 first x
+  x.rest := shoeCompTran1 rest x
+  x
  
 bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
