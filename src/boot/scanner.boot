@@ -90,7 +90,7 @@ shoeNextLine(s)==
   $n = nil => true
   stringChar($ln,$n) = shoeTAB =>
     a := makeString(7-REM($n,8),char " ")
-    $ln.$n := char " "
+    stringChar($ln,$n) := char " "
     $ln := strconc(a,$ln)
     s1:=[[$ln,:rest $f],:$r]
     shoeNextLine s1
@@ -443,10 +443,10 @@ shoeOrdToNum x==
   digit? x
  
 shoeKeyWord st   == 
-  GETHASH(st,shoeKeyTable)
+  tableValue(shoeKeyTable,st)
  
 shoeKeyWordP st  ==  
-  GETHASH(st,shoeKeyTable) ~= nil
+  tableValue(shoeKeyTable,st) ~= nil
  
 shoeMatch(l,i) == 
   shoeSubStringMatch(l,shoeDict,i)

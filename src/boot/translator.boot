@@ -54,7 +54,7 @@ genModuleFinalization(stream) ==
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
-      ["DEFUN", makeSymbol strconc($currentModuleName,"InitCLispFFI"), nil,
+      ["DEFUN", makeSymbol strconc($currentModuleName,'"InitCLispFFI"), nil,
         ["MAPC",["FUNCTION", "FMAKUNBOUND"],
           ["QUOTE",[second d for d in $foreignsDefsForCLisp]]],
           :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
@@ -540,7 +540,7 @@ shoeDfu(a,fn)==
  
 shoeReport stream==
   shoeFileLine('"DEFINED and not USED",stream)
-  a:=[i for i in HKEYS $bootDefined | not GETHASH(i,$bootUsed)]
+  a:=[i for i in HKEYS $bootDefined | not tableValue($bootUsed,i)]
   bootOut(SSORT a,stream)
   shoeFileLine('"             ",stream)
   shoeFileLine('"DEFINED TWICE",stream)
@@ -548,10 +548,10 @@ shoeReport stream==
   shoeFileLine('"             ",stream)
   shoeFileLine('"USED and not DEFINED",stream)
   a:=[i for i in HKEYS $bootUsed |
-	     not GETHASH(i,$bootDefined)]
+	     not tableValue($bootDefined,i)]
   for i in SSORT a repeat
      b := strconc(PNAME i,'" is used in ")
-     bootOutLines( SSORT GETHASH(i,$bootUsed),stream,b)
+     bootOutLines( SSORT tableValue($bootUsed,i),stream,b)
  
 shoeDefUse(s)==
   while not bStreamPackageNull s repeat
@@ -567,7 +567,7 @@ defuse(e,x)==
      x is ["EVAL_-WHEN",.,["SETQ",id,exp]]=>[id,exp]
      x is ["SETQ",id,exp]=>[id,exp]
      ["TOP-LEVEL", x]
-  if GETHASH(nee,$bootDefined)
+  if tableValue($bootDefined,nee)
   then
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
@@ -610,7 +610,7 @@ unfluidlist x==
   [first x,:unfluidlist rest x]
  
 defusebuiltin x ==  
-  GETHASH(x,$lispWordTable)
+  tableValue($lispWordTable,x)
  
 bootOut (l,outfn)==
   for i in l repeat shoeFileLine(strconc ('"   ",PNAME i),outfn)
@@ -662,7 +662,7 @@ shoeXReport stream==
    c:=SSORT HKEYS $bootUsed
    for i in c repeat
       a := strconc(PNAME i,'" is used in ")
-      bootOutLines( SSORT GETHASH(i,$bootUsed),stream,a)
+      bootOutLines( SSORT tableValue($bootUsed,i),stream,a)
  
 shoeItem (str)==
   dq:=first str
@@ -671,7 +671,7 @@ shoeItem (str)==
 stripm (x,pk,bt)==
   atom x =>
     symbol? x =>
-      SYMBOL_-PACKAGE x = bt => makeSymbol(PNAME x,pk)
+      SYMBOL_-PACKAGE x = bt => makeSymbol(symbolName x,pk)
       x
     x
   [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]

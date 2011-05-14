@@ -75,7 +75,7 @@ shoeNotFound fn ==
 shoeReadLispString(s,n) ==
   l := #s
   n >= l => nil
-  readLispFromString strconc( "(", subString(s,n,l-n) ,")")
+  readLispFromString strconc('"(", subString(s,n,l-n) ,'")")
 
 -- read a line from stream
 shoeReadLine stream ==

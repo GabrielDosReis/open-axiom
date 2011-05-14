@@ -54,7 +54,7 @@
              ((CHAR= (SCHAR |$ln| |$n|) |shoeTAB|)
               (SETQ |a|
                     (|makeString| (- 7 (REM |$n| 8)) (|char| '| |)))
-              (SETF (ELT |$ln| |$n|) (|char| '| |))
+              (SETF (SCHAR |$ln| |$n|) (|char| '| |))
               (SETQ |$ln| (CONCAT |a| |$ln|))
               (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))
               (|shoeNextLine| |s1|))
@@ -517,9 +517,9 @@
 
 (DEFUN |shoeOrdToNum| (|x|) (DIGIT-CHAR-P |x|))
 
-(DEFUN |shoeKeyWord| (|st|) (GETHASH |st| |shoeKeyTable|))
+(DEFUN |shoeKeyWord| (|st|) (|tableValue| |shoeKeyTable| |st|))
 
-(DEFUN |shoeKeyWordP| (|st|) (GETHASH |st| |shoeKeyTable|))
+(DEFUN |shoeKeyWordP| (|st|) (|tableValue| |shoeKeyTable| |st|))
 
 (DEFUN |shoeMatch| (|l| |i|)
   (|shoeSubStringMatch| |l| |shoeDict| |i|))
