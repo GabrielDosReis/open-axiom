@@ -627,11 +627,16 @@
                 (|bpPush| (|bfElt| (|bpPop2|) (|bpPop1|))))
            (|bpPush| (|bfSuffixDot| (|bpPop1|))))))
 
+(DEFUN |bpNamedScope| ()
+  (AND (|bpEqKey| 'NAMESPACE) (OR (|bpName|) (|bpDot|) (|bpTrap|))
+       (|bpPush| (|%Namespace| (|bpPop1|)))))
+
 (DEFUN |bpApplication| ()
-  (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)
-       (OR (AND (|bpApplication|)
-                (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
-           T)))
+  (OR (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)
+           (OR (AND (|bpApplication|)
+                    (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
+               T))
+      (|bpNamedScope|)))
 
 (DEFUN |bpTyping| ()
   (COND

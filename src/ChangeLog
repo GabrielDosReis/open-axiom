@@ -1,3 +1,8 @@
+2011-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpNamedScope): New.
+	(bpApplication): Call it.
+
 2011-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/utility.boot (charPosition): New.
