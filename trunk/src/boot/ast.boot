@@ -848,7 +848,7 @@ bfDef1 [op,args,body] ==
  
 shoeLAM (op,args,control,body)==
   margs :=bfGenSymbol()
-  innerfunc:= makeSymbol strconc(symbolName op,",LAM")
+  innerfunc:= makeSymbol strconc(symbolName op,'",LAM")
   [[innerfunc,["LAMBDA",args,body]],
      [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
                     ["WRAP",margs, ["QUOTE", control]]]]]]
@@ -1696,7 +1696,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   -- Note that Clozure CL does not mangle foreign function call for
   -- us, so we're left with more platform dependencies than needed.
   if %hasFeature KEYWORD::DARWIN then
-    op' := strconc("__",op')
+    op' := strconc('"__",op')
   call := [bfColonColon("CCL","EXTERNAL-CALL"), STRING op', :args, rettype]
             where
               args() == [:[x, parm] for x in argtypes for p in parms]

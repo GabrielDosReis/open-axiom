@@ -22,7 +22,7 @@
         (COND
           ((NOT (< |n| |l|)) NIL)
           (T (READ-FROM-STRING
-                 (CONCAT '|(| (|subString| |s| |n| (- |l| |n|)) '|)|))))))))
+                 (CONCAT "(" (|subString| |s| |n| (- |l| |n|)) ")"))))))))
 
 (DEFUN |shoeReadLine| (|stream|) (READ-LINE |stream| NIL NIL))
 

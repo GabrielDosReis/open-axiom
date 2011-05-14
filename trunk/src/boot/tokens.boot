@@ -310,6 +310,7 @@ for i in [ _
   ["stringEq?","STRING="] , _
   ["stringUpcase", "STRING-UPCASE"] , _
   ["subSequence", "SUBSEQ"] , _
+  ["symbolScope", "SYMBOL-PACKAGE"] , _
   ["symbolEq?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _
   ["symbolName", "SYMBOL-NAME"], _

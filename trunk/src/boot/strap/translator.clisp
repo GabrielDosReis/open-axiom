@@ -34,7 +34,7 @@
            (T (SETQ |init|
                     (CONS 'DEFUN
                           (CONS (INTERN (CONCAT |$currentModuleName|
-                                         '|InitCLispFFI|))
+                                         "InitCLispFFI"))
                                 (CONS NIL
                                       (CONS
                                        (LIST 'MAPC
@@ -871,7 +871,7 @@
                     ((OR (ATOM |bfVar#21|)
                          (PROGN (SETQ |i| (CAR |bfVar#21|)) NIL))
                      (RETURN |bfVar#22|))
-                    (T (AND (NOT (GETHASH |i| |$bootUsed|))
+                    (T (AND (NOT (|tableValue| |$bootUsed| |i|))
                             (COND
                               ((NULL |bfVar#22|)
                                (SETQ |bfVar#22| #0=(CONS |i| NIL))
@@ -893,7 +893,7 @@
                     ((OR (ATOM |bfVar#24|)
                          (PROGN (SETQ |i| (CAR |bfVar#24|)) NIL))
                      (RETURN |bfVar#25|))
-                    (T (AND (NOT (GETHASH |i| |$bootDefined|))
+                    (T (AND (NOT (|tableValue| |$bootDefined| |i|))
                             (COND
                               ((NULL |bfVar#25|)
                                (SETQ |bfVar#25| #1=(CONS |i| NIL))
@@ -908,7 +908,7 @@
                    (PROGN (SETQ |i| (CAR |bfVar#27|)) NIL))
                (RETURN NIL))
               (T (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
-                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                 (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|))
                      |stream| |b|)))
             (SETQ |bfVar#27| (CDR |bfVar#27|))))))))
 
@@ -999,7 +999,7 @@
         (SETQ |nee| (CAR |LETTMP#1|))
         (SETQ |niens| (CADR |LETTMP#1|))
         (COND
-          ((GETHASH |nee| |$bootDefined|)
+          ((|tableValue| |$bootDefined| |nee|)
            (SETQ |$bootDefinedTwice|
                  (COND
                    ((EQ |nee| 'TOP-LEVEL) |$bootDefinedTwice|)
@@ -1100,7 +1100,7 @@
 
 (DEFUN |defusebuiltin| (|x|)
   (DECLARE (SPECIAL |$lispWordTable|))
-  (GETHASH |x| |$lispWordTable|))
+  (|tableValue| |$lispWordTable| |x|))
 
 (DEFUN |bootOut| (|l| |outfn|)
   (LET ((|bfVar#31| |l|) (|i| NIL))
@@ -1173,7 +1173,7 @@
                    (PROGN (SETQ |i| (CAR |bfVar#32|)) NIL))
                (RETURN NIL))
               (T (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
-                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                 (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|))
                      |stream| |a|)))
             (SETQ |bfVar#32| (CDR |bfVar#32|))))))))
 
@@ -1206,7 +1206,8 @@
      (COND
        ((SYMBOLP |x|)
         (COND
-          ((EQUAL (SYMBOL-PACKAGE |x|) |bt|) (INTERN (PNAME |x|) |pk|))
+          ((EQUAL (SYMBOL-PACKAGE |x|) |bt|)
+           (INTERN (SYMBOL-NAME |x|) |pk|))
           (T |x|)))
        (T |x|)))
     (T (CONS (|stripm| (CAR |x|) |pk| |bt|)

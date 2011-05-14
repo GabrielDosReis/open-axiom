@@ -1571,7 +1571,7 @@
     (RETURN
       (PROGN
         (SETQ |margs| (|bfGenSymbol|))
-        (SETQ |innerfunc| (INTERN (CONCAT (SYMBOL-NAME |op|) '|,LAM|)))
+        (SETQ |innerfunc| (INTERN (CONCAT (SYMBOL-NAME |op|) ",LAM")))
         (LIST (LIST |innerfunc| (LIST 'LAMBDA |args| |body|))
               (LIST |op|
                     (LIST 'MLAMBDA (LIST '&REST |margs|)
@@ -3433,7 +3433,7 @@
             (SETQ |bfVar#228| (CDR |bfVar#228|))
             (SETQ |bfVar#229| (CDR |bfVar#229|))))
         (COND
-          ((|%hasFeature| :DARWIN) (SETQ |op'| (CONCAT '_ |op'|))))
+          ((|%hasFeature| :DARWIN) (SETQ |op'| (CONCAT "_" |op'|))))
         (SETQ |call|
               (CONS (|bfColonColon| 'CCL 'EXTERNAL-CALL)
                     (CONS (STRING |op'|)
