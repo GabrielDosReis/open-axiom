@@ -671,7 +671,7 @@ shoeItem (str)==
 stripm (x,pk,bt)==
   atom x =>
     symbol? x =>
-      SYMBOL_-PACKAGE x = bt => makeSymbol(symbolName x,pk)
+      symbolScope x = bt => makeSymbol(symbolName x,pk)
       x
     x
   [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
