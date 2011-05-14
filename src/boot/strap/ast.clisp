@@ -1827,21 +1827,19 @@
         (T NIL)))))
 
 (DEFUN |shoeCompTran1| (|x|)
-  (PROG (|args| |res| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
+  (PROG (|args| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
     (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
     (RETURN
       (COND
         ((ATOM |x|)
          (COND
-           ((|isDynamicVariable| |x|)
-            (SETQ |$dollarVars|
-                  (COND
-                    ((|symbolMember?| |x| |$dollarVars|) |$dollarVars|)
-                    (T (CONS |x| |$dollarVars|)))))
-           (T NIL)))
+           ((AND (|isDynamicVariable| |x|)
+                 (NOT (|symbolMember?| |x| |$dollarVars|)))
+            (SETQ |$dollarVars| (CONS |x| |$dollarVars|))))
+         |x|)
         (T (SETQ U (CAR |x|))
            (COND
-             ((EQ U 'QUOTE) NIL)
+             ((EQ U 'QUOTE) |x|)
              ((AND (CONSP |x|) (EQ (CAR |x|) 'L%T)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))
@@ -1852,29 +1850,26 @@
                             (AND (CONSP |ISTMP#2|)
                                  (NULL (CDR |ISTMP#2|))
                                  (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
-              (RPLACA |x| 'SETQ) (|shoeCompTran1| |r|)
+              (RPLACA |x| 'SETQ)
+              (SETF (CADDR |x|) (|shoeCompTran1| |r|))
               (COND
                 ((SYMBOLP |l|)
                  (COND
-                   ((NOT (|bfBeginsDollar| |l|))
-                    (SETQ |$locVars|
-                          (COND
-                            ((|symbolMember?| |l| |$locVars|)
-                             |$locVars|)
-                            (T (CONS |l| |$locVars|)))))
-                   (T (SETQ |$dollarVars|
-                            (COND
-                              ((|symbolMember?| |l| |$dollarVars|)
-                               |$dollarVars|)
-                              (T (CONS |l| |$dollarVars|)))))))
+                   ((|bfBeginsDollar| |l|)
+                    (COND
+                      ((NOT (|symbolMember?| |l| |$dollarVars|))
+                       (SETQ |$dollarVars| (CONS |l| |$dollarVars|))))
+                    |x|)
+                   (T (COND
+                        ((NOT (|symbolMember?| |l| |$locVars|))
+                         (SETQ |$locVars| (CONS |l| |$locVars|))))
+                      |x|)))
                 ((AND (CONSP |l|) (EQ (CAR |l|) 'FLUID))
-                 (SETQ |$fluidVars|
-                       (COND
-                         ((|symbolMember?| (CADR |l|) |$fluidVars|)
-                          |$fluidVars|)
-                         (T (CONS (CADR |l|) |$fluidVars|))))
-                 (RPLACA (CDR |x|) (CADR |l|)))))
-             ((EQ U '|%Leave|) (RPLACA |x| 'RETURN))
+                 (COND
+                   ((NOT (|symbolMember?| (CADR |l|) |$fluidVars|))
+                    (SETQ |$fluidVars| (CONS (CADR |l|) |$fluidVars|))))
+                 (RPLACA (CDR |x|) (CADR |l|)) |x|)))
+             ((EQ U '|%Leave|) (RPLACA |x| 'RETURN) |x|)
              ((|symbolMember?| U '(PROG LAMBDA))
               (SETQ |newbindings| NIL)
               (LET ((|bfVar#136| (CADR |x|)) (|y| NIL))
@@ -1890,7 +1885,7 @@
                            (SETQ |newbindings|
                                  (CONS |y| |newbindings|))))))
                   (SETQ |bfVar#136| (CDR |bfVar#136|))))
-              (SETQ |res| (|shoeCompTran1| (CDDR |x|)))
+              (RPLACD (CDR |x|) (|shoeCompTran1| (CDDR |x|)))
               (SETQ |$locVars|
                     (LET ((|bfVar#138| NIL) (|bfVar#139| NIL)
                           (|bfVar#137| |$locVars|) (|y| NIL))
@@ -1911,7 +1906,8 @@
                                     (T (RPLACD |bfVar#139| #0#)
                                      (SETQ |bfVar#139|
                                       (CDR |bfVar#139|)))))))
-                        (SETQ |bfVar#137| (CDR |bfVar#137|))))))
+                        (SETQ |bfVar#137| (CDR |bfVar#137|)))))
+              |x|)
              ((AND (CONSP |x|) (EQ (CAR |x|) '|vector|)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))
@@ -1923,15 +1919,15 @@
                                  (PROGN
                                    (SETQ |args| (CDR |ISTMP#2|))
                                    T))))))
-              (RPLACA |x| 'VECTOR) (RPLACD |x| |args|))
+              (RPLACA |x| 'VECTOR) (RPLACD |x| |args|) |x|)
              ((AND (CONSP |x|) (EQ (CAR |x|) '|vector|)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))
                      (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                           (EQ (CAR |ISTMP#1|) 'NIL))))
-              (RPLACA |x| 'VECTOR) (RPLACD |x| NIL))
-             (T (|shoeCompTran1| (CAR |x|))
-                (|shoeCompTran1| (CDR |x|)))))))))
+              (RPLACA |x| 'VECTOR) (RPLACD |x| NIL) |x|)
+             (T (RPLACA |x| (|shoeCompTran1| (CAR |x|)))
+                (RPLACD |x| (|shoeCompTran1| (CDR |x|))) |x|)))))))
 
 (DEFUN |bfTagged| (|a| |b|)
   (DECLARE (SPECIAL |$typings| |$op|))
