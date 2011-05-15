@@ -674,13 +674,13 @@ dbMkEvalable form ==
   mkEvalable form
 
 topLevelInterpEval x ==
-  $ProcessInteractiveValue: fluid := true
-  $noEvalTypeMsg: fluid := true
+  $ProcessInteractiveValue: local := true
+  $noEvalTypeMsg: local := true
   processInteractive(x,nil)
 
 kisValidType typeForm ==
-  $ProcessInteractiveValue: fluid := true
-  $noEvalTypeMsg: fluid := true
+  $ProcessInteractiveValue: local := true
+  $noEvalTypeMsg: local := true
   CATCH($SpadReaderTag, processInteractive(typeForm,nil))
     is [m,:t] and member(m,$LangSupportTypes) =>
       kCheckArgumentNumbers t and t

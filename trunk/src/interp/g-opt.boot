@@ -324,7 +324,7 @@ AssocBarGensym(key,l) ==
       EqualBarGensym(key,first x) => return x
  
 EqualBarGensym(x,y) ==
-  $GensymAssoc: fluid := nil
+  $GensymAssoc: local := nil
   fn(x,y) where
     fn(x,y) ==
       x=y => true

@@ -2389,7 +2389,7 @@ reportOpsFromUnitDirectly0 D ==
 reportOpsFromUnitDirectly1 D ==
   showFile := pathname ['SHOW,'LISTING,$listingDirectory]
   _$ERASE showFile
-  $sayBrightlyStream : fluid :=
+  $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
   sayShowWarning()
   reportOpsFromUnitDirectly D
@@ -2412,7 +2412,7 @@ reportOpsFromLisplib0(unitForm,u)  ==
 reportOpsFromLisplib1(unitForm,u)  ==
   showFile := pathname ['SHOW,'LISTING,$listingDirectory]
   _$ERASE showFile
-  $sayBrightlyStream : fluid :=
+  $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
   sayShowWarning()
   reportOpsFromLisplib(unitForm,u)
@@ -3065,7 +3065,7 @@ tabsToBlanks s ==
 
 doSystemCommand string ==
    string := strconc('")", EXPAND_-TABS string)
-   LINE: fluid := string
+   LINE: local := string
    processSynonyms()
    string := LINE
    string:=subString(string,1)

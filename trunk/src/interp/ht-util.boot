@@ -515,10 +515,10 @@ condErrorMsg type ==
   strconc('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
-  $QuietCommand:local := true
+  $InteractiveMode: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
+  $QuietCommand: local := true
   parseAndEval1 string
 
 parseAndEval1 string ==

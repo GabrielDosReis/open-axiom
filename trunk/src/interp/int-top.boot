@@ -85,12 +85,12 @@ runspad() ==
 ncTopLevel() ==
 -- Top-level read-parse-eval-print loop for the interpreter.  Uses
 -- the Bill Burge's parser.
-  IN_-STREAM: fluid := $InputStream
-  _*EOF_*: fluid := nil
-  $InteractiveMode :fluid := true
-  $NEWSPAD: fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  IN_-STREAM: local := $InputStream
+  _*EOF_*: local := nil
+  $InteractiveMode: local := true
+  $NEWSPAD: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   ncIntLoop()
 
 

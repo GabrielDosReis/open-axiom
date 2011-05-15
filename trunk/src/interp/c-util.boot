@@ -1651,9 +1651,9 @@ removeToplevelRETURN_-FROM body ==
 ++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
 transformToBackendCode x ==
-  $FluidVars: fluid := nil
-  $LocalVars: fluid := nil
-  $SpecialVars: fluid := nil
+  $FluidVars: local := nil
+  $LocalVars: local := nil
+  $SpecialVars: local := nil
   x := middleEndExpand x
   massageBackendCode CDDR x
   body := skipDeclarations CDDR x

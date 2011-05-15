@@ -326,11 +326,11 @@ throwPatternMsg(key,args) ==
   spadThrow()
 
 sayKeyedMsgAsTeX(key, args) == 
-  $texFormatting: fluid := true
+  $texFormatting: local := true
   sayKeyedMsgLocal(key, args)
 
 sayKeyedMsg(key,args) ==
-  $texFormatting: fluid := false
+  $texFormatting: local := false
   sayKeyedMsgLocal(key, args)
 
 sayKeyedMsgLocal(key, args) ==
@@ -395,15 +395,15 @@ systemErrorHere what ==
   keyedSystemError("S2GE0017",[what])
 
 isKeyedMsgInDb(key,dbName) ==
-  $msgDatabaseName : fluid := pathname dbName
+  $msgDatabaseName : local := pathname dbName
   fetchKeyedMsg(key,true)
 
 getKeyedMsgInDb(key,dbName) ==
-  $msgDatabaseName : fluid := pathname dbName
+  $msgDatabaseName : local := pathname dbName
   fetchKeyedMsg(key,false)
 
 sayKeyedMsgFromDb(key,args,dbName) ==
-  $msgDatabaseName : fluid := pathname dbName
+  $msgDatabaseName : local := pathname dbName
   msg := segmentKeyedMsg getKeyedMsg key
   msg := substituteSegmentedMsg(msg,args)
   if $displayMsgNumber then msg := ['"%b",key,":",'"%d",:msg]

@@ -89,7 +89,7 @@ getOpCode(op,vec,max) ==
 
 evalSlotDomain(u,dollar) ==
   $returnNowhereFromGoGet: local := false
-  $ : fluid := dollar                      -- ??? substitute
+  $: local := dollar                      -- ??? substitute
   $lookupDefaults : local := false -- new world
   u is '$ => dollar
   u is "$$" => dollar
@@ -607,7 +607,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   newExpandLocalTypeForm(u,dollar,domain)
  
 nrtEval(expr,dom) ==
-  $:fluid := dom             --??? this should be a substitute
+  $: local := dom             --??? this should be a substitute
   eval expr
  
 domainVal(dollar,domain,index) ==

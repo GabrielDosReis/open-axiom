@@ -39,12 +39,12 @@ $fortranArrayStartingIndex := 0
 
 --% Translation of Expression to FORTRAN
 assignment2Fortran1(name,e) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   checkLines fortran2Lines statement2Fortran ["=",name,e]
 
 integerAssignment2Fortran1(name,e) ==
-  $fortError : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortInts2Floats : local := nil
   checkLines fortran2Lines statement2Fortran ["=",name,e]
 
 statement2Fortran e ==
@@ -54,8 +54,8 @@ statement2Fortran e ==
   -- list of strings may contain '"%l".
   -- This is used when formatting e.g. a DO loop from Lisp
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := "DUMMY"
-  $fortInts2Floats : fluid := nil
+  $fortName : local := "DUMMY"
+  $fortInts2Floats : local := nil
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 expression2Fortran e ==
@@ -64,8 +64,8 @@ expression2Fortran e ==
   -- with 'FORTRAN is merely passed on in the list of strings. The
   -- list of strings may contain '"%l".
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := newFortranTempVar()
-  $fortInts2Floats : fluid := nil
+  $fortName : local := newFortranTempVar()
+  $fortInts2Floats : local := nil
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 expression2Fortran1(name,e) ==
@@ -74,7 +74,7 @@ expression2Fortran1(name,e) ==
   -- with 'FORTRAN is merely passed on in the list of strings. The
   -- list of strings may contain '"%l".
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := name
+  $fortName : local := name
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 newFortranTempVar() ==
@@ -344,13 +344,13 @@ fortError(u,v) ==
 -- The names are the same as those used in the old fortran code
 
 dispStatement x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines statement2Fortran x
 
 
 getStatement(x,ints2Floats?) ==
-  $fortInts2Floats : fluid := ints2Floats?
-  $fortError : fluid := nil
+  $fortInts2Floats : local := ints2Floats?
+  $fortError : local := nil
   checkLines fortran2Lines statement2Fortran x
 
 fortexp0 x ==
@@ -379,23 +379,23 @@ dispfortexp x ==
   dispfortexp1 x
  
 dispfortexpf (xf, fortranName) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   linef := fortran2Lines BUTLAST(expression2Fortran1(fortranName,xf),2)
   displayLines linef
 
 dispfortexpj (xj, fortranName) ==
-  $fortName : fluid := fortranName
-  $fortError : fluid := nil
+  $fortName : local := fortranName
+  $fortError : local := nil
   linej := fortran2Lines BUTLAST(expression2Fortran1(fortranName,xj),2)
   displayLines linej
 
 
 dispfortexp1 x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines expression2Fortran x
 
 getfortexp1 x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   checkLines fortran2Lines expression2Fortran x
 
 displayLines1 lines ==
@@ -411,12 +411,12 @@ checkLines lines ==
   lines
 
 dispfortarrayexp (fortranName,m) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines BUTLAST(expression2Fortran1(fortranName,m),2)
 
 getfortarrayexp(fortranName,m,ints2floats?) ==
-  $fortInts2Floats : fluid := ints2floats?
-  $fortError : fluid := nil
+  $fortInts2Floats : local := ints2floats?
+  $fortError : local := nil
   checkLines fortran2Lines BUTLAST(expression2Fortran1(fortranName,m),2)
 
  
@@ -447,7 +447,7 @@ exp2FortSpecial(op,args,nargs) ==
     -- Have a matrix element
     mkMat(args)
   op = "SUB" =>
-    $fortInts2Floats : fluid := nil
+    $fortInts2Floats : local := nil
     mkFortFn(first args,rest args,#(rest args))
   op in ["BRACE","BRACKET"] =>
     args is [var,['AGGLST,:elts]] =>
@@ -486,7 +486,7 @@ exp2FortSpecial(op,args,nargs) ==
   fortError1 [op,:args]
 
 mkMat(args) ==
-  $fortInts2Floats : fluid := nil
+  $fortInts2Floats : local := nil
   mkFortFn(second args,rest rest args,#(rest rest args))
 
  
@@ -584,8 +584,8 @@ changeExprLength(i) ==
   $maximumFortranExpressionLength := $maximumFortranExpressionLength + i
 
 fortFormatDo(var,lo,hi,incr,lab) ==
-  $fortError : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortInts2Floats : local := nil
   incr=1 =>
     checkLines fortran2Lines
       ['"DO ",STRINGIMAGE lab,'" ",STRINGIMAGE var,'"=",:statement2Fortran lo,_
@@ -596,7 +596,7 @@ fortFormatDo(var,lo,hi,incr,lab) ==
 
 fortFormatIfGoto(switch,label) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
-  $fortError : fluid := nil
+  $fortError : local := nil
   if first(switch) = "NULL" then switch := second switch
   r := reverse! statement2Fortran switch
   changeExprLength(8)
@@ -608,7 +608,7 @@ fortFormatIfGoto(switch,label) ==
 
 fortFormatLabelledIfGoto(switch,label1,label2) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := reverse! statement2Fortran switch
   changeExprLength(8)
@@ -624,7 +624,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
 
 fortFormatIf(switch) ==
   changeExprLength(-8) -- Leave room for IF( ... )THEN
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := reverse! statement2Fortran switch
   changeExprLength(8)
@@ -637,7 +637,7 @@ fortFormatIf(switch) ==
 fortFormatElseIf(switch) ==
   -- Leave room for IF( ... )THEN
   changeExprLength(-12)
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := reverse! statement2Fortran switch
   changeExprLength(12)
@@ -648,8 +648,8 @@ fortFormatElseIf(switch) ==
   checkLines fortran2Lines reverse! [:reverse! l,'"ELSEIF(",:r]
 
 fortFormatHead(returnType,name,args) ==
-  $fortError : fluid := nil
-  $fortranSegment : fluid := nil
+  $fortError : local := nil
+  $fortranSegment : local := nil
   -- if returnType = '"_"_(_)_"" then 
   if returnType = '"void" then
     asp := ['"SUBROUTINE "]
@@ -680,9 +680,9 @@ macro nameLen n ==
 
 fortFormatTypes(typeName,names) ==
   null names => return nil
-  $fortError : fluid := nil
-  $fortranSegment : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortranSegment : local := nil
+  $fortInts2Floats : local := nil
   typeName := checkType typeName
   typeName = '"CHARACTER" =>
     fortFormatCharacterTypes([unravel(u) for u in names])
@@ -726,7 +726,7 @@ fortFormatCharacterTypes(names) ==
                       :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 fortFormatIntrinsics(l) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   null l => return nil
   displayLines fortran2Lines ['"INTRINSIC ",:addCommas(l)]
   
@@ -766,7 +766,7 @@ fortPre l ==
   -- Essentially, the idea is to fix things so that we know what size of
   -- expression we will generate, which helps segment large expressions
   -- and do transformations to double precision output etc..
-  $exprStack : fluid := nil -- sometimes we will add elements to this in
+  $exprStack : local := nil -- sometimes we will add elements to this in
                             -- other functions, for example when extracing
                             -- lists etc.
   for e in l repeat if new := fortPre1 e then
@@ -838,7 +838,7 @@ fortPre1 e ==
 
 fortPreRoot e ==
 -- To set $fortInts2Floats 
-  $fortInts2Floats : fluid := true
+  $fortInts2Floats : local := true
   fortPre1 e
  
 fix2FortranFloat e ==

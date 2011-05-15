@@ -884,7 +884,7 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
-  $mutableDomain: fluid := false
+  $mutableDomain: local := false
   $compileExportsOnly or not $LISPLIB => 
     compDefineFunctor1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)

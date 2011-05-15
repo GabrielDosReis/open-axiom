@@ -82,7 +82,7 @@ evaluateType0 form ==
   --  and finally checking to see whether the type satisfies the
   --  conditions of its modemap
   -- However, the input might be an attribute, not a type
-  -- $noEvalTypeMsg: fluid := true
+  -- $noEvalTypeMsg: local := true
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
@@ -266,7 +266,7 @@ evalForm(op,opName,argl,mmS) ==
         if $NRTmonitorIfTrue = true then
           sayBrightlyNT ['"Applying ",first fun0,'" to:"]
           pp [devaluateDeeply x for x in form]
-        _$:fluid := domain
+        $: local := domain
         ['SPADCALL, :form, fun0]
   not form => nil
 --  not form => throwKeyedMsg("S2IE0008",[opName])
