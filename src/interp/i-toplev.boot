@@ -324,7 +324,7 @@ intSayKeyedMsg(key, args) ==
   sayKeyedMsg(packageTran key, packageTran args)
 
 intProcessSynonyms str ==
-  LINE: fluid := str
+  LINE: local := str
   processSynonyms
   LINE
 

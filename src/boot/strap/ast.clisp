@@ -696,7 +696,6 @@
 (DEFUN |bfLocal| (|a| |b|)
   (COND
     ((EQ |b| 'FLUID) (|compFluid| |a|))
-    ((EQ |b| '|fluid|) (|compFluid| |a|))
     ((EQ |b| '|local|) (|compFluid| |a|))
     (T |a|)))
 
@@ -1936,7 +1935,6 @@
     ((SYMBOLP |a|)
      (COND
        ((EQ |b| 'FLUID) (|bfLET| (|compFluid| |a|) NIL))
-       ((EQ |b| '|fluid|) (|bfLET| (|compFluid| |a|) NIL))
        ((EQ |b| '|local|) (|bfLET| (|compFluid| |a|) NIL))
        (T (SETQ |$typings| (CONS (LIST 'TYPE |b| |a|) |$typings|)) |a|)))
     (T (LIST 'THE |b| |a|))))

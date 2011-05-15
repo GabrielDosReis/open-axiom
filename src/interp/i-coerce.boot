@@ -314,7 +314,7 @@ retractByFunction(object,u) ==
   null fun => nil
   first(fun) = function Undef => nil
 --+
-  $: fluid := dcVector
+  $: local := dcVector
   object' := coerceUnion2Branch objNewWrap(SPADCALL(val,fun),target)
   u' := objMode object'
   u = u' => object'
@@ -1338,7 +1338,7 @@ coerceByFunction(T,m2) ==
     fn = function Undef => nil
     isWrapped x =>
 --+
-      $: fluid := dcVector
+      $: local := dcVector
       val := CATCH('coerceFailure, SPADCALL(unwrap x,fun))
       (val = $coerceFailure) => nil
       objNewWrap(val,m2)

@@ -461,7 +461,6 @@ bfForin(lhs,U)==
  
 bfLocal(a,b)==
   b is "FLUID" =>  compFluid a
-  b is "fluid" =>  compFluid a
   b is "local" =>  compFluid a
   a
  
@@ -1007,7 +1006,6 @@ bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
   symbol? a =>
     b is "FLUID" =>  bfLET(compFluid a,nil)
-    b is "fluid" =>  bfLET(compFluid a,nil)
     b is "local" =>  bfLET(compFluid a,nil)
     $typings := [["TYPE",b,a],:$typings]
     a

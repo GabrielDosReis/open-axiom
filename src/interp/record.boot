@@ -188,7 +188,7 @@ evaluateLines lines ==
     PRINTEXP(line, file)
     TERPRI file
   SHUT file
-  _/EDITFILE: fluid := '"/tmp/temp.input"
+  _/EDITFILE: local := '"/tmp/temp.input"
   _/RF()
     -- can't use _/EDITFILE since it might be reset
   DELETE_-FILE '"/tmp/temp.input"

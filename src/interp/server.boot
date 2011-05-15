@@ -51,8 +51,8 @@ serverReadLine(stream) ==
   FORCE_-OUTPUT()
   not $SpadServer or not IS_-CONSOLE stream =>
     read_-line(stream)
-  IN_-STREAM: fluid := stream
-  _*EOF_*: fluid := nil
+  IN_-STREAM: local := stream
+  _*EOF_*: local := nil
   line :=
    while not $EndServerSession and not _*EOF_* repeat
      if $NeedToSignalSessionManager then
@@ -100,13 +100,13 @@ serverReadLine(stream) ==
   ""
 
 parseAndInterpret str ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  $InteractiveMode : local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   ncParseAndInterpretString str
 
 executeQuietCommand() ==
-  $QuietCommand: fluid := true
+  $QuietCommand: local := true
   stringBuf := sockGetString $MenuServer
   CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
     parseAndInterpret stringBuf)))
@@ -145,9 +145,9 @@ parseAndInterpToString str ==
   breakIntoLines rest v
 
 parseAndEvalStr string ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  $InteractiveMode: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   parseAndEvalStr1 string
 
 parseAndEvalStr1 string ==
