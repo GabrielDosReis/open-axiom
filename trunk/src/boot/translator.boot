@@ -86,7 +86,7 @@ shoeCOMPILE_-FILE lspFileName ==
 BOOTTOCL(fn, out) ==
   try
     startCompileDuration()
-    callingPackage := _*PACKAGE_*
+    callingPackage := namespace .
     IN_-PACKAGE '"BOOTTRAN"
     result := BOOTTOCLLINES(nil,fn, out)
     setCurrentPackage callingPackage
@@ -129,7 +129,7 @@ shoeClLines(a,fn,lines,outfn)==
 BOOTTOCLC(fn, out)==
   try
     startCompileDuration()
-    callingPackage := _*PACKAGE_*
+    callingPackage := namespace .
     IN_-PACKAGE '"BOOTTRAN"
     result := BOOTTOCLCLINES(nil, fn, out)
     setCurrentPackage callingPackage
@@ -160,7 +160,7 @@ shoeClCLines(a,fn,lines,outfn)==
 ++ to machine code and loads it one item at a time
 BOOTTOMC: %String -> %Thing 
 BOOTTOMC fn==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter: local  := 0
    try
@@ -176,7 +176,7 @@ shoeMc(a,fn)==
   shoeConsole strconc(fn,'" COMPILED AND LOADED")
  
 evalBootFile fn ==
-   b := _*PACKAGE_*
+   b := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
    outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
@@ -192,7 +192,7 @@ evalBootFile fn ==
 ++ and prints the result at the console
 BO: %String -> %Thing 
 BO fn==
-  b := _*PACKAGE_*
+  b := namespace .
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
   try
@@ -203,7 +203,7 @@ BO fn==
     setCurrentPackage b
  
 BOCLAM fn==
-  callingPackage := _*PACKAGE_*
+  callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
   $bfClamming: local := true
@@ -226,25 +226,25 @@ STOUT string ==
   PSTOUT [string]
  
 string2BootTree string ==   
-  callingPackage := _*PACKAGE_*
+  callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
   a := shoeTransformString [string]
   result :=
     bStreamNull a => nil
-    stripm(first a,callingPackage,FIND_-PACKAGE '"BOOTTRAN")
+    stripm(first a,callingPackage,namespace BOOTTRAN)
   setCurrentPackage callingPackage
   result
 
  
 STEVAL string==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
-      fn:=stripm(first a,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+      fn:=stripm(first a,namespace .,namespace BOOTTRAN)
       EVAL fn
    setCurrentPackage callingPackage
    result
@@ -253,7 +253,7 @@ STEVAL string==
 -- to common lisp, and compiles it.
  
 STTOMC string==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
@@ -362,7 +362,7 @@ shoePPtoFile(x, stream) ==
  
 shoeConsoleTrees s ==
   while not bStreamPackageNull s repeat
-    fn:=stripm(first s,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+    fn:=stripm(first s,namespace .,namespace BOOTTRAN)
     REALLYPRETTYPRINT fn
     s:= rest s
  
@@ -526,7 +526,7 @@ $lispWordTable := nil
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
   $lispWordTable: local := makeTable function symbolEq?
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
+  DO_-SYMBOLS(i(namespace LISP),tableValue($lispWordTable,i) := true)
   $bootDefined: local := makeTable function symbolEq?
   $bootUsed:local := makeTable function symbolEq?
   $bootDefinedTwice: local := nil
@@ -559,7 +559,7 @@ shoeDefUse(s)==
     s:=rest s
  
 defuse(e,x)==
-  x:=stripm(x,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+  x:=stripm(x,namespace .,namespace BOOTTRAN)
   $used :=nil
   [nee,niens]:=
      x is ['DEFUN,name,bv,:body] => [name,['LAMBDA,bv,:body]]
@@ -643,7 +643,7 @@ XREF fn==
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
   $lispWordTable: local := makeTable function symbolEq?
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),tableValue($lispWordTable,i) := true)
+  DO_-SYMBOLS(i(namespace LISP),tableValue($lispWordTable,i) := true)
   $bootDefined: local := makeTable function symbolEq?
   $bootUsed: local := makeTable function symbolEq?
   $GenVarCounter: local := 0
@@ -677,7 +677,7 @@ stripm (x,pk,bt)==
   [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
  
 shoePCompile  fn==
-    fn:=stripm(fn,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+    fn:=stripm(fn,namespace .,namespace BOOTTRAN)
     fn is ['DEFUN,name,bv,:body]=>
           COMPILE (name,['LAMBDA,bv,:body])
     EVAL fn
@@ -688,7 +688,7 @@ shoePCompileTrees s==
     s := rest s
  
 bStreamPackageNull s==
-  a := _*PACKAGE_*
+  a := namespace .
   IN_-PACKAGE '"BOOTTRAN"
   b:=bStreamNull s
   setCurrentPackage a
@@ -727,7 +727,7 @@ BOOTPO() ==
   BOOTPO()
  
 PSTOUT string==
-  callingPackage := _*PACKAGE_*
+  callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
   $GenVarCounter: local := 0
   result := shoeConsoleTrees shoeTransformString string

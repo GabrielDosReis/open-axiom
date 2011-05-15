@@ -465,7 +465,7 @@ bpImport() ==
 ++    NAMESPACE Name
 bpNamespace() ==
   bpEqKey "NAMESPACE" and (bpName() or bpDot()) and
-    bpPush %Namespace bpPop1()
+    bpPush bfNamespace bpPop1()
 
 -- Parse a type alias defnition:
 --    type-alias-definition: 
@@ -596,6 +596,7 @@ bpApplication()==
    bpPrimary() and bpAnyNo function bpSelector and
       (bpApplication() and
             bpPush(bfApplication(bpPop2(),bpPop1())) or true)
+              or bpNamespace()
  
 ++ Typing:
 ++   SimpleType
