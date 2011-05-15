@@ -1826,7 +1826,8 @@
         (T NIL)))))
 
 (DEFUN |shoeCompTran1| (|x|)
-  (PROG (|args| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
+  (PROG (|n| |args| |newbindings| |r| |ISTMP#2| |l| |zs| |y| |ISTMP#1|
+             U)
     (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
     (RETURN
       (COND
@@ -1839,6 +1840,22 @@
         (T (SETQ U (CAR |x|))
            (COND
              ((EQ U 'QUOTE) |x|)
+             ((AND (CONSP |x|) (EQ (CAR |x|) 'CASE)
+                   (PROGN
+                     (SETQ |ISTMP#1| (CDR |x|))
+                     (AND (CONSP |ISTMP#1|)
+                          (PROGN
+                            (SETQ |y| (CAR |ISTMP#1|))
+                            (SETQ |zs| (CDR |ISTMP#1|))
+                            T))))
+              (SETF (CADR |x|) (|shoeCompTran1| |y|))
+              (LOOP
+                (COND
+                  ((NOT |zs|) (RETURN NIL))
+                  (T (SETF (CADR (CAR |zs|))
+                           (|shoeCompTran1| (CADR (CAR |zs|))))
+                     (SETQ |zs| (CDR |zs|)))))
+              |x|)
              ((AND (CONSP |x|) (EQ (CAR |x|) 'L%T)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))
@@ -1925,6 +1942,14 @@
                      (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                           (EQ (CAR |ISTMP#1|) 'NIL))))
               (RPLACA |x| 'VECTOR) (RPLACD |x| NIL) |x|)
+             ((AND (CONSP |x|) (EQ (CAR |x|) '|%Namespace|)
+                   (PROGN
+                     (SETQ |ISTMP#1| (CDR |x|))
+                     (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                          (PROGN (SETQ |n| (CAR |ISTMP#1|)) T))))
+              (COND
+                ((EQ |n| 'DOT) '*PACKAGE*)
+                (T (LIST 'FIND-PACKAGE (SYMBOL-NAME |n|)))))
              (T (RPLACA |x| (|shoeCompTran1| (CAR |x|)))
                 (RPLACD |x| (|shoeCompTran1| (CDR |x|))) |x|)))))))
 
@@ -2261,6 +2286,8 @@
                         (LIST 'GET (LIST 'QUOTE |op|)
                               (LIST 'QUOTE '|cacheInfo|))
                         (LIST 'QUOTE |cacheVector|))))))))
+
+(DEFUN |bfNamespace| (|x|) (LIST '|%Namespace| |x|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Form|) |bfNameOnly|))
 

@@ -969,6 +969,12 @@ shoeCompTran1 x ==
     x
   U := first x
   U is "QUOTE" => x
+  x is ["CASE",y,:zs] =>
+    second(x) := shoeCompTran1 y
+    while zs ~= nil repeat
+      second(first zs) := shoeCompTran1 second first zs
+      zs := rest zs
+    x
   x is ["L%T",l,r] =>
     x.op := "SETQ"
     third(x) := shoeCompTran1 r
@@ -998,6 +1004,9 @@ shoeCompTran1 x ==
   -- literal vectors.
   x is ['vector,['LIST,:args]] => (x.op := 'VECTOR; x.args := args; x)
   x is ['vector,'NIL] => (x.op := 'VECTOR; x.args := nil; x)
+  x is ['%Namespace,n] =>
+    n is "DOT" => "*PACKAGE*"
+    ["FIND-PACKAGE",symbolName n]
   x.first := shoeCompTran1 first x
   x.rest := shoeCompTran1 rest x
   x
@@ -1150,6 +1159,9 @@ bfMain(auxfn,op)==
       ["SETF",["GET",
            ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]]]
 
+
+bfNamespace x ==
+  ['%Namespace,x]
 
 bfNameOnly: %Thing -> %Form
 bfNameOnly x==

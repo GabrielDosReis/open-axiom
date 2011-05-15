@@ -500,7 +500,7 @@
 
 (DEFUN |bpNamespace| ()
   (AND (|bpEqKey| 'NAMESPACE) (OR (|bpName|) (|bpDot|))
-       (|bpPush| (|%Namespace| (|bpPop1|)))))
+       (|bpPush| (|bfNamespace| (|bpPop1|)))))
 
 (DEFUN |bpTypeAliasDefition| ()
   (AND (OR (|bpTerm| #'|bpIdList|) (|bpTrap|)) (|bpEqKey| 'TDEF)
@@ -628,10 +628,11 @@
            (|bpPush| (|bfSuffixDot| (|bpPop1|))))))
 
 (DEFUN |bpApplication| ()
-  (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)
-       (OR (AND (|bpApplication|)
-                (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
-           T)))
+  (OR (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)
+           (OR (AND (|bpApplication|)
+                    (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
+               T))
+      (|bpNamespace|)))
 
 (DEFUN |bpTyping| ()
   (COND
