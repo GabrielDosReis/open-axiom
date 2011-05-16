@@ -756,6 +756,11 @@ bpLeave() ==
   bpEqKey "LEAVE" and (bpLogical() or bpTrap()) and
     bpPush bfLeave bpPop1()
 
+++ Do:
+++  DO Assign
+bpDo() ==
+  bpEqKey "DO" and (bpAssign() or bpTrap()) and bpPush bfDo bpPop1()
+
 ++ Return:
 ++   RETURN Assign
 ++   Leave
@@ -767,6 +772,7 @@ bpReturn()==
     or bpLeave()
       or bpThrow()
         or bpAnd()
+          or bpDo()
  
  
 bpLogical()== bpLeftAssoc('(OR),function bpReturn)

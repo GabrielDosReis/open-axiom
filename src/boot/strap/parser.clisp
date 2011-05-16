@@ -818,10 +818,14 @@
   (AND (|bpEqKey| 'LEAVE) (OR (|bpLogical|) (|bpTrap|))
        (|bpPush| (|bfLeave| (|bpPop1|)))))
 
+(DEFUN |bpDo| ()
+  (AND (|bpEqKey| 'DO) (OR (|bpAssign|) (|bpTrap|))
+       (|bpPush| (|bfDo| (|bpPop1|)))))
+
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))
-      (|bpLeave|) (|bpThrow|) (|bpAnd|)))
+      (|bpLeave|) (|bpThrow|) (|bpAnd|) (|bpDo|)))
 
 (DEFUN |bpLogical| () (|bpLeftAssoc| '(OR) #'|bpReturn|))
 

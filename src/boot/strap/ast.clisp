@@ -197,6 +197,8 @@
 
 (DEFUN |bfPile| (|part|) |part|)
 
+(DEFUN |bfDo| (|x|) |x|)
+
 (DECLAIM (FTYPE (FUNCTION ((|%List| (|%List| |%Form|)))
                     (|%List| |%Form|))
                 |bfAppend|))

@@ -1,5 +1,13 @@
 2011-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: "do" is now a keyword.
+	* boot/ast.boot (bfDo): New.
+	* boot/parser.boot (bpDo): New.
+	(bpReturn): Include do-expressions.
+	* interp/vmlisp.lisp (do): Remove.
+
+2011-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (shoeCompTran1): Don't indiscriminately walk CASE
 	forms.  Translate %Namespace forms too.
 	* boot/parser.boot (bpApplication): Include Namespace too.
