@@ -62,6 +62,7 @@ shoeKeyWords == [  _
             ['"case","CASE"] , _
             ['"catch","CATCH"], _
             ['"cross","CROSS"] , _
+            ['"do",   "DO" ], _
             ['"else", "ELSE"] , _
             ['"finally", "FINALLY"], _
             ['"for",  "FOR"] , _

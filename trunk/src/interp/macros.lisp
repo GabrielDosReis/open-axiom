@@ -488,8 +488,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 #-(OR IBCL AKCL)
 (defmacro |elapsedGcTime| () '0)
  
-(defmacro |do| (&rest args) (CONS 'PROGN args))
-
 (defun DROPTRAILINGBLANKS  (LINE) (string-right-trim " " LINE))
 
 ; This function was modified by Greg Vanuxem on March 31, 2005

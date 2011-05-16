@@ -29,7 +29,7 @@
 
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
-          (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
+          (LIST "catch" 'CATCH) (LIST "cross" 'CROSS) (LIST "do" 'DO)
           (LIST "else" 'ELSE) (LIST "finally" 'FINALLY)
           (LIST "for" 'FOR) (LIST "forall" 'FORALL) (LIST "has" 'HAS)
           (LIST "if" 'IF) (LIST "import" 'IMPORT) (LIST "in" 'IN)

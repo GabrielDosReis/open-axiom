@@ -161,6 +161,9 @@ bfPile: %List %Form -> %List %Form
 bfPile(part) == 
   part
  
+bfDo x ==
+  x
+
 bfAppend: %List %List %Form -> %List %Form
 bfAppend ls ==
   ls isnt [l,:ls] => nil
