@@ -199,6 +199,11 @@
 
 (DEFUN |bfDo| (|x|) |x|)
 
+(DEFUN |bfAtScope| (|s| |x|)
+  (LIST 'LET (LIST (LIST '*PACKAGE* |s|)) |x|))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL) (TRACE |bfAtScope|))
+
 (DECLAIM (FTYPE (FUNCTION ((|%List| (|%List| |%Form|)))
                     (|%List| |%Form|))
                 |bfAppend|))
