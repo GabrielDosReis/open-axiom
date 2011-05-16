@@ -1,3 +1,9 @@
+2011-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfAtScope): New.
+	* boot/parser.boot (bpDo): Accept scoped expressions.
+	* boot/translator.boot: Cleanup.
+
 2011-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: "do" is now a keyword.

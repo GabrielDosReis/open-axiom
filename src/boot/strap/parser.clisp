@@ -356,7 +356,7 @@
           (COND
             (|done| (RETURN NIL))
             (T (SETQ |found|
-                     (LET ((#0=#:G1354
+                     (LET ((#0=#:G1355
                                (CATCH :OPEN-AXIOM-CATCH-POINT
                                  (APPLY |f| NIL))))
                        (COND
@@ -819,8 +819,12 @@
        (|bpPush| (|bfLeave| (|bpPop1|)))))
 
 (DEFUN |bpDo| ()
-  (AND (|bpEqKey| 'DO) (OR (|bpAssign|) (|bpTrap|))
-       (|bpPush| (|bfDo| (|bpPop1|)))))
+  (COND
+    ((|bpEqKey| 'IN) (OR (|bpNamespace|) (|bpTrap|))
+     (OR (|bpDo|) (|bpTrap|))
+     (|bpPush| (|bfAtScope| (|bpPop2|) (|bpPop1|))))
+    (T (AND (|bpEqKey| 'DO) (OR (|bpAssign|) (|bpTrap|))
+            (|bpPush| (|bfDo| (|bpPop1|)))))))
 
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))

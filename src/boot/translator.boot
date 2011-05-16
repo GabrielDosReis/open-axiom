@@ -86,11 +86,8 @@ shoeCOMPILE_-FILE lspFileName ==
 BOOTTOCL(fn, out) ==
   try
     startCompileDuration()
-    callingPackage := namespace .
-    IN_-PACKAGE '"BOOTTRAN"
-    result := BOOTTOCLLINES(nil,fn, out)
-    setCurrentPackage callingPackage
-    result
+    in namespace BOOTTRAN do
+      BOOTTOCLLINES(nil,fn, out)
   finally endCompileDuration()
  
 ++ (bootclam "filename") translates the file "filename.boot" to
@@ -129,11 +126,8 @@ shoeClLines(a,fn,lines,outfn)==
 BOOTTOCLC(fn, out)==
   try
     startCompileDuration()
-    callingPackage := namespace .
-    IN_-PACKAGE '"BOOTTRAN"
-    result := BOOTTOCLCLINES(nil, fn, out)
-    setCurrentPackage callingPackage
-    result
+    in namespace BOOTTRAN do
+      BOOTTOCLCLINES(nil, fn, out)
   finally endCompileDuration()
  
 BOOTTOCLCLINES(lines, fn, outfn)==
@@ -688,11 +682,8 @@ shoePCompileTrees s==
     s := rest s
  
 bStreamPackageNull s==
-  a := namespace .
-  IN_-PACKAGE '"BOOTTRAN"
-  b:=bStreamNull s
-  setCurrentPackage a
-  b
+  in namespace BOOTTRAN do
+    bStreamNull s
  
 PSTTOMC string==
   $GenVarCounter: local := 0
@@ -727,13 +718,9 @@ BOOTPO() ==
   BOOTPO()
  
 PSTOUT string==
-  callingPackage := namespace .
-  IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter: local := 0
-  result := shoeConsoleTrees shoeTransformString string
-  setCurrentPackage callingPackage
-  result
-
+  in namespace BOOTTRAN do
+    $GenVarCounter: local := 0
+    shoeConsoleTrees shoeTransformString string
 
 defaultBootToLispFile file ==
   strconc(pathBasename file, '".clisp")

@@ -757,8 +757,13 @@ bpLeave() ==
     bpPush bfLeave bpPop1()
 
 ++ Do:
+++  IN Namespace Do
 ++  DO Assign
 bpDo() ==
+  bpEqKey "IN" =>
+    bpNamespace() or bpTrap()
+    bpDo() or bpTrap()
+    bpPush bfAtScope(bpPop2(),bpPop1())
   bpEqKey "DO" and (bpAssign() or bpTrap()) and bpPush bfDo bpPop1()
 
 ++ Return:

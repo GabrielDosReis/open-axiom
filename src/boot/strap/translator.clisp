@@ -128,17 +128,12 @@
   (COMPILE-FILE |lspFileName|))
 
 (DEFUN BOOTTOCL (|fn| |out|)
-  (PROG (|result| |callingPackage|)
-    (RETURN
-      (UNWIND-PROTECT
-        (PROGN
-          (|startCompileDuration|)
-          (SETQ |callingPackage| *PACKAGE*)
-          (IN-PACKAGE "BOOTTRAN")
-          (SETQ |result| (BOOTTOCLLINES NIL |fn| |out|))
-          (|setCurrentPackage| |callingPackage|)
-          |result|)
-        (|endCompileDuration|)))))
+  (UNWIND-PROTECT
+    (PROGN
+      (|startCompileDuration|)
+      (LET ((*PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
+        (BOOTTOCLLINES NIL |fn| |out|)))
+    (|endCompileDuration|)))
 
 (DEFUN BOOTCLAM (|fn| |out|)
   (PROG (|$bfClamming|)
@@ -183,17 +178,12 @@
              (|closeFile| |stream|)))))))
 
 (DEFUN BOOTTOCLC (|fn| |out|)
-  (PROG (|result| |callingPackage|)
-    (RETURN
-      (UNWIND-PROTECT
-        (PROGN
-          (|startCompileDuration|)
-          (SETQ |callingPackage| *PACKAGE*)
-          (IN-PACKAGE "BOOTTRAN")
-          (SETQ |result| (BOOTTOCLCLINES NIL |fn| |out|))
-          (|setCurrentPackage| |callingPackage|)
-          |result|)
-        (|endCompileDuration|)))))
+  (UNWIND-PROTECT
+    (PROGN
+      (|startCompileDuration|)
+      (LET ((*PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
+        (BOOTTOCLCLINES NIL |fn| |out|)))
+    (|endCompileDuration|)))
 
 (DEFUN BOOTTOCLCLINES (|lines| |fn| |outfn|)
   (PROG (|a|)
@@ -538,7 +528,7 @@
         (SETQ |$bpParenCount| 0)
         (|bpFirstTok|)
         (SETQ |found|
-              (LET ((#0=#:G1364
+              (LET ((#0=#:G1365
                         (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
                 (COND
                   ((AND (CONSP #0#)
@@ -1242,14 +1232,7 @@
          (SETQ |s| (CDR |s|))))))
 
 (DEFUN |bStreamPackageNull| (|s|)
-  (PROG (|b| |a|)
-    (RETURN
-      (PROGN
-        (SETQ |a| *PACKAGE*)
-        (IN-PACKAGE "BOOTTRAN")
-        (SETQ |b| (|bStreamNull| |s|))
-        (|setCurrentPackage| |a|)
-        |b|))))
+  (LET ((*PACKAGE* (FIND-PACKAGE "BOOTTRAN"))) (|bStreamNull| |s|)))
 
 (DEFUN PSTTOMC (|string|)
   (PROG (|$GenVarCounter|)
@@ -1290,17 +1273,13 @@
                (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
 
 (DEFUN PSTOUT (|string|)
-  (PROG (|$GenVarCounter| |result| |callingPackage|)
+  (PROG (|$GenVarCounter|)
     (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
-      (PROGN
-        (SETQ |callingPackage| *PACKAGE*)
-        (IN-PACKAGE "BOOTTRAN")
-        (SETQ |$GenVarCounter| 0)
-        (SETQ |result|
-              (|shoeConsoleTrees| (|shoeTransformString| |string|)))
-        (|setCurrentPackage| |callingPackage|)
-        |result|))))
+      (LET ((*PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
+        (PROGN
+          (SETQ |$GenVarCounter| 0)
+          (|shoeConsoleTrees| (|shoeTransformString| |string|)))))))
 
 (DEFUN |defaultBootToLispFile| (|file|)
   (CONCAT (|pathBasename| |file|) ".clisp"))
