@@ -720,7 +720,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                  (T (COND (|$mathTrace| (TERPRI)))
                     (PRINMATHOR0 VAL CURSTRM)))))))
  
-(DEFUN MONITOR-BLANKS (N) (PRINC (MAKE-FULL-CVEC N " ") CURSTRM))
+(DEFUN MONITOR-BLANKS (N) (PRINC (|makeString| N (|char| " ")) CURSTRM))
  
 (DEFUN MONITOR-EVALBEFORE (X) (EVAL (MONITOR-EVALTRAN X NIL)) X)
  

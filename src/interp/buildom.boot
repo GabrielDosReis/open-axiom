@@ -481,6 +481,14 @@ coerceMap2E(x) ==
 
 --% Enumeration
 
+EnumerationCategory(:"args") ==
+  cat := eval ['Join,$SetCategory,
+                ['mkCategory,quoteForm 'domain,
+                   quoteForm [[[arg,['$],'constant],'T] for arg in args],
+                     [], [], nil]]
+  canonicalForm(cat) := ['EnumerationCategory,:args]
+  cat
+
 Enumeration(:"args") ==
   nargs := #args
   dom := newShell(nargs + 9)
@@ -498,7 +506,8 @@ Enumeration(:"args") ==
   vectorRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
   vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
   vectorRef(dom,5) := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
+  for i in $FirstParamSlot.. for a in args repeat
+    dom.i := a
   dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function createEnum, :dom]
@@ -521,8 +530,6 @@ createEnum(sym, dom) ==
 --% INSTANTIATORS
 
 RecordCategory(:"x") == constructorCategory ["Record",:x]
-
-EnumerationCategory(:"x") == constructorCategory ["Enumeration",:x]
 
 UnionCategory(:"x") == constructorCategory ["Union",:x]
 

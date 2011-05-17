@@ -735,6 +735,12 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
 
+compEnumCat(x,m,e) ==
+  for arg in x.args repeat
+    IDENTP arg => nil   -- OK
+    stackAndThrow('"all arguments to %1b must be identifiers",[x.op])
+  [x,resolve($Category,m),e]
+
 --% SUBSET CATEGORY
 
 compSubsetCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -2639,6 +2645,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["DEF", :"compDefine"],_
 	  ["elt", :"compElt"],_
 	  ["Enumeration", :"compCat"],_
+          ["EnumerationCategory", :"compEnumCat"],_
 	  ["exit", :"compExit"],_
 	  ["has", :"compHas"],_
 	  ["IF", : "compIf"],_
@@ -2659,9 +2666,9 @@ for x in [["|", :"compSuchthat"],_
 	  ["SEQ", :"compSeq"],_
 	  ["SubDomain", :"compSubDomain"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
-	  ["Union", :"compCat"],_
 	  ["Mapping", :"compCat"],_
           ["MappingCategory", :"compConstructorCategory"],_
+	  ["Union", :"compCat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["per",:"compPer"],_
