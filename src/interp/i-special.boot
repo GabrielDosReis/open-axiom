@@ -2016,6 +2016,7 @@ upLETtype(op,lhs,type) ==
   -- have to fix the following
   putModeSet(op,[mode])
 
+++ Note: this function is used in the algebra part.
 assignSymbol(symbol, value, domain) ==
 -- Special function for binding an interpreter variable from within algebra
 -- code.  Does not do the assignment and returns nil, if the variable is

@@ -191,9 +191,9 @@ Any(): SetCategory with
          otherwise => (rep(x).ob pretend SExpression)::OutputForm
 
      any(domain, object) ==
-       (isValidType(domain)$Lisp)@Boolean => per [domain, object]
-       domain := devaluate(domain)$Lisp
-       (isValidType(domain)$Lisp)@Boolean => per [domain, object]
+       isValidType(domain)$Foreign(Builtin) => per [domain, object]
+       domain := devaluate(domain)$Foreign(Builtin)
+       isValidType(domain)$Foreign(Builtin) => per [domain, object]
        error "function any must have a domain as first argument"
 
 @
@@ -239,7 +239,7 @@ AnyFunctions1(S:Type): with
     == add
         import NoneFunctions1(S)
 
-        Sexpr:SExpression := devaluate(S)$Lisp
+        Sexpr:SExpression := devaluate(S)$Foreign(Builtin)
 
         coerce(s:S):Any == any(Sexpr, s::None)
 
@@ -427,7 +427,7 @@ Scope(): Public == Private where
       nothing
 
     pushNewContour(b,s) ==
-      CONS(LIST(b)$Lisp,s)$Lisp
+      %pair(%list(b)$Foreign(Builtin),s)$Foreign(Builtin)
 
     currentScope() ==
       %head(_$e$Lisp)$Foreign(Builtin)

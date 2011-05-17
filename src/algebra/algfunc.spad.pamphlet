@@ -89,7 +89,9 @@ AlgebraicallyClosedField(): Category == Join(Field,RadicalCategory) with
     rootsOf(p:SUP)           == rootsOf(p, new())
     rootsOf(p:SUP, y:Symbol) == allroots(p, y, rootOf)
     zerosOf(p:SUP, y:Symbol) == allroots(p, y, zeroOf)
-    assign(x, f)             == (assignSymbol(x, f, $)$Lisp; f)
+    assign(x, f)             ==
+      assignSymbol(x, f, $)$Foreign(Builtin)
+      f
 
     zeroOf(p:Polynomial $) ==
       empty?(l := variables p) => error "zeroOf: constant polynomial"
