@@ -101,8 +101,8 @@ substDollarArgs(dollar,domain,object) ==
                 object)
 
 compareSig(sig,tableSig,dollar,domain) ==
-  not (#sig = #tableSig) => false
-  null (target := first sig)
+  #sig ~= #tableSig => false
+  null(target := first sig)
    or lazyCompareSigEqual(target,first tableSig,dollar,domain) =>
      and/[lazyCompareSigEqual(s,t,dollar,domain)
               for s in rest sig for t in rest tableSig]
@@ -121,7 +121,7 @@ compareSigEqual(s,t,dollar,domain) ==
   s = t => true
   atom t =>
     u :=
-      t='$ => dollar
+      t is '$ => dollar
       isSharpVar t =>
         vector? domain =>
           instantiationArgs(domain).(POSN1(t,$FormalMapVariableList))
@@ -131,7 +131,7 @@ compareSigEqual(s,t,dollar,domain) ==
     s is '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
     s = u
-  s='$ => compareSigEqual(dollar,t,dollar,domain)
+  s is '$ => compareSigEqual(dollar,t,dollar,domain)
   atom s => nil
   #s ~= #t => nil
   match := true
@@ -143,7 +143,6 @@ compareSigEqual(s,t,dollar,domain) ==
 --             Lookup From Interpreter
 --=======================================================
 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 compiledLookup(op,sig,dollar) ==
 --called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
 --  getFunctionFromDomain, optDeltaEntry, retractByFunction
@@ -155,7 +154,28 @@ compiledLookup(op,sig,dollar) ==
   if op = "^" then op := "**"
   basicLookup(op,sig,dollar,dollar)
 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
+lookupInDomainVector(op,sig,domain,dollar) ==
+  SPADCALL(op,sig,dollar,domainRef(domain,1))
+
+lookupInDomain(op,sig,addFormDomain,dollar,index) ==
+  addFormCell := vectorRef(addFormDomain,index) =>
+    integer? KAR addFormCell =>
+      or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
+    if not vector? addFormCell then
+      addFormCell := eval addFormCell
+    lookupInDomainVector(op,sig,addFormCell,dollar)
+  nil
+
+++ same as lookupInDomainVector except that the use of defaults
+++ (either in category packages or add-chains) is controlled
+++ by `useDefaults'.
+lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
+  savedLookupDefaults := $lookupDefaults
+  $lookupDefaults := useDefaults
+  fun := lookupInDomainVector(op,sig,domain,dollar)
+  $lookupDefaults := savedLookupDefaults
+  fun
+
 basicLookup(op,sig,domain,dollar) ==
   item := domain.1
   cons? item and first item in '(lookupInDomain lookupInTable) => 
@@ -194,7 +214,7 @@ goGet(:l) ==
   sig := substDomainArgs(thisDomain,sig)
   lookupDomain :=
      domainSlot = 0 => thisDomain
-     thisDomain.domainSlot -- where we look for the operation
+     domainRef(thisDomain,domainSlot) -- where we look for the operation
   if cons? lookupDomain then lookupDomain := evalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
@@ -203,14 +223,14 @@ goGet(:l) ==
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= apply(first fn,[:arglist,rest fn])
-  vectorRef(thisDomain,index) := fn
+  domainRef(thisDomain,index) := fn
   val
 
 NRTreplaceLocalTypes(t,dom) ==
    atom t =>
      not integer? t => t
-     t:= dom.t
-     if cons? t then t:= evalDomain t
+     t:= domainRef(dom,t)
+     if cons? t then t := evalDomain t
      canonicalForm t
    first t in '(Mapping Union Record _:) =>
       [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
@@ -224,7 +244,7 @@ substDomainArgs(domain,object) ==
 --       Category Default Lookup (from goGet or lookupInAddChain)
 --=======================================================
 lookupInCategories(op,sig,dom,dollar) ==
-  catformList := dom.4.0
+  catformList := domainRef(dom,4).0
   varList := ["$",:$FormalMapVariableList]
   nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   -- the following lines don't need to check for predicates because
@@ -232,9 +252,9 @@ lookupInCategories(op,sig,dom,dollar) ==
   -- builtin constructors -- their predicates are always true.
   r := or/[lookupInDomainVector(op,nsig,
               eval applySubst(pairList(varList,valueList),catform),dollar)
-        for catform in catformList | not null catform] where
+        for catform in catformList | catform ~= nil ] where
            valueList() ==
-              [MKQ dom,:[MKQ dom.(5+i) for i in 1..(#rest catform)]]
+              [MKQ dom,:[MKQ domainRef(dom,5+i) for i in 1..(#rest catform)]]
   r or lookupDisplay(op,sig,'"category defaults",'"-- not found")
 
 --=======================================================
@@ -249,7 +269,7 @@ defaultingFunction op ==
   isDefaultPackageName packageName
 
 lookupInAddChain(op,sig,addFormDomain,dollar) ==
-  addFunction:=lookupInDomain(op,sig,addFormDomain,dollar,5)
+  addFunction := lookupInDomain(op,sig,addFormDomain,dollar,5)
   defaultingFunction addFunction =>
      lookupInCategories(op,sig,addFormDomain,dollar) or addFunction
   addFunction or lookupInCategories(op,sig,addFormDomain,dollar)
@@ -258,35 +278,36 @@ lookupInAddChain(op,sig,addFormDomain,dollar) ==
 --       Lookup Function in Slot 1 (via SPADCALL)
 --=======================================================
 lookupInTable(op,sig,dollar,[domain,table]) ==
-  table = "derived" => lookupInAddChain(op,sig,domain,dollar)
-  success := false
+  table is "derived" => lookupInAddChain(op,sig,domain,dollar)
+  success := nil             -- lookup result
   someMatch := false
   while not success for [sig1,:code] in LASSQ(op,table) repeat
     success :=
       not compareSig(sig,sig1,canonicalForm dollar,domain) => false
-      code is ['subsumed,a] =>
-            subsumptionSig :=
-              applySubst(pairList($FormalMapVariableList,canonicalForm(domain).args),a)
-            someMatch := true
-            false
+      code is ['Subsumed,a] =>
+        subsumptionSig :=
+          applySubst(pairList($FormalMapVariableList,canonicalForm(domain).args),a)
+        someMatch := true
+        nil
       predIndex := code quo 8192
       predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
-        => false
+        => nil
       loc := (code rem 8192) quo 2
       loc = 0 =>
         someMatch := true
         nil
-      slot := domain.loc
+      slot := domainRef(domain,loc)
       slot is ["goGet",:.] =>
         lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
-      null slot =>
+      slot = nil =>
         lookupDisplay(op,sig,domain,'" !! null slot entry, continuing")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
       slot
-  success isnt 'failed and success => success
-  subsumptionSig and (u:= SPADCALL(op,subsumptionSig,dollar,domain.1)) => u
+  success isnt 'failed and success ~= nil => success
+  subsumptionSig ~= nil and
+    (u := SPADCALL(op,subsumptionSig,dollar,domainRef(domain,1))) => u
   someMatch => lookupInAddChain(op,sig,domain,dollar)
   nil
 
@@ -514,7 +535,7 @@ Enumeration(:"args") ==
   dom
 
 EnumEqual(e1,e2,dom) == 
-  e1=e2
+  scalarEq?(e1,e2)
 
 EnumPrint(enum, dom) == 
   instantiationArgs(dom).enum
@@ -524,7 +545,7 @@ createEnum(sym, dom) ==
   val := -1
   for v in args for i in 0.. repeat
      sym=v => return(val:=i)
-  val<0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
+  val < 0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
   val
 
 --% INSTANTIATORS
