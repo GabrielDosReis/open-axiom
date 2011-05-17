@@ -67,8 +67,10 @@ coerceConvertMmSelection(funName,m1,m2) ==
     hasCorrectTarget(m2,sig) and sig is [dc,targ,oarg] and oarg = m1]
   mmS and first mmS
 
-hasFileProperty(p,id,abbrev) == hasFilePropertyNoCache(p,id,abbrev)
+hasFileProperty(p,id,abbrev) ==
+  hasFilePropertyNoCache(p,id,abbrev)
 
+++ Note: this function is used in the algebra part.
 isValidType form ==
   -- returns true IFF form is a type whose arguments satisfy the
   --  predicate of the type constructor

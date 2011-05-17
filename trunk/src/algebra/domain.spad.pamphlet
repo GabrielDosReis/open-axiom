@@ -343,9 +343,9 @@ OperatorSignature(): Public == Private where
   Private == add
     import %equal: (%,%) -> Boolean from Foreign Builtin
 
-    construct(o,s) == LIST(o,s)$Lisp
+    construct(o,s) == %list(o,s)$Foreign(Builtin)
     name x == %head(x)$Foreign(Builtin)
-    signature x == CADR(x)$Lisp
+    signature x == %lsecond(x)$Foreign(Builtin)
     x = y == %equal(x,y)
     arity x == (#source signature x)::Arity
     coerce(x: %): OutputForm ==

@@ -372,12 +372,16 @@ FlexibleArray(S: Type) == Implementation where
 
 IndexedOneDimensionalArray(S:Type, mn:Integer):
  OneDimensionalArrayAggregate S == add
-   import %vlength: % -> NonNegativeInteger from Foreign Builtin
-   import %aref: (%,Integer) -> S           from Foreign Builtin
-
    macro Qmax == maxIndexOfSimpleArray$Foreign(Builtin)
    macro Qsetelt == setSimpleArrayEntry$Foreign(Builtin)
    macro I == Integer
+
+   import %icst0: I                         from Foreign Builtin
+   import %icst1: I                         from Foreign Builtin
+   import %ilt: (I,I) -> Boolean            from Foreign Builtin
+   import %vlength: % -> NonNegativeInteger from Foreign Builtin
+   import %aref: (%,Integer) -> S           from Foreign Builtin
+
    Rep == PrimitiveArray S
 
    newArray(n: Integer): % ==
@@ -395,22 +399,22 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
    map!(f, s1)  ==
       n: Integer := Qmax(s1)
       negative? n => s1
-      for i in 0..n repeat Qsetelt(s1, i, f(%aref(s1,i)))
+      for i in %icst0..n repeat Qsetelt(s1,i,f %aref(s1,i))
       s1
 
    map(f, s1)       ==
       n:Integer := Qmax(s1)
       negative? n => s1
       ss2:% := newArray(n+1)
-      for i in 0..n repeat Qsetelt(ss2, i, f(%aref(s1,i)))
+      for i in %icst0..n repeat Qsetelt(ss2,i,f %aref(s1,i))
       ss2
 
    map(f, a, b)   ==
       maxind:Integer := min(Qmax a, Qmax b)
       negative? maxind => empty()
-      c:% := newArray(maxind+1)
-      for i in 0..maxind repeat
-        Qsetelt(c, i, f(%aref(a,i),%aref(b,i)))
+      c:% := newArray(maxind + %icst1)
+      for i in %icst0..maxind repeat
+        Qsetelt(c,i,f(%aref(a,i),%aref(b,i)))
       c
 
    if zero? mn then
@@ -427,18 +431,18 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
 
    else if one? mn then
      maxIndex x       == %vlength x
-     qelt(x, i)       == %aref(x, i-1)
-     qsetelt!(x, i, s) == Qsetelt(x, i-1, s)
+     qelt(x, i)       == %aref(x, i - %icst1)
+     qsetelt!(x, i, s) == Qsetelt(x, i - %icst1, s)
 
      elt(x:%, i:I) ==
-       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       %ilt(i,%icst1) or %ilt(%vlength x,i) =>
          error "index out of range"
-       %aref(x, i-1)
+       %aref(x, i - %icst1)
 
      setelt(x:%, i:I, s:S) ==
-       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       %ilt(i,%icst1) or %ilt(%vlength x,i) =>
          error "index out of range"
-       Qsetelt(x, i-1, s)
+       Qsetelt(x, i - %icst1, s)
 
     else
        qelt(x, i)       == %aref(x, i - mn)
