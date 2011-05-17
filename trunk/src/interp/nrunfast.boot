@@ -166,7 +166,7 @@ replaceGoGetSlot env ==
 --=======================================================
 
 lookupComplete(op,sig,dollar,env) == 
-  newLookupInTable(op,sig,dollar,env,nil)
+  newLookupInTable(op,sig,dollar,env,false)
  
 lookupIncomplete(op,sig,dollar,env) == 
   newLookupInTable(op,sig,dollar,env,true)
@@ -189,18 +189,19 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   idxmax := maxIndex numvec
-  start := opvec.k
+  start := vectorRef(opvec,k)
   finish :=
-    QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
+    max > k => vectorRef(opvec,k + 2)
     idxmax
-  if QSGREATERP(finish,idxmax) then systemError '"limit too large"
-  numArgs := QSDIFFERENCE(#sig,1)
+  if finish > idxmax then
+    systemError '"limit too large"
+  numArgs := #sig - 1
   success := nil
   $isDefaultingPackage: local :=
     -- use special defaulting handler when dollar non-trivial
     dollar ~= domain and isDefaultPackageForm? devaluate domain
   while finish > start repeat
-    PROGN
+    do
       i := start
       numArgs ~= (numTableArgs := arrayRef(numvec,i)) => nil
       predIndex := arrayRef(numvec,i := i + 1)
@@ -209,17 +210,17 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       null loc => nil  --signifies no match
       loc = 1 => (someMatch := true)
       loc = 0 =>
-        start := QSPLUS(start,QSPLUS(numTableArgs,4))
+        start := start + numTableArgs + 4
         i := start + 2
         someMatch := true --mark so that if subsumption fails, look for original
         subsumptionSig :=
-          [newExpandTypeSlot(arrayRef(numvec,QSPLUS(i,j)),
+          [newExpandTypeSlot(arrayRef(numvec,i + j),
             dollar,domain) for j in 0..numTableArgs]
         if $monitorNewWorld then
           sayBrightly [formatOpSignature(op,sig),'"--?-->",
             formatOpSignature(op,subsumptionSig)]
         nil
-      slot := vectorRef(domain,loc)
+      slot := domainRef(domain,loc)
       cons? slot =>
         slot.op is 'newGoGet => someMatch:=true
                    --treat as if operation were not there
@@ -231,46 +232,18 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       slot is 'skip =>       --recursive call from above 'replaceGoGetSlot
         return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
-    start := QSPLUS(start,QSPLUS(numTableArgs,4))
+    start := start + numTableArgs + 4
   success isnt 'failed and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
         cons? success => [first success,:devaluate rest success]
         success
     success
-  subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
-  flag or someMatch => newLookupInAddChain(op,sig,domain,dollar)
+  subsumptionSig ~= nil
+    and (u := basicLookup(op,subsumptionSig,domain,dollar)) => u
+  flag or someMatch ~= nil => newLookupInAddChain(op,sig,domain,dollar)
   nil
  
- 
---=======================================================
---   Lookup In Domain (from lookupInAddChain)
---=======================================================
-lookupInDomain(op,sig,addFormDomain,dollar,index) ==
-  addFormCell := vectorRef(addFormDomain,index) =>
-    integer? KAR addFormCell =>
-      or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if not vector? addFormCell then
-      addFormCell := eval addFormCell
-    lookupInDomainVector(op,sig,addFormCell,dollar)
-  nil
-
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-lookupInDomainVector(op,sig,domain,dollar) ==
-  slot1 := vectorRef(domain,1)
-  SPADCALL(op,sig,dollar,slot1)
-
-
-++ same as lookupInDomainVector except that the use of defaults
-++ (either in category packages or add-chains) is controlled
-++ by `useDefaults'.
-lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
-  savedLookupDefaults := $lookupDefaults
-  $lookupDefaults := useDefaults
-  fun := lookupInDomainVector(op,sig,domain,dollar)
-  $lookupDefaults := savedLookupDefaults
-  fun
-
 --=======================================================
 --       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
 --=======================================================
@@ -300,7 +273,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
 --       Category Default Lookup (from goGet or lookupInAddChain)
 --=======================================================
 newLookupInCategories(op,sig,dom,dollar) ==
-  slot4 := vectorRef(dom,4)
+  slot4 := domainRef(dom,4)
   catVec := second slot4
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR canonicalForm catVec =>
@@ -336,8 +309,8 @@ newLookupInCategories(op,sig,dom,dollar) ==
             null code => nil
             byteVector := CDDDR infovec.3
             endPos :=
-              code+2 > max => # byteVector
-              opvec.(code+2)
+              code + 2 > max => # byteVector
+              vectorRef(opvec,code+2)
             not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
             --numOfArgs ~= #sig.source => nil
@@ -354,7 +327,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
               vectorRef(packageVec,i) := package
               package
           nil
-        not success =>
+        success = nil =>
           if $monitorNewWorld = true then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
@@ -385,12 +358,12 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := domainPredicates dom
-  slot4 := vectorRef(dom,4)
+  slot4 := domainRef(dom,4)
   packageVec := first slot4
   catVec := second slot4
   --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(#instantiationArgs dom)]]
+  valueList := [dom,:[domainRef(dom,5+i) for i in 1..(#instantiationArgs dom)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   for i in 0..maxIndex packageVec | (entry := vectorRef(packageVec,i))
@@ -541,17 +514,17 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
 
 lookupInDomainByName(op,domain,arg) ==
   atom arg => nil
-  opvec := domain . 1 . 2
+  opvec := domainRef(domain,1) . 2
   numvec := getDomainByteVector domain
   predvec := domainPredicates domain
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return nil
   idxmax := maxIndex numvec
-  start := opvec.k
+  start := vctorRef(opvec,k)
   finish :=
-    QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
+    max > k => vectorRef(opvec,k + 2)
     idxmax
-  if QSGREATERP(finish,idxmax) then systemError '"limit too large"
+  if finish > idxmax then systemError '"limit too large"
   success := false
   while finish > start repeat
     i := start
@@ -560,9 +533,9 @@ lookupInDomainByName(op,domain,arg) ==
     predIndex ~= 0 and not testBitVector(predvec,predIndex) => nil
     slotIndex := arrayRef(numvec,i + 2 + numberOfArgs)
     newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
-    slot := vectorRef(domain,slotIndex)
+    slot := domainRef(domain,slotIndex)
     cons? slot and sameObject?(first slot,first arg) and sameObject?(rest slot,rest arg) => return (success := true)
-    start := QSPLUS(start,QSPLUS(numberOfArgs,4))
+    start := start + numberOfArgs + 4
   success
  
 --=======================================================
@@ -621,7 +594,7 @@ sigDomainVal(dollar,domain,index) ==
 --returns a domain or a lazy slot
   index = 0 => "$"
   index = 2 => domain
-  vectorRef(domain,index)
+  domainRef(domain,index)
 
 --=======================================================
 --          Convert Lazy Domain to Domain Form
@@ -636,7 +609,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
     sayLooking1(concat(form2String devaluate thisDomain,
       '" activating lazy slot ",slot,'": "),slotDomain)
   name := first form
-  vectorRef(thisDomain,slot) := slotDomain
+  domainRef(thisDomain,slot) := slotDomain
  
 
 ++ Return a type form where all niladic constructors are
