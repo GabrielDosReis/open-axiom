@@ -632,7 +632,7 @@ mergeSort(f,g,p,n) ==
       p := rest p
       p.rest := t
       t.rest := nil
-   if QSLESSP(n,3) then return p
+   if n < 3 then return p
    -- split the list p into p and q of equal length
    l := n quo 2
    t := p

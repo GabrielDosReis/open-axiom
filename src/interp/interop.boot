@@ -466,9 +466,9 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   idxmax := maxIndex numvec
   start := vectorRef(opvec,k)
   finish :=
-    QSGREATERP(max,k) => vectorRef(opvec,QSPLUS(k,2))
+    max > k => vectorRef(opvec,k + 2)
     idxmax
-  if QSGREATERP(finish,idxmax) then systemError '"limit too large"
+  if finish > idxmax then systemError '"limit too large"
   numArgs := if hashCode? sig then -1 else (#sig)-1
   success := nil
   $isDefaultingPackage: local :=
@@ -487,11 +487,11 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       loc := arrayRef(numvec,i + numTableArgs + 2)
       loc = 1 => (someMatch := true)
       loc = 0 =>
-        start := QSPLUS(start,QSPLUS(numTableArgs,4))
+        start := start + numTableArgs + 4
         i := start + 2
         someMatch := true --mark so that if subsumption fails, look for original
         subsumptionSig :=
-          [newExpandTypeSlot(arrayRef(numvec,QSPLUS(i,j)),
+          [newExpandTypeSlot(arrayRef(numvec,i + j),
             dollar,domain) for j in 0..numTableArgs]
         if $monitorNewWorld then
           sayBrightly [formatOpSignature(op,sig),'"--?-->",
@@ -509,7 +509,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       slot is 'skip =>       --recursive call from above 'replaceGoGetSlot
         return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
-    start := QSPLUS(start,QSPLUS(numTableArgs,4))
+    start := start + numTableArgs + 4
   (success ~= 'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==

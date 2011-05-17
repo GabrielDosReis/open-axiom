@@ -121,7 +121,7 @@ mkAtree1 x ==
 mkAtree2(x,op,argl) ==
   nargl := #argl
   (op= "-") and (nargl = 1) and (integer? first argl) =>
-    mkAtree1(MINUS first argl)
+    mkAtree1(-first argl)
   op=":" and argl is [y,z] => [mkAtreeNode "Declare",:argl]
   op="COLLECT" => [mkAtreeNode op,:transformCollect argl]
   op= "break" =>

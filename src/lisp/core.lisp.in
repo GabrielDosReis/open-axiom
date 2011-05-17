@@ -503,7 +503,10 @@
 ;; Pretty-print a lisp form on a given output stream.
 (defun |prettyPrint| (x &optional (s |$OutputStream|))
   (let ((*print-pretty* t)
-	(*print-array* t))
+	(*print-array* t)
+	(*print-circle* t)
+	(*print-length* nil)
+	(*print-level* nil))
     (prin1 x s)))
 
 ;; 

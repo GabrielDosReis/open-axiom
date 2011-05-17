@@ -91,7 +91,7 @@ expandSTEP(id,lo,step,final)==
      final = nil => nil
      integer? inc =>
        pred :=
-	 MINUSP inc => "<"
+	 inc < 0 => "<"
 	 ">"
        [[pred,id,final]]
      [['COND,[['MINUSP,inc],

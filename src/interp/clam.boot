@@ -476,7 +476,8 @@ assocCacheShiftCount(x,al,fn) ==
       newFrontPointer := forwardPointer
       y.rest.first := second y + 1         --increment use count
       return (val:= y)
-    if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
+    c := second y
+    if c < minCount then                  --initial c is 1 so is true 1st time
       minCount := c
       newFrontPointer := forwardPointer   --CAR is slot replaced on failure
     forwardPointer:= rest forwardPointer
