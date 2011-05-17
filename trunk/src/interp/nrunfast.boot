@@ -532,7 +532,7 @@ lookupInDomainByName(op,domain,arg) ==
     predIndex := arrayRef(numvec,i := i + 1)
     predIndex ~= 0 and not testBitVector(predvec,predIndex) => nil
     slotIndex := arrayRef(numvec,i + 2 + numberOfArgs)
-    newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
+    newStart := start + numberOfArgs + 4
     slot := domainRef(domain,slotIndex)
     cons? slot and sameObject?(first slot,first arg) and sameObject?(rest slot,rest arg) => return (success := true)
     start := start + numberOfArgs + 4

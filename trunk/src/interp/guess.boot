@@ -288,8 +288,8 @@ canForgeWord(word,entry) ==
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
     e > E => n
-    QSPLUS(E-e,n) + 1
-  e > E => QSPLUS(W-w,n) + 1
+    E-e + n + 1
+  e > E => W-w + n + 1
   word.w = entry.e => forge(word,w+1,W,entry,e+1,E,n)
   w=W or e=E => forge(word,w+1,W,entry,e+1,E,n + 1)
   word.w=entry.(e+1) =>
@@ -302,12 +302,12 @@ forge(word,w,W,entry,e,E,n) ==
     deltaW >= deltaE and
       (k := or/[j for j in (w+2)..(W-1) | word.j = entry.e])
         and word.(k+1) = entry.(e+1) =>
-          forge(word,k+2,W,entry,e+2,E,QSPLUS(k-w,n))
+          forge(word,k+2,W,entry,e+2,E,k-w + n)
     deltaW <= deltaE and
     --if word is short, can we insert chars so as to match 2 consecutive chars
       (k := or/[j for j in (e+2)..(E-1) | word.w = entry.j])
         and word.(w+1) = entry.(k+1) =>
-          forge(word,w+2,W,entry,k+2,E,QSPLUS(n,k-e))
+          forge(word,w+2,W,entry,k+2,E,n + k-e)
     forge(word,w+1,W,entry,e+1,E,n + 1)
   --check for two consecutive matches down the line
   forge(word,w+1,W,entry,e+1,E,n + 1)

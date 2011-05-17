@@ -500,7 +500,7 @@ outputTran x ==
   vector? x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..maxIndex x]]]
   integer? x =>
-    MINUSP x => ["-",MINUS x]
+    x < 0 => ["-",MINUS x]
     x
   atom x =>
     x=$EmptyMode => specialChar 'quad
@@ -1872,7 +1872,7 @@ keyp(u) ==
   CAAR u
 
 absym x ==
-  (integer? x) and (MINUSP x) => -x
+  integer? x and (x < 0) => -x
   cons? x and (keyp(x) = '_-) => second x
   x
 
@@ -1990,7 +1990,7 @@ apphor(x1,x2,y,d,char) ==
   APP(char, x2, y, temp)
 
 syminusp x ==
-  integer? x => MINUSP x
+  integer? x => x < 0
   cons? x and sameObject?(keyp x,'_-)
 
 appsum(u, x, y, d) ==
