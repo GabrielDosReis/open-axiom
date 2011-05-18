@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import macros
+import c_-util
 namespace BOOT
 
 $returnNowhereFromGoGet := false
