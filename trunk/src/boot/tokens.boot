@@ -262,6 +262,7 @@ for i in [ _
   ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
+  ["copyTree", "COPY-TREE"] , _
   ["croak",      "CROAK"]  , _
   ["digit?",    "DIGIT-CHAR-P"]  , _
   ["drop",        "DROP"]  , _

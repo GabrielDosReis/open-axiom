@@ -117,24 +117,22 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   not firstTime and (k:= NRTassocIndex x) => k
   vector? x => systemErrorHere '"NRTencode"
   cons? x =>
-    op := first x
-    op = "Record" or x is ['Union,['_:,a,b],:.] =>
-      [op,:[['_:,a,encode(b,c,false)]
-        for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
+    op := x.op
+    op is ":" => [op,second x,encode(third x,third compForm,false)]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    IDENTP op and (constructor? op or op in '(Union Mapping)) =>
-      [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
+    op is "Enumeration" => x
+    IDENTP op and (constructor? op or builtinConstructor? op) =>
+      [op,:[encode(y,z,false) for y in x.args for z in compForm.args]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
-    op = "Enumeration" => x
-    ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE simplifyVMForm compForm]
+    ["NRTEVAL",NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
   symbolMember?(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
     firstTime => ["local",v]
     v
-  x = "$" => x
-  x = "$$" => x
+  x is "$" => x
+  x is "$$" => x
   ['QUOTE,x]
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
@@ -143,7 +141,7 @@ listOfBoundVars form ==
   form is '$ => []
   IDENTP form and (u:=get(form,'value,$e)) =>
     u:=u.expr
-    KAR u in '(Union Record) => listOfBoundVars u
+    builtinConstructor? KAR u => listOfBoundVars u
     [form]
   atom form => []
   first form is 'QUOTE => []
@@ -292,29 +290,25 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
 ++ This would prevent putting spurious items in $NRTdeltaList
 NRTinnerGetLocalIndex x ==
   atom x => x
-  -- following test should skip Unions, Records, Mapping
-  op := first x
-  op in '(Union Record Mapping Enumeration _[_|_|_]) => NRTgetLocalIndex x
-  constructor? op => NRTgetLocalIndex x
+  op := x.op
+  IDENTP op and (constructor? op or builtinConstructor? op) =>
+    NRTgetLocalIndex x
+  op is "[||]" => NRTgetLocalIndex x
   NRTaddInner x
 
 
 NRTaddInner x ==
 --called by genDeltaEntry and others that affect $NRTdeltaList
-  PROGN
+  do
     atom x => nil
-    x is ['Record,:l] =>
-      for [.,.,y] in l repeat NRTinnerGetLocalIndex y
-    first x in '(Union Mapping _[_|_|_]) =>
-      for y in rest x repeat
-         y is [":",.,z] => NRTinnerGetLocalIndex z
-         NRTinnerGetLocalIndex y
+    x is [":",y,z] => [x.op,y,NRTinnerGetLocalIndex z]
     x is ['SubDomain,y,:.] => NRTinnerGetLocalIndex y
+    builtinConstructor? x.op or x.op is "[||]" =>
+      for y in x.args repeat
+        NRTinnerGetLocalIndex y
     getConstructorSignature first x is [.,:ml] =>
-      for y in rest x for m in ml | y isnt '$ repeat
+      for y in x.args for m in ml | y isnt '$ repeat
         isCategoryForm(m,$CategoryFrame) => NRTinnerGetLocalIndex y
-    x is ["Enumeration",:.] =>
-      for y in rest x repeat NRTinnerGetLocalIndex y
     keyedSystemError("S2NR0003",[x])
   x
 

@@ -67,7 +67,7 @@ $useIntegerSubdomain := true
 
 -- These are the new structure functions.
 
-objNew(val, mode) == [mode,:val]             -- new names as of 10/14/93
+objNew(val, mode) == [mode,:val]           -- new names as of 10/14/93
 objNewWrap(val, mode) == [mode,:wrap val]
 objNewCode(val, mode) == ["CONS", MKQ mode,val ]
 objSetVal(obj,val) == obj.rest := val
@@ -93,10 +93,11 @@ wrap x ==
   isWrapped x => x
   ["WRAPPED",:x]
  
-isWrapped x == x is ['WRAPPED,:.] or integer? x or FLOATP x or string? x
+isWrapped x ==
+  x is ['WRAPPED,:.] or integer? x or float? x or string? x
  
 unwrap x ==
-  integer? x or FLOATP x or string? x => x
+  integer? x or float? x or string? x => x
   x is ["WRAPPED",:y] => y
   x
  
@@ -114,7 +115,7 @@ getValueNormalForm obj ==
   val := objVal obj
   atom val => val
   [op,:argl] := val
-  op = "WRAPPED" => MKQ argl
+  op is "WRAPPED" => MKQ argl
   IDENTP op and isConstructorName op => 
     isConceptualCategory objMode obj => instantiationNormalForm(op,argl)
     MKQ val
@@ -163,7 +164,8 @@ $immediateDataSymbol ==
 
 ++ If x is a literal of the basic types (Integer String DoubleFloat) then
 ++ this function returns its type, and nil otherwise.
-getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)
+macro getBasicMode x ==
+  getBasicMode0(x,$useIntegerSubdomain)
 
 ++ Subroutine of getBasicMode.
 getBasicMode0(x,useIntegerSubdomain) ==
@@ -219,19 +221,20 @@ getBasicObject x ==
 mkAtreeNode x ==
   -- maker of attrib tree node
   v := newShell 5
-  v.0 := x
+  vectorRef(v,0) := x
   v
 
 ++ remove mode, value, and misc. info from attrib tree
 emptyAtree expr ==
   vector? expr =>
-    $immediateDataSymbol = expr.0 => nil
-    expr.1:= nil
-    expr.2:= nil
-    expr.3:= nil
+    symbolEq?($immediateDataSymbol,vectorRef(expr,0)) => nil
+    vectorRef(expr,1) := nil
+    vectorRef(expr,2) := nil
+    vectorRef(expr,3) := nil
     -- kill proplist too?
   atom expr => nil
-  for e in expr repeat emptyAtree e
+  for e in expr repeat
+    emptyAtree e
 
 
 ++ returns true if x is a leaf VAT object.
@@ -250,13 +253,13 @@ getMode x ==
 putMode(x,y) ==
   x is [op,:.] => putMode(op,y)
   not vector? x => keyedSystemError("S2II0001",[x])
-  x.1 := y
+  vectorRef(x,1) := y
 
 ++ returns an interpreter object that represents the value of node x.
 ++ Note that an interpreter object is a pair of mode and value.
 ++ Also used by the algebra interface to the interperter.
 getValue x ==
-  vector? x => x.2
+  vector? x => vectorRef(x,2)
   atom x =>
     t := getBasicObject x => t
     keyedSystemError("S2II0001",[x])
@@ -266,7 +269,7 @@ getValue x ==
 putValue(x,y) ==
   x is [op,:.] => putValue(op,y)
   not vector? x => keyedSystemError("S2II0001",[x])
-  x.2 := y
+  vectorRef(x,2) := y
 
 ++ same as putValue(vec, val), except that vec is returned instead of val.
 putValueValue(vec,val) ==
@@ -276,7 +279,7 @@ putValueValue(vec,val) ==
 ++ Returns the node class of x, if possible; otherwise nil.
 ++ Also used by the algebra interface to the interpreter.
 getUnnameIfCan x ==
-  vector? x => x.0
+  vector? x => vectorRef(x,0)
   x is [op,:.] => getUnnameIfCan op
   atom x => x
   nil
@@ -288,7 +291,7 @@ getUnname x ==
 
 ++ Subroutine of getUnname.
 getUnname1 x ==
-  vector? x => x.0
+  vector? x => vectorRef(x,0)
   cons? x => keyedSystemError("S2II0001",[x])
   x
 
@@ -310,14 +313,14 @@ getModeSet x ==
 putModeSet(x,y) ==
   x is [op,:.] => putModeSet(op,y)
   not vector? x => keyedSystemError("S2II0001",[x])
-  x.3 := y
+  vectorRef(x,3) := y
   y
 
 getModeOrFirstModeSetIfThere x ==
   x is [op,:.] => getModeOrFirstModeSetIfThere op
   vector? x =>
-    m := x.1 => m
-    val := x.2 => objMode val
+    m := vectorRef(x,1) => m
+    val := vectorRef(x,2) => objMode val
     y := x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) => m
       first y
@@ -326,18 +329,18 @@ getModeOrFirstModeSetIfThere x ==
   nil
 
 getModeSetUseSubdomain x ==
-  x and cons? x => getModeSetUseSubdomain first x
-  vector?(x) =>
+  cons? x => getModeSetUseSubdomain first x
+  vector? x =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x
     y := x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
         [m]
       val := getValue x
-      (x.0 = $immediateDataSymbol) and (y = [$Integer]) =>
+      (vectorRef(x,0) = $immediateDataSymbol) and (y = [$Integer]) =>
         val := objValUnwrap val
         m := getBasicMode0(val,true)
-        x.2 := objNewWrap(val,m)
+        vectorRef(x,2) := objNewWrap(val,m)
         x.aModeSet := [m]
         [m]
       null val => y
@@ -373,8 +376,8 @@ putAtree(x,prop,val) ==
     x
   not vector? x => x     -- just ignore it
   n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
-    => x.n := val
-  x.4 := insertShortAlist(prop,val,x.4)
+    => vectorRef(x,n) := val
+  vectorRef(x,4) := insertShortAlist(prop,val,x.4)
   x
 
 getAtree(x,prop) ==
@@ -384,9 +387,9 @@ getAtree(x,prop) ==
     vector? op => getAtree(op,prop)
     nil
   not vector? x => nil     -- just ignore it
-  n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
-    => x.n
-  QLASSQ(prop,x.4)
+  n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
+    => vectorRef(x,n)
+  QLASSQ(prop,vectorRef(x,4))
 
 putTarget(x, targ) ==
   -- want to put nil modes perhaps to clear old target
@@ -409,31 +412,35 @@ getSrcPos(x) ==
 
 ++ sets the source location information for VAT node x.
 putSrcPos(x, file, src, line, col) ==
-  putAtree(x, 'srcAndPos, srcPos_New(file, src, line, col))
+  putAtree(x, 'srcAndPos, srcPosNew(file, src, line, col))
 
 srcPosNew(file, src, line, col) == 
-  LIST2VEC [file, src, line, col]
+  vector [file, src, line, col]
 
 ++ returns the name of source file for source location `sp'.
 srcPosFile(sp) ==
-  if sp then sp.0 else nil
+  sp ~= nil => vectorRef(sp,0)
+  nil
 
 ++ returns the input source string for source location `sp'.
 srcPosSource(sp) ==
-  if sp then sp.1 else nil
+  sp ~= nil => vectorRef(sp,1)
+  nil
 
 ++ returns the line number for source location `sp'.
 srcPosLine(sp) ==
-  if sp then sp.2 else nil
+  sp ~= nil => vectorRef(sp,2)
+  nil
 
 ++ returns the column number for source location `sp'.
 srcPosColumn(sp) ==
-  if sp then sp.3 else nil
+  sp ~= nil => vectorRef(sp,3)
+  nil
 
 srcPosDisplay(sp) ==
   null sp => nil
   s := strconc('"_"", srcPosFile sp, '"_", line ",
-      STRINGIMAGE srcPosLine sp, '": ")
+      toString srcPosLine sp, '": ")
   sayBrightly [s, srcPosSource sp]
   col  := srcPosColumn sp
   dots :=
