@@ -74,7 +74,7 @@ showImp(dom,:options) ==
   while u repeat
     [.,.,:key] := first u
     sayBrightly
-      key = 'constant => 
+      key is 'constant => 
         ["Constants implemented by",:bright form2String key,'":"]
       ["Functions implemented by",:bright form2String key,'":"]
     u := showDomainsOp1(u,key)
@@ -358,15 +358,18 @@ dcOpPrint(op,index) ==
   suffix :=
     predNumber = 0 => nil
     [:bright '"if",:pred2English $predvec.(predNumber - 1)]
+  kind := 'ELT
   namePart := bright
     slotNumber = 0 => '"subsumed by next entry"
     slotNumber = 1 => '"missing"
     name := $infovec.0.slotNumber
     atom name => name
     name is ["CONS","IDENTITY",
-              ["FUNCALL", ["dispatchFunction", impl],"$"]] => impl
+              ["FUNCALL", ["dispatchFunction", impl],"$"]] =>
+      kind := 'CONST
+      impl
     '"looked up"
-  sayBrightly [:formatOpSignature(op,signumList),:namePart, :suffix]
+  sayBrightly [:formatOpSignature(op,signumList,kind),:namePart, :suffix]
   index + 1
  
 dcSig(numvec,index,numOfArgs) ==
@@ -595,7 +598,7 @@ dcOps conname ==
       suffix := 
         atom pred => nil
         concat('" if ",pred2English pred)
-      key = 'Subsumed =>
+      key is 'Subsumed =>
         sayBrightly [:formatOpSignature(op,sig),'" subsumed by ",:formatOpSignature(op,slot),:suffix]
-      sayBrightly [:formatOpSignature(op,sig),:suffix]
+      sayBrightly [:formatOpSignature(op,sig,key),:suffix]
   
