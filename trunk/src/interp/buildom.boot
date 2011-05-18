@@ -326,6 +326,9 @@ oldSlotCode: %Short -> %Short
 oldSlotCode n ==
   2 * ($FirstParamSlot + n)
 
+++ Same as `oldSlotCode', except that it is used for constants.
+macro oldConstantSlodCode n ==
+  oldSlotCode n + 1
 
 Record(:args) ==
   srcArgs := [[":", second a, devaluate third a] for a in args]
@@ -333,23 +336,23 @@ Record(:args) ==
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
   canonicalForm(dom) := ["Record", :srcArgs]
-  vectorRef(dom,1) :=
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["RecordCategory",:instantiationArgs dom]
-  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  vectorRef(dom,5) := nil
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["RecordCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
-    vectorRef(dom,i) := third a
-  vectorRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
+    domainRef(dom,i) := third a
+  domainRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   -- following is cache for equality functions
-  vectorRef(dom,$FirstParamSlot + nargs + 3) := if nargs <= 2
+  domainRef(dom,$FirstParamSlot + nargs + 3) := if nargs <= 2
 	    then [nil,:nil]
 	    else newShell nargs
   dom
@@ -357,18 +360,19 @@ Record(:args) ==
 RecordEqual(x,y,dom) ==
   nargs := #instantiationArgs dom
   cons? x =>
-    b:=
-       SPADCALL(first x, first y, first(dom.(nargs + 9)) or
-         first (dom.(nargs + 9).first := findEqualFun(dom.$FirstParamSlot)))
+    b :=
+       SPADCALL(first x, first y, first(domainRef(dom,nargs + 9)) or
+         first(domainRef(dom,nargs + 9).first :=
+                 findEqualFun domainRef(dom,$FirstParamSlot)))
     nargs = 1 => b
     b and
        SPADCALL(rest x, rest y, rest (dom.(nargs + 9)) or
          rest (dom.(nargs + 9).rest := findEqualFun(dom.($FirstParamSlot+1))))
   vector? x =>
-    equalfuns := dom.(nargs + 9)
+    equalfuns := domainRef(dom,nargs + 9)
     and/[SPADCALL(x.i,y.i,equalfuns.i or _
-           (equalfuns.i:=findEqualFun(dom.($FirstParamSlot + i))))_
-         for i in 0..(nargs - 1)]
+           (equalfuns.i := findEqualFun domainRef(dom,$FirstParamSlot + i)))_
+              for i in 0..(nargs - 1)]
   error '"Bug: Silly record representation"
 
 RecordPrint(x,dom) == 
@@ -405,21 +409,21 @@ Union(:args) ==
   nargs := #args
   dom := newShell (nargs + 9)
   canonicalForm(dom) := ["Union", :srcArgs]
-  vectorRef(dom,1) :=
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["UnionCategory",:instantiationArgs dom]
-  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  vectorRef(dom,5) := nil
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["UnionCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
-    vectorRef(dom,i) := a
-  vectorRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   dom
 
 UnionEqual(x, y, dom) ==
@@ -434,7 +438,8 @@ UnionEqual(x, y, dom) ==
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
 
-UnionPrint(x, dom) == coerceUn2E(x, canonicalForm dom)
+UnionPrint(x, dom) ==
+  coerceUn2E(x, canonicalForm dom)
 
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
@@ -473,21 +478,21 @@ Mapping(:args) ==
   nargs := #args
   dom := newShell(nargs + 9)
   canonicalForm(dom) := ["Mapping", :srcArgs]
-  vectorRef(dom,1) :=
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  vectorRef(dom,2) := nil
-  vectorRef(dom,3) := $SetCategory
-  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  vectorRef(dom,5) := nil
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := $SetCategory
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
-    vectorRef(dom,i) := a
-  vectorRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
-  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   dom
 
 MappingEqual(x, y, dom) == sameObject?(x,y)
@@ -512,26 +517,33 @@ EnumerationCategory(:"args") ==
 
 Enumeration(:"args") ==
   nargs := #args
-  dom := newShell(nargs + 9)
+  dom := newShell(2 * nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
   canonicalForm(dom) := ["Enumeration", :args]
-  vectorRef(dom,1) :=
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]],
             ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
-                [["$", $Symbol], :oldSlotCode(nargs+2)]]
-                  ]]
-  vectorRef(dom,2) := nil
-  vectorRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
-  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  vectorRef(dom,5) := nil
+                [["$", $Symbol], :oldSlotCode(nargs+2)]],
+                  :[[arg,[["$"],:oldConstantSlodCode(nargs+3+i)]]
+                      for arg in args for i in 0..]
+                          ]]
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
-    dom.i := a
-  dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function createEnum, :dom]
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function EnumEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function createEnum, :dom]
+  -- Fille slots for constant returning functions.
+  -- Note: this is wasteful in terms of space since the constants are
+  --       already stored as arguments to this domain.
+  for i in ($FirstParamSlot + nargs + 3).. for . in args for v in 0.. repeat
+    domainRef(dom,i) := [function IDENTITY,:v]
   dom
 
 EnumEqual(e1,e2,dom) == 
@@ -544,7 +556,7 @@ createEnum(sym, dom) ==
   args := instantiationArgs dom
   val := -1
   for v in args for i in 0.. repeat
-     sym=v => return(val:=i)
+     symbolEq?(sym,v) => return(val:=i)
   val < 0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
   val
 
