@@ -215,32 +215,28 @@ formatOpType (form:=[op,:argl]) ==
   form2String [unabbrev op, :argl]
 
 formatOperationAlistEntry (entry:= [op,:modemaps]) ==
-  -- alist has entries of the form: ((op sig) . pred)
-  -- opsig on this list => op is defined only when the predicate is true
-  ans:= nil
-  for [sig,.,:predtail] in modemaps repeat
-    pred := (predtail is [p,:.] => p; 'T)
-    -- operation is always defined
+  ans := nil
+  for [sig,slot,pred,kind] in modemaps repeat
     ans :=
-      [concat(formatOpSignature(op,sig),formatIf pred),:ans]
+      [concat(formatOpSignature(op,sig,kind),formatIf pred),:ans]
   ans
 
 formatOperation([[op,sig],.,[fn,.,n]],domain) ==
-  opSigString := formatOpSignature(op,sig)
+  opSigString := formatOpSignature(op,sig,fn)
   integer? n and function Undef = KAR domain.n =>
     if integer? $commentedOps then $commentedOps := $commentedOps + 1
     concat(" --",opSigString)
   opSigString
 
-formatOpSignature(op,sig) ==
-  concat('"%b",formatOpSymbol(op,sig),'"%d",'": ",formatSignature sig)
+formatOpSignature(op,sig,kind == 'ELT) ==
+  concat('"%b",formatOpSymbol(op,sig),'"%d",'": ",formatSignature(sig,kind))
 
 formatOpConstant op ==
   concat('"%b",formatOpSymbol(op,'($)),'"%d",'": constant")
 
 formatOpSymbol(op,sig) ==
-  if op = 'Zero then op := "0"
-  else if op = 'One then op := "1"
+  if op is 'Zero then op := "0"
+  else if op is 'One then op := "1"
   null sig => op
   quad := specialChar 'quad
   n := #sig
@@ -296,25 +292,27 @@ dollarPercentTran x ==
 
 formatSignatureAsTeX sig == 
   $formatSigAsTeX: local := 2
-  formatSignature0 sig
+  formatSignature0(sig,'ELT)
 
-formatSignature sig ==
+formatSignature(sig,kind == 'ELT) ==
   $formatSigAsTeX: local := 1
-  formatSignature0 sig
+  formatSignature0(sig,kind)
 
 formatSignatureArgs sml ==
   $formatSigAsTeX: local := 1
   formatSignatureArgs0 sml
   
-formatSignature0 sig ==
+formatSignature0(sig,kind) ==
   null sig => "() -> ()"
   integer? sig => '"hashcode"
   [tm,:sml] := sig
   sourcePart:= formatSignatureArgs0 sml
   targetPart:= prefix2String0 tm
-  dollarPercentTran concat(sourcePart,concat(" -> ",targetPart))
+  dollarPercentTran
+    kind is 'CONST => targetPart
+    concat(sourcePart,concat(" -> ",targetPart))
 
-formatSignatureArgs0(sml) ==
+formatSignatureArgs0 sml ==
 -- formats the arguments of a signature
   null sml => ['"()"]
   null rest sml => prefix2String0 first sml
@@ -401,7 +399,7 @@ form2String1 u ==
   $InteractiveMode and IDENTP op and (u:= getConstructorAbbreviationFromDB op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
     op = "NTuple"  => [ form2String1 first argl, '"*"]
-    op = "Map"     => ['"(",:formatSignature0 [argl.1,argl.0],'")"]
+    op = "Map"     => ['"(",:formatSignature0([argl.1,argl.0],'ELT),'")"]
     op = "Record" => record2String(argl)
     null (conSig := getConstructorSignature op) =>
       application2String(constructorName op,[form2String1(a) for a in argl], u1)
@@ -493,13 +491,18 @@ formJoin1(op,u) ==
     concat(formJoin2 argl,suffix)
   formJoin2 u
 
+
+sigMarker x ==
+  x is ['constant] => 'CONST
+  'ELT
+
 formatJoinKey(r,key) ==
-  key = 'mkCategory =>
+  key is 'mkCategory =>
     r is [opPart,catPart,:.] =>
       opString :=
         opPart is ['%list,:u] =>
-          "append"/[concat("%l",formatOpSignature(op,sig),formatIf pred)
-            for ['QUOTE,[[op,sig],pred]] in u]
+          "append"/[concat("%l",formatOpSignature(op,sig,kind),formatIf pred)
+            for ['QUOTE,[[op,sig,:x],pred]] in u | kind := sigMarker x]
         nil
       catString :=
         catPart is ['%list,:u] =>
