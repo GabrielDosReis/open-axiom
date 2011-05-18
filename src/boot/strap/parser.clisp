@@ -1214,11 +1214,12 @@
        (|bpPush| (|bfCaseItem| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpOutItem| ()
-  (PROG (|r| |ISTMP#2| |l| |ISTMP#1| |b|)
-    (DECLARE (SPECIAL |$InteractiveMode| |$op|))
+  (PROG (|$GenVarCounter| |$op| |r| |ISTMP#2| |l| |ISTMP#1| |b|)
+    (DECLARE (SPECIAL |$GenVarCounter| |$op| |$InteractiveMode|))
     (RETURN
       (PROGN
         (SETQ |$op| NIL)
+        (SETQ |$GenVarCounter| 0)
         (OR (|bpComma|) (|bpTrap|))
         (SETQ |b| (|bpPop1|))
         (|bpPush|

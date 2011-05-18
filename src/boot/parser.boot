@@ -1175,7 +1175,8 @@ bpCaseItem()==
 
 ++ Main entry point into the parser module.
 bpOutItem()==
-  $op := nil
+  $op: local := nil
+  $GenVarCounter: local := 0
   bpComma() or bpTrap()
   b := bpPop1()
   bpPush 

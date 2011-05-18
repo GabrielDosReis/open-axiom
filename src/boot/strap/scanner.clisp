@@ -533,19 +533,19 @@
         (SETQ |ll| (LENGTH |l|))
         (SETQ |done| NIL)
         (SETQ |s1| "")
-        (LET ((|bfVar#2| (- (LENGTH |u|) 1)) (|j| 0))
+        (LET ((|bfVar#1| (- (LENGTH |u|) 1)) (|j| 0))
           (LOOP
             (COND
-              ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
+              ((OR (> |j| |bfVar#1|) |done|) (RETURN NIL))
               (T (SETQ |s| (ELT |u| |j|)) (SETQ |ls| (LENGTH |s|))
                  (SETQ |done|
                        (COND
                          ((< |ll| (+ |ls| |i|)) NIL)
                          (T (SETQ |eql| T)
-                            (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
+                            (LET ((|bfVar#2| (- |ls| 1)) (|k| 1))
                               (LOOP
                                 (COND
-                                  ((OR (> |k| |bfVar#3|) (NOT |eql|))
+                                  ((OR (> |k| |bfVar#2|) (NOT |eql|))
                                    (RETURN NIL))
                                   (T (SETQ |eql|
                                       (CHAR= (SCHAR |s| |k|)
