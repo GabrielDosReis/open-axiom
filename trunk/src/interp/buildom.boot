@@ -519,7 +519,7 @@ Enumeration(:"args") ==
   nargs := #args
   dom := newShell(2 * nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
-  canonicalForm(dom) := ["Enumeration", :args]
+  canonicalForm(dom) := ["Enumeration",:args]
   domainRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -613,7 +613,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
   m := dollarIfRepHack name
   --2. create coercions from subtypes to subUnion
   cList:=
-    [["=",[$Boolean,name ,name],["ELT",dc,$FirstParamSlot+nargs]],
+    [["=",[$Boolean,name,name],["ELT",dc,$FirstParamSlot+nargs]],
        ["~=",[$Boolean,name,name],["ELT",dc,0]],
         ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
@@ -634,16 +634,17 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
                               ["%tail",gg]]]
   [cList,e]
 
-mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
-  len:= #SL
-  dc := nam
+mkEnumerationFunList(dc,["Enumeration",:SL],e) ==
+  len := #SL
   cList :=
     [nil,
-      ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot+len]],
-        ["~=",[$Boolean,nam ,nam],["ELT",dc,0]],
-          ["coerce",[nam, ["Symbol"]], ["ELT", dc,$FirstParamSlot+len+1]],
-            ["coerce",[["OutputForm"],nam],["ELT",dc,$FirstParamSlot+len+2]]]
-  [substitute(nam, dc, cList),e]
+      ["=",[$Boolean,dc,dc],["XLAM",["#1","#2"],['%ieq,"#1","#2"]]],
+        ["~=",[$Boolean,dc,dc],["XLAM",["#1","#2"],['%not,['%ieq,"#1","#2"]]]],
+          ["coerce",[dc,$Symbol],["ELT",dc,$FirstParamSlot+len+1]],
+            ["coerce",[$OutputForm,dc],["ELT",dc,$FirstParamSlot+len+2]],
+              :[[arg,[dc],["XLAM",[],v]] for arg in SL for v in 0..]
+                 ]
+  [cList,e]
 
 mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   first listOfEntries is [":",.,.] => mkNewUnionFunList(op,form,e)
