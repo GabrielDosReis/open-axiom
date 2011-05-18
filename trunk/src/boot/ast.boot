@@ -125,6 +125,16 @@ bfGenSymbol()==
   $GenVarCounter := $GenVarCounter+1
   makeSymbol strconc('"bfVar#",toString $GenVarCounter)
 
+bfLetVar: () -> %Symbol
+bfLetVar() ==
+  $letGenVarCounter := $letGenVarCounter + 1
+  makeSymbol strconc('"LETTMP#",toString $letGenVarCounter)
+
+bfIsVar: () -> %Symbol
+bfIsVar() ==
+  $isGenVarCounter := $isGenVarCounter + 1
+  makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
+
 bfColon: %Thing -> %Form
 bfColon x== 
   ["COLON",x]
@@ -545,8 +555,7 @@ bfLET1(lhs,rhs) ==
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
     if symbol? first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
-  g := makeSymbol strconc('"LETTMP#",toString $letGenVarCounter)
-  $letGenVarCounter := $letGenVarCounter + 1
+  g := bfLetVar()
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
   let1 is ["PROGN",:.] => bfMKPROGN [rhs1,:rest let1]
@@ -582,8 +591,7 @@ bfLET2(lhs,rhs) ==
   lhs is ['append,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['reverse,rhs]
-    g := makeSymbol strconc('"LETTMP#", toString $letGenVarCounter)
-    $letGenVarCounter := $letGenVarCounter + 1
+    g := bfLetVar()
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then
       l2 := [l2,:nil]
@@ -607,7 +615,7 @@ bfLET2(lhs,rhs) ==
  
  
 bfLET(lhs,rhs) ==
-  $letGenVarCounter : local := 1
+  $letGenVarCounter : local := 0
   bfLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
@@ -639,8 +647,8 @@ bfISApplication(op,left,right)==
   [op ,left,right]
  
 bfIS(left,right)==
-  $isGenVarCounter: local :=1
-  $inDefIS:local :=true
+  $isGenVarCounter: local := 0
+  $inDefIS: local :=true
   bfIS1(left,right)
  
 bfISReverse(x,a) ==
@@ -666,8 +674,7 @@ bfIS1(lhs,rhs) ==
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
   cons? lhs =>
-    g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
-    $isGenVarCounter := $isGenVarCounter + 1
+    g := bfIsVar()
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a is "DOT" =>
@@ -683,8 +690,7 @@ bfIS1(lhs,rhs) ==
     bfAND [['CONSP,lhs],a1,b1]
   rhs is ['append,a,b] =>
     patrev := bfISReverse(b,a)
-    g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
-    $isGenVarCounter := $isGenVarCounter + 1
+    g := bfIsVar()
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['reverse,lhs]],'T]]
     l2 := bfIS1(g,patrev)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]

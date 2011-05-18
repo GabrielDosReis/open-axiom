@@ -157,6 +157,22 @@
     (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
     (INTERN (CONCAT "bfVar#" (WRITE-TO-STRING |$GenVarCounter|)))))
 
+(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfLetVar|))
+
+(DEFUN |bfLetVar| ()
+  (DECLARE (SPECIAL |$letGenVarCounter|))
+  (PROGN
+    (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
+    (INTERN (CONCAT "LETTMP#" (WRITE-TO-STRING |$letGenVarCounter|)))))
+
+(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfIsVar|))
+
+(DEFUN |bfIsVar| ()
+  (DECLARE (SPECIAL |$isGenVarCounter|))
+  (PROGN
+    (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
+    (INTERN (CONCAT "ISTMP#" (WRITE-TO-STRING |$isGenVarCounter|)))))
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Form|) |bfColon|))
 
 (DEFUN |bfColon| (|x|) (LIST 'COLON |x|))
@@ -787,7 +803,6 @@
 
 (DEFUN |bfLET1| (|lhs| |rhs|)
   (PROG (|let1| |g| |l2| |l1| |name| |rhs1| |ISTMP#1|)
-    (DECLARE (SPECIAL |$letGenVarCounter|))
     (RETURN
       (COND
         ((SYMBOLP |lhs|) (|bfLetForm| |lhs| |rhs|))
@@ -818,11 +833,7 @@
                 ((SYMBOLP (CAR |l2|)) (SETQ |l2| (CONS |l2| NIL))))
               (|bfMKPROGN|
                   (CONS |l1| (|append| |l2| (CONS |name| NIL)))))))
-        (T (SETQ |g|
-                 (INTERN (CONCAT "LETTMP#"
-                                 (WRITE-TO-STRING |$letGenVarCounter|))))
-           (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
-           (SETQ |rhs1| (LIST 'L%T |g| |rhs|))
+        (T (SETQ |g| (|bfLetVar|)) (SETQ |rhs1| (LIST 'L%T |g| |rhs|))
            (SETQ |let1| (|bfLET1| |lhs| |g|))
            (COND
              ((AND (CONSP |let1|) (EQ (CAR |let1|) 'PROGN))
@@ -842,7 +853,7 @@
 (DEFUN |bfLET2| (|lhs| |rhs|)
   (PROG (|isPred| |val1| |ISTMP#3| |g| |rev| |patrev| |l2| |l1| |var2|
             |var1| |b| |ISTMP#2| |a| |ISTMP#1|)
-    (DECLARE (SPECIAL |$inDefIS| |$letGenVarCounter|))
+    (DECLARE (SPECIAL |$inDefIS|))
     (RETURN
       (COND
         ((NULL |lhs|) NIL)
@@ -909,11 +920,7 @@
                        (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |var2| (CAR |ISTMP#2|)) T))))))
          (SETQ |patrev| (|bfISReverse| |var2| |var1|))
-         (SETQ |rev| (LIST '|reverse| |rhs|))
-         (SETQ |g|
-               (INTERN (CONCAT "LETTMP#"
-                               (WRITE-TO-STRING |$letGenVarCounter|))))
-         (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
+         (SETQ |rev| (LIST '|reverse| |rhs|)) (SETQ |g| (|bfLetVar|))
          (SETQ |l2| (|bfLET2| |patrev| |g|))
          (COND
            ((AND (CONSP |l2|) (ATOM (CAR |l2|)))
@@ -960,7 +967,7 @@
   (PROG (|$letGenVarCounter|)
     (DECLARE (SPECIAL |$letGenVarCounter|))
     (RETURN
-      (PROGN (SETQ |$letGenVarCounter| 1) (|bfLET1| |lhs| |rhs|)))))
+      (PROGN (SETQ |$letGenVarCounter| 0) (|bfLET1| |lhs| |rhs|)))))
 
 (DEFUN |addCARorCDR| (|acc| |expr|)
   (PROG (|funsR| |funsA| |p| |funs|)
@@ -1006,7 +1013,7 @@
     (DECLARE (SPECIAL |$inDefIS| |$isGenVarCounter|))
     (RETURN
       (PROGN
-        (SETQ |$isGenVarCounter| 1)
+        (SETQ |$isGenVarCounter| 0)
         (SETQ |$inDefIS| T)
         (|bfIS1| |left| |right|)))))
 
@@ -1024,7 +1031,6 @@
 (DEFUN |bfIS1| (|lhs| |rhs|)
   (PROG (|l2| |rev| |patrev| |cls| |b1| |a1| |b| |g| |l| |d| |ISTMP#2|
               |c| |a| |ISTMP#1|)
-    (DECLARE (SPECIAL |$isGenVarCounter|))
     (RETURN
       (COND
         ((NULL |rhs|) (LIST 'NULL |lhs|))
@@ -1063,11 +1069,7 @@
                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (|bfQ| |lhs| |a|))
-        ((CONSP |lhs|)
-         (SETQ |g|
-               (INTERN (CONCAT "ISTMP#"
-                               (WRITE-TO-STRING |$isGenVarCounter|))))
-         (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
+        ((CONSP |lhs|) (SETQ |g| (|bfIsVar|))
          (|bfMKPROGN| (LIST (LIST 'L%T |g| |lhs|) (|bfIS1| |g| |rhs|))))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'CONS)
               (PROGN
@@ -1120,11 +1122,7 @@
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                        (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |b| (CAR |ISTMP#2|)) T))))))
-         (SETQ |patrev| (|bfISReverse| |b| |a|))
-         (SETQ |g|
-               (INTERN (CONCAT "ISTMP#"
-                               (WRITE-TO-STRING |$isGenVarCounter|))))
-         (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
+         (SETQ |patrev| (|bfISReverse| |b| |a|)) (SETQ |g| (|bfIsVar|))
          (SETQ |rev|
                (|bfAND| (LIST (LIST 'CONSP |lhs|)
                               (LIST 'PROGN
