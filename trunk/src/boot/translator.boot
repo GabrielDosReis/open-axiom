@@ -109,7 +109,6 @@ BOOTTOCLLINES(lines, fn, outfn)==
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter: local := 0
   try
     stream := outputTextFile outfn
     genOptimizeOptions stream
@@ -138,7 +137,6 @@ BOOTTOCLCLINES(lines, fn, outfn)==
  
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter: local := 0
   try
     stream := outputTextFile outfn
     genOptimizeOptions stream
@@ -156,7 +154,6 @@ BOOTTOMC: %String -> %Thing
 BOOTTOMC fn==
    callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter: local  := 0
    try
      a := inputTextFile shoeAddbootIfNec fn
      shoeMc(a,fn)
@@ -188,7 +185,6 @@ BO: %String -> %Thing
 BO fn==
   b := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter: local := 0
   try
     a := inputTextFile shoeAddbootIfNec fn
     shoeToConsole(a,fn)
@@ -199,7 +195,6 @@ BO fn==
 BOCLAM fn==
   callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter: local := 0
   $bfClamming: local := true
   try
     a := inputTextFile shoeAddbootIfNec fn
@@ -222,7 +217,6 @@ STOUT string ==
 string2BootTree string ==   
   callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter: local := 0
   a := shoeTransformString [string]
   result :=
     bStreamNull a => nil
@@ -234,7 +228,6 @@ string2BootTree string ==
 STEVAL string==
    callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
@@ -249,7 +242,6 @@ STEVAL string==
 STTOMC string==
    callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter: local := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
@@ -524,7 +516,6 @@ shoeDfu(a,fn)==
   $bootDefined: local := makeTable function symbolEq?
   $bootUsed:local := makeTable function symbolEq?
   $bootDefinedTwice: local := nil
-  $GenVarCounter: local := 0
   $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   try
@@ -640,7 +631,6 @@ shoeXref(a,fn)==
   DO_-SYMBOLS(i(namespace LISP),tableValue($lispWordTable,i) := true)
   $bootDefined: local := makeTable function symbolEq?
   $bootUsed: local := makeTable function symbolEq?
-  $GenVarCounter: local := 0
   $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".xref")
@@ -686,7 +676,6 @@ bStreamPackageNull s==
     bStreamNull s
  
 PSTTOMC string==
-  $GenVarCounter: local := 0
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
@@ -719,7 +708,6 @@ BOOTPO() ==
  
 PSTOUT string==
   in namespace BOOTTRAN do
-    $GenVarCounter: local := 0
     shoeConsoleTrees shoeTransformString string
 
 defaultBootToLispFile file ==

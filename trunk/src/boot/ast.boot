@@ -876,7 +876,7 @@ shoeComps  x==
   [shoeComp def for def in x]
 
 shoeComp x==
-  a:=shoeCompTran second x
+  a := shoeCompTran second x
   a is ["LAMBDA",:.] => ["DEFUN",first x,second a,:CDDR a]
   ["DEFMACRO",first x,second a,:CDDR a]
 

@@ -1,3 +1,8 @@
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot: Remove bindings of $GenVarCounter.
+	* boot/parser.boot (bpOutItem): Bind it here.
+
 2011-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot (EnumerationCategory): Rewrite.
