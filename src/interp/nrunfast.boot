@@ -107,12 +107,7 @@ evalSlotDomain(u,dollar) ==
     y
   u is ['NRTEVAL,y] => eval y
   u is ['QUOTE,y] => y
-  u is ['Record,:argl] =>
-     apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
-                                 for [.,tag,dom] in argl])
-  u is ['Union,:argl] and first argl is ['_:,.,.] =>
-     apply('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
-                                 for [.,tag,dom] in argl])
+  u is [":",tag,dom] => [":",tag,evalSlotDomain(dom,dollar)]
   u is ["Enumeration",:.] => eval u
   cons? u =>
     -- The domain form may value arguments, get VM form first.
@@ -557,14 +552,15 @@ newExpandLocalType(lazyt,dollar,domain) ==
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
  
 newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
-  functorName in '(Record Union) and first argl is [":",:.] =>
-    [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
-                                 for [.,tag,dom] in argl]]
-  functorName in '(Union Mapping _[_|_|_] Enumeration) =>
-          [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
+  functorName is ":" =>
+    [":",first argl,newExpandLocalTypeArgs(second argl,dollar,domain,true)]
+  functorName is "[||]" =>
+    [functorName,newExpandLocalTypeArgs(first argl,dollar,domain,true)]
   functorName is "QUOTE"  => [functorName,:argl]
-  coSig := getDualSignatureFromDB functorName
-  null coSig => error ["bad functorName", functorName]
+  builtinConstructor? functorName =>
+    [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
+  coSig := getDualSignatureFromDB functorName or
+     error ["unknown constructor name", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
         for a in argl for flag in rest coSig]]
  
@@ -632,9 +628,9 @@ resolveNiladicConstructors form ==
 -- in spad code.  Please do not break this!  An example is the use of
 -- Interval (an Aldor domain) by SIGNEF in limitps.spad.  MCD.
 newHasTest(domform,catOrAtt) ==
-  domform is [dom,:.] and dom in '(Union Record Mapping Enumeration) =>
-    ofCategory(domform, catOrAtt)
   catOrAtt is '(Type) => true
+  cons? domform and builtinFunctorName? domform.op =>
+    ofCategory(domform,catOrAtt)
   asharpConstructorFromDB opOf domform => fn(domform,catOrAtt) where
   -- atom (infovec := getInfovec opOf domform) => fn(domform,catOrAtt) where
     fn(a,b) ==
