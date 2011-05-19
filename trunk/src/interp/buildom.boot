@@ -109,11 +109,11 @@ compareSig(sig,tableSig,dollar,domain) ==
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot is '$ => s is "$" or s = devaluate dollar
-  integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
-      lazyt is [.,.,.,[.,item,.]] and
-        item is [.,[functorName,:.]] and functorName = first s =>
-          compareSigEqual(s,canonicalForm evalDomain lazyt,dollar,domain)
-      nil
+  integer? tslot and cons?(lazyt := domainRef(domain,tslot)) and cons? s =>
+    lazyt is [.,.,.,[.,item,.]] and
+      item is [.,[functorName,:.]] and functorName = s.op =>
+        compareSigEqual(s,canonicalForm evalDomain lazyt,dollar,domain)
+    nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
 
 
@@ -175,7 +175,7 @@ lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
 
 
 basicLookup(op,sig,domain,dollar) ==
-  item := domain.1
+  item := domainRef(domain,1)
   cons? item and first item in '(lookupInDomain lookupInTable) => 
     lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
@@ -184,12 +184,10 @@ basicLookup(op,sig,domain,dollar) ==
 
 compiledLookupCheck(op,sig,dollar) ==
   fn := compiledLookup(op,sig,dollar)
-
   -- NEW COMPILER COMPATIBILITY ON
   if (fn = nil)  and (op = "**") then
     fn := compiledLookup("^",sig,dollar)
   -- NEW COMPILER COMPATIBILITY OFF
-
   fn = nil =>
     keyedSystemError("S2NR0001",[op,formatSignature sig,canonicalForm dollar])
   fn
@@ -203,11 +201,11 @@ goGet(:l) ==
   [[.,[op,initSig,:code]],thisDomain] := env
   domainSlot := code quo 8192
   code1 := code rem 8192
-  if QSODDP code1 then isConstant := true
+  isConstant := odd? code1
   code2 := code1 quo 2
-  if QSODDP code2 then explicitLookupDomainIfTrue := true
+  explicitLookupDomainIfTrue := odd? code2
   index := code2 quo 2
-  kind := (isConstant = true => 'CONST; 'ELT)
+  kind := (isConstant => 'CONST; 'ELT)
   sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
   sig := substDomainArgs(thisDomain,sig)
   lookupDomain :=
@@ -218,25 +216,25 @@ goGet(:l) ==
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
   if cons? dollar then dollar := evalDomain dollar
-  fn:= basicLookup(op,sig,lookupDomain,dollar)
-  fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
-  val:= apply(first fn,[:arglist,rest fn])
+  fn := basicLookup(op,sig,lookupDomain,dollar)
+  fn = nil => keyedSystemError("S2NR0001",[op,sig,canonicalForm lookupDomain])
+  val := apply(first fn,[:arglist,rest fn])
   domainRef(thisDomain,index) := fn
   val
 
 NRTreplaceLocalTypes(t,dom) ==
-   atom t =>
-     not integer? t => t
-     t:= domainRef(dom,t)
-     if cons? t then t := evalDomain t
-     canonicalForm t
-   first t in '(Mapping Union Record _:) =>
-      [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
-   t
+  atom t =>
+    not integer? t => t
+    t := domainRef(dom,t)
+    if cons? t then t := evalDomain t
+    canonicalForm t
+  t.op is ":" or builtinConstructor? t.op =>
+     [t.op,:[NRTreplaceLocalTypes(x,dom) for x in t.args]]
+  t
 
 substDomainArgs(domain,object) ==
   form := devaluate domain
-  applySubst(pairList(["$$",:$FormalMapVariableList],[form,:rest form]),object)
+  applySubst(pairList(["$$",:$FormalMapVariableList],[form,:form.args]),object)
 
 --=======================================================
 --       Category Default Lookup (from goGet or lookupInAddChain)

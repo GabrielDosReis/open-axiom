@@ -605,9 +605,7 @@ HasAttribute(domain,attrib) ==
         -- getDomainHash domain added on 4/01/94 by RSS
         basicLookup("%%",hashType(attrib, hashPercent),domain,domain)
      HasAttribute(CDDR domain, attrib)
--->
-  isNewWorldDomain domain => newHasAttribute(domain,attrib)
---+
+  integer? domainRef(domain,3) => newHasAttribute(domain,attrib)
   (u := LASSOC(attrib,domain.2)) and lookupPred(first u,domain,domain)
  
 newHasAttribute(domain,attrib) ==
@@ -658,9 +656,9 @@ HasCategory(domain,catform') ==
         basicLookup("%%",catform',domain,domain)
      HasCategory(CDDR domain, catform')
   catform:= devaluate catform'
-  isNewWorldDomain domain => newHasCategory(domain,catform)
-  domain0:=domain.0 -- handles old style domains, Record, Union etc.
-  slot4 := domain.4
+  integer? domainRef(domain,3) => newHasCategory(domain,catform)
+  domain0 := canonicalForm domain -- handles old style domains, Record, Union etc.
+  slot4 := domainRef(domain,4)
   catlist := slot4.1
   member(catform,catlist) or
    opOf(catform) in '(Object Type) or  --temporary hack
