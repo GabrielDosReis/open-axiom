@@ -286,11 +286,6 @@ optCons (x is ["CONS",a,b]) ==
     x
   x
  
-optMkRecord ["mkRecord",:u] ==
-  u is [x] => ['%list,x]
-  #u=2 => ['%pair,:u]
-  ['%vector,:u]
- 
 optCond (x is ['%when,:l]) ==
   if l is [a,[aa,b]] and aa is '%otherwise and b is ['%when,:c] then
     x.rest.rest := c
@@ -397,16 +392,6 @@ optSEQ ["SEQ",:l] ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
-optRECORDELT ["RECORDELT",name,ind,len] ==
-  len=1 =>
-    ind=0 => ['%head,name]
-    keyedSystemError("S2OO0002",[ind])
-  len=2 =>
-    ind=0 => ['%head,name]
-    ind=1 => ['%tail,name]
-    keyedSystemError("S2OO0002",[ind])
-  ['%vref,name,ind]
- 
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
     ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
@@ -447,8 +432,9 @@ $VMsideEffectFreeOperators ==
     %lreverse %lempty? %hash %ismall? %string? %f2s
     %ccst %ccstmax %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown
     %sname
-    %strlength %streq %i2s %schar %strlt %strconc %strcopy
-    %vector %aref %vref %vlength %bytevec2str %str2bytevec
+    %strlength %streq %i2s %schar %strlt %strconc
+    %strcopy %bytevec2str %str2bytevec
+    %vector %aref %vref %vlength %vcopy
     %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
@@ -828,10 +814,7 @@ for x in '( (%call         optCall) _
            (%when        optCond)_
            (%retract     optRetract)_
            (%CollectV    optCollectVector)_
-           (mkRecord     optMkRecord)_
-           (RECORDELT    optRECORDELT)_
-           (SETRECORDELT optSETRECORDELT)_
-           (RECORDCOPY   optRECORDCOPY)) _
+           (SETRECORDELT optSETRECORDELT)) _
    repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 

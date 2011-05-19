@@ -585,22 +585,49 @@ mkMappingFunList(nam,mapForm,e) ==
             ["ELT",dc,$FirstParamSlot + nargs + 1]]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
+
+++ Build an inline function for constructing records of length `n'.
+mkRecordFun n ==
+  args := take(n,$FormalMapVariableList)
+  op := 
+    n < 2 => '%list
+    n = 2 => '%pair
+    '%vector
+  ["XLAM",args,[op,:args]]
+
+++ Build an inline function for selecting field `i' or a
+++ record of length `n'.  
+eltRecordFun(n,i) ==
+  body :=
+    n < 2 => ['%head,"#1"]
+    n = 2 =>
+      i = 0 => ['%head,"#1"]
+      ['%tail,"#1"]
+    ['%vref,"#1",i]
+  ["XLAM",["#1","#2"],body]
+
+copyRecordFun n ==
+  body := 
+    n < 2 => ['%list,['%head,"#1"]]
+    n = 2 => ['%pair,['%head,"#1"],['%tail,"#1"]]
+    ['%vcopy,"#1"]
+  ["XLAM",["#1"],body]
+
 mkRecordFunList(nam,["Record",:Alist],e) ==
   len:= #Alist
   dc := gensym()
   sigFunAlist:=
-    [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
+    [["construct",[nam,:[A for [.,a,A] in Alist]],mkRecordFun len],
       ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot + len]],
         ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
          ["hash",[$SingleInteger,nam],["ELT",dc,0]],
 	  ["coerce",[$OutputForm,nam],["ELT",dc,$FirstParamSlot+len+1]],:
-	   [["elt",[A,nam,PNAME a],["XLAM",["$1","$2"],["RECORDELT","$1",i,len]]]
+	   [["elt",[A,nam,PNAME a],eltRecordFun(len,i)]
 	       for i in 0.. for [.,a,A] in Alist],:
 	     [["setelt",[A,nam,PNAME a,A],["XLAM",["$1","$2","$3"],
 	       ["SETRECORDELT","$1",i, len,"$3"]]]
 		 for i in 0.. for [.,a,A] in Alist],:
-		   [["copy",[nam,nam],["XLAM",["$1"],["RECORDCOPY",
-		     "$1",len]]]]]
+		   [["copy",[nam,nam],copyRecordFun len]]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
