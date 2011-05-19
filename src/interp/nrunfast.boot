@@ -60,16 +60,13 @@ initNewWorld() ==
   $updateCatTableIfTrue := false
   $doNotCompressHashTableIfTrue := true
  
-isNewWorldDomain domain == 
-  integer? domainRef(domain,3)    --see HasCategory/Attribute
- 
 getDomainByteVector dom == 
-  CDDR vectorRef(dom,4)
+  CDDR domainRef(dom,4)
 
 ++ Return the sequence of categories `dom' belongs to, as a vector
 ++ of lazy category forms.
 getDomainCategoriesVector dom ==
-  second vectorRef(dom,4)
+  second domainRef(dom,4)
 
 ++ Same as getDomainCategoriesVector except that we return a list of
 ++ input forms for the categories.
@@ -132,7 +129,7 @@ replaceGoGetSlot env ==
   goGetDomainSlotIndex := arrayRef(bytevec,index := index + 1)
   goGetDomain :=
      goGetDomainSlotIndex = 0 => thisDomain
-     vectorRef(thisDomain,goGetDomainSlotIndex)
+     domainRef(thisDomain,goGetDomainSlotIndex)
   if cons? goGetDomain then
      goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
   sig :=
@@ -151,7 +148,7 @@ replaceGoGetSlot env ==
     keyedSystemError("S2NR0001",[op,sig,goGetDomain.0])
   if $monitorNewWorld then
     sayLooking1(['"goget stuffing slot",:bright thisSlot,'"of "],thisDomain)
-  vectorRef(thisDomain,thisSlot) := slot
+  domainRef(thisDomain,thisSlot) := slot
   if $monitorNewWorld then
     sayLooking1('"<------",[first slot,:devaluate rest slot])
   slot
@@ -280,7 +277,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[vectorRef(dom,5+i) for i in 1..(# rest dom.0)]]
+  valueList := [dom,:[domainRef(dom,5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
   for i in 0..maxIndex packageVec |
@@ -438,7 +435,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
     s := devaluate dollar -- calls from HasCategory can have $s
   integer? a =>
-    not typeFlag => s = vectorRef(domain,a)
+    not typeFlag => s = domainRef(domain,a)
     a = 6 and $isDefaultingPackage => s = devaluate dollar
     vector? (d := domainVal(dollar,domain,a)) =>
       s = d.0 => true
@@ -568,7 +565,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u is '$ => u
   integer? u =>
      typeFlag => newExpandTypeSlot(u, dollar,domain)
-     vectorRef(domain,u)
+     domainRef(domain,u)
   u is ['NRTEVAL,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
   u is "$$" => canonicalForm domain
@@ -583,7 +580,7 @@ domainVal(dollar,domain,index) ==
 --returns a domain or a lazy slot
   index = 0 => dollar
   index = 2 => domain
-  vectorRef(domain,index)
+  domainRef(domain,index)
 
 -- ??? This function should be merged into the preceding one. 
 sigDomainVal(dollar,domain,index) ==

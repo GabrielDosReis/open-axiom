@@ -236,7 +236,7 @@ abbreviationsSpad2Cmd l ==
       abbQuery(key)
     type is 'remove =>
       DELDATABASE(key,'ABBREVIATION)
-    ODDP # al => sayKeyedMsg("S2IZ0002",[type])
+    odd? # al => sayKeyedMsg("S2IZ0002",[type])
     repeat
       null al => return 'fromLoop
       [a,b,:al] := al

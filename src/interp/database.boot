@@ -745,7 +745,7 @@ isExposedConstructor name ==
   --   slot 1: list of constructors explicitly exposed
   --   slot 2: list of constructors explicitly hidden
   -- check if it is explicitly hidden
-  name in '(Union Record Mapping) => true
+  builtinConstructor? name => true
   symbolMember?(name,$localExposureData.2) => false
   -- check if it is explicitly exposed
   symbolMember?(name,$localExposureData.1) => true

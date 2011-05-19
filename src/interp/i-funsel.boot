@@ -704,7 +704,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
   -- number of arguments. If no matches, returns nil. Otherwise returns
   -- a "signature" where a type position is non-nil only if all
   -- signatures shares that type .
-  first(dom) in '(Union Record Mapping) => nil
+  dom.op in '(Union Record Mapping) => nil
   mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => nil

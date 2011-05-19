@@ -94,18 +94,12 @@ evaluateType0 form ==
     bottomUp form'
     objVal getValue(form')
   form is [op,:argl] =>
-    op='CATEGORY =>
+    op in '(Enumeration EnumerationCategory) => form
+    op is 'CATEGORY =>
       argl is [x,:sigs] => [op,x,:[evaluateSignature(s) for s in sigs]]
       form
-    op in '(Join Mapping) =>
-      [op,:[evaluateType arg for arg in argl]]
-    op='Union  =>
-      argl and first argl is [x,.,.] and member(x,'(_: Declare)) =>
-        [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
-      [op,:[evaluateType arg for arg in argl]]
-    op='Record =>
-      [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
-    op='Enumeration => form
+    op is ":" => [op,first argl,evaluateType second argl]
+    builtinConstructor? op => [op,:[evaluateType arg for arg in argl]]
     constructor? op => evaluateType1 form
     nil
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]

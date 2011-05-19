@@ -288,6 +288,7 @@ for i in [ _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _
   ["null",        "NULL"]  , _
+  ["odd?",        "ODDP"] , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
   ["property",     "GET"]  , _

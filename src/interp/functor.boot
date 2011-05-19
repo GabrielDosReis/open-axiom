@@ -198,10 +198,10 @@ compCategories u ==
   atom u => u
   cons? first u =>
     error ['"compCategories: need an atom in operator position", first u]
-  first u = "Record" =>
+  first u is "Record" =>
     -- There is no modemap property for these guys so do it by hand.
     [first u, :[[":", a.1, compCategories1(a.2,$SetCategory)] for a in rest u]]
-  first u = "Union" or first u = "Mapping" =>
+  first u in '(Union Mapping) =>
     -- There is no modemap property for these guys so do it by hand.
     [first u, :[compCategories1(a,$SetCategory) for a in rest u]]
   u is ['SubDomain,D,.] => compCategories D
@@ -377,10 +377,8 @@ mkDomainFormer x ==
 mkTypeForm x ==
   atom x => mkDevaluate x
   x.op in '(CATEGORY mkCategory) => MKQ x
-  x is ['_:,selector,dom] =>
-    ['%list,MKQ '_:,MKQ selector,mkTypeForm dom]
-  x.op is 'Record =>
-    ['%list,MKQ 'Record,:[mkTypeForm y for y in x.args]]
+  x is [":",selector,dom] =>
+    ['%list,MKQ ":",MKQ selector,mkTypeForm dom]
   x.op is '%call => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD

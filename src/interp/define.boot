@@ -291,6 +291,7 @@ getExportCategory form ==
   [op,:argl] := form
   op is 'Record => ['RecordCategory,:argl]
   op is 'Union => ['UnionCategory,:argl]
+  op is 'Enumeration => ['EnumerationCategory,:argl]
   functorModemap := getConstructorModemapFromDB op
   [[.,target,:tl],:.] := functorModemap
   applySubst(pairList($FormalMapVariableList,argl),target)
@@ -366,9 +367,8 @@ substSlotNumbers(form,template,domain) ==
 expandType(lazyt,template,domform) ==
   atom lazyt => expandTypeArgs(lazyt,template,domform)
   [functorName,:argl] := lazyt
-  functorName in '(Record Union) and first argl is [":",:.] =>
-     [functorName,:[['_:,tag,expandTypeArgs(dom,template,domform)]
-                                 for [.,tag,dom] in argl]]
+  functorName is ":" =>
+    [functorName,first argl,expandTypeArgs(second argl,template,domform)]
   lazyt is ['local,x] =>
     n := POSN1(x,$FormalMapVariableList)
     domform.(1 + n)
@@ -1634,10 +1634,8 @@ registerInlinableDomain(x,e) ==
   x := macroExpand(x,e)
   x is [ctor,:.] =>
     constructor? ctor => nominateForInlining ctor
-    ctor = 'Record or ctor = 'Union =>
-      x.args is [['_:,:.],:.] =>
-        for [.,.,t] in x.args repeat
-          registerInlinableDomain(t,e)
+    ctor is ":" => registerInlinableDomain(third x,e)
+    builtinFunctorName? ctor =>
       for t in x.args repeat
         registerInlinableDomain(t,e)
     nil
