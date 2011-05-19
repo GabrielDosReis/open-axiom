@@ -1,5 +1,13 @@
 2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/aggcat.spad.pamphlet (Aggregate) [more?,less?,size?]:
+	Move to StreamAggregate.
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory):
+	Don't implement them.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+
+2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (bottomUpForm0): Tidy.
 	* interp/i-eval.boot (evalForm): Likewise.
 	* interp/buildom.boot (formalRecordField): New.

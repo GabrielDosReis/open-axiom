@@ -50,12 +50,6 @@ Aggregate: Category == Type with
      ++ e.g. \axiom{u: D := empty()}.
    empty?: % -> Boolean
      ++ empty?(u) tests if u has 0 elements.
-   less?: (%,NonNegativeInteger) -> Boolean
-     ++ less?(u,n) tests if u has less than n elements.
-   more?: (%,NonNegativeInteger) -> Boolean
-     ++ more?(u,n) tests if u has greater than n elements.
-   size?: (%,NonNegativeInteger) -> Boolean
-     ++ size?(u,n) tests if u has exactly n elements.
    sample: constant -> %    ++ sample yields a value of type %
    if % has finiteAggregate then
      #: % -> NonNegativeInteger     ++ # u returns the number of items in u.
@@ -64,9 +58,6 @@ Aggregate: Category == Type with
   sample() == empty()
   if % has finiteAggregate then
     empty? a   == #a = 0
-    less?(a,n) == #a < n
-    more?(a,n) == #a > n
-    size?(a,n) == #a = n
 
 @
 
@@ -150,7 +141,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
 
      if S has BasicType then
        x = y ==
-         size?(x, #y) and (and/[a = b for a in parts x for b in parts y])
+         #x = #y and (and/[a = b for a in parts x for b in parts y])
 
      if S has SetCategory then
        count(s:S, x:%) == count(s = #1, x)
@@ -1563,21 +1554,6 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => error "value of empty object"
     first x
 
-  less?(l, n) ==
-    i := n::Integer
-    while positive? i and not empty? l repeat (l := rest l; i := i - 1)
-    positive? i
-
-  more?(l, n) ==
-    i := n::Integer
-    while positive? i and not empty? l repeat (l := rest l; i := i - 1)
-    zero?(i) and not empty? l
-
-  size?(l, n) ==
-    i := n::Integer
-    while not empty? l and positive? i repeat (l := rest l; i := i - 1)
-    empty? l and zero? i
-
   #x ==
     k: NonNegativeInteger := 0
     while not empty? x repeat
@@ -1729,6 +1705,12 @@ StreamAggregate(S:Type): Category ==
 	++ possiblyInfinite?(s) tests if the stream s could possibly
 	++ have an infinite number of elements.
 	++ Note: for many datatypes, \axiom{possiblyInfinite?(s) = not explictlyFinite?(s)}.
+      less?: (%,NonNegativeInteger) -> Boolean
+        ++ less?(u,n) tests if u has less than n elements.
+      more?: (%,NonNegativeInteger) -> Boolean
+        ++ more?(u,n) tests if u has greater than n elements.
+      size?: (%,NonNegativeInteger) -> Boolean
+        ++ size?(u,n) tests if u has exactly n elements.
  add
    c2: (%, %) -> S
 

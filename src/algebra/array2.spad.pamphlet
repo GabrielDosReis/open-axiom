@@ -134,10 +134,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
           not f(qelt(m,i,j)) => return false
       true
 
-    size?(m,n) == nrows(m) * ncols(m) = n
-    less?(m,n) == nrows(m) * ncols(m) < n
-    more?(m,n) == nrows(m) * ncols(m) > n
-
 --% Size inquiries
 
     # m == nrows(m) * ncols(m)
