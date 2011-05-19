@@ -325,7 +325,7 @@ displayWarning(l,stream) ==
 displayComp level ==
   $bright:= " << "
   $dim:= " >> "
-  if $insideCapsuleFunctionIfTrue=true then
+  if $insideCapsuleFunctionIfTrue then
     sayBrightly ['"error in function",:bright $op,'"%l"]
   --mathprint removeZeroOne mkErrorExpr level
   pp removeZeroOne mkErrorExpr level

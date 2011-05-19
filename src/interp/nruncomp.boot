@@ -160,7 +160,7 @@ needToQuoteFlags?(sig,env) ==
       IDENTP t and null get(t,"value",e)
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
-  $killOptimizeIfTrue = true => nil
+  $killOptimizeIfTrue => nil
   -- references to modemaps from current domain are folded in a later
   -- stage of the compilation process.
   dc is '$ => nil
@@ -195,7 +195,7 @@ genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
-  if $profileCompiler = true then profileRecord(dc,op,sig)
+  if $profileCompiler then profileRecord(dc,op,sig)
   eltOrConst is 'XLAM => cform
   if eltOrConst is 'Subsumed then eltOrConst := 'ELT
   if atom dc then

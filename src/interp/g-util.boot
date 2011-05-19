@@ -231,7 +231,7 @@ get0(x,prop,e) ==
 get1(x,prop,e) ==
     --this is the old get
   cons? x => get(x.op,prop,e)
-  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
+  prop="modemap" and $insideCapsuleFunctionIfTrue =>
     symbolLassoc("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
   LASSOC(prop,getProplist(x,e)) or get2(x,prop)
@@ -258,7 +258,7 @@ put(x,prop,val,e) ==
   --e must never be $CapsuleModemapFrame
   cons? x => put(first x,prop,val,e)
   newProplist := augProplistOf(x,prop,val,e)
-  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
+  prop="modemap" and $insideCapsuleFunctionIfTrue =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
     $CapsuleModemapFrame:=
       addBinding(x,augProplistOf(x,"modemap",val,$CapsuleModemapFrame),

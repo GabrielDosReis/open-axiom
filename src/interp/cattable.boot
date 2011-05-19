@@ -478,7 +478,7 @@ updateCategoryTableForDomain(cname,category) ==
   [cname,:domainEntry]:= addDomainToTable(cname,category)
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
     tableValue(_*HASCATEGORY_-HASH_*,[cname,:a]) := b
-  $doNotCompressHashTableIfTrue = true => _*HASCATEGORY_-HASH_*
+  $doNotCompressHashTableIfTrue => _*HASCATEGORY_-HASH_*
   -- compressHashTable _*HASCATEGORY_-HASH_*
 
 clearCategoryTable($cname) ==

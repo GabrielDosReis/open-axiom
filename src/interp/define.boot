@@ -1040,7 +1040,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code
 ++ for a functor definition. 
 compFunctorBody(body,m,e,parForm) ==
-  $bootStrapMode = true =>
+  $bootStrapMode =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
   clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
@@ -1527,7 +1527,7 @@ compile u ==
     if not $insideCapsuleFunctionIfTrue
        then optimizedBody
        else putInLocalDomainReferences optimizedBody
-  $doNotCompileJustPrint=true => (PRETTYPRINT stuffToCompile; op')
+  $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; op')
   $macroIfTrue => constructMacro stuffToCompile
 
   -- Let the backend know about this function's type
@@ -1644,7 +1644,7 @@ registerInlinableDomain(x,e) ==
   nil
 
 compAdd(['add,$addForm,capsule],m,e) ==
-  $bootStrapMode = true =>
+  $bootStrapMode =>
     if $addForm is ["%Comma",:.] then code := nil
        else [code,m,e]:= comp($addForm,m,e)
     [['%when, _
@@ -1675,7 +1675,7 @@ compTuple2Record u ==
   ['Record,:[[":",i,x] for i in 1.. for x in u.args]]
 
 compCapsule(['CAPSULE,:itemList],m,e) ==
-  $bootStrapMode = true =>
+  $bootStrapMode =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true

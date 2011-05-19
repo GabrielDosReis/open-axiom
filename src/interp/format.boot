@@ -480,8 +480,8 @@ formDecl2String(left,right) ==
 formJoin1(op,u) ==
   if op = 'Join then [:argl,last] := u else (argl := nil; last := [op,:u])
   last is [id,.,:r] and id in '(mkCategory CATEGORY) =>
-    $abbreviateJoin = true => concat(formJoin2 argl,'"%b",'"with",'"%d",'"...")
-    $permitWhere = true =>
+    $abbreviateJoin => concat(formJoin2 argl,'"%b",'"with",'"%d",'"...")
+    $permitWhere =>
       opList:= formatJoinKey(r,id)
       $whereList:= concat($whereList,"%l",$declVar,": ",
         formJoin2 argl,'"%b",'"with",'"%d","%i",opList,"%u")

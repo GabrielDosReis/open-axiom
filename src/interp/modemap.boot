@@ -113,7 +113,7 @@ insertModemap(new,mmList) ==
 addModemap(op,mc,sig,pred,fn,$e) ==
   $InteractiveMode => $e
   if knownInfo pred then pred:=true
-  $insideCapsuleFunctionIfTrue=true =>
+  $insideCapsuleFunctionIfTrue =>
     $CapsuleModemapFrame :=
       addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
     $e
@@ -122,7 +122,7 @@ addModemap(op,mc,sig,pred,fn,$e) ==
 addModemapKnown(op,mc,sig,pred,fn,$e) ==
 --  if knownInfo pred then pred:=true
 --  that line is handled elsewhere
-  $insideCapsuleFunctionIfTrue=true =>
+  $insideCapsuleFunctionIfTrue =>
     $CapsuleModemapFrame :=
       addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
     $e
@@ -143,7 +143,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
   op='elt and sig is [:lt,sel] =>
     string? sel =>
       id:= makeSymbol sel
-      if $insideCapsuleFunctionIfTrue=true
+      if $insideCapsuleFunctionIfTrue
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)
       addModemap1(op,mc,[:lt,id],pred,fn,e)
@@ -152,7 +152,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
   op='setelt and sig is [:lt,sel,v] =>
     string? sel =>
       id:= makeSymbol sel
-      if $insideCapsuleFunctionIfTrue=true
+      if $insideCapsuleFunctionIfTrue
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)
       addModemap1(op,mc,[:lt,id,v],pred,fn,e)
@@ -364,7 +364,7 @@ addConstructorModemaps(name,form is [functorName,:.],e) ==
 --
  
 getDomainsInScope e ==
-  $insideCapsuleFunctionIfTrue=true => $CapsuleDomainsInScope
+  $insideCapsuleFunctionIfTrue => $CapsuleDomainsInScope
   get("$DomainsInScope","special",e)
  
 putDomainsInScope(x,e) ==

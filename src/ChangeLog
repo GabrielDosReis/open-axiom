@@ -1,5 +1,10 @@
 2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (lookupInDomainVector): Establish a new
+	binding for $lookupDefaults.
+
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (mkEnumerationFunList): Include enum
 	constants in the operation list.
 

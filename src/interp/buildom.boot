@@ -170,11 +170,9 @@ lookupInDomain(op,sig,addFormDomain,dollar,index) ==
 ++ (either in category packages or add-chains) is controlled
 ++ by `useDefaults'.
 lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
-  savedLookupDefaults := $lookupDefaults
-  $lookupDefaults := useDefaults
-  fun := lookupInDomainVector(op,sig,domain,dollar)
-  $lookupDefaults := savedLookupDefaults
-  fun
+  $lookupDefaults: local := useDefaults
+  lookupInDomainVector(op,sig,domain,dollar)
+
 
 basicLookup(op,sig,domain,dollar) ==
   item := domain.1

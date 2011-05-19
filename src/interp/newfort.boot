@@ -784,7 +784,7 @@ fortPre1 e ==
   -- strip the '%' character off objects like %pi etc..
   null e => nil
   integer?(e) =>
-    $fortInts2Floats = true =>
+    $fortInts2Floats =>
       e >= 0 => fix2FortranFloat(e)
       ['"-", fix2FortranFloat(-e)]
     e

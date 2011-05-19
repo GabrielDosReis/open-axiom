@@ -2087,7 +2087,7 @@ uppretend t ==
 -----------------------Compiler for Interpreter---------------------------------
 NRTcompileEvalForm(opName,sigTail,dcVector) ==
   u := NRTcompiledLookup(opName,sigTail,dcVector)
-  not ($insideCompileBodyIfTrue = true) => MKQ u
+  not $insideCompileBodyIfTrue => MKQ u
   k := NRTgetMinivectorIndex(u,opName,sigTail,dcVector)
   ['ELT,"$$$",k]  --$$$ denotes minivector
 

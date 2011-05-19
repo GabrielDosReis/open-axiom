@@ -104,7 +104,7 @@ compClam(op,argl,body,$clamList) ==
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
   cacheName:= mkCacheName op
-  if $reportCounts=true then
+  if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
     setDynamicBinding(hitCounter,0)
@@ -203,7 +203,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
-  if $reportCounts=true then
+  if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
     setDynamicBinding(hitCounter,0)
@@ -525,7 +525,7 @@ addToConstructorCache(op,args,value) ==
 haddProp(ht,op,prop,val) ==
   --presently, ht always = $ConstructorCache
   statRecordInstantiationEvent()
-  if $reportInstantiations = true or $reportEachInstantiation = true then
+  if $reportInstantiations or $reportEachInstantiation then
     startTimingProcess 'debug
     recordInstantiation(op,prop,false)
     stopTimingProcess 'debug
@@ -546,7 +546,7 @@ recordInstantiation(op,prop,dropIfTrue) ==
  
 recordInstantiation1(op,prop,dropIfTrue) ==
   op in '(CategoryDefaults RepeatedSquaring) => nil--ignore defaults for now
-  if $reportEachInstantiation = true then
+  if $reportEachInstantiation then
     trailer:= (dropIfTrue => '"  dropped"; '"  instantiated")
     if $insideCoerceInteractive= true then
       $instantCoerceCount:= 1+$instantCoerceCount
@@ -554,7 +554,7 @@ recordInstantiation1(op,prop,dropIfTrue) ==
       $instantCanCoerceCount:= 1+$instantCanCoerceCount
       xtra:=
         ['" for ",outputDomainConstructor m1,'"-->",outputDomainConstructor m2]
-    if $insideEvalMmCondIfTrue = true and null dropIfTrue then
+    if $insideEvalMmCondIfTrue and not dropIfTrue then
       $instantMmCondCount:= $instantMmCondCount + 1
     typeTimePrin ["CONCAT",outputDomainConstructor [op,:prop],trailer,:xtra]
   null $reportInstantiations => nil
@@ -616,7 +616,7 @@ listTruncate(l,n) ==
     n := n - 1
     u := rest u
   if cons? u then
-    if cons? rest u and $reportInstantiations = true then
+    if cons? rest u and $reportInstantiations then
       recordInstantiation($op,CAADR u,true)
     u.rest := nil
   l
