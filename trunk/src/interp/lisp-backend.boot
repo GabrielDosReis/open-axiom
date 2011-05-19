@@ -578,6 +578,7 @@ for x in [
     ['%vref,      :'SVREF],
     ['%aref,      :'getSimpleArrayEntry],
     ['%makevector,:'MAKE_-ARRAY],
+    ['%vcopy,     :'COPY_-SEQ],
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],

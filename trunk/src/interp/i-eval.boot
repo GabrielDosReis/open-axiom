@@ -239,12 +239,8 @@ evalForm(op,opName,argl,mmS) ==
           ['SPADCALL,:form,freeFun]
         fun is ['XLAM,xargs,:xbody] =>
           rec :=  first form
-          xbody is [['RECORDELT,.,ind,len]] =>
-            optRECORDELT([CAAR xbody,rec,ind,len])
           xbody is [['SETRECORDELT,.,ind,len,.]] =>
             optSETRECORDELT([CAAR xbody,rec,ind,len,third form])
-          xbody is [['RECORDCOPY,.,len]] =>
-            optRECORDCOPY([CAAR xbody,rec,len])
           ['FUNCALL,['function , ['LAMBDA,xargs,:xbody]],:TAKE(#xargs, form)]
         dcVector := evalDomain dc
         fun0 :=

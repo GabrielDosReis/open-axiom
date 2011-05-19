@@ -695,7 +695,6 @@ transformOperationAlist operationAlist ==
         impOp is 'XLAM => implementation
         impOp in '(CONST Subsumed) => impOp
         keyedSystemError("S2IL0025",[impOp])
-      implementation is 'mkRecord => 'mkRecord
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
