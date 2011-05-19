@@ -107,8 +107,8 @@ compClam(op,argl,body,$clamList) ==
   if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    setDynamicBinding(hitCounter,0)
-    setDynamicBinding(callCounter,0)
+    symbolValue(hitCounter) := 0
+    symbolValue(callCounter) := 0
     callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
     hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --length of cache or arg-value pair
@@ -206,8 +206,8 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    setDynamicBinding(hitCounter,0)
-    setDynamicBinding(callCounter,0)
+    symbolValue(hitCounter) := 0
+    symbolValue(callCounter) := 0
     callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
     hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --value computed by calling function
@@ -357,12 +357,12 @@ clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
-            then setDynamicBinding(cacheName,nil)
+            then symbolValue(cacheName) := nil
     if BOUNDP(cacheName:= INTERNL strconc(symbolName name,'";CAT"))
-          then setDynamicBinding(cacheName,nil)
+          then symbolValue(cacheName) := nil
  
 clearCategoryCache catName ==
-  setDynamicBinding(mkCacheName catName,nil)
+  symbolValue(mkCacheName catName) := nil
  
 displayHashtable x ==
   l:= reverse! SORTBY('CAR,[[opOf tableValue(x,key),key] for key in HKEYS x])
@@ -442,8 +442,8 @@ assocCache(x,cacheName,fn) ==
     FUNCALL(fn,CAAR forwardPointer,x) => return (val:= first forwardPointer)
     backPointer:= forwardPointer
     forwardPointer:= rest forwardPointer
-  val => val
-  setDynamicBinding(cacheName,backPointer)
+  val ~= nil => val
+  symbolValue(cacheName) := backPointer
   nil
  
 assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
@@ -460,7 +460,7 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
     backPointer := forwardPointer      --first is slot replaced on failure
     forwardPointer:= rest forwardPointer
   val => val
-  setDynamicBinding(cacheName,backPointer)
+  symbolValue(cacheName) := backPointer
   nil
  
 assocCacheShiftCount(x,al,fn) ==
@@ -495,8 +495,8 @@ clamStats() ==
       hitCounter:= INTERNL(op,'";hit")
       callCounter:= INTERNL(op,'";calls")
       res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
-      setDynamicBinding(hitCounter,0)
-      setDynamicBinding(callCounter,0)
+      symbolValue(hitCounter) := 0
+      symbolValue(callCounter) := 0
       res
     postString:=
       cacheValue:= eval cacheVec.cacheName
@@ -708,4 +708,4 @@ domainEqualList(argl1,argl2) ==
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
     sayBrightly ['"Un-clamming function",'"%b",fun,'"%d"]
-    setDynamicBinding(fun,eval makeSymbol strconc(STRINGIMAGE fun,'";"))
+    symbolValue(fun) := eval makeSymbol strconc(STRINGIMAGE fun,'";")

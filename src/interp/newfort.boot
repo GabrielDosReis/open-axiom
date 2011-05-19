@@ -245,7 +245,7 @@ exp2FortOptimizeCS1 e ==
   -- see if we have already seen this expression
   n := tableValue($fortCsHash,e)
   null n =>
-    n := VECTOR(1,nil,$fortCsExprStack,$fortCsFuncStack)
+    n := vector [1,nil,$fortCsExprStack,$fortCsFuncStack]
     tableValue($fortCsHash,e) := n
     e
   beenHere(e,n)

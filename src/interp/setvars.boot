@@ -126,11 +126,11 @@ initializeSetVariables (setTree) ==
         then FUNCALL( setData.setVar,"%initialize%")
         else sayMSG '"   Function not implemented."
     st = 'INTEGER  =>
-      setDynamicBinding(setData.setVar, setData.setDef)
+      symbolValue(setData.setVar) := setData.setDef
     st = 'STRING  =>
-      setDynamicBinding(setData.setVar, setData.setDef)
+      symbolValue(setData.setVar) := setData.setDef
     st = 'LITERALS =>
-      setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+      symbolValue(setData.setVar) := translateYesNo2TrueFalse setData.setDef
     st = 'TREE =>
       initializeSetVariables(setData.setLeaf)
 
@@ -216,8 +216,8 @@ set1(l,setTree) ==
   st = 'STRING   =>
     arg2 := l.1
     if arg2 = 'DEFAULT
-      then setDynamicBinding(setData.setVar, setData.setDef)
-      else if arg2 then setDynamicBinding(setData.setVar, arg2)
+      then symbolValue(setData.setVar) := setData.setDef
+      else if arg2 then symbolValue(setData.setVar) := arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -231,8 +231,8 @@ set1(l,setTree) ==
         (null (upperlimit := setData.setLeaf.1) or num <= upperlimit) => num
       selectOption(l.1,['default,:setData.setLeaf],nil)
     if arg2 = 'DEFAULT
-      then setDynamicBinding(setData.setVar, setData.setDef)
-      else if arg2 then setDynamicBinding(setData.setVar, arg2)
+      then symbolValue(setData.setVar) := setData.setDef
+      else if arg2 then symbolValue(setData.setVar) := arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -244,14 +244,14 @@ set1(l,setTree) ==
     -- validate the option, allowing the user to set the default
     if (arg2 := selectOption(l.1,['default,:setData.setLeaf],nil)) then
       if arg2 = 'DEFAULT
-        then setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+        then symbolValue(setData.setVar) := translateYesNo2TrueFalse setData.setDef
         else
           if arg2 = 'nobreak then
              useFastLinks true
           if arg2 = 'fastlinks then
              useFastLinks false
              arg2 := 'break
-          setDynamicBinding(setData.setVar, translateYesNo2TrueFalse arg2)
+          symbolValue(setData.setVar) := translateYesNo2TrueFalse arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -778,7 +778,7 @@ countCache n ==
         not IDENTP x => sayKeyedMsg("S2IF0007",[x])
         $cacheAlist:= insertAlist(x,n,$cacheAlist)
         cacheCountName:= INTERNL(x,'";COUNT")
-        setDynamicBinding(cacheCountName,n)
+        symbolValue(cacheCountName) := n
         sayCacheCount(x,n)
     optionError(CAAR $options,nil)
   sayCacheCount(nil,$cacheCount:= n)
