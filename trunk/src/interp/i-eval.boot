@@ -263,7 +263,7 @@ evalForm(op,opName,argl,mmS) ==
         sameObject?(bpi,function Undef) =>
          sayKeyedMsg("S2IE0009",[opName,formatSignature rest sig,first sig])
          nil
-        if $NRTmonitorIfTrue = true then
+        if $NRTmonitorIfTrue then
           sayBrightlyNT ['"Applying ",first fun0,'" to:"]
           pp [devaluateDeeply x for x in form]
         $: local := domain
@@ -346,7 +346,7 @@ getArgValueComp(arg,type,cond) ==
 
 evalFormMkValue(op,form,tm) ==
   val := object(form,tm)
-  if $NRTmonitorIfTrue = true then
+  if $NRTmonitorIfTrue then
     sayBrightlyNT ['"Value of ",op.0,'" ===> "]
     pp objValUnwrap val
   putValue(op,val)

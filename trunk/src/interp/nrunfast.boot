@@ -144,7 +144,7 @@ replaceGoGetSlot env ==
       '" wants",'"%l",'"  "),op,sig,goGetDomain)
   slot :=  basicLookup(op,sig,goGetDomain,goGetDomain)
   slot = nil =>
-    $returnNowhereFromGoGet = true =>
+    $returnNowhereFromGoGet =>
       ['nowhere,:goGetDomain]  --see newGetDomainOpTable
     sayBrightly concat('"Function: ",formatOpSignature(op,sig),
       '" is missing from domain: ",form2String goGetDomain.0)
@@ -168,7 +168,7 @@ lookupIncomplete(op,sig,dollar,env) ==
  
 newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   dollar = nil => systemError()
-  $lookupDefaults = true =>
+  $lookupDefaults =>
     newLookupInCategories(op,sig,domain,dollar)      --lookup first in my cats
       or newLookupInAddChain(op,sig,domain,dollar)
   --fast path when called from newGoGet
@@ -273,8 +273,8 @@ newLookupInCategories(op,sig,dom,dollar) ==
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR canonicalForm catVec =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
-  $lookupDefaults : local := nil
-  if $monitorNewWorld = true then sayBrightly concat('"----->",
+  $lookupDefaults : local := false
+  if $monitorNewWorld then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := domainPredicates dom
   packageVec := first slot4
@@ -323,7 +323,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
               package
           nil
         success = nil =>
-          if $monitorNewWorld = true then
+          if $monitorNewWorld then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
           nil
@@ -335,10 +335,10 @@ newLookupInCategories(op,sig,dom,dollar) ==
     if $monitorNewWorld then
       sayLooking1('"Looking at instantiated package ",package)
     res := basicLookup(op,sig,package,dollar) =>
-      if $monitorNewWorld = true then
+      if $monitorNewWorld then
         sayBrightly '"candidate default package succeeds"
       return res
-    if $monitorNewWorld = true then
+    if $monitorNewWorld then
       sayBrightly '"candidate fails -- continuing to search categories"
     nil
  
@@ -349,8 +349,8 @@ nrunNumArgCheck(num,bytevec,start,finish) ==
    nrunNumArgCheck(num,bytevec,start,finish)
  
 newLookupInCategories1(op,sig,dom,dollar) ==
-  $lookupDefaults : local := nil
-  if $monitorNewWorld = true then sayBrightly concat('"----->",
+  $lookupDefaults : local := false
+  if $monitorNewWorld then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := domainPredicates dom
   slot4 := domainRef(dom,4)
@@ -396,7 +396,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
               package
           nil
         not success =>
-          if $monitorNewWorld = true then
+          if $monitorNewWorld then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
           nil
@@ -408,10 +408,10 @@ newLookupInCategories1(op,sig,dom,dollar) ==
     if $monitorNewWorld then
       sayLooking1('"Looking at instantiated package ",package)
     res := lookupInDomainVector(op,sig,package,dollar) =>
-      if $monitorNewWorld = true then
+      if $monitorNewWorld then
         sayBrightly '"candidate default package succeeds"
       return res
-    if $monitorNewWorld = true then
+    if $monitorNewWorld then
       sayBrightly '"candidate fails -- continuing to search categories"
     nil
  

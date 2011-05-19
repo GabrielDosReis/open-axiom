@@ -204,7 +204,7 @@ postCategory u ==
   --RDJ: ugh_ please -- someone take away need for PROGN as soon as possible
   null l => u
   op :=
-    $insidePostCategoryIfTrue = true => "PROGN"
+    $insidePostCategoryIfTrue => "PROGN"
     "CATEGORY"
   [op,:[fn x for x in l]] where fn x ==
     $insidePostCategoryIfTrue: local := true

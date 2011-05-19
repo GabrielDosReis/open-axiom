@@ -2098,7 +2098,7 @@ unwritable? ob ==
 -- READTABLEs cannot presently be transformed back.
  
 writifyComplain s ==
-   $writifyComplained  = true => nil
+   $writifyComplained => nil
    $writifyComplained := true
    sayKeyedMsg("S2IH0027",[s]) 
 

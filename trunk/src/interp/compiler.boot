@@ -192,7 +192,7 @@ comp3(x,m,$e) ==
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
   op is ":" => compColon(x,m,e)
   op is "::" => compCoerce(x,m,e)
-  not ($insideCompTypeOf=true) and stringPrefix?('"TypeOf",PNAME op) =>
+  not $insideCompTypeOf and stringPrefix?('"TypeOf",PNAME op) =>
     compTypeOf(x,m,e)
   t:= compExpression(x,m,e)
   t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
@@ -425,7 +425,7 @@ compSymbol(s,m,e) ==
     [s,v.mode,e] --s has been SETQd
   m' := getmode(s,e) =>
     if not symbolMember?(s,$formalArgList) and not symbolMember?(s,$FormalMapVariableList) and
-      not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
+      not isFunction(s,e) and not $compForModeIfTrue then errorRef s
     [s,m',e] --s is a declared argument
   symbolMember?(s,$FormalMapVariableList) => 
     stackMessage('"no mode found for %1b",[s])
@@ -820,7 +820,7 @@ setqSingle(id,val,m,E) ==
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= coerce(T,m) or return nil
-  if $profileCompiler = true then
+  if $profileCompiler then
     not IDENTP id => nil
     key :=
       symbolMember?(id,$form.args) => "arguments"
@@ -1539,7 +1539,7 @@ maybeSpliceMode m ==
 
 compColon: (%Form,%Mode,%Env) -> %Maybe %Triple
 compColon([":",f,t],m,e) ==
-  $insideExpressionIfTrue=true => compColonInside(f,m,e,t)
+  $insideExpressionIfTrue => compColonInside(f,m,e,t)
     --if inside an expression, ":" means to convert to m "on faith"
   $lhsOfColon: local:= f
   t:=
@@ -1698,7 +1698,7 @@ coerceHard(T,m) ==
           modeEqual(m'',m') => [T.expr,m,T.env]
   string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
-      $bootStrapMode = true => [T.expr,m,$e]
+      $bootStrapMode => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
       coerceExtraHard(T,m)
   (m' is "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>

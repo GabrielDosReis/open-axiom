@@ -154,7 +154,7 @@ processInteractive(form, posnForm) ==
   object := processInteractive1(form, posnForm)
   --object := ERRORSET(['processInteractive1,LIST('QUOTE,form),['QUOTE,posnForm]],'t,'t)
   if not($ProcessInteractiveValue) then
-    if $reportInstantiations = true then
+    if $reportInstantiations then
       reportInstantiations()
       CLRHASH $instantRecord
     writeHistModesAndValues()
@@ -203,7 +203,7 @@ recordAndPrint(x,md) ==
   if $printStorageIfTrue then printStorage()
   if $printStatisticsSummaryIfTrue then printStatisticsSummary()
   if integer? $HTCompanionWindowID then mkCompanionPage md
-  $mkTestFlag = true => recordAndPrintTest md
+  $mkTestFlag => recordAndPrintTest md
   $runTestFlag =>
     $mkTestOutputType := md
     'done

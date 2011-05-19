@@ -428,13 +428,13 @@ opIsHasCat op ==
 --     (u := lookupInDomainVector(op,sig,domvec,domvec)) => u
 
 oldCompLookup(op, sig, domvec, dollar) ==
-  $lookupDefaults:local := nil
+  $lookupDefaults: local := false
   u := lookupInDomainVector(op,sig,domvec,dollar) => u
   $lookupDefaults := true
   lookupInDomainVector(op,sig,domvec,dollar)
 
 oldCompLookupNoDefaults(op, sig, domvec, dollar) ==
-  $lookupDefaults:local := nil
+  $lookupDefaults: local := false
   lookupInDomainVector(op,sig,domvec,dollar)
 
 hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
@@ -448,7 +448,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   if hashCode? sig and scalarEq?(sig, hashPercent) then 
          sig := hashType('(Mapping $), hashPercent)
   dollar = nil => systemError()
-  $lookupDefaults = true =>
+  $lookupDefaults =>
     hashNewLookupInCategories(op,sig,domain,dollar)      --lookup first in my cats
       or newLookupInAddChain(op,sig,domain,dollar)
   --fast path when called from newGoGet
@@ -526,8 +526,8 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
-  $lookupDefaults : local := nil
-  if $monitorNewWorld = true then sayBrightly concat('"----->",
+  $lookupDefaults : local := false
+  if $monitorNewWorld then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := domainPredicates dom
   packageVec := first slot4
@@ -576,7 +576,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
               package
           nil
         null success =>
-          if $monitorNewWorld = true then
+          if $monitorNewWorld then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
           nil
@@ -588,10 +588,10 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
     if $monitorNewWorld then
       sayLooking1('"Looking at instantiated package ",package)
     res := basicLookup(op,sig,package,dollar) =>
-      if $monitorNewWorld = true then
+      if $monitorNewWorld then
         sayBrightly '"candidate default package succeeds"
       return res
-    if $monitorNewWorld = true then
+    if $monitorNewWorld then
       sayBrightly '"candidate fails -- continuing to search categories"
     nil
 
