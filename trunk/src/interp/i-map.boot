@@ -707,7 +707,7 @@ compileDeclaredMap(op,sig,mapDef) ==
 putMapCode(op,code,sig,name,parms,isRecursive) ==
   -- saves the generated code and some other information about the
   -- function
-  codeInfo := VECTOR(op,code,sig,name,parms,isRecursive)
+  codeInfo := vector [op,code,sig,name,parms,isRecursive]
   allCode := [codeInfo,:get(op,'generatedCode,$e)]
   $e := putHist(op,'generatedCode,allCode,$e)
   op
@@ -774,7 +774,7 @@ compileCoerceMap(op,argTypes,mm) ==
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName name
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
-  setDynamicBinding(minivectorName,LIST2VEC $minivector)
+  symbolValue(minivectorName) := LIST2VEC $minivector
   compileInteractive [name,['LAMBDA,parms,body]]
   sig.target
 

@@ -1398,7 +1398,7 @@ backendCompileILAM(name,args,body) ==
   args' := [gensym() for . in 1..#args]
   body' := applySubst!(pairList(args,args'),body)
   property(name,'ILAM) := true
-  setDynamicBinding(name,["LAMBDA",args',:body'])
+  symbolValue(name) := ["LAMBDA",args',:body']
   name
 
 $CLOSEDFNS := nil
@@ -1445,7 +1445,7 @@ backendCompileSLAM(name,args,body) ==
     [true,["SETQ",al,app]]
   lamex := ["LAM",arg,["PROG",[g2],
                         ["RETURN",["COND",codePart1,codePart2]]]]
-  setDynamicBinding(al,nil)     -- clear the cache
+  symbolValue(al) := nil     -- clear the cache
   -- compile the worker function, first.
   u := [auxfn,["LAMBDA",args,:body]]
   COMP370 [u]

@@ -143,7 +143,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   $compiledOpNameList := [nam]
   minivectorName := makeInternalMapMinivectorName nam
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
-  setDynamicBinding(minivectorName,LIST2VEC $minivector)
+  symbolValue(minivectorName) := LIST2VEC $minivector
   argl := COPY argl     -- play it safe for optimization
   init :=
     not(isRecursive and $compileRecurrence and #argl = 1) => nil
@@ -417,7 +417,7 @@ clearLocalModemaps x ==
       if def:= get(fn,'definition,$e) then
         $e:= putHist(x,'value,objNew(def,$EmptyMode),$e)
       if cacheVec:= get(fn,'cacheInfo,$e) then
-        setDynamicBinding(cacheVec.cacheName,nil)
+        symbolValue(cacheVec.cacheName) := nil
       -- now clear the property list of the identifier
       $e := addIntSymTabBinding(x,nil,$e)
     sayKeyedMsg("S2IX0007",[x])
@@ -443,7 +443,7 @@ clearAllSlams x ==
     fn(thoseToClear,thoseCleared) ==
       for x in thoseToClear | not symbolMember?(x,thoseCleared) repeat
         slamListName:= mkCacheName x
-        setDynamicBinding(slamListName,nil)
+        symbolValue(slamListName) := nil
         thoseCleared:= ADJOIN(x,thoseCleared)
         someMoreToClear:=
           setDifference(LASSOC(x,$functorDependencyAlist),[:thoseToClear,:
@@ -451,4 +451,4 @@ clearAllSlams x ==
         append!(thoseToClear,someMoreToClear)
  
 clearSlam("functor")==
-  setDynamicBinding(mkCacheName functor,nil)
+  symbolValue(mkCacheName functor) := nil

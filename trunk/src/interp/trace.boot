@@ -231,15 +231,15 @@ traceOptionError(opt,keys) ==
 
 resetTimers () ==
   for timer in _/TIMERLIST repeat
-    setDynamicBinding(makeSymbol strconc(timer,'"_,TIMER"),0)
+    symbolValue(makeSymbol strconc(timer,'"_,TIMER")) := 0
 
 resetSpacers () ==
   for spacer in _/SPACELIST repeat
-    setDynamicBinding(makeSymbol strconc(spacer,'"_,SPACE"),0)
+    symbolValue(makeSymbol strconc(spacer,'"_,SPACE")) := 0
 
 resetCounters () ==
   for k in _/COUNTLIST repeat
-    setDynamicBinding(makeSymbol strconc(k,'"_,COUNT"),0)
+    symbolValue(makeSymbol strconc(k,'"_,COUNT")) := 0
 
 ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
@@ -278,7 +278,7 @@ domainToGenvar x ==
   $doNotAddEmptyModeIfTrue: local:= true
   (y:= unabbrevAndLoad x) and getConstructorKindFromDB opOf y = "domain" =>
     g:= genDomainTraceName y
-    setDynamicBinding(g,evalDomain y)
+    symbolValue(g) := evalDomain y
     g
 
 genDomainTraceName y ==

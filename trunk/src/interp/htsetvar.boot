@@ -133,7 +133,7 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
 
 htSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  symbolValue(htpProperty(htPage, 'variable)) := translateYesNo2TrueFalse val
   htKill(htPage,val)
 
 htShowIntegerPage(htPage, setData) ==
@@ -172,7 +172,7 @@ htSetInteger(htPage) ==
   val := chkRange htpLabelInputString(htPage,'value)
   not integer? val =>
     errorPage(htPage,['"Value Error",nil,'"\vspace{3}\centerline{{\em ",val,'"}}\vspace{2}\newline\centerline{Click on \UpBitmap{} to re-enter value}"])
-  setDynamicBinding(htpProperty(htPage, 'variable), val)
+  symbolValue(htpProperty(htPage, 'variable)) := val
   htKill(htPage,val)
 
 htShowFunctionPage(htPage,setData) ==
@@ -215,14 +215,14 @@ htSetvarDoneButton(message, func) ==
 
 htFunctionSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  symbolValue(htpProperty(htPage, 'variable)) := translateYesNo2TrueFalse val
   htSetFunCommandContinue(htPage,val)
 
 htSetFunCommand(htPage) ==
   variable := htpProperty(htPage,'variable)
   checker := htpProperty(htPage,'checker)
   value := htCheck(checker,htpLabelInputString(htPage,'value))
-  setDynamicBinding(variable,value) --kill this later
+  symbolValue(variable) := value --kill this later
   htSetFunCommandContinue(htPage,value)
 
 htSetFunCommandContinue(htPage,value) ==

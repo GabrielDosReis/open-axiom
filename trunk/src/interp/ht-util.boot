@@ -52,7 +52,7 @@ $activePageList := nil
 
 htpDestroyPage(pageName) ==
   symbolMember?(pageName,$activePageList) =>
-    setDynamicBinding(pageName, nil)
+    symbolValue(pageName) := nil
     $activePageList := remove!($activePageList,pageName)
 
 htpName htPage ==

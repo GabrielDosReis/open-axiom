@@ -102,10 +102,6 @@ getVMType d ==
 
 --%
 
-setDynamicBinding: (%Symbol,%Thing) -> %Thing
-setDynamicBinding(s,v) ==
-  symbolValue(s) := v
-
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
 macrop f ==

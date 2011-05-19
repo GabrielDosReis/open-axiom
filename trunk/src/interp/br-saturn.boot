@@ -607,8 +607,8 @@ htpMakeEmptyPage(propList,:options) ==
   name := IFCAR options or GENTEMP()
   if not $saturn then
     $activePageList := [name, :$activePageList]
-  setDynamicBinding(name, val := VECTOR(name, nil, nil, nil, nil, nil, propList, nil))
-  val
+  val := vector [name, nil, nil, nil, nil, nil, propList, nil]
+  symbolValue(name) :=  val
 
 --=======================================================================
 --              Redefinitions from br-con.boot

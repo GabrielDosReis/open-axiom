@@ -222,7 +222,7 @@ mkAtree3(x,op,argl) ==
   x is ['ADEF,arg,:r] =>
     r := mkAtreeValueOf r
     v :=
-      null arg => VECTOR(nil,nil,nil)
+      null arg => vector [nil,nil,nil]
       cons? arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
@@ -239,7 +239,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     a is [op,:arg] =>
       v :=
-        null arg => VECTOR(nil,nil,nil)
+        null arg => vector [nil,nil,nil]
         cons? arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
@@ -348,7 +348,7 @@ collectDefTypesAndPreds args ==
         pred  := addPred(pred,v.2)
     types := [nil]
     vars  := [args]
-  VECTOR(vars,types,pred)
+  vector [vars,types,pred]
  where
   addPred(old,new) ==
     null new => old

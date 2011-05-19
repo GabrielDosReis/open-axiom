@@ -496,7 +496,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- indicating under what conditions this
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
-  emptyVector := VECTOR()
+  emptyVector := vector []
   domainShell := newShell($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat
     vectorRef(domainShell,i) := vectorRef($domainShell,i)

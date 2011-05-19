@@ -115,7 +115,7 @@ htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
   if string? value and fun then value := FUNCALL(fun,value)
 --SCM::what to do???  if not integer? value then userError ???
-  setDynamicBinding(variable,value)
+  symbolValue(variable) := value
   htSystemVariables ()
 
 htSetSystemVariable(htPage,[name,value]) ==
@@ -123,7 +123,7 @@ htSetSystemVariable(htPage,[name,value]) ==
     value = 'on => true
     value = 'off => nil
     value
-  setDynamicBinding(name,value)
+  symbolValue(name) := value
   htSystemVariables ()
 
 htGloss(pattern) == htGlossPage(nil,dbNonEmptyPattern pattern or '"*",true)
