@@ -392,21 +392,6 @@ optSEQ ["SEQ",:l] ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
-optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
-  len=1 =>
-    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
-    keyedSystemError("S2OO0002",[ind])
-  len=2 =>
-    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
-    ind = 1 => ['SEQ,['%store,['%tail,name],expr],['EXIT,['%tail,name]]]
-    keyedSystemError("S2OO0002",[ind])
-  ['%store,['%vref,name,ind],expr]
- 
-optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len = 1 => ['%list,['%head,name]]
-  len = 2 => ['%pair,['%head,name],['%tail,name]]
-  ["REPLACE",["MAKE_-VEC",len],name]
- 
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
@@ -813,8 +798,7 @@ for x in '( (%call         optCall) _
            (CATCH        optCatch)_
            (%when        optCond)_
            (%retract     optRetract)_
-           (%CollectV    optCollectVector)_
-           (SETRECORDELT optSETRECORDELT)) _
+           (%CollectV    optCollectVector)) _
    repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 

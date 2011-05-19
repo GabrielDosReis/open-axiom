@@ -1,5 +1,16 @@
 2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-analy.boot (bottomUpForm0): Tidy.
+	* interp/i-eval.boot (evalForm): Likewise.
+	* interp/buildom.boot (formalRecordField): New.
+	(eltRecordFun): Use it.
+	(seteltRecordFun): New.
+	* interp/g-opt.boot (optSETRECORDELT): Remove.
+	(optRECORDCOPY): Likewise.
+	* interp/vmlisp.lisp (MAKE-VEC): Likewise.
+
+2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-eval.boot (evalForm): Adjust.
 	* interp/buildom.boot (mkRecordFun): New.
 	(eltRecordFun): Likewise.

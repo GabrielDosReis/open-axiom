@@ -598,16 +598,6 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
   m := isType t =>
     bottomUpType(t, m)
 
-  opName = 'copy and argModeSetList is [[['Record,:rargs]]] =>
-    -- this is a hack until Records go through the normal
-    -- modemap selection process
-    rtype := ['Record,:rargs]
-    code := optRECORDCOPY(['RECORDCOPY,getArgValue(first argl, rtype),#rargs])
-
-    val := object(code,rtype)
-    putValue(t,val)
-    putModeSet(t,[rtype])
-
   m := getModeOrFirstModeSetIfThere op
   m is ['Record,:.] and argModeSetList is [[['Variable,x]]] and
       member(x,getUnionOrRecordTags m) and (u := bottomUpElt t) => u

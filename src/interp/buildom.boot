@@ -573,7 +573,6 @@ constructorCategory (title is [op,:.]) ==
   canonicalForm(cat) := title
   cat
 
---mkMappingFunList(nam,mapForm,e) == [[],e]
 mkMappingFunList(nam,mapForm,e) ==
   nargs := #rest mapForm
   dc := gensym()
@@ -595,16 +594,27 @@ mkRecordFun n ==
     '%vector
   ["XLAM",args,[op,:args]]
 
+++ Build expression for selecting the i-th field of a fomal record
+++ variable of length `n'.
+formalRecordField(n,i) ==
+  n < 2 => ['%head,"#1"]
+  n = 2 =>
+    i = 0 => ['%head,"#1"]
+    ['%tail,"#1"]
+  ['%vref,"#1",i]
+
 ++ Build an inline function for selecting field `i' or a
 ++ record of length `n'.  
 eltRecordFun(n,i) ==
-  body :=
-    n < 2 => ['%head,"#1"]
-    n = 2 =>
-      i = 0 => ['%head,"#1"]
-      ['%tail,"#1"]
-    ['%vref,"#1",i]
-  ["XLAM",["#1","#2"],body]
+  ["XLAM",["#1","#2"],formalRecordField(n,i)]
+
+seteltRecordFun(n,i) ==
+  args := take(3,$FormalMapVariableList)
+  field := formalRecordField(n,i)
+  body := 
+    n > 2 => ['%store,field,"#3"]
+    ['SEQ,['%store,field,"#3"],['EXIT,field]]
+  ["XLAM",args,body]
 
 copyRecordFun n ==
   body := 
@@ -624,10 +634,9 @@ mkRecordFunList(nam,["Record",:Alist],e) ==
 	  ["coerce",[$OutputForm,nam],["ELT",dc,$FirstParamSlot+len+1]],:
 	   [["elt",[A,nam,PNAME a],eltRecordFun(len,i)]
 	       for i in 0.. for [.,a,A] in Alist],:
-	     [["setelt",[A,nam,PNAME a,A],["XLAM",["$1","$2","$3"],
-	       ["SETRECORDELT","$1",i, len,"$3"]]]
-		 for i in 0.. for [.,a,A] in Alist],:
-		   [["copy",[nam,nam],copyRecordFun len]]]
+	     [["setelt",[A,nam,PNAME a,A],seteltRecordFun(len,i)]
+		 for i in 0.. for [.,a,A] in Alist],
+		   ["copy",[nam,nam],copyRecordFun len]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==

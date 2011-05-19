@@ -782,8 +782,6 @@
 
 ; 16.1 Creation
 
-(defun MAKE-VEC (n) (make-array n))
-
 (defun GETREFV (n)
   (make-array n :initial-element nil))
 
