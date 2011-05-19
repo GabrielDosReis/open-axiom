@@ -212,7 +212,7 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
       xVals := xRange plot
       empty?(pointLists := listBranches plot) =>
         [nil(),xVals,segment(0,0)]
-      more?(pointLists := listBranches plot,1) =>
+      #(pointLists := listBranches plot) > 1 =>
         error "clipDraw: plot has more than one branch"
       empty?(pointList := first pointLists) =>
         [nil(),xVals,segment(0,0)]

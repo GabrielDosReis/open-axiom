@@ -273,7 +273,7 @@ TopLevelDrawFunctionsForCompiledFunctions():
         segList := retract(cl :: Any)$ANY1(L SEG)
         empty? segList =>
           error "draw: you may specify at least 1 segment for 2D clipping"
-        more?(segList,2) =>
+        #segList > 2 =>
           error "draw: you may specify at most 2 segments for 2D clipping"
         xLo : SF := 0; xHi : SF := 0; yLo : SF := 0; yHi : SF := 0
         if empty? rest segList then
@@ -1039,14 +1039,14 @@ TopLevelDrawFunctionsForAlgebraicCurves(R,Ex): Exports == Implementation where
       yRangeFloat : SEG F := segment(0,0)    -- dummy value
       if not ratRange case "failed" then
         ranges := retract(ratRange :: Any)$ANY1(L SEG RN)
-        not size?(ranges,2) => error "draw: you must specify two ranges"
+        #ranges ~= 2 => error "draw: you must specify two ranges"
         xRange := first ranges; yRange := second ranges
         xRangeFloat := map(convert(#1)@Float,xRange)@(SEG F)
         yRangeFloat := map(convert(#1)@Float,yRange)@(SEG F)
         floatRanges := [xRangeFloat,yRangeFloat]
       else
         floatRanges := retract(floatRange :: Any)$ANY1(L SEG F)
-        not size?(floatRanges,2) =>
+        #floatRanges ~= 2 =>
           error "draw: you must specify two ranges"
         xRangeFloat := first floatRanges
         yRangeFloat := second floatRanges
