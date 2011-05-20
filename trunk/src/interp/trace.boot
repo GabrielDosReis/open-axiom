@@ -173,7 +173,7 @@ saveMapSig(funNames) ==
 getMapSig(mapName,subName) ==
   lmms:= get(mapName,'localModemap,$InteractiveFrame) =>
     for mm in lmms until sig repeat
-      second mm = subName => sig:= CDAR mm
+      second mm = subName => sig := mm.mmSignature
     sig
 
 getTraceOption (x is [key,:l]) ==

@@ -1245,7 +1245,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   if which = '"operation" then
     $signature : local :=
       builtinFunctorName? conname => nil
-      CDAR getConstructorModemapFromDB conname
+      getConstructorModemapFromDB(conname).mmSignature
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.

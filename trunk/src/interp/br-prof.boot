@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
     kind = 'category =>
       [makeDefaultPackageName symbolName conname,"$",:rest conform]
     conform
-  faTypes  := CDDAR getConstructorModemapFromDB conname
+  faTypes := getConstructorModemapFromDB(conname).mmSource
 
   conArgTypes := 
     applySubst(pairList($FormalMapVariableList,IFCDR conform),faTypes)

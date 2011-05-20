@@ -205,7 +205,7 @@ genTempCategoryTable() ==
 
 addToCategoryTable con ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
-  u := CAAR getConstructorModemapFromDB con --domain
+  u := getConstructorModemapFromDB(con).mmDC --domain
   alist := getCategoryExtensionAlist u
   tableValue(_*ANCESTORS_-HASH_*,first u) := alist
   alist

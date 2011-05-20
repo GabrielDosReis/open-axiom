@@ -763,8 +763,8 @@ selectMostGeneralMm mmList ==
   genMm := first mmList
   while mml repeat
     [mm,:mml] := mml
-    and/[canCoerceFrom(genMmArg,mmArg) for mmArg in CDAR mm
-      for genMmArg in CDAR genMm] => genMm := mm
+    and/[canCoerceFrom(genMmArg,mmArg) for mmArg in mm.mmSignature
+      for genMmArg in genMm.mmSignature] => genMm := mm
   genMm
 
 findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
@@ -800,8 +800,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       q := nil
       r := nil
       for mm in rest p repeat
-        -- CDAR of mm is the signature argument list
-        if isHomogeneousList CDAR mm then q := [mm,:q]
+        if isHomogeneousList mm.mmSignature then q := [mm,:q]
         else r := [mm,:r]
       q := allOrMatchingMms(q,args1,tar,dc)
       for mm in q repeat
