@@ -112,10 +112,10 @@ asySubstMapping u ==
 --  name := makeSymbol PATHNAME_-NAME asyFile
 --  modemap :=
 --    [[[name],['CATEGORY,'domain,
---      :[asyMkSignature(con,CDAR mm) for [con,:mm] in $mmAlist]]],['T,name]]
---  opAlist := [[con,[CDAR mm]] for [con,:mm] in $mmAlist]
+--      :[asyMkSignature(con,mm.mmSignature) for [con,:mm] in $mmAlist]]],['T,name]]
+--  opAlist := [[con,[mm.mmSignature]] for [con,:mm] in $mmAlist]
 --  documentation :=
---    [[con,[CDAR mm,fn LASSOC(con,$docAlist)]] for [con,:mm] in $mmAlist]
+--    [[con,[mm.mmSignature,fn LASSOC(con,$docAlist)]] for [con,:mm] in $mmAlist]
 --      where fn u ==
 --            LASSOC('constructor,u) is [[=nil,doc]] => doc
 --            '""
@@ -272,7 +272,7 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
   pred1 :=
     kind is 'category => [["*1",form]]
     nil
-  signature  := CDAR modemap
+  signature  := modemap.mmSignature
   domainList :=
     [[a,m] for a in rest form for m in rest signature |
        asIsCategoryForm m]

@@ -74,7 +74,7 @@ hashType(type, percentHash) ==
                         hash := hashCombine(hashType(arg, percentHash), hash)
                 hash
 
-        cmm :=   CDDAR getConstructorModemapFromDB op
+        cmm := getConstructorModemapFromDB(op).mmSource
         cosig := rest getDualSignatureFromDB op
         for arg in args for c in cosig for ct in cmm repeat
                 if c then

@@ -543,9 +543,9 @@ knownInfo pred ==
   pred is ["SIGNATURE",name,op,sig,:.] =>
     v:= get(op,"modemap",$e)
     for w in v repeat
-      ww:= CDAR w  --the actual signature part
+      ww := w.mmSignature  --the actual signature part
       ww = sig =>
-        CAADR w  = true => return true
+        w.mmCondition  = true => return true
         false
         --error '"knownInfo"
   false

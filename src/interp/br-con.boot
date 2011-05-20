@@ -190,7 +190,7 @@ kArgPage(htPage,arg) ==
   [op,:args] := conform := htpProperty(htPage,'conform)
   domname := htpProperty(htPage,'domname)
   heading := htpProperty(htPage,'heading)
-  source := CDDAR getConstructorModemapFromDB op
+  source := getConstructorModemapFromDB(op).mmSource
   n := position(arg,args)
   typeForm := sublisFormal(args,source . n)
   domTypeForm := mkDomTypeForm(typeForm,conform,domname)
