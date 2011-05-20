@@ -1,3 +1,7 @@
+2011-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compConstructorCategory): Rewrite.
+
 2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/aggcat.spad.pamphlet (Aggregate) [more?,less?,size?]:
