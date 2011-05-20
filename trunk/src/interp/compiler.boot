@@ -733,13 +733,31 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 --% SPECIAL EVALUATION FUNCTIONS
 
-compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
-
 compEnumCat(x,m,e) ==
   for arg in x.args repeat
     IDENTP arg => nil   -- OK
     stackAndThrow('"all arguments to %1b must be identifiers",[x.op])
   [x,resolve($Category,m),e]
+
+compConstructorCategory(x,m,e) ==
+  x is [ctor,:args] =>
+    ctor in '(RecordCategory UnionCategory MappingCategory) =>
+      failed := false
+      colons := 0
+      args' := []
+      while not failed for y in args repeat
+        y is [":",.,t] =>
+          colons := colons + 1
+          [t',.,e] := compForMode(t,$EmptyMode,e) or return (failed := true)
+          args' := [[y.op,second y,t'],:args']
+        [t',.,e] := compForMode(y,$EmptyMode,e) or return (failed := true)
+        args' := [t',:args']
+      failed => nil
+      colons ~= 0 and colons ~= #args and ctor isnt 'MappingCategory => nil
+      [[ctor,:reverse! args'],resolve($Category,m),e]
+    ctor is 'EnumerationCategory => compEnumCat(x,m,e)
+    nil
+  nil
 
 --% SUBSET CATEGORY
 
