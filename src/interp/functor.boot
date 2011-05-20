@@ -196,34 +196,31 @@ CategoriesFromGDC x ==
  
 compCategories u ==
   atom u => u
-  cons? first u =>
-    error ['"compCategories: need an atom in operator position", first u]
-  first u is "Record" =>
+  cons? u.op =>
+    error ['"compCategories: need an atom in operator position", u.op]
+  u.op in '(Record Union Mapping) =>
     -- There is no modemap property for these guys so do it by hand.
-    [first u, :[[":", a.1, compCategories1(a.2,$SetCategory)] for a in rest u]]
-  first u in '(Union Mapping) =>
-    -- There is no modemap property for these guys so do it by hand.
-    [first u, :[compCategories1(a,$SetCategory) for a in rest u]]
+    [u.op, :[compCategories1(a,$SetCategory) for a in u.args]]
   u is ['SubDomain,D,.] => compCategories D
-  v:=get(first u,'modemap,$e)
+  v := get(u.op,'modemap,$e)
   atom v =>
-    error ['"compCategories: could not get proper modemap for operator",first u]
+    error ['"compCategories: could not get proper modemap for operator",u.op]
   if rest v then
     sayBrightly ['"compCategories: ", '"%b", '"Warning", '"%d",
                  '"ignoring unexpected stuff at end of modemap"]
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....
   --
-  if rest v and null CAAAR v then v:=rest v
-  v:= CDDAAR v
-  v:=resolvePatternVars(v, rest u) -- replaces #n forms
+  if rest v and null CAAAR v then
+    v := rest v
+  v := resolvePatternVars(first(v).mmSource, u.args) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
-  u:=[first u,:[compCategories1(a,b) for a in rest u for b in v]]
-  u
+  [u.op,:[compCategories1(a,b) for a in u.args for b in v]]
  
 compCategories1(u,v) ==
 -- v is the mode of u
   atom u => u
+  u is [":",x,t] => [u.op,x,compCategories1(t,v)]
   isCategoryForm(v,$e) => compCategories u
   [c,:.] := comp(macroExpand(u,$e),v,$e) => c
   error 'compCategories1
