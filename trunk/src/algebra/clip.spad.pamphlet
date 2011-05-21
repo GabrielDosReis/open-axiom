@@ -96,6 +96,8 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
     Pnan? p == any?(Fnan?,p)
    
     iClipParametric(pointLists,fraction,scale) ==
+      import Point SF
+      import List Point SF
       -- error checks and special cases
       negative? fraction or (fraction > 1) =>
         error "clipDraw: fraction should be between 0 and 1"

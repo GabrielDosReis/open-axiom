@@ -232,6 +232,7 @@ TopLevelDrawFunctionsForCompiledFunctions():
     import AnyFunctions1((SF,SF,SF) -> SF)
     import DrawOptionFunctions0
     import SPACE3
+    import DROP
 
     EXTOVARERROR : String := _
       "draw: when specifying function, left hand side must be a variable"
@@ -778,6 +779,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
 --% Two Dimensional Function Plots
  
     draw(f:Ex,bind:BIND,l:L DROP) ==
+      import DROP
       -- create title if necessary
       if not option?(l,"title" :: Symbol) then
         s:String := unparse(convert(f)@InputForm)
@@ -792,6 +794,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
 --% Parametric Plane Curves
 
     draw(ppc:PPC,bind:BIND,l:L DROP) ==
+      import DROP
       f := coordinate(ppc,1); g := coordinate(ppc,2)
       -- create title if necessary
       if not option?(l,"title" :: Symbol) then
@@ -812,6 +815,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
 ------------------------------------------------------------------------
 
     makeObject(psc:PSC,tBind:BIND,l:L DROP) ==
+      import DROP
       -- obtain dependent variable and coordinate functions
       t := variable tBind; tSeg := segment tBind
       f := coordinate(psc,1); g := coordinate(psc,2); h := coordinate(psc,3)
@@ -835,6 +839,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
       makeObject(psc,tBind,nil())
 
     draw(psc:PSC,tBind:BIND,l:L DROP) ==
+      import DROP
       -- obtain dependent variable and coordinate functions
       t := variable tBind; tSeg := segment tBind
       f := coordinate(psc,1); g := coordinate(psc,2); h := coordinate(psc,3)
@@ -864,6 +869,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
 --% Three Dimensional Function Plots
 
     makeObject(f:Ex,xBind:BIND,yBind:BIND,l:L DROP) ==
+      import DROP
       -- create title if necessary
       if not option?(l,"title" :: Symbol) then
         s:String := unparse(convert(f)@InputForm)
@@ -883,6 +889,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
       makeObject(f,xBind,yBind,nil())
 
     draw(f:Ex,xBind:BIND,yBind:BIND,l:L DROP) ==
+      import DROP
       -- create title if necessary
       if not option?(l,"title" :: Symbol) then
         s:String := unparse(convert(f)@InputForm)
@@ -904,6 +911,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
 --% parametric surface
 
     makeObject(s:PSF,uBind:BIND,vBind:BIND,l:L DROP) ==
+      import DROP
       f := coordinate(s,1); g := coordinate(s,2); h := coordinate(s,3)
       if not option?(l,"title" :: Symbol) then
         s:String := unparse(convert(f)@InputForm)
@@ -923,6 +931,7 @@ TopLevelDrawFunctions(Ex:Join(ConvertibleTo InputForm,SetCategory)):
       makeObject(s,uBind,vBind,nil())
 
     draw(s:PSF,uBind:BIND,vBind:BIND,l:L DROP) ==
+      import DROP
       f := coordinate(s,1); g := coordinate(s,2); h := coordinate(s,3)
       -- create title if necessary
       if not option?(l,"title" :: Symbol) then
@@ -995,6 +1004,7 @@ TopLevelDrawFunctionsForAlgebraicCurves(R,Ex): Exports == Implementation where
     import SegmentFunctions2(RN,F)
     import SegmentFunctions2(F,RN)
     import AnyFunctions1(L SEG RN)
+    import DROP
 
     drawToScaleRanges: (SEG F,SEG F) -> L SEG F
     drawToScaleRanges(xVals,yVals) ==

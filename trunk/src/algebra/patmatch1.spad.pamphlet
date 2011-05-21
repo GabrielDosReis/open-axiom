@@ -309,6 +309,7 @@ PatternMatchKernel(S, E): Exports == Implementation where
       patternMatchOpt   : (E, List PAT, PRS, E) -> PRS
 
       patternMatchOpt(x, lp, l, id) ==
+        import PAT
         (u := optpair lp) case List(PAT) =>
           failed?(l := addMatch(first(u::List(PAT)), id, l)) => failed()
           patternMatch(x, second(u::List(PAT)), l)

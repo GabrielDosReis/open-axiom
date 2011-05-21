@@ -330,6 +330,9 @@ AlgebraicManipulations(R, F): Exports == Implementation where
         concat([concat(k, same), concat(n, expo)], ll)
 
       rootProduct x ==
+        import P,F,Z
+        import List K
+        import List Z
         for rec in breakup rootkernels tower x repeat
           k0 := first(l := rec.ker)
           nx := numer x; dx := denom x
