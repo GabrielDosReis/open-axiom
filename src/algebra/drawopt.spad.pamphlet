@@ -244,6 +244,7 @@ DrawOptionFunctions1(S:Type): Exports == Implementation where
     ++ is contained in the list of drawing options, l, which is defined
     ++ by the draw command.
  Implementation ==> add
+  import DrawOption
   option(l, s) ==
     (u := option(l, s)@Union(Any, "failed")) case "failed" => "failed"
     retract(u::Any)$AnyFunctions1(S)

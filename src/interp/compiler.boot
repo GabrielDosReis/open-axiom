@@ -2395,9 +2395,6 @@ compRepeatOrCollect(form,m,e) ==
 --  fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
 --  [['%call,fn,x],target,e]
  
-listOrVectorElementMode x ==
-  x is [a,b,:.] and symbolMember?(a,'(PrimitiveArray Vector List)) => b
-
 ++ Return the least Integer subdomain that can represent values
 ++ of both Integer subdomains denoted by the forms `x' and `y.
 joinIntegerModes(x,y,e) ==

@@ -220,6 +220,7 @@ PrimitiveRatDE(F, UP, L, LQ): Exports == Implementation where
     indicialEquation(op:L, a:F) == indeq(monomial(1, 1) - a::UP, op)
 
     splitDenominator(op, lg) ==
+      import RF
       cd := splitDenominator coefficients op
       f  := cd.den / gcd(cd.num)
       l:L := 0

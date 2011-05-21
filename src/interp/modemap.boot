@@ -227,11 +227,10 @@ addNewDomain(domain,e) ==
 
 augModemapsFromDomain(name,functorForm,e) ==
   symbolMember?(KAR name or name,$DummyFunctorNames) => e
-  name=$Category or isCategoryForm(name,e) => e
-  listMember?(name,curDomainsInScope:= getDomainsInScope e) => e
+  name = $Category or isCategoryForm(name,e) => e
+  listMember?(name,getDomainsInScope e) => e
   if super := superType functorForm then
     e := addNewDomain(super,e)
-  if innerDom:= listOrVectorElementMode name then e:= addDomain(innerDom,e)
   if name is ["Union",:dl] then for d in stripUnionTags dl
                          repeat e:= addDomain(d,e)
   augModemapsFromDomain1(name,functorForm,e)
@@ -239,18 +238,18 @@ augModemapsFromDomain(name,functorForm,e) ==
 augModemapsFromDomain1(name,functorForm,e) ==
   property(KAR functorForm,"makeFunctionList") =>
     addConstructorModemaps(name,functorForm,e)
-  atom functorForm and (catform:= getmode(functorForm,e)) =>
+  atom functorForm and (catform := getmode(functorForm,e)) =>
     augModemapsFromCategory(name,name,functorForm,catform,e)
-  mappingForm:= getmodeOrMapping(KAR functorForm,e) =>
-    ["Mapping",categoryForm,:functArgTypes]:= mappingForm
-    catform:= substituteCategoryArguments(rest functorForm,categoryForm)
+  mappingForm := getmodeOrMapping(KAR functorForm,e) =>
+    ["Mapping",categoryForm,:functArgTypes] := mappingForm
+    catform := substituteCategoryArguments(rest functorForm,categoryForm)
     augModemapsFromCategory(name,name,functorForm,catform,e)
   stackMessage('"%1pb is an unknown mode",[functorForm])
   e
  
 substituteCategoryArguments(argl,catform) ==
-  argl:= substitute("$$","$",argl)
-  arglAssoc:= [[INTERNL("#",STRINGIMAGE i),:a] for i in 1.. for a in argl]
+  argl := substitute("$$","$",argl)
+  arglAssoc := [[INTERNL("#",STRINGIMAGE i),:a] for i in 1.. for a in argl]
   applySubst(arglAssoc,catform)
  
          --Called, by compDefineFunctor, to add modemaps for $ that may

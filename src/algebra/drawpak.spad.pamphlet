@@ -96,6 +96,7 @@ DrawComplex(): Exports == Implementation where
       min(max(x, -clipValue), clipValue)
  
     drawComplex(f, realRange, imagRange, arrows?) ==
+      import Point SF
       delReal := (hi(realRange) - lo(realRange))/realSteps::SF
       delImag := (hi(imagRange) - lo(imagRange))/imagSteps::SF
       funTable: ARRAY2(PC) := 
@@ -137,6 +138,7 @@ DrawComplex(): Exports == Implementation where
       makeViewport3D(space, "Complex Function")$VIEW3D
  
     drawComplexVectorField(f, realRange, imagRange): VIEW3D ==
+      import Point SF
       -- compute the steps size of the grid
       delReal := (hi(realRange) - lo(realRange))/realSteps::SF
       delImag := (hi(imagRange) - lo(imagRange))/imagSteps::SF

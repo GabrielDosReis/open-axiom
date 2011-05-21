@@ -1,5 +1,11 @@
 2011-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/modemap.boot (augModemapsFromDomain): Don't add modemaps
+	for element types of Vector or List aggregates.
+	* algebrar/: Adjust algebras that depended on this behaviour.
+
+2011-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compConstructorCategory): Rewrite.
 
 2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
