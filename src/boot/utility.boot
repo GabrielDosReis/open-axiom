@@ -32,11 +32,12 @@
 
 import initial_-env
 namespace BOOTTRAN
+
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, applySubst, applySubst!, applySubstNQ,
-  remove,removeSymbol) where
+  remove,removeSymbol,atomic?) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -45,6 +46,13 @@ module utility (objectMember?, symbolMember?, stringMember?,
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) -> %List %Thing
+    atomic?: %Thing -> %Boolean
+
+--%
+
+++ Return true if `x' is an atom of a quotation.
+atomic? x ==
+  not cons? x or x.op is 'QUOTE
 
 --% membership operators
 

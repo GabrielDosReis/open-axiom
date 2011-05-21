@@ -205,9 +205,8 @@ compFluid id ==
  
 compFluidize x==
   x = nil => nil
-  symbol? x and bfBeginsDollar x=>compFluid x
-  atom x => x
-  x is ["QUOTE",:.] => x
+  symbol? x and bfBeginsDollar x => compFluid x
+  atomic? x => x
   [compFluidize(first x),:compFluidize(rest x)]
  
 bfPlace x ==
@@ -497,8 +496,8 @@ bfLeave x ==
   ["%Leave",x]
  
 bfSUBLIS(p,e)==
-  atom e=>bfSUBLIS1(p,e)
-  e is ["QUOTE",:.] => e
+  atom e => bfSUBLIS1(p,e)
+  e.op is 'QUOTE => e
   [bfSUBLIS(p,first e),:bfSUBLIS(p,rest e)]
  
 +++ Returns e/p, where e is an atom.  We assume that the
@@ -961,7 +960,8 @@ shoeFluids x==
 
 shoeATOMs x ==
   x = nil => nil
-  atom x => [x]
+  symbol? x => [x]
+  atom x => nil
   [:shoeATOMs first x,:shoeATOMs rest x]
 
 ++ Return true if `x' is an identifier name that designates a

@@ -38,7 +38,6 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
-  atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List %Form,%List %Form) -> %List %Pair(%Form,%Form)
   mkList: %List %Form -> %Form
@@ -106,11 +105,6 @@ isSharpVarWithNum x ==
     d := stringChar(p,i)
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
-
-++ Returns true if `x' is either an atom or a quotation.
-atomic? x ==
-  cons? x => x.op is 'QUOTE
-  true
 
 --% Sub-domains information handlers
 

@@ -272,8 +272,7 @@
   (COND
     ((NULL |x|) NIL)
     ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|)) (|compFluid| |x|))
-    ((ATOM |x|) |x|)
-    ((AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)) |x|)
+    ((|atomic?| |x|) |x|)
     (T (CONS (|compFluidize| (CAR |x|)) (|compFluidize| (CDR |x|))))))
 
 (DEFUN |bfPlace| (|x|) (CONS '|%Place| |x|))
@@ -740,7 +739,7 @@
 (DEFUN |bfSUBLIS| (|p| |e|)
   (COND
     ((ATOM |e|) (|bfSUBLIS1| |p| |e|))
-    ((AND (CONSP |e|) (EQ (CAR |e|) 'QUOTE)) |e|)
+    ((EQ (CAR |e|) 'QUOTE) |e|)
     (T (CONS (|bfSUBLIS| |p| (CAR |e|)) (|bfSUBLIS| |p| (CDR |e|))))))
 
 (DEFUN |bfSUBLIS1| (|p| |e|)
@@ -1800,7 +1799,8 @@
 (DEFUN |shoeATOMs| (|x|)
   (COND
     ((NULL |x|) NIL)
-    ((ATOM |x|) (LIST |x|))
+    ((SYMBOLP |x|) (LIST |x|))
+    ((ATOM |x|) NIL)
     (T (|append| (|shoeATOMs| (CAR |x|)) (|shoeATOMs| (CDR |x|))))))
 
 (DEFUN |isDynamicVariable| (|x|)

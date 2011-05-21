@@ -10,7 +10,8 @@
                |charMember?| |scalarMember?| |listMember?| |reverse|
                |reverse!| |lastNode| |append| |append!| |copyList|
                |substitute| |substitute!| |setDifference| |applySubst|
-               |applySubst!| |applySubstNQ| |remove| |removeSymbol|)))
+               |applySubst!| |applySubstNQ| |remove| |removeSymbol|
+               |atomic?|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
                 |substitute|))
@@ -40,6 +41,10 @@
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|) |%Thing|)
                     (|%List| |%Thing|))
                 |remove|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
+
+(DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
