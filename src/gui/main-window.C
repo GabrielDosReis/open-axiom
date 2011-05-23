@@ -33,7 +33,7 @@
 #include <QAction>
 #include <QScrollArea>
 
-#include "engine-widget.h"
+#include "debate.h"
 #include "main-window.h"
 
 namespace OpenAxiom {
