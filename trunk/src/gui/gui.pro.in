@@ -12,12 +12,12 @@ TARGET = gui
 VPATH += @srcdir@
 
 ## Our headers
-HEADERS += main-window.h
+HEADERS += conversation.h main-window.h debate.h
 INCLUDEPATH +=  @srcdir@
 DEPENDPATH += @srcdir@
 
 ## Source files
-SOURCES += main-window.C main.C
+SOURCES += conversation.C main-window.C debate.C main.C
 
 ## Additional support libraries
 LIBS += $$OA_LIB
