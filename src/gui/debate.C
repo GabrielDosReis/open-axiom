@@ -29,14 +29,16 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <QApplication>
-#include "main-window.h"
+#include <QScrollBar>
+#include "debate.h"
 
-int
-main(int argc, char* argv[]) {
-   using namespace OpenAxiom;
-   QApplication app(argc, argv);
-   MainWindow main_win;
-   main_win.show();
-   return app.exec();
+namespace OpenAxiom {
+
+   Debate::Debate(QWidget* parent)
+         : QScrollArea(parent), conv(*this) {
+      setViewportMargins(0, 0, 0, 0);
+      setWidget(&conv);
+   }
+
+   Debate::~Debate() { }
 }

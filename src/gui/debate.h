@@ -29,14 +29,28 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <QApplication>
-#include "main-window.h"
+#ifndef OPENAXIOM_DEBATE_INCLUDED
+#define OPENAXIOM_DEBATE_INCLUDED
 
-int
-main(int argc, char* argv[]) {
-   using namespace OpenAxiom;
-   QApplication app(argc, argv);
-   MainWindow main_win;
-   main_win.show();
-   return app.exec();
+#include <QWidget>
+#include <QFontMetrics>
+#include <QScrollArea>
+#include "conversation.h"
+
+namespace OpenAxiom {
+   
+   class Debate : public QScrollArea {
+   public:
+      explicit Debate(QWidget*);
+      ~Debate();
+
+   private:
+      Conversation conv;
+   };
 }
+
+#endif  // OPENAXIOM_DEBATE_INCLUDED
+
+// Local Variables:
+// mode: c++
+// End:

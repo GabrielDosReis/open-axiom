@@ -31,18 +31,23 @@
 
 #include <QMenuBar>
 #include <QAction>
+#include <QScrollArea>
 
+#include "engine-widget.h"
 #include "main-window.h"
 
 namespace OpenAxiom {
-   MainWindow::MainWindow() {
+   
+   MainWindow::MainWindow() : tabs(this) {
+      setCentralWidget(&tabs);
+      tabs.addTab(new Debate(&tabs), "Main Frame");
       QMenu* file = menuBar()->addMenu(tr("&File"));
       QAction* action = new QAction(tr("Quit"), this);
       file->addAction(action);
       action->setShortcut(tr("Ctrl+Q"));
       connect(action, SIGNAL(triggered()), this, SLOT(close()));
    }
-
+   
    MainWindow::~MainWindow() {
    }
 }

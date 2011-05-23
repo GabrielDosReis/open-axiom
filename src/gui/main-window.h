@@ -33,6 +33,7 @@
 #define OPENAXIOM_GUI_MAIN_WINDOW_INCLUDED
 
 #include <QMainWindow>
+#include <QTabWidget>
 
 namespace OpenAxiom {
    // -- Main application window --
@@ -41,6 +42,9 @@ namespace OpenAxiom {
    public:
       MainWindow();
       ~MainWindow();
+
+   private:
+      QTabWidget tabs;
    };
 }
 
