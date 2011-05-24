@@ -44,6 +44,8 @@ namespace OpenAxiom {
       explicit Debate(QWidget*);
       ~Debate();
 
+      Conversation* exchanges() { return &conv; }
+
    private:
       Conversation conv;
    };

@@ -38,7 +38,13 @@ namespace OpenAxiom {
          : QScrollArea(parent), conv(*this) {
       setViewportMargins(0, 0, 0, 0);
       setWidget(&conv);
+      viewport()->setAutoFillBackground(true);
+      viewport()->setBackgroundRole(conv.backgroundRole());
+      QSize sz = conv.sizeHint();
+      horizontalScrollBar()->setRange(0, sz.width());
+      verticalScrollBar()->setRange(0, sz.height());
    }
 
    Debate::~Debate() { }
+
 }
