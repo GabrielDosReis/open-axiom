@@ -32,11 +32,13 @@
 #ifndef OPENAXIOM_CONVERSATION_INCLUDED
 #define OPENAXIOM_CONVERSATION_INCLUDED
 
+#include <vector>
 #include <QFrame>
 #include <QLineEdit>
 #include <QLabel>
 #include <QFont>
-#include <vector>
+#include <QEvent>
+#include <QResizeEvent>
 
 namespace OpenAxiom {
    // A conversation is a set of exchanges.  An exchange is a question
@@ -52,16 +54,21 @@ namespace OpenAxiom {
    class Question : public QLineEdit {
    public:
       explicit Question(Exchange&);
+
+   protected:
+      // Automatically grab focus when mouse moves into this widget
+      void enterEvent(QEvent*);
    };
 
    class Answer : public QLabel {
    public:
       explicit Answer(Exchange&);
+
+   protected:
+      // Automatically transfers focus to the associated query widget.
+      void enterEvent(QEvent*);
    };
    
-   // -- Elemental conversation widget
-   // -- A basic interaction consists of a query, a reply, and the
-   // -- the type of the reply.
    class Exchange : public QFrame {
       Q_OBJECT;
    public:
@@ -87,7 +94,7 @@ namespace OpenAxiom {
       QSize minimumSizeHint() const;
 
    protected:
-      // void resizeEvent(QResizeEvent*);
+      void resizeEvent(QResizeEvent*);
 
    private:
       const int no;
@@ -117,6 +124,10 @@ namespace OpenAxiom {
       // Return the `i'-th conversation in this set, if any.
       Exchange* operator[](int) const;
 
+      // Return the bottom left corner of the rectangle enclosing the
+      // the set of exchanges in this conversation.
+      QPoint bottom_left() const;
+      
       // Start a new conversation topic.
       Exchange* new_topic();
 
@@ -125,23 +136,20 @@ namespace OpenAxiom {
       QSize sizeHint() const;
 
       // Return the parent engine widget.
-      Debate* debate() { return &group; }
+      Debate* debate() const { return const_cast<Debate*>(&group); }
 
    public slots:
       // Return the topic following a given topic in this set of conversations
       Exchange* next(Exchange*);
       
+   protected:
+      void resizeEvent(QResizeEvent*);
+
    private:
       typedef std::vector<Exchange*> Children;
       Debate& group;
       Children children;
    };
-   
-   // Default number of characters per question line.
-   const int question_columns = 80;
-
-   QFont monospace_font();
-   QSize em_metrics(const QFont&);
 }
 
 #endif  // OPENAXIOM_CONVERSATION_INCLUDED

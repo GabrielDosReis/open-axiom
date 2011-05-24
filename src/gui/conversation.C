@@ -29,6 +29,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cmath>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -41,9 +42,19 @@ namespace OpenAxiom {
    // -- Question --
    Question::Question(Exchange& e) : QLineEdit(&e) { }
 
+   void Question::enterEvent(QEvent* e) {
+      setFocus(Qt::OtherFocusReason);
+      QLineEdit::enterEvent(e);
+   }
+
    // -- Answer --
    Answer::Answer(Exchange& e) : QLabel(&e) { }
-   
+
+   void Answer::enterEvent(QEvent* e) {
+      static_cast<Exchange*>(parentWidget())->question()
+         ->setFocus(Qt::OtherFocusReason);
+      QLabel::enterEvent(e);
+   }
 
    // -- Exchange --
    // Amount of pixel spacing between the query and reply areas.
@@ -51,77 +62,67 @@ namespace OpenAxiom {
 
    // Margin around query and reply areas.
    const int margin = 2;
-   
-   QSize Exchange::sizeHint() const {
-      QSize sz = question()->frameSize();
-      sz.rwidth() += 2 * margin;
-      sz.rheight() += answer()->frameSize().height() + spacing + 2 * margin;
-      return sz;
-   }
-
-   QSize Exchange::minimumSizeHint() const {
-      QSize sz = question()->frameSize();
-      sz.rwidth() += 2 * margin;
-      if (not answer()->isHidden())
-         sz.rheight() += answer()->frameSize().height() + spacing;
-      sz.rheight() += 2 * margin;
-      return sz;
-   }
 
    // Return a monospace font
-   QFont
-   monospace_font() {
+   static QFont monospace_font() {
       QFont f("Courier");
       f.setStyleHint(QFont::TypeWriter);
       return f;
    }
 
-   // Measurement in pixel of the em unit in the given font metrics.
-   static QSize
-   em_metrics(const QFontMetrics& fm) {
+   // Measurement in pixel of the em unit in the given font `f'.
+   static QSize em_metrics(const QWidget* w) {
+      const QFontMetrics fm = w->fontMetrics();
       return QSize(fm.width(QLatin1Char('m')), fm.height());
    }
    
-   // Measurement in pixel of the em unit in the given font `f'.
-   QSize em_metrics(const QFont& f) {
-      return em_metrics(QFontMetrics(f));
+   QSize Exchange::minimumSizeHint() const {
+      int w = question()->width() + 2 * margin;
+      int h = question()->height() + 2 * margin;
+      if (not answer()->isHidden())
+         h += answer()->height() + spacing;
+      return QSize(w, h);
+   }
+
+   QSize Exchange::sizeHint() const {
+      return Exchange::minimumSizeHint();
    }
 
    // Dress the query area with initial properties.
    static void
-   prepare_query_widget(QLineEdit* w) {
-      w->setFrame(false);
-      w->setFont(monospace_font());
-      QSize em = em_metrics(w->fontMetrics());
-      w->setGeometry(margin, margin,
-                     question_columns * em.width(), em.height());
+   prepare_query_widget(Exchange* e, Question* q) {
+      q->setFrame(false);
+      q->setFont(e->font());
+      q->setGeometry(margin, margin,
+                     e->width() - 2 * margin, q->fontMetrics().height());
    }
 
    // Dress the reply aread with initial properties.
    static void
-   prepare_reply_widget(QLabel* w, const QRect& below) {
-      w->setFont(monospace_font());
-      w->setGeometry(below.x(), below.height() + spacing,
-                     below.width(), 2 * w->fontMetrics().height());
-      w->hide();                // nothing to show yet
+   prepare_reply_widget(Exchange* e, Answer* a) {
+      a->setFont(e->font());
+      Question* q = e->question();
+      a->setGeometry(q->x(), q->height() + spacing,
+                     q->width(), 2 * a->fontMetrics().height());
+      a->setBackgroundRole(q->backgroundRole());
+      a->hide();                // nothing to show yet
+   }
+
+   static void prepare_frame(Conversation& conv, Exchange* e) {
+      e->setFont(conv.font());
+      e->setAutoFillBackground(true);
+      e->setBackgroundRole(e->question()->backgroundRole());
+      e->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+      e->setLineWidth(1);
+      QPoint pt = conv.bottom_left();
+      e->setGeometry(pt.x(), pt.y(), conv.width(), em_metrics(e).height());
    }
    
-   // -- Exchange --
    Exchange::Exchange(Conversation& conv, int n)
          : QFrame(&conv), no(n), query(*this), reply(*this) {
-      // 1. Construct the query area.
-      prepare_query_widget(question());
-
-      // 2. Construct the response area.
-      prepare_reply_widget(answer(), question()->geometry());
-
-      // 3. Construct  the whole frame
-      QSize qs = question()->frameSize();
-      QSize rs = answer()->frameSize();
-      resize(qs.width() + 2 * margin, qs.height() + rs.height() + 2 * margin);
-      setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-      setLineWidth(1);
-      // 4.
+      prepare_frame(conv, this);
+      prepare_query_widget(this, question());
+      prepare_reply_widget(this, answer());
       connect(&query, SIGNAL(returnPressed()),
               this, SLOT(reply_to_query()));
    }
@@ -140,6 +141,23 @@ namespace OpenAxiom {
    Debate* Exchange::debate() {
       return conversation()->debate();
    }
+
+   static void
+   ensure_visible_point(Debate* debate, const QPoint& pt) {
+      QScrollBar* vbar = debate->verticalScrollBar();
+      const int y = pt.y();
+      const int value = vbar->value();
+      const int new_value = y - vbar->pageStep();
+      if (y < value)
+         vbar->setValue(std::max(new_value, 0));
+      else if (new_value > value)
+         vbar->setValue(vbar->maximum());
+   }
+
+   static void ensure_visibility(Debate* debate, Exchange* e) {
+      ensure_visible_point(debate, e->frameGeometry().bottomLeft());
+      e->question()->setFocus(Qt::OtherFocusReason);
+   }
    
    void
    Exchange::reply_to_query() {
@@ -149,40 +167,50 @@ namespace OpenAxiom {
       QString ans = parenthesize(number()) + " " + input;
       answer()->show();
       answer()->setText(ans);
-      debate()->ensureWidgetVisible(answer());
-      debate()->horizontalScrollBar()->setValue(0);
-      conversation()->next(this)->question()
-         ->setFocus(Qt::OtherFocusReason);
+      resize(sizeHint());
+      update();
+      updateGeometry();
+      ensure_visibility(debate(), conversation()->next(this));
+   }
+
+   void Exchange::resizeEvent(QResizeEvent* e) {
+      QFrame::resizeEvent(e);
+      int w = width() - 2 * margin;
+      if (w > question()->width()) {
+         question()->resize(w, question()->height());
+         answer()->resize(w, answer()->height());
+      }
    }
 
    // ------------------
    // -- Conversation --
    // -------------------
+   
+   // Default number of characters per question line.
+   const int question_columns = 80;
 
-   static void resize_if_necessary(Conversation& conv) {
-      QSize sz = conv.sizeHint();
-      if (sz.height() > conv.height())
-         conv.resize(conv.width(), sz.height());
+   static QSize
+   minimum_preferred_size(const Conversation* conv) {
+      const QSize em = em_metrics(conv);
+      return QSize(question_columns * em.width(), 25 * em.height());
    }
-
-   static void debug_engine(Conversation& conv) {
-      std::cerr << "# conversations: " << conv.length()
-                << std::endl;
-      QSize sz = conv.sizeHint();
-      std::cerr << "size: " << sz.width() << ", " << sz.height()
-                << std::endl;
-   }
-
+   
    Conversation::Conversation(Debate& parent)
          : QWidget(&parent), group(parent) {
+      setFont(monospace_font());
+      setMinimumSize(minimum_preferred_size(this));
       setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-      QSize sz = new_topic()->frameSize();
-      setMinimumSize(sz.width(), 10 * sz.height());
    }
 
    Conversation::~Conversation() {
       for (int i = children.size() -1 ; i >= 0; --i)
          delete children[i];
+   }
+
+   QPoint Conversation::bottom_left() const {
+      if (length() == 0)
+         return QPoint(0, 0);
+      return children.back()->geometry().bottomLeft();
    }
 
    QSize Conversation::sizeHint() const {
@@ -193,25 +221,31 @@ namespace OpenAxiom {
             sz.setWidth(s.width());
          sz.rheight() += s.height();
       }
-      return sz;
+      return minimum_preferred_size(this).expandedTo(sz);
+   }
+
+   void Conversation::resizeEvent(QResizeEvent* e) {
+      QWidget::resizeEvent(e);
+      const int w = width();
+      for (int i = 0; i < length(); ++i) {
+         Exchange* e = children[i];
+         e->resize(w, e->height());
+      }
+      // Start the conversation on first exposure.
+      if (length() == 0)
+         new_topic();
    }
 
    Exchange*
    Conversation::new_topic() {
-      QPoint loc(0,0);
-      if (not fresh()) {
-         Exchange* last = children.back();
-         loc = last->geometry().bottomLeft();
-      }
       Exchange* w = new Exchange(*this, length() + 1);
       w->setVisible(true);
-      w->move(loc);
       children.push_back(w);
-      resize_if_necessary(*this);
-      debug_engine(*this);
+      adjustSize();
+      update();
+      updateGeometry();
       return w;
    }
-
 
    Exchange*
    Conversation::next(Exchange* w) {
