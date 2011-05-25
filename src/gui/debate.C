@@ -41,6 +41,7 @@ namespace OpenAxiom {
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
+      // setWidgetResizable(true);
    }
 
    Debate::~Debate() { }

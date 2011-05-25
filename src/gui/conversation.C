@@ -39,9 +39,6 @@
 #include "debate.h"
 
 namespace OpenAxiom {
-   // Default number of characters per question line.
-   const int columns = 80;
-
    // Measurement in pixel of the em unit in the given font `f'.
    static QSize em_metrics(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
@@ -73,12 +70,16 @@ namespace OpenAxiom {
    static int margin(const Exchange*e) {
       return 2 + e->lineWidth();
    }
-   
+
+   // The layout within an exchange is as follows:
+   //   -- input area (an editor) with its own decoation accounted for.
+   //   -- an optional spacing
+   //   -- an output area with its own decoration accounted for.
    QSize Exchange::sizeHint() const {
-      const int m = margin(this);
-      QSize sz = question()->size() + QSize(2 * m, 2 * m);
+      QSize sz = question()->frameSize();
+      sz.rwidth() += 2 * margin(this);
       if (not answer()->isHidden())
-         sz.rheight() += answer()->height() + spacing;
+         sz.rheight() += answer()->frameSize().height() + spacing;
       return sz;
    }
 
@@ -89,25 +90,24 @@ namespace OpenAxiom {
       q->setFrame(false);
       q->setFont(conv.font());
       const int m = margin(e);
-      q->setGeometry(m, m, conv.width() - 2 * m, q->height());
+      q->setGeometry(m, m, conv.width(), q->height());
    }
 
    // Dress the reply aread with initial properties.
+   // Place the reply widget right below the frame containing
+   // the query widget; make both of the same width, of course.
    static void
-   prepare_reply_widget(Exchange* e, Answer* a) {
-      a->setFont(e->font());
+   prepare_reply_widget(Conversation& conv, Exchange* e) {
+      Answer* a = e->answer();
       Question* q = e->question();
       const QPoint pt = e->question()->frameGeometry().bottomLeft();
-      // Place the reply widget right below the frame containing
-      // the query widget; make both of the same width, of course.
-      a->setGeometry(pt.x(), pt.y() + spacing,
-                     q->width(), 2 * q->height());
+      a->setGeometry(pt.x(), pt.y() + spacing, q->width(), q->height());
       a->setBackgroundRole(q->backgroundRole());
       a->hide();                // nothing to show yet
    }
 
-   static void prepare_exchange_widget(Conversation& conv, Exchange* e) {
-      e->setFont(conv.font());
+   static void
+   finish_exchange_make_up(Conversation& conv, Exchange* e) {
       e->setAutoFillBackground(true);
       e->setBackgroundRole(e->question()->backgroundRole());
       QPoint pt = conv.bottom_left();
@@ -118,10 +118,11 @@ namespace OpenAxiom {
    Exchange::Exchange(Conversation& conv, int n)
          : QFrame(&conv), parent(&conv), no(n), query(*this), reply(*this) {
       setLineWidth(1);
+      setFont(conv.font());
       prepare_query_widget(conv, this);
-      prepare_reply_widget(this, answer());
-      prepare_exchange_widget(conv, this);
-      connect(&query, SIGNAL(returnPressed()),
+      prepare_reply_widget(conv, this);
+      finish_exchange_make_up(conv, this);
+      connect(question(), SIGNAL(returnPressed()),
               this, SLOT(reply_to_query()));
    }
 
@@ -161,8 +162,6 @@ namespace OpenAxiom {
    }
 
    void Exchange::resizeEvent(QResizeEvent* e) {
-      std::cerr << "resizing exchange to "
-                << width() << ", " << height() << std::endl;
       QFrame::resizeEvent(e);
       const int w = width() - 2 * margin(this);
       if (w > question()->width()) {
@@ -175,6 +174,10 @@ namespace OpenAxiom {
    // -- Conversation --
    // -------------------
    
+   // Default number of characters per question line.
+   const int columns = 80;
+   const int lines = 25;
+
    static QSize
    minimum_preferred_size(const Conversation* conv) {
       const QSize em = em_metrics(conv);
@@ -207,7 +210,9 @@ namespace OpenAxiom {
             sz.setWidth(s.width());
          sz.rheight() += s.height();
       }
-      const int view_height = debate()->viewport()->width();
+      int view_height = debate()->viewport()->width();
+      if (view_height == 0)
+         view_height = lines * em_metrics(this).height();
       const int n = (sz.height() + view_height) / view_height;
       return QSize(sz.width(), n * view_height);
    }
