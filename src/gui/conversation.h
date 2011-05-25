@@ -39,6 +39,7 @@
 #include <QFont>
 #include <QEvent>
 #include <QResizeEvent>
+#include <QPaintEvent>
 
 namespace OpenAxiom {
    // A conversation is a set of exchanges.  An exchange is a question
@@ -54,19 +55,23 @@ namespace OpenAxiom {
    class Question : public QLineEdit {
    public:
       explicit Question(Exchange&);
+      Exchange* exchange() const { return parent; }
 
    protected:
       // Automatically grab focus when mouse moves into this widget
       void enterEvent(QEvent*);
+
+   private:
+      Exchange* const parent;
    };
 
    class Answer : public QLabel {
    public:
       explicit Answer(Exchange&);
+      Exchange* exchange() const { return parent; }
 
-   protected:
-      // Automatically transfers focus to the associated query widget.
-      void enterEvent(QEvent*);
+   private:
+      Exchange* const parent;
    };
    
    class Exchange : public QFrame {
@@ -75,9 +80,8 @@ namespace OpenAxiom {
       Exchange(Conversation&, int);
 
       // Return the parent widget of this conversation topic
-      Conversation* conversation();
-      Debate* debate();
-      
+      Conversation* conversation() const { return parent; }
+
       // The widget holding the query area
       Question* question() { return &query; }
       const Question* question() const { return &query; }
@@ -91,12 +95,12 @@ namespace OpenAxiom {
 
       // Reimplement positiion management.
       QSize sizeHint() const;
-      QSize minimumSizeHint() const;
 
    protected:
       void resizeEvent(QResizeEvent*);
 
    private:
+      Conversation* const parent;
       const int no;
       Question query;
       Answer reply;
@@ -144,6 +148,7 @@ namespace OpenAxiom {
       
    protected:
       void resizeEvent(QResizeEvent*);
+      void paintEvent(QPaintEvent*);
 
    private:
       typedef std::vector<Exchange*> Children;

@@ -31,18 +31,16 @@
 
 #include <QScrollBar>
 #include "debate.h"
+#include <iostream>
 
 namespace OpenAxiom {
 
    Debate::Debate(QWidget* parent)
          : QScrollArea(parent), conv(*this) {
-      setViewportMargins(0, 0, 0, 0);
       setWidget(&conv);
+      setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
-      QSize sz = conv.sizeHint();
-      horizontalScrollBar()->setRange(0, sz.width());
-      verticalScrollBar()->setRange(0, sz.height());
    }
 
    Debate::~Debate() { }
