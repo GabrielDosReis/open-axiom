@@ -1820,7 +1820,7 @@
         (T NIL)))))
 
 (DEFUN |shoeCompTran1| (|x|)
-  (PROG (|n| |args| |newbindings| |r| |ISTMP#2| |l| |zs| |y| |ISTMP#1|
+  (PROG (|n| |elts| |newbindings| |r| |ISTMP#2| |l| |zs| |y| |ISTMP#1|
              U)
     (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
     (RETURN
@@ -1918,20 +1918,12 @@
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))
                      (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
-                          (PROGN
-                            (SETQ |ISTMP#2| (CAR |ISTMP#1|))
-                            (AND (CONSP |ISTMP#2|)
-                                 (EQ (CAR |ISTMP#2|) 'LIST)
-                                 (PROGN
-                                   (SETQ |args| (CDR |ISTMP#2|))
-                                   T))))))
-              (RPLACA |x| 'VECTOR) (RPLACD |x| |args|) |x|)
-             ((AND (CONSP |x|) (EQ (CAR |x|) '|vector|)
-                   (PROGN
-                     (SETQ |ISTMP#1| (CDR |x|))
-                     (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
-                          (EQ (CAR |ISTMP#1|) 'NIL))))
-              (RPLACA |x| 'VECTOR) (RPLACD |x| NIL) |x|)
+                          (PROGN (SETQ |elts| (CAR |ISTMP#1|)) T))))
+              (RPLACA |x| 'VECTOR)
+              (COND
+                ((EQ |elts| 'NIL) (RPLACD |x| NIL))
+                (T (RPLACD |x| (|shoeCompTran1| (CDR |elts|)))))
+              |x|)
              ((AND (CONSP |x|) (EQ (CAR |x|) '|%Namespace|)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |x|))

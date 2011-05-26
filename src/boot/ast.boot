@@ -1015,8 +1015,12 @@ shoeCompTran1 x ==
     $locVars := [y for y in $locVars | not symbolMember?(y,newbindings)]
     x
   -- literal vectors.
-  x is ['vector,['LIST,:args]] => (x.op := 'VECTOR; x.args := args; x)
-  x is ['vector,'NIL] => (x.op := 'VECTOR; x.args := nil; x)
+  x is ['vector,elts] =>
+    x.op := 'VECTOR
+    do
+      elts is 'NIL => x.args := nil
+      x.args := shoeCompTran1 elts.args  -- elts.op is LIST
+    x
   x is ['%Namespace,n] =>
     n is "DOT" => "*PACKAGE*"
     ["FIND-PACKAGE",symbolName n]
