@@ -41,16 +41,19 @@ namespace OpenAxiom {
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
-      //resize(conv.size());
       adjustSize();
-      setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+      setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+      setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
    }
 
    Debate::~Debate() { }
 
    void Debate::resizeEvent(QResizeEvent* e) {
       QScrollArea::resizeEvent(e);
-      conv.resize(viewport()->size());
+      if (conv.length() != 0)
+         conv.resize(viewport()->size());
+      setSizePolicy(QSizePolicy::MinimumExpanding,
+                    QSizePolicy::MinimumExpanding);
    }
 
 }

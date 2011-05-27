@@ -118,6 +118,7 @@ namespace OpenAxiom {
    // -- queries.
    class Conversation : public QWidget {
       Q_OBJECT;
+      typedef QWidget Base;
    public:
       explicit Conversation(Debate&);
       ~Conversation();
