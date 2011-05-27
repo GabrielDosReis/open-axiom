@@ -51,3 +51,7 @@ namespace OpenAxiom {
 
 #endif  // OPENAXIOM_GUI_MAIN_WINDOW_INCLUDED
 
+
+// Local Variables:
+// mode: c++
+// End:

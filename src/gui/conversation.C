@@ -39,6 +39,11 @@
 #include "debate.h"
 
 namespace OpenAxiom {
+   static void debug_size(const char* s, const QSize& sz) {
+      std::cerr << s << " == "
+                << sz.width() << ", " << sz.height() << std::endl;
+   }
+   
    // Measurement in pixel of the em unit in the given font `f'.
    static QSize em_metrics(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
@@ -46,15 +51,17 @@ namespace OpenAxiom {
    }
 
    // -- Question --
-   Question::Question(Exchange& e) : QLineEdit(&e), parent(&e) { }
+   Question::Question(Exchange& e) : Base(&e), parent(&e) { }
 
    void Question::enterEvent(QEvent* e) {
-      QLineEdit::enterEvent(e);
+      Base::enterEvent(e);
       setFocus(Qt::OtherFocusReason);
    }
 
    // -- Answer --
-   Answer::Answer(Exchange& e) : QLabel(&e), parent(&e) { }
+   Answer::Answer(Exchange& e) : Base(&e), parent(&e) {
+      setReadOnly(true);
+   }
 
    // -- Exchange --
    // Amount of pixel spacing between the query and reply areas.
@@ -77,7 +84,6 @@ namespace OpenAxiom {
    //   -- an output area with its own decoration accounted for.
    QSize Exchange::sizeHint() const {
       QSize sz = question()->frameSize();
-      sz.rwidth() += 2 * margin(this);
       if (not answer()->isHidden())
          sz.rheight() += answer()->frameSize().height() + spacing;
       return sz;
@@ -97,7 +103,7 @@ namespace OpenAxiom {
    // Place the reply widget right below the frame containing
    // the query widget; make both of the same width, of course.
    static void
-   prepare_reply_widget(Conversation& conv, Exchange* e) {
+   prepare_reply_widget(Exchange* e) {
       Answer* a = e->answer();
       Question* q = e->question();
       const QPoint pt = e->question()->frameGeometry().bottomLeft();
@@ -120,7 +126,7 @@ namespace OpenAxiom {
       setLineWidth(1);
       setFont(conv.font());
       prepare_query_widget(conv, this);
-      prepare_reply_widget(conv, this);
+      prepare_reply_widget(this);
       finish_exchange_make_up(conv, this);
       connect(question(), SIGNAL(returnPressed()),
               this, SLOT(reply_to_query()));
@@ -134,16 +140,14 @@ namespace OpenAxiom {
    }
 
    static void ensure_visibility(Debate* debate, Exchange* e) {
-      const int y = e->frameGeometry().y();
+      const int y = e->frameGeometry().bottomLeft().y();
       QScrollBar* vbar = debate->verticalScrollBar();
       const int value = vbar->value();
       int new_value = y - vbar->pageStep();
       if (y < value)
          vbar->setValue(std::max(new_value, 0));
-      else if (new_value > value) {
-         new_value += 3 * vbar->singleStep();
+      else if (new_value > value)
          vbar->setValue(std::min(new_value, vbar->maximum()));
-      }
       e->question()->setFocus(Qt::OtherFocusReason);
    }
    
@@ -181,9 +185,11 @@ namespace OpenAxiom {
    static QSize
    minimum_preferred_size(const Conversation* conv) {
       const QSize em = em_metrics(conv);
-      return QSize(columns * em.width(), 25 * em.height());
+      return QSize(columns * em.width(), 2 * lines * em.height());
    }
-   
+
+   // Set a minimum preferred widget size, so no layout manager
+   // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate& parent) : group(parent) {
       setFont(monospace_font());
       setMinimumSize(minimum_preferred_size(this));
@@ -210,14 +216,17 @@ namespace OpenAxiom {
             sz.setWidth(s.width());
          sz.rheight() += s.height();
       }
-      int view_height = debate()->viewport()->width();
+      int view_height = debate()->viewport()->height();
       if (view_height == 0)
-         view_height = lines * em_metrics(this).height();
+         view_height = 2 * lines * em_metrics(this).height();
       const int n = (sz.height() + view_height) / view_height;
       return QSize(sz.width(), n * view_height);
    }
 
    void Conversation::resizeEvent(QResizeEvent* e) {
+      std::cerr << "-- Conversation::resizeEvent --" << std::endl;
+      debug_size("viewport.size", debate()->viewport()->size());
+      debug_size("conv.size", size());
       const QSize sz = size();
       if (e->oldSize() == sz)
          return;
@@ -225,7 +234,6 @@ namespace OpenAxiom {
          Exchange* e = children[i];
          e->resize(sz.width(), e->height());
       }
-      debate()->updateGeometry();
    }
 
    void Conversation::paintEvent(QPaintEvent* e) {
