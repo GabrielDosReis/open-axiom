@@ -35,7 +35,6 @@
 #include <vector>
 #include <QFrame>
 #include <QLineEdit>
-#include <QTextEdit>
 #include <QLabel>
 #include <QFont>
 #include <QEvent>
@@ -67,8 +66,8 @@ namespace OpenAxiom {
       Exchange* const parent;
    };
 
-   class Answer : public QTextEdit {
-      typedef QTextEdit Base;
+   class Answer : public QLabel {
+      typedef QLabel Base;
    public:
       explicit Answer(Exchange&);
       Exchange* exchange() const { return parent; }
