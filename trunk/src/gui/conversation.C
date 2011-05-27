@@ -60,7 +60,8 @@ namespace OpenAxiom {
 
    // -- Answer --
    Answer::Answer(Exchange& e) : Base(&e), parent(&e) {
-      setReadOnly(true);
+      setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+      setFrameStyle(StyledPanel | Plain);
    }
 
    // -- Exchange --
