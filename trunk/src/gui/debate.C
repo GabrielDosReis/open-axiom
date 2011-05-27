@@ -41,9 +41,9 @@ namespace OpenAxiom {
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
-      adjustSize();
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+      adjustSize();
    }
 
    Debate::~Debate() { }

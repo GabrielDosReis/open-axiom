@@ -184,7 +184,7 @@ namespace OpenAxiom {
    static QSize
    minimum_preferred_size(const Conversation* conv) {
       const QSize em = em_metrics(conv);
-      return QSize(columns * em.width(), 2 * lines * em.height());
+      return QSize(columns * em.width(), lines * em.height());
    }
 
    // Set a minimum preferred widget size, so no layout manager
@@ -226,18 +226,9 @@ namespace OpenAxiom {
       return round_up_height(sz, view_height);
    }
 
-   static void
-   set_size_policy(Conversation* conv) {
-      conv->updateGeometry();
-      conv->setSizePolicy(QSizePolicy::MinimumExpanding,
-                          QSizePolicy::MinimumExpanding);
-   }
-
    void Conversation::resizeEvent(QResizeEvent* e) {
       Base::resizeEvent(e);
       setMinimumSize(size());
-      if (length() == 0)
-         return set_size_policy(this);
       const QSize sz = size();
       if (e->oldSize() == sz)
          return;
@@ -259,8 +250,7 @@ namespace OpenAxiom {
       w->show();
       children.push_back(w);
       adjustSize();
-      update();
-      debate()->updateGeometry();
+      updateGeometry();
       return w;
    }
 
