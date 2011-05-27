@@ -75,7 +75,7 @@ namespace OpenAxiom {
    }
 
    static int margin(const Exchange*e) {
-      return 2 + e->lineWidth();
+      return 2 + e->frameWidth();
    }
 
    // The layout within an exchange is as follows:
@@ -83,9 +83,10 @@ namespace OpenAxiom {
    //   -- an optional spacing
    //   -- an output area with its own decoration accounted for.
    QSize Exchange::sizeHint() const {
-      QSize sz = question()->frameSize();
+      const int m = margin(this);
+      QSize sz = question()->size() + QSize(2 * m, 2 * m);
       if (not answer()->isHidden())
-         sz.rheight() += answer()->frameSize().height() + spacing;
+         sz.rheight() += answer()->height() + spacing;
       return sz;
    }
 
@@ -96,7 +97,7 @@ namespace OpenAxiom {
       q->setFrame(false);
       q->setFont(conv.font());
       const int m = margin(e);
-      q->setGeometry(m, m, conv.width(), q->height());
+      q->setGeometry(m, m, conv.width() - 2 * m, q->height());
    }
 
    // Dress the reply aread with initial properties.
@@ -106,7 +107,7 @@ namespace OpenAxiom {
    prepare_reply_widget(Exchange* e) {
       Answer* a = e->answer();
       Question* q = e->question();
-      const QPoint pt = e->question()->frameGeometry().bottomLeft();
+      const QPoint pt = e->question()->geometry().bottomLeft();
       a->setGeometry(pt.x(), pt.y() + spacing, q->width(), q->height());
       a->setBackgroundRole(q->backgroundRole());
       a->hide();                // nothing to show yet
@@ -116,9 +117,7 @@ namespace OpenAxiom {
    finish_exchange_make_up(Conversation& conv, Exchange* e) {
       e->setAutoFillBackground(true);
       e->setBackgroundRole(e->question()->backgroundRole());
-      QPoint pt = conv.bottom_left();
-      const QSize sz = e->sizeHint();
-      e->setGeometry(pt.x(), pt.y(), sz.width(), sz.height());
+      e->move(conv.bottom_left());
    }
    
    Exchange::Exchange(Conversation& conv, int n)
@@ -140,7 +139,7 @@ namespace OpenAxiom {
    }
 
    static void ensure_visibility(Debate* debate, Exchange* e) {
-      const int y = e->frameGeometry().bottomLeft().y();
+      const int y = e->y() + e->height();
       QScrollBar* vbar = debate->verticalScrollBar();
       const int value = vbar->value();
       int new_value = y - vbar->pageStep();
@@ -192,9 +191,9 @@ namespace OpenAxiom {
    // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate& parent) : group(parent) {
       setFont(monospace_font());
-      setMinimumSize(minimum_preferred_size(this));
-      setSizePolicy(QSizePolicy::MinimumExpanding,
-                    QSizePolicy::MinimumExpanding);
+      // setMinimumSize(minimum_preferred_size(this));
+      // setSizePolicy(QSizePolicy::MinimumExpanding,
+      //               QSizePolicy::MinimumExpanding);
    }
 
    Conversation::~Conversation() {
@@ -208,25 +207,37 @@ namespace OpenAxiom {
       return children.back()->geometry().bottomLeft();
    }
 
+   static QSize
+   round_up_height(const QSize& sz, int height) {
+      if (height < 1)
+         height = 1;
+      const int n = (sz.height() + height) / height;
+      return QSize(sz.width(), n * height);
+   }
+   
    QSize Conversation::sizeHint() const {
-      QSize sz(0,0);
-      for (int i = 0; i < length(); ++i) {
-         QSize s = children[i]->sizeHint();
-         if (s.width() > sz.width())
-            sz.setWidth(s.width());
-         sz.rheight() += s.height();
-      }
-      int view_height = debate()->viewport()->height();
-      if (view_height == 0)
-         view_height = 2 * lines * em_metrics(this).height();
-      const int n = (sz.height() + view_height) / view_height;
-      return QSize(sz.width(), n * view_height);
+      const int view_height = debate()->viewport()->height();
+      const int n = length();
+      if (n == 0)
+         return round_up_height(minimum_preferred_size(this), view_height);
+      QSize sz = children.front()->size();
+      for (int i = 1; i < n; ++i)
+         sz.rheight() += children[i]->height();
+      return round_up_height(sz, view_height);
+   }
+
+   static void
+   set_size_policy(Conversation* conv) {
+      conv->updateGeometry();
+      conv->setSizePolicy(QSizePolicy::MinimumExpanding,
+                          QSizePolicy::MinimumExpanding);
    }
 
    void Conversation::resizeEvent(QResizeEvent* e) {
-      std::cerr << "-- Conversation::resizeEvent --" << std::endl;
-      debug_size("viewport.size", debate()->viewport()->size());
-      debug_size("conv.size", size());
+      Base::resizeEvent(e);
+      setMinimumSize(size());
+      if (length() == 0)
+         return set_size_policy(this);
       const QSize sz = size();
       if (e->oldSize() == sz)
          return;
