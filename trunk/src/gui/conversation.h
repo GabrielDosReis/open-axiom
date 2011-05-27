@@ -35,6 +35,7 @@
 #include <vector>
 #include <QFrame>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QLabel>
 #include <QFont>
 #include <QEvent>
@@ -53,6 +54,7 @@ namespace OpenAxiom {
 
    // -- A question is just a one-liner query.
    class Question : public QLineEdit {
+      typedef QLineEdit Base;
    public:
       explicit Question(Exchange&);
       Exchange* exchange() const { return parent; }
@@ -65,7 +67,8 @@ namespace OpenAxiom {
       Exchange* const parent;
    };
 
-   class Answer : public QLabel {
+   class Answer : public QTextEdit {
+      typedef QTextEdit Base;
    public:
       explicit Answer(Exchange&);
       Exchange* exchange() const { return parent; }

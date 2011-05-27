@@ -37,6 +37,11 @@
 
 namespace OpenAxiom {
 
+   static void
+   try_to_honor_widget_size(MainWindow* w, Debate* debate) {
+      w->resize(debate->size());
+   }
+
    MainWindow::MainWindow() : tabs(this) {
       setCentralWidget(&tabs);
       Debate* debate = new Debate(&tabs);
@@ -46,6 +51,7 @@ namespace OpenAxiom {
       file->addAction(action);
       action->setShortcut(tr("Ctrl+Q"));
       connect(action, SIGNAL(triggered()), this, SLOT(close()));
+      try_to_honor_widget_size(this, debate);
    }
    
    MainWindow::~MainWindow() {
