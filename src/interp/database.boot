@@ -706,7 +706,7 @@ dropPrefix(fn) ==
 --++  $globalExposureGroupAlist := nil
 --++  egName  := nil
 --++  egFiles := nil
---++  while (not PLACEP (x:= readLine stream)) repeat
+--++  while (x:= readLine stream) ~= %nothing repeat
 --++    x := DROPTRAILINGBLANKS x
 --++    # x = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment

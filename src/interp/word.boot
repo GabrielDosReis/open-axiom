@@ -97,7 +97,7 @@ getListOfFunctionNames(fnames) ==
   for fn in fnames repeat
     null IOSTATE(fn,'DIRECT,'_*) => 'iterate
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
-    while (not PLACEP (x:= readLine stream)) repeat
+    while (x:= readLine stream) ~= %nothing repeat
       (s := # x) < 26 => 'iterate
       res:= [subString(x,26),:res]
     SHUT stream

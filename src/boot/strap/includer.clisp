@@ -24,8 +24,6 @@
           (T (READ-FROM-STRING
                  (CONCAT "(" (|subString| |s| |n| (- |l| |n|)) ")"))))))))
 
-(DEFUN |shoeReadLine| (|stream|) (READ-LINE |stream| NIL NIL))
-
 (DEFUN |shoeConsole| (|line|) (WRITE-LINE |line| *TERMINAL-IO*))
 
 (DEFUN |shoeSpaces| (|n|) (|makeString| |n| (|char| '|.|)))
@@ -135,9 +133,11 @@
 (DEFUN |bRgen1| (|s|)
   (PROG (|a|)
     (RETURN
-      (COND
-        ((SETQ |a| (|shoeReadLine| |s|)) (CONS |a| (|bRgen| |s|)))
-        (T (LIST '|nullstream|))))))
+      (PROGN
+        (SETQ |a| (|readLine| |s|))
+        (COND
+          ((NOT (EQUAL |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
+          (T (LIST '|nullstream|)))))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
 
