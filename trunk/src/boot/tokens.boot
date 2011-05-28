@@ -292,9 +292,7 @@ for i in [ _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
   ["property",     "GET"]  , _
-  ["readByte", "READ-BYTE"], _
   ["readInteger", "PARSE-INTEGER"], _
-  ["readLine", "READ-LINE"], _
   ["readLispFromString", "READ-FROM-STRING"] , _
   ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _

@@ -1,3 +1,13 @@
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Define and export readLine and readbyte.
+	* interp/sys-utility.boot (readByteFromFile): Remove.
+	* boot/tokens.boot: Don't rename readLine and readByte.
+	* boot/includer.boot (shoeReadLine): Remove.
+	(bRgen1): Adjust.  Use resdLine.
+	* algebra/net.spad.pamphlet (InputBinaryFile): Use readByte from
+	the runtime system.
+
 2011-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (shoeCompTran1): Translate arguments to vector

@@ -99,6 +99,7 @@
 	   "outputTextFile"
 	   "closeFile"
 	   "prettyPrint"
+	   "readLine"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -141,6 +142,7 @@
 	   "%systemArguments"
 	   "%basicSystemIsComplete"
 	   "%algebraSystemIsComplete"
+	   "%nothing"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
@@ -419,6 +421,10 @@
 
 (defconstant |$EditorProgram| "@oa_editor@")
 
+;; Token expression to indicate absence of value or bottom value.
+;; This is also the bottom value of the Maybe domain.
+(defconstant |%nothing| :|OpenAxiomNoValue|)
+
 ;; Base name of the native core runtime library
 (defconstant |$CoreLibName|
   "open-axiom-core")
@@ -499,6 +505,13 @@
 (defun |closeFile| (f)
   (close f))
 
+;; Read a line from the input text file.  Quietly return
+;; %nothing at end of file.
+(defmacro |readLine| (f)
+  `(read-line ,f nil |%nothing|))
+
+(defmacro |readByte| (f)
+  `(read-byte ,f nil |%nothing|))
 
 ;; Pretty-print a lisp form on a given output stream.
 (defun |prettyPrint| (x &optional (s |$OutputStream|))

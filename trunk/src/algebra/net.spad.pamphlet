@@ -209,7 +209,7 @@ InputBinaryFile(): Public == Private where
       not null? rep(ifile).stream
     readByte! ifile ==
       isOpen? ifile => 
-        b: Maybe Byte := readByteFromFile(rep(ifile).stream)$Lisp
+        b: Maybe Byte := readByte(rep(ifile).stream)$Lisp
         if b case nothing then 
           rep(ifile).eof := true
         b

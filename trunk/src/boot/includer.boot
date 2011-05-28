@@ -77,10 +77,6 @@ shoeReadLispString(s,n) ==
   n >= l => nil
   readLispFromString strconc('"(", subString(s,n,l-n) ,'")")
 
--- read a line from stream
-shoeReadLine stream ==
-  readLine(stream, nil, nil)
-
 -- write LINE to standard terminal I/O.
 shoeConsole line ==
   writeLine(line, _*TERMINAL_-IO_*)
@@ -174,7 +170,8 @@ bRgen s ==
   bDelay(function bRgen1,[s])
  
 bRgen1 s ==
-  a := shoeReadLine s => [a,:bRgen s]
+  a := readLine s
+  a ~= %nothing => [a,:bRgen s]
   ["nullstream"]
  
 bIgen n ==

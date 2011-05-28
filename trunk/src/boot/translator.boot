@@ -679,7 +679,7 @@ PSTTOMC string==
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
-  a := readLine()
+  a := readLine _*STANDARD_-INPUT_*
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTLOOP()
@@ -693,7 +693,7 @@ BOOTLOOP() ==
   BOOTLOOP()
  
 BOOTPO() ==
-  a := readLine()
+  a := readLine _*STANDARD_-INPUT_*
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTPO()

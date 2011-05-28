@@ -1221,7 +1221,7 @@
   (PROG (|stream| |b| |a|)
     (RETURN
       (PROGN
-        (SETQ |a| (READ-LINE))
+        (SETQ |a| (|readLine| *STANDARD-INPUT*))
         (COND
           ((EQL (LENGTH |a|) 0)
            (WRITE-LINE "Boot Loop; to exit type ] ") (BOOTLOOP))
@@ -1236,7 +1236,7 @@
   (PROG (|stream| |b| |a|)
     (RETURN
       (PROGN
-        (SETQ |a| (READ-LINE))
+        (SETQ |a| (|readLine| *STANDARD-INPUT*))
         (COND
           ((EQL (LENGTH |a|) 0)
            (WRITE-LINE "Boot Loop; to exit type ] ") (BOOTPO))

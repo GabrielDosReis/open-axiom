@@ -45,10 +45,6 @@ module sys_-utility where
 --%
 $COMBLOCKLIST := nil
 
-++ No value marker for the Maybe domain.
-%nothing == KEYWORD::%OpenAxiomNoValue
-
-
 ++ Constants describing byte order
 %littleEndian == KEYWORD::%littleEndian
 %bigEndian == KEYWORD::%bigEndian
@@ -309,11 +305,6 @@ openBinaryFile(file,mode) ==
   OPEN(file,KEYWORD::DIRECTION,mode,
     KEYWORD::IF_-EXISTS,KEYWORD::SUPERSEDE,
       KEYWORD::ELEMENT_-TYPE,"%Byte")
-
-++ Attemp to read a byte from input file `ifile'.  If not end of
-++ file, return the read byte; %nothing.
-readByteFromFile ifile ==
-  readByte(ifile,false,%nothing)
 
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
