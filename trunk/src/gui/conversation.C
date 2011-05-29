@@ -39,32 +39,67 @@
 #include "debate.h"
 
 namespace OpenAxiom {
-   static void debug_size(const char* s, const QSize& sz) {
-      std::cerr << s << " == "
-                << sz.width() << ", " << sz.height() << std::endl;
-   }
-   
    // Measurement in pixel of the em unit in the given font `f'.
    static QSize em_metrics(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
       return QSize(fm.width(QLatin1Char('m')), fm.height());
    }
 
-   // -- Question --
-   Question::Question(Exchange& e) : Base(&e), parent(&e) { }
-
-   void Question::enterEvent(QEvent* e) {
-      Base::enterEvent(e);
-      setFocus(Qt::OtherFocusReason);
-   }
-
-   // -- Answer --
-   Answer::Answer(Exchange& e) : Base(&e), parent(&e) {
+   // --------------------
+   // -- OutputTextArea --
+   // --------------------
+   OutputTextArea::OutputTextArea(QWidget* p)
+         : Base(p) {
+      setFont(p->font());
       setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
-      setFrameStyle(StyledPanel | Plain);
+      setLineWidth(1);
    }
 
+   // Concatenate two paragraphs.
+   static QString
+   accumulate_paragaphs(const QString& before, const QString& after) {
+      if (before.isNull() or before.isEmpty())
+         return after;
+      return before + "\n" + after;
+   }
+   
+   void OutputTextArea::add_paragraph(const QString& s) {
+      setText(accumulate_paragaphs(text(), s));
+      adjustSize();
+      const int w = parentWidget()->width() - 2 * frameWidth();
+      if (w > width())
+         resize(w, height());
+      show();
+      updateGeometry();
+   }
+
+   void OutputTextArea::add_text(const QString& s) {
+      setText(text() + s);
+      adjustSize();
+      const int w = parentWidget()->width();
+      if (w < width())
+         resize(w, height());
+      show();
+      updateGeometry();
+   }
+
+   // --------------
+   // -- Question --
+   // --------------
+   Question::Question(Exchange& e) : Base(&e), parent(&e) {
+      setBackgroundRole(QPalette::AlternateBase);
+   }
+
+   // ------------
+   // -- Answer --
+   // ------------
+   Answer::Answer(Exchange& e) : Base(&e), parent(&e) {
+      setFrameStyle(StyledPanel | Sunken);
+   }
+
+   // --------------
    // -- Exchange --
+   // --------------
    // Amount of pixel spacing between the query and reply areas.
    const int spacing = 0;
 
@@ -75,8 +110,9 @@ namespace OpenAxiom {
       return f;
    }
 
-   static int margin(const Exchange*e) {
-      return 2 + e->frameWidth();
+   // Return a resonable margin for this frame.
+   static int margin(const QFrame* f) {
+      return 2 + f->frameWidth();
    }
 
    // The layout within an exchange is as follows:
@@ -117,12 +153,13 @@ namespace OpenAxiom {
    static void
    finish_exchange_make_up(Conversation& conv, Exchange* e) {
       e->setAutoFillBackground(true);
-      e->setBackgroundRole(e->question()->backgroundRole());
+      //e->setBackgroundRole(e->question()->backgroundRole());
       e->move(conv.bottom_left());
    }
    
    Exchange::Exchange(Conversation& conv, int n)
-         : QFrame(&conv), parent(&conv), no(n), query(*this), reply(*this) {
+         : QFrame(&conv), parent(&conv), no(n),
+           query(*this), reply(*this) {
       setLineWidth(1);
       setFont(conv.font());
       prepare_query_widget(conv, this);
@@ -130,13 +167,6 @@ namespace OpenAxiom {
       finish_exchange_make_up(conv, this);
       connect(question(), SIGNAL(returnPressed()),
               this, SLOT(reply_to_query()));
-   }
-
-   static QString
-   parenthesize(int n) {
-      std::ostringstream os;
-      os << '(' << n << ')';
-      return QString::fromStdString(os.str());
    }
 
    static void ensure_visibility(Debate* debate, Exchange* e) {
@@ -156,13 +186,8 @@ namespace OpenAxiom {
       QString input = question()->text().trimmed();
       if (input.isEmpty())
          return;
-      QString ans = parenthesize(number()) + " " + input;
-      answer()->show();
-      answer()->setText(ans);
-      adjustSize();
-      update();
-      updateGeometry();
-      ensure_visibility(conversation()->debate(), conversation()->next(this));
+      topic()->oracle()->write(input.toAscii());
+      topic()->oracle()->write("\n");
    }
 
    void Exchange::resizeEvent(QResizeEvent* e) {
@@ -172,6 +197,14 @@ namespace OpenAxiom {
          question()->resize(w, question()->height());
          answer()->resize(w, answer()->height());
       }
+   }
+
+   // ------------
+   // -- Banner --
+   // ------------
+   Banner::Banner(Conversation* conv) :  Base(conv) {
+      setFrameStyle(StyledPanel | Raised);
+      setBackgroundRole(QPalette::Base);
    }
 
    // ------------------
@@ -190,21 +223,32 @@ namespace OpenAxiom {
 
    // Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
-   Conversation::Conversation(Debate& parent) : group(parent) {
+   Conversation::Conversation(Debate& parent)
+         : group(parent), greatings(this), cur_ex(), cur_out(&greatings) {
+      setBackgroundRole(QPalette::Base);
       setFont(monospace_font());
       // setMinimumSize(minimum_preferred_size(this));
       // setSizePolicy(QSizePolicy::MinimumExpanding,
       //               QSizePolicy::MinimumExpanding);
+      oracle()->setProcessChannelMode(QProcess::MergedChannels);
+      connect(oracle(), SIGNAL(readyReadStandardOutput()),
+              this, SLOT(read_reply()));
+      // connect(oracle(), SIGNAL(readyReadStandardError()),
+      //         this, SLOT(read_reply()));
+      // connect(oracle(), SIGNAL(started()),
+      //         this, SLOT(read_reply()));
    }
 
    Conversation::~Conversation() {
       for (int i = children.size() -1 ; i >= 0; --i)
          delete children[i];
+      if (oracle()->state() == QProcess::Running)
+         oracle()->terminate();
    }
 
    QPoint Conversation::bottom_left() const {
       if (length() == 0)
-         return QPoint(0, 0);
+         return greatings.geometry().bottomLeft();
       return children.back()->geometry().bottomLeft();
    }
 
@@ -221,8 +265,8 @@ namespace OpenAxiom {
       const int n = length();
       if (n == 0)
          return round_up_height(minimum_preferred_size(this), view_height);
-      QSize sz = children.front()->size();
-      for (int i = 1; i < n; ++i)
+      QSize sz = greatings.size();
+      for (int i = 0; i < n; ++i)
          sz.rheight() += children[i]->height();
       return round_up_height(sz, view_height);
    }
@@ -233,6 +277,7 @@ namespace OpenAxiom {
       const QSize sz = size();
       if (e->oldSize() == sz)
          return;
+      greatings.resize(sz.width(), greatings.height());
       for (int i = 0; i < length(); ++i) {
          Exchange* e = children[i];
          e->resize(sz.width(), e->height());
@@ -242,7 +287,7 @@ namespace OpenAxiom {
    void Conversation::paintEvent(QPaintEvent* e) {
       QWidget::paintEvent(e);
       if (length() == 0)
-         new_topic();
+         greatings.update();
    }
 
    Exchange*
@@ -252,13 +297,64 @@ namespace OpenAxiom {
       children.push_back(w);
       adjustSize();
       updateGeometry();
-      return w;
+      cur_out = w->answer();
+      return cur_ex = w;
    }
 
    Exchange*
    Conversation::next(Exchange* w) {
       if (w == 0 or w->number() == length())
          return new_topic();
-      return children[w->number()];
+      return cur_ex = children[w->number()];
+   }
+
+   struct OracleOutput {
+      QString result;
+      QString prompt;
+   };
+
+   static bool
+   empty_string(const QString& s) {
+      return s.isNull() or s.isEmpty();
+   }
+   
+   static OracleOutput
+   read_output(QProcess& proc) {
+      OracleOutput output;
+      QStringList strs = QString::fromLocal8Bit(proc.readAll()).split('\n');
+      QStringList new_list;
+      QRegExp rx("\\(\\d+\\)\\s->");
+      while (not strs.isEmpty()) {
+         QString s = strs.takeFirst();
+         if (empty_string(s))
+            continue;
+         if (rx.indexIn(s) != -1) {
+            output.prompt = s;
+            break;
+         }
+         new_list.append(s);
+      }
+     output.result =new_list.join("\n");
+     return output;
+   }
+
+   void
+   Conversation::read_reply() {
+      OracleOutput output = read_output(proc);
+      if (empty_string(output.result))
+         return;
+      std::cerr << output.result.toStdString() << std::endl;
+      cur_out->add_paragraph(output.result);
+      if (length() == 0) {
+         if (not empty_string(output.prompt))
+            ensure_visibility(debate(), new_topic());
+      }
+      else {
+         exchange()->adjustSize();
+         exchange()->update();
+         exchange()->updateGeometry();
+         if (not empty_string(output.prompt))
+            ensure_visibility(debate(), next(exchange()));
+      }
    }
 }
