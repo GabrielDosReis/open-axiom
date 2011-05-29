@@ -180,6 +180,8 @@ namespace OpenAxiom {
       // Return the parent engine widget.
       Debate* debate() const { return const_cast<Debate*>(&group); }
 
+      void submit_query(const QString&);
+
    public slots:
       // Return the topic following a given topic in this set of conversations
       Exchange* next(Exchange*);
