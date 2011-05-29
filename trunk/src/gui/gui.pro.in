@@ -17,7 +17,7 @@ INCLUDEPATH +=  @srcdir@
 DEPENDPATH += @srcdir@
 
 ## Source files
-SOURCES += conversation.C main-window.C debate.C main.C
+SOURCES += conversation.cc main-window.cc debate.cc main.cc
 
 ## Additional support libraries
 LIBS += $$OA_LIB
