@@ -92,7 +92,7 @@ off()==
 --    '"/windows/temp/browser.text"
 --  $saturn =>
 --    saturnEvalToFile(x, fn)
---    runCommand  '"cat /tmp/sat.text"
+--    displayTextFile  '"/tmp/sat.text"
 --  eval x
 
 

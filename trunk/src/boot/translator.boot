@@ -105,7 +105,7 @@ BOOTTOCLLINES(lines, fn, outfn)==
    try
      a := inputTextFile shoeAddbootIfNec fn
      shoeClLines(a,fn,lines,outfn)
-   finally closeFile a
+   finally closeStream a
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
@@ -117,7 +117,7 @@ shoeClLines(a,fn,lines,outfn)==
     shoeFileTrees(shoeTransformStream a,stream)
     genModuleFinalization stream
     outfn
-  finally closeFile stream
+  finally closeStream stream
  
 ++ (boottoclc "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" with the original boot
@@ -133,7 +133,7 @@ BOOTTOCLCLINES(lines, fn, outfn)==
   try
     a := inputTextFile shoeAddbootIfNec fn
     shoeClCLines(a,fn,lines,outfn)
-  finally closeFile a
+  finally closeStream a
  
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
@@ -146,7 +146,7 @@ shoeClCLines(a,fn,lines,outfn)==
       shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream)
     genModuleFinalization(stream)
     outfn
-  finally closeFile stream
+  finally closeStream stream
  
 ++ (boottomc "filename") translates the file "filename.boot"
 ++ to machine code and loads it one item at a time
@@ -158,7 +158,7 @@ BOOTTOMC fn==
      a := inputTextFile shoeAddbootIfNec fn
      shoeMc(a,fn)
    finally
-     closeFile a
+     closeStream a
      setCurrentPackage callingPackage
  
 shoeMc(a,fn)==
@@ -175,7 +175,7 @@ evalBootFile fn ==
      a := inputTextFile infn
      shoeClLines(a,infn,[],outfn)
    finally
-     closeFile a
+     closeStream a
      setCurrentPackage b
    LOAD outfn
  
@@ -189,7 +189,7 @@ BO fn==
     a := inputTextFile shoeAddbootIfNec fn
     shoeToConsole(a,fn)
   finally
-    closeFile a
+    closeStream a
     setCurrentPackage b
  
 BOCLAM fn==
@@ -200,7 +200,7 @@ BOCLAM fn==
     a := inputTextFile shoeAddbootIfNec fn
     shoeToConsole(a,fn)
   finally
-    closeFile a
+    closeStream a
     setCurrentPackage callingPackage
  
 shoeToConsole(a,fn)==
@@ -501,7 +501,7 @@ DEFUSE fn==
   try
     a := inputTextFile strconc(fn,'".boot")
     shoeDfu(a,fn)
-  finally closeFile a
+  finally closeStream a
  
 --%
 $bootDefined := nil
@@ -521,7 +521,7 @@ shoeDfu(a,fn)==
   try
     stream := outputTextFile strconc(fn,'".defuse")
     shoeReport stream
-  finally closeFile stream
+  finally closeStream stream
  
 shoeReport stream==
   shoeFileLine('"DEFINED and not USED",stream)
@@ -623,7 +623,7 @@ XREF fn==
   try
     a := inputTextFile strconc(fn,'".boot")
     shoeXref(a,fn)
-  finally closeFile a
+  finally closeStream a
  
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
@@ -638,7 +638,7 @@ shoeXref(a,fn)==
     stream := outputTextFile out
     shoeXReport stream
     out
-  finally closeFile stream
+  finally closeStream stream
  
  
 shoeXReport stream==

@@ -157,11 +157,6 @@
 ;         SYSTEM COMMANDS
 ;************************************************************************
 
-(defun CLEARDATABASE () (|runCommand| "ERASE MODEMAP DATABASE"))
-
-(defun erase (FN FT)
-  (|runCommand| (STRCONC "ERASE " (STRINGIMAGE FN) " " (STRINGIMAGE FT))))
-
 (defun READLISP (UPPER_CASE_FG)
   (let (v expr val )
     (setq EXPR (READ-FROM-STRING
@@ -202,8 +197,6 @@
         ((EQUAL OPTS "rq") (/RQ))
         ('T (/RQ-LIB)))
   (|terminateSystemCommand|))
-
-(defun CPSAY (X) (let (n) (if (EQ 0 (setq N (|runCommand| X))) NIL (PRINT N))))
 
 (defun |fin| ()
   (SETQ *EOF* 'T)

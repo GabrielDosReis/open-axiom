@@ -848,10 +848,10 @@ getIndexTable dir ==
     try
       stream := inputTextFile indexFile
       GET_-INDEX_-TABLE_-FROM_-STREAM stream
-    finally (if stream ~= nil then closeFile stream)
+    finally (if stream ~= nil then closeStream stream)
   -- index file doesn't exist but mark this directory as a Lisplib.
   try stream := outputTextFile indexFile
-  finally (if stream ~= nil then closeFile stream)
+  finally (if stream ~= nil then closeStream stream)
 
 --%
 compDefineExports(form,ops,sig,e) ==

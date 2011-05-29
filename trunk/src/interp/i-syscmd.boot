@@ -877,10 +877,10 @@ withAsharpCmd args ==
 --% )copyright -- display copyright notice
 
 summary l ==
- runCommand strconc('"cat _"", systemRootDirectory(),'"/lib/summary_"")
+ displayTextFile strconc(systemRootDirectory(),'"/lib/summary")
 
 copyright () ==
- runCommand strconc('"cat _"", systemRootDirectory(),'"/lib/copyright_"")
+ displayTextFile strconc(systemRootDirectory(),'"/lib/copyright")
 
 --% )credits -- display credit list
 

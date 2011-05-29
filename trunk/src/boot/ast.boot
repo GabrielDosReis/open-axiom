@@ -104,7 +104,7 @@ structure %Ast ==
   %Leave(%Ast)                          -- leave x
   %Throw(%Ast)                          -- throw OutOfRange 3
   %Catch(%Signature,%Ast)               -- catch(x: OutOfRange) => print x
-  %Finally(%Ast)                        -- finally closeFile f
+  %Finally(%Ast)                        -- finally closeStream f
   %Try(%Ast,%Sequence)                  -- try x / y catch DivisionByZero
   %Where(%Ast,%Sequence)                -- e where f x == y
   %Structure(%Ast,%Sequence)            -- structure Foo == ...

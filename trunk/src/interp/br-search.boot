@@ -228,7 +228,7 @@ grepSplit(lines,doc?) ==
       kind = char "o" => ops :=  insert(line,ops)
       kind = char "-" => 'skip                --for now
       systemError 'kind
-  if doc? then closeFile instream2
+  if doc? then closeStream instream2
   [['"attribute",:reverse! atts],
      ['"operation",:reverse! ops],
        ['"category",:reverse! cats],
@@ -930,7 +930,7 @@ dbWriteLines(s, :options) ==
 dbReadLines target == --AIX only--called by grepFile
   instream := inputTextFile target
   lines := [line := readLine instream while line ~= %nothing]
-  closeFile instream
+  closeStream instream
   lines
 
 dbGetCommentOrigin line ==
@@ -943,7 +943,7 @@ dbGetCommentOrigin line ==
   instream := inputTextFile grepSource key   --this always returns libdb now
   FILE_-POSITION(instream,readInteger address)
   line := readLine instream
-  closeFile instream
+  closeStream instream
   line
 
 grepSource key ==

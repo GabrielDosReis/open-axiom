@@ -98,6 +98,7 @@
 	   "inputTextFile"
 	   "outputTextFile"
 	   "closeFile"
+	   "closeStream"
 	   "prettyPrint"
 	   "readLine"
 	   "readExpr"
@@ -505,6 +506,9 @@
 
 (defun |closeFile| (f)
   (close f))
+
+(defmacro |closeStream| (s)
+  `(close ,s))
 
 ;; Read a line from the input text file.  Quietly return
 ;; %nothing at end of file.
