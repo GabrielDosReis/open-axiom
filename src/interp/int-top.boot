@@ -215,7 +215,7 @@ intloopInclude(name, n) ==
   try
     st := inputTextFile name
     intloopInclude0(st, name, n)
-  finally (if st ~= nil then closeFile st)
+  finally (if st ~= nil then closeStream st)
  
 intloopInclude1(name,n) ==
           a:=ncloopIncFileName name
@@ -352,7 +352,7 @@ ncloopInclude(name, n) ==
   try
     st := inputTextFile name
     ncloopInclude0(st, name, n)
-  finally (if st ~= nil then closeFile st)
+  finally (if st ~= nil then closeStream st)
  
 ncloopInclude1(name,n) ==
           a:=ncloopIncFileName name

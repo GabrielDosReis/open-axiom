@@ -46,7 +46,7 @@ asList() ==
   OBEY '"ls as/*.asy > temp.text"
   instream := inputTextFile '"temp.text"
   lines := [line := readLine instream while line ~= %nothing]
-  closeFile instream
+  closeStream instream
   lines
 
 asAll lines ==
@@ -429,7 +429,7 @@ asytran fn ==
     asytranDeclaration(d,'(top),nil,false)
     if null name then hohohoho()
     tableValue($docHash,name) := $docHashLocal
-  closeFile inStream
+  closeStream inStream
   'done
 
 mkNiladics u ==

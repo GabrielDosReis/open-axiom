@@ -41,6 +41,7 @@ namespace BOOT
 module sys_-utility where
   probeReadableFile : %String -> %Maybe %String
   remove!: (%List %Thing,%Thing) -> %List %Thing
+  displayTextFile: %Thing -> %Void
 
 --%
 $COMBLOCKLIST := nil
@@ -379,3 +380,11 @@ remove!(l,x) ==
       return l
     p := rest p
       
+--%
+displayTextFile f ==
+  try
+    stream := inputTextFile f
+    while (line := readLine stream) ~= %nothing repeat
+      writeLine(line,$OutputStream)
+  finally
+    stream ~= nil => closeStream stream

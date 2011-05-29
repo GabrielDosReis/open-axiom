@@ -58,7 +58,7 @@ incRgen s ==
  
 incRgen1 s==
   a := readLine s
-  a = %nothing => (closeFile s;StreamNil)
+  a = %nothing => (closeStream s;StreamNil)
   [a,:incRgen s]
  
 incIgen n ==

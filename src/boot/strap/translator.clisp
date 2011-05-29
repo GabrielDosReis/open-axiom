@@ -151,7 +151,7 @@
         (PROGN
           (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
           (|shoeClLines| |a| |fn| |lines| |outfn|))
-        (|closeFile| |a|)))))
+        (|closeStream| |a|)))))
 
 (DEFUN |shoeClLines| (|a| |fn| |lines| |outfn|)
   (PROG (|stream|)
@@ -173,7 +173,7 @@
                (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)
                (|genModuleFinalization| |stream|)
                |outfn|)
-             (|closeFile| |stream|)))))))
+             (|closeStream| |stream|)))))))
 
 (DEFUN BOOTTOCLC (|fn| |out|)
   (UNWIND-PROTECT
@@ -190,7 +190,7 @@
         (PROGN
           (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
           (|shoeClCLines| |a| |fn| |lines| |outfn|))
-        (|closeFile| |a|)))))
+        (|closeStream| |a|)))))
 
 (DEFUN |shoeClCLines| (|a| |fn| |lines| |outfn|)
   (PROG (|stream|)
@@ -216,7 +216,7 @@
                    |stream|)
                (|genModuleFinalization| |stream|)
                |outfn|)
-             (|closeFile| |stream|)))))))
+             (|closeStream| |stream|)))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BOOTTOMC))
 
@@ -231,7 +231,7 @@
             (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
             (|shoeMc| |a| |fn|))
           (PROGN
-            (|closeFile| |a|)
+            (|closeStream| |a|)
             (|setCurrentPackage| |callingPackage|)))))))
 
 (DEFUN |shoeMc| (|a| |fn|)
@@ -254,7 +254,7 @@
           (PROGN
             (SETQ |a| (|inputTextFile| |infn|))
             (|shoeClLines| |a| |infn| NIL |outfn|))
-          (PROGN (|closeFile| |a|) (|setCurrentPackage| |b|)))
+          (PROGN (|closeStream| |a|) (|setCurrentPackage| |b|)))
         (LOAD |outfn|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) BO))
@@ -269,7 +269,7 @@
           (PROGN
             (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
             (|shoeToConsole| |a| |fn|))
-          (PROGN (|closeFile| |a|) (|setCurrentPackage| |b|)))))))
+          (PROGN (|closeStream| |a|) (|setCurrentPackage| |b|)))))))
 
 (DEFUN BOCLAM (|fn|)
   (PROG (|$bfClamming| |a| |callingPackage|)
@@ -284,7 +284,7 @@
             (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
             (|shoeToConsole| |a| |fn|))
           (PROGN
-            (|closeFile| |a|)
+            (|closeStream| |a|)
             (|setCurrentPackage| |callingPackage|)))))))
 
 (DEFUN |shoeToConsole| (|a| |fn|)
@@ -795,7 +795,7 @@
         (PROGN
           (SETQ |a| (|inputTextFile| (CONCAT |fn| ".boot")))
           (|shoeDfu| |a| |fn|))
-        (|closeFile| |a|)))))
+        (|closeStream| |a|)))))
 
 (DEFPARAMETER |$bootDefined| NIL)
 
@@ -825,7 +825,7 @@
                (SETQ |stream|
                      (|outputTextFile| (CONCAT |fn| ".defuse")))
                (|shoeReport| |stream|))
-             (|closeFile| |stream|)))))))
+             (|closeStream| |stream|)))))))
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
@@ -1104,7 +1104,7 @@
         (PROGN
           (SETQ |a| (|inputTextFile| (CONCAT |fn| ".boot")))
           (|shoeXref| |a| |fn|))
-        (|closeFile| |a|)))))
+        (|closeStream| |a|)))))
 
 (DEFUN |shoeXref| (|a| |fn|)
   (PROG (|$bfClamming| |$bootUsed| |$bootDefined| |$lispWordTable|
@@ -1127,7 +1127,7 @@
                (SETQ |stream| (|outputTextFile| |out|))
                (|shoeXReport| |stream|)
                |out|)
-             (|closeFile| |stream|)))))))
+             (|closeStream| |stream|)))))))
 
 (DEFUN |shoeXReport| (|stream|)
   (PROG (|a| |c|)

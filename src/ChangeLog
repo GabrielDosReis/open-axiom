@@ -1,5 +1,17 @@
 2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (displayTextFile): New.
+	* interp/i-syscmd.boot (summary): Use it.
+	(copyright): Likewise.
+	* algebra/net.spad.pamphlet: Replace closeFile with closeStream.
+	* boot/translator.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (readExpr): New.
 	* interp/as.boot: Replace READLINE with readLine.
 	* interp/br-data.boot: Likewise.
