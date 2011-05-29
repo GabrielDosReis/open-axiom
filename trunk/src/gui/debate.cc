@@ -38,8 +38,12 @@ namespace OpenAxiom {
    static void
    start_interpreter(Conversation* conv) {
       QStringList args;
-      args << "--no-server" << "--role=slave";
+      args << "--no-server" << "--role=server";
       conv->oracle()->start("open-axiom",args);
+      // When invoked in a --role=server mode, OpenAxiom would
+      // wait to be pinged before displayed a prompt.  This is
+      // an unfortunate result of a rather awkward hack.
+      conv->submit_query("");
    }
 
    Debate::Debate(QWidget* parent)

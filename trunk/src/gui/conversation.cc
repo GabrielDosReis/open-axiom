@@ -45,6 +45,15 @@ namespace OpenAxiom {
       return QSize(fm.width(QLatin1Char('m')), fm.height());
    }
 
+   // Return true if the QString `s' is morally an empty string.
+   // QT makes a difference between a null string and an empty string.
+   // That distinction is largely pedantic and without difference
+   // for most of our practical purposes.
+   static bool
+   empty_string(const QString& s) {
+      return s.isNull() or s.isEmpty();
+   }
+   
    // --------------------
    // -- OutputTextArea --
    // --------------------
@@ -58,27 +67,29 @@ namespace OpenAxiom {
    // Concatenate two paragraphs.
    static QString
    accumulate_paragaphs(const QString& before, const QString& after) {
-      if (before.isNull() or before.isEmpty())
+      if (empty_string(before))
          return after;
       return before + "\n" + after;
    }
    
    void OutputTextArea::add_paragraph(const QString& s) {
       setText(accumulate_paragaphs(text(), s));
-      adjustSize();
+      QSize sz = sizeHint();
       const int w = parentWidget()->width() - 2 * frameWidth();
-      if (w > width())
-         resize(w, height());
+      if (w > sz.width())
+         sz.setWidth(w);
+      resize(sz);
       show();
       updateGeometry();
    }
 
    void OutputTextArea::add_text(const QString& s) {
       setText(text() + s);
-      adjustSize();
-      const int w = parentWidget()->width();
-      if (w < width())
-         resize(w, height());
+      QSize sz = sizeHint();
+      const int w = parentWidget()->width() - 2 * frameWidth();
+      if (w > sz.width())
+         sz.setWidth(w);
+      resize(sz);
       show();
       updateGeometry();
    }
@@ -153,7 +164,6 @@ namespace OpenAxiom {
    static void
    finish_exchange_make_up(Conversation& conv, Exchange* e) {
       e->setAutoFillBackground(true);
-      //e->setBackgroundRole(e->question()->backgroundRole());
       e->move(conv.bottom_left());
    }
    
@@ -184,10 +194,9 @@ namespace OpenAxiom {
    void
    Exchange::reply_to_query() {
       QString input = question()->text().trimmed();
-      if (input.isEmpty())
+      if (empty_string(input))
          return;
-      topic()->oracle()->write(input.toAscii());
-      topic()->oracle()->write("\n");
+      topic()->submit_query(input);
    }
 
    void Exchange::resizeEvent(QResizeEvent* e) {
@@ -225,17 +234,13 @@ namespace OpenAxiom {
    // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate& parent)
          : group(parent), greatings(this), cur_ex(), cur_out(&greatings) {
-      setBackgroundRole(QPalette::Base);
       setFont(monospace_font());
-      // setMinimumSize(minimum_preferred_size(this));
-      // setSizePolicy(QSizePolicy::MinimumExpanding,
-      //               QSizePolicy::MinimumExpanding);
+      setBackgroundRole(QPalette::Base);
+      greatings.setFont(font());
       oracle()->setProcessChannelMode(QProcess::MergedChannels);
       connect(oracle(), SIGNAL(readyReadStandardOutput()),
               this, SLOT(read_reply()));
       // connect(oracle(), SIGNAL(readyReadStandardError()),
-      //         this, SLOT(read_reply()));
-      // connect(oracle(), SIGNAL(started()),
       //         this, SLOT(read_reply()));
    }
 
@@ -313,11 +318,6 @@ namespace OpenAxiom {
       QString prompt;
    };
 
-   static bool
-   empty_string(const QString& s) {
-      return s.isNull() or s.isEmpty();
-   }
-   
    static OracleOutput
    read_output(QProcess& proc) {
       OracleOutput output;
@@ -338,13 +338,20 @@ namespace OpenAxiom {
      return output;
    }
 
+   static bool
+   empty(const OracleOutput& out) {
+      return empty_string(out.result) and empty_string(out.prompt);
+   }
+
    void
    Conversation::read_reply() {
       OracleOutput output = read_output(proc);
-      if (empty_string(output.result))
+      if (empty(output))
          return;
-      std::cerr << output.result.toStdString() << std::endl;
-      cur_out->add_paragraph(output.result);
+      if (not empty_string(output.result)) {
+         cur_out->add_paragraph(output.result);
+         adjustSize();
+      }
       if (length() == 0) {
          if (not empty_string(output.prompt))
             ensure_visibility(debate(), new_topic());
@@ -353,8 +360,16 @@ namespace OpenAxiom {
          exchange()->adjustSize();
          exchange()->update();
          exchange()->updateGeometry();
-         if (not empty_string(output.prompt))
+         if (empty_string(output.prompt))
+            ensure_visibility(debate(), exchange());
+         else
             ensure_visibility(debate(), next(exchange()));
       }
+   }
+
+   void
+   Conversation::submit_query(const QString& s) {
+      oracle()->write(s.toAscii());
+      oracle()->write("\n");
    }
 }
