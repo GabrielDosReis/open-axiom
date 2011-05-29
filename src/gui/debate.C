@@ -35,6 +35,13 @@
 
 namespace OpenAxiom {
 
+   static void
+   start_interpreter(Conversation* conv) {
+      QStringList args;
+      args << "--no-server" << "--role=slave";
+      conv->oracle()->start("open-axiom",args);
+   }
+
    Debate::Debate(QWidget* parent)
          : QScrollArea(parent), conv(*this) {
       setWidget(&conv);
@@ -44,6 +51,7 @@ namespace OpenAxiom {
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
       adjustSize();
+      start_interpreter(exchanges());
    }
 
    Debate::~Debate() { }

@@ -40,6 +40,7 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
+#include <QProcess>
 
 namespace OpenAxiom {
    // A conversation is a set of exchanges.  An exchange is a question
@@ -51,23 +52,41 @@ namespace OpenAxiom {
    class Question;
    class Answer;
 
-   // -- A question is just a one-liner query.
+   // --------------------
+   // -- OutputTextArea --
+   // --------------------
+   // An output text area is a widget where we output text.
+   // The texts are accumulated, as opposed to overwritten.
+   class OutputTextArea : public QLabel {
+      typedef QLabel Base;
+   public:
+      explicit OutputTextArea(QWidget*);
+      // Add a new paragraph to existing texts.  Paragraghs are
+      // separated by the newline character.
+      void add_paragraph(const QString&);
+      // Add accumulate new text.
+      void add_text(const QString&);
+   };
+
+   // ---------------
+   // -- Question --
+   // ---------------
+   // A question is just a one-liner query area.
    class Question : public QLineEdit {
       typedef QLineEdit Base;
    public:
       explicit Question(Exchange&);
       Exchange* exchange() const { return parent; }
 
-   protected:
-      // Automatically grab focus when mouse moves into this widget
-      void enterEvent(QEvent*);
-
    private:
       Exchange* const parent;
    };
 
-   class Answer : public QLabel {
-      typedef QLabel Base;
+   // ------------
+   // -- Answer --
+   // ------------
+   class Answer : public OutputTextArea {
+      typedef OutputTextArea Base;
    public:
       explicit Answer(Exchange&);
       Exchange* exchange() const { return parent; }
@@ -75,14 +94,17 @@ namespace OpenAxiom {
    private:
       Exchange* const parent;
    };
-   
+
+   // --------------
+   // -- Exchange --
+   // --------------
    class Exchange : public QFrame {
       Q_OBJECT;
    public:
       Exchange(Conversation&, int);
 
       // Return the parent widget of this conversation topic
-      Conversation* conversation() const { return parent; }
+      Conversation* topic() const { return parent; }
 
       // The widget holding the query area
       Question* question() { return &query; }
@@ -111,6 +133,13 @@ namespace OpenAxiom {
       void reply_to_query();
    };
 
+   // Conversation banner, welcome greatings.
+   class Banner : public OutputTextArea {
+      typedef OutputTextArea Base;
+   public:
+      explicit Banner(Conversation*);
+   };
+
    // -- Set of conversations that make up a session.
    // -- We remember and number each topic so that we
    // -- can go back in the conversation set and reevaluate
@@ -137,11 +166,17 @@ namespace OpenAxiom {
       
       // Start a new conversation topic.
       Exchange* new_topic();
-
+      
       // Override QWidegt::sizeHint.  Return the cumulative sizes
       // of all conversations so far.
       QSize sizeHint() const;
 
+      // Return a pointer to the oracle in this conversation.
+      QProcess* oracle() { return &proc; }
+
+      // Return a pointer to the current exchange, if any.
+      Exchange* exchange() { return cur_ex; }
+      
       // Return the parent engine widget.
       Debate* debate() const { return const_cast<Debate*>(&group); }
 
@@ -153,10 +188,17 @@ namespace OpenAxiom {
       void resizeEvent(QResizeEvent*);
       void paintEvent(QPaintEvent*);
 
+   private slots:
+      void read_reply();
+
    private:
       typedef std::vector<Exchange*> Children;
       Debate& group;
+      Banner greatings;
       Children children;
+      QProcess proc;
+      Exchange* cur_ex;
+      OutputTextArea* cur_out;
    };
 }
 
