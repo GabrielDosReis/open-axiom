@@ -811,6 +811,7 @@ bfQ(l,r)==
   r = nil => ["NULL",l]
   l = true or r = true => ["EQ",l,r]
   bfString? l or bfString? r => ["STRING=",l,r]
+  l is "%nothing" or r is "%nothing" => ["EQ",l,r]
   ["EQUAL",l,r]
  
 bfLessp(l,r)==

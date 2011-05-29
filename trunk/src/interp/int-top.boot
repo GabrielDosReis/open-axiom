@@ -106,13 +106,14 @@ intloop () ==
       resetStackLimits()
       mode := CATCH($intTopLevel, SpadInterpretStream(1, nil, true))
 
-++ If the interpreter is spwan by the session manager, then
+++ If the interpreter is spawn by the session manager, then
 ++ each successful connection also creates its own frame.  
 ++ In particular, the only time we get to do anything in the `initial'
-++ frame is when we get the first connection.  In that case, we would
+++ frame is when we get the first connection.  In that situation, we would
 ++ be asked by the session manager to create a frame.  The client is
-++ not aware of that,  It is therefore confusing to display a prompt,
-++ because all this horse-threading happens behind the client's back.
+++ not aware of that discrete request made by the session manager.
+++ It is utterly confusing to display a prompt, because all this
+++ horse-threading happens behind the client's back.
 printFirstPrompt?() ==
   $interpreterFrameName ~= "initial" or
     getOptionValue '"role" ~= '"server"

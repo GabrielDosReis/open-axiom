@@ -1114,15 +1114,6 @@
 ;; -*- Input/Output -*-
 ;; 
 
-(defmacro |shoeConsole| (line)
- `(write-line ,line |$OutputStream|))
-
-(defmacro |shoeInputFile| (filespec)
- `(open ,filespec :direction :input :if-does-not-exist nil))
-
-(defmacro |shoeread-line| (st)
- `(read-line ,st nil nil))
-
 (defmacro |report| (L)
   (SUBST (SECOND L) 'x
          '(COND ($reportFlag (sayBrightly x)) ((QUOTE T) NIL))))

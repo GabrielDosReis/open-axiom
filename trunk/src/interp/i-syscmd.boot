@@ -1293,8 +1293,8 @@ newHelpSpad2Cmd args ==
 
   filestream := MAKE_-INSTREAM(helpFile)
   repeat
-    line := read_-line(filestream,false)
-    null line =>
+    line := readLine filestream
+    line = %nothing =>
       SHUT filestream
       return true
     SAY line

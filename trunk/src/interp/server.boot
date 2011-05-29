@@ -50,7 +50,9 @@ serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
   FORCE_-OUTPUT()
   not $SpadServer or not IS_-CONSOLE stream =>
-    read_-line(stream)
+    line := readLine stream
+    line ~= %nothing => line
+    nil
   IN_-STREAM: local := stream
   _*EOF_*: local := nil
   line :=
@@ -60,7 +62,7 @@ serverReadLine(stream) ==
      $NeedToSignalSessionManager := false
      action := serverSwitch()
      action = $CallInterp =>
-       l := read_-line(stream)
+       l := readLine stream
        $NeedToSignalSessionManager := true
        return l
      action = $CreateFrame =>
@@ -96,7 +98,7 @@ serverReadLine(stream) ==
      action = $KillLispSystem => 
        coreQuit()
      nil
-  line => line
+  line ~= %nothing and line ~= nil => line
   ""
 
 parseAndInterpret str ==

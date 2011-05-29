@@ -431,9 +431,10 @@ queryUserKeyedMsg(key,args) ==
   -- display message and return reply
   conStream := DEFIOSTREAM ('((DEVICE . CONSOLE) (MODE . INPUT)),120,0)
   sayKeyedMsg(key,args)
-  ans := read_-line conStream
+  ans := readLine conStream
   SHUT conStream
-  ans
+  ans ~= %nothing => ans
+  nil
 
 flowSegmentedMsg(msg, len, offset) ==
   -- tries to break a sayBrightly-type input msg into multiple

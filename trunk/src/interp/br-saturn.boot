@@ -1581,8 +1581,7 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --  PRINTEXP($tick,comstream)
 --  PRINTEXP('"",  comstream)
 --  TERPRI(comstream)
---  while not EOFP instream repeat
---    line := READLINE instream
+--  while (line := readLine instream) ~= %nothing repeat
 --    comP := FILE_-POSITION comstream
 --    if key ~= line.0 then
 --      if outstream then SHUT outstream
