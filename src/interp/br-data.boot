@@ -226,7 +226,7 @@ dbAugmentConstructorDataTable() ==
   instream := MAKE_-INSTREAM '"libdb.text"
   while not EOFP instream repeat
     fp   := FILE_-POSITION instream
-    line := READLINE instream
+    line := readLine instream
     cname := makeSymbol dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
@@ -249,18 +249,19 @@ dbHasExamplePage conname ==
 dbRead(n) ==
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(), '"/algebra/libdb.text")
   FILE_-POSITION(instream,n)
-  line := READLINE instream
+  line := readLine instream
   SHUT instream
-  line
+  line ~= %nothing => line
+  nil
 
 dbReadComments(n) ==
   n = 0 => '""
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"/algebra/comdb.text")
   FILE_-POSITION(instream,n)
-  line := READLINE instream
+  line := readLine instream
   k := dbTickIndex(line,1,1)
   line := subString(line,k + 1)
-  while not EOFP instream and (x := READLINE instream) and
+  while (x := readLine instream) ~= %nothing and
     (k := maxIndex x) and (j := dbTickIndex(x,1,1)) and (j < k) and
       x.(j := j + 1) = char "-" and x.(j := j + 1) = char "-" repeat
         xtralines := [subString(x,j + 1),:xtralines]
@@ -275,8 +276,7 @@ dbSplitLibdb() ==
   PRINTEXP($tick,comstream)
   PRINTEXP('"",  comstream)
   TERPRI(comstream)
-  while not EOFP instream repeat
-    line := READLINE instream
+  while (line := readLine instream) ~= %nothing repeat
     outP := FILE_-POSITION outstream
     comP := FILE_-POSITION comstream
     [prefix,:comments] := dbSplit(line,6,1)
@@ -390,8 +390,7 @@ getGlossLines instream ==
   keys := nil
   text := nil
   lastLineHadTick := false
-  while not EOFP instream repeat
-    line := READLINE instream
+  while (line := readLine instream) ~= %nothing repeat
     #line = 0 => 'skip
     n := charPosition($tick,line,0)
     last := IFCAR text

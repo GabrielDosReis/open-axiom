@@ -66,8 +66,3 @@ update() ==
 
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]
-
-READLINE(:s) ==
-  s => read_-line(first s)
-  read_-line($InputStream)
-

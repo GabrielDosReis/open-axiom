@@ -1430,6 +1430,7 @@
     ((NULL |r|) (LIST 'NULL |l|))
     ((OR (EQ |l| T) (EQ |r| T)) (LIST 'EQ |l| |r|))
     ((OR (|bfString?| |l|) (|bfString?| |r|)) (LIST 'STRING= |l| |r|))
+    ((OR (EQ |l| '|%nothing|) (EQ |r| '|%nothing|)) (LIST 'EQ |l| |r|))
     (T (LIST 'EQUAL |l| |r|))))
 
 (DEFUN |bfLessp| (|l| |r|)

@@ -88,8 +88,7 @@ buildHtMacroTable() ==
   fn := strconc(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
   if PROBE_-FILE(fn) then
     instream := MAKE_-INSTREAM fn
-    while not EOFP instream repeat
-      line := READLINE instream
+    while (line := readLine instream) ~= %nothing repeat
       getHtMacroItem line is [string,:numOfArgs] =>
         tableValue($htMacroTable,string) := numOfArgs
     for [s,:n] in $primitiveHtCommands repeat tableValue($htMacroTable,s) := n

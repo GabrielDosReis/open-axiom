@@ -100,6 +100,7 @@
 	   "closeFile"
 	   "prettyPrint"
 	   "readLine"
+	   "readExpr"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -512,6 +513,9 @@
 
 (defmacro |readByte| (f)
   `(read-byte ,f nil |%nothing|))
+
+(defmacro |readExpr| (f)
+  `(read ,f nil |%nothing|))
 
 ;; Pretty-print a lisp form on a given output stream.
 (defun |prettyPrint| (x &optional (s |$OutputStream|))

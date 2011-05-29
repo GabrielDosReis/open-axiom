@@ -92,8 +92,8 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := inputTextFile '"topics.data"           
   while not EOFP instream repeat
-    line := READLINE instream
-    while blankLine? line repeat line := READLINE instream
+    line := readLine instream
+    while blankLine? line repeat line := readLine instream
     m := maxIndex line                        --file "topics.data" has form:
     m = -1 => 'skip                           --1   ConstructorName:
     stringChar(line,0) = char "-" => 'skip    --2      constructorName or operation name
@@ -101,8 +101,8 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     m := maxIndex line                        --     (blank line) ...
     stringChar(line,m) ~= char ":" => systemError('"wrong heading")
     con := makeSymbol subString(line,0,m)
-    alist := [lst while not EOFP instream and 
-       not (blankLine? (line := READLINE instream)) and
+    alist := [lst while (line := readLine instream) ~= %nothing and 
+       not blankLine? line and
          stringChar(line,0) ~= char "-" for i in 1..
            | lst := string2OpAlist line]
     alist => tableValue($conTopicHash,con) := alist

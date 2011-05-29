@@ -91,7 +91,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	i-output.$(FASLEXT)	i-special.$(FASLEXT)	\
 	i-syscmd.$(FASLEXT)	i-toplev.$(FASLEXT)	\
 	i-util.$(FASLEXT)	incl.$(FASLEXT)		\
-	int-top.$(FASLEXT)	intfile.$(FASLEXT)	\
+	int-top.$(FASLEXT)	                   	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
 	match.$(FASLEXT)	monitor.$(FASLEXT)	\
 	msg.$(FASLEXT)		msgdb.$(FASLEXT)	\

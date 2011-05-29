@@ -71,7 +71,9 @@ argumentDataError(argnum, condit, funname) ==
 queryUser msg ==
   -- display message and return reply
   sayBrightly msg
-  read_-line $InputStream
+  line := readLine $InputStream
+  line ~= %nothing => line
+  nil
 
 -- errorSupervisor is the old style error message trapper
 

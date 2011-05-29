@@ -166,17 +166,16 @@ htGlossPage(htPage,pattern,tryAgain?) ==
 gatherGlossLines(results,defstream) ==
   acc := nil
   for keyline in results repeat
-    --keyline := READLINE instream
     n := charPosition($tick,keyline,0)
     keyAndTick := subString(keyline,0,n + 1)
     byteAddress := string2Integer subString(keyline,n + 1)
     FILE_-POSITION(defstream,byteAddress)
-    line := READLINE defstream
+    line := readLine defstream
     k := charPosition($tick,line,1)
     pointer := subString(line,0,k)
     def := subString(line,k + 1)
     xtralines := nil
-    while not EOFP defstream and (x := READLINE defstream) and
+    while (x := readLine defstream) ~= %nothing and
       (j := charPosition($tick,x,1)) and (nextPointer := subString(x,0,j))
         and (nextPointer = pointer) repeat
           xtralines := [subString(x,j + 1),:xtralines]

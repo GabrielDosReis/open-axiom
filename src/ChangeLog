@@ -1,5 +1,34 @@
 2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (readExpr): New.
+	* interp/as.boot: Replace READLINE with readLine.
+	* interp/br-data.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/compat.boot (READLINE): Remove.
+	* interp/sys-macros.lisp (shoeConsole): Remove.
+	(shoeInputFile): Likewise.
+	(shoeread-line): Likewise.
+	* boot/ast.boot (bfQ): %nothing only needs EQ.
+	* algebra/files.spad.pamphlet (File) [read!, readIfCan!]: Use
+	readExpr instead of VMREAD.  Avoid PLACEP
+	(TextFile) [readLine!, readLineIfCan!]: Likewise.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/intfile.boot: Remove.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Define and export readLine and readbyte.
 	* interp/sys-utility.boot (readByteFromFile): Remove.
 	* boot/tokens.boot: Don't rename readLine and readByte.

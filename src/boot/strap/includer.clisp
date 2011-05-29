@@ -136,7 +136,7 @@
       (PROGN
         (SETQ |a| (|readLine| |s|))
         (COND
-          ((NOT (EQUAL |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
+          ((NOT (EQ |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
           (T (LIST '|nullstream|)))))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))

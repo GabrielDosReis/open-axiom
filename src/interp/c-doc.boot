@@ -1247,11 +1247,10 @@ whoOwns(con) ==
   quoteChar := char "_""
   runCommand strconc('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
-  value :=
-    EOFP instream => nil
-    READLINE instream
+  value := readLine instream
   SHUT instream
-  value
+  value ~= %nothing => value
+  nil
 
 --=======================================================================
 --             Report Documentation Error

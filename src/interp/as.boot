@@ -45,7 +45,7 @@ asList() ==
   removeFile '"temp.text"
   OBEY '"ls as/*.asy > temp.text"
   instream := inputTextFile '"temp.text"
-  lines := [READLINE instream while not EOFP instream]
+  lines := [line := readLine instream while line ~= %nothing]
   closeFile instream
   lines
 
