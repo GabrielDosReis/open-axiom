@@ -54,6 +54,11 @@ namespace OpenAxiom {
       return s.isNull() or s.isEmpty();
    }
    
+   // Return a resonable margin for this frame.
+   static int our_margin(const QFrame* f) {
+      return 2 + f->frameWidth();
+   }
+
    // --------------------
    // -- OutputTextArea --
    // --------------------
@@ -75,9 +80,7 @@ namespace OpenAxiom {
    void OutputTextArea::add_paragraph(const QString& s) {
       setText(accumulate_paragaphs(text(), s));
       QSize sz = sizeHint();
-      const int w = parentWidget()->width() - 2 * frameWidth();
-      if (w > sz.width())
-         sz.setWidth(w);
+      sz.setWidth(parentWidget()->width() - our_margin(this));
       resize(sz);
       show();
       updateGeometry();
@@ -101,6 +104,31 @@ namespace OpenAxiom {
       setBackgroundRole(QPalette::AlternateBase);
    }
 
+   void Question::focusInEvent(QFocusEvent* e) {
+      setFrame(true);
+      update();
+      Base::focusInEvent(e);
+   }
+
+   void Question::focusOutEvent(QFocusEvent* e) {
+      setFrame(false);
+      update();
+      Base::focusOutEvent(e);
+   }
+
+   void Question::enterEvent(QEvent* e) {
+      setFrame(true);
+      update();
+      Base::enterEvent(e);
+   }
+
+   void Question::leaveEvent(QEvent* e) {
+      if (not hasFocus())
+         setFrame(false);
+      update();
+      Base::leaveEvent(e);
+   }
+
    // ------------
    // -- Answer --
    // ------------
@@ -112,7 +140,7 @@ namespace OpenAxiom {
    // -- Exchange --
    // --------------
    // Amount of pixel spacing between the query and reply areas.
-   const int spacing = 0;
+   const int spacing = 2;
 
    // Return a monospace font
    static QFont monospace_font() {
@@ -121,17 +149,12 @@ namespace OpenAxiom {
       return f;
    }
 
-   // Return a resonable margin for this frame.
-   static int margin(const QFrame* f) {
-      return 2 + f->frameWidth();
-   }
-
    // The layout within an exchange is as follows:
    //   -- input area (an editor) with its own decoation accounted for.
    //   -- an optional spacing
    //   -- an output area with its own decoration accounted for.
    QSize Exchange::sizeHint() const {
-      const int m = margin(this);
+      const int m = our_margin(this);
       QSize sz = question()->size() + QSize(2 * m, 2 * m);
       if (not answer()->isHidden())
          sz.rheight() += answer()->height() + spacing;
@@ -144,7 +167,7 @@ namespace OpenAxiom {
       Question* q = e->question();
       q->setFrame(false);
       q->setFont(conv.font());
-      const int m = margin(e);
+      const int m = our_margin(e);
       q->setGeometry(m, m, conv.width() - 2 * m, q->height());
    }
 
@@ -152,11 +175,13 @@ namespace OpenAxiom {
    // Place the reply widget right below the frame containing
    // the query widget; make both of the same width, of course.
    static void
-   prepare_reply_widget(Exchange* e) {
+   prepare_reply_widget(Conversation& conv, Exchange* e) {
       Answer* a = e->answer();
       Question* q = e->question();
       const QPoint pt = e->question()->geometry().bottomLeft();
-      a->setGeometry(pt.x(), pt.y() + spacing, q->width(), q->height());
+      const int m = our_margin(a);
+      a->setGeometry(pt.x(), pt.y() + spacing, 
+		     conv.width() - 2 * m, q->height());
       a->setBackgroundRole(q->backgroundRole());
       a->hide();                // nothing to show yet
    }
@@ -173,10 +198,16 @@ namespace OpenAxiom {
       setLineWidth(1);
       setFont(conv.font());
       prepare_query_widget(conv, this);
-      prepare_reply_widget(this);
+      prepare_reply_widget(conv, this);
       finish_exchange_make_up(conv, this);
       connect(question(), SIGNAL(returnPressed()),
               this, SLOT(reply_to_query()));
+   }
+
+   // Transfter focus to this input area.
+   static void 
+   give_focus_to(Question* q) {
+     q->setFocus(Qt::OtherFocusReason);
    }
 
    static void ensure_visibility(Debate* debate, Exchange* e) {
@@ -188,7 +219,7 @@ namespace OpenAxiom {
          vbar->setValue(std::max(new_value, 0));
       else if (new_value > value)
          vbar->setValue(std::min(new_value, vbar->maximum()));
-      e->question()->setFocus(Qt::OtherFocusReason);
+      give_focus_to(e->question());
    }
    
    void
@@ -201,7 +232,7 @@ namespace OpenAxiom {
 
    void Exchange::resizeEvent(QResizeEvent* e) {
       QFrame::resizeEvent(e);
-      const int w = width() - 2 * margin(this);
+      const int w = width() - 2 * our_margin(this);
       if (w > question()->width()) {
          question()->resize(w, question()->height());
          answer()->resize(w, answer()->height());
