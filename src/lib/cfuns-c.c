@@ -2,7 +2,7 @@
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007-2010, Gabriel Dos Reis.
+   Copyright (C) 2007-2011, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -160,7 +160,7 @@ directoryp(char *path)
 OPENAXIOM_C_EXPORT int 
 make_path_from_file(char *s, char *t)
 {
-    char *pos = "";
+    char *pos = NULL;
     char *c;
 
     /** simply copies the path name from t into s **/
@@ -209,7 +209,7 @@ make_path_from_file(char *s, char *t)
 static inline int
 axiom_has_write_access(const struct stat* file_info)
 {
-   int effetive_uid = geteuid();
+   uid_t effetive_uid = geteuid();
 
    if (effetive_uid == 0)
       return 1;

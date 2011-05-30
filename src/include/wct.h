@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2011, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #define OPENAXIOM_wct_INCLUDED
 
 extern time_t ftime(char * );
-extern void fatal(char *  , char * );
+extern void fatal(const char *  , const char * );
 extern off_t fsize(char * );
 extern Wix * scanWct(Wct *  , char * );
 extern void reintern1Wct(Wct * );
@@ -48,7 +48,7 @@ extern void printTime(long * );
 extern int skimString(char *  , int  , int  , int );
 extern int prChar(int );
 extern Wct * reread1Wct(Wct * );
-extern void sfatal(char * );
+extern void sfatal(const char * );
 extern Wct * read1Wct(char * );
 extern Wct * nconcWct(Wct *  , Wct * );
 extern void sortWct(Wct * );
