@@ -105,17 +105,18 @@ int spad_server_number = -1;
    This is needed only for MS platforms.  */
 static int openaxiom_socket_module_loaded = 0;
 
+#ifdef __WIN32__
 /* Windows require some handshaking with the WinSock DLL before
    we can even think about talking about sockets. */
 
 static void
 openaxiom_unload_socket_module(void)
 {
-#ifdef __WIN32__
    WSACleanup();
    openaxiom_socket_module_loaded = 0;
-#endif
 }
+#endif
+
 
 static void
 openaxiom_load_socket_module(void)

@@ -103,7 +103,7 @@ extern int mode;   /** One of the above # defines *****/
 /**   Here is the structure for storing bound  pf-keys		   ***/
 typedef struct Fkey
 {
-  char *str;
+   const char *str;
   short type;
 } fkey;
 

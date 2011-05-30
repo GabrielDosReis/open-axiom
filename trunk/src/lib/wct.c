@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2011 Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -463,13 +463,13 @@ reintern1Wct(Wct *pwct)
 }
 
 void 
-sfatal(char *s)
+sfatal(const char *s)
 {
     fatal("%s", s);
 }
 
 void 
-fatal(char *fmt,char * s)
+fatal(const char* fmt, const char* s)
 {
     static char fbuf[256];
 

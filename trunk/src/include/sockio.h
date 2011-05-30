@@ -82,7 +82,7 @@ struct openaxiom_sio {
     struct sockaddr_in i_addr;
   } addr;
   char *host_name;      /* name of foreign host if type == AF_INET */
-   size_t nbytes_pending;       /* pending bytes for read.  */
+  int nbytes_pending;       /* pending bytes for read.  */
 };
 
 
