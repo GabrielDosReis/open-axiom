@@ -5,8 +5,14 @@
 OA_INC =
 OA_LIB =
 
+## We build in release mode.
+CONFIG += release
+
+## We are building a GUI application.
 TEMPLATE = app
-TARGET = gui
+
+## Put the executable directly in the staged bin directory.
+TARGET = @top_builddir@/@target@/bin/gui
 
 ## Tell QT that sources are not in the build directory
 VPATH += @srcdir@
