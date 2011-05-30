@@ -29,6 +29,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <QApplication>
 #include <QScrollBar>
 #include "debate.h"
 #include <iostream>
@@ -56,6 +57,9 @@ namespace OpenAxiom {
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
       adjustSize();
       start_interpreter(exchanges());
+      connect(conv.oracle(),
+              SIGNAL(finished(int,QProcess::ExitStatus)),
+              this, SLOT(done(int)));
    }
 
    Debate::~Debate() { }
@@ -68,4 +72,10 @@ namespace OpenAxiom {
                     QSizePolicy::MinimumExpanding);
    }
 
+   void Debate::done(int exit_code) {
+      // For the time being, shut done the whole application
+      // if the interpreter quits.  FIXME.
+      QApplication::exit(exit_code);
+   }
+   
 }

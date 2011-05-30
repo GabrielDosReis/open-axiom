@@ -41,6 +41,7 @@
 namespace OpenAxiom {
    
    class Debate : public QScrollArea {
+      Q_OBJECT;
    public:
       explicit Debate(QWidget*);
       ~Debate();
@@ -49,6 +50,9 @@ namespace OpenAxiom {
 
    protected:
       void resizeEvent(QResizeEvent*);
+
+   private slots:
+      void done(int);
 
    private:
       Conversation conv;
