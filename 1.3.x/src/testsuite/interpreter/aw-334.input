@@ -1,3 +1,0 @@
--- Issue AW/334
-
-coefficient(numer(12*sin(z)^3*z), sin(z), 3)    -- currently error

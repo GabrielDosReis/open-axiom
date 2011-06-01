@@ -1,2 +1,0 @@
--- Used to crash the system.
-laplace(log z, z, w)

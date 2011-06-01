@@ -1,2 +1,0 @@
--- Contributed by Martin Rubey
-integrate(log(z-1)*z/(z^2 - 1)^2,z=1..%plusInfinity)

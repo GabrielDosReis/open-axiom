@@ -1,7 +1,0 @@
---
--- expected
---
-exp^(log x)
-exp^(2 * log x)
-(exp^(log x))^2
-

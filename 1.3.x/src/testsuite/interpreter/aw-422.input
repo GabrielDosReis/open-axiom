@@ -1,6 +1,0 @@
-MayPair(T: Domain): Domain == Record(x: T, y: T)
-
-w: MyPair Float
-x
-y
-
