@@ -18,6 +18,7 @@ AC_CHECK_TYPES([intptr_t],[],[AC_TYPE_INTPTR_T])
 AC_CHECK_TYPES([uintptr_t],[],[AC_TYPE_UINTPTR_T])
 AC_CHECK_TYPES([intmax_t],[],[AC_TYPE_INTMAX_T])
 AC_CHECK_TYPES([uintmax_t],[],[AC_TYPE_UINTMAX_T])
+AC_TYPE_UID_T
 ])
 
 
