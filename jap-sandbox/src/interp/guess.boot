@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,23 +39,23 @@ $maxThreshold := 7
 --                        Build Directories
 --=======================================================================
 buildOperationWordTable() ==
-  $opWordTable := buildWordTable [PNAME x for x in allOperations()]
+  $opWordTable := buildWordTable [symbolName x for x in allOperations()]
  
 buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
     words := wordsOfString s
-    key := UPCASE s.0
-    HPUT(table,key,[[s,:words],:HGET(table,key)])
+    key := charUpcase stringChar(s,0)
+    tableValue(table,key) := [[s,:words],:tableValue(table,key)]
   for key in HKEYS table repeat
-    HPUT(table,key,
+    tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function first),
-          function second))
+        listSort(function GLESSEQP, tableValue(table,key),function first),
+          function second)
   table
 
 measureWordTable u ==
-  +/[+/[#entry for entry in HGET(u,key)] for key in HKEYS u]
+  +/[+/[#entry for entry in tableValue(u,key)] for key in HKEYS u]
 
 removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
@@ -64,28 +64,28 @@ removeDupOrderedAlist u ==
     (y := rest x) and first first x = first first y => x.rest := rest y
   u
  
-wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
+wordsOfString(s) == [stringUpcase x for x in wordsOfStringKeepCase s]
  
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | upperCase? s.i] =>
+  k := or/[i for i in j..(maxIndex(s)-1) | upperCase? stringChar(s,i)] =>
     tailWords:=
-      upperCase? s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not upperCase? s.i]
-        null n => [SUBSTRING(s,k,nil)]
-        n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | upperCase? s.i] =>
-        [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
-      [SUBSTRING(s,k,nil)]
-    k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
+      upperCase? stringChar(s,k+1) =>
+        n:= or/[i for i in (k+2)..(maxIndex(s)-1)| not upperCase? stringChar(s,i)]
+        null n => [subString(s,k)]
+        n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
+      m := or/[i for i in (k+2)..(maxIndex(s)-1) | upperCase? stringChar(s,i)] =>
+        [subString(s,k,m-k),:wordsOfString1(s,m)]
+      [subString(s,k)]
+    k > j+1 => [subString(s,j,k-j),:tailWords]
     tailWords
   nil
 
 wordKeys s == 
-  removeDuplicates [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [charUpcase stringChar(s,0),:fn(s,1,-1,maxIndex s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
-    upperCase? s.i =>
+    upperCase? stringChar(s,i) =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])
       fn(s,i + 1,i,n,[s.i,:acc])
     fn(s,i + 1,lastKeyIndex,n,acc)
@@ -96,8 +96,8 @@ wordKeys s ==
 add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
-    null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      HPUT($functionTable,key,[[s,:wordsOfString s],:HGET($functionTable,key)])
+    null LASSOC(s := PNAME fn,tableValue($functionTable,(key := UPCASE s.0))) =>
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:tableValue($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name
@@ -113,7 +113,7 @@ findWords(word,table) ==
     $countThreshold := $countThreshold + 2
     res := findApproximateWords(word,table) 
   $lastAlist := mySort res =>
---    $lastMinimum := first LAST $lastAlist
+--    $lastMinimum := first last $lastAlist
 --    $lastWords := wordSort CDAR $lastAlist
 --    $totalWords:= $lastWords
 --    $lastAlist := rest  $lastAlist
@@ -131,7 +131,7 @@ more() == moreWords($lastWord,$lastTable)
 
 moreWords(word,table) ==
   $lastAlist =>
-     $lastMinimum := first LAST pp $lastAlist
+     $lastMinimum := first last pp $lastAlist
      numberOfLastWords := #$lastWords
      $lastWords := "append"/(ASSOCRIGHT $lastAlist)
      if #$lastWords > numberOfLastWords then 
@@ -160,7 +160,7 @@ findApproximateWords(word,table) ==
   alist:= nil
   for i in 1..#words repeat
     $penalty :local := (i = 1 => 0; 1)
-    wordAlist:= HGET(table,UPCASE (first words).0)
+    wordAlist:= tableValue(table,UPCASE (first words).0)
     for [x,:wordList] in wordAlist repeat
       k := findApproxWordList(words,wordList,n,threshold,#wordList) 
       k =>
@@ -170,7 +170,7 @@ findApproximateWords(word,table) ==
       
     if i = 1 and null alist then
         --no winners, so try flattening to upper case and checking again
-        wordSize := SIZE word
+        wordSize := # word
         lastThreshold := MAX(threshold - 1,wordSize/2)
         for [x,:.] in wordAlist repeat
           k := deltaWordEntry(upperWord,UPCASE x)
@@ -277,44 +277,44 @@ deltaWordEntry(word,entry) ==
   word = entry => 0
   word.0 ~= entry.0 => 1000
   #word > 2 and stringPrefix?(word,entry) => 1
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  abs(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions
 --+   to understand the algorithm
 canForgeWord(word,entry) ==
-  forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0)
+  forge(word,0,maxIndex word,entry,0,maxIndex entry,0)
  
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
     e > E => n
-    QSADD1 QSPLUS(E-e,n)
-  e > E => QSADD1 QSPLUS(W-w,n)
+    E-e + n + 1
+  e > E => W-w + n + 1
   word.w = entry.e => forge(word,w+1,W,entry,e+1,E,n)
-  w=W or e=E => forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  w=W or e=E => forge(word,w+1,W,entry,e+1,E,n + 1)
   word.w=entry.(e+1) =>
-    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,QSADD1 n)
-    forge(word,w+1,W,entry,e+2,E,QSADD1 n)
-  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,QSADD1 n)
+    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,n + 1)
+    forge(word,w+1,W,entry,e+2,E,n + 1)
+  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,n + 1)
  
   (deltaW := W-w) > 1 and (deltaE := E-e) > 1 =>
     --if word is long, can we delete chars to match 2 consective chars
     deltaW >= deltaE and
       (k := or/[j for j in (w+2)..(W-1) | word.j = entry.e])
         and word.(k+1) = entry.(e+1) =>
-          forge(word,k+2,W,entry,e+2,E,QSPLUS(k-w,n))
+          forge(word,k+2,W,entry,e+2,E,k-w + n)
     deltaW <= deltaE and
     --if word is short, can we insert chars so as to match 2 consecutive chars
       (k := or/[j for j in (e+2)..(E-1) | word.w = entry.j])
         and word.(w+1) = entry.(k+1) =>
-          forge(word,w+2,W,entry,k+2,E,QSPLUS(n,k-e))
-    forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+          forge(word,w+2,W,entry,k+2,E,n + k-e)
+    forge(word,w+1,W,entry,e+1,E,n + 1)
   --check for two consecutive matches down the line
-  forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  forge(word,w+1,W,entry,e+1,E,n + 1)
  
 --+ DO NOT REMOVE DEFINITIONS BELOW which explain the algorithm
 --+ canForgeWord(word,entry) ==--
---+ [d,i,s,t] := forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0,0,0,0)
+--+ [d,i,s,t] := forge(word,0,maxIndex word,entry,0,maxIndex entry,0,0,0,0)
 --+ --d=deletions, i=insertions, s=substitutions, t=transpositions
 --+ --list is formed only for tuning purposes-- remove later on
 --+ d + i + s + t

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@
                    ((IDENTP V) NIL)
                    ((STRINGP U) (AND (STRINGP V) (string> V U)))
                    ((STRINGP V) NIL)
-                   ((AND (VECP U) (VECP V))
+                   ((AND (simple-vector-p U) (simple-vector-p V))
                     (AND (> (SIZE V) (SIZE U))
                          (DO ((I 0 (1+ I)))
                              ((GT I (MAXINDEX U)) 'T)
@@ -168,9 +168,6 @@
 (DEFUN STRINGSUFFIX (TARGET SOURCE) "Suffix source to target if enough room else nil."
   (concatenate 'string target source))
  
-(defun NSTRCONC (s1 s2) (concatenate 'string (string s1) (string s2)))
- 
- 
 (defun THETACHECK (VAL VAR OP) (if (EQL VAL VAR) (THETA_ERROR OP) val))
  
 ; 15 LISTS
@@ -180,16 +177,14 @@
  
 (defmacro TL (&rest L) `(tail . ,L))
  
-(DEFUN LASTELEM (X) (car (last X)))
+(DEFUN LASTELEM (X) (car (|lastNode| X)))
  
 (defun LISTOFATOMS (X)
   (COND ((NULL X) NIL)
         ((ATOM X) (LIST X))
-        ((NCONC (LISTOFATOMS (CAR X)) (LISTOFATOMS (CDR X))))))
+        ((|append!| (LISTOFATOMS (CAR X)) (LISTOFATOMS (CDR X))))))
  
 (DEFUN LASTATOM (L) (if (ATOM L) L (LASTATOM (CDR L))))
- 
-(define-function 'LASTTAIL #'last)
  
 (defun DROP (N X &aux m)
   "Return a pointer to the Nth cons of X, counting 0 as the first cons."
@@ -215,39 +210,6 @@
         ((EQL (CDR L) TL) (RPLACD L NIL))
         ((TRUNCLIST-1 (CDR L) TL))))
  
-; 15.4 Substitution of Expressions
- 
-(DEFUN SUBSTEQ (NEW OLD FORM)
-  "Version of SUBST that uses EQ rather than EQUAL on the world."
-  (PROG (NFORM HNFORM ITEM)
-        (SETQ HNFORM (SETQ NFORM (CONS () ())))
-     LP    (RPLACD NFORM
-                   (COND ((EQ FORM OLD) (SETQ FORM ()) NEW )
-                         ((NOT (PAIRP FORM)) FORM )
-                         ((EQ (SETQ ITEM (CAR FORM)) OLD) (CONS NEW ()) )
-                         ((PAIRP ITEM) (CONS (SUBSTEQ NEW OLD ITEM) ()) )
-                         ((CONS ITEM ()))))
-        (if (NOT (PAIRP FORM)) (RETURN (CDR HNFORM)))
-        (SETQ NFORM (CDR NFORM))
-        (SETQ FORM (CDR FORM))
-        (GO LP)))
- 
-(DEFUN SUBLISNQ (KEY E) (declare (special KEY)) (if (NULL KEY) E (SUBANQ E)))
- 
-(DEFUN SUBANQ (E)
-  (declare (special key))
-  (COND ((ATOM E) (SUBB KEY E))
-        ((EQCAR E (QUOTE QUOTE)) E)
-        ((MAPCAR #'(LAMBDA (J) (SUBANQ J)) E))))
- 
-(DEFUN SUBB (X E)
-  (COND ((ATOM X) E)
-        ((EQ (CAAR X) E) (CDAR X))
-        ((SUBB (CDR X) E))))
- 
-(defun SUBLISLIS (newl oldl form)
-   (sublis (mapcar #'cons oldl newl) form))
-
 ; 15.5 Using Lists as Sets
 
 (DEFUN PREDECESSOR (TL L)
@@ -258,15 +220,11 @@
  
 (defun remdup (l) (remove-duplicates l :test #'equalp))
  
-(DEFUN GETTAIL (X L) (member X L :test #'equal))
- 
 ; 15.6 Association Lists
  
 (defun QLASSQ (p a-list) (cdr (assq p a-list)))
 
 (define-function 'LASSQ #'QLASSQ)
- 
-(defun pair (x y) (mapcar #'cons x y))
  
 ;;; Operations on Association Sets (AS)
  
@@ -274,14 +232,14 @@
    ;; PF(item) x PF(item) x LIST(of pairs) -> LIST(of pairs with (A . B) added)
    ;; destructive on L; if (A . C) appears already, C is replaced by B
    (cond ((null l) (list (cons a b)))
-         ((equal a (caar l)) (rplac (cdar l) b) l)
+         ((equal a (caar l)) (rplacd (car l) b) l)
          ((?order a (caar l)) (cons (cons a b) l))
          (t (as-insert1 a b l) l)))
  
 (defun as-insert1 (a b l)
-   (cond ((null (cdr l)) (rplac (cdr l) (list (cons a b))))
-         ((equal a (caadr l)) (rplac (cdadr l) b))
-         ((?order a (caadr l)) (rplac (cdr l) (cons (cons a b) (cdr l))))
+   (cond ((null (cdr l)) (rplacd l (list (cons a b))))
+         ((equal a (caadr l)) (rplacd (cadr l) b))
+         ((?order a (caadr l)) (rplacd l (cons (cons a b) (cdr l))))
          (t (as-insert1 a b (cdr l)))))
  
  
@@ -530,8 +488,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 #-(OR IBCL AKCL)
 (defmacro |elapsedGcTime| () '0)
  
-(defmacro |do| (&rest args) (CONS 'PROGN args))
-
 (defun DROPTRAILINGBLANKS  (LINE) (string-right-trim " " LINE))
 
 ; This function was modified by Greg Vanuxem on March 31, 2005
@@ -555,7 +511,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 ;      (spadcall 
 ;       (cons (|function| (lambda (#:G1420 |envArg|) #:G1420)) (vector))
 ;       |#1|
-;       (qrefelt |*1;f;1;initial;MV| 0))))))
+;       (svref |*1;f;1;initial;MV| 0))))))
 ;
 ; the (|function| (lambda form used to cause an infinite expansion loop
 ;      
@@ -695,78 +651,10 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (if (> eol bol) 
          (setq line-list (cons (subseq str bol eol) line-list)))
      (setq bol (+ eol 1)))
-    (nreverse line-list)))
+    (|reverse!| line-list)))
 
-; part of the old spad to new spad translator
-; these are here because they need to be in depsys
-; they were in nspadaux.lisp
-
-(defmacro wi (a b) b)
-
-(defmacro |tryLine| (X)
-  `(LET ((|$autoLine|))
-        (declare (special |$autoLine|))
-        (|tryToFit| (|saveState|) ,X)))
-
-(defmacro |embrace| (X) `(|wrapBraces| (|saveC|) ,X (|restoreC|)))
-(defmacro |indentNB| (X) `(|wrapBraces| (|saveD|) ,X (|restoreD|)))
-
-(defmacro |tryBreak| (a b c d) 
-; Try to format <a b> by:
-; (1) with no line breaking ($autoLine = nil)
-; (2) with possible line breaks within a;
-; (3) otherwise use a brace
-  `(LET
-    ((state))
-    (setq state (|saveState| 't))
-    (or
-      (LET ((|$autoLine|))
-         (declare (special |$autoLine|))
-         (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (|restoreState| state)
-      (and (eqcar ,b (quote seq))
-               (|embrace| (and 
-                  ,a
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))
-      (|restoreState| state)
-      (|embrace| (and ,a 
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))))
-
-(defmacro |tryBreakNB| (a b c d) 
-; Try to format <a b> by:
-; (1) with no line breaking ($autoLine = nil)
-; (2) with possible line breaks within a;
-; (3) otherwise display without a brace
-  `(LET
-    ((state))
-    (setq state (|saveState| 't))
-    (or
-      (markhash ,b 0)
-      (LET ((|$autoLine|))
-         (declare (special |$autoLine|))
-         (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (|restoreState| state)
-      (markhash ,b 1)
-      (and (eqcar ,b (quote seq))
-               (|embrace| (and 
-                  ,a
-                  (|formatLB|)
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d))))
-      (markhash ,b 2)
-      (|restoreState| state)
-      (|indentNB| (and ,a 
-                  (|formatRight| '|formatPreferPile| ,b ,c ,d)))
-      (markhash ,b 3)
-
-)))   
 
 (defvar HT nil)
-
-(defun markhash (key n) (progn (cond
-  ((equal n 3) (remhash key ht))
-  ('t (hput ht key n)) ) nil))
 
 ;; 
 ;; -*- Record Structures -*-

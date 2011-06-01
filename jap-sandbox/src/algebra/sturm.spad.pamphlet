@@ -257,7 +257,7 @@ SturmHabichtPackage(R,x): T == C where
 -- elements in an ordered integral domain
 
      variation(Lsig:L R):INT ==
-       size?(Lsig,1) => 0
+       #Lsig = 1 => 0
        elt1:R:=first Lsig
        elt2:R:=Lsig.2
        sig1:R:=(sign(elt1*elt2))::R
@@ -270,7 +270,7 @@ SturmHabichtPackage(R,x): T == C where
 -- elements in an ordered integral domain
 
      permanence(Lsig:L R):INT ==
-       size?(Lsig,1) => 0
+       #Lsig = 1 => 0
        elt1:R:=first Lsig
        elt2:R:=Lsig.2
        sig1:R:=(sign(elt1*elt2))::R
@@ -290,8 +290,8 @@ SturmHabichtPackage(R,x): T == C where
      epsil(int1:NNI,elt1:R,elt2:R):INT ==
        int1 = 0 => 0
        odd? int1 => 0
-       ct1:INT:=if elt1 > 0 then 1 else -1
-       ct2:INT:=if elt2 > 0 then 1 else -1
+       ct1:INT:=if positive? elt1 then 1 else -1
+       ct2:INT:=if positive? elt2 then 1 else -1
        ct3:NNI:=(int1 exquo 2)::NNI
        ct4:INT:=(ct1*ct2)::INT
        ((-1)**(ct3::NNI))*ct4

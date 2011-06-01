@@ -59,7 +59,7 @@ namespace BOOT
 --=======================================================================
 --                      Global Variables
 --=======================================================================
-$backslash := char '_\
+$backslash := char "\"
 $testOutputLineFlag := nil   -- referenced by charyTop, prnd to stash lines
 $testOutputLineStack := nil  -- saves lines to be printed (needed to convert
                              -- lines for use in hypertex)
@@ -110,7 +110,7 @@ printRecordFile(pathname,:option) ==
     for x in i repeat sayBrightly x
     sayNewLine()
     for x in o repeat maPrin x
-    if t ~= '(Void) then printTypeAndTime(nil,t)
+    if t ~= $Void then printTypeAndTime(nil,t)
  
 testPrin(u,w) == --same as maPrin but lines are stored in $testOutputLineList
                  --these lines are needed for pasting into HT files
@@ -135,7 +135,7 @@ hyperize(u,w) ==
   res := reverse $testOutputLineList
   null res => '""
   null rest res => first res
-  strconc/[first res,:[strconc("\newline ",x) for x in rest res]]
+  strconc/[first res,:[strconc('"\newline ",x) for x in rest res]]
  
 verbatimize u ==
   u = '"" => u
@@ -176,7 +176,7 @@ testInput2Output(lines,n) ==
   evaluateLines lines
   null n => nil     --return from reading trailing system commands
   typ := $mkTestOutputType
-  output := nreverse $mkTestOutputStack
+  output := reverse! $mkTestOutputStack
   [prefix2String typ,:output]
 
 evaluateLines lines ==
@@ -188,7 +188,7 @@ evaluateLines lines ==
     PRINTEXP(line, file)
     TERPRI file
   SHUT file
-  _/EDITFILE: fluid := '"/tmp/temp.input"
+  _/EDITFILE: local := '"/tmp/temp.input"
   _/RF()
     -- can't use _/EDITFILE since it might be reset
   DELETE_-FILE '"/tmp/temp.input"
@@ -237,15 +237,15 @@ htFile2InputFile(pathname,:option) ==
  
 htCommandToInputLine s == fn(s,0) where fn(s,init) ==
 --similar to htTrimAtBackSlash except removes all \
-  k := or/[i for i in init..MAXINDEX s | s.i = char '_\] =>
-    member(s.(k + 1),[char 'f,char 'b]) => SUBSTRING(s,init,k - init)
-    strconc(SUBSTRING(s,init,k - init),fn(s,k + 1))
-  SUBSTRING(s,init,nil)
+  k := or/[i for i in init..maxIndex s | stringChar(s,i) = char "\"] =>
+    member(s.(k + 1),[char "f",char "b"]) => subString(s,init,k - init)
+    strconc(subString(s,init,k - init),fn(s,k + 1))
+  subString(s,init)
  
 htTrimAtBackSlash s ==
-  backslash := char '_\
-  k := or/[i for i in 0..MAXINDEX s | s.i = backslash 
-          and member(s.(i + 1),[char 'f,char 'b])] => SUBSTRING(s,0,k - 1)
+  backslash := char "\"
+  k := or/[i for i in 0..maxIndex s | stringChar(s,i) = backslash 
+          and member(s.(i + 1),[char "f",char "b"])] => subString(s,0,k - 1)
   s
  
 htMkPath(directory,name,typ) ==
@@ -267,12 +267,12 @@ recordAndPrintTest md ==  --called by recordAndPrint
     string? $currentLine => [$currentLine]
     fn $currentLine where fn x ==
       x is [y,:r] =>     
-        y.(k := MAXINDEX y) = char '__ => 
+        stringChar(y,k := maxIndex y) = char "__" => 
           u := fn r
-          [strconc(SUBSTRING(y,0,k),'" ",first u),:rest u]
+          [strconc(subString(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
-  output := nreverse $mkTestOutputStack -- set by maPrin
+  output := reverse! $mkTestOutputStack -- set by maPrin
   PRINT(writify [input,prefix2String md,:output],$testStream)
   $mkTestInputStack := nil
   $mkTestOutputStack := nil

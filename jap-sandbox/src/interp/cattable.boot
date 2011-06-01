@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -33,42 +33,42 @@
 
 
 import simpbool
-import g_-util
+import c_-util
 namespace BOOT
+module cattable where
+  hasCat: (%Instantiation,%Instantiation) -> %Code
 
-hasCat(domainOrCatName,catName) ==
-  catName="Type"  -- every domain is a Type
-    or constructorHasCategoryFromDB [domainOrCatName,:catName]
+hasCat(dom,cat) ==
+  cat.op is "Type"  -- every domain is a Type
+    or constructorHasCategoryFromDB [dom.op,:cat.op]
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
-     | a = con and (val := HGET(_*HASCATEGORY_-HASH_*,key))]
+     | symbolEq?(a,con) and (val := tableValue(_*HASCATEGORY_-HASH_*,key))]
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
   SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
-    HPUT($ct,a,[[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)])
-  for id in HKEYS $ct | null conList or MEMQ(id,conList) repeat
+    tableValue($ct,a) := [[b,:tableValue(_*HASCATEGORY_-HASH_*,key)],:tableValue($ct,a)]
+  for id in HKEYS $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
-    PRINT HGET($ct,id)
+    PRINT tableValue($ct,id)
 
 genCategoryTable() ==
   SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
   SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
   genTempCategoryTable()
-  domainList:=
-    [con for con in allConstructors()
-      | getConstructorKindFromDB con = "domain"]
-  domainTable:= [addDomainToTable(con,getConstrCat catl) for con
-    in domainList | catl := getConstructorCategoryFromDB con]
+  domainTable :=
+    [addDomainToTable(con,getConstrCat getConstructorCategoryFromDB con)
+      for con in allConstructors() | getConstructorKindFromDB con is "domain"]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := SETDIFFERENCE($nonLisplibDomains,$noCategoryDomains)
   domainTable:= [:[addDomainToTable(id, getConstrCat eval([id]).3)
     for id in specialDs], :domainTable]
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
-      HPUT(_*HASCATEGORY_-HASH_*,[id,:a],b)
+      tableValue(_*HASCATEGORY_-HASH_*,[id,:a]) := b
   simpTempCategoryTable()
   -- compressHashTable _*ANCESTORS_-HASH_*
   simpCategoryTable()
@@ -82,12 +82,12 @@ simpTempCategoryTable() ==
 simpCategoryTable() == main where
   main() ==
     for key in HKEYS _*HASCATEGORY_-HASH_* repeat
-      entry := HGET(_*HASCATEGORY_-HASH_*,key)
-      null entry => HREM(_*HASCATEGORY_-HASH_*,key)
+      entry := tableValue(_*HASCATEGORY_-HASH_*,key)
+      null entry => tableRemove!(_*HASCATEGORY_-HASH_*,key)
       change :=
         atom opOf entry => simpHasPred entry
         [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
-      HPUT(_*HASCATEGORY_-HASH_*,key,change)
+      tableValue(_*HASCATEGORY_-HASH_*,key) := change
 
 simpHasPred(pred,:options) == main where
   main() ==
@@ -95,22 +95,23 @@ simpHasPred(pred,:options) == main where
     simp pred
   simp pred ==
     pred is [op,:r] =>
-      op = "has" => simpHas(pred,first r,second r)
-      op = 'HasCategory => simp ["has",first r,simpDevaluate second r]
-      op = 'HasSignature =>
+      op is "has" => simpHas(pred,first r,second r)
+      op is 'HasCategory => simp ["has",first r,simpDevaluate second r]
+      op is 'HasSignature =>
          [op,sig] := simpDevaluate second r
          ["has",first r,['SIGNATURE,op,sig]]
-      op = 'HasAttribute =>
+      op is 'HasAttribute =>
         form := ["has",a := first r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
-        u = '%true or u is '(QUOTE T) => true
+        u is '%true or u is '(QUOTE T) => true
         simpBool u
-      op = 'hasArgs => ($hasArgs => $hasArgs = r; pred)
+      op is 'hasArgs => ($hasArgs => $hasArgs = r; pred)
       null r and opOf op = "has" => simp first pred
-      pred = '%true or pred is '(QUOTE T) => true
-      op1 := LASSOC(op,'((and . AND)(or . OR)(not . NOT))) => simp [op1,:r]
+      pred is '%true or pred is '(QUOTE T) => true
+      op1 := symbolLassoc(op,'((and . AND)(or . OR)(not . NOT))) =>
+        simp [op1,:r]
       simp first pred   --REMOVE THIS HACK !!!!
     pred in '(T etc) => pred
     null pred => nil
@@ -124,7 +125,7 @@ simpHasPred(pred,:options) == main where
     IDENTP npred or null hasIdent npred => npred
     pred
   evalHas (pred := ["has",d,cat]) ==
-    x := hasCat(first d,first cat)
+    x := hasCat(d,cat)
     y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
       false  --if not there, it is false
@@ -134,7 +135,7 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
   IDENTP conform => pred
   [conname,:args] := conform
   n := #sig
-  u := LASSOC(op,getConstructorOperationsFromDB conname)
+  u := symbolLassoc(op,getConstructorOperationsFromDB conname)
   candidates := [x for (x := [sig1,:.]) in u | #sig1 = #sig]  or return false
   match := or/[x for (x := [sig1,:.]) in candidates
                 | sig = sublisFormal(args,sig1)] or return false
@@ -142,8 +143,8 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
 
 simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   IDENTP conform => pred
-  conname := opOf conform
-  getConstructorKindFromDB conname = "category" =>
+  conname := conform.op
+  getConstructorKindFromDB conname is "category" =>
       simpCatHasAttribute(conform,attr)
   asharpConstructorName? conname =>
     p := LASSOC(attr,getConstructorAttributesFromDB conname) =>
@@ -152,7 +153,7 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   k := LASSOC(attr,infovec.2) or return nil --if not listed then false
   k = 0 => true
   $domain => kTestPred k    --from koOps
-  predvec := $predvec or sublisFormal(rest conform,
+  predvec := $predvec or sublisFormal(conform.args,
       getConstructorPredicatesFromDB conname)
   simpHasPred predvec.(k - 1)
 
@@ -164,13 +165,13 @@ simpCatHasAttribute(domform,attr) ==
     u := LASSOC(attr,catval . 2) => first u
     return false                            --exit: not there
   pred = true => true
-  eval SUBLISLIS(rest domform,rest conform,pred)
+  eval applySubst(pairList(conform.args,domform.args),pred)
 
 hasIdent pred ==
   pred is [op,:r] =>
-    op = 'QUOTE => false
+    op is 'QUOTE => false
     or/[hasIdent x for x in r]
-  pred = '_$ => false
+  pred is '_$ => false
   IDENTP pred => true
   false
 
@@ -186,7 +187,7 @@ addDomainToTable(id,catl) ==
   [id,:alist]
 
 domainHput(table,key:=[id,:a],b) ==
-  HPUT(table,key,b)
+  tableValue(table,key) := b
 
 genTempCategoryTable() ==
   --generates hashtable with key=categoryName and value of the form
@@ -194,19 +195,19 @@ genTempCategoryTable() ==
   --           "IF pred THEN ofCategory(key,form)"
   --  where form can involve #1, #2, ... the parameters of key
   for con in allConstructors()  repeat
-    getConstructorKindFromDB con = "category" =>
+    getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
-    item := HGET(_*ANCESTORS_-HASH_*, id) 
+    item := tableValue(_*ANCESTORS_-HASH_*, id) 
     for (u:=[.,:b]) in item repeat
       u.rest := simpCatPredicate simpBool b
-    HPUT(_*ANCESTORS_-HASH_*,id,listSort(function GLESSEQP,item))
+    tableValue(_*ANCESTORS_-HASH_*,id) := listSort(function GLESSEQP,item)
 
 addToCategoryTable con ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
-  u := CAAR getConstructorModemapFromDB con --domain
+  u := getConstructorModemapFromDB(con).mmDC --domain
   alist := getCategoryExtensionAlist u
-  HPUT(_*ANCESTORS_-HASH_*,first u,alist)
+  tableValue(_*ANCESTORS_-HASH_*,first u) := alist
   alist
 
 encodeCategoryAlist(id,alist) ==
@@ -232,7 +233,7 @@ encodeUnion(id,new:=[a,:b],alist) ==
   [new,:alist]
 
 moreGeneralCategoryPredicate(id,new,old) ==
-  old = 'T or new = 'T => 'T
+  old is 'T or new is 'T => 'T
   old is ["has",a,b] and new is ["has",=a,c] =>
     tempExtendsCat(b,c) => new
     tempExtendsCat(c,b) => old
@@ -271,7 +272,7 @@ getCategoryExtensionAlist cform ==
 
 formalSubstitute(form:=[.,:argl],u) ==
   isFormalArgumentList argl => u
-  EQSUBSTLIST(argl,$FormalMapVariableList,u)
+  applySubst(pairList($FormalMapVariableList,argl),u)
 
 isFormalArgumentList argl ==
   and/[x=fa for x in argl for fa in $FormalMapVariableList]
@@ -279,13 +280,13 @@ isFormalArgumentList argl ==
 mkCategoryExtensionAlist cform ==
   not cons? cform => nil
   cop := first cform
-  MEMQ(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
+  builtinCategoryName? cop => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))
   extendsList:= nil
   for [cat,:pred] in catlist repeat
     newList := getCategoryExtensionAlist0 cat
     finalList :=
-      pred = 'T => newList
+      pred is 'T => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
     extendsList:= catPairUnion(extendsList,finalList,cop,cat)
   extendsList
@@ -301,7 +302,7 @@ mkCategoryExtensionAlistBasic cform ==
   for [cat,pred,:.] in category.4.1 repeat
     newList := getCategoryExtensionAlist0 cat
     finalList :=
-      pred = 'T => newList
+      pred is 'T => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
     extendsList:= catPairUnion(extendsList,finalList,cop,cat)
   extendsList
@@ -346,12 +347,12 @@ getConstrCat(x) ==
 -- gets a different representation of the constructorCategory from the
 -- lisplib, which is a list of named categories or conditions
   x:= if x is ['Join,:y] then y else [x]
-  cats:= NIL
+  cats:= nil
   for y in x repeat
     y is ['CATEGORY,.,:z] =>
       for zz in z repeat cats := makeCatPred(zz, cats, true)
     cats:= [y,:cats]
-  cats:= nreverse cats
+  cats:= reverse! cats
   cats
 
 
@@ -371,7 +372,7 @@ getConstructorExports(conform,:options) == categoryParts(conform,
 
 categoryParts(conform,category,:options) == main where
   main() ==
-    cons? := IFCAR options  --means to include constructors as well
+    addCtor? := IFCAR options  --means to include constructors as well
     $attrlist: local := nil
     $oplist  : local := nil
     $conslist: local := nil
@@ -380,10 +381,11 @@ categoryParts(conform,category,:options) == main where
     $attrlist := listSort(function GLESSEQP,$attrlist)
     $oplist   := listSort(function GLESSEQP,$oplist)
     res := [$attrlist,:$oplist]
-    if cons? then res := [listSort(function GLESSEQP,$conslist),:res]
-    if getConstructorKindFromDB conname = "category" then
+    if addCtor? then
+      res := [listSort(function GLESSEQP,$conslist),:res]
+    if getConstructorKindFromDB conname is "category" then
       tvl := TAKE(#rest conform,$TriangleVariableList)
-      res := SUBLISLIS($FormalMapVariableList,tvl,res)
+      res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
   build(item,pred) ==
     item is ['SIGNATURE,op,sig,:.] => $oplist   := [[opOf op,sig,:pred],:$oplist]
@@ -392,7 +394,7 @@ categoryParts(conform,category,:options) == main where
       constructor? opOf attr =>
         $conslist := [[attr,:pred],:$conslist]
         nil
-      opOf attr = 'nothing => 'skip
+      opOf attr is 'nothing => 'skip
       $attrlist := [[opOf attr,IFCDR attr,:pred],:$attrlist]
     item is ['TYPE,op,type] =>
         $oplist := [[op,[type],:pred],:$oplist]
@@ -400,7 +402,7 @@ categoryParts(conform,category,:options) == main where
       build(s1,quickAnd(pred,pred1))
       s2 => build(s2,quickAnd(pred,['NOT,pred1]))
     null item => 'ok
-    item = "%noBranch" => 'ok
+    item is "%noBranch" => 'ok
     item is ['PROGN,:r] => for x in r repeat build(x,pred)
     systemError '"build error"
   exportsOf(target) ==
@@ -416,24 +418,24 @@ compressHashTable ht ==
 -- compresses hash table ht, to give maximal sharing of cells
   sayBrightlyNT '"compressing hash table..."
   $found: local := hashTable 'EQUAL
-  for x in HKEYS ht repeat compressSexpr(HGET(ht,x),nil,nil)
+  for x in HKEYS ht repeat compressSexpr(tableValue(ht,x),nil,nil)
   sayBrightly   "done"
   ht
 
 compressSexpr(x,left,right) ==
 -- recursive version of compressHashTable
   atom x => nil
-  u:= HGET($found,x) =>
+  u:= tableValue($found,x) =>
     left => left.first := u
     right => right.rest := u
     nil
   compressSexpr(first x,x,nil)
   compressSexpr(rest x,nil,x)
-  HPUT($found,x,x)
+  tableValue($found,x) := x
 
 squeezeList(l) ==
 -- changes the list l, so that is has maximal sharing of cells
-  $found:local:= NIL
+  $found:local:= nil
   squeeze1 l
 
 squeeze1(l) ==
@@ -455,12 +457,12 @@ squeeze1(l) ==
 
 updateCategoryTable(cname,kind) ==
   $updateCatTableIfTrue =>
-    kind = 'package => nil
-    kind = 'category => updateCategoryTableForCategory(cname)
+    kind is 'package => nil
+    kind is 'category => updateCategoryTableForCategory(cname)
     updateCategoryTableForDomain(cname,getConstrCat(
       getConstructorCategoryFromDB cname))
 --+
-  kind = 'domain =>
+  kind is 'domain =>
     updateCategoryTableForDomain(cname,getConstrCat(
       getConstructorCategoryFromDB cname))
 
@@ -475,31 +477,23 @@ updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
   [cname,:domainEntry]:= addDomainToTable(cname,category)
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
-    HPUT(_*HASCATEGORY_-HASH_*,[cname,:a],b)
-  $doNotCompressHashTableIfTrue = true => _*HASCATEGORY_-HASH_*
+    tableValue(_*HASCATEGORY_-HASH_*,[cname,:a]) := b
+  $doNotCompressHashTableIfTrue => _*HASCATEGORY_-HASH_*
   -- compressHashTable _*HASCATEGORY_-HASH_*
 
 clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)
 
 clearCategoryTable1(key,val) ==
-  (first key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
+  (first key=$cname)=> tableRemove!(_*HASCATEGORY_-HASH_*,key)
   nil
 
 clearTempCategoryTable(catNames) ==
   for key in HKEYS(_*ANCESTORS_-HASH_*) repeat
-    MEMQ(key,catNames) => nil
+    symbolMember?(key,catNames) => nil
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
-        MEMQ(first catForm,catNames) => nil
+        symbolMember?(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
-    HPUT(_*ANCESTORS_-HASH_*,key,extensions)
-
-
-
-
-
-
-
-
+    tableValue(_*ANCESTORS_-HASH_*,key) := extensions

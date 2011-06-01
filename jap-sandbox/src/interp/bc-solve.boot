@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -146,8 +146,8 @@ bcInputEquations(htPage,solutionMethod) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
       prefix := strconc('"\newline\tab{2}{\em Equation ",STRINGIMAGE i,'":}")
       prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      lnam := INTERN strconc('"l",STRINGIMAGE i)
-      rnam := INTERN strconc('"r",STRINGIMAGE i)
+      lnam := makeSymbol strconc('"l",STRINGIMAGE i)
+      rnam := makeSymbol strconc('"r",STRINGIMAGE i)
       var:= 
         linearp => bcMakeLinearEquations(i,n)
         bcMakeEquations(i,n)
@@ -184,26 +184,26 @@ bcCreateVariableString(i) ==
    strconc('"x",STRINGIMAGE i)
 
 bcMakeUnknowns(number)==
-   apply(function strconc,[strconc(bcCreateVariableString(i)," ") for i in 1..number])
+   apply(function strconc,[strconc(bcCreateVariableString(i),'" ") for i in 1..number])
    
 bcMakeEquations(i,number)==
-   number =1 => strconc(bcCreateVariableString(1),"^2+1")
+   number =1 => strconc(bcCreateVariableString(1),'"^2+1")
    bcCreateVariableString(i)
    strconc(
      strconc(
-      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        strconc("-2*",strconc(bcCreateVariableString(i),"^2")))
+      apply(function strconc,[strconc(bcCreateVariableString(j),'"+") for j in 1..number]),'"1"),
+        strconc('"-2*",strconc(bcCreateVariableString(i),'"^2")))
 
 
 bcMakeLinearEquations(i,number)==
    number = 1 => bcCreateVariableString(1)
    number = 2 => 
-        i=1 => strconc(bcCreateVariableString(1),strconc("+",bcCreateVariableString(2)))
-        strconc(bcCreateVariableString(1),strconc("-",bcCreateVariableString(2)))
+        i=1 => strconc(bcCreateVariableString(1),strconc('"+",bcCreateVariableString(2)))
+        strconc(bcCreateVariableString(1),strconc('"-",bcCreateVariableString(2)))
    strconc(
      strconc(
-      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        strconc("-2*",bcCreateVariableString(i)))
+      apply(function strconc,[strconc(bcCreateVariableString(j),'"+") for j in 1..number]),'"1"),
+        strconc('"-2*",bcCreateVariableString(i)))
       
 
 bcInputEquationsEnd htPage ==
@@ -278,7 +278,7 @@ bcLinearSolveMatrixInhomo(htPage,junk) ==
       prefix := strconc('"{\em Coefficient ",STRINGIMAGE i,'":}")
       if spacer ~= 0 then
         prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      name := INTERN strconc('"c",STRINGIMAGE i)
+      name := makeSymbol strconc('"c",STRINGIMAGE i)
       [prefix,"",30, 0,name, 'P]
   page := htInitPage('"Linear Solve Basic Command",htpPropertyList htPage)
   htpSetProperty(page,'matrix,htpProperty(htPage,'matrix))

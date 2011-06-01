@@ -103,7 +103,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
       li:= VEC2LIST e
       a:= [[LIST2VEC [if x then li.x else 0 for x in pat],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
-    NIL
+    nil
   z => x
   coercionFailure()
 
@@ -168,7 +168,7 @@ coerceDmpCoeffs(u,S,T) ==
     null (c' := coerceInt(objNewWrap(c,S),T)) => return (bad := true)
     u' := [[e,:objValUnwrap(c')],:u']
   bad => 'failed
-  nreverse u'
+  reverse! u'
 
 sortAndReorderDmpExponents(u,vl) ==
   vl' := reverse MSORT vl
@@ -287,15 +287,15 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
 
   -- only one variable in DMP case
   null vl' =>
-    u' := nreverse SORTBY('CAR,[[e.0,:c] for [e,:c] in u])
+    u' := reverse! SORTBY('CAR,[[e.0,:c] for [e,:c] in u])
     (u' := coerceInt(objNewWrap(u',[up,var,S]),target)) or
       coercionFailure()
     objValUnwrap u'
 
   S1 := [dmp,vl',S]
   plusfunc:= getFunctionFromDomain('_+,T,[T,T])
-  zero := getConstantFromDomain('(Zero),T)
-  x := NIL
+  zero := getConstantFromDomain($Zero,T)
+  x := nil
   pos:= POSN1(var,vl)
   for [e,:c] in u until not y repeat
     exp:= e.pos
@@ -308,7 +308,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
         p.rest := c'
       zero = objValUnwrap(y) => 'iterate
       x := [[exp,:objValUnwrap(y)],:x]
-  y => nreverse SORTBY('CAR,x)
+  y => reverse! SORTBY('CAR,x)
   coercionFailure()
 
 removeVectorElt(v,pos) ==
@@ -365,7 +365,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null v2 =>
         not (z := coerceInt(objNewWrap(u, source), T)) => coercionFailure()
-        [[LIST2VEC NIL, :objValUnwrap z]]
+        [[LIST2VEC nil, :objValUnwrap z]]
 
     obj := objNewWrap(u, source)
     univ := coerceInt(obj, ['UnivariatePolynomial, first v2, T])
@@ -546,11 +546,11 @@ Complex2Expr(u, source is [.,S], target is [., T]) ==
 
 I2EI(n,source,target) ==
   n = '_$fromCoerceable_$ => nil
-  if not ODDP(n) then n else coercionFailure()
+  if not odd? n then n else coercionFailure()
 
 I2OI(n,source,target) ==
   n = '_$fromCoerceable_$ => nil
-  if ODDP(n) then n else coercionFailure()
+  if odd? n then n else coercionFailure()
 
 I2PI(n,source,target) ==
   n = '_$fromCoerceable_$ => nil
@@ -571,7 +571,7 @@ L2Tuple(val, source is [.,S], target is [.,T]) ==
 L2DP(l, source is [.,S], target is [.,n,T]) ==
   -- need to know size of the list
   l = '_$fromCoerceable_$ => nil
-  n ~= SIZE l => coercionFailure()
+  n ~= # l => coercionFailure()
   (v := coerceInt(objNewWrap(LIST2VEC l,['Vector,S]),['Vector,T])) or
     coercionFailure()
   V2DP(objValUnwrap v, ['Vector, T], target)
@@ -579,7 +579,7 @@ L2DP(l, source is [.,S], target is [.,n,T]) ==
 V2DP(v, source is [.,S], target is [.,n,T]) ==
   -- need to know size of the vector
   v = '_$fromCoerceable_$ => nil
-  n ~= SIZE v => coercionFailure()
+  n ~= # v => coercionFailure()
   (v1 := coerceInt(objNewWrap(v,source),['Vector,T])) or
     coercionFailure()
   dpFun  := getFunctionFromDomain('directProduct, target, [['Vector,T]])
@@ -706,7 +706,7 @@ M2Rm(x,source is [.,R],[.,p,q,S]) ==
 M2Sm(x,source is [.,R],[.,p,S]) ==
   x = '_$fromCoerceable_$ => nil
   n:= #x
-  m:= #x.(0)
+  m:= #x.0
   n=m and m=p => M2M(x,source,[nil,S])
   coercionFailure()
 
@@ -740,10 +740,10 @@ Mp2Dmp(u, source is [., x, S], target is [dmp, y, T]) ==
 
 Mp2SimilarDmp(u,S,n,plus,mult,one,zero) ==
   u is [ =0,:c] =>
-    c = zero => NIL  -- zero for dmp
+    c = zero => nil  -- zero for dmp
     [[LIST2VEC LZeros n,:c]]
   u is [ =1,x,:terms] =>
-    u' := NIL  -- zero for dmp
+    u' := nil  -- zero for dmp
     for [e,:c] in terms repeat
       e' := LIST2VEC LZeros n
       e'.(x-1) := e
@@ -814,7 +814,7 @@ Mp2Mp(u,source is [mp,x,S], target is [.,y,T]) ==
   null y' =>    -- change source to MP[common] MP[x'] S
     univariate := getFunctionFromDomain('univariate,
       source,[source,['OrderedVariableList,x]])
-    u' := Mp2MpAux2(u,x,common,x',common,x',univariate,S,NIL)
+    u' := Mp2MpAux2(u,x,common,x',common,x',univariate,S,nil)
     (u' := coerceInt(objNewWrap(u', [mp,common,[mp,x',S]]),target)) or
       coercionFailure()
     objValUnwrap(u')
@@ -925,7 +925,7 @@ Mp2Up(u,source is [mp,vl,S],target is [up,x,T]) ==
   u = '_$fromCoerceable_$ =>
     member(x,vl) =>
       vl = [x] => canCoerce(S,T)
-      canCoerce([mp,delete(x,vl),S],T)
+      canCoerce([mp,remove(vl,x),S],T)
     canCoerce(source,T)
 
   u is [ =0,:c] =>      -- constant polynomial?
@@ -1139,7 +1139,7 @@ Qf2PF(u,source is [.,D],target) ==
   den':= coerceInt(objNewWrap(den,D),target) or
     coercionFailure()
   den' := objValUnwrap den'
-  equalZero(den', target) => throwKeyedMsg("S2IA0001",NIL)
+  equalZero(den', target) => throwKeyedMsg("S2IA0001",nil)
   SPADCALL(num',den', getFunctionFromDomain("/",target,[target,target]))
 
 Qf2F(u,source is [.,D,:.],target) ==
@@ -1260,14 +1260,14 @@ SUP2Up(u,source is [.,S],target is [.,x,T]) ==
   -- try to go underneath first
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
     -- must be careful in case any of the coeffs come back 0
-    u' := NIL
-    zero := getConstantFromDomain('(Zero),T)
+    u' := nil
+    zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or
         coercionFailure())
       c' = zero => 'iterate
       u' := [[e,:c'],:u']
-    nreverse u'
+    reverse! u'
   [[0,:objValUnwrap u']]
 
 --% SquareMatrix
@@ -1357,7 +1357,7 @@ Sy2Up(u,source,target is [up,x,S]) ==
   [[0,:objValUnwrap u]]
 
 Sy2Var(u,source,target is [.,x]) ==
-  u = '_$fromCoerceable_$ => NIL
+  u = '_$fromCoerceable_$ => nil
   u=x => u
   coercionFailure()
 
@@ -1490,14 +1490,14 @@ Up2SUP(u,source is [.,x,S],target is [.,T]) ==
   S = T => u
   -- try to go underneath first
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
-    u' := NIL
-    zero := getConstantFromDomain('(Zero),T)
+    u' := nil
+    zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or
         coercionFailure())
       c' = zero => 'iterate
       u' := [[e,:c'],:u']
-    nreverse u'
+    reverse! u'
   [[0,:objValUnwrap u']]
 
 Up2Up(u,source is [.,v1,S], target is [.,v2,T]) ==
@@ -1545,7 +1545,7 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1556,7 +1556,7 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1564,7 +1564,7 @@ Var2Mp(u,source,target is [mp,vl,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
   (n:= position1(u,vl)) ~= 0 =>
-    [1,n,[1,0,:getConstantFromDomain('(One),S)]]
+    [1,n,[1,0,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [0,:objValUnwrap u]
 
@@ -1575,7 +1575,7 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
 
@@ -1588,7 +1588,7 @@ Var2P(u,source,target is [poly,S]) ==
     u' := coerceInt(objNewWrap(u,source),S)
     if u' then return [0,:objValUnwrap(u')]
   -- if that failed, return it as a polynomial variable
-  [1,sym,[1,0,:getConstantFromDomain('(One),S)]]
+  [1,sym,[1,0,:getConstantFromDomain($One,S)]]
 
 Var2QF(u,source,target is [qf,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
@@ -1596,7 +1596,7 @@ Var2QF(u,source,target is [qf,S]) ==
   S = $Integer => coercionFailure()
   sym := second source
   (u' := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
-  [objValUnwrap u',:getConstantFromDomain('(One),S)]
+  [objValUnwrap u',:getConstantFromDomain($One,S)]
 
 Var2FS(u,source,target is [fs,S]) ==
   u = '_$fromCoerceable_$ => true
@@ -1609,7 +1609,7 @@ Var2Up(u,source,target is [up,x,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
-  x=sym => [[1,:getConstantFromDomain('(One),S)]]
+  x=sym => [[1,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[0,:objValUnwrap u]]
 
@@ -1617,7 +1617,7 @@ Var2SUP(u,source,target is [sup,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => (sym = "?") or canCoerce(source,S)
 
-  sym = "?" => [[1,:getConstantFromDomain('(One),S)]]
+  sym = "?" => [[1,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[0,:objValUnwrap u]]
 
@@ -1651,21 +1651,21 @@ V2M(u,[.,D],[.,R]) ==
     canCoerce(D,R)
   -- first see if we are coercing a vector of vectors
   D is ['Vector,E] and
-    isRectangularVector(u,MAXINDEX u,MAXINDEX u.0) =>
+    isRectangularVector(u,maxIndex u,maxIndex u.0) =>
       LIST2VEC
         [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-           for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+           for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   -- if not, try making it into a 1 by n matrix
   coercionFailure()
 --LIST2VEC [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(u.i,D),R))
---  for i in 0..MAXINDEX(u)]]
+--  for i in 0..maxIndex(u)]]
 
 V2Rm(u,[.,D],[.,n,m,R]) ==
   u = '_$fromCoerceable_$ => nil
   D is [.,E,:.] and isRectangularVector(u,n-1,m-1) =>
     LIST2VEC
       [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-         for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+         for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
 V2Sm(u,[.,D],[.,n,R]) ==
@@ -1673,12 +1673,12 @@ V2Sm(u,[.,D],[.,n,R]) ==
   D is [.,E,:.] and isRectangularVector(u,n-1,n-1) =>
     LIST2VEC
       [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
-         for j in 0..MAXINDEX(x:=u.i)] for i in 0..MAXINDEX u]
+         for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
 isRectangularVector(x,p,q) ==
-  MAXINDEX x = p =>
-    and/[q=MAXINDEX x.i for i in 0..p]
+  maxIndex x = p =>
+    and/[q=maxIndex x.i for i in 0..p]
 
 -- Polynomial and Expression to Univariate series types
 
@@ -1769,10 +1769,10 @@ commuteQuaternion(u,source,S,target,T) ==
 
 commuteFraction(u,source,S,target,T) ==
   u = '_$fromCoerceable_$ =>
-    ofCategory(target,'(Field)) => canCoerce(S,target)
+    ofCategory(target,$Field) => canCoerce(S,target)
     canCoerce(S,T) and canCoerce(T,target)
   [n,:d] := u
-  ofCategory(target,'(Field)) =>
+  ofCategory(target,$Field) =>
     -- see if denominator can go over to target
     (d' := coerceInt(objNewWrap(d,S),target)) or coercionFailure()
     -- if so, try to invert it
@@ -1997,7 +1997,7 @@ SETANDFILEQ($CoerceTable, '(                                          _
     ))_
   ))
 
-SETANDFILEQ($CoerceTable,NCONC($CoerceTable,'( _
+SETANDFILEQ($CoerceTable,append!($CoerceTable,'( _
   (Matrix . ( _
     (List                                 indeterm   M2L) _
     (RectangularMatrix                    partial    M2Rm) _

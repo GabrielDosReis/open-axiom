@@ -94,12 +94,15 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
     Decl ==> SExpressionCategory(Str, Sym, Int, Flt, Expr)
 
     Body ==> add
-        import %integer?: % -> Boolean from Foreign Builtin
-        import %string?: % -> Boolean  from Foreign Builtin
-        import %pair?: % -> Boolean    from Foreign Builtin
-        import %peq: (%,%) -> Boolean  from Foreign Builtin
-        import %head: % -> %           from Foreign Builtin
-        import %tail: % -> %           from Foreign Builtin
+        import %integer?: % -> Boolean  from Foreign Builtin
+        import %string?: % -> Boolean   from Foreign Builtin
+        import %pair?: % -> Boolean     from Foreign Builtin
+        import %peq: (%,%) -> Boolean   from Foreign Builtin
+        import %head: % -> %            from Foreign Builtin
+        import %tail: % -> %            from Foreign Builtin
+        import %llength: % -> Integer   from Foreign Builtin
+        import %nil: %                  from Foreign Builtin
+        import %equal: (%,%) -> Boolean from Foreign Builtin
 
         Rep := Expr
 
@@ -118,11 +121,11 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             #l = 2 and (first(l1) = QUOTE)@Boolean => quote first rest l1
             paren blankSeparate l1
 
-        b1 = b2        == EQUAL(b1,b2)$Lisp
+        b1 = b2        == %equal(b1,b2)
         eq(b1, b2)     == %peq(b1,b2)
 
-        null? b      == NULL(b)$Lisp
-        atom? b      == ATOM(b)$Lisp
+        null? b      == %peq(b,%nil)
+        atom? b      == not pair? b
         pair? b      == %pair? b
 
         list?    b   == pair? b or null? b
@@ -147,7 +150,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
 
         car b        == %head b
         cdr b        == %tail b
-        #   b        == LENGTH(b)$Lisp
+        #   b        == %llength b
         elt(b:%, i:Integer)       == destruct(b).i
         elt(b:%, li:List Integer) ==
           for i in li repeat b := destruct(b).i

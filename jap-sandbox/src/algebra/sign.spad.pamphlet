@@ -100,7 +100,7 @@ InnerPolySign(R, UP): Exports == Implementation where
     signAround(p:UP, dir:Integer, rsign:R -> U) ==
       zero? p => 0
       (u := rsign leadingCoefficient p) case "failed" => "failed"
-      (dir > 0) or (even? degree p) => u::Integer
+      positive? dir or (even? degree p) => u::Integer
       - (u::Integer)
 
 @

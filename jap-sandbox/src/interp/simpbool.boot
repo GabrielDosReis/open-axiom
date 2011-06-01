@@ -45,7 +45,7 @@ reduceDnf u ==
       x = y => 'skip
       dnfContains(x,y) => return (ok := false)
     ok = true => acc := [x,:acc]
-  nreverse acc
+  reverse! acc
  
 dnfContains([a,b],[c,d]) == fn(a,c) and fn(b,d) where
   fn(x,y) == and/[member(u,x) for u in y]
@@ -84,7 +84,7 @@ dnf2pf(x) ==
 be x == b2dnf x
 b2dnf x ==
   x = 'T => 'true
-  x = NIL => 'false
+  x = nil => 'false
   atom x => bassert x
   [op,:argl] := x
   op in '(AND and) => band argl
@@ -193,7 +193,7 @@ ordIntersection(a,b) ==
   ordIntersection(t,b)
 ordSetDiff(a,b) ==
   b isnt [h,:t] => a
-  member(h,a) => ordSetDiff(delete(h,a),t)
+  member(h,a) => ordSetDiff(remove(a,h),t)
   ordSetDiff(a,t)
 -------------
 testPredList u ==

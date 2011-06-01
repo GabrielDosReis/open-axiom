@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -129,21 +129,21 @@
 (DEFUN /D-2 (FN INFILE OUTPUTSTREAM OP EDITFLAG TRACEFLAG)
        (declare (special OUTPUTSTREAM))
   (PROG (FT oft SFN X EDINFILE FILE DEF KEY RECNO U W SOURCEFILES
-         ECHO-META SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
+         |$Echo| SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
          ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
          TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
-        (declare (special ECHO-META SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
+        (declare (special |$Echo| SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
                      TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE))
-        (if (PAIRP FN) (SETQ FN (QCAR FN)))
+        (if (CONSP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
           ;; $FUNCTION is freely set in getFunctionSourceFile
-        (IF (PAIRP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
+        (IF (CONSP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
         (SETQ FN $FUNCTION)
         (SETQ /FN $FUNCTION)
    LOOP (SETQ SOURCEFILES
@@ -245,7 +245,7 @@
                  ;(NXTTOK)
                  ;(SETQ LINE (CURINPUTLINE))
                  ;(SETQ SPADERRORSTREAM CUROUTSTREAM)
-                 ;(AND /ECHO (SETQ ECHO-META 'T) (PRINTEXP LINE) (TERPRI))
+                 ;(AND /ECHO (SETQ |$echo| 'T) (PRINTEXP LINE) (TERPRI))
                  ;(SFN)
                  (SETQ DEF (BOOT-PARSE-1 INPUTSTREAM))
                  (SETQ DEBUGMODE 'YES)
@@ -290,8 +290,6 @@
             (compile (EVAL DEF))))
         ( DEF
           (FUNCALL OP (LIST DEF)) ) )
-      #+Lucid(system::compiler-options :messages nil :warnings nil)
-      #+Lucid(TERPRI)
       (COND
         ( TRACEFLAG
           (/TRACE-2 /FN NIL) ) )
@@ -299,7 +297,7 @@
       (RETURN (LIST /FN)) ) )
  
 (DEFUN FUNLOC (func &aux file)
-  (if (PAIRP func) (SETQ func (CAR func)))
+  (if (CONSP func) (SETQ func (CAR func)))
   (setq file (ifcar (findtag func)))
   (if file (list (pathname-name file) (pathname-type file) func)
     nil))
@@ -310,7 +308,7 @@
                     (NOT (make-input-filename INFILE)))
             (RETURN NIL))
         (SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
-        (SETQ KEYLENGTH (STRINGLENGTH KEY))
+        (SETQ KEYLENGTH (LENGTH KEY))
         (WHEN (> INITRECNO 1)  ;; we think we know where it is
               (POINT INITRECNO |$InputStream|)
               (SETQ LN (READ-LINE |$InputStream| NIL NIL))
@@ -722,7 +720,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                  (T (COND (|$mathTrace| (TERPRI)))
                     (PRINMATHOR0 VAL CURSTRM)))))))
  
-(DEFUN MONITOR-BLANKS (N) (PRINC (MAKE-FULL-CVEC N " ") CURSTRM))
+(DEFUN MONITOR-BLANKS (N) (PRINC (|makeString| N (|char| " ")) CURSTRM))
  
 (DEFUN MONITOR-EVALBEFORE (X) (EVAL (MONITOR-EVALTRAN X NIL)) X)
  
@@ -828,7 +826,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 (DEFUN SMALL-ENOUGH-COUNT (X N M)
   "Returns number if number of nodes < M otherwise nil."
   (COND ((< M N) NIL)
-        ((VECP X)
+        ((simple-vector-p X)
          (do ((i 0 (1+ i)) (k (maxindex x)))
              ((> i k) n)
            (if (NOT (SETQ N (SMALL-ENOUGH-COUNT (ELT X I) (1+ N) M)))
@@ -1016,7 +1014,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                            (PRIN1 /CALLER CURSTRM)))
                   (MONITOR-PRINARGS
                     (if (SPADSYSNAMEP NAME)
-                        (NREVERSE (REVERSE  (|coerceTraceArgs2E|
+                        (|reverse!| (|reverse|  (|coerceTraceArgs2E|
                                               (INTERN NAME1)
                                               (INTERN NAME)
                                               /ARGS)))
@@ -1116,7 +1114,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 (MAKEPROP '|compFormWithModemap| '/TRANSFORM '(& * * & *))
  
 (defun UNVEC (X)
-  (COND ((REFVECP X) (CONS '$ (VEC_TO_TREE X)))
+  (COND ((simple-vector-p X) (CONS '$ (VEC_TO_TREE X)))
         ((ATOM X) X)
         ((CONS (UNVEC (CAR X)) (UNVEC (CDR X))))))
  

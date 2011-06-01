@@ -214,13 +214,13 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
       coef := coefficient(uls,0)
       (ord := order(uls,0)) = 0 and coef * coef = -1 => "failed"
       cc : Coef := 
-        ord < 0 =>
+        negative? ord =>
           TRANSFCN =>
             RATS =>
               lc := coefficient(uls,ord)
               (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" =>
                 (1/2) * pi()
-              (rat :: RN) > 0 => (1/2) * pi()
+              positive?(rat :: RN) => (1/2) * pi()
               (-1/2) * pi()
             (1/2) * pi()
           return "failed"
@@ -234,11 +234,11 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
       coef := coefficient(uls,0)
       (ord := order(uls,0)) = 0 and coef * coef = -1 => "failed"
       cc : Coef := 
-        ord < 0 =>
+        negative? ord =>
           RATS =>
             lc := coefficient(uls,ord)
             (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" => 0
-            (rat :: RN) > 0 => 0
+            positive?(rat :: RN) => 0
             TRANSFCN => pi()
             return "failed"
           0
@@ -315,13 +315,13 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
       (ord := order(uls,0)) = 0 and coef * coef = -1 =>
         error "atan: series expansion has logarithmic term"
       cc : Coef := 
-        ord < 0 =>
+        negative? ord =>
           TRANSFCN =>
             RATS =>
               lc := coefficient(uls,ord)
               (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" =>
                 (1/2) * pi()
-              (rat :: RN) > 0 => (1/2) * pi()
+              positive?(rat :: RN) => (1/2) * pi()
               (-1/2) * pi()
             (1/2) * pi()
           error "atan: series expansion involves transcendental constants"
@@ -338,11 +338,11 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
       (ord := order(uls,0)) = 0 and coef * coef = -1 =>
         error "acot: series expansion has logarithmic term"
       cc : Coef := 
-        ord < 0 =>
+        negative? ord =>
           RATS =>
             lc := coefficient(uls,ord)
             (rat := retractIfCan(lc)@Union(RN,"failed")) case "failed" => 0
-            (rat :: RN) > 0 => 0
+            positive?(rat :: RN) => 0
             TRANSFCN => pi()
             error "acot: series expansion involves transcendental constants"
           0

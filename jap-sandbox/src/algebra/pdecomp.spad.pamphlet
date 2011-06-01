@@ -53,7 +53,7 @@ PolynomialDecomposition(UP, F): PDcat == PDdef where
              for i in 0.. while f ~= 0 repeat
                  fr := divide(f, h)
                  f := fr.quotient; r := fr.remainder
-                 degree r > 0 => return "failed"
+                 positive? degree r => return "failed"
                  g := g + r * monomial(1, i)
              g
  

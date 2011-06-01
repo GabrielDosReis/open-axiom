@@ -47,6 +47,8 @@
 #include "cfuns.h"
 #include "all_alone.H1"
 
+using namespace OpenAxiom;
+
 
 
 /* This file forks a child process and exits the parent. It 

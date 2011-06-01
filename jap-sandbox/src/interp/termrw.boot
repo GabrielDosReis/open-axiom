@@ -38,25 +38,25 @@ termRW(t,R) ==
   -- reduce t by rewrite system R
   until b repeat
     t0:= termRW1(t,R)
-    b:= EQ(t,t0)
+    b:= sameObject?(t,t0)
     t:= t0
   t
  
 termRW1(t,R) ==
   -- tries to do one reduction on the leftmost outermost subterm of t
   t0:= term1RW(t,R)
-  not EQ(t0,t) or atom t => t0
+  not sameObject?(t0,t) or atom t => t0
   [t1,:t2]:= t
   tt1:= termRW1(t1,R)
   tt2:= t2 and termRW1(t2,R)
-  EQ(t1,tt1) and EQ(t2,tt2) => t
+  sameObject?(t1,tt1) and sameObject?(t2,tt2) => t
   [tt1,:tt2]
  
 term1RW(t,R) ==
   -- tries to reduce t at the top node
   [vars,:varRules]:= R
   for r in varRules until not (SL='failed) repeat
-    SL:= termMatch(first r,t,NIL,vars)
+    SL:= termMatch(first r,t,nil,vars)
     not (SL='failed) =>
       t:= subCopy(copy rest r,SL)
   t
@@ -65,14 +65,14 @@ term1RWall(t,R) ==
   -- same as term1RW, but returns a list
   [vars,:varRules]:= R
   [not (SL='failed) and subCopy(copy rest r,SL) for r in varRules |
-    not EQ(SL:= termMatch(first r,t,NIL,vars),'failed)]
+    not sameObject?(SL:= termMatch(first r,t,nil,vars),'failed)]
  
 termMatch(tp,t,SL,vars) ==
   -- t is a term pattern, t a term
   -- then the result is the augmented substitution SL or 'failed
   tp=t => SL
   atom tp =>
-    MEMQ(tp,vars) =>
+    symbolMember?(tp,vars) =>
       p:= ASSOC(tp,SL) => ( rest p=t )
       [[tp,:t],:SL]
     'failed
@@ -90,9 +90,9 @@ termMatch(tp,t,SL,vars) ==
  
 -- isContained(v,t) ==
 --   -- tests (by EQ), whether v occurs in term t
---   -- v must not be NIL
---   EQ(v,t) => 'T
---   atom t => NIL
+--   -- v must not be nil
+--   sameObject?(v,t) => 'T
+--   atom t => nil
 --   isContained(v,first t) or isContained(v,rest t)
  
 augmentSub(v,t,SL) ==
@@ -100,7 +100,7 @@ augmentSub(v,t,SL) ==
   -- t doesn't contain any of the variables of SL
   q := [v,:t]
   null SL => [q]
---  for p in SL repeat p.rest := SUBSTQ(t,v,rest p)
+--  for p in SL repeat p.rest := substitute(t,v,rest p)
   [q,:SL]
  
 mergeSubs(S1,S2) ==
@@ -115,7 +115,7 @@ mergeSubs(S1,S2) ==
 subCopy(t,SL) ==
   -- t is any LISP structure, SL a substitution list for sharp variables
   -- then t is substituted and copied if necessary
-  SL=NIL => t
+  SL=nil => t
   subCopy0(t,SL)
  
 subCopy0(t, SL) ==
@@ -123,21 +123,21 @@ subCopy0(t, SL) ==
   t
   
 subCopyOrNil(t,SL) ==
-  -- the same as subCopy, but the result is NIL if nothing was copied
+  -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => p
-  atom t => NIL
+  atom t => nil
   [t1,:t2]:= t
   t0:= subCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:subCopy0(t2,SL)]]
     [t,:[rest t0,:t2]]
   t2 and ( t0:= subCopyOrNil(t2,SL) ) => [t, :[t1,:rest t0]]
-  NIL
+  nil
  
  
 deepSubCopy(t,SL) ==
   -- t is any LISP structure, SL a substitution list for sharp variables
   -- then t is substituted and copied if necessary
-  SL=NIL => t
+  SL=nil => t
   deepSubCopy0(t,SL)
  
 deepSubCopy0(t, SL) ==
@@ -145,9 +145,9 @@ deepSubCopy0(t, SL) ==
   t
   
 deepSubCopyOrNil(t,SL) ==
-  -- the same as subCopy, but the result is NIL if nothing was copied
+  -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => [t,:deepSubCopy0(rest p, SL)]
-  atom t => NIL
+  atom t => nil
   [t1,:t2]:= t
   t0:= deepSubCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:deepSubCopy0(t2,SL)]]

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@
 
 ;;; Common  Block
 
-(defconstant |$Newline| #\Newline)
 (defvar |$preserveSystemLisplib| t "if nil finalizeLisplib does MA REP")
 (defvar |$reportInstantiations| nil)
 (defvar |$reportEachInstantiation| nil)
@@ -51,7 +50,6 @@
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
-(defvar |$getPutTrace| nil)
 (defvar |$formulaFormat| nil "if true produce script formula output")
 (defvar |$texFormat| nil "if true produce tex output")
 (defvar |$fortranFormat| nil "if true produce fortran output")
@@ -159,11 +157,6 @@
 ;         SYSTEM COMMANDS
 ;************************************************************************
 
-(defun CLEARDATABASE () (|runCommand| "ERASE MODEMAP DATABASE"))
-
-(defun erase (FN FT)
-  (|runCommand| (STRCONC "ERASE " (STRINGIMAGE FN) " " (STRINGIMAGE FT))))
-
 (defun READLISP (UPPER_CASE_FG)
   (let (v expr val )
     (setq EXPR (READ-FROM-STRING
@@ -205,8 +198,6 @@
         ('T (/RQ-LIB)))
   (|terminateSystemCommand|))
 
-(defun CPSAY (X) (let (n) (if (EQ 0 (setq N (|runCommand| X))) NIL (PRINT N))))
-
 (defun |fin| ()
   (SETQ *EOF* 'T)
   (THROW 'SPAD_READER NIL))
@@ -216,15 +207,6 @@
 
 (defun STREAM2UC (STRM)
   (LET ((X (ELT (LASTATOM STRM) 1))) (SETF (ELT X 0) (LC2UC (ELT X 0)))))
-
-(defun NEWNAMTRANS (X)
-  (COND
-    ((IDENTP X) (COND ( (GET X 'NEWNAM) (GET X 'NEWNAM)) ('T X)))
-    ((STRINGP X) X)
-    ((*VECP X) (MAPVWOC X (FUNCTION NEWNAMTRANS)))
-    ((ATOM X) X)
-    ((EQCAR X 'QUOTE))
-    (T (CONS (NEWNAMTRANS (FIRST X)) (NEWNAMTRANS (CDR X))))))
 
 (defun GP2COND (L)
   (COND ((NOT L) (ERROR "GP2COND"))
@@ -243,13 +225,7 @@
 (defun |sort| (seq spadfn)
     (sort (copy-seq seq) (function (lambda (x y) (SPADCALL X Y SPADFN)))))
 
-#-Lucid
 (defun DIVIDE2 (X Y) (multiple-value-call #'cons (TRUNCATE X Y)))
-
-#+Lucid
-(defun DIVIDE2 (X Y)
-  (if (zerop y) (truncate 1 Y)
-    (multiple-value-call #'cons (TRUNCATE X Y))))
 
 (define-function '|not| #'NOT)
 
@@ -326,24 +302,6 @@
   `(LET ((|$autoLine|))
         (declare (special |$autoLine|))
         (|tryToFit| (|saveState|) ,X)))
-
-(mapcar #'(lambda (X) (MAKEPROP (CAR X) 'format (CADR X)))
-        '((COMMENT |formatCOMMENT|)
-          (SEQ |formatSEQ|)
-          (DEF |formatDEF|)
-          (%LET |formatLET|)
-          (\: |formatColon|)
-          (ELT |formatELT|)
-          (SEGMENT |formatSEGMENT|)
-          (COND |formatCOND|)
-          (SCOND |formatSCOND|)
-          (QUOTE |formatQUOTE|)
-          (CONS |formatCONS|)
-          (|where| |formatWHERE|)
-          (APPEND |formatAPPEND|)
-          (REPEAT |formatREPEAT|)
-          (COLLECT |formatCOLLECT|)
-          (REDUCE |formatREDUCE|)))
 
 (defun SETELTFIRST (A B C) (declare (ignore b)) (RPLACA A C))
 
@@ -445,9 +403,7 @@
 
 (defun |hashable| (dom)
   (memq (|knownEqualPred| dom)
-        #-Lucid '(EQ EQL EQUAL)
-        #+Lucid '(EQ EQL EQUAL EQUALP)
-        ))
+        '(EQ EQL EQUAL)))
 
 ;; simpler interpface to RDEFIOSTREAM
 (defun RDEFINSTREAM (&rest fn)

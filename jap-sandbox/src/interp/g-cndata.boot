@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 
 
 import sys_-macros
+import c_-util
 namespace BOOT
 
 --% Manipulation of Constructor Datat
@@ -50,26 +51,26 @@ mkLowerCaseConTable() ==
 augmentLowerCaseConTable x ==
   y:=getConstructorAbbreviationFromDB x
   item:=[x,y,nil]
-  HPUT($lowerCaseConTb,x,item)
-  HPUT($lowerCaseConTb,DOWNCASE x,item)
-  HPUT($lowerCaseConTb,y,item)
+  tableValue($lowerCaseConTb,x) := item
+  tableValue($lowerCaseConTb,DOWNCASE x) := item
+  tableValue($lowerCaseConTb,y) := item
 
 getCDTEntry(info,isName) ==
-  not IDENTP info => NIL
-  (entry := HGET($lowerCaseConTb,info)) =>
+  not IDENTP info => nil
+  (entry := tableValue($lowerCaseConTb,info)) =>
     [name,abb,:.] := entry
-    isName and EQ(name,info) => entry
-    not isName and EQ(abb,info) => entry
-    NIL
+    isName and sameObject?(name,info) => entry
+    not isName and sameObject?(abb,info) => entry
+    nil
   entry
  
 putConstructorProperty(name,prop,val) ==
-  null (entry := getCDTEntry(name,true)) => NIL
+  null (entry := getCDTEntry(name,true)) => nil
   entry.rest.rest := PUTALIST(CDDR entry,prop,val)
   true
 
 attribute? name == 
-        MEMQ(name, $BuiltinAttributes)
+  symbolMember?(name, $BuiltinAttributes)
  
 abbreviation? abb ==
   -- if it is an abbreviation, return the corresponding name
@@ -90,8 +91,8 @@ packageForm? d ==
 categoryFrom?: %Form -> %Boolean
 categoryForm? c ==
   op := opOf c
-  MEMQ(op, $CategoryNames) => true
-  getConstructorKindFromDB op = "category" => true
+  builtinCategoryName? op => true
+  getConstructorKindFromDB op is "category" => true
   false
 
 -- probably will switch over to 'libName soon
@@ -121,8 +122,8 @@ installConstructor(cname,type) ==
   (entry := getCDTEntry(cname,true)) => entry
   item := [cname,getConstructorAbbreviationFromDB cname,nil]
   if $lowerCaseConTb then
-    HPUT($lowerCaseConTb,cname,item)
-    HPUT($lowerCaseConTb,DOWNCASE cname,item)
+    tableValue($lowerCaseConTb,cname) := item
+    tableValue($lowerCaseConTb,DOWNCASE cname) := item
  
 constructorNameConflict(name,kind) ==
   userError
@@ -130,11 +131,11 @@ constructorNameConflict(name,kind) ==
       "%l",'"please choose another ",kind]
 
 constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
-  siz := SIZE (s := PNAME a)
+  siz := # (s := symbolName a)
   if typ = "category" and siz > 7
-    then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
-  if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
-  if s ~= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
+    then throwKeyedErrorMsg('precompilation,"S2IL0021",nil)
+  if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",nil)
+  if s ~= stringUpcase s then throwKeyedMsg("S2IL0006",nil)
   abb := getConstructorAbbreviationFromDB c
   name:= getConstructorFullNameFromDB a
   type := getConstructorKindFromDB c
@@ -150,16 +151,16 @@ abbreviationError(c,a,typ,abb,name,type,error) ==
     throwKeyedMsg("S2IL0011",[a,type])
   error='wrongType =>
     throwKeyedMsg("S2IL0012",[c,type])
-  NIL
+  nil
  
 abbreviate u ==
   u is ['Union,:arglist] =>
     ['Union,:[abbreviate a for a in arglist]]
   u is [op,:arglist] =>
-    abb := constructor?(op) =>
+    abb := getConstructorAbbreviationFromDB(op) =>
       [abb,:condAbbrev(arglist,getPartialConstructorModemapSig(op))]
     u
-  constructor?(u) or u
+  getConstructorAbbreviationFromDB(u) or u
  
 unabbrev u == unabbrev1(u,nil)
  
@@ -169,9 +170,8 @@ isNameOfType x ==
   $doNotAddEmptyModeIfTrue:local:= true
   (val := get(x,'value,$InteractiveFrame)) and
     (domain := objMode val) and
-      member(domain,$LangSupportTypes) => true
-  y := opOf unabbrev x
-  constructor? y
+      listMember?(domain,$LangSupportTypes) => true
+  constructor? opOf unabbrev x
  
 unabbrev1(u,modeIfTrue) ==
   atom u =>
@@ -200,10 +200,11 @@ unabbrev1(u,modeIfTrue) ==
   u
  
 unabbrevSpecialForms(op,arglist,modeIfTrue) ==
-  op = 'Mapping => [op,:[unabbrev1(a,modeIfTrue) for a in arglist]]
-  op = 'Union   =>
+  op in '(Mapping MappingCategory) =>
+    [op,:[unabbrev1(a,modeIfTrue) for a in arglist]]
+  op in '(Union UnionCategory)  =>
     [op,:[unabbrevUnionComponent(a,modeIfTrue) for a in arglist]]
-  op = 'Record =>
+  op in '(Record RecordCategory) =>
     [op,:[unabbrevRecordComponent(a,modeIfTrue) for a in arglist]]
   nil
  
@@ -245,8 +246,8 @@ condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
 ++ are consulted.  Consequently, this functions is not appropriate
 ++ for use in the compiler.
 isConstructorName op ==
-  op in $BuiltinConstructorNames
-    or getConstructorAbbreviationFromDB op
+  getConstructorAbbreviationFromDB op
+    or builtinConstructor? op
 
  
 --% Code Being Phased Out
@@ -254,7 +255,7 @@ isConstructorName op ==
 nAssocQ(x,l,n) ==
   repeat
     if atom l then return nil
-    if EQ(x,first(l).n) then return first l
+    if sameObject?(x,first(l).n) then return first l
     l:= rest l
  
 

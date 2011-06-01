@@ -481,11 +481,11 @@ SparseMultivariatePolynomial(R: Ring,VarSet: OrderedSet): C == T where
 		  gcd(leadingCoefficient b, content a)::SUP $
 	      conta := content a
 	      mona:SUP $ := monomial(conta, minimumDegree a)
-              if mona ~= 1 then
+              if not one? mona then
 		   a := (a exquo mona)::SUP $
 	      contb := content b
 	      monb:SUP $ := monomial(contb, minimumDegree b)
-              if monb ~= 1 then
+              if not one? monb then
 		   b := (b exquo monb)::SUP $
 	      mong:SUP $  := monomial(gcd(conta, contb),
                                       min(degree mona, degree monb))

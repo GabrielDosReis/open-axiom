@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,13 @@
 
 #include "openaxiom-c-macros.h"
 
+/* Annotation to request C calling convention */
+#ifdef __cplusplus
+#  define OPENAXIOM_C_CALL extern "C"
+#else
+#  define OPENAXIOM_C_CALL
+#endif
+
 /* Cope with MS-platform oddities.  */
 #ifdef __WIN32__
 #  ifdef  DLL_EXPORT
@@ -51,26 +58,20 @@
 #  define OPENAXIOM_EXPORT  /* nothing */
 #endif /* OPENAXIOM_EXPORT */
 
+#define OPENAXIOM_C_EXPORT OPENAXIOM_C_CALL OPENAXIOM_EXPORT
+
 #if defined(HAVE_STDINT_H)
 #  include <stdint.h>
 #elif defined (HAVE_INTTYPES_H)
 #  include <inttypes.h>
 #endif
-typedef uint8_t openaxiom_byte;
 
 /* The opaque datatype.  */
 #ifdef __WIN32__
-#include <windows.h>
-typedef HANDLE openaxiom_handle;
-#else
-typedef void* openaxiom_handle;
+#  include <windows.h>
 #endif
 
 #include <unistd.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif   
 
 /* Do we have graphics support?  */
 #ifdef X_DISPLAY_MISSING
@@ -79,27 +80,40 @@ extern "C" {
 #  define OPENAXIOM_HAVE_GRAPHICS 1
 #endif
 
-/* Byte order enumeration.  */
-typedef enum openaxiom_byteorder {
-   oa_unknown_endian, oa_little_endian, oa_big_endian
-} openaxiom_byteorder;
+namespace OpenAxiom {
+   // A name for the byte datatype.
+   typedef uint8_t Byte;
 
+   // An opaque datatype
+#ifdef __WIN32__
+   typedef HANDLE Handle;
+#else
+   typedef void* Handle;
+#endif
 
-/* Datatype for packaging information necessary tolaunch a process. */
-typedef struct openaxiom_process {
-   int argc;
-   char** argv;
-   int id;
-} openaxiom_process;
+   // Byte order of machine word data.
+   enum Byteorder {
+      unknown_endian, little_endian, big_endian
+   };
+   
+   // Datatype for packaging information necessary tolaunch a process.
+   struct Process {
+      int argc;
+      char** argv;
+      int id;
+   };
 
-typedef enum openaxiom_spawn_flags {
-   openaxiom_spawn_search_path = 0x01,
-   openaxiom_spawn_replace     = 0x02,
-} openaxiom_spawn_flags;
+   enum SpawnFlags {
+      spawn_search_path = 0x01,
+      spawn_replace     = 0x02,
+   };
 
    
-/* Return the address of the data buffer `BUF'.  */
-#define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
+   // Return the address of the byte array object representation of `t'.
+   template<typename T>
+   inline Byte* byte_address(T& t) {
+      return reinterpret_cast<Byte*>(&t);
+   }
 
 /* Internal field separator character.  */
 #ifdef __WIN32__
@@ -119,23 +133,20 @@ typedef enum openaxiom_spawn_flags {
    of magnitude of difference when compared to the Unix world.
    We abstract over that difference here.  */
 
-static inline void
-openaxiom_sleep(int n)
-{
+   static inline void
+   openaxiom_sleep(int n)
+   {
 #ifdef __WIN32__
-   Sleep(n * 1000);
+      Sleep(n * 1000);
 #else
-   sleep(n);
+      sleep(n);
 #endif   
+   }
+
+   OPENAXIOM_C_EXPORT void oa_allocate_process_argv(Process*, int);
+   OPENAXIOM_C_EXPORT int oa_spawn(Process*, SpawnFlags);   
+   OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
+
 }
-
-
-OPENAXIOM_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
-OPENAXIOM_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
-OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
-
-#ifdef __cplusplus
-}
-#endif   
    
 #endif /* OPENAXIOM_included */

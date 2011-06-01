@@ -345,7 +345,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
         -- determine the multiplicative order of q modulo d
         e  : PI := 1
         qe : PI := q
-        while (qe rem d) ~= 1 repeat
+        while not one?(qe rem d) repeat
           e  := e + 1
           qe := qe * q
         prod := prod * _
@@ -361,7 +361,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- (cf. [LN] p.89, Th. 3.16, and p.87, following Th. 3.11)
       n : NNI := degree f
       n = 0 => false
-      leadingCoefficient f ~= 1 => false
+      not one? leadingCoefficient f => false
       coefficient(f, 0) = 0 => false
       q  : PI := sizeGF
       qn1: PI := (q**n - 1) :: NNI :: PI
@@ -371,7 +371,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- may be improved by tabulating the residues x**(i*q)
       -- for i = 0,...,n-1 :
       --
-      lift(x ** qn1)$MM ~= 1 => false -- X**(q**n - 1) rem f in GF[X]
+      not one? lift(x ** qn1)$MM => false -- X**(q**n - 1) rem f in GF[X]
       lrec  : L Record(factor:I, exponent:I) := factors(factor qn1)
       lfact : L PI := []              -- collect the prime factors
       for rec in lrec repeat          -- of q**n - 1
@@ -387,7 +387,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- x, x**q, ... , x**(q**(n-1)) are linearly independent over GF
       n : NNI := degree f
       n = 0 => false
-      leadingCoefficient f ~= 1 => false
+      not one? leadingCoefficient f => false
       coefficient(f, 0) = 0 => false
       n = 1 => true
       not irreducible? f => false
@@ -428,7 +428,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       n : NNI := degree f
       n = 0 => error "polynomial must have positive degree"
       -- make f monic
-      if (lcf := leadingCoefficient f) ~= 1 then f := (inv lcf) * f
+      if not one?(lcf := leadingCoefficient f) then f := (inv lcf) * f
       -- if f = fn*X**n + ... + f{i0}*X**{i0} with the fi non-zero
       -- then fRepr := [[n,fn], ... , [i0,f{i0}]]
       fRepr : Repr := f pretend Repr
@@ -506,7 +506,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       n : NNI := degree f
       n = 0 => error "polynomial must have positive degree"
       -- make f monic
-      if (lcf := leadingCoefficient f) ~= 1 then f := (inv lcf) * f
+      if not one?(lcf := leadingCoefficient f) then f := (inv lcf) * f
       -- if f = fn*X**n + ... + f{i0}*X**{i0} with the fi non-zero
       -- then fRepr := [[n,fn], ... , [i0,f{i0}]]
       fRepr : Repr := f pretend Repr
@@ -626,7 +626,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       n : NNI := degree f
       n = 0 => error "polynomial must have positive degree"
       -- make f monic
-      if (lcf := leadingCoefficient f) ~= 1 then f := (inv lcf) * f
+      if not one?(lcf := leadingCoefficient f) then f := (inv lcf) * f
       -- if f = fn*X**n + ... + f{i0}*X**{i0} with the fi non-zero
       -- then fRepr := [[n,fn], ... , [i0,f{i0}]]
       fRepr : Repr := f pretend Repr
@@ -740,7 +740,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       n : NNI := degree f
       n = 0 => error "polynomial must have positive degree"
       -- make f monic
-      if (lcf := leadingCoefficient f) ~= 1 then f := (inv lcf) * f
+      if not one?(lcf := leadingCoefficient f) then f := (inv lcf) * f
       -- if f = fn*X**n + ... + f{i0}*X**{i0} with the fi non-zero
       -- then fRepr := [[n,fn], ... , [i0,f{i0}]]
       fRepr : Repr := f pretend Repr

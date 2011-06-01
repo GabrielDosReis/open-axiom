@@ -145,7 +145,7 @@ PadeApproximants(R,PS,UP): Exports == Implementation where
       zero? gps => constInner 0
       -- Normalize so numerator or denominator has constant term.
       ldeg:= min(order dps,order gps)
-      if ldeg > 0 then
+      if positive? ldeg then
         dps := divOutDegree(dps,ldeg)
         gps := divOutDegree(gps,ldeg)
       padeInner(l,m,gps,dps)
@@ -181,7 +181,7 @@ PadeApproximants(R,PS,UP): Exports == Implementation where
         d0 := coefficient(d,0)
         d := (1/d0) * d; g := (1/d0) * g
         p : UP := 0; s := g
-        if l-m+1 < 0 then error "Internal pade error"
+        if negative?(l-m+1) then error "Internal pade error"
         degbd := (l-m+1) :: NNI
         for k in 1..degbd repeat
           pk := coefficient(s,0)

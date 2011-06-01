@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,20 +39,9 @@ $historyDisplayWidth := 120
 $newline := char 10
 
 downlink page ==
-  $saturn => downlinkSaturn page
   htInitPage('"Bridge",nil)
   htSay('"\replacepage{", page, '"}")
   htShowPage()
-
-downlinkSaturn fn ==
-  u := dbReadLines(fn)
-  lines := '""
-  while u is [line,:u] repeat
-    n := MAXINDEX line
-    n < 1 => nil
-    line.0 = (char '_%) => nil
-    lines := strconc(lines,line)
-  issueHTSaturn lines
 
 dbNonEmptyPattern pattern ==
   null pattern => '"*"
@@ -67,7 +56,7 @@ htSystemVariables() == main where
     $levels : local := '(compiler development interpreter)
     $heading  : local := nil
     while classlevel ~= first $levels repeat $levels := rest $levels
-    table := nreverse fn($setOptions,nil,true)
+    table := reverse! fn($setOptions,nil,true)
     htInitPage('"System Variables",nil)
     htSay '"\beginmenu"
     lastHeading := nil
@@ -116,7 +105,7 @@ htSystemVariables() == main where
       fn(rest t,gn(first t,al),firstTime)
     gn(t,al) ==
       [.,.,class,key,.,options,:.] := t
-      not MEMQ(class,$levels) => al
+      not symbolMember?(class,$levels) => al
       key = 'LITERALS or key = 'INTEGER or key = 'STRING => [[$heading,:t],:al]
       key = 'TREE => fn(options,al,false)
       key = 'FUNCTION => [[$heading,:t],:al]
@@ -125,8 +114,8 @@ htSystemVariables() == main where
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
   if string? value and fun then value := FUNCALL(fun,value)
---SCM::what to do???  if not FIXP value then userError ???
-  setDynamicBinding(variable,value)
+--SCM::what to do???  if not integer? value then userError ???
+  symbolValue(variable) := value
   htSystemVariables ()
 
 htSetSystemVariable(htPage,[name,value]) ==
@@ -134,13 +123,13 @@ htSetSystemVariable(htPage,[name,value]) ==
     value = 'on => true
     value = 'off => nil
     value
-  setDynamicBinding(name,value)
+  symbolValue(name) := value
   htSystemVariables ()
 
 htGloss(pattern) == htGlossPage(nil,dbNonEmptyPattern pattern or '"*",true)
 
 htGlossPage(htPage,pattern,tryAgain?) ==
-  $wildCard: local := char '_*
+  $wildCard: local := char "*"
   pattern = '"*" => downlink 'GlossaryPage
   filter := pmTransFilter pattern
   grepForm := mkGrepPattern(filter,'none)
@@ -156,8 +145,8 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     ['"Glossary items matching {\em ",pattern,'"}"]
   null lines =>
     tryAgain? and #pattern > 0 =>
-      (pattern.(k := MAXINDEX(pattern))) = char 's =>
-        htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
+      (pattern.(k := maxIndex(pattern))) = char "s" =>
+        htGlossPage(htPage,subString(pattern,0,k),true)
       upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
@@ -166,7 +155,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   htSay('"\beginscroll\beginmenu")
   for line in lines repeat
     tick := charPosition($tick,line,1)
-    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString SUBSTRING(line,0,tick),'"} ",SUBSTRING(line,tick + 1,nil))
+    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString subString(line,0,tick),'"} ",subString(line,tick + 1))
   htSay '"\endmenu "
   htSay '"\endscroll\newline "
   htMakePage [['bcLinks,['"Search",'"",'htGlossSearch,nil]]]
@@ -177,21 +166,20 @@ htGlossPage(htPage,pattern,tryAgain?) ==
 gatherGlossLines(results,defstream) ==
   acc := nil
   for keyline in results repeat
-    --keyline := READLINE instream
     n := charPosition($tick,keyline,0)
-    keyAndTick := SUBSTRING(keyline,0,n + 1)
-    byteAddress := string2Integer SUBSTRING(keyline,n + 1,nil)
+    keyAndTick := subString(keyline,0,n + 1)
+    byteAddress := string2Integer subString(keyline,n + 1)
     FILE_-POSITION(defstream,byteAddress)
-    line := READLINE defstream
+    line := readLine defstream
     k := charPosition($tick,line,1)
-    pointer := SUBSTRING(line,0,k)
-    def := SUBSTRING(line,k + 1,nil)
+    pointer := subString(line,0,k)
+    def := subString(line,k + 1)
     xtralines := nil
-    while not EOFP defstream and (x := READLINE defstream) and
-      (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
+    while (x := readLine defstream) ~= %nothing and
+      (j := charPosition($tick,x,1)) and (nextPointer := subString(x,0,j))
         and (nextPointer = pointer) repeat
-          xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
-    acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
+          xtralines := [subString(x,j + 1),:xtralines]
+    acc := [strconc(keyAndTick,def, strconc/reverse! xtralines),:acc]
   reverse acc
 
 htGlossSearch(htPage,junk) ==  htGloss htpLabelInputString(htPage,'filter)
@@ -209,8 +197,8 @@ htGreekSearch(filter) ==
   for x in names repeat
     superMatch?(filter,PNAME x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := nreverse matches
-  nonmatches := nreverse nonmatches
+  matches    := reverse! matches
+  nonmatches := reverse! nonmatches
   htInitPage('"Greek Names",nil)
   null matches =>
     htInitPage(['"Greek names matching search string {\em ",ss,'"}"],nil)
@@ -242,8 +230,8 @@ htTextSearch(filter) ==
   for x in lines repeat
     superMatch?(filter,x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := nreverse matches
-  nonmatches := nreverse nonmatches
+  matches    := reverse! matches
+  nonmatches := reverse! nonmatches
   htInitPage('"Text Matches",nil)
   null matches =>
     htInitPage(['"Lines matching search string {\em ",s,'"}"],nil)
@@ -267,7 +255,7 @@ htTutorialSearch pattern ==
     errorPage(nil,['"Empty search key",nil,'"\vspace{3}\centerline{You must enter some search string"])
   s := mkUnixPattern s
   source := '"$AXIOM/share/hypertex/pages/ht.db"
-  target :='"/tmp/temp.text.$SPADNUM"
+  target := '"/tmp/temp.text.$SPADNUM"
   runCommand strconc('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
   lines := dbReadLines 'temp
   htInitPageNoScroll(nil,['"Tutorial Pages mentioning {\em ",pattern,'"}"])
@@ -280,13 +268,15 @@ htTutorialSearch pattern ==
 
 mkUnixPattern s ==
   u := mkUpDownPattern s
-  starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
+  starPositions := reverse [i for i in 1..(-1 + maxIndex u) | u.i = $wild]
   for i in starPositions repeat
-    u := strconc(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
-  if u.0 ~= $wild then u := strconc('"[^a-zA-Z]",u)
-                  else u := SUBSTRING(u,1,nil)
-  if u.(k := MAXINDEX u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
-                                  else u := SUBSTRING(u,0,k)
+    u := strconc(subString(u,0,i),'".*",subString(u,i + 1))
+  if stringChar(u,0) ~= $wild
+  then u := strconc('"[^a-zA-Z]",u)
+  else u := subString(u,1)
+  if stringChar(u,k := maxIndex u) ~= $wild
+  then u := strconc(u,'"[^a-zA-Z]")
+  else u := subString(u,0,k)
   u
 
 

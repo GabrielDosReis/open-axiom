@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,10 +41,11 @@ $mapTarget := nil
 $mapReturnTypes := nil
 $mapName := 'noMapName
 $mapThrowCount := 0 -- times a "return" occurs in map
+$insideCompileBodyIfTrue := false
 
 --% Generating internal names for functions
 
-$specialMapNameSuffix := NIL
+$specialMapNameSuffix := nil
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
   name := strconc('"*",STRINGIMAGE numArgs,'";",
@@ -53,22 +54,22 @@ makeInternalMapName(userName,numArgs,numMms,extraPart) ==
   if extraPart then name := strconc(name,'";",extraPart)
   if $specialMapNameSuffix then
     name := strconc(name,'";",$specialMapNameSuffix)
-  INTERN name
+  makeSymbol name
 
 isInternalMapName name ==
   -- this only returns true or false as a "best guess"
   (not IDENTP(name)) or (name = "*") or (name = "**") => false
-  sz := SIZE (name' := PNAME name)
-  (sz < 7) or (char("*") ~= name'.0) => false
+  sz := # (name' := symbolName name)
+  (sz < 7) or (char "*" ~= name'.0) => false
   not digit? name'.1 => false
-  null STRPOS('"_;",name',1,NIL) => false
+  null STRPOS('"_;",name',1,nil) => false
   -- good enough
   true
 
 makeInternalMapMinivectorName(name) ==
   string? name =>
-    INTERN strconc(name,'";MV")
-  INTERN strconc(PNAME name,'";MV")
+    makeSymbol strconc(name,'";MV")
+  makeSymbol strconc(symbolName name,'";MV")
 
 --% Adding a function definition
 
@@ -116,7 +117,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   -- that are not numbers.
   parameters := [p for p in rest lhs | IDENTP(p)]
 
-  -- see if a signature has been given. if anything in mapsig is NIL,
+  -- see if a signature has been given. if anything in mapsig is nil,
   -- then declaration was omitted.
   someDecs := nil
   allDecs := true
@@ -128,13 +129,13 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
     if d then
       someDecs := true
       d' := evaluateType unabbrev d
-      isPartialMode d' => throwKeyedMsg("S2IM0004",NIL)
+      isPartialMode d' => throwKeyedMsg("S2IM0004",nil)
 --      tree := mkAtree d'
 --      null (d' := isType tree) => throwKeyedMsg("S2IM0005",[d])
       mapmode := [d',:mapmode]
     else allDecs := false
   if allDecs then
-    mapmode := nreverse mapmode
+    mapmode := reverse! mapmode
     putHist(op,'mode,mapmode,$e)
     if not defineeIsConstant then
       sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
@@ -151,8 +152,8 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   --step process as this should not include recursive calls to the map
   --itself, or the formal parameters
   userVariables1 := getUserIdentifiersIn rhs
-  $freeVars: local := NIL
-  $localVars: local := NIL
+  $freeVars: local := nil
+  $localVars: local := nil
   for parm in parameters repeat mkLocalVar($mapName,parm)
   userVariables2 := setDifference(userVariables1,findLocalVars(op,rhs))
   userVariables3 := setDifference(userVariables2, parameters)
@@ -176,14 +177,14 @@ addMap(lhs,rhs,pred) ==
         if x is ["SUCHTHAT",s,p] then (predList:= [p,:predList]; x:= s)
         x
   mkMapAlias(op,argl)
-  argPredList:= nreverse predList
+  argPredList:= reverse! predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
-    MKPF((pred and (pred ~= 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
-  body:= SUBLISNQ($sl,rhs)
+    MKPF((pred and (pred ~= 'T) => [:argPredList,applySubstNQ($sl,pred)]; argPredList),"and")
+  body:= applySubstNQ($sl,rhs)
   oldMap :=
     (obj := get(op,'value,$InteractiveFrame)) => objVal obj
-    NIL
+    nil
   newMap := augmentMap(op,argList,finalPred,body,oldMap)
   null newMap =>
     sayRemoveFunctionOrValue op
@@ -217,7 +218,7 @@ deleteMap(op,pattern,map) ==
       true
     null rest newMap => nil
     newMap
-  NIL
+  nil
 
 getUserIdentifiersIn body ==
   null body => nil
@@ -243,7 +244,7 @@ getUserIdentifiersIn body ==
       "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
       cons? op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
-        NCONC(getUserIdentifiersIn op, argIdList)
+        append!(getUserIdentifiersIn op, argIdList)
       argIdList
     removeDuplicates bodyIdList
 
@@ -285,8 +286,8 @@ mkMapAlias(op,argl) ==
   $e:= putHist(op,"alias",newAlias,$e)
 
 mkAliasList l == fn(l,nil) where fn(l,acc) ==
-  null l => nreverse acc
-  not IDENTP first l or first l in acc => fn(rest l,[nil,:acc])
+  null l => reverse! acc
+  not symbol? first l or symbolMember?(first l,acc) => fn(rest l,[nil,:acc])
   fn(rest l,[first l,:acc])
 
 args2Tuple args ==
@@ -378,14 +379,14 @@ clearDependencies(x,clearLocalModemapsIfTrue) ==
   clearDep1(x,nil,nil,$dependencies)
 
 clearDep1(x,toDoList,doneList,depList) ==
-  x in doneList => nil
+  symbolMember?(x,doneList) => nil
   clearCache x
   newDone:= [x,:doneList]
   until null a repeat
     a:= ASSQ(x,depList)
     a =>
-      depList:= delete(a,depList)
-      toDoList:= union(toDoList,
+      depList := remove(depList,a)
+      toDoList := union(toDoList,
         setDifference(rest a,doneList))
   toDoList is [a,:res] => clearDep1(a,res,newDone,depList)
   'done
@@ -428,13 +429,13 @@ simplifyMapPattern (x,alias) ==
   lhs is ["|",y,pred] =>
     pred:= predTran pred
     sl:= getEqualSublis pred =>
-      y':= SUBLIS(sl,y)
-      pred:= unTrivialize SUBLIS(sl,pred) where unTrivialize x ==
+      y' := applySubst(sl,y)
+      pred:= unTrivialize applySubst(sl,pred) where unTrivialize x ==
         x is [op,:l] and op in '(and or) =>
           MKPF([unTrivialize y for y in l],op)
         x is [op,a,=a] and op in '(_= is)=> true
         x
-      rhs':= SUBLIS(sl,rhs)
+      rhs':= applySubst(sl,rhs)
       pred=true => [y',:rhs']
       [["PAREN",["|",y',pred]],:rhs']
     pred=true => [y,:rhs]
@@ -472,7 +473,7 @@ predTran x ==
   x
 
 getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
-  (x:= SUBLIS(sl,x)) is [op,:l] and op in '(and or) =>
+  (x:= applySubst(sl,x)) is [op,:l] and op in '(and or) =>
     for y in l repeat sl:= fn(y,sl)
     sl
   x is ["is",a,b] => [[a,:b],:sl]
@@ -485,7 +486,7 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
 --% User function analysis
 
 mapCatchName mapname ==
-   INTERN strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
+   makeSymbol strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
 
 analyzeMap(op,argTypes,mapDef, tar) ==
   -- Top level enty point for map type analysis.  Sets up catch point
@@ -498,7 +499,7 @@ analyzeMap(op,argTypes,mapDef, tar) ==
   $repeatLabel    : local := nil   -- for loops; see upREPEAT
   $breakCount     : local := 0     -- breaks from loops; ditto
   $mapTarget      : local := tar
-  $interpOnly: local := NIL
+  $interpOnly: local := nil
   $mapName : local := op.0
   if get($mapName,'recursive,$e) then
     argTypes := [f t for t in argTypes] where
@@ -523,7 +524,7 @@ analyzeMap(op,argTypes,mapDef, tar) ==
     if getMode op isnt ['Mapping,:sig] then
       sig := [nil,:[nil for type in argTypes]]
     $e:=putHist(opName,'localModemap,
-      [[['interpOnly,:sig],fun,NIL]],$e)
+      [[['interpOnly,:sig],fun,nil]],$e)
   x
 
 analyzeMap0(op,argTypes,mapDef) ==
@@ -627,7 +628,7 @@ rewriteMap1(opName,argl,sig) ==
   else
     tar:= nil
     argTypes:= nil
-  evArgl := NIL
+  evArgl := nil
   for arg in reverse argl repeat
     v := getValue arg
     evArgl := [objNew(objVal v, objMode v),:evArgl]
@@ -654,7 +655,7 @@ interpMap(opName,tar) ==
   $genValue : local:= true
   $interpMapTag : local := nil
   $interpOnly : local := true
-  $localVars : local := NIL
+  $localVars : local := nil
   for lvar in get(opName,'localVars,$e) repeat mkLocalVar(opName,lvar)
   $mapName : local := opName
   $mapTarget : local := tar
@@ -706,7 +707,7 @@ compileDeclaredMap(op,sig,mapDef) ==
 putMapCode(op,code,sig,name,parms,isRecursive) ==
   -- saves the generated code and some other information about the
   -- function
-  codeInfo := VECTOR(op,code,sig,name,parms,isRecursive)
+  codeInfo := vector [op,code,sig,name,parms,isRecursive]
   allCode := [codeInfo,:get(op,'generatedCode,$e)]
   $e := putHist(op,'generatedCode,allCode,$e)
   op
@@ -715,7 +716,7 @@ makeLocalModemap(op,sig) ==
   -- create a local modemap for op with sig, and put it into $e
   if (currentMms := get(op,'localModemap,$e)) then
     untraceMapSubNames [CADAR currentMms]
-  newName := makeInternalMapName(op,#sig-1,1+#currentMms,NIL)
+  newName := makeInternalMapName(op,#sig-1,1+#currentMms,nil)
   newMm := [['local,:sig],newName,nil]
   mms := [newMm,:currentMms]
   $e := putHist(op,'localModemap,mms,$e)
@@ -773,7 +774,7 @@ compileCoerceMap(op,argTypes,mm) ==
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName name
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
-  setDynamicBinding(minivectorName,LIST2VEC $minivector)
+  symbolValue(minivectorName) := LIST2VEC $minivector
   compileInteractive [name,['LAMBDA,parms,body]]
   sig.target
 
@@ -790,7 +791,7 @@ mapRecurDepth(opName,opList,body) ==
       atom argl => 0
       argl => "MAX"/[mapRecurDepth(opName,opList,x) for x in argl]
       0
-    op in opList => argc
+    symbolMember?(op,opList) => argc
     op=opName => 1 + argc
     (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
       mapRecurDepth(opName,[op,:opList],getMapBody(op,mapDef))
@@ -801,8 +802,8 @@ mapRecurDepth(opName,opList,body) ==
 
 analyzeUndeclaredMap(op,argTypes,mapDef,$mapList) ==
   -- Computes the signature of the map named op, and compiles the body
-  $freeVars: local := NIL
-  $localVars: local := NIL
+  $freeVars: local := nil
+  $localVars: local := nil
   $env: local:= [[nil]]
   $mapList := [op,:$mapList]
   parms:=[var for var in $FormalMapVariableList for m in argTypes]
@@ -852,18 +853,18 @@ analyzeRecursiveMap(op,argTypes,body,parms,n) ==
   tar
 
 saveDependentMapInfo(op,opList) ==
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     lmml := [[op, :get(op, 'localModemap, $e)]]
     gcl := [[op, :get(op, 'generatedCode, $e)]]
     for [dep1,dep2] in getFlag("$dependencies") | dep1=op repeat
       [lmml', :gcl'] := saveDependentMapInfo(dep2, [op, :opList])
-      lmms := nconc(lmml', lmml)
-      gcl := nconc(gcl', gcl)
+      lmms := append!(lmml', lmml)
+      gcl := append!(gcl', gcl)
     [lmms, :gcl]
   nil
 
 restoreDependentMapInfo(op, opList, [lmml,:gcl]) ==
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     clearDependentMaps(op,opList)
     for [op, :lmm] in lmml repeat
       $e := putHist(op,'localModemap,lmm,$e)
@@ -872,7 +873,7 @@ restoreDependentMapInfo(op, opList, [lmml,:gcl]) ==
 
 clearDependentMaps(op,opList) ==
   -- clears the local modemaps of all the maps that depend on op
-  not (op in opList) =>
+  not symbolMember?(op,opList) =>
     $e := putHist(op,'localModemap,nil,$e)
     $e := putHist(op,'generatedCode,nil,$e)
     for [dep1,dep2] in getFlag("$dependencies") | dep1=op repeat
@@ -899,7 +900,7 @@ expandRecursiveBody(alreadyExpanded, body) ==
       ((numMapArgs mapDef) = 0) => getMapBody(body,mapDef)
     body
   body is [op,:argl] =>
-    not (op in alreadyExpanded) =>
+    not symbolMember?(op,alreadyExpanded) =>
       (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
         newBody:= getMapBody(op,mapDef)
         for arg in argl for var in $FormalMapVariableList repeat
@@ -989,7 +990,7 @@ mkValCheck(val,i) ==
 
 mkSharpVar i ==
   -- create #i
-  INTERN strconc('"#",STRINGIMAGE i)
+  makeSymbol strconc('"#",STRINGIMAGE i)
 
 mapPredTran pred ==
   -- transforms "x in i..j" to "x>=i and x<=j"
@@ -1099,7 +1100,7 @@ listOfVariables pat ==
   -- return a list of the variables in pat, which is an "is" pattern
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
-    (var='_. => NIL ; [var])
+    (var='_. => nil ; [var])
   cons? pat => removeDuplicates [:listOfVariables p for p in pat]
   nil
 
@@ -1134,7 +1135,7 @@ getLocalVars(op,body) ==
 --  case, y can never contain embedded wrapped expressions.  The mode
 --  part m of the triple is the type of y in the wrapped case and is
 --  consistent with the declared mode if given.  The mode part of an
---  unwrapped value is always $EmptyMode.  The e part is usually NIL
+--  unwrapped value is always $EmptyMode.  The e part is usually nil
 --  but may be used to hold a partial closure.
 --
 --  Effect of changes.  A rule can be built up for a variable by

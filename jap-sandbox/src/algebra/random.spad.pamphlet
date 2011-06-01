@@ -55,7 +55,7 @@ RandomNumberSource(): with
  
         randnum() ==
             t := (271828183 * x1 - 314159269 * x0) rem ranbase
-            if t < 0 then t := t + ranbase
+            if negative? t then t := t + ranbase
             x0:= x1
             x1:= t
  
@@ -150,9 +150,12 @@ IntegerBits: with
 		++ bitTruth(n,m) returns true if coefficient of 2**m in abs(n) is 1
  
     == add
-        bitLength n   == INTEGER_-LENGTH(n)$Lisp
-        bitCoef (n,i) == if INTEGER_-BIT(n,i)$Lisp then 1 else 0
-        bitTruth(n,i) == INTEGER_-BIT(n,i)$Lisp
+        import %ilength: Integer -> Integer        from Foreign Builtin
+        import %ibit: (Integer,Integer) -> Boolean from Foreign Builtin
+
+        bitLength n   == %ilength n
+        bitCoef (n,i) == if %ibit(n,i) then 1 else 0
+        bitTruth(n,i) == %ibit(n,i)
 
 @
 \section{package RIDIST RandomIntegerDistributions}
@@ -195,7 +198,7 @@ RandomIntegerDistributions(): with
 
             n  := 0
             mq := m  -- m quo w**n
-            while (mqnext := mq quo w) > 0 repeat
+            while positive?(mqnext := mq quo w) repeat
                 n  := n + 1
                 mq := mqnext
             ridHack1(mq, n, w, l)

@@ -173,10 +173,10 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
        init() == init()$S / 1$S
 
        nextItem(n) ==
-         m:= nextItem(numer(n))
-         m case "failed" =>
+         m:= nextItem numer n
+         m case nothing =>
            error "We seem to have a Fraction of a finite object"
-         m / 1
+         just(m / 1)
 
     map(fn, x)                         == (fn numer x) / (fn denom x)
     reducedSystem(m:Matrix %):Matrix S == clearDenominator m
@@ -202,8 +202,8 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
              (numer x  * denom y) < (numer y * denom x)
          else
            x:% < y:% ==
-             if denom(x) < 0 then (x,y):=(y,x)
-             if denom(y) < 0 then (x,y):=(y,x)
+             if negative? denom(x) then (x,y):=(y,x)
+             if negative? denom(y) then (x,y):=(y,x)
              (numer x  * denom y) < (numer y * denom x)
     else if S has OrderedSet then
        x:% < y:% ==
@@ -345,12 +345,12 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
 
       floor x ==
         one?(x.den) => x.num
-        x < 0 => -ceiling(-x)
+        negative? x => -ceiling(-x)
         wholePart x
 
       ceiling x ==
         one?(x.den) => x.num
-        x < 0 => -floor(-x)
+        negative? x => -floor(-x)
         1 + wholePart x
 
       if S has OpenMath then
@@ -551,18 +551,18 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
           if S has canonicalUnitNormal and S has GcdDomain then
              charthRoot x ==
                n:= charthRoot x.num
-               n case "failed" => "failed"
+               n case nothing => nothing
                d:=charthRoot x.den
-               d case "failed" => "failed"
-               n/d
+               d case nothing => nothing
+               just(n/d)
           else
              charthRoot x ==
                -- to find x = p-th root of n/d
                -- observe that xd is p-th root of n*d**(p-1)
                ans:=charthRoot(x.num *
                       (x.den)**(characteristic$%-1)::NonNegativeInteger)
-               ans case "failed" => "failed"
-               ans / x.den
+               ans case nothing => nothing
+               just(ans / x.den)
           clear: List % -> List S
           clear l ==
              d:="lcm"/[x.den for x in l]

@@ -154,6 +154,8 @@
           (~ 260 259 nil)
           (= 400 700)
           (|return| 202 201 (|PARSE-Return|))
+          (|try| 202 201 (|PARSE-Try|))
+	  (|throw| 202 201 (|PARSE-Throw|))
           (|leave| 202 201 (|PARSE-Leave|))
           (|exit| 202 201 (|PARSE-Exit|))
 	  (|break| 202 201 (|PARSE-Jump|))

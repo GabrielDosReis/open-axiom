@@ -97,15 +97,11 @@ $(axiom_target_docdir)/$(subdir)%.dvi: $(builddir)/%.dvi
 	export TEXINPUTS; \
 	BIBINPUTS=".:$(axiom_build_texdir):$${TEXINPUTS}"; \
 	export BIBINPUTS; \
-	$(axiom_build_document) --latex $<
+	$(oa_hammer) --latex $<
 
 %.tex: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --weave --output=$@ $<
+	$(oa_hammer) --weave --output=$@ $<
 
-
-$(axiom_build_texdir)/axiom.sty: $(axiom_src_docdir)/axiom.sty.pamphlet
-	$(mkinstalldirs) $(axiom_build_texdir)/
-	$(axiom_build_document) --tangle=axiom.sty --output=$@ $<
 
 ## Rules for regenerating configure.ac and configure from
 ## pamphlet files.  
@@ -134,10 +130,6 @@ Makefile: $(srcdir)/Makefile.in $(top_srcdir)/config/var-def.mk \
 	  $(top_srcdir)/config/setup-dep.mk \
 	  $(abs_top_builddir)/config.status
 	cd $(abs_top_builddir) && $(SHELL) ./config.status $(subdir)$@
-
-$(axiom_build_document): $(axiom_src_srcdir)/scripts/document.in
-	cd $(abs_top_builddir) && \
-	$(SHELL) ./config.status build/scripts/document
 
 $(top_builddir)/src/lisp/core.lisp: \
 	$(top_srcdir)/src/lisp/core.lisp.in \

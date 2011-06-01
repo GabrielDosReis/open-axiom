@@ -1345,7 +1345,7 @@ PolynomialSetUtilitiesPackage (R,E,V,P) : Exports == Implementation where
        lp := removeSquaresIfCan lp
        lp := removeDuplicates [unitCanonical(p) for p in lp]
        empty? lp => lp
-       size?(lp,1$N)$(List P) => lp
+       #lp = 1$N => lp
        lp := sort(infRittWu?,lp)
        p : P := first lp
        lp := rest lp

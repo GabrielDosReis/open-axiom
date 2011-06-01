@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@
 import bc_-util
 namespace BOOT
 
-
---====================> WAS b-con.boot <================================
 
 --=======================================================================
 --              Pages Initiated from HyperDoc Pages
@@ -76,9 +74,9 @@ conPage(a,:b) ==
 conPageFastPath x == --called by conPage and constructorSearch
 --gets line quickly for constructor name or abbreviation
   s := STRINGIMAGE x
-  charPosition(char '_*,s,0) < #s => nil     --quit if name has * in it
-  name := (string? x => INTERN x; x)
-  entry := HGET($lowerCaseConTb,name) or return nil
+  charPosition(char "*",s,0) < #s => nil     --quit if name has * in it
+  name := (string? x => makeSymbol x; x)
+  entry := tableValue($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
     dbRead lineNumber --read record for constructor from libdb.text
@@ -110,7 +108,7 @@ conPageConEntry entry ==
 --%   conname         := opOf conform
 --%   capitalKind     := capitalize kind
 --%   signature       := ncParseFromString sig
---%   sourceFileName  := dbSourceFile INTERN name
+--%   sourceFileName  := dbSourceFile makeSymbol name
 --%   constrings      :=
 --%     KDR form => dbConformGenUnder form
 --%     [strconc(name,args)]
@@ -175,9 +173,10 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{2}"
   if nargs > 0 then kPageArgs(conform,signature)
   htSayStandard '"\indentrel{-2}"
-  if name.(#name-1) = char "&" then name := SUBSEQ(name, 0, #name-1)
---sourceFileName := dbSourceFile INTERN name
-  sourceFileName := getConstructorSourceFileFromDB INTERN name
+  if isDefautPackageName makeSymbol name then
+    name := subSequence(name, 0, #name-1)
+--sourceFileName := dbSourceFile makeSymbol name
+  sourceFileName := getConstructorSourceFileFromDB makeSymbol name
   filename := extractFileNameFromPath sourceFileName
   if filename ~= '"" then
     htSayStandard '"\newline{}"
@@ -191,7 +190,7 @@ kArgPage(htPage,arg) ==
   [op,:args] := conform := htpProperty(htPage,'conform)
   domname := htpProperty(htPage,'domname)
   heading := htpProperty(htPage,'heading)
-  source := CDDAR getConstructorModemapFromDB op
+  source := getConstructorModemapFromDB(op).mmSource
   n := position(arg,args)
   typeForm := sublisFormal(args,source . n)
   domTypeForm := mkDomTypeForm(typeForm,conform,domname)
@@ -245,7 +244,7 @@ reportAO(kind,oplist) ==
   htSay '"\newline "
 
 mkDomTypeForm(typeForm,conform,domname) == --called by kargPage
-  domname => SUBLISLIS(rest domname,rest conform,typeForm)
+  domname => applySubst(pairList(conform.args,domname.args),typeForm)
   typeForm is ['Join,:r] => ['Join,:[mkDomTypeForm(t,conform,domname) for t in r]]
   null hasIdent typeForm => typeForm
   nil
@@ -253,8 +252,8 @@ mkDomTypeForm(typeForm,conform,domname) == --called by kargPage
 domainDescendantsOf(conform,domform) == main where --called by kargPage
   main() ==
     conform is [op,:r] =>
-      op = 'Join => jfn(delete('(Type Object),r),delete('(Type Object),IFCDR domform))
-      op = 'CATEGORY => nil
+      op is 'Join => jfn(remove(r,'Object),remove(IFCDR domform,'Object))
+      op is 'CATEGORY => nil
       domainsOf(conform,domform)
     domainsOf(conform,domform)
   jfn([y,:r],domlist) ==  --keep only those domains that appear in ALL parts of Join
@@ -393,13 +392,14 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   catpredvec := first u
   catinfo    := second u
   catvec     := third u
-  catforms := [[pakform,:pred] for i in 0..MAXINDEX catvec | test ] where
+  catforms := [[pakform,:pred] for i in 0..maxIndex catvec | test ] where
     test() ==
       pred := simpCatPredicate
-        p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
+        p := applySubst(pairList($FormalMapVariableList,conform.args),kTestPred catpredvec.i)
         $domain => eval p
         p
-      if domname and CONTAINED('$,pred) then pred := substitute(domname,'$,pred)
+      if domname and CONTAINED('$,pred) then
+        pred := substitute(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
       (pak := catinfo . i) and pred   --only those with default packages
     pakform() ==
@@ -427,7 +427,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(strconc(name,char '_&),'"")
+    bcCon(symbolName makeDefaultPackageName name,'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -467,7 +467,7 @@ kcPage(htPage,junk) ==
    if kind ~= '"category" then
     satBreak()
     htMakePage [['bcLinks,['"\menuitemstyle{Clients}",'"\tab{12}Constructors",'kcuPage,nil]]]
-    if HGET($defaultPackageNamesHT,conname)
+    if tableValue($defaultPackageNamesHT,conname)
       then htSay('" which {\em may use} this default package")
 --  htMakePage [['bcLinks,['"files",'"",'kcuPage,true]]]
       else htSay('" which {\em use} this ",kind)
@@ -501,7 +501,8 @@ kcpPage(htPage,junk) ==
   conname := opOf conform
   page := htInitPage(['"Parents of ",:heading],htCopyProplist htPage)
   parents := parentsOf conname --was listSort(function GLESSEQP, =this)
-  if domname then parents := SUBLISLIS(rest domname,rest conform,parents)
+  if domname then
+    parents := applySubst(pairList(conform.args,domname.args),parents)
   htpSetProperty(htPage,'cAlist,parents)
   htpSetProperty(htPage,'thing,'"parent")
   choice :=
@@ -510,7 +511,7 @@ kcpPage(htPage,junk) ==
   dbShowCons(htPage,choice)
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
-  alist := SUBLISLIS(rest domform,rest conform,alist)
+  alist := applySubst(pairList(conform.args,domform.args),alist)
   for pair in alist repeat 
     pair.rest := simpHasPred(rest pair,domform)
   [pair for (pair := [.,:pred]) in alist | pred]
@@ -577,13 +578,13 @@ augmentHasArgs(alist,conform) ==
 
 kcdePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  conname         := INTERN name
+  conname         := makeSymbol name
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN strconc(name,char '_&)
+--  kind = '"category" => makeDefaultPackageName name
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -593,13 +594,13 @@ kcdePage(htPage,junk) ==
 
 kcuPage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  conname         := INTERN name
+  conname         := makeSymbol name
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN strconc(name,char '_&)
+    kind = '"category" => makeDefaultPackageName name
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,18 +621,18 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN strconc(PNAME name,char '_&)
+    kind = '"category" => makeDefaultPackageName symbolName name
     opOf conform
   domList := getImports pakname
   if domname then
-    domList := SUBLISLIS([domname,:rest domname],['$,:rest conform],domList)
+    domList := applySubst(pairList(['$,:conform.args],[domname,:domname.args]),domList)
   cAlist := [[x,:true] for x in domList]
   htpSetProperty(htPage,'cAlist,cAlist)
   htpSetProperty(htPage,'thing,'"benefactor")
   dbShowCons(htPage,'names)
 
 koPageInputAreaUnchanged?(htPage, nargs) ==
-  [htpLabelInputString(htPage,INTERN strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
+  [htpLabelInputString(htPage,makeSymbol strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
       = htpProperty(htPage,'inputAreaList)
 
 kDomainName(htPage,kind,name,nargs) ==
@@ -639,7 +640,7 @@ kDomainName(htPage,kind,name,nargs) ==
   inputAreaList :=
     [htpLabelInputString(htPage,var) for i in 1..nargs for var in $PatternVariableList]
   htpSetProperty(htPage,'inputAreaList,inputAreaList)
-  conname := INTERN name
+  conname := makeSymbol name
   args := [kArgumentCheck(domain?,x) or nil for x in inputAreaList
               for domain? in rest getDualSignatureFromDB conname]
   or/[null x for x in args] =>
@@ -673,13 +674,13 @@ dbMkEvalable form ==
   mkEvalable form
 
 topLevelInterpEval x ==
-  $ProcessInteractiveValue: fluid := true
-  $noEvalTypeMsg: fluid := true
+  $ProcessInteractiveValue: local := true
+  $noEvalTypeMsg: local := true
   processInteractive(x,nil)
 
 kisValidType typeForm ==
-  $ProcessInteractiveValue: fluid := true
-  $noEvalTypeMsg: fluid := true
+  $ProcessInteractiveValue: local := true
+  $noEvalTypeMsg: local := true
   CATCH($SpadReaderTag, processInteractive(typeForm,nil))
     is [m,:t] and member(m,$LangSupportTypes) =>
       kCheckArgumentNumbers t and t
@@ -711,7 +712,7 @@ mkConform(kind,name,argString) ==
       systemError '"Keywords in argument list?"
     atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString strconc(char 'd,argString)]  --& case
+  [makeSymbol name,:rest ncParseFromString strconc('"d",argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch
@@ -740,7 +741,7 @@ conOpPage1(conform,:options) ==
 --constructors    Cname\#\E\sig \args   \abb \comments (C is C, D, P, X)
   bindingsAlist := IFCAR options
   conname       := opOf conform
-  MEMQ(conname,$DomainNames) =>
+  builtinFunctorName? conname =>
      dbSpecialOperations conname
   domname         :=                        --> !!note!! <--
     cons? conform => conform
@@ -754,7 +755,7 @@ conOpPage1(conform,:options) ==
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile INTERN name
+  sourceFileName  := dbSourceFile makeSymbol name
   emString        := ['"{\sf ",constring,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -767,7 +768,7 @@ conOpPage1(conform,:options) ==
   htpSetProperty(page,'domname,domname)         --> !!note!! <--
   htpSetProperty(page,'conform,conform)
   htpSetProperty(page,'signature,signature)
-  if selectedOperation := LASSOC('selectedOperation,IFCDR options) then
+  if selectedOperation := symbolLAssoc('selectedOperation,IFCDR options) then
     htpSetProperty(page,'selectedOperation,selectedOperation)
   for [a,:b] in bindingsAlist repeat htpSetProperty(page,a,b)
   koPage(page,'"operation")
@@ -778,7 +779,7 @@ conOpPage1(conform,:options) ==
 koPage(htPage,which) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   constring       := strconc(name,args)
-  conname         := INTERN name
+  conname         := makeSymbol name
   domname         :=
     (u := htpProperty(htPage,'domname)) is [=conname,:.]
       and  (htpProperty(htPage,'fromConOpPage1) = true or
@@ -835,16 +836,16 @@ dbConstructorDoc(conform,$op,$sig) == fn conform where
   gn([op,:alist]) ==
     op = $op and "or"/[doc or '("") for [sig,:doc] in alist | hn sig]
   hn sig ==
-    #$sig = #sig and $sig = SUBLISLIS($args,$FormalMapVariableList,sig)
+    #$sig = #sig and $sig = applySubst(pairList($FormalMapVariableList,$args),sig)
 
 dbDocTable conform ==
 --assumes $docTableHash bound --see dbExpandOpAlistIfNecessary
-  table := HGET($docTableHash,conform) => table
+  table := tableValue($docTableHash,conform) => table
   $docTable : local := hashTable 'EQ
   --process in reverse order so that closest cover up farthest
   for x in originsInOrder conform repeat dbAddDocTable x
   dbAddDocTable conform
-  HPUT($docTableHash,conform,$docTable)
+  tableValue($docTableHash,conform) := $docTable
   $docTable
 
 originsInOrder conform ==  --domain = nil or set to live domain
@@ -859,23 +860,23 @@ originsInOrder conform ==  --domain = nil or set to live domain
 
 dbAddDocTable conform ==
   conname := opOf conform
-  storedArgs := rest getConstructorForm conname
-  for [op,:alist] in SUBLISLIS(["$",:rest conform],
-    ["%",:storedArgs],getConstructorDocumentationFromDB opOf conform)
+  storedArgs := getConstructorForm(conname).args
+  for [op,:alist] in applySubst(pairList(["%",:storedArgs],["$",:conform.args]),
+    getConstructorDocumentationFromDB opOf conform)
       repeat
        op1 :=
          op = '(Zero) => 0
          op = '(One) => 1
          op
        for [sig,doc] in alist repeat
-         HPUT($docTable,op1,[[conform,:alist],:HGET($docTable,op1)])
+         tableValue($docTable,op1) := [[conform,:alist],:tableValue($docTable,op1)]
     --note opOf is needed!!! for some reason, One and Zero appear within prens
 
 dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --docTable is [[origin,entry1,...,:code] ...] where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
-    if null FIXP op and
+    if not integer? op and
       digit?((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
@@ -884,7 +885,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
         pred => ['ifp,:aux]
         first aux
       [origin,:doc]
-    or/[gn x for x in HGET(docTable,op)]
+    or/[gn x for x in tableValue(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
     $conform := first u              --origin
     if atom $conform then $conform := [$conform]
@@ -894,7 +895,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
   hn [sig,:doc] ==
     $which = '"attribute" => sig is ['attribute,: =$sig] and doc
     pred := #$sig = #sig and
-      alteredSig := SUBLISLIS(KDR $conform,$FormalMapVariableList,sig)
+      alteredSig := applySubst(pairList($FormalMapVariableList,KDR $conform),sig)
       alteredSig = $sig
     pred =>
       doc =>
@@ -941,7 +942,7 @@ dbShowCons(htPage,key,:options) ==
     abbrev? := htpProperty(htPage,'exclusion) = 'abbrs
     u := [x for x in cAlist | test] where test() ==
       conname := CAAR x
-      subject := (abbrev? => constructor? conname; conname)
+      subject := (abbrev? => getConstructorAbbreviationFromDB conname; conname)
       superMatch?(filter,DOWNCASE STRINGIMAGE subject)
     null u => emptySearchPage('"constructor",filter)
     htPage := htInitPageNoScroll(htCopyProplist htPage)
@@ -950,7 +951,7 @@ dbShowCons(htPage,key,:options) ==
   if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
       key = 'exposureOn => 'T
-      NIL
+      nil
     key := htpProperty(htPage,'exclusion)
   dbShowCons1(htPage,cAlist,key)
 
@@ -1019,7 +1020,7 @@ dbConsExposureMessage() ==
 --    kind = 'domain    => doms := [x,:doms]
 --    kind = 'package   => paks:= [x,:paks]
 --    defs := [x,:defs]
---  lists := [nreverse cats,nreverse doms,nreverse paks,nreverse defs]
+--  lists := [reverse! cats,reverse! doms,reverse! paks,reverse! defs]
 --  htBeginMenu(2)
 --  htSayStandard '"\indent{1}"
 --  kinds := +/[1 for x in lists | #x > 0]
@@ -1057,9 +1058,9 @@ dbShowConsDoc(htPage,conlist) ==
 
 dbShowConsDoc1(htPage,conform,indexOrNil) ==
   [conname,:conargs] := conform
-  MEMQ(conname,$DomainNames) =>
+  builtinFunctorName? conname =>
     conname := htpProperty(htPage,'conname)
-    [["constructor",["NIL",doc]],:.] := GETL(conname,'documentation)
+    [["constructor",["NIL",doc]],:.] := property(conname,'documentation)
     sig := '((CATEGORY domain) (SetCategory) (SetCategory))
     displayDomainOp(htPage,'"constructor",conform,conname,sig,true,doc,indexOrNil,'dbSelectCon,nil,nil)
   exposeFlag := isExposedConstructor conname
@@ -1067,7 +1068,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   signature := getConstructorSignature conname
   sig :=
     getConstructorKindFromDB conname = "category" =>
-      SUBLISLIS(conargs,$TriangleVariableList,signature)
+      applySubst(pairList($TriangleVariableList,conargs),signature)
     sublisFormal(conargs,signature)
   htSaySaturn '"\begin{description}"
   displayDomainOp(htPage,'"constructor",conform,conname,sig,true,doc,indexOrNil,'dbSelectCon,null exposeFlag,nil)
@@ -1075,7 +1076,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   --NOTE that we pass conform is as "origin"
 
 getConstructorDocumentation conname ==
-  LASSOC('constructor,getConstructorDocumentationFromDB conname)
+  symbolLassoc('constructor,getConstructorDocumentationFromDB conname)
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==
@@ -1126,9 +1127,9 @@ dbConsHeading(htPage,conlist,view,kind) ==
     nil
   heading := [:prefix,:placepart]
   connective :=
-    member(view,'(abbrs files kinds)) => '" as "
+    view in '(abbrs files kinds) => '" as "
     '" with "
-  if count ~= 0 and member(view,'(abbrs files parameters conditions)) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
+  if count ~= 0 and view in '(abbrs files parameters conditions) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
   heading
 
 dbShowConstructorLines lines ==
@@ -1170,7 +1171,7 @@ dbSpecialDescription(conname) ==
 dbSpecialOperations(conname) ==
   page := htInitPage(nil,nil)
   conform := getConstructorForm conname
-  opAlist := dbSpecialExpandIfNecessary(conform,rest GETL(conname,'documentation))
+  opAlist := dbSpecialExpandIfNecessary(conform,rest property(conname,'documentation))
   fromHeading := ['" from domain {\sf ",form2HtString conform,'"}"]
   htpSetProperty(page,'fromHeading,fromHeading)
   htpSetProperty(page,'conform,conform)
@@ -1182,7 +1183,7 @@ dbSpecialOperations(conname) ==
 dbSpecialExports(conname) ==
   conform := getConstructorForm conname
   page := htInitPage(['"Exports of {\sf ",form2HtString conform,'"}"],nil)
-  opAlist := dbSpecialExpandIfNecessary(conform,rest GETL(conname,'documentation))
+  opAlist := dbSpecialExpandIfNecessary(conform,rest property(conname,'documentation))
   kePageDisplay(page,'"operation",opAlist)
   htShowPage()
 
@@ -1308,16 +1309,17 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 
 mkConArgSublis args ==
-  [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..MAXINDEX s]]
+  [[arg,:makeSymbol digits2Names PNAME arg] for arg in args
+     | (s := PNAME arg) and
+         "or"/[digit? stringChar(s,i) for i in 0..maxIndex s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer
   str := '""
-  for i in 0..MAXINDEX s repeat
-    c := s.i
+  for i in 0..maxIndex s repeat
+    c := stringChar(s,i)
     segment :=
-      n := DIGIT_-CHAR_-P c =>
+      n := digit? c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
       c
     strconc(str, segment)

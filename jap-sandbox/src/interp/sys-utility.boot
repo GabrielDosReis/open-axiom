@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2010 Gabriel Dos Reis.
+-- Copyright (C) 2007-2011 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,21 +39,12 @@ import hash
 namespace BOOT
 
 module sys_-utility where
-  eval: %Thing -> %Thing
-  probleReadableFile : %String -> %Maybe %String
-
-
-++ Evaluate an OpenAxiom VM form.  Eventually, this function is
-++ to be provided as a builtin by a OpenAxiom target machine.
-eval x ==
-  EVAL expandToVMForm x
+  probeReadableFile : %String -> %Maybe %String
+  remove!: (%List %Thing,%Thing) -> %List %Thing
+  displayTextFile: %Thing -> %Void
 
 --%
 $COMBLOCKLIST := nil
-
-++ No value marker for the Maybe domain.
-%nothing == KEYWORD::%OpenAxiomNoValue
-
 
 ++ Constants describing byte order
 %littleEndian == KEYWORD::%littleEndian
@@ -73,7 +64,7 @@ $COMBLOCKLIST := nil
 ++ the runtime system.
 getVMType d ==
   IDENTP d => 
-    d = "*" => d
+    d is "*" => d
     "%Thing"
   string? d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
@@ -89,15 +80,15 @@ getVMType d ==
     IntegerMod => "%Integer"
     DoubleFloat => "%DoubleFloat"
     String => "%String"
-    List => "%List"
+    List => ["%List",getVMType second d']
     Vector => ["%Vector",getVMType second d']
     PrimitiveArray => ["%SimpleArray", getVMType second d']
-    Pair => "%Pair"
-    Union => "%Pair"
+    Pair => ["%Pair",getVMType second d',getVMType third d']
+    Union => ["%Pair",'%Short,'%Thing]
     Record =>
       #rest d' > 2 => "%Shell"
-      "%Pair"
-    IndexedList => "%List"
+      ["%Pair",'%Thing,'%Thing]
+    IndexedList => ["%List", getVMType second d']
     Int8 => ["SIGNED-BYTE", 8]
     Int16 => ["SIGNED-BYTE", 16]
     Int32 => ["SIGNED-BYTE", 32]
@@ -108,10 +99,6 @@ getVMType d ==
 
 --%
 
-setDynamicBinding: (%Symbol,%Thing) -> %Thing
-setDynamicBinding(s,v) ==
-  SETF(SYMBOL_-VALUE s,v)
-
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
 macrop f ==
@@ -121,16 +108,7 @@ macrop f ==
 functionp: %Thing -> %Boolean
 functionp f ==
   IDENTP f => FBOUNDP f and null MACRO_-FUNCTION f
-  FUNCTIONP f
-
-++ remove `item' from `sequence'.
-delete: (%Thing,%Sequence) -> %Sequence
-delete(item,sequence) ==
-  symbol? item => 
-    REMOVE(item,sequence,KEYWORD::TEST,function EQ)
-  atom item and not ARRAYP item =>
-    REMOVE(item,sequence)
-  REMOVE(item,sequence,KEYWORD::TEST,function EQUALP)
+  function? f
 
 ++ returns true if `x' is contained in `y'.
 CONTAINED: (%Thing,%Thing) -> %Boolean
@@ -139,10 +117,10 @@ CONTAINED(x,y) == main where
     symbol? x => eq(x,y)
     equal(x,y)
   eq(x,y) ==
-    atom y => EQ(x,y)
-    eq(x, first y) or eq(x, rest y)
+    cons? y => eq(x, first y) or eq(x, rest y)
+    symbolEq?(x,y)
   equal(x,y) ==
-    atom y => EQUAL(x,y)
+    atom y => x = y
     equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
@@ -150,18 +128,18 @@ CONTAINED(x,y) == main where
 ASSOCLEFT: %Thing -> %Thing
 ASSOCLEFT x ==
   atom x => x
-  MAPCAR(function first,x)
+  [first p for p in x]
 
 ++ Returns all the datums of association list `x'.
 -- ??? Should not this be named `alistAllValues'?
 ASSOCRIGHT: %Thing -> %Thing
 ASSOCRIGHT x ==
   atom x => x
-  MAPCAR(function rest,x)
+  [rest p for p in x]
 
 ++ Put the association list pair `(x . y)' into `l', erasing any 
 ++ previous association for `x'.
-ADDASSOC: (%Thing,%Thing,%List) -> %List
+ADDASSOC: (%Thing,%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 ADDASSOC(x,y,l) ==
   atom l => [[x,:y],:l]
   x = first first l => [[x,:y],:rest l]
@@ -169,7 +147,7 @@ ADDASSOC(x,y,l) ==
 
 
 ++ Remove any assocation pair `(u . x)' from list `v'.
-DELLASOS: (%Thing,%List) -> %List
+DELLASOS: (%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 DELLASOS(u,v) ==
   atom v => nil
   u = first first v => rest v
@@ -178,14 +156,14 @@ DELLASOS(u,v) ==
 
 ++ Return the datum associated with key `x' in association list `y'.
 -- ??? Should not this be named `alistValue'?
-LASSOC: (%Thing,%List) -> %Thing
+LASSOC: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 LASSOC(x,y) ==
   atom y => nil
   x = first first y => rest first y
   LASSOC(x,rest y)
 
 ++ Return the key associated with datum `x' in association list `y'.
-rassoc: (%Thing,%List) -> %Thing
+rassoc: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 rassoc(x,y) ==
   atom y => nil
   x = rest first y => first first y
@@ -234,6 +212,7 @@ checkMkdir path ==
 
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
+  d := systemAlgebraDirectory() => strconc(d,m,'".",$faslType)
   strconc(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
 ++ load module in `path' that supposedly will define the function 
@@ -280,8 +259,8 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
 
 hashTable cmp ==
   testFun :=
-    cmp in '(ID EQ) => function EQ
-    cmp = 'EQL => function EQL
+    cmp in '(ID EQ) => function sameObject?
+    cmp = 'EQL => function scalarEq?
     cmp = 'EQUAL => function EQUAL
     error '"bad arg to hashTable"
   MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
@@ -291,24 +270,24 @@ hashTable cmp ==
 minimalise x ==
   min(x,hashTable 'EQUAL) where
     min(x,ht) ==
-      y := HGET(ht,x)
+      y := tableValue(ht,x)
       y => y
       cons? x =>
         z := min(first x,ht)
-        if not EQ(z,first x) then x.first := z
+        if not sameObject?(z,first x) then x.first := z
         z := min(rest x,ht)
-        if not EQ(z,rest x) then x.rest := z
+        if not sameObject?(z,rest x) then x.rest := z
         hashCheck(x,ht)
       vector? x =>
-        for i in 0..MAXINDEX x repeat
+        for i in 0..maxIndex x repeat
           x.i := min(x.i,ht)
         hashCheck(x,ht)
       string? x => hashCheck(x,ht)
       x
     hashCheck(x,ht) ==
-      y := HGET(ht,x)
+      y := tableValue(ht,x)
       y => y
-      HPUT(ht,x,x)
+      tableValue(ht,x) := x
       x
 
 --% File IO
@@ -328,18 +307,15 @@ openBinaryFile(file,mode) ==
     KEYWORD::IF_-EXISTS,KEYWORD::SUPERSEDE,
       KEYWORD::ELEMENT_-TYPE,"%Byte")
 
-++ Attemp to read a byte from input file `ifile'.  If not end of
-++ file, return the read byte; %nothing.
-readByteFromFile ifile ==
-  readByte(ifile,false,%nothing)
-
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
   writeByte(b,ofile)
 
-closeFile file ==
-  CLOSE file
-  nil
+--%
+stringImage x ==
+  symbol? x => symbolName x
+  string? x => strconc('"_"",x,'"_"")
+  toString x
 
 --% Socket I/O
 
@@ -366,5 +342,49 @@ writeByteToStreamSocket(s,b) ==
 makeByteBuffer(n,b == 0) ==
   MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",KEYWORD::INITIAL_-ELEMENT,b)
 
+++ return the sub-string of `s' starting from `f'.
+++ When non-nil, `n' designates the length of the sub-string.
+subString(s,f,n == nil) ==
+  n = nil => subSequence(s,f)
+  subSequence(s,f,f + n)
+
 quoteForm t ==
   ["QUOTE",t]
+
+--% assoc
+
+symbolAssoc(s,l) ==
+  or/[symbolEq?(s,first x) and leave x for x in l | cons? x] or nil
+
+scalarAssoc(c,l) ==
+  or/[scalarEq?(c,first x) and leave x for x in l | cons? x] or nil
+
+stringAssoc(s,l) ==
+  or/[stringEq?(s,first x) and leave x for x in l | cons? x] or nil
+
+--% lassoc
+
+symbolLassoc(s,l) ==
+  p := symbolAssoc(s,l) => rest p
+  nil
+
+--%
+remove!(l,x) ==
+  l = nil => nil
+  valueEq?(first l,x) => rest l
+  p := l
+  repeat
+    p isnt [.,.,:.] => return l
+    valueEq?(second p,x) =>
+      p.rest := p.rest.rest
+      return l
+    p := rest p
+      
+--%
+displayTextFile f ==
+  try
+    stream := inputTextFile f
+    while (line := readLine stream) ~= %nothing repeat
+      writeLine(line,$OutputStream)
+  finally
+    stream ~= nil => closeStream stream

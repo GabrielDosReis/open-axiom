@@ -209,7 +209,7 @@ InputBinaryFile(): Public == Private where
       not null? rep(ifile).stream
     readByte! ifile ==
       isOpen? ifile => 
-        b: Maybe Byte := readByteFromFile(rep(ifile).stream)$Lisp
+        b: Maybe Byte := readByte(rep(ifile).stream)$Lisp
         if b case nothing then 
           rep(ifile).eof := true
         b
@@ -219,7 +219,7 @@ InputBinaryFile(): Public == Private where
       error "file is not open"
     close! ifile ==
       if isOpen? ifile then
-        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+        rep(ifile).stream := closeStream(rep(ifile).stream)$Foreign(Builtin)
         rep(ifile).eof := true
       ifile
     position ifile ==
@@ -268,7 +268,7 @@ OutputBinaryFile(): Public == Private where
       error "file is not open"
     close! ifile ==
       if isOpen? ifile then
-        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+        rep(ifile).stream := closeStream(rep(ifile).stream)$Foreign(Builtin)
       ifile
     coerce(ifile: %): OutputForm ==
       rep(ifile).filename::OutputForm

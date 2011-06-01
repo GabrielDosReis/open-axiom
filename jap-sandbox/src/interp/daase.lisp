@@ -781,7 +781,7 @@
   (let (data table stream ignore struct)
     (declare (ignore ignore))
     (when (or (symbolp constructor)
-	      (and (eq key 'hascategory) (pairp constructor)))
+	      (and (eq key 'hascategory) (consp constructor)))
       (case key
 ; note that abbreviation, constructorkind and cosig are heavy hitters
 ; thus they occur first in the list of things to check
@@ -1044,19 +1044,19 @@
 				    ".ao")))
 	   (push (namestring file) asos))
 	  ('else (format t "   )library cannot find the file ~a.~%" filename)))))
-     (dolist (file (nreverse nrlibs))
+     (dolist (file (|reverse!| nrlibs))
        (setq key (pathname-name (first (last (pathname-directory file)))))
        (setq object (concatenate 'string 
 				 (directory-namestring file) 
 				 "code." |$faslType|))
        (localnrlib key file object make-database? noexpose))
-     (dolist (file (nreverse asys))
+     (dolist (file (|reverse!| asys))
        (setq object
 	     (concatenate 'string 
 			  (directory-namestring file)
 			  (pathname-name file)))
        (localasy (|astran| file) object only make-database? noexpose))
-     (dolist (file (nreverse asos))
+     (dolist (file (|reverse!| asos))
        (setq object
 	     (concatenate 'string 
 			  (directory-namestring file)
@@ -1217,9 +1217,10 @@
 		     (unless make-database?
 		       (if (eq kind '|category|)
 			   (setf (database-ancestors dbstruct)
-				 (SUBLISLIS |$FormalMapVariableList| 
-					    (cdr constructorform)
-					    (fetchdata alist in "ancestors"))))
+				 (|applySubst| 
+                                      (|pairList| (cdr constructorform) 
+				      |$FormalMapVariableList|)
+				      (fetchdata alist in "ancestors"))))
 		       (|updateDatabase| key key systemdir?) ;makes many hashtables???
 		       (|installConstructor| key kind) ;used to be key cname ...
 		       (|updateCategoryTable| key kind)
@@ -1566,7 +1567,7 @@
   (flat expr)
   (dolist (leaf leaves)
    (when (setq pos (position leaf *compressvector*))
-     (nsubst (- pos) leaf expr)))
+     (|substitute!| (- pos) leaf expr)))
   expr)))
 
 (defun write-operationdb ()
@@ -1702,7 +1703,7 @@
         #'(lambda () func) ;; constant domain
         #'(lambda (&rest args)
             (apply (|ClosFun| func)
-                   (nconc
+                   (|append!|
                     (mapcar #'wrapDomArgs args (cdr cosig))
                     (list (|ClosEnv| func)))))))
       (apply cname args)))))
@@ -1720,7 +1721,7 @@
         #'(lambda (self &rest args)
             (let ((precat
                    (apply (|ClosFun| func)
-                          (nconc
+                          (|append!|
                            (mapcar #'wrapDomArgs args (cdr cosig))
                            (list (|ClosEnv| func))))))
               (|CCall| (elt (car precat) 5) (cdr precat) (wrapDomArgs self t))))))

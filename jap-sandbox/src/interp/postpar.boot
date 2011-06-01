@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,11 @@ module postpar
 
 ++ The type of parse trees.
 %ParseTree <=> 
-  %Number or %Symbol or %String or %Pair
+  %Number or %Symbol or %String or %Pair(%Thing,%Thing)
 
 ++ The result of processing a parse tree.
 %ParseForm <=>
-  %Number or %Symbol or %String or %Pair
+  %Number or %Symbol or %String or %Pair(%Thing,%Thing)
 
 $postStack := []
 
@@ -61,7 +61,7 @@ postTransform y ==
   u
 
 displayPreCompilationErrors() ==
-  n:= #($postStack:= removeDuplicates nreverse $postStack)
+  n:= #($postStack:= removeDuplicates reverse! $postStack)
   n=0 => nil
   errors:=
     1<n => '"errors"
@@ -72,7 +72,7 @@ displayPreCompilationErrors() ==
       heading:=
         $topOp ~= '$topOp => ['"   ",$topOp,'" has"]
         ['"   You have"]
-      sayBrightly [:heading,'%b,n,'%d,'"precompilation ",errors,'":"]
+      sayBrightly [:heading,'"%b",n,'"%d",'"precompilation ",errors,'":"]
   if 1<n then
     (for x in $postStack for i in 1.. repeat sayMath ['"   ",i,'"_) ",:x])
     else sayMath ['"    ",:first $postStack]
@@ -83,7 +83,7 @@ postTran x ==
   atom x =>
     postAtom x
   op := first x
-  symbol? op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
+  symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
@@ -92,7 +92,7 @@ postTran x ==
   op ~= (y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
-postTranList: %List -> %List
+postTranList: %List %ParseTree -> %List %ParseForm
 postTranList x == 
   [postTran y for y in x]
 
@@ -187,7 +187,7 @@ postBlock t ==
   t isnt ["%Block",:l,x] => systemErrorHere ["postBlock",t]
   ["SEQ",:postBlockItemList l,["exit",postTran x]]
 
-postBlockItemList: %List -> %List
+postBlockItemList: %List %ParseTree -> %List %ParseTree
 postBlockItemList l == 
   [postBlockItem x for x in l]
 
@@ -204,7 +204,7 @@ postCategory u ==
   --RDJ: ugh_ please -- someone take away need for PROGN as soon as possible
   null l => u
   op :=
-    $insidePostCategoryIfTrue = true => "PROGN"
+    $insidePostCategoryIfTrue => "PROGN"
     "CATEGORY"
   [op,:[fn x for x in l]] where fn x ==
     $insidePostCategoryIfTrue: local := true
@@ -217,7 +217,7 @@ postComma u ==
 postDef: %ParseTree -> %ParseForm
 postDef t ==
   t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
-  lhs is ['macro,name] => postMDef ["==>",name,rhs]
+  lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
   if $maxSignatureLineNumber ~= 0 then
@@ -241,7 +241,7 @@ postDef t ==
   specialCaseForm := [nil for x in form]
   ["DEF",newLhs,typeList,specialCaseForm,postTran rhs]
 
-postDefArgs: %List -> %List
+postDefArgs: %List %ParseTree -> %List %ParseForm
 postDefArgs argl ==
   null argl => argl
   argl is [[":",a],:b] =>
@@ -257,7 +257,7 @@ postMDef(t) ==
   [.,lhs,rhs] := t
   $InteractiveMode =>
     lhs := postTran lhs
-    not IDENTP lhs => throwKeyedMsg("S2IP0001",NIL)
+    not IDENTP lhs => throwKeyedMsg("S2IP0001",nil)
     ["MDEF",lhs,nil,nil,postTran rhs]
   lhs:= postTran lhs
   [form,targetType]:=
@@ -305,7 +305,7 @@ postForm u ==
     u:= postTranList u
     if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
-        '"is illegal because tuples cannot be applied_!",'%l,
+        '"is illegal because tuples cannot be applied!",'"%l",
           '"   Did you misuse infix dot?"]
     u
   x is [.,["%Comma",:y]] => [first x,:y]
@@ -316,7 +316,7 @@ postQuote [.,a] ==
   ["QUOTE",a]
 
 
-postScriptsForm: (%ParseTree,%List) -> %ParseForm
+postScriptsForm: (%ParseTree,%List %ParseTree) -> %ParseForm
 postScriptsForm(t,argl) ==
   t isnt ["Scripts",op,a] => systemErrorHere ["postScriptsForm",t]
   [getScriptName(op,a,#argl),:postTranScripts a,:argl]
@@ -331,7 +331,7 @@ getScriptName(op,a,numberOfFunctionalArgs) ==
   if not IDENTP op then
     postError ['"   ",op,'" cannot have scripts"]
   INTERNL("*",STRINGIMAGE numberOfFunctionalArgs,
-    decodeScripts a,PNAME op)
+    decodeScripts a,symbolName op)
 
 postTranScripts: %ParseTree -> %ParseForm
 postTranScripts a ==
@@ -416,7 +416,7 @@ postTupleCollect t ==
   t isnt [constructOp,:m,x] => systemErrorHere ["postTupleCollect",t]
   postCollect [constructOp,:m,["construct",x]]
 
-postIteratorList: %List -> %List
+postIteratorList: %List %ParseTree -> %List %ParseForm
 postIteratorList x ==
   x is [p,:l] =>
     (p:= postTran p) is ["IN",y,u] =>
@@ -489,7 +489,7 @@ postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   sig is ["->",:.] =>
     sig1:= postType sig
-    op:= postAtom (string? op => INTERN op; op)
+    op:= postAtom (string? op => makeSymbol op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
   ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
 
@@ -503,7 +503,7 @@ killColons x ==
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
   t isnt ['_/,a,b] => systemErrorHere ["postSlash",t]
-  string? a => postTran ["%Reduce",INTERN a,b]
+  string? a => postTran ["%Reduce",makeSymbol a,b]
   ['_/,postTran a,postTran b]
 
 removeSuperfluousMapping: %ParseTree -> %ParseForm

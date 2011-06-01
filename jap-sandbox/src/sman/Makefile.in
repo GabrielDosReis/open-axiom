@@ -81,7 +81,7 @@ stamp:	$(OUTLIB)/session$(EXEEXT) \
 .PRECIOUS: %.lo %.obj
 
 %.lo: %.c 
-	$(CXXCOMPILE) ${CCF} -o $@ $(axiom_includes) -I$(srcdir) \
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(axiom_includes) -I$(srcdir) \
 		-I$(top_srcdir)/src/driver $<
 
 ${OUTLIB}/session$(EXEEXT): $(session_objects) $(session_DEPENDENCIES)

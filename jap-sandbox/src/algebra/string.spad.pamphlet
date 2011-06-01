@@ -38,10 +38,24 @@ Character: OrderedFinite() with
 	    ++ \spad{space} provides the blank character.
 	quote: %
 	    ++ \spad{quote} provides the string quote character, \spad{"}.
-	escape: %
-	    ++ \spad{escape} provides the escape character, \spad{_}, which
-	    ++ is used to allow quotes and other characters {\em within}
-	    ++ strings.
+	underscore: %
+	    ++ \spad{underscore} designates the underbar character.
+        newline: %
+            ++ \spad{newline} designates the new line character.
+        carriageReturn: %
+            ++ \spad{carriageReturn} designates carriage return.
+        linefeed: %
+            ++ \spad{linefeed} designates the line feed character.
+        formfeed: %
+            ++ \spad{formfeed} designates the form feed character.
+        backspace: %
+            ++ \spad{backspace} designates the backspace character.
+        horizontalTab: %
+            ++ \spad{horizontalTab} designates horizontal tab.
+        verticalTab: %
+            ++ \spad{verticalTab} designates vertical tab.
+        escape: %
+            ++ \spad{escape} designate the escape character.
 	upperCase: % -> %
 	    ++ upperCase(c) converts a lower case letter to the corresponding
 	    ++ upper case letter.  If c is not a lower case letter, then
@@ -75,21 +89,27 @@ Character: OrderedFinite() with
 	CC ==> CharacterClass()
         NNI ==> NonNegativeInteger
 	import CC
+        import %ccstmax: NonNegativeInteger from Foreign Builtin
         import %ceq: (%,%) -> Boolean from Foreign Builtin
         import %clt: (%,%) -> Boolean from Foreign Builtin
         import %cle: (%,%) -> Boolean from Foreign Builtin
         import %cgt: (%,%) -> Boolean from Foreign Builtin
         import %cge: (%,%) -> Boolean from Foreign Builtin
+        import %cup: % -> %           from Foreign Builtin
+        import %cdown: % -> %         from Foreign Builtin
         import %c2i: % -> NNI         from Foreign Builtin
         import %i2c: NNI -> %         from Foreign Builtin
         import %ccst: String -> %     from Foreign Builtin
+        import %s2c: String -> %      from Foreign Builtin
+        import %c2s: % -> String      from Foreign Builtin
+        import %strconc: (String,String) -> String from Foreign Builtin
 
 	a = b		       == %ceq(a,b)
 	a < b		       == %clt(a,b)
 	a > b		       == %cgt(a,b)
 	a <= b		       == %cle(a,b)
 	a >= b		       == %cge(a,b)
-	size()		       == 256
+	size()		       == %ccstmax
 	index n		       == char((n - 1)::NNI)
 	lookup c	       == (1 + ord c)::PositiveInteger
 	char(n: NNI)	       == %i2c n
@@ -97,7 +117,15 @@ Character: OrderedFinite() with
 	random()	       == char(random(size())$NNI)
 	space		       == %ccst " "
 	quote		       == %ccst "_""
-	escape		       == %ccst "__"
+	underscore	       == %ccst "__"
+        newline                == %ccst "\n"
+        carriageReturn         == %i2c 13
+        linefeed               == %i2c 10
+        formfeed               == %i2c 12
+        backspace              == %i2c 8
+        horizontalTab          == %i2c 9
+        verticalTab            == %i2c 11
+        escape                 == %i2c 27
 	coerce(c:%):OutputForm == c : OutputForm
 	digit? c	       == member?(c, digit())
 	hexDigit? c	       == member?(c, hexDigit())
@@ -107,17 +135,16 @@ Character: OrderedFinite() with
 	alphanumeric? c	       == member?(c, alphanumeric())
 
 	latex c ==
-	  concat("\mbox{`", concat(new(1,c)$String, "'}")$String)$String
+	  %strconc("\mbox{`", %strconc(%c2s c, "'}"))
 
-	char(s:String) ==
-	  one?(#s) => s(minIndex s)
-	  userError "String is not a single character"
+	char(s: String) ==
+          %s2c s
 
 	upperCase c ==
-	  CHAR_-UPCASE(c)$Lisp : %
+          %cup c
 
 	lowerCase c ==
-	  CHAR_-DOWNCASE(c)$Lisp : %
+          %cdown c
 
 @
 
@@ -246,9 +273,9 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 ++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
 -- The following Lisp dependencies are divided into two groups
 -- Those that are required
--- QENUM QESET QCSIZE MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
+-- MAKE-FULL-CVEC
 -- Those that can are included for efficiency only
--- COPY STRCONC SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
+-- SUBSTRING STRPOS RPLACSTR
 ++ Description:
 ++ This domain implements low-level strings
 
@@ -261,25 +288,28 @@ IndexedString(mn:Integer): Export == Implementation where
 
   Export == StringAggregate()
   Implementation == add
-    -- These assume Character's Rep is Small I
-    Qelt    ==> CHAR$Lisp
-    Qequal  ==> EQUAL$Lisp
-    Qsetelt ==> QESET$Lisp
-    Qsize   ==> QCSIZE$Lisp
-    Cheq    ==> CHAR_=$Lisp
+    import %strlength: % -> N from Foreign Builtin
+    import %streq: (%,%) -> Boolean from Foreign Builtin
+    import %strlt: (%,%) -> Boolean from Foreign Builtin
+    import %ceq: (Character, Character) -> Boolean from Foreign Builtin
+    import %schar: (%,I) -> Character from Foreign Builtin
+    import %strconc: (%,%) -> % from Foreign Builtin
+    import %strcopy: % -> % from Foreign Builtin
+    import %strstc: (%,Integer,Character) -> Void from Foreign Builtin
+    import %hash : % -> SingleInteger from Foreign Builtin
 
     c:	Character
     cc: CharacterClass
 
---  new n		   == MAKE_-FULL_-CVEC(n, space$C)$Lisp
-    new(n, c)		   == MAKE_-FULL_-CVEC(n, c)$Lisp
-    empty()		   == MAKE_-FULL_-CVEC(0@I)$Lisp
-    empty?(s)		   == Qsize(s) = 0
-    #s			   == Qsize(s)
-    s = t		   == Qequal(s, t)
-    s < t		   == CGREATERP(t,s)$Lisp
-    concat(s:%,t:%)	   == STRCONC(s,t)$Lisp
-    copy s		   == COPY_-SEQ(s)$Lisp
+--  new n		   == makeString(n, space$C)$Lisp
+    new(n, c)		   == makeString(n, c)$Lisp
+    empty()		   == makeString(0@I)$Lisp
+    empty?(s)		   == %strlength s = 0
+    #s			   == %strlength s
+    s = t		   == %streq(s,t)
+    s < t		   == %strlt(s,t)
+    concat(s:%,t:%)	   == %strconc(s,t)
+    copy s		   == %strcopy s
     insert(s:%, t:%, i:I)  == concat(concat(s(mn..i-1), t), s(i..))
     coerce(s:%):OutputForm == outputForm(s pretend String)
     minIndex s		   == mn
@@ -293,51 +323,51 @@ IndexedString(mn:Integer): Export == Implementation where
 	m := #s
 	n := #t
 	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	l < 0 or h >= m or h < l-1 => error "index out of range"
+	negative? l or h >= m or h < l-1 => error "index out of range"
 	r := new((m-(h-l+1)+n)::N, space$C)
         k: NonNegativeInteger := 0
 	for i in 0..l-1 repeat
-          Qsetelt(r, k, Qelt(s, i))
+          %strstc(r, k, %schar(s, i))
           k := k + 1
 	for i in 0..n-1 repeat
-          Qsetelt(r, k, Qelt(t, i))
+          %strstc(r, k, %schar(t, i))
           k := k + 1
 	for i in h+1..m-1 repeat
-          Qsetelt(r, k, Qelt(s, i))
+          %strstc(r, k, %schar(s, i))
           k := k + 1
 	r
 
     setelt(s:%, i:I, c:C) ==
 	i < mn or i > maxIndex(s) => error "index out of range"
-	Qsetelt(s, i - mn, c)
+	%strstc(s, i - mn, c)
 	c
 
     substring?(part, whole, startpos) ==
-	np:I := Qsize part
-	nw:I := Qsize whole
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
+	np:I := %strlength part
+	nw:I := %strlength whole
+	negative?(startpos := startpos - mn) => error "index out of bounds"
 	np > nw - startpos => false
 	for ip in 0..np-1 for iw in startpos.. repeat
-	    not Cheq(Qelt(part, ip), Qelt(whole, iw)) => return false
+	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
 	true
 
     position(s:%, t:%, startpos:I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
+	negative?(startpos := startpos - mn) => error "index out of bounds"
+	startpos >= %strlength t => mn - 1
 	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
 	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
 	r + mn
     position(c: Character, t: %, startpos: I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
-	for r in startpos..Qsize t - 1 repeat
-	    if Cheq(Qelt(t, r), c) then return r + mn
+	negative?(startpos := startpos - mn) => error "index out of bounds"
+	startpos >= %strlength t => mn - 1
+	for r in startpos..%strlength t - 1 repeat
+	    if %ceq(%schar(t, r), c) then return r + mn
 	mn - 1
     position(cc: CharacterClass, t: %, startpos: I) ==
-	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
-	for r in startpos..Qsize t - 1 repeat
-	    if member?(Qelt(t,r), cc) then return r + mn
+	negative?(startpos := startpos - mn) => error "index out of bounds"
+	startpos >= %strlength t => mn - 1
+	for r in startpos..%strlength t - 1 repeat
+	    if member?(%schar(t,r), cc) then return r + mn
 	mn - 1
 
     suffix?(s, t) ==
@@ -404,22 +434,22 @@ IndexedString(mn:Integer): Export == Implementation where
 	m := #x
 	n := #y
 	s := s - mn
-	s < 0 or s+m > n => error "index out of range"
+	negative? s or s+m > n => error "index out of range"
 	RPLACSTR(y, s, m, x, 0, m)$Lisp
 	y
 
     elt(s:%, i:I) ==
 	i < mn or i > maxIndex(s) => error "index out of range"
-	Qelt(s, i - mn)
+	%schar(s, i - mn)
 
     elt(s:%, sg:U) ==
 	l := lo(sg) - mn
 	h := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	l < 0 or h >= #s => error "index out of bound"
+	negative? l or h >= #s => error "index out of bound"
 	SUBSTRING(s, l, max(0, h-l+1))$Lisp
 
     hash s ==
-        SXHASH(s)$Foreign(Builtin)
+        %hash s
 
     match(pattern,target,wildcard) == stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
  
@@ -470,8 +500,9 @@ String(): Public == Private where
     string: DoubleFloat -> %
       ++ \spad{string f} returns the decimal representation of
       ++ \spad{f} in a string
-  Private == IndexedString(MINSTRINGINDEX) add 
-    string(n: Integer) == STRINGIMAGE(n)$Lisp
+  Private == IndexedString(MINSTRINGINDEX) add
+    import %i2s: Integer -> % from Foreign Builtin
+    string(n: Integer) == %i2s n
     string(f: DoubleFloat) == %f2s(f)$Foreign(Builtin)
 
     OMwrite(x: %): String ==

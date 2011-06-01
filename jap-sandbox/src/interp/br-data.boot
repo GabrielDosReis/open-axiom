@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -37,10 +37,6 @@ namespace BOOT
 
 lefts u ==
    [x for x in HKEYS  _*HASCATEGORY_-HASH_* | rest x = u]
-
-
-
---====================> WAS b-data.boot <================================
 
 --============================================================================
 --              Build Library Database (libdb.text,...)
@@ -106,21 +102,21 @@ buildLibdbConEntry conname ==
     null $conform => nil
     $exposed? := (isExposedConstructor conname => '"x"; '"n")
     $doc      := getConstructorDocumentationFromDB conname
-    pname := PNAME conname
     kind  := getConstructorKindFromDB conname
     if kind = 'domain
       and getConstructorModemapFromDB conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
-      pname.(MAXINDEX pname) = char '_& => 'x
-      DOWNCASE PNAME(kind).0
+      isDefaultPackageName conname => 'x
+      DOWNCASE stringChar(symbolName kind,0)
     argl := rest $conform
     conComments :=
-      LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
+      symbolLassoc('constructor,$doc) is [[=nil,:r]] =>
+        libdbTrim concatWithBlanks r
       '""
-    argpart:= SUBSTRING(form2HtString ['f,:argl],1,nil)
+    argpart:= subString(form2HtString ['f,:argl],1)
     sigpart:= libConstructorSig $conform
-    header := strconc($kind,PNAME conname)
+    header := strconc($kind,symbolName conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
 
 dbMkForm x == atom x and [x] or x
@@ -131,11 +127,11 @@ buildLibdbString [x,:u] ==
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemapFromDB conname
   formals := TAKE(#argl,$FormalMapVariableList)
-  sig := SUBLISLIS(formals,$TriangleVariableList,sig)
+  sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
     g(x,u,i) ==  --does x appear in any but i-th element of u?
       or/[CONTAINED(x,y) for y in u for j in 1.. | j ~= i]
-  sig := fn SUBLISLIS(argl,$FormalMapVariableList,sig) where
+  sig := fn applySubst(pairList($FormalMapVariableList,argl),sig) where
     fn x ==
       atom x => x
       x is ['Join,a,:r] => ['Join,fn a,'etc]
@@ -161,18 +157,18 @@ writedb(u) ==
   TERPRI $outStream
 
 addPatchesToLongLines(s,n) ==
-  #s > n => strconc(SUBSTRING(s,0,n),
-              addPatchesToLongLines(strconc('"--",SUBSTRING(s,n,nil)),n))
+  #s > n => strconc(subString(s,0,n),
+              addPatchesToLongLines(strconc('"--",subString(s,n)),n))
   s
 
 buildLibOps oplist == for [op,sig,:pred] in oplist repeat buildLibOp(op,sig,pred)
 
 buildLibOp(op,sig,pred) ==
 --operations      OKop  \#\sig \conname\pred\comments (K is U or C)
-  nsig := SUBLISLIS(rest $conform,$FormalMapVariableList,sig)
-  pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
-  nsig := substitute('T,"T$",nsig)   --this ancient artifact causes troubles!
-  pred := substitute('T,"T$",pred)
+  nsig := applySubst(pairList($FormalMapVariableList,$conform.args),sig)
+  pred := applySubst(pairList($FormalMapVariableList,$conform.args),pred)
+  nsig := substitute("T","T$",nsig)   --this ancient artifact causes troubles!
+  pred := substitute("T","T$",pred)
   sigpart:= form2LispString ['Mapping,:nsig]
   predString := (pred = 'T => '""; form2LispString pred)
   sop :=
@@ -187,18 +183,18 @@ buildLibOp(op,sig,pred) ==
     buildLibdbString [header,# rest sig,$exposed?,sigpart,conform,predString,comments]
 
 libdbTrim s ==
-  k := MAXINDEX s
+  k := maxIndex s
   k < 0 => s
   for i in 0..k repeat
-    s.i = $Newline => s.i := char " "
+    stringChar(s,i) = $Newline => stringChar(s,i) := char " "
   trimString s
 
 checkCommentsForBraces(kind,sop,sigpart,comments) ==
   count := 0
-  for i in 0..MAXINDEX comments repeat
-    c := comments.i
-    c = char '_{ => count := count + 1
-    c = char '_} =>
+  for i in 0..maxIndex comments repeat
+    c := stringChar(comments,i)
+    c = char "{" => count := count + 1
+    c = char "}" =>
       count := count - 1
       count < 0 => missingLeft := true
   if count < 0 or missingLeft then
@@ -216,8 +212,8 @@ buildLibAttrs attrlist ==
 buildLibAttr(name,argl,pred) ==
 --attributes      AKname\#\args\conname\pred\comments (K is U or C)
   header := strconc('"a",STRINGIMAGE name)
-  argPart:= SUBSTRING(form2LispString ['f,:argl],1,nil)
-  pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
+  argPart:= subString(form2LispString ['f,:argl],1)
+  pred := applySubst(pairList($FormalMapVariableList,$conform.args),pred)
   predString := (pred = 'T => '""; form2LispString pred)
   header := strconc('"a",STRINGIMAGE name)
   conname := strconc($kind,form2LispString $conname)
@@ -230,8 +226,8 @@ dbAugmentConstructorDataTable() ==
   instream := MAKE_-INSTREAM '"libdb.text"
   while not EOFP instream repeat
     fp   := FILE_-POSITION instream
-    line := READLINE instream
-    cname := INTERN dbName line
+    line := readLine instream
+    cname := makeSymbol dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
        entry.rest.rest := PUTALIST(CDDR entry,'dbLineNumber,fp)
@@ -244,32 +240,33 @@ dbAugmentConstructorDataTable() ==
 
 dbHasExamplePage conname ==
   sname    := STRINGIMAGE conname
-  abb      := constructor? conname
-  ucname   := UPCASE STRINGIMAGE abb
+  abb      := getConstructorAbbreviationFromDB conname
+  ucname   := stringUpcase STRINGIMAGE abb
   pathname :=strconc(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
-  isExistingFile pathname => INTERN strconc(sname,'"XmpPage")
+  isExistingFile pathname => makeSymbol strconc(sname,'"XmpPage")
   nil
 
 dbRead(n) ==
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(), '"/algebra/libdb.text")
   FILE_-POSITION(instream,n)
-  line := READLINE instream
+  line := readLine instream
   SHUT instream
-  line
+  line ~= %nothing => line
+  nil
 
 dbReadComments(n) ==
   n = 0 => '""
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"/algebra/comdb.text")
   FILE_-POSITION(instream,n)
-  line := READLINE instream
+  line := readLine instream
   k := dbTickIndex(line,1,1)
-  line := SUBSTRING(line,k + 1,nil)
-  while not EOFP instream and (x := READLINE instream) and
-    (k := MAXINDEX x) and (j := dbTickIndex(x,1,1)) and (j < k) and
-      x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
-        xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
+  line := subString(line,k + 1)
+  while (x := readLine instream) ~= %nothing and
+    (k := maxIndex x) and (j := dbTickIndex(x,1,1)) and (j < k) and
+      x.(j := j + 1) = char "-" and x.(j := j + 1) = char "-" repeat
+        xtralines := [subString(x,j + 1),:xtralines]
   SHUT instream
-  strconc(line, strconc/nreverse xtralines)
+  strconc(line, strconc/reverse! xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -279,8 +276,7 @@ dbSplitLibdb() ==
   PRINTEXP($tick,comstream)
   PRINTEXP('"",  comstream)
   TERPRI(comstream)
-  while not EOFP instream repeat
-    line := READLINE instream
+  while (line := readLine instream) ~= %nothing repeat
     outP := FILE_-POSITION outstream
     comP := FILE_-POSITION comstream
     [prefix,:comments] := dbSplit(line,6,1)
@@ -307,17 +303,17 @@ dbSplitLibdb() ==
 
 dbSplit(line,n,k) ==
   k := charPosition($tick,line,k + 1)
-  n = 1 => [SUBSTRING(line,0,k),:dbSpreadComments(SUBSTRING(line,k + 1,nil),0)]
+  n = 1 => [subString(line,0,k),:dbSpreadComments(subString(line,k + 1),0)]
   dbSplit(line,n - 1,k)
 
 dbSpreadComments(line,n) ==
   line = '"" => nil
-  k := charPosition(char '_-,line,n + 2)
-  k >= MAXINDEX line => [SUBSTRING(line,n,nil)]
-  line.(k + 1) ~= char '_- =>
+  k := charPosition(char "-",line,n + 2)
+  k >= maxIndex line => [subString(line,n)]
+  stringChar(line,k + 1) ~= char "-" =>
     u := dbSpreadComments(line,k)
-    [strconc(SUBSTRING(line,n,k - n),first u),:rest u]
-  [SUBSTRING(line,n,k - n),:dbSpreadComments(SUBSTRING(line,k,nil),0)]
+    [strconc(subString(line,n,k - n),first u),:rest u]
+  [subString(line,n,k - n),:dbSpreadComments(subString(line,k),0)]
 
 --============================================================================
 --                  Build Glossary
@@ -380,7 +376,7 @@ spreadGlossText(line) ==
 --where XXX is the file position of key1
 --this is because grepping will only pick up the first 512 characters
   line = '"" => nil
-  MAXINDEX line > 500 => [SUBSTRING(line,0,500),:spreadGlossText(SUBSTRING(line,500,nil))]
+  maxIndex line > 500 => [subString(line,0,500),:spreadGlossText(subString(line,500))]
   [line]
 
 getGlossLines instream ==
@@ -394,23 +390,23 @@ getGlossLines instream ==
   keys := nil
   text := nil
   lastLineHadTick := false
-  while not EOFP instream repeat
-    line := READLINE instream
+  while (line := readLine instream) ~= %nothing repeat
     #line = 0 => 'skip
     n := charPosition($tick,line,0)
     last := IFCAR text
-    n > MAXINDEX line =>  --this line is continuation of previous line; concat it
+    n > maxIndex line =>  --this line is continuation of previous line; concat it
       fill :=
         #last = 0 =>
           lastLineHadTick => '""
           '"\blankline "
-        #last > 0 and last.(MAXINDEX last) ~= $charBlank => $charBlank
+        #last > 0 and stringChar(last,maxIndex last) ~= $charBlank =>
+          $charBlank
         '""
       lastLineHadTick := false
       text := [strconc(last,fill,line),:rest text]
     lastLineHadTick := true
-    keys := [SUBSTRING(line,0,n),:keys]
-    text := [SUBSTRING(line,n + 1,nil),:text]
+    keys := [subString(line,0,n),:keys]
+    text := [subString(line,n + 1),:text]
   ASSOCRIGHT listSort(function GLESSEQP,[[DOWNCASE key,key,:def] for key in keys for def in text])
   --this complication sorts them after lower casing the keys
 
@@ -425,17 +421,17 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
     for conform in getImports x repeat
       name := opOf conform
       if not (name in '(QUOTE)) then
-        HPUT($usersTb,name,insert(x,HGET($usersTb,name)))
+        tableValue($usersTb,name) := insert(x,tableValue($usersTb,name))
   for k in HKEYS $usersTb repeat
-    HPUT($usersTb,k,listSort(function GLESSEQP,HGET($usersTb,k)))
+    tableValue($usersTb,k) := listSort(function GLESSEQP,tableValue($usersTb,k))
   for x in allConstructors() | isDefaultPackageName x repeat
-    HPUT($usersTb,x,getDefaultPackageClients x)
+    tableValue($usersTb,x) := getDefaultPackageClients x
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
-  catname := INTERN SUBSTRING(s := PNAME con,0,MAXINDEX s)
+  catname := makeSymbol subString(s := symbolName con,0,maxIndex s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := INTERN strconc(PNAME catAncestor,'"&")
+    pakname := makeDefaultPackageName symbolName catAncestor
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)
@@ -451,9 +447,9 @@ mkDependentsHashTable() == --called by buildDatabase (database.boot)
   $depTb := MAKE_-HASH_-TABLE()
   for nam in allConstructors() repeat
     for con in getArgumentConstructors nam repeat
-      HPUT($depTb,con,[nam,:HGET($depTb,con)])
+      tableValue($depTb,con) := [nam,:tableValue($depTb,con)]
   for k in HKEYS $depTb repeat
-    HPUT($depTb,k,listSort(function GLESSEQP,HGET($depTb,k)))
+    tableValue($depTb,k) := listSort(function GLESSEQP,tableValue($depTb,k))
   $depTb
 
 getArgumentConstructors con == --called by mkDependentsHashTable
@@ -472,7 +468,7 @@ getImports conname == --called by mkUsersHashTable
   infovec := dbInfovec conname or return nil
   template := infovec.0
   u := [doImport(i,template)
-          for i in 5..(MAXINDEX template) | test]  where
+          for i in 5..(maxIndex template) | test]  where
     test() == template.i is [op,:.] and IDENTP op
               and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
@@ -495,7 +491,7 @@ getImports conname == --called by mkUsersHashTable
       x = "$$" => "$$"
       string? x => x
       systemError '"bad argument in template"
-  listSort(function GLESSEQP,SUBLISLIS(rest conform,$FormalMapVariableList,u))
+  listSort(function GLESSEQP,applySubst(pairList($FormalMapVariableList,conform.args),u))
 
 
 --============================================================================
@@ -507,27 +503,27 @@ getParentsFor(cname,formalParams,constructorCategory) ==
   formals := TAKE(#formalParams,$TriangleVariableList)
   constructorForm := getConstructorFormFromDB cname
   for x in folks constructorCategory repeat
-    x := SUBLISLIS(formalParams,formals,x)
-    x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
+    x := applySubst(pairList(formals,formalParams),x)
+    x := applySubst(pairList(formalParams,IFCDR constructorForm),x)
     x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 $parentsCache := nil
 
 parentsOf con == --called by kcpPage, ancestorsRecur
   if null $parentsCache then 
      $parentsCache := hashTable 'EQ
-  HGET($parentsCache,con) or
+  tableValue($parentsCache,con) or
     parents := getParentsForDomain con
-    HPUT($parentsCache,con,parents)
+    tableValue($parentsCache,con) := parents
     parents
 
 parentsOfForm [op,:argl] ==
   parents := parentsOf op
   null argl or argl = (newArgl := rest getConstructorFormFromDB op) =>
     parents
-  SUBLISLIS(argl, newArgl, parents)
+  applySubst(pairList(newArgl,argl),parents)
 
 getParentsForDomain domname  == --called by parentsOf
   acc := nil
@@ -537,7 +533,7 @@ getParentsForDomain domname  == --called by parentsOf
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 explodeIfs x == main where  --called by getParents, getParentsForDomain
   main() ==
@@ -571,7 +567,7 @@ descendantsOf(conform,domform) ==  --called by kcdPage
     [op,:argl] := conform
     null argl or argl = (newArgl := rest getConstructorFormFromDB op)
         => cats
-    SUBLISLIS(argl, newArgl, cats)
+    applySubst(pairList(newArgl,argl),cats)
   'notAvailable
 
 childrenOf conform ==
@@ -597,13 +593,13 @@ childArgCheck(argl, nargl) ==
 --  hash := hashTable 'EQUAL
 --  for [child,:pred] in childrenOf cat repeat
 --    childForm := getConstructorForm child
---    HPUT(hash,childForm,pred)
+--    tableValue(hash,childForm) := pred
 --    for [form,:pred] in descendantsOf(childForm,nil) repeat
 --      newPred :=
---        oldPred := HGET(hash,form) => quickOr(oldPred,pred)
+--        oldPred := tableValue(hash,form) => quickOr(oldPred,pred)
 --        pred
---      HPUT(hash,form,newPred)
---  mySort [[key,:HGET(hash,key)] for key in HKEYS hash]
+--      tableValue(hash,form) := newPred
+--  mySort [[key,:tableValue(hash,key)] for key in HKEYS hash]
 
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   "category" = getConstructorKindFromDB(conname := opOf conform) =>
@@ -623,12 +619,12 @@ computeAncestorsOf(conform,domform) ==
   ancestorsRecur(conform,domform,true,true)
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
-    for pair in HGET($if,op) repeat acc := [pair,:acc]
-  nreverse acc
+    for pair in tableValue($if,op) repeat acc := [pair,:acc]
+  reverse! acc
 
 ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   op      := opOf conform
-  pred = HGET($done,conform) => nil   --skip if already processed
+  pred = tableValue($done,conform) => nil   --skip if already processed
   parents :=
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) =>
       $lisplibParents
@@ -637,23 +633,23 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) => $form
     getConstructorForm op
   if conform ~= originalConform then
-    parents := SUBLISLIS(IFCDR conform,IFCDR originalConform,parents)
+    parents := applySubst(pairList(IFCDR originalConform,IFCDR conform),parents)
   for [newform,:p] in parents repeat
     if domform and rest domform then
-      newdomform := SUBLISLIS(rest domform,rest conform,newform)
-      p          := SUBLISLIS(rest domform,rest conform,p)
+      newdomform := applySubst(pairList(conform.args,domform.args),newform)
+      p          := applySubst(pairList(conform.args,domform.args),p)
     newPred := quickAnd(pred,p)
     ancestorsAdd(simpHasPred newPred,newdomform or newform)
     ancestorsRecur(newform,newdomform,newPred,false)
-  HPUT($done,conform,pred)                  --mark as already processed
+  tableValue($done,conform) := pred            --mark as already processed
 
 ancestorsAdd(pred,form) == --called by ancestorsRecur
   null pred => nil
   op := IFCAR form or form
-  alist := HGET($if,op)
+  alist := tableValue($if,op)
   existingNode := assoc(form,alist) =>
     existingNode.rest := quickOr(rest existingNode,pred)
-  HPUT($if,op,[[form,:pred],:alist])
+  tableValue($if,op) := [[form,:pred],:alist]
 
 domainsOf(conform,domname,:options) ==
   $hasArgList := IFCAR options
@@ -695,7 +691,7 @@ transKCatAlist(conform,domname,s) == main where
             null match? => 'skip
             npred := sublisFormal(KDR leftForm,pred)
             acc := [[leftForm,:npred],:acc]
-        nreverse acc
+        reverse! acc
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
         leftForm := getConstructorForm first pair or systemError nil
@@ -718,7 +714,7 @@ transKCatAlist(conform,domname,s) == main where
               ['hasArgs,:subargs]
             npred := quickAnd(hpred,npred)
           acc := [[leftForm,:npred],:acc]
-      nreverse acc
+      reverse! acc
     for pair in s repeat --pair has form [con,:pred]
       leftForm := getConstructorForm first pair
       pair.first := leftForm
@@ -743,13 +739,13 @@ sublisFormal(args,exp,:options) == main where
       while cons? y repeat
         acc := [sublisFormal1(args,first y,n),:acc]
         y := rest y
-      r := nreverse acc
+      r := reverse! acc
       if y then
-        nd := LASTNODE r
+        nd := lastNode r
         nd.rest := sublisFormal1(args,y,n)
       r
     IDENTP x =>
-      j := or/[i for f in $formals for i in 0..n | EQ(f,x)] =>
+      j := or/[i for f in $formals for i in 0..n | sameObject?(f,x)] =>
           args.j
       x
     x
@@ -761,7 +757,7 @@ sublisFormal(args,exp,:options) == main where
 buildDefaultPackageNamesHT() ==
   $defaultPackageNamesHT := MAKE_-HASH_-TABLE()
   for nam in allConstructors() | isDefaultPackageName nam repeat
-    HPUT($defaultPackageNamesHT,nam,true)
+    tableValue($defaultPackageNamesHT,nam) := true
   $defaultPackageNamesHT
 
 $defaultPackageNamesHT := buildDefaultPackageNamesHT()

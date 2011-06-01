@@ -111,13 +111,13 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
      exp0:Z:=0
      unitsq:P:=1
      lcf:P:=leadingCoefficient f
-     if ctf~=1 then
+     if not one? ctf then
        f0:=ctf*f0
        f:=(ctf::P)*f
        lcf:=ctf*lcf
      sqlead:List FFEP:= empty()
      sqlc:Factored P:=1
-     if lcf~=1$P then
+     if not one? lcf then
        leadpol:=true
        sqlc:=squareFree lcf
        unitsq:=unitsq*(unit sqlc)
@@ -132,7 +132,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
          gg := unitNormal leadingCoefficient f
          sqdec:=cons([gg.associate*f,exp0],sqdec)
          return  [gg.unit, sqdec]$squareForm
-       if ctf~=1 then g0:=ctf*g0
+       if not one? ctf then g0:=ctf*g0
        npol:=consnewpol(f,f0,exp0)
        (d,d0):=(npol.pol,npol.polval)
        if leadpol then lcoef:=coefChoose(exp0,sqlc)
@@ -147,8 +147,8 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        f:=h::SUP
        f0:=completeEval(h,lvar,lval)
        lcr:P:=leadingCoefficient result0
-       if leadpol and lcr~=1$P then
-         for lpfact in sqlead  while lcr~=1 repeat
+       if leadpol and not one? lcr then
+         for lpfact in sqlead  while not one? lcr repeat
            ground? lcr =>
              unitsq:=(unitsq exquo lcr)::P
              lcr:=1$P
@@ -195,7 +195,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        y:=lvar.im
        p:=p*monomial(1$P,y,n)
        result1:=cons(["sqfr",y::P,n],result1)
-     if p~=1$P then
+     if not one? p then
        f := (f exquo p)::P
        if ground? f then return makeFR(f, result1)
        lvar:=variables(f)
@@ -206,7 +206,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
        makeFR(unit result,append(result1,factorList result))
  
      ldeg:=degree(f,lvar)          ---  general case ---
-     m:="min"/[j for j in ldeg|j~=0]
+     m:="min"/[j for j in ldeg| not zero? j]
      i:Z:=1
      for j in ldeg while j>m repeat i:=i+1
      x:=lvar.i
@@ -226,7 +226,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
  
    intChoose(f:SUP,lvar:List(OV),ltry:List List R):Choice ==
      degf:= degree f
-     try:NNI:=0
+     tryCount:NNI:=0
      nvr:=#lvar
      range:Z:=10
      lfact1:List(FFE):=[]
@@ -251,17 +251,17 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
  
        d0:=compdegd lfact
                  ----      inizialize lfact1      ----
-       try=0 =>
+       tryCount=0 =>
          f1:=f0
          lfact1:=lfact
          ctf1:=ctf
          lval1:=lval
          d1:=d0
-         try:=1
+         tryCount:=1
        d0=d1 =>
          return [f1,lval1,lfact1,ctf1]$Choice
        d0 < d1 =>
-         try:=1
+         tryCount:=1
          f1:=f0
          lfact1:=lfact
          ctf1:=ctf

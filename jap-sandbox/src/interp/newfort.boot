@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,12 +39,12 @@ $fortranArrayStartingIndex := 0
 
 --% Translation of Expression to FORTRAN
 assignment2Fortran1(name,e) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   checkLines fortran2Lines statement2Fortran ["=",name,e]
 
 integerAssignment2Fortran1(name,e) ==
-  $fortError : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortInts2Floats : local := nil
   checkLines fortran2Lines statement2Fortran ["=",name,e]
 
 statement2Fortran e ==
@@ -54,8 +54,8 @@ statement2Fortran e ==
   -- list of strings may contain '"%l".
   -- This is used when formatting e.g. a DO loop from Lisp
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := "DUMMY"
-  $fortInts2Floats : fluid := nil
+  $fortName : local := "DUMMY"
+  $fortInts2Floats : local := nil
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 expression2Fortran e ==
@@ -64,8 +64,8 @@ expression2Fortran e ==
   -- with 'FORTRAN is merely passed on in the list of strings. The
   -- list of strings may contain '"%l".
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := newFortranTempVar()
-  $fortInts2Floats : fluid := nil
+  $fortName : local := newFortranTempVar()
+  $fortInts2Floats : local := nil
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 expression2Fortran1(name,e) ==
@@ -74,20 +74,20 @@ expression2Fortran1(name,e) ==
   -- with 'FORTRAN is merely passed on in the list of strings. The
   -- list of strings may contain '"%l".
   $exp2FortTempVarIndex : local := 0
-  $fortName : fluid := name
+  $fortName : local := name
   fortranCleanUp exp2Fort1 segment fortPre exp2FortOptimize outputTran e
 
 newFortranTempVar() ==
   $exp2FortTempVarIndex := 1 + $exp2FortTempVarIndex
-  newVar := INTERN strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
+  newVar := makeSymbol strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
   updateSymbolTable(newVar,$defaultFortranType)
   newVar
  
 fortranCleanUp l ==
   -- takes reversed list and cleans up a bit, putting it in
   -- correct order
-  oldTok := NIL
-  m := NIL
+  oldTok := nil
+  m := nil
   for e in l repeat
     if not (oldTok = '"-" and e = '"+") then m := [e,:m]
     oldTok := e
@@ -166,25 +166,25 @@ exp2FortOptimize e ==
   --   0         just extract arrays
   --   1         extract common subexpressions
   --   2         try to optimize computing of powers
-  $exprStack : local := NIL
+  $exprStack : local := nil
   atom e => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
-    nreverse [e1,:$exprStack]
+    reverse! [e1,:$exprStack]
   e := minimalise e
   for e1 in exp2FortOptimizeCS  e repeat
     e2 := exp2FortOptimizeArray e1
     $exprStack := [e2,:$exprStack]
-  nreverse $exprStack
+  reverse! $exprStack
 
  
 exp2FortOptimizeCS e ==
-  $fortCsList : local := NIL
+  $fortCsList : local := nil
   $fortCsHash : local := hashTable 'EQ
-  $fortCsExprStack : local := NIL
-  $fortCsFuncStack : local := NIL
+  $fortCsExprStack : local := nil
+  $fortCsFuncStack : local := nil
   f := exp2FortOptimizeCS1 e
-  nreverse [f,:$fortCsList]
+  reverse! [f,:$fortCsList]
  
 -- bug fix to beenHere 
 -- Thu Nov 05 12:01:46 CUT 1992 , Author: TTT
@@ -219,7 +219,7 @@ exp2FortOptimizeCS1 e ==
 
   -- see if we have been here before
   not (object2Identifier first e in '(ROW AGGLST)) and
-    (n := HGET($fortCsHash,e)) => beenHere(e,n) -- where
+    (n := tableValue($fortCsHash,e)) => beenHere(e,n) -- where
 
   -- descend sucessive CARs of CDRs of e
   f := e
@@ -232,21 +232,21 @@ exp2FortOptimizeCS1 e ==
       $fortCsFuncStack := rest $fortCsFuncStack
       $fortCsExprStack := rest $fortCsExprStack
     g := rest f
-    -- check to see of we have an non-NIL atomic CDR
+    -- check to see of we have an non-nil atomic CDR
     g and atom g =>
       pushCsStacks(f,'CDR)
       f.rest := exp2FortOptimizeCS1 g
       popCsStacks(0)
-      f := NIL
+      f := nil
     f := g
 
-  MEMQ(object2Identifier first e,'(ROW AGGLST)) => e
+  object2Identifier first e in '(ROW AGGLST) => e
 
   -- see if we have already seen this expression
-  n := HGET($fortCsHash,e)
+  n := tableValue($fortCsHash,e)
   null n =>
-    n := VECTOR(1,NIL,$fortCsExprStack,$fortCsFuncStack)
-    HPUT($fortCsHash,e,n)
+    n := vector [1,nil,$fortCsExprStack,$fortCsFuncStack]
+    tableValue($fortCsHash,e) := n
     e
   beenHere(e,n)
 
@@ -265,10 +265,10 @@ exp2FortOptimizeArray e ==
       $exprStack := [[op,var,['AGGLST,:exp2FortOptimizeArray elts]],
         :$exprStack]
       var
-  EQ(op1,'MATRIX) =>
+  op1 = 'MATRIX =>
     -- var := newFortranTempVar()
     var := $fortName
-    -- args looks like [NIL,[ROW,...],[ROW,...]]
+    -- args looks like [nil,[ROW,...],[ROW,...]]
     $exprStack := [[op,var,:exp2FortOptimizeArray args],:$exprStack]
     var
   [exp2FortOptimizeArray op,:exp2FortOptimizeArray args]
@@ -283,31 +283,30 @@ fortran2Lines f ==
  
   -- collect strings up to first %l or end of list. Then feed to
   -- fortran2Lines1.
-  fs := NIL
-  lines := NIL
+  fs := nil
+  lines := nil
   while f repeat
     while f and (ff := first(f)) ~= '"%l" repeat
       fs := [ff,:fs]
       f := rest f
     if f and first(f) = '"%l" then f := rest f
-    lines := append(fortran2Lines1 nreverse fs,lines)
+    lines := append(fortran2Lines1 reverse! fs,lines)
     fs := nil
-  nreverse lines
+  reverse! lines
  
 fortran2Lines1 f ==
   -- f is a list of strings making up 1 FORTRAN statement
   -- return: a reverse list of FORTRAN lines
-  normPref := MAKE_-STRING($fortIndent)
-  --contPref := strconc(MAKE_-STRING($fortIndent-1),"&")
-  contPref := strconc("     &",MAKE_-STRING($fortIndent-6))
-  lines := NIL
+  normPref := makeString $fortIndent
+  contPref := strconc("     &",makeString($fortIndent-6))
+  lines := nil
   ll := $fortIndent
   while f repeat
     ok := true
     line := normPref
     ff := first f
     while ok repeat
-      (ll + (sff := SIZE ff)) <= $fortLength =>
+      (ll + (sff := # ff)) <= $fortLength =>
         ll := ll + sff
         line := strconc(line,ff)
         f := rest f
@@ -320,8 +319,8 @@ fortran2Lines1 f ==
       -- legal format. MCD
       if (ll < $fortLength) and (ll + sff) > $fortLength then
         spaceLeft := $fortLength - ll
-        line := strconc(line,SUBSEQ(ff,0,spaceLeft))
-        ff := SUBSEQ(ff,spaceLeft)
+        line := strconc(line,subSequence(ff,0,spaceLeft))
+        ff := subSequence(ff,spaceLeft)
       lines := [line,:lines]
       ll := $fortIndent
       line := contPref
@@ -337,7 +336,7 @@ fortError1 u ==
  
 fortError(u,v) ==
   $fortError := "t"
-  msg := strconc("   ",STRINGIMAGE u);
+  msg := strconc('"   ",STRINGIMAGE u);
   sayErrorly("Fortran translation error",msg)
   mathPrint v
  
@@ -345,57 +344,58 @@ fortError(u,v) ==
 -- The names are the same as those used in the old fortran code
 
 dispStatement x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines statement2Fortran x
 
 
 getStatement(x,ints2Floats?) ==
-  $fortInts2Floats : fluid := ints2Floats?
-  $fortError : fluid := nil
+  $fortInts2Floats : local := ints2Floats?
+  $fortError : local := nil
   checkLines fortran2Lines statement2Fortran x
 
 fortexp0 x ==
   f := expression2Fortran x
   p := position('"%l",f)
   p < 0 => f
-  l := NIL
+  l := nil
   while p < 0 repeat
     [t,:f] := f
     l := [t,:l]
-  nreverse ['"...",:l]
+  reverse! ['"...",:l]
 
-++ This formating routine is essentially used to print
-++ values/expreions used to instantiate constructors.
-formatAsFortranExpresion x ==
-  $fortInts2Floats := false
+++ This formatting routine is essentially used to print
+++ values/expressions used to instantiate constructors.
+formatAsFortranExpression x ==
+  $fortInts2Floats: local := false
   fortranCleanUp exp2Fort1 segment fortPre outputTran x
 
  
 dispfortexp x ==
-  if atom(x) or x is [op,:.] and not object2Identifier op in
-    '(_= MATRIX construct ) then
-      var := INTERN strconc('"R",object2String $IOindex)
+  if atom(x) or x is [op,:.] and
+    not (object2Identifier op in '(_= MATRIX construct ))
+  then
+      var := makeSymbol strconc('"R",object2String $IOindex)
       x := ['"=",var,x]
   dispfortexp1 x
  
 dispfortexpf (xf, fortranName) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   linef := fortran2Lines BUTLAST(expression2Fortran1(fortranName,xf),2)
   displayLines linef
 
 dispfortexpj (xj, fortranName) ==
-  $fortName : fluid := fortranName
-  $fortError : fluid := nil
+  $fortName : local := fortranName
+  $fortError : local := nil
   linej := fortran2Lines BUTLAST(expression2Fortran1(fortranName,xj),2)
   displayLines linej
 
 
 dispfortexp1 x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines expression2Fortran x
 
 getfortexp1 x ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   checkLines fortran2Lines expression2Fortran x
 
 displayLines1 lines ==
@@ -411,12 +411,12 @@ checkLines lines ==
   lines
 
 dispfortarrayexp (fortranName,m) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   displayLines fortran2Lines BUTLAST(expression2Fortran1(fortranName,m),2)
 
 getfortarrayexp(fortranName,m,ints2floats?) ==
-  $fortInts2Floats : fluid := ints2floats?
-  $fortError : fluid := nil
+  $fortInts2Floats : local := ints2floats?
+  $fortError : local := nil
   checkLines fortran2Lines BUTLAST(expression2Fortran1(fortranName,m),2)
 
  
@@ -447,7 +447,7 @@ exp2FortSpecial(op,args,nargs) ==
     -- Have a matrix element
     mkMat(args)
   op = "SUB" =>
-    $fortInts2Floats : fluid := nil
+    $fortInts2Floats : local := nil
     mkFortFn(first args,rest args,#(rest args))
   op in ["BRACE","BRACKET"] =>
     args is [var,['AGGLST,:elts]] =>
@@ -467,13 +467,13 @@ exp2FortSpecial(op,args,nargs) ==
         $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
     fortError1 [op,:args]
   op in ["CONCAT","CONCATB"] =>
-    nargs = 0 => NIL
+    nargs = 0 => nil
     nargs = 1 => fortPre1 first args
     nargs = 2 and member(second args, ["!",'"!"]) =>
       mkFortFn("FACTORIAL",[first args],1)
     fortError1 [op,:args]
   member(op, ['"MATRIX","MATRIX"]) =>
-    args is [var, =NIL,:rows] =>
+    args is [var, =nil,:rows] =>
       var := object2String var
       nrows := #rows - 1
       ncols := #(rest first rows) - 1
@@ -486,13 +486,13 @@ exp2FortSpecial(op,args,nargs) ==
   fortError1 [op,:args]
 
 mkMat(args) ==
-  $fortInts2Floats : fluid := nil
+  $fortInts2Floats : local := nil
   mkFortFn(second args,rest rest args,#(rest rest args))
 
  
 mkFortFn(op,args,nargs) ==
   [fortranifyFunctionName(STRINGIMAGE op,nargs), 
-   :MAPCAR(function fortPre1 , args) ]
+   :[fortPre1 x for x in args]]
  
 fortranifyFunctionName(op,nargs) ==
   op = '"<" => '".LT."
@@ -584,8 +584,8 @@ changeExprLength(i) ==
   $maximumFortranExpressionLength := $maximumFortranExpressionLength + i
 
 fortFormatDo(var,lo,hi,incr,lab) ==
-  $fortError : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortInts2Floats : local := nil
   incr=1 =>
     checkLines fortran2Lines
       ['"DO ",STRINGIMAGE lab,'" ",STRINGIMAGE var,'"=",:statement2Fortran lo,_
@@ -596,21 +596,21 @@ fortFormatDo(var,lo,hi,incr,lab) ==
 
 fortFormatIfGoto(switch,label) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
-  $fortError : fluid := nil
+  $fortError : local := nil
   if first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"IF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"IF(",:r]
 
 fortFormatLabelledIfGoto(switch,label1,label2) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label2]
   while r and not(first(r) = '"%l") repeat
@@ -618,38 +618,38 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
     r := rest(r)
   labString := STRINGIMAGE label1
   for i in #(labString)..5 repeat labString := strconc(labString,'" ")
-  lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
-  lines := [strconc(labString,SUBSEQ(first lines,6)),:rest lines]
+  lines := fortran2Lines reverse! [:reverse! l,'"IF(",:r]
+  lines := [strconc(labString,subSequence(first lines,6)),:rest lines]
   checkLines lines
 
 fortFormatIf(switch) ==
   changeExprLength(-8) -- Leave room for IF( ... )THEN
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(8)
   l := ['")THEN"]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"IF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"IF(",:r]
 
 fortFormatElseIf(switch) ==
   -- Leave room for IF( ... )THEN
   changeExprLength(-12)
-  $fortError : fluid := nil
+  $fortError : local := nil
   if LISTP(switch) and first(switch) = "NULL" then switch := second switch
-  r := nreverse statement2Fortran switch
+  r := reverse! statement2Fortran switch
   changeExprLength(12)
   l := ['")THEN"]
   while r and not(first(r) = '"%l") repeat
     l := [first(r),:l]
     r := rest(r)
-  checkLines fortran2Lines nreverse [:nreverse l,'"ELSEIF(",:r]
+  checkLines fortran2Lines reverse! [:reverse! l,'"ELSEIF(",:r]
 
 fortFormatHead(returnType,name,args) ==
-  $fortError : fluid := nil
-  $fortranSegment : fluid := nil
+  $fortError : local := nil
+  $fortranSegment : local := nil
   -- if returnType = '"_"_(_)_"" then 
   if returnType = '"void" then
     asp := ['"SUBROUTINE "]
@@ -661,7 +661,7 @@ fortFormatHead(returnType,name,args) ==
   changeExprLength(-l)
 
 checkType ty ==
-  ty := STRING_-UPCASE STRINGIMAGE ty
+  ty := stringUpcase STRINGIMAGE ty
   $fortranPrecision = "double" =>
     ty = '"REAL" => '"DOUBLE PRECISION"
     ty = '"COMPLEX" => '"DOUBLE COMPLEX"
@@ -675,14 +675,14 @@ mkParameterList l ==
       apply(function strconc,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
-nameLen n ==>
+macro nameLen n ==
  +/[1+#(u) for u in n]
 
 fortFormatTypes(typeName,names) ==
   null names => return nil
-  $fortError : fluid := nil
-  $fortranSegment : fluid := nil
-  $fortInts2Floats : fluid := nil
+  $fortError : local := nil
+  $fortranSegment : local := nil
+  $fortInts2Floats : local := nil
   typeName := checkType typeName
   typeName = '"CHARACTER" =>
     fortFormatCharacterTypes([unravel(u) for u in names])
@@ -726,7 +726,7 @@ fortFormatCharacterTypes(names) ==
                       :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 fortFormatIntrinsics(l) ==
-  $fortError : fluid := nil
+  $fortError : local := nil
   null l => return nil
   displayLines fortran2Lines ['"INTRINSIC ",:addCommas(l)]
   
@@ -741,7 +741,7 @@ currentSP () ==
   $currentSubprogram or "MAIN"
  
 updateSymbolTable(name,type) ==
-    fun := ['$elt,'SYMS,'declare_!]
+    fun := ['$elt,'SYMS,'declare!]
     coercion := ['_:_:,STRING type,'FST]
     $insideCompileBodyIfTrue: local := false
     interpret([fun,["QUOTE",name],coercion])
@@ -766,7 +766,7 @@ fortPre l ==
   -- Essentially, the idea is to fix things so that we know what size of
   -- expression we will generate, which helps segment large expressions
   -- and do transformations to double precision output etc..
-  $exprStack : fluid := nil -- sometimes we will add elements to this in
+  $exprStack : local := nil -- sometimes we will add elements to this in
                             -- other functions, for example when extracing
                             -- lists etc.
   for e in l repeat if new := fortPre1 e then
@@ -784,7 +784,7 @@ fortPre1 e ==
   -- strip the '%' character off objects like %pi etc..
   null e => nil
   integer?(e) =>
-    $fortInts2Floats = true =>
+    $fortInts2Floats =>
       e >= 0 => fix2FortranFloat(e)
       ['"-", fix2FortranFloat(-e)]
     e
@@ -796,14 +796,14 @@ fortPre1 e ==
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
-  STRINGIMAGE(e).0 = "%" => SUBSEQ(STRINGIMAGE e,1)
+  STRINGIMAGE(e).0 = char "%" => subSequence(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
     (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
-    (FIXP exponent and ABS(exponent) < 32768) => ["**",fortPre1 rand,exponent]
+    (integer? exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
@@ -812,7 +812,7 @@ fortPre1 e ==
   specialOps  := '(BRACKET BRACE SUB AGGLST SUPERSUB MATRIX SEGMENT ALTSUPERSUB
                    PAREN CONCAT CONCATB QUOTE STRING SIGMA  STEP IN SIGMA2
                    INTSIGN  PI PI2 INDEFINTEGRAL)
-  op in specialOps => exp2FortSpecial(op,args,#args)
+  symbolMember?(op,specialOps) => exp2FortSpecial(op,args,#args)
   member(op,['"*", "*", '"+", "+", '"-", "-"]) and (#args > 2) =>
     binaryExpr := fortPre1 [op,first args, second args]
     for i in 3..#args repeat
@@ -838,29 +838,43 @@ fortPre1 e ==
 
 fortPreRoot e ==
 -- To set $fortInts2Floats 
-  $fortInts2Floats : fluid := true
+  $fortInts2Floats : local := true
   fortPre1 e
  
 fix2FortranFloat e ==
   -- Return a Fortran float for a given integer.
   $fortranPrecision = "double" => strconc(STRINGIMAGE(e),".0D0")
-  strconc(STRINGIMAGE(e),".")
+  strconc(STRINGIMAGE(e),'".")
  
 isFloat e ==
   FLOATP(e) or string?(e) and FIND(char ".",e)
  
+removeCharFromString(c,s) ==
+  -- find c's position in s.
+  k := nil
+  for i in 0..maxIndex s while k = nil repeat
+    stringChar(s,i) = c => k := i
+  k = nil => s
+  -- make a copy without c.
+  s' := makeString(#s - 1)
+  for i in 0..(k-1) repeat
+    stringChar(s',i) := stringChar(s,i)
+  for i in k..maxIndex s' repeat
+    stringChar(s',i) := stringChar(s,i+1)
+  s'
+
 checkPrecision e ==
   -- Do we have a string?
-  string?(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
-  e := delete(char " ",STRINGIMAGE e)
+  string? e and codePoint stringChar(e,0) = 34 => e
+  e := removeCharFromString(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
-    iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)
-    expt  := if ePos := POSITION(char "E",e) then SUBSEQ(e,ePos+1) else "0"
+    iPart := subSequence(e,0,(period:=POSITION(char ".",e))+1)
+    expt  := if ePos := POSITION(char "E",e) then subSequence(e,ePos+1) else "0"
     rPart :=
-      ePos => SUBSEQ(e,period+1,ePos)
-      period+1 < # e => SUBSEQ(e,period+1)
+      ePos => subSequence(e,period+1,ePos)
+      period+1 < # e => subSequence(e,period+1)
       "0"
-    strconc(iPart,rPart,"D",expt)
+    strconc(iPart,rPart,'"D",expt)
   e
  
 ----------------- segment.boot -----------------------
@@ -875,19 +889,19 @@ fortExpSize e ==
   -- (+ x (+ y z)) will be printed as "x+(y+z)" rather than "x+y+z"
   -- which is the actual case.
   atom e => # STRINGIMAGE e
-  #e > 3 => 2+fortSize MAPCAR(function fortExpSize, e)
-  #e < 3 => 2+fortSize MAPCAR(function fortExpSize, e)
+  #e > 3 => 2+fortSize [fortExpSize x for x in e]
+  #e < 3 => 2+fortSize [fortExpSize x for x in e]
   [op,arg1,arg2] := e
   op := STRINGIMAGE op
   op = '"CMPLX" => 3+fortSize [fortExpSize arg1,fortExpSize arg2]
   narys := ['"+",'"*"] -- those nary ops we changed to binary
   member(op,narys) =>
     LISTP arg1 and not(op=STRINGIMAGE first arg1) =>
-      2+fortSize MAPCAR(function fortExpSize, e)
+      2+fortSize [fortExpSize x for x in e]
     LISTP arg2 and not(op=STRINGIMAGE first arg2) =>
-      2+fortSize MAPCAR(function fortExpSize, e)
+      2+fortSize [fortExpSize x for x in e]
     1+fortSize [fortExpSize arg1,fortExpSize arg2]
-  2+fortSize MAPCAR(function fortExpSize, e)
+  2+fortSize [fortExpSize x for x in e]
  
 fortSize e ==
   +/[elen u for u in e] where

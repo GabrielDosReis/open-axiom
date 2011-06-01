@@ -317,7 +317,7 @@ UnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
     coefficient(x,n) ==
        -- Cannot use elt!  Should return 0 if stream doesn't have it.
        u := stream x
-       while not empty? u and n > 0 repeat
+       while not empty? u and positive? n repeat
          u := rst u
          n := (n - 1) :: NNI
        empty? u or n ~= 0 => 0

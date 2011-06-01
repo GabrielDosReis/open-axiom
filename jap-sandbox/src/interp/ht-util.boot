@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -51,9 +51,9 @@ $activePageList := nil
 --%
 
 htpDestroyPage(pageName) ==
-  pageName in $activePageList =>
-    setDynamicBinding(pageName, nil)
-    $activePageList := NREMOVE($activePageList, pageName)
+  symbolMember?(pageName,$activePageList) =>
+    symbolValue(pageName) := nil
+    $activePageList := remove!($activePageList,pageName)
 
 htpName htPage ==
 -- a symbol whose value is the page
@@ -130,15 +130,15 @@ htpLabelFilteredInputString(htPage, label) ==
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
     #props > 5 and props.6 =>
-      FUNCALL(SYMBOL_-FUNCTION props.6, props.0)
+      FUNCALL(symbolFunction props.6, props.0)
     replacePercentByDollar props.0
   nil
 
-replacePercentByDollar s == fn(s,0,MAXINDEX s) where
+replacePercentByDollar s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char "%",s,i)) > n => SUBSTRING(s,i,nil)
-    strconc(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
+    (m := charPosition(char "%",s,i)) > n => subString(s,i)
+    strconc(subString(s,i,m - i),'"$",fn(s,m + 1,n))
 
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page
@@ -211,7 +211,7 @@ iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
   cons? line =>
-    $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := append!(reverse! mapStringize copyList line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
@@ -230,20 +230,11 @@ basicStringize s ==
     s = '"{\em $}" => '"{\em \%}"
     s
   s = '_$ => '"\%"
-  PRINC_-TO_-STRING s
+  toString s
 
 stringize s ==
   string? s => s
-  PRINC_-TO_-STRING s
-
---htInitPageNoHeading(propList) ==
------------------------> replaced by htInitPageNoScroll
--- start defining a hyperTeX page
---  $curPage := htpMakeEmptyPage(propList)
---  if $saturn then $saturnPage := htpMakeEmptyPage(propList)
---  $newPage := true
---  $htLineList := nil
---  $curPage
+  toString s
 
 htQuote s ==
 -- wrap quotes around a piece of hyperTeX
@@ -278,7 +269,7 @@ bcSadFaces() ==
 
 htLispLinks(links,:option) ==
   [links,options] := beforeAfter('options,links)
-  indent := LASSOC('indent,options) or 5
+  indent := symbolLAssoc('indent,options) or 5
   iht '"\newline\indent{"
   iht stringize indent
   iht '"}\beginitems"
@@ -386,33 +377,33 @@ computeDomainVariableAlist() ==
     htpDomainPvarSubstList $curPage]
 
 pvarCondList pvar ==
-  nreverse pvarCondList1([pvar], nil, htpDomainConditions $curPage)
+  reverse! pvarCondList1([pvar], nil, htpDomainConditions $curPage)
 
 pvarCondList1(pvarList, activeConds, condList) ==
   null condList => activeConds
   [cond, : restConds] := condList
-  cond is [., pv, pattern] and pv in pvarList =>
-    pvarCondList1(nconc(pvarList, pvarsOfPattern pattern),
+  cond is [., pv, pattern] and symbolMember?(pv,pvarList) =>
+    pvarCondList1(append!(pvarList, pvarsOfPattern pattern),
                   [cond, :activeConds], restConds)
   pvarCondList1(pvarList, activeConds, restConds)
 
 pvarsOfPattern pattern ==
   not LISTP pattern => nil
-  [pvar for pvar in rest pattern | pvar in $PatternVariableList]
+  [pvar for pvar in rest pattern | symbolMember?(pvar,$PatternVariableList)]
 
 htMakeTemplates(templateList, numLabels) ==
   templateList := [templateParts template for template in templateList]
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
       cons? template =>
-        INTERN strconc(first template, PRINC_-TO_-STRING i, rest template)
+        makeSymbol strconc(first template, toString i, rest template)
       template
 
 templateParts template ==
   null string? template => template
   i := SEARCH('"%l", template)
   null i => template
-  [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]
+  [subSequence(template, 0, i), : subSequence(template, i+2)]
 
 htMakeDoneButton(message, func) ==
   bcHt '"\newline\vspace{1}\centerline{"
@@ -524,10 +515,10 @@ condErrorMsg type ==
   strconc('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
-  $QuietCommand:local := true
+  $InteractiveMode: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
+  $QuietCommand: local := true
   parseAndEval1 string
 
 parseAndEval1 string ==
@@ -552,7 +543,7 @@ makeSpadCommand(:l) ==
   argList := nil
   for arg in l while arg ~= lastArg repeat
     argList := [strconc(arg, '", "), :argList]
-  argList := nreverse [lastArg, :argList]
+  argList := reverse! [lastArg, :argList]
   strconc(opForm, apply(function strconc, argList), '")")
 
 htMakeInputList stringList ==
@@ -561,7 +552,7 @@ htMakeInputList stringList ==
   argList := nil
   for arg in stringList while arg ~= lastArg repeat
     argList := [strconc(arg, '", "), :argList]
-  argList := nreverse [lastArg, :argList]
+  argList := reverse! [lastArg, :argList]
   bracketString apply(function strconc, argList)
 
 
@@ -570,17 +561,18 @@ bracketString string == strconc('"[",string,'"]")
 
 quoteString string == strconc('"_"", string, '"_"")
 
-$funnyQuote := char 127
-$funnyBacks := char 128
+$funnyQuote := abstractChar 127
+$funnyBacks := abstractChar 128
 
 htEscapeString str ==
-  str := SUBSTITUTE($funnyQuote, char '_", str)
-  SUBSTITUTE($funnyBacks, char '_\, str)
+  str := SUBSTITUTE($funnyQuote, char "_"", str)
+  SUBSTITUTE($funnyBacks, char "\", str)
 
 unescapeStringsInForm form ==
   string? form =>
-    str := NSUBSTITUTE(char '_", $funnyQuote, form)
-    NSUBSTITUTE(char '_\, $funnyBacks, str)
+    for i in 0..maxIndex form repeat
+      stringChar(form,i) = $funnyQuote => stringChar(form,i) := char "_""
+      stringChar(form,i) = $funnyBacks => stringChar(form,i) := char "\"
   cons? form =>
     unescapeStringsInForm first form
     unescapeStringsInForm rest form

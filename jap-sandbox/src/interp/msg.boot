@@ -50,7 +50,7 @@ $LINELENGTH := 80
 $preLength := 11
 $LOGLENGTH := $LINELENGTH - 6
 $specificMsgTags := []
-$showKeyNum   :=        NIL
+$showKeyNum   :=        nil
 
 $compErrorPrefix :=    '"Error"
 $compBugPrefix :=      '"Bug!"
@@ -58,9 +58,6 @@ $compBugPrefix :=      '"Bug!"
 $ncMsgList := []
 
 --%
-
-ListMember?(ob, l) ==
-  MEMBER(ob, l, KEYWORD::TEST, function EQUAL)
 
 --%  Messages for the USERS of the compiler.
 -- The program being compiled has a minor error.
@@ -103,7 +100,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
  
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
     if cons? key then tag := 'old
-    msg := [tag,posWTag,key,argL,optPre,NIL]
+    msg := [tag,posWTag,key,argL,optPre,nil]
     if first optAttr then
         setMsgForcedAttrList(msg,first optAttr)
     putDatabaseStuff msg
@@ -115,7 +112,7 @@ processKeyedError msg ==
     getMsgTag? msg = 'old  =>                                 --temp
         erMsg := getMsgKey msg                                --temp
         if pre := getMsgPrefix? msg then                      --temp
-          erMsg := ['%b, pre, '%d, :erMsg]                    --temp
+          erMsg := ['"%b", pre, '"%d", :erMsg]                --temp
         sayBrightly ['"old msg from ",_
           CallerName 4,:erMsg]                  --temp
     msgImPr? msg =>
@@ -143,7 +140,7 @@ getMsgInfoFromKey msg ==
  
  
 getErFromDbL (erMsgKey,dbL) ==
-    erMsg := NIL
+    erMsg := nil
     while null erMsg   repeat
         dbName := first dbL
         dbL    := rest dbL
@@ -166,9 +163,9 @@ processChPosesForOneLine msgList ==
         posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
         setMsgPrefix (msg,strconc(oldPre,_
-                     MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
+                     makeString($preLength - 4 - # oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
-    NCONC(msgList,[leaderMsg])  --a back cons
+    append!(msgList,[leaderMsg])  --a back cons
  
 posPointers msgList ==
 --gets all the char posns for msgs on one line
@@ -226,8 +223,7 @@ putFTText (msg,chPosList) ==
        setMsgText(msg,[:markingText,:getMsgText msg])
  
 rep (c,n)  ==
-    n > 0 =>
-      MAKE_-FULL_-CVEC(n, c)
+    n > 0 => makeString(n, c)
     '""
  
 --called from parameter list of nc message functions
@@ -291,18 +287,18 @@ queueUpErrors(globalNumOfLine,msgList)==
        msgList := rest msgList
     if thisPosMsgs then
         thisPosMsgs := processChPosesForOneLine  thisPosMsgs
-        $outputList := NCONC(thisPosMsgs,$outputList)
+        $outputList := append!(thisPosMsgs,$outputList)
     if notThisPosMsgs then
-        $outputList := NCONC(notThisPosMsgs,$outputList)
+        $outputList := append!(notThisPosMsgs,$outputList)
     msgList
  
 redundant(msg,thisPosMsgs) ==
-    found := NIL
+    found := nil
     if msgNoRep? msg then
         for item in $noRepList repeat
             sameMsg?(msg,item) => return (found := true)
         $noRepList := [msg,$noRepList]
-    found or member(msg,thisPosMsgs)
+    found or listMember?(msg,thisPosMsgs)
  
 sameMsg? (msg1,msg2) ==
     (getMsgKey   msg1 = getMsgKey  msg2) and _
@@ -310,11 +306,11 @@ sameMsg? (msg1,msg2) ==
  
  
 thisPosIsLess(pos,num) ==
-    poNopos? pos => NIL
+    poNopos? pos => nil
     poGlobalLinePosn pos < num
  
 thisPosIsEqual(pos,num) ==
-    poNopos? pos => NIL
+    poNopos? pos => nil
     poGlobalLinePosn pos = num
  
 --%outputting stuff
@@ -383,11 +379,11 @@ getPosStL msg ==
     printedFileName :=  ['"%x2",'"[",:remLine fullPrintedPos,'"]" ]
     printedLineNum  :=  ['"%x2",'"[",:remFile fullPrintedPos,'"]" ]
     printedOrigin   :=  ['"%x2",'"[",:fullPrintedPos,'"]" ]
-    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '%l]
-    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '%l]
-    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '%l]
-    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '%l,_
-                         $optKeyBlanks,:printedLineNum,  '%l]
+    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '"%l"]
+    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '"%l"]
+    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '"%l"]
+    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '"%l",_
+                         $optKeyBlanks,:printedLineNum,  '"%l"]
     '""
  
 showMsgPos? msg ==
@@ -424,12 +420,12 @@ listDecideHowMuch(pos,oldPos) ==
     'NONE
  
 getPreStL optPre ==
-    null optPre => [MAKE_-FULL_-CVEC 2]
+    null optPre => [makeString 2]
     spses :=
-      (extraPlaces := ($preLength - (SIZE optPre) - 3)) > 0 =>
-        MAKE_-FULL_-CVEC extraPlaces
+      (extraPlaces := ($preLength - (# optPre) - 3)) > 0 =>
+        makeString extraPlaces
       '""
-    ['%b, optPre,spses,'":", '%d]
+    ['"%b", optPre,spses,'":", '"%d"]
  
 -------------------
 --%   a-list stuff
@@ -440,7 +436,7 @@ desiredMsg (erMsgKey,:optCatFlag) ==
     true
  
 isKeyQualityP (key,qual)  ==
-    --returns pair if found, else NIL
+    --returns pair if found, else nil
     found := false
     while not found and (qualPair := assoc(key,$specificMsgTags)) repeat
         if rest qualPair = qual then found := true
@@ -450,7 +446,7 @@ isKeyQualityP (key,qual)  ==
 --% these functions handle the attributes
  
 initImPr msg  ==
-    $erMsgToss or MEMQ (getMsgTag msg,$imPrTagGuys) =>
+    $erMsgToss or symbolMember? (getMsgTag msg,$imPrTagGuys) =>
         setMsgUnforcedAttr (msg,'$imPrGuys,'imPr)
  
 initToWhere msg  ==
@@ -494,7 +490,8 @@ setMsgCatlessAttr(msg,attr) ==
 whichCat attr ==
     found := 'catless
     for cat in $attrCats repeat
-        if ListMember? (attr,eval cat) then
+        -- ??? a cat is a vector.
+        if listMember?(attr,eval cat) then
           found := cat
           return found
     found
@@ -503,13 +500,13 @@ whichCat attr ==
 --% these functions directly interact with the message object
  
 makeLeaderMsg chPosList ==
-    st := MAKE_-FULL_-CVEC ($preLength- 3)
+    st := makeString($preLength- 3)
     oldPos := -1
     for [posNum,:posLetter] in reverse chPosList repeat
         st := strconc(st, _
             rep(char ".", (posNum - oldPos - 1)),posLetter)
         oldPos := posNum
-    ['leader,$nopos,'nokey,NIL,NIL,[st]]
+    ['leader,$nopos,'nokey,nil,nil,[st]]
  
 makeMsgFromLine line ==
     posOfLine  := getLinePos line
@@ -518,9 +515,9 @@ makeMsgFromLine line ==
     localNumOfLine  :=
         i := poLinePosn posOfLine
         stNum := STRINGIMAGE i
-        strconc(rep(char " ", ($preLength - 7 - SIZE stNum)),_
+        strconc(rep(char " ", ($preLength - 7 - # stNum)),_
          stNum)
-    ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
+    ['line,posOfLine,nil,nil, strconc('"Line", localNumOfLine),_
         textOfLine]
  
 getMsgTag msg == ncTag msg
@@ -552,7 +549,7 @@ getMsgKey? msg == IDENTP (val := getMsgKey msg) => val
 getMsgArgL msg == msg.3
  
 getMsgPrefix? msg ==
-    (pre := msg.4) = 'noPre => NIL
+    (pre := msg.4) = 'noPre => nil
     pre
  
 getMsgPrefix  msg == msg.4

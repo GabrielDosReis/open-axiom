@@ -35,14 +35,17 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
                      finiteAggregate
 
     Implementation ==> add
+        import tableValue: (%,Key) -> Entry from Foreign Builtin
+        import tableLength: % -> NonNegativeInteger from Foreign Builtin
+
         Pair ==> Record(key: Key, entry: Entry)
         Ex   ==> OutputForm
         failMsg := GENSYM()$Lisp
 
         t1 = t2              == %peq(t1,t2)$Foreign(Builtin)
         keys t               == HKEYS(t)$Lisp
-        # t                  == HCOUNT(t)$Lisp
-        setelt(t, k, e)      == HPUT(t,k,e)$Lisp
+        # t                  == tableLength t
+        setelt(t, k, e)      == %store(tableValue(t,k),e)$Foreign(Builtin)
         remove!(k:Key, t:%) ==
           r := HGET(t,k,failMsg)$Lisp
           not %peq(r,failMsg)$Foreign(Builtin) =>

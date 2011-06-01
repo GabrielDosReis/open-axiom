@@ -44,28 +44,28 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 -- a knowledgeable person wants to update it:
 --   The following LISP dependencies are divided into two groups
 --   Those that are required
---   CONS, EQ, NIL, NULL, QCAR, QCDR, RPLACA, RPLACD
+--   CONS, EQ, NIL, 
 --   Those that are included for efficiency only
---   LIST, CAR, CDR, NCONC2, NREVERSE, LENGTH
+--   LIST, NCONC2, LENGTH
 --   Also REVERSE, since it's called in Polynomial Ring
 
- Qnull   ==> NULL$Lisp
  Qpush   ==> PUSH$Lisp
  
  Exports ==> ListAggregate S 
  Implementation ==>
   add
-   import %nil: %                from Foreign Builtin
-   import %makepair: (S,%) -> %  from Foreign Builtin
-   import %peq: (%,%) -> Boolean  from Foreign Builtin
-   import %lempty?: % -> Boolean from Foreign Builtin
-   import %head: % -> S          from Foreign Builtin
-   import %tail: % -> %          from Foreign Builtin
-   import %lreverse: % -> %      from Foreign Builtin
-   import %lreverse!: % -> %     from Foreign Builtin
+   import %nil: %                           from Foreign Builtin
+   import %pair: (S,%) -> %                 from Foreign Builtin
+   import %peq: (%,%) -> Boolean            from Foreign Builtin
+   import %lempty?: % -> Boolean            from Foreign Builtin
+   import %head: % -> S                     from Foreign Builtin
+   import %tail: % -> %                     from Foreign Builtin
+   import %lreverse: % -> %                 from Foreign Builtin
+   import %lreverse!: % -> %                from Foreign Builtin
+   import %llength: % -> NonNegativeInteger from Foreign Builtin
    
-   #x                  == LENGTH(x)$Lisp
-   concat(s:S,x:%)     == %makepair(s,x)
+   #x                  == %llength x
+   concat(s:S,x:%)     == %pair(s,x)
    eq?(x,y)            == %peq(x,y)
    first x             == SPADfirst(x)$Lisp
    elt(x,"first")      == SPADfirst(x)$Lisp
@@ -75,35 +75,39 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    elt(x,"rest")       == %tail x
    setfirst!(x,s)     ==
       empty? x => error "Cannot update an empty list"
-      %head RPLACA(x,s)$Lisp
+      %store(%head x,s)$Foreign(Builtin)
+      s
    setelt(x,"first",s) ==
       empty? x => error "Cannot update an empty list"
-      %head RPLACA(x,s)$Lisp
+      %store(%head x,s)$Foreign(Builtin)
+      s
    setrest!(x,y)      ==
       empty? x => error "Cannot update an empty list"
-      %tail RPLACD(x,y)$Lisp
+      %store(%tail x,y)$Foreign(Builtin)
+      %tail x
    setelt(x,"rest",y)  ==
       empty? x => error "Cannot update an empty list"
-      %tail RPLACD(x,y)$Lisp
+      %store(%tail x,y)$Foreign(Builtin)
+      %tail x
    construct l         == l pretend %
    parts s             == s pretend List S
-   reverse! x         == NREVERSE(x)$Lisp
-   reverse x           == REVERSE(x)$Lisp
+   reverse! x         == %lreverse! x
+   reverse x           == %lreverse x
    minIndex x          == mn
 
    rest(x, n) ==
       for i in 1..n repeat
-         if Qnull x then error "index out of range"
+         if empty? x then error "index out of range"
          x := %tail x
       x
 
    copy x ==
       y := empty()
-      for i in 0.. while not Qnull x repeat
+      for i in 0.. while not empty? x repeat
          if i = cycleMax and cyclic? x then error "cyclic list"
-         y := %makepair(%head x,y)
+         y := %pair(%head x,y)
          x := %tail x
-      (NREVERSE(y)$Lisp)@%
+      %lreverse! y
 
    if S has CoercibleTo(OutputForm) then
      coerce(x):OutputForm ==
@@ -125,51 +129,52 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    if S has SetCategory then
      x = y ==
        %peq(x,y) => true
-       while not Qnull x and not Qnull y repeat
+       while not empty? x and not empty? y repeat
           %head x ~=$S %head y => return false
           x := %tail x
           y := %tail y
-       Qnull x and Qnull y
+       empty? x and empty? y
 
      latex(x : %): String ==
        s : String := "\left["
-       while not Qnull x repeat
+       while not empty? x repeat
          s := concat(s, latex(%head x)$S)$String
          x := %tail x
-         if not Qnull x then s := concat(s, ", ")$String
+         if not empty? x then s := concat(s, ", ")$String
        concat(s, " \right]")$String
 
      member?(s,x) ==
-        while not Qnull x repeat
+        while not empty? x repeat
            if s = %head x then return true else x := %tail x
         false
 
    -- Lots of code from parts of AGGCAT, repeated here to
    -- get faster compilation
    concat!(x:%,y:%) ==
-      Qnull x => 
-        Qnull y => x
+      empty? x => 
+        empty? y => x
         Qpush(first y,x)
-        QRPLACD(x,rest y)$Lisp
+        %store(%tail x,rest y)$Foreign(Builtin)
         x
       z:=x
-      while not Qnull %tail z repeat
+      while not empty? %tail z repeat
         z:=%tail z
-      QRPLACD(z,y)$Lisp
+      %store(%tail z,y)$Foreign(Builtin)
       x
 
    -- Then a quicky:
    if S has SetCategory then
      removeDuplicates! l ==
        p := l
-       while not Qnull p repeat
+       while not empty? p repeat
 --       p := setrest!(p, remove!(#1 = %head p, %tail p))
 -- far too expensive - builds closures etc.
          pp:=p
          f:S:=%head p
          p:=%tail p
-         while not Qnull (pr:=%tail pp) repeat
-           if (%head pr)@S = f then QRPLACD(pp,%tail pr)$Lisp
+         while not empty? (pr:=%tail pp) repeat
+           if (%head pr)@S = f then
+             %store(%tail pp,%tail pr)$Foreign(Builtin)
            else pp:=pr
        l
 
@@ -179,24 +184,24 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    sort!(f, l)       == mergeSort(f, l, #l)
 
    merge!(f, p, q) ==
-     Qnull p => q
-     Qnull q => p
+     empty? p => q
+     empty? q => p
      %peq(p, q) => error "cannot merge a list into itself"
      if f(%head p, %head q)
        then (r := t := p; p := %tail p)
        else (r := t := q; q := %tail q)
-     while not Qnull p and not Qnull q repeat
+     while not empty? p and not empty? q repeat
        if f(%head p, %head q)
-         then (QRPLACD(t, p)$Lisp; t := p; p := %tail p)
-         else (QRPLACD(t, q)$Lisp; t := q; q := %tail q)
-     QRPLACD(t, if Qnull p then q else p)$Lisp
+         then (%store(%tail t, p)$Foreign(Builtin); t := p; p := %tail p)
+         else (%store(%tail t, q)$Foreign(Builtin); t := q; q := %tail q)
+     %store(%tail t, if empty? p then q else p)$Foreign(Builtin)
      r
 
    split!(p, n) ==
       n < 1 => error "index out of range"
       p := rest(p, (n - 1)::NonNegativeInteger)
       q := %tail p
-      QRPLACD(p,%nil)$Lisp
+      %store(%tail p,%nil)$Foreign(Builtin)
       q
 
    mergeSort(f, p, n) ==
@@ -268,10 +273,15 @@ List(S:Type): Exports == Implementation where
 
  Implementation ==>
    IndexedList(S, LISTMININDEX) add
-      nil                      == NIL$Lisp
-      null l                   == NULL(l)$Lisp
-      cons(s, l)               == CONS(s, l)$Lisp
-      append(l:%, t:%)         == APPEND(l, t)$Lisp
+      import %nil: %                 from Foreign Builtin
+      import %peq: (%,%) -> Boolean  from Foreign Builtin
+      import %pair: (S,%) -> %       from Foreign Builtin
+      import %lconcat: (%,%) -> %    from Foreign Builtin
+
+      nil                      == %nil
+      null l                   == %peq(l,%nil)
+      cons(s, l)               == %pair(s,l)
+      append(l:%, t:%)         == %lconcat(l,t)
 
       if S has OpenMath then
         writeOMList(dev: OpenMathDevice, x: %): Void ==

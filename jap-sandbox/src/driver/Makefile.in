@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@
 
 bin_PROGRAMS = open-axiom$(EXEEXT)
 
-open_axiom_SOURCES = main.c utils.c
+open_axiom_SOURCES = main.cc utils.cc
 
-open_axiom_objects = $(open_axiom_SOURCES:.c=.lo)
+open_axiom_objects = $(open_axiom_SOURCES:.cc=.lo)
 
 open_axiom_LDADD = -L$(builddir)/../lib $(oa_c_libs)
 
@@ -49,11 +49,11 @@ stamp: $(bin_PROGRAMS)
 	$(STAMP) stamp
 
 .SUFFIXES:
-.SUFFIXES: .c .h .lo .$(OBJEXT)
+.SUFFIXES: .cc .h .lo .$(OBJEXT)
 .PRECIOUS: %.lo %.obj
 
-%.lo: %.c 
-	$(CXXCOMPILE) ${CCF} -o $@ \
+%.lo: %.cc 
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ \
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(axiom_includes) $<
 

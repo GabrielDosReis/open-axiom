@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -126,11 +126,11 @@ initializeSetVariables (setTree) ==
         then FUNCALL( setData.setVar,"%initialize%")
         else sayMSG '"   Function not implemented."
     st = 'INTEGER  =>
-      setDynamicBinding(setData.setVar, setData.setDef)
+      symbolValue(setData.setVar) := setData.setDef
     st = 'STRING  =>
-      setDynamicBinding(setData.setVar, setData.setDef)
+      symbolValue(setData.setVar) := setData.setDef
     st = 'LITERALS =>
-      setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+      symbolValue(setData.setVar) := translateYesNo2TrueFalse setData.setDef
     st = 'TREE =>
       initializeSetVariables(setData.setLeaf)
 
@@ -138,22 +138,22 @@ resetWorkspaceVariables() ==
   -- this replaces def in DEBUG LISP
   -- this function resets many workspace variables to their default
   -- values. Some things are reset by start and not reset by restart.
-  SETQ(_/COUNTLIST                  , NIL)
-  SETQ(_/EDITFILE                   , NIL)
-  SETQ(_/SOURCEFILES                , NIL)
-  SETQ($sourceFiles                 , NIL)
-  SETQ(_/PRETTY                     , NIL)
-  SETQ(_/SPACELIST                  , NIL)
-  SETQ(_/TIMERLIST                  , NIL)
+  SETQ(_/COUNTLIST                  , nil)
+  SETQ(_/EDITFILE                   , nil)
+  SETQ(_/SOURCEFILES                , nil)
+  SETQ($sourceFiles                 , nil)
+  SETQ(_/PRETTY                     , nil)
+  SETQ(_/SPACELIST                  , nil)
+  SETQ(_/TIMERLIST                  , nil)
   SETQ($existingFiles               , hashTable 'EQUAL)
-  SETQ($functionTable               , NIL)
-  SETQ($echoLineStack               , NIL)
-  SETQ($slamFlag                    , NIL)
+  SETQ($functionTable               , nil)
+  SETQ($echoLineStack               , nil)
+  SETQ($slamFlag                    , nil)
   SETQ($CommandSynonymAlist         , COPY($InitialCommandSynonymAlist))
-  SETQ($UserAbbreviationsAlist      , NIL)
-  SETQ($msgAlist                    , NIL)
-  SETQ($msgDatabase                 , NIL)
-  SETQ($msgDatabaseName             , NIL)
+  SETQ($UserAbbreviationsAlist      , nil)
+  SETQ($msgAlist                    , nil)
+  SETQ($msgDatabase                 , nil)
+  SETQ($msgDatabaseName             , nil)
   SETQ($IOindex                     , 1  )
   SETQ($e                           , $EmptyEnvironment)
   SETQ($env                         , [[nil]])
@@ -211,60 +211,60 @@ set1(l,setTree) ==
       else sayMSG '"   Function not implemented."
     -- if so set, then show option information
     if $displaySetValue then displaySetOptionInformation(arg,setData)
-    NIL
+    nil
 
   st = 'STRING   =>
     arg2 := l.1
     if arg2 = 'DEFAULT
-      then setDynamicBinding(setData.setVar, setData.setDef)
-      else if arg2 then setDynamicBinding(setData.setVar, arg2)
+      then symbolValue(setData.setVar) := setData.setDef
+      else if arg2 then symbolValue(setData.setVar) := arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
-    NIL
+    nil
 
   st = 'INTEGER  =>
     -- validate the option, allowing the user to set the default
     arg2 :=
       num := l.1
-      (FIXP num) and (num >= (setData.setLeaf).0) and
+      (integer? num) and (num >= (setData.setLeaf).0) and
         (null (upperlimit := setData.setLeaf.1) or num <= upperlimit) => num
       selectOption(l.1,['default,:setData.setLeaf],nil)
     if arg2 = 'DEFAULT
-      then setDynamicBinding(setData.setVar, setData.setDef)
-      else if arg2 then setDynamicBinding(setData.setVar, arg2)
+      then symbolValue(setData.setVar) := setData.setDef
+      else if arg2 then symbolValue(setData.setVar) := arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
     null arg2 => sayMessage ['" Your value",:bright object2String l.1,
         '"is not among the valid choices."]
-    NIL
+    nil
 
   st = 'LITERALS =>
     -- validate the option, allowing the user to set the default
     if (arg2 := selectOption(l.1,['default,:setData.setLeaf],nil)) then
       if arg2 = 'DEFAULT
-        then setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+        then symbolValue(setData.setVar) := translateYesNo2TrueFalse setData.setDef
         else
           if arg2 = 'nobreak then
              useFastLinks true
           if arg2 = 'fastlinks then
              useFastLinks false
              arg2 := 'break
-          setDynamicBinding(setData.setVar, translateYesNo2TrueFalse arg2)
+          symbolValue(setData.setVar) := translateYesNo2TrueFalse arg2
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
     null arg2 => sayMessage ['" Your value",:bright object2String l.1,
         '"is not among the valid choices."]
-    NIL
+    nil
 
   -- for a sub-tree, we must recurse
   st = 'TREE =>
     set1(KDR l,setData.setLeaf)
-    NIL
+    nil
   sayMessage ['"Cannot handle set tree node type",:bright st,"yet"]
-  NIL
+  nil
 
 
 displaySetOptionInformation(arg,setData) ==
@@ -276,7 +276,7 @@ displaySetOptionInformation(arg,setData) ==
   -- otherwise we want to show the current setting
   centerAndHighlight (strconc('"The ",object2String arg,'" Option"),
                       $LINELENGTH,specialChar 'hbar)
-  sayBrightly ['%l,:bright '"Description:",setData.setLabel]
+  sayBrightly ['"%l",:bright '"Description:",setData.setLabel]
 
   st = 'FUNCTION =>
     TERPRI()
@@ -287,13 +287,13 @@ displaySetOptionInformation(arg,setData) ==
   st = 'INTEGER  =>
     sayMessage ['" The",:bright arg,'"option",
       '" may be followed by an integer in the range",
-       :bright setData.setLeaf.0,'"to",'%l,
+       :bright setData.setLeaf.0,'"to",'"%l",
         :bright setData.setLeaf.1,'"inclusive.",
          '" The current setting is",:bright eval setData.setVar]
 
   st = 'STRING  =>
     sayMessage ['" The",:bright arg,'"option",
-      '" is followed by a string enclosed in double quote marks.", '%l,
+      '" is followed by a string enclosed in double quote marks.", '"%l",
          '" The current setting is",:bright ["_"",eval setData.setVar, "_""]]
 
   st = 'LITERALS =>
@@ -321,21 +321,21 @@ displaySetVariableSettings(setTree,label) ==
   sayBrightly ["Variable     ",
                "Description                                ",
                  "Current Value"]
-  SAY fillerSpaces($LINELENGTH,specialChar 'hbar)
+  SAY fillerSpaces($LINELENGTH,char specialChar 'hbar)
   subtree := nil
   for setData in setTree repeat
     null satisfiesUserLevel setData.setLevel => nil
     setOption := object2String setData.setName
-    setOption := strconc(setOption,fillerSpaces(13-#setOption,'" "),
+    setOption := strconc(setOption,fillerSpaces(13-#setOption,char " "),
                          setData.setLabel)
-    setOption := strconc(setOption,fillerSpaces(55-#setOption,'" "))
+    setOption := strconc(setOption,fillerSpaces(55-#setOption,char " "))
     st := setData.setType
     st = 'FUNCTION =>
       opt :=
         functionp(setData.setVar) => FUNCALL( setData.setVar,"%display%")
         '"unimplemented"
       if cons? opt then opt := [:[o,'" "] for o in opt]
-      sayBrightly concat(setOption,'%b,opt,'%d)
+      sayBrightly concat(setOption,'"%b",opt,'"%d")
     st = 'STRING   =>
       opt := object2String eval setData.setVar
       sayBrightly [setOption,:bright opt]
@@ -354,7 +354,7 @@ displaySetVariableSettings(setTree,label) ==
     sayBrightly ['"Variables with current values of",:bright '"...",
       '"have further sub-options. For example,"]
     sayBrightly ['"issue",:bright '")set ",subname,
-      '" to see what the options are for",:bright subname,'".",'%l,
+      '" to see what the options are for",:bright subname,'".",'"%l",
         '"For more information, issue",:bright '")help set",'"."]
 
 
@@ -384,11 +384,11 @@ setAsharpArgs arg ==
 
 describeAsharpArgs() ==
   sayBrightly LIST (
-   '%b,'")set compiler args ",'%d,_
-   '"is used to tell AXIOM how to invoke the library compiler ",'%l,_
-   '" when compiling code for AXIOM.",'%l,_
-   '" The args option is followed by a string enclosed in double quotes.",'%l,'%l,_
-   '" The current setting is",'%l,'%b,'"_"",$asharpCmdlineFlags,'"_"",'%d)
+   '"%b",'")set compiler args ",'"%d",_
+   '"is used to tell AXIOM how to invoke the library compiler ",'"%l",_
+   '" when compiling code for AXIOM.",'"%l",_
+   '" The args option is followed by a string enclosed in double quotes.",'"%l",'"%l",_
+   '" The current setting is",'"%l",'"%b",'"_"",$asharpCmdlineFlags,'"_"",'"%d")
 
 
 setInputLibrary arg ==
@@ -401,7 +401,7 @@ setInputLibrary arg ==
   arg is [act, filename] and (act := selectOptionLC(act,'(add drop),nil)) =>
     act = 'add => addInputLibrary TRUENAME STRINGIMAGE filename
     act = 'drop => dropInputLibrary TRUENAME STRINGIMAGE filename
-  setInputLibrary NIL
+  setInputLibrary nil
 
 
 setOutputLibrary arg ==
@@ -422,20 +422,20 @@ setOutputLibrary arg ==
 
 describeOutputLibraryArgs() ==
   sayBrightly LIST (
-   '%b,'")set compiler output library",'%d,_
-   '"is used to tell the compiler where to place", '%l,_
-   '"compiled code generated by the library compiler.  By default it goes",'%l,_
-   '"in a file called",'%b, '"user.lib", '%d, '"in the current directory." 
+   '"%b",'")set compiler output library",'"%d",_
+   '"is used to tell the compiler where to place", '"%l",_
+   '"compiled code generated by the library compiler.  By default it goes",'"%l",_
+   '"in a file called",'"%b", '"user.lib", '"%d", '"in the current directory." 
     )
 
 
 describeInputLibraryArgs() ==
   sayBrightly LIST (
-   '%b,'")set compiler input add library",'%d,_
-   '"is used to tell AXIOM to add", '%b, '"library", '%d, '"to",'%l,
+   '"%b",'")set compiler input add library",'"%d",_
+   '"is used to tell AXIOM to add", '"%b", '"library", '"%d", '"to",'"%l",
    '"the front of the path which determines where compiled code is loaded from.",_
-   '%l, '%b,'")set compiler input drop library",'%d,_
-   '"is used to tell AXIOM to remove", '%b, '"library", '%d, '%l,_
+   '"%l", '"%b",'")set compiler input drop library",'"%d",_
+   '"is used to tell AXIOM to remove", '"%b", '"library", '"%d", '%l,_
    '"from this path."
     )
 
@@ -486,12 +486,12 @@ setExpose arg ==
     sayKeyedMsg("S2IZ0049D",[namestring pathname ["INTERP","EXPOSED"]])
 
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(add drop initialize),NIL)) =>
+    '(add drop initialize),nil)) =>
       fn = 'add  =>  setExposeAdd fnargs
       fn = 'drop =>  setExposeDrop fnargs
       fn = 'initialize => setExpose "%initialize%"
-      NIL
-  setExpose NIL
+      nil
+  setExpose nil
 
 
 setExposeAdd arg ==
@@ -503,13 +503,13 @@ setExposeAdd arg ==
     sayMSG '" "
     displayExposedConstructors()
     sayMSG '" "
-    sayKeyedMsg("S2IZ0049E",NIL)
+    sayKeyedMsg("S2IZ0049E",nil)
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(group constructor),NIL)) =>
+    '(group constructor),nil)) =>
       fn = 'group  =>  setExposeAddGroup fnargs
       fn = 'constructor =>  setExposeAddConstr fnargs
-      NIL
-  setExposeAdd NIL
+      nil
+  setExposeAdd nil
 
 
 setExposeAddGroup arg ==
@@ -526,8 +526,8 @@ setExposeAddGroup arg ==
     if cons? x then x := first x
     x = 'all =>
       $localExposureData.0 :=[first x for x in $globalExposureGroupAlist]
-      $localExposureData.1 :=NIL
-      $localExposureData.2 :=NIL
+      $localExposureData.1 :=nil
+      $localExposureData.2 :=nil
       displayExposedGroups()
       sayMSG '" "
       displayExposedConstructors()
@@ -559,7 +559,7 @@ setExposeAddConstr arg ==
       sayKeyedMsg("S2IZ0049K",[x,$interpreterFrameName])
     -- if the constructor is explicitly hidden, then remove that
     if member(x,$localExposureData.2) then
-      $localExposureData.2 := delete(x,$localExposureData.2)
+      $localExposureData.2 := remove($localExposureData.2,x)
     $localExposureData.1 := MSORT [x,:$localExposureData.1]
     clearClams()
     sayKeyedMsg("S2IZ0049P",[x,$interpreterFrameName])
@@ -571,27 +571,27 @@ setExposeDrop arg ==
     --  give msg about explicitly hidden constructors
     displayHiddenConstructors()
     sayMSG '" "
-    sayKeyedMsg("S2IZ0049F",NIL)
+    sayKeyedMsg("S2IZ0049F",nil)
   arg is [fn,:fnargs] and (fn := selectOptionLC(fn,
-    '(group constructor),NIL)) =>
+    '(group constructor),nil)) =>
       fn = 'group  =>  setExposeDropGroup fnargs
       fn = 'constructor =>  setExposeDropConstr fnargs
-      NIL
-  setExposeDrop NIL
+      nil
+  setExposeDrop nil
 
 
 setExposeDropGroup arg ==
   (null arg) =>
     centerAndHighlight ("The group Option",$LINELENGTH,specialChar 'hbar)
-    sayKeyedMsg("S2IZ0049L",NIL)
+    sayKeyedMsg("S2IZ0049L",nil)
     sayMSG '" "
     displayExposedGroups()
   for x in arg repeat
     if cons? x then x := first x
     x = 'all =>
-      $localExposureData.0 := NIL
-      $localExposureData.1 := NIL
-      $localExposureData.2 := NIL
+      $localExposureData.0 := nil
+      $localExposureData.1 := nil
+      $localExposureData.2 := nil
       displayExposedGroups()
       sayMSG '" "
       displayExposedConstructors()
@@ -599,7 +599,7 @@ setExposeDropGroup arg ==
       displayHiddenConstructors()
       clearClams()
     member(x,$localExposureData.0) =>
-      $localExposureData.0 := delete(x,$localExposureData.0)
+      $localExposureData.0 := remove($localExposureData.0,x)
       clearClams()
       sayKeyedMsg("S2IZ0049S",[x,$interpreterFrameName])
     GETALIST($globalExposureGroupAlist,x) =>
@@ -611,7 +611,7 @@ setExposeDropConstr arg ==
   (null arg) =>
     centerAndHighlight ("The constructor Option",$LINELENGTH,
       specialChar 'hbar)
-    sayKeyedMsg("S2IZ0049N",NIL)
+    sayKeyedMsg("S2IZ0049N",nil)
     sayMSG '" "
     displayExposedConstructors()
     sayMSG '" "
@@ -625,7 +625,7 @@ setExposeDropConstr arg ==
     member(x,$localExposureData.2) =>
       sayKeyedMsg("S2IZ0049O",[x,$interpreterFrameName])
     if member(x,$localExposureData.1) then
-      $localExposureData.1 := delete(x,$localExposureData.1)
+      $localExposureData.1 := remove($localExposureData.1,x)
     $localExposureData.2 := MSORT [x,:$localExposureData.2]
     clearClams()
     sayKeyedMsg("S2IZ0049Q",[x,$interpreterFrameName])
@@ -658,7 +658,7 @@ setFortTmpDir arg ==
   -- VM code - must be an accessed disk mode [mode]
   not (mode := validateOutputDirectory arg) =>
     sayBrightly ['" Sorry, but your argument(s)",:bright arg,
-      '"is(are) not valid.",'%l]
+      '"is(are) not valid.",'"%l"]
     describeSetFortTmpDir()
   $fortranTmpDir := mode
 
@@ -666,19 +666,19 @@ setFortTmpDir arg ==
 validateOutputDirectory x ==
   AND(PATHNAME_-DIRECTORY(PROBE_-FILE(first(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(first(x)))) =>
     first(x)
-  NIL
+  nil
 
 
 describeSetFortTmpDir() ==
   sayBrightly [
-   '%b,'")set fortran calling tempfile",'%d,_
-   '" is used to tell AXIOM where",'%l,_
-   '" to place intermediate FORTRAN data files . This must be the ",'%l,_
-   '" name of a valid existing directory to which you have permission ",'%l,_
-   '" to write (including the final slash).",'%l,'%l,_
-   '" Syntax:",'%l,_
-   '"   )set fortran calling tempfile DIRECTORYNAME",'%l,'%l,_
-   '" The current setting is",'%b,$fortranTmpDir,'%d]
+   '"%b",'")set fortran calling tempfile",'"%d",_
+   '" is used to tell AXIOM where",'"%l",_
+   '" to place intermediate FORTRAN data files . This must be the ",'"%l",_
+   '" name of a valid existing directory to which you have permission ",'"%l",_
+   '" to write (including the final slash).",'"%l",'"%l",_
+   '" Syntax:",'"%l",_
+   '"   )set fortran calling tempfile DIRECTORYNAME",'"%l",'"%l",_
+   '" The current setting is",'"%b",$fortranTmpDir,'"%d"]
 
 
 setFortDir arg ==
@@ -697,21 +697,21 @@ setFortDir arg ==
   -- VM code - must be an accessed disk mode [mode]
   not (mode := validateOutputDirectory arg) =>
     sayBrightly ['" Sorry, but your argument(s)",:bright arg,
-      '"is(are) not valid.",'%l]
+      '"is(are) not valid.",'"%l"]
     describeSetFortDir()
   $fortranDirectory := mode
 
 
 describeSetFortDir() ==
   sayBrightly LIST (
-   '%b,'")set fortran calling directory",'%d,_
-   '" is used to tell AXIOM where",'%l,_
-   '" to place generated FORTRAN files. This must be the name ",'%l,_
-   '" of a valid existing directory to which you have permission ",'%l,_
-   '" to write (including the final slash).",'%l,'%l,_
-   '" Syntax:",'%l,_
-   '"   )set fortran calling directory DIRECTORYNAME",'%l,'%l,_
-   '" The current setting is",'%b,$fortranDirectory,'%d)
+   '"%b",'")set fortran calling directory",'"%d",_
+   '" is used to tell OpenAxiom where",'"%l",_
+   '" to place generated FORTRAN files. This must be the name ",'"%l",_
+   '" of a valid existing directory to which you have permission ",'"%l",_
+   '" to write (including the final slash).",'"%l",'"%l",_
+   '" Syntax:",'"%l",_
+   '"   )set fortran calling directory DIRECTORYNAME",'"%l",'"%l",_
+   '" The current setting is",'"%b",$fortranDirectory,'"%d")
 
 
 setLinkerArgs arg ==
@@ -728,16 +728,16 @@ setLinkerArgs arg ==
 
 describeSetLinkerArgs() ==
   sayBrightly [
-   '%b,'")set fortran calling linkerargs",'%d,_
-   '" is used to pass arguments to the linker",'%l,_
-   '" when using ",'%b,'"mkFort",'%d,_
-   '" to create functions which call Fortran code.",'%l,_
-   '" For example, it might give a list of libraries to be searched,",'%l,_
-   '" and their locations.",'%l,_
-   '" The string is passed verbatim, so must be the correct syntax for",'%l,_
-   '" the particular linker being used.",'%l,'%l,_
-   '" Example: )set fortran calling linker _"-lxlf_"",'%l,'%l,_
-   '" The current setting is",'%b,$fortranLibraries,'%d]
+   '"%b",'")set fortran calling linkerargs",'"%d",_
+   '" is used to pass arguments to the linker",'"%l",_
+   '" when using ",'"%b",'"mkFort",'"%d",_
+   '" to create functions which call Fortran code.",'"%l",_
+   '" For example, it might give a list of libraries to be searched,",'"%l",_
+   '" and their locations.",'"%l",_
+   '" The string is passed verbatim, so must be the correct syntax for",'"%l",_
+   '" the particular linker being used.",'"%l",'"%l",_
+   '" Example: )set fortran calling linker _"-lxlf_"",'"%l",'"%l",_
+   '" The current setting is",'"%b",$fortranLibraries,'"%d"]
 
 -- See the section functions in setvart.boot
 --
@@ -751,10 +751,10 @@ describeSetLinkerArgs() ==
 
 
 setFunctionsCache arg ==
-  $options : local := NIL
+  $options : local := nil
   arg = "%initialize%" =>
     $cacheCount := 0
-    $cacheAlist := NIL
+    $cacheAlist := nil
   arg = "%display%" =>
     null $cacheAlist => object2String $cacheCount
     '"..."
@@ -763,7 +763,7 @@ setFunctionsCache arg ==
     TERPRI()
     sayAllCacheCounts()
   n := first arg
-  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not integer? n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetFunctionsCache()
     terminateSystemCommand()
@@ -778,7 +778,7 @@ countCache n ==
         not IDENTP x => sayKeyedMsg("S2IF0007",[x])
         $cacheAlist:= insertAlist(x,n,$cacheAlist)
         cacheCountName:= INTERNL(x,'";COUNT")
-        setDynamicBinding(cacheCountName,n)
+        symbolValue(cacheCountName) := n
         sayCacheCount(x,n)
     optionError(CAAR $options,nil)
   sayCacheCount(nil,$cacheCount:= n)
@@ -786,14 +786,14 @@ countCache n ==
 
 describeSetFunctionsCache() ==
   sayBrightly [
-    '%b,'")set functions cache",'%d,'"is used to tell AXIOM how many",'%l,_
-    '" values computed by interpreter functions should be saved.  This can save ",'%l, _
-    '" quite a bit of time in recursive functions, though one must consider that",'%l,_
-    '" the cached values will take up (perhaps valuable) room in the workspace.",'%l,'%l,_
-    '" The value given  after",'%b,'"cache",'%d,'"must either be the",_
-    '" word",'%b,'"all",'%d,'"or a positive",'%l,_
-    '" integer.  This may be followed by any number of function names whose cache",'%l,_
-    '" sizes you wish to so set.  If no functions are given, the default cache",'%l,_
+    '"%b",'")set functions cache",'"%d",'"is used to tell AXIOM how many",'"%l",_
+    '" values computed by interpreter functions should be saved.  This can save ",'"%l", _
+    '" quite a bit of time in recursive functions, though one must consider that",'"%l",_
+    '" the cached values will take up (perhaps valuable) room in the workspace.",'"%l",'"%l",_
+    '" The value given  after",'"%b",'"cache",'"%d",'"must either be the",_
+    '" word",'"%b",'"all",'"%d",'"or a positive",'"%l",_
+    '" integer.  This may be followed by any number of function names whose cache",'"%l",_
+    '" sizes you wish to so set.  If no functions are given, the default cache",'"%l",_
     '" size is set.",'%l,'" Examples:",_
     '"   )set fun cache all         )set fun cache 10 f g Legendre"]
 
@@ -867,7 +867,7 @@ setHistory arg ==
    (fn := DOWNCASE(fn)) in '(y n ye yes no on of off) =>
     $options := [[fn]]
     historySpad2Cmd()
-  setHistory NIL
+  setHistory nil
 
 -- 
 -- See the section kernel in setvart.boot
@@ -987,15 +987,16 @@ setOutputAlgebra arg ==
 
   -- try to figure out what the argument is
 
-  if arg is [fn] and
-    fn in '(Y N YE YES NO O ON OF OFF CONSOLE y n ye yes no o on of off console)
-      then 'ok
-      else arg := [fn,'spout]
+  if arg is [fn] then
+    arg := 
+      fn in '(Y N YE YES NO O ON OF OFF CONSOLE
+                y n ye yes no o on of off console) => arg
+      [fn,'spout]
 
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(algebra algebra))
-    UPCASE(fn) in '(NO OFF)  => $algebraFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $algebraFormat := nil
     UPCASE(fn) in '(YES ON) => $algebraFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $algebraOutputStream
@@ -1015,10 +1016,11 @@ setOutputAlgebra arg ==
       SHUT $algebraOutputStream
       $algebraOutputStream := testStream
       $algebraOutputFile := object2String filename
-      sayKeyedMsg("S2IV0004",['"Algebra",$algebraOutputFile])
+      -- Inform of redirection only if verbosity is desired.
+      $verbose and sayKeyedMsg("S2IV0004",['"Algebra",$algebraOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputAlgebra()
 
 
@@ -1047,6 +1049,12 @@ describeSetOutputAlgebra() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputAlgebra "%display%",'%d]
 
+
+++ In case we are catching the output, we are also interested in 
+++ redirecting traffic on the standard output to that capturing stream.
+setStandardOutputToAlgebraStream() ==
+  $OutputStream := $algebraOutputStream
+  
 
 -- See the subsection output characters in setvart.boot
 -- 
@@ -1099,7 +1107,7 @@ setOutputCharacters arg ==
     sayBrightly '" The current setting is indicated within the list.  This option determines "
     sayBrightly '" the special characters used for algebraic output.  This is what the"
     sayBrightly '" current choice of special characters looks like:"
-    l := NIL
+    l := nil
     for [char,:.] in $specialCharacterAlist repeat
       s := strconc('"   ",PNAME char,'" is shown as ",
         PNAME specialChar(char))
@@ -1109,8 +1117,8 @@ setOutputCharacters arg ==
   arg is [fn] and (fn := DOWNCASE(fn)) =>
     fn = 'default => $specialCharacters := $RTspecialCharacters
     fn = 'plain   => $specialCharacters := $plainRTspecialCharacters
-    setOutputCharacters NIL
-  setOutputCharacters NIL
+    setOutputCharacters nil
+  setOutputCharacters nil
 
 -- See the subsection output fortran in setvart.boot
 -- 
@@ -1158,7 +1166,7 @@ setOutputFortran arg ==
     $fortranOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $fortranOutputFile := '"CONSOLE"
-    $fortranFormat := NIL
+    $fortranFormat := nil
 
   arg = "%display%" =>
     if $fortranFormat then label := '"On:" else label := '"Off:"
@@ -1169,8 +1177,8 @@ setOutputFortran arg ==
 
   -- try to figure out what the argument is
 
-  append := NIL
-  quiet := NIL
+  append := nil
+  quiet := nil
   while LISTP arg and UPCASE(first arg) in '(APPEND QUIET) repeat
     if UPCASE first(arg) = 'APPEND then append := true
     else if UPCASE first(arg) = 'QUIET then quiet := true
@@ -1184,7 +1192,7 @@ setOutputFortran arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(FORTRAN fortran))
-    UPCASE(fn) in '(NO OFF)  => $fortranFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $fortranFormat := nil
     UPCASE(fn) in '(YES ON)  => $fortranFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $fortranOutputStream
@@ -1206,7 +1214,7 @@ setOutputFortran arg ==
       $fortranOutputFile := object2String filename
       if null quiet then sayKeyedMsg("S2IV0004",['FORTRAN,$fortranOutputFile])
     if null quiet then sayKeyedMsg("S2IV0003",[fn,ft,fm])
-  if null quiet then sayKeyedMsg("S2IV0005",NIL)
+  if null quiet then sayKeyedMsg("S2IV0005",nil)
   describeSetOutputFortran()
 
 
@@ -1276,7 +1284,7 @@ setOutputMathml arg ==
     $mathmlOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $mathmlOutputFile := '"CONSOLE"
-    $mathmlFormat := NIL 
+    $mathmlFormat := nil 
 
   arg = "%display%" =>
     if $mathmlFormat then label := '"On:" else label := '"Off:"
@@ -1295,7 +1303,7 @@ setOutputMathml arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(MathML mathml))
-    UPCASE(fn) in '(NO OFF) => $mathmlFormat := NIL
+    UPCASE(fn) in '(NO OFF) => $mathmlFormat := nil
     UPCASE(fn) in '(YES ON) => $mathmlFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $mathmlOutputStream
@@ -1318,7 +1326,7 @@ setOutputMathml arg ==
       sayKeyedMsg("S2IV0004",['"MathML",$mathmlOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputMathml()
  
 describeSetOutputMathml() ==
@@ -1385,7 +1393,7 @@ setOutputOpenMath arg ==
     $openMathOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $openMathOutputFile := '"CONSOLE"
-    $openMathFormat := NIL
+    $openMathFormat := nil
 
   arg = "%display%" =>
     if $openMathFormat then label := '"On:" else label := '"Off:"
@@ -1404,7 +1412,7 @@ setOutputOpenMath arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(OpenMath openmath))
-    UPCASE(fn) in '(NO OFF)  => $openMathFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $openMathFormat := nil
     UPCASE(fn) in '(YES ON) => $openMathFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $openMathOutputStream
@@ -1427,7 +1435,7 @@ setOutputOpenMath arg ==
       sayKeyedMsg("S2IV0004",['"OpenMath",$openMathOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputOpenMath()
 
 
@@ -1497,7 +1505,7 @@ setOutputFormula arg ==
     $formulaOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $formulaOutputFile := '"CONSOLE"
-    $formulaFormat := NIL
+    $formulaFormat := nil
 
   arg = "%display%" =>
     if $formulaFormat then label := '"On:" else label := '"Off:"
@@ -1516,7 +1524,7 @@ setOutputFormula arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(script script))
-    UPCASE(fn) in '(NO OFF)  => $formulaFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $formulaFormat := nil
     UPCASE(fn) in '(YES ON) => $formulaFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $formulaOutputStream
@@ -1539,7 +1547,7 @@ setOutputFormula arg ==
       sayKeyedMsg("S2IV0004",['"IBM Script formula",$formulaOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputFormula()
 
 
@@ -1608,7 +1616,7 @@ setOutputTex arg ==
     $texOutputStream :=
       DEFIOSTREAM('((MODE . OUTPUT) (DEVICE . CONSOLE)),255,0)
     $texOutputFile := '"CONSOLE"
-    $texFormat := NIL
+    $texFormat := nil
 
   arg = "%display%" =>
     if $texFormat then label := '"On:" else label := '"Off:"
@@ -1627,7 +1635,7 @@ setOutputTex arg ==
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
       sayKeyedMsg("S2IV0002",'(TeX tex))
-    UPCASE(fn) in '(NO OFF)  => $texFormat := NIL
+    UPCASE(fn) in '(NO OFF)  => $texFormat := nil
     UPCASE(fn) in '(YES ON) => $texFormat := true
     UPCASE(fn) = 'CONSOLE =>
       SHUT $texOutputStream
@@ -1650,7 +1658,7 @@ setOutputTex arg ==
       sayKeyedMsg("S2IV0004",['"TeX",$texOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
-  sayKeyedMsg("S2IV0005",NIL)
+  sayKeyedMsg("S2IV0005",nil)
   describeSetOutputTex()
 
 
@@ -1697,7 +1705,7 @@ setStreamsCalculate arg ==
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetStreamsCalculate()
   n := first arg
-  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not integer? n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetStreamsCalculate()
     terminateSystemCommand()

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,28 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
-import initial_-env
+import utility
 namespace BOOTTRAN
-module tokens
+module tokens ($InteractiveMode)
+
+++ If true, means the system is in interactive mode.
+$InteractiveMode := false
+
+++ converts `x', a 1-length symbol, to a character.
+char x ==
+  stringChar(symbolName x, 0)
+
+shoeStartsId x ==
+  alphabetic? x or x in [char "$", char "?", char "%"]
+
+shoeIdChar x ==
+  alphanumeric? x or x in [char "'", char "?", char "%", char "!",char "&"]
+
+++ return the sub-string of `s' starting from `f'.
+++ When non-nil, `n' designates the length of the sub-string.
+subString(s,f,n == nil) ==
+  n = nil => subSequence(s,f)
+  subSequence(s,f,f + n)
 
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
@@ -43,8 +62,11 @@ shoeKeyWords == [  _
             ['"case","CASE"] , _
             ['"catch","CATCH"], _
             ['"cross","CROSS"] , _
+            ['"do",   "DO" ], _
             ['"else", "ELSE"] , _
+            ['"finally", "FINALLY"], _
             ['"for",  "FOR"] , _
+            ['"forall", "FORALL"] , _
             ['"has", "HAS"] , _
             ['"if", "IF"], _
             ['"import", "IMPORT"], _
@@ -52,6 +74,7 @@ shoeKeyWords == [  _
             ['"is", "IS"], _
             ['"isnt", "ISNT"] , _
             ['"leave", "LEAVE"], _
+            ['"macro", "MACRO"], _
             ['"module", "MODULE"], _
             ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
@@ -92,7 +115,6 @@ shoeKeyWords == [  _
             ['":=", "BEC"], _
             ['"+->", "GIVES"], _
             ['"==", "DEF"], _
-            ['"==>","MDEF" ], _
             ['"<=>", "TDEF"], _
             ['"(", "OPAREN"], _
             ['")", "CPAREN"], _
@@ -107,72 +129,55 @@ shoeKeyWords == [  _
 
  
 shoeKeyTableCons()==
-   KeyTable:=MAKE_-HASHTABLE("CVEC")
+   KeyTable := makeTable function valueEq?
    for st in shoeKeyWords repeat
-      HPUT(KeyTable,first st,second st)
+      tableValue(KeyTable,first st) := second st
    KeyTable
  
 shoeKeyTable:=shoeKeyTableCons()
  
-shoeSPACE       == QENUM('"    ", 0)
- 
-shoeESCAPE      == QENUM('"__  ", 0)
-shoeLispESCAPE      := QENUM('"!  ", 0)
- 
-shoeSTRING_CHAR == QENUM('"_"  ", 0)
- 
-shoePLUSCOMMENT == QENUM('"+   ", 0)
- 
-shoeMINUSCOMMENT == QENUM('"-   ", 0)
- 
-shoeDOT          == QENUM('".   ", 0)
- 
-shoeEXPONENT1   == QENUM('"E   ", 0)
- 
-shoeEXPONENT2   == QENUM('"e   ", 0)
- 
-shoeCLOSEPAREN  == QENUM('")   ", 0)
- 
---shoeCLOSEANGLE  == QENUM('">   ", 0)
-shoeTAB == 9
- 
 shoeInsert(s,d) ==
-      l := #s
-      h := QENUM(s,0)
-      u := ELT(d,h)
-      n := #u
-      k:=0
-      while l <= #(ELT(u,k)) repeat
-          k:=k+1
-      v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
-      VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
-      VEC_-SETELT(d,h,v)
-      s
+  l := #s
+  h := codePoint stringChar(s,0)
+  u := d.h
+  n := #u
+  k:=0
+  while l <= #u.k repeat
+      k:=k+1
+  v := newVector(n+1)
+  for i in 0..k-1 repeat
+    v.i := u.i
+  v.k := s
+  for i in k..n-1 repeat
+    v.(i+1) := u.i
+  d.h := v
+  s
  
 shoeDictCons()==
-      l:= HKEYS shoeKeyTable
-      d :=
-          a:=MAKE_-VEC(256)
-          b:=MAKE_-VEC(1)
-          VEC_-SETELT(b,0,MAKE_-CVEC 0)
-          for i in 0..255 repeat VEC_-SETELT(a,i,b)
-          a
-      for s in l repeat shoeInsert(s,d)
-      d
+  l := HKEYS shoeKeyTable
+  d :=
+    a := newVector 256
+    b := newVector 1
+    b.0 := newString 0
+    for i in 0..255 repeat
+      a.i := b
+    a
+  for s in l repeat
+    shoeInsert(s,d)
+  d
  
 shoeDict:=shoeDictCons()
  
  
 shoePunCons()==
-    listing := HKEYS shoeKeyTable
-    a:=MAKE_-BVEC 256
-    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
-    for k in listing repeat
-       if not shoeStartsId k.0
-       then BVEC_-SETELT(a,QENUM(k,0),1)
-    a
+  listing := HKEYS shoeKeyTable
+  a := makeBitVector 256
+  for i in 0..255 repeat
+    bitmask(a,i) := 0
+  for k in listing repeat
+    shoeStartsId k.0 => nil
+    bitmask(a,codePoint stringChar(k,0)) := 1
+  a
  
 shoePun:=shoePunCons()
 
@@ -223,12 +228,11 @@ for i in [ _
       ["*",         1] , _
       ["times",     1] , _
       ["CONS",    nil] , _
-      ["APPEND",  nil] , _
       ["append",  nil] , _
+      ["append!", nil] , _
       ["UNION",   nil] , _
       ["UNIONQ",  nil] , _
       ["union",   nil] , _
-      ["NCONC",   nil] , _
       ["and",    true] , _
       ["or",    false] , _
       ["AND",    true] , _
@@ -238,60 +242,89 @@ for i in [ _
        repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _
+  ["abs",        "ABS"], _
+  ["abstractChar", "CODE-CHAR"], _
   ["alphabetic?", "ALPHA-CHAR-P"], _
+  ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
-  ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
+  ["array?",    "ARRAYP"]  , _
+  ["arrayRef",    "AREF"]  , _
   ["atom",        "ATOM"]  , _
+  ["bitmask",   "SBIT"] , _
+  ["canonicalFilename", "PROBE-FILE"], _
+  ["charByName", "NAME-CHAR"] , _
+  ["charDowncase", "CHAR-DOWNCASE"], _
+  ["charEq?",   "CHAR=" ], _
+  ["charUpcase", "CHAR-UPCASE"], _
+  ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
+  ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
+  ["copyTree", "COPY-TREE"] , _
   ["croak",      "CROAK"]  , _
-  ["digit?",    "DIGITP"]  , _
+  ["digit?",    "DIGIT-CHAR-P"]  , _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
   ["first",        "CAR"]  , _
+  ["float?",   "FLOATP"] , _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
+  ["function?","FUNCTIONP"] , _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
   ["integer?","INTEGERP"]  , _
-  ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
+  ["listEq?",    "EQUAL"] , _
   ["lowerCase?", "LOWER-CASE-P"], _
+  ["makeSymbol", "INTERN"] , _
+  ["maxIndex", "MAXINDEX"] , _
   ["mkpf",        "MKPF"]  , _
-  ["nconc",      "NCONC"]  , _
+  ["newString", "MAKE-STRING"], _
+  ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _
-  ["nreverse", "NREVERSE"]  , _
   ["null",        "NULL"]  , _
+  ["odd?",        "ODDP"] , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
   ["property",     "GET"]  , _
-  ["readByte", "READ-BYTE"], _
   ["readInteger", "PARSE-INTEGER"], _
-  ["readLine", "READ-LINE"], _
+  ["readLispFromString", "READ-FROM-STRING"] , _
   ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
-  ["reverse",  "REVERSE"]  , _
+  ["sameObject?",  "EQ" ] , _
+  ["scalarEq?",   "EQL" ] , _
+  ["scalarEqual?","EQL" ] , _
   ["second",      "CADR"] , _
-  ["setDifference", "SETDIFFERENCE"]  , _
   ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
+  ["stringChar", "SCHAR"] , _
+  ["stringDowncase", "STRING-DOWNCASE"] , _
   ["string?",  "STRINGP"]  ,_
-  ["substitute",  "SUBST"]  , _
-  ["substitute!", "NSUBST"]  , _
+  ["stringEq?","STRING="] , _
+  ["stringUpcase", "STRING-UPCASE"] , _
+  ["subSequence", "SUBSEQ"] , _
+  ["symbolScope", "SYMBOL-PACKAGE"] , _
+  ["symbolEq?", "EQ"], _
+  ["symbolFunction", "SYMBOL-FUNCTION"], _
+  ["symbolName", "SYMBOL-NAME"], _
+  ["symbolValue", "SYMBOL-VALUE"], _
   ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
+  ["toString", "WRITE-TO-STRING"], _
   ["true",           "T"]  , _
   ["upperCase?", "UPPER-CASE-P"], _
+  ["valueEq?",    "EQUAL"] , _
   ["vector?", "SIMPLE-VECTOR-P"], _
+  ["vectorRef", "SVREF"] , _
   ["writeByte", "WRITE-BYTE"], _
   ["writeLine", "WRITE-LINE"], _
   ["PLUS",           "+"]  , _
@@ -339,6 +372,7 @@ for i in [ _
   ["mmImplementation","CADADR"] , _
   ["mmSignature",       "CDAR"] , _
   ["mmTarget",         "CADAR"] , _
+  ["mmSource",         "CDDAR"] , _
   ["mode",              "CADR"] , _
   ["op",                 "CAR"] , _
   ["opcode",            "CADR"] , _

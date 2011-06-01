@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,8 @@ packageTran sex ==
 -- destructively translate all the symbols in the given s-expression to the 
 -- current package
   symbol? sex =>
-    EQ(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
-    INTERN STRING sex
+    sameObject?(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
+    makeSymbol symbolName sex
   cons? sex =>
     sex.first := packageTran first sex
     sex.rest := packageTran rest sex
@@ -54,6 +54,6 @@ packageTran sex ==
 zeroOneTran sex ==
 -- destructively translate the symbols |0| and |1| to their 
 -- integer counterparts
-  NSUBST("$EmptyMode", "?", sex)
+  substitute!("$EmptyMode", "?", sex)
   sex
 

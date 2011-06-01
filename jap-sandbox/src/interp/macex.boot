@@ -86,8 +86,7 @@ macLambdaParameterHandling( replist , pform )  ==
     for p in pfParts pform repeat macLambdaParameterHandling( replist , p )
 
 macSubstituteId( replist , pform ) ==
-    ex := AlistAssocQ( pfIdSymbol pform , replist )
-    ex => 
+    ex := symbolAssoc( pfIdSymbol pform , replist ) =>
         RPLPAIR(pform,rest ex)
         pform
     pform 
@@ -120,17 +119,17 @@ macMacro pf ==
 mac0Define(sy, state, body) ==
     $pfMacros := [[sy, state, body],:$pfMacros]
  
--- Returns [state, body] or NIL.
+-- Returns [state, body] or nil.
 mac0Get sy ==
     IFCDR assoc(sy, $pfMacros)
  
--- Returns [sy, state] or NIL.
+-- Returns [sy, state] or nil.
 mac0GetName body ==
     name := nil
     for [sy,st,bd] in $pfMacros while not name repeat
         if st = 'mlambda then
             bd := pfMLambdaBody bd
-        EQ(bd, body) => name := [sy,st]
+        sameObject?(bd, body) => name := [sy,st]
     name
  
 macId pf ==
@@ -167,7 +166,7 @@ mac0MLambdaApply(mlambda, args, opf, $pfMacros) ==
     mac0ExpandBody( body , opf, $macActive, $posActive)
  
 mac0ExpandBody(body, opf, $macActive, $posActive) ==
-    MEMQ(body,$macActive) =>
+    symbolMember?(body,$macActive) =>
         [.,pf] := $posActive
         posn   := pfSourcePosition pf
         mac0InfiniteExpansion(posn, body, $macActive)

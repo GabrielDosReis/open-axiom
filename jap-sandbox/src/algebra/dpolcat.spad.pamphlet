@@ -330,7 +330,7 @@ DifferentialPolynomialCategory(R:Ring,S:OrderedSet,
       "max"/[order v for v in variables p]
     order (p:$,s:S):NonNegativeInteger ==
       ground? p => 0
-      empty? (vv:= [order v for v in variables p | (variable v) = s ]) =>0
+      empty? (vv:= [order v for v in variables p | (variable v) = s ]) => 0
       "max"/vv
 
     degree (p, s) ==

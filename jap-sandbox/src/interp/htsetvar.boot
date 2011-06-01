@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -76,8 +76,8 @@ htShowCount s == --# discounting {\em .. }
   i := 0
   count := 0
   while i < m - 7 repeat
-    s.i = char '_{ and  s.(i+1) = char '_\ and s.(i+2) = char 'e
-      and s.(i+3) = char 'm => i := i + 6     --discount {\em }
+    s.i = char "{" and  s.(i+1) = char "\" and s.(i+2) = char "e"
+      and s.(i+3) = char "m" => i := i + 6     --discount {\em }
     i := i + 1
     count := count + 1
   count + (m - i)
@@ -133,7 +133,7 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
 
 htSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  symbolValue(htpProperty(htPage, 'variable)) := translateYesNo2TrueFalse val
   htKill(htPage,val)
 
 htShowIntegerPage(htPage, setData) ==
@@ -172,7 +172,7 @@ htSetInteger(htPage) ==
   val := chkRange htpLabelInputString(htPage,'value)
   not integer? val =>
     errorPage(htPage,['"Value Error",nil,'"\vspace{3}\centerline{{\em ",val,'"}}\vspace{2}\newline\centerline{Click on \UpBitmap{} to re-enter value}"])
-  setDynamicBinding(htpProperty(htPage, 'variable), val)
+  symbolValue(htpProperty(htPage, 'variable)) := val
   htKill(htPage,val)
 
 htShowFunctionPage(htPage,setData) ==
@@ -215,14 +215,14 @@ htSetvarDoneButton(message, func) ==
 
 htFunctionSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  symbolValue(htpProperty(htPage, 'variable)) := translateYesNo2TrueFalse val
   htSetFunCommandContinue(htPage,val)
 
 htSetFunCommand(htPage) ==
   variable := htpProperty(htPage,'variable)
   checker := htpProperty(htPage,'checker)
   value := htCheck(checker,htpLabelInputString(htPage,'value))
-  setDynamicBinding(variable,value) --kill this later
+  symbolValue(variable) := value --kill this later
   htSetFunCommandContinue(htPage,value)
 
 htSetFunCommandContinue(htPage,value) ==
@@ -271,8 +271,8 @@ htCheck(checker,value) ==
 
 parseWord x ==
   string? x =>
-    and/[digit? x.i for i in 0..MAXINDEX x] => readInteger x
-    INTERN x
+    and/[digit? stringChar(x,i) for i in 0..maxIndex x] => readInteger x
+    makeSymbol x
   x
 
 htCheckList(checker,value) ==
@@ -280,7 +280,7 @@ htCheckList(checker,value) ==
   if value in '(n no N NO) then value := 'no
   checker is [n,m] and integer? n =>
     m = n + 1 =>
-      value in checker => value
+      scalarMember(value,checker) => value
       n
     null m =>
       integer? value and value >= n => value
@@ -288,7 +288,7 @@ htCheckList(checker,value) ==
     integer? m =>
       integer? value and value >= n and value <= m => value
       n
-  value in checker => value
+  membr(value,checker) => value
   first checker
 --  emlist := strconc/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
 --  strconc('"Please enter one of: ",emlist)
@@ -334,13 +334,13 @@ chkAllNonNegativeInteger s ==
 
 htMakePathKey path ==
   null path => systemError '"path is not set"
-  INTERN fn(PNAME first path,rest path) where
+  makeSymbol fn(PNAME first path,rest path) where
     fn(a,b) ==
       null b => a
       fn(strconc(a,'".",PNAME first b),rest b)
 
 htMarkTree(tree,n) ==
-  LASTTAIL(tree).rest := n
+  lastNode(tree).rest := n
   for branch in tree repeat
     branch.3 = 'TREE => htMarkTree(branch.5,n + 1)
 
@@ -422,15 +422,15 @@ htCacheAddChoice htPage ==
   htSetvarDoneButton('"Select to Set Values",'htCacheSet)
   htShowPage()
 
-htMakeLabel(prefix,i) == INTERN strconc(prefix,stringize i)
+htMakeLabel(prefix,i) == makeSymbol strconc(prefix,stringize i)
 
 htCacheSet htPage ==
   names := htpProperty(htPage,'names)
   for i in 1.. for name in names repeat
     num := chkAllNonNegativeInteger
              htpLabelInputString(htPage,htMakeLabel('"c",i))
-    $cacheAlist := ADDASSOC(INTERN name,num,$cacheAlist)
-  if (n := LASSOC('all,$cacheAlist)) then
+    $cacheAlist := ADDASSOC(makeSymbol name,num,$cacheAlist)
+  if (n := symbolLAssoc('all,$cacheAlist)) then
     $cacheCount := n
     $cacheAlist := deleteAssoc('all,$cacheAlist)
   htInitPage('"Cache Summary",nil)

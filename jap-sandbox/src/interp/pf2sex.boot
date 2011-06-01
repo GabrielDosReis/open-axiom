@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 import ptrees
 namespace BOOT
 
-$dotdot := INTERN('"..", '"BOOT")
+$dotdot := makeSymbol('"..", '"BOOT")
 $specificMsgTags := nil
 
 ++ nonzero means we are processing an Application parse form
@@ -185,7 +185,7 @@ pfLiteral2Sex pf ==
     MULTIPLE_-VALUE_-BIND(part1 pos1,
       readInteger(txt,KEYWORD::JUNK_-ALLOWED,true),
         if pos1 = #txt then part1
-        else readInteger(SUBSTRING(txt,pos1+1,nil),
+        else readInteger(subString(txt,pos1+1),
                KEYWORD::RADIX, part1))
   type = 'string or type = 'char =>
     pfLiteralString pf
@@ -200,9 +200,9 @@ pfLiteral2Sex pf ==
       ["QUOTE", pfLeafToken pf]
   keyedSystemError('"S2GE0017", ['"pfLiteral2Sex: unexpected form"])
 
-symEqual(sym, sym2) == EQ(sym, sym2)
+symEqual(sym, sym2) == sameObject?(sym, sym2)
 
-SymMemQ(sy, l) == MEMQ(sy, l)
+SymMemQ(sy, l) == symbolMember?(sy, l)
 
 pmDontQuote? sy ==
    SymMemQ(sy, '(_+ _- _* _*_* _^ _/ log exp pi sqrt ei li erf ci si dilog _
@@ -296,7 +296,7 @@ hasOptArgs? argSex ==
       opt := [[lhs, rhs], :opt]
     nonOpt := [arg, :nonOpt]
   null opt => nil
-  NCONC (nreverse nonOpt, [["construct", :nreverse opt]])
+  append!(reverse! nonOpt, [["construct", :reverse! opt]])
 
 pfDefinition2Sex pf ==
   $insideApplication > $insideQuasiquotation =>
@@ -332,11 +332,11 @@ pfLambdaTran pf ==
           argTypeList := [nil, :argTypeList]
         argTypeList := [pf2Sex1 pfTypedType arg, :argTypeList]
       systemError '"definition args should be typed"
-    argList := nreverse argList
+    argList := reverse! argList
     retType :=
       pfNothing? pfLambdaRets pf => nil
       pf2Sex1 pfLambdaRets pf
-    argTypeList := [retType, :nreverse argTypeList]
+    argTypeList := [retType, :reverse! argTypeList]
     [argList, :[argTypeList, [nil for arg in argTypeList],
       pf2Sex1 pfLambdaBody pf]]
   ['id, :['(()), '(()), pf2Sex1 pf]]
@@ -380,20 +380,20 @@ pfSequence2Sex0 seqList ==
     seqTranList := [item ,:seqTranList]
     seqList := rest seqList
   #seqTranList = 1 => first seqTranList
-  ["SEQ", :nreverse seqTranList]
+  ["SEQ", :reverse! seqTranList]
 
 float2Sex num ==
   eIndex := SEARCH('"e", num)
   mantPart :=
-    eIndex => SUBSEQ(num, 0, eIndex)
+    eIndex => subSequence(num, 0, eIndex)
     num
-  expPart := (eIndex => READ_-FROM_-STRING SUBSEQ(num, eIndex+1); 0)
+  expPart := (eIndex => READ_-FROM_-STRING subSequence(num, eIndex+1); 0)
   dotIndex := SEARCH('".", mantPart)
   intPart :=
-    dotIndex => READ_-FROM_-STRING SUBSEQ(mantPart, 0, dotIndex)
+    dotIndex => READ_-FROM_-STRING subSequence(mantPart, 0, dotIndex)
     READ_-FROM_-STRING mantPart
   fracPartString :=
-    dotIndex => SUBSEQ(mantPart, dotIndex+1)
+    dotIndex => subSequence(mantPart, dotIndex+1)
     '"0"
   bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
     # fracPartString, expPart)
@@ -413,7 +413,7 @@ loopIters2Sex iterList ==
     sex is ['IN, var, ['SEGMENT, i, j]] =>
       result := [['STEP, var, i, 1, j], :result]
     result := [sex, :result]
-  nreverse result
+  reverse! result
 
 pfCollect2Sex pf ==
   sex := ["COLLECT", :loopIters2Sex pfParts pfCollectIterators pf,
@@ -439,13 +439,13 @@ ruleLhsTran ruleLhs ==
     [name, predLhs, :predRhs] := pred
     vars := patternVarsOf predRhs
     rest vars =>  -- if there is more than one patternVariable
-      ruleLhs := NSUBST(predLhs, name, ruleLhs)
+      ruleLhs := substitute!(predLhs, name, ruleLhs)
       $multiVarPredicateList := [pred, :$multiVarPredicateList]
     predicate :=
       [., var] := predLhs
       ["suchThat", predLhs, ["ADEF", [var],
         '((Boolean) (Expression (Integer))), '(() ()), predRhs]]
-    ruleLhs := NSUBST(predicate, name, ruleLhs)
+    ruleLhs := substitute!(predicate, name, ruleLhs)
   ruleLhs
 
 rulePredicateTran rule ==
@@ -465,7 +465,7 @@ rulePredicateTran rule ==
 
 pvarPredTran(rhs, varList) ==
   for var in varList for i in 1.. repeat
-    rhs := NSUBST(['elt, 'predicateVariable, i], var, rhs)
+    rhs := substitute!(['elt, 'predicateVariable, i], var, rhs)
   rhs
 
 patternVarsOf expr ==

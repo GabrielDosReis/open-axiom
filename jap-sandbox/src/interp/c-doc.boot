@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,10 +46,10 @@ getDoc(conName,op,modemap) ==
   sig := [target,:sl]
   cons? dc =>
     sig := MSUSBT('$,dc,sig)
-    sig := SUBLISLIS($FormalMapVariableList,rest dc,sig)
+    sig := applySubst(pairList(dc.args,$FormalMapVariableList),sig)
     getDocForDomain(conName,op,sig)
   if argList := IFCDR getOfCategoryArgument pred then
-     SUBLISLIS($FormalMapArgumentList,argList,sig)
+     applySubst(pairList(argList,$FormalMapArgumentList),sig)
   sig := MSUBST('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
@@ -63,18 +63,20 @@ getOfCategoryArgument pred ==
   nil
 
 getDocForCategory(name,op,sig) ==
-  getOpDoc(constructor? name,op,sig) or
-    or/[getOpDoc(constructor? x,op,sig) for x in whatCatCategories name]
+  getOpDoc(getConstructorAbbreviationFromDB name,op,sig) or
+    or/[getOpDoc(getConstructorAbbreviationFromDB x,op,sig)
+         for x in whatCatCategories name]
 
 getDocForDomain(name,op,sig) ==
-  getOpDoc(constructor? name,op,sig) or
-    or/[getOpDoc(constructor? x,op,sig) for x in whatCatExtDom name]
+  getOpDoc(getConstructorAbbreviationFromDB name,op,sig) or
+    or/[getOpDoc(getConstructorAbbreviationFromDB x,op,sig)
+          for x in whatCatExtDom name]
 
 ++ returns the documentation, known to the global DB, for a operator
 ++ `op' and given signature `sigPart'.  The operator `op' is assumed
 ++ to have been defined in the domain or catagory `abb'.
 getOpDoc(abb,op,:sigPart) ==
-  u := LASSOC(op,getConstructorDocumentationFromDB abb)
+  u := symbolLassoc(op,getConstructorDocumentationFromDB abb)
   $argList : local := $FormalMapVariableList
   _$: local := '_$
   sigPart is [sig] => or/[d for [s,:d] in u | sig = s]
@@ -93,13 +95,13 @@ recordSignatureDocumentation(opSig,lineno) ==
 
 recordAttributeDocumentation(['Attribute,att],lineno) ==
   name := opOf att
-  upperCase? PNAME(name).0 => nil
+  upperCase? stringChar(symbolName name,0) => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)
 
 recordDocumentation(key,lineno) ==
   recordHeaderDocumentation lineno
   u:= collectComBlock lineno
-  --record NIL to mean "there was no documentation"
+  --record nil to mean "there was no documentation"
   $maxSignatureLineNumber := lineno
   $docList := [[key,:u],:$docList]
   -- leave first of $docList alone as required by collectAndDeleteAssoc
@@ -135,13 +137,13 @@ finalizeDocumentation() ==
   docList := substitute("$","%",transDocList($op,$docList))
   if u := [sig for [sig,:doc] in docList | null doc] then
     for y in u repeat
-      y = 'constructor => noHeading := true
-      y is [x,b] and b is [='attribute,:r] =>
+      y is 'constructor => noHeading := true
+      y is [x,b] and b is ['attribute,:r] =>
         attributes := [[x,:r],:attributes]
       signatures := [y,:signatures]
     name := first $lisplibForm
     if noHeading or signatures or attributes or unusedCommentLineNumbers then
-      sayKeyedMsg("S2CD0001",NIL)
+      sayKeyedMsg("S2CD0001",nil)
       bigcnt := 1
       if noHeading or signatures or attributes then
         sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),name])
@@ -177,7 +179,7 @@ finalizeDocumentation() ==
     fn(x,e) ==
       atom x => [x,nil]
       if #x > 2 then x := TAKE(2,x)
-      SUBLISLIS($FormalMapVariableList,rest $lisplibForm,
+      applySubst(pairList($lisplibForm.args,$FormalMapVariableList),
         macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)
@@ -213,11 +215,11 @@ transDoc(conname,doclist) ==
   $x: local := nil
   rlist := reverse doclist
   for [$x,:lines] in rlist repeat
-    $attribute? : local := $x is [.,[key]] and key = 'attribute
+    $attribute? : local := $x is [.,[key]] and key is 'attribute
     null lines =>
       $attribute? => nil
       checkDocError1 ['"Not documented!!!!"]
-    u := checkTrim($x,(string? lines => [lines]; $x = 'constructor => first lines; lines))
+    u := checkTrim($x,(string? lines => [lines]; $x is 'constructor => first lines; lines))
     $argl : local := nil    --set by checkGetArgs
 -- tpd: related domain information doesn't exist
 --    if v := checkExtract('"Related Domains:",u) then
@@ -242,31 +244,31 @@ transDoc(conname,doclist) ==
 --          n=0 and atom x => [x]
 --          x
     longline :=
-      $x = 'constructor =>
+      $x is 'constructor =>
         v :=checkExtract('"Description:",u) or u and
               checkExtract('"Description:",
                 [strconc('"Description: ",first u),:rest u])
         transformAndRecheckComments('constructor,v or u)
       transformAndRecheckComments($x,u)
     acc := [[$x,longline],:acc]  --processor assumes a list of lines
-  nreverse acc
+  reverse! acc
 
 checkExtractItemList l ==  --items are separated by commas or end of line
   acc := nil               --l is list of remaining lines
   while l repeat           --stop when you get to a line with a colon
-    m := MAXINDEX first l
-    k := charPosition(char '_:,first l,0)
+    m := maxIndex first l
+    k := charPosition(char ":",first l,0)
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
-  strconc/[x for x in nreverse acc]
+  strconc/[x for x in reverse! acc]
 
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
   x is [y, :z] =>
     y1 := escapePercent y
     z1 := escapePercent z
-    EQ(y, y1) and EQ(z, z1) => x
+    sameObject?(y, y1) and sameObject?(z, z1) => x
     [y1, :z1]
   x = "%" => "%%"
   x
@@ -301,11 +303,11 @@ checkRewrite(name,lines) == main where   --similar to checkComments from c-doc
     for x in u repeat
         w := newString2Words x
         verbatim =>
-          w and first w = '"\end{verbatim}" =>
+          w and first w is '"\end{verbatim}" =>
             verbatim := false
             u2 := append(u2, w)
           u2 := append(u2, [x])
-        w and first w = '"\begin{verbatim}" =>
+        w and first w is '"\begin{verbatim}" =>
             verbatim := true
             u2 := append(u2, w)
         u2 := append(u2, w)
@@ -327,7 +329,7 @@ checkTexht u ==
   acc   := nil
   while u repeat
     x := first u
-    if x = '"\texht" and (u := IFCDR u) then
+    if x is '"\texht" and (u := IFCDR u) then
         if not (IFCAR u = $charLbrace) then
            checkDocError '"First left brace after \texht missing"
         count := 1  -- drop first argument including braces of \texht
@@ -335,7 +337,7 @@ checkTexht u ==
           if y = $charLbrace then count := count + 1
           if y = $charRbrace then count := count - 1
         x :=  IFCAR (u := rest u)  -- drop first right brace of 1st arg
-    if x = '"\httex" and (u := IFCDR u) and (IFCAR u = $charLbrace) then
+    if x is '"\httex" and (u := IFCDR u) and (IFCAR u = $charLbrace) then
         acc := [IFCAR u,:acc]      --left  brace: add it
         while (y := IFCAR (u := rest u)) ~= $charRbrace repeat (acc := [y,:acc])
         acc := [IFCAR u,:acc]      --right brace: add it
@@ -344,24 +346,24 @@ checkTexht u ==
         x :=  IFCAR (u := rest u)  --forget right brace: move to next char
     acc := [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkRecordHash u ==
   while u repeat
     x := first u
-    if string? x and x.0 = $charBack then
+    if string? x and stringChar(x,0) = $charBack then
       if member(x,$HTlinks) and (u := checkLookForLeftBrace IFCDR u)
            and (u := checkLookForRightBrace IFCDR u)
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern IFCAR u
-        entry := HGET($htHash,htname) or [nil]
-        HPUT($htHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+        entry := tableValue($htHash,htname) or [nil]
+        tableValue($htHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if member(x,$HTlisplinks) and (u := checkLookForLeftBrace IFCDR u)
             and (u := checkLookForRightBrace IFCDR u)
               and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
         htname := intern checkGetLispFunctionName checkGetStringBeforeRightBrace u
-        entry := HGET($lispHash,htname) or [nil]
-        HPUT($lispHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
+        entry := tableValue($lispHash,htname) or [nil]
+        tableValue($lispHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
       else if ((p := member(x,'("\gloss" "\spadglos")))
                  or (q := member(x,'("\glossSee" "\spadglosSee"))))
                     and (u := checkLookForLeftBrace IFCDR u)
@@ -371,21 +373,21 @@ checkRecordHash u ==
              u := checkLookForLeftBrace IFCDR u
              u := IFCDR u
           htname := intern checkGetStringBeforeRightBrace u
-          entry := HGET($glossHash,htname) or [nil]
-          HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
-      else if x = '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+          entry := tableValue($glossHash,htname) or [nil]
+          tableValue($glossHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
+      else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
-          if s.0 = char '_) then s := SUBSTRING(s,1,nil)
+          if stringChar(s,0) = char ")" then s := subString(s,1)
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
             checkDocError ['"Bad system command: ",s]
-          atom parse or not (parse is ['set,arg]) => 'ok  ---assume ok
+          atom parse or (parse isnt ['set,arg]) => 'ok  ---assume ok
           not spadSysChoose($setOptions,arg) =>
             checkDocError ['"Incorrect \spadsys: ",s]
-            entry := HGET($sysHash,htname) or [nil]
-            HPUT($sysHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
-      else if x = '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+            entry := tableValue($sysHash,htname) or [nil]
+            tableValue($sysHash,htname) := [first entry,:[[$name,:$origin],:rest entry]]
+      else if x is '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
@@ -396,9 +398,9 @@ checkRecordHash u ==
             checkDocError ['"Unknown \spadtype: ", s]
           atom key => 'ok
           checkDocError ['"Wrong number of arguments: ",form2HtString key]
-      else if member(x,'("\spadop" "\keyword")) and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+      else if x in '("\spadop" "\keyword") and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           x := intern checkGetStringBeforeRightBrace u
-          not (GETL(x,'Led) or GETL(x,'Nud)) =>
+          not (property(x,'Led) or property(x,'Nud)) =>
             checkDocError ['"Unknown \spadop: ",x]
     u := rest u
   'done
@@ -407,10 +409,10 @@ checkGetParse s == ncParseFromString removeBackslashes s
 
 ++ remove non-leading backslash characters from string `s'.
 removeBackslashes s ==
-    s = '"" => '""
+    s is '"" => '""
     (k := charPosition($charBack,s,0)) < #s =>
-      k = 0 => removeBackslashes SUBSTRING(s,1,nil)
-      strconc(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
+      k = 0 => removeBackslashes subString(s,1)
+      strconc(subString(s,0,k),removeBackslashes subString(s,k + 1))
     s
 
 ++ returns the arity (as known to the global DB) of the functor
@@ -439,8 +441,8 @@ checkIsValidType form == main where
 
 checkGetLispFunctionName s ==
   n := #s
-  (k := charPosition(char '_|,s,1)) and k < n and
-    (j := charPosition(char '_|,s,k + 1)) and j < n => SUBSTRING(s,k + 1,j-k-1)
+  (k := charPosition(char "|",s,1)) and k < n and
+    (j := charPosition(char "|",s,k + 1)) and j < n => subString(s,k + 1,j-k-1)
   checkDocError ['"Ill-formed lisp expression : ",s]
   'illformed
 
@@ -448,7 +450,7 @@ checkGetStringBeforeRightBrace u ==
   acc := nil
   while u repeat
     x := first u
-    x = $charRbrace => return strconc/(nreverse acc)
+    x = $charRbrace => return strconc/(reverse! acc)
     acc := [x,:acc]
     u := rest u
 
@@ -456,25 +458,25 @@ checkGetStringBeforeRightBrace u ==
 --    acc := nil
 --    while u repeat
 --      x := first u
---      x = '"\begin" and checkTranVerbatimMiddle u is [middle,:r] =>
+--      x is '"\begin" and checkTranVerbatimMiddle u is [middle,:r] =>
 --        acc := [$charRbrace,:middle,$charLbrace,'"\spadpaste",:acc]
 --        u := r
---      if x = '"\spadcommand" then x := '"\spadpaste"
+--      if x is '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    nreverse acc
+--    reverse! acc
 --
 --  checkTranVerbatimMiddle u ==
 --      (y := IFCAR (v := IFCDR u)) = $charLbrace and
---        (y := IFCAR (v := IFCDR v)) = '"verbatim" and
+--        (y := IFCAR (v := IFCDR v)) is '"verbatim" and
 --          (y := IFCAR (v := IFCDR v)) = $charRbrace =>
 --             w := IFCDR v
 --             middle := nil
---             while w and (z := first w) ~= '"\end" repeat
+--             while w and (z := first w) isnt '"\end" repeat
 --               middle := [z,:middle]
 --               w := rest w
 --             if (y := IFCAR (w := IFCDR w)) = $charLbrace and
---               (y := IFCAR (w := IFCDR w))  = '"verbatim" and
+--               (y := IFCAR (w := IFCDR w))  is '"verbatim" and
 --                 (y := IFCAR (w := IFCDR w)) = $charRbrace then
 --                    u := IFCDR w
 --             else
@@ -486,28 +488,28 @@ checkGetStringBeforeRightBrace u ==
 --    acc := nil
 --    while u repeat
 --      x := first u
---      x = '"\begin" and (y := IFCAR (v := IFCDR u)) = $charLbrace and
---        (y := IFCAR (v := IFCDR v)) = '"verbatim" and
+--      x is '"\begin" and (y := IFCAR (v := IFCDR u)) = $charLbrace and
+--        (y := IFCAR (v := IFCDR v)) is '"verbatim" and
 --          (y := IFCAR (v := IFCDR v)) = $charRbrace =>
 --             w := IFCDR v
 --             middle := nil
---             while w and (z := first w) ~= '"\end" repeat
+--             while w and (z := first w) isnt '"\end" repeat
 --               middle := [z,:middle]
 --               w := rest w
 --             if (y := IFCAR (w := IFCDR w)) = $charLbrace and
---               (y := IFCAR (w := IFCDR w))  = '"verbatim" and
+--               (y := IFCAR (w := IFCDR w))  is '"verbatim" and
 --                 (y := IFCAR (w := IFCDR w)) = $charRbrace then
 --                    u := IFCDR w
 --             acc := [$charRbrace,:middle,$charLbrace,'"\spadpaste",:acc]
---      if x = '"\spadcommand" then x := '"\spadpaste"
+--      if x is '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    nreverse acc
+--    reverse! acc
 
 appendOver [head,:tail] ==
- acc := LASTNODE head
+ acc := lastNode head
  for x in tail repeat
-   end := LASTNODE x
+   end := lastNode x
    acc.rest := x
    acc := end
  head
@@ -518,19 +520,19 @@ checkRemoveComments lines ==
       line := checkTrimCommented first lines
       if firstNonBlankPosition line >= 0 then acc := [line,:acc]
     lines := rest lines
-  nreverse acc
+  reverse! acc
 
 ++ return the part of `line' that is not a comment.  A comment
 ++ is introduced by a leading percent character (%), or a double
 ++ percent character (%%).
 checkTrimCommented line ==
   n := #line
-  k := htcharPosition(char '_%,line,0)
+  k := htcharPosition(char "%",line,0)
   --line beginning with % is a comment
   k = 0 => '""
   --remarks beginning with %% are comments
-  k >= n - 1 or line.(k + 1) ~= char '_% => line
-  k < #line => SUBSTRING(line,0,k)
+  k >= n - 1 or line.(k + 1) ~= char "%" => line
+  k < #line => subString(line,0,k)
   line
 
 htcharPosition(char,line,i) ==
@@ -548,23 +550,23 @@ checkAddMacros u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
       y := LASSOC(x,$HTmacs) => [:y,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkComments(nameSig,lines) == main where
   main() ==
     $checkErrorFlag: local := false
     margin := checkGetMargin lines
-    if null $attribute? and nameSig ~= 'constructor then 
+    if null $attribute? and nameSig isnt 'constructor then 
       lines :=
         [checkTransformFirsts(first nameSig,first lines,margin),:rest lines]
     u := checkIndentedLines(lines, margin)
@@ -574,11 +576,11 @@ checkComments(nameSig,lines) == main where
     for x in u repeat
         w := newString2Words x
         verbatim =>
-          w and first w = '"\end{verbatim}" =>
+          w and first w is '"\end{verbatim}" =>
             verbatim := false
             u2 := append(u2, w)
           u2 := append(u2, [x])
-        w and first w = '"\begin{verbatim}" =>
+        w and first w is '"\begin{verbatim}" =>
             verbatim := true
             u2 := append(u2, w)
         u2 := append(u2, w)
@@ -604,62 +606,62 @@ checkIndentedLines(u, margin) ==
     k = -1 =>
         verbatim => u2 := [:u2, $charFauxNewline]
         u2 := [:u2, '"\blankline "]
-    s := SUBSTRING(x, k, nil)
-    s = '"\begin{verbatim}" =>
+    s := subString(x, k)
+    s is '"\begin{verbatim}" =>
         verbatim := true
         u2 := [:u2, s]
-    s = '"\end{verbatim}" =>
+    s is '"\end{verbatim}" =>
         verbatim := false
         u2 := [:u2, s]
-    verbatim => u2 := [:u2, SUBSTRING(x, margin, nil)]
+    verbatim => u2 := [:u2, subString(x, margin)]
     margin = k => u2 := [:u2, s]
     u2 := [:u2, strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
   u2
 
 newString2Words l ==
   not string? l => [l]
-  m := MAXINDEX l
-  m = -1 => NIL
+  m := maxIndex l
+  m = -1 => nil
   i := 0
   [w while newWordFrom(l,i,m) is [w,i]]
 
 newWordFrom(l,i,m) ==
-  while i <= m and l.i = char " " repeat i := i + 1
-  i > m => NIL
+  while i <= m and stringChar(l,i) = char " " repeat i := i + 1
+  i > m => nil
   buf := '""
-  ch := l.i
+  ch := stringChar(l,i)
   ch = $charFauxNewline => [$stringFauxNewline, i+ 1]
   done := false
   while i <= m and not done repeat
-    ch := l.i
+    ch := stringChar(l,i)
     ch = $charBlank or ch = $charFauxNewline => done := true
-    buf := strconc(buf, STRING ch)
+    buf := strconc(buf, charString ch)
     i := i + 1
   [buf,i]
 
 checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
-  m := MAXINDEX s
-  lastChar := s . m
-  lastChar = char '_! or lastChar = char '_? or lastChar = char '_. => s
-  lastChar = char '_, or lastChar = char '_; =>
-    s . m := (char '_.)
+  m := maxIndex s
+  lastChar := stringChar(s,m)
+  lastChar = char "!" or lastChar = char "?" or lastChar = char "." => s
+  lastChar = char "," or lastChar = char ";" =>
+    stringChar(s,m) := char "."
     s
   s
 
 checkGetArgs u ==
-  NOT string? u => nil
-  m := MAXINDEX u
+  not string? u => nil
+  m := maxIndex u
   k := firstNonBlankPosition(u)
-  k > 0 => checkGetArgs SUBSTRING(u,k,nil)
+  k > 0 => checkGetArgs subString(u,k)
   stringPrefix?('"\spad{",u) =>
-    k := getMatchingRightPren(u,6,char '_{,char '_}) or m
-    checkGetArgs SUBSTRING(u,6,k-6)
-  (i := charPosition(char '_(,u,0)) > m => nil
-  (u . m) ~= char '_) => nil
+    k := getMatchingRightPren(u,6,char "{",char "}") or m
+    checkGetArgs subString(u,6,k-6)
+  (i := charPosition(char "(",u,0)) > m => nil
+  stringChar(u,m) ~= char ")" => nil
   while (k := charPosition($charComma,u,i + 1)) < m repeat
-    acc := [trimString SUBSTRING(u,i + 1,k - i - 1),:acc]
+    acc := [trimString subString(u,i + 1,k - i - 1),:acc]
     i := k
-  nreverse [SUBSTRING(u,i + 1,m - i - 1),:acc]
+  reverse! [subString(u,i + 1,m - i - 1),:acc]
 
 checkGetMargin lines ==
   while lines repeat
@@ -674,25 +676,25 @@ checkGetMargin lines ==
 firstNonBlankPosition(x,:options) ==
   start := IFCAR options or 0
   k := -1
-  for i in start..MAXINDEX x repeat
-    if x.i ~= $charBlank then return (k := i)
+  for i in start..maxIndex x repeat
+    if stringChar(x,i) ~= $charBlank then return (k := i)
   k
 
 checkAddIndented(x,margin) ==
   k := firstNonBlankPosition x
   k = -1 => '"\blankline "
   margin = k => x
-  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
+  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(subString(x,k),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
-  m := MAXINDEX u
+  m := maxIndex u
   i := charPosition($charBlank,u,k)
   m < i => u
   j := i
-  while (j := j + 1) < m and u.j = (char '_  ) repeat 'continue
+  while (j := j + 1) < m and stringChar(u,j) = char " " repeat 'continue
   n := j - i   --number of blanks
-  n > 1 => strconc(SUBSTRING(u,0,i),'"\space{",
-             STRINGIMAGE n,'"}",checkAddSpaceSegments(SUBSTRING(u,i + n,nil),0))
+  n > 1 => strconc(subString(u,0,i),'"\space{",
+             STRINGIMAGE n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
   checkAddSpaceSegments(u,j)
 
 checkTrim($x,lines) == main where
@@ -700,7 +702,7 @@ checkTrim($x,lines) == main where
     s := [wherePP first lines]
     for x in rest lines repeat
       j := wherePP x
-      if not MEMQ(j,s) then
+      if not scalarMember?(j,s) then
         checkDocError [$x,'" has varying indentation levels"]
         s := [j,:s]
     [trim y for y in lines]
@@ -711,11 +713,11 @@ checkTrim($x,lines) == main where
     k
   trim(s) ==
     k := wherePP(s)
-    return SUBSTRING(s,k + 2,nil)
-    m := MAXINDEX s
+    return subString(s,k + 2)
+    m := maxIndex s
     n := k + 2
-    for j in (k + 2)..m while s.j = $charBlank repeat (n := n + 1)
-    SUBSTRING(s,n,nil)
+    for j in (k + 2)..m while stringChar(s,j) = $charBlank repeat (n := n + 1)
+    subString(s,n)
 
 checkExtract(header,lines) ==
   while lines repeat
@@ -725,11 +727,11 @@ checkExtract(header,lines) ==
     lines := rest lines
   null lines => nil
   u := first lines
-  j := charPosition(char '_:,u,k)
+  j := charPosition(char ":",u,k)
   margin := k
   firstLines :=
     (k := firstNonBlankPosition(u,j + 1)) ~= -1 =>
-      [SUBSTRING(u,j + 1,nil),:rest lines]
+      [subString(u,j + 1),:rest lines]
     rest lines
   --now look for another header; if found skip all rest of these lines
   acc := nil
@@ -738,12 +740,12 @@ checkExtract(header,lines) ==
       m := #line
       (k := firstNonBlankPosition line) = -1 => 'skip  --include if blank
       k > margin                             => 'skip  --include if idented
-      not upperCase? line.k                  => 'skip  --also if not upcased
-      (j := charPosition(char '_:,line,k)) = m   => 'skip  --or if not colon, or
-      (i := charPosition(char '_ ,line,k+1)) < j => 'skip  --blank before colon
+      not upperCase? stringChar(line,k)      => 'skip  --also if not upcased
+      (j := charPosition(char ":",line,k)) = m   => 'skip  --or if not colon, or
+      (i := charPosition(char " ",line,k+1)) < j => 'skip  --blank before colon
       return nil
     acc := [line,:acc]
-  nreverse acc
+  reverse! acc
 
 checkFixCommonProblem u ==
   acc := nil
@@ -756,7 +758,7 @@ checkFixCommonProblem u ==
       u := rest rest u
     acc := [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkDecorate u ==
   count := 0           -- number of enclosing opening braces
@@ -768,91 +770,93 @@ checkDecorate u ==
     x := first u
 
     if not verbatim then
-      if x = '"\em" then
+      if x is '"\em" then
         if count > 0 then
           mathSymbolsOk := count - 1
           spadflag := count - 1
         else checkDocError ['"\em must be enclosed in braces"]
-      if member(x,'("\spadpaste" "\spad" "\spadop")) then mathSymbolsOk := count
-      if member(x,'("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote")) then spadflag := count
+      if string? x and x in '("\spadpaste" "\spad" "\spadop") then
+        mathSymbolsOk := count
+      if string? x and x in '("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote") then
+        spadflag := count
       else if x = $charLbrace then
         count := count + 1
       else if x = $charRbrace then
         count := count - 1
         if mathSymbolsOk = count then mathSymbolsOk := false
         if spadflag = count then spadflag := false
-      else if not mathSymbolsOk and member(x,'("+" "*" "=" "==" "->")) then
+      else if not mathSymbolsOk and x in '("+" "*" "=" "==" "->") then
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
 
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
 
-      x = '"\begin" and first (v := IFCDR u) = $charLbrace and
-        first (v := IFCDR v) = '"detail" and first (v := IFCDR v) = $charRbrace
+      x is '"\begin" and first(v := IFCDR u) = $charLbrace and
+        first(v := IFCDR v) is '"detail" and first(v := IFCDR v) = $charRbrace
           =>
             u := v
             ['"\blankline ",:acc]
-      x = '"\end" and first (v := IFCDR u) = $charLbrace and
-        first (v := IFCDR v) = '"detail" and first (v := IFCDR v) = $charRbrace
+      x is '"\end" and first(v := IFCDR u) = $charLbrace and
+        first(v := IFCDR v) is '"detail" and first(v := IFCDR v) = $charRbrace
           =>
             u := v
             acc
-      x = char '_$ or x = '"$"  => ['"\$",:acc]
-      x = char '_% or x = '"%"  => ['"\%",:acc]
-      x = char '_, or x = '","  => 
+      char? x and x = char "$" or x is '"$"  => ['"\$",:acc]
+      char? x and x = char "%" or x is '"%"  => ['"\%",:acc]
+      char? x and x = char "," or x is '","  => 
         spadflag => ['",",:acc]
         ['",{}",:acc]
-      x = '"\spad" => ['"\spad",:acc]
-      string? x and digit? x.0 => [x,:acc]
+      x is '"\spad" => ['"\spad",:acc]
+      string? x and digit? stringChar(x,0) => [x,:acc]
       not spadflag and
-        (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
+        (char? x and alphabetic? x and not charMember?(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((string? x and not x.0 = $charBack and digit?(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(maxIndex x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
-      xcount := SIZE x
-      xcount = 3 and x.1 = char 't and x.2 = char 'h =>
+      xcount := (string? x => # x; 0)
+      xcount = 3 and x.1 = char "t" and x.2 = char "h" =>
         ['"th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
-      xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>
+      xcount = 4 and x.1 = char "-" and x.2 = char "t" and x.3 = char "h" =>
         ['"-th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
-      not spadflag and (xcount = 2 and x.1 = char 'i or  --wrap ei, xi, hi
-         xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
+      not spadflag and (xcount = 2 and x.1 = char "i" or  --wrap ei, xi, hi
+         xcount > 0 and xcount < 4 and not x in '("th" "rd" "st") and
            hasNoVowels x) =>                    --wrap words with no vowels
              [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 hasNoVowels x ==
-  max := MAXINDEX x
-  x.max = char 'y => false
-  and/[not isVowel(x.i) for i in 0..max]
+  max := maxIndex x
+  stringChar(x,max) = char "y" => false
+  and/[not isVowel stringChar(x,i) for i in 0..max]
 
 isVowel c ==
-  c=char 'a or c=char 'e or c=char 'i or c=char 'o or c=char 'u or
-    c=char 'A or c=char 'E or c=char 'I or c=char 'O or c=char 'U
+  c=char "a" or c=char "e" or c=char "i" or c=char "o" or c=char "u" or
+    c=char "A" or c=char "E" or c=char "I" or c=char "O" or c=char "U"
 
 
 checkAddBackSlashes s ==
-  (CHARP s and (c := s)) or (#s = 1 and (c := s.0)) =>
-    MEMQ(s,$charEscapeList) => strconc($charBack,c)
+  (char? s and (c := s)) or (#s = 1 and (c := stringChar(s,0))) =>
+    charMember?(s,$charEscapeList) => strconc($charBack,charString c)
     s
   k := 0
-  m := MAXINDEX s
+  m := maxIndex s
   insertIndex := nil
   while k <= m repeat
     do
-      char := s.k
-      char = $charBack => k := k + 2
-      MEMQ(char,$charEscapeList) => return (insertIndex := k)
+      c := stringChar(s,k)
+      c = $charBack => k := k + 2
+      charMember?(c,$charEscapeList) => return (insertIndex := k)
     k := k + 1
-  insertIndex => checkAddBackSlashes strconc(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
+  insertIndex => checkAddBackSlashes strconc(subString(s,0,insertIndex),$charBack,s.k,subString(s,insertIndex + 1))
   s
 
 checkAddSpaces u ==
@@ -865,14 +869,14 @@ checkAddSpaces u ==
     -- since this might be written to a file, we can't really use
     -- newline characters. The Browser and HD will do the translation
     -- later.
-    if f = '"\begin{verbatim}" then
+    if f is '"\begin{verbatim}" then
         space := $charFauxNewline
         if null u2 then u2 := [space]
 
     if i > 1 then u2 := [:u2, space, f]
     else u2 := [:u2, f]
 
-    if f = '"\end{verbatim}" then
+    if f is '"\end{verbatim}" then
         u2 := [:u2, space]
         space := $charBlank
   u2
@@ -883,29 +887,29 @@ checkIeEg u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkIeEgfun x => [:nreverse z,:acc]
+      z := checkIeEgfun x => [:reverse! z,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkIeEgfun x ==
   CHARP x => nil
-  x = '"" => nil
-  m := MAXINDEX x
+  x is '"" => nil
+  m := maxIndex x
   for k in 0..(m - 3) repeat
     x.(k + 1) = $charPeriod and x.(k + 3) = $charPeriod and
-     (x.k = char 'i and x.(k + 2) = char 'e and (key := '"that is")
-       or x.k = char 'e and x.(k + 2) = char 'g and (key := '"for example")) =>
-          firstPart := (k > 0 => [SUBSTRING(x,0,k)]; nil)
-          result := [:firstPart,'"\spadignore{",SUBSTRING(x,k,4),'"}",
-                     :checkIeEgfun SUBSTRING(x,k+4,nil)]
+     (x.k = char "i" and x.(k + 2) = char "e" and (key := '"that is")
+       or x.k = char "e" and x.(k + 2) = char "g" and (key := '"for example")) =>
+          firstPart := (k > 0 => [subString(x,0,k)]; nil)
+          result := [:firstPart,'"\spadignore{",subString(x,k,4),'"}",
+                     :checkIeEgfun subString(x,k+4)]
   result
 
 checkSplit2Words u ==
@@ -913,24 +917,24 @@ checkSplit2Words u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkSplitBrace x => [:nreverse z,:acc]
+      z := checkSplitBrace x => [:reverse! z,:acc]
       [x,:acc]
     u := rest u
-  nreverse acc
+  reverse! acc
 
 checkSplitBrace x ==
   CHARP x => [x]
   #x = 1 => [x.0]
   (u := checkSplitBackslash x)
      and rest u  => "append"/[checkSplitBrace y for y in u]
-  m := MAXINDEX x
+  m := maxIndex x
   (u := checkSplitOn x)
      and rest u  => "append"/[checkSplitBrace y for y in u]
   (u := checkSplitPunctuation x)
@@ -939,63 +943,64 @@ checkSplitBrace x ==
 
 checkSplitBackslash x ==
   not string? x => [x]
-  m := MAXINDEX x
+  m := maxIndex x
   (k := charPosition($charBack,x,0)) < m =>
     m = 1 or alphabetic?(x . (k + 1)) =>        --starts with a backslash so..
       (k := charPosition($charBack,x,1)) < m => --..see if there is another
-         [SUBSTRING(x,0,k),:checkSplitBackslash SUBSTRING(x,k,nil)]  -- yup
+         [subString(x,0,k),:checkSplitBackslash subString(x,k)]  -- yup
       [x]                                       --no, just return line
     k = 0 => --starts with backspace but x.1 is not a letter; break it up
-      [SUBSTRING(x,0,2),:checkSplitBackslash SUBSTRING(x,2,nil)]
-    u := SUBSTRING(x,0,k)
-    v := SUBSTRING(x,k,2)
+      [subString(x,0,2),:checkSplitBackslash subString(x,2)]
+    u := subString(x,0,k)
+    v := subString(x,k,2)
     k + 1 = m => [u,v]
-    [u,v,:checkSplitBackslash SUBSTRING(x,k + 2,nil)]
+    [u,v,:checkSplitBackslash subString(x,k + 2)]
   [x]
 
 checkSplitPunctuation x ==
-  CHARP x => [x]
-  m := MAXINDEX x
+  not string? x => [x]
+  m := maxIndex x
   m < 1 => [x]
   lastchar := x.m
-  lastchar = $charPeriod and x.(m - 1) = $charPeriod =>
+  lastchar = $charPeriod and stringChar(x,m - 1) = $charPeriod =>
     m = 1 => [x]
-    m > 3 and x.(m-2) = $charPeriod =>
-      [:checkSplitPunctuation SUBSTRING(x,0,m-2),'"..."]
-    [:checkSplitPunctuation SUBSTRING(x,0,m-1),'".."]
+    m > 3 and stringChar(x,m-2) = $charPeriod =>
+      [:checkSplitPunctuation subString(x,0,m-2),'"..."]
+    [:checkSplitPunctuation subString(x,0,m-1),'".."]
   lastchar = $charPeriod or lastchar = $charSemiColon or lastchar = $charComma
-    => [SUBSTRING(x,0,m),lastchar]
-  m > 1 and x.(m - 1) = $charQuote => [SUBSTRING(x,0,m - 1),SUBSTRING(x,m-1,nil)]
+    => [subString(x,0,m),lastchar]
+  m > 1 and stringChar(x,m - 1) = $charQuote =>
+    [subString(x,0,m - 1),subString(x,m-1)]
   (k := charPosition($charBack,x,0)) < m =>
     k = 0 =>
-      m = 1 or HGET($htMacroTable,x) or alphabetic? x.1 => [x]
-      v := SUBSTRING(x,2,nil)
-      [SUBSTRING(x,0,2),:checkSplitPunctuation v]
-    u := SUBSTRING(x,0,k)
-    v := SUBSTRING(x,k,nil)
+      m = 1 or tableValue($htMacroTable,x) or alphabetic? x.1 => [x]
+      v := subString(x,2)
+      [subString(x,0,2),:checkSplitPunctuation v]
+    u := subString(x,0,k)
+    v := subString(x,k)
     [:checkSplitPunctuation u,:checkSplitPunctuation v]
   (k := charPosition($charDash,x,1)) < m =>
-    u := SUBSTRING(x,k + 1,nil)
-    [SUBSTRING(x,0,k),$charDash,:checkSplitPunctuation u]
+    u := subString(x,k + 1)
+    [subString(x,0,k),$charDash,:checkSplitPunctuation u]
   [x]
 
 checkSplitOn(x) ==
-  CHARP x => [x]
+  not string? x => [x]
   l := $charSplitList
-  m := MAXINDEX x
+  m := maxIndex x
   while l repeat
     char := first l
     do
-      m = 0 and x.0 = char => return (k := -1)  --special exit
+      m = 0 and stringChar(x,0) = char => return (k := -1)  --special exit
       k := charPosition(char,x,0)
       k > 0 and x.(k - 1) = $charBack => [x]
       k <= m => return k
     l := rest l
   null l => [x]
   k = -1 => [char]
-  k = 0 => [char,SUBSTRING(x,1,nil)]
-  k = MAXINDEX x => [SUBSTRING(x,0,k),char]
-  [SUBSTRING(x,0,k),char,:checkSplitOn SUBSTRING(x,k + 1,nil)]
+  k = 0 => [char,subString(x,1)]
+  k = maxIndex x => [subString(x,0,k),char]
+  [subString(x,0,k),char,:checkSplitOn subString(x,k + 1)]
 
 
 checkBalance u ==
@@ -1015,7 +1020,7 @@ checkBalance u ==
         checkDocError ['"Missing left ",checkSayBracket open]
     u := rest u
   if stack then
-    for x in nreverse stack repeat
+    for x in reverse! stack repeat
       checkDocError ['"Missing right ",checkSayBracket x]
   u
 
@@ -1024,8 +1029,8 @@ checkBalance u ==
 ++    brace   ::= '{' | '}'
 ++    bracket ::= '[' | ']'
 checkSayBracket x ==
-  x = char '_( or x = char '_) => '"pren"
-  x = char '_{ or x = char '_} => '"brace"
+  x = char "(" or x = char ")" => '"pren"
+  x = char "{" or x = char "}" => '"brace"
   '"bracket"
 
 checkBeginEnd u ==
@@ -1033,27 +1038,27 @@ checkBeginEnd u ==
   while u repeat
     IDENTITY
       x := first u
-      string? x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
-        and not (x = '"\spadignore") and IFCAR IFCDR u = $charLbrace
+      string? x and x.0 = $charBack and #x > 2 and not tableValue($htMacroTable,x)
+        and not (x is '"\spadignore") and IFCAR IFCDR u = $charLbrace
           and not
             (substring?('"\radiobox",x,0) or substring?('"\inputbox",x,0))=>
              --allow 0 argument guys to pass through
               checkDocError ["Unexpected HT command: ",x]
-      x = '"\beginitems" =>
+      x is '"\beginitems" =>
         beginEndStack := ["items",:beginEndStack]
-      x = '"\begin" =>
+      x is '"\begin" =>
         u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           if not member(y,$beginEndList) then
             checkDocError ['"Unknown begin type: \begin{",y,'"}"]
           beginEndStack := [y,:beginEndStack]
           u := r
         checkDocError ['"Improper \begin command"]
-      x = '"\item" =>
+      x is '"\item" =>
         member(IFCAR beginEndStack,'("items" "menu")) => nil
         null beginEndStack =>
           checkDocError ['"\item appears outside a \begin-\end"]
         checkDocError ['"\item appears within a \begin{",IFCAR beginEndStack,'"}.."]
-      x = '"\end" =>
+      x is '"\end" =>
         u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           y = IFCAR beginEndStack =>
             beginEndStack := rest beginEndStack
@@ -1068,7 +1073,7 @@ checkArguments u ==
   while u repeat
     do
       x := first u
-      null (k := HGET($htMacroTable,x)) => 'skip
+      null (k := tableValue($htMacroTable,x)) => 'skip
       k = 0 => 'skip
       k > 0 => checkHTargs(x,rest u,k,nil)
       checkHTargs(x,rest u,-k,true)
@@ -1106,8 +1111,8 @@ checkLookForRightBrace(u) ==  --return line beginning with right brace
 
 checkInteger s ==
   CHARP s => false
-  s = '"" => false
-  and/[DIGIT_-CHAR_-P s.i for i in 0..MAXINDEX s]
+  s is '"" => false
+  and/[digit? stringChar(s,i) for i in 0..maxIndex s]
 
 checkTransformFirsts(opname,u,margin) ==
 --case 1: \spad{...
@@ -1115,73 +1120,74 @@ checkTransformFirsts(opname,u,margin) ==
 --case 3: form arg
 --case 4: op arg
 --case 5: arg op arg
-  namestring := PNAME opname
-  if namestring = '"Zero" then namestring := '"0"
-  else if namestring = '"One" then namestring := '"1"
+  namestring :=
+    opname is ['Zero] => '"0"
+    opname is ['One] => '"1"
+    symbolName opname
   margin > 0 =>
     s := leftTrim u
     strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))
-  m := MAXINDEX u
+  m := maxIndex u
   m < 2 => u
-  u.0 = $charBack => u
+  stringChar(u,0) = $charBack => u
   alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
     j := checkSkipBlanks(u,i,m) or return u
-    open := u.j
-    open = char '_[ and (close := char '_]) or
-          open = char '_(  and (close := char '_)) =>
+    open := stringChar(u,j)
+    open = char "[" and (close := char "]") or
+          open = char "("  and (close := char ")") =>
       k := getMatchingRightPren(u,j + 1,open,close)
-      namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+      namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
       null k =>
-         if open = char '_[
+         if open = char "["
            then checkDocError ['"Missing close bracket on first line: ", u]
            else checkDocError ['"Missing close parenthesis on first line: ", u]
          u
-      strconc('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
+      strconc('"\spad{",subString(u,0,k + 1),'"}",subString(u,k + 1))
     k := checkSkipToken(u,j,m) or return u
-    infixOp := INTERN SUBSTRING(u,j,k - j)
-    not GETL(infixOp,'Led) =>                                     --case 3
-      namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+    infixOp := makeSymbol subString(u,j,k - j)
+    null property(infixOp,'Led) =>                                --case 3
+      namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
-      #(p := PNAME infixOp) = 1 and (open := p.0) and
+      #(p := symbolName infixOp) = 1 and (open := p.0) and
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
-          if l > MAXINDEX u then l := k - 1
-          strconc('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
-      strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+          if l > maxIndex u then l := k - 1
+          strconc('"\spad{",subString(u,0,l + 1),'"}",subString(u,l + 1))
+      strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
     l := checkSkipBlanks(u,k,m) or return u
     n := checkSkipToken(u,l,m) or return u
-    namestring ~= PNAME infixOp =>
+    namestring ~= symbolName infixOp =>
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
-    strconc('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
+    strconc('"\spad{",subString(u,0,n),'"}",subString(u,n))   --case 5
   true =>          -- not alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
-    namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+    namestring ~= (firstWord := subString(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    prefixOp := INTERN SUBSTRING(u,0,i)
-    not GETL(prefixOp,'Nud) =>
+    prefixOp := makeSymbol subString(u,0,i)
+    not property(prefixOp,'Nud) =>
       u ---what could this be?
     j := checkSkipBlanks(u,i,m) or return u
-    u.j = char '_( =>                                            --case 4
-      j := getMatchingRightPren(u,j + 1,char '_(,char '_))
+    u.j = char "(" =>                                            --case 4
+      j := getMatchingRightPren(u,j + 1,char "(",char ")")
       j > m => u
-      strconc('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
+      strconc('"\spad{",subString(u,0,j + 1),'"}",subString(u,j + 1))
     k := checkSkipToken(u,j,m) or return u
-    namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+    namestring ~= (firstWord := subString(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+    strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
 
 getMatchingRightPren(u,j,open,close) ==
   count := 0
-  m := MAXINDEX u
+  m := maxIndex u
   for i in j..m repeat
-    c := u . i
+    c := stringChar(u,i)
     do
       c = close =>
         count = 0 => return (found := i)
@@ -1190,12 +1196,12 @@ getMatchingRightPren(u,j,open,close) ==
   found
 
 checkSkipBlanks(u,i,m) ==
-  while i < m and u.i = $charBlank repeat i := i + 1
+  while i < m and stringChar(u,i) = $charBlank repeat i := i + 1
   i = m => nil
   i
 
 checkSkipToken(u,i,m) ==
-  alphabetic?(u.i) => checkSkipIdentifierToken(u,i,m)
+  alphabetic? stringChar(u,i) => checkSkipIdentifierToken(u,i,m)
   checkSkipOpToken(u,i,m)
 
 checkSkipOpToken(u,i,m) ==
@@ -1212,7 +1218,7 @@ checkSkipIdentifierToken(u,i,m) ==
 
 ++ returns true if character `c' is alphabetic.
 checkAlphabetic c ==
-  alphabetic? c or digit? c or MEMQ(c,$charIdentifierEndings)
+  alphabetic? c or digit? c or charMember?(c,$charIdentifierEndings)
 
 --=======================================================================
 --        Code for creating a personalized report for ++ comments
@@ -1238,14 +1244,13 @@ whoOwns(con) ==
   null $exposeFlag => nil
 --con=constructor name (id beginning with a capital), returns owner as a string
   filename := getConstructorSourceFileFromDB con
-  quoteChar := char '_"
+  quoteChar := char "_""
   runCommand strconc('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
-  value :=
-    EOFP instream => nil
-    READLINE instream
+  value := readLine instream
   SHUT instream
-  value
+  value ~= %nothing => value
+  nil
 
 --=======================================================================
 --             Report Documentation Error
@@ -1290,22 +1295,22 @@ checkDecorateForHt u ==
   while u repeat
     x := first u
     do
-      if x = '"\em" then
+      if x is '"\em" then
         if count > 0 then spadflag := count - 1
         else checkDocError ['"\em must be enclosed in braces"]
-      if member(x,'("\s" "\spadop" "\spadtype" "\spad" "\spadpaste" "\spadcommand" "\footnote")) then spadflag := count
+      if x in '("\s" "\spadop" "\spadtype" "\spad" "\spadpaste" "\spadcommand" "\footnote") then spadflag := count
       else if x = $charLbrace then count := count + 1
       else if x = $charRbrace then
         count := count - 1
         if spadflag = count then spadflag := false
-      else if not spadflag and member(x,'("+" "*" "=" "==" "->")) then
+      else if not spadflag and x in '("+" "*" "=" "==" "->") then
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
-      x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
+      x is '"$" or x is '"%" => checkDocError ['"Unescaped ",x]
 --      not spadflag and string? x and (member(x,$argl) or #x = 1
---        and alphabetic? x.0) and not member(x,'("a" "A")) =>
+--        and alphabetic? x.0) and not (x in '("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit? stringChar(x,maxIndex x) or x in '("true" "false"))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

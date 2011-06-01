@@ -139,7 +139,7 @@ FractionalIdeal(R, F, UP, A): Exports == Implementation where
       intIdeal(coefficients(poly i1 * poly i2), denom i1 * denom i2)
 
     i:$ ** m:Integer ==
-      m < 0 => inv(i) ** (-m)
+      negative? m => inv(i) ** (-m)
       n := m::NonNegativeInteger
       v := numer i
       intIdeal([qelt(v, j) ** n for j in minIndex v .. maxIndex v],
@@ -349,7 +349,7 @@ ModularHermitianRowReduction(R): Exports == Implementation where
         normalizedDivide(n:R, d:R):Record(quotient:R, remainder:R) ==
             qr := divide(n, d)
             qr.remainder >= 0 => qr
-            d > 0 =>
+            positive? d =>
                 qr.remainder := qr.remainder + d
                 qr.quotient := qr.quotient - 1
                 qr
@@ -440,7 +440,7 @@ ModularHermitianRowReduction(R): Exports == Implementation where
             qsetelt!(x, k, j, 0)
           un := unitNormal qelt(x,i,j)
           qsetelt!(x,i,j,un.canonical)
-          if un.associate ~= 1 then for jj in (j+1)..ncols repeat
+          if not one?(un.associate) then for jj in (j+1)..ncols repeat
               qsetelt!(x,i,jj,un.associate * qelt(x,i,jj))
 
           xij := qelt(x,i,j)
@@ -698,7 +698,7 @@ HyperellipticFiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
 -- if is cheaper to keep on reducing as we exponentiate if d is already reduced
     n:Z * d:% ==
       zero? n => 0
-      n < 0 => (-n) * (-d)
+      negative? n => (-n) * (-d)
       divisor(d.principalPart ** n) + divisor(mkIdeal(d.center,d.polyPart) ** n)
 
     divisor(i:ID) ==
@@ -720,7 +720,7 @@ HyperellipticFiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
       v::UP
 
     redpolyIfCan(h, a) ==
-      degree(p := lift h) ~= 1 => "failed"
+      not one? degree(p := lift h) => "failed"
       q := - coefficient(p, 0) / coefficient(p, 1)
       rec := extendedEuclidean(denom q, a)
       not ground?(rec.generator) => "failed"
@@ -876,10 +876,10 @@ FiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
                   ((n exquo rank()) case "failed") =>
                                     error "divisor: point is singular"
         m:N :=
-          n < 0 => (-n)::N
+          negative? n => (-n)::N
           n::N
         g := makeDivisor(d**m,(monomial(1,1)$UPUP - b::UP::RF::UPUP)**m,1)
-        n < 0 => -g
+        negative? n => -g
         g
 
       reduce d ==

@@ -109,7 +109,7 @@ ComplexCategory(R:CommutativeRing): Category ==
           factorSquareFreePolynomial pp ==
               pnorm:=normPolynomial pp
               k:R:=0
-              while degree gcd(pnorm,differentiate pnorm)>0 repeat
+              while positive? degree gcd(pnorm,differentiate pnorm) repeat
                  k:=k+1
                  pnorm:=normPolynomial
                           elt(pp,monomial(1,1)-monomial(complex(0,k),0))
@@ -273,7 +273,7 @@ ComplexCategory(R:CommutativeRing): Category ==
                                               complex(0, - c.associate)]
              c := unitNormal real x
              x := c.associate * x
-             imag x < 0 =>
+             negative? imag x =>
                x := complex(- imag x, real x)
                [- c.unit * imaginary(), x, c.associate * imaginary()]
              [c.unit ::%, x, c.associate ::%]
@@ -327,12 +327,12 @@ ComplexCategory(R:CommutativeRing): Category ==
             xx := x * y1
             x1 := real(xx) rem r
             a  := x1
-            if x1~=0 and sizeLess?(r, 2 * x1) then
+            if not zero? x1 and sizeLess?(r, 2 * x1) then
               a := x1 - r
               if sizeLess?(x1, a) then a := x1 + r
             x2 := imag(xx) rem r
             b  := x2
-            if x2~=0 and sizeLess?(r, 2 * x2) then
+            if not zero? x2 and sizeLess?(r, 2 * x2) then
               b := x2 - r
               if sizeLess?(x2, b) then b := x2 + r
             y1 := (complex(a, b) exquo y1)::%
@@ -378,25 +378,25 @@ ComplexCategory(R:CommutativeRing): Category ==
          pi()  == pi()$R :: %
 
          if R is DoubleFloat then
-            stoc ==> S_-TO_-C$Lisp
-            ctos ==> C_-TO_-S$Lisp
+            stoc ==> %val2z$Foreign(Builtin)
+            ctos ==> %z2val$Foreign(Builtin)
 
-            exp   x == ctos EXP(stoc x)$Lisp
-            log   x == ctos LOG(stoc x)$Lisp
+            exp   x == ctos %zexp(stoc x)$Foreign(Builtin)
+            log   x == ctos %zlog(stoc x)$Foreign(Builtin)
 
-            sin   x == ctos SIN(stoc x)$Lisp
-            cos   x == ctos COS(stoc x)$Lisp
-            tan   x == ctos TAN(stoc x)$Lisp
-            asin  x == ctos ASIN(stoc x)$Lisp
-            acos  x == ctos ACOS(stoc x)$Lisp
-            atan  x == ctos ATAN(stoc x)$Lisp
+            sin   x == ctos %zsin(stoc x)$Foreign(Builtin)
+            cos   x == ctos %zcos(stoc x)$Foreign(Builtin)
+            tan   x == ctos %ztan(stoc x)$Foreign(Builtin)
+            asin  x == ctos %zasin(stoc x)$Foreign(Builtin)
+            acos  x == ctos %zacos(stoc x)$Foreign(Builtin)
+            atan  x == ctos %zatan(stoc x)$Foreign(Builtin)
 
-            sinh  x == ctos SINH(stoc x)$Lisp
-            cosh  x == ctos COSH(stoc x)$Lisp
-            tanh  x == ctos TANH(stoc x)$Lisp
-            asinh x == ctos ASINH(stoc x)$Lisp
-            acosh x == ctos ACOSH(stoc x)$Lisp
-            atanh x == ctos ATANH(stoc x)$Lisp
+            sinh  x == ctos %zsinh(stoc x)$Foreign(Builtin)
+            cosh  x == ctos %zcosh(stoc x)$Foreign(Builtin)
+            tanh  x == ctos %ztanh(stoc x)$Foreign(Builtin)
+            asinh x == ctos %zasinh(stoc x)$Foreign(Builtin)
+            acosh x == ctos %zacosh(stoc x)$Foreign(Builtin)
+            atanh x == ctos %zatanh(stoc x)$Foreign(Builtin)
 
          else
            atan x ==

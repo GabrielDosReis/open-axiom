@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -44,9 +44,9 @@ $asyPrint := false
 asList() ==
   removeFile '"temp.text"
   OBEY '"ls as/*.asy > temp.text"
-  instream := OPEN '"temp.text"
-  lines := [READLINE instream while not EOFP instream]
-  CLOSE instream
+  instream := inputTextFile '"temp.text"
+  lines := [line := readLine instream while line ~= %nothing]
+  closeStream instream
   lines
 
 asAll lines ==
@@ -68,7 +68,7 @@ astran asyFile ==
   $asyFile: local := asyFile
   $asFilename: local := strconc(PATHNAME_-NAME asyFile,'".as")
   asytran asyFile
-  conlist := [x for x in HKEYS $conHash | HGET($conHash,x) isnt [.,.,"function",:.]]
+  conlist := [x for x in HKEYS $conHash | tableValue($conHash,x) isnt [.,.,"function",:.]]
   $mmAlist : local :=
     [[con,:asyConstructorModemap con] for con in conlist]
   $docAlist : local :=
@@ -77,10 +77,10 @@ astran asyFile ==
 --$childrenHash: local := MAKE_-HASH_-TABLE()
   for con in conlist repeat
     parents := asyParents con
-    HPUT($parentsHash,con,asyParents con)
+    tableValue($parentsHash,con) := asyParents con
 --  for [parent,:pred] in parents repeat
 --    parentOp := opOf parent
---    HPUT($childrenHash,parentOp,insert([con,:pred],HGET($childrenHash,parentOp)))
+--    tableValue($childrenHash,parentOp) := insert([con,:pred],tableValue($childrenHash,parentOp))
   $newConlist := union(conlist, $newConlist)
   [[x,:asMakeAlist x] for x in HKEYS $conHash]
 
@@ -91,11 +91,11 @@ asyParents(conform) ==
   modemap := LASSOC(con,$mmAlist)
   $constructorCategory :local := asySubstMapping modemap.mmTarget
   for x in folks $constructorCategory repeat
---  x := SUBLISLIS(formalParams,formals,x)
---  x := SUBLISLIS(IFCDR conform,formalParams,x)
---  x := SUBST('Type,'Object,x)
+--  x := applySubst(pairList(formals,formalParams),x)
+--  x := applySubst(pairList(formalParams,IFCDR conform),x)
+--  x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  nreverse acc
+  reverse! acc
 
 asySubstMapping u ==
   u is [op,:r] =>
@@ -109,13 +109,13 @@ asySubstMapping u ==
   u
 
 --asyFilePackage asyFile ==
---  name := INTERN PATHNAME_-NAME asyFile
+--  name := makeSymbol PATHNAME_-NAME asyFile
 --  modemap :=
 --    [[[name],['CATEGORY,'domain,
---      :[asyMkSignature(con,CDAR mm) for [con,:mm] in $mmAlist]]],['T,name]]
---  opAlist := [[con,[CDAR mm]] for [con,:mm] in $mmAlist]
+--      :[asyMkSignature(con,mm.mmSignature) for [con,:mm] in $mmAlist]]],['T,name]]
+--  opAlist := [[con,[mm.mmSignature]] for [con,:mm] in $mmAlist]
 --  documentation :=
---    [[con,[CDAR mm,fn LASSOC(con,$docAlist)]] for [con,:mm] in $mmAlist]
+--    [[con,[mm.mmSignature,fn LASSOC(con,$docAlist)]] for [con,:mm] in $mmAlist]
 --      where fn u ==
 --            LASSOC('constructor,u) is [[=nil,doc]] => doc
 --            '""
@@ -135,39 +135,41 @@ asyMkSignature(con,sig) ==
   ['SIGNATURE,con,sig]
 
 asMakeAlist con ==
-  record := HGET($conHash,con)
+  record := tableValue($conHash,con)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
 --TTT in case we put the wrong thing in for niladic catgrs
 --if atom(form) and kind='category then form:=[form]
   if atom(form) then form:=[form]
-  kind = 'function => asMakeAlistForFunction con
+  kind is 'function => asMakeAlistForFunction con
   abb := asyAbbreviation(con,#(KDR sig))
-  if null KDR form then PUT(opOf form,'NILADIC,'T)
+  if null KDR form then
+    property(opOf form,'NILADIC) := 'T
   modemap := asySubstMapping LASSOC(con,$mmAlist)
   $constructorCategory :local := modemap.mmTarget
-  parents := mySort HGET($parentsHash,con)
---children:= mySort HGET($childrenHash,con)
-  alists  := HGET($opHash,con)
-  opAlist := SUBLISLIS($FormalMapVariableList,KDR form,CDDR alists)
-  ancestorAlist:= SUBLISLIS($FormalMapVariableList,KDR form,first alists)
+  parents := mySort tableValue($parentsHash,con)
+--children:= mySort tableValue($childrenHash,con)
+  alists  := tableValue($opHash,con)
+  opAlist := applySubst(pairList(KDR form,$FormalMapVariableList),CDDR alists)
+  ancestorAlist :=
+    applySubst(pairList(KDR form,$FormalMapVariableList),first alists)
   catAttrs := [[x,:true] for x in getAttributesFromCATEGORY $constructorCategory]
   attributeAlist := removeDuplicates [:second alists,:catAttrs]
   documentation :=
-    SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
+    applySubst(pairList(KDR form,$FormalMapVariableList),LASSOC(con,$docAlist))
   filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
-  constantPart := HGET($constantHash,con) and [['constant,:true]]
-  niladicPart := MEMQ(con,$niladics) and [['NILADIC,:true]]
+  constantPart := tableValue($constantHash,con) and [['constant,:true]]
+  niladicPart := symbolMember?(con,$niladics) and [['NILADIC,:true]]
   falist :=  TAKE(#KDR form,$FormalMapVariableList)
   constructorCategory :=
-    kind = 'category =>
+    kind is 'category =>
       talist := TAKE(#KDR form, $TriangleVariableList)
-      SUBLISLIS(talist, falist, $constructorCategory)
-    SUBLISLIS(falist,KDR form,$constructorCategory)
+      applySubst(pairList(falist,talist),$constructorCategory)
+    applySubst(pairList(KDR form,falist),$constructorCategory)
   if constructorCategory='Category then kind := 'category
   exportAlist := asGetExports(kind, form, constructorCategory)
-  constructorModemap  := SUBLISLIS(falist,KDR form,modemap)
+  constructorModemap := applySubst(pairList(KDR form,falist),modemap)
 --TTT fix a niladic category constructormodemap (remove the joins)
-  if kind = 'category then
+  if kind is 'category then
      constructorModemap.mmTarget := $Category
   res := [['constructorForm,:form],:constantPart,:niladicPart,
            ['constructorKind,:kind],
@@ -198,7 +200,7 @@ asGetExports(kind, conform, catform) ==
       [sig, nil, :pred]
 
 asMakeAlistForFunction fn ==
-  record := HGET($conHash,fn)
+  record := tableValue($conHash,fn)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
   modemap := LASSOC(fn,$mmAlist)
   newsig := asySignature(sig,nil)
@@ -248,7 +250,7 @@ displayDatabase x == main where
 zeroOneConversion opAlist == opAlist
 --   for u in opAlist repeat
 --     [op,:.] := u
---     digit? (PNAME op).0 => u.first := string2Integer PNAME op
+--     digit? stringChar(PNAME op,0) => u.first := string2Integer PNAME op
 --   opAlist
 
 asyDisplay(con,alist) ==
@@ -268,24 +270,24 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
     kind in '(category function) => "*1"
     form
   pred1 :=
-    kind = 'category => [["*1",form]]
+    kind is 'category => [["*1",form]]
     nil
-  signature  := CDAR modemap
+  signature  := modemap.mmSignature
   domainList :=
     [[a,m] for a in rest form for m in rest signature |
        asIsCategoryForm m]
   catPredList:=
-    kind = 'function => [["isFreeFunction","*1",opOf form]]
+    kind is 'function => [["isFreeFunction","*1",opOf form]]
     [['ofCategory,:u] for u in [:pred1,:domainList]]
---  for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
+--  for [op,:itemlist] in applySubst(pairList($FormalMapVariableList,rpvl),opAlist) repeat
 --  the code seems to oscillate between generating $FormalMapVariableList 
 --  and generating $TriangleVariableList
-  for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
+  for [op,:itemlist] in applySubst(pairList($FormalMapVariableList,rpvl),opAlist) repeat
     for [sig0, pred] in itemlist repeat
       sig := substitute(dc,"$",sig0)
-      pred:= subtitute(dc,"$",pred)
-      sig := SUBLISLIS(rpvl,KDR oform,sig)
-      pred:= SUBLISLIS(rpvl,KDR oform,pred)
+      pred:= substitute(dc,"$",pred)
+      sig := applySubst(pairList(KDR oform,rpvl),sig)
+      pred:= applySubst(pairList(KDR oform,rpvl),pred)
       pred := pred or 'T
   ----------> Constants change <--------------
       if IDENTP sig0 then
@@ -294,33 +296,33 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
       pred' := MKPF([pred,:catPredList],'AND)
       mm := [[dc,:sig],[pred']]
       acc := [[op,:interactiveModemapForm mm],:acc]
-  nreverse acc
+  reverse! acc
 
 asIsCategoryForm m ==
   m = "BasicType" or getConstructorKindFromDB opOf m = "category"
 
 asyDocumentation con ==
-  docHash := HGET($docHash,con)
+  docHash := tableValue($docHash,con)
   u := [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash
-           | rec := HGET(docHash,op)] where fn(x,op) ==
+           | rec := tableValue(docHash,op)] where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     ----------> Constants change <--------------
     if IDENTP sig then sig := [sig]
     [asySignature(sig,nil),trimComments comments]
-  [form,sig,pred,origin,where?,comments] := first HGET($conHash,con)
+  [form,sig,pred,origin,where?,comments] := first tableValue($conHash,con)
   --above "first" assumes only one entry
   comments := trimComments asyExtractDescription comments
   [:u,['constructor,[nil,comments]]]
 
 asyExtractDescription str ==
-  k := STRPOS('"Description:",str,0,nil) => asyExtractDescription SUBSTRING(str,k + 12,nil)
-  k := STRPOS('"Author:",str,0,nil) => asyExtractDescription SUBSTRING(str,0,k)
+  k := STRPOS('"Description:",str,0,nil) => asyExtractDescription subString(str,k + 12)
+  k := STRPOS('"Author:",str,0,nil) => asyExtractDescription subString(str,0,k)
   str
 
 trimComments str ==
-  null str or str = '"" => '""
-  m := MAXINDEX str
-  str := SUBSTRING(str,0,m)
+  str = nil or str is '"" => '""
+  m := maxIndex str
+  str := subString(str,0,m)
   trimString str
 
 asyExportAlist con ==
@@ -328,8 +330,8 @@ asyExportAlist con ==
 --    <sig slotNumberOrNil optPred optELT>
 --    <sig sig'            predOrT "Subsumed">
 --!!! asyFile NEED: need to know if function is implemented by domain!!!
-  docHash := HGET($docHash,con)
-  [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash | rec := HGET(docHash,op)]
+  docHash := tableValue($docHash,con)
+  [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash | rec := tableValue(docHash,op)]
        where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     tail :=
@@ -340,15 +342,15 @@ asyExportAlist con ==
 
 asyMakeOperationAlist(con,proplist, key) ==
   oplist :=
-    u := LASSOC('domExports,proplist) =>
+    u := symbolLassoc('domExports,proplist) =>
       kind := 'domain
       u
-    u := LASSOC('catExports,proplist) =>
+    u := symbolLassoc('catExports,proplist) =>
       kind := 'category
       u
-    key = 'domain =>
+    key is 'domain =>
       kind := 'domain
-      u := NIL
+      u := nil
     return nil
   ht := MAKE_-HASH_-TABLE()
   ancestorAlist := nil
@@ -364,7 +366,7 @@ asyMakeOperationAlist(con,proplist, key) ==
   ----------> Constants change <--------------
       id
     pred :=
-      LASSOC('condition,r) is p => hackToRemoveAnd p
+      symbolLassoc('condition,r) is p => hackToRemoveAnd p
       nil
     sig := asySignature(asytranForm(form,[idForm],nil),nil)
     entry :=
@@ -374,10 +376,10 @@ asyMakeOperationAlist(con,proplist, key) ==
           [[sig],nil,true,'ASCONST]
       pred => [sig,nil,asyPredTran pred]
       [sig]
-    HPUT(ht,id,[entry,:HGET(ht,id)])
-  opalist := [[op,:removeDuplicates HGET(ht,op)] for op in HKEYS ht]
-  --HPUT($opHash,con,[ancestorAlist,attributeAlist,:opalist])
-  HPUT($opHash,con,[ancestorAlist,nil,:opalist])
+    tableValue(ht,id) := [entry,:tableValue(ht,id)]
+  opalist := [[op,:removeDuplicates tableValue(ht,op)] for op in HKEYS ht]
+  --tableValue($opHash,con) := [ancestorAlist,attributeAlist,:opalist]
+  tableValue($opHash,con) := [ancestorAlist,nil,:opalist]
 
 hackToRemoveAnd p ==
 ---remove this as soon as .asy files do not contain forms (And pred) forms
@@ -390,8 +392,8 @@ asyAncestors x ==
   x is ['Apply,:r] => asyAncestorList r
   x is [op,y,:.] and op in '(PretendTo RestrictTo) => asyAncestors y
   atom x =>
-    x = '_% => '_$
-    MEMQ(x, $niladics)       => [x]
+    x is '_% => '_$
+    symbolMember?(x, $niladics)       => [x]
     niladicConstructorFromDB x => [x]
     x
   asyAncestorList x
@@ -415,7 +417,7 @@ asyAncestorList x == [asyAncestors y for y in x]
 asytran fn ==
 --put operations into table format for browser:
 --    <sig pred origin         exposed? comments>
-  inStream := OPEN fn
+  inStream := inputTextFile fn
   sayBrightly ['"   Reading ",fn]
   u := VMREAD inStream
   $niladics := mkNiladics u
@@ -426,8 +428,8 @@ asytran fn ==
     $docHashLocal: local := MAKE_-HASH_-TABLE()
     asytranDeclaration(d,'(top),nil,false)
     if null name then hohohoho()
-    HPUT($docHash,name,$docHashLocal)
-  CLOSE inStream
+    tableValue($docHash,name) := $docHashLocal
+  closeStream inStream
   'done
 
 mkNiladics u ==
@@ -436,11 +438,11 @@ mkNiladics u ==
 --OLD DEFINITION FOLLOWS
 asytranDeclaration(dform,levels,predlist,local?) ==
   ['Declare,id,form,r] := dform
-  id = 'failed => id
-  KAR dform ~= 'Declare => systemError '"asytranDeclaration"
-  if levels = '(top) then
-    if form isnt ['Apply,"->",:.] then HPUT($constantHash,id,true)
-  comments := LASSOC('documentation,r) or '""
+  id is 'failed => id
+  KAR dform isnt 'Declare => systemError '"asytranDeclaration"
+  if levels is '(top) then
+    if form isnt ['Apply,"->",:.] then tableValue($constantHash,id) := true
+  comments := symbolLassoc('documentation,r) or '""
   idForm   :=
     levels is ['top,:.] =>
       form is ['Apply,'_-_>,source,target] => [id,:asyArgs source]
@@ -459,14 +461,14 @@ asytranDeclaration(dform,levels,predlist,local?) ==
         'domain
       'domain
     first levels
-  typeCode := LASSOC('symeTypeCode,r)
+  typeCode := symbolLassoc('symeTypeCode,r)
   record := [idForm,newsig,asyMkpred predlist,key,true,comments,typeCode,:$asyFile]
   if not local? then
     ht :=
-      levels = '(top) => $conHash
+      levels is '(top) => $conHash
       $docHashLocal
-    HPUT(ht,id,[record,:HGET(ht,id)])
-  if levels = '(top) then asyMakeOperationAlist(id,r, key)
+    tableValue(ht,id) := [record,:tableValue(ht,id)]
+  if levels is '(top) then asyMakeOperationAlist(id,r, key)
   ['Declare,id,newsig,r]
 
 asyLooksLikeCatForm? x ==
@@ -476,13 +478,13 @@ asyLooksLikeCatForm? x ==
 
 --asytranDeclaration(dform,levels,predlist,local?) ==
 --  ['Declare,id,form,r] := dform
---  id = 'failed => id
+--  id is 'failed => id
 --  levels isnt ['top,:.] => asytranForm(form,[id,:levels],local?)
 --  idForm   :=
 --    form is ['Apply,'_-_>,source,target] => [id,:asyArgs source]
 --    id
---  if form isnt ['Apply,"->",:.] then HPUT($constantHash,id,true)
---  comments := LASSOC('documentation,r) or '""
+--  if form isnt ['Apply,"->",:.] then tableValue($constantHash,id) := true
+--  comments := symbolLassoc('documentation,r) or '""
 --  newsig  := asytranForm(form,[idForm,:levels],local?)
 --  key :=
 --    id in '(%% Category Type) => 'constant
@@ -493,10 +495,10 @@ asyLooksLikeCatForm? x ==
 --  record := [newsig,asyMkpred predlist,key,true,comments,:$asyFile]
 --  if not local? then
 --    ht :=
---      levels = '(top) => $conHash
+--      levels is '(top) => $conHash
 --      $docHashLocal
---    HPUT(ht,id,[record,:HGET(ht,id)])
---  if levels = '(top) then asyMakeOperationAlist(id,r)
+--    tableValue(ht,id) := [record,:tableValue(ht,id)]
+--  if levels is '(top) then asyMakeOperationAlist(id,r)
 --  ['Declare,id,newsig,r]
 
 asyIsCatForm form ==
@@ -541,13 +543,13 @@ asytranForm1(form,levels,local?) ==
   form is ['Define,:.]  =>
     form is ['Define,['Declare,.,x,:.],rest] =>
 --TTT i don't know about this one but looks ok
-      x = 'Category => asytranForm1(rest,levels, local?)
+      x is 'Category => asytranForm1(rest,levels, local?)
       asytranForm1(x,levels,local?)
     error '"DEFINE forms are not handled yet"
-  if form = '_% then $hasPerCent := true
+  if form is '_% then $hasPerCent := true
   IDENTP form =>
-    form = "%" => "$"
-    GETL(form,"NILADIC") => [form]
+    form is "%" => "$"
+    form has NILADIC => [form]
     form
   [asytranForm(x,levels,local?) for x in form]
 
@@ -562,7 +564,7 @@ asytranApply(['Apply,name,:arglist],levels,local?) ==
   name is 'string => asytranLiteral first arglist
   name is 'integer => asytranLiteral first arglist
   name is 'float => asytranLiteral first arglist
-  name = 'Enumeration =>
+  name is 'Enumeration =>
     ["Enumeration",:[asytranEnumItem arg for arg in arglist]]
   [:argl,lastArg] := arglist
   [name,:[asytranFormSpecial(arg,levels,true) for arg in argl],
@@ -605,11 +607,11 @@ asytranCategory(form,levels,predlist,local?) ==
     dform := asytranCategoryItem(x,levels,predlist,local?)
     null dform => nil
     dform is ['Declare,id,record,r] =>
-      HPUT(catTable,id,[asyWrap(record,predlist),:HGET(catTable,id)])
+      tableValue(catTable,id) := [asyWrap(record,predlist),:tableValue(catTable,id)]
     catList := [asyWrap(dform,predlist),:catList]
   keys := listSort(function GLESSEQP,HKEYS catTable)
-  right1 := nreverse catList
-  right2 := [[key,:HGET(catTable,key)] for key in keys]
+  right1 := reverse! catList
+  right2 := [[key,:tableValue(catTable,key)] for key in keys]
   right :=
     right2 => [:right1,['Exports,:right2]]
     right1
@@ -654,7 +656,7 @@ extendConstructorDataTable() ==
 --  tb := $constructorDataTable
   for x in listSort(function GLESSEQP,HKEYS $conHash) repeat
 --     if LASSOC(x,tb) then tb := DELLASOS(x,tb)
-     record := HGET($conHash,x)
+     record := tableValue($conHash,x)
      [form,sig,predlist,origin,exposure,comments,typeCode,:filename] := first record
      abb := asyAbbreviation(x,#(rest sig))
      kind := 'domain
@@ -691,9 +693,9 @@ asyCosigType u ==
   u is [name,t] =>
     t is [fn,:.] =>
       asyComma? fn => fn
-      fn = 'With  => 'T
+      fn is 'With  => 'T
       nil
-    t = 'Type => 'T
+    t is 'Type => 'T
     error '"Unknown atomic type"
   error false
 
@@ -701,12 +703,12 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
   main() ==
     a := createAbbreviation id => a
     name := PNAME id
---  #name < 8 => INTERN UPCASE name
-    parts := asySplit(name,MAXINDEX name)
+--  #name < 8 => makeSymbol stringUpcase name
+    parts := asySplit(name,maxIndex name)
     newname := strconc/[asyShorten x for x in parts]
-    #newname < 8 => INTERN newname
-    tryname := SUBSTRING(name,0,7)
-    not createAbbreviation tryname => INTERN UPCASE tryname
+    #newname < 8 => makeSymbol newname
+    tryname := subString(name,0,7)
+    not createAbbreviation tryname => makeSymbol stringUpcase tryname
     nil
   chk(conname,abb) ==
     (xx := asyGetAbbrevFromComments conname) => xx
@@ -716,24 +718,24 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     abb
 
 asyGetAbbrevFromComments con ==
-  docHash := HGET($docHash,con)
+  docHash := tableValue($docHash,con)
   u := [[op,:[fn(x,op) for x in rec]] for op in HKEYS docHash
-           | rec := HGET(docHash,op)] where fn(x,op) ==
+           | rec := tableValue(docHash,op)] where fn(x,op) ==
     [form,sig,pred,origin,where?,comments,:.] := x
     ----------> Constants change <--------------
     if IDENTP sig then sig := [sig]
     [asySignature(sig,nil),trimComments comments]
-  [form,sig,pred,origin,where?,comments] := first HGET($conHash,con)
+  [form,sig,pred,origin,where?,comments] := first tableValue($conHash,con)
   --above "first" assumes only one entry
   x := asyExtractAbbreviation comments
   x => intern x
-  NIL
+  nil
 
 asyExtractAbbreviation str ==
-        not (k:= STRPOS('"Abbrev: ",str,0,nil)) => NIL
-        str := SUBSTRING(str, k+8, nil)
+        not (k:= STRPOS('"Abbrev: ",str,0,nil)) => nil
+        str := subString(str, k+8)
         k := STRPOS($stringNewline, str,0,nil)
-        k => SUBSTRING(str, 0, k)
+        k => subString(str, 0, k)
         str
 
 asyShorten x ==
@@ -750,11 +752,11 @@ asySplit(name,end) ==
   k := 0
   for i in 1..end while lowerCase? name.i repeat k := i
   k := k + 1
-  [SUBSTRING(name,0,k),:asySplit(SUBSTRING(name,k,nil),end-k)]
+  [subString(name,0,k),:asySplit(subString(name,k),end-k)]
 
 createAbbreviation s ==
-  if string? s then s := INTERN s
-  a := constructor? s
+  if string? s then s := makeSymbol s
+  a := getConstructorAbbreviationFromDB s
   a ~= s => a
   nil
 
@@ -764,7 +766,7 @@ createAbbreviation s ==
 --Note: modemap property is built when getConstructorModemapFromDB is called
 
 asyConstructorModemap con ==
-  HGET($conHash,con) isnt [record,:.] => nil   --not there
+  tableValue($conHash,con) isnt [record,:.] => nil   --not there
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := record
   $kind: local := kind
   --NOTE: sig has the form (-> source target) or simply (target)
@@ -772,7 +774,7 @@ asyConstructorModemap con ==
   signature := asySignature(sig,false)
   formals := ['_$,:TAKE(#$constructorArgs,$FormalMapVariableList)]
   mm := [[[con,:$constructorArgs],:signature],['T,con]]
-  SUBLISLIS(formals,['_%,:$constructorArgs],mm)
+  applySubst(pairList(['_%,:$constructorArgs],formals),mm)
 
 asySignature(sig,names?) ==
   sig is ['Join,:.] => [asySig(sig,nil)]
@@ -798,30 +800,30 @@ asySig1(u,name?,target?) ==
     name? and u is [name,t] => t
     u
   x is [fn,:r] =>
-    fn = 'Join => asyTypeJoin r       ---------> jump out to newer code 4/94
+    fn is 'Join => asyTypeJoin r       ---------> jump out to newer code 4/94
     fn in '(RestrictTo PretendTo) => asySig(first r,name?)
     asyComma? fn =>
       u := [asySig(x,name?) for x in r]
       target? =>
-        null u => '(Void)
+        null u => $Void
         -- this implies a multiple value return, not currently supported
         -- in the interpreter
         ['Multi,:u]
       u
-    fn = 'With  => asyCATEGORY r
-    fn = 'Third =>
+    fn is 'With  => asyCATEGORY r
+    fn is 'Third =>
       r is [b] =>
         b is ['With,:s]  => asyCATEGORY s
         b is ['Blank,:.] => asyCATEGORY nil
       error x
-    fn = 'Apply and r is ['_-_>,:s] => asyMapping(s,name?)
-    fn = '_-_> => asyMapping(r,name?)
-    fn = 'Declare and r is [name,typ,:.] =>
+    fn is 'Apply and r is ['_-_>,:s] => asyMapping(s,name?)
+    fn is '_-_> => asyMapping(r,name?)
+    fn is 'Declare and r is [name,typ,:.] =>
         asySig1(typ, name?, target?)
     x is '(_%) => '(_$)
     [fn,:[asySig(x,name?) for x in r]]
---x = 'Type => '(Type)
-  x = '_% => '_$
+--x is 'Type => $Type
+  x is '_% => '_$
   x
 
 -- old version was :
@@ -846,19 +848,19 @@ asyMapping([a,b],name?) ==
 --============================================================================
 asyType x ==
   x is [fn,:r] =>
-    fn = 'Join => asyTypeJoin r
+    fn is 'Join => asyTypeJoin r
     fn in '(RestrictTo PretendTo) => asyType first r
     asyComma? fn =>
       u := [asyType x for x in r]
       u
-    fn = 'With  => asyCATEGORY r
-    fn = '_-_> => asyTypeMapping r
-    fn = 'Apply => r
---  fn = 'Declare and r is [name,typ,:.] => typ
+    fn is 'With  => asyCATEGORY r
+    fn is '_-_> => asyTypeMapping r
+    fn is 'Apply => r
+--  fn is 'Declare and r is [name,typ,:.] => typ
     x is '(_%) => '(_$)
     x
---x = 'Type => '(Type)
-  x = '_% => '_$
+--x is 'Type => $Type
+  x is '_% => '_$
   x
 
 asyTypeJoin r ==
@@ -900,7 +902,7 @@ asyTypeJoinPartPred x ==
 
 asyTypeJoinItem x ==
   result := asyTypeUnit x
-  isLowerCaseLetter PNAME(opOf result).0 =>
+  isLowerCaseLetter stringChar(symbolName opOf result,0) =>
     $opStack := [[['ATTRIBUTE,result],:$predlist],:$opStack]
   $conStack := [[result,:$predlist],:$conStack]
 
@@ -914,20 +916,20 @@ asyTypeMapping([a,b]) ==
 
 asyTypeUnit x ==
   x is [fn,:r] =>
-    fn = 'Join => systemError 'Join ----->asyTypeJoin r
+    fn is 'Join => systemError 'Join ----->asyTypeJoin r
     fn in '(RestrictTo PretendTo) => asyTypeUnit first r
     asyComma? fn =>
       u := [asyTypeUnit x for x in r]
       u
-    fn = 'With  => asyCATEGORY r
-    fn = '_-_> => asyTypeMapping r
-    fn = 'Apply => asyTypeUnitList r
-    fn = 'Declare and r is [name,typ,:.] => asyTypeUnitDeclare(name,typ)
+    fn is 'With  => asyCATEGORY r
+    fn is '_-_> => asyTypeMapping r
+    fn is 'Apply => asyTypeUnitList r
+    fn is 'Declare and r is [name,typ,:.] => asyTypeUnitDeclare(name,typ)
     x is '(_%) => '(_$)
     [fn,:asyTypeUnitList r]
   GETL(x,"NILADIC") => [x]
---x = 'Type => '(Type)
-  x = '_% => '_$
+--x is 'Type => $Type
+  x is '_% => '_$
   x
 
 asyTypeUnitList x == [asyTypeUnit y for y in x]
@@ -975,7 +977,7 @@ asyFindAttrs l ==
   for x in l repeat 
     x0 := x
     while cons? x repeat x := first x
-    if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
+    if symbolMember?(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]
 
@@ -1068,7 +1070,7 @@ asyUnTuple x ==
 
 asyTypeItem x ==
   atom x =>
-    x = '_%         => '_$
+    x is '_%         => '_$
     x
   x is ['_-_>,a,b] =>
       ['Mapping,b,:asyUnTuple a]
@@ -1096,7 +1098,7 @@ asyComma? op == op in '(Comma Multi)
 
 hput(table,name,value) ==
   if null name then systemError()
-  HPUT(table,name,value)
+  tableValue(table,name) := value
 
 --============================================================================
 --               category parts
@@ -1117,9 +1119,9 @@ asCategoryParts(kind,conform,category,:options) == main where
     $oplist   := listSort(function GLESSEQP,$oplist)
     res := [$attrlist,:$oplist]
     if cons? then res := [listSort(function GLESSEQP,$conslist),:res]
-    if kind = 'category then
+    if kind is 'category then
       tvl := TAKE(#rest conform,$TriangleVariableList)
-      res := SUBLISLIS($FormalMapVariableList,tvl,res)
+      res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
    where
     build(item,pred) ==
@@ -1129,7 +1131,7 @@ asCategoryParts(kind,conform,category,:options) == main where
         constructor? opOf attr =>
           $conslist := [[attr,:pred],:$conslist]
           nil
-        opOf attr = 'nothing => 'skip
+        opOf attr is 'nothing => 'skip
         $attrlist := [[opOf attr,IFCDR attr,:pred],:$attrlist]
       item is ['TYPE,op,type] =>
           $oplist := [[op,[type],:pred],:$oplist]

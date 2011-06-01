@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -45,27 +45,27 @@ printTimeIfTrue := false
 $printStorageIfTrue := false
  
 printNamedStatsByProperty(listofnames, prop) ==
-  total := +/[GETL(name,prop) for [name,:.] in listofnames]
+  total := +/[property(name,prop) for [name,:.] in listofnames]
   for [name,:.] in listofnames repeat
-    n := GETL(name, prop)
+    n := property(name, prop)
     strname := STRINGIMAGE name
     strval  := STRINGIMAGE n
     sayBrightly concat(bright strname,
-      fillerSpaces(70-#strname-#strval,'"."),bright strval)
-  sayBrightly bright fillerSpaces(72,'"-")
+      fillerSpaces(70-#strname-#strval,char "."),bright strval)
+  sayBrightly bright fillerSpaces(72,char "-")
   sayBrightly concat(bright '"Total",
-    fillerSpaces(65-# STRINGIMAGE total,'"."),bright STRINGIMAGE total)
+    fillerSpaces(65-# STRINGIMAGE total,char "."),bright STRINGIMAGE total)
  
 makeLongStatStringByProperty _
  (listofnames, listofclasses, prop, classprop, units, flag) ==
   total := 0
   str := '""
-  otherStatTotal := GETL('other, prop)
+  otherStatTotal := property('other, prop)
   for [name,class,:ab] in listofnames repeat
     name = 'other => 'iterate
     cl := first LASSOC(class,listofclasses)
-    n := GETL( name, prop)
-    PUT(cl,classprop, n + GETL(cl,classprop))
+    n := property(name, prop)
+    property(cl,classprop) := n + property(cl,classprop)
     total := total + n
     if n >= 0.01
       then timestr := normalizeStatAndStringify n
@@ -74,18 +74,18 @@ makeLongStatStringByProperty _
         otherStatTotal := otherStatTotal + n
     str := makeStatString(str,timestr,ab,flag)
   otherStatTotal := otherStatTotal
-  PUT('other, prop, otherStatTotal)
+  property('other, prop) := otherStatTotal
   if otherStatTotal > 0 then
     str := makeStatString(str,normalizeStatAndStringify otherStatTotal,'O,flag)
     total := total + otherStatTotal
-    cl := first LASSOC('other,listofnames)
+    cl := first symbolLassoc('other,listofnames)
     cl := first LASSOC(cl,listofclasses)
-    PUT(cl,classprop, otherStatTotal + GETL(cl,classprop))
+    property(cl,classprop) := otherStatTotal + property(cl,classprop)
   if flag ~= 'long then
     total := 0
     str := '""
     for [class,name,:ab] in listofclasses repeat
-      n := GETL(name, classprop)
+      n := property(name, classprop)
       n = 0.0 => 'iterate
       total := total + n
       timestr := normalizeStatAndStringify n
@@ -137,7 +137,7 @@ pushTimedName name ==
 startTimingProcess name ==
   updateTimedName peekTimedName()
   pushTimedName name
-  if EQ(name, 'load) then          statRecordLoadEvent()
+  if name = 'load then          statRecordLoadEvent()
  
 stopTimingProcess name ==
   (name ~= peekTimedName()) and not $InteractiveMode =>
@@ -187,20 +187,20 @@ $interpreterTimedClasses == '(
  
 initializeTimedNames(listofnames,listofclasses) ==
   for [name,:.] in listofnames repeat
-    PUT(name, 'TimeTotal, 0.0)
-    PUT(name, 'SpaceTotal,  0)
+    property(name, 'TimeTotal) := 0.0
+    property(name, 'SpaceTotal) := 0
   for [.,name,:.] in listofclasses repeat
-    PUT( name, 'ClassTimeTotal, 0.0)
-    PUT( name, 'ClassSpaceTotal,  0)
+    property(name, 'ClassTimeTotal) := 0.0
+    property(name, 'ClassSpaceTotal) := 0
   $timedNameStack := '(other)
   computeElapsedTime()
-  PUT('gc, 'TimeTotal, 0.0)
-  PUT('gc, 'SpaceTotal,  0)
-  NIL
+  property('gc, 'TimeTotal) := 0.0
+  property('gc, 'SpaceTotal) := 0
+  nil
  
 updateTimedName name ==
-  count := (GETL(name,'TimeTotal) or 0) + computeElapsedTime()
-  PUT(name,'TimeTotal, count) 
+  count := (property(name,'TimeTotal) or 0) + computeElapsedTime()
+  property(name,'TimeTotal) := count
  
 printNamedStats listofnames ==
   printNamedStatsByProperty(listofnames, 'TimeTotal)
@@ -225,8 +225,8 @@ computeElapsedTime() ==
   gcDelta := currentGCTime - $oldElapsedGCTime
   elapsedSeconds:=
      1.* (currentTime-$oldElapsedTime-gcDelta)/$timerTicksPerSecond
-  PUT('gc, 'TimeTotal,GETL('gc,'TimeTotal) +
-                   1.*QUOTIENT(gcDelta,$timerTicksPerSecond))
+  property('gc, 'TimeTotal) := property('gc,'TimeTotal) +
+                   1.*QUOTIENT(gcDelta,$timerTicksPerSecond)
   $oldElapsedTime := elapsedUserTime()
   $oldElapsedGCTime := elapsedGcTime()
   elapsedSeconds
@@ -245,7 +245,7 @@ timedAlgebraEvaluation(code) ==
  
 timedOptimization(code) ==
   startTimingProcess 'optimization
-  $getDomainCode : local := NIL
+  $getDomainCode : local := nil
   r := simplifyVMForm code
   if $reportOptimization then
     sayBrightlyI bright '"Optimized intermediate code:"
@@ -260,8 +260,8 @@ timedEVALFUN(code) ==
   r
  
 timedEvaluate code ==
-  code is ["LIST",:a] and #a > 200 =>
-    "append"/[eval ["LIST",:x] for x in splitIntoBlocksOf200 a]
+  code is ['%list,:a] and #a > 200 =>
+    "append"/[eval ['%list,:x] for x in splitIntoBlocksOf200 a]
   eval code
  
 displayHeapStatsIfWanted() ==

@@ -88,26 +88,25 @@ buildHtMacroTable() ==
   fn := strconc(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
   if PROBE_-FILE(fn) then
     instream := MAKE_-INSTREAM fn
-    while not EOFP instream repeat
-      line := READLINE instream
+    while (line := readLine instream) ~= %nothing repeat
       getHtMacroItem line is [string,:numOfArgs] =>
-        HPUT($htMacroTable,string,numOfArgs)
-    for [s,:n] in $primitiveHtCommands repeat HPUT($htMacroTable,s,n)
+        tableValue($htMacroTable,string) := numOfArgs
+    for [s,:n] in $primitiveHtCommands repeat tableValue($htMacroTable,s) := n
   else
     sayBrightly '"Warning: macro table not found"
   $htMacroTable
 
 getHtMacroItem line ==
   not stringPrefix?('"\newcommand{",line) => nil
-  k := charPosition(char '_},line,11)
-  command := SUBSTRING(line,12,k - 12)
+  k := charPosition(char "}",line,11)
+  command := subString(line,12,k - 12)
   numOfArgs :=
     m := #line
-    i := charPosition(char '_[,line,k)
+    i := charPosition(char "[",line,k)
     i = m => 0
-    j := charPosition(char '_],line,i + 1)
-    digitString := SUBSTRING(line,i + 1,j - i - 1)
-    and/[digit? digitString.i for i in 0..MAXINDEX digitString]
+    j := charPosition(char "]",line,i + 1)
+    digitString := subString(line,i + 1,j - i - 1)
+    and/[digit? stringChar(digitString,i) for i in 0..maxIndex digitString]
       => readInteger digitString
     return nil
   [command,:numOfArgs]

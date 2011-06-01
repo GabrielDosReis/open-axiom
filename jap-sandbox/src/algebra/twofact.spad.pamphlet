@@ -43,7 +43,7 @@ NormRetractPackage(F, ExtF, SUEx, ExtP, n):C  == T where
 
       Frobenius(ff:ExtP):ExtP ==
          fft:ExtP:=0
-         while ff~=0 repeat
+         while not zero? ff repeat
            fft:=fft + monomial(map(Frobenius, leadingCoefficient ff),
                                degree ff)
            ff:=reductum ff
@@ -159,7 +159,7 @@ TwoFactorize(F) : C == T
                               pfaclist)
              unitPart := unit(nfacs)**uexp * unitPart
           pfaclist := cons(u,pfaclist)
-       cont ~= 1 =>
+       not one? cont =>
            sqp := squareFree cont
            contlist:=[[w.flg,(w.fctr)::P,w.xpnt] for w in factorList sqp]
            pfaclist:= append(contlist, pfaclist)
@@ -176,7 +176,7 @@ TwoFactorize(F) : C == T
        ll:=[]
        unitPart:P
        cont:=content m
-       if degree(cont)>0 then 
+       if positive? degree(cont) then 
           m1:=m exquo cont
           m1 case "failed" => error "content doesn't divide"
           m:=m1
@@ -188,7 +188,7 @@ TwoFactorize(F) : C == T
        sqfrm:=squareFree m
        for u in factors sqfrm repeat
            expo:=u.exponent
-           if expo < 0 then error "negative exponent in a factorisation"
+           if negative? expo then error "negative exponent in a factorisation"
            expon:NonNegativeInteger:=expo::NonNegativeInteger
            fac:=u.factor
            degree fac = 1 => ll:=[["irred",fac,expon],:ll]
@@ -220,17 +220,17 @@ TwoFactorize(F) : C == T
        -- find the substitution for x
        look:Boolean:=true
        dm:=degree m
-       try:Integer:=min(5,size()$F)
+       tryCount:Integer:=min(5,size()$F)
        i:Integer:=0
        lcm := leadingCoefficient m
        umv : R
        vval : F
-       while look and i < try repeat
+       while look and i < tryCount repeat
           vval := random()$F
           i:=i+1
           zero? elt(lcm, vval) => "next value"
           umv := map(elt(#1,vval), m)$UPCF2(R, P, F, R)
-          degree(gcd(umv,differentiate umv))~=0 => "next val"
+          not zero? degree(gcd(umv,differentiate umv)) => "next val"
           n := 1
           look := false
        extField:=FiniteFieldExtension(F,n)
@@ -238,7 +238,7 @@ TwoFactorize(F) : C == T
        TP:=SparseUnivariatePolynomial SUEx
        mm:TP:=0
        m1:=m
-       while m1~=0 repeat
+       while not zero? m1 repeat
          mm:=mm+monomial(map(coerce,leadingCoefficient m1)$UPCF2(F,R,
                 extField,SUEx),degree m1)
          m1:=reductum m1
@@ -253,7 +253,7 @@ TwoFactorize(F) : C == T
          i:=i+1
          elt(lcmm,val)=0 => "next value"
          umex := map(elt(#1,val), mm)$UPCF2(SUEx, TP, extField, SUEx)
-         degree(gcd(umex,differentiate umex))~=0 => "next val"
+         not zero? degree(gcd(umex,differentiate umex)) => "next val"
          look:=false
        prime:SUEx:=monomial(1,1)-monomial(val,0)
        fumex:=factor(umex)$DistinctDegreeFactorize(extField,SUEx)
@@ -274,7 +274,7 @@ TwoFactorize(F) : C == T
        while not empty? lfacth repeat
          ff := first lfacth
          lfacth := rest lfacth
-         if (c:=leadingCoefficient leadingCoefficient ff) ~=1 then
+         if not one?(c:=leadingCoefficient leadingCoefficient ff) then
            ff:=((inv c)::SUEx)* ff
          not ((ffu:= retractIfCan(ff)$Normp) case "failed") =>
                     lfactk := cons(ffu::P, lfactk)

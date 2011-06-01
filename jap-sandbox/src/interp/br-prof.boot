@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,6 @@
 
 import bc_-util
 namespace BOOT
-
---====================> WAS b-prof.boot <================================
 
 --============================================================================
 --                Browser Code for Profiling
@@ -78,15 +76,15 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [INTERN strconc(PNAME conname,'"&"),"$",:rest conform]
+      [makeDefaultPackageName symbolName conname,"$",:rest conform]
     conform
-  faTypes  := CDDAR getConstructorModemapFromDB conname
+  faTypes := getConstructorModemapFromDB(conname).mmSource
 
-  conArgTypes :=
-    SUBLISLIS(IFCDR conform,TAKE(#faTypes,$FormalMapVariableList),faTypes)
+  conArgTypes := 
+    applySubst(pairList($FormalMapVariableList,IFCDR conform),faTypes)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
---argTypes := reverse ASSOCRIGHT LASSOC('arguments,alist)
+--argTypes := reverse ASSOCRIGHT symbolLassoc('arguments,alist)
 --sig := or/[sig for [sig,:.] in LASSOC(op,opAlist) | rest sig = argTypes]
   ops := escapeSpecialChars STRINGIMAGE zeroOneConvert op
   oppart := ['"{\em ", ops, '"}"]
@@ -213,7 +211,7 @@ dbInfoChoose1(htPage,con,alist) ==
   opAlist := [pair for x in koOps(con,nil) | pair:=dbInfoSigMatch(x,alist)]
   page := htInitPage(nil,nil)
   htpSetProperty(page,'conform,con)
-  htpSetProperty(page,'kind,PNAME getConstructorKindFromDB opOf con)
+  htpSetProperty(page,'kind,symbolName getConstructorKindFromDB opOf con)
   dbShowOperationsFromConform(page,'"operation",opAlist)
 
 dbInfoSigMatch(x,alist) ==
@@ -252,13 +250,13 @@ hasNewInfoText u ==
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
-  if cat? then conname := INTERN strconc(STRINGIMAGE conname,'"&")
-  abb := constructor? conname or return '"not a constructor"
-  fs  := strconc(PNAME abb,'".NRLIB/info")
+  if cat? then conname := makeDefaultPackageName symbolName conname
+  abb := getConstructorAbbreviationFromDB conname or return '"not a constructor"
+  fs  := strconc(symbolName abb,'".NRLIB/info")
   inStream :=
-    PROBE_-FILE fs => OPEN fs
-    filename := strconc('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
-    PROBE_-FILE filename => OPEN filename
+    PROBE_-FILE fs => inputTextFile fs
+    filename := strconc('"/spad/int/algebra/",symbolName abb,'".NRLIB/info")
+    PROBE_-FILE filename => inputTextFile filename
     return nil
   alist := mySort READ inStream
   if cat? then

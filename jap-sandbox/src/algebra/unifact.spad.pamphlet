@@ -120,7 +120,7 @@ UnivariateFactorize(ZP) : public == private where
        false
 
      negShiftz(n: Z,Modulus:PI): Z ==
-       if n < 0 then n := n+Modulus
+       if negative? n then n := n+Modulus
        n > (Modulus quo 2) => n-Modulus
        n
 
@@ -136,7 +136,7 @@ UnivariateFactorize(ZP) : public == private where
        nm := (degree m)::NNI
        nmq2:NNI := nm quo 2
        norm: Z := sqroot(+/[coefficient(m,k)**2 for k in 0..nm])
-       if nmq2~=1 then nm := (nmq2-1):NNI
+       if not one? nmq2 then nm := (nmq2-1):NNI
        else nm := nmq2
        bin0 := nm
        cbound := (bin0*norm+lcm)::PI
@@ -147,7 +147,7 @@ UnivariateFactorize(ZP) : public == private where
          if cbound<j then cbound := j
        (2*cbound*lcm)::PI -- adjusted by lcm to prepare for exquo in ghensel
 
-     remp(t: Z,q:PI): Z == ((t := t rem q)<0 => t+q ;t)
+     remp(t: Z,q:PI): Z == (negative?(t := t rem q) => t+q ;t)
 
      numFactors(ddlist:DDList): Z ==
        ans: Z := 0
@@ -173,7 +173,7 @@ UnivariateFactorize(ZP) : public == private where
          q:=nextPrime(q)$IntegerPrimesPackage(Z) pretend PI
          (rr:=lcm rem q) = 0$Z => "next prime"
          disc:=gcd(m,differentiate m,q)
-         (degree disc)~=0 => "next prime"
+         not zero?(degree disc) => "next prime"
          k := k+1
          newdd := ddFact(m,q)
          ((n := numFactors(newdd)) < 9) =>
@@ -215,11 +215,11 @@ UnivariateFactorize(ZP) : public == private where
        d,d2: Z
        d := coefficient(m,1)**2-4*coefficient(m,0)*coefficient(m,2)
        d2 := sqroot(d)
-       (d-d2**2)~=0 => [m]
+       not zero?(d-d2**2) => [m]
        alpha: Z := coefficient(m,1)+d2
        beta: Z := 2*coefficient(m,2)
        d := gcd(alpha,beta)
-       if d ~=1 then
+       if not one? d then
          alpha := alpha quo d
          beta := beta quo d
        m0: ZP := monomial(beta,1)+monomial(alpha,0)
@@ -248,12 +248,12 @@ UnivariateFactorize(ZP) : public == private where
       m := (m exquo c)::ZP
 
       -- make the lc m positive
-      if leadingCoefficient m < 0 then
+      if negative? leadingCoefficient m then
         c := -c
         m := -m
 
       -- is x**d factor of m?
-      if (d := minimumDegree m) >0 then
+      if positive?(d := minimumDegree m) then
         m := (monicDivide(m,monomial(1,d))).quotient
         factorlist := [[monomial(1,1),d]$ParFact]
 
@@ -281,7 +281,7 @@ UnivariateFactorize(ZP) : public == private where
       odd?(d) and (lcPol = reductum(m)) =>
         for sfac in cyclotomicDecomposition(degree m)$CYC repeat
            fac:=subMinusX sfac
-           if leadingCoefficient fac < 0 then fac := -fac
+           if negative? leadingCoefficient fac then fac := -fac
            factorlist := cons([fac,1]$ParFact,factorlist)
         [c,factorlist]$FinalFact
 

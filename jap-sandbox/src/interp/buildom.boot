@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 -- GDR, March 2008.
 
 import sys_-macros
+import c_-util
 namespace BOOT
 
 $noCategoryDomains == '(Mode SubDomain)
@@ -53,12 +54,258 @@ $commonCategoryAncestors ==
 ++ Default category packages for Record, Union, Mapping and 
 ++ Enumeration domains.
 $commonCategoryDefaults ==
-  ['(SetCategory_& $), '(BasicType_& $), nil]
+  ['(SetCategory& $), '(BasicType& $), nil]
 
 ++ The slot number in a domain shell that holds the first parameter to
 ++ a domain constructor.
 $FirstParamSlot == 
   6
+
+--% Monitoring functions
+
+lookupDisplay(op,sig,vectorOrForm,suffix) ==
+  not $NRTmonitorIfTrue => nil
+  prefix := (suffix is '"" => ">"; "<")
+  sayBrightly
+    concat(prefix,formatOpSignature(op,sig),
+        '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
+
+isInstantiated [op,:argl] ==
+  u:= lassocShiftWithFunction(argl,tableValue($ConstructorCache,op),'domainEqualList)
+    => CDRwithIncrement u
+  nil
+
+--=======================================================
+--                       Predicates
+--=======================================================
+lookupPred(pred,dollar,domain) ==
+  pred = true => true
+  pred is [op,:pl] and op in '(AND and %and) =>
+    and/[lookupPred(p,dollar,domain) for p in pl]
+  pred is [op,:pl] and op in '(OR or %or) =>
+    or/[lookupPred(p,dollar,domain) for p in pl]
+  pred is [op,p] and op in '(NOT not %not) => not lookupPred(p,dollar,domain)
+  pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
+  pred is ["has",a,b] =>
+    vector? a =>
+      keyedSystemError("S2GE0016",['"lookupPred",
+        '"vector as  first argument to has"])
+    a := eval mkEvalable substDollarArgs(dollar,domain,a)
+    b := substDollarArgs(dollar,domain,b)
+    HasCategory(a,b)
+  keyedSystemError("S2NR0002",[pred])
+
+substDollarArgs(dollar,domain,object) ==
+  form := devaluate domain
+  applySubst(pairList(["$",:$FormalMapVariableList],[devaluate dollar,:rest form]),
+                object)
+
+compareSig(sig,tableSig,dollar,domain) ==
+  #sig ~= #tableSig => false
+  null(target := first sig)
+   or lazyCompareSigEqual(target,first tableSig,dollar,domain) =>
+     and/[lazyCompareSigEqual(s,t,dollar,domain)
+              for s in rest sig for t in rest tableSig]
+
+lazyCompareSigEqual(s,tslot,dollar,domain) ==
+  tslot is '$ => s is "$" or s = devaluate dollar
+  integer? tslot and cons?(lazyt := domainRef(domain,tslot)) and cons? s =>
+    lazyt is [.,.,.,[.,item,.]] and
+      item is [.,[functorName,:.]] and functorName = s.op =>
+        compareSigEqual(s,canonicalForm evalDomain lazyt,dollar,domain)
+    nil
+  compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
+
+
+compareSigEqual(s,t,dollar,domain) ==
+  s = t => true
+  atom t =>
+    u :=
+      t is '$ => dollar
+      isSharpVar t =>
+        vector? domain =>
+          instantiationArgs(domain).(POSN1(t,$FormalMapVariableList))
+        domain.args.(POSN1(t,$FormalMapVariableList))
+      string? t and IDENTP s => (s := symbolName s; t)
+      nil
+    s is '$ => compareSigEqual(dollar,u,dollar,domain)
+    u => compareSigEqual(s,u,dollar,domain)
+    s = u
+  s is '$ => compareSigEqual(dollar,t,dollar,domain)
+  atom s => nil
+  #s ~= #t => nil
+  match := true
+  for u in s for v in t repeat
+    not compareSigEqual(u,v,dollar,domain) => return(match:=false)
+  match
+
+--=======================================================
+--             Lookup From Interpreter
+--=======================================================
+
+compiledLookup(op,sig,dollar) ==
+--called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
+--  getFunctionFromDomain, optDeltaEntry, retractByFunction
+  if not vector? dollar then dollar := evalDomain dollar
+  -- "^" is an alternate name for "**" in OpenAxiom libraries.
+  -- ??? When, we get to support Aldor libraries and the equivalence
+  -- ??? does not hold, we may want to do the reverse lookup too.
+  -- ??? See compiledLookupCheck below.
+  if op = "^" then op := "**"
+  basicLookup(op,sig,dollar,dollar)
+
+lookupInDomainVector(op,sig,domain,dollar) ==
+  SPADCALL(op,sig,dollar,domainRef(domain,1))
+
+lookupInDomain(op,sig,addFormDomain,dollar,index) ==
+  addFormCell := vectorRef(addFormDomain,index) =>
+    integer? KAR addFormCell =>
+      or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
+    if not vector? addFormCell then
+      addFormCell := eval addFormCell
+    lookupInDomainVector(op,sig,addFormCell,dollar)
+  nil
+
+++ same as lookupInDomainVector except that the use of defaults
+++ (either in category packages or add-chains) is controlled
+++ by `useDefaults'.
+lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
+  $lookupDefaults: local := useDefaults
+  lookupInDomainVector(op,sig,domain,dollar)
+
+
+basicLookup(op,sig,domain,dollar) ==
+  item := domainRef(domain,1)
+  cons? item and first item in '(lookupInDomain lookupInTable) => 
+    lookupInDomainVector(op,sig,domain,dollar)
+  ----------new world code follows------------
+  u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
+  lookupInDomainAndDefaults(op,sig,domain,dollar,true)
+
+compiledLookupCheck(op,sig,dollar) ==
+  fn := compiledLookup(op,sig,dollar)
+  -- NEW COMPILER COMPATIBILITY ON
+  if (fn = nil)  and (op = "**") then
+    fn := compiledLookup("^",sig,dollar)
+  -- NEW COMPILER COMPATIBILITY OFF
+  fn = nil =>
+    keyedSystemError("S2NR0001",[op,formatSignature sig,canonicalForm dollar])
+  fn
+
+--=======================================================
+--                 Lookup From Compiled Code
+--=======================================================
+goGet(:l) ==
+  [:arglist,env] := l
+  arglist is ['goGet,:.] => stop()
+  [[.,[op,initSig,:code]],thisDomain] := env
+  domainSlot := code quo 8192
+  code1 := code rem 8192
+  isConstant := odd? code1
+  code2 := code1 quo 2
+  explicitLookupDomainIfTrue := odd? code2
+  index := code2 quo 2
+  kind := (isConstant => 'CONST; 'ELT)
+  sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
+  sig := substDomainArgs(thisDomain,sig)
+  lookupDomain :=
+     domainSlot = 0 => thisDomain
+     domainRef(thisDomain,domainSlot) -- where we look for the operation
+  if cons? lookupDomain then lookupDomain := evalDomain lookupDomain
+  dollar :=                             -- what matches $ in signatures
+    explicitLookupDomainIfTrue => lookupDomain
+    thisDomain
+  if cons? dollar then dollar := evalDomain dollar
+  fn := basicLookup(op,sig,lookupDomain,dollar)
+  fn = nil => keyedSystemError("S2NR0001",[op,sig,canonicalForm lookupDomain])
+  val := apply(first fn,[:arglist,rest fn])
+  domainRef(thisDomain,index) := fn
+  val
+
+NRTreplaceLocalTypes(t,dom) ==
+  atom t =>
+    not integer? t => t
+    t := domainRef(dom,t)
+    if cons? t then t := evalDomain t
+    canonicalForm t
+  t.op is ":" or builtinConstructor? t.op =>
+     [t.op,:[NRTreplaceLocalTypes(x,dom) for x in t.args]]
+  t
+
+substDomainArgs(domain,object) ==
+  form := devaluate domain
+  applySubst(pairList(["$$",:$FormalMapVariableList],[form,:form.args]),object)
+
+--=======================================================
+--       Category Default Lookup (from goGet or lookupInAddChain)
+--=======================================================
+lookupInCategories(op,sig,dom,dollar) ==
+  catformList := domainRef(dom,4).0
+  varList := ["$",:$FormalMapVariableList]
+  nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
+  -- the following lines don't need to check for predicates because
+  -- this code (the old runtime scheme) is used only for
+  -- builtin constructors -- their predicates are always true.
+  r := or/[lookupInDomainVector(op,nsig,
+              eval applySubst(pairList(varList,valueList),catform),dollar)
+        for catform in catformList | catform ~= nil ] where
+           valueList() ==
+              [MKQ dom,:[MKQ domainRef(dom,5+i) for i in 1..(#rest catform)]]
+  r or lookupDisplay(op,sig,'"category defaults",'"-- not found")
+
+--=======================================================
+--       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
+--=======================================================
+defaultingFunction op ==
+  op isnt [.,:dom] => false
+  not vector? dom => false
+  not (#dom > 0) => false
+  canonicalForm dom isnt [packageName,:.] => false
+  not IDENTP packageName => false
+  isDefaultPackageName packageName
+
+lookupInAddChain(op,sig,addFormDomain,dollar) ==
+  addFunction := lookupInDomain(op,sig,addFormDomain,dollar,5)
+  defaultingFunction addFunction =>
+     lookupInCategories(op,sig,addFormDomain,dollar) or addFunction
+  addFunction or lookupInCategories(op,sig,addFormDomain,dollar)
+
+--=======================================================
+--       Lookup Function in Slot 1 (via SPADCALL)
+--=======================================================
+lookupInTable(op,sig,dollar,[domain,table]) ==
+  table is "derived" => lookupInAddChain(op,sig,domain,dollar)
+  success := nil             -- lookup result
+  someMatch := false
+  while not success for [sig1,:code] in LASSQ(op,table) repeat
+    success :=
+      not compareSig(sig,sig1,canonicalForm dollar,domain) => false
+      code is ['Subsumed,a] =>
+        subsumptionSig :=
+          applySubst(pairList($FormalMapVariableList,canonicalForm(domain).args),a)
+        someMatch := true
+        nil
+      predIndex := code quo 8192
+      predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
+        => nil
+      loc := (code rem 8192) quo 2
+      loc = 0 =>
+        someMatch := true
+        nil
+      slot := domainRef(domain,loc)
+      slot is ["goGet",:.] =>
+        lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
+        lookupInAddChain(op,sig,domain,dollar) or 'failed
+      slot = nil =>
+        lookupDisplay(op,sig,domain,'" !! null slot entry, continuing")
+        lookupInAddChain(op,sig,domain,dollar) or 'failed
+      lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
+      slot
+  success isnt 'failed and success ~= nil => success
+  subsumptionSig ~= nil and
+    (u := SPADCALL(op,subsumptionSig,dollar,domainRef(domain,1))) => u
+  someMatch => lookupInAddChain(op,sig,domain,dollar)
+  nil
 
 --% Record
 --  Want to eventually have the elts and setelts.
@@ -75,54 +322,53 @@ oldSlotCode: %Short -> %Short
 oldSlotCode n ==
   2 * ($FirstParamSlot + n)
 
+++ Same as `oldSlotCode', except that it is used for constants.
+macro oldConstantSlodCode n ==
+  oldSlotCode n + 1
 
 Record(:args) ==
   srcArgs := [[":", second a, devaluate third a] for a in args]
-  -- if we already have this instantiation in store, just hand it back.
-  t := lassocShiftWithFunction(srcArgs,
-         HGET($ConstructorCache,"Record"), "domainEqualList") =>
-    CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
-  dom.0 := ["Record", :srcArgs]
-  dom.1 :=
+  canonicalForm(dom) := ["Record", :srcArgs]
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := nil
-  dom.3 := ["RecordCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := third a
-  dom.($FirstParamSlot + nargs) := [function RecordEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
--- following is cache for equality functions
-  dom.($FirstParamSlot + nargs + 3) := if nargs <= 2
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["RecordCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    domainRef(dom,i) := third a
+  domainRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  -- following is cache for equality functions
+  domainRef(dom,$FirstParamSlot + nargs + 3) := if nargs <= 2
 	    then [nil,:nil]
 	    else newShell nargs
-  -- remember this instantiation for future re-use.
-  haddProp($ConstructorCache,"Record",srcArgs,[1,:dom])
   dom
 
 RecordEqual(x,y,dom) ==
-  nargs := #rest(dom.0)
+  nargs := #instantiationArgs dom
   cons? x =>
-    b:=
-       SPADCALL(first x, first y, first(dom.(nargs + 9)) or
-         first (dom.(nargs + 9).first := findEqualFun(dom.$FirstParamSlot)))
+    b :=
+       SPADCALL(first x, first y, first(domainRef(dom,nargs + 9)) or
+         first(domainRef(dom,nargs + 9).first :=
+                 findEqualFun domainRef(dom,$FirstParamSlot)))
     nargs = 1 => b
     b and
        SPADCALL(rest x, rest y, rest (dom.(nargs + 9)) or
          rest (dom.(nargs + 9).rest := findEqualFun(dom.($FirstParamSlot+1))))
   vector? x =>
-    equalfuns := dom.(nargs + 9)
+    equalfuns := domainRef(dom,nargs + 9)
     and/[SPADCALL(x.i,y.i,equalfuns.i or _
-           (equalfuns.i:=findEqualFun(dom.($FirstParamSlot + i))))_
-         for i in 0..(nargs - 1)]
+           (equalfuns.i := findEqualFun domainRef(dom,$FirstParamSlot + i)))_
+              for i in 0..(nargs - 1)]
   error '"Bug: Silly record representation"
 
 RecordPrint(x,dom) == 
@@ -156,30 +402,28 @@ coerceRe2E(x,source) ==
 Union(:args) ==
   srcArgs := [(a is [":",tag,d] => [":",tag,devaluate d]; devaluate a)
                  for a in args]
-  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Union"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell (nargs + 9)
-  dom.0 := ["Union", :srcArgs]
-  dom.1 :=
+  canonicalForm(dom) := ["Union", :srcArgs]
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  dom.2 := nil
-  dom.3 := ["UnionCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
-  dom.($FirstParamSlot + nargs) := [function UnionEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
-  haddProp($ConstructorCache,"Union",srcArgs,[1,:dom])
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["UnionCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   dom
 
 UnionEqual(x, y, dom) ==
-  ["Union",:branches] := dom.0
+  ["Union",:branches] := canonicalForm dom
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
@@ -190,7 +434,8 @@ UnionEqual(x, y, dom) ==
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
 
-UnionPrint(x, dom) == coerceUn2E(x, dom.0)
+UnionPrint(x, dom) ==
+  coerceUn2E(x, canonicalForm dom)
 
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
@@ -210,102 +455,124 @@ coerceUn2E(x,source) ==
 --% Mapping
 --  Want to eventually have elt: ($, args) -> target
 
+++ Implementation of the `MappinCategory' as builtin.
+++ A domain that satisfy this predicate provides implementation
+++ to abstraction that map values from some type to values
+++ of another type.
+MappingCategory(:"sig") ==       
+  sig = nil =>
+    error '"MappingCategory requires at least one argument"
+  cat := eval ['Join,$Type,
+                ['mkCategory,quoteForm 'domain,
+                   quoteForm [[['elt,[first sig,'$,:rest sig]],true]],
+                     [], [], nil]]
+  canonicalForm(cat) := ['MappingCategory,:sig]
+  cat
+
 Mapping(:args) ==
   srcArgs := [devaluate a for a in args]
-  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Mapping"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 9)
-  dom.0 := ["Mapping", :srcArgs]
-  dom.1 :=
+  canonicalForm(dom) := ["Mapping", :srcArgs]
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := nil
-  dom.3 := $SetCategory
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
-  dom.($FirstParamSlot + nargs) := [function MappingEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
-  haddProp($ConstructorCache,"Mapping",srcArgs,[1,:dom])
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := $SetCategory
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   dom
 
-MappingEqual(x, y, dom) == EQ(x,y)
+MappingEqual(x, y, dom) == sameObject?(x,y)
 MappingPrint(x, dom) == coerceMap2E(x)
 
 coerceMap2E(x) ==
   -- nrlib domain
-  ARRAYP rest x => ["theMap", BPINAME first x,
+  array? rest x => ["theMap", BPINAME first x,
     if $testingSystem then 0 else HASHEQ(rest x) rem 1000]
   -- aldor 
   ["theMap", BPINAME first x  ]
 
 --% Enumeration
 
+EnumerationCategory(:"args") ==
+  cat := eval ['Join,$SetCategory,
+                ['mkCategory,quoteForm 'domain,
+                   quoteForm [[[arg,['$],'constant],'T] for arg in args],
+                     [], [], nil]]
+  canonicalForm(cat) := ['EnumerationCategory,:args]
+  cat
+
 Enumeration(:"args") ==
-  t := lassocShiftWithFunction(args,HGET($ConstructorCache,"Enumeration"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
-  dom := newShell(nargs + 9)
+  dom := newShell(2 * nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
-  dom.0 := ["Enumeration", :args]
-  dom.1 :=
+  canonicalForm(dom) := ["Enumeration",:args]
+  domainRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]],
             ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
-                [["$", $Symbol], :oldSlotCode(nargs+2)]]
-                  ]]
-  dom.2 := nil
-  dom.3 := ["EnumerationCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
-  dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function createEnum, :dom]
-  haddProp($ConstructorCache,"Enumeration",args,[1,:dom])
+                [["$", $Symbol], :oldSlotCode(nargs+2)]],
+                  :[[arg,[["$"],:oldConstantSlodCode(nargs+3+i)]]
+                      for arg in args for i in 0..]
+                          ]]
+  domainRef(dom,2) := nil
+  domainRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
+  domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  domainRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    domainRef(dom,i) := a
+  domainRef(dom,$FirstParamSlot + nargs) := [function EnumEqual, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
+  domainRef(dom,$FirstParamSlot + nargs + 2) := [function createEnum, :dom]
+  -- Fille slots for constant returning functions.
+  -- Note: this is wasteful in terms of space since the constants are
+  --       already stored as arguments to this domain.
+  for i in ($FirstParamSlot + nargs + 3).. for . in args for v in 0.. repeat
+    domainRef(dom,i) := [function IDENTITY,:v]
   dom
 
 EnumEqual(e1,e2,dom) == 
-  e1=e2
+  scalarEq?(e1,e2)
 
 EnumPrint(enum, dom) == 
-  (rest(dom.0)).enum
+  instantiationArgs(dom).enum
 
 createEnum(sym, dom) ==
-  args := rest(dom.0)
+  args := instantiationArgs dom
   val := -1
   for v in args for i in 0.. repeat
-     sym=v => return(val:=i)
-  val<0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
+     symbolEq?(sym,v) => return(val:=i)
+  val < 0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
   val
 
 --% INSTANTIATORS
 
 RecordCategory(:"x") == constructorCategory ["Record",:x]
 
-EnumerationCategory(:"x") == constructorCategory ["Enumeration",:x]
-
 UnionCategory(:"x") == constructorCategory ["Union",:x]
 
 constructorCategory (title is [op,:.]) ==
-  constructorFunction:= GETL(op,"makeFunctionList") or
+  constructorFunction:= property(op,"makeFunctionList") or
               systemErrorHere ['"constructorCategory",title]
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
-  cat.(0):= title
+  canonicalForm(cat) := title
   cat
 
---mkMappingFunList(nam,mapForm,e) == [[],e]
 mkMappingFunList(nam,mapForm,e) ==
   nargs := #rest mapForm
   dc := gensym()
@@ -317,22 +584,59 @@ mkMappingFunList(nam,mapForm,e) ==
             ["ELT",dc,$FirstParamSlot + nargs + 1]]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
+
+++ Build an inline function for constructing records of length `n'.
+mkRecordFun n ==
+  args := take(n,$FormalMapVariableList)
+  op := 
+    n < 2 => '%list
+    n = 2 => '%pair
+    '%vector
+  ["XLAM",args,[op,:args]]
+
+++ Build expression for selecting the i-th field of a fomal record
+++ variable of length `n'.
+formalRecordField(n,i) ==
+  n < 2 => ['%head,"#1"]
+  n = 2 =>
+    i = 0 => ['%head,"#1"]
+    ['%tail,"#1"]
+  ['%vref,"#1",i]
+
+++ Build an inline function for selecting field `i' or a
+++ record of length `n'.  
+eltRecordFun(n,i) ==
+  ["XLAM",["#1","#2"],formalRecordField(n,i)]
+
+seteltRecordFun(n,i) ==
+  args := take(3,$FormalMapVariableList)
+  field := formalRecordField(n,i)
+  body := 
+    n > 2 => ['%store,field,"#3"]
+    ['SEQ,['%store,field,"#3"],['EXIT,field]]
+  ["XLAM",args,body]
+
+copyRecordFun n ==
+  body := 
+    n < 2 => ['%list,['%head,"#1"]]
+    n = 2 => ['%pair,['%head,"#1"],['%tail,"#1"]]
+    ['%vcopy,"#1"]
+  ["XLAM",["#1"],body]
+
 mkRecordFunList(nam,["Record",:Alist],e) ==
   len:= #Alist
   dc := gensym()
   sigFunAlist:=
-    [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
+    [["construct",[nam,:[A for [.,a,A] in Alist]],mkRecordFun len],
       ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot + len]],
         ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
          ["hash",[$SingleInteger,nam],["ELT",dc,0]],
 	  ["coerce",[$OutputForm,nam],["ELT",dc,$FirstParamSlot+len+1]],:
-	   [["elt",[A,nam,PNAME a],["XLAM",["$1","$2"],["RECORDELT","$1",i,len]]]
+	   [["elt",[A,nam,PNAME a],eltRecordFun(len,i)]
 	       for i in 0.. for [.,a,A] in Alist],:
-	     [["setelt",[A,nam,PNAME a,A],["XLAM",["$1","$2","$3"],
-	       ["SETRECORDELT","$1",i, len,"$3"]]]
-		 for i in 0.. for [.,a,A] in Alist],:
-		   [["copy",[nam,nam],["XLAM",["$1"],["RECORDCOPY",
-		     "$1",len]]]]]
+	     [["setelt",[A,nam,PNAME a,A],seteltRecordFun(len,i)]
+		 for i in 0.. for [.,a,A] in Alist],
+		   ["copy",[nam,nam],copyRecordFun len]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
@@ -341,15 +645,15 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
   m := dollarIfRepHack name
   --2. create coercions from subtypes to subUnion
   cList:=
-    [["=",[$Boolean,name ,name],["ELT",dc,$FirstParamSlot+nargs]],
+    [["=",[$Boolean,name,name],["ELT",dc,$FirstParamSlot+nargs]],
        ["~=",[$Boolean,name,name],["ELT",dc,0]],
         ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
 	   ("append"/
-	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
+	    [[["construct",[name,type],["XLAM",["#1"],["%pair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
-		   ["XLAM",["#1"],['%ieq,['%head,"#1"],i]]]]
+		   ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
 			gg:=gensym()
@@ -362,16 +666,17 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
                               ["%tail",gg]]]
   [cList,e]
 
-mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
-  len:= #SL
-  dc := nam
+mkEnumerationFunList(dc,["Enumeration",:SL],e) ==
+  len := #SL
   cList :=
     [nil,
-      ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot+len]],
-        ["~=",[$Boolean,nam ,nam],["ELT",dc,0]],
-          ["coerce",[nam, ["Symbol"]], ["ELT", dc,$FirstParamSlot+len+1]],
-            ["coerce",[["OutputForm"],nam],["ELT",dc,$FirstParamSlot+len+2]]]
-  [substitute(nam, dc, cList),e]
+      ["=",[$Boolean,dc,dc],["XLAM",["#1","#2"],['%ieq,"#1","#2"]]],
+        ["~=",[$Boolean,dc,dc],["XLAM",["#1","#2"],['%not,['%ieq,"#1","#2"]]]],
+          ["coerce",[dc,$Symbol],["ELT",dc,$FirstParamSlot+len+1]],
+            ["coerce",[$OutputForm,dc],["ELT",dc,$FirstParamSlot+len+2]],
+              :[[arg,[dc],["XLAM",[],v]] for arg in SL for v in 0..]
+                 ]
+  [cList,e]
 
 mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   first listOfEntries is [":",.,.] => mkNewUnionFunList(op,form,e)
@@ -393,7 +698,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	     for p in predList for t in listOfEntries])] where
 		upFun() ==
 		  p is ['%ieq,['%head,x],n] =>
-                    ["XLAM",["#1"],["%makepair",n,"#1"]]
+                    ["XLAM",["#1"],["%pair",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
 		  gg:=gensym()
@@ -411,8 +716,8 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
 		   p is ['%ieq,['%head,x],n] =>
-		     ["XLAM",["#1"],['%ieq,['%head,x],n]]
-		   ["XLAM",["#1"],p]
+		     ["XLAM",["#1","#2"],['%ieq,['%head,x],n]]
+		   ["XLAM",["#1","#2"],p]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
 

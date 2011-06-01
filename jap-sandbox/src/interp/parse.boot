@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,10 @@ $defOp := nil
 ++ When true, means that we are building a compile time value.  For
 ++ the parse tree transformer, this means that some assumtpions
 ++ are made about certain operators, regardless of their types
-++ and semantics.  For example `x >= y' is assumed to have the
-++ same semantics as `not(x < y)'.  Note that this normalization
-++ is also done when this parser is used to translate Boot codes
-++ to Lisp.  That usage is being phased out though.
+++ and semantics.  For example, in `a and b => x' the guard `a and b'
+++ is assumed to have the standard semantics of (short-circuted)
+++ conjunction of two Boolean expressions.
+++ That usage is being phased out though.
 $normalizeTree := false
 
 ++ True if we know we are parsing a form supposed to designate a type.
@@ -59,14 +59,13 @@ $parsingType := false
 washOperatorName x ==
   string? x =>
     stackWarning('"String syntax for %1b in signature is deprecated.",[x])
-    INTERN x
+    makeSymbol x
   x
 
 parseTransform: %ParseForm -> %Form 
 parseTransform x ==
   $defOp: local:= nil
-  x := substitute('$,'%,x) -- for new compiler compatibility
-  parseTran x
+  parseTran substitute('$,'%,x) -- for new compiler compatibility
 
 parseTran: %ParseForm -> %Form
 parseTran x ==
@@ -85,9 +84,10 @@ parseType t ==
   parseTran t
 
 parseTypeList l ==
-  mapInto(l, function parseType) 
+  l = nil => nil
+  [parseType first l, :parseTypeList rest l]
 
-parseTranList: %List -> %List
+parseTranList: %List %Form -> %List %Form
 parseTranList l ==
   atom l => parseTran l
   [parseTran first l,:parseTranList rest l]
@@ -169,7 +169,7 @@ transUnCons: %ParseForm -> %Form
 transUnCons u ==
   atom u => systemErrorHere ["transUnCons",u]
   u is ["APPEND",x,y] =>
-    null y => x
+    y = nil => x
     systemErrorHere ["transUnCons",u]
   u is ["CONS",x,y] =>
     atom y => [x,:y]
@@ -230,7 +230,8 @@ parseMDEF t ==
  
 parseTranCheckForRecord: (%ParseForm,%ParseForm) -> %Form
 parseTranCheckForRecord(x,op) ==
-  (x:= parseTran x) is ["Record",:l] =>
+  x := parseTran x
+  x is ["Record",:l] =>
     or/[y for y in l | y isnt [":",.,.]] =>
       postError ['"   Constructor",:bright x,'"has missing label"]
     x
@@ -240,30 +241,25 @@ parseCategory: %ParseForm -> %Form
 parseCategory t ==
   t isnt ["CATEGORY",:x] => systemErrorHere ["parseCategory",t]
   $parsingType: local := true
-  l:= parseTranList x
-  key:=
-    CONTAINED("$",l) => "domain"
-    "package"
+  l := parseTranList x
+  key :=
+    CONTAINED("$",l) => 'domain
+    'package
   ["CATEGORY",key,:l]
  
-
-parseLessEqual: %ParseForm -> %Form
-parseLessEqual u == 
-  parseTran ["not",[substitute(">","<=",first u),:rest u]]
-
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
   t isnt ["and",:u] => systemErrorHere ["parseAnd",t]
-  null u => "true"
-  null rest u => first u
+  u = nil => "true"
+  u is [a] => a
   parseIf ["IF",parseTran first u,parseAnd ["and",:rest u],"false"]
  
 
 parseOr: %ParseForm -> %Form
 parseOr t ==
   t isnt ["or",:u] => systemErrorHere ["parseOr",t]
-  null u => "false"
-  null rest u => first u
+  u = nil => "false"
+  u is [a] => a
   (x:= parseTran first u) is ["not",y] => 
     parseIf ["IF",y,parseOr ["or",:rest u],"true"]
   parseIf ["IF",x,"true",parseOr ["or",:rest u]]
@@ -300,7 +296,7 @@ parseJoin t ==
   t isnt ["Join",:l] => systemErrorHere ["parseJoin",t]
   ["Join",:fn parseTypeList l] where
     fn l ==
-      null l => nil
+      l = nil => nil
       l is [["Join",:x],:y] => [:x,:fn y]
       [first l,:fn rest l]
 
@@ -362,25 +358,25 @@ makeSimplePredicateOrNil p ==
   wrapSEQExit [["%LET",g:= gensym(),p],g]
  
 
-parseWhere: %List -> %Form
+parseWhere: %List %Form -> %Form
 parseWhere t == 
   t isnt ["where",:l] => systemErrorHere ["parseWhere",t]
-  ["where",:mapInto(l, function parseTran)]
+  ["where",:parseTranList l]
  
  
-parseSeq: %List -> %Form
+parseSeq: %List %Form -> %Form
 parseSeq t ==
   t isnt ["SEQ",:l] => systemErrorHere ["parseSeq",t]
   l isnt [:.,["exit",:.]] =>
     postError ['"   Invalid ending to block: ",last l]
-  transSeq mapInto(l,function parseTran)
+  transSeq parseTranList l
  
 
-transSeq: %List -> %Form
+transSeq: %List %Form -> %Form
 transSeq l ==
-  null l => nil
-  null rest l => decExitLevel first l
-  [item,:tail]:= l
+  l = nil => nil
+  l is [x] => decExitLevel x
+  [item,:tail] := l
   item is ["SEQ",:l,["exit",1,["IF",p,["exit", =2,q],"%noBranch"]]] and
     (and/[x is ["%LET",:.] for x in l]) =>
       ["SEQ",:[decExitLevel x for x in l],["exit",1,["IF",decExitLevel p,
@@ -389,6 +385,8 @@ transSeq l ==
     ["IF",decExitLevel a,decExitLevel b,transSeq tail]
   item is ["IF",a,"%noBranch",["exit",1,b]] =>
     ["IF",decExitLevel a,transSeq tail,decExitLevel b]
+  item is ["IF",a,["exit",1,b],c] =>
+    ["IF",decExitLevel a,decExitLevel b,transSeq [c,:tail]]
   (y:= transSeq tail) is ["SEQ",:s] => ["SEQ",item,:s]
   ["SEQ",item,["exit",1,incExitLevel y]]
  
@@ -405,46 +403,45 @@ transCategoryItem x ==
       $transCategoryAssoc:= [[lhs,:rhs],:$transCategoryAssoc]
       postError ['"  Invalid signature: ",x]
     [op,:argl]:= lhs
-    extra:= nil
+    extra := nil
     if rhs is ["Mapping",:m] then
       if rest m then extra:= rest m
                  --should only be 'constant' or 'variable'
       rhs:= first m
-    [["SIGNATURE",op,[rhs,:SUBLIS($transCategoryAssoc,argl)],:extra]]
+    [["SIGNATURE",op,[rhs,:applySubst($transCategoryAssoc,argl)],:extra]]
   [x]
  
 
-superSub: (%Symbol, %List) -> %Form
+superSub: (%Symbol, %List %Form ) -> %Form
 superSub(name,x) ==
   for u in x repeat y:= [:y,:u]
   code:=
     x is [[u]] => $quadSymbol
     strconc('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
-  [INTERNL(PNAME name,"$",code),:y]
+  [INTERNL(symbolName name,"$",code),:y]
  
-scriptTran: %List -> %String
+scriptTran: %List %Form -> %String
 scriptTran x ==
-  null x => '""
+  x = nil => '""
   strconc('";",scriptTranRow first x,scriptTran rest x)
  
-scriptTranRow: %List -> %String
+scriptTranRow: %List %Form -> %String
 scriptTranRow x ==
-  null x => '""
+  x = nil => '""
   strconc($quadSymbol,scriptTranRow1 rest x)
 
-scriptTranRow1: %List -> %String 
+scriptTranRow1: %List %Form -> %String 
 scriptTranRow1 x ==
-  null x => '""
+  x = nil => '""
   strconc('",",$quadSymbol,scriptTranRow1 rest x)
  
-parseVCONS: %List -> %Form
+parseVCONS: %List %Form -> %Form
 parseVCONS l == 
   ["VECTOR",:parseTranList rest l]
 
 --% Register special parsers.
 
-for x in [["<=", :"parseLessEqual"],_
-	  [":", :"parseColon"],_
+for x in [[":", :"parseColon"],_
 	  ["::", :"parseCoerce"],_
 	  ["@", :"parseAtSign"],_
 	  ["and", :"parseAnd"],_

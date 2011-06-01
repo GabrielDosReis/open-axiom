@@ -71,7 +71,10 @@ collectParsedLines(s, p) ==
 ++ parse the whole file `file'.  Returns a list of parse tree
 ++ containing full source location information.
 parseInputFile file ==
-  WITH_-OPEN_-FILE(st file, parseStream(st, file))
+  try
+    st := inputTextFile file
+    parseStream(st, file)
+  finally (if st ~= nil then close st)
 
 ++ Same as parseInputFile, but returns a parse form, instead of
 ++ of a parse tree, i.e. source location information left out.

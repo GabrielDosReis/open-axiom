@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,12 +35,11 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
 $aixTestSaturn := false
 --These will be set in patches.lisp:
 --$saturn := false  --true to write SATURN output to $browserOutputStream
---$standard:= true  --true to write browser output on AIX
+$standard := true  --true to write browser output on AIX
 $saturnAmpersand := '"\&\&"
 $saturnFileNumber --true to write DOS files for Thinkpad (testing only)
    := false
@@ -82,8 +81,8 @@ off()==
 --
 --protectedEVAL1 x ==
 --  error := true
---  val := NIL
---  UNWIND_-PROTECT((val := saturnEVAL x; error := NIL),
+--  val := nil
+--  UNWIND_-PROTECT((val := saturnEVAL x; error := nil),
 --                   error => (resetStackLimits(); sendHTErrorSignal()))
 --  val
 --
@@ -93,7 +92,7 @@ off()==
 --    '"/windows/temp/browser.text"
 --  $saturn =>
 --    saturnEvalToFile(x, fn)
---    runCommand  '"cat /tmp/sat.text"
+--    displayTextFile  '"/tmp/sat.text"
 --  eval x
 
 
@@ -157,7 +156,7 @@ bcHt line ==
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
   cons? line =>
-    $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
+    $htLineList := append!(reverse! mapStringize copyList line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 --=======================================================================
@@ -173,21 +172,21 @@ htShowPageNoScroll() ==
 -- show the page which has been computed
   htSayStandard '"\autobuttons"
   if $standard then
-    htpSetPageDescription($curPage, nreverse htpPageDescription $curPage)
+    htpSetPageDescription($curPage, reverse! htpPageDescription $curPage)
   if $saturn then
-    htpSetPageDescription($saturnPage, nreverse htpPageDescription $saturnPage)
+    htpSetPageDescription($saturnPage, reverse! htpPageDescription $saturnPage)
   $newPage := false
   ----------------------
   if $standard then
     $htLineList := nil
     htMakePage htpPageDescription $curPage
-    if $htLineList then line := apply(function strconc, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, reverse! $htLineList)
     issueHTStandard line
   ----------------------
   if $saturn then
     $htLineList := nil
     htMakePage htpPageDescription $saturnPage
-    if $htLineList then line := apply(function strconc, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, reverse! $htLineList)
     issueHTSaturn line
   ----------------------
   endHTPage()
@@ -212,7 +211,7 @@ writeSaturnPrefix() ==
       STRINGIMAGE ($saturnContextMenuIndex := $saturnContextMenuIndex + 1)
     writeSaturnLines
       ['"\newmenu{BCM", index,
-          '"}{",:nreverse $saturnContextMenuLines,
+          '"}{",:reverse! $saturnContextMenuLines,
             '"}\usemenu{BCM", index,'"}{\vbox{"]
 
 writeSaturnSuffix() ==
@@ -230,71 +229,71 @@ htMakeErrorPage htPage ==
   if $standard then $curPage := htPage
   if $saturn then $saturnPage := htPage
   htMakePage htpPageDescription htPage
-  line := apply(function strconc, nreverse $htLineList)
+  line := apply(function strconc, reverse! $htLineList)
   issueHT line
   endHTPage()
 
 writeSaturnLines lines ==
   for line in lines repeat
-   if line ~= '"" and line.0 = char '_\ then saturnTERPRI()
+   if line ~= '"" and stringChar(line,0) = char "\" then saturnTERPRI()
    saturnPRINTEXP line
 
 writeSaturn(line) ==
   k := 0
-  n := MAXINDEX line
+  n := maxIndex line
   while  --advance k if true
       k > n => false
-      line.k ~= char '_\ => true
+      stringChar(line,k) ~= char "\" => true
       code := isBreakSegment?(line, k + 1,n) => false
       true
     repeat (k := k + 1)
   k > n => writeSaturnPrint(line)
-  segment := SUBSTRING(line,0,k)
+  segment := subString(line,0,k)
   writeSaturnPrint(segment)
   code = 1 =>
     writeSaturnPrint('"\\")
-    writeSaturn SUBSTRING(line,k + 2, nil)
+    writeSaturn subString(line,k + 2)
   code = 2 =>
     writeSaturnPrint('"  &")
-    writeSaturn SUBSTRING(line,k + 4, nil)
+    writeSaturn subString(line,k + 4)
   code = 3 =>
     writeSaturnPrint('"\item")
-    writeSaturn SUBSTRING(line,k + 5,nil)
+    writeSaturn subString(line,k + 5)
   code = 4 =>
     writeSaturnPrint('"\newline")
-    writeSaturn SUBSTRING(line,k + 8,nil)
+    writeSaturn subString(line,k + 8)
   code = 5 =>
     writeSaturnPrint('"\table{")
     $marg := $marg + 3
-    writeSaturnTable SUBSTRING(line,k + 7,nil)
+    writeSaturnTable subString(line,k + 7)
   code = 6 =>
-    i := charPosition(char '_},line,k + 4)
-    tabCode := SUBSTRING(line,k, i - k + 1)
+    i := charPosition(char "}",line,k + 4)
+    tabCode := subString(line,k, i - k + 1)
     writeSaturnPrint tabCode
-    line := SUBSTRING(line,i + 1, nil)
+    line := subString(line,i + 1)
     writeSaturn line
   code = 7 =>
     saturnTERPRI()
-    writeSaturn SUBSTRING(line, k + 2,nil)
+    writeSaturn subString(line, k + 2)
   code = 8 =>
     i :=
       substring?('"\beginmenu",  line,k) => k + 9
       substring?('"\beginscroll",line,k) => k + 11
-      charPosition(char '_},line,k)
-    if char '_[ = line.(i + 1) then
-      i := charPosition(char '_], line, i + 2)
-    beginCode := SUBSTRING(line,k, i - k + 1)
+      charPosition(char "}",line,k)
+    if char "[" = line.(i + 1) then
+      i := charPosition(char "]", line, i + 2)
+    beginCode := subString(line,k, i - k + 1)
     writeSaturnPrint(beginCode)
-    line := SUBSTRING(line,i + 1,nil)
+    line := subString(line,i + 1)
     writeSaturn line
   code = 9 =>
     i :=
       substring?('"\endmenu",line,k)   => k + 7
       substring?('"\endscroll",line,k) => k + 9
-      charPosition(char '_},line,k)
-    endCode := SUBSTRING(line,k, i - k + 1)
+      charPosition(char "}",line,k)
+    endCode := subString(line,k, i - k + 1)
     writeSaturnPrint(endCode)
-    line := SUBSTRING(line,i + 1,nil)
+    line := subString(line,i + 1)
     $marg := $marg - 3
     writeSaturn line
   systemError code
@@ -302,28 +301,28 @@ writeSaturn(line) ==
 isBreakSegment?(line, k, n) ==
   k > n => nil
   char2 := line . k
-  char2 = (char '_\) => 1
-  char2 = (char '_&) =>
+  char2 = (char "\") => 1
+  char2 = (char "&") =>
     substring?('"&\&", line, k) => 2
     nil
-  char2 = char 'i =>
+  char2 = char "i" =>
     substring?('"item",line,k) => 3
     nil
-  char2 = char 'n =>
+  char2 = char "n" =>
     substring?('"newline",line,k) => 4
     nil
-  char2 = char 't =>
+  char2 = char "t" =>
     (k := k + 2) > n => nil
-    line.(k - 1) = char 'a and line.k = char 'b =>
+    line.(k - 1) = char "a" and line.k = char "b" =>
       (k := k + 1) > n => nil
       line.k = char "{" => 6
       substring?('"table",line,k - 3) => 5
       nil
-  char2 = (char '_!) => 7
-  char2 = char 'b =>
+  char2 = char "!" => 7
+  char2 = char "b" =>
     substring?('"begin",line,k) => 8
     nil
-  char2 = (char 'e)  =>
+  char2 = (char "e")  =>
     substring?('"end",line,k) => 9
     nil
   nil
@@ -342,21 +341,21 @@ saturnTERPRI() ==
   TERPRI()
 
 writeSaturnTable line ==
-  open := charPosition(char '"_{",line,0)
-  close:= charPosition(char '"_}",line,0)
+  open := charPosition(char "{",line,0)
+  close:= charPosition(char "}",line,0)
   open < close =>
-    close := findBalancingBrace(line,open + 1,MAXINDEX line,0) or error '"no balancing brace"
-    writeSaturnPrint SUBSTRING(line,0,close + 1)
-    writeSaturnTable SUBSTRING(line,close + 1,nil)
+    close := findBalancingBrace(line,open + 1,maxIndex line,0) or error '"no balancing brace"
+    writeSaturnPrint subString(line,0,close + 1)
+    writeSaturnTable subString(line,close + 1)
   $marg := $marg - 3
-  writeSaturnPrint SUBSTRING(line,0,close + 1)
-  writeSaturn SUBSTRING(line, close + 1,nil)
+  writeSaturnPrint subString(line,0,close + 1)
+  writeSaturn subString(line, close + 1)
 
 findBalancingBrace(s,k,n,level) ==
   k > n => nil
   c := s . k
-  c = char '_{ => findBalancingBrace(s, k + 1, n, level + 1)
-  c = char '_} =>
+  c = char "{" => findBalancingBrace(s, k + 1, n, level + 1)
+  c = char "}" =>
     level = 0 => k
     findBalancingBrace(s, k + 1, n, level - 1)
   findBalancingBrace(s, k + 1, n, level)
@@ -454,7 +453,7 @@ saturnTranText x ==
   error nil
 
 isMenuItemStyle? s ==
-  15 = STRING_<('"\menuitemstyle{", s) => SUBSTRING(s,15,(MAXINDEX s) - 15)
+  15 = ('"\menuitemstyle{" < s) => subString(s,15,(maxIndex s) - 15)
   nil
 
 getCallBack callTail ==
@@ -485,7 +484,7 @@ htDoneButton(func, htPage, :optionalArgs) ==
     htMakeErrorPage htPage
   not FBOUNDP func =>
     systemError ['"unknown function", func]
-  FUNCALL(SYMBOL_-FUNCTION func, htPage)
+  FUNCALL(symbolFunction func, htPage)
 
 htBcLinks(links,:options) ==
   skipStateInfo? := IFCAR options
@@ -549,7 +548,7 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
     string? pageDescrip => [pageDescrip, :htPage.7]
-    nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
+    append!(reverse! copyList pageDescrip, htPage.7)
   htPage.7 := newDescript
 
 
@@ -608,8 +607,8 @@ htpMakeEmptyPage(propList,:options) ==
   name := IFCAR options or GENTEMP()
   if not $saturn then
     $activePageList := [name, :$activePageList]
-  setDynamicBinding(name, val := VECTOR(name, nil, nil, nil, nil, nil, propList, nil))
-  val
+  val := vector [name, nil, nil, nil, nil, nil, propList, nil]
+  symbolValue(name) :=  val
 
 --=======================================================================
 --              Redefinitions from br-con.boot
@@ -627,7 +626,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   conname         := opOf conform
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile INTERN name
+  sourceFileName  := dbSourceFile makeSymbol name
   constrings      :=
     KDR form => dbConformGenUnder form
     [strconc(name,args)]
@@ -769,15 +768,15 @@ dbPresentCons(htPage,kind,:exclusions) ==
   star?  := true     --always include information on exposed/unexposed   4/92
   if $standard then htBeginTable()
   htSay '"{"
-  if one? or member('abbrs,exclusions)
+  if one? or 'abbrs in exclusions
     then htSay '"{\em Abbreviations}"
     else htMakePage [['bcLispLinks,['"Abbreviations",'"",'dbShowCons,'abbrs]]]
   htSay '"}{"
-  if one? or member('conditions,exclusions) or "and"/[rest x = true for x in cAlist]
+  if one? or 'conditions in exclusions or "and"/[rest x = true for x in cAlist]
     then htSay '"{\em Conditions}"
     else htMakePage [['bcLispLinks,['"Conditions",'"",'dbShowCons,'conditions]]]
   htSay '"}{"
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSay '"{\em Descriptions}"
     else htMakePage [['bcLispLinks,['"Descriptions",'"",'dbShowCons,'documentation]]]
   htSay '"}{"
@@ -786,15 +785,15 @@ dbPresentCons(htPage,kind,:exclusions) ==
     else htMakePage
       [['bcLinks,['"Filter",'"",'htFilterPage,['dbShowCons,'filter]]]]
   htSay '"}{"
-  if one? or member('kinds,exclusions) or kind ~= 'constructor
+  if one? or 'kinds in exclusions or kind ~= 'constructor
     then htSay '"{\em Kinds}"
     else htMakePage [['bcLispLinks,['"Kinds",'"",'dbShowCons,'kinds]]]
   htSay '"}{"
-  if one? or member('names,exclusions)
+  if one? or 'names in exclusions
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowCons,'names]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
+  if one? or 'parameters in exclusions or not ("or"/[CDAR x for x in cAlist])
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowCons,'parameters]]]
   htSay '"}{"
@@ -821,25 +820,25 @@ dbPresentConsSaturn(htPage,kind,exclusions) ==
   exposedUnexposedFlag := $includeUnexposed? --used to be star?       4/92
   star?  := true     --always include information on exposed/unexposed   4/92
   if $standard then htBeginTable()
-  if one? or member('abbrs,exclusions)
+  if one? or 'abbrs in exclusions
     then htSayCold '"\&Abbreviations"
     else htMakePage [['bcLispLinks,['"\&Abbreviations",'"",'dbShowCons,'abbrs]]]
-  if one? or member('conditions,exclusions) or "and"/[rest x = true for x in cAlist]
+  if one? or 'conditions in exclusions or "and"/[rest x = true for x in cAlist]
     then htSayCold '"\&Conditions"
     else htMakePage [['bcLispLinks,['"\&Conditions",'"",'dbShowCons,'conditions]]]
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSayCold '"\&Descriptions"
     else htMakePage [['bcLispLinks,['"\&Descriptions",'"",'dbShowCons,'documentation]]]
   if one? or null rest cAlist
     then htSayCold '"\&Filter"
     else htMakeSaturnFilterPage ['dbShowCons, 'filter]
-  if one? or member('kinds,exclusions) or kind ~= 'constructor
+  if one? or 'kinds in exclusions or kind ~= 'constructor
     then htSayCold '"\&Kinds"
     else htMakePage [['bcLispLinks,['"\&Kinds",'"",'dbShowCons,'kinds]]]
-  if one? or member('names,exclusions)
+  if one? or 'names in exclusions
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowCons,'names]]]
-  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
+  if one? or 'parameters in exclusions or not ("or"/[CDAR x for x in cAlist])
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowCons,'parameters]]]
   htSaySaturn '"\hrule"
@@ -885,7 +884,7 @@ dbShowConsKinds cAlist ==
     kind = 'domain    => doms := [x,:doms]
     kind = 'package   => paks := [x,:paks]
     defs := [x,:defs]
-  lists := [nreverse cats,nreverse doms,nreverse paks,nreverse defs]
+  lists := [reverse! cats,reverse! doms,reverse! paks,reverse! defs]
   htBeginMenu 'description
   htSayStandard '"\indent{1}"
   kinds := +/[1 for x in lists | #x > 0]
@@ -942,7 +941,7 @@ addParameterTemplates(page, conform) ==
     htSaySaturn '" = }"
     htSaySaturnAmpersand()
     htSaySaturn '"\colorbuttonbox{lightgray}{\inputbox[2.5in]{\"
-    htSaySaturn SUBLIS(argSublis,par)
+    htSaySaturn applySubst(argSublis,par)
     htSaySaturn '"}{"
     htSaySaturn argstring
     htSaySaturn '"}}"
@@ -1040,12 +1039,12 @@ dbPresentOps(htPage,which,:exclusions) ==
   one? := empty? or one?
   htBeginTable()
   htSay '"{"
-  if one? or member('conditions,exclusions)
+  if one? or 'conditions in exclusions
                  or (htpProperty(htPage,'condition?) = 'no)
       then htSay '"{\em Conditions}"
       else htMakePage [['bcLispLinks,['"Conditions",'"",'dbShowOps,which,'conditions]]]
   htSay '"}{"
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSay '"{\em Descriptions}"
     else htMakePage [['bcLispLinks,['"Descriptions",'"",'dbShowOps,which,'documentation]]]
   htSay '"}{"
@@ -1053,29 +1052,29 @@ dbPresentOps(htPage,which,:exclusions) ==
     then htSay '"{\em Filter}"
     else htMakePage [['bcLinks,['"Filter ",'"",'htFilterPage,['dbShowOps,which,'filter]]]]
   htSay '"}{"
-  if one? or member('names,exclusions) or null KDR opAlist
+  if one? or 'names in exclusions or null KDR opAlist
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowOps,which,'names]]]
   if not star? then
     htSay '"}{"
-    if not implementation? or member('implementation,exclusions) or which = '"attribute" or
+    if not implementation? or 'implementation in exclusions or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
         and getConstructorKindFromDB conname = "category")
     then htSay '"{\em Implementations}"
     else htMakePage
       [['bcLispLinks,['"Implementations",'"",'dbShowOps,which,'implementation]]]
   htSay '"}{"
-  if one? or member('origins,exclusions)
+  if one? or 'origins in exclusions
     then htSay '"{\em Origins}"
     else htMakePage [['bcLispLinks,['"Origins",'"",'dbShowOps,which,'origins]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) --also test for some parameter
+  if one? or 'parameters in exclusions --also test for some parameter
       or not dbDoesOneOpHaveParameters? opAlist
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowOps,which,'parameters]]]
   htSay '"}{"
   if which ~= '"attribute" then
-    if one? or member('signatures,exclusions)
+    if one? or 'signatures in exclusions
       then htSay '"{\em Signatures}"
       else htMakePage [['bcLispLinks,['"Signatures",'"",'dbShowOps,which,'signatures]]]
   htSay '"}"
@@ -1109,34 +1108,34 @@ dbPresentOpsSaturn(htPage,which,exclusions) ==
   empty? := null opAlist
   one?   := opAlist is [entry] and 2 = #entry
   one? := empty? or one?
-  if one? or member('conditions,exclusions)
+  if one? or 'conditions in exclusions
                  or (htpProperty(htPage,'condition?) = 'no)
       then htSayCold '"\&Conditions"
       else htMakePage [['bcLispLinks,['"\&Conditions",'"",'dbShowOps,which,'conditions]]]
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSayCold '"\&Descriptions"
     else htMakePage [['bcLispLinks,['"\&Descriptions",'"",'dbShowOps,which,'documentation]]]
   if null IFCDR opAlist
     then htSayCold '"\&Filter"
     else htMakeSaturnFilterPage ['dbShowOps, which, 'filter]
-  if not implementation? or member('implementation,exclusions) or which = '"attribute" or
+  if not implementation? or 'implementation in exclusions or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
         and getConstructorKindFromDB conname = "category")
     then htSayCold '"\&Implementations"
     else htMakePage
       [['bcLispLinks,['"\&Implementations",'"",'dbShowOps,which,'implementation]]]
-  if one? or member('names,exclusions) or null KDR opAlist
+  if one? or 'names in exclusions or null KDR opAlist
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowOps,which,'names]]]
-  if one? or member('origins,exclusions)
+  if one? or 'origins in exclusions
     then htSayCold '"\&Origins"
     else htMakePage [['bcLispLinks,['"\&Origins",'"",'dbShowOps,which,'origins]]]
-  if one? or member('parameters,exclusions) --also test for some parameter
+  if one? or 'parameters in exclusions --also test for some parameter
       or not dbDoesOneOpHaveParameters? opAlist
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowOps,which,'parameters]]]
   if which ~= '"attribute" then
-    if one? or member('signatures,exclusions)
+    if one? or 'signatures in exclusions
       then htSayCold '"\&Signatures"
       else htMakePage [['bcLispLinks,['"\&Signatures",'"",'dbShowOps,which,'signatures]]]
   if star? then
@@ -1157,7 +1156,7 @@ htShowPageStar() ==
   $saturn => htShowPageStarSaturn()
   htSayStandard '"\endscroll "
   if $exposedOnlyIfTrue then
-    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,NIL]]]
+    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,nil]]]
   else
     htMakePage [['bcLinks,['"Exposed Only",'"",'repeatSearch,'T]]]
   htShowPageNoScroll()
@@ -1166,7 +1165,7 @@ htShowPageStarSaturn() ==
   $newPage    : local := nil
   $htLineList : local := nil
   if $exposedOnlyIfTrue then
-    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,NIL]]]
+    htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,nil]]]
   else
     htMakePage [['bcLinks,['"Exposed Only",'"",'repeatSearch,'T]]]
   $saturnContextMenuLines := $htLineList
@@ -1221,14 +1220,14 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   ops := escapeSpecialChars STRINGIMAGE op
   n := #sig
   do
-    n = 2 and LASSOC('Nud,PROPLIST op) => 
+    n = 2 and symbolLassoc('Nud,PROPLIST op) => 
       htSay(ops,'" {\em ",quickForm2HtString KAR args,'"}")
-    n = 3 and LASSOC('Led,PROPLIST op) => 
+    n = 3 and symbolLassoc('Led,PROPLIST op) => 
       htSay('"{\em ",quickForm2HtString KAR args,'"} ",ops,'" {\em ",quickForm2HtString KAR KDR args,'"}")
     if unexposed? and $includeUnexposed? then
       htSayUnexposed()
     htSay(ops)
-    predicate='ASCONST or operationIsNiladicConstructor op or member(op,'(0 1)) => 'skip
+    predicate='ASCONST or operationIsNiladicConstructor op or op in '(0 1) => 'skip
     which = '"attribute" and null args => 'skip
     htSay('"(")
     if IFCAR args then htSay('"{\em ",quickForm2HtString IFCAR args,'"}")
@@ -1245,13 +1244,13 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   $conargs   : local := rest conform
   if which = '"operation" then
     $signature : local :=
-      MEMQ(conname,$DomainNames) => nil
-      CDAR getConstructorModemapFromDB conname
+      builtinFunctorName? conname => nil
+      getConstructorModemapFromDB(conname).mmSignature
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.
     tvarlist := TAKE(# $conargs,$TriangleVariableList)
-    $signature := SUBLISLIS($FormalMapVariableList,tvarlist,$signature)
+    $signature := applySubst(pairList(tvarlist,$FormalMapVariableList),$signature)
   $sig :=
     which = '"attribute" or which = '"constructor" => sig
     $conkind ~= '"package" => sig
@@ -1261,7 +1260,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   -----------------------------------------------------------
   htSaySaturn '"\begin{tabular}{lp{0in}}"
   -----------------------------------------------------------
-  if member(which,'("operation" "constructor")) then
+  if which in '("operation" "constructor") then
     $displayReturnValue: local := nil
     if args then
       htSayStandard('"\newline\tab{2}{\em Arguments:}")
@@ -1328,7 +1327,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     htSaySaturn '"{\em Where:}"
     htSayStandard('"\newline\tab{2}{\em Where:}")
     firstTime := true
-    if ASSOC("$",$whereList) then
+    if symbolAssoc("$",$whereList) then
       htSayIndentRel(15,true)
       htSaySaturnAmpersand()
       htSayStandard '"{\em \$} is "
@@ -1406,7 +1405,7 @@ htSaySourceFile conname ==
 
 htSayIndentRel(n,:options) ==
   flag := IFCAR options
-  m := ABSVAL n
+  m := abs n
   if flag then m := m + 2
   if $standard then htSayStandard
     n > 0 =>
@@ -1499,8 +1498,8 @@ unTab s ==
   [unTab1 first s, :rest s]
 
 unTab1 s ==
-  STRING_<('"\tab{", s) = 5 and (k := charPosition(char '_}, s, 4)) =>
-      SUBSTRING(s, k + 1, nil)
+  ('"\tab{" < s) = 5 and (k := charPosition(char "}", s, 4)) =>
+      subString(s, k + 1)
   s
 
 satBreak() ==
@@ -1582,8 +1581,7 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --  PRINTEXP($tick,comstream)
 --  PRINTEXP('"",  comstream)
 --  TERPRI(comstream)
---  while not EOFP instream repeat
---    line := READLINE instream
+--  while (line := readLine instream) ~= %nothing repeat
 --    comP := FILE_-POSITION comstream
 --    if key ~= line.0 then
 --      if outstream then SHUT outstream
@@ -1633,9 +1631,9 @@ bcConform1 form == main where
       -- too, until we fix that.
       string? form or not isConstructorName form =>
         s := 
-          string? form => strconc("_"",form,"_"")
+          string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
-        (s.0 = char '_#) =>
+        stringChar(s,0) = char "#" =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>
               htSay form2HtString ($FormalMapVariableList . n)
            htSay '"\"
@@ -1717,13 +1715,13 @@ purgeNewConstructorLines(lines, conlist) ==
 -- screenLocalLine1(line, conlist) ==
 screenLocalLine(line, conlist) ==
   k := dbKind line
-  con := INTERN
-    k = char 'o or k = char 'a =>
+  con := makeSymbol
+    k = char "o" or k = char "a" =>
       s := dbPart(line,5,1)
-      k := charPosition(char '_(,s,1)
-      SUBSTRING(s,1,k - 1)
+      k := charPosition(char "(",s,1)
+      subString(s,1,k - 1)
     dbName line
-  MEMQ(con, conlist)
+  symbolMember?(con, conlist)
 
 purgeLocalLibdb() ==   --called by the user through a clear command?
   $newConstructorList := nil

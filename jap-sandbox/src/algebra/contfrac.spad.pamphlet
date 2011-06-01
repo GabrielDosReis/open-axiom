@@ -161,7 +161,7 @@ ContinuedFraction(R): Exports == Implementation where
             d := denom a
             q := n quo d
             r := n - q*d
-            if r < 0 then q := q - 1
+            if negative? r then q := q - 1
             q
         eucWhole a
 
@@ -187,8 +187,8 @@ ContinuedFraction(R): Exports == Implementation where
             empty? nums or empty? dens => empty()
             n := frst nums
             d := frst dens
-            n < 0 => error "Numerators must be greater than 0."
-            d < 0 => error "Denominators must be greater than 0."
+            negative? n => error "Numerators must be greater than 0."
+            negative? d => error "Denominators must be greater than 0."
             concat([n,d]$Rec, delay genFractionA(rst nums,rst dens))
     else
         continuedFraction(wh,nums,dens) == [[wh,genFractionB(nums,dens)],false]

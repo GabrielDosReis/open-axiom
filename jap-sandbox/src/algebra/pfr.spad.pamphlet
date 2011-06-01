@@ -114,10 +114,11 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
 
     Rep    := Record(whole:R, fract: LfTerm)
 
+    import %before?: (FRR,FRR) -> Boolean from Foreign Builtin
+
     -- private function signatures
 
     copypf: % -> %
-    LessThan: (fTerm, fTerm) -> Boolean
     multiplyFracTerms: (fTerm, fTerm) -> %
     normalizeFracTerm: fTerm -> %
     partialFractionNormalized: (R, FRR) -> %
@@ -132,10 +133,9 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
 
     copypf(a: %): % == [a.whole,copy a.fract]$%
 
-    LessThan(s: fTerm, t: fTerm) ==
+    LessThan(s: fTerm, t: fTerm): Boolean ==
       -- have to wait until FR has < operation
-      if (GGREATERP(s.den,t.den)$Lisp : Boolean) then false
-      else true
+      %before?(s.den,t.den)
 
     multiplyFracTerms(s : fTerm, t : fTerm) ==
       nthFactor(s.den,1) = nthFactor(t.den,1) =>

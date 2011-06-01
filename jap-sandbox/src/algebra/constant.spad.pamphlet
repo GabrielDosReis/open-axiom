@@ -88,7 +88,7 @@ InnerAlgebraicNumber(): Exports == Implementation where
     one? a == one? numer a and one? denom a
     x:% / y:%        == mainRatDenom(x /$Rep y)
     x:% ** n:Integer ==
-      n < 0 => mainRatDenom (x **$Rep n)
+      negative? n => mainRatDenom (x **$Rep n)
       x **$Rep n
     trueEqual(a,b) ==
        -- if two algebraic numbers have the same norm (after deleting repeated

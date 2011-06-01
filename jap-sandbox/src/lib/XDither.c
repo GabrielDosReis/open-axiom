@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ char XDitherBits[] = {
    0x05, 0x07, 0x07,
    0x07, 0x07, 0x07 };
 
-#include "XDither.H1"
+#include "XDither.h"
 
 Pixmap XDither[XDitherMax];
 unsigned int DITHERINIT = 0;

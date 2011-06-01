@@ -211,7 +211,7 @@ ViewDefaultsPackage():Exports == Implementation where
     viewWriteDefault listOfThings ==
       thingsToWrite : L S := []
       for aTypeOfFile in listOfThings repeat
-        if (writeTypeInt := position(upperCase aTypeOfFile,viewWriteAvailable())) < 0 then
+        if negative?(writeTypeInt := position(upperCase aTypeOfFile,viewWriteAvailable())) then
           sayBrightly(["  > ",concat(aTypeOfFile,
                        " is not a valid file type for writing a viewport")])$Lisp
         else

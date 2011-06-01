@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,160 @@ module lisplib
 ++
 $functionLocations := []
 
+--=======================================================================
+--                Generate Slot 2 Attribute Alist
+--=======================================================================
+NRTgenInitialAttributeAlist attributeList ==
+  --alist has form ((item pred)...) where some items are constructor forms
+  alist := [x for x in attributeList | -- throw out constructors
+    not symbolMember?(opOf first x,allConstructors())]
+  $lisplibAttributes := simplifyAttributeAlist
+    [[a,:b] for [a,b] in applySubst($pairlis,alist) | a isnt 'nothing]
+
+simplifyAttributeAlist al ==
+  al is [[a,:b],:r] =>
+    u := [x for x in r | x is [=a,:b]] 
+    null u => [first al,:simplifyAttributeAlist rest al]
+    pred := simpBool makePrefixForm([b,:ASSOCRIGHT u],'OR)
+    $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
+    s := [x for x in r | x isnt [=a,:b]]
+    [[a,:pred],:simplifyAttributeAlist s]
+  nil
+ 
+NRTgenFinalAttributeAlist() ==
+  [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ~= -1]
+ 
+predicateBitIndex x == 
+  pn(x,false) where
+    pn(x,flag) ==
+      u := simpBool transHasCode x
+      u is 'T  =>  0
+      u = nil => -1
+      p := POSN1(u,$NRTslot1PredicateList) => p + 1
+      not flag => pn(predicateBitIndexRemop x,true)
+      systemError nil
+
+predicateBitIndexRemop p==
+--transform attribute predicates taken out by removeAttributePredicates
+  p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
+    simpBool makePrefixForm([predicateBitIndexRemop x for x in argl],op)
+  p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
+  p
+ 
+predicateBitRef x ==
+  x is 'T => 'T
+  ['testBitVector,'pv_$,predicateBitIndex x]
+ 
+makePrefixForm(u,op) ==
+  u := MKPF(u,op)
+  u is ''T => 'T
+  u
+
+--=======================================================================
+--               Generate Slot 3 Predicate Vector
+--=======================================================================
+makePredicateBitVector pl ==   --called by buildFunctor
+  if $insideCategoryPackageIfTrue then
+    pl := union(pl,$categoryPredicateList)
+  $predGensymAlist := nil --bound by buildFunctor, used by optHas
+  for p in removeAttributePredicates pl repeat
+    pred := simpBool transHasCode p
+    atom pred => 'skip                --skip over T and nil
+    if isHasDollarPred pred then 
+      lasts := insert(pred,lasts)
+      for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
+    else 
+      firsts := insert(pred,firsts)
+  firstPl := applySubst($pairlis,reverse! orderByContainment firsts)
+  lastPl  := applySubst($pairlis,reverse! orderByContainment lasts)
+  firstCode:= 
+    ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
+  lastCode := augmentPredCode(# firstPl,lastPl)
+  $lisplibPredicates := [:firstPl,:lastPl] --what is stored under 'predicates
+  [$lisplibPredicates,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
+
+augmentPredCode(n,lastPl) ==
+  ['%list,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
+  delta := 2 ** n
+  l := [(u := MKPF([x,['augmentPredVector,"$",delta]],'AND); 
+         delta:=2 * delta; u) for x in pl]
+
+augmentPredVector(dollar,value) ==
+  domainPredicates(dollar) := value + domainPredicates dollar
+
+isHasDollarPred pred ==
+  pred is [op,:r] =>
+    op in '(AND and %and OR or %or NOT not %not) => 
+      or/[isHasDollarPred x for x in r]
+    op in '(HasCategory HasAttribute) => first r is '$
+  false
+
+stripOutNonDollarPreds pred ==
+  pred is [op,:r] and op in '(AND and %and OR or %or NOT not %not) => 
+    "append"/[stripOutNonDollarPreds x for x in r]
+  not isHasDollarPred pred => [pred]
+  nil
+
+removeAttributePredicates pl ==
+  [fn p for p in pl] where
+    fn p ==
+      p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
+          makePrefixForm(fnl argl,op)
+      p is ["has",'$,['ATTRIBUTE,a]] =>
+        sayBrightlyNT '"Predicate: "
+        PRINT p
+        sayBrightlyNT '"  replaced by: "
+        PRINT LASSOC(a,$NRTattributeAlist)
+      p
+    fnl p == [fn x for x in p]
+ 
+transHasCode x ==
+  atom x => x
+  op := x.op
+  op in '(HasCategory HasAttribute) => x
+  op="has" => compHasFormat x
+  [transHasCode y for y in x]
+ 
+mungeAddGensyms(u,gal) ==
+  ['%list,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
+    atom x => x
+    g := LASSOC(x,gal) =>
+      n = 0 => ["%LET",g,x]
+      g
+    [first x,:[fn(y,gal,n + 1) for y in rest x]]
+ 
+orderByContainment pl ==
+  null pl or null rest pl => pl
+  max := first pl
+  for x in rest pl repeat
+    if (y := CONTAINED(max,x)) then
+      if null assoc(max,$predGensymAlist)
+      then $predGensymAlist := [[max,:gensym()],:$predGensymAlist]
+    else if CONTAINED(x,max)
+         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:gensym()],:$predGensymAlist]
+    if y then max := x
+  [max,:orderByContainment remove(pl,max)]
+ 
+buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
+  null l => n
+  n := n + n
+  if first l then n := n + 1
+  fn(rest l,n)
+ 
+buildPredVector(init,n,l) == fn(init,2 ** n,l) where fn(acc,n,l) ==
+  null l => acc
+  if first l then acc := acc + n
+  fn(acc,n + n,rest l)
+
+testBitVector(vec,i) ==
+--bit vector indices are always 1 larger than position in vector
+  i = 0 => true
+  LOGBITP(i - 1,vec)
+ 
+bitsOf n ==
+  n = 0 => 0
+  1 + bitsOf(n quo 2)
+ 
 --% Standard Library Creation Functions
  
 readLib(fn,ft) == readLib1(fn,ft,"*")
@@ -68,7 +222,7 @@ putFileProperty(fn,ft,id,val) ==
   val
  
 lisplibWrite(prop,val,filename) ==
-  -- this may someday not write NIL keys, but it will now
+  -- this may someday not write nil keys, but it will now
   if $LISPLIB then
      rwrite128(prop,val,filename)
  
@@ -102,7 +256,7 @@ hasFilePropertyNoCache(p,id,abbrev) ==
   -- it is assumed that the file exists and is a proper pathname
   -- startTimingProcess 'diskread
   fnStream:= readLibPathFast p
-  null fnStream => NIL
+  null fnStream => nil
   -- str:= object2String id
   val:= rread(id,fnStream, nil)
   RSHUT fnStream
@@ -119,13 +273,13 @@ unInstantiate(clist) ==
 killNestedInstantiations(deps) ==
   for key in HKEYS($ConstructorCache)
     repeat
-      for [arg,count,:inst] in HGET($ConstructorCache,key) repeat
+      for [arg,count,:inst] in tableValue($ConstructorCache,key) repeat
         isNestedInstantiation(inst.0,deps) =>
           HREMPROP($ConstructorCache,key,arg)
  
 isNestedInstantiation(form,deps) ==
   form is [op,:argl] =>
-    op in deps => true
+    symbolMember?(op,deps) => true
     or/[isNestedInstantiation(x,deps) for x in argl]
   false
  
@@ -147,8 +301,8 @@ findModule cname ==
 loadLibIfNotLoaded libName ==
   -- replaces old SpadCondLoad
   -- loads is library is not already loaded
-  $PrintOnly = 'T => NIL
-  GETL(libName,'LOADED) => NIL
+  $PrintOnly => nil
+  property(libName,'LOADED) => nil
   loadLib libName
  
 loadLib cname ==
@@ -170,14 +324,14 @@ loadLib cname ==
   coSig :=
       u =>
           [[.,:sig],:.] := u
-          [NIL,:[categoryForm?(x) for x in rest sig]]
-      NIL
-  -- in following, add property value false or NIL to possibly clear
+          [nil,:[categoryForm?(x) for x in rest sig]]
+      nil
+  -- in following, add property value false or nil to possibly clear
   -- old value
   if null rest getConstructorFormFromDB cname then
       property(cname,'NILADIC) := true
     else
-      REMPROP(cname,'NILADIC)
+      property(cname,'NILADIC) := nil
   property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
@@ -206,14 +360,14 @@ loadIfNecessary u == loadLibIfNecessary(u,true)
 loadIfNecessaryAndExists u == loadLibIfNecessary(u,nil)
  
 loadLibIfNecessary(u,mustExist) ==
-  u = '$EmptyMode => u
+  u is '$EmptyMode => u
   cons? u => loadLibIfNecessary(first u,mustExist)
   value:=
     functionp(u) or macrop(u) => u
-    GETL(u,'LOADED) => u
+    property(u,'LOADED) => u
     loadLib u => u
   null $InteractiveMode and ((null (y:= getProplist(u,$CategoryFrame)))
-    or (null LASSOC('isFunctor,y)) and (null LASSOC('isCategory,y))) =>
+    or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
       y:= getConstructorKindFromDB u =>
          y = "category" =>
             updateCategoryFrameForCategory u
@@ -250,13 +404,13 @@ loadFunctor u ==
  
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
-    cnam in $CategoryNames => nil
-    REMPROP(cnam,'LOADED)
+    builtinCategoryName? cnam => nil
+    property(cnam,'LOADED) := nil
 --    fn:=getConstructorAbbreviationFromDB cnam
     if niladicConstructorFromDB cnam
-     then PUT(cnam,'NILADIC,'T)
-     else REMPROP(cnam,'NILADIC)
-    systemDependentMkAutoload(constructor? cnam,cnam)
+     then property(cnam,'NILADIC) := 'T
+     else property(cnam,'NILADIC) := nil
+    systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP(cnam) => "next"
@@ -265,26 +419,26 @@ systemDependentMkAutoload(fn,cnam) ==
          cosig := getDualSignatureFromDB cnam
          file := getConstructorModuleFromDB cnam
          SET_-LIB_-FILE_-GETTER(file, cnam)
-         kind = 'category =>
+         kind is 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
-  cname in $BuiltinConstructorNames => cname
-  if not GETL(cname,'LOADED) then loadLib cname
-  SYMBOL_-FUNCTION cname
+  builtinConstructor? cname => cname
+  if not property(cname,'LOADED) then loadLib cname
+  symbolFunction cname
 
 setAutoLoadProperty(name) ==
---  abb := constructor? name
-  REMPROP(name,'LOADED)
-  SETF(SYMBOL_-FUNCTION name,mkAutoLoad(constructor? name, name))
+--  abb := getConstructorAbbreviationFromDB name
+  property(name,'LOADED) := nil
+  symbolFunction(name) := mkAutoLoad(getConstructorAbbreviationFromDB name, name)
 
 unloadOneConstructor(cnam,fn) ==
-    REMPROP(cnam,'LOADED)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    property(cnam,'LOADED) := nil
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 --% Compilation
  
@@ -304,22 +458,22 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
-  $lisplibAttributes: local := NIL
-  $lisplibPredicates: local := NIL
-  $lisplibForm: local := NIL
-  $lisplibAbbreviation: local := NIL
-  $lisplibParents: local := NIL
-  $lisplibAncestors: local := NIL
-  $lisplibKind: local := NIL
-  $lisplibModemap: local := NIL
-  $lisplibModemapAlist: local := NIL
-  $lisplibSlot1 : local := NIL   --used by NRT mechanisms
-  $lisplibOperationAlist: local := NIL
-  $lisplibOpAlist: local:= NIL
-  $lisplibSuperDomain: local := NIL
-  $libFile: local := NIL
-  $lisplibVariableAlist: local := NIL
-  $lisplibSignatureAlist: local := NIL
+  $lisplibAttributes: local := nil
+  $lisplibPredicates: local := nil
+  $lisplibForm: local := nil
+  $lisplibAbbreviation: local := nil
+  $lisplibParents: local := nil
+  $lisplibAncestors: local := nil
+  $lisplibKind: local := nil
+  $lisplibModemap: local := nil
+  $lisplibModemapAlist: local := nil
+  $lisplibSlot1 : local := nil   --used by NRT mechanisms
+  $lisplibOperationAlist: local := nil
+  $lisplibOpAlist: local:= nil
+  $lisplibSuperDomain: local := nil
+  $libFile: local := nil
+  $lisplibVariableAlist: local := nil
+  $lisplibSignatureAlist: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
@@ -334,26 +488,26 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
  
 compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
-  sayMSG fillerSpaces(72,'"-")
+  sayMSG fillerSpaces(72,char "-")
   $LISPLIB: local := 'T
   $op: local := op
-  $lisplibAttributes: local := NIL
-  $lisplibPredicates: local := NIL -- set by makePredicateBitVector
-  $lisplibForm: local := NIL
-  $lisplibKind: local := NIL
-  $lisplibAbbreviation: local := NIL
-  $lisplibParents: local := NIL
-  $lisplibAncestors: local := NIL
-  $lisplibModemap: local := NIL
-  $lisplibModemapAlist: local := NIL
-  $lisplibSlot1 : local := NIL   -- used by NRT mechanisms
-  $lisplibOperationAlist: local := NIL
+  $lisplibAttributes: local := nil
+  $lisplibPredicates: local := nil -- set by makePredicateBitVector
+  $lisplibForm: local := nil
+  $lisplibKind: local := nil
+  $lisplibAbbreviation: local := nil
+  $lisplibParents: local := nil
+  $lisplibAncestors: local := nil
+  $lisplibModemap: local := nil
+  $lisplibModemapAlist: local := nil
+  $lisplibSlot1 : local := nil   -- used by NRT mechanisms
+  $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local := nil  --operations alist for new runtime system
   $lisplibSignatureAlist: local := nil
-  $lisplibSuperDomain: local := NIL
-  $libFile: local := NIL
-  $lisplibVariableAlist: local := NIL
---  $lisplibRelatedDomains: local := NIL   --from ++ Related Domains: see c-doc
+  $lisplibSuperDomain: local := nil
+  $libFile: local := nil
+  $lisplibVariableAlist: local := nil
+--  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
   $lisplibCategory: local := nil        
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
@@ -369,19 +523,19 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   -- finalizeLisplib libName
   -- following guarantee's compiler output files get closed.
   ok := false;
-  UNWIND_-PROTECT(
-      PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
-            leaveIfErrors(libName),
-            sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
-            ok := finalizeLisplib libName),
-      RSHUT $libFile)
+  try
+    res:= FUNCALL(fn,df,m,e,prefix,fal)
+    leaveIfErrors(libName)
+    sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
+    ok := finalizeLisplib libName
+  finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
   RPACKFILE filearg
   FRESH_-LINE $algebraOutputStream
-  sayMSG fillerSpaces(72,'"-")
+  sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE([SYMBOL_-NAME getConstructorAbbreviationFromDB op],NIL)
+  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],nil)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
@@ -408,7 +562,7 @@ initializeLisplib libName ==
   resetErrorCount()
   $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
   ADDOPTIONS('FILE,$libFile)
-  if pathnameTypeId(_/EDITFILE) = 'SPAD
+  if pathnameTypeId(_/EDITFILE) is 'SPAD
     then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
 
 ++ If compilation produces an error, issue inform user and
@@ -483,7 +637,7 @@ Operators u ==
   atom u => []
   atom first u =>
     answer:="union"/[Operators v for v in rest u]
-    MEMQ(first u,answer) => answer
+    symbolMember?(first u,answer) => answer
     [first u,:answer]
   "union"/[Operators v for v in u]
  
@@ -512,16 +666,16 @@ getSlot1 domainName ==
   p := pathname [fn,$spadLibFT,'"*"]
   not isExistingFile(p) =>
     sayKeyedMsg("S2IL0003",[namestring p])
-    NIL
+    nil
   (sig := getConstructorSignature domainName) =>
     [.,target,:argMml] := sig
     for a in $FormalMapVariableList for m in argMml repeat
       $e:= put(a,'mode,m,$e)
     t := compMakeCategoryObject(target,$e) or
       systemErrorHere ["getSlot1",domainName]
-    t.expr.1
+    categoryExports t.expr
   sayKeyedMsg("S2IL0022",[namestring p,'"constructor modemap"])
-  NIL
+  nil
  
 transformOperationAlist operationAlist ==
   --  this transforms the operationAlist which is written out onto LISPLIBs.
@@ -531,17 +685,16 @@ transformOperationAlist operationAlist ==
   --      where signature-Alist has entries (<signature> . item)
   --        where item has form (<slotNumber> <condition> <kind>)
   --          where <kind> =
-  --             NIL  => function
+  --             nil  => function
   --             CONST => constant ... and others
   newAlist:= nil
   for [[op,sig,:.],condition,implementation] in operationAlist repeat
     kind:=
       implementation is [eltEtc,.,n] and eltEtc in '(CONST ELT) => eltEtc
       implementation is [impOp,:.] =>
-        impOp = 'XLAM => implementation
+        impOp is 'XLAM => implementation
         impOp in '(CONST Subsumed) => impOp
         keyedSystemError("S2IL0025",[impOp])
-      implementation = 'mkRecord => 'mkRecord
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
@@ -559,20 +712,21 @@ sayNonUnique x ==
 --   [:[[op,:x] for x in y] for [op,:y] in operationAlist]
  
 findConstructorSlotNumber(domainForm,domain,op,sig) ==
-  null domain.1 => getSlotNumberFromOperationAlist(domainForm,op,sig)
+  null categoryExports domain =>
+    getSlotNumberFromOperationAlist(domainForm,op,sig)
   sayMSG ['"   using slot 1 of ",domainForm]
   constructorArglist:= rest domainForm
   nsig:=#sig
-  tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
+  tail:= or/[r for [[op1,sig1],:r] in categoryExports domain | op=op1 and nsig=#sig1 and
     "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
-      FIXP b => a=constructorArglist.b
+      integer? b => a=constructorArglist.b
       isSubset(bustUnion a,bustUnion b,$CategoryFrame)
   tail is [.,["ELT",.,n]] => n
   systemErrorHere ["findConstructorSlotNumber",domainForm]
  
 bustUnion d ==
-  d is ["Union",domain,utype] and utype='"failed" => domain
+  d is ["Union",domain,'"failed"] => domain
   d
  
 getSlotNumberFromOperationAlist(domainForm,op,sig) ==
@@ -592,7 +746,7 @@ sigsMatch(sig,sig1,domainForm) ==
   while sig and sig1 repeat
     partsMatch:=
       (item:= first sig)=(item1:= first sig1) => true --ok, go to next iteration
-      FIXP item1 => item = domainForm.item1       --item1=n means nth arg
+      integer? item1 => item = domainForm.item1       --item1=n means nth arg
       isSubset(bustUnion item1,bustUnion item,$CategoryFrame)
     null partsMatch => return nil
     sig:= rest sig; sig1 := rest sig1
@@ -601,7 +755,7 @@ sigsMatch(sig,sig1,domainForm) ==
  
 findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   nsig:=#sig
-  tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
+  tail:= or/[r for [[op1,sig1],:r] in categoryExports domain | op=op1 and nsig=#sig1 and
     "and"/[a=b or isSubset(bustUnion a,bustUnion b,$CategoryFrame)
       for a in sig for b in sig1]]
   tail is [.,["ELT",.,n]] => n
@@ -615,8 +769,8 @@ getConstructorSignature ctor ==
   -- Note: constructors are not overloadable.
   rest getmode(ctor,$e)
  
-getSlotFromCategoryForm ([op,:argl],index) ==
-  u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
+getSlotFromCategoryForm (x,index) ==
+  u:= eval [x.op,:[MKQ f for f in $FormalMapVariableList for . in 1..#x.args]]
   not vector? u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index
@@ -624,7 +778,7 @@ getSlotFromCategoryForm ([op,:argl],index) ==
  
 isDomainForm(D,e) ==
   --added for MPOLY 3/83 by RDJ
-  MEMQ(KAR D,$SpecialDomainNames) or isFunctor D or
+  symbolMember?(KAR D,$SpecialDomainNames) or isFunctor D or
     -- ((D is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
      ((getmode(D,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
        isCategoryForm(getmode(D,e),e) or isDomainConstructorForm(D,e)
@@ -632,13 +786,13 @@ isDomainForm(D,e) ==
 isDomainConstructorForm(D,e) ==
   D is [op,:argl] and (u:= get(op,"value",e)) and
     u is [.,["Mapping",target,:.],:.] and
-      isCategoryForm(EQSUBSTLIST(argl,$FormalMapVariableList,target),e)
+      isCategoryForm(applySubst(pairList($FormalMapVariableList,argl),target),e)
  
 isFunctor x ==
   op:= opOf x
   not IDENTP op => false
   $InteractiveMode =>
-    MEMQ(op,$DomainNames) => true
+    builtinFunctorName? op => true
     getConstructorKindFromDB op in '(domain package)
   u:= get(op,'isFunctor,$CategoryFrame)
     or op in '(SubDomain Union Record Enumeration) => u
@@ -655,7 +809,7 @@ getIndexPathname: %String -> %String
 getIndexPathname dir ==
   strconc(ensureTrailingSlash dir, $IndexFilename)
 
-getAllIndexPathnames: %String -> %List
+getAllIndexPathnames: %String -> %List %Thing
 getAllIndexPathnames dir ==
   -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
   -- rest of everybody else' semantics.  Namely, GCL would return a
@@ -668,7 +822,7 @@ getAllIndexPathnames dir ==
 )endif
   
 
-getAllAldorObjectFiles: %String -> %List
+getAllAldorObjectFiles: %String -> %List %Thing
 getAllAldorObjectFiles dir ==
   asys := DIRECTORY strconc(dir,'"*.asy")
   asos := DIRECTORY strconc(dir,'"*.ao")
@@ -676,7 +830,7 @@ getAllAldorObjectFiles dir ==
   -- only sensical .asy files.
   dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
   [asys,[f for f in asos 
-          | PATHNAME_-NAME f='"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+          | PATHNAME_-NAME f is '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
     
 
 
@@ -684,28 +838,29 @@ getAllAldorObjectFiles dir ==
 ++ in directory designated by 'dir'.
 openIndexFileIfPresent: %String -> %Thing
 openIndexFileIfPresent dir ==
-  OPEN(getIndexPathname dir,KEYWORD::DIRECTION,KEYWORD::INPUT,
-    KEYWORD::IF_-DOES_-NOT_-EXIST,nil)
+  inputTextFile getIndexPathname dir
 
 ++
 getIndexTable: %String -> %Thing
 getIndexTable dir ==
   indexFile := getIndexPathname dir
   existingFile? indexFile =>
-    WITH_-OPEN_-FILE(stream indexFile, 
-      GET_-INDEX_-TABLE_-FROM_-STREAM stream)
+    try
+      stream := inputTextFile indexFile
+      GET_-INDEX_-TABLE_-FROM_-STREAM stream
+    finally (if stream ~= nil then closeStream stream)
   -- index file doesn't exist but mark this directory as a Lisplib.
-  WITH_-OPEN_-FILE(stream(indexFile,KEYWORD::DIRECTION,KEYWORD::OUTPUT),
-    nil)
+  try stream := outputTextFile indexFile
+  finally (if stream ~= nil then closeStream stream)
 
 --%
 compDefineExports(form,ops,sig,e) ==
   not $LISPLIB => systemErrorHere "compDefineExports"
   op := first form
   -- Ensure constructor parameters appear as formals
-  sig := SUBLIS($pairlis, sig)
-  ops := SUBLIS($pairlis,ops)
-  form := SUBLIS($pairlis,form)
+  sig := applySubst($pairlis, sig)
+  ops := applySubst($pairlis,ops)
+  form := applySubst($pairlis,form)
   -- In case we are not compiling the capsule, the slot numbers are
   -- most likely bogus.  Nullify them so people don't think they
   -- bear any meaningful semantics (well, they should not think
@@ -715,13 +870,13 @@ compDefineExports(form,ops,sig,e) ==
       fixupSigloc entry where
         fixupSigloc entry ==
           [opsig,pred,funsel] := entry
-          if pred ~= 'T then 
+          if pred isnt 'T then 
             entry.rest.first := simpBool pred
           funsel is [op,a,:.] and op in '(ELT CONST) =>
             entry.rest.rest.first := [op,a,nil]
     ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
-  exportsFile := strconc(STRING libName,'".sig")
+  exportsFile := strconc(symbolName libName,'".sig")
   removeFile exportsFile
   withOutputFile(s,exportsFile, 
     PRETTYPRINT(

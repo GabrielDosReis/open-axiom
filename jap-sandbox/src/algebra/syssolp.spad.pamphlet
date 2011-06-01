@@ -130,7 +130,7 @@ SystemSolvePackage(R): Cat == Cap where
        newInF(n: Integer):F==varInF new()$SE
 
        testDegree(f :P R , lv :L SE) : Boolean ==
-         "or"/[degree(f,vv)>0 for vv in lv]
+         "or"/[positive? degree(f,vv) for vv in lv]
                     ---- Exported Functions ----
 
        -- solve a system of rational functions
@@ -147,13 +147,13 @@ SystemSolvePackage(R): Cat == Cap where
            push:=PushVariables(R,DP,OV,dmp)
            lq : L dmp
            lvv:L OV:=[variable(vv)::OV for vv in lv]
-           lq:=[pushup(df::dmp,lvv)$push for f in lf|(df:=denom f)~=1]
+           lq:=[pushup(df::dmp,lvv)$push for f in lf|not one?(df:=denom f)]
            lp:=[pushup(numer(f)::dmp,lvv)$push for f in lf]
            parRes:=groebSolve(lp,lvv)$GroebnerSolve(lv,P R,R)
            if lq~=[] then
              gb:=GroebnerInternalPackage(P R,DirectProduct(#lv,NNI),OV,dmp)
              parRes:=[pr for pr in parRes|
-                       and/[(redPol(fq,pr pretend List(dmp))$gb) ~=0
+                       and/[not zero?(redPol(fq,pr pretend List(dmp))$gb)
                          for fq in lq]]
            [[retract pushdown(pf,lvv)$push for pf in pr] for pr in parRes]
 

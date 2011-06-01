@@ -262,7 +262,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
 
 	sample()==kroneckerDelta()$%
         int2index(n: Integer, indv: INDEX): INDEX ==
-            n < 0 => error "Index error (too small)"
+            negative? n => error "Index error (too small)"
             rnk := #indv
             for i in 1..rnk repeat
                 qr := divide(n, dim)
@@ -275,7 +275,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             n: I := 0
             for i in 1..#indv repeat
                 ix := indv.i - minix
-                ix<0 or ix>dim-1 => error "Index error (out of range)"
+                negative? ix or ix>dim-1 => error "Index error (out of range)"
                 n := dim*n + ix
             n
 
@@ -372,7 +372,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             lengthRankOrElse n
 
         elt(x) ==
-            #x ~= 1    => error "Index error (the rank is not 0)"
+            not one?(#x)    => error "Index error (the rank is not 0)"
             get(x,0)
         elt(x, i: I) ==
             #x ~= dim  => error "Index error (the rank is not 1)"
@@ -392,7 +392,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             n: I := 0
             for ii in i repeat
                 ix := ii - minix
-                ix<0 or ix>dim-1 => error "Index error (out of range)"
+                negative? ix or ix>dim-1 => error "Index error (out of range)"
                 n := dim*n + ix
             get(x,n)
 

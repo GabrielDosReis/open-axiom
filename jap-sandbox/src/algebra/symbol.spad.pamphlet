@@ -70,6 +70,9 @@ Symbol(): Exports == Implementation where
        ++ sample() returns a sample of %
 
   Implementation ==> add
+    import %equal: (%,%) -> Boolean   from Foreign Builtin
+    import %before?: (%,%) -> Boolean from Foreign Builtin
+
     count: Reference(Integer) := ref 0
     xcount: AssociationList(%, Integer) := empty()
     istrings:PrimitiveArray(String) :=
@@ -131,8 +134,8 @@ Symbol(): Exports == Implementation where
     convert(s:%):InputForm == convert(s pretend Symbol)$InputForm
     convert(s:%):Symbol    == s pretend Symbol
     coerce(s:String):%     == VALUES(INTERN(s)$Lisp)$Lisp
-    x = y                  == EQUAL(x,y)$Lisp
-    x < y                  == GGREATERP(y, x)$Lisp
+    x = y                  == %equal(x,y)
+    x < y                  == %before?(x,y)
     coerce(x:%):OutputForm == outputForm(x pretend Symbol)
     subscript(sy, lx)      == script(sy, [lx, nil, nil(), nil(), nil()])
     elt(sy,lx)             == subscript(sy,lx)
@@ -275,7 +278,7 @@ Symbol(): Exports == Implementation where
       for k in keys xcount repeat remove!(k, xcount)
 
     scripted? sy ==
-      not ATOM(sy)$Lisp
+      %pair?(sy)$Foreign(Builtin)
 
     name sy ==
       not scripted? sy => sy

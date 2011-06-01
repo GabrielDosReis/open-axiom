@@ -35,10 +35,10 @@ import sys_-macros
 import astr
 namespace BOOT
 module posit where
-  %Position <=> %List
-  tokType: %List -> %Symbol
-  tokPart: %List -> %Thing
-  tokPosn: %List -> %Position
+  %Position <=> %List %Form
+  tokType: %List %Form -> %Symbol
+  tokPart: %List %Form -> %Thing
+  tokPosn: %List %Form -> %Position
 
 $nopos ==
   ['noposition]
@@ -138,7 +138,7 @@ pfAbSynOp form ==
 
 pfAbSynOp?(form, op) ==
     hd := first form
-    EQ(hd, op) or hd is [=op,:.]
+    sameObject?(hd, op) or hd is [=op,:.]
 
 pfLeaf? form ==
   pfAbSynOp form in

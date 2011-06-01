@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@
 import br_-op1
 namespace BOOT
 
---====================> WAS br-op2.boot <================================
-
 --=======================================================================
 --                   Operation Description
 --=======================================================================
@@ -46,13 +44,13 @@ htSayConstructor(key,u) ==
   u is ['CATEGORY,kind,:r] =>
     htSay('"a ",kind,'" ")
     htSayExplicitExports(r)
-  key = 'is =>
+  key is "is" =>
     htSay '"the domain "
     bcConform(u,true)
   htSay
-    key = 'is => '"the domain "
+    key is "is" => '"the domain "
     kind := getConstructorKindFromDB opOf u
-    kind = "domain" => '"an element of "
+    kind is "domain" => '"an element of "
     '"a domain of "
   u is ['Join,:middle,r] =>
     rest middle =>
@@ -95,7 +93,7 @@ htSayExplicitExports r ==
     systemError()
 
 displayBreakIntoAnds pred ==
-  pred is [op,:u] and member(op,'(and AND)) => u
+  pred is [op,:u] and op in '(and AND) => u
   [pred]
 
 htSayValue t ==
@@ -104,7 +102,7 @@ htSayValue t ==
       htSayTuple source
       htSay '" to "
       htSayArgument target
-  t = '(Category) => htSay('"a category")
+  t is '(Category) => htSay('"a category")
   t is [op,:.] and op in '(Join CATEGORY) or constructor? opOf t =>
     htSayConstructor(nil,t)
   htSay('"an element of domain ")
@@ -148,8 +146,8 @@ dbGetFormFromDocumentation(op,sig,x) ==
   string? doc and
      (stringPrefix?('"\spad{",doc) and (k := 6) or
        stringPrefix?('"\s{",doc) and (k := 3)) =>
-    n := charPosition($charRbrace,doc,k)
-    s := SUBSTRING(doc,k,n - k)
+    n := charPosition(char "}",doc,k)
+    s := subString(doc,k,n - k)
     parse := ncParseFromString s
     parse is [=op,:.] and #parse = #sig => parse
   nil
@@ -163,8 +161,8 @@ dbMakeContrivedForm(op,sig,:options) ==
   dbGetContrivedForm(op,sig)
 
 dbGetContrivedForm(op,sig) ==
-  op = '"0" => [0]
-  op = '"1" => [1]
+  op is '"0" => [0]
+  op is '"1" => [1]
   [op,:[dbChooseOperandName s for s in rest sig]]
 
 dbChooseOperandName(typ) ==
@@ -174,10 +172,10 @@ dbChooseOperandName(typ) ==
     x
   name := opOf typ
   kind :=
-    name = "$" => 'domain
+    name is "$" => 'domain
     getConstructorKindFromDB name
-  s := PNAME opOf typ
-  kind ~= 'category =>
+  s := symbolName opOf typ
+  kind isnt 'category =>
     anySubstring?('"Integer",s,0) or anySubstring?('"Number",s,0) =>
       x := first $NumberList
       $NumberList := rest $NumberList
@@ -189,7 +187,7 @@ dbChooseOperandName(typ) ==
           member(y,$ElementList) => y
           first $ElementList
       first $ElementList
-    $ElementList := delete(x,$ElementList)
+    $ElementList := remove($ElementList,x)
     x
   x := first $DomainList
   $DomainList := rest $DomainList
@@ -253,15 +251,15 @@ getSubstInsert(x,candidates) ==
 --                      Who Uses
 --=======================================================================
 whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
-  key = 'filter => koaPageFilterByName(htPage,'whoUsesOperation)
+  key is 'filter => koaPageFilterByName(htPage,'whoUsesOperation)
   opAlist := htpProperty(htPage,'opAlist)
   conform := htpProperty(htPage,'conform)
   conargs := rest conform
   opl := nil
   for [op,:alist] in opAlist repeat
     for [sig,:.] in alist repeat
-      opl := [[op,:SUBLISLIS($FormalMapVariableList,rest conform,sig)],:opl]
-  opl := nreverse opl
+      opl := [[op,:applySubst(pairList(conform.args,$FormalMapVariableList),sig)],:opl]
+  opl := reverse! opl
   u := whoUses(opl,conform)
   prefix := pluralSay(#u,'"constructor uses",'"constructors use")
   suffix :=
@@ -303,22 +301,21 @@ whoUses(opSigList,conform) ==
   acc  := nil
   $conname : local := first conform
   domList := getUsersOfConstructor $conname
-  hash := MAKE_-HASH_-TABLE()
-  for name in allConstructors() | MEMQ(name,domList) repeat
+  for name in allConstructors() | symbolMember?(name,domList) repeat
     $infovec : local := dbInfovec name
     null $infovec => 'skip           --category
     template := $infovec . 0
     found := false
     opacc := nil
-    for i in 7..MAXINDEX template repeat
-      item := template . i
-      item isnt [n,:op] or not MEMQ(op,opList) => 'skip
+    for i in 7..maxIndex template repeat
+      item := vectorRef(template,i)
+      item isnt [n,:op] or not symbolMember?(op,opList) => 'skip
       index := n
       numvec := getCodeVector()
-      numOfArgs := numvec . index
-      null member(numOfArgs,numOfArgsList) => 'skip
-      whereNumber := numvec.(index := index + 1)
-      template . whereNumber isnt [= $conname,:.] => 'skip
+      numOfArgs := arrayRef(numvec,index)
+      not scalarMember?(numOfArgs,numOfArgsList) => 'skip
+      whereNumber := arrayRef(numvec,index := index + 1)
+      vectorRef(template,whereNumber) isnt [= $conname,:.] => 'skip
       signumList := dcSig(numvec,index + 1,numOfArgs)
       opsig := or/[pair for (pair := [op1,:sig]) in opSigList | op1 = op and whoUsesMatch?(signumList,sig,nil)]
         => opacc := [opsig,:opacc]
@@ -333,7 +330,7 @@ whoUsesMatch1?(signumList,sig,al) ==
     x := LASSOC(pattern,al) =>
       x = subject => whoUsesMatch1?(r,s,al)
       false
-    pattern = '_$ =>
+    pattern is '_$ =>
       subject is [= $conname,:.] => whoUsesMatch1?(r,s,[['_$,:subject],:al])
       false
     whoUsesMatch1?(r,s,[[pattern,:subject],:al])
@@ -350,9 +347,9 @@ koAttrs(conform,domname) ==
       koCatAttrs(conform,domname)
   $infovec: local := dbInfovec conname or return nil
   $predvec: local :=
-    $domain => $domain . 3
+    $domain => domainPredicares $domain
     getConstructorPredicatesFromDB conname
-  u := [[a,:pred] for [a,:i] in $infovec . 2 | a ~= 'nil and (pred := sublisFormal(args,kTestPred i))]
+  u := [[a,:pred] for [a,:i] in $infovec . 2 | a isnt 'nil and (pred := sublisFormal(args,kTestPred i))]
                                                ---------  CHECK for a = nil
   listSort(function GLESSEQP,fn u) where fn u ==
     alist := nil
@@ -373,12 +370,12 @@ koOps(conform,domname,:options) == main where
 --    if relatives? then
 --      relatives := relativesOf(conform,domname)
 --      if domname then relatives :=
---      SUBLISLIS([domname,:rest domname],['_$,:rest conform],relatives)
+--      applySubst(pairList(['_$,:conform.args],[domname,:domname.args]),relatives)
 --      --kill all relatives that have a sharp variable remaining in them
 --      for x in relatives repeat
 --      or/[y for y in CDAR x | isSharpVar y] => 'skip
 --      acc := [x,:acc]
---      relatives := nreverse acc
+--      relatives := reverse! acc
 --      for (pair := [pakform,:.]) in relatives repeat
 --      $packageItem := sublisFormal(rest conform,pair)
 --      ours := merge(fn(pakform,nil),ours)
@@ -415,18 +412,18 @@ koOps(conform,domname,:options) == main where
     alist
 
 zeroOneConvert x ==
-  x = 'Zero => 0
-  x = 'One  => 1
+  x is 'Zero => 0
+  x is 'One  => 1
   x
 
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   atom x => x
-  (op := first x) = '_$ => '_$
-  op = 'local => second x
-  op = ":" => [":",second x,fn third x]
+  (op := first x) is '_$ => '_$
+  op is 'local => second x
+  op is ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
   integer? op => op
-  op = 'QUOTE and atom second x => second x
+  op is 'QUOTE and atom second x => second x
   x
 
 koCatOps(conform,domname) ==
@@ -456,16 +453,16 @@ koCatAttrs(catform,domname) ==
   hashTable2Alist $if
 
 hashTable2Alist tb ==
-  [[op,:HGET(tb,op)] for op in listSort(function GLESSEQP,HKEYS $if)]
+  [[op,:tableValue(tb,op)] for op in listSort(function GLESSEQP,HKEYS $if)]
 
 koCatAttrsAdd(catform,pred) ==
   for [name,argl,:p] in first getConstructorExports catform repeat
     npred  := quickAnd(pred,p)
-    exists := HGET($if,name)
+    exists := tableValue($if,name)
     if existingPred := LASSOC(argl,exists)_
         then npred := quickOr(npred,existingPred)
     if not (name in '(nil nothing)) _
-        then HPUT($if,name,[[argl,simpHasPred npred],:exists])
+        then tableValue($if,name) := [[argl,simpHasPred npred],:exists]
 
 --=======================================================================
 --            Filter by Category
@@ -495,9 +492,9 @@ dbHeading(items,which,heading,:options) ==
   capwhich := capitalize which
   prefix :=
     count < 2 =>
-      names? => pluralSay(count,strconc(capwhich," Name"),nil)
+      names? => pluralSay(count,strconc(capwhich,'" Name"),nil)
       pluralSay(count,capwhich,nil)
-    names? => pluralSay(count,nil,strconc(capwhich," Names"))
+    names? => pluralSay(count,nil,strconc(capwhich,'" Names"))
     pluralSay(count,nil,pluralize capwhich)
   [:prefix,'" for ",:heading]
 
@@ -525,7 +522,7 @@ koaPageFilterByCategory1(htPage,i) ==
         newOpAlist := insertAlist(op,newEntry,newOpAlist)
   falist := nil
   for [op,:alist] in newOpAlist repeat
-    falist := [[op,:nreverse alist],:falist]
+    falist := [[op,:reverse! alist],:falist]
   htpSetProperty(htPage,'fromcat,['" from category {\sf ",form2HtString ancestor,'"}"])
   dbShowOperationsFromConform(htPage,which,falist)
 
@@ -544,8 +541,8 @@ opPageFast opAlist == --called by oSearch
 opPageFastPath opstring ==
 --return nil
   x := STRINGIMAGE opstring
-  charPosition(char '_*,x,0) < #x => nil     --quit if name has * in it
-  op := (string? x => INTERN x; x)
+  charPosition(char "*",x,0) < #x => nil     --quit if name has * in it
+  op := (string? x => makeSymbol x; x)
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
   opAlist := [[op,:[item for mm in mmList]]] where item() ==
     [predList, origin, sig] := modemap2Sig(op, mm)
@@ -562,7 +559,7 @@ modemap2Sig(op,mm) ==
     false
   condlist := modemap2SigConds conds
   [origin, vlist, flist] := getDcForm(dc, condlist) or return nil
-  subcondlist := SUBLISLIS(flist, vlist, condlist)
+  subcondlist := applySubst(pairList(vlist,flist),condlist)
   [predList,vlist, flist] := getSigSubst(subcondlist, nil, vlist, flist)
   if partial? then
     target := dcSig . 1
@@ -594,9 +591,9 @@ getDcForm(dc, condlist) ==
   [ofWord,id,cform] := or/[x for x in condlist | x is [k,=dc,:.]
      and k in '(ofCategory isDomain)] or return nil
   conform := getConstructorForm opOf cform
-  ofWord = 'ofCategory =>
+  ofWord is 'ofCategory =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]
-  ofWord = 'isDomain =>
+  ofWord is 'isDomain =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]
   systemError()
 
@@ -606,10 +603,10 @@ getSigSubst(u, pl, vl, fl) ==
        [pl, vl, fl] := getSigSubst(s, pl, vl, fl)
        getSigSubst(r, pl, vl, fl)
     [key, v, f] := item
-    key = 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
-    key = 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
-    key = 'ofType    => getSigSubst(r, pl, vl, fl)
-    key = "has" => getSigSubst(r, [item, :pl], vl, fl)
-    key = 'not => getSigSubst(r, [item, :pl], vl, fl)
+    key is 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
+    key is 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
+    key is 'ofType    => getSigSubst(r, pl, vl, fl)
+    key is "has" => getSigSubst(r, [item, :pl], vl, fl)
+    key is 'not => getSigSubst(r, [item, :pl], vl, fl)
     systemError()
   [pl, vl, fl]

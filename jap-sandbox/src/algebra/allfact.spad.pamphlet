@@ -171,7 +171,7 @@ MPolyCatRationalFunctionFactorizer(E,OV,R,PRF) : C == T
        ground? g => g
        rf:PRF:=0$PRF
        ug:=univariate(g,x)
-       while ug~=0 repeat
+       while not zero? ug repeat
          rf:=rf+pushdterm(ug,x)
          ug := reductum ug
        rf
@@ -192,7 +192,7 @@ MPolyCatRationalFunctionFactorizer(E,OV,R,PRF) : C == T
       ----  push x back from the coefficient domain ----
      pushuconst(r:F,x:OV):PRF ==
        xs:SE:=convert x
-       degree(denom r,xs)>0 => error "bad polynomial form"
+       positive? degree(denom r,xs) => error "bad polynomial form"
        inv((denom r)::F)*pushucoef(univariate(numer r,xs),x)
 
 

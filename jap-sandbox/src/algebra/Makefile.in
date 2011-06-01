@@ -1,3 +1,75 @@
+## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+## All rights reserved.
+## Copyright (C) 2007-2011, Gabriel Dos Reis.
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are
+## met:
+##
+##     - Redistributions of source code must retain the above copyright
+##       notice, this list of conditions and the following disclaimer.
+##
+##     - Redistributions in binary form must reproduce the above copyright
+##       notice, this list of conditions and the following disclaimer in
+##       the documentation and/or other materials provided with the
+##       distribution.
+##
+##     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+##       names of its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+## IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+## TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+## PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+## OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+## EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+## PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+## PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+## LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+##
+
+# * Adding new algebra
+#
+# This is a complex process by its very nature. Developers and Maintainers
+# who undertake the process need to understand quite a lot of detail. The
+# ultimate steps to add algebra are tedious but simple. Note that only
+# algebra code that gets shipped with the system needs to undergo this
+# process. User code can be compiled once the distributed algebra exists
+# and does not need either this Makefile or this installation process.
+#
+# NOTE: If you add new algebra to this file you must also update
+#
+# \File{exposed.lsp.pamphlet}
+#
+# otherwise the new algebra won't be loaded by the interpreter when needed.
+#
+# The first idea that you need to understand is the overall process
+# of adding algebra code. Lets assume that you have a brand new spad
+# file, called \File{foo.spad} containing a simple domain `BAR'. The
+# steps in the process of adding this file are:
+#  1. Find out where the algebra code lives in the lattice.
+#     You do this by 
+#       a. starting a new interpsys session
+#       b. collecting all the names of the algebra files BAR requires
+#       c. determining which layer each of the required files resides
+#       d. determine the highest layer (e.g. 14) that contains
+#          the required files
+#
+#  2. insert the documentation into the next layer (e.g. 15)
+#
+#  3. insert the [[\${OUT}/BAR.$(FASLEXT)]] file into the layer's file list
+#
+# * Rebuilding the algebra from scratch
+#
+# Compile order is important. Here we try to define the ordered lattice
+# of spad file dependencies. However this is, in reality, a graph rather
+# than a lattice.
+#
+
 
 IN=$(srcdir)
 OUT=$(axiom_targetdir)/algebra
@@ -5,13 +77,457 @@ DOC=$(axiom_target_docdir)/src/algebra
 OUTSRC=$(axiom_target_srcdir)/algebra
 INPUT=../input
 
-## We use interpsys, built from previous stage, to bootstrap the algebra
-## files.  In fact, we use interpsys to build everything.
-COMPILE_LISP = $(INTERPSYS) --compile --output=$@ $<
+# Name of the driver to launch the compiler
+DRIVER = ../driver/open-axiom$(EXEEXT)
+
+INTERPSYS = ../interp/interpsys$(EXEEXT)
+
+COMPILE_SPAD = $(DRIVER) --execpath=$(INTERPSYS) \
+		--system="$(AXIOM)" \
+		--sysdb="$(axiom_src_datadir)/algebra/" \
+		--strap=strap-2 --optimize=3 \
+		--system-algebra --compile $<
+
+BOOTSTRAP = $(DRIVER) --execpath=$(INTERPSYS) \
+		--system="$(AXIOM)" \
+		--sysdb="$(axiom_src_datadir)/algebra/" \
+		--system-algebra --compile
+
+oa_strap_0_fasls = \
+	$(addprefix strap-0/,$(addsuffix .$(FASLEXT),$(oa_strap_0_sources)))
 
 
-INTERPSYS = ../interp/interpsys$(EXEEXT) -- --system="$(AXIOM)" \
-		--sysalg="$(axiom_src_datadir)/algebra/"
+oa_strap_1_fasls = \
+	$(addprefix strap-1/,$(addsuffix .$(FASLEXT),$(oa_strap_1_sources)))
+
+
+oa_strap_2_fasls = \
+	$(addprefix strap-2/,$(addsuffix .$(FASLEXT),$(oa_strap_2_sources)))
+
+oa_strap_0_sources = \
+	TYPE UTYPE BASTYPE KOERCE KRCFROM KONVERT RETRACT FRETRCT SETCAT \
+	FINITE ORDTYPE ORDSET ORDFIN \
+	PROPLOG BOOLE LOGIC \
+	ABELGRP LLINSET RLINSET LINSET CABMON ABELMON ABELSG \
+	SGROUP MONOID OAMON OAMONS OASGP OCAMON OAGROUP \
+	RNG SRING RING ORDRING LMODULE RMODULE BMODULE \
+	COMRING ENTIRER ALGEBRA MODULE DIVRING FIELD \
+	DIFFSPC DIFFDOM DIFRING LINEXP PATMAB CFCAT REAL \
+	INTDOM GCDDOM PID UFD OINTDOM INS OM \
+	CHARZ CHARNZ STEP IEVALAB EVALAB \
+	AGG HOAGG CLAGG ELTAB ELTAGG IXAGG LNAGG \
+	FLAGG ELAGG RCAGG URAGG STAGG LSAGG A1AGG \
+	BGAGG DIOPS DIAGG SETAGG FSAGG VECTCAT \
+	FEVALAB PDDOM PDSPC DSEXT PDRING DIFEXT \
+	RADCAT AMR FAMR FLINEXP POLYCAT UPOLYC PATAB FPATMAB PFECAT \
+	KVTFROM SEXCAT QFCAT \
+	RNS FPS \
+	BOOLEAN INT NNI PI MAYBE LIST VECTOR CHAR STRING
+
+oa_strap_1_sources = $(oa_strap_0_sources) \
+	SRAGG AHYP HYPCAT ATRIG TRIGCAT TRANFUN \
+	ILIST ISTRING DFLOAT SINT
+
+
+oa_strap_2_sources = $(oa_strap_1_sources) \
+	PRIMARR IARRAY1 IVECTOR SYMBOL
+
+## Bootstrap layer 0 dependencies.
+## This layer comprises mostly categories, and a limited number of domains.
+## Categories are compiled for their exports.  Default definitions
+## are skipped.  Similarly, domains are compiled, mostly as empty
+## or incomplete types.  They are needed only for their being known as
+## constructors.
+## Consequently, the dependencies listed here are at the categories
+## inheritance level; not necessarily at the use level.
+strap-0/UTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/BASTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/KOERCE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/KONVERT.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/RETRACT.$(FASLEXT): strap-0/KRCFROM.$(FASLEXT)
+strap-0/FRETRCT.$(FASLEXT): strap-0/RETRACT.$(FASLEXT)
+strap-0/SETCAT.$(FASLEXT): strap-0/BASTYPE.$(FASLEXT) strap-0/KOERCE.$(FASLEXT)
+strap-0/FINITE.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/ORDTYPE.$(FASLEXT): strap-0/BASTYPE.$(FASLEXT)
+strap-0/ORDSET.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/ORDTYPE.$(FASLEXT)
+strap-0/ORDFIN.$(FASLEXT): strap-0/ORDSET.$(FASLEXT) strap-0/FINITE.$(FASLEXT)
+strap-0/LOGIC.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/BOOLE.$(FASLEXT): strap-0/LOGIC.$(FASLEXT)
+strap-0/PROPLOG.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/BOOLE.$(FASLEXT)
+
+strap-0/LLINSET.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/RLINSET.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/LINSET.$(FASLEXT): strap-0/LLINSET.$(FASLEXT) \
+	strap-0/RLINSET.$(FASLEXT)
+strap-0/ABELSG.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/ABELMON.$(FASLEXT): strap-0/ABELSG.$(FASLEXT)
+strap-0/CABMON.$(FASLEXT): strap-0/ABELMON.$(FASLEXT)
+strap-0/SGROUP.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/MONOID.$(FASLEXT): strap-0/SGROUP.$(FASLEXT)
+strap-0/ABELGRP.$(FASLEXT): strap-0/CABMON.$(FASLEXT) \
+	strap-0/LLINSET.$(FASLEXT)
+strap-0/RNG.$(FASLEXT): strap-0/ABELGRP.$(FASLEXT)
+strap-0/LMODULE.$(FASLEXT): strap-0/ABELGRP.$(FASLEXT) \
+	strap-0/LLINSET.$(FASLEXT)
+strap-0/RMODULE.$(FASLEXT): strap-0/ABELGRP.$(FASLEXT) \
+	strap-0/RLINSET.$(FASLEXT)
+strap-0/SRING.$(FASLEXT): strap-0/ABELMON.$(FASLEXT) strap-0/MONOID.$(FASLEXT)
+strap-0/RING.$(FASLEXT): strap-0/RNG.$(FASLEXT) strap-0/MONOID.$(FASLEXT) \
+	strap-0/LMODULE.$(FASLEXT) strap-0/KRCFROM.$(FASLEXT)
+strap-0/COMRING.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/BMODULE.$(FASLEXT)
+strap-0/INTDOM.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
+	strap-0/ALGEBRA.$(FASLEXT) strap-0/ENTIRER.$(FASLEXT)
+strap-0/GCDDOM.$(FASLEXT): strap-0/INTDOM.$(FASLEXT)
+strap-0/BMODULE.$(FASLEXT): strap-0/LMODULE.$(FASLEXT) \
+	strap-0/RMODULE.$(FASLEXT)
+strap-0/MODULE.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
+	strap-0/BMODULE.$(FASLEXT) strap-0/LINSET.$(FASLEXT)
+strap-0/ENTIRER.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/BMODULE.$(FASLEXT)
+strap-0/ALGEBRA.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
+	strap-0/RING.$(FASLEXT) strap-0/MODULE.$(FASLEXT) \
+	strap-0/KRCFROM.$(FASLEXT)
+
+strap-0/UFD.$(FASLEXT): strap-0/GCDDOM.$(FASLEXT)
+
+strap-0/DIFFSPC.$(FASLEXT): strap-0/DIFFDOM.$(FASLEXT)
+strap-0/PATMAB.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/OASGP.$(FASLEXT): strap-0/ORDSET.$(FASLEXT) strap-0/SGROUP.$(FASLEXT)
+strap-0/OAMON.$(FASLEXT): strap-0/OASGP.$(FASLEXT)
+strap-0/OAMONS.$(FASLEXT): strap-0/OAMON.$(FASLEXT) strap-0/OCAMON.$(FASLEXT)
+strap-0/OCAMON.$(FASLEXT): strap-0/OAMON.$(FASLEXT)
+strap-0/OAGROUP.$(FASLEXT): strap-0/OCAMON.$(FASLEXT) \
+	strap-0/ABELGRP.$(FASLEXT)
+strap-0/ORDRING.$(FASLEXT): strap-0/OAGROUP.$(FASLEXT) \
+	strap-0/RING.$(FASLEXT) strap-0/MONOID.$(FASLEXT)
+strap-0/OINTDOM.$(FASLEXT): strap-0/ORDRING.$(FASLEXT) \
+	strap-0/INTDOM.$(FASLEXT)
+strap-0/GCDDOM.$(FASLEXT): strap-0/INTDOM.$(FASLEXT)
+strap-0/PID.$(FASLEXT): strap-0/GCDDOM.$(FASLEXT)
+strap-0/CHARNZ.$(FASLEXT): strap-0/RING.$(FASLEXT)
+strap-0/CHARZ.$(FASLEXT): strap-0/RING.$(FASLEXT)
+strap-0/EUCDOM.$(FASLEXT): strap-0/PID.$(FASLEXT)
+strap-0/DIVRING.$(FASLEXT): strap-0/ENTIRER.$(FASLEXT) \
+	strap-0/ALGEBRA.$(FASLEXT)
+strap-0/DIVRING.$(FASLEXT): strap-0/RING.$(FASLEXT)
+strap-0/FIELD.$(FASLEXT): strap-0/EUCDOM.$(FASLEXT) strap-0/UFD.$(FASLEXT) \
+	strap-0/DIVRING.$(FASLEXT)
+strap-0/DIFFDOM.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/DIFFSPC.$(FASLEXT): strap-0/DIFFDOM.$(FASLEXT)
+strap-0/DIVRING.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/DIFFSPC.$(FASLEXT)
+strap-0/DIFRING.$(FASLEXT): strap-0/RING.$(FASLEXT)
+strap-0/PDRING.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/PDSPC.$(FASLEXT)
+
+strap-0/IEVALAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/EVALAB.$(FASLEXT): strap-0/IEVALAB.$(FASLEXT) strap-0/SETCAT.$(FASLEXT)
+strap-0/LINEXP.$(FASLEXT): strap-0/LMODULE.$(FASLEXT) strap-0/RING.$(FASLEXT)
+strap-0/AMR.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/OAMON.$(FASLEXT) \
+	strap-0/BMODULE.$(FASLEXT) strap-0/CHARNZ.$(FASLEXT) \
+	strap-0/ALGEBRA.$(FASLEXT) strap-0/INTDOM.$(FASLEXT)
+strap-0/FAMR.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/OAMON.$(FASLEXT) \
+	strap-0/AMR.$(FASLEXT)
+strap-0/PFECAT.$(FASLEXT): strap-0/UFD.$(FASLEXT) strap-0/CHARNZ.$(FASLEXT)
+strap-0/POLYCAT.$(FASLEXT): strap-0/PDRING.$(FASLEXT) strap-0/FAMR.$(FASLEXT) \
+	strap-0/FLINEXP.$(FASLEXT) strap-0/PFECAT.$(FASLEXT)
+strap-0/UPOLYC.$(FASLEXT): strap-0/POLYCAT.$(FASLEXT)
+strap-0/CFCAT.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/REAL.$(FASLEXT): strap-0/CHARZ.$(FASLEXT) strap-0/ORDRING.$(FASLEXT) \
+	strap-0/COMRING.$(FASLEXT) strap-0/FIELD.$(FASLEXT) \
+	strap-0/FRETRCT.$(FASLEXT) strap-0/ALGEBRA.$(FASLEXT) \
+	strap-0/RADCAT.$(FASLEXT)
+strap-0/STEP.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/INS.$(FASLEXT): strap-0/UFD.$(FASLEXT) strap-0/EUCDOM.$(FASLEXT) \
+	strap-0/OINTDOM.$(FASLEXT) strap-0/DIFRING.$(FASLEXT) \
+	strap-0/LINEXP.$(FASLEXT) strap-0/PATMAB.$(FASLEXT) \
+	strap-0/CFCAT.$(FASLEXT) strap-0/REAL.$(FASLEXT) \
+	strap-0/CHARZ.$(FASLEXT) strap-0/STEP.$(FASLEXT)
+strap-0/RNS.$(FASLEXT): strap-0/FIELD.$(FASLEXT) strap-0/ORDRING.$(FASLEXT) \
+	strap-0/REAL.$(FASLEXT) strap-0/RETRACT.$(FASLEXT) \
+	strap-0/RADCAT.$(FASLEXT) strap-0/KONVERT.$(FASLEXT) \
+	strap-0/PATAB.$(FASLEXT) strap-0/CHARZ.$(FASLEXT)
+strap-0/FPS.$(FASLEXT): strap-0/RNS.$(FASLEXT)
+strap-0/FEVALAB.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) \
+	strap-0/EVALAB.$(FASLEXT)
+strap-0/PDDOM.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/PDSPC.$(FASLEXT): strap-0/PDDOM.$(FASLEXT)
+strap-0/DSEXT.$(FASLEXT): strap-0/PDSPC.$(FASLEXT)
+strap-0/DIFEXT.$(FASLEXT): strap-0/DSEXT.$(FASLEXT) strap-0/PDRING.$(FASLEXT)
+strap-0/FLINEXP.$(FASLEXT): strap-0/LINEXP.$(FASLEXT)
+strap-0/PATAB.$(FASLEXT): strap-0/KONVERT.$(FASLEXT)
+strap-0/FPATMAB.$(FASLEXT): strap-0/PATMAB.$(FASLEXT)
+
+
+strap-0/BOOLEAN.$(FASLEXT): strap-0/ORDFIN.$(FASLEXT) \
+	strap-0/PROPLOG.$(FASLEXT) strap-0/KONVERT.$(FASLEXT)
+
+strap-0/OM.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/INT.$(FASLEXT): strap-0/INS.$(FASLEXT) \
+	strap-0/KONVERT.$(FASLEXT) strap-0/OM.$(FASLEXT)
+
+strap-0/NNI.$(FASLEXT): strap-0/INT.$(FASLEXT)
+strap-0/PI.$(FASLEXT): strap-0/NNI.$(FASLEXT)
+
+strap-0/AGG.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/EVALAB.$(FASLEXT)
+strap-0/CLAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
+strap-0/ELTAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/ELTAGG.$(FASLEXT): strap-0/ELTAB.$(FASLEXT) strap-0/SETCAT.$(FASLEXT)
+strap-0/IXAGG.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) \
+	strap-0/ELTAGG.$(FASLEXT) strap-0/HOAGG.$(FASLEXT)
+strap-0/LNAGG.$(FASLEXT): strap-0/IXAGG.$(FASLEXT) strap-0/CLAGG.$(FASLEXT)
+strap-0/FLAGG.$(FASLEXT): strap-0/LNAGG.$(FASLEXT)
+strap-0/ELAGG.$(FASLEXT): strap-0/LNAGG.$(FASLEXT)
+strap-0/RCAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
+strap-0/URAGG.$(FASLEXT): strap-0/RCAGG.$(FASLEXT)
+strap-0/STAGG.$(FASLEXT): strap-0/URAGG.$(FASLEXT) strap-0/LNAGG.$(FASLEXT)
+strap-0/LSAGG.$(FASLEXT): strap-0/FLAGG.$(FASLEXT) strap-0/ELAGG.$(FASLEXT) \
+	strap-0/STAGG.$(FASLEXT)
+strap-0/A1AGG.$(FASLEXT): strap-0/FLAGG.$(FASLEXT)
+strap-0/BGAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
+strap-0/DIOPS.$(FASLEXT): strap-0/BGAGG.$(FASLEXT) strap-0/CLAGG.$(FASLEXT)
+strap-0/DIAGG.$(FASLEXT): strap-0/DIOPS.$(FASLEXT) strap-0/SETCAT.$(FASLEXT)
+strap-0/SETAGG.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/CLAGG.$(FASLEXT)
+strap-0/FSAGG.$(FASLEXT): strap-0/DIAGG.$(FASLEXT) strap-0/SETAGG.$(FASLEXT) \
+	strap-0/SETCAT.$(FASLEXT)
+strap-0/SRAGG.$(FASLEXT): strap-0/A1AGG.$(FASLEXT)
+strap-0/VECTCAT.$(FASLEXT): strap-0/A1AGG.$(FASLEXT)
+
+strap-0/STRING.$(FASLEXT): strap-0/SRAGG.$(FASLEXT)
+strap-0/LIST.$(FASLEXT): strap-0/LSAGG.$(FASLEXT)
+strap-0/VECTOR.$(FASLEXT): strap-0/VECTCAT.$(FASLEXT)
+strap-0/CHAR.$(FASLEXT): strap-0/FSAGG.$(FASLEXT)
+strap-0/STRING.$(FASLEXT): strap-0/SRAGG.$(FASLEXT)
+
+## Bootstrap stage 1 dependencies.
+## At this stage, we attempt to compile domains essential for completing
+## the bootstrap process (stage 2).  Those that were compiled at stage 0
+## were (necessarily) incomplete.
+
+# We need Boolean to be complete when compiling the defaults of BasicType.
+strap-1/BOOLEAN.$(FASLEXT): strap-1/BOOLE.$(FASLEXT)
+strap-1/MAYBE.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) \
+	strap-1/KOERCE.$(FASLEXT) strap-1/RETRACT.$(FASLEXT)
+strap-1/BASTYPE.$(FASLEXT): strap-1/BOOLEAN.$(FASLEXT)
+strap-1/SETCAT.$(FASLEXT): strap-1/BASTYPE.$(FASLEXT) strap-1/KOERCE.$(FASLEXT)
+strap-1/KOERCE.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
+strap-1/KONVERT.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
+strap-1/RETRACT.$(FASLEXT): strap-1/KRCFROM.$(FASLEXT)
+strap-1/FRETRCT.$(FASLEXT): strap-1/RETRACT.$(FASLEXT)
+strap-1/FINITE.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/ORDTYPE.$(FASLEXT): strap-1/BASTYPE.$(FASLEXT)
+strap-1/ORDSET.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/ORDTYPE.$(FASLEXT)
+strap-1/ORDFIN.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) strap-1/FINITE.$(FASLEXT)
+strap-1/LOGIC.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
+strap-1/BOOLE.$(FASLEXT): strap-1/LOGIC.$(FASLEXT)
+strap-1/PROPLOG.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/BOOLE.$(FASLEXT)
+
+strap-1/LLINSET.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/RLINSET.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/LINSET.$(FASLEXT): strap-1/LLINSET.$(FASLEXT) \
+	strap-1/RLINSET.$(FASLEXT)
+strap-1/ABELSG.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/ABELMON.$(FASLEXT): strap-1/ABELSG.$(FASLEXT)
+strap-1/CABMON.$(FASLEXT): strap-1/ABELMON.$(FASLEXT)
+strap-1/SGROUP.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/MONOID.$(FASLEXT): strap-1/SGROUP.$(FASLEXT) strap-1/MAYBE.$(FASLEXT)
+strap-1/ABELGRP.$(FASLEXT): strap-1/CABMON.$(FASLEXT) \
+	strap-1/LLINSET.$(FASLEXT)
+strap-1/RNG.$(FASLEXT): strap-1/ABELGRP.$(FASLEXT)
+strap-1/LMODULE.$(FASLEXT): strap-1/ABELGRP.$(FASLEXT) \
+	strap-1/LLINSET.$(FASLEXT)
+strap-1/RMODULE.$(FASLEXT): strap-1/ABELGRP.$(FASLEXT) \
+	strap-1/RLINSET.$(FASLEXT)
+strap-1/RING.$(FASLEXT): strap-1/RNG.$(FASLEXT) strap-1/MONOID.$(FASLEXT) \
+	strap-1/LMODULE.$(FASLEXT) strap-1/KRCFROM.$(FASLEXT)
+strap-1/COMRING.$(FASLEXT): strap-1/RING.$(FASLEXT) strap-1/BMODULE.$(FASLEXT)
+strap-1/INTDOM.$(FASLEXT): strap-1/COMRING.$(FASLEXT) \
+	strap-1/ALGEBRA.$(FASLEXT) strap-1/ENTIRER.$(FASLEXT)
+strap-1/GCDDOM.$(FASLEXT): strap-1/INTDOM.$(FASLEXT)
+strap-1/BMODULE.$(FASLEXT): strap-1/LMODULE.$(FASLEXT) \
+	strap-1/RMODULE.$(FASLEXT)
+strap-1/MODULE.$(FASLEXT): strap-1/COMRING.$(FASLEXT) \
+	strap-1/BMODULE.$(FASLEXT) strap-1/LINSET.$(FASLEXT)
+strap-1/ENTIRER.$(FASLEXT): strap-1/RING.$(FASLEXT) strap-1/BMODULE.$(FASLEXT)
+strap-1/ALGEBRA.$(FASLEXT): strap-1/COMRING.$(FASLEXT) \
+	strap-1/RING.$(FASLEXT) strap-1/MODULE.$(FASLEXT) \
+	strap-1/KRCFROM.$(FASLEXT)
+strap-1/UFD.$(FASLEXT): strap-1/GCDDOM.$(FASLEXT)
+strap-1/PID.$(FASLEXT): strap-1/GCDDOM.$(FASLEXT)
+strap-1/EUCDOM.$(FASLEXT): strap-1/PID.$(FASLEXT)
+strap-1/DIFFSPC.$(FASLEXT): strap-1/DIFFDOM.$(FASLEXT)
+strap-1/PATMAB.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/OASGP.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) strap-1/SGROUP.$(FASLEXT)
+strap-1/OAMON.$(FASLEXT): strap-1/OASGP.$(FASLEXT)
+strap-1/OAMONS.$(FASLEXT): strap-1/OAMON.$(FASLEXT) strap-1/OCAMON.$(FASLEXT)
+strap-1/OCAMON.$(FASLEXT): strap-1/OAMON.$(FASLEXT)
+strap-1/OAGROUP.$(FASLEXT): strap-1/OCAMON.$(FASLEXT) \
+	strap-1/ABELGRP.$(FASLEXT)
+strap-1/ORDRING.$(FASLEXT): strap-1/OAGROUP.$(FASLEXT) \
+	strap-1/RING.$(FASLEXT) strap-1/MONOID.$(FASLEXT)
+strap-1/OINTDOM.$(FASLEXT): strap-1/ORDRING.$(FASLEXT) \
+	strap-1/INTDOM.$(FASLEXT)
+strap-1/FIELD.$(FASLEXT): strap-1/EUCDOM.$(FASLEXT) strap-1/UFD.$(FASLEXT) \
+	strap-1/DIVRING.$(FASLEXT)
+strap-1/DIFFDOM.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
+strap-1/DIFFSPC.$(FASLEXT): strap-1/DIFFDOM.$(FASLEXT)
+strap-1/DIFRING.$(FASLEXT): strap-1/RING.$(FASLEXT)
+strap-1/PDRING.$(FASLEXT): strap-1/RING.$(FASLEXT) strap-1/PDSPC.$(FASLEXT)
+strap-1/PDSPC.$(FASLEXT): strap-1/PDDOM.$(FASLEXT)
+strap-1/DSEXT.$(FASLEXT): strap-1/PDSPC.$(FASLEXT)
+strap-1/DIFEXT.$(FASLEXT): strap-1/RING.$(FASLEXT) strap-1/DSEXT.$(FASLEXT) \
+	strap-1/PDRING.$(FASLEXT)
+strap-1/FLINEXP.$(FASLEXT): strap-1/LINEXP.$(FASLEXT)
+strap-1/PATAB.$(FASLEXT): strap-1/KONVERT.$(FASLEXT)
+strap-1/FPATMAB.$(FASLEXT): strap-1/PATAB.$(FASLEXT)
+strap-1/CHARNZ.$(FASLEXT): strap-1/RING.$(FASLEXT)
+strap-1/FPS.$(FASLEXT): strap-0/FIELD.$(FASLEXT) strap-1/ORDRING.$(FASLEXT) \
+	strap-1/REAL.$(FASLEXT) strap-1/RETRACT.$(FASLEXT) \
+	strap-1/CHARZ.$(FASLEXT)
+strap-1/FPS.$(FASLEXT): strap-1/RNS.$(FASLEXT)
+strap-1/HYPCAT.$(FASLEXT): strap-1/ELEMFUN.$(FASLEXT)
+strap-1/TRANFUN.$(FASLEXT): strap-1/TRIGCAT.$(FASLEXT) \
+	strap-1/ATRIG.$(FASLEXT) strap-1/HYPCAT.$(FASLEXT) \
+	strap-1/AHYP.$(FASLEXT)
+strap-1/INS.$(FASLEXT): strap-1/DFLOAT.$(FASLEXT)
+strap-1/DFLOAT.$(FASLEXT): strap-1/FPS.$(FASLEXT) \
+	strap-1/TRANFUN.$(FASLEXT)
+strap-1/SEXCAT.$(FASLEXT): strap-1/KVTFROM.$(FASLEXT)
+strap-1/POLYCAT.$(FASLEXT): strap-1/SEXCAT.$(FASLEXT)
+strap-1/QFCAT.$(FASLEXT): strap-1/FEVALAB.$(FASLEXT) \
+	 strap-1/EUCDOM.$(FASLEXT) strap-1/DIFEXT.$(FASLEXT) \
+	strap-1/FLINEXP.$(FASLEXT) strap-1/FPATMAB.$(FASLEXT) \
+	strap-1/CHARNZ.$(FASLEXT) strap-1/PFECAT.$(FASLEXT) \
+	strap-1/DFLOAT.$(FASLEXT)
+strap-1/DIVRING.$(FASLEXT): strap-1/ENTIRER.$(FASLEXT) \
+	strap-1/ALGEBRA.$(FASLEXT)
+strap-1/INTDOM.$(FASLEXT): strap-1/FIELD.$(FASLEXT)
+strap-1/A1AGG.$(FASLEXT): strap-1/BOOLE.$(FASLEXT)
+strap-1/DIOPS.$(FASLEXT): strap-1/BGAGG.$(FASLEXT) \
+	strap-1/CLAGG.$(FASLEXT) strap-1/CHAR.$(FASLEXT)
+strap-1/DIAGG.$(FASLEXT): strap-1/DIOPS.$(FASLEXT)
+strap-1/FSAGG.$(FASLEXT): strap-1/DIAGG.$(FASLEXT)
+strap-1/CHAR.$(FASLEXT): strap-1/FSAGG.$(FASLEXT)
+strap-1/STRING.$(FASLEXT): strap-1/SRAGG.$(FASLEXT) strap-1/CHAR.$(FASLEXT) \
+	strap-1/ISTRING.$(FASLEXT)
+strap-1/INT.$(FASLEXT): strap-1/STRING.$(FASLEXT) strap-1/ORDRING.$(FASLEXT)
+strap-1/SINT.$(FASLEXT): strap-1/INT.$(FASLEXT) strap-1/ORDFIN.$(FASLEXT) \
+	strap-1/BOOLE.$(FASLEXT)
+strap-1/LIST.$(FASLEXT): strap-1/ILIST.$(FASLEXT) strap-1/STRING.$(FASLEXT)
+strap-1/VECTOR.$(FASLEXT): strap-1/LIST.$(FASLEXT)
+
+
+## Bootstrap stage 2 dependencies.
+## At this stage we recompile everything from stage 1, including
+## a few more domains.
+## We compile integers domains first so that they can be properly
+## inlined.
+strap-2/SINT.$(FASLEXT): strap-2/INT.$(FASLEXT)
+strap-2/NNI.$(FASLEXT): strap-2/INT.$(FASLEXT)
+strap-2/PI.$(FASLEXT): strap-2/NNI.$(FASLEXT)
+strap-2/BOOLEAN.$(FASLEXT): strap-2/SINT.$(FASLEXT)
+strap-2/MAYBE.$(FASLEXT): strap-2/BOOLEAN.$(FASLEXT)
+strap-2/ISTRING.$(FASLEXT): strap-2/INT.$(FASLEXT)
+strap-2/CHAR.$(FASLEXT): strap-2/PI.$(FASLEXT)
+strap-2/STRING.$(FASLEXT): strap-2/CHAR.$(FASLEXT) strap-2/ISTRING.$(FASLEXT)
+strap-2/LIST.$(FASLEXT): strap-2/ILIST.$(FASLEXT) strap-2/STRING.$(FASLEXT)
+strap-2/PRIMARR.$(FASLEXT): strap-2/INT.$(FASLEXT)
+strap-2/IARRAY1.$(FASLEXT): strap-2/PRIMARR.$(FASLEXT)
+strap-2/IVECTOR.$(FASLEXT): strap-2/IARRAY1.$(FASLEXT)
+strap-2/VECTOR.$(FASLEXT): strap-2/IVECTOR.$(FASLEXT) strap-2/LIST.$(FASLEXT)
+strap-2/SYMBOL.$(FASLEXT): strap-2/STRING.$(FASLEXT)
+strap-2/DFLOAT.$(FASLEXT): strap-2/INT.$(FASLEXT)
+
+strap-2/BASTYPE.$(FASLEXT): strap-2/BOOLEAN.$(FASLEXT)
+strap-2/SETCAT.$(FASLEXT): strap-2/BASTYPE.$(FASLEXT) strap-2/KOERCE.$(FASLEXT)
+strap-2/KOERCE.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
+strap-2/KONVERT.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
+strap-2/RETRACT.$(FASLEXT): strap-2/KRCFROM.$(FASLEXT)
+strap-2/FRETRCT.$(FASLEXT): strap-2/RETRACT.$(FASLEXT)
+strap-2/FINITE.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
+strap-2/ORDTYPE.$(FASLEXT): strap-2/BASTYPE.$(FASLEXT)
+strap-2/ORDSET.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) strap-2/ORDTYPE.$(FASLEXT)
+strap-2/ORDFIN.$(FASLEXT): strap-2/ORDSET.$(FASLEXT) strap-2/FINITE.$(FASLEXT)
+strap-2/LOGIC.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
+strap-2/BOOLE.$(FASLEXT): strap-2/LOGIC.$(FASLEXT)
+strap-2/MONOID.$(FASLEXT): strap-2/MAYBE.$(FASLEXT)
+strap-2/PROPLOG.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) strap-2/BOOLE.$(FASLEXT)
+strap-2/PID.$(FASLEXT): strap-2/GCDDOM.$(FASLEXT)
+strap-2/EUCDOM.$(FASLEXT): strap-2/PID.$(FASLEXT)
+strap-2/PDSPC.$(FASLEXT): strap-2/PDDOM.$(FASLEXT)
+strap-2/DSEXT.$(FASLEXT): strap-2/PDSPC.$(FASLEXT)
+strap-2/DIFEXT.$(FASLEXT): strap-2/RING.$(FASLEXT) strap-2/DSEXT.$(FASLEXT) \
+	strap-2/PDRING.$(FASLEXT)
+strap-2/FLINEXP.$(FASLEXT): strap-2/LINEXP.$(FASLEXT)
+strap-2/PATAB.$(FASLEXT): strap-2/KONVERT.$(FASLEXT)
+strap-2/FPATMAB.$(FASLEXT): strap-2/PATAB.$(FASLEXT)
+strap-2/CHARNZ.$(FASLEXT): strap-2/RING.$(FASLEXT)
+strap-2/FPS.$(FASLEXT): strap-2/FIELD.$(FASLEXT) strap-2/ORDRING.$(FASLEXT) \
+	strap-2/REAL.$(FASLEXT) strap-2/RETRACT.$(FASLEXT) \
+	strap-2/CHARZ.$(FASLEXT)
+strap-2/FPS.$(FASLEXT): strap-2/RNS.$(FASLEXT)
+strap-2/HYPCAT.$(FASLEXT): strap-2/ELEMFUN.$(FASLEXT)
+strap-2/TRANFUN.$(FASLEXT): strap-2/TRIGCAT.$(FASLEXT) \
+	strap-2/ATRIG.$(FASLEXT) strap-2/HYPCAT.$(FASLEXT) \
+	strap-2/AHYP.$(FASLEXT)
+strap-2/PFECAT.$(FASLEXT): strap-2/IVECTOR.$(FASLEXT)
+strap-2/SEXCAT.$(FASLEXT): strap-2/KVTFROM.$(FASLEXT)
+strap-2/POLYCAT.$(FASLEXT): strap-2/SEXCAT.$(FASLEXT)
+strap-2/QFCAT.$(FASLEXT): strap-2/FEVALAB.$(FASLEXT) \
+	 strap-2/EUCDOM.$(FASLEXT) strap-2/DIFEXT.$(FASLEXT) \
+	strap-2/FLINEXP.$(FASLEXT) strap-2/FPATMAB.$(FASLEXT) \
+	strap-2/CHARNZ.$(FASLEXT) strap-2/PFECAT.$(FASLEXT) \
+	strap-2/DFLOAT.$(FASLEXT)
+strap-2/DIVRING.$(FASLEXT): strap-2/QFCAT.$(FASLEXT)
+strap-2/FIELD.$(FASLEXT): strap-2/EUCDOM.$(FASLEXT) \
+	strap-2/EUCDOM.$(FASLEXT) strap-2/DIVRING.$(FASLEXT)
+strap-2/INTDOM.$(FASLEXT): strap-2/FIELD.$(FASLEXT)
+strap-2/A1AGG.$(FASLEXT): strap-2/BOOLE.$(FASLEXT)
+strap-2/DIOPS.$(FASLEXT): strap-2/BGAGG.$(FASLEXT) \
+	strap-2/CLAGG.$(FASLEXT) strap-2/CHAR.$(FASLEXT)
+strap-2/DIAGG.$(FASLEXT): strap-2/DIOPS.$(FASLEXT)
+strap-2/FSAGG.$(FASLEXT): strap-2/DIAGG.$(FASLEXT)
+
+
+strap-0/.started:
+	$(mkdir_p) strap-0 && $(TOUCH) $@
+
+strap-0/.finished: $(oa_strap_0_fasls)
+	rm -f $@
+	rm -rf $(addsuffix .NRLIB,$(oa_strap_0_sources))
+	$(TOUCH) $@
+
+strap-1/.started: strap-0/.finished
+	$(mkdir_p) strap-1 && $(TOUCH) $@
+
+strap-1/.finished: $(oa_strap_1_fasls)
+	rm -f $@
+	rm -rf $(addsuffix .NRLIB,$(oa_strap_1_sources)) \
+		 $(addsuffix -.NRLIB,$(oa_strap_1_sources))
+	$(TOUCH) $@
+
+strap-2/.started: $(oa_strap_1_fasls)
+	$(mkdir_p) strap-2 && $(TOUCH) $@
+
+strap-2/.finished: $(oa_strap_2_fasls)
+	rm -f $@
+	rm -rf $(addsuffix .NRLIB,$(oa_strap_2_sources)) \
+		 $(addsuffix -.NRLIB,$(oa_strap_2_sources))
+	$(TOUCH) $@
+
+strap-0/%.$(FASLEXT): %.spad strap-0/.started
+	$(BOOTSTRAP) --sysalg=strap-0 --bootstrap $< \
+		&& cp $*.NRLIB/code.$(FASLEXT) $@
+
+strap-1/%.$(FASLEXT): %.spad strap-1/.started
+	$(BOOTSTRAP) --strap=strap-0 --sysalg=strap-1 --optimize=3 $< && \
+		cp $*.NRLIB/code.$(FASLEXT) $@ && \
+		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
+			strap-1/$*-.$(FASLEXT); else : ; fi
+
+strap-2/%.$(FASLEXT): %.spad strap-2/.started
+	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 --optimize=3 $< && \
+		cp $*.NRLIB/code.$(FASLEXT) $@ && \
+		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
+			strap-2/$*-.$(FASLEXT); else : ; fi
 
 
 SPADFILES= \
@@ -174,62 +690,11 @@ TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
 
 subdir = src/algebra/
 
-# The list of objects necessary to bootstrap the whole algebra library.
-axiom_algebra_layer_strap = \
-	$(addprefix strap/,$(axiom_algebra_bootstrap))
+$(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
+$(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
+$(OUT)/PI.$(FASLEXT): $(OUT)/NNI.$(FASLEXT)
 
-axiom_algebra_layer_strap_objects = \
-	$(addsuffix .$(FASLEXT),$(axiom_algebra_layer_strap))
-
-
-axiom_algebra_bootstrap = \
-  ABELGRP  ABELGRP- ABELMON  ABELMON- \
-  ABELSG   ABELSG-  ALAGG    BOOLEAN  \
-  CABMON   CHAR     CLAGG    CLAGG-   \
-  COMRING  DFLOAT   DIFRING           \
-  DIVRING  DIVRING- ENTIRER           \
-           EUCDOM   EUCDOM-  FFIELDC  \
-  FFIELDC- FPS      FPS-     GCDDOM   \
-  GCDDOM-  HOAGG    HOAGG-   ILIST    \
-  INS      INS-     INT      INTDOM   \
-  INTDOM-  ISTRING  LIST     LNAGG    \
-  LNAGG-   LSAGG    LSAGG-   MONOID   \
-  MONOID-  MTSCAT   NNI      OINTDOM  \
-  ORDRING  ORDRING- OUTFORM  PI       \
-           POLYCAT  POLYCAT-          \
-           QFCAT    QFCAT-   RCAGG    \
-  RCAGG-            RING     RING-    \
-  RNG      RNS      RNS-     SETAGG   \
-  SETAGG-                    SINT     \
-  STAGG    STAGG-   SYMBOL            \
-           UFD      UFD-              \
-                    URAGG    URAGG-   \
-  VECTOR
-
-axiom_algebra_bootstrap_last_layer = \
-           DFLOAT                     \
-  DIVRING  DIVRING-                   \
-           EUCDOM   EUCDOM-  FFIELDC  \
-  FFIELDC- FPS      FPS-              \
-  INS      INS-     INT               \
-           MTSCAT   NNI               \
-                    OUTFORM  PI       \
-           POLYCAT  POLYCAT-          \
-           QFCAT    QFCAT-            \
-           RNS      RNS-              \
-                             SINT     \
-                    SYMBOL            \
-  VECTOR
-
-
-axiom_algebra_bootstrap_nrlibs = \
-	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_bootstrap))
-
-axiom_algebra_bootstrap_last_layer_objects = \
-	$(addprefix $(OUT)/, \
-	   $(addsuffix .$(FASLEXT), $(axiom_algebra_bootstrap_last_layer)))
-
-
+$(OUT)/TYPE.$(FASLEXT): $(OUT)/SINT.$(FASLEXT)
 $(OUT)/IEVALAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/EVALAB.$(FASLEXT): $(OUT)/IEVALAB.$(FASLEXT)
 $(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -243,7 +708,7 @@ $(OUT)/CFCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 
 
-$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
 $(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT) $(OUT)/EVALAB.$(FASLEXT)
 $(OUT)/RCAGG.$(FASLEXT): $(OUT)/EVALAB.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT) \
@@ -260,7 +725,7 @@ $(OUT)/FLAGG.$(FASLEXT): $(OUT)/BMODULE.$(FASLEXT) $(OUT)/PID.$(FASLEXT) \
 	$(OUT)/LINEXP.$(FASLEXT) $(OUT)/PATMAB.$(FASLEXT) \
 	$(OUT)/REAL.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT) \
 	$(OUT)/DIFFSPC.$(FASLEXT)
-$(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/LOGIC.$(FASLEXT) \
+$(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/BOOLE-.$(FASLEXT) \
 	$(OUT)/FLAGG.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT) \
 	$(OUT)/ORDTYPE-.$(FASLEXT)
 $(OUT)/SRAGG.$(FASLEXT): $(OUT)/A1AGG.$(FASLEXT)
@@ -277,7 +742,8 @@ $(OUT)/KDAGG.$(FASLEXT): $(OUT)/DIAGG.$(FASLEXT)
 $(OUT)/TBAGG.$(FASLEXT): $(OUT)/KDAGG.$(FASLEXT)
 $(OUT)/ALAGG.$(FASLEXT): $(OUT)/TBAGG.$(FASLEXT)
 $(OUT)/ILIST.$(FASLEXT): $(OUT)/LSAGG.$(FASLEXT)
-$(OUT)/LIST.$(FASLEXT): $(OUT)/ILIST.$(FASLEXT)
+$(OUT)/LIST.$(FASLEXT): $(OUT)/ILIST.$(FASLEXT) $(OUT)/REF.$(FASLEXT) \
+	$(OUT)/ALIST.$(FASLEXT) $(OUT)/PRIMARR.$(FASLEXT)
 
 $(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
@@ -306,10 +772,11 @@ $(OUT)/STEP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/PATMAB.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT)
 
-$(OUT)/LOGIC.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+$(OUT)/LOGIC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/BOOLE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
-
-$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
+	$(OUT)/PI.$(FASLEXT)
 $(OUT)/ABELSG.$(FASLEXT) $(OUT)/ABELSG-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	$(OUT)/LLINSET.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
@@ -357,7 +824,8 @@ axiom_algebra_layer_0 = \
   BMODULE           BASTYPE  BASTYPE- STEP     LMODULE  \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
   ABELSG-  ORDSET            OASGP    FILECAT  SEXCAT   \
-  MODULE   MODULE-  PID      OAGROUP  OCAMON   OAMON    \
+  MODULE   MODULE-  PID      OAGROUP  OAGROUP- OCAMON   \
+  OAMON    OAMON- \
   RNG      ORDFIN   LLINSET  RLINSET  LINSET   OAMONS   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
@@ -374,7 +842,12 @@ axiom_algebra_layer_0 = \
   LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
-  DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT
+  DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT          \
+  BOOLE    BOOLE-   REF      ALIST    PRIMARR  SRING    \
+  INS      INS-     DIVRING  DIVRING- EUCDOM   EUCDOM-  \
+                    FPS      FPS-     RNS      RNS-     \
+  POLYCAT  POLYCAT- QFCAT    QFCAT-                     \
+  INT      NNI      PI       SINT     SYMBOL   DFLOAT
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -394,13 +867,13 @@ $(OUT)/IEVALAB.$(FASLEXT) $(OUT)/IEVALAB-.$(FASLEXT): \
 $(OUT)/EVALAB.$(FASLEXT) $(OUT)/EVALAB-.$(FASLEXT): \
 	$(OUT)/IEVALAB.$(FASLEXT)
 
-$(OUT)/BOOLE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/PROPLOG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 
 $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 
 $(OUT)/BYTEORD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
+$(OUT)/SRING.$(FASLEXT): $(OUT)/ABELMON.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT)
 $(OUT)/RING.$(FASLEXT): $(OUT)/RNG.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT) \
 	$(OUT)/LMODULE.$(FASLEXT) $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/MONOID.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
@@ -442,11 +915,11 @@ axiom_algebra_layer_1 = \
   CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
   DIFRING           ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
-  PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
-  IDENT             BINDING  ALIST    BOOLEAN   PRIMARR  \
-  ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
+  PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC            \
+  IDENT    OUTFORM  BINDING           BOOLEAN            \
+  ORDRING                    FEVALAB  FEVALAB-  IARRAY1  \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
-  FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1   BOOLE    \
+  FIELD    FIELD-   VECTCAT  VECTCAT- \
   PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
   RADCAT   RADCAT-  PDMOD    DMEXT    LZSTAGG   LZSTAGG-
 
@@ -639,7 +1112,7 @@ axiom_algebra_layer_10 = \
   PINTERP  PLOTTOOL PFR      PMDOWN   \
   PRTITION PMINS    PMLSAGG  PMTOOLS  \
   PSCAT    PSCAT-   QFORM    QUEUE    \
-  SQMATRIX SEG      SEG2              \
+  SQMATRIX SEG      SEG2     MTSCAT   \
   STACK    STTAYLOR TABLBUMP TABLEAU  \
   TOPSP    TRANFUN  TRANFUN- TUBE     \
   UDPO     UNISEG   VIEW     VSPACE   \
@@ -647,7 +1120,7 @@ axiom_algebra_layer_10 = \
   FUNDESC  XPBWPOLY SMATCAT  SMATCAT- \
   RMATRIX  RMATCAT  RMATCAT- DIRPROD \
   DIRPCAT  DIRPCAT- IVECTOR  MATRIX  \
-  MATCAT   MATCAT-  IIARRAY2 
+  MATCAT   MATCAT-  IIARRAY2 FFIELDC  FFIELDC-
 
 
 axiom_algebra_layer_10_nrlibs = \
@@ -672,7 +1145,7 @@ axiom_algebra_layer_11 = \
   TS       TUPLE    UPSCAT   UPSCAT-  \
                     XDPOLY   XEXPPKG  \
   XF       XF-               XPOLY    \
-  XRPOLY   
+  XRPOLY   FFIELDC  FFIELDC- MTSCAT
 
 axiom_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_11))
@@ -706,7 +1179,7 @@ axiom_algebra_layer_13 = \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
   PFECAT   PFECAT-  POINT    PSEUDLIN \
   PTPACK   REP2     SETMN             \
-  SYMFUNC  VECTOR2     CHAR  \
+  SYMFUNC  VECTOR2  VECTOR   CHAR  \
   INBCON   INBCON-  OUTBCON  OUTBCON-
 
 axiom_algebra_layer_13_nrlibs = \
@@ -1120,18 +1593,12 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PREVIOUS: %.spad
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
-	${INTERPSYS} --strap=strap --system-algebra --optimize=3 --compile $<
-
-# Compile bootstrap file to machine object code, and the result
-# immediately available for AXIOMsys consumption.
-strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
-	$(COMPILE_LISP)
-
+	$(COMPILE_SPAD)
 
 $(OUTSRC)/%.spad: mk-target-src-algabra-dir
 
 ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+	$(oa_hammer) --tangle --output=$@ $<
 
 .PHONY: mk-target-src-algabra-dir
 mk-target-src-algabra-dir:
@@ -1153,30 +1620,29 @@ $(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
 		   $(axiom_build_texdir)/axiom.sty
 
 $(builddir)/%.dvi: $(builddir)/%.tex
-	$(axiom_build_document) --latex $<
+	$(oa_hammer) --latex $<
 
 $(builddir)/%.tex: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --weave --output=$@ $<
+	$(oa_hammer) --weave --output=$@ $<
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	${INTERPSYS} --system-algebra --compile $<
+	$(COMPILE_SPAD)
 
 PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
-	${INTERPSYS} --system-algebra --compile $<
-
+	$(COMPILE_SPAD)
 
 
 ${INPUT}/TESTFR.input: $(srcdir)/fr.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST FR' --output=$@ $<
+	$(oa_hammer) --tangle='TEST FR' --output=$@ $<
 
 ${INPUT}/INTHEORY.input: $(srcdir)/numtheor.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST INTHEORY' --output=$@ $<
+	$(oa_hammer) --tangle='TEST INTHEORY' --output=$@ $<
 
 ${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST VIEW2D' --output=$@ $<
+	$(oa_hammer) --tangle='TEST VIEW2D' --output=$@ $<
 
 
 ${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
@@ -1206,10 +1672,12 @@ $(axiom_algebra_layer_20_objects): 19-stamp
 $(axiom_algebra_layer_21_objects): 20-stamp
 $(axiom_algebra_layer_22_objects): 21-stamp
 $(axiom_algebra_layer_23_objects): 22-stamp
-$(axiom_algebra_bootstrap_last_layer_objects): 23-stamp
 $(axiom_algebra_layer_user_objects): bootstrap-stamp
 
-strap-stamp: $(axiom_algebra_layer_strap_objects)
+.PHONY: all-algstrap
+all-algstrap: strap-stamp
+
+strap-stamp: strap-2/.finished
 	@ rm -f strap-stamp
 	@ $(STAMP) strap-stamp
 	@ echo =====================================
@@ -1384,7 +1852,7 @@ strap-stamp: $(axiom_algebra_layer_strap_objects)
 	@ echo === layer 23 of 23 complete ======
 	@ echo ==================================
 
-bootstrap-stamp: 23-stamp $(axiom_algebra_bootstrap_last_layer_objects)
+bootstrap-stamp: 23-stamp
 	@ rm -f bootstrap-stamp
 	@ $(STAMP) bootstrap-stamp
 	@ echo ==================================
@@ -1398,18 +1866,11 @@ user-stamp: $(axiom_algebra_layer_user_objects)
 
 
 
-.PHONY: all-algstrap
-all-algstrap: $(addsuffix .NRLIB/code.lsp,$(axiom_algebra_bootstrap))
-	for a in $(axiom_algebra_bootstrap); do \
-	  old=$(srcdir)/strap/$$a.lsp; new=$$a.NRLIB/code.lsp; \
-	  cmp -s $$new $$old || cp -p $$new $$old || exit 1; \
-	done
-
 mostlyclean-local:
 	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
 	@rm -rf *.NRLIB
 	@rm -rf *.DAASE *.daase libdb.text
-	@rm -rf strap
+	@rm -rf strap*
 	@rm -f *stamp
 
 clean-local: mostlyclean-local

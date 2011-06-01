@@ -48,6 +48,8 @@
 #include "scrollbar.h"
 #include "titlebar.h"
 
+using namespace OpenAxiom;
+
 static void end_a_page(void );
 static HyperDocPage * format_page(UnloadedPage * ulpage);
 static void parse_page(HyperDocPage * page);

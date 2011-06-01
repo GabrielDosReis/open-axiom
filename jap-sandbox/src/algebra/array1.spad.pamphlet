@@ -17,7 +17,7 @@
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    macro NNI == NonNegativeInteger
    import %vlength: % -> NonNegativeInteger from Foreign Builtin
-   import %vref: (%,Integer) -> S           from Foreign Builtin
+   import %aref: (%,Integer) -> S           from Foreign Builtin
    import makeSimpleArray: (Domain,NNI) -> % from Foreign Builtin
 
    #x == %vlength x
@@ -34,8 +34,8 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    new(n, x) == 
      makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
 
-   qelt(x, i) == %vref(x,i)
-   elt(x:%, i:Integer) ==  %vref(x,i)
+   qelt(x, i) == %aref(x,i)
+   elt(x:%, i:Integer) ==  %aref(x,i)
 
    qsetelt!(x, i, s) == 
      setSimpleArrayEntry(x,i,s)$Lisp
@@ -199,8 +199,8 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
 
     growAdding(r, b, s) ==
        b = 0 => r
-       #r > 0 => growAndFill(r, b, (r.f).0)
-       #s > 0 => growAndFill(r, b, (s.f).0)
+       positive?(#r) => growAndFill(r, b, (r.f).0)
+       positive?(#s) => growAndFill(r, b, (s.f).0)
        error "no default filler element"
 
     growAndFill(r, b, x) ==
@@ -272,21 +272,21 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
 
     delete!(r:%, i1:I) ==
        i := i1 - mn
-       i < 0 or i > r.logLen => error "index out of range"
+       negative? i or i > r.logLen => error "index out of range"
        for k in i..r.logLen-2 repeat r.f.k := r.f.(k+1)
        shrink(r, 1)
 
     delete!(r:%, i:U) ==
        l := lo i - mn; m := maxIndex r - mn
        h := (hasHi i => hi i - mn; m)
-       l < 0 or h > m => error "index out of range"
+       negative? l or h > m => error "index out of range"
        for j in l.. for k in h+1..m repeat r.f.j := r.f.k
        shrink(r, max(0,h-l+1))
 
     insert!(x:S, r:%, i1:I):% ==
        i := i1 - mn
        n := r.logLen
-       i < 0 or i > n => error "index out of range"
+       negative? i or i > n => error "index out of range"
        growAndFill(r, 1, x)
        for k in n-1 .. i by -1 repeat r.f.(k+1) := r.f.k
        r.f.i := x
@@ -296,7 +296,7 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
        i := i1 - mn
        if eq?(a, b) then b := copy b
        m := #a; n := #b
-       i < 0 or i > n => error "index out of range"
+       negative? i or i > n => error "index out of range"
        growAdding(b, m, a)
        for k in n-1 .. i by -1 repeat b.f.(m+k) := b.f.k
        for k in m-1 .. 0 by -1 repeat b.f.(i+k) := a.f.k
@@ -372,12 +372,16 @@ FlexibleArray(S: Type) == Implementation where
 
 IndexedOneDimensionalArray(S:Type, mn:Integer):
  OneDimensionalArrayAggregate S == add
-   import %vlength: % -> NonNegativeInteger from Foreign Builtin
-   import %vref: (%,Integer) -> S           from Foreign Builtin
-
    macro Qmax == maxIndexOfSimpleArray$Foreign(Builtin)
    macro Qsetelt == setSimpleArrayEntry$Foreign(Builtin)
    macro I == Integer
+
+   import %icst0: I                         from Foreign Builtin
+   import %icst1: I                         from Foreign Builtin
+   import %ilt: (I,I) -> Boolean            from Foreign Builtin
+   import %vlength: % -> NonNegativeInteger from Foreign Builtin
+   import %aref: (%,Integer) -> S           from Foreign Builtin
+
    Rep == PrimitiveArray S
 
    newArray(n: Integer): % ==
@@ -394,27 +398,27 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
 
    map!(f, s1)  ==
       n: Integer := Qmax(s1)
-      n < 0 => s1
-      for i in 0..n repeat Qsetelt(s1, i, f(%vref(s1,i)))
+      negative? n => s1
+      for i in %icst0..n repeat Qsetelt(s1,i,f %aref(s1,i))
       s1
 
    map(f, s1)       ==
       n:Integer := Qmax(s1)
-      n < 0 => s1
+      negative? n => s1
       ss2:% := newArray(n+1)
-      for i in 0..n repeat Qsetelt(ss2, i, f(%vref(s1,i)))
+      for i in %icst0..n repeat Qsetelt(ss2,i,f %aref(s1,i))
       ss2
 
    map(f, a, b)   ==
       maxind:Integer := min(Qmax a, Qmax b)
-      maxind < 0 => empty()
-      c:% := newArray(maxind+1)
-      for i in 0..maxind repeat
-        Qsetelt(c, i, f(%vref(a,i),%vref(b,i)))
+      negative? maxind => empty()
+      c:% := newArray(maxind + %icst1)
+      for i in %icst0..maxind repeat
+        Qsetelt(c,i,f(%aref(a,i),%aref(b,i)))
       c
 
    if zero? mn then
-     qelt(x, i)       == %vref(x, i)
+     qelt(x, i)       == %aref(x, i)
      qsetelt!(x, i, s) == Qsetelt(x, i, s)
 
      elt(x:%, i:I) ==
@@ -427,21 +431,21 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
 
    else if one? mn then
      maxIndex x       == %vlength x
-     qelt(x, i)       == %vref(x, i-1)
-     qsetelt!(x, i, s) == Qsetelt(x, i-1, s)
+     qelt(x, i)       == %aref(x, i - %icst1)
+     qsetelt!(x, i, s) == Qsetelt(x, i - %icst1, s)
 
      elt(x:%, i:I) ==
-       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       %ilt(i,%icst1) or %ilt(%vlength x,i) =>
          error "index out of range"
-       %vref(x, i-1)
+       %aref(x, i - %icst1)
 
      setelt(x:%, i:I, s:S) ==
-       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       %ilt(i,%icst1) or %ilt(%vlength x,i) =>
          error "index out of range"
-       Qsetelt(x, i-1, s)
+       Qsetelt(x, i - %icst1, s)
 
     else
-       qelt(x, i)       == %vref(x, i - mn)
+       qelt(x, i)       == %aref(x, i - mn)
        qsetelt!(x, i, s) == Qsetelt(x, i - mn, s)
 
        elt(x:%, i:I) ==

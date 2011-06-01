@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,22 +40,23 @@ namespace BOOT
 $noEvalTypeMsg := nil
 
 evalDomain form ==
-  if $evalDomain then
-    sayMSG concat('"   instantiating","%b",prefix2String form,"%d")
   startTimingProcess 'instantiation
   newType? form => form
+  form is ['%store,:.] => eval form
   result := eval mkEvalable form
   stopTimingProcess 'instantiation
   result
 
 mkEvalable form ==
   form is [op,:argl] =>
-    op="QUOTE" => form
-    op="WRAPPED" => mkEvalable devaluate argl
-    op="Record" => mkEvalableRecord form
-    op="Union"  => mkEvalableUnion  form
-    op="Mapping"=> mkEvalableMapping form
-    op="Enumeration" => form
+    op is "QUOTE" => form
+    op is ":" => [op,second form,mkEvalable third form]
+    op is "WRAPPED" => mkEvalable devaluate argl
+    op in '(Record Union Mapping) =>
+      [op,:[mkEvalable arg for arg in argl]]
+    op is 'Enumeration => form
+    -- a niladic constructor instantiation goes by itself
+    constructor? op and argl = nil => form
     loadIfNecessary op
     kind:= getConstructorKindFromDB op
     cosig := getDualSignatureFromDB op =>
@@ -74,17 +75,6 @@ mkEvalable form ==
   FBPIP form => BPINAME form
   form
 
-mkEvalableMapping form ==
-  [first form,:[mkEvalable d for d in rest form]]
-
-mkEvalableRecord form ==
-  [first form,:[[":",n,mkEvalable d] for [":",n,d] in rest form]]
-
-mkEvalableUnion form ==
-  isTaggedUnion form =>
-    [first form,:[[":",n,mkEvalable d] for [":",n,d] in rest form]]
-  [first form,:[mkEvalable d for d in rest form]]
-
 evaluateType0 form ==
   -- Takes a parsed, unabbreviated type and evaluates it, replacing
   --  type valued variables with their values, and calling bottomUp
@@ -92,7 +82,7 @@ evaluateType0 form ==
   --  and finally checking to see whether the type satisfies the
   --  conditions of its modemap
   -- However, the input might be an attribute, not a type
-  -- $noEvalTypeMsg: fluid := true
+  -- $noEvalTypeMsg: local := true
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
@@ -104,22 +94,16 @@ evaluateType0 form ==
     bottomUp form'
     objVal getValue(form')
   form is [op,:argl] =>
-    op='CATEGORY =>
+    op in '(Enumeration EnumerationCategory) => form
+    op is 'CATEGORY =>
       argl is [x,:sigs] => [op,x,:[evaluateSignature(s) for s in sigs]]
       form
-    op in '(Join Mapping) =>
-      [op,:[evaluateType arg for arg in argl]]
-    op='Union  =>
-      argl and first argl is [x,.,.] and member(x,'(_: Declare)) =>
-        [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
-      [op,:[evaluateType arg for arg in argl]]
-    op='Record =>
-      [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
-    op='Enumeration => form
+    op is ":" => [op,first argl,evaluateType second argl]
+    builtinConstructor? op => [op,:[evaluateType arg for arg in argl]]
     constructor? op => evaluateType1 form
-    NIL
+    nil
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
+  IDENTP form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
 ++ Check for duplicate fields in a Union or Record domain form.
@@ -163,11 +147,11 @@ evaluateType form ==
         IDENTP arg => nil
         throwKeyedMsg("S2IL0031",nil)
       for [arg,:args] in tails argl repeat
-        MEMQ(arg,args) => throwKeyedMsg("S2IL0032",[arg])
+        symbolMember?(arg,args) => throwKeyedMsg("S2IL0032",[arg])
       form
     evaluateFormAsType form
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
+  IDENTP form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
   evaluateFormAsType form
 
@@ -194,7 +178,7 @@ evaluateType1 (form is [op,:argl]) ==
   for x in argl for m in ml for argnum in 1.. repeat
     typeList := [v,:typeList] where v() ==
       categoryForm?(m) =>
-	m := evaluateType MSUBSTQ(x,'_$,m)
+	m := evaluateType substitute(x,'_$,m)
 	evalCategory(x' := (evaluateType x), m) => x'
 	throwEvalTypeMsg("S2IE0004",[form])
       m := evaluateType m
@@ -205,7 +189,7 @@ evaluateType1 (form is [op,:argl]) ==
 	      throwKeyedMsgCannotCoerceWithValue(zv,zt,m)
       if x = $EmptyMode then x := $quadSymbol
       throwEvalTypeMsg("S2IE0006",[makeOrdinal argnum,m,form])
-  [op,:nreverse typeList]
+  [op,:reverse! typeList]
 
 throwEvalTypeMsg(msg, args) ==
   $noEvalTypeMsg => spadThrow()
@@ -216,7 +200,7 @@ makeOrdinal i ==
 
 evaluateSignature sig ==
   -- calls evaluateType on a signature
-  sig is [ ='SIGNATURE,fun,sigl] =>
+  sig is ['SIGNATURE,fun,sigl] =>
     ['SIGNATURE,fun,
       [(t = '_$ => t; evaluateType(t)) for t in sigl]]
   sig
@@ -239,9 +223,9 @@ evalForm(op,opName,argl,mmS) ==
     #argl ~= #CDDR sig => 'skip ---> RDJ 6/95
     form:=
       $genValue or null cond =>
-        [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return NIL
+        [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return nil
          for x in argl for t in CDDR sig]
-      [getArgValueComp2(x,t,c,sideEffectedArg?(t,sig,opName),opName) or return NIL
+      [getArgValueComp2(x,t,c,sideEffectedArg?(t,sig,opName),opName) or return nil
         for x in argl for t in CDDR sig for c in cond]
     form or null argl =>
       dc:= first sig
@@ -249,18 +233,12 @@ evalForm(op,opName,argl,mmS) ==
         dc='local => --[fun,:form]
           atom fun =>
             isLocallyBound fun => ['SPADCALL,:form,fun]
-            [fun,:form,NIL]
+            [fun,:form,nil]
           ['SPADCALL,:form,fun]
         dc is ["__FreeFunction__",:freeFun] =>
           ['SPADCALL,:form,freeFun]
         fun is ['XLAM,xargs,:xbody] =>
           rec :=  first form
-          xbody is [['RECORDELT,.,ind,len]] =>
-            optRECORDELT([CAAR xbody,rec,ind,len])
-          xbody is [['SETRECORDELT,.,ind,len,.]] =>
-            optSETRECORDELT([CAAR xbody,rec,ind,len,third form])
-          xbody is [['RECORDCOPY,.,len]] =>
-            optRECORDCOPY([CAAR xbody,rec,len])
           ['FUNCALL,['function , ['LAMBDA,xargs,:xbody]],:TAKE(#xargs, form)]
         dcVector := evalDomain dc
         fun0 :=
@@ -270,13 +248,13 @@ evalForm(op,opName,argl,mmS) ==
           NRTcompileEvalForm(opName,fun,dcVector)
         null fun0 => throwKeyedMsg("S2IE0008",[opName])
         [bpi,:domain] := fun0
-        EQ(bpi,function Undef) =>
+        sameObject?(bpi,function Undef) =>
          sayKeyedMsg("S2IE0009",[opName,formatSignature rest sig,first sig])
-         NIL
-        if $NRTmonitorIfTrue = true then
+         nil
+        if $NRTmonitorIfTrue then
           sayBrightlyNT ['"Applying ",first fun0,'" to:"]
           pp [devaluateDeeply x for x in form]
-        _$:fluid := domain
+        $: local := domain
         ['SPADCALL, :form, fun0]
   not form => nil
 --  not form => throwKeyedMsg("S2IE0008",[opName])
@@ -286,8 +264,8 @@ evalForm(op,opName,argl,mmS) ==
   evalFormMkValue(op,form,targetType)
 
 sideEffectedArg?(t,sig,opName) ==
-  opString := SYMBOL_-NAME opName
-  (opName ~= 'setelt) and (opString.(#opString-1) ~= char '_!) => nil
+  opString := symbolName opName
+  (opName ~= 'setelt) and (opString.(#opString-1) ~= char "!") => nil
   dc := first sig
   t = dc
 
@@ -328,12 +306,12 @@ getMappingArgValue(a,t,m is ['Mapping,:ml]) ==
       mmS := selectLocalMms(a,name,rest ml, nil)
       or/[mm for mm in mmS |
         (mm is [[., :ml1],oldName,:.] and ml=ml1)] => MKQ [oldName]
-      NIL
+      nil
     una
   mmS := selectLocalMms(a,una,rest ml, nil)
   or/[mm for mm in mmS |
     (mm is [[., :ml1],oldName,:.] and ml=ml1)] => MKQ [oldName]
-  NIL
+  nil
 
 getArgValueComp2(arg, type, cond, se?, opName) ==
   se? and (objMode(getValue arg) ~= type) =>
@@ -356,18 +334,18 @@ getArgValueComp(arg,type,cond) ==
 
 evalFormMkValue(op,form,tm) ==
   val := object(form,tm)
-  if $NRTmonitorIfTrue = true then
+  if $NRTmonitorIfTrue then
     sayBrightlyNT ['"Value of ",op.0,'" ===> "]
     pp objValUnwrap val
   putValue(op,val)
   [tm]
 
 failCheck x ==
-  x = '"failed" =>
+  x is '"failed" =>
     stopTimingProcess peekTimedName()
     THROW('interpreter,objNewWrap('"failed",$String))
   x = $coerceFailure =>
-    NIL
+    nil
   x
 
 --% Some Antique Comments About the Interpreter

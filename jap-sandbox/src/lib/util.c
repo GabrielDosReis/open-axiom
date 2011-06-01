@@ -42,11 +42,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "view.h"
-
+#include "cfuns.h"
 
 #include "util.H1"
 
 
+/* FIXME: Remove this kludge */
+using namespace OpenAxiom;
 
 
 int

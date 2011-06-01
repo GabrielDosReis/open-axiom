@@ -284,7 +284,7 @@ Plot(): Exports == Implementation where
       xDiff = 0 or yDiff = 0 => curve
       l := lo tRange; h := hi tRange
       (tDiff := h-l) = 0 => curve
---      if (EQL(yDiff, quietDoubleNaN()$Lisp)$Lisp) then yDiff := 1::F
+--      if (%sptreq(yDiff, quietDoubleNaN()$Lisp)$Foreign(Builtin)) then yDiff := 1::F
       t := curve.knots
       #t < 3 => curve
       p := curve.points; f := curve.source
@@ -387,7 +387,7 @@ Plot(): Exports == Implementation where
           todo1 := rest todo1
           todo2 := rest todo2
           if not null todo1 then (t := first(todo1); p := first(todo2))
-      n > 0 =>
+      positive? n =>
         NUMFUNEVALS := NUMFUNEVALS + n
         t := curve.knots; p := curve.points
         xRange := select(p,xCoord,min) .. select(p,xCoord,max)

@@ -101,14 +101,14 @@ FiniteFieldPolynomialPackage2(F,GF):Exports == Implementation where
           beta:=Frobenius(beta)
           trModp:=trModp +$(SUP F) beta *$(SUP F) map(coerce,qexp.i)$SUPF2
         -- if it is of degree 0, it doesn't help us finding a root
-        if degree(trModp)$(SUP F) > 0 then
+        if positive? degree(trModp)$(SUP F) then
           -- for all elements gf of GF do
           for j in 1..sizeGF repeat
             -- compute gcd(trace(beta * x) + gf,stillToFactor)
             h:=gcd(stillToFactor,trModp +$(SUP F) _
              (index(j pretend PI)$GF::F::(SUP F)))$(SUP F)
             -- make the gcd polynomial monic
-            if leadingCoefficient(h)$(SUP F) ~= 1$F then
+            if not one? leadingCoefficient(h)$(SUP F) then
               h:= (inv leadingCoefficient(h)) * h
             degh:=degree(h)$(SUP F)
             degSTF:=degree(stillToFactor)$(SUP F)

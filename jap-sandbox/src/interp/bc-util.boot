@@ -33,6 +33,7 @@
 
 
 import ht_-util
+import c_-util
 namespace BOOT
 
 ++
@@ -50,9 +51,9 @@ bcMkFunction(name,arg,args) ==
   strconc(name,'"(",arg,strconc/[strconc('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
-  (string? s) and (s.0 = char '_")  =>
+  string? s and stringChar(s,0) = char "_""  =>
     len := #s
-    strconc('"\_"", SUBSTRING(s, 1, len-2), '"\_"")
+    strconc('"\_"", subString(s, 1, len-2), '"\_"")
   s
 
 bcString2HyString s == s
@@ -93,14 +94,14 @@ bcOptional s ==
 
 bcvspace() == bcHt '"\vspace{1}\newline "
 
-bcString2WordList s == fn(s,0,MAXINDEX s) where
+bcString2WordList s == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => nil
-    k := or/[j for j in i..n | s.j ~= char '_  ]
-    null integer? k => nil
-    l := bcFindString(s,k + 1,n,char '_  )
-    null integer? l => [SUBSTRING(s,k,nil)]
-    [SUBSTRING(s,k,l-k),:fn(s,l + 1,n)]
+    k := or/[j for j in i..n | s.j ~= char " "]
+    not integer? k => nil
+    l := bcFindString(s,k + 1,n,char " ")
+    not integer? l => [subString(s,k)]
+    [subString(s,k,l-k),:fn(s,l + 1,n)]
 
 
 bcwords2liststring u ==

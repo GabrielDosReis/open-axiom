@@ -49,7 +49,7 @@ viewAlone_DEPENDENCIES =
 
 subdir = src/graph/viewAlone/
 
-AXIOM_CFLAGS = ${CCF} ${AXIOM_X11_CFLAGS} -I$(srcdir) -I${LINC} -I${GINC} \
+AXIOM_CFLAGS = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I$(srcdir) -I${LINC} -I${GINC} \
 			$(axiom_includes)
 
 HEADERS= $(srcdir)/viewAlone.h     ${LINC}/component.h ${LINC}/view2D.h  \
@@ -68,14 +68,14 @@ stamp: $(axiom_target_bindir)/viewAlone$(EXEEXT)
 
 $(axiom_target_bindir)/viewAlone$(EXEEXT): $(viewAlone_objects) \
 		 $(viewAlone_DEPENDENCIES)
-	$(LINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
+	$(CXXLINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
 
 .PRECIOUS: %.lo
 
 %.lo: $(HEADERS)
 
 %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 mostlyclean-local:
 

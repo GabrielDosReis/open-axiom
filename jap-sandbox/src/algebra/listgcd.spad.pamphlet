@@ -71,14 +71,14 @@ HeuGcd (BP):C == T
     constNotZero(f : BP ) : Boolean == (degree f = 0) and not (zero? f)
 
     negShiftz(n:Z,Modulus:PI):Z ==
-      n < 0 => n:= n+Modulus
+      negative? n => n:= n+Modulus
       n > (Modulus quo 2) => n-Modulus
       n
 
     --compute the height of a polynomial
     height(f:BP):PI ==
       k:PI:=1
-      while f~=0 repeat
+      while not zero? f repeat
            k:=max(k,abs(leadingCoefficient(f)@Z)::PI)
            f:=reductum f
       k
@@ -88,7 +88,7 @@ HeuGcd (BP):C == T
     genpoly(dval:Z,value:PI):BP ==
       d:=0$BP
       val:=dval
-      for i in 0..  while (val~=0) repeat
+      for i in 0..  while not zero? val repeat
         val1:=negShiftz(val rem value,value)
         d:= d+monomial(val1,i)
         val:=(val-val1) quo value
@@ -118,7 +118,7 @@ HeuGcd (BP):C == T
       empty? lind =>
         member?(1,listdeg) => lincase(listdeg,listf)
         localgcd listf
-      or/[n>0 for n in listdeg] => cons(1$BP,listf)
+      or/[positive? n for n in listdeg] => cons(1$BP,listf)
       lclistf:List(Z):= [leadingCoefficient f for f in listf]
       d:=lintgcd(lclistf)
       d=1 =>  cons(1$BP,listf)
@@ -181,7 +181,7 @@ HeuGcd (BP):C == T
       minpol:=1$BP
       -- extract a monomial gcd
       mdeg:= "min"/[minimumDegree f for f in listf]
-      if mdeg>0 then
+      if positive? mdeg then
         minpol1:= monomial(1,mdeg)
         listf:= [(f exquo minpol1)::BP for f in listf]
         minpol:=minpol*minpol1

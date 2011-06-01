@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -36,29 +36,29 @@
 --                        Build Directories
 --=======================================================================
 buildFunctionTable(dicts) ==
-  sayKeyedMsg("S2GL0011",NIL)
+  sayKeyedMsg("S2GL0011",nil)
   buildWordTable getListOfFunctionNames dicts
  
 buildWordTable u ==
   table:= hashTable 'EQ
   for s in u repeat
-    key := UPCASE s.0
-    HPUT(table,key,[[s,:wordsOfString s],:HGET(table,key)])
+    key := charUpcase stringChar(s,0)
+    tableValue(table,key) := [[s,:wordsOfString s],:tableValue(table,key)]
   for key in HKEYS table repeat
-    HPUT(table,key,
+    tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function first),
-          function second))
+        listSort(function GLESSEQP, tableValue(table,key),function first),
+          function second)
   table
  
 writeFunctionTables(filemode) ==
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADU,'(SPAD))
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADD,'(SPADSYS))
-  $functionTable := NIL
+  $functionTable := nil
   writeFunctionTable(filemode,'SPADC,'(SPADSYS SCRATCHPAD_-COMPILER))
-  $functionTable := NIL
+  $functionTable := nil
   'done
  
 writeFunctionTable(filemode,name,dicts) ==
@@ -67,12 +67,12 @@ writeFunctionTable(filemode,name,dicts) ==
   if not $functionTable then
     $functionTable:= buildFunctionTable dicts
   for key in HKEYS $functionTable repeat
-    rwrite(object2Identifier key,HGET($functionTable,key),stream)
+    rwrite(object2Identifier key,tableValue($functionTable,key),stream)
   RSHUT stream
   'done
  
 readFunctionTable() ==
-  sayKeyedMsg("S2GL0011",NIL)
+  sayKeyedMsg("S2GL0011",nil)
   name :=
     $wordDictionary = 'user => 'SPADU
     $wordDictionary = 'development => 'SPADD
@@ -80,7 +80,7 @@ readFunctionTable() ==
   stream:= readLib(name,'DATABASE)
   table:= hashTable 'EQ
   for key in RKEYIDS makePathname(name,'DATABASE,"*") repeat
-    HPUT(table,kk:=object2Identifier key, rread(kk,stream,nil))
+    tableValue(table,kk:=object2Identifier key) := rread(kk,stream,nil)
   RSHUT stream
   table
  
@@ -97,27 +97,28 @@ getListOfFunctionNames(fnames) ==
   for fn in fnames repeat
     null IOSTATE(fn,'DIRECT,'_*) => 'iterate
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
-    while (not PLACEP (x:= readLine stream)) repeat
-      (s := SIZE x) < 26 => 'iterate
-      res:= [SUBSTRING(x,26,NIL),:res]
+    while (x:= readLine stream) ~= %nothing repeat
+      (s := # x) < 26 => 'iterate
+      res:= [subString(x,26),:res]
     SHUT stream
   res
  
-wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
+wordsOfString(s) ==
+  [stringUpcase x for x in wordsOfStringKeepCase s]
  
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
+  k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
     tailWords:=
       isBreakCharacter s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not isBreakCharacter s.i]
-        null n => [SUBSTRING(s,k,nil)]
-        n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
-        [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
-      [SUBSTRING(s,k,nil)]
-    k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
+        n:= or/[i for i in (k+2)..(maxIndex(s)-1)|not isBreakCharacter stringChar(s,i)]
+        null n => [subString(s,k)]
+        n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
+      m := or/[i for i in (k+2)..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
+        [subString(s,k,m-k),:wordsOfString1(s,m)]
+      [subString(s,k)]
+    k > j+1 => [subString(s,j,k-j),:tailWords]
     tailWords
   nil
  
@@ -131,18 +132,18 @@ isBreakCharacter x == null SMALL__LITER x
 add2WordFunctionTable fn ==
 --called from DEF
   $functionTable and
-    null LASSOC(s := PNAME fn,HGET($functionTable,(key := UPCASE s.0))) =>
-      HPUT($functionTable,key,[[s,:wordsOfString s],:HGET($functionTable,key)])
+    null LASSOC(s := PNAME fn,tableValue($functionTable,(key := UPCASE s.0))) =>
+      tableValue($functionTable,key) := [[s,:wordsOfString s],:tableValue($functionTable,key)]
  
 --=======================================================================
 --                       Guess Function Name
 --=======================================================================
 guess word ==
-  u := bootFind word => INTERN u
+  u := bootFind word => makeSymbol u
   nil
  
 bootFind word ==
-  not $useWordFacility => NIL
+  not $useWordFacility => nil
   list:= bootSearch word
   PNAME word in list => nil --mismatch of directories: pretend it was not found
   null list => centerAndHighlight('"no match found",80,'" ")
@@ -173,20 +174,20 @@ pickANumber(word,list) ==
   secondList:= TAKE(-halfLength,short)
   secondStartIndex:= halfLength + extra
   shortList:=
-    "append"/[[[:bright i,fillerSpaces(xx-WIDTH i,'" "),x],
-      [:bright(i+secondStartIndex),fillerSpaces(xx-WIDTH (i+halfLength),'" "),y]]
+    "append"/[[[:bright i,fillerSpaces(xx-WIDTH i,char " "),x],
+      [:bright(i+secondStartIndex),fillerSpaces(xx-WIDTH (i+halfLength),char " "),y]]
         for i in 1.. for x in firstList for y in secondList]
   say2PerLineThatFit shortList
   i:= 1 + halfLength
   if extra=1 then
-    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,'" "),list.(i-1)]
+    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,char " "),list.(i-1)]
   for x in long for i in (1+length).. repeat
-    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,'" "),x]
+    sayBrightly [:bright i,fillerSpaces(xx-WIDTH i,char " "),x]
   center80 ['"If so: type a number between",:bright 1,'"and",:bright n,"and ENTER"]
   center80 ['"Anything else means",:bright 'no]
   y := queryUser nil
   x:= string2Integer y
-  FIXP x and x >= 1 and x <= #list => list.(x-1)
+  integer? x and x >= 1 and x <= #list => list.(x-1)
   nil
  
 bootSearch word ==
@@ -196,10 +197,10 @@ bootSearch word ==
   list :=
     hasWildCard? key =>
       pattern := patternTran key -- converts * to &
-      pattern.0 ~= '_& =>
-        [x for [x,:.] in HGET($functionTable,UPCASE pattern.0)|
+      pattern.0 ~= char "&" =>
+        [x for [x,:.] in tableValue($functionTable,UPCASE pattern.0)|
           match?(pattern,COPY x)]
-      "append"/[[x for [x,:.] in HGET($functionTable,k)| match?(pattern,COPY x)]
+      "append"/[[x for [x,:.] in tableValue($functionTable,k)| match?(pattern,COPY x)]
                   for k in HKEYS $functionTable]
     findApproximateWords(PNAME word,$functionTable)
   list
@@ -211,7 +212,7 @@ findApproximateWords(word,table) ==
   threshold:=
     n = 1 => 3
     4
-  alist:= HGET(table,UPCASE word.0)
+  alist:= tableValue(table,UPCASE word.0)
  
   --first try to break up as list of words
   firstTry := [x for [x,:wordList] in alist | p] where p ==
@@ -268,62 +269,62 @@ findApproximateWords(word,table) ==
  
   --no winners, so try flattening to upper case and checking again
  
-  wordSize := SIZE word
+  wordSize := # word
   lastThreshold := MAX(3,wordSize/2)
   vec := GETREFV lastThreshold
   for [x,:.] in alist repeat
     k := deltaWordEntry(upperWord,UPCASE COPY x)
     k < lastThreshold => vec.k := [x,:vec.k]
-  or/[vec.k for k in 0..MAXINDEX vec]
+  or/[vec.k for k in 0..maxIndex vec]
  
 guessFromList(key,stringList) ==
-  threshold := MAX(3,(SIZE key)/2)
+  threshold := MAX(3,(# key)/2)
   vec := GETREFV threshold
   for x in stringList repeat
     k := deltaWordEntry(key,x)
     k < threshold => vec.k := [x,:vec.k]
-  or/[vec.k for k in 0..MAXINDEX vec]
+  or/[vec.k for k in 0..maxIndex vec]
  
 deltaWordEntry(word,entry) ==
   word = entry => 0
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  abs(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions
 --+   to understand the algorithm
 canForgeWord(word,entry) ==
-  forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0)
+  forge(word,0,maxIndex word,entry,0,maxIndex entry,0)
  
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
     e > E => n
-    QSADD1 QSPLUS(E-e,n)
-  e > E => QSADD1 QSPLUS(W-w,n)
+    E-e + n + 1
+  e > E => W-w + n + 1
   word.w = entry.e => forge(word,w+1,W,entry,e+1,E,n)
-  w=W or e=E => forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  w=W or e=E => forge(word,w+1,W,entry,e+1,E,n + 1)
   word.w=entry.(e+1) =>
-    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,QSADD1 n)
-    forge(word,w+1,W,entry,e+2,E,QSADD1 n)
-  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,QSADD1 n)
+    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,n + 1)
+    forge(word,w+1,W,entry,e+2,E,n + 1)
+  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,n + 1)
  
   (deltaW := W-w) > 1 and (deltaE := E-e) > 1 =>
     --if word is long, can we delete chars to match 2 consective chars
     deltaW >= deltaE and
       (k := or/[j for j in (w+2)..(W-1) | word.j = entry.e])
         and word.(k+1) = entry.(e+1) =>
-          forge(word,k+2,W,entry,e+2,E,QSPLUS(k-w,n))
+          forge(word,k+2,W,entry,e+2,E,k-w + n)
     deltaW <= deltaE and
     --if word is short, can we insert chars so as to match 2 consecutive chars
       (k := or/[j for j in (e+2)..(E-1) | word.w = entry.j])
         and word.(w+1) = entry.(k+1) =>
-          forge(word,w+2,W,entry,k+2,E,QSPLUS(n,k-e))
-    forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+          forge(word,w+2,W,entry,k+2,E,n + k-e)
+    forge(word,w+1,W,entry,e+1,E,n + 1)
   --check for two consecutive matches down the line
-  forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  forge(word,w+1,W,entry,e+1,E,n + 1)
  
 --+ DO NOT REMOVE DEFINITIONS BELOW which explain the algorithm
 --+ canForgeWord(word,entry) ==--
---+ [d,i,s,t] := forge(word,0,MAXINDEX word,entry,0,MAXINDEX entry,0,0,0,0)
+--+ [d,i,s,t] := forge(word,0,maxIndex word,entry,0,maxIndex entry,0,0,0,0)
 --+ --d=deletions, i=insertions, s=substitutions, t=transpositions
 --+ --list is formed only for tuning purposes-- remove later on
 --+ d + i + s + t
@@ -361,27 +362,28 @@ forge(word,w,W,entry,e,E,n) ==
 patternTran pattern ==
   not hasWildCard? pattern and LITER pattern.0 and
     UPCASE copy pattern = pattern =>
-      name:= abbreviation? INTERN pattern
+      name:= abbreviation? makeSymbol pattern
         or browseError [:bright pattern,
           '"is not a constructor abbreviation"]
       DOWNCASE PNAME name
   maskConvert DOWNCASE pattern
  
 hasWildCard? str ==
-  or/[str.i = '_? and (i=0 or not(str.(i-1) = '__ )) for i in 0..MAXINDEX str]
+  or/[stringChar(str,i) = char "?" and
+        (i=0 or stringChar(str,i-1) ~= char"__" ) for i in 0..maxIndex str]
  
 maskConvert str ==
 --replace all ? not preceded by an underscore by &
   buf:= GETSTR(#str)
   j:= 0  --index into res
-  final := MAXINDEX str
+  final := maxIndex str
   for i in 0..final repeat
-    char := str.i
-    if char = '__ and i < final then
-      i:= i+1
-      char := str.i
-     else if char = '_? then char := '_&
-    SUFFIX(char,buf)
+    c := stringChar(str,i)
+    if c = char "__" and i < final then
+      i := i+1
+      c := stringChar(str,i)
+     else if c = char "?" then c := char "&"
+    SUFFIX(c,buf)
   buf
  
  
@@ -397,6 +399,6 @@ suffix?(s,t) ==
 obSearch x ==
   vec:= OBARRAY()
   pattern:= PNAME x
-  [y for i in 0..MAXINDEX OBARRAY() |
+  [y for i in 0..maxIndex OBARRAY() |
     (IDENTP (y := vec.i) or CVEC y) and match?(pattern,COPY y)]
  

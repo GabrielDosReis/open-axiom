@@ -77,8 +77,10 @@ FileNameCategory(): Category == Join(SetCategory, HomotopicTo String) with
 ++   This domain provides an interface to names in the file system.
  
 FileName(): FileNameCategory == add
- 
-        f1 = f2                  == EQUAL(f1, f2)$Lisp
+
+        import %equal: (%,%) -> Boolean from Foreign Builtin
+
+        f1 = f2                  == %equal(f1,f2)
         coerce(f: %): OutputForm == f::String::OutputForm
  
         coerce(f: %): String     == NAMESTRING(f)$Lisp

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -58,17 +58,19 @@ canCoerce(t1, t2) ==
   nil
 
 coerceConvertMmSelection(funName,m1,m2) ==
-  -- calls selectMms with $Coerce=NIL and tests for required
+  -- calls selectMms with $Coerce=nil and tests for required
   -- target type. funName is either 'coerce or 'convert.
-  $declaredMode : local:= NIL
-  $reportBottomUpFlag : local:= NIL
-  l := selectMms1(funName,m2,[m1],[m1],NIL)
+  $declaredMode : local:= nil
+  $reportBottomUpFlag : local:= nil
+  l := selectMms1(funName,m2,[m1],[m1],nil)
   mmS := [[sig,[targ,arg],:pred] for x in l | x is [sig,[.,arg],:pred] and
     hasCorrectTarget(m2,sig) and sig is [dc,targ,oarg] and oarg = m1]
   mmS and first mmS
 
-hasFileProperty(p,id,abbrev) == hasFilePropertyNoCache(p,id,abbrev)
+hasFileProperty(p,id,abbrev) ==
+  hasFilePropertyNoCache(p,id,abbrev)
 
+++ Note: this function is used in the algebra part.
 isValidType form ==
   -- returns true IFF form is a type whose arguments satisfy the
   --  predicate of the type constructor
@@ -85,28 +87,28 @@ isValidType form ==
     ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
-    null mapargs => NIL
+    null mapargs => nil
     and/[isValidType type for type in mapargs]
   form is ['Union,:args] =>
     -- check for a tagged union
     args and first args is [":",:.] =>
       and/[isValidType type for [:.,type] in args]
-    null (and/[isValidType arg for arg in args]) => NIL
+    null (and/[isValidType arg for arg in args]) => nil
     ((# args) = (# removeDuplicates args)) => true
     sayKeyedMsg("S2IR0005",[form])
-    NIL
+    nil
 
   badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
-  form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
+  form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => nil
 
   form is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,'(Field)) => NIL
+    ofCategory(D,$Field) => nil
   form is ['UnivariatePolynomial, x, ['UnivariatePolynomial, y, .]] and x=y =>
-    NIL
-  form = '(Complex (AlgebraicNumber)) => NIL
-  form is ['Expression, ['Kernel, . ]] => NIL
+    nil
+  form = '(Complex (AlgebraicNumber)) => nil
+  form is ['Expression, ['Kernel, . ]] => nil
   form is [op,:argl] =>
-    null constructor? op => nil
+    not constructor? op => nil
     cosig := getDualSignatureFromDB op
     cosig and null rest cosig => -- niladic constructor
         null argl => true
@@ -119,7 +121,7 @@ isValidType form ==
     cl:= replaceSharps(cl,form)
     and/[isValid for x in argl for c in cl] where isValid() ==
       categoryForm?(c) =>
-        evalCategory(x,MSUBSTQ(x,'_$,c)) and isValidType x
+        evalCategory(x,substitute(x,'_$,c)) and isValidType x
       -- Arguments to constructors are general expressions.  Below
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x
@@ -145,7 +147,7 @@ resolveTT(t1,t2) ==
   -- resolves two types
   -- this symmetric resolve looks for a type t to which both t1 and t2
   -- can be coerced
-  -- if resolveTT fails, the result will be NIL
+  -- if resolveTT fails, the result will be nil
   startTimingProcess 'resolve
   t1 := eqType t1
   t2 := eqType t2
@@ -170,18 +172,18 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
 
   t is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,'(Field)) => false
+    ofCategory(D,$Field) => false
   t = '(Complex (AlgebraicNumber)) => false
 
   t := equiType t
   vl := isPolynomialMode t =>
     if vl~='all then
-      var:= or/[(x in polyVarList => x;nil) for x in vl] => return false
+      var:= or/[(member(x,polyVarList) => x;nil) for x in vl] => return false
       listOfDuplicates vl => return false
       polyVarList:= union(vl,polyVarList)
     hasPolyMode => false
     con := first t
-    poly? := (con = 'Polynomial or con = 'Expression)
+    poly? := (con is 'Polynomial or con is 'Expression)
     isLegitimateMode(underDomainOf t,poly?,polyVarList)
 
   IDENTP(op := first t) and constructor? op =>
@@ -210,9 +212,9 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
 underDomainOf t ==
   t = $RationalNumber => $Integer
-  atom t => NIL
+  atom t => nil
   d := deconstructT t
-  1 = #d => NIL
+  1 = #d => nil
   u := getUnderModeOf(t) => u
   last d
 

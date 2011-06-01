@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,8 @@ import pile
 import parser
 import ast
 namespace BOOTTRAN
-module translator
+module translator (evalBootFile, loadNativeModule, loadSystemRuntimeCore,
+  string2BootTree, genImportDeclaration)
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
@@ -53,7 +54,7 @@ genModuleFinalization(stream) ==
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
-      ["DEFUN", INTERN strconc($currentModuleName,"InitCLispFFI"), nil,
+      ["DEFUN", makeSymbol strconc($currentModuleName,'"InitCLispFFI"), nil,
         ["MAPC",["FUNCTION", "FMAKUNBOUND"],
           ["QUOTE",[second d for d in $foreignsDefsForCLisp]]],
           :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
@@ -67,12 +68,9 @@ genOptimizeOptions stream ==
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
   if %hasFeature KEYWORD::GCL then
-    SETF(SYMBOL_-VALUE
-      bfColonColon("COMPILER","*COMPILE-VERBOSE*"),false)
-    SETF(SYMBOL_-VALUE 
-      bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
-    SETF(SYMBOL_-VALUE 
-      bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
+    symbolValue(bfColonColon("COMPILER","*COMPILE-VERBOSE*")) := false
+    symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*")) := false
+    symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*")) := true
 
 ++ Make x, the current package
 setCurrentPackage: %Thing -> %Thing
@@ -86,115 +84,124 @@ shoeCOMPILE_-FILE lspFileName ==
 
  
 BOOTTOCL(fn, out) ==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLLINES(nil,fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    in namespace BOOTTRAN do
+      BOOTTOCLLINES(nil,fn, out)
+  finally endCompileDuration()
  
 ++ (bootclam "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" , producing, for each function
 ++ a hash table to store previously computed values indexed by argument
 ++ list.
 BOOTCLAM(fn, out) == 
-  $bfClamming := true
+  $bfClamming: local := true
   BOOTCLAMLINES(nil,fn, out)
  
 BOOTCLAMLINES(lines, fn, out) ==
    BOOTTOCLLINES(lines, fn, out)
 
 BOOTTOCLLINES(lines, fn, outfn)==
-   infn:=shoeAddbootIfNec fn
-   shoeOpenInputFile(a,infn, shoeClLines(a,fn,lines,outfn))
+   try
+     a := inputTextFile shoeAddbootIfNec fn
+     shoeClLines(a,fn,lines,outfn)
+   finally closeStream a
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter := 0
-  shoeOpenOutputFile(stream,outfn,_
-    (genOptimizeOptions stream;
-     (for line in lines repeat shoeFileLine(line,stream);
-       shoeFileTrees(shoeTransformStream a,stream));
-      genModuleFinalization(stream)))
-  outfn
+  try
+    stream := outputTextFile outfn
+    genOptimizeOptions stream
+    for line in lines repeat
+      shoeFileLine(line,stream)
+    shoeFileTrees(shoeTransformStream a,stream)
+    genModuleFinalization stream
+    outfn
+  finally closeStream stream
  
 ++ (boottoclc "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" with the original boot
 ++ code as comments
 BOOTTOCLC(fn, out)==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLCLINES(nil, fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    in namespace BOOTTRAN do
+      BOOTTOCLCLINES(nil, fn, out)
+  finally endCompileDuration()
  
 BOOTTOCLCLINES(lines, fn, outfn)==
-  infn:=shoeAddbootIfNec fn
-  shoeOpenInputFile(a,infn, shoeClCLines(a,fn,lines,outfn))
-  
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeClCLines(a,fn,lines,outfn)
+  finally closeStream a
  
 shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
-  $GenVarCounter := 0
-  shoeOpenOutputFile(stream,outfn,
-    (genOptimizeOptions stream;
-     for line in lines repeat shoeFileLine (line,stream);
-      shoeFileTrees(shoeTransformToFile(stream,
-	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream);
-      genModuleFinalization(stream)))
-  outfn
+  try
+    stream := outputTextFile outfn
+    genOptimizeOptions stream
+    for line in lines repeat
+       shoeFileLine(line,stream)
+    shoeFileTrees(shoeTransformToFile(stream,
+      shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream)
+    genModuleFinalization(stream)
+    outfn
+  finally closeStream stream
  
 ++ (boottomc "filename") translates the file "filename.boot"
 ++ to machine code and loads it one item at a time
 BOOTTOMC: %String -> %Thing 
 BOOTTOMC fn==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter  := 0
-   infn:=shoeAddbootIfNec fn
-   result := shoeOpenInputFile(a,infn,shoeMc(a,fn))
-   setCurrentPackage callingPackage
-   result
+   try
+     a := inputTextFile shoeAddbootIfNec fn
+     shoeMc(a,fn)
+   finally
+     closeStream a
+     setCurrentPackage callingPackage
  
 shoeMc(a,fn)==
   a=nil => shoeNotFound fn
   shoePCompileTrees shoeTransformStream a
   shoeConsole strconc(fn,'" COMPILED AND LOADED")
  
-EVAL_-BOOT_-FILE fn ==
-   b := _*PACKAGE_*
+evalBootFile fn ==
+   b := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
    outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
-   shoeOpenInputFile(a,infn,shoeClLines(a,infn,[],outfn))
-   setCurrentPackage b
+   try
+     a := inputTextFile infn
+     shoeClLines(a,infn,[],outfn)
+   finally
+     closeStream a
+     setCurrentPackage b
    LOAD outfn
  
 ++ (boot "filename") translates the file "filename.boot"
 ++ and prints the result at the console
 BO: %String -> %Thing 
 BO fn==
-  b := _*PACKAGE_*
+  b := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
-  infn:=shoeAddbootIfNec fn
-  shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
-  setCurrentPackage b
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeToConsole(a,fn)
+  finally
+    closeStream a
+    setCurrentPackage b
  
 BOCLAM fn==
-  callingPackage := _*PACKAGE_*
+  callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
-  $bfClamming := true
-  infn:=shoeAddbootIfNec fn
-  result := shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
-  setCurrentPackage callingPackage
-  result
+  $bfClamming: local := true
+  try
+    a := inputTextFile shoeAddbootIfNec fn
+    shoeToConsole(a,fn)
+  finally
+    closeStream a
+    setCurrentPackage callingPackage
  
 shoeToConsole(a,fn)==
   a=nil => shoeNotFound fn
@@ -208,25 +215,23 @@ STOUT string ==
   PSTOUT [string]
  
 string2BootTree string ==   
-  callingPackage := _*PACKAGE_*
+  callingPackage := namespace .
   IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
   a := shoeTransformString [string]
   result :=
     bStreamNull a => nil
-    stripm(first a,callingPackage,FIND_-PACKAGE '"BOOTTRAN")
+    stripm(first a,callingPackage,namespace BOOTTRAN)
   setCurrentPackage callingPackage
   result
 
  
 STEVAL string==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
-      fn:=stripm(first a,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+      fn:=stripm(first a,namespace .,namespace BOOTTRAN)
       EVAL fn
    setCurrentPackage callingPackage
    result
@@ -235,9 +240,8 @@ STEVAL string==
 -- to common lisp, and compiles it.
  
 STTOMC string==
-   callingPackage := _*PACKAGE_*
+   callingPackage := namespace .
    IN_-PACKAGE '"BOOTTRAN"
-   $GenVarCounter := 0
    a:=  shoeTransformString [string]
    result := 
       bStreamNull a => nil
@@ -324,7 +328,7 @@ shoeConsoleLines lines ==
   shoeConsole '" "
  
 shoeFileLine(x, stream) ==
-    WRITE_-LINE(x, stream)
+    writeLine(x, stream)
     x
  
 shoeFileTrees(s,st)==
@@ -344,7 +348,7 @@ shoePPtoFile(x, stream) ==
  
 shoeConsoleTrees s ==
   while not bStreamPackageNull s repeat
-    fn:=stripm(first s,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+    fn:=stripm(first s,namespace .,namespace BOOTTRAN)
     REALLYPRETTYPRINT fn
     s:= rest s
  
@@ -363,8 +367,10 @@ shoeOutParse stream ==
   $bpCount := 0
   $bpParenCount := 0
   bpFirstTok()
-  found := try bpOutItem() catch TRAPPOINT
-  found = "TRAPPED" => nil
+  found :=
+    try bpOutItem()
+    catch(e: BootParserException) => e
+  found = 'TRAPPED => nil
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()
     nil
@@ -380,8 +386,12 @@ genDeclaration(n,t) ==
     if argTypes ~= nil and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
+  t is ["%Forall",vars,t'] =>
+    vars = nil => genDeclaration(n,t')
+    if symbol? vars then
+      vars := [vars]
+    genDeclaration(n,applySubst([[v,:"*"] for v in vars],t'))
   ["DECLAIM",["TYPE",t,n]]
-
 
 ++ Translate the signature declaration `d' to its Lisp equivalent.
 translateSignatureDeclaration d ==
@@ -404,6 +414,15 @@ translateToplevelExpression expr ==
   $InteractiveMode => expr'
   shoeEVALANDFILEACTQ expr'
 
+inAllContexts x ==
+  ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
+                  KEYWORD::LOAD_-TOPLEVEL,
+                    KEYWORD::EXECUTE], x]
+
+exportNames ns ==
+  ns = nil => nil
+  [inAllContexts ["EXPORT",["QUOTE",ns]]]
+
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
@@ -411,16 +430,18 @@ translateToplevel(b,export?) ==
     %Signature(op,t) => [genDeclaration(op,t)]
     %Definition(op,args,body) => rest bfDef(op,args,body)
 
-    %Module(m,ds) =>
+    %Module(m,ns,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      [["PROVIDE", STRING m],
+      [["PROVIDE", symbolName m], :exportNames ns,
         :[first translateToplevel(d,true) for d in ds]]
 
-    %Import(m) => 
+    %Import(m) =>
+      m is ['%Namespace,n] =>
+        [inAllContexts ["USE-PACKAGE",symbolName n]]
       if getOptionValue "import" ~= '"skip" then
-        bootImport STRING m
-      [["IMPORT-MODULE", STRING m]]
+        bootImport symbolName m
+      [["IMPORT-MODULE", symbolName m]]
 
     %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
@@ -448,8 +469,8 @@ translateToplevel(b,export?) ==
     %Structure(t,alts) => [bfCreateDef alt for alt in alts]
 
     %Namespace n =>
-      $activeNamespace := STRING n
-      [["IN-PACKAGE",STRING n]]
+      $activeNamespace := symbolName n
+      [["IN-PACKAGE",symbolName n]]
 
     %Lisp s => shoeReadLispString(s,0)
 
@@ -471,14 +492,16 @@ shoeAddStringIfNec(str,s)==
 shoeRemoveStringIfNec(str,s)==
   n := SEARCH(str,s,KEYWORD::FROM_-END,true)
   n = nil => s
-  SUBSTRING(s,0,n)
+  subString(s,0,n)
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
  
 DEFUSE fn==
-  infn := strconc(fn,'".boot")
-  shoeOpenInputFile(a,infn,shoeDfu(a,fn))
+  try
+    a := inputTextFile strconc(fn,'".boot")
+    shoeDfu(a,fn)
+  finally closeStream a
  
 --%
 $bootDefined := nil
@@ -488,21 +511,21 @@ $lispWordTable := nil
 
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
-  $lispWordTable :=MAKE_-HASHTABLE ("EQ")
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-  $bootDefined :=MAKE_-HASHTABLE "EQ"
-  $bootUsed :=MAKE_-HASHTABLE "EQ"
-  $bootDefinedTwice := nil
-  $GenVarCounter := 0
-  $bfClamming := false
+  $lispWordTable: local := makeTable function symbolEq?
+  DO_-SYMBOLS(i(namespace LISP),tableValue($lispWordTable,i) := true)
+  $bootDefined: local := makeTable function symbolEq?
+  $bootUsed:local := makeTable function symbolEq?
+  $bootDefinedTwice: local := nil
+  $bfClamming: local := false
   shoeDefUse shoeTransformStream a
-  out := strconc(fn,'".defuse")
-  shoeOpenOutputFile(stream,out,shoeReport stream)
-  out
+  try
+    stream := outputTextFile strconc(fn,'".defuse")
+    shoeReport stream
+  finally closeStream stream
  
 shoeReport stream==
   shoeFileLine('"DEFINED and not USED",stream)
-  a:=[i for i in HKEYS $bootDefined | not GETHASH(i,$bootUsed)]
+  a:=[i for i in HKEYS $bootDefined | not tableValue($bootUsed,i)]
   bootOut(SSORT a,stream)
   shoeFileLine('"             ",stream)
   shoeFileLine('"DEFINED TWICE",stream)
@@ -510,10 +533,10 @@ shoeReport stream==
   shoeFileLine('"             ",stream)
   shoeFileLine('"USED and not DEFINED",stream)
   a:=[i for i in HKEYS $bootUsed |
-	     not GETHASH(i,$bootDefined)]
+	     not tableValue($bootDefined,i)]
   for i in SSORT a repeat
      b := strconc(PNAME i,'" is used in ")
-     bootOutLines( SSORT GETHASH(i,$bootUsed),stream,b)
+     bootOutLines( SSORT tableValue($bootUsed,i),stream,b)
  
 shoeDefUse(s)==
   while not bStreamPackageNull s repeat
@@ -521,7 +544,7 @@ shoeDefUse(s)==
     s:=rest s
  
 defuse(e,x)==
-  x:=stripm(x,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+  x:=stripm(x,namespace .,namespace BOOTTRAN)
   $used :=nil
   [nee,niens]:=
      x is ['DEFUN,name,bv,:body] => [name,['LAMBDA,bv,:body]]
@@ -529,22 +552,22 @@ defuse(e,x)==
      x is ["EVAL_-WHEN",.,["SETQ",id,exp]]=>[id,exp]
      x is ["SETQ",id,exp]=>[id,exp]
      ["TOP-LEVEL", x]
-  if GETHASH(nee,$bootDefined)
+  if tableValue($bootDefined,nee)
   then
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
 	    [nee,:$bootDefinedTwice]
-  else HPUT($bootDefined,nee,true)
+  else tableValue($bootDefined,nee) := true
   defuse1 (e,niens)
   for i in $used repeat
-     HPUT($bootUsed,i,[nee,:GETHASH(i,$bootUsed)])
+     tableValue($bootUsed,i) := [nee,:tableValue($bootUsed,i)]
  
 defuse1(e,y)==
   atom y =>
-      IDENTP y =>
+      symbol? y =>
 	 $used:=
-	      MEMQ(y,e)=>$used
-	      MEMQ(y,$used)=>$used
+	      symbolMember?(y,e)=>$used
+	      symbolMember?(y,$used)=>$used
 	      defusebuiltin y =>$used
 	      UNION([y],$used)
       []
@@ -552,7 +575,7 @@ defuse1(e,y)==
   y is ["PROG",a,:b]=>
 	 [dol,ndol]:=defSeparate a
 	 for i in dol repeat
-	       HPUT($bootDefined,i,true)
+	       tableValue($bootDefined,i) := true
 	 defuse1 (append(ndol,e),b)
   y is ["QUOTE",:a] => []
   y is ["+LINE",:a] => []
@@ -572,7 +595,7 @@ unfluidlist x==
   [first x,:unfluidlist rest x]
  
 defusebuiltin x ==  
-  GETHASH(x,$lispWordTable)
+  tableValue($lispWordTable,x)
  
 bootOut (l,outfn)==
   for i in l repeat shoeFileLine(strconc ('"   ",PNAME i),outfn)
@@ -597,21 +620,25 @@ bootOutLines(l,outfn,s)==
 -- used in "fn.boot", together with a list of functions that use it.
  
 XREF fn==
-  infn := strconc(fn,'".boot")
-  shoeOpenInputFile(a,infn,shoeXref(a,fn))
+  try
+    a := inputTextFile strconc(fn,'".boot")
+    shoeXref(a,fn)
+  finally closeStream a
  
 shoeXref(a,fn)==
   a = nil => shoeNotFound fn
-  $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
-  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-  $bootDefined  :=MAKE_-HASHTABLE "EQ"
-  $bootUsed  :=MAKE_-HASHTABLE "EQ"
-  $GenVarCounter  :=0
-  $bfClamming :=false
+  $lispWordTable: local := makeTable function symbolEq?
+  DO_-SYMBOLS(i(namespace LISP),tableValue($lispWordTable,i) := true)
+  $bootDefined: local := makeTable function symbolEq?
+  $bootUsed: local := makeTable function symbolEq?
+  $bfClamming: local := false
   shoeDefUse shoeTransformStream a
   out := strconc(fn,'".xref")
-  shoeOpenOutputFile(stream,out,shoeXReport stream)
-  out
+  try
+    stream := outputTextFile out
+    shoeXReport stream
+    out
+  finally closeStream stream
  
  
 shoeXReport stream==
@@ -619,37 +646,7 @@ shoeXReport stream==
    c:=SSORT HKEYS $bootUsed
    for i in c repeat
       a := strconc(PNAME i,'" is used in ")
-      bootOutLines( SSORT GETHASH(i,$bootUsed),stream,a)
- 
-FBO (name,fn)== 
-  shoeGeneralFC(function BO,name,fn)
- 
-FEV(name,fn)== 
-  shoeGeneralFC(function EVAL_-BOOT_-FILE,name,fn)
- 
-shoeGeneralFC(f,name,fn)==
-   $bfClamming :=false
-   $GenVarCounter  := 0
-   infn:=shoeAddbootIfNec fn
-   a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
-   filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-   a =>  FUNCALL(f, strconc('"/tmp/",filename))
-   nil
- 
-shoeFindName2(fn,name,a)==
-  lines:=shoeFindLines(fn,name,a)
-  lines =>
-    filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-    filename := strconc('"/tmp/",filename,'".boot")
-    shoeOpenOutputFile(stream, filename,
-	 for line in lines repeat shoeFileLine (line,stream))
-    true
-  false
- 
-shoeTransform2 str==
-    bNext(function shoeItem,
-      streamTake(1, bNext(function shoePileInsert,
-           bNext(function shoeLineToks, str))))
+      bootOutLines( SSORT tableValue($bootUsed,i),stream,a)
  
 shoeItem (str)==
   dq:=first str
@@ -657,26 +654,17 @@ shoeItem (str)==
  
 stripm (x,pk,bt)==
   atom x =>
-    IDENTP x =>
-      SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
+    symbol? x =>
+      symbolScope x = bt => makeSymbol(symbolName x,pk)
       x
     x
   [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
  
 shoePCompile  fn==
-    fn:=stripm(fn,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
+    fn:=stripm(fn,namespace .,namespace BOOTTRAN)
     fn is ['DEFUN,name,bv,:body]=>
           COMPILE (name,['LAMBDA,bv,:body])
     EVAL fn
- 
-FC(name,fn)==
-   $GenVarCounter  := 0
-   infn:=shoeAddbootIfNec fn
-   shoeOpenInputFile(a,infn,shoeFindName(fn,name, a))
- 
-shoeFindName(fn,name,a)==
-  lines:=shoeFindLines(fn,name,a)
-  shoePCompileTrees shoeTransformString lines
  
 shoePCompileTrees s==
   while not bStreamNull s repeat
@@ -684,52 +672,43 @@ shoePCompileTrees s==
     s := rest s
  
 bStreamPackageNull s==
-  a := _*PACKAGE_*
-  IN_-PACKAGE '"BOOTTRAN"
-  b:=bStreamNull s
-  setCurrentPackage a
-  b
+  in namespace BOOTTRAN do
+    bStreamNull s
  
 PSTTOMC string==
-  $GenVarCounter := 0
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
-  a:=READ_-LINE()
+  a := readLine _*STANDARD_-INPUT_*
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
-       BOOTLOOP()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTLOOP()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTTOMC bRgen stream
-       BOOTLOOP()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTTOMC bRgen stream
+    BOOTLOOP()
+  stringChar(a,0) = char "]" => nil
   PSTTOMC [a]
   BOOTLOOP()
  
 BOOTPO() ==
-  a:=READ_-LINE()
+  a := readLine _*STANDARD_-INPUT_*
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
-       BOOTPO()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTPO()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTOUT bRgen stream
-       BOOTPO()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTOUT bRgen stream
+    BOOTPO()
+  stringChar(a,0) = char "]" => nil
   PSTOUT [a]
   BOOTPO()
  
 PSTOUT string==
-  callingPackage := _*PACKAGE_*
-  IN_-PACKAGE '"BOOTTRAN"
-  $GenVarCounter := 0
-  result := shoeConsoleTrees shoeTransformString string
-  setCurrentPackage callingPackage
-  result
-
+  in namespace BOOTTRAN do
+    shoeConsoleTrees shoeTransformString string
 
 defaultBootToLispFile file ==
   strconc(pathBasename file, '".clisp")
@@ -783,5 +762,4 @@ loadNativeModule m ==
 
 loadSystemRuntimeCore() ==
   %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
-  loadNativeModule strconc(systemLibraryDirectory(),
-    '"libopen-axiom-core",$NativeModuleExt)
+  loadNativeModule strconc('"libopen-axiom-core",$NativeModuleExt)

@@ -114,12 +114,19 @@ Syntax(): Public == Private where
       ++ x case String is true if `x' really is a String
 
   Private == add
-    import %integer?: % -> Boolean from Foreign Builtin
-    import %float?: % -> Boolean   from Foreign Builtin
-    import %string?: % -> Boolean  from Foreign Builtin
+    import %nil: %                   from Foreign Builtin
+    import %peq: (%,%) -> Boolean    from Foreign Builtin
+    import %integer?: % -> Boolean   from Foreign Builtin
+    import %float?: % -> Boolean     from Foreign Builtin
+    import %string?: % -> Boolean    from Foreign Builtin
+    import %ident?: % -> Boolean     from Foreign Builtin
+    import %pair?: % -> Boolean      from Foreign Builtin
+    import %equal: (%,%) -> Boolean  from Foreign Builtin
+    import %head: % -> %             from Foreign Builtin
+    import %tail: % -> List %        from Foreign Builtin
 
     x = y ==
-      EQUAL(x,y)$Lisp
+      %equal(x,y)
    
     s case Integer ==
       %integer? s
@@ -131,7 +138,7 @@ Syntax(): Public == Private where
       %string? s
 
     s case Identifier ==
-      IDENTP(s)$Lisp
+      %ident? s
 
     coerce(x: %): OutputForm ==
       -- For the moment, print syntax as s-expression.
@@ -202,32 +209,32 @@ Syntax(): Public == Private where
 
     --% syntax construction
     buildSyntax(s: Identifier, l: List %): % ==
-      %makepair(s,l)$Foreign(Builtin)
+      %pair(s,l)$Foreign(Builtin)
 
     buildSyntax(op: %, l: List %): % ==
-      %makepair(op,l)$Foreign(Builtin)
+      %pair(op,l)$Foreign(Builtin)
 
     nil? x ==
-      NULL(x)$Lisp
+      %peq(x,%nil)
 
     atom?(x: %): Boolean ==
-      ATOM(x)$Lisp
+      not %pair? x
 
     getOperator x ==
       atom? x => userError "atom as operand to getOperator"
-      op: % := %head(x)$Foreign(Builtin)
-      op case Identifier => op@Identifier
-      op case Integer => op@Integer
-      op case DoubleFloat => op@DoubleFloat
-      op case String => op@String
-      op
+      case (op := %head x) is
+        s@Identifier => s
+        i@Integer => i
+        d@DoubleFloat => d
+        s@String => s
+        otherwise => op
    
     compound? x ==
-      CONSP(x)$Lisp
+      %pair? x
 
     getOperands x ==
       atom? x => []
-      %tail(x)$Foreign(Builtin)
+      %tail x
 
     coerce(x: %): InputForm ==
       x : InputForm
@@ -275,7 +282,7 @@ ElaboratedExpression(): Public == Private where
     import %peq: (%,%) -> Boolean from Foreign Builtin
     import %pair?: % -> Boolean  from Foreign Builtin
     isAtomic(x: %): Boolean ==
-      ATOM(x)$Lisp
+      not %pair? x
 
     type x ==
       getMode(x)$Lisp
@@ -625,10 +632,12 @@ ParameterAst(): Public == Private where
       ++ object \spad{x} to \spadtype{String}.  This function
       ++ is left at the discretion of the compiler.
   Private == add
-    import %string?: % -> Boolean from Foreign Builtin
+    import %string?: % -> Boolean   from Foreign Builtin
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+    import %ident?: % -> Boolean    from Foreign Builtin
 
     x case Identifier ==
-      SYMBOLP(x)$Foreign(Builtin)
+      %ident? x
 
     autoCoerce(x: %): Identifier ==
       x : Identifier
@@ -640,7 +649,7 @@ ParameterAst(): Public == Private where
       x : String
 
     x = y ==
-      EQUAL(x,y)$Foreign(Builtin)
+      %equal(x,y)
 
     coerce(x: %): OutputForm ==
       case x is 

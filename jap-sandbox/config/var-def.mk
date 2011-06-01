@@ -194,17 +194,14 @@ axiom_target_srcdir = $(axiom_targetdir)/src
 axiom_target_docdir = $(axiom_targetdir)/doc
 axiom_target_datadir = $(axiom_targetdir)/share
 axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
+oa_target_includedir = $(axiom_targetdir)/include
 
-
-## Where OpenAxiom keeps the tarballs for optional components
-axiom_optional_srcdir = $(abs_top_srcdir)/zips
 
 ## The final directory where OpenAxiom is installed.  This is usually
 ## the directory deduced or specified at configuration time.
 open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
-CCF=@CCF@
 oa_c_runtime_extra = @LIBS@ @oa_c_runtime_extra@ -lm
 oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 
@@ -228,22 +225,10 @@ AXIOM = $(top_builddir)/$(target)
 ## Where to find OpenAxiom data bases.
 DAASE = $(axiom_src_datadir)
 
-TMP=$(axiom_builddir)
-
-## Shall we build GCL?
-oa_include_gcl = @oa_include_gcl@
-
 ## -------------------------------------------
 ## -- Files generated for the build machine --
 ## -------------------------------------------
-axiom_build_document = $(axiom_top_builddir)/scripts/document
-axiom_build_nowebdir = $(axiom_builddir)/noweb
-
-TANGLE = @NOTANGLE@
-WEAVE = @NOWEAVE@
-## We export TANGLE and WEAVE for use in subshells, such as document.
-export TANGLE
-export WEAVE
+oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file

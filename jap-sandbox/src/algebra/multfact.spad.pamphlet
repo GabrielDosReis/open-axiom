@@ -117,7 +117,7 @@ InnerMultFact(OV,E,R,P) : C == T
       factorlist:L SUParFact :=empty()
 
       mdeg :=minimumDegree um     ---- is the Mindeg > 0? ----
-      if mdeg>0 then
+      if positive? mdeg then
         f1:USP:=monomial(1,mdeg)
         um:=(um exquo f1)::USP
         factorlist:=cons([monomial(1,1),mdeg],factorlist)
@@ -182,7 +182,7 @@ InnerMultFact(OV,E,R,P) : C == T
         "max"/[numberOfMonomials ff for ff in lum]
 
       "max"/[+/[euclideanSize cc for i in 0..degree ff|
-                (cc:= coefficient(ff,i))~=0] for ff in lum]
+                not zero? (cc:= coefficient(ff,i))] for ff in lum]
 
           ---  Choose the integer to reduce to univariate case  ---
     intChoose(um:USP,lvar:L OV,clc:R,plist:L P,ltry:L L R,
@@ -220,12 +220,12 @@ InnerMultFact(OV,E,R,P) : C == T
        leadcomp1:=[retract eval(pol,lvar,lval) for pol in plist]
        testp and or/[unit? epl for epl in leadcomp1] => range:=2*range
        newm:BP:=completeEval(um,lvar,lval)
-       degum ~= degree newm or minimumDegree newm ~=0 => range:=2*range
+       degum ~= degree newm or not zero? minimumDegree newm => range:=2*range
        lffc1:=content newm
        newm:=(newm exquo lffc1)::BP
        testp and leadtest and not polCase(lffc1*clc,#plist,leadcomp1)
                              => range:=2*range
-       degree(gcd [newm,differentiate(newm)])~=0 => range:=2*range
+       not zero? degree(gcd [newm,differentiate(newm)]) => range:=2*range
        luniv:=ufactor(newm)
        lunivf:= factors luniv
        lffc1:R:=retract(unit luniv)@R * lffc1
@@ -325,7 +325,7 @@ InnerMultFact(OV,E,R,P) : C == T
         lpol:= dist.polfac
         dd := dist.correct
         unifact:=dist.corrfact
-      if dd~=1 then
+      if not one? dd then
 --        if polcase then lpol := [unitCanonical lp for lp in lpol]
 --        dd:=unitCanonical(dd)
         unifact := [dd * unif for unif in unifact]
@@ -334,7 +334,7 @@ InnerMultFact(OV,E,R,P) : C == T
       (ffin:=lifting(umd,lvar,unifact,lval,lpol,ldeg,pmod))
         case "failed" => intfact(um,lvar,ldeg,tleadpol,ltry,ufactor)
       factfin: L USP:=ffin :: L USP
-      if dd~=1 then
+      if not one? dd then
         factfin:=[primitivePart ff for ff in factfin]
       factfin
 
@@ -383,7 +383,7 @@ InnerMultFact(OV,E,R,P) : C == T
       factorlist:L MParFact :=empty()
 
       lmdeg :=minimumDegree(m,lvar)     ---- is the Mindeg > 0? ----
-      or/[n>0 for n in lmdeg] => simplify(m,lvar,lmdeg,ufactor)
+      or/[positive? n for n in lmdeg] => simplify(m,lvar,lmdeg,ufactor)
 
       sqfacs := squareFree m
       lcont := unit sqfacs
@@ -425,7 +425,7 @@ InnerMultFact(OV,E,R,P) : C == T
           x := lvar.first
           lvar := lvar.rest
         pc:= gcd coefficients um
-        if pc~=1 then
+        if not one? pc then
             um:=(um exquo pc)::USP
             ffactor:=multivariate(um,x)
             for lcterm in mFactor(pc,ufactor).factors repeat

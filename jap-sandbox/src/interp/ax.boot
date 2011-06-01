@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ setExtendedDomains(l) ==
         $extendedDomains := l
 
 fileConstructors name ==
-   [INTERN(con,"BOOT") for con in SRCABBREVS SOURCEPATH STRING name]
+   [makeSymbol(con,"BOOT") for con in SRCABBREVS SOURCEPATH STRING name]
 
 makeAxFile(filename, constructors) ==
   $defaultFlag : local := false
@@ -73,7 +73,7 @@ makeAxFile(filename, constructors) ==
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   st := MAKE_-OUTSTREAM(filename)
   PPRINT(axForm,st)
-  CLOSE st
+  closeStream st
 
 makeAxExportForm(filename, constructors) ==
   $defaultFlag : local := false
@@ -107,7 +107,7 @@ modemapToAx(modemap) ==
   resultType :=  axFormatType stripType target
   categoryForm? constructor =>
       categoryInfo := getConstructorCategoryFromDB constructor
-      categoryInfo := SUBLISLIS($FormalMapVariableList, $TriangleVariableList,
+      categoryInfo := applySubst(pairList($TriangleVariableList,$FormalMapVariableList), 
                        categoryInfo)
       null args =>
           ['Define,['Declare, constructor,'Category],
@@ -117,11 +117,11 @@ modemapToAx(modemap) ==
            ['Lambda, argdecls, 'Category,
              ['Label, constructor,
                addDefaults(constructor, axFormatType categoryInfo)]]]
-  constructor in $extendedDomains =>
+  symbolMember?(constructor,$extendedDomains) =>
      null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
-     conscat := INTERN(strconc(SYMBOL_-NAME(constructor), "ExtendCategory"),"BOOT")
+     conscat := makeSymbol(strconc(symbolName(constructor), "ExtendCategory"),"BOOT")
      rtype := ['Apply, conscat, :args]
 --     if resultType is ['With,a,b] then
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
@@ -151,13 +151,13 @@ optcomma [op,:args] ==
    [op,:args]
 
 axFormatDecl(sym, type) ==
-   if sym = '$ then sym := '%
+   if sym is '$ then sym := '%
    opOf type in '(StreamAggregate FiniteLinearAggregate) =>
         ['Declare, sym, 'Type]
    ['Declare, sym, axFormatType type]
 
 makeTypeSequence l ==
-   ['Sequence,: delete('Type, l)]
+   ['Sequence,: removeSymbol(l,'Type)]
 
 axFormatAttrib(typeform) ==
   atom typeform => typeform
@@ -165,19 +165,19 @@ axFormatAttrib(typeform) ==
 
 axFormatType(typeform) ==
   atom typeform =>
-     typeform = '$ => '%
+     typeform is '$ => '%
      string? typeform =>
-        ['Apply,'Enumeration, INTERN typeform]
+        ['Apply,'Enumeration, makeSymbol typeform]
      integer? typeform =>
        -- need to test for PositiveInteger vs Integer
         axAddLiteral('integer, 'PositiveInteger, 'Literal)
         ['RestrictTo, ['LitInteger, STRINGIMAGE typeform ], 'PositiveInteger]
      FLOATP typeform => ['LitFloat, STRINGIMAGE typeform]
-     MEMQ(typeform,$TriangleVariableList) =>
-        SUBLISLIS($FormalMapVariableList, $TriangleVariableList, typeform)
-     MEMQ(typeform, $FormalMapVariableList) => typeform
+     symbolMember?(typeform,$TriangleVariableList) =>
+       applySubst(pairList($TriangleVariableList, $FormalMapVariableList), typeform)
+     symbolMember?(typeform, $FormalMapVariableList) => typeform
      axAddLiteral('string, 'Symbol, 'Literal)
-     ['RestrictTo, ['LitString, PNAME typeform], 'Symbol]
+     ['RestrictTo, ['LitString, symbolName typeform], 'Symbol]
   typeform is ['construct,: args] =>
       axAddLiteral('bracket, ['Apply, 'List, 'Symbol], [ 'Apply, 'Tuple, 'Symbol])
       axAddLiteral('string, 'Symbol, 'Literal)
@@ -185,8 +185,8 @@ axFormatType(typeform) ==
                         :[axFormatType a for a in args]],
                           ['Apply, 'List, 'Symbol] ]
   typeform is [op] =>
-    op = '$ => '%
-    op = 'Void => ['Comma]
+    op is '$ => '%
+    op is 'Void => ['Comma]
     op
   typeform is ['local, val] => axFormatType val
   typeform is ['QUOTE, val] => axFormatType val
@@ -211,8 +211,8 @@ axFormatType(typeform) ==
       valueCount := 0
       for x in args repeat
           tag :=
-            string? x => INTERN x
-            x is ['QUOTE,val] and string? val => INTERN val
+            string? x => makeSymbol x
+            x is ['QUOTE,val] and string? val => makeSymbol val
             valueCount := valueCount + 1
             INTERNL("value", STRINGIMAGE valueCount)
           taglist := [tag ,: taglist]
@@ -243,14 +243,14 @@ axFormatOpList ops == ['Sequence,:[axFormatOp o for o in ops]]
 
 axOpTran(name) ==
    atom name =>
-      name = 'elt => 'apply
-      name = 'setelt => 'set_!
-      name = 'SEGMENT => ".."
-      name = 1 => '_1
-      name = 0 => '_0
+      name is 'elt => 'apply
+      name is 'setelt => 'set!
+      name is 'SEGMENT => ".."
+      name is 1 => '_1
+      name is 0 => '_0
       name
-   opOf name = 'Zero => '_0
-   opOf name = 'One => '_1
+   opOf name is 'Zero => '_0
+   opOf name is 'One => '_1
    error "bad op name"
 
 axFormatOpSig(name, [result,:argtypes]) ==
@@ -264,19 +264,19 @@ axFormatConstantOp(name, [result]) ==
 axFormatPred pred ==
    atom pred => pred
    [op,:args] := pred
-   op = 'IF => axFormatOp pred
+   op is 'IF => axFormatOp pred
    op = "has" =>
       [name,type] := args
-      if name = '$ then name := '%
+      if name is '$ then name := '%
       else name := axFormatOp name
       ftype := axFormatOp type
       if ftype is ['Declare,:.] then
            ftype := ['With, [], ftype]
       ['Test,['Has,name, ftype]]
    axArglist := [axFormatPred arg for arg in args]
-   op = 'AND => ['And,:axArglist]
-   op = 'OR  => ['Or,:axArglist]
-   op = 'NOT => ['Not,:axArglist]
+   op is 'AND => ['And,:axArglist]
+   op is 'OR  => ['Or,:axArglist]
+   op is 'NOT => ['Not,:axArglist]
    error "unknown predicate"
 
 
@@ -332,12 +332,12 @@ getDefaultingOps catname ==
   $infovec: local := getInfovec name
   opTable := $infovec.1
   $opList:local  := nil
-  for i in 0..MAXINDEX opTable repeat
+  for i in 0..maxIndex opTable repeat
     op := opTable.i
     i := i + 1
     startIndex := opTable.i
     stopIndex :=
-      i + 1 > MAXINDEX opTable => MAXINDEX getCodeVector()
+      i + 1 > maxIndex opTable => maxIndex getCodeVector()
       opTable.(i + 2)
     curIndex := startIndex
     while curIndex < stopIndex repeat
@@ -350,7 +350,7 @@ axFormatDefaultOpSig(op, sig, catops) ==
   #sig > 1 => axFormatOpSig(op,sig)
   nsig := MSUBST('$,'($), sig) -- dcSig listifies '$ ??
   (catsigs := LASSOC(op, catops)) and
-    (catsig := assoc(nsig, catsigs)) and last(catsig) = 'CONST =>
+    (catsig := assoc(nsig, catsigs)) and last(catsig) is 'CONST =>
        axFormatConstantOp(op, sig)
   axFormatOpSig(op,sig)
 
@@ -364,11 +364,11 @@ get1defaultOp(op,index) ==
   signumList :=
  -- following substitution fixes the problem that default packages
  -- have $ added as a first arg, thus other arg counts are off by 1.
-    SUBLISLIS($FormalMapVariableList, rest $FormalMapVariableList,
+    applySubst(pairList(rest $FormalMapVariableList,$FormalMapVariableList), 
              dcSig(numvec,index,numOfArgs))
   index := index + numOfArgs + 1
   slotNumber := numvec.index
-  if not([op,signumList] in $opList) then
+  if not listMember?([op,signumList],$opList) then
      $opList := [[op,signumList],:$opList]
   index + 1
 

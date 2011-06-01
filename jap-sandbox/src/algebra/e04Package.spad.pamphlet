@@ -356,7 +356,7 @@ AnnaNumericalOptimizationPackage(): with
   goodnessOfFit(Args:NumericalOptimizationProblem):Result ==
     r := optimize(Args)
     args1:UNOALSA := retract(Args)$NumericalOptimizationProblem
-    args1 case noa => error("goodnessOfFit","Not an appropriate problem")
+    args1 case noa => error("goodnessOfFit","Not an appropriate problem")$ErrorFunctions
     args:LSA := args1.lsa
     lf := args.lfn
     n:INT := #(variables(args))

@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ all-viewAlone: all-Gdraws
 
 
 parabola/data parabola/graph0: $(srcdir)/fileformats.pamphlet
-	$(axiom_build_document) --tangle=`basename $@` --output=$@ $<
+	$(oa_hammer) --tangle=`basename $@` --output=$@ $<
 
 mostlyclean-local:
 

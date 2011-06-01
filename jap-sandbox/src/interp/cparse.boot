@@ -108,7 +108,7 @@ npPush x ==
 ++ name on the parsing tree stack, otherwise treat the token
 ++ has a name.
 npPushId() ==
-  a := GETL($ttok,'INFGENERIC)
+  a := property($ttok,'INFGENERIC)
   $ttok := if a then a else $ttok
   $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
   npNext()
@@ -204,7 +204,7 @@ npListofFun(f,h,g)==
       a := $stack
       $stack := nil
       while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
-      $stack := [nreverse $stack,:a]
+      $stack := [reverse! $stack,:a]
       npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
     true
   false
@@ -219,7 +219,7 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
       $stack := nil
       while npEqKey str1 and (npEqKey "BACKSET" or true) and
                          (apply(f,nil) or npTrap()) repeat 0
-      $stack := [nreverse $stack,:a]
+      $stack := [reverse! $stack,:a]
       npPush FUNCALL(g,[npPop3(),npPop2(),:npPop1()])
     npPush FUNCALL(g, [npPop1()])
   npPush FUNCALL(g, [])
@@ -296,8 +296,8 @@ npLeftAssoc(operations,parser) ==
 
 ++ Parse an infix operator name.
 npInfixOp() ==
-  $stok.first.first = "key" and
-    GETL($ttok,"INFGENERIC") and npPushId()
+  $stok.first.first is "key" and
+    property($ttok,"INFGENERIC") and npPushId()
 
 ++ Parse an infix operator, either quoted or backquoted.    
 npInfixOperator() ==
@@ -315,7 +315,7 @@ npInfixOperator() ==
 
 ++ Parse any infix keyword in the list `s'.    
 npInfKey s ==
-  $stok.first.first = "key" and MEMQ($ttok,s) and npPushId()
+  $stok.first.first = "key" and symbolMember?($ttok,s) and npPushId()
 
 ++ Parse any infix keyword in the list `s', either in plain syntax
 ++ or quoted form.
@@ -379,12 +379,12 @@ npQuantified f ==
 -- peek for keyword s, no advance of token stream
 
 npEqPeek s ==
-  $stok.first.first = "key" and EQ(s,$ttok)
+  $stok.first.first = "key" and sameObject?(s,$ttok)
 
 -- test for keyword s, if found advance token stream
 
 npEqKey s ==
-  $stok.first.first = "key" and EQ(s,$ttok) and npNext()
+  $stok.first.first = "key" and sameObject?(s,$ttok) and npNext()
 
 $npTokToNames ==
   ["~","#","[]","{}", "[||]","{||}"]
@@ -393,7 +393,7 @@ npId() ==
   $stok.first.first = "id" =>
      npPush $stok
      npNext()
-  $stok.first.first = "key" and MEMQ($ttok,$npTokToNames) =>
+  $stok.first.first = "key" and symbolMember?($ttok,$npTokToNames) =>
      npPush tokConstruct("id",$ttok,tokPosn $stok)
      npNext()
   false
@@ -628,7 +628,7 @@ npZeroOrMore f==
     a := $stack
     $stack := nil
     while apply(f,nil) repeat 0
-    $stack := [nreverse $stack,:a]
+    $stack := [reverse! $stack,:a]
     npPush [npPop2(),:npPop1()]
   npPush nil
   true
@@ -1075,7 +1075,7 @@ npListAndRecover(f)==
                c:=$inputStream
     b := [npPop1(),:b]
   $stack := a
-  npPush nreverse b
+  npPush reverse! b
  
 npMoveTo n==
   $inputStream = nil => true

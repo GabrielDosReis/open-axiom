@@ -168,7 +168,6 @@
 
 ; *** Next Line
 
-(defparameter Echo-Meta nil                 "T if you want a listing of what has been read.")
 (defparameter Line-Handler 'next-META-line "Who grabs lines for us.")
 
 (defun next-line (&optional (in-stream t)) (funcall Line-Handler in-stream))
@@ -250,7 +249,7 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
   "Makes output listings."
   (if Read-Quietly (stack-push (copy-tree string) Printer-Line-Stack)
       (progn (mapc #'(lambda (x) (format strm "; ~A~%" x) (terpri))
-                   (nreverse (stack-store Printer-Line-Stack)))
+                   (|reverse!| (stack-store Printer-Line-Stack)))
              (stack-clear Printer-Line-Stack)
              (format strm "~&; ~A~%" string))))
 
@@ -408,10 +407,10 @@ NonBlank is true if the token is not preceded by a blank."
         (*print-pretty* t))
     (if store
         (progn (format t "~%Reduction stack contains:~%")
-               (mapcar #'(lambda (x) (if (eq (type-of x) 'token)
-                               #+Symbolics (zl:describe-defstruct x)
-                               #-Symbolics (describe x)
-                                         (print x)))
+               (mapcar #'(lambda (x)
+			   (if (eq (type-of x) 'token)
+                               (describe x)
+			     (print x)))
                        (stack-store reduce-stack)))
         (format t "~%There is nothing on the reduction stack.~%"))))
 
@@ -461,7 +460,7 @@ empty (if File-Closed (return nil))
                                           (get-a-line in-stream))))
       (if (= (length string) 0) (go empty))
       (Line-New-Line (suffix #\Space string) Current-Line)
-      (if Echo-Meta (Print-New-Line (Line-Buffer Current-Line) out-stream))
+      (if |$Echo| (Print-New-Line (Line-Buffer Current-Line) out-stream))
       (return t)))
  
 (defparameter Comment-Character #\% "Delimiter of comments in Meta code.")
@@ -525,19 +524,13 @@ empty (if File-Closed (return nil))
       (format t "~%The number of valid tokens is ~S.~%" Valid-Tokens))
   (if (> Valid-Tokens 0)
       (progn (format t "The current token is~%")
-             #+Symbolics (zl:describe-defstruct current-token)
-             #-Symbolics (describe current-token)
-             ))
+             (describe current-token)))
   (if (> Valid-Tokens 1)
       (progn (format t "The next token is~%")
-             #+Symbolics (zl:describe-defstruct next-token)
-             #-Symbolics (describe next-token)
-             ))
+             (describe next-token)))
   (if (token-type prior-token)
       (progn (format t "The prior token was~%")
-             #+Symbolics (zl:describe-defstruct prior-token)
-             #-Symbolics (describe prior-token)
-             )))
+             (describe prior-token))))
 
 (defmacro token-stack-clear ()
   `(progn (setq valid-tokens 0)
@@ -570,9 +563,9 @@ empty (if File-Closed (return nil))
 
 
 (defconstant Keywords 
-  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist|
-    |has| |with| |add| |case| |in| |by| |pretend| |mod|
-    |exquo| |div| |quo| |else| |rem| |then| |suchthat|
+  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist| |try|
+    |has| |with| |add| |case| |in| |by| |pretend| |mod| |finally|
+    |exquo| |div| |quo| |else| |rem| |then| |suchthat| |catch| |throw|
     |if| |yield| |iterate| |break| |from| |exit| |leave| |return|
     |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
 

@@ -68,7 +68,7 @@ $(axiom_target_bindir)/clef$(EXEEXT): $(clef_objects) $(clef_DEPENDENCIES)
 	$(axiom_configdir)/openaxiom-c-macros.h
 
 %.lo: %.c $(axiom_c_macros_h)
-	$(CXXCOMPILE) -o $@ ${CCF} $(axiom_includes) $<
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $<
 
 mostlyclean-local:
 	@rm -f $(clef_objects)

@@ -520,36 +520,36 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
               for mons in monslist]
 
     if R has CharacteristicNonZero then
-          charthRootlv: (%,List VarSet,NonNegativeInteger) -> Union(%,"failed")
+          charthRootlv: (%,List VarSet,NonNegativeInteger) -> Maybe %
           charthRoot p ==
             vars:= variables p
             empty? vars =>
               ans := charthRoot ground p
-              ans case "failed" => "failed"
-              ans::R::%
+              ans case nothing => nothing
+              just(ans::R::%)
             ch:=characteristic$%
             charthRootlv(p,vars,ch)
           charthRootlv(p,vars,ch) ==
             empty? vars =>
               ans := charthRoot ground p
-              ans case "failed" => "failed"
-              ans::R::%
+              ans case nothing => nothing
+              just(ans::R::%)
             v:=first vars
             vars:=rest vars
             d:=degree(p,v)
             ans:% := 0
-            while (d>0) repeat
+            while positive? d repeat
                (dd:=(d::Integer exquo ch::Integer)) case "failed" =>
-                      return "failed"
+                      return nothing
                cp:=coefficient(p,v,d)
                p:=p-monomial(cp,v,d)
                ansx:=charthRootlv(cp,vars,ch)
-               ansx case "failed" => return "failed"
+               ansx case nothing => return nothing
                d:=degree(p,v)
                ans:=ans+monomial(ansx,v,dd::Integer::NonNegativeInteger)
             ansx:=charthRootlv(p,vars,ch)
-            ansx case "failed" => return "failed"
-            return ans+ansx
+            ansx case nothing => return nothing
+            return just(ans+ansx)
 
     monicDivide(p1,p2,mvar) ==
        result:=monicDivide(univariate(p1,mvar),univariate(p2,mvar))
@@ -842,25 +842,25 @@ UnivariatePolynomialCategory(R:Ring): Category ==
 
     if R has StepThrough then
        init() == init()$R::%
-       nextItemInner: % -> Union(%,"failed")
+       nextItemInner: % -> Maybe %
        nextItemInner(n) ==
-         zero? n => nextItem(0$R)::R::% -- assumed not to fail
+         zero? n => just(nextItem(0$R)::R::%) -- assumed not to fail
          zero? degree n =>
            nn:=nextItem leadingCoefficient n
-           nn case "failed" => "failed"
-           nn::R::%
+           nn case nothing => nothing
+           just(nn::R::%)
          n1:=reductum n
          n2:=nextItemInner n1 -- try stepping the reductum
-         n2 case % => monomial(leadingCoefficient n,degree n) + n2
+         n2 case % => just(monomial(leadingCoefficient n,degree n) + n2)
          1+degree n1 < degree n => -- there was a hole between lt n and n1
-           monomial(leadingCoefficient n,degree n)+
-             monomial(nextItem(init()$R)::R,1+degree n1)
+           just(monomial(leadingCoefficient n,degree n)+
+             monomial(nextItem(init()$R)::R,1+degree n1))
          n3:=nextItem leadingCoefficient n
-         n3 case "failed" => "failed"
-         monomial(n3,degree n)
+         n3 case nothing => nothing
+         just monomial(n3,degree n)
        nextItem(n) ==
          n1:=nextItemInner n
-         n1 case "failed" => monomial(nextItem(init()$R)::R,1+degree(n))
+         n1 case nothing => just monomial(nextItem(init()$R)::R,1+degree(n))
          n1
 
     if R has GcdDomain then
@@ -880,7 +880,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
     if R has CommutativeRing then
       differentiate(x:%, deriv:R -> R, x':%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           lc := leadingCoefficient x
           d := d + x' * monomial(dg * lc, (dg - 1)::NonNegativeInteger)
                  + monomial(deriv lc, dg)
@@ -896,7 +896,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
 
       differentiate(x:%, deriv:R -> R, x':%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           lc := leadingCoefficient x
           d := d + monomial(deriv lc, dg) + lc * ncdiff(dg, x')
           x := reductum x
@@ -904,7 +904,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
     differentiate(x:%, deriv:R -> R) == differentiate(x, deriv, 1$%)$%
     differentiate(x:%) ==
         d:% := 0
-        while (dg := degree x) > 0 repeat
+        while positive?(dg := degree x) repeat
           d := d + monomial(dg * leadingCoefficient x, (dg - 1)::NonNegativeInteger)
           x := reductum x
         d

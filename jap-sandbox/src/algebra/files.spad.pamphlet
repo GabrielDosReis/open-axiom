@@ -172,16 +172,15 @@ File(S:SetCategory): FileCategory(FileName, S) with
         read! f ==
             f.fileIOmode ~= "input" =>
                 error "File not in read state"
-            x := VMREAD(f.fileState)$Lisp
-            PLACEP(x)$Lisp =>
-                error "End of file"
-            x
+            x: Maybe S := readExpr(f.fileState)$Foreign(Builtin)
+            x case nothing => error "End of file"
+            x@S
         readIfCan! f ==
             f.fileIOmode ~= "input" =>
                 error "File not in read state"
-            x: S := VMREAD(f.fileState)$Lisp
-            PLACEP(x)$Lisp => "failed"
-            x
+            x: Maybe S := readExpr(f.fileState)$Foreign(Builtin)
+            x case nothing => "failed"
+            x@S
         write!(f, x) ==
             f.fileIOmode ~= "output" =>
                 error "File not in write state"
@@ -251,14 +250,14 @@ TextFile: Cat == Def where
  
         readLine! f ==
             f.fileIOmode ~= "input"  => error "File not in read state"
-            s: String := read_-line(f.fileState)$Lisp
-            PLACEP(s)$Lisp => error "End of file"
-            s
+            s: Maybe String := readLine(f.fileState)$Foreign(Builtin)
+            s case String => s
+            error "End of file"
         readLineIfCan! f ==
             f.fileIOmode ~= "input"  => error "File not in read state"
-            s: String := read_-line(f.fileState)$Lisp
-            PLACEP(s)$Lisp => "failed"
-            s
+            s: Maybe String := readLine(f.fileState)$Foreign(Builtin)
+            s case String => s@String
+            "failed"
         write!(f, x) ==
             f.fileIOmode ~= "output" => error "File not in write state"
             PRINTEXP(x, f.fileState)$Lisp
@@ -364,7 +363,7 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
             ks: List Symbol := RKEYIDS(f.fileName)$Lisp
             null ks => error ["Attempt to read empty file", f]
             ix := random()$Integer rem #ks
-            k: String := PNAME(ks.ix)$Lisp
+            k: String := string(ks.ix)
             [k, SPADRREAD(k, f.fileState)$Lisp]
         write!(f, pr) ==
             f.fileIOmode ~= "output" => error ["File not in write state",f]
@@ -391,8 +390,8 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
         setelt(f,k,e) ==
             -- Leaves f in a safe, closed state.  For speed use "write".
             reopen!(f, "output")
-            UNWIND_-PROTECT(write!(f, [k,e]), close! f)$Lisp
-            close! f
+            try write!(f, [k,e])
+            finally close! f
             e
         search(k,f) ==
             not member?(k, keys f) => "failed"   -- can't trap RREAD error
@@ -437,10 +436,9 @@ Library(): Join(TableAggregate(String, Any),Eltable(Symbol,Any)) with
              ++ \spad{lib}.  It can later be extracted using the key \spad{k}.
 
     == KeyedAccessFile(Any) add
-         Rep := KeyedAccessFile(Any)
-         library f == open f
-         elt(f:%,v:Symbol) == elt(f, string v)
-         setelt(f:%, v:Symbol, val:Any) == setelt(f, string v, val)
+         library f == per open f
+         elt(f:%,v:Symbol) == elt(rep f, string v)
+         setelt(f:%, v:Symbol, val:Any) == setelt(rep f, string v, val)
 
 @
 \section{License}

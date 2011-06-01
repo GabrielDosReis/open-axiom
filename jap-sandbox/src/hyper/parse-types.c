@@ -52,6 +52,8 @@
 #include "extent.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 static void parse_condnode(void );
 static void parse_hasreturnto(void );
 

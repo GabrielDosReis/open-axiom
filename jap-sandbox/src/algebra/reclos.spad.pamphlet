@@ -118,7 +118,7 @@ RealPolynomialUtilitiesPackage(TheField,ThePols) : PUB == PRIV where
        while (p2 ~= 0) repeat
          res := cons(p2 , res)
          (p1 , p2) := (p2 , -(p1 rem p2))
-       if degree(p1) > 0
+       if positive? degree(p1)
        then
          p1 := unitCanonical(p1)
          res := [ term quo p1 for term in res ]
@@ -244,10 +244,10 @@ RealRootCharacterizationCategory(TheField, ThePols ) : Category == PUB where
           sign(toTest, rootChar) = 0
                 
         negative?(toTest, rootChar) == 
-          sign(toTest, rootChar) < 0              
+          negative? sign(toTest, rootChar)
         
         positive?(toTest, rootChar) == 
-          sign(toTest, rootChar) > 0
+          positive? sign(toTest, rootChar)
 
         rootOf(pol,n) ==
           liste:List($):= allRootsOf(pol)
@@ -633,7 +633,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
         lt := cons(t.int , lt)
     vi := sturmVariationsOf(reverse! lt)$UTIL
     o :Z := n - vl + vi
-    if o > 0
+    if positive? o
     then 
        sturmNthRoot(lp,int,r,vi,vr,o::N)
     else
@@ -703,7 +703,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
     null(l) => false
     f := sign(first(l))
     for term in rest(l) repeat
-      if f*term < 0 then return(true)
+      if negative?(f*term) then return(true)
     false
     
    hasVars(p:P) ==
@@ -743,7 +743,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
 <<performance problem>>
     res :$ := [left,right,leadingMonomial(pol)+reductum(pol)]$Rep -- safe copy
     while zero?(pol.(res.high)) repeat refine!(res)
-    while (res.high * res.low < 0 ) repeat refine!(res)
+    while negative?(res.high * res.low) repeat refine!(res)
     zero?(pol.(res.low)) => [res.low,res.high,monomial(1,1)-(res.low)::P]
     res
 
@@ -815,7 +815,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
                inv(leadingCoefficient(toTest))*reductum(toTest)
      delta := gcd(toTest,rootChar.defPol)
      newChar := [rootChar.low,rootChar.high,rootChar.defPol]$Rep
-     if degree(delta) > 0
+     if positive? degree(delta)
      then
        if sign(delta.(rootChar.low) * delta.(rootChar.high)) <= 0
        then
@@ -862,7 +862,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
           rootChar.low := int
           rootChar.defPol := monomial(1,1) - int::P
           rootChar
-        if (s1*s2 < 0)
+        if negative?(s1*s2)
         then 
           rootChar.high := int
         else 
@@ -874,7 +874,7 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
         int := middle(rootChar)
         s:= (rootChar.defPol).int * (rootChar.defPol).(rootChar.high)
         zero?(s) => [int,rootChar.high,monomial(1,1)-int::P]
-        if s < 0 
+        if negative? s 
         then 
           [int,rootChar.high,rootChar.defPol]
         else 

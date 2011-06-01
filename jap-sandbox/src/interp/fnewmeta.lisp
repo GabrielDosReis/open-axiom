@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@
 
 (defun |isTokenDelimiter| () 
        (MEMBER (CURRENT-SYMBOL) '(\) END\_UNIT NIL)))
-
 
 (DEFUN |PARSE-NewExpr| ()
   (OR (AND (MATCH-STRING ")") (ACTION (|processSynonyms|))
@@ -144,7 +143,7 @@
 
 
 (DEFUN |PARSE-With| ()
-  (AND (MATCH-ADVANCE-STRING "with") (MUST (|PARSE-Category|))
+  (AND (MATCH-ADVANCE-KEYWORD "with") (MUST (|PARSE-Category|))
        (PUSH-REDUCTION '|PARSE-With|
            (CONS '|with| (CONS (POP-STACK-1) NIL))))) 
 
@@ -152,12 +151,12 @@
 (DEFUN |PARSE-Category| ()
   (PROG (G1)
     (RETURN
-      (OR (AND (MATCH-ADVANCE-STRING "if") (MUST (|PARSE-Expression|))
-               (MUST (MATCH-ADVANCE-STRING "then"))
+      (OR (AND (MATCH-ADVANCE-KEYWORD "if") (MUST (|PARSE-Expression|))
+               (MUST (MATCH-ADVANCE-KEYWORD "then"))
                (MUST (|PARSE-Category|))
                (BANG FIL_TEST
                      (OPTIONAL
-                         (AND (MATCH-ADVANCE-STRING "else")
+                         (AND (MATCH-ADVANCE-KEYWORD "else")
                               (MUST (|PARSE-Category|)))))
                (PUSH-REDUCTION '|PARSE-Category|
                    (CONS '|if|
@@ -201,11 +200,11 @@
 
 
 (DEFUN |PARSE-Import| ()
-  (AND (MATCH-ADVANCE-STRING "import") 
+  (AND (MATCH-ADVANCE-KEYWORD "import") 
        (MUST (|PARSE-Expr| 1000))
        (OR (AND (MATCH-ADVANCE-STRING ":")
                 (MUST (|PARSE-Expression|))
-                (MUST (MATCH-ADVANCE-STRING "from"))
+                (MUST (MATCH-ADVANCE-KEYWORD "from"))
                 (MUST (|PARSE-Expr| 1000))
                 (PUSH-REDUCTION '|PARSE-Import|
 		    (CONS '|%SignatureImport|
@@ -225,7 +224,7 @@
 ;; deliberate restriction on naming one type at a time.
 ;; -- gdr, 2009-02-28.
 (DEFUN |PARSE-Inline| ()
-  (AND (MATCH-ADVANCE-STRING "inline")
+  (AND (MATCH-ADVANCE-KEYWORD "inline")
        (MUST (|PARSE-Expr| 1000))
        (PUSH-REDUCTION '|PARSE-Inline|
            (CONS '|%Inline| (CONS (POP-STACK-1) NIL)))))
@@ -245,9 +244,9 @@
       (|PARSE-Application|)))
 
 (DEFUN |PARSE-Quantifier| ()
-  (OR (AND (MATCH-ADVANCE-STRING "forall")
+  (OR (AND (MATCH-ADVANCE-KEYWORD "forall")
 	   (MUST (PUSH-REDUCTION '|PARSE-Quantifier| '|%Forall|)))
-      (AND (MATCH-ADVANCE-STRING "exist")
+      (AND (MATCH-ADVANCE-KEYWORD "exist")
 	   (MUST (PUSH-REDUCTION '|PARSE-Quantifier| '|%Exist|)))))
 
 (DEFUN |PARSE-QuantifiedVariableList| ()
@@ -321,11 +320,61 @@
        (PUSH-REDUCTION '|PARSE-SemiColon|
            (CONS '|;| (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))) 
 
-
+;; We should factorize these boilerplates
 (DEFUN |PARSE-Return| ()
-  (AND (MATCH-ADVANCE-STRING "return") (MUST (|PARSE-Expression|))
+  (AND (MATCH-ADVANCE-KEYWORD "return") (MUST (|PARSE-Expression|))
        (PUSH-REDUCTION '|PARSE-Return|
            (CONS '|return| (CONS (POP-STACK-1) NIL))))) 
+
+(DEFUN |PARSE-Throw| ()
+  (AND (MATCH-ADVANCE-KEYWORD "throw")
+       (MUST (|PARSE-Expression|))
+       (PUSH-REDUCTION '|PARSE-Throw|
+           (CONS '|%Throw| (CONS (POP-STACK-1) NIL))))) 
+
+(DEFUN |PARSE-Catch| ()
+  (AND (MATCH-SPECIAL ";")
+       (MATCH-KEYWORD-NEXT "catch")
+       (ACTION (ADVANCE-TOKEN))
+       (ACTION (ADVANCE-TOKEN))
+       (MUST (|PARSE-GlyphTok| "("))
+       (MUST (|PARSE-QuantifiedVariable|))
+       (MUST (MATCH-ADVANCE-SPECIAL ")"))
+       (MUST (|PARSE-GlyphTok| "=>"))
+       (MUST (|PARSE-Expression|))
+       (PUSH-REDUCTION '|PARSE-Catch|
+	  (CONS (POP-STACK-2)
+		(CONS (POP-STACK-1) NIL)))))
+
+(DEFUN |PARSE-Finally| ()
+  (AND (MATCH-SPECIAL ";")
+       (MATCH-KEYWORD-NEXT "finally")
+       (ACTION (ADVANCE-TOKEN))
+       (ACTION (ADVANCE-TOKEN))
+       (MUST (|PARSE-Expression|))))
+
+(DEFUN |PARSE-Try| ()
+  (AND (MATCH-ADVANCE-KEYWORD "try")
+       (MUST (|PARSE-Expression|))
+       ;; exception handlers: either a finally-expression, or
+       ;; a series of catch-expressions optionally followed by
+       ;; a finally-expression.
+       (MUST (OR (AND (|PARSE-Finally|)
+		      (PUSH-REDUCTION '|PARSE-Try|
+                         (CONS '|%Try| 
+			       (CONS (POP-STACK-2)
+				     (CONS NIL
+					   (CONS (POP-STACK-1) NIL))))))
+		 (AND (MUST (STAR REPEATOR (|PARSE-Catch|)))
+		      (BANG FIL_TEST
+			    (OPTIONAL (|PARSE-Finally|)))
+		      (PUSH-REDUCTION '|PARSE-Try|
+                         (CONS '|%Try|
+			       (CONS (POP-STACK-3)
+				     (CONS (POP-STACK-2)
+					   (CONS (POP-STACK-1) 
+						 NIL))))))))))
+
 
 (DEFUN |PARSE-Jump| ()
   (LET ((S (CURRENT-SYMBOL)))
@@ -335,7 +384,7 @@
 
 
 (DEFUN |PARSE-Exit| ()
-  (AND (MATCH-ADVANCE-STRING "exit")
+  (AND (MATCH-ADVANCE-KEYWORD "exit")
        (MUST (OR (|PARSE-Expression|)
                  (PUSH-REDUCTION '|PARSE-Exit| '|$NoValue|)))
        (PUSH-REDUCTION '|PARSE-Exit|
@@ -343,7 +392,7 @@
 
 
 (DEFUN |PARSE-Leave| ()
-  (AND (MATCH-ADVANCE-STRING "leave")
+  (AND (MATCH-ADVANCE-KEYWORD "leave")
        (MUST (OR (|PARSE-Expression|)
                  (PUSH-REDUCTION '|PARSE-Leave| '|$NoValue|)))
        (MUST (PUSH-REDUCTION '|PARSE-Leave|
@@ -351,7 +400,7 @@
 
 
 (DEFUN |PARSE-Seg| ()
-  (AND (|PARSE-GliphTok| '|..|)
+  (AND (|PARSE-GlyphTok| "..")
        (BANG FIL_TEST (OPTIONAL (|PARSE-Expression|)))
        (PUSH-REDUCTION '|PARSE-Seg|
            (CONS 'SEGMENT
@@ -359,11 +408,11 @@
 
 
 (DEFUN |PARSE-Conditional| ()
-  (AND (MATCH-ADVANCE-STRING "if") (MUST (|PARSE-Expression|))
-       (MUST (MATCH-ADVANCE-STRING "then")) (MUST (|PARSE-Expression|))
+  (AND (MATCH-ADVANCE-KEYWORD "if") (MUST (|PARSE-Expression|))
+       (MUST (MATCH-ADVANCE-KEYWORD "then")) (MUST (|PARSE-Expression|))
        (BANG FIL_TEST
              (OPTIONAL
-                 (AND (MATCH-ADVANCE-STRING "else")
+                 (AND (MATCH-ADVANCE-KEYWORD "else")
                       (MUST (|PARSE-ElseClause|)))))
        (PUSH-REDUCTION '|PARSE-Conditional|
            (CONS '|if|
@@ -378,21 +427,21 @@
 
 (DEFUN |PARSE-Loop| ()
   (OR (AND (STAR REPEATOR (|PARSE-Iterator|))
-           (MUST (MATCH-ADVANCE-STRING "repeat"))
+           (MUST (MATCH-ADVANCE-KEYWORD "repeat"))
            (MUST (|PARSE-Expr| 110))
            (PUSH-REDUCTION '|PARSE-Loop|
                (CONS 'REPEAT
                      (APPEND (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))
-      (AND (MATCH-ADVANCE-STRING "repeat") (MUST (|PARSE-Expr| 110))
+      (AND (MATCH-ADVANCE-KEYWORD "repeat") (MUST (|PARSE-Expr| 110))
            (PUSH-REDUCTION '|PARSE-Loop|
                (CONS 'REPEAT (CONS (POP-STACK-1) NIL)))))) 
 
 
 (DEFUN |PARSE-Iterator| ()
-  (OR (AND (MATCH-ADVANCE-STRING "for") (MUST (|PARSE-Primary|))
-           (MUST (MATCH-ADVANCE-STRING "in"))
+  (OR (AND (MATCH-ADVANCE-KEYWORD "for") (MUST (|PARSE-Primary|))
+           (MUST (MATCH-ADVANCE-KEYWORD "in"))
            (MUST (|PARSE-Expression|))
-           (MUST (OR (AND (MATCH-ADVANCE-STRING "by")
+           (MUST (OR (AND (MATCH-ADVANCE-KEYWORD "by")
                           (MUST (|PARSE-Expr| 200))
                           (PUSH-REDUCTION '|PARSE-Iterator|
                               (CONS 'INBY
@@ -408,18 +457,18 @@
                     (MUST (|PARSE-Expr| 111))
                     (PUSH-REDUCTION '|PARSE-Iterator|
                         (CONS '|\|| (CONS (POP-STACK-1) NIL))))))
-      (AND (MATCH-ADVANCE-STRING "while") (MUST (|PARSE-Expr| 190))
+      (AND (MATCH-ADVANCE-KEYWORD "while") (MUST (|PARSE-Expr| 190))
            (PUSH-REDUCTION '|PARSE-Iterator|
                (CONS 'WHILE (CONS (POP-STACK-1) NIL))))
-      (AND (MATCH-ADVANCE-STRING "until") (MUST (|PARSE-Expr| 190))
+      (AND (MATCH-ADVANCE-KEYWORD "until") (MUST (|PARSE-Expr| 190))
            (PUSH-REDUCTION '|PARSE-Iterator|
                (CONS 'UNTIL (CONS (POP-STACK-1) NIL)))))) 
 
 
 (DEFUN |PARSE-Match| ()
-  (AND (MATCH-ADVANCE-STRING "case")
+  (AND (MATCH-ADVANCE-KEYWORD "case")
        (MUST (|PARSE-Expr| 400))
-       (MATCH-ADVANCE-STRING "is")
+       (MATCH-ADVANCE-KEYWORD "is")
        (MUST (|PARSE-Expr| 110))
        (PUSH-REDUCTION '|PARSE-Match|
 		       (CONS '|%Match|
@@ -493,16 +542,16 @@
 
 
 (DEFUN |PARSE-Form| ()
-  (OR (AND (MATCH-ADVANCE-STRING "iterate")
+  (OR (AND (MATCH-ADVANCE-KEYWORD "iterate")
            (BANG FIL_TEST
                  (OPTIONAL
-                     (AND (MATCH-ADVANCE-STRING "from")
+                     (AND (MATCH-ADVANCE-KEYWORD "from")
                           (MUST (|PARSE-Label|))
                           (PUSH-REDUCTION '|PARSE-Form|
                               (CONS (POP-STACK-1) NIL)))))
            (PUSH-REDUCTION '|PARSE-Form|
                (CONS '|iterate| (APPEND (POP-STACK-1) NIL))))
-      (AND (MATCH-ADVANCE-STRING "yield") (MUST (|PARSE-Application|))
+      (AND (MATCH-ADVANCE-KEYWORD "yield") (MUST (|PARSE-Application|))
            (PUSH-REDUCTION '|PARSE-Form|
                (CONS '|yield| (CONS (POP-STACK-1) NIL))))
       (|PARSE-Application|))) 
@@ -562,10 +611,10 @@
 
 
 (DEFUN |PARSE-FloatBase| ()
-  (OR (AND (FIXP (CURRENT-SYMBOL)) (CHAR-EQ (CURRENT-CHAR) ".")
+  (OR (AND (INTEGERP (CURRENT-SYMBOL)) (CHAR-EQ (CURRENT-CHAR) ".")
            (CHAR-NE (NEXT-CHAR) ".") (|PARSE-IntegerTok|)
            (MUST (|PARSE-FloatBasePart|)))
-      (AND (FIXP (CURRENT-SYMBOL))
+      (AND (INTEGERP (CURRENT-SYMBOL))
            (CHAR-EQ (CHAR-UPCASE (CURRENT-CHAR)) 'E)
            (|PARSE-IntegerTok|) (PUSH-REDUCTION '|PARSE-FloatBase| 0)
            (PUSH-REDUCTION '|PARSE-FloatBase| 0))
@@ -723,10 +772,10 @@
                  (OPTIONAL
                      (AND (STAR REPEATOR (|PARSE-Sexpr1|))
                           (OPTIONAL
-                              (AND (|PARSE-GliphTok| '|.|)
+                              (AND (|PARSE-GlyphTok| ".")
                                    (MUST (|PARSE-Sexpr1|))
                                    (PUSH-REDUCTION '|PARSE-Sexpr1|
-                                    (NCONC (POP-STACK-2) (POP-STACK-1))))))))
+                                    (|append!| (POP-STACK-2) (POP-STACK-1))))))))
            (MUST (MATCH-ADVANCE-STRING ")"))))) 
 
 
@@ -736,9 +785,10 @@
        (ACTION (ADVANCE-TOKEN)))) 
 
 
-(DEFUN |PARSE-GliphTok| (|tok|)
+(DEFUN |PARSE-GlyphTok| (|tok|)
   (DECLARE (SPECIAL |tok|))
-  (AND (MATCH-CURRENT-TOKEN 'GLIPH |tok|) (ACTION (ADVANCE-TOKEN)))) 
+  (AND (MATCH-CURRENT-TOKEN 'GLIPH (INTERN |tok|))
+       (ACTION (ADVANCE-TOKEN)))) 
 
 
 (DEFUN |PARSE-AnyId| ()
@@ -773,33 +823,31 @@
 
 
 (DEFUN |PARSE-OpenBracket| ()
-  (PROG (G1)
-    (RETURN
-      (AND (EQ (|getToken| (SETQ G1 (CURRENT-SYMBOL))) '[)
-           (MUST (OR (AND (EQCAR G1 '|elt|)
-                          (PUSH-REDUCTION '|PARSE-OpenBracket|
-                              (CONS '|elt|
-                                    (CONS (CADR G1)
-                                     (CONS '|construct| NIL)))))
-                     (PUSH-REDUCTION '|PARSE-OpenBracket| '|construct|)))
-           (ACTION (ADVANCE-TOKEN)))))) 
+  (LET ((G1 (CURRENT-SYMBOL)))
+    (AND (EQ (|getToken| G1) '[)
+	 (MUST (OR (AND (EQCAR G1 '|elt|)
+			(PUSH-REDUCTION '|PARSE-OpenBracket|
+			    (CONS '|elt|
+				  (CONS (CADR G1)
+				   (CONS '|construct| NIL)))))
+		   (PUSH-REDUCTION '|PARSE-OpenBracket| '|construct|)))
+	 (ACTION (ADVANCE-TOKEN)))))
 
 
 (DEFUN |PARSE-OpenBrace| ()
-  (PROG (G1)
-    (RETURN
-      (AND (EQ (|getToken| (SETQ G1 (CURRENT-SYMBOL))) '{)
-           (MUST (OR (AND (EQCAR G1 '|elt|)
-                          (PUSH-REDUCTION '|PARSE-OpenBrace|
-                              (CONS '|elt|
-                                    (CONS (CADR G1)
-                                     (CONS '|brace| NIL)))))
-                     (PUSH-REDUCTION '|PARSE-OpenBrace| '|construct|)))
-           (ACTION (ADVANCE-TOKEN)))))) 
+  (LET ((G1 (CURRENT-SYMBOL)))
+    (AND (EQ (|getToken| G1) '{)
+	 (MUST (OR (AND (EQCAR G1 '|elt|)
+			(PUSH-REDUCTION '|PARSE-OpenBrace|
+			    (CONS '|elt|
+				  (CONS (CADR G1)
+				   (CONS '|brace| NIL)))))
+		   (PUSH-REDUCTION '|PARSE-OpenBrace| '|construct|)))
+	 (ACTION (ADVANCE-TOKEN)))))
 
 
 (DEFUN |PARSE-IteratorTail| ()
-  (OR (AND (MATCH-ADVANCE-STRING "repeat")
+  (OR (AND (MATCH-ADVANCE-KEYWORD "repeat")
            (BANG FIL_TEST
                  (OPTIONAL (STAR REPEATOR (|PARSE-Iterator|)))))
       (STAR REPEATOR (|PARSE-Iterator|)))) 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,10 @@ namespace BOOT
 --%
 --% Numeric limits
 --%
+
+++ Maximum value of character code point values
+$CharCodeMaximum ==
+  CHAR_-CODE_-LIMIT
 
 ++ Minimum for %Short values.
 $ShortMinimum ==
@@ -105,7 +109,7 @@ _/MAJOR_-VERSION ==
 
 ++ Glyph for a box
 $boxString ==
-  strconc(STRING CODE_-CHAR 29, STRING CODE_-CHAR 226)
+  strconc(charString abstractChar 29, charString abstractChar 226)
 
 ++ Glyph for an APL quad
 $quadSymbol ==
@@ -119,7 +123,7 @@ $quadSymbol ==
 
 ++ The escape character, in string form
 $escapeString ==
-  STRING CODE_-CHAR 27
+  charString abstractChar 27
 
 ++ Marker to swicth to bold font
 $boldString ==
@@ -295,7 +299,7 @@ $TriangleVariableList ==
 
 
 $AtVariables ==
-  [INTERN strconc('"@",WRITE_-TO_-STRING i) for i in 1..50]
+  [makeSymbol strconc('"@",toString i) for i in 1..50]
 
 ++ List of basic predicates the system has a built-in optimization
 ++ support for.
@@ -325,17 +329,8 @@ $SideEffectFreeFunctionList ==
     _>_=     _
     _<       _
     _<_=     _
-    MEMBER   _
     _is      _
-    _isnt    _
-    ATOM     _
-    $_=      _
-    $_>      _
-    $_>_=    _
-    $_<      _
-    $_<_=    _
-    $_^_=    _
-    $MEMBER)
+    _isnt)
 
 --% Types
 
@@ -346,11 +341,23 @@ $Field ==
 $DivisionRing ==
   '(DivisionRing)
 
+$IntegralDomain ==
+  '(IntegralDomain)
+
 $CombinatorialFunctionCategory ==
   '(CombinatorialFunctionCategory)
 
+$Ring ==
+  '(Ring)
+
 $Group ==
   '(Group)
+
+$AbelianMonoid ==
+  '(AbelianMonoid)
+
+$Monoid ==
+  '(Monoid)
 
 ++ The Void domain constructor form
 $Void ==
@@ -367,6 +374,12 @@ $None ==
 ++ The Syntax domain constructor form
 $Syntax ==
   '(Syntax)
+
+$BasicOperator ==
+  '(BasicOperator)
+
+$AlgebraicNumber ==
+  '(AlgebraicNumber)
 
 ++ Boolean domain constructor form
 $Boolean ==
@@ -464,9 +477,11 @@ $InputForm ==
 $FunctionalExpression ==
   'Expression
 
-++ Expression domain constructor form
-$Expression ==
-  '(OutputForm)
+$TexFormat ==
+  '(TexFormat)
+
+$MathMLFormat ==
+  '(MathMLFormat)
 
 ++ The constructor form for unnamed functions.
 $AnonymousFunction ==
@@ -524,31 +539,6 @@ $DomainConstructor ==
 $StringCategory ==
   '(StringCategory)
 
-
-++ List of category constructors that do not have entries in the 
-++ constructor database. So, they are mostly recognized by their names.
-$CategoryNames ==
-  '(CATEGORY _
-    RecordCategory _
-    Join _
-    EnumerationCategory _
-    SubsetCategory _
-    UnionCategory)
-
-++ List of domain constructors that do not have entries in the constructor
-++ database. So, they are mostly recognized by their names.
-++ See also $CategoryNames.
-$DomainNames ==
-  '(Mapping _
-    SubDomain _
-    Union _
-    Record _
-    Enumeration)
-
-++ The union of the above two lists.
-$BuiltinConstructorNames ==
-  [:$CategoryNames,:$DomainNames]
-
 ++ List of language support type forms.
 $LangSupportTypes ==
   '((Mode) (Domain) (Type) (Category))
@@ -556,17 +546,6 @@ $LangSupportTypes ==
 ++
 $NonMentionableDomainNames ==
   '($ Rep Record Union Mapping Enumeration)
-
-
-++ List of primitive domains
-$PrimitiveDomainNames ==
-  '(List _
-    Integer _
-    NonNegativeInteger _
-    PositiveInteger _
-    SingleInteger _
-    String _
-    Boolean)
 
 ++ These symbols are not constructor names, but they define domains.
 $SpecialDomainNames ==

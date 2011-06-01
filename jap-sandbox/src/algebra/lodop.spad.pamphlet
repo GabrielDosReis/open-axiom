@@ -178,7 +178,7 @@ NonCommutativeOperatorDivision(P, F): PDcat == PDdef  where
         leftGcd(a,b) ==
              a = 0 =>b
              b = 0 =>a
-             while degree b > 0 repeat (a,b) := (b, leftRemainder(a,b))
+             while positive? degree b repeat (a,b) := (b, leftRemainder(a,b))
              if b=0 then a else b
         -- l = leftLcm(a,b) means  l = a*aa  l = b*bb   Uses leftDivide.
         leftLcm(a,b) ==

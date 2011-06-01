@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-search.boot <================================
-
 --=======================================================================
 --              Grepping Database libdb.text
 -- Redone 12/95 for Saturn; previous function grep renamed as grepFile
@@ -60,7 +58,7 @@ grepConstruct1(s,key) ==
 --returns the name of file (WITHOUT .text.$SPADNUM on the end)
   $key     : local := key
   if key = 'k and          --convert 'k to 'y if name contains an "&"
-    or/[s . i = char '_& for i in 0..MAXINDEX s] then key := 'y
+    or/[stringChar(s,i) = char "&" for i in 0..maxIndex s] then key := 'y
   filter := pmTransFilter STRINGIMAGE s  --parses and-or-not form
   filter is ['error,:.] => filter        --exit on parser error
   pattern := mkGrepPattern(filter,key)  --create string to pass to "grep"
@@ -76,23 +74,23 @@ grepConstructDo(x, key) ==
   grepf(x,key,false)
 
 dbExposed?(line,kind) == -- does line come from an unexposed constructor?
-  conname := INTERN
-    kind = char 'a or kind = char 'o => dbNewConname line --get conname from middle
+  conname := makeSymbol
+    kind = char "a" or kind = char "o" => dbNewConname line --get conname from middle
     dbName line
   isExposedConstructor conname
 
 dbScreenForDefaultFunctions lines == [x for x in lines | not isDefaultOpAtt x]
 
-isDefaultOpAtt x == x.(1 + dbTickIndex(x,4,0)) = char 'x
+isDefaultOpAtt x == x.(1 + dbTickIndex(x,4,0)) = char "x"
 
 grepForAbbrev(s,key) ==
 --checks that filter s is not * and is all uppercase; if so, look for abbrevs
-  u := HGET($lowerCaseConTb,s) => ['Abbreviations,u]    --try cheap test first
+  u := tableValue($lowerCaseConTb,s) => ['Abbreviations,u]    --try cheap test first
   s := STRINGIMAGE s
   someLowerCaseChar := false
   someUpperCaseChar := false
-  for i in 0..MAXINDEX s repeat
-    c := s . i
+  for i in 0..maxIndex s repeat
+    c := stringChar(s,i)
     lowerCase? c => return (someLowerCaseChar := true)
     upperCase? c => someUpperCaseChar := true
   someLowerCaseChar or not someUpperCaseChar => false
@@ -101,9 +99,9 @@ grepForAbbrev(s,key) ==
     for x in allConstructors() | test]] where test() ==
          not $includeUnexposed? and not isExposedConstructor x => false
          a := getConstructorAbbreviationFromDB x
-         match?(pattern,PNAME a) and not HGET($defaultPackageNamesHT,x)
+         match?(pattern,symbolName a) and not tableValue($defaultPackageNamesHT,x)
 
-applyGrep(x,filename) ==   --OBSELETE with $saturn--> see applyGrepSaturn
+applyGrep(x,filename) ==
   atom x => grepFile(x,filename,'i)
   $localLibdb =>
     a := purgeNewConstructorLines(grepf(x,filename,false),$newConstructorList)
@@ -139,11 +137,11 @@ grepf(pattern,s,not?) ==  --s=sourceFile or list of strings
 pmTransFilter s ==
 --result is either a string or (op ..) where op= and,or,not and arg are results
   if $browseMixedCase = true then s := DOWNCASE s
-  or/[isFilterDelimiter? s.i or s.i = $charUnderscore for i in 0..MAXINDEX s]
+  or/[isFilterDelimiter? stringChar(s,i) or stringChar(s,i) = $charUnderscore for i in 0..maxIndex s]
     => (parse := pmParseFromString s) and checkPmParse parse or
         ['error,'"Illegal search string",'"\vspace{3}\center{{\em Your search string} ",escapeSpecialChars s,'" {\em has incorrect syntax}}"]
-  or/[s . i = char '_* and s.(i + 1) = char '_*
-      and (i=0 or s . (i - 1) ~= char $charUnderscore) for i in 0..(MAXINDEX s - 1)]
+  or/[s . i = char "*" and s.(i + 1) = char "*"
+      and (i=0 or stringChar(s,i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
        => ['error,'"Illegal search string",'"\vspace{3}\center{Consecutive {\em *}'s are not allowed in search patterns}"]
   s
 
@@ -184,55 +182,59 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
   hn x == SUBLISLIS('(and or not),'("and" "or" "not"),x)
   fn(s,n,siz) ==  --main function: s is string, n is origin
     n = siz => '""
-    i := firstNonDelim(s,n) or return SUBSTRING(s,n,nil)
+    i := firstNonDelim(s,n) or return subString(s,n)
     j := firstDelim(s,i + 1) or siz
     t := gn(s,i,j - 1)
     middle :=
-      member(t,'("and" "or" "not")) => t
+      t in '("and" "or" "not") => t
       --the following 2 lines make commutative("*") parse correctly!!!!
-      t.0 = char '_" => t
-      j < siz - 1 and s.j = char '_( => t
-      strconc(char '_",t,char '_")
-    strconc(SUBSTRING(s,n,i - n),middle,fn(s,j,siz))
+      stringChar(t,0) = char "_"" => t
+      j < siz - 1 and s.j = char "(" => t
+      strconc('"_"",t,'"_"")
+    strconc(subString(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
     n := or/[k for k in i..j | s.k = $charUnderscore] =>
-      strconc(SUBSTRING(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
-    SUBSTRING(s,i,j - i + 1)
+      strconc(subString(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
+    subString(s,i,j - i + 1)
 
-firstNonDelim(s,n) ==  or/[k for k in n..MAXINDEX s | not isFilterDelimiter? s.k]
-firstDelim(s,n) ==  or/[k for k in n..MAXINDEX s | isFilterDelimiter? s.k]
+firstNonDelim(s,n) ==
+  or/[k for k in n..maxIndex s | not isFilterDelimiter? stringChar(s,k)]
 
-isFilterDelimiter? c == MEMQ(c,$pmFilterDelimiters)
+firstDelim(s,n) ==
+  or/[k for k in n..maxIndex s | isFilterDelimiter? stringChar(s,k)]
+
+isFilterDelimiter? c ==
+  charMember?(c,$pmFilterDelimiters)
 
 grepSplit(lines,doc?) ==
   if doc? then
-    instream2 := OPEN strconc(systemRootDirectory(),'"/algebra/libdb.text")
+    instream2 := inputTextFile strconc(systemRootDirectory(),'"/algebra/libdb.text")
   cons := atts := doms := nil
   while lines is [line, :lines] repeat
     if doc? then
         N:=readInteger dbPart(line,1,-1)
         if integer? N then 
            FILE_-POSITION(instream2,N)
-           line := READLINE instream2
+           line := readLine instream2
     kind := dbKind line
     not $includeUnexposed? and not dbExposed?(line,kind) => 'skip
-    (kind = char 'a or kind = char 'o) and isDefaultOpAtt line => 'skip
+    (kind = char "a" or kind = char "o") and isDefaultOpAtt line => 'skip
     PROGN
-      kind = char 'c => cats := insert(line,cats)
-      kind = char 'd => doms := insert(line,doms)
-      kind = char 'x => defs := insert(line,defs)
-      kind = char 'p => paks := insert(line,paks)
-      kind = char 'a => atts := insert(line,atts)
-      kind = char 'o => ops :=  insert(line,ops)
-      kind = char '_- => 'skip                --for now
+      kind = char "c" => cats := insert(line,cats)
+      kind = char "d" => doms := insert(line,doms)
+      kind = char "x" => defs := insert(line,defs)
+      kind = char "p" => paks := insert(line,paks)
+      kind = char "a" => atts := insert(line,atts)
+      kind = char "o" => ops :=  insert(line,ops)
+      kind = char "-" => 'skip                --for now
       systemError 'kind
-  if doc? then CLOSE instream2
-  [['"attribute",:nreverse atts],
-     ['"operation",:nreverse ops],
-       ['"category",:nreverse cats],
-         ['"domain",:nreverse doms],
-           ['"package",:nreverse paks]
---           ['"default_ package",:nreverse defs]   -- drop defaults
+  if doc? then closeStream instream2
+  [['"attribute",:reverse! atts],
+     ['"operation",:reverse! ops],
+       ['"category",:reverse! cats],
+         ['"domain",:reverse! doms],
+           ['"package",:reverse! paks]
+--           ['"default_ package",:reverse! defs]   -- drop defaults
                ]
 
 mkUpDownPattern s == recurse(s,0,#s) where
@@ -241,7 +243,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
     strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
     alphabetic? c =>
-      strconc(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
+      strconc('"[",charUpdate c,charDowncase c,'"]")
     c
 
 mkGrepPattern(s,key) ==
@@ -253,14 +255,14 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
   $options : local := options
   s := STRINGIMAGE x
 --s := DOWNCASE STRINGIMAGE x
-  addOptions remUnderscores addWilds split(g s,char '_*) where
+  addOptions remUnderscores addWilds split(g s,char "*") where
     addWilds sl ==    --add wild cards (sl is list of parts between *'s)
       IFCAR sl = '"" => h(IFCDR sl,[$wild1])
       h(sl,nil)
     g s  ==    --remove "*"s around pattern for text match
-      not MEMQ('w,$options) => s
-      if s.0 = char '_* then s := SUBSTRING(s,1,nil)
-      if s.(k := MAXINDEX s) = char '_* then s := SUBSTRING(s,0,k)
+      not ('w in $options) => s
+      if stringChar(s,0) = char "*" then s := subString(s,1)
+      if stringChar(s,k := maxIndex s) = char "*" then s := subString(s,0,k)
       s
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
@@ -268,19 +270,19 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       if not ('w in $options) then
         if first res ~= '"" then res := ['"`",:res]
         else if res is [.,p,:r] and p = $wild1 then res := r
-      strconc/nreverse res
+      strconc/reverse! res
     remUnderscores s ==
-      (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
-        strconc(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
-                remUnderscores(SUBSTRING(s,k + 2,nil)))
+      (k := charPosition(char $charUnderscore,s,0)) < maxIndex s =>
+        strconc(subString(s,0,k),'"[",s.(k + 1),'"]",
+                remUnderscores(subString(s,k + 2)))
       s
     split(s,char) ==
-      max := MAXINDEX s + 1
+      max := maxIndex s + 1
       f := -1
-      [SUBSTRING(s,i,f-i)
+      [subString(s,i,f-i)
         while ((i := f + 1) <= max) and (f := charPosition(char,s,i))]
     charPosition(c,t,startpos) ==  --honors underscores
-      n := SIZE t
+      n := # t
       if startpos < 0 or startpos > n then error "index out of range"
       k:= startpos
       for i in startpos .. n-1 while c ~= t.i
@@ -314,7 +316,7 @@ conform2OutputForm(form) ==
   [op,:args] := form
   null args => form
   cosig := rest getDualSignatureFromDB op
-  atypes := rest CDAR getConstructorModemapFromDB op
+  atypes := getConstructorModemapFromDB(op).mmSource
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]
     pred => conform2OutputForm x
@@ -358,7 +360,7 @@ spadType(x) ==  --called by \spadtype{x} from HyperDoc
 
 looksLikeDomainForm x ==
   entry := getCDTEntry(opOf x,true) or return false
-  coSig := LASSOC('coSig,CDDR entry)
+  coSig := symbolLassoc('coSig,CDDR entry)
   k := #coSig
   atom x => k = 1
   k ~= #x => false
@@ -369,7 +371,7 @@ looksLikeDomainForm x ==
 
 spadSys(x) ==   --called by \spadsyscom{x}
   s := PNAME x
-  if s.0 = char '_) then s := SUBSTRING(s,1,nil)
+  if stringChar(s,0) = char ")" then s := subString(s,1)
   form := ncParseFromString s or
            systemError ['"Argument: ",s,'" to spadType won't parse"]
   htSystemCommands PNAME opOf form
@@ -392,7 +394,8 @@ genSearch(filter,:options) == --"Complete" from HD (see man0.ht) and aokSearch
   if includeDoc? then
     docSearchAlist := grepConstruct(key,'w,true)
     docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-    docSearchAlist := [x for x in docSearchAlist | x.0 ~= char 'x]--drop defaults
+    docSearchAlist := [x for x in docSearchAlist
+                         | stringChar(x,0) ~= char "x"]--drop defaults
   genSearch1(filter,genSearchTran regSearchAlist,genSearchTran docSearchAlist)
 
 genSearchTran alist == [[x,y,:y] for [x,:y] in alist]
@@ -527,7 +530,7 @@ genSearchUniqueCount(u) ==
       lastid := id
   count
 
-dbGetName line == SUBSTRING(line,1,charPosition($tick,line,1) - 1)
+dbGetName line == subString(line,1,charPosition($tick,line,1) - 1)
 
 pluralSay(count,singular,plural,:options) ==
   item := (options is [x,:options] => x; '"")
@@ -546,7 +549,8 @@ docSearch filter ==  --"Documentation" from HD (see man0.ht)
   key := removeSurroundingStars filter
   docSearchAlist := grepConstruct(filter,'w,true)
   docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-  docSearchAlist := [x for x in docSearchAlist | x.0 ~= char 'x] --drop defaults
+  docSearchAlist := [x for x in docSearchAlist
+                       | stringChar(x,0) ~= char "x"] --drop defaults
   docSearch1(filter,genSearchTran docSearchAlist)
 
 docSearch1(filter,doc) ==
@@ -570,8 +574,9 @@ docSearch1(filter,doc) ==
 
 removeSurroundingStars filter ==
   key := STRINGIMAGE filter
-  if key.0 = char '_* then key := SUBSTRING(key,1,nil)
-  if key.(max := MAXINDEX key) = char '_* then key := SUBSTRING(key,0,max)
+  if stringChar(key,0) = char "*" then key := subString(key,1)
+  if stringChar(key,max := maxIndex key) = char "*" then
+    key := subString(key,0,max)
   key
 
 showNamedDoc([kind,:lines],index) ==
@@ -581,9 +586,9 @@ sayDocMessage message ==
   htSay('"{\em ")
   if message is [leftEnd,left,middle,right,rightEnd] then
     htSay(leftEnd,left,'"}")
-    if left ~= '"" and left.(MAXINDEX left) = $blank then htBlank()
+    if left ~= '"" and stringChar(left,maxIndex left) = $blank then htBlank()
     htSay middle
-    if right ~= '"" and right.0 = $blank then htBlank()
+    if right ~= '"" and stringChar(right,0) = $blank then htBlank()
     htSay('"{\em ",right,rightEnd)
   else
     htSay message
@@ -593,8 +598,8 @@ stripOffSegments(s,n) ==
   progress := true
   while n > 0 and progress = true repeat
     n := n - 1
-    k := charPosition(char '_`,s,0)
-    new := SUBSTRING(s,k + 1,nil)
+    k := charPosition(char "`",s,0)
+    new := subString(s,k + 1)
     #new < #s => s := new
     progress := false
   n = 0 => s
@@ -602,9 +607,9 @@ stripOffSegments(s,n) ==
 
 replaceTicksBySpaces s ==
   n := -1
-  max := MAXINDEX s
-  while (n := charPosition(char '_`,s,n + 1)) <= max repeat 
-    s.n := char " "
+  max := maxIndex s
+  while (n := charPosition(char "`",s,n + 1)) <= max repeat 
+    stringChar(s,n) := char " "
   s
 
 checkFilter filter ==
@@ -655,14 +660,14 @@ constructorSearch(filter,key,kind) ==
   (parse := conSpecialString? filter) => conPage parse
   pageName := LASSOC(DOWNCASE filter,'(("union" . DomainUnion)("record" . DomainRecord)("mapping" . DomainMapping) ("enumeration" . DomainEnumeration))) =>
     downlink pageName
-  name := (string? filter => INTERN filter; filter)
-  if u := HGET($lowerCaseConTb,name) then filter := STRINGIMAGE first u
+  name := (string? filter => makeSymbol filter; filter)
+  if u := tableValue($lowerCaseConTb,name) then filter := STRINGIMAGE first u
   line := conPageFastPath DOWNCASE filter =>
     code := dbKind line
     newkind :=
-      code = char 'p => '"package"
-      code = char 'd => '"domain"
-      code = char 'c => '"category"
+      code = char "p" => '"package"
+      code = char "d" => '"domain"
+      code = char "c" => '"category"
       nil
     kind = '"constructor" or kind = newkind => kPage line
     page := htInitPage('"Query Page",nil)
@@ -681,7 +686,7 @@ conSpecialString?(filter,:options) ==
   secondTime := IFCAR options
   parse :=
     words := string2Words filter is [s] => ncParseFromString s
-    and/[not member(x,'("and" "or" "not")) for x in words] => ncParseFromString filter
+    and/[not (x in '("and" "or" "not")) for x in words] => ncParseFromString filter
     false
   null parse => nil
   form := conLowerCaseConTran parse
@@ -699,30 +704,30 @@ dbString2Words l ==
 $dbDelimiters := [char " " , char "(", char ")"]
 
 dbWordFrom(l,i) ==
-  maxIndex := MAXINDEX l
-  while maxIndex >= i and l.i = char " " repeat i := i + 1
-  if maxIndex >= i and member(l.i, $dbDelimiters) then return [l.i, i + 1]
-  k := or/[j for j in i..maxIndex | not member(l.j, $dbDelimiters)] or return nil
+  idxmax := maxIndex l
+  while idxmax >= i and stringChar(l,i) = char " " repeat i := i + 1
+  if idxmax >= i and member(stringChar(l,i), $dbDelimiters) then return [l.i, i + 1]
+  k := or/[j for j in i..idxmax | not member(stringChar(l,j), $dbDelimiters)] or return nil
   buf := '""
-  while k <= maxIndex and not member(c := l.k, $dbDelimiters) repeat
+  while k <= idxmax and not member(c := stringChar(l,k), $dbDelimiters) repeat
     ch :=
-      c = char '__   => l.(k := 1+k)  --this may exceed bounds
+      c = char "__"   => l.(k := 1+k)  --this may exceed bounds
       c
     buf := strconc(buf,ch)
     k := k + 1
   [buf,k]
 
 conLowerCaseConTran x ==
-  IDENTP x => IFCAR HGET($lowerCaseConTb, x) or x
+  IDENTP x => IFCAR tableValue($lowerCaseConTb, x) or x
   atom x   => x
   [conLowerCaseConTran y for y in x]
 
 string2Constructor x ==
   not string? x => x
-  IFCAR HGET($lowerCaseConTb, INTERN DOWNCASE x) or x
+  IFCAR tableValue($lowerCaseConTb, makeSymbol DOWNCASE x) or x
 
 conLowerCaseConTranTryHarder x ==
-  IDENTP x => IFCAR HGET($lowerCaseConTb,DOWNCASE x) or x
+  IDENTP x => IFCAR tableValue($lowerCaseConTb,DOWNCASE x) or x
   atom x   => x
   [conLowerCaseConTranTryHarder y for y in x]
 
@@ -740,18 +745,18 @@ dbSearch(lines,kind,filter) == --called by attribute, operation, constructor sea
   lines is ['error,:.] => bcErrorPage lines
   null filter => nil      --means filter error
   lines is ['Abbreviations,:r] => dbSearchAbbrev(lines,kind,filter)
-  if member(kind,'("attribute" "operation")) then --should not be necessary!!
+  if kind in '("attribute" "operation") then --should not be necessary!!
     lines := dbScreenForDefaultFunctions lines
   count := #lines
   count = 0 => emptySearchPage(kind,filter)
-  member(kind,'("attribute" "operation")) => dbShowOperationLines(kind,lines)
+  kind in '("attribute" "operation") => dbShowOperationLines(kind,lines)
   dbShowConstructorLines lines
 
 dbSearchAbbrev([.,:conlist],kind,filter) ==
   null conlist => emptySearchPage('"abbreviation",filter)
   kind := intern kind
   if kind ~= 'constructor then
-    conlist := [x for x in conlist | LASSOC('kind,IFCDR IFCDR x) = kind]
+    conlist := [x for x in conlist | symbolLassoc('kind,IFCDR IFCDR x) = kind]
   conlist is [[nam,:.]] => conPage DOWNCASE nam
   cAlist := [[con,:true] for con in conlist]
   htPage := htInitPage('"",nil)
@@ -761,7 +766,7 @@ dbSearchAbbrev([.,:conlist],kind,filter) ==
   page := htInitPage([#conlist,
     '" Abbreviations Match {\em ",STRINGIMAGE filter,'"}"],nil)
   for [nam,abbr,:r] in conlist repeat
-    kind := LASSOC('kind,r)
+    kind := symbolLAssoc('kind,r)
     htSay('"\newline{\em ",s := STRINGIMAGE abbr)
     htSayStandard '"\tab{10}"
     htSay '"}"
@@ -831,17 +836,17 @@ generalSearchDo(htPage,flag) ==
   nargs:= generalSearchString(htPage,selectors.1)
   npat := standardizeSignature generalSearchString(htPage,selectors.2)
   kindCode :=
-    which = 'ops => char 'o
-    which = 'attrs => char 'a
+    which = 'ops => char "o"
+    which = 'attrs => char "a"
     acc := '""
-    if htButtonOn?(htPage,'cats) then acc := strconc(char 'c,acc)
-    if htButtonOn?(htPage,'doms) then acc := strconc(char 'd,acc)
-    if htButtonOn?(htPage,'paks) then acc := strconc(char 'p,acc)
-    if htButtonOn?(htPage,'defs) then acc := strconc(char 'x,acc)
+    if htButtonOn?(htPage,'cats) then acc := strconc('"c",acc)
+    if htButtonOn?(htPage,'doms) then acc := strconc('"d",acc)
+    if htButtonOn?(htPage,'paks) then acc := strconc('"p",acc)
+    if htButtonOn?(htPage,'defs) then acc := strconc('"x",acc)
     n := #acc
     n = 0 or n = 4 => '"[cdpx]"
     n = 1 => acc
-    strconc(char '_[,acc,char '_])
+    strconc('"[",acc,'"]")
   form := mkDetailedGrepPattern(kindCode,name,nargs,npat)
   lines := applyGrep(form,'libdb)
 --lines := dbReadLines resultFile
@@ -871,50 +876,40 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
   main() ==
     nottick := '"[^`]"
     name := replaceGrepStar name
-    firstPart :=
-      $saturn => strconc(char "^",name)
-      strconc(char "^",kind,name)
+    firstPart := strconc('"^",kind,name)
     nargsPart := replaceGrepStar nargs
-    exposedPart := char '_.   --always get exposed/unexposed
+    exposedPart := char "."   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
     simp strconc(conc(firstPart,conc(nargsPart,conc(exposedPart, patPart))),$tick)
   conc(a,b) ==
-    b = '"[^`]*" or b = char '_. => a
+    b = '"[^`]*" or b = char "." => a
     strconc(a,$tick,b)
   simp a ==
-    m := MAXINDEX a
-    m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
-      and     a.(m-3) = $tick    and a.(m-2) = char '_]
-          and a.(m-1) = char '_* and a.m = $tick
-            => simp SUBSTRING(a,0,m-5)
+    m := maxIndex a
+    m > 6 and stringChar(a,m-5) = char "[" and stringChar(a,m-4) = char "^"
+      and     stringChar(a,m-3) = $tick    and stringChar(a,m-2) = char "]"
+          and stringChar(a,m-1) = char "*" and stringChar(a,m) = $tick
+            => simp subString(a,0,m-5)
     a
 
 replaceGrepStar s ==
   s = "" => s
-  final := MAXINDEX s
-  i := charPosition(char '_*,s,0)
+  final := maxIndex s
+  i := charPosition(char "*",s,0)
   i > final => s
-  strconc(SUBSTRING(s,0,i),'"[^`]*",replaceGrepStar SUBSTRING(s,i + 1,nil))
+  strconc(subString(s,0,i),'"[^`]*",replaceGrepStar subString(s,i + 1))
 
 standardizeSignature(s) == underscoreDollars
-  s.0 = char '_( => s
+  stringChar(s,0) = char "(" => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
-  s.(k - 1) = char '_) => strconc(char '_(,s)
-  strconc(char '_(,SUBSTRING(s,0,k),char '_),SUBSTRING(s,k,nil))
+  stringChar(s,k - 1) = char ")" => strconc('"(",s)
+  strconc('"(",subString(s,0,k),'")",subString(s,k))
 
-underscoreDollars(s) == fn(s,0,MAXINDEX s) where
+underscoreDollars(s) == fn(s,0,maxIndex s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char '_$,s,i)) > n => SUBSTRING(s,i,nil)
-    strconc(SUBSTRING(s,i,m - i),'"___$",fn(s,m + 1,n))
-
---=======================================================================
---                     Code dependent on $saturn
---=======================================================================
-
-obey x ==
-  $saturn and not $aixTestSaturn => nil
-  runCommand x
+    (m := charPosition(char "$",s,i)) > n => subString(s,i)
+    strconc(subString(s,i,m - i),'"___$",fn(s,m + 1,n))
 
 --=======================================================================
 --                         I/O Code
@@ -933,9 +928,9 @@ dbWriteLines(s, :options) ==
   pathname
 
 dbReadLines target == --AIX only--called by grepFile
-  instream := OPEN target
-  lines := [READLINE instream while not EOFP instream]
-  CLOSE instream
+  instream := inputTextFile target
+  lines := [line := readLine instream while line ~= %nothing]
+  closeStream instream
   lines
 
 dbGetCommentOrigin line ==
@@ -943,12 +938,12 @@ dbGetCommentOrigin line ==
 --Comment lines have format  [dcpxoa]xxxxxx`ccccc... where
 --x's give pointer into libdb, c's are comments
   firstPart := dbPart(line,1,-1)
-  key := INTERN SUBSTRING(firstPart,0,1)    --extract this and throw away
-  address := SUBSTRING(firstPart, 1, nil)   --address in libdb
-  instream := OPEN grepSource key           --this always returns libdb now
+  key := makeSymbol subString(firstPart,0,1)    --extract this and throw away
+  address := subString(firstPart, 1)        --address in libdb
+  instream := inputTextFile grepSource key   --this always returns libdb now
   FILE_-POSITION(instream,readInteger address)
-  line := READLINE instream
-  CLOSE instream
+  line := readLine instream
+  closeStream instream
   line
 
 grepSource key ==
@@ -960,14 +955,15 @@ grepSource key ==
     'comdb
 
 mkGrepTextfile s == 
-  strconc(systemRootDirectory(),"/algebra/", STRINGIMAGE s, '".text")
+  strconc(systemRootDirectory(),'"/algebra/", STRINGIMAGE s, '".text")
+
+getTemporaryDirectory() ==
+  getEnv '"TMP" or getEnv '"TEMP"
+    or strconc(systemRootDirectory(),'"/algebra/")
 
 mkGrepFile s ==  --called to generate a path name for a temporary grep file
-  prefix :=
-    $standard or $aixTestSaturn => '"/tmp/"
-    strconc(systemRootDirectory(),'"/algebra/")
   suffix := getEnv '"SPADNUM"
-  strconc(prefix, PNAME s,'".txt.", suffix)
+  strconc(getTemporaryDirectory(), PNAME s,'".txt.", suffix)
 
 --=======================================================================
 --                     Grepping Code
@@ -977,35 +973,30 @@ grepFile(pattern,:options) ==
   key := (x := IFCAR options => (options := rest options; x); nil)
   source := grepSource key
   lines :=
-    not PROBE_-FILE source => NIL
-    $standard or $aixTestSaturn =>
-    -----AIX Version----------
-      target := getTempPath 'target
-      casepart :=
-        'iv in options => '"-vi"
-        '"-i"
-      command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
-      obey
-        member(key,'(a o c d p x)) =>
-          strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
-        strconc(command, '" > ",target)
-      dbReadLines target
-    ----Windows Version------
-    invert? := 'iv in options
-    GREP(source, pattern, false, not invert?)
+    not PROBE_-FILE source => nil
+    target := getTempPath 'target
+    casepart :=
+      'iv in options => '"-vi"
+      '"-i"
+    command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
+    runCommand
+      key in '(a o c d p x) =>
+        strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
+      strconc(command, '" > ",target)
+    dbReadLines target
   dbUnpatchLines lines
 
 dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
-  dash := char '_-
+  dash := char "-"
   acc := nil
   while lines is [line, :lines] repeat
     #line = 0 => 'skip     --skip blank lines
     acc :=
-      line.0 = dash and line.1 = dash =>
-        [strconc(first acc,SUBSTRING(line,2,nil)),:rest acc]
+      stringChar(line,0) = dash and line.1 = dash =>
+        [strconc(first acc,subString(line,2)),:rest acc]
       [line,:acc]
-  -- following call to nreverse needed to keep lines properly sorted
-  nreverse acc  ------> added by BMT 12/95
+  -- following call to reverse! needed to keep lines properly sorted
+  reverse! acc  ------> added by BMT 12/95
 
 
 

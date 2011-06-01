@@ -254,7 +254,7 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
        lyndon? w ==
          w = 1$OFMON => false
          f: OFMON := rest w
-         while f ~= 1$OFMON repeat
+         while not one? f repeat
            not lexico(w,f) => return false
            f := rest f
          true
@@ -807,7 +807,7 @@ PoincareBirkhoffWittLyndonBasis(VarSet: OrderedSet): Public == Private where
        null x.rest
 
      retract x == 
-        #x ~= 1 => error "cannot convert to Lyndon word"
+        not one?(#x) => error "cannot convert to Lyndon word"
         x.first
 
      retractIfCan x ==

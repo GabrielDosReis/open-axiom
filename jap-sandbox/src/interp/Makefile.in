@@ -1,97 +1,124 @@
+## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+## All rights reserved.
+## Copyright (C) 2007-2011, Gabriel Dos Reis.
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are
+## met:
+##
+##     - Redistributions of source code must retain the above copyright
+##       notice, this list of conditions and the following disclaimer.
+##
+##     - Redistributions in binary form must reproduce the above copyright
+##       notice, this list of conditions and the following disclaimer in
+##       the documentation and/or other materials provided with the
+##       distribution.
+##
+##     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+##       names of its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+## IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+## TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+## PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+## OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+## EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+## PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+## PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+## LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+##
+
 
 subdir = src/interp/
 
 IN=$(srcdir)
 DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
+
+# Do we still need this?
 AUTO=$(axiom_targetdir)/autoload
 
 autoload_objects =
 
-# Build platform-dependent Lisp image, at the base of other
-# derived Lisp images (interpsys, AXIOMsys)
-LISPSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
+# Driver to launch translation and compilation
+DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
 
-BOOTSYS= $(axiom_target_bindir)/bootsys$(EXEEXT) -- --syslib=$(axiom_target_libdir)
+# Translator from Boot to Lisp (or machine code)
+BOOTSYS = $(axiom_target_bindir)/bootsys$(EXEEXT)
 
+# Minimal OpenAxiom image necessary to build the algebra
 SAVESYS= interpsys$(EXEEXT)
+
+# Complete OpenAxiom image after completion of algebra, ready to install.
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
 OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	sys-driver.$(FASLEXT)	sys-constants.$(FASLEXT) \
-	hash.$(FASLEXT) 	 			 \
+	hash.$(FASLEXT) 	lisp-backend.$(FASLEXT)	 \
 	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
 	                    	sys-os.$(FASLEXT)	 \
 	sys-utility.$(FASLEXT)  diagnostics.$(FASLEXT)	 \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
 	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
-	unlisp.$(FASLEXT)	\
-	astr.$(FASLEXT)	bits.$(FASLEXT)	\
+	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
+	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
+	astr.$(FASLEXT)		bits.$(FASLEXT)		\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
-	br-search.$(FASLEXT)	\
-	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
-	g-util.$(FASLEXT)	hashcode.$(FASLEXT) \
+	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
+	buildom.$(FASLEXT)	hashcode.$(FASLEXT)	\
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
-	cformat.$(FASLEXT)		\
-	clam.$(FASLEXT)	        \
+	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
-	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
-	pathname.$(FASLEXT)	\
-	compat.$(FASLEXT)	                    	\
+	comp.$(FASLEXT)	        foam_l.$(FASLEXT) 	\
+	pathname.$(FASLEXT)	compat.$(FASLEXT)      	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
 	g-cndata.$(FASLEXT)	database.$(FASLEXT)	\
 	debug.$(FASLEXT)	dq.$(FASLEXT)		\
 	fname.$(FASLEXT)	format.$(FASLEXT)	\
-	g-error.$(FASLEXT)	g-opt.$(FASLEXT)	\
-	ggreater.$(FASLEXT)				\
-	hypertex.$(FASLEXT)	\
-	i-object.$(FASLEXT)	i-analy.$(FASLEXT)	\
-	i-code.$(FASLEXT)	i-resolv.$(FASLEXT)	\
-	i-coerce.$(FASLEXT)	\
-	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
-	i-funsel.$(FASLEXT)	\
+	g-error.$(FASLEXT)	ggreater.$(FASLEXT)	\
+	hypertex.$(FASLEXT)	i-object.$(FASLEXT)	\
+	i-analy.$(FASLEXT)	i-resolv.$(FASLEXT)	\
+	i-coerce.$(FASLEXT)	i-coerfn.$(FASLEXT)	\
+	i-eval.$(FASLEXT)	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
-	i-output.$(FASLEXT)	\
-	i-spec1.$(FASLEXT)				\
-	i-spec2.$(FASLEXT)	i-syscmd.$(FASLEXT)	\
-	i-toplev.$(FASLEXT)	i-util.$(FASLEXT)	\
-	incl.$(FASLEXT)	int-top.$(FASLEXT)	\
-	intfile.$(FASLEXT)	c-util.$(FASLEXT)	\
+	i-output.$(FASLEXT)	i-special.$(FASLEXT)	\
+	i-syscmd.$(FASLEXT)	i-toplev.$(FASLEXT)	\
+	i-util.$(FASLEXT)	incl.$(FASLEXT)		\
+	int-top.$(FASLEXT)	                   	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
-	match.$(FASLEXT)				\
-	monitor.$(FASLEXT)	msg.$(FASLEXT)		\
-	msgdb.$(FASLEXT)	\
+	match.$(FASLEXT)	monitor.$(FASLEXT)	\
+	msg.$(FASLEXT)		msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
-	nrunfast.$(FASLEXT)	\
-	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
-	osyscmd.$(FASLEXT)	\
-	packtran.$(FASLEXT)	\
-	pf2sex.$(FASLEXT)	\
+	nrunfast.$(FASLEXT)	osyscmd.$(FASLEXT)	\
+	packtran.$(FASLEXT)	pf2sex.$(FASLEXT)	\
 	scan.$(FASLEXT)		pile.$(FASLEXT)		\
-	property.$(FASLEXT)	\
-	postpar.$(FASLEXT)	parse.$(FASLEXT)	\
-	spad-parser.$(FASLEXT) \
-	record.$(FASLEXT)				\
-	rulesets.$(FASLEXT)	\
-	server.$(FASLEXT)				\
-	setvars.$(FASLEXT)	\
+	property.$(FASLEXT)	postpar.$(FASLEXT)	\
+	parse.$(FASLEXT)	spad-parser.$(FASLEXT) \
+	record.$(FASLEXT)	rulesets.$(FASLEXT)	\
+	server.$(FASLEXT)	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	slam.$(FASLEXT)		fnewmeta.$(FASLEXT)	\
 	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
-	spad.$(FASLEXT)	\
-	spaderror.$(FASLEXT)				\
+	spad.$(FASLEXT)		spaderror.$(FASLEXT)	\
 	                       	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
 	$(OCOBJS) $(BROBJS) $(ASCOMP) $(INOBJS)
 
+# Last minite patches.
+# FIXMEL: should be folded into the main object list.
 INOBJS=	setvart.$(FASLEXT) interop.$(FASLEXT) patches.$(FASLEXT)
 
+# Main compiler files.
 OCOBJS=	\
-	info.$(FASLEXT)		modemap.$(FASLEXT)	\
+	                  	modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
 	                    	compiler.$(FASLEXT)	\
 	c-doc.$(FASLEXT)	\
@@ -100,6 +127,7 @@ OCOBJS=	\
 
 autoload_objects += $(OCOBJS)
 
+# Browser component files.
 BROBJS=	bc-matrix.$(FASLEXT)				\
 	bc-misc.$(FASLEXT)	bc-solve.$(FASLEXT)	\
 	htsetvar.$(FASLEXT)	\
@@ -112,11 +140,6 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 	br-saturn.$(FASLEXT)
 
 autoload_objects += $(BFOBJS)
-
-TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT) \
-	  ${AUTO}/pspad2.$(FASLEXT) ${AUTO}/mark.$(FASLEXT) ${AUTO}/nspadaux.$(FASLEXT)
-
-autoload_objects += $(TRANOBJS)
 
 ASCOMP= as.$(FASLEXT) axext_l.$(FASLEXT)
 
@@ -132,8 +155,7 @@ YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
 .PRECIOUS:	${SAVESYS}
 .PRECIOUS:	${AXIOMSYS}
 
-UNUSED= ${DOC}/construc.lisp.dvi \
-	${DOC}/guess.boot.dvi \
+UNUSED= ${DOC}/guess.boot.dvi \
 	${DOC}/interp-fix.boot.dvi \
 	${DOC}/nhyper.boot.dvi ${DOC}/pf2atree.boot.dvi \
 	${DOC}/redefs.boot.dvi 	${DOC}/word.boot.dvi 
@@ -187,7 +209,7 @@ makeint.lisp: Makefile
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
+	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
@@ -195,9 +217,11 @@ makeint.lisp: Makefile
 ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
-	$(BOOTSYS) -- --system="$(AXIOM)/" --system-algebra \
-		--sysalg="$(axiom_src_datadir)/algebra/" \
+		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
+	$(DRIVER) --execpath=$(BOOTSYS) \
+		--syslib=$(axiom_target_libdir) \
+		--system="$(AXIOM)/" --system-algebra \
+		--sysdb="$(axiom_src_datadir)/algebra/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
@@ -210,8 +234,9 @@ all-axiomsys: ${AXIOMSYS}
 ${AXIOMSYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
-	$(BOOTSYS) -- \
+		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
+	$(DRIVER) --execpath=$(BOOTSYS) \
+		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
 		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
@@ -219,13 +244,12 @@ ${AXIOMSYS}: database.date \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
 	@ echo 6a $@ created
 exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
-	@ echo 615 making exposed.lsp from $(axiom_src_algdir)/exposed.lsp.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+	$(oa_hammer) --tangle --output=$@ $<
 
 $(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
-	@ echo 616 making $@ from exposed.lsp
 	$(mkdir_p) $(axiom_targetdir)/algebra
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 database.date:
 	@ echo 617 the database was updated...remaking interpsys
@@ -239,10 +263,12 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	@cp -p $< $@
 
 %.$(LNKEXT) %.$(FASLEXT): %.boot
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 %.$(LNKEXT) %.$(FASLEXT): %.lisp
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 ## Translation to Fortran
 fortcall.$(FASLEXT): sys-macros.$(FASLEXT)
@@ -261,7 +287,7 @@ br-util.$(FASLEXT): bc-util.$(FASLEXT)
 bc-solve.$(FASLEXT): bc-matrix.$(FASLEXT)
 bc-matrix.$(FASLEXT): bc-util.$(FASLEXT)
 bc-misc.$(FASLEXT): bc-util.$(FASLEXT)
-bc-util.$(FASLEXT): ht-util.$(FASLEXT)
+bc-util.$(FASLEXT): ht-util.$(FASLEXT) c-util.$(FASLEXT)
 ht-root.$(FASLEXT): ht-util.$(FASLEXT)
 htcheck.$(FASLEXT): sys-driver.$(FASLEXT) macros.$(FASLEXT)
 ht-util.$(FASLEXT): macros.$(FASLEXT)
@@ -279,8 +305,7 @@ int-top.$(FASLEXT): incl.$(FASLEXT) i-toplev.$(FASLEXT) unlisp.$(FASLEXT)
 i-toplev.$(FASLEXT): i-analy.$(FASLEXT)
 i-syscmd.$(FASLEXT): i-object.$(FASLEXT)
 i-output.$(FASLEXT): sys-macros.$(FASLEXT)
-i-spec2.$(FASLEXT): i-spec1.$(FASLEXT)
-i-spec1.$(FASLEXT): i-analy.$(FASLEXT)
+i-special.$(FASLEXT): i-analy.$(FASLEXT)
 i-funsel.$(FASLEXT): i-coerfn.$(FASLEXT)
 i-map.$(FASLEXT): i-object.$(FASLEXT)
 i-eval.$(FASLEXT): i-analy.$(FASLEXT)
@@ -289,30 +314,26 @@ i-coerce.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
 i-resolv.$(FASLEXT): i-object.$(FASLEXT)
 i-analy.$(FASLEXT): i-object.$(FASLEXT)
 i-intern.$(FASLEXT): i-object.$(FASLEXT) ptrees.$(FASLEXT)
-i-code.$(FASLEXT): i-object.$(FASLEXT)
-i-object.$(FASLEXT): g-util.$(FASLEXT)
-i-util.$(FASLEXT): g-util.$(FASLEXT)
+i-object.$(FASLEXT): i-util.$(FASLEXT)
+i-util.$(FASLEXT): c-util.$(FASLEXT)
 format.$(FASLEXT): macros.$(FASLEXT)
 match.$(FASLEXT): sys-macros.$(FASLEXT)
 record.$(FASLEXT): nlib.$(FASLEXT) pathname.$(FASLEXT)
 setvart.$(FASLEXT): macros.$(FASLEXT)
 
 ## OpenAxiom's compiler
-wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
-wi1.$(FASLEXT): macros.$(FASLEXT)
 compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
-nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
-nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) \
-	simpbool.$(FASLEXT) functor.$(FASLEXT)
+nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 	nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
-		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) nrungo.$(FASLEXT) lisplib.$(FASLEXT)
-category.$(FASLEXT): g-util.$(FASLEXT) g-cndata.$(FASLEXT)
-cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
+		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
+		c-util.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
+category.$(FASLEXT): c-util.$(FASLEXT) g-cndata.$(FASLEXT)
+cattable.$(FASLEXT): simpbool.$(FASLEXT) c-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): macros.$(FASLEXT)
 newfort.$(FASLEXT): macros.$(FASLEXT)
@@ -335,14 +356,13 @@ server.$(FASLEXT): macros.$(FASLEXT)
 ## While in theory that should work, in practice it turns out that 
 ## people tend to override functions in the autoload part, correcting
 ## bugs only there.  The consequence is that the same function will
-## bahave very differently based on the history of the seesion.  Ideal
+## behave very differently based on the history of the seesion.  Ideal
 ## recipe for creating heisenbugs.
 ##
 
 ## The old parser component roughtly is:
 ##
 spad-parser.$(FASLEXT): parse.$(FASLEXT)
-mark.$(FASLEXT): macros.$(FASLEXT)
 parse.$(FASLEXT): metalex.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
@@ -386,14 +406,12 @@ debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)
 property.$(FASLEXT): sys-macros.$(FASLEXT)
-nspadaux.$(FASLEXT): sys-macros.$(FASLEXT)
 sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
 trace.$(FASLEXT): debug.$(FASLEXT)
 termrw.$(FASLEXT): macros.$(FASLEXT)
-showimp.$(FASLEXT): macros.$(FASLEXT)
+showimp.$(FASLEXT): c-util.$(FASLEXT)
 sfsfun.$(FASLEXT): macros.$(FASLEXT)
-modemap.$(FASLEXT): c-util.$(FASLEXT) info.$(FASLEXT)
-info.$(FASLEXT): g-util.$(FASLEXT)
+modemap.$(FASLEXT): c-util.$(FASLEXT) 
 slam.$(FASLEXT): g-timer.$(FASLEXT)
 clammed.$(FASLEXT): g-timer.$(FASLEXT)
 clam.$(FASLEXT): g-timer.$(FASLEXT)
@@ -404,15 +422,13 @@ g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)
 hashcode.$(FASLEXT): g-util.$(FASLEXT)
-pspad2.$(FASLEXT): pspad1.$(FASLEXT)
-pspad1.$(FASLEXT): macros.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) sys-utility.$(FASLEXT)
-g-cndata.$(FASLEXT): sys-macros.$(FASLEXT)
+g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 util.$(FASLEXT): parsing.$(FASLEXT)
 fname.$(FASLEXT): macros.$(FASLEXT)
 sys-macros.$(FASLEXT): diagnostics.$(FASLEXT) union.$(FASLEXT)
-buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
+buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 diagnostics.$(FASLEXT): sys-globals.$(FASLEXT) vmlisp.$(FASLEXT)
 sys-driver.$(FASLEXT): sys-driver.boot types.$(FASLEXT)
 sys-globals.$(FASLEXT): sys-constants.$(FASLEXT) hash.$(FASLEXT)
@@ -423,6 +439,7 @@ union.$(FASLEXT): vmlisp.$(FASLEXT)
 ggreater.$(FASLEXT): vmlisp.$(FASLEXT)
 axext_l.$(FASLEXT): foam_l.$(FASLEXT)
 foam_l.$(FASLEXT): vmlisp.$(FASLEXT) sys-constants.$(FASLEXT)
+lisp-backend.$(FASLEXT): sys-macros.$(FASLEXT)
 sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT) hash.$(FASLEXT)
 vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
 types.$(FASLEXT): boot-pkg.$(FASLEXT)

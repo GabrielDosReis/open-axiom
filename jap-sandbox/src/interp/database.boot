@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 
 import nlib
 import g_-cndata
+import c_-util
 import clam
 import cattable
 import compat
@@ -46,7 +47,7 @@ $globalExposureGroupAlist := []
 --% 
 
 pathToDatabase name ==
-  if dbdir := systemAlgebraDirectory() then
+  if dbdir := systemDatabaseDirectory() then
     path := strconc(dbdir,name)
     if $verbose then
       FORMAT(true,'"   Using local database ~a..",path)
@@ -57,125 +58,125 @@ pathToDatabase name ==
 
 --%
 
-getConstructorAbbreviationFromDB: %Symbol -> %Symbol
+getConstructorAbbreviationFromDB: %Constructor -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
   GETDATABASE(ctor,"ABBREVIATION")
 
-getConstructorCategoryFromDB: %Symbol -> %Form
+getConstructorCategoryFromDB: %Constructor -> %Form
 getConstructorCategoryFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
 
-getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
+getConstructorKindFromDB: %Constructor -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORKIND")
 
-getConstructorAncestorsFromDB: %Symbol -> %List
+getConstructorAncestorsFromDB: %Constructor -> %List %Constructor
 getConstructorAncestorsFromDB ctor ==
   GETDATABASE(ctor,"ANCESTORS")
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
-getConstructorModemapFromDB: %Symbol -> %Mode
+getConstructorModemapFromDB: %Constructor -> %Mode
 getConstructorModemapFromDB form ==
   GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
  
-getConstructorFormFromDB: %Symbol -> %Form
+getConstructorFormFromDB: %Constructor -> %Form
 getConstructorFormFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORFORM")
 
-getConstructorSourceFileFromDB: %Symbol -> %Maybe %String
+getConstructorSourceFileFromDB: %Constructor -> %Maybe %String
 getConstructorSourceFileFromDB ctor ==
   GETDATABASE(ctor,"SOURCEFILE")
 
-getConstructorModuleFromDB: %Symbol -> %Maybe %String
+getConstructorModuleFromDB: %Constructor -> %Maybe %String
 getConstructorModuleFromDB ctor ==
   GETDATABASE(ctor,"OBJECT")
 
-getConstructorDocumentationFromDB: %Symbol -> %List
+getConstructorDocumentationFromDB: %Constructor -> %List %Form
 getConstructorDocumentationFromDB ctor ==
   GETDATABASE(ctor,"DOCUMENTATION")
 
-getConstructorOperationsFromDB: %Symbol -> %List
+getConstructorOperationsFromDB: %Constructor -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
   GETDATABASE(ctor,"OPERATIONALIST")
 
-getConstructorFullNameFromDB: %Symbol -> %Symbol
+getConstructorFullNameFromDB: %Symbol -> %Constructor
 getConstructorFullNameFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTOR")
 
-getConstructorArgsFromDB: %Symbol -> %List
+getConstructorArgsFromDB: %Constructor -> %List %Symbol
 getConstructorArgsFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORARGS")
 
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
-getDualSignatureFromDB: %Symbol -> %Form
+getDualSignatureFromDB: %Constructor -> %Form
 getDualSignatureFromDB ctor ==
   GETDATABASE(ctor,"COSIG")
 
-getConstructorPredicatesFromDB: %Symbol -> %Thing
+getConstructorPredicatesFromDB: %Constructor -> %List %Thing
 getConstructorPredicatesFromDB ctor ==
   GETDATABASE(ctor,"PREDICATES")
 
-getConstructorParentsFromDB: %Symbol -> %List
+getConstructorParentsFromDB: %Constructor -> %List %Constructor
 getConstructorParentsFromDB ctor ==
   GETDATABASE(ctor,"PARENTS")
 
-getSuperDomainFromDB: %Symbol -> %Form
+getSuperDomainFromDB: %Constructor -> %Form
 getSuperDomainFromDB ctor ==
   GETDATABASE(ctor,"SUPERDOMAIN")
 
-getConstructorAttributesFromDB: %Symbol -> %Form
+getConstructorAttributesFromDB: %Constructor -> %Form
 getConstructorAttributesFromDB ctor ==
   GETDATABASE(ctor,"ATTRIBUTES")
 
-niladicConstructorFromDB: %Symbol -> %Boolean
+niladicConstructorFromDB: %Constructor -> %Boolean
 niladicConstructorFromDB ctor ==
   GETDATABASE(ctor,"NILADIC")
 
-asharpConstructorFromDB: %Symbol -> %Maybe %Symbol
+asharpConstructorFromDB: %Constructor -> %Maybe %Symbol
 asharpConstructorFromDB ctor ==
   GETDATABASE(ctor,"ASHARP?")
 
-constructorHasCategoryFromDB: %Pair -> %Thing
+constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
 constructorHasCategoryFromDB p ==
   GETDATABASE(p,"HASCATEGORY")
 
-getConstructorDefaultFromDB: %Symbol -> %Maybe %Symbol
+getConstructorDefaultFromDB: %Constructor -> %Maybe %Symbol
 getConstructorDefaultFromDB ctor ==
   GETDATABASE(ctor,"DEFAULTDOMAIN")
 
-getOperationFromDB: %Symbol -> %List
+getOperationFromDB: %Symbol -> %List %Sig
 getOperationFromDB op ==
   GETDATABASE(op,"OPERATION")
 
-getOperationModemapsFromDB: %Symbol -> %List
+getOperationModemapsFromDB: %Symbol -> %List %Modemap
 getOperationModemapsFromDB op ==
   GETDATABASE(op,"MODEMAPS")
 
 
-getConstructorArity: %Symbol -> %Short
+getConstructorArity: %Constructor -> %Short
 getConstructorArity ctor ==
   sig := getConstructorSignature ctor => #rest sig
   -1
 
-getConstructorKind: %Symbol -> %Maybe %ConstructorKind
+getConstructorKind: %Constructor -> %Maybe %ConstructorKind
 getConstructorKind ctor ==
   kind := getConstructorKindFromDB ctor =>
-    kind = "domain" and isDefaultPackageName ctor => "package"
+    kind is "domain" and isDefaultPackageName ctor => "package"
     kind
-  ctor in $DomainNames => "domain"
-  ctor in $CategoryNames => "category"
+  builtinFunctorName? ctor => "domain"
+  builtinCategoryName? ctor => "category"
   nil
 
 --% Functions for manipulating MODEMAP DATABASE
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
   sl := [["$",:"*1"],:pairList(argl,rest $PatternVariableList)]
-  form:= SUBLIS(sl,form)
-  body:= SUBLIS(sl,body)
-  signature:= SUBLIS(sl,signature)
-  opAlist:= SUBLIS(sl,$domainShell.(1)) or return nil
+  form:= applySubst(sl,form)
+  body:= applySubst(sl,body)
+  signature:= applySubst(sl,signature)
+  opAlist:= applySubst(sl,categoryExports $domainShell) or return nil
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
   domainList:=
@@ -183,7 +184,7 @@ augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
       isCategoryForm(m,$EmptyEnvironment)]
   catPredList:= [['ofCategory,:u] for u in [["*1",form],:domainList]]
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
-    member(sig,LASSOC(op,nonCategorySigAlist)) repeat
+    listMember?(sig,LASSOC(op,nonCategorySigAlist)) repeat
       pred':= MKPF([pred,:catPredList],'AND)
       modemap:= [["*1",:sig],[pred',sel]]
       $lisplibModemapAlist:=
@@ -194,14 +195,14 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   opAlist:= formal2Pattern opAlist
   signature:= formal2Pattern signature
   for u in form for v in signature repeat
-    if MEMQ(u,$PatternVariableList) then
+    if symbolMember?(u,$PatternVariableList) then
       -- we are going to be EVALing categories containing these
       -- pattern variables
       $e:=put(u,'mode,v,$e)
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps first signature or return nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
-    or/[member(sig,catSig) for catSig in
+    or/[listMember?(sig,catSig) for catSig in
       allLASSOCs(op,nonCategorySigAlist)] repeat
         skip:=
           argl and CONTAINED("$",rest sig) => 'SKIP
@@ -211,11 +212,11 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
         --get relevant predicates
         predList:=
           [[a,m] for a in argl for m in rest signature
-            | MEMQ(a,$PatternVariableList)]
+            | symbolMember?(a,$PatternVariableList)]
         sig:= substitute(form,"$",sig)
         pred':= MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
         l:=listOfPatternIds predList
-        if "OR"/[null MEMQ(u,l) for u in argl] then
+        if "OR"/[null symbolMember?(u,l) for u in argl] then
           sayMSG ['"cannot handle modemap for",:bright op,
                           '"by pattern match" ]
           skip:= 'SKIP
@@ -263,14 +264,14 @@ saveUsersHashTable() ==
   _$ERASE('USERS,'DATABASE,'a)
   stream:= writeLib1('USERS,'DATABASE,'a)
   for k in MSORT HKEYS $usersTb repeat
-    rwrite(k, HGET($usersTb, k), stream)
+    rwrite(k, tableValue($usersTb, k), stream)
   RSHUT stream
 
 saveDependentsHashTable() ==
   _$ERASE('DEPENDENTS,'DATABASE,'a)
   stream:= writeLib1('DEPENDENTS,'DATABASE,'a)
   for k in MSORT HKEYS $depTb repeat
-    rwrite(k, HGET($depTb, k), stream)
+    rwrite(k, tableValue($depTb, k), stream)
   RSHUT stream
 
 getUsersOfConstructor(con) ==
@@ -297,9 +298,9 @@ orderPredTran(oldList,sig,skip) ==
   -----  (isDomain *1 ..)
   for pred in oldList repeat
     ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
-       and pvar=first sig and not (pvar in rest sig)) or
-        (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
-          oldList:=delete(pred,oldList)
+       and pvar=first sig and not symbolMember?(pvar,rest sig)) or
+        (not skip and pred is ['isDomain,pvar,.] and pvar is "*1")) =>
+          oldList := remove(oldList,pred)
           lastPreds:=[pred,:lastPreds]
 --sayBrightlyNT "lastPreds="
 --pp lastPreds
@@ -328,7 +329,7 @@ orderPredTran(oldList,sig,skip) ==
         and INTERSECTIONQ(indepvl,lastDependList) =>
       somethingDone := true
       lastPreds := [:lastPreds,x]
-      oldList := delete(x,oldList)
+      oldList := remove(oldList,x)
 --if somethingDone then
 --  sayBrightlyNT "Again lastPreds="
 --  pp lastPreds
@@ -336,17 +337,17 @@ orderPredTran(oldList,sig,skip) ==
 --  pp oldList
 
   --(3b) newList= list of ofCat/isDom entries that don't depend on
-  while oldList repeat
+  while oldList ~= nil repeat
     for x in oldList repeat
       if (x is ['ofCategory,v,body]) or (x is ['isDomain,v,body]) then
-        indepvl:=listOfPatternIds v
-        depvl:=listOfPatternIds body
+        indepvl := listOfPatternIds v
+        depvl := listOfPatternIds body
       else
         indepvl := listOfPatternIds x
         depvl := nil
       (INTERSECTIONQ(indepvl,dependList) = nil) =>
-        dependList:= setDifference(dependList,depvl)
-        newList:= [:newList,x]
+        dependList := setDifference(dependList,depvl)
+        newList := [:newList,x]
 --  sayBrightlyNT "newList="
 --  pp newList
 
@@ -362,7 +363,7 @@ orderPredTran(oldList,sig,skip) ==
   for pred in newList repeat
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
       ids:= listOfPatternIds y
-      if "and"/[id in fullDependList for id in ids] then
+      if "and"/[symbolMember?(id,fullDependList) for id in ids] then
         fullDependList:= insertWOC(x,fullDependList)
       fullDependList:= UNIONQ(fullDependList,ids)
 
@@ -384,7 +385,7 @@ isDomainSubst u == main where
     u
   fn(x,alist) ==
     atom x =>
-      IDENTP x and MEMQ(x,$PatternVariableList) and (s := findSub(x,alist)) => s
+      IDENTP x and symbolMember?(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
     [first x,:[fn(y,alist) for y in rest x]]
   findSub(x,alist) ==
@@ -405,7 +406,7 @@ interactiveModemapForm mm ==
   mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
   [pattern:=[dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
-    x is [a,b,c] and a ~= 'isFreeFunction and atom c => [a,b,[c]]
+    x is [a,b,c] and a isnt 'isFreeFunction and atom c => [a,b,[c]]
     x
 --pp pred
   [mmpat, patternAlist, partial, patvars] :=
@@ -430,7 +431,7 @@ modemapPattern(mmPattern,sig) ==
   partial := false
   for xTails in tails mmPattern repeat
     x := first xTails
-    if x is ['Union,dom,tag] and tag = '"failed" and xTails=sig then
+    if x is ['Union,dom,'"failed"] and xTails=sig then
       x := dom
       partial := true
     patvar := rassoc(x,patternAlist)
@@ -439,25 +440,25 @@ modemapPattern(mmPattern,sig) ==
     patvars := rest patvars
     mmpat := [patvar,:mmpat]
     patternAlist := [[patvar,:x],:patternAlist]
-  [nreverse mmpat,patternAlist,partial,patvars]
+  [reverse! mmpat,patternAlist,partial,patvars]
 
 substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
-  domainPredicates := nil
+  domPreds := nil
   for [[patVar,:value],:.] in tails patternAlist repeat
     pred := MSUBST(patVar,value,pred)
     patternAlist := nsubst(patVar,value,patternAlist)
-    domainPredicates := MSUBST(patVar,value,domainPredicates)
-    if not MEMQ(value,$FormalMapVariableList) then
-      domainPredicates := [["isDomain",patVar,value],:domainPredicates]
-  everything := [pred,patternAlist,domainPredicates]
+    domPreds := MSUBST(patVar,value,domPreds)
+    if not symbolMember?(value,$FormalMapVariableList) then
+      domPreds := [["isDomain",patVar,value],:domPreds]
+  everything := [pred,patternAlist,domPreds]
   for var in $FormalMapVariableList repeat
     CONTAINED(var,everything) =>
       replacementVar := first patternVarList
       patternVarList := rest patternVarList
       pred := substitute(replacementVar,var,pred)
-      domainPredicates := substitute(replacementVar,var,domainPredicates)
-  [pred, domainPredicates]
+      domPreds := substitute(replacementVar,var,domPreds)
+  [pred, domPreds]
 
 fixUpPredicate(predClause, domainPreds, partial, sig) ==
   --  merge the predicates in predClause and domainPreds into a
@@ -574,7 +575,7 @@ getModemapsFromDatabase(op,nargs) ==
 
 getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
-    mms := NIL
+    mms := nil
     for (x := [[.,:sig],.]) in mml repeat
       (integer? nargs) and (nargs ~= # sig.source) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
@@ -633,16 +634,16 @@ mkDatabasePred [a,t] ==
   ['ofType,a,t]
 
 formal2Pattern x ==
-  SUBLIS(pairList($FormalMapVariableList,rest $PatternVariableList),x)
+  applySubst(pairList($FormalMapVariableList,rest $PatternVariableList),x)
 
 updateDatabase(fname,cname,systemdir?) ==
  -- for now in NRUNTIME do database update only if forced
   not $forceDatabaseUpdate => nil
   -- these modemaps are never needed in the old scheme
-  if oldFname := constructor? cname then
+  if oldFname := getConstructorAbbreviationFromDB cname then
     clearClams()
     clearAllSlams []
-    if GETL(cname, 'LOADED) then
+    if property(cname, 'LOADED) then
       clearConstructorCaches()
   if $forceDatabaseUpdate or not systemdir? then
     clearClams()
@@ -683,16 +684,17 @@ getOplistForConstructorForm (form := [op,:argl]) ==
 
 getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
   alist:= nil
-  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind ~= 'Subsumed repeat
-    alist:= insertAlist(SUBLIS(pairlis,[op,sig]),
-                SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
+  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind isnt 'Subsumed repeat
+    alist:= insertAlist(applySubst(pairlis,[op,sig]),
+                applySubst(pairlis,[pred,[kind,nil,slotNumber]]),
                 alist)
   alist
 
 --% Exposure Group Code
 
 dropPrefix(fn) ==
-  member(fn.0,[char "?",char "-",char "+"]) => SUBSTRING(fn,1,nil)
+  charMember?(stringChar(fn,0),[char "?",char "-",char "+"]) =>
+    subString(fn,1)
   fn
 
 --moved to util.lisp
@@ -701,12 +703,12 @@ dropPrefix(fn) ==
 --++--  null MAKE_-INPUT_-FILENAME(egFile) =>
 --++--    throwKeyedMsg("S2IL0003",[namestring egFile])
 --++  stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,:egFile]],80,0)
---++  $globalExposureGroupAlist := NIL
---++  egName  := NIL
---++  egFiles := NIL
---++  while (not PLACEP (x:= readLine stream)) repeat
+--++  $globalExposureGroupAlist := nil
+--++  egName  := nil
+--++  egFiles := nil
+--++  while (x:= readLine stream) ~= %nothing repeat
 --++    x := DROPTRAILINGBLANKS x
---++    SIZE(x) = 0 => 'iterate                         -- blank line
+--++    # x = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment
 --++    x.0 = char " " =>
 --++       -- possible exposure group member name and library name
@@ -714,25 +716,25 @@ dropPrefix(fn) ==
 --++     throwKeyedMsg("S2IZ0069A",[namestring egFile,x])
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
---++       p := STRPOS('" ",x,1,NIL)
+--++       p := STRPOS('" ",x,1,nil)
 --++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
---++       n := object2Identifier SUBSTRING(x,0,p)
---++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)
---++       SIZE(x) = 0 =>
+--++       n := object2Identifier subString(x,0,p)
+--++       x := dropLeadingBlanks subString(x,p+1)
+--++       # x = 0 =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       egFiles := [[n,:object2Identifier x],:egFiles]
 --++    -- have a new group name
 --++    if egName then $globalExposureGroupAlist :=
---++      [[egName,:nreverse egFiles],:$globalExposureGroupAlist]
---++    egFiles := NIL
---++    STRPOS('" ",x,1,NIL) =>
+--++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
+--++    egFiles := nil
+--++    STRPOS('" ",x,1,nil) =>
 --++      throwKeyedMsg("S2IZ0069C",[namestring egFile,x])
 --++    egName := object2Identifier x
 --++  if egFiles then $globalExposureGroupAlist :=
---++      [[egName,:nreverse egFiles],:$globalExposureGroupAlist]
+--++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
 --++  SHUT stream
---++  $globalExposureGroupAlist := nreverse $globalExposureGroupAlist
+--++  $globalExposureGroupAlist := reverse! $globalExposureGroupAlist
 --++  'done
 
 isExposedConstructor name ==
@@ -743,12 +745,12 @@ isExposedConstructor name ==
   --   slot 1: list of constructors explicitly exposed
   --   slot 2: list of constructors explicitly hidden
   -- check if it is explicitly hidden
-  name in '(Union Record Mapping) => true
-  MEMQ(name,$localExposureData.2) => false
+  builtinConstructor? name => true
+  symbolMember?(name,$localExposureData.2) => false
   -- check if it is explicitly exposed
-  MEMQ(name,$localExposureData.1) => true
+  symbolMember?(name,$localExposureData.1) => true
   -- check if it is in an exposed group
-  found := NIL
+  found := nil
   for g in $localExposureData.0 while not found repeat
     null (x := GETALIST($globalExposureGroupAlist,g)) => 'iterate
     if GETALIST(x,name) then found := true
@@ -762,7 +764,7 @@ displayExposedGroups() ==
       centerAndHighlight g
 
 displayExposedConstructors() ==
-  sayKeyedMsg("S2IZ0049B",NIL)
+  sayKeyedMsg("S2IZ0049B",nil)
   if null $localExposureData.1
     then centerAndHighlight
       '"there are no explicitly exposed constructors"
@@ -770,7 +772,7 @@ displayExposedConstructors() ==
       centerAndHighlight c
 
 displayHiddenConstructors() ==
-  sayKeyedMsg("S2IZ0049C",NIL)
+  sayKeyedMsg("S2IZ0049C",nil)
   if null $localExposureData.2
     then centerAndHighlight
       '"there are no explicitly hidden constructors"
@@ -782,14 +784,9 @@ displayHiddenConstructors() ==
 --%
 
 
-++ Return the list of modemaps exported by the category object `c'.
-++ The format of modemap is as found in category objects.
-getCategoryExports: %Shell -> %List
-getCategoryExports c == c.1
-
 ++ Return the list of category attribute info for the category object `c'.
 ++ A category attribute info is pair of attribute-predicate.
-getCategoryAttributes: %Shell -> %List
+getCategoryAttributes: %Shell -> %List %Form
 getCategoryAttributes c == c.2
 
 
@@ -799,7 +796,7 @@ getCategoryParents c == c.4.1
 
 
 --%
-squeezeAll: %List -> %List
+squeezeAll: %List %Code -> %List %Code
 squeezeAll x ==
   [SQUEEZE t for t in x]
 

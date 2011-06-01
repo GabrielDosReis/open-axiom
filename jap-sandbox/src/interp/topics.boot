@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import macros
 namespace BOOT
 
 $topicsDefaults := '(
-  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map_! qsetelt_!)
+  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map! qsetelt!)
   (conversion coerce convert retract)
   (hidden retractIfCan Zero One)
   (predicate _< _=)
@@ -44,7 +44,7 @@ $topicsDefaults := '(
   (hyperbolic acosh acoth acsch asech asinh atanh cosh coth csch sech sinh tanh)
   (destructive setelt qsetelt)
   (extraction xRange yRange zRange elt qelt)
-  (transformation map map_!))
+  (transformation map map!))
 
 $topicSynonyms := '(
   (b . basic)
@@ -65,19 +65,19 @@ $topicSynonyms := '(
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
 $topicHash := hashTable 'EQ
-SETF(GETHASH("basic",$topicHash),2)
-SETF(GETHASH("algebraic",$topicHash),4)
-SETF(GETHASH("miscellaneous",$topicHash),13)
-SETF(GETHASH("extraction",$topicHash),6)
-SETF(GETHASH("conversion",$topicHash),7)
-SETF(GETHASH("hidden",$topicHash),3)
-SETF(GETHASH("extended",$topicHash),1)
-SETF(GETHASH("destructive",$topicHash),5)
-SETF(GETHASH("transformation",$topicHash),10)
-SETF(GETHASH("hyperbolic",$topicHash),12)
-SETF(GETHASH("construct",$topicHash),9)
-SETF(GETHASH("predicate",$topicHash),8)
-SETF(GETHASH("trignometric",$topicHash),11)
+GETHASH("basic",$topicHash) := 2
+GETHASH("algebraic",$topicHash) := 4
+GETHASH("miscellaneous",$topicHash) := 13
+GETHASH("extraction",$topicHash) := 6
+GETHASH("conversion",$topicHash) := 7
+GETHASH("hidden",$topicHash) := 3
+GETHASH("extended",$topicHash) := 1
+GETHASH("destructive",$topicHash) := 5
+GETHASH("transformation",$topicHash) := 10
+GETHASH("hyperbolic",$topicHash) := 12
+GETHASH("construct",$topicHash) := 9
+GETHASH("predicate",$topicHash) := 8
+GETHASH("trignometric",$topicHash) := 11
 
 
 --=======================================================================
@@ -88,65 +88,65 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
-      HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
+      tableValue($defaultsHash,item) := [kind,:tableValue($defaultsHash,item)]
   $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
-  instream := OPEN '"topics.data"           
+  instream := inputTextFile '"topics.data"           
   while not EOFP instream repeat
-    line := READLINE instream
-    while blankLine? line repeat line := READLINE instream
-    m := MAXINDEX line                        --file "topics.data" has form:
+    line := readLine instream
+    while blankLine? line repeat line := readLine instream
+    m := maxIndex line                        --file "topics.data" has form:
     m = -1 => 'skip                           --1   ConstructorName:
-    line.0 = char '_- => 'skip                --2      constructorName or operation name
+    stringChar(line,0) = char "-" => 'skip    --2      constructorName or operation name
     line := trimString line                   --3-n    ...
-    m := MAXINDEX line                        --     (blank line) ...
-    line.m ~= (char '_:) => systemError('"wrong heading")
-    con := INTERN SUBSTRING(line,0,m)
-    alist := [lst while not EOFP instream and 
-       not (blankLine? (line := READLINE instream)) and
-         line.0 ~= char '_- for i in 1..
+    m := maxIndex line                        --     (blank line) ...
+    stringChar(line,m) ~= char ":" => systemError('"wrong heading")
+    con := makeSymbol subString(line,0,m)
+    alist := [lst while (line := readLine instream) ~= %nothing and 
+       not blankLine? line and
+         stringChar(line,0) ~= char "-" for i in 1..
            | lst := string2OpAlist line]
-    alist => HPUT($conTopicHash,con,alist)
+    alist => tableValue($conTopicHash,con) := alist
   --initialize table of topic classes
   $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
-  for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
-  $topicIndex := rest LAST $groupAssoc
+  for [x,:c] in $groupAssoc repeat tableValue($topicHash,x) := c
+  $topicIndex := rest last $groupAssoc
 
   --replace each property list by a topic code
   --store under each construct an OR of all codes
   for con in HKEYS $conTopicHash repeat
     conCode := 0
-    for pair in HGET($conTopicHash,con) repeat 
+    for pair in tableValue($conTopicHash,con) repeat 
       pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
-    HPUT($conTopicHash,con,
-      [['constructor,:conCode],:HGET($conTopicHash,con)])      
+    tableValue($conTopicHash,con) := 
+      [['constructor,:conCode],:tableValue($conTopicHash,con)]
   SHUT instream
 
 --reduce integers stored under names to 1 + its power of 2
   for key in HKEYS $topicHash repeat 
-    HPUT($topicHash,key,INTEGER_-LENGTH HGET($topicHash,key))
+    tableValue($topicHash,key) := INTEGER_-LENGTH tableValue($topicHash,key)
 
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
 blankLine? line ==
-  MAXINDEX line = -1 or and/[line . j = (char '_ ) for j in 0..MAXINDEX line]
+  #line = 0 or and/[stringChar(line,j) = char " " for j in 0..maxIndex line]
 
 string2OpAlist s ==
   m := #s
   k := skipBlanks(s,0,m) or return nil
-  upperCase? s.k => nil       --skip constructor names
+  upperCase? stringChar(s,k) => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
-    acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
-  acc := nreverse acc
+    acc := [makeSymbol subString(s,k,-k + (k := charPosition(char " ",s,k + 1))),:acc]
+  acc := reverse! acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]
   acc
 
 getDefaultProps name ==
-  u := HGET($defaultsHash,name)
-  if (s := PNAME name).(m := MAXINDEX s) = char '? then u := ['p,:u]
-  if s.m = char '_! then u := ['destructive,:u]
+  u := tableValue($defaultsHash,name)
+  if stringChar(s := symbolName name,m := maxIndex s) = char "?" then u := ['p,:u]
+  if stringChar(s,m) = char "!" then u := ['destructive,:u]
   u
   
 skipBlanks(u,i,m) ==
@@ -165,8 +165,8 @@ topicCode lst ==
   bitIndexList := nil
   for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
-      k := HGET($topicHash,x) => k
-      HPUT($topicHash,x,$topicIndex := $topicIndex * 2)
+      k := tableValue($topicHash,x) => k
+      tableValue($topicHash,x) := $topicIndex := $topicIndex * 2
       $topicIndex
   code := +/[i for i in bitIndexList]
 
@@ -175,7 +175,7 @@ topicCode lst ==
 --=======================================================================
 --called to modify DOCUMENTATION property for each "con"
 addTopic2Documentation(con,docAlist) ==
-  alist := HGET($conTopicHash,con) or return docAlist
+  alist := tableValue($conTopicHash,con) or return docAlist
   [y for x in docAlist] where y() ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
@@ -189,39 +189,41 @@ addTopic2Documentation(con,docAlist) ==
 --=======================================================================
 td con ==
   $topicClasses := ASSOCRIGHT mySort
-      [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
 
 tdAdd(con,hash) ==
-  v := HGET($conTopicHash,con)
+  v := tableValue($conTopicHash,con)
   u := addTopic2Documentation(con,v)
 --u := getConstructorDocumentationFromDB con
-  for pair in u | FIXP (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
-    for x in (names := code2Classes code) repeat HPUT(hash,x,insert(op,HGET(hash,x)))
+  for pair in u | integer? (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
+    for x in (names := code2Classes code) repeat
+      tableValue(hash,x) := insert(op,tableValue(hash,x))
 
 tdPrint hash ==
   for key in mySort HKEYS hash repeat 
     sayBrightly [key,'":"]
     sayBrightlyNT '"   "
-    for x in HGET(hash,key) repeat sayBrightlyNT ['" ",x]
+    for x in tableValue(hash,key) repeat sayBrightlyNT ['" ",x]
     TERPRI()
 
 topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
-      [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
-  for x in HKEYS hash repeat HPUT(hash,x,mySort HGET(hash,x))
+  for x in HKEYS hash repeat
+    tableValue(hash,x) := mySort tableValue(hash,x)
   tdPrint hash 
 
 code2Classes cc ==
   cc := 2*cc
-  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := cc quo 2)]
+  [x while cc ~= 0 for x in $topicClasses | odd? (cc := cc quo 2)]
   
 myLastAtom x == 
   while x is [.,:x] repeat nil
@@ -238,7 +240,7 @@ transferClassCodes(conform,opAlist) ==
 
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
-    | FIXP (code := myLastAtom pair) repeat
+    | integer? (code := myLastAtom pair) repeat
       u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
@@ -246,14 +248,14 @@ transferCodeCon(con,opAlist) ==
 --=======================================================================
 
 filterByTopic(opAlist,topic) ==
-  bitNumber := HGET($topicHash,topic)
+  bitNumber := tableValue($topicHash,topic)
   [x for x in opAlist 
-    | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
+    | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
 
 listOfTopics(conname) ==
   doc := getConstructorDocumentationFromDB conname
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
---null FIXP code => nil
-  mySort [key for key in HKEYS($topicHash) | LOGBITP(HGET($topicHash,key),code)]
+--not integer? code => nil
+  mySort [key for key in HKEYS($topicHash) | LOGBITP(tableValue($topicHash,key),code)]
 

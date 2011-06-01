@@ -117,7 +117,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
         [cc, nc]
       if (v := isPower f) case Record(val:F, exponent:Z) then
         vv := v::Record(val:F, exponent:Z)
-        (vv.exponent ~= 1) =>
+        not one?(vv.exponent) =>
           rec := splitConstant(vv.val, x)
           return [rec.const ** vv.exponent, rec.nconst ** vv.exponent]
       error "splitConstant: should not happen"
@@ -154,7 +154,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              da := differentiate(a := l.pma, x)
              d := a * (cc := l.pmc) / da
              zero? differentiate(d, x) => [EI, a, d]
-             comp? or (((u := sign a) case Z) and (u::Z) < 0) =>
+             comp? or (((u := sign a) case Z) and negative?(u::Z)) =>
                d := cc * (sa := insqrt(- a)) / da
                zero? differentiate(d, x) => [ERF, sa, - d * spi]
                [NONE, 0, 0]
@@ -248,7 +248,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              rec.coef * sqrt(rec.radicand)
 
            pmintegrate(f, x) ==
-             (rc := splitConstant(f, x)).const ~= 1 =>
+             not one?((rc := splitConstant(f, x)).const) =>
                (u := pmintegrate(rc.nconst, x)) case "failed" => "failed"
                rec := u::ANS
                [rc.const * rec.special, rc.const * rec.integrand]
@@ -266,7 +266,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              "failed"
 
            pmComplexintegrate(f, x) ==
-             (rc := splitConstant(f, x)).const ~= 1 =>
+             not one?((rc := splitConstant(f, x)).const) =>
                (u := pmintegrate(rc.nconst, x)) case "failed" => "failed"
                rec := u::ANS
                [rc.const * rec.special, rc.const * rec.integrand]
@@ -283,7 +283,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
              empty?(l := match1(f, x, t, cc)) => "failed"
              mw := first l
              zero?(ms := third l) or ((sgs := sign ms) case "failed")=> "failed"
-             ((sgz := sign(z := (mw + 1) / ms)) case "failed") or (sgz::Z < 0)
+             ((sgz := sign(z := (mw + 1) / ms)) case "failed") or negative?(sgz::Z)
                 => "failed"
              mmi := retract(mm := second l)@Z
              sgs * (last l) * ms**(- mmi - 1) *

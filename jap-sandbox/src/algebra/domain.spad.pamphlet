@@ -52,8 +52,10 @@ FunctionDescriptor(): Public == Private where
       ++ \spad{signature(x)} returns the signature of function
       ++ described by \spad{x}.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     signature x == %head(x)$Foreign(Builtin)
-    x = y == EQUAL(x,y)$Lisp
+    x = y == %equal(x,y)
     coerce x == (x : Syntax)::OutputForm
 
 @
@@ -108,10 +110,10 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
        ++ exported by instantiations of constructor \spad{c}.
        ++ The operators are partitioned into overload sets.
   add
-    kind x == getConstructorKind(x)$Lisp
-    arity x == getConstructorArity(x)$Lisp
-    dualSignature x == getDualSignatureFromDB(x)$Lisp
-    operations x == getConstructorOperationsFromDB(x)$Lisp
+    kind x == getConstructorKind(x)$Foreign(Builtin)
+    arity x == getConstructorArity(x)$Foreign(Builtin)
+    dualSignature x == getDualSignatureFromDB(x)$Foreign(Builtin)
+    operations x == getConstructorOperationsFromDB(x)$Foreign(Builtin)
 
 @
 
@@ -133,10 +135,11 @@ Constructor(): ConstructorCategory with
   == add
     Rep == Identifier
     name x == rep x
-    kind x == getConstructorKind(x)$Lisp
-    arity x == getConstructorArity(x)$Lisp
+    kind x == getConstructorKind(x)$Foreign(Builtin)
+    arity x == getConstructorArity(x)$Foreign(Builtin)
     findConstructor s ==
-      isConstructorName(s)$Lisp => just per(s pretend Identifier)
+      isConstructorName(s)$Foreign(Builtin) =>
+        just per(s pretend Identifier)
       nothing
 
 @
@@ -164,8 +167,9 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       ++ arguments used to invoke the constructor.
 
   Private == add
-    import %head: % -> C from Foreign Builtin
-    import %tail: % -> List Syntax from Foreign Builtin
+    import %head: % -> C            from Foreign Builtin
+    import %tail: % -> List Syntax  from Foreign Builtin
+    import %equal: (%,%) -> Boolean from Foreign Builtin
 
     constructor x ==
       %head x 
@@ -174,10 +178,10 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       %tail x
 
     x = y ==
-      EQUAL(x,y)$Lisp
+      %equal(x,y)
 
     coerce(x: %): OutputForm ==
-      outputDomainConstructor(x)$Lisp
+      outputDomainConstructor(x)$Foreign(Builtin)
 
 @
 
@@ -246,6 +250,8 @@ FunctorData(): Public == Private where
       ++ \spad{lookupFunction x} returns the name of the lookup
       ++ function associated with the functor data \spad{x}.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     domainTemplate x == %head(x)$Foreign(Builtin)
     attributeData x == CADDR(x)$Foreign(Builtin)
    
@@ -255,7 +261,7 @@ FunctorData(): Public == Private where
     encodingDirectory x == CDDDR(part3Data x)$Foreign(Builtin)
     lookupFunction x == CADDDDR(x)$Foreign(Builtin)
 
-    x = y == EQUAL(x,y)$Foreign(Builtin)
+    x = y == %equal(x,y)
     coerce(x: %): OutputForm ==
       import SExpression
       (x pretend SExpression)::OutputForm
@@ -275,7 +281,7 @@ DomainConstructor(): Public == Private where
       ++ \spad{functorData x} returns the functor data associated
       ++ with the domain constructor \spad{x}.      
   Private == Constructor add
-    functorData x == GET(x,'infovec)$Foreign(Builtin)
+    functorData x == %property(x,'infovec)$Foreign(Builtin)
     coerce(x: %): Constructor == rep x
 
 @
@@ -335,10 +341,12 @@ OperatorSignature(): Public == Private where
       ++ construct(op,sig) construct a signature-operator with
       ++ operator name `op', and signature `sig'.
   Private == add
-    construct(o,s) == LIST(o,s)$Lisp
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
+    construct(o,s) == %list(o,s)$Foreign(Builtin)
     name x == %head(x)$Foreign(Builtin)
-    signature x == CADR(x)$Lisp
-    x = y == EQUAL(x,y)$Lisp
+    signature x == %lsecond(x)$Foreign(Builtin)
+    x = y == %equal(x,y)
     arity x == (#source signature x)::Arity
     coerce(x: %): OutputForm ==
       infix('_:::OutputForm, name(x)::OutputForm, 
@@ -353,11 +361,13 @@ OperatorSignature(): Public == Private where
 SystemPredicate(): Public == Private where
   Public == SetCategory
   Private == add
-    x = y == EQUAL(x,y)$Lisp
+    Rep == Syntax
+    x = y == rep x = rep y
     coerce(x: %): OutputForm ==
-      %not(x)$Foreign(Builtin) => 'false::OutputForm
-      %peq(x,'T)$Foreign(Builtin) => 'true::OutputForm
-      EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
+      nil? rep x => 'false::OutputForm
+      case rep x is
+         y@Identifier => (y = 'T => 'true::OutputForm; y::OutputForm)
+         otherwise => y::OutputForm
 
 @
 
@@ -393,7 +403,7 @@ Category(): Public == Private where
 
     exportedOperators c ==
       [%head(x)$Foreign(Builtin)@OperatorSignature 
-         for x in getCategoryExports(c)$Lisp@List(Syntax)]
+         for x in categoryExports(c)$Lisp@List(Syntax)]
     
     principalAncestors c == 
       getCategoryPrincipalAncestors(c)$Lisp

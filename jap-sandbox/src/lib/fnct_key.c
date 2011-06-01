@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2011 Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,12 @@
 #include "bsdsignal.h"
 
 
-#include "fnct_key.H1"
-#include "prt.H1"
-#include "edin.H1"
+#include "fnct_key.h"
+#include "prt.h"
+#include "edin.h"
 
+/* FIXME: Remove this in complete rewrite */
+using namespace OpenAxiom;
 
 /** Some constants for functio key defs ****/
 #define DELAYED 0
@@ -63,7 +65,7 @@
 fkey function_key[13];          /** Strings which replace function
                                     keys when a key is hit          ***/
 
-static char *defaulteditor = "clefedit";
+static const char *defaulteditor = "clefedit";
 char editorfilename[100];
 
 
@@ -151,11 +153,8 @@ define_function_keys(void)
                 }
                 break;
             }
-            if (type != -1) {
-                (function_key[key]).str =
-                    (char *) malloc(strlen(string) + 1);
-                sprintf((function_key[key]).str, "%s", string);
-            }
+            if (type != -1)
+               (function_key[key]).str = strdup(string);
         }
     }
 

@@ -1,4 +1,4 @@
-dnl Copyright (C) 2006-2010, Gabriel Dos Reis.
+dnl Copyright (C) 2006-2011, Gabriel Dos Reis.
 dnl All rights reserved.
 dnl
 dnl Redistribution and use in source and binary forms, with or without
@@ -33,27 +33,27 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-dnl Most of the macros used in this configure.ac are defined in files
-dnl located in the subdirectory config/
-sinclude(config/open-axiom.m4)
-sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-08-16], 
+AC_INIT([OpenAxiom], [1.4.0-2011-06-01], 
         [open-axiom-bugs@lists.sf.net])
 
-AC_CONFIG_AUX_DIR(config)
-AC_CONFIG_MACRO_DIR(config)
+dnl Most of the macros used in this configure.ac are defined in files
+dnl located in the subdirectory config/
+m4_include([config/aclocal.m4])
+AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([config])
 
 dnl Put all configuration macros here
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 
-dnl We don't use Automake yet.
-# AM_INIT_AUTOMAKE([foreign])
+AC_CANONICAL_SYSTEM
+
+dnl Page Automake
+AM_INIT_AUTOMAKE([foreign])
 AC_PREREQ([2.62])
 
 dnl Simple sanity check.
-AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
+AC_CONFIG_SRCDIR(src/Makefile.in)
 
-AC_CANONICAL_SYSTEM
 
 open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
 AC_SUBST(open_axiom_installdir)
@@ -65,7 +65,7 @@ dnl a warning when we detect attempt at cross build.
 dnl Note that we do not stop the configuration process because we do seek
 dnl contributions for cross build support.
 if test $build != $target; then
-   AC_MSG_WARN([Cross build is not supported.])
+   AC_MSG_WARN([Cross build is not supported yet.])
    AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
 fi
 
@@ -77,14 +77,12 @@ fi
 ## in  sub-directories different from others.
 axiom_build_sharedir=$axiom_builddir/share
 
-
-## Accumulate list of utils needed for the build platform
-## It is vital that noweb is present in the build environement.
-oa_all_prerequisites=
-AC_SUBST(oa_all_prerequisites)
+## We have now almost switched entirely to C++.
+AC_LANG([C++])
 
 OPENAXIOM_HOST_COMPILERS
-OPENAXIOM_GCL_HACKS
+AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
+
 OPENAXIOM_HOST_DATA_PROPERTIES
 
 OPENAXIOM_DYNAMIC_MODULE_SUPPORT
@@ -95,21 +93,22 @@ OPENAXIOM_FILE_EXTENSIONS
 OPENAXIOM_BUILD_OPTIONS
 OPENAXIOM_HOST_PROGS
 
-axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
-AC_SUBST(axiom_src_subdirs)
-
 OPENAXIOM_CHECK_CORE_SUPPORT
 OPENAXIOM_CHECK_IO
+AM_CONDITIONAL([OA_BUILD_SMAN], [test $oa_use_sman = 1])
 OPENAXIOM_CHECK_GRAPHICS
+AM_CONDITIONAL([OA_BUILD_GRAPHICS], [test x$axiom_use_x = xyes])
+AM_CONDITIONAL([OA_BUILD_GUI], [test x$oa_has_qt = xyes])
 
 OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
+OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
-OPENAXIOM_MAKEFILE([Makefile])
-OPENAXIOM_MAKEFILE([src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
+OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])
 OPENAXIOM_MAKEFILE([src/driver/Makefile])
 OPENAXIOM_MAKEFILE([src/lisp/Makefile])
@@ -120,14 +119,22 @@ OPENAXIOM_MAKEFILE([src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/input/Makefile])
 OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
-
-## We now generate the "document" script and support files at configure time.
-## We put them in the build directory because they are intended to be 
-## build support utils only.
-AC_CONFIG_FILES(build/scripts/document:$srcdir/src/scripts/document.in, \
-                [chmod +x build/scripts/document])
+OPENAXIOM_MAKEFILE([src/clef/Makefile])
+OPENAXIOM_MAKEFILE([src/sman/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
+AC_CONFIG_FILES([src/gui/gui.pro])
 
 AC_OUTPUT
+
+## Set up Makefile for QT-based gui
+if test x$oa_has_qt = xyes; then
+  (cd src/gui && $OA_QT_QMAKE -makefile gui.pro)
+fi
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.
 echo -n "extracting list of SPAD type definitions..."
@@ -139,7 +146,7 @@ egrep '<<(category|domain|package) .*>>=' \
         set $chunk_desc; spad_abbrev=$2
         cat >> src/algebra/tmp-extract-spad.mk <<EOF
 $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
-    @\$(axiom_build_document) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
+    @\$(oa_hammer) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
     \$(top_confdir)/move-if-change \$@.tmp \$@
 EOF
     done 

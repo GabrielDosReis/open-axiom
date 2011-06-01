@@ -889,7 +889,7 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
        resultantReduit(P : polR, Q : polR) : R ==
           UV := subResultantGcdEuclidean(P, Q)
           UVs : polR := UV.gcd
-          degree(UVs) > 0 => 0
+          positive? degree(UVs) => 0
           l : List(R) := concat(coefficients(UV.coef1), coefficients(UV.coef2))
           return (LC(UVs) exquo gcd(l))::R
 
@@ -897,7 +897,7 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
                      Record(coef1 : polR, coef2 : polR, resultantReduit : R) ==
           UV := subResultantGcdEuclidean(P, Q)
           UVs : polR := UV.gcd
-          degree(UVs) > 0 => construct(0::polR, 0::polR, 0::R)
+          positive? degree(UVs) => construct(0::polR, 0::polR, 0::R)
           l : List(R) := concat(coefficients(UV.coef1), coefficients(UV.coef2))
           gl : R := gcd(l)
           c1 : polR := (UV.coef1 exquo gl)::polR
@@ -909,7 +909,7 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
                                    Record(coef2 : polR, resultantReduit : R) ==
           UV := subResultantGcdEuclidean(P, Q)
           UVs : polR := UV.gcd
-          degree(UVs) > 0 => construct(0::polR, 0::R)
+          positive? degree(UVs) => construct(0::polR, 0::R)
           l : List(R) := concat(coefficients(UV.coef1), coefficients(UV.coef2))
           gl : R := gcd(l)
           c2 : polR := (UV.coef2 exquo gl)::polR

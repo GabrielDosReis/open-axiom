@@ -90,7 +90,7 @@ AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Intege
       if not (% has Ring) then
         n:Integer * x:% ==
           zero? n => 0
-          n>0 => double(n pretend PositiveInteger,x)
+          positive? n => double(n pretend PositiveInteger,x)
           double((-n) pretend PositiveInteger,-x)
 
 @
@@ -224,7 +224,7 @@ BasicType(): Category == Type with
       ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
       before?: (%,%) -> Boolean
         ++ \spad{before?(x,y)} holds if the system representation
-        ++ of \spad{x} is comes before that of \spad{y} in a
+        ++ of \spad{x} comes before that of \spad{y} in a
         ++ an implementation defined manner.
    add
       x = y == not before?(x,y) and not before?(y,x)
@@ -272,7 +272,7 @@ OrderedType(): Category == BasicType with
     x > y  == y < x
     x <= y == not(y < x)
     x >= y == not(x < y)
-    x = y  == not(x < y) and not(y < x)
+    x = y  == not(x < y or y < x)
     max(x,y) ==
       x < y => y
       x
@@ -377,7 +377,7 @@ CancellationAbelianMonoid(): Category == AbelianMonoid with
 ++ Description:
 ++ Rings of Characteristic Non Zero
 CharacteristicNonZero():Category == Ring with
-    charthRoot: % -> Union(%,"failed")
+    charthRoot: % -> Maybe %
        ++ charthRoot(x) returns the pth root of x
        ++ where p is the characteristic of the ring.
 
@@ -654,9 +654,9 @@ DivisionRing(): Category ==
       x ** n: Integer ==
          zero? n => 1
          zero? x =>
-            n<0 => error "division by zero"
+            negative? n => error "division by zero"
             x
-         n<0 =>
+         negative? n =>
             expt(inv x,(-n) pretend PositiveInteger)
          expt(x,n pretend PositiveInteger)
 --    if % has CharacteristicZero() then
@@ -683,7 +683,6 @@ DivisionRing(): Category ==
 ++ Axioms:
 ++   \spad{ab=0 => a=0 or b=0}  -- known as noZeroDivisors
 ++   \spad{not(1=0)}
---EntireRing():Category == Join(Ring,BiModule(%:Ring,%:Ring)) with
 EntireRing():Category == Join(Ring,BiModule(%,%)) with
       noZeroDivisors  ++ if a product is zero then one of the factors
                       ++ must be zero.
@@ -823,14 +822,14 @@ EuclideanDomain(): Category == PrincipalIdealDomain with
          u:= extendedEuclidean(first l,v.generator)
          [[u.coef1,:[u.coef2*vv for vv in v.coef]],u.generator]
       expressIdealMember(l,z) ==
-         z = 0 => [0 for v in l]
+         zero? z => just [0 for v in l]
          pid := principalIdeal l
-         (q := z exquo (pid.generator)) case "failed" => "failed"
-         [q*v for v in pid.coef]
+         (q := z exquo (pid.generator)) case "failed" => nothing
+         just [q*v for v in pid.coef]
       multiEuclidean(l,z) ==
          n := #l
          zero? n => error "empty list passed to multiEuclidean"
-         n = 1 => [z]
+         one? n => [z]
          l1 := copy l
          l2 := split!(l1, n quo 2)
          u:= extendedEuclidean(*/l1, */l2, z)
@@ -884,7 +883,7 @@ Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
       unitCanonical(x) == if zero? x then x else 1
       associates?(x,y) == if zero? x then zero? y else not(zero? y)
       inv x ==((u:=recip x) case "failed" => error "not invertible"; u)
-      x exquo y == (y=0 => "failed"; x / y)
+      x exquo y == (zero? y => "failed"; x / y)
       gcd(x,y) == 1
       euclideanSize(x) == 0
       prime? x == false
@@ -1002,8 +1001,8 @@ GcdDomain(): Category == IntegralDomain with
 	    ++ univariate polynomials over the domain
     add
       lcm(x: %,y: %) ==
-        y = 0 => 0
-        x = 0 => 0
+        zero? y => 0
+        zero? x => 0
         LCM : Union(%,"failed") := y exquo gcd(x,y)
         LCM case % =>  x * LCM
         error "bad gcd in lcm computation"
@@ -1016,13 +1015,15 @@ GcdDomain(): Category == IntegralDomain with
         c1:= content(p1); c2:= content(p2)
         p1:= (p1 exquo c1)::SUP %
         p2:= (p2 exquo c2)::SUP %
-        if (e1:=minimumDegree p1) > 0 then p1:=(p1 exquo monomial(1,e1))::SUP %
-        if (e2:=minimumDegree p2) > 0 then p2:=(p2 exquo monomial(1,e2))::SUP %
+        if positive?(e1:=minimumDegree p1) then
+          p1:=(p1 exquo monomial(1,e1))::SUP %
+        if positive?(e2:=minimumDegree p2) then
+          p2:=(p2 exquo monomial(1,e2))::SUP %
         e1:=min(e1,e2); c1:=gcd(c1,c2)
         p1:=
-           degree p1 = 0 or degree p2 = 0 => monomial(c1,0)
+           zero? degree p1 or zero? degree p2 => monomial(c1,0)
            p:= subResultantGcd(p1,p2)
-           degree p = 0 => monomial(c1,0)
+           zero? degree p => monomial(c1,0)
            c2:= gcd(leadingCoefficient p1,leadingCoefficient p2)
            unitCanonical(c1 * primitivePart(((c2*p) exquo leadingCoefficient p)::SUP %))
         zero? e1 => p1
@@ -1067,7 +1068,7 @@ Group(): Category == Monoid with
       recip(x:%) == inv(x)
       x:% ** n:Integer ==
          zero? n => 1
-         n<0 => expt(inv(x),(-n) pretend PositiveInteger)
+         negative? n => expt(inv(x),(-n) pretend PositiveInteger)
          expt(x,n pretend PositiveInteger)
       conjugate(p,q) == inv(q) * p * q
       commutator(p,q) == inv(p) * inv(q) * p * q
@@ -1272,7 +1273,7 @@ Monoid(): Category == SemiGroup with
 )abbrev category OAGROUP OrderedAbelianGroup
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: March 10, 2011
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1284,9 +1285,26 @@ Monoid(): Category == SemiGroup with
 ++ the ordering.
 
 OrderedAbelianGroup(): Category ==
-        Join(OrderedCancellationAbelianMonoid, AbelianGroup)
-
+    Join(OrderedCancellationAbelianMonoid, AbelianGroup) with
+      negative?: % -> Boolean
+        ++ \spad{negative?(x)} holds when \spad{x} is less than \spad{0}.
+      sign: % -> Integer
+        ++ \spad{sign(x)} is \spad{1} if \spad{x} is positive,
+        ++ \spad{-1} if \spad{x} is negative, and \spad{0} otherwise.
+      abs: % -> %
+        ++ \spad{abs(x)} returns the absolute value of \spad{x}.
+  add
+    negative? x == x < 0
+    sign x ==
+      positive? x => 1
+      negative? x => -1
+      0
+    abs x ==
+      positive? x => x
+      negative? x => -x
+      0
 @
+
 \section{category OAMON OrderedAbelianMonoid}
 <<category OAMON OrderedAbelianMonoid>>=
 )abbrev category OAMON OrderedAbelianMonoid
@@ -1304,7 +1322,12 @@ OrderedAbelianGroup(): Category ==
 ++ preserves the ordering.
 
 OrderedAbelianMonoid(): Category ==
-        Join(OrderedAbelianSemiGroup, AbelianMonoid)
+    Join(OrderedAbelianSemiGroup, AbelianMonoid) with
+      positive?: % -> Boolean
+        ++ \spad{positive?(x)} holds when \spad{x} is greater
+        ++ than \spad{0}.
+  add    
+    positive? x == 0 < x
 
 @
 \section{category OAMONS OrderedAbelianMonoidSup}
@@ -1457,7 +1480,7 @@ OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 )abbrev category ORDRING OrderedRing
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: March 10, 2011
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1471,28 +1494,7 @@ OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 ++ Axiom:
 ++   \spad{0<a and b<c => ab< ac}
 
-OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid) with
-     positive?: % -> Boolean
-       ++ positive?(x) tests whether x is strictly greater than 0.
-     negative?: % -> Boolean
-       ++ negative?(x) tests whether x is strictly less than 0.
-     sign     : % -> Integer
-       ++ sign(x) is 1 if x is positive, -1 if x is negative, 0 if x equals 0.
-     abs      : % -> %
-       ++ abs(x) returns the absolute value of x.
-  add
-     positive? x == x>0
-     negative? x == x<0
-     sign x ==
-       positive? x => 1
-       negative? x => -1
-       zero? x => 0
-       error "x satisfies neither positive?, negative? or zero?"
-     abs x ==
-       positive? x => x
-       negative? x => -x
-       zero? x => 0
-       error "x satisfies neither positive?, negative? or zero?"
+OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid)
 
 @
 
@@ -1707,9 +1709,9 @@ PolynomialFactorizationExplicit(): Category == Definition where
               ++ whose \spad{p}-th powers (p is the characteristic of the domain)
               ++ are a solution of the homogenous linear system represented
               ++ by m, or "failed" is there is no such vector.
-         charthRoot: % -> Union(%,"failed")
-              ++ charthRoot(r) returns the \spad{p}-th root of r, or "failed"
-              ++ if none exists in the domain.
+         charthRoot: % -> Maybe %
+              ++ charthRoot(r) returns the \spad{p}-th root of r, or
+              ++ \spad{nothing} if none exists in the domain.
               -- this is a special case of conditionP, but often the one we want
       add
         gcdPolynomial(f,g) ==
@@ -1726,11 +1728,13 @@ PolynomialFactorizationExplicit(): Category == Definition where
              -- to take p'th root of f, solve the system X-fY=0,
              -- so solution is [x,y]
              -- with x^p=X and y^p=Y, then (x/y)^p = f
-             zero? f => 0
+             zero? f => just 0
              m:Matrix % := matrix [[1,-f]]
              ans:= conditionP m
-             ans case "failed" => "failed"
-             (ans.1) exquo (ans.2)
+             ans case "failed" => nothing
+             r := (ans.1) exquo (ans.2)
+             r case "failed" => nothing
+             just r
         if % has Field then
           solveLinearPolynomialEquation(lf,g) ==
             multiEuclidean(lf,g)$P
@@ -1766,9 +1770,9 @@ PrincipalIdealDomain(): Category == GcdDomain with
          ++ generator component is a generator of the ideal
          ++ generated by \spad{[f1,...,fn]} whose coef component satisfies
          ++ \spad{generator = sum (input.i * coef.i)}
-      expressIdealMember: (List %,%) -> Union(List %,"failed")
-         ++ expressIdealMember([f1,...,fn],h) returns a representation
-         ++ of h as a linear combination of the fi or "failed" if h
+      expressIdealMember: (List %,%) -> Maybe List %
+         ++ \spad{expressIdealMember([f1,...,fn],h)} returns a representation
+         ++ of h as a linear combination of the fi or \spad{nothing} if h
          ++ is not in the ideal generated by the fi.
 
 @
@@ -1795,6 +1799,24 @@ PrincipalIdealDomain(): Category == GcdDomain with
 ++   \spad{ (x+y)*x = (x*a)+(y*a) }
 RightModule(R:Rng):Category == Join(AbelianGroup, RightLinearSet R)
 
+@
+
+\section{category SRING SemiRing}
+<<category SRING SemiRing>>=
+)abbrev category SRING SemiRing
+++ Author: Gabriel Dos Reis
+++ Date Created: March 7, 2011
+++ Date Last Modified: March 7, 2011
+++ Description:
+++   The category of all semiring structures, e.g. triples (D,+,*)
+++   such that (D,+) is an Abelian monoid and (D,*) is a monoid
+++   with the following laws:
+++ Axioms:
+++    a * (b + c) = (a * b) + (a * c)
+++    (b + c) * a = (b * a) + (c * a)
+++    0 * a = 0
+++    a * 0 = 0
+SemiRing(): Category == Join(AbelianMonoid,Monoid)
 @
 
 \section{category RING Ring}
@@ -1917,7 +1939,9 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
       latex: % -> String       ++ latex(s) returns a LaTeX-printable output
                                ++ representation of s.
   add
-      hash(s : %):  SingleInteger == SXHASH(s)$Lisp
+      import %hash: % -> SingleInteger from Foreign Builtin
+
+      hash(s : %):  SingleInteger == %hash s
       latex(s : %): String       == "\mbox{\bf Unimplemented}"
 @
 
@@ -1944,13 +1968,14 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
 ++ starting from any initial element.
 ++
 ++ Conditional attributes:
-++   infinite\tab{15}repeated \spad{nextItem}'s are never "failed".
+++   infinite\tab{15}repeated \spad{nextItem}'s are never \spad{nothing}.
 StepThrough(): Category == SetCategory with
     --operations
       init:             %
         ++ init() chooses an initial object for stepping.
-      nextItem: % -> Union(%,"failed")
-        ++ nextItem(x) returns the next item, or "failed" if domain is exhausted.
+      nextItem: % -> Maybe %
+        ++ \spad{nextItem(x)} returns the next item, or \spad{failed}
+        ++ if domain is exhausted.
 
 @
 \section{category UFD UniqueFactorizationDomain}
@@ -1989,7 +2014,7 @@ UniqueFactorizationDomain(): Category == GcdDomain with
   squareFreePart x ==
     unit(s := squareFree x) * _*/[f.factor for f in factors s]
 
-  prime? x == # factorList factor x = 1
+  prime? x == one?(# factorList factor x)
 
 @
 

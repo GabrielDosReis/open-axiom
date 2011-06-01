@@ -417,11 +417,11 @@ FortranCode(): public == private where
       cnt : O := "CONTINUE"::O
       --sp  : O := hspace(6-width lab)
       sp  : O := hspace(_$fortIndent$Lisp -width lab)
-      LIST(STRCONC(STRINGIMAGE(lab)$Lisp,sp,cnt)$Lisp)$Lisp
+      LIST(STRCONC(string(label)$String,sp,cnt)$Lisp)$Lisp
 
     getGoto(label:SingleInteger):SEX ==
      fortran2Lines(
-      LIST(STRCONC("GOTO ",STRINGIMAGE(label::O)$Lisp)$Lisp)$Lisp)$Lisp
+      LIST(STRCONC("GOTO ",string(label)$String)$Lisp)$Lisp)$Lisp
 
     getRepeat(repRec:LOOP):SEX ==
       sw : Switch := NOT elt(repRec,switch)$LOOP

@@ -2,7 +2,7 @@
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007-2010, Gabriel Dos Reis.
+   Copyright (C) 2007-2011, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,9 @@
 #  define getegid() getgid()
 #endif
 
-OPENAXIOM_EXPORT int
+namespace OpenAxiom {
+
+OPENAXIOM_C_EXPORT int
 addtopath(char *dir)
 {
     char *path, *newpath;
@@ -112,7 +114,7 @@ openaxiom_is_path_separator(char c)
   Returns a the dirname of `path'.  If `path' has no separator, then
   returns ".".  The returned value if malloc-allocated.  */
 
-OPENAXIOM_EXPORT char*
+OPENAXIOM_C_EXPORT char*
 oa_dirname(const char* path)
 {
    const int n = strlen(path);
@@ -146,7 +148,7 @@ oa_dirname(const char* path)
  */
 
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 directoryp(char *path)
 {
     struct stat buf;
@@ -155,10 +157,10 @@ directoryp(char *path)
     return code == -1 ? -1 : S_ISDIR(buf.st_mode);
 }
 
-OPENAXIOM_EXPORT int 
+OPENAXIOM_C_EXPORT int 
 make_path_from_file(char *s, char *t)
 {
-    char *pos = "";
+    char *pos = NULL;
     char *c;
 
     /** simply copies the path name from t into s **/
@@ -207,7 +209,7 @@ make_path_from_file(char *s, char *t)
 static inline int
 axiom_has_write_access(const struct stat* file_info)
 {
-   int effetive_uid = geteuid();
+   uid_t effetive_uid = geteuid();
 
    if (effetive_uid == 0)
       return 1;
@@ -235,7 +237,7 @@ axiom_has_write_access(const struct stat* file_info)
       2 if the file does not exists but process has write
         has write access to the dirname of path.  */
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 writeablep(char *path)
 {
     struct stat buf;
@@ -271,7 +273,7 @@ writeablep(char *path)
       0 if the file exists but process has no read access.
       1 if the file exists and read access is granted.  */
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 readablep(char *path)
 {
     struct stat buf;
@@ -298,7 +300,7 @@ readablep(char *path)
 
 
 
-OPENAXIOM_EXPORT long
+OPENAXIOM_C_EXPORT long
 findString(char *file, char *string)
 {
     int nstring, charpos;
@@ -318,7 +320,7 @@ findString(char *file, char *string)
 
 }
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 copyEnvValue(char *varName, char *buffer)
 {
     char *s;
@@ -332,7 +334,7 @@ copyEnvValue(char *varName, char *buffer)
 
 /* Return 1 if the file descriptor FD, as viewed by the Core Executable,
    is attached to a terminal.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 std_stream_is_terminal(int fd)
 {
    assert(fd > -1 && fd < 3);
@@ -364,7 +366,7 @@ std_stream_is_terminal(int fd)
 
 /* Change the process' curretnt directory.  Return zero on success,
    and -1 on failure.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_chdir(const char* path)
 {
 #ifdef __WIN32__
@@ -387,7 +389,7 @@ is_dot_or_dotdot(const char* path)
    Return 0 on success, and -1 on falure.
    In practice, OpenAxiom does not remove directories with
    non-trivial recursive structues.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_unlink(const char* path)
 {
    const char* curdir;
@@ -485,7 +487,7 @@ oa_unlink(const char* path)
 }
 
 /* Rename a file or directory.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_rename(const char* old_path, const char* new_path)
 {
 #ifdef __WIN32__
@@ -497,7 +499,7 @@ oa_rename(const char* old_path, const char* new_path)
 
 /* Create a new directory named `path'.  Return 0 on success,
    and -1 on failure.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_mkdir(const char* path)
 {
 #ifdef __WIN32__
@@ -510,13 +512,13 @@ oa_mkdir(const char* path)
 }
 
 /* Run a shell command.  Effectively forward to C's system().  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_system(const char* cmd)
 {
    return system(cmd);
 }
 
-OPENAXIOM_EXPORT int 
+OPENAXIOM_C_EXPORT int 
 oa_getpid(void) 
 {
 #ifdef __WIN32__
@@ -528,7 +530,7 @@ oa_getpid(void)
 
 /* Concatenate two strings and return a pointer to the
    newly allocate resulting string. */
-OPENAXIOM_EXPORT const char*
+OPENAXIOM_C_EXPORT const char*
 oa_concatenate_string(const char* lhs, const char* rhs)
 {
    if (lhs == NULL)
@@ -546,13 +548,13 @@ oa_concatenate_string(const char* lhs, const char* rhs)
 
 /* Return a string object that is the result of catenating the strings
    designated by `left' and `right'.   */
-OPENAXIOM_EXPORT const char*
+OPENAXIOM_C_EXPORT const char*
 oa_strcat(const char* left, const char* right)
 {
    int left_size = strlen(left);
    int right_size = strlen(right);
    int size = left_size + right_size;
-   char* buffer = malloc(size + 1);
+   char* buffer = (char*) malloc(size + 1);
 
    memcpy(buffer, left, left_size);
    memcpy(buffer + left_size, right, right_size);
@@ -561,7 +563,7 @@ oa_strcat(const char* left, const char* right)
 }
 
 /* Return the value of an environment variable.  */
-OPENAXIOM_EXPORT char*
+OPENAXIOM_C_EXPORT char*
 oa_getenv(const char* var)
 {
 #ifdef __WIN32__   
@@ -588,7 +590,7 @@ oa_getenv(const char* var)
 
 /* Set the value of environment variable VAR to VAL.
    Return 1 on success, and 0 otherwise.  */
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_setenv(const char* var, const char* val)
 {
 #ifdef __WIN32__
@@ -606,7 +608,7 @@ oa_setenv(const char* var, const char* val)
 }
 
 
-OPENAXIOM_EXPORT char*
+OPENAXIOM_C_EXPORT char*
 oa_getcwd(void)
 {
    int bufsz = 256;
@@ -618,7 +620,7 @@ oa_getcwd(void)
       exit(-1);
    }
    else if (n > bufsz) {
-      buf = realloc(buf,n);
+     buf = (char*) realloc(buf,n);
       if (GetCurrentDirectory(n, buf) != n) {
          perror("oa_getcwd");
          exit(-1);
@@ -631,7 +633,7 @@ oa_getcwd(void)
       if (errno == ERANGE) {
          errno = 0;
          bufsz *= 2;
-         buf = realloc(buf, bufsz);
+         buf = (char*) realloc(buf, bufsz);
       }
       else {
          perror("oa_getcwd");
@@ -642,7 +644,7 @@ oa_getcwd(void)
 #endif
 }
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_access_file_for_read(const char* path)
 {
 #ifdef __WIN32__
@@ -653,7 +655,7 @@ oa_access_file_for_read(const char* path)
 }
 
 
-OPENAXIOM_EXPORT const char*
+OPENAXIOM_C_EXPORT const char*
 oa_get_tmpdir(void)
 {
 #ifdef __WIN32__
@@ -682,7 +684,7 @@ oa_get_tmpdir(void)
 }
 
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_C_EXPORT int
 oa_copy_file(const char* src, const char* dst)
 {
 #ifdef __WIN32__
@@ -712,7 +714,7 @@ oa_copy_file(const char* src, const char* dst)
 }
 
 
-OPENAXIOM_EXPORT double 
+OPENAXIOM_C_EXPORT double 
 plus_infinity(void )
 {
 #ifdef INFINITY   
@@ -724,13 +726,13 @@ plus_infinity(void )
 #endif   
 }
 
-OPENAXIOM_EXPORT double 
+OPENAXIOM_C_EXPORT double 
 minus_infinity(void)
 {
    return -plus_infinity();
 }
 
-OPENAXIOM_EXPORT double 
+OPENAXIOM_C_EXPORT double 
 quiet_double_NaN(void)
 {
 #ifdef NAN
@@ -741,27 +743,27 @@ quiet_double_NaN(void)
 }
 
 
-OPENAXIOM_EXPORT openaxiom_byteorder
+OPENAXIOM_C_EXPORT Byteorder
 oa_get_host_byteorder(void)
 {
 #ifdef WORDS_BIGENDIAN
-   return oa_big_endian;
+   return big_endian;
 #else
-   return oa_little_endian;
+   return little_endian;
 #endif   
 }
 
 
-OPENAXIOM_EXPORT void
-oa_allocate_process_argv(openaxiom_process* proc, int argc)
+OPENAXIOM_C_EXPORT void
+oa_allocate_process_argv(Process* proc, int argc)
 {
    proc->argc = argc;
    proc->argv = (char**) malloc((1 + argc) * sizeof (char*));
    proc->argv[argc] = NULL;
 }
 
-OPENAXIOM_EXPORT int
-oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
+OPENAXIOM_C_EXPORT int
+oa_spawn(Process* proc, SpawnFlags flags)
 {
 #ifdef __WIN32__
    const char* path = NULL;
@@ -785,7 +787,7 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
    }
    cmd_line[curpos] = '\0';
 
-   if ((flags & openaxiom_spawn_search_path) == 0)
+   if ((flags & spawn_search_path) == 0)
       path = proc->argv[0];
 
    if(CreateProcess(/* lpApplicationName */ path,
@@ -802,7 +804,7 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
       return proc->id = -1;
    }
    proc->id = proc_info.dwProcessId;
-   if ((flags & openaxiom_spawn_replace) == 0)
+   if ((flags & spawn_replace) == 0)
       return proc->id;
    WaitForSingleObject(proc_info.hProcess, INFINITE);
    GetExitCodeProcess(proc_info.hProcess, &status);
@@ -812,23 +814,23 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 
 #else
    proc->id = 0;
-   if ((flags & openaxiom_spawn_replace) == 0)
+   if ((flags & spawn_replace) == 0)
       proc->id = fork();
    if (proc->id == 0) {
-      if (flags & openaxiom_spawn_search_path)
+      if (flags & spawn_search_path)
          execvp(proc->argv[0], proc->argv);
       else
          execv(proc->argv[0], proc->argv);
       perror(strerror(errno));
       /* Don't keep useless clones around.  */
-      if ((flags & openaxiom_spawn_replace) == 0)
+      if ((flags & spawn_replace) == 0)
          exit(-1);
    }
    return proc->id;
 #endif   
 }
 
-OPENAXIOM_EXPORT char*
+OPENAXIOM_C_EXPORT char*
 oa_substr(const char* str, const size_t begin, const size_t end)
 {
    char* substring;
@@ -840,14 +842,14 @@ oa_substr(const char* str, const size_t begin, const size_t end)
          return NULL;
 
    len = (end - begin) + 2;
-   substring = malloc(len * sizeof(char));
+   substring = (char*) malloc(len * sizeof(char));
    memset(substring,'\0',len);
    memcpy(substring, str+begin, len-1);
 
    return substring;
 }
 
-OPENAXIOM_EXPORT char**
+OPENAXIOM_C_EXPORT char**
 oa_split(const char* sequence, const char* delimiter, int* size)
 {
    int sequence_length = 0, newsize = 0;
@@ -874,3 +876,4 @@ oa_split(const char* sequence, const char* delimiter, int* size)
    return tokens; 
 }
 
+}

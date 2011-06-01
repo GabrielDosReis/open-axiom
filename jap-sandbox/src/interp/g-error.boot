@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -63,15 +63,17 @@ $ReadingFile := false
 
 argumentDataError(argnum, condit, funname) ==
   msg := ['"The test",:bright pred2English condit,'"evaluates to",
-    :bright '"false",'%l,'"   for argument",:bright argnum,_
-    '"to the function",:bright funname,'"and this indicates",'%l,_
+    :bright '"false",'"%l",'"   for argument",:bright argnum,_
+    '"to the function",:bright funname,'"and this indicates",'"%l",_
     '"   that the argument is not appropriate."]
   errorSupervisor($AlgebraError,msg)
 
 queryUser msg ==
   -- display message and return reply
   sayBrightly msg
-  read_-line $InputStream
+  line := readLine $InputStream
+  line ~= %nothing => line
+  nil
 
 -- errorSupervisor is the old style error message trapper
 
@@ -79,7 +81,7 @@ errorSupervisor(errorType,errorMsg) ==
   errorSupervisor1(errorType,errorMsg,$BreakMode)
 
 needsToSplitMessage msg ==
-  member("%b", msg) or member('"%b",msg) => false
+  member("%b",msg) or member('"%b",msg) => false
   member("%d",msg) or member('"%d",msg) => false
   member("%l",msg) or member('"%l",msg) => false
   true
@@ -96,7 +98,7 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   msg :=
     errorMsg is ['mathprint, :.] => errorMsg
     atom errorMsg => ['"   ", errorMsg]
-    needsToSplitMessage errorMsg => rest [:['%l,'"   ",u] for u in errorMsg]
+    needsToSplitMessage errorMsg => rest [:['"%l",'"   ",u] for u in errorMsg]
     ['"   ",:errorMsg]
   sayErrorly(errorLabel, msg)
   handleLispBreakLoop($BreakMode)
@@ -111,28 +113,28 @@ handleLispBreakLoop($BreakMode) ==
     while not gotIt repeat
       gotIt := true
       msgQ := 
-       ['%l,'"   You have three options. Enter:",'%l,_
-        '"    ",:bright '"continue",'"  to continue processing,",'%l,_
-        '"    ",:bright '"top     ",'"  to return to top level, or",'%l,_
-        '"    ",:bright '"break   ",'"  to enter a LISP break loop.",'%l,_
-        '%l,'"   Please enter your choice now:"]
+       ['"%l",'"   You have three options. Enter:",'"%l",_
+        '"    ",:bright '"continue",'"  to continue processing,",'"%l",_
+        '"    ",:bright '"top     ",'"  to return to top level, or",'"%l",_
+        '"    ",:bright '"break   ",'"  to enter a LISP break loop.",'"%l",_
+        '"%l",'"   Please enter your choice now:"]
       x := STRING2ID_-N(queryUser msgQ,1)
-      x := selectOptionLC(x,'(top break continue),NIL)
+      x := selectOptionLC(x,'(top break continue),nil)
       null x =>
         sayBrightly bright '"  That was not one of your choices!"
-        gotIt := NIL
+        gotIt := nil
       x = 'top => returnToTopLevel()
       x = 'break =>
         $BreakMode := 'break
 	sayBrightly ['"   Enter",:bright '":C",
-	  '"when you are ready to continue processing where you ",'%l,_
+	  '"when you are ready to continue processing where you ",'"%l",_
 	  '"   interrupted the system, enter",:bright '"(TOP)",_
-	  '"when you wish to return",'%l,'"   to top level.",'%l,'%l]
+	  '"when you wish to return",'"%l",'"   to top level.",'"%l",'"%l"]
         BREAK()
       sayBrightly
         '"   Processing will continue where it was interrupted."
       THROW($SpadReaderTag, nil)
-  $BreakMode = 'resume =>
+  $BreakMode = 'resume or $ReadingFile =>
     returnToReader()
   returnToTopLevel()
 
@@ -145,24 +147,10 @@ returnToTopLevel() ==
 
 returnToReader() ==
   not $ReadingFile => returnToTopLevel()
-  sayBrightly ['"   Continuing to read the file...", '%l]
+  sayBrightly ['"   Continuing to read the file...", '"%l"]
   THROW($SpadReaderTag, nil)
 
 sayErrorly(errorLabel, msg) ==
-  $saturn => saturnSayErrorly(errorLabel, msg)
-  sayErrorly1(errorLabel, msg)
-
-saturnSayErrorly(errorLabel, msg) ==
-  SETQ($OutputStream, $texOutputStream)
-  old := pushSatOutput("line")
-  sayString '"\bgroup\color{red}"
-  sayString '"\begin{verbatim}"
-  sayErrorly1(errorLabel, msg)
-  sayString '"\end{verbatim}"
-  sayString '"\egroup"
-  popSatOutput(old)
-
-sayErrorly1(errorLabel, msg) ==
   sayBrightly '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayBrightly ['"   >> ",errorLabel,'":"]
@@ -202,6 +190,7 @@ systemErrorHandler c ==
   $BreakMode = "validate" => 
     systemError ERROR_-FORMAT('"~a",[c])
   not $inLispVM and $BreakMode in '(nobreak query resume) =>
+    TYPEP(c,'CONTROL_-ERROR) => keyedSystemError('S2GE0020,nil)
     LET(($inLispVM true)(), systemError ERROR_-FORMAT('"~a",[c]))
   $BreakMode = "letPrint2" =>
     $BreakMode := nil

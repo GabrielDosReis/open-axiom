@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ import i_-object
 import ptrees
 namespace BOOT
 
-$useParserSrcPos :=  NIL
-$transferParserSrcPos := NIL
+$useParserSrcPos :=  nil
+$transferParserSrcPos := nil
 
 --  Making Trees
 
@@ -88,7 +88,7 @@ mkAtreeExpandMacros x ==
         [args,:body] := m
         #args = #argl =>
           sl := [[a,:s] for a in args for s in argl]
-          x := SUBLISNQ(sl,body)
+          x := applySubstNQ(sl,body)
         null args => x := [body,:argl]
         x := [op,:argl]
       x := [mkAtreeExpandMacros op,:argl]
@@ -100,7 +100,7 @@ mkAtree1 x ==
   vector? x => x
   atom x =>
     x in '(%noBranch %noMapVal) => x
-    x in '(nil true false) => mkAtree2([x],x,NIL)
+    x in '(nil true false) => mkAtree2([x],x,nil)
     x = '_/throwAway =>
       -- don't want to actually compute this
       tree := mkAtree1 '(void)
@@ -121,7 +121,7 @@ mkAtree1 x ==
 mkAtree2(x,op,argl) ==
   nargl := #argl
   (op= "-") and (nargl = 1) and (integer? first argl) =>
-    mkAtree1(MINUS first argl)
+    mkAtree1(-first argl)
   op=":" and argl is [y,z] => [mkAtreeNode "Declare",:argl]
   op="COLLECT" => [mkAtreeNode op,:transformCollect argl]
   op= "break" =>
@@ -197,7 +197,7 @@ mkAtree3(x,op,argl) ==
     [mkAtreeNode "not",[mkAtreeNode "=",mkAtree1 lhs,mkAtree1 rhs]]
   op="in" and argl is [var ,["SEGMENT",lb,ul]] =>
     upTest:=
-      null ul => NIL
+      null ul => nil
       mkLessOrEqual(var,ul)
     lowTest:=mkLessOrEqual(lb,var)
     z :=
@@ -214,15 +214,15 @@ mkAtree3(x,op,argl) ==
     if funbody is [":",body,type] then
       types := [type]
       funbody := body
-    else types := [NIL]
+    else types := [nil]
     v := collectDefTypesAndPreds funargs
     types := [:types,:v.1]
-    [mkAtreeNode "ADEF",[v.0,types,[NIL for a in types],funbody],
+    [mkAtreeNode "ADEF",[v.0,types,[nil for a in types],funbody],
       if v.2 then v.2 else true, false]
   x is ['ADEF,arg,:r] =>
     r := mkAtreeValueOf r
     v :=
-      null arg => VECTOR(NIL,NIL,NIL)
+      null arg => vector [nil,nil,nil]
       cons? arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
@@ -239,7 +239,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     a is [op,:arg] =>
       v :=
-        null arg => VECTOR(NIL,NIL,NIL)
+        null arg => vector [nil,nil,nil]
         cons? arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
@@ -309,7 +309,7 @@ signatureFromModemap m ==
   pred = true => rest sig
   pred.op in '(AND %and) =>
     sl := [[a,:b] for [.,a,b] in rest pred]
-    rest SUBLIS(sl,sig)
+    rest applySubst(sl,sig)
   
 collectDefTypesAndPreds args ==
   -- given an arglist to a DEF-like form, this function returns
@@ -317,10 +317,10 @@ collectDefTypesAndPreds args ==
   --   slot 0: just the variables
   --   slot 1: the type declarations on the variables
   --   slot 2: a predicate for all arguments
-  pred := types := vars := NIL
+  pred := types := vars := nil
   junk :=
     IDENTP args =>
-      types := [NIL]
+      types := [nil]
       vars  := [args]
     args is [":",var,type] =>
       types := [type]
@@ -339,16 +339,16 @@ collectDefTypesAndPreds args ==
         types := [:types,:v.1]
         pred  := addPred(pred,v.2)
       vars := [var]
-      types := [NIL]
+      types := [nil]
     args is ["tuple",:args'] =>
       for a in args' repeat
         v := collectDefTypesAndPreds a
         vars  := [:vars,first v.0]
         types := [:types,first v.1]
         pred  := addPred(pred,v.2)
-    types := [NIL]
+    types := [nil]
     vars  := [args]
-  VECTOR(vars,types,pred)
+  vector [vars,types,pred]
  where
   addPred(old,new) ==
     null new => old
@@ -438,7 +438,7 @@ rempropI(x,prop) ==
     atom x => x
     first x
   getI(id,prop) =>
-    recordNewValue(id,prop,NIL)
+    recordNewValue(id,prop,nil)
     recordOldValue(id,prop,getI(id,prop))
     $InteractiveFrame:= remprop(id,prop,$InteractiveFrame)
 
@@ -470,7 +470,7 @@ transformCollect [:itrl,body] ==
     it is ["UNTIL",:.] => nil
     throwKeyedMsg("S2IS0061",nil)
   bodyTree:=mkAtree1 body
-  iterList:=nconc(iterList,[:iterTran2 for it in itrl]) where
+  iterList:=append!(iterList,[:iterTran2 for it in itrl]) where
     iterTran2() ==
       it is ["STEP",:.] => nil
       it is ["IN",:.] => nil

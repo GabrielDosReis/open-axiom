@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,16 @@
 ;; 
 ;; -*- Charcters and Strings -*-
 ;; 
+
+;; Special character constants
+(defconstant |$Bell| (code-char 7))
+(defconstant |$Backspace| #\Backspace)
+(defconstant |$HorizontalTab| #\Tab)
+(defconstant |$Newline| #\Newline)
+(defconstant |$VerticalTab| (code-char 11))
+(defconstant |$FormFeed| #\Page)
+(defconstant |$CarriageReturn| #\Return)
+
 
 (defmacro |char| (arg)
   (cond ((stringp arg)
@@ -198,132 +208,14 @@
  #+:common-lisp (:compile-toplevel :load-toplevel :execute)
  #-:common-lisp (compile load eval)
  (progn
- 
-   (DEFUN APPLYR (L X)
-     (if (not L)
-	 X 
-       (LIST (CAR L) (APPLYR (CDR L) X))))
-
-   (defun PARTCODET (N)
-     (COND ((OR (NULL (INTEGERP N)) 
-		(LT N 1)) 
-	    (ERROR 'PARTCODET))
-	   ((EQL N 1) 
-	    '(CDR))
-	   ((EQL N 2)
-	    '(CDDR))
-	   ((EQL N 3)
-	    '(CDDDR))
-	   ((EQL N 4)
-	    '(CDDDDR))
-	   ((APPEND (PARTCODET (PLUS N -4)) '(CDDDDR)))))
-   
    (defun NLIST (N FN)
      "Returns a list of N items, each initialized to the value of an
  invocation of FN"
      (if (LT N 1)
 	 NIL 
        (CONS (EVAL FN) (NLIST (1- N) FN))))
-
-   (defun TAILFN (X N) 
-     (if (LT N 1) 
-	 X 
-       (TAILFN (CDR X) (1- N))))
     
    ))
-
-
-(defmacro TAIL (&rest L)
-  (let ((x (car L)) 
-	(n (if (cdr L) 
-	       (cadr L)
-	     1)))
-    (COND ((EQL N 0)
-	   X)
-          ((EQL N 1) 
-	   (LIST 'CDR X))
-          ((GT N 1) 
-	   (APPLYR (PARTCODET N) X))
-          ((LIST 'TAILFN X N)))))
- 
-
-;; 
-;; -*- Cons Cell Manipulators -*-
-;; 
-
-(eval-when
- #+:common-lisp (:compile-toplevel :load-toplevel :execute)
- #-:common-lisp (compile load eval)
- (progn
-   (MAPC #'(LAMBDA (J) (MAKEPROP (CAR J) 'SELCODE (CADR J)))
-	 '((CAR 2) (CDR 3) (CAAR 4) (CADR 5) (CDAR 6) (CDDR 7)
-	   (CAAAR 8) (CAADR 9) (CADAR 10) (CADDR 11) (CDAAR 12)
-	   (CDADR 13) (CDDAR 14) (CDDDR 15) (CAAAAR 16) (CAAADR 17)
-	   (CAADAR 18) (CAADDR 19) (CADAAR 20) (CADADR 21) (CADDAR 22)
-	   (CADDDR 23) (CDAAAR 24) (CDAADR 25) (CDADAR 26) (CDADDR 27)
-	   (CDDAAR 28) (CDDADR 29) (CDDDAR 30) (CDDDDR 31)))
-   
-   (DEFUN RENAME (U) 
-     (let (x)
-       (if (AND (IDENTP U) (SETQ X (GET U 'NEWNAM)))
-	   X 
-	 U)))
-   
-   (defun CARCDRX1 (X N FG)      ; FG = TRUE FOR CAR AND CDR
-     (COND ((< N 1)
-	    (fail))
-	   ((EQL N 1)
-	    X)
-	   ((let ((D (DIVIDE N 2)))
-	      (CARCDRX1 (LIST (if (EQL (CADR D) 0)
-				  (if FG 'CAR 'CAR) 
-				(if FG 'CDR 'CDR)) X)
-			(CAR D)
-			FG)))))
-   
-   (defun CARCDREXPAND (X FG)    ; FG = TRUE FOR CAR AND CDR
-     (let (n hx)
-       (COND ((ATOM X) 
-	      X)
-	     ((SETQ N 
-		    (GET (RENAME (SETQ HX (CARCDREXPAND (CAR X) FG)))
-			 'SELCODE))
-	      (CARCDRX1 (CARCDREXPAND (CADR X) FG) N FG))
-	     ((CONS HX (MAPCAR #'(LAMBDA (Y) (CARCDREXPAND Y FG)) (CDR X)))))))
-   ))
-
-
-(defmacro RPLAC (&rest L)
-  (if (EQCAR (CAR L) 'ELT)
-      (LIST 'SETELT (CADAR L) (CADDR (CAR L)) (CADR L))
-    (let ((A (CARCDREXPAND (CAR L) NIL)) (B (CADR L)))
-      (COND ((CDDR L) (ERROR 'RPLAC))
-	    ((EQCAR A 'CAR) (LIST 'RPLACA (CADR A) B))
-	    ((EQCAR A 'CDR) (LIST 'RPLACD (CADR A) B))
-	    ((ERROR 'RPLAC))))))
-
-(defmacro |rplac| (&rest L)
-  (let (a b s)
-    (cond
-      ((EQCAR (SETQ A (CAR L)) 'ELT)
-       (COND ((AND (INTEGERP (SETQ B (CADDR A))) (>= B 0))
-	      (SETQ S "CA")
-	      (do ((i 1 (1+ i))) ((> i b)) (SETQ S (STRCONC S "D")))
-	      (LIST 'RPLAC (LIST (INTERN (STRCONC S "R")) (CADR A)) (CADR L)))
-	     ((ERROR "rplac"))))
-      ((PROGN
-	 (SETQ A (CARCDREXPAND (CAR L) NIL))
-	 (SETQ B (CADR L))
-	 (COND
-	   ((CDDR L) (ERROR 'RPLAC))
-	   ((EQCAR A 'CAR) (LIST 'RPLACA (CADR A) B))
-	   ((EQCAR A 'CDR) (LIST 'RPLACD (CADR A) B))
-	   ((ERROR 'RPLAC))))))))
-
-;; 
-;; -*- Association Lists -*-
-;; 
-
 
 ;; 
 ;; -*- Simple Arrays -*-
@@ -364,7 +256,7 @@
 
 (defmacro SPADCALL (&rest L)
   (let ((args (butlast l))
-	(fn (car (last l)))
+	(fn (car (|lastNode| l)))
 	(gi (gensym)))
     ;; (values t) indicates a single return value
     `(let ((,gi ,fn)) 
@@ -658,9 +550,9 @@
        (DO ((X SPL (CDR X)))
 	   ((ATOM X)
 	    (LIST 'spadDO 
-		  (NREVERSE IL) 
-		  (LIST (MKPF (NREVERSE XCL) 'OR) XV)
-		  (SEQOPT (CONS 'SEQ (NCONC (NREVERSE RSL)
+		  (|reverse!| IL) 
+		  (LIST (MKPF (|reverse!| XCL) 'OR) XV)
+		  (SEQOPT (CONS 'SEQ (|append!| (|reverse!| RSL)
 					    (LIST (LIST 'EXIT BD)))))))
 	   (COND ((ATOM (CAR X)) 
 		  (FAIL)))
@@ -795,7 +687,7 @@
 		    '(EXIT RESET IN ON GSTEP ISTEP STEP 
 			   GENERAL UNTIL WHILE SUCHTHAT EXIT))
 	    (REPEAT-TRAN (CDR L) (CONS (CAR L) LP)))
-	   ((CONS (NREVERSE LP) (MKPF L 'PROGN)))))
+	   ((CONS (|reverse!| LP) (MKPF L 'PROGN)))))
    
    (defun MK_LEFORM (U)
      (COND ((IDENTP U) 
@@ -863,7 +755,7 @@
 	   (UNIONQ NIL)
 	   (|gcd| (|Zero|))
 	   (|union| NIL)
-	   (NCONC NIL)
+	   (|append!| NIL)
 	   (|and| |true|)
 	   (|or| |false|)
 	   (AND 'T)
@@ -882,7 +774,7 @@
 
    (defun NREVERSE-N (X AXIS)
      (COND ((EQL AXIS 0)
-	    (NREVERSE X))
+	    (|reverse!| X))
 	   ((MAPCAR #'(LAMBDA (Y) (NREVERSE-N Y (1- AXIS))) X))))
  
 
@@ -901,7 +793,7 @@
 		       (PROG (L BOD1 ITL)
 			     (SETQ L (REVERSE (CDR BOD)))
 			     (SETQ BOD1 (CAR L))
-			     (SETQ ITL (NREVERSE (CDR L)))
+			     (SETQ ITL (|reverse!| (CDR L)))
 			     (RETURN (-REDUCE OP1 AXIS IDEN BOD1 ITL)) )
 		     (progn 
 		       (SETQ U (-REDUCE-OP OP1 AXIS))
@@ -915,9 +807,9 @@
    (defun REDUCE-N (OP RIGHT L ACC)
      (COND (RIGHT 
 	    (PROG (U L1)
-		  (SETQ L1 (NREVERSE L))
+		  (SETQ L1 (|reverse!| L))
 		  (SETQ U (REDUCE-N-1 OP 'T L1 ACC))
-		  (NREVERSE L1)
+		  (|reverse!| L1)
 		  (RETURN U) ))
 	   ((REDUCE-N-1 OP NIL L ACC))))
 
@@ -967,7 +859,7 @@
 			(LIST 'THETACHECK G (MKQ G)(MKQ OP)))
 		       (G) ))
 	   (COND ((EQ OP 'CONS)
-		  (SETQ EXIT (LIST 'NREVERSE0 EXIT))))
+		  (SETQ EXIT (LIST '|reverse!| EXIT))))
 	   ;; CONSCODE= code which conses a member onto the list
 	   (SETQ VALUE 
 		 (COND ((EQ Y 'NO_THETA_PROPERTY)
@@ -1080,21 +972,21 @@
 			   ((ATOM VL) 
 			    (GO BADO)))
 		     G180   
-		     (AND (NOT (PAIRP (SETQ V (CAR VL)))) 
+		     (AND (NOT (CONSP (SETQ V (CAR VL)))) 
 			  (SETQ V (LIST V)))
 		     (AND (NOT (IDENTP (CAR V)))
 			  (GO BADO))
 		     (PUSH (CAR V) VARS)
-		     (PUSH (COND ((PAIRP (CDR V)) (CADR V))) INITS)
-		     (AND (PAIRP (CDR V))
-			  (PAIRP (CDDR V))
+		     (PUSH (COND ((CONSP (CDR V)) (CADR V))) INITS)
+		     (AND (CONSP (CDR V))
+			  (CONSP (CDDR V))
 			  (SEQ (PUSH (CAR V) U-VARS)
 			       (PUSH (CADDR V) U-VALS)))
-		     (AND (PAIRP (progn (POP VL) VL))
+		     (AND (CONSP (progn (POP VL) VL))
 			  (GO G180))
                     TG5 
 		    (setq exitforms (POP L))
-		    (and (PAIRP EXITFORMS)
+		    (and (CONSP EXITFORMS)
 			 (progn 
 			   (setq endtest (POP EXITFORMS))
 			   exitforms)))))
@@ -1127,7 +1019,7 @@
 	(RETURN (COND
 		 ((AND $NEWSPAD)
 		  (CONS 'SEQ
-			(NCONC (DO_LET VARS INITS)
+			(|append!| (DO_LET VARS INITS)
 			       (LIST 'G190 
 				     ENDTEST 
 				     BODYFORMS 
@@ -1149,21 +1041,21 @@
 	(ERROR (FORMAT NIL "BAD DO FORMAT~%~A" OL))))
 
 (defmacro THETA (&rest LL)
-  (let (U (L (copy-list LL)))
+  (let (U (L (|copyList| LL)))
     (if (EQ (KAR L) '\,) 
 	`(theta CONS . ,(CDR L))
       (progn
 	(if (EQCAR (CAR L) 'QUOTE) 
-	    (RPLAC (CAR L) (CADAR L)))
+	    (RPLACA L (CADAR L)))
 	(-REDUCE (CAR L) 0
 		 (if (SETQ U (GET (CAR L) 'THETA))
 		     (CAR U)
 		   (MOAN "NO THETA PROPERTY"))
-		 (CAR (SETQ L (NREVERSE (CDR L))))
-		 (NREVERSE (CDR L)))))))
+		 (CAR (SETQ L (|reverse!| (CDR L))))
+		 (|reverse!| (CDR L)))))))
 
 (defmacro THETA1 (&rest LL)
-  (let (U (L (copy-list LL)))
+  (let (U (L (|copyList| LL)))
     (if (EQ (KAR L) '\,)
         (LIST 'NREVERSE-N (CONS 'THETA1 (CONS 'CONS (CDR L))) 1)
       (-REDUCE (CAR L) 
@@ -1171,8 +1063,8 @@
 	       (if (SETQ U (GET (CAR L) 'THETA))
 		   (CAR U)
 		 (MOAN "NO THETA PROPERTY"))
-	       (CAR (SETQ L (NREVERSE (CDR L))))
-	       (NREVERSE (CDR L))))))
+	       (CAR (SETQ L (|reverse!| (CDR L))))
+	       (|reverse!| (CDR L))))))
 
 (defmacro SPADREDUCE (OP AXIS BOD)
   (REDUCE-1 OP AXIS BOD))
@@ -1200,7 +1092,7 @@
  
 (defmacro COLLECT (&rest L)
   (let ((U (REPEAT-TRAN L NIL)))
-    (CONS 'THETA (CONS '\, (NCONC (CAR U) (LIST (CDR U)))))))
+    (CONS 'THETA (CONS '\, (|append!| (CAR U) (LIST (CDR U)))))))
 
 ;; 
 ;; -*- Non-Local Gotos -*-
@@ -1222,15 +1114,6 @@
 ;; -*- Input/Output -*-
 ;; 
 
-(defmacro |shoeConsole| (line)
- `(write-line ,line |$OutputStream|))
-
-(defmacro |shoeInputFile| (filespec)
- `(open ,filespec :direction :input :if-does-not-exist nil))
-
-(defmacro |shoeread-line| (st)
- `(read-line ,st nil nil))
-
 (defmacro |report| (L)
   (SUBST (SECOND L) 'x
          '(COND ($reportFlag (sayBrightly x)) ((QUOTE T) NIL))))
@@ -1249,3 +1132,6 @@
 
 (defmacro |spadConstant| (dollar n)
  `(spadcall (svref ,dollar (the fixnum ,n))))
+
+(defmacro |shellEntry| (dollar n)
+  `(svref ,dollar ,n))

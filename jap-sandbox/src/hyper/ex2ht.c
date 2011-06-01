@@ -50,6 +50,8 @@
 #include "cfuns.h"
 
 
+using namespace OpenAxiom;
+
 #define MaxLineLength 512
 #define MaxFiles      100
 

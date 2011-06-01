@@ -197,7 +197,7 @@ pf2Atree1 pf ==
             idList, pf2Atree1 (pfAssignRhs)(pf)]
         decls =>
             [mkAtreeNodeWithSrcPos("SEQ",pf),
-                :[pf2Atree1 decl for decl in nreverse decls], x]
+                :[pf2Atree1 decl for decl in reverse! decls], x]
         x
 
 --  (pfDefinition?)(pf) =>
@@ -364,11 +364,11 @@ pfApplication2Atree pf ==
 --            argTypeList := [nil, :argTypeList]
 --          argTypeList := [pf2Atree1 pfTypedType arg, :argTypeList]
 --        systemError '"definition args should be typed"
---      argList := nreverse argList
+--      argList := reverse! argList
 --      retType :=
 --        pfNothing? pfLambdaRets pf => nil
 --        pf2Atree1 pfLambdaRets pf
---      argTypeList := [retType, :nreverse argTypeList]
+--      argTypeList := [retType, :reverse! argTypeList]
 --      [argList, :[argTypeList, [nil for arg in argTypeList],
 --        pf2Atree1 pfLambdaBody pf]]
 --    ['id, :['(()), '(()), pf2Atree1 pf]]
@@ -411,21 +411,21 @@ pfSequence2Atree0(seqList, pf) ==
         seqTranList := [item ,:seqTranList]
         seqList := rest seqList
     #seqTranList = 1 => first seqTranList
-    [mkAtreeNodeWithSrcPos("SEQ",pf), :nreverse seqTranList]
+    [mkAtreeNodeWithSrcPos("SEQ",pf), :reverse! seqTranList]
 
 --
 --  float2Atree num ==
 --    eIndex := SEARCH('"e", num)
 --    mantPart :=
---      eIndex => SUBSEQ(num, 0, eIndex)
+--      eIndex => subSequence(num, 0, eIndex)
 --      num
---    expPart := (eIndex => READ_-FROM_-STRING SUBSEQ(num, eIndex+1); 0)
+--    expPart := (eIndex => READ_-FROM_-STRING subSequence(num, eIndex+1); 0)
 --    dotIndex := SEARCH('".", mantPart)
 --    intPart :=
---      dotIndex => READ_-FROM_-STRING SUBSEQ(mantPart, 0, dotIndex)
+--      dotIndex => READ_-FROM_-STRING subSequence(mantPart, 0, dotIndex)
 --      READ_-FROM_-STRING mantPart
 --    fracPartString :=
---      dotIndex => SUBSEQ(mantPart, dotIndex+1)
+--      dotIndex => subSequence(mantPart, dotIndex+1)
 --      '"0"
 --    bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
 --      # fracPartString, expPart)
@@ -455,7 +455,7 @@ loopIters2Atree iterList ==
             newIter := ["IN", var, mkAtree1 s]
             result := [newIter, :result]
         result := [pf2Atree1(iter), :result]
-    nreverse result
+    reverse! result
 
 pfCollect2Atree pf ==
     atree := [mkAtree1WithSrcPos("COLLECT",pf),
@@ -490,13 +490,13 @@ pfCollect2Atree pf ==
 --      [name, predLhs, :predRhs] := pred
 --      vars := patternVarsOf predRhs
 --      rest vars =>  -- if there is more than one patternVariable
---        ruleLhs := NSUBST(predLhs, name, ruleLhs)
+--        ruleLhs := substitute!(predLhs, name, ruleLhs)
 --        $multiVarPredicateList := [pred, :$multiVarPredicateList]
 --      predicate :=
 --        [., var] := predLhs
 --        ["suchThat", predLhs, ["ADEF", [var],
 --          '((Boolean) (Expression (Integer))), '(() ()), predRhs]]
---      ruleLhs := NSUBST(predicate, name, ruleLhs)
+--      ruleLhs := substitute!(predicate, name, ruleLhs)
 --    ruleLhs
 --
 --  rulePredicateTran rule ==
@@ -516,7 +516,7 @@ pfCollect2Atree pf ==
 --
 --  pvarPredTran(rhs, varList) ==
 --    for var in varList for i in 1.. repeat
---      rhs := NSUBST(['elt, 'predicateVariable, i], var, rhs)
+--      rhs := substitute!(['elt, 'predicateVariable, i], var, rhs)
 --    rhs
 --
 --  patternVarsOf expr ==

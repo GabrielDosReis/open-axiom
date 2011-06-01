@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@
 import bc_-util
 namespace BOOT
 
---====================> WAS b-util.boot <================================
-
 --=======================================================================
 --                     AXIOM Browser
 -- Initial entry is from man0.ht page to one of these functions:
@@ -52,7 +50,7 @@ browserAutoloadOnceTrigger() == nil
 
 ----------------------> Global Variables <-----------------------
 $includeUnexposed? := true   --default setting
-$tick := char '_`            --field separator for database files
+$tick := char "`"            --field separator for database files
 $charUnderscore := ('__)     --needed because of parser bug
 $wild1 := '"[^`]*"           --phrase used to convert keys to grep strings
 $browseCountThreshold := 10  --the maximum number of names that will display
@@ -75,11 +73,11 @@ $docTableHash := hashTable 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------
-$pmFilterDelimiters := [char '_(,char '_),char '_ ]
+$pmFilterDelimiters := [char "(",char ")",char " "]
 $dbKindAlist :=
-  [[char 'a,:'"attribute"],[char 'o,:'"operation"],
-    [char 'd,:'"domain"],[char 'p,:'"package"],
-      [char 'c,:'"category"],[char 'x,:'"default_ package"]]
+  [[char "a",:'"attribute"],[char "o",:'"operation"],
+    [char "d",:'"domain"],[char "p",:'"package"],
+      [char "c",:'"category"],[char "x",:'"default_ package"]]
 $OpViewTable := '(
   (names           "Name"      "Names"           dbShowOpNames)
   (documentation   "Name"      "Names"           dbShowOpDocumentation)
@@ -106,7 +104,7 @@ capitalize s ==
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
-    res.0 := UPCASE res.0
+    stringChar(res,0) := charUpcase stringChar(res,0)
     res
 
 escapeSpecialIds u ==   --very expensive function
@@ -123,7 +121,7 @@ escapeString com ==   --this makes changes on single comment lines
 -- was htexCom
   look := 0
   while look repeat
-    look >= SIZE com => look := []
+    look >= #com => look := []
 
 
     look := STRPOSL ('"${}#%", com, look, [])
@@ -150,7 +148,8 @@ htPred2English(x,:options) ==
         gn(x,op,l,prec)
         if prec < 5 then htSay '")"
       x = 'etc => htSay '"..."
-      IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds PNAME x
+      IDENTP x and not symbolMember?(x,$emList) =>
+        htSay escapeSpecialIds symbolName x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
       op in '(NOT not) =>
@@ -178,11 +177,11 @@ htPred2English(x,:options) ==
 
 unMkEvalable u ==
  u is ['QUOTE,a] => a
- u is ['LIST,:r] => [unMkEvalable x for x in r]
+ u is ['%list,:r] => [unMkEvalable x for x in r]
  u
 
 lisp2HT u == ['"_'",:fn u] where fn u ==
-  IDENTP u => escapeSpecialIds PNAME u
+  IDENTP u => escapeSpecialIds symbolName u
   string? u => escapeString u
   atom u => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]
@@ -190,7 +189,7 @@ lisp2HT u == ['"_'",:fn u] where fn u ==
 args2HtString(x,:options) ==
   null x => '""
   emList := IFCAR options
-  SUBSTRING(form2HtString(['f,:x],emList),1,nil)
+  subString(form2HtString(['f,:x],emList),1)
 
 quickForm2HtString(x) ==
   atom x => STRINGIMAGE x
@@ -202,9 +201,10 @@ form2HtString(x,:options) ==
   fn(x) where
     fn x ==
       atom x =>
-        MEMQ(x,$FormalMapVariableList) => strconc('"\",STRINGIMAGE x)
+        symbolMember?(x,$FormalMapVariableList) =>
+          strconc('"\",symbolName x)
         u := escapeSpecialChars STRINGIMAGE x
-        MEMQ(x,$emList) => strconc('"{\em ",u,'"}")
+        symbolMember?(x,$emList) => strconc('"{\em ",u,'"}")
         string? x => strconc('"_"",u,'"_"")
         u
       first x = 'QUOTE => strconc('"'",sexpr2HtString second x)
@@ -236,8 +236,8 @@ sexpr2HtString x ==
 form2LispString(x) ==
   atom x =>
     x = '_$ => '"__$"
-    MEMQ(x,$FormalMapVariableList) => strconc(STRINGIMAGE '__, STRINGIMAGE x)
-    string? x => strconc('"_"",STRINGIMAGE x,'"_"")
+    symbolMember?(x,$FormalMapVariableList) => strconc('"__", symbolName x)
+    string? x => strconc('"_"",x,'"_"")
     STRINGIMAGE x
   x is ['QUOTE,a] => strconc('"'",sexpr2LispString a)
   x is [":",a,b] => strconc(form2LispString a,'":",form2LispString b)
@@ -267,7 +267,7 @@ dbConstructorKind x ==
   target := getConstructorModemapFromDB(x).mmTarget
   target = '(Category) => 'category
   target is ['CATEGORY,'package,:.] => 'package
-  HGET($defaultPackageNamesHT,x) => 'default_ package
+  tableValue($defaultPackageNamesHT,x) => 'default_ package
   'domain
 
 getConstructorForm name ==
@@ -348,7 +348,7 @@ bcStarSpaceOp(op,exposed?) ==
   null $includeUnexposed? => nil
   not exposed? =>
     htSayUnexposed()
-    if op.0 = char '_* then htSay '" "
+    if stringChar(op,0) = char "*" then htSay '" "
   htBlank()
 
 bcStarConform form ==
@@ -371,8 +371,8 @@ asharpConstructors() ==
 
 extractFileNameFromPath s == fn(s,0,#s) where
   fn(s,i,m) ==
-    k := charPosition(char '_/,s,i)
-    k = m => SUBSTRING(s,i,nil)
+    k := charPosition(char "/",s,i)
+    k = m => subString(s,i)
     fn(s,k + 1,m)
 
 bcOpTable(u,fn) ==
@@ -406,8 +406,8 @@ bcConTable u ==
 bcAbbTable u ==
   htBeginTable()
   firstTime := true
-  for x in removeDuplicates u repeat        --allow x to be NIL meaning "no abbreviation"
-  -- for x in u repeat    --allow x to be NIL meaning "no abbreviation"
+  for x in removeDuplicates u repeat        --allow x to be nil meaning "no abbreviation"
+  -- for x in u repeat    --allow x to be nil meaning "no abbreviation"
     if firstTime then firstTime := false
     else htSaySaturn '"&"
     if x is [con,abb,:.] then
@@ -457,7 +457,7 @@ splitConTable cons ==
     null pred => 'skip
     pred = 'T or pred is ['hasArgs,:.]  => uncond := [pair,:uncond]
     cond := [pair,:cond]
-  [nreverse uncond,:nreverse cond]
+  [reverse! uncond,:reverse! cond]
 
 bcNameTable(u,fn,:option) ==   --option if * prefix
   htSay '"\newline"
@@ -505,19 +505,14 @@ dbSayItems(countOrPrefix,singular,plural,:options) ==
   for x in options repeat bcHt x
   if count ~= 0 then bcHt '":"
 
-dbBasicConstructor? conname == member(dbSourceFile conname,'("catdef" "coerce"))
+dbBasicConstructor? conname ==
+  dbSourceFile conname in '("catdef" "coerce")
 
 nothingFoundPage(:options) ==
   htInitPage('"Sorry, no match found",nil)
   htShowPage()
 
 htCopyProplist htPage == [[x,:y] for [x,:y] in htpPropertyList htPage]
-
-dbInfovec name ==
-  "category" = getConstructorKindFromDB name => nil
-  asharpConstructorFromDB name => nil
-  loadLibIfNotLoaded(name)
-  u := GETL(name,'infovec) => u
 
 emptySearchPage(kind,filter,:options) ==
   skipNamePart := IFCAR options
@@ -531,10 +526,11 @@ emptySearchPage(kind,filter,:options) ==
   htSay '"}}"
   htShowPage()
 
-isLoaded? conform == GETL(constructor? opOf conform,'LOADED)
+isLoaded? conform ==
+  property(getConstructorAbbreviationFromDB opOf conform,'LOADED)
 
 string2Integer s ==
-  and/[DIGIT_-CHAR_-P (s.i) for i in 0..MAXINDEX s] => readInteger s
+  and/[digit? (s.i) for i in 0..maxIndex s] => readInteger s
   nil
 
 dbGetInputString htPage ==
@@ -602,18 +598,18 @@ dbNotAvailablePage(:options) ==
 --=======================================================================
 --       Utility Functions for Manipulating Browse Datalines
 --=======================================================================
-dbpHasDefaultCategory? s ==  #s > 1 and s.1 = char 'x  --s is part 3 of line
+dbpHasDefaultCategory? s ==  #s > 1 and s.1 = char "x"  --s is part 3 of line
 
 dbKind line == line.0
 
 dbKindString kind == LASSOC(kind,$dbKindAlist)
 
-dbName line == escapeString SUBSTRING(line,1,charPosition($tick,line,1) - 1)
+dbName line == escapeString subString(line,1,charPosition($tick,line,1) - 1)
 
 dbAttr line == strconc(dbName line,escapeString dbPart(line,4,0))
 
 dbPart(line,n,k) ==  --returns part n of line (n=1,..) beginning in column k
-  n = 1 => SUBSTRING(line,k + 1,charPosition($tick,line,k + 1) - k - 1)
+  n = 1 => subString(line,k + 1,charPosition($tick,line,k + 1) - k - 1)
   dbPart(line,n - 1,charPosition($tick,line,k + 1))
 
 dbXParts(line,n,m) ==
@@ -622,7 +618,7 @@ dbXParts(line,n,m) ==
 
 dbParts(line,n,m) ==  --split line into n parts beginning in column m
   n = 0 => nil
-  [SUBSTRING(line,m,-m + (k := charPosition($tick,line,m))),
+  [subString(line,m,-m + (k := charPosition($tick,line,m))),
     :dbParts(line,n - 1,k + 1)]
 
 dbConname(line) == dbPart(line,5,1)
@@ -630,10 +626,10 @@ dbConname(line) == dbPart(line,5,1)
 dbComments line ==  dbReadComments(string2Integer dbPart(line,7,1))
 
 dbNewConname(line) == --dbName line unless kind is 'a or 'o => name in 5th pos.
-  (kind := line.0) = char 'a or kind = char 'o =>
+  (kind := line.0) = char "a" or kind = char "o" =>
     conform := dbPart(line,5,1)
-    k := charPosition(char '_(,conform,1)
-    SUBSTRING(conform,1,k - 1)
+    k := charPosition(char "(",conform,1)
+    subString(conform,1,k - 1)
   dbName line
 
 dbTickIndex(line,n,k) == --returns index of nth tick in line starting at k
@@ -643,6 +639,18 @@ dbTickIndex(line,n,k) == --returns index of nth tick in line starting at k
 mySort u == listSort(function GLESSEQP,u)
 
 
+
+quickAnd(a,b) ==
+  a = true => b
+  b = true => a
+  a = false or b = false => false
+  simpBool ['AND,a,b]
+
+quickOr(a,b) ==
+  a = true or b = true => true
+  b = false => a
+  a = false => b
+  simpCatPredicate simpBool ['OR,a,b]
 
 
 

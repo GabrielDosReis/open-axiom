@@ -330,7 +330,7 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
       parts x == VEC2LIST(x)$Lisp
  
       directProduct z ==
-        size?(z, dim) => per copy z
+        #z = dim => per copy z
         error "Not of the correct length"
  
  

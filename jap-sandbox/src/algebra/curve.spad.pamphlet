@@ -275,7 +275,7 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
       [represents row(m, i) for i in minRowIndex m .. maxRowIndex m]
 
     integralAtInfinity? f ==
-      not any?(infOrder(#1) < 0,
+      not any?(negative? infOrder(#1),
          coordinates(f) * inverseIntegralMatrixAtInfinity())$Vector(RF)
 
     numberOfComponents() ==
@@ -305,13 +305,13 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
 
     infValue f ==
       zero? f => 0
-      (n := infOrder f) > 0 => 0
+      positive?(n := infOrder f) => 0
       zero? n =>
         (leadingCoefficient numer f) / (leadingCoefficient denom f)
       error "f not locally integral at infinity"
 
     rfmonom n ==
-      n < 0 => inv(monomial(1, (-n)::NonNegativeInteger)$UP :: RF)
+      negative? n => inv(monomial(1, (-n)::NonNegativeInteger)$UP :: RF)
       monomial(1, n::NonNegativeInteger)$UP :: RF
 
     kmin(m, v) ==

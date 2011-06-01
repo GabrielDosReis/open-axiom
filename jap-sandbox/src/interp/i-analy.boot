@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -61,25 +61,25 @@ putCallInfo(t,op,arg,nargs) ==
 
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
-  -- given variable. Returns NIL if none.
-  string?(t) or IDENTP(t) => NIL
+  -- given variable. Returns nil if none.
+  string?(t) or IDENTP(t) => nil
   t = $Symbol => t
   t is ['Variable,u] =>
     (u = var) => t
-    NIL
+    nil
   t is ['Polynomial,.] => t
   t is ['RationalFunction,D] => ['Polynomial,D]
-  t is [up,t',u,.] and MEMQ(up,$univariateDomains) =>
+  t is [up,t',u,.] and symbolMember?(up,$univariateDomains) =>
     -- power series have one more arg and different ordering
     u = var => t
     getMinimalVariableTower(var,t')
-  t is [up,u,t'] and MEMQ(up,$univariateDomains) =>
+  t is [up,u,t'] and symbolMember?(up,$univariateDomains) =>
     u = var => t
     getMinimalVariableTower(var,t')
-  t is [mp,u,t'] and MEMQ(mp,$multivariateDomains) =>
-    var in u => t
+  t is [mp,u,t'] and symbolMember?(mp,$multivariateDomains) =>
+    member(var,u) => t
     getMinimalVariableTower(var,t')
-  null (t' := underDomainOf t) => NIL
+  null (t' := underDomainOf t) => nil
   getMinimalVariableTower(var,t')
 
 getMinimalVarMode(id,m) ==
@@ -93,8 +93,8 @@ getMinimalVarMode(id,m) ==
   defaultMode :=
     $Symbol
   null m => defaultMode
-  (vl := polyVarlist m) and ((id in vl) or 'all in vl) =>
-    SUBSTQ($Integer,$EmptyMode,m)
+  (vl := polyVarlist m) and (member(id,vl) or 'all in vl) =>
+    substitute($Integer,$EmptyMode,m)
   (um := underDomainOf m) => getMinimalVarMode(id,um)
   defaultMode
 
@@ -109,21 +109,18 @@ polyVarlist m ==
         [., ., a, :.] := m
         a := removeQuote a
         [a]
-    op in '(Polynomial RationalFunction Expression) =>
-      '(all)
+    op in '(Polynomial RationalFunction Expression) => '(all)
     a := removeQuote a
-    op in '(UnivariatePolynomial) =>
-      [a]
-    op in $multivariateDomains =>
-          a
+    op in '(UnivariatePolynomial) => [a]
+    symbolMember?(op,$multivariateDomains) => a
   nil
 
 --% Pushing Down Target Information
 
 pushDownTargetInfo(op,target,arglist) ==
   -- put target info on args for certain operations
-  target = $OutputForm => NIL
-  target = $Any        => NIL
+  target = $OutputForm => nil
+  target = $Any        => nil
   n := # arglist
   pushDownOnArithmeticVariables(op,target,arglist)
   (pdArgs := pushDownOp?(op,n)) =>
@@ -138,7 +135,7 @@ pushDownTargetInfo(op,target,arglist) ==
   2 = nargs =>
     op = "*" =>            -- only push down on 1st arg if not immed
       if not getTarget second arglist then putTarget(second arglist,target)
-      getTarget(x := first arglist) => NIL
+      getTarget(x := first arglist) => nil
       if getUnname(x) ~= $immediateDataSymbol then putTarget(x,target)
     op = "**" or op = "^" =>           -- push down on base
       if not getTarget first arglist then putTarget(first arglist,target)
@@ -160,19 +157,19 @@ pushDownTargetInfo(op,target,arglist) ==
     (op = 'SEGMENT) and (target is ['UniversalSegment,S]) =>
       for x in arglist repeat
         if not getTarget(x) then putTarget(x,S)
-    NIL
-  NIL
+    nil
+  nil
 
 pushDownOnArithmeticVariables(op,target,arglist) ==
   -- tries to push appropriate target information onto variable
   -- occurring in arithmetic expressions
-  cons?(target) and first(target) = 'Variable => NIL
-  not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
-  not containsPolynomial(target)   => NIL
+  cons?(target) and first(target) = 'Variable => nil
+  not symbolMember?(op,'(_+ _- _* _*_* _/)) => nil
+  not containsPolynomial(target)   => nil
   for x in arglist for i in 1.. repeat
     vector?(x) =>   -- leaf
       transferPropsToNode(xn := getUnname(x),x)
-      getValue(x) or (xn = $immediateDataSymbol) => NIL
+      getValue(x) or (xn = $immediateDataSymbol) => nil
       t := getMinimalVariableTower(xn,target) or target
       if not getTarget(x) then putTarget(x,t)
     cons?(x) =>  -- node
@@ -185,7 +182,7 @@ pushDownOp?(op,n) ==
   -- the target type is equal to one or more arguments. If so, a list
   -- of the appropriate arguments is returned.
   ops := [sig for [sig,:.] in getModemapsFromDatabase(op,n)]
-  null ops => NIL
+  null ops => nil
   op in '(_+ _* _- _exquo) => [i for i in 0..(n-1)]
   -- each signature has form
   -- [domain of implementation, target, arg1, arg2, ...]
@@ -195,9 +192,9 @@ pushDownOp?(op,n) ==
   numMms := # ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat
-      targ = arg => setShellEntry(sameAsTarg,i,1 + sameAsTarg.i)
+      targ = arg => vectorRef(sameAsTarg,i) := 1 + sameAsTarg.i
   -- now see which args have their count = numMms
-  ok := NIL
+  ok := nil
   for i in 0..(n-1) repeat
     if numMms = sameAsTarg.i then ok := [i,:ok]
   reverse ok
@@ -212,6 +209,11 @@ elaborateForm pf ==
   t := mkAtree1 pf
   bottomUp t
   t
+
+++ Elaborate a VAT with specified target type.
+elaborateTree(t,mode) ==
+  putTarget(t,mode)
+  bottomUp t
 
 bottomUp t ==
   -- bottomUp takes an attributed tree, and returns the modeSet for it.
@@ -230,7 +232,7 @@ bottomUp t ==
       else
         transferPropsToNode(opName,op)
     else
-      opName := NIL
+      opName := nil
       bottomUp op
 
     opVal := getValue op
@@ -238,7 +240,7 @@ bottomUp t ==
     -- call a special handler if we are not being package called
     dol := getAtree(op,'dollar) and (opName ~= 'construct)
 
-    (null dol) and (fn:= GETL(opName,"up")) and (u:= FUNCALL(fn, t)) => u
+    (null dol) and (fn:= property(opName,"up")) and (u:= FUNCALL(fn, t)) => u
     nargs := #argl
     if opName then for x in argl for i in 1.. repeat
       putCallInfo(x,opName,i,nargs)
@@ -260,38 +262,42 @@ bottomUp t ==
             pushDownTargetInfo(opName,tar,argl)
             argModeSetList:= [bottomUp x for x in argl]
 
-    ms := bottomUpForm(t,op,opName,argl,argModeSetList)
-    -- If this is a type producing form, then we don't want
-    -- to store the representation object in the environment.
-    -- Rather, we want to record the reified canonical form.
-    if ms is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e))
-    then putValue(t,objNew(devaluate objValUnwrap getValue t, m))
-
-    -- given no target or package calling, force integer constants to
-    -- belong to tightest possible subdomain
-
-    op := first t              -- may have changed in bottomUpElt
-    $useIntegerSubdomain and null tar and null dol and
-      isEqualOrSubDomain(first ms,$Integer) =>
-        val := objVal getValue op
-        isWrapped val =>       -- constant if wrapped
-          val := unwrap val
-          bm := getBasicMode val
-          putValue(op,objNewWrap(val,bm))
-          putModeSet(op,[bm])
-        ms
-    ms
+    bottomUpWithArgModesets(t,op,opName,argl,argModeSetList)
   m := getBasicMode t => [m]
   IDENTP (id := getUnname t) =>
     putModeSet(t,bottomUpIdentifier(t,id))
   keyedSystemError("S2GE0016",['"bottomUp",'"unknown object form"])
 
+bottomUpWithArgModesets(t,op,opName,args,argModeSetList) ==
+  ms := bottomUpForm(t,op,opName,args,argModeSetList)
+  -- If this is a type producing form, then we don't want
+  -- to store the representation object in the environment.
+  -- Rather, we want to record the reified canonical form.
+  if ms is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e))
+  then putValue(t,objNew(devaluate objValUnwrap getValue t, m))
+
+  -- given no target or package calling, force integer constants to
+  -- belong to tightest possible subdomain
+  pcall? := getAtree(op,'dollar) and (opName ~= 'construct)
+  op := t.op -- may have changed in bottomUpElt
+  $useIntegerSubdomain and getTarget op = nil and not pcall? and
+    isEqualOrSubDomain(first ms,$Integer) =>
+      val := objVal getValue op
+      isWrapped val =>       -- constant if wrapped
+        val := unwrap val
+        bm := getBasicMode val
+        putValue(op,objNewWrap(val,bm))
+        putModeSet(op,[bm])
+      ms
+  ms
+
+
 computeTypeWithVariablesTarget(p, q) ==
     polyVarlist(p) or polyVarlist(q) =>
         t := resolveTT(p, q)
         polyVarlist(t) => t
-        NIL
-    NIL
+        nil
+    nil
 
 bottomUpCompile t ==
   $genValue:local := false
@@ -330,13 +336,13 @@ bottomUpCompilePredicate(pred, name) ==
 isUnambiguouslyConstructor(id,t) ==
   niladicConstructorFromDB id => nil
   k := getConstructorKindFromDB id or
-        id in $DomainNames => "domain"
-        id in $CategoryNames => "category"
+        builtinFunctorName? id => "domain"
+        builtinCategoryName? id => "category"
   k = nil => nil
   ms := 
     k = "category" => [$CategoryConstructor]
     [$DomainConstructor]
-  if not(id in $BuiltinConstructorNames) then 
+  if not builtinConstructor? id then 
     loadIfNecessary id
   putValue(t,objNewWrap(id,first ms))
   putModeSet(t,ms)
@@ -347,7 +353,7 @@ isUnambiguouslyConstructor(id,t) ==
 bottomUpIdentifier(t,id) ==
   ms := isUnambiguouslyConstructor(id,t) => ms
   m := isType t => bottomUpType(t, m)
-  id = "%noMapVal" => throwKeyedMsg('"S2IB0002",NIL)
+  id = "%noMapVal" => throwKeyedMsg('"S2IB0002",nil)
   id = "%noBranch" =>
     keyedSystemError("S2GE0016",
       ['"bottomUpIdentifier",'"trying to evaluate %noBranch"])
@@ -448,14 +454,14 @@ bottomUpDefaultEval(t,id,defaultMode,target,isSub) ==
   if isPartialMode target then
     -- this hackery will go away when Symbol is not the default type
     if defaultMode = $Symbol and (target is [D,x,.]) then
-      (D in $univariateDomains and (x = id)) or
-        (D in $multivariateDomains and (id in x)) =>
+      (symbolMember?(D,$univariateDomains) and (x = id)) or
+        (symbolMember?(D,$multivariateDomains) and member(id,x)) =>
            dmode := [D,x,$Integer]
            (val' := coerceInteractive(objNewWrap(id,
              ['Variable,id]),dmode)) =>
                defaultMode := dmode
                val := val'
-      NIL
+      nil
     target := resolveTM(defaultMode,target)
   -- The following is experimental.  SCM 10/11/90
   if target and (tm := getMinimalVarMode(id, target)) then
@@ -481,7 +487,7 @@ bottomUpDefaultCompile(t,id,defaultMode,target,isSub) ==
   tmode and tval and (mdv := objMode tval) =>
     if isPartialMode tmode then
       null (tmode := resolveTM(mdv,tmode)) =>
-        keyedMsgCompFailure("S2IB0010",NIL)
+        keyedMsgCompFailure("S2IB0010",nil)
     putValue(t,objNew(expr,tmode))
     [tmode]
   tmode or (tval and (tmode := objMode tval)) =>
@@ -496,7 +502,7 @@ bottomUpDefaultCompile(t,id,defaultMode,target,isSub) ==
   [defaultMode]
 
 interpRewriteRule(t,id,expr) ==
-  null get(id,'isInterpreterRule,$e) => NIL
+  null get(id,'isInterpreterRule,$e) => nil
   (ms:= selectLocalMms(t,id,nil,nil)) and (ms:=evalForm(t,id,nil,ms)) =>
     ms
   nil
@@ -543,8 +549,8 @@ bottomUpForm2(t,op,opName,argl,argModeSetList) ==
   bottomUpForm0(t,op,opName,argl,argModeSetList)
 
 bottomUpFormTuple(t, op, opName, args, argModeSetList) ==
-  getAtree(op,'dollar) => NIL
-  null (singles := getModemapsFromDatabase(opName, 1)) => NIL
+  getAtree(op,'dollar) => nil
+  null (singles := getModemapsFromDatabase(opName, 1)) => nil
 
   -- see if any of the modemaps have Tuple arguments
   haveTuple := false
@@ -552,9 +558,9 @@ bottomUpFormTuple(t, op, opName, args, argModeSetList) ==
     if getFirstArgTypeFromMm(mm) is ["Tuple",.] then haveTuple := true
   not haveTuple => nil
   nargs := #args
-  nargs = 1 and getUnname first args = "Tuple" => NIL
+  nargs = 1 and getUnname first args = "Tuple" => nil
   nargs = 1 and (ms := bottomUp first args) and
-    (ms is [["Tuple",.]] or ms is [["List",.]]) => NIL
+    (ms is [["Tuple",.]] or ms is [["List",.]]) => nil
 
   -- now make the args into a tuple
 
@@ -579,9 +585,9 @@ removeUnionsAtStart(argl,modeSets) ==
 printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
-    b := prefix2String first a
+    b := first a
     if atom b then b := [b]
-    amsl := ['%l,:b,:amsl]
+    amsl := ['"%l",b,:amsl]
   if amsl then amsl := rest amsl
   amsl
 
@@ -591,16 +597,6 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
 
   m := isType t =>
     bottomUpType(t, m)
-
-  opName = 'copy and argModeSetList is [[['Record,:rargs]]] =>
-    -- this is a hack until Records go through the normal
-    -- modemap selection process
-    rtype := ['Record,:rargs]
-    code := optRECORDCOPY(['RECORDCOPY,getArgValue(first argl, rtype),#rargs])
-
-    val := object(code,rtype)
-    putValue(t,val)
-    putModeSet(t,[rtype])
 
   m := getModeOrFirstModeSetIfThere op
   m is ['Record,:.] and argModeSetList is [[['Variable,x]]] and
@@ -629,7 +625,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
   (opName ~= "elt") and (opName ~= "apply") and
     isEltable(op, argl, #argl) and (u := bottomUpElt t) => u
 
-  if FIXP $HTCompanionWindowID then
+  if integer? $HTCompanionWindowID then
     mkCompanionPage('operationError, t)
 
   amsl := printableArgModeSetList()
@@ -637,12 +633,12 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
     opName0 = $immediateDataSymbol =>
         (o := coerceInteractive(getValue op0,$OutputForm)) =>
             outputTran objValUnwrap o
-        NIL
+        nil
     opName0
 
   if null(opName1) then
     opName1 :=
-        (o := getValue op0) => prefix2String objMode o
+        (o := getValue op0) => objMode o
         '"<unknown type>"
     msgKey :=
         null amsl => "S2IB0013"
@@ -665,14 +661,14 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
   -- see if we can give some decent messages about the availability if
   -- library messages
 
-  integer? opName => NIL
+  integer? opName => nil
 
   oo :=  object2Identifier opOf opName
   if ( oo = "%" ) or ( oo = "Domain" ) or ( domainForm? opName ) then
     opName := "elt"
 
-  nAllExposedMmsWithName := #getModemapsFromDatabase(opName, NIL)
-  nAllMmsWithName        := #getAllModemapsFromDatabase(opName, NIL)
+  nAllExposedMmsWithName := #getModemapsFromDatabase(opName, nil)
+  nAllMmsWithName        := #getAllModemapsFromDatabase(opName, nil)
 
   -- first see if there are ANY ops with this name
 
@@ -696,7 +692,7 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
 ++ Returns the `conceptual' type of `type', e.g., the type of type in
 ++ the abstract semantics, not necessarily the one from implementation
 ++ point of view.
-conceptualType: %Thing -> %List
+conceptualType: %Thing -> %Mode
 conceptualType type ==
   isPartialMode type => $Mode
   member(type,[$Mode,$Domain,$Category]) => $Type
@@ -727,8 +723,8 @@ bottomUpPercent(tree is [op,:argl]) ==
       val:= fetchOutput i
       putValue(op,val)
       putModeSet(op,[objMode(val)])
-    throwKeyedMsgSP('"S2IB0006",NIL,t)
-  throwKeyedMsgSP('"S2IB0006",NIL,op)
+    throwKeyedMsgSP('"S2IB0006",nil,t)
+  throwKeyedMsgSP('"S2IB0006",nil,op)
 
 bottomUpFormRetract(t,op,opName,argl,amsl) ==
   -- tries to find one argument, which can be pulled back, and calls
@@ -738,13 +734,13 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
 
   -- if no such operation exists in the database, don't bother
   $inRetract: local := true
-  null getAllModemapsFromDatabase(getUnname op,#argl) => NIL
+  null getAllModemapsFromDatabase(getUnname op,#argl) => nil
 
   u := bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) => u
 
-  a  := NIL
-  b  := NIL
-  ms := NIL
+  a  := nil
+  b  := nil
+  ms := nil
   for x in argl for m in amsl for i in 1.. repeat
     -- do not retract first arg of a setelt
     (i = 1) and (opName = "setelt") =>
@@ -753,7 +749,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     (i = 1) and (opName = "set!") =>
         a := [x,:a]
         ms := [m,:ms]
-    if cons?(m) and first(m) = $EmptyMode then return NIL
+    if cons?(m) and first(m) = $EmptyMode then return nil
     object:= retract getValue x
     a:= [x,:a]
     object="failed" =>
@@ -766,8 +762,8 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     putValue(x,object)
     putModeSet(x,[objMode(object)])
   --insert pulled-back items
-  a := nreverse a
-  ms := nreverse ms
+  a := reverse! a
+  ms := reverse! ms
 
   -- check that we haven't seen these types before
   typesHad := getAtree(t, 'typesHad)
@@ -789,15 +785,15 @@ retractAtree atr ==
 bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
   -- see if we have a Union
 
-  ok := NIL
+  ok := nil
   for m in amsl while not ok repeat
-    if atom first(m) then return NIL
+    if atom first(m) then return nil
     first m = $Any => ok := true
     (first first m = 'Union) => ok := true
-  not ok => NIL
+  not ok => nil
 
-  a:= NIL
-  b:= NIL
+  a:= nil
+  b:= nil
 
   for x in argl for m in amsl for i in 0.. repeat
     m0 := first m
@@ -808,19 +804,19 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := [x,:a]
-  b and bottomUpForm(t,op,opName,nreverse a,amsl)
+  b and bottomUpForm(t,op,opName,reverse! a,amsl)
 
 bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
   -- see if we have a Union with no tags, if so retract all such guys
 
-  ok := NIL
+  ok := nil
   for [m] in amsl while not ok repeat
-    if atom m then return NIL
+    if atom m then return nil
     if m is ['Union, :.] and null getUnionOrRecordTags m then ok := true
-  not ok => NIL
+  not ok => nil
 
-  a:= NIL
-  b:= NIL
+  a:= nil
+  b:= nil
 
   for x in argl for m in amsl for i in 0.. repeat
     m0 := first m
@@ -831,7 +827,7 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := [x,:a]
-  b and bottomUpForm(t,op,opName,nreverse a,amsl)
+  b and bottomUpForm(t,op,opName,reverse! a,amsl)
 
 bottomUpElt (form:=[op,:argl]) ==
   -- this transfers expressions that look like function calls into

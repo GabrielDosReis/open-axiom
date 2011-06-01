@@ -277,7 +277,7 @@ ElementaryFunction(R, F): Exports == Implementation where
     acsch x == opacsch x
     kernel x == retract(x)@K
 
-    posrem(n, m)    == ((r := n rem m) < 0 => r + m; r)
+    posrem(n, m)    == (negative?(r := n rem m) => r + m; r)
     valueOrPole rec == (rec.pole => INV; rec.func)
     belong? op      == has?(op, 'elem)
 
@@ -647,7 +647,7 @@ ElementaryFunction(R, F): Exports == Implementation where
       ilog x
 
     ilog x ==
-      ((num1 := one?(num := numer x)) or num = -1) and (den := denom x) ~= 1
+      ((num1 := one?(num := numer x)) or num = -1) and not one?(den := denom x)
         and empty? variables x => - kernel(oplog, (num1 => den; -den)::F)
       kernel(oplog, x)
 

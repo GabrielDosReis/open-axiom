@@ -7,22 +7,11 @@ error() {
 
 # set -x
 
+rm -rf autom4te.cache
 autoheader || error "could not re-generate config/openaxiom-c-macros.h"
+aclocal --output=config/aclocal.m4  -I config --install
+automake -a -c
 autoconf || error "could not re-generate configure"
-
-## subdirectories that contain Makefile pamphlets of interest
-SUBDIRS="     .   \
-                  src                    \
-		  src/interp             \
-		  src/algebra            \
-		  src/input              \
-"
-
-
-for d in $SUBDIRS; do
-    notangle -t8 $d/Makefile.pamphlet > $d/tmp-Makefile.in \
-       || error "could not extract $d/Makefile.in from pamphlet file"
-    config/move-if-change $d/tmp-Makefile.in $d/Makefile.in
-done
+rm -rf autom4te.cache
 
 # set +x

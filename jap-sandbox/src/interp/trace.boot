@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,13 @@ namespace BOOT
 -- This code supports the )trace system command and allows the
 -- tracing of LISP, BOOT and SPAD functions and interpreter maps.
 
-$traceNoisely := NIL  -- give trace and untrace messages
+$traceNoisely := nil  -- give trace and untrace messages
 
-$reportSpadTrace := NIL  -- reports traced funs
+$reportSpadTrace := nil  -- reports traced funs
 
-$optionAlist := NIL
+$optionAlist := nil
 
-$tracedMapSignatures := NIL
+$tracedMapSignatures := nil
 
 $traceOptionList == '(
     after _
@@ -70,7 +70,7 @@ $traceOptionList == '(
     )
 
 
-$lastUntraced := NIL
+$lastUntraced := nil
 
 SETLETPRINTFLAG x == x
 
@@ -83,27 +83,27 @@ traceSpad2Cmd l ==
   traceReply()
 
 trace1 l ==
-  $traceNoisely: local := NIL
+  $traceNoisely: local := nil
   if hasOption($options,'nonquietly) then $traceNoisely := true
   hasOption($options,'off) =>
     (ops := hasOption($options,'ops)) or
       (lops := hasOption($options,'local)) =>
-        null l => throwKeyedMsg("S2IT0019",NIL)
+        null l => throwKeyedMsg("S2IT0019",nil)
         constructor := unabbrev
           atom l => l
           null rest l =>
             atom first l => first l
             first first l
-          NIL
-        not(isFunctor constructor) => throwKeyedMsg("S2IT0020",NIL)
+          nil
+        not(isFunctor constructor) => throwKeyedMsg("S2IT0020",nil)
         if ops then
           ops := getTraceOption ops
-          NIL
+          nil
         if lops then
           lops := rest getTraceOption lops
           untraceDomainLocalOps(constructor,lops)
     (1 < # $options) and not hasOption($options,'nonquietly) =>
-      throwKeyedMsg("S2IT0021",NIL)
+      throwKeyedMsg("S2IT0021",nil)
     untrace l
   hasOption($options,'stats) =>
     (1 < # $options) =>
@@ -121,13 +121,13 @@ trace1 l ==
     resetSpacers()
     resetTimers()
     resetCounters()
-    throwKeyedMsg("S2IT0002",NIL)
+    throwKeyedMsg("S2IT0002",nil)
   a:= hasOption($options,'restore) =>
     null(oldL:= $lastUntraced) => nil
-    newOptions:= delete(a,$options)
+    newOptions:= remove($options,a)
     null l => trace1 oldL
     for x in l repeat
-      x is [domain,:opList] and VECP domain =>
+      x is [domain,:opList] and vector? domain =>
         sayKeyedMsg("S2IT0003",[devaluate domain])
       $options:= [:newOptions,:LASSOC(x,$optionAlist)]
       trace1 LIST x
@@ -138,9 +138,9 @@ trace1 l ==
     ADDASSOC(x,$options,$optionAlist)
   optionList:= getTraceOptions $options
   argument:=
-    domainList:= LASSOC("of",optionList) =>
-      LASSOC("ops",optionList) =>
-        throwKeyedMsg("S2IT0004",NIL)
+    domainList := symbolLassoc("of",optionList) =>
+      symbolLAssoc("ops",optionList) =>
+        throwKeyedMsg("S2IT0004",nil)
       opList:=
         traceList => [["ops",:traceList]]
         nil
@@ -161,7 +161,7 @@ getTraceOptions options ==
       [key,parms] := first $traceErrorStack
       throwKeyedMsg(key,['"",:parms])
     throwListOfKeyedMsgs("S2IT0017",[# $traceErrorStack],
-      nreverse $traceErrorStack)
+      reverse! $traceErrorStack)
   optionList
 
 saveMapSig(funNames) ==
@@ -173,7 +173,7 @@ saveMapSig(funNames) ==
 getMapSig(mapName,subName) ==
   lmms:= get(mapName,'localModemap,$InteractiveFrame) =>
     for mm in lmms until sig repeat
-      second mm = subName => sig:= CDAR mm
+      second mm = subName => sig := mm.mmSignature
     sig
 
 getTraceOption (x is [key,:l]) ==
@@ -182,9 +182,9 @@ getTraceOption (x is [key,:l]) ==
   key in '(nonquietly timer nt) => x
   key='break =>
     null l => ['break,'before]
-    opts := [selectOptionLC(y,'(before after),NIL) for y in l]
+    opts := [selectOptionLC(y,'(before after),nil) for y in l]
     and/[IDENTP y for y in opts] => ['break,:opts]
-    stackTraceOptionError ["S2IT0008",NIL]
+    stackTraceOptionError ["S2IT0008",nil]
   key='restore =>
     null l => x
     stackTraceOptionError ["S2IT0009",[strconc('")",object2String key)]]
@@ -199,10 +199,10 @@ getTraceOption (x is [key,:l]) ==
     l is [a] => [key,:l]
     stackTraceOptionError ["S2IT0011",[strconc('")",object2String key)]]
   key='depth =>
-    l is [n] and FIXP n => x
+    l is [n] and integer? n => x
     stackTraceOptionError ["S2IT0012",['")depth"]]
   key='count =>
-    (null l) or (l is [n] and FIXP n) => x
+    (null l) or (l is [n] and integer? n) => x
     stackTraceOptionError ["S2IT0012",['")count"]]
   key="of" =>
     ["of",:[hn y for y in l]] where
@@ -231,38 +231,38 @@ traceOptionError(opt,keys) ==
 
 resetTimers () ==
   for timer in _/TIMERLIST repeat
-    setDynamicBinding(INTERN strconc(timer,'"_,TIMER"),0)
+    symbolValue(makeSymbol strconc(timer,'"_,TIMER")) := 0
 
 resetSpacers () ==
   for spacer in _/SPACELIST repeat
-    setDynamicBinding(INTERN strconc(spacer,'"_,SPACE"),0)
+    symbolValue(makeSymbol strconc(spacer,'"_,SPACE")) := 0
 
 resetCounters () ==
   for k in _/COUNTLIST repeat
-    setDynamicBinding(INTERN strconc(k,'"_,COUNT"),0)
+    symbolValue(makeSymbol strconc(k,'"_,COUNT")) := 0
 
 ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
   for timer in _/TIMERLIST repeat
     sayBrightly ["  ",:bright timer,'_:,'" ",
-      eval(INTERN strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
+      eval(makeSymbol strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
 
 pspacers() ==
   null _/SPACELIST => sayBrightly '"   no functions have space monitored"
   for spacer in _/SPACELIST repeat
     sayBrightly ["  ",:bright spacer,'_:,'" ",
-      eval INTERN strconc(spacer,'"_,SPACE"),'" bytes"]
+      eval makeSymbol strconc(spacer,'"_,SPACE"),'" bytes"]
 
 pcounters() ==
   null _/COUNTLIST => sayBrightly '"   no functions are being counted"
   for k in _/COUNTLIST repeat
     sayBrightly ["  ",:bright k,'_:,'" ",
-      eval INTERN strconc(k,'"_,COUNT"),'" times"]
+      eval makeSymbol strconc(k,'"_,COUNT"),'" times"]
 
 transOnlyOption l ==
   l is [n,:y] =>
-    FIXP n => [n,:transOnlyOption y]
-    MEMQ(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
+    integer? n => [n,:transOnlyOption y]
+    symbolMember?(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
     stackTraceOptionError ["S2IT0006",[n]]
     transOnlyOption y
   nil
@@ -278,7 +278,7 @@ domainToGenvar x ==
   $doNotAddEmptyModeIfTrue: local:= true
   (y:= unabbrevAndLoad x) and getConstructorKindFromDB opOf y = "domain" =>
     g:= genDomainTraceName y
-    setDynamicBinding(g,evalDomain y)
+    symbolValue(g) := evalDomain y
     g
 
 genDomainTraceName y ==
@@ -301,7 +301,7 @@ transTraceItem x ==
   $doNotAddEmptyModeIfTrue: local:=true
   atom x =>
     (value:=get(x,"value",$InteractiveFrame)) and
-      (objMode value in $LangSupportTypes) =>
+      member(objMode value,$LangSupportTypes) =>
         x := objVal value
         (y:= domainToGenvar x) => y
         x
@@ -317,10 +317,10 @@ transTraceItem x ==
 
 removeTracedMapSigs untraceList ==
   for name in untraceList repeat
-    REMPROP(name,$tracedMapSignatures)
+    property(name,$tracedMapSignatures) := nil
 
 coerceTraceArgs2E(traceName,subName,args) ==
-  MEMQ(name:= subName,$mathTraceList) =>
+  symbolMember?(name:= subName,$mathTraceList) =>
     SPADSYSNAMEP PNAME name => coerceSpadArgs2E(reverse rest reverse args)
     [["=",name,objValUnwrap coerceInteractive(objNewWrap(arg,type),$OutputForm)]
       for name in '(arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16 arg17 arg18 arg19 )
@@ -343,7 +343,7 @@ subTypes(mm,sublist) ==
   [subTypes(m,sublist) for m in mm]
 
 coerceTraceFunValue2E(traceName,subName,value) ==
-  MEMQ(name:= subName,$mathTraceList) =>
+  symbolMember?(name:= subName,$mathTraceList) =>
     SPADSYSNAMEP PNAME traceName => coerceSpadFunValue2E(value)
     (u:=LASSOC(subName,$tracedMapSignatures)) =>
       objValUnwrap coerceInteractive(objNewWrap(value,first u),$OutputForm)
@@ -372,7 +372,7 @@ getPreviousMapSubNames(traceNames) ==
   subs:= nil
   for mapName in ASSOCLEFT CAAR $InteractiveFrame repeat
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
-      MEMQ(CADAR lmm,traceNames) =>
+      symbolMember?(CADAR lmm,traceNames) =>
         for mm in lmm repeat
           subs:= [[mapName,:second mm],:subs]
   subs
@@ -404,12 +404,12 @@ augmentTraceNames(l,mapSubNames) ==
 isSubForRedundantMapName(subName) ==
   mapName:= rassocSub(subName,$mapSubNameAlist) =>
     tail:=member([mapName,:subName],$mapSubNameAlist) =>
-      MEMQ(mapName,rest ASSOCLEFT tail)
+      symbolMember?(mapName,rest ASSOCLEFT tail)
 
 untraceMapSubNames traceNames ==
   null($mapSubNameAlist:local:= getPreviousMapSubNames traceNames) => nil
   for name in (subs:= ASSOCRIGHT $mapSubNameAlist)
-    | MEMQ(name,_/TRACENAMES) repeat
+    | symbolMember?(name,_/TRACENAMES) repeat
       _/UNTRACE_,2(name,nil)
       $lastUntraced:= SETDIFFERENCE($lastUntraced,subs)
 
@@ -431,7 +431,7 @@ spadTrace(domain,options) ==
   listOfOperations:=
     [g x for x in getOption("OPS",options)] where
       g x ==
-        string? x => INTERN x
+        string? x => makeSymbol x
         x
   if listOfVariables := getOption("VARS",options) then
     options := removeOption("VARS",options)
@@ -447,8 +447,8 @@ spadTrace(domain,options) ==
     [triple
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
       for [op,sig,n,.,kind] in opStructureList | kind = 'ELT
-        and (anyifTrue or MEMQ(op,listOfOperations)) and
-         FIXP n and
+        and (anyifTrue or symbolMember?(op,listOfOperations)) and
+         integer? n and
           isTraceable(triple:= [op,sig,n],domain)] where
             isTraceable(x is [.,.,n,:.],domain) ==
               atom domain.n => nil
@@ -472,7 +472,7 @@ spadTrace(domain,options) ==
     alias:= spadTraceAlias(domainId,op,n)
     $tracedModemap:= subTypes(mm,constructSubst(domain.0))
     traceName:= BPITRACE(first domain.n,alias, options)
-    NCONC(pair,[listOfVariables,first domain.n,traceName,alias])
+    append!(pair,[listOfVariables,first domain.n,traceName,alias])
     domain.n.first := traceName
   sigSlotNumberAlist:= [x for x in sigSlotNumberAlist | CDDDR x]
   if $reportSpadTrace then
@@ -488,17 +488,17 @@ spadTrace(domain,options) ==
 traceDomainLocalOps(dom,lops,options) ==
  sayMSG ['"  ",'"The )local option has been withdrawn"]
  sayMSG ['"  ",'"Use )ltr to trace local functions."]
- NIL
+ nil
 --  abb := abbreviate dom
 --  loadLibIfNotLoaded abb
 --  actualLops := getLocalOpsFromLisplib abb
 --  null actualLops =>
 --    sayMSG ['"  ",:bright abb,'"has no local functions to trace."]
 --  lops = 'all => _/TRACE_,1(actualLops,options)
---  l := NIL
+--  l := nil
 --  for lop in lops repeat
---    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
---    not MEMQ(internalName,actualLops) =>
+--    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
+--    not symbolMember?(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
 --    l := [internalName,:l]
@@ -508,29 +508,29 @@ traceDomainLocalOps(dom,lops,options) ==
 untraceDomainLocalOps(dom,lops) ==
  abb := abbreviate dom
  sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
- NIL
+ nil
 --  lops = "all" => untraceAllDomainLocalOps(dom)
 --  abb := abbreviate dom
 --  loadLibIfNotLoaded abb
 --  actualLops := getLocalOpsFromLisplib abb
 --  null actualLops =>
 --    sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
---  l := NIL
+--  l := nil
 --  for lop in lops repeat
---    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
---    not MEMQ(internalName,actualLops) =>
+--    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
+--    not symbolMember?(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
 --    l := [internalName,:l]
 --  l => untrace l
 --  nil
 
-untraceAllDomainLocalOps(dom) == NIL
+untraceAllDomainLocalOps(dom) == nil
 --  abb := abbreviate dom
 --  actualLops := getLocalOpsFromLisplib abb
---  null (l := intersection(actualLops,_/TRACENAMES)) => NIL
---  _/UNTRACE_,1(l,NIL)
---  NIL
+--  null (l := intersection(actualLops,_/TRACENAMES)) => nil
+--  _/UNTRACE_,1(l,nil)
+--  nil
 
 traceDomainConstructor(domainConstructor,options) ==
   -- Trace all domains built with the given domain constructor,
@@ -541,11 +541,11 @@ traceDomainConstructor(domainConstructor,options) ==
   if listOfLocalOps then
     traceDomainLocalOps(domainConstructor,listOfLocalOps,
       [opt for opt in options | opt isnt ['LOCAL,:.]])
-  listOfLocalOps and not getOption("OPS",options) => NIL
-  for [argl,.,:domain] in HGET($ConstructorCache,domainConstructor)
+  listOfLocalOps and not getOption("OPS",options) => nil
+  for [argl,.,:domain] in tableValue($ConstructorCache,domainConstructor)
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
-  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
+  innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then domainConstructor := innerDomainConstructor
   EMBED(domainConstructor,
     ['LAMBDA, ['_&REST, 'args],
@@ -565,10 +565,10 @@ untraceDomainConstructor domainConstructor ==
                false
         true
   untraceAllDomainLocalOps domainConstructor
-  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
+  innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then UNEMBED innerDomainConstructor
     else UNEMBED domainConstructor
-  SETQ(_/TRACENAMES,delete(domainConstructor,_/TRACENAMES))
+  SETQ(_/TRACENAMES,removeSymbol(_/TRACENAMES,domainConstructor))
 
 flattenOperationAlist(opAlist) ==
    res:= nil
@@ -586,15 +586,15 @@ mapLetPrint(x,val,currentFunction) ==
 
 letPrint(x,val,currentFunction) ==
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          sayBrightlyNT [:bright x,": "]
          PRIN1 shortenForPrinting val
          TERPRI()
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+        (y="all" or symbolMember?(x,y) and
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               shortenForPrinting val]
   val
@@ -604,16 +604,16 @@ letPrint(x,val,currentFunction) ==
 letPrint2(x,printform,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLAssoc("all",$letAssoc))) then
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,printform],flag)
          if flag='letPrint2 then print printform
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+        (y="all" or symbolMember?(x,y) and
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,":= ",
               printform]
   x
@@ -624,16 +624,16 @@ letPrint2(x,printform,currentFunction) ==
 letPrint3(x,xval,printfn,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
-      if (y="all" or MEMQ(x,y)) and
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
+      if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,SPADCALL(xval,printfn)],flag)
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
-        (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+        (y="all" or symbolMember?(x,y) and
+          (not (PNAME(x).0 in '($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
   x
@@ -641,12 +641,12 @@ letPrint3(x,xval,printfn,currentFunction) ==
 getAliasIfTracedMapParameter(x,currentFunction) ==
   isSharpVarWithNum x =>
     aliasList:= get(currentFunction,'alias,$InteractiveFrame) =>
-      aliasList.(STRING2PINT_-N(SUBSTRING(PNAME x,1,NIL),1)-1)
+      aliasList.(STRING2PINT_-N(subString(PNAME x,1,nil),1)-1)
   x
 
 getBpiNameIfTracedMap(name) ==
   lmm:= get(name,'localModemap,$InteractiveFrame) =>
-    MEMQ(bpiName:= CADAR lmm,_/TRACENAMES) => bpiName
+    symbolMember?(bpiName:= CADAR lmm,_/TRACENAMES) => bpiName
   name
 
 hasPair(key,l) ==
@@ -666,12 +666,12 @@ getOption(opt,l) ==
 
 reportSpadTrace(header,[op,sig,n,:t]) ==
   null $traceNoisely => nil
-  msg:= [header,'%b,op,":",'%d,rest sig," -> ",first sig," in slot ",n]
-  namePart:= nil --(t is (.,.,name,:.) => (" named ",name); NIL)
+  msg:= [header,'"%b",op,":",'"%d",rest sig," -> ",first sig," in slot ",n]
+  namePart:= nil --(t is (.,.,name,:.) => (" named ",name); nil)
   tracePart:=
     t is [y,:.] and not null y =>
-      (y="all" => ['%b,"all",'%d,"vars"]; [" vars: ",y])
-    NIL
+      (y="all" => ['"%b","all",'"%d","vars"]; [" vars: ",y])
+    nil
   sayBrightly [:msg,:namePart,:tracePart]
 
 orderBySlotNumber l ==
@@ -701,7 +701,7 @@ spadUntrace(domain,options) ==
       :bright prefix2String domainId,'"are now traced."]
   sigSlotNumberAlist:= rest pair
   for (pair:= [op,sig,n,lv,bpiPointer,traceName,alias]) in sigSlotNumberAlist |
-    anyifTrue or MEMQ(op,listOfOperations) repeat
+    anyifTrue or symbolMember?(op,listOfOperations) repeat
       BPIUNTRACE(traceName,alias)
       domain.n.first := bpiPointer
       pair.rest.rest.rest := nil
@@ -776,7 +776,7 @@ _?t() ==
     suffix:=
       isDomain d => '"domain"
       '"package"
-    sayBrightly ['"   Functions traced in ",suffix,'%b,devaluate d,'%d,":"]
+    sayBrightly ['"   Functions traced in ",suffix,'"%b",devaluate d,'"%d",":"]
     for x in orderBySlotNumber l repeat reportSpadTrace("   ",take(4,x))
     TERPRI()
 
@@ -793,10 +793,10 @@ tracelet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $TRACELETFLAG : local := true
   $QuickLet : local := false
-  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P SYMBOL_-FUNCTION fn
+  not symbolMember?(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
-       $traceletFunctions:= delete(fn,$traceletFunctions) )
+       $traceletFunctions:= remove($traceletFunctions,fn) )
 
 breaklet(fn,vars) ==
                        --vars is "all" or a list of variables
@@ -807,23 +807,23 @@ breaklet(fn,vars) ==
   fn = "Undef" => nil
   fnEntry:= LASSOC(fn,$letAssoc)
   vars:=
-    pair:= ASSOC("BREAK",fnEntry) => union(vars,rest pair)
+    pair := symbolLassoc("BREAK",fnEntry) => union(vars,rest pair)
     vars
   $letAssoc:=
     null fnEntry => [[fn,:[["BREAK",:vars]]],:$letAssoc]
     pair => (pair.rest := vars; $letAssoc)
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
-  not MEMQ(fn,$traceletFunctions) and not stupidIsSpadFunction fn
+  not symbolMember?(fn,$traceletFunctions) and not stupidIsSpadFunction fn
     and not GENSYMP fn =>
       $traceletFunctions:= [fn,:$traceletFunctions]
       compileBoot fn
-      $traceletFunctions:= delete(fn,$traceletFunctions)
+      $traceletFunctions:= removeSymbol($traceletFunctions,fn)
 
 stupidIsSpadFunction fn ==
   -- returns true if the function pname has a semi-colon in it
   -- eventually, this will use isSpadFunction from luke boot
-  STRPOS('"_;",PNAME fn,0,NIL)
+  STRPOS('"_;",PNAME fn,0,nil)
 
 break msg ==
   condition:= MONITOR_,EVALTRAN(_/BREAKCONDITION,nil)

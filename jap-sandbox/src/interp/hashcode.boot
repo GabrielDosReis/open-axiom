@@ -48,33 +48,33 @@ hashType(type, percentHash) ==
         symbol? type  =>
            type = '$ => percentHash
            type = "%" => percentHash
-           hashString SYMBOL_-NAME type
+           hashString symbolName type
         string? type  => hashCombine(hashString type, 
                                         hashString('"Enumeration"))
         type is ['QUOTE, val] => hashType(val, percentHash)
-        type is [dom] => hashString SYMBOL_-NAME dom
+        type is [dom] => hashString symbolName dom
         type is ['_:, ., type2] => hashType(type2, percentHash)
         isDomain type => getDomainHash type
         [op, :args] := type
-        hash := hashString SYMBOL_-NAME op
-        op = 'Mapping =>
+        hash := hashString symbolName op
+        op is 'Mapping =>
                 hash := hashString '"->"
                 [retType, :mapArgs] := args
                 for arg in mapArgs repeat
                         hash := hashCombine(hashType(arg, percentHash), hash)
                 retCode := hashType(retType, percentHash)
-                EQL(retCode, $VoidHash) => hash
+                scalarEq?(retCode, $VoidHash) => hash
                 hashCombine(retCode, hash)
-        op = 'Enumeration =>
+        op is 'Enumeration =>
                 for arg in args repeat
-                        hash := hashCombine(hashString(STRING arg), hash)
+                  hash := hashCombine(hashString(symbolName arg), hash)
                 hash
-        op in $DomainsWithoutLisplibs =>
+        symbolMember?(op,$DomainsWithoutLisplibs) =>
                 for arg in args repeat
                         hash := hashCombine(hashType(arg, percentHash), hash)
                 hash
 
-        cmm :=   CDDAR getConstructorModemapFromDB op
+        cmm := getConstructorModemapFromDB(op).mmSource
         cosig := rest getDualSignatureFromDB op
         for arg in args for c in cosig for ct in cmm repeat
                 if c then
@@ -82,7 +82,7 @@ hashType(type, percentHash) ==
                 else
                         hash := hashCombine(7, hash)
 --           !!!   If/when asharp hashes values using their type, use instead
---                      ctt := EQSUBSTLIST(args, $FormalMapVariableList, ct)
+--                      ctt := applySubst(pairList($FormalMapVariableList,args),ct)
 --                      hash := hashCombine(hashType(ctt, percentHash), hash)
 
 
@@ -95,7 +95,7 @@ $hashModulus := 1073741789                      -- largest 30-bit prime
 hashString str ==
         h := 0
         for i in 0..#str-1 repeat
-                j := CHAR_-CODE char str.i
+                j := codePoint char str.i
                 h := LOGXOR(h, ASH(h, 8))
                 h := h + j + 200041
                 h := LOGAND(h, 1073741823)      -- 0x3FFFFFFF

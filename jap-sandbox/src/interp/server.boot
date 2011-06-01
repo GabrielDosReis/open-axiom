@@ -50,9 +50,11 @@ serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
   FORCE_-OUTPUT()
   not $SpadServer or not IS_-CONSOLE stream =>
-    read_-line(stream)
-  IN_-STREAM: fluid := stream
-  _*EOF_*: fluid := NIL
+    line := readLine stream
+    line ~= %nothing => line
+    nil
+  IN_-STREAM: local := stream
+  _*EOF_*: local := nil
   line :=
    while not $EndServerSession and not _*EOF_* repeat
      if $NeedToSignalSessionManager then
@@ -60,7 +62,7 @@ serverReadLine(stream) ==
      $NeedToSignalSessionManager := false
      action := serverSwitch()
      action = $CallInterp =>
-       l := read_-line(stream)
+       l := readLine stream
        $NeedToSignalSessionManager := true
        return l
      action = $CreateFrame =>
@@ -96,17 +98,17 @@ serverReadLine(stream) ==
      action = $KillLispSystem => 
        coreQuit()
      nil
-  line => line
+  line ~= %nothing and line ~= nil => line
   ""
 
 parseAndInterpret str ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  $InteractiveMode : local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   ncParseAndInterpretString str
 
 executeQuietCommand() ==
-  $QuietCommand: fluid := true
+  $QuietCommand: local := true
   stringBuf := sockGetString $MenuServer
   CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
     parseAndInterpret stringBuf)))
@@ -124,40 +126,42 @@ parseAndEvalToString str ==
   $IOindex: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  nreverse $outputLines
+  reverse! $outputLines
 
 parseAndEvalToStringForHypertex str ==
   $collectOutput:local := true
   $outputLines: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  nreverse $outputLines
+  reverse! $outputLines
 
 parseAndEvalToStringEqNum str ==
   $collectOutput:local := true
   $outputLines: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  nreverse $outputLines
+  reverse! $outputLines
 
 parseAndInterpToString str ==
   v := applyWithOutputToString('parseAndEvalStr, [str])
   breakIntoLines rest v
 
 parseAndEvalStr string ==
-  $InteractiveMode :fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  $InteractiveMode: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   parseAndEvalStr1 string
 
 parseAndEvalStr1 string ==
-  string.0 = char '")" =>
-    doSystemCommand SUBSEQ(string, 1)
-  processInteractive(ncParseFromString string, NIL)
+  string.0 = char ")" =>
+    doSystemCommand subSequence(string, 1)
+  processInteractive(ncParseFromString string, nil)
 
 protectedEVAL x ==
   error := true
-  val := NIL
-  UNWIND_-PROTECT((val := eval x; error := NIL),
-                   error => (resetStackLimits(); sendHTErrorSignal()))
+  val := nil
+  try
+    val := eval x
+    error := false
+  finally (error => (resetStackLimits(); sendHTErrorSignal()))
   val

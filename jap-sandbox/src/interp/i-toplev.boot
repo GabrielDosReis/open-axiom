@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -45,11 +45,11 @@ $intRestart ==
 
 -- When $QuiteCommand is true Spad will not produce any output from
 --  a top level command
-$QuietCommand := NIL
+$QuietCommand := nil
 -- When $ProcessInteractiveValue is true, we don't want the value printed
 -- or recorded.
-$ProcessInteractiveValue := NIL
-$HTCompanionWindowID := NIL
+$ProcessInteractiveValue := nil
+$HTCompanionWindowID := nil
 
 ++ initialize the garbage collection timer
 statisticsInitialization() ==
@@ -85,7 +85,7 @@ start(:l) ==
   if not $ruleSetsInitialized then initializeRuleSets()
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"constructors"])
   makeConstructorsAutoLoad()
-  GCMSG(NIL)
+  GCMSG(nil)
   SETQ($IOindex,1)
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"history"])
   initHist()
@@ -96,16 +96,16 @@ start(:l) ==
     readSpadProfileIfThere()
   if $displayStartMsgs then spadStartUpMsgs()
   if $OLDLINE then
-    SAY fillerSpaces($LINELENGTH,'"=")
+    SAY fillerSpaces($LINELENGTH,char "=")
     sayKeyedMsg("S2IZ0050",[namestring ['axiom,'input]])
     if $OLDLINE ~= 'END__UNIT
       then
         centerAndHighlight($OLDLINE,$LINELENGTH,'" ")
-        sayKeyedMsg("S2IZ0051",NIL)
-      else sayKeyedMsg("S2IZ0052",NIL)
-    SAY fillerSpaces($LINELENGTH,'"=")
+        sayKeyedMsg("S2IZ0051",nil)
+      else sayKeyedMsg("S2IZ0052",nil)
+    SAY fillerSpaces($LINELENGTH,char "=")
     TERPRI()
-    $OLDLINE := NIL
+    $OLDLINE := nil
   $superHash := hashTable 'EQUAL
   if null l then runspad()
   'EndOfSpad
@@ -116,7 +116,7 @@ readSpadProfileIfThere() ==
   MAKE_-INPUT_-FILENAME file =>
     SETQ(_/EDITFILE,file)
     _/RQ ()
-  NIL
+  nil
 
 --% Parser Output --> Interpreter
 
@@ -128,18 +128,18 @@ processInteractive(form, posnForm) ==
   initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
 
   $op: local:= (form is [op,:.] => op; form) --name of operator
-  $Coerce: local := NIL
+  $Coerce: local := nil
   $compErrorMessageStack: local := nil
-  $freeVars : local := NIL
-  $mapList:local := NIL            --list of maps being type analyzed
-  $compilingMap:local:= NIL        --true when compiling a map
-  $compilingLoop:local:= NIL       --true when compiling a loop body
-  $interpOnly: local := NIL        --true when in interpret only mode
-  $whereCacheList: local := NIL    --maps compiled because of where
+  $freeVars : local := nil
+  $mapList:local := nil            --list of maps being type analyzed
+  $compilingMap:local:= nil        --true when compiling a map
+  $compilingLoop:local:= nil       --true when compiling a loop body
+  $interpOnly: local := nil        --true when in interpret only mode
+  $whereCacheList: local := nil    --maps compiled because of where
   $StreamFrame: local := nil       --used in printing streams
-  $declaredMode: local := NIL      --Weak type propagation for symbols
-  $localVars:local := NIL          --list of local variables in function
-  $analyzingMapList:local := NIL   --names of maps currently being
+  $declaredMode: local := nil      --Weak type propagation for symbols
+  $localVars:local := nil          --list of local variables in function
+  $analyzingMapList:local := nil   --names of maps currently being
                                    --analyzed
   $lastLineInSEQ: local := true    --see evalIF and friends
   $instantCoerceCount: local := 0
@@ -148,13 +148,13 @@ processInteractive(form, posnForm) ==
   $defaultFortVar:= 'X             --default FORTRAN variable name
   $fortVar : local :=              --variable name for FORTRAN output
      $defaultFortVar
-  $minivector: local := NIL
-  $domPvar: local := NIL
-  $inRetract: local := NIL
+  $minivector: local := nil
+  $domPvar: local := nil
+  $inRetract: local := nil
   object := processInteractive1(form, posnForm)
   --object := ERRORSET(['processInteractive1,LIST('QUOTE,form),['QUOTE,posnForm]],'t,'t)
   if not($ProcessInteractiveValue) then
-    if $reportInstantiations = true then
+    if $reportInstantiations then
       reportInstantiations()
       CLRHASH $instantRecord
     writeHistModesAndValues()
@@ -186,7 +186,7 @@ recordAndPrint(x,md) ==
   --  Prints out the value x which is of type m, and records the changes
   --  in environment $e into $InteractiveFrame
   --  $printAnyIfTrue  is documented in setvart.boot. controlled with )se me any
-  if md = '(Any) and $printAnyIfTrue  then
+  if md = $Any and $printAnyIfTrue  then
     md' := first  x
     x' := rest x
   else
@@ -195,22 +195,21 @@ recordAndPrint(x,md) ==
   $outputMode: local := md   --used by DEMO BOOT
   mode:= (md=$EmptyMode => quadSch(); md)
   if (md ~= $Void) or $printVoidIfTrue then
-    if null $collectOutput then TERPRI $algebraOutputStream
-    if $QuietCommand = false then
+    newlineIfDisplaying()
+    if not $QuietCommand then
       output(x',md')
   putHist('%,'value,objNewWrap(x,md),$e)
   if $printTimeIfTrue or $printTypeIfTrue then printTypeAndTime(x',md')
   if $printStorageIfTrue then printStorage()
   if $printStatisticsSummaryIfTrue then printStatisticsSummary()
-  if FIXP $HTCompanionWindowID then mkCompanionPage md
-  $mkTestFlag = true => recordAndPrintTest md
+  if integer? $HTCompanionWindowID then mkCompanionPage md
+  $mkTestFlag => recordAndPrintTest md
   $runTestFlag =>
     $mkTestOutputType := md
     'done
   'done
 
 printTypeAndTime(x,m) ==  --m is the mode/type of the result
-  $saturn => printTypeAndTimeSaturn(x, m)
   printTypeAndTimeNormal(x, m)
 
 printTypeAndTimeNormal(x,m) ==
@@ -218,7 +217,7 @@ printTypeAndTimeNormal(x,m) ==
   if m is ['Union, :argl] then
     x' := retract(objNewWrap(x,m))
     m' := objMode x'
-    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], '"..."]
+    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], "..."]
   if $printTimeIfTrue then
     timeString := makeLongTimeString($interpreterTimedNames,
       $interpreterTimedClasses)
@@ -233,31 +232,6 @@ printTypeAndTimeNormal(x,m) ==
     $collectOutput =>
       $outputLines := [justifyMyType msgText("S2GL0012", [m]), :$outputLines]
     sayKeyedMsg("S2GL0012",[m])
-
-printTypeAndTimeSaturn(x, m) ==
-  -- header
-  if $printTimeIfTrue then
-    timeString := makeLongTimeString($interpreterTimedNames,
-      $interpreterTimedClasses)
-  else
-    timeString := '""
-  if $printTypeIfTrue then
-    typeString := form2StringAsTeX devaluate m
-  else
-    typeString := '""
-  if $printTypeIfTrue then
-    printAsTeX('"\axPrintType{")
-    if cons? typeString then
-      MAPC(FUNCTION printAsTeX, typeString)
-    else
-      printAsTeX(typeString)
-    printAsTeX('"}")
-  if $printTimeIfTrue then
-    printAsTeX('"\axPrintTime{")
-    printAsTeX(timeString)
-    printAsTeX('"}")
-
-printAsTeX(x) == PRINC(x, $texOutputStream)
 
 sameUnionBranch(uArg, m) ==
   uArg is [":", ., t] => t = m
@@ -350,15 +324,12 @@ intSayKeyedMsg(key, args) ==
   sayKeyedMsg(packageTran key, packageTran args)
 
 intProcessSynonyms str ==
-  LINE: fluid := str
+  LINE: local := str
   processSynonyms
   LINE
 
 intInterpretPform pf ==
   processInteractive(zeroOneTran packageTran pf2Sex pf, pf)
-
-SpadInterpretFile fn ==
-  SpadInterpretStream(1, fn, nil)
 
 intNewFloat() ==
   ["Float"]

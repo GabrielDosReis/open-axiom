@@ -44,14 +44,9 @@ ncParseFromString s ==
   zeroOneTran packageTran CATCH($SpadReaderTag, parseFromString s)
 
 ncINTERPFILE(file, echo) ==
-  savedEcho := $EchoLines
-  savedReadingFile := $ReadingFile
-  $EchoLines: fluid := echo
-  $ReadingFile: fluid := true
-  result := SpadInterpretFile file
-  $EchoLines := savedEcho
-  $ReadingFile := savedReadingFile
-  result
+  $Echo: local := echo
+  $ReadingFile: local := true
+  SpadInterpretFile file
 
 ncGetFunction(op, dom, sig) ==
   applyInPackage(function getNCfunction,_
@@ -90,12 +85,12 @@ runspad() ==
 ncTopLevel() ==
 -- Top-level read-parse-eval-print loop for the interpreter.  Uses
 -- the Bill Burge's parser.
-  IN_-STREAM: fluid := $InputStream
-  _*EOF_*: fluid := NIL
-  $InteractiveMode :fluid := true
-  $NEWSPAD: fluid := true
-  $SPAD: fluid := true
-  $e:fluid := $InteractiveFrame
+  IN_-STREAM: local := $InputStream
+  _*EOF_*: local := nil
+  $InteractiveMode: local := true
+  $NEWSPAD: local := true
+  $SPAD: local := true
+  $e: local := $InteractiveFrame
   ncIntLoop()
 
 
@@ -111,13 +106,14 @@ intloop () ==
       resetStackLimits()
       mode := CATCH($intTopLevel, SpadInterpretStream(1, nil, true))
 
-++ If the interpreter is spwan by the session manager, then
+++ If the interpreter is spawn by the session manager, then
 ++ each successful connection also creates its own frame.  
 ++ In particular, the only time we get to do anything in the `initial'
-++ frame is when we get the first connection.  In that case, we would
+++ frame is when we get the first connection.  In that situation, we would
 ++ be asked by the session manager to create a frame.  The client is
-++ not aware of that,  It is therefore confusing to display a prompt,
-++ because all this horse-threading happens behind the client's back.
+++ not aware of that discrete request made by the session manager.
+++ It is utterly confusing to display a prompt, because all this
+++ horse-threading happens behind the client's back.
 printFirstPrompt?() ==
   $interpreterFrameName ~= "initial" or
     getOptionValue '"role" ~= '"server"
@@ -150,6 +146,9 @@ SpadInterpretStream(str, source, interactive?) ==
  
     -----------------------------------------------------------------
 
+SpadInterpretFile fn ==
+  SpadInterpretStream(1, fn, nil)
+
 intloopReadConsole(b, n)==
     a:= serverReadLine $InputStream
     not string? a => leaveScratchpad()
@@ -164,7 +163,7 @@ intloopReadConsole(b, n)==
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
     a:=strconc(b,a)
-    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (# a) - 1),n)
+    ncloopEscaped a => intloopReadConsole(subSequence(a, 0, #a - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
     intloopReadConsole('"", c)
@@ -184,7 +183,7 @@ intloopPrefix?(prefix,whole) ==
          spaces := spaces + 1
        else leading := false
      spaces = wlen => nil
-     if good then SUBSTRING(whole,spaces,nil) else good
+     if good then subString(whole,spaces) else good
  
  
 intloopProcess(n,interactive,s)==
@@ -201,7 +200,7 @@ intloopEchoParse s==
          [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,$lines)
          setCurrentLine(mkLineList(lines))
-         if $EchoLines then ncloopPrintLines lines
+         if $Echo then ncloopPrintLines lines
          $lines:=rest
          [[[lines,npParse dqToList dq]],:rest s]
  
@@ -213,7 +212,10 @@ intloopInclude0(st, name, n) ==
           next(function lineoftoks,$lines))))
 
 intloopInclude(name, n) ==
-  WITH_-OPEN_-FILE(st name, intloopInclude0(st, name, n))
+  try
+    st := inputTextFile name
+    intloopInclude0(st, name, n)
+  finally (if st ~= nil then closeStream st)
  
 intloopInclude1(name,n) ==
           a:=ncloopIncFileName name
@@ -281,8 +283,8 @@ mkLineList lines ==
 
 nonBlank str ==
   value := false
-  for i in 0..MAXINDEX str repeat
-    str.i ~= char " " =>
+  for i in 0..maxIndex str repeat
+    stringChar(str,i) ~= char " " =>
       value := true
       return value
   value
@@ -296,10 +298,10 @@ ncloopCommand (line,n) ==
 ncloopEscaped x==
      esc :=false
      done:=false
-     for i in (# x) - 1 .. 0 by -1 while not done repeat
+     for i in maxIndex x .. 0 by -1 while not done repeat
          done:=
-              x.i='" ".0 =>false
-              x.i='"__".0=>
+              stringChar(x,i) = char " " => false
+              stringChar(x,i) = char "__" =>
                        esc:=true
                        true
               true
@@ -314,7 +316,7 @@ ncloopDQlines (dq,stream)==
 streamChop(n,s)==
     if StreamNull s
     then [nil,nil]
-    else if EQL(n,0)
+    else if n = 0
          then [nil,s]
          else
             [a,b]:= streamChop(n-1,rest s)
@@ -324,15 +326,15 @@ streamChop(n,s)==
             [[d,:a],b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat writeLine rest line
-        writeLine '" "
+        for line in lines repeat writeLine(rest line,$OutputStream)
+        writeLine('" ",$OutputStream)
  
 ncloopIncFileName string==
-                fn := incFileName string
-                not fn =>
-                    writeLine (strconc(string, '" not found"))
-                    []
-                fn
+      fn := incFileName string
+      not fn =>
+          writeLine(strconc(string, '" not found"),$ErrorStream)
+          []
+      fn
 
 ncloopParse s==
          [dq,stream]:=first s
@@ -347,7 +349,10 @@ ncloopInclude0(st, name, n) ==
             next(function lineoftoks,$lines))))
 
 ncloopInclude(name, n) ==
-  WITH_-OPEN_-FILE(st name, ncloopInclude0(st, name, n))
+  try
+    st := inputTextFile name
+    ncloopInclude0(st, name, n)
+  finally (if st ~= nil then closeStream st)
  
 ncloopInclude1(name,n) ==
           a:=ncloopIncFileName name
@@ -365,7 +370,7 @@ ncError() ==
 --% phParse: carrier[tokens,...] -> carrier[ptree, tokens,...]
 --)line (defun pretty (x) (boottran::reallyprettyprint x))
 --)line (defun packagetran (x) (boot::|packageTran|))
-$ncmParse :=      NIL
+$ncmParse :=      nil
 
 phParse(carrier,ptree) ==
     phBegin 'Parsing
@@ -410,7 +415,7 @@ ncConversationPhase(fn, args) ==
     $ncMsgList: local := []
     $convPhase: local := 'NoPhase
  
-    UNWIND_-PROTECT( apply(fn, args), wrapup(carrier) ) where
+    (try apply(fn, args); finally wrapup(carrier)) where
         wrapup(carrier) ==
             for m in $ncMsgList repeat
                 ncPutQ(carrier, 'messages, [m, :ncEltQ(carrier, 'messages)])
@@ -420,9 +425,9 @@ ncloopPrefix?(prefix,whole) ==
      good:=true
      for i in 0..#prefix-1 for j in 0.. while good repeat
                 good:= prefix.i = whole.j
-     if good then SUBSTRING(whole,#prefix,nil) else good
+     if good then subString(whole,#prefix) else good
 
-$ncmPhase :=      NIL
+$ncmPhase :=      nil
  
 phBegin id ==
     $convPhase := id

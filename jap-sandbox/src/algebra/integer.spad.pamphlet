@@ -78,7 +78,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
     noetherian
       ++ ascending chain condition on ideals.
     infinite
-      ++ nextItem never returns "failed".
+      ++ nextItem never returns \spad{nothing}.
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer
@@ -86,7 +86,9 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %icst1: %                 from Foreign Builtin
       import %ineg: % -> %             from Foreign Builtin
       import %iabs: % -> %             from Foreign Builtin
+      import %irandom: % -> %          from Foreign Builtin
       import %iodd?: % -> Boolean      from Foreign Builtin
+      import %ieven?: % -> Boolean     from Foreign Builtin
       import %hash: % -> SingleInteger from Foreign Builtin
       import %iadd: (%,%) -> %         from Foreign Builtin
       import %isub: (%,%) -> %         from Foreign Builtin
@@ -101,6 +103,9 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %ile: (%,%) -> Boolean    from Foreign Builtin
       import %igt: (%,%) -> Boolean    from Foreign Builtin
       import %ige: (%,%) -> Boolean    from Foreign Builtin
+      import %ilength: % -> %          from Foreign Builtin
+      import %i2s: % -> String         from Foreign Builtin
+      import %strconc: (String,String) -> String from Foreign Builtin
 
       x,y: %
       n: NonNegativeInteger
@@ -148,20 +153,21 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
         if wholeObj then
           OMputEndObject(dev)
 
-      zero? x == x = 0@%
-      one? x == x = 1@%
+      zero? x == x = %icst0
+      one? x == x = %icst1
       0 == %icst0
       1 == %icst1
       base()  == 2 pretend %
       copy x  == x
-      inc  x  == x + 1@%
-      dec  x  == x - 1@%
+      inc  x  == x + %icst1
+      dec  x  == x - %icst1
       hash x == %hash x
-      negative? x == x < 0@%
+      negative? x == x < %icst0
+      positive? x == %icst0 < x
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
-      length a == INTEGER_-LENGTH(a)$Lisp
+      length a == %ilength a
       addmod(a, b, p) ==
          c := %iadd(a,b)
          c >= p => c - p
@@ -174,12 +180,12 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       convert(x:%):Float       == coerce(x)$Float
       convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
       convert(x:%):InputForm   == convert(x)$InputForm
-      convert(x:%):String      == string(x)$String
+      convert(x:%):String      == %i2s x
 
       latex(x:%):String ==
-        s : String := string(x)$String
-        (-1 < (x pretend Integer)) and ((x  pretend Integer) < 10) => s
-        concat("{", concat(s, "}")$String)$String
+        s : String := convert x
+        -%icst1 < x and x < 10 => s
+        %strconc("{", %strconc(s, "}"))
 
       positiveRemainder(a, b) ==
         negative?(r := a rem b) =>
@@ -196,7 +202,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 
       abs(x) == %iabs x
       random() == random()$Lisp
-      random(x) == RANDOM(x)$Lisp
+      random(x) == %irandom x
       x = y == %ieq(x,y)
       x < y == %ilt(x,y)
       x > y == %igt(x,y)
@@ -209,6 +215,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
       x ** n == %ipow(x,n)$Foreign(Builtin)
       odd? x == %iodd? x
+      even? x == %ieven? x
       max(x,y) == %imax(x,y)
       min(x,y) == %imin(x,y)
       divide(x,y) == %idivide(x,y)$Foreign(Builtin)
@@ -219,8 +226,8 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       gcd(x,y) == %igcd(x,y)
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==
-         negative? x => [-1@%,-x,-1@%]$UCA
-         [1@%,x,1@%]$UCA
+         negative? x => [-%icst1,-x,-%icst1]$UCA
+         [%icst1,x,%icst1]$UCA
       unitCanonical x == abs x
       solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
          solveLinearPolynomialEquation(lp pretend List ZZP,
@@ -295,7 +302,7 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
       shift(x:%, n:Integer):% == ASH(x,n)$Lisp
       subtractIfCan(x, y) ==
         c:Integer := rep x - rep y
-        c < 0 => "failed"
+        negative? c => "failed"
         per c
 
 @

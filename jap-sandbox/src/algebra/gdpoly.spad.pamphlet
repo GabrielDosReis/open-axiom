@@ -74,7 +74,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
          zero?(p) => "failed"
          for v in vl repeat
            vv := variable(v)::OV
-           if degree(p,vv)>0 then return vv
+           if positive? degree(p,vv) then return vv
          "failed"
 
       ground?(p) == mainVariable(p) case "failed"
@@ -148,7 +148,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
             p := reductum p
             for i in 1..n repeat
               maxdeg.i := max(maxdeg.i, tdeg.i)
-         [index(i:PositiveInteger) for i in 1..n | maxdeg.i~=0]
+         [index(i:PositiveInteger) for i in 1..n | not zero? maxdeg.i]
 
       reorder(p: %,perm: List Integer):% ==
          #perm ~= n => error "must be a complete permutation of all vars"
@@ -254,7 +254,7 @@ GeneralDistributedMultivariatePolynomial(vl,R,E): public == private where
             t.k.i = 1 => l := cons(vl1.i,l)
             l := cons(vl1.i ** t.k.i ::OutputForm,l)
           l := reverse l
-          if (t.c ~= 1) or (null l) then l := cons(t.c :: OutputForm,l)
+          if not one? t.c or (null l) then l := cons(t.c :: OutputForm,l)
           1 = #l => lt := cons(first l,lt)
           lt := cons(reduce("*",l),lt)
         1 = #lt => first lt

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -104,13 +104,13 @@ compClam(op,argl,body,$clamList) ==
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
   cacheName:= mkCacheName op
-  if $reportCounts=true then
+  if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    setDynamicBinding(hitCounter,0)
-    setDynamicBinding(callCounter,0)
-    callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
-    hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
+    symbolValue(hitCounter) := 0
+    symbolValue(callCounter) := 0
+    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
+    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --length of cache or arg-value pair
   g3:= gensym()  --value computed by calling function
   lookUpFunction:=
@@ -121,28 +121,28 @@ compClam(op,argl,body,$clamList) ==
     'assocCache
   returnFoundValue:=
     countFl => ['CDDR,g3]
-    ['CDR,g3]
+    ['%tail,g3]
   namePart:=
     countFl => cacheName
     MKQ cacheName
   secondPredPair:=
 --   null argl => [cacheName]
-    [['SETQ,g3,[lookUpFunction,g1,namePart,eqEtc]],
+    [['%store,g3,[lookUpFunction,g1,namePart,eqEtc]],
       :hitCountCode,
         returnFoundValue]
   resetCacheEntry:=
-    countFl => ['CONS,1,g2]
+    countFl => ['%pair,1,g2]
     g2
   thirdPredPair:=
-    ['%true,
+    ['%otherwise,
       ['%store,g2,computeValue],
-        ['%store,g3,['CAR,cacheName]],
-          ['RPLACA,g3,g1],
-            ['RPLACD,g3,resetCacheEntry],
+        ['%store,g3,['%head,cacheName]],
+          ['%store,['%head,g3],g1],
+            ['%store,['%tail,g3],resetCacheEntry],
               g2]
   codeBody:= ['PROG,[g2,g3],
                 :callCountCode,
-                  ['RETURN,['COND,secondPredPair,thirdPredPair]]]
+                  ['RETURN,['%when,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
@@ -157,7 +157,7 @@ compClam(op,argl,body,$clamList) ==
   compileQuietly [computeFunction]
  
   cacheType:= 'function
-  cacheResetCode:= ['SETQ,cacheName,['initCache,cacheCount]]
+  cacheResetCode:= ['%store,cacheName,['initCache,cacheCount]]
   cacheCountCode:= ['countCircularAlist,cacheName,cacheCount]
   cacheVector:= mkCacheVec(op,cacheName,cacheType,
     cacheResetCode,cacheCountCode)
@@ -175,7 +175,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
  
-  if cacheNameOrNil and cacheNameOrNil~='_$ConstructorCache then
+  if cacheNameOrNil and cacheNameOrNil ~= '_$ConstructorCache then
     keyedSystemError("S2GE0010",[op])
     --restriction due to omission of call to hputNewValue (see *** lines below)
  
@@ -199,17 +199,17 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     null argl => [nil,nil,[auxfn]]
     argl is [.] =>
       key:= (cacheNameOrNil => ['devaluate,g1]; g1)
-      [[g1],['LIST,key],[auxfn,g1]]  --g1 is a parameter
+      [[g1],['%list,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
-  if $reportCounts=true then
+  if $reportCounts then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    setDynamicBinding(hitCounter,0)
-    setDynamicBinding(callCounter,0)
-    callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
-    hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
+    symbolValue(hitCounter) := 0
+    symbolValue(callCounter) := 0
+    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
+    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     null argl =>
@@ -222,33 +222,34 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:=
-    null argl => ['HGET,cacheName,MKQ op]
+    null argl => ['tableValue,cacheName,MKQ op]
     cacheNameOrNil =>
       eqEtc ~= 'EQUAL =>
         ['lassocShiftWithFunction,cacheArgKey,
-          ['HGET,cacheNameOrNil,MKQ op],MKQ eqEtc]
-      ['lassocShift,cacheArgKey,['HGET,cacheNameOrNil,MKQ op]]
-    ['HGET,cacheName,g1]
-  secondPredPair:= [['SETQ,g2,getCode],:hitCountCode,returnFoundValue]
+          ['tableValue,cacheNameOrNil,MKQ op],MKQ eqEtc]
+      ['lassocShift,cacheArgKey,['tableValue,cacheNameOrNil,MKQ op]]
+    ['tableValue,cacheName,g1]
+  secondPredPair:= [g2,optSEQ ['SEQ,:hitCountCode,['EXIT,returnFoundValue]]]
   putCode:=
     null argl =>
       cacheNameOrNil =>
-        countFl => ['CDDAR,['HPUT,cacheNameOrNil,MKQ op,
-                      ['LIST,['CONS,nil,['CONS,1,computeValue]]]]]
-        ['HPUT,cacheNameOrNil,MKQ op,['LIST,['CONS,nil,computeValue]]]
+        countFl =>
+          ['CDDAR,['%store,['tableValue,cacheNameOrNil,MKQ op],
+            ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
+        ['%store,['tableValue,cacheNameOrNil,MKQ op],
+          ['%list,['%pair,'%nil,computeValue]]]
       systemError '"unexpected"
     cacheNameOrNil => computeValue
-    --countFl => ['CDR,['hputNewProp,cacheNameOrNil,MKQ op,cacheArgKey, --***
-    --             ['CONS,1,computeValue]]]                             --***
-    --['hputNewProp,cacheNameOrNil,MKQ op,cacheArgKey,computeValue]    --***
-    countFl => ['CDR,['HPUT,cacheName,g1,['CONS,1,computeValue]]]
-    ['HPUT,cacheName,g1,computeValue]
+    countFl =>
+      ['%tail,['%store,['tableValue,cacheName,g1],['%pair,1,computeValue]]]
+    ['%store,['tableValue,cacheName,g1],computeValue]
   if cacheNameOrNil then putCode :=
-     ['UNWIND_-PROTECT,['PROG1,putCode,['SETQ,g2,'T]],
-                  ['COND,[['NOT,g2],['HREM,cacheName,MKQ op]]]]
-  thirdPredPair:= ['%true,putCode]
-  codeBody:= ['PROG,[g2],
-               :callCountCode,['RETURN,['COND,secondPredPair,thirdPredPair]]]
+     ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
+                  ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
+  thirdPredPair:= ['%otherwise,putCode]
+  codeBody:= optSEQ
+    ['SEQ,:callCountCode,
+      ['EXIT,['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
@@ -293,19 +294,20 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
       argl is [.] => [auxfn,g1]  --g1 is a parameter
       ['APPLX,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
-  g2:= gensym()  --value computed by calling function
+  g2 := gensym()  --value computed by calling function
   returnFoundValue:=
     countFl => ['CDRwithIncrement,g2]
     g2
-  getCode:= ['HGET,cacheName,cacheArgKey]
-  secondPredPair:= [['%store,g2,getCode],returnFoundValue]
-  putForm:= ['CONS,MKQ op,g1]
+  getCode:= ['tableValue,cacheName,cacheArgKey]
+  secondPredPair:= [g2,returnFoundValue]
+  putForm:= ['%pair,MKQ op,g1]
   putCode:=
-    countFl => ['HPUT,cacheName,putForm,['CONS,1,computeValue]]
-    ['HPUT,cacheName,putForm,computeValue]
-  thirdPredPair:= ['%true,putCode]
-  codeBody:= ['PROG,[g2], ['RETURN,['COND,secondPredPair,thirdPredPair]]]
-  lamex:= ['LAM,arg,codeBody]
+    countFl =>
+      ['%store,['tableValue,cacheName,putForm],['%pair,1,computeValue]]
+    ['%store,['tableValue,cacheName,putForm],computeValue]
+  thirdPredPair := ['%otherwise,putCode]
+  codeBody := ['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]
+  lamex := ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
   compileInteractive mainFunction
@@ -318,12 +320,12 @@ consForHashLookup(a,b) ==
   $hashNode
  
 CDRwithIncrement x ==
-  x.first := QSADD1 first x
+  x.first := first x + 1
   rest x
  
-HGETandCount(hashTable,prop) ==
-  u:= HGET(hashTable,prop) or return nil
-  u.first := QSADD1 first u
+HGETandCount(ht,prop) ==
+  u:= tableValue(ht,prop) or return nil
+  u.first := first u + 1
   u
  
 clearClams() ==
@@ -331,9 +333,9 @@ clearClams() ==
     clearClam fn
  
 clearClam fn ==
-  infovec:= GETL(fn,'cacheInfo) or keyedSystemError("S2GE0003",[fn])
+  infovec := property(fn,'cacheInfo) or keyedSystemError("S2GE0003",[fn])
   eval infovec.cacheReset
- 
+
 reportAndClearClams() ==
   cacheStats()
   clearClams()
@@ -345,7 +347,7 @@ clearConstructorCaches() ==
 clearConstructorCache(cname) ==
   (kind := getConstructorKindFromDB cname) =>
     kind = "category" => clearCategoryCache cname
-    HREM($ConstructorCache,cname)
+    tableRemove!($ConstructorCache,cname)
  
 clearConstructorAndLisplibCaches() ==
   clearClams()
@@ -355,17 +357,17 @@ clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
-            then setDynamicBinding(cacheName,nil)
-    if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
-          then setDynamicBinding(cacheName,nil)
+            then symbolValue(cacheName) := nil
+    if BOUNDP(cacheName:= INTERNL strconc(symbolName name,'";CAT"))
+          then symbolValue(cacheName) := nil
  
 clearCategoryCache catName ==
-  setDynamicBinding(mkCacheName catName,nil)
+  symbolValue(mkCacheName catName) := nil
  
 displayHashtable x ==
-  l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
+  l:= reverse! SORTBY('CAR,[[opOf tableValue(x,key),key] for key in HKEYS x])
   for [a,b] in l repeat
-    sayBrightlyNT ['%b,a,'%d]
+    sayBrightlyNT ['"%b",a,'"%d"]
     pp b
  
 cacheStats() ==
@@ -377,16 +379,16 @@ cacheStats() ==
     sayBrightly ["Unknown cache type for","%b",fn,"%d"]
  
 reportCircularCacheStats(fn,n) ==
-  infovec:= GETL(fn,'cacheInfo)
+  infovec:= property(fn,'cacheInfo)
   circList:= eval infovec.cacheName
   numberUsed :=
-    +/[1 for i in 1..n for x in circList while x isnt [='_$failed,:.]]
+    +/[1 for i in 1..n for x in circList while x isnt ['_$failed,:.]]
   sayBrightly ["%b",fn,"%d","has","%b",numberUsed,"%d","/ ",n," values cached"]
   displayCacheFrequency mkCircularCountAlist(circList,n)
   TERPRI()
  
 displayCacheFrequency al ==
-  al := nreverse SORTBY('CAR,al)
+  al := reverse! SORTBY('CAR,al)
   sayBrightlyNT "    #hits/#occurrences: "
   for [a,:b] in al repeat sayBrightlyNT [a,"/",b,"  "]
   TERPRI()
@@ -401,9 +403,9 @@ mkCircularCountAlist(cl,len) ==
   al
  
 reportHashCacheStats fn ==
-  infovec:= GETL(fn,'cacheInfo)
-  hashTable:= eval infovec.cacheName
-  hashValues:= [HGET(hashTable,key) for key in HKEYS hashTable]
+  infovec:= property(fn,'cacheInfo)
+  ht := eval infovec.cacheName
+  hashValues:= [tableValue(ht,key) for key in HKEYS ht]
   sayBrightly [:bright fn,'"has",:bright(# hashValues),'"values cached."]
   displayCacheFrequency mkHashCountAlist hashValues
   TERPRI()
@@ -423,7 +425,7 @@ clearHashReferenceCounts() ==
  
 remHashEntriesWith0Count $hashTable ==
   MAPHASH(function fn,$hashTable) where fn(key,obj) ==
-    first obj = 0 => HREM($hashTable,key)  --free store
+    first obj = 0 => tableRemove!($hashTable,key)  --free store
     nil
  
 initCache n ==
@@ -436,12 +438,12 @@ assocCache(x,cacheName,fn) ==
   al:= eval cacheName
   forwardPointer:= al
   val:= nil
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn,CAAR forwardPointer,x) => return (val:= first forwardPointer)
     backPointer:= forwardPointer
     forwardPointer:= rest forwardPointer
-  val => val
-  setDynamicBinding(cacheName,backPointer)
+  val ~= nil => val
+  symbolValue(cacheName) := backPointer
   nil
  
 assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
@@ -449,16 +451,16 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
   al:= eval cacheName
   forwardPointer:= al
   val:= nil
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
-      if not EQ(forwardPointer,al) then   --shift referenced entry to front
+      if not sameObject?(forwardPointer,al) then   --shift referenced entry to front
         forwardPointer.first := first al
         al.first := y
       return (val:= y)
     backPointer := forwardPointer      --first is slot replaced on failure
     forwardPointer:= rest forwardPointer
   val => val
-  setDynamicBinding(cacheName,backPointer)
+  symbolValue(cacheName) := backPointer
   nil
  
 assocCacheShiftCount(x,al,fn) ==
@@ -469,16 +471,17 @@ assocCacheShiftCount(x,al,fn) ==
   forwardPointer:= al
   val:= nil
   minCount:= 10000 --preset minCount but not newFrontPointer here
-  until EQ(forwardPointer,al) repeat
+  until sameObject?(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
-      y.rest.first := QSADD1 second y         --increment use count
+      y.rest.first := second y + 1         --increment use count
       return (val:= y)
-    if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
+    c := second y
+    if c < minCount then                  --initial c is 1 so is true 1st time
       minCount := c
       newFrontPointer := forwardPointer   --CAR is slot replaced on failure
     forwardPointer:= rest forwardPointer
-  if not EQ(newFrontPointer,al) then       --shift referenced entry to front
+  if not sameObject?(newFrontPointer,al) then       --shift referenced entry to front
     temp:= first newFrontPointer           --or entry with smallest count
     newFrontPointer.first := first al
     al.first := temp
@@ -486,18 +489,18 @@ assocCacheShiftCount(x,al,fn) ==
  
 clamStats() ==
   for [op,kind,:.] in $clamList repeat
-    cacheVec:= GETL(op,'cacheInfo) or systemErrorHere ["clamStats",op]
+    cacheVec:= property(op,'cacheInfo) or systemErrorHere ["clamStats",op]
     prefix:=
       $reportCounts ~= true => nil
       hitCounter:= INTERNL(op,'";hit")
       callCounter:= INTERNL(op,'";calls")
       res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
-      setDynamicBinding(hitCounter,0)
-      setDynamicBinding(callCounter,0)
+      symbolValue(hitCounter) := 0
+      symbolValue(callCounter) := 0
       res
     postString:=
       cacheValue:= eval cacheVec.cacheName
-      kind = 'hash => [" (","%b",HASH_-TABLE_-COUNT cacheValue,"%d","entries)"]
+      kind = 'hash => [" (","%b",tableLength cacheValue,"%d","entries)"]
       empties:= numberOfEmptySlots eval cacheVec.cacheName
       empties = 0 => nil
       [" (","%b",kind-empties,"/",kind,"%d","slots used)"]
@@ -506,7 +509,7 @@ clamStats() ==
  
 numberOfEmptySlots cache==
   count:= (CAAR cache ='$failed => 1; 0)
-  for x in tails rest cache while NE(x,cache) repeat
+  for x in tails rest cache while not sameObject?(x,cache) repeat
     if CAAR x='$failed then count:= count+1
   count
  
@@ -522,18 +525,18 @@ addToConstructorCache(op,args,value) ==
 haddProp(ht,op,prop,val) ==
   --presently, ht always = $ConstructorCache
   statRecordInstantiationEvent()
-  if $reportInstantiations = true or $reportEachInstantiation = true then
+  if $reportInstantiations or $reportEachInstantiation then
     startTimingProcess 'debug
     recordInstantiation(op,prop,false)
     stopTimingProcess 'debug
-  u:= HGET(ht,op) =>     --hope that one exists most of the time
+  u:= tableValue(ht,op) =>     --hope that one exists most of the time
     assoc(prop,u) => val     --value is already there--must = val; exit now
     u.rest := [first u,:rest u]
     u.first := [prop,:val]
     $op: local := op
     listTruncate(u,20)        --save at most 20 instantiations
     val
-  HPUT(ht,op,[[prop,:val]])
+  tableValue(ht,op) := [[prop,:val]]
   val
  
 recordInstantiation(op,prop,dropIfTrue) ==
@@ -543,7 +546,7 @@ recordInstantiation(op,prop,dropIfTrue) ==
  
 recordInstantiation1(op,prop,dropIfTrue) ==
   op in '(CategoryDefaults RepeatedSquaring) => nil--ignore defaults for now
-  if $reportEachInstantiation = true then
+  if $reportEachInstantiation then
     trailer:= (dropIfTrue => '"  dropped"; '"  instantiated")
     if $insideCoerceInteractive= true then
       $instantCoerceCount:= 1+$instantCoerceCount
@@ -551,11 +554,11 @@ recordInstantiation1(op,prop,dropIfTrue) ==
       $instantCanCoerceCount:= 1+$instantCanCoerceCount
       xtra:=
         ['" for ",outputDomainConstructor m1,'"-->",outputDomainConstructor m2]
-    if $insideEvalMmCondIfTrue = true and null dropIfTrue then
+    if $insideEvalMmCondIfTrue and not dropIfTrue then
       $instantMmCondCount:= $instantMmCondCount + 1
     typeTimePrin ["CONCAT",outputDomainConstructor [op,:prop],trailer,:xtra]
   null $reportInstantiations => nil
-  u:= HGET($instantRecord,op) =>     --hope that one exists most of the time
+  u:= tableValue($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
       dropIfTrue => v.rest := 1+rest v
       v.first := 1+first v
@@ -567,17 +570,17 @@ recordInstantiation1(op,prop,dropIfTrue) ==
   val :=
     dropIfTrue => [0,:1]
     [1,:0]
-  HPUT($instantRecord,op,[[prop,:val]])
+  tableValue($instantRecord,op) := [[prop,:val]]
  
 reportInstantiations() ==
   --assumed to be a hashtable with reference counts
     conList:=
-      [:[[n,m,[key,:argList]] for [argList,n,:m] in HGET($instantRecord,key)]
+      [:[[n,m,[key,:argList]] for [argList,n,:m] in tableValue($instantRecord,key)]
         for key in HKEYS $instantRecord]
     sayBrightly ['"# instantiated/# dropped/domain name",
       "%l",'"------------------------------------"]
     nTotal:= mTotal:= rTotal := nForms:= 0
-    for [n,m,form] in nreverse SORTBY('CADDR,conList) repeat
+    for [n,m,form] in reverse! SORTBY('CADDR,conList) repeat
       nTotal:= nTotal+n; mTotal:= mTotal+m
       if n > 1 then rTotal:= rTotal + n-1
       nForms:= nForms + 1
@@ -608,12 +611,12 @@ hputNewProp(ht,op,argList,val) ==
  
 listTruncate(l,n) ==
   u:= l
-  n:= QSSUB1 n
+  n:= n - 1
   while n ~= 0 and cons? u repeat
-    n:= QSSUB1 n
-    u:= rest u
+    n := n - 1
+    u := rest u
   if cons? u then
-    if cons? rest u and $reportInstantiations = true then
+    if cons? rest u and $reportInstantiations then
       recordInstantiation($op,CAADR u,true)
     u.rest := nil
   l
@@ -621,10 +624,10 @@ listTruncate(l,n) ==
 lassocShift(x,l) ==
   y:= l
   while cons? y repeat
-    EQUAL(x,first first y) => return (result := first y)
+    x = first first y => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -636,7 +639,7 @@ lassocShiftWithFunction(x,l,fn) ==
     FUNCALL(fn,x,first first y) => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -645,10 +648,10 @@ lassocShiftWithFunction(x,l,fn) ==
 lassocShiftQ(x,l) ==
   y:= l
   while cons? y repeat
-    EQ(x,first first y) => return (result := first y)
+    sameObject?(x,first first y) => return (result := first y)
     y:= rest y
   result =>
-    if not EQ(y,l) then
+    if not sameObject?(y,l) then
       y.first := first l
       l.first := result
     rest result
@@ -657,10 +660,10 @@ lassocShiftQ(x,l) ==
 -- rassocShiftQ(x,l) ==
 --   y:= l
 --   while cons? y repeat
---     EQ(x,rest first y) => return (result := first y)
+--     sameObject?(x,rest first y) => return (result := first y)
 --     y:= rest y
 --   result =>
---     if not EQ(y,l) then
+--     if not sameObject?(y,l) then
 --       y.first := first l
 --       l.first := result
 --     first result
@@ -670,13 +673,13 @@ globalHashtableStats(x,sortFn) ==
   --assumed to be a hashtable with reference counts
   keys:= HKEYS x
   for key in keys repeat
-    u:= HGET(x,key)
+    u:= tableValue(x,key)
     for [argList,n,:.] in u repeat
       not integer? n =>   keyedSystemError("S2GE0013",[x])
       argList1:= [constructor2ConstructorForm x for x in argList]
       reportList:= [[n,key,argList1],:reportList]
   sayBrightly ["%b","  USE  NAME ARGS","%d"]
-  for [n,fn,args] in nreverse SORTBY(sortFn,reportList) repeat
+  for [n,fn,args] in reverse! SORTBY(sortFn,reportList) repeat
     sayBrightlyNT [:rightJustifyString(n,6),"  ",fn,": "]
     pp args
  
@@ -687,7 +690,7 @@ constructor2ConstructorForm x ==
 rightJustifyString(x,maxWidth) ==
   size:= entryWidth x
   size > maxWidth => keyedSystemError("S2GE0014",[x])
-  [fillerSpaces(maxWidth-size," "),x]
+  [fillerSpaces(maxWidth-size,char " "),x]
  
 domainEqualList(argl1,argl2) ==
   --function used to match argument lists of constructors
@@ -704,5 +707,5 @@ domainEqualList(argl1,argl2) ==
  
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
-    sayBrightly ['"Un-clamming function",'%b,fun,'%d]
-    setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))
+    sayBrightly ['"Un-clamming function",'"%b",fun,'"%d"]
+    symbolValue(fun) := eval makeSymbol strconc(STRINGIMAGE fun,'";")

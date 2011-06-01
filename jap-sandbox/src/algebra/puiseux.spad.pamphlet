@@ -125,7 +125,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
 
     monomial(c,k) ==
       k = 0 => c :: %
-      k < 0 => puiseux(-k,monomial(c,-1))
+      negative? k => puiseux(-k,monomial(c,-1))
       puiseux(k,monomial(c,1))
 
     coerce(ls:ULS) == puiseux(1,ls)
@@ -504,7 +504,7 @@ UnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
 
         approximateLaurent: (ULS,Coef,I) -> Coef
         approximateLaurent(x,term,n) ==
-          (m := n - (e := degree x)) < 0 => 0
+          negative?(m := n - (e := degree x)) => 0
           app := stToCoef(coefficients taylorRep x,term,0,m :: NNI)
           zero? e => app
           app * term ** (e :: RN)

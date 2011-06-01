@@ -98,7 +98,7 @@
 (defun PREPARSE (Strm &aux (stack ()))
   (SETQ $COMBLOCKLIST NIL $skipme NIL)
   (when $preparse-last-line
-        (if (pairp $preparse-last-line)
+        (if (consp $preparse-last-line)
             (setq stack $preparse-last-line)
           (push $preparse-last-line stack))
         (setq $INDEX (- $INDEX (length stack))))
@@ -123,8 +123,8 @@
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (FINCOMBLOCK NIL NUMS LOCS NCOMBLOCK NIL)))
-                (RETURN (PAIR (NREVERSE NUMS)
-                              (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES))))))
+                (RETURN (|pairList| (|reverse!| NUMS)
+			 (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
                 (PREPARSE-ECHO LineList)
@@ -156,7 +156,7 @@
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
-                  ('T (PUSH (STRCONC (GETFULLSTR N " ")
+                  ('T (PUSH (STRCONC (|makeString| N #\Space)
                                   (SUBSTRING A N ())) $LINELIST)
                       (SETQ $INDEX (1- $INDEX))
                       (SETQ A (SUBSEQ A 0 N))))
@@ -184,9 +184,9 @@
                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
              (IF (NOT (IS-CONSOLE in-stream))
                  (setq $preparse-last-line
-                       (nreverse $echolinestack)))
-             (RETURN (PAIR (NREVERSE NUMS)
-                        (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES)))))
+                       (|reverse!| $echolinestack)))
+             (RETURN (|pairList| (|reverse!| NUMS)
+                        (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
          (COND (NCOMBLOCK
                 (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist)
@@ -198,8 +198,8 @@
          (setq PARENLEV (+ PARENLEV PCOUNT))
          (when (and (is-console in-stream) (not continue))
             (setq $preparse-last-line nil)
-             (RETURN (PAIR (NREVERSE NUMS)
-                           (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES)))))
+             (RETURN (|pairList| (|reverse!| NUMS)
+                           (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))
  
@@ -209,7 +209,7 @@
 ;; NCBLOCK is the current comment block
 (DEFUN FINCOMBLOCK (NUM OLDNUMS OLDLOCS NCBLOCK linelist)
   (PUSH
-    (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (REVERSE (CDR NCBLOCK))))
+    (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (|reverse| (CDR NCBLOCK))))
               ;; comment for constructor itself paired with 1st line -1
           ('T
            (COND ($EchoLineStack
@@ -225,7 +225,7 @@
                 (if (and (numberp (car olocs))
                          (<= (car olocs) sloc))
                     (return (car onums))))
-            (REVERSE (CDR NCBLOCK)))))
+            (|reverse| (CDR NCBLOCK)))))
     $COMBLOCKLIST))
  
 (defun PARSEPRINT (L)
@@ -330,7 +330,7 @@
 ;;        (and (stringp line) (incf $INDEX))
 ;;        (if (NOT (STRINGP LINE)) (RETURN (CONS $INDEX LINE)))
 ;;        (setq LINE (DROPTRAILINGBLANKS LINE))
-;;        (if Echo-Meta (PUSH (COPY-SEQ LINE) $EchoLineStack))
+;;        (if |$Echo| (PUSH (COPY-SEQ LINE) $EchoLineStack))
 ;;        ; next line must evaluate $INDEX before recursive call
 ;;        (RETURN
 ;;          (CONS $INDEX
@@ -342,7 +342,7 @@
 ;;                    LINE)))))
  
 (defun PREPARSE-ECHO (linelist)
-  (if Echo-Meta (REPEAT (IN X (REVERSE $EchoLineStack))
+  (if |$Echo| (REPEAT (IN X (|reverse| $EchoLineStack))
                         (format out-stream "~&;~A~%" X)))
   (setq $EchoLineStack ()))
  
@@ -353,8 +353,8 @@
 (defun PARSEPILES (LOCS LINES)
   "Add parens and semis to lines to aid parsing."
   (mapl #'add-parens-and-semis-to-line 
-	(NCONC LINES '(" ")) 
-	(nconc locs '(nil)))
+	(|append!| LINES '(" ")) 
+	(|append!| locs '(nil)))
   LINES)
  
 (defun add-parens-and-semis-to-line (slines slocs)

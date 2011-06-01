@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -90,9 +90,6 @@ $currentLine := nil
 
 ++
 $domainTraceNameAssoc := []
-
-++
-$evalDomain := false
 
 ++
 $exitModeStack := []
@@ -377,6 +374,8 @@ LINE := nil
 CHR := nil
 TOK := nil
 
+$Echo := false
+
 ++ answers x has y category questions
 _*HASCATEGORY_-HASH_* := nil
 
@@ -448,18 +447,6 @@ $formulaOutputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
 conOutStream := 
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-
-
-
-$InputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
-
-$OutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-$ErrorStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
 --%
