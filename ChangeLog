@@ -1,10 +1,13 @@
+2011-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Check for uid_t.
+
 2011-04-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_HOST_LISP_CPU_PRECISION):
 	Special-case for detecting binary personality. 
 	* configure.ac: ECL now provides (at last!) way to gather
 	information about binary personality.
-	
 
 2011-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
