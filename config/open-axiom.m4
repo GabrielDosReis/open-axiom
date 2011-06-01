@@ -207,23 +207,22 @@ OPENAXIOM_PROG_LISP
 OPENAXIOM_LISP_FLAVOR
 OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
+oa_gnu_compiler=no
 AC_PROG_CC
 AC_PROG_CXX
 ## Augment C and C++ compiler flags with ABI directives as appropriate
 ## before we proceed to infer other host datatype properties.
 if test -n "$openaxiom_host_lisp_precision"; then
-   case $GCC in
-     yes)
-       CPPFLAGS="$CPPFLAGS -m$openaxiom_host_lisp_precision"
-       LDFLAGS="$LDFLAGS -m$openaxiom_host_lisp_precision"
-       ;;
-     no)
-       # cross fingers and pray.
-       ;;
-   esac
+   if test x$GCC = xyes || test x$GXX = xyes; then
+     oa_gnu_compiler=yes
+     CPPFLAGS="$CPPFLAGS -m$openaxiom_host_lisp_precision"
+     LDFLAGS="$LDFLAGS -m$openaxiom_host_lisp_precision"
+   ## else, cross fingers and pray.
+   fi
 fi
 OPENAXIOM_SATISFY_GCL_NEEDS
 AC_PROG_CPP
+AC_PROG_CXXCPP
 OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS
 ])
 
@@ -234,7 +233,7 @@ dnl GCL assumes that the C compiler is from GNU.
 AC_DEFUN([OPENAXIOM_SATISFY_GCL_NEEDS],[
 ## If we are using GCL as the base runtime system, then we do really need
 ## a C compiler from GNU.  Well, at least for the moment.
-case $axiom_lisp_flavor,$GCC in
+case $axiom_lisp_flavor,$oa_gnu_compiler in
    gcl,yes)
        axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
        ;;
@@ -613,7 +612,7 @@ AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
                   *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
                esac])
 # GNU compilers want hints about multithreading.
-case $GCC,$oa_enable_threads in
+case $oa_gnu_compiler,$oa_enable_threads in
    yes,yes)
      axiom_cflags="$axiom_cflags -pthread"
 esac
@@ -1016,7 +1015,7 @@ dnl -- OPENAXIOM_CHECK_MISC --
 dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
 OPENAXIOM_ALIGNMENT_OPERATOR
-case $GCC in
+case $oa_gnu_compiler in
   yes)
      CFLAGS="$CFLAGS -O2 -Wall"
      CXXFLAGS="$CXXFLAGS -O2 -Wall"
