@@ -65,7 +65,7 @@ dnl a warning when we detect attempt at cross build.
 dnl Note that we do not stop the configuration process because we do seek
 dnl contributions for cross build support.
 if test $build != $target; then
-   AC_MSG_WARN([Cross build is not supported.])
+   AC_MSG_WARN([Cross build is not supported yet.])
    AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
 fi
 
@@ -77,6 +77,8 @@ fi
 ## in  sub-directories different from others.
 axiom_build_sharedir=$axiom_builddir/share
 
+## We have now almost switched entirely to C++.
+AC_LANG([C++])
 
 OPENAXIOM_HOST_COMPILERS
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
