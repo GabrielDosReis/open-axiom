@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008-2010, Gabriel Dos Reis.
+   Copyright (C) 2008-2011, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include "utils.h"
+#include "open-axiom.h"
 
 namespace OpenAxiom {
 
@@ -52,6 +52,12 @@ namespace OpenAxiom {
    on command line.  */
 #define OPENAXIOM_CORE_PATH \
    "/bin/" OPENAXIOM_CORE_EXECUTABLE
+
+#define OPENAXIOM_GUI_SUBPATH \
+   "/bin/" OPENAXIOM_GUI_EXECUTABLE
+
+#define OPENAXIOM_GUI_EXECUTABLE \
+   "gui" OPENAXIOM_EXEEXT
 
 /* Path to the session manager, relative to OPENAXIOM_ROOT_DIRECTORY,
    or to the system root directory as specified on command line.  */
@@ -144,11 +150,14 @@ get_systemdir(int argc, char* argv[])
 
 /* Return the path to `driver'. */
 static const char*
-get_driver_name(Driver driver)
+get_driver_subpath(Driver driver)
 {
    switch (driver) {
    case sman_driver:
       return OPENAXIOM_SMAN_PATH;
+
+   case gui_driver:
+      return OPENAXIOM_GUI_SUBPATH;
 
    case script_driver:
    case compiler_driver:
@@ -168,7 +177,7 @@ const char*
 make_path_for(const char* prefix, Driver driver)
 {
    const int prefix_length = strlen(prefix);
-   const char* prog = get_driver_name(driver);
+   const char* prog = get_driver_subpath(driver);
    char* execpath = (char*) malloc(prefix_length + strlen(prog) + 1);
    strcpy(execpath, prefix);
    strcpy(execpath + prefix_length, prog);
@@ -183,6 +192,7 @@ build_rts_options(Command* command, Driver driver)
    switch (driver) {
    case config_driver:
    case sman_driver:
+   case gui_driver:
    case execute_driver:
    case unknown_driver:
       break;
@@ -241,6 +251,8 @@ build_rts_options(Command* command, Driver driver)
 
 #if OPENAXIOM_USE_SMAN
 #  define OPENAXIOM_DEFAULT_DRIVER sman_driver
+#elif OPENAXIOM_USE_GUI
+#  define OPENAXIOM_DEFAULT_DRIVER gui_driver   
 #else
 #  define OPENAXIOM_DEFAULT_DRIVER core_driver
 #endif
@@ -389,6 +401,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
          switch (driver) {
          case unknown_driver:
          case sman_driver:
+         case gui_driver:
             command->core.argc += 1;
             command->core.argv =
                (char**) malloc((other + 2) * sizeof(char*));

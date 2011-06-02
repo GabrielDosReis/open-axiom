@@ -38,6 +38,8 @@ open_axiom_objects = $(open_axiom_SOURCES:.cc=.lo)
 
 open_axiom_LDADD = -L$(builddir)/../lib $(oa_c_libs)
 
+VPATH += $(top_srcdir)/src/include
+
 .PHONY: all all-ax all-driver
 
 all: all-ax
@@ -57,8 +59,8 @@ stamp: $(bin_PROGRAMS)
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(axiom_includes) $<
 
-utils.lo: utils.h
-main.lo: utils.h
+utils.lo: open-axiom.h
+main.lo: open-axiom.h
 
 open-axiom$(EXEEXT): $(open_axiom_objects)
 	$(CXXLINK) -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
