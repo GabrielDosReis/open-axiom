@@ -32,11 +32,14 @@
 
 bin_PROGRAMS = open-axiom$(EXEEXT)
 
-open_axiom_SOURCES = main.cc utils.cc
+open_axiom_SOURCES = main.cc
 
 open_axiom_objects = $(open_axiom_SOURCES:.cc=.lo)
 
-open_axiom_LDADD = -L$(builddir)/../lib $(oa_c_libs)
+open_axiom_LDADD = \
+	-L$(axiom_target_libdir)/ \
+	-L$(builddir)/../lib \
+	-lOpenAxiom $(oa_c_libs)
 
 VPATH += $(top_srcdir)/src/include
 
@@ -59,7 +62,6 @@ stamp: $(bin_PROGRAMS)
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(axiom_includes) $<
 
-utils.lo: open-axiom.h
 main.lo: open-axiom.h
 
 open-axiom$(EXEEXT): $(open_axiom_objects)
