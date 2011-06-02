@@ -33,6 +33,7 @@
 #include <QScrollBar>
 #include "debate.h"
 #include <iostream>
+#include "open-axiom.h"
 
 namespace OpenAxiom {
 

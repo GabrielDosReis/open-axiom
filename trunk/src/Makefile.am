@@ -76,7 +76,7 @@ stamp-subdirs:
 
 .PHONY: $(oa_all_targets)
 
-all-driver: all-lib
+all-driver: all-utils all-lib
 	cd driver && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-utils: stamp-subdirs
