@@ -207,14 +207,17 @@ OPENAXIOM_PROG_LISP
 OPENAXIOM_LISP_FLAVOR
 OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
+## Are we using compilers from GNU?
 oa_gnu_compiler=no
 AC_PROG_CC
 AC_PROG_CXX
+if test x$GCC = xyes || test x$GXX = xyes; then
+  oa_gnu_compiler=yes
+fi
 ## Augment C and C++ compiler flags with ABI directives as appropriate
 ## before we proceed to infer other host datatype properties.
 if test -n "$openaxiom_host_lisp_precision"; then
-   if test x$GCC = xyes || test x$GXX = xyes; then
-     oa_gnu_compiler=yes
+   if test x$oa_gnu_compiler = xyes; then
      CPPFLAGS="$CPPFLAGS -m$openaxiom_host_lisp_precision"
      LDFLAGS="$LDFLAGS -m$openaxiom_host_lisp_precision"
    ## else, cross fingers and pray.
