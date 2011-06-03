@@ -172,6 +172,9 @@
 /* mmap anonymous flag */
 #undef OPENAXIOM_MM_ANONYMOUS_MAP_FLAG
 
+/* Whether to use the QT-based GUI interface as driver. */
+#undef OPENAXIOM_USE_GUI
+
 /* Whether to use the session manager as driver. */
 #undef OPENAXIOM_USE_SMAN
 

@@ -20702,6 +20702,11 @@ $as_echo "$as_me: WARNING: This version of Qt is too old for OpenAxiom." >&2;}
   esac
 fi
 
+cat >>confdefs.h <<_ACEOF
+#define OPENAXIOM_USE_GUI `expr x$oa_has_qt = xyes`
+_ACEOF
+
+
 
 openaxiom_host_has_regex=
 ac_fn_cxx_check_header_mongrel "$LINENO" "regex.h" "ac_cv_header_regex_h" "$ac_includes_default"
