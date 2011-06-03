@@ -924,6 +924,8 @@ if test -n "$OA_QT_MOC"; then
        ;;
   esac
 fi
+AC_DEFINE_UNQUOTED([OPENAXIOM_USE_GUI], [`expr x$oa_has_qt = xyes`],
+                   [Whether to use the QT-based GUI interface as driver.])
 ])
 
 dnl -------------------------------------
