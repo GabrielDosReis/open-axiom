@@ -20,6 +20,8 @@ VPATH += @srcdir@
 ## Our headers
 HEADERS += conversation.h main-window.h debate.h
 INCLUDEPATH +=  @srcdir@
+INCLUDEPATH += @top_srcdir@/src/include
+INCLUDEPATH += @top_builddir@/config
 DEPENDPATH += @srcdir@
 
 ## Source files
