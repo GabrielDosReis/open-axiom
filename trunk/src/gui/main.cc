@@ -32,11 +32,20 @@
 #include <QApplication>
 #include "main-window.h"
 
+
 int
 main(int argc, char* argv[]) {
    using namespace OpenAxiom;
+   Command command;
+   // The toplevel driver may be have called us with the
+   // path to the gui interface (argv[0]) and the full name
+   // of the toplevel driver itself (argv[1].)  Skip.
+   preprocess_arguments(&command, argc - 1, argv + 1);
    QApplication app(argc, argv);
-   MainWindow main_win;
+   QApplication::setApplicationName("OpenAxiom");
+   QApplication::setOrganizationDomain("www.open-axiom.org");
+   MainWindow main_win(command);
+   main_win.setWindowTitle("OpenAxiom");
    main_win.show();
    return app.exec();
 }

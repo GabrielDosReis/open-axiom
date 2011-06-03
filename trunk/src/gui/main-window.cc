@@ -55,9 +55,9 @@ namespace OpenAxiom {
       w->resize(w->size() + diff);
    }
 
-   MainWindow::MainWindow() : tabs(this) {
+  MainWindow::MainWindow(Command& cmd) : tabs(this) {
       setCentralWidget(&tabs);
-      Debate* debate = new Debate(&tabs);
+      Debate* debate = new Debate(&tabs, cmd);
       tabs.addTab(debate, "Main Frame");
       QMenu* file = menuBar()->addMenu(tr("&File"));
       QAction* action = new QAction(tr("Quit"), this);

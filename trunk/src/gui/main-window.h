@@ -34,13 +34,14 @@
 
 #include <QMainWindow>
 #include <QTabWidget>
+#include "open-axiom.h"
 
 namespace OpenAxiom {
    // -- Main application window --
    class MainWindow : public QMainWindow {
       Q_OBJECT;
    public:
-      MainWindow();
+     MainWindow(Command&);
       ~MainWindow();
 
    private:
