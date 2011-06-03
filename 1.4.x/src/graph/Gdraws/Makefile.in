@@ -1,0 +1,105 @@
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+
+IN=	$(axiom_src_srcdir)/graph/Gdraws
+OUT=	$(axiom_target_libdir)
+PS=	$(axiom_target_libdir)/graph
+DOC=    $(axiom_target_docdir)/src/graph
+
+# local include files shared by graphics
+LINC=	$(axiom_src_srcdir)/graph/include
+
+# global include files shared by everyone
+GINC=	$(axiom_src_srcdir)/include
+
+# include files in Hyperdoc
+HINC=	$(axiom_src_srcdir)/hyper
+
+# bitmaps for cursors
+BIT=	$(axiom_src_srcdir)/graph/include/bitmaps
+
+# a .h file stuck in a really wierd place
+DOTH=	$(axiom_src_srcdir)/graph/viewman
+
+# a .c file in the library subdirectory
+DOTC=	$(axiom_src_srcdir)/lib
+
+AXIOM_CFLAGS = ${CXXFLAGS)} -I${LINC} -I${GINC} -I$(srcdir) -I${HINC} \
+		$(axiom_includes) ${AXIOM_X11_CFLAGS}
+
+
+subdir = src/graph/Gdraws/
+
+pamphlets = psFiles.pamphlet
+
+HEADERS = ${IN}/Gdraws0.h ${LINC}/G.h     ${LINC}/Gfun.H1    \
+          ${GINC}/hash.h  $(axiom_c_macros_h)
+
+PSFiles= ${PS}/colorpoly.ps ${PS}/colorwol.ps  ${PS}/draw.ps      \
+         ${PS}/drawIstr.ps  ${PS}/drawarc.ps   ${PS}/drawcolor.ps \
+         ${PS}/drawline.ps  ${PS}/drawlines.ps ${PS}/drawpoint.ps \
+         ${PS}/drawrect.ps  ${PS}/drawstr.ps   ${PS}/drwfilled.ps \
+         ${PS}/end.ps       ${PS}/fillarc.ps   ${PS}/fillpoly.ps  \
+         ${PS}/fillwol.ps   ${PS}/header.ps    ${PS}/setup.ps
+
+.SUFFIXES:
+.SUFFIXES: .c .lo .h .ps
+
+.PHONY: all all-ax all-Gdraws
+all: all-ax
+all-ax all-Gdraws: stamp
+	@ echo finished making $(axiom_src_srcdir)/Gdraws
+
+.PHONY: PSfiles.post
+stamp:  Gfun.$(OBJEXT) $(PSfiles)
+	@rm -f stamp
+	$(STAMP) stamp
+
+$(PS)/%.ps: $(srcdir)/psFiles.pamphlet
+	$(axiom_build_document) --tangle=$* --output=$@ $<
+
+Gfun.$(OBJEXT): ${HEADERS}
+
+Gfun.$(OBJEXT): $(builddir)/Gfun.c 
+	${CXXCOMPILE} -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+
+
+mostlyclean-local:
+	@rm -f Gfun.$(OBJEXT)
+
+clean-local: mostlyclean-local
+	@rm -f $(PSFiles)
+
+distclean-local: clean-local
+

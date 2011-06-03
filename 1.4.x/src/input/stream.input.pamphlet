@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input STREAM.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from StreamXmpPage
+)clear all
+
+ints := [i for i in 0..]
+f : List INT -> List INT
+f x == [x.1 + x.2, x.1]
+fibs := [i.2 for i in [generate(f,[1,1])]]
+[i for i in ints | odd? i]
+odds := [2*i+1 for i in ints]
+scan(0,+,odds)
+[i*j for i in ints for j in odds]
+map(*,ints,odds)
+first ints
+rest ints
+fibs 20
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

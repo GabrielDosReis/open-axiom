@@ -1,0 +1,87 @@
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+# local include files shared by graphics
+LINC=	$(axiom_src_srcdir)/graph/include
+
+# global include files shared by everyone
+GINC=	$(axiom_src_srcdir)/include
+
+build_libdir = $(top_builddir)/src/lib
+
+bin_PROGRAMS = viewAlone$(EXEEXT)
+
+viewAlone_SOURCES = viewAlone.c spoonComp.c spoon2D.c
+
+viewAlone_objects = $(viewAlone_SOURCES:.c=.lo)
+
+viewAlone_LDADD = -L$(build_libdir) -lspad $(AXIOM_X11_LDFLAGS) $(oa_c_libs)
+viewAlone_DEPENDENCIES =
+
+subdir = src/graph/viewAlone/
+
+AXIOM_CFLAGS = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I$(srcdir) -I${LINC} -I${GINC} \
+			$(axiom_includes)
+
+HEADERS= $(srcdir)/viewAlone.h     ${LINC}/component.h ${LINC}/view2D.h  \
+         ${LINC}/view3D.h      ${LINC}/tube.h      ${LINC}/actions.h \
+         ${LINC}/viewCommand.h 
+
+.PHONY: all all-ax all-viewAlone
+all: all-ax
+
+all-ax all-viewAlone: stamp
+	@echo finished $(builddir)
+
+stamp: $(axiom_target_bindir)/viewAlone$(EXEEXT)
+	@rm -f stamp
+	$(STAMP) stamp
+
+$(axiom_target_bindir)/viewAlone$(EXEEXT): $(viewAlone_objects) \
+		 $(viewAlone_DEPENDENCIES)
+	$(CXXLINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
+
+.PRECIOUS: %.lo
+
+%.lo: $(HEADERS)
+
+%.lo: %.c $(axiom_c_macros_h)
+	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+
+mostlyclean-local:
+
+clean-local: mostlyclean-local
+	@rm -f $(viewAlone_objects)
+	@rm -f $(axiom_target_bindir)/viewAlone$(EXEEXT)
+
+distclean-local: clean-local
+

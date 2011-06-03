@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input SET.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from SetXmpPage
+)clear all
+
+s := set [x**2-1, y**2-1, z**2-1]
+t := set [x**i - i+1 for i in 2..10 | prime? i]
+i := intersect(s,t)
+u := union(s,t)
+difference(s,t)
+symmetricDifference(s,t)
+member?(y, s)
+member?((y+1)*(y-1), s)
+subset?(i, s)
+subset?(u, s)
+gs := set [g for i in 1..11 | primitive?(g := i::PF 11)]
+complement gs
+a := set [i**2 for i in 1..5]
+insert!(32, a)
+remove!(25, a)
+a
+b := b0 := set [i**2 for i in 1..5]
+b := union(b, {32})
+b := difference(b, {25})
+b0
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

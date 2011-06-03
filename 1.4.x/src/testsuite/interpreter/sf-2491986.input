@@ -1,0 +1,4 @@
+-- Contributed by Grégory Vanuxem.
+a := 1/7
+)display value a
+
