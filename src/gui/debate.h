@@ -36,6 +36,7 @@
 #include <QFontMetrics>
 #include <QScrollArea>
 #include <QResizeEvent>
+#include "open-axiom.h"
 #include "conversation.h"
 
 namespace OpenAxiom {
@@ -43,7 +44,7 @@ namespace OpenAxiom {
    class Debate : public QScrollArea {
       Q_OBJECT;
    public:
-      explicit Debate(QWidget*);
+     explicit Debate(QWidget*, Command&);
       ~Debate();
 
       Conversation* exchanges() { return &conv; }

@@ -32,23 +32,23 @@
 #include <QApplication>
 #include <QScrollBar>
 #include "debate.h"
-#include <iostream>
-#include "open-axiom.h"
 
 namespace OpenAxiom {
 
    static void
-   start_interpreter(Conversation* conv) {
+   start_interpreter(Conversation* conv, Command& cmd) {
       QStringList args;
-      args << "--no-server" << "--role=server";
-      conv->oracle()->start("open-axiom",args);
+      args << "--" << "--role=server";
+      for (int i = 0; i < cmd.rt_args.size(); ++i)
+	args << cmd.rt_args[i];
+      conv->oracle()->start(make_path_for(cmd.root_dir, core_driver), args);
       // When invoked in a --role=server mode, OpenAxiom would
       // wait to be pinged before displayed a prompt.  This is
       // an unfortunate result of a rather awkward hack.
       conv->submit_query("");
    }
 
-   Debate::Debate(QWidget* parent)
+  Debate::Debate(QWidget* parent, Command& cmd)
          : QScrollArea(parent), conv(*this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
@@ -57,7 +57,7 @@ namespace OpenAxiom {
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
       adjustSize();
-      start_interpreter(exchanges());
+      start_interpreter(exchanges(), cmd);
       connect(conv.oracle(),
               SIGNAL(finished(int,QProcess::ExitStatus)),
               this, SLOT(done(int)));

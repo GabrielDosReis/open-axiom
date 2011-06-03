@@ -3,7 +3,7 @@
 ## Written by Gabriel Dos Reis.
 
 OA_INC =
-OA_LIB =
+OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
 
 ## We build in release mode.
 CONFIG += release
@@ -12,7 +12,8 @@ CONFIG += release
 TEMPLATE = app
 
 ## Put the executable directly in the staged bin directory.
-TARGET = @top_builddir@/@target@/bin/gui
+DESTDIR = @top_builddir@/@target@/bin
+TARGET = gui
 
 ## Tell QT that sources are not in the build directory
 VPATH += @srcdir@
