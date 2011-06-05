@@ -249,13 +249,15 @@ build_rts_options(Command* command, Driver driver)
    }
 }
 
-#if OPENAXIOM_USE_SMAN
-#  define OPENAXIOM_DEFAULT_DRIVER sman_driver
-#elif OPENAXIOM_USE_GUI
-#  define OPENAXIOM_DEFAULT_DRIVER gui_driver   
-#else
-#  define OPENAXIOM_DEFAULT_DRIVER core_driver
-#endif
+// Return a description of the driver to invokve by default.
+static Driver default_driver(bool explicit_no_gui) {
+   if (OPENAXIOM_USE_SMAN)
+      return sman_driver;
+   else if (OPENAXIOM_USE_GUI and not explicit_no_gui)
+      return gui_driver;
+   else
+      return core_driver;
+}
 
 
 static void print_line(const char* line) {
@@ -338,6 +340,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
    int other = 1;
    int files = 0;
    Driver driver = unknown_driver;
+   bool explicit_no_gui = false; // True if --no-gui explicitly specified.
 
    command->root_dir = get_systemdir(argc, argv);
    for (i = 1; i < argc; ++i)
@@ -370,9 +373,13 @@ preprocess_arguments(Command* command, int argc, char** argv)
          if (const Driver d = option_driver(argv[i]))
             driver = d;
          else {
-            if (argv[i][0] == '-')
-               /* Maybe option for the driver.  */
-               ;
+            /* Maybe option for the driver.  */
+	    if (argv[i][0] == '-') {
+               // this is awkward to handle here since it supposed
+               // to go to Superman.  FIXME when sman is gone.
+               if (strcmp(argv[i], "--no-gui") == 0)
+                  explicit_no_gui = true;
+	    }
             else if (strlen(argv[i]) > 0)
                /* Assume a file.  */
                ++files;
@@ -416,7 +423,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
             break;
          }
       else if (driver == unknown_driver)
-         driver = OPENAXIOM_DEFAULT_DRIVER;
+         driver = default_driver(explicit_no_gui);
       command->core.argv[command->core.argc] = NULL;
       
       build_rts_options(command, driver);
