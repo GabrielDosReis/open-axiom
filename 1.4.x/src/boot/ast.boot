@@ -176,7 +176,6 @@ bfDo x ==
 
 bfAtScope(s,x) ==
   ["LET",[["*PACKAGE*",s]],x]
-TRACE bfAtScope  
 
 bfAppend: %List %List %Form -> %List %Form
 bfAppend ls ==

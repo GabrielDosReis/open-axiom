@@ -1,3 +1,8 @@
+2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Remove debugging statement.
+	* driver/Makefile.in (open-axiom$(EXEEXT)): Link statically.
+
 2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (displayTextFile): New.
