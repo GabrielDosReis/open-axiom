@@ -1,3 +1,9 @@
+2011-06-05  Gabriel Dos Reis  <gdr@ce.tamu.edu>
+
+	* utils/command.cc (default_driver): New.
+	(preprocess_arguments): Use it.  Honor --no-gui on Windows.
+	(OPENAXIOM_DEFAULT_DRIVER): Remove.
+
 2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/main.cc (upgrade_environment): Augment PATH for Windows
