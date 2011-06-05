@@ -1,7 +1,12 @@
 2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* boot/ast.boot: Remove debugging statement.
+	* driver/main.cc (upgrade_environment): Augment PATH for Windows
+	DLL search.
+
+2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* driver/Makefile.in (open-axiom$(EXEEXT)): Link statically.
+	* boot/ast.boot: Remove debugging statement.
 
 2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
