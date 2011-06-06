@@ -145,6 +145,7 @@
 	   "%basicSystemIsComplete"
 	   "%algebraSystemIsComplete"
 	   "%nothing"
+	   "%escapeSequenceAverseHost?"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
@@ -350,8 +351,7 @@
 	   (defconstant |$EnableLispProfiling| @oa_enable_profiling@))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-	   (when |$EnableLispProfiling|
-	     (progn #+sbcl (require :sb-sprof))))
+	   (progn #+sbcl (require :sb-sprof)))
 
 ;; Return true if the full OpenAxiom algebra system is completed
 ;; built.
@@ -420,6 +420,13 @@
 (defconstant |$NativeModuleExt|
   (cond (|$useDynamicLink| "@SHREXT@")
 	(t ".@LIBEXT@")))
+
+;; Return true if the host is escape sequence averse.  This is notably
+;; true on windows-based builds (win32 or win64)
+(defun |%escapeSequenceAverseHost?| ()
+  (or (member :win32 *features*)
+      (member :windows *features*)))
+
 
 (defconstant |$EditorProgram| "@oa_editor@")
 
