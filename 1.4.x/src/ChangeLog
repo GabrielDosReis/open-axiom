@@ -1,3 +1,7 @@
+2011-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/view3D/header.h (swap): Remove.
+
 2011-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (%escapeSequenceAverseHost?): New.

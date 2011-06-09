@@ -53,8 +53,6 @@
 #include "override.h"
 #include "G.h"      /* Gdraw functions header file */
 
-#define swap(a,b) {a^=b; b^=a; a^=b;}
-
                       /**********************************/
                       /***         axes stuff         ***/
                       /**********************************/
