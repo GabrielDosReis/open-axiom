@@ -2,10 +2,11 @@
 === TODO ===
 ============
 
+* Retargetto Poly/ML abstract machine.
+* Add exception handling in the interpreter.
 * Fix parse tree transformation (e.g. typed definitions.)
 * Cleanup commuting coercion facility.
 * Improve efficiency of array operations.
-* Rework subsumption.
 * Finish network communication support.
 * Finish Bemol backend.
 * Finish JVM backend.
@@ -18,7 +19,6 @@
   application (or as a Firefox extension)
 * Make highlighting more configurable
 * Build domains for theorem proving and proof checking facilities.
-* Better support on Windows platform (MinGW/MSYS)
 * Modernize algebras
 * Better documentations
 * Interfaces to mainstream programming languages
@@ -26,35 +26,29 @@
 * Integrate to development environments
 * Move rule semantics transformation from the ParseForm -> SExpression
   transformer to the interpreter.
-
 * Audit all codes that manipulate sockets.
-
-* Automate the process of "optimized" OpenAxiom: this requires a two-pass
-  build; once to gather type information, a second time to use the
-  information.  
-
 * Find a better of structuring for PLF, CCF, LDF, LISP.
-
 * Have OpenAxiom configure pass options specified on the
   invokation line down to GCL.
-
 * Properly document the new build in a very intelligible way
-
-* Document src/scripts/document.in
-
 * Improve Boot documentation
-
-* Reduce the number of bar Lisp codes to the minimum residual.
-
 * Audit cleanup rules
-
 * Audit file copying.
-
 * Document the installation structure.
 
 ============
 === DONE ===
 ============
+
+* Add exception handling in library.
+
+* Automate the process of "optimized" OpenAxiom.
+
+* Better support on Windows platform (MinGW/MSYS)
+
+* Reduce the number of bar Lisp codes to the minimum residual.
+
+* Rework subsumption: subsumption is almost inexistent.
 
 * Remove dependency on noweb.
 
@@ -62,6 +56,9 @@
 
 * Find better documentation tools and formats that do not get in
   the way of building the system on more platforms.
+
+* Document src/scripts/document.in.  Remove and replaced by a C++
+  program (src/hammer.cc)
 
 * FFI support for Spad
 
