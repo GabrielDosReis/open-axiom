@@ -4,7 +4,7 @@
 \beginscroll
 \beginmenu
     \menudownlink{Online information}{onlineInformation}
-    \menudownlink{Januray 2009}{jan2009}
+    \menudownlink{June 2011}{jun2011}
 \endmenu
 \endscroll
 \autobuttons
@@ -21,10 +21,17 @@
 \end{page}
 
 % =====================================================================
+\begin{page}{jun2011}{OpenAxiom 1.4.0 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.4.0 was released on June 13, 2011.  It is the major
+release of \Language{} system, in the 1.4.x series.
+
+% =====================================================================
 \begin{page}{jan2009}{OpenAxiom 1.2.1 release}
 % =====================================================================
 \beginscroll
-OpenAxiom-1.2.1 was released on Januray 29, 2009.  This is a bug
+OpenAxiom-1.2.1 was released on January 29, 2009.  This is a bug
 fix release of the \Language{} system, in the 1.2.x series.
 
 This release includes the full complement of algebra, the graphics

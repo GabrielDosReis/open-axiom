@@ -8,6 +8,8 @@
 %------------------------------------------------------------------------
 %\downlink{\inputbitmap{\htbmdir{}/axiom.xbm}}{RootPage1}
 \beginscroll
+Copyright 2007, 2008, 2009, 2010, 2011 by Gabriel Dos Reis.
+
 Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997 by
 the Numerical Algorithms Group Limited, which is also the proprietor of the
 trademarks AXIOM and the AXIOM logo and of the registered
@@ -17,6 +19,7 @@ Business Machines Corporation, Yorktown Heights, New York, USA.
 \centerline{\inputbitmap{\htbmdir{}/naglogo.bitmap}}
 Incorporating ANNA : the AXIOM/NAG Numerical Analyst Expert System
 \centerline{\inputbitmap{\htbmdir{}/anna_logo.xbm}}
+
 \endscroll
 \end{page}
 

@@ -14,6 +14,7 @@
 
 \newcommand{\Browse}{Browse}
 \newcommand{\Language}{OpenAxiom}
+\newcommand{\System}{OpenAxiom}
 \newcommand{\SpadName}{\Language}
 \newcommand{\LangName}{\Language}
 \newcommand{\HyperName}{HyperDoc}
