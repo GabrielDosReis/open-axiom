@@ -1,3 +1,9 @@
+2011-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Remove --enable-locbfd from
+	oa_gcl_bfd_option.
+	(oa_gcl_emacs): Remove.
+
 2011-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* TODO: Update.

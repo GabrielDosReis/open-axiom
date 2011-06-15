@@ -264,7 +264,7 @@ if test x"$oa_include_gcl" = xyes; then
 	&& test x"$oa_host_has_libbfd" = xyes; then
 	oa_gcl_bfd_option="--disable-dynsysbfd"
     else
-	oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+	oa_gcl_bfd_option="--disable-statsysbfd"
     fi
 fi
 
@@ -279,13 +279,7 @@ esac
 ## We don't need GCL to build support for X Window system or TCL/TK:
 oa_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl --disable-tcltk"
 
-## Under some unusual circumstances, GLC's configure will
-## fail to properly detect usable Emacs directories, and the
-## build will mysteriously fail later.  We temporarily work
-## around that bug as follows:
-oa_gcl_emacs="--enable-emacs=correct"
-
-GCLOPTS="$oa_gcl_emacs $oa_gcl_bfd_option $oa_gcl_mm_option $oa_gcl_x_option"
+GCLOPTS="$oa_gcl_bfd_option $oa_gcl_mm_option $oa_gcl_x_option"
 AC_SUBST(GCLOPTS)
 ])
 
