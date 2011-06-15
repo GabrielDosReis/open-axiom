@@ -1,5 +1,10 @@
 2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/fnct_key.c (handle_function_key): Explicitly cast the
+	null pointer sentinel to a pointer type.
+
+2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sman/sman.c: utils.h no longer exists.
 	* sman/Makefile.in (sman_LDADD): Include OpenAxiom library.
 
