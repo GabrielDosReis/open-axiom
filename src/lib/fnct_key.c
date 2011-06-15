@@ -313,7 +313,7 @@ handle_function_key(int key,int  chann)
           case 0:
             execlp((function_key[12]).str,
                    (function_key[12]).str,
-                   editorfilename, NULL);
+                   editorfilename, (char*) NULL);
             perror("Returned from exec");
             exit(0);
 
