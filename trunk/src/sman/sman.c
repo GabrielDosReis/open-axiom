@@ -55,7 +55,6 @@
 #include "sockio.h"
 #include "openpty.h"
 #include "cfuns.h"
-#include "utils.h"
 
 using namespace OpenAxiom;
 

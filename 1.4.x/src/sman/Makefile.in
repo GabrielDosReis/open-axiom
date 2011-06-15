@@ -61,7 +61,9 @@ spadclient_DEPENDENCIES =
 
 sman_SOURCES = sman.c
 sman_objects = $(sman_SOURCES:.c=.lo)
-sman_LDADD = -L$(build_libdir) $(libspad_la) $(oa_c_libs)
+sman_LDADD = \
+	-L$(axiom_target_libdir)/ -lOpenAxiom \
+	-L$(build_libdir) $(libspad_la) $(oa_c_libs)
 sman_DEPENDENCIES =
 
 
@@ -83,8 +85,7 @@ stamp:	$(OUTLIB)/session$(EXEEXT) \
 .PRECIOUS: %.lo %.obj
 
 %.lo: %.c 
-	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(axiom_includes) -I$(srcdir) \
-		-I$(top_srcdir)/src/driver $<
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(axiom_includes) -I$(srcdir) $<
 
 ${OUTLIB}/session$(EXEEXT): $(session_objects) $(session_DEPENDENCIES)
 	$(CXXLINK) -o $@ $(session_objects) $(session_LDADD)
