@@ -24,8 +24,18 @@
 \begin{page}{jun2011}{OpenAxiom 1.4.0 release}
 % =====================================================================
 \beginscroll
-OpenAxiom-1.4.0 was released on June 13, 2011.  It is the major
-release of \Language{} system, in the 1.4.x series.
+OpenAxiom-1.4.0 was released on June 15, 2011.  It is the major
+release of \Language{} system, in the 1.4.x series. 
+
+This release includes several improvements to the algebra, compiler,
+and interpreter, as well as several new categories, domains, and packages.
+
+% =====================================================================
+\begin{page}{aug2009}{OpenAxiom 1.3.0 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.3.0 was released on August 05, 2009.  It is the major
+release of \Language{} system.
 
 % =====================================================================
 \begin{page}{jan2009}{OpenAxiom 1.2.1 release}
