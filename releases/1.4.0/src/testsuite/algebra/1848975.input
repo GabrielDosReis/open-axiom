@@ -1,0 +1,3 @@
+++ Cotnributed by Luke Wagner
+-- Issue: `Built in' domains should be coercible to OutputForm
+s : List Record(a:INT, b:FLOAT) := []

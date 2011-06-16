@@ -1,0 +1,904 @@
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- All rights reserved.
+--
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are
+-- met:
+--
+--     - Redistributions of source code must retain the above copyright
+--       notice, this list of conditions and the following disclaimer.
+--
+--     - Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in
+--       the documentation and/or other materials provided with the
+--       distribution.
+--
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--       names of its contributors may be used to endorse or promote products
+--       derived from this software without specific prior written permission.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+-- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+-- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+-- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+import ggreater
+import macros
+import sys_-utility
+namespace BOOT
+
+module g_-util where
+  getTypeOfSyntax: %Form -> %Mode
+  pairList: (%List %Form,%List %Form) -> %List %Pair(%Form,%Form)
+  mkList: %List %Form -> %Form
+  isSubDomain: (%Mode,%Mode) -> %Form
+  usedSymbol?: (%Symbol,%Code) -> %Boolean
+  isDefaultPackageName: %Symbol -> %Boolean
+  makeDefaultPackageName: %String -> %Symbol
+
+--%  
+
+$AbstractionOperator ==
+  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA)
+
+++ Return true if the symbol 's' is used in the form 'x'.  
+usedSymbol?(s,x) ==
+  symbol? x => s = x
+  atom x => false
+  x is ['QUOTE,:.] => false
+  x is [op,parms,:body] and abstractionOperator? op =>
+    symbolMember?(s,parms) => false
+    usedSymbol?(s,body)
+  or/[usedSymbol?(s,x') for x' in x]
+  
+
+++ Return the character designated by the string `s'.
+stringToChar: %String -> %Char
+stringToChar s ==
+  #s = 1 => char s
+  s = '"\a" => $Bell
+  s = '"\n" => $Newline
+  s = '"\f" => $FormFeed
+  s = '"\r" => $CarriageReturn
+  s = '"\b" => $Backspace
+  s = '"\t" => $HorizontalTab
+  s = '"\v" => $VerticalTab
+  error strconc('"invalid character designator: ", s)
+  
+++
+$interpOnly := false
+
+--% Utility Functions of General Use
+
+mkCacheName(name) ==
+  makeSymbol strconc(symbolName name,'";AL")
+
+mkAuxiliaryName(name) ==
+  makeSymbol strconc(symbolName name,'";AUX")
+
+
+homogeneousListToVector(t,l) ==
+  makeSimpleArrayFromList(t,l)
+
+
+++ tests if x is an identifier beginning with #
+isSharpVar x ==
+  IDENTP x and stringChar(symbolName x,0) = char "#"
+ 
+isSharpVarWithNum x ==
+  not isSharpVar x => nil
+  p := symbolName x
+  (n := #p) < 2 => nil
+  ok := true
+  c := 0
+  for i in 1..(n-1) while ok repeat
+    d := stringChar(p,i)
+    ok := digit? d => c := 10*c + DIG2FIX d
+  if ok then c else nil
+
+--% Sub-domains information handlers
+
+++ If `dom' is a subdomain, return its immediate super-domain.  
+superType: %Mode -> %Maybe %Mode
+superType dom ==
+  dom = "$" => superType $functorForm
+  dom isnt [ctor,:args] => nil
+  [super,.] := getSuperDomainFromDB ctor or return nil
+  sublisFormal(args,super,$AtVariables)
+
+++ If the domain designated by the domain form `dom' is a subdomain,
+++ then return its defining predicate.  Otherwise, return nil.
+domainVMPredicate dom ==
+  dom = "$" => domainVMPredicate $functorForm
+  dom isnt [ctor,:args] => false
+  [.,pred] := getSuperDomainFromDB ctor or return nil
+  sublisFormal(args,pred,$AtVariables)
+
+++ Return the root of the reflexive transitive closure of
+++ the super-domain chain for the domain designated by the domain 
+++ form `d'.
+maximalSuperType: %Mode -> %Mode
+maximalSuperType d ==
+  d' := superType d => maximalSuperType d'
+  d
+
+++ Note that the functor `sub' instantiates to domains that
+++ are subdomains of `super' instances restricted by the 
+++ predicate `pred'.
+noteSubDomainInfo: (%Symbol,%Instantiation,%Form) -> %Thing
+noteSubDomainInfo(sub,super,pred) ==
+  SETDATABASE(sub,"SUPERDOMAIN",[super,pred])
+
+++ Returns non-nil if `d1' is a sub-domain of `d2'.  This is the
+++ case when `d1' is transitively given by an instance of SubDomain
+++    d1 == SubDomain(d2,pred)
+++ The transitive closure of the predicate form is returned, where 
+++ the predicate parameter is `#1'.
+isSubDomain(d1,d2) ==
+  atom d1 or atom d2 => false
+
+  -- 1.  Easy, if by syntax constructs.
+  d1 is ["SubDomain",=d2,pred] => pred
+
+  -- 2.  Just say no, if there is no hope.
+  [sup,pred] := getSuperDomainFromDB first d1 or return false
+
+  -- 3.  We may be onto something.
+  -- `sup' and `pred' are in most general form.  We cannot just
+  -- test for the functors, as different arguments may instantiate
+  -- to super-domains.  
+  args := rest d1
+  sublisFormal(args,sup,$AtVariables) = d2 => 
+    sublisFormal(args,pred,$AtVariables)
+
+  -- 4.  Otherwise, lookup in the super-domain chain.
+  pred' := isSubDomain(sup,d2) => 
+    MKPF([pred',sublisFormal(args,pred,$AtVariables)],"AND")
+
+  -- 5.  Lot of smoke, no fire.
+  false
+
+--%
+
+mkList u ==
+  u => ['%list,:u]
+  nil
+
+ELEMN(x, n, d) ==
+  null x => d
+  n = 1 => first x
+  ELEMN(rest x, n-1, d)
+
+PPtoFile(x, fname) ==
+    stream := DEFIOSTREAM([['MODE, :'OUTPUT], ['FILE, :fname]], 80, 0)
+    PRETTYPRINT(x, stream)
+    SHUT stream
+    x
+
+ScanOrPairVec(f, ob) ==
+    $seen:     local := hashTable 'EQ
+ 
+    CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
+        ScanOrInner(f, ob) ==
+            tableValue($seen, ob) => nil
+            cons? ob =>
+                tableValue($seen, ob) := true
+                ScanOrInner(f, first ob)
+                ScanOrInner(f, rest ob)
+                nil
+            vector? ob =>
+                tableValue($seen, ob) := true
+                for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
+                nil
+            FUNCALL(f, ob) =>
+                THROW('ScanOrPairVecAnswer, true)
+            nil
+
+
+++ Query properties for an entity in a given environment.
+get: (%Thing,%Symbol,%Env) -> %Thing
+get0: (%Thing,%Symbol,%Env) -> %Thing
+get1: (%Thing,%Symbol,%Env) -> %Thing
+get2: (%Thing,%Symbol) -> %Thing
+
+get(x,prop,e) ==
+  $InteractiveMode => get0(x,prop,e)
+  get1(x,prop,e)
+
+get0(x,prop,e) ==
+  cons? x => get(x.op,prop,e)
+  u:= QLASSQ(x,first first e) => QLASSQ(prop,u)
+  (tail:= rest first e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+    QLASSQ(prop,u)
+  nil
+
+get1(x,prop,e) ==
+    --this is the old get
+  cons? x => get(x.op,prop,e)
+  prop="modemap" and $insideCapsuleFunctionIfTrue =>
+    symbolLassoc("modemap",getProplist(x,$CapsuleModemapFrame))
+      or get2(x,prop)
+  LASSOC(prop,getProplist(x,e)) or get2(x,prop)
+
+get2(x,prop) ==
+  prop="modemap" and IDENTP x and constructor? x =>
+    (u := getConstructorModemapFromDB x) => [u]
+    nil
+  nil
+
+++ Update properties of an entity in an environment.
+put: (%Thing,%Symbol,%Thing,%Env) -> %Env
+addBinding: (%Thing,%List %Thing,%Env) -> %Env
+addBindingInteractive: (%Thing, %List %Thing, %Env) -> %Env
+augProplistOf: (%Thing,%Symbol,%Thing,%Env) -> %List %Thing
+augProplist: (%List %Thing,%Symbol,%Thing) -> %List %Thing
+augProplistInteractive: (%List %Thing,%Symbol,%Thing) -> %List %Thing
+putIntSymTab: (%Thing,%Symbol,%Form,%Env) -> %Env
+addIntSymTabBinding: (%Thing,%List %Thing,%Env) -> %Env
+
+put(x,prop,val,e) ==
+  $InteractiveMode and not sameObject?(e,$CategoryFrame) =>
+    putIntSymTab(x,prop,val,e)
+  --e must never be $CapsuleModemapFrame
+  cons? x => put(first x,prop,val,e)
+  newProplist := augProplistOf(x,prop,val,e)
+  prop="modemap" and $insideCapsuleFunctionIfTrue =>
+    SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
+    $CapsuleModemapFrame:=
+      addBinding(x,augProplistOf(x,"modemap",val,$CapsuleModemapFrame),
+        $CapsuleModemapFrame)
+    e
+  addBinding(x,newProplist,e)
+
+putIntSymTab(x,prop,val,e) ==
+  cons? x => putIntSymTab(first x,prop,val,e)
+  pl0 := pl := search(x,e)
+  pl :=
+    null pl => [[prop,:val]]
+    u := ASSQ(prop,pl) =>
+      u.rest := val
+      pl
+    lp := lastNode pl
+    u := [[prop,:val]]
+    lp.rest := u
+    pl
+  sameObject?(pl0,pl) => e
+  addIntSymTabBinding(x,pl,e)
+
+addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
+  -- change proplist of var in e destructively
+  u := ASSQ(var,curContour) =>
+    u.rest := proplist
+    e
+  first(e).first := [[var,:proplist],:curContour]
+  e
+
+putMacro(lhs,rhs,e) ==
+  atom lhs => put(lhs,"macro",rhs,e)
+  parms := [gensym() for p in lhs.args]
+  put(lhs.op,"macro",
+    ['%mlambda,parms,applySubst(pairList(lhs.args,parms),rhs)],e)
+
+--% Syntax manipulation
+
+++ Build a quasiquotation form for `x'.
+quasiquote x ==
+  ["[||]",x]
+
+++ Extract the quoted form, otherwise return nil
+isQuasiquote m ==
+  m is ["[||]",y] => y
+
+
+++ returns the inferred domain for the syntactic object t.
+getTypeOfSyntax t ==
+  atom t => 
+    IDENTP t => '(Identifier)
+    (m := getBasicMode t) and not member(m,[$EmptyMode,$NoValueMode]) =>
+      ["Literal",m]
+    $Syntax
+  [op,:.] := t
+  op = "Mapping" => '(MappingAst)
+  op = "QUOTE" and #t = 2 and IDENTP second t => ["Literal",$Symbol]
+  op = "IF" => '(IfAst)
+  op = "REPEAT" => '(RepeatAst)
+  op = "WHILE" => '(WhileAst)
+  op = "IN" => '(InAst)
+  op = "COLLECT" => '(CollectAst)
+  op = "construct" => '(ConstructAst)
+  op = "exit" => '(ExitAst)
+  op = "return" => '(ReturnAst)
+  op = "SEGMENT" => '(SegmentAst)
+  op = "SEQ" => '(SequenceAst)
+  op = "pretend" => '(PretendAst)
+  op = "::" => '(CoerceAst)
+  op = "@" => '(RestrictAst)
+  op = "%LET" => '(LetAst)
+  op = "|" => '(SuchThatAst)
+  op = ":" => '(ColonAst)
+  op = ":=" => '(LetAst)
+  op = "%Comma" => '(CommaAst)
+  op = "case" => '(CaseAst)
+  op = "has" => '(HasAst)
+  op = "is" => '(IsAst)
+  op = "DEF" => '(DefinitionAst)
+  op in '(MDEF %Macro) => '(MacroAst)
+  op = "where" => '(WhereAst)
+  op in '(ATTRIBUTE %Attribute) => '(AttributeAst)
+  op = "Join" => '(JoinAst)
+  op = "CAPSULE" => '(CapsuleAst)
+  op in '(%Import import) => '(ImportAst)
+  op in '(%Signature SIGNATURE) => '(SignatureAst)
+  op = "CATEGORY" => '(CategoryAst)
+  op = "where" => '(WhereAst)
+  op = "[||]" => '(QuasiquoteAst)
+  $Syntax
+
+--%
+
+-- Convert an arbitrary lisp object to canonical boolean.
+bool: %Thing -> %Boolean
+bool x ==
+    null null x
+
+++ Return true is the form `x' is a predicate known to always
+++ evaluate to true.
+TruthP x ==
+  x = nil or x = '%false => false
+  x = true or x = '%true => true
+  x is ['QUOTE,:.] => true
+  false
+
+--% Record and Union utils.
+
+stripUnionTags doms ==
+  [if dom is [":",.,dom'] then dom' else dom for dom in doms]
+
+isTaggedUnion u ==
+  u is ['Union,:tl] and tl and first tl is [":",.,.] and true
+
+getUnionOrRecordTags u ==
+  tags := nil
+  if u is ['Union, :tl] or u is ['Record, :tl] then
+      for t in tl repeat
+         if t is [":",tag,.] then tags := [tag, :tags]
+  tags
+
+--% Various lispy things
+
+Identity x == x
+
+length1? l == cons? l and not cons? rest l
+
+length2? l == cons? l and cons? (l := rest l) and not cons? rest l
+
+pairList(u,v) == [[x,:y] for x in u for y in v]
+
+-- GETALIST(alist,prop) == IFCDR assoc(prop,alist)
+GETALIST(alist,prop) == rest assoc(prop,alist)
+
+PUTALIST(alist,prop,val) ==
+  null alist => [[prop,:val]]
+  pair := assoc(prop,alist) =>
+    rest pair = val => alist
+    -- else we fall over Lucid's read-only storage feature again
+    pair.rest := val
+    alist
+  lastNode(alist).rest := [[prop,:val]]
+  alist
+
+REMALIST(alist,prop) ==
+  null alist => alist
+  alist is [[ =prop,:.],:r] =>
+    null r => nil
+    alist.first := first r
+    alist.rest := rest r
+    alist
+  null rest alist => alist
+  l := alist
+  ok := true
+  while ok repeat
+    [.,[p,:.],:r] := l
+    p = prop =>
+      ok := nil
+      l.rest := r
+    if null (l := rest l) or null rest l then ok := nil
+  alist
+
+deleteLassoc(x,y) ==
+  y is [[a,:.],:y'] =>
+    sameObject?(x,a) => y'
+    [first y,:deleteLassoc(x,y')]
+  y
+
+--% association list functions
+
+deleteAssoc(x,y) ==
+  y is [[a,:.],:y'] =>
+   a=x => deleteAssoc(x,y')
+   [first y,:deleteAssoc(x,y')]
+  y
+
+deleteAssocWOC(x,y) ==
+  null y => y
+  [[a,:.],:t]:= y
+  x=a => t
+  (fn(x,y);y) where fn(x,y is [h,:t]) ==
+    t is [[a,:.],:t1] =>
+      x=a => y.rest := t1
+      fn(x,t)
+    nil
+
+insertWOC(x,y) ==
+  null y => [x]
+  (fn(x,y); y) where fn(x,y is [h,:t]) ==
+    x=h => nil
+    null t =>
+      y.rest := [h,:t]
+      y.first := x
+    fn(x,t)
+
+
+
+--% Miscellaneous Functions for Working with Strings
+
+fillerSpaces(n,charPart == char " ") ==
+  n <= 0 => '""
+  makeString(n,charPart)
+
+centerString(text,width,fillchar) ==
+  wid := entryWidth text
+  wid >= width => text
+  f := DIVIDE(width - wid,2)
+  fill1 := ""
+  for i in 1..(f.0) repeat
+    fill1 := strconc(fillchar,fill1)
+  fill2:= fill1
+  if f.1 ~= 0 then fill1 := strconc(fillchar,fill1)
+  [fill1,text,fill2]
+
+stringPrefix?(pref,str) ==
+  -- sees if the first #pref letters of str are pref
+  -- replaces STRINGPREFIXP
+  not (string?(pref) and string?(str)) => nil
+  (lp := # pref) = 0 => true
+  lp > # str => nil
+  ok := true
+  i := 0
+  while ok and (i < lp) repeat
+    stringChar(pref,i) ~= stringChar(str,i) => ok := nil
+    i := i + 1
+  ok
+
+stringChar2Integer(str,pos) ==
+  -- returns small integer represented by character in position pos
+  -- in string str. Returns nil if not a digit or other error.
+  if IDENTP str then str := symbolName str
+  not (string?(str) and
+    integer?(pos) and (pos >= 0) and (pos < #str)) => nil
+  not digit?(d := stringChar(str,pos)) => nil
+  DIG2FIX d
+
+dropLeadingBlanks str ==
+  str := object2String str
+  l := # str
+  nb := nil
+  i := 0
+  while (i < l) and nb = nil repeat
+    if stringChar(str,i) ~= char " " then nb := i
+    else i := i + 1
+  nb = 0 => str
+  nb => subString(str,nb)
+  '""
+
+concat(:l) == concatList l
+
+concatList [x,:y] ==
+  null y => x
+  null x => concatList y
+  concat1(x,concatList y)
+
+concat1(x,y) ==
+  null x => y
+  atom x => (null y => x; atom y => [x,y]; [x,:y])
+  null y => x
+  atom y => [:x,y]
+  [:x,:y]
+
+--% BOOT ravel and reshape
+
+ravel a == a
+
+reshape(a,b) == a
+
+--% Some functions for algebra code
+
+boolODDP x == ODDP x
+
+--% Miscellaneous
+
+freeOfSharpVars x ==
+  atom x => not isSharpVarWithNum x
+  freeOfSharpVars first x and freeOfSharpVars rest x
+
+listOfSharpVars x ==
+  atom x => (isSharpVarWithNum x => [x]; nil)
+  union(listOfSharpVars first x,listOfSharpVars rest x)
+
+listOfPatternIds x ==
+  isPatternVar x => [x]
+  atom x => nil
+  x is ['QUOTE,:.] => nil
+  UNIONQ(listOfPatternIds first x,listOfPatternIds rest x)
+
+isPatternVar v ==
+  -- a pattern variable consists of a star followed by a star or digit(s)
+  IDENTP(v) and v in '(_*_* _*1 _*2 _*3 _*4 _*5 _*6 _*7 _*8 _*9 _*10
+    _*11 _*12 _*13 _*14 _*15 _*16 _*17 _*18 _*19 _*20) and true
+
+removeZeroOne x ==
+  -- replace all occurrences of (Zero) and (One) with
+  -- 0 and 1
+  x = $Zero => 0
+  x = $One => 1
+  atom x => x
+  [removeZeroOne first x,:removeZeroOne rest x]
+
+removeZeroOneDestructively t ==
+  -- replace all occurrences of (Zero) and (One) with
+  -- 0 and 1 destructively
+  t = $Zero => 0
+  t = $One => 1
+  atom t => t
+  RPLNODE(t,removeZeroOneDestructively first t,
+    removeZeroOneDestructively rest t)
+
+flattenSexpr s ==
+  null s => s
+  atom s => s
+  [f,:r] := s
+  atom f => [f,:flattenSexpr r]
+  [:flattenSexpr f,:flattenSexpr r]
+
+isLowerCaseLetter c ==
+  lowerCase? c
+
+isUpperCaseLetter c ==
+  upperCase? c
+
+isLetter c ==
+  alphabetic? c
+
+--% Inplace Merge Sort for Lists
+-- MBM April/88
+
+-- listSort(pred,list) or listSort(pred,list,key)
+-- the pred function is a boolean valued function defining the ordering
+-- the key function extracts the key from an item for comparison by pred
+
+listSort(pred,list,:optional) ==
+   not functionp pred => error "listSort: first arg must be a function"
+   not LISTP list => error "listSort: second argument must be a list"
+   optional = nil => mergeSort(pred,function Identity,list,# list)
+   key := first optional
+   not functionp key => error "listSort: last arg must be a function"
+   mergeSort(pred,key,list,# list)
+
+-- non-destructive merge sort using NOT GGREATERP as predicate
+MSORT list == listSort(function GLESSEQP, copyList list)
+
+-- destructive merge sort using NOT GGREATERP as predicate
+NMSORT list == listSort(function GLESSEQP, list)
+
+-- non-destructive merge sort using ?ORDER as predicate
+orderList l == listSort(function _?ORDER, copyList l)
+
+-- dummy defn until clean-up
+-- order     l == orderList l
+
+mergeInPlace(f,g,p,q) ==
+   -- merge the two sorted lists p and q
+   if null p then return p
+   if null q then return q
+   if FUNCALL(f,FUNCALL(g, first p),FUNCALL(g, first q))
+   then (r := t := p; p := rest p)
+   else (r := t := q; q := rest q)
+   while not null p and not null q repeat
+      if FUNCALL(f,FUNCALL(g,first p),FUNCALL(g,first q))
+      then (t.rest := p; t := p; p := rest p)
+      else (t.rest := q; t := q; q := rest q)
+   if null p then t.rest := q else t.rest := p
+   r
+
+mergeSort(f,g,p,n) ==
+   if n=2 and FUNCALL(f,FUNCALL(g,second p),FUNCALL(g,first p)) then
+      t := p
+      p := rest p
+      p.rest := t
+      t.rest := nil
+   if n < 3 then return p
+   -- split the list p into p and q of equal length
+   l := n quo 2
+   t := p
+   for i in 1..l-1 repeat t := rest t
+   q := rest t
+   t.rest := nil
+   p := mergeSort(f,g,p,l)
+   q := mergeSort(f,g,q,QSDIFFERENCE(n,l))
+   mergeInPlace(f,g,p,q)
+
+--% Throwing with glorious highlighting (maybe)
+
+spadThrow() ==
+  if $interpOnly and $mapName then
+    putHist($mapName,'localModemap, nil, $e)
+  THROW($SpadReaderTag,nil)
+
+spadThrowBrightly x ==
+  sayBrightly x
+  spadThrow()
+
+sublisNQ(al,e) ==
+  atom al => e
+  fn(al,e) where fn(al,e) ==
+    atom e =>
+      for x in al repeat
+        sameObject?(first x,e) => return (e := rest x)
+      e
+    sameObject?(a := first e,'QUOTE) => e
+    u := fn(al,a)
+    v := fn(al,rest e)
+    sameObject?(a,u) and sameObject?(rest e,v) => e
+    [u,:v]
+
+opOf: %Thing -> %Thing
+opOf x ==
+  cons? x => x.op
+  x
+
+getProplist: (%Thing,%Env) -> %List %Thing
+search: (%Thing,%Env) -> %List %Thing
+searchCurrentEnv: (%Thing,%List %Thing) -> %List %Thing
+searchTailEnv: (%Thing,%Env) -> %List %Thing
+
+getProplist(x,E) ==
+  cons? x => getProplist(first x,E)
+  u:= search(x,E) => u
+  --$InteractiveMode => nil
+  --$InteractiveMode and (u:= search(x,$InteractiveFrame)) => u
+  (pl:=search(x,$CategoryFrame)) =>
+    pl
+--  (pl:=PROPLIST x) => pl
+-- Above line commented out JHD/BMT 2.Aug.90
+
+search(x,e is [curEnv,:tailEnv]) ==
+  searchCurrentEnv(x,curEnv) or searchTailEnv(x,tailEnv)
+
+searchCurrentEnv(x,currentEnv) ==
+  for contour in currentEnv repeat
+    if u:= ASSQ(x,contour) then return (signal:= u)
+  KDR signal
+
+searchTailEnv(x,e) ==
+  for env in e repeat
+    signal:=
+      for contour in env repeat
+        if (u:= ASSQ(x,contour)) and ASSQ("FLUID",u) then return (signal:= u)
+      if signal then return signal
+  KDR signal
+
+augProplist(proplist,prop,val) ==
+  $InteractiveMode => augProplistInteractive(proplist,prop,val)
+  while (proplist is [[ =prop,:.],:proplist']) repeat proplist:= proplist'
+  val=(u:= LASSOC(prop,proplist)) => proplist
+  null val =>
+    null u => proplist
+    DELLASOS(prop,proplist)
+  [[prop,:val],:proplist]
+
+augProplistOf(var,prop,val,e) ==
+  proplist:= getProplist(var,e)
+  semchkProplist(var,proplist,prop,val)
+  augProplist(proplist,prop,val)
+
+semchkProplist(x,proplist,prop,val) ==
+  prop="isLiteral" =>
+    symbolLassoc("value",proplist) or symbolLassoc("mode",proplist) =>
+      warnLiteral x
+  prop in '(mode value) =>
+    symbolLassoc("isLiteral",proplist) => warnLiteral x
+
+addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
+  sameObject?(proplist,getProplist(var,e)) => e
+  $InteractiveMode => addBindingInteractive(var,proplist,e)
+  if curContour is [[ =var,:.],:.] then curContour:= rest curContour
+                 --Previous line should save some space
+  [[[lx,:curContour],:tailContour],:tailEnv] where lx:= [var,:proplist]
+
+addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
+  -- change proplist of var in e destructively
+  u := ASSQ(var,curContour) =>
+    u.rest := proplist
+    e
+  first(e).first := [[var,:proplist],:curContour]
+  e
+
+augProplistInteractive(proplist,prop,val) ==
+  u := ASSQ(prop,proplist) =>
+    u.rest := val
+    proplist
+  [[prop,:val],:proplist]
+
+position(x,l) ==
+  posn(x,l,0) where
+    posn(x,l,n) ==
+      null l => -1
+      x=first l => n
+      posn(x,rest l,n+1)
+
+insert(x,y) ==
+  member(x,y) => y
+  [x,:y]
+
+after(u,v) ==
+  r:= u
+  for x in u for y in v repeat r:= rest r
+  r
+
+
+$blank == char " "
+
+trimString s ==
+  leftTrim rightTrim s
+
+leftTrim s ==
+  k := maxIndex s
+  k < 0 => s
+  stringChar(s,0) = $blank =>
+    for i in 0..k while stringChar(s,i) = $blank repeat (j := i)
+    subString(s,j + 1)
+  s
+
+rightTrim s ==  -- assumed a non-empty string
+  k := maxIndex s
+  k < 0 => s
+  stringChar(s,k) = $blank =>
+    for i in k..0 by -1 while stringChar(s,i) = $blank repeat (j := i)
+    subString(s,0,j)
+  s
+
+pp x ==
+  PRETTYPRINT x
+  x
+
+pr x ==
+  F_,PRINT_-ONE x
+  nil
+
+intern x ==
+  string? x =>
+    digit? stringChar(x,0) => string2Integer x
+    makeSymbol x
+  x
+
+isDomain a ==
+  cons? a and vector? first a and
+    member(first a.0, $domainTypeTokens)
+
+-- variables used by browser
+
+$htHash      := MAKE_-HASH_-TABLE()
+$glossHash   := MAKE_-HASH_-TABLE()
+$lispHash    := MAKE_-HASH_-TABLE()
+$sysHash     := MAKE_-HASH_-TABLE()
+$htSystemCommands := '(
+ (boot . development) clear display (fin . development) edit help
+ frame history load quit read set show synonym system
+ trace what )
+$currentSysList := [opOf x for x in $htSystemCommands] --see ht-root
+$outStream   := nil
+$recheckingFlag    := false     --see transformAndRecheckComments
+$exposeFlag        := false     --if true, messages go to $outStream
+$exposeFlagHeading := false     --see htcheck.boot
+$checkingXmptex? := false       --see htcheck.boot
+$exposeDocHeading:= nil         --see htcheck.boot
+$charPlus == char "+"
+$charBlank == char " "
+$charLbrace == char "{"
+$charRbrace == char "}"
+$charBack == char "\"
+$charDash == char "-"
+
+$charTab            == abstractChar 9
+$charNewline        == abstractChar 10
+$charFauxNewline    == abstractChar 25
+$stringNewline      == charString abstractChar 10
+$stringFauxNewline  == charString abstractChar 25
+
+$charExclusions == [char "a", char "A"]
+$charQuote == char "'"
+$charSemiColon == char ";"
+$charComma     == char ","
+$charPeriod    == char "."
+$checkPrenAlist := [[char "(",:char ")"],[char "{",:char "}"],[char "[",:char "]"]]
+$charEscapeList:= [char "%",char "#",$charBack]
+$charIdentifierEndings := [char "__", char "!", char "?"]
+$charSplitList := [$charComma,$charPeriod,char "[", char "]",$charLbrace, $charRbrace, char "(", char ")", char "$", char "%"]
+$charDelimiters := [$charBlank, char "(", char ")", $charBack]
+$HTspadmacros := '("\spadtype" "\spadcommand" "\spadop" "\spadfun" "\spadatt" "\spadsyscom" "\spad" "\s")
+$HTmacs := [
+  ['"\beginmenu",$charRbrace,'"menu",$charLbrace,'"\begin"],
+   ['"\endmenu",$charRbrace,'"menu",$charLbrace,'"\end"],
+     ['"\beginitems",$charRbrace,'"items",$charLbrace,'"\begin"],
+       ['"\enditems",$charRbrace,'"items",$charLbrace,'"\end"],
+         ['"\beginscroll",$charRbrace,'"scroll",$charLbrace,'"\begin"],
+           ['"\endscroll",$charRbrace,'"scroll",$charLbrace,'"\end"]]
+
+$HTlinks := '(
+  "\downlink"
+  "\menulink"
+  "\menudownlink"
+  "\menuwindowlink"
+  "\menumemolink")
+
+$HTlisplinks := '(
+  "\lispdownlink"
+  "\menulispdownlink"
+  "\menulispwindowlink"
+  "\menulispmemolink"
+  "\lispwindowlink"
+  "\lispmemolink")
+
+$beginEndList := '(
+  "page"
+  "items"
+  "menu"
+  "scroll"
+  "verbatim"
+  "detail")
+
+isDefaultPackageName x ==
+  s := symbolName x
+  stringChar(s,maxIndex s) = char "&"
+
+isDefaultPackageForm? x ==
+  x is [op,:.] and IDENTP op and isDefaultPackageName op
+
+makeDefaultPackageName x ==
+  makeSymbol strconc(x,'"&")
+
+-- gensym utils
+
+charDigitVal c ==
+  digits := '"0123456789"
+  n := -1
+  for i in 0..maxIndex digits while n < 0 repeat
+      if c = stringChar(digits,i) then n := i
+  n < 0 => error '"Character is not a digit"
+  n
+
+gensymInt g ==
+  not GENSYMP g => error '"Need a GENSYM"
+  p := symbolName g
+  n := 0
+  for i in 2..maxIndex p repeat
+    n := 10 * n + charDigitVal stringChar(p,i)
+  n
+
+++ Returns a newly allocated domain shell (a simple vector) of length `n'.
+newShell: %Short -> SIMPLE_-ARRAY
+newShell n ==
+  MAKE_-ARRAY(n,KEYWORD::INITIAL_-ELEMENT,nil)
+
+-- Push into the BOOT package when invoked in batch mode.
+AxiomCore::$sysScope := '"BOOT"

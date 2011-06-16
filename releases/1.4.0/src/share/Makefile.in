@@ -1,0 +1,64 @@
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+subdir = src/share/
+
+FILES = \
+	$(axiom_target_libdir)/command.list \
+	$(axiom_target_texdir)/open-axiom.sty
+
+
+.SUFFIXES:
+.PHONY: all all-share
+all: all-ax
+
+all-ax all-share: stamp
+	@ echo 3 finished $(srcdir)
+
+stamp: ${FILES}
+	-rm -f stamp
+	$(STAMP) stamp
+
+mostlyclean-local:
+	@-rm -f $(FILES)
+	@-rm -f stamp
+
+clean-local: mostlyclean-local
+distclean-local: clean-local
+
+$(axiom_target_libdir)/command.list: $(srcdir)/algebra/command.list
+	cp -p $< $@
+
+$(axiom_target_texdir)/open-axiom.sty: $(axiom_src_texdir)/open-axiom.sty
+	$(mkdir_p) "$(axiom_target_texdir)"
+	cp -p $< $@
+

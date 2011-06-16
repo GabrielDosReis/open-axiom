@@ -1,0 +1,1337 @@
+2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/fnct_key.c (handle_function_key): Explicitly cast the
+	null pointer sentinel to a pointer type.
+
+2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c: utils.h no longer exists.
+	* sman/Makefile.in (sman_LDADD): Include OpenAxiom library.
+
+2011-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* scripts/document.in: Remove.
+
+2011-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/view3D/header.h (swap): Remove.
+
+2011-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (%escapeSequenceAverseHost?): New.
+	* interp/msgdb.boot (brightPrint0): Use it.
+
+2011-06-05  Gabriel Dos Reis  <gdr@ce.tamu.edu>
+
+	* utils/command.cc (default_driver): New.
+	(preprocess_arguments): Use it.  Honor --no-gui on Windows.
+	(OPENAXIOM_DEFAULT_DRIVER): Remove.
+
+2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/main.cc (upgrade_environment): Augment PATH for Windows
+	DLL search.
+
+2011-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/Makefile.in (open-axiom$(EXEEXT)): Link statically.
+	* boot/ast.boot: Remove debugging statement.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (displayTextFile): New.
+	* interp/i-syscmd.boot (summary): Use it.
+	(copyright): Likewise.
+	* algebra/net.spad.pamphlet: Replace closeFile with closeStream.
+	* boot/translator.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (readExpr): New.
+	* interp/as.boot: Replace READLINE with readLine.
+	* interp/br-data.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/compat.boot (READLINE): Remove.
+	* interp/sys-macros.lisp (shoeConsole): Remove.
+	(shoeInputFile): Likewise.
+	(shoeread-line): Likewise.
+	* boot/ast.boot (bfQ): %nothing only needs EQ.
+	* algebra/files.spad.pamphlet (File) [read!, readIfCan!]: Use
+	readExpr instead of VMREAD.  Avoid PLACEP
+	(TextFile) [readLine!, readLineIfCan!]: Likewise.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/intfile.boot: Remove.
+
+2011-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Define and export readLine and readbyte.
+	* interp/sys-utility.boot (readByteFromFile): Remove.
+	* boot/tokens.boot: Don't rename readLine and readByte.
+	* boot/includer.boot (shoeReadLine): Remove.
+	(bRgen1): Adjust.  Use resdLine.
+	* algebra/net.spad.pamphlet (InputBinaryFile): Use readByte from
+	the runtime system.
+
+2011-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (shoeCompTran1): Translate arguments to vector
+	constructor too.
+
+2011-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/modemap.boot (augModemapsFromDomain): Don't add modemaps
+	for element types of Vector or List aggregates.
+	* algebrar/: Adjust algebras that depended on this behaviour.
+
+2011-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compConstructorCategory): Rewrite.
+
+2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet (Aggregate) [more?,less?,size?]:
+	Move to StreamAggregate.
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory):
+	Don't implement them.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+
+2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (bottomUpForm0): Tidy.
+	* interp/i-eval.boot (evalForm): Likewise.
+	* interp/buildom.boot (formalRecordField): New.
+	(eltRecordFun): Use it.
+	(seteltRecordFun): New.
+	* interp/g-opt.boot (optSETRECORDELT): Remove.
+	(optRECORDCOPY): Likewise.
+	* interp/vmlisp.lisp (MAKE-VEC): Likewise.
+
+2011-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (evalForm): Adjust.
+	* interp/buildom.boot (mkRecordFun): New.
+	(eltRecordFun): Likewise.
+	(copyRecordFun): Likewise.
+	(mkRecordFunList): Use them.
+	* interp/g-opt.boot (optMkRecord): Remove.
+	(optRECORDELT): Likewise.
+	* interp/lisp-backend.boot: Translate %vcopy.
+
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (lookupInDomainVector): Establish a new
+	binding for $lookupDefaults.
+
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (mkEnumerationFunList): Include enum
+	constants in the operation list.
+
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (Enumeration): Provide implementation of
+	constants. 
+
+2011-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot: Remove bindings of $GenVarCounter.
+	* boot/parser.boot (bpOutItem): Bind it here.
+
+2011-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (EnumerationCategory): Rewrite.
+	* interp/compiler.boot (compEnumCat): New.  Compile
+	EnumerationCategory forms.
+
+2011-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfAtScope): New.
+	* boot/parser.boot (bpDo): Accept scoped expressions.
+	* boot/translator.boot: Cleanup.
+
+2011-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: "do" is now a keyword.
+	* boot/ast.boot (bfDo): New.
+	* boot/parser.boot (bpDo): New.
+	(bpReturn): Include do-expressions.
+	* interp/vmlisp.lisp (do): Remove.
+
+2011-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (shoeCompTran1): Don't indiscriminately walk CASE
+	forms.  Translate %Namespace forms too.
+	* boot/parser.boot (bpApplication): Include Namespace too.
+
+2011-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpNamedScope): New.
+	(bpApplication): Call it.
+
+2011-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (charPosition): New.
+	* boot/scanner.boot (shoeAccumulateLines): Use it.
+	(shoeS): Likewise.
+
+2011-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (MAKE-HASHTABLE): Remove.
+	(BEVC-MAKE-FULL): Likewise.
+	(MAKE-BVEC): Likewise.
+	* boot/tokens.boot (shoeKeyTableCons): Adjust.
+	(shoePunCons): Likewise.
+	(shoeDfu): Likewise.
+	(shoeXref): Likewise.
+
+2011-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/table.spad.pamphlet (HashTable): Use tableValue instead
+	of HGET. Use tableLength instead of HCOUNT.
+
+2011-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (shoeOpenOutputFile): Remove.  Adjust
+	callers to use outputTextFile.
+
+2011-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (shoeOpenInputFile): Remove.  Adjust
+	callers to use inputTextFile with try/finally.
+
+2011-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (idList?, charList?, stringLits?): New.
+	(bfMember): Use them for special cases.
+	* boot/parser.boot (bpDefinition): Stop support MDEF forms.
+	(bpMdef, bpMDefTail): Remove.
+	* boot/tokens.boot: "==>" is no longer a token.
+
+2011-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (categoryRef, domainRef, canonicalForm)
+	(instantiatorCtor, instantiatorArgs, categoryExports): New.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpDefinition): Accept macro definition
+	starting with the keyword "MACRO".
+	* boot/translator.boot (exportNames): Export them in all
+	evaluation contexts.
+	* interp/c-util.boot: "macro" is now a keyword.
+	* interp/define.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/macros.lisp (WI, tryLine, embrace indentNB, tryBreak)
+	(tryBreakNB, MARKHASH): Remove.
+	* interp/spad.lisp (NEWNAMTRANS): Likewise.
+	* interp/sys-macros.lisp: Remove more Lispy junk.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (applySubstNQ): New.
+	* interp/compiler.boot (finishLambdaExpression): Use it.
+	* interp/i-intern.boot (mkAtreeExpandMacros): Likewise.
+	* interp/i-map.boot (addMap): Likewise.
+	* interp/vmlisp.lisp (SUBLISNQ, SUBANQ, SUBB): Remove.
+
+2011-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (EQSUBSTLIST): Remove.
+	* interp/c-util.boot (eqSubstAndCopy, eqSubst): Likewise.  Adjust
+	callers. 
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot: Replace use of EQSUBSTLIST with applySubst.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/hashcode.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/rulesets.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/sys-macros.lisp (APPLYR, TAILFN, TAIL, rplac): Remove as
+	unused. 
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't rename append.
+	* boot/parser.boot (bpTyping): Support universally quantified types.
+	* boot/ast.boot: Rewrite APPEND as append.
+	(%Forall): New AST node.
+	* boot/translator.boot: Translate it.
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfAppend): Write in full.
+	* interp/ptrees.boot (pfAppend): Likewise.
+
+2011-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (NREMOVE): Remove.
+	(EFFACE): Likewise.
+	* interp/sys-utility.boot (remove!): New.
+
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (remove): Remove.
+	(REMOVEQ, NREMOVEQ): Likewise.
+	* boot/utility.boot (removeSymbol, removeScalar, removeValue)
+	(remove):  New.
+	* boot/ast.boot (bfMDef): Use applySubst in lieu of SUBLIS.
+
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (assocSymbol): New.
+	(applySubst): Likewise.  Export.
+	* boot/ast.boot: Use it.  Remove SUBLIS and SUBLISLIS.
+	* interp/ax.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+
+2011-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cattable.boot (hasCat): Add type.  Accept only
+	instantiation forms.
+	(simpHasPred): Adjust call to hasCat.
+	* interp/i-funsel.boot (hasCaty): Likewise.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfReduceCollect): Delegate to bfDoCollect if
+	op is append or append!.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfCollect): Use bfDoCollect.
+	(bfListReduce): Remove.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfMakeCollectInsn): Fix thinko.
+
+2011-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-util.boot (dbInfovec): Move to c-util.boot
+
+2011-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (inAllContexts): New.
+	(translateToplevel): Use it.
+	* boot/parser.boot (bpImport): Accept namespace import.
+
+2011-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (MEMQ): Remove.
+	* boot/ast.boot (shoeATOMs): Don't use it.
+	(isDynamicVariable): Likewise.
+	(shoeCompTran1): Likewise.
+	* boot/translator.boot (defuse1): Likewise.
+
+2011-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfMakeCollectInsn): New.
+	(bfDoCollect): Tidy.
+
+2011-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfDoCollect): New.  Implement one-pass 
+	list comprehension.
+	(bfListReduce): Use it.
+
+2011-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bf0APPEND): Remove.
+	(bf0COLLECT): Likewise.
+	(bfCollect): Tidy.
+
+2011-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Export basic types and compiler data types.
+	* interp/modemap.boot (knownInfo): Fix latent bug uncovered by
+	type declarations.
+	* boot/ast.boot: Remove type definitions.
+	(bfIN): Handle DOT as loop variable.
+	(bfON): Likewise.  Allow a loop variable to iterator over its own
+	tails. 
+	* boot/parser.boot (bfTyping): Simplify.
+	(bpSimpleMapping): Fix thinko.
+
+2011-04-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't translate setDifference.
+	* boot/initial-env.lisp (SETDIFFERNECE): Remove.
+	* boot/translator.boot (evalBootFile): Rename form EVAL-BOOT-FILE.
+	* boot/utility.boot (setDifference): Define.
+	* interp/unlisp.lisp (ListMemberQ?): Remove.
+	(ListRemoveQ): Likewise.
+	(AlistAssocQ): Likewise.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (copyList): Define.
+	(append!): Likewise.
+	* boot/tokens.boot: Do not translate nconc.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't translate lastNode anymore.
+	* boot/utility.boot (lastNode): Define.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot (objectMember?): Don't rely non tail recursion
+	removal. 
+	(reverse): Define.
+	* boot/tokens.boot: Don't rename reverse anymore.
+	* boot/ast.boot: Generate reverse forms instead of REVERSE.
+
+2011-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't rename nreverse.
+	* boot/utility.boot (reverse!): Define.
+	* boot/parser.boot: Use reverse! instead of NREVERSE.
+	* boot/ast.boot: Generate reverse! forms instead of NREVERSE.
+
+2011-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (substitute): Define.
+	(substitute!): Likewise.
+	* boot/utility.boot: Do not rely on tail recursion removal.
+	* boot/tokens.boot: Don't translate substitute and substitute!.
+	* boot/ast.boot (bfLp1): Tidy.
+
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: charUpcase, charDowncase, stringUpcase,
+	singDowncase, valueEq? are new builtin functions.
+	* boot/ast.boot (bfMembr): Tidy.
+
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/newfort.boot: Likewise.
+	* interp/define.boot (orderBySubsumption): Fix thinko.
+	* interp/boot-pkg.lisp: Use BOOTTRAN package.  Don't import names
+	individually.
+	* boot/utility.boot: New.
+	* boot/translator.boot (exportNames): Fix thinko.
+	* boot/tokens.boot: Add charEq? and scalarEq? builtiin functions.
+	* boot/ast.boot (bfMember): Generate call to symbolMember? for
+	membership tests for symbols.
+
+2011-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (%Module): Now take three arguments.
+	* boot/parser.boot (bpModuleInterface): Rename from bpExports.
+	(bpModuleExports): New.
+	(bpModule): Now allow specification of exported names.
+
+2011-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Translate maxIndex to MAXINDEX.
+
+2011-04-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot (shoeIdChar): Accept "!" too.
+
+2011-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot: Use stringChar more often.
+
+2011-04-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Include SB-SPROF when profiling SBCL-based build.
+
+2011-04-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (compileLispFile): Tell ECL that the linker is 
+	a C++ compiler.
+
+2011-03-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/op.spad.pamphlet (BasicOperator) [display]: Now return a
+	Maybe (List O -> O) value.
+	[input]: Now return a Maybe(List SEX -> SEX).
+	* algebra/kl.spad.pamphlet (Kernel): Adjust.
+	* algebra/pattern.spad.pamphlet (Pattern): Likewise.
+
+2011-03-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include
+	%bytevec2str and %str2bytevec opcode.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/data.spad.pamphlet (ByteBuffer): Tidy.
+
+2011-03-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (FC): Remove.
+	(FBO): Likewise.
+	(FEV): Likewise.
+	(shoeGeneralFC): Likewise.
+	(shoeFindName): Likewise.
+	(shoeFindName2): Likewise.
+	(shoeTransform2): Likewise.
+	* boot/scanner.boot (shoeLineToks): Don't support `)package' line
+	anymore. 
+	* boot/includer.boot: Remove support for `)package', `)include',
+	`)includelisp', `)includelines' lines.
+	(shorPackageStartsAt): Remove.
+	(shorFindLines): Likewise.
+	(shoeFileInput): Likewise.
+	(shoeLispFileInput): Likewise.
+	(shoeLineFileInput): Likewise.
+	(shoeFunctionFileInput): Likewise.
+	(shoePlainLine?): Reflect removal.
+	(shoeSimpleLine): Likewise.
+	* boot/tokens.boot (charByName): New builtin library function.
+	* algebra/sf.spad.pamphlet (RealNumberSystem): Don't re-export
+	abs.  It is already exported by OrderedRing.
+
+2011-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/sexpr.H: Support more specialized s-expressions.
+	* utils/sexpr.cc: Likewise.
+
+2011-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/storage.H: Rework.
+	* utils/storage.cc: Likewise.
+
+2011-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-syscmd.boot (compileSpad2Cmd): Remove experimental
+	support for Spad to Aldor translation.
+	(convertSpasToAsFile): Remove.
+	* interp/mark.boot: Remove.
+	* interp/nspadux.lisp: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/spad.lisp: Don't register removed formatters.
+	* interp/util.lisp: (TRANSLATE-FUNCTIONS): Remove.
+	(BUILD-INTERPSYS): Now take only one argument.
+	* src/share/doc/msgs/s2-us.msgs: Remove diagnostic S2IZ0085.
+	* interp/Makefile.in: Remove rules for building wi1.boot,
+	wi2.boot, mark.boot, pspad1.boot pspad2.boot.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use not zero? when comparing for
+	 equality with 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use not one? when comparing for
+	 equality with 1.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use negative? when comparing for
+	 equality with 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use negative? when comparing for
+	greater than 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* src/algebra/: Systematically use negative? when comparing for
+	less than 0.
+
+2011-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/si.spad.pamphlet (IntegerNumberSystem) [positive?]:
+	Remove definition.
+	(SingleInteger): Simplify implementation of random.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Likewise.  
+	[positive?]: Define.
+	* algebra/integer.spad.pamphlet (Integer): Tidy.
+
+2011-03-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (OrderedAbelianGroup): Export
+	negative?, abs, sign, with default implementations.
+	(OrderedAbelianMonoid): Export positive?, with default.
+	(OrderedRing): Don't export them.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (CharacteristicNonZero)
+	[charthRoot]:  Now return Maybe %.
+	(PolynomialFactorizationExplicit) [charthRoot]: Likewise.
+	* algebra/ffcat.spad.pamphlet (FiniteAlgebraicExtensionField):
+	Propagate change.
+	* algebra/fraction.spad.pamphlet (Fraction) [charthRoot]: Likewise.
+	* algebra/poly.spad.pamphlet (UnivariatePolynomialSquareFree):
+	Likewise. 
+	* algebra/polycat.spad.pamphlet (PolynomialCategory): Likewise.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (equalFormTemplate): Tidy comparison of value
+	argument to constructors.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (mutateArgumentList): New.
+	(inlineDirectCall): Break out of replaceSimpleFunctions.
+	(resolveIndirectCall): Break out of foldSpadcall.
+	(replaceSimpleFunctions): Use them.
+	(foldSpadcall): Remove.
+	(usesVariablesLinearly?): Tidy.
+	(foldExportedFunctionReferences): Don't call foldSpadcall.
+
+2011-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (resolveConstantForm): New.  Split out of
+	replaceSimpleFunctions.
+	(foldSpadcall): Use it too.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (StepThrough) [nextItem]: Now
+	return Maybe %.
+	* algebra/ffcat.spad.pamphlet: Propagate change.
+	* algebra/fmod.spad.pamphlet: Likewise.
+	* algebra/fraction.spad.pamphlet: Likewise.
+	* algebra/integer.spad.pamphlet: Likewise.
+	* algebra/pfbr.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (EuclideanDomain)
+	[expressIdealMember]:  Now returns Maybe List %.
+	* algebra/Makefile.in: Tidy.
+	(axiom_algebra_bootstrap_last_layer): Remove.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot: %pair, %list, %vector, %bitvector are now
+	considered side-effect free functions.
+	* algebra/boolean.spad.pamphlet: Reflect change.
+	* algebra/Makefile.in (oa_strap_0_sources): Include MAYBE.
+
+2011-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (semiSimpleRelativeTo?): Consider conditionals.
+
+2011-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (SemiRing): New category.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (getSystemModulePath): Use
+	systemAlgebraDirectory. 
+	* interp/database.boot (pathToDatabase): Use systemDatabaseDirectory. 
+	* algebra/integer.spad.pamphlet (Integer) [latex]: Tidy.
+	* algebra/string.spad.pamphlet (Character) [latex]: Likewise.
+	* algebra/Makefile.in: Rework bootstrapping set up.
+	(COMPILE_LISP): Remove.
+	(axiom_algebra_layer_strap): Likewise.
+	(axiom_algebra_layer_strap_objects): Likewise.
+	(axiom_algebra_bootstrap): Likewise.
+	(oa_strap_0_fasls): New.
+	(oa_strap_1_fasls): Likewise.
+	(oa_strap_2_fasls): Likewise.
+	(oa_strap_0_sources): Likewise.
+	(oa_strap_1_sources): Likewise.
+	(oa_strap_2_sources): Likewise.
+	* src/algerab/strap: Remove.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/si.spad.pamphlet (SingleInteger): Logic is indirectly
+	included through BooleanLogic.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (mkEvalable): Simplify.
+	(mkEvalableMapping): Remove.
+	(mkEvalableRecord): Likewise.
+	(mkEvalableUnion): Likewise.
+
+2011-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %c2s.
+	* interp/lisp-backend.boot: Translate it.
+	* algebra/integer.spad.pamphlet (Integer) [convert]: Tidy.
+	[latex]: Likewise.
+	* algebra/string.spad.pamphlet (Character)[latex]: Likewise.
+
+2011-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/as.boot: Use getConstructorAbbreviationFromDB.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+
+2011-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunopt.boot: Move content to define.boot, interop.boot,
+	lisplib.boot, nruncomp.boot, showimp.boot.  Delete.
+
+2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrungo.boot: Move content to buildom.boot, i-map.boot,
+	i-special.boot, nrunfast.boot.  Delete.
+
+2011-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (mkEvalable): Exit early on niladic constructors.
+	* interp/define.boot (compDefineFunctor1): If bootstrapping, mark
+	functor as incomplete.
+	* interp/c-util.boot (lookupDefiningFunction): Don't look into
+	incomplete domains.
+
+2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/info.boot: Move content to modemap.boot.  Delete.
+
+2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-code.boot: Move content to i-coerce.boot.  Delete.
+
+2011-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalFormula): 
+	Implement true and false.  Fix thinko in notFormula.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (elaborateTree): New.
+	* interp/i-special.boot (bottomUpProposition): Likewise.  
+	(upand): Use  it to handle propositional formula.
+	(upor): Likewise.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (bottomUpWithArgModesets): Split out of
+	bottomUp.
+	(bottomUp): Call it.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.in (OBJS): Remove i-spec1.$(FASLEXT) and
+	i-spec2.$(FASLEXT).  Add i-special.$(FASLEXT).
+	* interp/i-spec1.boot, interp/i-spec2.boot: Move content to
+	i-special.boot.  Remove.
+
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/outform.spad.pamphlet (OutputForm) [infix?]: Rewrite.
+
+2011-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Recognize conjunction and
+	disjunction forms.
+
+2011-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (optDeltaEntry): Don't SPADCALL the
+	constant producing function.
+	* interp/c-util.boot (getFunctionReplacement): Use
+	comptileTimeBindingOf.
+	(lookupDefiningFunction): Tidy.
+	* interp/g-opt.boot (compileTimeBindingOf): Move to c-util.boot.
+
+2011-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (canInlineVarDefinition): Observe order of
+	evaluation. 
+
+2011-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optNot): Push %not inside conditionals.
+	(optCond): Remove ineffectual transformation.
+
+2011-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (parseLessEqual): Remove.
+
+2011-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/fmod.spad.pamphlet (IntegerMod): Simplify implementation.
+
+2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: makeSymbol is not a builtin function.
+	* boot/ast.boot: Use makeSymbol in place of INTERN.
+	* boot/parser.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/translator.boot: Likewise.
+	* interp/alql.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/bc-matrix.boot: Likewise.
+	* interp/bc-solve.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/packtran.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/incl.boot: Likewise.
+	* interp/word.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/sys-constants.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/scan.boot: Likewise.
+
+2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-macros.lisp (shellEntry): New.
+	* interp/g-util.boot (setShellEntry): Remove.
+	* interp/compiler.boot: Use %store to %tref forms instead of
+	setHSellEntry. 
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/c-util.boot (isSimple): Tidy.
+	(isSideEffectFree): Likewise.
+	(updateCapsuleDirectory): Likewise.
+
+2011-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (isSimple): Accept constructor instantiations.
+	* algebra/formula.spad.pamphlet: Avoid Lispisms.
+	* algebra/mathml.spad.pamphlet: Likewise.
+	* algebra/op.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+
+2011-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: mmSource is a new selector for modemap datatype.
+	* interp/wi1.boot: Likewise.
+	* interp/br-data.boot: Various cleanups.
+	* interp/c-util.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/topics.boot: Likewise.
+
+2011-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Recognize conjunctive guard as
+	nested conditionals.
+
+2011-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (transSeq): Aggregate branches of toplevel
+	conditionals so that implications propagate down the pipe.
+
+2011-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (coerceExtraHard): Explicitly fail if
+	autoCoerceByModemap fails.
+
+2011-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (getUnionMode): Remove.
+	(isUnionMode): Move to c-util.boot.
+	(coerceExtraHard): Rework.
+	(belongsTo?): Remove.
+	* interp/c-util.boot (isUnionMode): Moved from compiler.boot.
+	(unionLike?): New.
+	(unionProperty): Likewise.
+	(getInverseEnvironment): Use unionProperty instead of getUnionMode.
+
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (getSuccessEnvironment): Follow through
+	temporaries designating result of assignment.
+	(getInverseEnvironment): Likewise.
+
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (mkNewUnionFunList): Align arity of
+	'case' implementation to declared signature.
+	(mkUnionFunList): Likewise.
+	* interp/compiler.boot (compCase1): 'case' is now unconditionally
+	binary. 
+	* interp/g-opt.boot (optCond): Fix thinko.
+
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Get rid of double negatives when
+	possible. 
+	* interp/g-util.boot (assumeProperty): Remove.
+	(flattenVMForm): Likewise.
+	(mkVMForm): Likewise.
+
+2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compCons1): Use coerce not convert.
+	(setqSingle): Likewise.
+	(setqMultiple): Likewise.
+	(compConstruct): Likewise.
+	(compQuote): Likewise.
+	(compElt): Likewise.
+	(compSignatureImport): Likewise.
+	(compComma): Likewise.
+
+2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compExpressionList): Remove.
+	(compForm1): Don't call it.
+
+2011-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Tidy.
+
+2011-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (dependentVars): New.
+	(canInlineVarDefinition): Use it to safely inline vardefs.
+
+2011-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (canReturn): Don't check for LET*.
+	* interp/g-opt.boot (optLET*): Remove as we now generate only
+	%bind forms.
+
+2011-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %funcall
+	and %nothing.
+	* algebra/mkfunc.spad.pamphlet: Use %funcall instead of FUNCALL.
+
+2011-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (VEC-SETELT): Remove.
+	* interp/scan.boot (scanInserts): Use vectorRef.
+	* interp/functor.boot (DescendCode): Don't check for SETELT or
+	QSETREFV forms.
+	* interp/nrunfast.boot (evalSlotDomain): Likewise.
+
+2011-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($evalDomain): Remove.
+	* interp/nrungo.boot (NRTevalDomain): Likewise.  Fix callers to call
+	evalDomain. 
+	* interp/i-eval.boot (evalDomain): Don't check for $evalDomain
+	anymore. Handle assignment to domain object forms.
+
+2011-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add MappingCategory as a (builtin) category.
+	* interp/sys-constants.boot ($CategoryNames): Include MappingCategory.
+	* interp/g-cndata.boot (unabbrevSpecialForms): Handle
+	MappingCategory, RecordCategory, and UnionCategory.
+	* interp/buildom.boot (MappingCategory): New.
+	* interp/compiler.boot: Elaboration MappingCategory forms. 
+	* interp/g-error.boot (needsToSplitMessage): Fix thinko from
+	type-based dispatch done by the Boot translator.
+	* interp/nrunfast.boot (builtinConstructor?): New.
+	(generalizedBuiltinConstructor?): Likewise.
+	(lazyMatch): Use them.
+	(newHasTest): Properly recognize all flavours of category forms.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-constants.boot ($PrimitiveDomainNames): Remove.
+	* interp/category.boot (mkCategory): Drop test for primitive
+	domains.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot (mkCategory): Don't single out List
+	instantiations in determining NewLocals.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot(categoryObject?): Rename from isCategory.
+	* interp/c-util.boot: Adjust use.
+	* interp/functor.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot: Don't cache instantiation of builtin
+	domains, as the comment at the top of the file says.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisp-backend.boot: Translate %ident? to IDENTP, not SYMBOLP.
+	* interp/compiler.boot (compMatch): test for identifier, not
+	atomic value.
+	* algebra/syntax.spad.pamphlet (Syntax): Tidy.
+
+2011-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: arrayRef is now a builtin function.
+
+2011-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/ituple.spad.pamphlet (InfiniteTuple): Use Stream S as
+	representation, not extended domain (default search does not
+	work for the non-extending categories.)
+
+2011-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (groupVariableDefinitions): Look into clauses
+	of conditional too.
+
+2011-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (matchingEXIT): New.
+	(simplifySEQ): Use it.
+
+2011-02-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %fmanexp.
+	(sideEffectFree?): New.
+	(varIsAssigned): Tidy.
+	(canInlineVarDefinition): Likewise.
+	* interp/boot-pkg.lisp (gensym?): New.
+	* interp/c-util.boot ($NonExpandableOperators): New.
+	(expandableDefinition?): Use it.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Use %fmanexp.
+
+2011-02-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include inverse
+	hyperbolic functions.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/sf.spad.pamphlet: Use them.
+
+2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove CGREATERP
+	and GGREATERP.  Add VM-level complex number operators.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/gaussian.spad.pamphlet (ComplexCategory): Use VM form
+	instead of Lisp level forms.
+	* algebra/pfr.spad.pamphlet (PartialFraction): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/symbol.spad.pamphlet (Symbol): Likewise.
+
+2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove more Lisp
+	level operators.  Include %property and %bitveclt.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/si.spad.pamphlet (SingleInteger): Tidy.  Use %ismall?.
+	* algebra/domain.spad.pamphlet (DomainConstructo): Use %property.
+	* algebra/outform.spad.pamphlet (OutputForm): Likewise.
+	* algebra/boolean.spad.pamphlet (IndexedBits): Use %bitveclt.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (mutateConditionalFormWithUnaryFunction):
+	Rename from mutateCONDFormWithUnaryFunction.  Update callers
+	(mutateBindingFormWithUnaryFunction): Rename from
+	mutateLETFormWithUnaryFunction.  Allow %bind form too.
+	Update callers.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/stream.spad.pamphlet (Stream): Remove bogus assignment
+	to Rep. Rework local function definitions.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Replace COND with %when throught.
+	Use %otherwise instead of %true where appropriate.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/i-code.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/info.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/compiler.boot (canReturn): Don't test for COND anymore.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/slam.boot (reportFunctionCompilation): Use %otherwise,
+	not %true for default cases.
+	(reportFunctionCacheAll): Likewise.
+	(compileRecurrenceRelation): Likewise.
+	* interp/lisp-backend.boot (expandTry): Tidy.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %otherwise.
+	* interp/compiler.boot (compAlternativeGuard): Emit %otherwise
+	form, not Lisp level T form.
+	* interp/clam.boot (compClam): Tidy.
+	(compHash): Likewise.
+	(compHashGlobal): Likewise.
+
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (finishLambdaExpression): Tidy.  Don't
+	generate Lisp code directly.
+	(canReturn): Don't look into CLOSEDFN forms.
+
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/clam.boot: Tidy.
+	* interp/slam.boot: Likewise.
+
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisp-backend.boot: New file.  Consolidate Common Lisp
+	backend module.
+	* interp/Makefile.in (OBJS): Include it.
+	(lisp-backend.$(FASLEXT)): New rule.
+
+2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/files.spad.pamphlet (Library): Remove assignment to Rep.
+	* algebra/lie.spad.pamphlet (AssociatedLieAlgebra): Likewise.
+	(AssociatedJordanAlgebra): Likewise.
+	(LieSquareMatrix): Likewise.
+
+2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunopt.boot (NRTgetLookupFunction): Explain reason for
+	non-extension. 
+
+2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compList): Use %nil form, not NIL.
+
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCallSpecially): Remove.
+	(optSpeciallCall): Likeise.
+	(optCall): Adjust.
+	(optCallEval): Move to wi2.boot, sole user.
+
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optQSMINUS): Remove.
+	* algebra/data.spad.pamphlet: Tidy.
+	* algebra/plot.spad.pamphlet: Likewise.
+	* algebra/plot3d.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/syntax.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Remove use of NULL$Lisp.
+
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove QCDR,
+	QCAR. SYMBOLP, GREATERP. 
+	Add %ibit, %ilength, %ident, %equal.
+	* interp/g-util.boot: Expand them
+	* algebra/any.spad.pamphlet: Tidy.
+	* algebra/catdef.spad.pamphlet: Likewise.
+	* algebra/data.spad.pamphlet: Likewise.
+	* algebra/domain.spad.pamphlet: Likewise.
+	* algebra/float.spad.pamphlet: Likewise.
+	* algebra/fname.spad.pamphlet: Likewise.
+	* algebra/integer.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/random.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/syntax.spad.pamphlet: Likewise.
+
+2011-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp: Remove QREFELT, QSDEC1, QSETREFV, QSETVELT,
+	QSETVELT-1, QSINC1, QVELT, QVELT-1.
+	* algebra/si.spad.pamphlet: Use %iinc and %idec forms.
+
+2011-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (NRTputInHead): Tidy.
+
+2011-01-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (expandListlit): Tidy.
+
+2011-01-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compForm1): Use %listlit form.
+	(compExpressionList): Likewise.
+	(compCons1): Likewise.
+	(compList): Likewise.
+	(compVector): Likewise.
+	* interp/g-timer.boot (timedEvaluate): Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/g-opt.boot (optMkRecord): Likewise.
+	(optRECORDCOPY): Likewise.
+	(optLIST): Remove.
+	(optListlit): New.
+	* interp/g-util.boot (optListlit): New.  Expand %listlit forms.
+
+2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optMkRecord): Generate %makepair forms.
+	($VMsideEffectFreeOperators): Include %listlit and %veclit.
+	* interp/g-util.boot: Translate them.
+
+2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/array1.spad.pamphlet: Use %aref instead of %vref.
+	* interp/g-opt.boot (optSETRECORDELT): Tidy code generation.
+	(optRECORDCOPY): Likewise.
+	(optRECORDELT): Likewise.
+	($VMsideEffectFreeOperators): Include %aref.  Translate.
+
+2011-01-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (FIXP): Remove.
+	* interp/alql.boot: Use integer? instead of FIXP.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/fnewmeta.lisp: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/word.boot: Likewise.
+
+2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot: Expand new bit vector operators.
+	* interp/g-opt.boot (opt2bit): New.
+	(opt2bool): Likewise.
+	* interp/bits.lisp (BVEC-SIZE): Remove.
+	(BVEC-COPY): Likewise.
+	(BVEC-CONCAT): Likewise.
+	(BVEC-EQUAL): Likewise.
+	(BVEC-AND): Likewise.
+	(BVEC-OR): Likewise.
+	(BVEC-XOR): Likewise.
+	(BVEC-NAND): Likewise.
+	(BVEC-NOR): Likewise.
+	(BVEC-NOT): Likewise.
+	* algebra/boolean.spad.pamphlet (IndexedBits): Remove uses of
+	Lisp-level functions.
+
+2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunfast.boot (evalSlotDomain): Expand to VM forms before
+	value argument evaluation.
+	(lazyMatch): Check for %llength too.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %2bit
+	and %2bool.
+	* interp/g-util.boot: Expand them.
+	* interp/define.boot (compJoin): Check for %llenght too.
+	* algebra/boolean.spad.pamphlet: Tidy.
+	* algebra/domain.spad.pamphlet: Likewise.
+	* algebra/draw.spad.pamphlet: Likewise.
+	* algebra/files.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+	* algebra/sf.spad.pamphlet: Likewise.
+

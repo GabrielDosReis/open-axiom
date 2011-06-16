@@ -1,0 +1,154 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\title{src/algebra term.spad}
+
+\begin{document}
+\author{Gabriel Dos~Reis}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+  This file contains specifications and implementations for basic
+  support of term algebras, in the sense of Universal Algebra.
+\tableofcontents
+\eject
+
+
+\section{The \code{Arity} domain}
+
+<<domain ARITY Arity>>=
+)abbrev domain ARITY Arity
+++ Author: Gabriel Dos Reis
+++ Date Created: December 04, 2008
+++ Date Last Updated: May 09, 2009
+++ Description:
+++   This domain implements the arity of a function or an operator,
+++   e.g. the number of arguments that an operator can take.  An 
+++   arity is either a definition nonnegative integer, and the special
+++   value `arbitrary', signifying that an operation can take any
+++   number of arguments.
+Arity(): Public == Private where
+  Public == Join(SetCategory, RetractableTo NonNegativeInteger) with
+    arbitrary: %
+      ++ aribitrary is the arity of a function that accepts any
+      ++ number of arguments.
+    zero?: % -> Boolean
+      ++ \spad{zero? a} holds if \spad{a} is the arity of niladic function.
+    one?: % -> Boolean
+      ++ \spad{one? a} holds if \spad{a} is the arity of nullary function.
+  Private == add
+    Rep == SingleInteger
+    arbitrary == per(-1)
+    zero? a == zero? rep a
+    one? a == one? rep a
+    hash x == hash rep x
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm == 
+      x = arbitrary => 'arbitrary::OutputForm
+      rep(x)::OutputForm
+    coerce(n: NonNegativeInteger): % == 
+      max()$SingleInteger < n => 
+        error "arity is too large for OpenAxiom"
+      per(n::SingleInteger)
+    retractIfCan x ==
+      negative?(n := rep x) => "failed"
+      n@Integer::NonNegativeInteger
+   
+@
+
+
+\section{Operator Interface: \code{OperatorCategory}}
+
+<<category OPERCAT OperatorCategory>>=
+)abbrev category OPERCAT OperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: December 04, 2008
+++ Date Last Updated: December 17, 2008
+++ Description:
+++   This category specifies the interface for operators used to build
+++   terms, in the sense of Universal Algebra.  The domain parameter S
+++   provides representation for the `external name' of an operator.
+OperatorCategory(S: SetCategory): Category ==
+    SetCategory with
+      name: % -> S
+        ++ \spad{name(op)} returns the externam name of \spad{op}.
+      arity: % -> Arity
+        ++ \spad{arity(op)} returns the arity of the operator \spad{op}.
+      is?: (%,S) -> Boolean
+        ++ \spad{is?(op,n)} holds if the name of the operator \spad{op}
+        ++ is \spad{n}.
+  add
+    coerce(op: %): OutputForm == name(op)::OutputForm
+    is?(op,n) == name op = n
+@
+
+\section{Term Algebra Operator}
+<<domain TALGOP TermAlgebraOperator>>=
+)abbrev domain TALGOP TermAlgebraOperator
+++ Author: Gabriel Dos Reis
+++ Date Created: April 17, 2010
+++ Date Last Modified: April 17, 2010
+TermAlgebraOperator(S: SetCategory): Public == Private where
+  Public == OperatorCategory S with
+    operator: (S,Arity) -> %
+      ++ \spad{operator(n,a)} returns an operator named \spad{n}
+      ++ and with arity \spad{a}.
+  Private == add
+    Rep == Pair(S,Arity)
+    operator(n,a) == per pair(n,a)
+    name x == first rep x
+    arity x == second rep x
+@
+
+
+\section{License}
+
+<<license>>=
+--Copyright (C) 2007-2010, Gabriel Dos Reis
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@
+
+
+\section{Putting It Altogether}
+
+<<*>>=
+<<license>>
+<<domain ARITY Arity>>
+<<category OPERCAT OperatorCategory>>
+<<domain TALGOP TermAlgebraOperator>>
+
+@
+
+
+
+\end{document}

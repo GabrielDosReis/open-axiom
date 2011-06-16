@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CARD.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from CardinalNumberXmpPage
+)clear all
+
+c0 := 0 :: CardinalNumber
+c1 := 1 :: CardinalNumber
+c2 := 2 :: CardinalNumber
+c3 := 3 :: CardinalNumber
+A0 := Aleph 0
+A1 := Aleph 1
+finite? c2
+finite? A0
+countable? c2
+countable? A0
+countable? A1
+[c2 + c2, c2 + A1]
+[c0*c2, c1*c2, c2*c2, c0*A1, c1*A1, c2*A1, A0*A1]
+[c2**c0, c2**c1, c2**c2, A1**c0, A1**c1, A1**c2]
+[c2-c1, c2-c2, c2-c3, A1-c2, A1-A0, A1-A1]
+generalizedContinuumHypothesisAssumed true
+[c0**A0, c1**A0, c2**A0, A0**A0, A0**A1, A1**A0, A1**A1]
+a := Aleph 0
+c := 2**a
+f := 2**c
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

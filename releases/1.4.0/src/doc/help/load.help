@@ -1,0 +1,17 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.16.  )load
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Description: 
+ 
+This command is obsolete. Use )library instead.
+ 

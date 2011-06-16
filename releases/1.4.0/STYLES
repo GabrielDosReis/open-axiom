@@ -1,0 +1,57 @@
+Styles for Boot Codes
+---------------------
+
+  The core of the OpenAxiom system is mostly written in Boot.  A long
+time ago, Boot was essentially a Lisp DSL with a much more palatable
+syntax geared specifically toward  writing readable codes.  As such it
+tended to have lots of Lispism in it.
+
+  There days, Boot is no longer `just a syntactic sugar over Lisp',
+even when we essentially translate to Lisp.  Boot is a
+programming language in of its own.  In fact, we would like to remove
+Lispism from Boot codes.  The `rules' below are suggestions (or
+guidelines) for writing `good Boot codes'.
+
+
+* In general, you should precede your functions definitions with
+  ++ comments that describes the semantics of the functions, its
+  pre- and post-conditions.
+
+* Use -- comments only for non-descriptive remarks, such as in
+  function body.
+
+* Always precede your functions definitions with type declarations.
+  Exception to this rule should be rare and documented.
+
+
+* Don't use Lisp functions directly in Boot codes, except where
+  they are for interfacing with Lisp.
+
+   Example: 
+
+      -- GOOD --
+      first form in '(Mapping Record) => -- ...
+      form.first := '%LET
+
+      -- BAD --
+      CAR form in '(Mapping Record) => -- ...
+      RPLACA(form,'%LET)
+
+* Don't use `null' to test for Boolean values, use `not'
+
+   Example:
+
+      -- GOOD --
+      not $monitorNewworld => ...
+
+      -- BAD --
+      null $monitorNewworld => ...
+
+* Use idiomatic Boot constructs
+
+   Example:
+     -- GOOD --
+     vars := [var,:vars]
+
+     -- BAD --
+     vars := CONS(var,vars)
