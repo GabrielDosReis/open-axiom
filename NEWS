@@ -1,4 +1,20 @@
-* May 2009.
+* June 15, 2011
+
+  OpenAxiom 1.4.0 has been released.
+
+  Changes from previous releases are listed at
+
+       http://www.open-axiom.org/1.4/
+
+  × They include significant improvements to the OpenAxiom algebra, the
+    library compiler, and the script interpreter.  The OpenAxiom
+    compiler now generates much better quality Lisp code.  
+ 
+
+  × The system has a new interface on Windows platforms.
+
+
+* August 05, 2009.
 
   Changes from previous release, please see
 

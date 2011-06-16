@@ -33,7 +33,7 @@ separately install it, or download the dependency  tarball
 
 from the SourceForge download site
 
-http://voxel.dl.sourceforge.net/sourceforge/open-axiom/open-axiom-1.4.0-dep.tar.bz2
+     http://surfnet.dl.sf.net/project/open-axiom/open-axiom/dependencies/open-axiom-1.4.0-dep.tar.bz2
 
 If you already have a Lisp system installed, please go to step 2.
 Note however that if you want to build OpenAxiom with the GCL from
@@ -74,8 +74,8 @@ different from the one that contains the sources.  For example, you
 may create a directory sibling to open-axiom-1.4.0 and build the
 system from there:
 
-      mkdir build-oa
-      cd build-oa
+      mkdir oa-build
+      cd oa-build
       ../open-axiom-1.4.0/configure
 
 It is possible to tell configure where to put the final OpenAxiom
