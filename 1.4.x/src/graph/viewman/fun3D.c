@@ -276,7 +276,7 @@ forkView3D(int typeOfViewport)
 #endif
     sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
     sprintf(runView,"%s%s",envAXIOM,"/lib/view3D");
-    check(execl(runView,runView,NULL));
+    check(execl(runView,runView, (char*) NULL));
     fprintf(stderr,"The viewport manager could not execute view3D.\nCheck that view3D is on your PATH.\n");
     exit(-1);
 

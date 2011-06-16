@@ -88,7 +88,7 @@ spoonView3D(int type)
             "(viewAlone) execution of the ThreeDimensionalViewport process");
     sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
     sprintf(runView,"%s%s",envAXIOM,"/lib/view3D");
-    check(execl(runView,runView,NULL));
+    check(execl(runView,runView, (char*) NULL));
     fprintf(stderr,"Could not execute view3D!\n");
     exit(-1);
   default:
