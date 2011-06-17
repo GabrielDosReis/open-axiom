@@ -70,9 +70,14 @@
   <h4 name="1.4.0-changes-comp">2.1.2. Compiler</h4>
 
   <ul>
-    <li>The compiler now generate far better (Lisp) codes for Spad
-        libraries or scripts.
+    <li>The compiler now accepts interpreter-style unnamed functions.
     </li>
+
+    <li>The compiler now generate far better (Lisp) codes for Spad
+        libraries or scripts.  The compiler now applies more
+        aggressive (but sound) optimizations, including domain
+        inlining, type propagations.
+     </li>
 
     <li>The compiler now accepts interpreter-style unnamed functions.
     </li>
@@ -80,7 +85,10 @@
     <li>Parameterized macros are now supported by the compiler.
     </li>
 
-    <li>The compiler now support exception handling.
+    <li>The compiler now support exception handling.  In particular,
+        the <code>try/finally</code> programming construct was added
+        to support reliable resource management (e.g. opening/closing
+        or creating/removing files.)
     </li>
   </ul>
 
@@ -131,7 +139,29 @@
       <code>StreamAggregate</code> where they seem more appropriate.
    </li>
 
+  <li>The domain <code>InnerTaylorSeries</code> now satisfies the
+      category <code>BiModule</code>.
+  </li>
+
+  <li>The domains <code>FreeModule</code>
+       and <code>OrderedFreeMonoid</code> now satisfy the newly added
+      <code>FreeMonoidCategory</code>.  
+  </li>
+
+
+  <li>The list of domains for OpenAxiom program manipulation has been
+      expanded.
+  </li>
+
+  <li>Support for range and segment bindings now includes
+      <code>RangeBinding</code>.
+  </li>
+
   </ul>
+
+  <h4 name="1.4.0-changes-boot">2.1.4. Boot</h4>
+  Boot, the programming language used to write the OpenAxiom compiler,
+  has been vastly improved.  Lisp codes are being phased out.
 
 </div>
 
