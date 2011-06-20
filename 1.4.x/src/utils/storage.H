@@ -77,7 +77,7 @@ namespace OpenAxiom {
       Pointer os_acquire_raw_memory(size_t);
 
       // Release raw storage to the hosting OS.  The first operand must
-      // be a pointer value previous returned by `os_acquire_raw_memory'.
+      // be a pointer value previously returned by `os_acquire_raw_memory'.
       // Otherwise, the result is undefined.
       void os_release_raw_memory(Pointer, size_t);
 
@@ -96,24 +96,20 @@ namespace OpenAxiom {
       // -------------
       // -- Storage --
       // -------------
-      // This class is a low-level abstraction intented for use
-      // to implement higher level storage abstraction.
+      // This class provides low-level abstractions intented for use
+      // to implement higher level storage abstractions.
       struct Storage {
-         // Objects of this sbstract datatype holds storage objects.
+         // Objects of this abstract datatype hold storage objects.
          struct Handle;
          
-         // Acquire storage chunk of at least `n' bytes.
-         // The result is a pointer to a storage object.  That object
-         // `result' is constructed such that `begin(result)' points
-         // to the next allocatable address.
-         static Handle* acquire(size_t n);
-
          // Return the storage pointed to by the operand.  It
          // must be a pointer value previously returned by `acquire'.
          // Otherwise, the result is undefined.
          static void release(Handle*);
          
-         // Return the start address of storage area.
+         // Return the start address of storage area.  Clients would
+         // want to add padding bytes necessary to accomodate alignment
+         // requirements.  
          // Note: this should not be confused with the address of
          // the handle object.
          static Pointer begin(Handle*);
@@ -134,14 +130,28 @@ namespace OpenAxiom {
       // -- SinglyLinkedStorage --
       // -------------------------
       // This class implements a simple single-linked list of storage
-      // objects.
+      // objects.  Each storage object in the link is created with
+      // a specific starting alignment requirements.
       struct SinglyLinkedStorage : Storage {
-         // Same as Storage::acquire, except begin(h) returns an address
-         // that satisfies the alignment requirement `a'.
+         // Return the previous handle in the link chain.
+         static Handle*& previous(Handle*);
+      };
+
+      // -------------------------
+      // -- DoublyLinkedStorage --
+      // -------------------------
+      // Like SinglyLinkedStorage, except that the chain of storage
+      // object supports bidirectional travervsal.
+      struct DoublyLinkedStorage : Storage {
+         // Same as Storage::acquire, except that begin(h) returns an
+         // address that satisfies the alignment requirement `a'.
          static Handle* acquire(size_t n, size_t a);
          
          // Return the previous handle in the link chain.
          static Handle*& previous(Handle*);
+         
+         // Return the next handle in the link chain.
+         static Handle*& next(Handle*);
       };
 
       // ------------------

@@ -1,3 +1,13 @@
+2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/storage.H (Memory::Storage::acquire): Remove.
+	(Memory::SinglyLinkedStorage::acquire): Likewise.
+	(Memory::DoublyLinkedStorage): New.
+	* utils/storage.cc (acquire_storage_with_header): Rename from
+	Storage::acquire.  Make template.
+	(OneWayLinkHeader): Rename from SingleLinkHeader.
+	(TwoWayLinkHeader): New.
+
 2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lib/fnct_key.c (handle_function_key): Explicitly cast the

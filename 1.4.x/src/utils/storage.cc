@@ -131,8 +131,8 @@ namespace OpenAxiom {
       // -- Storage --
       // -------------
       struct Storage::Handle {
-         size_t extent;
-         void* start;
+         size_t extent;         // count of allocated bytes
+         void* start;           // beginning of usable address.
       };
 
       static inline Pointer
@@ -140,11 +140,15 @@ namespace OpenAxiom {
          return Storage::byte_address(h) + h->extent;
       }
 
-      Storage::Handle*
-      Storage::acquire(size_t n) {
-         // Adjust for overhead, and to page boundary.
-         n = round_up(n + sizeof(Handle), page_size());
-         Handle* h = static_cast<Handle*>(os_acquire_raw_memory(n));
+      // Acquire storage chunk of at least `n' bytes.
+      // The result is a pointer to a storage object.  That object
+      // `result' is constructed such that `begin(result)' points
+      // to the next allocatable address.
+      template<typename T>
+      static T*
+      acquire_storage_with_header(size_t n) {
+         n = Storage::round_up(n, page_size());
+         T* h = static_cast<T*>(os_acquire_raw_memory(n));
          h->extent = n;
          h->start = h + 1;
          return h;
@@ -163,28 +167,54 @@ namespace OpenAxiom {
       // -------------------------
       // -- SinglyLinkedStorage --
       // -------------------------
-      struct SingleLinkHeader : Storage::Handle {
+      struct OneWayLinkHeader : Storage::Handle {
          Handle* previous;
       };
       
       SinglyLinkedStorage::Handle*&
       SinglyLinkedStorage::previous(Handle* h) {
-         return static_cast<SingleLinkHeader*>(h)->previous;
+         return static_cast<OneWayLinkHeader*>(h)->previous;
       }
 
-      SinglyLinkedStorage::Handle*
-      SinglyLinkedStorage::acquire(size_t n, size_t a) {
-         const size_t overhead = round_up(sizeof (SingleLinkHeader), a);
-         Handle* h = Storage::acquire(overhead + n);
+      // -------------------------
+      // -- DoublyLinkedStorage --
+      // -------------------------
+      struct TwoWayLinkHeader : Storage::Handle {
+         Handle* previous;
+         Handle* next;
+      };
+
+      static inline TwoWayLinkHeader*
+      two_way_link(Storage::Handle* h) {
+         return static_cast<TwoWayLinkHeader*>(h);
+      }
+
+      DoublyLinkedStorage::Handle*&
+      DoublyLinkedStorage::previous(Handle* h) {
+         return two_way_link(h)->previous;
+      }
+
+      DoublyLinkedStorage::Handle*&
+      DoublyLinkedStorage::next(Handle* h) {
+         return two_way_link(h)->next;
+      }
+
+      DoublyLinkedStorage::Handle*
+      DoublyLinkedStorage::acquire(size_t n, size_t a) {
+         // Add enough padding space for specified alignment.
+         const size_t overhead = round_up(sizeof (TwoWayLinkHeader), a);
+         TwoWayLinkHeader* h =
+            acquire_storage_with_header<TwoWayLinkHeader>(overhead + n);
          h->start = byte_address (h) + overhead;
-         previous(h) = 0;
+         h->previous = 0;
+         h->next = 0;
          return h;
       }
 
       // ------------------
       // -- BlockStorage --
       // ------------------
-      struct BlockHeader : SingleLinkHeader {
+      struct BlockHeader : OneWayLinkHeader {
          Byte* available;
       };
 
@@ -196,13 +226,13 @@ namespace OpenAxiom {
       BlockStorage::Handle*
       BlockStorage::acquire(size_t n, size_t a) {
          const size_t overhead = round_up(sizeof (BlockHeader), a);
-         // Tell SinglyLinkedStorage not to align; we do that here.
-         BlockHeader* h = block_header
-            (SinglyLinkedStorage::acquire(overhead + n, 1));
+         BlockHeader* h =
+            acquire_storage_with_header<BlockHeader>(overhead + n);
          // Remember the next available address to allocate from.
          h->available = byte_address(h) + overhead;
          // That is also where the actual object storage starts.
          h->start = h->available;
+         h->previous = 0;
          return h;
       }
 
