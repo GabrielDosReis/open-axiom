@@ -1,4 +1,4 @@
-# Copyright (C) 2010, Gabriel Dos Reis.
+# Copyright (C) 2011, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -49,12 +49,14 @@ OA_SMAN_TARGETS = all-sman all-clef
 endif
 
 if OA_BUILD_GRAPHICS
-OA_GRAPHICS_TARGETS = all-graph
+OA_GRAPHICS_GRAPH_TARGET = all-graph
 endif
 
 if OA_BUILD_GUI
-OA_GRAPHICS_TARGETS = all-gui
+OA_GRAPHICS_GUI_TARGET = all-gui
 endif
+
+OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 
 all-local: all-src
 
