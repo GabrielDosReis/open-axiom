@@ -476,9 +476,9 @@ Plot(): Exports == Implementation where
 
     myTrap: (F-> F, F) -> F
     myTrap(ff:F-> F, f:F):F ==
-      s := trapNumericErrors(ff(f))$Lisp :: Union(F, "failed")
-      s case "failed" => quietDoubleNaN()$Lisp
-      r:F:=s::F
+      s: Maybe F := trapNumericErrors(ff(f))$Lisp
+      s case nothing => quietDoubleNaN()$Lisp
+      r:F := s@F
       r > max()$F or r < min()$F => quietDoubleNaN()$Lisp
       r
 

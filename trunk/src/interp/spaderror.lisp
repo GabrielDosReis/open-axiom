@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -43,34 +43,29 @@
  
 ;;(defmacro |trappedSpadEval| (form) form) ;;nop for now
 
-#+:akcl
+#+:gcl
 (defun |resetStackLimits| () (system:reset-stack-limits))
-#-:akcl
+#-:gcl
 (defun |resetStackLimits| () nil)
-
-;; failed union branch --  value returned for numeric failure
-(defconstant |$numericFailure| (cons 1 "failed")) 
 
 (defvar |$oldBreakMode|)
 
-;; following macro evaluates form returning Union(type-of form, "failed")
-
+;; following macro evaluates form returning Maybe type-of form
+#+:gcl
 (defmacro |trapNumericErrors| (form)
   `(let ((|$oldBreakMode| |$BreakMode|)
-         (|$BreakMode| '|trapNumerics|)
+         (|$BreakMode| '|trapNumerics|))
          (val))
-     (setq val (catch '|trapNumerics| ,form))
-     (if (eq val |$numericFailure|) val
-       (cons 0 val))))
+     (catch '|trapNumerics| ,form))
 
-;;;;;; considering this version for kcl
-;;(defmacro |trapNumericErrors| (form)
-;;   `(let ((val))
-;;      (setq val (errorset ,form))
-;;      (if (NULL val) |$numericFailure| (cons 0 (car val)))))
+#-:gcl
+(defmacro |trapNumericErrors| (form)
+  `(handler-bind ((division-by-zero
+		   #'(lambda (c) (declare (ignore c)) |%nothing|)))
+		 ,form))
 
 ;; the following form embeds around the akcl error handler
-#+:akcl
+#+:gcl
 (eval-when
  (load eval)
  (unembed 'system:universal-error-handler)
@@ -85,7 +80,8 @@
                            (|systemError| (error-format error-string args)))
                           ((and (eq |$BreakMode| '|trapNumerics|)
                                 (eq type :ERROR))
-                           (setq |$BreakMode| nil)                         (throw '|trapNumerics| |$numericFailure|))
+                           (setq |$BreakMode| nil)
+			   (throw '|trapNumerics| |%nothing|))
                           ((and (eq |$BreakMode| '|trapNumerics|)
                                 (boundp '|$oldBreakMode|)
                                 (setq |$BreakMode| |$oldBreakMode|)

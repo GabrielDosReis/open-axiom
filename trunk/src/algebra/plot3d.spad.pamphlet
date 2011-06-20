@@ -445,12 +445,9 @@ Plot3D(): Exports == Implementation where
  
     myTrap: (F-> F, F) -> F
     myTrap(ff:F-> F, f:F):F ==
-      s := trapNumericErrors(ff(f))$Lisp :: Union(F, "failed")
-      if (s) case "failed" then
-        r:F := quietDoubleNaN()$Lisp
-      else
-        r:F := s
-      r
+      s: Maybe F := trapNumericErrors(ff(f))$Lisp
+      s case nothing => quietDoubleNaN()$Lisp
+      s
 
     plot(f1:F -> F,f2:F -> F,f3:F -> F,col:F -> F,tRange:R) ==
       p := basicPlot(point(myTrap(f1,#1),myTrap(f2,#1),myTrap(f3,#1),col(#1)),tRange)
