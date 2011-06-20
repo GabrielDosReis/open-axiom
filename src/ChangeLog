@@ -1,5 +1,15 @@
 2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spaderror.lisp ($numericFailure): Remove.
+	(trapNumericErrors): Define for non-GCL RTS.
+	Tidy GCL-based definition.
+	* algebra/draw.spad.pamphlet: trapNumericErrors now returns a
+	value of type Maybe T.
+	* algebra/plot.spad.pamphlet: Likewise.
+	* algebra/plot3d.spad.pamphlet: Likewise.
+
+2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.am (OA_GRAPHICS_TARGETS): Fix thinko.
 
 2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
