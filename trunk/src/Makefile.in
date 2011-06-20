@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2010, Gabriel Dos Reis.
+# Copyright (C) 2011, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -305,8 +305,9 @@ subdirs = \
 
 oa_targetdir = $(top_builddir)/$(target)
 @OA_BUILD_SMAN_TRUE@OA_SMAN_TARGETS = all-sman all-clef
-@OA_BUILD_GRAPHICS_TRUE@OA_GRAPHICS_TARGETS = all-graph
-@OA_BUILD_GUI_TRUE@OA_GRAPHICS_TARGETS = all-gui
+@OA_BUILD_GRAPHICS_TRUE@OA_GRAPHICS_GRAPH_TARGET = all-graph
+@OA_BUILD_GUI_TRUE@OA_GRAPHICS_GUI_TARGET = all-gui
+OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 all: all-recursive
 
 .SUFFIXES:

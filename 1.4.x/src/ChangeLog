@@ -1,5 +1,9 @@
 2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.am (OA_GRAPHICS_TARGETS): Fix thinko.
+
+2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* utils/storage.H (Memory::Storage::acquire): Remove.
 	(Memory::SinglyLinkedStorage::acquire): Likewise.
 	(Memory::DoublyLinkedStorage): New.
