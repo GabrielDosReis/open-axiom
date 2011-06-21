@@ -75,7 +75,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
-	comp.$(FASLEXT)	        foam_l.$(FASLEXT) 	\
+	comp.$(FASLEXT)	                          	\
 	pathname.$(FASLEXT)	compat.$(FASLEXT)      	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
@@ -110,7 +110,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	                       	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
-	$(OCOBJS) $(BROBJS) $(ASCOMP) $(INOBJS)
+	$(OCOBJS) $(BROBJS) $(INOBJS)
 
 # Last minite patches.
 # FIXMEL: should be folded into the main object list.
@@ -141,11 +141,6 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 
 autoload_objects += $(BFOBJS)
 
-ASCOMP= as.$(FASLEXT) axext_l.$(FASLEXT)
-
-ASAUTO= ${AUTO}/ax.$(FASLEXT)
-
-autoload_objects += $(ASAUTO)
 TIMESTAMP=$(axiom_targetdir)/timestamp
 YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
                 (setq *build-version* "$(PACKAGE_STRING)") \
@@ -209,15 +204,15 @@ makeint.lisp: Makefile
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
-	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
-	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
+	@ echo '(unless (or |$$StandardLinking| (|%basicSystemIsComplete|)) (build-interpsys)(|clearClams|))' >> makeint.lisp
+	@ echo '#+:gcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
+	@ echo '#+:gcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
 ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
+		$(OBJS) makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" --system-algebra \
@@ -234,7 +229,7 @@ all-axiomsys: ${AXIOMSYS}
 ${AXIOMSYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(OBJS) makeint.$(LNKEXT)
+		$(OBJS) makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" \
@@ -340,10 +335,6 @@ newfort.$(FASLEXT): macros.$(FASLEXT)
 lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT)
 interop.$(FASLEXT): interop.boot c-util.$(FASLEXT) hashcode.$(FASLEXT)
 c-doc.$(FASLEXT): c-util.$(FASLEXT)
-
-## Interface with the Aldor compiler.
-ax.$(FASLEXT): as.$(FASLEXT)
-as.$(FASLEXT): macros.$(FASLEXT)
 server.$(FASLEXT): macros.$(FASLEXT)
 
 ##
@@ -400,7 +391,7 @@ bits.$(FASLEXT): boot-pkg.$(FASLEXT)
 dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
-daase.$(FASLEXT): macros.$(FASLEXT) foam_l.$(FASLEXT)
+daase.$(FASLEXT): macros.$(FASLEXT)
 spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
@@ -437,8 +428,6 @@ sys-constants.$(FASLEXT): types.$(FASLEXT)
 hash.$(FASLEXT): types.$(FASLEXT)
 union.$(FASLEXT): vmlisp.$(FASLEXT)
 ggreater.$(FASLEXT): vmlisp.$(FASLEXT)
-axext_l.$(FASLEXT): foam_l.$(FASLEXT)
-foam_l.$(FASLEXT): vmlisp.$(FASLEXT) sys-constants.$(FASLEXT)
 lisp-backend.$(FASLEXT): sys-macros.$(FASLEXT)
 sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT) hash.$(FASLEXT)
 vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -110,7 +110,7 @@
 
 
 ; This file contains the code to build, open and access the .DAASE
-; files this file contains the code to )library NRLIBS and asy files
+; files this file contains the code to )library NRLIBS
 
 ; There is a major issue about the data that resides in these
 ; databases.  the fundamental problem is that the system requires more
@@ -202,7 +202,6 @@
 
 (import-module "macros")
 (in-package "AxiomCore")
-(import-module "foam_l")
 (in-package "BOOT")
 
 (defstruct database
@@ -324,17 +323,7 @@
 (defvar *allOperations* nil
   "a list of all the operations in the system")
 
-(defvar *asharpflags*
-  "-O -laxiom -Fasy -Flsp" "library compiler flags")
-
 (defvar |$ConstructorCache| nil)
-
-(defun asharp (file &optional (flags *asharpflags*))
- "call the asharp compiler"
- (|runProgram|
-   (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl")
-    (list flags file)))
-
 
 (defun |closeAllDatabaseStreams| nil
   (close *interp-stream*)
@@ -826,10 +815,6 @@
 	     (setq stream *interp-stream*)
 	     (when (setq struct (get constructor 'database))
 	       (setq data (database-object struct))))
-	    (asharp?
-	     (setq stream *interp-stream*)
-	     (when (setq struct (get constructor 'database))
-	       (setq data (database-object struct))))
 	    (niladic
 	     (setq stream *interp-stream*)
 	     (when (setq struct (get constructor 'database))
@@ -946,10 +931,6 @@
 		     (concatenate 'string 
 				  (|systemRootDirectory|)
 				  "src/algebra/" data))))
-	    (asharp?			; is this asharp code?
-	     (if (consp data)
-		 (setq data (cdr data))
-	       (setq data nil)))
 	    (object		       ; fix up system object pathname
 	     (if (consp data)
 		 (setq data
@@ -973,8 +954,6 @@
   
 ; localdatabase tries to find files in the order of:
 ;  NRLIB/index.KAF
-;  .asy
-;  .ao, then asharp to .asy
 
 (defun localdatabase (filelist options &optional (make-database? nil))
   "read a local filename and update the hash tables"
@@ -1000,13 +979,11 @@
 		      (aldorFiles (|getAllAldorObjectFiles| dirarg)))
 		  (values
 		   indexFiles
-		   (first aldorFiles)
-		   (second aldorFiles)
 		   ;; At the moment we will only look for user.lib: others 
-		   ;; are taken care of by localasy and localnrlib.
+		   ;; are taken care of by localnrlib.
 		   nil
 		   ))))
-   (let (thisdir nrlibs asos asys libs object only dir key 
+   (let (thisdir nrlibs libs object only dir key 
 		 (|$forceDatabaseUpdate| t) noexpose)
      (declare (special |$forceDatabaseUpdate|))
      (setq thisdir (get-current-directory))
@@ -1016,7 +993,7 @@
      (if make-database? 
 	 (setq noexpose t))
      (if dir 
-       (multiple-value-setq (nrlibs asys asos libs)
+       (multiple-value-setq (nrlibs libs)
           (processDir (|ensureTrailingSlash| (string dir)))))
      (dolist (file filelist)
        (let ((filename (pathname-name file))
@@ -1031,18 +1008,6 @@
 				    ".NRLIB/"
 				    |$IndexFilename|)))
 	   (push (namestring file) nrlibs))
-	  ((setq file (probe-file
-		       (concatenate 'string 
-				    namedir 
-				    filename
-				    ".asy")))
-	   (push (namestring file) asys))
-	  ((setq file (probe-file
-		       (concatenate 'string 
-				    namedir 
-				    filename
-				    ".ao")))
-	   (push (namestring file) asos))
 	  ('else (format t "   )library cannot find the file ~a.~%" filename)))))
      (dolist (file (|reverse!| nrlibs))
        (setq key (pathname-name (first (last (pathname-directory file)))))
@@ -1050,107 +1015,8 @@
 				 (directory-namestring file) 
 				 "code." |$faslType|))
        (localnrlib key file object make-database? noexpose))
-     (dolist (file (|reverse!| asys))
-       (setq object
-	     (concatenate 'string 
-			  (directory-namestring file)
-			  (pathname-name file)))
-       (localasy (|astran| file) object only make-database? noexpose))
-     (dolist (file (|reverse!| asos))
-       (setq object
-	     (concatenate 'string 
-			  (directory-namestring file)
-			  (pathname-name file)))
-       (asharp file)
-       (setq file (|astran| (concatenate 'string 
-					 (pathname-name file) 
-					 ".asy")))
-       (localasy file object only make-database? noexpose))
      (HCLEAR |$ConstructorCache|))))
 
-
-(defun localasy (asy object only make-database? noexpose)
-  "given an alist from the asyfile and the objectfile update the database"
-  (labels (
-	   (fetchdata (alist index)
-		      (cdr (assoc index alist :test #'string=))))
-	  (let (cname kind key alist (systemdir? nil) 
-		      oldmaps asharp-name dbstruct abbrev)
-   (set-file-getter object)  ; sets the autoload property for G-object
-   (dolist (domain asy)
-     (setq key (first domain))
-     (setq alist (rest domain))
-     (setq asharp-name
-           (foam::axiomxl-global-name (pathname-name object) key
-                                     (lassoc '|typeCode| alist)))
-     (if (< (length alist) 4) ;we have a naked function object
-         (let ((opname key)
-               (modemap (car (LASSOC '|modemaps| alist))) )
-           (setq oldmaps (|getOperationFromDB| opname))
-           (setf (gethash opname *operation-hash*)
-                 (adjoin (subst asharp-name opname (cdr modemap))
-                         oldmaps :test #'equal))
-           (asharpMkAutoloadFunction object asharp-name))
-       (when (if (null only) (not (eq key '%%)) (member key only))
-	 (setq *allOperations* nil)        ; force this to recompute
-	 (setq oldmaps (|getOperationModemapsFromDB| key))
-	 (setq dbstruct (make-database))
-	 (setf (get key 'database) dbstruct)
-	 (setq *allconstructors* (adjoin key *allconstructors*))
-	 (setf (database-constructorform dbstruct)
-	       (fetchdata alist "constructorForm"))
-	 (setf (database-constructorkind dbstruct)
-	       (fetchdata alist "constructorKind"))
-	 (setf (database-constructormodemap dbstruct)
-	       (fetchdata alist "constructorModemap"))
-	 (unless (setf (database-abbreviation dbstruct)
-		       (fetchdata alist "abbreviation"))
-	   (setf (database-abbreviation dbstruct) key)) ; default
-	 (setq abbrev (database-abbreviation dbstruct))
-	 (setf (get abbrev 'abbreviationfor) key)
-	 (setf (database-constructorcategory dbstruct)
-	       (fetchdata alist "constructorCategory"))
-	 (setf (database-attributes dbstruct)
-	       (fetchdata alist "attributes"))
-	 (setf (database-sourcefile dbstruct)
-	       (fetchdata alist "sourceFile"))
-	 (setf (database-operationalist dbstruct)
-	       (fetchdata alist "operationAlist"))
-	 (setf (database-modemaps dbstruct)
-	       (fetchdata alist "modemaps"))
-	 (setf (database-documentation dbstruct)
-	       (fetchdata alist "documentation"))
-	 (setf (database-predicates dbstruct)
-	       (fetchdata alist "predicates"))
-	 (setf (database-niladic dbstruct)
-	       (fetchdata alist "NILADIC"))
-	 (addoperations key oldmaps)
-	 (setq cname  (|opOf| (database-constructorform dbstruct)))
-	 (setq kind (database-constructorkind dbstruct))
-	 (if (null noexpose) (|setExposeAddConstr| (cons cname nil)))
-	 (unless make-database?
-	   (|updateDatabase| key cname systemdir?) ;makes many hashtables???
-	   (|installConstructor| cname kind)
-	   ;; following can break category database build
-	   (if (eq kind '|category|)
-	       (setf (database-ancestors dbstruct)
-		     (fetchdata alist "ancestors")))
-	   (if (eq kind '|domain|)
-	       (dolist (pair (cdr (assoc "ancestors" alist :test #'string=)))
-		 (setf (gethash (cons cname (caar pair)) *hascategory-hash*)
-		       (cdr pair))))
-	   (if |$InteractiveMode| 
-	       (setq |$CategoryFrame| |$EmptyEnvironment|)))
-	 (setf (database-cosig dbstruct)
-	       (cons nil (mapcar #'|categoryForm?|
-				 (cddar (database-constructormodemap dbstruct)))))
-	 (setf (database-object dbstruct) (cons object asharp-name))
-	 (if (eq kind '|category|)
-	     (asharpMkAutoLoadCategory object cname asharp-name
-				       (database-cosig dbstruct))
-	   (asharpMkAutoLoadFunctor object cname asharp-name
-				    (database-cosig dbstruct)))
-	 (|sayKeyedMsg| 'S2IU0001 (list cname object))))))))
 
 (defun localnrlib (key nrlib object make-database? noexpose)
   "given a string pathname of an index.KAF and the object update the database"
@@ -1339,7 +1205,6 @@
                                         ; does gethash calls into it rather than doing a getdatabase call.
   (write-interpdb)
 #+:AKCL  (write-warmdata)
-  (create-initializers)
   (when (probe-file (final-name "compress"))
         (delete-file (final-name "compress")))
   (rename-file "compress.build" (final-name "compress"))
@@ -1609,202 +1474,3 @@
     (maphash #'(lambda (k v) (declare (ignore v)) (push k *allOperations*))
 	     *operation-hash*))
   *allOperations*)
-
-; the variable NOPfuncall is a funcall-able object that is a dummy
-; initializer for libaxiom asharp domains.
-(defvar NOPfuncall (cons 'identity nil))
-
-(defun create-initializers ()
-;; since libaxiom is now built with -name=axiom following unnecessary
-;; (dolist (con (|allConstructors|))
-;;   (let ((sourcefile (|getConstructorSourceFileFromDB| con)))
-;;     (if sourcefile
-;;       (set (foam::axiomxl-file-init-name (pathname-name sourcefile))
-;;             NOPfuncall))))
- (setf (symbol-value (foam::axiomxl-file-init-name "axiom")) NOPfuncall)
-;; (set (foam::axiomxl-file-init-name "axclique") NOPfuncall)
- (setf (symbol-value (foam::axiomxl-file-init-name "filecliq")) NOPfuncall)
- (setf (symbol-value (foam::axiomxl-file-init-name "attrib")) NOPfuncall)
-;; following needs to happen inside restart since $AXIOM may change
- (let ((asharprootlib (strconc (|systemRootDirectory|) "/aldor/lib/")))
-   (set-file-getter (strconc asharprootlib "runtime"))
-   (set-file-getter (strconc asharprootlib "lang"))
-   (set-file-getter (strconc asharprootlib "attrib"))
-   (set-file-getter (strconc asharprootlib "axlit"))
-   (set-file-getter (strconc asharprootlib "minimach"))
-   (set-file-getter (strconc asharprootlib "axextend"))))
-
-
-
-;---------------------------------------------------------------------
-
-; how the magic works:
-;  when a )library is done on a new compiler file we set up multiple
-;  functions (refered to as autoloaders). there is an autoloader
-;  stored in the symbol-function of the G-filename (e.g. G-basic)
-;  (see set-file-getter function)
-;  and an autoloader stored in the symbol-function of every domain
-;  in the basic.as file ( asharpMkAutoloadFunctor )
-; When a domain is needed the autoloader for the domain is executed.
-;  this autoloader invokes file-getter-name to get the name of the
-;  file (eg basic) and evaluates the name. the FIRST time this is done
-;  for a file the file will be loaded by its autoloader, then it will
-;  return the file object. every other time the file is already
-;  loaded and the file object is returned directly.
-; Once the file object is gotten getconstructor is called to get the
-;  domain. the FIRST time this is done for the domain the autoloader
-;  invokes the file object. every other time the domain already
-;  exists.
-;(defvar *this-file* "no-file")
-
-(defmacro |CCall| (fun &rest args)
-  (let ((ccc (gensym)) (cfun (gensym)) (cenv (gensym)))
-    `(let ((,ccc ,fun))
-       (let ((,cfun (|ClosFun| ,ccc))
-             (,cenv (|ClosEnv| ,ccc)))
-         (funcall ,cfun ,@args ,cenv )))))
-
-(defmacro |ClosFun| (x) `(car ,x))
-(defmacro |ClosEnv| (x) `(cdr ,x))
-
-(defun file-runner (name)
- (declare (special foam-user::|G-domainPrepare!|))
-  (|CCall| foam-user::|G-domainPrepare!| (|CCall| name)))
-
-(defun getConstructor (file-fn asharp-name)
- (|CCall| file-fn)
-; (eval (cdr (assoc file-id (get name 'asharp-name) :test #'equal))))
- (eval asharp-name))
-
-(defun getop (dom op type)
- (declare (special foam-user::|G-domainGetExport!|))
-  (|CCall| foam-user::|G-domainGetExport!| dom
-      (|hashString| (symbol-name op)) type))
-
-; the asharp compiler will allow both constant domains and domains
-; which are functions. localasy sets the autoload property so that
-; the symbol-function contains a function that, when invoked with
-; the correct number of args will return a domain.
-
-; this function is called if we are given a new compiler domain
-; which is a function. the symbol-function of the domain is set
-; to call the function with the correct number of arguments.
-
-(defun wrapDomArgs (obj type?)
-  (cond ((not type?) obj)
-        (t (|makeOldAxiomDispatchDomain| obj))))
-
-(defun asharpMkAutoLoadFunctor (file cname asharp-name cosig)
-  (setf (symbol-function cname)
-  #'(lambda (&rest args)
-     (let ((func (getconstructor (eval (file-getter-name file)) asharp-name)))
-      (setf (symbol-function cname)
-       (if (vectorp (car func))
-        #'(lambda () func) ;; constant domain
-        #'(lambda (&rest args)
-            (apply (|ClosFun| func)
-                   (|append!|
-                    (mapcar #'wrapDomArgs args (cdr cosig))
-                    (list (|ClosEnv| func)))))))
-      (apply cname args)))))
-
-(defun asharpMkAutoLoadCategory (file cname asharp-name cosig)
-  (asharpMkAutoLoadFunctor file cname asharp-name cosig)
-  (let ((packname (INTERN (STRCONC cname '"&"))))
-    (setf (symbol-function packname)
-  #'(lambda (self &rest args)
-     (let ((func (getconstructor (eval (file-getter-name file)) asharp-name)))
-      (setf (symbol-function packname)
-       (if (vectorp (car func))
-        #'(lambda (self)
-            (|CCall| (elt (car func) 5) (cdr func) (wrapDomArgs self t))) ;; constant category
-        #'(lambda (self &rest args)
-            (let ((precat
-                   (apply (|ClosFun| func)
-                          (|append!|
-                           (mapcar #'wrapDomArgs args (cdr cosig))
-                           (list (|ClosEnv| func))))))
-              (|CCall| (elt (car precat) 5) (cdr precat) (wrapDomArgs self t))))))
-      (apply packname self args))))))
-
-(defun asharpMkAutoLoadFunction (file asharpname)
-  (setf (symbol-value asharpname)
-   (cons
-    #'(lambda (&rest l)
-        (let ((args (butlast l))
-              (func (getconstructor (eval (file-getter-name file)) asharpname)))
-          (apply (car func) (append args (list (cdr func))))))
-        ())))
-
-; this function will return the internal name of the file object getter
-
-(defun file-getter-name (filename)
-   (foam::axiomxl-file-init-name (pathname-name filename)))
-
-;;need to initialize |G-filename| to a function which loads file
-;; and then returns the new value of |G-filename|
-
-(defun set-file-getter (filename)
-  (let ((getter-name (file-getter-name filename)))
-    (setf (symbol-value getter-name)
-         (cons #'init-file-getter  (cons getter-name filename)))))
-
-(defun init-file-getter (env)
-  (let ((getter-name (car env))
-        (filename (cdr env)))
-    (load filename)
-    (|CCall| (eval getter-name))))
-
-(defun set-lib-file-getter (filename cname)
-  (let ((getter-name (file-getter-name filename)))
-    (setf (symbol-value getter-name)
-         (cons #'init-lib-file-getter  (cons getter-name cname)))))
-
-(defun init-lib-file-getter (env)
-  (let* ((getter-name (car env))
-         (cname (cdr env))
-         (filename (|getConstructorModuleFromDB| cname)))
-    (load filename)
-    (|CCall| (eval getter-name))))
-
-;; following 2 functions are called by file-exports and file-imports macros
-(defun foam::process-import-entry (entry)
-  (let* ((asharpname (car entry))
-         (stringname (cadr entry))
-         (hcode (caddr entry))
-         (libname (cadddr entry))
-         (bootname (intern stringname 'boot)))
-    (declare (ignore libname))
-    (if (and (eq hcode 'foam-user::|initializer|) (not (boundp asharpname)))
-        (error (format nil "AxiomXL file ~s is missing!" stringname)))
-    (unless (or (not (numberp hcode)) (zerop hcode) (boundp asharpname))
-          (when (|constructor?| bootname)
-                (setf (symbol-value asharpname)
-                     (if (|niladicConstructorFromDB| bootname)
-                         (|makeLazyOldAxiomDispatchDomain| (list bootname))
-                       (cons '|runOldAxiomFunctor|  bootname))))
-          (when (|attribute?| bootname)
-                (setf (symbol-value asharpname)
-		      (|makeLazyOldAxiomDispatchDomain| bootname))))))
-          
-                 
-
-;(defun foam::process-export-entry (entry)
-;  (let* ((asharpname (car entry))
-;        (stringname (cadr entry))
-;        (hcode (caddr entry))
-;        (libname (cadddr entry))
-;        (bootname (intern stringname 'boot)))
-;    (declare (ignore libname))
-;    (when (numberp hcode)
-;         (setf (get bootname 'asharp-name)
-;               (cons (cons *this-file* asharpname)
-;                     (get bootname 'asharp-name)))
-;         )))
-
-
-
-
-
-
-

@@ -40,7 +40,7 @@ namespace BOOT
 $cacheAlist := nil
 $compileRecurrence := true
 $errorReportLevel := 'warning
-$sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
+$sourceFileTypes := '(INPUT SPAD BOOT LISP)
 
 $existingFiles := hashTable "EQUAL"
 
@@ -437,48 +437,21 @@ compiler args ==
 
     af  := pathname args
     aft := pathnameType af
--- Whats this for? MCD/PAB 21-9-95
---    if haveNew and (null(aft) or (aft = '"")) then
---        af := pathname [af, '"as"]
---        aft = '"as"
---    if haveOld and (null(aft) or (aft = '"")) then
---        af := pathname [af, '"spad"]
---        aft = '"spad"
-
-    haveNew or (aft = '"as")   =>
-        not (af1 := $FINDFILE (af, '(as))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
-        compileAsharpCmd [af1]
     haveOld or (aft = '"spad") =>
         not (af1 := $FINDFILE (af, '(spad))) =>
             throwKeyedMsg("S2IL0003",[NAMESTRING af])
         compileSpad2Cmd  [af1]
-    aft = '"lsp"   =>
-        not (af1 := $FINDFILE (af, '(lsp))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
-        compileAsharpLispCmd [af1]
     aft = '"NRLIB"  =>
         not (af1 := $FINDFILE (af, '(NRLIB))) =>
             throwKeyedMsg("S2IL0003",[NAMESTRING af])
         compileSpadLispCmd [af1]
-    aft = '"ao"   =>
-        not (af1 := $FINDFILE (af, '(ao))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
-        compileAsharpCmd [af1]
-    aft = '"al"   =>    -- archive library of .ao files
-        not (af1 := $FINDFILE (af, '(al))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
-        compileAsharpArchiveCmd [af1]
 
     -- see if we something with the appropriate file extension
     -- lying around
 
     af1 := $FINDFILE (af, '(as spad ao asy))
 
-    af1 and pathnameType(af1) = '"as"   => compileAsharpCmd [af1]
-    af1 and pathnameType(af1) = '"ao"  => compileAsharpCmd [af1]
     af1 and pathnameType(af1) = '"spad" => compileSpad2Cmd  [af1]
-    af1 and pathnameType(af1) = '"asy"  => compileAsharpArchiveCmd [af1]
 
     -- maybe /EDITFILE has some stuff that can help us
     ef := pathname _/EDITFILE
@@ -487,226 +460,16 @@ compiler args ==
     ef = af => throwKeyedMsg("S2IZ0039", nil)
     af := ef
 
-    pathnameType(af) = '"as"   => compileAsharpCmd args
-    pathnameType(af) = '"ao"  => compileAsharpCmd args
     pathnameType(af) = '"spad" => compileSpad2Cmd  args
 
     -- see if we something with the appropriate file extension
     -- lying around
-    af1 := $FINDFILE (af, '(as spad ao asy))
+    af1 := $FINDFILE (af, '(spad))
 
-    af1 and pathnameType(af1) = '"as"   => compileAsharpCmd [af1]
-    af1 and pathnameType(af1) = '"ao"  => compileAsharpCmd [af1]
     af1 and pathnameType(af1) = '"spad" => compileSpad2Cmd  [af1]
-    af1 and pathnameType(af1) = '"asy"  => compileAsharpArchiveCmd [af1]
 
     throwKeyedMsg("S2IZ0039", nil)
 
-compileAsharpCmd args ==
-    compileAsharpCmd1 args
-    terminateSystemCommand()
-
-compileAsharpCmd1 args ==
-    -- Assume we entered from the "compiler" function, so args ~= nil
-    -- and is a file with file extension .as or .ao
-
-    path := pathname args
-    pathType := pathnameType path
-    (pathType ~= '"as") and (pathType ~= '"ao") => throwKeyedMsg("S2IZ0083", nil)
-    null PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
-
-    SETQ(_/EDITFILE, path)
-    updateSourceFiles path
-
-    optList :=  '( _
-      new _
-      old _
-      translate _
-      onlyargs _
-      moreargs _
-      quiet _
-      nolispcompile _
-      noquiet _
-      library _
-      nolibrary _
-        )
-
-    beQuiet := false         -- be verbose here
-    doLibrary  := true       -- so a )library after compilation
-    doCompileLisp := true    -- do compile generated lisp code
-
-    moreArgs := nil
-    onlyArgs := nil
-
-    for opt in $options repeat
-        [optname,:optargs] := opt
-        fullopt := selectOptionLC(optname,optList,nil)
-
-        fullopt = 'new       => nil
-        fullopt = 'old       => error "Internal error: compileAsharpCmd got )old"
-        fullopt = 'translate => error "Internal error: compileAsharpCmd got )translate"
-
-        fullopt = 'quiet     => beQuiet := true
-        fullopt = 'noquiet   => beQuiet := false
-
-        fullopt = 'nolispcompile   => doCompileLisp := false
-
-        fullopt = 'moreargs  => moreArgs := optargs
-        fullopt = 'onlyargs  => onlyArgs := optargs
-
-        fullopt = 'library   => doLibrary  := true
-        fullopt = 'nolibrary => doLibrary  := false
-
-        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
-
-    tempArgs :=
-        pathType = '"ao" =>
-            -- want to strip out -Fao
-            (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, nil)) =>
-                p = 0 => subString($asharpCmdlineFlags, 5)
-                strconc(subString($asharpCmdlineFlags, 0, p), '" ",
-                    subString($asharpCmdlineFlags, p+5))
-            $asharpCmdlineFlags
-        $asharpCmdlineFlags
-
-    asharpArgs :=
-        onlyArgs =>
-            s := ""
-            for a in onlyArgs repeat
-                s := strconc(s, '" ", object2String a)
-            s
-        moreArgs =>
-            s := tempArgs
-            for a in moreArgs repeat
-                s := strconc(s, '" ", object2String a)
-            s
-        tempArgs
-
-    if not beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
-
-    command :=
-     strconc(strconc(getEnv('"ALDORROOT"),'"/bin/"),_
-               "aldor ", asharpArgs, '" ", namestring args)
-    rc := runCommand command
-
-    if (rc = 0) and doCompileLisp then
-        lsp := fnameMake('".", pathnameName args, '"lsp")
-        if fnameReadable?(lsp) then
-            if not beQuiet then sayKeyedMsg("S2IZ0089", [namestring lsp])
-            compileFileQuietly(lsp)
-        else
-            sayKeyedMsg("S2IL0003", [namestring lsp])
-
-    if rc = 0 and doLibrary then
-        -- do we need to worry about where the compilation output went?
-        if not beQuiet then sayKeyedMsg("S2IZ0090", [ pathnameName path ])
-        withAsharpCmd [ pathnameName path ]
-    else if not beQuiet then
-        sayKeyedMsg("S2IZ0084", nil)
-
-    if not $buildingSystemAlgebra then
-      extendLocalLibdb $newConlist
-
-compileAsharpArchiveCmd args ==
-    -- Assume we entered from the "compiler" function, so args ~= nil
-    -- and is a file with file extension .al. We also assume that
-    -- the name is fully qualified.
-
-    path := pathname args
-    null PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
-
-    -- here is the plan:
-    --   1. extract the file name and try to make a directory based
-    --      on that name.
-    --   2. cd to that directory and ar x the .al file
-    --   3. for each .ao file that shows up, compile it
-    --   4. delete the generated .ao files
-
-    -- First try to make the directory in the current directory
-
-    dir  := fnameMake('".", pathnameName path, '"axldir")
-    exists := PROBE_-FILE dir
-    isDir := directoryp namestring dir
-    exists and isDir ~= 1=>
-        throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
-
-    if isDir ~= 1 then
-        rc   := mkdir namestring dir
-        rc ~= 0 => throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
-
-    curDir := GET_-CURRENT_-DIRECTORY()
-
-    -- cd to that directory and try to unarchive the .al file
-
-    cd [ object2Identifier namestring dir ]
-
-    cmd := strconc( '"ar x ", namestring path )
-    rc := runCommand cmd
-    rc ~= 0 =>
-        cd [ object2Identifier namestring curDir ]
-        throwKeyedMsg("S2IL0028",[namestring dir, namestring args])
-
-    -- Look for .ao files
-
-    asos := DIRECTORY '"*.ao"
-    null asos =>
-        cd [ object2Identifier namestring curDir ]
-        throwKeyedMsg("S2IL0029",[namestring dir, namestring args])
-
-    -- Compile the .ao files
-
-    for aso in asos repeat
-        compileAsharpCmd1 [ namestring aso ]
-
-    -- Reset the current directory
-
-    cd [ object2Identifier namestring curDir ]
-
-    terminateSystemCommand()
-
-compileAsharpLispCmd args ==
-    -- Assume we entered from the "compiler" function, so args ~= nil
-    -- and is a file with file extension .lsp
-
-    path := pathname args
-    null PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
-
-    optList :=  '( _
-      quiet _
-      noquiet _
-      library _
-      nolibrary _
-        )
-
-    beQuiet := false         -- be verbose here
-    doLibrary  := true       -- so a )library after compilation
-
-    for opt in $options repeat
-        [optname,:optargs] := opt
-        fullopt := selectOptionLC(optname,optList,nil)
-
-        fullopt = 'quiet     => beQuiet := true
-        fullopt = 'noquiet   => beQuiet := false
-
-        fullopt = 'library   => doLibrary  := true
-        fullopt = 'nolibrary => doLibrary  := false
-
-        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
-
-    lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
-    if fnameReadable?(lsp) then
-        if not beQuiet then sayKeyedMsg("S2IZ0089", [namestring lsp])
-        compileFileQuietly(lsp)
-    else
-        sayKeyedMsg("S2IL0003", [namestring lsp])
-
-    if doLibrary then
-        -- do we need to worry about where the compilation output went?
-        if not beQuiet then sayKeyedMsg("S2IZ0090", [ pathnameName path ])
-        withAsharpCmd [ pathnameName path ]
-    else if not beQuiet then
-        sayKeyedMsg("S2IZ0084", nil)
-    terminateSystemCommand()
 
 compileSpadLispCmd args ==
     -- Assume we entered from the "compiler" function, so args ~= nil
@@ -869,10 +632,6 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                           (RWRITE KEY VALUE STREAM)))) )
     (try compilerDoit(constructor,fun); finally SEQ(UNEMBED 'RWRITE))
 
-
-withAsharpCmd args ==
-    $options: local := nil
-    LOCALDATABASE(args, $options)
 
 --% )copyright -- display copyright notice
 
