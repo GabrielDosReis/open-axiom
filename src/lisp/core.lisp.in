@@ -183,6 +183,9 @@
 	   "bootImport"
 	   "CONCAT"
 	   "$EditorProgram"
+
+	   ;; numeric support
+	   "%fNaN?"
            ))
 
 (in-package "AxiomCore")
@@ -1323,6 +1326,14 @@
 #+ :sbcl
 (eval-when (:load-toplevel :execute)
    (pushnew #'shoe-provide-module sb-ext:*module-provider-functions*))
+
+;; 
+;; -*-* Numerics support -*-
+;; 
+(defmacro |%fNaN?| (x)
+  #+:sbcl `(sb-ext:float-nan-p ,x)
+  #+:ecl `(ext:float-nan-p ,x)
+  #-(or :sbcl :ecl) `(/= ,x ,x))
 
 ;; 
 ;; -*- Native Datatype correspondance -*-
