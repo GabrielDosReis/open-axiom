@@ -60,9 +60,8 @@
 
 #-:gcl
 (defmacro |trapNumericErrors| (form)
-  `(handler-bind ((division-by-zero
-		   #'(lambda (c) (declare (ignore c)) |%nothing|)))
-		 ,form))
+  `(handler-case ,form
+		 (arithmetic-error () |%nothing|)))
 
 ;; the following form embeds around the akcl error handler
 #+:gcl

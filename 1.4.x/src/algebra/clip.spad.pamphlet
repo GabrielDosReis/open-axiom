@@ -89,10 +89,10 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
     norm: Pt -> SF
     iClipParametric: (L L Pt,RN,RN) -> CLIPPED
     findPt: L L Pt -> Union(Pt,"failed")
-    Fnan?: SF ->Boolean
     Pnan?:Pt ->Boolean
 
-    Fnan? x == x~=x
+    Fnan?(x: SF): Boolean == %fNaN?(x)$Foreign(Builtin)
+
     Pnan? p == any?(Fnan?,p)
    
     iClipParametric(pointLists,fraction,scale) ==

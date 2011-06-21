@@ -154,7 +154,6 @@ Plot(): Exports == Implementation where
     basicPlot      : (F -> P,R) -> C
     basicRefine    : (C,R) -> C
     pt             : (F,F) -> P
-    Fnan?           : F -> Boolean
     Pnan?           : P -> Boolean
 
 --% representation
@@ -175,7 +174,7 @@ Plot(): Exports == Implementation where
     ANGLEBOUND: F := cos inv (4::F)
     DEBUG: B := false
 
-    Fnan?(x) == x ~= x
+    Fnan?(x: F): Boolean == %fNaN?(x)$Foreign(Builtin)
     Pnan?(x) == any?(Fnan?,x)
 
 --% graphics output
@@ -284,7 +283,8 @@ Plot(): Exports == Implementation where
       xDiff = 0 or yDiff = 0 => curve
       l := lo tRange; h := hi tRange
       (tDiff := h-l) = 0 => curve
---      if (%sptreq(yDiff, quietDoubleNaN()$Lisp)$Foreign(Builtin)) then yDiff := 1::F
+      if %fNaN?(yDiff)$Foreign(Builtin) then
+        yDiff := 1@F
       t := curve.knots
       #t < 3 => curve
       p := curve.points; f := curve.source

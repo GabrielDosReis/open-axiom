@@ -1,5 +1,14 @@
 2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (%fNaN?): New.
+	* interp/spaderror.lisp (trapNumericErrors): Handle
+	ARITHMETIC-ERROR too.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %fNaN?.
+	* algebra/clip.spad.pamphlet (TwoDimensionalPlotClipping): Use it.
+	* algebra/plot.spad.pamphlet (Plot): Likewise.
+
+2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spaderror.lisp ($numericFailure): Remove.
 	(trapNumericErrors): Define for non-GCL RTS.
 	Tidy GCL-based definition.
