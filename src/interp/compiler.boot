@@ -1353,7 +1353,6 @@ getBasicFFIType t ==
   t = $Int64 => bootDenotation "int64"
   t = $UInt64 => bootDenotation "uint64"
   t = $SingleInteger => bootDenotation "int"
-  t = $SingleFloat =>  bootDenotation "float"
   t = $DoubleFloat => bootDenotation "double"
   t = $String => bootDenotation "string"
   t = $SystemPointer => bootDenotation "pointer"
@@ -1370,8 +1369,7 @@ $FFIAggregableDataType ==
     $Int16,$UInt16,
       $Int32,$UInt32,
         $Int64, $UInt64,
-          $SingleFloat,
-	    $DoubleFloat]
+          $DoubleFloat]
 
 ++ Return the Boot denotation of an FFI datatype.  This is either
 ++ a basic VM type, or a simple array of sized integer or floating

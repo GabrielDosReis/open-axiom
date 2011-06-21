@@ -1,3 +1,11 @@
+2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot: Remove reference to $SingleFloat.
+	* interp/foam_l.lisp: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/sys-constants.boot: Likewise.
+	* lisp/core.lisp.in: Likewise.
+
 2011-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (%fNaN?): New.

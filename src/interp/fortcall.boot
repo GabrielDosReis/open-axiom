@@ -528,13 +528,11 @@ spadify(l,results,decls,names,actual) ==
 lispType u ==
   -- Return the lisp type equivalent to the given Fortran type.
   LISTP u => lispType first u
-  u = "real" => "%SingleFloat"
   u = "double" => "%DoubleFloat"
   u = "double precision" => "DoubleFloat"
   u = "integer" => "FIXNUM"
   u = "logical" => "BOOLEAN"
   u = "character" => "CHARACTER"
-  u = "complex" => "%SingleFloat"
   u = "double complex" => "%DoubleFloat"
   error ['"Unrecognised Fortran type: ",u]
 
@@ -557,7 +555,6 @@ checkForBoolean u ==
   u = "BOOLEAN" => "%Short"
   u
 
-shortZero == COERCE(0,"%SingleFloat")
 longZero == COERCE(0,"%DoubleFloat")
 
 prepareResults(results,args,dummies,values,decls) ==
@@ -571,20 +568,18 @@ prepareResults(results,args,dummies,values,decls) ==
         LISTP(type) and first(type) in ["complex","double complex"] =>
           makeVector(  makeList(
             2*apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
-            if first(type)="complex" then shortZero else longZero),_
-          if first(type)="complex" then "%SingleFloat" else "%DoubleFloat" )
+            longZero),_
+          "%DoubleFloat" )
         LISTP type => makeVector(_
           makeList(
             apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             defaultValue(first type,argNames,actual)),_
           checkForBoolean lispType first(type) )
         type = "integer" => 0
-        type = "real" => shortZero
         type = "double" => longZero
         type = "double precision" => longZero
         type = "logical" => 0
         type = "character" => makeString 1
-        type = "complex" => makeVector([shortZero,shortZero],"%SingleFloat")
         type = "double complex" => makeVector([longZero,longZero],"%DoubleFloat")
         error ['"Unrecognised Fortran type: ",type]
   reverse! data
