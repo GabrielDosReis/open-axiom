@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -82,11 +82,11 @@
 (export '(
  compile-as-file cases
 
- |Clos| |Char| |Bool| |Byte| |HInt| |SInt| |BInt| |SFlo| |DFlo| |Ptr| 
+ |Clos| |Char| |Bool| |Byte| |HInt| |SInt| |BInt| |DFlo| |Ptr| 
  |Word| |Arb| |Env| |Level| |Arr| |Record| |Nil|
 
  |ClosInit| |CharInit| |BoolInit| |ByteInit| |HIntInit| |SIntInit| 
- |BIntInit| |SFloInit| |DFloInit| |PtrInit| |WordInit| |ArbInit| |EnvInit|
+ |BIntInit| |DFloInit| |PtrInit| |WordInit| |ArbInit| |EnvInit|
  |ArrInit| |RecordInit| |LevelInit| 
 
  |BoolFalse| |BoolTrue| |BoolNot| |BoolAnd| |BoolOr| |BoolEQ| |BoolNE|
@@ -94,13 +94,6 @@
  |CharSpace| |CharNewline| |CharMin| |CharMax| |CharIsDigit|
  |CharIsLetter| |CharEQ| |CharNE| |CharLT| |CharLE|
  |CharLower| |CharUpper| |CharOrd| |CharNum| |CharCode0|
-
- |SFlo0| |SFlo1| |SFloMin| |SFloMax| |SFloEpsilon| |SFloIsZero|
- |SFloIsNeg| |SFloIsPos| |SFloEQ| |SFloNE| |SFloLT|
- |SFloLE| |SFloNegate| |SFloPrev| |SFloNext| |SFloPlus|
- |SFloMinus| |SFloTimes| |SFloTimesPlus| |SFloDivide|
- |SFloRPlus| |SFloRMinus| |SFloRTimes| |SFloRTimesPlus|
- |SFloRDivide| |SFloDissemble| |SFloAssemble|
 
  |DFlo0| |DFlo1| |DFloMin| |DFloMax| |DFloEpsilon|
  |DFloIsZero| |DFloIsNeg| |DFloIsPos| |DFloEQ| |DFloNE|
@@ -133,17 +126,17 @@
 
  |PtrNil| |PtrIsNil| |PtrMagicEQ| |PtrEQ| |PtrNE|
 
- |FormatSFlo| |FormatDFlo| |FormatSInt| |FormatBInt|
+ |FormatDFlo| |FormatSInt| |FormatBInt|
  |fgetss| |fputss|
 
- |ScanSFlo| |ScanDFlo| |ScanSInt| |ScanBInt|
+ |ScanDFlo| |ScanSInt| |ScanBInt|
 
- |SFloToDFlo| |DFloToSFlo| |ByteToSInt| |SIntToByte| |HIntToSInt|
- |SIntToHInt| |SIntToBInt| |BIntToSInt| |SIntToSFlo|
- |SIntToDFlo| |BIntToSFlo| |BIntToDFlo| |PtrToSInt|
+ |ByteToSInt| |SIntToByte| |HIntToSInt|
+ |SIntToHInt| |SIntToBInt| |BIntToSInt|
+ |SIntToDFlo| |BIntToDFlo| |PtrToSInt|
  |SIntToPtr| |BoolToSInt|
 
- |ArrToSFlo| |ArrToDFlo| |ArrToSInt| |ArrToBInt|
+ |ArrToDFlo| |ArrToSInt| |ArrToBInt|
 
  |PlatformRTE| |PlatformOS| |Halt|
 
@@ -159,9 +152,9 @@
 
  |MakeEnv| |EnvLevel| |EnvNext| |EnvInfo| |SetEnvInfo| |FoamEnvEnsure|
  |MakeLit| |MakeLevel|
- |printNewLine| |printChar| |printString| |printSInt| |printBInt| |printSFloat|
+ |printNewLine| |printChar| |printString| |printSInt| |printBInt|
  |printDFloat| 
- |strLength| |formatSInt| |formatBInt| |formatSFloat| |formatDFloat|
+ |strLength| |formatSInt| |formatBInt| |formatDFloat|
  
  |ProgHashCode| |SetProgHashCode| |ProgFun|
  |G-mainArgc| |G-mainArgv|
@@ -194,8 +187,6 @@
 
 (deftype |BInt| () 'BOOT::|%Integer|)
 
-(deftype |SFlo| () 'BOOT::|%SingleFloat|)
-
 (deftype |DFlo| () 'BOOT::|%DoubleFloat|)
 
 (deftype |Level| () t) ;; structure??
@@ -216,7 +207,6 @@
 (defconstant |HIntInit| (the |HInt| 0))
 (defconstant |SIntInit| (the |SInt| 0))
 (defconstant |BIntInit| (the |BInt|  0))
-(defconstant |SFloInit| (coerce 0 '|SFlo|))
 (defconstant |DFloInit| (coerce 0 '|DFlo|))
 (defconstant |PtrInit|  (the |Ptr|  nil))
 (defconstant |ArrInit|  (the |Arr|  nil))
@@ -254,40 +244,6 @@
 (defmacro |CharUpper|   (x) `(the |Char| (CHAR-UPCASE (the |Char| ,x))))
 (defmacro |CharOrd|     (x) `(CHAR-INT (the |Char| ,x)))
 (defmacro |CharNum|     (x) `(INT-CHAR (the |SInt| ,x)))
-
-(defmacro |SFlo0|        () (coerce 0 '|SFlo|))
-(defmacro |SFlo1|        () (coerce 1 '|SFlo|))
-(defmacro |SFloMin|      () BOOT::|$SingleFloatMinimum|)
-(defmacro |SFloMax|      () BOOT::|$SingleFloatMaximum|)
-(defmacro |SFloEpsilon|  () BOOT::|$SingleFloatEpsilon|)
-(defmacro |SFloIsZero|  (x) `(zerop (the |SFlo| ,x)))
-(defmacro |SFloIsNeg|   (x) `(minusp (the |SFlo| ,x)))
-(defmacro |SFloIsPos|   (x) `(plusp (the |SFlo| ,x)))
-(defmacro |SFloLT|    (x y) `(< (the |SFlo| ,x) (the |SFlo| ,y)))
-(defmacro |SFloLE|    (x y) `(<= (the |SFlo| ,x) (the |SFlo| ,y)))
-(defmacro |SFloEQ|    (x y) `(= (the |SFlo| ,x) (the |SFlo| ,y)))
-(defmacro |SFloNE|    (x y) `(/= (the |SFlo| ,x) (the |SFlo| ,y)))
-(defmacro |SFloNegate|  (x) `(the |SFlo| (- (the |SFlo| ,x))))
-(defmacro |SFloNext|    (x) `(the |SFlo| (+ (the |SFlo| ,x) |SFlo1|)))
-(defmacro |SFloPrev|    (x) `(the |SFlo| (- (the |SFlo| ,x) |SFlo1|)))
-(defmacro |SFloMinus| (x y) `(the |SFlo| (- (the |SFlo| ,x) (the |SFlo| ,y))))
-(defmacro |SFloTimes| (x y) `(the |SFlo| (* (the |SFlo| ,x) (the |SFlo| ,y))))
-(defmacro |SFloTimesPlus| (x y z)
-  `(the |SFlo| (+ (* (the |SFlo| ,x) (the |SFlo| ,y)) (the |SFlo| ,z))))
-(defmacro |SFloDivide|  (x y) `(the |SFlo| (/ (the |SFlo| ,x) (the |SFlo| ,y))))
-(defmacro |SFloRPlus|  (x y r) `(error "unimplemented operation -- SFloRPlus"))
-(defmacro |SFloRMinus| (x y r) `(error "unimplemented operation -- SFloRTimes"))
-(defmacro |SFloRTimes| (x y r) `(error "unimplemented operation -- SFloRTimes"))
-(defmacro |SFloRTimesPlus| (x y z r) `(error "unimplemented operation -- SFloTimesPlus"))
-(defmacro |SFloRDivide|(x y r) `(error "unimplemented operation -- SFloDivide"))
-(defmacro |SFloDissemble| (x) `(error "unimplemented operation -- SFloDissemble"))
-(defmacro |SFloAssemble| (w x y) `(error "unimplemented operation -- SFloAssemble"))
-
-;; These are no longer foam builtins
-;;(defmacro |SFloRound|    (x) `(the |BInt| (round (the |SFlo| ,x))))
-;;(defmacro |SFloTruncate| (x) `(the |BInt| (truncate (the |SFlo| ,x))))
-;;(defmacro |SFloFloor|    (x) `(the |BInt| (floor (the |SFlo| ,x))))
-;;(defmacro |SFloCeiling|  (x) `(the |BInt| (ceiling (the |SFlo| ,x))))
 
 (defmacro |DFlo0|         () (coerce 0 '|DFlo|))
 (defmacro |DFlo1|         () (coerce 1 '|DFlo|))
@@ -468,16 +424,12 @@
 ;;  (setf (fill-pointer |FoamOutputString|) 0)
     (+ i (length str))))
 
-(defmacro |FormatSFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 (defmacro |FormatDFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 (defmacro |FormatSInt| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 (defmacro |FormatBInt| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 
 (set-syntax-from-char (code-char 0) #\space) ;;makes null char act like white space
 
-(defmacro |ScanSFlo| (arr i)
-  `(read-from-string ,arr nil (|SFlo0|)
-                     :start ,i :preserve-whitespace t))
 (defmacro |ScanDFlo| (arr i)
   `(read-from-string ,arr nil (|DFlo0|)
                      :start ,i :preserve-whitespace t))
@@ -494,13 +446,10 @@
 (defmacro |BoolToSInt|  (x) `(if ,x 1 0))
 (defmacro |BIntToSInt| (x) `(hacked-the |SInt| ,x))
 (defmacro |SIntToBInt| (x) `(hacked-the |BInt| ,x))
-(defmacro |SIntToSFlo| (x) `(coerce (hacked-the |SInt| ,x) '|SFlo|))
 (defmacro |SIntToByte| (x) `(coerce (hacked-the |SInt| ,x) '|Byte|))
 (defmacro |SIntToHInt| (x) `(coerce (hacked-the |SInt| ,x) '|HInt|))
 (defmacro |SIntToDFlo| (x) `(coerce (hacked-the |SInt| ,x) '|DFlo|))
-(defmacro |BIntToSFlo| (x) `(coerce (hacked-the |BInt| ,x) '|SFlo|))
 (defmacro |BIntToDFlo| (x) `(coerce (hacked-the |BInt| ,x) '|DFlo|))
-(defmacro |ArrToSFlo|  (x) `(read-from-string ,x nil (|SFlo0|)))
 (defmacro |ArrToDFlo|  (x) `(read-from-string ,x nil (|DFlo0|)))
 (defmacro |ArrToSInt|  (x) `(read-from-string ,x nil (|SInt0|)))
 (defmacro |ArrToBInt|  (x) `(read-from-string ,x nil (|BInt0|)))
@@ -706,7 +655,6 @@
    ((eq x '|HInt|) '|HIntInit|)
    ((eq x '|SInt|) '|SIntInit|)
    ((eq x '|BInt|) '|BIntInit|)
-   ((eq x '|SFlo|) '|SFloInit|)
    ((eq x '|DFlo|) '|DFloInit|)
    ((eq x '|Ptr|) '|PtrInit|)
    ((eq x '|Word|) '|WordInit|)
@@ -736,7 +684,6 @@
 
 (defun |formatSInt| (n) (format nil "~D" n))
 (defun |formatBInt| (n) (format nil "~D" n))
-(defun |formatSFloat| (x) (format nil "~G" x))
 (defun |formatDFloat| (x) (format nil "~G" x))
 
 
@@ -754,7 +701,6 @@
 
 (defun |printSInt| (cs n) (format cs "~D" n))
 (defun |printBInt| (cs n) (format cs "~D" n))
-(defun |printSFloat| (cs x) (format cs "~G" x))
 (defun |printDFloat| (cs x) (format cs "~G" x))
 
 (defun |fputc| (si cs)

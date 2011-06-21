@@ -71,7 +71,6 @@
 	   "%Integer"
 	   "%Number"
 	   "%IntegerSection"
-	   "%SingleFloat"
 	   "%DoubleFloat"
 	   "%Atom"
 	   "%Maybe"
@@ -226,10 +225,6 @@
 (deftype |%Integer| () 'integer)
 
 (deftype |%IntegerSection| (n) `(integer ,n))
-
-(deftype |%SingleFloat| ()
-  #+ :gcl 'short-float
-  #- :gcl 'single-float)
 
 (deftype |%DoubleFloat| () 'double-float)
 
