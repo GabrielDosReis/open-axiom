@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,6 @@
 ;; of the system from the command prompt. This varies from rebuilding
 ;; individual files to whole directories. The most complex functions
 ;; like `makespad' can rebuild the whole algebra tree.
-
-;; A third group of related functions are used to set up the 
-;; `autoload' mechanism. These enable whole subsystems to
-;; be kept out of memory until they are used.
 
 ;; A fourth group of related functions are used to construct and
 ;; search Emacs TAGS files.
@@ -243,79 +239,6 @@
 ;; directory from the current {\bf AXIOM} shell variable.
 (defvar $relative-library-directory-list '("/algebra/"))
 
-;; This is part of the {\bf ALDOR subsystem}. These will be loaded
-;; if you compile a {\bf .as} file rather than a {\bf .spad} file.
-;; {\bf ALDOR} is an external compiler that gets automatically called
-;; if the file extension is {\bf .as}.
-(defparameter asauto-functions '(
-        loadas
-;;      |as|                         ;; now in as.boot
-;;      |astran|                     ;; now in as.boot
-        |spad2AxTranslatorAutoloadOnceTrigger|
-        |sourceFilesToAxcliqueAxFile|
-        |sourceFilesToAxFile|
-        |setExtendedDomains|
-        |makeAxFile|
-        |makeAxcliqueAxFile|
-        |nrlibsToAxFile|
-        |attributesToAxFile| ))
-
-;; These are some {\bf debugging} functions that I use. I can't imagine
-;; why you might autoload them but they don't need to be in a running
-;; system.
-(defparameter debug-functions '(
-        loaddebug
-        |showSummary|
-        |showPredicates|
-        |showAttributes|
-        |showFrom|
-        |showImp|))
-
-;; This function is called by {\bf build-interpsys}. It takes two lists.
-;; The first is a list of functions that need to be used as 
-;; ``autoload triggers''. The second is a list of files to load if one
-;; of the trigger functions is called. At system build time each of the
-;; functions in the first list is set up to load every file in the second
-;; list. In this way we will automatically load a whole subsystem if we
-;; touch any function in that subsystem. We call a helper function
-;; called {\bf setBootAutoLoadProperty} to set up the autoload trigger.
-;; This helper function is listed below.
-(defun |setBootAutloadProperties| (fun-list file-list)
-#+:AKCL
-  (mapc #'(lambda (fun) (|setBootAutoLoadProperty| fun file-list)) fun-list)
-)
-
-
-;; This function knows where the {\bf autoload} subdirectory lives.
-;; It is called by {\bf mkBootAutoLoad} above to find the necessary
-;; files.
-(defun boot-load (file)
-  (let ((name (concat (|systemRootDirectory|)
-                      "/autoload/" 
-                      (pathname-name file))))
-    (if |$printLoadMsgs|
-        (format t "   Loading ~A.~%" name))
-    (load name)))
-
-;; This is a helper function to set up the autoload trigger. It sets
-;; the function cell of each symbol to {\bf mkBootAutoLoad} which is
-;; listed below. 
-(defun |setBootAutoLoadProperty| (func file-list)
-  (setf (symbol-function func) (|mkBootAutoLoad| func file-list)) )
-
-;; This is how the autoload magic happens. Every function named in the
-;; autoload lists is actually just another name for this function. When
-;; the named function is called we call {\bf boot-load} on all of the
-;; files in the subsystem. This overwrites all of the autoload triggers.
-;; We then look up the new (real) function definition and call it again
-;; with the real arguments. Thus the subsystem loads and the original
-;; call succeeds.
-(defun |mkBootAutoLoad| (fn file-list)
-   (function (lambda (&rest args)
-                 (mapc #'boot-load file-list)
-                 (unless (string= (subseq (string fn) 0 4) "LOAD")
-                  (apply (symbol-function fn) args)))))
-
 ;############################################################################
 ;# autoload dependencies
 ;#
@@ -332,15 +255,7 @@
 ;#	  (e.g. ${AUTO}/parsing.${O}: ${OUT}/parsing.${O})
 ;#     c) edit util.lisp to add the 'external' function (those that
 ;#	  should trigger the autoload
-;#   case 2:
-;#     build-interpsys (in util.lisp) needs an extra argument for the
-;#     new autoload things and several functions in util.lisp need hacking.
 ;############################################################################
-
-;; The `build-interpsys' function takes a list of files to load
-;; into the image (`load-files'). It also takes several lists of files, 
-;; one for each subsystem which will be autoloaded. Autoloading is explained
-;; below. This function is called in the src/interp/Makefile. 
 
 ;; This function calls `reroot' to set up pathnames we need. Next
 ;; it sets up the lisp system memory (at present only for AKCL/GCL). Next
@@ -348,7 +263,7 @@
 ;; loads the databases, sets up autoload triggers and clears out hash tables.
 ;; After this function is called the image is clean and can be saved.
 
-(defun build-interpsys (asauto-files)
+(defun build-interpsys ()
   (reroot)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
@@ -357,10 +272,8 @@
   (|initNewWorld|)
   (compressopen)
   (interpopen)
-  (create-initializers)
   (|start| :fin)
   (setq *load-verbose* nil)
-  (|setBootAutloadProperties| asauto-functions asauto-files)
   (|fillDatabasesInCore|) ; the databases into core, then close the streams
   (|closeAllDatabaseStreams|)
  )

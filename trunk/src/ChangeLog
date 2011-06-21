@@ -1,5 +1,16 @@
 2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.in (OBJS): Remove foam_l.$(FASLEXT), $(ASCOMP).
+	(ASCOMP, ASAUTO): Remove.
+	* interp/axext_l.lisp: Remove.
+	* interp/foam_l.lisp: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/daase.lisp: Adjust.
+	* interp/i-syscmd.boot: Likewise.
+
+2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (MappingCategory): Take argument by value.
 
 2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>

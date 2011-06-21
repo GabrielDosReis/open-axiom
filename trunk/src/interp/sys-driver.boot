@@ -144,7 +144,6 @@ openDatabases() ==
   OPERATIONOPEN()
   CATEGORYOPEN()
   BROWSEOPEN()
-  CREATE_-INITIALIZERS()
 
 ++
 restart() ==
