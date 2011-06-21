@@ -459,7 +459,7 @@ coerceUn2E(x,source) ==
 ++ A domain that satisfy this predicate provides implementation
 ++ to abstraction that map values from some type to values
 ++ of another type.
-MappingCategory(:"sig") ==       
+MappingCategory(:sig) ==       
   sig = nil =>
     error '"MappingCategory requires at least one argument"
   cat := eval ['Join,$Type,

@@ -1,5 +1,9 @@
 2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (MappingCategory): Take argument by value.
+
+2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot: Remove reference to $SingleFloat.
 	* interp/foam_l.lisp: Likewise.
 	* interp/fortcall.boot: Likewise.
