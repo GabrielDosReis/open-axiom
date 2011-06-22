@@ -72,7 +72,6 @@ stamp-subdirs:
 	$(MKDIR_P) $(oa_targetdir)/share
 	$(MKDIR_P) $(oa_targetdir)/doc
 	$(MKDIR_P) $(oa_targetdir)/doc/help
-	$(MKDIR_P) $(oa_targetdir)/autoload
 	$(MKDIR_P) algebra/strap
 	touch stamp-subdirs
 
