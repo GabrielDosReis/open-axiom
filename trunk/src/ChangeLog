@@ -1,5 +1,17 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-con.boot: Remove reference to asharp constructors.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix ECL-based build failure.
 	* interp/sys-driver.boot (loadExposureGroupData): Use
 	getSystemModulePath to look up system modules.

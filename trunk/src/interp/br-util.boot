@@ -362,13 +362,6 @@ dbSourceFile name ==
   t := PATHNAME_-TYPE u
   strconc(n,'".",t)
 
-asharpConstructorName? name ==
-  u:= getConstructorSourceFileFromDB name
-  u and PATHNAME_-TYPE u = '"as"
-
-asharpConstructors() ==
-  [x for x in allConstructors() | not asharpConstructorName? x]
-
 extractFileNameFromPath s == fn(s,0,#s) where
   fn(s,i,m) ==
     k := charPosition(char "/",s,i)

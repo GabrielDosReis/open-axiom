@@ -146,9 +146,6 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   conname := conform.op
   getConstructorKindFromDB conname is "category" =>
       simpCatHasAttribute(conform,attr)
-  asharpConstructorName? conname =>
-    p := LASSOC(attr,getConstructorAttributesFromDB conname) =>
-      simpHasPred sublisFormal(rest conform,p)
   infovec := dbInfovec conname
   k := LASSOC(attr,infovec.2) or return nil --if not listed then false
   k = 0 => true

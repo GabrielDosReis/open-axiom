@@ -93,65 +93,6 @@ conPageConEntry entry ==
 --=======================================================================
 --                    Constructor Page
 --=======================================================================
--- in br-saturn.boot now
---% kPage(line,:options) == --any cat, dom, package, default package
---% --constructors    Cname\#\E\sig \args   \abb \comments (C is C, D, P, X)
---% ------------------> BRANCH OUT FOR SATURN
---%   true => kPageSaturn(line,options)
---%   parts := dbXParts(line,7,1)
---%   [kind,name,nargs,xflag,sig,args,abbrev,comments] := parts
---%   form := IFCAR options
---%   isFile := null kind
---%   kind := kind or '"package"
---%   parts.first := kind
---%   conform         := mkConform(kind,name,args)
---%   conname         := opOf conform
---%   capitalKind     := capitalize kind
---%   signature       := ncParseFromString sig
---%   sourceFileName  := dbSourceFile makeSymbol name
---%   constrings      :=
---%     KDR form => dbConformGenUnder form
---%     [strconc(name,args)]
---%   emString        := ['"{\sf ",:constrings,'"}"]
---%   heading := [capitalKind,'" ",:emString]
---%   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
---%   if name=abbrev then abbrev := asyAbbreviation(conname,nargs)
---%   page := htInitPage(heading,nil)
---%   htpSetProperty(page,'isFile,true)
---%   htpSetProperty(page,'parts,parts)
---%   htpSetProperty(page,'heading,heading)
---%   htpSetProperty(page,'kind,kind)
---%   if asharpConstructorName? conname then
---%     htpSetProperty(page,'isAsharpConstructor,true)
---%   htpSetProperty(page,'conform,conform)
---%   htpSetProperty(page,'signature,signature)
---%   kdPageInfo(name,abbrev,nargs,conform,signature,isFile)
---%   htSayStandard  '"\newline"
---%   htBeginMenu(3)
---%   htSayStandard '"\item "
---%   htMakePage [['bcLinks,['"\menuitemstyle{Description}",
---%                 [['text,'"\tab{19}",'"General description"]],'kiPage,nil]]]
---%   satBreak()
---%   htMakePage [['bcLinks,['"\menuitemstyle{Operations}",
---%                 [['text,'"\tab{19}All exported operations"]],'koPage,'"operation"]]]
---%   if not asharpConstructorName? conname then
---%     satBreak()
---%     htMakePage [['bcLinks,['"\menuitemstyle{Attributes}",
---%                 [['text,'"\tab{19}All exported attributes"]],'koPage,'"attribute"]]]
---%   if kind ~= 'category and (pathname := dbHasExamplePage conname) then
---%     satBreak()
---%     htMakePage [['bcLinks,['"\menuitemstyle{Examples}",
---%                 [['text,'"\tab{19}Examples illustrating use"]],'kxPage,pathname]]]
---%   satBreak()
---%   htMakePage [['bcLinks,['"\menuitemstyle{Exports}",
---%     [['text,'"\tab{19}Explicit categories and operations"]],'kePage,nil]]]
---%   satBreak()
---%   htMakePage [['bcLinks,['"\menuitemstyle{Cross Reference}",
---%                 [['text,'"\tab{19}Hierarchy and usage information"]],'kcPage,nil]]]
---%   htEndMenu(3)
---%   if kind ~= 'category and nargs > 0 then addParameterTemplates conform
---%   htShowPage()
---% 
 conform2String u ==
   x := form2String u
   atom x => STRINGIMAGE x
@@ -450,27 +391,24 @@ kcPage(htPage,junk) ==
     satBreak()
     htMakePage [['bcLinks,['"\menuitemstyle{Descendants}",[['text,'"\tab{12}",
       '"All categories which extend this category"]],'kcdPage,nil]]]
-  if not asharpConstructorName? conname then
-    satBreak()
-    message := '"Constructors mentioning this as an argument type"
-    htMakePage [['bcLinks,['"\menuitemstyle{Dependents}",
-      [['text,'"\tab{12}",message]],'kcdePage,nil]]]
-  if not asharpConstructorName? conname and kind ~= '"category" then
-    satBreak()
-    htMakePage [['bcLinks,['"\menuitemstyle{Lineage}",
-      '"\tab{12}Constructor hierarchy used for operation lookup",'ksPage,nil]]]
-  if not asharpConstructorName? conname then
-   if kind = '"category" then
-    satBreak()
-    htMakePage [['bcLinks,['"\menuitemstyle{Domains}",[['text,'"\tab{12}",
-      '"All domains which are of this category"]],'kcdoPage,nil]]]
-   if kind ~= '"category" then
-    satBreak()
-    htMakePage [['bcLinks,['"\menuitemstyle{Clients}",'"\tab{12}Constructors",'kcuPage,nil]]]
-    if tableValue($defaultPackageNamesHT,conname)
-      then htSay('" which {\em may use} this default package")
+  satBreak()
+  message := '"Constructors mentioning this as an argument type"
+  htMakePage [['bcLinks,['"\menuitemstyle{Dependents}",
+    [['text,'"\tab{12}",message]],'kcdePage,nil]]]
+  satBreak()
+  htMakePage [['bcLinks,['"\menuitemstyle{Lineage}",
+    '"\tab{12}Constructor hierarchy used for operation lookup",'ksPage,nil]]]
+  if kind = '"category" then
+   satBreak()
+   htMakePage [['bcLinks,['"\menuitemstyle{Domains}",[['text,'"\tab{12}",
+     '"All domains which are of this category"]],'kcdoPage,nil]]]
+  if kind ~= '"category" then
+   satBreak()
+   htMakePage [['bcLinks,['"\menuitemstyle{Clients}",'"\tab{12}Constructors",'kcuPage,nil]]]
+   if tableValue($defaultPackageNamesHT,conname)
+     then htSay('" which {\em may use} this default package")
 --  htMakePage [['bcLinks,['"files",'"",'kcuPage,true]]]
-      else htSay('" which {\em use} this ",kind)
+     else htSay('" which {\em use} this ",kind)
   if kind ~= '"category" or dbpHasDefaultCategory? xpart then
     satBreak()
     message :=
@@ -479,11 +417,10 @@ kcPage(htPage,junk) ==
     htMakePage [['bcLinks,['"\menuitemstyle{Benefactors}",
       [['text,'"\tab{12}",:message]],'kcnPage,nil]]]
   --to remove "Capsule Information", comment out the next 5 lines
-  if not asharpConstructorName? conname and hasNewInfoAlist conname then
-    satBreak()
-    message := ['"Cross reference for capsule implementation"]
-    htMakePage [['bcLinks,['"\menuitemstyle{CapsuleInfo}",
-      [['text,'"\tab{12}",:message]],'kciPage,nil]]]
+  satBreak()
+  message := ['"Cross reference for capsule implementation"]
+  htMakePage [['bcLinks,['"\menuitemstyle{CapsuleInfo}",
+    [['text,'"\tab{12}",:message]],'kciPage,nil]]]
   htEndMenu(3)
   htShowPage()
 
@@ -1144,16 +1081,12 @@ bcUnixTable(u) ==
     if firstTime then firstTime := false
     else htSaySaturn '"&"
     htSay '"{"
-    ft :=
-      isAsharpFileName? x => '("AS")
-      '("SPAD")
+    ft := '("SPAD")
     filename := NAMESTRING $FINDFILE(STRINGIMAGE x, ft)
     htMakePage [['text, '"\unixcommand{",PATHNAME_-NAME x, '"}{",
                    textEditor(), '" ", filename, '"} "]]
     htSay '"}"
   htEndTable()
-
-isAsharpFileName? con == false
 
 --=======================================================================
 --             Special Code for Union, Mapping, and Record
