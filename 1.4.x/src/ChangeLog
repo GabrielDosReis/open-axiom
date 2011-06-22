@@ -1,3 +1,14 @@
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Remove unreachable code. 
+	(opt2bit): Tidy.
+	(opt2bool): Likewise.
+	* interp/bits.lisp (TRUTH-TO-BIT): Remove.
+	(BIT-TO-TRUTH): Likewise.
+	(BVEC-MAKE-FULL): Likewise.
+	(BVEC-ELT): Likewise.
+	(BVEC-SETELT): Likewise.
+
 2011-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.in (OBJS): Remove foam_l.$(FASLEXT), $(ASCOMP).

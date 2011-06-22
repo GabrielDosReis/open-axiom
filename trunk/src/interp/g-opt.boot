@@ -287,6 +287,9 @@ optCons (x is ["CONS",a,b]) ==
   x
  
 optCond (x is ['%when,:l]) ==
+  l is [['%true,c],:.] => c
+  l is [['%false,.],:.] => optCond ['%when,:rest l]
+  l is [['%otherwise,c]] => c
   if l is [a,[aa,b]] and aa is '%otherwise and b is ['%when,:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
@@ -680,10 +683,20 @@ optOr(x is ['%or,a,b]) ==
   a is '%true => '%true
   x
 
+-- Boolean <-> bit conversion.
+opt2bit ['%2bit,a] ==
+  optCond ['%when,[a,'%icst1],['%otherwise,'%icst0]]
+
+opt2bool ['%2bool,a] ==
+  a is '%icst0 => '%false
+  a is '%icst1 => '%true
+  optIeq ['%ieq,a,'%icst1]
+
 optIeq(x is ['%ieq,a,b]) ==
   integer? a and integer? b =>
-    a = b => '%true
+    scalarEq?(a,b) => '%true
     '%false
+  sameObject?(a,b) => '%true
   x
 
 optIlt(x is ['%ilt,a,b]) ==
@@ -752,23 +765,11 @@ optIquo(x is ['%iquo,a,b]) ==
   integer? a and integer? b => a quo b
   x
 
--- Boolean <-> bit conversion.
-opt2bit(x is ['%2bit,a]) ==
-  a is '%true => 1
-  a is '%false => 0
-  x
-
-opt2bool(x is ['%2bool,a]) ==
-  integer? a =>
-    a = 1 => '%true
-    '%false
-  x
-
 --%  
 --% optimizer hash table
 --%
  
-for x in '( (%call         optCall) _
+for x in '((%call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (%bind        optBind)_
