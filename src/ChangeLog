@@ -1,5 +1,10 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include FUNCALL.
+	($simpleVMoperators): Include SPADCALL.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-search.boot (dbReadLines): Don't include end-of-stream
 	marker. 
 
