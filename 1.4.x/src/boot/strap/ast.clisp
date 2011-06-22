@@ -2222,9 +2222,6 @@
 (DEFUN |shoeCompileTimeEvaluation| (|x|)
   (LIST 'EVAL-WHEN (LIST :COMPILE-TOPLEVEL) |x|))
 
-(DEFUN |shoeEVALANDFILEACTQ| (|x|)
-  (LIST 'EVAL-WHEN (LIST :EXECUTE :LOAD-TOPLEVEL) |x|))
-
 (DEFUN |bfMain| (|auxfn| |op|)
   (PROG (|defCode| |cacheVector| |cacheCountCode| |cacheResetCode|
             |cacheType| |mainFunction| |codeBody| |thirdPredPair|
@@ -2259,11 +2256,10 @@
               (LIST 'DEFPARAMETER |cacheName|
                     (LIST 'MAKE-HASHTABLE (LIST 'QUOTE 'UEQUAL))))
         (LIST |defCode| |mainFunction|
-              (|shoeEVALANDFILEACTQ|
-                  (LIST 'SETF
-                        (LIST 'GET (LIST 'QUOTE |op|)
-                              (LIST 'QUOTE '|cacheInfo|))
-                        (LIST 'QUOTE |cacheVector|))))))))
+              (LIST 'SETF
+                    (LIST 'GET (LIST 'QUOTE |op|)
+                          (LIST 'QUOTE '|cacheInfo|))
+                    (LIST 'QUOTE |cacheVector|)))))))
 
 (DEFUN |bfNamespace| (|x|) (LIST '|%Namespace| |x|))
 

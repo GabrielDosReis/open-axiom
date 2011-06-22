@@ -1,5 +1,13 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (shoeEVALANDFILEACTQ): Remove.
+	(bfMain): Don't use it.
+	(translateToplevelExpression): Likewise.
+	* interp/Makefile.in (stamp): $(AUTO) is no more. 
+	(all-interpsys): Likewise.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spaderror.lisp (trapNumericErrors): Fix typo.
 
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>

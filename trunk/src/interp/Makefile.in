@@ -157,7 +157,7 @@ all: all-ax
 all-ax: stamp
 	@echo finished $(srcdir)
 
-stamp: $(AUTO) remove-stamp build-images
+stamp: remove-stamp build-images
 	$(STAMP) stamp
 
 .PHONY: remove-stamp
@@ -168,7 +168,6 @@ remove-stamp:
 build-images: remove-stamp all-interpsys
 
 all-interpsys:
-	$(mkdir_p) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
 all-axiomsys: all-interpsys
@@ -241,9 +240,6 @@ database.date:
 	@ echo 617 the database was updated...remaking interpsys
 	@ touch database.date
 
-
-$(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
-	@cp -p $< $@
 
 %.$(LNKEXT) %.$(FASLEXT): %.boot
 	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \

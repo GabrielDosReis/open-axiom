@@ -1146,9 +1146,6 @@ bfCompHash(op,argl,body) ==
 shoeCompileTimeEvaluation x ==
   ["EVAL-WHEN", [KEYWORD::COMPILE_-TOPLEVEL], x]
 
-shoeEVALANDFILEACTQ x==  
-  ["EVAL-WHEN", [KEYWORD::EXECUTE, KEYWORD::LOAD_-TOPLEVEL], x]
- 
 bfMain(auxfn,op)==
   g1 := bfGenSymbol()
   arg :=["&REST",g1]
@@ -1172,8 +1169,7 @@ bfMain(auxfn,op)==
   defCode := ["DEFPARAMETER",cacheName,
                 ['MAKE_-HASHTABLE,["QUOTE","UEQUAL"]]]
   [defCode,mainFunction,
-    shoeEVALANDFILEACTQ
-      ["SETF",["GET",
+    ["SETF",["GET",
            ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]]]
 
 

@@ -595,7 +595,6 @@
 
 (DEFUN |translateToplevelExpression| (|expr|)
   (PROG (|expr'|)
-    (DECLARE (SPECIAL |$InteractiveMode|))
     (RETURN
       (PROGN
         (SETQ |expr'|
@@ -609,13 +608,9 @@
               ((AND (CONSP |t|) (EQ (CAR |t|) 'DECLARE))
                (IDENTITY (RPLACA |t| 'DECLAIM))))
             (SETQ |bfVar#1| (CDR |bfVar#1|))))
-        (SETQ |expr'|
-              (COND
-                ((< 1 (LENGTH |expr'|)) (CONS 'PROGN |expr'|))
-                (T (CAR |expr'|))))
         (COND
-          (|$InteractiveMode| |expr'|)
-          (T (|shoeEVALANDFILEACTQ| |expr'|)))))))
+          ((< 1 (LENGTH |expr'|)) (CONS 'PROGN |expr'|))
+          (T (CAR |expr'|)))))))
 
 (DEFUN |inAllContexts| (|x|)
   (LIST 'EVAL-WHEN (LIST :COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
@@ -1300,13 +1295,11 @@
               |objFile|)
           (T NIL))))))
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (|associateRequestWithFileType| (|Option| "translate") "boot"
-      #'|translateBootFile|))
+(|associateRequestWithFileType| (|Option| "translate") "boot"
+    #'|translateBootFile|)
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (|associateRequestWithFileType| (|Option| "compile") "boot"
-      #'|compileBootHandler|))
+(|associateRequestWithFileType| (|Option| "compile") "boot"
+    #'|compileBootHandler|)
 
 (DEFUN |loadNativeModule| (|m|)
   (COND
