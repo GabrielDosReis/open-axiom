@@ -101,7 +101,7 @@ systemDatabaseDirectory() ==
 loadExposureGroupData() ==
   LOAD('"./exposed", KEYWORD::VERBOSE,false,
     KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
-  LOAD(strconc(systemRootDirectory(),'"algebra/exposed"),
+  LOAD(getSystemModulePath '"exposed",
     KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
   "failed"
 

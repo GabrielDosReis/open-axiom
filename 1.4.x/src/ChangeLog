@@ -1,5 +1,11 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix ECL-based build failure.
+	* interp/sys-driver.boot (loadExposureGroupData): Use
+	getSystemModulePath to look up system modules.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (shoeEVALANDFILEACTQ): Remove.
 	(bfMain): Don't use it.
 	(translateToplevelExpression): Likewise.
