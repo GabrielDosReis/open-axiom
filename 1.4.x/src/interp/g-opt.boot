@@ -399,7 +399,8 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(SPADfirst ASH IDENTP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+  '(FUNCALL
+    SPADfirst ASH IDENTP FLOAT_-RADIX FLOAT FLOAT_-SIGN
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
@@ -431,7 +432,7 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse!,
+    ['SPADCALL,'STRINGIMAGE,'%gensym, '%lreverse!,
       '%strstc,"MAKE-FULL-CVEC"])
 
 ++ Return true if the `form' is semi-simple with respect to
