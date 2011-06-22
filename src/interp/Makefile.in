@@ -39,11 +39,6 @@ IN=$(srcdir)
 DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
 
-# Do we still need this?
-AUTO=$(axiom_targetdir)/autoload
-
-autoload_objects =
-
 # Driver to launch translation and compilation
 DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
 
@@ -125,8 +120,6 @@ OCOBJS=	\
 	profile.$(FASLEXT)	functor.$(FASLEXT)	\
 	nruncomp.$(FASLEXT)	htcheck.$(FASLEXT)
 
-autoload_objects += $(OCOBJS)
-
 # Browser component files.
 BROBJS=	bc-matrix.$(FASLEXT)				\
 	bc-misc.$(FASLEXT)	bc-solve.$(FASLEXT)	\
@@ -138,8 +131,6 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 	br-util.$(FASLEXT)	\
 	topics.$(FASLEXT)     br-prof.$(FASLEXT)    \
 	br-saturn.$(FASLEXT)
-
-autoload_objects += $(BFOBJS)
 
 TIMESTAMP=$(axiom_targetdir)/timestamp
 YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
@@ -251,9 +242,6 @@ database.date:
 	@ touch database.date
 
 
-## Copy FASLs that are autoloaded to the autoload directory.
-.PREVIOUS: $(AUTO)/%.$(FASLEXT)
-
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	@cp -p $< $@
 
@@ -341,14 +329,6 @@ server.$(FASLEXT): macros.$(FASLEXT)
 ## OpenAxiom's front-end consists of two parts:
 ##    (a) the interprerter's parser -- also referred to as new parser
 ##    (b) the compiler parser -- also referred to as parser
-##
-## The new parser component is always included in a running OpenAxiom
-## image.  However the old parser component is so called `autoloaded'.
-## While in theory that should work, in practice it turns out that 
-## people tend to override functions in the autoload part, correcting
-## bugs only there.  The consequence is that the same function will
-## behave very differently based on the history of the seesion.  Ideal
-## recipe for creating heisenbugs.
 ##
 
 ## The old parser component roughtly is:

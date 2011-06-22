@@ -239,28 +239,10 @@
 ;; directory from the current {\bf AXIOM} shell variable.
 (defvar $relative-library-directory-list '("/algebra/"))
 
-;############################################################################
-;# autoload dependencies
-;#
-;# if you are adding a file which is to be autoloaded the following step
-;# information is useful:
-;#  there are 2 cases:
-;#   1) adding files to currently autoloaded parts
-;#	(as of 2/92: browser old parser and old compiler)
-;#   2) adding new files
-;#   case 1:
-;#     a) you have to add the file to the list of files currently there
-;#	  (e.g. see BROBJS above)
-;#     b) add an autolaod rule
-;#	  (e.g. ${AUTO}/parsing.${O}: ${OUT}/parsing.${O})
-;#     c) edit util.lisp to add the 'external' function (those that
-;#	  should trigger the autoload
-;############################################################################
-
 ;; This function calls `reroot' to set up pathnames we need. Next
 ;; it sets up the lisp system memory (at present only for AKCL/GCL). Next
 ;; it loads all of the named files, resets a few global state variables,
-;; loads the databases, sets up autoload triggers and clears out hash tables.
+;; loads the databases.
 ;; After this function is called the image is clean and can be saved.
 
 (defun build-interpsys ()
