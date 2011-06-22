@@ -1,5 +1,9 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spaderror.lisp (trapNumericErrors): Fix typo.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include FUNCALL.
 	($simpleVMoperators): Include SPADCALL.
 

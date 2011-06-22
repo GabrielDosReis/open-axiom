@@ -54,9 +54,9 @@
 #+:gcl
 (defmacro |trapNumericErrors| (form)
   `(let ((|$oldBreakMode| |$BreakMode|)
-         (|$BreakMode| '|trapNumerics|))
-         (val))
-     (catch '|trapNumerics| ,form))
+         (|$BreakMode| '|trapNumerics|)
+	 (val))
+     (catch '|trapNumerics| ,form)))
 
 #-:gcl
 (defmacro |trapNumericErrors| (form)
