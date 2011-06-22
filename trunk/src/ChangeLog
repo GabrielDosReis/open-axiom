@@ -1,5 +1,10 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-search.boot (dbReadLines): Don't include end-of-stream
+	marker. 
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optCond): Remove unreachable code. 
 	(opt2bit): Tidy.
 	(opt2bool): Likewise.

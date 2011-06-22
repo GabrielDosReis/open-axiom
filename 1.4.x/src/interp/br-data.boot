@@ -767,7 +767,7 @@ $defaultPackageNamesHT := buildDefaultPackageNamesHT()
 --=======================================================================
 -- $createLocalLibDb := false
 
-extendLocalLibdb conlist ==   --  called by astran
+extendLocalLibdb conlist ==   --  called by compileSpad2Cmd
   not $createLocalLibDb => nil
   null conlist => nil
   buildLibdb conlist          --> puts datafile into temp.text
