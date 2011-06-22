@@ -927,11 +927,13 @@ dbWriteLines(s, :options) ==
   SHUT $outStream
   pathname
 
-dbReadLines target == --AIX only--called by grepFile
+dbReadLines target ==
   instream := inputTextFile target
-  lines := [line := readLine instream while line ~= %nothing]
+  lines := []
+  while (line := readLine instream) ~= %nothing repeat
+    lines := [line,:lines]
   closeStream instream
-  lines
+  reverse! lines
 
 dbGetCommentOrigin line ==
 --Given a comment line in comdb, returns line in libdb pointing to it
