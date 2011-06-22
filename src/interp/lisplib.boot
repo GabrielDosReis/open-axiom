@@ -413,15 +413,7 @@ makeConstructorsAutoLoad() ==
     systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
-    FBOUNDP(cnam) => "next"
-    asharpName := asharpConstructorFromDB cnam =>
-         kind := getConstructorKindFromDB cnam
-         cosig := getDualSignatureFromDB cnam
-         file := getConstructorModuleFromDB cnam
-         SET_-LIB_-FILE_-GETTER(file, cnam)
-         kind is 'category =>
-              ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
-         ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
+    FBOUNDP cnam => "next"
     symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 autoLoad(abb,cname) ==

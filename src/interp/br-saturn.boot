@@ -642,8 +642,6 @@ kPage(line,:options) == --any cat, dom, package, default package
   htpSetProperty(page,'parts,parts)
   htpSetProperty(page,'heading,heading)
   htpSetProperty(page,'kind,kind)
-  if asharpConstructorName? conname then
-    htpSetProperty(page,'isAsharpConstructor,true)
   htpSetProperty(page,'conform,conform)
   htpSetProperty(page,'signature,signature)
   ---what follows is stuff from kiPage with domain = nil
@@ -668,17 +666,14 @@ kPageContextMenu page ==
   if kind = '"category" then
     htSay '"}{"
     htMakePage [['bcLinks,['Children,'"",'kccPage,nil]]]
-  if not asharpConstructorName? conname then
-    htSay '"}{"
-    htMakePage [['bcLinks,['Dependents,'"",'kcdePage,nil]]]
+  htSay '"}{"
+  htMakePage [['bcLinks,['Dependents,'"",'kcdePage,nil]]]
   if kind = '"category" then
     htSay '"}{"
     htMakePage [['bcLinks,['Descendents,'"",'kcdPage,nil]]]
   if kind = '"category" then
     htSay '"}{"
-    if not asharpConstructorName? conname then
-      htMakePage [['bcLinks,['Domains,'"",'kcdoPage,nil]]]
-    else htSay '"{\em Domains}"
+    htMakePage [['bcLinks,['Domains,'"",'kcdoPage,nil]]]
   htSay '"}{"
   if kind ~= '"category" and (pathname := dbHasExamplePage conname)
     then htMakePage [['bcLinks,['Examples,'"",'kxPage,pathname]]]
@@ -691,9 +686,7 @@ kPageContextMenu page ==
   htMakePage [['bcLinks,['Parents,'"",'kcpPage,'"operation"]]]
   if kind ~= '"category" then
     htSay '"}{"
-    if not asharpConstructorName? conname
-    then  htMakePage [['bcLinks,["Search Path",'"",'ksPage,nil]]]
-    else htSay '"{\em Search Path}"
+    htMakePage [['bcLinks,["Search Path",'"",'ksPage,nil]]]
   if kind ~= '"category" then
     htSay '"}{"
     htMakePage [['bcLinks,['Users,'"",'kcuPage,nil]]]
@@ -712,23 +705,18 @@ kPageContextMenuSaturn page ==
   htMakePage [['bcLinks,['"Attri\&butes",'"",'koPage,'"attribute"]]]
   if kind = '"category" then
     htMakePage [['bcLinks,['"\&Children",'"",'kccPage,nil]]]
-  if not asharpConstructorName? conname then
-    htMakePage [['bcLinks,['"\&Dependents",'"",'kcdePage,nil]]]
+  htMakePage [['bcLinks,['"\&Dependents",'"",'kcdePage,nil]]]
   if kind = '"category" then
     htMakePage [['bcLinks,['"Desce\&ndents",'"",'kcdPage,nil]]]
   if kind = '"category" then
-    if not asharpConstructorName? conname then
-      htMakePage [['bcLinks,['"Do\&mains",'"",'kcdoPage,nil]]]
-      else htSayCold '"Do\&mains"
+    htMakePage [['bcLinks,['"Do\&mains",'"",'kcdoPage,nil]]]
   if kind ~= '"category" and (name := saturnHasExamplePage conname)
     then saturnExampleLink name
     else htSayCold '"E\&xamples"
   htMakePage [['bcLinks,['"\&Exports",'"",'kePage,nil]]]
   htMakePage [['bcLinks,['"\&Operations",'"",'koPage,'"operation"]]]
   htMakePage [['bcLinks,['"\&Parents",'"",'kcpPage,'"operation"]]]
-  if not asharpConstructorName? conname
-    then  htMakePage [['bcLinks,['"Search O\&rder",'"",'ksPage,nil]]]
-    else htSayCold '"Search Order"
+  htMakePage [['bcLinks,['"Search O\&rder",'"",'ksPage,nil]]]
   if kind ~= '"category" or dbpHasDefaultCategory? xpart
     then
        htMakePage [['bcLinks,['"\&Users",'"",'kcuPage,nil]]]
@@ -1022,11 +1010,10 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
 
 dbPresentOps(htPage,which,:exclusions) ==
   $saturn => dbPresentOpsSaturn(htPage,which,exclusions)
-  asharp? := htpProperty(htPage,'isAsharpConstructor)
   fromConPage? := (conname := opOf htpProperty(htPage,'conform))
   usage? := nil
   star? := not fromConPage? or which = '"package operation"
-  implementation? := not asharp? and
+  implementation? := 
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
   if integer? first exclusions then exclusions := ['documentation]
@@ -1093,11 +1080,10 @@ dbPresentOps(htPage,which,:exclusions) ==
 dbPresentOpsSaturn(htPage,which,exclusions) ==
   $htLineList : local := nil
   $newPage    : local := nil
-  asharp? := htpProperty(htPage,'isAsharpConstructor)
   fromConPage? := (conname := opOf htpProperty(htPage,'conform))
   usage? := nil
   star? := not fromConPage? or which = '"package operation"
-  implementation? := not asharp? and
+  implementation? := 
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
   if integer? first exclusions then exclusions := ['documentation]

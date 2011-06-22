@@ -628,16 +628,6 @@ newHasTest(domform,catOrAtt) ==
   catOrAtt is '(Type) => true
   cons? domform and builtinFunctorName? domform.op =>
     ofCategory(domform,catOrAtt)
-  asharpConstructorFromDB opOf domform => fn(domform,catOrAtt) where
-  -- atom (infovec := getInfovec opOf domform) => fn(domform,catOrAtt) where
-    fn(a,b) ==
-      categoryForm?(a) => assoc(b, ancestorsOf(a, nil))
-      isPartialMode a => throwKeyedMsg("S2IS0025",nil)
-      b is ["SIGNATURE",:opSig] =>
-        HasSignature(evalDomain a,opSig)
-      b is ["ATTRIBUTE",attr] => HasAttribute(evalDomain a,attr)
-      hasCaty(a,b,nil) isnt 'failed
-      HasCategory(evalDomain a,b) => true -- for asharp domains: must return Boolean
   op := opOf catOrAtt
   isAtom := atom catOrAtt
   not isAtom and op is 'Join =>

@@ -134,10 +134,6 @@ niladicConstructorFromDB: %Constructor -> %Boolean
 niladicConstructorFromDB ctor ==
   GETDATABASE(ctor,"NILADIC")
 
-asharpConstructorFromDB: %Constructor -> %Maybe %Symbol
-asharpConstructorFromDB ctor ==
-  GETDATABASE(ctor,"ASHARP?")
-
 constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
 constructorHasCategoryFromDB p ==
   GETDATABASE(p,"HASCATEGORY")

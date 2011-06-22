@@ -127,7 +127,6 @@ $SetCategory ==
 
 dbInfovec name ==
   getConstructorKindFromDB name is "category" => nil
-  asharpConstructorFromDB name => nil
   loadLibIfNotLoaded(name)
   u := property(name,'infovec) => u
   nil
