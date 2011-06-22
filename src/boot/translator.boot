@@ -408,11 +408,8 @@ translateToplevelExpression expr ==
   for t in expr' repeat
     t is ["DECLARE",:.] =>
       t.first := "DECLAIM"
-  expr' :=
-    #expr' > 1 => ["PROGN",:expr']
-    first expr'
-  $InteractiveMode => expr'
-  shoeEVALANDFILEACTQ expr'
+  #expr' > 1 => ["PROGN",:expr']
+  first expr'
 
 inAllContexts x ==
   ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
