@@ -446,8 +446,6 @@ for x in [
     ['%true,  :'T],
     -- unary Boolean operations
     ['%not,   :'NOT],
-    ['%2bit,  :'TRUTH_-TO_-BIT],
-    ['%2bool, :'BIT_-TO_-TRUTH],
     -- binary Boolean operations
     ['%and,   :'AND],
     ['%or,    :'OR],
@@ -470,6 +468,8 @@ for x in [
     ['%blt, :'byteLessThan],
 
     -- integer constants
+    ['%icst0,   :0],
+    ['%icst1,   :1],
     ['%icstmin, :'_$ShortMinimum],
     ['%icstmax, :'_$ShortMaximum],
     -- unary integer operations.

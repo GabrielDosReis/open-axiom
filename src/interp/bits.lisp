@@ -47,15 +47,6 @@
 
 ;;; SMW Nov 88: Created
  
-(defmacro truth-to-bit (x) `(cond (,x 1) ('else 0)))
-(defmacro bit-to-truth (b) `(eql ,b 1))
-
-(defun    bvec-make-full (n x) 
-    (make-array (list n) :element-type 'bit :initial-element x))
-
-(defmacro bvec-elt       (bv i)    `(sbit ,bv ,i))
-(defmacro bvec-setelt    (bv i x)  `(setf (sbit ,bv ,i) ,x))
-
 (defun    bvec-greater   (bv1 bv2)
   (let ((pos (mismatch bv1 bv2)))
     (cond ((or (null pos) (>= pos (length bv1))) nil)
