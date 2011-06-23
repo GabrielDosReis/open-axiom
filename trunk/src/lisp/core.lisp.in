@@ -938,6 +938,9 @@
   (progn
     (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
     (eval prologue)
+    (let ((d nil))
+      (maphash #'(lambda (k v) (setq d (cons (cons k v)  d))) |$driverTable|)
+      (format t "~%==> driver table before saveCore = ~s <==~%" d))
     (|saveCore| core-image entry-point))
   #+:ecl 
   (let* ((compiler::*ld* oa-cxx)
@@ -959,6 +962,7 @@
       (|coreQuit|)))
   )
 
+(trace |link|)
 
 ;; 
 ;; -*- Handling Command Line Arguments -*-
@@ -1169,6 +1173,9 @@
 (defun |topLevel|()
   (let ((*package* (find-package "AxiomCore"))
 	(command-args (|getCommandLineArguments|)))
+    (let ((d nil))
+      (maphash #'(lambda (k v) (setq d (cons (cons k v)  d))) |$driverTable|)
+      (format t "~%==> driver table = ~s <==~%" d))
     (when (null command-args) 
       (|internalError| "empty command line args"))
     ;; Existing system programming practive, and POSIX, have it

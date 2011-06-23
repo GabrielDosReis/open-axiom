@@ -1,5 +1,10 @@
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* driver/Makefile.in (open_axiom_LDADD): Use library archives for
+	linking, to prevent accidental use of dynamic libraries.
+
+2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-con.boot: Remove reference to asharp constructors.
 	* interp/br-op2.boot: Likewise.
 	* interp/br-saturn.boot: Likewise.
