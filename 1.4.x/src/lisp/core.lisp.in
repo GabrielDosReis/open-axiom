@@ -956,10 +956,7 @@
 			  (pushnew :open-axiom-base-lisp *features*)
 			  ,prologue
 			  (funcall ,entry-point)))
-      (|coreQuit|)))
-  )
-
-(trace |link|)
+      (|coreQuit|))))
 
 ;; 
 ;; -*- Handling Command Line Arguments -*-
