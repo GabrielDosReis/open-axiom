@@ -223,7 +223,7 @@ build_rts_options(Command* command, Driver driver)
 
       case clozure_runtime:
          command->rt_args.allocate(2);
-         command->rt_args[0] = (char*) "--quiet";
+         command->rt_args[0] = (char*) "--no-init";
          command->rt_args[1] = (char*) "--batch";
          break;
 
@@ -523,10 +523,8 @@ execute_core(const Command* command, Driver driver)
       args[0] = (char*) "";
    /* And CLISP wants to believe that argv[0] is where it hides stuff
       from the saved image.  */
-   else if (OPENAXIOM_BASE_RTS == clisp_runtime)
-      args[0] = execpath;
    else
-      args[0] = command->core.argv[0];
+      args[0] = execpath;
    /* Now, make sure we copy whatever arguments are required by the
       runtime system.  */
    for (i = 0; i < command->rt_args.size(); ++i)

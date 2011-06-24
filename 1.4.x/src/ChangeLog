@@ -1,3 +1,9 @@
+2011-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/command.cc (build_rts_options) [clozure_runtime]: Request
+	no read of initialization file instead of quiet mode.
+	(execute_core): Set arg[0] to the about-to-bed-executed program.
+
 2011-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/Makefile.in (open_axiom_LDADD): Use library archives for
