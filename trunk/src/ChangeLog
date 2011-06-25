@@ -1,3 +1,8 @@
+2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c (main): Don't start the graphics and no X11 server
+	is running.
+
 2011-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/command.cc (build_rts_options) [clozure_runtime]: Request
