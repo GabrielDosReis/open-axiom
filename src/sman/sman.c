@@ -777,7 +777,8 @@ main(int argc, char *argv[])
   if (start_spadclient)       start_the_spadclient();
   if (start_local_spadclient) start_the_local_spadclient();
   if (start_ht)               start_the_hypertex();
-  if (start_graphics)         start_the_graphics();
+  if (start_graphics and is_X())
+     start_the_graphics();
   openaxiom_sleep(1);
 
   if (fork_you(Die) != NULL) {
