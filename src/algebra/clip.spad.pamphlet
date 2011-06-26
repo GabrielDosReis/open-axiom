@@ -91,9 +91,7 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
     findPt: L L Pt -> Union(Pt,"failed")
     Pnan?:Pt ->Boolean
 
-    Fnan?(x: SF): Boolean == %fNaN?(x)$Foreign(Builtin)
-
-    Pnan? p == any?(Fnan?,p)
+    Pnan? p == any?(nan?,p)
    
     iClipParametric(pointLists,fraction,scale) ==
       import Point SF
@@ -224,8 +222,8 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
       -- throw out points with large and small y-coordinates
       yMin := yCoord(sortedList.clipNum)
       yMax := yCoord(sortedList.(n - 1 - clipNum))
-      if Fnan? yMin then yMin : SF := 0
-      if Fnan? yMax then yMax : SF := 0
+      if nan? yMin then yMin : SF := 0
+      if nan? yMax then yMax : SF := 0
       (yDiff := yMax - yMin) = 0 =>
         [pointLists,xRange plot,segment(yMin - 1,yMax + 1)]
       numm := numer scale; denn := denom scale
@@ -236,11 +234,11 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
          (yCoord(#1) < yMax) and (yCoord(#1) > yMin),xMin,xMax,yMin,yMax)
       yMin := yCoord(sortedList.clipNum)
       yMax := yCoord(sortedList.(n - 1 - clipNum))
-      if Fnan? yMin then yMin : SF := 0
-      if Fnan? yMax then yMax : SF := 0
+      if nan? yMin then yMin : SF := 0
+      if nan? yMax then yMax : SF := 0
       for list in lists repeat
         for pt in list repeat
-          if not Fnan?(yCoord pt) then
+          if not nan?(yCoord pt) then
             yMin := min(yMin,yCoord pt)
             yMax := max(yMax,yCoord pt)
       [lists,xVals,segment(yMin,yMax)]
@@ -249,13 +247,13 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
  
     norm(pt) == 
       x := xCoord(pt); y := yCoord(pt)
-      if Fnan? x then
-        if Fnan? y then
+      if nan? x then
+        if nan? y then
           r:SF := 0
         else
           r:SF := y**2
       else
-        if Fnan? y then
+        if nan? y then
           r:SF := x**2
         else
           r:SF := x**2 + y**2

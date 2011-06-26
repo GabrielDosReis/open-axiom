@@ -209,6 +209,7 @@ FloatingPointSystem(): Category == RealNumberSystem() with
 ++ Author: Michael Monagan
 ++ Date Created:
 ++   January 1988
+++ Date Last Modified: June 26, 2011.
 ++ Change History:
 ++ Basic Operations: exp1, hash, log2, log10, rationalApproximation, / , **
 ++ Related Constructors:
@@ -274,6 +275,9 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
          ++ rationalApproximation(f, n, b) computes a rational
          ++ approximation r to f with relative error \spad{< b**(-n)}
          ++ (that is, \spad{|(r-f)/f| < b**(-n)}).
+      nan?: % -> Boolean
+         ++ \spad{nan? x} holds if \spad{x} is a Not a Number floating
+         ++ point data in the IEEE 754 sense.
 
  == add
    macro MER == Record(MANTISSA:Integer,EXPONENT:Integer)
@@ -322,6 +326,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %facosh: % -> %               from Foreign Builtin
    import %fatanh: % -> %               from Foreign Builtin
    import %fcstpi: () -> %              from Foreign Builtin
+   import %fNaN?: % -> Boolean          from Foreign Builtin
 
    manexp: % -> MER
 
@@ -537,6 +542,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
       d = 2 => sqrt(x) ** n
       x ** (n::% / d::%)
 
+   nan? x == %fNaN? x
 @
 
 \section{License}

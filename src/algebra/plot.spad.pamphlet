@@ -174,8 +174,7 @@ Plot(): Exports == Implementation where
     ANGLEBOUND: F := cos inv (4::F)
     DEBUG: B := false
 
-    Fnan?(x: F): Boolean == %fNaN?(x)$Foreign(Builtin)
-    Pnan?(x) == any?(Fnan?,x)
+    Pnan?(x) == any?(nan?,x)
 
 --% graphics output
 
@@ -236,11 +235,11 @@ Plot(): Exports == Implementation where
 
     select(l,f,g) ==
       m := f first l
-      if Fnan? m then m := 0
+      if nan? m then m := 0
       for p in rest l repeat
         n := m
         m := g(m, f p)
-        if Fnan? m then m := n
+        if nan? m then m := n
       m
 
     rangeRefine(curve,nRange) ==
