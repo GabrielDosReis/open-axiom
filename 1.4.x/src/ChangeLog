@@ -1,5 +1,10 @@
 2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* share/algebra/libaxiom.al: Remove.
+	* algebra/libdb.text: Likewise.
+
+2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sman/sman.c (main): Don't start the graphics and no X11 server
 	is running.
 
