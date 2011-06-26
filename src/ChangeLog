@@ -1,5 +1,11 @@
 2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* sman/Makefile.in (oa_OpenAxiom_ldflags): New.
+	(spadclient_LDADD): Use it.
+	(sman_LDADD): Likewise.
+
+2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* share/algebra/libaxiom.al: Remove.
 	* algebra/libdb.text: Likewise.
 

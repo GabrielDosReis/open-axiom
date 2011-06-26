@@ -41,6 +41,8 @@ INC=    $(axiom_src_srcdir)/include
 
 build_libdir = $(top_builddir)/src/lib
 
+oa_OpenAxiom_ldflags = $(builddir)/../utils -lOpenAxiom
+
 bin_PROGRAMS = session$(EXEEXT) \
 		spadclient$(EXEEXT) \
 		sman$(EXEEXT)
@@ -55,14 +57,14 @@ session_DEPENDENCIES =
 spadclient_SOURCES = spadclient.c
 spadclient_objects = $(spadclient_SOURCES:.c=.lo)
 spadclient_LDADD =  \
-	-L$(axiom_target_libdir)/ -lOpenAxiom \
+	$(oa_OpenAxiom_ldflags) \
 	-L$(build_libdir) $(libspad_la)  $(oa_c_libs)
 spadclient_DEPENDENCIES =
 
 sman_SOURCES = sman.c
 sman_objects = $(sman_SOURCES:.c=.lo)
 sman_LDADD = \
-	-L$(axiom_target_libdir)/ -lOpenAxiom \
+	$(oa_OpenAxiom_ldflags) \
 	-L$(build_libdir) $(libspad_la) $(oa_c_libs)
 sman_DEPENDENCIES =
 
