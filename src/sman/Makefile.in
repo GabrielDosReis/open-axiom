@@ -41,7 +41,7 @@ INC=    $(axiom_src_srcdir)/include
 
 build_libdir = $(top_builddir)/src/lib
 
-oa_OpenAxiom_ldflags = $(builddir)/../utils -lOpenAxiom
+oa_OpenAxiom_ldflags = -L$(builddir)/../utils -lOpenAxiom
 
 bin_PROGRAMS = session$(EXEEXT) \
 		spadclient$(EXEEXT) \
