@@ -1,3 +1,10 @@
+2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/sf.spad.pamphlet (DoubleFloat) [nan?]: New export.
+	* algebra/clip.spad.pamphlet (TwoDimensionalPlotClipping): Use it
+          instead of %fNan?.
+	* algebra/plot.spad.pamphlet (Plot): Likewise.
+
 2011-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/Makefile.in (oa_OpenAxiom_ldflags): New.
