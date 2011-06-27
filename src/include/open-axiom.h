@@ -35,6 +35,7 @@
 #define OPENAXIOM_included
 
 #include <vector>
+#include <string>
 
 #include "openaxiom-c-macros.h"
 
@@ -207,6 +208,34 @@ namespace OpenAxiom {
       const char* exec_path;  // path to the program to execute.
       Command();
    };
+
+   // ----------------
+   // -- Filesystem --
+   // ----------------
+   // Basic interface to the OpenAxiom filesystem
+   struct Filesystem {
+      // Construct the basic filesystem from the OpenAxiom system
+      // directory.  All other directories are derived from the root.
+      explicit Filesystem(const std::string&);
+
+      // The directory containing the core system
+      std::string sysdir() const;
+
+      // The directory containing algebra modules
+      std::string algdir() const;
+
+      // The directory containing database files.
+      std::string dbdir() const;
+      
+   private:
+      const std::string root;
+      const std::string alg;
+      const std::string db;
+   };
+
+   // Return the path name the specified dabatase file.
+   std::string database_filepath(const Filesystem&, const std::string&);
+
 
    const char* get_systemdir(int argc, char*[]);
    const char* make_path_for(const char*, Driver);

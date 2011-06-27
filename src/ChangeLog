@@ -1,3 +1,10 @@
+2011-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/Makefile.in (libOpenAxiom_SOURCES): Include filesystem.cc
+	* include/open-axiom.h (Filesystem): New.
+	* gui/debate.cc (Debate::Debate): Initialize fs data member.
+	* gui/debate.h (Debate): Declare it.
+
 2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/sf.spad.pamphlet (DoubleFloat) [nan?]: New export.
