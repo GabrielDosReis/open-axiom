@@ -13,9 +13,9 @@
 //       the documentation and/or other materials provided with the
 //       distribution.
 //
-//     - Neither the name of OpenAxiom. nor the names of its contributors
-//       may be used to endorse or promote products derived from this
-//       software without specific prior written permission.
+//     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -29,41 +29,26 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OPENAXIOM_DEBATE_INCLUDED
-#define OPENAXIOM_DEBATE_INCLUDED
+// --% Author: Gabriel Dos Reis.
 
-#include <QWidget>
-#include <QFontMetrics>
-#include <QScrollArea>
-#include <QResizeEvent>
+
 #include "open-axiom.h"
-#include "conversation.h"
 
 namespace OpenAxiom {
-   
-   class Debate : public QScrollArea {
-      Q_OBJECT;
-   public:
-     explicit Debate(QWidget*, Command&);
-      ~Debate();
+   Filesystem::Filesystem(const std::string& d)
+         : root(d),
+           alg(d + "/algebra"),
+           db(alg)
+   { }
 
-      Conversation* exchanges() { return &conv; }
-      Filesystem* filesystem() { return &fs; }
+   std::string Filesystem::sysdir() const { return root; }
 
-   protected:
-      void resizeEvent(QResizeEvent*);
+   std::string Filesystem::algdir() const { return alg; }
 
-   private slots:
-      void done(int);
+   std::string Filesystem::dbdir() const { return db; }
 
-   private:
-      Conversation conv;
-      Filesystem fs;
-   };
+   std::string
+   database_filepath(const Filesystem& fs, const std::string& file) {
+      return fs.dbdir() + "/" + file + ".daase";
+   }
 }
-
-#endif  // OPENAXIOM_DEBATE_INCLUDED
-
-// Local Variables:
-// mode: c++
-// End:

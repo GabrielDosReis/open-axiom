@@ -48,6 +48,7 @@ namespace OpenAxiom {
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
+      Filesystem* filesystem() { return &fs; }
 
    protected:
       void resizeEvent(QResizeEvent*);
@@ -57,6 +58,7 @@ namespace OpenAxiom {
 
    private:
       Conversation conv;
+      Filesystem fs;
    };
 }
 

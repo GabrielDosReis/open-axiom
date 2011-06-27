@@ -49,7 +49,7 @@ namespace OpenAxiom {
    }
 
   Debate::Debate(QWidget* parent, Command& cmd)
-         : QScrollArea(parent), conv(*this) {
+        : QScrollArea(parent), conv(*this), fs(cmd.root_dir) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
