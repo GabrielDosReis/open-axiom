@@ -70,12 +70,6 @@ domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]
  
 --% MODEMAP FUNCTIONS
  
---getTargetMode(x is [op,:argl],e) ==
---  CASES(#(mml:= getModemapList(op,#argl,e)),
---    (1 =>
---    ([[.,target,:.],:.]:= first mml; substituteForFormalArguments(argl,target))
---      ; 0 => MOAN(x," has no modemap"); systemError [x," has duplicate modemaps"]))
- 
 getModemap(x is [op,:.],e) ==
   for modemap in get(op,'modemap,e) repeat
     if u:= compApplyModemap(x,modemap,e) then return
@@ -120,8 +114,6 @@ addModemap(op,mc,sig,pred,fn,$e) ==
   addModemap0(op,mc,sig,pred,fn,$e)
  
 addModemapKnown(op,mc,sig,pred,fn,$e) ==
---  if knownInfo pred then pred:=true
---  that line is handled elsewhere
   $insideCapsuleFunctionIfTrue =>
     $CapsuleModemapFrame :=
       addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
@@ -205,23 +197,6 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
       return modemapList
   if entry then [:modemapList,entry] else modemapList
  
--- next definition RPLACs, and hence causes problems.
--- In ptic., SubResGcd in SparseUnivariatePolynomial is miscompiled
---mergeModemap(entry:=((mc,:sig),:.),modemapList,e) ==
---    for (mmtail:= (((mc',:sig'),:.),:.)) in tails modemapList do
---       mc=mc' or isSubset(mc,mc',e)  =>
---         mmtail.rest := (first mmtail,: rest mmtail)
---         mmtail.first := entry
---         entry := nil
---         return modemapList
---     if entry then (:modemapList,entry) else modemapList
- 
---substituteForRep(entry is [[mc,:sig],:.],curModemapList) ==
---  --change 'Rep to "$" unless the resulting signature is already in $
---  member(entry':= substitute("$",'Rep,entry),curModemapList) =>
---    [entry,:curModemapList]
---  [entry,entry',:curModemapList]
- 
 addNewDomain(domain,e) ==
   augModemapsFromDomain(domain,domain,e)
 
@@ -286,29 +261,8 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   e:= putDomainsInScope(domainName,e)
   condlist:=[]
   for [[op,sig,:.],cond,fnsel] in fnAlist repeat
---  e:= addModemap(op,domainName,sig,cond,fnsel,e)
----------next 5 lines commented out to avoid wasting time checking knownInfo on
----------conditions attached to each modemap being added, takes a very long time
----------instead conditions will be checked when maps are actually used
-  --v:=ASSOC(cond,condlist) =>
-  --  e:= addModemapKnown(op,domainName,sig,rest v,fnsel,e)
-  --$e:local := e  -- $e is used by knownInfo
-  --if knownInfo cond then cond1:=true else cond1:=cond
-  --condlist:=[[cond,:cond1],:condlist]
     e:= addModemapKnown(op,domainName,sig,cond,fnsel,e) -- cond was cond1
---  for u in sig | (not member(u,$DomainsInScope)) and
---                   (cons? u) and
---                     (not isCategoryForm(u,e)) do
---     e:= addNewDomain(u,e)
   e
- 
---subCatParametersInto(domainForm,catForm,e) ==
---  -- JHD 08/08/84 perhaps we are fortunate that it is not used
---  --this is particularly dirty and should be cleaned up, say, by wrapping
---  -- an appropriate lambda expression around mapping forms
---  domainForm is [op,:l] and l =>
---    get(op,'modemap,e) is [[[mc,:.],:.]] => applySubst(pairList(rest mc,l),catForm)
---  catForm
  
 evalAndSub(domainName,viewName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
@@ -323,7 +277,6 @@ evalAndSub(domainName,viewName,functorForm,form,$e) ==
 getOperationAlist(name,functorForm,form) ==
   if atom name and niladicConstructorFromDB name then 
     functorForm:= [functorForm]
--- (null isConstructorForm functorForm) and (u:= isFunctor functorForm)
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
   $insideFunctorIfTrue and name="$" =>
@@ -356,11 +309,6 @@ addConstructorModemaps(name,form is [functorName,:.],e) ==
     e:= addModemap(op,name,sig,true,opcode,e)
   e
  
- 
---The way XLAMs work:
---  ((XLAM ($1 $2 $3) (%store (%vref $1 0) $3)) X "c" V) ==>
---               (%store (%vref X 0) V)
---
  
 getDomainsInScope e ==
   $insideCapsuleFunctionIfTrue => $CapsuleDomainsInScope
