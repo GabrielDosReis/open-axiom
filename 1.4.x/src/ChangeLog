@@ -1,5 +1,9 @@
 2011-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* sman/sman.c (main): Don't start Hyperdoc if no X11 server is running.
+
+2011-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/modemap.boot: Cleanup inactive codes.
 
 2011-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
