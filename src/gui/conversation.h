@@ -35,7 +35,7 @@
 #include <vector>
 #include <QFrame>
 #include <QLineEdit>
-#include <QLabel>
+#include <QTextEdit>
 #include <QFont>
 #include <QEvent>
 #include <QResizeEvent>
@@ -57,10 +57,12 @@ namespace OpenAxiom {
    // --------------------
    // An output text area is a widget where we output text.
    // The texts are accumulated, as opposed to overwritten.
-   class OutputTextArea : public QLabel {
-      typedef QLabel Base;
+   class OutputTextArea : public QTextEdit {
+      typedef QTextEdit Base;
    public:
       explicit OutputTextArea(QWidget*);
+      // the metrics of this output area
+      QSize sizeHint() const;
       // Add a new paragraph to existing texts.  Paragraghs are
       // separated by the newline character.
       void add_paragraph(const QString&);
@@ -123,7 +125,7 @@ namespace OpenAxiom {
       // Conversion number
       int number() const { return no; }
 
-      // Reimplement positiion management.
+      // Reimplement position management.
       QSize sizeHint() const;
 
    protected:
