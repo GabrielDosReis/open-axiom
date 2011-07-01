@@ -54,6 +54,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the <gmp.h> header file. */
+#undef HAVE_GMP_H
+
 /* Define to 1 if the system has the type `int16_t'. */
 #undef HAVE_INT16_T
 
@@ -74,6 +77,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `gmp' library (-lgmp). */
+#undef HAVE_LIBGMP
 
 /* Define to 1 if you have the <libutil.h> header file. */
 #undef HAVE_LIBUTIL_H

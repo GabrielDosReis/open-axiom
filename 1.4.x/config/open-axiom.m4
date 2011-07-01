@@ -796,6 +796,7 @@ OPENAXIOM_CHECK_FILESYSTEM
 OPENAXIOM_CHECK_SIGNALS
 OPENAXIOM_CHECK_SOCKETS
 OPENAXIOM_CHECK_PROCESS
+OPENAXIOM_CHECK_GMP
 ])
 
 dnl ------------------------
@@ -1007,6 +1008,14 @@ AC_COMPILE_IFELSE([int a = __alignof(int);],
 AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
                    [Alignment query operator])
 AC_MSG_RESULT([$oa_alignment])
+])
+
+dnl -------------------------
+dnl -- OPENAXIOM_CHECK_GMP --
+dnl -------------------------
+AC_DEFUN([OPENAXIOM_CHECK_GMP],[
+AC_CHECK_HEADERS([gmp.h], [AC_CHECK_LIB([gmp],[__gmpz_init])])
+AM_CONDITIONAL([OA_HAS_GMP], [test -n $ac_cv_header_gmp_h])
 ])
 
 dnl --------------------------
