@@ -1,3 +1,18 @@
+2011-07-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* gui/conversation.h (OutputTextArea): Now inherit from
+	QTextEditor, for the nth time.
+	(OutputTextArea::sizeHint): Declare as override.
+	* gui/conversation.cc (OutputTextArea::OutputTextArea): Make the
+	output text editor read only.  Disallow vertical scroll bars.
+	(OutputTextArea::sizeHint): Give a tight estimate.
+	(OutputTextArea::add_paragraph): Tidy.
+	(OutputTextArea::add_text): Likewise.
+	(Exchange::reply_to_query): Toggle the mouse in busy state
+	after submitting query.
+	(Conversation::read_reply): Untoggle mouse' busy state if last
+	output text was read.
+
 2011-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/sman.c (main): Don't start Hyperdoc if no X11 server is running.

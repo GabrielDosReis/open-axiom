@@ -35,6 +35,7 @@
 #include <iostream>
 
 #include <QScrollBar>
+#include <QApplication>
 #include "conversation.h"
 #include "debate.h"
 
@@ -64,9 +65,25 @@ namespace OpenAxiom {
    // --------------------
    OutputTextArea::OutputTextArea(QWidget* p)
          : Base(p) {
+      setReadOnly(true);          // this is a output only area.
+      setLineWrapMode(NoWrap);    // for the time being, mess with nothing.
       setFont(p->font());
+      setViewportMargins(0, 0, 0, 0);
       setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+      // We do not want to see scroll bars.  Usually disallowing vertical
+      // scroll bars and allocating enough horizontal space is sufficient
+      // to ensure that we don't see any horizontal scrollbar.
+      setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
       setLineWidth(1);
+   }
+
+   // This overriding implementation is so that we can control the
+   // amount of vertical space in the read-only editor viewport allocated
+   // for the display of output text.  In particular we do not want
+   // scrollbars.
+   QSize
+   OutputTextArea::sizeHint() const {
+      return QSize(width(), document()->lineCount() * fontMetrics().height());
    }
 
    // Concatenate two paragraphs.
@@ -78,7 +95,7 @@ namespace OpenAxiom {
    }
    
    void OutputTextArea::add_paragraph(const QString& s) {
-      setText(accumulate_paragaphs(text(), s));
+      setPlainText(accumulate_paragaphs(toPlainText(), s));
       QSize sz = sizeHint();
       sz.setWidth(parentWidget()->width() - our_margin(this));
       resize(sz);
@@ -87,7 +104,7 @@ namespace OpenAxiom {
    }
 
    void OutputTextArea::add_text(const QString& s) {
-      setText(text() + s);
+      setPlainText(toPlainText() + s);
       QSize sz = sizeHint();
       const int w = parentWidget()->width() - 2 * frameWidth();
       if (w > sz.width())
@@ -228,6 +245,7 @@ namespace OpenAxiom {
       if (empty_string(input))
          return;
       topic()->submit_query(input);
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    }
 
    void Exchange::resizeEvent(QResizeEvent* e) {
@@ -393,8 +411,10 @@ namespace OpenAxiom {
          exchange()->updateGeometry();
          if (empty_string(output.prompt))
             ensure_visibility(debate(), exchange());
-         else
+         else {
             ensure_visibility(debate(), next(exchange()));
+            QApplication::restoreOverrideCursor();
+	 }
       }
    }
 
