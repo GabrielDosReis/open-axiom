@@ -489,7 +489,7 @@ mathprint(x,out == $OutputStream) ==
 
 sayMath u ==
   for x in u repeat acc:= concat(acc,linearFormatName x)
-  sayALGEBRA acc
+  sayMSG acc
 
 --% Output transformations
 
@@ -1485,7 +1485,7 @@ xLate(l,x,y,d) ==
 concatTrouble(u,d,start,lineLength,$addBlankIfTrue) ==
   [x,:l] := splitConcat(u,lineLength,true)
   null l =>
-    sayALGEBRA ['"%l",'"%b",'"  Too wide to Print",'"%d"]
+    sayMSG ['"%l",'"%b",'"  Too wide to Print",'"%d"]
     THROW('output,nil)
   charybdis(fixUp x,start,lineLength)
   for y in l repeat
@@ -1593,7 +1593,7 @@ output(expr,domain) ==
      SPADCALL(SPADCALL textwrit, expr, printfun)
      sayMSGNT '"%l"
 
-  sayALGEBRA [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
+  sayMSG [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
 
 outputNumber(start,linelength,num) ==
   if start > 1 then blnks := fillerSpaces(start-1,char " ")
@@ -1607,8 +1607,7 @@ outputNumber(start,linelength,num) ==
        $outputLines := [strconc(blnks, subString(num,0,linelength),under),
                         :$outputLines]
     else
-      sayALGEBRA [blnks,
-                  subString(num,0,linelength),under]
+      sayMSG [blnks, subString(num,0,linelength),under]
     num := subString(num,linelength)
     if firsttime then 
          blnks:=strconc(blnks,'" ")
@@ -1617,7 +1616,7 @@ outputNumber(start,linelength,num) ==
   if $collectOutput then
     $outputLines := [strconc(blnks, num), :$outputLines]
   else
-    sayALGEBRA [blnks, num]
+    sayMSG [blnks, num]
 
 outputString(start,linelength,str) ==
   if start > 1 then blnks := fillerSpaces(start-1,char " ")
@@ -1627,12 +1626,12 @@ outputString(start,linelength,str) ==
        $outputLines := [strconc(blnks, subString(str,0,linelength)),
                         :$outputLines]
     else
-      sayALGEBRA [blnks, subString(str,0,linelength)]
+      sayMSG [blnks, subString(str,0,linelength)]
     str := subString(str,linelength)
   if $collectOutput then
     $outputLines := [strconc(blnks, str), :$outputLines]
   else
-    sayALGEBRA [blnks, str]
+    sayMSG [blnks, str]
 
 outputDomainConstructor form ==
   if VECTORP form then form := devaluate form
