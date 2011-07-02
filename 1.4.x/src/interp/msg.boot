@@ -65,7 +65,7 @@ $ncMsgList := []
 ncSoftError(pos, erMsgKey, erArgL,:optAttr) ==
   $newcompErrorCount := $newcompErrorCount + 1
   desiredMsg erMsgKey =>
-    processKeyedError _
+    processKeyedError 
        msgCreate ('error, pos, erMsgKey, erArgL, $compErrorPrefix,optAttr)
  
 -- The program being compiled is seriously incorrect.
@@ -73,14 +73,14 @@ ncSoftError(pos, erMsgKey, erArgL,:optAttr) ==
 ncHardError(pos, erMsgKey, erArgL,:optAttr) ==
   $newcompErrorCount := $newcompErrorCount + 1
   desiredMsg erMsgKey =>
-    erMsg := processKeyedError _
+    processKeyedError 
        msgCreate('error,pos,erMsgKey, erArgL, $compErrorPrefix,optAttr)
   ncError()
  
 -- Bug in the compiler: something which shouldn't have happened did.
 ncBug (erMsgKey, erArgL,:optAttr) ==
   $newcompErrorCount := $newcompErrorCount + 1
-  erMsg := processKeyedError _
+  processKeyedError 
         msgCreate('bug,$nopos, erMsgKey, erArgL,$compBugPrefix,optAttr)
   BREAK()
   ncAbort()
@@ -331,13 +331,15 @@ msgOutputter msg  ==
           st := flowSegmentedMsg(st,$LOGLENGTH,0)
        alreadyOpened := alreadyOpened? msg
         
-toScreen? msg ==  getMsgToWhere msg ~= 'fileOnly
+toScreen? msg ==
+  getMsgToWhere msg ~= 'fileOnly
+
 toFile? msg   ==
-     getMsgToWhere msg ~= 'screenOnly
+  getMsgToWhere msg ~= 'screenOnly
  
  
 alreadyOpened? msg ==
-       not msgImPr? msg
+  not msgImPr? msg
  
 getStFromMsg msg ==
     $optKeyBlanks : local := '""  --set in setOptKeyBlanks()

@@ -1,3 +1,10 @@
+2011-07-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/macros.lisp (sayALGEBRA): Remove as duplicate of sayMSG.
+	* interp/i-output.boot: Replace sayALGBEBRA with sayMSG.
+	* interp/msg.boot (ncHardError): Remove dead variable ergMsg.
+	(ncBug): Likewise.
+
 2011-07-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* gui/conversation.h (OutputTextArea): Now inherit from

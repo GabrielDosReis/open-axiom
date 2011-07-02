@@ -371,9 +371,6 @@
 	(TERPRI out) 
 	(force-output out))))
  
-(defun |sayALGEBRA| (X) "Prints on Algebra output stream."
-  (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
- 
 (defun |sayMSG| (X)
   (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
  
