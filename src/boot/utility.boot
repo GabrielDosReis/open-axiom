@@ -37,7 +37,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, applySubst, applySubst!, applySubstNQ,
-  remove,removeSymbol,atomic?) where
+  remove,removeSymbol,atomic?,finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -47,6 +47,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
+    finishLine: %Thing -> %Void
 
 --%
 
@@ -267,3 +268,10 @@ charPosition(c,s,k) ==
     k >= n => return nil
     stringChar(s,k) = c => return k
     k := k + 1
+
+--% I/O
+
+++ Add a newline character and flush the output stream.
+finishLine out ==
+  writeNewline out
+  flushOutput out

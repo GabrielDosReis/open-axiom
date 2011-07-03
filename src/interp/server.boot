@@ -48,7 +48,7 @@ $sockBufferLength := 9217
 
 serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
-  FORCE_-OUTPUT()
+  flushOutput()
   not $SpadServer or not IS_-CONSOLE stream =>
     line := readLine stream
     line ~= %nothing => line

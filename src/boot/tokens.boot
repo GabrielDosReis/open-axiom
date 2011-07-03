@@ -270,6 +270,7 @@ for i in [ _
   ["false",        'NIL]   , _
   ["first",        "CAR"]  , _
   ["float?",   "FLOATP"] , _
+  ["flushOutput", "FORCE-OUTPUT"], _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["function?","FUNCTIONP"] , _
@@ -325,8 +326,11 @@ for i in [ _
   ["valueEq?",    "EQUAL"] , _
   ["vector?", "SIMPLE-VECTOR-P"], _
   ["vectorRef", "SVREF"] , _
-  ["writeByte", "WRITE-BYTE"], _
-  ["writeLine", "WRITE-LINE"], _
+  ["writeByte",    "WRITE-BYTE"], _
+  ["writeChar",    "WRITE-CHAR"], _
+  ["writeLine",    "WRITE-LINE"], _
+  ["writeNewline", "TERPRI"], _
+  ["writeString",  "WRITE-STRING"], _
   ["PLUS",           "+"]  , _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _
