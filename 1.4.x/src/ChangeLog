@@ -1,3 +1,14 @@
+2011-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: flushOutput, writeNewline, writeString
+	are new builtin library functions.
+	* boot/utility.boot (finishLine): New exported function.
+	* interp/i-output.boot (formulaFormat): Use it.
+	(texFormat): Likewise.
+	(texFormat1): Likewise.
+	(mathmlFormat): Likewise.
+	(output): Remove case for TextWriter.
+
 2011-07-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/macros.lisp (sayALGEBRA): Remove as duplicate of sayMSG.

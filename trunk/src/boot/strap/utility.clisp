@@ -11,7 +11,7 @@
                |reverse!| |lastNode| |append| |append!| |copyList|
                |substitute| |substitute!| |setDifference| |applySubst|
                |applySubst!| |applySubstNQ| |remove| |removeSymbol|
-               |atomic?|)))
+               |atomic?| |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
                 |substitute|))
@@ -43,6 +43,8 @@
                 |remove|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Void|) |finishLine|))
 
 (DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
 
@@ -317,4 +319,7 @@
             ((NOT (< |k| |n|)) (RETURN NIL))
             ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
             (T (SETQ |k| (+ |k| 1)))))))))
+
+(DEFUN |finishLine| (|out|)
+  (PROGN (TERPRI |out|) (FORCE-OUTPUT |out|)))
 

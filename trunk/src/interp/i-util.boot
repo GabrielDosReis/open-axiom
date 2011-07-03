@@ -80,7 +80,7 @@ MKPROMPT() ==
 printPrompt(flush? == false) ==
   PRINC(MKPROMPT(), $OutputStream)
   if flush? then
-    FORCE_-OUTPUT $OutputStream
+    flushOutput $OutputStream
 
 ++ Return the name of a text editor, if possible.
 textEditor() ==

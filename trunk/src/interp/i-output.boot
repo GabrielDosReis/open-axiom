@@ -1530,8 +1530,7 @@ formulaFormat expr ==
   displayFn := getFunctionFromDomain("display",sff,[sff])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
   if not $collectOutput then
-    TERPRI $algebraOutputStream
-    FORCE_-OUTPUT $formulaOutputStream
+    finishLine $algebraOutputStream
   nil
 
 texFormat expr ==
@@ -1540,8 +1539,7 @@ texFormat expr ==
     getFunctionFromDomain("convert",tf,[$OutputForm,$Integer])
   displayFn := getFunctionFromDomain("display",tf,[tf])
   SPADCALL(SPADCALL(expr,$IOindex,formatFn),displayFn)
-  TERPRI $texOutputStream
-  FORCE_-OUTPUT $texOutputStream
+  finishLine $texOutputStream
   nil
 
 texFormat1 expr ==
@@ -1549,8 +1547,7 @@ texFormat1 expr ==
   formatFn := getFunctionFromDomain("coerce",tf, [$OutputForm])
   displayFn := getFunctionFromDomain("display",tf,[tf])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
-  TERPRI $texOutputStream
-  FORCE_-OUTPUT $texOutputStream
+  finishLine $texOutputStream
   nil
 
 mathmlFormat expr ==
@@ -1559,8 +1556,7 @@ mathmlFormat expr ==
   formatFn := getFunctionFromDomain("coerce",mml,[$OutputForm])
   displayFn := getFunctionFromDomain("display",mml,[mmlrep])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
-  TERPRI $mathmlOutputStream
-  FORCE_-OUTPUT $mathmlOutputStream
+  finishLine $mathmlOutputStream
   nil
 
 output(expr,domain) ==
@@ -1581,18 +1577,11 @@ output(expr,domain) ==
     if $fortranFormat then
       dispfortexp x
       if not $collectOutput then TERPRI $fortranOutputStream
-      FORCE_-OUTPUT $fortranOutputStream
+      flushOutput $fortranOutputStream
     if $algebraFormat then
       mathprintWithNumber(x,domain)
     if $texFormat     then texFormat x
     if $mathmlFormat  then mathmlFormat x
-  (function?(opOf domain)) and
-    (printfun := compiledLookup("<<",'(TextWriter TextWriter $), evalDomain domain))
-       and (textwrit := compiledLookup("print", '($), TextWriter())) =>
-     sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
-     SPADCALL(SPADCALL textwrit, expr, printfun)
-     sayMSGNT '"%l"
-
   sayMSG [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
 
 outputNumber(start,linelength,num) ==
