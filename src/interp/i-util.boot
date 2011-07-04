@@ -78,7 +78,7 @@ MKPROMPT() ==
  
 
 printPrompt(flush? == false) ==
-  PRINC(MKPROMPT(), $OutputStream)
+  writeString(MKPROMPT(), $OutputStream)
   if flush? then
     flushOutput $OutputStream
 

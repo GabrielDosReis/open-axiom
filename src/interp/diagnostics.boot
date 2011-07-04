@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis
+-- Copyright (C) 2007-2011, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -81,19 +81,19 @@ MESSAGEPRINT x ==
 
 MESSAGEPRINT_-1 x ==
   cons? x =>
-    PRINC '"("
+    writeString '"("
     MESSAGEPRINT_-1 first x
     MESSAGEPRINT_-2 rest x
-    PRINC '")"
+    writeString '")"
   x = "%l" or x is '"%l" => TERPRI()
   PRINC x
 
 MESSAGEPRINT_-2 x ==
   atom x =>
     not null x =>
-      PRINC '" . "
+      writeString '" . "
       MESSAGEPRINT_-1 x
-  PRINC '" "
+  writeString '" "
   MESSAGEPRINT_-1 first x
   MESSAGEPRINT_-2 rest x
 

@@ -1261,8 +1261,6 @@
 (define-function 'prin2cvec #'princ-to-string)
 (define-function 'stringimage #'princ-to-string)
 
-(define-function 'printexp #'princ)
-
 (defun |F,PRINT-ONE| (form &optional (stream |$OutputStream|))
  (declare (ignore stream))
     (let ((*print-level* 4) (*print-length* 4))

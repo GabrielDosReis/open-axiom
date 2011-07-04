@@ -543,14 +543,14 @@ sayMessage msg == sayMSG mkMessage msg
 sayNewLine(out == $OutputStream, margin == nil) ==
   -- Note: this function should *always* be used by sayBrightly and
   -- friends rather than TERPRI --  see bindSayBrightly
-  TERPRI(out)
+  writeNewline out
   if margin ~= nil then BLANKS(margin,out)
   nil
 
 sayString(x,out == $OutputStream) ==
   -- Note: this function should *always* be used by sayBrightly and
-  -- friends rather than PRINTEXP --  see bindSayBrightly
-  PRINTEXP(x,out)
+  -- friends rather than PRINC --  see bindSayBrightly
+  PRINC(x,out)
 
 spadStartUpMsgs() ==
   -- messages displayed when the system starts up

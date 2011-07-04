@@ -333,11 +333,11 @@ writeSaturnPrint s ==
   saturnTERPRI()
 
 saturnPRINTEXP s ==
-  $browserOutputStream => PRINTEXP(s,$browserOutputStream)
-  PRINTEXP s
+  $browserOutputStream => PRINC(s,$browserOutputStream)
+  PRINC s
 
 saturnTERPRI() ==
-  $browserOutputStream => TERPRI($browserOutputStream)
+  $browserOutputStream => writeNewline $browserOutputStream
   TERPRI()
 
 writeSaturnTable line ==
@@ -1563,9 +1563,9 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --  key := nil    --dummy first key
 --  instream  := MAKE_-INSTREAM  '"libdb.text"
 --  comstream := MAKE_-OUTSTREAM '"comdb.text"
---  PRINTEXP(0,    comstream)
---  PRINTEXP($tick,comstream)
---  PRINTEXP('"",  comstream)
+--  PRINC(0,    comstream)
+--  PRINC($tick,comstream)
+--  PRINC('"",  comstream)
 --  TERPRI(comstream)
 --  while (line := readLine instream) ~= %nothing repeat
 --    comP := FILE_-POSITION comstream
@@ -1575,23 +1575,23 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --      outstream := MAKE_-OUTSTREAM strconc(STRINGIMAGE key,'"libdb.text")
 --    outP := FILE_-POSITION outstream
 --    [prefix,:comments] := dbSplit(line,6,1)
---    PRINTEXP(prefix,outstream)
---    PRINTEXP($tick ,outstream)
+--    PRINC(prefix,outstream)
+--    PRINC($tick ,outstream)
 --    null comments =>
---      PRINTEXP(0,outstream)
+--      PRINC(0,outstream)
 --      TERPRI(outstream)
---    PRINTEXP(comP,outstream)
+--    PRINC(comP,outstream)
 --    TERPRI(outstream)
---    PRINTEXP(key,   comstream)   --identifies file the backpointer is to
---    PRINTEXP(outP  ,comstream)
---    PRINTEXP($tick ,comstream)
---    PRINTEXP(first comments,comstream)
+--    PRINC(key,   comstream)   --identifies file the backpointer is to
+--    PRINC(outP  ,comstream)
+--    PRINC($tick ,comstream)
+--    PRINC(first comments,comstream)
 --    TERPRI(comstream)
 --    for c in rest comments repeat
---      PRINTEXP(key,   comstream)   --identifies file the backpointer is to
---      PRINTEXP(outP  ,comstream)
---      PRINTEXP($tick ,comstream)
---      PRINTEXP(c, comstream)
+--      PRINC(key,   comstream)   --identifies file the backpointer is to
+--      PRINC(outP  ,comstream)
+--      PRINC($tick ,comstream)
+--      PRINC(c, comstream)
 --      TERPRI(comstream)
 --  SHUT instream
 --  SHUT outstream

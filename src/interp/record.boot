@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -182,11 +182,9 @@ testInput2Output(lines,n) ==
 evaluateLines lines ==
   file := MAKE_-OUTSTREAM '"/tmp/temp.input"
   for line in lines repeat
---  stringPrefix?('")read ",line) => 'skip
     stringPrefix?('")r",line) => 'skip
     stringPrefix?('")undo )redo",line) => 'skip
-    PRINTEXP(line, file)
-    TERPRI file
+    writeLine(line, file)
   SHUT file
   _/EDITFILE: local := '"/tmp/temp.input"
   _/RF()
@@ -223,15 +221,14 @@ htFile2InputFile(pathname,:option) ==
   SHUT $htStream
   outStream := MAKE_-OUTSTREAM opathname
   for [pageName,:commands] in alist repeat
-    PRINTEXP('"-- ",outStream)
-    PRINTEXP(pageName,outStream)
-    TERPRI outStream 
-    PRINTEXP('")cl all",outStream)
-    TERPRI outStream
+    writeString('"-- ",outStream)
+    PRINC(pageName,outStream)
+    writeNewline outStream 
+    writeLine('")cl all",outStream)
     for x in commands repeat 
-      PRINTEXP(htCommandToInputLine x,outStream)
-      TERPRI outStream
-    TERPRI outStream
+      PRINC(htCommandToInputLine x,outStream)
+      writeNewline outStream
+    writeNewline outStream
   SHUT outStream
   opathname
  

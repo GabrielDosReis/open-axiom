@@ -185,7 +185,7 @@ File(S:SetCategory): FileCategory(FileName, S) with
             f.fileIOmode ~= "output" =>
                 error "File not in write state"
             z := PRINT_-FULL(x, f.fileState)$Lisp
-            TERPRI(f.fileState)$Lisp
+            %writeNewline(f.fileState)$Foreign(Builtin)
             x
 
 @
@@ -260,16 +260,15 @@ TextFile: Cat == Def where
             "failed"
         write!(f, x) ==
             f.fileIOmode ~= "output" => error "File not in write state"
-            PRINTEXP(x, f.fileState)$Lisp
+            %writeString(x, f.fileState)$Foreign(Builtin)
             x
         writeLine! f ==
             f.fileIOmode ~= "output" => error "File not in write state"
-            TERPRI(f.fileState)$Lisp
+            %writeNewline(f.fileState)$Foreign(Builtin)
             ""
         writeLine!(f, x) ==
             f.fileIOmode ~= "output" => error "File not in write state"
-            PRINTEXP(x, f.fileState)$Lisp
-            TERPRI(f.fileState)$Lisp
+            %writeLine(x,f.fileState)$Foreign(Builtin)
             x
         endOfFile? f ==
           f.fileIOmode = "output" => false

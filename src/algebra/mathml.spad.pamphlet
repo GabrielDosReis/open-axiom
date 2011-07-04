@@ -258,8 +258,8 @@ mathmlFormat expr ==
   formatFn := getFunctionFromDomain("coerce",mml,[$OutputForm])
   displayFn := getFunctionFromDomain("display",mml,[mmlrep])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
-  TERPRI $mathmlOutputStream
-  FORCE_-OUTPUT $mathmlOutputStream
+  writeNewline $mathmlOutputStream
+  flushOutput $mathmlOutputStream
   NIL
 \end{verbatim}
 

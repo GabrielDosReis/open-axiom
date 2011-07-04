@@ -50,7 +50,7 @@ browserAutoloadOnceTrigger() == nil
 
 ----------------------> Global Variables <-----------------------
 $includeUnexposed? := true   --default setting
-$tick := char "`"            --field separator for database files
+$tick == char "`"            --field separator for database files
 $charUnderscore := ('__)     --needed because of parser bug
 $wild1 := '"[^`]*"           --phrase used to convert keys to grep strings
 $browseCountThreshold := 10  --the maximum number of names that will display
