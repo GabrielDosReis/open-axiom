@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2011, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@
 #include <sys/time.h>
 
 
+#include "cfuns.h"
 #include "header.h"
 #include "cpanel.h"
 #include "volume.h"
@@ -52,15 +53,12 @@
 #include "draw.h"
 #include "sockio.h"
 #include "com.h"
-
-
 #include "util.H1"
 #include "Gfun.H1"
 #include "pixmap.h"
 #include "XShade.h"
 #include "XSpadFill.h"
 #include "all_3d.H1"
-#include "cfuns.h"
 
 #define inside(A,B) (((XButtonEvent *)event)->x >= A && \
                      ((XButtonEvent *)event)->x <= B)

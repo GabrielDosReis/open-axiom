@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2011, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "sockio.h"
 #include "header.h"
 #include "draw.h"
 #include "mode.h"   /* for #define components */
-#include "sockio.h"
 #include "com.h"
-
 #include "XSpadFill.h"
 #include "XShade.h"
 #include "util.H1"

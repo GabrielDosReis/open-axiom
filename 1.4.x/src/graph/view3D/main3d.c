@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2011, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,17 +42,16 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include "cfuns.h"
 #include "header.h"
 #include "cpanel.h"
 #include "process.h"
 #include "bsdsignal.h"
-
 #include "util.H1"
 #include "Gfun.H1"
 #include "XSpadFill.h"
 #include "XShade.h"
 #include "all_3d.H1"
-#include "cfuns.h"
 
 using namespace OpenAxiom;
 

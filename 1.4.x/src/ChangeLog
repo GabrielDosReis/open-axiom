@@ -1,5 +1,15 @@
 2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* graph/view2D/process2d.c: Include "cfuns.h? before other local
+	headers. 
+	* graph/view2D/control2d.c: Likewise.
+	* graph/view2D/main2d.c: Likewise.
+	* graph/view3D/process3d.c: Likewise.
+	* graph/view3D/main3d.c: Likewise.
+	* graph/view3D/surface3d.c: Likewise.
+
+2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/setvars.boot: Remove support for script formula.
 	* interp/setvart.boot: Likewise.
 	* interp/diagnostics.boot (sayBrightlyNT1): Move from macros.lisp.
