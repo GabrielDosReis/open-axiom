@@ -133,7 +133,13 @@ AC_OUTPUT
 
 ## Set up Makefile for QT-based gui
 if test x$oa_has_qt = xyes; then
-  (cd src/gui && $OA_QT_QMAKE -makefile gui.pro)
+  oa_qmake_spec=
+  case $host,$GXX in
+     *darwin*,yes)
+         oa_qmake_spec="-spec macx-g++"
+         ;;
+  esac
+  (cd src/gui && $OA_QT_QMAKE -makefile $oa_qmake_spec gui.pro)
 fi
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.
