@@ -1524,15 +1524,6 @@ spadPrint(x,m) ==
   output(x,m)
   newlineIfDisplaying()
 
-formulaFormat expr ==
-  sff := '(ScriptFormulaFormat)
-  formatFn := getFunctionFromDomain("coerce",sff,[$OutputForm])
-  displayFn := getFunctionFromDomain("display",sff,[sff])
-  SPADCALL(SPADCALL(expr,formatFn),displayFn)
-  if not $collectOutput then
-    finishLine $algebraOutputStream
-  nil
-
 texFormat expr ==
   tf := $TexFormat
   formatFn := 
@@ -1562,7 +1553,6 @@ mathmlFormat expr ==
 output(expr,domain) ==
   if isWrapped expr then expr := unwrap expr
   isMapExpr expr =>
-    if $formulaFormat then formulaFormat expr
     if $texFormat     then texFormat expr
     if $mathmlFormat  then mathmlFormat expr
     if $algebraFormat then mathprintWithNumber(expr,domain)
@@ -1573,7 +1563,6 @@ output(expr,domain) ==
       texFormat outputDomainConstructor expr
   T := coerceInteractive(objNewWrap(expr,domain),$OutputForm) =>
     x := objValUnwrap T
-    if $formulaFormat then formulaFormat x
     if $fortranFormat then
       dispfortexp x
       if not $collectOutput then

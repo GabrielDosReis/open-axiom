@@ -1,5 +1,29 @@
 2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/setvars.boot: Remove support for script formula.
+	* interp/setvart.boot: Likewise.
+	* interp/diagnostics.boot (sayBrightlyNT1): Move from macros.lisp.
+	(sayBrightly1): Likewise.
+	(sayBrightlyNT): Likewise.
+	(sayBrightly): Likewise.
+	(sayBrightlyI): Likewise.
+	(sayMSG): Likewise.
+	(sayTeX): Likewise.
+	(sayMSG2File): Likewise.
+	* interp/i-output.boot (formulaFormat): Remove.
+	(output): Adjust.
+	* interp/macros.lisp (sayMSGNT): Remove.
+	(sayFORTRAN): Likewise.
+	(sayFORMULA): Likewise.
+	($formulaOutputstream): Likewise.
+	* interp/sys-globals.boot ($formulaOutputstream): Remove.
+	* interp/spad.lisp ($formulaFormat): Remove.
+	* algebra/exposed.lsp.pamphlet: Do not expose ScriptFormulaFormat
+	and ScriptFormulaFormat1.
+	* algebra/exposed.lsp.pamphlet: Remove.
+
+2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/int-top.boot (SpadInterpretStream): Remove binding of
 	$erMsgToss, as it is never assigned to.
 	(phIntReportMsgs): Adjust.

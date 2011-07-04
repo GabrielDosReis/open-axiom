@@ -1,6 +1,6 @@
 
-(30 . 3518066230)            
-(4514 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3518758384)            
+(4510 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -119,9 +119,8 @@
  |FreeModuleCat| |FortranMatrixFunctionCategory| |FreeMonoidCategory|
  |FreeMonoid| |FortranMachineTypeCategory| |FileName| |FileNameCategory|
  |FreeNilpotentLie| |FortranOutputStackPackage| |FindOrderFinite|
- |ScriptFormulaFormat| |ScriptFormulaFormat1| |FortranPackage|
- |FortranProgramCategory| |FortranFunctionCategory| |FortranProgram|
- |FullPartialFractionExpansion| |FullyPatternMatchable|
+ |FortranPackage| |FortranProgramCategory| |FortranFunctionCategory|
+ |FortranProgram| |FullPartialFractionExpansion| |FullyPatternMatchable|
  |FieldOfPrimeCharacteristic&| |FieldOfPrimeCharacteristic|
  |FloatingPointSystem&| |FloatingPointSystem| |Factored| |FactoredFunctions2|
  |Fraction| |FractionFunctions2| |FramedAlgebra&| |FramedAlgebra|
@@ -561,25 +560,24 @@
  |readable?| |exists?| |extension| |directory| |filename| |shallowExpand|
  |deepExpand| |clearFortranOutputStack| |showFortranOutputStack|
  |popFortranOutputStack| |pushFortranOutputStack| |topFortranOutputStack|
- |setFormula!| |formula| |linkToFortran| |setLegalFortranSourceExtensions|
- |fracPart| |polyPart| |fullPartialFraction| |primeFrobenius| |discreteLog|
- |decreasePrecision| |increasePrecision| |bits| |unitNormalize| |unit|
- |flagFactor| |sqfrFactor| |primeFactor| |nthFlag| |nthExponent|
- |irreducibleFactor| |factors| |nilFactor| |regularRepresentation|
- |traceMatrix| |randomLC| |minimize| |module| |rightRegularRepresentation|
- |leftRegularRepresentation| |rightTraceMatrix| |leftTraceMatrix|
- |rightDiscriminant| |leftDiscriminant| |represents| |mergeFactors| |isMult|
- |applyQuote| |ground| |ground?| |exprToXXP| |exprToUPS| |exprToGenUPS|
- |localAbs| |universe| |complement| |cardinality| |internalIntegrate0|
- |makeCos| |makeSin| |iiGamma| |iiabs| |bringDown| |newReduc| |logical?|
- |character?| |doubleComplex?| |complex?| |double?| |ffactor| |qfactor|
- |UP2ifCan| |anfactor| |fortranCharacter| |fortranDoubleComplex|
- |fortranComplex| |fortranLogical| |fortranInteger| |fortranDouble|
- |fortranReal| |external?| |scalarTypeOf| |fortranCarriageReturn|
- |fortranLiteral| |fortranLiteralLine| |processTemplate| |makeFR|
- |musserTrials| |stopMusserTrials| |numberOfFactors| |modularFactor|
- |useSingleFactorBound?| |useSingleFactorBound| |useEisensteinCriterion?|
- |useEisensteinCriterion| |eisensteinIrreducible?|
+ |linkToFortran| |setLegalFortranSourceExtensions| |fracPart| |polyPart|
+ |fullPartialFraction| |primeFrobenius| |discreteLog| |decreasePrecision|
+ |increasePrecision| |bits| |unitNormalize| |unit| |flagFactor| |sqfrFactor|
+ |primeFactor| |nthFlag| |nthExponent| |irreducibleFactor| |factors|
+ |nilFactor| |regularRepresentation| |traceMatrix| |randomLC| |minimize|
+ |module| |rightRegularRepresentation| |leftRegularRepresentation|
+ |rightTraceMatrix| |leftTraceMatrix| |rightDiscriminant| |leftDiscriminant|
+ |represents| |mergeFactors| |isMult| |applyQuote| |ground| |ground?|
+ |exprToXXP| |exprToUPS| |exprToGenUPS| |localAbs| |universe| |complement|
+ |cardinality| |internalIntegrate0| |makeCos| |makeSin| |iiGamma| |iiabs|
+ |bringDown| |newReduc| |logical?| |character?| |doubleComplex?| |complex?|
+ |double?| |ffactor| |qfactor| |UP2ifCan| |anfactor| |fortranCharacter|
+ |fortranDoubleComplex| |fortranComplex| |fortranLogical| |fortranInteger|
+ |fortranDouble| |fortranReal| |external?| |scalarTypeOf|
+ |fortranCarriageReturn| |fortranLiteral| |fortranLiteralLine|
+ |processTemplate| |makeFR| |musserTrials| |stopMusserTrials| |numberOfFactors|
+ |modularFactor| |useSingleFactorBound?| |useSingleFactorBound|
+ |useEisensteinCriterion?| |useEisensteinCriterion| |eisensteinIrreducible?|
  |tryFunctionalDecomposition?| |tryFunctionalDecomposition| |btwFact|
  |beauzamyBound| |bombieriNorm| |rootBound| |singleFactorBound| |quadraticNorm|
  |infinityNorm| |scaleRoots| |shiftRoots| |degreePartition| |factorOfDegree|

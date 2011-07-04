@@ -1272,11 +1272,11 @@ checkDocError u ==
     $constructorName => checkDocMessage u
     u
   if $exposeFlag and $exposeFlagHeading then
-    SAYBRIGHTLY1($exposeFlagHeading,$outStream)
+    sayBrightly1($exposeFlagHeading,$outStream)
     sayBrightly $exposeFlagHeading
     $exposeFlagHeading := nil
   sayBrightly msg
-  if $exposeFlag then SAYBRIGHTLY1(msg,$outStream)
+  if $exposeFlag then sayBrightly1(msg,$outStream)
   --if called by checkDocFile (see file checkdoc.boot)
 
 ++ Augment `u' with information about the owner of the source file

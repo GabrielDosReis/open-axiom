@@ -97,3 +97,46 @@ MESSAGEPRINT_-2 x ==
   MESSAGEPRINT_-1 first x
   MESSAGEPRINT_-2 rest x
 
+--%
+
+++ if not nil, gives stream for sayBrightly output
+$sayBrightlyStream := nil
+
+sayBrightlyNT1(x,out) ==
+  cons? x => brightPrint(x,out)
+  brightPrint0(x,out)
+
+sayBrightly1(x,out) ==
+  sayBrightlyNT1(x,out)
+  finishLine out
+
+sayBrightlyNT(x,out == $OutputStream) ==
+  x = nil => nil
+  $sayBrightlyStream ~= nil => sayBrightlyNT1(x,$sayBrightlyStream)
+  IS_-CONSOLE out => sayBrightlyNT1(x,out)
+  sayBrightly1(x,out) => sayBrightlyNT1(x,out)
+  nil
+
+sayBrightly(x,out == $OutputStream) ==
+  x = nil => nil
+  $sayBrightlyStream ~= nil => sayBrightly1(x,$sayBrightlyStream)
+  IS_-CONSOLE out => sayBrightly1(x,out)
+  sayBrightly1(x,out) => sayBrightly1(x,$OutputStream)
+  nil
+
+sayBrightlyI(x,out == $OutputStream) ==
+  x = nil => nil
+  sayBrightly1(x,out)
+
+sayMSG x ==
+  x = nil => nil
+  sayBrightly1(x,$algebraOutputStream)
+
+sayMSG2File msg ==
+  file := makePathname('spadmsg,'listing,$listingDirectory)
+  str := DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
+  sayBrightly1(msg,str)
+
+sayTeX x ==
+  x = nil => nil
+  sayBrightly1(x,$texOutputStream)

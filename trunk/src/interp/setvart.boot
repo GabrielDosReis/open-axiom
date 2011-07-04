@@ -1131,7 +1131,6 @@ $setOptions := '(
 -- algebra     display output in algebraic form         On:CONSOLE 
 -- asgard      show output in asgard form               off 
 -- characters  choose special output character set      plain 
--- script      display output in SCRIPT formula format  Off:CONSOLE 
 -- fortran     create output in FORTRAN format          Off:CONSOLE 
 -- fraction    how fractions are formatted              vertical 
 -- length      line length of output displays           77 
@@ -1385,55 +1384,6 @@ $setOptions := '(
        ("where TeX output goes (enter {\em console} or a pathname)"
         FILENAME
         $openMathOutputFile
-        chkOutputFileName
-        "console"))
-      NIL)
-
--- ---------------------- The script Option ----------------------
---
---  Description: display output in SCRIPT formula format
---
---  )set output script is used to tell AXIOM to turn IBM Script
---  formula-style output printing on and off, and where to place
---  the output.  By default, the destination for the output is the 
---  screen but printing is turned off.
---
--- Syntax:   )set output script <arg>
---     where arg can be one of
---   on      turn IBM Script formula printing on
---   off     turn IBM Script formula printing off 
---           (default state)
---   console send IBM Script formula output to screen 
---           (default state)
---   fp<.fe> send IBM Script formula output to file with file 
---           prefix fp and file extension .fe. If not given, 
---           .fe defaults to .sform.
---
--- If you wish to send the output to a file, you must issue 
--- this command twice: once with on and once with the file 
--- name. For example, to send IBM Script formula output to 
--- the file polymer.sform, issue the two commands
---
---   )set output script on
---   )set output script polymer
---
--- The output is placed in the directory from which you 
--- invoked AXIOM or the one you set with the )cd system command.
--- The current setting is:  Off:CONSOLE 
-     (script
-      "display output in SCRIPT formula format"
-      interpreter
-      FUNCTION
-      setOutputFormula
-      (("display output in SCRIPT format"
-        LITERALS
-        $formulaFormat
-        (off on)
-        off)
-       (break $formulaFormat)
-       ("where script output goes (enter {\em console} or a a pathname)"
-        FILENAME
-        $formulaOutputFile
         chkOutputFileName
         "console"))
       NIL)
