@@ -389,7 +389,7 @@ getPosStL msg ==
     '""
  
 showMsgPos? msg ==
-    $erMsgToss or (not msgImPr? msg and not msgLeader? msg)
+  not msgImPr? msg and not msgLeader? msg
  
  
 remFile positionList ==
@@ -448,8 +448,8 @@ isKeyQualityP (key,qual)  ==
 --% these functions handle the attributes
  
 initImPr msg  ==
-    $erMsgToss or symbolMember? (getMsgTag msg,$imPrTagGuys) =>
-        setMsgUnforcedAttr (msg,'$imPrGuys,'imPr)
+  symbolMember?(getMsgTag msg,$imPrTagGuys) =>
+    setMsgUnforcedAttr (msg,'$imPrGuys,'imPr)
  
 initToWhere msg  ==
     member ('trace,getMsgCatAttr (msg,'catless)) =>

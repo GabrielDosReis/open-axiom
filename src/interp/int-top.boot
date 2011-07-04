@@ -130,7 +130,6 @@ SpadInterpretStream(str, source, interactive?) ==
  
  
     $lastPos               : local := $nopos   ------------>!!!
-    $erMsgToss             : local := false --------------->!!!
     $ncMsgList             : local := nil
  
     $systemCommandFunction : local := function InterpExecuteSpadSystemCommand
@@ -266,7 +265,6 @@ phInterpret carrier ==
  
 --% phReportMsgs: carrier[lines,messages,..]-> carrier[lines,messages,..]
 phIntReportMsgs(carrier, interactive?) ==
-    $erMsgToss => 'OK
     lines := ncEltQ(carrier, 'lines)
     msgs  := ncEltQ(carrier, 'messages)
     nerr  := #msgs
@@ -399,7 +397,6 @@ phMacro carrier ==
  
 --% phReportMsgs: carrier[lines,messages,..]-> carrier[lines,messages,..]
 phReportMsgs(carrier, interactive?) ==
-    $erMsgToss => 'OK
     lines := ncEltQ(carrier, 'lines)
     msgs  := ncEltQ(carrier, 'messages)
     nerr  := #msgs
