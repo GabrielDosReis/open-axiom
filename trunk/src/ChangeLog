@@ -1,3 +1,12 @@
+2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/int-top.boot (SpadInterpretStream): Remove binding of
+	$erMsgToss, as it is never assigned to.
+	(phIntReportMsgs): Adjust.
+	(phReportMsgs): Likewise.
+	* interp/msg.boot (showMsgPos?): Likewise.
+	(initImPr): Likewise.
+
 2011-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (PRINTEXP): Remove.
