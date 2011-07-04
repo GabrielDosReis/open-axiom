@@ -65,7 +65,7 @@ in addition we need to add a line defining [[PI2]] in [[formatPlex]]:
 ++ Basic Operations: coerce, convert, display, epilogue,
 ++   tex, new, prologue, setEpilogue!, setTex!, setPrologue!
 ++ Related Constructors: TexFormat1
-++ Also See: ScriptFormulaFormat
+++ Also See: 
 ++ AMS Classifications:
 ++ Keywords: TeX, LaTeX, output, format
 ++ References: \TeX{} is a trademark of the American Mathematical Society.
@@ -653,7 +653,7 @@ TexFormat(): public == private where
 ++ Change History:
 ++ Basic Operations: coerce
 ++ Related Constructors: TexFormat
-++ Also See: ScriptFormulaFormat, ScriptFormulaFormat1
+++ Also See: 
 ++ AMS Classifications:
 ++ Keywords: TeX, output, format
 ++ References: \TeX{} is a trademark of the American Mathematical

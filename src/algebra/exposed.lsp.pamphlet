@@ -387,8 +387,6 @@
   (|RomanNumeral| . ROMAN)
   (|Ruleset| . RULESET)
   (|Scope| . SCOPE)
-  (|ScriptFormulaFormat| . FORMULA)
-  (|ScriptFormulaFormat1| . FORMULA1)
   (|Segment| . SEG)
   (|SegmentAst| . SEGAST)
   (|SegmentBinding| . SEGBIND)

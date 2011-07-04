@@ -50,7 +50,6 @@
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
-(defvar |$formulaFormat| nil "if true produce script formula output")
 (defvar |$texFormat| nil "if true produce tex output")
 (defvar |$fortranFormat| nil "if true produce fortran output")
 (defvar |$algebraFormat| t "produce 2-d algebra output")

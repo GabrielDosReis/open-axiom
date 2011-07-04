@@ -443,9 +443,6 @@ $texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 $fortranOutputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-$formulaOutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
 conOutStream := 
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 

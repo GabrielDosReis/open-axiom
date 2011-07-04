@@ -296,7 +296,7 @@ PredImplies(a,b) ==
  
 SigListOpSubsume([[name1,sig1,:.],:.],list) ==
   --does m subsume another operator in the list?
-        --see "operator subsumption" in SYSTEM SCRIPT
+        --see "operator subsumption" in JHD's report
         --if it does, returns the subsumed member
   lsig1 := #sig1
   ans := []
@@ -305,7 +305,7 @@ SigListOpSubsume([[name1,sig1,:.],:.],list) ==
   return ans
  
 MachineLevelSubsume([name1,[out1,:in1],:flag1],[name2,[out2,:in2],:flag2]) ==
-  -- Checks for machine-level subsumption in the sense of SYSTEM SCRIPT
+  -- Checks for machine-level subsumption
   --  true if the first signature subsumes the second
   --  flag1 = flag2 and: this really should be checked, but
   symbolEq?(name1,name2) and MachineLevelSubset(out1,out2) and
@@ -442,7 +442,7 @@ JoinInner(l,$e) ==
     -- this skips buggy code which discards needed categories
   for [b,condition] in FindFundAncs l' repeat
       --This loop implements Category Subsumption
-          --as described in SYSTEM SCRIPT
+          --as described in JHD's report
     if not (b.0=nil) then
                    --It's a named category
       bname:= b.0
