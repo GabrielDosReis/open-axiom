@@ -923,7 +923,7 @@ stackAndThrow(msg, args == nil) ==
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
  
-printString x == PRINTEXP (string? x => x; PNAME x)
+printString x == PRINC (string? x => x; PNAME x)
  
 printAny x == if atom x then printString x else PRIN1 x
  

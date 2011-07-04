@@ -388,7 +388,7 @@ $collectOutput := false
 ++ Start a a new line if we are in 2-d ASCII art display mode.
 newlineIfDisplaying() ==
   if not $collectOutput then
-    TERPRI $algebraOutputStream
+    writeNewline $algebraOutputStream
 
 
 specialChar(symbol) ==
@@ -1576,7 +1576,8 @@ output(expr,domain) ==
     if $formulaFormat then formulaFormat x
     if $fortranFormat then
       dispfortexp x
-      if not $collectOutput then TERPRI $fortranOutputStream
+      if not $collectOutput then
+        writeNewline $fortranOutputStream
       flushOutput $fortranOutputStream
     if $algebraFormat then
       mathprintWithNumber(x,domain)
@@ -1674,9 +1675,9 @@ printMap1(x,initialFlag) ==
   printBasic second x
 
 printBasic x ==
-  x=$One => PRIN1(1,$algebraOutputStream)
-  x=$Zero => PRIN1(0,$algebraOutputStream)
-  IDENTP x => PRINTEXP(symbolName x,$algebraOutputStream)
+  x=$One => writeInteger(1,$algebraOutputStream)
+  x=$Zero => writeInteger(0,$algebraOutputStream)
+  IDENTP x => writeString(symbolName x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)
 
@@ -1850,8 +1851,8 @@ scylla(n,v) ==
   if $collectOutput then
     $outputLines := [y, :$outputLines]
   else
-    PRINTEXP(y,$algebraOutputStream)
-    TERPRI $algebraOutputStream
+    PRINC(y,$algebraOutputStream)
+    writeNewline $algebraOutputStream
   nil
 
 keyp(u) ==
@@ -2355,12 +2356,12 @@ prnd(start, op) ==
   $testOutputLineFlag =>
     string := strconc(fillerSpaces MAX(0,start - 1),op)
     $testOutputLineList := [string,:$testOutputLineList]
-  PRINTEXP(fillerSpaces MAX(0,start - 1),$algebraOutputStream)
+  writeString(fillerSpaces MAX(0,start - 1),$algebraOutputStream)
   $collectOutput =>
     string := strconc(fillerSpaces MAX(0,start - 1),op)
     $outputLines := [string, :$outputLines]
-  PRINTEXP(op,$algebraOutputStream)
-  TERPRI $algebraOutputStream
+  PRINC(op,$algebraOutputStream)
+  writeNewline $algebraOutputStream
 
 qTSub(u) ==
   subspan second u
@@ -2587,10 +2588,11 @@ maPrin u ==
   u is ['EQUATNUM,num,form] or u is [['EQUATNUM,:.],num,form] =>
     charybdis(['EQUATNUM,num], $MARGIN, $LINELENGTH)
     if not $collectOutput then
-      TERPRI $algebraOutputStream
+      writeNewline $algebraOutputStream
       PRETTYPRINT(form,$algebraOutputStream)
     form
-  if not $collectOutput then PRETTYPRINT(u,$algebraOutputStream)
+  if not $collectOutput then
+    PRETTYPRINT(u,$algebraOutputStream)
   nil
 
 

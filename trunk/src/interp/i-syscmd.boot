@@ -717,8 +717,7 @@ CREDITS := '(
 
 credits() ==
  for i in CREDITS repeat
-  PRINC(i)
-  TERPRI()
+  writeLine i
 
 --% )display
 

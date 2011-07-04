@@ -343,7 +343,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
   if CATCH('VERSIONCHECK,loadModule(fullLibName,cname)) = -1
     then 
-      PRINC('"   wrong library version...recompile ")
+      writeString('"   wrong library version...recompile ")
       PRINC(fullLibName)
       TERPRI()
       TOPLEVEL()

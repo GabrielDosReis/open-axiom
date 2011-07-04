@@ -400,8 +400,8 @@ getfortexp1 x ==
 
 displayLines1 lines ==
   for l in lines repeat
-    PRINTEXP(l,$fortranOutputStream)
-    TERPRI($fortranOutputStream)
+    PRINC(l,$fortranOutputStream)
+    writeNewline $fortranOutputStream
 
 displayLines lines ==
   if not $fortError then displayLines1 lines

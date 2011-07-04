@@ -152,9 +152,8 @@ concatWithBlanks r ==
 
 writedb(u) ==
   not string? u => nil        --skip if not a string
-  PRINTEXP(addPatchesToLongLines(u,500),$outStream)
   --positions for tick(1), dashes(2), and address(9), i.e. 12
-  TERPRI $outStream
+  writeLine(addPatchesToLongLines(u,500),$outStream)
 
 addPatchesToLongLines(s,n) ==
   #s > n => strconc(subString(s,0,n),
@@ -272,30 +271,29 @@ dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
   outstream:= MAKE_-OUTSTREAM '"libdb.text"
   comstream:= MAKE_-OUTSTREAM '"comdb.text"
-  PRINTEXP(0,    comstream)
-  PRINTEXP($tick,comstream)
-  PRINTEXP('"",  comstream)
-  TERPRI(comstream)
+  writeInteger(0,    comstream)
+  writeChar($tick,comstream)
+  writeLine('"",  comstream)
   while (line := readLine instream) ~= %nothing repeat
     outP := FILE_-POSITION outstream
     comP := FILE_-POSITION comstream
     [prefix,:comments] := dbSplit(line,6,1)
-    PRINTEXP(prefix,outstream)
-    PRINTEXP($tick ,outstream)
+    PRINC(prefix,outstream)
+    writeChar($tick ,outstream)
     null comments =>
-      PRINTEXP(0,outstream)
-      TERPRI(outstream)
-    PRINTEXP(comP,outstream)
-    TERPRI(outstream)
-    PRINTEXP(outP  ,comstream)
-    PRINTEXP($tick ,comstream)
-    PRINTEXP(first comments,comstream)
-    TERPRI(comstream)
+      writeInteger(0,outstream)
+      writeNewline outstream
+    PRINC(comP,outstream)
+    writeNewline outstream
+    PRINC(outP  ,comstream)
+    writeChar($tick ,comstream)
+    PRINC(first comments,comstream)
+    writeNewline comstream
     for c in rest comments repeat
-      PRINTEXP(outP  ,comstream)
-      PRINTEXP($tick ,comstream)
-      PRINTEXP(c, comstream)
-      TERPRI(comstream)
+      PRINC(outP  ,comstream)
+      writeChar($tick ,comstream)
+      PRINC(c, comstream)
+      writeNewline comstream
   SHUT instream
   SHUT outstream
   SHUT comstream
@@ -336,30 +334,27 @@ buildGloss() ==  --called by buildDatabase (database.boot)
   defpath  := '"glossdef.text"
   defstream:= MAKE_-OUTSTREAM defpath
   pairs := getGlossLines instream
-  PRINTEXP('"\begin{page}{GlossaryPage}{G l o s s a r y}\beginscroll\beginmenu",htstream)
+  writeString('"\begin{page}{GlossaryPage}{G l o s s a r y}\beginscroll\beginmenu",htstream)
   for [name,:line] in pairs repeat
     outP  := FILE_-POSITION outstream
     defP  := FILE_-POSITION defstream
     lines := spreadGlossText transformAndRecheckComments(name,[line])
-    PRINTEXP(name, outstream)
-    PRINTEXP($tick,outstream)
-    PRINTEXP(defP, outstream)
-    TERPRI(outstream)
---  PRINTEXP('"\item\newline{\em \menuitemstyle{}}\tab{0}{\em ",htstream)
-    PRINTEXP('"\item\newline{\em \menuitemstyle{}}{\em ",htstream)
-    PRINTEXP(name,        htstream)
-    PRINTEXP('"}\space{}",htstream)
-    TERPRI(htstream)
+    PRINC(name, outstream)
+    writeChar($tick,outstream)
+    PRINC(defP, outstream)
+    writeNewline outstream
+    writeString('"\item\newline{\em \menuitemstyle{}}{\em ",htstream)
+    PRINC(name,        htstream)
+    writeLine('"}\space{}",htstream)
     for x in lines repeat
-      PRINTEXP(outP, defstream)
-      PRINTEXP($tick,defstream)
-      PRINTEXP(x,    defstream)
-      TERPRI defstream
-    PRINTEXP(strconc/lines,htstream)
-    TERPRI htstream
-  PRINTEXP('"\endmenu\endscroll",htstream)
-  PRINTEXP('"\lispdownlink{Search}{(|htGloss| _"\stringvalue{pattern}_")} for glossary entry matching \inputstring{pattern}{24}{*}",htstream)
-  PRINTEXP('"\end{page}",htstream)
+      PRINC(outP, defstream)
+      writeChar($tick,defstream)
+      PRINC(x,    defstream)
+      writeNewline defstream
+    writeLine(strconc/lines,htstream)
+  writeString('"\endmenu\endscroll",htstream)
+  writeString('"\lispdownlink{Search}{(|htGloss| _"\stringvalue{pattern}_")} for glossary entry matching \inputstring{pattern}{24}{*}",htstream)
+  writeString('"\end{page}",htstream)
   SHUT instream
   SHUT outstream
   SHUT defstream

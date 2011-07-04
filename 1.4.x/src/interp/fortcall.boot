@@ -131,7 +131,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   if first fortranArgs then
     printCName(first fortranArgs,isPointer?(first fortranArgs,decls),asps,fp)
   for a in rest fortranArgs repeat
-    PRINC('",",fp)
+    writeString('",",fp)
     printCName(a,isPointer?(a,decls),asps,fp)
   writeStringLengths(fortranArgs,decls,fp)
   writeLine('");",fp)
@@ -160,8 +160,10 @@ isPointer?(u,decls) ==
 printCName(u,ispointer,asps,fp) ==
   member(u,asps) =>
     PRINC(u,fp)
-    if $addUnderscoreToFortranNames then PRINC(charString abstractChar 95,fp)
-  if not ispointer then PRINC('"&",fp)
+    if $addUnderscoreToFortranNames then
+      writeString(charString abstractChar 95,fp)
+  if not ispointer then
+    writeString('"&",fp)
   PRINC(u,fp)
 
 getFortranType(u,decls) ==
@@ -241,7 +243,7 @@ writeMalloc(name,type,dims,fp) ==
 
 wl (l,fp) ==
   for u in l repeat PRINC(u,fp)
-  TERPRI(fp)
+  writeNewline fp
 
 wt (l,fp) ==
   for u in l repeat PRINC(u,fp)

@@ -602,7 +602,12 @@ for x in [
     ['%leave,    :'RETURN],
     ['%otherwise,:'T],
     ['%funcall,  :'FUNCALL],
-    ['%when,     :'COND]
+    ['%when,     :'COND],
+
+    -- I/O stream functions
+    ['%writeString,  :'WRITE_-STRING],
+    ['%writeNewline, :'TERPRI],
+    ['%writeLine,    :'WRITE_-LINE]
   ] repeat property(first x,'%Rename) := rest x
 
 ++ Table of opcode-expander pairs.  

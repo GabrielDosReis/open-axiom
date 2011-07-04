@@ -199,9 +199,6 @@
               " "
               (STRINGIMAGE $LINENUMBER)))
           (SHUT INPUTSTREAM)
-          ;(COND
-          ;  ( (EQ (READ |$InputStream|) 'ABORTPROCESS)
-          ;    (RETURN 'ABORT) ) )
           ;;%% next is done in case the diskmode changed
           ;;(SETQ INFILE (|pathname| (IFCAR
           ;; (QSORT ($LISTFILE INFILE)))))
@@ -215,7 +212,6 @@
                  (RETURN NIL)))
           ;; next is done in case the diskmode changed
           (SHUT INPUTSTREAM) ))
-        ;;(SETQ INFILE (|pathname| (IFCAR ($LISTFILE INFILE))))
         (SETQ INFILE (make-input-filename INFILE))
         (MAKEPROP /FN 'DEFLOC
                   (CONS RECNO INFILE))
@@ -234,19 +230,8 @@
         (SETQ DEF
               (COND
                ( SFN
-                 ;(+VOL 'METABASE)
                  (POINT RECNO INPUTSTREAM)
-                 ;(SETQ CHR (CAR INPUTSTREAM))
-                 ;(SETQ ERRCOL 0)
-                 ;(SETQ COUNT 0)
-                 ;(SETQ COLUMN 0)
-                 ;(SETQ TRAPFLAG NIL)
                  (SETQ OK 'T)
-                 ;(NXTTOK)
-                 ;(SETQ LINE (CURINPUTLINE))
-                 ;(SETQ SPADERRORSTREAM CUROUTSTREAM)
-                 ;(AND /ECHO (SETQ |$echo| 'T) (PRINTEXP LINE) (TERPRI))
-                 ;(SFN)
                  (SETQ DEF (BOOT-PARSE-1 INPUTSTREAM))
                  (SETQ DEBUGMODE 'YES)
                  (COND
@@ -342,11 +327,11 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
        (SETQ /UPDATESTREAM (open (strconc "/tmp/update." FILENAME) 
 			      :direction :output
 			      :if-exists :append :if-does-not-exist :create)))
-   (PRINTEXP
+   (PRINC
  "       Function Name                    Filename             Date   Time"
       /UPDATESTREAM)
    (TERPRI /UPDATESTREAM)
-   (PRINTEXP
+   (PRINC
  " ---------------------------      -----------------------  -------- -----"
       /UPDATESTREAM)
    (TERPRI /UPDATESTREAM) )
@@ -393,35 +378,15 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 ;;;If /UPDATESTREAM not set or current /UPDATES file doesnt exist, initialize.
  
    (PROG (IFT KEY RECNO ORECNO DATE TIME DATETIME)
-;         (if (EQ 0 /VERSION) (RETURN NIL))
          (if (EQ 'INPUT FT) (RETURN NIL))
          (if (NOT |$createUpdateFiles|) (RETURN NIL))
-;         (COND ((/= 0 (directory "A")))
-;               ((SAY "A disk is not read-write. Update file not modified")
-;                (RETURN NIL)))
          (if (OR (NOT (BOUNDP '/UPDATESTREAM))
                  (NOT (STREAMP /UPDATESTREAM)))
              (/INITUPDATES /VERSION))
-;         (SETQ IFT (INTERN (STRINGIMAGE /VERSION)))
-;         (SETQ INPUTSTREAM (open (strconc IFT /WSNAME) :direction :input))
-;         (NEXT INPUTSTREAM)
-;         (SETQ KEY (if (NOT FUN)
-;                       (STRCONC "                                QUAD "
-;                                (PNAME FN))
-;                       (PNAME FUN)))
-;         (SETQ RECNO (/LOCATE KEY (LIST 'FROMWRITEUPDATE /WSNAME) 1))
-;         (SETQ COUNT (COND
-;                       ((NOT (NUMBERP RECNO)) 1)
-;                       ((POINT RECNO INPUTSTREAM)
-;                        (do ((i 1 (1+ i))) ((> i 4)) (read inputstream))
-;                        (1+ (READ INPUTSTREAM)) )))
-;         (COND ((NUMBERP RECNO)
-;                (SETQ ORECNO (NOTE /UPDATESTREAM))
-;                (POINTW RECNO /UPDATESTREAM) ))
          (SETQ DATETIME (|getDateAndTime|))
          (SETQ DATE (CAR DATETIME))
          (SETQ TIME (CDR DATETIME))
-         (PRINTEXP (STRCONC
+         (PRINC (STRCONC
                   (COND ((NOT FUN) "                                QUAD ")
                         ((STRINGPAD (PNAME FUN) 28))) " "
                   (STRINGIMAGE FM)
@@ -429,7 +394,6 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                   " "
                   DATE " " TIME) /UPDATESTREAM)
          (TERPRI /UPDATESTREAM)
-;         (if (NUMBERP RECNO) (POINTW ORECNO /UPDATESTREAM))
          ))
  
 (defun |getDateAndTime| ()

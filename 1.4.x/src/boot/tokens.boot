@@ -328,6 +328,7 @@ for i in [ _
   ["vectorRef", "SVREF"] , _
   ["writeByte",    "WRITE-BYTE"], _
   ["writeChar",    "WRITE-CHAR"], _
+  ["writeInteger", "PRINC"], _
   ["writeLine",    "WRITE-LINE"], _
   ["writeNewline", "TERPRI"], _
   ["writeString",  "WRITE-STRING"], _
