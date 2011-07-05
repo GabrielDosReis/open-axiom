@@ -4,7 +4,10 @@
 \beginscroll
 \beginmenu
     \menudownlink{Online information}{onlineInformation}
-    \menudownlink{June 2011}{jun2011}
+    \menudownlink{Version 1.4.1}{jul2011}
+    \menudownlink{Version 1.4.0}{jun2011}
+    \menudownlink{Version 1.3.0}{aug2009}
+    \menudownlink{Version 1.2.1}{jan2009}
 \endmenu
 \endscroll
 \autobuttons
@@ -21,6 +24,19 @@
 \end{page}
 
 % =====================================================================
+\begin{page}{jul2011}{OpenAxiom 1.4.1 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.4.1 was released on July 6, 2011.  It is the first bug fix
+release of \Language{} system, in the 1.4.x series.  It contains 
+bug fixes for regressions introduces in the 1.4.0 release, and several
+improvements for the GUI interface on the Windows platform.
+
+\endscroll
+\autobuttons
+\end{page}
+
+% =====================================================================
 \begin{page}{jun2011}{OpenAxiom 1.4.0 release}
 % =====================================================================
 \beginscroll
@@ -30,12 +46,20 @@ release of \Language{} system, in the 1.4.x series.
 This release includes several improvements to the algebra, compiler,
 and interpreter, as well as several new categories, domains, and packages.
 
+\endscroll
+\autobuttons
+\end{page}
+
 % =====================================================================
 \begin{page}{aug2009}{OpenAxiom 1.3.0 release}
 % =====================================================================
 \beginscroll
 OpenAxiom-1.3.0 was released on August 05, 2009.  It is the major
 release of \Language{} system.
+
+\endscroll
+\autobuttons
+\end{page}
 
 % =====================================================================
 \begin{page}{jan2009}{OpenAxiom 1.2.1 release}
