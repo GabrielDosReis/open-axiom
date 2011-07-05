@@ -23732,7 +23732,7 @@ if test x$oa_has_qt = xyes; then
          oa_qmake_spec="-spec macx-g++"
          ;;
   esac
-  (cd src/gui && $OA_QT_QMAKE $oa_qmake_spec -makefile gui.pro)
+  (cd src/gui && $OA_QT_QMAKE -makefile $oa_qmake_spec gui.pro)
 fi
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.

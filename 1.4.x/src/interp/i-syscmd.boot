@@ -107,7 +107,7 @@ systemCommand [[op,:argl],:options] ==
   $options: local:= options
   $e:local := $CategoryFrame
   fun := selectOptionLC(op,$SYSCOMMANDS,'commandError)
-  argl and (first argl = '_?) and fun ~= 'synonym =>
+  argl and (first argl is '_?) and fun isnt 'synonym =>
     helpSpad2Cmd [fun]
   fun := selectOption(fun,commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -122,7 +122,7 @@ commandsForUserLevel l == --[a for [a,:b] in l | satisfiesUserLevel(a)]
 synonymsForUserLevel l ==
   -- l is a list of synonyms, and this returns a sublist of applicable
   -- synonyms at the current user level.
-  $UserLevel = 'development => l
+  $UserLevel is 'development => l
   nl := nil
   for syn in reverse l repeat
     cmd := STRING2ID_-N(rest syn,1)
@@ -132,14 +132,14 @@ synonymsForUserLevel l ==
   nl
 
 satisfiesUserLevel x ==
-  x          = 'interpreter => true
-  $UserLevel = 'interpreter => false
-  x          = 'compiler    => true
-  $UserLevel = 'compiler    => false
+  x          is 'interpreter => true
+  $UserLevel is 'interpreter => false
+  x          is 'compiler    => true
+  $UserLevel is 'compiler    => false
   true
 
 unAbbreviateKeyword x ==
-  x' :=selectOptionLC(x,$SYSCOMMANDS,'commandErrorIfAmbiguous)
+  x' := selectOptionLC(x,$SYSCOMMANDS,'commandErrorIfAmbiguous)
   if not x' then
     x' := 'system
     SETQ(LINE, strconc('")system ", subString(LINE, 1, #LINE-1)))
@@ -148,7 +148,7 @@ unAbbreviateKeyword x ==
     'commandUserLevelError)
 
 hasOption(al,opt) ==
-  optPname:= PNAME opt
+  optPname := PNAME opt
   found := nil
   for pair in al while not found repeat
     stringPrefix?(PNAME first pair,optPname) => found := pair
@@ -280,9 +280,9 @@ clearSpad2Cmd l ==
     optList:= "append"/[['"%l",'"       ",x] for x in $clearOptions]
     sayKeyedMsg("S2IZ0010",[optList])
   arg := selectOptionLC(first l,'(all completely scaches),nil)
-  arg = 'all          => clearCmdAll()
-  arg = 'completely   => clearCmdCompletely()
-  arg = 'scaches      => clearCmdSortedCaches()
+  arg is 'all          => clearCmdAll()
+  arg is 'completely   => clearCmdCompletely()
+  arg is 'scaches      => clearCmdSortedCaches()
   $clearExcept => clearCmdExcept(l)
   clearCmdParts(l)
   updateCurrentInterpreterFrame()
@@ -341,9 +341,9 @@ clearCmdParts(l is [opt,:vl]) ==
   -- singular
 
   option :=
-    option = 'types =>  'mode
-    option = 'modes =>  'mode
-    option = 'values => 'value
+    option is 'types =>  'mode
+    option is 'modes =>  'mode
+    option is 'values => 'value
     option
 
   null vl => sayKeyedMsg("S2IZ0055",nil)
@@ -355,12 +355,13 @@ clearCmdParts(l is [opt,:vl]) ==
   $e : local := $InteractiveFrame
   for x in vl repeat
     clearDependencies(x,true)
-    if option='properties and symbolMember?(x,pmacs) then clearParserMacro(x)
-    if option='properties and symbolMember?(x,imacs) and not symbolMember?(x,pmacs) then
+    if option is 'properties and symbolMember?(x,pmacs) then
+      clearParserMacro(x)
+    if option is 'properties and symbolMember?(x,imacs) and not symbolMember?(x,pmacs) then
         sayMessage ['"   You cannot clear the definition of the system-defined macro ",
             fixObjectForPrinting x,"."]
     p1 := assoc(x,CAAR $InteractiveFrame) =>
-      option='properties =>
+      option is 'properties =>
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
             cons? lm => untraceMapSubNames [CADAR lm]
@@ -395,7 +396,7 @@ close args ==
     closeInterpreterFrame(nil)
   for [opt,:.] in $options repeat
     fullopt := selectOptionLC(opt, '(quiet), 'optionError)
-    fullopt = 'quiet   =>
+    fullopt is 'quiet   =>
            quiet:=true
   quiet =>
     sockSendInt($SessionManager, $CloseClient)
@@ -428,10 +429,10 @@ compiler args ==
     for opt in $options while not (haveNew and haveOld) repeat
         [optname,:optargs] := opt
         fullopt := selectOptionLC(optname,optlist,nil)
-        fullopt = 'new => haveNew := true
-        fullopt = 'translate => haveOld := true
-        fullopt = 'constructor => haveOld := true
-        fullopt = 'old => haveOld := true
+        fullopt is 'new => haveNew := true
+        fullopt is 'translate => haveOld := true
+        fullopt is 'constructor => haveOld := true
+        fullopt is 'old => haveOld := true
 
     haveNew and haveOld => throwKeyedMsg("S2IZ0081", nil)
 
@@ -492,11 +493,11 @@ compileSpadLispCmd args ==
         [optname,:optargs] := opt
         fullopt := selectOptionLC(optname,optList,nil)
 
-        fullopt = 'quiet     => beQuiet := true
-        fullopt = 'noquiet   => beQuiet := false
+        fullopt is 'quiet     => beQuiet := true
+        fullopt is 'noquiet   => beQuiet := false
 
-        fullopt = 'library   => doLibrary  := true
-        fullopt = 'nolibrary => doLibrary  := false
+        fullopt is 'library   => doLibrary  := true
+        fullopt is 'nolibrary => doLibrary  := false
 
         throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
@@ -563,32 +564,30 @@ compileSpad2Cmd args ==
         [optname,:optargs] := opt
         fullopt := selectOptionLC(optname,optList,nil)
 
-        fullopt = 'new         => error "Internal error: compileSpad2Cmd got )new"
-        fullopt = 'old         => nil     -- no opt
+        fullopt is 'new   => error "Internal error: compileSpad2Cmd got )new"
+        fullopt is 'old       => nil     -- no opt
 
-        fullopt = 'library     => fun.1 := 'lib
-        fullopt = 'nolibrary   => fun.1 := 'nolib
+        fullopt is 'library   => fun.1 := 'lib
+        fullopt is 'nolibrary => fun.1 := 'nolib
 
         -- Ignore quiet/nonquiet if "constructor" is given.
-        fullopt = 'quiet       => if fun.0 ~= 'c then fun.0 := 'rq
-        fullopt = 'noquiet     => if fun.0 ~= 'c then fun.0 := 'rf
-        fullopt = 'nobreak     => $scanIfTrue := true
-        fullopt = 'break       => $scanIfTrue := nil
-        fullopt = 'vartrace      =>
-          $QuickLet  := false
-        fullopt = 'lisp        =>
-          throwKeyedMsg("S2IZ0036",['")lisp"])
-        fullopt = 'functions   =>
+        fullopt is 'quiet       => if fun.0 ~= 'c then fun.0 := 'rq
+        fullopt is 'noquiet     => if fun.0 ~= 'c then fun.0 := 'rf
+        fullopt is 'nobreak     => $scanIfTrue := true
+        fullopt is 'break       => $scanIfTrue := nil
+        fullopt is 'vartrace    => $QuickLet  := false
+        fullopt is 'lisp        => throwKeyedMsg("S2IZ0036",['")lisp"])
+        fullopt is 'functions   =>
             null optargs =>
               throwKeyedMsg("S2IZ0037",['")functions"])
             $compileOnlyCertainItems := optargs
-        fullopt = 'constructor =>
+        fullopt is 'constructor =>
             null optargs =>
               throwKeyedMsg("S2IZ0037",['")constructor"])
             fun.0       := 'c
             constructor := [unabbrev o for o in optargs]
-        fullopt = "optimize" => setCompilerOptimizations first optargs
-        fullopt = "report" =>
+        fullopt is "optimize" => setCompilerOptimizations first optargs
+        fullopt is "report" =>
            null optargs => throwKeyedMsg("S2IZ0037",['")report"])
            if "insn" in optargs then
              $reportOptimization := true
@@ -643,7 +642,7 @@ copyright () ==
 
 --% )credits -- display credit list
 
-CREDITS := '(
+CREDITS == '(
   "An alphabetical listing of contributors to AXIOM (to October, 2006):"
   "Cyril Alberga          Roy Adler              Christian Aistleitner"
   "Richard Anderson       George Andrews"
@@ -725,25 +724,25 @@ display l == displaySpad2Cmd l
 
 displaySpad2Cmd l ==
   $e: local := $EmptyEnvironment
-  l is [opt,:vl] and opt ~= "?" =>
+  l is [opt,:vl] and opt isnt "?" =>
     option := selectOptionLC(opt,$displayOptions,'optionError) =>
 
       -- the option may be given in the plural but the property in
       -- the alist is sometimes singular
 
       option :=
-        option = 'all   =>
+        option is 'all   =>
             l := ['properties]
             'properties
-        (option = 'modes) or (option = 'types) =>
+        (option is 'modes) or (option is 'types) =>
             l := ['type, :vl]
             'type
-        option = 'values =>
+        option is 'values =>
             l := ['value, :vl]
             'value
         option
 
-      option = 'abbreviations =>
+      option is 'abbreviations =>
         null vl => listConstructorAbbreviations()
         for v in vl repeat
           abbQuery
@@ -752,11 +751,11 @@ displaySpad2Cmd l ==
             ctor:= abbreviation? v => ctor
             v
 
-      option = 'operations =>     displayOperations vl
-      option = "macros" =>         displayMacros vl
-      option = 'names =>          displayWorkspaceNames()
+      option is 'operations =>     displayOperations vl
+      option is "macros" =>         displayMacros vl
+      option is 'names =>          displayWorkspaceNames()
       displayProperties(option,l)
-  optList:= [:['"%l",'"        ",x] for x in $displayOptions]
+  optList := [:['"%l",'"        ",x] for x in $displayOptions]
   msg := [:bright '"  )display",'"keyword arguments are",
     :bright optList,'"%l",'"   or abbreviations thereof."]
   sayMessage msg
@@ -878,13 +877,13 @@ displayProperties(option,l) ==
   for v in vl repeat
     isInternalMapName(v) => 'iterate
     pl := getIProplist(v)
-    option = 'flags =>     getAndSay(v,"flags")
-    option = 'value =>     displayValue(v,getI(v,'value),nil)
-    option = 'condition => displayCondition(v,getI(v,"condition"),nil)
-    option = 'mode =>      displayMode(v,getI(v,'mode),nil)
-    option = 'type =>      displayType(v,getI(v,'value),nil)
-    option = 'properties =>
-      v = "--flags--" => nil
+    option is 'flags =>     getAndSay(v,"flags")
+    option is 'value =>     displayValue(v,getI(v,'value),nil)
+    option is 'condition => displayCondition(v,getI(v,"condition"),nil)
+    option is 'mode =>      displayMode(v,getI(v,'mode),nil)
+    option is 'type =>      displayType(v,getI(v,'value),nil)
+    option is 'properties =>
+      v is "--flags--" => nil
       pl is [['cacheInfo,:.],:.] => nil
       v1 := fixObjectForPrinting(v)
       sayMSG ['"Properties of",:bright prefix2String v1,'":"]
@@ -900,11 +899,11 @@ displayProperties(option,l) ==
       for [prop,:val] in pl | not symbolMember?(prop,propsSeen) and val repeat
         prop in '(alias generatedCode IS_-GENSYM mapBody localVars) =>
           nil
-        prop = 'condition =>
+        prop is 'condition =>
           displayCondition(prop,val,true)
-        prop = 'recursive =>
+        prop is 'recursive =>
           sayMSG '"   This is recursive."
-        prop = 'isInterpreterFunction =>
+        prop is 'isInterpreterFunction =>
           sayMSG '"   This is an interpreter function."
           sayFunctionDeps v where
             sayFunctionDeps x ==
@@ -926,14 +925,14 @@ displayProperties(option,l) ==
                 msg := ["%b",'"     "]
                 for y in dependees repeat msg := ['" ",y,:msg]
                 sayMSG [:reverse! msg,"%d"]
-        prop = 'isInterpreterRule =>
+        prop is 'isInterpreterRule =>
           sayMSG '"   This is an interpreter rule."
           sayFunctionDeps v
-        prop = 'localModemap =>
+        prop is 'localModemap =>
           displayModemap(v,val,true)
-        prop = 'mode =>
+        prop is 'mode =>
           displayMode(prop,val,true)
-        prop = 'value =>
+        prop is 'value =>
           val => displayValue(v,val,true)
         sayMSG ['"   ",prop,'":  ",val]
         propsSeen:= [prop,:propsSeen]
@@ -1006,7 +1005,7 @@ editSpad2Cmd l ==
     pathnameType l => [pathnameType l]
     $UserLevel = 'interpreter => '("input" "INPUT" "spad" "SPAD")
     $UserLevel = 'compiler    => '("input" "INPUT" "spad" "SPAD")
-    '("input" "INPUT" "spad" "SPAD" "boot" "BOOT" "lisp" "LISP" "meta" "META")
+    '("input" "INPUT" "spad" "SPAD" "boot" "BOOT" "lisp" "LISP")
   ll := 
        oldDir = '"" => pathname $FINDFILE (pathnameName l, fileTypes)
        l
@@ -1093,13 +1092,13 @@ frameSpad2Cmd args ==
   args := rest args
   if args is [a] then args := a
   if atom args then args := object2Identifier args
-  arg = 'drop  =>
+  arg is 'drop  =>
     args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
-  arg = "import" =>  importFromFrame args
-  arg = "last"  =>   previousInterpreterFrame()
-  arg = "names" =>   displayFrameNames()
-  arg = "new"   =>
+  arg is "import" =>  importFromFrame args
+  arg is "last"  =>   previousInterpreterFrame()
+  arg is "names" =>   displayFrameNames()
+  arg is "new"   =>
     args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
@@ -1350,14 +1349,14 @@ historySpad2Cmd() ==
       $HiFiAccess:= false
       disableHist()
       sayKeyedMsg("S2IH0012",nil)
-    opt = 'file    => setHistoryCore nil
-    opt = 'memory  => setHistoryCore true
-    opt = 'reset   => resetInCoreHist()
-    opt = 'save    => saveHistory optargs
-    opt = 'show    => showHistory optargs
-    opt = 'change  => changeHistListLen first optargs
-    opt = 'restore => restoreHistory optargs
-    opt = 'write   => writeInputLines(optargs,1)
+    opt is 'file    => setHistoryCore nil
+    opt is 'memory  => setHistoryCore true
+    opt is 'reset   => resetInCoreHist()
+    opt is 'save    => saveHistory optargs
+    opt is 'show    => showHistory optargs
+    opt is 'change  => changeHistListLen first optargs
+    opt is 'restore => restoreHistory optargs
+    opt is 'write   => writeInputLines(optargs,1)
   'done
 
 
@@ -1471,7 +1470,7 @@ updateInCoreHist() ==
 putHist(x,prop,val,e) ==
   -- records new value to $HistRecord and old value to $HistList
   -- then put is called with e
-  if not (x='%) then recordOldValue(x,prop,get(x,prop,e))
+  if x isnt '% then recordOldValue(x,prop,get(x,prop,e))
   if $HiFiAccess then recordNewValue(x,prop,val)
   putIntSymTab(x,prop,val,e)
 
@@ -1748,13 +1747,13 @@ SPADRREAD(vec, stream) ==
 --  SMW
 SPADRWRITE(vec, item, stream) ==
   val := SPADRWRITE0(vec, item, stream) 
-  val = 'writifyFailed =>
+  val is 'writifyFailed =>
     throwKeyedMsg("S2IH0036", nil) -- cannot save value to file
   item
 
 SPADRWRITE0(vec, item, stream) ==
     val := safeWritify item
-    val = 'writifyFailed => val
+    val is 'writifyFailed => val
     rwrite(vec, val, stream)
     item
 
@@ -1878,11 +1877,11 @@ dewritify ob ==
             null ob => nil
             e := tableValue($seen, ob) => e
  
-            cons? ob and first ob = 'WRITIFIED!! =>
+            cons? ob and first ob is 'WRITIFIED!! =>
                 type := ob.1
-                type = 'SELF =>
+                type is 'SELF =>
                     'WRITIFIED!!
-                type = 'BPI =>
+                type is 'BPI =>
                     oname := ob.2
                     f :=
                         integer? oname => eval GENSYMMER oname
@@ -1893,19 +1892,19 @@ dewritify ob ==
                         error '"A required BPI has been redefined."
                     tableValue($seen, ob) := f
                     f
-                type = 'HASHTABLE =>
+                type is 'HASHTABLE =>
                     nob := hashTable ob.2
                     tableValue($seen, ob) := nob
                     tableValue($seen, nob) := nob
                     for k in ob.3 for e in ob.4 repeat
                       tableValue(nob, dewritifyInner k) := dewritifyInner e
                     nob
-                type = 'DEVALUATED =>
+                type is 'DEVALUATED =>
                     nob := eval dewritifyInner ob.2
                     tableValue($seen, ob) := nob
                     tableValue($seen, nob) := nob
                     nob
-                type = 'SPADCLOSURE =>
+                type is 'SPADCLOSURE =>
                     vec := dewritifyInner ob.2
                     name := ob.3
                     not FBOUNDP name => 
@@ -1914,16 +1913,16 @@ dewritify ob ==
                     tableValue($seen, ob) := nob
                     tableValue($seen, nob) := nob
                     nob
-                type = 'PLACE =>
+                type is 'PLACE =>
                     nob := VMREAD MAKE_-INSTREAM nil
                     tableValue($seen, ob) := nob
                     tableValue($seen, nob) := nob
                     nob
-                type = 'READTABLE =>
+                type is 'READTABLE =>
                     error '"Cannot de-writify a read table."
-                type = 'NULLSTREAM => $NullStream
-                type = 'NONNULLSTREAM => $NonNullStream
-                type = 'FLOAT =>
+                type is 'NULLSTREAM => $NullStream
+                type is 'NONNULLSTREAM => $NonNullStream
+                type is 'FLOAT =>
                    [fval, signif, expon, sign] := CDDR ob
                    fval := SCALE_-FLOAT( FLOAT(signif, fval), expon)
                    sign<0 => -fval
@@ -1973,11 +1972,11 @@ loadSpad2Cmd args ==
 --    fullopt := selectOptionLC(opt,
 --      '(cond update query new noexpose noupdate),
 --        'optionError)
---    fullopt = 'cond     => loadfun := 'loadLibIfNotLoaded
---    fullopt = 'query    => justWondering := true
---    fullopt = 'update   => $forceDatabaseUpdate := true
---    fullopt = 'noexpose => doExpose := false
---    fullopt = 'noupdate => $forceDatabaseUpdate := false
+--    fullopt is 'cond     => loadfun := 'loadLibIfNotLoaded
+--    fullopt is 'query    => justWondering := true
+--    fullopt is 'update   => $forceDatabaseUpdate := true
+--    fullopt is 'noexpose => doExpose := false
+--    fullopt is 'noupdate => $forceDatabaseUpdate := false
 --  if $forceDatabaseUpdate then clearClams()
 --  for lib in args repeat
 --    lib := object2Identifier lib
@@ -2047,8 +2046,8 @@ readSpad2Cmd l ==
   ifthere := nil
   for [opt,:.] in $options repeat
     fullopt := selectOptionLC(opt,'(quiet test ifthere),'optionError)
-    fullopt = 'ifthere => ifthere  := true
-    fullopt = 'quiet   => quiet := true
+    fullopt is 'ifthere => ifthere  := true
+    fullopt is 'quiet   => quiet := true
 
   ef := pathname _/EDITFILE
   if pathnameTypeId(ef) = 'SPAD then
@@ -2100,9 +2099,9 @@ showSpad2Cmd l ==
   $env : local := $InteractiveFrame
   l is [constr] =>
     constr in '(Union Record Mapping) =>
-      constr = 'Record =>
+      constr is 'Record =>
         sayKeyedMsg("S2IZ0044R",[constr, '")show Record(a: Integer, b: String)"])
-      constr = 'Mapping =>
+      constr is 'Mapping =>
         sayKeyedMsg("S2IZ0044M",nil)
       sayKeyedMsg("S2IZ0045T",[constr, '")show Union(a: Integer, b: String)"])
       sayKeyedMsg("S2IZ0045U",[constr, '")show Union(Integer, String)"])
@@ -2120,7 +2119,7 @@ reportOperations(oldArg,u) ==
   $doNotAddEmptyModeIfTrue: local:= true
   u = $quadSymbol =>
      sayBrightly ['"   mode denotes", :bright '"any", "type"]
-  u = "%" =>
+  u is "%" =>
     sayKeyedMsg("S2IZ0063",nil)
     sayKeyedMsg("S2IZ0064",nil)
   u isnt ['Record,:.] and u isnt ['Union,:.] and
@@ -2200,7 +2199,7 @@ reportOpsFromUnitDirectly unitForm ==
 
   for [opt] in $options repeat
     opt := selectOptionLC(opt,$showOptions,'optionError)
-    opt = 'attributes =>
+    opt is 'attributes =>
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       isRecordOrUnion =>
         sayBrightly '"   Records and Unions have no attributes."
@@ -2208,7 +2207,7 @@ reportOpsFromUnitDirectly unitForm ==
       attList:= removeDuplicates MSORT [x for [x,:.] in unit.2]
       say2PerLine [formatAttribute x for x in attList]
       nil
-    opt = 'operations =>
+    opt is 'operations =>
       $commentedOps: local := 0
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
       centerAndHighlight('"Operations",$LINELENGTH,specialChar 'hbar)
@@ -2259,11 +2258,11 @@ reportOpsFromLisplib(op,u) ==
 
   for [opt] in $options repeat
     opt := selectOptionLC(opt,$showOptions,'optionError)
-    opt = 'layout =>
+    opt is 'layout =>
       dc1 fn
-    opt = 'views => sayBrightly ['"To get",:bright '"views",
+    opt is 'views => sayBrightly ['"To get",:bright '"views",
       '"you must give parameters of constructor"]
-    opt = 'attributes =>
+    opt is 'attributes =>
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       sayBrightly '""
       attList:= removeDuplicates MSORT [x for [x,:.] in
@@ -2272,7 +2271,7 @@ reportOpsFromLisplib(op,u) ==
         concat('"%b",form2String functorForm,'"%d","has no attributes.",'"%l")
       say2PerLine [formatAttribute x for x in attList]
       nil
-    opt = 'operations => displayOperationsFromLisplib functorForm
+    opt is 'operations => displayOperationsFromLisplib functorForm
     nil
 
 displayOperationsFromLisplib form ==
@@ -2505,7 +2504,7 @@ undoSingleStep(changes,env) ==
 
 undoLocalModemapHack changeList ==
   [newPair for (pair := [name,:value]) in changeList | newPair] where newPair()  ==
-     name = 'localModemap => [name]
+     name is 'localModemap => [name]
      pair
 
 removeUndoLines u == --called by writeInputLines
@@ -2573,20 +2572,20 @@ whatSpad2Cmd l ==
     fixpat x ==
       x is [x',:.] => DOWNCASE x'
       DOWNCASE x
-  key = 'things =>
+  key is 'things =>
     for opt in $whatOptions repeat
       not (opt in '(things)) => whatSpad2Cmd [opt,:args]
-  key = 'categories =>
+  key is 'categories =>
     filterAndFormatConstructors('category,'"Categories",args)
-  key = 'commands =>
+  key is 'commands =>
     whatCommands(args)
-  key = 'domains =>
+  key is 'domains =>
     filterAndFormatConstructors('domain,'"Domains",args)
-  key = 'operations =>
+  key is 'operations =>
     apropos args
-  key = 'packages =>
+  key is 'packages =>
     filterAndFormatConstructors('package,'"Packages",args)
-  key = 'synonyms =>
+  key is 'synonyms =>
     printSynonyms(args)
 
 filterAndFormatConstructors(constrType,label,patterns) ==
@@ -2716,12 +2715,12 @@ workfilesSpad2Cmd args ==
   args => throwKeyedMsg("S2IZ0047",nil)
   deleteFlag := nil
   for [type,:.] in $options repeat
-    type1 := selectOptionLC(type,'(boot lisp meta delete),nil)
+    type1 := selectOptionLC(type,'(boot lisp delete),nil)
     null type1 => throwKeyedMsg("S2IZ0048",[type])
-    type1 = 'delete => deleteFlag := true
+    type1 is 'delete => deleteFlag := true
   for [type,:flist] in $options repeat
     type1 := selectOptionLC(type,'(boot lisp meta delete),nil)
-    type1 = 'delete => nil
+    type1 is 'delete => nil
     for file in flist repeat
       fl := pathname [file,type1,'"*"]
       deleteFlag => SETQ($sourceFiles,remove($sourceFiles,fl))
@@ -2751,25 +2750,25 @@ zsystemdevelopment1(l,im) ==
     if null optargs then optargs := l
     newopt := append(optargs,fromopt)
     opt1 := selectOptionLC(opt,'(from),nil)
-    opt1 = 'from => nil
-    opt = "c"   => _/D_,1 (newopt ,_/COMP(),nil,nil)
-    opt = "d"   => _/D_,1 (newopt ,'DEFINE,nil,nil)
-    opt = "dt"  => _/D_,1 (newopt ,'DEFINE,nil,true)
-    opt = "ct"  => _/D_,1 (newopt ,_/COMP(),nil,true)
-    opt = "ctl"  => _/D_,1 (newopt ,_/COMP(),nil,'TRACELET)
-    opt = "ec"  => _/D_,1 (newopt ,_/COMP(),true,nil)
-    opt = "ect" => _/D_,1 (newopt ,_/COMP(),true,true)
-    opt = "e"   => _/D_,1 (newopt ,nil,true,nil)
-    opt = "version" => version()
-    opt = "pause" =>
+    opt1 is 'from => nil
+    opt is "c"   => _/D_,1 (newopt ,_/COMP(),nil,nil)
+    opt is "d"   => _/D_,1 (newopt ,'DEFINE,nil,nil)
+    opt is "dt"  => _/D_,1 (newopt ,'DEFINE,nil,true)
+    opt is "ct"  => _/D_,1 (newopt ,_/COMP(),nil,true)
+    opt is "ctl"  => _/D_,1 (newopt ,_/COMP(),nil,'TRACELET)
+    opt is "ec"  => _/D_,1 (newopt ,_/COMP(),true,nil)
+    opt is "ect" => _/D_,1 (newopt ,_/COMP(),true,true)
+    opt is "e"   => _/D_,1 (newopt ,nil,true,nil)
+    opt is "version" => version()
+    opt is "pause" =>
       conStream := DEFIOSTREAM ('((DEVICE . CONSOLE) (QUAL . V)),120,0)
       NEXT conStream
       SHUT conStream
-    opt = "update" or opt = "patch" =>
+    opt is "update" or opt is "patch" =>
       $InteractiveMode := nil
       upf := [KAR optargs or _/VERSION, KADR optargs or _/WSNAME,
               KADDR optargs or '_*]
-      fun := (opt = "patch" => '_/UPDATE_-LIB_-1; '_/UPDATE_-1)
+      fun := (opt is "patch" => '_/UPDATE_-LIB_-1; '_/UPDATE_-1)
       CATCH('FILENAM, FUNCALL(fun, upf))
       sayMessage '"   Update/patch is completed."
     null optargs =>
@@ -2826,7 +2825,7 @@ doSystemCommand string ==
    LINE: local := string
    processSynonyms()
    string := LINE
-   string:=subString(string,1)
+   string := subString(string,1)
    string = '"" => nil
    tok:=getFirstWord(string)
    tok =>
@@ -2843,22 +2842,22 @@ doSystemCommand string ==
 handleNoParseCommands(unab, string) ==
   string := stripSpaces string
   spaceIndex := SEARCH('" ", string)
-  unab = "lisp" =>
+  unab is "lisp" =>
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", nil)
       nil
     else nplisp(stripLisp string)
-  unab = "boot" =>
+  unab is "boot" =>
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", nil)
       nil
     else npboot(subSequence(string, spaceIndex+1))
-  unab = "system" =>
+  unab is "system" =>
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", nil)
       nil
     else npsystem(unab, string)
-  unab = "synonym" =>
+  unab is "synonym" =>
     npsynonym(unab, (null spaceIndex => '""; subSequence(string, spaceIndex+1)))
   null spaceIndex =>
     FUNCALL unab
