@@ -1,3 +1,7 @@
+2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Don't test for GMP, just yet.
+
 2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac: Use macx-g++ spec for QT when building for darwin
