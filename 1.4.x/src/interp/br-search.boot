@@ -35,6 +35,8 @@
 import bc_-util
 namespace BOOT
 
+$charUnderscore == char "__"     --needed because of parser bug
+
 --=======================================================================
 --              Grepping Database libdb.text
 -- Redone 12/95 for Saturn; previous function grep renamed as grepFile
@@ -50,7 +52,7 @@ grepConstruct(s,key,:options) == --key = a o c d p x k (all) . (aok) w (doc)
   $localLibdb : local := fnameExists? '"libdb.text" and '"libdb.text"
   lines := grepConstruct1(s,key)
   lines is ["error",:.] => lines
-  IFCAR options => grepSplit(lines,key = 'w)    --leave now if a constructor
+  IFCAR options => grepSplit(lines,key is 'w)    --leave now if a constructor
   key in '(o a) => dbScreenForDefaultFunctions lines --kill default lines if a/o
   lines
 
@@ -193,8 +195,8 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       strconc('"_"",t,'"_"")
     strconc(subString(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
-    n := or/[k for k in i..j | s.k = $charUnderscore] =>
-      strconc(subString(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
+    n := or/[k for k in i..j | stringChar(s,k) = $charUnderscore] =>
+      strconc(subString(s,i,n - i + 1),charString $charUnderscore,gn(s,n + 1,j))
     subString(s,i,j - i + 1)
 
 firstNonDelim(s,n) ==
@@ -272,7 +274,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
         else if res is [.,p,:r] and p = $wild1 then res := r
       strconc/reverse! res
     remUnderscores s ==
-      (k := charPosition(char $charUnderscore,s,0)) < maxIndex s =>
+      (k := charPosition($charUnderscore,s,0)) < maxIndex s =>
         strconc(subString(s,0,k),'"[",s.(k + 1),'"]",
                 remUnderscores(subString(s,k + 2)))
       s
@@ -394,8 +396,6 @@ genSearch(filter,:options) == --"Complete" from HD (see man0.ht) and aokSearch
   if includeDoc? then
     docSearchAlist := grepConstruct(key,'w,true)
     docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-    docSearchAlist := [x for x in docSearchAlist
-                         | stringChar(x,0) ~= char "x"]--drop defaults
   genSearch1(filter,genSearchTran regSearchAlist,genSearchTran docSearchAlist)
 
 genSearchTran alist == [[x,y,:y] for [x,:y] in alist]
@@ -549,8 +549,6 @@ docSearch filter ==  --"Documentation" from HD (see man0.ht)
   key := removeSurroundingStars filter
   docSearchAlist := grepConstruct(filter,'w,true)
   docSearchAlist is ['error,:.] => bcErrorPage docSearchAlist
-  docSearchAlist := [x for x in docSearchAlist
-                       | stringChar(x,0) ~= char "x"] --drop defaults
   docSearch1(filter,genSearchTran docSearchAlist)
 
 docSearch1(filter,doc) ==

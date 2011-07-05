@@ -1334,7 +1334,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSayIndentRel(-15,count > 1)
     htSaySaturn '"\\"
   -----------------------------------------------------------
-  if doc and (doc ~= '"" and (doc isnt [d] or d ~= '"")) then
+  if doc ~= nil and doc isnt '"" and (doc isnt [d] or d ~= '"") then
     htSaySaturn '"{\em Description:}"
     htSaySaturnAmpersand()
     htSayStandard('"\newline\tab{2}{\em Description:}")
@@ -1615,7 +1615,7 @@ bcConform1 form == main where
     atom form =>
       -- string literals, e.g. "failed", are constructor arguments
       -- too, until we fix that.
-      string? form or not isConstructorName form =>
+      string? form or not (IDENTP form and isConstructorName form) =>
         s := 
           string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
