@@ -1,5 +1,22 @@
 2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-util.boot ($charUnderscore): Move to br-search.boot
+	where it is used.
+	* interp/br-search.boot (pmPreparse): Tidy.
+	(mkGrepPattern1): Likewise.
+	(genSearch): Don't try to remove default operations; they have
+	already been left out by grepSplit.
+	(docSearch): Likewise.
+	* interp/br-con.boot (dbShowConsDoc1): Don't confusingly enclose a
+	straightline documentation in a list.
+	* interp/br-op1.boot (dbShowOpDocumentation): Remove redundant test.
+	* interp/br-op2.boot (kFormatSlotDomain): Call isConstructorName
+	only on identifiers.
+	* interp/br-saturn.boot (displayDomainOp): Tidy.
+	(bcConform1): Likewise.
+
+2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* gui/gui.pro.in [Mac OS X]: Don't build application bundle.
 
 2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>

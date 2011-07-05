@@ -1001,7 +1001,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
     sig := '((CATEGORY domain) (SetCategory) (SetCategory))
     displayDomainOp(htPage,'"constructor",conform,conname,sig,true,doc,indexOrNil,'dbSelectCon,nil,nil)
   exposeFlag := isExposedConstructor conname
-  doc := [getConstructorDocumentation conname]
+  doc := getConstructorDocumentation conname
   signature := getConstructorSignature conname
   sig :=
     getConstructorKindFromDB conname = "category" =>

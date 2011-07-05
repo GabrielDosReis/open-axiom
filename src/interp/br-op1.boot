@@ -662,7 +662,7 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
             dbReadComments k
           tail := CDDDDR item
           tail.first := comments
-        doc := (string? comments and comments isnt '"" => comments; nil)
+        doc := (comments isnt '"" => comments; nil)
         pred := predicate or true
         index := (exactlyOneOpSig => nil; base + j)
         if which is '"package operation" then

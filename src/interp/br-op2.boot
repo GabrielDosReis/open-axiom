@@ -419,7 +419,7 @@ kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   (op := first x) is '_$ => '_$
   op is 'local => second x
   op is ":" => [":",second x,fn third x]
-  isConstructorName op => [fn y for y in x]
+  IDENTP op and isConstructorName op => [fn y for y in x]
   integer? op => op
   op is 'QUOTE and atom second x => second x
   x
