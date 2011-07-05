@@ -1,3 +1,7 @@
+2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* gui/gui.pro.in [Mac OS X]: Don't build application bundle.
+
 2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* graph/view2D/process2d.c: Include "cfuns.h? before other local
