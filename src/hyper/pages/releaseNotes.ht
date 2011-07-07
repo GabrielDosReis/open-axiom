@@ -27,7 +27,7 @@
 \begin{page}{jul2011}{OpenAxiom 1.4.1 release}
 % =====================================================================
 \beginscroll
-OpenAxiom-1.4.1 was released on July 6, 2011.  It is the first bug fix
+OpenAxiom-1.4.1 was released on July 7, 2011.  It is the first bug fix
 release of \Language{} system, in the 1.4.x series.  It contains 
 bug fixes for regressions introduces in the 1.4.0 release, and several
 improvements for the GUI interface on the Windows platform.
