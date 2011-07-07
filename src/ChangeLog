@@ -1,3 +1,9 @@
+2011-07-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* gui/debate.cc (start_interpreter): Do not forget core command
+	line options.  Separate them from options to the base Lisp runtime
+	system. 
+
 2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-util.boot ($charUnderscore): Move to br-search.boot

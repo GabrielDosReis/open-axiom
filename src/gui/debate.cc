@@ -38,9 +38,11 @@ namespace OpenAxiom {
    static void
    start_interpreter(Conversation* conv, Command& cmd) {
       QStringList args;
-      args << "--" << "--role=server";
       for (int i = 0; i < cmd.rt_args.size(); ++i)
-	args << cmd.rt_args[i];
+         args << cmd.rt_args[i];
+      args << "--" << "--role=server";
+      for (int i = 1; i < cmd.core.argc; ++i)
+         args << cmd.core.argv[i];
       conv->oracle()->start(make_path_for(cmd.root_dir, core_driver), args);
       // When invoked in a --role=server mode, OpenAxiom would
       // wait to be pinged before displayed a prompt.  This is
