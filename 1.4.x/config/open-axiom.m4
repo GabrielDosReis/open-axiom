@@ -566,13 +566,12 @@ dnl the system is up and running.
 AC_DEFUN([OPENAXIOM_HOST_EDITOR],[
 AC_SUBST(oa_editor)
 ## On Windows system, we prefer the default installation
-## location to be 'C:/Program Files/OpenAxiom', following Windows 
-## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
-## to operate unconditionally.  Therefore, we resort to this dirty
-## trick stepping over Autoconf's internals.
+## location to be 'C:/OpenAxiom'.  We cannot use AC_PREFIX_DEFAULT
+## directly as it seems to operate unconditionally.  Therefore, we 
+## resort to this dirty trick stepping over Autoconf's internals.
 case $host in
     *mingw*)
-        ac_default_prefix="C:/Program Files/OpenAxiom"
+        ac_default_prefix="C:/OpenAxiom"
         AC_PATH_PROGS([oa_editor],[notepad.exe])
 	;;
     *)  

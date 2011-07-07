@@ -1,3 +1,8 @@
+2011-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (ac_default_prefix): Set to C:/OpenAxiom on
+	Windows platforms.
+
 2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4: Don't test for GMP, just yet.
