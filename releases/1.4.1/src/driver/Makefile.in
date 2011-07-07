@@ -1,0 +1,83 @@
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+bin_PROGRAMS = open-axiom$(EXEEXT)
+
+open_axiom_SOURCES = main.cc
+
+open_axiom_objects = $(open_axiom_SOURCES:.cc=.lo)
+
+## Ideally, we want a standalone binary driver unencounbered by
+## any sort of dependencies.  However, static program linking is not
+## available on all plaforms (think Mac OS, Solaris, etc.)  So we must link
+## against library archives.  Thefore we avoid using $(axiom_target_libdir)
+## below.  On purpose.
+open_axiom_LDADD = \
+	-L$(builddir)/../utils \
+	-L$(builddir)/../lib \
+	-lOpenAxiom $(oa_c_libs)
+
+VPATH += $(top_srcdir)/src/include
+
+.PHONY: all all-ax all-driver
+
+all: all-ax
+
+all-ax all-driver: stamp
+
+stamp: $(bin_PROGRAMS)
+	-rm -f stamp
+	$(STAMP) stamp
+
+.SUFFIXES:
+.SUFFIXES: .cc .h .lo .$(OBJEXT)
+.PRECIOUS: %.lo %.obj
+
+%.lo: %.cc 
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ \
+		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
+		$(axiom_includes) $<
+
+main.lo: open-axiom.h
+
+open-axiom$(EXEEXT): $(open_axiom_objects)
+	$(CXXLINK) -all-static -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
+
+mostlyclean-local:
+	@rm -f $(open_axiom_objects)
+	@rm -f *~ core
+
+clean-local: mostlyclean-local
+	@rm -f $(bin_PROGRAMS)
+
+distclean-local: clean-local
+

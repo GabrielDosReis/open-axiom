@@ -1,3 +1,7 @@
+2011-07-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.4.1 released.
+
 2011-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (ac_default_prefix): Set to C:/OpenAxiom on

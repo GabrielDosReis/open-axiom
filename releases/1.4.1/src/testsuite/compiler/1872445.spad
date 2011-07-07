@@ -1,0 +1,7 @@
+-- Contributed by Luke Wagner
+)abbrev domain TEST Test
+Test(): with
+    foo: Integer -> Integer
+  == add
+    Rep := Record(a: Integer, b: Test)
+    foo i == i

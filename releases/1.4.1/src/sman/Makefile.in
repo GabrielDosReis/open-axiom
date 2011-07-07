@@ -1,0 +1,117 @@
+# Copyright (C) 2007-2011, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+subdir = src/sman/
+
+# this is where to put the various commands
+OUT=	$(axiom_target_bindir)
+OUTLIB=	$(axiom_target_libdir)
+
+# this is where the include files live
+INC=    $(axiom_src_srcdir)/include
+
+build_libdir = $(top_builddir)/src/lib
+
+oa_OpenAxiom_ldflags = -L$(builddir)/../utils -lOpenAxiom
+
+bin_PROGRAMS = session$(EXEEXT) \
+		spadclient$(EXEEXT) \
+		sman$(EXEEXT)
+
+libspad_la = $(build_libdir)/libspad.$(LIBEXT)
+
+session_SOURCES = session.c
+session_objects = $(session_SOURCES:.c=.lo)
+session_LDADD = -L$(build_libdir) $(libspad_la) $(oa_c_libs)
+session_DEPENDENCIES =
+
+spadclient_SOURCES = spadclient.c
+spadclient_objects = $(spadclient_SOURCES:.c=.lo)
+spadclient_LDADD =  \
+	$(oa_OpenAxiom_ldflags) \
+	-L$(build_libdir) $(libspad_la)  $(oa_c_libs)
+spadclient_DEPENDENCIES =
+
+sman_SOURCES = sman.c
+sman_objects = $(sman_SOURCES:.c=.lo)
+sman_LDADD = \
+	$(oa_OpenAxiom_ldflags) \
+	-L$(build_libdir) $(libspad_la) $(oa_c_libs)
+sman_DEPENDENCIES =
+
+
+
+.PHONY: all all-sman
+
+all: all-ax
+
+all-ax all-sman: stamp
+
+stamp:	$(OUTLIB)/session$(EXEEXT) \
+		$(OUTLIB)/spadclient$(EXEEXT) \
+		$(OUT)/sman$(EXEEXT)
+	-rm -f stamp
+	$(STAMP) stamp
+
+.SUFFIXES:
+.SUFFIXES: .c .h .lo .$(OBJEXT)
+.PRECIOUS: %.lo %.obj
+
+%.lo: %.c 
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(axiom_includes) -I$(srcdir) $<
+
+${OUTLIB}/session$(EXEEXT): $(session_objects) $(session_DEPENDENCIES)
+	$(CXXLINK) -o $@ $(session_objects) $(session_LDADD)
+
+${OUTLIB}/spadclient$(EXEEXT): $(spadclient_objects) $(spadclient_DEPENDENCIES)
+	$(CXXLINK) -o $@ $(spadclient_objects) $(spadclient_LDADD)
+
+spadclient.$(OBJEXT): ${INC}/useproto.h ${INC}/spadclient.H1 \
+			$(axiom_configdir)/axiom-c-macros.h
+
+${OUT}/sman$(EXEEXT): $(sman_objects) $(sman_DEPENDENCIES)
+	$(CXXLINK) -o $@ $(sman_objects) $(sman_LDADD)
+
+$(sman_objects): sman.h $(axiom_c_macros_h)
+
+mostlyclean-local:
+	@rm -f $(session_objects)
+	@rm -f $(session_objects)
+	@rm -f $(sman_objects)
+
+clean-local: mostlyclean-local
+	@rm -f $(OUTLIB)/session$(EXEEXT)
+	@rm -f $(OUTLIB)/spadclient$(EXEEXT)
+	@rm -f $(OUT)/sman$(EXEEXT)
+
+distclean-local: clean-local
+

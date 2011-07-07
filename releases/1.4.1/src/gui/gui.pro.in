@@ -1,0 +1,41 @@
+## Copyright (C) 2011 Gabriel Dos Reis.
+## All rights reserved.
+## Autoconf template file for the benefit of QMake 
+## Written by Gabriel Dos Reis.
+
+OA_INC =
+OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
+
+## We build in release mode.
+CONFIG += release
+## But, don't think we want an app bundle, yet.
+macx {
+  CONFIG -= app_bundle
+}
+
+## We are building a GUI application.
+TEMPLATE = app
+
+## Put the executable directly in the staged bin directory.
+DESTDIR = @top_builddir@/@target@/bin
+TARGET = gui
+
+## Tell QT that sources are not in the build directory
+VPATH += @srcdir@
+
+## Our headers
+HEADERS += conversation.h main-window.h debate.h
+INCLUDEPATH +=  @srcdir@
+INCLUDEPATH += @top_srcdir@/src/include
+INCLUDEPATH += @top_builddir@/config
+DEPENDPATH += @srcdir@
+
+## Source files
+SOURCES += conversation.cc main-window.cc debate.cc main.cc
+
+## Additional support libraries
+LIBS += $$OA_LIB
+
+## C++ compiler
+#QMAKE_CXX = @CXX@
+#QMAKE_CXXFLAGS += @CXXFLAGS@

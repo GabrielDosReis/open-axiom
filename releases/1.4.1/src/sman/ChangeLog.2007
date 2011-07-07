@@ -1,0 +1,105 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove.
+
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove rules for extracting files from
+	pamphlets. 
+	(%.lo): Adjust include directory.
+	(mostlyclean-local): Don't remove source files and headers.
+	* nagman.c.pamphlet: Remove.
+	* session.c.pamphlet: Likewise.
+	* sman.c.pamphlet: Likewise.
+	* sessions.c: New.
+	* sman.h: Likewise.
+	* sman.c: Likewise.
+
+2007-09-13  Alfredo Portes  <alfredo.portes@gmail.com>
+	    Waldek Hebisch <hebisch@math.uni.wroc.pl>
+
+	* sman.c.pamphlet: Add cleanup function for HyperDoc sockets.
+
+2007-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman.c.pamphlet (HypertexProgram): hypertex is installed in lib/
+	directory. 
+
+2007-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Propagate libtoolization changes.
+	* Makefile.in: Regenerate.
+
+2007-04-09  Bill Page  <bill.page1@synthesis.anikast.ca>
+
+	* Makefile.pamphlet (session_LDADD): Add extrac C runtime libraries.
+	(spadclient_LDADD): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	    Bill Page  <bill.page1@synthesis.anikast.ca>
+
+	* Makefile.pamphlet (sman_LDADD): Add extra runtime libraries.
+
+2006-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman.c.pamphlet: Don't include useproto.h.  Avoid including
+	axiom-c-macros.h twice.
+	* session.c.pamphlet: Remove K&R C style function declarations.
+	Don't include useproto.h
+	* spadclient.c.pamphlet: Likewise.
+
+2006-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman.c.pamphlet (should_I_clef): Recover lost return type.
+
+2006-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nagman.c.pamphlet: Include axiom-c-macros.h.
+	* session.c.pamphlet: Likewise.
+	* sman.c.pamphlet: Likewise.
+	* spadclient.c.pamphlet: Likewise.
+
+	* Makefile.pamphlet: Add support for OS that require extension for
+	executable binary files.
+	* Makefile.in: Regenerate.
+
+2006-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(build_libdir)/libspad.a): Remove.
+	(LDFLAGS): Likewise.
+	(SMANOBJS): Likewise.
+	(LIB): Likewise.
+	(DOC): Likewise.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman.c.pamphlet: Include "axiom-c-macros.h
+	Remove K&R C style function declarations.
+
+	* Makefile.pamphlet (DOC, CFLAGS, LDFLAGS, SMANOBJS): Remove.
+	(session_DEPENDENCIES): Clear.
+	(spadclient_DEPENDENCIES): Likewise.
+	(sman_DEPENDENCIES): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-11-18  Bill Page  <bill.page1@synthesis.anikast.ca>
+
+	* Makefile.pamphlet (LDFLAGS): Add X11 libraries flags.
+	* Makefile.in: Regenerate.
+
+2006-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Create stamp file.
+	* Makefile.in: Regenerate.
+
+2006-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${OUTLIB}/session, ${OUTLIB}/spadclient,
+	${OUT}/sman): Fix thinko.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Simplify.
+	* Makefile.in: Regenerate.
+

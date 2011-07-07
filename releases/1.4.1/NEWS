@@ -1,0 +1,92 @@
+* June 15, 2011
+
+  OpenAxiom 1.4.0 has been released.
+
+  Changes from previous releases are listed at
+
+       http://www.open-axiom.org/1.4/
+
+  × They include significant improvements to the OpenAxiom algebra, the
+    library compiler, and the script interpreter.  The OpenAxiom
+    compiler now generates much better quality Lisp code.  
+ 
+
+  × The system has a new interface on Windows platforms.
+
+
+* August 05, 2009.
+
+  Changes from previous release, please see
+
+       http://www.open-axiom.org/1.3/
+
+* January 29, 2009.
+  OpenAxiom 1.2.1 has been released.
+
+  Changes from previous release, please see
+
+       http://www.open-axiom.org/1.2/
+
+* August 22, 2008
+  OpenAxiom-1.2.0 has been released.
+
+  Changes from previous release, please see
+
+       http://www.open-axiom.org/1.2/
+
+* February 14, 2008
+  OpenAxiom-1.1.0 has been released.
+  Changes from previous release:
+  
+  × OpenAxiom now supports batch processing, either for scripting
+    or for compiling Spad libraries.
+
+  × Many bugs fixes in both algebra and interpreter/compiler components.
+
+  × The interpreter now allows `case' functions defined in libraries.
+    Consequently, `case' no longer requires values of Union types, as
+    long as the arguments are of appropriate types, e.g. ones for
+    which a `case' operator has been defined.
+
+  × OpenAxiom developers: depsys is no longer built.  All files in
+    src/interp/ are now compiled with bootsys.
+
+  × OpenAxiom has a new abstract syntax tree domain for representing Spad
+    libraries, Spad scripts, and Boot programs.
+    Furthermore, parsers for Spad libraries and Spad scripts are
+    now part of the standard algebra.
+
+  × OpenAxiom now supports aggregates/collections of domains.  More
+    generally, it is now possible define and call functions with arguments
+    that are of domain type.
+
+  × OpenAxiom no longer uses global setting of the environment
+    variable AXIOM.  Now, OpenAxiom's AXIOMsys can be invoked with
+    optional command line argument specifying the system root
+    directory and the system alegbra directory.
+
+  × OpenAxiom now supports versioning, meaning that installing newer
+    versions will not overwrite previous OpenAxiom version runtimes.
+
+* September 21, 2007
+
+  OpenAxiom-1.0.1 has been released.
+  Changes from previous release:
+
+  × Now OpenAxiom ignores system-installed GCL versions that are too old.
+
+  × Problem with HyperDoc not restarting fixed.
+  
+  × Build failure on Windows XP or Vista fixed.
+  
+  × Build with the dependency tarball open-axiom-1.0.x-dep.tar.bz2 has
+    been improved.  Many problems fixed.
+
+* August 24, 2007
+
+  OpenAxiom-1.0.0 has been released.
+
+* August 13, 2007
+  
+  OpenAxiom has been created.
+

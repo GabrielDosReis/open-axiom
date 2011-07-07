@@ -1,0 +1,99 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.11.  )frame
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )frame  new  frameName
+  - )frame  drop  [frameName]
+  - )frame  next
+  - )frame  last
+  - )frame  names
+  - )frame  import frameName [objectName1 [objectName2 ...]]
+  - )set message frame on | off
+  - )set message prompt frame
+ 
+Command Description: 
+ 
+A frame can be thought of as a logical session within the physical session
+that you get when you start the system. You can have as many frames as you
+want, within the limits of your computer's storage, paging space, and so on.
+Each frame has its own step number, environment and history. You can have a
+variable named a in one frame and it will have nothing to do with anything
+that might be called a in any other frame.
+ 
+Some frames are created by the HyperDoc program and these can have pretty
+strange names, since they are generated automatically. To find out the names
+of all frames, issue
+ 
+)frame names
+ 
+It will indicate the name of the current frame.
+ 
+You create a new frame ``quark'' by issuing
+ 
+)frame new quark
+ 
+The history facility can be turned on by issuing either )set history on or
+)history )on. If the history facility is on and you are saving history
+information in a file rather than in the OpenAxiom environment then a history
+file with filename quark.axh will be created as you enter commands. If you
+wish to go back to what you were doing in the ``initial'' frame, use
+ 
+)frame next
+ 
+or
+ 
+)frame last
+ 
+to cycle through the ring of available frames to get back to ``initial''.
+ 
+If you want to throw away a frame (say ``quark''), issue
+ 
+)frame drop quark
+ 
+If you omit the name, the current frame is dropped.
+ 
+If you do use frames with the history facility on and writing to a file, you
+may want to delete some of the older history files. These are directories, so
+you may want to issue a command like rm -r quark.axh to the operating system.
+ 
+You can bring things from another frame by using )frame import. For example,
+to bring the f and g from the frame ``quark'' to the current frame, issue
+ 
+)frame import quark f g
+ 
+If you want everything from the frame ``quark'', issue
+ 
+)frame import quark
+ 
+You will be asked to verify that you really want everything.
+ 
+There are two )set flags to make it easier to tell where you are.
+ 
+)set message frame on | off
+ 
+will print more messages about frames when it is set on. By default, it is
+off.
+ 
+)set message prompt frame
+ 
+will give a prompt that looks like
+ 
+initial (1) ->
+ 
+when you start up. In this case, the frame name and step make up the prompt.
+ 
+Also See: 
+o )history
+o )set
+ 
