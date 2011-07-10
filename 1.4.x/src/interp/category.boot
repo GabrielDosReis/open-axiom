@@ -137,25 +137,27 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   v := newShell count
   canonicalForm(v) := nil
   categoryExports(v) := sigList
-  v.2 := attList
-  v.3 := $Category
+  categoryAttributes(v) := attList
+  categoryRef(v,3) := $Category
   if PrincipalAncestor ~= nil then
     for x in 6..#PrincipalAncestor-1 repeat 
-      v.x := PrincipalAncestor.x
-    v.4 := [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
-  else v.4 := [nil,nil,OldLocals] --associated categories and domains
-  v.5 := domList
-  for [nsig,:sequence] in NSigList repeat 
-    v.sequence := nsig
+      categoryRef(v,x) := PrincipalAncestor.x
+    categoryRef(v,4) :=
+      [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
+  else
+    categoryRef(v,4) := [nil,nil,OldLocals] --associated categories and domains
+  categoryRef(v,5) := domList
+  for [nsig,:n] in NSigList repeat 
+    categoryRef(v,n) := nsig
   v
 
 --% Subsumption code (for operators)
  
-DropImplementations (a is [sig,pred,:implem]) ==
-  if implem is [[q,:.]] and (q="ELT" or q="CONST")
-     then if (q="ELT")  then [sig,pred]
-                        else [[:sig,:'(constant)],pred]
-     else a
+DropImplementations a ==
+  a is [sig,pred,[q,:.]] and q in '(ELT CONST) =>
+    q = "ELT" => [sig,pred]
+    [[:sig,'constant],pred]
+  a
  
 SigListUnion(extra,original) ==
   --augments original %with everything in extra that is not in original
@@ -567,12 +569,3 @@ Join(:l) ==
     null $e or $InteractiveMode => $CategoryFrame
     $e
   JoinInner(l, e)
- 
---ProduceDomainAlist(u,e) ==
---  -- Gives a complete Alist for all the functions in the Domain
---  not (sig:= get(u,"modemap",e)) => nil
---  sig:= CADAAR sig
---                       --an incantation
---  [c,.,.]:= compMakeCategoryObject(sig,e)
---  -- We assume that the environment need not be kept
---  c.1
