@@ -1,5 +1,17 @@
 2011-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: copyString, copyTree, and copyVector are now
+	builtin library functions.
+	* interp/br-util.boot: Use copyVector instead of COPY-SEQ.
+	* interp/category.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+
+2011-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot: Remove dead codes.
 	* interp/define.boot (hasFullSignature): Tidy.
 

@@ -198,7 +198,7 @@ beenHere(e,n) ==
     if exprStk then
 -- using COPY-TREE : RPLAC does not smash $fortCsList
 -- which led to inconsistencies in assignment of temp. vars.
-      $fortCsList := COPY_-TREE [['"=",var,e],:$fortCsList]
+      $fortCsList := copyTree [['"=",var,e],:$fortCsList]
       loc := first exprStk
       fun := first n.3
       fun = 'CAR =>
