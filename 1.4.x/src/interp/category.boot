@@ -469,7 +469,7 @@ JoinInner(l,$e) ==
                   FundamentalAncestors:= [newentry,:FundamentalAncestors]
              else ancindex:= nil
           if not copied then
-            $NewCatVec:= COPY_-SEQ $NewCatVec
+            $NewCatVec:= copyVector $NewCatVec
             copied:= true
           if ancindex
              then ($NewCatVec.ancindex:= bname; reallynew:= nil)
@@ -516,7 +516,8 @@ JoinInner(l,$e) ==
         copied:= false
         originalvector:= false
         $NewCatVec.n:= b.0
-  if not copied then $NewCatVec:= COPY_-SEQ $NewCatVec
+  if not copied then
+    $NewCatVec:= copyVector $NewCatVec
     -- It is important to copy the vector now,
     -- in case SigListUnion alters it while
     -- performing Operator Subsumption

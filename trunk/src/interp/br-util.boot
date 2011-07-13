@@ -102,7 +102,7 @@ capitalize s ==
       ("package"  . "Package")
       ("default package" . "Default Package"))) 
    or
-    res := COPY_-SEQ s
+    res := copyString s
     stringChar(res,0) := charUpcase stringChar(res,0)
     res
 

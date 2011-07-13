@@ -933,7 +933,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $compileExportsOnly =>
       compDefineExports(form, categoryExports ds, signature',$e)
-    $domainShell: local := COPY_-SEQ ds
+    $domainShell: local := copyVector ds
     attributeList := vectorRef(ds,2) --see below under "loadTimeAlist"
     $condAlist: local := nil
     $uncondAlist: local := nil

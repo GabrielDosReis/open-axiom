@@ -414,7 +414,7 @@ Expr2Dmp1(summands, vec, c, source, index, varList, T) ==
         univ := objValUnwrap univ
 
         for [e,:c] in univ repeat
-            vec := COPY_-SEQ vec
+            vec := copyVector vec
             vec.index := e
             summands := Expr2Dmp1(summands, vec, c, T, index+1, rest varList, T)
     summands

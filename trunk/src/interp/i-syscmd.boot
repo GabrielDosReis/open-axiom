@@ -88,7 +88,7 @@ $localExposureDataDefault :=
   VECTOR(["basic", "categories"], [], [])
 
 $localExposureData := 
-  COPY_-SEQ $localExposureDataDefault
+  copyVector $localExposureDataDefault
 
 
 --% Top level system command
@@ -295,7 +295,7 @@ clearCmdSortedCaches() ==
 
 clearCmdCompletely() ==
   clearCmdAll()
-  $localExposureData := COPY_-SEQ $localExposureDataDefault
+  $localExposureData := copyVector $localExposureDataDefault
   -- $functionTable := nil
   sayKeyedMsg("S2IZ0013",nil)
   clearClams()
@@ -1127,7 +1127,7 @@ emptyInterpreterFrame(name) ==
        $HistListAct,                    -- $HistListAct
        $HistRecord,                     -- $HistRecord
        nil,                             -- $internalHistoryTable
-       COPY_-SEQ $localExposureDataDefault        -- $localExposureData
+       copyVector $localExposureDataDefault        -- $localExposureData
       ]
 
 closeInterpreterFrame(name) ==

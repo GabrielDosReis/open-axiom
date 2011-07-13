@@ -78,13 +78,13 @@ DomainPrint1(D,brief,$e) ==
         for u in D for i in 1..],:$Sublis]
   for u in D for i in 1.. repeat
     brief and i>1 => nil
-    uu:= COPY_-SEQ rest u
-    uu.4:= '"This domain"
+    uu := copyVector rest u
+    uu.4 := '"This domain"
     if not brief then
       SAY ['"View number ",i,'" corresponding to categories:"]
       PRETTYPRINT first u
     if i=1 and vector? uu.5 then
-      vv:= COPY_-SEQ uu.5
+      vv := copyVector uu.5
       uu.5:= vv
       for j in 0..maxIndex vv repeat
         if vector? vv.j then
@@ -121,7 +121,7 @@ DPname() ==
   name
  
 PacPrint v ==
-  vv:= COPY_-SEQ v
+  vv := copyVector v
   for j in 0..maxIndex vv repeat
     if vector? vv.j then
       l:= ASSQ(keyItem vv.j,Sublis)
