@@ -586,8 +586,10 @@ compDefineAddSignature([op,:argl],signature,e) ==
  
 hasFullSignature(argl,[target,:ml],e) ==
   target =>
-    u:= [m or get(x,"mode",e) or return 'failed for x in argl for m in ml]
-    u~='failed => [target,:u]
+    u := [m or get(x,"mode",e) or return 'failed for x in argl for m in ml]
+    u is 'failed => nil
+    [target,:u]
+  nil
  
 addEmptyCapsuleIfNecessary: (%Form,%Form) -> %Form
 addEmptyCapsuleIfNecessary(target,rhs) ==
@@ -1065,8 +1067,7 @@ reportOnFunctorCompilation() ==
   displayWarnings()
   $functorStats:= addStats($functorStats,$functionStats)
   [byteCount,elapsedSeconds] := $functorStats
-  sayBrightly ['%l,:bright '"  Cumulative Statistics for Constructor",
-    $op]
+  sayBrightly ['%l,:bright '"  Cumulative Statistics for Constructor",$op]
   timeString := normalizeStatAndStringify elapsedSeconds
   sayBrightly ['"      Time:",:bright timeString,'"seconds"]
   sayBrightly '" "
@@ -1852,7 +1853,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   item.op := '%when
-  item.rest := [[p',x,:x'],['%otherwise,y,:y']]
+  item.args := [[p',x,:x'],['%otherwise,y,:y']]
  where localExtras(oldFLP) ==
    sameObject?(oldFLP,$functorLocalParameters) => nil
    flp1:=$functorLocalParameters
