@@ -216,7 +216,6 @@ mkOr(a,b) ==
   a=true => true
   b=true => true
   b=a => a
---PRETTYPRINT ("Condition merging",a,b)
   l:=
     a is ["OR",:a'] =>
       (b is ["OR",:b'] => union(a',b'); mkOr2(b,a') )
@@ -252,7 +251,6 @@ mkAnd(a,b) ==
   a=true => b
   b=true => a
   b=a => a
-  --PRETTYPRINT ("Condition merging",a,b)
   l:=
     a is ["AND",:a'] =>
       (b is ["AND",:b'] => union(a',b'); mkAnd2(b,a') )
@@ -359,12 +357,6 @@ CatEval x ==
     $InteractiveMode => $CategoryFrame
     $e
   compMakeCategoryObject(x,e).expr
- 
---RemovePrinAncs(l,leaves) ==
---  l=nil => nil
---  leaves:= [first y for y in leaves]
---               --remove the slot pointers
---  [x for x in l | not AncestorP(x.0,leaves)]
  
 AncestorP: (%Form, %List %Instantiation) -> %Form
 AncestorP(xname,leaves) ==
