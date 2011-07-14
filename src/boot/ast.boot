@@ -677,6 +677,7 @@ bfIS1(lhs,rhs) ==
   rhs is ['CONS,a,b] =>
     a is "DOT" =>
       b = nil => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
+      b is "DOT" => ['CONSP,lhs]
       bfAND [['CONSP,lhs],bfIS1(['CDR,lhs],b)]
     b = nil =>
       bfAND [['CONSP,lhs],['NULL,['CDR,lhs]],bfIS1(['CAR,lhs],a)]
