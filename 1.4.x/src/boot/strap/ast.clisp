@@ -1083,6 +1083,7 @@
               ((NULL |b|)
                (|bfAND| (LIST (LIST 'CONSP |lhs|)
                               (LIST 'NULL (LIST 'CDR |lhs|)))))
+              ((EQ |b| 'DOT) (LIST 'CONSP |lhs|))
               (T (|bfAND| (LIST (LIST 'CONSP |lhs|)
                                 (|bfIS1| (LIST 'CDR |lhs|) |b|))))))
            ((NULL |b|)

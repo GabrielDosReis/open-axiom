@@ -1,3 +1,7 @@
+2011-07-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfIS1): Tidy test for cons cells.
+
 2011-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/functor.boot (CategoryPrint): Move from category.boot.
