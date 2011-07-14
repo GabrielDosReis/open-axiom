@@ -60,28 +60,6 @@ isCategoryForm(x,e) ==
     cons? u and categoryForm? u
   categoryForm? x
  
---% Functions for building categories
- 
-CategoryPrint(D,$e) ==
-  SAY "--------------------------------------"
-  SAY "Name (and arguments) of category:"
-  PRETTYPRINT canonicalForm D
-  SAY "operations:"
-  PRETTYPRINT categoryExports D
-  SAY "attributes:"
-  PRETTYPRINT D.2
-  SAY "This is a sub-category of"
-  PRETTYPRINT first D.4
-  for u in second D.4 repeat
-    SAY("This has an alternate view: slot ",rest u," corresponds to ",first u)
-  for u in third D.4 repeat
-    SAY("This has a local domain: slot ",rest u," corresponds to ",first u)
-  for j in 6..maxIndex D repeat
-    u:= D.j
-    null u => SAY "another domain"
-    atom first u => SAY("Alternate View corresponding to: ",u)
-    PRETTYPRINT u
-
 ++ Returns a freshly built category object for a domain or package
 ++ (as indicated by `domainOrPackage'), with signature list
 ++ designated by `sigList', attribute list designated by `attList',
