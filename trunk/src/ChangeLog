@@ -1,5 +1,12 @@
 2011-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/functor.boot (CategoryPrint): Move from category.boot.
+	(DomainPrint1): Tidy.
+	(PacPrint): Likewise.
+	(DomainPrintSubst): Likewise.
+
+2011-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: copyString, copyTree, and copyVector are now
 	builtin library functions.
 	* interp/br-util.boot: Use copyVector instead of COPY-SEQ.

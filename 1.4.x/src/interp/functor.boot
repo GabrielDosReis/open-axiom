@@ -37,9 +37,31 @@ import interop
 import category
 namespace BOOT
 
+--% Functions for building categories
+ 
+CategoryPrint(D,$e) ==
+  SAY "--------------------------------------"
+  SAY "Name (and arguments) of category:"
+  PRETTYPRINT canonicalForm D
+  SAY "operations:"
+  PRETTYPRINT categoryExports D
+  SAY "attributes:"
+  PRETTYPRINT categoryAttributes D
+  SAY "This is a sub-category of"
+  PRETTYPRINT first categoryRef(D,4)
+  for u in second categoryRef(D,4) repeat
+    SAY("This has an alternate view: slot ",rest u," corresponds to ",first u)
+  for u in third categoryRef(D,4) repeat
+    SAY("This has a local domain: slot ",rest u," corresponds to ",first u)
+  for j in 6..maxIndex D repeat
+    u := categoryRef(D,j)
+    null u => SAY "another domain"
+    atom first u => SAY("Alternate View corresponding to: ",u)
+    PRETTYPRINT u
+
 --%  Domain printing
 keyItem a ==
-  isDomain a => CDAR a.4
+  isDomain a => CDAR domainRef(a,4)
   a
   --The item that domain checks on
  
@@ -70,11 +92,11 @@ DomainPrint(D,brief) ==
  
 DomainPrint1(D,brief,$e) ==
   vector? D and not isDomain D => PacPrint D
-  if vector? D then D:= D.4
-             --if we were passed a vector, go to the domain
+  if vector? D then
+    D := D.4 --if we were passed a vector, go to the domain
   Sublis:=
     [:
-      [[rest u,:makeSymbol strconc('"View",STRINGIMAGE i)]
+      [[rest u,:makeSymbol strconc('"View",toString i)]
         for u in D for i in 1..],:$Sublis]
   for u in D for i in 1.. repeat
     brief and i>1 => nil
@@ -85,75 +107,76 @@ DomainPrint1(D,brief,$e) ==
       PRETTYPRINT first u
     if i=1 and vector? uu.5 then
       vv := copyVector uu.5
-      uu.5:= vv
+      uu.5 := vv
       for j in 0..maxIndex vv repeat
         if vector? vv.j then
-          l:= ASSQ(keyItem vv.j,Sublis)
+          l := ASSQ(keyItem vv.j,Sublis)
           if l
              then name:= rest l
              else
-              name:=DPname()
-              Sublis:= [[keyItem vv.j,:name],:Sublis]
-              $Sublis:= [first Sublis,:$Sublis]
-              $WhereList:= [[name,:vv.j],:$WhereList]
-          vv.j:= name
+              name := DPname()
+              Sublis := [[keyItem vv.j,:name],:Sublis]
+              $Sublis := [first Sublis,:$Sublis]
+              $WhereList := [[name,:vv.j],:$WhereList]
+          vv.j := name
     if i>1 then
-      uu.1:= uu.2:= uu.5:= '"As in first view"
+      uu.1 := uu.2 := uu.5 := '"As in first view"
     for i in 6..maxIndex uu repeat
-      uu.i:= DomainPrintSubst(uu.i,Sublis)
+      uu.i := DomainPrintSubst(uu.i,Sublis)
       if vector? uu.i then
-        name:=DPname()
-        Sublis:= [[keyItem uu.i,:name],:Sublis]
-        $Sublis:= [first Sublis,:$Sublis]
-        $WhereList:= [[name,:uu.i],:$WhereList]
-        uu.i:= name
+        name := DPname()
+        Sublis := [[keyItem uu.i,:name],:Sublis]
+        $Sublis := [first Sublis,:$Sublis]
+        $WhereList := [[name,:uu.i],:$WhereList]
+        uu.i := name
       if uu.i is [.,:v] and vector? v then
-        name:=DPname()
-        Sublis:= [[keyItem v,:name],:Sublis]
-        $Sublis:= [first Sublis,:$Sublis]
-        $WhereList:= [[name,:v],:$WhereList]
-        uu.i:= [first uu.i,:name]
-    if brief then PRETTYPRINT uu.0 else PRETTYPRINT uu
+        name := DPname()
+        Sublis := [[keyItem v,:name],:Sublis]
+        $Sublis := [first Sublis,:$Sublis]
+        $WhereList := [[name,:v],:$WhereList]
+        uu.i := [first uu.i,:name]
+    brief => PRETTYPRINT uu.0
+    PRETTYPRINT uu
  
 DPname() ==
-  name:= INTERNL strconc('"Where",STRINGIMAGE $WhereCounter)
-  $WhereCounter:= $WhereCounter+1
+  name := INTERNL strconc('"Where",toString $WhereCounter)
+  $WhereCounter := $WhereCounter+1
   name
  
 PacPrint v ==
   vv := copyVector v
   for j in 0..maxIndex vv repeat
     if vector? vv.j then
-      l:= ASSQ(keyItem vv.j,Sublis)
+      l := ASSQ(keyItem vv.j,Sublis)
       if l
-         then name:= rest l
+         then name := rest l
          else
-          name:=DPname()
-          Sublis:= [[keyItem vv.j,:name],:Sublis]
-          $Sublis:= [first Sublis,:$Sublis]
-          $WhereList:= [[name,:vv.j],:$WhereList]
-      vv.j:= name
+          name := DPname()
+          Sublis := [[keyItem vv.j,:name],:Sublis]
+          $Sublis := [first Sublis,:$Sublis]
+          $WhereList := [[name,:vv.j],:$WhereList]
+      vv.j := name
     if cons? vv.j and vector?(u:=rest vv.j) then
-      l:= ASSQ(keyItem u,Sublis)
+      l := ASSQ(keyItem u,Sublis)
       if l
-         then name:= rest l
+         then name := rest l
          else
-          name:=DPname()
-          Sublis:= [[keyItem u,:name],:Sublis]
-          $Sublis:= [first Sublis,:$Sublis]
-          $WhereList:= [[name,:u],:$WhereList]
+          name := DPname()
+          Sublis := [[keyItem u,:name],:Sublis]
+          $Sublis := [first Sublis,:$Sublis]
+          $WhereList := [[name,:u],:$WhereList]
       vv.j.rest := name
   PRETTYPRINT vv
  
 DomainPrintSubst(item,Sublis) ==
   item is [a,:b] =>
-    c1:= DomainPrintSubst(a,Sublis)
-    c2:= DomainPrintSubst(b,Sublis)
+    c1 := DomainPrintSubst(a,Sublis)
+    c2 := DomainPrintSubst(b,Sublis)
     sameObject?(c1,a) and sameObject?(c2,b) => item
     [c1,:c2]
-  l:= ASSQ(item,Sublis)
+  l := ASSQ(item,Sublis)
   l => rest l
-  l:= ASSQ(keyItem item,Sublis)
+  l := ASSQ(keyItem item,Sublis)
   l => rest l
   item
  
@@ -164,16 +187,16 @@ mkDevaluate a ==
   a is ['QUOTE,a'] =>
     a' = nil => nil
     a
-  a = '$ => MKQ '$
+  a is '$ => MKQ '$
   a is ['%list,:.] =>
     a.args = nil => nil
     a
   ['devaluate,a]
  
 getDomainView(domain,catform) ==
-  u:= HasCategory(domain,catform) => u
-  c:= eval catform
-  u:= HasCategory(domain,c.0) => u
+  u := HasCategory(domain,catform) => u
+  c := eval catform
+  u := HasCategory(domain,c.0) => u
   -- note:  this is necessary because of domain == another domain, e.g.
   -- Ps are defined to be SUPs with specific arguments so that if one
   -- asks if a P is a Module over itself, here one has catform= (Module
@@ -182,7 +205,7 @@ getDomainView(domain,catform) ==
   throwKeyedMsg("S2IF0009",[devaluate domain, catform])
  
 getPrincipalView domain ==
-  pview:= domain
+  pview := domain
   for [.,:view] in domain.4 repeat
     if #view > #pview then
       pview := view
@@ -927,7 +950,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  s:= STRINGIMAGE u
+  s := STRINGIMAGE u
   alphabetic? stringChar(s,maxIndex s) => 
     makeSymbol strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
