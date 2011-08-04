@@ -543,7 +543,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
-      IDENTP entry =>
+      ident? entry =>
         cat := catVec.i
         packageForm := nil
         if not property(entry,'LOADED) then loadLib entry

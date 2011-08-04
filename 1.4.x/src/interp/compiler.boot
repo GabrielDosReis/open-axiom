@@ -277,7 +277,7 @@ freeVarUsage([.,vars,body],env) ==
   freeList(body,vars,nil,env) where
     freeList(u,bound,free,e) ==
       atom u =>
-        not IDENTP u => free
+        not ident? u => free
         symbolMember?(u,bound) => free
         v := ASSQ(u,free) =>
           v.rest := 1 + rest v
@@ -377,7 +377,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
-  (op := x.op) and IDENTP op and (fn := property(op,'SPECIAL)) =>
+  (op := x.op) and ident? op and (fn := property(op,'SPECIAL)) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -395,9 +395,9 @@ compAtomWithModemap(x,m,e,mmList) ==
 compAtom(x,m,e) ==
   x is "break" => compBreak(x,m,e)
   x is "iterate" => compIterate(x,m,e)
-  T := IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
+  T := ident? x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   t :=
-    IDENTP x => compSymbol(x,m,e) or return nil
+    ident? x => compSymbol(x,m,e) or return nil
     listMember?(m,$IOFormDomains) and primitiveType x => [x,m,e]
     string? x => [x,x,e]
     [x,primitiveType x or return nil,e]
@@ -607,7 +607,7 @@ compFormWithModemap(form,m,e,modemap) ==
         form':= [f,:[t.expr for t in Tl]]
         target=$Category or isCategoryForm(target,e) => form'
         -- try to deal with new-style Unions where we know the conditions
-        op = "elt" and f is ['XLAM,:.] and IDENTP(z := first argl) and
+        op = "elt" and f is ['XLAM,:.] and ident?(z := first argl) and
           (c := get(z,'condition,e)) and
             c is [["case",=z,c1]] and
               (c1 is [":",=(second argl),=m] or sameObject?(c1,second argl) ) =>
@@ -735,7 +735,7 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 compEnumCat(x,m,e) ==
   for arg in x.args repeat
-    IDENTP arg => nil   -- OK
+    ident? arg => nil   -- OK
     stackAndThrow('"all arguments to %1b must be identifiers",[x.op])
   [x,resolve($Category,m),e]
 
@@ -804,7 +804,7 @@ compSetq(["%LET",form,val],m,E) ==
   compSetq1(form,val,m,E)
 
 compSetq1(form,val,m,E) ==
-  IDENTP form => setqSingle(form,val,m,E)
+  ident? form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
     [.,.,E']:= compMakeDeclaration(x,y,E)
     compSetq1(x,val,m,E')
@@ -839,7 +839,7 @@ setqSingle(id,val,m,E) ==
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= coerce(T,m) or return nil
   if $profileCompiler then
-    not IDENTP id => nil
+    not ident? id => nil
     key :=
       symbolMember?(id,$form.args) => "arguments"
       "locals"
@@ -939,7 +939,7 @@ compileQuasiquote(["[||]",:form],m,e) ==
 recordDeclarationInSideCondition(item,e) ==
   item is [":",x,t] =>
     t := macroExpand(t,e)
-    IDENTP x => $whereDecls := [[x,t],:$whereDecls]
+    ident? x => $whereDecls := [[x,t],:$whereDecls]
     x is ['%Comma,:.] =>
       $whereDecls := [:[[x',t] for x' in x.args],:$whereDecls]
   item is ['SEQ,:stmts,["exit",.,val]] =>
@@ -984,7 +984,7 @@ compConstruct(form is ["construct",:l],m,e) ==
 ++ Compile a literal (quoted) symbol.
 compQuote: (%Form,%Mode,%Env) -> %Maybe %Triple
 compQuote(expr,m,e) == 
-  expr is ["QUOTE",x] and IDENTP x => 
+  expr is ["QUOTE",x] and ident? x => 
     -- Ideally, Identifier should be the default type.  However, for
     -- historical reasons we cannot afford that luxury yet.
     m = $Identifier or listMember?(m,$IOFormDomains) => [expr,m,e]
@@ -1024,7 +1024,7 @@ compMacro(form,m,e) ==
       :formatUnabbreviated lhs,'" ==> ",:prhs,'"%d"]
   m=$EmptyMode or m=$NoValueMode =>
     -- Macro names shall be identifiers.
-    not IDENTP lhs.op =>
+    not ident? lhs.op =>
       stackMessage('"invalid left-hand-side in macro definition",nil)
       e
     -- We do not have the means, at this late stage, to make a distinction
@@ -1449,7 +1449,7 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
     stackAndThrow('"signature import must be from a %1bp domain",["Foreign"])
   args isnt [lang] =>
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
-  not IDENTP lang =>
+  not ident? lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
   not (lang in '(Builtin C Lisp)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
@@ -2077,7 +2077,7 @@ compRecoverGuard(x,t,sn,sm,e) ==
     -- We have a univariate type scheme.  At the moment we insist
     -- that the body of the type scheme be identical to the type
     -- variable.  This restriction should be lifted in future work.
-    not IDENTP t' or t' ~= var' =>
+    not ident? t' or t' ~= var' =>
       stackAndThrow('"Sorry: type %1b too complex",[t'])
     not isCategoryForm(cat',e) =>
       stackAndThrow('"Expression %1b does not designate a category",[cat'])
@@ -2139,7 +2139,7 @@ defineMatchScrutinee(m,e) ==
 ++   `eF' is the environment for unsuccessful guard 
 compAlternativeGuardItem(sn,sm,pat,e) ==
   pat is [op,x,t] and op in '(_: _@) =>
-    not IDENTP x => 
+    not ident? x => 
       stackAndThrow('"pattern %1b must declare a variable",[pat])
     if $catchAllCount > 0 then
       warnUnreachableAlternative pat
@@ -2213,7 +2213,7 @@ compMatch(["%Match",subject,altBlock],m,env) ==
   $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
-    IDENTP sn => ['%bind,[[sn,se]],['%when,:reverse! altsCode]]
+    ident? sn => ['%bind,[[sn,se]],['%when,:reverse! altsCode]]
     ["%bind",[[n,e] for n in sn for e in rest se], 
        ['%when,:reverse! altsCode]]
   [code,m,savedEnv]
@@ -2570,11 +2570,11 @@ gatherParameterList vars == main(vars,nil,nil) where
     main(rest vars,[v,:parms],[s,:source])
   check var == 
     atom var =>
-      not IDENTP var =>
+      not ident? var =>
         stackAndThrow('"invalid parameter %1b in lambda expression",[var])
       [checkVariableName var,nil]
     var is [":",p,t] =>
-      not IDENTP p =>
+      not ident? p =>
         stackAndThrow('"invalid parameter %1b in lambda expression",[p])
       [checkVariableName p,t]
     stackAndThrow('"invalid parameter for mapping",nil)

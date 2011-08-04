@@ -78,12 +78,12 @@ isValidType form ==
   -- cause problems with the interpreter. Thus things like P P I
   -- are not valid.
   string? form => true
-  IDENTP  form => false
+  ident?  form => false
   member(form,$LangSupportTypes) => true
   form is ['Record,:selectors] =>
     and/[isValidType type for [:.,type] in selectors]
   form is ['Enumeration,:args] =>
-    null (and/[IDENTP x for x in args]) => false
+    null (and/[ident? x for x in args]) => false
     ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
@@ -125,7 +125,7 @@ isValidType form ==
       -- Arguments to constructors are general expressions.  Below
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x
-      cons? x' or not IDENTP x' => true   -- surely not constructors
+      cons? x' or not ident? x' => true   -- surely not constructors
       getConstructorKindFromDB x' ~= "domain"
 
 selectMms1(op,tar,args1,args2,$Coerce) ==
@@ -186,7 +186,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
     poly? := (con is 'Polynomial or con is 'Expression)
     isLegitimateMode(underDomainOf t,poly?,polyVarList)
 
-  IDENTP(op := first t) and constructor? op =>
+  ident?(op := first t) and constructor? op =>
     isLegitimateMode(underDomainOf t,hasPolyMode,polyVarList) => t
   t is ['Mapping,:ml] =>
     null ml => false
@@ -205,7 +205,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
     false
   t is ['Record,:r] => isLegitimateRecordOrTaggedUnion r
   t is ['Enumeration,:r] =>
-    null (and/[IDENTP x for x in r]) => false
+    null (and/[ident? x for x in r]) => false
     ((# r) = (# removeDuplicates r)) => true
     false
   false

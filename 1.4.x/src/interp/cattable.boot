@@ -120,9 +120,9 @@ simpHasPred(pred,:options) == main where
   simpHas(pred,a,b) ==
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
     b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
-    IDENTP a or hasIdent b => pred
+    ident? a or hasIdent b => pred
     npred := evalHas pred
-    IDENTP npred or null hasIdent npred => npred
+    ident? npred or null hasIdent npred => npred
     pred
   evalHas (pred := ["has",d,cat]) ==
     x := hasCat(d,cat)
@@ -132,7 +132,7 @@ simpHasPred(pred,:options) == main where
     x
 
 simpHasSignature(pred,conform,op,sig) == --eval w/o loading
-  IDENTP conform => pred
+  ident? conform => pred
   [conname,:args] := conform
   n := #sig
   u := symbolLassoc(op,getConstructorOperationsFromDB conname)
@@ -142,7 +142,7 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
   simpHasPred(match is [sig,.,:p] and sublisFormal(args,p) or true)
 
 simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
-  IDENTP conform => pred
+  ident? conform => pred
   conname := conform.op
   getConstructorKindFromDB conname is "category" =>
       simpCatHasAttribute(conform,attr)
@@ -169,7 +169,7 @@ hasIdent pred ==
     op is 'QUOTE => false
     or/[hasIdent x for x in r]
   pred is '_$ => false
-  IDENTP pred => true
+  ident? pred => true
   false
 
 addDomainToTable(id,catl) ==

@@ -147,7 +147,7 @@ htPred2English(x,:options) ==
         gn(x,op,l,prec)
         if prec < 5 then htSay '")"
       x = 'etc => htSay '"..."
-      IDENTP x and not symbolMember?(x,$emList) =>
+      ident? x and not symbolMember?(x,$emList) =>
         htSay escapeSpecialIds symbolName x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
@@ -180,7 +180,7 @@ unMkEvalable u ==
  u
 
 lisp2HT u == ['"_'",:fn u] where fn u ==
-  IDENTP u => escapeSpecialIds symbolName u
+  ident? u => escapeSpecialIds symbolName u
   string? u => escapeString u
   atom u => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]

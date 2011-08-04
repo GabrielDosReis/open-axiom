@@ -856,7 +856,7 @@ bfDef1 [op,args,body] ==
   argl :=
     bfTupleP args => rest args
     [args]
-  [quotes,control,arglp,body]:=bfInsertLet (argl,body)
+  [quotes,control,arglp,body] := bfInsertLet (argl,body)
   quotes => shoeLAM(op,arglp,control,body)
   [[op,["LAMBDA",arglp,body]]]
  
@@ -955,16 +955,13 @@ shoePROG(v,b)==
   [["PROG",v,:blist,["RETURN", blast]]]
 
 shoeFluids x==
-  x = nil => nil
-  symbol? x and bfBeginsDollar x => [x]
-  atom x => nil
-  x is ["QUOTE",:.] => nil
+  ident? x and bfBeginsDollar x => [x]
+  atomic? x => nil
   [:shoeFluids first x,:shoeFluids rest x]
 
 shoeATOMs x ==
-  x = nil => nil
-  symbol? x => [x]
-  atom x => nil
+  ident? x => [x]
+  atomic? x => nil
   [:shoeATOMs first x,:shoeATOMs rest x]
 
 ++ Return true if `x' is an identifier name that designates a

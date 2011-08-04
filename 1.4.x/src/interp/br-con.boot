@@ -344,7 +344,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
 --    which = '"attribute" => pred    --all categories
       (pak := catinfo . i) and pred   --only those with default packages
     pakform() ==
-      pak and not IDENTP pak => devaluate pak --in case it has been instantiated
+      pak and not ident? pak => devaluate pak --in case it has been instantiated
       catform := kFormatSlotDomain catvec . i
 --    which = '"attribute" => dbSubConform(rest conform,catform)
       res := dbSubConform(rest conform,[pak,"$",:rest catform])

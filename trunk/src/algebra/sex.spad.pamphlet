@@ -96,6 +96,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
     Body ==> add
         import %integer?: % -> Boolean  from Foreign Builtin
         import %string?: % -> Boolean   from Foreign Builtin
+        import %ident?: % -> Boolean    from Foreign Builtin
         import %pair?: % -> Boolean     from Foreign Builtin
         import %peq: (%,%) -> Boolean   from Foreign Builtin
         import %head: % -> %            from Foreign Builtin
@@ -130,13 +131,13 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
 
         list?    b   == pair? b or null? b
         string?  b   == %string? b
-        symbol?  b   == IDENTP(b)$Lisp
+        symbol?  b   == %ident? b
         integer? b   == %integer? b
         float?   b   == RNUMP(b)$Lisp
 
         destruct b == (list? b    => b pretend List %; error "Non-list")
         string b == (%string? b => b pretend Str; error "Non-string")
-        symbol b == (IDENTP(b)$Lisp => b pretend Sym;error "Non-symbol")
+        symbol b == (%ident? b => b pretend Sym;error "Non-symbol")
         float   b == (RNUMP(b)$Lisp  => b pretend Flt;error "Non-float")
         integer b == (INTP(b)$Lisp => b pretend Int;error "Non-integer")
         expr    b == b pretend Expr

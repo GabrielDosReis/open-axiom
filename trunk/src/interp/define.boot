@@ -609,7 +609,7 @@ getTargetFromRhs(lhs,rhs,e) ==
   (compOrCroak(rhs,$EmptyMode,e)).mode
  
 giveFormalParametersValues(argl,e) ==
-  for x in argl | IDENTP x repeat
+  for x in argl | ident? x repeat
     e := giveVariableSomeValue(x,get(x,'mode,e),e)
   e
 
@@ -625,7 +625,7 @@ macroExpandInPlace(x,e) ==
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
   atom x =>
-    not IDENTP x or (u := get(x,"macro",e)) = nil => x
+    not ident? x or (u := get(x,"macro",e)) = nil => x
     -- Don't expand a functional macro name by itself.
     u is ['%mlambda,:.] => x
     macroExpand(u,e)
@@ -634,9 +634,9 @@ macroExpand(x,e) ==   --not worked out yet
       macroExpand(rhs,e)]
   -- macros should override niladic props
   [op,:args] := x
-  IDENTP op and args = nil and niladicConstructorFromDB op and
+  ident? op and args = nil and niladicConstructorFromDB op and
     (u := get(op,"macro", e)) => macroExpand(u,e)
-  IDENTP op and (get(op,"macro",e) is ['%mlambda,parms,body]) =>
+  ident? op and (get(op,"macro",e) is ['%mlambda,parms,body]) =>
     nargs := #args
     nparms := #parms
     msg :=
@@ -863,7 +863,7 @@ predicatesFromAttributes attrList ==
 
 ++ Subroutine of inferConstructorImplicitParameters.
 typeDependencyPath(m,path,e) ==
-  IDENTP m and assoc(m,$whereDecls) =>
+  ident? m and assoc(m,$whereDecls) =>
     get(m,'value,e) => nil  -- parameter was given value
     [[m,:reverse path],:typeDependencyPath(getmode(m,e),path,e)]
   atomic? m => nil
@@ -1555,7 +1555,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   -- parameters are never used in the body.
   vl := [ renameParameter for v in vl] where
     renameParameter() ==
-      integer? v or IDENTP v or string? v => v
+      integer? v or ident? v or string? v => v
       gensym '"flag"
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
@@ -1607,7 +1607,7 @@ constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
   not (and/[atom x for x in vl]) =>
     stackSemanticError(["illegal parameters for macro: ",vl],nil)
-  ["XLAM",vl':= [x for x in vl | IDENTP x],body]
+  ["XLAM",vl':= [x for x in vl | ident? x],body]
  
 listInitialSegment(u,v) ==
   null u => true
@@ -1943,7 +1943,7 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   parameters:=
     removeDuplicates
       ("append"/
-        [[x for x in sig | IDENTP x and x~='_$]
+        [[x for x in sig | ident? x and x~='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])
   wrapDomainSub(parameters,body)
 

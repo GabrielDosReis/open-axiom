@@ -87,9 +87,9 @@ compClam(op,argl,body,$clamList) ==
   countFl := 'count in options
   if #argl > 1 and eqEtc= 'EQ then
     keyedSystemError("S2GE0007",[op])
-  (not IDENTP kind) and (not integer? kind or kind < 1) =>
+  (not ident? kind) and (not integer? kind or kind < 1) =>
     keyedSystemError("S2GE0005",[op])
-  IDENTP kind =>
+  ident? kind =>
     shiftFl => keyedSystemError("S2GE0008",[op])
     compHash(op,argl,body,(kind='hash => nil; kind),eqEtc,countFl)
   cacheCount:= kind

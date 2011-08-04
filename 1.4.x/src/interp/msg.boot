@@ -546,7 +546,7 @@ getMsgFTTag? msg == IFCAR member (IFCAR getMsgPosTagOb msg,_
  
 getMsgKey msg == msg.2
  
-getMsgKey? msg == IDENTP (val := getMsgKey msg) => val
+getMsgKey? msg == ident? (val := getMsgKey msg) => val
  
 getMsgArgL msg == msg.3
  

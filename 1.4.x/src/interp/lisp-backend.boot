@@ -583,7 +583,7 @@ for x in [
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
-    ['%ident?,  :'IDENTP],
+    ['%ident?,  :'ident?],
     ['%property,:'GET],
 
     -- string functions
@@ -690,10 +690,10 @@ getOpcodeExpander op ==
 ++ suitable for evaluation by the VM.
 expandToVMForm x ==
   x = '%false or x = '%nil => 'NIL
-  IDENTP x and (x' := x has %Rename) => x'
+  ident? x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
-  IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
+  ident? op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
   args' := expandToVMForm args
   sameObject?(op,op') and sameObject?(args,args') => x

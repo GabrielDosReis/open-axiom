@@ -102,7 +102,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
     for (p := [x,:y]) in fromAlist repeat
       x = $ => dollar := [[honestConform,:y]]
       x = 'Rep => rep := [['Rep,:y]]
-      IDENTP x => args := [dbInfoFindCat(conform,conArgTypes,p), :args]
+      ident? x => args := [dbInfoFindCat(conform,conArgTypes,p), :args]
       cons := [dbInfoTran(x,y), :cons]
     [:mySort args, :dollar, :rep, :mySort cons]
   sigAlist  := LASSOC(op,opAlist)
@@ -122,7 +122,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   bincount := 2
   for [con,:fns] in fromAlist repeat
     htSay '"\item"
-    if IDENTP con then
+    if ident? con then
         htSay '"\menuitemstyle{} {\em calls to} "
         if con ~= 'Rep then htSay '"{\em argument} "
         htSay con

@@ -914,7 +914,7 @@ mkRepititionAssoc l ==
  
 encodeItem x ==
   x is [op,:argl] => getCaps op
-  IDENTP x => symbolName x
+  ident? x => symbolName x
   STRINGIMAGE x
  
 getCaps x ==

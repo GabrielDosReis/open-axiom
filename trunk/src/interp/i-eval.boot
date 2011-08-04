@@ -71,7 +71,7 @@ mkEvalable form ==
         MKQ x
     [op,:[mkEvalable x for x in argl]]
   form=$EmptyMode => $Integer
-  IDENTP form and constructor?(form) => [form]
+  ident? form and constructor?(form) => [form]
   FBPIP form => BPINAME form
   form
 
@@ -102,8 +102,8 @@ evaluateType0 form ==
     builtinConstructor? op => [op,:[evaluateType arg for arg in argl]]
     constructor? op => evaluateType1 form
     nil
-  IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or builtinConstructor? form) =>
+  ident? form and niladicConstructorFromDB form => evaluateType [form]
+  ident? form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
 ++ Check for duplicate fields in a Union or Record domain form.
@@ -144,14 +144,14 @@ evaluateType form ==
     op='Enumeration => 
       -- only symbols, and they must not be repeated.
       for arg in argl repeat
-        IDENTP arg => nil
+        ident? arg => nil
         throwKeyedMsg("S2IL0031",nil)
       for [arg,:args] in tails argl repeat
         symbolMember?(arg,args) => throwKeyedMsg("S2IL0032",[arg])
       form
     evaluateFormAsType form
-  IDENTP form and niladicConstructorFromDB form => evaluateType [form]
-  IDENTP form and (constructor? form or builtinConstructor? form) =>
+  ident? form and niladicConstructorFromDB form => evaluateType [form]
+  ident? form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
   evaluateFormAsType form
 

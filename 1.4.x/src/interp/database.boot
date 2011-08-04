@@ -381,7 +381,7 @@ isDomainSubst u == main where
     u
   fn(x,alist) ==
     atom x =>
-      IDENTP x and symbolMember?(x,$PatternVariableList) and (s := findSub(x,alist)) => s
+      ident? x and symbolMember?(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
     [first x,:[fn(y,alist) for y in rest x]]
   findSub(x,alist) ==

@@ -30,6 +30,13 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
+--%
+--% Definitions in this file provide runtime support for the Boot
+--% language.  As such, some of the definitions (e.g. reverse, append, etc)
+--% use `unusual' style.  These functions are used in code generated
+--% by the Boot translator.  Others are handy library functions.
+--%
+
 import initial_-env
 namespace BOOTTRAN
 

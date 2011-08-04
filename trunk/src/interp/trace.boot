@@ -183,14 +183,14 @@ getTraceOption (x is [key,:l]) ==
   key='break =>
     null l => ['break,'before]
     opts := [selectOptionLC(y,'(before after),nil) for y in l]
-    and/[IDENTP y for y in opts] => ['break,:opts]
+    and/[ident? y for y in opts] => ['break,:opts]
     stackTraceOptionError ["S2IT0008",nil]
   key='restore =>
     null l => x
     stackTraceOptionError ["S2IT0009",[strconc('")",object2String key)]]
   key='only => ['only,:transOnlyOption l]
   key='within =>
-    l is [a] and IDENTP a => x
+    l is [a] and ident? a => x
     stackTraceOptionError ["S2IT0010",['")within"]]
   key in '(cond before after) =>
     key:=
@@ -356,9 +356,9 @@ coerceSpadFunValue2E(value) ==
   objValUnwrap coerceInteractive(objNewWrap(value,first $tracedSpadModemap),
     $OutputForm)
 
-isListOfIdentifiers l == and/[IDENTP x for x in l]
+isListOfIdentifiers l == and/[ident? x for x in l]
 
-isListOfIdentifiersOrStrings l == and/[IDENTP x or string? x for x in l]
+isListOfIdentifiersOrStrings l == and/[ident? x or string? x for x in l]
 
 getMapSubNames(l) ==
   subs:= nil

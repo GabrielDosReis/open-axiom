@@ -55,7 +55,7 @@ postTransform: %ParseTree -> %ParseForm
 postTransform y ==
   x:= y
   u:= postTran x
-  if u is ["%Comma",:l,[":",y,t]] and (and/[IDENTP x for x in l]) then u:=
+  if u is ["%Comma",:l,[":",y,t]] and (and/[ident? x for x in l]) then u:=
     [":",["LISTOF",:l,y],t]
   postTransformCheck u
   u
@@ -177,7 +177,7 @@ postAtom x ==
   x=0 => $Zero
   x=1 => $One
   x='T => "T$" -- rename T in spad code to T$
-  IDENTP x and niladicConstructorFromDB x => [x]
+  ident? x and niladicConstructorFromDB x => [x]
   x="," => "%Comma"
   x = "^" => "**"  -- always use `**' internally for exponentiation
   x
@@ -194,7 +194,7 @@ postBlockItemList l ==
 postBlockItem: %ParseTree -> %ParseForm
 postBlockItem x ==
   x:= postTran x
-  x is ["%Comma",:l,[":",y,t]] and (and/[IDENTP x for x in l]) =>
+  x is ["%Comma",:l,[":",y,t]] and (and/[ident? x for x in l]) =>
     [":",["LISTOF",:l,y],t]
   x
 
@@ -257,7 +257,7 @@ postMDef(t) ==
   [.,lhs,rhs] := t
   $InteractiveMode =>
     lhs := postTran lhs
-    not IDENTP lhs => throwKeyedMsg("S2IP0001",nil)
+    not ident? lhs => throwKeyedMsg("S2IP0001",nil)
     ["MDEF",lhs,nil,nil,postTran rhs]
   lhs:= postTran lhs
   [form,targetType]:=
@@ -328,7 +328,7 @@ postScripts t ==
 
 getScriptName: (%Symbol,%ParseTree, %Short) -> %ParseForm
 getScriptName(op,a,numberOfFunctionalArgs) ==
-  if not IDENTP op then
+  if not ident? op then
     postError ['"   ",op,'" cannot have scripts"]
   INTERNL("*",STRINGIMAGE numberOfFunctionalArgs,
     decodeScripts a,symbolName op)

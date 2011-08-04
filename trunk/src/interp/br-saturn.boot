@@ -1164,13 +1164,13 @@ htShowPageStarSaturn() ==
 ++ returns true if op designate a niladic constructor.  Note that
 ++ constructors are symbols whereas ordinary operations are strings.
 operationIsNiladicConstructor op ==
-  IDENTP op => niladicConstructorFromDB op
+  ident? op => niladicConstructorFromDB op
   false
 
 ++ Like operationIsNiladicConstructor() except that we just want
 ++ to know whether `op' is a constructor, arity is unimportant.
 operationIsConstructor op ==
-  IDENTP op => getDualSignatureFromDB op
+  ident? op => getDualSignatureFromDB op
   nil
 
 --------------> NEW DEFINITION (see br-op2.boot.pamphlet)
@@ -1240,7 +1240,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   $sig :=
     which = '"attribute" or which = '"constructor" => sig
     $conkind ~= '"package" => sig
-    symbolsUsed := [x for x in rest conform | IDENTP x]
+    symbolsUsed := [x for x in rest conform | ident? x]
     $DomainList := SETDIFFERENCE($DomainList,symbolsUsed)
     getSubstSigIfPossible sig
   -----------------------------------------------------------
@@ -1615,7 +1615,7 @@ bcConform1 form == main where
     atom form =>
       -- string literals, e.g. "failed", are constructor arguments
       -- too, until we fix that.
-      string? form or not (IDENTP form and isConstructorName form) =>
+      string? form or not (ident? form and isConstructorName form) =>
         s := 
           string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form

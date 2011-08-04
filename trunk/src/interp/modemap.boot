@@ -48,7 +48,7 @@ addDomain(domain,e) ==
   atom domain =>
     domain="$EmptyMode" => e
     domain="$NoValueMode" => e
-    not IDENTP domain or 2 < #(s:= STRINGIMAGE domain) and
+    not ident? domain or 2 < #(s:= STRINGIMAGE domain) and
       char "#" = stringChar(s,0) and char "#" = stringChar(s,1) => e
     symbolMember?(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e

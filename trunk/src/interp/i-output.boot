@@ -432,7 +432,7 @@ APP(u,x,y,d) ==
   appelse(u,x,y,d)
 
 atom2String x ==
-  IDENTP x => symbolName x
+  ident? x => symbolName x
   string? x => x
   stringer x
 
@@ -608,7 +608,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and
+  ident? op and not (op in '(_* _*_*) ) and
     char "*" = stringChar(symbolName op,0) => mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -1168,7 +1168,7 @@ maprinChk x ==
     $MatrixList is [[name,:value]] and y=name =>
       $MatrixList:=[]   -- we are pulling this one off
       maPrin ['EQUATNUM,n, deMatrix value]
-    IDENTP y => --------this part is never called
+    ident? y => --------this part is never called
       -- Not true: JHD 28/2/93
       -- m:=[[1,2,3],[4,5,6],[7,8,9]]
       -- mm:=[[m,1,0],[0,m,1],[0,1,m]]
@@ -1666,7 +1666,7 @@ printMap1(x,initialFlag) ==
 printBasic x ==
   x=$One => writeInteger(1,$algebraOutputStream)
   x=$Zero => writeInteger(0,$algebraOutputStream)
-  IDENTP x => writeString(symbolName x,$algebraOutputStream)
+  ident? x => writeString(symbolName x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)
 
@@ -2597,7 +2597,7 @@ primaryForm2String x ==
   x = nil => '""
   string? x => x
   x = $EmptyMode => specialChar 'quad
-  IDENTP x => 
+  ident? x => 
     x = "$" => '"%"
     x = "$$" => '"%%"
     symbolName x
@@ -2664,7 +2664,7 @@ minusForm2String x ==
 
 parms2String x ==
   null x => "()"
-  IDENTP x => x
+  ident? x => x
   x is [var] => var
   if x is ["tuple",:.] then x := rest x
   paren [parm xs for xs in tails x] where

@@ -93,7 +93,7 @@ homogeneousListToVector(t,l) ==
 
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==
-  IDENTP x and stringChar(symbolName x,0) = char "#"
+  ident? x and stringChar(symbolName x,0) = char "#"
  
 isSharpVarWithNum x ==
   not isSharpVar x => nil
@@ -231,7 +231,7 @@ get1(x,prop,e) ==
   LASSOC(prop,getProplist(x,e)) or get2(x,prop)
 
 get2(x,prop) ==
-  prop="modemap" and IDENTP x and constructor? x =>
+  prop="modemap" and ident? x and constructor? x =>
     (u := getConstructorModemapFromDB x) => [u]
     nil
   nil
@@ -303,13 +303,13 @@ isQuasiquote m ==
 ++ returns the inferred domain for the syntactic object t.
 getTypeOfSyntax t ==
   atom t => 
-    IDENTP t => '(Identifier)
+    ident? t => '(Identifier)
     (m := getBasicMode t) and not member(m,[$EmptyMode,$NoValueMode]) =>
       ["Literal",m]
     $Syntax
   [op,:.] := t
   op = "Mapping" => '(MappingAst)
-  op = "QUOTE" and #t = 2 and IDENTP second t => ["Literal",$Symbol]
+  op = "QUOTE" and #t = 2 and ident? second t => ["Literal",$Symbol]
   op = "IF" => '(IfAst)
   op = "REPEAT" => '(RepeatAst)
   op = "WHILE" => '(WhileAst)
@@ -483,7 +483,7 @@ stringPrefix?(pref,str) ==
 stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns nil if not a digit or other error.
-  if IDENTP str then str := symbolName str
+  if ident? str then str := symbolName str
   not (string?(str) and
     integer?(pos) and (pos >= 0) and (pos < #str)) => nil
   not digit?(d := stringChar(str,pos)) => nil
@@ -543,7 +543,7 @@ listOfPatternIds x ==
 
 isPatternVar v ==
   -- a pattern variable consists of a star followed by a star or digit(s)
-  IDENTP(v) and v in '(_*_* _*1 _*2 _*3 _*4 _*5 _*6 _*7 _*8 _*9 _*10
+  ident?(v) and v in '(_*_* _*1 _*2 _*3 _*4 _*5 _*6 _*7 _*8 _*9 _*10
     _*11 _*12 _*13 _*14 _*15 _*16 _*17 _*18 _*19 _*20) and true
 
 removeZeroOne x ==
@@ -872,7 +872,7 @@ isDefaultPackageName x ==
   stringChar(s,maxIndex s) = char "&"
 
 isDefaultPackageForm? x ==
-  x is [op,:.] and IDENTP op and isDefaultPackageName op
+  x is [op,:.] and ident? op and isDefaultPackageName op
 
 makeDefaultPackageName x ==
   makeSymbol strconc(x,'"&")

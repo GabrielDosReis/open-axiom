@@ -118,7 +118,7 @@ htSayArgument t == --called only for operations not for constructors
       htSaySaturn '"{\em \%}"
     htSayStandard '"{\em $}"
     htSaySaturn '"{\em \%}"
-  not IDENTP t => bcConform(t,true)
+  not ident? t => bcConform(t,true)
   k := position(t,$conargs)
   if k > -1 then
     typeOfArg := (rest $signature).k
@@ -419,7 +419,7 @@ kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   (op := first x) is '_$ => '_$
   op is 'local => second x
   op is ":" => [":",second x,fn third x]
-  IDENTP op and isConstructorName op => [fn y for y in x]
+  ident? op and isConstructorName op => [fn y for y in x]
   integer? op => op
   op is 'QUOTE and atom second x => second x
   x
@@ -581,7 +581,7 @@ modemap2SigConds conds ==
   [conds]
 
 hasPatternVar x ==
-  IDENTP x and (x ~= "**") => isPatternVar x
+  ident? x and (x ~= "**") => isPatternVar x
   atom x => false
   or/[hasPatternVar y for y in x]
 

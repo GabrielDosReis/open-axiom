@@ -1791,17 +1791,14 @@
 
 (DEFUN |shoeFluids| (|x|)
   (COND
-    ((NULL |x|) NIL)
-    ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|)) (LIST |x|))
-    ((ATOM |x|) NIL)
-    ((AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)) NIL)
+    ((AND (|ident?| |x|) (|bfBeginsDollar| |x|)) (LIST |x|))
+    ((|atomic?| |x|) NIL)
     (T (|append| (|shoeFluids| (CAR |x|)) (|shoeFluids| (CDR |x|))))))
 
 (DEFUN |shoeATOMs| (|x|)
   (COND
-    ((NULL |x|) NIL)
-    ((SYMBOLP |x|) (LIST |x|))
-    ((ATOM |x|) NIL)
+    ((|ident?| |x|) (LIST |x|))
+    ((|atomic?| |x|) NIL)
     (T (|append| (|shoeATOMs| (CAR |x|)) (|shoeATOMs| (CDR |x|))))))
 
 (DEFUN |isDynamicVariable| (|x|)

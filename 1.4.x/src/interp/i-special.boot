@@ -63,7 +63,7 @@ upADEF t ==
   t isnt [.,[vars,types,.,body],pred,.] => nil
   -- do some checking on what we got
   for var in vars repeat
-    if not IDENTP(var) then throwKeyedMsg("S2IS0057",[var])
+    if not ident?(var) then throwKeyedMsg("S2IS0057",[var])
   -- unabbreviate types
   types := [(if t then evaluateType unabbrev t else nil) for t in types]
   -- we do not allow partial types
@@ -502,7 +502,7 @@ upLoopIters itrl ==
 upLoopIterIN(iter,index,s) ==
   iterMs := bottomUp s
 
-  not IDENTP index =>  throwKeyedMsg("S2IS0005",[index])
+  not ident? index =>  throwKeyedMsg("S2IS0005",[index])
 
   if $genValue and first iterMs is ['Union,:.] then
     v := coerceUnion2Branch getValue s
@@ -529,7 +529,7 @@ upLoopIterIN(iter,index,s) ==
   mkIteratorVariable index
 
 upLoopIterSTEP(index,lower,step,upperList) ==
-  not IDENTP index => throwKeyedMsg("S2IS0005",[index])
+  not ident? index => throwKeyedMsg("S2IS0005",[index])
   ltype := IFCAR bottomUpUseSubdomain(lower)
   not (typeIsASmallInteger(ltype) or isEqualOrSubDomain(ltype,$Integer))=>
     throwKeyedMsg("S2IS0007",['"lower"])
@@ -1114,7 +1114,7 @@ upDeclare t ==
   packageForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'package],op)
   getAtree(op,"callingFunction") =>
     -- This isn't a real declaration, rather a field specification.
-    not IDENTP lhs => throwKeyedMsg("S2IE0020",nil)
+    not ident? lhs => throwKeyedMsg("S2IE0020",nil)
     -- ??? When we come to support field spec as type, change this.
     putValue(op,objNewWrap([":",lhs,mode],mode))
     putModeSet(op,[mode])
@@ -1197,7 +1197,7 @@ replaceSharps(x,d) ==
 
 isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
-  IDENTP form and (val := (
+  ident? form and (val := (
     get(form,'value,$InteractiveFrame) or _
     (cons?($env) and get(form,'value,$env)) or _
     (cons?($e) and get(form,'value,$e)))) and
@@ -1224,7 +1224,7 @@ evalCategory(d,c) ==
   isPartialMode d => true            -- maybe too generous
   -- If this is a local variable then, its declared type 
   -- must imply category `c' satisfaction.
-  IDENTP d and (m := getmode(d,$env)) => categoryImplies(m,c)
+  ident? d and (m := getmode(d,$env)) => categoryImplies(m,c)
   ofCategory(d,c)
 
 isOkInterpMode m ==
@@ -1610,7 +1610,7 @@ putPvarModes(pattern,m) ==
   -- Puts the modes for the pattern variables into $env
   m isnt ["List",um] => throwKeyedMsg("S2IS0030",nil)
   for pvar in pattern repeat
-    IDENTP pvar => (not (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
+    ident? pvar => (not (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
     pvar is ['_:,var] =>
       null (var=$quadSymbol) and put(var,"mode",m,$env)
     pvar is ['_=,var] =>
@@ -1632,7 +1632,7 @@ evalis(op,[a,pattern],mode) ==
 isLocalPred pattern ==
   -- returns true if this predicate is to be compiled
   for pat in pattern repeat
-    IDENTP pat and isLocallyBound pat => return true
+    ident? pat and isLocallyBound pat => return true
     pat is [":",var] and isLocallyBound var => return true
     pat is ["=",var] and isLocallyBound var => return true
 
@@ -1641,7 +1641,7 @@ compileIs(val,pattern) ==
   --  into local variables of the function
   vars:= nil
   for pat in rest pattern repeat
-    IDENTP(pat) and isLocallyBound pat => vars:=[pat,:vars]
+    ident?(pat) and isLocallyBound pat => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
   predCode:=["%LET",g:=gensym(),["isPatternMatch",
@@ -1693,7 +1693,7 @@ isPatMatch(l,pats) ==
       $subs := [[var],:$subs]
     $subs:='failed
   pats is [pat,:restPats] =>
-    IDENTP pat =>
+    ident? pat =>
       $subs:=[[pat,:first l],:$subs]
       isPatMatch(rest l,restPats)
     pat is ["=",var] =>
@@ -1754,7 +1754,7 @@ up%LET t ==
     throwKeyedMsg("S2IS0027",[obj])
   var in '(% %%) =>               -- for history
     throwKeyedMsg("S2IS0027",[var])
-  (IDENTP var) and not (var in '(true false elt QUOTE)) =>
+  (ident? var) and not (var in '(true false elt QUOTE)) =>
     var ~= (var' := unabbrev(var)) =>  -- constructor abbreviation
       throwKeyedMsg("S2IS0028",[var,var'])
     if get(var,'isInterpreterFunction,$e) then
@@ -2036,7 +2036,7 @@ getInterpMacroNames() ==
 
 isInterpMacro name ==
   -- look in local and then global environment for a macro
-  not IDENTP name => nil
+  not ident? name => nil
   symbolMember?(name,$specialOps) => nil
   (m := get("--macros--",name,$env)) => m
   (m := get("--macros--",name,$e))   => m
@@ -2051,7 +2051,7 @@ upQUOTE t ==
   t isnt [op,expr] => nil
   ms:= list
     m:= getBasicMode expr => m
-    IDENTP expr =>
+    ident? expr =>
 --    $useSymbolNotVariable => $Symbol
       getTarget t = $Identifier => $Identifier
       ['Variable,expr]

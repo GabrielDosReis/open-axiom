@@ -425,7 +425,7 @@ translateToplevel(b,export?) ==
   b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
     %Signature(op,t) => [genDeclaration(op,t)]
-    %Definition(op,args,body) => rest bfDef(op,args,body)
+    %Definition(op,args,body) => bfDef(op,args,body).args
 
     %Module(m,ns,ds) =>
       $currentModuleName := m 

@@ -126,7 +126,7 @@ compareSigEqual(s,t,dollar,domain) ==
         vector? domain =>
           instantiationArgs(domain).(POSN1(t,$FormalMapVariableList))
         domain.args.(POSN1(t,$FormalMapVariableList))
-      string? t and IDENTP s => (s := symbolName s; t)
+      string? t and ident? s => (s := symbolName s; t)
       nil
     s is '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
@@ -261,7 +261,7 @@ defaultingFunction op ==
   not vector? dom => false
   not (#dom > 0) => false
   canonicalForm dom isnt [packageName,:.] => false
-  not IDENTP packageName => false
+  not ident? packageName => false
   isDefaultPackageName packageName
 
 lookupInAddChain(op,sig,addFormDomain,dollar) ==

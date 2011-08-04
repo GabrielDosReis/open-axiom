@@ -194,7 +194,7 @@ simplifyVMForm x ==
   x
  
 subrname u ==
-  IDENTP u => u
+  ident? u => u
   COMPILED_-FUNCTION_-P u or MBPIP u => BPINAME u
   nil
  
@@ -400,7 +400,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(FUNCALL
-    SPADfirst ASH IDENTP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+    SPADfirst ASH FLOAT_-RADIX FLOAT FLOAT_-SIGN
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
@@ -478,7 +478,7 @@ isVMConstantForm form ==
 
 ++ Return the set of free variables in the VM form `form'.
 findVMFreeVars form ==
-  IDENTP form => [form]
+  ident? form => [form]
   form isnt [op,:args] => nil  
   op is "QUOTE" => nil
   vars := union/[findVMFreeVars arg for arg in args]
@@ -498,7 +498,7 @@ varIsAssigned(var,form) ==
 ++ Return the list of variables referenced in `expr'.  
 dependentVars expr == main(expr,nil) where
   main(x,vars) ==
-    IDENTP x =>
+    ident? x =>
       symbolMember?(x,vars) => vars
       [x,:vars]
     atomic? x => vars
@@ -528,7 +528,7 @@ canInlineVarDefinition(var,expr,body) ==
   -- If the initializer is a variable and the body is
   -- a series of choices with side-effect free predicates, then
   -- no harm is done by removing the local `var'.
-  IDENTP expr and body is ['%when,:branches] =>
+  ident? expr and body is ['%when,:branches] =>
     and/[sideEffectFree? pred for [pred,:.] in branches]
   false
 

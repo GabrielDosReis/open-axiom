@@ -111,7 +111,7 @@ mkAtree1 x ==
       v := mkAtreeNode $immediateDataSymbol
       putValue(v,getBasicObject x)
       v
-    IDENTP x => mkAtreeNode x
+    ident? x => mkAtreeNode x
     keyedSystemError("S2II0002",[x])
   x is [op,:argl] => mkAtree2(x,op,argl)
   systemErrorHere ["mkAtree1",x]
@@ -319,7 +319,7 @@ collectDefTypesAndPreds args ==
   --   slot 2: a predicate for all arguments
   pred := types := vars := nil
   junk :=
-    IDENTP args =>
+    ident? args =>
       types := [nil]
       vars  := [args]
     args is [":",var,type] =>
@@ -362,7 +362,7 @@ mkAtreeValueOf l ==
 
 mkAtreeValueOf1 l ==
   null l or atom l or null rest l => l
-  l is ["valueOf",u] and IDENTP u =>
+  l is ["valueOf",u] and ident? u =>
     v := mkAtreeNode $immediateDataSymbol
     putValue(v,get(u,"value",$InteractiveFrame) or
       objNewWrap(u,['Variable,u]))

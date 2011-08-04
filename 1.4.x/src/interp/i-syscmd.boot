@@ -159,7 +159,7 @@ selectOptionLC(x,l,errorFunction) ==
 
 selectOption(x,l,errorFunction) ==
   member(x,l) => x                   --exact spellings are always OK
-  not IDENTP x =>
+  not ident? x =>
     errorFunction => FUNCALL(errorFunction,x,u)
     nil
   u := [y for y in l | stringPrefix?(PNAME x,PNAME y)]
@@ -985,7 +985,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     strconc('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
   if atom labmode then labmode := [labmode]
-  IDENTP expr and getConstructorKindFromDB expr = "domain" =>
+  ident? expr and getConstructorKindFromDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
     outputFormat(expr,objMode(u))]
@@ -1577,7 +1577,7 @@ restoreHistory(fn) ==
   -- uses fn $historyFileType to recover an old session
   -- if fn = nil, then use $oldHistoryFileName
   if null fn then fn' := $oldHistoryFileName
-  else if fn is [fn'] and IDENTP(fn') then fn' := fn'
+  else if fn is [fn'] and ident?(fn') then fn' := fn'
        else throwKeyedMsg("S2IH0023",[fn'])
   restfile := makeHistFileName(fn')
   null MAKE_-INPUT_-FILENAME restfile =>
@@ -2368,7 +2368,7 @@ undo(l) ==
   n :=
     null l => -1
     first l
-  if IDENTP n then
+  if ident? n then
     n := readInteger PNAME n
     if not integer? n then userError '"undo argument must be an integer"
   $InteractiveFrame := undoSteps(undoCount n,undoWhen)

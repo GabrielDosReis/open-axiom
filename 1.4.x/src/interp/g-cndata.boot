@@ -56,7 +56,7 @@ augmentLowerCaseConTable x ==
   tableValue($lowerCaseConTb,y) := item
 
 getCDTEntry(info,isName) ==
-  not IDENTP info => nil
+  not ident? info => nil
   (entry := tableValue($lowerCaseConTb,info)) =>
     [name,abb,:.] := entry
     isName and sameObject?(name,info) => entry
@@ -175,7 +175,7 @@ isNameOfType x ==
  
 unabbrev1(u,modeIfTrue) ==
   atom u =>
-    not IDENTP u => u                    -- surely not constructor abbrev
+    not ident? u => u                    -- surely not constructor abbrev
     modeIfTrue =>
       d:= isDomainValuedVariable u => u
       a := abbreviation? u =>
