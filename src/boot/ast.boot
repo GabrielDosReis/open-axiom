@@ -1081,22 +1081,20 @@ bfIf(a,b,c)==
 bfExit(a,b)==  
   ["COND",[a,["IDENTITY",b]]]
  
+bfFlattenSeq l ==
+  l = nil => l
+  [x,:xs] := l
+  x isnt [.,:.] =>
+    xs = nil => l
+    bfFlattenSeq xs
+  x.op is 'PROGN => bfFlattenSeq [:x.args,:xs]
+  [x,:bfFlattenSeq xs]
+
 bfMKPROGN l==
-  a := [:bfFlattenSeq c for c in tails l]
-  a = nil => nil
-  rest a = nil => first a
-  ["PROGN",:a]
- 
-bfFlattenSeq x ==
-  x = nil => nil
-  f := first x
-  atom f =>
-    rest x => nil
-    [f]
-  f is ["PROGN",:.] =>
-    rest x => [i for i in rest f| not atom i]
-    rest f
-  [f]
+  l := bfFlattenSeq l
+  l = nil => nil
+  l is [.] => first l
+  ["PROGN",:l]
  
 ++ The body of each branch of a COND form is an implicit PROGN.  
 ++ For readability purpose, we want to refrain from including

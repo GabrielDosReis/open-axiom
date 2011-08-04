@@ -2014,57 +2014,26 @@
 (DEFUN |bfExit| (|a| |b|)
   (LIST 'COND (LIST |a| (LIST 'IDENTITY |b|))))
 
-(DEFUN |bfMKPROGN| (|l|)
-  (PROG (|a|)
-    (RETURN
-      (PROGN
-        (SETQ |a|
-              (LET ((|bfVar#1| NIL) (|bfVar#2| NIL) (|c| |l|))
-                (LOOP
-                  (COND
-                    ((ATOM |c|) (RETURN |bfVar#1|))
-                    (T (LET ((|bfVar#3|
-                                 (|copyList| (|bfFlattenSeq| |c|))))
-                         (COND
-                           ((NULL |bfVar#3|) NIL)
-                           ((NULL |bfVar#1|) (SETQ |bfVar#1| |bfVar#3|)
-                            (SETQ |bfVar#2| (|lastNode| |bfVar#1|)))
-                           (T (RPLACD |bfVar#2| |bfVar#3|)
-                              (SETQ |bfVar#2| (|lastNode| |bfVar#2|)))))))
-                  (SETQ |c| (CDR |c|)))))
-        (COND
-          ((NULL |a|) NIL)
-          ((NULL (CDR |a|)) (CAR |a|))
-          (T (CONS 'PROGN |a|)))))))
-
-(DEFUN |bfFlattenSeq| (|x|)
-  (PROG (|f|)
+(DEFUN |bfFlattenSeq| (|l|)
+  (PROG (|xs| |x|)
     (RETURN
       (COND
-        ((NULL |x|) NIL)
-        (T (SETQ |f| (CAR |x|))
+        ((NULL |l|) |l|)
+        (T (SETQ |x| (CAR |l|)) (SETQ |xs| (CDR |l|))
            (COND
-             ((ATOM |f|) (COND ((CDR |x|) NIL) (T (LIST |f|))))
-             ((AND (CONSP |f|) (EQ (CAR |f|) 'PROGN))
-              (COND
-                ((CDR |x|)
-                 (LET ((|bfVar#2| NIL) (|bfVar#3| NIL)
-                       (|bfVar#1| (CDR |f|)) (|i| NIL))
-                   (LOOP
-                     (COND
-                       ((OR (ATOM |bfVar#1|)
-                            (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
-                        (RETURN |bfVar#2|))
-                       (T (AND (NOT (ATOM |i|))
-                               (COND
-                                 ((NULL |bfVar#2|)
-                                  (SETQ |bfVar#2| #0=(CONS |i| NIL))
-                                  (SETQ |bfVar#3| |bfVar#2|))
-                                 (T (RPLACD |bfVar#3| #0#)
-                                    (SETQ |bfVar#3| (CDR |bfVar#3|)))))))
-                     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
-                (T (CDR |f|))))
-             (T (LIST |f|))))))))
+             ((NOT (CONSP |x|))
+              (COND ((NULL |xs|) |l|) (T (|bfFlattenSeq| |xs|))))
+             ((EQ (CAR |x|) 'PROGN)
+              (|bfFlattenSeq| (|append| (CDR |x|) |xs|)))
+             (T (CONS |x| (|bfFlattenSeq| |xs|)))))))))
+
+(DEFUN |bfMKPROGN| (|l|)
+  (PROGN
+    (SETQ |l| (|bfFlattenSeq| |l|))
+    (COND
+      ((NULL |l|) NIL)
+      ((AND (CONSP |l|) (NULL (CDR |l|))) (CAR |l|))
+      (T (CONS 'PROGN |l|)))))
 
 (DEFUN |bfWashCONDBranchBody| (|x|)
   (PROG (|y|)
