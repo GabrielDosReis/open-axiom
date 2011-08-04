@@ -1,3 +1,8 @@
+2011-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfFlattenSeq): Rewrite.
+	(bfMKPROGN): Tidy.
+
 2011-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfSTEP): Synthetize artificial variable for
