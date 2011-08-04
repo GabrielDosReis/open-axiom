@@ -367,6 +367,7 @@
   (PROG (|suc| |ex| |pred| |final| |g2| |inc| |g1| |initval| |initvar|)
     (RETURN
       (PROGN
+        (COND ((EQ |id| 'DOT) (SETQ |id| (|bfGenSymbol|))))
         (SETQ |initvar| (LIST |id|))
         (SETQ |initval| (LIST |fst|))
         (SETQ |inc|

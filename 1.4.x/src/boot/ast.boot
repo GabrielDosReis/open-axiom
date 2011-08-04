@@ -267,6 +267,8 @@ bfForTree(OP,lhs,whole)==
  
  
 bfSTEP(id,fst,step,lst)==
+  if id is "DOT" then
+    id := bfGenSymbol()
   initvar := [id]
   initval := [fst]
   inc :=

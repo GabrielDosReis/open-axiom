@@ -1,3 +1,8 @@
+2011-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfSTEP): Synthetize artificial variable for
+	unnamed loop index.
+
 2011-07-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfIS1): Tidy test for cons cells.
