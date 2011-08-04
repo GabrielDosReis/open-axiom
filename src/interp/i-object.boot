@@ -116,7 +116,7 @@ getValueNormalForm obj ==
   atom val => val
   [op,:argl] := val
   op is "WRAPPED" => MKQ argl
-  IDENTP op and isConstructorName op => 
+  ident? op and isConstructorName op => 
     isConceptualCategory objMode obj => instantiationNormalForm(op,argl)
     MKQ val
   -- This is not the final value of `obj', rather something that needs
@@ -127,7 +127,7 @@ instantiationNormalForm(op,argl) ==
   [op,:[normalVal for arg in argl]] where normalVal() ==
      atom arg => arg
      [h,:t] := arg
-     IDENTP h and isConstructorName h => instantiationNormalForm(h,t)
+     ident? h and isConstructorName h => instantiationNormalForm(h,t)
      MKQ arg
 
 

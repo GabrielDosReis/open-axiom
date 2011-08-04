@@ -183,6 +183,7 @@
 	   "CONCAT"
 	   "$EditorProgram"
 
+	   "ident?"
 	   ;; numeric support
 	   "%fNaN?"
            ))
@@ -1319,6 +1320,11 @@
 #+ :sbcl
 (eval-when (:load-toplevel :execute)
    (pushnew #'shoe-provide-module sb-ext:*module-provider-functions*))
+
+;; Return true if `x' designates an identifier.
+(defun |ident?| (x)
+  (and (symbolp x)
+       (not (null x))))
 
 ;; 
 ;; -*-* Numerics support -*-

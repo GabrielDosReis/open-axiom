@@ -400,5 +400,5 @@ obSearch x ==
   vec:= OBARRAY()
   pattern:= PNAME x
   [y for i in 0..maxIndex OBARRAY() |
-    (IDENTP (y := vec.i) or CVEC y) and match?(pattern,COPY y)]
+    (ident? (y := vec.i) or CVEC y) and match?(pattern,COPY y)]
  

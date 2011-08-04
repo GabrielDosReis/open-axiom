@@ -342,7 +342,7 @@ prefix2String0 form ==
 --  atom form =>
 --    form=$EmptyMode or form=$quadSymbol => formWrapId specialChar 'quad
 --    string? form => formWrapId form
---    IDENTP form => 
+--    ident? form => 
 --      constructor? form => app2StringWrap(formWrapId form, [form])
 --      formWrapId form
 --    formWrapId STRINGIMAGE form
@@ -385,7 +385,7 @@ constructorName con ==
 form2String1 u ==
   atom u => 
     u=$EmptyMode or u=$quadSymbol => formWrapId specialChar 'quad
-    IDENTP u =>
+    ident? u =>
       constructor? u => app2StringWrap(formWrapId u, [u])
       formWrapId u
     SUBRP u => formWrapId BPINAME u
@@ -396,7 +396,7 @@ form2String1 u ==
     -- string literals (e.g. "failed") masquerading as constructors
     stringImage op
   op='Join or op= 'mkCategory => formJoin1(op,argl)
-  $InteractiveMode and IDENTP op and (u:= getConstructorAbbreviationFromDB op) =>
+  $InteractiveMode and ident? op and (u:= getConstructorAbbreviationFromDB op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
     op = "NTuple"  => [ form2String1 first argl, '"*"]
     op = "Map"     => ['"(",:formatSignature0([argl.1,argl.0],'ELT),'")"]
@@ -460,7 +460,7 @@ formWrapId id ==
 formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
   fn(x,m) ==
     x=$EmptyMode or x=$quadSymbol => specialChar 'quad
-    string?(x) or IDENTP(x) => x
+    string?(x) or ident?(x) => x
     x is ['_:,:.] => form2String1 x
     isValidType(m) and cons?(m) and
       (getConstructorKindFromDB first(m) = "domain") =>
@@ -624,7 +624,7 @@ formTuple2String argl ==
   string
 
 isInternalFunctionName(op) ==
-  (not IDENTP(op)) or (op = "*") or (op = "**") => nil
+  (not ident?(op)) or (op = "*") or (op = "**") => nil
   op' := symbolName op
   1 = #op' or char "*" ~= stringChar(op',0) => nil
   -- if there is a semicolon in the name then it is the name of
@@ -746,7 +746,7 @@ object2String x ==
   toString x
 
 object2Identifier x ==
-  IDENTP x  => x
+  ident? x  => x
   makeSymbol object2String x
 
 blankList x == "append"/[[BLANK,y] for y in x]
@@ -792,7 +792,7 @@ form2Fence1 x ==
     op = "QUOTE" => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
     ['"(", FORMAT(nil, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
   null x => '""
-  IDENTP x => FORMAT(nil, '"|~a|", x)
+  ident? x => FORMAT(nil, '"|~a|", x)
   ['"  ", x]
 
 form2FenceQuote x ==

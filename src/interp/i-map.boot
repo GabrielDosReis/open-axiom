@@ -58,7 +58,7 @@ makeInternalMapName(userName,numArgs,numMms,extraPart) ==
 
 isInternalMapName name ==
   -- this only returns true or false as a "best guess"
-  (not IDENTP(name)) or (name = "*") or (name = "**") => false
+  (not ident?(name)) or (name = "*") or (name = "**") => false
   sz := # (name' := symbolName name)
   (sz < 7) or (char "*" ~= name'.0) => false
   not digit? name'.1 => false
@@ -115,7 +115,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
 
   -- get the formal parameters. These should only be atomic symbols
   -- that are not numbers.
-  parameters := [p for p in rest lhs | IDENTP(p)]
+  parameters := [p for p in rest lhs | ident?(p)]
 
   -- see if a signature has been given. if anything in mapsig is nil,
   -- then declaration was omitted.
@@ -222,7 +222,7 @@ deleteMap(op,pattern,map) ==
 
 getUserIdentifiersIn body ==
   null body => nil
-  IDENTP body =>
+  ident? body =>
     isSharpVarWithNum body => nil
     body = $ClearBodyToken => nil
     [body]
@@ -335,7 +335,7 @@ makeRuleForm(op,pattern)==
 mkFormalArg(x,s) ==
   isConstantArgument x => ["SUCHTHAT",s,["=",s,x]]
   isPatternArgument x => ["SUCHTHAT",s,["is",s,x]]
-  IDENTP x =>
+  ident? x =>
     y:= LASSOC(x,$sl) => ["SUCHTHAT",s,["=",s,y]]
     $sl:= [[x,:s],:$sl]
     s
@@ -400,7 +400,7 @@ displayRule(op,rule) ==
 
 outputFormat(x,m) ==
   -- this is largely junk and is being phased out
-  IDENTP m => x
+  ident? m => x
   m=$OutputForm or m=$EmptyMode => x
   categoryForm?(m) => x
   isMapExpr x => x
@@ -478,8 +478,8 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
     sl
   x is ["is",a,b] => [[a,:b],:sl]
   x is ["=",a,b] =>
-    IDENTP a and not CONTAINED(a,b) => [[a,:b],:sl]
-    IDENTP b and not CONTAINED(b,a) => [[b,:a],:sl]
+    ident? a and not CONTAINED(a,b) => [[a,:b],:sl]
+    ident? b and not CONTAINED(b,a) => [[b,:a],:sl]
     sl
   sl
 
@@ -1009,7 +1009,7 @@ findLocalVars(op,form) ==
 findLocalVars1(op,form) ==
   -- sets the two lists $localVars and $freeVars
   atom form =>
-    not IDENTP form or isSharpVarWithNum form => nil
+    not ident? form or isSharpVarWithNum form => nil
     isLocallyBound form or isFreeVar form => nil
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
@@ -1098,7 +1098,7 @@ mkFreeVar(op,var) ==
 
 listOfVariables pat ==
   -- return a list of the variables in pat, which is an "is" pattern
-  IDENTP pat => (pat='_. => nil ; [pat])
+  ident? pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
     (var='_. => nil ; [var])
   cons? pat => removeDuplicates [:listOfVariables p for p in pat]

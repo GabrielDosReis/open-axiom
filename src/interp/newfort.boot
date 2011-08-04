@@ -802,7 +802,7 @@ fortPre1 e ==
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
-    (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
+    (ident? rand or string? rand) and exponent=2 => ["*", rand, rand]
     (integer? exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>

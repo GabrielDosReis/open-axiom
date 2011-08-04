@@ -369,7 +369,7 @@ looksLikeDomainForm x ==
   and/[p for key in rest coSig for arg in rest x] where
     p() ==
       key => looksLikeDomainForm arg
-      not IDENTP arg
+      not ident? arg
 
 spadSys(x) ==   --called by \spadsyscom{x}
   s := PNAME x
@@ -716,7 +716,7 @@ dbWordFrom(l,i) ==
   [buf,k]
 
 conLowerCaseConTran x ==
-  IDENTP x => IFCAR tableValue($lowerCaseConTb, x) or x
+  ident? x => IFCAR tableValue($lowerCaseConTb, x) or x
   atom x   => x
   [conLowerCaseConTran y for y in x]
 
@@ -725,7 +725,7 @@ string2Constructor x ==
   IFCAR tableValue($lowerCaseConTb, makeSymbol DOWNCASE x) or x
 
 conLowerCaseConTranTryHarder x ==
-  IDENTP x => IFCAR tableValue($lowerCaseConTb,DOWNCASE x) or x
+  ident? x => IFCAR tableValue($lowerCaseConTb,DOWNCASE x) or x
   atom x   => x
   [conLowerCaseConTranTryHarder y for y in x]
 

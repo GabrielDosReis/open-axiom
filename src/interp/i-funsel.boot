@@ -1692,7 +1692,7 @@ ofCategory(dom,cat) ==
   -- the result is true or nil
   $Subst:local:= nil
   $hope:local := nil
-  IDENTP dom => nil
+  ident? dom => nil
   cat is ['Join,:cats] => and/[ofCategory(dom,c) for c in cats]
   (hasCaty(dom,cat,nil) isnt 'failed)
 

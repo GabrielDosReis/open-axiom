@@ -413,7 +413,7 @@ dcCats con ==
       [:bright '"if",:pred2English $predvec.(predNumber - 1)]
     extra :=
       null (info := catinfo.i) => nil
-      IDENTP info => bright '"package"
+      ident? info => bright '"package"
       bright '"instantiated"
     sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
  
@@ -430,7 +430,7 @@ dcCats1 con ==
       [:bright '"if",:pred2English $predvec.(predNumber - 1)]
     extra :=
       null (info := catinfo.i) => nil
-      IDENTP info => bright '"package"
+      ident? info => bright '"package"
       bright '"instantiated"
     sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
  

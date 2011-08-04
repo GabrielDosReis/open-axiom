@@ -97,7 +97,7 @@ evalSlotDomain(u,dollar) ==
              --lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
       vector? v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
-      IDENTP v and constructor? v 
+      ident? v and constructor? v 
         or v in '(Record Union Mapping Enumeration) =>
            lazyDomainSet(y,dollar,u)        --new style has lazyt
       y
@@ -287,7 +287,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
-      IDENTP entry =>
+      ident? entry =>
         cat := vectorRef(catVec,i)
         packageForm := nil
         if not property(entry,'LOADED) then loadLib entry
@@ -366,7 +366,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
-      IDENTP entry =>
+      ident? entry =>
         cat := first node
         packageForm := nil
         if not property(entry,'LOADED) then loadLib entry
@@ -449,7 +449,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   string? a =>
     string? s => a = s
     s is ['QUOTE,y] and PNAME y = a
-    IDENTP s and symbolName s = a
+    ident? s and symbolName s = a
   atom a =>  a = s
   op := opOf a
   op is 'NRTEVAL => s = nrtEval(second a,domain)
@@ -609,7 +609,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
 ++ resolved to constructor calls.  Note: it is assumed that no
 ++ such resolution has already occured.
 resolveNiladicConstructors form ==
-  IDENTP form and niladicConstructorFromDB form => [form]
+  ident? form and niladicConstructorFromDB form => [form]
   atom form => form
   form is ["QUOTE",:.] => form
   for args in tails rest form repeat

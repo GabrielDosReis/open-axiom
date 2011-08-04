@@ -578,7 +578,7 @@ brightPrint(x,out == $OutputStream) ==
 
 brightPrint0(x,out == $OutputStream) ==
   $texFormatting => brightPrint0AsTeX(x,out)
-  if IDENTP x then x := symbolName x
+  if ident? x then x := symbolName x
   not string? x => brightPrintHighlight(x,out)
 
   -- if the first character is a backslash and the second is a percent sign,
@@ -644,7 +644,7 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
   brightPrintHighlight(x,out)
 
 blankIndicator x ==
-  if IDENTP x then x := symbolName x
+  if ident? x then x := symbolName x
   not string? x or maxIndex x < 1 => nil
   stringChar(x,0) = char "%" and stringChar(x,1) = char "x" =>
     maxIndex x > 1 => readInteger subString(x,2)
@@ -660,7 +660,7 @@ brightPrint1(x, out == $OutputStream) ==
 brightPrintHighlight(x, out == $OutputStream) ==
   $texFormatting => brightPrintHighlightAsTeX(x,out)
   x is [key,:rst] =>
-    if IDENTP key then key := symbolName key
+    if ident? key then key := symbolName key
     key is '"%m" => mathprint(rst,out)
     string? key and key in '("%p" "%s") => PRETTYPRIN0(rst,out)
     key is '"%ce" => brightPrintCenter(rst,out)
@@ -677,7 +677,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
       sayString('" . ",out)
       brightPrint1(la,out)
     sayString('")",out)
-  IDENTP x => sayString(symbolName x,out)
+  ident? x => sayString(symbolName x,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
   vector? x => sayString('"UNPRINTABLE",out)
@@ -704,7 +704,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
       sayString('" . ",out)
       brightPrint1(la,out)
     sayString('")",out)
-  IDENTP x => sayString(symbolName x,out)
+  ident? x => sayString(symbolName x,out)
   vector? x => sayString('"UNPRINTABLE",out)
   sayString(object2String x,out)
 
@@ -802,7 +802,7 @@ sayBrightlyLength1 x ==
   string? x and # x > 2 and stringChar(x,0) = char "%"
     and stringChar(x,1) = char "x" => readInteger subString(x,2)
   string? x => # x
-  IDENTP x => # symbolName x
+  ident? x => # symbolName x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
   vector? x => # '"UNPRINTABLE"

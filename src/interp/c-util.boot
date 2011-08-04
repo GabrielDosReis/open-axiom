@@ -508,14 +508,14 @@ lhsOfAssignment x ==
 getSuccessEnvironment(a,e) ==
   a is ["is",id,m] =>
     id := lhsOfAssignment id
-    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
+    ident? id and isDomainForm(m,$EmptyEnvironment) =>
       e:=put(id,"specialCase",m,e)
       currentProplist:= getProplist(id,e)
       [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
       newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
       addBinding(id,newProplist,e)
     e
-  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+  a is ["case",x,m] and (x := lhsOfAssignment x) and ident? x =>
     put(x,"condition",[a,:get(x,"condition",e)],e)
   a is ["and",:args] =>
     for form in args repeat
@@ -553,7 +553,7 @@ unionProperty(x,e) ==
   nil
 
 getInverseEnvironment(a,e) ==
-  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+  a is ["case",x,m] and (x := lhsOfAssignment x) and ident? x =>
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
     (get(x,"condition",e) is [["OR",:oldpred]]) and listMember?(a,oldpred) =>
@@ -685,7 +685,7 @@ diagnoseUnknownType(t,e) ==
     t
   ctor is "Enumeration" =>
     for t' in args repeat
-      IDENTP t' => nil
+      ident? t' => nil
       stackSemanticError(['"Enumerators must be symbols."], nil)
     -- Make sure we don't have repeated symbolic values
     for [sym,:syms] in tails args repeat
@@ -710,7 +710,7 @@ diagnoseUnknownType(t,e) ==
  
  
 isConstantId(name,e) ==
-  IDENTP name =>
+  ident? name =>
     pl:= getProplist(name,e) =>
       (symbolLassoc("value",pl) or symbolLassoc("mode",pl) => false; true)
     true
@@ -736,7 +736,7 @@ makeLiteral(x,e) ==
   put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
-  IDENTP s and #(x:= symbolName s) > 2 and
+  ident? s and #(x:= symbolName s) > 2 and
     stringChar(x,0) = char "#" and stringChar(x,1) = char "#"
 
 ++ Return non-nil is the domain form `x' is a `subset' of domain
@@ -766,7 +766,7 @@ isDomainInScope(domain,e) ==
   domainList:= getDomainsInScope e
   atom domain =>
     symbolMember?(domain,domainList) => true
-    not IDENTP domain or isSomeDomainVariable domain => true
+    not ident? domain or isSomeDomainVariable domain => true
     false
   (name:= first domain)="Category" => true
   ASSQ(name,domainList) => true
@@ -781,7 +781,7 @@ isSimple x ==
  
 isSideEffectFree op ==
   op is ["elt",.,op'] => isSideEffectFree op'
-  not IDENTP op => false
+  not ident? op => false
   listMember?(op,$SideEffectFreeFunctionList) or constructor? op
  
 isAlmostSimple x ==
@@ -795,9 +795,9 @@ isAlmostSimple x ==
         op="has" => x
         op="is" => x
         op="%LET" =>
-          IDENTP y => (setAssignment [x]; y)
+          ident? y => (setAssignment [x]; y)
           (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
-        op = "case" and IDENTP y => x
+        op = "case" and ident? y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
         $assignmentList:= "failed"
       setAssignment x ==
@@ -864,7 +864,7 @@ genSomeVariable() ==
   INTERNL strconc('"##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
-  IDENTP x => [x]
+  ident? x => [x]
   x is [op,:l] => removeDuplicates ("append"/[listOfIdentifiersIn y for y in l])
   nil
  
@@ -1181,10 +1181,10 @@ $middleEndMacroList ==
 --middleEndExpand: %Form -> %Code
 middleEndExpand x ==
   x is '%false or x is '%nil => 'NIL
-  IDENTP x and (x' := x has %Rename) => x'
+  ident? x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
-  IDENTP op and (fun := getOpcodeExpander op) =>
+  ident? op and (fun := getOpcodeExpander op) =>
     middleEndExpand apply(fun,x,nil)
   symbol? op and symbolMember?(op,$middleEndMacroList) =>
     middleEndExpand MACROEXPAND_-1 x
@@ -1286,7 +1286,7 @@ replaceSimpleFunctions form ==
 ++ and body given by `body'.  If `body' is a forwarding function call, 
 ++ return the target function.  Otherwise, return nil.
 forwardingCall?(vars,body) ==
-  vars is [:vars',.] and body is [fun,: =vars'] and IDENTP fun => fun
+  vars is [:vars',.] and body is [fun,: =vars'] and ident? fun => fun
   nil
 
 
@@ -1320,7 +1320,7 @@ expandableDefinition?(vars,body) ==
 
     atomic? body => true
     [op,:args] := body
-    not IDENTP op or symbolMember?(op,$NonExpandableOperators) => false
+    not ident? op or symbolMember?(op,$NonExpandableOperators) => false
     and/[atomic? x for x in args] 
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
@@ -1510,7 +1510,7 @@ backendCompile2 code ==
 ++ returns all fuild variables contained in `x'.  Fuild variables are
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
-  IDENTP x and x ~= "$" and x ~= "$$" and
+  ident? x and x ~= "$" and x ~= "$$" and
     stringChar(symbolName x,0) = char "$" and
       not digit? stringChar(symbolName x,1) => x
   atomic? x => nil
@@ -1547,7 +1547,7 @@ noteSpecialVariable x ==
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 massageBackendCode: %Code -> %Void
 massageBackendCode x ==
-  IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
+  ident? x and isLispSpecialVariable x => noteSpecialVariable x
   atomic? x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
@@ -1558,7 +1558,7 @@ massageBackendCode x ==
       x.first := "LETT"
     massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
-      IDENTP second x => pushLocalVariable second x
+      ident? second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
         x.rest.first := CADADR x
@@ -1569,7 +1569,7 @@ massageBackendCode x ==
     -- special variable.
     u is 'SETQ and isLispSpecialVariable second x =>
       noteSpecialVariable second x
-  IDENTP u and GET(u,"ILAM") ~= nil =>
+  ident? u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
     massageBackendCode x
   u in '(LET LET_*) =>

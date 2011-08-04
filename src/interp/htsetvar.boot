@@ -301,7 +301,7 @@ translateYesNoToTrueFalse x ==
 chkNameList x ==
   u := bcString2ListWords x
   parsedNames := [ncParseFromString x for x in u]
-  and/[IDENTP x for x in parsedNames] => parsedNames
+  and/[ident? x for x in parsedNames] => parsedNames
   '"Please enter a list of identifiers separated by blanks"
 
 chkPosInteger s ==

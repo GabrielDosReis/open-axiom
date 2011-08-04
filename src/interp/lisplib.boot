@@ -782,7 +782,7 @@ isDomainConstructorForm(D,e) ==
  
 isFunctor x ==
   op:= opOf x
-  not IDENTP op => false
+  not ident? op => false
   $InteractiveMode =>
     builtinFunctorName? op => true
     getConstructorKindFromDB op in '(domain package)

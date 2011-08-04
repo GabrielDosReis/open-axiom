@@ -464,7 +464,7 @@ getImports conname == --called by mkUsersHashTable
   template := infovec.0
   u := [doImport(i,template)
           for i in 5..(maxIndex template) | test]  where
-    test() == template.i is [op,:.] and IDENTP op
+    test() == template.i is [op,:.] and ident? op
               and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
       x is [op,:args] =>
@@ -739,7 +739,7 @@ sublisFormal(args,exp,:options) == main where
         nd := lastNode r
         nd.rest := sublisFormal1(args,y,n)
       r
-    IDENTP x =>
+    ident? x =>
       j := or/[i for f in $formals for i in 0..n | sameObject?(f,x)] =>
           args.j
       x

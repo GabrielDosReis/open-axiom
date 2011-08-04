@@ -47,7 +47,7 @@ module astr where
 ncTag x ==
    atom x => ncBug('S2CB0031,[])
    x := first x
-   IDENTP x => x
+   ident? x => x
    atom x => ncBug('S2CB0031,[])
    first x
  
@@ -55,7 +55,7 @@ ncTag x ==
 ncAlist x ==
    atom x => ncBug('S2CB0031,[])
    x := first x
-   IDENTP x => nil
+   ident? x => nil
    atom x => ncBug('S2CB0031,[])
    rest x
 

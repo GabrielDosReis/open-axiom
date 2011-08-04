@@ -729,7 +729,7 @@ getUnderModeOf d ==
 deconstructT(t) ==
   -- M is a type, which may contain type variables
   -- results in a pair (type constructor . mode arguments)
-  KDR t and (op := first t) and IDENTP op and constructor? op =>
+  KDR t and (op := first t) and ident? op and constructor? op =>
     dt := destructT op
     args := [ x for d in dt for y in t | ( x := d and y ) ]
     c := [ x for d in dt for y in t | ( x := not d and y ) ]

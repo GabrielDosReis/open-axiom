@@ -122,7 +122,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
     op is "Enumeration" => x
-    IDENTP op and (constructor? op or builtinConstructor? op) =>
+    ident? op and (constructor? op or builtinConstructor? op) =>
       [op,:[encode(y,z,false) for y in x.args for z in compForm.args]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
@@ -139,7 +139,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
 listOfBoundVars form ==
 -- Only called from the function genDeltaEntry below
   form is '$ => []
-  IDENTP form and (u:=get(form,'value,$e)) =>
+  ident? form and (u:=get(form,'value,$e)) =>
     u:=u.expr
     builtinConstructor? KAR u => listOfBoundVars u
     [form]
@@ -157,7 +157,7 @@ listOfBoundVars form ==
 needToQuoteFlags?(sig,env) ==
   or/[selector?(t,env) for t in sig] where
     selector?(t,e) ==
-      IDENTP t and null get(t,"value",e)
+      ident? t and null get(t,"value",e)
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   $killOptimizeIfTrue => nil
@@ -176,7 +176,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
   if fun = nil and needToQuoteFlags?(sig,$e) then
      nsig := [quoteSelector tt for tt in sig] where
        quoteSelector(x) ==
-         not(IDENTP x) => x
+         not(ident? x) => x
          get(x,'value,$e) => x
          x='$ => x
          MKQ x
@@ -291,7 +291,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
 NRTinnerGetLocalIndex x ==
   atom x => x
   op := x.op
-  IDENTP op and (constructor? op or builtinConstructor? op) =>
+  ident? op and (constructor? op or builtinConstructor? op) =>
     NRTgetLocalIndex x
   op is "[||]" => NRTgetLocalIndex x
   NRTaddInner x

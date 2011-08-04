@@ -62,7 +62,7 @@ putCallInfo(t,op,arg,nargs) ==
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
   -- given variable. Returns nil if none.
-  string?(t) or IDENTP(t) => nil
+  string?(t) or ident?(t) => nil
   t = $Symbol => t
   t is ['Variable,u] =>
     (u = var) => t
@@ -264,7 +264,7 @@ bottomUp t ==
 
     bottomUpWithArgModesets(t,op,opName,argl,argModeSetList)
   m := getBasicMode t => [m]
-  IDENTP (id := getUnname t) =>
+  ident? (id := getUnname t) =>
     putModeSet(t,bottomUpIdentifier(t,id))
   keyedSystemError("S2GE0016",['"bottomUp",'"unknown object form"])
 

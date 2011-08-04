@@ -63,7 +63,7 @@ $COMBLOCKLIST := nil
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
 getVMType d ==
-  IDENTP d => 
+  ident? d => 
     d is "*" => d
     "%Thing"
   string? d => "%Thing"            -- literal flag parameter
@@ -102,12 +102,12 @@ getVMType d ==
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
 macrop f ==
-  IDENTP f and not null MACRO_-FUNCTION f
+  ident? f and not null MACRO_-FUNCTION f
 
 ++ returns true if `f' is bound to a function
 functionp: %Thing -> %Boolean
 functionp f ==
-  IDENTP f => FBOUNDP f and null MACRO_-FUNCTION f
+  ident? f => FBOUNDP f and null MACRO_-FUNCTION f
   function? f
 
 ++ returns true if `x' is contained in `y'.
