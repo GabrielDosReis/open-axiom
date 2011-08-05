@@ -105,8 +105,6 @@ shoeKeyWords == [  _
             ['"<=","LE" ], _
             ['">=","GE" ], _
             ['"=", "SHOEEQ"], _
-            ['"^", "NOTRETIRED"], _
-            ['"^=","SHOENERETIRED" ], _
             ['"~=","SHOENE" ], _
             ['"..","SEG" ], _
             ['"#", "LENGTH"], _
@@ -118,11 +116,8 @@ shoeKeyWords == [  _
             ['"<=>", "TDEF"], _
             ['"(", "OPAREN"], _
             ['")", "CPAREN"], _
-            ['"(|", "OBRACK"], _
-            ['"|)", "CBRACK"], _
             ['"[", "OBRACK"], _
             ['"]", "CBRACK"], _
-            ['"suchthat","BAR"], _
             ['"'", "QUOTE"], _
             ['"|", "BAR"]                          ]
  
