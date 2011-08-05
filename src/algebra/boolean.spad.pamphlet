@@ -477,8 +477,6 @@ Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
       ++ nand(a,b) returns the logical negation of \spad{a} and b.
     nor    : (%, %) -> %
       ++ nor(a,b) returns the logical negation of \spad{a} or b.
-    test: % -> %
-      ++ test(b) returns b and is provided for compatibility with the new compiler.
   == add
     import %false: % from Foreign Builtin
     import %true: % from Foreign Builtin
@@ -486,8 +484,6 @@ Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
     import %and: (%,%) -> % from Foreign Builtin
     import %or: (%,%) -> % from Foreign Builtin
     import %not: % -> % from Foreign Builtin
-
-    test a        == a
 
     true          == %true
     false         == %false
