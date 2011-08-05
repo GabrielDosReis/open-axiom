@@ -645,7 +645,7 @@ bpLeftAssoc(operations,parser)==
  
 bpString()==
   shoeTokType $stok is "STRING" and
-    bpPush(["QUOTE",makeSymbol $ttok]) and bpNext()
+    bpPush(quote makeSymbol $ttok) and bpNext()
  
 bpThetaName() ==
   $stok is ["ID",:.] and $ttok has SHOETHETA =>
