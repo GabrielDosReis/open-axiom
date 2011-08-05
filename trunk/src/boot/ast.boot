@@ -148,7 +148,7 @@ bfColonColon(package, name) ==
 bfSymbol: %Thing -> %Thing 
 bfSymbol x==
   string? x=> x
-  ['QUOTE,x]
+  quote x
 
  
 bfDot: () -> %Symbol
@@ -702,7 +702,7 @@ bfIS1(lhs,rhs) ==
 
 
 bfHas(expr,prop) ==
-  symbol? prop => ["GET",expr,["QUOTE",prop]]
+  symbol? prop => ["GET",expr, quote prop]
   bpSpecificErrorHere('"expected identifier as property name")
   
 bfApplication(bfop, bfarg) ==
@@ -734,7 +734,7 @@ bfMember(var,seq) ==
     seq is ["QUOTE",[x]] => ["EQL",var,x]
     ["scalarMember?",var,seq]
   defQuoteId var or sequence?(seq,function symbol?) =>
-    seq is ["QUOTE",[x]] => ["EQ",var,["QUOTE",x]]
+    seq is ["QUOTE",[x]] => ["EQ",var, quote x]
     ["symbolMember?",var,seq]
   idList? seq =>
     seq.args is [.] => ["EQ",var,:seq.args]
@@ -837,8 +837,8 @@ bfMDef (op,args,body) ==
   [gargl,sgargl,nargl,largl]:=bfGargl argl
   sb := [[i,:j] for i in nargl for j in sgargl]
   body := applySubst(sb,body)
-  sb2 := [["CONS",["QUOTE",i],j] for i in sgargl for j in largl]
-  body := ["applySubst",["LIST",:sb2],["QUOTE",body]]
+  sb2 := [["CONS",quote i,j] for i in sgargl for j in largl]
+  body := ["applySubst",["LIST",:sb2],quote body]
   lamex:= ["MLAMBDA",gargl,body]
   def:= [op,lamex]
   [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
@@ -848,7 +848,7 @@ bfGargl argl==
   [a,b,c,d] := bfGargl rest argl
   first argl is "&REST" =>
     [[first argl,:b],b,c,
-       [["CONS",["QUOTE","LIST"],first d],:rest d]]
+       [["CONS",quote "LIST",first d],:rest d]]
   f := bfGenSymbol()
   [[f,:a],[f,:b],[first argl,:c],[f,:d]]
  
@@ -864,8 +864,8 @@ shoeLAM (op,args,control,body)==
   margs :=bfGenSymbol()
   innerfunc:= makeSymbol strconc(symbolName op,'",LAM")
   [[innerfunc,["LAMBDA",args,body]],
-     [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
-                    ["WRAP",margs, ["QUOTE", control]]]]]]
+     [op,["MLAMBDA",["&REST",margs],["CONS", quote innerfunc,
+                    ["WRAP",margs,quote control]]]]]
  
 bfDef(op,args,body) ==
  $bfClamming =>
@@ -1159,16 +1159,13 @@ bfMain(auxfn,op)==
   mainFunction:= ["DEFUN",op,arg,codeBody]
  
   cacheType:=     'hash_-table
-  cacheResetCode:=   ['SETQ,cacheName,['MAKE_-HASHTABLE,
-                        ["QUOTE","UEQUAL"]]]
-  cacheCountCode:= ['hashCount,cacheName]
+  cacheResetCode := ['SETQ,cacheName,['MAKE_-HASHTABLE,quote "UEQUAL"]]
+  cacheCountCode := ['hashCount,cacheName]
   cacheVector:=
       [op,cacheName,cacheType,cacheResetCode,cacheCountCode]
-  defCode := ["DEFPARAMETER",cacheName,
-                ['MAKE_-HASHTABLE,["QUOTE","UEQUAL"]]]
+  defCode := ["DEFPARAMETER",cacheName,['MAKE_-HASHTABLE,quote "UEQUAL"]]
   [defCode,mainFunction,
-    ["SETF",["GET",
-           ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]]]
+    ["SETF",["GET",quote op,quote 'cacheInfo],quote cacheVector]]
 
 
 bfNamespace x ==
@@ -1188,9 +1185,9 @@ bfNameArgs (x,y)==
  
 bfCreateDef: %Thing -> %Form
 bfCreateDef x==
-  x is [f] => ["DEFCONSTANT",f,["LIST",["QUOTE",f]]]
+  x is [f] => ["DEFCONSTANT",f,["LIST",quote f]]
   a := [bfGenSymbol() for i in rest x]
-  ["DEFUN",first x,a,["CONS",["QUOTE",first x],["LIST",:a]]]
+  ["DEFUN",first x,a,["CONS",quote first x,["LIST",:a]]]
 
 bfCaseItem: (%Thing,%Thing) -> %Form
 bfCaseItem(x,y) ==
@@ -1237,8 +1234,8 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
           [[true,["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,n]],:xs]]
     hs is [['%Catch,['%Signature,v,t],s],:hs'] =>
       t := 
-        symbol? t => ["QUOTE",[t]] -- instantiate niladic type ctor
-        ["QUOTE",t]
+        symbol? t => quote [t] -- instantiate niladic type ctor
+        quote t
       main(n,e,hs',[[bfQ(["CAR",e],t),["LET",[[v,["CDR",e]]],s]],:xs])
     bpTrap()
 
@@ -1268,8 +1265,8 @@ bfThrow e ==
     t := "SystemException"
     x := e
   t :=
-    symbol? t => ["QUOTE",[t]]
-    ["QOUTE",t]
+    symbol? t => quote [t]
+    quote t
   ["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,
     ["CONS",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,["CONS",t,x]]]
 

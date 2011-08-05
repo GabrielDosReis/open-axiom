@@ -39,7 +39,7 @@
                                       (CONS
                                        (LIST 'MAPC
                                         (LIST 'FUNCTION 'FMAKUNBOUND)
-                                        (LIST 'QUOTE
+                                        (|quote|
                                          (LET
                                           ((|bfVar#2| NIL)
                                            (|bfVar#3| NIL)
@@ -84,7 +84,7 @@
                                               (SETQ |bfVar#5|
                                                #1=(CONS
                                                    (LIST 'EVAL
-                                                    (LIST 'QUOTE |d|))
+                                                    (|quote| |d|))
                                                    NIL))
                                               (SETQ |bfVar#6|
                                                |bfVar#5|))
@@ -99,7 +99,7 @@
 (DEFUN |genOptimizeOptions| (|stream|)
   (REALLYPRETTYPRINT
       (LIST 'PROCLAIM
-            (LIST 'QUOTE (CONS 'OPTIMIZE |$LispOptimizeOptions|)))
+            (|quote| (CONS 'OPTIMIZE |$LispOptimizeOptions|)))
       |stream|))
 
 (DEFUN |AxiomCore|::|%sysInit| ()
@@ -619,7 +619,7 @@
 (DEFUN |exportNames| (|ns|)
   (COND
     ((NULL |ns|) NIL)
-    (T (LIST (|inAllContexts| (LIST 'EXPORT (LIST 'QUOTE |ns|)))))))
+    (T (LIST (|inAllContexts| (LIST 'EXPORT (|quote| |ns|)))))))
 
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |sig| |n| |ISTMP#1| |xs|)

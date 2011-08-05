@@ -692,7 +692,7 @@
 (DEFUN |bpString| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
   (AND (EQ (|shoeTokType| |$stok|) 'STRING)
-       (|bpPush| (LIST 'QUOTE (INTERN |$ttok|))) (|bpNext|)))
+       (|bpPush| (|quote| (INTERN |$ttok|))) (|bpNext|)))
 
 (DEFUN |bpThetaName| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))

@@ -56,14 +56,14 @@ genModuleFinalization(stream) ==
     init := 
       ["DEFUN", makeSymbol strconc($currentModuleName,'"InitCLispFFI"), nil,
         ["MAPC",["FUNCTION", "FMAKUNBOUND"],
-          ["QUOTE",[second d for d in $foreignsDefsForCLisp]]],
-          :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
+          quote [second d for d in $foreignsDefsForCLisp]],
+          :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]
     REALLYPRETTYPRINT(init,stream)
   nil
 
 genOptimizeOptions stream ==
   REALLYPRETTYPRINT
-    (["PROCLAIM",["QUOTE",["OPTIMIZE",:$LispOptimizeOptions]]],stream)
+    (["PROCLAIM",quote ["OPTIMIZE",:$LispOptimizeOptions]],stream)
 
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
@@ -418,7 +418,7 @@ inAllContexts x ==
 
 exportNames ns ==
   ns = nil => nil
-  [inAllContexts ["EXPORT",["QUOTE",ns]]]
+  [inAllContexts ["EXPORT",quote ns]]
 
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.

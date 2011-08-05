@@ -189,8 +189,7 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfSymbol|))
 
-(DEFUN |bfSymbol| (|x|)
-  (COND ((STRINGP |x|) |x|) (T (LIST 'QUOTE |x|))))
+(DEFUN |bfSymbol| (|x|) (COND ((STRINGP |x|) |x|) (T (|quote| |x|))))
 
 (DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfDot|))
 
@@ -1146,7 +1145,7 @@
 
 (DEFUN |bfHas| (|expr| |prop|)
   (COND
-    ((SYMBOLP |prop|) (LIST 'GET |expr| (LIST 'QUOTE |prop|)))
+    ((SYMBOLP |prop|) (LIST 'GET |expr| (|quote| |prop|)))
     (T (|bpSpecificErrorHere| "expected identifier as property name"))))
 
 (DEFUN |bfApplication| (|bfop| |bfarg|)
@@ -1240,7 +1239,7 @@
                           (SETQ |ISTMP#2| (CAR |ISTMP#1|))
                           (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                                (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
-            (LIST 'EQ |var| (LIST 'QUOTE |x|)))
+            (LIST 'EQ |var| (|quote| |x|)))
            (T (LIST '|symbolMember?| |var| |seq|))))
         ((|idList?| |seq|)
          (COND
@@ -1493,16 +1492,14 @@
                      (RETURN |bfVar#7|))
                     ((NULL |bfVar#7|)
                      (SETQ |bfVar#7|
-                           #2=(CONS (LIST 'CONS (LIST 'QUOTE |i|) |j|)
-                                    NIL))
+                           #2=(CONS (LIST 'CONS (|quote| |i|) |j|) NIL))
                      (SETQ |bfVar#8| |bfVar#7|))
                     (T (RPLACD |bfVar#8| #2#)
                        (SETQ |bfVar#8| (CDR |bfVar#8|))))
                   (SETQ |bfVar#5| (CDR |bfVar#5|))
                   (SETQ |bfVar#6| (CDR |bfVar#6|)))))
         (SETQ |body|
-              (LIST '|applySubst| (CONS 'LIST |sb2|)
-                    (LIST 'QUOTE |body|)))
+              (LIST '|applySubst| (CONS 'LIST |sb2|) (|quote| |body|)))
         (SETQ |lamex| (LIST 'MLAMBDA |gargl| |body|))
         (SETQ |def| (LIST |op| |lamex|))
         (CONS (|shoeComp| |def|)
@@ -1537,7 +1534,7 @@
            (COND
              ((EQ (CAR |argl|) '&REST)
               (LIST (CONS (CAR |argl|) |b|) |b| |c|
-                    (CONS (LIST 'CONS (LIST 'QUOTE 'LIST) (CAR |d|))
+                    (CONS (LIST 'CONS (|quote| 'LIST) (CAR |d|))
                           (CDR |d|))))
              (T (SETQ |f| (|bfGenSymbol|))
                 (LIST (CONS |f| |a|) (CONS |f| |b|)
@@ -1573,9 +1570,9 @@
         (LIST (LIST |innerfunc| (LIST 'LAMBDA |args| |body|))
               (LIST |op|
                     (LIST 'MLAMBDA (LIST '&REST |margs|)
-                          (LIST 'CONS (LIST 'QUOTE |innerfunc|)
+                          (LIST 'CONS (|quote| |innerfunc|)
                                 (LIST 'WRAP |margs|
-                                      (LIST 'QUOTE |control|))))))))))
+                                      (|quote| |control|))))))))))
 
 (DEFUN |bfDef| (|op| |args| |body|)
   (PROG (|body1| |arg1| |op1| |LETTMP#1|)
@@ -2215,19 +2212,18 @@
         (SETQ |cacheType| '|hash-table|)
         (SETQ |cacheResetCode|
               (LIST 'SETQ |cacheName|
-                    (LIST 'MAKE-HASHTABLE (LIST 'QUOTE 'UEQUAL))))
+                    (LIST 'MAKE-HASHTABLE (|quote| 'UEQUAL))))
         (SETQ |cacheCountCode| (LIST '|hashCount| |cacheName|))
         (SETQ |cacheVector|
               (LIST |op| |cacheName| |cacheType| |cacheResetCode|
                     |cacheCountCode|))
         (SETQ |defCode|
               (LIST 'DEFPARAMETER |cacheName|
-                    (LIST 'MAKE-HASHTABLE (LIST 'QUOTE 'UEQUAL))))
+                    (LIST 'MAKE-HASHTABLE (|quote| 'UEQUAL))))
         (LIST |defCode| |mainFunction|
               (LIST 'SETF
-                    (LIST 'GET (LIST 'QUOTE |op|)
-                          (LIST 'QUOTE '|cacheInfo|))
-                    (LIST 'QUOTE |cacheVector|)))))))
+                    (LIST 'GET (|quote| |op|) (|quote| '|cacheInfo|))
+                    (|quote| |cacheVector|)))))))
 
 (DEFUN |bfNamespace| (|x|) (LIST '|%Namespace| |x|))
 
@@ -2254,7 +2250,7 @@
     (RETURN
       (COND
         ((AND (CONSP |x|) (NULL (CDR |x|))) (SETQ |f| (CAR |x|))
-         (LIST 'DEFCONSTANT |f| (LIST 'LIST (LIST 'QUOTE |f|))))
+         (LIST 'DEFCONSTANT |f| (LIST 'LIST (|quote| |f|))))
         (T (SETQ |a|
                  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL)
                        (|bfVar#1| (CDR |x|)) (|i| NIL))
@@ -2270,7 +2266,7 @@
                           (SETQ |bfVar#3| (CDR |bfVar#3|))))
                      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
            (LIST 'DEFUN (CAR |x|) |a|
-                 (LIST 'CONS (LIST 'QUOTE (CAR |x|)) (CONS 'LIST |a|))))))))
+                 (LIST 'CONS (|quote| (CAR |x|)) (CONS 'LIST |a|))))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%Form|) |bfCaseItem|))
 
@@ -2410,8 +2406,8 @@
          (SETQ |hs'| (CDR |hs|))
          (SETQ |t|
                (COND
-                 ((SYMBOLP |t|) (LIST 'QUOTE (LIST |t|)))
-                 (T (LIST 'QUOTE |t|))))
+                 ((SYMBOLP |t|) (|quote| (LIST |t|)))
+                 (T (|quote| |t|))))
          (|bfHandlers,main| |n| |e| |hs'|
              (CONS (LIST (|bfQ| (LIST 'CAR |e|) |t|)
                          (LIST 'LET (LIST (LIST |v| (LIST 'CDR |e|)))
@@ -2474,8 +2470,8 @@
           (T (SETQ |t| '|SystemException|) (SETQ |x| |e|)))
         (SETQ |t|
               (COND
-                ((SYMBOLP |t|) (LIST 'QUOTE (LIST |t|)))
-                (T (LIST 'QOUTE |t|))))
+                ((SYMBOLP |t|) (|quote| (LIST |t|)))
+                (T (|quote| |t|))))
         (LIST 'THROW :OPEN-AXIOM-CATCH-POINT
               (LIST 'CONS :OPEN-AXIOM-CATCH-POINT (LIST 'CONS |t| |x|)))))))
 
