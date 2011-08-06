@@ -312,13 +312,13 @@ extendsCategory(dom,u,v) ==
   v is ["CATEGORY",.,:l] => and/[extendsCategory(dom,u,x) for x in l]
   v is ["SubsetCategory",cat,d] => extendsCategory(dom,u,cat) and isSubset(dom,d,$e)
   v := substSlotNumbers(v,$template,$functorForm)
-  extendsCategoryBasic0(dom,u,v) => true
+  extendsCategoryBasic(dom,u,v) => true
   $why :=
     v is ['SIGNATURE,op,sig] => [u,['"  has no ",:formatOpSignature(op,sig)]]
     [u,'" has no",v]
   nil
  
-extendsCategoryBasic0(dom,u,v) ==
+extendsCategoryBasic(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
     uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
     cons? c and isCategoryForm(c,nil) =>
@@ -326,9 +326,6 @@ extendsCategoryBasic0(dom,u,v) ==
       LASSOC(c,second slot4) is [=p,:.]
     slot2 := vectorRef(uVec,2)
     LASSOC(c,slot2) is [=p,:.]
-  extendsCategoryBasic(dom,u,v)
- 
-extendsCategoryBasic(dom,u,v) ==
   u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v) for x in l]
   u = v => true
   uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
@@ -337,8 +334,8 @@ extendsCategoryBasic(dom,u,v) ==
     or/[vectorRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
-    nil
-  nil
+    false
+  false
  
 catExtendsCat?(u,v,uvec) ==
   u = v => true
