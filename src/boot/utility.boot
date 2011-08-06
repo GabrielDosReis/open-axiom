@@ -60,7 +60,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
 
 ++ Return true if `x' is an atom of a quotation.
 atomic? x ==
-  not cons? x or x.op is 'QUOTE
+  x isnt [.,:.] or x.op is 'QUOTE
 
 --% membership operators
 
