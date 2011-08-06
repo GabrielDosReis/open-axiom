@@ -143,7 +143,7 @@ listOfBoundVars form ==
     u:=u.expr
     builtinConstructor? KAR u => listOfBoundVars u
     [form]
-  atom form => []
+  form isnt [.,:.] => []
   first form is 'QUOTE => []
   -- We don't want to pick up the tag, only the domain
   first form = ":" => listOfBoundVars third form
@@ -165,12 +165,12 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
   -- stage of the compilation process.
   dc is '$ => nil
   ndc :=
-    atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
+    dc isnt [.,:.] and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
   sig := MSUBST(ndc,dc,sig)
   -- Don't bother if the domain of computation is not an instantiation
   -- nor a candidate for inlining.
-  atom ndc or not optimizableDomain? ndc => nil
+  ndc isnt [.,:.] or not optimizableDomain? ndc => nil
   fun := lookupDefiningFunction(op,sig,ndc)
   -- following code is to handle selectors like first, rest
   if fun = nil and needToQuoteFlags?(sig,$e) then
@@ -198,7 +198,7 @@ genDeltaEntry(opMmPair,e) ==
   if $profileCompiler then profileRecord(dc,op,sig)
   eltOrConst is 'XLAM => cform
   if eltOrConst is 'Subsumed then eltOrConst := 'ELT
-  if atom dc then
+  if dc isnt [.,:.] then
     dc = "$" => nsig := sig
     if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
@@ -246,7 +246,7 @@ NRTgetLocalIndex item ==
   k := NRTassocIndex item => k
   item = "$" => 0
   item = "$$" => 2
-  atom item and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
+  item isnt [.,:.] and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
     $NRTdeltaList:= [["%domain",NRTaddInner item],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     index := $NRTbase + $NRTdeltaLength      -- slot number to return
@@ -289,7 +289,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
 ++ NRTaddInner should call following function instead of NRTgetLocalIndex
 ++ This would prevent putting spurious items in $NRTdeltaList
 NRTinnerGetLocalIndex x ==
-  atom x => x
+  x isnt [.,:.] => x
   op := x.op
   ident? op and (constructor? op or builtinConstructor? op) =>
     NRTgetLocalIndex x
@@ -300,7 +300,7 @@ NRTinnerGetLocalIndex x ==
 NRTaddInner x ==
 --called by genDeltaEntry and others that affect $NRTdeltaList
   do
-    atom x => nil
+    x isnt [.,:.] => nil
     x is [":",y,z] => [x.op,y,NRTinnerGetLocalIndex z]
     x is ['SubDomain,y,:.] => NRTinnerGetLocalIndex y
     builtinConstructor? x.op or x.op is "[||]" =>
@@ -402,7 +402,7 @@ washFunctorBody form == main form where
 --=======================================================================
 stuffSlot(dollar,i,item) ==
   vectorRef(dollar,i) :=
-    atom item => [symbolFunction item,:dollar]
+    item isnt [.,:.] => [symbolFunction item,:dollar]
     item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
       b is '$ => ['makeSpadConstant,eval a,dollar,i]
@@ -571,8 +571,8 @@ NRTcheckVector domainShell ==
     v := vectorRef(domainShell,i)
     v=true => nil  --item is marked; ignore
     v=nil => nil
-    atom v => systemErrorHere '"CheckVector"
-    atom first v => nil  --category form; ignore
+    v isnt [.,:.] => systemErrorHere '"CheckVector"
+    first v isnt [.,:.] => nil  --category form; ignore
     assoc(first v,alist) => nil
     alist := [[first v,:vectorRef($SetFunctions,i)],:alist]
   alist
@@ -714,7 +714,7 @@ vectorLocation(op,sig) ==
 NRTsubstDelta(initSig) ==
   sig := [replaceSlotTypes s for s in initSig] where
      replaceSlotTypes(t) ==
-        atom t =>
+        t isnt [.,:.] =>
           not integer? t => t
           t = 0 => '$
           t = 2 => '_$_$
@@ -735,7 +735,7 @@ NRTputInLocalReferences bod ==
   NRTputInHead bod
 
 NRTputInHead bod ==
-  atom bod => bod
+  bod isnt [.,:.] => bod
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
@@ -755,10 +755,10 @@ NRTputInHead bod ==
 
 NRTputInTail x ==
   for y in tails x repeat
-    atom (u := first y) =>
+    (u := first y) isnt [.,:.] =>
       u='$ or LASSOC(u,$devaluateList) => nil
       k:= NRTassocIndex u =>
-        atom u => y.first := ['%vref,'_$,k]
+        u isnt [.,:.] => y.first := ['%vref,'_$,k]
         -- u atomic means that the slot will always contain a vector
         y.first := ['SPADCHECKELT,'_$,k]
       --this reference must check that slot is a vector

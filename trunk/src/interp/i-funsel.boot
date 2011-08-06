@@ -225,7 +225,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     while a repeat
       x:= first a
       a:= rest a
-      atom x => 'iterate
+      x isnt [.,:.] => 'iterate
       mmS := append(mmS, findFunctionInDomain(op,x,tar,args1,args2,nil,nil))
 
     -- step 2. if we didn't get one, trying coercing (if we are
@@ -236,7 +236,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
       while a repeat
         x:= first a
         a:= rest a
-        atom x => 'iterate
+        x isnt [.,:.] => 'iterate
         mmS := append(mmS,
           findFunctionInDomain(op,x,tar,args1,args2,$Coerce,nil))
 
@@ -271,7 +271,7 @@ defaultTarget(opNode,op,nargs,args) ==
     target
 
   a1 := first args
-  atom a1 => target
+  a1 isnt [.,:.] => target
   a1f := first a1
 
   nargs = 1 =>
@@ -525,7 +525,7 @@ argCouldBelongToSubdomain(op, nargs) ==
 CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or nil
 -- with domain being one of PositiveInteger and NonNegativeInteger
-   atom cond => false
+   cond isnt [.,:.] => false
    cond.op in '(AND OR and or %and %or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in cond.args]
    cond.op is 'isDomain =>
@@ -650,7 +650,7 @@ orderMms(name, mmS,args1,args2,tar) ==
 
 domainDepth(d) ==
   -- computes the depth of lisp structure d
-  atom d => 0
+  d isnt [.,:.] => 0
   MAX(domainDepth(first d)+1,domainDepth(rest d))
 
 hitListOfTarget(t) ==
@@ -907,7 +907,7 @@ matchMmCond(cond) ==
   -- tests the condition, which comes with a modemap
   -- cond is 'T or a list, but I hate to test for 'T (ALBI)
   $domPvar: local := nil
-  atom cond or 
+  cond isnt [.,:.] or 
     cond.op in '(AND and %and) =>
       and/[matchMmCond c for c in cond.args]
     cond.op in '(OR or %or) =>
@@ -1001,7 +1001,7 @@ filterModemapsFromPackages(mms, names, op) ==
 
 
 isTowerWithSubdomain(towerType,elem) ==
-  atom towerType => nil
+  towerType isnt [.,:.] => nil
   dt := deconstructT towerType
   2 ~= #dt => nil
   s := underDomainOf(towerType)
@@ -1035,7 +1035,7 @@ selectMmsGen(op,tar,args1,args2) ==
   -- for common aggregates, use under domain also
   for a in removeDuplicates args repeat
     a =>
-      atom a => nil
+      a isnt [.,:.] => nil
       fa := a.op
       fa in '(Record Union) => nil
       conNames := insert(STRINGIMAGE fa, conNames)
@@ -1235,7 +1235,7 @@ replaceSharpCalls t ==
   doReplaceSharpCalls t
 
 doReplaceSharpCalls t ==
-  atom t => t
+  t isnt [.,:.] => t
   t is ['_#, l] => #l
   t is ['construct,: l] => eval ['LIST,:l]
   [first t,:[ doReplaceSharpCalls u for u in rest t]]
@@ -1491,12 +1491,12 @@ hasCaty(d,cat,SL) ==
         z' := [domArg2(a, S, S') for a in z]
         S1:= unifyStruct(y,z',copy SL)
         if S1 isnt 'failed then S1:=
-          atom cond => S1
+          cond isnt [.,:.] => S1
           ncond := subCopy(cond, S)
           ncond is ["has", =d, =cat] => 'failed
           hasCaty1(ncond,S1)
       S1
-    atom x => SL
+    x isnt [.,:.] => SL
     ncond := subCopy(x, constructSubst d)
     ncond is ["has", =d, =cat] => 'failed
     hasCaty1(ncond, SL)
@@ -1556,7 +1556,7 @@ hasSigAnd(andCls, S0, SL) ==
   SA := 'failed
   for cls in andCls while not dead repeat
     SA :=
-      atom cls => copy SL
+      cls isnt [.,:.] => copy SL
       cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       keyedSystemError("S2GE0016",
@@ -1569,7 +1569,7 @@ hasSigOr(orCls, S0, SL) ==
   SA := 'failed
   for cls in orCls until found repeat
     SA :=
-      atom cls => copy SL
+      cls isnt [.,:.] => copy SL
       cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       cls is [op,:andCls] and op in '(AND and %and) =>
@@ -1588,7 +1588,7 @@ hasSig(dom,foo,sig,SL) ==
     p := ASSQ(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until S isnt 'failed repeat
         S:=
-          atom cond => copy SL
+          cond isnt [.,:.] => copy SL
           cond is ["has",a,b] =>
             hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
           cond is [op,:andCls] and op in '(AND and %and) =>
@@ -1641,7 +1641,7 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
-  atom s1 or atom s2 => 'failed
+  s1 isnt [.,:.] or s2 isnt [.,:.] => 'failed
   until null s1 or null s2 or SL is 'failed repeat
     SL:= unifyStruct(first s1,first s2,SL)
     s1:= rest s1
@@ -1714,18 +1714,18 @@ printMms(mmS) ==
 
 containsVars(t) ==
   -- tests whether term t contains a * variable
-  atom t => isPatternVar t
+  t isnt [.,:.] => isPatternVar t
   containsVars1(t)
 
 containsVars1(t) ==
   -- recursive version, which works on a list
   [t1,:t2]:= t
-  atom t1 =>
+  t1 isnt [.,:.] =>
     isPatternVar t1 or
-      atom t2 => isPatternVar t2
+      t2 isnt [.,:.] => isPatternVar t2
       containsVars1(t2)
   containsVars1(t1) or
-    atom t2 => isPatternVar t2
+    t2 isnt [.,:.] => isPatternVar t2
     containsVars1(t2)
 
 isPartialMode m ==
@@ -1742,8 +1742,8 @@ getSymbolType var ==
 isEqualOrSubDomain(d1,d2) ==
   -- last 2 parts are for tagged unions (hack for now, RSS)
   (d1=d2) or isSubDomain(d1,d2) or
-    (atom(d1) and ((d2 is ['Variable,=d1]) or (d2 is [=d1])))
-     or (atom(d2) and ((d1 is ['Variable,=d2]) or (d1 is [=d2])))
+    (d1 isnt [.,:.] and ((d2 is ['Variable,=d1]) or (d2 is [=d1])))
+     or (d2 isnt [.,:.] and ((d1 is ['Variable,=d2]) or (d1 is [=d2])))
 
 defaultTypeForCategory(cat, SL) ==
   -- this function returns a domain belonging to cat

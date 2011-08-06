@@ -225,7 +225,7 @@ bottomUp t ==
       null tar => [om]
       (r := resolveTM(om,tar)) => [r]
       [om]
-    if atom op then
+    if op isnt [.,:.] then
       opName:= getUnname op
       if isLocallyBound opName then
         putModeSet(op,bottomUpIdentifier(op,opName))
@@ -586,7 +586,7 @@ printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
     b := first a
-    if atom b then b := [b]
+    if b isnt [.,:.] then b := [b]
     amsl := ['"%l",b,:amsl]
   if amsl then amsl := rest amsl
   amsl
@@ -787,7 +787,7 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
 
   ok := nil
   for m in amsl while not ok repeat
-    if atom first(m) then return nil
+    if first(m) isnt [.,:.] then return nil
     first m = $Any => ok := true
     (first first m = 'Union) => ok := true
   not ok => nil
@@ -811,7 +811,7 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
 
   ok := nil
   for [m] in amsl while not ok repeat
-    if atom m then return nil
+    if m isnt [.,:.] then return nil
     if m is ['Union, :.] and null getUnionOrRecordTags m then ok := true
   not ok => nil
 

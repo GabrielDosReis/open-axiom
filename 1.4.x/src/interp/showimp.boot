@@ -246,8 +246,8 @@ formatLazyDomain(dom,x) ==
 formatLazyDomainForm(dom,x) ==
   x = 0 => ["$"]
   integer? x => formatLazyDomain(dom,dom.x)
-  atom x => x
-  x is ['NRTEVAL,y] => (atom y => [y]; y)
+  x isnt [.,:.] => x
+  x is ['NRTEVAL,y] => (y isnt [.,:.] => [y]; y)
   [first x,:[formatLazyDomainForm(dom,y) for y in rest x]]
  
 
@@ -282,7 +282,7 @@ dcSlots con ==
     item := template.i
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
     null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
-    atom item => sayBrightly ['"fun  ",item]
+    item isnt [.,:.] => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
  
@@ -321,8 +321,8 @@ formatSlotDomain x ==
     val := $infovec.0.x
     null val => [strconc('"#",STRINGIMAGE (x  - 5))]
     formatSlotDomain val
-  atom x => x
-  x is ['NRTEVAL,y] => (atom y => [y]; y)
+  x isnt [.,:.] => x
+  x is ['NRTEVAL,y] => (y isnt [.,:.] => [y]; y)
   [first x,:[formatSlotDomain y for y in rest x]]
  
 --=======================================================================
@@ -363,7 +363,7 @@ dcOpPrint(op,index) ==
     slotNumber = 0 => '"subsumed by next entry"
     slotNumber = 1 => '"missing"
     name := $infovec.0.slotNumber
-    atom name => name
+    name isnt [.,:.] => name
     name is ["CONS","IDENTITY",
               ["FUNCALL", ["dispatchFunction", impl],"$"]] =>
       kind := 'CONST
@@ -471,7 +471,7 @@ dcSize(:options) ==
   fun   := 0  --# of function slots
   lazyNodes := 0 --# of nodes needed for lazy domain slots
   for i in 5..maxindex repeat
-    atom (item := template.i) =>   fun := fun + 1
+    (item := template.i) isnt [.,:.] =>   fun := fun + 1
     integer? first item    => latch := latch + 1
     'T                 =>  
        lazy := lazy + 1
@@ -537,7 +537,7 @@ halfWordSize(n) ==
   2 * n
 
 numberOfNodes(x) ==
-  atom x => 0
+  x isnt [.,:.] => 0
   1 + numberOfNodes first x + numberOfNodes rest x
 
 template con ==
@@ -596,7 +596,7 @@ dcOps conname ==
   for [op,:u] in reverse getConstructorOperationsFromDB conname repeat
     for [sig,slot,pred,key,:.] in u repeat
       suffix := 
-        atom pred => nil
+        pred isnt [.,:.] => nil
         concat('" if ",pred2English pred)
       key is 'Subsumed =>
         sayBrightly [:formatOpSignature(op,sig),'" subsumed by ",:formatOpSignature(op,slot),:suffix]

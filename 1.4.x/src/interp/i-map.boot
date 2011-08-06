@@ -92,7 +92,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   -- a niladic functions.  We try to limit the damage as much as we can.
   defineeIsConstant := false
 
-  if atom lhs then
+  if lhs isnt [.,:.] then
     op := lhs
     putHist(op,'isInterpreterRule,true,$e)
     putHist(op,'isInterpreterFunction,false,$e)
@@ -274,7 +274,7 @@ getIteratorIds itl ==
 makeArgumentIntoNumber x ==
   x=$Zero => 0
   x=$One => 1
-  atom x => x
+  x isnt [.,:.] => x
   x is ["-",n] and integer? n => -n
   [removeZeroOne first x,:removeZeroOne rest x]
 
@@ -405,7 +405,7 @@ outputFormat(x,m) ==
   categoryForm?(m) => x
   isMapExpr x => x
   containsVars x => x
-  atom(x) and first(m) = 'List => x
+  x isnt [.,:.] and first(m) = 'List => x
   (x is ['construct,:.]) and m = '(List (Expression)) => x
   T:= coerceInteractive(objNewWrap(x,maximalSuperType(m)),
     $OutputForm) or return x
@@ -445,7 +445,7 @@ simplifyMapPattern (x,alias) ==
 
 simplifyMapConstructorRefs form ==
   -- try to linear format constructor names
-  atom form => form
+  form isnt [.,:.] => form
   [op,:args] := form
   op in '(exit SEQ) =>
     [op,:[simplifyMapConstructorRefs a for a in args]]
@@ -454,10 +454,10 @@ simplifyMapConstructorRefs form ==
   op in '(_: _:_: _@) =>
     args is [obj,dom] =>
       dom' := prefix2String dom
-      --if atom dom' then dom' := [dom']
+      --if dom' isnt [.,:.] then dom' := [dom']
       --[op,obj,apply(function strconc,dom')]
       dom'' :=
-          atom dom' => dom'
+          dom' isnt [.,:.] => dom'
           null rest dom' => first dom'
           apply(function strconc, dom')
       [op,obj, dom'']
@@ -785,10 +785,10 @@ depthOfRecursion(opName,body) ==
 mapRecurDepth(opName,opList,body) ==
   -- walks over the map body counting depth of recursive calls
   --  expanding the bodies of maps called in body
-  atom body => 0
+  body isnt [.,:.] => 0
   body is [op,:argl] =>
     argc:=
-      atom argl => 0
+      argl isnt [.,:.] => 0
       argl => "MAX"/[mapRecurDepth(opName,opList,x) for x in argl]
       0
     symbolMember?(op,opList) => argc
@@ -895,7 +895,7 @@ nonRecursivePart(opName, funBody) ==
 
 expandRecursiveBody(alreadyExpanded, body) ==
   -- replaces calls to other maps with their bodies
-  atom body =>
+  body isnt [.,:.] =>
     (obj := get(body,'value,$e)) and objVal obj is ["%Map",:mapDef] and
       ((numMapArgs mapDef) = 0) => getMapBody(body,mapDef)
     body
@@ -940,7 +940,7 @@ containsOp(body,op) ==
 
 notCalled(opName,form) ==
   -- returns true if opName is not called in the form
-  atom form => true
+  form isnt [.,:.] => true
   form is [op,:argl] =>
     op=opName => false
     and/[notCalled(opName,x) for x in argl]
@@ -1008,16 +1008,16 @@ findLocalVars(op,form) ==
 
 findLocalVars1(op,form) ==
   -- sets the two lists $localVars and $freeVars
-  atom form =>
+  form isnt [.,:.] =>
     not ident? form or isSharpVarWithNum form => nil
     isLocallyBound form or isFreeVar form => nil
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
     for x in vars repeat
-      atom x => mkLocalVar(op, x)
+      x isnt [.,:.] => mkLocalVar(op, x)
   form is ['free, :vars] =>
     for x in vars repeat
-      atom x => mkFreeVar(op, x)
+      x isnt [.,:.] => mkFreeVar(op, x)
   form is ["%LET",a,b] =>
     (a is ["tuple",:vars]) and (b is ["tuple",:vals]) =>
       for var in vars for val in vals repeat
@@ -1025,7 +1025,7 @@ findLocalVars1(op,form) ==
     a is ['construct,:pat] =>
       for var in listOfVariables pat repeat mkLocalVar(op,var)
       findLocalVars1(op,b)
-    (atom a) or (a is ['_:,a,.]) =>
+    a isnt [.,:.] or (a is ['_:,a,.]) =>
       mkLocalVar(op,a)
       findLocalVars1(op,b)
     findLocalVars1(op,b)

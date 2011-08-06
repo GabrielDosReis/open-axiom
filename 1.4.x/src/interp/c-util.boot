@@ -275,7 +275,7 @@ devaluateList l == [devaluate d for d in l]
  
 devaluateDeeply x ==
   vector? x => devaluate x
-  atom x => x
+  x isnt [.,:.] => x
   [devaluateDeeply y for y in x]
 
 --% Debugging Functions
@@ -347,12 +347,12 @@ mkErrorExpr level ==
       l is [a,b] =>
         highlight(b,a) where
           highlight(b,a) ==
-            atom b =>
+            b isnt [.,:.] =>
               substitute(var,b,a) where
                 var:= makeSymbol strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
             highlight1(b,a) where
               highlight1(b,a) ==
-                atom a => a
+                a isnt [.,:.] => a
                 a is [ =b,:c] => [$bright,b,$dim,:c]
                 [highlight1(b,first a),:highlight1(b,rest a)]
       substitute(bracket rest l,second l,first l)
@@ -549,7 +549,7 @@ unionLike?(m,e) ==
 ++ If `x' designates a store with multiple views, e.g. Union, return
 ++ the collection of those modes.
 unionProperty(x,e) ==
-  atom x => unionLike?(getmode(x,e),e)
+  x isnt [.,:.] => unionLike?(getmode(x,e),e)
   nil
 
 getInverseEnvironment(a,e) ==
@@ -652,7 +652,7 @@ isKnownCategory(c,e) ==
  
 ++ Returns non-nil if `t' is a known type in the environement `e'.
 diagnoseUnknownType(t,e) ==
-  atom t =>
+  t isnt [.,:.] =>
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
     (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
@@ -719,7 +719,7 @@ isConstantId(name,e) ==
 isFalse() == nil
  
 isFluid s ==
-  atom s and char "$" = stringChar(PNAME s,0)
+  s isnt [.,:.] and char "$" = stringChar(PNAME s,0)
  
 isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [
@@ -764,7 +764,7 @@ isSubset(x,y,e) ==
  
 isDomainInScope(domain,e) ==
   domainList:= getDomainsInScope e
-  atom domain =>
+  domain isnt [.,:.] =>
     symbolMember?(domain,domainList) => true
     not ident? domain or isSomeDomainVariable domain => true
     false
@@ -790,7 +790,7 @@ isAlmostSimple x ==
   transform:=
     fn x where
       fn x ==
-        atom x or null rest x => x
+        x isnt [.,:.] or null rest x => x
         [op,y,:l]:= x
         op="has" => x
         op="is" => x
@@ -813,12 +813,12 @@ incExitLevel u ==
 decExitLevel u ==
   (adjExitLevel(u,1,-1); removeExit0 u) where
     removeExit0 x ==
-      atom x => x
+      x isnt [.,:.] => x
       x is ["exit",0,u] => removeExit0 u
       [removeExit0 first x,:removeExit0 rest x]
  
 adjExitLevel(x,seqnum,inc) ==
-  atom x => x
+  x isnt [.,:.] => x
   x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
@@ -845,7 +845,7 @@ removeEnv t == [t.expr,t.mode,$EmptyEnvironment]  -- t is a triple
 --  [first l,:ordinsert(x,rest l)]
  
 makeNonAtomic x ==
-  atom x => [x]
+  x isnt [.,:.] => [x]
   x
  
 flatten(l,key) ==
@@ -875,7 +875,7 @@ numOfOccurencesOf(x,y) ==
     fn(x,y,n) ==
       null y => 0
       x=y => n+1
-      atom y => n
+      y isnt [.,:.] => n
       fn(x,first y,n)+fn(x,rest y,n)
  
 compilerMessage(msg,args) ==
@@ -888,7 +888,7 @@ printDashedLine() ==
 stackSemanticError(msg,expr) ==
   BUMPERRORCOUNT "semantic"
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  if atom msg then msg:= [msg]
+  if msg isnt [.,:.] then msg:= [msg]
   entry:= [msg,expr]
   if not listMember?(entry,$semanticErrorStack) then $semanticErrorStack:=
     [entry,:$semanticErrorStack]
@@ -929,7 +929,8 @@ stackAndThrow(msg, args == nil) ==
  
 printString x == PRINC (string? x => x; PNAME x)
  
-printAny x == if atom x then printString x else PRIN1 x
+printAny x ==
+  if x isnt [.,:.] then printString x else PRIN1 x
  
 printSignature(before,op,[target,:argSigList]) ==
   printString before
@@ -1018,12 +1019,12 @@ outerProduct l ==
   "append"/[[[x,:y] for y in outerProduct rest l] for x in first l]
  
 sublisR(al,u) ==
-  atom u => u
+  u isnt [.,:.] => u
   y:= rassoc(t:= [sublisR(al,x) for x in u],al) => y
   true => t
  
 substituteOp(op',op,x) ==
-  atom x => x
+  x isnt [.,:.] => x
   [(op=(f:= first x) => op'; f),:[substituteOp(op',op,y) for y in rest x]]
  
 --substituteForFormalArguments(argl,expr) ==
@@ -1032,12 +1033,12 @@ substituteOp(op',op,x) ==
  -- following is only intended for substituting in domains slots 1 and 4
  -- signatures and categories
 sublisV(p,e) ==
-  (atom p => e; suba(p,e)) where
+  (p isnt [.,:.] => e; suba(p,e)) where
     suba(p,e) ==
       string? e => e
       -- no need to descend vectors unless they are categories
       categoryObject? e => LIST2VEC [suba(p,e.i) for i in 0..maxIndex e]
-      atom e => (y:= ASSQ(e,p) => rest y; e)
+      e isnt [.,:.] => (y:= ASSQ(e,p) => rest y; e)
       u:= suba(p,first e)
       v:= suba(p,rest e)
       sameObject?(first e,u) and sameObject?(rest e,v) => e
@@ -1051,7 +1052,7 @@ old2NewModemaps x ==
   x
 
 traceUp() ==
-  atom $x => sayBrightly "$x is an atom"
+  $x isnt [.,:.] => sayBrightly "$x is an atom"
   for y in rest $x repeat
     u:= comp(y,$EmptyMode,$f) =>
       sayBrightly [y,'" ==> mode",'"%b",u.mode,'"%d"]
@@ -1163,7 +1164,7 @@ mutateBindingFormWithUnaryFunction(form,fun) ==
   form isnt [op,inits,:body] and op in '(LET %bind) => form
   for defs in tails inits repeat
     def := first defs
-    atom def => nil -- no initializer
+    def isnt [.,:.] => nil -- no initializer
     def.rest.first := FUNCALL(fun, second def)
   for stmts in tails body repeat
     stmts.first := FUNCALL(fun, first stmts)
@@ -1387,9 +1388,9 @@ proclaimCapsuleFunction(op,sig) ==
           -- we optimize abstractions just as well as builtins.
           r := getRepresentation $e => normalize(r,top?)
           -- Cope with old-style constructor definition
-          atom $functorForm => [$functorForm] 
+          $functorForm isnt [.,:.] => [$functorForm] 
           normalize($functorForm,top?)
-        atom d => 
+        d isnt [.,:.] => 
           top? => "%Thing"
           getmode(d,$e) => "*"
           d
@@ -1412,9 +1413,10 @@ MAKE_-CLOSEDFN_-NAME() ==
 backendCompileNEWNAM: %Form -> %Void
 backendCompileNEWNAM x ==
   atomic? x => nil
-  atom(y := first x) =>
+  y := first x
+  y isnt [.,:.] =>
     backendCompileNEWNAM rest x
-    if y = "CLOSEDFN" then
+    if y is "CLOSEDFN" then
       u := MAKE_-CLOSEDFN_-NAME()
       PUSH([u,second x], $CLOSEDFNS)
       x.first := "FUNCTION"
@@ -1514,7 +1516,7 @@ backendFluidize x ==
     stringChar(symbolName x,0) = char "$" and
       not digit? stringChar(symbolName x,1) => x
   atomic? x => nil
-  first x = "FLUID" => second x
+  first x is "FLUID" => second x
   a := backendFluidize first x
   b := backendFluidize rest x
   a = nil => b
@@ -1663,7 +1665,7 @@ transformToBackendCode x ==
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
     body is [stmt] and
-      (atom stmt
+      (stmt isnt [.,:.]
         or stmt.op in '(SEQ LET LET_*)
           or not CONTAINED("EXIT",stmt)) =>
             body
@@ -1758,7 +1760,7 @@ expandFormTemplate(shell,args,slot) ==
     slot = 0 => "$"
     slot = 2 => "$$"
     expandFormTemplate(shell,args,vectorRef(shell,slot))
-  atom slot => slot
+  slot isnt [.,:.] => slot
   slot is ["local",parm] and (n := isFormal parm) => 
     args.n   -- FIXME: we should probably expand with dual signature
   slot is ["NRTEVAL",val] => val
@@ -1780,7 +1782,7 @@ equalFormTemplate(shell,args,slot,form) ==
   slot is ["QUOTE",val] => 
      string? val or symbol? val or integer? val => val = form
      slot = form
-  atom slot or atom form => form = slot
+  slot isnt [.,:.] or form isnt [.,:.] => form = slot
   #slot ~= #form => false
   and/[equalFormTemplate(shell,args,i,x) for i in slot for x in form]
 
@@ -1816,7 +1818,7 @@ getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
 ++ Subroutine of lookupDefiningFunction.
 lookupInheritedDefiningFunction(op,sig,shell,args,slot) ==
   dom := expandFormTemplate(shell,args,slot)
-  atom dom or dom is ["local",:.] => nil
+  dom isnt [.,:.] or dom is ["local",:.] => nil
   lookupDefiningFunction(op,sig,dom)
 
 ++ Return the name of the function definition that explicitly implements

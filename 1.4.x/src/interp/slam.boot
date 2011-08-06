@@ -124,7 +124,7 @@ mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
   -- form substitution list of the form:
   -- ( ((f (,DIFFERENCE #1 1)) . #2) ((f (,DIFFERENCE #1 2)) . #3) ...)
   --   but also checking that all difference values lie in 1..k
-  atom body => nil
+  body isnt [.,:.] => nil
   body is ['%when,:pl] =>
     "union"/[mkDiffAssoc(op,c,k,sharpPosition,sharpArg,diffSlot,vecname) for [p,c] in pl]
   body is [fn,:argl] =>
@@ -365,7 +365,7 @@ mkCacheVec(op,nam,kind,resetCode,countCode) ==
 --
 -- op2String op ==
 --   u:= linearFormatName op
---   atom u => PNAME u
+--   u isnt [.,:.] => PNAME u
 --   strconc/u
 --
 -- reportCacheStorePrint(op,kind,count) ==

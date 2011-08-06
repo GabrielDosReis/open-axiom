@@ -119,7 +119,8 @@ buildLibdbConEntry conname ==
     header := strconc($kind,symbolName conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
 
-dbMkForm x == atom x and [x] or x
+dbMkForm x ==
+  x isnt [.,:.] and [x] or x
 
 buildLibdbString [x,:u] ==
   strconc(STRINGIMAGE x,strconc/[strconc('"`",STRINGIMAGE y) for y in u])
@@ -133,7 +134,7 @@ libConstructorSig [conname,:argl] ==
       or/[CONTAINED(x,y) for y in u for j in 1.. | j ~= i]
   sig := fn applySubst(pairList($FormalMapVariableList,argl),sig) where
     fn x ==
-      atom x => x
+      x isnt [.,:.] => x
       x is ['Join,a,:r] => ['Join,fn a,'etc]
       x is ['CATEGORY,:.] => 'etc
       [fn y for y in x]
@@ -452,7 +453,7 @@ getArgumentConstructors con == --called by mkDependentsHashTable
   fn argtypes where
     fn(u) == "union"/[gn x for x in u]
     gn(x) ==
-      atom x => nil
+      x isnt [.,:.] => nil
       x is ['Join,:r] => fn(r)
       x is ['CATEGORY,:.] => nil
       constructor? first x => [first x,:fn rest x]
@@ -541,7 +542,7 @@ explodeIfs x == main where  --called by getParents, getParentsForDomain
     [[a,:p]]
 
 folks u == --called by getParents and getParentsForDomain
-  atom u => nil
+  u isnt [.,:.] => nil
   u is [op,:v] and op in '(Join PROGN)
     or u is ['CATEGORY,a,:v] => "append"/[folks x for x in v]
   u is ['SIGNATURE,:.] => nil

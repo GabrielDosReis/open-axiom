@@ -90,9 +90,9 @@ trace1 l ==
       (lops := hasOption($options,'local)) =>
         null l => throwKeyedMsg("S2IT0019",nil)
         constructor := unabbrev
-          atom l => l
+          l isnt [.,:.] => l
           null rest l =>
-            atom first l => first l
+            first l isnt [.,:.] => first l
             first first l
           nil
         not(isFunctor constructor) => throwKeyedMsg("S2IT0020",nil)
@@ -207,7 +207,7 @@ getTraceOption (x is [key,:l]) ==
   key="of" =>
     ["of",:[hn y for y in l]] where
       hn x ==
-        atom x and not upperCase? STRINGIMAGE(x).0 =>
+        x isnt [.,:.] and not upperCase? STRINGIMAGE(x).0 =>
           isDomainOrPackage eval x => x
           stackTraceOptionError ["S2IT0013",[x]]
         g:= domainToGenvar x => g
@@ -299,7 +299,7 @@ untrace l ==
 
 transTraceItem x ==
   $doNotAddEmptyModeIfTrue: local:=true
-  atom x =>
+  x isnt [.,:.] =>
     (value:=get(x,"value",$InteractiveFrame)) and
       member(objMode value,$LangSupportTypes) =>
         x := objVal value
@@ -337,7 +337,7 @@ coerceSpadArgs2E(args) ==
         for arg in args for type in rest $tracedSpadModemap]
 
 subTypes(mm,sublist) ==
-  atom mm =>
+  mm isnt [.,:.] =>
     (s:= LASSOC(mm,sublist)) => s
     mm
   [subTypes(m,sublist) for m in mm]
@@ -451,7 +451,7 @@ spadTrace(domain,options) ==
          integer? n and
           isTraceable(triple:= [op,sig,n],domain)] where
             isTraceable(x is [.,.,n,:.],domain) ==
-              atom domain.n => nil
+              domain.n  isnt [.,:.] => nil
               functionSlot:= first domain.n
               GENSYMP functionSlot =>
                 (reportSpadTrace("Already Traced",x); nil)
@@ -650,7 +650,7 @@ getBpiNameIfTracedMap(name) ==
   name
 
 hasPair(key,l) ==
-  atom l => nil
+  l isnt [.,:.] => nil
   l is [[ =key,:a],:.] => a
   hasPair(key,rest l)
 
@@ -728,7 +728,7 @@ traceReply() ==
   sayBrightly '" "
   for x in _/TRACENAMES repeat
     x is [d,:.] and (isDomainOrPackage d) => addTraceItem d
-    atom x =>
+    x isnt [.,:.] =>
       isFunctor x => addTraceItem x
       (IS__GENVAR x =>
         addTraceItem eval x; functionList:= [x,:functionList])
@@ -745,19 +745,19 @@ traceReply() ==
   if $domains then
     displayList:= concat(prefix2String first $domains,
           [:concat('",",'" ",prefix2String x) for x in rest $domains])
-    if atom displayList then displayList:= [displayList]
+    if displayList isnt [.,:.] then displayList:= [displayList]
     sayBrightly '"   Domains traced: "
     sayBrightly flowSegmentedMsg(displayList,$LINELENGTH,6)
   if $packages then
     displayList:= concat(prefix2String first $packages,
           [:concat(", ",prefix2String x) for x in rest $packages])
-    if atom displayList then displayList:= [displayList]
+    if displayList isnt [.,:.] then displayList:= [displayList]
     sayBrightly '"   Packages traced: "
     sayBrightly flowSegmentedMsg(displayList,$LINELENGTH,6)
   if $constructors then
     displayList:= concat(abbreviate first $constructors,
           [:concat(", ",abbreviate x) for x in rest $constructors])
-    if atom displayList then displayList:= [displayList]
+    if displayList isnt [.,:.] then displayList:= [displayList]
     sayBrightly '"   Parameterized constructors traced:"
     sayBrightly flowSegmentedMsg(displayList,$LINELENGTH,6)
 
@@ -768,7 +768,7 @@ addTraceItem d ==
 
 _?t() ==
   null _/TRACENAMES => sayMSG bright '"nothing is traced"
-  for x in _/TRACENAMES | atom x and not IS__GENVAR x repeat
+  for x in _/TRACENAMES | x isnt [.,:.] and not IS__GENVAR x repeat
     if llm:= get(x,'localModemap,$InteractiveFrame) then
       x:= ([CADAR llm])
     sayMSG ['"Function",:bright rassocSub(x,$mapSubNameAlist),'"traced"]

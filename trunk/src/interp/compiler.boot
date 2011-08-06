@@ -182,12 +182,12 @@ comp3(x,m,$e) ==
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
-  string? m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m => (x isnt [.,:.] => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   -- In quasiquote mode, x should match exactly
   (y := isQuasiquote m) =>
      y = x => [["QUOTE",x], m, $e]
      nil
-  atom x => compAtom(x,m,e)
+  x isnt [.,:.] => compAtom(x,m,e)
   op:= x.op
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
   op is ":" => compColon(x,m,e)
@@ -257,7 +257,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --   if argl'="failed" then return nil
 --   mappingHasCategoryTarget => convert([form,first ml,e],m)
 --   form:=
---     not symbolMember?(op,$formalArgList) and atom op =>
+--     not symbolMember?(op,$formalArgList) and op isnt [.,:.] =>
 --       [op',:argl',"$"] where
 --         op':= makeSymbol strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ['%call,["applyFun",op],:argl']
@@ -276,7 +276,7 @@ hasFormalMapVariable(x, vl) ==
 freeVarUsage([.,vars,body],env) ==
   freeList(body,vars,nil,env) where
     freeList(u,bound,free,e) ==
-      atom u =>
+      u isnt [.,:.] =>
         not ident? u => free
         symbolMember?(u,bound) => free
         v := ASSQ(u,free) =>
@@ -305,7 +305,7 @@ freeVarUsage([.,vars,body],env) ==
           for vv in v repeat
             free := freeList(vv,bound,free,e)
         free
-      if atom op then --Atomic functions aren't descended
+      if op isnt [.,:.] then --Atomic functions aren't descended
         u := rest u
       for v in u repeat
         free := freeList(v,bound,free,e)
@@ -695,7 +695,7 @@ compApplication(op,argl,m,T) ==
               for x in argl for m in argml]
     argTl = "failed" => nil
     form:=
-      atom T.expr and 
+      T.expr isnt [.,:.] and 
         not (symbolMember?(op,$formalArgList) or symbolMember?(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
@@ -1274,7 +1274,7 @@ compIf(["IF",a,b,c],m,E) ==
   [x,mc,returnEnv]
 
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
-  atom expr => ValueFlag and level=exitCount
+  expr isnt [.,:.] => ValueFlag and level=exitCount
   op := expr.op
   op in '(QUOTE CLOSEDFN) => ValueFlag and level=exitCount
   op is "TAGGEDexit" =>
@@ -1286,7 +1286,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
     [.,gs,data]:= expr
     (findThrow(gs,data,level,exitCount,ValueFlag) => true) where
       findThrow(gs,expr,level,exitCount,ValueFlag) ==
-        atom expr => nil
+        expr isnt [.,:.] => nil
         expr is ["THROW", =gs,data] => true
             --this is pessimistic, but I know of no more accurate idea
         expr is ["SEQ",:l] =>
@@ -1309,7 +1309,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
        or canReturn(third expr,level,exitCount,ValueFlag)
   --now we have an ordinary form
-  atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
+  op isnt [.,:.] => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   systemErrorHere ['"canReturn",expr] --for the time being
 
 ++ We are compiling a conditional expression, type check and generate
@@ -1403,7 +1403,7 @@ getBootType t ==
 ++ Verify that mode `t' is admissible in an external entity signature
 ++ specification, and return its Boot denotation.
 checkExternalEntityType(t,e) ==
-  atom t => 
+  t isnt [.,:.] => 
     stackAndThrow('"Type variable not allowed in import of external entity",nil)
   t' := getBootType t => t'
   stackAndThrow('"Type %1bp is invalid in a foreign signature",[t])
@@ -1559,7 +1559,7 @@ compColon([":",f,t],m,e) ==
     --if inside an expression, ":" means to convert to m "on faith"
   $lhsOfColon: local:= f
   t:=
-    atom t and (t':= assoc(t,getDomainsInScope e)) => t'
+    t isnt [.,:.] and (t':= assoc(t,getDomainsInScope e)) => t'
     isDomainForm(t,e) and not $insideCategoryIfTrue =>
       (if not listMember?(t,getDomainsInScope e) then e:= addDomain(t,e); t)
     isDomainForm(t,e) or isCategoryForm(t,e) => t
@@ -1865,7 +1865,7 @@ resolve(din,dout) ==
 modeEqual(x,y) ==
   -- this is the late modeEqual
   -- orders Unions
-  atom x or atom y => x=y
+  x isnt [.,:.] or y isnt [.,:.] => x=y
   #x ~= #y => nil
   x is ['Union,:xl] and y is ['Union,:yl] =>
     for x1 in xl repeat
@@ -1880,7 +1880,7 @@ modeEqual(x,y) ==
 
 modeEqualSubst(m1,m,e) ==
   modeEqual(m1, m) => true
-  atom m1 => get(m1,"value",e) is [m',:.] and modeEqual(m',m)
+  m1 isnt [.,:.] => get(m1,"value",e) is [m',:.] and modeEqual(m',m)
   m1 is [op,:l1] and m is [=op,:l2]  and # l1 = # l2 =>
 -- Above length test inserted JHD 4:47 on 15/8/86
 -- Otherwise Records can get fouled up - consider expressIdealElt
@@ -2235,7 +2235,7 @@ processInlineRequest(t,e) ==
   T := compOrCroak(t,$EmptyMode,e)
   not isCategoryForm(T.mode,e) =>
     stackAndThrow('"%1b does not designate a domain",[t])
-  atom T.expr =>
+  T.expr isnt [.,:.] =>
     stackWarning('"inline request for type variable %1bp is meaningless",[t])
   nominateForInlining T.expr
 
@@ -2294,7 +2294,7 @@ getIdentity(x,e) ==
 numberize x ==
   x=$Zero => 0
   x=$One => 1
-  atom x => x
+  x isnt [.,:.] => x
   [numberize first x,:numberize rest x]
 
 ++ If there is a local reference to mode `m', return it.  
@@ -2565,11 +2565,11 @@ compUnnamedMapping(parms,source,target,body,env) ==
 gatherParameterList vars == main(vars,nil,nil) where
   main(vars,parms,source) ==
     vars = nil => [reverse! parms,reverse! source]
-    atom vars or vars is [":",:.] => [[x] for x in check vars]
+    vars isnt [.,:.] or vars is [":",:.] => [[x] for x in check vars]
     [v,s] := check first vars
     main(rest vars,[v,:parms],[s,:source])
   check var == 
-    atom var =>
+    var isnt [.,:.] =>
       not ident? var =>
         stackAndThrow('"invalid parameter %1b in lambda expression",[var])
       [checkVariableName var,nil]

@@ -160,7 +160,7 @@ finalizeDocumentation() ==
           for [op,sig] in signatures repeat
             s := formatOpSignature(op,sig)
             sayMSG
-              atom s => ['%x9,s]
+              s isnt [.,:.] => ['%x9,s]
               ['%x9,:s]
         if attributes then
           sayKeyedMsg("S2CD0005",
@@ -169,7 +169,7 @@ finalizeDocumentation() ==
           for x in attributes repeat
             a := form2String x
             sayMSG
-              atom a => ['%x9,a]
+              a isnt [.,:.] => ['%x9,a]
               ['%x9,:a]
       if unusedCommentLineNumbers then
         sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),name])
@@ -177,7 +177,7 @@ finalizeDocumentation() ==
           sayMSG ['"   ",:bright n,'"   ",r]
   hn [[:fn(sig,$e),:doc] for [sig,:doc] in docList] where
     fn(x,e) ==
-      atom x => [x,nil]
+      x isnt [.,:.] => [x,nil]
       if #x > 2 then x := TAKE(2,x)
       applySubst(pairList($lisplibForm.args,$FormalMapVariableList),
         macroExpand(x,e))
@@ -241,7 +241,7 @@ transDoc(conname,doclist) ==
 --            checkDocError
 --              ['"_"Related Domain_" has wrong number of arguments: ",x]
 --            nil
---          n=0 and atom x => [x]
+--          n=0 and x isnt [.,:.] => [x]
 --          x
     longline :=
       $x is 'constructor =>
@@ -280,7 +280,7 @@ transformAndRecheckComments(name,lines) ==
   $origin       : local := 'gloss
   $recheckingFlag : local := false
   $exposeFlagHeading : local := 
-    atom name => ['"     -- ",name]
+    name isnt [.,:.] => ['"     -- ",name]
     concat('"     --",formatOpSignature(name.0, escapePercent name.1))
   if not $exposeFlag then sayBrightly $exposeFlagHeading
   u := checkComments(name,lines)
@@ -382,7 +382,7 @@ checkRecordHash u ==
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
             checkDocError ['"Bad system command: ",s]
-          atom parse or (parse isnt ['set,arg]) => 'ok  ---assume ok
+          parse isnt [.,:.] or (parse isnt ['set,arg]) => 'ok  ---assume ok
           not spadSysChoose($setOptions,arg) =>
             checkDocError ['"Incorrect \spadsys: ",s]
             entry := tableValue($sysHash,htname) or [nil]
@@ -393,10 +393,10 @@ checkRecordHash u ==
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           n := checkNumOfArgs parse
           null n => checkDocError ['"Unknown \spadtype: ", s]
-          atom parse and n > 0 => 'skip
+          parse isnt [.,:.] and n > 0 => 'skip
           null (key := checkIsValidType parse) =>
             checkDocError ['"Unknown \spadtype: ", s]
-          atom key => 'ok
+          key isnt [.,:.] => 'ok
           checkDocError ['"Wrong number of arguments: ",form2HtString key]
       else if x in '("\spadop" "\keyword") and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           x := intern checkGetStringBeforeRightBrace u
@@ -428,7 +428,7 @@ checkNumOfArgs conform ==
 ++ The check is down recursively on the argument to the instantiated functor.
 checkIsValidType form == main where
   main() ==
-    atom form => 'ok
+    form isnt [.,:.] => 'ok
     [op,:args] := form
     conname := (constructor? op => op; abbreviation? op)
     null conname => nil

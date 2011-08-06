@@ -45,7 +45,7 @@ $forceAdd := false
 --   or to get the current domains in scope;
  
 addDomain(domain,e) ==
-  atom domain =>
+  domain isnt [.,:.] =>
     domain="$EmptyMode" => e
     domain="$NoValueMode" => e
     not ident? domain or 2 < #(s:= STRINGIMAGE domain) and
@@ -139,7 +139,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)
       addModemap1(op,mc,[:lt,id],pred,fn,e)
-    -- atom sel => systemErrorHere '"addEltModemap"
+    -- sel isnt [.,:.] => systemErrorHere '"addEltModemap"
     addModemap1(op,mc,sig,pred,fn,e)
   op='setelt and sig is [:lt,sel,v] =>
     string? sel =>
@@ -148,7 +148,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)
       addModemap1(op,mc,[:lt,id,v],pred,fn,e)
-    -- atom sel => systemError '"addEltModemap"
+    -- sel isnt [.,:.] => systemError '"addEltModemap"
     addModemap1(op,mc,sig,pred,fn,e)
   systemErrorHere '"addEltModemap"
  
@@ -213,7 +213,7 @@ augModemapsFromDomain(name,functorForm,e) ==
 augModemapsFromDomain1(name,functorForm,e) ==
   property(KAR functorForm,"makeFunctionList") =>
     addConstructorModemaps(name,functorForm,e)
-  atom functorForm and (catform := getmode(functorForm,e)) =>
+  functorForm isnt [.,:.] and (catform := getmode(functorForm,e)) =>
     augModemapsFromCategory(name,name,functorForm,catform,e)
   mappingForm := getmodeOrMapping(KAR functorForm,e) =>
     ["Mapping",categoryForm,:functArgTypes] := mappingForm
@@ -275,7 +275,7 @@ evalAndSub(domainName,viewName,functorForm,form,$e) ==
   [substAlist,$e]
  
 getOperationAlist(name,functorForm,form) ==
-  if atom name and niladicConstructorFromDB name then 
+  if name isnt [.,:.] and niladicConstructorFromDB name then 
     functorForm:= [functorForm]
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
@@ -359,7 +359,7 @@ addInformation(m,$e) ==
   info m where
     info m ==
       --Processes information from a mode declaration in compCapsule
-      atom m => nil
+      m isnt [.,:.] => nil
       m is ["CATEGORY",.,:stuff] => for u in stuff repeat addInfo u
       m is ["Join",:stuff] => for u in stuff repeat info u
       nil
@@ -372,15 +372,15 @@ addInfo u ==
   $Information:= [formatInfo u,:$Information]
  
 formatInfo u ==
-  atom u => u
+  u isnt [.,:.] => u
   u is ["SIGNATURE",:v] => ["SIGNATURE","$",:v]
   u is ["PROGN",:l] => ["PROGN",:[formatInfo v for v in l]]
   u is ["ATTRIBUTE",v] =>
  
     -- The parser can't tell between those attributes that really
     -- are attributes, and those that are category names
-    atom v and isCategoryForm([v],$e) => ["has","$",[v]]
-    atom v => ["ATTRIBUTE","$",v]
+    v isnt [.,:.] and isCategoryForm([v],$e) => ["has","$",[v]]
+    v isnt [.,:.] => ["ATTRIBUTE","$",v]
     isCategoryForm(v,$e) => ["has","$",v]
     ["ATTRIBUTE","$",v]
   u is ["IF",a,b,c] =>
@@ -401,13 +401,13 @@ liftCond (clause is [ante,conseq]) ==
 formatPred u ==
          --Assumes that $e is set up to point to an environment
   u is ["has",a,b] =>
-    atom b and isCategoryForm([b],$e) => ["has",a,[b]]
-    atom b => ["has",a,["ATTRIBUTE",b]]
+    b isnt [.,:.] and isCategoryForm([b],$e) => ["has",a,[b]]
+    b isnt [.,:.] => ["has",a,["ATTRIBUTE",b]]
     isCategoryForm(b,$e) => u
     b is ["ATTRIBUTE",.] => u
     b is ["SIGNATURE",:.] => u
     ["has",a,["ATTRIBUTE",b]]
-  atom u => u
+  u isnt [.,:.] => u
   u is ["and",:v] => ["and",:[formatPred w for w in v]]
   systemError ['"formatPred",u]
  

@@ -49,7 +49,7 @@ pathname? p ==
  
 pathname p ==
   pathname? p => p
-  atom p => PATHNAME p
+  p isnt [.,:.] => PATHNAME p
   if #p>2 then p:=[p.0,p.1]
   PATHNAME apply(FUNCTION MAKE_-FILENAME, p)
  

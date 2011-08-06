@@ -155,12 +155,12 @@ dbShowInfoList(dataItems,count,buttonForOp?) ==
     htSay '"{"
     if count < 16384 or not buttonForOp? then
       htSay [ops,'": "]
-      atom sig => bcConform sig
+      sig isnt [.,:.] => bcConform sig
       bcConform dbInfoSig sig
     else
       htMakePage [['bcLinks,[ops,'"",'dbInfoChooseSingle,count]]]
       htSay '": "
-      if atom sig then htSay sig else
+      if sig isnt [.,:.] then htSay sig else
         bcConform dbInfoSig sig
     htSay '"}"
     count := count + 1
@@ -245,7 +245,7 @@ hasNewInfoAlist conname ==
   (u := getInfoAlist conname) and hasNewInfoText u
 
 hasNewInfoText u ==
-  and/[atom op and "and"/[item is [sig,:alist] and
+  and/[op isnt [.,:.] and "and"/[item is [sig,:alist] and
     null sig or cons? sig and cons? alist for item in items] for [op,:items] in u]
 
 getInfoAlist conname ==

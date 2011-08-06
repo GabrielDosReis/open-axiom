@@ -82,7 +82,7 @@ expandSTEP(id,lo,step,final)==
     loopvar := [:loopvar,[g1,step]]
     g1
   final :=
-    atom final => final
+    final isnt [.,:.] => final
     final is [hi] and atomic? hi => hi
     g2 := gensym()
     loopvar := [:loopvar,[g2,:final]]

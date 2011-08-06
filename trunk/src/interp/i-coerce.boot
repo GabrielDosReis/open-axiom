@@ -212,7 +212,7 @@ retract2Specialization object ==
     null isRectangularList(val',n,m) => nil
     coerceInt(object,['Matrix,D'])
   type is ['Expression,D] =>
-    atom val' => nil          -- certainly not a fraction
+    val' isnt [.,:.] => nil          -- certainly not a fraction
     [num,:den] := val'
     ofCategory(type,$Field) =>
       -- coerceRetract already handles case where den = 1
@@ -424,7 +424,7 @@ canCoerce1(t1,t2) ==
     string? t2 =>
       t1 is ['Variable,v] and (t2 = PNAME(v)) => true
       nil
-    atom t1 or atom t2 => nil
+    t1 isnt [.,:.] or t2 isnt [.,:.] => nil
     null isValidType(t2) => nil
 
     absolutelyCannotCoerce(t1,t2) => nil
@@ -671,7 +671,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
   -- difference is a subdomain
   isEqualOrSubDomain(t1,t2) => true
   typeIsASmallInteger(t1) and t2 = $Integer => true
-  atom(t1) or atom(t2) => false
+  t1 isnt [.,:.] or t2 isnt [.,:.] => false
   [tl1,:u1] := deconstructT t1
   [tl2,:u2] := deconstructT t2
   tl1 = '(Stream) and tl2 = '(InfiniteTuple) =>
@@ -684,7 +684,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
 absolutelyCannotCoerce(t1,t2) ==
   -- response of true means "definitely cannot coerce"
   -- this is largely an efficiency hack
-  atom(t1) or atom(t2) => nil
+  t1 isnt [.,:.] or t2 isnt [.,:.] => nil
   t2 = $None => true
   n1   := first t1
   n2   := first t2
@@ -851,13 +851,13 @@ coerceInt1(triple,t2) ==
   (string? t1) and (t1 = unwrap val) =>
     t2 = $OutputForm => objNew(t1,$OutputForm)
     nil
-  atom t1 => nil
+  t1 isnt [.,:.] => nil
 
   if t1 = $AnonymousFunction and (t2 is ['Mapping,target,:margl]) then
     $useCoerceOrCroak := nil
     [.,vars,:body] := unwrap val
     vars :=
-      atom vars => [vars]
+      vars isnt [.,:.] => [vars]
       vars is ["tuple",:.] => rest vars
       vars
     #margl ~= #vars => 'continue
@@ -1234,14 +1234,14 @@ computeTTTranspositions(t1,t2) ==
   reverse! towers
 
 decomposeTypeIntoTower t ==
-  atom t => [t]
+  t isnt [.,:.] => [t]
   d := deconstructT t
   null rest d => [t]
   rd := reverse t
   [reverse rest rd,:decomposeTypeIntoTower first rd]
 
 reassembleTowerIntoType tower ==
-  atom tower => tower
+  tower isnt [.,:.] => tower
   null rest tower => first tower
   [:top,t,s] := tower
   reassembleTowerIntoType [:top,[:t,s]]

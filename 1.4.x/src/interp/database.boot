@@ -380,7 +380,7 @@ isDomainSubst u == main where
       [nhead,:isDomainSubst rest u]
     u
   fn(x,alist) ==
-    atom x =>
+    x isnt [.,:.] =>
       ident? x and symbolMember?(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
     [first x,:[fn(y,alist) for y in rest x]]
@@ -390,7 +390,7 @@ isDomainSubst u == main where
     findSub(x,rest alist)
 
 signatureTran pred ==
-  atom pred => pred
+  pred isnt [.,:.] => pred
   pred is ["has",D,catForm] and isCategoryForm(catForm,$e) =>
     ['ofCategory,D,catForm]
   [signatureTran p for p in pred]
@@ -402,7 +402,7 @@ interactiveModemapForm mm ==
   mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
   [pattern:=[dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
-    x is [a,b,c] and a isnt 'isFreeFunction and atom c => [a,b,[c]]
+    x is [a,b,c] and a isnt 'isFreeFunction and c isnt [.,:.] => [a,b,[c]]
     x
 --pp pred
   [mmpat, patternAlist, partial, patvars] :=
@@ -600,7 +600,7 @@ mkAlistOfExplicitCategoryOps target ==
       [[atomizeOp op,:sig] for x in l | x is ['SIGNATURE,op,sig,:.]]
             where
               atomizeOp op ==
-                atom op => op
+                op isnt [.,:.] => op
                 op is [a] => a
                 keyedSystemError("S2GE0016",
                   ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
@@ -613,7 +613,7 @@ mkAlistOfExplicitCategoryOps target ==
     ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
 
 flattenSignatureList(x) ==
-  atom x => nil
+  x isnt [.,:.] => nil
   x is ['SIGNATURE,:.] => [x]
   x is ['IF,cond,b1,b2] =>
      append(flattenSignatureList b1, flattenSignatureList b2)
@@ -647,7 +647,7 @@ updateDatabase(fname,cname,systemdir?) ==
 
 REMOVER(lst,item) ==
   --destructively removes item from lst
-  atom lst =>
+  lst isnt [.,:.] =>
     lst=item => nil
     lst
   first lst=item => rest lst

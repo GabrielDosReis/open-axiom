@@ -45,18 +45,18 @@ module astr where
  
 -- Pick off the tag
 ncTag x ==
-   atom x => ncBug('S2CB0031,[])
+   x isnt [.,:.] => ncBug('S2CB0031,[])
    x := first x
    ident? x => x
-   atom x => ncBug('S2CB0031,[])
+   x isnt [.,:.] => ncBug('S2CB0031,[])
    first x
  
 -- Pick off the property list
 ncAlist x ==
-   atom x => ncBug('S2CB0031,[])
+   x isnt [.,:.] => ncBug('S2CB0031,[])
    x := first x
    ident? x => nil
-   atom x => ncBug('S2CB0031,[])
+   x isnt [.,:.] => ncBug('S2CB0031,[])
    rest x
 
  --- Get the entry for key k on x's association list

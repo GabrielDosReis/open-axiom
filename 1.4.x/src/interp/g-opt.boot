@@ -53,7 +53,7 @@ nominateForInlining dom ==
 ++ return the template of the instantiating functor for
 ++ the domain form `dom'.
 getDomainTemplate dom ==
-  atom dom => nil
+  dom isnt [.,:.] => nil
   getInfovec first dom
 
 ++ Emit code for an indirect call to domain-wide Spad function.  
@@ -160,14 +160,14 @@ optimizeFunctionDef(def) ==
         x is ["THROW", =g,:u] =>
           x.first := "RETURN"
           x.rest := replaceThrowByReturn(u,g)
-        atom x => nil
+        x isnt [.,:.] => nil
         replaceThrowByReturn(first x,g)
         replaceThrowByReturn(rest x,g)
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
 
 resetTo(x,y) ==
-  atom y => x := y
+  y isnt [.,:.] => x := y
   sameObject?(x,y) => x
   x.first := y.first
   x.rest := y.rest
@@ -179,7 +179,7 @@ simplifyVMForm x ==
   x is '%icst1 => 1
   atomic? x => x
   x.op is 'CLOSEDFN => x
-  atom x.op =>
+  x.op isnt [.,:.] =>
     x is [op,vars,body] and abstractionOperator? op =>
       third(x) := simplifyVMForm body
       x
@@ -199,18 +199,18 @@ subrname u ==
   nil
  
 changeThrowToExit(s,g) ==
-  atom s or s.op in '(QUOTE SEQ REPEAT COLLECT %collect %loop) => nil
+  s isnt [.,:.] or s.op in '(QUOTE SEQ REPEAT COLLECT %collect %loop) => nil
   s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)
 
 hasNoThrows(a,g) ==
   a is ["THROW", =g,:.] => false
-  atom a => true
+  a isnt [.,:.] => true
   hasNoThrows(first a,g) and hasNoThrows(rest a,g)
 
 changeThrowToGo(s,g) ==
-  atom s or first s is 'QUOTE => nil
+  s isnt [.,:.] or s.op is 'QUOTE => nil
   s is ["THROW", =g,u] =>
     changeThrowToGo(u,g)
     s.first := "PROGN"
@@ -236,7 +236,7 @@ removeNeedlessThrow x ==
 
 optCatch (x is ["CATCH",g,a]) ==
   $InteractiveMode => x
-  atom a => a
+  a isnt [.,:.] => a
   removeNeedlessThrow a
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
@@ -259,11 +259,11 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
  
 optCall (x is ['%call,:u]) ==
   u is [['XLAM,vars,body],:args] =>
-    atom vars => body
+    vars isnt [.,:.] => body
     #vars > #args => systemErrorHere ['optCall,x]
     resetTo(x,optXLAMCond applySubst(pairList(vars,args),body))
   [fn,:a] := u
-  atom fn =>
+  fn isnt [.,:.] =>
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
     resetTo(x,u)
   fn is ['applyFun,name] =>
@@ -332,7 +332,7 @@ EqualBarGensym(x,y) ==
         true
       null x => y is [g] and GENSYMP g
       null y => x is [g] and GENSYMP g
-      atom x or atom y => false
+      x isnt [.,:.] or y isnt [.,:.] => false
       fn(first x,first y) and fn(rest x,rest y)
  
 --Called early, to change IF to conditional form
@@ -348,7 +348,7 @@ optXLAMCond x ==
   x is ['%when,u:= [p,c],:l] =>
     p is '%otherwise => c
     ['%when,u,:optCONDtail l]
-  atom x => x
+  x isnt [.,:.] => x
   x.first := optXLAMCond first x
   x.rest := optXLAMCond rest x
   x
@@ -459,7 +459,7 @@ isSimpleVMForm form ==
 ++ on the program point where it is evaluated. 
 isFloatableVMForm: %Code -> %Boolean
 isFloatableVMForm form ==
-  atom form => form isnt "$"
+  form isnt [.,:.] => form isnt "$"
   form is ["QUOTE",:.] => true
   symbolMember?(form.op, $simpleVMoperators) and
     "and"/[isFloatableVMForm arg for arg in form.args]
@@ -482,7 +482,7 @@ findVMFreeVars form ==
   form isnt [op,:args] => nil  
   op is "QUOTE" => nil
   vars := union/[findVMFreeVars arg for arg in args]
-  atom op => vars
+  op isnt [.,:.] => vars
   union(findVMFreeVars op,vars)
 
 ++ Return true is `var' is the left hand side of an assignment
@@ -584,7 +584,7 @@ optLET u ==
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
   for defs in tails inits repeat
     def := first defs
-    atom def => systemErrorHere ["optLET",def] -- cannot happen
+    def isnt [.,:.] => systemErrorHere ["optLET",def] -- cannot happen
     def.rest := second def
   applySubst(inits,body)
 
@@ -655,7 +655,7 @@ optCollectVector form ==
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
 optRetract ["%retract",e,m,pred] ==
-  atom e =>
+  e isnt [.,:.] =>
     cond := simplifyVMForm substitute(e,"#1",pred)
     cond is '%true => e
     ["check-subtype",cond,MKQ m,e]

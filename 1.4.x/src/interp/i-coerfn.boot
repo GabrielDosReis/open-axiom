@@ -1284,7 +1284,7 @@ Sm2PolyType(u,source is [sm,n,S], target is [pol,vl,T]) ==
   -- first want to check case S is Polynomial
   S is ['Polynomial,S'] =>
     -- check to see if variable occurs in any of the terms
-    if atom vl
+    if vl isnt [.,:.]
       then vl' := [vl]
       else vl' := vl
     novars := true

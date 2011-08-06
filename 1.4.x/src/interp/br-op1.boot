@@ -136,7 +136,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
     key
   [what,whats,fn] := LASSOC(branch,$OpViewTable)
   data := dbGatherData(htPage,opAlist,which,branch)
-  dataCount := +/[1 for x in data | (what is '"Name" and $exposedOnlyIfTrue => atom x; true)]
+  dataCount := +/[1 for x in data | (what is '"Name" and $exposedOnlyIfTrue => x isnt [.,:.]; true)]
   namedPart :=
     null rest opAlist =>
       ops := escapeSpecialChars STRINGIMAGE CAAR opAlist
@@ -235,7 +235,7 @@ conform2StringList(form,opFn,argFn,exception) ==
       pred =>
         string? x => [x]
         u := apply(argFn,[x])
-        atom u and [u] or u
+        u isnt [.,:.] and [u] or u
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
       u := mathform2HtString algCoerceInteractive(x,typ,'(OutputForm)) => [u]
@@ -371,14 +371,14 @@ dbGatherData(htPage,opAlist,which,key) ==
         y                                   --no, create new entry in DATA
       if key in '(origins conditions) then
         r := CDDR newEntry
-        if atom r then r := nil             --clear out possible 'ASCONST
+        if r isnt [.,:.] then r := nil      --clear out possible 'ASCONST
         newEntry.rest.rest :=               --store op/sigs under key if needed
           insert([dbMakeSignature(op,item),exposeFlag,:tail],r)
   if key in '(origins conditions) then
     for entry in data repeat   --sort list of entries (after the 2nd)
       tail := CDDR entry
       tail :=
-        atom tail => tail
+        tail isnt [.,:.] => tail
         listSort(function LEXLESSEQP,tail)
       entry.rest.rest := tail
   data := listSort(function LEXLESSEQP,data)
@@ -417,7 +417,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
           alist := [[key,gn key,:entries],:alist]
       reverse! alist
     gn key ==
-      atom key => true
+      key isnt [.,:.] => true
       isExposedConstructor first key
 
 dbSelectData(htPage,opAlist,key) ==
@@ -504,7 +504,7 @@ dbShowOpItems(which,data,exposedOnly?) ==
   for i in 0.. for item in data repeat
     if firstTime then firstTime := false
     else htSaySaturn '"&"
-    if atom item then
+    if item isnt [.,:.] then
       op := item
       exposeFlag := true
     else
@@ -549,7 +549,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
 
 simpOrDumb(new,old) ==
   new is 'etc => 'etc
-  atom new => old
+  new isnt [.,:.] => old
   'etc
 
 dbShowOpOrigins(htPage,opAlist,which,data) ==
@@ -907,19 +907,19 @@ mathform2HtString form == escapeString
   form is ['BRACKET,['AGGLST,:arg]] =>
     if arg is ['construct,:r] then arg := r
     arg :=
-      atom arg => [arg]
+      arg isnt [.,:.] => [arg]
       [y for x in arg | y := (x is ['QUOTE,a] => a; x)]
     tailPart := strconc/[strconc('",",STRINGIMAGE x) for x in rest arg]
     strconc('"[",STRINGIMAGE first arg,tailPart,'"]")
   form is ['BRACKET,['AGGLST,'QUOTE,arg]] =>
-    if atom arg then arg := [arg]
+    if arg isnt [.,:.] then arg := [arg]
     tailPart := strconc/[strconc('",",x) for x in rest arg]
     strconc('"[",first arg,tailPart,'"]")
-  atom form => form
+  form isnt [.,:.] => form
   strconc/fortexp0 form
 
 niladicHack form ==
-  atom form => form
+  form isnt [.,:.] => form
   form is [x] and GETL(x,"NILADIC") => x
   [niladicHack x for x in form]
 
@@ -979,7 +979,7 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     pred is 'T => true
     systemError nil
   convertCatArg p ==
-    atom p or #p = 1 => MKQ p
+    p isnt [.,:.] or #p = 1 => MKQ p
     ['%list,MKQ first p,:[convertCatArg x for x in rest p]]
   evpred(dom,pred) ==
     k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)

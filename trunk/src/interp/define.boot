@@ -137,7 +137,7 @@ makeDomainTemplate vec ==
     item := vectorRef(vec,index)
     null item => nil
     vectorRef(newVec,index) :=
-      atom item => item
+      item isnt [.,:.] => item
       cons? first item => makeGoGetSlot(item,index)
       item   
   $byteVec := "append"/reverse! $byteVec
@@ -255,7 +255,7 @@ NRTmakeCategoryAlist() ==
 
 encodeCatform x ==
   k := NRTassocIndex x => k
-  atom x or atom rest x => x
+  x isnt [.,:.] or rest x isnt [.,:.] => x
   [first x,:[encodeCatform y for y in rest x]]
  
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
@@ -273,7 +273,7 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
   domform := applySubst($pairlis,domform)
   addForm := applySubst($pairlis,addForm)
   $why: local := nil
-  atom addForm => 'lookupComplete
+  addForm isnt [.,:.] => 'lookupComplete
   extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
   if null extends then 
     [u,msg,:v] := $why
@@ -362,7 +362,7 @@ substSlotNumbers(form,template,domain) ==
   expandType(form,template,domain)
  
 expandType(lazyt,template,domform) ==
-  atom lazyt => expandTypeArgs(lazyt,template,domform)
+  lazyt isnt [.,:.] => expandTypeArgs(lazyt,template,domform)
   [functorName,:argl] := lazyt
   functorName is ":" =>
     [functorName,first argl,expandTypeArgs(second argl,template,domform)]
@@ -376,7 +376,7 @@ expandTypeArgs(u,template,domform) ==
   integer? u => expandType(templateVal(template, domform, u), template,domform)
   u is ['NRTEVAL,y] => y  --eval  y
   u is ['QUOTE,y] => y
-  atom u => u
+  u isnt [.,:.] => u
   expandType(u,template,domform)
  
 templateVal(template,domform,index) ==
@@ -614,14 +614,14 @@ giveFormalParametersValues(argl,e) ==
 macroExpandInPlace: (%Form,%Env) -> %Form 
 macroExpandInPlace(x,e) ==
   y:= macroExpand(x,e)
-  atom x or atom y => y
+  x isnt [.,:.] or y isnt [.,:.] => y
   x.first := first y
   x.rest := rest y
   x
 
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
-  atom x =>
+  x isnt [.,:.] =>
     not ident? x or (u := get(x,"macro",e)) = nil => x
     -- Don't expand a functional macro name by itself.
     u is ['%mlambda,:.] => x
@@ -700,7 +700,7 @@ makeCategoryPredicates(form,u) ==
           u is ["has",:.] =>
             insert(applySubst(pairList($tvl,$mvl),u),pl)
           u is [op,:.] and op in '(SIGNATURE ATTRIBUTE) => pl
-          atom u => pl
+          u isnt [.,:.] => pl
           fnl(u,pl)
         fnl(u,pl) ==
           for x in u repeat pl := fn(x,pl)
@@ -717,7 +717,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   nameForDollar := first SETDIFFERENCE('(S A B C D E F G H I),argl)
   packageArgl := [nameForDollar,:argl]
   capsuleDefAlist := fn(def,nil) where fn(x,oplist) ==
-    atom x => oplist
+    x isnt [.,:.] => oplist
     x is ['DEF,y,:.] => [y,:oplist]
     fn(x.args,fn(x.op,oplist))
   catvec := eval mkEvalableCategoryForm form
@@ -828,7 +828,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 
 mkConstructor: %Form -> %Form
 mkConstructor form ==
-  atom form => ['devaluate,form]
+  form isnt [.,:.] => ['devaluate,form]
   null form.args => ['QUOTE,[form.op]]
   ['%list,MKQ form.op,:[mkConstructor x for x in form.args]]
  
@@ -1199,7 +1199,7 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
           getmode(a,e) or userError concat(
             '"There is no mode for argument",a,'"of function",form.op)
         transformType x ==
-          atom x => x
+          x isnt [.,:.] => x
           x is [":",R,Rtype] =>
             ($sigAlist:= [[R,:transformType Rtype],:$sigAlist]; x)
           x is ['Record,:.] => x --RDJ 8/83
@@ -1602,7 +1602,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
  
 constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
-  not (and/[atom x for x in vl]) =>
+  not (and/[x isnt [.,:.] for x in vl]) =>
     stackSemanticError(["illegal parameters for macro: ",vl],nil)
   ["XLAM",vl':= [x for x in vl | ident? x],body]
  
@@ -1616,7 +1616,7 @@ modemap2Signature [[.,:sig],:.] == sig
 
 uncons: %Form -> %Form 
 uncons x ==
-  atom x => x
+  x isnt [.,:.] => x
   x is ["CONS",a,b] => [a,:uncons b]
  
 --% CAPSULE
@@ -1758,7 +1758,7 @@ doIt(item,$predl) ==
   item is ["%LET",lhs,rhs,:.] =>
     compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
-    not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
+    not (code is ["%LET",lhs',rhs',:.] and lhs' isnt [.,:.]) =>
       code is ["PROGN",:.] =>
          stackSemanticError(["multiple assignment ",item," not allowed"],nil)
       item.first := first code
@@ -1865,7 +1865,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    -- conditional compilation
    nils:=ans:=[]
    for u in flp1 repeat -- is =u form always an atom?
-     if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+     if u isnt [.,:.] or (or/[v is [.,=u,:.] for v in $getDomainCode])
        then
          nils:=[u,:nils]
        else
@@ -1896,7 +1896,7 @@ compJoin(["Join",:argl],m,e) ==
           parameters:=
             union("append"/[getParms(y,e) for y in rest x],parameters)
               where getParms(y,e) ==
-                atom y =>
+                y isnt [.,:.] =>
                   isDomainForm(y,e) => [y]
                   nil
                 y is [op,y'] and op in '(LENGTH %llength) => [y,y']
@@ -1905,7 +1905,7 @@ compJoin(["Join",:argl],m,e) ==
         x is ["DomainSubstitutionMacro",pl,body] =>
           (parameters:= union(pl,parameters); body)
         x is ["mkCategory",:.] => x
-        atom x and getmode(x,e)=$Category => x
+        x isnt [.,:.] and getmode(x,e) = $Category => x
         stackSemanticError(["invalid argument to Join: ",x],nil)
         x
   T:= [wrapDomainSub(parameters,["Join",:catList']),$Category,e]
@@ -1949,7 +1949,7 @@ DomainSubstitutionFunction(parameters,body) ==
   if parameters then
     (body := Subst(parameters,body)) where
       Subst(parameters,body) ==
-        atom body =>
+        body isnt [.,:.] =>
           symbolMember?(body,parameters) => MKQ body
           body
         listMember?(body,parameters) =>
@@ -1966,7 +1966,7 @@ DomainSubstitutionFunction(parameters,body) ==
           =>  ['QUOTE,simplifyVMForm body]
         [Subst(parameters,u) for u in body]
   body isnt ["Join",:.] => body
-  atom $definition => body
+  $definition isnt [.,:.] => body
   null $definition.args => body 
            --should not bother if it will only be called once
   name := makeSymbol strconc(KAR $definition,";CAT")

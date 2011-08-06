@@ -231,7 +231,7 @@ evalForm(op,opName,argl,mmS) ==
       dc:= first sig
       form :=
         dc='local => --[fun,:form]
-          atom fun =>
+          fun isnt [.,:.] =>
             isLocallyBound fun => ['SPADCALL,:form,fun]
             [fun,:form,nil]
           ['SPADCALL,:form,fun]
@@ -270,7 +270,7 @@ sideEffectedArg?(t,sig,opName) ==
   t = dc
 
 getArgValue(a, t) ==
-  atom a and not vector? a =>
+  a isnt [.,:.] and not vector? a =>
     t' := coerceOrRetract(getBasicObject a,t)
     t' and getValueNormalForm t'
   v := getArgValue1(a, t) => v

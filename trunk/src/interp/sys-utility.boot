@@ -120,28 +120,28 @@ CONTAINED(x,y) == main where
     cons? y => eq(x, first y) or eq(x, rest y)
     symbolEq?(x,y)
   equal(x,y) ==
-    atom y => x = y
+    y isnt [.,:.] => x = y
     equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
 -- ??? Should not this be named `alistAllKeys'?
 ASSOCLEFT: %Thing -> %Thing
 ASSOCLEFT x ==
-  atom x => x
+  x isnt [.,:.] => x
   [first p for p in x]
 
 ++ Returns all the datums of association list `x'.
 -- ??? Should not this be named `alistAllValues'?
 ASSOCRIGHT: %Thing -> %Thing
 ASSOCRIGHT x ==
-  atom x => x
+  x isnt [.,:.] => x
   [rest p for p in x]
 
 ++ Put the association list pair `(x . y)' into `l', erasing any 
 ++ previous association for `x'.
 ADDASSOC: (%Thing,%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 ADDASSOC(x,y,l) ==
-  atom l => [[x,:y],:l]
+  l isnt [.,:.] => [[x,:y],:l]
   x = first first l => [[x,:y],:rest l]
   [first l,:ADDASSOC(x,y,rest l)]
 
@@ -149,7 +149,7 @@ ADDASSOC(x,y,l) ==
 ++ Remove any assocation pair `(u . x)' from list `v'.
 DELLASOS: (%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
 DELLASOS(u,v) ==
-  atom v => nil
+  v isnt [.,:.] => nil
   u = first first v => rest v
   [first v,:DELLASOS(u,rest v)]
 
@@ -158,14 +158,14 @@ DELLASOS(u,v) ==
 -- ??? Should not this be named `alistValue'?
 LASSOC: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 LASSOC(x,y) ==
-  atom y => nil
+  y isnt [.,:.] => nil
   x = first first y => rest first y
   LASSOC(x,rest y)
 
 ++ Return the key associated with datum `x' in association list `y'.
 rassoc: (%Thing,%Alist(%Thing,%Thing)) -> %Thing
 rassoc(x,y) ==
-  atom y => nil
+  y isnt [.,:.] => nil
   x = rest first y => first first y
   rassoc(x,rest y)
 

@@ -55,7 +55,7 @@ categoryObject? a ==
 ++ envronement `e'.
 isCategoryForm: (%Form,%Env) -> %Boolean
 isCategoryForm(x,e) ==
-  atom x =>
+  x isnt [.,:.] =>
     u := macroExpand(x,e)
     cons? u and categoryForm? u
   categoryForm? x
@@ -95,7 +95,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
       Prepare2 v ==
         v is '$ => nil
         string? v => nil
-        atom v => [v]
+        v isnt [.,:.] => [v]
         v.op is 'Union =>
           "union"/[Prepare2 x for x in stripUnionTags v.args]
         v.op is 'Mapping => "union"/[Prepare2 x for x in v.args]
@@ -376,7 +376,7 @@ JoinInner(l,$e) ==
   for u in l repeat
     for at in u.2 repeat
       at2:= first at
-      if atom at2 then at2:=[at2]
+      if at2 isnt [.,:.] then at2 := [at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
       symbolMember?(first at2,$Attributes) => nil

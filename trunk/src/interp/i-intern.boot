@@ -72,7 +72,7 @@ mkAtreeExpandMacros x ==
   -- handle macro expansion. if the macros have args we require that
   -- we match the correct number of args
   if x isnt ["MDEF",:.] and x isnt ["DEF",["macro",:.],:.] then
-    atom x and (m := isInterpMacro x) =>
+    x isnt [.,:.] and (m := isInterpMacro x) =>
       [args,:body] := m
       args => "doNothing"
       x := body
@@ -98,7 +98,7 @@ mkAtree1 x ==
   -- first special handler for making attrib tree
   null x => throwKeyedMsg("S2IP0005",['"NIL"])
   vector? x => x
-  atom x =>
+  x isnt [.,:.] =>
     x in '(%noBranch %noMapVal) => x
     x in '(nil true false) => mkAtree2([x],x,nil)
     x = '_/throwAway =>
@@ -267,7 +267,7 @@ mkAtree3(x,op,argl) ==
       v := mkAtreeNode $immediateDataSymbol
       putValue(v,getBasicObject op)
       v
-    atom op => 
+    op isnt [.,:.] => 
       t := mkAtreeNode op
       putAtree(t, 'flagArgsPos, flagArguments(op,#argl))
       t
@@ -361,7 +361,7 @@ mkAtreeValueOf l ==
   mkAtreeValueOf1 l
 
 mkAtreeValueOf1 l ==
-  null l or atom l or null rest l => l
+  null l or l isnt [.,:.] or null rest l => l
   l is ["valueOf",u] and ident? u =>
     v := mkAtreeNode $immediateDataSymbol
     putValue(v,get(u,"value",$InteractiveFrame) or
@@ -435,7 +435,7 @@ removeBindingI x ==
 
 rempropI(x,prop) ==
   id:=
-    atom x => x
+    x isnt [.,:.] => x
     first x
   getI(id,prop) =>
     recordNewValue(id,prop,nil)

@@ -126,5 +126,5 @@ spadSysBranch(tree,arg) ==  --tree is (msg kind TREEorSomethingElse ...)
   kind = 'TREE => spadSysChoose(tree.4,arg)
   kind = 'LITERALS => member(arg,tree.4)
   kind = 'INTEGER  => integer? arg
-  kind = 'FUNCTION => atom arg
+  kind = 'FUNCTION => arg isnt [.,:.]
   systemError '"unknown tree branch"

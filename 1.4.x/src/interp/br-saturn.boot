@@ -383,7 +383,7 @@ htMakePage1 itemList ==
     itemType := 'text
     items :=
       string? u => u
-      atom u => STRINGIMAGE u
+      u isnt [.,:.] => STRINGIMAGE u
       string? first u => u
       u is ['text, :s] => s
       itemType := first u
@@ -425,7 +425,7 @@ saturnTran x ==
 
 mkBold s ==
   secondPart :=
-    atom s => [s, '"}"]
+    s isnt [.,:.] => [s, '"}"]
     [:s, '"}"]
   ['"{\bf ", :secondPart]
 
@@ -441,8 +441,8 @@ getCallBackFn form ==
   strconc('"(|htDoneButton| '|", func, '"| ",htpName page(), '")")
 
 mkDocLink(code,s) ==
-  if atom code then code := [code]
-  if atom s    then s    := [s]
+  if code isnt [.,:.] then code := [code]
+  if s isnt [.,:.]    then s    := [s]
   ['"\lispLink[d]{\verb!", :code, '"!}{", :s, '"}"]
 
 saturnTranText x ==
@@ -994,9 +994,9 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
       integer? thing => '"unexported"
       constructorIfTrue =>
         htSay word
-        atom thing => '" an unknown constructor"
+        thing isnt [.,:.] => '" an unknown constructor"
         '""
-      atom thing => '"unconditional"
+      thing isnt [.,:.] => '"unconditional"
       '""
     htSay '"}"
     if cons? thing then
@@ -1480,7 +1480,7 @@ htBlank(:options) ==
 
 unTab s ==
   string? s => unTab1 s
-  atom s => s
+  s isnt [.,:.] => s
   [unTab1 first s, :rest s]
 
 unTab1 s ==
@@ -1612,7 +1612,7 @@ bcConform1 form == main where
       bcPred pred
     hd form
   hd form ==
-    atom form =>
+    form isnt [.,:.] =>
       -- string literals, e.g. "failed", are constructor arguments
       -- too, until we fix that.
       string? form or not (ident? form and isConstructorName form) =>

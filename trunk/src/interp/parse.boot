@@ -69,7 +69,7 @@ parseTransform x ==
 
 parseTran: %ParseForm -> %Form
 parseTran x ==
-  atom x => x
+  x isnt [.,:.] => x
   [op,:argl]:= x
   u := g(op) where g op == (op is ["elt",op,x] => g x; op)
   u="construct" =>
@@ -89,7 +89,7 @@ parseTypeList l ==
 
 parseTranList: %List %Form -> %List %Form
 parseTranList l ==
-  atom l => parseTran l
+  l isnt [.,:.] => parseTran l
   [parseTran first l,:parseTranList rest l]
  
 parseConstruct: %ParseForm -> %Form
@@ -129,13 +129,13 @@ transIs1 u ==
     h:= [":",transIs x]
     (v:= transIs1 y) is [":",z] => [h,z]
     v="nil" => second h
-    atom v => [h,[":",v]]
+    v isnt [.,:.] => [h,[":",v]]
     [h,:v]
   u is ["cons",x,y] =>
     h:= transIs x
     (v:= transIs1 y) is [":",z] => [h,z]
     v="nil" => [h]
-    atom v => [h,[":",v]]
+    v isnt [.,:.] => [h,[":",v]]
     [h,:v]
   u
  
@@ -167,12 +167,12 @@ parseBigelt t ==
 
 transUnCons: %ParseForm -> %Form 
 transUnCons u ==
-  atom u => systemErrorHere ["transUnCons",u]
+  u isnt [.,:.] => systemErrorHere ["transUnCons",u]
   u is ["APPEND",x,y] =>
     y = nil => x
     systemErrorHere ["transUnCons",u]
   u is ["CONS",x,y] =>
-    atom y => [x,:y]
+    y isnt [.,:.] => [x,:y]
     [x,:transUnCons y]
 
 parseCoerce: %ParseForm -> %Form 
@@ -216,8 +216,8 @@ parseDEF t ==
  
 parseLhs: %ParseForm -> %Form
 parseLhs x ==
-  atom x => parseTran x
-  atom first x => [parseTran first x,:[transIs parseTran y for y in rest x]]
+  x isnt [.,:.] => parseTran x
+  first x isnt [.,:.] => [parseTran first x,:[transIs parseTran y for y in rest x]]
   parseTran x
  
 
@@ -395,7 +395,7 @@ transCategoryItem x ==
   x is ["SIGNATURE",lhs,rhs] =>
     lhs is ["LISTOF",:y] =>
       "append" /[transCategoryItem ["SIGNATURE",z,rhs] for z in y]
-    atom lhs =>
+    lhs isnt [.,:.] =>
       lhs := washOperatorName lhs
       rhs is ["Mapping",:m] =>
         m is [.,"constant"] => [["SIGNATURE",lhs,[first m],"constant"]]

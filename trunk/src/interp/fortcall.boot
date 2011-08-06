@@ -53,20 +53,20 @@ makeFort(name,args,decls,results,returnType,aspInfo) ==
   dummies := [second(u) for u in args | first u = 0]
   args := [untangle2(u) for u in args] -- lose spad Union representation
     where untangle2 u ==
-      atom (v := rest(u)) => v
+      (v := rest(u)) isnt [.,:.] => v
       first(v)
   userArgs := [u for u in args | not member(u,dummies)]  -- Temporary
   decls := [untangle(u) for u in decls] -- lose spad Union representation
     where untangle u ==
-      [if atom(rest(v)) then rest(v) else _
-        [if atom(w) then w else rest(w) for w in rest(v)] for v in u]
+      [if rest(v) isnt [.,:.] then rest(v) else _
+        [if w isnt [.,:.] then w else rest(w) for w in rest(v)] for v in u]
   makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo)
 
 makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo) ==
   asps := [first(u) for u in aspInfo]
   -- Now reorder the arguments so that all the scalars come first, so
   -- that when we come to deal with arrays we know all the dimensions.
-  scalarArgs := [u for u in args | atom getFortranType(u,decls)]
+  scalarArgs := [u for u in args | getFortranType(u,decls) isnt [.,:.]]
   arrayArgs := [u for u in args | not member(u,scalarArgs)]
   orderedArgs := [:scalarArgs,:arrayArgs]
   file := if $fortranDirectory then
@@ -170,7 +170,7 @@ getFortranType(u,decls) ==
   -- find u in decls, return the given (Fortran) type.
   result := nil
   for d in decls repeat for dec in rest d repeat
-    atom(dec) and dec=u =>
+    dec isnt [.,:.] and dec=u =>
       return( result := first d )
     LISTP(dec) and first(dec)=u =>
       return( result := [first d,:rest dec] )
@@ -225,7 +225,7 @@ writeXDR(v,str,fp) ==
   wl(['"));"],fp)
 
 prefix2Infix(l) ==
-  atom(l) => [l]
+  l isnt [.,:.] => [l]
   #l=2 => [first l,"(",:prefix2Infix second l,")"]
   #l=3 => ["(",:prefix2Infix second l,first l,:prefix2Infix third l,")"]
   error '"Function in array dimensions with more than two arguments"
@@ -283,14 +283,14 @@ spadTypeTTT u ==
 mkQuote l ==
  [addQuote(u)for u in l] where
     addQuote u ==
-      atom u => ['QUOTE,u]
+      u isnt [.,:.] => ['QUOTE,u]
       ["construct",:[addQuote(v) for v in u]]
 
 makeLispList(l) ==
   outputList := []
   for u in l repeat
     outputList := [:outputList, _
-                  if atom(u) then ['QUOTE,u] else [["$elt","Lisp","construct"],_
+                  if u isnt [.,:.] then ['QUOTE,u] else [["$elt","Lisp","construct"],_
                   :makeLispList(u)]]
   outputList
 
@@ -519,10 +519,10 @@ spadify(l,results,decls,names,actual) ==
       if not scalarMember?(0,dims) then els := makeVector(reverse! els,nil)
       spadForms := [makeResultRecord(name,ty,els), :spadForms]
     -- Result is a Boolean Scalar
-    atom fort and ty="logical" =>
+    fort isnt [.,:.] and ty="logical" =>
       spadForms := [makeResultRecord(name,ty,int2Bool fort), :spadForms]
     -- Result is a Scalar
-    atom fort => 
+    fort isnt [.,:.] => 
       spadForms := [makeResultRecord(name,ty,fort),:spadForms]
     error ['"Unrecognised output format: ",fort]
   reverse! spadForms

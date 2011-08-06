@@ -968,7 +968,7 @@ displayType($op,u,omitVariableNameIfTrue) ==
     sayMSG ['"   Type of value of ",
         fixObjectForPrinting PNAME $op,'":  (none)"]
   type := prefix2String objMode(u)
-  if atom type then type := [type]
+  if type isnt [.,:.] then type := [type]
   sayMSG concat ['"   Type of value of ",fixObjectForPrinting PNAME $op,'": ",:type]
   nil
 
@@ -984,7 +984,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     rhs := '":  "
     strconc('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
-  if atom labmode then labmode := [labmode]
+  if labmode isnt [.,:.] then labmode := [labmode]
   ident? expr and getConstructorKindFromDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
@@ -1091,7 +1091,7 @@ frameSpad2Cmd args ==
   arg  := selectOptionLC(first args,frameArgs,'optionError)
   args := rest args
   if args is [a] then args := a
-  if atom args then args := object2Identifier args
+  if args isnt [.,:.] then args := object2Identifier args
   arg is 'drop  =>
     args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
@@ -1229,7 +1229,7 @@ displayFrameNames() ==
 
 importFromFrame args ==
   -- args should have the form [frameName,:varNames]
-  if args and atom args then args := [args]
+  if args and args isnt [.,:.] then args := [args]
   null args => throwKeyedMsg("S2IZ0073",nil)
   [fname,:args] := args
   not member(fname,frameNames()) =>
@@ -1705,7 +1705,7 @@ readHiFi(n) ==
   if $useInternalHistoryTable
   then
     pair := assoc(n,$internalHistoryTable)
-    atom pair => keyedSystemError("S2IH0034",nil)
+    pair isnt [.,:.] => keyedSystemError("S2IH0034",nil)
     vec := rest pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
@@ -2124,15 +2124,15 @@ reportOperations(oldArg,u) ==
     sayKeyedMsg("S2IZ0064",nil)
   u isnt ['Record,:.] and u isnt ['Union,:.] and
     null(isNameOfType u) and u isnt ['typeOf,.] =>
-      if atom oldArg then oldArg := [oldArg]
+      if oldArg isnt [.,:.] then oldArg := [oldArg]
       sayKeyedMsg("S2IZ0063",nil)
       for op in oldArg repeat
         sayKeyedMsg("S2IZ0062",[opOf op])
   (v := isDomainValuedVariable u) =>  reportOpsFromUnitDirectly0 v
   unitForm:=
-    atom u => opOf unabbrev u
+    u isnt [.,:.] => opOf unabbrev u
     unabbrev u
-  atom unitForm => reportOpsFromLisplib0(unitForm,u)
+  unitForm isnt [.,:.] => reportOpsFromLisplib0(unitForm,u)
   unitForm' := evaluateType unitForm
   tree := mkAtree removeZeroOneDestructively unitForm
   (unitForm' := isType tree) => reportOpsFromUnitDirectly0 unitForm'
@@ -2220,7 +2220,7 @@ reportOpsFromUnitDirectly unitForm ==
             $CategoryFrame)
           sigList := removeDuplicates MSORT
                       [[[a,b],true,slot c] for [a,b,c] in funlist]
-                             where slot c == (atom c => [c,0,1]; c)
+                             where slot c == (c isnt [.,:.] => [c,0,1]; c)
         else
           sigList:= removeDuplicates MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]

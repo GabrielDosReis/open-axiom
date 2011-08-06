@@ -450,7 +450,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     string? s => a = s
     s is ['QUOTE,y] and PNAME y = a
     ident? s and symbolName s = a
-  atom a =>  a = s
+  a isnt [.,:.] =>  a = s
   op := opOf a
   op is 'NRTEVAL => s = nrtEval(second a,domain)
   op is 'QUOTE => s = second a
@@ -499,13 +499,13 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
     x is ['elt,someDomain,opname] => lookupInDomainByName(opname,evalDomain someDomain,arg)
     x is '$ and (arg = dollarName or arg = domainName) => true
     x = dollarName and arg = domainName => true
-    atom x or atom arg => false
+    x isnt [.,:.] or arg isnt [.,:.] => false
     xt and first x = first arg =>
       lazyMatchArgDollarCheck(x,arg,dollarName,domainName)
     false
 
 lookupInDomainByName(op,domain,arg) ==
-  atom arg => nil
+  arg isnt [.,:.] => nil
   opvec := domainRef(domain,1) . 2
   numvec := getDomainByteVector domain
   predvec := domainPredicates domain
@@ -543,7 +543,7 @@ newExpandTypeSlot(slot, dollar, domain) ==
  
 newExpandLocalType(lazyt,dollar,domain) ==
   vector? lazyt => canonicalForm lazyt
-  atom lazyt => lazyt
+  lazyt isnt [.,:.] => lazyt
   lazyt is [vec,.,:lazyForm] and vector? vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
@@ -569,7 +569,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u is ['NRTEVAL,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
   u is "$$" => canonicalForm domain
-  atom u => u   --can be first, rest, etc.
+  u isnt [.,:.] => u   --can be first, rest, etc.
   newExpandLocalTypeForm(u,dollar,domain)
  
 nrtEval(expr,dom) ==
@@ -610,7 +610,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
 ++ such resolution has already occured.
 resolveNiladicConstructors form ==
   ident? form and niladicConstructorFromDB form => [form]
-  atom form => form
+  form isnt [.,:.] => form
   form is ["QUOTE",:.] => form
   for args in tails rest form repeat
     args.first := resolveNiladicConstructors first args
@@ -629,7 +629,7 @@ newHasTest(domform,catOrAtt) ==
   cons? domform and builtinFunctorName? domform.op =>
     ofCategory(domform,catOrAtt)
   op := opOf catOrAtt
-  isAtom := atom catOrAtt
+  isAtom := catOrAtt isnt [.,:.]
   not isAtom and op is 'Join =>
     and/[newHasTest(domform,x) for x in rest catOrAtt]
 -- we will refuse to say yes for 'Cat has Cat'
@@ -640,7 +640,7 @@ newHasTest(domform,catOrAtt) ==
       for [aCat,:cond] in [:ancestorsOf(domform,nil),:applySubst(pairList($FormalMapVariableList,rest domform),getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
-             atom x => x
+             x isnt [.,:.] => x
              [pred,:l] := x
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
@@ -682,7 +682,7 @@ lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
 sayLooking(prefix,op,sig,dom) ==
   $monitorNewWorld := false
   dollar := devaluate dom
-  atom dollar or vector? dollar or "or"/[vector? x for x in dollar] => systemError nil
+  dollar isnt [.,:.] or vector? dollar or "or"/[vector? x for x in dollar] => systemError nil
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),bright '"from ",form2String dollar)
   $monitorNewWorld := true

@@ -89,7 +89,7 @@ MESSAGEPRINT_-1 x ==
   PRINC x
 
 MESSAGEPRINT_-2 x ==
-  atom x =>
+  x isnt [.,:.] =>
     not null x =>
       writeString '" . "
       MESSAGEPRINT_-1 x

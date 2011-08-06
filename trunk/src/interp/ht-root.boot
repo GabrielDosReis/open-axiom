@@ -83,7 +83,7 @@ htSystemVariables() == main where
    where
     functionTail(name,class,var,valuesOrFunction) ==
       val := eval var
-      atom valuesOrFunction =>
+      valuesOrFunction isnt [.,:.] =>
         htMakePage '((domainConditions (isDomain STR (String))))
         htMakePage [['bcLinks,['"reset",'"",'htSetSystemVariableKind,[var,name,nil]]]]
         htMakePage [['bcStrings,[30,STRINGIMAGE val,name,valuesOrFunction]]]
@@ -100,7 +100,7 @@ htSystemVariables() == main where
           htSay('"{\em ",x,'"}\space{1}")
         htMakePage [['bcLispLinks,[x,'" ",'htSetSystemVariable,[variable,x]]]]
     fn(t,al,firstTime) ==
-      atom t => al
+      t isnt [.,:.] => al
       if firstTime then $heading := opOf first t
       fn(rest t,gn(first t,al),firstTime)
     gn(t,al) ==

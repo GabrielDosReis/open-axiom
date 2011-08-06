@@ -182,7 +182,7 @@ unMkEvalable u ==
 lisp2HT u == ['"_'",:fn u] where fn u ==
   ident? u => escapeSpecialIds symbolName u
   string? u => escapeString u
-  atom u => systemError()
+  u isnt [.,:.] => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]
 
 args2HtString(x,:options) ==
@@ -191,7 +191,7 @@ args2HtString(x,:options) ==
   subString(form2HtString(['f,:x],emList),1)
 
 quickForm2HtString(x) ==
-  atom x => STRINGIMAGE x
+  x isnt [.,:.] => STRINGIMAGE x
   form2HtString x
 
 form2HtString(x,:options) ==
@@ -199,7 +199,7 @@ form2HtString(x,:options) ==
   $brief: local := IFCAR IFCDR options --see dbShowOperationsFromConform (lib11)
   fn(x) where
     fn x ==
-      atom x =>
+      x isnt [.,:.] =>
         symbolMember?(x,$FormalMapVariableList) =>
           strconc('"\",symbolName x)
         u := escapeSpecialChars STRINGIMAGE x
@@ -223,17 +223,17 @@ form2HtString(x,:options) ==
       strconc('",",fn first x,fnTailTail rest x)
 
 sexpr2HtString x ==
-  atom x => form2HtString x
+  x isnt [.,:.] => form2HtString x
   strconc('"(",fn x,'")") where fn x ==
     r := rest x
     suffix :=
       null r => '""
-      atom r => strconc('" . ",form2HtString rest x)
+      r isnt [.,:.] => strconc('" . ",form2HtString rest x)
       strconc('" ",fn r)
     strconc(sexpr2HtString first x,suffix)
 
 form2LispString(x) ==
-  atom x =>
+  x isnt [.,:.] =>
     x = '_$ => '"__$"
     symbolMember?(x,$FormalMapVariableList) => strconc('"__", symbolName x)
     string? x => strconc('"_"",x,'"_"")
@@ -246,12 +246,12 @@ form2LispString(x) ==
   strconc(form2LispString first x,args2LispString rest x)
 
 sexpr2LispString x ==
-  atom x => form2LispString x
+  x isnt [.,:.] => form2LispString x
   strconc('"(",fn x,'")") where fn x ==
     r := rest x
     suffix :=
       null r => '""
-      atom r => strconc('" . ",form2LispString rest x)
+      r isnt [.,:.] => strconc('" . ",form2LispString rest x)
       strconc('" ",fn r)
     strconc(sexpr2HtString first x,suffix)
 
@@ -418,7 +418,7 @@ bcConPredTable(u,conname,:options) ==
     htSay '"{"
     bcStarSpace opOf conform
     form :=
-      atom conform => getConstructorForm conform
+      conform isnt [.,:.] => getConstructorForm conform
       conform
     bcConform(form,italicList)
     if extractHasArgs pred is [arglist,:pred] then

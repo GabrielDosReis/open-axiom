@@ -44,7 +44,7 @@ namespace BOOT
 --conPage(a,:b) ==
 --  --The next 4 lines allow e.g. MATRIX INT  ==> Matrix Integer (see kPage)
 --  $conArgstrings: local :=
---    atom a => b
+--    a isnt [.,:.] => b
 --    a := conform2OutputForm a
 --    [mathform2HtString x for x in rest a]
 --  if cons? a then a := first a
@@ -60,7 +60,7 @@ namespace BOOT
 conPage(a,:b) ==
   --The next 4 lines allow e.g. MATRIX INT  ==> Matrix Integer (see kPage)
   form :=
-    atom a => [a,:b]
+    a isnt [.,:.] => [a,:b]
     a
   $conArgstrings: local := [form2HtString x for x in KDR a]
   if cons? a then a := first a
@@ -95,7 +95,7 @@ conPageConEntry entry ==
 --=======================================================================
 conform2String u ==
   x := form2String u
-  atom x => STRINGIMAGE x
+  x isnt [.,:.] => STRINGIMAGE x
   strconc/[STRINGIMAGE y for y in x]
 
 kxPage(htPage,name) == downlink name
@@ -647,7 +647,7 @@ mkConform(kind,name,argString) ==
       sayBrightlyNT '"Won't parse: "
       pp form
       systemError '"Keywords in argument list?"
-    atom parse => [parse]
+    parse isnt [.,:.] => [parse]
     parse
   [makeSymbol name,:rest ncParseFromString strconc('"d",argString)]  --& case
 
@@ -825,7 +825,8 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
     or/[gn x for x in tableValue(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
     $conform := first u              --origin
-    if atom $conform then $conform := [$conform]
+    if $conform isnt [.,:.] then
+      $conform := [$conform]
     code     := LASTATOM u         --optional topic code
     comments := or/[p for entry in rest u | p := hn entry] or return nil
     [$conform,first comments,:code]
@@ -854,7 +855,7 @@ dbAddChainDomain conform ==
   dbSubConform(args,kFormatSlotDomain devaluate form)
 
 dbSubConform(args,u) ==
-  atom u =>
+  u isnt [.,:.] =>
     (n := position(u,$FormalMapVariableList)) >= 0 => args . n
     u
   u is ['local,y] => dbSubConform(args,y)
@@ -862,7 +863,7 @@ dbSubConform(args,u) ==
 
 dbAddChain conform ==
   u := dbAddChainDomain conform =>
-    atom u => nil
+    u isnt [.,:.] => nil
     [[u,:true],:dbAddChain u]
   nil
 

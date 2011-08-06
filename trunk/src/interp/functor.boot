@@ -56,7 +56,7 @@ CategoryPrint(D,$e) ==
   for j in 6..maxIndex D repeat
     u := categoryRef(D,j)
     null u => SAY "another domain"
-    atom first u => SAY("Alternate View corresponding to: ",u)
+    first u isnt [.,:.] => SAY("Alternate View corresponding to: ",u)
     PRETTYPRINT u
 
 --%  Domain printing
@@ -212,13 +212,13 @@ getPrincipalView domain ==
   pview
  
 CategoriesFromGDC x ==
-  atom x => nil
+  x isnt [.,:.] => nil
   x is ['%list,a,:b] and a is ['QUOTE,a'] =>
     union([[a']],"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
 compCategories u ==
-  atom u => u
+  u isnt [.,:.] => u
   cons? u.op =>
     error ['"compCategories: need an atom in operator position", u.op]
   u.op in '(Record Union Mapping) =>
@@ -226,7 +226,7 @@ compCategories u ==
     [u.op, :[compCategories1(a,$SetCategory) for a in u.args]]
   u is ['SubDomain,D,.] => compCategories D
   v := get(u.op,'modemap,$e)
-  atom v =>
+  v isnt [.,:.] =>
     error ['"compCategories: could not get proper modemap for operator",u.op]
   if rest v then
     sayBrightly ['"compCategories: ", '"%b", '"Warning", '"%d",
@@ -242,7 +242,7 @@ compCategories u ==
  
 compCategories1(u,v) ==
 -- v is the mode of u
-  atom u => u
+  u isnt [.,:.] => u
   u is [":",x,t] => [u.op,x,compCategories1(t,v)]
   isCategoryForm(v,$e) => compCategories u
   [c,:.] := comp(macroExpand(u,$e),v,$e) => c
@@ -280,7 +280,7 @@ optFunctorBody x ==
     null rest l and null CDAR l =>
             --there is no meat to this conditional form
       pred:= CAAR l
-      atom pred => nil
+      pred isnt [.,:.] => nil
       first pred="HasCategory" => nil
       ['%when,:l]
     ['%when,:l]
@@ -288,12 +288,12 @@ optFunctorBody x ==
  
 optFunctorBodyQuotable u ==
   u = nil or integer? u or string? u => true
-  atom u => false
+  u isnt [.,:.] => false
   u is ['QUOTE,:.] => true
   false
  
 optFunctorBodyRequote u ==
-  atom u => u
+  u isnt [.,:.] => u
   u is ['QUOTE,v] => v
   systemErrorHere ["optFunctorBodyRequote",u]
  
@@ -343,7 +343,7 @@ setVector12 args ==
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['%list,:args2]]]
  where freeof(a,b) ==
-         atom a => null symbolMember?(a,b)
+         a isnt [.,:.] => null symbolMember?(a,b)
          freeof(first a,b) => freeof(rest a,b)
          false
  
@@ -395,7 +395,7 @@ mkDomainFormer x ==
   x
  
 mkTypeForm x ==
-  atom x => mkDevaluate x
+  x isnt [.,:.] => mkDevaluate x
   x.op in '(CATEGORY mkCategory) => MKQ x
   x is [":",selector,dom] =>
     ['%list,MKQ ":",MKQ selector,mkTypeForm dom]
@@ -432,7 +432,7 @@ mkVectorWithDeferral(objects,tag) ==
        for u in objects for count in 0..]]
  
 DescendCodeAdd(base,flag) ==
-  atom base => DescendCodeVarAdd(base,flag)
+  base isnt [.,:.] => DescendCodeVarAdd(base,flag)
   not (modemap:=get(opOf base,'modemap,$CategoryFrame)) =>
       if getmode(opOf base,$e) is ["Mapping",target,:formalArgModes]
          then formalArgs:= take(#formalArgModes,$FormalMapVariableList)
@@ -474,7 +474,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   (for u in code repeat
       if update(u,copyvec,[]) then code := remove(code,u))
     where update(code,copyvec,sofar) ==
-      atom code => nil
+      code isnt [.,:.] => nil
       code.op in '(%tref ELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
@@ -591,7 +591,7 @@ ProcessCond cond ==
 TryGDC cond ==
             --sees if a condition can be optimised by the use of
             --information in $getDomainCode
-  atom cond => cond
+  cond isnt [.,:.] => cond
   cond is ['HasCategory,:l] =>
     solved := nil
     for u in $getDomainCode while solved = nil repeat
@@ -679,7 +679,7 @@ InvestigateConditions catvecListMaker ==
   principal' :=
     pessimise $principal where
       pessimise a ==
-        atom a => a
+        a isnt [.,:.] => a
         a is ['SIGNATURE,:.] => a
         a is ['IF,cond,:.] =>
           if not listMember?(cond,$Conditions) then
@@ -703,7 +703,7 @@ InvestigateConditions catvecListMaker ==
     Conds(code,previous) ==
            --each call takes a list of conditions, and returns a list
            --of refinements of that list
-      atom code => [previous]
+      code isnt [.,:.] => [previous]
       code is ['DomainSubstitutionMacro,.,b] => Conds(b,previous)
       code is ['IF,a,b,c] => union(Conds(b,[a,:previous]),Conds(c,previous))
       code is ['PROGN,:l] => "union"/[Conds(u,previous) for u in l]
@@ -760,7 +760,7 @@ InvestigateConditions catvecListMaker ==
   [true,:[LASSOC(ms,list) for ms in masterSecondaries]]
  
 ICformat u ==
-      atom u => u
+      u isnt [.,:.] => u
       u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
         l:= removeDuplicates [ICformat v for [v,:l'] in tails l
@@ -811,7 +811,7 @@ ICformat u ==
       l
  
 partPessimise(a,trueconds) ==
-  atom a => a
+  a isnt [.,:.] => a
   a is ['SIGNATURE,:.] => a
   a is ['IF,cond,:.] => (listMember?(cond,trueconds) => a; nil)
   [partPessimise(first a,trueconds),:partPessimise(rest a,trueconds)]

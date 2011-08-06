@@ -46,7 +46,7 @@ $intTopLevel ==
  
 inputPrompt str ==
   -- replaces older INPUT-PROMPT
-  atom (x := $SCREENSIZE()) => nil
+  (x := $SCREENSIZE()) isnt [.,:.] => nil
   p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,nil)
