@@ -421,7 +421,7 @@ exportNames ns ==
   [inAllContexts ["EXPORT",quote ns]]
 
 translateToplevel(b,export?) ==
-  atom b => [b]  -- generally happens in interactive mode.
+  b isnt [.,:.] => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
     %Signature(op,t) => [genDeclaration(op,t)]
@@ -560,7 +560,7 @@ defuse(e,x)==
      tableValue($bootUsed,i) := [nee,:tableValue($bootUsed,i)]
  
 defuse1(e,y)==
-  atom y =>
+  y isnt [.,:.] =>
       symbol? y =>
 	 $used:=
 	      symbolMember?(y,e)=>$used
@@ -587,7 +587,7 @@ defSeparate x==
 
 unfluidlist x==
   x = nil => []
-  atom x => [x]
+  x isnt [.,:.] => [x]
   x is ["&REST",y]=> [y]
   [first x,:unfluidlist rest x]
  
@@ -650,7 +650,7 @@ shoeItem (str)==
   [[[first line for line in  shoeDQlines dq]],:rest str]
  
 stripm (x,pk,bt)==
-  atom x =>
+  x isnt [.,:.] =>
     symbol? x =>
       symbolScope x = bt => makeSymbol(symbolName x,pk)
       x

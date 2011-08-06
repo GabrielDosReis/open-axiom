@@ -255,7 +255,7 @@ bfForTree(OP,lhs,whole)==
   whole :=
     bfTupleP whole => bfMakeCons rest whole
     whole
-  atom lhs => bfINON [OP,lhs,whole]
+  lhs isnt [.,:.] => bfINON [OP,lhs,whole]
   lhs :=
     bfTupleP lhs => second lhs
     lhs
@@ -272,13 +272,13 @@ bfSTEP(id,fst,step,lst)==
   initvar := [id]
   initval := [fst]
   inc :=
-    atom step => step
+    step isnt [.,:.] => step
     g1 := bfGenSymbol()
     initvar := [g1,:initvar]
     initval := [step,:initval]
     g1
   final :=
-    atom lst => lst
+    lst isnt [.,:.] => lst
     g2 := bfGenSymbol()
     initvar := [g2,:initvar]
     initval := [lst,:initval]
@@ -497,7 +497,7 @@ bfLeave x ==
   ["%Leave",x]
  
 bfSUBLIS(p,e)==
-  atom e => bfSUBLIS1(p,e)
+  e isnt [.,:.] => bfSUBLIS1(p,e)
   e.op is 'QUOTE => e
   [bfSUBLIS(p,first e),:bfSUBLIS(p,rest e)]
  
@@ -564,7 +564,7 @@ bfLET1(lhs,rhs) ==
  
 bfCONTAINED(x,y)==
   sameObject?(x,y) => true
-  atom y=> false
+  y isnt [.,:.] => false
   bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
  
 bfLET2(lhs,rhs) ==
@@ -574,7 +574,7 @@ bfLET2(lhs,rhs) ==
   lhs is ['L%T,a,b] =>
     a := bfLET2(a,rhs)
     (b := bfLET2(b,rhs)) = nil => a
-    atom b => [a,b]
+    b isnt [.,:.] => [a,b]
     cons? first b => [a,:b]
     [a,b]
   lhs is ['CONS,var1,var2] =>
@@ -582,18 +582,20 @@ bfLET2(lhs,rhs) ==
       bfLET2(var2,addCARorCDR('CDR,rhs))
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
     var2 = nil or var2 is "DOT" =>l1
-    if cons? l1 and atom first l1 then l1 := [l1,:nil]
+    if cons? l1 and first l1 isnt [.,:.] then
+      l1 := [l1,:nil]
     symbol? var2 =>
       [:l1,bfLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := bfLET2(var2,addCARorCDR('CDR,rhs))
-    if cons? l2 and atom first l2 then l2 := [l2,:nil]
+    if cons? l2 and first l2 isnt [.,:.] then
+      l2 := [l2,:nil]
     [:l1,:l2]
   lhs is ['append,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['reverse,rhs]
     g := bfLetVar()
     l2 := bfLET2(patrev,g)
-    if cons? l2 and atom first l2 then
+    if cons? l2 and first l2 isnt [.,:.] then
       l2 := [l2,:nil]
     var1 is "DOT" => [['L%T,g,rev],:l2]
     first lastNode l2 is ['L%T, =var1, val1] =>
@@ -619,7 +621,7 @@ bfLET(lhs,rhs) ==
   bfLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
-  atom expr => [acc,expr]
+  expr isnt [.,:.] => [acc,expr]
   acc is 'CAR and expr is ["reverse",:.] =>
       ["CAR",["lastNode",:rest expr]]
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
@@ -664,19 +666,23 @@ bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
   bfString? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
   bfChar? rhs or integer? rhs => ['EQL,lhs,rhs]
-  atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
-  rhs is ['QUOTE,a] =>
+  rhs isnt [.,:.] => ['PROGN,bfLetForm(rhs,lhs),'T]
+  rhs.op is 'QUOTE =>
+    [.,a] := rhs
     symbol? a => ['EQ,lhs,rhs]
     string? a => bfAND [['STRINGP,lhs],["STRING=",lhs,a]]
     ["EQUAL",lhs,rhs]
-  rhs is ['L%T,c,d] =>
+  rhs.op is 'L%T =>
+    [.,c,d] := rhs
     l := bfLET(c,lhs)
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
+  rhs is ['CONS,a,b] and a is "DOT" and b is "DOT" => ['CONSP,lhs]
   cons? lhs =>
     g := bfIsVar()
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
-  rhs is ['CONS,a,b] =>
+  rhs.op is 'CONS =>
+    [.,a,b] := rhs
     a is "DOT" =>
       b = nil => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
       b is "DOT" => ['CONSP,lhs]
@@ -689,12 +695,14 @@ bfIS1(lhs,rhs) ==
     a1 is ['PROGN,c,'T] and b1 is ['PROGN,:cls] =>
       bfAND [['CONSP,lhs],bfMKPROGN [c,:cls]]
     bfAND [['CONSP,lhs],a1,b1]
-  rhs is ['append,a,b] =>
+  rhs.op is 'append =>
+    [.,a,b] := rhs
     patrev := bfISReverse(b,a)
     g := bfIsVar()
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['reverse,lhs]],'T]]
     l2 := bfIS1(g,patrev)
-    if cons? l2 and atom first l2 then l2 := [l2,:nil]
+    if cons? l2 and first l2 isnt [.,:.] then
+      l2 := [l2,:nil]
     a is "DOT" => bfAND [rev,:l2]
     bfAND [rev,:l2,['PROGN,bfLetForm(a,['reverse!,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
@@ -890,7 +898,7 @@ shoeComp x==
 ++ on parameters with default values are satisfied.  Return the
 ++ new augmented parameter list.
 bfParameterList(p1,p2) ==
-  p2=nil and not atom p1 => p1
+  p2=nil and p1 is [.,:.] => p1
   p1 is ["&OPTIONAL",:.] =>
     p2 isnt ["&OPTIONAL",:.] => bpSpecificErrorHere '"default value required"
     [first p1,:rest p1,:rest p2]
@@ -911,7 +919,7 @@ bfInsertLet1(y,body)==
   symbol? y => [false,nil,y,body]
   y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
   g:=bfGenSymbol()
-  atom y => [false,nil,g,body]
+  y isnt [.,:.] => [false,nil,g,body]
   case y of
     %DefaultValue(p,v) => [false,nil,["&OPTIONAL",[p,v]],body]
     otherwise => [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
@@ -943,7 +951,7 @@ shoeCompTran x==
   [lamtype,args,:body]
 
 needsPROG body ==
-  atom body => false
+  body isnt [.,:.] => false
   [op,:args] := body
   op in '(RETURN RETURN_-FROM) => true
   op in '(LET PROG LOOP BLOCK DECLARE LAMBDA) => false
@@ -976,7 +984,7 @@ isDynamicVariable x ==
   false
  
 shoeCompTran1 x ==
-  atom x =>
+  x isnt [.,:.] =>
     if isDynamicVariable x and not symbolMember?(x,$dollarVars) then
       $dollarVars := [x,:$dollarVars]
     x
@@ -1199,7 +1207,7 @@ bfCase(x,y)==
   -- To minimize the number of GENSYMS and assignments, we want
   -- to do this only when the scrutinee is not reduced yet.
   g := 
-    atom x => x 
+    x isnt [.,:.] => x 
     bfGenSymbol()
   body := ["CASE",["CAR", g], :bfCaseItems(g,y)]
   sameObject?(g,x) => body
@@ -1275,7 +1283,7 @@ bfThrow e ==
 backquote: (%Form,%List %Symbol) -> %Form
 backquote(form,params) ==
   params = nil => quote  form
-  atom form =>
+  form isnt [.,:.] =>
     symbolMember?(form,params) => form
     quote form
   ["LIST",:[backquote(t,params) for t in form]]
@@ -1383,7 +1391,7 @@ unknownNativeTypeError t ==
 
 nativeType t ==
   t = nil => t
-  atom t =>
+  t isnt [.,:.] =>
     t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
       t' := 
 	%hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
@@ -1479,7 +1487,7 @@ nativeArgumentType t ==
   -- Allow 'string'  for `pass-by-value'
   t is "string" => nativeType t
   -- anything else must use a modified reference type.
-  atom t or #t ~= 2 => 
+  t isnt [.,:.] or #t ~= 2 => 
      coreError '"invalid argument type for a native function"
   [m,[c,t']] := t
   -- Require a modifier.

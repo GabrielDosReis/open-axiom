@@ -628,7 +628,7 @@
                       |$currentModuleName|))
     (RETURN
       (COND
-        ((ATOM |b|) (LIST |b|))
+        ((NOT (CONSP |b|)) (LIST |b|))
         ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)) (SETQ |xs| (CDR |b|))
          (|coreError| "invalid AST"))
         (T (CASE (CAR |b|)
@@ -986,7 +986,7 @@
     (DECLARE (SPECIAL |$bootDefined| |$used|))
     (RETURN
       (COND
-        ((ATOM |y|)
+        ((NOT (CONSP |y|))
          (COND
            ((SYMBOLP |y|)
             (SETQ |$used|
@@ -1054,7 +1054,7 @@
     (RETURN
       (COND
         ((NULL |x|) NIL)
-        ((ATOM |x|) (LIST |x|))
+        ((NOT (CONSP |x|)) (LIST |x|))
         ((AND (CONSP |x|) (EQ (CAR |x|) '&REST)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
@@ -1167,7 +1167,7 @@
 
 (DEFUN |stripm| (|x| |pk| |bt|)
   (COND
-    ((ATOM |x|)
+    ((NOT (CONSP |x|))
      (COND
        ((SYMBOLP |x|)
         (COND
