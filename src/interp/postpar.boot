@@ -80,7 +80,7 @@ displayPreCompilationErrors() ==
 
 postTran: %ParseTree -> %ParseForm
 postTran x ==
-  atom x =>
+  x isnt [.,:.] =>
     postAtom x
   op := first x
   symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
@@ -228,16 +228,16 @@ postDef t ==
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
-  if not $InteractiveMode and atom form then form := [form]
+  if not $InteractiveMode and form isnt [.,:.] then form := [form]
   newLhs:=
-    atom form => form
+    form isnt [.,:.] => form
     [op,:argl]:= [(x is [":",a,.] => a; x) for x in form]
     [op,:postDefArgs argl]
   argTypeList:=
-    atom form => nil
+    form isnt [.,:.] => nil
     [(x is [":",.,t] => t; nil) for x in rest form]
   typeList:= [targetType,:argTypeList]
-  if atom form then form := [form]
+  if form isnt [.,:.] then form := [form]
   specialCaseForm := [nil for x in form]
   ["DEF",newLhs,typeList,specialCaseForm,postTran rhs]
 
@@ -247,7 +247,7 @@ postDefArgs argl ==
   argl is [[":",a],:b] =>
     b ~= nil => postError
       ['"   Argument",:bright a,'"of indefinite length must be last"]
-    atom a or a is ["QUOTE",:.] => a
+    a isnt [.,:.] or a is ["QUOTE",:.] => a
     postError
       ['"   Argument",:bright a,'"of indefinite length must be a name"]
   [first argl,:postDefArgs rest argl]
@@ -264,7 +264,7 @@ postMDef(t) ==
     lhs is [":",:.] => rest lhs
     [lhs,nil]
   form:=
-    atom form => [form]
+    form isnt [.,:.] => [form]
     form
   newLhs:= [(x is [":",a,:.] => a; x) for x in form]
   typeList:= [targetType,:[(x is [":",.,t] => t; nil) for x in rest form]]
@@ -293,7 +293,7 @@ postForm: %ParseTree -> %ParseForm
 postForm u ==
   u isnt [op,:argl] => systemErrorHere ["postForm",u]
   x:=
-    atom op =>
+    op isnt [.,:.] =>
       argl':= postTranList argl
       op':=
         true=> op
@@ -495,7 +495,7 @@ postSignature t ==
 
 killColons: %ParseTree -> %ParseForm
 killColons x ==
-  atom x => x
+  x isnt [.,:.] => x
   x is [op,:.] and op in '(Record Union %Forall %Exist) => x
   x is [":",.,y] => killColons y
   [killColons first x,:killColons rest x]
@@ -551,7 +551,7 @@ postTransformCheck x ==
 
 postcheck: %ParseTree -> %ParseForm
 postcheck x ==
-  atom x => nil
+  x isnt [.,:.] => nil
   x is ["DEF",form,[target,:.],:.] =>
     setDefOp form
     postcheck rest rest x
@@ -562,7 +562,7 @@ postcheck x ==
 setDefOp: %ParseForm -> %Thing
 setDefOp f ==
   if f is [":",g,:.] then f := g
-  f := (atom f => f; first f)
+  f := (f isnt [.,:.] => f; first f)
   if $topOp then $defOp:= f else $topOp:= f
 
 unComma: %ParseForm -> %ParseForm

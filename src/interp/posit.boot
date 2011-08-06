@@ -86,7 +86,7 @@ lnFileName lineObject    ==
     ncBug('"there is no file name in %1", [lineObject] )
  
 lnFileName? lineObject   ==
-    atom (fN := lineObject.4)  => nil
+    (fN := lineObject.4) isnt [.,:.]  => nil
     fN
  
 lnPlaceOfOrigin lineObject ==

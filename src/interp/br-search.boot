@@ -68,7 +68,7 @@ grepConstruct1(s,key) ==
 
 grepConstructDo(x, key) ==
   $orCount := 0
---atom x => grepFile(x, key,'i)
+--x isnt [.,:.] => grepFile(x, key,'i)
   $localLibdb =>
     oldLines := purgeNewConstructorLines(grepf(x,key,false),$newConstructorList)
     newLines := grepf(x,$localLibdb,false)
@@ -104,7 +104,7 @@ grepForAbbrev(s,key) ==
          match?(pattern,symbolName a) and not tableValue($defaultPackageNamesHT,x)
 
 applyGrep(x,filename) ==
-  atom x => grepFile(x,filename,'i)
+  x isnt [.,:.] => grepFile(x,filename,'i)
   $localLibdb =>
     a := purgeNewConstructorLines(grepf(x,filename,false),$newConstructorList)
     b := grepf(x,$localLibdb,false)
@@ -250,7 +250,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
 
 mkGrepPattern(s,key) ==
   --called by grepConstruct1 and grepf
-  atom s => mkGrepPattern1(s,key)
+  s isnt [.,:.] => mkGrepPattern1(s,key)
   [first s,:[mkGrepPattern(x,key) for x in rest s]]
 
 mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
@@ -344,7 +344,7 @@ aPage(a,:b) ==  --called by \spadatt{a}
   arg := IFCAR b or a
   s   := pmParseFromString STRINGIMAGE arg
   searchOn :=
-    atom s => s
+    s isnt [.,:.] => s
     IFCAR s
   $attributeArgs : local := IFCAR IFCDR s
   aSearch searchOn
@@ -355,7 +355,7 @@ spadType(x) ==  --called by \spadtype{x} from HyperDoc
   s := PNAME x
   form := ncParseFromString s or
             systemError ['"Argument: ",s,'" to spadType won't parse"]
-  if atom form then form := [form]
+  if form isnt [.,:.] then form := [form]
   op    := opOf form
   looksLikeDomainForm form => apply(function conPage,form)
   conPage(op)
@@ -364,7 +364,7 @@ looksLikeDomainForm x ==
   entry := getCDTEntry(opOf x,true) or return false
   coSig := symbolLassoc('coSig,CDDR entry)
   k := #coSig
-  atom x => k = 1
+  x isnt [.,:.] => k = 1
   k ~= #x => false
   and/[p for key in rest coSig for arg in rest x] where
     p() ==
@@ -717,7 +717,7 @@ dbWordFrom(l,i) ==
 
 conLowerCaseConTran x ==
   ident? x => IFCAR tableValue($lowerCaseConTb, x) or x
-  atom x   => x
+  x isnt [.,:.] => x
   [conLowerCaseConTran y for y in x]
 
 string2Constructor x ==
@@ -726,7 +726,7 @@ string2Constructor x ==
 
 conLowerCaseConTranTryHarder x ==
   ident? x => IFCAR tableValue($lowerCaseConTb,DOWNCASE x) or x
-  atom x   => x
+  x isnt [.,:.] => x
   [conLowerCaseConTranTryHarder y for y in x]
 
 constructorSearchGrep(filter,key,kind) ==

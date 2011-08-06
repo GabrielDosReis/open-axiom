@@ -203,7 +203,7 @@ getSubstSigIfPossible sig ==
 
 fullSubstitute(x,y,z) ==  --substitutes deeply: x for y in list z
   z = y => x
-  atom z => z
+  z isnt [.,:.] => z
   [fullSubstitute(x,y,u) for u in z]
 
 getSubstCandidates sig ==
@@ -415,13 +415,13 @@ zeroOneConvert x ==
   x
 
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
-  atom x => x
+  x isnt [.,:.] => x
   (op := first x) is '_$ => '_$
   op is 'local => second x
   op is ":" => [":",second x,fn third x]
   ident? op and isConstructorName op => [fn y for y in x]
   integer? op => op
-  op is 'QUOTE and atom second x => second x
+  op is 'QUOTE and second x isnt [.,:.] => second x
   x
 
 koCatOps(conform,domname) ==
@@ -582,7 +582,7 @@ modemap2SigConds conds ==
 
 hasPatternVar x ==
   ident? x and (x ~= "**") => isPatternVar x
-  atom x => false
+  x isnt [.,:.] => false
   or/[hasPatternVar y for y in x]
 
 getDcForm(dc, condlist) ==

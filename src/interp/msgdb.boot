@@ -119,7 +119,7 @@ getKeyedMsg key == fetchKeyedMsg(key,false)
 segmentKeyedMsg(msg) == string2Words msg
 
 segmentedMsgPreprocess x ==
-  atom x => x
+  x isnt [.,:.] => x
   [head,:tail] := x
   center := rightJust := nil
   if member(head, '(%ceon "%ceon")) then center := true
@@ -238,7 +238,7 @@ substituteSegmentedMsg(msg,args) ==
 
 addBlanks msg ==
   -- adds proper blanks
-  atom msg => msg
+  msg isnt [.,:.] => msg
   null msg => msg
   # msg = 1 => msg
   blanksOff := false
@@ -292,7 +292,7 @@ noBlankAfterP word==
 cleanUpSegmentedMsg msg ==
   -- removes any junk like double blanks
   -- takes a reversed msg and puts it in the correct order
-  atom msg => msg
+  msg isnt [.,:.] => msg
   blanks := ['" "," "]
   haveBlank := nil
   prims :=
@@ -531,7 +531,7 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 --% Some Standard Message Printing Functions
 
 bright x == ['"%b",:(cons?(x) and null rest lastNode x => x; [x]),'"%d"]
---bright x == ['"%b",:(atom x => [x]; x),'"%d"]
+--bright x == ['"%b",:(x isnt [.,:.] => [x]; x),'"%d"]
 
 mkMessage msg ==
   msg and (cons? msg) and member((first msg),'(%l "%l"))  and
@@ -716,7 +716,7 @@ tabber num ==
 brightPrintCenter(x,out == $OutputStream) ==
   $texFormatting => brightPrintCenterAsTeX(x,out)
   -- centers rst within $LINELENGTH, checking for %l's
-  atom x =>
+  x isnt [.,:.] =>
     x := object2String x
     wid := # x
     if wid < $LINELENGTH then
@@ -742,7 +742,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   nil
 
 brightPrintCenterAsTeX(x, out == $OutputStream) ==
-  atom x =>
+  x isnt [.,:.] =>
     sayString('"\centerline{",out)
     sayString(x,out)
     sayString('"}",out)
@@ -762,7 +762,7 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
 
 brightPrintRightJustify(x, out == $OutputStream) ==
   -- right justifies rst within $LINELENGTH, checking for %l's
-  atom x =>
+  x isnt [.,:.] =>
     x := object2String x
     wid := # x
     wid < $LINELENGTH =>
@@ -791,7 +791,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
 
 sayBrightlyLength l ==
   null l => 0
-  atom l => sayBrightlyLength1 l
+  l isnt [.,:.] => sayBrightlyLength1 l
   sayBrightlyLength1 first l + sayBrightlyLength rest l
 
 sayBrightlyLength1 x ==
@@ -806,7 +806,7 @@ sayBrightlyLength1 x ==
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
   vector? x => # '"UNPRINTABLE"
-  atom x => # toString x
+  x isnt [.,:.] => # toString x
   2 + sayBrightlyLength x
 
 sayAsManyPerLineAsPossible l ==
@@ -883,7 +883,7 @@ sayDisplayWidth x ==
   # atom2String x
 
 sayWidth x ==
-  atom x => # atom2String x
+  x isnt [.,:.] => # atom2String x
   +/[fn y for y in x] where fn y ==
     sayWidth y
 
@@ -950,7 +950,7 @@ splitSayBrightly u ==
   u
 
 splitSayBrightlyArgument u ==
-  atom u => nil
+  u isnt [.,:.] => nil
   while splitListSayBrightly u is [head,:u] repeat result:= [head,:result]
   result => [:reverse! result,u]
   [u]

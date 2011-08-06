@@ -38,7 +38,7 @@ simpBool x == dnf2pf reduceDnf be x
  
 reduceDnf u ==
 -- (OR (AND ..b..) b) ==> (OR  b  )
-  atom u => u
+  u isnt [.,:.] => u
   for x in u repeat
     ok := true
     for y in u repeat
@@ -78,14 +78,14 @@ andReduce(x,y) ==
 dnf2pf(x) ==
   x = 'true => 'T
   x = 'false => nil
-  atom x => x
+  x isnt [.,:.] => x
   mkpf(
     [mkpf([:[k for k in b],:[['not,k] for k in a]],'AND) for [a,b] in x],'OR)
 be x == b2dnf x
 b2dnf x ==
   x = 'T => 'true
   x = nil => 'false
-  atom x => bassert x
+  x isnt [.,:.] => bassert x
   [op,:argl] := x
   op in '(AND and) => band argl
   op in '(OR or)   => bor argl

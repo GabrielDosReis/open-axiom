@@ -166,7 +166,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   null t        => true    -- a terminating condition with underDomainOf
   t = $EmptyMode => true
   string? t     => true
-  atom t => false
+  t isnt [.,:.] => false
 
   badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
@@ -212,7 +212,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
 underDomainOf t ==
   t = $RationalNumber => $Integer
-  atom t => nil
+  t isnt [.,:.] => nil
   d := deconstructT t
   1 = #d => nil
   u := getUnderModeOf(t) => u

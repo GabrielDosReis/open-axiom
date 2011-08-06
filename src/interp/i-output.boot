@@ -412,7 +412,7 @@ stringWidth u ==
   2+#u
 
 obj2String o ==
-  atom o =>
+  o isnt [.,:.] =>
     string? o => o
     o = " " => '" "
     o = ")" => '")"
@@ -421,7 +421,7 @@ obj2String o ==
   apply(function strconc,[obj2String o' for o' in o])
 
 APP(u,x,y,d) ==
-  atom u => appChar(atom2String u,x,y,d)
+  u isnt [.,:.] => appChar(atom2String u,x,y,d)
   u is [[op,:.],a] and (s:= GETL(op,'PREFIXOP)) =>
     GETL(op,'isSuffix) => appChar(s,x+WIDTH a,y,APP(a,x,y,d))
     APP(a,x+#s,y,appChar(s,x,y,d))
@@ -502,7 +502,7 @@ outputTran x ==
   integer? x =>
     x < 0 => ["-",MINUS x]
     x
-  atom x =>
+  x isnt [.,:.] =>
     x=$EmptyMode => specialChar 'quad
     x
   x is [c,var,mode] and c in '(_pretend _: _:_: _@) =>
@@ -626,7 +626,7 @@ checkArgs(op,tail) ==
   head := []
   while tail repeat
     term := first tail
-    atom term =>
+    term isnt [.,:.] =>
       head := [term,:head]
       tail := rest tail
     not LISTP term => -- never happens?
@@ -725,7 +725,7 @@ outputConstructTran x ==
       b is ['construct,:l] => ['construct,aPart,:l]
       ['BRACKET,['AGGLST,aPart,[":",b]]]
     [op,a,b]
-  atom x => x
+  x isnt [.,:.] => x
   [outputTran first x,:outputConstructTran rest x]
 
 outputTranMatrix x ==
@@ -780,7 +780,7 @@ timesApp(u,x,y,d) ==
       d:= APP(BLANK,x,y,d)
       x:= x+1
     [d,x]:= appInfixArg(arg,x,y,d,rightPrec,"left",nil) --app in a right arg
-    wasSimple:= atom arg and not integer? arg or isRationalNumber arg
+    wasSimple:= arg isnt [.,:.] and not integer? arg or isRationalNumber arg
     wasQuotient:= isQuotient op
     wasNumber:= integer? arg
     lastOp := op
@@ -859,7 +859,7 @@ exptApp([.,a,b],x,y,d) ==
   APP(b,x',y',d)
 
 exptNeedsPren a ==
-  atom a and null (integer? a and a < 0)  => false
+  a isnt [.,:.] and null (integer? a and a < 0)  => false
   key:= keyp a
   key = "OVER" => true  -- added JHD 2/Aug/90
   (key="SUB") or (null GETL(key,"Nud") and null GETL(key,"Led")) => false
@@ -874,8 +874,8 @@ exptWidth [.,a,b] == WIDTH a+WIDTH b+(exptNeedsPren a => 2;0)
 needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
   wasQuotient or isQuotient op => true
   wasSimple =>
-    atom cur or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
-      (atom op and not integer? op and null GETL(op,"APP"))
+    cur isnt [.,:.] or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
+      (op isnt [.,:.] and not integer? op and null GETL(op,"APP"))
   wasNumber =>
     integer?(cur) or isRationalNumber cur or
         ((op="**" or op ="^") and integer?(second cur))
@@ -893,7 +893,7 @@ timesWidth u ==
       w:= w+1
     if infixArgNeedsParens(arg, rightPrec, "left") then w:= w+2
     w:= w+WIDTH arg
-    wasSimple:= atom arg and not integer? arg --or isRationalNumber arg
+    wasSimple:= arg isnt [.,:.] and not integer? arg --or isRationalNumber arg
     wasQuotient:= isQuotient op
     wasNumber:= integer? arg
     firstTime:= nil
@@ -1043,7 +1043,7 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
     stringChar(u,0) = char "%" and
       (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
     #u
-  atom u => # atom2String u
+  u isnt [.,:.] => # atom2String u
   WIDTH COPY u
 
 WIDTH u ==
@@ -1065,12 +1065,12 @@ WIDTH u ==
     -- roughly log2(10). This should return an over-estimate, but for objects
     -- this big does it matter?
     FLOOR(INTEGER_-LENGTH(u)/3.3)
-  atom u => # atom2String u
+  u isnt [.,:.] => # atom2String u
   putWidth u is [[.,:n],:.] => n
   THROW('outputFailure,'outputFailure)
 
 putWidth u ==
-  atom u or u is [[.,:n],:.] and integer? n => u
+  u isnt [.,:.] or u is [[.,:n],:.] and integer? n => u
   op:= keyp u
 --integer? op => nil
   leftPrec:= getBindingPowerOf("left",u)
@@ -1094,7 +1094,7 @@ putWidth u ==
         WIDTH x
     0
   newFirst:=
-    atom (oldFirst:= first u) =>
+    (oldFirst:= first u) isnt [.,:.] =>
       fn:= GETL(oldFirst,"WIDTH") =>
         [oldFirst,:FUNCALL(fn,[oldFirst,:l])]
       if l then ll := rest l else ll := nil
@@ -1155,7 +1155,7 @@ maprin0 x ==
 
 maprinChk x ==
   null $MatrixList => maPrin x
-  atom x and (u:= assoc(x,$MatrixList)) =>
+  x isnt [.,:.] and (u:= assoc(x,$MatrixList)) =>
     $MatrixList := remove($MatrixList,u)
     maPrin deMatrix rest u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
@@ -1205,7 +1205,7 @@ LargeMatrixp(u,width, dist) ==
   --  sees if there is a matrix wider than 'width' in the next 'dist'
   --  part of u, a sized charybdis structure.
   --  nil if not, first such matrix if there is one
-  atom u => nil
+  u isnt [.,:.] => nil
   CDAR u <= width => nil
        --CDAR is the width of a charybdis structure
   op:=CAAR u
@@ -1270,7 +1270,7 @@ SubstWhileDesizing(u,m) ==
     -- arg. m is always nil (historical: EU directive to increase argument lists 1991/XGII)     
     --Replaces all occurrences of matrix m by name in u
     --Taking out any outdated size information as it goes
-  atom u => u
+  u isnt [.,:.] => u
   [[op,:n],:l]:=u
   --name := RASSOC(u,$MatrixList) => name
   -- doesn't work since RASSOC seems to use an EQ test, and returns the
@@ -1284,7 +1284,7 @@ SubstWhileDesizing(u,m) ==
     PushMatrix u
   l':=SubstWhileDesizingList(l,m)
   -- [op,:l']
-  atom op => [op,:l']
+  op isnt [.,:.] => [op,:l']
   [SubstWhileDesizing(op,m),:l']
 
 --;SubstWhileDesizingList(u,m) ==
@@ -1300,11 +1300,11 @@ SubstWhileDesizing(u,m) ==
 SubstWhileDesizingList(u,m) ==
    u is [a,:b] =>
      res:= 
-       atom a => [a] 
+       a isnt [.,:.] => [a] 
        [SubstWhileDesizing(a,m)] 
      tail:=res
      for i in b repeat
-        if atom i then tail.rest := [i]
+        if i isnt [.,:.] then tail.rest := [i]
         else tail.rest := [SubstWhileDesizing(i,m)]
         tail:=rest tail
      res   
@@ -1345,11 +1345,11 @@ bigopAppAux(bot,top,arg,x,y,d,kind) ==
   xCenter := half(maxWidth-1) + x
   d:=APP(arg,x+2+maxWidth,y,d)
   d:=
-      atom bot and # atom2String bot = 1 => APP(bot,xCenter,y-2,d)
+      bot isnt [.,:.] and # atom2String bot = 1 => APP(bot,xCenter,y-2,d)
       APP(bot,x + half(maxWidth - botWidth),y-2-superspan bot,d)
   if top then
     d:=
-      atom top and # atom2String top = 1 => APP(top,xCenter,y+2,d)
+      top isnt [.,:.] and # atom2String top = 1 => APP(top,xCenter,y+2,d)
       APP(top,x + half(maxWidth - topWidth),y+2+subspan top,d)
   delta := (kind = 'pi => 2; 1)
   opCode :=
@@ -1614,7 +1614,7 @@ outputString(start,linelength,str) ==
 
 outputDomainConstructor form ==
   if VECTORP form then form := devaluate form
-  atom (u:= prefix2String form) => u
+  (u:= prefix2String form) isnt [.,:.] => u
   v:= [object2String(x) for x in u]
   return INTERNL apply(function strconc,v)
 
@@ -1667,7 +1667,7 @@ printBasic x ==
   x=$One => writeInteger(1,$algebraOutputStream)
   x=$Zero => writeInteger(0,$algebraOutputStream)
   ident? x => writeString(symbolName x,$algebraOutputStream)
-  atom x => PRIN1(x,$algebraOutputStream)
+  x isnt [.,:.] => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)
 
 charybdis(u,start,linelength) ==
@@ -1702,8 +1702,8 @@ charyTop(u,start,linelength) ==
   '" "
 
 charyTopWidth u ==
-    atom u => u
-    atom first u => putWidth u
+    u isnt [.,:.] => u
+    first u isnt [.,:.] => putWidth u
     integer? CDAR u => u
     putWidth u
 
@@ -1729,7 +1729,7 @@ sublisMatAlist(m,m1,u) ==
 
 charyTrouble1(u,v,start,linelength) ==
   integer? u => outputNumber(start,linelength,atom2String u)
-  atom u => outputString(start,linelength,atom2String u)
+  u isnt [.,:.] => outputString(start,linelength,atom2String u)
   sameObject?(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
   x='EQUATNUM => charyEquatnum(u,v,start,linelength)
@@ -1845,8 +1845,8 @@ scylla(n,v) ==
   nil
 
 keyp(u) ==
-  atom u => nil
-  atom first u => first u
+  u isnt [.,:.] => nil
+  first u isnt [.,:.] => first u
   CAAR u
 
 absym x ==
@@ -1866,10 +1866,10 @@ aggwidth u ==
 argsapp(u,x,y,d) == appargs(rest u,x,y,d)
 
 subspan u ==
-  atom u => 0
+  u isnt [.,:.] => 0
   integer? rest u => subspan first u
   (cons? first u             and_
-   atom CAAR u           and_
+   CAAR u isnt [.,:.]        and_
    not integer? CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUBSPAN), [u])
@@ -1878,10 +1878,10 @@ subspan u ==
 agggsub u == subspan rest u
 
 superspan u ==
-  atom u => 0
+  u isnt [.,:.] => 0
   integer? rest u => superspan first u
   (cons? first u               and_
-   atom CAAR u             and_
+   CAAR u isnt [.,:.]          and_
    not integer? CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
@@ -2362,8 +2362,8 @@ qTWidth(u) ==
   2 + WIDTH second u
 
 remWidth(x) ==
-  atom x => x
-  true => [(atom first x => first x; true => CAAR x),
+  x isnt [.,:.] => x
+  true => [(first x isnt [.,:.] => first x; true => CAAR x),
               :[remWidth y for y in rest x]]
 
 subSub(u) ==
@@ -2554,7 +2554,7 @@ mathPrint u ==
    PSTRING u; nil)
 
 mathPrintTran u ==
-  atom u => u
+  u isnt [.,:.] => u
   true =>
     for x in tails u repeat
           x.first := mathPrintTran first x
@@ -2601,11 +2601,11 @@ primaryForm2String x ==
     x = "$" => '"%"
     x = "$$" => '"%%"
     symbolName x
-  atom x => toString x
+  x isnt [.,:.] => toString x
   strconc('"(",inputForm2String x, '")")
 
 callForm2String x ==
-  atom x => primaryForm2String x
+  x isnt [.,:.] => primaryForm2String x
   [op,:args] := x
 
   member(op,$allClassicOps) => primaryForm2String x
@@ -2674,7 +2674,7 @@ parms2String x ==
       strconc(first xs, '", ")
 
 inputForm2String x ==
-  atom x => primaryForm2String x
+  x isnt [.,:.] => primaryForm2String x
   [op,:args] := x
   isUnaryPrefix op and #args = 1 => unaryForm2String x
   #args = 2 =>

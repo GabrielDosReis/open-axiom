@@ -85,7 +85,7 @@ simpCategoryTable() == main where
       entry := tableValue(_*HASCATEGORY_-HASH_*,key)
       null entry => tableRemove!(_*HASCATEGORY_-HASH_*,key)
       change :=
-        atom opOf entry => simpHasPred entry
+        opOf entry isnt [.,:.] => simpHasPred entry
         [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
       tableValue(_*HASCATEGORY_-HASH_*,key) := change
 
@@ -157,7 +157,8 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
 simpCatHasAttribute(domform,attr) ==
   conform := getConstructorForm opOf domform
   catval :=  eval mkEvalable conform
-  if atom KDR attr then attr := IFCAR attr
+  if KDR attr isnt [.,:.] then
+    attr := IFCAR attr
   pred :=
     u := LASSOC(attr,catval . 2) => first u
     return false                            --exit: not there
@@ -421,7 +422,7 @@ compressHashTable ht ==
 
 compressSexpr(x,left,right) ==
 -- recursive version of compressHashTable
-  atom x => nil
+  x isnt [.,:.] => nil
   u:= tableValue($found,x) =>
     left => left.first := u
     right => right.rest := u
@@ -439,14 +440,14 @@ squeeze1(l) ==
 -- recursive version of squeezeList
   x:= first l
   y:=
-    atom x => x
+    x isnt [.,:.] => x
     z:= member(x,$found) => first z
     $found:= [x,:$found]
     squeeze1 x
   l.first := y
   x:= rest l
   y:=
-    atom x => x
+    x isnt [.,:.] => x
     z:= member(x,$found) => first z
     $found:= [x,:$found]
     squeeze1 x

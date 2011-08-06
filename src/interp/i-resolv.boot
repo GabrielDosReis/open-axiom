@@ -326,7 +326,7 @@ resolveTTRed2(t1,t2,TL) ==
 resolveTTRed3(t) ==
   -- recursive resolveTTRed which handles all subterms of the form
   -- (Resolve t1 t2) or subterms which have to be interpreted
-  atom t => t
+  t isnt [.,:.] => t
   t is ['Resolve,a,b] =>
     ( t1 := resolveTTRed3 a ) and ( t2 := resolveTTRed3 b ) and
       resolveTT1(t1,t2)
@@ -339,7 +339,7 @@ resolveTTRed3(t) ==
   t is ['VarEqual,a,b] => (a = b) and a
   t is ['SetEqual,a,b] =>
     (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
-  [( atom x and x ) or ((not cs and x and not interpOp? x and x)
+  [(x isnt [.,:.] and x ) or ((not cs and x and not interpOp? x and x)
     or resolveTTRed3 x) or return nil
       for x in t for cs in getDualSignatureFromDB first t ]
 
@@ -448,7 +448,7 @@ matchUpToPatternVars(pat,form,patAlist) ==
     patAlist := [[pat,:form],:patAlist]
     true
   cons?(pat) =>
-    atom form => nil
+    form isnt [.,:.] => nil
     matchUpToPatternVars(first pat, first form,patAlist) and
       matchUpToPatternVars(rest pat, rest form,patAlist)
   nil
@@ -491,7 +491,7 @@ resolveTM1(t,m) ==
         t=rest p and t
       $Subst := [[m,:t],:$Subst]
       t
-    atom(t) or atom(m) => nil
+    t isnt [.,:.] or m isnt [.,:.] => nil
     (t is ['Record,:tr]) and (m is ['Record,:mr]) and
       (tt := resolveTMRecord(tr,mr)) => tt
     t is ['Record,:.] or m is ['Record,:.] => nil
@@ -678,7 +678,7 @@ resolveTMRed(t,m) ==
 resolveTMRed1(t) ==
   -- recursive resolveTMRed which handles all subterms of the form
   -- (Resolve a b)
-  atom t => t
+  t isnt [.,:.] => t
   t is ['Resolve,a,b] =>
     ( a := resolveTMRed1 a ) and ( b := resolveTMRed1 b ) and
       resolveTM1(a,b)
@@ -692,7 +692,7 @@ resolveTMRed1(t) ==
     "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
-  [( atom x and x ) or resolveTMRed1 x or return nil for x in t]
+  [(x isnt [.,:.] and x ) or resolveTMRed1 x or return nil for x in t]
 
 --% Type and Mode Representation
 

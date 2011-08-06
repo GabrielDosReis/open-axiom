@@ -219,7 +219,7 @@ bcIssueHt line ==
   iht line
 
 mapStringize l ==
-  atom l => l
+  l isnt [.,:.] => l
   l.first := basicStringize first l
   l.rest := mapStringize rest l
   l

@@ -54,7 +54,7 @@ $AbstractionOperator ==
 ++ Return true if the symbol 's' is used in the form 'x'.  
 usedSymbol?(s,x) ==
   symbol? x => s = x
-  atom x => false
+  x isnt [.,:.] => false
   x is ['QUOTE,:.] => false
   x is [op,parms,:body] and abstractionOperator? op =>
     symbolMember?(s,parms) => false
@@ -145,7 +145,7 @@ noteSubDomainInfo(sub,super,pred) ==
 ++ The transitive closure of the predicate form is returned, where 
 ++ the predicate parameter is `#1'.
 isSubDomain(d1,d2) ==
-  atom d1 or atom d2 => false
+  d1 isnt [.,:.] or d2 isnt [.,:.] => false
 
   -- 1.  Easy, if by syntax constructs.
   d1 is ["SubDomain",=d2,pred] => pred
@@ -284,7 +284,7 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   e
 
 putMacro(lhs,rhs,e) ==
-  atom lhs => put(lhs,"macro",rhs,e)
+  lhs isnt [.,:.] => put(lhs,"macro",rhs,e)
   parms := [gensym() for p in lhs.args]
   put(lhs.op,"macro",
     ['%mlambda,parms,applySubst(pairList(lhs.args,parms),rhs)],e)
@@ -302,7 +302,7 @@ isQuasiquote m ==
 
 ++ returns the inferred domain for the syntactic object t.
 getTypeOfSyntax t ==
-  atom t => 
+  t isnt [.,:.] => 
     ident? t => '(Identifier)
     (m := getBasicMode t) and not member(m,[$EmptyMode,$NoValueMode]) =>
       ["Literal",m]
@@ -510,9 +510,9 @@ concatList [x,:y] ==
 
 concat1(x,y) ==
   null x => y
-  atom x => (null y => x; atom y => [x,y]; [x,:y])
+  x isnt [.,:.] => (null y => x; y isnt [.,:.] => [x,y]; [x,:y])
   null y => x
-  atom y => [:x,y]
+  y isnt [.,:.] => [:x,y]
   [:x,:y]
 
 --% BOOT ravel and reshape
@@ -528,16 +528,16 @@ boolODDP x == ODDP x
 --% Miscellaneous
 
 freeOfSharpVars x ==
-  atom x => not isSharpVarWithNum x
+  x isnt [.,:.] => not isSharpVarWithNum x
   freeOfSharpVars first x and freeOfSharpVars rest x
 
 listOfSharpVars x ==
-  atom x => (isSharpVarWithNum x => [x]; nil)
+  x isnt [.,:.] => (isSharpVarWithNum x => [x]; nil)
   union(listOfSharpVars first x,listOfSharpVars rest x)
 
 listOfPatternIds x ==
   isPatternVar x => [x]
-  atom x => nil
+  x isnt [.,:.] => nil
   x is ['QUOTE,:.] => nil
   UNIONQ(listOfPatternIds first x,listOfPatternIds rest x)
 
@@ -551,7 +551,7 @@ removeZeroOne x ==
   -- 0 and 1
   x = $Zero => 0
   x = $One => 1
-  atom x => x
+  x isnt [.,:.] => x
   [removeZeroOne first x,:removeZeroOne rest x]
 
 removeZeroOneDestructively t ==
@@ -559,15 +559,15 @@ removeZeroOneDestructively t ==
   -- 0 and 1 destructively
   t = $Zero => 0
   t = $One => 1
-  atom t => t
+  t isnt [.,:.] => t
   RPLNODE(t,removeZeroOneDestructively first t,
     removeZeroOneDestructively rest t)
 
 flattenSexpr s ==
   null s => s
-  atom s => s
+  s isnt [.,:.] => s
   [f,:r] := s
-  atom f => [f,:flattenSexpr r]
+  f isnt [.,:.] => [f,:flattenSexpr r]
   [:flattenSexpr f,:flattenSexpr r]
 
 isLowerCaseLetter c ==
@@ -649,9 +649,9 @@ spadThrowBrightly x ==
   spadThrow()
 
 sublisNQ(al,e) ==
-  atom al => e
+  al isnt [.,:.] => e
   fn(al,e) where fn(al,e) ==
-    atom e =>
+    e isnt [.,:.] =>
       for x in al repeat
         sameObject?(first x,e) => return (e := rest x)
       e

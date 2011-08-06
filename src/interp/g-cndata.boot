@@ -174,7 +174,7 @@ isNameOfType x ==
   constructor? opOf unabbrev x
  
 unabbrev1(u,modeIfTrue) ==
-  atom u =>
+  u isnt [.,:.] =>
     not ident? u => u                    -- surely not constructor abbrev
     modeIfTrue =>
       d:= isDomainValuedVariable u => u
@@ -254,7 +254,7 @@ isConstructorName op ==
  
 nAssocQ(x,l,n) ==
   repeat
-    if atom l then return nil
+    if l isnt [.,:.] then return nil
     if sameObject?(x,first(l).n) then return first l
     l:= rest l
  

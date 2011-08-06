@@ -941,7 +941,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   vec
 
 subVecNodes(new,old,form) ==
-  atom form =>
+  form isnt [.,:.] =>
     (vector? form) and (form.0 = old) => new
     form
   [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]
@@ -1250,14 +1250,14 @@ isPolynomialMode m ==
   nil
 
 containsPolynomial m ==
-  atom m => nil
+  m isnt [.,:.] => nil
   [d,:.] := m
   symbolMember?(d,$univariateDomains) or symbolMember?(d,$multivariateDomains) or
     d in '(Polynomial RationalFunction) => true
   (m' := underDomainOf m) and containsPolynomial m'
 
 containsVariables m ==
-  atom m => nil
+  m isnt [.,:.] => nil
   [d,:.] := m
   symbolMember?(d,$univariateDomains) or symbolMember?(d,$multivariateDomains) => true
   (m' := underDomainOf m) and containsVariables m'
@@ -1367,7 +1367,7 @@ upDollar t ==
   if f = $immediateDataSymbol then
     f := objValUnwrap coerceInteractive(getValue form,$OutputForm)
     if f = '(construct) then f := "nil"
-  atom form and (f ~= $immediateDataSymbol) =>
+  form isnt [.,:.] and (f ~= $immediateDataSymbol) =>
     type := constantInDomain?([f],t) =>
       type ~= true => findConstantInDomain(op,f,type,t)
       -- Ambiguous constant.  FIXME: try to narrow before giving up.
@@ -1413,7 +1413,7 @@ upDollarTuple(op, f, t, t2, args, nargs) ==
 
 upLispCall(op,t) ==
   -- process $Lisp calls
-  if atom t then code:=getUnname t else
+  if t isnt [.,:.] then code:=getUnname t else
     [lispOp,:argl]:= t
     null functionp lispOp.0 =>
       throwKeyedMsg("S2IS0024",[lispOp.0])
@@ -1672,7 +1672,7 @@ removeConstruct pat ==
   -- removes the "construct" from the beginning of patterns
   if pat is ["construct",:p] then pat:=p
   if pat is ["cons", a, b] then pat := [a, [":", b]]
-  atom pat => pat
+  pat isnt [.,:.] => pat
   pat.first := removeConstruct first pat
   pat.rest := removeConstruct rest pat
   pat
@@ -1973,7 +1973,7 @@ unVectorize body ==
     name := getUnname body
     name ~= $immediateDataSymbol => name
     objValUnwrap getValue body
-  atom body => body
+  body isnt [.,:.] => body
   body is [op,:argl] =>
     newOp:=unVectorize op
     if newOp = 'SUCHTHAT then newOp := "|"
@@ -2098,7 +2098,7 @@ NRTcompiledLookup(op,sig,dom) ==
   compiledLookupCheck(op,sig,dom)
 
 NRTtypeHack t ==
-  atom t => t
+  t isnt [.,:.] => t
   first t = '_# => # second t
   [first t,:[NRTtypeHack tt for tt in rest t]]
 
@@ -2411,7 +2411,7 @@ upwhere t ==
   [env,:e] := upwhereClause(clause,$env,$e)
   tree := upwhereMkAtree(tree,env,e)
   if x := getAtree(op,'dollar) then
-    atom tree => throwKeyedMsg("S2IS0048",nil)
+    tree isnt [.,:.] => throwKeyedMsg("S2IS0048",nil)
     putAtree(first tree,'dollar,x)
   upwhereMain(tree,env,e)
   val := getValue tree

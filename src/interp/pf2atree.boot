@@ -524,7 +524,7 @@ pfCollect2Atree pf ==
 --
 --  patternVarsOf1(expr, varList) ==
 --    null expr => varList
---    atom expr =>
+--    expr isnt [.,:.] =>
 --      not symbol? expr => varList
 --      SymMemQ(expr, varList) => varList
 --      [expr, :varList]

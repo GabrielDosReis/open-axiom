@@ -101,7 +101,7 @@ makePredicateBitVector pl ==   --called by buildFunctor
   $predGensymAlist := nil --bound by buildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
     pred := simpBool transHasCode p
-    atom pred => 'skip                --skip over T and nil
+    pred isnt [.,:.] => 'skip                --skip over T and nil
     if isHasDollarPred pred then 
       lasts := insert(pred,lasts)
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
@@ -151,7 +151,7 @@ removeAttributePredicates pl ==
     fnl p == [fn x for x in p]
  
 transHasCode x ==
-  atom x => x
+  x isnt [.,:.] => x
   op := x.op
   op in '(HasCategory HasAttribute) => x
   op="has" => compHasFormat x
@@ -159,7 +159,7 @@ transHasCode x ==
  
 mungeAddGensyms(u,gal) ==
   ['%list,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
-    atom x => x
+    x isnt [.,:.] => x
     g := LASSOC(x,gal) =>
       n = 0 => ["%LET",g,x]
       g
@@ -626,8 +626,8 @@ mergeSignatureAndLocalVarAlists(signatureAlist, localVarAlist) ==
     [funcName, :signature] in signatureAlist]
  
 Operators u ==
-  atom u => []
-  atom first u =>
+  u isnt [.,:.] => []
+  first u isnt [.,:.] =>
     answer:="union"/[Operators v for v in rest u]
     symbolMember?(first u,answer) => answer
     [first u,:answer]

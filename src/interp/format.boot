@@ -261,7 +261,7 @@ formatOpSymbol(op,sig) ==
   op
 
 formatAttribute x ==
-  atom x => ["  ",x]
+  x isnt [.,:.] => ["  ",x]
   x is [op,:argl] =>
     for x in argl repeat
       argPart:= append!(argPart,concat('",",formatAttributeArg x))
@@ -270,7 +270,7 @@ formatAttribute x ==
 
 formatAttributeArg x ==
   x is '"*" => "_"*_""
-  atom x => formatOpSymbol (x,nil)
+  x isnt [.,:.] => formatOpSymbol (x,nil)
   x is [":",op,["Mapping",:sig]] =>
     concat('"%b",formatOpSymbol(op,sig),": ",'"%d",formatMapping sig)
   prefix2String0 x
@@ -324,7 +324,7 @@ formatSignatureArgs0 sml ==
 --% Conversions to string form
 
 expr2String x ==
-  atom (u:= prefix2String0 x) => u
+  (u:= prefix2String0 x) isnt [.,:.] => u
   strconc/[atom2String y for y in u]
 
 -- exports (this is a badly named bit of sillyness)
@@ -339,7 +339,7 @@ prefix2String0 form ==
   form2StringLocal form
 
 --  SUBRP form => formWrapId BPINAME form
---  atom form =>
+--  form isnt [.,:.] =>
 --    form=$EmptyMode or form=$quadSymbol => formWrapId specialChar 'quad
 --    string? form => formWrapId form
 --    ident? form => 
@@ -361,7 +361,7 @@ form2StringWithPrens form ==
 
 formString u ==
   x := form2String u
-  atom x => STRINGIMAGE x
+  x isnt [.,:.] => STRINGIMAGE x
   strconc/[STRINGIMAGE y for y in x]
 
 form2String u == 
@@ -383,7 +383,7 @@ constructorName con ==
   con
 
 form2String1 u ==
-  atom u => 
+  u isnt [.,:.] => 
     u=$EmptyMode or u=$quadSymbol => formWrapId specialChar 'quad
     ident? u =>
       constructor? u => app2StringWrap(formWrapId u, [u])
@@ -429,10 +429,10 @@ form2String1 u ==
   op = 'AGGLST => tuple2String argl
   op = 'BRACKET =>
     argl' := form2String1 first argl
-    ['"[",:(atom argl' => [argl']; argl'),'"]"]
+    ['"[",:(argl' isnt [.,:.] => [argl']; argl'),'"]"]
   op = 'PAREN =>
     argl' := form2String1 first argl
-    ['"(",:(atom argl' => [argl']; argl'),'")"]
+    ['"(",:(argl' isnt [.,:.] => [argl']; argl'),'")"]
   op = "SIGNATURE" =>
      [operation,sig] := argl
      concat(operation,'": ",formatSignature sig)
@@ -550,7 +550,7 @@ tuple2String argl ==
   if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
     then string := strconc('"_"",string,'"_"")
     else string :=
-      atom string => object2String string
+      string isnt [.,:.] => object2String string
       [f x for x in string]
   for x in rest argl repeat
     if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
@@ -559,22 +559,22 @@ tuple2String argl ==
   string
  where
   f x ==
-    atom x => object2String x
+    x isnt [.,:.] => object2String x
     -- [f first x,:f rest x]
     [f y for y in x]
 
 script2String s ==
   null s => '""   -- just to be safe
-  if atom s then s := [s]
+  if s isnt [.,:.] then s := [s]
   linearFormatForm(first s, rest s)
 
 linearFormatName x ==
-  atom x => x
+  x isnt [.,:.] => x
   linearFormat x
 
 linearFormat x ==
-  atom x => x
-  x is [op,:argl] and atom op =>
+  x isnt [.,:.] => x
+  x is [op,:argl] and op isnt [.,:.] =>
     argPart:=
       argl is [a,:l] => [a,:"append"/[['",",x] for x in l]]
       nil
@@ -752,7 +752,7 @@ object2Identifier x ==
 blankList x == "append"/[[BLANK,y] for y in x]
 
 pkey keyStuff ==
-    if atom keyStuff then keyStuff := [keyStuff]
+    if keyStuff isnt [.,:.] then keyStuff := [keyStuff]
     allMsgs := ['" "]
     while not null keyStuff repeat
         dbN := nil
@@ -799,16 +799,16 @@ form2FenceQuote x ==
   integer? x => [STRINGIMAGE x]
   symbol? x => [FORMAT(nil, '"|~a|", x)]
   string? x => ['"_"",x,'"_""]
-  atom    x => systemErrorHere ["form2FenceQuote",x]
+  x isnt [.,:.] => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]
 
 form2FenceQuoteTail x ==
   null x => ['")"]
-  atom x => ['" . ",:form2FenceQuote x,'")"]
+  x isnt [.,:.] => ['" . ",:form2FenceQuote x,'")"]
   ['" ",:form2FenceQuote first x,:form2FenceQuoteTail rest x]
 
 form2StringList u ==
-  atom (r := form2String u) => [r]
+  (r := form2String u) => [r] isnt [.,:.]
   r
 
 --% Type Formatting Without Abbreviation
@@ -825,7 +825,7 @@ formatUnabbreviatedSig sig ==
 formatUnabbreviatedTuple t ==
   -- t is a list of types
   null t => t
-  atom t => [t]
+  t isnt [.,:.] => [t]
   t0 := formatUnabbreviated t.op
   null rest t => t0
   [:t0,'",",:formatUnabbreviatedTuple rest t]
@@ -833,7 +833,7 @@ formatUnabbreviatedTuple t ==
 formatUnabbreviated t ==
   null t =>
     ['"()"]
-  atom t =>
+  t isnt [.,:.] =>
     [t]
   t is [p,sel,arg] and p = ":" =>
     [sel,'": ",:formatUnabbreviated arg]

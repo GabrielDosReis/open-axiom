@@ -194,7 +194,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
       [eval quoteCatOp cat for [cat,:pred] in parents | eval pred])
 
 quoteCatOp cat == 
-   atom cat => MKQ cat
+   cat isnt [.,:.] => MKQ cat
    ['LIST, MKQ first cat,: rest cat]
 
 
@@ -282,7 +282,7 @@ depthAssoc x ==
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  
 listOfEntries form ==
-  atom form => form
+  form isnt [.,:.] => form
   form is [op,:l] =>
     op is 'Join => "append"/[listOfEntries x for x in l]
     op is 'CATEGORY => listOfCategoryEntries rest l

@@ -113,7 +113,7 @@ removeQuote x ==
 ++ argument to a (library) function call.
 getValueNormalForm obj ==
   val := objVal obj
-  atom val => val
+  val isnt [.,:.] => val
   [op,:argl] := val
   op is "WRAPPED" => MKQ argl
   ident? op and isConstructorName op => 
@@ -125,7 +125,7 @@ getValueNormalForm obj ==
 
 instantiationNormalForm(op,argl) ==
   [op,:[normalVal for arg in argl]] where normalVal() ==
-     atom arg => arg
+     arg isnt [.,:.] => arg
      [h,:t] := arg
      ident? h and isConstructorName h => instantiationNormalForm(h,t)
      MKQ arg
@@ -232,14 +232,14 @@ emptyAtree expr ==
     vectorRef(expr,2) := nil
     vectorRef(expr,3) := nil
     -- kill proplist too?
-  atom expr => nil
+  expr isnt [.,:.] => nil
   for e in expr repeat
     emptyAtree e
 
 
 ++ returns true if x is a leaf VAT object.
 isLeaf x == 
-  atom x     --may be a number or a vector
+  x isnt [.,:.]     --may be a number or a vector
 
 ++ returns the mode of the VAT node x.
 ++ Also used by the algebra interface to the interpreter.
@@ -260,7 +260,7 @@ putMode(x,y) ==
 ++ Also used by the algebra interface to the interperter.
 getValue x ==
   vector? x => vectorRef(x,2)
-  atom x =>
+  x isnt [.,:.] =>
     t := getBasicObject x => t
     keyedSystemError("S2II0001",[x])
   getValue first x
@@ -281,7 +281,7 @@ putValueValue(vec,val) ==
 getUnnameIfCan x ==
   vector? x => vectorRef(x,0)
   x is [op,:.] => getUnnameIfCan op
-  atom x => x
+  x isnt [.,:.] => x
   nil
 
 ++ Returns the node class of x; otherwise raise an error.
@@ -454,7 +454,7 @@ srcPosDisplay(sp) ==
 ++ represented by the VAT `t'.
 getFlagArgsPos t ==
   vector? t => getAtree(t, 'flagArgsPos)
-  atom t => keyedSystemError("S2II0001",[t])
+  t isnt [.,:.] => keyedSystemError("S2II0001",[t])
   getFlagArgsPos first t
 
 --% Transfer of VAT properties.

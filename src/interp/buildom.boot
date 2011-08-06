@@ -119,7 +119,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 compareSigEqual(s,t,dollar,domain) ==
   s = t => true
-  atom t =>
+  t isnt [.,:.] =>
     u :=
       t is '$ => dollar
       isSharpVar t =>
@@ -132,7 +132,7 @@ compareSigEqual(s,t,dollar,domain) ==
     u => compareSigEqual(s,u,dollar,domain)
     s = u
   s is '$ => compareSigEqual(dollar,t,dollar,domain)
-  atom s => nil
+  s isnt [.,:.] => nil
   #s ~= #t => nil
   match := true
   for u in s for v in t repeat
@@ -223,7 +223,7 @@ goGet(:l) ==
   val
 
 NRTreplaceLocalTypes(t,dom) ==
-  atom t =>
+  t isnt [.,:.] =>
     not integer? t => t
     t := domainRef(dom,t)
     if cons? t then t := evalDomain t

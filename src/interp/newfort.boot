@@ -100,7 +100,7 @@ exp2Fort1 l ==
  
 exp2Fort2(e,prec,oldOp) ==
   null e    => nil
-  atom e    => [object2String e]
+  e isnt [.,:.] => [object2String e]
   e is [ "=",lhs,rhs] or e is [ '"=",lhs,rhs] =>
     ['"%l",:exp2Fort2(rhs,prec,'"="),'"=",:exp2Fort2(lhs,prec,'"=")]
  
@@ -120,7 +120,7 @@ exp2Fort2(e,prec,oldOp) ==
     (p := position(op,unaryOps)) > -1 =>
       nprec := unaryPrecs.p
       s := [:exp2Fort2(first args,nprec,op),op]
-      op = '"-" and atom first args => s
+      op = '"-" and first args isnt [.,:.] => s
       op = oldOp and member(op,['"*",'"+"]) => s
       nprec <= prec => ['")",:s,'"("]
       s
@@ -167,7 +167,7 @@ exp2FortOptimize e ==
   --   1         extract common subexpressions
   --   2         try to optimize computing of powers
   $exprStack : local := nil
-  atom e => [e]
+  e isnt [.,:.] => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
     reverse! [e1,:$exprStack]
@@ -214,8 +214,8 @@ beenHere(e,n) ==
 
 exp2FortOptimizeCS1 e ==
   -- we do nothing with atoms or simple lists containing atoms
-  atom(e) or (atom first e and null rest e) => e
-  e is [op,arg] and object2Identifier op = "-" and atom arg => e
+  e isnt [.,:.] or (first e isnt [.,:.] and null rest e) => e
+  e is [op,arg] and object2Identifier op = "-" and arg isnt [.,:.] => e
 
   -- see if we have been here before
   not (object2Identifier first e in '(ROW AGGLST)) and
@@ -233,7 +233,7 @@ exp2FortOptimizeCS1 e ==
       $fortCsExprStack := rest $fortCsExprStack
     g := rest f
     -- check to see of we have an non-nil atomic CDR
-    g and atom g =>
+    g and g isnt [.,:.] =>
       pushCsStacks(f,'CDR)
       f.rest := exp2FortOptimizeCS1 g
       popCsStacks(0)
@@ -254,7 +254,7 @@ exp2FortOptimizeCS1 e ==
  
 exp2FortOptimizeArray e ==
   -- this handles arrays
-  atom e => e
+  e isnt [.,:.] => e
   [op,:args] := e
   op1 := object2Identifier op
   op1 in '(BRACE BRACKET) =>
@@ -371,7 +371,7 @@ formatAsFortranExpression x ==
 
  
 dispfortexp x ==
-  if atom(x) or x is [op,:.] and
+  if x isnt [.,:.] or x is [op,:.] and
     not (object2Identifier op in '(_= MATRIX construct ))
   then
       var := makeSymbol strconc('"R",object2String $IOindex)
@@ -438,7 +438,7 @@ exp2FortSpecial(op,args,nargs) ==
   --the next line is NEVER used by FORTRAN code but is needed when
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
-    atom (arg := first args) => STRINGIMAGE arg
+    (arg := first args) isnt [.,:.] => STRINGIMAGE arg
     tailPart := strconc/[strconc('",",x) for x in rest arg]
     strconc('"[",first arg,tailPart,'"]")
   op = "PAREN" =>
@@ -670,7 +670,7 @@ checkType ty ==
 
 mkParameterList l ==
   [par2string(u) for u in l] where par2string u ==
-      atom(u) => STRINGIMAGE u
+      u isnt [.,:.] => STRINGIMAGE u
       u := rest second u
       apply(function strconc,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
@@ -687,7 +687,7 @@ fortFormatTypes(typeName,names) ==
   typeName = '"CHARACTER" =>
     fortFormatCharacterTypes([unravel(u) for u in names])
       where unravel u ==
-              atom u => u
+              u isnt [.,:.] => u
               CDADR u
   fortFormatTypes1(typeName,mkParameterList names)
 
@@ -712,7 +712,7 @@ fortFormatCharacterTypes(names) ==
   sortedByLength := []
   genuineArrays  := []
   for u in names repeat
-    atom u => sortedByLength := insertEntry(0,u,sortedByLength)
+    u isnt [.,:.] => sortedByLength := insertEntry(0,u,sortedByLength)
     #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
@@ -797,7 +797,7 @@ fortPre1 e ==
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
   STRINGIMAGE(e).0 = char "%" => subSequence(STRINGIMAGE e,1)
-  atom e => e
+  e isnt [.,:.] => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
@@ -888,7 +888,7 @@ fortExpSize e ==
   -- This function overestimates the size because it assumes that e.g.
   -- (+ x (+ y z)) will be printed as "x+(y+z)" rather than "x+y+z"
   -- which is the actual case.
-  atom e => # STRINGIMAGE e
+  e isnt [.,:.] => # STRINGIMAGE e
   #e > 3 => 2+fortSize [fortExpSize x for x in e]
   #e < 3 => 2+fortSize [fortExpSize x for x in e]
   [op,arg1,arg2] := e
@@ -906,7 +906,7 @@ fortExpSize e ==
 fortSize e ==
   +/[elen u for u in e] where
     elen z ==
-      atom z => z
+      z isnt [.,:.] => z
       first z
  
 tempLen () == 1 + # STRINGIMAGE $exp2FortTempVarIndex
@@ -950,7 +950,7 @@ segment1(e,maxSize) ==
  
 segment2(e,topSize) ==
   maxSize := $maximumFortranExpressionLength -tempLen()-1
-  atom(e) => [e]
+  e isnt [.,:.] => [e]
   exprs := nil
   newE  := [first e]
   topSize := topSize - fortExpSize newE

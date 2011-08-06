@@ -45,7 +45,7 @@ termRW(t,R) ==
 termRW1(t,R) ==
   -- tries to do one reduction on the leftmost outermost subterm of t
   t0:= term1RW(t,R)
-  not sameObject?(t0,t) or atom t => t0
+  not sameObject?(t0,t) or t isnt [.,:.] => t0
   [t1,:t2]:= t
   tt1:= termRW1(t1,R)
   tt2:= t2 and termRW1(t2,R)
@@ -71,12 +71,12 @@ termMatch(tp,t,SL,vars) ==
   -- t is a term pattern, t a term
   -- then the result is the augmented substitution SL or 'failed
   tp=t => SL
-  atom tp =>
+  tp isnt [.,:.] =>
     symbolMember?(tp,vars) =>
       p:= ASSOC(tp,SL) => ( rest p=t )
       [[tp,:t],:SL]
     'failed
-  atom t => 'failed
+  t isnt [.,:.] => 'failed
   [tp1,:tp2]:= tp
   [t1,:t2]:= t
   SL:= termMatch(tp1,t1,SL,vars)
@@ -92,7 +92,7 @@ termMatch(tp,t,SL,vars) ==
 --   -- tests (by EQ), whether v occurs in term t
 --   -- v must not be nil
 --   sameObject?(v,t) => 'T
---   atom t => nil
+--   t isnt [.,:.] => nil
 --   isContained(v,first t) or isContained(v,rest t)
  
 augmentSub(v,t,SL) ==
@@ -125,7 +125,7 @@ subCopy0(t, SL) ==
 subCopyOrNil(t,SL) ==
   -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => p
-  atom t => nil
+  t isnt [.,:.] => nil
   [t1,:t2]:= t
   t0:= subCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:subCopy0(t2,SL)]]
@@ -147,7 +147,7 @@ deepSubCopy0(t, SL) ==
 deepSubCopyOrNil(t,SL) ==
   -- the same as subCopy, but the result is nil if nothing was copied
   p:= ASSOC(t,SL) => [t,:deepSubCopy0(rest p, SL)]
-  atom t => nil
+  t isnt [.,:.] => nil
   [t1,:t2]:= t
   t0:= deepSubCopyOrNil(t1,SL) =>
     t2 => [t, :[rest t0,:deepSubCopy0(t2,SL)]]
