@@ -292,8 +292,8 @@ getExportCategory form ==
   op is 'Record => ['RecordCategory,:argl]
   op is 'Union => ['UnionCategory,:argl]
   op is 'Enumeration => ['EnumerationCategory,:argl]
-  functorModemap := getConstructorModemapFromDB op
-  [[.,target,:tl],:.] := functorModemap
+  op is 'Mapping => ['MappingCategory,:argl]
+  [[.,target,:tl],:.] := getConstructorModemapFromDB op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
 NRTextendsCategory1(domform,exCategory,addForm) ==
@@ -372,18 +372,11 @@ expandType(lazyt,template,domform) ==
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  
 expandTypeArgs(u,template,domform) ==
-  u is '$ => u --template.0      -------eliminate this as $ is rep by 0
-  integer? u => expandType(templateVal(template, domform, u), template,domform)
-  u is ['NRTEVAL,y] => y  --eval  y
-  u is ['QUOTE,y] => y
+  u is '$ => u
+  integer? u => expandType(vectorRef(template,u),template,domform)
+  u is [.,y] and u.op in '(NRTEVAL QUOTE) => y
   u isnt [.,:.] => u
   expandType(u,template,domform)
- 
-templateVal(template,domform,index) ==
---returns a domform or a lazy slot
-  index = 0 => BREAK() --template
-  vectorRef(template,index)
-
 
 --% Subdomains
 
