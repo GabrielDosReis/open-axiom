@@ -245,7 +245,7 @@
            (LET ((|bfVar#1| |x|))
              (LOOP
                (COND
-                 ((ATOM |bfVar#1|) (RETURN NIL))
+                 ((NOT (CONSP |bfVar#1|)) (RETURN NIL))
                  (T (AND (CONSP |bfVar#1|)
                          (PROGN (SETQ |a| (CAR |bfVar#1|)) T)
                          (NOT (|objectMember?| |a| |y|))

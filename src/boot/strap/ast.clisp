@@ -293,7 +293,7 @@
           ((LET ((|bfVar#2| NIL) (|bfVar#1| |a|) (|x| NIL))
              (LOOP
                (COND
-                 ((OR (ATOM |bfVar#1|)
+                 ((OR (NOT (CONSP |bfVar#1|))
                       (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                   (RETURN |bfVar#2|))
                  (T (SETQ |bfVar#2|
@@ -412,7 +412,7 @@
         (SETQ |g| (|bfGenSymbol|))
         (SETQ |vars| (LIST |g|))
         (SETQ |inits| (LIST E))
-        (SETQ |exitCond| (LIST 'ATOM |g|))
+        (SETQ |exitCond| (LIST 'NOT (LIST 'CONSP |g|)))
         (COND
           ((NOT (EQ |x| 'DOT))
            (SETQ |vars| (|append| |vars| (CONS |x| NIL)))
@@ -436,7 +436,7 @@
            (SETQ |var| (LIST |x|)) (SETQ |init| (LIST E))))
         (LIST (LIST |var| |init|
                     (LIST (LIST 'SETQ |x| (LIST 'CDR |x|))) NIL
-                    (LIST (LIST 'ATOM |x|)) NIL))))))
+                    (LIST (LIST 'NOT (LIST 'CONSP |x|))) NIL))))))
 
 (DEFUN |bfSuchthat| (|p|)
   (LIST (LIST NIL NIL NIL (LIST |p|) NIL NIL)))
@@ -477,9 +477,9 @@
                  (|i| NIL) (|bfVar#2| |r|) (|j| NIL))
              (LOOP
                (COND
-                 ((OR (ATOM |bfVar#1|)
+                 ((OR (NOT (CONSP |bfVar#1|))
                       (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL)
-                      (ATOM |bfVar#2|)
+                      (NOT (CONSP |bfVar#2|))
                       (PROGN (SETQ |j| (CAR |bfVar#2|)) NIL))
                   (RETURN |bfVar#3|))
                  ((NULL |bfVar#3|)
@@ -637,11 +637,11 @@
                                     (|bfVar#2| |inits|) (|i| NIL))
                                 (LOOP
                                   (COND
-                                    ((OR (ATOM |bfVar#1|)
+                                    ((OR (NOT (CONSP |bfVar#1|))
                                       (PROGN
                                         (SETQ |v| (CAR |bfVar#1|))
                                         NIL)
-                                      (ATOM |bfVar#2|)
+                                      (NOT (CONSP |bfVar#2|))
                                       (PROGN
                                         (SETQ |i| (CAR |bfVar#2|))
                                         NIL))
@@ -1156,7 +1156,7 @@
            (LET ((|bfVar#2| T) (|bfVar#1| |seq|) (|y| NIL))
              (LOOP
                (COND
-                 ((OR (ATOM |bfVar#1|)
+                 ((OR (NOT (CONSP |bfVar#1|))
                       (PROGN (SETQ |y| (CAR |bfVar#1|)) NIL))
                   (RETURN |bfVar#2|))
                  (T (SETQ |bfVar#2| (APPLY |pred| |y| NIL))
@@ -1168,7 +1168,7 @@
        (LET ((|bfVar#2| T) (|bfVar#1| (CDR |x|)) (|arg| NIL))
          (LOOP
            (COND
-             ((OR (ATOM |bfVar#1|)
+             ((OR (NOT (CONSP |bfVar#1|))
                   (PROGN (SETQ |arg| (CAR |bfVar#1|)) NIL))
               (RETURN |bfVar#2|))
              (T (SETQ |bfVar#2| (|defQuoteId| |arg|))
@@ -1180,7 +1180,7 @@
        (LET ((|bfVar#2| T) (|bfVar#1| (CDR |x|)) (|arg| NIL))
          (LOOP
            (COND
-             ((OR (ATOM |bfVar#1|)
+             ((OR (NOT (CONSP |bfVar#1|))
                   (PROGN (SETQ |arg| (CAR |bfVar#1|)) NIL))
               (RETURN |bfVar#2|))
              (T (SETQ |bfVar#2| (|bfChar?| |arg|))
@@ -1192,7 +1192,7 @@
        (LET ((|bfVar#2| T) (|bfVar#1| (CDR |x|)) (|arg| NIL))
          (LOOP
            (COND
-             ((OR (ATOM |bfVar#1|)
+             ((OR (NOT (CONSP |bfVar#1|))
                   (PROGN (SETQ |arg| (CAR |bfVar#1|)) NIL))
               (RETURN |bfVar#2|))
              (T (SETQ |bfVar#2| (|bfString?| |arg|))
@@ -1351,7 +1351,7 @@
                    (|c| NIL))
                (LOOP
                  (COND
-                   ((OR (ATOM |bfVar#1|)
+                   ((OR (NOT (CONSP |bfVar#1|))
                         (PROGN (SETQ |c| (CAR |bfVar#1|)) NIL))
                     (RETURN |bfVar#2|))
                    (T (LET ((|bfVar#4|
@@ -1373,7 +1373,7 @@
                    (|c| NIL))
                (LOOP
                  (COND
-                   ((OR (ATOM |bfVar#1|)
+                   ((OR (NOT (CONSP |bfVar#1|))
                         (PROGN (SETQ |c| (CAR |bfVar#1|)) NIL))
                     (RETURN |bfVar#2|))
                    (T (LET ((|bfVar#4|
@@ -1452,9 +1452,9 @@
                     (|i| NIL) (|bfVar#2| |sgargl|) (|j| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL)
-                         (ATOM |bfVar#2|)
+                         (NOT (CONSP |bfVar#2|))
                          (PROGN (SETQ |j| (CAR |bfVar#2|)) NIL))
                      (RETURN |bfVar#3|))
                     ((NULL |bfVar#3|)
@@ -1471,9 +1471,9 @@
                     (|j| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#5|)
+                    ((OR (NOT (CONSP |bfVar#5|))
                          (PROGN (SETQ |i| (CAR |bfVar#5|)) NIL)
-                         (ATOM |bfVar#6|)
+                         (NOT (CONSP |bfVar#6|))
                          (PROGN (SETQ |j| (CAR |bfVar#6|)) NIL))
                      (RETURN |bfVar#7|))
                     ((NULL |bfVar#7|)
@@ -1493,7 +1493,7 @@
                     (|bfVar#9| |$wheredefs|) (|d| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#9|)
+                    ((OR (NOT (CONSP |bfVar#9|))
                          (PROGN (SETQ |d| (CAR |bfVar#9|)) NIL))
                      (RETURN |bfVar#10|))
                     (T (LET ((|bfVar#12|
@@ -1579,7 +1579,7 @@
                      (|d| NIL))
                  (LOOP
                    (COND
-                     ((OR (ATOM |bfVar#1|)
+                     ((OR (NOT (CONSP |bfVar#1|))
                           (PROGN (SETQ |d| (CAR |bfVar#1|)) NIL))
                       (RETURN |bfVar#2|))
                      (T (LET ((|bfVar#4|
@@ -1598,7 +1598,8 @@
   (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |x|) (|def| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#1|) (PROGN (SETQ |def| (CAR |bfVar#1|)) NIL))
+        ((OR (NOT (CONSP |bfVar#1|))
+             (PROGN (SETQ |def| (CAR |bfVar#1|)) NIL))
          (RETURN |bfVar#2|))
         ((NULL |bfVar#2|)
          (SETQ |bfVar#2| #0=(CONS (|shoeComp| |def|) NIL))
@@ -1752,7 +1753,7 @@
              (T (LET ((|bfVar#2| NIL) (|bfVar#1| |body|) (|t| NIL))
                   (LOOP
                     (COND
-                      ((OR (ATOM |bfVar#1|)
+                      ((OR (NOT (CONSP |bfVar#1|))
                            (PROGN (SETQ |t| (CAR |bfVar#1|)) NIL))
                        (RETURN |bfVar#2|))
                       (T (SETQ |bfVar#2| (|needsPROG| |t|))
@@ -1866,7 +1867,7 @@
               (LET ((|bfVar#1| (CADR |x|)) (|y| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |y| (CAR |bfVar#1|)) NIL))
                      (RETURN NIL))
                     ((NOT (|symbolMember?| |y| |$locVars|))
@@ -1882,7 +1883,7 @@
                           (|bfVar#2| |$locVars|) (|y| NIL))
                       (LOOP
                         (COND
-                          ((OR (ATOM |bfVar#2|)
+                          ((OR (NOT (CONSP |bfVar#2|))
                                (PROGN (SETQ |y| (CAR |bfVar#2|)) NIL))
                            (RETURN |bfVar#3|))
                           (T (AND (NOT (|symbolMember?| |y|
@@ -2067,7 +2068,7 @@
                        (|x| NIL))
                    (LOOP
                      (COND
-                       ((OR (ATOM |bfVar#1|)
+                       ((OR (NOT (CONSP |bfVar#1|))
                             (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL)
                             (NOT (AND (CONSP |x|) (EQ (CAR |x|) 'COND)
                                       (PROGN
@@ -2145,7 +2146,7 @@
                     (|d| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |d| (CAR |bfVar#1|)) NIL))
                      (RETURN |bfVar#2|))
                     ((NULL |bfVar#2|)
@@ -2242,7 +2243,7 @@
                        (|bfVar#1| (CDR |x|)) (|i| NIL))
                    (LOOP
                      (COND
-                       ((OR (ATOM |bfVar#1|)
+                       ((OR (NOT (CONSP |bfVar#1|))
                             (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
                         (RETURN |bfVar#2|))
                        ((NULL |bfVar#2|)
@@ -2283,7 +2284,7 @@
             (|bfVar#1| NIL))
         (LOOP
           (COND
-            ((OR (ATOM |bfVar#2|)
+            ((OR (NOT (CONSP |bfVar#2|))
                  (PROGN (SETQ |bfVar#1| (CAR |bfVar#2|)) NIL))
              (RETURN |bfVar#3|))
             (T (AND (CONSP |bfVar#1|)
@@ -2315,7 +2316,7 @@
                          (|bfVar#1| |a|) (|i| NIL) (|j| 1))
                      (LOOP
                        (COND
-                         ((OR (ATOM |bfVar#1|)
+                         ((OR (NOT (CONSP |bfVar#1|))
                               (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
                           (RETURN |bfVar#2|))
                          (T (AND (NOT (EQ |i| 'DOT))
@@ -2476,7 +2477,7 @@
                    (|t| NIL))
                (LOOP
                  (COND
-                   ((OR (ATOM |bfVar#1|)
+                   ((OR (NOT (CONSP |bfVar#1|))
                         (PROGN (SETQ |t| (CAR |bfVar#1|)) NIL))
                     (RETURN |bfVar#2|))
                    ((NULL |bfVar#2|)
@@ -2692,7 +2693,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                      (RETURN |bfVar#2|))
                     ((NULL |bfVar#2|)
@@ -2707,7 +2708,7 @@
           ((LET ((|bfVar#5| T) (|bfVar#4| (CONS |t| |s|)) (|x| NIL))
              (LOOP
                (COND
-                 ((OR (ATOM |bfVar#4|)
+                 ((OR (NOT (CONSP |bfVar#4|))
                       (PROGN (SETQ |x| (CAR |bfVar#4|)) NIL))
                   (RETURN |bfVar#5|))
                  (T (SETQ |bfVar#5| (|isSimpleNativeType| |x|))
@@ -2750,8 +2751,8 @@
                                          (|a| |cargs|))
                                          (LOOP
                                            (COND
-                                             ((OR (ATOM |x|)
-                                               (ATOM |a|))
+                                             ((OR (NOT (CONSP |x|))
+                                               (NOT (CONSP |a|)))
                                               (RETURN |bfVar#6|))
                                              ((NULL |bfVar#6|)
                                               (SETQ |bfVar#6|
@@ -2786,8 +2787,9 @@
                                               (|a| |cargs|))
                                               (LOOP
                                                 (COND
-                                                  ((OR (ATOM |x|)
-                                                    (ATOM |a|))
+                                                  ((OR
+                                                    (NOT (CONSP |x|))
+                                                    (NOT (CONSP |a|)))
                                                    (RETURN |bfVar#8|))
                                                   ((NULL |bfVar#8|)
                                                    (SETQ |bfVar#8|
@@ -2811,7 +2813,7 @@
                          (|bfVar#11| NIL))
                      (LOOP
                        (COND
-                         ((OR (ATOM |bfVar#12|)
+                         ((OR (NOT (CONSP |bfVar#12|))
                               (PROGN
                                 (SETQ |bfVar#11| (CAR |bfVar#12|))
                                 NIL))
@@ -2882,7 +2884,7 @@
         (LET ((|bfVar#1| |s|) (|x| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#1|)
+              ((OR (NOT (CONSP |bfVar#1|))
                    (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                (RETURN NIL))
               (T (SETQ |argtypes|
@@ -2910,7 +2912,7 @@
                               (LOOP
                                 (COND
                                   ((OR (> |i| |bfVar#2|)
-                                    (ATOM |bfVar#3|)
+                                    (NOT (CONSP |bfVar#3|))
                                     (PROGN
                                       (SETQ |x| (CAR |bfVar#3|))
                                       NIL))
@@ -2934,7 +2936,7 @@
         (|bfVar#7| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#8|)
+        ((OR (NOT (CONSP |bfVar#8|))
              (PROGN (SETQ |bfVar#7| (CAR |bfVar#8|)) NIL))
          (RETURN |bfVar#6|))
         (T (SETQ |bfVar#6| (CONCAT |bfVar#6| |bfVar#7|))))
@@ -2982,7 +2984,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                      (RETURN |bfVar#2|))
                     ((NULL |bfVar#2|)
@@ -2998,7 +3000,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#4|)
+                    ((OR (NOT (CONSP |bfVar#4|))
                          (PROGN (SETQ |x| (CAR |bfVar#4|)) NIL))
                      (RETURN |bfVar#5|))
                     ((NULL |bfVar#5|)
@@ -3012,11 +3014,11 @@
               (|bfVar#9| |argtypes|) (|y| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#7|)
+              ((OR (NOT (CONSP |bfVar#7|))
                    (PROGN (SETQ |p| (CAR |bfVar#7|)) NIL)
-                   (ATOM |bfVar#8|)
+                   (NOT (CONSP |bfVar#8|))
                    (PROGN (SETQ |x| (CAR |bfVar#8|)) NIL)
-                   (ATOM |bfVar#9|)
+                   (NOT (CONSP |bfVar#9|))
                    (PROGN (SETQ |y| (CAR |bfVar#9|)) NIL))
                (RETURN NIL))
               ((|needsStableReference?| |x|)
@@ -3036,11 +3038,11 @@
                                 (|bfVar#11| |parms|) (|a| NIL))
                             (LOOP
                               (COND
-                                ((OR (ATOM |bfVar#10|)
+                                ((OR (NOT (CONSP |bfVar#10|))
                                      (PROGN
                                        (SETQ |x| (CAR |bfVar#10|))
                                        NIL)
-                                     (ATOM |bfVar#11|)
+                                     (NOT (CONSP |bfVar#11|))
                                      (PROGN
                                        (SETQ |a| (CAR |bfVar#11|))
                                        NIL))
@@ -3065,7 +3067,7 @@
                                (|bfVar#14| NIL))
                            (LOOP
                              (COND
-                               ((OR (ATOM |bfVar#15|)
+                               ((OR (NOT (CONSP |bfVar#15|))
                                     (PROGN
                                       (SETQ |bfVar#14|
                                        (CAR |bfVar#15|))
@@ -3101,7 +3103,7 @@
                                      (|bfVar#18| |parms|) (|p| NIL))
                                  (LOOP
                                    (COND
-                                     ((OR (ATOM |bfVar#18|)
+                                     ((OR (NOT (CONSP |bfVar#18|))
                                        (PROGN
                                          (SETQ |p| (CAR |bfVar#18|))
                                          NIL))
@@ -3131,7 +3133,7 @@
                                        (|p| NIL))
                                    (LOOP
                                      (COND
-                                       ((OR (ATOM |bfVar#21|)
+                                       ((OR (NOT (CONSP |bfVar#21|))
                                          (PROGN
                                            (SETQ |p| (CAR |bfVar#21|))
                                            NIL))
@@ -3162,7 +3164,7 @@
                    (LET ((|bfVar#25| |localPairs|) (|bfVar#24| NIL))
                      (LOOP
                        (COND
-                         ((OR (ATOM |bfVar#25|)
+                         ((OR (NOT (CONSP |bfVar#25|))
                               (PROGN
                                 (SETQ |bfVar#24| (CAR |bfVar#25|))
                                 NIL))
@@ -3232,7 +3234,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                      (RETURN |bfVar#2|))
                     ((NULL |bfVar#2|)
@@ -3247,7 +3249,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#4|)
+                    ((OR (NOT (CONSP |bfVar#4|))
                          (PROGN (SETQ |x| (CAR |bfVar#4|)) NIL))
                      (RETURN |bfVar#5|))
                     ((NULL |bfVar#5|)
@@ -3261,9 +3263,9 @@
         (LET ((|bfVar#7| |args|) (|a| NIL) (|bfVar#8| |s|) (|x| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#7|)
+              ((OR (NOT (CONSP |bfVar#7|))
                    (PROGN (SETQ |a| (CAR |bfVar#7|)) NIL)
-                   (ATOM |bfVar#8|)
+                   (NOT (CONSP |bfVar#8|))
                    (PROGN (SETQ |x| (CAR |bfVar#8|)) NIL))
                (RETURN NIL))
               (T (SETQ |newArgs|
@@ -3314,7 +3316,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#1|)
+                    ((OR (NOT (CONSP |bfVar#1|))
                          (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
                      (RETURN |bfVar#2|))
                     ((NULL |bfVar#2|)
@@ -3329,7 +3331,7 @@
                     (|x| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#4|)
+                    ((OR (NOT (CONSP |bfVar#4|))
                          (PROGN (SETQ |x| (CAR |bfVar#4|)) NIL))
                      (RETURN |bfVar#5|))
                     ((NULL |bfVar#5|)
@@ -3343,9 +3345,9 @@
         (LET ((|bfVar#7| |parms|) (|p| NIL) (|bfVar#8| |s|) (|x| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#7|)
+              ((OR (NOT (CONSP |bfVar#7|))
                    (PROGN (SETQ |p| (CAR |bfVar#7|)) NIL)
-                   (ATOM |bfVar#8|)
+                   (NOT (CONSP |bfVar#8|))
                    (PROGN (SETQ |x| (CAR |bfVar#8|)) NIL))
                (RETURN NIL))
               ((EQ |x| '|string|)
@@ -3378,11 +3380,11 @@
                                     (|bfVar#10| |parms|) (|p| NIL))
                                 (LOOP
                                   (COND
-                                    ((OR (ATOM |bfVar#9|)
+                                    ((OR (NOT (CONSP |bfVar#9|))
                                       (PROGN
                                         (SETQ |x| (CAR |bfVar#9|))
                                         NIL)
-                                      (ATOM |bfVar#10|)
+                                      (NOT (CONSP |bfVar#10|))
                                       (PROGN
                                         (SETQ |p| (CAR |bfVar#10|))
                                         NIL))
@@ -3420,7 +3422,7 @@
         (LET ((|bfVar#14| |aryPairs|) (|arg| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#14|)
+              ((OR (NOT (CONSP |bfVar#14|))
                    (PROGN (SETQ |arg| (CAR |bfVar#14|)) NIL))
                (RETURN NIL))
               (T (SETQ |call|
@@ -3437,7 +3439,7 @@
                                         (|arg| NIL))
                                     (LOOP
                                       (COND
-                                        ((OR (ATOM |bfVar#15|)
+                                        ((OR (NOT (CONSP |bfVar#15|))
                                           (PROGN
                                             (SETQ |arg|
                                              (CAR |bfVar#15|))

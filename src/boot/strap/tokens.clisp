@@ -60,7 +60,7 @@
         (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#1|)
+              ((OR (NOT (CONSP |bfVar#1|))
                    (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
                (RETURN NIL))
               (T (SETF (|tableValue| |KeyTable| (CAR |st|))
@@ -120,7 +120,7 @@
         (LET ((|bfVar#1| |l|) (|s| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#1|)
+              ((OR (NOT (CONSP |bfVar#1|))
                    (PROGN (SETQ |s| (CAR |bfVar#1|)) NIL))
                (RETURN NIL))
               (T (|shoeInsert| |s| |d|)))
@@ -144,7 +144,7 @@
         (LET ((|bfVar#1| |listing|) (|k| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#1|)
+              ((OR (NOT (CONSP |bfVar#1|))
                    (PROGN (SETQ |k| (CAR |bfVar#1|)) NIL))
                (RETURN NIL))
               ((|shoeStartsId| (ELT |k| 0)) NIL)
@@ -157,7 +157,8 @@
 (LET ((|bfVar#1| (LIST 'NOT 'LENGTH)) (|i| NIL))
   (LOOP
     (COND
-      ((OR (ATOM |bfVar#1|) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+      ((OR (NOT (CONSP |bfVar#1|))
+           (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
        (RETURN NIL))
       (T (SETF (GET |i| 'SHOEPRE) T)))
     (SETQ |bfVar#1| (CDR |bfVar#1|))))
@@ -172,7 +173,8 @@
       (|i| NIL))
   (LOOP
     (COND
-      ((OR (ATOM |bfVar#1|) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+      ((OR (NOT (CONSP |bfVar#1|))
+           (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
        (RETURN NIL))
       (T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
     (SETQ |bfVar#1| (CDR |bfVar#1|))))
@@ -189,7 +191,8 @@
       (|i| NIL))
   (LOOP
     (COND
-      ((OR (ATOM |bfVar#1|) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+      ((OR (NOT (CONSP |bfVar#1|))
+           (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
        (RETURN NIL))
       (T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
     (SETQ |bfVar#1| (CDR |bfVar#1|))))
@@ -268,7 +271,8 @@
       (|i| NIL))
   (LOOP
     (COND
-      ((OR (ATOM |bfVar#1|) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+      ((OR (NOT (CONSP |bfVar#1|))
+           (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
        (RETURN NIL))
       (T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
     (SETQ |bfVar#1| (CDR |bfVar#1|))))
@@ -296,7 +300,8 @@
       (|i| NIL))
   (LOOP
     (COND
-      ((OR (ATOM |bfVar#1|) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+      ((OR (NOT (CONSP |bfVar#1|))
+           (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
        (RETURN NIL))
       (T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
     (SETQ |bfVar#1| (CDR |bfVar#1|))))
