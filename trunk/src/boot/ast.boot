@@ -305,7 +305,7 @@ bfIN(x,E)==
   g := bfGenSymbol()
   vars := [g]
   inits := [E]
-  exitCond := ['ATOM,g]
+  exitCond := ['NOT,['CONSP,g]]
   if x isnt "DOT" then
     vars := [:vars,x]
     inits := [:inits,nil]
@@ -320,7 +320,7 @@ bfON(x,E)==
   if not symbol? E or not symbolEq?(x,E) then
     var := [x]
     init := [E]
-  [[var,init,[['SETQ,x,['CDR, x]]],[],[['ATOM,x]],[]]]
+  [[var,init,[['SETQ,x,['CDR, x]]],[],[['NOT,['CONSP,x]]],[]]]
  
 bfSuchthat p ==
   [[[],[],[],[p],[],[]]]
