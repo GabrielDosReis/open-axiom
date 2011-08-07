@@ -61,10 +61,10 @@ expandIN(x,l,early?) ==
   early? =>               -- give the loop variable a wider scope.
     [[[g,middleEndExpand l],[x,'NIL]],
       nil,[['SETQ,g,['CDR,g]]],
-        nil,[['ATOM,g],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
+        nil,[['NOT,['CONSP,g]],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
   [[[g,middleEndExpand l]],
     [[x,['CAR,g]]],[['SETQ,g,['CDR,g]]],
-      nil,[['ATOM,g]]]
+      nil,[['NOT,['CONSP,g]]]]
 
 expandON(x,l) ==
   [[[x,middleEndExpand l]],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
