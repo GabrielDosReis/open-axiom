@@ -269,12 +269,12 @@ hasDefaultPackage catname ==
 --=======================================================================
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
-NRTgetLookupFunction(domform,exCategory,addForm) ==
+NRTgetLookupFunction(domform,exCategory,addForm,env) ==
   domform := applySubst($pairlis,domform)
   addForm := applySubst($pairlis,addForm)
   $why: local := nil
   addForm isnt [.,:.] => 'lookupComplete
-  NRTextendsCategory1(domform,exCategory,getExportCategory addForm) =>
+  NRTextendsCategory1(domform,exCategory,getExportCategory addForm,env) =>
     'lookupIncomplete
   [u,msg,:v] := $why
   SAY '"--------------non extending category----------------------"
@@ -295,48 +295,49 @@ getExportCategory form ==
   [[.,target,:tl],:.] := getConstructorModemapFromDB op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
-NRTextendsCategory1(domform,exCategory,addForm) ==
+NRTextendsCategory1(domform,exCategory,addForm,env) ==
   addForm is ["%Comma",:r] => 
-    and/[extendsCategory(domform,exCategory,x) for x in r]
-  extendsCategory(domform,exCategory,addForm)
+    and/[extendsCategory(domform,exCategory,x,env) for x in r]
+  extendsCategory(domform,exCategory,addForm,env)
 
 --=======================================================================
 --         Compute if a domain constructor is forgetful functor
 --=======================================================================
-extendsCategory(dom,u,v) ==
+extendsCategory(dom,u,v,env) ==
   --does category u extend category v (yes iff u contains everything in v)
   --is dom of category u also of category v?
   u=v => true
-  v is ["Join",:l] => and/[extendsCategory(dom,u,x) for x in l]
-  v is ["CATEGORY",.,:l] => and/[extendsCategory(dom,u,x) for x in l]
-  v is ["SubsetCategory",cat,d] => extendsCategory(dom,u,cat) and isSubset(dom,d,$e)
+  v is ["Join",:l] => and/[extendsCategory(dom,u,x,env) for x in l]
+  v is ["CATEGORY",.,:l] => and/[extendsCategory(dom,u,x,env) for x in l]
+  v is ["SubsetCategory",cat,d] =>
+    extendsCategory(dom,u,cat,env) and isSubset(dom,d,env)
   v := substSlotNumbers(v,$template,$functorForm)
-  extendsCategoryBasic(dom,u,v) => true
+  extendsCategoryBasic(dom,u,v,env) => true
   $why :=
     v is ['SIGNATURE,op,sig] => [u,['"  has no ",:formatOpSignature(op,sig)]]
     [u,'" has no",v]
   nil
  
-extendsCategoryBasic(dom,u,v) ==
+extendsCategoryBasic(dom,u,v,env) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
-    uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
-    cons? c and isCategoryForm(c,nil) =>
+    uVec := compMakeCategoryObject(u,env).expr
+    cons? c and isCategoryForm(c,env) =>
       LASSOC(c,second categoryHierarchy uVec) is [=p,:.]
     LASSOC(c,categoryAttributes uVec) is [=p,:.]
-  u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v) for x in l]
+  u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
   u = v => true
-  isCategoryForm(v,nil) => catExtendsCat?(u,v)
+  isCategoryForm(v,env) => catExtendsCat?(u,v,env)
   v is ['SIGNATURE,op,sig] =>
-    uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+    uVec := compMakeCategoryObject(u,env).expr
     or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
     false
   false
  
-catExtendsCat?(u,v) ==
+catExtendsCat?(u,v,env) ==
   u = v => true
-  uvec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+  uvec := compMakeCategoryObject(u,env).expr
   slot4 := categoryHierarchy uvec
   prinAncestorList := first slot4
   listMember?(v,prinAncestorList) => true
@@ -347,7 +348,7 @@ catExtendsCat?(u,v) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v) for x in ASSOCLEFT second slot4]
+  or/[catExtendsCat?(x,v,env) for x in ASSOCLEFT second slot4]
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and
@@ -921,7 +922,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $compileExportsOnly =>
       compDefineExports(form, categoryExports ds, signature',$e)
     $domainShell: local := copyVector ds
-    attributeList := vectorRef(ds,2) --see below under "loadTimeAlist"
+    attributeList := categoryAttributes ds --see below under "loadTimeAlist"
     $condAlist: local := nil
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
@@ -999,7 +1000,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         $lisplibFunctionLocations := applySubst($pairlis,$functionLocations)
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
-            NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)
+            NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm,$e)
             --either lookupComplete (for forgetful guys) or lookupIncomplete
         $byteAddress :local := 0
         $byteVec :local := nil

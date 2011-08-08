@@ -1,5 +1,14 @@
 2011-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (NRTgetLookupFunction): Take an environment
+	argument. Adjust caller.
+	(NRTextendsCategory1): Likewise.
+	(extendsCategory): Likewise.
+	(extendsCategoryBasic): Likewise.
+	(catExtendsCat?): Likewise.
+
+2011-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (categoryHierarchy): New.
 	* interp/category.boot (mkCategory): Use it.
 	* interp/define.boot (NRTgetLookupFunction): Tidy.
