@@ -120,10 +120,10 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   if PrincipalAncestor ~= nil then
     for x in 6..#PrincipalAncestor-1 repeat 
       categoryRef(v,x) := PrincipalAncestor.x
-    categoryRef(v,4) :=
+    categoryHierarchy(v) :=
       [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
   else
-    categoryRef(v,4) := [nil,nil,OldLocals] --associated categories and domains
+    categoryHierarchy(v) := [nil,nil,OldLocals]
   categoryRef(v,5) := domList
   for [nsig,:n] in NSigList repeat 
     categoryRef(v,n) := nsig
