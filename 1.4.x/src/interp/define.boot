@@ -274,17 +274,16 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
   addForm := applySubst($pairlis,addForm)
   $why: local := nil
   addForm isnt [.,:.] => 'lookupComplete
-  extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
-  if null extends then 
-    [u,msg,:v] := $why
-    SAY '"--------------non extending category----------------------"
-    sayPatternMsg('"%1p of category %2p", [domform,u])
-    if v ~= nil then
-      sayPatternMsg('"%1b %2p",[msg,first v])
-    else
-      sayPatternMsg('"%1b",[msg])
-    SAY '"----------------------------------------------------------"
-  extends => 'lookupIncomplete
+  NRTextendsCategory1(domform,exCategory,getExportCategory addForm) =>
+    'lookupIncomplete
+  [u,msg,:v] := $why
+  SAY '"--------------non extending category----------------------"
+  sayPatternMsg('"%1p of category %2p", [domform,u])
+  if v ~= nil then
+    sayPatternMsg('"%1b %2p",[msg,first v])
+  else
+    sayPatternMsg('"%1b",[msg])
+  SAY '"----------------------------------------------------------"
   'lookupComplete
 
 getExportCategory form ==
@@ -320,27 +319,25 @@ extendsCategory(dom,u,v) ==
  
 extendsCategoryBasic(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
-    uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
+    uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
     cons? c and isCategoryForm(c,nil) =>
-      slot4 := vectorRef(uVec,4)
-      LASSOC(c,second slot4) is [=p,:.]
-    slot2 := vectorRef(uVec,2)
-    LASSOC(c,slot2) is [=p,:.]
+      LASSOC(c,second categoryHierarchy uVec) is [=p,:.]
+    LASSOC(c,categoryAttributes uVec) is [=p,:.]
   u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v) for x in l]
   u = v => true
-  uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
-  isCategoryForm(v,nil) => catExtendsCat?(u,v,uVec)
+  isCategoryForm(v,nil) => catExtendsCat?(u,v)
   v is ['SIGNATURE,op,sig] =>
-    or/[vectorRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
+    uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+    or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
     false
   false
  
-catExtendsCat?(u,v,uvec) ==
+catExtendsCat?(u,v) ==
   u = v => true
-  uvec := uvec or (compMakeCategoryObject(u,$EmptyEnvironment)).expr
-  slot4 := vectorRef(uvec,4)
+  uvec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+  slot4 := categoryHierarchy uvec
   prinAncestorList := first slot4
   listMember?(v,prinAncestorList) => true
   vOp := KAR v
@@ -350,7 +347,7 @@ catExtendsCat?(u,v,uvec) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v,nil) for x in ASSOCLEFT second slot4]
+  or/[catExtendsCat?(x,v) for x in ASSOCLEFT second slot4]
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and

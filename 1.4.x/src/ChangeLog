@@ -1,3 +1,10 @@
+2011-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (categoryHierarchy): New.
+	* interp/category.boot (mkCategory): Use it.
+	* interp/define.boot (NRTgetLookupFunction): Tidy.
+	(catExtendsCat?): Lose last argument.  Adjust callers.
+
 2011-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (templateVal): Fold into expantTypeArgs. Remove. 
