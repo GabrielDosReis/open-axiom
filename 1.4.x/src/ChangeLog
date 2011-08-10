@@ -1,5 +1,21 @@
 2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/float.spad.pamphlet (Float): Tidy.
+	* algebra/fortmac.spad.pamphlet (MachineInteger): Likewise.
+	* algebra/fspace.spad.pamphlet (FunctionSpace): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/mkfunc.spad.pamphlet (InputForm): Likewise.
+	* algebra/newpoly.spad.pamphlet (RecursivePolynomialCategory):
+	Likewise. 
+	* input/knot.input.pamphlet: Likewise.
+	* input/knot2.input.pamphlet: Likewise.
+	* input/mult3d.input.pamphlet: Likewise.
+	* input/multKnot.input.pamphlet: Likewise.
+	* input/r21bugsbig.input.pamphlet: Likewise.
+	* input/tutchap2.input.pamphlet: Likewise.
+
+2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.in (oa_strap_0_sources): Don't include OM.
 	(axiom_algebra_layer_0): Don't include OM, OMCONN, OMDEV.
 	(axiom_algebra_layer_4): Don't include OMENC.

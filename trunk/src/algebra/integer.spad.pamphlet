@@ -70,7 +70,7 @@ IntegerSolveLinearPolynomialEquation(): C ==T
 ++ Description: \spadtype{Integer} provides the domain of arbitrary precision
 ++ integers.
 
-Integer: Join(IntegerNumberSystem, ConvertibleTo String) with
+Integer: IntegerNumberSystem with
     canonical
       ++ mathematical equality is data structure equality.
     canonicalsClosed
@@ -137,10 +137,9 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String) with
       convert(x:%):Float       == coerce(x)$Float
       convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
       convert(x:%):InputForm   == convert(x)$InputForm
-      convert(x:%):String      == %i2s x
 
       latex(x:%):String ==
-        s : String := convert x
+        s := %i2s x
         -%icst1 < x and x < 10 => s
         %strconc("{", %strconc(s, "}"))
 

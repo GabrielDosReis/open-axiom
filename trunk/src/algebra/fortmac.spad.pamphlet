@@ -54,7 +54,7 @@ MachineInteger(): Exports == Implementation where
     coerce(u:Integer):$ ==
       import S
       abs(u) > MAXINT => 
-        message: S := concat [convert(u)@S,"  > MAXINT(",convert(MAXINT)@S,")"]
+        message: S := concat [string u,"  > MAXINT(",string MAXINT,")"]
         error message
       per u
 
@@ -208,7 +208,7 @@ MachineFloat(): Exports == Implementation where
     checkExponent(u:$):$ ==
       exponent(u) < EMIN or exponent(u) > EMAX =>
         message :S := concat(["Exponent out of range: ",
-                              convert(EMIN)@S, "..", convert(EMAX)@S])$S
+                              string EMIN, "..", string EMAX])$S
         error message
       u
     

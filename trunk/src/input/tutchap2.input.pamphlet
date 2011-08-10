@@ -83,14 +83,14 @@ halfSum(x, y) == (x + y)/2
 halfSum(1, 3)
 halfSum(1.5, 2.5)
 halfSum(2, 4)
-f(n)==#((2^n)::String)   
+f(n)==#(string(2^n))   
 f(20)
-f(n) == (local length; length := #((2^n)::String);     _
+f(n) == (local length; length := #(string(2^n));     _
                  if length > 120 then "Too long!" else length)
 f 100
 f 1000
 f(n : PositiveInteger) : Any ==                   _
-          (local length; length := #((2^n)::String);      _
+          (local length; length := #(string(2^n));      _
            if length > 120 then "Too long!" else length)
 f 0
 g1(x) == 2*x

@@ -19,7 +19,7 @@
 n : PositiveInteger := 5
 UZn : List(PositiveInteger) := [i for i in 1 .. n-1 | gcd(i,n) = 1]
 -- K = Q(t), corps des fractions rationnelles a Phi(n) indeterminees sur Q
-vars : List(Symbol) := [concat("t", i::String)::Symbol for i in 0 ..#UZn-1] ;
+vars : List(Symbol) := [concat("t", string i)::Symbol for i in 0 ..#UZn-1] ;
 Zt := DistributedMultivariatePolynomial(vars, Integer) ;   K :=Fraction(Zt) ;
 t : List(K) := [v::K for v in vars]
 -- ATTENTION : on specialise certains des indeterminees

@@ -819,7 +819,7 @@ Float():
    fixed f ==
       zero? f => "0.0"
       zero? exponent f =>
-        padFromRight concat(convert(mantissa f)@S, ".0")
+        padFromRight concat(string mantissa f, ".0")
       negative? f => concat("-", fixed abs f)
       d := if OUTPREC() = -1 then digits()::I else OUTPREC()
 --    g := convert10(abs f,digits); m := g.mantissa; e := g.exponent
@@ -830,7 +830,7 @@ Float():
          if -e > OUTPREC() and -e < 2*digits()::I then
             g := normalize10(g,l+e+OUTPREC())
             m := g.mantissa; e := g.exponent
-      s := convert(m)@S; n := #s; o := e+n
+      s := string m; n := #s; o := e+n
       p := if OUTPREC() = -1 then n::I else OUTPREC()
       t:S
       if e >= 0 then
@@ -855,15 +855,15 @@ Float():
       negative? f => concat("-", floating abs f)
       t:S := if zero? SPACING() then "E" else " E "
       zero? exponent f =>
-        s := convert(mantissa f)@S
-        concat ["0.", padFromLeft s, t, convert(#s)@S]
+        s := string mantissa f
+        concat ["0.", padFromLeft s, t, string(#s)]
       -- base conversion to decimal rounded to the requested precision
       d := if OUTPREC() = -1 then digits()::I else OUTPREC()
       g := convert10(f,d); m := g.mantissa; e := g.exponent
       -- I'm assuming that length10 m = # s given n > 0
-      s := convert(m)@S; n := #s; o := e+n
+      s := string m; n := #s; o := e+n
       s := padFromLeft s
-      concat ["0.", s, t, convert(o)@S]
+      concat ["0.", s, t, string o]
 
    general(f) ==
       zero? f => "0.0"
@@ -871,15 +871,15 @@ Float():
       d := if OUTPREC() = -1 then digits()::I else OUTPREC()
       zero? exponent f =>
         d := d + 1
-        s := convert(mantissa f)@S
+        s := string mantissa f
         OUTPREC() ~= -1 and (e := #s) > d =>
           t:S := if zero? SPACING() then "E" else " E "
-          concat ["0.", padFromLeft s, t, convert(e)@S]
+          concat ["0.", padFromLeft s, t, string e]
         padFromRight concat(s, ".0")
       -- base conversion to decimal rounded to the requested precision
       g := convert10(f,d); m := g.mantissa; e := g.exponent
       -- I'm assuming that length10 m = # s given n > 0
-      s := convert(m)@S; n := #s; o := n + e
+      s := string m; n := #s; o := n + e
       -- Note: at least one digit is displayed after the decimal point
       -- and trailing zeroes after the decimal point are dropped
       if positive? o and o <= max(n,d) then
@@ -896,7 +896,7 @@ Float():
          -- print using E format written  0.mantissa E exponent
          t := padFromLeft rightTrim(s,zero)
          s := if zero? SPACING() then "E" else " E "
-         concat ["0.", t, s, convert(e+n)@S]
+         concat ["0.", t, s, string(e+n)]
 
    outputSpacing n == SPACING() := n
    outputFixed() == (OUTMODE() := "fixed"; OUTPREC() := -1)
