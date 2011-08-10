@@ -613,7 +613,7 @@ FunctionSpace(R: SetCategory): Category == Definition where
 
       characteristic == characteristic$R
       coerce(k:K):%       == k::MP::%
-      symsub(sy, i)       == concat(string sy, convert(i)@String)::SY
+      symsub(sy, i)       == concat(string sy, string i)::SY
       numerator x         == numer(x)::%
       eval(x:%, s:SY, n:N, f:% -> %)     == eval(x,[s],[n],[f first #1])
       eval(x:%, s:SY, n:N, f:List % -> %) == eval(x, [s], [n], [f])

@@ -122,7 +122,7 @@ InputForm():
 
     flatten0(s, sy, n) ==
       atom? s => [nil(), s]
-      a := convert(concat(string sy, convert(n)@String)::Symbol)@%
+      a := convert(concat(string sy, string n)::Symbol)@%
       l := destruct s
       l2 := [flatten0(x, sy, n := n+1) for x in rest l]
       [concat(concat [u.lst for u in l2], conv([convert(

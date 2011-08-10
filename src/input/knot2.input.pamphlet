@@ -37,7 +37,7 @@ knot := tubePlot(sin t * cos(PQ*t),cos t * cos(PQ*t),cos t * sin(PQ*t),
                       f, theRange, 0.1::SF, 6, "open" )
 
 -- make a viewport out of it
-makeViewport3D(knot, concat ["knot",p::String,q::String])$VIEW3D
+makeViewport3D(knot, concat ["knot", string p,string q])$VIEW3D
 @
 \eject
 \begin{thebibliography}{99}

@@ -1367,7 +1367,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
            then
 
              convert(pol:$):String ==
-               ground?(pol) => convert(retract(ground(pol))@INT)@String
+               ground?(pol) => string(retract(ground(pol))@INT)
                ipol : $ := init(pol)
                vpol : V := mvar(pol)
                dpol : NNI := mdeg(pol)
@@ -1392,7 +1392,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                  then
                    sdpol :=  empty()$String
                  else
-                   sdpol := concat("**",convert(convert(dpol)@INT)@String )$String 
+                   sdpol := concat("**",string(convert(dpol)@INT))$String 
                if zero? tpol
                  then
                    stpol :=  empty()$String
@@ -1402,9 +1402,9 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                        n := retract(ground(tpol))@INT
                        if positive? n
                          then
-                           stpol :=  concat(" +",convert(n)@String)$String
+                           stpol :=  concat(" +", string n)$String
                          else
-                           stpol := convert(n)@String
+                           stpol := string n
                      else
                        stpol := convert(tpol)@String
                        if not member?((stpol.1)::String,["+","-"])$(List String)
