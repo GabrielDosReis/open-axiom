@@ -183,7 +183,7 @@ IntegerNumberSystem(): Category ==
 -- QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
-SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) with
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
    canonicalsClosed
@@ -236,51 +236,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,OpenMath) w
    import %bitand: (%,%) -> %       from Foreign Builtin
    import %bitior: (%,%) -> %       from Foreign Builtin
    import %bitxor: (%,%) -> %       from Foreign Builtin
-
-   writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
-    if negative? x then
-      OMputApp(dev)
-      OMputSymbol(dev, "arith1", "unary_minus")
-      OMputInteger(dev, convert(-x))
-      OMputEndApp(dev)
-    else
-      OMputInteger(dev, convert(x))
-
-   OMwrite(x: %): String ==
-    s: String := ""
-    sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-    dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-    OMputObject(dev)
-    writeOMSingleInt(dev, x)
-    OMputEndObject(dev)
-    OMclose(dev)
-    s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-    s
-
-   OMwrite(x: %, wholeObj: Boolean): String ==
-    s: String := ""
-    sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-    dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-    if wholeObj then
-      OMputObject(dev)
-    writeOMSingleInt(dev, x)
-    if wholeObj then
-      OMputEndObject(dev)
-    OMclose(dev)
-    s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-    s
-
-   OMwrite(dev: OpenMathDevice, x: %): Void ==
-    OMputObject(dev)
-    writeOMSingleInt(dev, x)
-    OMputEndObject(dev)
-
-   OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-    if wholeObj then
-      OMputObject(dev)
-    writeOMSingleInt(dev, x)
-    if wholeObj then
-      OMputEndObject(dev)
 
    reducedSystem(m: Matrix %) == m pretend Matrix(Integer)
    coerce(x):OutputForm == rep(x)::OutputForm

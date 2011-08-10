@@ -70,7 +70,7 @@ IntegerSolveLinearPolynomialEquation(): C ==T
 ++ Description: \spadtype{Integer} provides the domain of arbitrary precision
 ++ integers.
 
-Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
+Integer: Join(IntegerNumberSystem, ConvertibleTo String) with
     canonical
       ++ mathematical equality is data structure equality.
     canonicalsClosed
@@ -109,49 +109,6 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 
       x,y: %
       n: NonNegativeInteger
-
-      writeOMInt(dev: OpenMathDevice, x: %): Void ==
-        if negative? x then
-          OMputApp(dev)
-          OMputSymbol(dev, "arith1", "unary__minus")
-          OMputInteger(dev, (-x) pretend Integer)
-          OMputEndApp(dev)
-        else
-          OMputInteger(dev, x pretend Integer)
-
-      OMwrite(x: %): String ==
-        s: String := ""
-        sp: String := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp, OMencodingXML())
-        OMputObject(dev)
-        writeOMInt(dev, x)
-        OMputEndObject(dev)
-        OMclose(dev)
-        OM_-STRINGPTRTOSTRING(sp)$Lisp
-
-      OMwrite(x: %, wholeObj: Boolean): String ==
-        s: String := ""
-        sp: String := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp, OMencodingXML())
-        if wholeObj then
-          OMputObject(dev)
-        writeOMInt(dev, x)
-        if wholeObj then
-          OMputEndObject(dev)
-        OMclose(dev)
-        OM_-STRINGPTRTOSTRING(sp)$Lisp
-
-      OMwrite(dev: OpenMathDevice, x: %): Void ==
-        OMputObject(dev)
-        writeOMInt(dev, x)
-        OMputEndObject(dev)
-
-      OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-        if wholeObj then
-          OMputObject(dev)
-        writeOMInt(dev, x)
-        if wholeObj then
-          OMputEndObject(dev)
 
       zero? x == x = %icst0
       one? x == x = %icst1

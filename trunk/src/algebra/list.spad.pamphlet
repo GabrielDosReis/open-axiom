@@ -269,7 +269,6 @@ List(S:Type): Exports == Implementation where
       ++ setDifference(u1,u2) returns a list of the elements
       ++ of \spad{u1} that are not also in \spad{u2}.
       ++ The order of elements in the resulting list is unspecified.
-  if S has OpenMath then OpenMath
 
  Implementation ==>
    IndexedList(S, LISTMININDEX) add
@@ -282,55 +281,6 @@ List(S:Type): Exports == Implementation where
       null l                   == %peq(l,%nil)
       cons(s, l)               == %pair(s,l)
       append(l:%, t:%)         == %lconcat(l,t)
-
-      if S has OpenMath then
-        writeOMList(dev: OpenMathDevice, x: %): Void ==
-          OMputApp(dev)
-          OMputSymbol(dev, "list1", "list")
-          -- The following didn't compile because the compiler isn't
-          -- convinced that `xval' is a S.  Duhhh! MCD.
-          --for xval in x repeat
-          --  OMwrite(dev, xval, false)
-          while not null x repeat
-            OMwrite(dev,first x,false)
-            x := rest x
-          OMputEndApp(dev)
-
-        OMwrite(x: %): String ==
-          s: String := ""
-          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-          OMputObject(dev)
-          writeOMList(dev, x)
-          OMputEndObject(dev)
-          OMclose(dev)
-          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-          s
-
-        OMwrite(x: %, wholeObj: Boolean): String ==
-          s: String := ""
-          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-          if wholeObj then
-            OMputObject(dev)
-          writeOMList(dev, x)
-          if wholeObj then
-            OMputEndObject(dev)
-          OMclose(dev)
-          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-          s
-
-        OMwrite(dev: OpenMathDevice, x: %): Void ==
-          OMputObject(dev)
-          writeOMList(dev, x)
-          OMputEndObject(dev)
-
-        OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-          if wholeObj then
-            OMputObject(dev)
-          writeOMList(dev, x)
-          if wholeObj then
-            OMputEndObject(dev)
 
       if S has SetCategory then
         setUnion(l1:%,l2:%)      == removeDuplicates concat(l1,l2)

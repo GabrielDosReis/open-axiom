@@ -1,3 +1,19 @@
+2011-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/setvart.boot: Remoe OpenMath description.
+	* interp/setvars.boot (setOutputOpenMath): Remove.
+	(describeOutputOpenMath): Likewise.
+	* algebra/Makefile.in (axiom_algebra_layer_14): Don't include OMSERVER.
+	* algebra/float.spad.pamphlet (Float): Remove OpenMath exports.
+	* algebra/fraction.spad.pamphlet (Fraction): Likewise.
+	* algebra/gaussian.spad.pamphlet (Complex): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/list.spad.pamphlet (List): Likewise.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/string.spad.pamphlet (String): Likewise.
+	* algebra/symbol.spad.pamphlet (Symbol): Likewise.
+
 2011-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (NRTgetLookupFunction): Take an environment

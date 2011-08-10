@@ -22,7 +22,7 @@ Symbol(): Exports == Implementation where
   L ==> List OutputForm
   Scripts ==> Record(sub:L,sup:L,presup:L,presub:L,args:L)
 
-  Exports ==> Join(OrderedSet, ConvertibleTo InputForm, OpenMath,
+  Exports ==> Join(OrderedSet, ConvertibleTo InputForm,
         ConvertibleTo Symbol,CoercibleFrom String,
          ConvertibleTo Pattern Integer, ConvertibleTo Pattern Float,
           PatternMatchable Integer, PatternMatchable Float) with
@@ -81,47 +81,6 @@ Symbol(): Exports == Implementation where
     nums:String:="0123456789"
     ALPHAS:String:="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     alphas:String:="abcdefghijklmnopqrstuvwxyz"
-
-    writeOMSym(dev: OpenMathDevice, x: %): Void ==
-      scripted? x =>
-        error "Cannot convert a scripted symbol to OpenMath"
-      OMputVariable(dev, x pretend Symbol)
-
-    OMwrite(x: %): String ==
-      s: String := ""
-      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-      OMputObject(dev)
-      writeOMSym(dev, x)
-      OMputEndObject(dev)
-      OMclose(dev)
-      s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-      s
-
-    OMwrite(x: %, wholeObj: Boolean): String ==
-      s: String := ""
-      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-      if wholeObj then
-        OMputObject(dev)
-      writeOMSym(dev, x)
-      if wholeObj then
-        OMputEndObject(dev)
-      OMclose(dev)
-      s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-      s
-
-    OMwrite(dev: OpenMathDevice, x: %): Void ==
-      OMputObject(dev)
-      writeOMSym(dev, x)
-      OMputEndObject(dev)
-
-    OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-      if wholeObj then
-        OMputObject(dev)
-      writeOMSym(dev, x)
-      if wholeObj then
-        OMputEndObject(dev)
 
     hd:String    := "*"
     lhd          := #hd

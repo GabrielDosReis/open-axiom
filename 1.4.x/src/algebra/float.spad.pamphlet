@@ -119,7 +119,7 @@ N ==> NonNegativeInteger
 
 
 Float():
- Join(FloatingPointSystem, DifferentialRing, ConvertibleTo String, OpenMath,_
+ Join(FloatingPointSystem, DifferentialRing, ConvertibleTo String,_
   CoercibleTo DoubleFloat, TranscendentalFunctionCategory, _
     ConvertibleTo InputForm,ConvertibleFrom SF) with
    /  : (%, I) -> %
@@ -210,50 +210,6 @@ Float():
    cosSeries: % -> %             -- cos(x) by taylor series |x| < 1/2
    piRamanujan: () -> %          -- pi using Ramanujans series
 
-   writeOMFloat(dev: OpenMathDevice, x: %): Void ==
-      OMputApp(dev)
-      OMputSymbol(dev, "bigfloat1", "bigfloat")
-      OMputInteger(dev, mantissa x)
-      OMputInteger(dev, 2)
-      OMputInteger(dev, exponent x)
-      OMputEndApp(dev)
-
-   OMwrite(x: %): String ==
-      s: String := ""
-      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-      OMputObject(dev)
-      writeOMFloat(dev, x)
-      OMputEndObject(dev)
-      OMclose(dev)
-      s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-      s
-
-   OMwrite(x: %, wholeObj: Boolean): String ==
-      s: String := ""
-      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-      if wholeObj then
-         OMputObject(dev)
-      writeOMFloat(dev, x)
-      if wholeObj then
-         OMputEndObject(dev)
-      OMclose(dev)
-      s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-      s
-
-   OMwrite(dev: OpenMathDevice, x: %): Void ==
-      OMputObject(dev)
-      writeOMFloat(dev, x)
-      OMputEndObject(dev)
-
-   OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-      if wholeObj then
-         OMputObject(dev)
-      writeOMFloat(dev, x)
-      if wholeObj then
-         OMputEndObject(dev)
-   
    shift2(x,y) == sign(x)*shift(sign(x)*x,y)
 
    asin x ==
