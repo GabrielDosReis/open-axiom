@@ -250,7 +250,7 @@ FloatingPointSystem(): Category == RealNumberSystem() with
 ++ \spadtype{Float} is that it is much more expensive than small floats when the latter can be used.
 -- I've put some timing comparisons in the notes for the Float
 -- domain about the difference in speed between the two domains.
-DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
+DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
    TranscendentalFunctionCategory, ConvertibleTo InputForm) with
       /   : (%, Integer) -> %
         ++ x / i computes the division from x by an integer i.
@@ -329,42 +329,6 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fNaN?: % -> Boolean          from Foreign Builtin
 
    manexp: % -> MER
-
-   OMwrite(x: %): String ==
-     s: String := ""
-     sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-     OMputObject(dev)
-     OMputFloat(dev, convert x)
-     OMputEndObject(dev)
-     OMclose(dev)
-     s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-     s
-
-   OMwrite(x: %, wholeObj: Boolean): String ==
-     s: String := ""
-     sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
-     if wholeObj then
-       OMputObject(dev)
-     OMputFloat(dev, convert x)
-     if wholeObj then
-       OMputEndObject(dev)
-     OMclose(dev)
-     s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-     s
-
-   OMwrite(dev: OpenMathDevice, x: %): Void ==
-     OMputObject(dev)
-     OMputFloat(dev, convert x)
-     OMputEndObject(dev)
-
-   OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
-     if wholeObj then
-       OMputObject(dev)
-     OMputFloat(dev, convert x)
-     if wholeObj then
-       OMputEndObject(dev)
 
    base()           == %fbase()
    mantissa x       == manexp(x).MANTISSA
