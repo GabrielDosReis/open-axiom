@@ -1,6 +1,6 @@
 
-(30 . 3521929245)            
-(4505 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3521934607)            
+(4428 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -266,25 +266,23 @@
  |ReduceLODE| |RationalRicDE| |SystemODESolver| |ODETools|
  |OrderedDirectProduct| |OrderlyDifferentialPolynomial|
  |OrdinaryDifferentialRing| |OrderlyDifferentialVariable| |OrderedFreeMonoid|
- |OrderedIntegralDomain| |OpenMath| |OpenMathConnection| |OpenMathDevice|
- |OpenMathEncoding| |OpenMathError| |OpenMathErrorKind| |ExpressionToOpenMath|
- |OppositeMonogenicLinearOperator| |OpenMathPackage| |OrderedMultisetAggregate|
- |OnePointCompletion| |OnePointCompletionFunctions2| |Operator|
- |OperatorCategory&| |OperatorCategory| |OperationsQuery| |OperatorSignature|
- |NumericalOptimizationCategory| |AnnaNumericalOptimizationPackage|
- |NumericalOptimizationProblem| |OrderedCompletion|
- |OrderedCompletionFunctions2| |OrderedFinite| |OrderingFunctions|
- |OrderedMonoid| |OrderedRing| |OrderedSet| |OrderedStructure| |OrderedType&|
- |OrderedType| |UnivariateSkewPolynomialCategory&|
- |UnivariateSkewPolynomialCategory| |UnivariateSkewPolynomialCategoryOps|
- |SparseUnivariateSkewPolynomial| |UnivariateSkewPolynomial|
- |OrthogonalPolynomialFunctions| |OrderedSemiGroup| |OrdSetInts|
- |OutputPackage| |OutputByteConduit&| |OutputByteConduit| |OutputBinaryFile|
- |OutputForm| |OrderedVariableList| |OverloadSet| |OrdinaryWeightedPolynomials|
- |PadeApproximants| |PadeApproximantPackage| |PAdicInteger|
- |PAdicIntegerCategory| |PAdicRational| |PAdicRationalConstructor| |Pair|
- |Palette| |PolynomialAN2Expression| |ParameterAst|
- |ParametricPlaneCurveFunctions2| |ParametricPlaneCurve|
+ |OrderedIntegralDomain| |OppositeMonogenicLinearOperator|
+ |OrderedMultisetAggregate| |OnePointCompletion| |OnePointCompletionFunctions2|
+ |Operator| |OperatorCategory&| |OperatorCategory| |OperationsQuery|
+ |OperatorSignature| |NumericalOptimizationCategory|
+ |AnnaNumericalOptimizationPackage| |NumericalOptimizationProblem|
+ |OrderedCompletion| |OrderedCompletionFunctions2| |OrderedFinite|
+ |OrderingFunctions| |OrderedMonoid| |OrderedRing| |OrderedSet|
+ |OrderedStructure| |OrderedType&| |OrderedType|
+ |UnivariateSkewPolynomialCategory&| |UnivariateSkewPolynomialCategory|
+ |UnivariateSkewPolynomialCategoryOps| |SparseUnivariateSkewPolynomial|
+ |UnivariateSkewPolynomial| |OrthogonalPolynomialFunctions| |OrderedSemiGroup|
+ |OrdSetInts| |OutputPackage| |OutputByteConduit&| |OutputByteConduit|
+ |OutputBinaryFile| |OutputForm| |OrderedVariableList| |OverloadSet|
+ |OrdinaryWeightedPolynomials| |PadeApproximants| |PadeApproximantPackage|
+ |PAdicInteger| |PAdicIntegerCategory| |PAdicRational|
+ |PAdicRationalConstructor| |Pair| |Palette| |PolynomialAN2Expression|
+ |ParameterAst| |ParametricPlaneCurveFunctions2| |ParametricPlaneCurve|
  |ParametricSpaceCurveFunctions2| |ParametricSpaceCurve| |Parser|
  |ParametricSurfaceFunctions2| |ParametricSurface| |PartitionsAndPermutations|
  |Patternable| |PatternMatchListResult| |PatternMatchable| |PatternMatch|
@@ -729,51 +727,38 @@
  |constantCoefficientRicDE| |changeVar| |ratDsolve|
  |indicialEquationAtInfinity| |reduceLODE| |singRicDE| |polyRicDE| |ricDsolve|
  |triangulate| |solveInField| |wronskianMatrix| |variationOfParameters|
- |lexico| |OMmakeConn| |OMcloseConn| |OMconnInDevice| |OMconnOutDevice|
- |OMconnectTCP| |OMbindTCP| |OMopenFile| |OMopenString| |OMclose|
- |OMsetEncoding| |OMputApp| |OMputAtp| |OMputAttr| |OMputBind| |OMputBVar|
- |OMputError| |OMputObject| |OMputEndApp| |OMputEndAtp| |OMputEndAttr|
- |OMputEndBind| |OMputEndBVar| |OMputEndError| |OMputEndObject| |OMputInteger|
- |OMputFloat| |OMputVariable| |OMputString| |OMputSymbol| |OMgetApp| |OMgetAtp|
- |OMgetAttr| |OMgetBind| |OMgetBVar| |OMgetError| |OMgetObject| |OMgetEndApp|
- |OMgetEndAtp| |OMgetEndAttr| |OMgetEndBind| |OMgetEndBVar| |OMgetEndError|
- |OMgetEndObject| |OMgetInteger| |OMgetFloat| |OMgetVariable| |OMgetString|
- |OMgetSymbol| |OMgetType| |OMencodingBinary| |OMencodingSGML| |OMencodingXML|
- |OMencodingUnknown| |omError| |errorInfo| |errorKind| |OMReadError?|
- |OMUnknownSymbol?| |OMUnknownCD?| |OMParseError?| |OMwrite| |po| |op| |OMread|
- |OMreadFile| |OMreadStr| |OMlistCDs| |OMlistSymbols| |OMsupportsCD?|
- |OMsupportsSymbol?| |OMunhandledSymbol| |infinity| |makeop| |opeval|
- |evaluateInverse| |evaluate| |conjug| |adjoint| |arity| |getDatabase|
- |numericalOptimization| |optimize| |goodnessOfFit| |whatInfinity| |infinite?|
- |finite?| |minusInfinity| |plusInfinity| |pureLex| |totalLex| |reverseLex|
- |min| |leftLcm| |rightExtendedGcd| |rightGcd| |rightExactQuotient|
- |rightRemainder| |rightQuotient| |rightLcm| |leftExtendedGcd| |leftGcd|
- |leftExactQuotient| |leftRemainder| |leftQuotient| |times| |apply|
- |monicLeftDivide| |monicRightDivide| |leftDivide| |rightDivide| |hermiteH|
- |laguerreL| |legendreP| |outputList| |writeBytes!| |writeUInt8!| |writeInt8!|
- |writeByte!| |isOpen?| |outputBinaryFile| |not| |or| |and| |quo| |rem| |div|
- >= > ~= |blankSeparate| |semicolonSeparate| |commaSeparate| |pile| |paren|
- |bracket| |prod| |overlabel| |overbar| |prime| |quote| |supersub| |presuper|
- |presub| |super| |sub| |rarrow| |assign| |slash| |over| |zag| |box| |label|
- |infix?| |postfix| |infix| |prefix| |vconcat| |hconcat| |rspace| |vspace|
- |hspace| |superHeight| |subHeight| |height| |width| |doubleFloatFormat|
- |messagePrint| |message| |members| |padecf| |pade| |root| |quotientByP|
- |moduloP| |modulus| |digits| |continuedFraction| |pair| |light| |pastel|
- |bright| |dim| |dark| |getSyntaxFormsFromFile| |surface| |coordinate|
- |conjugates| |shuffle| |shufflein| |sequences| |permutations| |lists|
- |makeResult| |is?| |Is| |addMatchRestricted| |insertMatch| |addMatch|
- |getMatch| |failed| |failed?| |optpair| |getBadValues| |resetBadValues|
- |hasTopPredicate?| |topPredicate| |setTopPredicate| |patternVariable|
- |withPredicates| |setPredicates| |predicates| |hasPredicate?| |optional?|
- |multiple?| |generic?| |quoted?| |inR?| |isList| |isQuotient| |isOp| |Zero|
- |satisfy?| |addBadValue| |badValues| |retractable?| |ListOfTerms| |One|
- |PDESolve| |leftFactor| |rightFactorCandidate| |measure| D |ptree|
- |coerceImages| |fixedPoints| |odd?| |even?| |numberOfCycles| |cyclePartition|
- |coerceListOfPairs| |coercePreimagesImages| |listRepresentation| |permanent|
- |cycles| |cycle| |initializeGroupForWordProblem| <= < |support|
- |wordInGenerators| |wordInStrongGenerators| |orbits| |orbit|
- |permutationGroup| |wordsForStrongGenerators| |strongGenerators| |base|
- |generators| |bivariateSLPEBR| |solveLinearPolynomialEquationByRecursion|
+ |lexico| |po| |op| |infinity| |makeop| |opeval| |evaluateInverse| |evaluate|
+ |conjug| |adjoint| |arity| |getDatabase| |numericalOptimization| |optimize|
+ |goodnessOfFit| |whatInfinity| |infinite?| |finite?| |minusInfinity|
+ |plusInfinity| |pureLex| |totalLex| |reverseLex| |min| |leftLcm|
+ |rightExtendedGcd| |rightGcd| |rightExactQuotient| |rightRemainder|
+ |rightQuotient| |rightLcm| |leftExtendedGcd| |leftGcd| |leftExactQuotient|
+ |leftRemainder| |leftQuotient| |times| |apply| |monicLeftDivide|
+ |monicRightDivide| |leftDivide| |rightDivide| |hermiteH| |laguerreL|
+ |legendreP| |outputList| |writeBytes!| |writeUInt8!| |writeInt8!| |writeByte!|
+ |isOpen?| |outputBinaryFile| |not| |or| |and| |quo| |rem| |div| >= > ~=
+ |blankSeparate| |semicolonSeparate| |commaSeparate| |pile| |paren| |bracket|
+ |prod| |overlabel| |overbar| |prime| |quote| |supersub| |presuper| |presub|
+ |super| |sub| |rarrow| |assign| |slash| |over| |zag| |box| |label| |infix?|
+ |postfix| |infix| |prefix| |vconcat| |hconcat| |rspace| |vspace| |hspace|
+ |superHeight| |subHeight| |height| |width| |doubleFloatFormat| |messagePrint|
+ |message| |members| |padecf| |pade| |root| |quotientByP| |moduloP| |modulus|
+ |digits| |continuedFraction| |pair| |light| |pastel| |bright| |dim| |dark|
+ |getSyntaxFormsFromFile| |surface| |coordinate| |conjugates| |shuffle|
+ |shufflein| |sequences| |permutations| |lists| |makeResult| |is?| |Is|
+ |addMatchRestricted| |insertMatch| |addMatch| |getMatch| |failed| |failed?|
+ |optpair| |getBadValues| |resetBadValues| |hasTopPredicate?| |topPredicate|
+ |setTopPredicate| |patternVariable| |withPredicates| |setPredicates|
+ |predicates| |hasPredicate?| |optional?| |multiple?| |generic?| |quoted?|
+ |inR?| |isList| |isQuotient| |isOp| |Zero| |satisfy?| |addBadValue|
+ |badValues| |retractable?| |ListOfTerms| |One| |PDESolve| |leftFactor|
+ |rightFactorCandidate| |measure| D |ptree| |coerceImages| |fixedPoints| |odd?|
+ |even?| |numberOfCycles| |cyclePartition| |coerceListOfPairs|
+ |coercePreimagesImages| |listRepresentation| |permanent| |cycles| |cycle|
+ |initializeGroupForWordProblem| <= < |support| |wordInGenerators|
+ |wordInStrongGenerators| |orbits| |orbit| |permutationGroup|
+ |wordsForStrongGenerators| |strongGenerators| |base| |generators|
+ |bivariateSLPEBR| |solveLinearPolynomialEquationByRecursion|
  |factorByRecursion| |factorSquareFreeByRecursion| |randomR| |factorSFBRlcUnit|
  |charthRoot| |conditionP| |solveLinearPolynomialEquation|
  |factorSquareFreePolynomial| |factorPolynomial| |squareFreePolynomial|

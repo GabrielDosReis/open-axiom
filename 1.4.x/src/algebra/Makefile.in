@@ -113,7 +113,7 @@ oa_strap_0_sources = \
 	RNG SRING RING ORDRING LMODULE RMODULE BMODULE \
 	COMRING ENTIRER ALGEBRA MODULE DIVRING FIELD \
 	DIFFSPC DIFFDOM DIFRING LINEXP PATMAB CFCAT REAL \
-	INTDOM GCDDOM PID UFD OINTDOM INS OM \
+	INTDOM GCDDOM PID UFD OINTDOM INS \
 	CHARZ CHARNZ STEP IEVALAB EVALAB \
 	AGG HOAGG CLAGG ELTAB ELTAGG IXAGG LNAGG \
 	FLAGG ELAGG RCAGG URAGG STAGG LSAGG A1AGG \
@@ -259,9 +259,8 @@ strap-0/FPATMAB.$(FASLEXT): strap-0/PATMAB.$(FASLEXT)
 strap-0/BOOLEAN.$(FASLEXT): strap-0/ORDFIN.$(FASLEXT) \
 	strap-0/PROPLOG.$(FASLEXT) strap-0/KONVERT.$(FASLEXT)
 
-strap-0/OM.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/INT.$(FASLEXT): strap-0/INS.$(FASLEXT) \
-	strap-0/KONVERT.$(FASLEXT) strap-0/OM.$(FASLEXT)
+	strap-0/KONVERT.$(FASLEXT)
 
 strap-0/NNI.$(FASLEXT): strap-0/INT.$(FASLEXT)
 strap-0/PI.$(FASLEXT): strap-0/NNI.$(FASLEXT)
@@ -617,9 +616,8 @@ SPADFILES= \
  ${OUTSRC}/numode.spad ${OUTSRC}/numquad.spad ${OUTSRC}/numsolve.spad \
  ${OUTSRC}/numtheor.spad \
  ${OUTSRC}/oct.spad ${OUTSRC}/odealg.spad ${OUTSRC}/odeef.spad \
- ${OUTSRC}/oderf.spad ${OUTSRC}/omcat.spad ${OUTSRC}/omdev.spad \
- ${OUTSRC}/omerror.spad ${OUTSRC}/omserver.spad ${OUTSRC}/opalg.spad \
- ${OUTSRC}/openmath.spad ${OUTSRC}/op.spad ${OUTSRC}/ore.spad \
+ ${OUTSRC}/oderf.spad ${OUTSRC}/opalg.spad \
+ ${OUTSRC}/op.spad ${OUTSRC}/ore.spad \
  ${OUTSRC}/outform.spad ${OUTSRC}/out.spad \
  ${OUTSRC}/pade.spad ${OUTSRC}/padiclib.spad ${OUTSRC}/padic.spad \
  ${OUTSRC}/paramete.spad ${OUTSRC}/partperm.spad ${OUTSRC}/patmatch1.spad \
@@ -819,7 +817,7 @@ axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
   KRCFROM  KVTFROM  IEVALAB  IEVALAB- EVALAB   EVALAB-  \
   RETRACT  RETRACT- SETCAT   SETCAT-  VOID     SEGCAT   \
-  MSYSCMD  FINITE   OM       OMCONN   OMDEV    OUT      \
+  MSYSCMD  FINITE                              OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
   BMODULE           BASTYPE  BASTYPE- STEP     LMODULE  \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
@@ -969,7 +967,7 @@ $(OUT)/PALETTE.$(FASLEXT): $(OUT)/COLOR.$(FASLEXT)
 axiom_algebra_layer_4 = \
   ANON     OSI      COMM     COMPPROP ESCONT1  EXIT     \
   FAMONC   FORMULA1 IDPC              NONE     NUMINT   \
-  ODECAT   COLOR    OMENC    ONECOMP2 OPTCAT            \
+  ODECAT   COLOR             ONECOMP2 OPTCAT            \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
   PARSU2            PATRES2  PATTERN1 PDECAT            \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
@@ -1225,7 +1223,7 @@ axiom_algebra_layer_14 = \
   MPC2     MPC3     MPOLY    MPRFF    \
   MRATFAC  MULTSQFR NORMRETR NPCOEF   \
   NSUP     NTPOLFN  ODP      ODEPRIM  \
-  ODEPRRIC OMPKG             PADEPAC  \
+  ODEPRRIC                   PADEPAC  \
   PADICRAT PADICRC  PCOMP    PDECOMP  \
   PF       PFBR     PFBRU    PFOTOOLS \
   PFRPAC   PGCD     PINTERPA PLEQN    \
@@ -1325,7 +1323,6 @@ axiom_algebra_layer_18_objects = \
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
 $(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/FEXPR.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
-$(OUT)/OMERR.$(FASLEXT): $(OUT)/OMERRK.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM           ATTRBUT \
@@ -1344,7 +1341,7 @@ axiom_algebra_layer_19 = \
   NAGC06   NAGD03   NAGE01   NAGE02  \
   NAGE04   NAGF07   NAGS     NAGSP   \
   NREP     NUMFMT   OC       OC-     \
-  ODEPACK  ODERAT   OMERR    OMERRK  \
+  ODEPACK  ODERAT                    \
   OPTPACK           PATTERN  OVAR    \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
@@ -1385,7 +1382,7 @@ axiom_algebra_layer_20 = \
   INTAF    INTALG   INTEF    INTG0    \
   INTHERAL INTPAF   INTPM    INTTOOLS \
   ITRIGMNP JORDAN   KOVACIC  LF       \
-  LIE      LODOF    LSQM     OMEXPR   \
+  LIE      LODOF    LSQM              \
   MCMPLX   MULTFACT NAGD01   NAGD02   \
   NAGF01   NAGF02   NAGF04   NCEP     \
   NLINSOL  NSMP     NUMERIC  OCT      \

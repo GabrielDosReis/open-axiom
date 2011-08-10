@@ -1,3 +1,17 @@
+2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.in (oa_strap_0_sources): Don't include OM.
+	(axiom_algebra_layer_0): Don't include OM, OMCONN, OMDEV.
+	(axiom_algebra_layer_4): Don't include OMENC.
+	(axiom_algebra_layer_14): Don't include OMPKG.
+	(axiom_algebra_layer_19): Don't include OMERR, OMERRK.
+	(axiom_algebra_layer_20): Don't include OMEXPR.
+	* algebra/omcat.spad.pamphlet: Remove.
+	* algebra/omdev.spad.pamphlet: Remove.
+	* algebra/omerror.spad.pamphlet: Remove.
+	* algebra/omserver.spad.pamphlet: Remove.
+	* algebra/openmath.spad.pamphlet: Remove.
+
 2011-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/setvart.boot: Remoe OpenMath description.
