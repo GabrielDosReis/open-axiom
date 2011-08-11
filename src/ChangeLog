@@ -1,3 +1,8 @@
+2011-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (extendsCategoryBasic): Handle attribute
+	third argument too.
+
 2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisp-backend.boot (expandBytevec2str): Use MAP instead of

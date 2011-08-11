@@ -320,15 +320,20 @@ extendsCategory(dom,u,v,env) ==
  
 extendsCategoryBasic(dom,u,v,env) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
-    uVec := compMakeCategoryObject(u,env).expr
+    uVec := compMakeCategoryObject(u,env).expr or return false
     cons? c and isCategoryForm(c,env) =>
       LASSOC(c,second categoryHierarchy uVec) is [=p,:.]
     LASSOC(c,categoryAttributes uVec) is [=p,:.]
   u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
   u = v => true
+  v is ['ATTRIBUTE,c] =>
+    cons? c and isCategoryForm(c,env) => extendsCategoryBasic(dom,u,c,env)
+    u is ['CATEGORY,.,:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
+    uVec := compMakeCategoryObject(u,env).expr or return false
+    LASSOC(c,categoryAttributes uVec) is [=true]
   isCategoryForm(v,env) => catExtendsCat?(u,v,env)
   v is ['SIGNATURE,op,sig] =>
-    uVec := compMakeCategoryObject(u,env).expr
+    uVec := compMakeCategoryObject(u,env).expr or return false
     or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
