@@ -1,5 +1,13 @@
 2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisp-backend.boot (expandBytevec2str): Use MAP instead of
+	COERCE.  Eliminate second argument.
+	(expandStr2bytevec): Use MAP instead of COERCE.
+	* algebra/data.spad.pamphlet (ByteBuffer) [coerce]: Adjust call to
+	%bytevec2str. 
+
+2011-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/float.spad.pamphlet (Float): Tidy.
 	* algebra/fortmac.spad.pamphlet (MachineInteger): Likewise.
 	* algebra/fspace.spad.pamphlet (FunctionSpace): Likewise.

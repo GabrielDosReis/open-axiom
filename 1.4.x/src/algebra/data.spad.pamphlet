@@ -313,7 +313,7 @@ ByteBuffer(): Public == Private where
       ++ `buf'.  Error if `n' is more than the capacity.
     finiteAggregate  ++ A ByteBuffer object is a finite aggregate
   Private == add
-    import %bytevec2str: (PrimitiveArray Byte,NNI) -> String
+    import %bytevec2str: PrimitiveArray Byte -> String
       from Foreign Builtin
 
     -- A buffer object is a pair of a simple array, and the count
@@ -364,7 +364,7 @@ ByteBuffer(): Public == Private where
       rep(buf).ary
 
     coerce(buf: %): String ==
-      %bytevec2str(rep(buf).ary,#buf)
+      %bytevec2str rep(buf).ary
 
     construct l ==
       buf := makeByteBuffer(#l)

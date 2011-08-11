@@ -317,11 +317,13 @@ expandStrlt ['%strlt,x,y] ==
 expandStrstc ['%strstc,x,y,z] ==
   expandToVMForm ['%store,['%schar,x,y],z]
 
-expandBytevec2str ['%bytevec2str,x,y] ==
-  ['COERCE,['SUBSEQ,expandToVMForm x,0,expandToVMForm y],quoteForm '%String]
+expandBytevec2str ['%bytevec2str,x] ==
+  ['MAP,quoteForm 'STRING, --FIXME: should be '%String, fix when SBCL is fixed.
+    ['FUNCTION,['LAMBDA,['c],['CODE_-CHAR,'c]]],expandToVMForm x]
 
 expandStr2bytevec ['%str2bytevec,x] ==
-  ['COERCE,expandToVMForm x,quoteForm ['%Vector,'%Byte]]
+  ['MAP,quoteForm ['%Vector,'%Byte],
+    ['FUNCTION,['LAMBDA,['c],['CHAR_-CODE,'c]]],expandToVMForm x]
 
 -- bit vector operations
 expandBitvecnot ['%bitvecnot,x] ==
