@@ -401,7 +401,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
   for (x := [.,.,:key]) in u for i in 0.. repeat
     key = domainForm => domexports := [x,:domexports]
     integer? key => unexports := [x,:unexports]
-    isDefaultPackageForm? key => defexports := [x,:defexports]
+    defaultPackageForm? key => defexports := [x,:defexports]
     key is 'nowhere => nowheres := [x,:nowheres]
     key is 'constant =>constants := [x,:constants]
     others := [x,:others]   --add chain domains go here

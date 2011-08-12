@@ -1,3 +1,10 @@
+2011-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunfast.boot (newLookupInTable): Compare domain and
+	dollar as objects, not as value.
+	(newLookupInCategories): Remove deadcode.
+	(newExpandGoGetTypes): Remove as unused.
+
 2011-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (NRTgetLookupFunction): Handle the case where

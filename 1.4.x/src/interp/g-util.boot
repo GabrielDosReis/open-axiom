@@ -877,7 +877,7 @@ isDefaultPackageName x ==
   s := symbolName x
   stringChar(s,maxIndex s) = char "&"
 
-isDefaultPackageForm? x ==
+defaultPackageForm? x ==
   x is [op,:.] and ident? op and isDefaultPackageName op
 
 makeDefaultPackageName x ==

@@ -473,7 +473,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   success := nil
   $isDefaultingPackage: local :=
     -- use special defaulting handler when dollar non-trivial
-    dollar ~= domain and isDefaultPackageForm? devaluate domain
+    dollar ~= domain and defaultPackageForm? devaluate domain
   while finish > start repeat
     PROGN
       i := start
@@ -631,7 +631,7 @@ newHasCategory(domain,catform) ==
   slot4 := domain.4
   auxvec := first slot4
   catvec := second slot4
-  $isDefaultingPackage: local := isDefaultPackageForm? devaluate domain
+  $isDefaultingPackage: local := defaultPackageForm? devaluate domain
   #catvec > 0 and integer? KDR catvec.0 =>              --old style
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
