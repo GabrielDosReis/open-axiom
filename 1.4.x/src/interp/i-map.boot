@@ -774,7 +774,7 @@ compileCoerceMap(op,argTypes,mm) ==
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName name
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
-  symbolValue(minivectorName) := LIST2VEC $minivector
+  symbolValue(minivectorName) := vector $minivector
   compileInteractive [name,['LAMBDA,parms,body]]
   sig.target
 

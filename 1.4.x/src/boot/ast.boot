@@ -1024,10 +1024,19 @@ shoeCompTran1 x ==
     x
   -- literal vectors.
   x is ['vector,elts] =>
-    x.op := 'VECTOR
     do
-      elts is 'NIL => x.args := nil
-      x.args := shoeCompTran1 elts.args  -- elts.op is LIST
+      elts is 'NIL =>
+        x.op := 'VECTOR
+        x.args := nil
+      elts is ['LIST,:.] =>
+        x.op := 'VECTOR
+        x.args := shoeCompTran1 elts.args
+      elts isnt [.,:.] =>
+        elts := shoeCompTran1 elts
+        x.op := 'MAKE_-ARRAY
+        x.args := [['LIST_-LENGTH,elts],KEYWORD::INITIAL_-CONTENTS,elts]
+      x.op := 'COERCE
+      x.args := [shoeCompTran1 elts,quote 'VECTOR]
     x
   x is ['%Namespace,n] =>
     n is "DOT" => "*PACKAGE*"

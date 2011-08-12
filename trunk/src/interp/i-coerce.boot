@@ -1213,7 +1213,7 @@ computeTTTranspositions(t1,t2) ==
   -- create a list of permutations that transform the tower parts
   -- of t1 into the order they are in in t2
   n1 := #tl1
-  p2 := LIST2VEC compress(p2,0,# removeDuplicates tl1) where
+  p2 := vector compress(p2,0,# removeDuplicates tl1) where
     compress(l,start,len) ==
       start >= len => l
       member(start,l) => compress(l,start+1,len)
@@ -1223,7 +1223,7 @@ computeTTTranspositions(t1,t2) ==
   -- them
   perms := permuteToOrder(p2,n1-1,0)
   towers := [tl1]
-  tower := LIST2VEC tl1
+  tower := vector tl1
   for perm in perms repeat
     t := tower.(first perm)
     tower.(first perm) := tower.(rest perm)

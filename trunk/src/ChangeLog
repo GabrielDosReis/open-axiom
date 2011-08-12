@@ -1,5 +1,19 @@
 2011-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (shoeCompTran1): Translate extended vector-forms.
+	* interp/c-util.boot: Use vector instead of LIST2VEC.
+	* interp/define.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-special.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/slam.boot: Likewise.
+
+2011-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nrunfast.boot (newLookupInTable): Compare domain and
 	dollar as objects, not as value.
 	(newLookupInCategories): Remove deadcode.

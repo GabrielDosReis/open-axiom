@@ -155,7 +155,7 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   $compiledOpNameList := [$mapName]
   minivectorName := makeInternalMapMinivectorName symbolName $mapName
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
-  symbolValue(minivectorName) := LIST2VEC $minivector
+  symbolValue(minivectorName) := vector $minivector
 
   -- The use of the three variables $definingMap, $genValue and $compilingMap
   -- is to cover the following cases:
