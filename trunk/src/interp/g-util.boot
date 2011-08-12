@@ -94,7 +94,13 @@ homogeneousListToVector(t,l) ==
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==
   ident? x and stringChar(symbolName x,0) = char "#"
- 
+
+++ If `x' is a formal variable, return its numeral position.
+++ Otherwise return nil.
+formalVarNumber x ==
+  not isSharpVar x => nil
+  readIntegerIfCan subsString(symbolName x,1)
+
 isSharpVarWithNum x ==
   not isSharpVar x => nil
   p := symbolName x

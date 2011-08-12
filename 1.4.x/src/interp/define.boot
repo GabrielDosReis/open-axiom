@@ -270,10 +270,15 @@ hasDefaultPackage catname ==
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
 NRTgetLookupFunction(domform,exCategory,addForm,env) ==
-  domform := applySubst($pairlis,domform)
-  addForm := applySubst($pairlis,addForm)
   $why: local := nil
-  addForm isnt [.,:.] => 'lookupComplete
+  domform := applySubst($pairlis,domform)
+  addForm isnt [.,:.] =>
+    IDENTP addForm and (m := getmode(addForm,env)) ~= nil
+      and isCategoryForm(m,env) 
+        and extendsCategory(domform,exCategory,applySubst($pairlis,m),env) =>
+          'lookupIncomplete
+    'lookupComplete
+  addForm := applySubst($pairlis,addForm)
   NRTextendsCategory1(domform,exCategory,getExportCategory addForm,env) =>
     'lookupIncomplete
   [u,msg,:v] := $why

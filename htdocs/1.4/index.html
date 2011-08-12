@@ -199,6 +199,28 @@
 
   </ul>
 
+
+  <h4 name="1.4.1-changes-comp">2.3.2. Compiler</h4>
+
+  <ul>
+    <li>A bug in the compiler where certain functors were incorrectly
+      treated as forgetful was fixed.  Now, functor such as <code>D</code>
+      defined by
+      <pre>
+	D(T: SetCategory): Public == Private where
+          Public == SetCategory with
+             makeD : T -> %
+	  Private == T add
+	     makeD x == per x
+      </pre>
+      (where the base domain is a paramater)
+      are now correctly compiled as extension functors as opposed to
+      forgetful functors.  Note that an extension functor is one whose
+      category extends the base functor's category.  Any other
+      situation is still correctly compiled as a forgetful functor.
+    </li>
+  </ul>
+
 </div>
 
 <div id="footer">

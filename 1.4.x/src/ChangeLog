@@ -1,5 +1,12 @@
 2011-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (NRTgetLookupFunction): Handle the case where
+	the base domain is a parameter.
+	* interp/g-util.boot (formalVarNumber): New.
+	* lisp/core.lisp.in (readIntegerIfCan): Likewise.
+
+2011-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (extendsCategoryBasic): Handle attribute
 	third argument too.
 

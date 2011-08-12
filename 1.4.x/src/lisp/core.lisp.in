@@ -101,6 +101,7 @@
 	   "prettyPrint"
 	   "readLine"
 	   "readExpr"
+	   "readIntegerIfCan"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -526,6 +527,11 @@
 
 (defmacro |readExpr| (f)
   `(read ,f nil |%nothing|))
+
+(defun |readIntegerIfCan| (s)
+  (let ((r (multiple-value-call #'cons (parse-integer s :junk-allowed t))))
+    (cond ((eql (cdr r) (length s)) (car r))
+	  (t nil))))
 
 ;; Pretty-print a lisp form on a given output stream.
 (defun |prettyPrint| (x &optional (s |$OutputStream|))
