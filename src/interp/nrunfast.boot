@@ -191,16 +191,24 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   success := nil
   $isDefaultingPackage: local :=
     -- use special defaulting handler when dollar non-trivial
-    dollar ~= domain and isDefaultPackageForm? devaluate domain
+    not sameObject?(dollar,domain) and defaultPackageForm? canonicalForm domain
   while finish > start repeat
     do
+      -- a. Skip if non-matching arity.
       i := start
-      numArgs ~= (numTableArgs := arrayRef(numvec,i)) => nil
-      predIndex := arrayRef(numvec,i := i + 1)
+      numTableArgs := arrayRef(numvec,i)
+      numArgs ~= numTableArgs => nil
+      -- b. Skip if predicate untrue.
+      i := i + 1
+      predIndex := arrayRef(numvec,i)
       predIndex ~= 0 and not testBitVector(predvec,predIndex) => nil
-      loc := newCompareSig(sig,numvec,(i := i + 1),dollar,domain)
+      -- c. Skip if differing signature.
+      i := i + 1
+      loc := newCompareSig(sig,numvec,i,dollar,domain)
       null loc => nil  --signifies no match
-      loc = 1 => (someMatch := true)
+      -- d. Should we consider for inherited operator?
+      loc = 1 => someMatch := true
+      -- e. Operator may be subsumed?
       loc = 0 =>
         start := start + numTableArgs + 4
         i := start + 2
@@ -211,18 +219,11 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         if $monitorNewWorld then
           sayBrightly [formatOpSignature(op,sig),'"--?-->",
             formatOpSignature(op,subsumptionSig)]
-        nil
       slot := domainRef(domain,loc)
       cons? slot =>
-        slot.op is 'newGoGet => someMatch:=true
+        slot.op is 'newGoGet => someMatch := true
                    --treat as if operation were not there
-        --if sameObject?(QCAR slot,'newGoGet) then
-        --  UNWIND_-PROTECT --break infinite recursion
-        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
-        --      if domain.loc is 'skip then domain.loc := slot)
         return (success := slot)
-      slot is 'skip =>       --recursive call from above 'replaceGoGetSlot
-        return (success := newLookupInAddChain(op,sig,domain,dollar))
       systemError '"unexpected format"
     start := start + numTableArgs + 4
   success isnt 'failed and success =>
@@ -290,35 +291,22 @@ newLookupInCategories(op,sig,dom,dollar) ==
       ident? entry =>
         cat := vectorRef(catVec,i)
         packageForm := nil
-        if not property(entry,'LOADED) then loadLib entry
+        if property(entry,'LOADED) = nil then loadLib entry
         infovec := property(entry,'infovec)
         success :=
-          --vector? infovec =>  ----new world
-          true =>  ----new world
-            opvec := infovec.1
-            max := maxIndex opvec
-            code := getOpCode(op,opvec,max)
-            null code => nil
-            byteVector := CDDDR infovec.3
-            endPos :=
-              code + 2 > max => # byteVector
-              vectorRef(opvec,code+2)
-            not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
-            --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ~= #sig.source => nil
-            packageForm := [entry,'$,:rest cat]
-            package := evalSlotDomain(packageForm,dom)
-            vectorRef(packageVec,i) := package
-            package
-                           ----old world
-          table := tableValue($Slot1DataBase,entry) or systemError nil
-          (u := LASSQ(op,table))
-            and (v := or/[rest x for x in u | #sig = #x.0]) =>
-              packageForm := [entry,'$,:rest cat]
-              package := evalSlotDomain(packageForm,dom)
-              vectorRef(packageVec,i) := package
-              package
-          nil
+          [.,opvec,:.] := infovec
+          max := maxIndex opvec
+          code := getOpCode(op,opvec,max)
+          null code => nil
+          [.,.,.,[.,.,.,:byteVector],:.] := infovec
+          endPos :=
+            code + 2 > max => # byteVector
+            vectorRef(opvec,code+2)
+          not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
+          packageForm := [entry,'$,:rest cat]
+          package := evalSlotDomain(packageForm,dom)
+          vectorRef(packageVec,i) := package
+          package
         success = nil =>
           if $monitorNewWorld then
             sayBrightlyNT '"  not in: "
@@ -432,17 +420,16 @@ lazyMatchArg(s,a,dollar,domain) == lazyMatchArg2(s,a,dollar,domain,true)
  
 lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s is '$ then
-    --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
     s := devaluate dollar -- calls from HasCategory can have $s
   integer? a =>
     not typeFlag => s = domainRef(domain,a)
     a = 6 and $isDefaultingPackage => s = devaluate dollar
-    vector? (d := domainVal(dollar,domain,a)) =>
-      s = d.0 => true
+    d := domainVal(dollar,domain,a)
+    vector? d =>
+      s = canonicalForm d => true
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
-      KAR s = first d.0 and
+      KAR s = canonicalForm(d).op and
         lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
-    --vector? first d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a is '$ => s = devaluate dollar
   a is "$$" => s = devaluate domain
@@ -451,7 +438,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     s is ['QUOTE,y] and PNAME y = a
     ident? s and symbolName s = a
   a isnt [.,:.] =>  a = s
-  op := opOf a
+  op := a.op
   op is 'NRTEVAL => s = nrtEval(second a,domain)
   op is 'QUOTE => s = second a
   lazyMatch(s,a,dollar,domain)
@@ -512,7 +499,7 @@ lookupInDomainByName(op,domain,arg) ==
   max := maxIndex opvec
   k := getOpCode(op,opvec,max) or return nil
   idxmax := maxIndex numvec
-  start := vctorRef(opvec,k)
+  start := vectorRef(opvec,k)
   finish :=
     max > k => vectorRef(opvec,k + 2)
     idxmax
@@ -533,13 +520,9 @@ lookupInDomainByName(op,domain,arg) ==
 --=======================================================
 --        Expand Signature from Encoded Slot Form
 --=======================================================
-newExpandGoGetTypeSlot(slot,dollar,domain) ==
-  newExpandTypeSlot(slot,domain,domain)
- 
 newExpandTypeSlot(slot, dollar, domain) ==
 -- returns domain form for dollar.slot
    newExpandLocalType(sigDomainVal(dollar, domain, slot), dollar,domain)
- 
  
 newExpandLocalType(lazyt,dollar,domain) ==
   vector? lazyt => canonicalForm lazyt
