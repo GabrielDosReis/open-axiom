@@ -190,7 +190,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
   -- parents :=  getConstructorParentsFromDB opOf catform
   parents := parentsOf opOf catform
   PROGV(vars, vals,
-    LIST2VEC
+    vector
       [eval quoteCatOp cat for [cat,:pred] in parents | eval pred])
 
 quoteCatOp cat == 

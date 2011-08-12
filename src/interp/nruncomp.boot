@@ -432,7 +432,7 @@ stuffDomainSlots dollar ==
     bitVector := domainPredicates dollar
     predvec := first proto4
     packagevec := second proto4
-    auxvec := LIST2VEC [fn for i in 0..maxIndex predvec] where fn() ==
+    auxvec := vector [fn for i in 0..maxIndex predvec] where fn() ==
       not testBitVector(bitVector,predvec.i) => nil
       packagevec.i or true
     [auxvec,:CDDR proto4]

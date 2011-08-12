@@ -713,7 +713,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
   vec := nil
   for mm in rest mmList repeat
     nargs = #first mm =>
-      null vec  => vec := LIST2VEC first mm
+      null vec  => vec := vector first mm
       for i in 0.. for x in first mm repeat
         if vec.i and vec.i ~= x then vec.i := nil
   VEC2LIST vec

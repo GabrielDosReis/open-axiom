@@ -165,7 +165,7 @@ makeCompactDirect u ==
   --pp opList 
   d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(op,items)]
   $byteVec := [:$byteVec,:"append"/reverse! $byteVecAcc]
-  LIST2VEC ("append"/d)
+  vector("append"/d)
  
 makeCompactDirect1(op,items) ==
 --NOTES: creates byte codes for ops implemented by the domain
@@ -248,8 +248,8 @@ NRTmakeCategoryAlist() ==
   catformvec := ASSOCLEFT slot1
   maxElement := "MAX"/$byteVec
   ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
-    ['CONS, MKQ LIST2VEC slot0,
-      ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
+    ['CONS, MKQ vector slot0,
+      ['CONS, MKQ vector [encodeCatform x for x in catformvec],
         ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
   --NOTE: this is new form: old form satisfies vector? CDDR form
 

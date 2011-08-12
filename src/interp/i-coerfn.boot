@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ Dmp2Dmp(u,source is [dmp,v1,S], target is [.,v2,T]) ==
       t2:= if w2 then [dmp,w2,T] else T
       canCoerce(t1,t2)
   null u => domainZero(target)
-  u is [[e,:c]] and e=LIST2VEC [0 for v in v1] =>
+  u is [[e,:c]] and e = vector [0 for v in v1] =>
     z:= coerceInt(objNewWrap(c,S),target) => objValUnwrap(z)
     coercionFailure()
   v:= intersection(v1,v2) =>
@@ -83,10 +83,10 @@ coerceDmp1(u,source is [.,v1,S],target is [.,v2,T],v,w) ==
   pat2:= [member(x,w) for x in v1]
   pat3:= [member(x,v) and POSN1(x,v) for x in v2]
   for [e,:c] in u until not z repeat
-    exp:= LIST2VEC [y for x in pat2 for y in VEC2LIST e | x]
+    exp := vector [y for x in pat2 for y in VEC2LIST e | x]
     z:= coerceInt(objNewWrap([[exp,:c]],t),target) =>
       li:= [y for x in pat1 for y in VEC2LIST e | x]
-      a:= [[LIST2VEC [if x then li.x else 0 for x in pat3],:one]]
+      a:= [[vector [if x then li.x else 0 for x in pat3],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
   z => x
   coercionFailure()
@@ -101,7 +101,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
   for [e,:c] in u until not z repeat
     z:= coerceInt(objNewWrap(c,S),target) =>
       li:= VEC2LIST e
-      a:= [[LIST2VEC [if x then li.x else 0 for x in pat],:one]]
+      a:= [[vector [if x then li.x else 0 for x in pat],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
     nil
   z => x
@@ -173,11 +173,11 @@ coerceDmpCoeffs(u,S,T) ==
 sortAndReorderDmpExponents(u,vl) ==
   vl' := reverse MSORT vl
   n := (-1) + #vl
-  pos := LIST2VEC LZeros (n+1)
+  pos := vector LZeros (n+1)
   for i in 0..n repeat pos.i := position(vl.i,vl')
   u' := nil
   for [e,:c] in u repeat
-    e' := LIST2VEC LZeros (n+1)
+    e' := vector LZeros (n+1)
     for i in 0..n repeat e'.(pos.i) := e.i
     u' := [[e',:c],:u']
   reverse u'
@@ -313,7 +313,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
 
 removeVectorElt(v,pos) ==
   -- removes the pos'th element from vector v
-  LIST2VEC [x for x in VEC2LIST v for y in 0.. | not (y=pos)]
+  vector [x for x in VEC2LIST v for y in 0.. | y ~= pos]
 
 removeListElt(l,pos) ==
   pos = 0 => rest l
@@ -365,7 +365,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null v2 =>
         not (z := coerceInt(objNewWrap(u, source), T)) => coercionFailure()
-        [[LIST2VEC nil, :objValUnwrap z]]
+        [[vector [], :objValUnwrap z]]
 
     obj := objNewWrap(u, source)
     univ := coerceInt(obj, ['UnivariatePolynomial, first v2, T])
@@ -394,7 +394,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
     summands := nil
     for [e,:c] in univ repeat
         summands := Expr2Dmp1(summands,
-            LIST2VEC [e, :[0 for v in rest v2]], c, T, 1, rest v2, T)
+            vector [e, :[0 for v in rest v2]], c, T, 1, rest v2, T)
 
     plus := getFunctionFromDomain("+", target, [target, target])
     sum  := domainZero target
@@ -492,7 +492,7 @@ Factored2Factored(u,oldmode,newmode) ==
 coerceFFE(ffe, oldmode, newmode) ==
   fac' := coerceInt(objNewWrap(ffe.1,oldmode),newmode)
   null fac' => 'failed
-  LIST2VEC [ffe.0,objValUnwrap(fac'),ffe.2]
+  vector [ffe.0,objValUnwrap(fac'),ffe.2]
 
 --% Complex
 
@@ -572,7 +572,7 @@ L2DP(l, source is [.,S], target is [.,n,T]) ==
   -- need to know size of the list
   l = '_$fromCoerceable_$ => nil
   n ~= # l => coercionFailure()
-  (v := coerceInt(objNewWrap(LIST2VEC l,['Vector,S]),['Vector,T])) or
+  (v := coerceInt(objNewWrap(vector l,['Vector,S]),['Vector,T])) or
     coercionFailure()
   V2DP(objValUnwrap v, ['Vector, T], target)
 
@@ -587,7 +587,7 @@ V2DP(v, source is [.,S], target is [.,n,T]) ==
 
 L2V(l, source is [.,S], target is [.,T]) ==
   l = '_$fromCoerceable_$ => canCoerce(S,T)
-  (v := coerceInt(objNewWrap(LIST2VEC l,['Vector,S]),target)) or
+  (v := coerceInt(objNewWrap(vector l,['Vector,S]),target)) or
     coercionFailure()
   objValUnwrap(v)
 
@@ -606,8 +606,8 @@ L2M(u,[.,D],[.,R]) ==
       for y in x repeat
         (y' := coerceInt(objNewWrap(y,E),R)) or coercionFailure()
         x' := [objValUnwrap(y'),:x']
-      u' := [LIST2VEC reverse x',:u']
-    LIST2VEC reverse u'
+      u' := [vector reverse x',:u']
+    vector reverse u'
   coercionFailure()
 
 L2Record(l,[.,D],[.,:al]) ==
@@ -616,9 +616,9 @@ L2Record(l,[.,D],[.,:al]) ==
     v:= [u for x in l for [":",.,D'] in al] where u() ==
       T:= coerceInt(objNewWrap(x,D),D') or return 'failed
       objValUnwrap(T)
-    v = 'failed => coercionFailure()
+    v is 'failed => coercionFailure()
     #v = 2 => [v.0,:v.1]
-    LIST2VEC v
+    vector v
   coercionFailure()
 
 L2Rm(u,source is [.,D],target is [.,n,m,R]) ==
@@ -693,8 +693,8 @@ M2M(x,[.,R],[.,S]) ==
       y := x.i.j
       (y' := coerceInt(objNewWrap(y,R),S)) or coercionFailure()
       u := [objValUnwrap y',:u]
-    v := [LIST2VEC reverse u,:v]
-  LIST2VEC reverse v
+    v := [vector reverse u,:v]
+  vector reverse v
 
 M2Rm(x,source is [.,R],[.,p,q,S]) ==
   x = '_$fromCoerceable_$ => nil
@@ -741,11 +741,11 @@ Mp2Dmp(u, source is [., x, S], target is [dmp, y, T]) ==
 Mp2SimilarDmp(u,S,n,plus,mult,one,zero) ==
   u is [ =0,:c] =>
     c = zero => nil  -- zero for dmp
-    [[LIST2VEC LZeros n,:c]]
+    [[vector LZeros n,:c]]
   u is [ =1,x,:terms] =>
     u' := nil  -- zero for dmp
     for [e,:c] in terms repeat
-      e' := LIST2VEC LZeros n
+      e' := vector LZeros n
       e'.(x-1) := e
       t := [[e',:one]]
       t := SPADCALL(t,Mp2SimilarDmp(c,S,n,plus,mult,one,zero),mult)
@@ -1320,7 +1320,7 @@ Sy2Dmp(u,source,target is [dmp,vl,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    u:= wrap LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],:1]
+    u:= wrap LIST [vector [(n=i => 1; 0) for i in 0..len-1],:1]
     objValUnwrap(coerceInt(objNew(u,[dmp,vl,$Integer]),target))
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
@@ -1336,7 +1336,7 @@ Sy2NDmp(u,source,target is [ndmp,vl,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    u:= wrap LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],:1]
+    u:= wrap LIST [vector [(n=i => 1; 0) for i in 0..len-1],:1]
     objValUnwrap(coerceInt(objNew(u,[ndmp,vl,$Integer]),target))
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
@@ -1382,7 +1382,7 @@ Up2Dmp(u,source is ['UnivariatePolynomial,var,S],
     for [e,:c] in u until not z repeat
       z:= coerceInt(objNewWrap(c,S),target) =>
         y:= SPADCALL(objValUnwrap(z),
-          [[LIST2VEC [:l1,e,:l2],:one]],multfunc)
+          [[vector [:l1,e,:l2],:one]],multfunc)
         x:= SPADCALL(x,y,plusfunc)
     z => x
     coercionFailure()
@@ -1544,7 +1544,7 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
 
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
-    LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
+    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
       :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
@@ -1555,7 +1555,7 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
 
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
-    LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
+    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
       :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
@@ -1574,7 +1574,7 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
 
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
+    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
       :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
@@ -1652,27 +1652,25 @@ V2M(u,[.,D],[.,R]) ==
   -- first see if we are coercing a vector of vectors
   D is ['Vector,E] and
     isRectangularVector(u,maxIndex u,maxIndex u.0) =>
-      LIST2VEC
-        [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
+      vector
+        [vector [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
            for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   -- if not, try making it into a 1 by n matrix
   coercionFailure()
---LIST2VEC [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(u.i,D),R))
---  for i in 0..maxIndex(u)]]
 
 V2Rm(u,[.,D],[.,n,m,R]) ==
   u = '_$fromCoerceable_$ => nil
   D is [.,E,:.] and isRectangularVector(u,n-1,m-1) =>
-    LIST2VEC
-      [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
+    vector
+      [vector [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
          for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
 V2Sm(u,[.,D],[.,n,R]) ==
   u = '_$fromCoerceable_$ => nil
   D is [.,E,:.] and isRectangularVector(u,n-1,n-1) =>
-    LIST2VEC
-      [LIST2VEC [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
+    vector
+      [vector [objValUnwrap(coerceInt(objNewWrap(x.j,E),R))
          for j in 0..maxIndex(x:=u.i)] for i in 0..maxIndex u]
   coercionFailure()
 
@@ -1755,7 +1753,7 @@ commuteQuaternion(u,source,S,target,T) ==
     or coercionFailure()) for x in VEC2LIST u]
   q := '(Quaternion (Integer))
   e := [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
-  e := [(coerceInt(objNewWrap(LIST2VEC x,q),T)
+  e := [(coerceInt(objNewWrap(vector x,q),T)
     or coercionFailure()) for x in e]
   e :=[objValUnwrap(coerceInt(x,target) or coercionFailure()) for x in e]
   u' := domainZero(target)
@@ -1822,7 +1820,7 @@ commuteSquareMatrix(u,source,S,target,T) ==
 makeEijSquareMatrix(i, j, dim) ==
   -- assume using 0 based scale, makes a dim by dim matrix with a
   -- 1 in the i,j position, zeros elsewhere
-  LIST2VEC [LIST2VEC [((i=r) and (j=c) => 1; 0)
+  vector [vector [((i=r) and (j=c) => 1; 0)
     for c in 0..(dim-1)] for r in 0..(dim-1)]
 
 --% Univariate Polynomial and Sparse Univariate Polynomial
