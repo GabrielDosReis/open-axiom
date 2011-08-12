@@ -1846,7 +1846,7 @@ compComma(form,m,e) ==
     Tl' := [coerce(T,t) or return "failed" for T in Tl]
     Tl' = "failed" => nil
     [["asTupleNew0", ["getVMType",t], [T.expr for T in Tl']], m, e]
-  T := [["LIST2VEC", [T.expr for T in Tl]], 
+  T := [['%vector, :[T.expr for T in Tl]], 
         ["Cross",:[T.mode for T in Tl]], e]
   coerce(T,m)
 
