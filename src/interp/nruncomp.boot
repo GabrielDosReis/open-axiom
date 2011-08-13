@@ -424,10 +424,10 @@ stuffDomainSlots dollar ==
   for i in (6 + # rest domname)..maxIndex template
     | item := vectorRef(template,i) repeat
       stuffSlot(dollar,i,item)
-  vectorRef(dollar,1) := LIST(lookupFunction,dollar,infovec.1)
-  vectorRef(dollar,2) := infovec.2
+  domainDirectory(dollar) := LIST(lookupFunction,dollar,infovec.1)
+  domainAttributes(dollar) := infovec.2
   proto4 := infovec.3
-  vectorRef(dollar,4) := 
+  domainData(dollar) := 
     vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
     bitVector := domainPredicates dollar
     predvec := first proto4
@@ -443,7 +443,7 @@ getLookupFun infovec ==
 
 makeSpadConstant [fn,dollar,slot] ==
   val := FUNCALL(fn,dollar)
-  u := vectorRef(dollar,slot)
+  u := domainRef(dollar,slot)
   u.first := function IDENTITY
   u.rest := val
   val
