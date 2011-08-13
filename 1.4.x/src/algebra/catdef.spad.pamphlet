@@ -1963,12 +1963,10 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
 ++ return duplicate items and only return "failed" after exhausting
 ++ all elements of the domain.
 ++ This assumes that the sequence starts with \spad{init()}.
-++ For infinite domains, repeated application
+++ For non-fiinite domains, repeated application
 ++ of \spadfun{nextItem} is not required to reach all possible domain elements
 ++ starting from any initial element.
 ++
-++ Conditional attributes:
-++   infinite\tab{15}repeated \spad{nextItem}'s are never \spad{nothing}.
 StepThrough(): Category == SetCategory with
     --operations
       init:             %

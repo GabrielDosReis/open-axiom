@@ -1,5 +1,9 @@
 2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/integer.spad.pamphlet (Integer): Remove attribute infinite.
+
+2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (instantiationArgs): New.
 	(domainDirectory): Likewise.
 	(domainLookupFunction): Likewise.

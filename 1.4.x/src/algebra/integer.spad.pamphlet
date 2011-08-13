@@ -77,8 +77,6 @@ Integer: IntegerNumberSystem with
       ++ two positives multiply to give positive.
     noetherian
       ++ ascending chain condition on ideals.
-    infinite
-      ++ nextItem never returns \spad{nothing}.
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer
