@@ -1,3 +1,18 @@
+2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (instantiationArgs): New.
+	(domainDirectory): Likewise.
+	(domainLookupFunction): Likewise.
+	(domainOperatorTable): Likewise.
+	(domainAttributes): Likewise.
+	(domainPredicates): Likewise.
+	(domainData): Likewise.
+	* interp/buildom.boot: Use new domain accessors.
+	* interp/functor.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+
 2011-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (shoeCompTran1): Translate extended vector-forms.

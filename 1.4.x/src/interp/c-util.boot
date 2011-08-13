@@ -73,6 +73,10 @@ macro instantiationCtor d ==
 macro instantiationArgs d ==
   canonicalForm(d).args
 
+++ Return the number of arguments used to instantiate a domain object.  
+macro instantiationArity d ==
+  # instantiationArgs d
+
 ++ Return the list of operations exported by a category object
 macro categoryExports d ==
   categoryRef(d,1)
@@ -85,10 +89,32 @@ macro categoryAttributes d ==
 macro categoryHierarchy c ==
   categoryRef(c,4)
 
+++ Reference a 3-list
+++   [lookupFunction,thisDomain,optable]
+++ necessary for function lookup in a domain:
+macro domainDirectory d ==
+  domainRef(d,1)
+
+++ Reference the lookup function of a domain object
+macro domainLookupFunction d ==
+  first domainDirectory d
+  
+++ Reference the operator-code table of a domain object.  
+macro domainOperatorTable d ==
+  third domainDirectory d
+
+++ Reference the list of (attribute, predIndex) pairs for this domain.
+macro domainAttributes d ==
+  domainRef(d,2)
+  
 ++ Return the predicate values associated with the domain object.
 ++ This is an integer interpreted as bit vector
 macro domainPredicates d ==
   domainRef(d,3)
+
+++ Return a 3-element dotted list of address data for a domain.
+macro domainData d ==
+  domainRef(d,4)
 
 --%
 
@@ -268,7 +294,7 @@ declareUnusedParameters x == (augment x; x) where
 
 devaluate d ==
   not vector? d => d
-  QVSIZE d > 5 and vectorRef(d,3) is ['Category] => canonicalForm d
+  categoryObject? d => canonicalForm d
   QVSIZE d > 0 =>
     d' := canonicalForm d
     isFunctor d' => d'

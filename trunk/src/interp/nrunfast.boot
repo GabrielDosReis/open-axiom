@@ -61,12 +61,12 @@ initNewWorld() ==
   $doNotCompressHashTableIfTrue := true
  
 getDomainByteVector dom == 
-  CDDR domainRef(dom,4)
+  CDDR domainData dom
 
 ++ Return the sequence of categories `dom' belongs to, as a vector
 ++ of lazy category forms.
 getDomainCategoriesVector dom ==
-  second domainRef(dom,4)
+  second domainData dom
 
 ++ Same as getDomainCategoriesVector except that we return a list of
 ++ input forms for the categories.
@@ -266,7 +266,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
 --       Category Default Lookup (from goGet or lookupInAddChain)
 --=======================================================
 newLookupInCategories(op,sig,dom,dollar) ==
-  slot4 := domainRef(dom,4)
+  slot4 := domainData dom 
   catVec := second slot4
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR canonicalForm catVec =>
@@ -338,7 +338,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   if $monitorNewWorld then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := domainPredicates dom
-  slot4 := domainRef(dom,4)
+  slot4 := domainData dom
   packageVec := first slot4
   catVec := second slot4
   --the next three lines can go away with new category world
@@ -493,7 +493,7 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
 
 lookupInDomainByName(op,domain,arg) ==
   arg isnt [.,:.] => nil
-  opvec := domainRef(domain,1) . 2
+  opvec := domainOperatorTable domain
   numvec := getDomainByteVector domain
   predvec := domainPredicates domain
   max := maxIndex opvec

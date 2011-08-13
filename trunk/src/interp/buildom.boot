@@ -175,7 +175,7 @@ lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
 
 
 basicLookup(op,sig,domain,dollar) ==
-  item := domainRef(domain,1)
+  item := domainDirectory domain
   cons? item and first item in '(lookupInDomain lookupInTable) => 
     lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
@@ -332,16 +332,14 @@ Record(:args) ==
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
   canonicalForm(dom) := ["Record", :srcArgs]
-  domainRef(dom,1) :=
+  domainDirectory(dom) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  domainRef(dom,2) := nil
   domainRef(dom,3) := ["RecordCategory",:instantiationArgs dom]
   domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
     domainRef(dom,i) := third a
   domainRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
@@ -405,16 +403,14 @@ Union(:args) ==
   nargs := #args
   dom := newShell (nargs + 9)
   canonicalForm(dom) := ["Union", :srcArgs]
-  domainRef(dom,1) :=
+  domainDirectory(dom) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  domainRef(dom,2) := nil
   domainRef(dom,3) := ["UnionCategory",:instantiationArgs dom]
   domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
     domainRef(dom,i) := a
   domainRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
@@ -474,16 +470,14 @@ Mapping(:args) ==
   nargs := #args
   dom := newShell(nargs + 9)
   canonicalForm(dom) := ["Mapping", :srcArgs]
-  domainRef(dom,1) :=
+  domainDirectory(dom) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  domainRef(dom,2) := nil
   domainRef(dom,3) := $SetCategory
   domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
     domainRef(dom,i) := a
   domainRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
@@ -516,7 +510,7 @@ Enumeration(:"args") ==
   dom := newShell(2 * nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
   canonicalForm(dom) := ["Enumeration",:args]
-  domainRef(dom,1) :=
+  domainDirectory(dom) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]],
@@ -526,10 +520,8 @@ Enumeration(:"args") ==
                   :[[arg,[["$"],:oldConstantSlodCode(nargs+3+i)]]
                       for arg in args for i in 0..]
                           ]]
-  domainRef(dom,2) := nil
   domainRef(dom,3) := ["EnumerationCategory",:instantiationArgs dom]
   domainRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
-  domainRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat
     domainRef(dom,i) := a
   domainRef(dom,$FirstParamSlot + nargs) := [function EnumEqual, :dom]

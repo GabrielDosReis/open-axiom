@@ -521,7 +521,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   nil
 
 hashNewLookupInCategories(op,sig,dom,dollar) ==
-  slot4 := vectorRef(dom,4)
+  slot4 := domainData dom
   catVec := second slot4
   # catVec = 0 => nil                      --early exit if no categories
   integer? KDR catVec.0 =>
@@ -658,7 +658,7 @@ HasCategory(domain,catform') ==
   catform:= devaluate catform'
   integer? domainRef(domain,3) => newHasCategory(domain,catform)
   domain0 := canonicalForm domain -- handles old style domains, Record, Union etc.
-  slot4 := domainRef(domain,4)
+  slot4 := domainData domain
   catlist := slot4.1
   member(catform,catlist) or
    opOf(catform) in '(Object Type) or  --temporary hack

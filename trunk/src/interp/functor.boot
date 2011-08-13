@@ -351,7 +351,7 @@ SetDomainSlots124(vec,names,vals) ==
   l := pairList(names,vals)
   vectorRef(vec,1) := sublisProp(l,vectorRef(vec,1))
   vectorRef(vec,2) := sublisProp(l,vectorRef(vec,2))
-  l:= [[a,:devaluate b] for a in names for b in vals]
+  l := [[a,:devaluate b] for a in names for b in vals]
   vectorRef(vec,4) := applySubst(l,vectorRef(vec,4))
   vectorRef(vec,1) := applySubst(l,vectorRef(vec,1))
  
