@@ -128,10 +128,10 @@ LinGroebnerPackage(lv,F) : C == T
         ofirstmon:=firstmon
         orecfmon := recfmon
         lm:=zero(2*ndim+1)
-        j : Integer
         for j in 1..ndim repeat lm(j):=veccoef(j)
         lm(ndim+i):=recfmon.mult
         lm := reduceRow(linmat, lm, i-1, pivots)
+        j : Integer
         if i=ndim1 then j:=ndim1
         else
           j:=1
@@ -179,11 +179,10 @@ LinGroebnerPackage(lv,F) : C == T
         omult := (omult exquo cc)::F
         veccoef:VF:=coord(f,algBasis)
         lm:=zero(2*ndim+1)
-        j : Integer
         for j in 1..ndim repeat lm(j) := veccoef(j)
         lm(ndim+i):=omult
         lm := reduceRow(linmat, lm, i-1, pivots)
-        j:=1
+        j: Integer :=1
         while lm(j)=0 and j<ndim1 repeat j:=j+1
         if j=ndim1 then return
           g:HDPoly:=0
@@ -287,11 +286,10 @@ LinGroebnerPackage(lv,F) : C == T
         ofirstmon:=firstmon
         orecfmon := recfmon
         lm:=zero(2*ndim+1)
-        j : Integer
         for j in 1..ndim repeat lm(j):=veccoef(j)
         lm(ndim+i):=recfmon.mult
         lm := reduceRow(linmat, lm, i-1, pivots)
-        j:=1
+        j: Integer :=1
         while lm(j) = 0 and j<ndim1 repeat j:=j+1
         if j=ndim1 then
           cordlist:List F:=[lm(j) for j in ndim1..ndim1+(#nBasis)]

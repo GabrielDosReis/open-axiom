@@ -204,14 +204,13 @@ DisplayPackage: public == private where
 
     center0:  (I,I,S) -> RECLR
 
-    s : S
     l : L S
 
     HION    : S := "%b"
     HIOFF   : S := "%d"
     NEWLINE : S := "%l"
 
-    bright s == [HION,s,HIOFF]$(L S)
+    bright(s: S) == [HION,s,HIOFF]$(L S)
     bright l == cons(HION,append(l,list HIOFF))
     newLine() == NEWLINE
 
@@ -228,7 +227,7 @@ DisplayPackage: public == private where
       t : S := copies(1 + (m quo (sayLength fill)),fill)
       [t(1..m),t(1..wid-len-m)]$RECLR
 
-    center(s, wid, fill) ==
+    center(s: S, wid: I, fill: S) ==
       wid < 1 => ""
       len : I := sayLength s
       len = wid => s
@@ -244,13 +243,13 @@ DisplayPackage: public == private where
       rec : RECLR := center0(len,wid,fill)
       cons(rec.lhs,append(l,list rec.rhs))
 
-    say s ==
+    say(s: S) ==
       sayBrightly$Lisp s
 
     say l ==
       sayBrightly$Lisp l
 
-    sayLength s == #s
+    sayLength(s: S) == #s
 
     sayLength l ==
       sum : I := 0

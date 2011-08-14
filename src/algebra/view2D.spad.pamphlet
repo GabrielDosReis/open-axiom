@@ -307,7 +307,7 @@ GraphImage (): Exports == Implementation where
 
     makeGraph graf ==
       doOptions(graf)
-      (s := #(graf.llPoints)) = 0 =>
+      (n := #(graf.llPoints)) = 0 =>
         error "You are trying to make a graph with no points"
       key graf ~= 0 => 
         error "You are trying to draw over an existing graph"
@@ -327,7 +327,7 @@ GraphImage (): Exports == Implementation where
       sendSF(VIEW,hi(second tonto))$Lisp
       sendSF(VIEW,first (graf.unitsField))$Lisp
       sendSF(VIEW,second (graf.unitsField))$Lisp
-      sendI(VIEW,s)$Lisp     -- how many lists of points are being sent
+      sendI(VIEW,n)$Lisp     -- how many lists of points are being sent
       for aList in graf.llPoints for pColor in graf.pointColors for lColor in graf.lineColors for s in graf.pointSizes repeat
         sendI(VIEW,#aList)$Lisp  -- how many points in this list
         for p in aList repeat

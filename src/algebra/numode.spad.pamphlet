@@ -193,7 +193,6 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
       tiny    : NF   := 10.0**(-(digits()+1)::I)
       m       : I    := nvar
       outlist : L OFORM := [x::E,x::E,x::E]
-      i       : I
 
       eps  := 1.0/eps
       for i in 1..m repeat
@@ -263,7 +262,6 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
       errcon : NF := 0.6E-04  --(this is 4/safety)**(1/grow)
       hh     : NF
       errmax : NF
-      i      : I
       m      : I  := n
 --
       for i in 1..m repeat
@@ -343,7 +341,6 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
       h6 : NF := h/6.0
       xh : NF := x+hh
       m  : I  := n
-      i  : I
 -- first step
       for i in 1..m repeat
          yt(i) := y(i) + hh*dydx(i)

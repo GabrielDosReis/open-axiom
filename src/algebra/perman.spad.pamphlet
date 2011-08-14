@@ -152,7 +152,6 @@ Permanent(n : PositiveInteger, R : Ring with commutative("*")):
  
     x : SM
     a,b : R
-    i,j,k,l : I
  
     permanent3(x) ==
       -- This algorithm is based upon the principle of inclusion-
@@ -214,8 +213,9 @@ Permanent(n : PositiveInteger, R : Ring with commutative("*")):
       while j ~= n repeat  -- we sum over all subsets of (1,...,n-1)
         sgn := -sgn
         b := sgn
-        if vv.1.j = 1 then k := -1
-        else k := 1  -- was that element deleted(k=-1) or added(k=1)?
+        k := 
+          vv.1.j = 1 => -1
+          1  -- was that element deleted(k=-1) or added(k=1)?
         for i in 1..n repeat
           w.i :=  w.i +$R k *$R  x(i,j)
           b := b *$R w.i
@@ -259,8 +259,9 @@ Permanent(n : PositiveInteger, R : Ring with commutative("*")):
       while j ~= n repeat  -- we sum over all subsets of (1,...,n-1)
         sgn := -sgn
         b := sgn
-        if vv.1.j = 1 then k := -1
-        else k := 1  -- was that element deleted(k=-1) or added(k=1)?
+        k := 
+          vv.1.j = 1 => -1
+          1  -- was that element deleted(k=-1) or added(k=1)?
         c := k * two
         for i in 1..n repeat
           w.i :=  w.i +$R c *$R x(i,j)
