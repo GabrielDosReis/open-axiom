@@ -119,7 +119,7 @@ SystemSolvePackage(R): Cat == Cap where
          np:=numer makeP2F p
          lx:=variables np
          x : SE
-         for x in lv repeat if member?(x,lx) then leave x
+         for x: free in lv repeat if member?(x,lx) then leave x
          up:=univariate(np,x)
          (degree up)=1 =>
            equation(x::P(R)::F,-coefficient(up,0)/leadingCoefficient up)

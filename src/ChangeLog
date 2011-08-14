@@ -1,3 +1,61 @@
+2011-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisp-backend.boot ($freeVarName): New global constant.
+	(loopVarInit): New.
+	(expandIN): Use it.
+	(expandON): Likewise.
+	(expandSTEP): Likewise.
+	(massageFreeVarInits): New.
+	(expandLoop): Use it.
+	* interp/fnewmeta.lisp (PARSE-QuantifiedVariable): Tidy.
+	(PARSE-AnyId): Likewise.
+	(PARSE-Variable):  New.  Allow scope-of-type specification for
+	loop variable.
+	(PARSE-Iterator): Use it.
+	* interp/compiler.boot (massage_llop): Don't check
+	$mayHaveFreeIteratorVariables.
+	(compRepeatOrCollect): Don't bind it.
+	(classifyIteratorVariable): New.
+	(complainIfShadowing): Remove as no longer needed.
+	(compStepIterator): Use it.  Tidy.
+	(compONIterator, compINIterator): New. Split out of compIterator.
+	(compIterator): Refactor.
+	* interp/functor.boot (optFunctorBody): Fix thinko.
+	* interp/g-opt.boot (optCollectVector): A STEP iterator may have a
+	storage class.
+
+	* algebra/clip.spad.pamphlet: Fix loop variable scope.
+	* algebra/ffpoly.spad.pamphlet: Likewise.
+	* algebra/fparfrac.spad.pamphlet: Likewise.
+	* algebra/gdpoly.spad.pamphlet: Likewise.
+	* algebra/ghensel.spad.pamphlet: Likewise.
+	* algebra/groebsol.spad.pamphlet: Likewise.
+	* algebra/intfact.spad.pamphlet: Likewise.
+	* algebra/matfuns.spad.pamphlet: Likewise.
+	* algebra/moddfact.spad.pamphlet: Likewise.
+	* algebra/numtheor.spad.pamphlet: Likewise.
+	* algebra/permgrps.spad.pamphlet: Likewise.
+	* algebra/pfbr.spad.pamphlet: Likewise.
+	* algebra/pgcd.spad.pamphlet: Likewise.
+	* algebra/pleqn.spad.pamphlet: Likewise.
+	* algebra/pseudolin.spad.pamphlet: Likewise.
+	* algebra/radeigen.spad.pamphlet: Likewise.
+	* algebra/radix.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet: Likewise.
+	* algebra/rep2.spad.pamphlet: Likewise.
+	* algebra/sgcf.spad.pamphlet: Likewise.
+	* algebra/smith.spad.pamphlet: Likewise.
+	* algebra/sregset.spad.pamphlet: Likewise.
+	* algebra/syssolp.spad.pamphlet: Likewise.
+	* algebra/zerodim.spad.pamphlet: Likewise.
+	* algebra/crfp.spad.pamphlet: Remove capsule-level declaration of
+	local variables.
+	* algebra/galfact.spad.pamphlet: Likewise.
+	* algebra/mathml.spad.pamphlet: Likewise.
+	* algebra/numode.spad.pamphlet: Likewise.
+	* algebra/tex.spad.pamphlet: Likewise.
+	* algebra/updecomp.spad.pamphlet: Likewise.
+
 2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compRepeatOrCollect): Set $loopKind directly.

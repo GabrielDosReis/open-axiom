@@ -213,7 +213,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
         s : I := 0
         sOld: I
         y : I
-        for y in 0..n repeat
+        for y: free in 0..n repeat
           sOld := s
           s := s + numberOfImproperPartitions(n-y,m-t-1)
           if s > k then leave
@@ -242,7 +242,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
         cm := cm - 1
         sOld : I
         y : I
-        for y in n..1 by -1 repeat   --determination of the next son
+        for y: free in n..1 by -1 repeat   --determination of the next son
           sOld := s  -- remember old s
           -- this functions counts the number of elements in a subtree
           s := s + numberOfImproperPartitionsInternal(n-y,m,cm)
@@ -271,7 +271,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       s  : I := m
       for t in 0..(m-1) repeat
          y : Integer
-         for y in (s-1)..(n+1) repeat
+         for y: free in (s-1)..(n+1) repeat
             if binomial$ICF (y,s) > mm then leave
          l := append (l,list(y-1)$(L I))
          mm := mm - binomial$ICF (y-1,s)
@@ -405,7 +405,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
         --  vrest(k) := alpha(k)
         coleman := new(nrow,ncol,0)
         j : I := 0
-      for i in (j+1)::NNI..nrow-1 repeat
+      for i: local in (j+1)::NNI..nrow-1 repeat
         succ := nextPartition(vrest,vnull,beta(i))
         coleman := setRow!(coleman, i, succ)
         vrest := vrest - succ

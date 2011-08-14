@@ -107,7 +107,7 @@ PseudoLinearNormalForm(K:Field): Exports == Implementation where
           M := changeBase(M, E, sig, der)
           B := B*E
           Binv := inv(E)*Binv
-          for j in 1..N repeat
+          for j: local in 1..N repeat
             if j ~= i+1 then
               E := addMatrix(N, i+1, j, siginv(-M(i,j)))
               M := changeBase(M, E, sig, der)
@@ -116,7 +116,7 @@ PseudoLinearNormalForm(K:Field): Exports == Implementation where
           i := i + 1
         else
           -- apply lemma 6
-          for j in i..2 by -1 repeat
+          for j: local in i..2 by -1 repeat
             for k in (i+1)..N repeat
               E := addMatrix(N, k, j-1, M(k,j))
               M := changeBase(M, E, sig, der)

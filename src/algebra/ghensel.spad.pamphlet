@@ -147,7 +147,7 @@ GeneralHenselPackage(RP,TP):C == T where
           finallist := cons(poly1,finallist)
           dfn := degree m
           aux := []
-          for poly in fln repeat
+          for poly: local in fln repeat
             not member?(poly,auxl) => aux := cons(poly,aux)
             auxfl := [term for term in auxfl | not member?(poly,term)]
             factlist := [term for term in factlist | not member?(poly,term)]

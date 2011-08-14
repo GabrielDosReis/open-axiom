@@ -624,7 +624,9 @@ optCollectVector form ==
       -- pick a loop variable that we can use as the loop index.
       [.,var,lo,inc,:etc] := iter
       if lo = 0 and inc = 1 then
-        index := var
+        index :=
+          var is [.,:var'] => var'
+          var
       if [hi] := etc then
         sz :=
           inc = 1 =>

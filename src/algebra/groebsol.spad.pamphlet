@@ -89,7 +89,7 @@ GroebnerSolve(lv,F,R) : C == T
        #lvar=1 => [f]
        rlvar:=rest reverse lvar
        newlpol:List(DPoly):=[f]
-       for f in rlpol.rest repeat
+       for f: local in rlpol.rest repeat
          x:=first rlvar
          fi:= univariate(f,x)
          if (mainVariable leadingCoefficient fi case "failed") then

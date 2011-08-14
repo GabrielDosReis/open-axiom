@@ -304,7 +304,7 @@ PolynomialGcdPackage(E,OV,R,P):C == T where
         listpol:=listpol.rest
         nolift:Boolean:=true
         uf: SUP
-        for uf in listpol repeat
+        for uf: free in listpol repeat
               --note uf and d not necessarily primitive
           degree gcd(uf,d) =0 => nolift:=false
         nolift => ["notCoprime"]

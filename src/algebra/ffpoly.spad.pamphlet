@@ -437,7 +437,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- the input(!) f would be modified by assigning
       -- a new value to one of its records
       term : Rec
-      for term in fRepr repeat
+      for term: free in fRepr repeat
         fcopy := cons(copy term, fcopy)
       if term.expnt ~= 0 then
         fcopy := cons([0,0]$Rec, fcopy)
@@ -515,7 +515,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- the input(!) f would be modified by assigning
       -- a new value to one of its records
       term : Rec
-      for term in fRepr repeat
+      for term: free in fRepr repeat
         fcopy := cons(copy term, fcopy)
       if term.expnt ~= 0 then
         term  := [0,0]$Rec
@@ -635,7 +635,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- the input(!) f would be modified by assigning
       -- a new value to one of its records
       term : Rec
-      for term in fRepr repeat
+      for term: free in fRepr repeat
         fcopy := cons(copy term, fcopy)
       if term.expnt ~= 0 then
         term  := [0,0]$Rec
@@ -749,7 +749,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- the input(!) f would be modified by assigning
       -- a new value to one of its records
       term : Rec
-      for term in fRepr repeat
+      for term: free in fRepr repeat
         fcopy := cons(copy term, fcopy)
       if term.expnt ~= 0 then
         term  := [0,0]$Rec

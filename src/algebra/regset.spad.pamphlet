@@ -577,7 +577,7 @@ QuasiComponentPackage(R,E,V,P,TS): Exports == Implementation where
      removeSuperfluousCases (cases:List LpWT) ==
        #cases < 2 => cases
        toSee := sort(supDimElseRittWu?(#1.tower,#2.tower),cases)
-       lpwt1,lpwt2 : LpWT
+       lpwt1 : LpWT
        toSave,headmaxcases,maxcases,copymaxcases : List LpWT
        while not empty? toSee repeat
          lpwt1 := first toSee
@@ -670,14 +670,14 @@ QuasiComponentPackage(R,E,V,P,TS): Exports == Implementation where
         (empty? leq) or (empty? lineq) => ([leq, ts, lineq]$Branch)::UBF
         if b4
           then
-            for q in lineq repeat
+            for q: local in lineq repeat
               zero? initiallyReduce(q,ts) => 
                 return("failed"::Union(Branch,"failed"))
         if b5
           then
             newleq: LP := []
             for p in leq repeat
-              for q in lineq repeat
+              for q: local in lineq repeat
                 if mvar(p) = mvar(q)
                   then
                     g := gcd(p,q)
@@ -1050,12 +1050,12 @@ RegularTriangularSetGcdPackage(R,E,V,P,TS): Exports == Implementation where
          p3: P := LazardQuotient2(p2, leadingCoefficient(p2,v), s, delta)
          zero?(degree(p3,v)) =>
            toReturn := cons([p3,lpwt.tower]$PWT, toReturn)
-           for lpwt in toSee repeat 
+           for lpwt: free in toSee repeat 
              toReturn := cons([p3,lpwt.tower]$PWT, toReturn)
          (p1, p2) := (p3, next_subResultant2(p1, p2, p3, s))
          s := leadingCoefficient(p1,v)
          llpwt := cons([[p1,p2,s],lpwt.tower]$LpWT, llpwt)
-         for lpwt in toSee repeat 
+         for lpwt:local in toSee repeat 
            llpwt := cons([[p1,p2,s],lpwt.tower]$LpWT, llpwt)
        toReturn
 
@@ -1295,7 +1295,7 @@ RegularSetDecompositionPackage(R,E,V,P,TS): Exports == Implementation where
        s: String := concat ["[", string((#toSee)::Z), " ", convert(lpwt)@String]
        m: N := #(lpwt.val)
        toSee := rest toSee
-       for lpwt in toSee repeat
+       for lpwt: local in toSee repeat
          m := m + #(lpwt.val)
          s := concat [s, ",", convert(lpwt)@String]
        s := concat [s, " -> |", string(m::Z), "|; {", string(n::Z),"}]"]

@@ -149,7 +149,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
         v : IndexedOneDimensionalArray(I,minC) := new(ncol,minR - 1)
         j : Integer
         for i in minR..(minR + rk - 1) repeat
-          for j in minC.. while qelt(x,i,j) = 0 repeat j
+          for j: free in minC.. while qelt(x,i,j) = 0 repeat j
           qsetelt!(v,j,i)
         j := maxC; l := minR + ncol - 1
         while j >= minC repeat
@@ -186,7 +186,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
           swapRows!(x,i,rown); ans := -ans
         ans := qelt(x,i,j) * ans; b := -inv qelt(x,i,j)
         for l in (j+1)..maxC repeat qsetelt!(x,i,l,b * qelt(x,i,l))
-        for k in (i+1)..maxR repeat
+        for k: local in (i+1)..maxR repeat
           if (b := qelt(x,k,j)) ~= 0 then
             for l in (j+1)..maxC repeat
               qsetelt!(x,k,l,qelt(x,k,l) + b * qelt(x,i,l))
@@ -587,7 +587,7 @@ MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
                swapRows!(x,i,rown)
                ans := -ans
           (c := qelt(x,i,j)) = 0 =>  "next j" -- try next column
-          for k in (i+1)..maxR repeat
+          for k: local in (i+1)..maxR repeat
             if qelt(x,k,j) = 0 then
               for l in (j+1)..maxC repeat
                 qsetelt!(x,k,l,(c * qelt(x,k,l) exquo b) :: R)

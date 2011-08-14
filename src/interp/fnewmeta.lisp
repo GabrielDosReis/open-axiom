@@ -263,7 +263,7 @@
        (MUST (MATCH-ADVANCE-STRING ")"))))
 
 (DEFUN |PARSE-QuantifiedVariable| ()
-  (AND (PARSE-IDENTIFIER)
+  (AND (|PARSE-Name|)
        (MUST (MATCH-ADVANCE-STRING ":"))
        (MUST (|PARSE-Application|))
        (MUST (PUSH-REDUCTION '|PARSE-QuantifiedVariable|
@@ -437,8 +437,18 @@
                (CONS 'REPEAT (CONS (POP-STACK-1) NIL)))))) 
 
 
+(DEFUN |PARSE-Variable| ()
+  (OR (AND (|PARSE-Name|)
+	   (OPTIONAL (AND (MATCH-ADVANCE-STRING ":")
+			  (MUST (|PARSE-Application|))
+			  (MUST (PUSH-REDUCTION '|PARSE-Variable|
+				   (CONS '|:| 
+				      (CONS (POP-STACK-2)
+					    (CONS (POP-STACK-1) NIL))))))))
+      (|PARSE-Primary|)))
+
 (DEFUN |PARSE-Iterator| ()
-  (OR (AND (MATCH-ADVANCE-KEYWORD "for") (MUST (|PARSE-Primary|))
+  (OR (AND (MATCH-ADVANCE-KEYWORD "for") (MUST (|PARSE-Variable|))
            (MUST (MATCH-ADVANCE-KEYWORD "in"))
            (MUST (|PARSE-Expression|))
            (MUST (OR (AND (MATCH-ADVANCE-KEYWORD "by")
@@ -792,7 +802,7 @@
 
 
 (DEFUN |PARSE-AnyId| ()
-  (OR (PARSE-IDENTIFIER)
+  (OR (|PARSE-Name|)
       (OR (AND (MATCH-STRING "$")
                (PUSH-REDUCTION '|PARSE-AnyId| (CURRENT-SYMBOL))
                (ACTION (ADVANCE-TOKEN)))

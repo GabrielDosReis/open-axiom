@@ -310,11 +310,10 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       ddlist: DDList := empty()
       degfact: N := 0
       nf: N := stopmussertrials+1
-      i: Z
 
       -- Musser, see [3] --
       diffp := differentiate p
-      for i in 1..mussertrials | nf>stopmussertrials repeat
+      for i: Z in 1..mussertrials | nf>stopmussertrials repeat
         -- test 1: cprime divides leading coefficient
         -- test 2: "bad" primes: (in future: use Dedekind's Criterion)
         while (zero? ((leadingCoefficient p) rem cprime)) or

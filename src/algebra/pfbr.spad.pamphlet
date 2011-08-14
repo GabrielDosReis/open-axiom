@@ -466,7 +466,7 @@ PolynomialFactorizationByRecursion(R,E, VarSet:OrderedSet, S): public ==
          -- pp1 is mathematically equal to pp, but is in S[z][v]
          -- so we wish to operate on all of its coefficients
          ans:List SupSupS:= [0 for u in lpolys]
-         for m in reverse! monomials pp1 repeat
+         for m: local in reverse! monomials pp1 repeat
              ans1:=SLPEBR(lpolys,lvpolys,leadingCoefficient m,lvpp)
              ans1 case "failed" => return "failed"
              d:=degree m

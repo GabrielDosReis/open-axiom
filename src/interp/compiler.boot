@@ -2306,7 +2306,7 @@ localReferenceIfThere m ==
 massageLoop x == main x where
   main x ==
     x isnt ['CATCH,tag,['REPEAT,:iters,body]] => x
-    $mayHaveFreeIteratorVariables or CONTAINED('TAGGEDexit,x) => x
+    CONTAINED('TAGGEDexit,x) => x
     replaceThrowWithLeave(body,tag)
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
     ['CATCH,tag,['%loop,:iters,body,'%nil]]
@@ -2339,7 +2339,6 @@ compRepeatOrCollect(form,m,e) ==
         $iterateCount: local := 0
         $loopBodyTag: local := nil
         $breakCount: local := 0
-        $mayHaveFreeIteratorVariables: local := false
         oldEnv := e
         aggr := nil
         [$loopKind,:itl,body]:= form
@@ -2399,6 +2398,28 @@ joinIntegerModes(x,y,e) ==
   isSubset(y,x,e) => x
   $Integer
 
+++ Given a for-loop iterator `x', return
+++   a. its storage class
+++   b. its name
+++   c. an environment containing its declaration in case a type
+++      was specified.
+classifyIteratorVariable(x,e) == check(main(x,e),x) where
+  main(x,e) ==
+    x is [":",var,t] =>
+      not ident? var => nil
+      checkVariableName var
+      t is 'local => ['%local,var,e]
+      t is 'free => ['%free,var,e]
+      [.,.,e] := compMakeDeclaration(var,t,e) => ['%local,var,e]
+      nil
+    ident? x =>
+      checkVariableName x
+      ['%local,x,e]
+    nil
+  check(x,y) ==
+    x ~= nil => x
+    stackAndThrow('"invalid loop variable %1bp",[y])
+
 ++ Subroutine of compStepIterator.
 ++ We are elaborating the STEP form of a for-iterator, where all
 ++ bounds and increment are expected to be integer-valued expressions.
@@ -2427,21 +2448,13 @@ compIntegerValue(x,e) ==
     comp(x,$NonNegativeInteger,e) or
       compOrCroak(x,$Integer,e)
 
-++ Issue a diagnostic if `x' names a loop variable with a matching
-++ declaration  or definition in the enclosing scope.  
-complainIfShadowing(x,e) ==
-  $loopKind = 'COLLECT => nil -- collect loop variables always shadow
-  if getmode(x,e) ~= nil then
-    $mayHaveFreeIteratorVariables := true  -- bound in compRepeatOrCollect
-    stackWarning('"loop variable %1b shadows variable from enclosing scope",[x])
-
 ++ Attempt to compile a `for' iterator of the form
 ++     for index in start..final by inc
 ++ where the bound `final' may be missing.
 compStepIterator(index,start,final,inc,e) ==
-  checkVariableName index
-  complainIfShadowing(index,e)
-  $formalArgList := [index,:$formalArgList]
+  [sc,index,e] := classifyIteratorVariable(index,e)
+  if sc = '%local then
+    $formalArgList := [index,:$formalArgList]
   [start,startMode,e] := compIntegerValue(start,e) or return
     stackMessage('"start value of index: %1b must be an integer",[start])
   [inc,incMode,e] := compIntegerValue(inc,e) or return
@@ -2456,38 +2469,42 @@ compStepIterator(index,start,final,inc,e) ==
   if get(index,"mode",e) = nil then
     [.,.,e] := compMakeDeclaration(index,indexMode,e) or return nil
   e := giveVariableSomeValue(index,indexMode,e)
-  [["STEP",index,start,inc,:final],e]
+  [["STEP",[sc,:index],start,inc,:final],e]
  
+compINIterator(x,y,e) ==
+  [sc,x,e] := classifyIteratorVariable(x,e)
+  --these two lines must be in this order, to get "for f in list f"
+  --to give  an error message if f is undefined
+  [y',m,e]:= comp(y,$EmptyMode,e) or return nil
+  if sc = '%local then
+    $formalArgList := [x,:$formalArgList]
+  [mOver,mUnder]:=
+    modeIsAggregateOf("List",m,e) or return
+       stackMessage('"mode: %1pb must be a list of some mode",[m])
+  if null get(x,"mode",e) then [.,.,e]:=
+    compMakeDeclaration(x,mUnder,e) or return nil
+  e:= giveVariableSomeValue(x,mUnder,e)
+  [y'',m'',e] := coerce([y',m,e], mOver) or return nil
+  [["IN",[sc,:x],y''],e]
+
+compONIterator(x,y,e) ==
+  [sc,x,e] := classifyIteratorVariable(x,e)
+  if sc = '%local then
+    $formalArgList := [x,:$formalArgList]
+  [y',m,e]:= comp(y,$EmptyMode,e) or return nil
+  [mOver,mUnder]:=
+    modeIsAggregateOf("List",m,e) or return
+      stackMessage('"mode: %1pb must be a list of other modes",[m])
+  if null get(x,"mode",e) then [.,.,e]:=
+    compMakeDeclaration(x,m,e) or return nil
+  e:= giveVariableSomeValue(x,m,e)
+  [y'',m'',e] := coerce([y',m,e], mOver) or return nil
+  [["ON",[sc,:x],y''],e]
+
 compIterator(it,e) ==
     -- ??? Allow for declared iterator variable.
-  it is ["IN",x,y] =>
-    checkVariableName x
-    complainIfShadowing(x,e)
-    --these two lines must be in this order, to get "for f in list f"
-    --to give  an error message if f is undefined
-    [y',m,e]:= comp(y,$EmptyMode,e) or return nil
-    $formalArgList:= [x,:$formalArgList]
-    [mOver,mUnder]:=
-      modeIsAggregateOf("List",m,e) or return
-         stackMessage('"mode: %1pb must be a list of some mode",[m])
-    if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration(x,mUnder,e) or return nil
-    e:= giveVariableSomeValue(x,mUnder,e)
-    [y'',m'',e] := coerce([y',m,e], mOver) or return nil
-    [["IN",x,y''],e]
-  it is ["ON",x,y] =>
-    checkVariableName x
-    complainIfShadowing(x,e)
-    $formalArgList:= [x,:$formalArgList]
-    [y',m,e]:= comp(y,$EmptyMode,e) or return nil
-    [mOver,mUnder]:=
-      modeIsAggregateOf("List",m,e) or return
-        stackMessage('"mode: %1pb must be a list of other modes",[m])
-    if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration(x,m,e) or return nil
-    e:= giveVariableSomeValue(x,m,e)
-    [y'',m'',e] := coerce([y',m,e], mOver) or return nil
-    [["ON",x,y''],e]
+  it is ["IN",x,y] => compINIterator(x,y,e)
+  it is ["ON",x,y] => compONIterator(x,y,e)
   it is ["STEP",index,start,inc,:optFinal] =>
     compStepIterator(index,start,optFinal,inc,e)
   it is ["WHILE",p] =>

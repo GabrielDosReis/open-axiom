@@ -185,7 +185,7 @@ SmithNormalForm(R,Row,Col,M) : Exports == Implementation where
       t11:=t1(1,1)
       for i in 1..m1 repeat
         u(i,1) := (mm(i,1) exquo t11) :: R
-        for j in 2..m1 repeat
+        for j: local in 2..m1 repeat
           j0:=j
           tjj : R
           while zero?(tjj:=t1(j,j0)) repeat j0:=j0+1

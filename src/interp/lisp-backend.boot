@@ -55,27 +55,39 @@ module lisp_-backend where
 --%  3. predicate guarding loop body execution
 --%  4. loop termination predicate
 
+++ Dummy free var name.
+$freeVarName == KEYWORD::freeVar
+
+loopVarInit(x,y) ==
+  x is ['%free,:id] => [id,[$freeVarName,middleEndExpand ['%LET,id,y]]]
+  if x is ['%local,:.] then
+    x := x.rest
+  [x,[x,middleEndExpand y]]
+
 ++ Generate code that sequentially visits each component of a list.
 expandIN(x,l,early?) ==
   g := gensym()           -- rest of the list yet to be visited
   early? =>               -- give the loop variable a wider scope.
-    [[[g,middleEndExpand l],[x,'NIL]],
+    [x,init] := loopVarInit(x,'%nil)
+    [[[g,middleEndExpand l],init],
       nil,[['SETQ,g,['CDR,g]]],
         nil,[['NOT,['CONSP,g]],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
+  [x,init] := loopVarInit(x,['%head,g])
   [[[g,middleEndExpand l]],
-    [[x,['CAR,g]]],[['SETQ,g,['CDR,g]]],
+    [init],[['SETQ,g,['CDR,g]]],
       nil,[['NOT,['CONSP,g]]]]
 
 expandON(x,l) ==
-  [[[x,middleEndExpand l]],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
+  [x,init] := loopVarInit(x,l)
+  [[init],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
   
 ++ Generate code that traverses an interval with lower bound 'lo',
 ++ arithmetic progression `step, and possible upper bound `final'.
 expandSTEP(id,lo,step,final)==
-  lo := middleEndExpand lo
   step := middleEndExpand step
   final := middleEndExpand final
-  loopvar := [[id,lo]]
+  [id,init] := loopVarInit(id,lo)
+  loopvar := [init]
   inc :=
     atomic? step => step
     g1 := gensym()
@@ -133,6 +145,16 @@ expandIterators iters ==
        it is ["%init",var,val] => expandInit(var,val)
        nil
 
+massageFreeVarInits(body,inits) ==
+  inits = nil => body
+  inits is [[var,init]] and sameObject?(var,$freeVarName) =>
+    ['SEQ,init,['EXIT,body]]
+  for init in inits repeat
+    sameObject?(init.first,$freeVarName) =>
+      init.first := gensym()
+  ['LET,inits,body]
+
+
 expandLoop ['%loop,:iters,body,ret] ==
   itersCode := expandIterators iters
   itersCode = "failed" => systemErrorHere ["expandLoop",iters]
@@ -145,25 +167,23 @@ expandLoop ['%loop,:iters,body,ret] ==
   if filters ~= nil then
     body := mkpf([:filters,body],"AND")
   -- If there is any body-wide initialization, now is the time.
-  if bodyInits ~= nil then
-    body := ["LET",bodyInits,body]
+  body := massageFreeVarInits(body,bodyInits)
   exits := ["COND",
              [mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
                [true,body]]
   body := ["LOOP",exits,:cont]
   -- Finally, set up loop-wide initializations.
-  loopInits = nil => body
-  ["LET",loopInits,body]
+  massageFreeVarInits(body,loopInits)
 
 ++ Generate code for list comprehension.
 expandCollect ['%collect,:iters,body] ==
   val := gensym()    -- result of the list comprehension
   -- Transform the body to build the list as we go.
-  body := ["SETQ",val,["CONS",middleEndExpand body,val]]
+  body := ['%store,val,['%pair,body,val]]
   -- Initialize the variable holding the result; expand as 
   -- if ordinary loop.  But don't forget we built the result
   -- in reverse order.
-  expandLoop ['%loop,:iters,["%init",val,nil],body,["reverse!",val]]
+  expandLoop ['%loop,:iters,["%init",val,nil],body,['%lreverse!,val]]
 
 expandList(x is ['%list,:args]) ==
   args := [expandToVMForm arg for arg in args]

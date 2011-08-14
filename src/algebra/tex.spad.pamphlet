@@ -245,7 +245,6 @@ TexFormat(): public == private where
       f
 
     display(f : $, len : I) ==
-      s,t : S
       for s in f.prolog repeat sayTeX$Lisp s
       for s in f.TeX repeat
         for t in splitLong(s, len) repeat sayTeX$Lisp t
@@ -263,7 +262,6 @@ TexFormat(): public == private where
     setEpilogue!(f : $, l : L S) == f.epilog := l
 
     coerce(f : $): E ==
-      s,t : S
       l : L S := nil
       for s in f.prolog repeat l := concat(s,l)
       for s in f.TeX repeat
@@ -329,7 +327,6 @@ TexFormat(): public == private where
       l : List S := nil
       s : S := ""
       ls : I := 0
-      ss : S
       lss : I
       for ss in split(str,char " ") repeat
         -- have the newline macro end a line (even if it means the line

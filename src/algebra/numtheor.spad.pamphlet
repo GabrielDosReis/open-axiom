@@ -654,7 +654,7 @@ PolynomialNumberTheoryFunctions(): Exports == Implementation where
     p
 
   laguerre n ==
-    k:I; s:I; t:I; p:SUP(I); q:SUP(I)
+    s:I; t:I; p:SUP(I); q:SUP(I)
     negative? n => error "laguerre not defined for negative integers"
     -- (s,p,q) := if n < L.Ln then (0,1,x) else L
     if n < L.Ln then (s := 0; p := 1; q := x) else (s,p,q) := L
