@@ -2342,27 +2342,26 @@ compRepeatOrCollect(form,m,e) ==
         $mayHaveFreeIteratorVariables: local := false
         oldEnv := e
         aggr := nil
-        [repeatOrCollect,:itl,body]:= form
+        [$loopKind,:itl,body]:= form
         itl':=
           [([x',e]:= compIterator(x,e) or return "failed"; x') for x in itl]
         itl'="failed" => nil
         targetMode:= first $exitModeStack
         bodyMode:=
-          repeatOrCollect="COLLECT" =>
+          $loopKind="COLLECT" =>
             targetMode = $EmptyMode => (aggr:=["List",$EmptyMode]; $EmptyMode)
             [aggr,u] := modeIsAggregateOf('List,targetMode,e) => u
             [aggr,u] := modeIsAggregateOf('PrimitiveArray,targetMode,e) =>
-              repeatOrCollect := "%CollectV"
+              $loopKind := "%CollectV"
               u
             [aggr,u] := modeIsAggregateOf('Vector,targetMode,e) =>
-              repeatOrCollect := "%CollectV"
+              $loopKind := "%CollectV"
               u
             stackMessage('"Invalid collect bodytype")
             return nil
             -- If we're doing a collect, and the type isn't conformable
             -- then we've boobed. JHD 26.July.1990
           -- ??? we hve a plain old loop; the return type should be Void
-          $loopKind := repeatOrCollect
           $NoValueMode
         [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
@@ -2372,11 +2371,11 @@ compRepeatOrCollect(form,m,e) ==
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
         form':= 
-           repeatOrCollect = "%CollectV" => 
+           $loopKind = "%CollectV" => 
              ["%CollectV",localReferenceIfThere m',:itl',body']
            -- We are phasing out use of LISP macros COLLECT and REPEAT.
-           repeatOrCollect = "COLLECT" => ['%collect,:itl',body']
-           [repeatOrCollect,:itl',body']
+           $loopKind = "COLLECT" => ['%collect,:itl',body']
+           [$loopKind,:itl',body']
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
           m'
@@ -2431,6 +2430,7 @@ compIntegerValue(x,e) ==
 ++ Issue a diagnostic if `x' names a loop variable with a matching
 ++ declaration  or definition in the enclosing scope.  
 complainIfShadowing(x,e) ==
+  $loopKind = 'COLLECT => nil -- collect loop variables always shadow
   if getmode(x,e) ~= nil then
     $mayHaveFreeIteratorVariables := true  -- bound in compRepeatOrCollect
     stackWarning('"loop variable %1b shadows variable from enclosing scope",[x])

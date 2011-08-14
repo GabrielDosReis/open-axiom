@@ -226,7 +226,6 @@ NumericalQuadrature(): Exports == Implementation where
       x1   : F := a
       x2   : F := a + hh
       io   : L OFORM := [x1::E,x2::E]
-      i    : I
       for i in 1..nint repeat
          ans := romberg(func,x1,x2,epsrel,epsabs,nmin,nmax)
          if (not ans.success) then
@@ -253,7 +252,6 @@ NumericalQuadrature(): Exports == Implementation where
       x1   : F := a
       x2   : F := a + hh
       io   : L OFORM := [x1::E,x2::E]
-      i    : I
       for i in 1..nint repeat
          ans := simpson(func,x1,x2,epsrel,epsabs,nmin,nmax)
          if (not ans.success) then
@@ -275,7 +273,6 @@ NumericalQuadrature(): Exports == Implementation where
       sum  : F := 0.0
       err  : F := 0.0
       pts  : I  := 1
-      i    : I
       done : B := true
       hh   : F := (b-a) / nint
       x1   : F := a
@@ -307,10 +304,8 @@ NumericalQuadrature(): Exports == Implementation where
       change : F := 0.0
       qx1    : F := newsum
       table  : V F := new((nmax+1)::PI,0.0)
-      n      : I  := 1
       pts    : I  := 1
       four   : I
-      j      : I
       i      : I
       if (nmin < 2) then
          output("romberg: nmin to small (nmin > 1) nmin = ",nmin::E)
@@ -361,7 +356,6 @@ NumericalQuadrature(): Exports == Implementation where
       oldsum : F := 0.0
       oldest : F := 0.0
       change : F := 0.0
-      n      : I  := 1
       pts    : I  := 1
       if (nmin < 2) then
          output("simpson: nmin to small (nmin > 1) nmin = ",nmin::E)
@@ -403,7 +397,6 @@ NumericalQuadrature(): Exports == Implementation where
       newsum : F := 0.5*(b-a)*(func(a)+func(b))
       change : F := 0.0
       oldsum : F
-      n      : I  := 1
       pts    : I  := 1
       if (nmin < 2) then
          output("trapezoidal: nmin to small (nmin > 1) nmin = ",nmin::E)
@@ -447,9 +440,7 @@ NumericalQuadrature(): Exports == Implementation where
       qx1    : F := newsum
       table  : V F := new((nmax+1)::PI,0.0)
       four   : I
-      j      : I
       i      : I
-      n      : I  := 1
       pts    : I  := 1
       for n in 1..nmax repeat
          oldsum   := newsum
@@ -486,7 +477,6 @@ NumericalQuadrature(): Exports == Implementation where
       oldsum : F := 0.0
       oldest : F := 0.0
       change : F := 0.0
-      n      : I  := 1
       pts    : I  := 1
       for n in 1..nmax repeat
          oldsum := newsum
@@ -514,7 +504,6 @@ NumericalQuadrature(): Exports == Implementation where
       change : F := 0.0
       pts    : I  := 1
       oldsum : F
-      n      : I
       for n in 1..nmax repeat
          oldsum := newsum
          newsum := trapopen(func,a,delta,oldsum,pts)
@@ -534,7 +523,6 @@ NumericalQuadrature(): Exports == Implementation where
    trapclosed(func,start,h,oldsum,numpoints) ==
       x   : F := start + 0.5*h
       sum : F := 0.0
-      i   : I
       for i in 1..numpoints repeat
           sum := sum + func(x)
           x   := x + h
@@ -546,7 +534,6 @@ NumericalQuadrature(): Exports == Implementation where
       ddel : F := 2.0*del
       x   : F := start + 0.5*del
       sum : F := 0.0
-      i   : I
       for i in 1..numpoints repeat
           sum := sum + func(x)
           x   := x + ddel

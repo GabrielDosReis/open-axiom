@@ -1,5 +1,22 @@
 2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compRepeatOrCollect): Set $loopKind directly.
+	(complainIfShadowing): Don't complain when collecting.
+	* algebra/contfrac.spad.pamphlet: Remove capsule-level declaration
+	of local variables.
+	* algebra/cycles.spad.pamphlet: Likewise.
+	* algebra/cyclotom.spad.pamphlet: Likewise.
+	* algebra/ddfact.spad.pamphlet: Likewise.
+	* algebra/fortpak.spad.pamphlet: Likewise.
+	* algebra/lingrob.spad.pamphlet: Likewise.
+	* algebra/numode.spad.pamphlet: Likewise.
+	* algebra/numquad.spad.pamphlet: Likewise.
+	* algebra/out.spad.pamphlet: Likewise.
+	* algebra/perman.spad.pamphlet: Likewise.
+	* algebra/view2D.spad.pamphlet: Likewise.
+
+2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/integer.spad.pamphlet (Integer): Remove attribute infinite.
 
 2011-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>

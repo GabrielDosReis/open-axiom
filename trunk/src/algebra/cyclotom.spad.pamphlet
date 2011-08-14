@@ -43,7 +43,6 @@ CyclotomicPolynomialPackage: public == private where
     cyclotomicDecomposition(n:Integer):LSUP ==
       x,y,z: SUP
       l,ll,m: LSUP
-      rr: Integer
       g := factors factor(n)$IFP
       l := [monomial(1,1) - monomial(1,0)]
       --Now, for each prime in the factorization apply recursion
@@ -57,7 +56,6 @@ CyclotomicPolynomialPackage: public == private where
       l
  
     cyclotomicFactorization(n:Integer):FR ==
-      f :  SUP
       fr : FR := 1$FR
       for f in cyclotomicDecomposition(n) repeat
         fr := fr * primeFactor(f,1$Integer)

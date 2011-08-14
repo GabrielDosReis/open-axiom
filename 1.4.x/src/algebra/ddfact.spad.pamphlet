@@ -148,7 +148,6 @@ DistinctDegreeFactorize(F,FP): C == T
         dg:NNI :=0
         ddfact:List(fact):=empty()
         --evaluation of x**p mod m
-        k1:NNI
         u:= m
         du := degree u
         setPoly u

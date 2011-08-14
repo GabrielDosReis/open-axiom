@@ -294,7 +294,6 @@ ContinuedFraction(R): Exports == Implementation where
     c, d: %
     a: R
     q: Q
-    n: Integer
 
     0 == (0$R) :: %
     1 == (1$R) :: %
@@ -305,7 +304,7 @@ ContinuedFraction(R): Exports == Implementation where
     c * d   == genFromSequence map(#1 * #2, apx c, apx d)
     a * d   == genFromSequence map( a * #1, apx d)
     q * d   == genFromSequence map( q * #1, apx d)
-    n * d   == genFromSequence map( n * #1, apx d)
+    n: Integer * d   == genFromSequence map( n * #1, apx d)
     c / d   == genFromSequence map(#1 / #2, apx c, rest apx d)
     recip c ==(c = 0 => "failed";
 	       genFromSequence map( 1 / #1, rest apx c))

@@ -535,7 +535,6 @@ MultiVariableCalculusFunctions(S,F,FLAF,FLAS) : Exports == Implementation where
        xlist:List(S) := parts(xflas)
        localGradient(v,xlist)
     localDivergence(vf:Vector(F),xlist:List(S)):F ==
-       i: PI
        n: NNI
        ans: F
        -- Perhaps should report error if two args of min different
@@ -545,7 +544,6 @@ MultiVariableCalculusFunctions(S,F,FLAF,FLAS) : Exports == Implementation where
        ans
     divergence(vf,xflas) ==
        xlist:List(S) := parts(xflas)
-       i: PI
        n: NNI
        ans: F
        -- Perhaps should report error if two args of min different
@@ -565,11 +563,9 @@ MultiVariableCalculusFunctions(S,F,FLAF,FLAS) : Exports == Implementation where
     --   matrix([[D(vf(i),x) for x in xlist] for i in 1 .. maxIndex(vf)])
     jacobian(vf,xflas) ==
        xlist:List(S) := parts(xflas)
-       i: PI
        matrix([[D(vf(i),x) for x in xlist] for i in 1 .. maxIndex(vf)])
     bandedHessian(v,xflas,k) ==
        xlist:List(S) := parts(xflas)
-       j,iw: PI
        n: NNI
        bandM: Matrix F
        n:= #(xlist)
@@ -581,7 +577,6 @@ MultiVariableCalculusFunctions(S,F,FLAF,FLAS) : Exports == Implementation where
        bandM
     bandedJacobian(vf,xflas,kl,ku) ==
        xlist:List(S) := parts(xflas)
-       j,iw: PI
        n: NNI
        bandM: Matrix F
        n:= #(xlist)
