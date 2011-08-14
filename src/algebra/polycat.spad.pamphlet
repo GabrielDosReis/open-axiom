@@ -138,7 +138,7 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
     if R has CommutativeRing then 
        binomThmExpt(x,y,nn) ==
                nn = 0 => 1$%
-               ans,xn,yn: %
+               ans,yn: %
                bincoef: Integer
                powl: List(%):= [x]
                for i in 2..nn repeat powl:=[x * powl.first, :powl]

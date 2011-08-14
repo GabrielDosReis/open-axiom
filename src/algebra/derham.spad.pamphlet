@@ -75,7 +75,6 @@ ExtAlgBasis(): Export == Implement where
  
    Implement == add
      Rep := L I
-     x,y :  %
 
      x = y == x =$Rep y
 
@@ -105,7 +104,7 @@ ExtAlgBasis(): Export == Implement where
 
      Nul n            == [0 for i in 1..n]
 
-     coerce x         == coerce(x @ Rep)$(L I)
+     coerce(x: %)         == coerce(x @ Rep)$(L I)
 
 @
 \section{domain ANTISYM AntiSymm}
