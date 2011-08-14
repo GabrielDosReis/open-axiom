@@ -84,7 +84,6 @@ FourierSeries(R:Join(CommutativeRing,Algebra(Fraction Integer)),
    Rep  := List Term
    multiply : (Term,Term) -> $
    w,x1,x2:$
-   t1,t2:Term
    n:NonNegativeInteger
    z:Integer
    e:FourierComponent(E)

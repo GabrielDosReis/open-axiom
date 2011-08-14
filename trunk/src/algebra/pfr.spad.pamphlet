@@ -192,7 +192,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
       b: % := compactFraction a
       null b.fract => b
       l : LfTerm := nil
-      s : fTerm
       f : R
       e,d: Integer
       for s in b.fract repeat
@@ -215,7 +214,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
       s : fTerm := [(first af).num,(first af).den]$fTerm
       f : R := nthFactor(s.den,1)
       e : Integer := nthExponent(s.den,1)
-      t : fTerm
       for t in rest af repeat
         f = nthFactor(t.den,1) =>
           s.num := s.num + (t.num *
@@ -237,7 +235,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
     coerce(n): % == [(n :: R), nil()$LfTerm]
     coerce(a): Fraction R ==
       q : Fraction R := (a.whole :: Fraction R)
-      s : fTerm
       for s in a.fract repeat
         q := q + (s.num / (expand s.den))
       q
@@ -291,7 +288,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
       (a :: Fraction R) = (b :: Fraction R)
 
     - a ==
-      s: fTerm
       l: LfTerm := nil
       for s in reverse a.fract repeat l := cons([- s.num,s.den]$fTerm,l)
       [- a.whole,l]
@@ -301,7 +297,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
       r = 1$R => a
       b : % := (r * a.whole) :: %
       c : %
-      s : fTerm
       for s in reverse a.fract repeat
         c := normalizeFracTerm [r * s.num, s.den]$fTerm
         b.whole := b.whole + c.whole
@@ -320,7 +315,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
       null b.fract => b.whole * a
       af : % := [0$R, a.fract]$%   --     a - a.whole
       c: % := (a.whole * b) + (b.whole * af)
-      s,t : fTerm
       for s in a.fract repeat
         for t in b.fract repeat
           c := c + multiplyFracTerms(s,t)
@@ -328,7 +322,6 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
 
     coerce(a): Ex ==
       null a.fract => a.whole :: Ex
-      s : fTerm
       l : List Ex
       if a.whole = 0 then l := nil else l := [a.whole :: Ex]
       for s in a.fract repeat

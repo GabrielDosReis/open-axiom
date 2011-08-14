@@ -285,10 +285,6 @@ CliffordAlgebra(n, K, Q): T == Impl where
  
         New     ==> new(dim, 0$K)$Rep
  
-        x, y, z: %
-        c: K
-        m: Integer
- 
         characteristic   == characteristic$K
         dimension()      == dim::CardinalNumber
  
@@ -300,13 +296,13 @@ CliffordAlgebra(n, K, Q): T == Impl where
         x + y == (z := New; for i in 0..dim-1 repeat z.i := x.i + y.i; z)
         x - y == (z := New; for i in 0..dim-1 repeat z.i := x.i - y.i; z)
         - x   == (z := New; for i in 0..dim-1 repeat z.i := - x.i; z)
-        m * x == (z := New; for i in 0..dim-1 repeat z.i := m*x.i; z)
-        c * x == (z := New; for i in 0..dim-1 repeat z.i := c*x.i; z)
+        m: Integer * x: % == (z := New; for i in 0..dim-1 repeat z.i := m*x.i; z)
+        c: K * x: % == (z := New; for i in 0..dim-1 repeat z.i := c*x.i; z)
  
         0            == New
         1            == (z := New; z.0 := 1; z)
-        coerce(m): % == (z := New; z.0 := m::K; z)
-        coerce(c): % == (z := New; z.0 := c; z)
+        coerce(m: Integer): % == (z := New; z.0 := m::K; z)
+        coerce(c: K): % == (z := New; z.0 := c; z)
  
         e b ==
             b::NNI > n => error "No such basis element"
@@ -333,7 +329,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
             z.bz := z.bz + c
             z
  
-        x * y ==
+        x: % * y: % ==
             z := New
             for ix in 0..dim-1 repeat
                 if x.ix ~= 0 then for iy in 0..dim-1 repeat
@@ -388,7 +384,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
             be := reduce("*", ml)
             c = 1 => be
             c::Ex * be
-        coerce(x): Ex ==
+        coerce(x: %): Ex ==
             tl := [coerceMonom(x.i,i) for i in 0..dim-1 | not zero? x.i]
             null tl => "0"::Ex
             reduce("+", tl)

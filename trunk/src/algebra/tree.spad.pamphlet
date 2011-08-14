@@ -55,10 +55,6 @@ Tree(S: SetCategory): T==C where
     cycleTreeMax ==> 5
 
     Rep := Union(node:Record(value: S, args: List %),empty:"empty")
-    t:%
-    br:%
-    s: S
-    ls: List S
     empty? t == t case empty
     empty()  == ["empty"]
     children t == 
@@ -89,8 +85,8 @@ Tree(S: SetCategory): T==C where
       for c in children t repeat map!(fn, c)
       t
     tree(s,lt) == [[s,lt]]
-    tree(s) == [[s,[]]]
-    tree(ls) ==
+    tree(s: S) == [[s,[]]]
+    tree(ls: List S) ==
       empty? ls => empty()
       tree(first ls, [tree s for s in rest ls])
     value t ==

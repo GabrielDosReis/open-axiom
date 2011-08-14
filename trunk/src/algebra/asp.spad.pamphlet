@@ -512,7 +512,6 @@ Asp19(name): Exports == Implementation where
       s2 : SegmentBinding POLY INT := equation(J@S,seg2)
       as : FC := assign(FJACC,[I@S::(POLY INT),J@S::(POLY INT)],0.0::EXPR FLOAT)
       clear : FC := forLoop(s1,forLoop(s2,as))
-      j:Integer
       x:S := XC::S
       pu:List(S) := []
       -- Work out which variables appear in the expressions
@@ -685,7 +684,6 @@ Asp20(name): Exports == Implementation where
       assign(s,j')$FortranCode
 
     coerce(u:MAT FEXPR):$ ==
-      j:Integer
       x:Symbol := X::Symbol
       n := nrows(u)::PI
       p:VEC FEXPR := [retract(subscript(x,[j::O])$Symbol)@FEXPR for j in 1..n]
@@ -1448,7 +1446,6 @@ Asp31(name): Exports == Implementation where
       assign(s,j')$FC
 
     makeXList(n:Integer):List(Symbol) ==
-      j:Integer
       y:Symbol := Y::Symbol
       p:List(Symbol) := []
       for j in 1 .. n repeat p:= cons(subscript(y,[j::OutputForm])$Symbol,p)
@@ -2090,7 +2087,6 @@ Asp41(nameOne,nameTwo,nameThree): Exports == Implementation where
       makeCodeOne(jacEps)
 
     makeYList(n:Integer):List(Symbol) ==
-      j:Integer
       y:Symbol := Y::Symbol
       p:List(Symbol) := []
       [subscript(y,[j::OutputForm])$Symbol for j in 1..n]
@@ -2306,7 +2302,6 @@ Asp42(nameOne,nameTwo,nameThree): Exports == Implementation where
     BCEPsym:Symbol:=coerce "BCEP"
 
     makeList(n:Integer,s:Symbol):List(Symbol) ==
-      j:Integer
       p:List(Symbol) := []
       for j in 1 .. n repeat p:= cons(subscript(s,[j::OutputForm])$Symbol,p)
       reverse(p)

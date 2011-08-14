@@ -252,8 +252,6 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
         Rep := IndexedVector(R,0)
 
         n:     Integer
-        r,s:   R
-        x,y,z: %
 
         ---- Local stuff
         dim2: NNI := dim**2
@@ -371,23 +369,23 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             n := #x
             lengthRankOrElse n
 
-        elt(x) ==
+        elt(x: %) ==
             not one?(#x)    => error "Index error (the rank is not 0)"
             get(x,0)
-        elt(x, i: I) ==
+        elt(x: %, i: I) ==
             #x ~= dim  => error "Index error (the rank is not 1)"
             get(x,(i-minix))
-        elt(x, i: I, j: I) ==
+        elt(x: %, i: I, j: I) ==
             #x ~= dim2 => error "Index error (the rank is not 2)"
             get(x,(dim*(i-minix) + (j-minix)))
-        elt(x, i: I, j: I, k: I) ==
+        elt(x: %, i: I, j: I, k: I) ==
             #x ~= dim3 => error "Index error (the rank is not 3)"
             get(x,(dim2*(i-minix) + dim*(j-minix) + (k-minix)))
-        elt(x, i: I, j: I, k: I, l: I) ==
+        elt(x: %, i: I, j: I, k: I, l: I) ==
             #x ~= dim4 => error "Index error (the rank is not 4)"
             get(x,(dim3*(i-minix) + dim2*(j-minix) + dim*(k-minix) + (l-minix)))
 
-        elt(x, i: List I) ==
+        elt(x: %, i: List I) ==
             #i ~= rank x => error "Index error (wrong rank)"
             n: I := 0
             for ii in i repeat
@@ -473,22 +471,22 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             z := new(#x, 0)
             for i in 0..#x-1 repeat set!(z, i, -get(x,i))
             z
-        n * x ==
+        n: Integer * x: % ==
             -- [n * xi for xi in x]
             z := new(#x, 0)
             for i in 0..#x-1 repeat set!(z, i, n * get(x,i))
             z
-        x * n ==
+        x: % * n: Integer ==
             -- [n * xi for xi in x]
             z := new(#x, 0)
             for i in 0..#x-1 repeat set!(z, i, n* get(x,i))  -- Commutative!!
             z
-        r * x ==
+        r: R * x: % ==
             -- [r * xi for xi in x]
             z := new(#x, 0)
             for i in 0..#x-1 repeat set!(z, i, r * get(x,i))
             z
-        x * r ==
+        x: % * r: R ==
             -- [xi*r for xi in x]
             z := new(#x, 0)
             for i in 0..#x-1 repeat set!(z, i, r* get(x,i))  -- Commutative!!
@@ -500,7 +498,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
                 for j in 0..ny-1 repeat
                     set!(z, ioff + j, get(x,i) * get(y,j))
             z
-        x * y ==
+        x: % * y: % ==
             rx := rank x
             ry := rank y
             rx = 0 => get(x,0) * y

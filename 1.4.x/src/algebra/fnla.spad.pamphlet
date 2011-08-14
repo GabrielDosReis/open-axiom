@@ -135,7 +135,6 @@ HallBasis() : Export == Implement where
         n = 0 => 1
         n = 1 => d
         sum:I := 0
-        m:I
         for m in 1..(n-1) repeat
           if n rem m = 0 then
             sum := sum + m * lfunc(d,m)
