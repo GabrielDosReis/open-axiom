@@ -86,10 +86,8 @@ UnivariatePolynomialDecompositionPackage(R,UP): Exports == Implementation where
       s := subtractIfCan(dq,1)::N
       lcp := leadingCoefficient p
       q: UP := monomial(lcq,dq)
-      k: N 
       for k in 1..s repeat
         c: R := 0
-        i: N
         for i in 0..subtractIfCan(k,1)::N repeat
          c := c+(k::R-(n::R+1)*(i::R))*
           coefficient(q,subtractIfCan(dq,i)::N)*

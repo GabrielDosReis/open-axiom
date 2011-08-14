@@ -284,7 +284,7 @@ optFunctorBody x ==
       first pred="HasCategory" => nil
       ['%when,:l]
     ['%when,:l]
-  [optFunctorBody u for u in x]
+  [optFunctorBody first x,:optFunctorBody rest x]
  
 optFunctorBodyQuotable u ==
   u = nil or integer? u or string? u => true

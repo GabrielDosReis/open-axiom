@@ -231,7 +231,7 @@ RadixExpansion(bb): Exports == Implementation where
       n    := i
       -- 2. Find p = first i such that rits.i = rits.(i+n)
       ritsi := rits
-      ritsn := rits; for i in 1..n repeat ritsn := rest ritsn
+      ritsn := rits; for i: local in 1..n repeat ritsn := rest ritsn
       i := 0
       while first(ritsi) ~= first(ritsn) repeat
         ritsi := rest ritsi
@@ -239,11 +239,11 @@ RadixExpansion(bb): Exports == Implementation where
         i     := i + 1
       p := i
       -- 3. Find c = first i such that rits.p = rits.(p+i)
-      ritsn := rits; for i in 1..n repeat ritsn := rest ritsn
+      ritsn := rits; for i: local in 1..n repeat ritsn := rest ritsn
       rn    := first ritsn
       cfound:= false
       c : I := 0
-      for i in 1..p while not cfound repeat
+      for i: local in 1..p while not cfound repeat
         ritsn := rest ritsn
         if rn = first(ritsn) then
           c := i
@@ -252,10 +252,10 @@ RadixExpansion(bb): Exports == Implementation where
       -- 4. Now produce the lists of ragits.
       ritspfx: List I := nil()
       ritscyc: List I := nil()
-      for i in 1..p repeat
+      for i: local in 1..p repeat
         ritspfx := concat(first(rits).quotient, ritspfx)
         rits    := rest rits
-      for i in 1..c repeat
+      for i: local in 1..c repeat
         ritscyc := concat(first(rits).quotient, ritscyc)
         rits    := rest rits
       [reverse! ritspfx, reverse! ritscyc]

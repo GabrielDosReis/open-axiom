@@ -279,7 +279,7 @@ TwoDimensionalPlotClipping(): Exports == Implementation where
       xMin : SF := xCoord firstPt; xMax : SF := xCoord firstPt
       yMin : SF := yCoord firstPt; yMax : SF := yCoord firstPt
       for list in lists repeat
-        for pt in list repeat
+        for pt: local in list repeat
           if not Pnan? pt then
             xMin := min(xMin,xCoord pt)
             xMax := max(xMax,xCoord pt)

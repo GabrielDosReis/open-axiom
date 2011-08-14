@@ -157,7 +157,7 @@ RadicalEigenPackage() : C == T
        n := nrows v
        RMR:=RectangularMatrix(n:PI,1,RE)
        orth:List(MRE):=[(normalise v)]
-       for v in lvect.rest repeat
+       for v: local in lvect.rest repeat
          pol:=((v:RMR)-(+/[(innerprod(w,v)*w):RMR for w in orth])):MRE
          orth:=cons(normalise pol,orth)
        orth

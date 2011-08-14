@@ -179,7 +179,7 @@ ModularDistinctDegreeFactorizer(U):C == T where
       x:U:= monomial(1,1)
       -- for small primes find linear factors by exhaustion
       d=1 and p < 1000  =>
-        for i in 0.. while positive? du repeat
+        for i: local in 0.. while positive? du repeat
           if u(i::U) = 0 then
             ans := cons(reduce(x-(i::U),p),ans)
             du := du-1

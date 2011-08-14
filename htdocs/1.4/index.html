@@ -219,12 +219,31 @@
       category extends the base functor's category.  Any other
       situation is still correctly compiled as a forgetful functor.
     </li>
+
+    <li>The library compiler now allows storage class and type specifier
+      in a <code>for</code> iterator.  A storage class for a
+      loop variable can be one of <code>local</code> or <code>free</code>.
+      <ul>
+	<li>A loop variable with <code>local</code> storage class means that
+	  the variable is local to the loop.  This is the default
+	  behaviour when no storage class is explicitly specified, or when
+	  only the type of the variable is specified.
+	</li>
+
+	<li>A loop variable with <code>free</code> storage class means
+	  that the variable retains its last stored value at the
+	  exit of the loop.  A matching declaration in an enclosing
+	  scope must be in effect.
+	</li>
+      </ul>
+    </li>
+
   </ul>
 
 </div>
 
 <div id="footer">
-  Copyright &copy; 2007-2010 Gabriel Dos Reis
+  Copyright &copy; 2011 Gabriel Dos Reis
 </div>
 
 

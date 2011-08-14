@@ -770,7 +770,7 @@ RepresentationPackage2(R): public == private where
           nred : I := n rem ((q**dim -1) quo (q-1))
           pos : I := nred
           i : I := 0
-          for i in 0..dim-1 while nred >= 0 repeat
+          for i: free in 0..dim-1 while nred >= 0 repeat
             pos := nred
             nred := nred - (q**i)
           i  := if i = 0 then 0 else i-1
@@ -780,7 +780,7 @@ RepresentationPackage2(R): public == private where
           for j in 1..(maxIndex iR) repeat
             coefficients.(dim-((#iR)::I) +j) := index((iR.j+(q::I))::PI)$R
           result : V R := new(nn,0)
-          for i in 1..maxIndex coefficients repeat
+          for i: local in 1..maxIndex coefficients repeat
             newAdd : V R := coefficients.i * basis.i
             for j in 1..nn repeat
               result.j := result.j + newAdd.j

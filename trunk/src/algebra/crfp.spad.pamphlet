@@ -162,7 +162,6 @@ ComplexRootFindingPackage(R, UP): public == private where
      Rep := ModMonic(C, UP)
 
      -- constants
-     c : C
      r : R
      --globalDigits : I := 10 ** 41
      globalDigits : I := 10 ** 7

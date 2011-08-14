@@ -310,7 +310,6 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
      ynew : V NF := new(nvar::NNI,0.0)
      h    : NF := (x2-x1) / (nstep::NF)
      x    : NF := x1
-     i    : I
      j    : I
 -- start integrating
      for i in 1..nstep repeat

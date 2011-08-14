@@ -346,7 +346,7 @@ PermutationGroup(S:SetCategory): public == private where
       ort: REC
       k1: NNI
       i : NNI
-      for i in number1..degree repeat
+      for i: free in number1..degree repeat
         ort := orbitWithSvc ( group , i )
         k   := ort.orb
         k1  := # k
@@ -355,7 +355,7 @@ PermutationGroup(S:SetCategory): public == private where
       words2 := nil()$(L L NNI)
       gplength : NNI := #group
       jj: NNI
-      for jj in 1..gplength repeat if (group.jj).i ~= i then leave
+      for jj: free in 1..gplength repeat if (group.jj).i ~= i then leave
       for k in 1..gplength repeat
         el2 := group.k
         if el2.i ~= i then

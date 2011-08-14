@@ -587,7 +587,6 @@ returning Void.  I really only need the one coerce function.
       -- This breaks down an expression into atoms and returns it as
       -- a string.  It's for developmental purposes to help understand
       -- the expressions.
-      a : E
       expr := precondition expr
 --      sayTeX$Lisp "0: "stringify expr
       (not %pair?(expr)$Foreign(Builtin)) or (stringify expr = "NOTHING") => 
@@ -749,7 +748,6 @@ have to be switched by swapping names.
       -- This breaks down an expression into a flat list of atomic expressions.
       -- expr should be preconditioned.
       le : L E := nil()
-      a : E
       letmp : L E
       (not %pair?(expr)$Foreign(Builtin)) or (stringify expr = "NOTHING") => 
         le := append(le,list(expr))

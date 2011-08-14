@@ -160,7 +160,7 @@ FullPartialFractionExpansion(F, UP): Exports == Implementation where
       empty? l => empty()
       rec := first l
       ans := output(rec.exponent, rec.center, rec.num)
-      for rec in rest l repeat
+      for rec: local in rest l repeat
         ans := ans + output(rec.exponent, rec.center, rec.num)
       ans
 

@@ -314,7 +314,7 @@ LexTriangularPackage(R,ls): Exports == Implementation where
            newlp := lp 
            while (not empty? newlp) and (mvar(first newlp) = v) repeat
              newlp := rest newlp
-           for us in lus repeat
+           for us: local in lus repeat
              toSee := cons([newlp, us]$LpWTS, toSee)
        algebraicSort(toSave)$quasicomppackTS
 
@@ -357,7 +357,7 @@ LexTriangularPackage(R,ls): Exports == Implementation where
            newlp := lp 
            while (not empty? newlp) and (mvar(first newlp) = v) repeat
              newlp := rest newlp
-           for us in lus repeat
+           for us: local in lus repeat
              toSee := cons([newlp, us]$LpWST, toSee)
        algebraicSort(toSave)$quasicomppackST
 
@@ -563,7 +563,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
            wip := [lp,ts]
            toSee := cons(wip,toSee)
          lts := makeLinearAndMonic(p,xi,ts,univ?,false,false)
-         for ts in lts repeat
+         for ts: local in lts repeat
            wip := [lp,ts]
            toSee := cons(wip,toSee)
        toSave
@@ -687,7 +687,7 @@ RationalUnivariateRepresentationPackage(R,ls): Exports == Implementation where
            newlq := [remainder(q,newts).polnum for q in lq]
            toSee := cons([newlq,newts]$LQWT,toSee)
        toReturn: List RUR := []
-       for ts in toSave repeat
+       for ts: local in toSave repeat
          lus := rur(ts,univ?)$rurpack 
          check? and (not checkRur(ts,lus)$rurpack) =>
            output("RUR for: ")$OutputPackage
