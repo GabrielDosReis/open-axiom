@@ -1,5 +1,12 @@
 2011-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compSeq1): Tidy.
+	(cpmpSeqItem): Likewise.
+	(replaceExitEtc): Likewise.
+	(massageLoop): Don't check for TAGGEDexit anymore.
+
+2011-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisp-backend.boot ($freeVarName): New global constant.
 	(loopVarInit): New.
 	(expandIN): Use it.

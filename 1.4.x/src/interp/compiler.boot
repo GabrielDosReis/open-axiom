@@ -1044,19 +1044,18 @@ compSeq(["SEQ",:l],m,e) ==
   compSeq1(l,[m,:$exitModeStack],e)
 
 compSeq1(l,$exitModeStack,e) ==
-  $insideExpressionIfTrue: local
+  $insideExpressionIfTrue: local := false
   $finalEnv: local := nil   --used in replaceExitEtc.
-  c:=
-    [([.,.,e]:=
-      --this used to be compOrCroak-- but changed so we can back out
-        ($insideExpressionIfTrue:= false; compSeqItem(x,$NoValueMode,e) or return
-          "failed")).expr for x in l]
-  if c="failed" then return nil
-  catchTag:= MKQ gensym()
-  form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
-  [["CATCH",catchTag,form],$exitModeStack.0,$finalEnv]
+  c :=
+    [([.,.,e] := compSeqItem(x,$NoValueMode,e) or leave "failed").expr
+      for x in l]
+  if c is "failed" then return nil
+  catchTag := MKQ gensym()
+  form := ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",first $exitModeStack)]
+  [["CATCH",catchTag,form],first $exitModeStack,$finalEnv]
 
-compSeqItem(x,m,e) == 
+compSeqItem(x,m,e) ==
+  $insideExpressionIfTrue := false
   comp(macroExpand(x,e),m,e)
 
 replaceExitEtc(x,tag,opFlag,opMode) ==
@@ -1064,24 +1063,21 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
     fn(x,tag,opFlag,opMode) ==
       atomic? x => nil
       x is [ =opFlag,n,t] =>
-        second(x.args).expr :=
-          replaceExitEtc(second(x.args).expr,tag,opFlag,opMode)
+        t.expr := replaceExitEtc(t.expr,tag,opFlag,opMode)
         n=0 =>
-          $finalEnv:=
-                  --bound in compSeq1 and compDefineCapsuleFunction
-            $finalEnv => intersectionEnvironment($finalEnv,t.env)
+          $finalEnv :=
+            $finalEnv ~= nil => intersectionEnvironment($finalEnv,t.env)
             t.env
-          if opFlag is 'TAGGEDreturn then
-            x.op := '%return
-          else 
-            x.op := "THROW"
-            first(x.args) := tag
-          second(x.args) := convertOrCroak(t,opMode).expr
-        first(x.args) := second x-1
+          first(x) :=
+            opFlag is 'TAGGEDreturn => '%return
+            second(x) := tag
+            "THROW"
+          third(x) := convertOrCroak(t,opMode).expr
+        second(x) := n-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
         t.expr := replaceExitEtc(t.expr,tag,opFlag,opMode)
-      replaceExitEtc(x.op,tag,opFlag,opMode)
-      replaceExitEtc(x.args,tag,opFlag,opMode)
+      replaceExitEtc(first x,tag,opFlag,opMode)
+      replaceExitEtc(rest x,tag,opFlag,opMode)
 
 --% SUCHTHAT
 compSuchthat: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1095,11 +1091,11 @@ compSuchthat([.,x,p],m,e) ==
 
 compExit: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExit(["exit",level,x],m,e) ==
-  index:= level-1
+  index := level-1
   $exitModeStack = [] => comp(x,m,e)
-  m1:= $exitModeStack.index
+  m1 := $exitModeStack.index
   [x',m',e']:=
-    u:=
+    u :=
       comp(x,m1,e) or return
         stackMessageIfNone ["cannot compile exit expression",x,"in mode",m1]
   modifyModeStack(m',index)
@@ -1113,8 +1109,8 @@ modifyModeStack(m,index) ==
 
 compLeave: (%Form,%Mode,%Env) -> %Maybe %Triple
 compLeave(["leave",level,x],m,e) ==
-  index:= #$exitModeStack-1-$leaveLevelStack.(level-1)
-  [x',m',e']:= u:= comp(x,$exitModeStack.index,e) or return nil
+  index := #$exitModeStack - 1 - $leaveLevelStack.(level-1)
+  [x',m',e'] := u := comp(x,$exitModeStack.index,e) or return nil
   modifyModeStack(m',index)
   [["TAGGEDexit",index,u],m,e]
 
@@ -1127,7 +1123,7 @@ jumpFromLoop(kind,key) ==
 compBreak: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compBreak(x,m,e) ==
   x isnt "break" or not jumpFromLoop("REPEAT",x) => nil
-  index:= #$exitModeStack-1-$leaveLevelStack.0
+  index := #$exitModeStack - 1 - $leaveLevelStack.0
   $breakCount := $breakCount + 1
   u := coerce(["$NoValue",$Void,e],$exitModeStack.index) or return nil
   u := coerce(u,m) or return nil
@@ -1753,8 +1749,8 @@ coerceable(m,m',e) ==
 
 coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
-  m':= resolve(m,m')
-  x':= replaceExitEtc(x,catchTag:= MKQ gensym(),"TAGGEDexit",$exitMode)
+  m' := resolve(m,m')
+  x' := replaceExitEtc(x,catchTag := MKQ gensym(),"TAGGEDexit",$exitMode)
   coerce([["CATCH",catchTag,x'],m,e],m')
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -2306,7 +2302,6 @@ localReferenceIfThere m ==
 massageLoop x == main x where
   main x ==
     x isnt ['CATCH,tag,['REPEAT,:iters,body]] => x
-    CONTAINED('TAGGEDexit,x) => x
     replaceThrowWithLeave(body,tag)
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
     ['CATCH,tag,['%loop,:iters,body,'%nil]]
