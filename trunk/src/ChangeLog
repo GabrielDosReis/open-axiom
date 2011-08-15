@@ -1,5 +1,12 @@
 2011-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optCollectVector): Generate VM forms.
+	(optIinc): New.  Register as new transformer.
+	* interp/c-util.boot ($middleEndMacroList): Remove.
+	(middleEndExpand): Don't check for Lisp-level macros anymore.
+
+2011-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compSeq1): Tidy.
 	(cpmpSeqItem): Likewise.
 	(replaceExitEtc): Likewise.

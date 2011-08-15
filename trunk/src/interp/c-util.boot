@@ -1202,23 +1202,15 @@ mutateBindingFormWithUnaryFunction(form,fun) ==
 
 --% 
 
-++ List of macros used by the middle end to represent some
-++ high level control structures.
--- NOTE: It is potentially dangerous to assume every occurrence of 
--- element of $middleEndMacroList is actually a macro call
-$middleEndMacroList == 
-  '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
-
 --middleEndExpand: %Form -> %Code
 middleEndExpand x ==
+  x is '%void => '""  -- NIL would have caused havoc elsewhere
   x is '%false or x is '%nil => 'NIL
   ident? x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
   ident? op and (fun := getOpcodeExpander op) =>
     middleEndExpand apply(fun,x,nil)
-  symbol? op and symbolMember?(op,$middleEndMacroList) =>
-    middleEndExpand MACROEXPAND_-1 x
   a := middleEndExpand op
   b := middleEndExpand args
   sameObject?(a,op) and sameObject?(b,args) => x
