@@ -428,7 +428,8 @@ $VMsideEffectFreeOperators ==
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
-    %writeString %writeNewline %writeLine)
+    %writeString %writeNewline %writeLine
+    %void)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
@@ -618,8 +619,8 @@ optCollectVector form ==
   index := nil           -- loop/vector index.
   for iter in iters while not fromList repeat
     [op,:.] := iter
-    op in '(SUCHTHAT WHILE UNTIL) => fromList := true
-    op in '(IN ON) => vecSize := [["SIZE",third iter],:vecSize]
+    op in '(| SUCHTHAT WHILE UNTIL) => fromList := true
+    op in '(IN ON) => vecSize := [['%llength,third iter],:vecSize]
     op in '(STEP ISTEP) =>
       -- pick a loop variable that we can use as the loop index.
       [.,var,lo,inc,:etc] := iter
@@ -631,11 +632,11 @@ optCollectVector form ==
         sz :=
           inc = 1 =>
             lo = 1 => hi
-            lo = 0 => MKQSADD1 hi
-            MKQSADD1 ["-",hi,lo]
-          lo = 1 => ["/",hi,inc]
-          lo = 0 => ["/",MKQSADD1 hi,inc]
-          ["/",["-",MKQSADD1 hi, lo],inc]
+            lo = 0 => ['%iinc,hi]
+            ['%iinc,['%isub,hi,lo]]
+          lo = 1 => ['%idiv,hi,inc]
+          lo = 0 => ['%idiv,['%iinc,hi],inc]
+          ['%idiv,['%isub,['%iinc,hi], lo],inc]
         vecSize := [sz, :vecSize]
     systemErrorHere ["optCollectVector", iter]
   -- if we draw from a list, then just build a list and convert to vector.
@@ -645,7 +646,7 @@ optCollectVector form ==
   -- get the actual size of the vector.
   vecSize :=
     vecSize is [hi] => hi
-    ["MIN",:reverse! vecSize]
+    ['%imin,:reverse! vecSize]
   -- if no suitable loop index was found, introduce one.
   if index = nil then
     index := gensym()
@@ -745,6 +746,13 @@ optIadd(x is ['%iadd,a,b]) ==
   integer? b and b = 0 => a
   x
 
+optIinc(x is ['%iinc,a]) ==
+  a is [op,b,c] and op in '(%isub %iadd) =>
+    integer? b => simplifyVMForm [op,[op,b,1],c]
+    integer? c => simplifyVMForm [op,b,[op,c,1]]
+    x
+  x
+
 optIsub(x is ['%isub,a,b]) ==
   integer? a and integer? b => a - b
   integer? a and a = 0 => ['%ineg,b]
@@ -791,6 +799,7 @@ for x in '((%call         optCall) _
            (%ige         optIge)_
            (%ineg        optIneg)_
            (%iadd        optIadd)_
+           (%iinc        optIinc)_
            (%isub        optIsub)_
            (%irem        optIrem)_
            (%iquo        optIquo)_
