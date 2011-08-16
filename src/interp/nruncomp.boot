@@ -473,7 +473,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
   $catvecList: local := nil   --list of vectors v1..vn for each view
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
-  $catNames: local := nil      --list of names n1..nn for each view
   $catsig: local := nil        --target category (used in ProcessCond)
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
   $ConstantAssignments: local := nil --code for creation of constants
@@ -501,21 +500,21 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   for i in 0..4 repeat
     vectorRef(domainShell,i) := vectorRef($domainShell,i)
     --we will clobber elements; copy since $domainShell may be a cached vector
-  $template := newShell ($NRTbase + $NRTdeltaLength)
-  $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
-  $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
-  $SetFunctions:= newShell # domainShell
-  $catNames:= ['$,:[genvar() for u in rest catvecListMaker]]
-  domname:='dv_$
+  $template := newShell($NRTbase + $NRTdeltaLength)
+  $SetFunctions := newShell # domainShell
+  $catvecList := [domainShell,:[emptyVector for u in second domainShell.4]]
+  -- list of names n1..nn for each view
+  viewNames := ['$,:[genvar() for u in rest catvecListMaker]]
+  domname := 'dv_$
 
   -- Do this now to create predicate vector; then DescendCode can refer
   -- to predicate vector if it can
   [$uncondAlist,:$condAlist] :=    --bound in compDefineFunctor1
-      NRTsetVector4Part1($catNames,catvecListMaker,condCats)
+      NRTsetVector4Part1(viewNames,catvecListMaker,condCats)
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
       makePredicateBitVector [:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList]
 
-  storeOperationCode:= DescendCode(code,true,nil,first $catNames)
+  storeOperationCode := DescendCode(code,true,nil)
   NRTaddDeltaCode()
   storeOperationCode:= NRTputInLocalReferences storeOperationCode
   NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
