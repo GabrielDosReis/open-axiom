@@ -1,3 +1,15 @@
+2011-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/modemap.boot (addModemap0): Don't special-case
+	CategoryDefaults. 
+	* interp/define.boot (processFunctor): Fold into caller.  Remove.
+	* interp/clam.boot (recordInstantiation1): Do not special case
+	CategoryDefaults and RepeatedSquaring.
+	* interp/functor.boot (DescendCode): Lose last argument, for it is
+	always $.  Adjust body.  Adjust caller.
+	* interp/nruncomp.boot (buildFunctor): $catNames should not be a
+	fluid variable.  Rename to viewNames.
+
 2011-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/functor.boot (setVector0, setVector12, setVector3,

@@ -545,7 +545,6 @@ recordInstantiation(op,prop,dropIfTrue) ==
   stopTimingProcess 'debug
  
 recordInstantiation1(op,prop,dropIfTrue) ==
-  op in '(CategoryDefaults RepeatedSquaring) => nil--ignore defaults for now
   if $reportEachInstantiation then
     trailer:= (dropIfTrue => '"  dropped"; '"  instantiated")
     if $insideCoerceInteractive= true then

@@ -1706,22 +1706,18 @@ compSubDomain1(domainForm,predicate,m,e) ==
 compCapsuleInner(itemList,m,e) ==
   e:= addInformation(m,e)
            --puts a new 'special' property of $Information
-  data:= ["PROGN",:itemList]
+  data := ["PROGN",:itemList]
       --RPLACd by compCapsuleItems and Friends
-  e:= compCapsuleItems(itemList,nil,e)
+  e := compCapsuleItems(itemList,nil,e)
   localParList:= $functorLocalParameters
-  if $addForm then data:= ['add,$addForm,data]
-  code:=
+  if $addForm ~= nil then
+    data := ['add,$addForm,data]
+  code :=
     $insideCategoryIfTrue and not $insideCategoryPackageIfTrue => data
-    processFunctor($form,$signature,data,localParList,e)
+    buildFunctor($form,$signature,data,localParList,e)
   [MKPF([:$getDomainCode,code],"PROGN"),m,e]
  
 --% PROCESS FUNCTOR CODE
- 
-processFunctor(form,signature,data,localParList,e) ==
-  form is ["CategoryDefaults"] =>
-    error "CategoryDefaults is a reserved name"
-  buildFunctor(form,signature,data,localParList,e)
  
 compCapsuleItems(itemlist,$predl,$e) ==
   $signatureOfForm: local := nil
