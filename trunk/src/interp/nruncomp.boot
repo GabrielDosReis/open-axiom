@@ -479,7 +479,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
   $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
-  $extraParms:local := nil  --Set in DomainSubstitutionFunction, used in setVector12
+  $extraParms:local := nil  --Set in DomainSubstitutionFunction
   $devaluateList: local := nil --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
   $devaluateList:= [[arg,:b] for arg in args for b in $ModeVariableList]
   $supplementaries: local := nil
