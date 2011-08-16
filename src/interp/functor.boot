@@ -318,42 +318,13 @@ cons5(p,l) ==
   QCDDDDR(l).rest := nil
   [p,:l]
  
-setVector0(catNames,definition) ==
-          --returns code to set element 0 of the vector
-          --to the definition of the category
-  definition:= mkTypeForm definition
-  for u in catNames repeat
-    definition:= ['%store,['%tref,u,0],definition]
-  definition
- 
-setVector12 args ==
-            --The purpose of this function is to replace place holders
-            --e.g. argument names or gensyms, by real values
-  null args => nil
-  args1:=args2:=args
-  for u in $extraParms repeat
-            --A typical element of $extraParms, which is set in
-            --DomainSubstitutionFunction, would be (gensym) cons
-            --(category parameter), e.g. DirectProduct(length vl,NNI)
-            --as in DistributedMultivariatePolynomial
-    args1:=[u.op,:args1]
-    args2:=[u.args,:args2]
-  freeof(categoryExports $domainShell,args1) and
-      freeof($domainShell.2,args1) and
-          freeof($domainShell.4,args1) => nil  
-  [['SetDomainSlots124,'$,['QUOTE,args1],['%list,:args2]]]
- where freeof(a,b) ==
-         a isnt [.,:.] => null symbolMember?(a,b)
-         freeof(first a,b) => freeof(rest a,b)
-         false
- 
-SetDomainSlots124(vec,names,vals) ==
+SetDomainSlots124(dom,names,vals) ==
   l := pairList(names,vals)
-  vectorRef(vec,1) := sublisProp(l,vectorRef(vec,1))
-  vectorRef(vec,2) := sublisProp(l,vectorRef(vec,2))
+  domainDirectory(dom) := sublisProp(l,domainDirectory dom)
+  domainAttributes(dom) := sublisProp(l,domainAttributes dom)
   l := [[a,:devaluate b] for a in names for b in vals]
-  vectorRef(vec,4) := applySubst(l,vectorRef(vec,4))
-  vectorRef(vec,1) := applySubst(l,vectorRef(vec,1))
+  domainData(dom) := applySubst(l,domainData dom)
+  domainDirectory(dom) := sublisProp(l,domainDirectory dom)
  
 sublisProp(subst,props) ==
   null props => nil
@@ -365,7 +336,7 @@ sublisProp(subst,props) ==
       cond is ['or,:x] =>
         (or/[inspect(u,subst) for u in x] => [a,true,:l]; nil)
       cond is ["has",nam,b] and (val:= ASSQ(nam,subst)) =>
-        ev:=
+        ev :=
           b is ['ATTRIBUTE,c] => HasAttribute(rest val,c)
           b is ['SIGNATURE,c] => HasSignature(rest val,c)
           isDomainForm(b,$CategoryFrame) => b=rest val
@@ -377,22 +348,6 @@ sublisProp(subst,props) ==
   props' := sublisProp(subst,props')
   sameObject?(a',cp) and sameObject?(props',rest props) => props
   [a',:props']
- 
-setVector3(name,instantiator) ==
-      --generates code to set element 3 of 'name' from 'instantiator'
-      --element 3 is data structure representing category
-      --returns a single LISP statement
-  instantiator is ['DomainSubstitutionMacro,.,body] => setVector3(name,body)
-  ['%store,['%tref,name,3],mkTypeForm instantiator]
- 
-mkDomainFormer x ==
-  if x is ['DomainSubstitutionMacro,parms,body] then
-    x := DomainSubstitutionFunction(parms,body)
-    x := applySubst($extraParms,x)
-    --The next line ensures that only one copy of this structure will
-    --appear in the BPI being generated, thus saving (some) space
-  x is ['Join,:.] => ['eval,['QUOTE,x]]
-  x
  
 mkTypeForm x ==
   x isnt [.,:.] => mkDevaluate x
@@ -406,30 +361,6 @@ mkTypeForm x ==
     op in '(Join %list) => nil
     MKQ x
   ['%list,MKQ x.op,:[mkTypeForm a for a in x.args]]
- 
-setVector5(catNames,locals) ==
-  generated:= nil
-  for u in locals for uname in catNames repeat
-    if w:= assoc(u,generated)
-       then w.rest := [uname,:rest w]
-       else generated:= [[u,uname],:generated]
-  [(w:= mkVectorWithDeferral(first u,second u);
-      for v in rest u repeat
-         w:= ['%store,['%tref,v,5],w];
-        w)
-          for u in generated]
- 
-mkVectorWithDeferral(objects,tag) ==
--- Construct a %vector form, but spots things that aren't safe to instantiate
--- and places them at the end of $ConstantAssignments, so that they get
--- called AFTER the constants of $ have been set up.   JHD 26.July.89
-  ['%vector,:
-   [if CONTAINED('$,u) then -- It's not safe to instantiate this now
-      $ConstantAssignments:=[:$ConstantAssignments,
-                             ['%store,['%tref,['%tref,tag,5],count],u]]
-      []
-    else u
-       for u in objects for count in 0..]]
  
 DescendCodeAdd(base,flag) ==
   base isnt [.,:.] => DescendCodeVarAdd(base,flag)

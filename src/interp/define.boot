@@ -778,12 +778,13 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
-    body:= optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
-    if $extraParms then
-      formals:=actuals:=nil
-      for u in $extraParms repeat
-        formals:=[first u,:formals]
-        actuals:=[MKQ rest u,:actuals]
+    body := optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
+    if $extraParms ~= nil then
+      formals := nil
+      actuals := nil
+      for [u,:v] in $extraParms repeat
+        formals := [u,:formals]
+        actuals := [MKQ v,:actuals]
       body := ['sublisV,['pairList,['QUOTE,formals],['%list,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
         ['sublisV,['pairList,['QUOTE,sargl],['%list,:
@@ -1946,30 +1947,26 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   wrapDomainSub(parameters,body)
 
 DomainSubstitutionFunction(parameters,body) ==
-  --see definition of DomainSubstitutionMacro in SPAD LISP
-  if parameters then
+  if parameters ~= nil then
     (body := Subst(parameters,body)) where
       Subst(parameters,body) ==
         body isnt [.,:.] =>
-          symbolMember?(body,parameters) => MKQ body
+          objectMember?(body,parameters) => MKQ body
           body
         listMember?(body,parameters) =>
           g := gensym()
-          $extraParms := PUSH([g,:body],$extraParms)
+          $extraParms := [[g,:body],:$extraParms]
            --Used in SetVector12 to generate a substitution list
            --bound in buildFunctor
            --For categories, bound and used in compDefineCategory
           MKQ g
-        body.op = "QUOTE" => body
-        cons? $definition and
-            isFunctor body.op and 
-              body.op ~= $definition.op
-          =>  ['QUOTE,simplifyVMForm body]
+        first body is "QUOTE" => body
+        cons? $definition and isFunctor body.op and 
+          body.op ~= $definition.op => quoteForm simplifyVMForm body
         [Subst(parameters,u) for u in body]
   body isnt ["Join",:.] => body
   $definition isnt [.,:.] => body
-  null $definition.args => body 
-           --should not bother if it will only be called once
+  $definition.args = nil => body 
   name := makeSymbol strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
   body := ['%when,[name],['%otherwise,['%store,name,body]]]
