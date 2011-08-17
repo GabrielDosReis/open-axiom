@@ -479,22 +479,23 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $epilogue: local := nil     --code to set slot 5, things to be done last
   $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
   $extraParms:local := nil  --Set in DomainSubstitutionFunction
-  $devaluateList: local := nil --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
-  $devaluateList:= [[arg,:b] for arg in args for b in $ModeVariableList]
+  $devaluateList: local :=
+    --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
+    [[arg,:b] for arg in args for b in $ModeVariableList]
   $supplementaries: local := nil
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
 
   oldtime:= TEMPUS_-FUGIT()
-  [$catsig,:argsig]:= sig
-  catvecListMaker:=removeDuplicates
-    [(comp($catsig,$EmptyMode,$e)).expr,
-      :[compCategories first u for u in second $domainShell.4]]
-  condCats:= InvestigateConditions [$catsig,:rest catvecListMaker]
+  [$catsig,:argsig] := sig
+  catvecListMaker := removeDuplicates
+    [comp($catsig,$EmptyMode,$e).expr,
+      :[compCategories u for [u,:.] in categoryAncestors $domainShell]]
+  condCats := InvestigateConditions [$catsig,:rest catvecListMaker]
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
   -- category should be present.  true => always
-  makeCatvecCode:= first catvecListMaker
+  makeCatvecCode := first catvecListMaker
   emptyVector := vector []
   domainShell := newShell($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat
@@ -539,21 +540,21 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
     createPredVecCode := ["pv$",predBitVectorCode1]
 
   --CODE: part 1
-  codePart1:= [setVector0Code, slot3Code,:slamCode] where
-    setVector0Code:=['%store,['%tref,"$",0],"dv$"]
+  codePart1 := [setVector0Code, slot3Code,:slamCode] where
+    setVector0Code := ['%store,['%tref,"$",0],"dv$"]
     slot3Code := ['%store,['%tref,"$",3],"pv$"]
-    slamCode:=
+    slamCode :=
       isCategoryPackageName name => nil
       [NRTaddToSlam($definition,"$")]
 
   --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
-  codePart3:= [:$ConstantAssignments,:$epilogue]
+  codePart3 := [:$ConstantAssignments,:$epilogue]
   ans := ["%bind",bindings,
            :washFunctorBody optFunctorBody
               [:codePart1,:codePart2,:codePart3],"$"]
-  $getDomainCode:= nil
+  $getDomainCode := nil
     --if we didn't kill this, DEFINE would insert it in the wrong place
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
   ans

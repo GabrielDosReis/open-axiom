@@ -1,5 +1,14 @@
 2011-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (categoryPrincipals): New.
+	(categoryAncestors): Likewise.
+	* interp/functor.boot (DescendCodeAdd): Tidy.
+	(DescendCodeVarAdd): Fix thinko.  Iterator over $domainShell.
+	Don't pretend constants have ELT implementations.
+	* interp/nruncomp.boot (buildFunctor): Tidy.
+
+2011-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/modemap.boot (addModemap0): Don't special-case
 	CategoryDefaults. 
 	* interp/define.boot (processFunctor): Fold into caller.  Remove.

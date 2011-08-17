@@ -364,12 +364,13 @@ mkTypeForm x ==
  
 DescendCodeAdd(base,flag) ==
   base isnt [.,:.] => DescendCodeVarAdd(base,flag)
-  not (modemap:=get(opOf base,'modemap,$CategoryFrame)) =>
-      if getmode(opOf base,$e) is ["Mapping",target,:formalArgModes]
-         then formalArgs:= take(#formalArgModes,$FormalMapVariableList)
+  modemap := get(base.op,'modemap,$CategoryFrame)
+  modemap = nil  =>
+      if getmode(base.op,$e) is ["Mapping",target,:formalArgModes]
+         then formalArgs := take(#formalArgModes,$FormalMapVariableList)
                 --argument substitution if parameterized?
  
-         else keyedSystemError("S2OR0001",[opOf base])
+         else keyedSystemError("S2OR0001",[base.op])
       DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes)
   for [[[.,:formalArgs],target,:formalArgModes],.] in modemap repeat
     (ans:= DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes))=>
@@ -771,10 +772,9 @@ getViewsConditions u ==
       --if you don't want it, rest it off
  
 DescendCodeVarAdd(base,flag) ==
-   princview := first $catvecList
-   [SetFunctionSlots(sig,substitute('ELT,'CONST,implem),flag,'adding) repeat
-       for i in 6..maxIndex princview |
-         princview.i is [sig:=[op,types],:.] and
+   [SetFunctionSlots(sig,implem,flag,'adding) repeat
+       for i in 6..maxIndex $domainShell |
+         categoryRef($domainShell,i) is [sig:=[op,types],:.] and
            LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
                   [[pred,implem]]]
  
