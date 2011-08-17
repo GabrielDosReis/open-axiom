@@ -89,6 +89,14 @@ macro categoryAttributes d ==
 macro categoryHierarchy c ==
   categoryRef(c,4)
 
+++ Return the list of principal ancestors of category `c'.  
+macro categoryPrincipals c ==
+  first categoryHierarchy c
+
+++ Return the list of [ancestor,predicate,index] data of catagory `c'.  
+macro categoryAncestors c ==
+  second categoryHierarchy c
+
 ++ Reference a 3-list
 ++   [lookupFunction,thisDomain,optable]
 ++ necessary for function lookup in a domain:
