@@ -600,7 +600,7 @@ InvestigateConditions catvecListMaker ==
   if $principal is [op,:.] then
     [principal',:.]:=compMakeCategoryObject($principal,$e)
               --Rather like eval, but quotes parameters first
-    for u in second principal'.4 repeat
+    for u in categoryAncestors principal' repeat
       if not TruthP(cond:=second u) then
         new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,first u], '%noBranch]]
         $principal is ['Join,:l] =>
@@ -620,14 +620,14 @@ InvestigateConditions catvecListMaker ==
   null $Conditions => [true,:[true for u in secondaries]]
   PrincipalSecondaries:= getViewsConditions principal'
   MinimalPrimary:= first first PrincipalSecondaries
-  MaximalPrimary:= CAAR $domainShell.4
+  MaximalPrimary := first categoryPrincipals $domainShell
   necessarySecondaries:= [first u for u in PrincipalSecondaries | rest u=true]
   and/[listMember?(u,necessarySecondaries) for u in secondaries] =>
     [true,:[true for u in secondaries]]
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
-    MaximalPrimaries:=[MaximalPrimary,:first CatEval(MaximalPrimary).4]
-    MinimalPrimaries:=[MinimalPrimary,:first CatEval(MinimalPrimary).4]
+    MaximalPrimaries:=[MaximalPrimary,:categoryPrincipals CatEval MaximalPrimary]
+    MinimalPrimaries:=[MinimalPrimary,:categoryPrincipals CatEval MinimalPrimary]
     MaximalPrimaries:=S_-(MaximalPrimaries,MinimalPrimaries)
     [[x] for x in MaximalPrimaries]
   ($Conditions:= Conds($principal,nil)) where
@@ -657,7 +657,7 @@ InvestigateConditions catvecListMaker ==
       # u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
-      for v' in [v,:first CatEval(v).4] repeat
+      for v' in [v,:categoryPrincipals CatEval v] repeat
         if (w:=assoc(v',$HackSlot4)) then
           w.rest := if rest w then mkOr(u,rest w) else u
     (list:= update(list,u,secondaries,newS)) where
@@ -751,8 +751,8 @@ getPossibleViews u ==
   --returns a list of all the categories that can be views of this one
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getPossibleViews",u]
-  views:= [first u for u in second vec.4]
-  null vec.0 => [CAAR vec.4,:views] --*
+  views:= [first u for u in categoryAncestors vec]
+  null vec.0 => [first categoryPrincipals vec,:views] --*
   [vec.0,:views] --*
       --the two lines marked  ensure that the principal view comes first
       --if you don't want it, rest it off
@@ -763,10 +763,10 @@ getViewsConditions u ==
   --paired with the condition under which they are such views
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getViewsConditions",u]
-  views:= [[first u,:second u] for u in second vec.4]
+  views:= [[first u,:second u] for u in categoryAncestors vec]
   null vec.0 =>
-    null first vec.4 => views
-    [[CAAR vec.4,:true],:views] --*
+    null categoryPrincipals vec => views
+    [[first categoryPrincipals vec,:true],:views] --*
   [[vec.0,:true],:views] --*
       --the two lines marked  ensure that the principal view comes first
       --if you don't want it, rest it off

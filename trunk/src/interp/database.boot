@@ -775,22 +775,6 @@ displayHiddenConstructors() ==
     else for c in $localExposureData.2 repeat
       centerAndHighlight c
 
-
-
---%
-
-
-++ Return the list of category attribute info for the category object `c'.
-++ A category attribute info is pair of attribute-predicate.
-getCategoryAttributes: %Shell -> %List %Form
-getCategoryAttributes c == c.2
-
-
-getCategoryPrincipalAncestors c == c.4.0
-
-getCategoryParents c == c.4.1
-
-
 --%
 squeezeAll: %List %Code -> %List %Code
 squeezeAll x ==

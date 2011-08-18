@@ -86,16 +86,23 @@ macro categoryAttributes d ==
   categoryRef(d,2)
 
 ++ Return a 3-list of data describing the hierarchy of category `c'.
-macro categoryHierarchy c ==
+macro categoryAssociatedTypes c ==
   categoryRef(c,4)
 
 ++ Return the list of principal ancestors of category `c'.  
 macro categoryPrincipals c ==
-  first categoryHierarchy c
+  first categoryAssociatedTypes c
 
-++ Return the list of [ancestor,predicate,index] data of catagory `c'.  
+++ Return the list of [ancestor,predicate,index] data of catagory `c',
+++ where `ancestor' is a fundamental ancestor, `index' its sequence number.
 macro categoryAncestors c ==
-  second categoryHierarchy c
+  second categoryAssociatedTypes c
+
+macro categoryLocals c ==
+  third categoryAssociatedTypes c
+
+macro categoryParameters c ==
+  categoryRef(c,5)
 
 ++ Reference a 3-list
 ++   [lookupFunction,thisDomain,optable]
@@ -1033,12 +1040,11 @@ extendsCategoryForm(domain,form,form') ==
     form' is ["IF",:.] => true --temporary hack so comp won't fail
     -- Are we dealing with an Aldor category?  If so use the "has" function ...
     # formVec = 1 => newHasTest(form,form')
-    catvlist:= formVec.4
-    listMember?(form',first catvlist) or
-     listMember?(form',substitute(domain,"$",first catvlist)) or
+    listMember?(form',categoryPrincipals formVec) or
+     listMember?(form',substitute(domain,"$",categoryPrincipals formVec)) or
       (or/
         [extendsCategoryForm(domain,substitute(domain,"$",cat),form')
-          for [cat,:.] in second catvlist])
+          for [cat,:.] in categoryAncestors formVec])
   nil
  
 getmode(x,e) ==

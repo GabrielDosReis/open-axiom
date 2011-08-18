@@ -327,7 +327,7 @@ extendsCategoryBasic(dom,u,v,env) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
     uVec := compMakeCategoryObject(u,env).expr or return false
     cons? c and isCategoryForm(c,env) =>
-      LASSOC(c,second categoryHierarchy uVec) is [=p,:.]
+      LASSOC(c,categoryAncestors uVec) is [=p,:.]
     LASSOC(c,categoryAttributes uVec) is [=p,:.]
   u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
   u = v => true
@@ -348,8 +348,7 @@ extendsCategoryBasic(dom,u,v,env) ==
 catExtendsCat?(u,v,env) ==
   u = v => true
   uvec := compMakeCategoryObject(u,env).expr
-  slot4 := categoryHierarchy uvec
-  prinAncestorList := first slot4
+  prinAncestorList := categoryPrincipals uvec
   listMember?(v,prinAncestorList) => true
   vOp := KAR v
   if similarForm := assoc(vOp,prinAncestorList) then
@@ -358,7 +357,7 @@ catExtendsCat?(u,v,env) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v,env) for x in ASSOCLEFT second slot4]
+  or/[catExtendsCat?(x,v,env) for x in ASSOCLEFT categoryAncestors uvec]
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and

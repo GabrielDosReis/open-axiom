@@ -476,14 +476,13 @@ knownInfo pred ==
     vmode is ["Join",:l] and listMember?(cat,l) => true
     [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return
                  stackAndThrow('"cannot find category %1pb",[vmode])
-    catlist := vv.4
-    listMember?(cat,first catlist) => true  --checks princ. ancestors
-    (u:=assoc(cat,second catlist)) and knownInfo second u => true
+    listMember?(cat,categoryPrincipals vv) => true  --checks princ. ancestors
+    (u:=assoc(cat,categoryAncestors vv)) and knownInfo second u => true
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
     or/[AncestorP(cat,[first u]) 
-         for u in second catlist | knownInfo second u] => true
+         for u in categoryAncestors vv | knownInfo second u] => true
     false
   pred is ["SIGNATURE",name,op,sig,:.] =>
     v:= get(op,"modemap",$e)
@@ -547,8 +546,8 @@ actOnInfo(u,$e) ==
       [ocatvec,.,$e]:= compMakeCategoryObject(vmode,$e)
  
       --we are adding a principal descendant of what was already known
-      listMember?(cat,first ocatvec.4) or
-         assoc(cat,second ocatvec.4) is [.,"T",.] => $e
+      listMember?(cat,categoryPrincipals ocatvec) or
+         assoc(cat,categoryAncestors ocatvec) is [.,"T",.] => $e
              --what was being asserted is an ancestor of what was known
       if name="$"
         then $e:= augModemapsFromCategory(name,name,name,cat,$e)

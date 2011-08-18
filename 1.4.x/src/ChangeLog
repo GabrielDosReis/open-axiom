@@ -1,3 +1,23 @@
+2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (categoryAssociatedTypes): Rename from
+	categoryHierarchy.  Adjust callers.
+	(categoryPrincipals): New.
+	(categoryAncestors): Likewise.
+	(categoryLocals): Likewise.
+	(categoryParameters): Likewise.
+	(extendsCategoryForm): Use them.
+	* interp/category.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/database.boot (getCategoryAttributes): Remove.
+	(getPrincipalAncestors): Likewise.
+	(getCategoryParents): Likewise.
+	* algebra/domain.spad.pamphlet (Category): Adjust.
+
 2011-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (categoryPrincipals): New.
