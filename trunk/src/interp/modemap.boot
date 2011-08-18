@@ -456,8 +456,8 @@ knownInfo pred ==
           stackAndThrow('"can't find category of %1pb",[name])
     [vv,.,.] := compMakeCategoryObject(v.mode,$e) or return
                  stackAndThrow('"can't make category of %1pb",[name])
-    listMember?(attr,vv.2) => true
-    x := assoc(attr,vv.2) => knownInfo second x
+    listMember?(attr,categoryAttributes vv) => true
+    x := assoc(attr,categoryAttributes vv) => knownInfo second x
           --format is a list of two elements: information, predicate
     false
   pred is ["has",name,cat] =>

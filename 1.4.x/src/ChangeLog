@@ -1,5 +1,11 @@
 2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Use category accessors.
+	* interp/category.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+
+2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (categoryAssociatedTypes): Rename from
 	categoryHierarchy.  Adjust callers.
 	(categoryPrincipals): New.
