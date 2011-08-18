@@ -296,8 +296,8 @@ mkCategoryExtensionAlistBasic cform ==
   category :=      -- changed by RSS on 7/29/87
     macrop cop => eval cform
     apply(cop, rest cform)
-  extendsList:= [[x,:'T] for x in category.4.0]
-  for [cat,pred,:.] in category.4.1 repeat
+  extendsList := [[x,:'T] for x in categoryPrincipals category]
+  for [cat,pred,:.] in categoryAncestors category repeat
     newList := getCategoryExtensionAlist0 cat
     finalList :=
       pred is 'T => newList

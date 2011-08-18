@@ -503,7 +503,8 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template := newShell($NRTbase + $NRTdeltaLength)
   $SetFunctions := newShell # domainShell
-  $catvecList := [domainShell,:[emptyVector for u in second domainShell.4]]
+  $catvecList :=
+    [domainShell,:[emptyVector for u in categoryAncestors domainShell]]
   -- list of names n1..nn for each view
   viewNames := ['$,:[genvar() for u in rest catvecListMaker]]
   domname := 'dv_$
@@ -607,13 +608,14 @@ NRTsetVector4a(sig,form,cond) ==
   sig is '$ =>
      domainList :=
        [simplifyVMForm COPY comp(d,$EmptyMode,$e).expr or d
-         for d in $domainShell.4.0]
+         for d in categoryPrincipals $domainShell]
      $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
      $uncondList
   evalform := eval mkEvalableCategoryForm form
-  cond = true => $uncondList := [form,:append(evalform.4.0,$uncondList)]
-  $condList := [[cond,[form,:evalform.4.0]],:$condList]
+  cond = true =>
+    $uncondList := [form,:append(categoryPrincipals evalform,$uncondList)]
+  $condList := [[cond,[form,:categoryPrincipals evalform]],:$condList]
 
 NRTmakeSlot1Info() ==
 -- 4 cases:

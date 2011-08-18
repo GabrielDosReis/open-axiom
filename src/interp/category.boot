@@ -105,7 +105,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   OldLocals:= nil
   -- Remove possible duplicate local domain caches.
   if PrincipalAncestor then 
-    for u in (OldLocals:= third PrincipalAncestor.4) repeat 
+    for u in (OldLocals := categoryLocals PrincipalAncestor) repeat 
       NewLocals := remove(NewLocals,first u)
   -- New local domains caches are hosted in slots at the end onward
   for u in NewLocals repeat
@@ -120,10 +120,12 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   if PrincipalAncestor ~= nil then
     for x in 6..#PrincipalAncestor-1 repeat 
       categoryRef(v,x) := PrincipalAncestor.x
-    categoryHierarchy(v) :=
-      [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
+    categoryAssociatedTypes(v) :=
+      [categoryPrincipals PrincipalAncestor,
+        categoryAncestors PrincipalAncestor,
+          OldLocals]
   else
-    categoryHierarchy(v) := [nil,nil,OldLocals]
+    categoryAssociatedTypes(v) := [nil,nil,OldLocals]
   categoryRef(v,5) := domList
   for [nsig,:n] in NSigList repeat 
     categoryRef(v,n) := nsig
@@ -310,17 +312,17 @@ FindFundAncs l ==
   canonicalForm f1 = nil => FindFundAncs rest l
   ans:= FindFundAncs rest l
   for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
-   for x in second f1.4] repeat
+   for x in categoryAncestors f1] repeat
     x:= ASSQ(first u,ans) =>
       ans:= [[first u,mkOr(second x,second u)],:remove(ans,x)]
     ans:= [u,:ans]
         --testing to see if first l is already there
   x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x)],:remove(ans,x)]
   CADAR l=true =>
-    for x in first f1.4 repeat
+    for x in categoryPrincipals f1 repeat
       if y:= ASSQ(CatEval x,ans) then ans := remove(ans,y)
     [first l,:ans]
-  for x in first f1.4 repeat
+  for x in categoryPrincipals f1 repeat
     if y:= ASSQ(CatEval x,ans) then ans:=
       [[first y,mkOr(CADAR l,second y)],:remove(ans,y)]
   [first l,:ans]
@@ -341,7 +343,7 @@ AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
   listMember?(xname,leaves) => xname
   for y in leaves repeat
-    listMember?(xname,first CatEval(y).4) => return y
+    listMember?(xname,categoryPrincipals CatEval y) => return y
  
 CondAncestorP(xname,leaves,condition) ==
   -- checks for being a principal ancestor of one of the leaves
@@ -350,7 +352,7 @@ CondAncestorP(xname,leaves,condition) ==
     ucond:=
       null rest u => true
       second u
-    xname = u' or listMember?(xname,first CatEval(u').4) =>
+    xname = u' or listMember?(xname,categoryPrincipals CatEval u') =>
       PredImplies(ucond,condition) => return u'
 
 
@@ -364,8 +366,8 @@ DescendantP(a,b) ==
   a:= CatEval a
   b is ["ATTRIBUTE",b'] =>
     (l:=assoc(b',a.2)) => TruthP second l
-  listMember?(b,first a.4) => true
-  AncestorP(b,[first u for u in second a.4]) => true
+  listMember?(b,categoryPrincipals a) => true
+  AncestorP(b,[first u for u in categoryAncestors a]) => true
   false
  
 --% The implementation of Join
@@ -403,7 +405,7 @@ JoinInner(l,$e) ==
   sigl := categoryExports $NewCatVec
   attl:= $NewCatVec.2
   globalDomains:= $NewCatVec.5
-  FundamentalAncestors:= second $NewCatVec.4
+  FundamentalAncestors := categoryAncestors $NewCatVec
   if $NewCatVec.0 then FundamentalAncestors:=
     [[$NewCatVec.0],:FundamentalAncestors]
                     --principal ancestor . all those already included
@@ -422,7 +424,7 @@ JoinInner(l,$e) ==
       (f:=AncestorP(bname,[first u for u in FundamentalAncestors])) =>
         [.,.,index]:=assoc(f,FundamentalAncestors)
         FundamentalAncestors:=[[bname,condition,index],:FundamentalAncestors]
-      PrinAncb:= first CatEval(bname).4
+      PrinAncb := categoryPrincipals CatEval bname
                --Principal Ancestors of b
       reallynew:= true
       for anc in FundamentalAncestors repeat
@@ -455,7 +457,7 @@ JoinInner(l,$e) ==
               if originalVector and (condition=true) then
                 $NewCatVec:= CatEval bname
                 copied:= nil
-                FundamentalAncestors:= [[bname],:second $NewCatVec.4]
+                FundamentalAncestors:= [[bname],:categoryAncestors $NewCatVec]
                          --bname is Principal, so comes first
                 reallynew:= nil
                 objectMember?(b,l) =>
@@ -529,10 +531,11 @@ JoinInner(l,$e) ==
             [sig,mkpf([oldpred,newpred],"and"),:implem]
   FundamentalAncestors:= [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
-  c:= first $NewCatVec.4
+  c := categoryPrincipals $NewCatVec
   pName:= $NewCatVec.0
   if pName and not listMember?(pName,c) then c:= [pName,:c]
-  $NewCatVec.4:= [c,FundamentalAncestors,third $NewCatVec.4]
+  categoryAssociatedTypes($NewCatVec) :=
+    [c,FundamentalAncestors,categoryLocals $NewCatVec]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
 
 Join(:l) ==

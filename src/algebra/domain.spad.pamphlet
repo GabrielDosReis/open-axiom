@@ -399,18 +399,18 @@ Category(): Public == Private where
       ++ extended by the category `c'.
   Private == add
     constructor x ==
-      %head(devaluate(x)$Lisp)$Foreign(Builtin)
+      %head(devaluate(x)$Foreign(Builtin))$Foreign(Builtin)
 
     exportedOperators c ==
       [%head(x)$Foreign(Builtin)@OperatorSignature 
-         for x in categoryExports(c)$Lisp@List(Syntax)]
+         for x in categoryExports(c)$Foreign(Builtin)@List(Syntax)]
     
     principalAncestors c == 
-      getCategoryPrincipalAncestors(c)$Lisp
+      categoryPrincipals(c)$Foreign(Builtin)
 
     parents c ==
       [%head(x)$Foreign(Builtin)@ConstructorCall(CategoryConstructor)
-         for x in getCategoryParents(c)$Lisp@List(Syntax)]
+         for x in categoryAncestors(c)$Foreign(Builtin)@List(Syntax)]
 
     coerce x ==
       outputDomainConstructor(x)$Lisp
