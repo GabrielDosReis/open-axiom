@@ -1,5 +1,11 @@
 2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/momdemap.boot: Fold content into compiler.boot and
+	define.boot.  Remove.
+	* Makefile.in: Adjust dependencies.
+
+2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot: Use category accessors.
 	* interp/category.boot: Likewise.
 	* interp/modemap.boot: Likewise.
