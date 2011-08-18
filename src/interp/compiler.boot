@@ -34,7 +34,6 @@
 
 import msgdb
 import pathname
-import modemap
 import define
 namespace BOOT
 
@@ -1184,6 +1183,11 @@ compTry(['%Try,x,ys,z],m,e) ==
   
 --% ELT
 
+getModemapListFromDomain(op,numOfArgs,D,e) ==
+  [mm
+    for (mm:= [[dc,:sig],:.]) in get(op,'modemap,e) | dc=D and #rest sig=
+      numOfArgs]
+
 ++ `op' supposedly designate an external entity with language linkage
 ++ `lang'.  Return the mode of its local declaration (import).
 getExternalSymbolMode(op,lang,e) ==
@@ -1514,6 +1518,11 @@ compExclusiveOr(x,m,e) ==
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCase1: (%Form,%Mode,%Env) -> %Maybe %Triple
 
+getModemapList(op,numOfArgs,e) ==
+  op is ['elt,D,op'] => getModemapListFromDomain(op',numOfArgs,D,e)
+  [mm for
+    (mm:= [[.,.,:sigl],:.]) in get(op,'modemap,e) | numOfArgs=#sigl]
+ 
 --Will the jerk who commented out these two functions please NOT do so
 --again.  These functions ARE needed, and case can NOT be done by
 --modemap alone.  The reason is that A case B requires to take A
