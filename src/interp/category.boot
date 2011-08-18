@@ -365,7 +365,7 @@ DescendantP(a,b) ==
   a is ["SIGNATURE",:.] => false
   a:= CatEval a
   b is ["ATTRIBUTE",b'] =>
-    (l:=assoc(b',a.2)) => TruthP second l
+    (l := assoc(b',categoryAttributes a)) => TruthP second l
   listMember?(b,categoryPrincipals a) => true
   AncestorP(b,[first u for u in categoryAncestors a]) => true
   false
@@ -376,7 +376,7 @@ JoinInner(l,$e) ==
   $NewCatVec: local := nil
   CondList:= nil
   for u in l repeat
-    for at in u.2 repeat
+    for at in categoryAttributes u repeat
       at2:= first at
       if at2 isnt [.,:.] then at2 := [at2]
         -- the variable $Attributes is built globally, so that true
@@ -403,8 +403,8 @@ JoinInner(l,$e) ==
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
   sigl := categoryExports $NewCatVec
-  attl:= $NewCatVec.2
-  globalDomains:= $NewCatVec.5
+  attl := categoryAttributes $NewCatVec
+  globalDomains := categoryParameters $NewCatVec
   FundamentalAncestors := categoryAncestors $NewCatVec
   if $NewCatVec.0 then FundamentalAncestors:=
     [[$NewCatVec.0],:FundamentalAncestors]
@@ -462,7 +462,7 @@ JoinInner(l,$e) ==
                 reallynew:= nil
                 objectMember?(b,l) =>
                   --objectMember? since category vectors are guaranteed unique
-                  (sigl:= categoryExports $NewCatVec; attl:= $NewCatVec.2; l:= remove(l,b))
+                  (sigl:= categoryExports $NewCatVec; attl:= categoryAttributes $NewCatVec; l:= remove(l,b))
              --     SAY("domain ",bname," subsumes")
              --     SAY("adding a conditional domain ",
              --         bname,
@@ -472,14 +472,14 @@ JoinInner(l,$e) ==
                 CondList := remove(CondList,bCond)
              -- value of bCond not used and could be nil
              -- bCond:= second bCond
-                globalDomains:= $NewCatVec.5
+                globalDomains := categoryParameters $NewCatVec
                 for u in categoryExports $NewCatVec repeat
                   if not listMember?(u,sigl) then
                     [s,c,i]:= u
                     if c=true
                        then sigl:= [[s,condition,i],:sigl]
                        else sigl:= [[s,["and",condition,c],i],:sigl]
-                for u in $NewCatVec.2 repeat
+                for u in categoryAttributes $NewCatVec repeat
                   if not listMember?(u,attl) then
                     [a,c]:= u
                     if c=true
@@ -503,15 +503,11 @@ JoinInner(l,$e) ==
     -- performing Operator Subsumption
   for b in l repeat
     sigl:= SigListUnion([DropImplementations u for u in categoryExports b],sigl)
-    attl:=
--- next two lines are merely performance improvements
-      symbolMember?(attl,b.2) => b.2
-      symbolMember?(b.2,attl) => attl
-      S_+(b.2,attl)
-    globalDomains:= [:globalDomains,:S_-(b.5,globalDomains)]
+    attl := S_+(categoryAttributes b,attl)
+    globalDomains:= [:globalDomains,:S_-(categoryParameters b,globalDomains)]
   for b in CondList repeat
     newpred:= second b
-    for u in (first b).2 repeat
+    for u in categoryAttributes first b repeat
       v:= assoc(first u,attl)
       null v =>
         attl:=
