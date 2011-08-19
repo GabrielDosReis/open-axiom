@@ -1,3 +1,24 @@
+2011-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot (mkOr): Taken environment as parameter.
+	Adjust callers.
+	(mkOr2): Likewise.
+	(mkAnd): Likewise.
+	(mkAnd2): Likewise.
+	(FindFundAncs): Likewise.
+	(CatEval): Likewise.
+	(AncestorP): Likewise.
+	(CondAncestorP): Likewise.
+	(DescendantP): Likewise.
+	* interp/compiler.boot (compMapCond): Likewise.
+	(compMapCond'): Likewise.
+	* interp/define.boot (formatPred): Likewise.
+	(formatInfo): Likewise.
+	(addInfo): Likewise.
+	(knownPred): Likewise.
+	* interp/functor.boot (InvestigateConditions): Likewise.
+	(ICformat): Likewise.
+
 2011-08-18  Alfredo Portes  <doyenatccny@gmail.com>
 
 	* sman/sman.c: Do not try to start graphic components

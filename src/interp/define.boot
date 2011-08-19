@@ -147,54 +147,53 @@ liftCond (clause is [ante,conseq]) ==
         ["and",pred,conj]
   [clause]
  
-formatPred u ==
-         --Assumes that $e is set up to point to an environment
+formatPred(u,e) ==
   u is ["has",a,b] =>
-    b isnt [.,:.] and isCategoryForm([b],$e) => ["has",a,[b]]
+    b isnt [.,:.] and isCategoryForm([b],e) => ["has",a,[b]]
     b isnt [.,:.] => ["has",a,["ATTRIBUTE",b]]
-    isCategoryForm(b,$e) => u
+    isCategoryForm(b,e) => u
     b is ["ATTRIBUTE",.] => u
     b is ["SIGNATURE",:.] => u
     ["has",a,["ATTRIBUTE",b]]
   u isnt [.,:.] => u
-  u is ["and",:v] => ["and",:[formatPred w for w in v]]
+  u is ["and",:v] => ["and",:[formatPred(w,e) for w in v]]
   systemError ['"formatPred",u]
  
-formatInfo u ==
+formatInfo(u,e) ==
   u isnt [.,:.] => u
   u is ["SIGNATURE",:v] => ["SIGNATURE","$",:v]
-  u is ["PROGN",:l] => ["PROGN",:[formatInfo v for v in l]]
+  u is ["PROGN",:l] => ["PROGN",:[formatInfo(v,e) for v in l]]
   u is ["ATTRIBUTE",v] =>
  
     -- The parser can't tell between those attributes that really
     -- are attributes, and those that are category names
-    v isnt [.,:.] and isCategoryForm([v],$e) => ["has","$",[v]]
+    v isnt [.,:.] and isCategoryForm([v],e) => ["has","$",[v]]
     v isnt [.,:.] => ["ATTRIBUTE","$",v]
-    isCategoryForm(v,$e) => ["has","$",v]
+    isCategoryForm(v,e) => ["has","$",v]
     ["ATTRIBUTE","$",v]
   u is ["IF",a,b,c] =>
-    c="%noBranch" => ['%when,:liftCond [formatPred a,formatInfo b]]
-    b="%noBranch" => ['%when,:liftCond [["not",formatPred a],formatInfo c]]
-    ['%when,:liftCond [formatPred a,formatInfo b],:
-      liftCond [["not",formatPred a],formatInfo c]]
+    c is "%noBranch" =>
+      ['%when,:liftCond [formatPred(a,e),formatInfo(b,e)]]
+    b is "%noBranch" =>
+      ['%when,:liftCond [["not",formatPred(a,e)],formatInfo(c,e)]]
+    ['%when,:liftCond [formatPred(a,e),formatInfo(b,e)],:
+      liftCond [["not",formatPred(a,e)],formatInfo(c,e)]]
   systemError ['"formatInfo",u]
  
-addInfo u == 
-  $Information:= [formatInfo u,:$Information]
+addInfo(u,e) == 
+  $Information:= [formatInfo(u,e),:$Information]
  
-addInformation(m,$e) ==
+addInformation(m,e) ==
   $Information: local := nil
-  info m where
-    info m ==
+  info(m,e) where
+    info(m,e) ==
       --Processes information from a mode declaration in compCapsule
       m isnt [.,:.] => nil
-      m is ["CATEGORY",.,:stuff] => for u in stuff repeat addInfo u
-      m is ["Join",:stuff] => for u in stuff repeat info u
+      m is ["CATEGORY",.,:stuff] => for u in stuff repeat addInfo(u,e)
+      m is ["Join",:stuff] => for u in stuff repeat info(u,e)
       nil
-  $e:=
-    put("$Information","special",[:$Information,:
-      get("$Information","special",$e)],$e)
-  $e
+  put("$Information","special",
+       [:$Information,:get("$Information","special",e)],e)
  
 hasToInfo (pred is ["has",a,b]) ==
   b is ["SIGNATURE",:data] => ["SIGNATURE",a,:data]
@@ -203,48 +202,48 @@ hasToInfo (pred is ["has",a,b]) ==
  
 ++ Return true if we are certain that the information
 ++ denotated by `pred' is derivable from the current environment. 
-knownInfo pred ==
+knownInfo(pred,env) ==
   pred=true => true
-  listMember?(pred,get("$Information","special",$e)) => true
-  pred is ["OR",:l] => or/[knownInfo u for u in l]
-  pred is ["AND",:l] => and/[knownInfo u for u in l]
-  pred is ["or",:l] => or/[knownInfo u for u in l]
-  pred is ["and",:l] => and/[knownInfo u for u in l]
+  listMember?(pred,get("$Information","special",env)) => true
+  pred is ["OR",:l] => or/[knownInfo(u,env) for u in l]
+  pred is ["AND",:l] => and/[knownInfo(u,env) for u in l]
+  pred is ["or",:l] => or/[knownInfo(u,env) for u in l]
+  pred is ["and",:l] => and/[knownInfo(u,env) for u in l]
   pred is ["ATTRIBUTE",name,attr] =>
-    v := compForMode(name,$EmptyMode,$e) or return
+    v := compForMode(name,$EmptyMode,env) or return
           stackAndThrow('"can't find category of %1pb",[name])
-    [vv,.,.] := compMakeCategoryObject(v.mode,$e) or return
+    [vv,.,.] := compMakeCategoryObject(v.mode,env) or return
                  stackAndThrow('"can't make category of %1pb",[name])
     listMember?(attr,categoryAttributes vv) => true
-    x := assoc(attr,categoryAttributes vv) => knownInfo second x
+    x := assoc(attr,categoryAttributes vv) => knownInfo(second x,env)
           --format is a list of two elements: information, predicate
     false
   pred is ["has",name,cat] =>
-    cat is ["ATTRIBUTE",:a] => knownInfo ["ATTRIBUTE",name,:a]
-    cat is ["SIGNATURE",:a] => knownInfo ["SIGNATURE",name,:a]
+    cat is ["ATTRIBUTE",:a] => knownInfo(["ATTRIBUTE",name,:a],env)
+    cat is ["SIGNATURE",:a] => knownInfo(["SIGNATURE",name,:a],env)
     -- unnamed category expressions imply structural checks.
-    cat is ["Join",:.] => and/[knownInfo ["has",name,c] for c in cat.args]
+    cat is ["Join",:.] => and/[knownInfo(["has",name,c],env) for c in cat.args]
     cat is ["CATEGORY",.,:atts] =>
-      and/[knownInfo hasToInfo ["has",name,att] for att in atts]
+      and/[knownInfo(hasToInfo ["has",name,att],env) for att in atts]
     name is ['Union,:.] => false
     -- we have a named category expression
-    v:= compForMode(name,$EmptyMode,$e) or return
+    v:= compForMode(name,$EmptyMode,env) or return
           stackAndThrow('"can't find category of %1pb",[name])
     vmode := v.mode
     cat = vmode => true
     vmode is ["Join",:l] and listMember?(cat,l) => true
-    [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return
+    [vv,.,.]:= compMakeCategoryObject(vmode,env) or return
                  stackAndThrow('"cannot find category %1pb",[vmode])
     listMember?(cat,categoryPrincipals vv) => true  --checks princ. ancestors
-    (u:=assoc(cat,categoryAncestors vv)) and knownInfo second u => true
+    (u:=assoc(cat,categoryAncestors vv)) and knownInfo(second u,env) => true
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
-    or/[AncestorP(cat,[first u]) 
-         for u in categoryAncestors vv | knownInfo second u] => true
+    or/[AncestorP(cat,[first u],env) 
+         for u in categoryAncestors vv | knownInfo(second u,env)] => true
     false
   pred is ["SIGNATURE",name,op,sig,:.] =>
-    v:= get(op,"modemap",$e)
+    v:= get(op,"modemap",env)
     for w in v repeat
       ww := w.mmSignature  --the actual signature part
       ww = sig =>
@@ -340,7 +339,7 @@ infoToHas a ==
 chaseInferences(pred,$e) ==
   foo hasToInfo pred where
     foo pred ==
-      knownInfo pred => nil
+      knownInfo(pred,$e) => nil
       $e:= actOnInfo(pred,$e)
       pred:= infoToHas pred
       for u in get("$Information","special",$e) repeat
@@ -1114,7 +1113,7 @@ getModemap(x is [op,:.],e) ==
  
 addModemap(op,mc,sig,pred,fn,$e) ==
   $InteractiveMode => $e
-  if knownInfo pred then pred:=true
+  if knownInfo(pred,$e) then pred:=true
   $insideCapsuleFunctionIfTrue =>
     $CapsuleModemapFrame :=
       addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
@@ -1919,7 +1918,7 @@ getSignature(op,argModeList,$e) ==
       removeDuplicates
         [sig
           for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
-            and sig.source = argModeList and knownInfo pred]) => first sigl
+            and sig.source = argModeList and knownInfo(pred,$e)]) => first sigl
   null sigl =>
     (u:= getmode(op,$e)) is ['Mapping,:sig] => sig
     SAY '"************* USER ERROR **********"
