@@ -43,8 +43,8 @@ namespace OpenAxiom {
 OPENAXIOM_C_EXPORT int addtopath(char*);
 OPENAXIOM_C_EXPORT int directoryp(char*);
 OPENAXIOM_C_EXPORT int make_path_from_file(char*, char*);
-OPENAXIOM_C_EXPORT int writeablep(char*);
-OPENAXIOM_C_EXPORT int readablep(char*);
+OPENAXIOM_C_EXPORT int writeablep(const char*);
+OPENAXIOM_C_EXPORT int readablep(const char*);
 OPENAXIOM_C_EXPORT long findString(char*, char*);
 OPENAXIOM_C_EXPORT int copyEnvValue(char*, char*);
 OPENAXIOM_C_EXPORT int oa_chdir(const char*);
