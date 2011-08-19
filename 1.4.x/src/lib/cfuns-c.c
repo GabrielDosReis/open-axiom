@@ -238,7 +238,7 @@ axiom_has_write_access(const struct stat* file_info)
         has write access to the dirname of path.  */
 
 OPENAXIOM_C_EXPORT int
-writeablep(char *path)
+writeablep(const char *path)
 {
     struct stat buf;
     int code;
@@ -274,7 +274,7 @@ writeablep(char *path)
       1 if the file exists and read access is granted.  */
 
 OPENAXIOM_C_EXPORT int
-readablep(char *path)
+readablep(const char *path)
 {
     struct stat buf;
     int code;
