@@ -75,8 +75,8 @@ static SpadProcess* spawn_of_hell(const char* , int);
 static void start_the_spadclient(void);
 static void start_the_local_spadclient(void);
 static void start_the_session_manager(void);
-static void start_the_hypertex(void);
-static void start_the_graphics(void);
+static void start_the_hypertex(Command*);
+static void start_the_graphics(Command*);
 static void fork_Axiom(Command*);
 static void start_the_Axiom(Command*);
 static void clean_up_sockets(void);
@@ -105,10 +105,9 @@ int server_num;                 /* OpenAxiom server number */
 /* definitions of programs which sman can start */
 /************************************************/
 
-const char    *GraphicsProgram        = "$AXIOM/lib/viewman";
-const char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
-const char    *ClefProgram            = 
-           "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
+const char    *GraphicsProgram        = "/lib/viewman";
+const char    *HypertexProgram        = "/lib/hypertex";
+const char    *ClefProgram            = "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
 const char    *SessionManagerProgram  = "$AXIOM/lib/session";
 const char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
 char    *PasteFile              = NULL;
@@ -445,29 +444,44 @@ start_the_session_manager(void)
 }
 
 static void
-start_the_hypertex(void)
+start_the_hypertex(Command* cmd)
 {
-  char prog[512];
+  const char* root_dir = cmd->root_dir;
+  const char* command = oa_concatenate_string(root_dir,HypertexProgram);
 
+  if (readablep(command) != 1) {
+    fprintf(stderr, "Hypertex program not found.\n");
+    return;
+  } 
   if (PasteFile){
-    sprintf(prog, "%s -k -ip %s", HypertexProgram, PasteFile);
-    spawn_of_hell(prog, NadaDelShitsky);
+    command = oa_concatenate_string(command, " -s -k -ip ");
+    command = oa_concatenate_string(command, PasteFile);
+    spawn_of_hell(command, NadaDelShitsky);
   }
   else if (MakeRecordFile){
-    sprintf(prog, "%s -k -rm %s", HypertexProgram,MakeRecordFile );
-    spawn_of_hell(prog, NadaDelShitsky);
+    command = oa_concatenate_string(command, " -s -k -rm ");
+    command = oa_concatenate_string(command, MakeRecordFile);
+    spawn_of_hell(command, NadaDelShitsky);
   }
   else if (VerifyRecordFile){
-    sprintf(prog, "%s -k -rv %s", HypertexProgram, VerifyRecordFile);
-    spawn_of_hell(prog, NadaDelShitsky);
+    command = oa_concatenate_string(command, " -s -k -rv ");
+    command = oa_concatenate_string(command, VerifyRecordFile);
+    spawn_of_hell(command, NadaDelShitsky);
   }
-  else  spawn_of_hell(HypertexProgram, CleanHypertexSocket);
+  else
+    spawn_of_hell(command, CleanHypertexSocket);
 }
 
 static void
-start_the_graphics(void)
+start_the_graphics(Command* cmd)
 {
-  spawn_of_hell(GraphicsProgram, DoItAgain);
+  const char* root_dir = cmd -> root_dir;
+  const char* command = oa_concatenate_string(root_dir,GraphicsProgram);
+
+  if (readablep(command) == 1)
+    spawn_of_hell(command, DoItAgain);
+  else
+    fprintf(stderr, "Graphics program not found.\n");
 }
 
 /* Start the core executable session in a separate process, */
@@ -758,9 +772,9 @@ monitor_children(void)
 int
 main(int argc, char *argv[])
 {
-   Command command;
-   command.root_dir = get_systemdir(argc, argv);
-   process_options(&command, argc, argv);
+  Command command;
+  command.root_dir = get_systemdir(argc, argv);
+  process_options(&command, argc, argv);
 
   putenv((char*) "LC_ALL=C");
   setlocale(LC_ALL, "");
@@ -774,12 +788,14 @@ main(int argc, char *argv[])
     exit(-1);
   }
   start_the_session_manager();
-  if (start_spadclient)       start_the_spadclient();
-  if (start_local_spadclient) start_the_local_spadclient();
+  if (start_spadclient)       
+    start_the_spadclient();
+  if (start_local_spadclient) 
+    start_the_local_spadclient();
   if (start_ht and in_X())
-     start_the_hypertex();
+    start_the_hypertex(&command);
   if (start_graphics and in_X())
-     start_the_graphics();
+    start_the_graphics(&command);
   openaxiom_sleep(1);
 
   if (fork_you(Die) != NULL) {
