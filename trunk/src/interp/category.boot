@@ -175,13 +175,13 @@ SigListUnion(extra,original) ==
             original := [x,:original]
           else
             original:= [[xsig,xpred,["Subsumed",:esig]],:original]
-       else epred:=mkOr(epred,xpred)
+       else epred := mkOr(epred,xpred,$e)
 -- this used always to be done, as noted below, but that's not safe
       if not(ximplem is [["Subsumed",:.],:.]) then eimplem:= ximplem
       if eimplem then esig:=[first esig,second esig] 
            -- in case there's a constant marker
       e:= [esig,epred,:eimplem]
---    e:= [esig,mkOr(xpred,epred),:ximplem]
+--    e:= [esig,mkOr(xpred,epred,$e),:ximplem]
 -- Original version -gets it wrong if the new operator is only
 -- present under certain conditions
         -- We must pick up the previous implementation, if any
@@ -191,18 +191,18 @@ SigListUnion(extra,original) ==
     original:= [e,:original]
   original
  
-mkOr: (%Form,%Form) -> %Form
-mkOr(a,b) ==
+mkOr: (%Form,%Form,%Env) -> %Form
+mkOr(a,b,e) ==
   a=true => true
   b=true => true
   b=a => a
   l:=
     a is ["OR",:a'] =>
-      (b is ["OR",:b'] => union(a',b'); mkOr2(b,a') )
-    b is ["OR",:b'] => mkOr2(a,b')
+      (b is ["OR",:b'] => union(a',b'); mkOr2(b,a',e) )
+    b is ["OR",:b'] => mkOr2(a,b',e)
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat) => [b]
-      DescendantP(bcat,acat) => [a]
+      DescendantP(acat,bcat,e) => [b]
+      DescendantP(bcat,acat,e) => [a]
       [a,b]
     a is ['AND,:a'] and listMember?(b,a') => [b]
     b is ['AND,:b'] and listMember?(a,b') => [a]
@@ -212,47 +212,47 @@ mkOr(a,b) ==
   #l = 1 => first l
   ["OR",:l]
  
-mkOr2: (%Form,%Form) -> %Form
-mkOr2(a,b) ==
+mkOr2: (%Form,%Form,%Env) -> %Form
+mkOr2(a,b,e) ==
   --a is a condition, "b" a list of them
   listMember?(a,b) => b
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
-      DescendantP(acat,ccat) =>
+      DescendantP(acat,ccat,e) =>
         return (aRedundant:=true)
-      if DescendantP(ccat,acat) then b := remove(b,c)
+      if DescendantP(ccat,acat,e) then b := remove(b,c)
     aRedundant => b
     [a,:b]
   [a,:b]
  
-mkAnd: (%Form,%Form) -> %Form
-mkAnd(a,b) ==
+mkAnd: (%Form,%Form,%Env) -> %Form
+mkAnd(a,b,e) ==
   a=true => b
   b=true => a
   b=a => a
   l:=
     a is ["AND",:a'] =>
-      (b is ["AND",:b'] => union(a',b'); mkAnd2(b,a') )
-    b is ["AND",:b'] => mkAnd2(a,b')
+      (b is ["AND",:b'] => union(a',b'); mkAnd2(b,a',e) )
+    b is ["AND",:b'] => mkAnd2(a,b',e)
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat) => [a]
-      DescendantP(bcat,acat) => [b]
+      DescendantP(acat,bcat,e) => [a]
+      DescendantP(bcat,acat,e) => [b]
       [a,b]
     [a,b]
   #l = 1 => first l
   ["AND",:l]
  
-mkAnd2: (%Form,%Form) -> %Form
-mkAnd2(a,b) ==
+mkAnd2: (%Form,%Form,%Env) -> %Form
+mkAnd2(a,b,e) ==
   --a is a condition, "b" a list of them
   listMember?(a,b) => b
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
-      DescendantP(ccat,acat) =>
+      DescendantP(ccat,acat,e) =>
         return (aRedundant:=true)
-      if DescendantP(acat,ccat) then b := remove(b,c)
+      if DescendantP(acat,ccat,e) then b := remove(b,c)
     aRedundant => b
     [a,:b]
   [a,:b]
@@ -303,71 +303,70 @@ MachineLevelSubset(a,b) ==
  
 --% Ancestor chasing code
  
-FindFundAncs l ==
+FindFundAncs(l,e) ==
   --l is a list of categories and associated conditions (a list of 2-lists
   --returns a list of them and all their fundamental ancestors
   --also as two-lists with the appropriate conditions
   l=nil => nil
-  f1:= CatEval CAAR l
-  canonicalForm f1 = nil => FindFundAncs rest l
-  ans:= FindFundAncs rest l
-  for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
-   for x in categoryAncestors f1] repeat
+  f1 := CatEval(CAAR l,e)
+  canonicalForm f1 = nil => FindFundAncs(rest l,e)
+  ans := FindFundAncs(rest l,e)
+  for u in FindFundAncs([[CatEval(first x,e),mkAnd(CADAR l,second x,e)]
+   for x in categoryAncestors f1],e) repeat
     x:= ASSQ(first u,ans) =>
-      ans:= [[first u,mkOr(second x,second u)],:remove(ans,x)]
+      ans:= [[first u,mkOr(second x,second u,e)],:remove(ans,x)]
     ans:= [u,:ans]
         --testing to see if first l is already there
-  x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x)],:remove(ans,x)]
+  x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x,e)],:remove(ans,x)]
   CADAR l=true =>
     for x in categoryPrincipals f1 repeat
-      if y:= ASSQ(CatEval x,ans) then ans := remove(ans,y)
+      if y:= ASSQ(CatEval(x,e),ans) then ans := remove(ans,y)
     [first l,:ans]
   for x in categoryPrincipals f1 repeat
-    if y:= ASSQ(CatEval x,ans) then ans:=
-      [[first y,mkOr(CADAR l,second y)],:remove(ans,y)]
+    if y:= ASSQ(CatEval(x,e),ans) then ans:=
+      [[first y,mkOr(CADAR l,second y,e)],:remove(ans,y)]
   [first l,:ans]
   -- Our new thing may have, as an alternate view, a principal
   -- descendant of something previously added which is therefore
   -- subsumed
  
-CatEval: %Thing -> %Shell
-CatEval x ==
+CatEval: (%Thing,%Env) -> %Shell
+CatEval(x,e) ==
   vector? x => x
-  e := 
-    $InteractiveMode => $CategoryFrame
-    $e
+  if $InteractiveMode then
+    e := $CategoryFrame
   compMakeCategoryObject(x,e).expr
  
-AncestorP: (%Form, %List %Instantiation) -> %Form
-AncestorP(xname,leaves) ==
+AncestorP: (%Form,%List %Instantiation,%Env) -> %Form
+AncestorP(xname,leaves,env) ==
   -- checks for being a principal ancestor of one of the leaves
   listMember?(xname,leaves) => xname
   for y in leaves repeat
-    listMember?(xname,categoryPrincipals CatEval y) => return y
+    listMember?(xname,categoryPrincipals CatEval(y,env)) => return y
  
-CondAncestorP(xname,leaves,condition) ==
+CondAncestorP(xname,leaves,condition,env) ==
   -- checks for being a principal ancestor of one of the leaves
   for u in leaves repeat
     u':=first u
     ucond:=
       null rest u => true
       second u
-    xname = u' or listMember?(xname,categoryPrincipals CatEval u') =>
+    xname = u' or listMember?(xname,categoryPrincipals CatEval(u',env)) =>
       PredImplies(ucond,condition) => return u'
 
 
 ++ Returns true if the form `a' designates a category that is any 
 ++ kind of descendant of the category designated by the form `b'.
-DescendantP: (%Form,%Form) -> %Boolean
-DescendantP(a,b) ==
+DescendantP: (%Form,%Form,%Env) -> %Boolean
+DescendantP(a,b,e) ==
   a=b => true
   a is ["ATTRIBUTE",:.] => false
   a is ["SIGNATURE",:.] => false
-  a:= CatEval a
+  a:= CatEval(a,e)
   b is ["ATTRIBUTE",b'] =>
     (l := assoc(b',categoryAttributes a)) => TruthP second l
   listMember?(b,categoryPrincipals a) => true
-  AncestorP(b,[first u for u in categoryAncestors a]) => true
+  AncestorP(b,[first u for u in categoryAncestors a],e) => true
   false
  
 --% The implementation of Join
@@ -388,16 +387,17 @@ JoinInner(l,$e) ==
       pred:= second at
         -- The predicate under which this category is conditional
       listMember?(pred,get("$Information","special",$e)) =>
-        l:= [:l,CatEval at2]
+        l:= [:l,CatEval(at2,$e)]
           --It's true, so we add this as unconditional
-      not (pred is ["and",:.]) => CondList:= [[CatEval at2,pred],:CondList]
+      pred isnt ["and",:.] =>
+        CondList := [[CatEval(at2,$e),pred],:CondList]
       pred':=
         [u
           for u in rest pred | not listMember?(u,get("$Information","special",$e))
             and not (u=true)]
-      null pred' => l:= [:l,CatEval at2]
-      # pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
-      CondList:= [[CatEval at2,["and",:pred']],:CondList]
+      null pred' => l:= [:l,CatEval(at2,$e)]
+      # pred'=1 => CondList:= [[CatEval(at2,$e),pred'],:CondList]
+      CondList:= [[CatEval(at2,$e),["and",:pred']],:CondList]
   [$NewCatVec,:l]:= l
   l':= [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
@@ -414,17 +414,17 @@ JoinInner(l,$e) ==
   -- this flag helps us detect this case
   originalVector := false
     -- this skips buggy code which discards needed categories
-  for [b,condition] in FindFundAncs l' repeat
+  for [b,condition] in FindFundAncs(l',$e) repeat
       --This loop implements Category Subsumption
           --as described in JHD's report
     if not (b.0=nil) then
                    --It's a named category
       bname:= b.0
-      CondAncestorP(bname,FundamentalAncestors,condition) => nil
-      (f:=AncestorP(bname,[first u for u in FundamentalAncestors])) =>
+      CondAncestorP(bname,FundamentalAncestors,condition,$e) => nil
+      (f:=AncestorP(bname,[first u for u in FundamentalAncestors],$e)) =>
         [.,.,index]:=assoc(f,FundamentalAncestors)
         FundamentalAncestors:=[[bname,condition,index],:FundamentalAncestors]
-      PrinAncb := categoryPrincipals CatEval bname
+      PrinAncb := categoryPrincipals CatEval(bname,$e)
                --Principal Ancestors of b
       reallynew:= true
       for anc in FundamentalAncestors repeat
@@ -455,7 +455,7 @@ JoinInner(l,$e) ==
              then ($NewCatVec.ancindex:= bname; reallynew:= nil)
              else
               if originalVector and (condition=true) then
-                $NewCatVec:= CatEval bname
+                $NewCatVec:= CatEval(bname,$e)
                 copied:= nil
                 FundamentalAncestors:= [[bname],:categoryAncestors $NewCatVec]
                          --bname is Principal, so comes first
@@ -516,8 +516,8 @@ JoinInner(l,$e) ==
       second v=true => nil
       attl:= remove(attl,v)
       attl:=
-        second u=true => [[first u,mkOr(second v,newpred)],:attl]
-        [[first u,mkOr(second v,mkAnd(newpred,second u))],:attl]
+        second u=true => [[first u,mkOr(second v,newpred,$e)],:attl]
+        [[first u,mkOr(second v,mkAnd(newpred,second u,$e),$e)],:attl]
     sigl:=
       SigListUnion(
         [AddPredicate(DropImplementations u,newpred) for u in categoryExports(first b)],sigl) where

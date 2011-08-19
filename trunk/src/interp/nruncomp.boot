@@ -491,7 +491,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   catvecListMaker := removeDuplicates
     [comp($catsig,$EmptyMode,$e).expr,
       :[compCategories u for [u,:.] in categoryAncestors $domainShell]]
-  condCats := InvestigateConditions [$catsig,:rest catvecListMaker]
+  condCats := InvestigateConditions([$catsig,:rest catvecListMaker],$e)
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
   -- category should be present.  true => always

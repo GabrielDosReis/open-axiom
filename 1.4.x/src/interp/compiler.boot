@@ -1918,7 +1918,7 @@ compViableModemap(op,argTl,mm,e) ==
   argTl = "failed" => nil
 
   -- 2.  obtain domain-specific function, if possible
-  f := compMapCond(dc,fnsel) or return nil
+  f := compMapCond(dc,fnsel,e) or return nil
 
   -- 3. Mark `f' as used.
   -- We can no longer trust what the modemap says for a reference into
@@ -1948,13 +1948,13 @@ compApplyModemap(form,modemap,$e) ==
   -- 2. Select viable modemap implementation.
   compViableModemap(op,lt,modemap,$e)
 
-compMapCond': (%Form,%Mode) -> %Boolean
-compMapCond'(cexpr,dc) ==
+compMapCond': (%Form,%Mode,%Env) -> %Boolean
+compMapCond'(cexpr,dc,env) ==
   cexpr=true => true
-  cexpr is ["AND",:l] => and/[compMapCond'(u,dc) for u in l]
-  cexpr is ["OR",:l] => or/[compMapCond'(u,dc) for u in l]
-  cexpr is ["not",u] => not compMapCond'(u,dc)
-  cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
+  cexpr is ["AND",:l] => and/[compMapCond'(u,dc,env) for u in l]
+  cexpr is ["OR",:l] => or/[compMapCond'(u,dc,env) for u in l]
+  cexpr is ["not",u] => not compMapCond'(u,dc,env)
+  cexpr is ["has",name,cat] => (knownInfo(cexpr,env) => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
         --stackSemanticError(("not known that",'"%b",name,
@@ -1965,9 +1965,9 @@ compMapCond'(cexpr,dc) ==
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
 
-compMapCond: (%Mode,%List %Code) -> %Code
-compMapCond(dc,[cexpr,fnexpr]) ==
-  compMapCond'(cexpr,dc) => fnexpr
+compMapCond: (%Mode,%List %Code,%Env) -> %Code
+compMapCond(dc,[cexpr,fnexpr],env) ==
+  compMapCond'(cexpr,dc,env) => fnexpr
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
 
 
