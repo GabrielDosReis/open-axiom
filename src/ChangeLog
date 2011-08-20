@@ -1,3 +1,26 @@
+2011-08-20  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/sys-utility.boot (constructorDB): New.
+	* interp/daase.lisp (dbNiladic?): New.  Use it to access niladic
+	property. of a constructor.
+	* interp/database.boot: Import daase.
+	(niladicContructorFromDB): Use it.
+	* interp/define.boot (compDefineCategory): Don't write
+	compilerInfo garbage.
+	(compDefineFunctor1): Likewise.
+	(compDefineCategory2): Set niladic property.
+	(compDefineFunctor): Likewise.
+	* interp/lisplib.boot (loadLib): Do not set niladic property.  It
+	is now a side-effect of loading.
+	(loadLibNoUpdate): Do not check for version.
+	(makeConstructorAutoload): Do not set niladic property.
+	(initializeLisplib): Do not emit code to check version.
+	(mkCtorDBForm): New.
+	(writeNiladic?): Likewise.
+	(finalizeLisplib): Do not set niladic property.
+	* interp/patches.lisp: Remove deadcode.
+	* interp/sys-constants.boot  (MAJOR-VERSION): Remove.
+
 2011-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/polycat.spad.pamphlet (UnivariatePolynomialCategory)
@@ -501,6 +524,11 @@
 	* include/open-axiom.h (Filesystem): New.
 	* gui/debate.cc (Debate::Debate): Initialize fs data member.
 	* gui/debate.h (Debate): Declare it.
+
+2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/storage.H (Memory::Arena): Extend.
+	(Memory::Factory): Add iterators.  Make bidirectional.
 
 2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

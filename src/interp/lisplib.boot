@@ -326,12 +326,6 @@ loadLib cname ==
           [[.,:sig],:.] := u
           [nil,:[categoryForm?(x) for x in rest sig]]
       nil
-  -- in following, add property value false or nil to possibly clear
-  -- old value
-  if null rest getConstructorFormFromDB cname then
-      property(cname,'NILADIC) := true
-    else
-      property(cname,'NILADIC) := nil
   property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
@@ -341,18 +335,12 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
   kind := getConstructorKindFromDB cname
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
-  if CATCH('VERSIONCHECK,loadModule(fullLibName,cname)) = -1
-    then 
-      writeString('"   wrong library version...recompile ")
-      PRINC(fullLibName)
-      TERPRI()
-      TOPLEVEL()
-    else
-     clearConstructorCache cname
-     installConstructor(cname,kind)
-     property(cname,'LOADED) := fullLibName
-     if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
-     stopTimingProcess 'load
+  loadModule(fullLibName,cname)
+  clearConstructorCache cname
+  installConstructor(cname,kind)
+  property(cname,'LOADED) := fullLibName
+  if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
+  stopTimingProcess 'load
   'T
  
 loadIfNecessary u == loadLibIfNecessary(u,true)
@@ -406,10 +394,6 @@ makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
     builtinCategoryName? cnam => nil
     property(cnam,'LOADED) := nil
---    fn:=getConstructorAbbreviationFromDB cnam
-    if niladicConstructorFromDB cnam
-     then property(cnam,'NILADIC) := 'T
-     else property(cnam,'NILADIC) := nil
     systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
@@ -554,8 +538,14 @@ initializeLisplib libName ==
   resetErrorCount()
   $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
   ADDOPTIONS('FILE,$libFile)
-  if pathnameTypeId(_/EDITFILE) is 'SPAD
-    then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
+
+mkCtorDBForm ctor ==
+  ['constructorDB,quoteForm ctor]
+
+writeNiladic?(ctor,file) ==
+  insn := ['%store,['dbNiladic?,mkCtorDBForm ctor],'%true]
+  LAM_,FILEACTQ('NILADIC,expandToVMForm insn)
+  lisplibWrite('"NILADIC",true,file)
 
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
@@ -597,8 +587,6 @@ finalizeLisplib libName ==
   lisplibWrite('"documentation",finalizeDocumentation(),$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
-  if $lisplibForm and null rest $lisplibForm then
-    property(first $lisplibForm,'NILADIC) := true
   leaveIfErrors libName
   true
 

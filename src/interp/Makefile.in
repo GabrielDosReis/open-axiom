@@ -70,7 +70,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
-	comp.$(FASLEXT)	                          	\
+	comp.$(FASLEXT)	        daase.$(FASLEXT)       	\
 	pathname.$(FASLEXT)	compat.$(FASLEXT)      	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
@@ -103,7 +103,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
 	spad.$(FASLEXT)		spaderror.$(FASLEXT)	\
 	                       	termrw.$(FASLEXT)	\
-	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
+	trace.$(FASLEXT)	                     	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
 	$(OCOBJS) $(BROBJS) $(INOBJS)
 
@@ -305,7 +305,7 @@ nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) nruncomp.$(FASLEXT) database.$(FASLEXT)
-database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
+database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) daase.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
 		c-util.$(FASLEXT)
 functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
