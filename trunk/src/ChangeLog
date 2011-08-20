@@ -1,3 +1,10 @@
+2011-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/polycat.spad.pamphlet (UnivariatePolynomialCategory)
+	[divide]: Tidy.
+	* algebra/Makefile.in (strap-0/%.$(FASLEXT)): Copy generated Lisp
+	files if keeping intermediate files.
+
 2011-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot (mkOr): Taken environment as parameter.

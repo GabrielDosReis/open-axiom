@@ -986,7 +986,7 @@ UnivariatePolynomialCategory(R:Ring): Category ==
             degree x
       divide(x,y) ==
             zero? y => error "division by 0 in Univariate Polynomials"
-            quot:=0
+            quot: % := 0
             lc := inv leadingCoefficient y
             while not zero?(x) and (degree x >= degree y) repeat
                f:=lc*leadingCoefficient x

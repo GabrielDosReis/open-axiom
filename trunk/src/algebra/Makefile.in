@@ -514,7 +514,9 @@ strap-2/.finished: $(oa_strap_2_fasls)
 
 strap-0/%.$(FASLEXT): %.spad strap-0/.started
 	$(BOOTSTRAP) --sysalg=strap-0 --bootstrap $< \
-		&& cp $*.NRLIB/code.$(FASLEXT) $@
+		&& cp $*.NRLIB/code.$(FASLEXT) $@ && \
+		if test x@oa_keep_files@ = xyes; then \
+			cp $*.NRLIB/code.lsp strap-0/$*.lsp; fi
 
 strap-1/%.$(FASLEXT): %.spad strap-1/.started
 	$(BOOTSTRAP) --strap=strap-0 --sysalg=strap-1 --optimize=3 $< && \
