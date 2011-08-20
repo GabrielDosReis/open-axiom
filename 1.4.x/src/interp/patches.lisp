@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -191,46 +191,4 @@
    (|setIOindex| (- |$IOindex| 3))
   )
 )
-
-#+:akcl
-(defun print-xdr-stream (x y z) (format y "XDR:~A" (xdr-stream-name x)))
-#+:akcl
-(defstruct (xdr-stream
-                (:print-function  print-xdr-stream))
-           "A structure to hold XDR streams. The stream is printed out."
-           (handle ) ;; this is what is used for xdr-open xdr-read xdr-write
-           (name ))  ;; this is used for printing
-#+(and :gcl (not (or :dos :win32)))
-(defun |xdrOpen| (str dir) (make-xdr-stream :handle (system:xdr-open str) :name str))
-#+(and :gcl (or :dos :win32))
-(defun |xdrOpen| (str dir) (format t "xdrOpen called"))
-
-#+(and :akcl (not (or :dos :win32)))
-(defun |xdrRead| (xstr r) (system:xdr-read (xdr-stream-handle xstr) r) )
-#+(and :gcl (or :dos :win32))
-(defun |xdrRead| (str) (format t "xdrRead called"))
-
-#+(and :akcl (not (or :dos :win32)))
-(defun |xdrWrite| (xstr d) (system:xdr-write (xdr-stream-handle xstr) d) )
-#+(and :gcl (or :dos :win32))
-(defun |xdrWrite| (str) (format t "xdrWrite called"))
-
-;; here is a test for XDR
-;; (setq *print-array* T)
-;; (setq foo (open "xdrtest" :direction :output))
-;; (setq xfoo (|xdrOpen| foo))
-;; (|xdrWrite| xfoo "hello: This contains an integer, a float and a float array")
-;; (|xdrWrite| xfoo 42)
-;; (|xdrWrite| xfoo 3.14159)
-;; (|xdrWrite| xfoo (make-array 10 :element-type 'long-float :initial-element 2.78111D12))
-;; (close foo)
-;; (setq foo (open "xdrtest" :direction :input))
-;; (setq xfoo (|xdrOpen| foo))
-;; (|xdrRead| xfoo "")
-;; (|xdrRead| xfoo 0)
-;; (|xdrRead| xfoo 0.0)
-;; (|xdrRead| xfoo (make-array 10 :element-type 'long-float ))
-;; (setq *print-array* NIL)
-
-(defun /versioncheck (n) (unless (= n /MAJOR-VERSION) (throw 'versioncheck -1)))
 

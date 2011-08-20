@@ -388,3 +388,8 @@ displayTextFile f ==
       writeLine(line,$OutputStream)
   finally
     stream ~= nil => closeStream stream
+
+--%
+macro constructorDB ctor ==
+  property(ctor,'DATABASE)
+  

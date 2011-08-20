@@ -74,11 +74,6 @@ $DoubleFloatEpsilon ==
 $timerTicksPerSecond == 
   INTERNAL_-TIME_-UNITS_-PER_-SECOND
 
-
-++ Internal magic coockie.
-_/MAJOR_-VERSION ==
-  2
-
 --
 -- Text formatting
 --

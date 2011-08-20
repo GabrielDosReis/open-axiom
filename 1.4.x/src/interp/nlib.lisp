@@ -107,6 +107,7 @@
            (file-position stream pos))
           (t (file-position stream 0)
              (princ "                    " stream)
+	     (terpri stream)
              (setq indextable pos)))
     (values stream indextable)))
 

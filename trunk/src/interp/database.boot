@@ -38,6 +38,7 @@ import c_-util
 import clam
 import cattable
 import compat
+import daase
 namespace BOOT
 
 $getUnexposedOperations := true
@@ -132,6 +133,7 @@ getConstructorAttributesFromDB ctor ==
 
 niladicConstructorFromDB: %Constructor -> %Boolean
 niladicConstructorFromDB ctor ==
+  property(ctor,'LOADED) => dbNiladic? constructorDB ctor
   GETDATABASE(ctor,"NILADIC")
 
 constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code

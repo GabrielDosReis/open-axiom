@@ -1047,16 +1047,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     -- If we are only interested in the defaults, there is no point
     -- in writing out compiler info and load-time stuff for 
     -- the category which is assumed to have already been translated.
-    if not $compileDefaultsOnly then
-      lisplibWrite('"compilerInfo",
-        removeZeroOne ['SETQ,'$CategoryFrame,
-         ['put,['QUOTE,op'],'
-          (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
-            MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
-      --Equivalent to the following two lines, we hope
-      if null sargl then
-        evalAndRwriteLispForm('NILADIC,
-              ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
+    if not $compileDefaultsOnly and null sargl then
+      writeNiladic?(op',$libFile)
  
     -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:[MKQ f for f in sargl]]
@@ -1085,11 +1077,13 @@ compDefineCategory(df,m,e,prefix,fal) ==
   $lisplibCategory: local := nil
   -- since we have so many ways to say state the kind of a constructor,
   -- make sure we do have some minimal internal coherence.
-  ctor := opOf second df
+  lhs := second df
+  ctor := opOf lhs
   kind := getConstructorKindFromDB ctor
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
-  $insideFunctorIfTrue or not $LISPLIB or $compileDefaultsOnly =>
+  $insideFunctorIfTrue or $LISPLIB = nil or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
+  dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
 
 
@@ -1345,8 +1339,11 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $profileCompiler: local := true
   $profileAlist:    local := nil
   $mutableDomain: local := false
-  $compileExportsOnly or not $LISPLIB => 
+  $compileExportsOnly or $LISPLIB = nil => 
     compDefineFunctor1(df,m,e,prefix,fal)
+  lhs := second df
+  ctor := opOf lhs
+  dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
 compDefineFunctor1(df is ['DEF,form,signature,nils,body],
@@ -1476,21 +1473,12 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         $byteVec :local := nil
         $NRTslot1PredicateList :=
           [simpBool x for x in $NRTslot1PredicateList]
-        rwriteLispForm('loadTimeStuff,
+        LAM_,FILEACTQ('loadTimeStuff,
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
       $lisplibSlot1 := $NRTslot1Info
       $lisplibOperationAlist:= operationAlist
-    lisplibWrite('"compilerInfo",
-       removeZeroOne ['SETQ,'$CategoryFrame,
-        ['put,['QUOTE,op'],'
-         (QUOTE isFunctor),
-          ['QUOTE,operationAlist],['addModemap,['QUOTE,op'],['
-           QUOTE,parForm],['QUOTE,parSignature],true,['QUOTE,op'],
-            ['put,['QUOTE,op' ],'(QUOTE mode),
-             ['QUOTE,['Mapping,:parSignature]],'$CategoryFrame]]]],$libFile)
     if null argl then
-      evalAndRwriteLispForm('NILADIC,
-            ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])
+      writeNiladic?(op',$libFile)
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,
