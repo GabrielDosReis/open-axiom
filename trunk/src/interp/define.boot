@@ -101,7 +101,6 @@ $CapsuleModemapFrame := nil
 $CapsuleDomainsInScope := nil
 $signatureOfForm := nil
 $addFormLhs := nil
-$lisplibSuperDomain := nil
 $sigList := []
 $atList := []
 
@@ -641,9 +640,7 @@ expandTypeArgs(u,template,domform) ==
 emitSubdomainInfo(form,super,pred) ==
   pred := applySubst!(pairList(form.args,$AtVariables),pred)
   super := applySubst!(pairList(form.args,$AtVariables),super)
-  evalAndRwriteLispForm("evalOnLoad2",["noteSubDomainInfo",
-     quoteForm form.op,quoteForm super, quoteForm pred])
-
+  dbSuperDomain(constructorDB form.op) := [super,pred]
 
 ++ List of operations defined in a given capsule
 ++ Each item on this list is of the form
@@ -1055,7 +1052,6 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $lisplibCategory:= formalBody
     if $LISPLIB then
       $lisplibForm:= form
-      $lisplibKind:= 'category
       modemap:= [[parForm,:parSignature],[true,op']]
       $lisplibModemap:= modemap
       $lisplibParents  :=         
@@ -1452,9 +1448,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
       $lisplibAbbreviation := getConstructorAbbreviationFromDB $op
     $insideFunctorIfTrue:= false
     if $LISPLIB then
-      $lisplibKind:=
-        $functorTarget is ["CATEGORY",key,:.] and key~="domain" => 'package
-        'domain
       $lisplibForm:= form
       if not $bootStrapMode then
         $NRTslot1Info := NRTmakeSlot1Info()
@@ -1495,7 +1488,11 @@ incompleteFunctorBody(form,m,body,e) ==
     if funsel is [op,.,.] and op in '(ELT CONST) then
       third(funsel) := nil
     ops := [[opsig,pred,funsel],:ops]
-  $lisplibOperationAlist := listSort(function GGREATERP, ops, function first)
+  $lisplibOperationAlist := listSort(function GGREATERP,ops,function first)
+  dbSuperDomain(constructorDB form.op) :=
+    body is ['SubDomain,dom,pred] => [dom,pred]
+    body is ['add,['SubDomain,dom,pred],:.] => [dom,pred]
+    nil
   [bootStrapError(form, _/EDITFILE),m,e]
 
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code
@@ -2197,7 +2194,6 @@ compSubDomain1(domainForm,predicate,m,e) ==
   CONTAINED("$",pred) => 
     stackAndThrow('"predicate %1pb is not simple enough",[predicate])
   emitSubdomainInfo($form,domainForm,pred)
-  $lisplibSuperDomain := [domainForm,predicate]
   [domainForm,m,e]
 
 compCapsuleInner(itemList,m,e) ==

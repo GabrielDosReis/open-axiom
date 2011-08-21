@@ -909,7 +909,7 @@ dbShowCons1(htPage,cAlist,key) ==
     htPage and htpProperty(htPage,'domname) => first conlist
     opOf first conlist
   conlist := [opOf x for x in conlist]
-  kinds := "union"/[dbConstructorKind x for x in conlist]
+  kinds := [dbConstructorKind constructorDB x for x in conlist]
   kind :=
     kinds is [a] => a
     'constructor
@@ -946,35 +946,6 @@ dbShowCons1(htPage,cAlist,key) ==
 dbConsExposureMessage() ==
   $atLeastOneUnexposed =>
       htSay '"\newline{}-------------\newline{}{\em *} = unexposed"
-
--- DUPLICATE DEF - ALSO in br-saturn.boot
--- dbShowConsKinds cAlist ==
--- ---------> !OBSELETE! <-------------
---  cats := doms := paks := defs := nil
---  for x in cAlist repeat
---    op := CAAR x
---    kind := dbConstructorKind op
---    kind  = 'category => cats := [x,:cats]
---    kind = 'domain    => doms := [x,:doms]
---    kind = 'package   => paks:= [x,:paks]
---    defs := [x,:defs]
---  lists := [reverse! cats,reverse! doms,reverse! paks,reverse! defs]
---  htBeginMenu(2)
---  htSayStandard '"\indent{1}"
---  kinds := +/[1 for x in lists | #x > 0]
---  for kind in '("category" "domain" "package" "default package") for x in lists | #x > 0 repeat
---    htSay('"\item")
---    if kinds = 1 then htSay menuButton() else
---      htMakePage [['bcLinks,[menuButton(),'"",'dbShowConsKindsFilter,[kind,x]]]]
---    htSayStandard '"\tab{1}"
---    htSay  '"{\em "
---    htSay (c := #x)
---    htSay '" "
---    htSay (c > 1 => pluralize kind; kind)
---    htSay '":}"
---    bcConTable removeDuplicates [CAAR y for y in x]
---  htEndMenu(2)
---  htSay '"\indent{0}"
 
 dbShowConsKindsFilter(htPage,[kind,cAlist]) ==
   htpSetProperty(htPage,'cAlist,cAlist)

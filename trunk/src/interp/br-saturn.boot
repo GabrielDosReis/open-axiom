@@ -867,7 +867,7 @@ dbShowConsKinds cAlist ==
   cats := doms := paks := defs := nil
   for x in cAlist repeat
     op := CAAR x
-    kind := dbConstructorKind op
+    kind := dbConstructorKind constructorDB op
     kind  = 'category => cats := [x,:cats]
     kind = 'domain    => doms := [x,:doms]
     kind = 'package   => paks := [x,:paks]

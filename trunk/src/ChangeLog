@@ -1,5 +1,22 @@
 2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (leaveIfErrors): Take kind as argument.
+	(writeInfo): New.
+	(writeSuperDomain): Likewise.
+	(finalizeLisplib): Use it.  Take constructor as argument.
+	* interp/define.boot ($lisplibSuperDomain): Remove.  Adjust users.
+	($lisplibKind): Remove Adjust users.
+	(emitSubdomainInfo): Set dbSuperDomain.
+	(incompleteFunctorBody): Likewise.
+	* interp/daase.lisp: Add new database accessors.
+	(GETDATABASE): Fix handling of superDomain property.
+	* interp/br-util.boot (dbConstructorKind): Remove.
+	* interp/br-con.boot: Remove deadcode.
+	(dbShowCons1): Adjust.
+	* interp/br-saturn.boot (dbShowConsKinds): Likewise.
+
+2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-globals.boot ($compileExportOnly): Remove.
 	* interp/sys-driver.boot (initializeGlobalState): Don't set it.
 	* interp/define.boot (skipCategoryPackage?): Adjust.
