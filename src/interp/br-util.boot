@@ -262,13 +262,6 @@ args2LispString x ==
       null x => '""
       strconc('",",form2LispString first x,fnTailTail rest x)
 
-dbConstructorKind x ==
-  target := getConstructorModemapFromDB(x).mmTarget
-  target = '(Category) => 'category
-  target is ['CATEGORY,'package,:.] => 'package
-  tableValue($defaultPackageNamesHT,x) => 'default_ package
-  'domain
-
 getConstructorForm name ==
   name = 'Union   => '(Union  (_: a A) (_: b B))
   name = 'UntaggedUnion => '(Union A B)

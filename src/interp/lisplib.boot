@@ -35,6 +35,7 @@
 import nlib
 import c_-util
 import debug
+import daase
 
 namespace BOOT
 module lisplib
@@ -440,13 +441,11 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibAbbreviation: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
-  $lisplibKind: local := nil
   $lisplibModemap: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   --used by NRT mechanisms
   $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local:= nil
-  $lisplibSuperDomain: local := nil
   $libFile: local := nil
   $lisplibVariableAlist: local := nil
   $lisplibSignatureAlist: local := nil
@@ -470,7 +469,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $lisplibAttributes: local := nil
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibForm: local := nil
-  $lisplibKind: local := nil
   $lisplibAbbreviation: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
@@ -480,7 +478,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local := nil  --operations alist for new runtime system
   $lisplibSignatureAlist: local := nil
-  $lisplibSuperDomain: local := nil
   $libFile: local := nil
   $lisplibVariableAlist: local := nil
 --  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
@@ -501,9 +498,9 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   ok := false;
   try
     res:= FUNCALL(fn,df,m,e,prefix,fal)
-    leaveIfErrors(libName)
+    leaveIfErrors(libName,dbConstructorKind constructorDB $op)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
-    ok := finalizeLisplib libName
+    ok := finalizeLisplib(op,libName)
   finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
@@ -547,18 +544,28 @@ writeNiladic?(ctor,file) ==
   LAM_,FILEACTQ('NILADIC,expandToVMForm insn)
   lisplibWrite('"NILADIC",true,file)
 
+writeInfo(ctor,info,key,prop,file) ==
+  if info ~= nil then
+    insn := ['%store,[prop,mkCtorDBForm ctor],quoteForm info]
+    LAM_,FILEACTQ(key,expandToVMForm insn)
+  lisplibWrite(symbolName key,info,file)
+  
+writeSuperDomain(ctor,domPred,file) ==
+  writeInfo(ctor,domPred,'superDomain,'dbSuperDomain,file)
+
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
-leaveIfErrors libName ==
+leaveIfErrors(libName,kind) ==
   errorCount() ~= 0 =>
-    sayMSG ['"   Errors in processing ",$lisplibKind,'" ",:bright libName,'":"]
+    sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
     sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
     spadThrow()
 
 ++ Finalize `libName' compilation; returns true if everything is OK.
-finalizeLisplib libName ==
+finalizeLisplib(ctor,libName) ==
+  kind := dbConstructorKind constructorDB ctor
   lisplibWrite('"constructorForm",removeZeroOne $lisplibForm,$libFile)
-  lisplibWrite('"constructorKind",kind:=removeZeroOne $lisplibKind,$libFile)
+  lisplibWrite('"constructorKind",kind,$libFile)
   lisplibWrite('"constructorModemap",removeZeroOne $lisplibModemap,$libFile)
   $lisplibCategory:= $lisplibCategory or $lisplibModemap.mmTarget
   -- set to target of modemap for package/domain constructors;
@@ -575,7 +582,7 @@ finalizeLisplib libName ==
      $pairlis : local := pairList($lisplibForm,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist rest opsAndAtts
-  lisplibWrite('"superDomain",removeZeroOne $lisplibSuperDomain,$libFile)
+  writeSuperDomain(ctor,dbSuperDomain constructorDB ctor,$libFile)
   lisplibWrite('"signaturesAndLocals",
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
@@ -587,7 +594,7 @@ finalizeLisplib libName ==
   lisplibWrite('"documentation",finalizeDocumentation(),$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
-  leaveIfErrors libName
+  leaveIfErrors(libName,kind)
   true
 
 lisplibDoRename(libName) ==

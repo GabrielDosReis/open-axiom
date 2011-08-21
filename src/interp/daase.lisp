@@ -230,6 +230,24 @@
  ) ; database structure
 
 
+(defmacro |dbAbbreviation| (db)
+  `(database-abbreviation ,db))
+
+(defmacro |dbConstructorKind| (db)
+  `(database-constructorkind ,db))
+
+(defmacro |dbConstructorForm| (db)
+  `(database-constructorform ,db))
+
+(defmacro |dbOperations| (db)
+  `(database-operationalist ,db))
+
+(defmacro |dbConstructorModemap| (db)
+  `(database-constructormodemap ,db))
+
+(defmacro |dbSuperDomain| (db)
+  `(database-superdomain ,db))
+
 (defmacro |dbNiladic?| (db)
   `(database-niladic ,db))
 
@@ -577,18 +595,18 @@
 	(setq *allconstructors* (adjoin (first item) *allconstructors*))
 	(setq dbstruct (make-database))
 	(setf (|constructorDB| (car item)) dbstruct)
-	(setf (database-operationalist dbstruct) (second item))
-	(setf (database-constructormodemap dbstruct) (third item))
+	(setf (|dbOperations| dbstruct) (second item))
+	(setf (|dbConstructorModemap| dbstruct) (third item))
 	(setf (database-modemaps dbstruct) (fourth item))
 	(setf (database-object dbstruct) (fifth item))
 	(setf (database-constructorcategory dbstruct) (sixth item))
 	(setf (|dbNiladic?| dbstruct) (seventh item))
-	(setf (database-abbreviation dbstruct) (eighth item))
+	(setf (|dbAbbreviation| dbstruct) (eighth item))
 	(setf (get (eighth item) 'abbreviationfor) (first item)) ;invert
 	(setf (database-cosig dbstruct) (ninth item))
-	(setf (database-constructorkind dbstruct) (tenth item))
+	(setf (|dbConstructorKind| dbstruct) (tenth item))
 	(setf (database-ancestors dbstruct) (nth 11 item))
-	(setf (database-superdomain dbstruct) (nth 12 item))
+	(setf (|dbSuperDomain| dbstruct) (nth 12 item))
 	))
     
     (format t "~&")))
@@ -635,14 +653,14 @@
 	(setq item (unsqueeze item))
 	(unless (setq dbstruct (|constructorDB| (car item)))
 	  (format t "browseOpen:~%")
-	  (format t "the browse database contains a contructor ~a~%" item)
+	  (format t "the browse database contains a constructor ~a~%" item)
 	  (format t "that is not in the interp.daase file. we cannot~%")
 	  (format t "get the database structure for this constructor and~%")
 	  (warn "will create a new one~%")
 	  (setf (|constructorDB| (car item)) (setq dbstruct (make-database)))
 	  (setq *allconstructors* (adjoin item *allconstructors*)))
 	(setf (database-sourcefile dbstruct) (second item))
-	(setf (database-constructorform dbstruct) (third item))
+	(setf (|dbConstructorForm| dbstruct) (third item))
 	(setf (database-documentation dbstruct) (fourth item))
 	(setf (database-attributes dbstruct) (fifth item))
 	(setf (database-predicates dbstruct) (sixth item))
@@ -753,13 +771,13 @@
 	(setf (|constructorDB| constructor) struct))
       (case key
 	    (abbreviation
-	     (setf (database-abbreviation struct) value)
+	     (setf (|dbAbbreviation| struct) value)
 	     (when (symbolp value)
 	       (setf (get value 'abbreviationfor) constructor)))
 	    (superdomain
-	     (setf (database-superdomain struct) value))
+	     (setf (|dbSuperDomain| struct) value))
 	    (constructorkind
-	     (setf (database-constructorkind struct) value))))))
+	     (setf (|dbConstructorKind| struct) value))))))
 
 (defun deldatabase (constructor key)
   (when (symbolp constructor)
@@ -781,11 +799,11 @@
 	    (abbreviation
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-abbreviation struct))))
+	       (setq data (|dbAbbreviation| struct))))
 	    (constructorkind
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-constructorkind struct))))
+	       (setq data (|dbConstructorKind| struct))))
 	    (cosig
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
@@ -796,7 +814,7 @@
 	    (constructormodemap
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-constructormodemap struct))))
+	       (setq data (|dbConstructorModemap| struct))))
 	    (constructorcategory
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
@@ -806,7 +824,7 @@
 	    (operationalist
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-operationalist struct))))
+	       (setq data (|dbOperations| struct))))
 	    (modemaps
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
@@ -825,10 +843,10 @@
 	       (setq data (|dbNiladic?| struct))))
 	    (constructor?
 	     (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
-	    (superdomain ; only 2 superdomains in the world
+	    (superdomain
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-superdomain struct))))
+	       (setq data (|dbSuperDomain| struct))))
 	    (constructor
 	     (when (setq data (get constructor 'abbreviationfor))))
 	    (defaultdomain
@@ -844,7 +862,7 @@
 	    (constructorform
 	     (setq stream *browse-stream*)
 	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-constructorform struct))))
+	       (setq data (|dbConstructorForm| struct))))
 	    (constructorargs
 	     (setq data (cdr (|getConstructorFormFromDB| constructor))))
 	    (attributes
@@ -888,15 +906,15 @@
 	      (hascategory 
 	       (setf (gethash constructor *hascategory-hash*) data))
 	      (constructorkind 
-	       (setf (database-constructorkind struct) data))
+	       (setf (|dbConstructorKind| struct) data))
 	      (cosig     
 	       (setf (database-cosig struct) data))
 	      (constructormodemap 
-	       (setf (database-constructormodemap struct) data))
+	       (setf (|dbConstructorModemap| struct) data))
 	      (constructorcategory 
 	       (setf (database-constructorcategory struct) data))
 	      (operationalist
-	       (setf (database-operationalist struct) data))
+	       (setf (|dbOperations| struct) data))
 	      (modemaps  
 	       (setf (database-modemaps struct) data))
 	      (object    
@@ -904,13 +922,13 @@
 	      (niladic   
 	       (setf (|dbNiladic?| struct) data))
 	      (abbreviation 
-	       (setf (database-abbreviation struct) data))
+	       (setf (|dbAbbreviation| struct) data))
 	      (constructor 
 	       (setf (database-constructor struct) data))
 	      (ancestors 
 	       (setf (database-ancestors struct) data))
 	      (constructorform     
-	       (setf (database-constructorform struct) data))
+	       (setf (|dbConstructorForm| struct) data))
 	      (attributes
 	       (setf (database-attributes struct) data))
 	      (predicates 
@@ -920,7 +938,7 @@
 	      (parents   
 	       (setf (database-parents struct) data))
 	      (superdomain
-	       (setf (database-superdomain struct) data))
+	       (setf (|dbSuperDomain| struct) data))
 	      (users     
 	       (setf (database-users struct) data))
 	      (dependents
@@ -1044,17 +1062,17 @@
 		     (setq dbstruct (make-database))
 		     (setq *allconstructors* (adjoin key *allconstructors*))
 		     (setf (|constructorDB| key) dbstruct) ; store the struct, side-effect it...
-		     (setf (database-constructorform dbstruct) constructorform)
+		     (setf (|dbConstructorForm| dbstruct) constructorform)
 		     (setq *allOperations* nil)   ; force this to recompute
 		     (setf (database-object dbstruct) object)
 		     (setq abbrev
 			   (intern (pathname-name (first (last (pathname-directory object))))))
-		     (setf (database-abbreviation dbstruct) abbrev)
+		     (setf (|dbAbbreviation| dbstruct) abbrev)
 		     (setf (get abbrev 'abbreviationfor) key)
-		     (setf (database-operationalist dbstruct) nil)
-		     (setf (database-operationalist dbstruct)
+		     (setf (|dbOperations| dbstruct) nil)
+		     (setf (|dbOperations| dbstruct)
 			   (fetchdata alist in "operationAlist"))
-		     (setf (database-constructormodemap dbstruct)
+		     (setf (|dbConstructorModemap| dbstruct)
 			   (fetchdata alist in "constructorModemap"))
 		     (setf (database-modemaps dbstruct) 
 			   (fetchdata alist in "modemaps"))
@@ -1063,7 +1081,7 @@
 		     (when make-database?
 		       (setf (database-sourcefile dbstruct)
 			     (file-namestring  (database-sourcefile dbstruct))))
-		     (setf (database-constructorkind dbstruct)
+		     (setf (|dbConstructorKind| dbstruct)
 			   (setq kind (fetchdata alist in "constructorKind")))
 		     (setf (database-constructorcategory dbstruct)
 			   (fetchdata alist in "constructorCategory"))
@@ -1075,14 +1093,8 @@
 			   (fetchdata alist in "predicates"))
 		     (setf (|dbNiladic?| dbstruct)
 			   (when (fetchdata alist in "NILADIC") t))
-		     (let ((super (fetchdata alist in "evalOnLoad2")))
-		       (setf (database-superdomain dbstruct)
-			     (when super 
-			       (setq super (cddr super))
-			       ;; unquote the domain and predicate.
-			       (rplaca super (second (first super)))
-			       (rplacd super (cdr (second super)))
-			       super)))
+		     (setf (|dbSuperDomain| dbstruct)
+			   (fetchdata alist in "superDomain"))
 		     (addoperations key oldmaps)
 		     (unless make-database?
 		       (if (eq kind '|category|)
@@ -1098,7 +1110,7 @@
 			   (setq |$CategoryFrame| |$EmptyEnvironment|)))
 		     (setf (database-cosig dbstruct)
 			   (cons nil (mapcar #'|categoryForm?|
-					     (cddar (database-constructormodemap dbstruct)))))
+					     (cddar (|dbConstructorModemap| dbstruct)))))
 		     (remprop key 'loaded)
 		     (if (null noexpose) 
 			 (|setExposeAddConstr| (cons key nil)))
@@ -1198,7 +1210,7 @@
      (when (setq dbstruct (|constructorDB| con))
            (setf (database-cosig dbstruct)
                  (cons nil (mapcar #'|categoryForm?|
-                                   (cddar (database-constructormodemap dbstruct)))))
+                                   (cddar (|dbConstructorModemap| dbstruct)))))
            (when (and (|categoryForm?| con)
                       (= (length (setq d (|domainsOf| (list con) NIL NIL))) 1))
                  (setq d (caar d))
@@ -1294,10 +1306,10 @@
    (let (struct)
     (setq struct (|constructorDB| constructor))
     (setq opalistpos (file-position out))
-    (print (squeeze (database-operationalist struct)) out)
+    (print (squeeze (|dbOperations| struct)) out)
     (finish-output out)
     (setq cmodemappos (file-position out))
-    (print (squeeze (database-constructormodemap struct)) out)
+    (print (squeeze (|dbConstructorModemap| struct)) out)
     (finish-output out)
     (setq modemapspos (file-position out))
     (print (squeeze (database-modemaps struct)) out)
@@ -1318,9 +1330,9 @@
 	  (finish-output out))
       (setq categorypos nil))
     (setq niladic (|dbNiladic?| struct))
-    (setq abbrev (database-abbreviation struct))
+    (setq abbrev (|dbAbbreviation| struct))
     (setq cosig (database-cosig struct))
-    (setq kind (database-constructorkind struct))
+    (setq kind (|dbConstructorKind| struct))
     (setq defaultdomain (database-defaultdomain struct))
     (setq ancestors (squeeze (gethash constructor *ancestors-hash*))) ;cattable.boot
     (if ancestors
@@ -1332,7 +1344,7 @@
     (setq superpos
 	  ;; We do NOT want to compress codes, as we may not be 
 	  ;; able to uncompress them to their original form.
-	  (let ((super (database-superdomain struct)))
+	  (let ((super (|dbSuperDomain| struct)))
 	    (when super
 	      (prog1 (file-position out)
 		(print super out)
@@ -1363,7 +1375,7 @@
      ; sourcefile is small. store the string directly
     (setq src (database-sourcefile struct))
     (setq formpos (file-position out))
-    (print (squeeze (database-constructorform struct)) out)
+    (print (squeeze (|dbConstructorForm| struct)) out)
     (finish-output out)
     (setq docpos (file-position out))
     (print (database-documentation struct) out)
