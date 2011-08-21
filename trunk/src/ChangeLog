@@ -1,3 +1,13 @@
+2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($compileExportOnly): Remove.
+	* interp/sys-driver.boot (initializeGlobalState): Don't set it.
+	* interp/define.boot (skipCategoryPackage?): Adjust.
+	(compDefineFunctor): Likewise.
+	(compDefineFunctor1): Likewise.
+	(incompleteFunctorBody): New.
+	(compFunctorBody): Use it.
+
 2011-08-20  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/sys-utility.boot (constructorDB): New.

@@ -914,9 +914,9 @@ mkEvalableCategoryForm c ==
  
 ++ Return true if we should skip compilation of category package.
 ++ This situation happens either when there is no default, of we are in
-++ bootstrap mode, or we are compiling only for exports.
+++ bootstrap mode.
 skipCategoryPackage? capsule ==
-  null capsule or $bootStrapMode or $compileExportsOnly
+  null capsule or $bootStrapMode
 
 compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
   categoryCapsule :=
@@ -1339,8 +1339,7 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $profileCompiler: local := true
   $profileAlist:    local := nil
   $mutableDomain: local := false
-  $compileExportsOnly or $LISPLIB = nil => 
-    compDefineFunctor1(df,m,e,prefix,fal)
+  $LISPLIB = nil => compDefineFunctor1(df,m,e,prefix,fal)
   lhs := second df
   ctor := opOf lhs
   dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
@@ -1386,8 +1385,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $implicitParameters: local := inferConstructorImplicitParameters(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
-    $compileExportsOnly =>
-      compDefineExports(form, categoryExports ds, signature',$e)
     $domainShell: local := copyVector ds
     attributeList := categoryAttributes ds --see below under "loadTimeAlist"
     $condAlist: local := nil
@@ -1485,19 +1482,33 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'%incomplete], true])
     [fun,['Mapping,:signature'],originale]
 
+
+++ Finish the incomplete compilation of a functor body.
+incompleteFunctorBody(form,m,body,e) ==
+  -- The slot numbers from the category shell are bogus at this point.
+  -- Nullify them so people don't think they bear any meaningful
+  -- semantics (well, they should not think these are forwarding either).
+  ops := nil
+  for [opsig,pred,funsel] in categoryExports $domainShell repeat
+    if pred isnt 'T then
+      pred := simpBool pred
+    if funsel is [op,.,.] and op in '(ELT CONST) then
+      third(funsel) := nil
+    ops := [[opsig,pred,funsel],:ops]
+  $lisplibOperationAlist := listSort(function GGREATERP, ops, function first)
+  [bootStrapError(form, _/EDITFILE),m,e]
+
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code
 ++ for a functor definition. 
 compFunctorBody(body,m,e,parForm) ==
-  $bootStrapMode =>
-    [bootStrapError($functorForm, _/EDITFILE),m,e]
+  $bootStrapMode => incompleteFunctorBody($functorForm,m,body,e)
   clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
   $capsuleFunctionStack := reverse! $capsuleFunctionStack
   -- ??? Don't resolve default definitions, yet.
-  if $insideCategoryPackageIfTrue then
-    backendCompile $capsuleFunctionStack
-  else 
-    backendCompile foldExportedFunctionReferences $capsuleFunctionStack
+  backendCompile
+    $insideCategoryPackageIfTrue => $capsuleFunctionStack
+    foldExportedFunctionReferences $capsuleFunctionStack
   clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and op in '(add CAPSULE) => T
   $NRTaddForm :=
