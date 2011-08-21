@@ -33,6 +33,7 @@
 
 
 import c_-util
+import daase
 namespace BOOT
 
 batchExecute() ==
@@ -132,7 +133,7 @@ collectAndDeleteAssoc x ==
       y.rest := s
   res
 
-finalizeDocumentation() ==
+finalizeDocumentation ctor ==
   unusedCommentLineNumbers := [x for (x := [n,:r]) in $COMBLOCKLIST | r]
   docList := substitute("$","%",transDocList($op,$docList))
   if u := [sig for [sig,:doc] in docList | null doc] then
@@ -141,17 +142,16 @@ finalizeDocumentation() ==
       y is [x,b] and b is ['attribute,:r] =>
         attributes := [[x,:r],:attributes]
       signatures := [y,:signatures]
-    name := first $lisplibForm
     if noHeading or signatures or attributes or unusedCommentLineNumbers then
       sayKeyedMsg("S2CD0001",nil)
       bigcnt := 1
       if noHeading or signatures or attributes then
-        sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),ctor])
         bigcnt := bigcnt + 1
         litcnt := 1
         if noHeading then
           sayKeyedMsg("S2CD0003",
-            [strconc('"(",STRINGIMAGE litcnt,'")"),name])
+            [strconc('"(",STRINGIMAGE litcnt,'")"),ctor])
           litcnt := litcnt + 1
         if signatures then
           sayKeyedMsg("S2CD0004",
@@ -172,15 +172,15 @@ finalizeDocumentation() ==
               a isnt [.,:.] => ['%x9,a]
               ['%x9,:a]
       if unusedCommentLineNumbers then
-        sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),ctor])
         for [n,r] in unusedCommentLineNumbers repeat
           sayMSG ['"   ",:bright n,'"   ",r]
-  hn [[:fn(sig,$e),:doc] for [sig,:doc] in docList] where
-    fn(x,e) ==
+  form := dbConstructorForm constructorDB ctor
+  hn [[:fn(sig,$e,form.args),:doc] for [sig,:doc] in docList] where
+    fn(x,e,args) ==
       x isnt [.,:.] => [x,nil]
       if #x > 2 then x := TAKE(2,x)
-      applySubst(pairList($lisplibForm.args,$FormalMapVariableList),
-        macroExpand(x,e))
+      applySubst(pairList(args,$FormalMapVariableList),macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)
       opList := removeDuplicates ASSOCLEFT u

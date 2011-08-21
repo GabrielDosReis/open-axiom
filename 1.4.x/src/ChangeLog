@@ -1,5 +1,18 @@
 2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot ($lisplibAbbreviation): Remove.  Adjust users.
+	($lisplibForm): Likewise.
+	* interp/c-doc.boot (finalizeDocumentation): Take constructor's
+	name as parameter.  Adjust callers.
+	* interp/lisplib.boot (compileDocumentation): Likewise.
+	(WriteKind): New.
+	(writeConstructorForm): Likewise.
+	(writeOperations): Likewise.
+	(WriteConstructorModemap): Likewise.
+	(finalizeLisplib): Use them.
+
+2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (leaveIfErrors): Take kind as argument.
 	(writeInfo): New.
 	(writeSuperDomain): Likewise.

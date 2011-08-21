@@ -317,7 +317,7 @@ newfort.$(FASLEXT): macros.$(FASLEXT)
 lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT) \
 	daase.$(FASLEXT)
 interop.$(FASLEXT): interop.boot c-util.$(FASLEXT) hashcode.$(FASLEXT)
-c-doc.$(FASLEXT): c-util.$(FASLEXT)
+c-doc.$(FASLEXT): c-util.$(FASLEXT) daase.$(FASLEXT)
 server.$(FASLEXT): macros.$(FASLEXT)
 
 ##

@@ -437,8 +437,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $LISPLIB: local := 'T
   $lisplibAttributes: local := nil
   $lisplibPredicates: local := nil
-  $lisplibForm: local := nil
-  $lisplibAbbreviation: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
   $lisplibModemap: local := nil
@@ -468,8 +466,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibAttributes: local := nil
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
-  $lisplibForm: local := nil
-  $lisplibAbbreviation: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
   $lisplibModemap: local := nil
@@ -486,7 +482,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
   libName := getConstructorAbbreviation op
-  $compileDocumentation => compileDocumentation libName
+  $compileDocumentation => compileDocumentation(op,libName)
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
   initializeLisplib libName
@@ -512,13 +508,11 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
-compileDocumentation libName ==
+compileDocumentation(ctor,libName) ==
   filename := MAKE_-INPUT_-FILENAME(libName,$spadLibFT)
   $FCOPY(filename,[libName,'DOCLB])
   stream := RDEFIOSTREAM [['FILE,libName,'DOCLB],['MODE, :'O]]
-  lisplibWrite('"documentation",finalizeDocumentation(),stream)
---  if $lisplibRelatedDomains then 
---    lisplibWrite('"relatedDomains",$lisplibRelatedDomains,stream)
+  lisplibWrite('"documentation",finalizeDocumentation ctor,stream)
   RSHUT(stream)
   RPACKFILE([libName,'DOCLB])
   $REPLACE([libName,$spadLibFT],[libName,'DOCLB])
@@ -550,8 +544,20 @@ writeInfo(ctor,info,key,prop,file) ==
     LAM_,FILEACTQ(key,expandToVMForm insn)
   lisplibWrite(symbolName key,info,file)
   
+writeKind(ctor,kind,file) ==
+  writeInfo(ctor,kind,'constructorKind,'dbConstructorKind,file)
+
+writeConstructorForm(ctor,form,file) ==
+  writeInfo(ctor,form,'constructorForm,'dbConstructorForm,file)
+
 writeSuperDomain(ctor,domPred,file) ==
   writeInfo(ctor,domPred,'superDomain,'dbSuperDomain,file)
+
+writeOperations(ctor,ops,file) ==
+  writeInfo(ctor,ops,'operationAlist,'dbOperations,file)
+
+writeConstructorModemap(ctor,mm,file) ==
+  writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
 
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
@@ -564,22 +570,20 @@ leaveIfErrors(libName,kind) ==
 ++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib(ctor,libName) ==
   kind := dbConstructorKind constructorDB ctor
-  lisplibWrite('"constructorForm",removeZeroOne $lisplibForm,$libFile)
-  lisplibWrite('"constructorKind",kind,$libFile)
-  lisplibWrite('"constructorModemap",removeZeroOne $lisplibModemap,$libFile)
-  $lisplibCategory:= $lisplibCategory or $lisplibModemap.mmTarget
+  form := dbConstructorForm constructorDB ctor
+  writeConstructorForm(ctor,form,$libFile)
+  writeKind(ctor,kind,$libFile)
+  writeConstructorModemap(ctor,removeZeroOne $lisplibModemap,$libFile)
+  $lisplibCategory := $lisplibCategory or $lisplibModemap.mmTarget
   -- set to target of modemap for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
   lisplibWrite('"constructorCategory",$lisplibCategory,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
   lisplibWrite('"modemaps",removeZeroOne $lisplibModemapAlist,$libFile)
-  opsAndAtts:= getConstructorOpsAndAtts(
-    $lisplibForm,kind,$lisplibModemap)
-  lisplibWrite('"operationAlist",removeZeroOne first opsAndAtts,$libFile)
-  --lisplibWrite('"attributes",rest opsAndAtts,$libFile)
-  --if kind='category then NRTgenInitialAttributeAlist rest opsAndAtts
+  opsAndAtts := getConstructorOpsAndAtts(form,kind,$lisplibModemap)
+  writeOperations(ctor,removeZeroOne first opsAndAtts,$libFile)
   if kind='category then
-     $pairlis : local := pairList($lisplibForm,$FormalMapVariableList)
+     $pairlis : local := pairList(form,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist rest opsAndAtts
   writeSuperDomain(ctor,dbSuperDomain constructorDB ctor,$libFile)
@@ -588,10 +592,10 @@ finalizeLisplib(ctor,libName) ==
                                     $lisplibVariableAlist),$libFile)
   lisplibWrite('"attributes",removeZeroOne $lisplibAttributes,$libFile)
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
-  lisplibWrite('"abbreviation",$lisplibAbbreviation,$libFile)
+  lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
   lisplibWrite('"parents",removeZeroOne $lisplibParents,$libFile)
   lisplibWrite('"ancestors",removeZeroOne $lisplibAncestors,$libFile)
-  lisplibWrite('"documentation",finalizeDocumentation(),$libFile)
+  lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
   leaveIfErrors(libName,kind)

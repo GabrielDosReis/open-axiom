@@ -167,12 +167,6 @@ $letAssoc := false
 $libFile := nil
 
 ++
-$lisplibForm := nil
-
-++
-$lisplibKind := nil
-
-++
 $lisplibModemapAlist := []
 
 ++

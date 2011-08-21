@@ -75,7 +75,6 @@ $functorStats := nil
 
 $lisplibCategory := nil
 $lisplibAncestors := nil
-$lisplibAbbreviation := nil
 $CheckVectorList := []
 $pairlis := []
 $functorTarget := nil
@@ -1051,13 +1050,11 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $domainShell := eval [op',:[MKQ f for f in sargl]]
     $lisplibCategory:= formalBody
     if $LISPLIB then
-      $lisplibForm:= form
       modemap:= [[parForm,:parSignature],[true,op']]
       $lisplibModemap:= modemap
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
-      $lisplibAbbreviation := getConstructorAbbreviationFromDB $op
       form':=[op',:sargl]
       augLisplibModemapsFromCategory(form',formalBody,signature')
     [fun,$Category,e]
@@ -1077,6 +1074,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
   ctor := opOf lhs
   kind := getConstructorKindFromDB ctor
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
+  dbConstructorForm(constructorDB ctor) := lhs
   $insideFunctorIfTrue or $LISPLIB = nil or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
   dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
@@ -1362,6 +1360,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
+    dbConstructorForm(constructorDB $op) := form
     $formalArgList:= [:argl,:$formalArgList]
     $pairlis: local := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
@@ -1445,10 +1444,8 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
-      $lisplibAbbreviation := getConstructorAbbreviationFromDB $op
     $insideFunctorIfTrue:= false
     if $LISPLIB then
-      $lisplibForm:= form
       if not $bootStrapMode then
         $NRTslot1Info := NRTmakeSlot1Info()
         $isOpPackageName: local := isCategoryPackageName $op
