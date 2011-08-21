@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2010 Gabriel Dos Reis
+-- Copyright (C) 2007-2011 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -189,7 +189,6 @@ initializeGlobalState() ==
   $buildingSystemAlgebra := getOptionValue "system-algebra"
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"
-  $compileExportsOnly := getOptionValue "exports-only"
   $compileDefaultsOnly := getOptionValue "defaults-only"
   $reportOptimization := getOptionValue "show-insn"
   $optimizeRep := getOptionValue "inline-rep"
