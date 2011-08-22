@@ -126,7 +126,7 @@ getConstructorParentsFromDB ctor ==
 getSuperDomainFromDB: %Constructor -> %Form
 getSuperDomainFromDB ctor ==
   GETDATABASE(ctor,"SUPERDOMAIN")
-
+  
 getConstructorAttributesFromDB: %Constructor -> %Form
 getConstructorAttributesFromDB ctor ==
   GETDATABASE(ctor,"ATTRIBUTES")

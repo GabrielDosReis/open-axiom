@@ -1,5 +1,11 @@
 2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/daase.lisp: Remove NILADIC field from DATABASE structure.
+	(dbNiladic?): Remove.  Adjust users.
+	(WRITE-INTERP): Don't write NILADIC field.
+
+2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (substNames): Lose second parameter.  Adjust
 	callsers.
 	(evalAndSub): Likewise.
