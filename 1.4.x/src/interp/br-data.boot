@@ -94,7 +94,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
   removeFile '"temp.text"
 
 buildLibdbConEntry conname ==
-    null getConstructorModemapFromDB conname => nil
+    null getConstructorModemap conname => nil
     abb:= getConstructorAbbreviationFromDB conname
     $conname := conname
     conform := getConstructorFormFromDB conname or [conname] --hack for Category,..
@@ -104,7 +104,7 @@ buildLibdbConEntry conname ==
     $doc      := getConstructorDocumentationFromDB conname
     kind  := getConstructorKindFromDB conname
     if kind = 'domain
-      and getConstructorModemapFromDB conname is [[.,t,:.],:.]
+      and getConstructorModemap conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
       isDefaultPackageName conname => 'x
@@ -126,7 +126,7 @@ buildLibdbString [x,:u] ==
   strconc(STRINGIMAGE x,strconc/[strconc('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
-  [[.,:sig],:.] := getConstructorModemapFromDB conname
+  [[.,:sig],:.] := getConstructorModemap conname
   formals := TAKE(#argl,$FormalMapVariableList)
   sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
@@ -449,7 +449,7 @@ mkDependentsHashTable() == --called by buildDatabase (database.boot)
   $depTb
 
 getArgumentConstructors con == --called by mkDependentsHashTable
-  argtypes := IFCDR IFCAR getConstructorModemapFromDB con or return nil
+  argtypes := IFCDR IFCAR getConstructorModemap con or return nil
   fn argtypes where
     fn(u) == "union"/[gn x for x in u]
     gn(x) ==

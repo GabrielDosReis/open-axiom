@@ -320,7 +320,7 @@ loadLib cname ==
   clearConstructorCache cname
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
-  u := getConstructorModemapFromDB cname
+  u := getConstructorModemap cname
   updateCategoryTable(cname,kind)
   coSig :=
       u =>
@@ -374,14 +374,14 @@ convertOpAlist2compilerInfo(opalist) ==
    
 updateCategoryFrameForConstructor(constructor) ==
    opAlist := getConstructorOperationsFromDB constructor
-   [[dc,:sig],[pred,impl]] := getConstructorModemapFromDB constructor
+   [[dc,:sig],[pred,impl]] := getConstructorModemap constructor
    $CategoryFrame := put(constructor,'isFunctor,
        convertOpAlist2compilerInfo(opAlist),
        addModemap(constructor, dc, sig, pred, impl,
            put(constructor, 'mode, ['Mapping,:sig], $CategoryFrame)))
 
 updateCategoryFrameForCategory(category) ==
-   [[dc,:sig],[pred,impl]] := getConstructorModemapFromDB category
+   [[dc,:sig],[pred,impl]] := getConstructorModemap category
    $CategoryFrame :=
      put(category, 'isCategory, 'T,
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
@@ -439,7 +439,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibPredicates: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
-  $lisplibModemap: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   --used by NRT mechanisms
   $lisplibOperationAlist: local := nil
@@ -468,7 +467,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
-  $lisplibModemap: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   -- used by NRT mechanisms
   $lisplibOperationAlist: local := nil
@@ -571,16 +569,17 @@ leaveIfErrors(libName,kind) ==
 finalizeLisplib(ctor,libName) ==
   kind := dbConstructorKind constructorDB ctor
   form := dbConstructorForm constructorDB ctor
+  mm := getConstructorModemap ctor
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
-  writeConstructorModemap(ctor,removeZeroOne $lisplibModemap,$libFile)
-  $lisplibCategory := $lisplibCategory or $lisplibModemap.mmTarget
-  -- set to target of modemap for package/domain constructors;
+  writeConstructorModemap(ctor,removeZeroOne mm,$libFile)
+  $lisplibCategory := $lisplibCategory or mm.mmTarget
+  -- set to target of mm for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
   lisplibWrite('"constructorCategory",$lisplibCategory,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
   lisplibWrite('"modemaps",removeZeroOne $lisplibModemapAlist,$libFile)
-  opsAndAtts := getConstructorOpsAndAtts(form,kind,$lisplibModemap)
+  opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
   writeOperations(ctor,removeZeroOne first opsAndAtts,$libFile)
   if kind='category then
      $pairlis : local := pairList(form,$FormalMapVariableList)
@@ -755,7 +754,7 @@ findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
 
 getConstructorSignature: %Symbol -> %Form
 getConstructorSignature ctor ==
-  ([[.,:sig],:.] := getConstructorModemapFromDB ctor) => sig
+  ([[.,:sig],:.] := getConstructorModemap ctor) => sig
   -- If we have a local or forward declaration take it.
   -- Note: constructors are not overloadable.
   rest getmode(ctor,$e)

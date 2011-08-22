@@ -451,7 +451,7 @@
 	    |Variable|
 	    |Vector|))
     (dolist (con constructormodemapAndoperationalist)
-      (|getConstructorModemapFromDB| con)
+      (|getConstructorModemap| con)
       (|getConstructorOperationsFromDB| con))
     (setq operation 
 	  '(|+| |-| |*| |/| |**| 
@@ -725,7 +725,7 @@
   (format t "~a: ~a~%" 'operation
 	  (|getOperationFromDB| constructor))
   (format t "~a: ~%" 'constructormodemap)
-  (pprint (|getConstructorModemapFromDB| constructor))
+  (pprint (|getConstructorModemap| constructor))
   (format t "~&~a: ~%" 'constructorcategory)
   (pprint (|getConstructorCategoryFromDB| constructor))
   (format t "~&~a: ~%" 'operationalist)
@@ -820,7 +820,7 @@
 	     (when (setq struct (|constructorDB| constructor))
 	       (setq data (database-constructorcategory struct))
 	       (when (null data) ;domain or package then subfield of constructormodemap
-		 (setq data (cadar (|getConstructorModemapFromDB| constructor))))))
+		 (setq data (cadar (|getConstructorModemap| constructor))))))
 	    (operationalist
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))

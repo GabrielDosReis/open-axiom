@@ -223,7 +223,7 @@ conform2StringList(form,opFn,argFn,exception) ==
     rest getDualSignatureFromDB op
   atypes :=
     special => cosig
-    getConstructorModemapFromDB(op).mmSource
+    getConstructorModemap(op).mmSource
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     keyword :=
       x is [":",y,t] =>
@@ -267,7 +267,7 @@ dbOuttran form ==
     op := form
     args := nil
   cosig := rest getDualSignatureFromDB op
-  atypes := getConstructorModemapFromDB(op).mmSource
+  atypes := getConstructorModemap(op).mmSource
   argl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pred => x
     typ := sublisFormal(args,atype)
@@ -891,7 +891,7 @@ evalableConstructor2HtString domform ==
         f is 'QUOTE => first args
         [f,:[unquote x for x in args]]
       arg
-  fargtypes := getConstructorModemapFromDB(conname).mmSource
+  fargtypes := getConstructorModemap(conname).mmSource
 --argtypes:= sublisFormal(arglist,fargtypes)
   form2HtString([conname,:[fn for arg in arglist for x in coSig
                    for ftype in fargtypes]],nil,true) where

@@ -170,9 +170,6 @@ $libFile := nil
 $lisplibModemapAlist := []
 
 ++
-$lisplibModemap := nil
-
-++
 $lisplibOperationAlist := []
 
 ++

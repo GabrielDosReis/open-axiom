@@ -238,7 +238,7 @@ get1(x,prop,e) ==
 
 get2(x,prop) ==
   prop="modemap" and ident? x and constructor? x =>
-    (u := getConstructorModemapFromDB x) => [u]
+    (u := getConstructorModemap x) => [u]
     nil
   nil
 

@@ -318,7 +318,7 @@ conform2OutputForm(form) ==
   [op,:args] := form
   null args => form
   cosig := rest getDualSignatureFromDB op
-  atypes := getConstructorModemapFromDB(op).mmSource
+  atypes := getConstructorModemap(op).mmSource
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]
     pred => conform2OutputForm x

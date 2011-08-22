@@ -542,7 +542,7 @@ getExportCategory form ==
   op is 'Union => ['UnionCategory,:argl]
   op is 'Enumeration => ['EnumerationCategory,:argl]
   op is 'Mapping => ['MappingCategory,:argl]
-  [[.,target,:tl],:.] := getConstructorModemapFromDB op
+  [[.,target,:tl],:.] := getConstructorModemap op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
 NRTextendsCategory1(domform,exCategory,addForm,env) ==
@@ -1048,10 +1048,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
  
     -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:[MKQ f for f in sargl]]
+    dbConstructorModemap(constructorDB op') := [[parForm,:parSignature],[true,op']]
     $lisplibCategory:= formalBody
     if $LISPLIB then
-      modemap:= [[parForm,:parSignature],[true,op']]
-      $lisplibModemap:= modemap
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
@@ -1437,9 +1436,9 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     reportOnFunctorCompilation()
  
     --  5. give operator a 'modemap property
+    modemap := [[parForm,:parSignature],[true,op']]
+    dbConstructorModemap(constructorDB op') := modemap
     if $LISPLIB then
-      modemap:= [[parForm,:parSignature],[true,op']]
-      $lisplibModemap:= modemap
       $lisplibCategory := modemap.mmTarget
       $lisplibParents  :=         
         getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
@@ -1454,7 +1453,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         $lisplibFunctionLocations := applySubst($pairlis,$functionLocations)
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
-            NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm,$e)
+            NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
             --either lookupComplete (for forgetful guys) or lookupIncomplete
         $byteAddress :local := 0
         $byteVec :local := nil

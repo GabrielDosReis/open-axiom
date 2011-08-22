@@ -1,5 +1,10 @@
 2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (getConstructorModemap): Rename from
+	getConstructorModemapFromDB.  Adjust callers.
+
+2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/database.boot (niladicConstructor?): Rename from
 	niladicConstructorFromDB.  Use getConstructorFormFromDB.
 	Adjust callers.
