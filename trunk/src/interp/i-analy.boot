@@ -334,7 +334,7 @@ bottomUpCompilePredicate(pred, name) ==
 ++ By default, the ambiguity is resolved to types. 
 ++ See bottomUpIdentifier and isType.
 isUnambiguouslyConstructor(id,t) ==
-  niladicConstructorFromDB id => nil
+  niladicConstructor? id => nil
   k := getConstructorKindFromDB id or
         builtinFunctorName? id => "domain"
         builtinCategoryName? id => "category"
@@ -395,7 +395,7 @@ namedConstant(id,t) ==
   -- ignore polymorphic constants are not supported yet.
   doms := [getDCFromSystemModemap sysmm for sysmm in sysmms]
   candidates := nil
-  for dc in doms | niladicConstructorFromDB first dc repeat
+  for dc in doms | niladicConstructor? first dc repeat
     LASSOC(id,getConstructorOperationsFromDB dc.op) is [[sig,.,.,"CONST"]] =>
       candidates := [[dc,sig],:candidates]
   null candidates => nil

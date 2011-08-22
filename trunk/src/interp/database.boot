@@ -131,10 +131,10 @@ getConstructorAttributesFromDB: %Constructor -> %Form
 getConstructorAttributesFromDB ctor ==
   GETDATABASE(ctor,"ATTRIBUTES")
 
-niladicConstructorFromDB: %Constructor -> %Boolean
-niladicConstructorFromDB ctor ==
-  property(ctor,'LOADED) => dbNiladic? constructorDB ctor
-  GETDATABASE(ctor,"NILADIC")
+niladicConstructor?: %Constructor -> %Boolean
+niladicConstructor? ctor ==
+  form := getConstructorFormFromDB ctor => form.args = nil
+  false
 
 constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
 constructorHasCategoryFromDB p ==

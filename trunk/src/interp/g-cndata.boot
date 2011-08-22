@@ -179,13 +179,13 @@ unabbrev1(u,modeIfTrue) ==
     modeIfTrue =>
       d:= isDomainValuedVariable u => u
       a := abbreviation? u =>
-        niladicConstructorFromDB a => [a]
+        niladicConstructor? a => [a]
         largs := ['_$EmptyMode for arg in
           getPartialConstructorModemapSig(a)]
         unabbrev1([u,:largs],modeIfTrue)
       u
     a:= abbreviation?(u) or u
-    niladicConstructorFromDB a => [a]
+    niladicConstructor? a => [a]
     a
   [op,:arglist] := u
   op = 'Join => ['Join, :[unabbrev1(x, modeIfTrue) for x in arglist]]

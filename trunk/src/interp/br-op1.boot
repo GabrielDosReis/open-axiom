@@ -920,7 +920,7 @@ mathform2HtString form == escapeString
 
 niladicHack form ==
   form isnt [.,:.] => form
-  form is [x] and niladicConstructorFromDB x => x
+  form is [x] and niladicConstructor? x => x
   [niladicHack x for x in form]
 
 --============================================================================

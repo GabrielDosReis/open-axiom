@@ -737,7 +737,7 @@
   (format t "~a: ~a~%" 'object
 	  (|getConstructorModuleFromDB| constructor))
   (format t "~a: ~a~%" 'niladic
-	  (|niladicConstructorFromDB| constructor))
+	  (|niladicConstructor?| constructor))
   (format t "~a: ~a~%" 'abbreviation
 	  (|getConstructorAbbreviationFromDB| constructor))
   (format t "~a: ~a~%" 'constructor?

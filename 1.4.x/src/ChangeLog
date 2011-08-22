@@ -1,5 +1,11 @@
 2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (niladicConstructor?): Rename from
+	niladicConstructorFromDB.  Use getConstructorFormFromDB.
+	Adjust callers.
+
+2011-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($lisplibAbbreviation): Remove.  Adjust users.
 	($lisplibForm): Likewise.
 	* interp/c-doc.boot (finalizeDocumentation): Take constructor's

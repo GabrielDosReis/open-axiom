@@ -177,7 +177,7 @@ postAtom x ==
   x=0 => $Zero
   x=1 => $One
   x='T => "T$" -- rename T in spad code to T$
-  ident? x and niladicConstructorFromDB x => [x]
+  ident? x and niladicConstructor? x => [x]
   x="," => "%Comma"
   x = "^" => "**"  -- always use `**' internally for exponentiation
   x

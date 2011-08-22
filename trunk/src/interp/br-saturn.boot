@@ -1164,7 +1164,7 @@ htShowPageStarSaturn() ==
 ++ returns true if op designate a niladic constructor.  Note that
 ++ constructors are symbols whereas ordinary operations are strings.
 operationIsNiladicConstructor op ==
-  ident? op => niladicConstructorFromDB op
+  ident? op => niladicConstructor? op
   false
 
 ++ Like operationIsNiladicConstructor() except that we just want

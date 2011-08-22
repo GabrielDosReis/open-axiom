@@ -102,7 +102,7 @@ evaluateType0 form ==
     builtinConstructor? op => [op,:[evaluateType arg for arg in argl]]
     constructor? op => evaluateType1 form
     nil
-  ident? form and niladicConstructorFromDB form => evaluateType [form]
+  ident? form and niladicConstructor? form => evaluateType [form]
   ident? form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
@@ -150,7 +150,7 @@ evaluateType form ==
         symbolMember?(arg,args) => throwKeyedMsg("S2IL0032",[arg])
       form
     evaluateFormAsType form
-  ident? form and niladicConstructorFromDB form => evaluateType [form]
+  ident? form and niladicConstructor? form => evaluateType [form]
   ident? form and (constructor? form or builtinConstructor? form) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
   evaluateFormAsType form
