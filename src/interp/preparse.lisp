@@ -168,7 +168,7 @@
  NOCOMS  (setq SLOC (INDENT-POS A))
          (setq A (DROPTRAILINGBLANKS A))
          (cond ((NULL SLOC) (setq SLOC PSLOC) (GO READLOOP)))
-         (cond ((EQ (ELT A (MAXINDEX A)) XCAPE)
+         (cond ((EQ (ELT A (MAXINDEX A)) #\_)
                 (setq CONTINUE T a (subseq A (MAXINDEX A))))
                ((setq CONTINUE NIL)))
          (if (and (null LINES) (= SLOC 0)) ;;test for skipping constructors
@@ -346,7 +346,7 @@
                         (format out-stream "~&;~A~%" X)))
   (setq $EchoLineStack ()))
  
-(defun ESCAPED (STR N) (and (> N 0) (EQ (CHAR STR (1- N)) XCAPE)))
+(defun ESCAPED (STR N) (and (> N 0) (EQ (CHAR STR (1- N)) #\_)))
  
 (defun atEndOfUnit (X) (NULL (STRINGP X)) )
  
