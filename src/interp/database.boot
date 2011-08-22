@@ -77,9 +77,9 @@ getConstructorAncestorsFromDB ctor ==
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
-getConstructorModemapFromDB: %Constructor -> %Mode
-getConstructorModemapFromDB form ==
-  GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
+getConstructorModemap: %Constructor -> %Mode
+getConstructorModemap ctor ==
+  GETDATABASE(ctor, 'CONSTRUCTORMODEMAP)
  
 getConstructorFormFromDB: %Constructor -> %Form
 getConstructorFormFromDB ctor ==
