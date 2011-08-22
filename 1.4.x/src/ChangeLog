@@ -1,5 +1,15 @@
 2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/metalex.lisp (LINE-HANDLER, NEXT-LINE, XCAPE): Remove.
+	(XTOKENREADER, GET-TOKEN, NEXT-META-LINE): Likewise.
+	(META_ERROR_HANDLER, META-SYNTAX-ERROR, META-META-ERROR-HANLER):
+	Likewise.
+	* interp/debug.lisp: Do not set /XCAPE property.
+	* interp/bootlex.lisp (INIT-BOOT/SPAD-READER): Do not set
+	XTOKENRADER, LINE-HANDLER, META_ERROR_HANDLER.
+
+2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp: Remove NILADIC field from DATABASE structure.
 	(dbNiladic?): Remove.  Adjust users.
 	(WRITE-INTERP): Don't write NILADIC field.

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -168,10 +168,6 @@
 
 ; *** Next Line
 
-(defparameter Line-Handler 'next-META-line "Who grabs lines for us.")
-
-(defun next-line (&optional (in-stream t)) (funcall Line-Handler in-stream))
-
 (defun make-string-adjustable (s)
   (cond ((adjustable-array-p s) s)
         (t (make-array (array-dimensions s) :element-type 'character
@@ -262,8 +258,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 
 ; *** Current Char, Next Char, Advance Char
 
-(defparameter xcape #\_ "Escape character for Boot code.")
-
 (defun Current-Char ()
   "Returns the current character of the line, initially blank for an unread line."
   (if (Line-Past-End-P Current-Line) #\Return (Line-Current-Char Current-Line)))
@@ -279,7 +273,7 @@ is a token separator, which blank is equivalent to."
   "Advances IN-STREAM, invoking Next Line if necessary."
   (loop (cond ((not (Line-At-End-P Current-Line))
                (return (Line-Advance-Char Current-Line)))
-              ((next-line in-stream)
+              ((next-boot-line in-stream)
                (return (current-char)))
               ((return nil)))))
 
@@ -326,7 +320,7 @@ NonBlank is true if the token is not preceded by a blank."
 ; *** Current Token, Next Token, Advance Token
 
 (defun try-get-token (token)
-  (let ((tok (get-token token)))
+  (let ((tok (get-boot-token token)))
     (if tok (progn (incf Valid-Tokens) token))))
 
 (defun current-symbol () (make-symbol-of (current-token)))
@@ -364,14 +358,6 @@ NonBlank is true if the token is not preceded by a blank."
     (2 (setq Prior-Token (copy-token Current-Token))
        (setq Current-Token (copy-token Next-Token))
        (decf Valid-Tokens))))
-
-
-(defparameter XTokenReader 'get-meta-token "Name of tokenizing function")
-
-; *** Get Token
-
-(defun get-token (token) (funcall XTokenReader token))
-
 
 
 ; 1D. A Reduction
@@ -446,23 +432,6 @@ NonBlank is true if the token is not preceded by a blank."
 
  
 ; *** 2. META Line Handling
- 
-(defun next-META-line (&optional (in-stream t))
- 
-"Get next line, trimming trailing blanks and trailing comments.
-One trailing blank is added to a non-blank line to ease between-line
-processing for Next Token (i.e., blank takes place of return).  Returns T
-if it gets a non-blank line, and NIL at end of stream."
- 
-  (prog (string)
-empty (if File-Closed (return nil))
-      (setq string (kill-trailing-blanks (kill-comments
-                                          (get-a-line in-stream))))
-      (if (= (length string) 0) (go empty))
-      (Line-New-Line (suffix #\Space string) Current-Line)
-      (if |$Echo| (Print-New-Line (Line-Buffer Current-Line) out-stream))
-      (return t)))
- 
 (defparameter Comment-Character #\% "Delimiter of comments in Meta code.")
  
 (defun kill-comments (string)
@@ -792,26 +761,3 @@ special character be the atom whose print name is the character itself."
 (defparameter $num_of_meta_errors 0)
 
 (defparameter Meta_Errors_Occurred nil  "Did any errors occur")
-
-(defparameter Meta_Error_Handler 'meta-meta-error-handler)
-
-(defun meta-syntax-error (&optional (wanted nil) (parsing nil))
-  (funcall Meta_Error_Handler wanted parsing))
- 
-(defun meta-meta-error-handler (&optional (wanted nil) (parsing nil))
-  "Print syntax error indication, underline character, scrub line."
-  (format out-stream "~&% MetaLanguage syntax error: ")
-  (if (Line-Past-End-P Current-Line)
-      (cond ((and wanted parsing)
-             (format out-stream "wanted ~A while parsing ~A.~%"
-                     wanted parsing))
-            (wanted (format out-stream "wanted ~A.~%" wanted))
-            (parsing (format out-stream "while parsing ~A.~%" parsing)))
-      (progn (format out-stream "~:[here~;wanted ~A here~]" wanted wanted)
-             (format out-stream "~:[~; while parsing ~A~]:~%" parsing parsing)
-             (current-line-print)
-             (current-line-clear)
-             (current-token)
-             (incf $num_of_meta_errors)
-             (setq Meta_Errors_Occurred t)))
-   nil)

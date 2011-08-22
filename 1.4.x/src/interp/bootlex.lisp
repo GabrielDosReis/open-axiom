@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -56,9 +56,6 @@
 (defun init-boot/spad-reader ()
   (setq $SPAD_ERRORS (VECTOR 0 0 0))
   (setq SPADERRORSTREAM |$OutputStream|)
-  (setq XTokenReader 'get-BOOT-token)
-  (setq Line-Handler 'next-BOOT-line)
-  (setq Meta_Error_Handler 'spad_syntax_error)
   (setq File-Closed nil)
   (Next-Lines-Clear)
   (setq Boot-Line-Stack nil)
@@ -88,7 +85,6 @@
            (*comp370-apply* (function print-defun))
            (*fileactq-apply* (function print-defun))
            ($SPAD T)
-           (XCape #\_)
            (OPTIONLIST nil)
            (*EOF* NIL)
            (File-Closed NIL)
@@ -238,7 +234,7 @@ or the chracters ?, !, ' or %"
       (suffix (current-char) buf)
       (advance-char)
    id (let ((cur-char (current-char)))
-         (cond ((char= cur-char XCape)
+         (cond ((char= cur-char #\_)
                 (if (not (advance-char)) (go bye))
                 (suffix (current-char) buf)
                 (setq escaped? t)
@@ -290,7 +286,7 @@ or the chracters ?, !, ' or %"
         (if (char/= (current-char) #\") (RETURN NIL) (advance-char))
         (loop
          (if (char= (current-char) #\") (return nil))
-         (SUFFIX (if (char= (current-char) XCape)
+         (SUFFIX (if (char= (current-char) #\_)
                      (advance-char)
                    (current-char))
                  BUF)

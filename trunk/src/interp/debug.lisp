@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -62,9 +62,6 @@
 (MAKEPROP 'INPUT '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'SPAD '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'BOOT '/TERMCHR '(#\:  #\<  #\  #\())
-(MAKEPROP 'INPUT '/XCAPE #\_)
-(MAKEPROP 'BOOT '/XCAPE '#\_)
-(MAKEPROP 'SPAD '/XCAPE '#\_)
 (MAKEPROP 'META '/READFUN 'META\,RULE)
 (MAKEPROP 'INPUT '/READFUN '|New,LEXPR,Interactive|)
 (MAKEPROP 'INPUT '/TRAN '/TRANSPAD)
@@ -129,13 +126,13 @@
 (DEFUN /D-2 (FN INFILE OUTPUTSTREAM OP EDITFLAG TRACEFLAG)
        (declare (special OUTPUTSTREAM))
   (PROG (FT oft SFN X EDINFILE FILE DEF KEY RECNO U W SOURCEFILES
-         |$Echo| SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
+         |$Echo| SINGLINEMODE INPUTSTREAM SPADERRORSTREAM
          ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
          TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
-        (declare (special |$Echo| SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
+        (declare (special |$Echo| SINGLINEMODE INPUTSTREAM
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
@@ -160,9 +157,7 @@
                     ;;?(REMFLAG S-SPADKEY 'KEY)    ;  hack !!
                     (SETQ  FT (|pathnameType| FILE))
                     (SETQ  oft (|object2Identifier| (UPCASE FT)))
-                    (SETQ XCAPE (OR (GET oft '/XCAPE) #\|))
                     (SETQ COMMENTCHR (GET oft '/COMMENTCHR))
-                    (SETQ XTOKENREADER (OR (GET oft '/NXTTOK) 'METATOK))
                     (SETQ DEFINITION_NAME FN)
                     (SETQ KEY
                           (STRCONC

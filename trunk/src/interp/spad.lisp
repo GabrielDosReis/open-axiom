@@ -77,7 +77,6 @@
 (defvar sortpred)
 (defvar SPADSYSKEY '(EOI EOL))
 (defvar STAKCOLUMN -1)
-(defvar XTOKENREADER 'SPADTOK)
 (defvar xtrans '|boot-new|)
 (defvar |$IOAlist| '((|%i| . (|gauss| 0 1))))
 (defvar |InteractiveMode|)
@@ -264,16 +263,13 @@
          (S-PROCESS x))))
 
 (defun |New,ENTRY,1| ()
-    (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG| XCAPE
+    (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG|
           SINGLELINEMODE OK ISID NBLNK COUNT CHR ULCASEFG ($LINESTACK 'BEGIN_UNIT)
           $TOKSTACK COMMENTCHR TOK LINE BACK INPUTSTREAM XTRANS
-          XTOKENREADER STACK STACKX TRAPFLAG)
-      (SETQ XTRANS '|boot-New|
-            XTOKENREADER 'NewSYSTOK
-            Meta_Error_Handler 'SPAD_SYNTAX_ERROR)
+          STACK STACKX TRAPFLAG)
+      (SETQ XTRANS '|boot-New|)
       (FLAG |boot-NewKEY| 'KEY)
       (PROMPT)
-      (SETQ XCAPE '_)
       (SETQ COMMENTCHR 'IGNORE)
       (SETQ INITCOLUMN 0)
       (SETQ SINGLELINEMODE T)   ; SEE NewSYSTOK
