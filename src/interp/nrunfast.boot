@@ -592,7 +592,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
 ++ resolved to constructor calls.  Note: it is assumed that no
 ++ such resolution has already occured.
 resolveNiladicConstructors form ==
-  ident? form and niladicConstructorFromDB form => [form]
+  ident? form and niladicConstructor? form => [form]
   form isnt [.,:.] => form
   form is ["QUOTE",:.] => form
   for args in tails rest form repeat

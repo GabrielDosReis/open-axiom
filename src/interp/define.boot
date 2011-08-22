@@ -874,7 +874,7 @@ macroExpand(x,e) ==   --not worked out yet
       macroExpand(rhs,e)]
   -- macros should override niladic props
   [op,:args] := x
-  ident? op and args = nil and niladicConstructorFromDB op and
+  ident? op and args = nil and niladicConstructor? op and
     (u := get(op,"macro", e)) => macroExpand(u,e)
   ident? op and (get(op,"macro",e) is ['%mlambda,parms,body]) =>
     nargs := #args
@@ -1209,7 +1209,7 @@ putDomainsInScope(x,e) ==
   put("$DomainsInScope","special",newValue,e)
 
 getOperationAlist(name,functorForm,form) ==
-  if name isnt [.,:.] and niladicConstructorFromDB name then 
+  if name isnt [.,:.] and niladicConstructor? name then 
     functorForm:= [functorForm]
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
