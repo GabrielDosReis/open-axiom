@@ -214,7 +214,6 @@
  cosig                      ; interp.
  defaultdomain              ; interp.
  modemaps                   ; interp.
- niladic                    ; interp.
  object                     ; interp.
  operationalist             ; interp.
  documentation              ; browse.
@@ -247,9 +246,6 @@
 
 (defmacro |dbSuperDomain| (db)
   `(database-superdomain ,db))
-
-(defmacro |dbNiladic?| (db)
-  `(database-niladic ,db))
 
 ; there are only a small number of domains that have default domains.
 ; rather than keep this slot in every domain we maintain a list here.
@@ -570,7 +566,6 @@
 ;    constructorcategory -- note that this info is the cadar of the
 ;         constructormodemap for domains and packages so it is stored
 ;         as NIL for them. it is valid for categories.
-;    niladic             -- t or nil directly
 ;    abbrev              -- kept directly
 ;    cosig               -- kept directly
 ;    constructorkind     -- kept directly
@@ -600,13 +595,12 @@
 	(setf (database-modemaps dbstruct) (fourth item))
 	(setf (database-object dbstruct) (fifth item))
 	(setf (database-constructorcategory dbstruct) (sixth item))
-	(setf (|dbNiladic?| dbstruct) (seventh item))
-	(setf (|dbAbbreviation| dbstruct) (eighth item))
-	(setf (get (eighth item) 'abbreviationfor) (first item)) ;invert
-	(setf (database-cosig dbstruct) (ninth item))
-	(setf (|dbConstructorKind| dbstruct) (tenth item))
-	(setf (database-ancestors dbstruct) (nth 11 item))
-	(setf (|dbSuperDomain| dbstruct) (nth 12 item))
+	(setf (|dbAbbreviation| dbstruct) (seventh item))
+	(setf (get (seventh item) 'abbreviationfor) (first item)) ;invert
+	(setf (database-cosig dbstruct) (eighth item))
+	(setf (|dbConstructorKind| dbstruct) (ninth item))
+	(setf (database-ancestors dbstruct) (nth 10 item))
+	(setf (|dbSuperDomain| dbstruct) (nth 11 item))
 	))
     
     (format t "~&")))
@@ -736,8 +730,6 @@
 	  (|constructorHasCategoryFromDB| constructor))
   (format t "~a: ~a~%" 'object
 	  (|getConstructorModuleFromDB| constructor))
-  (format t "~a: ~a~%" 'niladic
-	  (|niladicConstructor?| constructor))
   (format t "~a: ~a~%" 'abbreviation
 	  (|getConstructorAbbreviationFromDB| constructor))
   (format t "~a: ~a~%" 'constructor?
@@ -837,10 +829,6 @@
 	     (setq stream *interp-stream*)
 	     (when (setq struct (|constructorDB| constructor))
 	       (setq data (database-object struct))))
-	    (niladic
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbNiladic?| struct))))
 	    (constructor?
 	     (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
 	    (superdomain
@@ -895,10 +883,11 @@
 	(when *miss*
 	  (format t "getdatabase miss: ~20a ~a~%" key constructor))
 	(file-position stream data)
-	;; Don't attempt to uncompress codes -- they are not compressed.
 	(setq data (read stream))
-	(unless (eq key 'superdomain)
-	  (setq data (unsqueeze data)))
+	;; Don't attempt to uncompress codes -- they are not compressed.
+	(cond ((eq key 'superdomain)
+	       (rplaca data (unsqueeze (car data))))
+	      (t (setq data (unsqueeze data))))
 	;;(setq data (unsqueeze (read stream)))
 	(case key ; cache the result of the database read
 	      (operation           
@@ -919,8 +908,6 @@
 	       (setf (database-modemaps struct) data))
 	      (object    
 	       (setf (database-object struct) data))
-	      (niladic   
-	       (setf (|dbNiladic?| struct) data))
 	      (abbreviation 
 	       (setf (|dbAbbreviation| struct) data))
 	      (constructor 
@@ -1091,8 +1078,6 @@
 			   (fetchdata alist in "attributes"))
 		     (setf (database-predicates dbstruct)
 			   (fetchdata alist in "predicates"))
-		     (setf (|dbNiladic?| dbstruct)
-			   (when (fetchdata alist in "NILADIC") t))
 		     (setf (|dbSuperDomain| dbstruct)
 			   (fetchdata alist in "superDomain"))
 		     (addoperations key oldmaps)
@@ -1296,7 +1281,7 @@
  "build interp.daase from hash tables"
  (declare (special *ancestors-hash*))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
-        concategory categorypos kind niladic cosig abbrev defaultdomain
+        concategory categorypos kind cosig abbrev defaultdomain
         ancestors ancestorspos superpos out)
   (print "building interp.daase")
   (setq out (open "interp.build" :direction :output))
@@ -1329,7 +1314,6 @@
 	  (print concategory out)
 	  (finish-output out))
       (setq categorypos nil))
-    (setq niladic (|dbNiladic?| struct))
     (setq abbrev (|dbAbbreviation| struct))
     (setq cosig (database-cosig struct))
     (setq kind (|dbConstructorKind| struct))
@@ -1347,11 +1331,11 @@
 	  (let ((super (|dbSuperDomain| struct)))
 	    (when super
 	      (prog1 (file-position out)
-		(print super out)
+		(print (list (squeeze (car super)) (second super)) out)
 		(finish-output out)))))
     
     (push (list constructor opalistpos cmodemappos modemapspos
-		obj categorypos niladic abbrev cosig kind defaultdomain
+		obj categorypos abbrev cosig kind defaultdomain
 		ancestorspos superpos) master)))
   (finish-output out)
   (setq masterpos (file-position out))

@@ -131,7 +131,7 @@ all-asq: all-hyper-post all-utils
 	cd etc && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-databases
-all-databases:  all-interp all-doc
+all-databases:  all-interpsys all-doc
 	cd etc && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-hyper-post

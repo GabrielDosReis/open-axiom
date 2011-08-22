@@ -1040,11 +1040,6 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis := pairList(argl,$FormalMapVariableList)
     parSignature:= applySubst(pairlis,signature')
     parForm:= applySubst(pairlis,form)
-    -- If we are only interested in the defaults, there is no point
-    -- in writing out compiler info and load-time stuff for 
-    -- the category which is assumed to have already been translated.
-    if not $compileDefaultsOnly and null sargl then
-      writeNiladic?(op',$libFile)
  
     -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:[MKQ f for f in sargl]]
@@ -1076,7 +1071,6 @@ compDefineCategory(df,m,e,prefix,fal) ==
   dbConstructorForm(constructorDB ctor) := lhs
   $insideFunctorIfTrue or $LISPLIB = nil or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
-  dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
 
 
@@ -1313,9 +1307,6 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $profileAlist:    local := nil
   $mutableDomain: local := false
   $LISPLIB = nil => compDefineFunctor1(df,m,e,prefix,fal)
-  lhs := second df
-  ctor := opOf lhs
-  dbNiladic?(constructorDB ctor) := lhs isnt [.,:.] or lhs.args = nil
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
 compDefineFunctor1(df is ['DEF,form,signature,nils,body],
@@ -1443,8 +1434,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
       $lisplibSlot1 := $NRTslot1Info
       $lisplibOperationAlist:= operationAlist
-    if null argl then
-      writeNiladic?(op',$libFile)
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,

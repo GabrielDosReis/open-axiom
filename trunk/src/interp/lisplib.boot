@@ -531,11 +531,6 @@ initializeLisplib libName ==
 mkCtorDBForm ctor ==
   ['constructorDB,quoteForm ctor]
 
-writeNiladic?(ctor,file) ==
-  insn := ['%store,['dbNiladic?,mkCtorDBForm ctor],'%true]
-  LAM_,FILEACTQ('NILADIC,expandToVMForm insn)
-  lisplibWrite('"NILADIC",true,file)
-
 writeInfo(ctor,info,key,prop,file) ==
   if info ~= nil then
     insn := ['%store,[prop,mkCtorDBForm ctor],quoteForm info]
