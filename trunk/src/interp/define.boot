@@ -316,9 +316,9 @@ actOnInfo(u,$e) ==
          assoc(cat,categoryAncestors ocatvec) is [.,"T",.] => $e
              --what was being asserted is an ancestor of what was known
       if name="$"
-        then $e:= augModemapsFromCategory(name,name,name,cat,$e)
+        then $e:= augModemapsFromCategory(name,name,cat,$e)
         else
-          genDomainView(name,name,cat,"HasCategory")
+          genDomainView(name,cat,"HasCategory")
           -- a domain upgrade at function level is local to that function.
           if not $insideCapsuleFunctionIfTrue and 
             not symbolMember?(name,$functorLocalParameters) then
@@ -1208,42 +1208,39 @@ putDomainsInScope(x,e) ==
   put("$DomainsInScope","special",newValue,e)
 
 getOperationAlist(name,functorForm,form) ==
-  if name isnt [.,:.] and niladicConstructor? name then 
-    functorForm:= [functorForm]
+  if ident? name and niladicConstructor? name then 
+    functorForm := [functorForm]
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
-  $insideFunctorIfTrue and name="$" =>
+  $insideFunctorIfTrue and name is "$" =>
     $domainShell => categoryExports $domainShell
     systemError '"$ has no shell now"
   T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; categoryExports T.expr)
   stackMessage('"not a category form: %1bp",[form])
  
-substNames(domainName,viewName,functorForm,opalist) ==
+substNames(domainName,functorForm,opalist) ==
   functorForm := substitute("$$","$", functorForm)
   nameForDollar :=
     isCategoryPackageName functorForm => second functorForm
     domainName
   [[:substitute("$","$$",substitute(nameForDollar,"$",modemapform)),
-       [sel, viewName,if domainName = "$" then pos else
+       [sel, domainName,if domainName is "$" then pos else
                                          modemapform.mmTarget]]
      for [:modemapform,[sel,"$",pos]] in
        applySubst(pairList($FormalMapVariableList,KDR functorForm),opalist)]
  
-evalAndSub(domainName,viewName,functorForm,form,$e) ==
+evalAndSub(domainName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
   categoryObject? form =>
-    [substNames(domainName,viewName,functorForm,categoryExports form),$e]
+    [substNames(domainName,functorForm,categoryExports form),$e]
   --next lines necessary-- see MPOLY for which $ is actual arg. --- RDJ 3/83
   if CONTAINED("$$",form) then $e:= put("$$","mode",get("$","mode",$e),$e)
   opAlist:= getOperationAlist(domainName,functorForm,form)
-  substAlist:= substNames(domainName,viewName,functorForm,opAlist)
+  substAlist:= substNames(domainName,functorForm,opAlist)
   [substAlist,$e]
  
-augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
-  [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
-  --  catform:= (categoryObject? categoryForm => categoryForm.0; categoryForm)
-  -- catform appears not to be used, so why set it?
-  --if not $InteractiveMode then
+augModemapsFromCategory(domainName,functorForm,categoryForm,e) ==
+  [fnAlist,e]:= evalAndSub(domainName,functorForm,categoryForm,e)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   condlist:=[]
@@ -1268,11 +1265,11 @@ augModemapsFromDomain1(name,functorForm,e) ==
   property(KAR functorForm,"makeFunctionList") =>
     addConstructorModemaps(name,functorForm,e)
   functorForm isnt [.,:.] and (catform := getmode(functorForm,e)) =>
-    augModemapsFromCategory(name,name,functorForm,catform,e)
+    augModemapsFromCategory(name,functorForm,catform,e)
   mappingForm := getmodeOrMapping(KAR functorForm,e) =>
     ["Mapping",categoryForm,:functArgTypes] := mappingForm
     catform := substituteCategoryArguments(rest functorForm,categoryForm)
-    augModemapsFromCategory(name,name,functorForm,catform,e)
+    augModemapsFromCategory(name,functorForm,catform,e)
   stackMessage('"%1pb is an unknown mode",[functorForm])
   e
  
@@ -1288,23 +1285,6 @@ substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
   arglAssoc := [[INTERNL("#",STRINGIMAGE i),:a] for i in 1.. for a in argl]
   applySubst(arglAssoc,catform)
- 
-         --Called, by compDefineFunctor, to add modemaps for $ that may
-         --be equivalent to those of Rep. We must check that these
-         --operations are not being redefined.
-augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
-  [fnAlist,e]:= evalAndSub(domainName,domainName,domainName,categoryForm,e)
-  [repFnAlist,e]:= evalAndSub("Rep","Rep",repDefn,getmode(repDefn,e),e)
-  catform:= (categoryObject? categoryForm => categoryForm.0; categoryForm)
-  compilerMessage('"Adding %1p modemaps",[domainName])
-  e:= putDomainsInScope(domainName,e)
-  for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
-    u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
-    u and not AMFCR_,redefinedList(op,functorBody) =>
-      fnsel' := third u
-      e:= addModemap(op,domainName,sig,cond,fnsel',e)
-    e:= addModemap(op,domainName,sig,cond,fnsel,e)
-  e
  
 ++ Subroutine of inferConstructorImplicitParameters.
 typeDependencyPath(m,path,e) ==
@@ -1397,7 +1377,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     for x in argl repeat NRTgetLocalIndex x
     [.,.,$e]:= compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
-      $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
+      $e:= augModemapsFromCategory('_$,'_$,target,$e)
     $signature:= signature'
     parSignature:= applySubst($pairlis,signature')
     parForm:= applySubst($pairlis,form)
@@ -1579,38 +1559,38 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
     fn(a,s) ==
       isCategoryForm(s,$CategoryFrame) =>
         s is ["Join",:catlist] => genDomainViewList(a,s.args)
-        [genDomainView(a,a,s,"getDomainView")]
+        [genDomainView(a,s,"getDomainView")]
       [a]
  
-genDomainOps(viewName,dom,cat) ==
+genDomainOps(dom,cat) ==
   oplist:= getOperationAlist(dom,dom,cat)
   siglist:= [sig for [sig,:.] in oplist]
-  oplist:= substNames(dom,viewName,dom,oplist)
+  oplist:= substNames(dom,dom,oplist)
   cd:=
-    ["%LET",viewName,['mkOpVec,dom,['%list,:
+    ["%LET",dom,['mkOpVec,dom,['%list,:
       [['%list,MKQ op,['%list,:[mkTypeForm mode for mode in sig]]]
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
   for [opsig,cond,:.] in oplist for i in 0.. repeat
     if listMember?(opsig,$ConditionalOperators) then cond:=nil
     [op,sig]:=opsig
-    $e:= addModemap(op,dom,sig,cond,['ELT,viewName,i],$e)
-  viewName
+    $e := addModemap(op,dom,sig,cond,['ELT,dom,i],$e)
+  dom
  
-genDomainView(viewName,originalName,c,viewSelector) ==
-  c is ['CATEGORY,.,:l] => genDomainOps(viewName,originalName,c)
+genDomainView(viewName,c,viewSelector) ==
+  c is ['CATEGORY,.,:l] => genDomainOps(viewName,c)
   code:=
     c is ['SubsetCategory,c',.] => c'
     c
-  $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
-  cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
+  $e:= augModemapsFromCategory(viewName,nil,c,$e)
+  cd:= ["%LET",viewName,[viewSelector,viewName,mkTypeForm code]]
   if not listMember?(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
 
 genDomainViewList: (%Symbol,%List %Form) -> %List %Code
 genDomainViewList(id,catlist) ==
-  [genDomainView(id,id,cat,"getDomainView") 
+  [genDomainView(id,cat,"getDomainView") 
      for cat in catlist | isCategoryForm(cat,$EmptyEnvironment)]
  
 mkOpVec(dom,siglist) ==
