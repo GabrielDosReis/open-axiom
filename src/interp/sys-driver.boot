@@ -174,6 +174,12 @@ restart() ==
 
 --%    
 
+initializeDatabases firstTime? ==
+  initdb := getOptionValue "initial-db" => populateDBFromFile initdb
+  not firstTime? => openDatabases()
+  fillDatabasesInCore()
+  mkLowerCaseConTable()
+
 ++ Initialize all global states that need to.  Sub-routine of the command
 ++ line compiler, the script executor, etc.  Mess with care.
 initializeGlobalState() ==
@@ -211,11 +217,7 @@ initializeGlobalState() ==
   -- 3. Databases
   if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"database"])
-  if init? then
-    fillDatabasesInCore()
-    mkLowerCaseConTable()
-  else  
-    openDatabases()
+  initializeDatabases init?
 
   -- 4. Constructors
   if $verbose and $displayStartMsgs then 

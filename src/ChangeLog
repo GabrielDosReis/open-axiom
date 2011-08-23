@@ -1,3 +1,19 @@
+2011-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (initializeDatabases): New.
+	(initializeGlobalState): Use it.
+	* interp/spad-parser.boot (parseSpadFile): Tidy.
+	* interp/g-cndata.boot (installConstructor): Exit early it global
+	table not initialized.
+	* interp/database.boot (makeInitialDB): New.
+	(populateDBFromFile): Likewise.
+	* interp/daase.lisp: Introduce more DB accessors.
+	* interp/br-util.boot (dbSourceFile): Remove.
+	* interp/br-con.boot (kdPageInfo): Use
+	getConstructorSourceFileFromDB instead of dbSourceFile.
+	(kPage): Likewise.
+	* algebra/Makefile.in (SPADFILES): Include domain.spad
+
 2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (initializeGlobalState): Construct

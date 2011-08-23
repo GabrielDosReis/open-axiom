@@ -55,6 +55,7 @@ OA_SRC_TARGETS = \
 	all-local \
 	all-src \
 	all-algebra \
+	all-algstrap \
 	all-asq \
 	all-axiomsys \
 	all-boot \
@@ -77,7 +78,7 @@ OA_SRC_TARGETS = \
 
 if OA_BUILD_GCL
 all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-  all-algebra all-input all-src all-local: all-gcl
+  all-algebra all-algstrap all-input all-src all-local: all-gcl
 endif
 
 all: all-local
@@ -85,7 +86,7 @@ $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
 .PHONY: all-algstrap
-all-algstrap:
+all-algstrap: all-interpsys
 	cd src/algebra && $(MAKE) $@
 
 .PHONY: all-gcl

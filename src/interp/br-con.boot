@@ -116,7 +116,6 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{-2}"
   if isDefautPackageName makeSymbol name then
     name := subSequence(name, 0, #name-1)
---sourceFileName := dbSourceFile makeSymbol name
   sourceFileName := getConstructorSourceFileFromDB makeSymbol name
   filename := extractFileNameFromPath sourceFileName
   if filename ~= '"" then
@@ -692,7 +691,7 @@ conOpPage1(conform,:options) ==
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile makeSymbol name
+  sourceFileName  := getContructorSourceFileFromDB makeSymbol name
   emString        := ['"{\sf ",constring,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]

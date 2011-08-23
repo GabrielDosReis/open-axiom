@@ -360,6 +360,7 @@ OA_SRC_TARGETS = \
 	all-local \
 	all-src \
 	all-algebra \
+	all-algstrap \
 	all-asq \
 	all-axiomsys \
 	all-boot \
@@ -915,14 +916,14 @@ uninstall-am:
 .PHONY: $(OA_SRC_TARGETS)
 
 @OA_BUILD_GCL_TRUE@all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-@OA_BUILD_GCL_TRUE@  all-algebra all-input all-src all-local: all-gcl
+@OA_BUILD_GCL_TRUE@  all-algebra all-algstrap all-input all-src all-local: all-gcl
 
 all: all-local
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
 .PHONY: all-algstrap
-all-algstrap:
+all-algstrap: all-interpsys
 	cd src/algebra && $(MAKE) $@
 
 .PHONY: all-gcl
