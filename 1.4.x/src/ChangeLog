@@ -1,5 +1,12 @@
 2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (initializeGlobalState): Construct
+	database tables if algebra is not complete yet.
+	* interp/Makefile.in (${SAVESYS}): Simplify.
+	* algebra/Makefile.in (strap-stamp): Make the destination directory.
+
+2011-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/metalex.lisp (LINE-HANDLER, NEXT-LINE, XCAPE): Remove.
 	(XTOKENREADER, GET-TOKEN, NEXT-META-LINE): Likewise.
 	(META_ERROR_HANDLER, META-SYNTAX-ERROR, META-META-ERROR-HANLER):

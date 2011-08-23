@@ -1681,6 +1681,7 @@ $(axiom_algebra_layer_user_objects): bootstrap-stamp
 all-algstrap: strap-stamp
 
 strap-stamp: strap-2/.finished
+	@ $(mkdir_p) $(OUT)
 	@ rm -f strap-stamp
 	@ $(STAMP) strap-stamp
 	@ echo =====================================
