@@ -349,7 +349,6 @@
   (close *category-stream*)
   (close *browse-stream*))
 
-
 (defun |fillDatabasesInCore| nil
  "set all -hash* to clean values. used to clean up core before saving system"
  (setq *hascategory-hash* (make-hash-table :test #'equal))

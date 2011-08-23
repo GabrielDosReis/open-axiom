@@ -198,18 +198,14 @@ makeint.lisp: Makefile
 	@ echo '#+:gcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
-${SAVESYS}: database.date \
-		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
-		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(OBJS) makeint.$(LNKEXT)
+${SAVESYS}: database.date $(axiom_target_datadir)/msgs/s2-us.msgs $(OBJS)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" --system-algebra \
 		--sysdb="$(axiom_src_datadir)/algebra/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
-		--load-directory=. $(OBJS) makeint.$(LNKEXT)
-	@ echo 6 $@ created
+		--load-directory=. $(OBJS)
 	$(mkdir_p) $(axiom_target_bindir)
 .PHONY: all-axiomsys
 

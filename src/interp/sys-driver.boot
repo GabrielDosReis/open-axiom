@@ -178,7 +178,7 @@ restart() ==
 ++ line compiler, the script executor, etc.  Mess with care.
 initializeGlobalState() ==
   REROOT()
-  have_to := $StandardLinking or not %basicSystemIsComplete()
+  init? := $StandardLinking or not %algebraSystemIsComplete()
 
   -- 0. Global variables.
   $inLispVM := false
@@ -195,12 +195,13 @@ initializeGlobalState() ==
   setCompilerOptimizations(getOptionValue "optimize" or
                              $defaultOptimizationLevel)
   GCMSG(NIL)
-  if have_to then
+  if init? then
     $superHash := hashTable 'EQUAL
   initNewWorld()
 
   -- 1. Macros.
-  if have_to then buildHtMacroTable()
+  if init? then
+    buildHtMacroTable()
 
   -- 2. History
   if $verbose and $displayStartMsgs then 
@@ -210,7 +211,7 @@ initializeGlobalState() ==
   -- 3. Databases
   if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"database"])
-  if have_to then
+  if init? then
     fillDatabasesInCore()
     mkLowerCaseConTable()
   else  
@@ -220,24 +221,27 @@ initializeGlobalState() ==
   if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"constructors"])
   loadExposureGroupData()
-  if have_to then makeConstructorsAutoLoad()
+  if init? then
+    makeConstructorsAutoLoad()
 
   -- 5. Rule sets.
   if not $ruleSetsInitialized 
     then initializeRuleSets()
 
   -- 6. Interpreter
-  if have_to then
+  if init? then
     if $verbose and $displayStartMsgs then 
       sayKeyedMsg("S2IZ0053",['"interpreter"])
     initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
+
+  if init? then
     statisticsInitialization()
     initializeSystemCommands()
   $InteractiveFrame := makeInitialModemapFrame()
   initializeInterpreterFrameRing()
 
   -- 7. Etc.
-  if have_to and functionp 'addtopath then 
+  if init? and functionp 'addtopath then 
     addtopath strconc(systemRootDirectory(),'"bin")
   -- Take off
 
