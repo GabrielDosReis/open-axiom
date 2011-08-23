@@ -41,6 +41,8 @@ namespace BOOT
 --=======================================================================
 --            Build Table of Lower Case Constructor Names
 --=======================================================================
+$lowerCaseConTb := nil
+
 mkLowerCaseConTable() ==
 --Called at system build time by function BUILD-INTERPSYS (see util.lisp)
 --Table is referenced by functions conPageFastPath and grepForAbbrev
@@ -119,11 +121,11 @@ abbQuery(x) ==
   sayKeyedMsg("S2IZ0003",[x])
  
 installConstructor(cname,type) ==
+  $lowerCaseConTb = nil => nil
   (entry := getCDTEntry(cname,true)) => entry
   item := [cname,getConstructorAbbreviationFromDB cname,nil]
-  if $lowerCaseConTb then
-    tableValue($lowerCaseConTb,cname) := item
-    tableValue($lowerCaseConTb,DOWNCASE cname) := item
+  tableValue($lowerCaseConTb,cname) := item
+  tableValue($lowerCaseConTb,DOWNCASE cname) := item
  
 constructorNameConflict(name,kind) ==
   userError

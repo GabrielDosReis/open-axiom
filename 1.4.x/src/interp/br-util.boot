@@ -347,13 +347,6 @@ bcStarConform form ==
   bcStar opOf form
   bcConform form
 
-dbSourceFile name ==
-  u:= getConstructorSourceFileFromDB name
-  null u => '""
-  n := PATHNAME_-NAME u
-  t := PATHNAME_-TYPE u
-  strconc(n,'".",t)
-
 extractFileNameFromPath s == fn(s,0,#s) where
   fn(s,i,m) ==
     k := charPosition(char "/",s,i)
@@ -491,7 +484,7 @@ dbSayItems(countOrPrefix,singular,plural,:options) ==
   if count ~= 0 then bcHt '":"
 
 dbBasicConstructor? conname ==
-  dbSourceFile conname in '("catdef" "coerce")
+  getConstructorSourceFileFromDB conname in '("catdef" "coerce")
 
 nothingFoundPage(:options) ==
   htInitPage('"Sorry, no match found",nil)

@@ -1,3 +1,8 @@
+2011-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.am (OA_SRC_TARGETS): Include all-algstrap
+	(all-algstrap): Require all-interpsys, and all-gcl if building GCL.
+
 2011-07-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* OpenAxiom-1.4.1 released.

@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -61,8 +61,7 @@ parseSpadFile sourceFile ==
   -- we need to tell the post-parsing transformers that we're compiling
   -- Spad because few parse forms have slightly different representations
   -- depending on whether we are interpreter mode or compiler mode.
-  savedInteractiveMode := $InteractiveMode
-  $InteractiveMode := false
+  $InteractiveMode: local := false
   INIT_-BOOT_/SPAD_-READER()
   -- we need to restore the global input stream state after we
   -- finished messing with it.
@@ -71,7 +70,6 @@ parseSpadFile sourceFile ==
   -- If soureFile cannot be processed for whatever reasons
   -- get out of here instead of being stuck later.
   not (IN_-STREAM := MAKE_-INSTREAM sourceFile) =>
-    $InteractiveMode := savedInteractiveMode
     IN_-STREAM := savedInStream
     systemError '"cannot open input source file"
   INITIALIZE_-PREPARSE IN_-STREAM
@@ -81,13 +79,12 @@ parseSpadFile sourceFile ==
   while not (_*EOF_* or FILE_-CLOSED) repeat
     BOOT_-LINE_-STACK : local := PREPARSE IN_-STREAM
     LINE : local := CDAR BOOT_-LINE_-STACK
-    PARSE_-NewExpr()
+    CATCH('SPAD__READER,PARSE_-NewExpr())
     asts := [parseTransform postTransform POP_-STACK_-1(), :asts]
   -- clean up the mess, and get out of here
   IOCLEAR(IN_-STREAM, OUT_-STREAM)             
   SHUT IN_-STREAM                              
   IN_-STREAM := savedInStream
-  $InteractiveMode := savedInteractiveMode
   -- we accumulated the parse trees in reverse order
   reverse! asts
 

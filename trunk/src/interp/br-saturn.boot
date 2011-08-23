@@ -626,7 +626,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   conname         := opOf conform
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile makeSymbol name
+  sourceFileName  := getConstructorSourceFileFromDB makeSymbol name
   constrings      :=
     KDR form => dbConformGenUnder form
     [strconc(name,args)]

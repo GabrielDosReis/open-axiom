@@ -782,3 +782,18 @@ squeezeAll: %List %Code -> %List %Code
 squeezeAll x ==
   [SQUEEZE t for t in x]
 
+makeInitialDB [form,kind,abbrev,srcfile] ==
+  db := makeDB form.op
+  dbConstructorForm(db) := form
+  dbConstructorKind(db) := kind
+  dbAbbreviation(db) := abbrev
+  property(abbrev,'ABBREVIATIONFOR) := form.op
+  dbSourceFile(db) := srcfile
+  setAutoLoadProperty form.op
+  
+populateDBFromFile path ==
+  try
+    dbfile := inputTextFile path
+    while (entry := readExpr dbfile) ~= %nothing repeat
+      makeInitialDB entry
+  finally closeStream dbfile

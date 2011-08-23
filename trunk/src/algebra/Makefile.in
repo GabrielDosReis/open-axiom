@@ -542,7 +542,7 @@ SPADFILES= \
  ${OUTSRC}/annacat.spad ${OUTSRC}/any.spad ${OUTSRC}/array1.spad \
  ${OUTSRC}/array2.spad ${OUTSRC}/asp.spad ${OUTSRC}/attreg.spad \
  ${OUTSRC}/bags.spad ${OUTSRC}/bezout.spad ${OUTSRC}/boolean.spad \
- ${OUTSRC}/brill.spad \
+ ${OUTSRC}/brill.spad ${OUTSRC}/domain.spad \
  ${OUTSRC}/c02.spad ${OUTSRC}/c05.spad ${OUTSRC}/c06.spad \
  ${OUTSRC}/card.spad ${OUTSRC}/carten.spad ${OUTSRC}/catdef.spad \
  ${OUTSRC}/cden.spad ${OUTSRC}/clifford.spad ${OUTSRC}/clip.spad \
