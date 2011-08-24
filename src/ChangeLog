@@ -1,5 +1,15 @@
 2011-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.in: Support construction initial DB profile.
+	* interp/database.boot (printInitdbInfo): New.
+	(printAllInitdbInfo): Likewise.
+	* interp/sys-driver.boot (initializeDatabases): Exit early if
+	constructing initial DB profile.
+	(buildInitdbHandler): New.  Handle --build-initdb.
+	* utils/command.cc (driver_table): Add map for --build-initdb.
+
+2011-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (initializeDatabases): New.
 	(initializeGlobalState): Use it.
 	* interp/spad-parser.boot (parseSpadFile): Tidy.

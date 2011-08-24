@@ -1598,14 +1598,8 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	$(COMPILE_SPAD)
 
-$(OUTSRC)/%.spad: mk-target-src-algabra-dir
-
 ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
-
-.PHONY: mk-target-src-algabra-dir
-mk-target-src-algabra-dir:
-	@ [ -d $(OUTSRC) ] || $(mkdir_p) $(OUTSRC)
 
 .PRECIOUS: $(builddir)/%.tex
 .PRECIOUS: $(builddir)/%.dvi
@@ -1868,12 +1862,30 @@ user-stamp: $(axiom_algebra_layer_user_objects)
 	@ $(STAMP) user-stamp
 
 
+.PHONY: spad-files-stamp
+spad-files-stamp: $(SPADFILES)
+	@ rm -f spad-files-stamp
+	@ $(STAMP) spad-files-stamp
+
+.PHONY: all-initdb
+all-initdb: initdb-stamp
+
+.PHONY: initdb-stamp
+initdb-stamp: initdb.daase
+	@ rm -f initdb-stamp
+	@ $(STAMP) initdb-stamp
+
+initdb.daase: spad-files-stamp
+	$(DRIVER) --execpath=$(INTERPSYS) --system="$(AXIOM)" \
+		--spad-srcdir=$(OUTSRC) \
+		--output=initdb.$$$$ --build-initdb && \
+		$(top_confdir)/move-if-change initdb.$$$$ $@
 
 
 mostlyclean-local:
 	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
 	@rm -rf *.NRLIB
-	@rm -rf *.DAASE *.daase libdb.text
+	@rm -rf *.DAASE *.daase libdb.text initdb.*
 	@rm -rf strap*
 	@rm -f *stamp
 

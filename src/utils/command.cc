@@ -319,6 +319,7 @@ static void print_usage(void) {
       { "--compile", compiler_driver },
       { "--translate", compiler_driver },
       { "--build-databases", compiler_driver },
+      { "--build-initdb", core_driver },
       { "--make", linker_driver },
    };
 

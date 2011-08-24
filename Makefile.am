@@ -56,6 +56,7 @@ OA_SRC_TARGETS = \
 	all-src \
 	all-algebra \
 	all-algstrap \
+	all-initdb \
 	all-asq \
 	all-axiomsys \
 	all-boot \
@@ -84,10 +85,6 @@ endif
 all: all-local
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
-
-.PHONY: all-algstrap
-all-algstrap: all-interpsys
-	cd src/algebra && $(MAKE) $@
 
 .PHONY: all-gcl
 all-gcl: $(oa_builddir)/bin/gcl$(EXEEXT)
