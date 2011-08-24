@@ -669,7 +669,7 @@ stamp-subdirs:
 	$(MKDIR_P) $(oa_targetdir)/share
 	$(MKDIR_P) $(oa_targetdir)/doc
 	$(MKDIR_P) $(oa_targetdir)/doc/help
-	$(MKDIR_P) algebra/strap
+	$(MKDIR_P) $(oa_targetdir)/src/algebra
 	touch stamp-subdirs
 
 .PHONY: $(oa_all_targets)
@@ -714,7 +714,15 @@ all-interpsys: all-boot all-hyper-pre all-utils
 all-axiomsys: all-asq
 	cd interp && $(MAKE) $(AM_MAKEFLAGS) all-axiomsys
 
-all-algebra: all-interpsys all-share all-hyper-pre
+all-algebra: all-driver all-interpsys all-share all-hyper-pre
+	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
+
+.PHONY: all-algstrap
+all-algstrap: all-driver all-interpsys
+	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
+
+.PHONY: all-initdb
+all-initdb: all-driver all-interpsys
 	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-hyper-pre

@@ -797,3 +797,27 @@ populateDBFromFile path ==
     while (entry := readExpr dbfile) ~= %nothing repeat
       makeInitialDB entry
   finally closeStream dbfile
+
+printInitdbInfo(path,dbfile) == main(path,dbfile) where
+  main(path,dbfile) ==
+    for x in parseSpadFile path repeat
+      x is ['DEF,lhs,:.] => fn(lhs,path,dbfile)
+      x is ["where",['DEF,lhs,:.],:.] => fn(lhs,path,dbfile)
+  fn(lhs,path,dbfile) ==
+    if lhs isnt [.,:.] then lhs := [lhs]
+    db := constructorDB lhs.op
+    db = nil => nil
+    form := [id for x in lhs.args]
+              where id() == (x is [":",x',:.] => x'; x)
+    form := [lhs.op,:form]
+    prettyPrint([form,dbConstructorKind db,dbAbbreviation db,path],dbfile)
+    writeNewline dbfile
+
+printAllInitdbInfo(srcdir,dbfile) ==
+  paths := DIRECTORY strconc(ensureTrailingSlash srcdir,'"*.spad")
+    or coreError strconc('"no .spad file in directory ",srcdir)
+  try
+    out := outputTextFile dbfile
+    for path in paths repeat
+      printInitdbInfo(NAMESTRING path,out)
+  finally closeStream out

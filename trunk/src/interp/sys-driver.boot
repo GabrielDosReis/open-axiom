@@ -175,6 +175,7 @@ restart() ==
 --%    
 
 initializeDatabases firstTime? ==
+  getOptionValue "build-initdb" => nil
   initdb := getOptionValue "initial-db" => populateDBFromFile initdb
   not firstTime? => openDatabases()
   fillDatabasesInCore()
@@ -306,6 +307,20 @@ buildDatabasesHandler(prog,options,args) ==
 
 installDriver(Option '"build-databases",function buildDatabasesHandler)
 
+
+buildInitdbHandler(prog,options,args) ==
+  $displayStartMsgs := false
+  initializeGlobalState()
+  srcdir := getOptionValue "spad-srcdir" or
+     coreError '"missing --spad-srcdir=<dir> argument"
+  not string? srcdir => coreError '"invalid value for --spad-srcdir"
+  dbfile := getOptionValue "output" or '"initdb.daase"
+  not string? dbfile => coreError '"invalid value for --output"
+  printAllInitdbInfo(srcdir,dbfile)
+  coreQuit(errorCount() > 0 => 1; 0)
+
+installDriver(Option '"build-initdb",function buildInitdbHandler)
+  
 --%
 
 ++ Main entry point to the interactive system.
