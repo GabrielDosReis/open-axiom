@@ -821,3 +821,18 @@ printAllInitdbInfo(srcdir,dbfile) ==
     for path in paths repeat
       printInitdbInfo(NAMESTRING path,out)
   finally closeStream out
+
+--%
+
+loadDBIfnecessary db ==
+  ctor := dbConstructor db
+  property(ctor,'LOADED) => db
+  loadLib ctor or return nil
+  constructorDB ctor
+
+++ Returns true if instantiations of the constructor
+++ defined by `db' should not be cached.
+dbMutable? db ==
+  dbInstanceCache loadDBIfnecessary db = nil
+
+  

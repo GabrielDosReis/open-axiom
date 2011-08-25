@@ -1862,6 +1862,7 @@ user-stamp: $(axiom_algebra_layer_user_objects)
 	@ $(STAMP) user-stamp
 
 
+.PRECIOUS: $(SPADFILES)
 .PHONY: spad-files-stamp
 spad-files-stamp: $(SPADFILES)
 	@ rm -f spad-files-stamp

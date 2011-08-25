@@ -664,10 +664,6 @@ HasCategory(domain,catform') ==
    opOf(catform) in '(Object Type) or  --temporary hack
     or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
 
---systemDependentMkAutoload(fn,cnam) ==
---    FBOUNDP(cnam) => "next"
---    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
-
 domainEqual(a,b) == 
   vector? a and vector? b and a.0 = b.0
  
