@@ -602,6 +602,51 @@ resolveNiladicConstructors form ==
 --=======================================================
 --                   HasCategory/Attribute
 --=======================================================
+domainEqual(a,b) == 
+  vector? a and vector? b and a.0 = b.0
+ 
+HasAttribute(domain,attrib) ==
+  integer? domainRef(domain,3) => newHasAttribute(domain,attrib)
+  (u := LASSOC(attrib,domain.2)) and lookupPred(first u,domain,domain)
+ 
+newHasAttribute(domain,attrib) ==
+  predIndex := LASSOC(attrib,domain.2) =>
+    predIndex = 0 => true
+    predvec := domainPredicates domain
+    testBitVector(predvec,predIndex)
+  false
+
+newHasCategory(domain,catform) ==
+  catform = $Type or catform = $Category => true  
+  catform is ["Join",:cats] => 
+    and/[newHasCategory(domain,cat) for cat in cats]
+  slot4 := domain.4
+  auxvec := first slot4
+  catvec := second slot4
+  $isDefaultingPackage: local := defaultPackageForm? devaluate domain
+  #catvec > 0 and integer? KDR catvec.0 =>              --old style
+    predIndex := lazyMatchAssocV1(catform,catvec,domain)
+    null predIndex => false
+    predIndex = 0 => true
+    predvec := domainPredicates domain
+    testBitVector(predvec,predIndex)
+  lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
+
+HasSignature(domain,[op,sig]) ==
+  compiledLookup(op,sig,domain)
+ 
+HasCategory(domain,catform') ==
+  catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
+  catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)
+  catform:= devaluate catform'
+  integer? domainRef(domain,3) => newHasCategory(domain,catform)
+  domain0 := canonicalForm domain -- handles old style domains, Record, Union etc.
+  slot4 := domainData domain
+  catlist := slot4.1
+  member(catform,catlist) or
+   opOf(catform) in '(Object Type) or  --temporary hack
+    or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
+
 -- PLEASE NOTE: This function has the rather charming side-effect that
 -- e.g. it works if domform is an Aldor Category.  This is being used
 -- by extendscategoryForm in c-util to allow Aldor domains to be used

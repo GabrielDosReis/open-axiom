@@ -65,7 +65,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	astr.$(FASLEXT)		bits.$(FASLEXT)		\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
 	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
-	buildom.$(FASLEXT)	hashcode.$(FASLEXT)	\
+	buildom.$(FASLEXT)	                    	\
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
@@ -109,7 +109,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 
 # Last minite patches.
 # FIXMEL: should be folded into the main object list.
-INOBJS=	setvart.$(FASLEXT) interop.$(FASLEXT) patches.$(FASLEXT)
+INOBJS=	setvart.$(FASLEXT) patches.$(FASLEXT)
 
 # Main compiler files.
 OCOBJS=	\
@@ -299,12 +299,11 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
-nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) daase.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
 		c-util.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) interop.$(FASLEXT) lisplib.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) lisplib.$(FASLEXT) nrunfast.$(FASLEXT)
 category.$(FASLEXT): c-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) c-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
@@ -312,7 +311,6 @@ simpbool.$(FASLEXT): macros.$(FASLEXT)
 newfort.$(FASLEXT): macros.$(FASLEXT)
 lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT) \
 	daase.$(FASLEXT)
-interop.$(FASLEXT): interop.boot c-util.$(FASLEXT) hashcode.$(FASLEXT)
 c-doc.$(FASLEXT): c-util.$(FASLEXT) daase.$(FASLEXT)
 server.$(FASLEXT): macros.$(FASLEXT)
 
@@ -382,7 +380,6 @@ msgdb.$(FASLEXT): g-util.$(FASLEXT)
 g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)
-hashcode.$(FASLEXT): g-util.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) sys-utility.$(FASLEXT)
 g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)

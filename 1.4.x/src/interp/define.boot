@@ -466,6 +466,20 @@ makeCompactSigCode sig == [fn for x in sig] where
 --=======================================================================
 --               Generate Slot 4 Constructor Vectors
 --=======================================================================
+depthAssocList u == 
+  u := removeSymbol(u,'DomainSubstitutionMacro)  --hack by RDJ 8/90
+  removeDuplicates ("append"/[depthAssoc(y) for y in u])
+ 
+depthAssoc x ==
+  y := tableValue($depthAssocCache,x) => y
+  x is ['Join,:u] or (u := getCatAncestors x) =>
+    v := depthAssocList u
+    tableValue($depthAssocCache,x) := [[x,:n],:v]
+      where n() == 1 + "MAX"/[rest y for y in v]
+  tableValue($depthAssocCache,x) := [[x,:0]]
+ 
+getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
+ 
 NRTmakeCategoryAlist() ==
   $depthAssocCache: local := hashTable 'EQ
   $catAncestorAlist: local := nil

@@ -1,5 +1,11 @@
 2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/hashcode.boot: Remove.
+	*interp/interop.boot: Move OpenAxiom relevant code to define.boot
+	and nrunfast.boot.  Remove.
+
+2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($mutableDomain): Remove.  Adjust users.
 	($mutableDomains): Likewise.
 	* interp/database.boot (dbMutable?): Remove.

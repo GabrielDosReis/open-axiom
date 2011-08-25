@@ -33,7 +33,7 @@
 
 
 import lisplib
-import interop
+import nrunfast
 import category
 namespace BOOT
 
@@ -60,11 +60,6 @@ CategoryPrint(D,$e) ==
     PRETTYPRINT u
 
 --%  Domain printing
-keyItem a ==
-  isDomain a => CDAR domainRef(a,4)
-  a
-  --The item that domain checks on
- 
 --Global strategy here is to maintain a list of substitutions
 --  ( in $Sublis), of vectors and the names that they have,
 --  which may be either local names ('View1') or global names ('Where1')
@@ -78,7 +73,7 @@ DomainPrint(D,brief) ==
   $WhereCounter: local := 1
   env:= $e or $EmptyEnvironment --in case we are called from top level
   categoryObject? D => CategoryPrint(D,env)
-  $Sublis:= [[keyItem D,:'original]]
+  $Sublis:= [[D,:'original]]
   SAY '"-----------------------------------------------------------------------"
   DomainPrint1(D,nil,env)
   while ($WhereList) repeat
@@ -91,7 +86,6 @@ DomainPrint(D,brief) ==
   SAY '"-----------------------------------------------------------------------"
  
 DomainPrint1(D,brief,$e) ==
-  vector? D and not isDomain D => PacPrint D
   if vector? D then
     D := D.4 --if we were passed a vector, go to the domain
   Sublis:=
@@ -110,12 +104,12 @@ DomainPrint1(D,brief,$e) ==
       uu.5 := vv
       for j in 0..maxIndex vv repeat
         if vector? vv.j then
-          l := ASSQ(keyItem vv.j,Sublis)
+          l := ASSQ(vv.j,Sublis)
           if l
              then name:= rest l
              else
               name := DPname()
-              Sublis := [[keyItem vv.j,:name],:Sublis]
+              Sublis := [[vv.j,:name],:Sublis]
               $Sublis := [first Sublis,:$Sublis]
               $WhereList := [[name,:vv.j],:$WhereList]
           vv.j := name
@@ -125,13 +119,13 @@ DomainPrint1(D,brief,$e) ==
       uu.i := DomainPrintSubst(uu.i,Sublis)
       if vector? uu.i then
         name := DPname()
-        Sublis := [[keyItem uu.i,:name],:Sublis]
+        Sublis := [[uu.i,:name],:Sublis]
         $Sublis := [first Sublis,:$Sublis]
         $WhereList := [[name,:uu.i],:$WhereList]
         uu.i := name
       if uu.i is [.,:v] and vector? v then
         name := DPname()
-        Sublis := [[keyItem v,:name],:Sublis]
+        Sublis := [[v,:name],:Sublis]
         $Sublis := [first Sublis,:$Sublis]
         $WhereList := [[name,:v],:$WhereList]
         uu.i := [first uu.i,:name]
@@ -147,22 +141,22 @@ PacPrint v ==
   vv := copyVector v
   for j in 0..maxIndex vv repeat
     if vector? vv.j then
-      l := ASSQ(keyItem vv.j,Sublis)
+      l := ASSQ(vv.j,Sublis)
       if l
          then name := rest l
          else
           name := DPname()
-          Sublis := [[keyItem vv.j,:name],:Sublis]
+          Sublis := [[vv.j,:name],:Sublis]
           $Sublis := [first Sublis,:$Sublis]
           $WhereList := [[name,:vv.j],:$WhereList]
       vv.j := name
     if cons? vv.j and vector?(u:=rest vv.j) then
-      l := ASSQ(keyItem u,Sublis)
+      l := ASSQ(u,Sublis)
       if l
          then name := rest l
          else
           name := DPname()
-          Sublis := [[keyItem u,:name],:Sublis]
+          Sublis := [[u,:name],:Sublis]
           $Sublis := [first Sublis,:$Sublis]
           $WhereList := [[name,:u],:$WhereList]
       vv.j.rest := name
@@ -176,7 +170,7 @@ DomainPrintSubst(item,Sublis) ==
     [c1,:c2]
   l := ASSQ(item,Sublis)
   l => rest l
-  l := ASSQ(keyItem item,Sublis)
+  l := ASSQ(item,Sublis)
   l => rest l
   item
  
