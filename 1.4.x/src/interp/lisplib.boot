@@ -64,17 +64,18 @@ simplifyAttributeAlist al ==
     [[a,:pred],:simplifyAttributeAlist s]
   nil
  
-NRTgenFinalAttributeAlist() ==
-  [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ~= -1]
+NRTgenFinalAttributeAlist e ==
+  [[a,:k] for [a,:b] in $NRTattributeAlist
+     | (k := predicateBitIndex(b,e)) ~= -1]
  
-predicateBitIndex x == 
-  pn(x,false) where
-    pn(x,flag) ==
-      u := simpBool transHasCode x
+predicateBitIndex(x,e) == 
+  pn(x,false,e) where
+    pn(x,flag,e) ==
+      u := simpBool transHasCode(x,e)
       u is 'T  =>  0
       u = nil => -1
       p := POSN1(u,$NRTslot1PredicateList) => p + 1
-      not flag => pn(predicateBitIndexRemop x,true)
+      not flag => pn(predicateBitIndexRemop x,true,e)
       systemError nil
 
 predicateBitIndexRemop p==
@@ -84,9 +85,9 @@ predicateBitIndexRemop p==
   p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
   p
  
-predicateBitRef x ==
+predicateBitRef(x,e) ==
   x is 'T => 'T
-  ['testBitVector,'pv_$,predicateBitIndex x]
+  ['testBitVector,'pv_$,predicateBitIndex(x,e)]
  
 makePrefixForm(u,op) ==
   u := MKPF(u,op)
@@ -96,12 +97,12 @@ makePrefixForm(u,op) ==
 --=======================================================================
 --               Generate Slot 3 Predicate Vector
 --=======================================================================
-makePredicateBitVector pl ==   --called by buildFunctor
+makePredicateBitVector(pl,e) ==   --called by buildFunctor
   if $insideCategoryPackageIfTrue then
     pl := union(pl,$categoryPredicateList)
   $predGensymAlist := nil --bound by buildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
-    pred := simpBool transHasCode p
+    pred := simpBool transHasCode(p,e)
     pred isnt [.,:.] => 'skip                --skip over T and nil
     if isHasDollarPred pred then 
       lasts := insert(pred,lasts)
@@ -151,12 +152,12 @@ removeAttributePredicates pl ==
       p
     fnl p == [fn x for x in p]
  
-transHasCode x ==
+transHasCode(x,e) ==
   x isnt [.,:.] => x
   op := x.op
   op in '(HasCategory HasAttribute) => x
-  op="has" => compHasFormat x
-  [transHasCode y for y in x]
+  op="has" => compHasFormat(x,e)
+  [transHasCode(y,e) for y in x]
  
 mungeAddGensyms(u,gal) ==
   ['%list,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==

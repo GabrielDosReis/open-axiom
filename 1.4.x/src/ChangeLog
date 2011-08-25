@@ -1,5 +1,17 @@
 2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compHasFormat): Take environment
+	argument.  Adjust callers.
+	* interp/define.boot (NRTmakeCategoryAlist): Likewise.
+	* interp/functor.boot (ProcessCond): Likewise.
+	* interp/lisplib.boot (NRTgenFinalAttributeAlist): Likewise.
+	(predicateBitIndex): Likewise.
+	(predicateBitRef): Likewise.
+	(makePredicateBitVector): Likewise.
+	(transHasCode): Likewise.
+
+2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/hashcode.boot: Remove.
 	*interp/interop.boot: Move OpenAxiom relevant code to define.boot
 	and nrunfast.boot.  Remove.

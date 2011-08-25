@@ -360,8 +360,8 @@ getInfovecCode() ==
   ['LIST,
     MKQ makeDomainTemplate $template,
       MKQ makeCompactDirect $NRTslot1Info,
-        MKQ NRTgenFinalAttributeAlist(),
-          NRTmakeCategoryAlist(),
+        MKQ NRTgenFinalAttributeAlist $e,
+          NRTmakeCategoryAlist $e,
             MKQ $lookupFunction]
 
 --=======================================================================
@@ -425,7 +425,7 @@ makeCompactDirect1(op,items) ==
       n is [p,:.] => p  --the rest is linenumber of function definition
       n
     predCode :=
-      s is [pred,:.] => predicateBitIndex pred
+      s is [pred,:.] => predicateBitIndex(pred,$e)
       0
   --> drop items which are not present (predCode = -1)
   predCode = -1 => return nil
@@ -480,7 +480,7 @@ depthAssoc x ==
  
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  
-NRTmakeCategoryAlist() ==
+NRTmakeCategoryAlist e ==
   $depthAssocCache: local := hashTable 'EQ
   $catAncestorAlist: local := nil
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
@@ -488,7 +488,7 @@ NRTmakeCategoryAlist() ==
   opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
   slot1 := [[a,:k] for [a,:b] in applySubst($pairlis,opcAlist)
-                   | (k := predicateBitIndex b) ~= -1]
+                   | (k := predicateBitIndex(b,e)) ~= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis

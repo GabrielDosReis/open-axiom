@@ -1231,26 +1231,26 @@ compElt(form,m,E) ==
 --% HAS
 
 compHas: (%Form,%Mode,%Env) -> %Maybe %Triple
-compHas(pred is ["has",a,b],m,$e) ==
-  $e:= chaseInferences(pred,$e)
-  predCode:= compHasFormat pred
-  coerce([predCode,$Boolean,$e],m)
+compHas(pred is ["has",a,b],m,e) ==
+  e := chaseInferences(pred,e)
+  predCode := compHasFormat(pred,e)
+  coerce([predCode,$Boolean,e],m)
 
       --used in various other places to make the discrimination
 
-compHasFormat (pred is ["has",olda,b]) ==
+compHasFormat(pred is ["has",olda,b],e) ==
   argl := rest $form
   formals := TAKE(#argl,$FormalMapVariableList)
   a := applySubst(pairList(formals,argl),olda)
-  [a,:.] := comp(a,$EmptyMode,$e) or return nil
+  [a,.,e] := comp(a,$EmptyMode,e) or return nil
   a := applySubst(pairList(argl,formals),a)
   b is ["ATTRIBUTE",c] => ["HasAttribute",a,["QUOTE",c]]
   b is ["SIGNATURE",op,sig,:.] =>
      ["HasSignature",a,
        mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
   b is ["Join",:l] or b is ["CATEGORY",.,:l] => 
-     ["AND",:[compHasFormat ["has",olda,c] for c in l]]
-  isCategoryForm(b,$e) => ["HasCategory",a,mkTypeForm b]
+     ["AND",:[compHasFormat(["has",olda,c],e) for c in l]]
+  isCategoryForm(b,e) => ["HasCategory",a,mkTypeForm b]
   stackAndThrow('"Second argument to %1b must be a category, or a signature or an attribute",["has"])
 
 --% IF
