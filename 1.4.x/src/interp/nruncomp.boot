@@ -660,9 +660,9 @@ NRToptimizeHas u ==
   u
 
 NRTaddToSlam([name,:argnames],shell) ==
-  $mutableDomain => return nil
+  dbInstanceCache constructorDB name = nil => return nil
   null argnames => addToConstructorCache(name,nil,shell)
-  args:= ['%list,:ASSOCRIGHT $devaluateList]
+  args := ['%list,:ASSOCRIGHT $devaluateList]
   addToConstructorCache(name,args,shell)
 
 changeDirectoryInSlot1() ==  --called by buildFunctor

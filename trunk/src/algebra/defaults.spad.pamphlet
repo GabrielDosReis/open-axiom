@@ -16,11 +16,6 @@
 ++ Description:
 ++ Implements exponentiation by repeated squaring
 ++ RelatedOperations: expt
--- the following package is only instantiated over %
--- thus shouldn't be cached. We prevent it
--- from being cached by declaring it to be mutableDomains
-
-)bo PUSH('RepeatedSquaring, $mutableDomains) 
 
 RepeatedSquaring(S): Exports == Implementation where
    S: SetCategory with 
@@ -46,12 +41,6 @@ RepeatedSquaring(S): Exports == Implementation where
 ++ Description:
 ++ Implements multiplication by repeated addition
 ++ RelatedOperations: *
- 
--- the following package is only instantiated over %
--- thus shouldn't be cached. We prevent it
--- from being cached by declaring it to be mutableDomains
-
-)bo PUSH('RepeatedDoubling, $mutableDomains) 
 
 RepeatedDoubling(S):Exports ==Implementation where
    S: SetCategory with 
@@ -80,11 +69,6 @@ RepeatedDoubling(S):Exports ==Implementation where
 ++ Description:
 ++  This package exports 3 sorting algorithms which work over 
 ++  FiniteLinearAggregates.
--- the following package is only instantiated over %
--- thus shouldn't be cached. We prevent it
--- from being cached by declaring it to be mutableDomains
- 
-)bo PUSH('FiniteLinearAggregateSort, $mutableDomains) 
 
 FiniteLinearAggregateSort(S, V): Exports == Implementation where
   S: Type

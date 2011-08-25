@@ -573,7 +573,7 @@ finalizeLisplib(ctor,libName) ==
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,removeZeroOne mm,$libFile)
-  if not $mutableDomains then
+  if dbInstanceCache constructorDB ctor then
     writeInstanceCache(ctor,$libFile)
   $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;

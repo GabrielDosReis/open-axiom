@@ -51,13 +51,6 @@ module define where
 
 $newCompCompare := false
 
-++ List of mutable domains.
-$mutableDomains := nil
-
-++ True if the current constructor being compiled instantiates
-++ mutable domains or packages.  Default is `false'.
-$mutableDomain := false
-
 ++ when non nil, holds the declaration number of a function in a capsule.
 $suffix := nil
 
@@ -991,6 +984,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
          --Set in DomainSubstitutionFunction, used further down
     -- 1.1  augment e to add declaration $: <form>
     [$op,:argl] := $definition
+    dbInstanceCache(constructorDB $op) := true
     e:= addBinding("$",[['mode,:$definition]],e)
  
     -- 2. obtain signature
@@ -1305,7 +1299,6 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
-  $mutableDomain: local := false
   $LISPLIB = nil => compDefineFunctor1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
@@ -1333,10 +1326,8 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     dbConstructorForm(constructorDB $op) := form
     $formalArgList:= [:argl,:$formalArgList]
     $pairlis: local := pairList(argl,$FormalMapVariableList)
-    $mutableDomain: local :=
-      -- all defaulting packages should have caching turned off
-       isCategoryPackageName $op or symbolMember?($op,$mutableDomains)
-                                    --true if domain has mutable state
+    -- all defaulting packages should have caching turned off
+    dbInstanceCache(constructorDB $op) := not isCategoryPackageName $op
     signature':=
       [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
     $functorForm := $form := [$op,:argl]
@@ -1398,7 +1389,9 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
        [nil, ['Mapping, :signature'], originale]
  
     body':= T.expr
-    lamOrSlam:= if $mutableDomain then 'LAM else 'SPADSLAM
+    lamOrSlam :=
+      dbInstanceCache constructorDB $op = nil => 'LAM
+      'SPADSLAM
     fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
     operationAlist := applySubst($pairlis,$lisplibOperationAlist)
@@ -2050,7 +2043,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
   $clamList: local := nil
   lambdaOrSlam :=
     getConstructorKindFromDB fn = "category" => 'SPADSLAM
-    $mutableDomain => 'LAMBDA
+    dbInstanceCache constructorDB fn = nil => 'LAMBDA
     $clamList:=
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA

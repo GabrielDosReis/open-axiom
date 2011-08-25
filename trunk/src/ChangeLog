@@ -1,3 +1,13 @@
+2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot ($mutableDomain): Remove.  Adjust users.
+	($mutableDomains): Likewise.
+	* interp/database.boot (dbMutable?): Remove.
+	* interp/clam.boot (addToclam): Remove as unused.
+	* algebra/modmon.spad.pamphlet: Do not make MoMonic mutable.
+	* algebra/defaults.spad.pamphlet: Do not make RepeatedSquaring and
+	RepeatedDoubling, FiniteLinearAggregateSort mutable.
+
 2011-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/daase.lisp (dbArity, dbInstanceCache): New accessors.

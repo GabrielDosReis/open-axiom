@@ -14,8 +14,6 @@
 )abbrev domain MODMON ModMonic
 ++ Description:
 ++ This package \undocumented
--- following line prevents caching ModMonic
-)bo PUSH('ModMonic, $mutableDomains)
  
 ModMonic(R,Rep): C == T
  where
