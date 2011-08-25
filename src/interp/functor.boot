@@ -445,7 +445,7 @@ DescendCode(code,flag,viewAssoc) ==
       reverse! [v for u in reverse codelist |
                     (v:= DescendCode(u,flag,viewAssoc))~=nil]]
   code is ['%when,:condlist] =>
-    c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
+    c:= [[u2:= ProcessCond(first u,$e),:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
             TruthP u2 => flag;
@@ -473,7 +473,7 @@ DescendCode(code,flag,viewAssoc) ==
           code:=['%store,['%tref,['%tref,'$,5],#$locals-#u],code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
-            [['%when,[ProcessCond  flag,code]],:$epilogue]
+            [['%when,[ProcessCond(flag,$e),code]],:$epilogue]
           nil
         code
     code -- doItIf deletes entries from $locals so can't optimize this
@@ -488,7 +488,7 @@ DescendCode(code,flag,viewAssoc) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([second(u).args,third u],flag)
     ConstantCreator u =>
-      if flag ~= true then u:= ['%when,[ProcessCond flag,u]]
+      if flag ~= true then u:= ['%when,[ProcessCond(flag,$e),u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
@@ -508,9 +508,9 @@ ConstantCreator u ==
   u is ['CONS,:.] => false
   true
  
-ProcessCond cond ==
+ProcessCond(cond,e) ==
   ncond := applySubst($pairlis,cond)
-  integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
+  integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
   cond
 
 TryGDC cond ==
@@ -688,7 +688,7 @@ InvestigateConditions(catvecListMaker,env) ==
  
 ICformat(u,env) ==
       u isnt [.,:.] => u
-      u is ["has",:.] => compHasFormat u
+      u is ["has",:.] => compHasFormat(u,env)
       u is ['AND,:l] or u is ['and,:l] =>
         l:= removeDuplicates [ICformat(v,env) for [v,:l'] in tails l
                                 | not listMember?(v,l')]
