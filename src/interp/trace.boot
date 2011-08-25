@@ -762,23 +762,8 @@ traceReply() ==
     sayBrightly flowSegmentedMsg(displayList,$LINELENGTH,6)
 
 addTraceItem d ==
-  isDomain d => $domains:= [devaluate d,:$domains]
   isDomainOrPackage d => $packages:= [devaluate d,:$packages]
   constructor? d => $constructors:=[d,:$constructors]
-
-_?t() ==
-  null _/TRACENAMES => sayMSG bright '"nothing is traced"
-  for x in _/TRACENAMES | x isnt [.,:.] and not IS__GENVAR x repeat
-    if llm:= get(x,'localModemap,$InteractiveFrame) then
-      x:= ([CADAR llm])
-    sayMSG ['"Function",:bright rassocSub(x,$mapSubNameAlist),'"traced"]
-  for x in _/TRACENAMES | x is [d,:l] and isDomainOrPackage d repeat
-    suffix:=
-      isDomain d => '"domain"
-      '"package"
-    sayBrightly ['"   Functions traced in ",suffix,'"%b",devaluate d,'"%d",":"]
-    for x in orderBySlotNumber l repeat reportSpadTrace("   ",take(4,x))
-    TERPRI()
 
 tracelet(fn,vars) ==
   if GENSYMP fn and stupidIsSpadFunction eval fn then

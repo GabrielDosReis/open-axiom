@@ -797,10 +797,6 @@ intern x ==
     makeSymbol x
   x
 
-isDomain a ==
-  cons? a and vector? first a and
-    member(first a.0, $domainTypeTokens)
-
 -- variables used by browser
 
 $htHash      := MAKE_-HASH_-TABLE()
