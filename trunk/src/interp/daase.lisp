@@ -225,7 +225,7 @@
  users                      ; browse.
  dependents                 ; browse.
  superdomain                ; interp.
- spare                      ; superstition
+ instantiations		    ; nil if mutable constructor
  ) ; database structure
 
 
@@ -276,6 +276,12 @@
 
 (defmacro |dbModule| (db)
   `(database-object ,db))
+
+(defmacro |dbArity| (db)
+  `(list-length (cdr (|dbConstructorForm| ,db))))
+
+(defmacro |dbInstanceCache| (db)
+  `(database-instantiations ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))
