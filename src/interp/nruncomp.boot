@@ -448,7 +448,7 @@ makeSpadConstant [fn,dollar,slot] ==
   u.rest := val
   val
 
-buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
+buildFunctor(db,sig,code,$locals,$e) ==
 --PARAMETERS
 --  $definition: constructor form, e.g. (SquareMatrix 10 (RationalNumber))
 --  sig: signature of constructor form
@@ -464,10 +464,12 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 --GLOBAL VARIABLES REFERENCED:
 --  $domainShell: passed in from compDefineFunctor1
 --  $QuickCode: compilation flag
+  $definition: local := dbConstructorForm db
+  [name,:args] := $definition
 
   if code is ['add,.,newstuff] then code := newstuff
 
-  changeDirectoryInSlot1()  --this extends $NRTslot1PredicateList
+  changeDirectoryInSlot1 db  --this extends $NRTslot1PredicateList
 
   --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
@@ -665,7 +667,7 @@ NRTaddToSlam([name,:argnames],shell) ==
   args := ['%list,:ASSOCRIGHT $devaluateList]
   addToConstructorCache(name,args,shell)
 
-changeDirectoryInSlot1() ==  --called by buildFunctor
+changeDirectoryInSlot1 db ==  --called by buildFunctor
   --3 cases:
   --  if called inside buildFunctor, $NRTdeltaLength gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
