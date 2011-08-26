@@ -1337,11 +1337,12 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
-    dbConstructorForm(constructorDB $op) := form
+    db := constructorDB $op
+    dbConstructorForm(db) := form
     $formalArgList:= [:argl,:$formalArgList]
     $pairlis: local := pairList(argl,$FormalMapVariableList)
     -- all defaulting packages should have caching turned off
-    dbInstanceCache(constructorDB $op) := not isCategoryPackageName $op
+    dbInstanceCache(db) := not isCategoryPackageName $op
     signature':=
       [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
     $functorForm := $form := [$op,:argl]
@@ -1360,7 +1361,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $condAlist: local := nil
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
-    $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
+    $NRTattributeAlist: local := NRTgenInitialAttributeAlist(db,attributeList)
     $NRTslot1Info: local := nil  --set in NRTmakeSlot1Info
        --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd
@@ -1404,7 +1405,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
  
     body':= T.expr
     lamOrSlam :=
-      dbInstanceCache constructorDB $op = nil => 'LAM
+      dbInstanceCache db = nil => 'LAM
       'SPADSLAM
     fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
@@ -2145,7 +2146,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $useRepresentationHack := true
   clearCapsuleFunctionTable()
   e := checkRepresentation($addFormLhs,itemList,e)
-  compCapsuleInner(itemList,m,addDomain('_$,e))
+  compCapsuleInner(constructorDB $form.op,itemList,m,addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
@@ -2168,7 +2169,7 @@ compSubDomain1(domainForm,predicate,m,e) ==
   emitSubdomainInfo($form,domainForm,pred)
   [domainForm,m,e]
 
-compCapsuleInner(itemList,m,e) ==
+compCapsuleInner(db,itemList,m,e) ==
   e:= addInformation(m,e)
            --puts a new 'special' property of $Information
   data := ["PROGN",:itemList]
@@ -2179,7 +2180,7 @@ compCapsuleInner(itemList,m,e) ==
     data := ['add,$addForm,data]
   code :=
     $insideCategoryIfTrue and not $insideCategoryPackageIfTrue => data
-    buildFunctor($form,$signature,data,localParList,e)
+    buildFunctor(db,$signature,data,localParList,e)
   [MKPF([:$getDomainCode,code],"PROGN"),m,e]
  
 --% PROCESS FUNCTOR CODE

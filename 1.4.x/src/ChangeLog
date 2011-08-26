@@ -1,6 +1,16 @@
 2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* interp/lisplib.boot (autoLoad): Lose first parameter.  
+	Remove $lisplibAttributes.
+	* interp/define.boot (compDefineFunctor1): Tidy.
+	(compCapsuleInner): Add a DB first parameter.  Adjust callers.
+	* interp/lisplib.boot (NRTgenInitialAttributeAlist): Likewise.
+	(simplifyAttributeAlist): Likewise.
+	* interp/nruncomp.boot (changeDirectoryInSlot1): Likewise.
+	(buildFunctor): Change first parameter to DB.  Adjust caller.
+
+2011-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (autoLoad): Lose first parameter.
 	Adjust callers.
 	(unloadOneConstructor): Likewise.
 	* interp/category.boot (isCategoryForm): Rewrite.

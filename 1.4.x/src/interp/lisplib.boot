@@ -47,21 +47,21 @@ $functionLocations := []
 --=======================================================================
 --                Generate Slot 2 Attribute Alist
 --=======================================================================
-NRTgenInitialAttributeAlist attributeList ==
+NRTgenInitialAttributeAlist(db,attributeList) ==
   --alist has form ((item pred)...) where some items are constructor forms
   alist := [x for x in attributeList | -- throw out constructors
     not symbolMember?(opOf first x,allConstructors())]
-  $lisplibAttributes := simplifyAttributeAlist
-    [[a,:b] for [a,b] in applySubst($pairlis,alist) | a isnt 'nothing]
+  dbAttributes(db) := simplifyAttributeAlist(db,
+    [[a,:b] for [a,b] in applySubst($pairlis,alist) | a isnt 'nothing])
 
-simplifyAttributeAlist al ==
+simplifyAttributeAlist(db,al) ==
   al is [[a,:b],:r] =>
     u := [x for x in r | x is [=a,:b]] 
-    null u => [first al,:simplifyAttributeAlist rest al]
+    null u => [first al,:simplifyAttributeAlist(db,rest al)]
     pred := simpBool makePrefixForm([b,:ASSOCRIGHT u],'OR)
     $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
     s := [x for x in r | x isnt [=a,:b]]
-    [[a,:pred],:simplifyAttributeAlist s]
+    [[a,:pred],:simplifyAttributeAlist(db,s)]
   nil
  
 NRTgenFinalAttributeAlist e ==
@@ -442,7 +442,6 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
-  $lisplibAttributes: local := nil
   $lisplibPredicates: local := nil
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
@@ -470,7 +469,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   sayMSG fillerSpaces(72,char "-")
   $LISPLIB: local := 'T
   $op: local := op
-  $lisplibAttributes: local := nil
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibParents: local := nil
   $lisplibAncestors: local := nil
@@ -574,6 +572,7 @@ leaveIfErrors(libName,kind) ==
 
 ++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib(ctor,libName) ==
+  db := constructorDB ctor
   kind := dbConstructorKind constructorDB ctor
   form := dbConstructorForm constructorDB ctor
   mm := getConstructorModemap ctor
@@ -593,12 +592,12 @@ finalizeLisplib(ctor,libName) ==
   if kind='category then
      $pairlis : local := pairList(form,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
-     NRTgenInitialAttributeAlist rest opsAndAtts
+     NRTgenInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain(ctor,dbSuperDomain constructorDB ctor,$libFile)
   lisplibWrite('"signaturesAndLocals",
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
-  lisplibWrite('"attributes",removeZeroOne $lisplibAttributes,$libFile)
+  lisplibWrite('"attributes",removeZeroOne dbAttributes db,$libFile)
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
   lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
   lisplibWrite('"parents",removeZeroOne $lisplibParents,$libFile)
