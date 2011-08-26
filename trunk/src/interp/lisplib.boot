@@ -400,23 +400,29 @@ makeConstructorsAutoLoad() ==
  
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP cnam => "next"
-    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
+    symbolFunction(cnam) := mkAutoLoad cnam
 
-autoLoad(abb,cname) ==
+mkAutoLoad ctor ==
+  function((:args) +-> (autoLoad ctor; apply(ctor,args)))
+
+autoLoad cname ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
   builtinConstructor? cname => cname
-  if not property(cname,'LOADED) then loadLib cname
+  if constructorDB cname = nil then
+    makeDB cname
+  if property(cname,'LOADED) = nil then
+    loadLib cname
   symbolFunction cname
 
 setAutoLoadProperty(name) ==
---  abb := getConstructorAbbreviationFromDB name
   property(name,'LOADED) := nil
-  symbolFunction(name) := mkAutoLoad(getConstructorAbbreviationFromDB name, name)
+  symbolFunction(name) := mkAutoLoad name
 
-unloadOneConstructor(cnam,fn) ==
+unloadOneConstructor cnam ==
     property(cnam,'LOADED) := nil
-    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
+    symbolFunction(cnam) := mkAutoLoad cnam
+    --FIXME: should not we clear other fields too?
 
 --% Compilation
  
@@ -502,7 +508,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   RPACKFILE filearg
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
-  unloadOneConstructor(op,libName)
+  unloadOneConstructor op
   LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],nil)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
