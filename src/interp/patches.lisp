@@ -42,11 +42,6 @@
 
 (define-function '|construct| #'list) ;; NEEDED , SPAD-COMPILER generated Lisp code
 
-(defun |mkAutoLoad| (fn cname)
-   (function (lambda (&rest args)
-                 (|autoLoad| fn cname)
-                 (apply cname args))))
-
 (defmacro dribinit (streamvar)
   `(if (is-console ,streamvar)
        (setq ,streamvar *terminal-io*)))

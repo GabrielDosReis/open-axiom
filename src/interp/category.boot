@@ -55,10 +55,10 @@ categoryObject? a ==
 ++ envronement `e'.
 isCategoryForm: (%Form,%Env) -> %Boolean
 isCategoryForm(x,e) ==
-  x isnt [.,:.] =>
-    u := macroExpand(x,e)
-    cons? u and categoryForm? u
-  categoryForm? x
+  if x isnt [.,:.] then
+    x := macroExpand(x,e)
+  x isnt [.,:.] => ident? x and getmode(x,e) = $Category
+  getConstructorKind(x.op) is 'category -- FIXME: check arguments too.
  
 ++ Returns a freshly built category object for a domain or package
 ++ (as indicated by `domainOrPackage'), with signature list
