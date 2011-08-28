@@ -557,11 +557,6 @@ writeOperations(ctor,ops,file) ==
 writeConstructorModemap(ctor,mm,file) ==
   writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
 
-writeInstanceCache(ctor,file) ==
-  insn := ['%store,['dbInstanceCache,mkCtorDBForm ctor],'%true]
-  LAM_,FILEACTQ('instanceCache,expandToVMForm insn)
-  lisplibWrite('"instanceCache",'T,file)
-  
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
 leaveIfErrors(libName,kind) ==
@@ -579,8 +574,6 @@ finalizeLisplib(ctor,libName) ==
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,removeZeroOne mm,$libFile)
-  if dbInstanceCache constructorDB ctor then
-    writeInstanceCache(ctor,$libFile)
   $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
