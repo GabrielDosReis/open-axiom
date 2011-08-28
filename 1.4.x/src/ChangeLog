@@ -1,5 +1,10 @@
 2011-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (writeInstanceCache): Remove.
+	(finalizeLisplib): Don't call it.
+
+2011-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp (DATABASE): Add new field BEING-DEFINED.
 	(dbBeingMacro?): New accessor.
 	(GETDATABASE): Tidy.
