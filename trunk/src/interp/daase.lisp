@@ -226,6 +226,7 @@
  dependents                 ; browse.
  superdomain                ; interp.
  instantiations		    ; nil if mutable constructor
+ being-defined		    ; T is definition of constructor is being processed
  ) ; database structure
 
 
@@ -282,6 +283,9 @@
 
 (defmacro |dbInstanceCache| (db)
   `(database-instantiations ,db))
+
+(defmacro |dbBeingDefined?| (db)
+  `(database-being-defined ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))
@@ -824,170 +828,171 @@
     (declare (ignore ignore))
     (when (or (symbolp constructor)
 	      (and (eq key 'hascategory) (consp constructor)))
-      (case key
+      (let ((struct (and (symbolp constructor) (|constructorDB| constructor))))
+	(case key
 ; note that abbreviation, constructorkind and cosig are heavy hitters
 ; thus they occur first in the list of things to check
-	    (abbreviation
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbAbbreviation| struct))))
-	    (constructorkind
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbConstructorKind| struct))))
-	    (cosig
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbDualSignature| struct))))
-	    (operation
-	     (setq stream *operation-stream*)
-	     (setq data (gethash constructor *operation-hash*)))
-	    (constructormodemap
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbConstructorModemap| struct))))
-	    (constructorcategory
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbCategory| struct))
-	       (when (null data) ;domain or package then subfield of constructormodemap
-		 (setq data (cadar (|getConstructorModemap| constructor))))))
-	    (operationalist
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbOperations| struct))))
-	    (modemaps
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbModemaps| struct))))
-	    (hascategory
-	     (setq table  *hasCategory-hash*)
-	     (setq stream *category-stream*)
-	     (setq data (gethash constructor table)))
-	    (object
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbModule| struct))))
-	    (constructor?
-	     (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
-	    (superdomain
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbSuperDomain| struct))))
-	    (constructor
-	     (when (setq data (get constructor 'abbreviationfor))))
-	    (defaultdomain
-	      (setq data (cadr (assoc constructor *defaultdomain-list*))))
-	    (ancestors
-	     (setq stream *interp-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbAncestors| struct))))
-	    (sourcefile
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-sourcefile struct))))
-	    (constructorform
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbConstructorForm| struct))))
-	    (constructorargs
-	     (setq data (cdr (|getConstructorFormFromDB| constructor))))
-	    (attributes
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbAttributes| struct))))
-	    (predicates
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (|dbPredicates| struct))))
-	    (documentation
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-documentation struct))))
-	    (parents
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-parents struct))))
-	    (users
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-users struct))))
-	    (dependents
-	     (setq stream *browse-stream*)
-	     (when (setq struct (|constructorDB| constructor))
-	       (setq data (database-dependents struct))))
-	    (otherwise  
-	     (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
-      (when (numberp data)                 ;fetch the real data
-	(when *miss*
-	  (format t "getdatabase miss: ~20a ~a~%" key constructor))
-	(file-position stream data)
-	(setq data (read stream))
-	;; Don't attempt to uncompress codes -- they are not compressed.
-	(cond ((eq key 'superdomain)
-	       (rplaca data (unsqueeze (car data))))
-	      (t (setq data (unsqueeze data))))
-	;;(setq data (unsqueeze (read stream)))
-	(case key ; cache the result of the database read
-	      (operation           
-	       (setf (gethash constructor *operation-hash*) data))
-	      (hascategory 
-	       (setf (gethash constructor *hascategory-hash*) data))
-	      (constructorkind 
-	       (setf (|dbConstructorKind| struct) data))
-	      (cosig     
-	       (setf (|dbDualSignature| struct) data))
-	      (constructormodemap 
-	       (setf (|dbConstructorModemap| struct) data))
-	      (constructorcategory 
-	       (setf (|dbCategory| struct) data))
+	      (abbreviation
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbAbbreviation| struct))))
+	      (constructorkind
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbConstructorKind| struct))))
+	      (cosig
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbDualSignature| struct))))
+	      (operation
+	       (setq stream *operation-stream*)
+	       (setq data (gethash constructor *operation-hash*)))
+	      (constructormodemap
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbConstructorModemap| struct))))
+	      (constructorcategory
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbCategory| struct))
+		 (when (null data) ;domain or package then subfield of constructormodemap
+		   (setq data (cadar (|getConstructorModemap| constructor))))))
 	      (operationalist
-	       (setf (|dbOperations| struct) data))
-	      (modemaps  
-	       (setf (|dbModemaps| struct) data))
-	      (object    
-	       (setf (|dbModule| struct) data))
-	      (abbreviation 
-	       (setf (|dbAbbreviation| struct) data))
-	      (constructor 
-	       (setf (|dbConstructor| struct) data))
-	      (ancestors 
-	       (setf (|dbAncestors| struct) data))
-	      (constructorform     
-	       (setf (|dbConstructorForm| struct) data))
-	      (attributes
-	       (setf (|dbAttributes| struct) data))
-	      (predicates 
-	       (setf (|dbPredicates| struct) data))
-	      (documentation 
-	       (setf (database-documentation struct) data))
-	      (parents   
-	       (setf (database-parents struct) data))
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbOperations| struct))))
+	      (modemaps
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbModemaps| struct))))
+	      (hascategory
+	       (setq table  *hasCategory-hash*)
+	       (setq stream *category-stream*)
+	       (setq data (gethash constructor table)))
+	      (object
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbModule| struct))))
+	      (constructor?
+	       (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
 	      (superdomain
-	       (setf (|dbSuperDomain| struct) data))
-	      (users     
-	       (setf (database-users struct) data))
-	      (dependents
-	       (setf (database-dependents struct) data))
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbSuperDomain| struct))))
+	      (constructor
+	       (when (setq data (get constructor 'abbreviationfor))))
+	      (defaultdomain
+		(setq data (cadr (assoc constructor *defaultdomain-list*))))
+	      (ancestors
+	       (setq stream *interp-stream*)
+	       (when struct
+		 (setq data (|dbAncestors| struct))))
 	      (sourcefile
-	       (setf (database-sourcefile struct) data))))
-      (case key ; fixup the special cases
-	    (sourcefile
-	     (when (and data (string= (directory-namestring data) "")
-			(string= (pathname-type data) "spad"))
-	       (setq data
-		     (concatenate 'string 
-				  (|systemRootDirectory|)
-				  "src/algebra/" data))))
-	    (object		       ; fix up system object pathname
-	     (if (consp data)
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (database-sourcefile struct))))
+	      (constructorform
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (|dbConstructorForm| struct))))
+	      (constructorargs
+	       (setq data (cdr (|getConstructorFormFromDB| constructor))))
+	      (attributes
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (|dbAttributes| struct))))
+	      (predicates
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (|dbPredicates| struct))))
+	      (documentation
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (database-documentation struct))))
+	      (parents
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (database-parents struct))))
+	      (users
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (database-users struct))))
+	      (dependents
+	       (setq stream *browse-stream*)
+	       (when struct
+		 (setq data (database-dependents struct))))
+	      (otherwise  
+	       (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
+	(when (numberp data)                 ;fetch the real data
+	  (when *miss*
+	    (format t "getdatabase miss: ~20a ~a~%" key constructor))
+	  (file-position stream data)
+	  (setq data (read stream))
+	;; Don't attempt to uncompress codes -- they are not compressed.
+	  (cond ((eq key 'superdomain)
+		 (rplaca data (unsqueeze (car data))))
+		(t (setq data (unsqueeze data))))
+	;;(setq data (unsqueeze (read stream)))
+	  (case key ; cache the result of the database read
+		(operation           
+		 (setf (gethash constructor *operation-hash*) data))
+		(hascategory 
+		 (setf (gethash constructor *hascategory-hash*) data))
+		(constructorkind 
+		 (setf (|dbConstructorKind| struct) data))
+		(cosig     
+		 (setf (|dbDualSignature| struct) data))
+		(constructormodemap 
+		 (setf (|dbConstructorModemap| struct) data))
+		(constructorcategory 
+		 (setf (|dbCategory| struct) data))
+		(operationalist
+		 (setf (|dbOperations| struct) data))
+		(modemaps  
+		 (setf (|dbModemaps| struct) data))
+		(object    
+		 (setf (|dbModule| struct) data))
+		(abbreviation 
+		 (setf (|dbAbbreviation| struct) data))
+		(constructor 
+		 (setf (|dbConstructor| struct) data))
+		(ancestors 
+		 (setf (|dbAncestors| struct) data))
+		(constructorform     
+		 (setf (|dbConstructorForm| struct) data))
+		(attributes
+		 (setf (|dbAttributes| struct) data))
+		(predicates 
+		 (setf (|dbPredicates| struct) data))
+		(documentation 
+		 (setf (database-documentation struct) data))
+		(parents   
+		 (setf (database-parents struct) data))
+		(superdomain
+		 (setf (|dbSuperDomain| struct) data))
+		(users     
+		 (setf (database-users struct) data))
+		(dependents
+		 (setf (database-dependents struct) data))
+		(sourcefile
+		 (setf (database-sourcefile struct) data))))
+	(case key ; fixup the special cases
+	      (sourcefile
+	       (when (and data (string= (directory-namestring data) "")
+			  (string= (pathname-type data) "spad"))
 		 (setq data
-		       (if (string= (directory-namestring (car data)) "")
-			   (|getSystemModulePath| (car data))
-			 (car data)))
-	       (when (and data (string= (directory-namestring data) ""))
-		 (setq data (|getSystemModulePath| data)))))))
-    data))
+		       (concatenate 'string 
+				    (|systemRootDirectory|)
+				    "src/algebra/" data))))
+	      (object		       ; fix up system object pathname
+	       (if (consp data)
+		   (setq data
+			 (if (string= (directory-namestring (car data)) "")
+			     (|getSystemModulePath| (car data))
+			   (car data)))
+		 (when (and data (string= (directory-namestring data) ""))
+		   (setq data (|getSystemModulePath| data)))))))
+      data)))
 
 ;; Current directory
 ;; Contributed by Juergen Weiss.
