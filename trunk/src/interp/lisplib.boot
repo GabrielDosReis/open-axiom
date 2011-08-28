@@ -557,6 +557,9 @@ writeOperations(ctor,ops,file) ==
 writeConstructorModemap(ctor,mm,file) ==
   writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
 
+writeAncestors(ctor,x,file) ==
+  writeInfo(ctor,x,'ancestors,'dbAncestors,file)
+
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
 leaveIfErrors(libName,kind) ==
@@ -594,7 +597,7 @@ finalizeLisplib(ctor,libName) ==
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
   lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
   lisplibWrite('"parents",removeZeroOne $lisplibParents,$libFile)
-  lisplibWrite('"ancestors",removeZeroOne $lisplibAncestors,$libFile)
+  writeAncestors(ctor,removeZeroOne $lisplibAncestors,$libFile)
   lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()

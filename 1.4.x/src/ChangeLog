@@ -1,3 +1,13 @@
+2011-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compDefineCategory2): Mark begining and end
+	of definition processing.
+	(compDefineFunctor1): Likewise.
+	* interp/daase.lisp (dbPrincipals): New accessor.
+	* interp/br-data.boot (getDefaultPackageClients): Fix thinko.
+	* interp/lisplib.boot (writeAncestors): New.
+	(finalizeLisplib): Use it
+
 2011-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (writeInstanceCache): Remove.

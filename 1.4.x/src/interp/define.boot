@@ -998,7 +998,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
          --Set in DomainSubstitutionFunction, used further down
     -- 1.1  augment e to add declaration $: <form>
     [$op,:argl] := $definition
-    dbInstanceCache(constructorDB $op) := true
+    db := constructorDB $op
+    dbBeingDefined?(db) := true
+    dbInstanceCache(db) := true
     e:= addBinding("$",[['mode,:$definition]],e)
  
     -- 2. obtain signature
@@ -1059,6 +1061,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       $lisplibAncestors := computeAncestorsOf($form,nil)
       form':=[op',:sargl]
       augLisplibModemapsFromCategory(form',formalBody,signature')
+    dbBeingDefined?(db) := false
     [fun,$Category,e]
 
 mkConstructor: %Form -> %Form
@@ -1338,6 +1341,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     originale:= $e
     [$op,:argl]:= form
     db := constructorDB $op
+    dbBeingDefined?(db) := true
     dbConstructorForm(db) := form
     $formalArgList:= [:argl,:$formalArgList]
     $pairlis: local := pairList(argl,$FormalMapVariableList)
@@ -1446,6 +1450,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'%incomplete], true])
+    dbBeingDefined?(db) := false
     [fun,['Mapping,:signature'],originale]
 
 

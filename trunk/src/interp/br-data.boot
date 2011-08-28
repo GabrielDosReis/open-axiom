@@ -427,7 +427,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
 getDefaultPackageClients con ==  --called by mkUsersHashTable
   catname := makeSymbol subString(s := symbolName con,0,maxIndex s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := makeDefaultPackageName symbolName catAncestor
+    pakname := makeDefaultPackageName symbolName catAncestor.op
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)

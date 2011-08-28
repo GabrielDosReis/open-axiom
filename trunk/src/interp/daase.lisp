@@ -260,6 +260,9 @@
 (defmacro |dbCategory| (db)
   `(database-constructorcategory ,db))
 
+(defmacro |dbPrincipals| (db)
+  `(database-parents ,db))
+
 (defmacro |dbAncestors| (db)
   `(database-ancestors ,db))
 
@@ -702,7 +705,7 @@
 	(setf (database-documentation dbstruct) (fourth item))
 	(setf (|dbAttributes| dbstruct) (fifth item))
 	(setf (|dbPredicates| dbstruct) (sixth item))
-	(setf (database-parents dbstruct) (seventh item))))
+	(setf (|dbPrincipals| dbstruct) (seventh item))))
     (format t "~&")))
 
 (defun categoryOpen ()
@@ -912,7 +915,7 @@
 	      (parents
 	       (setq stream *browse-stream*)
 	       (when struct
-		 (setq data (database-parents struct))))
+		 (setq data (|dbPrincipals| struct))))
 	      (users
 	       (setq stream *browse-stream*)
 	       (when struct
@@ -967,7 +970,7 @@
 		(documentation 
 		 (setf (database-documentation struct) data))
 		(parents   
-		 (setf (database-parents struct) data))
+		 (setf (|dbPrincipals| struct) data))
 		(superdomain
 		 (setf (|dbSuperDomain| struct) data))
 		(users     
