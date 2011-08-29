@@ -321,13 +321,7 @@ loadLib cname ==
   clearConstructorCache cname
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
-  u := getConstructorModemap cname
   updateCategoryTable(cname,kind)
-  coSig :=
-      u =>
-          [[.,:sig],:.] := u
-          [nil,:[categoryForm?(x) for x in rest sig]]
-      nil
   property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
@@ -770,15 +764,15 @@ getSlotFromCategoryForm (x,index) ==
   u:= eval [x.op,:[MKQ f for f in $FormalMapVariableList for . in 1..#x.args]]
   not vector? u =>
     systemErrorHere '"getSlotFromCategoryForm"
-  u . index
+  categoryRef(u,index)
  
  
 isDomainForm(D,e) ==
+  op := opOf D
   --added for MPOLY 3/83 by RDJ
-  symbolMember?(KAR D,$SpecialDomainNames) or isFunctor D or
-    -- ((D is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
-     ((getmode(D,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
-       isCategoryForm(getmode(D,e),e) or isDomainConstructorForm(D,e)
+  symbolMember?(op,$SpecialDomainNames) or isFunctor op or
+     ((getmode(op,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
+       isCategoryForm(getmode(op,e),e) or isDomainConstructorForm(D,e)
  
 isDomainConstructorForm(D,e) ==
   D is [op,:argl] and (u:= get(op,"value",e)) and
@@ -793,10 +787,10 @@ isFunctor x ==
     getConstructorKindFromDB op in '(domain package)
   u:= get(op,'isFunctor,$CategoryFrame)
     or op in '(SubDomain Union Record Enumeration) => u
-  ab := getConstructorAbbreviationFromDB op =>
+  getConstructorAbbreviationFromDB op =>
     if getConstructorKindFromDB op = "category"
       then updateCategoryFrameForCategory op
-      else loadExports ab or updateCategoryFrameForConstructor op
+      else updateCategoryFrameForConstructor op
     get(op,'isFunctor,$CategoryFrame)
   nil
 
@@ -808,8 +802,8 @@ getIndexPathname dir ==
 
 getAllIndexPathnames: %String -> %List %Thing
 getAllIndexPathnames dir ==
-  -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
-  -- rest of everybody else' semantics.  Namely, GCL would return a
+  -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from
+  -- everybody else's.  Namely, GCL would return a
   -- a list of drirectories AND files.  Pretty much like `ls *'.
   -- Everybody else strips out directories.
 )if %hasFeature KEYWORD::GCL
@@ -851,36 +845,3 @@ getIndexTable dir ==
   finally (if stream ~= nil then closeStream stream)
 
 --%
-compDefineExports(form,ops,sig,e) ==
-  not $LISPLIB => systemErrorHere "compDefineExports"
-  op := first form
-  -- Ensure constructor parameters appear as formals
-  sig := applySubst($pairlis, sig)
-  ops := applySubst($pairlis,ops)
-  form := applySubst($pairlis,form)
-  -- In case we are not compiling the capsule, the slot numbers are
-  -- most likely bogus.  Nullify them so people don't think they
-  -- bear any meaningful semantics (well, they should not think
-  -- these are forwarding either).
-  if $compileExportsOnly then
-    for entry in ops repeat
-      fixupSigloc entry where
-        fixupSigloc entry ==
-          [opsig,pred,funsel] := entry
-          if pred isnt 'T then 
-            entry.rest.first := simpBool pred
-          funsel is [op,a,:.] and op in '(ELT CONST) =>
-            entry.rest.rest.first := [op,a,nil]
-    ops := listSort(function GGREATERP, ops, function first)
-  libName := getConstructorAbbreviation op
-  exportsFile := strconc(symbolName libName,'".sig")
-  removeFile exportsFile
-  withOutputFile(s,exportsFile, 
-    PRETTYPRINT(
-      ["SETQ", "$CategoryFrame",
-        ["put", quoteForm op, quoteForm "isFunctor", quoteForm ops,
-          ["addModemap", quoteForm op, quoteForm form,
-             quoteForm sig, true, quoteForm op,
-               ["put", quoteForm op, quoteForm "mode",
-                 quoteForm ["Mapping",:sig], "$CategoryFrame"]]]], s))
-  [op,["Mapping",:sig],e]
