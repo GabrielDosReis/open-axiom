@@ -222,22 +222,21 @@ get(x,prop,e) ==
   get1(x,prop,e)
 
 get0(x,prop,e) ==
-  cons? x => get(x.op,prop,e)
-  u:= QLASSQ(x,first first e) => QLASSQ(prop,u)
-  (tail:= rest first e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+  cons? x => get0(x.op,prop,e)
+  u := QLASSQ(x,first first e) => QLASSQ(prop,u)
+  (tail := rest first e) and (u := fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
   nil
 
 get1(x,prop,e) ==
-    --this is the old get
-  cons? x => get(x.op,prop,e)
-  prop="modemap" and $insideCapsuleFunctionIfTrue =>
+  cons? x => get1(x.op,prop,e)
+  prop = "modemap" and $insideCapsuleFunctionIfTrue =>
     symbolLassoc("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
   LASSOC(prop,getProplist(x,e)) or get2(x,prop)
 
 get2(x,prop) ==
-  prop="modemap" and ident? x and constructor? x =>
+  prop = "modemap" and ident? x and constructor? x =>
     (u := getConstructorModemap x) => [u]
     nil
   nil

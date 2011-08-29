@@ -1,5 +1,14 @@
 2011-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot	(loadLib): Remove deadcode.
+	(isDomainForm): Tidy.
+	(isFunctor): Likewise.
+	(compDefineExports): Remove as no longer used.
+	* interp/sys-utility.boot (loadExports): Likewise.
+	* interp/g-util.boot (get0, get1, get2): Tidy.
+
+2011-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (writePrincipals): New.
 	(finalizeLisplib): Use it.
 

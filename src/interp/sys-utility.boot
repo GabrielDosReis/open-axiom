@@ -222,9 +222,6 @@ loadModule(path,name) ==
   FMAKUNBOUND name
   LOAD path
 
-loadExports name ==
-  loadFileIfPresent strconc(STRING name,'".sig")
-
 --% numerics
 log10 x ==
   LOG(x,10)
