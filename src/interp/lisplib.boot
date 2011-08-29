@@ -339,18 +339,14 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
   stopTimingProcess 'load
   'T
  
-loadIfNecessary u == loadLibIfNecessary(u,true)
- 
-loadIfNecessaryAndExists u == loadLibIfNecessary(u,nil)
- 
-loadLibIfNecessary(u,mustExist) ==
+loadIfNecessary u ==
   u is '$EmptyMode => u
-  cons? u => loadLibIfNecessary(first u,mustExist)
+  cons? u => loadIfNecessary first u
   value:=
     functionp(u) or macrop(u) => u
     property(u,'LOADED) => u
     loadLib u => u
-  null $InteractiveMode and ((null (y:= getProplist(u,$CategoryFrame)))
+  not $InteractiveMode and (null (y:= getProplist(u,$CategoryFrame))
     or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
       y:= getConstructorKindFromDB u =>
          y = "category" =>
@@ -358,6 +354,18 @@ loadLibIfNecessary(u,mustExist) ==
          updateCategoryFrameForConstructor u
       throwKeyedMsg("S2IL0005",[u])
   value
+
+++ Load the module associated with `db' and return the module's path.
+loadDB db ==
+  try
+    startTimingProcess 'load
+    dbBeingDefined? db => nil
+    ctor := dbConstructor db
+    property(ctor,'LOADED) => db  --FIXME: this should be a db operation
+    lib := findModule ctor or return nil
+    loadModule(lib,ctor)
+    property(ctor,'LOADED) := lib
+  finally stopTimingProcess 'load
  
 convertOpAlist2compilerInfo(opalist) ==
    "append"/[[formatSig(op,sig) for sig in siglist]
@@ -548,6 +556,9 @@ writeSuperDomain(ctor,domPred,file) ==
 writeOperations(ctor,ops,file) ==
   writeInfo(ctor,ops,'operationAlist,'dbOperations,file)
 
+writeAttributes(ctor,ats,file) ==
+ writeInfo(ctor,ats,'attributes,'dbAttributes,file)
+
 writeConstructorModemap(ctor,mm,file) ==
   writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
 
@@ -590,7 +601,7 @@ finalizeLisplib(ctor,libName) ==
   lisplibWrite('"signaturesAndLocals",
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
-  lisplibWrite('"attributes",removeZeroOne dbAttributes db,$libFile)
+  writeAttributes(ctor,removeZeroOne dbAttributes db,$libFile)
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
   lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
   writePrincipals(ctor,removeZeroOne $lisplibParents,$libFile)
