@@ -1242,11 +1242,17 @@
      (when (setq dbstruct (|constructorDB| con))
            (setf (|dbDualSignature| dbstruct)
                  (cons nil (mapcar #'|categoryForm?|
-                                   (cddar (|dbConstructorModemap| dbstruct)))))
-           (when (and (|categoryForm?| con)
+				   ;; The DBs have been munged by SQUEEZE
+				   ;; in WRITE-BROWSEDB, WRITE-OPERATIONDB
+				   ;; WRITE-CATEGORYDB.  Unsqueeze a copy
+				   ;; of them before checking for category
+				   ;; form-ness.  This is sick!  FIXME.
+				   (unsqueeze (copy-tree
+                                   (cddar (|dbConstructorModemap| dbstruct)))))))
+           (when (and (eq (|dbConstructorKind| dbstruct) '|category|)
                       (= (length (setq d (|domainsOf| (list con) NIL NIL))) 1))
                  (setq d (caar d))
-                 (when (= (length d) (length (|getConstructorForm| con)))
+                 (when (= (length d) (length (|dbConstructorForm| dbstruct)))
                        (format t "   ~a has a default domain of ~a~%" con (car d))
                        (setf (|dbDefaultDomain| dbstruct) (car d)))))))
                                         ; note: genCategoryTable creates *ancestors-hash*. write-interpdb

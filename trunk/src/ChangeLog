@@ -1,5 +1,16 @@
 2011-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (laodIfNecessaryAndExists): Remove as unused.
+	(loadLibIfnecessary): Fold definition into loadIfNecessary.
+	(loadDB): New.
+	(writeAttributes): Likewise.
+	(finalizeLisplib): Use it.
+	* interp/daase.lisp (MAKE-DATABASES): Fix SQUEEZE snafu.
+	* interp/c-util.boot (extendsCategoryForm): Prefer existing
+	translation of category definition to re-evaluation on the fly.
+
+2011-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot	(loadLib): Remove deadcode.
 	(isDomainForm): Tidy.
 	(isFunctor): Likewise.

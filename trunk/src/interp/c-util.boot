@@ -1027,7 +1027,14 @@ extendsCategoryForm(domain,form,form') ==
   domain = "$" and form = $definition => 
     extendsCategoryForm(domain, $currentCategoryBody, form')
   isCategoryForm(form,$EmptyEnvironment) =>
-          --Constructs the associated vector
+    -- If we have an existing definition for this category, use it.
+    (db := constructorDB form.op) and loadDB db =>
+      form' is ['SIGNATURE,op,types,:.] => assoc([op,args],dbOperations db)
+      form' is ['ATTRIBUTE,a] => assoc(a,dbAttributes db)
+      subst := pairList(dbConstructorForm(db).args,form.args)
+      or/[extendsCategoryForm(domain,applySubst(subst,cat),form')
+           for [cat,:.] in dbAncestors db]
+    -- Otherwise constructs the associated domain shell
     formVec:=(compMakeCategoryObject(form,$e)).expr
             --Must be $e to pick up locally bound domains
     form' is ["SIGNATURE",op,args,:.] =>
