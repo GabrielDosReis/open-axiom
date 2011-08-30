@@ -1,3 +1,8 @@
+2011-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.in: Simplify bootstrap rules.  Build
+	initdb.daase before bootstrap.
+
 2011-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (laodIfNecessaryAndExists): Remove as unused.
