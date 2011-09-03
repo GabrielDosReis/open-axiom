@@ -874,25 +874,28 @@ AC_SUBST(X_LIBS)
 AC_SUBST(X_EXTRA_LIBS)
 
 ## Finally, output the list of libraries that need to appear before -lX11
-## Some part of OpenAxiom depends on Xpm.  That library has kind uncertain
+## Some part of OpenAxiom depends on Xpm.  That library has kind of uncertain
 ## future.  At some point in the past, it was deprecated, to be
 ## replaced by xpm-nox; then came back again.  So, its support may
 ## vary from system to system.  For the moment, we assume that if X11
-## is found then, Xpm is already present.  Though, clearly that is a
+## is found then, Xpm is also present.  Though, clearly that is a
 ## very optimistic assumption.  Long term, OpenAxiom should get rid of
 ## dependence on Xpm.  A nearly fool-proof test would be probably
 ## inspired by AC_PATH_XTRA.  I don't have time to get to that 
 ## complication right now.  Will fix later.
+## But we can check for the existence of <X11/xpm.h>
 X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
 axiom_use_x=no
-if test -z "$no_x"; then
+if test x"$no_x" = xyes; then
+    AC_MSG_NOTICE([The Graphics component is disabled.])
+else
+    AC_CHECK_HEADERS([X11/xpm.h],[],
+      [AC_MSG_ERROR([The header <X11/xpm.h> could not be found.  Install Xpm development package and re-start the configuration process.])])
     axiom_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
-else
-    AC_MSG_NOTICE([The Garphics component is disabled.])
 fi
 AC_SUBST(axiom_use_x)
 ])
