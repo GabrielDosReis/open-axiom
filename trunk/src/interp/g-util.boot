@@ -34,7 +34,7 @@
 
 import ggreater
 import macros
-import sys_-utility
+import daase
 namespace BOOT
 
 module g_-util where
@@ -119,7 +119,10 @@ superType: %Mode -> %Maybe %Mode
 superType dom ==
   dom = "$" => superType $functorForm
   dom isnt [ctor,:args] => nil
-  [super,.] := getSuperDomainFromDB ctor or return nil
+  [super,.] := 
+    (db := constructorDB ctor) and dbBeingDefined? db =>
+      dbSuperDomain db or return nil
+    getSuperDomainFromDB ctor or return nil
   sublisFormal(args,super,$AtVariables)
 
 ++ If the domain designated by the domain form `dom' is a subdomain,

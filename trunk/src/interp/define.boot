@@ -819,7 +819,7 @@ compDefine1(form,m,e) ==
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
     $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
-    getConstructorAbbreviationFromDB $op
+    dbAbbreviation constructorDB $op
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
 compDefineAddSignature([op,:argl],signature,e) ==
@@ -1057,7 +1057,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $lisplibCategory:= formalBody
     if $LISPLIB then
       $lisplibParents  :=         
-        getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
+        getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
       form':=[op',:sargl]
       augLisplibModemapsFromCategory(form',formalBody,signature')
@@ -1424,7 +1424,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if $LISPLIB then
       $lisplibCategory := modemap.mmTarget
       $lisplibParents  :=         
-        getParentsFor($op,$FormalMapVariableList,$lisplibCategory)
+        getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if $LISPLIB then
