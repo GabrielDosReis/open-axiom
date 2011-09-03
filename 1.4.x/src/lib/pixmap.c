@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2010, Gabriel Dos Reis.
+    Copyright (C) 2007-2011, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
+#include <X11/xpm.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <netinet/in.h>
@@ -263,7 +264,6 @@ read_pixmap_file(Display *display, int screen, char *filename,
 #else /*OLD*/
 
 
-#include "xpm.h"
 
 int
 read_pixmap_file(Display *display, int screen, char *filename,
