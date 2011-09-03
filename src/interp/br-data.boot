@@ -493,15 +493,14 @@ getImports conname == --called by mkUsersHashTable
 --============================================================================
 --                 Get Hierarchical Information
 --============================================================================
-getParentsFor(cname,formalParams,constructorCategory) ==
+getParentsFor(db,formalParams,constructorCategory) ==
 --called by compDefineFunctor1
   acc := nil
   formals := TAKE(#formalParams,$TriangleVariableList)
-  constructorForm := getConstructorFormFromDB cname
+  constructorForm := dbConstructorForm db
   for x in folks constructorCategory repeat
     x := applySubst(pairList(formals,formalParams),x)
     x := applySubst(pairList(formalParams,IFCDR constructorForm),x)
-    x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
   reverse! acc
 

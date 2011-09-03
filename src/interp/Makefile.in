@@ -300,7 +300,7 @@ compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) nruncomp.$(FASLEXT) database.$(FASLEXT)
-database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) daase.$(FASLEXT) \
+database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
 		c-util.$(FASLEXT)
 functor.$(FASLEXT): category.$(FASLEXT) lisplib.$(FASLEXT) nrunfast.$(FASLEXT)
@@ -309,9 +309,8 @@ cattable.$(FASLEXT): simpbool.$(FASLEXT) c-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): macros.$(FASLEXT)
 newfort.$(FASLEXT): macros.$(FASLEXT)
-lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT) \
-	daase.$(FASLEXT)
-c-doc.$(FASLEXT): c-util.$(FASLEXT) daase.$(FASLEXT)
+lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT)
+c-doc.$(FASLEXT): c-util.$(FASLEXT)
 server.$(FASLEXT): macros.$(FASLEXT)
 
 ##
@@ -360,7 +359,7 @@ bits.$(FASLEXT): boot-pkg.$(FASLEXT)
 dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
-daase.$(FASLEXT): macros.$(FASLEXT)
+daase.$(FASLEXT): sys-utility.$(FASLEXT)
 spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
@@ -380,7 +379,7 @@ msgdb.$(FASLEXT): g-util.$(FASLEXT)
 g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)
-g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) sys-utility.$(FASLEXT)
+g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) daase.$(FASLEXT)
 g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 util.$(FASLEXT): parsing.$(FASLEXT)
