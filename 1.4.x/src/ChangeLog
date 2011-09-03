@@ -1,3 +1,15 @@
+2011-09-03  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/property.lisp: Remove unused codes.
+	* interp/g-util.boot (superType): If domain is $ then use current
+	information. 
+	* interp/daase.lisp: Tidy.
+	* interp/c-util.boot (extendsCategoryForm): Temporarily disable
+	uses of information not coming from on-the-fly category compilation.
+	* interp/br-data.boot (getParentsFor): Change first parameter to a DB.
+	Adjust callers.
+	* algebra/Makefile.in: Adjust dependencies.
+
 2011-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/Makefile.in: Simplify bootstrap rules.  Build

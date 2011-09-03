@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -122,10 +122,4 @@
 
 ;; following was in INIT LISP
 
-(FLAG '(|Union| |Record| |Enumration| |Mapping| |Enumeration|) 'FUNCTOR)
-
 (FLAG '(* + AND OR PROGN) 'NARY)
-
-(MAKEPROP 'INTEGER 'ISFUNCTION 'INTEGERP)
-(MAKEPROP '|Integer| '|isFunction| '|IsInteger|)
-(MAKEPROP '|Boolean| '|isFunction| '|isBoolean|)

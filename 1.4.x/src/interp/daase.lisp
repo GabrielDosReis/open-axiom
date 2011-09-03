@@ -200,7 +200,7 @@
 
 ; -- tim daly
 
-(import-module "macros")
+(import-module "sys-utility")
 (in-package "AxiomCore")
 (in-package "BOOT")
 
@@ -635,8 +635,7 @@
       (dolist (item constructors)
 	(setq item (unsqueeze item))
 	(setq *allconstructors* (adjoin (first item) *allconstructors*))
-	(setq dbstruct (make-database))
-	(setf (|constructorDB| (car item)) dbstruct)
+	(setq dbstruct (|makeDB| (first item)))
 	(setf (|dbOperations| dbstruct) (second item))
 	(setf (|dbConstructorModemap| dbstruct) (third item))
 	(setf (|dbModemaps| dbstruct) (fourth item))
@@ -698,7 +697,7 @@
 	  (format t "that is not in the interp.daase file. we cannot~%")
 	  (format t "get the database structure for this constructor and~%")
 	  (warn "will create a new one~%")
-	  (setf (|constructorDB| (car item)) (setq dbstruct (make-database)))
+	  (setq dbstruct (|makeDB| (first item)))
 	  (setq *allconstructors* (adjoin item *allconstructors*)))
 	(setf (database-sourcefile dbstruct) (second item))
 	(setf (|dbConstructorForm| dbstruct) (third item))
@@ -1093,9 +1092,8 @@
 		     (setq constructorform (read in))
 		     (setq key (car constructorform))
 		     (setq oldmaps (|getOperationModemapsFromDB| key))
-		     (setq dbstruct (make-database))
+		     (setq dbstruct (|makeDB| key))
 		     (setq *allconstructors* (adjoin key *allconstructors*))
-		     (setf (|constructorDB| key) dbstruct) ; store the struct, side-effect it...
 		     (setf (|dbConstructorForm| dbstruct) constructorform)
 		     (setq *allOperations* nil)   ; force this to recompute
 		     (setf (|dbModule| dbstruct) object)
