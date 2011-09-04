@@ -67,7 +67,6 @@ $functionStats := nil
 $functorStats := nil
 
 $lisplibCategory := nil
-$lisplibAncestors := nil
 $CheckVectorList := []
 $pairlis := []
 $functorTarget := nil
@@ -1056,8 +1055,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     dbConstructorModemap(constructorDB op') := [[parForm,:parSignature],[true,op']]
     $lisplibCategory:= formalBody
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
+    dbAncestors(db) := computeAncestorsOf($form,nil)
     if $LISPLIB then
-      $lisplibAncestors := computeAncestorsOf($form,nil)
       augLisplibModemapsFromCategory([op',:sargl],formalBody,signature')
     dbBeingDefined?(db) := false
     [fun,$Category,e]
@@ -1421,7 +1420,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     dbConstructorModemap(constructorDB op') := modemap
     $lisplibCategory := modemap.mmTarget
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
-    $lisplibAncestors := computeAncestorsOf($form,nil)
+    dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       if not $bootStrapMode then
