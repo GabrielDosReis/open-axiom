@@ -622,7 +622,7 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   pred = tableValue($done,conform) => nil   --skip if already processed
   parents :=
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) =>
-      $lisplibParents
+      dbPrincipals constructorDB op
     parentsOf op
   originalConform :=
     firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) => $form
