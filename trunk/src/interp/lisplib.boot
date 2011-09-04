@@ -543,11 +543,18 @@ writeInfo(ctor,info,key,prop,file) ==
 writeKind(ctor,kind,file) ==
   writeInfo(ctor,kind,'constructorKind,'dbConstructorKind,file)
 
+writeAbbreviation(db,file) ==
+  writeInfo(dbConstructor db,dbAbbreviation db,
+    'abbreviation,'dbAbbreviation,file)
+
 writeConstructorForm(ctor,form,file) ==
   writeInfo(ctor,form,'constructorForm,'dbConstructorForm,file)
 
 writeSuperDomain(ctor,domPred,file) ==
   writeInfo(ctor,domPred,'superDomain,'dbSuperDomain,file)
+
+writePredicates(ctor,preds,file) ==
+  writeInfo(ctor,preds,'predicates,'dbPredicates,file)
 
 writeOperations(ctor,ops,file) ==
   writeInfo(ctor,ops,'operationAlist,'dbOperations,file)
@@ -598,8 +605,8 @@ finalizeLisplib(ctor,libName) ==
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
   writeAttributes(ctor,removeZeroOne dbAttributes db,$libFile)
-  lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
-  lisplibWrite('"abbreviation",dbAbbreviation db,$libFile)
+  writePredicates(ctor,removeZeroOne  $lisplibPredicates,$libFile)
+  writeAbbreviation(db,$libFile)
   writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
   writeAncestors(ctor,removeZeroOne dbAncestors db,$libFile)
   lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)

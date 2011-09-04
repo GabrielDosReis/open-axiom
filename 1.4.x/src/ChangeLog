@@ -1,5 +1,13 @@
 2011-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (writeAbbreviation): New.
+	(writePredicates): Likewise.
+	(finalizeLisplib): Use them.
+	* interp/daase.lisp (squeezeCopy): New,  
+	Use it in place of SQUEEZE.
+
+2011-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot: Likewise.
 	* interp/define.boot: Remove $lisplibAncestors.
 

@@ -934,7 +934,6 @@
 	  (cond ((eq key 'superdomain)
 		 (rplaca data (unsqueeze (car data))))
 		(t (setq data (unsqueeze data))))
-	;;(setq data (unsqueeze (read stream)))
 	  (case key ; cache the result of the database read
 		(operation           
 		 (setf (gethash constructor *operation-hash*) data))
@@ -1152,6 +1151,13 @@
 			       (apply key args)))
 		     (|sayKeyedMsg| 'S2IU0001 (list key object))))))
 
+;; The infamous SQUEEZE functions couple produces its results by
+;; in-place transmoglification.  We use this function in places
+;; where we want the arguments to remain unmolested.
+;;    -- gdr, 2011-09-03
+(defun |squeezeCopy| (x)
+  (squeeze (copy-tree x)))
+
 ; making new databases consists of:
 ;  1) reset all of the system hash tables
 ;  *) set up Union, Record and Mapping
@@ -1240,13 +1246,7 @@
      (when (setq dbstruct (|constructorDB| con))
            (setf (|dbDualSignature| dbstruct)
                  (cons nil (mapcar #'|categoryForm?|
-				   ;; The DBs have been munged by SQUEEZE
-				   ;; in WRITE-BROWSEDB, WRITE-OPERATIONDB
-				   ;; WRITE-CATEGORYDB.  Unsqueeze a copy
-				   ;; of them before checking for category
-				   ;; form-ness.  This is sick!  FIXME.
-				   (unsqueeze (copy-tree
-                                   (cddar (|dbConstructorModemap| dbstruct)))))))
+                                   (cddar (|dbConstructorModemap| dbstruct)))))
            (when (and (eq (|dbConstructorKind| dbstruct) '|category|)
                       (= (length (setq d (|domainsOf| (list con) NIL NIL))) 1))
                  (setq d (caar d))
@@ -1342,13 +1342,13 @@
    (let (struct)
     (setq struct (|constructorDB| constructor))
     (setq opalistpos (file-position out))
-    (print (squeeze (|dbOperations| struct)) out)
+    (print (|squeezeCopy| (|dbOperations| struct)) out)
     (finish-output out)
     (setq cmodemappos (file-position out))
-    (print (squeeze (|dbConstructorModemap| struct)) out)
+    (print (|squeezeCopy| (|dbConstructorModemap| struct)) out)
     (finish-output out)
     (setq modemapspos (file-position out))
-    (print (squeeze (|dbModemaps| struct)) out)
+    (print (|squeezeCopy| (|dbModemaps| struct)) out)
     (finish-output out)
     (let ((entry (|dbModule| struct)))
       (cond ((consp entry)
@@ -1358,7 +1358,7 @@
 	     (setq obj (pathname-name
 			(first (last (pathname-directory entry))))))
 	    (t (setq obj nil))))
-    (setq concategory (squeeze (|dbCategory| struct)))
+    (setq concategory (|squeezeCopy| (|dbCategory| struct)))
     (if concategory  ; if category then write data else write nil
 	(progn
 	  (setq categorypos (file-position out))
@@ -1369,7 +1369,7 @@
     (setq cosig (|dbDualSignature| struct))
     (setq kind (|dbConstructorKind| struct))
     (setq defaultdomain (|dbDefaultDomain| struct))
-    (setq ancestors (squeeze (gethash constructor *ancestors-hash*))) ;cattable.boot
+    (setq ancestors (|squeezeCopy| (gethash constructor *ancestors-hash*))) ;cattable.boot
     (if ancestors
 	(progn
 	  (setq ancestorspos (file-position out))
@@ -1382,7 +1382,7 @@
 	  (let ((super (|dbSuperDomain| struct)))
 	    (when super
 	      (prog1 (file-position out)
-		(print (list (squeeze (car super)) (second super)) out)
+		(print (list (|squeezeCopy| (car super)) (second super)) out)
 		(finish-output out)))))
     
     (push (list constructor opalistpos cmodemappos modemapspos
@@ -1410,16 +1410,16 @@
      ; sourcefile is small. store the string directly
     (setq src (database-sourcefile struct))
     (setq formpos (file-position out))
-    (print (squeeze (|dbConstructorForm| struct)) out)
+    (print (|squeezeCopy| (|dbConstructorForm| struct)) out)
     (finish-output out)
     (setq docpos (file-position out))
     (print (database-documentation struct) out)
     (finish-output out)
     (setq attpos (file-position out))
-    (print (squeeze (|dbAttributes| struct)) out)
+    (print (|squeezeCopy| (|dbAttributes| struct)) out)
     (finish-output out)
     (setq predpos (file-position out))
-    (print (squeeze (|dbPredicates| struct)) out)
+    (print (|squeezeCopy| (|dbPredicates| struct)) out)
     (finish-output out)
     (push (list constructor src formpos docpos attpos predpos) master)))
   (finish-output out)
@@ -1444,7 +1444,7 @@
      (setq pos value)
      (progn
       (setq pos (file-position out))
-      (print (squeeze value) out)
+      (print (|squeezeCopy| value) out)
       (finish-output out)))
      (push (list key pos) master))
      *hasCategory-hash*)
@@ -1494,7 +1494,7 @@
   (finish-output out)
   (maphash #'(lambda (key value)
    (setq pos (file-position out))
-   (print (squeeze value) out)
+   (print (|squeezeCopy| value) out)
    (finish-output out)
    (push (cons key pos) master))
    *operation-hash*)
