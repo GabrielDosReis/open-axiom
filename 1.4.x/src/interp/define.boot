@@ -1055,12 +1055,10 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $domainShell := eval [op',:[MKQ f for f in sargl]]
     dbConstructorModemap(constructorDB op') := [[parForm,:parSignature],[true,op']]
     $lisplibCategory:= formalBody
+    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     if $LISPLIB then
-      $lisplibParents  :=         
-        getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
       $lisplibAncestors := computeAncestorsOf($form,nil)
-      form':=[op',:sargl]
-      augLisplibModemapsFromCategory(form',formalBody,signature')
+      augLisplibModemapsFromCategory([op',:sargl],formalBody,signature')
     dbBeingDefined?(db) := false
     [fun,$Category,e]
 
@@ -1421,11 +1419,9 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     --  5. give operator a 'modemap property
     modemap := [[parForm,:parSignature],[true,op']]
     dbConstructorModemap(constructorDB op') := modemap
-    if $LISPLIB then
-      $lisplibCategory := modemap.mmTarget
-      $lisplibParents  :=         
-        getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
-      $lisplibAncestors := computeAncestorsOf($form,nil)
+    $lisplibCategory := modemap.mmTarget
+    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
+    $lisplibAncestors := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       if not $bootStrapMode then

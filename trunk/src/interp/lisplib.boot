@@ -445,7 +445,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
   $lisplibPredicates: local := nil
-  $lisplibParents: local := nil
   $lisplibAncestors: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   --used by NRT mechanisms
@@ -472,7 +471,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $LISPLIB: local := 'T
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
-  $lisplibParents: local := nil
   $lisplibAncestors: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   -- used by NRT mechanisms
@@ -604,7 +602,7 @@ finalizeLisplib(ctor,libName) ==
   writeAttributes(ctor,removeZeroOne dbAttributes db,$libFile)
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
   lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
-  writePrincipals(ctor,removeZeroOne $lisplibParents,$libFile)
+  writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
   writeAncestors(ctor,removeZeroOne $lisplibAncestors,$libFile)
   lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
