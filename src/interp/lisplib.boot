@@ -445,7 +445,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
   $lisplibPredicates: local := nil
-  $lisplibAncestors: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   --used by NRT mechanisms
   $lisplibOperationAlist: local := nil
@@ -471,7 +470,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $LISPLIB: local := 'T
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
-  $lisplibAncestors: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibSlot1 : local := nil   -- used by NRT mechanisms
   $lisplibOperationAlist: local := nil
@@ -577,8 +575,8 @@ leaveIfErrors(libName,kind) ==
 ++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib(ctor,libName) ==
   db := constructorDB ctor
-  kind := dbConstructorKind constructorDB ctor
-  form := dbConstructorForm constructorDB ctor
+  kind := dbConstructorKind db
+  form := dbConstructorForm db
   mm := getConstructorModemap ctor
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
@@ -595,15 +593,15 @@ finalizeLisplib(ctor,libName) ==
      $pairlis : local := pairList(form,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
-  writeSuperDomain(ctor,dbSuperDomain constructorDB ctor,$libFile)
+  writeSuperDomain(ctor,dbSuperDomain db,$libFile)
   lisplibWrite('"signaturesAndLocals",
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
   writeAttributes(ctor,removeZeroOne dbAttributes db,$libFile)
   lisplibWrite('"predicates",removeZeroOne  $lisplibPredicates,$libFile)
-  lisplibWrite('"abbreviation",dbAbbreviation constructorDB ctor,$libFile)
+  lisplibWrite('"abbreviation",dbAbbreviation db,$libFile)
   writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
-  writeAncestors(ctor,removeZeroOne $lisplibAncestors,$libFile)
+  writeAncestors(ctor,removeZeroOne dbAncestors db,$libFile)
   lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
