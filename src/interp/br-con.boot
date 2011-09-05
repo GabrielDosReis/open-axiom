@@ -328,7 +328,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   u := $infovec.3
   $predvec:=
     $domain => $domain . 3
-    getConstructorPredicatesFromDB name
+    getConstructorPredicates name
   catpredvec := first u
   catinfo    := second u
   catvec     := third u

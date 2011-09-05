@@ -1607,7 +1607,7 @@ hasAtt(dom,att,SL) ==
   -- needs S0 similar to hasSig above ??
   $domPvar: local := nil
   fun := dom.op =>
-    atts:= subCopy(getConstructorAttributesFromDB fun,constructSubst dom) =>
+    atts:= subCopy(getConstructorAttributes fun,constructSubst dom) =>
       cons? (u := getInfovec dom.op) =>
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until S isnt 'failed repeat
