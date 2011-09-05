@@ -1,5 +1,15 @@
 2011-09-04  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
+	* interp/lisplib.boot (writeCategory): New,
+	(finalizeLisplib): Use it.  Write category bodies in generated
+	Lisp code file.
+	* interp/daase.lisp (GETDATABASE) [CONSTRUCTORCATEGORY]: Don't
+	bother with package and domain constructors.
+	* interp/database.boot (getConstructorCategory): Rename from
+	getConstructorCategoryFromDB.  Reimplement,  Adjusr callers.
+
+2011-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp (GETDATABASE): Do not handle PREDICATES and
 	ATTRIBUTES selectors anymore.
 	* interp/database.boot (getConstructorPredicates): Rename from

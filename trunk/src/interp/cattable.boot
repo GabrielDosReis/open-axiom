@@ -60,7 +60,7 @@ genCategoryTable() ==
   SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
   genTempCategoryTable()
   domainTable :=
-    [addDomainToTable(con,getConstrCat getConstructorCategoryFromDB con)
+    [addDomainToTable(con,getConstrCat getConstructorCategory con)
       for con in allConstructors() | getConstructorKindFromDB con is "domain"]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := SETDIFFERENCE($nonLisplibDomains,$noCategoryDomains)
@@ -366,7 +366,7 @@ makeCatPred(zz, cats, thePred) ==
   cats
 
 getConstructorExports(conform,:options) == categoryParts(conform,
-  getConstructorCategoryFromDB opOf conform,IFCAR options)
+  getConstructorCategory opOf conform,IFCAR options)
 
 categoryParts(conform,category,:options) == main where
   main() ==
@@ -458,11 +458,10 @@ updateCategoryTable(cname,kind) ==
     kind is 'package => nil
     kind is 'category => updateCategoryTableForCategory(cname)
     updateCategoryTableForDomain(cname,getConstrCat(
-      getConstructorCategoryFromDB cname))
---+
+      getConstructorCategory cname))
   kind is 'domain =>
     updateCategoryTableForDomain(cname,getConstrCat(
-      getConstructorCategoryFromDB cname))
+      getConstructorCategory cname))
 
 updateCategoryTableForCategory(cname) ==
   clearTempCategoryTable([[cname,'category]])

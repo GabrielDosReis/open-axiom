@@ -63,9 +63,11 @@ getConstructorAbbreviationFromDB: %Constructor -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
   GETDATABASE(ctor,"ABBREVIATION")
 
-getConstructorCategoryFromDB: %Constructor -> %Form
-getConstructorCategoryFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
+getConstructorCategory: %Constructor -> %Form
+getConstructorCategory ctor ==
+  getConstructorKindFromDB ctor = 'category =>
+    GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
+  getConstructorModemap(ctor).mmTarget
 
 getConstructorKindFromDB: %Constructor -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==

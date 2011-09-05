@@ -550,6 +550,9 @@ writeAbbreviation(db,file) ==
 writeConstructorForm(ctor,form,file) ==
   writeInfo(ctor,form,'constructorForm,'dbConstructorForm,file)
 
+writeCategory(ctor,cat,file) ==
+  writeInfo(ctor,cat,'constructorCategory,'dbCategory,file)
+
 writeSuperDomain(ctor,domPred,file) ==
   writeInfo(ctor,domPred,'superDomain,'dbSuperDomain,file)
 
@@ -591,7 +594,8 @@ finalizeLisplib(ctor,libName) ==
   $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
-  lisplibWrite('"constructorCategory",$lisplibCategory,$libFile)
+  if dbConstructorKind db = 'category then
+    writeCategory(ctor,$lisplibCategory,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
   lisplibWrite('"modemaps",removeZeroOne $lisplibModemapAlist,$libFile)
   opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
