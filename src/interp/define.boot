@@ -78,11 +78,9 @@ $NRTslot1Info := nil
 $NRTdeltaListComp := []
 $template := nil
 $signature := nil
-$isOpPackageName := false
 $lookupFunction := nil
 $byteAddress := nil
 $byteVec := nil
-$lisplibSlot1 := nil
 $sigAlist := []
 $predAlist := []
 $argumentConditionList := []
@@ -1364,7 +1362,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist(db,attributeList)
     $NRTslot1Info: local := nil  --set in NRTmakeSlot1Info
-       --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
@@ -1425,9 +1422,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if $LISPLIB then
       if not $bootStrapMode then
         $NRTslot1Info := NRTmakeSlot1Info()
-        $isOpPackageName: local := isCategoryPackageName $op
-        if $isOpPackageName then lisplibWrite('"slot1DataBase",
-          ['updateSlot1DataBase,MKQ $NRTslot1Info],$libFile)
         $lisplibFunctionLocations := applySubst($pairlis,$functionLocations)
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
@@ -1439,7 +1433,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
           [simpBool x for x in $NRTslot1PredicateList]
         LAM_,FILEACTQ('loadTimeStuff,
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
-      $lisplibSlot1 := $NRTslot1Info
       $lisplibOperationAlist:= operationAlist
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then

@@ -267,10 +267,8 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
 --=======================================================
 newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := domainData dom 
-  catVec := second slot4
+  [.,catVec,:.] := slot4
   # catVec = 0 => nil                      --early exit if no categories
-  integer? KDR canonicalForm catVec =>
-    newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := false
   if $monitorNewWorld then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
@@ -332,73 +330,6 @@ nrunNumArgCheck(num,bytevec,start,finish) ==
    num = args => true
    (start := start + args + 4) = finish => nil
    nrunNumArgCheck(num,bytevec,start,finish)
- 
-newLookupInCategories1(op,sig,dom,dollar) ==
-  $lookupDefaults : local := false
-  if $monitorNewWorld then sayBrightly concat('"----->",
-    form2String devaluate dom,'"-----> searching default packages for ",op)
-  predvec := domainPredicates dom
-  slot4 := domainData dom
-  packageVec := first slot4
-  catVec := second slot4
-  --the next three lines can go away with new category world
-  varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[domainRef(dom,5+i) for i in 1..(#instantiationArgs dom)]]
-  valueList := [MKQ val for val in valueList]
-  nsig := MSUBST(canonicalForm dom,canonicalForm dollar,sig)
-  for i in 0..maxIndex packageVec | (entry := vectorRef(packageVec,i))
-      and (vector? entry or (predIndex := rest (node := catVec.i)) and
-          (predIndex = 0 or testBitVector(predvec,predIndex))) repeat
-    package :=
-      vector? entry =>
-         if $monitorNewWorld then
-           sayLooking1('"already instantiated cat package",entry)
-         entry
-      ident? entry =>
-        cat := first node
-        packageForm := nil
-        if not property(entry,'LOADED) then loadLib entry
-        infovec := property(entry,'infovec)
-        success :=
-          vector? infovec =>
-            opvec := infovec.1
-            max := maxIndex opvec
-            code := getOpCode(op,opvec,max)
-            null code => nil
-            byteVector := CDDR infovec.3
-            numOfArgs := arrayRef(byteVector,opvec.code)
-            numOfArgs ~= #sig.source => nil
-            packageForm := [entry,'$,:rest cat]
-            package := evalSlotDomain(packageForm,dom)
-            vectorRef(packageVec,i) := package
-            package
-          table := tableValue($Slot1DataBase,entry) or systemError nil
-          (u := LASSQ(op,table))
-            and (v := or/[rest x for x in u | #sig = #x.0]) =>
-              packageForm := [entry,'$,:rest cat]
-              package := evalSlotDomain(packageForm,dom)
-              vectorRef(packageVec,i) := package
-              package
-          nil
-        not success =>
-          if $monitorNewWorld then
-            sayBrightlyNT '"  not in: "
-            pp (packageForm and devaluate package or entry)
-          nil
-        if $monitorNewWorld then
-          sayLooking1('"candidate default package instantiated: ",success)
-        success
-      entry
-    null package => nil
-    if $monitorNewWorld then
-      sayLooking1('"Looking at instantiated package ",package)
-    res := lookupInDomainVector(op,sig,package,dollar) =>
-      if $monitorNewWorld then
-        sayBrightly '"candidate default package succeeds"
-      return res
-    if $monitorNewWorld then
-      sayBrightly '"candidate fails -- continuing to search categories"
-    nil
  
 --=======================================================
 --         Compare Signature to One Derived from Table

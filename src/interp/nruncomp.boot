@@ -53,9 +53,6 @@ $insideCategoryPackageIfTrue := false
 $profileCompiler := false
 
 ++
-$Slot1DataBase := hashTable 'EQ
-
-++
 $NRTdeltaList := []
 $NRTdeltaLength := 0
 
@@ -731,9 +728,6 @@ NRTsubstDelta(initSig) ==
         t
 
 -----------------------------SLOT1 DATABASE------------------------------------
-
-updateSlot1DataBase [name,info] ==
-  tableValue($Slot1DataBase,name) := info
 
 NRTputInLocalReferences bod ==
   NRTputInHead bod
