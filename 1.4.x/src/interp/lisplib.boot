@@ -447,7 +447,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibPredicates: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibOperationAlist: local := nil
-  $lisplibOpAlist: local:= nil
   $libFile: local := nil
   $lisplibVariableAlist: local := nil
   $lisplibSignatureAlist: local := nil
@@ -471,7 +470,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibModemapAlist: local := nil
   $lisplibOperationAlist: local := nil
-  $lisplibOpAlist: local := nil  --operations alist for new runtime system
   $lisplibSignatureAlist: local := nil
   $libFile: local := nil
   $lisplibVariableAlist: local := nil

@@ -1,5 +1,12 @@
 2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineFunctor1): Do not set
+	$lisplibFunctions.
+	* interp/lisplib.boot: Remove $lisplibOpAlist.
+	* interp/nruncomp.boot: Likewise.
+
+2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (updateSlot1DataBase)e: Remove.
 	(newLookupInCategories1): Remove.
 	(newLookupInCategories): Do not call it.

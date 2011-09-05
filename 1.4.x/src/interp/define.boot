@@ -1422,7 +1422,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     if $LISPLIB then
       if not $bootStrapMode then
         $NRTslot1Info := NRTmakeSlot1Info()
-        $lisplibFunctionLocations := applySubst($pairlis,$functionLocations)
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
             NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
