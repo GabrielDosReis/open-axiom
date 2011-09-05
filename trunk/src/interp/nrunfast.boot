@@ -289,7 +289,8 @@ newLookupInCategories(op,sig,dom,dollar) ==
       ident? entry =>
         cat := vectorRef(catVec,i)
         packageForm := nil
-        if property(entry,'LOADED) = nil then loadLib entry
+        if not dbLoaded? constructorDB entry then
+          loadLib entry
         infovec := property(entry,'infovec)
         success :=
           [.,opvec,:.] := infovec

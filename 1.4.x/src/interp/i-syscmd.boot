@@ -1981,7 +1981,7 @@ loadSpad2Cmd args ==
 --  for lib in args repeat
 --    lib := object2Identifier lib
 --    justWondering =>
---      GETL(lib,'LOADED) => sayKeyedMsg("S2IZ0028",[lib])
+--      dbLoaded? constructorDB lib => sayKeyedMsg("S2IZ0028",[lib])
 --      sayKeyedMsg("S2IZ0029",[lib])
 --    null getConstructorModuleFromDB lib and
 --     null (lib := getConstructorFullNameFromDB lib) =>

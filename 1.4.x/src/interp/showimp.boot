@@ -298,7 +298,7 @@ dcOpLatchPrint(op,index) ==
  
 getInfovec name ==
   u := property(name,'infovec) => u
-  property(name,'LOADED) => nil
+  dbLoaded? constructorDB name => nil
   fullLibName := getConstructorModuleFromDB name or return nil
   startTimingProcess 'load
   loadLibNoUpdate(name, name, fullLibName)

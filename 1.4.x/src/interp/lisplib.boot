@@ -299,10 +299,10 @@ findModule cname ==
   systemError ['"missing module for ",:bright cname]
  
 loadLibIfNotLoaded libName ==
-  -- replaces old SpadCondLoad
   -- loads is library is not already loaded
   $PrintOnly => nil
-  property(libName,'LOADED) => nil
+  db := constructorDB libName or return nil
+  dbLoaded? db => nil
   loadLib libName
  
 loadLib cname ==
@@ -320,7 +320,7 @@ loadLib cname ==
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
   updateCategoryTable(cname,kind)
-  property(cname,'LOADED) := fullLibName
+  dbLoadPath(constructorDB cname) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
   'T
@@ -332,7 +332,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
   loadModule(fullLibName,cname)
   clearConstructorCache cname
   installConstructor(cname,kind)
-  property(cname,'LOADED) := fullLibName
+  dbLoadPath(constructorDB cname) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
   'T
@@ -342,7 +342,7 @@ loadIfNecessary u ==
   cons? u => loadIfNecessary first u
   value:=
     functionp(u) or macrop(u) => u
-    property(u,'LOADED) => u
+    dbLoaded? constructorDB u => u
     loadLib u => u
   not $InteractiveMode and (null (y:= getProplist(u,$CategoryFrame))
     or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
@@ -358,11 +358,11 @@ loadDB db ==
   try
     startTimingProcess 'load
     dbBeingDefined? db => nil
+    dbLoaded? db => db
     ctor := dbConstructor db
-    property(ctor,'LOADED) => db  --FIXME: this should be a db operation
     lib := findModule ctor or return nil
     loadModule(lib,ctor)
-    property(ctor,'LOADED) := lib
+    dbLoadPath(db) := lib
   finally stopTimingProcess 'load
  
 convertOpAlist2compilerInfo(opalist) ==
@@ -395,7 +395,8 @@ loadFunctor u ==
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
     builtinCategoryName? cnam => nil
-    property(cnam,'LOADED) := nil
+    if db := constructorDB cnam then
+      dbLoadPath(db) := nil
     systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
@@ -409,20 +410,19 @@ autoLoad cname ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
   builtinConstructor? cname => cname
-  if constructorDB cname = nil then
-    makeDB cname
-  if property(cname,'LOADED) = nil then
+  db := constructorDB cname or makeDB cname
+  if not dbLoaded? db then
     loadLib cname
   symbolFunction cname
 
-setAutoLoadProperty(name) ==
-  property(name,'LOADED) := nil
+setAutoLoadProperty name ==
+  if db := constructorDB name then
+    dbLoadPath(db) := nil
   symbolFunction(name) := mkAutoLoad name
 
 unloadOneConstructor cnam ==
-    property(cnam,'LOADED) := nil
-    symbolFunction(cnam) := mkAutoLoad cnam
-    --FIXME: should not we clear other fields too?
+  setAutoLoadProperty cnam
+  --FIXME: should not we clear other fields too?
 
 --% Compilation
  
