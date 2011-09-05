@@ -2266,7 +2266,7 @@ reportOpsFromLisplib(op,u) ==
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       sayBrightly '""
       attList:= removeDuplicates MSORT [x for [x,:.] in
-        getConstructorAttributesFromDB op]
+        getConstructorAttributes op]
       null attList => sayBrightly
         concat('"%b",form2String functorForm,'"%d","has no attributes.",'"%l")
       say2PerLine [formatAttribute x for x in attList]

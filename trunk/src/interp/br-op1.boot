@@ -392,7 +392,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
   dom     := eval domainForm
   which   := '"operation"
   [nam,:$domainArgs] := domainForm
-  $predicateList: local := getConstructorPredicatesFromDB nam
+  $predicateList: local := getConstructorPredicates nam
   predVector := domainPredicates dom
   u := getDomainOpTable(dom,true,ASSOCLEFT opAlist)
   --u has form ((op,sig,:implementor)...)

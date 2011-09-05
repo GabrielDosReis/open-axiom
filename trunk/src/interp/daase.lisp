@@ -793,9 +793,9 @@
   (format t "~a: ~a~%" 'constructorargs
 	  (|getConstructorArgsFromDB| constructor))
   (format t "~a: ~a~%" 'attributes
-	  (|getConstructorAttributesFromDB| constructor))
+	  (|getConstructorAttributes| constructor))
   (format t "~a: ~%" 'predicates)
-  (pprint (|getConstructorPredicatesFromDB| constructor))
+  (pprint (|getConstructorPredicates| constructor))
   (format t "~a: ~a~%" 'documentation
 	  (|getConstructorDocumentationFromDB| constructor))
   (format t "~a: ~a~%" 'parents
@@ -899,14 +899,6 @@
 		 (setq data (|dbConstructorForm| struct))))
 	      (constructorargs
 	       (setq data (cdr (|getConstructorFormFromDB| constructor))))
-	      (attributes
-	       (setq stream *browse-stream*)
-	       (when struct
-		 (setq data (|dbAttributes| struct))))
-	      (predicates
-	       (setq stream *browse-stream*)
-	       (when struct
-		 (setq data (|dbPredicates| struct))))
 	      (documentation
 	       (setq stream *browse-stream*)
 	       (when struct
@@ -961,10 +953,6 @@
 		 (setf (|dbAncestors| struct) data))
 		(constructorform     
 		 (setf (|dbConstructorForm| struct) data))
-		(attributes
-		 (setf (|dbAttributes| struct) data))
-		(predicates 
-		 (setf (|dbPredicates| struct) data))
 		(documentation 
 		 (setf (database-documentation struct) data))
 		(parents   

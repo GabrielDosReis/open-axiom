@@ -51,7 +51,7 @@ showImp(dom,:options) ==
   missingOnlyFlag := KAR options
   domainForm := devaluate dom
   [nam,:$domainArgs] := domainForm
-  $predicateList: local := getConstructorPredicatesFromDB nam
+  $predicateList: local := getConstructorPredicates nam
   predVector := domainPredicates dom
   u := getDomainOpTable(dom,true)
   --sort into 4 groups: domain exports, unexports, default exports, others
@@ -99,7 +99,7 @@ showFrom(D,:option) ==
   alist := nil
   domainForm := devaluate D
   [nam,:.] := domainForm
-  $predicateList: local := getConstructorPredicatesFromDB nam
+  $predicateList: local := getConstructorPredicates nam
   for (opSig := [op,sig]) in getDomainSigs1(D,ops) repeat
     u := from?(D,op,sig)
     x := assoc(u,alist) => x.rest := [opSig,:rest x]
@@ -113,12 +113,12 @@ showFrom(D,:option) ==
 --=======================================================================
 getDomainOps D ==
   conname := insantiationCtor D
-  $predicateList: local := getConstructorPredicatesFromDB conname
+  $predicateList: local := getConstructorPredicates conname
   removeDuplicates listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   conname := instantiationCtor D
-  $predicateList: local := getConstructorPredicatesFromDB conname
+  $predicateList: local := getConstructorPredicates conname
   getDomainSigs1(D,first option)
   
 getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
@@ -127,7 +127,7 @@ getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
  
 getDomainDocs(D,:option) ==
   conname := instantiationCtor D
-  $predicateList: local := getConstructorPredicatesFromDB conname
+  $predicateList: local := getConstructorPredicates conname
   ops := KAR option
   [[op,sig,:getInheritanceByDoc(D,op,sig)] for [op,sig] in getDomainSigs1(D,ops)]
  
@@ -208,7 +208,7 @@ showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
   conname := instantiationCtor dom
   predvector := domainPredicates dom
-  predicateList := getConstructorPredicatesFromDB conname
+  predicateList := getConstructorPredicates conname
   for i in 1.. for p in predicateList repeat
     prefix := 
       testBitVector(predvector,i) => '"true : "
@@ -332,7 +332,7 @@ dcOpTable con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   template := $infovec.0
-  $predvec: local := getConstructorPredicatesFromDB con
+  $predvec: local := getConstructorPredicates con
   opTable := $infovec.1
   for i in 0..maxIndex opTable repeat
     op := opTable.i
@@ -378,7 +378,7 @@ dcSig(numvec,index,numOfArgs) ==
 dcPreds con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
-  $predvec:= getConstructorPredicatesFromDB con
+  $predvec:= getConstructorPredicates con
   for i in 0..maxIndex $predvec repeat
     sayBrightlyNT bright (i + 1)
     sayBrightly pred2English $predvec.i
@@ -386,7 +386,7 @@ dcPreds con ==
 dcAtts con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
-  $predvec:= getConstructorPredicatesFromDB con
+  $predvec:= getConstructorPredicates con
   attList := $infovec.2
   for [a,:predNumber] in attList for i in 0.. repeat
     sayBrightlyNT bright i
@@ -400,7 +400,7 @@ dcCats con ==
   $infovec: local := getInfovec name
   u := $infovec.3
   vector? CDDR u => dcCats1 con    --old style slot4
-  $predvec:= getConstructorPredicatesFromDB con
+  $predvec:= getConstructorPredicates con
   catpredvec := first u
   catinfo := second u
   catvec := third u
@@ -418,7 +418,7 @@ dcCats con ==
     sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
  
 dcCats1 con ==
-  $predvec:= getConstructorPredicatesFromDB con
+  $predvec:= getConstructorPredicates con
   u := $infovec.3
   catvec := second u
   catinfo := first u

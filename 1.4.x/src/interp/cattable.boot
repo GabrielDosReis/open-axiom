@@ -151,7 +151,7 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   k = 0 => true
   $domain => kTestPred k    --from koOps
   predvec := $predvec or sublisFormal(conform.args,
-      getConstructorPredicatesFromDB conname)
+      getConstructorPredicates conname)
   simpHasPred predvec.(k - 1)
 
 simpCatHasAttribute(domform,attr) ==

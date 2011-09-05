@@ -115,9 +115,9 @@ getDualSignatureFromDB: %Constructor -> %Form
 getDualSignatureFromDB ctor ==
   GETDATABASE(ctor,"COSIG")
 
-getConstructorPredicatesFromDB: %Constructor -> %List %Thing
-getConstructorPredicatesFromDB ctor ==
-  GETDATABASE(ctor,"PREDICATES")
+getConstructorPredicates: %Constructor -> %List %Thing
+getConstructorPredicates ctor ==
+  dbPredicates loadDBIfnecessary constructorDB ctor
 
 getConstructorParentsFromDB: %Constructor -> %List %Constructor
 getConstructorParentsFromDB ctor ==
@@ -127,9 +127,9 @@ getSuperDomainFromDB: %Constructor -> %Form
 getSuperDomainFromDB ctor ==
   GETDATABASE(ctor,"SUPERDOMAIN")
   
-getConstructorAttributesFromDB: %Constructor -> %Form
-getConstructorAttributesFromDB ctor ==
-  GETDATABASE(ctor,"ATTRIBUTES")
+getConstructorAttributes: %Constructor -> %Form
+getConstructorAttributes ctor ==
+  dbAttributes loadDBIfnecessary constructorDB ctor
 
 niladicConstructor?: %Constructor -> %Boolean
 niladicConstructor? ctor ==

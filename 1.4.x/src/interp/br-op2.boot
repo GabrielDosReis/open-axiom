@@ -347,7 +347,7 @@ koAttrs(conform,domname) ==
   $infovec: local := dbInfovec conname or return nil
   $predvec: local :=
     $domain => domainPredicares $domain
-    getConstructorPredicatesFromDB conname
+    getConstructorPredicates conname
   u := [[a,:pred] for [a,:i] in $infovec . 2 | a isnt 'nil and (pred := sublisFormal(args,kTestPred i))]
                                                ---------  CHECK for a = nil
   listSort(function GLESSEQP,fn u) where fn u ==
