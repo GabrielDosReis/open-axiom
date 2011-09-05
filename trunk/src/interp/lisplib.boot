@@ -225,8 +225,7 @@ putFileProperty(fn,ft,id,val) ==
  
 lisplibWrite(prop,val,filename) ==
   -- this may someday not write nil keys, but it will now
-  if $LISPLIB then
-     rwrite128(prop,val,filename)
+  rwrite128(prop,val,filename)
  
 rwrite128(key,value,stream) ==
   rwrite(key,value,stream)
@@ -236,9 +235,8 @@ evalAndRwriteLispForm(key,form) ==
   rwriteLispForm(key,form)
  
 rwriteLispForm(key,form) ==
-  if $LISPLIB then
-    rwrite( key,form,$libFile)
-    LAM_,FILEACTQ(key,form)
+  rwrite( key,form,$libFile)
+  LAM_,FILEACTQ(key,form)
  
 getLisplib(name,id) ==
   -- this version does cache the returned value
@@ -443,7 +441,6 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
  
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
-  $LISPLIB: local := 'T
   $lisplibPredicates: local := nil
   $lisplibModemapAlist: local := nil
   $lisplibOperationAlist: local := nil
@@ -465,7 +462,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
 compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,char "-")
-  $LISPLIB: local := 'T
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibModemapAlist: local := nil

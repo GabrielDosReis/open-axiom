@@ -1,3 +1,11 @@
+2011-09-05  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/define.boot: Remove $LISPLIB.
+	* interp/functor.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/sys-globals.boot: Likewise.
+
 2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compDefineFunctor1): Do not set
