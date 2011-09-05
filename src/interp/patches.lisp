@@ -72,8 +72,8 @@
   (declare (special |$Echo|))
   (/RF-1 nil))
 
-(defun |/RQ,LIB| (&rest foo &aux (|$Echo| nil) ($LISPLIB T))
-  (declare (special |$Echo| $LISPLIB))
+(defun |/RQ,LIB| (&rest foo &aux (|$Echo| nil))
+  (declare (special |$Echo|))
   (/RF-1 nil))
 
 (defun /RF-1 (ignore)

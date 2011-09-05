@@ -801,9 +801,8 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
           strconc(STRINGIMAGE n,encodeItem x)
     encodedName:= INTERNL(getConstructorAbbreviationFromDB packageName,";",
         encodeItem fun,";",encodedSig, sep,STRINGIMAGE count)
-    if $LISPLIB then
-      $lisplibSignatureAlist:=
-        [[encodedName,:signature'],:$lisplibSignatureAlist]
+    $lisplibSignatureAlist :=
+      [[encodedName,:signature'],:$lisplibSignatureAlist]
     encodedName
 
 ++ Return the linkage name of the local operation named `op'.

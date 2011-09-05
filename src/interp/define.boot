@@ -1054,8 +1054,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $lisplibCategory:= formalBody
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     dbAncestors(db) := computeAncestorsOf($form,nil)
-    if $LISPLIB then
-      augLisplibModemapsFromCategory([op',:sargl],formalBody,signature')
+    augLisplibModemapsFromCategory([op',:sargl],formalBody,signature')
     dbBeingDefined?(db) := false
     [fun,$Category,e]
 
@@ -1075,7 +1074,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
   kind := getConstructorKindFromDB ctor
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
   dbConstructorForm(constructorDB ctor) := lhs
-  $insideFunctorIfTrue or $LISPLIB = nil or $compileDefaultsOnly =>
+  $insideFunctorIfTrue or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
 
@@ -1311,7 +1310,6 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
-  $LISPLIB = nil => compDefineFunctor1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
 compDefineFunctor1(df is ['DEF,form,signature,nils,body],
@@ -1408,8 +1406,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
     operationAlist := applySubst($pairlis,$lisplibOperationAlist)
-    if $LISPLIB then
-      augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
+    augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
  
     --  5. give operator a 'modemap property
@@ -1419,20 +1416,19 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
-    if $LISPLIB then
-      if not $bootStrapMode then
-        $NRTslot1Info := NRTmakeSlot1Info()
-        libFn := getConstructorAbbreviationFromDB op'
-        $lookupFunction: local :=
-            NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
-            --either lookupComplete (for forgetful guys) or lookupIncomplete
-        $byteAddress :local := 0
-        $byteVec :local := nil
-        $NRTslot1PredicateList :=
-          [simpBool x for x in $NRTslot1PredicateList]
-        LAM_,FILEACTQ('loadTimeStuff,
-          ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
-      $lisplibOperationAlist:= operationAlist
+    if not $bootStrapMode then
+      $NRTslot1Info := NRTmakeSlot1Info()
+      libFn := getConstructorAbbreviationFromDB op'
+      $lookupFunction: local :=
+          NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
+          --either lookupComplete (for forgetful guys) or lookupIncomplete
+      $byteAddress :local := 0
+      $byteVec :local := nil
+      $NRTslot1PredicateList :=
+        [simpBool x for x in $NRTslot1PredicateList]
+      LAM_,FILEACTQ('loadTimeStuff,
+        ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
+    $lisplibOperationAlist:= operationAlist
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,
@@ -1966,7 +1962,7 @@ compile u ==
     u:= [op',lamExpr]
   -- If just updating certain functions, check for previous existence.
   -- Deduce old sequence number and use it (items have been skipped).
-  if $LISPLIB and $compileOnlyCertainItems then
+  if $compileOnlyCertainItems then
     parts := splitEncodedFunctionName(u.op, ";")
   --  Next line JHD/SMWATT 7/17/86 to deal with inner functions
     parts='inner => $savableItems:=[u.op,:$savableItems]
