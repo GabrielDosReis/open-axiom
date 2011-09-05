@@ -446,7 +446,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $LISPLIB: local := 'T
   $lisplibPredicates: local := nil
   $lisplibModemapAlist: local := nil
-  $lisplibSlot1 : local := nil   --used by NRT mechanisms
   $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local:= nil
   $libFile: local := nil
@@ -471,7 +470,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibModemapAlist: local := nil
-  $lisplibSlot1 : local := nil   -- used by NRT mechanisms
   $lisplibOperationAlist: local := nil
   $lisplibOpAlist: local := nil  --operations alist for new runtime system
   $lisplibSignatureAlist: local := nil
@@ -614,7 +612,6 @@ finalizeLisplib(ctor,libName) ==
   writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
   writeAncestors(ctor,removeZeroOne dbAncestors db,$libFile)
   lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
-  lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
   leaveIfErrors(libName,kind)
   true
