@@ -227,6 +227,7 @@
  superdomain                ; interp.
  instantiations		    ; nil if mutable constructor
  being-defined		    ; T is definition of constructor is being processed
+ load-path		    ; full object path name, when loaded.
  ) ; database structure
 
 
@@ -289,6 +290,9 @@
 
 (defmacro |dbBeingDefined?| (db)
   `(database-being-defined ,db))
+
+(defmacro |dbLoadPath| (db)
+  `(database-load-path ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))
@@ -593,8 +597,8 @@
 	  (format t "   preloading ~a.." c))
 	(if (probe-file c)
 	    (progn
-	      (put con 'loaded c)
 	      (|loadModule| c con)
+	      (setf (|dbLoadPath| (|constructorDB| con)) c)
 	      (when |$verbose|
 		(format t "loaded.~%")))
 	  (when |$verbose|
@@ -1122,12 +1126,12 @@
 		     (setf (|dbDualSignature| dbstruct)
 			   (cons nil (mapcar #'|categoryForm?|
 					     (cddar (|dbConstructorModemap| dbstruct)))))
-		     (remprop key 'loaded)
+		     (setf (|dbLoadPath| (|constructorDB| key)) nil)
 		     (if (null noexpose) 
 			 (|setExposeAddConstr| (cons key nil)))
 		     (setf (symbol-function key) ; sets the autoload property for cname
 			   #'(lambda (&rest args)
-			       (unless (get key 'loaded)
+			       (unless (|dbLoaded?| (|constructorDB| key))
 				 (|startTimingProcess| '|load|)
 				 (|loadLibNoUpdate| key key object)) ; used to be cname key
 			       (apply key args)))

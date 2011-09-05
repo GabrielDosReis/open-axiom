@@ -1,4 +1,16 @@
-2011-09-05  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Stop using LOADED symbol property of constructors.
+	* interp/daase.lisp (DATABASE) [LOAD-PATH]: New field.
+	(dbLoadPath): New accessor.
+	(INITIAL-GETDATABASE): Tidy.
+	* interp/database.boot: Use dbLoadPath and dbLoaded?.
+	* interp/lisplib.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/br-util.boot (isLoaded?): Remove as unused.
+
+2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot: Remove $LISPLIB.
 	* interp/functor.boot: Likewise.

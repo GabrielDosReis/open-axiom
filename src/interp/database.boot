@@ -643,7 +643,7 @@ updateDatabase(fname,cname,systemdir?) ==
   if oldFname := getConstructorAbbreviationFromDB cname then
     clearClams()
     clearAllSlams []
-    if property(cname, 'LOADED) then
+    if dbLoaded? constructorDB cname then
       clearConstructorCaches()
   if $forceDatabaseUpdate or not systemdir? then
     clearClams()
@@ -826,8 +826,11 @@ printAllInitdbInfo(srcdir,dbfile) ==
 
 --%
 
+dbLoaded? db ==
+  dbLoadPath db ~= nil
+
 loadDBIfnecessary db ==
   ctor := dbConstructor db
-  property(ctor,'LOADED) => db
+  dbLoaded? db => db
   loadLib ctor or return nil
   constructorDB ctor
