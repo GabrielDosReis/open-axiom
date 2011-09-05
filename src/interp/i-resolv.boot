@@ -412,7 +412,7 @@ getConditionsForCategoryOnType(t,cat) ==
 getConditionalCategoryOfType(t,conditions,match) ==
   if cons? t then t := first t
   t in '(Union Mapping Record) => nil
-  conCat := getConstructorCategoryFromDB t
+  conCat := getConstructorCategory t
   removeDuplicates rest getConditionalCategoryOfType1(conCat,conditions,match,[nil])
 
 getConditionalCategoryOfType1(cat,conditions,match,seen) ==
@@ -429,7 +429,7 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
     member(cat, rest seen) => conditions
     seen.rest := [cat,:rest seen]
-    subCat := getConstructorCategoryFromDB catName
+    subCat := getConstructorCategory catName
     -- substitute vars of cat into category
     for v in rest cat for vv in $TriangleVariableList repeat
       subCat := substitute(v,vv,subCat)

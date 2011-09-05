@@ -522,7 +522,7 @@ parentsOfForm [op,:argl] ==
 
 getParentsForDomain domname  == --called by parentsOf
   acc := nil
-  for x in folks getConstructorCategoryFromDB domname repeat
+  for x in folks getConstructorCategory domname repeat
     x :=
       getConstructorKindFromDB domname = "category" =>
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)

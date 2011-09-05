@@ -327,9 +327,7 @@
   "if true print out cache misses on getdatabase calls")
 
    ; note that constructorcategory information need only be kept for
-   ; items of type category. this will be fixed in the next iteration
-   ; when the need for the various caches are reviewed
-
+   ; items of type category.
    ; note that the *modemaps-hash* information does not need to be kept
    ; for system files. these are precomputed and kept in modemap.daase
    ; however, for user-defined files these are needed.
@@ -610,9 +608,7 @@
 ;    constructormodemap
 ;    modemaps            -- this should not be needed. eliminate it.
 ;    object              -- the name of the object file to load for this con.
-;    constructorcategory -- note that this info is the cadar of the
-;         constructormodemap for domains and packages so it is stored
-;         as NIL for them. it is valid for categories.
+;    constructorcategory -- note that this info is valid only for categories.
 ;    abbrev              -- kept directly
 ;    cosig               -- kept directly
 ;    constructorkind     -- kept directly
@@ -767,7 +763,7 @@
   (format t "~a: ~%" 'constructormodemap)
   (pprint (|getConstructorModemap| constructor))
   (format t "~&~a: ~%" 'constructorcategory)
-  (pprint (|getConstructorCategoryFromDB| constructor))
+  (pprint (|getConstructorCategory| constructor))
   (format t "~&~a: ~%" 'operationalist)
   (pprint (|getConstructorOperationsFromDB| constructor))
   (format t "~&~a: ~%" 'modemaps)
@@ -856,9 +852,7 @@
 	      (constructorcategory
 	       (setq stream *interp-stream*)
 	       (when struct
-		 (setq data (|dbCategory| struct))
-		 (when (null data) ;domain or package then subfield of constructormodemap
-		   (setq data (cadar (|getConstructorModemap| constructor))))))
+		 (setq data (|dbCategory| struct))))
 	      (operationalist
 	       (setq stream *interp-stream*)
 	       (when struct
