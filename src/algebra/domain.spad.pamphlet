@@ -281,7 +281,7 @@ DomainConstructor(): Public == Private where
       ++ \spad{functorData x} returns the functor data associated
       ++ with the domain constructor \spad{x}.      
   Private == Constructor add
-    functorData x == %property(x,'infovec)$Foreign(Builtin)
+    functorData x == getInfovec(x)$Foreign(Builtin)
     coerce(x: %): Constructor == rep x
 
 @

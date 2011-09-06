@@ -790,17 +790,16 @@ mkOperatorEntry(opSig is [op,sig,:flag],pred,count) ==
  
 --% Code for encoding function names inside package or domain
  
-encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
-   ==
-    signature':= MSUBST("$",package,signature)
+encodeFunctionName(db,fun,signature,sep,count) ==
+    signature':= MSUBST("$",dbConstructorForm db,signature)
     reducedSig:= mkRepititionAssoc [:rest signature',first signature']
     encodedSig:=
       (strconc/[encodedPair for [n,:x] in reducedSig]) where
         encodedPair() ==
           n=1 => encodeItem x
-          strconc(STRINGIMAGE n,encodeItem x)
-    encodedName:= INTERNL(getConstructorAbbreviationFromDB packageName,";",
-        encodeItem fun,";",encodedSig, sep,STRINGIMAGE count)
+          strconc(toString n,encodeItem x)
+    encodedName:= INTERNL(symbolName dbAbbreviation db,'";",
+        encodeItem fun,'";",encodedSig,sep,toString count)
     $lisplibSignatureAlist :=
       [[encodedName,:signature'],:$lisplibSignatureAlist]
     encodedName
@@ -809,7 +808,7 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
 encodeLocalFunctionName op ==
   prefix :=
     $prefix => $prefix
-    $functorForm => getConstructorAbbreviationFromDB first $functorForm
+    $functorForm => symbolName dbAbbreviation constructorDB $functorForm.op
     stackAndThrow('"There is no context for local function %1b",[op]) 
   makeSymbol strconc(prefix,'";",encodeItem op)
  
