@@ -1377,6 +1377,10 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     parSignature:= applySubst($pairlis,signature')
     parForm:= applySubst($pairlis,form)
  
+    --  3. give operator a 'modemap property
+    modemap := [[parForm,:parSignature],[true,$op]]
+    dbConstructorModemap(db) := modemap
+
     --  (3.1) now make a list of the functor's local parameters; for
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
     --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
@@ -1411,9 +1415,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
  
-    --  5. give operator a 'modemap property
-    modemap := [[parForm,:parSignature],[true,op']]
-    dbConstructorModemap(constructorDB op') := modemap
+    --  5.
     $lisplibCategory := modemap.mmTarget
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     dbAncestors(db) := computeAncestorsOf($form,nil)
