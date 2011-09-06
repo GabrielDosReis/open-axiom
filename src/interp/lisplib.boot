@@ -794,8 +794,10 @@ isFunctor x ==
   $InteractiveMode =>
     builtinFunctorName? op => true
     getConstructorKindFromDB op in '(domain package)
-  u:= get(op,'isFunctor,$CategoryFrame)
-    or op in '(SubDomain Union Record Enumeration) => u
+  u := get(op,'isFunctor,$CategoryFrame) => u
+  op in '(SubDomain Union Record Enumeration) => true
+     --FIXME: above should use builtinFunctionName?.  Change when
+     --FIXME: Mapping acquire first class functorship.
   getConstructorAbbreviationFromDB op =>
     if getConstructorKindFromDB op = "category"
       then updateCategoryFrameForCategory op
