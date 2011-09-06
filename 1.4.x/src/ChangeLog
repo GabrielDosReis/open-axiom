@@ -1,5 +1,14 @@
 2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot: Use DB for current constructor.
+	(mkCategoryPackage): Category defaults are packages, not domains.
+	* interp/functor.boot (encodeFunctionName): Use current
+	constructor DB.  First argument is now a DB.  Adjust caller.
+	* algebra/domain.spad.pamphlet (DomainConstructo) [functorData]:
+	Use getInfovec.
+
+2011-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Stop using LOADED symbol property of constructors.
 	* interp/daase.lisp (DATABASE) [LOAD-PATH]: New field.
 	(dbLoadPath): New accessor.

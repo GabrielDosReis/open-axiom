@@ -954,11 +954,12 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
+  catdb := constructorDB op
   packageName:= makeDefaultPackageName symbolName op
-  packageAbb := makeSymbol(strconc(getConstructorAbbreviationFromDB op,'"-"))
+  packageAbb := makeSymbol strconc(symbolName dbAbbreviation catdb,'"-")
   $options:local := []
   -- This stops the next line from becoming confused
-  abbreviationsSpad2Cmd ['domain,packageAbb,packageName]
+  abbreviationsSpad2Cmd ['package,packageAbb,packageName]
   -- This is a little odd, but the parser insists on calling
   -- domains, rather than packages
   nameForDollar := first SETDIFFERENCE('(S A B C D E F G H I),argl)
@@ -974,7 +975,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
         | assoc(op1,capsuleDefAlist)]
   null catOpList => nil
   packageCategory :=
-    ['CATEGORY,'domain,
+    ['CATEGORY,'package,
        :applySubst(pairList($FormalMapVariableList,argl),catOpList)]
   nils:= [nil for x in argl]
   packageSig := [packageCategory,form,:nils]
@@ -1071,9 +1072,10 @@ compDefineCategory(df,m,e,prefix,fal) ==
   -- make sure we do have some minimal internal coherence.
   lhs := second df
   ctor := opOf lhs
-  kind := getConstructorKindFromDB ctor
+  db := constructorDB ctor
+  kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
-  dbConstructorForm(constructorDB ctor) := lhs
+  dbConstructorForm(db) := lhs
   $insideFunctorIfTrue or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
@@ -1418,7 +1420,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
       $NRTslot1Info := NRTmakeSlot1Info()
-      libFn := getConstructorAbbreviationFromDB op'
+      libFn := dbAbbreviation db
       $lookupFunction: local :=
           NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
@@ -1954,7 +1956,7 @@ compile u ==
       isLocalFunction op =>
         if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem op) 
-      encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
+      encodeFunctionName(constructorDB $functorForm.op,op,$signatureOfForm,'";",$suffix)
      where
        isLocalFunction op ==
          null symbolMember?(op,$formalArgList) and
@@ -2044,14 +2046,15 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
   $clamList: local := nil
+  db := constructorDB fn
   lambdaOrSlam :=
-    getConstructorKindFromDB fn = "category" => 'SPADSLAM
-    dbInstanceCache constructorDB fn = nil => 'LAMBDA
+    dbConstructorKind db = 'category => 'SPADSLAM
+    dbInstanceCache db = nil => 'LAMBDA
     $clamList:=
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA
   compForm:= [[fn,[lambdaOrSlam,vl,:bodyl]]]
-  if getConstructorKindFromDB fn = "category"
+  if dbConstructorKind db = 'category
       then u:= compAndDefine compForm
       else u:= backendCompile compForm
   clearConstructorCache fn      --clear cache for constructor
