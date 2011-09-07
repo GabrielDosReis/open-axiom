@@ -1370,9 +1370,10 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
-    [.,.,$e]:= compMakeDeclaration("$",target,$e)
+    [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
-      $e:= augModemapsFromCategory('_$,'_$,target,$e)
+      $e := augModemapsFromCategory('_$,'_$,target,$e)
+      $e := put('$,'%domain,form,$e)
     $signature:= signature'
     parSignature:= applySubst($pairlis,signature')
     parForm:= applySubst($pairlis,form)

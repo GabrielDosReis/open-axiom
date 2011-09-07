@@ -1,5 +1,12 @@
 2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineFunctor1): Augment the envionment
+	with current instantiation.
+	* interp/c-util.boot (isSubset): Accept values of current
+	instantiation as values of the current domain.
+
+2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compImport): Don't do anything if
 	bootstrapping: there is no much to import for now.
 	* interp/define.boot (getOperationAlist): Get the isFunctor
