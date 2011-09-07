@@ -1333,7 +1333,9 @@ compFromIf(a,m,E) ==
 
 compImport: (%Form,%Mode,%Env) -> %Triple
 compImport(["import",:doms],m,e) ==
-  for dom in doms repeat e:=addDomain(dom,e)
+  if not $bootStrapMode then
+    for dom in doms repeat
+      e := addDomain(dom,e)
   ["/throwAway",$NoValueMode,e]
 
 --% Foreign Function Interface

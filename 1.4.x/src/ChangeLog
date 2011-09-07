@@ -1,3 +1,11 @@
+2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compImport): Don't do anything if
+	bootstrapping: there is no much to import for now.
+	* interp/define.boot (getOperationAlist): Get the isFunctor
+	property directly.
+	(addDomain): Call isDomainForm.
+
 2011-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (isFunctor): Tidy.
