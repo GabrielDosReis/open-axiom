@@ -319,7 +319,7 @@ or the chracters ?, !, ' or %"
 ;; digits forming that integer token.
 (defun get-integer-in-radix (buf r)
   (unless (> r 1)
-    (meta-syntax-error))
+    (spad_syntax_error))
   (let ((mark (1+ (size buf))))
     (tagbody lp
 	     (suffix (current-char) buf)
@@ -327,7 +327,7 @@ or the chracters ?, !, ' or %"
 		    (dig (|rdigit?| nxt)))
 	       (when dig
 		 (unless (< dig r)
-		   (meta-syntax-error))
+		   (spad_syntax_error))
 		 (advance-char)
 		 (go lp))))
     (parse-integer buf :start mark :radix r)))

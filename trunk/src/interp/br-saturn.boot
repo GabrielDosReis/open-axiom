@@ -938,7 +938,7 @@ addParameterTemplates(page, conform) ==
 kPageArgs([op,:args],[.,.,:source]) ==
   htSaySaturn '"\begin{tabular}{p{.25in}lp{0in}}"
   firstTime := true
-  coSig := rest getDualSignatureFromDB op
+  coSig := rest getDualSignature op
   for x in args for t in source for pred in coSig repeat
     if firstTime then firstTime := false
                  else
@@ -1170,7 +1170,7 @@ operationIsNiladicConstructor op ==
 ++ Like operationIsNiladicConstructor() except that we just want
 ++ to know whether `op' is a constructor, arity is unimportant.
 operationIsConstructor op ==
-  ident? op => getDualSignatureFromDB op
+  ident? op => getDualSignature op
   nil
 
 --------------> NEW DEFINITION (see br-op2.boot.pamphlet)

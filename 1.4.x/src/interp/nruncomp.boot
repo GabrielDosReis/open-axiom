@@ -303,7 +303,7 @@ NRTaddInner x ==
     builtinConstructor? x.op or x.op is "[||]" =>
       for y in x.args repeat
         NRTinnerGetLocalIndex y
-    cosig := getDualSignatureFromDB x.op =>
+    cosig := getDualSignature x.op =>
       for y in x.args for t in cosig.source | y isnt '$ and t repeat
         NRTinnerGetLocalIndex y
     keyedSystemError("S2NR0003",[x])

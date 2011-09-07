@@ -1,5 +1,22 @@
 2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (finalizeLisplib): Finalize documentaion
+	only if not bootstrapping.
+	(isFunctor): Tidy.
+	* interp/g-util.boot (superType): Tidy.
+	* interp/database.boot (getDualSignature): Rename from
+	getDualSignatureFromDB.  Adjust callers.
+	* interp/c-util.boot (isKnownCategory): Remove.
+	(diagnoseUnknownType): Use isCategoryForm.
+	* interp/bootlex.lisp (GET-INTEGER-IN-RADIX): Use SPAD_SYNTAX_ERROR.
+	* interp/metalex.lisp (GET-STRING-TOKEN): Likewise.
+	* interp/parsing.lisp (MUST): Likewise.
+	* algebra/boolean.spad.pamphlet (Refrence) [coerce]: Bypass
+	conversion to Identifier.
+	* algebra/domain.spad.pamphlet (ContructorKind): Tidy.
+
+2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (NRTaddInner): Use the dual signature.
 	* interp/lisplib.boot (writeDualSignature): New.
 	(finalizeLisplib): Likewise.

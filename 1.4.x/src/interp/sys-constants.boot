@@ -702,3 +702,8 @@ $OperatorFunctionNames ==
     "+", "-", ">", ">=", "=", "~=", "<", "<=", "#", "~", "not",
      "case", "and", "or", "<<", ">>", "/\", "\/" ]
 
+--%
+%categoryKind == 'category
+%domainKind == 'domain
+%packageKind == 'package
+

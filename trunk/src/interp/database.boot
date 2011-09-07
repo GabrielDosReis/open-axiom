@@ -113,13 +113,14 @@ getConstructorArgsFromDB ctor ==
 
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
-getDualSignatureFromDB: %Constructor -> %Form
-getDualSignatureFromDB ctor ==
-  GETDATABASE(ctor,"COSIG")
+getDualSignature: %Constructor -> %Form
+getDualSignature ctor ==
+  db := constructorDB ctor or return nil
+  dbDualSignature db or GETDATABASE(ctor,'COSIG)
 
 getConstructorPredicates: %Constructor -> %List %Thing
 getConstructorPredicates ctor ==
-  dbPredicates loadDBIfnecessary constructorDB ctor
+  dbPredicates loadDBIfNecessary constructorDB ctor
 
 getConstructorParentsFromDB: %Constructor -> %List %Constructor
 getConstructorParentsFromDB ctor ==
@@ -131,7 +132,7 @@ getSuperDomainFromDB ctor ==
   
 getConstructorAttributes: %Constructor -> %Form
 getConstructorAttributes ctor ==
-  dbAttributes loadDBIfnecessary constructorDB ctor
+  dbAttributes loadDBIfNecessary constructorDB ctor
 
 niladicConstructor?: %Constructor -> %Boolean
 niladicConstructor? ctor ==
@@ -829,7 +830,7 @@ printAllInitdbInfo(srcdir,dbfile) ==
 dbLoaded? db ==
   dbLoadPath db ~= nil
 
-loadDBIfnecessary db ==
+loadDBIfNecessary db ==
   ctor := dbConstructor db
   dbLoaded? db => db
   loadLib ctor or return nil

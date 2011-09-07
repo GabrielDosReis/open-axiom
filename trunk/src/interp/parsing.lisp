@@ -148,7 +148,7 @@ the stack, then stack a NIL. Return the value of prod."
                        prodvalue)))))
 
 (defmacro must (dothis &optional (this-is nil) (in-rule nil))
-  `(or ,dothis (meta-syntax-error ,this-is ,in-rule)))
+  `(or ,dothis (spad_syntax_error ,this-is ,in-rule)))
 
 ; Optional means that if it is present in the token stream, that is a good thing,
 ; otherwise don't worry (like [ foo ] in BNF notation).
@@ -250,7 +250,7 @@ the stack, then stack a NIL. Return the value of prod."
                     (or (funcall procfun (pop-stack-1))))
                (go top))
               ((compfin) (return 't)) )
-        (meta-syntax-error)
+        (spad_syntax_error)
         (go top)))
 
 (defun termchr ()  "Is CHR a terminating character?"

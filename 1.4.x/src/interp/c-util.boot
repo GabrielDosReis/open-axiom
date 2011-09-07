@@ -683,24 +683,12 @@ TrimCF() ==
 
 --%
 
-isKnownCategory: (%Mode,%Env) -> %Boolean
-isKnownCategory(c,e) ==
-  c = $Type => true
-  c = $Category => true
-  [ctor,:args] := c
-  ctor = "Join" => true           -- don't check arguments yet.
-  ctor = "SubsetCategory" => true -- ditto
-  get(ctor,"isCategory",e) => true
-  false
-
---TRACE isKnownCategory
- 
 ++ Returns non-nil if `t' is a known type in the environement `e'.
 diagnoseUnknownType(t,e) ==
   t isnt [.,:.] =>
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
-    (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
+    (m := getmode(t,e)) and isCategoryForm(m,$CategoryFrame) => t
     string? t => t
     -- ??? We should not to check for $$ at this stage.  
     -- ??? This is a bug in the compiler that needs to be fixed.

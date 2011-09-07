@@ -197,7 +197,7 @@ fromHeading htPage ==
     upOp    := symbolName opOf  updomain
     ['" {\em from} ",:dbConformGen dnForm,'" {\em under} \ops{",upOp,'"}{",:$pn,:upFence,'"}"]
   domname  := htpProperty(htPage,'domname)
-  numberOfUnderlyingDomains := #[x for x in rest getDualSignatureFromDB(opOf domname) | x]
+  numberOfUnderlyingDomains := #[x for x in rest getDualSignature(opOf domname) | x]
 --  numberOfUnderlyingDomains = 1 and
 --    KDR domname and (dn := dbExtractUnderlyingDomain domname) =>
 --      ['" {\em from} ",:pickitForm(domname,dn)]
@@ -220,7 +220,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   special := op in '(Union Record Mapping)
   cosig :=
     special => ['T for x in args]
-    rest getDualSignatureFromDB op
+    rest getDualSignature op
   atypes :=
     special => cosig
     getConstructorModemap(op).mmSource
@@ -266,7 +266,7 @@ dbOuttran form ==
   else
     op := form
     args := nil
-  cosig := rest getDualSignatureFromDB op
+  cosig := rest getDualSignature op
   atypes := getConstructorModemap(op).mmSource
   argl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pred => x
@@ -882,7 +882,7 @@ getRegistry(op,sig) ==
 evalableConstructor2HtString domform ==
   if vector? domform then domform := devaluate domform
   conname := first domform
-  coSig   := rest getDualSignatureFromDB conname
+  coSig   := rest getDualSignature conname
   --entries are T for arguments which are domains; NIL for computational objects
   and/[x for x in coSig] => form2HtString(domform,nil,true)
   arglist := [unquote x for x in rest domform] where

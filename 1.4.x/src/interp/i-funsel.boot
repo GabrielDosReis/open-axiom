@@ -1250,7 +1250,7 @@ coerceTypeArgs(t1, t2, SL) ==
   -- if needed.
   t1 isnt [con1, :args1] or t2 isnt [con2, :args2] => t2
   con1 ~= con2 => t2
-  coSig := rest getDualSignatureFromDB first t1
+  coSig := rest getDualSignature first t1
   and/coSig => t2
   csub1 := constructSubst t1
   csub2 := constructSubst t2

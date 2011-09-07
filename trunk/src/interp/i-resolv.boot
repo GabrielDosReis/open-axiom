@@ -341,7 +341,7 @@ resolveTTRed3(t) ==
     (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
   [(x isnt [.,:.] and x ) or ((not cs and x and not interpOp? x and x)
     or resolveTTRed3 x) or return nil
-      for x in t for cs in getDualSignatureFromDB first t ]
+      for x in t for cs in getDualSignature t.op ]
 
 interpOp?(op) ==
   cons?(op) and
@@ -755,7 +755,7 @@ replaceLast(A,t) ==
 destructT(functor)==
   -- provides a list of booleans, which indicate whether the arguments
   -- to the functor are category forms or not
-  getDualSignatureFromDB opOf functor
+  getDualSignature opOf functor
 
 constructTowerT(t,TL) ==
   -- t is a type, TL a list of constructors and argument lists

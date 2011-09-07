@@ -109,7 +109,7 @@ isValidType form ==
   form is ['Expression, ['Kernel, . ]] => nil
   form is [op,:argl] =>
     not constructor? op => nil
-    cosig := getDualSignatureFromDB op
+    cosig := getDualSignature op
     cosig and null rest cosig => -- niladic constructor
         null argl => true
         false

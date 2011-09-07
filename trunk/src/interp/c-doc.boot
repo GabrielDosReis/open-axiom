@@ -432,7 +432,7 @@ checkIsValidType form == main where
     [op,:args] := form
     conname := (constructor? op => op; abbreviation? op)
     null conname => nil
-    fn(form,getDualSignatureFromDB conname)
+    fn(form,getDualSignature conname)
   fn(form,coSig) ==
     #form ~= #coSig => form
     or/[null checkIsValidType x for x in rest form for flag in rest coSig | flag]

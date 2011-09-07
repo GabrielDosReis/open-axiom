@@ -391,7 +391,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
               for [.,stag,s] in sargl for [.,atag,a] in argl]
       generalizedBuiltinConstructor? op =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
-      coSig := getDualSignatureFromDB op
+      coSig := getDualSignature op
       null coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
            for s in sargl for a in argl for flag in rest coSig]
@@ -409,7 +409,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
  
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   #s ~= #d => nil
-  scoSig := getDualSignatureFromDB opOf s or return nil
+  scoSig := getDualSignature opOf s or return nil
   if opOf s in '(Union Mapping Record) then 
      scoSig := [true for x in s]
   and/[fn for x in rest s for arg in rest d for xt in rest scoSig] where
@@ -471,7 +471,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   functorName is "QUOTE"  => [functorName,:argl]
   builtinConstructor? functorName =>
     [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
-  coSig := getDualSignatureFromDB functorName or
+  coSig := getDualSignature functorName or
      error ["unknown constructor name", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
         for a in argl for flag in rest coSig]]
