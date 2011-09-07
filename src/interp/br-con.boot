@@ -578,7 +578,7 @@ kDomainName(htPage,kind,name,nargs) ==
   htpSetProperty(htPage,'inputAreaList,inputAreaList)
   conname := makeSymbol name
   args := [kArgumentCheck(domain?,x) or nil for x in inputAreaList
-              for domain? in rest getDualSignatureFromDB conname]
+              for domain? in rest getDualSignature conname]
   or/[null x for x in args] =>
     (n := +/[1 for x in args | x]) > 0 =>
       ['error,nil,'"\centerline{You gave values for only {\em ",n,'" } of the {\em ",#args,'"}}",'"\centerline{parameters of {\sf ",name,'"}}\vspace{1}\centerline{Please enter either {\em all} or {\em none} of the type parameters}"]
@@ -624,7 +624,7 @@ kisValidType typeForm ==
 
 kCheckArgumentNumbers t ==
   [conname,:args] := t
-  cosig := KDR getDualSignatureFromDB conname
+  cosig := KDR getDualSignature conname
   #cosig ~= #args => false
   and/[foo for domain? in cosig for x in args] where foo() ==
     domain? => kCheckArgumentNumbers x

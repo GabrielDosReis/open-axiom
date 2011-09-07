@@ -427,7 +427,7 @@ Reference(S:Type): Type with
 
         if S has SetCategory then
           coerce p ==
-            prefix('ref::Identifier::OutputForm, [p.value::OutputForm])
+            prefix('ref::OutputForm, [p.value::OutputForm])
 
 @
 

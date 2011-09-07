@@ -119,9 +119,9 @@ superType: %Mode -> %Maybe %Mode
 superType dom ==
   dom = "$" => superType $functorForm
   dom isnt [ctor,:args] => nil
-  [super,.] := 
-    (db := constructorDB ctor) and dbBeingDefined? db =>
-      dbSuperDomain db or return nil
+  [super,.] :=
+    db := constructorDB ctor or return nil
+    dbBeingDefined? db => dbSuperDomain db or return nil
     getSuperDomainFromDB ctor or return nil
   sublisFormal(args,super,$AtVariables)
 

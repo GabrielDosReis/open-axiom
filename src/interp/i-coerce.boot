@@ -1067,7 +1067,7 @@ coerceIntByMapInner(arg,[u1,:u2]) == coerceOrThrowFailure(arg,u1,u2)
 valueArgsEqual?(t1, t2) ==
   -- returns true if the object-valued arguments to t1 and t2 are the same
   -- under coercion
-  coSig := rest getDualSignatureFromDB first t1
+  coSig := rest getDualSignature first t1
   constrSig := rest getConstructorSignature first t1
   tl1 := replaceSharps(constrSig, t1)
   tl2 := replaceSharps(constrSig, t2)

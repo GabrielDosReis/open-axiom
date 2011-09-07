@@ -29,9 +29,9 @@ ConstructorKind(): Public == Private where
     domain: %   ++ `domain' is the kind of domain constructors
     package: %  ++ `package' is the kind of package constructors.
   Private == add
-    category == 'category : %
-    domain == 'domain : %
-    package == 'package : %
+    category == %categoryKind$Foreign(Builtin)
+    domain == %domainKind$Foreign(Builtin)
+    package == %packageKind$Foreign(Builtin)
     k1 = k2 == %peq(k1,k2)$Foreign(Builtin)
     coerce(k: %): OutputForm == k : OutputForm
 

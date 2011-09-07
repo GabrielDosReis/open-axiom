@@ -59,7 +59,7 @@ mkEvalable form ==
     constructor? op and argl = nil => form
     loadIfNecessary op
     kind:= getConstructorKindFromDB op
-    cosig := getDualSignatureFromDB op =>
+    cosig := getDualSignature op =>
       [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
           kind = "category" => MKQ x

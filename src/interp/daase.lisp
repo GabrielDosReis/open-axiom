@@ -761,7 +761,7 @@
   (format t "~&~a: ~a~%" 'constructorkind
 	  (|getConstructorKindFromDB| constructor))
   (format t "~a: ~a~%" 'cosig
-	  (|getDualSignatureFromDB| constructor))
+	  (|getDualSignature| constructor))
   (format t "~a: ~a~%" 'operation
 	  (|getOperationFromDB| constructor))
   (format t "~a: ~%" 'constructormodemap)

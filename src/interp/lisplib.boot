@@ -610,7 +610,8 @@ finalizeLisplib(ctor,libName) ==
   writeAbbreviation(db,$libFile)
   writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
   writeAncestors(ctor,removeZeroOne dbAncestors db,$libFile)
-  lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
+  if not $bootStrapMode then
+    lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   if $profileCompiler then profileWrite()
   leaveIfErrors(libName,kind)
   true
@@ -803,12 +804,10 @@ isFunctor x ==
   op in '(SubDomain Union Record Enumeration) => true
      --FIXME: above should use builtinFunctionName?.  Change when
      --FIXME: Mapping acquire first class functorship.
-  getConstructorAbbreviationFromDB op =>
-    if getConstructorKindFromDB op = "category"
-      then updateCategoryFrameForCategory op
-      else updateCategoryFrameForConstructor op
-    get(op,'isFunctor,$CategoryFrame)
-  nil
+  kind := getConstructorKindFromDB op
+  kind = nil or kind = 'category => false
+  updateCategoryFrameForConstructor op
+  get(op,'isFunctor,$CategoryFrame)
 
 --%
 
