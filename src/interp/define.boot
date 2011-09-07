@@ -1211,7 +1211,7 @@ putDomainsInScope(x,e) ==
 getOperationAlist(name,functorForm,form) ==
   if ident? name and niladicConstructor? name then 
     functorForm := [functorForm]
-  (u:= isFunctor functorForm) and not
+  (u:= get(functorForm,'isFunctor,$CategoryFrame)) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
   $insideFunctorIfTrue and name is "$" =>
     $domainShell => categoryExports $domainShell
@@ -1811,7 +1811,7 @@ addDomain(domain,e) ==
   getmode(name,e) is ["Mapping",target,:.] and isCategoryForm(target,e)=>
       addNewDomain(domain,e)
     -- constructor? test needed for domains compiled with $bootStrapMode=true
-  isFunctor name or constructor? name => addNewDomain(domain,e)
+  isDomainForm(domain,e) => addNewDomain(domain,e)
   -- ??? we should probably augment $DummyFunctorNames with CATEGORY
   -- ??? so that we don't have to do this special check here.  Investigate.
   isQuasiquote domain => e 
