@@ -1,5 +1,15 @@
 2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (NRTaddInner): Use the dual signature.
+	* interp/lisplib.boot (writeDualSignature): New.
+	(finalizeLisplib): Likewise.
+	* interp/define.boot (compDefineCategory2): Compute dual signature.
+	(compDefineFunctor1): Likewise.
+	* interp/daase.lisp (LOCALNRLIB): Juts read dual signature info;
+	don't compute it.
+
+2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (compDefineFunctor1): Augment the envionment
 	with current instantiation.
 	* interp/c-util.boot (isSubset): Accept values of current

@@ -802,8 +802,7 @@ isSubset(x,y,e) ==
   -- Expand domain representation form
   x is 'Rep and not $useRepresentationHack =>
     isSubset(getRepresentation e,y,e)
-  -- x is '$ and get(x,'%domain,e) = y => true
-  y is '$ and get(y,'%domain,e) = x => true
+  y is '$ and get(y,'%form,e) = x => true
   -- Or, if x has the Subsets property set by SubsetCategory.
   pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
   -- Or, they are related by subdomain chain.

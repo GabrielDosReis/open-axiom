@@ -1051,7 +1051,10 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
  
     -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:[MKQ f for f in sargl]]
-    dbConstructorModemap(constructorDB op') := [[parForm,:parSignature],[true,op']]
+    dbConstructorModemap(db) := [[parForm,:parSignature],[true,$op]]
+    dbDualSignature(db) :=
+      [isCategoryForm(t,e) for t in dbConstructorModemap(db).mmSource]
+    dbDualSignature(db) := [true,:dbDualSignature db]
     $lisplibCategory:= formalBody
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     dbAncestors(db) := computeAncestorsOf($form,nil)
@@ -1373,7 +1376,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
       $e := augModemapsFromCategory('_$,'_$,target,$e)
-      $e := put('$,'%domain,form,$e)
+      $e := put('$,'%form,form,$e)
     $signature:= signature'
     parSignature:= applySubst($pairlis,signature')
     parForm:= applySubst($pairlis,form)
@@ -1381,6 +1384,8 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     --  3. give operator a 'modemap property
     modemap := [[parForm,:parSignature],[true,$op]]
     dbConstructorModemap(db) := modemap
+    dbDualSignature(db) := [isCategoryForm(t,$e) for t in modemap.mmSource]
+    dbDualSignature(db) := [false,:dbDualSignature db]
 
     --  (3.1) now make a list of the functor's local parameters; for
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
