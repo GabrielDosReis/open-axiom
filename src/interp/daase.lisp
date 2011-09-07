@@ -1124,8 +1124,7 @@
 		       (if |$InteractiveMode| 
 			   (setq |$CategoryFrame| |$EmptyEnvironment|)))
 		     (setf (|dbDualSignature| dbstruct)
-			   (cons nil (mapcar #'|categoryForm?|
-					     (cddar (|dbConstructorModemap| dbstruct)))))
+			   (fetchdata alist in "dualSignature"))
 		     (setf (|dbLoadPath| (|constructorDB| key)) nil)
 		     (if (null noexpose) 
 			 (|setExposeAddConstr| (cons key nil)))

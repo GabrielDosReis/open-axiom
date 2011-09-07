@@ -560,6 +560,10 @@ writeAttributes(ctor,ats,file) ==
 writeConstructorModemap(ctor,mm,file) ==
   writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
 
+writeDualSignature(db,file) ==
+  writeInfo(dbConstructor db,dbDualSignature db,
+    'dualSignature,'dbDualSignature,file)
+
 writeAncestors(ctor,x,file) ==
   writeInfo(ctor,x,'ancestors,'dbAncestors,file)
 
@@ -583,6 +587,7 @@ finalizeLisplib(ctor,libName) ==
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,removeZeroOne mm,$libFile)
+  writeDualSignature(db,$libFile)
   $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
