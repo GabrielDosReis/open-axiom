@@ -536,7 +536,7 @@ traceDomainConstructor(domainConstructor,options) ==
   -- Trace all domains built with the given domain constructor,
   -- including all presently instantiated domains, and all future
   -- instantiations, while domain constructor is traced.
-  loadFunctor domainConstructor
+  loadLibIfNotLoaded domainConstructor
   listOfLocalOps := getOption("LOCAL",options)
   if listOfLocalOps then
     traceDomainLocalOps(domainConstructor,listOfLocalOps,

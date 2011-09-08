@@ -833,5 +833,4 @@ dbLoaded? db ==
 loadDBIfNecessary db ==
   ctor := dbConstructor db
   dbLoaded? db => db
-  loadLib ctor or return nil
-  constructorDB ctor
+  loadDB db

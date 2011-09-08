@@ -217,12 +217,6 @@ writeLib(fn,ft) == writeLib1(fn,ft,"*")
  
 writeLib1(fn,ft,fm) == RDEFIOSTREAM [['FILE,fn,ft,fm],'(MODE . OUTPUT)]
  
-putFileProperty(fn,ft,id,val) ==
-  fnStream:= writeLib1(fn,ft,"*")
-  val:= rwrite( id,val,fnStream)
-  RSHUT fnStream
-  val
- 
 lisplibWrite(prop,val,filename) ==
   -- this may someday not write nil keys, but it will now
   rwrite128(prop,val,filename)
@@ -237,51 +231,6 @@ evalAndRwriteLispForm(key,form) ==
 rwriteLispForm(key,form) ==
   rwrite( key,form,$libFile)
   LAM_,FILEACTQ(key,form)
- 
-getLisplib(name,id) ==
-  -- this version does cache the returned value
-  getFileProperty(name,$spadLibFT,id,true)
- 
-getLisplibNoCache(name,id) ==
-  -- this version does not cache the returned value
-  getFileProperty(name,$spadLibFT,id,false)
- 
-getFileProperty(fn,ft,id,cache) ==
-  fn in '(DOMAIN SUBDOM MODE) => nil
-  p := pathname [fn,ft,'"*"] or return nil
-  cache => hasFileProperty(p,id,fn)
-  hasFilePropertyNoCache(p,id,fn)
- 
-hasFilePropertyNoCache(p,id,abbrev) ==
-  -- it is assumed that the file exists and is a proper pathname
-  -- startTimingProcess 'diskread
-  fnStream:= readLibPathFast p
-  null fnStream => nil
-  -- str:= object2String id
-  val:= rread(id,fnStream, nil)
-  RSHUT fnStream
-  -- stopTimingProcess 'diskread
-  val
- 
---% Uninstantiating
- 
-unInstantiate(clist) ==
-  for c in clist repeat
-    clearConstructorCache(c)
-  killNestedInstantiations(clist)
- 
-killNestedInstantiations(deps) ==
-  for key in HKEYS($ConstructorCache)
-    repeat
-      for [arg,count,:inst] in tableValue($ConstructorCache,key) repeat
-        isNestedInstantiation(inst.0,deps) =>
-          HREMPROP($ConstructorCache,key,arg)
- 
-isNestedInstantiation(form,deps) ==
-  form is [op,:argl] =>
-    symbolMember?(op,deps) => true
-    or/[isNestedInstantiation(x,deps) for x in argl]
-  false
  
 --% Loading
 
@@ -363,6 +312,7 @@ loadDB db ==
     lib := findModule ctor or return nil
     loadModule(lib,ctor)
     dbLoadPath(db) := lib
+    constructorDB ctor
   finally stopTimingProcess 'load
  
 convertOpAlist2compilerInfo(opalist) ==
@@ -387,11 +337,6 @@ updateCategoryFrameForCategory(category) ==
      put(category, 'isCategory, 'T,
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
 
-loadFunctor u ==
-  cons? u => loadFunctor first u
-  loadLibIfNotLoaded u
-  u
- 
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
     builtinCategoryName? cnam => nil
@@ -497,6 +442,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor op
+  $buildingSystemAlgebra => res
   LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],nil)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
@@ -511,12 +457,6 @@ compileDocumentation(ctor,libName) ==
   $REPLACE([libName,$spadLibFT],[libName,'DOCLB])
   ['dummy, $EmptyMode, $e]
 
-getLisplibVersion libName ==
-  stream := RDEFIOSTREAM [['FILE,libName,$spadLibFT],['MODE, :'I]]
-  version:= second rread('VERSION, stream,nil)
-  RSHUT(stream)
-  version
- 
 initializeLisplib libName ==
   _$ERASE(libName,'ERRORLIB,$libraryDirectory)
   resetErrorCount()
@@ -638,14 +578,6 @@ mergeSignatureAndLocalVarAlists(signatureAlist, localVarAlist) ==
   -- for the function being compiled
   [[funcName,:[signature,:LASSOC(funcName,localVarAlist)]] for
     [funcName, :signature] in signatureAlist]
- 
-Operators u ==
-  u isnt [.,:.] => []
-  first u isnt [.,:.] =>
-    answer:="union"/[Operators v for v in rest u]
-    symbolMember?(first u,answer) => answer
-    [first u,:answer]
-  "union"/[Operators v for v in u]
  
 getConstructorOpsAndAtts(form,kind,modemap) ==
   kind is 'category => getCategoryOpsAndAtts(form)
@@ -784,6 +716,7 @@ getSlotFromCategoryForm (x,index) ==
  
 isDomainForm(D,e) ==
   op := opOf D
+  not ident? op => false
   --added for MPOLY 3/83 by RDJ
   symbolMember?(op,$SpecialDomainNames) or isFunctor op or
      ((getmode(op,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
