@@ -66,7 +66,6 @@ $clamList :=
   '((canCoerce hash UEQUAL count)                 _
     (canCoerceFrom hash UEQUAL count)             _
     (coerceConvertMmSelection hash UEQUAL count)  _
-    (hasFileProperty hash UEQUAL count)           _
     (isLegitimateMode hash UEQUAL count)          _
     (isValidType hash UEQUAL count)               _
     (resolveTT hash UEQUAL count)                 _

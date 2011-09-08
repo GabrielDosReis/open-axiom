@@ -1,5 +1,23 @@
 2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($clamList): Do not include hasFileProperty.
+	* interp/database.boot (loadDBIfnecessary): Tidy.
+	* interp/clammed.boot (hasFileProperty): Remove as unused.
+	* interp/lisplib.boot (putFileProperty): Likewise.
+	(getLisplib): Likewise.
+	(getLisplibNoCache): Likewise.
+	(getFileProperty): Likewise.
+	(hasfilePropertyNoCache): Likewise.
+	(unInstantiate): Likewise.
+	(killNestedInstantiations): Likewise.
+	(isNestedInstantiations): Likewise.
+	(loadFunctor): Likewise.
+	(getLisplibVersion): Likewise.
+	(Operators): Likewise.
+	(compDefineLisplib): Don't LOCALDATABASE if building system algebra.
+
+2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (finalizeLisplib): Finalize documentaion
 	only if not bootstrapping.
 	(isFunctor): Tidy.
