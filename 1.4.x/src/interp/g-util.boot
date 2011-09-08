@@ -46,6 +46,43 @@ module g_-util where
   isDefaultPackageName: %Symbol -> %Boolean
   makeDefaultPackageName: %String -> %Symbol
 
+--%
+
+++ List of category constructors that do not have entries in the 
+++ constructor database. So, they are mostly recognized by their names.
+$CategoryNames ==
+  '(CATEGORY _
+    RecordCategory _
+    Join _
+    EnumerationCategory _
+    SubsetCategory _
+    UnionCategory _
+    MappingCategory)
+
+macro builtinCategoryName? x ==
+  symbolMember?(x,$CategoryNames)
+
+++ List of domain constructors that do not have entries in the constructor
+++ database. So, they are mostly recognized by their names.
+++ See also $CategoryNames.
+$DomainNames ==
+  '(Mapping _
+    SubDomain _
+    Union _
+    Record _
+    Enumeration)
+
+macro builtinFunctorName? x ==
+  symbolMember?(x,$DomainNames)
+
+++ The collection of builtin category names and builtin domain names.
+$BuiltinConstructorNames ==
+  [:$CategoryNames,:$DomainNames]
+
+++ Return true if the symbol `s' designates a builtin constructor.
+macro builtinConstructor? s ==
+  symbolMember?(s,$BuiltinConstructorNames)
+
 --%  
 
 $AbstractionOperator ==
@@ -119,9 +156,12 @@ superType: %Mode -> %Maybe %Mode
 superType dom ==
   dom = "$" => superType $functorForm
   dom isnt [ctor,:args] => nil
+  builtinConstructor? ctor => nil
   [super,.] :=
     db := constructorDB ctor or return nil
     dbBeingDefined? db => dbSuperDomain db or return nil
+    dbConstructorKind db is 'domain or return nil
+    --dbSuperDomain loadDBIfNecessary db or return nil
     getSuperDomainFromDB ctor or return nil
   sublisFormal(args,super,$AtVariables)
 

@@ -1,3 +1,11 @@
+2011-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (builtinCategoryName?): Move to g-util.boot.
+	(builtinFunctorName?): Likewise.
+	(builtinConstructor?): Likewise.
+	(superType): Exit early if builtin functor or non-domain form.
+	* algebra/Makefile.in: Flesh out bootstrap dependencies.
+
 2011-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-globals.boot ($clamList): Do not include hasFileProperty.
