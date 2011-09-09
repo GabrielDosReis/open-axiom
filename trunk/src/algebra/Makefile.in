@@ -1641,6 +1641,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	$(COMPILE_SPAD)
 
+.PRECIOUS: $(OUTSRC)/%.spad
 ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
 
