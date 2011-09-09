@@ -116,6 +116,7 @@ BasicOperator(): Exports == Implementation where
     macro DISPLAY == '%display
     macro SEXPR == '%input
     import Arity
+    import String
     -- if narg < 0 then the operator ahs variable arity.
     Rep == Record(opname:Symbol, narg: Arity, props:P)
 
@@ -130,11 +131,11 @@ BasicOperator(): Exports == Implementation where
     operator(s: Symbol, a: Arity) == per [s, a, table()]
     property(op: %, name: String)   == search(name, rep(op).props)
     property(op: %, p: Identifier) == 
-      case search(STRING(p)$Lisp, rep(op).props) is
+      case search(string p, rep(op).props) is
         val@None => just val
         otherwise => nothing
     assert(op: %, p: Identifier) == setProperty(op, p, NIL$Lisp)
-    has?(op: %, name: Identifier) == key?(STRING(name)$Lisp, rep(op).props)
+    has?(op: %, name: Identifier) == key?(string name, rep(op).props)
     weight(op, n)        == setProperty(op, WEIGHT, n pretend None)
     nullary? op          == zero? rep(op).narg
     unary? op            == one? rep(op).narg
@@ -144,13 +145,13 @@ BasicOperator(): Exports == Implementation where
     display(op:$, f:O -> O)        == display(op, f first #1)
     deleteProperty!(op: %, name: String) == (remove!(name, properties op); op)
     deleteProperty!(op: %, p: Identifier) == 
-      remove!(p::String, properties op)
+      remove!(string p, properties op)
       op
     setProperty(op: %, name: String, valu: None) == 
       rep(op).props.name := valu
       op
     setProperty(op: %, p: Identifier, valu: None) == 
-      rep(op).props.(p::String) := valu
+      rep(op).props.(string p) := valu
       op
     coerce(op:$):OutputForm        == name(op)::OutputForm
     input(op:$, f:List SEX -> SEX) == setProperty(op, SEXPR, f pretend None)
