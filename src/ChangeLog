@@ -1,5 +1,10 @@
 2011-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/string.spad.pamphlet (String) [string]: New overload to
+	convert from Identifier.
+
+2011-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (builtinCategoryName?): Move to g-util.boot.
 	(builtinFunctorName?): Likewise.
 	(builtinConstructor?): Likewise.
