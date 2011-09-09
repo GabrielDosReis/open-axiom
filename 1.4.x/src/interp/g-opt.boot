@@ -261,7 +261,7 @@ optCall (x is ['%call,:u]) ==
   u is [['XLAM,vars,body],:args] =>
     vars isnt [.,:.] => body
     #vars > #args => systemErrorHere ['optCall,x]
-    resetTo(x,optXLAMCond applySubst(pairList(vars,args),body))
+    resetTo(x,applySubst(pairList(vars,args),body))
   [fn,:a] := u
   fn isnt [.,:.] =>
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
@@ -343,22 +343,6 @@ optIF2COND ["IF",a,b,c] ==
   c is ["IF",:.] => ['%when,[a,b],:rest optIF2COND c]
   c is ['%when,:p] => ['%when,[a,b],:p]
   ['%when,[a,b],['%otherwise,c]]
- 
-optXLAMCond x ==
-  x is ['%when,u:= [p,c],:l] =>
-    p is '%otherwise => c
-    ['%when,u,:optCONDtail l]
-  x isnt [.,:.] => x
-  x.first := optXLAMCond first x
-  x.rest := optXLAMCond rest x
-  x
- 
-optCONDtail l ==
-  null l => nil
-  [frst:= [p,c],:l']:= l
-  p is '%otherwise => [['%otherwise,c]]
-  null rest l => [frst,['%otherwise,["CondError"]]]
-  [frst,:optCONDtail l']
 
 ++ Determine whether the symbol `g' is the name of a temporary that
 ++ can be replaced in the form `x', if it is of linear usage and not
