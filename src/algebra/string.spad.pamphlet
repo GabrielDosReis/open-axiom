@@ -99,6 +99,8 @@ Character: OrderedFinite() with
         import %cdown: % -> %         from Foreign Builtin
         import %c2i: % -> NNI         from Foreign Builtin
         import %i2c: NNI -> %         from Foreign Builtin
+        import %iinc: NNI -> PositiveInteger from Foreign Builtin
+        import %idec: PositiveInteger -> NNI from Foreign Builtin
         import %ccst: String -> %     from Foreign Builtin
         import %s2c: String -> %      from Foreign Builtin
         import %c2s: % -> String      from Foreign Builtin
@@ -110,8 +112,8 @@ Character: OrderedFinite() with
 	a <= b		       == %cle(a,b)
 	a >= b		       == %cge(a,b)
 	size()		       == %ccstmax
-	index n		       == char((n - 1)::NNI)
-	lookup c	       == (1 + ord c)::PositiveInteger
+	index n		       == char %idec n
+	lookup c	       == %iinc ord c
 	char(n: NNI)	       == %i2c n
 	ord c		       == %c2i c
 	random()	       == char(random(size())$NNI)
@@ -197,6 +199,9 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	    ++ \spadfunFrom{alphanumeric?}{Character} is true.
 
     == add
+        import %iinc: Integer -> Integer from Foreign Builtin
+        import %idec: Integer -> Integer from Foreign Builtin
+
 	Rep := IndexedBits(0)
 	N   := size()$Character
 
@@ -220,7 +225,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	convert(cl):String ==
 	  construct(convert(cl)@List(Character))
 	convert(cl:%):List(Character) ==
-	  [char(i) for i in 0..N-1 | cl.i]
+	  [char(i) for i in 0..%idec N | cl.i]
 
 	charClass(s: String) ==
 	  cl := new(N, false)
@@ -235,7 +240,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	coerce(cl):OutputForm == (convert(cl)@String)::OutputForm
 
 	-- Stuff to make a legal SetAggregate view
-	# a		== (n := 0; for i in 0..N-1 | a.i repeat n := n+1; n)
+	# a == (n := 0; for i in 0..%idec N | a.i repeat n := %iinc n; n)
 	empty():%	== charClass []
 	brace():%	== charClass []
 
@@ -243,245 +248,28 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	remove!(c: Character, a:%) == (a(ord c) := false; a)
 
 	inspect(a) ==
-	    for i in 0..N-1 | a.i repeat
+	    for i in 0..%idec N | a.i repeat
 		 return char i
 	    error "Cannot take a character from an empty class."
 	extract!(a) ==
-	    for i in 0..N-1 | a.i repeat
+	    for i in 0..%idec N | a.i repeat
 		 a.i := false
 		 return char i
 	    error "Cannot take a character from an empty class."
 
 	map(f, a) ==
 	    b := new(N, false)
-	    for i in 0..N-1 | a.i repeat b(ord f char i) := true
+	    for i in 0..%idec N | a.i repeat b(ord f char i) := true
 	    b
 
 	temp: % := new(N, false)$Rep
 	map!(f, a) ==
 	    fill!(temp, false)
-	    for i in 0..N-1 | a.i repeat temp(ord f char i) := true
+	    for i in 0..%idec N | a.i repeat temp(ord f char i) := true
 	    copyInto!(a, temp, 0)
 
 	parts a ==
-	    [char i for i in 0..N-1 | a.i]
-
-@
-\section{domain ISTRING IndexedString}
-<<domain ISTRING IndexedString>>=
-)abbrev domain ISTRING IndexedString
-++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
--- The following Lisp dependencies are divided into two groups
--- Those that are required
--- MAKE-FULL-CVEC
--- Those that can are included for efficiency only
--- SUBSTRING STRPOS RPLACSTR
-++ Description:
-++ This domain implements low-level strings
-
-IndexedString(mn:Integer): Export == Implementation where
-  B ==> Boolean
-  C ==> Character
-  I ==> Integer
-  N ==> NonNegativeInteger
-  U ==> UniversalSegment Integer
-
-  Export == StringAggregate()
-  Implementation == add
-    import %strlength: % -> N from Foreign Builtin
-    import %streq: (%,%) -> Boolean from Foreign Builtin
-    import %strlt: (%,%) -> Boolean from Foreign Builtin
-    import %ceq: (Character, Character) -> Boolean from Foreign Builtin
-    import %schar: (%,I) -> Character from Foreign Builtin
-    import %strconc: (%,%) -> % from Foreign Builtin
-    import %strcopy: % -> % from Foreign Builtin
-    import %strstc: (%,Integer,Character) -> Void from Foreign Builtin
-    import %hash : % -> SingleInteger from Foreign Builtin
-
-    c:	Character
-    cc: CharacterClass
-
---  new n		   == makeString(n, space$C)$Lisp
-    new(n, c)		   == makeString(n, c)$Lisp
-    empty()		   == makeString(0@I)$Lisp
-    empty?(s)		   == %strlength s = 0
-    #s			   == %strlength s
-    s = t		   == %streq(s,t)
-    s < t		   == %strlt(s,t)
-    concat(s:%,t:%)	   == %strconc(s,t)
-    copy s		   == %strcopy s
-    insert(s:%, t:%, i:I)  == concat(concat(s(mn..i-1), t), s(i..))
-    coerce(s:%):OutputForm == outputForm(s pretend String)
-    minIndex s		   == mn
-    upperCase! s	   == map!(upperCase, s)
-    lowerCase! s	   == map!(lowerCase, s)
-
-    latex s		   == concat("\mbox{``", concat(s pretend String, "''}"))
-
-    replace(s, sg, t) ==
-	l := lo(sg) - mn
-	m := #s
-	n := #t
-	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	negative? l or h >= m or h < l-1 => error "index out of range"
-	r := new((m-(h-l+1)+n)::N, space$C)
-        k: NonNegativeInteger := 0
-	for i in 0..l-1 repeat
-          %strstc(r, k, %schar(s, i))
-          k := k + 1
-	for i in 0..n-1 repeat
-          %strstc(r, k, %schar(t, i))
-          k := k + 1
-	for i in h+1..m-1 repeat
-          %strstc(r, k, %schar(s, i))
-          k := k + 1
-	r
-
-    setelt(s:%, i:I, c:C) ==
-	i < mn or i > maxIndex(s) => error "index out of range"
-	%strstc(s, i - mn, c)
-	c
-
-    substring?(part, whole, startpos) ==
-	np:I := %strlength part
-	nw:I := %strlength whole
-	negative?(startpos := startpos - mn) => error "index out of bounds"
-	np > nw - startpos => false
-	for ip in 0..np-1 for iw in startpos.. repeat
-	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
-	true
-
-    position(s:%, t:%, startpos:I) ==
-	negative?(startpos := startpos - mn) => error "index out of bounds"
-	startpos >= %strlength t => mn - 1
-	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
-	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
-	r + mn
-    position(c: Character, t: %, startpos: I) ==
-	negative?(startpos := startpos - mn) => error "index out of bounds"
-	startpos >= %strlength t => mn - 1
-	for r in startpos..%strlength t - 1 repeat
-	    if %ceq(%schar(t, r), c) then return r + mn
-	mn - 1
-    position(cc: CharacterClass, t: %, startpos: I) ==
-	negative?(startpos := startpos - mn) => error "index out of bounds"
-	startpos >= %strlength t => mn - 1
-	for r in startpos..%strlength t - 1 repeat
-	    if member?(%schar(t,r), cc) then return r + mn
-	mn - 1
-
-    suffix?(s, t) ==
-	(m := maxIndex s) > (n := maxIndex t) => false
-	substring?(s, t, mn + n - m)
-
-    split(s, c) ==
-	n := maxIndex s
-        i := mn
-	while i <= n and s.i = c repeat i := i + 1
-	l := empty()$List(%)
-	j:Integer -- j is conditionally intialized
-	while i <= n and (j := position(c, s, i)) >= mn repeat
-	    l := concat(s(i..j-1), l)
-            i := j
-	    while i <= n and s.i = c repeat i := i + 1
-	if i <= n then l := concat(s(i..n), l)
-	reverse! l
-
-    split(s, cc) ==
-	n := maxIndex s
-        i := mn
-	while i <= n and member?(s.i,cc) repeat i := i + 1
-	l := empty()$List(%)
-	j:Integer -- j is conditionally intialized
-	while i <= n and (j := position(cc, s, i)) >= mn repeat
-	    l := concat(s(i..j-1), l)
-            i := j
-	    while i <= n and member?(s.i,cc) repeat i := i + 1
-	if i <= n then l := concat(s(i..n), l)
-	reverse! l
-
-    leftTrim(s, c) ==
-	n := maxIndex s
-        i := mn
-	while i <= n and s.i = c repeat i := i + 1
-	s(i..n)
-
-    leftTrim(s, cc) ==
-	n := maxIndex s
-        i := mn
-	while i <= n and member?(s.i,cc) repeat i := i + 1
-	s(i..n)
-
-    rightTrim(s, c) ==
-        j := maxIndex s
-	while j >=  mn and s.j = c repeat j := j - 1
-	s(minIndex(s)..j)
-
-    rightTrim(s, cc) ==
-        j := maxIndex s
-	while j >= mn and member?(s.j, cc) repeat j := j - 1
-	s(minIndex(s)..j)
-
-    concat l ==
-	t := new(+/[#s for s in l], space$C)
-	i := mn
-	for s in l repeat
-	    copyInto!(t, s, i)
-	    i := i + #s
-	t
-
-    copyInto!(y, x, s) ==
-	m := #x
-	n := #y
-	s := s - mn
-	negative? s or s+m > n => error "index out of range"
-	RPLACSTR(y, s, m, x, 0, m)$Lisp
-	y
-
-    elt(s:%, i:I) ==
-	i < mn or i > maxIndex(s) => error "index out of range"
-	%schar(s, i - mn)
-
-    elt(s:%, sg:U) ==
-	l := lo(sg) - mn
-	h := if hasHi sg then hi(sg) - mn else maxIndex s - mn
-	negative? l or h >= #s => error "index out of bound"
-	SUBSTRING(s, l, max(0, h-l+1))$Lisp
-
-    hash s ==
-        %hash s
-
-    match(pattern,target,wildcard) == stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
- 
-@
-
-Up to [[patch--40]] this read
-
-\begin{verbatim}
-    match(pattern,target,wildcard) == stringMatch(pattern,target,wildcard)$Lisp
-\end{verbatim}
-
-which did not work (Issue~\#97), since [[wildcard]] is an Axiom-[[Character]],
-not a Lisp-[[Character]]. The operation [[CHARACTER]] from [[Lisp]] performs
-the coercion.
-
-<<domain ISTRING IndexedString>>=
-    match?(pattern, target, dontcare) ==
-	n := maxIndex pattern
-	p := position(dontcare, pattern, m := minIndex pattern)::N
-	p = m-1 => pattern = target
-	(p ~= m) and not prefix?(pattern(m..p-1), target) => false
-	i := p	-- index into target
-	q := position(dontcare, pattern, p + 1)::N
-	while q ~= m-1 repeat
-	   s := pattern(p+1..q-1)
-	   i := position(s, target, i)::N
-	   i = m-1 => return false
-	   i := i + #s
-	   p := q
-	   q := position(dontcare, pattern, q + 1)::N
-	(p ~= n) and not suffix?(pattern(p+1..n), target) => false
-	true
+	    [char i for i in 0..%idec N | a.i]
 
 @
 
@@ -490,7 +278,7 @@ the coercion.
 )abbrev domain STRING String
 ++ Description:
 ++   This is the domain of character strings.
-MINSTRINGINDEX ==> 1	      -- as of 3/14/90.
+++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
 
 String(): Public == Private where
   Public == StringAggregate with
@@ -503,13 +291,207 @@ String(): Public == Private where
     string: Identifier -> %
       ++ \spad{string id} is the string representation of the
       ++ identifier \spad{id}
-  Private == IndexedString(MINSTRINGINDEX) add
-    import %i2s: Integer -> %      from Foreign Builtin
-    import %f2s: DoubleFloat -> %  from Foreign Builtin
-    import %sname: Identifier -> % from Foreign Builtin
-    string(n: Integer) == %i2s n
+  Private == add
+    macro B == Boolean
+    macro C == Character
+    macro I == Integer
+    macro N == NonNegativeInteger
+    macro U == UniversalSegment Integer
+
+    import %icst0: N                  from Foreign Builtin
+    import %icst1: N                  from Foreign Builtin
+    import %i2s: I -> %               from Foreign Builtin
+    import %iinc: I -> I              from Foreign Builtin
+    import %idec: I -> I              from Foreign Builtin
+    import %f2s: DoubleFloat -> %     from Foreign Builtin
+    import %sname: Identifier -> %    from Foreign Builtin
+    import %strlength: % -> N         from Foreign Builtin
+    import %streq: (%,%) -> B         from Foreign Builtin
+    import %strlt: (%,%) -> B         from Foreign Builtin
+    import %ceq: (C, C) -> B          from Foreign Builtin
+    import %schar: (%,I) -> C         from Foreign Builtin
+    import %strconc: (%,%) -> %       from Foreign Builtin
+    import %strcopy: % -> %           from Foreign Builtin
+    import %strstc: (%,I,C) -> Void   from Foreign Builtin
+    import %hash : % -> SingleInteger from Foreign Builtin
+
+    string(n: I) == %i2s n
     string(f: DoubleFloat) == %f2s f
     string(id: Identifier) == %sname id
+
+    c:	Character
+    cc: CharacterClass
+
+--  new n		   == makeString(n, space$C)$Lisp
+    new(n, c)		   == makeString(n, c)$Lisp
+    empty()		   == makeString(0@I)$Lisp
+    empty?(s)		   == zero? %strlength s
+    #s			   == %strlength s
+    s = t		   == %streq(s,t)
+    s < t		   == %strlt(s,t)
+    concat(s:%,t:%)	   == %strconc(s,t)
+    copy s		   == %strcopy s
+    insert(s:%, t:%, i:I)  == concat(concat(s(1..%idec i), t), s(i..))
+    coerce(s:%):OutputForm == outputForm(s pretend String)
+    minIndex s		   == %icst1
+    upperCase! s	   == map!(upperCase, s)
+    lowerCase! s	   == map!(lowerCase, s)
+
+    latex s		   ==
+      concat("\mbox{``", concat(s pretend String, "''}"))
+
+    replace(s, sg, t) ==
+	l := %idec lo(sg)
+	m := #s
+	n := #t
+	h:I := if hasHi sg then %idec hi(sg) else %idec maxIndex s
+	negative? l or h >= m or h < %idec l => error "index out of range"
+	r := new((m-%iinc(h-l)+n)::N, space$C)
+        k: NonNegativeInteger := %icst0
+	for i in %icst0..%idec l repeat
+          %strstc(r, k, %schar(s, i))
+          k := %iinc(k) : N
+	for i in %icst0..%idec n repeat
+          %strstc(r, k, %schar(t, i))
+          k := %iinc(k) : N
+	for i in %iinc h..%idec m repeat
+          %strstc(r, k, %schar(s, i))
+          k := %iinc(k) : N
+	r
+
+    setelt(s:%, i:I, c:C) ==
+	i < 1 or i > maxIndex(s) => error "index out of range"
+	%strstc(s, %idec i, c)
+	c
+
+    substring?(part, whole, startpos) ==
+	np:I := %strlength part
+	nw:I := %strlength whole
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	np > nw - startpos => false
+	for ip in %icst0..%idec np for iw in startpos.. repeat
+	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
+	true
+
+    position(s:%, t:%, startpos:I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
+	%peq(r, NIL$Lisp)$Foreign(Builtin) => %icst0
+	%iinc r
+    position(c: Character, t: %, startpos: I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	for r in startpos..%idec %strlength t repeat
+	    if %ceq(%schar(t, r), c) then return %iinc r
+	%icst0
+    position(cc: CharacterClass, t: %, startpos: I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	for r in startpos..%idec %strlength t repeat
+	    if member?(%schar(t,r), cc) then return %iinc r
+	%icst0
+
+    suffix?(s, t) ==
+	(m := maxIndex s) > (n := maxIndex t) => false
+	substring?(s, t, %iinc(n - m))
+
+    split(s, c) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and s.i = c repeat i := %iinc i
+	l := empty()$List(%)
+	j:Integer -- j is conditionally intialized
+	while i <= n and (j := position(c, s, i)) >= %icst1 repeat
+	    l := concat(s(i..%idec j), l)
+            i := j
+	    while i <= n and s.i = c repeat i := %iinc i
+	if i <= n then l := concat(s(i..n), l)
+	reverse! l
+
+    split(s, cc) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and member?(s.i,cc) repeat i := %iinc i
+	l := empty()$List(%)
+	j:Integer -- j is conditionally intialized
+	while i <= n and (j := position(cc, s, i)) >= 1 repeat
+	    l := concat(s(i..%idec j), l)
+            i := j
+	    while i <= n and member?(s.i,cc) repeat i := %iinc i
+	if i <= n then l := concat(s(i..n), l)
+	reverse! l
+
+    leftTrim(s, c) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and s.i = c repeat i := %iinc i
+	s(i..n)
+
+    leftTrim(s, cc) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and member?(s.i,cc) repeat i := %iinc i
+	s(i..n)
+
+    rightTrim(s, c) ==
+        j := maxIndex s
+	while j >=  1 and s.j = c repeat j := %idec j
+	s(minIndex(s)..j)
+
+    rightTrim(s, cc) ==
+        j := maxIndex s
+	while j >= %icst1 and member?(s.j, cc) repeat j := %idec j
+	s(minIndex(s)..j)
+
+    concat l ==
+	t := new(+/[#s for s in l], space$C)
+	i := %icst1
+	for s in l repeat
+	    copyInto!(t, s, i)
+	    i := i + #s
+	t
+
+    copyInto!(y, x, s) ==
+	m := #x
+	n := #y
+	s := %idec s
+	negative? s or s+m > n => error "index out of range"
+	RPLACSTR(y, s, m, x, %icst0, m)$Lisp
+	y
+
+    elt(s:%, i:I) ==
+	i < %icst1 or i > maxIndex(s) => error "index out of range"
+	%schar(s, %idec i)
+
+    elt(s:%, sg:U) ==
+	l := %idec lo(sg)
+	h := if hasHi sg then %idec hi(sg) else %idec maxIndex s
+	negative? l or h >= #s => error "index out of bound"
+	SUBSTRING(s, l, max(%icst0, %iinc(h-l)))$Lisp
+
+    hash s ==
+        %hash s
+
+    match(pattern,target,wildcard) ==
+      stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
+ 
+    match?(pattern, target, dontcare) ==
+	n := maxIndex pattern
+	p := position(dontcare, pattern, m := minIndex pattern)::N
+	p = %idec m => pattern = target
+	(p ~= m) and not prefix?(pattern(m..%idec p), target) => false
+	i := p	-- index into target
+	q := position(dontcare, pattern, %iinc p)::N
+	while q ~= %idec m repeat
+	   s := pattern(%iinc p..%idec q)
+	   i := position(s, target, i)::N
+	   i = %idec m => return false
+	   i := i + #s
+	   p := q
+	   q := position(dontcare, pattern, %iinc q)::N
+	(p ~= n) and not suffix?(pattern(%iinc p..n), target) => false
+	true
 
 @
 
@@ -517,7 +499,7 @@ String(): Public == Private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -553,7 +535,6 @@ String(): Public == Private where
 
 <<domain CHAR Character>>
 <<domain CCLASS CharacterClass>>
-<<domain ISTRING IndexedString>>
 <<domain STRING String>>
 @
 \eject
