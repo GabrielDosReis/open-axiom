@@ -197,10 +197,21 @@
       representation of an integer.
     </li>
 
+    <li>The domain <code>Identifier</code> no longer satisfies the
+      properties <code>CoercibleTo Symbol</code> and
+      <code>CoercibleTo String</code>.  Rather, the domain
+      <code>Symbol</code> now satisfies
+      <code>RetractableTo Symbol</code> and a new operation
+      <pre>
+	      string: Identifier -> %
+      </pre>
+      has been added to the domain <code>String</code>.
+    </li>
+
   </ul>
 
 
-  <h4 name="1.4.1-changes-comp">2.3.2. Compiler</h4>
+  <h4 name="1.4.2-changes-comp">2.3.2. Compiler</h4>
 
   <ul>
     <li>A bug in the compiler where certain functors were incorrectly
