@@ -23,7 +23,8 @@ Symbol(): Exports == Implementation where
   Scripts ==> Record(sub:L,sup:L,presup:L,presub:L,args:L)
 
   Exports ==> Join(OrderedSet, ConvertibleTo InputForm,
-        ConvertibleTo Symbol,CoercibleFrom String,
+       ConvertibleTo Symbol,CoercibleFrom String,
+        RetractableTo Identifier,
          ConvertibleTo Pattern Integer, ConvertibleTo Pattern Float,
           PatternMatchable Integer, PatternMatchable Float) with
      new: () -> %
@@ -276,6 +277,10 @@ Symbol(): Exports == Implementation where
       sy pretend List(%)
 
     sample() == 'aSymbol
+    coerce(x: Identifier): % == x : %
+    retractIfCan(x): Union(Identifier,"failed") ==
+      scripted? x => x : Identifier
+      "failed"
 
 @
 
