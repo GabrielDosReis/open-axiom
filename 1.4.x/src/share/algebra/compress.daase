@@ -1,6 +1,6 @@
 
-(30 . 3524522242)            
-(4428 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3524556578)            
+(4427 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -187,9 +187,9 @@
  |IntegrationResultFunctions2| |IntegrationResultToFunction|
  |InternalRepresentationForm| |IntegerRoots| |IrredPolyOverFiniteField|
  |IntegrationResultRFToFunction| |IrrRepSymNatPackage|
- |InternalRationalUnivariateRepresentationPackage| |IsAst| |IndexedString|
- |InnerPolySum| |InnerSparseUnivariatePowerSeries| |InnerTaylorSeries|
- |InternalTypeForm| |InfiniteTupleFunctions2| |InfiniteTupleFunctions3|
+ |InternalRationalUnivariateRepresentationPackage| |IsAst| |InnerPolySum|
+ |InnerSparseUnivariatePowerSeries| |InnerTaylorSeries| |InternalTypeForm|
+ |InfiniteTupleFunctions2| |InfiniteTupleFunctions3|
  |InnerTrigonometricManipulations| |InfiniteTuple| |IndexedVector|
  |IndexedAggregate&| |IndexedAggregate| |JoinAst| |AssociatedJordanAlgebra|
  |JVMBytecode| |JVMClassFileAccess| |JVMConstantTag| |JVMFieldAccess|

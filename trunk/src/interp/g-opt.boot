@@ -406,7 +406,7 @@ $VMsideEffectFreeOperators ==
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
     %ilength %ibit %icst0 %icst1 %icstmin %icstmax
     %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-    %irem %iquo %idivide %idec %irandom
+    %idec %irem %iquo %idivide %idec %irandom
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
     %fsqrt %fpowf %flog %flog2 %flog10 %fmanexp %fNaN?
@@ -742,11 +742,24 @@ optBge ['%bge,a,b] ==
 
 optIadd(x is ['%iadd,a,b]) ==
   integer? a and integer? b => a + b
-  integer? a and a = 0 => b
-  integer? b and b = 0 => a
+  integer? a =>
+    a = 0 => b
+    b is [op,b1,b2] and op in '(%iadd %isub) =>
+      integer? b1 => simplifyVMForm [op,['%iadd,a,b1],b2]
+      integer? b2 => simplifyVMForm ['%iadd,b1,[op,a,b2]]
+      x
+    x
+  integer? b =>
+    b = 0 => a
+    a is [op,a1,a2] and op in '('%iadd %isub) =>
+      integer? a1 => simplifyVMForm [op,['%iadd,a1,b],a2]
+      integer? a2 => simplifyVMForm ['%iadd,a1,[op,b,a2]]
+      x
+    x
   x
 
 optIinc(x is ['%iinc,a]) ==
+  integer? a => a + 1
   a is [op,b,c] and op in '(%isub %iadd) =>
     integer? b => simplifyVMForm [op,[op,b,1],c]
     integer? c => simplifyVMForm [op,b,[op,c,1]]
@@ -755,8 +768,40 @@ optIinc(x is ['%iinc,a]) ==
 
 optIsub(x is ['%isub,a,b]) ==
   integer? a and integer? b => a - b
-  integer? a and a = 0 => ['%ineg,b]
-  integer? b and b = 0 => a
+  integer? a =>
+    a = 0 => ['%ineg,b]
+    b is ['%iadd,b1,b2] =>
+      integer? b1 => simplifyVMForm ['%isub,['%isub,a,b1],b2]
+      integer? b2 => simplifyVMForm ['%isub,['%isub,a,b2],b1]
+      x
+    b is ['%isub,b1,b2] =>
+      integer? b1 => simplifyVMForm ['%iadd,['%isub,a,b1],b2]
+      integer? b2 => simplifyVMForm ['%isub,['%iadd,a,b2],b1]
+      x
+    x
+  integer? b =>
+    b = 0 => a
+    a is ['%iadd,a1,a2] =>
+      integer? a1 => simplifyVMForm ['%iadd,['%isub,a1,b],a2]
+      integer? a2 => simplifyVMForm ['%iadd,a1,['%isub,a2,b]]
+      x
+    a is ['%isub,a1,a2] =>
+      integer? a1 => simplifyVMForm ['%isub,['%isub,a1,b],a2]
+      integer? a2 => simplifyVMForm ['%isub,a1,['%iadd,a2,b]]
+      x
+    x
+  x
+
+optIdec(x is ['%idec,a]) ==
+  integer? a => a - 1
+  a is ['%iadd,b,c] =>
+    integer? b => simplifyVMForm ['%iadd,['%isub,b,1],c]
+    integer? c => simplifyVMForm ['%iadd,b,['%isub,c,1]]
+    x
+  a is ['%isub,b,c] =>
+    integer? b => simplifyVMForm ['%isub,['%isub,b,1],c]
+    integer? c => simplifyVMForm ['%isub,b,['%iadd,c,1]]
+    x
   x
 
 optImul(x is ['%imul,a,b]) ==

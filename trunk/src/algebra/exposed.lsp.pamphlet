@@ -940,7 +940,6 @@
   (|IndexedList| . ILIST)
   (|IndexedMatrix| . IMATRIX)
   (|IndexedOneDimensionalArray| . IARRAY1)
-  (|IndexedString| . ISTRING)
   (|IndexedTwoDimensionalArray| . IARRAY2)
   (|IndexedVector| . IVECTOR)
   (|InnerAlgFactor| . IALGFACT)
