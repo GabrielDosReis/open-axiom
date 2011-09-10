@@ -1135,3 +1135,12 @@
 
 (defmacro |shellEntry| (dollar n)
   `(svref ,dollar ,n))
+
+(defmacro |assert| (x y)
+  `(if (null ,x) (|error| ,y)))
+
+
+(defmacro |:| (tag expr)
+  `(list '|:| ,(mkq tag) ,expr))
+
+

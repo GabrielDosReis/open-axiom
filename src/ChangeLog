@@ -1,5 +1,21 @@
 2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/macros.lisp (COERCE-FAILURE-MSG): Remove.
+	(check-subtype): Likewise.
+	(check-union): Likewise.
+	(MAKE-REASONABLE): Move to diagnostic.boot.  Rename.
+	(assert): Move to sys-macros.lisp.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %retract
+	and %pullback.
+	(optRetract): Tidy.
+	(optPullback): New.
+	* interp/diagnostics.boot (makeReasonable): New.
+	(moanRetract): Likewise.  Use it.
+	* interp/buildom.boot (mkNewUnionFunList): Simplify.
+	(mkUnionFunList): Likewise.
+
+2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (doInlineCall): New.
 	(optCall): Use it to implement inline functions.
 	($VMsideEffectFreeOperators): Include %apply and STRINGIMAGE.

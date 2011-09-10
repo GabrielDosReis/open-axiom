@@ -44,6 +44,21 @@ import vmlisp
 namespace BOOT
 
 
+++ Subroutine of moanRetract.
+makeReasonable s ==
+  # s > 30 =>
+    strconc('"expression beginning ",subString(s,0,20))
+  s
+
+++ This rountine is used by the runtime system to report failed
+++ attempt to coerce a value from one type to another.  Usually
+++ this involves Union branches or SubDomains or other forms
+++ of retraction.
+moanRetract(v,t) ==
+  error
+    strconc(makeReasonable STRINGIMAGE v,'" cannot be coerce to mode ",
+      outputDomainConstructor t)
+
 ++ This routine is used by the interperter to count syntax, or
 ++ precompilation, or semantics analysis errors.
 
