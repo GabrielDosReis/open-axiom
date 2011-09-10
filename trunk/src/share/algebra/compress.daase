@@ -1,6 +1,6 @@
 
-(30 . 3524556578)            
-(4427 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3524578949)            
+(4426 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -162,18 +162,17 @@
  |IndexedDirectProductObject| |IndexedDirectProductOrderedAbelianMonoid|
  |IndexedDirectProductOrderedAbelianMonoidSup| |InnerEvalable&| |InnerEvalable|
  |InnerFreeAbelianMonoid| |IndexedFlexibleArray| |IfAst| |InnerFiniteField|
- |InnerIndexedTwoDimensionalArray| |IndexedList|
- |InnerMatrixLinearAlgebraFunctions| |InnerMatrixQuotientFieldFunctions|
- |IndexedMatrix| |ImportAst| |InAst| |InputByteConduit&| |InputByteConduit|
- |InnerNormalBasisFieldFunctions| |InputBinaryFile| |IncrementingMaps|
- |IndexedExponents| |InnerNumericEigenPackage| |InetClientStreamSocket|
- |Infinity| |InputForm| |InputFormFunctions1|
- |InfiniteProductCharacteristicZero| |InnerNumericFloatSolvePackage|
- |InnerModularGcd| |InnerMultFact| |InfiniteProductFiniteField|
- |InfiniteProductPrimeField| |InnerPolySign| |IntegerNumberSystem&|
- |IntegerNumberSystem| |Integer| |Int16| |Int32| |Int64| |Int8| |InnerTable|
- |AlgebraicIntegration| |AlgebraicIntegrate| |IntegerBits| |IntervalCategory|
- |IntegralDomain&| |IntegralDomain| |ElementaryIntegration|
+ |InnerIndexedTwoDimensionalArray| |InnerMatrixLinearAlgebraFunctions|
+ |InnerMatrixQuotientFieldFunctions| |IndexedMatrix| |ImportAst| |InAst|
+ |InputByteConduit&| |InputByteConduit| |InnerNormalBasisFieldFunctions|
+ |InputBinaryFile| |IncrementingMaps| |IndexedExponents|
+ |InnerNumericEigenPackage| |InetClientStreamSocket| |Infinity| |InputForm|
+ |InputFormFunctions1| |InfiniteProductCharacteristicZero|
+ |InnerNumericFloatSolvePackage| |InnerModularGcd| |InnerMultFact|
+ |InfiniteProductFiniteField| |InfiniteProductPrimeField| |InnerPolySign|
+ |IntegerNumberSystem&| |IntegerNumberSystem| |Integer| |Int16| |Int32| |Int64|
+ |Int8| |InnerTable| |AlgebraicIntegration| |AlgebraicIntegrate| |IntegerBits|
+ |IntervalCategory| |IntegralDomain&| |IntegralDomain| |ElementaryIntegration|
  |IntegerFactorizationPackage| |IntegrationFunctionsTable|
  |GenusZeroIntegration| |IntegerNumberTheoryFunctions|
  |AlgebraicHermiteIntegration| |TranscendentalHermiteIntegration|
