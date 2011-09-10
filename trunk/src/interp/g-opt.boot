@@ -256,12 +256,47 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
   argl is [:argl,fun] and fun is ["ELT",dom,slot] =>
     optCall ['%call,['ELT,dom,slot],:argl]
   form
- 
+
+++ Inline a call with arguments `args'  to a simple function with
+++ parameter-list `parms' and body `body'.
+doInlineCall(args,parms,body) ==
+  -- 1. almost constant functions are easy
+  parms = nil => body
+  -- 2. identity functions too
+  parms is [=body] => first args
+  -- 3. We know that the body is essentially side-effect-free (at best)
+  --    or simple expression (at worst.)  The issue is whether it is
+  --    OK to directly substitute the arguments which may be
+  --    arbitrary expressions.  The ideal semantics calls for introducting
+  --    a (fresh) temporary to hold the values of the argument expressions.
+  --    We attempt to short-circuit the native evaluation as follows:
+  --      a. side-effect-free arguments go by themselves.
+  --      b. Simple expression arguments go by themselves as long as
+  --         the corresponding parameter is used linearly in the body.
+  --      c. Others get evaluated to temporaries.
+  tmps := nil         -- list of temporaries
+  inits := nil        -- list of local bindings
+  subst := nil        -- arguments substitution.
+  for arg in args for parm in parms repeat
+    g := gensym()
+    tmps := [g,:tmps]
+    sideEffectFree? arg
+      or (numOfOccurencesOf(parm,body) < 2 and isSimpleVMForm body) =>
+        subst := [[g,:arg],:subst]
+    inits := [[g,arg],:inits]
+  -- 4. Alpha-rename the body and substitute simple expression arguments.
+  body := applySubst(pairList(parms,reverse! tmps),body)
+  body := applySubst!(subst,body)
+  -- 5. Deliver.
+  inits = nil => body
+  ['%bind,reverse! inits,body]    
+
+
 optCall (x is ['%call,:u]) ==
   u is [['XLAM,vars,body],:args] =>
     vars isnt [.,:.] => body
     #vars > #args => systemErrorHere ['optCall,x]
-    resetTo(x,applySubst(pairList(vars,args),body))
+    resetTo(x,doInlineCall(args,vars,body))
   [fn,:a] := u
   fn isnt [.,:.] =>
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
@@ -383,7 +418,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(FUNCALL
+  '(FUNCALL %apply
     SPADfirst ASH FLOAT_-RADIX FLOAT FLOAT_-SIGN
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
@@ -402,7 +437,7 @@ $VMsideEffectFreeOperators ==
     %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
     %nil %pair %list %pair? %lconcat %llength %lfirst %lsecond %lthird
-    %lreverse %lempty? %hash %ismall? %string? %f2s
+    %lreverse %lempty? %hash %ismall? %string? %f2s STRINGIMAGE
     %ccst %ccstmax %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown
     %sname
     %strlength %streq %i2s %schar %strlt %strconc
@@ -418,7 +453,7 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['SPADCALL,'STRINGIMAGE,'%gensym, '%lreverse!,
+    ['SPADCALL,'%gensym, '%lreverse!,
       '%strstc,"MAKE-FULL-CVEC"])
 
 ++ Return true if the `form' is semi-simple with respect to
@@ -498,6 +533,8 @@ dependentVars expr == main(expr,nil) where
 ++ defined in a binding form can be safely replaced by its initalization
 ++ `expr' in the `body' of the binding form.
 canInlineVarDefinition(var,expr,body) ==
+  -- Occasional situation where `expr' evaluates to itself
+  gensym? var and sameObject?(var,body) => true
   -- FIXME: We should not be inlining a side-effecting initializer.
   -- If the variable is assigned to, that is a no no.
   varIsAssigned(var,body) => false
@@ -580,7 +617,7 @@ optBind form ==
     [var,expr] := first inits
     usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
     body := third form
-    canInlineVarDefinition(var,expr,body) and isSimpleVMForm expr =>
+    canInlineVarDefinition(var,expr,body) =>
       third(form) := substitute!(expr,var,body)
       inits := rest inits
     ok := false
