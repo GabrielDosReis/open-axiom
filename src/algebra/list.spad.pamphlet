@@ -2,218 +2,13 @@
 \usepackage{open-axiom}
 \begin{document}
 \title{src/algebra list.spad}
-\author{Michael Monagon, Manuel Bronstein}
+\author{Michael Monagon, Manuel Bronstein, Gabriel Dos Reis}
 \maketitle
 
 \begin{abstract}
 \end{abstract}
 \tableofcontents
 \eject
-
-\section{domain ILIST IndexedList}
-
-<<domain ILIST IndexedList>>=
-import Type
-import ListAggregate
-)abbrev domain ILIST IndexedList
-++ Author: Michael Monagan
-++ Date Created: Sep 1987
-++ Change History:
-++ Basic Operations:
-++   \#, concat, concat!, construct, copy, elt, elt, empty,
-++   empty?, eq?, first, member?, merge!, mergeSort, minIndex,
-++   parts, removeDuplicates!, rest, rest, reverse, reverse!,
-++   setelt, setfirst!, setrest!, sort!, split!
-++ Related Constructors: List
-++ Also See:
-++ AMS Classification:
-++ Keywords: list, aggregate, index
-++ Description:
-++   \spadtype{IndexedList} is a basic implementation of the functions
-++   in \spadtype{ListAggregate}, often using functions in the underlying
-++   LISP system. The second parameter to the constructor (\spad{mn})
-++   is the beginning index of the list. That is, if \spad{l} is a
-++   list, then \spad{elt(l,mn)} is the first value. This constructor
-++   is probably best viewed as the implementation of singly-linked
-++   lists that are addressable by index rather than as a mere wrapper
-++   for LISP lists.
-IndexedList(S:Type, mn:Integer): Exports == Implementation where
- cycleMax ==> 1000        -- value used in checking for cycles
-
--- The following seems to be a bit out of date, but is kept in case
--- a knowledgeable person wants to update it:
---   The following LISP dependencies are divided into two groups
---   Those that are required
---   CONS, EQ, NIL, 
---   Those that are included for efficiency only
---   LIST, NCONC2, LENGTH
---   Also REVERSE, since it's called in Polynomial Ring
-
- Qpush   ==> PUSH$Lisp
- 
- Exports ==> ListAggregate S 
- Implementation ==>
-  add
-   import %nil: %                           from Foreign Builtin
-   import %pair: (S,%) -> %                 from Foreign Builtin
-   import %peq: (%,%) -> Boolean            from Foreign Builtin
-   import %lempty?: % -> Boolean            from Foreign Builtin
-   import %head: % -> S                     from Foreign Builtin
-   import %tail: % -> %                     from Foreign Builtin
-   import %lreverse: % -> %                 from Foreign Builtin
-   import %lreverse!: % -> %                from Foreign Builtin
-   import %llength: % -> NonNegativeInteger from Foreign Builtin
-   
-   #x                  == %llength x
-   concat(s:S,x:%)     == %pair(s,x)
-   eq?(x,y)            == %peq(x,y)
-   first x             == SPADfirst(x)$Lisp
-   elt(x,"first")      == SPADfirst(x)$Lisp
-   empty()             == %nil
-   empty? x            == %lempty? x
-   rest x              == %tail x
-   elt(x,"rest")       == %tail x
-   setfirst!(x,s)     ==
-      empty? x => error "Cannot update an empty list"
-      %store(%head x,s)$Foreign(Builtin)
-      s
-   setelt(x,"first",s) ==
-      empty? x => error "Cannot update an empty list"
-      %store(%head x,s)$Foreign(Builtin)
-      s
-   setrest!(x,y)      ==
-      empty? x => error "Cannot update an empty list"
-      %store(%tail x,y)$Foreign(Builtin)
-      %tail x
-   setelt(x,"rest",y)  ==
-      empty? x => error "Cannot update an empty list"
-      %store(%tail x,y)$Foreign(Builtin)
-      %tail x
-   construct l         == l pretend %
-   parts s             == s pretend List S
-   reverse! x         == %lreverse! x
-   reverse x           == %lreverse x
-   minIndex x          == mn
-
-   rest(x, n) ==
-      for i in 1..n repeat
-         if empty? x then error "index out of range"
-         x := %tail x
-      x
-
-   copy x ==
-      y := empty()
-      for i in 0.. while not empty? x repeat
-         if i = cycleMax and cyclic? x then error "cyclic list"
-         y := %pair(%head x,y)
-         x := %tail x
-      %lreverse! y
-
-   if S has CoercibleTo(OutputForm) then
-     coerce(x):OutputForm ==
-        -- displays cycle with overbar over the cycle
-        y := empty()$List(OutputForm)
-        s := cycleEntry x
-        while not %peq(x, s) repeat
-          y := concat((first x)::OutputForm, y)
-          x := rest x
-        y := reverse! y
-        empty? s => bracket y
-        -- cyclic case: z is cylic part
-        z := list((first x)::OutputForm)
-        while not %peq(s, rest x) repeat
-           x := rest x
-           z := concat((first x)::OutputForm, z)
-        bracket concat!(y, overbar commaSeparate reverse! z)
-
-   if S has SetCategory then
-     x = y ==
-       %peq(x,y) => true
-       while not empty? x and not empty? y repeat
-          %head x ~=$S %head y => return false
-          x := %tail x
-          y := %tail y
-       empty? x and empty? y
-
-     latex(x : %): String ==
-       s : String := "\left["
-       while not empty? x repeat
-         s := concat(s, latex(%head x)$S)$String
-         x := %tail x
-         if not empty? x then s := concat(s, ", ")$String
-       concat(s, " \right]")$String
-
-     member?(s,x) ==
-        while not empty? x repeat
-           if s = %head x then return true else x := %tail x
-        false
-
-   -- Lots of code from parts of AGGCAT, repeated here to
-   -- get faster compilation
-   concat!(x:%,y:%) ==
-      empty? x => 
-        empty? y => x
-        Qpush(first y,x)
-        %store(%tail x,rest y)$Foreign(Builtin)
-        x
-      z:=x
-      while not empty? %tail z repeat
-        z:=%tail z
-      %store(%tail z,y)$Foreign(Builtin)
-      x
-
-   -- Then a quicky:
-   if S has SetCategory then
-     removeDuplicates! l ==
-       p := l
-       while not empty? p repeat
---       p := setrest!(p, remove!(#1 = %head p, %tail p))
--- far too expensive - builds closures etc.
-         pp:=p
-         f:S:=%head p
-         p:=%tail p
-         while not empty? (pr:=%tail pp) repeat
-           if (%head pr)@S = f then
-             %store(%tail pp,%tail pr)$Foreign(Builtin)
-           else pp:=pr
-       l
-
-   -- then sorting
-   mergeSort: ((S, S) -> Boolean, %, Integer) -> %
-
-   sort!(f, l)       == mergeSort(f, l, #l)
-
-   merge!(f, p, q) ==
-     empty? p => q
-     empty? q => p
-     %peq(p, q) => error "cannot merge a list into itself"
-     if f(%head p, %head q)
-       then (r := t := p; p := %tail p)
-       else (r := t := q; q := %tail q)
-     while not empty? p and not empty? q repeat
-       if f(%head p, %head q)
-         then (%store(%tail t, p)$Foreign(Builtin); t := p; p := %tail p)
-         else (%store(%tail t, q)$Foreign(Builtin); t := q; q := %tail q)
-     %store(%tail t, if empty? p then q else p)$Foreign(Builtin)
-     r
-
-   split!(p, n) ==
-      n < 1 => error "index out of range"
-      p := rest(p, (n - 1)::NonNegativeInteger)
-      q := %tail p
-      %store(%tail p,%nil)$Foreign(Builtin)
-      q
-
-   mergeSort(f, p, n) ==
-     if n = 2 and f(first rest p, first p) then p := reverse! p
-     n < 3 => p
-     l := (n quo 2)::NonNegativeInteger
-     q := split!(p, l)
-     p := mergeSort(f, p, l)
-     q := mergeSort(f, q, n - l)
-     merge!(f, p, q)
-
-@
 
 \section{domain LIST List}
 <<domain LIST List>>=
@@ -222,7 +17,7 @@ import ListAggregate
 )abbrev domain LIST List
 ++ Author: Michael Monagan
 ++ Date Created: Sep 1987
-++ Change History:
+++ Date Last Changed: September 9, 2011.
 ++ Basic Operations:
 ++   \#, append, concat, concat!, cons, construct, copy, elt, elt,
 ++   empty, empty?, eq?, first, member?, merge!, mergeSort, minIndex,
@@ -236,76 +31,233 @@ import ListAggregate
 ++ Description:
 ++   \spadtype{List} implements singly-linked lists that are
 ++   addressable by indices; the index of the first element
-++   is 1. In addition to the operations provided by
-++   \spadtype{IndexedList}, this constructor provides some
-++   LISP-like functions such as \spadfun{null} and \spadfun{cons}.
+++   is 1. this constructor provides some LISP-like functions
+++   such as \spadfun{null} and \spadfun{cons}.
 List(S:Type): Exports == Implementation where 
- LISTMININDEX ==> 1       -- this is the minimum list index
+  Exports == ListAggregate S with
+    nil             : %
+      ++ \spad{nil} is the empty list.
+    null            : %      -> Boolean
+      ++ null(u) tests if list \spad{u} is the
+      ++ empty list.
+    cons            : (S, %) -> %
+      ++ cons(element,u) appends \spad{element} onto the front
+      ++ of list \spad{u} and returns the new list. This new list
+      ++ and the old one will share some structure.
+    append          : (%, %) -> %
+      ++ append(u1,u2) appends the elements of list \spad{u1}
+      ++ onto the front of list \spad{u2}. This new list
+      ++ and \spad{u2} will share some structure.
+    if S has SetCategory then
+      setUnion        : (%, %) -> %
+        ++ setUnion(u1,u2) appends the two lists u1 and u2, then
+        ++ removes all duplicates. The order of elements in the
+        ++ resulting list is unspecified.
+      setIntersection : (%, %) -> %
+        ++ setIntersection(u1,u2) returns a list of the elements
+        ++ that lists \spad{u1} and \spad{u2} have in common.
+        ++ The order of elements in the resulting list is unspecified.
+      setDifference   : (%, %) -> %
+        ++ setDifference(u1,u2) returns a list of the elements
+        ++ of \spad{u1} that are not also in \spad{u2}.
+        ++ The order of elements in the resulting list is unspecified.
 
- Exports ==> ListAggregate S with
-  nil             : %
-    ++ \spad{nil} is the empty list.
-  null            : %      -> Boolean
-    ++ null(u) tests if list \spad{u} is the
-    ++ empty list.
-  cons            : (S, %) -> %
-    ++ cons(element,u) appends \spad{element} onto the front
-    ++ of list \spad{u} and returns the new list. This new list
-    ++ and the old one will share some structure.
-  append          : (%, %) -> %
-    ++ append(u1,u2) appends the elements of list \spad{u1}
-    ++ onto the front of list \spad{u2}. This new list
-    ++ and \spad{u2} will share some structure.
-  if S has SetCategory then
-    setUnion        : (%, %) -> %
-      ++ setUnion(u1,u2) appends the two lists u1 and u2, then
-      ++ removes all duplicates. The order of elements in the
-      ++ resulting list is unspecified.
-    setIntersection : (%, %) -> %
-      ++ setIntersection(u1,u2) returns a list of the elements
-      ++ that lists \spad{u1} and \spad{u2} have in common.
-      ++ The order of elements in the resulting list is unspecified.
-    setDifference   : (%, %) -> %
-      ++ setDifference(u1,u2) returns a list of the elements
-      ++ of \spad{u1} that are not also in \spad{u2}.
-      ++ The order of elements in the resulting list is unspecified.
+  Implementation == add
+    import %nil: %                           from Foreign Builtin
+    import %peq: (%,%) -> Boolean            from Foreign Builtin
+    import %pair: (S,%) -> %                 from Foreign Builtin
+    import %lconcat: (%,%) -> %              from Foreign Builtin
+    import %lempty?: % -> Boolean            from Foreign Builtin
+    import %head: % -> S                     from Foreign Builtin
+    import %tail: % -> %                     from Foreign Builtin
+    import %lreverse: % -> %                 from Foreign Builtin
+    import %lreverse!: % -> %                from Foreign Builtin
+    import %llength: % -> NonNegativeInteger from Foreign Builtin
+    import %icst0: NonNegativeInteger        from Foreign Builtin
+    import %icst1: NonNegativeInteger        from Foreign Builtin
+    import %idec: Integer -> Integer         from Foreign Builtin
 
- Implementation ==>
-   IndexedList(S, LISTMININDEX) add
-      import %nil: %                 from Foreign Builtin
-      import %peq: (%,%) -> Boolean  from Foreign Builtin
-      import %pair: (S,%) -> %       from Foreign Builtin
-      import %lconcat: (%,%) -> %    from Foreign Builtin
+    Qpush   ==> PUSH$Lisp
+    cycleMax ==> 1000        -- value used in checking for cycles
 
-      nil                      == %nil
-      null l                   == %peq(l,%nil)
-      cons(s, l)               == %pair(s,l)
-      append(l:%, t:%)         == %lconcat(l,t)
+    nil                == %nil
+    null l             == %peq(l,%nil)
+    cons(s, l)         == %pair(s,l)
+    append(l:%, t:%)   == %lconcat(l,t)
 
-      if S has SetCategory then
-        setUnion(l1:%,l2:%)      == removeDuplicates concat(l1,l2)
+    #x                 == %llength x
+    concat(s:S,x:%)    == %pair(s,x)
+    eq?(x,y)           == %peq(x,y)
+    first x            == SPADfirst(x)$Lisp
+    elt(x,"first")     == SPADfirst(x)$Lisp
+    empty()            == %nil
+    empty? x           == %lempty? x
+    rest x             == %tail x
+    elt(x,"rest")      == %tail x
+    setfirst!(x,s)     ==
+       empty? x => error "Cannot update an empty list"
+       %store(%head x,s)$Foreign(Builtin)
+       s
+    setelt(x,"first",s) ==
+       empty? x => error "Cannot update an empty list"
+       %store(%head x,s)$Foreign(Builtin)
+       s
+    setrest!(x,y)      ==
+       empty? x => error "Cannot update an empty list"
+       %store(%tail x,y)$Foreign(Builtin)
+       %tail x
+    setelt(x,"rest",y)  ==
+       empty? x => error "Cannot update an empty list"
+       %store(%tail x,y)$Foreign(Builtin)
+       %tail x
+    construct l         == l pretend %
+    parts s             == s pretend List S
+    reverse! x         == %lreverse! x
+    reverse x           == %lreverse x
+    minIndex x          == 1
 
-        setIntersection(l1:%,l2:%) ==
-          u :% := empty()
-          l1 := removeDuplicates l1
-          while not empty? l1 repeat
-            if member?(first l1,l2) then u := cons(first l1,u)
-            l1 := rest l1
-          u
+    rest(x, n) ==
+       for i in %icst1..n repeat
+          if empty? x then error "index out of range"
+          x := %tail x
+       x
 
-        setDifference(l1:%,l2:%) ==
-          l1 := removeDuplicates l1
-          lu:% := empty()
-          while not empty? l1 repeat
-            l11:=l1.1
-            if not member?(l11,l2) then lu := concat(l11,lu)
-            l1 := rest l1
-          lu
+    copy x ==
+       y := empty()
+       for i in %icst0.. while not empty? x repeat
+          if i = cycleMax and cyclic? x then error "cyclic list"
+          y := %pair(%head x,y)
+          x := %tail x
+       %lreverse! y
 
-      if S has ConvertibleTo InputForm then
-        convert(x:%):InputForm ==
-          convert concat(convert('construct)@InputForm,
-                [convert a for a in (x pretend List S)]$List(InputForm))
+    if S has CoercibleTo(OutputForm) then
+      coerce(x):OutputForm ==
+         -- displays cycle with overbar over the cycle
+         y := empty()$List(OutputForm)
+         s := cycleEntry x
+         while not %peq(x, s) repeat
+           y := concat((first x)::OutputForm, y)
+           x := rest x
+         y := reverse! y
+         empty? s => bracket y
+         -- cyclic case: z is cylic part
+         z := list((first x)::OutputForm)
+         while not %peq(s, rest x) repeat
+            x := rest x
+            z := concat((first x)::OutputForm, z)
+         bracket concat!(y, overbar commaSeparate reverse! z)
+
+    if S has SetCategory then
+      x = y ==
+        %peq(x,y) => true
+        while not empty? x and not empty? y repeat
+           %head x ~=$S %head y => return false
+           x := %tail x
+           y := %tail y
+        empty? x and empty? y
+
+      latex(x : %): String ==
+        s : String := "\left["
+        while not empty? x repeat
+          s := concat(s, latex(%head x)$S)$String
+          x := %tail x
+          if not empty? x then s := concat(s, ", ")$String
+        concat(s, " \right]")$String
+
+      member?(s,x) ==
+         while not empty? x repeat
+            if s = %head x then return true else x := %tail x
+         false
+
+    -- Lots of code from parts of AGGCAT, repeated here to
+    -- get faster compilation
+    concat!(x:%,y:%) ==
+       empty? x => 
+         empty? y => x
+         Qpush(first y,x)
+         %store(%tail x,rest y)$Foreign(Builtin)
+         x
+       z:=x
+       while not empty? %tail z repeat
+         z:=%tail z
+       %store(%tail z,y)$Foreign(Builtin)
+       x
+
+    -- Then a quicky:
+    if S has SetCategory then
+      removeDuplicates! l ==
+        p := l
+        while not empty? p repeat
+ --       p := setrest!(p, remove!(#1 = %head p, %tail p))
+ -- far too expensive - builds closures etc.
+          pp:=p
+          f:S:=%head p
+          p:=%tail p
+          while not empty? (pr:=%tail pp) repeat
+            if (%head pr)@S = f then
+              %store(%tail pp,%tail pr)$Foreign(Builtin)
+            else pp:=pr
+        l
+
+    -- then sorting
+    mergeSort: ((S, S) -> Boolean, %, Integer) -> %
+
+    sort!(f, l)       == mergeSort(f, l, #l)
+
+    merge!(f, p, q) ==
+      empty? p => q
+      empty? q => p
+      %peq(p, q) => error "cannot merge a list into itself"
+      if f(%head p, %head q)
+        then (r := t := p; p := %tail p)
+        else (r := t := q; q := %tail q)
+      while not empty? p and not empty? q repeat
+        if f(%head p, %head q)
+          then (%store(%tail t, p)$Foreign(Builtin); t := p; p := %tail p)
+          else (%store(%tail t, q)$Foreign(Builtin); t := q; q := %tail q)
+      %store(%tail t, if empty? p then q else p)$Foreign(Builtin)
+      r
+
+    split!(p, n) ==
+       n < %icst1 => error "index out of range"
+       p := rest(p, %idec(n)::NonNegativeInteger)
+       q := %tail p
+       %store(%tail p,%nil)$Foreign(Builtin)
+       q
+
+    mergeSort(f, p, n) ==
+      if n = 2 and f(first rest p, first p) then p := reverse! p
+      n < 3 => p
+      l := (n quo 2)::NonNegativeInteger
+      q := split!(p, l)
+      p := mergeSort(f, p, l)
+      q := mergeSort(f, q, n - l)
+      merge!(f, p, q)
+
+    if S has SetCategory then
+      setUnion(l1:%,l2:%)      == removeDuplicates concat(l1,l2)
+
+      setIntersection(l1:%,l2:%) ==
+        u :% := empty()
+        l1 := removeDuplicates l1
+        while not empty? l1 repeat
+          if member?(first l1,l2) then u := cons(first l1,u)
+          l1 := rest l1
+        u
+
+      setDifference(l1:%,l2:%) ==
+        l1 := removeDuplicates l1
+        lu:% := empty()
+        while not empty? l1 repeat
+          l11:=l1.1
+          if not member?(l11,l2) then lu := concat(l11,lu)
+          l1 := rest l1
+        lu
+
+    if S has ConvertibleTo InputForm then
+      convert(x:%):InputForm ==
+        convert concat(convert('construct)@InputForm,
+              [convert a for a in (x pretend List S)]$List(InputForm))
 
 @
 
@@ -623,7 +575,6 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
 <<*>>=
 <<license>>
 
-<<domain ILIST IndexedList>>
 <<domain LIST List>>
 <<package LIST2 ListFunctions2>>
 <<package LIST3 ListFunctions3>>

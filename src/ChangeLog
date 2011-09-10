@@ -1,5 +1,13 @@
 2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Remove IndexedList.
+	* algebra/list.spad.pamphlet (IndexedList): Fold definition into
+	List. Remove.
+	* algebra/exposed.lsp.pamphlet: Don't expose ILIST.
+	* algebra/Makefile.in: Adjust.
+
+2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (doInlineCall): Tidy.
 	(canInlineVarDefinition): Likewise.
 
