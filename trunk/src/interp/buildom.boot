@@ -648,14 +648,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 		   ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
-			gg:=gensym()
-			$InteractiveMode =>
-			  ["XLAM",["#1"],["PROG1",["%tail","#1"],
-			    ["check-union",['%ieq,['%head,"#1"],i],type,"#1"]]]
-			["XLAM",["#1"],
-                          ['%bind,[[gg,"#1"]],
-                            ["check-union",['%ieq,['%head,gg],i],type,gg],
-                              ["%tail",gg]]]
+                         ['XLAM,["#1","#2"],['%pullback,"#1",type,i]]
   [cList,e]
 
 mkEnumerationFunList(dc,["Enumeration",:SL],e) ==
@@ -673,10 +666,8 @@ mkEnumerationFunList(dc,["Enumeration",:SL],e) ==
 mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   first listOfEntries is [":",.,.] => mkNewUnionFunList(op,form,e)
   nargs := #listOfEntries
-  --1. create representations of subtypes
-  predList:= mkPredList listOfEntries
-  g:=gensym()
-  --2. create coercions from subtypes to subUnion
+  -- create coercions from subtypes to subUnion
+  g := gensym()
   cList:=
    [["=",[$Boolean,g ,g],["ELT",op,$FirstParamSlot + nargs]],
      ["~=",[$Boolean,g,g],["ELT",op,0]],
@@ -687,29 +678,11 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	   ["coerce",[t,g],cdownFun],
 	   ["autoCoerce",[t,g],downFun], --this should be removed eventually
 	   ["case",[$Boolean,g,t],typeFun]]
-	     for p in predList for t in listOfEntries])] where
-		upFun() ==
-		  p is ['%ieq,['%head,x],n] =>
-                    ["XLAM",["#1"],["%pair",n,"#1"]]
-		  ["XLAM",["#1"],"#1"]
-		cdownFun() ==
-		  gg:=gensym()
-		  if p is ['%ieq,['%head,x],n] then
-		     ref:=["%tail",gg]
-		     q:= ['%ieq,['%head,gg],n]
-		  else
-		     ref:=gg
-		     q:= substitute(gg,"#1",p)
-		  ["XLAM",["#1"],
-                    ['%bind,[[gg,"#1"]],["check-union",q,t,gg],ref]]
-		downFun() ==
-		   p is ['%ieq,['%head,x],.] =>
-		     ["XLAM",["#1"],["%tail","#1"]]
-		   ["XLAM",["#1"],"#1"]
-		typeFun() ==
-		   p is ['%ieq,['%head,x],n] =>
-		     ["XLAM",["#1","#2"],['%ieq,['%head,x],n]]
-		   ["XLAM",["#1","#2"],p]
+	      for t in listOfEntries for n in 0..])] where
+		upFun() == ["XLAM",["#1"],["%pair",n,"#1"]]
+		cdownFun() == ['XLAM,["#1"],['%pullback,"#1",t,n]]
+		downFun() == ["XLAM",["#1"],["%tail","#1"]]
+		typeFun() == ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],n]]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
 

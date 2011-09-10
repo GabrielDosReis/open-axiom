@@ -448,7 +448,7 @@ $VMsideEffectFreeOperators ==
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
     %writeString %writeNewline %writeLine
-    %void)
+    %void %retract %pullback)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
@@ -682,10 +682,23 @@ optRetract ["%retract",e,m,pred] ==
   e isnt [.,:.] =>
     cond := simplifyVMForm substitute(e,"#1",pred)
     cond is '%true => e
-    ["check-subtype",cond,MKQ m,e]
+    ['%when,[cond,e],['%otherwise,['moanRetract,e,MKQ m]]]
   g := gensym()
-  ['%bind,[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
+  ['%bind,[[g,e]],
+    ['%when,[substitute(g,"#1",pred),g],
+      ['%otherwise,['moanRetract,g,MKQ m]]]]
 
+++ We have an expression `x' of some Union type.  Expand an attempted
+++ pullback to the `n'th branch of type `t'.
+optPullback ['%pullback,x,t,n] ==
+  y :=
+    ident? x => x
+    gensym()
+  expr :=
+    ['%when,[['%ieq,['%head,y],n],['%tail,y]],
+      ['%otherwise,['moanRetract,y,MKQ t]]]
+  symbolEq?(x,y) => expr
+  ['%bind,[[y,x]],expr]
 
 --%  Boolean expression transformers
 
@@ -878,6 +891,7 @@ for x in '((%call         optCall) _
            (CATCH        optCatch)_
            (%when        optCond)_
            (%retract     optRetract)_
+           (%pullback    optPullback)_
            (%CollectV    optCollectVector)) _
    repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC

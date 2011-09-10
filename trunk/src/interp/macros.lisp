@@ -381,28 +381,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
  
 ;; range tests and assertions
  
-(defmacro |assert| (x y) `(IF (NULL ,x) (|error| ,y)))
- 
-(defun coerce-failure-msg (val mode)
-   (STRCONC (MAKE-REASONABLE (STRINGIMAGE val))
-            " cannot be coerced to mode "
-            (STRINGIMAGE (|devaluate| mode))))
- 
-(defmacro |check-subtype| (pred submode val)
-  `(progn 
-     (|assert| ,pred (coerce-failure-msg ,val ,submode))
-     ,val))
-
-(defmacro |check-union| (pred branch val)
-  `(progn
-     (|assert| ,pred (coerce-failure-msg ,val ,branch))
-     ,val))
-  
- 
-(defun MAKE-REASONABLE (Z)
-   (if (> (length Z) 30) (CONCAT "expression beginning " (subseq Z 0 20)) Z))
- 
- 
 (defmacro |elapsedUserTime| () '(get-internal-run-time))
  
 #+IBCL
@@ -581,12 +559,3 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 
 (defvar HT nil)
-
-;; 
-;; -*- Record Structures -*-
-;; 
-
-(defmacro |:| (tag expr)
-  `(LIST '|:| ,(MKQ tag) ,expr))
-
-
