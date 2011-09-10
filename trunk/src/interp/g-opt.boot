@@ -280,9 +280,8 @@ doInlineCall(args,parms,body) ==
   for arg in args for parm in parms repeat
     g := gensym()
     tmps := [g,:tmps]
-    sideEffectFree? arg
-      or (numOfOccurencesOf(parm,body) < 2 and isSimpleVMForm body) =>
-        subst := [[g,:arg],:subst]
+    sideEffectFree? arg or numOfOccurencesOf(parm,body) = 1 =>
+      subst := [[g,:arg],:subst]
     inits := [[g,arg],:inits]
   -- 4. Alpha-rename the body and substitute simple expression arguments.
   body := applySubst(pairList(parms,reverse! tmps),body)
@@ -546,7 +545,8 @@ canInlineVarDefinition(var,expr,body) ==
   -- Linearly used internal temporaries should be replaced, and
   -- so should side-effet free initializers for linear variables.
   usageCount := numOfOccurencesOf(var,body)
-  usageCount < 2 and (gensym? var or sideEffectFree? expr) => true
+  usageCount < 2 and sideEffectFree? expr => true
+  gensym? var and usageCount = 1 => true
   -- If the initializer is a variable and the body is
   -- a series of choices with side-effect free predicates, then
   -- no harm is done by removing the local `var'.

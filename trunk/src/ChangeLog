@@ -1,5 +1,10 @@
 2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (doInlineCall): Tidy.
+	(canInlineVarDefinition): Likewise.
+
+2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/macros.lisp (COERCE-FAILURE-MSG): Remove.
 	(check-subtype): Likewise.
 	(check-union): Likewise.
