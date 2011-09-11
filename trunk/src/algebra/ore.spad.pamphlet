@@ -296,26 +296,25 @@ Automorphism(R:Ring): Join(Group, Eltable(R, R)) with
       morphism: ((R, Integer) -> R) -> %
         ++ morphism(f) returns the morphism given by \spad{f^n(x) = f(x,n)}.
    == add
+      Rep == (R, Integer) -> R
       err:   R -> R
       ident: (R, Integer) -> R
       iter:  (R -> R, NonNegativeInteger, R) -> R
       iterat: (R -> R, R -> R, Integer, R) -> R
-      apply: (%, R, Integer) -> R
- 
-      Rep := ((R, Integer) -> R)
- 
-      1                               == ident
+      apply: (Rep, R, Integer) -> R
+  
+      1                               == per ident
       err r                           == error "Morphism is not invertible"
       ident(r, n)                     == r
       f = g                           == %peq(f,g)$Foreign(Builtin)
-      elt(f, r)                       == apply(f, r, 1)
-      inv f                           == apply(f, #1, - #2)
-      (f: %) ** (n: Integer)          == apply(f, #1, n * #2)
+      elt(f, r)                       == apply(rep f, r, 1)
+      inv f                           == per apply(rep f, #1, - #2)
+      (f: %) ** (n: Integer)          == per apply(rep f, #1, n * #2)
       coerce(f:%):OutputForm          == message("R -> R")
-      morphism(f:(R, Integer) -> R):% == f
+      morphism(f:(R, Integer) -> R):% == per f
       morphism(f:R -> R):%            == morphism(f, err)
-      morphism(f, g)                  == iterat(f, g, #2, #1)
-      apply(f, r, n) == (g := f pretend ((R, Integer) -> R); g(r, n))
+      morphism(f, g)                  == per iterat(f, g, #2, #1)
+      apply(f, r, n) == f(r, n)
  
       iterat(f, g, n, r) ==
           negative? n => iter(g, (-n)::NonNegativeInteger, r)
@@ -327,7 +326,7 @@ Automorphism(R:Ring): Join(Group, Eltable(R, R)) with
  
       f * g ==
         f = g => f**2
-        iterat(f g #1, (inv g)(inv f) #1, #2, #1)
+        per iterat(f g #1, (inv g)(inv f) #1, #2, #1)
 
 @
 \section{package OREPCTO UnivariateSkewPolynomialCategoryOps}

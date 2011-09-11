@@ -188,7 +188,8 @@ comp3(x,m,$e) ==
      nil
   x isnt [.,:.] => compAtom(x,m,e)
   op:= x.op
-  getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
+  ident? op and getXmode(op,e) is ["Mapping",:ml]
+    and (T := applyMapping(x,m,e,ml)) => T
   op is ":" => compColon(x,m,e)
   op is "::" => compCoerce(x,m,e)
   not $insideCompTypeOf and stringPrefix?('"TypeOf",PNAME op) =>
@@ -236,32 +237,9 @@ applyMapping([op,:argl],m,e,ml) ==
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
-    ['%call,['applyFun,op],:argl']
+    ['%apply,op,:argl']
   pairlis := pairList($FormalMapVariableList,argl')
   convert([form,applySubst(pairlis,first ml),e],m)
-
--- This version tends to give problems with #1 and categories
--- applyMapping([op,:argl],m,e,ml) ==
---   #argl~=#ml-1 => nil
---   mappingHasCategoryTarget :=
---     isCategoryForm(first ml,e) => --is op a functor?
---       form:= [op,:argl']
---       pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
---       ml:= applySubst(pairlis,ml)
---       true
---     false
---   argl':=
---     [T.expr for x in argl for m' in rest ml] where
---       T() == [.,.,e]:= comp(x,m',e) or return "failed"
---   if argl'="failed" then return nil
---   mappingHasCategoryTarget => convert([form,first ml,e],m)
---   form:=
---     not symbolMember?(op,$formalArgList) and op isnt [.,:.] =>
---       [op',:argl',"$"] where
---         op':= makeSymbol strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
---     ['%call,["applyFun",op],:argl']
---   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
---   convert([form,applySubst(pairlis,first ml),e],m)
 
 hasFormalMapVariable(x, vl) ==
   $formalMapVariables: local := vl
@@ -356,10 +334,10 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   if string? x then x := makeSymbol x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
-  (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
+  (vl ~= nil) and not hasFormalMapVariable(x, vl) =>
     [u,.,.] := comp([x,:vl],m',e) or return nil
     extractCodeAndConstructTriple(u, m, oldE)
-  null vl and (t := comp([x], m', e)) => return
+  null vl and (t := comp([x], m', e)) =>
     [u,.,.] := t
     extractCodeAndConstructTriple(u, m, oldE)
   [u,.,.]:= comp(x,m',e) or return nil
@@ -370,6 +348,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
   u is ['%call,fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
+  u is ['%apply,op,:.] => [op,m,oldE]
   [op,:.,env] := u
   [["CONS",["function",op],env],m,oldE]
 
@@ -694,11 +673,13 @@ compApplication(op,argl,m,T) ==
               for x in argl for m in argml]
     argTl = "failed" => nil
     form:=
-      T.expr isnt [.,:.] and 
+      args := [a.expr for a in argTl]
+      ident? T.expr and 
         not (symbolMember?(op,$formalArgList) or symbolMember?(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
-            emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
-      ['%call, ['applyFun, T.expr], :[a.expr for a in argTl]]
+            emitLocalCallInsn(T.expr,args,e)
+      ident? T.expr => ['%apply,T.expr,:args]
+      ['%call,['applyFun,T.expr],:args]
     coerce([form, retm, e],resolve(retm,m))
   op is 'elt => nil
   eltForm := ['elt, op, :argl]
@@ -851,6 +832,9 @@ setqSingle(id,val,m,E) ==
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
       stackWarning('"domain valued variable %1b has been reassigned within its scope",[id])
+    -- single domains have constant values in their scopes, we might just
+    -- as well take advantage of that at compile-time where appropriate.
+    e' := put(id,'%macro,val,e')
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
@@ -1714,10 +1698,10 @@ coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
   string? m' and modeEqual(m,$String) => [T.expr,m,$e]
-  modeEqual(m',m) or
-    (get(m',"value",$e) is [m'',:.] or getmode(m',$e) is ["Mapping",m'']) and
-      modeEqual(m'',m) or
-        (get(m,"value",$e) is [m'',:.] or getmode(m,$e) is ["Mapping",m'']) and
+  modeEqual(m',m) or ident? m' and
+    (get(m',"value",$e) is [m'',:.] or getXmode(m',$e) is ["Mapping",m'']) and
+      modeEqual(m'',m) or ident? m and
+        (get(m,"value",$e) is [m'',:.] or getXmode(m,$e) is ["Mapping",m'']) and
           modeEqual(m'',m') => [T.expr,m,T.env]
   string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
@@ -1778,7 +1762,7 @@ autoCoerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 compCoerce(["::",x,m'],m,e) ==
   e:= addDomain(m',e)
   T:= compCoerce1(x,m',e) => coerce(T,m)
-  getmode(m',e) is ["Mapping",["UnionCategory",:l]] =>
+  ident? m' and getXmode(m',e) is ["Mapping",["UnionCategory",:l]] =>
     T:= (or/[compCoerce1(x,m1,e) for m1 in l]) or return nil
     coerce([T.expr,m',T.env],m)
 

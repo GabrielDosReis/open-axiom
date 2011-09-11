@@ -514,6 +514,12 @@ hasDefaultPackage catname ==
   constructor? defname => defname
   nil
  
+++ Like getmode, except that if the mode is local variable with
+++ defined value, we want that value instead.
+getXmode(x,e) ==
+  m := getmode(x,e) or return nil
+  ident? m and get(m,'%macro,e) or m
+
  
 --=======================================================================
 --              Compute the lookup function (complete or incomplete)
@@ -522,7 +528,7 @@ NRTgetLookupFunction(domform,exCategory,addForm,env) ==
   $why: local := nil
   domform := applySubst($pairlis,domform)
   addForm isnt [.,:.] =>
-    IDENTP addForm and (m := getmode(addForm,env)) ~= nil
+    ident? addForm and (m := getmode(addForm,env)) ~= nil
       and isCategoryForm(m,env) 
         and extendsCategory(domform,exCategory,applySubst($pairlis,m),env) =>
           'lookupIncomplete
@@ -1503,7 +1509,7 @@ displayMissingFunctions() ==
   loc := nil              -- list of local operation signatures
   exp := nil              -- list of exported operation signatures
   for [[op,sig,:.],:pred] in $CheckVectorList  | not pred repeat
-    not symbolMember?(op,$formalArgList) and getmode(op,$e) is ['Mapping,:.] =>
+    not symbolMember?(op,$formalArgList) and getXmode(op,$e) is ['Mapping,:.] =>
       loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
@@ -1745,7 +1751,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
  
     localOrExported :=
       not symbolMember?($op,$formalArgList) and
-        getmode($op,e) is ['Mapping,:.] => 'local
+        getXmode($op,e) is ['Mapping,:.] => 'local
       'exported
  
     --6a skip if compiling only certain items but not this one
@@ -1780,7 +1786,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     [fun,['Mapping,:signature'],$e]
  
 getSignatureFromMode(form,e) ==
-  getmode(opOf form,e) is ['Mapping,:signature] =>
+  getXmode(opOf form,e) is ['Mapping,:signature] =>
     #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
     applySubst(pairList($FormalMapVariableList,form.args),signature)
 
@@ -1814,7 +1820,7 @@ addDomain(domain,e) ==
     addNewDomain(domain,e)
   (name:= first domain)='Category => e
   domainMember(domain,getDomainsInScope e) => e
-  getmode(name,e) is ["Mapping",target,:.] and isCategoryForm(target,e)=>
+  getXmode(name,e) is ["Mapping",target,:.] and isCategoryForm(target,e) =>
       addNewDomain(domain,e)
     -- constructor? test needed for domains compiled with $bootStrapMode=true
   isDomainForm(domain,e) => addNewDomain(domain,e)
@@ -1887,7 +1893,7 @@ getSignature(op,argModeList,$e) ==
           for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
             and sig.source = argModeList and knownInfo(pred,$e)]) => first sigl
   null sigl =>
-    (u:= getmode(op,$e)) is ['Mapping,:sig] => sig
+    (u:= getXmode(op,$e)) is ['Mapping,:sig] => sig
     SAY '"************* USER ERROR **********"
     SAY("available signatures for ",op,": ")
     if null mmList
@@ -1968,7 +1974,7 @@ compile u ==
      where
        isLocalFunction op ==
          null symbolMember?(op,$formalArgList) and
-           getmode(op,$e) is ['Mapping,:.]
+           getXmode(op,$e) is ['Mapping,:.]
     u:= [op',lamExpr]
   -- If just updating certain functions, check for previous existence.
   -- Deduce old sequence number and use it (items have been skipped).
@@ -2368,7 +2374,7 @@ compJoin(["Join",:argl],m,e) ==
         x is ["DomainSubstitutionMacro",pl,body] =>
           (parameters:= union(pl,parameters); body)
         x is ["mkCategory",:.] => x
-        x isnt [.,:.] and getmode(x,e) = $Category => x
+        ident? x and getXmode(x,e) = $Category => x
         stackSemanticError(["invalid argument to Join: ",x],nil)
         x
   T:= [wrapDomainSub(parameters,["Join",:catList']),$Category,e]

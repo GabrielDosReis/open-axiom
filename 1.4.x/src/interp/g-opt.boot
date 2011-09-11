@@ -280,7 +280,8 @@ doInlineCall(args,parms,body) ==
   for arg in args for parm in parms repeat
     g := gensym()
     tmps := [g,:tmps]
-    sideEffectFree? arg or numOfOccurencesOf(parm,body) = 1 =>
+    n := numOfOccurencesOf(parm,body)
+    atomic? arg or (sideEffectFree? arg and n < 2) or n = 1 =>
       subst := [[g,:arg],:subst]
     inits := [[g,arg],:inits]
   -- 4. Alpha-rename the body and substitute simple expression arguments.
@@ -417,8 +418,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(FUNCALL %apply
-    SPADfirst ASH FLOAT_-RADIX FLOAT FLOAT_-SIGN
+  '(SPADfirst ASH FLOAT FLOAT_-SIGN
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
@@ -452,8 +452,8 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['SPADCALL,'%gensym, '%lreverse!,
-      '%strstc,"MAKE-FULL-CVEC"])
+    ['SPADCALL,'%apply, '%gensym, '%lreverse!,
+      '%strstc])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
@@ -528,7 +528,7 @@ dependentVars expr == main(expr,nil) where
       vars := main(y,vars)
     vars
 
-++ Subroutine of optLET and optBind.  Return true if the variable `var' locally
+++ Subroutine of optBind.  Return true if the variable `var' locally
 ++ defined in a binding form can be safely replaced by its initalization
 ++ `expr' in the `body' of the binding form.
 canInlineVarDefinition(var,expr,body) ==
@@ -559,57 +559,6 @@ canInlineVarDefinition(var,expr,body) ==
 ++ This transformation will probably be more effective when all
 ++ type informations are still around.   Which is why we should
 ++ have a type directed compilation throughout. 
-optLET u ==
-  -- Hands off non-simple cases.
-  u isnt ["LET",inits,body] => u
-  -- Inline functionally used local variables with their initializers.
-  inits := [:newInit for (init := [var,expr]) in inits] where 
-    newInit() ==
-      canInlineVarDefinition(var,expr,body) =>
-        body := substitute(expr,var,body)
-        nil  -- remove this initialization
-      [init] -- otherwwise keep it.
-  null inits => body
-  u.rest.first := inits
-  u.rest.rest.first := body
-  -- Avoid initialization forms that may not be floatable.
-  not(and/[isFloatableVMForm init for [.,init] in inits]) => u
-  -- Identity function.
-  inits is [[=body,init]] => init
-  -- Handle only most trivial operators.
-  body isnt [op,:args] => u
-  -- Well, with case-patterns, it is beneficial to try a bit harder
-  -- with conditional forms.
-  op is '%when =>
-    continue := true      -- shall be continue let-inlining?
-    -- Since we do a single pass, we can't reuse the inits list
-    -- as we may find later that we can't really inline into
-    -- all forms due to excessive conversatism.  So we build a 
-    -- substitution list ahead of time.
-    substPairs := [[var,:init] for [var,init] in inits]
-    for clauses in tails args while continue repeat
-      clause := first clauses
-      -- we do not attempt more complicated clauses yet.
-      clause isnt [test,stmt] => continue := false
-      -- Stop inlining at least one test is not simple
-      not isSimpleVMForm test => continue := false
-      clause.first := applySubst(substPairs,test)
-      isSimpleVMForm stmt =>
-        clause.rest.first := applySubst(substPairs,stmt)
-      continue := false
-    continue => body
-    u
-  not symbolMember?(op,$simpleVMoperators) => u
-  not(and/[atomic? arg for arg in args]) => u
-  -- Inline only if all parameters are used.  Get cute later.
-  not(and/[symbolMember?(x,args) for [x,.] in inits]) => u
-  -- Munge inits into list of dotted-pairs.  Lovely Lisp.
-  for defs in tails inits repeat
-    def := first defs
-    def isnt [.,:.] => systemErrorHere ["optLET",def] -- cannot happen
-    def.rest := second def
-  applySubst(inits,body)
-
 optBind form ==
   form isnt ['%bind,inits,.] => form           -- accept only simple bodies
   ok := true
@@ -862,7 +811,6 @@ optIquo(x is ['%iquo,a,b]) ==
  
 for x in '((%call         optCall) _
            (SEQ          optSEQ)_
-           (LET          optLET)_
            (%bind        optBind)_
            (%try         optTry)_
            (%not         optNot)_

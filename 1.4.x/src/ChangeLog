@@ -1,3 +1,29 @@
+2011-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (isFunctor): Noe recognize Mapping as a functor.
+	* interp/g-opt.boot (doInlineCall): Tidy one more time.
+	($VMsideEffectFreeOperators): Move %aplly to $simpleVMoperators.
+	(optLET): Remove as unused.
+	* interp/lisp-backend.boot (expandApply): New.  Register as
+	expander for %apply forms.
+	* interp/define.boot (getXmode): New.
+	(displayMissingFunctions): Use it instead of getmode.
+	(compDefineCapsuleFunction): Likewise.
+	(addDomain): Likewise.
+	(getSignature): Likewise.
+	(compile): Likewise.
+	(compJoin): Likewise.
+	* interp/compiler.boot (comp3): Likewise.
+	(compWithMappingMode): Likewise.
+	(applyMapping): Generate %apply form.
+	(compApplication): Likewise.
+	(autoCoerceByModemap): Likewise.
+	(extractCodeAndConstructTriple): Handle %apply forms.
+	(setqSingle): For domain variables, put corresponding macro forms
+	in the environment.
+	* algebra/ore.spad.pamphlet (Automorphism): Define Rep as a constant.
+	Adjust; include explicit uses of rep and per.
+
 2011-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Remove IndexedList.

@@ -734,9 +734,7 @@ isFunctor x ==
     builtinFunctorName? op => true
     getConstructorKindFromDB op in '(domain package)
   u := get(op,'isFunctor,$CategoryFrame) => u
-  op in '(SubDomain Union Record Enumeration) => true
-     --FIXME: above should use builtinFunctionName?.  Change when
-     --FIXME: Mapping acquire first class functorship.
+  builtinFunctorName? op => true
   kind := getConstructorKindFromDB op
   kind = nil or kind = 'category => false
   updateCategoryFrameForConstructor op
