@@ -321,7 +321,7 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
     vec := ['%vector,:reverse! vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
-  ["CONS",fname,vec]
+  ['%pair,fname,vec]
 
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
@@ -350,7 +350,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
     [fn,m,oldE]
   u is ['%apply,op,:.] => [op,m,oldE]
   [op,:.,env] := u
-  [["CONS",["function",op],env],m,oldE]
+  [['%pair,['%function,op],env],m,oldE]
 
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true

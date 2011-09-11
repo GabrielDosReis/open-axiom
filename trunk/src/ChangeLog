@@ -1,5 +1,13 @@
 2011-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (finishLambdaExpression): Tidy.
+	(extractCodeAndConstructTriple): Likewise.
+	* interp/g-opt.boot (optCall): Likewise.
+	($VMsideEffectFreeOperators): Include %function
+	* interp/lisp-backend.boot: Translate %function.
+
+2011-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (isFunctor): Noe recognize Mapping as a functor.
 	* interp/g-opt.boot (doInlineCall): Tidy one more time.
 	($VMsideEffectFreeOperators): Move %aplly to $simpleVMoperators.
