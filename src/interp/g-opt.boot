@@ -305,6 +305,10 @@ optCall (x is ['%call,:u]) ==
     x.first := 'SPADCALL
     x.rest := [:a,name]
     x
+  fn is ['%pair,['%function,op],env] =>
+    x.first := op
+    x.rest := [:a,env]
+    x
   fn is [q,R,n] and q in '(ELT CONST) =>
     q is 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
@@ -418,7 +422,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(SPADfirst ASH FLOAT FLOAT_-SIGN
+  '(SPADfirst ASH FLOAT FLOAT_-SIGN %function
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
