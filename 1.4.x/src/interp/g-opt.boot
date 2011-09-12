@@ -584,7 +584,9 @@ optTry form ==
 
 optList form ==
   form is ['%list] => '%nil
-  form
+  literalElts := [(x is ['QUOTE,y] => y; leave "failed") for x in form.args]
+  literalElts is "failed" => form
+  quoteForm literalElts
 
 optCollectVector form ==
   [.,eltType,:iters,body] := form
