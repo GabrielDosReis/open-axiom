@@ -726,22 +726,6 @@ SPADFILES= \
  ${OUTSRC}/zerodim.spad
 
 
-ALDORFILES= \
-	axtimer.as \
-	ffrac.as \
-	herm.as \
-	interval.as \
-	invnode.as \
-	invrender.as \
-	invtypes.as \
-	invutils.as \
-	iviews.as \
-	ndftip.as \
-	nepip.as \
-	noptip.as nqip.as \
-	nrc.as nsfip.as 
-
-
 TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
 
 

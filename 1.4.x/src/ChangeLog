@@ -1,5 +1,23 @@
 2011-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/axtimer.as.pamphlet: Remove.
+	* algebra/ffrac.as.pamphlet: Likewise.
+	* algebra/herm.as.pamphlet: Likewise.
+	* algebra/interval.as.pamphlet: Likewise.
+	* algebra/invnode.as.pamphlet: Likewise.
+	* algebra/invrender.as.pamphlet: Likewise.
+	* algebra/invtypes.as.pamphlet: Likewise.
+	* algebra/invutils.as.pamphlet: Likewise.
+	* algebra/iviews.as.pamphlet: Likewise.
+	* algebra/ndftip.as.pamphlet: Likewise.
+	* algebra/nepip.as.pamphlet: Likewise.
+	* algebra/noptip.as.pamphlet: Likewise.
+	* algebra/nqip.as.pamphlet: Likewise.
+	* algebra/nrc.as.pamphlet: Likewise.
+	* algebra/nsfip.as.pamphlet: Likewise.
+
+2011-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/alql.spad.pamphlet (IndexCard): Now satisfies
 	CoercibleFrom String.  Remove explicit coerce export.
 	* algebra/carten.spad.pamphlet (CartesianTensor): Remove explicit
