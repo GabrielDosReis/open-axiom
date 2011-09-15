@@ -30,9 +30,8 @@ InnerAlgebraicNumber(): Exports == Implementation where
                    LinearlyExplicitRingOver Z, RealConstant,
                    LinearlyExplicitRingOver Fraction Z,
                    CharacteristicZero,
-                   ConvertibleTo Complex Float, DifferentialRing) with
-    coerce : P -> %
-      ++ coerce(p) returns p viewed as an algebraic number.
+                   ConvertibleTo Complex Float, DifferentialRing,
+                   CoercibleFrom P) with
     numer  : % -> P
       ++ numer(f) returns the numerator of f viewed as a
       ++ polynomial in the kernels over Z.
@@ -164,9 +163,8 @@ AlgebraicNumber(): Exports == Implementation where
                    LinearlyExplicitRingOver Z, RealConstant,
                    LinearlyExplicitRingOver Fraction Z,
                    CharacteristicZero,
-                   ConvertibleTo Complex Float, DifferentialRing) with
-    coerce : P -> %
-      ++ coerce(p) returns p viewed as an algebraic number.
+                   ConvertibleTo Complex Float, DifferentialRing,
+                   CoercibleFrom P) with
     numer  : % -> P
       ++ numer(f) returns the numerator of f viewed as a
       ++ polynomial in the kernels over Z.

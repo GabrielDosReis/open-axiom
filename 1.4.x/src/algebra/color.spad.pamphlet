@@ -164,7 +164,7 @@ Palette(): Exports == Implementation where
   C      ==> Color
   SHADE  ==> ["Dark","Dim","Bright","Pastel","Light"]
 
-  Exports ==> SetCategory with
+  Exports ==> Join(SetCategory,CoercibleFrom C) with
     dark   : C  -> %
       ++ dark(c) sets the shade of the indicated hue of c to it's lowest value.
     dim    : C  -> %
@@ -179,9 +179,6 @@ Palette(): Exports == Implementation where
       ++ hue(p) returns the hue field of the indicated palette p.
     shade  : %  -> I
       ++ shade(p) returns the shade index of the indicated palette p.
-    coerce : C  -> %
-      ++ coerce(c) sets the average shade for the palette to that of the 
-      ++ indicated color c.
  
   Implementation ==> add
     import I

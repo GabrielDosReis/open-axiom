@@ -1,3 +1,16 @@
+2011-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/alql.spad.pamphlet (IndexCard): Now satisfies
+	CoercibleFrom String.  Remove explicit coerce export.
+	* algebra/carten.spad.pamphlet (CartesianTensor): Remove explicit
+	coerce export.  Add satisfaction of CoercibleFrom appropriate
+	domains.
+	* algebra/color.spad.pamphlet (Palette): Relace explicit coerce
+	export with CoercibleTo %.
+	* algebra/constant.spad.pamphlet (InnerAlgebraicNumber): Likewise.
+	* algebra/dpolcat.spad.pamphlet (DifferentialVariableCategory):
+	Likewise. 
+
 2011-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/Makefile.in (libOpenAxiom_HEADERS): Include vm.H.

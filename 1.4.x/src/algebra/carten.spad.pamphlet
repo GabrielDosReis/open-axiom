@@ -131,20 +131,9 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
     R: CommutativeRing
 
     Exports ==> Join(GradedAlgebra(R, NNI), GradedModule(I, NNI),_
-                  Eltable(I,R)) with
-
-        coerce: DP(dim, R) -> %
-            ++ coerce(v) views a vector as a rank 1 tensor.
-        coerce: SM(dim, R)  -> %
-            ++ coerce(m) views a matrix as a rank 2 tensor.
-
-        coerce: List R -> %
-            ++ coerce([r_1,...,r_dim]) allows tensors to be constructed
-            ++ using lists.
-
-        coerce: List % -> %
-            ++ coerce([t_1,...,t_dim]) allows tensors to be constructed
-            ++ using lists.
+                  Eltable(I,R),CoercibleFrom DP(dim,R),_
+                  CoercibleFrom SM(dim,R),CoercibleFrom List R,_
+                  CoercibleFrom List %) with
 
         rank: % -> NNI
             ++ rank(t) returns the tensorial rank of t (that is, the

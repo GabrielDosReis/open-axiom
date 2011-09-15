@@ -41,7 +41,7 @@ DataList(S:OrderedSet) : Exports == Implementation where
 ++ This domain implements a container of information
 ++ about the AXIOM library
 IndexCard() : Exports == Implementation where
-  Exports == OrderedSet with
+  Exports == Join(OrderedSet,CoercibleFrom String) with
     elt: (%,Symbol) -> String
       ++ elt(ic,s) selects a particular field from \axiom{ic}.  Valid fields
       ++ are \axiom{name, nargs, exposed, type, abbreviation, kind, origin,
@@ -50,10 +50,6 @@ IndexCard() : Exports == Implementation where
       ++ display(ic) prints a summary of the information contained in \axiom{ic}.
     fullDisplay: % -> Void
       ++ fullDisplay(ic) prints all of the information contained in \axiom{ic}.
-    coerce: String -> %
-      ++ coerce(s) converts \axiom{s} into an \axiom{IndexCard}.  Warning: if
-      ++ \axiom{s} is not of the right format then an error will occur when using
-      ++ it.
   Implementation == add
     macro I == Integer
     Rep == String
