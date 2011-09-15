@@ -1,42 +1,49 @@
-#Axiom NSIS Install Script
-#Written By: Dan Martens dan_martens@lycos.com
-#Updated By: Bill Page  bill.page1@sympatico.ca
-#Updated By: Alfredo Portes alfredo.portes@gmail.com
+#----------------------------------------------------
+# OpenAxiom NSI Install Script
+#
+# Written By: Dan Martens dan_martens@lycos.com
+# Updated By: Bill Page  bill.page1@sympatico.ca
+# Updated By: Alfredo Portes alfredo.portes@gmail.com
+#----------------------------------------------------
 
-;--------------------------------
-;Include Modern UI
-;--------------------------------
-  !include "MUI.nsh"
-  !include "StrFunc.nsh"
-  !include "WinMessages.nsh"
+!include "MUI.nsh"
+!include "StrFunc.nsh"
+!include "WinMessages.nsh"
 
-;--------------------------------
-;Axiom Variables
-;--------------------------------
-  Var AXIOM_TEMP
-  Var STARTMENU_FOLDER
-  Var AXIOMVAR
-  ${StrRep}
+;-----------------
+; Define Variables
+;-----------------
 
-;--------------------------------
-; Declare used functions
-;--------------------------------
+!define APPNAME "OpenAxiom"
+!define BUILD_VERSION "1.4.1"
+!define BUILD_DIRECTORY "lib\open-axiom\i686-pc-mingw32\${BUILD_VERSION}"
+!define APPNAMEANDVERSION "${APPNAME}-${BUILD_VERSION}"
+!define ICON "openaxiom.ico"
+!define BINARIES "bin"
+!define GCC "gcc"
+!define EXECUTABLE "bin\open-axiom.exe"
+!define LICENSE "copyright.txt"
+!define OUTFILE "open-axiom-${BUILD_VERSION}-windows-i386.exe"
+!define TEXMACS_PLUGINS_DIRECTORY "C:\Program Files\WinTeXmacs\TeXmacs\plugins"
 
-  !verbose 3
-  !ifdef ALL_USERS
-    !define WriteEnvStr_RegKey \
-     'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
-  !else
-    !define WriteEnvStr_RegKey 'HKCU "Environment"'
-  !endif
-  !verbose 4
+Var OpenAxiom_TEMP
+Var STARTMENU_FOLDER
 
-  ; Define your application name
-  !define APPNAME "OpenAxiom"
-  !define BUILD_VERSION "1.0.1"
-  !define APPNAMEANDVERSION "${APPNAME}-${BUILD_VERSION}"
+!verbose 3
 
- Function AddToPath
+!ifdef ALL_USERS
+  !define WriteEnvStr_RegKey \
+    'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+!else
+  !define WriteEnvStr_RegKey 'HKCU "Environment"'
+!endif
+
+!verbose 4
+
+${StrRep}
+Var OPENAXIOMVAR
+
+Function AddToPath
   Exch $0
   Push $1
   Push $2
@@ -100,7 +107,8 @@
     Pop $1
     Pop $0
 FunctionEnd
- Function un.RemoveFromPath
+
+Function un.RemoveFromPath
   Exch $0
   Push $1
   Push $2
@@ -182,7 +190,17 @@ FunctionEnd
     Pop $1
     Pop $0
 FunctionEnd
- Function WriteEnvStr
+
+#-----------------------------------------------
+# WriteEnvStr - Writes an environment variable
+# Note: Win9x systems requires reboot
+#
+# Example:
+#  Push "HOMEDIR"           # name
+#  Push "C:\New Home Dir\"  # value
+#  Call WriteEnvStr
+#-----------------------------------------------
+Function WriteEnvStr
   Exch $1 ; $1 has environment variable value
   Exch
   Exch $0 ; $0 has environment variable name
@@ -219,8 +237,7 @@ FunctionEnd
 #  Push "HOMEDIR"           # name
 #  Call un.DeleteEnvStr
 #---------------------------------------------------
-
- Function un.DeleteEnvStr
+Function un.DeleteEnvStr
   Exch $0 ; $0 now has the name of the variable
   Push $1
   Push $2
@@ -271,19 +288,6 @@ FunctionEnd
     Pop $0
 FunctionEnd
 
-###########################################
-#            Utility Functions            #
-###########################################
-
-; IsNT
-; no input
-; output, top of the stack = 1 if NT or 0 if not
-;
-; Usage:
-;   Call IsNT
-;   Pop $R0
-;  ($R0 at this point is 1 or 0)
-
 !macro IsNT un
 Function ${un}IsNT
   Push $0
@@ -303,19 +307,6 @@ FunctionEnd
 !macroend
 !insertmacro IsNT ""
 !insertmacro IsNT "un."
-
-; StrStr
-; input, top of stack = string to search for
-;        top of stack-1 = string to search in
-; output, top of stack (replaces with the portion of the string remaining)
-; modifies no other variables.
-;
-; Usage:
-;   Push "this is a long ass string"
-;   Push "ass"
-;   Call StrStr
-;   Pop $R0
-;  ($R0 at this point is "ass string")
 
 !macro StrStr un
 Function ${un}StrStr
@@ -346,143 +337,120 @@ done:
   Pop $R2
   Exch $R1
 FunctionEnd
+
 !macroend
 !insertmacro StrStr ""
 !insertmacro StrStr "un."
+
+InstType "Typical"
+Name "${APPNAME}"
+OutFile ${OUTFILE}
+
+;Default installation folder
+InstallDir "$PROGRAMFILES\${APPNAME}"
+
+;Get installation folder from registry if available
+InstallDirRegKey HKLM "Software\${APPNAME}" ""
+
+;Vista redirects $SMPROGRAMS to all users without this
+;RequestExecutionLevel admin
+
+!define MUI_ABORTWARNING
+;!define MUI_FINISHPAGE_RUN "$INSTDIR\${EXECUTABLE}" '--system="$INSTDIR\${BUILD_DIRECTORY}'
+;!define MUI_FINISHPAGE_LINK "Please donate to the Axiom Foundation"
+;!define MUI_FINISHPAGE_LINK_LOCATION "http://axiom-developer.org/public/donate.html"
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE ${LICENSE}
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
   
-;--------------------------------
-;General
-;--------------------------------
-
-  InstType "Typical"
-
-  Name "${APPNAMEANDVERSION}"
-  OutFile "OpenAxiom-${BUILD_VERSION}.exe"
-
-  ;Default installation folder
-  InstallDir "$PROGRAMFILES\${APPNAME}"
-
-  ;Get installation folder from registry if available
-  InstallDirRegKey HKLM "Software\${APPNAME}" ""
-
-  ;Vista redirects $SMPROGRAMS to all users without this
-  RequestExecutionLevel admin
-
-;--------------------------------
-;Interface Settings
-;--------------------------------
-
-  ;!define AXIOM_ABORTWARNING
-
-;--------------------------------
-;Pages
-;--------------------------------
-
-  !define MUI_ABORTWARNING
-  !define MUI_FINISHPAGE_RUN "$INSTDIR\bin\AXIOMsys.exe"
-;  !define MUI_FINISHPAGE_LINK "Please donate to the Axiom Foundation"
-;  !define MUI_FINISHPAGE_LINK_LOCATION "http://axiom-developer.org/public/donate.html"
-  !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "OpenAxiom\License.txt"
-  !insertmacro MUI_PAGE_COMPONENTS
-  !insertmacro MUI_PAGE_DIRECTORY
+;Start Menu Folder Page Configuration
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${APPNAME}"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   
-  ;Start Menu Folder Page Configuration
-  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${APPNAME}"
-  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
-  
-  !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
-  
-  !insertmacro MUI_PAGE_INSTFILES
-  !insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
+!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "French"
+!insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Russian"
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "TradChinese"
+!insertmacro MUI_RESERVEFILE_LANGDLL
 
-  !insertmacro MUI_UNPAGE_WELCOME
-  !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_INSTFILES
-  !insertmacro MUI_UNPAGE_FINISH
-
-;--------------------------------
-;Languages
-;Set languages (first is default language)
-;--------------------------------
-
-  !insertmacro MUI_LANGUAGE "English"
-  !insertmacro MUI_LANGUAGE "French"
-  !insertmacro MUI_LANGUAGE "German"
-  !insertmacro MUI_LANGUAGE "Russian"
-  !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "TradChinese"
-  !insertmacro MUI_RESERVEFILE_LANGDLL
-
-;--------------------------------
-;Installer Section
-;--------------------------------
-
- Section "!OpenAxiom Core" Section1
+Section "!OpenAxiom Core" Section1
 
   SectionIn 1 2 RO
         
   ; Set Section properties
   SetOverwrite on
 
+  ; Install for all users for now.
+  ; We should ask the user.
+  SetShellVarContext all
+
   SetOutPath "$INSTDIR"
-  
-  File /r openaxiom\*
+  File /r ${APPNAME}\*.*
+  File ${ICON}
+
+  SetOutPath "$INSTDIR\lib\open-axiom\i686-pc-mingw32\${BUILD_VERSION}\bin"
+  File /nonfatal /r ${BINARIES}\*.*
+
+  ;SetOutPath "$INSTDIR\lib"
+  ;File /r ${GCC}
 
   ReadEnvStr $0 "USERPROFILE" ;
 
   ;Store installation folder
-  WriteRegStr HKCU "Software\OpenAxiom" "" $INSTDIR
+  WriteRegStr HKCU "Software\${APPNAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     
-    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-    
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\${APPNAME}.lnk" "$INSTDIR\bin\AXIOMsys.exe" "" "$INSTDIR\axiom.ico"
+    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"  
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\${APPNAME}.lnk" "$INSTDIR\bin\open-axiom.exe" '--system="$INSTDIR\${BUILD_DIRECTORY}"' "$INSTDIR\${ICON}"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\${APPNAME} (Interpreter).lnk" "$INSTDIR\bin\open-axiom.exe" '--no-gui --system="$INSTDIR\${BUILD_DIRECTORY}"' "$INSTDIR\${ICON}"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-    CreateShortCut "$DESKTOP\OpenAxiom.lnk" "$INSTDIR\bin\AXIOMsys.exe" "" "$INSTDIR\axiom.ico"
-
+    CreateShortCut "$DESKTOP\OpenAxiom.lnk" "$INSTDIR\bin\open-axiom.exe" '--system="$INSTDIR\${BUILD_DIRECTORY}"' "$INSTDIR\${ICON}"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenAxiom Website.lnk" "http://www.open-axiom.org" "" "$INSTDIR\${ICON}"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenAxiom Bug Reports.lnk" "http://www.open-axiom.org/bugs.html" "" "$INSTDIR\${ICON}"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Online Axiom Book.lnk" "http://axiom-wiki.newsynthesis.org/uploads/contents.xhtml" "" "$INSTDIR\${ICON}"
+  
   !insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
 
-Section /o "Documentation" Section2
-        
-  SetOverwrite on
-  SetOutPath "$INSTDIR"
-  
-  File /r doc
+#Section /o "JyperDoc" Section2
+#        
+#  SetOutPath "$INSTDIR\bin"
+#  SetOverwrite on 
+#
+#  ;Shortcuts
+#  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\JyperDoc.lnk" "$INSTDIR\bin\jyperdoc.bat" "$INSTDIR\${ICON}"
+#  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\JyperDoc Website.lnk" "http://code.google.com/p/jyperdoc/" "" "$INSTDIR\${ICON}"
+#
+#  SetOutPath "$INSTDIR\${BUILD_DIRECTORY}"
+#  SetOverwrite on 
+#
+#  File /r jyperdoc
+#
+#SectionEnd
 
-  ;Shortcuts
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Axiom Tutorial.lnk" "$INSTDIR\doc\tutorial.pdf"
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Axiom Book.lnk" "$INSTDIR\doc\axiom-book2.pdf"
+Section -FinishSection
 
-SectionEnd
-; Section /o "Source Code" Section3
-
-  ; Set Section properties
-;  SetOverwrite on
-
-  ; Set Section Files and Shortcuts
-;  SetOutPath "$INSTDIR"
-  
-  ;File /r src
-
-;SectionEnd
- Section -FinishSection
-
-  ${StrRep} $AXIOMVAR "$INSTDIR" "\" "/"
-  Push "AXIOM"
-  Push "$AXIOMVAR"
+  ${StrRep} $OPENAXIOMVAR "$INSTDIR\${BUILD_DIRECTORY}" "\" "/"
+  Push "OPENAXIOM"
+  Push "$OPENAXIOMVAR"
   Call WriteEnvStr
 
-  ; in case of Start AXIOM from installer set AXIOM variable now
-  System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("AXIOM", "$AXIOMVAR").r0'
-  ReadEnvStr $0 "USERPROFILE" ;
   SetOutPath "$0\My Documents" # sets the 'START IN' parameter
   WriteRegStr HKLM "Software\${APPNAME}" "" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
@@ -491,10 +459,23 @@ SectionEnd
 
 SectionEnd
 
+;Section /o "TeXMacs Plugin"
+
+;  SetOutPath $INSTDIR
+;  SetOverwrite on
+
+;  File /r tm_openaxiom\openaxiom  
+
+;  SetOutPath "$OPENAXIOMVAR\bin"
+
+;  File /r tm_openaxiom\openaxiom\bin\tm_openaxiom.exe
+
+;SectionEnd
+
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${Section1} "The main program files."
-  !insertmacro MUI_DESCRIPTION_TEXT ${Section2} "Program Documentation"
-;  !insertmacro MUI_DESCRIPTION_TEXT ${Section3} "Source code"
+  !insertmacro MUI_DESCRIPTION_TEXT ${Section1} "OpenAxiom Core"
+  !insertmacro MUI_DESCRIPTION_TEXT ${Section2} "TeXMacs Plugin"
+  ;!insertmacro MUI_DESCRIPTION_TEXT ${Section3} "Experimental browser frontend for OpenAxiom"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section -AddtoPath
@@ -502,42 +483,52 @@ Section -AddtoPath
   Call AddToPath
 SectionEnd
 
-;--------------------------------
-;Uninstaller Section
-;--------------------------------
+;-----------------
+; Unistall Section
+;-----------------
 
- Section "Uninstall"
+Section "Uninstall"
 
+  ; Install for all users for now.
+  ; We should ask the user.
+  SetShellVarContext all
+  
   Delete "$INSTDIR\Uninstall.exe"
   RMDir /r $INSTDIR
-  !insertmacro MUI_STARTMENU_GETFOLDER Application $AXIOM_TEMP
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $OpenAxiom_TEMP
     
-  Delete "$SMPROGRAMS\$AXIOM_TEMP\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$AXIOM_TEMP\${APPNAME}.lnk"
-  Delete "$DESKTOP\${APPNAME}.lnk"
-  Delete "$SMPROGRAMS\$AXIOM_TEMP\Axiom Tutorial.lnk"
-  Delete "$SMPROGRAMS\$AXIOM_TEMP\Axiom Book.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\${APPNAME}.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\${APPNAME} (Interpreter).lnk"
+  Delete "$DESKTOP\OpenAxiom.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\OpenAxiom Website.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\OpenAxiom Bug Reports.lnk"
+  Delete "$SMPROGRAMS\$OpenAxiom_TEMP\Online Axiom Book.lnk"
+
+  ;Delete "$SMPROGRAMS\$OpenAxiom_TEMP\JyperDoc.lnk"
+  ;Delete "$SMPROGRAMS\$OpenAxiom_TEMP\JyperDoc Website.lnk"
   
-  ;Delete empty start menu parent diretories
-  StrCpy $AXIOM_TEMP "$SMPROGRAMS\$AXIOM_TEMP"
+  ;Delete empty start menu parent directories
+  StrCpy $OpenAxiom_TEMP "$SMPROGRAMS\$OpenAxiom_TEMP"
  
   startMenuDeleteLoop:
-        ClearErrors
-    RMDir $AXIOM_TEMP
-    GetFullPathName $AXIOM_TEMP "$AXIOM_TEMP\.."
+    ClearErrors
+    RMDir $OpenAxiom_TEMP
+    GetFullPathName $OpenAxiom_TEMP "$OpenAxiom_TEMP\.."
     
     IfErrors startMenuDeleteLoopDone
   
-    StrCmp $AXIOM_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
+    StrCmp $OpenAxiom_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
   startMenuDeleteLoopDone:
 
   DeleteRegKey /ifempty HKCU "Software\${APPNAME}"
   Push "$INSTDIR\bin"
         
   Call un.RemoveFromPath
+
   # remove the variable
-  Push "AXIOM"
+  Push "OPENAXIOM"
   Call un.DeleteEnvStr
 
 SectionEnd
- 
+
