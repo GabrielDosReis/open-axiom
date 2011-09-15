@@ -89,9 +89,6 @@ DifferentialVariableCategory(S:OrderedSet): Category ==
     weight        : $ -> NonNegativeInteger
        ++ weight(v) returns the weight of the derivative v.
        -- Example: weight(v)
-    coerce        : S  -> $
-       ++ coerce(s) returns s, viewed as the zero-th order derivative of s.
-       -- Example: coerce('s); differentiate(%,5)
  add
     import NumberFormats
     coerce (s:S):$ == makeVariable(s, 0)
