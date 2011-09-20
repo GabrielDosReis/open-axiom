@@ -1,3 +1,35 @@
+2011-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/asp.spad.pamphlet: Remove.
+	* algebra/c02.spad.pamphlet: Likewise.
+	* algebra/c05.spad.pamphlet: Likewise.
+	* algebra/c06.spad.pamphlet: Likewise.
+	* algebra/d01.spad.pamphlet: Likewise.
+	* algebra/d02.spad.pamphlet: Likewise.
+	* algebra/d03.spad.pamphlet: Likewise.
+	* algebra/e01.spad.pamphlet: Likewise.
+	* algebra/e02.spad.pamphlet: Likewise.
+	* algebra/e04.spad.pamphlet: Likewise.
+	* algebra/f01.spad.pamphlet: Likewise.
+	* algebra/f02.spad.pamphlet: Likewise.
+	* algebra/f04.spad.pamphlet: Likewise.
+	* algebra/f07.spad.pamphlet: Likewise.
+	* algebra/s.spad.pamphlet: Likewise.
+	* algebra/d01Package.spad.pamphlet: Likewise.
+	* algebra/d02Package.spad.pamphlet: Likewise.
+	* algebra/d03Package.spad.pamphlet: Likewise.
+	* algebra/e04Package.spad.pamphlet: Likewise.
+	* algebra/d01agents.spad.pamphlet: Likewise.
+	* algebra/d01routine.spad.pamphlet: Likewise.
+	* algebra/d01transform.spad.pamphlet: Likewise.
+	* algebra/d01weights.spad.pamphlet: Likewise.
+	* algebra/d02agents.spad.pamphlet: Likewise.
+	* algebra/d02routine.spad.pamphlet: Likewise.
+	* algebra/d03agents.spad.pamphlet: Likewise.
+	* algebra/d03routine.spad.pamphlet: Likewise.
+	* algebra/e04agents.spad.pamphlet: Likewise.
+	* algebra/e04routine.spad.pamphlet: Likewise.
+
 2011-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/axtimer.as.pamphlet: Remove.
