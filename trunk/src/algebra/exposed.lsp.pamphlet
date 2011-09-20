@@ -49,7 +49,7 @@
 (in-package "BOOT")
 (defparameter |$globalExposureGroupAlist|
 '(
-;;define the groups |basic| |naglink| |anna| |categories| |Hidden| |defaults|
+;;define the groups |basic| |naglink| |categories| |Hidden| |defaults|
 (|basic| 
   (|AddAst| . ADDAST)
   (|AlgebraicManipulations| . ALGMANIP)
@@ -452,51 +452,11 @@
   (|WuWenTsunTriangularSet| . WUTSET)
 )
 (|naglink|
-  (|FortranCode| . FC)
-  (|FortranCodePackage1| . FCPAK1)
-  (|FortranExpression| . FEXPR)
-  (|FortranMachineTypeCategory| . FMTC)
-  (|FortranMatrixCategory| . FMC)
-  (|FortranMatrixFunctionCategory| . FMFUN)
-  (|FortranOutputStackPackage| . FOP)
-  (|FortranPackage| . FORT)
-  (|FortranProgramCategory| . FORTCAT)
-  (|FortranProgram| . FORTRAN)
-  (|FortranFunctionCategory| . FORTFN)
   (|FortranScalarType| . FST)
   (|FortranType| . FT)
-  (|FortranTemplate| . FTEM)
-  (|FortranVectorFunctionCategory| . FVFUN)
-  (|FortranVectorCategory| . FVC)
-  (|MachineComplex| . MCMPLX)
-  (|MachineFloat| . MFLOAT)
-  (|MachineInteger| . MINT)
-  (|MultiVariableCalculusFunctions| . MCALCFN)
-  (|PackedHermitianSequence| . PACKED)
-  (|Result| . RESULT)
-  (|SimpleFortranProgram| . SFORT)
-  (|Switch| . SWITCH)
   (|SymbolTable| . SYMTAB)
-  (|TemplateUtilities| . TEMUTL)
   (|TheSymbolTable| . SYMS)
-  (|ThreeDimensionalMatrix| . M3D))
-(|anna|
-  (|AttributeButtons| . ATTRBUT)
-  (|BasicFunctions| . BFUNCT)
-  (|ExpertSystemContinuityPackage| . ESCONT)
-  (|ExpertSystemContinuityPackage1| . ESCONT1)
-  (|ExpertSystemToolsPackage| . ESTOOLS)
-  (|ExpertSystemToolsPackage1| . ESTOOLS1)
-  (|ExpertSystemToolsPackage2| . ESTOOLS2)
-  (|NumericalIntegrationCategory| . NUMINT)
-  (|NumericalIntegrationProblem| . NIPROB)
-  (|NumericalODEProblem| . ODEPROB)
-  (|NumericalOptimizationCategory| . OPTCAT)
-  (|NumericalOptimizationProblem| . OPTPROB)
-  (|NumericalPDEProblem| . PDEPROB)
-  (|OrdinaryDifferentialEquationsSolverCategory| . ODECAT)
-  (|PartialDifferentialEquationsSolverCategory| . PDECAT)
-  (|RoutinesTable| . ROUTINE))
+)
 (|categories| 
   (|AbelianGroup| . ABELGRP)
   (|AbelianMonoid| . ABELMON)
@@ -1243,7 +1203,6 @@
 '|basic| 
 '|categories| 
 '|naglink| 
-'|anna|
 ) 
 (LIST 
 ;;These constructors will be explicitly exposed
