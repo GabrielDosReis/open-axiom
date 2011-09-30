@@ -48,6 +48,10 @@ $currentModuleName := nil
 ++ Stack of foreign definitions to cope with CLisp's odd FFI interface.
 $foreignsDefsForCLisp := []
 
+reallyPrettyPrint(x,st == _*STANDARD_-OUTPUT_*) ==
+  prettyPrint(x,st)
+  writeNewline st
+
 genModuleFinalization(stream) ==
   %hasFeature KEYWORD::CLISP =>
     $foreignsDefsForCLisp = nil => nil
@@ -58,11 +62,11 @@ genModuleFinalization(stream) ==
         ["MAPC",["FUNCTION", "FMAKUNBOUND"],
           quote [second d for d in $foreignsDefsForCLisp]],
           :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]
-    REALLYPRETTYPRINT(init,stream)
+    reallyPrettyPrint(init,stream)
   nil
 
 genOptimizeOptions stream ==
-  REALLYPRETTYPRINT
+  reallyPrettyPrint
     (["PROCLAIM",quote ["OPTIMIZE",:$LispOptimizeOptions]],stream)
 
 AxiomCore::%sysInit() ==
@@ -170,7 +174,7 @@ evalBootFile fn ==
    b := namespace .
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
-   outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
+   outfn := strconc(shoeRemovebootIfNec fn,'".",'"lisp")
    try
      a := inputTextFile infn
      shoeClLines(a,infn,[],outfn)
@@ -337,19 +341,14 @@ shoeFileTrees(s,st)==
     if a is ["+LINE",:.]
     then shoeFileLine(second a,st)
     else 
-      REALLYPRETTYPRINT(a,st)
+      reallyPrettyPrint(a,st)
       TERPRI st
     s:= rest s
- 
- 
-shoePPtoFile(x, stream) ==
-  SHOENOTPRETTYPRINT(x, stream)
-  x
  
 shoeConsoleTrees s ==
   while not bStreamPackageNull s repeat
     fn:=stripm(first s,namespace .,namespace BOOTTRAN)
-    REALLYPRETTYPRINT fn
+    reallyPrettyPrint fn
     s:= rest s
  
 shoeAddComment l==  
@@ -474,18 +473,16 @@ translateToplevel(b,export?) ==
     otherwise =>
       [translateToplevelExpression b]
 
-
-shoeAddbootIfNec s == 
-  shoeAddStringIfNec('".boot",s)
+shoeAddbootIfNec s ==
+  ext := '".boot"
+  n1 := #ext - 1
+  n2 := #s - n1 - 1
+  and/[stringChar(ext,k) = stringChar(s,n2 + k) for k in 0..n1] => s
+  strconc(s,ext)
  
 shoeRemovebootIfNec s == 
   shoeRemoveStringIfNec('".boot",s)
 
-shoeAddStringIfNec(str,s)==
-  a:=STRPOS(str,s,0,nil)
-  a=nil => strconc(s,str)
-  s
- 
 shoeRemoveStringIfNec(str,s)==
   n := SEARCH(str,s,KEYWORD::FROM_-END,true)
   n = nil => s
@@ -664,7 +661,7 @@ shoePCompile  fn==
  
 shoePCompileTrees s==
   while not bStreamNull s repeat
-    REALLYPRETTYPRINT shoePCompile first s
+    reallyPrettyPrint shoePCompile first s
     s := rest s
  
 bStreamPackageNull s==

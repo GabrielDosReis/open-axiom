@@ -44,7 +44,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, applySubst, applySubst!, applySubstNQ,
-  remove,removeSymbol,atomic?,finishLine) where
+  remove,removeSymbol,atomic?,finishLine,subStringMatch?) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -55,6 +55,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
     remove: (%List %Thing, %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
     finishLine: %Thing -> %Void
+    firstNonblankPosition: (%String,%Short) -> %Maybe %Short
+    firstBlankPosition: (%String,%Short) -> %Maybe %Short
 
 --%
 
@@ -275,6 +277,13 @@ charPosition(c,s,k) ==
     k >= n => return nil
     stringChar(s,k) = c => return k
     k := k + 1
+
+firstNonblankPosition(s,k) ==
+  or/[i for i in k..#s - 1 | stringChar(s,i) ~= char " "]
+
+firstBlankPosition(s,k) ==
+  or/[i for i in k..#s - 1 | stringChar(s,i) = char " "]
+    
 
 --% I/O
 

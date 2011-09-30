@@ -1,5 +1,28 @@
 2011-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (firstNonblankPosition): New.
+	(firstBlankPosition): Likewis.
+	* boot/translator.boot (reallyPrettyPrint): New.
+	(genOptimizeOptions): Use it.
+	(evalBootFile): Tidy.
+	(shoePPtoFile): Remove as deadcode.
+	(shoeAddbootIfNec): Rewrite.
+	(shoeAddStringIfNec): Remove.
+	* boot/scanner.boot (shoeNextLine): Use firstNonblankPosition.
+	(shoeEsc): Likewise.
+	(shoePossFloat): Likewise.
+	* boot/initial-env.lisp ($IEEE): Remove.
+	(*LISP-BIN-FILETYPE*): Likewise.
+	(*LISP-SOURCE-FILETYPE*): Likewise.
+	(SHOEPRETTYPRINT1): Likewise,
+	(REALLYPRETTYPRINT): Likewise.
+	(SHOENOPRETTYPRINT): Likewise.
+	(STRPOS): Likewise.
+	(STRPOSL): Likewise.
+	(shoeReadLisp): Likewise.
+
+2011-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-data.boot (lefts): Iterate directly over table.
 	(mkUsersHashTable): Likewise.
 	(mkDependentsHashTable): Likewise.

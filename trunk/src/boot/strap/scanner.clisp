@@ -41,7 +41,8 @@
     (RETURN
      (COND ((|bStreamNull| |s|) NIL)
            (T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|)) (SETQ |$r| (CDR |s|))
-            (SETQ |$ln| (CAR |$f|)) (SETQ |$n| (STRPOSL " " |$ln| 0 T))
+            (SETQ |$ln| (CAR |$f|))
+            (SETQ |$n| (|firstNonblankPosition| |$ln| 0))
             (SETQ |$sz| (LENGTH |$ln|))
             (COND ((NULL |$n|) T)
                   ((CHAR= (SCHAR |$ln| |$n|) |shoeTAB|)
@@ -216,7 +217,7 @@
          (LOOP (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |$r|))))
          (|shoeEsc|) NIL)
         (T NIL)))
-      (T (SETQ |n1| (STRPOSL " " |$ln| |$n| T))
+      (T (SETQ |n1| (|firstNonblankPosition| |$ln| |$n|))
        (COND
         ((NULL |n1|) (|shoeNextLine| |$r|)
          (LOOP (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |$r|))))
@@ -296,7 +297,7 @@
     (RETURN
      (PROGN
       (SETQ |n| |$n|)
-      (SETQ |$n| (STRPOSL " " |$ln| |$n| T))
+      (SETQ |$n| (|firstNonblankPosition| |$ln| |$n|))
       (SETQ |$floatok| T)
       (COND ((NULL |$n|) (|shoeLeafSpaces| 0) (SETQ |$n| (LENGTH |$ln|)))
             (T (|shoeLeafSpaces| (- |$n| |n|))))))))

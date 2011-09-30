@@ -219,9 +219,9 @@ shoeLisp?         s  == shoePrefix?('")lisp",        s)
 shoeLine?         s  == shoePrefix?('")line",        s)
  
 shoeBiteOff x ==
-  n :=STRPOSL('" ",x,0,true)
+  n := firstNonblankPosition(x,0)
   n = nil =>  false
-  n1 := STRPOSL ('" ",x,n,nil)
+  n1 := firstBlankPosittion(x,n)
   n1 = nil =>  [subString(x,n),'""]
   [subString(x,n,n1-n),subString(x,n1)]
  
