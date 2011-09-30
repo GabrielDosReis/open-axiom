@@ -44,11 +44,10 @@ buildWordTable u ==
   for s in u repeat
     key := charUpcase stringChar(s,0)
     tableValue(table,key) := [[s,:wordsOfString s],:tableValue(table,key)]
-  for key in HKEYS table repeat
+  for [key,:val] in entries table repeat
     tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, tableValue(table,key),function first),
-          function second)
+        listSort(function GLESSEQP,val,function first),function second)
   table
  
 writeFunctionTables(filemode) ==
@@ -66,8 +65,8 @@ writeFunctionTable(filemode,name,dicts) ==
   stream:= writeLib1(name,'DATABASE,filemode)
   if not $functionTable then
     $functionTable:= buildFunctionTable dicts
-  for key in HKEYS $functionTable repeat
-    rwrite(object2Identifier key,tableValue($functionTable,key),stream)
+  for [key,:val] in entries $functionTable repeat
+    rwrite(object2Identifier key,val,stream)
   RSHUT stream
   'done
  
@@ -200,8 +199,8 @@ bootSearch word ==
       pattern.0 ~= char "&" =>
         [x for [x,:.] in tableValue($functionTable,UPCASE pattern.0)|
           match?(pattern,COPY x)]
-      "append"/[[x for [x,:.] in tableValue($functionTable,k)| match?(pattern,COPY x)]
-                  for k in HKEYS $functionTable]
+      "append"/[[x for [x,:.] in v | match?(pattern,COPY x)]
+                  for [k,:v] in entries $functionTable]
     findApproximateWords(PNAME word,$functionTable)
   list
  

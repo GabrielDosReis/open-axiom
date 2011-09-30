@@ -43,17 +43,17 @@ hasCat(dom,cat) ==
     or constructorHasCategoryFromDB [dom.op,:cat.op]
 
 showCategoryTable con ==
-  [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
-     | symbolEq?(a,con) and (val := tableValue(_*HASCATEGORY_-HASH_*,key))]
+  [[b,:val] for [[a,:b],:val] in entries _*HASCATEGORY_-HASH_*
+     | symbolEq?(a,con) and val ~= nil]
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
   SETQ($ct,hashTable 'EQ)
-  for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
-    tableValue($ct,a) := [[b,:tableValue(_*HASCATEGORY_-HASH_*,key)],:tableValue($ct,a)]
-  for id in HKEYS $ct | null conList or symbolMember?(id,conList) repeat
+  for [[a,:b],:val] in entries _*HASCATEGORY_-HASH_* repeat
+    tableValue($ct,a) := [[b,:val],:tableValue($ct,a)]
+  for [id,:val] in entries $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
-    PRINT tableValue($ct,id)
+    PRINT val
 
 genCategoryTable() ==
   SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
@@ -75,14 +75,13 @@ genCategoryTable() ==
   -- compressHashTable _*HASCATEGORY_-HASH_*
 
 simpTempCategoryTable() ==
-  for id in HKEYS _*ANCESTORS_-HASH_* repeat
+  for [id,:.] in entries _*ANCESTORS_-HASH_* repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
       u.rest := simpHasPred b
 
 simpCategoryTable() == main where
   main() ==
-    for key in HKEYS _*HASCATEGORY_-HASH_* repeat
-      entry := tableValue(_*HASCATEGORY_-HASH_*,key)
+    for [key,:entry] in entries _*HASCATEGORY_-HASH_* repeat
       null entry => tableRemove!(_*HASCATEGORY_-HASH_*,key)
       change :=
         opOf entry isnt [.,:.] => simpHasPred entry
@@ -195,8 +194,7 @@ genTempCategoryTable() ==
   for con in allConstructors()  repeat
     getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
-  for id in HKEYS _*ANCESTORS_-HASH_* repeat
-    item := tableValue(_*ANCESTORS_-HASH_*, id) 
+  for [id,:item] in entries _*ANCESTORS_-HASH_* repeat
     for (u:=[.,:b]) in item repeat
       u.rest := simpCatPredicate simpBool b
     tableValue(_*ANCESTORS_-HASH_*,id) := listSort(function GLESSEQP,item)
@@ -416,7 +414,7 @@ compressHashTable ht ==
 -- compresses hash table ht, to give maximal sharing of cells
   sayBrightlyNT '"compressing hash table..."
   $found: local := hashTable 'EQUAL
-  for x in HKEYS ht repeat compressSexpr(tableValue(ht,x),nil,nil)
+  for [x,:y] in entries ht repeat compressSexpr(y,nil,nil)
   sayBrightly   "done"
   ht
 
@@ -466,7 +464,7 @@ updateCategoryTable(cname,kind) ==
 updateCategoryTableForCategory(cname) ==
   clearTempCategoryTable([[cname,'category]])
   addToCategoryTable(cname)
-  for id in HKEYS _*ANCESTORS_-HASH_* repeat
+  for [id,:.] in entries _*ANCESTORS_-HASH_* repeat
       for (u:=[.,:b]) in getConstructorAncestorsFromDB id repeat
         u.rest := simpCatPredicate simpBool b
 
@@ -486,7 +484,7 @@ clearCategoryTable1(key,val) ==
   nil
 
 clearTempCategoryTable(catNames) ==
-  for key in HKEYS(_*ANCESTORS_-HASH_*) repeat
+  for [key,:.] in entries _*ANCESTORS_-HASH_* repeat
     symbolMember?(key,catNames) => nil
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key

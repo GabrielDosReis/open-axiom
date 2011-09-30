@@ -47,15 +47,14 @@ buildWordTable u ==
     words := wordsOfString s
     key := charUpcase stringChar(s,0)
     tableValue(table,key) := [[s,:words],:tableValue(table,key)]
-  for key in HKEYS table repeat
+  for [key,:val] in entries table repeat
     tableValue(table,key) := 
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, tableValue(table,key),function first),
-          function second)
+        listSort(function GLESSEQP,val,function first),function second)
   table
 
 measureWordTable u ==
-  +/[+/[#entry for entry in tableValue(u,key)] for key in HKEYS u]
+  +/[+/[#entry for entry in item] for [key,:item] in entries u]
 
 removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
