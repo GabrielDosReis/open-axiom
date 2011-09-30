@@ -581,9 +581,41 @@
          (SETQ |bfVar#1| (CDR |bfVar#1|))))
       (LIST (|reverse!| |x|) (|reverse!| |y|))))))
 
+(DEFUN |bfTableIteratorBindingForm| (|keyval| |end?| |succ|)
+  (PROG (|k| |v| |val| |ISTMP#2| |key| |ISTMP#1|)
+    (RETURN
+     (COND
+      ((AND (CONSP |keyval|) (EQ (CAR |keyval|) 'CONS)
+            (PROGN
+             (SETQ |ISTMP#1| (CDR |keyval|))
+             (AND (CONSP |ISTMP#1|)
+                  (PROGN
+                   (SETQ |key| (CAR |ISTMP#1|))
+                   (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                   (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                        (PROGN (SETQ |val| (CAR |ISTMP#2|)) T))))))
+       (COND ((EQ |key| 'DOT) (SETQ |key| (GENSYM))))
+       (COND ((EQ |val| 'DOT) (SETQ |val| (GENSYM))))
+       (COND
+        ((AND (|ident?| |key|) (|ident?| |val|))
+         (LIST 'MULTIPLE-VALUE-BIND (LIST |end?| |key| |val|) (LIST |succ|)))
+        ((|ident?| |key|) (SETQ |v| (GENSYM))
+         (LIST 'MULTIPLE-VALUE-BIND (LIST |end?| |key| |v|) (LIST |succ|)
+               (|bfLET| |val| |v|)))
+        (T (SETQ |k| (GENSYM))
+         (COND
+          ((|ident?| |val|)
+           (LIST 'MULTIPLE-VALUE-BIND (LIST |end?| |k| |val|) (LIST |succ|)
+                 (|bfLET| |key| |k|)))
+          (T (SETQ |v| (GENSYM))
+           (LIST 'MULTIPLE-VALUE-BIND (LIST |end?| |k| |v|) (LIST |succ|)
+                 (|bfLET| |key| |k|) (|bfLET| |val| |v|)))))))
+      (T (SETQ |k| (GENSYM)) (SETQ |v| (GENSYM))
+       (LIST 'MULTIPLE-VALUE-BIND (LIST |end?| |k| |v|) (LIST |succ|)
+             (|bfLET| |keyval| (LIST 'CONS |k| |v|))))))))
+
 (DEFUN |bfExpandTableIters| (|iters|)
-  (PROG (|ISTMP#5| |v| |ISTMP#4| CONS |ISTMP#3| |k| |x| |g| |ISTMP#2| |t|
-         |ISTMP#1| |e| |exits| |localBindings| |inits|)
+  (PROG (|x| |g| |ISTMP#2| |t| |ISTMP#1| |e| |exits| |localBindings| |inits|)
     (RETURN
      (PROGN
       (SETQ |inits| NIL)
@@ -610,44 +642,9 @@
                  (SETQ |inits| (CONS (LIST |g| |t|) |inits|))
                  (SETQ |x| (GENSYM))
                  (SETQ |exits| (CONS (LIST 'NOT |x|) |exits|))
-                 (COND
-                  ((AND (CONSP |e|) (EQ (CAR |e|) 'CONS)
-                        (PROGN
-                         (SETQ |ISTMP#1| (CDR |e|))
-                         (AND (CONSP |ISTMP#1|)
-                              (PROGN
-                               (SETQ |k| (CAR |ISTMP#1|))
-                               (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                               (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
-                                    (PROGN
-                                     (SETQ |ISTMP#3| (CAR |ISTMP#2|))
-                                     (AND (CONSP |ISTMP#3|)
-                                          (PROGN
-                                           (SETQ CONS (CAR |ISTMP#3|))
-                                           (SETQ |ISTMP#4| (CDR |ISTMP#3|))
-                                           (AND (CONSP |ISTMP#4|)
-                                                (PROGN
-                                                 (SETQ |v| (CAR |ISTMP#4|))
-                                                 (SETQ |ISTMP#5|
-                                                         (CDR |ISTMP#4|))
-                                                 (AND (CONSP |ISTMP#5|)
-                                                      (NULL (CDR |ISTMP#5|))
-                                                      (EQ (CAR |ISTMP#5|)
-                                                          'NIL)))))))))))
-                        (|ident?| |k|) (|ident?| |v|))
-                   (SETQ |localBindings|
-                           (CONS
-                            (LIST 'MULTIPLE-VALUE-BIND (LIST |x| |k| |v|)
-                                  (LIST |g|))
-                            |localBindings|)))
-                  (T (SETQ |k| (GENSYM)) (SETQ |v| (GENSYM))
-                   (SETQ |localBindings|
-                           (CONS
-                            (LIST 'MULTIPLE-VALUE-BIND (LIST |x| |k| |v|)
-                                  (LIST |g|)
-                                  (|bfLET1|
-                                   (LIST 'CONS |k| (LIST 'CONS |v| 'NIL)) |e|))
-                            |localBindings|))))))))
+                 (SETQ |localBindings|
+                         (CONS (|bfTableIteratorBindingForm| |e| |x| |g|)
+                               |localBindings|))))))
          (SETQ |bfVar#2| (CDR |bfVar#2|))))
       (LIST |inits| |localBindings| |exits|)))))
 

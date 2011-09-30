@@ -86,14 +86,6 @@
   (shoeprettyprin0 x stream) 
   (terpri stream))
 
-(defun HKEYS (table)
-  (let (keys)
-    (maphash #'(lambda (key val) 
-                 (declare (ignore val))
-                 (push key keys)) table)
-    keys))
-
-
 (defun strpos (what in start dontcare)
   (setq what (string what) in (string in))
   (if dontcare

@@ -149,7 +149,6 @@ shoeInsert(s,d) ==
   s
  
 shoeDictCons()==
-  l := HKEYS shoeKeyTable
   d :=
     a := newVector 256
     b := newVector 1
@@ -157,7 +156,7 @@ shoeDictCons()==
     for i in 0..255 repeat
       a.i := b
     a
-  for s in l repeat
+  for [s,:.] in entries shoeKeyTable repeat
     shoeInsert(s,d)
   d
  
@@ -165,12 +164,11 @@ shoeDict:=shoeDictCons()
  
  
 shoePunCons()==
-  listing := HKEYS shoeKeyTable
   a := makeBitVector 256
   for i in 0..255 repeat
     bitmask(a,i) := 0
-  for k in listing repeat
-    shoeStartsId k.0 => nil
+  for [k,:.] in entries shoeKeyTable repeat
+    shoeStartsId stringChar(k,0) => nil
     bitmask(a,codePoint stringChar(k,0)) := 1
   a
  

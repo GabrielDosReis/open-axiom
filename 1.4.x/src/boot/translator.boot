@@ -522,15 +522,14 @@ shoeDfu(a,fn)==
  
 shoeReport stream==
   shoeFileLine('"DEFINED and not USED",stream)
-  a:=[i for i in HKEYS $bootDefined | not tableValue($bootUsed,i)]
+  a := [i for [i,:b] in entries $bootDefined | not b]
   bootOut(SSORT a,stream)
   shoeFileLine('"             ",stream)
   shoeFileLine('"DEFINED TWICE",stream)
   bootOut(SSORT $bootDefinedTwice,stream)
   shoeFileLine('"             ",stream)
   shoeFileLine('"USED and not DEFINED",stream)
-  a:=[i for i in HKEYS $bootUsed |
-	     not tableValue($bootDefined,i)]
+  a := [i for [i,:b] in entries $bootUsed | not b]
   for i in SSORT a repeat
      b := strconc(PNAME i,'" is used in ")
      bootOutLines( SSORT tableValue($bootUsed,i),stream,b)
@@ -640,7 +639,7 @@ shoeXref(a,fn)==
  
 shoeXReport stream==
    shoeFileLine('"USED and where DEFINED",stream)
-   c:=SSORT HKEYS $bootUsed
+   c := SSORT [k for [k,:.] in entries $bootUsed]
    for i in c repeat
       a := strconc(PNAME i,'" is used in ")
       bootOutLines( SSORT tableValue($bootUsed,i),stream,a)
