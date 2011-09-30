@@ -1814,7 +1814,7 @@ writify ob ==
                 nob := ['WRITIFIED!!]
                 tableValue($seen, ob) := nob
                 tableValue($seen, nob) := nob
-                keys := HKEYS ob
+                keys := [k for [k,:.] in entries ob]
                 nob.rest := 
                         ['HASHTABLE,
                           HASHTABLE_-CLASS ob,

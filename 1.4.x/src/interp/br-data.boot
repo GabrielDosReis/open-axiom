@@ -36,7 +36,7 @@ import bc_-util
 namespace BOOT
 
 lefts u ==
-   [x for x in HKEYS  _*HASCATEGORY_-HASH_* | rest x = u]
+   [x for [x,:.] in entries _*HASCATEGORY_-HASH_* | rest x = u]
 
 --============================================================================
 --              Build Library Database (libdb.text,...)
@@ -418,8 +418,8 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
       name := opOf conform
       if not (name in '(QUOTE)) then
         tableValue($usersTb,name) := insert(x,tableValue($usersTb,name))
-  for k in HKEYS $usersTb repeat
-    tableValue($usersTb,k) := listSort(function GLESSEQP,tableValue($usersTb,k))
+  for [k,:v] in entries $usersTb repeat
+    tableValue($usersTb,k) := listSort(function GLESSEQP,v)
   for x in allConstructors() | isDefaultPackageName x repeat
     tableValue($usersTb,x) := getDefaultPackageClients x
   $usersTb
@@ -444,8 +444,8 @@ mkDependentsHashTable() == --called by buildDatabase (database.boot)
   for nam in allConstructors() repeat
     for con in getArgumentConstructors nam repeat
       tableValue($depTb,con) := [nam,:tableValue($depTb,con)]
-  for k in HKEYS $depTb repeat
-    tableValue($depTb,k) := listSort(function GLESSEQP,tableValue($depTb,k))
+  for [k,:v] in entries $depTb repeat
+    tableValue($depTb,k) := listSort(function GLESSEQP,v)
   $depTb
 
 getArgumentConstructors con == --called by mkDependentsHashTable
@@ -594,7 +594,7 @@ childArgCheck(argl, nargl) ==
 --        oldPred := tableValue(hash,form) => quickOr(oldPred,pred)
 --        pred
 --      tableValue(hash,form) := newPred
---  mySort [[key,:tableValue(hash,key)] for key in HKEYS hash]
+--  mySort [[key,:val] for [key,:val] in entries hash]
 
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   "category" = getConstructorKindFromDB(conname := opOf conform) =>
@@ -649,7 +649,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
 domainsOf(conform,domname,:options) ==
   $hasArgList := IFCAR options
   conname := opOf conform
-  u := [key for key in HKEYS _*HASCATEGORY_-HASH_*
+  u := [key for [key,:.] in entries _*HASCATEGORY_-HASH_*
     | key is [anc,: =conname]]
   --u is list of pairs (a . b) where b() = conname
   --we sort u then replace each b by the predicate for which this is true

@@ -113,9 +113,9 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
 
   --replace each property list by a topic code
   --store under each construct an OR of all codes
-  for con in HKEYS $conTopicHash repeat
+  for [con,:item] in entries $conTopicHash repeat
     conCode := 0
-    for pair in tableValue($conTopicHash,con) repeat 
+    for pair in item repeat 
       pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
     tableValue($conTopicHash,con) := 
@@ -123,8 +123,8 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   SHUT instream
 
 --reduce integers stored under names to 1 + its power of 2
-  for key in HKEYS $topicHash repeat 
-    tableValue($topicHash,key) := INTEGER_-LENGTH tableValue($topicHash,key)
+  for [key,:item] in entries $topicHash repeat 
+    tableValue($topicHash,key) := INTEGER_-LENGTH item
 
   $conTopicHash   --keys are ops or 'constructor', values are codes
 
@@ -189,7 +189,7 @@ addTopic2Documentation(con,docAlist) ==
 --=======================================================================
 td con ==
   $topicClasses := ASSOCRIGHT mySort
-      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[val,:key] for [key,:val] in entries $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
@@ -212,13 +212,13 @@ tdPrint hash ==
 topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
-      [[tableValue($topicHash,key),:key] for key in HKEYS $topicHash]      
+      [[val,:key] for [key,:val] in entries $topicHash]      
   hash := hashTable 'EQ
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
-  for x in HKEYS hash repeat
-    tableValue(hash,x) := mySort tableValue(hash,x)
+  for [x,:y] in entries hash repeat
+    tableValue(hash,x) := mySort y
   tdPrint hash 
 
 code2Classes cc ==
@@ -257,5 +257,5 @@ listOfTopics(conname) ==
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
 --not integer? code => nil
-  mySort [key for key in HKEYS($topicHash) | LOGBITP(tableValue($topicHash,key),code)]
+  mySort [key for [key,:val] in entries $topicHash | LOGBITP(val,code)]
 

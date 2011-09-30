@@ -183,7 +183,7 @@ scanDictCons()==
     for i in 0..255 repeat
       vectorRef(a,i) := b
     a
-  for s in HKEYS scanKeyTable repeat
+  for [s,:.] in entries scanKeyTable repeat
     scanInsert(s,d)
   d
 
@@ -191,13 +191,12 @@ scanDict:=scanDictCons()
 
 
 scanPunCons()==
-  listing := HKEYS scanKeyTable
   a := makeBitVector 256
   for i in 0..255 repeat
     bitmask(a,i) := 0
-  for k in listing repeat
-    if not startsId? k.0
-    then bitmask(a,codePoint stringChar(k,0)) := 1
+  for [k,:.] in entries scanKeyTable repeat
+    if not startsId? stringChar(k,0) then
+      bitmask(a,codePoint stringChar(k,0)) := 1
   a
 
 scanPun:=scanPunCons()

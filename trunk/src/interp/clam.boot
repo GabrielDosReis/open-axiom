@@ -365,7 +365,7 @@ clearCategoryCache catName ==
   symbolValue(mkCacheName catName) := nil
  
 displayHashtable x ==
-  l:= reverse! SORTBY('CAR,[[opOf tableValue(x,key),key] for key in HKEYS x])
+  l:= reverse! SORTBY('CAR,[[opOf val,key] for [key,:val] in entries x])
   for [a,b] in l repeat
     sayBrightlyNT ['"%b",a,'"%d"]
     pp b
@@ -405,7 +405,7 @@ mkCircularCountAlist(cl,len) ==
 reportHashCacheStats fn ==
   infovec:= property(fn,'cacheInfo)
   ht := eval infovec.cacheName
-  hashValues:= [tableValue(ht,key) for key in HKEYS ht]
+  hashValues:= [val for [.,:val] in entries ht]
   sayBrightly [:bright fn,'"has",:bright(# hashValues),'"values cached."]
   displayCacheFrequency mkHashCountAlist hashValues
   TERPRI()
@@ -568,8 +568,8 @@ recordInstantiation1(op,prop,dropIfTrue) ==
 reportInstantiations() ==
   --assumed to be a hashtable with reference counts
     conList:=
-      [:[[n,m,[key,:argList]] for [argList,n,:m] in tableValue($instantRecord,key)]
-        for key in HKEYS $instantRecord]
+      [:[[n,m,[key,:argList]] for [argList,n,:m] in item]
+        for [key,:item] in entries $instantRecord]
     sayBrightly ['"# instantiated/# dropped/domain name",
       "%l",'"------------------------------------"]
     nTotal:= mTotal:= rTotal := nForms:= 0
@@ -664,9 +664,7 @@ lassocShiftQ(x,l) ==
  
 globalHashtableStats(x,sortFn) ==
   --assumed to be a hashtable with reference counts
-  keys:= HKEYS x
-  for key in keys repeat
-    u:= tableValue(x,key)
+  for [key,:u] in entries x repeat
     for [argList,n,:.] in u repeat
       not integer? n =>   keyedSystemError("S2GE0013",[x])
       argList1:= [constructor2ConstructorForm x for x in argList]

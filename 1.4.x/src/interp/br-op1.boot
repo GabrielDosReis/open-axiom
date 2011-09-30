@@ -530,7 +530,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
       pred := simpOrDumb(predicate,LASSQ(conname,domOriginAlist) or true)
       domOriginAlist := insertAlist(conname,pred,domOriginAlist)
   --the following is similar to "domainsOf" but do not sort immediately
-  u := [COPY key for key in HKEYS _*HASCATEGORY_-HASH_*
+  u := [COPY key for [key,:.] in entries _*HASCATEGORY_-HASH_*
           | LASSQ(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair

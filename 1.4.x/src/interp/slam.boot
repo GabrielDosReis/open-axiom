@@ -239,7 +239,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   nam
  
 hashCount table ==
-  +/[ADD1 nodeCount tableValue(table,key) for key in HKEYS table]
+  +/[ADD1 nodeCount val for [key,:val] in entries table]
  
 mkCircularAlist n ==
   l:= [[$failed,:$failed] for i in 1..n]

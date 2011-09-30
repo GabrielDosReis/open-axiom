@@ -1,5 +1,37 @@
 2011-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-data.boot (lefts): Iterate directly over table.
+	(mkUsersHashTable): Likewise.
+	(mkDependentsHashTable): Likewise.
+	(domainsOf): Likewise.
+	* interp/br-op1.boot (dbShowOpAllDomains): Likewise.
+	* interp/cattable.boot (showCategoryTable): Likewise.
+	(displayCategoryTable): Likewise.
+	(simpTempCategoryTable): Likewise.
+	(simpCategoryTable): Likewise.
+	(genTempCategoryTable): Likewise.
+	(compressHashTable): Likewise.
+	(updateCategoryTableForCategory): Likewise.
+	(clearTempCategoryTable): Likewise.
+	* interp/clam.boot (displayHashtable): Likewise.
+	(reportHashCacheStats): Likewise.
+	(reportInstantiations): Likewise.
+	(globalHashtableStats): Likewise.
+	* interp/guess.boot (buildWordTable): Likewise.
+	* interp/i-syscmd.boot (writify): Likewise.
+	* interp/scan.boot (scanDictCons): Likewise.
+	(scanPunCons): Likewise.
+	* interp/slam.boot (hashCount): Likewise.
+	* interp/topics.boot (mkTopicHashTable): Likewise.
+	(addTopic2Documentation): Likewise.
+	(topics): Likewise.
+	(listOfTopics): Likewise.
+	* interp/word.boot (buildWordTable): Likewise.
+	(writeFunctionTables): Likewise.
+	(bootSearch): Likewise.
+
+2011-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfTableIteratorBindingForm): New.
 	(bfExpandTableIters): Use it.
 	* boot/initial-env.lisp (HKEYS): Remove.
