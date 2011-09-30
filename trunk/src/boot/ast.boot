@@ -246,10 +246,11 @@ bfMakeCons l ==
     a
   ['CONS,first l,bfMakeCons rest l]
  
-bfFor(bflhs,U,step) ==
-  U is ["tails",:.] => bfForTree('ON, bflhs, second U)
-  U is ["SEGMENT",:.] => bfSTEP(bflhs,second U,step,third U)
-  bfForTree('IN, bflhs, U)
+bfFor(lhs,u,step) ==
+  u is ["tails",:.] => bfForTree('ON, lhs, second u)
+  u is ["SEGMENT",:.] => bfSTEP(lhs,second u,step,third u)
+  u is ['entries,:.] => bfIterateTable(lhs,second u)
+  bfForTree('IN,lhs,u)
  
 bfForTree(OP,lhs,whole)==
   whole :=
@@ -295,6 +296,9 @@ bfSTEP(id,fst,step,lst)==
   suc := [['SETQ,id,["+",id,inc]]]
   [[initvar,initval,suc,[],ex,[]]]
  
+++ Build a hashtable-iterator form.
+bfIterateTable(e,t) ==
+  ['%tbliter,e,t,gensym()]
  
 bfINON x==
   [op,id,whole] := x
@@ -423,8 +427,41 @@ bfDoCollect(expr,itl,adv,k) ==
   extrait := [[[head,prev],['NIL,'NIL],nil,nil,nil,[head]]]
   bfLp2(extrait,itl,body)
 
+++ Given the list of loop iterators, return 2-list where the first
+++ component is the list of all non-table iterators and the second
+++ is the list of all-table iterators,
+separateIterators iters ==
+  x := nil
+  y := nil
+  for iter in iters repeat
+    iter is ['%tbliter,:.] => y := [rest iter,:y]
+    x := [iter,:x]
+  [reverse! x,reverse! y]
+
+++ Expand the list of table iterators into a tuple form with
+++   (a) list of table iteration initialization
+++   (b) for each iteration, local bindings of key value
+++   (c) a list of exit conditions
+bfExpandTableIters iters ==
+  inits := nil
+  localBindings := nil
+  exits := nil
+  for [e,t,g] in iters repeat
+    inits := [[g,t],:inits]
+    x := gensym()   -- exit guard
+    exits := [['NOT,x],:exits]
+    e is ['CONS,k,[CONS,v,'NIL]] and ident? k and ident? v =>
+      localBindings := [['MULTIPLE_-VALUE_-BIND,[x,k,v],[g]],:localBindings]
+    k := gensym()   -- key local var
+    v := gensym()   -- value local var
+    localBindings := [['MULTIPLE_-VALUE_-BIND,[x,k,v],[g],
+                         bfLET1(['CONS,k,['CONS,v,'NIL]],e)],:localBindings]
+  [inits,localBindings,exits] -- NOTE: things are returned in reverse order.
+
 bfLp1(iters,body)==
+  [iters,tbls] := separateIterators iters
   [vars,inits,sucs,filters,exits,value] := bfSep bfAppend iters
+  [tblInits,tblLocs,tblExits] := bfExpandTableIters tbls
   nbody :=
     filters = nil => body
     bfAND [:filters,body]
@@ -432,11 +469,15 @@ bfLp1(iters,body)==
     value = nil => "NIL"
     first value
   exits :=
-    exits = nil => nbody
-    bfIf(bfOR exits,["RETURN",value],nbody)
+    exits = nil and tblExits = nil => nbody
+    bfIf(bfOR [:exits,:tblExits],["RETURN",value],nbody)
+  for locBinding in tblLocs repeat
+    exits := [:locBinding,exits]
   loop := ["LOOP",exits,:sucs]
   if vars then loop := 
-    ["LET",[[v, i] for v in vars for i in inits], loop]
+    ["LET",[[v, i] for v in vars for i in inits],loop]
+  for x in tblInits repeat
+    loop := ['WITH_-HASH_-TABLE_-ITERATOR,x,loop]
   loop
  
 bfLp2(extrait,itl,body)==
