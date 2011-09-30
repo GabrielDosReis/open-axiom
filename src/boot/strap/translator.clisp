@@ -760,28 +760,25 @@
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
-    (DECLARE (SPECIAL |$bootDefined| |$bootUsed| |$bootDefinedTwice|))
+    (DECLARE (SPECIAL |$bootDefined| |$bootDefinedTwice| |$bootUsed|))
     (RETURN
      (PROGN
       (|shoeFileLine| "DEFINED and not USED" |stream|)
       (SETQ |a|
-              (LET ((|bfVar#2| NIL)
-                    (|bfVar#3| NIL)
-                    (|bfVar#1| (HKEYS |$bootDefined|))
-                    (|i| NIL))
-                (LOOP
-                 (COND
-                  ((OR (NOT (CONSP |bfVar#1|))
-                       (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
-                   (RETURN |bfVar#2|))
-                  (T
-                   (AND (NOT (|tableValue| |$bootUsed| |i|))
-                        (COND
-                         ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS |i| NIL))
-                          (SETQ |bfVar#3| |bfVar#2|))
-                         (T (RPLACD |bfVar#3| #1#)
-                          (SETQ |bfVar#3| (CDR |bfVar#3|)))))))
-                 (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+              (WITH-HASH-TABLE-ITERATOR (#1=#:G732 |$bootDefined|)
+                (LET ((|bfVar#1| NIL) (|bfVar#2| NIL))
+                  (LOOP
+                   (MULTIPLE-VALUE-BIND (#2=#:G733 |i| |b|)
+                       (#1#)
+                     (COND ((NOT #2#) (RETURN |bfVar#1|))
+                           (T
+                            (AND (NOT |b|)
+                                 (COND
+                                  ((NULL |bfVar#1|)
+                                   (SETQ |bfVar#1| #3=(CONS |i| NIL))
+                                   (SETQ |bfVar#2| |bfVar#1|))
+                                  (T (RPLACD |bfVar#2| #3#)
+                                   (SETQ |bfVar#2| (CDR |bfVar#2|))))))))))))
       (|bootOut| (SSORT |a|) |stream|)
       (|shoeFileLine| "             " |stream|)
       (|shoeFileLine| "DEFINED TWICE" |stream|)
@@ -789,32 +786,29 @@
       (|shoeFileLine| "             " |stream|)
       (|shoeFileLine| "USED and not DEFINED" |stream|)
       (SETQ |a|
-              (LET ((|bfVar#5| NIL)
-                    (|bfVar#6| NIL)
-                    (|bfVar#4| (HKEYS |$bootUsed|))
-                    (|i| NIL))
-                (LOOP
-                 (COND
-                  ((OR (NOT (CONSP |bfVar#4|))
-                       (PROGN (SETQ |i| (CAR |bfVar#4|)) NIL))
-                   (RETURN |bfVar#5|))
-                  (T
-                   (AND (NOT (|tableValue| |$bootDefined| |i|))
-                        (COND
-                         ((NULL |bfVar#5|) (SETQ |bfVar#5| #2=(CONS |i| NIL))
-                          (SETQ |bfVar#6| |bfVar#5|))
-                         (T (RPLACD |bfVar#6| #2#)
-                          (SETQ |bfVar#6| (CDR |bfVar#6|)))))))
-                 (SETQ |bfVar#4| (CDR |bfVar#4|)))))
-      (LET ((|bfVar#7| (SSORT |a|)) (|i| NIL))
+              (WITH-HASH-TABLE-ITERATOR (#4=#:G734 |$bootUsed|)
+                (LET ((|bfVar#3| NIL) (|bfVar#4| NIL))
+                  (LOOP
+                   (MULTIPLE-VALUE-BIND (#5=#:G735 |i| |b|)
+                       (#4#)
+                     (COND ((NOT #5#) (RETURN |bfVar#3|))
+                           (T
+                            (AND (NOT |b|)
+                                 (COND
+                                  ((NULL |bfVar#3|)
+                                   (SETQ |bfVar#3| #6=(CONS |i| NIL))
+                                   (SETQ |bfVar#4| |bfVar#3|))
+                                  (T (RPLACD |bfVar#4| #6#)
+                                   (SETQ |bfVar#4| (CDR |bfVar#4|))))))))))))
+      (LET ((|bfVar#5| (SSORT |a|)) (|i| NIL))
         (LOOP
          (COND
-          ((OR (NOT (CONSP |bfVar#7|)) (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
+          ((OR (NOT (CONSP |bfVar#5|)) (PROGN (SETQ |i| (CAR |bfVar#5|)) NIL))
            (RETURN NIL))
           (T (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
            (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|)) |stream|
                            |b|)))
-         (SETQ |bfVar#7| (CDR |bfVar#7|))))))))
+         (SETQ |bfVar#5| (CDR |bfVar#5|))))))))
 
 (DEFUN |shoeDefUse| (|s|)
   (LOOP
@@ -1047,16 +1041,28 @@
     (RETURN
      (PROGN
       (|shoeFileLine| "USED and where DEFINED" |stream|)
-      (SETQ |c| (SSORT (HKEYS |$bootUsed|)))
-      (LET ((|bfVar#1| |c|) (|i| NIL))
+      (SETQ |c|
+              (SSORT
+               (WITH-HASH-TABLE-ITERATOR (#1=#:G738 |$bootUsed|)
+                 (LET ((|bfVar#1| NIL) (|bfVar#2| NIL))
+                   (LOOP
+                    (MULTIPLE-VALUE-BIND (#2=#:G739 |k| #:G740)
+                        (#1#)
+                      (COND ((NOT #2#) (RETURN |bfVar#1|))
+                            ((NULL |bfVar#1|)
+                             (SETQ |bfVar#1| #3=(CONS |k| NIL))
+                             (SETQ |bfVar#2| |bfVar#1|))
+                            (T (RPLACD |bfVar#2| #3#)
+                             (SETQ |bfVar#2| (CDR |bfVar#2|))))))))))
+      (LET ((|bfVar#3| |c|) (|i| NIL))
         (LOOP
          (COND
-          ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+          ((OR (NOT (CONSP |bfVar#3|)) (PROGN (SETQ |i| (CAR |bfVar#3|)) NIL))
            (RETURN NIL))
           (T (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
            (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|)) |stream|
                            |a|)))
-         (SETQ |bfVar#1| (CDR |bfVar#1|))))))))
+         (SETQ |bfVar#3| (CDR |bfVar#3|))))))))
 
 (DEFUN |shoeItem| (|str|)
   (PROG (|dq|)

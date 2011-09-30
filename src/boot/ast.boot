@@ -438,6 +438,26 @@ separateIterators iters ==
     x := [iter,:x]
   [reverse! x,reverse! y]
 
+bfTableIteratorBindingForm(keyval,end?,succ) ==
+  -- FIXME: most of the repetitions below could be avoided
+  -- FIXME: with better bfIS1 implementation.
+  keyval is ['CONS,key,val] =>
+    if key is 'DOT then key := gensym()
+    if val is 'DOT then val := gensym()
+    ident? key and ident? val =>
+      ['MULTIPLE_-VALUE_-BIND,[end?,key,val],[succ]]
+    ident? key =>
+      v := gensym()
+      ['MULTIPLE_-VALUE_-BIND,[end?,key,v],[succ],bfLET(val,v)]
+    k := gensym()
+    ident? val =>
+      ['MULTIPLE_-VALUE_-BIND,[end?,k,val],[succ],bfLET(key,k)]
+    v := gensym()
+    ['MULTIPLE_-VALUE_-BIND,[end?,k,v],[succ],bfLET(key,k),bfLET(val,v)]
+  k := gensym()
+  v := gensym()
+  ['MULTIPLE_-VALUE_-BIND,[end?,k,v],[succ],bfLET(keyval,['CONS,k,v])]
+
 ++ Expand the list of table iterators into a tuple form with
 ++   (a) list of table iteration initialization
 ++   (b) for each iteration, local bindings of key value
@@ -450,12 +470,7 @@ bfExpandTableIters iters ==
     inits := [[g,t],:inits]
     x := gensym()   -- exit guard
     exits := [['NOT,x],:exits]
-    e is ['CONS,k,[CONS,v,'NIL]] and ident? k and ident? v =>
-      localBindings := [['MULTIPLE_-VALUE_-BIND,[x,k,v],[g]],:localBindings]
-    k := gensym()   -- key local var
-    v := gensym()   -- value local var
-    localBindings := [['MULTIPLE_-VALUE_-BIND,[x,k,v],[g],
-                         bfLET1(['CONS,k,['CONS,v,'NIL]],e)],:localBindings]
+    localBindings := [bfTableIteratorBindingForm(e,x,g),:localBindings]
   [inits,localBindings,exits] -- NOTE: things are returned in reverse order.
 
 bfLp1(iters,body)==
