@@ -1,3 +1,11 @@
+2011-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfFor): Tidy. Handle hashtable iterator forms.
+	(bfIterateTable): New.
+	(separateIterators): Likewise.
+	(bfExpandTableIters): Likewise.
+	(bfLp1): Use them.
+
 2011-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/annacat.spad.pamphlet: Remove.
