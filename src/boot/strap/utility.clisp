@@ -12,7 +12,7 @@
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |applySubst| |applySubst!|
                      |applySubstNQ| |remove| |removeSymbol| |atomic?|
-                     |finishLine|)))
+                     |finishLine| |subStringMatch?|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -42,6 +42,14 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Void|) |finishLine|))
+
+(DECLAIM
+ (FTYPE (FUNCTION (|%String| |%Short|) (|%Maybe| |%Short|))
+  |firstNonblankPosition|))
+
+(DECLAIM
+ (FTYPE (FUNCTION (|%String| |%Short|) (|%Maybe| |%Short|))
+  |firstBlankPosition|))
 
 (DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
 
@@ -273,6 +281,28 @@
        (COND ((NOT (< |k| |n|)) (RETURN NIL))
              ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
              (T (SETQ |k| (+ |k| 1)))))))))
+
+(DEFUN |firstNonblankPosition| (|s| |k|)
+  (LET ((|bfVar#2| NIL) (|bfVar#1| (- (LENGTH |s|) 1)) (|i| |k|))
+    (LOOP
+     (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
+           (T
+            (AND (NOT (CHAR= (SCHAR |s| |i|) (|char| '| |)))
+                 (PROGN
+                  (SETQ |bfVar#2| |i|)
+                  (COND (|bfVar#2| (RETURN |bfVar#2|)))))))
+     (SETQ |i| (+ |i| 1)))))
+
+(DEFUN |firstBlankPosition| (|s| |k|)
+  (LET ((|bfVar#2| NIL) (|bfVar#1| (- (LENGTH |s|) 1)) (|i| |k|))
+    (LOOP
+     (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
+           (T
+            (AND (CHAR= (SCHAR |s| |i|) (|char| '| |))
+                 (PROGN
+                  (SETQ |bfVar#2| |i|)
+                  (COND (|bfVar#2| (RETURN |bfVar#2|)))))))
+     (SETQ |i| (+ |i| 1)))))
 
 (DEFUN |finishLine| (|out|) (PROGN (TERPRI |out|) (FORCE-OUTPUT |out|)))
 

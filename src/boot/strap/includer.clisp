@@ -186,9 +186,9 @@
   (PROG (|n1| |n|)
     (RETURN
      (PROGN
-      (SETQ |n| (STRPOSL " " |x| 0 T))
+      (SETQ |n| (|firstNonblankPosition| |x| 0))
       (COND ((NULL |n|) NIL)
-            (T (SETQ |n1| (STRPOSL " " |x| |n| NIL))
+            (T (SETQ |n1| (|firstBlankPosittion| |x| |n|))
              (COND ((NULL |n1|) (LIST (|subString| |x| |n|) ""))
                    (T
                     (LIST (|subString| |x| |n| (- |n1| |n|))

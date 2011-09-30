@@ -22,6 +22,9 @@
 
 (DEFPARAMETER |$foreignsDefsForCLisp| NIL)
 
+(DEFUN |reallyPrettyPrint| (|x| &OPTIONAL (|st| *STANDARD-OUTPUT*))
+  (PROGN (|prettyPrint| |x| |st|) (TERPRI |st|)))
+
 (DEFUN |genModuleFinalization| (|stream|)
   (PROG (|init|)
     (DECLARE (SPECIAL |$foreignsDefsForCLisp| |$currentModuleName|))
@@ -83,11 +86,11 @@
                                         (T (RPLACD |bfVar#6| #2#)
                                          (SETQ |bfVar#6| (CDR |bfVar#6|))))
                                        (SETQ |bfVar#4| (CDR |bfVar#4|)))))))))
-              (REALLYPRETTYPRINT |init| |stream|))))
+              (|reallyPrettyPrint| |init| |stream|))))
       (T NIL)))))
 
 (DEFUN |genOptimizeOptions| (|stream|)
-  (REALLYPRETTYPRINT
+  (|reallyPrettyPrint|
    (LIST 'PROCLAIM (|quote| (CONS 'OPTIMIZE |$LispOptimizeOptions|))) |stream|))
 
 (DEFUN |AxiomCore|::|%sysInit| ()
@@ -226,8 +229,7 @@
       (SETQ |b| *PACKAGE*)
       (IN-PACKAGE "BOOTTRAN")
       (SETQ |infn| (|shoeAddbootIfNec| |fn|))
-      (SETQ |outfn|
-              (CONCAT (|shoeRemovebootIfNec| |fn|) "." *LISP-SOURCE-FILETYPE*))
+      (SETQ |outfn| (CONCAT (|shoeRemovebootIfNec| |fn|) "." "lisp"))
       (UNWIND-PROTECT
           (PROGN
            (SETQ |a| (|inputTextFile| |infn|))
@@ -434,11 +436,8 @@
              (COND
               ((AND (CONSP |a|) (EQ (CAR |a|) '+LINE))
                (|shoeFileLine| (CADR |a|) |st|))
-              (T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
+              (T (|reallyPrettyPrint| |a| |st|) (TERPRI |st|)))
              (SETQ |s| (CDR |s|))))))))
-
-(DEFUN |shoePPtoFile| (|x| |stream|)
-  (PROGN (SHOENOTPRETTYPRINT |x| |stream|) |x|))
 
 (DEFUN |shoeConsoleTrees| (|s|)
   (PROG (|fn|)
@@ -448,7 +447,7 @@
             (T
              (SETQ |fn|
                      (|stripm| (CAR |s|) *PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
-             (REALLYPRETTYPRINT |fn|) (SETQ |s| (CDR |s|))))))))
+             (|reallyPrettyPrint| |fn|) (SETQ |s| (CDR |s|))))))))
 
 (DEFUN |shoeAddComment| (|l|) (CONCAT "; " (CAR |l|)))
 
@@ -702,16 +701,26 @@
                  (|shoeReadLispString| |s| 0)))
               (T (LIST (|translateToplevelExpression| |b|)))))))))
 
-(DEFUN |shoeAddbootIfNec| (|s|) (|shoeAddStringIfNec| ".boot" |s|))
-
-(DEFUN |shoeRemovebootIfNec| (|s|) (|shoeRemoveStringIfNec| ".boot" |s|))
-
-(DEFUN |shoeAddStringIfNec| (|str| |s|)
-  (PROG (|a|)
+(DEFUN |shoeAddbootIfNec| (|s|)
+  (PROG (|n2| |n1| |ext|)
     (RETURN
      (PROGN
-      (SETQ |a| (STRPOS |str| |s| 0 NIL))
-      (COND ((NULL |a|) (CONCAT |s| |str|)) (T |s|))))))
+      (SETQ |ext| ".boot")
+      (SETQ |n1| (- (LENGTH |ext|) 1))
+      (SETQ |n2| (- (- (LENGTH |s|) |n1|) 1))
+      (COND
+       ((LET ((|bfVar#1| T) (|k| 0))
+          (LOOP
+           (COND ((> |k| |n1|) (RETURN |bfVar#1|))
+                 (T
+                  (SETQ |bfVar#1|
+                          (CHAR= (SCHAR |ext| |k|) (SCHAR |s| (+ |n2| |k|))))
+                  (COND ((NOT |bfVar#1|) (RETURN NIL)))))
+           (SETQ |k| (+ |k| 1))))
+        |s|)
+       (T (CONCAT |s| |ext|)))))))
+
+(DEFUN |shoeRemovebootIfNec| (|s|) (|shoeRemoveStringIfNec| ".boot" |s|))
 
 (DEFUN |shoeRemoveStringIfNec| (|str| |s|)
   (PROG (|n|)
@@ -1120,7 +1129,7 @@
 (DEFUN |shoePCompileTrees| (|s|)
   (LOOP
    (COND ((|bStreamNull| |s|) (RETURN NIL))
-         (T (REALLYPRETTYPRINT (|shoePCompile| (CAR |s|)))
+         (T (|reallyPrettyPrint| (|shoePCompile| (CAR |s|)))
           (SETQ |s| (CDR |s|))))))
 
 (DEFUN |bStreamPackageNull| (|s|)

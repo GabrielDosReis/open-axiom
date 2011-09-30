@@ -85,8 +85,8 @@ shoeNextLine(s)==
   $f:= first s
   $r:= rest s
   $ln:=first $f
-  $n:=STRPOSL('" ",$ln,0,true)
-  $sz :=# $ln
+  $n := firstNonblankPosition($ln,0)
+  $sz := #$ln
   $n = nil => true
   stringChar($ln,$n) = shoeTAB =>
     a := makeString(7-REM($n,8),char " ")
@@ -240,7 +240,7 @@ shoeEsc()==
       shoeEsc()
       false
     false
-  n1:=STRPOSL('" ",$ln,$n,true)
+  n1 := firstNonblankPosition($ln,$n)
   n1 = nil =>
     shoeNextLine($r)
     while $n = nil repeat 
@@ -296,7 +296,7 @@ shoePossFloat (w)==
  
 shoeSpace()==
   n := $n
-  $n := STRPOSL('" ",$ln,$n,true)
+  $n := firstNonblankPosition($ln,$n)
   $floatok := true
   $n = nil =>
      shoeLeafSpaces 0
