@@ -1,5 +1,13 @@
 2011-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot (bpImport): Accept long names for used namespaces.
+	* boot/translator.boot (packageBody): Tidy.
+	(translateToplevel): Likewise.
+	(getIntermediateLispFile): Likewise.
+	* interp/sys-os.boot: Import System.Foreign.
+
+2011-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/utility.boot: Define BOOTTRAN namespace.
 	(setUnion): New.
 	(setDifference): New.

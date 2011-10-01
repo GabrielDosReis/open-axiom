@@ -428,7 +428,18 @@ packageBody(x,p) ==
       ['COND,
         [['%hasFeature,KEYWORD::COMMON_-LISP],['USE_-PACKAGE,'"COMMON-LISP",:user]],
            ['T,['USE_-PACKAGE,'"LISP",:user]]]
-    ['USE_-PACKAGE,symbolName ns,:user]
+    z :=
+      ns is ['DOT,'System,'Foreign] =>
+        %hasFeature KEYWORD::SBCL => 'SB_-ALIEN
+        %hasFeature KEYWORD::CLISP => 'FFI
+        %hasFeature KEYWORD::CLOZURE => 'CCL
+        %hasFeature KEYWORD::ECL => 'FFI
+        %hasFeature KEYWORD::GCL => 'SI
+        nil
+      ident? ns => ns
+      nil
+    z = nil => bpTrap()
+    ['USE_-PACKAGE,symbolName z,:user]
   x is ['PROGN,:.] => [x.op,:[packageBody(y,p) for y in x.args]]
   x
 
@@ -446,7 +457,7 @@ translateToplevel(b,export?) ==
         :[first translateToplevel(d,true) for d in ds]]
 
     %Import(m) =>
-      m is ['%Namespace,n] => [inAllContexts packageBody(m,nil)]
+      m is ['%Namespace,n] => [inAllContexts packageBody(b,nil)]
       if getOptionValue "import" ~= '"skip" then
         bootImport symbolName m
       [["IMPORT-MODULE", symbolName m]]
@@ -458,9 +469,7 @@ translateToplevel(b,export?) ==
 
     %ConstantDefinition(lhs,rhs) =>
       lhs is ['%Namespace,ns] =>
-        def := ['UNLESS,['FIND_-PACKAGE,symbolName ns],
-                 ['MAKE_-PACKAGE,symbolName ns]]
-        [inAllContexts def,inAllContexts packageBody(rhs,ns)]
+        [['DEFPACKAGE,symbolName ns],inAllContexts packageBody(rhs,ns)]
       sig := nil
       if lhs is ["%Signature",n,t] then
         sig := genDeclaration(n,t)
@@ -725,8 +734,7 @@ defaultBootToLispFile file ==
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
   out ~= nil => 
-    strconc(shoeRemoveStringIfNec
-       (strconc('".",$effectiveFaslType),out),'".clisp")
+    strconc(shoeRemoveStringIfNec(strconc('".",$faslType),out),'".clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==

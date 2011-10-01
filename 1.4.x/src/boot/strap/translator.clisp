@@ -566,7 +566,7 @@
         (T (LIST (|inAllContexts| (LIST 'EXPORT (|quote| |ns|)))))))
 
 (DEFUN |packageBody| (|x| |p|)
-  (PROG (|user| |ns| |ISTMP#3| |ISTMP#2| |ISTMP#1|)
+  (PROG (|z| |user| |ns| |ISTMP#3| |ISTMP#2| |ISTMP#1|)
     (RETURN
      (COND
       ((AND (CONSP |x|) (EQ (CAR |x|) '|%Import|)
@@ -587,7 +587,25 @@
                (LIST (LIST '|%hasFeature| :COMMON-LISP)
                      (CONS 'USE-PACKAGE (CONS "COMMON-LISP" |user|)))
                (LIST 'T (CONS 'USE-PACKAGE (CONS "LISP" |user|)))))
-        (T (CONS 'USE-PACKAGE (CONS (SYMBOL-NAME |ns|) |user|)))))
+        (T
+         (SETQ |z|
+                 (COND
+                  ((AND (CONSP |ns|) (EQ (CAR |ns|) 'DOT)
+                        (PROGN
+                         (SETQ |ISTMP#1| (CDR |ns|))
+                         (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) '|System|)
+                              (PROGN
+                               (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                               (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                                    (EQ (CAR |ISTMP#2|) '|Foreign|))))))
+                   (COND ((|%hasFeature| :SBCL) 'SB-ALIEN)
+                         ((|%hasFeature| :CLISP) 'FFI)
+                         ((|%hasFeature| :CLOZURE) 'CCL)
+                         ((|%hasFeature| :ECL) 'EXT) ((|%hasFeature| :GCL) 'SI)
+                         (T NIL)))
+                  ((|ident?| |ns|) |ns|) (T NIL)))
+         (COND ((NULL |z|) (|bpTrap|))
+               (T (CONS 'USE-PACKAGE (CONS (SYMBOL-NAME |z|) |user|)))))))
       ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN))
        (CONS (CAR |x|)
              (LET ((|bfVar#2| NIL)
@@ -607,7 +625,7 @@
       (T |x|)))))
 
 (DEFUN |translateToplevel| (|b| |export?|)
-  (PROG (|lhs| |t| |ISTMP#2| |sig| |def| |ns| |n| |ISTMP#1| |xs|)
+  (PROG (|lhs| |t| |ISTMP#2| |sig| |ns| |n| |ISTMP#1| |xs|)
     (DECLARE
      (SPECIAL |$currentModuleName| |$foreignsDefsForCLisp|
       |$constantIdentifiers| |$InteractiveMode| |$activeNamespace|))
@@ -662,7 +680,7 @@
                          (SETQ |ISTMP#1| (CDR |m|))
                          (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                               (PROGN (SETQ |n| (CAR |ISTMP#1|)) T))))
-                   (LIST (|inAllContexts| (|packageBody| |m| NIL))))
+                   (LIST (|inAllContexts| (|packageBody| |b| NIL))))
                   (T
                    (COND
                     ((NOT (STRING= (|getOptionValue| '|import|) "skip"))
@@ -682,11 +700,7 @@
                          (SETQ |ISTMP#1| (CDR |lhs|))
                          (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                               (PROGN (SETQ |ns| (CAR |ISTMP#1|)) T))))
-                   (SETQ |def|
-                           (LIST 'UNLESS
-                                 (LIST 'FIND-PACKAGE (SYMBOL-NAME |ns|))
-                                 (LIST 'MAKE-PACKAGE (SYMBOL-NAME |ns|))))
-                   (LIST (|inAllContexts| |def|)
+                   (LIST (LIST 'DEFPACKAGE (SYMBOL-NAME |ns|))
                          (|inAllContexts| (|packageBody| |rhs| |ns|))))
                   (T (SETQ |sig| NIL)
                    (COND
@@ -1234,9 +1248,8 @@
       (SETQ |out| (NAMESTRING (|getOutputPathname| |options|)))
       (COND
        (|out|
-        (CONCAT
-         (|shoeRemoveStringIfNec| (CONCAT "." |$effectiveFaslType|) |out|)
-         ".clisp"))
+        (CONCAT (|shoeRemoveStringIfNec| (CONCAT "." |$faslType|) |out|)
+                ".clisp"))
        (T (|defaultBootToLispFile| |file|)))))))
 
 (DEFUN |translateBootFile| (|progname| |options| |file|)

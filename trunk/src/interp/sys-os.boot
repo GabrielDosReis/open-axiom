@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2010 Gabriel Dos Reis.
+-- Copyright (C) 2007-2011 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 import sys_-constants
 
 namespace BOOT
+import namespace System.Foreign
 
 module sys_-os
 
