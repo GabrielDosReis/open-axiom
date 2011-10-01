@@ -581,13 +581,13 @@ freeOfSharpVars x ==
 
 listOfSharpVars x ==
   x isnt [.,:.] => (isSharpVarWithNum x => [x]; nil)
-  union(listOfSharpVars first x,listOfSharpVars rest x)
+  setUnion(listOfSharpVars first x,listOfSharpVars rest x)
 
 listOfPatternIds x ==
   isPatternVar x => [x]
   x isnt [.,:.] => nil
   x is ['QUOTE,:.] => nil
-  UNIONQ(listOfPatternIds first x,listOfPatternIds rest x)
+  setUnion(listOfPatternIds first x,listOfPatternIds rest x)
 
 isPatternVar v ==
   -- a pattern variable consists of a star followed by a star or digit(s)

@@ -146,6 +146,7 @@
 	   "%algebraSystemIsComplete"
 	   "%nothing"
 	   "%escapeSequenceAverseHost?"
+	   "%defaultReadAndLoadSettings"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
@@ -427,6 +428,12 @@
   (or (member :win32 *features*)
       (member :windows *features*)))
 
+;; Some default settings
+(defmacro |%defaultReadAndLoadSettings| ()
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+	      (progn
+		(setq *read-default-float-format* 'double-float)
+		(setq *load-verbose* nil))))
 
 (defconstant |$EditorProgram| "@oa_editor@")
 

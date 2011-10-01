@@ -766,7 +766,7 @@ extendLocalLibdb conlist ==   --  called by compileSpad2Cmd
   not $createLocalLibDb => nil
   null conlist => nil
   buildLibdb conlist          --> puts datafile into temp.text
-  $newConstructorList := union(conlist, $newConstructorList)
+  $newConstructorList := setUnion(conlist, $newConstructorList)
   localLibdb := '"libdb.text"
   not PROBE_-FILE '"libdb.text" =>
     RENAME_-FILE('"temp.text",'"libdb.text")

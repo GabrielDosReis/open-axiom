@@ -48,16 +48,14 @@
 ## entire bootstrap process.
 
 DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
-AXIOM_LOCAL_LISP_sources = initial-env.lisp
 AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
 
 
 ## FASLs that comprises `bootsys'
-boot_SOURCES = initial-env.lisp $(boot_sources)
-boot_sources = utility.boot tokens.boot includer.boot scanner.boot \
+boot_SOURCES = utility.boot tokens.boot includer.boot scanner.boot \
 	pile.boot ast.boot parser.boot  translator.boot
-boot_clisp = $(boot_sources:.boot=.clisp)
-boot_objects = initial-env.$(LNKEXT) $(boot_sources:.boot=.$(LNKEXT))
+boot_clisp = $(boot_SOURCES:.boot=.clisp)
+boot_objects = $(boot_SOURCES:.boot=.$(LNKEXT))
 
 oa_target_bootdir = $(axiom_targetdir)/boot
 ifeq (@axiom_lisp_flavor@,ecl)
@@ -67,8 +65,8 @@ oa_boot_linkset =
 endif
 
 # Garbage produced by GCL during compilation
-boot_data = $(boot_sources:.boot=.data)
-boot_fn = $(boot_sources:.boot=.fn)
+boot_data = $(boot_SOURCES:.boot=.data)
+boot_fn = $(boot_SOURCES:.boot=.fn)
 
 # reference to this directory from toplevel
 subdir = src/boot/
@@ -187,10 +185,7 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 ## FIXME: This should be automatically extracted from the
 ## Boot source file at packaging time.
 
-%/initial-env.$(LNKEXT): initial-env.lisp %/.started
-	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --compile --output=$@ $<
-
-%/utility.$(LNKEXT): %/utility.clisp %/initial-env.$(LNKEXT)
+%/utility.$(LNKEXT): %/utility.clisp %/.started
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/tokens.$(LNKEXT): %/tokens.clisp %/utility.$(LNKEXT)

@@ -161,7 +161,7 @@ topicCode lst ==
   u := [y for x in lst] where y() ==
     rename := LASSOC(x,$topicSynonyms) => rename
     x
-  if null intersection('(basic extended hidden),u) then u := ['extended,:u]
+  if setIntersection('(basic extended hidden),u) = nil then u := ['extended,:u]
   bitIndexList := nil
   for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==

@@ -65,7 +65,7 @@ Dmp2Dmp(u,source is [dmp,v1,S], target is [.,v2,T]) ==
   u is [[e,:c]] and e = vector [0 for v in v1] =>
     z:= coerceInt(objNewWrap(c,S),target) => objValUnwrap(z)
     coercionFailure()
-  v:= intersection(v1,v2) =>
+  v := intersection(v1,v2) =>
     w1:= SETDIFFERENCE(v1,v) =>
       coerceDmp1(u,source,target,v,w1)
     coerceDmp2(u,source,target)

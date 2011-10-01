@@ -37,14 +37,18 @@
 --% by the Boot translator.  Others are handy library functions.
 --%
 
-import initial_-env
+namespace BOOTTRAN ==
+  import namespace System
+  import namespace AxiomCore
+
 namespace BOOTTRAN
 
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
-  setDifference, applySubst, applySubst!, applySubstNQ,
-  remove,removeSymbol,atomic?,finishLine,subStringMatch?) where
+  setDifference, setUnion, setIntersection,
+  applySubst, applySubst!, applySubstNQ,
+  remove,removeSymbol,atomic?,finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -53,10 +57,15 @@ module utility (objectMember?, symbolMember?, stringMember?,
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) -> %List %Thing
+    setDifference: (%List %Thing,%List %Thing) -> %List %Thing
+    setUnion: (%List %Thing,%List %Thing) -> %List %Thing
+    setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
     finishLine: %Thing -> %Void
     firstNonblankPosition: (%String,%Short) -> %Maybe %Short
     firstBlankPosition: (%String,%Short) -> %Maybe %Short
+
+%defaultReadAndLoadSettings()
 
 --%
 
@@ -232,6 +241,19 @@ setDifference(x,y) ==
     p.rest := [a]
     p := rest p
   rest l
+
+++ Return the union of two lists of objects, with no duplicates.  
+setUnion(x,y) ==
+  z := nil
+  for a in x | not objectMember?(a,z) repeat
+    z := [a,:z]
+  for a in y | not objectMember?(a,z) repeat
+    z := [a,:z]
+  reverse! z
+
+++ Return the intersection of two lists of objects, with no duplicates.  
+setIntersection(x,y) ==
+  [a for a in x | objectMember?(a,y)]
 
 --% removal
 

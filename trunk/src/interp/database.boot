@@ -307,13 +307,13 @@ orderPredTran(oldList,sig,skip) ==
 --pp lastPreds
 
   --(2a) lastDependList=list of all variables that lastPred forms depend upon
-  lastDependList := "UNIONQ"/[listOfPatternIds x for x in lastPreds]
+  lastDependList := setUnion/[listOfPatternIds x for x in lastPreds]
 --sayBrightlyNT "lastDependList="
 --pp lastDependList
 
   --(2b) dependList=list of all variables that isDom/ofCat forms depend upon
   dependList :=
-    "UNIONQ"/[listOfPatternIds y for x in oldList |
+    setUnion/[listOfPatternIds y for x in oldList |
       x is ['isDomain,.,y] or x is ['ofCategory,.,y]]
 --sayBrightlyNT "dependList="
 --pp dependList
@@ -326,8 +326,8 @@ orderPredTran(oldList,sig,skip) ==
     else
       indepvl := listOfPatternIds x
       depvl := nil
-    (INTERSECTIONQ(indepvl,dependList) = nil)
-        and INTERSECTIONQ(indepvl,lastDependList) =>
+    setIntersection(indepvl,dependList) = nil
+        and setIntersection(indepvl,lastDependList) =>
       somethingDone := true
       lastPreds := [:lastPreds,x]
       oldList := remove(oldList,x)
@@ -346,7 +346,7 @@ orderPredTran(oldList,sig,skip) ==
       else
         indepvl := listOfPatternIds x
         depvl := nil
-      (INTERSECTIONQ(indepvl,dependList) = nil) =>
+      setIntersection(indepvl,dependList) = nil =>
         dependList := setDifference(dependList,depvl)
         newList := [:newList,x]
 --  sayBrightlyNT "newList="
@@ -365,14 +365,14 @@ orderPredTran(oldList,sig,skip) ==
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
       ids:= listOfPatternIds y
       if "and"/[symbolMember?(id,fullDependList) for id in ids] then
-        fullDependList:= insertWOC(x,fullDependList)
-      fullDependList:= UNIONQ(fullDependList,ids)
+        fullDependList := insertWOC(x,fullDependList)
+      fullDependList := setUnion(fullDependList,ids)
 
   newList:=[:newList,:lastPreds]
 
 --substitute (isDomain ..) forms as completely as possible to avoid false paths
   newList := isDomainSubst newList
-  answer := [['AND,:newList],:INTERSECTIONQ(fullDependList,sig)]
+  answer := [['AND,:newList],:setIntersection(fullDependList,sig)]
 --sayBrightlyNT '"answer="
 --pp answer
 

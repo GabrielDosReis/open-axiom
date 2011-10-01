@@ -419,6 +419,19 @@ exportNames ns ==
   ns = nil => nil
   [inAllContexts ["EXPORT",quote ns]]
 
+packageBody(x,p) ==
+  x is ['%Import,['%Namespace,ns]] =>
+    user :=
+      p = nil => nil
+      [symbolName p]
+    ns is 'System =>
+      ['COND,
+        [['%hasFeature,KEYWORD::COMMON_-LISP],['USE_-PACKAGE,'"COMMON-LISP",:user]],
+           ['T,['USE_-PACKAGE,'"LISP",:user]]]
+    ['USE_-PACKAGE,symbolName ns,:user]
+  x is ['PROGN,:.] => [x.op,:[packageBody(y,p) for y in x.args]]
+  x
+
 translateToplevel(b,export?) ==
   b isnt [.,:.] => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
@@ -433,8 +446,7 @@ translateToplevel(b,export?) ==
         :[first translateToplevel(d,true) for d in ds]]
 
     %Import(m) =>
-      m is ['%Namespace,n] =>
-        [inAllContexts ["USE-PACKAGE",symbolName n]]
+      m is ['%Namespace,n] => [inAllContexts packageBody(m,nil)]
       if getOptionValue "import" ~= '"skip" then
         bootImport symbolName m
       [["IMPORT-MODULE", symbolName m]]
@@ -445,6 +457,10 @@ translateToplevel(b,export?) ==
     %TypeAlias(lhs, rhs) => [genTypeAlias(lhs,rhs)]
 
     %ConstantDefinition(lhs,rhs) =>
+      lhs is ['%Namespace,ns] =>
+        def := ['UNLESS,['FIND_-PACKAGE,symbolName ns],
+                 ['MAKE_-PACKAGE,symbolName ns]]
+        [inAllContexts def,inAllContexts packageBody(rhs,ns)]
       sig := nil
       if lhs is ["%Signature",n,t] then
         sig := genDeclaration(n,t)

@@ -365,7 +365,7 @@ getMapSubNames(l) ==
   for mapName in l repeat
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
       subs:= append([[mapName,:second mm] for mm in lmm],subs)
-  union(subs,getPreviousMapSubNames UNIONQ(_/TRACENAMES,
+  setUnion(subs,getPreviousMapSubNames setUnion(_/TRACENAMES,
     $lastUntraced))
 
 getPreviousMapSubNames(traceNames) ==
@@ -411,7 +411,7 @@ untraceMapSubNames traceNames ==
   for name in (subs:= ASSOCRIGHT $mapSubNameAlist)
     | symbolMember?(name,_/TRACENAMES) repeat
       _/UNTRACE_,2(name,nil)
-      $lastUntraced:= SETDIFFERENCE($lastUntraced,subs)
+      $lastUntraced := setDifference($lastUntraced,subs)
 
 funfind("functor","opname") ==
   ops:= isFunctor functor
@@ -528,7 +528,7 @@ untraceDomainLocalOps(dom,lops) ==
 untraceAllDomainLocalOps(dom) == nil
 --  abb := abbreviate dom
 --  actualLops := getLocalOpsFromLisplib abb
---  null (l := intersection(actualLops,_/TRACENAMES)) => nil
+--  null (l := setIntersection(actualLops,_/TRACENAMES)) => nil
 --  _/UNTRACE_,1(l,nil)
 --  nil
 
@@ -772,7 +772,7 @@ tracelet(fn,vars) ==
   fn = 'Undef => nil
   vars:=
     vars="all" => "all"
-    l:= LASSOC(fn,$letAssoc) => union(vars,l)
+    l:= LASSOC(fn,$letAssoc) => setUnion(vars,l)
     vars
   $letAssoc:= [[fn,:vars],:$letAssoc]
   if $letAssoc then SETLETPRINTFLAG true
@@ -792,7 +792,7 @@ breaklet(fn,vars) ==
   fn = "Undef" => nil
   fnEntry:= LASSOC(fn,$letAssoc)
   vars:=
-    pair := symbolLassoc("BREAK",fnEntry) => union(vars,rest pair)
+    pair := symbolLassoc("BREAK",fnEntry) => setUnion(vars,rest pair)
     vars
   $letAssoc:=
     null fnEntry => [[fn,:[["BREAK",:vars]]],:$letAssoc]

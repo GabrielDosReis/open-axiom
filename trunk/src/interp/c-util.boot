@@ -416,9 +416,9 @@ intersectionContour(c,c') ==
     computeIntersection(c,c') ==
       varlist:= removeDuplicates ASSOCLEFT c
       varlist':= removeDuplicates ASSOCLEFT c'
-      interVars:= intersection(varlist,varlist')
-      unionVars:= union(varlist,varlist')
-      diffVars:= setDifference(unionVars,interVars)
+      interVars := setIntersection(varlist,varlist')
+      unionVars := setUnion(varlist,varlist')
+      diffVars := setDifference(unionVars,interVars)
       modeAssoc:= buildModeAssoc(diffVars,c,c')
       [:modeAssoc,:
         [[x,:proplist]

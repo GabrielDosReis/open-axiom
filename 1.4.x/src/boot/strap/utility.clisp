@@ -1,5 +1,14 @@
 (PROCLAIM '(OPTIMIZE SPEED))
-(IMPORT-MODULE "initial-env")
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (UNLESS (FIND-PACKAGE #1="BOOTTRAN") (MAKE-PACKAGE #1#)))
+
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (PROGN
+   (COND
+    ((|%hasFeature| :COMMON-LISP)
+     (USE-PACKAGE "COMMON-LISP" . #1=(#2="BOOTTRAN")))
+    (T (USE-PACKAGE "LISP" . #1#)))
+   (USE-PACKAGE "AxiomCore" #2#)))
 
 (IN-PACKAGE "BOOTTRAN")
 
@@ -10,9 +19,9 @@
    '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
-                     |substitute!| |setDifference| |applySubst| |applySubst!|
-                     |applySubstNQ| |remove| |removeSymbol| |atomic?|
-                     |finishLine| |subStringMatch?|)))
+                     |substitute!| |setDifference| |setUnion| |setIntersection|
+                     |applySubst| |applySubst!| |applySubstNQ| |remove|
+                     |removeSymbol| |atomic?| |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -39,6 +48,18 @@
 (DECLAIM
  (FTYPE (FUNCTION ((|%List| |%Thing|) |%Thing|) (|%List| |%Thing|)) |remove|))
 
+(DECLAIM
+ (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|)) (|%List| |%Thing|))
+  |setDifference|))
+
+(DECLAIM
+ (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|)) (|%List| |%Thing|))
+  |setUnion|))
+
+(DECLAIM
+ (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|)) (|%List| |%Thing|))
+  |setIntersection|))
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Void|) |finishLine|))
@@ -50,6 +71,8 @@
 (DECLAIM
  (FTYPE (FUNCTION (|%String| |%Short|) (|%Maybe| |%Short|))
   |firstBlankPosition|))
+
+(|%defaultReadAndLoadSettings|)
 
 (DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
 
@@ -223,6 +246,41 @@
                             (SETQ |p| (CDR |p|))))))
                (SETQ |bfVar#1| (CDR |bfVar#1|))))
             (CDR |l|))))))
+
+(DEFUN |setUnion| (|x| |y|)
+  (PROG (|z|)
+    (RETURN
+     (PROGN
+      (SETQ |z| NIL)
+      (LET ((|bfVar#1| |x|) (|a| NIL))
+        (LOOP
+         (COND
+          ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |a| (CAR |bfVar#1|)) NIL))
+           (RETURN NIL))
+          (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
+         (SETQ |bfVar#1| (CDR |bfVar#1|))))
+      (LET ((|bfVar#2| |y|) (|a| NIL))
+        (LOOP
+         (COND
+          ((OR (NOT (CONSP |bfVar#2|)) (PROGN (SETQ |a| (CAR |bfVar#2|)) NIL))
+           (RETURN NIL))
+          (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
+         (SETQ |bfVar#2| (CDR |bfVar#2|))))
+      (|reverse!| |z|)))))
+
+(DEFUN |setIntersection| (|x| |y|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |x|) (|a| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |a| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      (T
+       (AND (|objectMember?| |a| |y|)
+            (COND
+             ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS |a| NIL))
+              (SETQ |bfVar#3| |bfVar#2|))
+             (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|)))))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
 (DEFUN |removeSymbol| (|l| |x|)
   (PROG (|y| |LETTMP#1| |l'| |before|)

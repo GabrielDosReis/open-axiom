@@ -565,8 +565,49 @@
   (COND ((NULL |ns|) NIL)
         (T (LIST (|inAllContexts| (LIST 'EXPORT (|quote| |ns|)))))))
 
+(DEFUN |packageBody| (|x| |p|)
+  (PROG (|user| |ns| |ISTMP#3| |ISTMP#2| |ISTMP#1|)
+    (RETURN
+     (COND
+      ((AND (CONSP |x|) (EQ (CAR |x|) '|%Import|)
+            (PROGN
+             (SETQ |ISTMP#1| (CDR |x|))
+             (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                  (PROGN
+                   (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                   (AND (CONSP |ISTMP#2|) (EQ (CAR |ISTMP#2|) '|%Namespace|)
+                        (PROGN
+                         (SETQ |ISTMP#3| (CDR |ISTMP#2|))
+                         (AND (CONSP |ISTMP#3|) (NULL (CDR |ISTMP#3|))
+                              (PROGN (SETQ |ns| (CAR |ISTMP#3|)) T))))))))
+       (SETQ |user| (COND ((NULL |p|) NIL) (T (LIST (SYMBOL-NAME |p|)))))
+       (COND
+        ((EQ |ns| '|System|)
+         (LIST 'COND
+               (LIST (LIST '|%hasFeature| :COMMON-LISP)
+                     (CONS 'USE-PACKAGE (CONS "COMMON-LISP" |user|)))
+               (LIST 'T (CONS 'USE-PACKAGE (CONS "LISP" |user|)))))
+        (T (CONS 'USE-PACKAGE (CONS (SYMBOL-NAME |ns|) |user|)))))
+      ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN))
+       (CONS (CAR |x|)
+             (LET ((|bfVar#2| NIL)
+                   (|bfVar#3| NIL)
+                   (|bfVar#1| (CDR |x|))
+                   (|y| NIL))
+               (LOOP
+                (COND
+                 ((OR (NOT (CONSP |bfVar#1|))
+                      (PROGN (SETQ |y| (CAR |bfVar#1|)) NIL))
+                  (RETURN |bfVar#2|))
+                 ((NULL |bfVar#2|)
+                  (SETQ |bfVar#2| #1=(CONS (|packageBody| |y| |p|) NIL))
+                  (SETQ |bfVar#3| |bfVar#2|))
+                 (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+                (SETQ |bfVar#1| (CDR |bfVar#1|))))))
+      (T |x|)))))
+
 (DEFUN |translateToplevel| (|b| |export?|)
-  (PROG (|lhs| |t| |ISTMP#2| |sig| |n| |ISTMP#1| |xs|)
+  (PROG (|lhs| |t| |ISTMP#2| |sig| |def| |ns| |n| |ISTMP#1| |xs|)
     (DECLARE
      (SPECIAL |$currentModuleName| |$foreignsDefsForCLisp|
       |$constantIdentifiers| |$InteractiveMode| |$activeNamespace|))
@@ -621,8 +662,7 @@
                          (SETQ |ISTMP#1| (CDR |m|))
                          (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                               (PROGN (SETQ |n| (CAR |ISTMP#1|)) T))))
-                   (LIST
-                    (|inAllContexts| (LIST 'USE-PACKAGE (SYMBOL-NAME |n|)))))
+                   (LIST (|inAllContexts| (|packageBody| |m| NIL))))
                   (T
                    (COND
                     ((NOT (STRING= (|getOptionValue| '|import|) "skip"))
@@ -636,22 +676,33 @@
                  (LIST (|genTypeAlias| |lhs| |rhs|))))
               (|%ConstantDefinition|
                (LET ((|lhs| (CADR |b|)) (|rhs| (CADDR |b|)))
-                 (PROGN
-                  (SETQ |sig| NIL)
-                  (COND
-                   ((AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Signature|)
-                         (PROGN
-                          (SETQ |ISTMP#1| (CDR |lhs|))
-                          (AND (CONSP |ISTMP#1|)
-                               (PROGN
-                                (SETQ |n| (CAR |ISTMP#1|))
-                                (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                                (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
-                                     (PROGN (SETQ |t| (CAR |ISTMP#2|)) T))))))
-                    (SETQ |sig| (|genDeclaration| |n| |t|)) (SETQ |lhs| |n|)))
-                  (SETQ |$constantIdentifiers|
-                          (CONS |lhs| |$constantIdentifiers|))
-                  (LIST (LIST 'DEFCONSTANT |lhs| |rhs|)))))
+                 (COND
+                  ((AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Namespace|)
+                        (PROGN
+                         (SETQ |ISTMP#1| (CDR |lhs|))
+                         (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                              (PROGN (SETQ |ns| (CAR |ISTMP#1|)) T))))
+                   (SETQ |def|
+                           (LIST 'UNLESS
+                                 (LIST 'FIND-PACKAGE (SYMBOL-NAME |ns|))
+                                 (LIST 'MAKE-PACKAGE (SYMBOL-NAME |ns|))))
+                   (LIST (|inAllContexts| |def|)
+                         (|inAllContexts| (|packageBody| |rhs| |ns|))))
+                  (T (SETQ |sig| NIL)
+                   (COND
+                    ((AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Signature|)
+                          (PROGN
+                           (SETQ |ISTMP#1| (CDR |lhs|))
+                           (AND (CONSP |ISTMP#1|)
+                                (PROGN
+                                 (SETQ |n| (CAR |ISTMP#1|))
+                                 (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                                 (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                                      (PROGN (SETQ |t| (CAR |ISTMP#2|)) T))))))
+                     (SETQ |sig| (|genDeclaration| |n| |t|)) (SETQ |lhs| |n|)))
+                   (SETQ |$constantIdentifiers|
+                           (CONS |lhs| |$constantIdentifiers|))
+                   (LIST (LIST 'DEFCONSTANT |lhs| |rhs|))))))
               (|%Assignment|
                (LET ((|lhs| (CADR |b|)) (|rhs| (CADDR |b|)))
                  (PROGN

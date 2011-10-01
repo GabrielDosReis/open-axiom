@@ -81,7 +81,7 @@ displayTranModemap (mm is [[x,:sig],[pred,:y],:z]) ==
 
 listOfPredOfTypePatternIds p ==
   p is ['AND,:lp] or p is ['OR,:lp] =>
-    UNIONQ([:listOfPredOfTypePatternIds p1 for p1 in lp],nil)
+    setUnion([:listOfPredOfTypePatternIds p1 for p1 in lp],nil)
   p is [op,a,.] and op = 'ofType =>
     isPatternVar a => [a]
     nil

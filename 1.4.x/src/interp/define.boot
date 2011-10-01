@@ -968,7 +968,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   abbreviationsSpad2Cmd ['package,packageAbb,packageName]
   -- This is a little odd, but the parser insists on calling
   -- domains, rather than packages
-  nameForDollar := first SETDIFFERENCE('(S A B C D E F G H I),argl)
+  nameForDollar := first setDifference('(S A B C D E F G H I),argl)
   packageArgl := [nameForDollar,:argl]
   capsuleDefAlist := fn(def,nil) where fn(x,oplist) ==
     x isnt [.,:.] => oplist
@@ -1654,7 +1654,7 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
       argDepAlist :=
         [[x,:dependencies] for [x,:y] in argSigAlist] where
           dependencies() ==
-            union(listOfIdentifiersIn y,
+            setUnion(listOfIdentifiersIn y,
               remove(listOfIdentifiersIn LASSOC(x,$predAlist),x))
           argSigAlist := [:$sigAlist,:pairList(argList,sigList)]
  
@@ -1681,7 +1681,7 @@ orderByDependency(vl,dl) ==
   fatalError => userError '"Parameter specification error"
   until vl = nil repeat
     newl:=
-      [v for v in vl for d in dl | null intersection(d,vl)] or return nil
+      [v for v in vl for d in dl | setIntersection(d,vl) = nil] or return nil
     orderedVarList:= [:newl,:orderedVarList]
     vl' := setDifference(vl,newl)
     dl' := [setDifference(d,newl) for x in vl for d in dl

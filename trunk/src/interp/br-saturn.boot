@@ -1241,7 +1241,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     which = '"attribute" or which = '"constructor" => sig
     $conkind ~= '"package" => sig
     symbolsUsed := [x for x in rest conform | ident? x]
-    $DomainList := SETDIFFERENCE($DomainList,symbolsUsed)
+    $DomainList := setDifference($DomainList,symbolsUsed)
     getSubstSigIfPossible sig
   -----------------------------------------------------------
   htSaySaturn '"\begin{tabular}{lp{0in}}"
