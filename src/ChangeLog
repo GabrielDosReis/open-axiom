@@ -1,3 +1,19 @@
+2011-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/utility.boot: Define BOOTTRAN namespace.
+	(setUnion): New.
+	(setDifference): New.
+	* boot/translator.boot (packageBody): New.
+	(translateToplevel): Use it.  Translate namespace definition.
+	* boot/tokens.boot: Replace bitmask with bitref.
+	Do not translate setDifference and setUnion.
+	* boot/parser.boot (bpDef): Now include namespace definition.
+	(bpComma): Remove namespace rule as subsumed by Where rule.
+	* boot/Makefile.in: Remove dependencies on initial-env.lisp.
+	(AXIOM_LOCAL_LISP_sources): Remove as unused,
+	(boot_sources): Remove as redundant with boot_SOURCES.
+	* boot/initial-env.lisp: Remove.
+
 2011-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/utility.boot (firstNonblankPosition): New.

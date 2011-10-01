@@ -166,10 +166,10 @@ shoeDict:=shoeDictCons()
 shoePunCons()==
   a := makeBitVector 256
   for i in 0..255 repeat
-    bitmask(a,i) := 0
+    bitref(a,i) := 0
   for [k,:.] in entries shoeKeyTable repeat
     shoeStartsId stringChar(k,0) => nil
-    bitmask(a,codePoint stringChar(k,0)) := 1
+    bitref(a,codePoint stringChar(k,0)) := 1
   a
  
 shoePun:=shoePunCons()
@@ -224,7 +224,7 @@ for i in [ _
       ["append",  nil] , _
       ["append!", nil] , _
       ["UNION",   nil] , _
-      ["UNIONQ",  nil] , _
+      ["setUnion",  nil] , _
       ["union",   nil] , _
       ["and",    true] , _
       ["or",    false] , _
@@ -244,7 +244,7 @@ for i in [ _
   ["array?",    "ARRAYP"]  , _
   ["arrayRef",    "AREF"]  , _
   ["atom",        "ATOM"]  , _
-  ["bitmask",   "SBIT"] , _
+  ["bitref",   "SBIT"] , _
   ["canonicalFilename", "PROBE-FILE"], _
   ["charByName", "NAME-CHAR"] , _
   ["charDowncase", "CHAR-DOWNCASE"], _
@@ -297,9 +297,7 @@ for i in [ _
   ["scalarEq?",   "EQL" ] , _
   ["scalarEqual?","EQL" ] , _
   ["second",      "CADR"] , _
-  ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
-  ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
   ["stringChar", "SCHAR"] , _
   ["stringDowncase", "STRING-DOWNCASE"] , _

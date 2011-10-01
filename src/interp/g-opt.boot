@@ -506,7 +506,7 @@ findVMFreeVars form ==
   op is "QUOTE" => nil
   vars := union/[findVMFreeVars arg for arg in args]
   op isnt [.,:.] => vars
-  union(findVMFreeVars op,vars)
+  setUnion(findVMFreeVars op,vars)
 
 ++ Return true is `var' is the left hand side of an assignment
 ++ in `form'.

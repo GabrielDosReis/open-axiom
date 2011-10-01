@@ -895,6 +895,7 @@ bpStoreName()==
 
 bpDef() ==  
   bpName() and bpStoreName() and bpDefTail function %Definition
+    or bpNamespace() and bpSimpleDefinitionTail()
  
 bpDDef() ==  bpName() and bpDefTail function %Definition
 
@@ -946,8 +947,7 @@ bpPDefinitionItems()==
   bpParenthesized function bpSemiColonDefinition
  
 bpComma()== 
-  bpModule() or bpImport() or bpNamespace() or
-    bpTuple function bpWhere
+  bpModule() or bpImport() or bpTuple function bpWhere
  
 bpTuple(p) ==
   bpListofFun(p,function bpCommaBackSet,function bfTuple)

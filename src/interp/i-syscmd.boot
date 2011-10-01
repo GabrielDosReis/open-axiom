@@ -824,7 +824,7 @@ displayWorkspaceNames() ==
   if null names
     then sayBrightly "   * None *"
     else sayAsManyPerLineAsPossible [object2String x for x in names]
-  imacs := SETDIFFERENCE(imacs,pmacs)
+  imacs := setDifference(imacs,pmacs)
   if imacs then
     sayMessage '"Names of System-Defined Objects in the Workspace:"
     sayAsManyPerLineAsPossible [object2String x for x in imacs]

@@ -884,7 +884,8 @@
    T))
 
 (DEFUN |bpDef| ()
-  (AND (|bpName|) (|bpStoreName|) (|bpDefTail| #'|%Definition|)))
+  (OR (AND (|bpName|) (|bpStoreName|) (|bpDefTail| #'|%Definition|))
+      (AND (|bpNamespace|) (|bpSimpleDefinitionTail|))))
 
 (DEFUN |bpDDef| () (AND (|bpName|) (|bpDefTail| #'|%Definition|)))
 
@@ -930,8 +931,7 @@
 
 (DEFUN |bpPDefinitionItems| () (|bpParenthesized| #'|bpSemiColonDefinition|))
 
-(DEFUN |bpComma| ()
-  (OR (|bpModule|) (|bpImport|) (|bpNamespace|) (|bpTuple| #'|bpWhere|)))
+(DEFUN |bpComma| () (OR (|bpModule|) (|bpImport|) (|bpTuple| #'|bpWhere|)))
 
 (DEFUN |bpTuple| (|p|) (|bpListofFun| |p| #'|bpCommaBackSet| #'|bfTuple|))
 

@@ -193,10 +193,10 @@ scanDict:=scanDictCons()
 scanPunCons()==
   a := makeBitVector 256
   for i in 0..255 repeat
-    bitmask(a,i) := 0
+    bitref(a,i) := 0
   for [k,:.] in entries scanKeyTable repeat
     if not startsId? stringChar(k,0) then
-      bitmask(a,codePoint stringChar(k,0)) := 1
+      bitref(a,codePoint stringChar(k,0)) := 1
   a
 
 scanPun:=scanPunCons()

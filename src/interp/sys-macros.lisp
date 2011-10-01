@@ -752,7 +752,7 @@
 	   (APPEND NIL)
 	   (|append| NIL) 
 	   (UNION NIL) 
-	   (UNIONQ NIL)
+	   (|setUnion| NIL)
 	   (|gcd| (|Zero|))
 	   (|union| NIL)
 	   (|append!| NIL)

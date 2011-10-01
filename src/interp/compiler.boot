@@ -264,12 +264,12 @@ freeVarUsage([.,vars,body],env) ==
       op := u.op
       op in '(QUOTE GO function) => free
       op = "LAMBDA" =>
-        bound := UNIONQ(bound, second u)
+        bound := setUnion(bound, second u)
         for v in CDDR u repeat
           free := freeList(v,bound,free,e)
         free
       op = "PROG" =>
-        bound := UNIONQ(bound, second u)
+        bound := setUnion(bound, second u)
         for v in CDDR u | cons? v repeat
           free := freeList(v,bound,free,e)
         free
