@@ -362,7 +362,6 @@ bpName() ==
     bpAnyNo function bpQualifiedName
   false
 
-
 ++ Constant:
 ++   INTEGER
 ++   FLOAT
@@ -445,10 +444,13 @@ bpModule() ==
 ++ Import:
 ++    IMPORT Signature FOR Name
 ++    IMPORT Name
-++    IMPORT Namespace
+++    IMPORT NAMESPACE LongName
 bpImport() ==
   bpEqKey "IMPORT" =>
-    bpNamespace() => bpPush %Import bpPop1()
+    bpEqKey "NAMESPACE" =>
+      bpLeftAssoc('(DOT),function bpName) and
+        bpPush %Import bfNamespace bpPop1()
+          or bpTrap()
     a := bpState()
     bpName() or bpTrap()
     bpEqPeek "COLON" =>
