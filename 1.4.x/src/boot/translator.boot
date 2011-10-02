@@ -431,8 +431,6 @@ packageBody(x,p) ==
     z :=
       ns is ['DOT,'System,'Foreign] =>
         %hasFeature KEYWORD::SBCL => 'SB_-ALIEN
-        %hasFeature KEYWORD::CLISP => 'FFI
-        %hasFeature KEYWORD::CLOZURE => 'CCL
         %hasFeature KEYWORD::ECL => 'FFI
         return nil
       ident? ns => ns
@@ -551,7 +549,7 @@ shoeReport stream==
   shoeFileLine('"USED and not DEFINED",stream)
   a := [i for [i,:b] in entries $bootUsed | not b]
   for i in SSORT a repeat
-     b := strconc(PNAME i,'" is used in ")
+     b := strconc(symbolName i,'" is used in ")
      bootOutLines( SSORT tableValue($bootUsed,i),stream,b)
  
 shoeDefUse(s)==
@@ -661,7 +659,7 @@ shoeXReport stream==
    shoeFileLine('"USED and where DEFINED",stream)
    c := SSORT [k for [k,:.] in entries $bootUsed]
    for i in c repeat
-      a := strconc(PNAME i,'" is used in ")
+      a := strconc(symbolName i,'" is used in ")
       bootOutLines( SSORT tableValue($bootUsed,i),stream,a)
  
 shoeItem (str)==

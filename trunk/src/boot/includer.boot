@@ -218,27 +218,6 @@ shoeElseIf?       s  == shoePrefix?('")elseif",      s)
 shoeLisp?         s  == shoePrefix?('")lisp",        s)
 shoeLine?         s  == shoePrefix?('")line",        s)
  
-shoeBiteOff x ==
-  n := firstNonblankPosition(x,0)
-  n = nil =>  false
-  n1 := firstBlankPosittion(x,n)
-  n1 = nil =>  [subString(x,n),'""]
-  [subString(x,n,n1-n),subString(x,n1)]
- 
-shoeFileName x==
-  a := shoeBiteOff x
-  a = nil =>  '""
-  c := shoeBiteOff second a
-  c = nil =>  first a
-  strconc(first a,'".",first c)
- 
-shoeFnFileName x==
-  a := shoeBiteOff x
-  a = nil =>  ['"",'""]
-  c := shoeFileName second a
-  c = nil =>  [first a,'""]
-  [first a, c]
- 
 shoeInclude s == 
   bDelay(function shoeInclude1,[s])
 

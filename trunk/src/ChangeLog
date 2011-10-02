@@ -1,3 +1,12 @@
+2011-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Do not use CCL in AxiomCore.
+	* boot/translator.boot (packageBody): Tidy.
+	* boot/scanner.boot (shoeOrdToNum): Remove.
+	* boot/includer.boot (shoeBiteOff): Remove.
+	(shoeFileName): Likewise.
+	(shoeFnFileName): Likewise.
+
 2011-10-01  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* boot/utility.boot (objectAssoc): New.  Export.
