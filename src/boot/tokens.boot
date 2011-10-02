@@ -177,8 +177,6 @@ shoePun:=shoePunCons()
 ++ List of prefix operators. 
 for i in [ _
              "NOT", _
---           "COLON", _
---           "SHOEEQ", _
              "LENGTH"  _
                      ] _
        repeat property(i,'SHOEPRE) := true
@@ -231,7 +229,6 @@ for i in [ _
       ["AND",    true] , _
       ["OR",    false]   _
                          ]
- 
        repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _

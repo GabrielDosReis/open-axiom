@@ -57,7 +57,7 @@
   #+:gcl (:use "DEFPACKAGE")
   ;; Clozure CL sequesters most of its useful extensions, in particular
   ;; threads, in the CCL package.
-  #+:clozure (:use "CCL")
+  ;; #+:clozure (:use "CCL")
   (:export "%Thing"
 	   "%Void"
 	   "%Boolean"
