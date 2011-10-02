@@ -1487,8 +1487,8 @@ recordNewValue(x,prop,val) ==
 recordNewValue0(x,prop,val) ==
   -- writes (prop . val) into $HistRecord
   -- updateHist writes this stuff out into the history file
-  p1:= ASSQ(x,$HistRecord) =>
-    p2:= ASSQ(prop,rest p1) =>
+  p1 := objectAssoc(x,$HistRecord) =>
+    p2 := objectAssoc(prop,rest p1) =>
       p2.rest := val
     p1.rest := [[prop,:val],:rest p1]
   p:= [x,:list [prop,:val]]
@@ -1501,8 +1501,8 @@ recordOldValue(x,prop,val) ==
 
 recordOldValue0(x,prop,val) ==
   -- writes (prop . val) into $HistList
-  p1:= ASSQ(x,first $HistList) =>
-    not ASSQ(prop,rest p1) =>
+  p1 := objectAssoc(x,first $HistList) =>
+    objectAssoc(prop,rest p1) = nil =>
       p1.rest := [[prop,:val],:rest p1]
   p:= [x,:list [prop,:val]]
   $HistList.first := [p,:first $HistList]
@@ -1517,7 +1517,7 @@ undoInCore(n) ==
   n>0 and
     $HiFiAccess =>
       vec:= rest (try readHiFi(n); finally disableHist())
-      val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and
+      val:= ( p := objectAssoc('%,vec) ) and (p1 := objectAssoc('value,rest p) ) and
         rest p1
     sayKeyedMsg("S2IH0019",[n])
   $InteractiveFrame:= putHist('%,'value,val,$InteractiveFrame)
@@ -1546,7 +1546,7 @@ undoFromFile(n) ==
       x:= first p1
       for p2 in rest p1 repeat
         $InteractiveFrame:= putHist(x,first p2,rest p2,$InteractiveFrame)
-  val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and rest p1
+  val := (p := objectAssoc('%,vec) ) and (p1 := objectAssoc('value,rest p) ) and rest p1
   $InteractiveFrame:= putHist('%,'value,val,$InteractiveFrame)
   updateHist()
 
@@ -1679,8 +1679,8 @@ showInOut(mini,maxi) ==
   for ind in mini..maxi repeat
     vec:= (try readHiFi(ind); finally disableHist())
     sayMSG [first vec]
-    Alist:= ASSQ('%,rest vec) =>
-      triple:= rest ASSQ('value,rest Alist)
+    Alist := objectAssoc('%,rest vec) =>
+      triple := rest objectAssoc('value,rest Alist)
       $IOindex:= ind
       spadPrint(objValUnwrap triple,objMode triple)
 
@@ -1694,8 +1694,8 @@ fetchOutput(n) ==
     n >= $IOindex => throwKeyedMsg("S2IH0001",[n])
     n < 1        => throwKeyedMsg("S2IH0002",[n])
     vec:= (try readHiFi(n); finally disableHist())
-    Alist:= ASSQ('%,rest vec) =>
-      val:= rest ASSQ('value,rest Alist) => val
+    Alist := objectAssoc('%,rest vec) =>
+      val := rest objectAssoc('value,rest Alist) => val
       throwKeyedMsg("S2IH0003",[n])
     throwKeyedMsg("S2IH0003",[n])
   throwKeyedMsg("S2IH0004",nil)
@@ -2395,7 +2395,7 @@ diffAlist(new,old) ==
     -- (2) if the old world does have a proplist for that variable, then
     --     a) for each property with a value: give the old value
     --     b) for each property missing:      give nil as the old value
-    oldPair := ASSQ(name,old) =>
+    oldPair := objectAssoc(name,old) =>
       null (oldProplist := rest oldPair) =>
       --record old values of new properties as nil
         acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
@@ -2409,7 +2409,7 @@ diffAlist(new,old) ==
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
 --record properties absent on new list (say, from a )cl all)
   for (oldPair := [name,:r]) in old repeat
-    r and null LASSQ(name,new) =>
+    r and null QLASSQ(name,new) =>
       acc := [oldPair,:acc]
     -- name has an entry both in new and old world
     -- (1) if the new world has no proplist for that variable
@@ -2492,10 +2492,10 @@ undoSingleStep(changes,env) ==
   for (change := [name,:changeList]) in changes repeat
     if symbolLassoc('localModemap,changeList) then
       changeList := undoLocalModemapHack changeList
-    pairlist := ASSQ(name,env) =>
+    pairlist := objectAssoc(name,env) =>
       proplist := rest pairlist =>
         for (pair := [prop,:value]) in changeList repeat
-          node := ASSQ(prop,proplist) => node.rest := value
+          node := objectAssoc(prop,proplist) => node.rest := value
           proplist.rest := [first proplist,:rest proplist]
           proplist.first := pair
       pairlist.rest := changeList

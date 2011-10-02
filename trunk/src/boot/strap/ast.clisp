@@ -2448,7 +2448,9 @@
      (COND ((NULL |t|) |t|)
            ((NOT (CONSP |t|))
             (COND
-             ((SETQ |t'| (CDR (ASSOC (|coreSymbol| |t|) |$NativeTypeTable|)))
+             ((SETQ |t'|
+                      (CDR
+                       (|objectAssoc| (|coreSymbol| |t|) |$NativeTypeTable|)))
               (SETQ |t'|
                       (COND
                        ((|%hasFeature| :SBCL) (|bfColonColon| 'SB-ALIEN |t'|))
@@ -3109,7 +3111,8 @@
 (DEFUN |genCLISPnativeTranslation,actualArg| (|p| |pairs|)
   (PROG (|a'|)
     (RETURN
-     (COND ((SETQ |a'| (CDR (ASSOC |p| |pairs|))) (CDR (CDR |a'|))) (T |p|)))))
+     (COND ((SETQ |a'| (CDR (|objectAssoc| |p| |pairs|))) (CDR (CDR |a'|)))
+           (T |p|)))))
 
 (DEFUN |getCLISPType| (|a|) (LIST (|bfColonColon| 'FFI 'C-ARRAY) (LENGTH |a|)))
 
@@ -3255,10 +3258,12 @@
                                        (LIST |x|
                                              (COND
                                               ((SETQ |p'|
-                                                       (ASSOC |p| |strPairs|))
+                                                       (|objectAssoc| |p|
+                                                                      |strPairs|))
                                                (CDR |p'|))
                                               ((SETQ |p'|
-                                                       (ASSOC |p| |aryPairs|))
+                                                       (|objectAssoc| |p|
+                                                                      |aryPairs|))
                                                (CDR |p'|))
                                               (T |p|)))))
                                   (COND ((NULL |bfVar#13|) NIL)

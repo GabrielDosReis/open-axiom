@@ -313,17 +313,17 @@ FindFundAncs(l,e) ==
   ans := FindFundAncs(rest l,e)
   for u in FindFundAncs([[CatEval(first x,e),mkAnd(CADAR l,second x,e)]
    for x in categoryAncestors f1],e) repeat
-    x:= ASSQ(first u,ans) =>
+    x:= objectAssoc(first u,ans) =>
       ans:= [[first u,mkOr(second x,second u,e)],:remove(ans,x)]
     ans:= [u,:ans]
         --testing to see if first l is already there
-  x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x,e)],:remove(ans,x)]
+  x := objectAssoc(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x,e)],:remove(ans,x)]
   CADAR l=true =>
     for x in categoryPrincipals f1 repeat
-      if y:= ASSQ(CatEval(x,e),ans) then ans := remove(ans,y)
+      if y := objectAssoc(CatEval(x,e),ans) then ans := remove(ans,y)
     [first l,:ans]
   for x in categoryPrincipals f1 repeat
-    if y:= ASSQ(CatEval(x,e),ans) then ans:=
+    if y := objectAssoc(CatEval(x,e),ans) then ans:=
       [[first y,mkOr(CADAR l,second y,e)],:remove(ans,y)]
   [first l,:ans]
   -- Our new thing may have, as an alternate view, a principal
@@ -468,7 +468,7 @@ JoinInner(l,$e) ==
              --         bname,
              --         " replacing",
              --         first anc)
-                bCond:= ASSQ(b,CondList)
+                bCond := objectAssoc(b,CondList)
                 CondList := remove(CondList,bCond)
              -- value of bCond not used and could be nil
              -- bCond:= second bCond

@@ -604,8 +604,8 @@ canCoerceTower(t1,t2) ==
 
 canCoerceLocal(t1,t2) ==
   -- test for coercion on top level
-  p:= ASSQ(first t1,$CoerceTable)
-  p and ASSQ(first t2,rest p) is [.,:[tag,fun]] =>
+  p := objectAssoc(first t1,$CoerceTable)
+  p and objectAssoc(first t2,rest p) is [.,:[tag,fun]] =>
     tag='partial => nil
     tag='total   => true
     (functionp(fun) and
@@ -619,8 +619,8 @@ canCoerceCommute(t1,t2) ==
 -- looks for the existence of a commuting function
   symbolMember?(first(t1),(l := [$QuotientField, 'Gaussian])) and
     symbolMember?(first(t2),l) => true
-  p:= ASSQ(first t1,$CommuteTable)
-  p and ASSQ(first t2,rest p) is [.,:['commute,.]]
+  p := objectAssoc(first t1,$CommuteTable)
+  p and objectAssoc(first t2,rest p) is [.,:['commute,.]]
 
 newCanCoerceCommute(t1,t2) ==
   coerceIntCommute(objNewWrap("$fromCoerceable$",t1),t2)
@@ -1133,8 +1133,8 @@ coerceIntTableOrFunction(triple,t2) ==
   null isValidType t2 => nil  -- added 9-18-85 by RSS
   null isLegitimateMode(t2,nil,nil) => nil  -- added 6-28-87 by RSS
   t1 := objMode triple
-  p:= ASSQ(first t1,$CoerceTable)
-  p and ASSQ(first t2,rest p) is [.,:[tag,fun]] =>
+  p := objectAssoc(first t1,$CoerceTable)
+  p and objectAssoc(first t2,rest p) is [.,:[tag,fun]] =>
     val := objVal triple
     fun='Identity => objNew(val,t2)
     tag='total =>
@@ -1275,8 +1275,8 @@ coerceIntTest(t1,t2) ==
   -- thus the type can be bubbled before coerceIntTableOrFunction is called
   t1=t2 or
     b:=
-      p:= ASSQ(first t1,$CoerceTable)
-      p and ASSQ(first t2,rest p)
+      p := objectAssoc(first t1,$CoerceTable)
+      p and objectAssoc(first t2,rest p)
     b or coerceConvertMmSelection('coerce,t1,t2) or
       ($useConvertForCoercions and
         coerceConvertMmSelection('convert,t1,t2))

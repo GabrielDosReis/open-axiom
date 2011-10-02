@@ -735,7 +735,7 @@ $exampleConstructors := nil
 saturnHasExamplePage conname ==
   if not $exampleConstructors then
      $exampleConstructors := getSaturnExampleList()
-  ASSQ(conname, $exampleConstructors)
+  objectAssoc(conname, $exampleConstructors)
   
 getSaturnExampleList() == 
   file := strconc(systemRootDirectory(), "/doc/axug/examples.lsp")

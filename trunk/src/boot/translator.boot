@@ -434,11 +434,9 @@ packageBody(x,p) ==
         %hasFeature KEYWORD::CLISP => 'FFI
         %hasFeature KEYWORD::CLOZURE => 'CCL
         %hasFeature KEYWORD::ECL => 'FFI
-        %hasFeature KEYWORD::GCL => 'SI
-        nil
+        return nil
       ident? ns => ns
-      nil
-    z = nil => bpTrap()
+      bpTrap()
     ['USE_-PACKAGE,symbolName z,:user]
   x is ['PROGN,:.] => [x.op,:[packageBody(y,p) for y in x.args]]
   x

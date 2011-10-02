@@ -1647,7 +1647,7 @@ compileIs(val,pattern) ==
   predCode:=["%LET",g:=gensym(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
   for var in removeDuplicates vars repeat
-    assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
+    assignCode:=[["%LET",var,["CDR",["objectAssoc",MKQ var,g]]],:assignCode]
   null $opIsIs =>
     ['%when,[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,'%true]]]
   ['%when,[['%not,["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,'%true]]]
@@ -1697,7 +1697,7 @@ isPatMatch(l,pats) ==
       $subs:=[[pat,:first l],:$subs]
       isPatMatch(rest l,restPats)
     pat is ["=",var] =>
-      p:=ASSQ(var,$subs) =>
+      p := objectAssoc(var,$subs) =>
         first l = rest p => isPatMatch(rest l, restPats)
         $subs:="failed"
       $subs:="failed"

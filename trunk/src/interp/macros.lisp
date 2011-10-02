@@ -222,10 +222,6 @@
  
 ; 15.6 Association Lists
  
-(defun QLASSQ (p a-list) (cdr (assq p a-list)))
-
-(define-function 'LASSQ #'QLASSQ)
- 
 ;;; Operations on Association Sets (AS)
  
 (defun AS-INSERT (A B L)

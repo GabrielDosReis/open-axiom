@@ -70,15 +70,8 @@
 (defmacro add1 (x)
  `(1+ ,x))
 
-(defmacro assemble (&rest ignore) 
- (declare (ignore ignore))
-  nil)
-
 (defmacro applx (&rest args)
  `(apply ,@args))
-
-(defmacro assq (a b)
- `(assoc ,a ,b :test #'eq))
 
 (defmacro bintp (n)
  `(typep ,n 'bignum))
@@ -201,33 +194,16 @@
 (defmacro maxindex (x)
  `(the fixnum (1- (the fixnum (length ,x)))))
 
-(defmacro memq (a b)
- `(member ,a ,b :test #'eq))
-
 (defmacro minus (x)
  `(- ,x))
-
-(defmacro namederrset (id iexp &rest item)
- (declare (ignore item))
-  `(catch ,id ,iexp))
 
 (defmacro ne (a b) `(not (equal ,a ,b)))
 
 (defmacro nump (n)
  `(numberp ,n))
 
-(defmacro oraddtempdefs (filearg)
- `(eval-when 
-   #+:common-lisp (:compile-toplevel)
-   #-:common-lisp (compile)
-   (load ,filearg)))
-
 (defmacro plus (&rest args)
  `(+ ,@ args))
-
-; (defmacro qassq (a b)
-;  `(assoc ,a ,b :test #'eq))
-(defmacro qassq (a b) `(assq ,a ,b))
 
 (defmacro qcar (x)
  `(car (the cons ,x)))
@@ -264,47 +240,8 @@
 (defmacro qcdddr (x)
  `(cdr (the cons (cdr (the cons (cdr (the cons ,x)))))))
 
-(defmacro qcaaaar (x)
- `(car (the cons (car (the cons (car (the cons (car (the cons ,x)))))))))
-(defmacro qcaaadr (x)
- `(car (the cons (car (the cons (car (the cons (cdr (the cons ,x)))))))))
-(defmacro qcaadar (x)
- `(car (the cons (car (the cons (cdr (the cons (car (the cons ,x)))))))))
-(defmacro qcaaddr (x)
- `(car (the cons (car (the cons (cdr (the cons (cdr (the cons ,x)))))))))
-(defmacro qcadaar (x)
- `(car (the cons (cdr (the cons (car (the cons (car (the cons ,x)))))))))
-(defmacro qcadadr (x)
- `(car (the cons (cdr (the cons (car (the cons (cdr (the cons ,x)))))))))
-(defmacro qcaddar (x)
- `(car (the cons (cdr (the cons (cdr (the cons (car (the cons ,x)))))))))
-(defmacro qcadddr (x)
- `(car (the cons (cdr (the cons (cdr (the cons (cdr (the cons ,x)))))))))
-(defmacro qcdaaar (x)
- `(cdr (the cons (car (the cons (car (the cons (car (the cons ,x)))))))))
-(defmacro qcdaadr (x)
- `(cdr (the cons (car (the cons (car (the cons (cdr (the cons ,x)))))))))
-(defmacro qcdadar (x)
- `(cdr (the cons (car (the cons (cdr (the cons (car (the cons ,x)))))))))
-(defmacro qcdaddr (x)
- `(cdr (the cons (car (the cons (cdr (the cons (cdr (the cons ,x)))))))))
-(defmacro qcddaar (x)
- `(cdr (the cons (cdr (the cons (car (the cons (car (the cons ,x)))))))))
-(defmacro qcddadr (x)
- `(cdr (the cons (cdr (the cons (car (the cons (cdr (the cons ,x)))))))))
-(defmacro qcdddar (x)
- `(cdr (the cons (cdr (the cons (cdr (the cons (car (the cons ,x)))))))))
-(defmacro qcddddr (x)
- `(cdr (the cons (cdr (the cons (cdr (the cons (cdr (the cons ,x)))))))))
-
-(defmacro qcsize (x)
- `(the fixnum (length (the simple-string ,x))))
-
 (defmacro qeqq (pattern exp)
  `(,(ecqexp pattern 1) ,exp))
-
-(defmacro qlength (a)
- `(length ,a))
 
 (defmacro qrplaca (a b)
  `(rplaca (the cons ,a) ,b))
@@ -733,6 +670,8 @@
 (defun |last| (x) (car (lastpair x)))
 
 ; 14.3 Searching
+
+(defun QLASSQ (p a-list) (cdr (|objectAssoc| p a-list)))
 
 (DEFUN |assoc| (X Y)
   "Return the pair associated with key X in association list Y."

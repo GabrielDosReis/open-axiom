@@ -256,7 +256,7 @@ freeVarUsage([.,vars,body],env) ==
       u isnt [.,:.] =>
         not ident? u => free
         symbolMember?(u,bound) => free
-        v := ASSQ(u,free) =>
+        v := objectAssoc(u,free) =>
           v.rest := 1 + rest v
           free
         getmode(u,e) = nil => free

@@ -378,7 +378,7 @@ getPreviousMapSubNames(traceNames) ==
   subs
 
 lassocSub(x,subs)  ==
-  y:= LASSQ(x,subs) => y
+  y := QLASSQ(x,subs) => y
   x
 
 rassocSub(x,subs) ==

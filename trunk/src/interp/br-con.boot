@@ -49,7 +49,7 @@ namespace BOOT
 --    [mathform2HtString x for x in rest a]
 --  if cons? a then a := first a
 --  da := DOWNCASE a
---  pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
+--  pageName := QLASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
 --    downlink pageName              --special jump out for primitive domains
 --  line := conPageFastPath a        => kPage line  --lower case name of cons?
 --  line := conPageFastPath UPCASE a => kPage line  --upper case an abbr?
@@ -65,7 +65,7 @@ conPage(a,:b) ==
   $conArgstrings: local := [form2HtString x for x in KDR a]
   if cons? a then a := first a
   da := DOWNCASE a
-  pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
+  pageName := QLASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
     downlink pageName                --special jump out for primitive domains
   line := conPageFastPath da  => kPage(line,form) --lower case name of cons?
   line := conPageFastPath UPCASE a => kPage(line,form) --upper case an abbr?
@@ -77,7 +77,7 @@ conPageFastPath x == --called by conPage and constructorSearch
   charPosition(char "*",s,0) < #s => nil     --quit if name has * in it
   name := (string? x => makeSymbol x; x)
   entry := tableValue($lowerCaseConTb,name) or return nil
-  lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
+  lineNumber := QLASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
     dbRead lineNumber --read record for constructor from libdb.text
   conPageConEntry first entry

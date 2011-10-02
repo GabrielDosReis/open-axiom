@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -484,7 +484,7 @@ resolveTM1(t,m) ==
   m = $Exit => t
   containsVars m =>
     isPatternVar m =>
-      p := ASSQ(m,$Subst) =>
+      p := objectAssoc(m,$Subst) =>
         $Coerce =>
           tt := resolveTT1(t,rest p) => (p.rest := tt) and tt
           nil
@@ -633,8 +633,8 @@ resolveTMEq1(ct,cm) ==
     b :=
       xt=xm => 'T
       isPatternVar(xm) and
-        p := ASSQ(xm,$Subst) => xt=rest p
-        p := ASSQ(xm,SL) => xt=rest p
+        p := objectAssoc(xm,$Subst) => xt=rest p
+        p := objectAssoc(xm,SL) => xt=rest p
         SL := augmentSub(xm,xt,SL)
   b => SL
   'failed

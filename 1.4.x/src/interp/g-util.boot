@@ -313,7 +313,7 @@ putIntSymTab(x,prop,val,e) ==
   pl0 := pl := search(x,e)
   pl :=
     null pl => [[prop,:val]]
-    u := ASSQ(prop,pl) =>
+    u := objectAssoc(prop,pl) =>
       u.rest := val
       pl
     lp := lastNode pl
@@ -325,7 +325,7 @@ putIntSymTab(x,prop,val,e) ==
 
 addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
-  u := ASSQ(var,curContour) =>
+  u := objectAssoc(var,curContour) =>
     u.rest := proplist
     e
   first(e).first := [[var,:proplist],:curContour]
@@ -734,14 +734,15 @@ search(x,e is [curEnv,:tailEnv]) ==
 
 searchCurrentEnv(x,currentEnv) ==
   for contour in currentEnv repeat
-    if u:= ASSQ(x,contour) then return (signal:= u)
+    if u:= objectAssoc(x,contour) then return (signal:= u)
   KDR signal
 
 searchTailEnv(x,e) ==
   for env in e repeat
     signal:=
       for contour in env repeat
-        if (u:= ASSQ(x,contour)) and ASSQ("FLUID",u) then return (signal:= u)
+        if (u := objectAssoc(x,contour)) and objectAssoc("FLUID",u) then
+          return (signal:= u)
       if signal then return signal
   KDR signal
 
@@ -775,14 +776,14 @@ addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
 
 addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
-  u := ASSQ(var,curContour) =>
+  u := objectAssoc(var,curContour) =>
     u.rest := proplist
     e
   first(e).first := [[var,:proplist],:curContour]
   e
 
 augProplistInteractive(proplist,prop,val) ==
-  u := ASSQ(prop,proplist) =>
+  u := objectAssoc(prop,proplist) =>
     u.rest := val
     proplist
   [[prop,:val],:proplist]

@@ -690,7 +690,7 @@ getFunctionFromDomain(op,dc,args) ==
 isOpInDomain(opName,dom,nargs) ==
   -- returns true only if there is an op in the given domain with
   -- the given number of arguments
-  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
+  mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => nil
   gotOne := nil
@@ -705,7 +705,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
   -- a "signature" where a type position is non-nil only if all
   -- signatures shares that type .
   dom.op in '(Union Record Mapping) => nil
-  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
+  mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => nil
   gotOne := nil
@@ -720,7 +720,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
 
 findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
-  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
+  mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList =>
     throwKeyedMsg("S2IS0021",[opName,dom])
@@ -792,7 +792,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     nil
   fun:= nil
-  ( p := ASSQ(op,getConstructorOperationsFromDB dcName) ) and
+  ( p := objectAssoc(op,getConstructorOperationsFromDB dcName) ) and
     SL := constructSubst dc
     -- if the arglist is homogeneous, first look for homogeneous
     -- functions. If we don't find any, look at remaining ones
@@ -838,7 +838,7 @@ isHomogeneousList y ==
   nil
 
 findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
-  dc:= rest (dollarPair := ASSQ('$,SL))
+  dc := rest (dollarPair := objectAssoc('$,SL))
   -- need to drop '$ from SL
   mm:= subCopy(omm, SL)
   -- tests whether modemap mm is appropriate for the function
@@ -1118,14 +1118,14 @@ matchTypes(pm,args1,args2) ==
   --   args2 a list of polynomial types for symbols
   -- the result is a match from pm to args, if one exists
   for v in pm for t1 in args1 for t2 in args2 until $Subst is 'failed repeat
-    p:= ASSQ(v,$Subst) =>
+    p := objectAssoc(v,$Subst) =>
       t:= rest p
       t=t1 => $Coerce and t1 = $Symbol and
-        (q := ASSQ(v,$SymbolType)) and t2 and
+        (q := objectAssoc(v,$SymbolType)) and t2 and
           (t3 := resolveTT(rest q, t2)) and
             (q.rest := t3)
       $Coerce =>
-        if t = $Symbol and (q := ASSQ(v,$SymbolType)) then
+        if t = $Symbol and (q := objectAssoc(v,$SymbolType)) then
           t := rest q
         if t1 = $Symbol and t2 then t1:= t2
         t0 := resolveTT(t,t1) => p.rest := t0
@@ -1203,7 +1203,7 @@ evalMmCond0(op,sig,st) ==
   SL:= evalMmDom st
   SL is 'failed => 'failed
   for p in SL until p1 and not b repeat b:=
-    p1:= ASSQ(first p,$Subst)
+    p1 := objectAssoc(first p,$Subst)
     p1 and
       t1:= rest p1
       t:= rest p
@@ -1286,7 +1286,7 @@ evalMmDom(st) ==
   for mmC in st until SL is 'failed repeat
     mmC is ['isDomain,v,d] =>
       string? d => SL:= 'failed
-      p:= ASSQ(v,SL) and not (d=rest p) => SL:= 'failed
+      p := objectAssoc(v,SL) and not (d=rest p) => SL:= 'failed
       d1:= subCopy(d,SL)
       cons?(d1) and symbolMember?(v,d1) => SL:= 'failed
       SL:= augmentSub(v,d1,SL)
@@ -1315,8 +1315,8 @@ orderMmCatStack st ==
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==
-  b1 := ASSQ(second c1, $Subst)
-  b2 := ASSQ(second c2, $Subst)
+  b1 := objectAssoc(second c1, $Subst)
+  b2 := objectAssoc(second c2, $Subst)
   b1 and null(b2) => true
   false
 
@@ -1346,7 +1346,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
   $domPvar: local := nil
   $hope:= nil
   NSL:= hasCate(d,c,SL)
-  NSL is 'failed and isPatternVar d and $Coerce and ( p:= ASSQ(d,$Subst) )
+  NSL is 'failed and isPatternVar d and $Coerce and ( p:= objectAssoc(d,$Subst) )
     and (rest(p) is ["Variable",:.] or rest(p) = $Symbol) =>
       p.rest := getSymbolType d
       hasCate(d,c,SL)
@@ -1361,7 +1361,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
     dom := defaultTypeForCategory(c, SL)
     null dom =>
       op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
-    null (p := ASSQ(d,$Subst)) =>
+    null (p := objectAssoc(d,$Subst)) =>
       dom =>
         NSL := [[d,:dom]]
       op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
@@ -1376,9 +1376,9 @@ hasCate(dom,cat,SL) ==
   -- augments substitution SL or returns 'failed
   dom = $EmptyMode => nil
   isPatternVar dom =>
-    (p:= ASSQ(dom,SL)) and ((NSL := hasCate(rest p,cat,SL)) isnt 'failed) =>
+    (p:= objectAssoc(dom,SL)) and ((NSL := hasCate(rest p,cat,SL)) isnt 'failed) =>
        NSL
-    (p:= ASSQ(dom,$Subst)) or (p := ASSQ(dom, SL)) =>
+    (p:= objectAssoc(dom,$Subst)) or (p := objectAssoc(dom, SL)) =>
 --      S:= hasCate(rest p,cat,augmentSub(first p,rest p,copy SL))
       S:= hasCate1(rest p,cat,SL, dom)
       S isnt 'failed => S
@@ -1503,12 +1503,12 @@ hasCaty(d,cat,SL) ==
   'failed
 
 mkDomPvar(p, d, subs, y) ==
-  l := MEMQ(p, $FormalMapVariableList) =>
+  l := upwardCut(p,$FormalMapVariableList) =>
     domArg(d, #$FormalMapVariableList - #l, subs, y)
   d
 
 domArg(type, i, subs, y) ==
-  p := MEMQ($FormalMapVariableList.i, subs) =>
+  p := upwardCut($FormalMapVariableList.i, subs) =>
     y.(#subs - #p)
   type
 
@@ -1585,7 +1585,7 @@ hasSig(dom,foo,sig,SL) ==
   $domPvar: local := nil
   fun:= getConstructorAbbreviationFromDB dom.op =>
     S0:= constructSubst dom
-    p := ASSQ(foo,getConstructorOperationsFromDB dom.op) =>
+    p := objectAssoc(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until S isnt 'failed repeat
         S:=
           cond isnt [.,:.] => copy SL
@@ -1734,7 +1734,7 @@ isPartialMode m ==
 
 getSymbolType var ==
 -- var is a pattern variable
-  p:= ASSQ(var,$SymbolType) => rest p
+  p:= objectAssoc(var,$SymbolType) => rest p
   t:= '(Polynomial (Integer))
   $SymbolType:= [[var,:t],:$SymbolType]
   t

@@ -86,7 +86,7 @@
                                 (setq |$BreakMode| |$oldBreakMode|)
                                 nil)) ;; resets error handler
                           ((and (null |$inLispVM|)
-                                (memq |$BreakMode| '(|nobreak| |query| |resume|)))
+                                (|symbolMember?| |$BreakMode| '(|nobreak| |query| |resume|)))
                            (let ((|$inLispVM| T)) ;; turn off handler
                              (return
                               (|systemError| (error-format error-string args)))))

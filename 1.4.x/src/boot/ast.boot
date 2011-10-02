@@ -1457,7 +1457,7 @@ unknownNativeTypeError t ==
 nativeType t ==
   t = nil => t
   t isnt [.,:.] =>
-    t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
+    t' := rest objectAssoc(coreSymbol t,$NativeTypeTable) => 
       t' := 
 	%hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
 	%hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
@@ -1710,7 +1710,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
     call := 
       [n,:[actualArg(p,localPairs) for p in parms]] where
 	    actualArg(p,pairs) ==
-	      a' := rest ASSOC(p,pairs) => rest rest a'
+	      a' := rest objectAssoc(p,pairs) => rest rest a'
 	      p
     -- Fix up the call if there is any `write' parameter.
     call := 
@@ -1792,8 +1792,8 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
             where
               args() == [:[x, parm] for x in argtypes for p in parms]
               parm() ==
-                    p' := ASSOC(p, strPairs) => rest p'
-                    p' := ASSOC(p, aryPairs) => rest p'
+                    p' := objectAssoc(p, strPairs) => rest p'
+                    p' := objectAssoc(p, aryPairs) => rest p'
                     p
 
   -- If the foreign call returns a C-string, turn it into a Lisp string.

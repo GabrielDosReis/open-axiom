@@ -42,6 +42,7 @@ module sys_-utility where
   probeReadableFile : %String -> %Maybe %String
   remove!: (%List %Thing,%Thing) -> %List %Thing
   displayTextFile: %Thing -> %Void
+  upwardCut: (%Thing, %List %Thing) -> %List %Thing
 
 --%
 $COMBLOCKLIST := nil
@@ -377,6 +378,14 @@ remove!(l,x) ==
       return l
     p := rest p
       
+++ Return the list of objects that follow x in l, including x itself.
+++ Otherwise return nil.
+upwardCut(x,l) ==
+  repeat
+    l isnt [.,:.] => return nil
+    sameObject?(x,first l) => return l
+    l := rest l
+
 --%
 displayTextFile f ==
   try

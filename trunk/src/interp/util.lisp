@@ -60,8 +60,8 @@
 (defun make-directory (direc)
   (setq direc (namestring direc))
   (if (string= direc "")  (|systemRootDirectory|)
-   (if (or (memq :unix *features*)
-           (memq 'unix *features*))
+   (if (or (|symbolMember?| :unix *features*)
+           (|symbolMember?| 'unix *features*))
     (progn
       (if (char/= (char direc 0) #\/)
           (setq direc (concat (|systemRootDirectory|) "/" direc)))

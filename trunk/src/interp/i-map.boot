@@ -383,8 +383,7 @@ clearDep1(x,toDoList,doneList,depList) ==
   clearCache x
   newDone:= [x,:doneList]
   until null a repeat
-    a:= ASSQ(x,depList)
-    a =>
+    a := objectAssoc(x,depList) =>
       depList := remove(depList,a)
       toDoList := setUnion(toDoList,
         setDifference(rest a,doneList))

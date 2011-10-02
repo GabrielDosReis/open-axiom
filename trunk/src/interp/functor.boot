@@ -104,7 +104,7 @@ DomainPrint1(D,brief,$e) ==
       uu.5 := vv
       for j in 0..maxIndex vv repeat
         if vector? vv.j then
-          l := ASSQ(vv.j,Sublis)
+          l := objectAssoc(vv.j,Sublis)
           if l
              then name:= rest l
              else
@@ -141,7 +141,7 @@ PacPrint v ==
   vv := copyVector v
   for j in 0..maxIndex vv repeat
     if vector? vv.j then
-      l := ASSQ(vv.j,Sublis)
+      l := objectAssoc(vv.j,Sublis)
       if l
          then name := rest l
          else
@@ -151,7 +151,7 @@ PacPrint v ==
           $WhereList := [[name,:vv.j],:$WhereList]
       vv.j := name
     if cons? vv.j and vector?(u:=rest vv.j) then
-      l := ASSQ(u,Sublis)
+      l := objectAssoc(u,Sublis)
       if l
          then name := rest l
          else
@@ -168,9 +168,9 @@ DomainPrintSubst(item,Sublis) ==
     c2 := DomainPrintSubst(b,Sublis)
     sameObject?(c1,a) and sameObject?(c2,b) => item
     [c1,:c2]
-  l := ASSQ(item,Sublis)
+  l := objectAssoc(item,Sublis)
   l => rest l
-  l := ASSQ(item,Sublis)
+  l := objectAssoc(item,Sublis)
   l => rest l
   item
  
@@ -309,7 +309,7 @@ worthlessCode x ==
 cons5(p,l) ==
   l and (CAAR l = first p) => [p,: rest l]
   # l < 5 => [p,:l]
-  QCDDDDR(l).rest := nil
+  l.rest.rest.rest.rest.rest := nil
   [p,:l]
  
 SetDomainSlots124(dom,names,vals) ==
@@ -329,7 +329,7 @@ sublisProp(subst,props) ==
                         --keep original CONS
       cond is ['or,:x] =>
         (or/[inspect(u,subst) for u in x] => [a,true,:l]; nil)
-      cond is ["has",nam,b] and (val:= ASSQ(nam,subst)) =>
+      cond is ["has",nam,b] and (val := objectAssoc(nam,subst)) =>
         ev :=
           b is ['ATTRIBUTE,c] => HasAttribute(rest val,c)
           b is ['SIGNATURE,c] => HasSignature(rest val,c)
@@ -852,9 +852,9 @@ getCaps x ==
 getAbbreviation(name,c) ==
   --returns abbreviation of name with c arguments
   x := getConstructorAbbreviationFromDB name
-  X := ASSQ(x,$abbreviationTable) =>
-    N:= ASSQ(name,rest X) =>
-      C:= ASSQ(c,rest N) => rest C --already there
+  X := objectAssoc(x,$abbreviationTable) =>
+    N := objectAssoc(name,rest X) =>
+      C := objectAssoc(c,rest N) => rest C --already there
       newAbbreviation:= mkAbbrev(X,x)
       N.rest := [[c,:newAbbreviation],:rest N]
       newAbbreviation

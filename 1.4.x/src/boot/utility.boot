@@ -47,7 +47,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
-  applySubst, applySubst!, applySubstNQ,
+  applySubst, applySubst!, applySubstNQ, objectAssoc,
   remove,removeSymbol,atomic?,finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
@@ -57,6 +57,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) -> %List %Thing
+    objectAssoc: (%Thing, %List %Pair(%Thing,%Thing)) ->
+                    %Maybe %Pair(%Thing,%Thing)
     setDifference: (%List %Thing,%List %Thing) -> %List %Thing
     setUnion: (%List %Thing,%List %Thing) -> %List %Thing
     setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
@@ -290,6 +292,11 @@ remove(l,x) ==
   removeValue(l,x)
 
 --% search
+
+objectAssoc(x,l) ==
+  repeat
+    l isnt [p,:l] => return nil
+    p is [a,:.] and sameObject?(a,x) => return p
 
 ++ Return the index of the character `c' in the string `s', if present.
 ++ Otherwise, return nil.

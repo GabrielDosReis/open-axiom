@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -129,7 +129,7 @@ tokType x== ncTag x
 tokPart x== rest x
 
 tokPosn x==
-     a:= QASSQ("posn",ncAlist x)
+     a := objectAssoc("posn",ncAlist x)
      if a then rest a else pfNoPosition()
 
 pfAbSynOp form ==

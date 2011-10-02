@@ -1553,7 +1553,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
       for u in ss repeat
         $ConditionalOperators:=[rest u,:$ConditionalOperators]
       s is ['Join,:sl] =>
-        u:=ASSQ('CATEGORY,ss) =>
+        u := objectAssoc('CATEGORY,ss) =>
           MSUBST([:u,:ss],u,s)
         ['Join,:sl,['CATEGORY,'package,:ss]]
       ['Join,s,['CATEGORY,'package,:ss]]
@@ -1602,7 +1602,7 @@ mkOpVec(dom,siglist) ==
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops := newVector #siglist
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat
-    u:= ASSQ(op,oplist)
+    u := objectAssoc(op,oplist)
     assoc(sig,u) is [.,n,.,'ELT] =>
       vectorRef(ops,i) := vectorRef(dom,n)
     noplist := applySubst(substargs,u)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -61,9 +61,8 @@ ncAlist x ==
 
  --- Get the entry for key k on x's association list
 ncEltQ(x,k) ==
-   r := QASSQ(k,ncAlist x)
-   null r => ncBug ('S2CB0007,[k])
-   rest r
+   r := objectAssoc(k,ncAlist x) => rest r
+   ncBug ('S2CB0007,[k])
  
 -- Put (k . v) on the association list of x and return v
 -- case1: ncPutQ(x,k,v) where k is a key (an identifier), v a value
@@ -74,7 +73,7 @@ ncPutQ(x,k,v) ==
    LISTP k =>
       for key in k for val in v repeat ncPutQ(x,key,val)
       v
-   r := QASSQ(k,ncAlist x)
+   r := objectAssoc(k,ncAlist x)
    if null r then
       r := [[k,:v], :ncAlist x]
       x.first := [ncTag x,:r]

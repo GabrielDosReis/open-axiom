@@ -636,10 +636,12 @@ TrimCF() ==
   new:= nil
   old:= CAAR $CategoryFrame
   for u in old repeat
-    if not ASSQ(first u,new) then
+    if objectAssoc(first u,new) = nil then
       uold:= rest u
       unew:= nil
-      for v in uold repeat if not ASSQ(first v,unew) then unew:= [v,:unew]
+      for v in uold repeat
+        if objectAssoc(first v,unew) = nil then
+          unew:= [v,:unew]
       new:= [[first u,:reverse! unew],:new]
   $CategoryFrame:= [[reverse! new]]
   nil
@@ -766,7 +768,7 @@ isDomainInScope(domain,e) ==
     not ident? domain or isSomeDomainVariable domain => true
     false
   (name:= first domain)="Category" => true
-  ASSQ(name,domainList) => true
+  objectAssoc(name,domainList) => true
 --   null rest domain or domainMember(domain,domainList) => true
 --   false
   isFunctor name => false
@@ -1008,8 +1010,8 @@ extendsCategoryForm(domain,form,form') ==
  
 getmode(x,e) ==
   prop:=getProplist(x,e)
-  u:= LASSQ("value",prop) => u.mode
-  LASSQ("mode",prop)
+  u := QLASSQ("value",prop) => u.mode
+  QLASSQ("mode",prop)
  
 getmodeOrMapping(x,e) ==
   u:= getmode(x,e) => u
@@ -1041,7 +1043,7 @@ sublisV(p,e) ==
       string? e => e
       -- no need to descend vectors unless they are categories
       categoryObject? e => vector [suba(p,e.i) for i in 0..maxIndex e]
-      e isnt [.,:.] => (y:= ASSQ(e,p) => rest y; e)
+      e isnt [.,:.] => (y := objectAssoc(e,p) => rest y; e)
       u:= suba(p,first e)
       v:= suba(p,rest e)
       sameObject?(first e,u) and sameObject?(rest e,v) => e
@@ -1495,7 +1497,7 @@ backendCompile2 code ==
   code isnt [name,[type,args,:body],:junk] or junk ~= nil =>
     systemError ['"parenthesis error in: ", code]
   type = "SLAM" => backendCompileSLAM(name,args,body)
-  LASSQ(name,$clamList) => compClam(name,args,body,$clamList)
+  QLASSQ(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
   type = "ILAM" => backendCompileILAM(name,args,body)
   body := [name,[type,args,:body]]

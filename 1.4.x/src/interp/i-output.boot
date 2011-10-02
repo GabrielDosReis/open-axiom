@@ -394,7 +394,7 @@ newlineIfDisplaying() ==
 specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
   -- into the EBCDIC table, and returns the appropriate character
-  null (code := IFCDR ASSQ(symbol,$specialCharacterAlist)) => '"?"
+  null (code := IFCDR objectAssoc(symbol,$specialCharacterAlist)) => '"?"
   $specialCharacters.code
 
 rbrkSch() == symbolName specialChar 'rbrk

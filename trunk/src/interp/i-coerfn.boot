@@ -302,7 +302,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
     e1:= removeVectorElt(e,pos)
     y:= coerceInt(objNewWrap([[e1,:c]],S1),T) =>
       -- need to be careful about zeros
-      p:= ASSQ(exp,x) =>
+      p := objectAssoc(exp,x) =>
         c' := SPADCALL(rest p,objValUnwrap(y),plusfunc)
         c' = zero => x := REMALIST(x,exp)
         p.rest := c'

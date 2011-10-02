@@ -363,7 +363,7 @@ computedMode t ==
 --% Other VAT properties
 
 insertShortAlist(prop,val,al) ==
-  pair := QASSQ(prop,al) =>
+  pair := objectAssoc(prop,al) =>
     pair.rest := val
     al
   [[prop,:val],:al]
