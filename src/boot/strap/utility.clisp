@@ -48,6 +48,12 @@
  (FTYPE (FUNCTION ((|%List| |%Thing|) |%Thing|) (|%List| |%Thing|)) |remove|))
 
 (DECLAIM
+ (FTYPE
+  (FUNCTION (|%Thing| (|%List| (|%Pair| |%Thing| |%Thing|)))
+   (|%Maybe| (|%Pair| |%Thing| |%Thing|)))
+  |objectAssoc|))
+
+(DECLAIM
  (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|)) (|%List| |%Thing|))
   |setDifference|))
 
@@ -328,6 +334,17 @@
   (COND ((SYMBOLP |x|) (|removeSymbol| |l| |x|))
         ((OR (CHARACTERP |x|) (INTEGERP |x|)) (|removeScalar| |l| |x|))
         (T (|removeValue| |l| |x|))))
+
+(DEFUN |objectAssoc| (|x| |l|)
+  (PROG (|a| |p|)
+    (RETURN
+     (LOOP
+      (COND
+       ((NOT
+         (AND (CONSP |l|) (PROGN (SETQ |p| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
+        (RETURN NIL))
+       ((AND (CONSP |p|) (PROGN (SETQ |a| (CAR |p|)) T) (EQ |a| |x|))
+        (RETURN |p|)))))))
 
 (DEFUN |charPosition| (|c| |s| |k|)
   (PROG (|n|)

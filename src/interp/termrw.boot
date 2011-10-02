@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -108,7 +108,7 @@ mergeSubs(S1,S2) ==
   -- S1 doesn't contain any of the variables of S2
   null S1 => S2
   null S2 => S1
-  S3 := [p for p in S2 | not ASSQ(first p, S1)]
+  S3 := [p for p in S2 | objectAssoc(first p, S1) = nil]
 --  for p in S1 repeat S3:= augmentSub(first p,rest p,S3)
   append(S1,S3)
  

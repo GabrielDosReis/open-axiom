@@ -1,3 +1,47 @@
+2011-10-01  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* boot/utility.boot (objectAssoc): New.  Export.
+	* boot/ast.boot: Use it. instead of ASSOC.
+	* boot/translator.boot (packageBody): Tidy.
+	* interp/astr.boot: Use objectAssoc instead of ASSQ.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-special.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/posit.boot: Likewise.
+	* interp/termrw.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/sys-utility.boot (upwardCut): New.
+	* interp/spad.lisp: Use it.
+	* interp/util.lisp: Likewise.
+	* interp/spaderror.lisp: Likewise.
+	* interp/vmlisp.lisp (ASSEMBLE): Remove.
+	(ASSQ): Likewise.
+	(MEMQ): Likewise.
+	(NAMEDERRSET): Likewise.
+	(ORADDTEMPDEFS): Likewise.
+	* interp/macros.lisp (QLASSQ): Move to vmlisp.lisp.
+	(LASSQ): Remove.
+
 2011-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot (bpImport): Accept long names for used namespaces.

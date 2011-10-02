@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -468,7 +468,7 @@ getMsgToWhere msg ==
     getMsgCatAttr (msg,'$toWhereGuys)
  
 getMsgCatAttr  (msg,cat) ==
-    IFCDR QASSQ(cat, ncAlist msg)
+    IFCDR objectAssoc(cat, ncAlist msg)
  
 setMsgForcedAttrList (msg,aL) ==
     for attr in aL repeat
@@ -484,10 +484,10 @@ setMsgForcedAttr(msg,cat,attr) ==
  
 setMsgUnforcedAttr(msg,cat,attr) ==
     cat = 'catless => setMsgCatlessAttr(msg,attr)
-    not QASSQ(cat, ncAlist msg) => ncPutQ(msg,cat,attr)
+    objectAssoc(cat, ncAlist msg) = nil => ncPutQ(msg,cat,attr)
  
 setMsgCatlessAttr(msg,attr) ==
-    ncPutQ(msg,'catless,CONS (attr, IFCDR QASSQ("catless", ncAlist msg)))
+    ncPutQ(msg,'catless,CONS (attr, IFCDR objectAssoc("catless", ncAlist msg)))
  
 whichCat attr ==
     found := 'catless

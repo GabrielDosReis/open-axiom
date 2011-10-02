@@ -637,7 +637,7 @@ transformOperationAlist operationAlist ==
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
       [sig,n,condition,kind]
-    itemList:= [signatureItem,:LASSQ(op,newAlist)]
+    itemList:= [signatureItem,:QLASSQ(op,newAlist)]
     newAlist:= insertAlist(op,itemList,newAlist)
   newAlist
  

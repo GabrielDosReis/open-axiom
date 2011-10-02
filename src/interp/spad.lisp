@@ -397,7 +397,7 @@
       nil)))
 
 (defun |hashable| (dom)
-  (memq (|knownEqualPred| dom)
+  (|symbolMember?| (|knownEqualPred| dom)
         '(EQ EQL EQUAL)))
 
 ;; simpler interpface to RDEFIOSTREAM

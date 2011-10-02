@@ -114,7 +114,7 @@ LZeros n ==
 $variableNumberAlist := nil
 
 variableNumber(x) ==
-  p := ASSQ(x, $variableNumberAlist)
+  p := objectAssoc(x, $variableNumberAlist)
   null p => 
     $variableNumberAlist := [[x,:0], :$variableNumberAlist]
     0
