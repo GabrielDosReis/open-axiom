@@ -483,7 +483,7 @@ isSimpleVMForm form ==
 isFloatableVMForm: %Code -> %Boolean
 isFloatableVMForm form ==
   form isnt [.,:.] => form isnt "$"
-  form is ["QUOTE",:.] => true
+  form is ['QUOTE,:.] => true
   symbolMember?(form.op, $simpleVMoperators) and
     "and"/[isFloatableVMForm arg for arg in form.args]
     
@@ -503,7 +503,7 @@ isVMConstantForm form ==
 findVMFreeVars form ==
   ident? form => [form]
   form isnt [op,:args] => nil  
-  op is "QUOTE" => nil
+  op is 'QUOTE => nil
   vars := union/[findVMFreeVars arg for arg in args]
   op isnt [.,:.] => vars
   setUnion(findVMFreeVars op,vars)
@@ -586,7 +586,7 @@ optList form ==
   form is ['%list] => '%nil
   literalElts := [(x is ['QUOTE,y] => y; leave "failed") for x in form.args]
   literalElts is "failed" => form
-  quoteForm literalElts
+  quote literalElts
 
 optCollectVector form ==
   [.,eltType,:iters,body] := form

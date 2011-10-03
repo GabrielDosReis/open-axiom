@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -509,7 +509,7 @@ pfCollect2Atree pf ==
 --      [[.,.,:rhs],:.] := $multiVarPredicateList
 --      pvarPredTran(rhs, varList)
 --    ['suchThat, rule,
---     ['construct, :[["QUOTE", var] for var in varList]],
+--     ['construct, :[quote var for var in varList]],
 --      ['ADEF, '(predicateVariable),
 --       '((Boolean) (List (Expression (Integer)))), '(() ()),
 --        predBody]]

@@ -459,8 +459,8 @@ MappingCategory(:sig) ==
   sig = nil =>
     error '"MappingCategory requires at least one argument"
   cat := eval ['Join,$Type,
-                ['mkCategory,quoteForm 'domain,
-                   quoteForm [[['elt,[first sig,'$,:rest sig]],true]],
+                ['mkCategory,quote 'domain,
+                   quote [[['elt,[first sig,'$,:rest sig]],true]],
                      [], [], nil]]
   canonicalForm(cat) := ['MappingCategory,:sig]
   cat
@@ -499,8 +499,8 @@ coerceMap2E(x) ==
 
 EnumerationCategory(:"args") ==
   cat := eval ['Join,$SetCategory,
-                ['mkCategory,quoteForm 'domain,
-                   quoteForm [[[arg,['$],'constant],'T] for arg in args],
+                ['mkCategory,quote 'domain,
+                   quote [[[arg,['$],'constant],'T] for arg in args],
                      [], [], nil]]
   canonicalForm(cat) := ['EnumerationCategory,:args]
   cat

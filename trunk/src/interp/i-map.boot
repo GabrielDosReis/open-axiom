@@ -343,7 +343,7 @@ mkFormalArg(x,s) ==
 
 isConstantArgument x ==
   integer? x => x
-  x is ["QUOTE",.] => x
+  x is ['QUOTE,.] => x
 
 isPatternArgument x == x is ["construct",:.]
 

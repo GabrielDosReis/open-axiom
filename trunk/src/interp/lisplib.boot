@@ -464,11 +464,11 @@ initializeLisplib libName ==
   ADDOPTIONS('FILE,$libFile)
 
 mkCtorDBForm ctor ==
-  ['constructorDB,quoteForm ctor]
+  ['constructorDB,quote ctor]
 
 writeInfo(ctor,info,key,prop,file) ==
   if info ~= nil then
-    insn := ['%store,[prop,mkCtorDBForm ctor],quoteForm info]
+    insn := ['%store,[prop,mkCtorDBForm ctor],quote info]
     LAM_,FILEACTQ(key,expandToVMForm insn)
   lisplibWrite(symbolName key,info,file)
   

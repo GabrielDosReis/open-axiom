@@ -346,9 +346,6 @@ subString(s,f,n == nil) ==
   n = nil => subSequence(s,f)
   subSequence(s,f,f + n)
 
-quoteForm t ==
-  ["QUOTE",t]
-
 --% assoc
 
 symbolAssoc(s,l) ==

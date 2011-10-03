@@ -381,7 +381,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
 ++ constructor, that is a builtin constructor or any operator we
 ++ deem as a constructor from the domain slot-filling machinery perspective.
 generalizedBuiltinConstructor? s ==
-  builtinConstructor? s or s is "QUOTE" or s is "[||]"
+  builtinConstructor? s or s is 'QUOTE or s is "[||]"
 
 lazyMatch(source,lazyt,dollar,domain) ==
   lazyt is [op,:argl] and cons? source and op=first source
@@ -468,7 +468,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
     [":",first argl,newExpandLocalTypeArgs(second argl,dollar,domain,true)]
   functorName is "[||]" =>
     [functorName,newExpandLocalTypeArgs(first argl,dollar,domain,true)]
-  functorName is "QUOTE"  => [functorName,:argl]
+  functorName is 'QUOTE  => [functorName,:argl]
   builtinConstructor? functorName =>
     [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   coSig := getDualSignature functorName or
@@ -526,7 +526,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
 resolveNiladicConstructors form ==
   ident? form and niladicConstructor? form => [form]
   form isnt [.,:.] => form
-  form is ["QUOTE",:.] => form
+  form is ['QUOTE,:.] => form
   for args in tails rest form repeat
     args.first := resolveNiladicConstructors first args
   form

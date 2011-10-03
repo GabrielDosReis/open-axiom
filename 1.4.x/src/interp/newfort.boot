@@ -437,7 +437,7 @@ exp2FortSpecial(op,args,nargs) ==
     mkFortFn("EQ",[first args, third args],2)
   --the next line is NEVER used by FORTRAN code but is needed when
   --  called to get a linearized form for the browser
-  op = "QUOTE" =>
+  op = 'QUOTE =>
     (arg := first args) isnt [.,:.] => STRINGIMAGE arg
     tailPart := strconc/[strconc('",",x) for x in rest arg]
     strconc('"[",first arg,tailPart,'"]")
@@ -744,7 +744,7 @@ updateSymbolTable(name,type) ==
     fun := ['$elt,'SYMS,'declare!]
     coercion := ['_:_:,STRING type,'FST]
     $insideCompileBodyIfTrue: local := false
-    interpret([fun,["QUOTE",name],coercion])
+    interpret([fun,quote name,coercion])
  
 addCommas l ==
   not l => nil

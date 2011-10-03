@@ -77,7 +77,7 @@ mkAtreeExpandMacros x ==
       args => "doNothing"
       x := body
     x is [op,:argl] =>
-      op = "QUOTE" => "doNothing"
+      op = 'QUOTE => "doNothing"
       op = "where" and argl is [before,after] =>
         -- in a where clause, what follows "where" (the "after" parm
         -- above) might be a local macro, so do not expand the "before"
@@ -135,7 +135,7 @@ mkAtree2(x,op,argl) ==
       [mkAtreeNode op,mkAtree1 val]
     [mkAtreeNode op,mkAtree1 '(void)]
   op="exit" => mkAtree1 second argl
-  op = "QUOTE" => [mkAtreeNode op,:argl]
+  op = 'QUOTE => [mkAtreeNode op,:argl]
   op="SEGMENT" =>
     argl is [a] => [mkAtreeNode op, mkAtree1 a]
     z :=

@@ -225,7 +225,7 @@ applySubst!(sl,t) ==
 ++ Like applySubst, but skip quoted materials.
 applySubstNQ(sl,t) ==
   t is [hd,:tl] =>
-    hd is "QUOTE" => t
+    hd is 'QUOTE => t
     hd := applySubstNQ(sl,hd)
     tl := applySubstNQ(sl,tl)
     sameObject?(hd,first t) and sameObject?(tl,rest t) => t

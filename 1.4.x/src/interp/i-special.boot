@@ -1744,7 +1744,7 @@ up%LET t ==
   cons? lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
-    var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
+    var = 'QUOTE => throwKeyedMsg("S2IS0027",['"A quoted form"])
     upLETWithFormOnLhs(op,lhs,rhs)
   var:= getUnname lhs
   var = $immediateDataSymbol =>
@@ -1846,7 +1846,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
   -- have to change code to return value of a
   failCode :=
     ['spadThrowBrightly,['concat,
-      '"   Pattern",['QUOTE,bright form2String pattern],
+      '"   Pattern",quote bright form2String pattern,
         '"is not matched in assignment to right-hand side."]]
   if $genValue
     then
@@ -2062,7 +2062,7 @@ upQUOTE t ==
 evalQUOTE(op,[expr],[m]) ==
   triple:=
     $genValue => objNewWrap(expr,m)
-    objNew(['QUOTE,expr],m)
+    objNew(quote expr,m)
   putValue(op,triple)
 
 --% Quasiquotation

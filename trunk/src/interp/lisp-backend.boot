@@ -194,7 +194,7 @@ expandList(x is ['%list,:args]) ==
              arg is ['QUOTE,form] => form
              nil
   args' = 'failed => ['LIST,:args]
-  quoteForm args'
+  quote args'
 
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
@@ -290,7 +290,7 @@ expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
 expandFcstpi ['%fcstpi] ==
-  ['COERCE,'PI,quoteForm '%DoubleFloat]
+  ['COERCE,'PI,quote '%DoubleFloat]
 
 expandFsqrt ['%fsqrt,x] ==
   ['C_-TO_-R,['SQRT,expandToVMForm x]]
@@ -338,11 +338,11 @@ expandStrstc ['%strstc,x,y,z] ==
   expandToVMForm ['%store,['%schar,x,y],z]
 
 expandBytevec2str ['%bytevec2str,x] ==
-  ['MAP,quoteForm 'STRING, --FIXME: should be '%String, fix when SBCL is fixed.
+  ['MAP,quote 'STRING, --FIXME: should be '%String, fix when SBCL is fixed.
     ['FUNCTION,['LAMBDA,['c],['CODE_-CHAR,'c]]],expandToVMForm x]
 
 expandStr2bytevec ['%str2bytevec,x] ==
-  ['MAP,quoteForm ['%Vector,'%Byte],
+  ['MAP,quote ['%Vector,'%Byte],
     ['FUNCTION,['LAMBDA,['c],['CHAR_-CODE,'c]]],expandToVMForm x]
 
 -- bit vector operations
@@ -371,7 +371,7 @@ expandBitveccopy ['%bitveccopy,x] ==
   ['COPY_-SEQ,expandToVMForm x]
 
 expandBitvecconc ['%bitvecconc,x,y] ==
-  ['CONCATENATE, quoteForm '%BitVector,expandToVMForm x,expandToVMForm y]
+  ['CONCATENATE, quote '%BitVector,expandToVMForm x,expandToVMForm y]
 
 expandBitvecref ['%bitvecref,x,y] ==
   ['SBIT,expandToVMForm x,expandToVMForm y]
@@ -384,7 +384,7 @@ expandBitveclt ['%bitveclt,x,y] ==
 
 expandBitvector ['%bitvector,x,y] ==
   ['MAKE_-ARRAY,['LIST,expandToVMForm x],
-     KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
+     KEYWORD::ELEMENT_-TYPE,quote '%Bit,
        KEYWORD::INITIAL_-ELEMENT,expandToVMForm y]
 
 --% complex number conversions

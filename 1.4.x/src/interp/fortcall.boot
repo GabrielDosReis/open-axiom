@@ -283,14 +283,14 @@ spadTypeTTT u ==
 mkQuote l ==
  [addQuote(u)for u in l] where
     addQuote u ==
-      u isnt [.,:.] => ['QUOTE,u]
+      u isnt [.,:.] => quote u
       ["construct",:[addQuote(v) for v in u]]
 
 makeLispList(l) ==
   outputList := []
   for u in l repeat
     outputList := [:outputList, _
-                  if u isnt [.,:.] then ['QUOTE,u] else [["$elt","Lisp","construct"],_
+                  if u isnt [.,:.] then quote u else [["$elt","Lisp","construct"],_
                   :makeLispList(u)]]
   outputList
 

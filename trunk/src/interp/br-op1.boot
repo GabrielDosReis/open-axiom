@@ -276,7 +276,7 @@ dbOuttran form ==
       x
     res := mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
     integer? res or string? res => res
-    ['QUOTE,res]
+    quote res
   [op,:argl]
 
 dbOpsForm form ==

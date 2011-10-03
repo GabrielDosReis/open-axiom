@@ -180,11 +180,11 @@ comp3(x,m,$e) ==
   $e:= addDomain(m,$e)
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
-  m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
+  m is ['QUOTE,a] => (x=a => [x,m,$e]; nil)
   string? m => (x isnt [.,:.] => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   -- In quasiquote mode, x should match exactly
   (y := isQuasiquote m) =>
-     y = x => [["QUOTE",x], m, $e]
+     y = x => [quote x, m, $e]
      nil
   x isnt [.,:.] => compAtom(x,m,e)
   op:= x.op
@@ -394,7 +394,7 @@ primitiveType x ==
 compSymbol(s,m,e) ==
   s is "$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
-  sameObject?(s,m) or isLiteral(s,e) => [["QUOTE",s],s,e]
+  sameObject?(s,m) or isLiteral(s,e) => [quote s,s,e]
   v := get(s,"value",e) =>
     symbolMember?(s,$functorLocalParameters) =>
         NRTgetLocalIndex s
@@ -408,7 +408,7 @@ compSymbol(s,m,e) ==
   symbolMember?(s,$FormalMapVariableList) => 
     stackMessage('"no mode found for %1b",[s])
   listMember?(m,$IOFormDomains) or member(m,[$Identifier,$Symbol]) =>
-    [['QUOTE,s],m,e]
+    [quote s,m,e]
   not isFunction(s,e) => errorRef s
 
 ++ Return true if `m' is the most recent unique type case assumption 
@@ -687,7 +687,7 @@ compApplication(op,argl,m,T) ==
 
 compToApply(op,argl,m,e) ==
   T := compNoStacking(op,$EmptyMode,e) or return nil
-  T.expr is ["QUOTE", =T.mode] => nil
+  T.expr is ['QUOTE, =T.mode] => nil
   compApplication(op,argl,m,T)
 
 ++ `form' is a call to a operation described by the signature `sig'.
@@ -912,7 +912,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 compileQuasiquote: (%Instantiation,%Mode,%Env) -> %Maybe %Triple
 compileQuasiquote(["[||]",:form],m,e) ==
   null form => nil
-  coerce([["QUOTE", :form],$Syntax,e], m)
+  coerce([['QUOTE, :form],$Syntax,e], m)
 
 
 --% WHERE
@@ -967,7 +967,7 @@ compConstruct(form is ["construct",:l],m,e) ==
 ++ Compile a literal (quoted) symbol.
 compQuote: (%Form,%Mode,%Env) -> %Maybe %Triple
 compQuote(expr,m,e) == 
-  expr is ["QUOTE",x] and ident? x => 
+  expr is ['QUOTE,x] and ident? x => 
     -- Ideally, Identifier should be the default type.  However, for
     -- historical reasons we cannot afford that luxury yet.
     m = $Identifier or listMember?(m,$IOFormDomains) => [expr,m,e]
@@ -985,7 +985,7 @@ compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
   Tl := [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl is "failed" => nil
-  [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quoteForm getVMType mUnder,
+  [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quote getVMType mUnder,
      KEYWORD::INITIAL_-CONTENTS, ['%list, :[T.expr for T in Tl]]],m,e]
 
 --% MACROS
@@ -1228,7 +1228,7 @@ compHasFormat(pred is ["has",olda,b],e) ==
   a := applySubst(pairList(formals,argl),olda)
   [a,.,e] := comp(a,$EmptyMode,e) or return nil
   a := applySubst(pairList(argl,formals),a)
-  b is ["ATTRIBUTE",c] => ["HasAttribute",a,["QUOTE",c]]
+  b is ["ATTRIBUTE",c] => ["HasAttribute",a,quote c]
   b is ["SIGNATURE",op,sig,:.] =>
      ["HasSignature",a,
        mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
@@ -2292,7 +2292,7 @@ numberize x ==
 localReferenceIfThere m ==
   m is "$" => m
   idx := NRTassocIndex m => ['%tref,'$,idx]
-  quoteForm m
+  quote m
 
 massageLoop x == main x where
   main x ==
@@ -2601,7 +2601,7 @@ compLambda(x is ["+->",vars,body],m,e) ==
            stackAndThrow('"inappropriate function type for unnamed mapping",nil)
         compUnnamedMapping(parms,src,dst,body,e) or return nil
       -- Otherwise, assumes this is just purely syntactic code block.
-      [quoteForm ["+->",parms,body],$AnonymousFunction,e]
+      [quote ["+->",parms,body],$AnonymousFunction,e]
     -- 2.2. If all parameters are declared, then compile as a mapping.
     and/[s ~= nil for s in source] =>
       compUnnamedMapping(parms,source,$EmptyMode,body,e) or return nil

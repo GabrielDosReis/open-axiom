@@ -5,6 +5,8 @@
 
 (PROVIDE "ast")
 
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE) (EXPORT '|quote|))
+
 (DEFPARAMETER |$bfClamming| NIL)
 
 (DEFPARAMETER |$constantIdentifiers| NIL)

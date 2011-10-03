@@ -19,8 +19,8 @@
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |setUnion| |setIntersection|
-                     |applySubst| |applySubst!| |applySubstNQ| |remove|
-                     |removeSymbol| |atomic?| |finishLine|)))
+                     |applySubst| |applySubst!| |applySubstNQ| |objectAssoc|
+                     |remove| |removeSymbol| |atomic?| |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 

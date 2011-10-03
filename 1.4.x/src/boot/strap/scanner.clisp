@@ -9,8 +9,6 @@
 
 (DEFCONSTANT |shoeTAB| (CODE-CHAR 9))
 
-(DEFUN |double| (|x|) (FLOAT |x| 1.0))
-
 (DEFUN |dqUnit| (|s|)
   (PROG (|a|) (RETURN (PROGN (SETQ |a| (LIST |s|)) (CONS |a| |a|)))))
 
@@ -24,16 +22,17 @@
 
 (DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) (T (CAR |s|))))
 
+(DEFUN |shoeTokConstruct| (|x| |y| |z|) (CONS |x| (CONS |y| |z|)))
+
 (DEFUN |shoeConstructToken| (|lp| |b| |n|)
-  (CONS (ELT |b| 0) (CONS (ELT |b| 1) (CONS |lp| |n|))))
+  (|shoeTokConstruct| (ELT |b| 0) (ELT |b| 1) (CONS |lp| |n|)))
 
 (DEFUN |shoeTokType| (|x|) (CAR |x|))
 
 (DEFUN |shoeTokPart| (|x|) (CADR |x|))
 
-(DEFUN |shoeTokPosn| (|x|) (CDDR |x|))
-
-(DEFUN |shoeTokConstruct| (|x| |y| |z|) (CONS |x| (CONS |y| |z|)))
+(DEFUN |shoeTokPosn| (|x|)
+  (PROG (|p|) (RETURN (PROGN (SETQ |p| (CDDR |x|)) |p|))))
 
 (DEFUN |shoeNextLine| (|s|)
   (PROG (|s1| |a|)
@@ -406,7 +405,7 @@
       (LET ((|bfVar#1| (- |ns| 1)) (|i| 0))
         (LOOP
          (COND ((> |i| |bfVar#1|) (RETURN NIL))
-               (T (SETQ |d| (|shoeOrdToNum| (SCHAR |s| |i|)))
+               (T (SETQ |d| (DIGIT-CHAR-P (SCHAR |s| |i|)))
                 (SETQ |ival| (+ (* 10 |ival|) |d|))))
          (SETQ |i| (+ |i| 1))))
       |ival|))))
@@ -467,8 +466,6 @@
                                (WRITE-TO-STRING (CHAR-CODE (SCHAR |$ln| |n|)))
                                " is not a Boot character"))
       (|shoeLeafError| (SCHAR |$ln| |n|))))))
-
-(DEFUN |shoeOrdToNum| (|x|) (DIGIT-CHAR-P |x|))
 
 (DEFUN |shoeKeyWord| (|st|) (|tableValue| |shoeKeyTable| |st|))
 

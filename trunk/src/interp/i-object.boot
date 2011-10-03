@@ -102,11 +102,11 @@ unwrap x ==
   x
  
 quote2Wrapped x ==
-  x is ["QUOTE",y] => wrap y
+  x is ['QUOTE,y] => wrap y
   x
  
 removeQuote x ==
-  x is ["QUOTE",y] => y
+  x is ['QUOTE,y] => y
   x
  
 ++ returns the normal form of `obj''s value, suitable for use as
@@ -133,7 +133,7 @@ instantiationNormalForm(op,argl) ==
 
 -- addQuote x ==
 --   integer? x => x
---   ['QUOTE,x]
+--   quote x
  
 --% Library compiler structures needed by the interpreter
 
@@ -146,10 +146,10 @@ asTupleNew0(eltType,listOfElts) ==
   [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
-  ["asTupleNew", quoteForm getVMType eltType, size, ['%list, :listOfElts]]
+  ["asTupleNew", quote getVMType eltType, size, ['%list, :listOfElts]]
 
 asTupleNewCode0(eltType,listForm) == 
-  ["asTupleNew0", quoteForm getVMType eltType, listForm]
+  ["asTupleNew0", quote getVMType eltType, listForm]
 
 asTupleSize(at) == first at
 asTupleAsVector(at) == rest at

@@ -49,7 +49,7 @@ evalDomain form ==
 
 mkEvalable form ==
   form is [op,:argl] =>
-    op is "QUOTE" => form
+    op is 'QUOTE => form
     op is ":" => [op,second form,mkEvalable third form]
     op is "WRAPPED" => mkEvalable devaluate argl
     op in '(Record Union Mapping) =>

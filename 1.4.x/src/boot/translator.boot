@@ -591,7 +591,7 @@ defuse1(e,y)==
 	 for i in dol repeat
 	       tableValue($bootDefined,i) := true
 	 defuse1 (append(ndol,e),b)
-  y is ["QUOTE",:a] => []
+  y is ['QUOTE,:a] => []
   y is ["+LINE",:a] => []
   for i in y repeat defuse1(e,i)
  

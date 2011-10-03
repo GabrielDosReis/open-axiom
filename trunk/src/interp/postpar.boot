@@ -247,7 +247,7 @@ postDefArgs argl ==
   argl is [[":",a],:b] =>
     b ~= nil => postError
       ['"   Argument",:bright a,'"of indefinite length must be last"]
-    a isnt [.,:.] or a is ["QUOTE",:.] => a
+    a isnt [.,:.] or a is ['QUOTE,:.] => a
     postError
       ['"   Argument",:bright a,'"of indefinite length must be a name"]
   [first argl,:postDefArgs rest argl]
@@ -313,7 +313,7 @@ postForm u ==
 
 postQuote: %ParseTree -> %ParseForm
 postQuote [.,a] == 
-  ["QUOTE",a]
+  quote a
 
 
 postScriptsForm: (%ParseTree,%List %ParseTree) -> %ParseForm
@@ -555,7 +555,7 @@ postcheck x ==
   x is ["DEF",form,[target,:.],:.] =>
     setDefOp form
     postcheck rest rest x
-  x is ["QUOTE",:.] => nil
+  x is ['QUOTE,:.] => nil
   postcheck first x
   postcheck rest x
 

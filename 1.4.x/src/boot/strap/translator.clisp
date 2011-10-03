@@ -599,8 +599,6 @@
                                (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                                     (EQ (CAR |ISTMP#2|) '|Foreign|))))))
                    (COND ((|%hasFeature| :SBCL) 'SB-ALIEN)
-                         ((|%hasFeature| :CLISP) 'FFI)
-                         ((|%hasFeature| :CLOZURE) 'CCL)
                          ((|%hasFeature| :ECL) 'FFI) (T (RETURN NIL))))
                   ((|ident?| |ns|) |ns|) (T (|bpTrap|))))
          (CONS 'USE-PACKAGE (CONS (SYMBOL-NAME |z|) |user|)))))
@@ -877,7 +875,7 @@
          (COND
           ((OR (NOT (CONSP |bfVar#5|)) (PROGN (SETQ |i| (CAR |bfVar#5|)) NIL))
            (RETURN NIL))
-          (T (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
+          (T (SETQ |b| (CONCAT (SYMBOL-NAME |i|) " is used in "))
            (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|)) |stream|
                            |b|)))
          (SETQ |bfVar#5| (CDR |bfVar#5|))))))))
@@ -1131,7 +1129,7 @@
          (COND
           ((OR (NOT (CONSP |bfVar#3|)) (PROGN (SETQ |i| (CAR |bfVar#3|)) NIL))
            (RETURN NIL))
-          (T (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
+          (T (SETQ |a| (CONCAT (SYMBOL-NAME |i|) " is used in "))
            (|bootOutLines| (SSORT (|tableValue| |$bootUsed| |i|)) |stream|
                            |a|)))
          (SETQ |bfVar#3| (CDR |bfVar#3|))))))))

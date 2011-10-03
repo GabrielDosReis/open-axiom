@@ -200,7 +200,7 @@ $optExportedFunctionReference := false
 ++ Quote form, if not a basic value.
 quoteMinimally form ==
   integer? form or string? form or form = nil or form = true => form
-  ["QUOTE",form]
+  quote form
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.
@@ -1761,7 +1761,7 @@ expandFormTemplate(shell,args,slot) ==
   slot is ["local",parm] and (n := isFormal parm) => 
     args.n   -- FIXME: we should probably expand with dual signature
   slot is ["NRTEVAL",val] => val
-  slot is ["QUOTE",val] => 
+  slot is ['QUOTE,val] => 
     string? val => val
     slot
   [expandFormTemplate(shell,args,i) for i in slot]
@@ -1776,7 +1776,7 @@ equalFormTemplate(shell,args,slot,form) ==
   slot is ["local",parm] and (n := isFormal parm) => 
     equalFormTemplate(shell,args,args.n,form)
   slot is ["NTREVAL",val] => form = val
-  slot is ["QUOTE",val] => 
+  slot is ['QUOTE,val] => 
      string? val or symbol? val or integer? val => val = form
      slot = form
   slot isnt [.,:.] or form isnt [.,:.] => form = slot
