@@ -40,7 +40,7 @@
 
 import includer
 namespace BOOTTRAN
-module ast
+module ast (quote)
 
 ++ True means that Boot functions should be translated to use
 ++ hash tables to remember values.  By default, functions are
@@ -116,7 +116,7 @@ $inDefIS := false
 
 ++ returns a `quote' ast for x.
 quote x ==
-  ["QUOTE",x]
+  ['QUOTE,x]
 
 --%
 
@@ -191,7 +191,7 @@ bfAppend ls ==
 bfColonAppend: (%List %Form,%Form) -> %Form
 bfColonAppend(x,y) ==
   x = nil => 
-    y is ["BVQUOTE",:a] => ["&REST",["QUOTE",:a]]
+    y is ["BVQUOTE",:a] => ["&REST",['QUOTE,:a]]
     ["&REST",y]
   [first x,:bfColonAppend(rest x,y)]
 
@@ -358,7 +358,7 @@ bfSep(iters)==
  
 bfReduce(op,y)==
   a :=
-    op is ["QUOTE",:.] => second op
+    op is ['QUOTE,:.] => second op
     op
   op := bfReName a
   init := a has SHOETHETA or op has SHOETHETA
@@ -380,7 +380,7 @@ bfReduceCollect(op,y)==
     body := second y
     itl := third y
     a :=
-      op is ["QUOTE",:.] => second op
+      op is ['QUOTE,:.] => second op
       op
     a is "append!" => bfDoCollect(body,itl,'lastNode,'skipNil)
     a is "append" => bfDoCollect(['copyList,body],itl,'lastNode,'skipNil)
@@ -634,7 +634,7 @@ bfLET2(lhs,rhs) ==
     cons? first b => [a,:b]
     [a,b]
   lhs is ['CONS,var1,var2] =>
-    var1 is "DOT" or var1 is ["QUOTE",:.] =>
+    var1 is "DOT" or var1 is ['QUOTE,:.] =>
       bfLET2(var2,addCARorCDR('CDR,rhs))
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
     var2 = nil or var2 is "DOT" =>l1
@@ -779,7 +779,7 @@ bfReName x==
   x
 
 sequence?(x,pred) ==
-  x is ["QUOTE",seq] and cons? seq and
+  x is ['QUOTE,seq] and cons? seq and
     "and"/[apply(pred,y,nil) for y in seq]
 
 idList? x ==
@@ -795,10 +795,10 @@ stringList? x ==
 ++ is a sequence (e.g. a list)
 bfMember(var,seq) ==
   integer? var or sequence?(seq,function integer?) =>
-    seq is ["QUOTE",[x]] => ["EQL",var,x]
+    seq is ['QUOTE,[x]] => ["EQL",var,x]
     ["scalarMember?",var,seq]
   defQuoteId var or sequence?(seq,function symbol?) =>
-    seq is ["QUOTE",[x]] => ["EQ",var, quote x]
+    seq is ['QUOTE,[x]] => ["EQ",var, quote x]
     ["symbolMember?",var,seq]
   idList? seq =>
     seq.args is [.] => ["EQ",var,:seq.args]
@@ -806,7 +806,7 @@ bfMember(var,seq) ==
       bfOR [["EQ",var,x],["EQ",var,y]]
     ["symbolMember?",var,seq]
   bfChar? var or sequence?(seq,function char?) =>
-    seq is ["QUOTE",[x]] => ["CHAR=",var,x]
+    seq is ['QUOTE,[x]] => ["CHAR=",var,x]
     ["charMember?",var,seq]
   charList? seq =>
     seq.args is [.] => ["CHAR=",var,:seq.args]
@@ -814,7 +814,7 @@ bfMember(var,seq) ==
       bfOR [["CHAR=",var,x],["CHAR=",var,y]]
     ["charMember?",var,seq]
   bfString? var or sequence?(seq,function string?) =>
-    seq is ["QUOTE",[x]] => ["STRING=",var,x]
+    seq is ['QUOTE,[x]] => ["STRING=",var,x]
     ["stringMember?",var,seq]
   stringList? seq =>
     seq.args is [.] => ["STRING=",var,:seq.args]
@@ -856,7 +856,7 @@ bfAND l ==
  
  
 defQuoteId x==  
-  x is ["QUOTE",:.] and symbol? second x
+  x is ['QUOTE,:.] and symbol? second x
  
 bfChar? x ==
   char? x or cons? x and x.op in '(char CODE_-CHAR SCHAR)
@@ -964,7 +964,7 @@ bfParameterList(p1,p2) ==
 bfInsertLet(x,body)==
   x = nil => [false,nil,x,body]
   x is ["&REST",a] =>
-    a is ["QUOTE",b] => [true,"QUOTE",["&REST",b],body]
+    a is ['QUOTE,b] => [true,'QUOTE,["&REST",b],body]
     [false,nil,x,body]
   [b,norq,name1,body1] :=  bfInsertLet1 (first x,body)
   [b1,norq1,name2,body2] :=  bfInsertLet (rest x,body1)
@@ -973,7 +973,7 @@ bfInsertLet(x,body)==
 bfInsertLet1(y,body)==
   y is ["L%T",l,r] => [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
   symbol? y => [false,nil,y,body]
-  y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
+  y is ["BVQUOTE",b] => [true,'QUOTE,b,body]
   g:=bfGenSymbol()
   y isnt [.,:.] => [false,nil,g,body]
   case y of
@@ -1045,7 +1045,7 @@ shoeCompTran1 x ==
       $dollarVars := [x,:$dollarVars]
     x
   U := first x
-  U is "QUOTE" => x
+  U is 'QUOTE => x
   x is ["CASE",y,:zs] =>
     second(x) := shoeCompTran1 y
     while zs ~= nil repeat

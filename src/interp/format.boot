@@ -789,7 +789,7 @@ form2Fence form ==
 
 form2Fence1 x ==
   x is [op,:argl] =>
-    op = "QUOTE" => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
+    op = 'QUOTE => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
     ['"(", FORMAT(nil, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
   null x => '""
   ident? x => FORMAT(nil, '"|~a|", x)

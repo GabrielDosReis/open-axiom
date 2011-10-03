@@ -130,7 +130,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     v
   x is "$" => x
   x is "$$" => x
-  ['QUOTE,x]
+  quote x
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
 listOfBoundVars form ==
@@ -745,7 +745,7 @@ NRTputInHead bod ==
   bod is ['%when,:clauses] =>
     for cc in clauses repeat NRTputInTail cc
     bod
-  bod is ["QUOTE",:.] => bod
+  bod is ['QUOTE,:.] => bod
   bod is ["CLOSEDFN",:.] => bod
   NRTputInHead first bod
   NRTputInTail rest bod

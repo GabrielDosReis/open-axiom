@@ -182,38 +182,6 @@
 
 (DEFUN |shoeLine?| (|s|) (|shoePrefix?| ")line" |s|))
 
-(DEFUN |shoeBiteOff| (|x|)
-  (PROG (|n1| |n|)
-    (RETURN
-     (PROGN
-      (SETQ |n| (|firstNonblankPosition| |x| 0))
-      (COND ((NULL |n|) NIL)
-            (T (SETQ |n1| (|firstBlankPosittion| |x| |n|))
-             (COND ((NULL |n1|) (LIST (|subString| |x| |n|) ""))
-                   (T
-                    (LIST (|subString| |x| |n| (- |n1| |n|))
-                          (|subString| |x| |n1|))))))))))
-
-(DEFUN |shoeFileName| (|x|)
-  (PROG (|c| |a|)
-    (RETURN
-     (PROGN
-      (SETQ |a| (|shoeBiteOff| |x|))
-      (COND ((NULL |a|) "")
-            (T (SETQ |c| (|shoeBiteOff| (CADR |a|)))
-             (COND ((NULL |c|) (CAR |a|))
-                   (T (CONCAT (CAR |a|) "." (CAR |c|))))))))))
-
-(DEFUN |shoeFnFileName| (|x|)
-  (PROG (|c| |a|)
-    (RETURN
-     (PROGN
-      (SETQ |a| (|shoeBiteOff| |x|))
-      (COND ((NULL |a|) (LIST "" ""))
-            (T (SETQ |c| (|shoeFileName| (CADR |a|)))
-             (COND ((NULL |c|) (LIST (CAR |a|) ""))
-                   (T (LIST (CAR |a|) |c|)))))))))
-
 (DEFUN |shoeInclude| (|s|) (|bDelay| #'|shoeInclude1| (LIST |s|)))
 
 (DEFUN |shoeInclude1| (|s|)

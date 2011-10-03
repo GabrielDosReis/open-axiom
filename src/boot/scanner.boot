@@ -40,10 +40,6 @@ module scanner
 
 shoeTAB == abstractChar 9
  
--- converts X to double-float.
-double x ==
-  FLOAT(x, 1.0)
- 
 dqUnit s==
   a := [s]
   [a,:a]

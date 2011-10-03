@@ -257,7 +257,7 @@ optFunctorBody x ==
     null l => nil
     l:= [optFunctorBody u for u in l]
     and/[optFunctorBodyQuotable u for u in l] =>
-      ['QUOTE,[optFunctorBodyRequote u for u in l]]
+      quote [optFunctorBodyRequote u for u in l]
     ['%list,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
   x is ['%when,:l] =>
@@ -573,7 +573,7 @@ SigSlotsMatch(sig,pattern,implem) ==
 makeMissingFunctionEntry(alist,i) ==
   tran applySubst(alist,$SetFunctions.i) where
     tran x ==
-      x is ["HasCategory",a,["QUOTE",b]] => ["has",a,b]
+      x is ["HasCategory",a,['QUOTE,b]] => ["has",a,b]
       x is [op,:l] and op in '(AND OR NOT) => [op,:[tran y for y in l]]
       x
  
@@ -679,7 +679,7 @@ InvestigateConditions(catvecListMaker,env) ==
     reshape(u,env) ==
       ['%when,[TryGDC ICformat(rest u,env)],
              ['%otherwise,['RPLACA,'(CAR TrueDomain),
-                             ['delete,['QUOTE,first u],'(CAAR TrueDomain)]]]]
+                             ['delete, quote first u,'(CAAR TrueDomain)]]]]
   $supplementaries:=
     [u
       for u in list | not listMember?(first u,masterSecondaries)

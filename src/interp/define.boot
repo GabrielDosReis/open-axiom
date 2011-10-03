@@ -1041,9 +1041,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       for [u,:v] in $extraParms repeat
         formals := [u,:formals]
         actuals := [MKQ v,:actuals]
-      body := ['sublisV,['pairList,['QUOTE,formals],['%list,:actuals]],body]
+      body := ['sublisV,['pairList,quote formals,['%list,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
-        ['sublisV,['pairList,['QUOTE,sargl],['%list,:
+        ['sublisV,['pairList,quote sargl,['%list,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ["%bind",[[g:= gensym(),body]],
@@ -1071,7 +1071,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 mkConstructor: %Form -> %Form
 mkConstructor form ==
   form isnt [.,:.] => ['devaluate,form]
-  null form.args => ['QUOTE,[form.op]]
+  null form.args => quote [form.op]
   ['%list,MKQ form.op,:[mkConstructor x for x in form.args]]
  
 compDefineCategory(df,m,e,prefix,fal) ==
@@ -1448,7 +1448,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,
-            ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'%incomplete], true])
+            ['MAKEPROP,quote op',quote '%incomplete,true])
     dbBeingDefined?(db) := false
     [fun,['Mapping,:signature'],originale]
 
@@ -2404,13 +2404,13 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
     ["mkCategory",MKQ domainOrPackage,['%list,:reverse sigList],
       ['%list,:reverse atList],MKQ domList,nil] where
         domList() ==
-          ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
+          ("union"/[fn sig for ['QUOTE,[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]
   parameters:=
     removeDuplicates
       ("append"/
         [[x for x in sig | ident? x and x~='_$]
-          for ["QUOTE",[[.,sig,:.],:.]] in sigList])
+          for ['QUOTE,[[.,sig,:.],:.]] in sigList])
   wrapDomainSub(parameters,body)
 
 DomainSubstitutionFunction(parameters,body) ==
@@ -2427,9 +2427,9 @@ DomainSubstitutionFunction(parameters,body) ==
            --bound in buildFunctor
            --For categories, bound and used in compDefineCategory
           MKQ g
-        first body is "QUOTE" => body
+        first body is 'QUOTE => body
         cons? $definition and isFunctor body.op and 
-          body.op ~= $definition.op => quoteForm simplifyVMForm body
+          body.op ~= $definition.op => quote simplifyVMForm body
         [Subst(parameters,u) for u in body]
   body isnt ["Join",:.] => body
   $definition isnt [.,:.] => body

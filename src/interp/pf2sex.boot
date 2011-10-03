@@ -62,15 +62,15 @@ pf2Sex1 pf ==
   pfSymbol? pf =>
     $insideRule = 'left =>
       s := pfSymbolSymbol pf
-      ["constant", ["QUOTE", s]]
-    ["QUOTE", pfSymbolSymbol pf]
+      ["constant", quote s]
+    quote pfSymbolSymbol pf
   pfLiteral? pf =>
     pfLiteral2Sex pf
   pfId? pf =>
     $insideRule =>
       s := pfIdSymbol pf
       SymMemQ(s, '(%pi %e %i)) => s
-      ["QUOTE", s]
+      quote s
     pfIdSymbol pf
   pfApplication? pf =>
     pfApplication2Sex pf
@@ -194,10 +194,10 @@ pfLiteral2Sex pf ==
   type = 'symbol =>
     $insideRule =>
       s := pfSymbolSymbol pf
-      ["QUOTE", s]
+      quote s
     pfSymbolSymbol pf
   type = 'expression =>
-      ["QUOTE", pfLeafToken pf]
+      quote pfLeafToken pf
   keyedSystemError('"S2GE0017", ['"pfLiteral2Sex: unexpected form"])
 
 symEqual(sym, sym2) == sameObject?(sym, sym2)
@@ -212,7 +212,7 @@ pmDontQuote? sy ==
 pfOp2Sex pf ==
   alreadyQuoted := pfSymbol? pf
   op := pf2Sex1 pf
-  op is ["QUOTE", realOp] =>
+  op is ['QUOTE, realOp] =>
     $insideRule = 'left => realOp
     $insideRule = 'right =>
       pmDontQuote? realOp => realOp
@@ -266,11 +266,11 @@ pfApplication2Sex pf ==
     symEqual(op, "%braceFromCurly") =>
       argSex is ["SEQ",:.] => argSex
       ["brace", ["construct", :argSex]]
-    op is [qt, realOp] and symEqual(qt, "QUOTE") =>
+    op is [qt, realOp] and symEqual(qt, 'QUOTE) =>
        ["applyQuote", op, :argSex]
     val := hasOptArgs? argSex => [op, :val]
     [op, :argSex]
-  op is [qt, realOp] and symEqual(qt, "QUOTE") =>
+  op is [qt, realOp] and symEqual(qt, 'QUOTE) =>
     pfFinishApplication ["applyQuote", op, pf2Sex1 args]
   symEqual(op, "%braceFromCurly") => pfFinishApplication
     x := pf2Sex1 args
@@ -458,7 +458,7 @@ rulePredicateTran rule ==
     [[.,.,:rhs],:.] := $multiVarPredicateList
     pvarPredTran(rhs, varList)
   ['suchThat, rule,
-   ['construct, :[["QUOTE", var] for var in varList]],
+   ['construct, :[quote var for var in varList]],
     ['ADEF, '(predicateVariable),
      '((Boolean) (List (Expression (Integer)))), '(() ()),
       predBody]]

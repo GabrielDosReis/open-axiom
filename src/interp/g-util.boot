@@ -357,7 +357,7 @@ getTypeOfSyntax t ==
     $Syntax
   [op,:.] := t
   op = "Mapping" => '(MappingAst)
-  op = "QUOTE" and #t = 2 and ident? second t => ["Literal",$Symbol]
+  op = 'QUOTE and #t = 2 and ident? second t => ["Literal",$Symbol]
   op = "IF" => '(IfAst)
   op = "REPEAT" => '(RepeatAst)
   op = "WHILE" => '(WhileAst)

@@ -187,6 +187,7 @@
 
 	   "ident?"
 	   ;; numeric support
+	   "double"
 	   "%fNaN?"
            ))
 
@@ -1346,6 +1347,10 @@
   #+:sbcl `(sb-ext:float-nan-p ,x)
   #+:ecl `(ext:float-nan-p ,x)
   #-(or :sbcl :ecl) `(/= ,x ,x))
+
+;; convert an integer to double-float
+(defmacro |double| (x)
+  `(float ,x 1.0d0))
 
 ;; 
 ;; -*- Native Datatype correspondance -*-
