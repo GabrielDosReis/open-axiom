@@ -125,7 +125,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     -- to be encoded.
     ["NRTEVAL",NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
   symbolMember?(x,$formalArgList) =>
-    v := $FormalMapVariableList.(POSN1(x,$formalArgList))
+    v := $FormalMapVariableList.(symbolPosition(x,$formalArgList))
     firstTime => ["local",v]
     v
   x is "$" => x
@@ -216,7 +216,7 @@ genDeltaEntry(opMmPair,e) ==
       saveNRTdeltaListComp.first := compEntry
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
-      (n:= POSN1(opModemapPair,$NRTdeltaList)) => n + 1
+      (n := valuePosition(opModemapPair,$NRTdeltaList)) => n + 1
         --n + 1 since $NRTdeltaLength is 1 too large
       $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
       $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
@@ -277,7 +277,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
       sig := substitute('$,second($functorForm),sig)
   sig := [NRTgetLocalIndex x for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
-  POSN1(opModemapPair,$NRTdeltaList) => nil   --already there
+  valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
   $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
   $NRTdeltaLength := $NRTdeltaLength+1
@@ -524,7 +524,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
       [['%store,['%tref,'$,i],v] for i in $NRTbase.. for v in $FormalMapVariableList
 	for arg in args]
     if symbolMember?($NRTaddForm,$locals) then
-       addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
+       addargname := $FormalMapVariableList.(symbolPosition($NRTaddForm,$locals))
        argStuffCode := [['%store,['%tref,'$,5],addargname],:argStuffCode]
     [['stuffDomainSlots,'$],:argStuffCode,
        :predBitVectorCode2,storeOperationCode]

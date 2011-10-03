@@ -70,7 +70,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
-	comp.$(FASLEXT)	        daase.$(FASLEXT)       	\
+	                        daase.$(FASLEXT)       	\
 	pathname.$(FASLEXT)	compat.$(FASLEXT)      	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
@@ -328,7 +328,6 @@ postpar.$(FASLEXT): macros.$(FASLEXT)
 bootlex.$(FASLEXT): preparse.$(FASLEXT) macros.$(FASLEXT) \
 			nlib.$(FASLEXT) sys-globals.$(FASLEXT)
 newaux.$(FASLEXT): macros.$(FASLEXT)
-comp.$(FASLEXT): macros.$(FASLEXT)
 preparse.$(FASLEXT): fnewmeta.$(FASLEXT)
 fnewmeta.$(FASLEXT): parsing.$(FASLEXT)
 parsing.$(FASLEXT): metalex.$(FASLEXT)

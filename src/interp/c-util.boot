@@ -1721,6 +1721,8 @@ compAndDefine l ==
   _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
   backendCompile l
 
+$compileDontDefineFunctions := true
+
 ++ Subroutine of compileInteractive.
 compQuietly fn ==
   _*COMP370_-APPLY_* :=

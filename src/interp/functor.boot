@@ -510,7 +510,7 @@ ConstantCreator u ==
  
 ProcessCond(cond,e) ==
   ncond := applySubst($pairlis,cond)
-  integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
+  valuePosition(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
   cond
 
 TryGDC cond ==

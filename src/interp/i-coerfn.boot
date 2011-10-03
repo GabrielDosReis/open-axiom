@@ -81,7 +81,7 @@ coerceDmp1(u,source is [.,v1,S],target is [.,v2,T],v,w) ==
   multfunc:= getFunctionFromDomain('_*,target,[target,target])
   pat1:= [member(x,v) for x in v1]
   pat2:= [member(x,w) for x in v1]
-  pat3:= [member(x,v) and POSN1(x,v) for x in v2]
+  pat3:= [member(x,v) and valuePosition(x,v) for x in v2]
   for [e,:c] in u until not z repeat
     exp := vector [y for x in pat2 for y in VEC2LIST e | x]
     z:= coerceInt(objNewWrap([[exp,:c]],t),target) =>
@@ -97,7 +97,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
   one:= domainOne(T)
   plusfunc:= getFunctionFromDomain('_+,target,[target,target])
   multfunc:= getFunctionFromDomain('_*,target,[target,target])
-  pat:= [member(x,v1) and POSN1(x,v1) for x in v2]
+  pat:= [member(x,v1) and valuePosition(x,v1) for x in v2]
   for [e,:c] in u until not z repeat
     z:= coerceInt(objNewWrap(c,S),target) =>
       li:= VEC2LIST e
@@ -296,7 +296,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
   plusfunc:= getFunctionFromDomain('_+,T,[T,T])
   zero := getConstantFromDomain($Zero,T)
   x := nil
-  pos:= POSN1(var,vl)
+  pos := valuePosition(var,vl)
   for [e,:c] in u until not y repeat
     exp:= e.pos
     e1:= removeVectorElt(e,pos)
@@ -442,7 +442,7 @@ Expr2Up(u,source is [Expr,S], target is [.,var,T]) ==
 
     -- variable is a kernel
 
-    varKernel  := kernels.(POSN1(var, v1))
+    varKernel  := kernels.(valuePosition(var, v1))
     univFunc   := getFunctionFromDomain("univariate", source, [source, kernelDom])
     sup        := ['SparseUnivariatePolynomial, source]
 
@@ -1376,7 +1376,7 @@ Up2Dmp(u,source is ['UnivariatePolynomial,var,S],
     one:= domainOne(T)
     plusfunc:= getFunctionFromDomain('_+,target,[target,target])
     multfunc:= getFunctionFromDomain('_*,target,[target,target])
-    n:= #vl ; p:= POSN1(var,vl)
+    n:= #vl ; p:= valuePosition(var,vl)
     l1:= not (p=0) and [0 for m in 1..p]
     l2:= not (p=n-1) and [0 for m in p..n-2]
     for [e,:c] in u until not z repeat

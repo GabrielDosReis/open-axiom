@@ -43,6 +43,8 @@ module sys_-utility where
   remove!: (%List %Thing,%Thing) -> %List %Thing
   displayTextFile: %Thing -> %Void
   upwardCut: (%Thing, %List %Thing) -> %List %Thing
+  symbolPosition: (%Symbol,%List %Symbol) -> %Maybe %Short
+  valuePosition: (%Thing,%List %Thing) -> %Maybe %Short
 
 --%
 $COMBLOCKLIST := nil
@@ -345,6 +347,14 @@ makeByteBuffer(n,b == 0) ==
 subString(s,f,n == nil) ==
   n = nil => subSequence(s,f)
   subSequence(s,f,f + n)
+
+++ Return the position of the symbol `s' in the list `l', if present.
+++ Otherwise return nil.
+symbolPosition(s,l) ==
+  or/[i for i in 0.. for x in l | symbolEq?(s,x)]
+
+valuePosition(s,l) ==
+  or/[i for i in 0.. for x in l | valueEq?(s,x)]
 
 --% assoc
 
