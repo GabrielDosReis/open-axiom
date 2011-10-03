@@ -580,7 +580,7 @@ childArgCheck(argl, nargl) ==
   and/[fn for x in argl for y in nargl for i in 0..] where
     fn() ==
       x = y or constructor? opOf y => true
-      isSharpVar y => i = POSN1(y, $FormalMapVariableList)
+      isSharpVar y => i = symbolPosition(y,$FormalMapVariableList)
       false
 
 --computeDescendantsOf cat ==

@@ -1,3 +1,14 @@
+2011-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/comp.lisp: Remove.
+	* interp/setvart.boot: Remove setting of 'compiler' options.
+	* interp/setvars.boot (setAsharpArgs): Remove.
+	(describeAsharpArgs): Likewise.
+	(setInputLibrary): Likewise.
+	(setOutputLibrary): Likewise.
+	(describeInputLibraryArgs): Likewise.
+	(describeOutputLibraryArgs): Likewise.
+
 2011-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in: Do not use CCL in AxiomCore.

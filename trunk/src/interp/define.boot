@@ -629,7 +629,7 @@ expandType(lazyt,template,domform) ==
   functorName is ":" =>
     [functorName,first argl,expandTypeArgs(second argl,template,domform)]
   lazyt is ['local,x] =>
-    n := POSN1(x,$FormalMapVariableList)
+    n := symbolPosition(x,$FormalMapVariableList)
     domform.(1 + n)
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  

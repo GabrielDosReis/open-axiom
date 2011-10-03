@@ -124,8 +124,8 @@ compareSigEqual(s,t,dollar,domain) ==
       t is '$ => dollar
       isSharpVar t =>
         vector? domain =>
-          instantiationArgs(domain).(POSN1(t,$FormalMapVariableList))
-        domain.args.(POSN1(t,$FormalMapVariableList))
+          instantiationArgs(domain).(symbolPosition(t,$FormalMapVariableList))
+        domain.args.(symbolPosition(t,$FormalMapVariableList))
       string? t and ident? s => (s := symbolName s; t)
       nil
     s is '$ => compareSigEqual(dollar,u,dollar,domain)

@@ -1620,7 +1620,7 @@ bcConform1 form == main where
           string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
         stringChar(s,0) = char "#" =>
-           (n := POSN1(form, $FormalFunctionParameterList)) =>
+           (n := symbolPosition(form,$FormalFunctionParameterList)) =>
               htSay form2HtString ($FormalMapVariableList . n)
            htSay '"\"
            htSay form

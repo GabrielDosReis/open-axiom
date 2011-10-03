@@ -982,14 +982,14 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     p isnt [.,:.] or #p = 1 => MKQ p
     ['%list,MKQ first p,:[convertCatArg x for x in rest p]]
   evpred(dom,pred) ==
-    k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)
+    k := valuePosition(pred,$predicateList) => testBitVector(dom.3,k + 1)
     evpred1(dom,pred)
   evpred1(dom,pred) ==
     pred is [op,:argl] =>
       op in '(AND and) => "and"/[evpred1(dom,x) for x in argl]
       op in '(OR or)   =>  "or"/[evpred1(dom,x) for x in argl]
       op is 'NOT => not evpred1(dom,first argl)
-      k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)
+      k := valuePosition(pred,$predicateList) => testBitVector(dom.3,k + 1)
       op is 'HasAttribute =>
         [arg,[.,a]] := argl
         attPredIndex := LASSOC(a,dom.2)
