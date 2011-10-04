@@ -42,6 +42,7 @@
 ;               4. META Token Parsing Actions
 ;               5. META Error Handling
 
+(IMPORT-MODULE "lexing") 
 (IMPORT-MODULE "macros") 
 (in-package "BOOT")
 
@@ -55,49 +56,8 @@
 ; 1. Data structure declarations (defstructs) for parsing objects
 ;
 ;               A. Line Buffer
-;               B. Stack
 ;               C. Token
 ;               D. Reduction
-
-; 1B. A Stack (of lines, tokens, or whatever)
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Make-Stack, Stack-Store, Stack-Size, Stack-Top, Stack-Load, Stack-Clear,
-;       Stack-/-Empty, Stack-Push, Stack-Pop
-
-(defstruct Stack                "A stack"
-           (Store nil)          ; contents of the stack
-           (Size 0)             ; number of elements in Store
-           (Top nil)            ; first element of Store
-
-           (Updated nil)        ; whether something has been pushed on the stack
-                                ; since this flag was last set to NIL
-)
-
-(defun stack-load (list stack)
-  (setf (stack-store stack) list
-        (stack-size stack) (length list)
-        (stack-top stack) (car list)))
-
-(defun stack-clear (stack)
-  (setf (stack-store stack) nil (stack-size stack) 0 (stack-top stack) nil
-        (stack-updated stack) nil))
-
-(defmacro stack-/-empty (stack) `(> (stack-size ,stack) 0))
-
-(defun stack-push (x stack)
-  (push x (stack-store stack))
-  (setf (stack-top stack) x (stack-updated stack) t)
-  (incf (stack-size stack))
-  x)
-
-(defun stack-pop (stack)
-  (let ((y (pop (stack-store stack))))
-    (decf (stack-size stack))
-    (setf (stack-top stack) (if (stack-/-empty stack) (car (stack-store stack))))
-    y))
-
 
 ; 1A. A Line Buffer
 ;
@@ -235,7 +195,7 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 
 ; *** Print New Line
 
-(defparameter Printer-Line-Stack (make-stack)
+(defparameter Printer-Line-Stack (|makeStack|)
   "Stack of output listing lines waiting to print. [local to PRINT-NEW-LINE]")
 
 (defparameter Read-Quietly nil
@@ -243,10 +203,10 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 
 (defun Print-New-Line (string &optional (strm |$OutputStream|))
   "Makes output listings."
-  (if Read-Quietly (stack-push (copy-tree string) Printer-Line-Stack)
+  (if Read-Quietly (|stackPush!| (copy-tree string) Printer-Line-Stack)
       (progn (mapc #'(lambda (x) (format strm "; ~A~%" x) (terpri))
-                   (|reverse!| (stack-store Printer-Line-Stack)))
-             (stack-clear Printer-Line-Stack)
+                   (|reverse!| (|stackStore| Printer-Line-Stack)))
+             (|stackClear!| Printer-Line-Stack)
              (format strm "~&; ~A~%" string))))
 
 
@@ -383,13 +343,13 @@ NonBlank is true if the token is not preceded by a blank."
 ;
 ;       Push-Reduction Pop-Reduction
 
-(defparameter Reduce-Stack (make-stack) "Stack of results of reduced productions.")
+(defparameter Reduce-Stack (|makeStack|) "Stack of results of reduced productions.")
 
 (defun Push-Reduction (rule redn)
-  (stack-push (make-reduction :rule rule :value redn) Reduce-Stack))
+  (|stackPush!| (make-reduction :rule rule :value redn) Reduce-Stack))
 
 (defun reduce-stack-show ()
-  (let ((store (stack-store reduce-stack))
+  (let ((store (|stackStore| reduce-stack))
         (*print-pretty* t))
     (if store
         (progn (format t "~%Reduction stack contains:~%")
@@ -397,24 +357,24 @@ NonBlank is true if the token is not preceded by a blank."
 			   (if (eq (type-of x) 'token)
                                (describe x)
 			     (print x)))
-                       (stack-store reduce-stack)))
+                       (|stackStore| reduce-stack)))
         (format t "~%There is nothing on the reduction stack.~%"))))
 
-(defmacro reduce-stack-clear () `(stack-load nil reduce-stack))
+(defmacro reduce-stack-clear () `(|stackLoad!| nil reduce-stack))
 
-(defun Pop-Reduction () (stack-pop Reduce-Stack))
+(defun Pop-Reduction () (|stackPop!| Reduce-Stack))
 
 (defmacro pop-stack-1 () '(reduction-value (Pop-Reduction)))
 
 (defmacro pop-stack-2 ()
   `(let* ((top (Pop-Reduction)) (next (Pop-Reduction)))
-     (stack-push top Reduce-Stack)
+     (|stackPush!| top Reduce-Stack)
      (reduction-value next)))
 
 (defmacro pop-stack-3 ()
   `(let* ((top (Pop-Reduction)) (next (Pop-Reduction)) (nnext (Pop-Reduction)))
-     (stack-push next Reduce-Stack)
-     (stack-push top Reduce-Stack)
+     (|stackPush!| next Reduce-Stack)
+     (|stackPush!| top Reduce-Stack)
      (reduction-value nnext)))
 
 (defmacro pop-stack-4 ()
@@ -422,13 +382,13 @@ NonBlank is true if the token is not preceded by a blank."
           (next (Pop-Reduction))
           (nnext (Pop-Reduction))
           (nnnext (Pop-Reduction)))
-     (stack-push nnext Reduce-Stack)
-     (stack-push next Reduce-Stack)
-     (stack-push top Reduce-Stack)
+     (|stackPush!| nnext Reduce-Stack)
+     (|stackPush!| next Reduce-Stack)
+     (|stackPush!| top Reduce-Stack)
      (reduction-value nnnext)))
 
 (defmacro nth-stack (x)
-  `(reduction-value (nth (1- ,x) (stack-store Reduce-Stack))))
+  `(reduction-value (nth (1- ,x) (|stackStore| Reduce-Stack))))
 
  
 ; *** 2. META Line Handling
