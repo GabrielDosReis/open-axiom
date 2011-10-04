@@ -84,7 +84,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
     applySubst(pairList($FormalMapVariableList,IFCDR conform),faTypes)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
---argTypes := reverse ASSOCRIGHT symbolLassoc('arguments,alist)
+--argTypes := reverse ASSOCRIGHT symbolTarget('arguments,alist)
 --sig := or/[sig for [sig,:.] in LASSOC(op,opAlist) | rest sig = argTypes]
   ops := escapeSpecialChars STRINGIMAGE zeroOneConvert op
   oppart := ['"{\em ", ops, '"}"]

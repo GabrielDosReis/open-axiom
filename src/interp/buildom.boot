@@ -277,7 +277,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
   table is "derived" => lookupInAddChain(op,sig,domain,dollar)
   success := nil             -- lookup result
   someMatch := false
-  while not success for [sig1,:code] in QLASSQ(op,table) repeat
+  while not success for [sig1,:code] in symbolTarget(op,table) repeat
     success :=
       not compareSig(sig,sig1,canonicalForm dollar,domain) => false
       code is ['Subsumed,a] =>

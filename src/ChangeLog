@@ -1,5 +1,38 @@
 2011-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (symbolAssoc): Rename from assocSymbol. Export.
+	* interp/functor.boot: Remove getAbbreviation, mkAbbrev, addsuffix.
+	* interp/sys-utility.boot (symbolAssoc): Remove as redundant.
+	(scalarTarget): New.
+	* interp/bc-matrix.boot: Use symbolTarget instead of symbolLassoc.
+	* interp/br-con.boot: Use QLASSQ instead of symbolTarget.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/profile.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/vmlisp.lisp (assoc): Tidy.
+
+2011-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/comp.lisp: Remove.
 	* interp/setvart.boot: Remove setting of 'compiler' options.
 	* interp/setvars.boot (setAsharpArgs): Remove.

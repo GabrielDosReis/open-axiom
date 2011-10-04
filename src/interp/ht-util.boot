@@ -269,7 +269,7 @@ bcSadFaces() ==
 
 htLispLinks(links,:option) ==
   [links,options] := beforeAfter('options,links)
-  indent := symbolLAssoc('indent,options) or 5
+  indent := symbolTarget('indent,options) or 5
   iht '"\newline\indent{"
   iht stringize indent
   iht '"}\beginitems"

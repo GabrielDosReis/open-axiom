@@ -78,7 +78,7 @@ $failed := '"failed"
 compClam(op,argl,body,$clamList) ==
   --similar to reportFunctionCompilation in SLAM BOOT
   if $InteractiveMode then startTimingProcess 'compilation
-  if (u := QLASSQ(op,$clamList)) isnt [kind,eqEtc,:options]
+  if (u := symbolTarget(op,$clamList)) isnt [kind,eqEtc,:options]
     then keyedSystemError("S2GE0004",[op])
   $clamList:= nil            --clear to avoid looping
   if u:= S_-(options,'(shift count)) then

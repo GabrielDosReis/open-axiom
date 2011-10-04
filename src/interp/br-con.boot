@@ -49,7 +49,7 @@ namespace BOOT
 --    [mathform2HtString x for x in rest a]
 --  if cons? a then a := first a
 --  da := DOWNCASE a
---  pageName := QLASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
+--  pageName := symbolTarget(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
 --    downlink pageName              --special jump out for primitive domains
 --  line := conPageFastPath a        => kPage line  --lower case name of cons?
 --  line := conPageFastPath UPCASE a => kPage line  --upper case an abbr?
@@ -65,7 +65,7 @@ conPage(a,:b) ==
   $conArgstrings: local := [form2HtString x for x in KDR a]
   if cons? a then a := first a
   da := DOWNCASE a
-  pageName := QLASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
+  pageName := symbolTarget(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
     downlink pageName                --special jump out for primitive domains
   line := conPageFastPath da  => kPage(line,form) --lower case name of cons?
   line := conPageFastPath UPCASE a => kPage(line,form) --upper case an abbr?
@@ -77,7 +77,7 @@ conPageFastPath x == --called by conPage and constructorSearch
   charPosition(char "*",s,0) < #s => nil     --quit if name has * in it
   name := (string? x => makeSymbol x; x)
   entry := tableValue($lowerCaseConTb,name) or return nil
-  lineNumber := QLASSQ('dbLineNumber,CDDR entry) =>
+  lineNumber := symbolTarget('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
     dbRead lineNumber --read record for constructor from libdb.text
   conPageConEntry first entry
@@ -704,7 +704,7 @@ conOpPage1(conform,:options) ==
   htpSetProperty(page,'domname,domname)         --> !!note!! <--
   htpSetProperty(page,'conform,conform)
   htpSetProperty(page,'signature,signature)
-  if selectedOperation := symbolLAssoc('selectedOperation,IFCDR options) then
+  if selectedOperation := symbolTarget('selectedOperation,IFCDR options) then
     htpSetProperty(page,'selectedOperation,selectedOperation)
   for [a,:b] in bindingsAlist repeat htpSetProperty(page,a,b)
   koPage(page,'"operation")
@@ -984,7 +984,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   --NOTE that we pass conform is as "origin"
 
 getConstructorDocumentation conname ==
-  symbolLassoc('constructor,getConstructorDocumentationFromDB conname)
+  symbolTarget('constructor,getConstructorDocumentationFromDB conname)
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==

@@ -266,15 +266,15 @@ get(x,prop,e) ==
 
 get0(x,prop,e) ==
   cons? x => get0(x.op,prop,e)
-  u := QLASSQ(x,first first e) => QLASSQ(prop,u)
+  u := symbolTarget(x,first first e) => symbolTarget(prop,u)
   (tail := rest first e) and (u := fastSearchCurrentEnv(x,tail)) =>
-    QLASSQ(prop,u)
+    symbolTarget(prop,u)
   nil
 
 get1(x,prop,e) ==
   cons? x => get1(x.op,prop,e)
   prop = "modemap" and $insideCapsuleFunctionIfTrue =>
-    symbolLassoc("modemap",getProplist(x,$CapsuleModemapFrame))
+    symbolTarget("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
   LASSOC(prop,getProplist(x,e)) or get2(x,prop)
 
@@ -762,10 +762,10 @@ augProplistOf(var,prop,val,e) ==
 
 semchkProplist(x,proplist,prop,val) ==
   prop="isLiteral" =>
-    symbolLassoc("value",proplist) or symbolLassoc("mode",proplist) =>
+    symbolTarget("value",proplist) or symbolTarget("mode",proplist) =>
       warnLiteral x
   prop in '(mode value) =>
-    symbolLassoc("isLiteral",proplist) => warnLiteral x
+    symbolTarget("isLiteral",proplist) => warnLiteral x
 
 addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
   sameObject?(proplist,getProplist(var,e)) => e
@@ -875,7 +875,6 @@ $charQuote == char "'"
 $charSemiColon == char ";"
 $charComma     == char ","
 $charPeriod    == char "."
-$checkPrenAlist := [[char "(",:char ")"],[char "{",:char "}"],[char "[",:char "]"]]
 $charEscapeList:= [char "%",char "#",$charBack]
 $charIdentifierEndings := [char "__", char "!", char "?"]
 $charSplitList := [$charComma,$charPeriod,char "[", char "]",$charLbrace, $charRbrace, char "(", char ")", char "$", char "%"]

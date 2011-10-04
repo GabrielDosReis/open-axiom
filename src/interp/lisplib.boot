@@ -294,7 +294,7 @@ loadIfNecessary u ==
     dbLoaded? constructorDB u => u
     loadLib u => u
   not $InteractiveMode and (null (y:= getProplist(u,$CategoryFrame))
-    or (null symbolLassoc('isFunctor,y)) and (null symbolLAssoc('isCategory,y))) =>
+    or (null symbolTarget('isFunctor,y)) and (null symbolTarget('isCategory,y))) =>
       y:= getConstructorKindFromDB u =>
          y = "category" =>
             updateCategoryFrameForCategory u
@@ -637,7 +637,7 @@ transformOperationAlist operationAlist ==
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
       [sig,n,condition,kind]
-    itemList:= [signatureItem,:QLASSQ(op,newAlist)]
+    itemList:= [signatureItem,:symbolTarget(op,newAlist)]
     newAlist:= insertAlist(op,itemList,newAlist)
   newAlist
  
@@ -673,7 +673,7 @@ getSlotNumberFromOperationAlist(domainForm,op,sig) ==
   operationAlist:=
     getConstructorOperationsFromDB constructorName or
       keyedSystemError("S2IL0026",[constructorName])
-  entryList:= QLASSQ(op,operationAlist) or return nil
+  entryList:= symbolTarget(op,operationAlist) or return nil
   tail:= or/[r for [sig1,:r] in entryList | sigsMatch(sig,sig1,domainForm)] =>
     first tail
   nil
