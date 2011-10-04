@@ -109,22 +109,22 @@ the sub-reductions of PROD and labelling them with LAB.
 E.G., (Star IDs (parse-id)) with A B C will stack (3 IDs (A B C)),
 where (parse-id) would stack (1 ID (A)) when applied once."
 
-  `(prog ((oldstacksize (|stackSize| reduce-stack)))
+  `(prog ((oldstacksize (|stackSize| |$reduceStack|)))
          (if (not ,prod) ;(progn (format t "~&Star failed for ~A.~%" ',lab) (return nil)))
              (return nil))
     loop (if (not ,prod)
-             (let* ((newstacksize (|stackSize| reduce-stack))
+             (let* ((newstacksize (|stackSize| |$reduceStack|))
                     (number-of-new-reductions (- newstacksize oldstacksize)))
 ;              (format t "~&Starring ~A with ~D new reductions.~%"
 ;                      ',lab number-of-new-reductions)
                (if (> number-of-new-reductions 0)
                    (return (do ((i 0 (1+ i)) (accum nil))
                                ((= i number-of-new-reductions)
-                                (Push-Reduction ',lab accum)
+                                (|pushReduction| ',lab accum)
 ;                               (format t "~&Star accumulated ~D reductions.~%"
 ;                                       (length accum))
                                 (return t))
-                             (push (pop-stack-1) accum)))
+                             (push (|popStack1|) accum)))
                    (return t)))
              (go loop))))
 
@@ -133,18 +133,13 @@ where (parse-id) would stack (1 ID (A)) when applied once."
 "If the execution of prod does not result in an increase in the size of
 the stack, then stack a NIL. Return the value of prod."
 
-  `(progn (setf (|stackUpdated?| reduce-stack) nil)
-;         (format t "~&Banging ~A~:[~; and I think the stack is updated!~].~%" ',lab
-;                 (stack-updated reduce-stack))
+  `(progn (setf (|stackUpdated?| |$reduceStack|) nil)
           (let* ((prodvalue ,prod)
-                 (updated (|stackUpdated?| reduce-stack)))
-;           (format t "~&Bang thinks that ~A ~:[didn't do anything~;did something~].~&"
-;                   ',lab prodvalue)
+                 (updated (|stackUpdated?| |$reduceStack|)))
             (if updated
                 (progn ; (format t "~&Banged ~A and I think the stack is updated!~%" ',lab)
                        prodvalue)
-                (progn (push-reduction ',lab nil)
-                       ; (format t "~&Banged ~A.~%" ',lab)
+                (progn (|pushReduction| ',lab nil)
                        prodvalue)))))
 
 (defmacro must (dothis &optional (this-is nil) (in-rule nil))
@@ -233,7 +228,7 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun conversation (x y)
   (prog (u)
-     a  (reduce-stack-clear)
+     a  (|reduceStackClear|)
         (setq u (namederrset 'spad_reader (conversation1 x y) ))
         (cond (*eof* (return nil))
               ((atom u) (go a))
@@ -247,7 +242,7 @@ the stack, then stack a NIL. Return the value of prod."
               ((and (current-token) (next-token)) (go top))
               ((compfin) (return 't))
               ((and (funcall firstfun)
-                    (or (funcall procfun (pop-stack-1))))
+                    (or (funcall procfun (|popStack1|))))
                (go top))
               ((compfin) (return 't)) )
         (spad_syntax_error)
@@ -432,7 +427,7 @@ the stack, then stack a NIL. Return the value of prod."
      c1  (cond ( (not (identp tok)) (go d1)))
          (princ "/isid= ")
         ;; (princ (cond (isid "T") (t "NIL")))
-     d1  (princ "/stack= ")            (prin1 (|stackStore| reduce-stack))
+     d1  (princ "/stack= ")            (prin1 (|stackStore| |$reduceStack|))
          (setq v (apply fun* argl*))           (setq /depth (- /depth 1))
          (terpri)
          (trblanks (* 2 /depth))          (princ (stringimage (\1+ /depth)))
@@ -447,7 +442,7 @@ the stack, then stack a NIL. Return the value of prod."
      c2  (if (not (identp tok)) (go d2))
          (princ "/isid= ")
         ;; (princ (if isid "T" "NIL"))
-     d2  (princ "/stack= ")            (prin1 (|stackStore| reduce-stack))
+     d2  (princ "/stack= ")            (prin1 (|stackStore| |$reduceStack|))
          (princ "/value= ")         (prin1 v)
          (return v)))))))
 
@@ -502,11 +497,9 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun IOStat ()
   "Tell me what the current state of the parsing world is."
-  ;(IOStreams-show)
   (current-line-show)
   (if $SPAD (next-lines-show))
   (token-stack-show)
-  ;(reduce-stack-show)
   nil)
 
 (defun IOClear (&optional (in t) (out t))
@@ -514,7 +507,7 @@ the stack, then stack a NIL. Return the value of prod."
   (input-clear)
   (current-line-clear)
   (token-stack-clear)
-  (reduce-stack-clear)
+  (|reduceStackClear|)
   (if $SPAD (next-lines-clear))
   nil)
 

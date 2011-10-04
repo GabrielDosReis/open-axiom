@@ -1,5 +1,15 @@
 2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (stackClear!): Fix typo.
+	Add new grammar reduction abstract datatype facility.
+	* interp/fnewmeta.lisp: Use it.
+	* interp/parsing.lisp: Likewise.
+	* interp/bootlex.lisp (SPAD): Use popStack1.
+	* interp/spad-parser.boot (parseSpadFile): Likewise.
+	* interp/metalex.lisp: Remove REDUCTION and associated functions.
+
+2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot: New.
 	* interp/metalex.lisp: Include it.  Use new stack datatype support.
 	* interp/parsing.lisp: Use new stack datatype support.

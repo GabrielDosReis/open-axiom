@@ -268,7 +268,7 @@
   (ioclear)
   (LET* ((BOOT-LINE-STACK (LIST (CONS 1 LINE)))
      ($SPAD T)
-     (PARSEOUT (PROG2 (|PARSE-NewExpr|) (POP-STACK-1))))
+     (PARSEOUT (PROG2 (|PARSE-NewExpr|) (|popStack1|))))
     (DECLARE (SPECIAL BOOT-LINE-STACK $SPAD))
     PARSEOUT))
 

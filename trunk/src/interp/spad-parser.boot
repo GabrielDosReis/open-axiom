@@ -80,7 +80,7 @@ parseSpadFile sourceFile ==
     BOOT_-LINE_-STACK : local := PREPARSE IN_-STREAM
     LINE : local := CDAR BOOT_-LINE_-STACK
     CATCH('SPAD__READER,PARSE_-NewExpr())
-    asts := [parseTransform postTransform POP_-STACK_-1(), :asts]
+    asts := [parseTransform postTransform popStack1(), :asts]
   -- clean up the mess, and get out of here
   IOCLEAR(IN_-STREAM, OUT_-STREAM)             
   SHUT IN_-STREAM                              
