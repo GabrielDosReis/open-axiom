@@ -56,7 +56,8 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	hash.$(FASLEXT) 	lisp-backend.$(FASLEXT)	 \
 	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
 	                    	sys-os.$(FASLEXT)	 \
-	sys-utility.$(FASLEXT)  diagnostics.$(FASLEXT)	 \
+	sys-utility.$(FASLEXT)  lexing.$(FASLEXT)        \
+	diagnostics.$(FASLEXT)	                         \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
 	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
@@ -65,7 +66,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	astr.$(FASLEXT)		bits.$(FASLEXT)		\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
 	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
-	buildom.$(FASLEXT)	                    	\
+	buildom.$(FASLEXT)	                        \
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	clam.$(FASLEXT)		\
@@ -331,9 +332,10 @@ newaux.$(FASLEXT): macros.$(FASLEXT)
 preparse.$(FASLEXT): fnewmeta.$(FASLEXT)
 fnewmeta.$(FASLEXT): parsing.$(FASLEXT)
 parsing.$(FASLEXT): metalex.$(FASLEXT)
-metalex.$(FASLEXT): macros.$(FASLEXT)
+metalex.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
 nlib.$(FASLEXT): macros.$(FASLEXT)
 macros.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
+lexing.$(FASLEXT): sys-utility.$(FASLEXT)
 
 ## The new parser component roughtly is:
 ##   astr.boot dq.boot incl.boot pile.boot ptrees.boot

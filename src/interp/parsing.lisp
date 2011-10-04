@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -109,11 +109,11 @@ the sub-reductions of PROD and labelling them with LAB.
 E.G., (Star IDs (parse-id)) with A B C will stack (3 IDs (A B C)),
 where (parse-id) would stack (1 ID (A)) when applied once."
 
-  `(prog ((oldstacksize (stack-size reduce-stack)))
+  `(prog ((oldstacksize (|stackSize| reduce-stack)))
          (if (not ,prod) ;(progn (format t "~&Star failed for ~A.~%" ',lab) (return nil)))
              (return nil))
     loop (if (not ,prod)
-             (let* ((newstacksize (stack-size reduce-stack))
+             (let* ((newstacksize (|stackSize| reduce-stack))
                     (number-of-new-reductions (- newstacksize oldstacksize)))
 ;              (format t "~&Starring ~A with ~D new reductions.~%"
 ;                      ',lab number-of-new-reductions)
@@ -133,11 +133,11 @@ where (parse-id) would stack (1 ID (A)) when applied once."
 "If the execution of prod does not result in an increase in the size of
 the stack, then stack a NIL. Return the value of prod."
 
-  `(progn (setf (stack-updated reduce-stack) nil)
+  `(progn (setf (|stackUpdated?| reduce-stack) nil)
 ;         (format t "~&Banging ~A~:[~; and I think the stack is updated!~].~%" ',lab
 ;                 (stack-updated reduce-stack))
           (let* ((prodvalue ,prod)
-                 (updated (stack-updated reduce-stack)))
+                 (updated (|stackUpdated?| reduce-stack)))
 ;           (format t "~&Bang thinks that ~A ~:[didn't do anything~;did something~].~&"
 ;                   ',lab prodvalue)
             (if updated
@@ -432,7 +432,7 @@ the stack, then stack a NIL. Return the value of prod."
      c1  (cond ( (not (identp tok)) (go d1)))
          (princ "/isid= ")
         ;; (princ (cond (isid "T") (t "NIL")))
-     d1  (princ "/stack= ")            (prin1 (stack-store reduce-stack))
+     d1  (princ "/stack= ")            (prin1 (|stackStore| reduce-stack))
          (setq v (apply fun* argl*))           (setq /depth (- /depth 1))
          (terpri)
          (trblanks (* 2 /depth))          (princ (stringimage (\1+ /depth)))
@@ -447,7 +447,7 @@ the stack, then stack a NIL. Return the value of prod."
      c2  (if (not (identp tok)) (go d2))
          (princ "/isid= ")
         ;; (princ (if isid "T" "NIL"))
-     d2  (princ "/stack= ")            (prin1 (stack-store reduce-stack))
+     d2  (princ "/stack= ")            (prin1 (|stackStore| reduce-stack))
          (princ "/value= ")         (prin1 v)
          (return v)))))))
 

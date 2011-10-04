@@ -1,3 +1,10 @@
+2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot: New.
+	* interp/metalex.lisp: Include it.  Use new stack datatype support.
+	* interp/parsing.lisp: Use new stack datatype support.
+	* interp/Makefile.in: Adjust.
+
 2011-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/utility.boot (symbolAssoc): Rename from assocSymbol. Export.
