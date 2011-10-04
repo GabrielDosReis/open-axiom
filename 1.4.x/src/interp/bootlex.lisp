@@ -183,7 +183,7 @@ Otherwise, get a .. identifier."
       nil
       (let ((token-type (boot-token-lookahead-type (current-char))))
         (case token-type
-          (eof                  (token-install nil '*eof token nonblank))
+          (eof                  (|tokenInstall| nil '*eof token |$nonblank|))
           (escape               (advance-char)
                                 (get-boot-identifier-token token t))
           (argument-designator  (get-argument-designator-token token))
@@ -194,11 +194,11 @@ Otherwise, get a .. identifier."
           (t                    (get-gliph-token token token-type))))))
 
 (defun boot-skip-blanks ()
-  (setq nonblank t)
+  (setq |$nonblank| t)
   (loop (let ((cc (current-char)))
           (if (not cc) (return nil))
           (if (eq (boot-token-lookahead-type cc) 'white)
-              (progn (setq nonblank nil) (if (not (advance-char)) (return nil)))
+              (progn (setq |$nonblank| nil) (if (not (advance-char)) (return nil)))
               (return t)))))
 
 (defun boot-token-lookahead-type (char)
@@ -221,8 +221,8 @@ Otherwise, get a .. identifier."
 (defun get-argument-designator-token (token)
   (advance-char)
   (get-number-token token)
-  (token-install (intern (strconc "#" (format nil "~D" (token-symbol token))))
-                 'argument-designator token nonblank))
+  (|tokenInstall| (intern (strconc "#" (format nil "~D" (|tokenSymbol| token))))
+                 'argument-designator token |$nonblank|))
 
 
 (defun get-boot-identifier-token (token &optional (escaped? nil))
@@ -258,13 +258,13 @@ or the chracters ?, !, ' or %"
           (setq buf (concatenate 'string default-package "'" buf)
                 default-package nil))
       (setq buf (intern buf (or default-package "BOOT")))
-      (return (token-install
+      (return (|tokenInstall|
                 buf
                 (if (and (not escaped?)
                          (member buf Keywords :test #'eq))
                     'keyword 'identifier)
                 token
-                nonblank))))
+                |$nonblank|))))
 
 (defun get-gliph-token (token gliph-list)
   (prog ((buf (make-adjustable-string 0)))
@@ -277,8 +277,8 @@ or the chracters ?, !, ' or %"
                    (advance-char)
                    (go loop))
             (let ((new-token (intern buf)))
-              (return (token-install (or (get new-token 'renametok) new-token)
-                                     'gliph token nonblank))))))
+              (return (|tokenInstall| (or (get new-token 'renametok) new-token)
+                                     'gliph token |$nonblank|))))))
 
 (defun get-SPADSTRING-token (token)
    "With TOK=\" and ABC\" on IN-STREAM, extracts and stacks string ABC"
@@ -294,7 +294,7 @@ or the chracters ?, !, ' or %"
              (PROGN (|sayBrightly| "Close quote inserted") (RETURN nil)))
          )
         (advance-char)
-        (return (token-install (copy-seq buf) ;should make a simple string
+        (return (|tokenInstall| (copy-seq buf) ;should make a simple string
                                'spadstring token))))
 
 ;; -*- Parse an integer number -*-
@@ -345,7 +345,7 @@ or the chracters ?, !, ' or %"
     (when (is-radix-char (current-char))
       (setq val (get-integer-in-radix buf val))
       (advance-char))
-    (token-install val 'number token (size buf))))
+    (|tokenInstall| val 'number token (size buf))))
 
 ; **** 4. BOOT token parsing actions
 

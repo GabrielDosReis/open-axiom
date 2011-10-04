@@ -48,12 +48,12 @@
 (DEFPARAMETER LABLASOC NIL)
 
 (defun |isTokenDelimiter| () 
-       (MEMBER (CURRENT-SYMBOL) '(\) END\_UNIT NIL)))
+       (MEMBER (|currentSymbol|) '(\) END\_UNIT NIL)))
 
 (DEFUN |PARSE-NewExpr| ()
   (OR (AND (MATCH-STRING ")") (ACTION (|processSynonyms|))
            (MUST (|PARSE-Command|)))
-      (AND (ACTION (SETQ DEFINITION_NAME (CURRENT-SYMBOL)))
+      (AND (ACTION (SETQ DEFINITION_NAME (|currentSymbol|)))
            (|PARSE-Statement|)))) 
 
 
@@ -64,9 +64,9 @@
 
 
 (DEFUN |PARSE-SpecialKeyWord| ()
-  (AND (MATCH-CURRENT-TOKEN 'IDENTIFIER)
-       (ACTION (SETF (TOKEN-SYMBOL (CURRENT-TOKEN))
-                     (|unAbbreviateKeyword| (CURRENT-SYMBOL)))))) 
+  (AND (|matchCurrentToken| 'IDENTIFIER)
+       (ACTION (SETF (|tokenSymbol| (|currentToken|))
+                     (|unAbbreviateKeyword| (|currentSymbol|)))))) 
 
 
 (DEFUN |PARSE-SpecialCommand| ()
@@ -78,9 +78,9 @@
            (|pushReduction| '|PARSE-SpecialCommand|
                (CONS '|show| (CONS (|popStack1|) NIL)))
            (MUST (|PARSE-CommandTail|)))
-      (AND (MEMBER (CURRENT-SYMBOL) |$noParseCommands|)
-           (ACTION (FUNCALL (CURRENT-SYMBOL))))
-      (AND (MEMBER (CURRENT-SYMBOL) |$tokenCommands|)
+      (AND (MEMBER (|currentSymbol|) |$noParseCommands|)
+           (ACTION (FUNCALL (|currentSymbol|))))
+      (AND (MEMBER (|currentSymbol|) |$tokenCommands|)
            (|PARSE-TokenList|) (MUST (|PARSE-TokenCommandTail|)))
       (AND (STAR REPEATOR (|PARSE-PrimaryOrQM|))
            (MUST (|PARSE-CommandTail|))))) 
@@ -89,8 +89,8 @@
 (DEFUN |PARSE-TokenList| ()
   (STAR REPEATOR
         (AND (NOT (|isTokenDelimiter|))
-             (|pushReduction| '|PARSE-TokenList| (CURRENT-SYMBOL))
-             (ACTION (ADVANCE-TOKEN))))) 
+             (|pushReduction| '|PARSE-TokenList| (|currentSymbol|))
+             (ACTION (|advanceToken|))))) 
 
 
 (DEFUN |PARSE-TokenCommandTail| ()
@@ -194,7 +194,7 @@
 
 (DEFUN |PARSE-Expression| ()
   (AND (|PARSE-Expr|
-           (|PARSE-rightBindingPowerOf| (MAKE-SYMBOL-OF PRIOR-TOKEN)
+           (|PARSE-rightBindingPowerOf| (|makeSymbolOf| |$priorToken|)
                |ParseMode|))
        (|pushReduction| '|PARSE-Expression| (|popStack1|)))) 
 
@@ -272,8 +272,8 @@
 					 (CONS (|popStack1|) NIL)))))))
 
 (DEFUN |PARSE-Infix| ()
-  (AND (|pushReduction| '|PARSE-Infix| (CURRENT-SYMBOL))
-       (ACTION (ADVANCE-TOKEN)) (OPTIONAL (|PARSE-TokTail|))
+  (AND (|pushReduction| '|PARSE-Infix| (|currentSymbol|))
+       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
        (MUST (|PARSE-Expression|))
        (|pushReduction| '|PARSE-Infix|
            (CONS (|popStack2|)
@@ -281,16 +281,16 @@
 
 
 (DEFUN |PARSE-Prefix| ()
-  (AND (|pushReduction| '|PARSE-Prefix| (CURRENT-SYMBOL))
-       (ACTION (ADVANCE-TOKEN)) (OPTIONAL (|PARSE-TokTail|))
+  (AND (|pushReduction| '|PARSE-Prefix| (|currentSymbol|))
+       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
        (MUST (|PARSE-Expression|))
        (|pushReduction| '|PARSE-Prefix|
            (CONS (|popStack2|) (CONS (|popStack1|) NIL))))) 
 
 
 (DEFUN |PARSE-Suffix| ()
-  (AND (|pushReduction| '|PARSE-Suffix| (CURRENT-SYMBOL))
-       (ACTION (ADVANCE-TOKEN)) (OPTIONAL (|PARSE-TokTail|))
+  (AND (|pushReduction| '|PARSE-Suffix| (|currentSymbol|))
+       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
        (|pushReduction| '|PARSE-Suffix|
            (CONS (|popStack1|) (CONS (|popStack1|) NIL))))) 
 
@@ -298,13 +298,13 @@
 (DEFUN |PARSE-TokTail| ()
   (PROG (G1)
     (RETURN
-      (AND (EQ (CURRENT-SYMBOL) '$)
+      (AND (EQ (|currentSymbol|) '$)
            (OR (ALPHA-CHAR-P (CURRENT-CHAR))
                (CHAR-EQ (CURRENT-CHAR) "$")
                (CHAR-EQ (CURRENT-CHAR) "%")
                (CHAR-EQ (CURRENT-CHAR) "("))
-           (ACTION (SETQ G1 (COPY-TOKEN PRIOR-TOKEN)))
-           (|PARSE-Qualification|) (ACTION (SETQ PRIOR-TOKEN G1)))))) 
+           (ACTION (SETQ G1 (|copyToken| |$priorToken|)))
+           (|PARSE-Qualification|) (ACTION (SETQ |$priorToken| G1)))))) 
 
 
 (DEFUN |PARSE-Qualification| ()
@@ -335,8 +335,8 @@
 (DEFUN |PARSE-Catch| ()
   (AND (MATCH-SPECIAL ";")
        (MATCH-KEYWORD-NEXT "catch")
-       (ACTION (ADVANCE-TOKEN))
-       (ACTION (ADVANCE-TOKEN))
+       (ACTION (|advanceToken|))
+       (ACTION (|advanceToken|))
        (MUST (|PARSE-GlyphTok| "("))
        (MUST (|PARSE-QuantifiedVariable|))
        (MUST (MATCH-ADVANCE-SPECIAL ")"))
@@ -349,8 +349,8 @@
 (DEFUN |PARSE-Finally| ()
   (AND (MATCH-SPECIAL ";")
        (MATCH-KEYWORD-NEXT "finally")
-       (ACTION (ADVANCE-TOKEN))
-       (ACTION (ADVANCE-TOKEN))
+       (ACTION (|advanceToken|))
+       (ACTION (|advanceToken|))
        (MUST (|PARSE-Expression|))))
 
 (DEFUN |PARSE-Try| ()
@@ -377,9 +377,9 @@
 
 
 (DEFUN |PARSE-Jump| ()
-  (LET ((S (CURRENT-SYMBOL)))
+  (LET ((S (|currentSymbol|)))
        (AND S 
-	    (ACTION (ADVANCE-TOKEN))
+	    (ACTION (|advanceToken|))
 	    (|pushReduction| '|PARSE-Jump| S))))
 
 
@@ -421,7 +421,7 @@
 
 
 (DEFUN |PARSE-ElseClause| ()
-  (OR (AND (EQ (CURRENT-SYMBOL) '|if|) (|PARSE-Conditional|))
+  (OR (AND (EQ (|currentSymbol|) '|if|) (|PARSE-Conditional|))
       (|PARSE-Expression|))) 
 
 
@@ -512,8 +512,8 @@
 
 (DEFUN |PARSE-Operation| (|ParseMode| RBP)
   (DECLARE (SPECIAL |ParseMode| RBP))
-  (AND (NOT (MATCH-CURRENT-TOKEN 'IDENTIFIER))
-       (GETL (SETQ |tmptok| (CURRENT-SYMBOL)) |ParseMode|)
+  (AND (NOT (|matchCurrentToken| 'IDENTIFIER))
+       (GETL (SETQ |tmptok| (|currentSymbol|)) |ParseMode|)
        (LT RBP (|PARSE-leftBindingPowerOf| |tmptok| |ParseMode|))
        (ACTION (SETQ RBP
                      (|PARSE-rightBindingPowerOf| |tmptok| |ParseMode|)))
@@ -545,10 +545,10 @@
 
 
 (DEFUN |PARSE-ReductionOp| ()
-  (AND (GETL (CURRENT-SYMBOL) '|Led|)
-       (MATCH-NEXT-TOKEN 'GLIPH '/)
-       (|pushReduction| '|PARSE-ReductionOp| (CURRENT-SYMBOL))
-       (ACTION (ADVANCE-TOKEN)) (ACTION (ADVANCE-TOKEN)))) 
+  (AND (GETL (|currentSymbol|) '|Led|)
+       (|matchNextToken| 'GLIPH '/)
+       (|pushReduction| '|PARSE-ReductionOp| (|currentSymbol|))
+       (ACTION (|advanceToken|)) (ACTION (|advanceToken|)))) 
 
 
 (DEFUN |PARSE-Form| ()
@@ -576,7 +576,7 @@
 
 
 (DEFUN |PARSE-Selector| ()
-  (OR (AND NONBLANK (EQ (CURRENT-SYMBOL) '|.|)
+  (OR (AND |$nonblank| (EQ (|currentSymbol|) '|.|)
            (CHAR-NE (CURRENT-CHAR) '| |) (MATCH-ADVANCE-STRING ".")
            (MUST (|PARSE-PrimaryNoFloat|))
            (MUST (|pushReduction| '|PARSE-Selector|
@@ -599,7 +599,7 @@
 (DEFUN |PARSE-Primary1| ()
   (OR (AND (|PARSE-VarForm|)
            (OPTIONAL
-               (AND NONBLANK (EQ (CURRENT-SYMBOL) '|(|)
+               (AND |$nonblank| (EQ (|currentSymbol|) '|(|)
                     (MUST (|PARSE-Primary1|))
                     (|pushReduction| '|PARSE-Primary1|
                         (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))
@@ -613,7 +613,7 @@
 
 (DEFUN |PARSE-Float| ()
   (AND (|PARSE-FloatBase|)
-       (MUST (OR (AND NONBLANK (|PARSE-FloatExponent|))
+       (MUST (OR (AND |$nonblank| (|PARSE-FloatExponent|))
                  (|pushReduction| '|PARSE-Float| 0)))
        (|pushReduction| '|PARSE-Float|
            (MAKE-FLOAT (|popStack4|) (|popStack2|) (|popStack2|)
@@ -621,14 +621,14 @@
 
 
 (DEFUN |PARSE-FloatBase| ()
-  (OR (AND (INTEGERP (CURRENT-SYMBOL)) (CHAR-EQ (CURRENT-CHAR) ".")
+  (OR (AND (INTEGERP (|currentSymbol|)) (CHAR-EQ (CURRENT-CHAR) ".")
            (CHAR-NE (NEXT-CHAR) ".") (|PARSE-IntegerTok|)
            (MUST (|PARSE-FloatBasePart|)))
-      (AND (INTEGERP (CURRENT-SYMBOL))
+      (AND (INTEGERP (|currentSymbol|))
            (CHAR-EQ (CHAR-UPCASE (CURRENT-CHAR)) 'E)
            (|PARSE-IntegerTok|) (|pushReduction| '|PARSE-FloatBase| 0)
            (|pushReduction| '|PARSE-FloatBase| 0))
-      (AND (DIGITP (CURRENT-CHAR)) (EQ (CURRENT-SYMBOL) '|.|)
+      (AND (DIGITP (CURRENT-CHAR)) (EQ (|currentSymbol|) '|.|)
            (|pushReduction| '|PARSE-FloatBase| 0)
            (|PARSE-FloatBasePart|)))) 
 
@@ -637,7 +637,7 @@
   (AND (MATCH-ADVANCE-STRING ".")
        (MUST (OR (AND (DIGITP (CURRENT-CHAR))
                       (|pushReduction| '|PARSE-FloatBasePart|
-                          (TOKEN-NONBLANK (CURRENT-TOKEN)))
+                          (|tokenNonblank?| (|currentToken|)))
                       (|PARSE-IntegerTok|))
                  (AND (|pushReduction| '|PARSE-FloatBasePart| 0)
                       (|pushReduction| '|PARSE-FloatBasePart| 0)))))) 
@@ -646,8 +646,8 @@
 (DEFUN |PARSE-FloatExponent| ()
   (PROG (G1)
     (RETURN
-      (OR (AND (MEMBER (CURRENT-SYMBOL) '(E |e|))
-               (FIND (CURRENT-CHAR) "+-") (ACTION (ADVANCE-TOKEN))
+      (OR (AND (MEMBER (|currentSymbol|) '(E |e|))
+               (FIND (CURRENT-CHAR) "+-") (ACTION (|advanceToken|))
                (MUST (OR (|PARSE-IntegerTok|)
                          (AND (MATCH-ADVANCE-STRING "+")
                               (MUST (|PARSE-IntegerTok|)))
@@ -656,9 +656,9 @@
                               (|pushReduction| '|PARSE-FloatExponent|
                                   (MINUS (|popStack1|))))
                          (|pushReduction| '|PARSE-FloatExponent| 0))))
-          (AND (IDENTP (CURRENT-SYMBOL))
-               (SETQ G1 (FLOATEXPID (CURRENT-SYMBOL)))
-               (ACTION (ADVANCE-TOKEN))
+          (AND (IDENTP (|currentSymbol|))
+               (SETQ G1 (FLOATEXPID (|currentSymbol|)))
+               (ACTION (|advanceToken|))
                (|pushReduction| '|PARSE-FloatExponent| G1)))))) 
 
 
@@ -724,7 +724,7 @@
 
 
 (DEFUN |PARSE-Scripts| ()
-  (AND NONBLANK (MATCH-ADVANCE-STRING "[") (MUST (|PARSE-ScriptItem|))
+  (AND |$nonblank| (MATCH-ADVANCE-STRING "[") (MUST (|PARSE-ScriptItem|))
        (MUST (MATCH-ADVANCE-STRING "]")))) 
 
 
@@ -754,7 +754,7 @@
 
 
 (DEFUN |PARSE-Sexpr| ()
-  (AND (ACTION (ADVANCE-TOKEN)) (|PARSE-Sexpr1|))) 
+  (AND (ACTION (|advanceToken|)) (|PARSE-Sexpr1|))) 
 
 
 (DEFUN |PARSE-Sexpr1| ()
@@ -791,21 +791,21 @@
 
 (DEFUN |PARSE-NBGliphTok| (|tok|)
   (DECLARE (SPECIAL |tok|))
-  (AND (MATCH-CURRENT-TOKEN 'GLIPH |tok|) NONBLANK
-       (ACTION (ADVANCE-TOKEN)))) 
+  (AND (|matchCurrentToken| 'GLIPH |tok|) |$nonblank|
+       (ACTION (|advanceToken|)))) 
 
 
 (DEFUN |PARSE-GlyphTok| (|tok|)
   (DECLARE (SPECIAL |tok|))
-  (AND (MATCH-CURRENT-TOKEN 'GLIPH (INTERN |tok|))
-       (ACTION (ADVANCE-TOKEN)))) 
+  (AND (|matchCurrentToken| 'GLIPH (INTERN |tok|))
+       (ACTION (|advanceToken|)))) 
 
 
 (DEFUN |PARSE-AnyId| ()
   (OR (|PARSE-Name|)
       (OR (AND (MATCH-STRING "$")
-               (|pushReduction| '|PARSE-AnyId| (CURRENT-SYMBOL))
-               (ACTION (ADVANCE-TOKEN)))
+               (|pushReduction| '|PARSE-AnyId| (|currentSymbol|))
+               (ACTION (|advanceToken|)))
           (PARSE-KEYWORD)
 	  (|PARSE-OperatorFunctionName|))))
 
@@ -833,7 +833,7 @@
 
 
 (DEFUN |PARSE-OpenBracket| ()
-  (LET ((G1 (CURRENT-SYMBOL)))
+  (LET ((G1 (|currentSymbol|)))
     (AND (EQ (|getToken| G1) '[)
 	 (MUST (OR (AND (EQCAR G1 '|elt|)
 			(|pushReduction| '|PARSE-OpenBracket|
@@ -841,11 +841,11 @@
 				  (CONS (CADR G1)
 				   (CONS '|construct| NIL)))))
 		   (|pushReduction| '|PARSE-OpenBracket| '|construct|)))
-	 (ACTION (ADVANCE-TOKEN)))))
+	 (ACTION (|advanceToken|)))))
 
 
 (DEFUN |PARSE-OpenBrace| ()
-  (LET ((G1 (CURRENT-SYMBOL)))
+  (LET ((G1 (|currentSymbol|)))
     (AND (EQ (|getToken| G1) '{)
 	 (MUST (OR (AND (EQCAR G1 '|elt|)
 			(|pushReduction| '|PARSE-OpenBrace|
@@ -853,7 +853,7 @@
 				  (CONS (CADR G1)
 				   (CONS '|brace| NIL)))))
 		   (|pushReduction| '|PARSE-OpenBrace| '|construct|)))
-	 (ACTION (ADVANCE-TOKEN)))))
+	 (ACTION (|advanceToken|)))))
 
 
 (DEFUN |PARSE-IteratorTail| ()

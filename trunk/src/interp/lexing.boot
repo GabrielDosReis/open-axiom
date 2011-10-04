@@ -41,6 +41,104 @@ namespace BOOT
 module lexing
 
 --%
+--% Token abstract datatype.
+--%   Operational semantics:
+--%      structure Token ==
+--%         Record(symbol: Identifier, type: TokenType, nonBlank?: Boolean)
+--%
+--%   type in '(NUMBER IDENTIFIER SPECIAL_-CHAR)
+--%   nonBlank? if token is not preceded by a blank.
+--%
+makeToken(sym == nil, typ == nil, blnk? == true) ==
+  [sym,typ,blnk?]
+
+macro copyToken t ==
+  copyList t
+
+macro tokenSymbol t ==
+  first t
+
+macro tokenType t ==
+  second t
+
+macro tokenNonblank? t ==
+  third t
+
+++ Last seen token
+$priorToken := makeToken()
+
+++ Is there no blank in front of current token?
+$nonblank := true
+
+++ First token in input stream
+$currentToken := makeToken()
+
+++ Next token in input stream
+$nextToken := makeToken()
+
+++ Number of token in the buffer (0, 1, 2)
+$validTokens := 0
+
+tokenInstall(sym,typ,tok,nonblank == true) ==
+  tokenSymbol(tok) := sym
+  tokenType(tok) := typ
+  tokenNonblank?(tok) := nonblank
+  tok
+
+tryGetToken tok ==
+  GET_-BOOT_-TOKEN tok =>
+   $validTokens := $validTokens + 1
+   tok
+  nil
+
+++ Returns the current token or gets a new one if necessary
+currentToken() ==
+  $validTokens > 0 => $currentToken
+  tryGetToken $currentToken
+
+++ Returns the token after the current token, or nil if there is none after
+nextToken() ==
+  currentToken()
+  $validTokens > 1 => $nextToken
+  tryGetToken $nextToken
+
+matchToken(tok,typ,sym == false) ==
+  tok ~= nil and symbolEq?(tokenType tok,typ) and
+    (sym = nil or symbolEq?(sym,tokenSymbol tok)) and tok
+
+++ Return the current token if it has type `typ', and possibly the
+++ same spelling as `sym'.
+matchCurrentToken(typ,sym == nil) ==
+  matchToken(currentToken(),typ,sym)
+
+++ Return the next token if it has type `typ;, and possibly the same
+++ spelling as `sym'.
+matchNextToken(typ,sym == nil) ==
+  matchToken(nextToken(),typ,sym)
+
+++ Makes the next token be the current token.
+advanceToken() ==
+  $validTokens = 0 => tryGetToken $currentToken
+  $validTokens = 1 =>
+    $validTokens := $validTokens - 1
+    $priorToken := copyToken $currentToken
+    tryGetToken $currentToken
+  $validTokens = 2 =>
+    $priorToken := copyToken $currentToken
+    $currentToken := copyToken $nextToken
+    $validTokens := $validTokens - 1
+  nil
+
+makeSymbolOf tok ==
+  tok = nil => nil
+  tokenSymbol tok = nil => nil
+  char? tokenSymbol tok => makeSymbol charString tokenSymbol tok
+  tokenSymbol tok
+
+currentSymbol() ==
+  makeSymbolOf currentToken()
+
+--%
 --% Stack abstract datatype.
 --%  Operational semantics:
 --%     structure Stack ==

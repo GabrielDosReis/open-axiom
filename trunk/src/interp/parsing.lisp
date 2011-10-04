@@ -187,7 +187,7 @@ the stack, then stack a NIL. Return the value of prod."
 (defun Match-Advance-String (x)
   "Same as MATCH-STRING except if successful, advance inputstream past X."
   (let ((y (if (>= (length (string x))
-                   (length (string (quote-if-string (current-token)))))
+                   (length (string (quote-if-string (|currentToken|)))))
                (Match-String x)
                nil))) ; must match at least the current token
     (if y (progn (incf (Line-Current-Index Current-Line) y)
@@ -196,25 +196,23 @@ the stack, then stack a NIL. Return the value of prod."
                            (elt (Line-Buffer Current-Line)
                                 (Line-Current-Index Current-Line)))
                      (setf (Line-Current-Char Current-Line) #\Space))
-                 (setq prior-token
-                       (make-token :Symbol (intern (string x))
-                                   :Type 'identifier
-                                   :nonBlank nonblank))
+                 (setq |$priorToken|
+                       (|makeToken| (intern (string x)) 'identifier |$nonblank|))
                  t))))
 
 (defun match-advance-keyword (str)
-  (and (match-token (current-token) 'keyword (intern str))
-       (action (advance-token))))
+  (and (|matchToken| (|currentToken|) 'keyword (intern str))
+       (action (|advanceToken|))))
 
 (defun match-advance-special (str)
-  (and (match-token (current-token) 'special-char (character str))
-       (action (advance-token))))
+  (and (|matchToken| (|currentToken|) 'special-char (character str))
+       (action (|advanceToken|))))
 
 (defun match-special (str)
-  (match-token (current-token) 'special-char (character str)))
+  (|matchToken| (|currentToken|) 'special-char (character str)))
 
 (defun match-keyword-next (str)
-  (match-token (next-token) 'keyword (intern str)))
+  (|matchToken| (|nextToken|) 'keyword (intern str)))
 
 (defun initial-substring-p (part whole)
   "Returns length of part if part matches initial segment of whole."
@@ -239,7 +237,7 @@ the stack, then stack a NIL. Return the value of prod."
 (defun conversation1 (firstfun procfun)
   (prog nil
      top(cond ((not (Current-Char)) (return nil))
-              ((and (current-token) (next-token)) (go top))
+              ((and (|currentToken|) (|nextToken|)) (go top))
               ((compfin) (return 't))
               ((and (funcall firstfun)
                     (or (funcall procfun (|popStack1|))))

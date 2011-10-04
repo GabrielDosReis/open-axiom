@@ -38,7 +38,6 @@
 ;
 ;               1. META File Handling
 ;               2. META Line Handling
-;               3. META Token Handling
 ;               4. META Token Parsing Actions
 ;               5. META Error Handling
 
@@ -56,7 +55,6 @@
 ; 1. Data structure declarations (defstructs) for parsing objects
 ;
 ;               A. Line Buffer
-;               C. Token
 
 ; 1A. A Line Buffer
 ;
@@ -237,87 +235,9 @@ is a token separator, which blank is equivalent to."
               ((return nil)))))
 
 ; 1C. Token
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Make-Token, Token-Symbol, Token-Type, Token-Install, Token-Print
-
-(defstruct Token
-  "A token is a Symbol with a Type.
-The type is either NUMBER, IDENTIFIER or SPECIAL-CHAR.
-NonBlank is true if the token is not preceded by a blank."
-  (Symbol nil)
-  (Type nil)
-  (NonBlank t))
-
-(defparameter Prior-Token (make-token) "What did I see last")
-(defparameter nonblank t "Is there no blank in front of the current token.")
-(defparameter Current-Token (make-token) "Token at head of input stream.")
-(defparameter Next-Token (make-token)    "Next token in input stream.")
-(defparameter Valid-Tokens 0               "Number of tokens in buffer (0, 1 or 2)")
-
-(defun Token-Install (symbol type token &optional (nonblank t))
-  (setf (token-symbol token) symbol 
-	(token-type token) type
-        (token-nonblank token) nonblank)
-  token)
-
-; *** Match Token
-
-(defun match-token (token type &optional (symbol nil))
-  (if (and token (eq (token-type token) type))
-      (if symbol (if (equal symbol (token-symbol token)) token) token)))
-
-(defun match-current-token (type &optional (symbol nil))
-  "Returns the current token if it has EQ type and (optionally) equal symbol."
-  (match-token (current-token) type symbol))
-
-(defun match-next-token (type &optional (symbol nil))
-  "Returns the next token if it has equal type and (optionally) equal symbol."
-  (match-token (next-token) type symbol))
-
-; *** Current Token, Next Token, Advance Token
-
-(defun try-get-token (token)
-  (let ((tok (get-boot-token token)))
-    (if tok (progn (incf Valid-Tokens) token))))
-
-(defun current-symbol () (make-symbol-of (current-token)))
-
-(defun make-symbol-of (token)
-  (let ((u (and token (token-symbol token))))
-    (cond ((not u) nil)
-          ((characterp u) (intern (string u)))
-          (u))))
-
 (defun Token-Print (token)
   (format out-stream "(token (symbol ~S) (type ~S))~%"
-          (Token-Symbol token) (Token-Type token)))
-
-(defun current-token ()
-  "Returns the current token getting a new one if necessary."
-  (if (> Valid-Tokens 0)
-      Current-Token
-      (try-get-token Current-Token)))
-
-(defun next-token ()
-  "Returns the token after the current token, or NIL if there is none after."
-  (current-token)
-  (if (> Valid-Tokens 1)
-      Next-Token
-      (try-get-token Next-Token)))
-
-(defun advance-token ()
-  "Makes the next token be the current token."
-  (case Valid-Tokens
-    (0 (try-get-token Current-Token))
-    (1 (decf Valid-Tokens)
-       (setq Prior-Token (copy-token Current-Token))
-       (try-get-token Current-Token))
-    (2 (setq Prior-Token (copy-token Current-Token))
-       (setq Current-Token (copy-token Next-Token))
-       (decf Valid-Tokens))))
-
+          (|tokenSymbol| token) (|tokenType| token)))
 
 (defun reduce-stack-show ()
   (let ((store (|stackStore| |$reduceStack|))
@@ -373,62 +293,62 @@ NonBlank is true if the token is not preceded by a blank."
 
 ; Tokens are acquired from a stream of characters.  Lexical analysis is performed
 ; by the functiond Get Token.  One-token lookahead is maintained in variables
-; Current-Token and Next-Token by procedures Current Token, Next Token, and
+; |$CurrentToken| and |$NextToken| by procedures Current Token, Next Token, and
 ; Advance Token.  The functions Match Current Token and Match Next Token recognize
 ; classes of tokens, by type, or by type and symbol.  The current and next tokens
 ; can be shoved back on the input stream (to the current line) with Unget-Tokens.
 
 (defmacro Defun-Parse-Token (token)
   `(defun ,(intern (concatenate 'string "PARSE-" (string token))) ()
-     (let* ((tok (match-current-token ',token))
-            (symbol (if tok (token-symbol tok))))
+     (let* ((tok (|matchCurrentToken| ',token))
+            (symbol (if tok (|tokenSymbol| tok))))
        (if tok (progn (|pushReduction|
                         ',(intern (concatenate 'string (string token)
                                                "-TOKEN"))
                         (copy-tree symbol))
-                      (advance-token)
+                      (|advanceToken|)
                       t)))))
 
 (defun token-stack-show ()
-  (if (= Valid-Tokens 0) (format t "~%There are no valid tokens.~%")
-      (format t "~%The number of valid tokens is ~S.~%" Valid-Tokens))
-  (if (> Valid-Tokens 0)
+  (if (= |$validTokens| 0) (format t "~%There are no valid tokens.~%")
+      (format t "~%The number of valid tokens is ~S.~%" |$validTokens|))
+  (if (> |$validTokens| 0)
       (progn (format t "The current token is~%")
-             (describe current-token)))
-  (if (> Valid-Tokens 1)
+             (describe |$currentToken|)))
+  (if (> |$validTokens| 1)
       (progn (format t "The next token is~%")
-             (describe next-token)))
-  (if (token-type prior-token)
+             (describe |$nextToken|)))
+  (if (|tokenType| |$priorToken|)
       (progn (format t "The prior token was~%")
-             (describe prior-token))))
+             (describe |$priorToken|))))
 
 (defmacro token-stack-clear ()
-  `(progn (setq valid-tokens 0)
-          (token-install nil nil current-token nil)
-          (token-install nil nil next-token nil)
-          (token-install nil nil prior-token nil)))
+  `(progn (setq |$validTokens| 0)
+          (|tokenInstall| nil nil |$currentToken| nil)
+          (|tokenInstall| nil nil |$nextToken| nil)
+          (|tokenInstall| nil nil |$priorToken| nil)))
 
 ; Unget-Tokens
 
 (defun quote-if-string (token)
-  (if token   ;only use token-type on non-null tokens
-  (case (token-type token)
-    (bstring            (strconc "[" (token-symbol token) "]*"))
-    (string             (strconc "'" (token-symbol token) "'"))
-    (spadstring         (strconc "\"" (underscore (token-symbol token)) "\""))
-    (number             (format nil "~v,'0D" (token-nonblank token)
-                                (token-symbol token)))
-    (special-char       (string (token-symbol token)))
-    (identifier         (let ((id (symbol-name (token-symbol token)))
+  (if token   ;only use |tokenType| on non-null tokens
+  (case (|tokenType| token)
+    (bstring            (strconc "[" (|tokenSymbol| token) "]*"))
+    (string             (strconc "'" (|tokenSymbol| token) "'"))
+    (spadstring         (strconc "\"" (underscore (|tokenSymbol| token)) "\""))
+    (number             (format nil "~v,'0D" (|tokenNonblank?| token)
+                                (|tokenSymbol| token)))
+    (special-char       (string (|tokenSymbol| token)))
+    (identifier         (let ((id (symbol-name (|tokenSymbol| token)))
                               (pack (package-name (symbol-package
-                                                   (token-symbol token)))))
+                                                   (|tokenSymbol| token)))))
                           (if $SPAD
                               (if (equal pack "BOOT")
-                                  (escape-keywords (underscore id) (token-symbol token))
+                                  (escape-keywords (underscore id) (|tokenSymbol| token))
                                 (concatenate 'string
                                              (underscore pack) "'" (underscore id)))
                             id)))
-    (t                  (token-symbol token)))
+    (t                  (|tokenSymbol| token)))
    nil))
 
 
@@ -466,25 +386,25 @@ as keywords.")
       out-string)))
 
 (defun Unget-Tokens ()
-  (case Valid-Tokens
+  (case |$validTokens|
     (0 t)
-    (1 (let* ((cursym (quote-if-string current-token))
+    (1 (let* ((cursym (quote-if-string |$currentToken|))
               (curline (line-current-segment current-line))
               (revised-line (strconc cursym curline (copy-seq " "))))
          (line-new-line revised-line current-line (line-number current-line))
-         (setq NonBlank (token-nonblank current-token))
-         (setq Valid-Tokens 0)))
-    (2 (let* ((cursym (quote-if-string current-token))
-              (nextsym (quote-if-string next-token))
+         (setq |$nonblank| (|tokenNonblank?| |$currentToken|))
+         (setq |$validTokens| 0)))
+    (2 (let* ((cursym (quote-if-string |$currentToken|))
+              (nextsym (quote-if-string |$nextToken|))
               (curline (line-current-segment current-line))
               (revised-line
-                (strconc (if (token-nonblank current-token) "" " ")
+                (strconc (if (|tokenNonblank?| |$currentToken|) "" " ")
                          cursym
-                         (if (token-nonblank next-token) "" " ")
+                         (if (|tokenNonblank?| |$nextToken|) "" " ")
                          nextsym curline " ")))
-         (setq NonBlank (token-nonblank current-token))
+         (setq |$nonblank| (|tokenNonblank?| |$currentToken|))
          (line-new-line revised-line current-line (line-number current-line))
-         (setq Valid-Tokens 0)))
+         (setq |$validTokens| 0)))
     (t (error "How many tokens do you think you have?"))))
  
 (defun-parse-token STRING)
@@ -499,12 +419,12 @@ as keywords.")
 (defun-parse-token ARGUMENT-DESIGNATOR)
 
 (defun |PARSE-OperatorFunctionName| ()
-  (let ((id (make-symbol-of (or (match-current-token 'keyword)
-				(match-current-token 'gliph)
-				(match-current-token 'special-char)))))
+  (let ((id (|makeSymbolOf| (or (|matchCurrentToken| 'keyword)
+				(|matchCurrentToken| 'gliph)
+				(|matchCurrentToken| 'special-char)))))
     (when (and id (member id |$OperatorFunctionNames|))
       (|pushReduction| '|PARSE-OperatorFunctionName| id)
-      (action (advance-token)))))
+      (action (|advanceToken|)))))
 
 ; Meta tokens fall into the following categories:
 ;
@@ -569,7 +489,7 @@ as keywords.")
                 (suffix (current-char) buf)
                 (if (not (advance-char)) (go bye))
                 (go id))))
-  bye (return (token-install (intern buf) 'identifier token))))
+  bye (return (|tokenInstall| (intern buf) 'identifier token))))
  
 (defun get-string-token (token)
   "With 'ABC' on IN-STREAM, extracts and stacks String 'ABC'."
@@ -578,7 +498,7 @@ as keywords.")
         (progn (advance-char)
                (loop (case (current-char)
                        (#\' (advance-char)
-                        (return (token-install buf 'string token)))
+                        (return (|tokenInstall| buf 'string token)))
                        (#\\ (advance-char)
                         (suffix (current-char) buf)
                         (advance-char))
@@ -599,7 +519,7 @@ as keywords.")
                        (#\] (if (char= (next-char) #\*)
                                 (progn (advance-char)
                                        (advance-char)
-                                       (return (token-install buf 'bstring token)))
+                                       (return (|tokenInstall| buf 'bstring token)))
                                 (progn (suffix (current-char) buf)
                                        (advance-char))))
                        (#\\ (advance-char)
@@ -618,7 +538,7 @@ as keywords.")
 special character be the atom whose print name is the character itself."
   (let ((symbol (current-char)))
     (advance-char)
-    (token-install symbol 'special-char token)))
+    (|tokenInstall| symbol 'special-char token)))
  
 (defun get-number-token (token)
   "Take a number off the input stream."
@@ -630,7 +550,7 @@ special character be the atom whose print name is the character itself."
                  (advance-char)
                  (go nu1))))
         (advance-char) 
-	(return (token-install (read-from-string buf)
+	(return (|tokenInstall| (read-from-string buf)
 			       'number token
 			       (size buf) ;used to keep track of digit count
 			       ))))
