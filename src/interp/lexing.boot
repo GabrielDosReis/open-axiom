@@ -71,7 +71,7 @@ stackClear! st ==
   stackStore(st) := nil
   stackSize(st) := 0
   stackTop(st) := nil
-  stackUpdate?(st) := false
+  stackUpdated?(st) := false
 
 stackPush!(x,st) ==
   stackStore(st) := [x,:stackStore st]
@@ -86,3 +86,61 @@ stackPop! st ==
   if stackStore st ~= nil then
     stackTop(st) := first stackStore st
   y
+
+
+--%  
+--% Parsing reduction stack
+--%
+--% Abstractly;
+--%   structure Reduction == Record(rule: RuleName, value: ParseTree)
+--%
+makeReduction(p == nil,v == nil) ==
+  [p,v]
+
+macro reductionRule r ==
+  first r
+
+macro reductionValue r ==
+  second r
+
+++ stack of results of reduced productions
+$reduceStack := makeStack()
+
+pushReduction(rn,pt) ==
+  stackPush!(makeReduction(rn,pt),$reduceStack)
+
+popReduction() ==
+  stackPop! $reduceStack
+  
+reduceStackClear() ==
+  stackClear! $reduceStack
+
+popStack1() ==
+  reductionValue popReduction()
+
+popStack2() ==
+  r1 := popReduction()
+  r2 := popReduction()
+  stackPush!(r1,$reduceStack)
+  reductionValue r2
+
+popStack3() ==
+  r1 := popReduction()
+  r2 := popReduction()
+  r3 := popReduction()
+  stackPush!(r2,$reduceStack)
+  stackPush!(r1,$reduceStack)
+  reductionValue r3
+
+popStack4() ==
+  r1 := popReduction()
+  r2 := popReduction()
+  r3 := popReduction()
+  r4 := popReduction()
+  stackPush!(r3,$reduceStack)
+  stackPush!(r2,$reduceStack)
+  stackPush!(r1,$reduceStack)
+  reductionValue r4
+
+nthStack n ==
+  reductionValue stackStore($reduceStack).(n - 1)

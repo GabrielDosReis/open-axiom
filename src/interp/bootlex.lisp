@@ -122,7 +122,7 @@
              (let ((LINE (cdar Boot-Line-Stack)))
                (declare (special LINE))
                (|PARSE-NewExpr|)
-               (let ((parseout (pop-stack-1)) )
+               (let ((parseout (|popStack1|)) )
                  (when parseout
                        (let ((|$OutputStream| out-stream))
                          (S-PROCESS parseout))

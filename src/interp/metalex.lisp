@@ -57,7 +57,6 @@
 ;
 ;               A. Line Buffer
 ;               C. Token
-;               D. Reduction
 
 ; 1A. A Line Buffer
 ;
@@ -320,36 +319,8 @@ NonBlank is true if the token is not preceded by a blank."
        (decf Valid-Tokens))))
 
 
-; 1D. A Reduction
-;
-
-(defstruct (Reduction (:type list))
-"A reduction of a rule is any S-Expression the rule chooses to stack."
-  (Rule nil)            ; Name of rule
-  (Value nil))
-
-; 2. Recursive descent parsing support routines (semantically related to MetaLanguage)
-;
-; This section of the code contains:
-;
-;               A. Routines for stacking and retrieving reductions of rules.
-;               B. Routines for applying certain metagrammatical elements
-;                  of a production (e.g., Star).
-;               C. Token-level parsing utilities (keywords, strings, identifiers).
-
-; 2A. Routines for stacking and retrieving reductions of rules.
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Push-Reduction Pop-Reduction
-
-(defparameter Reduce-Stack (|makeStack|) "Stack of results of reduced productions.")
-
-(defun Push-Reduction (rule redn)
-  (|stackPush!| (make-reduction :rule rule :value redn) Reduce-Stack))
-
 (defun reduce-stack-show ()
-  (let ((store (|stackStore| reduce-stack))
+  (let ((store (|stackStore| |$reduceStack|))
         (*print-pretty* t))
     (if store
         (progn (format t "~%Reduction stack contains:~%")
@@ -357,38 +328,8 @@ NonBlank is true if the token is not preceded by a blank."
 			   (if (eq (type-of x) 'token)
                                (describe x)
 			     (print x)))
-                       (|stackStore| reduce-stack)))
+                       (|stackStore| |$reduceStack|)))
         (format t "~%There is nothing on the reduction stack.~%"))))
-
-(defmacro reduce-stack-clear () `(|stackLoad!| nil reduce-stack))
-
-(defun Pop-Reduction () (|stackPop!| Reduce-Stack))
-
-(defmacro pop-stack-1 () '(reduction-value (Pop-Reduction)))
-
-(defmacro pop-stack-2 ()
-  `(let* ((top (Pop-Reduction)) (next (Pop-Reduction)))
-     (|stackPush!| top Reduce-Stack)
-     (reduction-value next)))
-
-(defmacro pop-stack-3 ()
-  `(let* ((top (Pop-Reduction)) (next (Pop-Reduction)) (nnext (Pop-Reduction)))
-     (|stackPush!| next Reduce-Stack)
-     (|stackPush!| top Reduce-Stack)
-     (reduction-value nnext)))
-
-(defmacro pop-stack-4 ()
-  `(let* ((top (Pop-Reduction))
-          (next (Pop-Reduction))
-          (nnext (Pop-Reduction))
-          (nnnext (Pop-Reduction)))
-     (|stackPush!| nnext Reduce-Stack)
-     (|stackPush!| next Reduce-Stack)
-     (|stackPush!| top Reduce-Stack)
-     (reduction-value nnnext)))
-
-(defmacro nth-stack (x)
-  `(reduction-value (nth (1- ,x) (|stackStore| Reduce-Stack))))
 
  
 ; *** 2. META Line Handling
@@ -441,7 +382,7 @@ NonBlank is true if the token is not preceded by a blank."
   `(defun ,(intern (concatenate 'string "PARSE-" (string token))) ()
      (let* ((tok (match-current-token ',token))
             (symbol (if tok (token-symbol tok))))
-       (if tok (progn (Push-Reduction
+       (if tok (progn (|pushReduction|
                         ',(intern (concatenate 'string (string token)
                                                "-TOKEN"))
                         (copy-tree symbol))
@@ -562,7 +503,7 @@ as keywords.")
 				(match-current-token 'gliph)
 				(match-current-token 'special-char)))))
     (when (and id (member id |$OperatorFunctionNames|))
-      (Push-Reduction '|PARSE-OperatorFunctionName| id)
+      (|pushReduction| '|PARSE-OperatorFunctionName| id)
       (action (advance-token)))))
 
 ; Meta tokens fall into the following categories:
