@@ -1206,9 +1206,9 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   ops := escapeSpecialChars STRINGIMAGE op
   n := #sig
   do
-    n = 2 and symbolLassoc('Nud,PROPLIST op) => 
+    n = 2 and symbolTarget('Nud,PROPLIST op) => 
       htSay(ops,'" {\em ",quickForm2HtString KAR args,'"}")
-    n = 3 and symbolLassoc('Led,PROPLIST op) => 
+    n = 3 and symbolTarget('Led,PROPLIST op) => 
       htSay('"{\em ",quickForm2HtString KAR args,'"} ",ops,'" {\em ",quickForm2HtString KAR KDR args,'"}")
     if unexposed? and $includeUnexposed? then
       htSayUnexposed()

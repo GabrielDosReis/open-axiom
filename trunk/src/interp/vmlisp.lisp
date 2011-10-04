@@ -671,26 +671,13 @@
 
 ; 14.3 Searching
 
-(defun QLASSQ (p a-list) (cdr (|objectAssoc| p a-list)))
-
 (DEFUN |assoc| (X Y)
   "Return the pair associated with key X in association list Y."
   ; ignores non-nil list terminators
   ; ignores non-pair a-list entries
-  (cond ((symbolp X)
-         (PROG NIL
-               A  (COND ((ATOM Y) (RETURN NIL))
-                        ((NOT (consp (CAR Y))) )
-                        ((EQ (CAAR Y) X) (RETURN (CAR Y))) )
-               (SETQ Y (CDR Y))
-               (GO A)))
+  (cond ((symbolp X) (|symbolAssoc| X Y))
         ((or (numberp x) (characterp x))
-         (PROG NIL
-               A  (COND ((ATOM Y) (RETURN NIL))
-                        ((NOT (consp (CAR Y))) )
-                        ((EQL (CAAR Y) X) (RETURN (CAR Y))) )
-               (SETQ Y (CDR Y))
-               (GO A)))
+	 (|scalarAssoc| X Y))
         (t
          (PROG NIL
                A  (COND ((ATOM Y) (RETURN NIL))

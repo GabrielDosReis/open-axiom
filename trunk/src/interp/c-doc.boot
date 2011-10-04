@@ -36,6 +36,9 @@ import c_-util
 import daase
 namespace BOOT
 
+$checkPrenAlist ==
+  [[char "(",:char ")"],[char "{",:char "}"],[char "[",:char "]"]]
+
 batchExecute() ==
   _/RF_-1 '(GENCON INPUT)
 
@@ -77,7 +80,7 @@ getDocForDomain(name,op,sig) ==
 ++ `op' and given signature `sigPart'.  The operator `op' is assumed
 ++ to have been defined in the domain or catagory `abb'.
 getOpDoc(abb,op,:sigPart) ==
-  u := symbolLassoc(op,getConstructorDocumentationFromDB abb)
+  u := symbolTarget(op,getConstructorDocumentationFromDB abb)
   $argList : local := $FormalMapVariableList
   _$: local := '_$
   sigPart is [sig] => or/[d for [s,:d] in u | sig = s]
@@ -1009,8 +1012,8 @@ checkBalance u ==
   while u repeat
     do
       x := first u
-      openClose := assoc(x,$checkPrenAlist)  --is it an open bracket?
-        => stack := [first openClose,:stack] --yes, push the open bracket
+      closer := scalarTarget(x,$checkPrenAlist)  --is it an open bracket?
+        => stack := [closer,:stack] --yes, push the open bracket
       open  := rassoc(x,$checkPrenAlist) =>  --it is a close bracket!
         stack is [top,:restStack] => --does corresponding open bracket match?
           if open ~= top then          --yes: just pop the stack
@@ -1153,7 +1156,7 @@ checkTransformFirsts(opname,u,margin) ==
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
       #(p := symbolName infixOp) = 1 and (open := p.0) and
-        (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
+        (close := scalarTarget(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
           if l > maxIndex u then l := k - 1
           strconc('"\spad{",subString(u,0,l + 1),'"}",subString(u,l + 1))

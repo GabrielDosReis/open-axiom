@@ -47,7 +47,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
-  applySubst, applySubst!, applySubstNQ, objectAssoc,
+  symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
   remove,removeSymbol,atomic?,finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
@@ -57,8 +57,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
     lastNode: %List %Thing -> %Maybe %Node %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
     remove: (%List %Thing, %Thing) -> %List %Thing
-    objectAssoc: (%Thing, %List %Pair(%Thing,%Thing)) ->
-                    %Maybe %Pair(%Thing,%Thing)
+    objectAssoc: (%Thing, %List %Thing) -> %Maybe %Pair(%Thing,%Thing)
+    symbolAssoc: (%Symbol,%List %Thing) -> %Maybe %Pair(%Symbol,%Thing)
     setDifference: (%List %Thing,%List %Thing) -> %List %Thing
     setUnion: (%List %Thing,%List %Thing) -> %List %Thing
     setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
@@ -177,12 +177,15 @@ append(x,y) ==
 
 --% a-list
 
-assocSymbol(s,al) ==
+symbolAssoc(s,l) ==
   repeat
-    al is [x,:al] =>
-      cons? x and symbolEq?(s,first x) =>
-        return x
-    return nil
+    l isnt [x,:l] => return nil
+    x is [.,:.] and symbolEq?(s,first x) => return x
+
+objectAssoc(x,l) ==
+  repeat
+    l isnt [p,:l] => return nil
+    p is [.,:.] and sameObject?(first p,x) => return p
 
 --% substitution
 
@@ -210,7 +213,7 @@ applySubst(sl,t) ==
     tl := applySubst(sl,rest t)
     sameObject?(hd,first t) and sameObject?(tl,rest t) => t
     [hd,:tl]
-  symbol? t and (p := assocSymbol(t,sl)) => rest p
+  symbol? t and (p := symbolAssoc(t,sl)) => rest p
   t
 
 applySubst!(sl,t) ==
@@ -219,7 +222,7 @@ applySubst!(sl,t) ==
     tl := applySubst!(sl,rest t)
     t.first := hd
     t.rest := tl
-  symbol? t and (p := assocSymbol(t,sl)) => rest p
+  symbol? t and (p := symbolAssoc(t,sl)) => rest p
   t
 
 ++ Like applySubst, but skip quoted materials.
@@ -230,7 +233,7 @@ applySubstNQ(sl,t) ==
     tl := applySubstNQ(sl,tl)
     sameObject?(hd,first t) and sameObject?(tl,rest t) => t
     [hd,:tl]
-  symbol? t and (p := assocSymbol(t,sl)) => rest p
+  symbol? t and (p := symbolAssoc(t,sl)) => rest p
   t
 
 --% set operations
@@ -292,11 +295,6 @@ remove(l,x) ==
   removeValue(l,x)
 
 --% search
-
-objectAssoc(x,l) ==
-  repeat
-    l isnt [p,:l] => return nil
-    p is [a,:.] and sameObject?(a,x) => return p
 
 ++ Return the index of the character `c' in the string `s', if present.
 ++ Otherwise, return nil.

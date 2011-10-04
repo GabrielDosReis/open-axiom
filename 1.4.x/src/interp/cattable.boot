@@ -109,7 +109,7 @@ simpHasPred(pred,:options) == main where
       op is 'hasArgs => ($hasArgs => $hasArgs = r; pred)
       null r and opOf op = "has" => simp first pred
       pred is '%true or pred is '(QUOTE T) => true
-      op1 := symbolLassoc(op,'((and . AND)(or . OR)(not . NOT))) =>
+      op1 := symbolTarget(op,'((and . AND)(or . OR)(not . NOT))) =>
         simp [op1,:r]
       simp first pred   --REMOVE THIS HACK !!!!
     pred in '(T etc) => pred
@@ -134,7 +134,7 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
   ident? conform => pred
   [conname,:args] := conform
   n := #sig
-  u := symbolLassoc(op,getConstructorOperationsFromDB conname)
+  u := symbolTarget(op,getConstructorOperationsFromDB conname)
   candidates := [x for (x := [sig1,:.]) in u | #sig1 = #sig]  or return false
   match := or/[x for (x := [sig1,:.]) in candidates
                 | sig = sublisFormal(args,sig1)] or return false

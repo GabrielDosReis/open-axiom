@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -73,19 +73,19 @@ profileRecord(label,name,info) ==  --name: info is var: type or op: sig
   $profileAlist
 
 profileDisplay() ==
-  profileDisplayOp('constructor,symbolLassoc('constructor,$profileAlist) )
+  profileDisplayOp('constructor,symbolTarget('constructor,$profileAlist) )
   for [op,:alist1] in $profileAlist | op ~= 'constructor repeat
     profileDisplayOp(op,alist1)
 
 profileDisplayOp(op,alist1) ==
   sayBrightly op
-  if symbolLassoc('arguments,alist1) then
+  if symbolTarget('arguments,alist1) then
     sayBrightly '"  arguments"
-    for [x,:t] in MSORT symbolLAssoc('arguments,alist1) repeat 
+    for [x,:t] in MSORT symbolTarget('arguments,alist1) repeat 
       sayBrightly concat('"     ",x,": ",prefix2String t)
-  if symbolLassoc('locals,alist1) then
+  if symbolTarget('locals,alist1) then
     sayBrightly '"  locals"
-    for [x,:t] in MSORT symbolLassoc('locals,alist1) repeat 
+    for [x,:t] in MSORT symbolTarget('locals,alist1) repeat 
       sayBrightly concat('"     ",x,": ",prefix2String t)
   for [con,:alist2] in alist1 | not (con in '(locals arguments)) repeat
     sayBrightly concat('"  ",prefix2String con)

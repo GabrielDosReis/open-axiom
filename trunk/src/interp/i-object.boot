@@ -375,7 +375,7 @@ putAtree(x,prop,val) ==
     if vector? op then putAtree(op,prop,val)
     x
   not vector? x => x     -- just ignore it
-  n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
+  n := symbolTarget(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => vectorRef(x,n) := val
   vectorRef(x,4) := insertShortAlist(prop,val,x.4)
   x
@@ -387,9 +387,9 @@ getAtree(x,prop) ==
     vector? op => getAtree(op,prop)
     nil
   not vector? x => nil     -- just ignore it
-  n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
+  n := symbolTarget(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => vectorRef(x,n)
-  QLASSQ(prop,vectorRef(x,4))
+  symbolTarget(prop,vectorRef(x,4))
 
 putTarget(x, targ) ==
   -- want to put nil modes perhaps to clear old target
@@ -462,7 +462,7 @@ getFlagArgsPos t ==
 
 transferPropsToNode(x,t) ==
   propList := getProplist(x,$env)
-  QLASSQ('Led,propList) or QLASSQ('Nud,propList) => nil
+  symbolTarget('Led,propList) or symbolTarget('Nud,propList) => nil
   node :=
     vector? t => t
     first t

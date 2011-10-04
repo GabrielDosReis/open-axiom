@@ -45,6 +45,9 @@ module sys_-utility where
   upwardCut: (%Thing, %List %Thing) -> %List %Thing
   symbolPosition: (%Symbol,%List %Symbol) -> %Maybe %Short
   valuePosition: (%Thing,%List %Thing) -> %Maybe %Short
+  symbolTarget: (%Symbol,%List %Thing) -> %Maybe %Thing
+  scalarAssoc: (%Thing,%List %Thing) -> %Maybe %Pair(%Thing,%Thing)
+  scalarTarget: (%Thing,%List %Thing) -> %Maybe %Thing
 
 --%
 $COMBLOCKLIST := nil
@@ -147,7 +150,6 @@ ADDASSOC(x,y,l) ==
   l isnt [.,:.] => [[x,:y],:l]
   x = first first l => [[x,:y],:rest l]
   [first l,:ADDASSOC(x,y,rest l)]
-
 
 ++ Remove any assocation pair `(u . x)' from list `v'.
 DELLASOS: (%Thing,%Alist(%Thing,%Thing)) -> %Alist(%Thing,%Thing)
@@ -358,9 +360,6 @@ valuePosition(s,l) ==
 
 --% assoc
 
-symbolAssoc(s,l) ==
-  or/[symbolEq?(s,first x) and leave x for x in l | cons? x] or nil
-
 scalarAssoc(c,l) ==
   or/[scalarEq?(c,first x) and leave x for x in l | cons? x] or nil
 
@@ -369,8 +368,12 @@ stringAssoc(s,l) ==
 
 --% lassoc
 
-symbolLassoc(s,l) ==
+symbolTarget(s,l) ==
   p := symbolAssoc(s,l) => rest p
+  nil
+
+scalarTarget(s,l) ==
+  p := scalarAssoc(s,l) => rest p
   nil
 
 --%

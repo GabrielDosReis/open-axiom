@@ -846,36 +846,3 @@ getCaps x ==
   clist:= [c for i in 0..maxIndex s | upperCase? (c:= s.i)]
   null clist => '"__"
   strconc/[first clist,:[L_-CASE u for u in rest clist]]
- 
---% abbreviation code
- 
-getAbbreviation(name,c) ==
-  --returns abbreviation of name with c arguments
-  x := getConstructorAbbreviationFromDB name
-  X := objectAssoc(x,$abbreviationTable) =>
-    N := objectAssoc(name,rest X) =>
-      C := objectAssoc(c,rest N) => rest C --already there
-      newAbbreviation:= mkAbbrev(X,x)
-      N.rest := [[c,:newAbbreviation],:rest N]
-      newAbbreviation
-    newAbbreviation:= mkAbbrev(X,x)
-    X.rest := [[name,[c,:newAbbreviation]],:rest X]
-    newAbbreviation
-  $abbreviationTable:= [[x,[name,[c,:x]]],:$abbreviationTable]
-  x
- 
-mkAbbrev(X,x) == addSuffix(alistSize rest X,x)
- 
-alistSize c ==
-  count(c,1) where
-    count(x,level) ==
-      level=2 => #x
-      null x => 0
-      count(CDAR x,level+1)+count(rest x,level)
- 
-addSuffix(n,u) ==
-  s := STRINGIMAGE u
-  alphabetic? stringChar(s,maxIndex s) => 
-    makeSymbol strconc(s,STRINGIMAGE n)
-  INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
- 

@@ -138,8 +138,8 @@ trace1 l ==
     ADDASSOC(x,$options,$optionAlist)
   optionList:= getTraceOptions $options
   argument:=
-    domainList := symbolLassoc("of",optionList) =>
-      symbolLAssoc("ops",optionList) =>
+    domainList := symbolTarget("of",optionList) =>
+      symbolTarget("ops",optionList) =>
         throwKeyedMsg("S2IT0004",nil)
       opList:=
         traceList => [["ops",:traceList]]
@@ -378,7 +378,7 @@ getPreviousMapSubNames(traceNames) ==
   subs
 
 lassocSub(x,subs)  ==
-  y := QLASSQ(x,subs) => y
+  y := symbolTarget(x,subs) => y
   x
 
 rassocSub(x,subs) ==
@@ -586,7 +586,7 @@ mapLetPrint(x,val,currentFunction) ==
 
 letPrint(x,val,currentFunction) ==
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          sayBrightlyNT [:bright x,": "]
@@ -604,7 +604,7 @@ letPrint(x,val,currentFunction) ==
 letPrint2(x,printform,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLAssoc("all",$letAssoc))) then
+    ((y:= symbolTarget(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
@@ -624,7 +624,7 @@ letPrint2(x,printform,currentFunction) ==
 letPrint3(x,xval,printfn,currentFunction) ==
   $BreakMode:local := nil
   if $letAssoc and
-    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolLassoc("all",$letAssoc))) then
+    ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          $BreakMode:='letPrint2
@@ -792,7 +792,7 @@ breaklet(fn,vars) ==
   fn = "Undef" => nil
   fnEntry:= LASSOC(fn,$letAssoc)
   vars:=
-    pair := symbolLassoc("BREAK",fnEntry) => setUnion(vars,rest pair)
+    pair := symbolTarget("BREAK",fnEntry) => setUnion(vars,rest pair)
     vars
   $letAssoc:=
     null fnEntry => [[fn,:[["BREAK",:vars]]],:$letAssoc]

@@ -19,8 +19,9 @@
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |setUnion| |setIntersection|
-                     |applySubst| |applySubst!| |applySubstNQ| |objectAssoc|
-                     |remove| |removeSymbol| |atomic?| |finishLine|)))
+                     |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
+                     |objectAssoc| |remove| |removeSymbol| |atomic?|
+                     |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -49,9 +50,15 @@
 
 (DECLAIM
  (FTYPE
-  (FUNCTION (|%Thing| (|%List| (|%Pair| |%Thing| |%Thing|)))
+  (FUNCTION (|%Thing| (|%List| |%Thing|))
    (|%Maybe| (|%Pair| |%Thing| |%Thing|)))
   |objectAssoc|))
+
+(DECLAIM
+ (FTYPE
+  (FUNCTION (|%Symbol| (|%List| |%Thing|))
+   (|%Maybe| (|%Pair| |%Symbol| |%Thing|)))
+  |symbolAssoc|))
 
 (DECLAIM
  (FTYPE (FUNCTION ((|%List| |%Thing|) (|%List| |%Thing|)) (|%List| |%Thing|))
@@ -172,15 +179,25 @@
 
 (DEFUN |append| (|x| |y|) (|append!| (|copyList| |x|) |y|))
 
-(DEFUN |assocSymbol| (|s| |al|)
+(DEFUN |symbolAssoc| (|s| |l|)
   (PROG (|x|)
     (RETURN
      (LOOP
       (COND
-       ((AND (CONSP |al|)
-             (PROGN (SETQ |x| (CAR |al|)) (SETQ |al| (CDR |al|)) T))
-        (COND ((AND (CONSP |x|) (EQ |s| (CAR |x|))) (IDENTITY (RETURN |x|)))))
-       (T (RETURN NIL)))))))
+       ((NOT
+         (AND (CONSP |l|) (PROGN (SETQ |x| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
+        (RETURN NIL))
+       ((AND (CONSP |x|) (EQ |s| (CAR |x|))) (RETURN |x|)))))))
+
+(DEFUN |objectAssoc| (|x| |l|)
+  (PROG (|p|)
+    (RETURN
+     (LOOP
+      (COND
+       ((NOT
+         (AND (CONSP |l|) (PROGN (SETQ |p| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
+        (RETURN NIL))
+       ((AND (CONSP |p|) (EQ (CAR |p|) |x|)) (RETURN |p|)))))))
 
 (DEFUN |substitute!| (|y| |x| |s|)
   (COND ((NULL |s|) NIL) ((EQ |x| |s|) |y|)
@@ -208,7 +225,7 @@
        (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
        (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
              (T (CONS |hd| |tl|))))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|))) (CDR |p|))
+      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
       (T |t|)))))
 
 (DEFUN |applySubst!| (|sl| |t|)
@@ -218,7 +235,7 @@
       ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
        (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
        (RPLACD |t| |tl|))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|))) (CDR |p|))
+      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
       (T |t|)))))
 
 (DEFUN |applySubstNQ| (|sl| |t|)
@@ -231,7 +248,7 @@
               (SETQ |tl| (|applySubstNQ| |sl| |tl|))
               (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
                     (T (CONS |hd| |tl|))))))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|assocSymbol| |t| |sl|))) (CDR |p|))
+      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
       (T |t|)))))
 
 (DEFUN |setDifference| (|x| |y|)
@@ -334,17 +351,6 @@
   (COND ((SYMBOLP |x|) (|removeSymbol| |l| |x|))
         ((OR (CHARACTERP |x|) (INTEGERP |x|)) (|removeScalar| |l| |x|))
         (T (|removeValue| |l| |x|))))
-
-(DEFUN |objectAssoc| (|x| |l|)
-  (PROG (|a| |p|)
-    (RETURN
-     (LOOP
-      (COND
-       ((NOT
-         (AND (CONSP |l|) (PROGN (SETQ |p| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
-        (RETURN NIL))
-       ((AND (CONSP |p|) (PROGN (SETQ |a| (CAR |p|)) T) (EQ |a| |x|))
-        (RETURN |p|)))))))
 
 (DEFUN |charPosition| (|c| |s| |k|)
   (PROG (|n|)

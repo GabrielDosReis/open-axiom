@@ -353,7 +353,7 @@ clearCmdParts(l is [opt,:vl]) ==
     vl := ASSOCLEFT CAAR $InteractiveFrame
     vl := removeDuplicates(append(vl, pmacs))
   $e : local := $InteractiveFrame
-  for x in vl repeat
+  for x in vl | ident? x repeat
     clearDependencies(x,true)
     if option is 'properties and symbolMember?(x,pmacs) then
       clearParserMacro(x)
@@ -2409,7 +2409,7 @@ diffAlist(new,old) ==
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
 --record properties absent on new list (say, from a )cl all)
   for (oldPair := [name,:r]) in old repeat
-    r and null QLASSQ(name,new) =>
+    r and null symbolTarget(name,new) =>
       acc := [oldPair,:acc]
     -- name has an entry both in new and old world
     -- (1) if the new world has no proplist for that variable
@@ -2490,7 +2490,7 @@ undoSingleStep(changes,env) ==
 --  pp '"----Undoing 1 step--------"
 --  pp changes
   for (change := [name,:changeList]) in changes repeat
-    if symbolLassoc('localModemap,changeList) then
+    if symbolTarget('localModemap,changeList) then
       changeList := undoLocalModemapHack changeList
     pairlist := objectAssoc(name,env) =>
       proplist := rest pairlist =>

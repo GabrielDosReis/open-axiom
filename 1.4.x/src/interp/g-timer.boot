@@ -78,7 +78,7 @@ makeLongStatStringByProperty _
   if otherStatTotal > 0 then
     str := makeStatString(str,normalizeStatAndStringify otherStatTotal,'O,flag)
     total := total + otherStatTotal
-    cl := first symbolLassoc('other,listofnames)
+    cl := first symbolTarget('other,listofnames)
     cl := first LASSOC(cl,listofclasses)
     property(cl,classprop) := otherStatTotal + property(cl,classprop)
   if flag ~= 'long then

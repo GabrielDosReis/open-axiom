@@ -478,7 +478,7 @@ addContour(c,E is [cur,:tail]) ==
                    if p="conditionalmode" then
                      pv.first := "mode"
                      --check for conflicts with earlier mode
-                     if vv := symbolLassoc("mode",e) then
+                     if vv := symbolTarget("mode",e) then
                         if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
@@ -603,7 +603,7 @@ prEnv E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       SAY('"******CONTOUR ",j,'", LEVEL ",i,'":******")
-      for z in y | null symbolLassoc("modemap",rest z) repeat
+      for z in y | null symbolTarget("modemap",rest z) repeat
         TERPRI()
         SAY("Properties Of: ",first z)
         for u in rest z repeat
@@ -619,7 +619,7 @@ prModemaps E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       for z in y | not member(first z,listOfOperatorsSeenSoFar) and
-        (modemap := symbolLassoc("modemap",rest z)) repeat
+        (modemap := symbolTarget("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           TERPRI()
           PRIN1 first z
@@ -710,7 +710,7 @@ diagnoseUnknownType(t,e) ==
 isConstantId(name,e) ==
   ident? name =>
     pl:= getProplist(name,e) =>
-      (symbolLassoc("value",pl) or symbolLassoc("mode",pl) => false; true)
+      (symbolTarget("value",pl) or symbolTarget("mode",pl) => false; true)
     true
   false
  
@@ -1010,8 +1010,8 @@ extendsCategoryForm(domain,form,form') ==
  
 getmode(x,e) ==
   prop:=getProplist(x,e)
-  u := QLASSQ("value",prop) => u.mode
-  QLASSQ("mode",prop)
+  u := symbolTarget("value",prop) => u.mode
+  symbolTarget("mode",prop)
  
 getmodeOrMapping(x,e) ==
   u:= getmode(x,e) => u
@@ -1095,7 +1095,7 @@ displayModemaps E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
       for z in y | not member(first z,listOfOperatorsSeenSoFar) and
-        (modemaps := symbolLassoc("modemap",rest z)) repeat
+        (modemaps := symbolTarget("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
           displayOpModemaps(first z,modemaps)
  
@@ -1497,7 +1497,7 @@ backendCompile2 code ==
   code isnt [name,[type,args,:body],:junk] or junk ~= nil =>
     systemError ['"parenthesis error in: ", code]
   type = "SLAM" => backendCompileSLAM(name,args,body)
-  QLASSQ(name,$clamList) => compClam(name,args,body,$clamList)
+  symbolTarget(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
   type = "ILAM" => backendCompileILAM(name,args,body)
   body := [name,[type,args,:body]]

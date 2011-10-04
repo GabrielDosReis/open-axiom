@@ -362,7 +362,7 @@ spadType(x) ==  --called by \spadtype{x} from HyperDoc
 
 looksLikeDomainForm x ==
   entry := getCDTEntry(opOf x,true) or return false
-  coSig := symbolLassoc('coSig,CDDR entry)
+  coSig := symbolTarget('coSig,CDDR entry)
   k := #coSig
   x isnt [.,:.] => k = 1
   k ~= #x => false
@@ -754,7 +754,7 @@ dbSearchAbbrev([.,:conlist],kind,filter) ==
   null conlist => emptySearchPage('"abbreviation",filter)
   kind := intern kind
   if kind ~= 'constructor then
-    conlist := [x for x in conlist | symbolLassoc('kind,IFCDR IFCDR x) = kind]
+    conlist := [x for x in conlist | symbolTarget('kind,IFCDR IFCDR x) = kind]
   conlist is [[nam,:.]] => conPage DOWNCASE nam
   cAlist := [[con,:true] for con in conlist]
   htPage := htInitPage('"",nil)
@@ -764,7 +764,7 @@ dbSearchAbbrev([.,:conlist],kind,filter) ==
   page := htInitPage([#conlist,
     '" Abbreviations Match {\em ",STRINGIMAGE filter,'"}"],nil)
   for [nam,abbr,:r] in conlist repeat
-    kind := symbolLAssoc('kind,r)
+    kind := symbolTarget('kind,r)
     htSay('"\newline{\em ",s := STRINGIMAGE abbr)
     htSayStandard '"\tab{10}"
     htSay '"}"

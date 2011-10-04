@@ -786,13 +786,12 @@ mapRecurDepth(opName,opList,body) ==
   --  expanding the bodies of maps called in body
   body isnt [.,:.] => 0
   body is [op,:argl] =>
-    argc:=
+    argc :=
       argl isnt [.,:.] => 0
-      argl => "MAX"/[mapRecurDepth(opName,opList,x) for x in argl]
-      0
-    symbolMember?(op,opList) => argc
-    op=opName => 1 + argc
-    (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
+      "MAX"/[mapRecurDepth(opName,opList,x) for x in argl]
+    ident? op and symbolMember?(op,opList) => argc
+    ident? op and op = opName => 1 + argc
+    ident? op and (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
       mapRecurDepth(opName,[op,:opList],getMapBody(op,mapDef))
         + argc
     argc
@@ -895,15 +894,15 @@ nonRecursivePart(opName, funBody) ==
 expandRecursiveBody(alreadyExpanded, body) ==
   -- replaces calls to other maps with their bodies
   body isnt [.,:.] =>
-    (obj := get(body,'value,$e)) and objVal obj is ["%Map",:mapDef] and
+    ident? body and (obj := get(body,'value,$e)) and objVal obj is ["%Map",:mapDef] and
       ((numMapArgs mapDef) = 0) => getMapBody(body,mapDef)
     body
   body is [op,:argl] =>
-    not symbolMember?(op,alreadyExpanded) =>
+    ident? op and not symbolMember?(op,alreadyExpanded) =>
       (obj := get(op,'value,$e)) and objVal obj is ["%Map",:mapDef] =>
-        newBody:= getMapBody(op,mapDef)
+        newBody := getMapBody(op,mapDef)
         for arg in argl for var in $FormalMapVariableList repeat
-          newBody:=MSUBST(arg,var,newBody)
+          newBody := substitute(arg,var,newBody)
         expandRecursiveBody([op,:alreadyExpanded],newBody)
       [op,:[expandRecursiveBody(alreadyExpanded,arg) for arg in argl]]
     [op,:[expandRecursiveBody(alreadyExpanded,arg) for arg in argl]]

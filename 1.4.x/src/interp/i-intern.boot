@@ -449,9 +449,9 @@ remprop(x,prop,e) ==
   e
 
 fastSearchCurrentEnv(x,currentEnv) ==
-  u:= QLASSQ(x,first currentEnv) => u
+  u:= symbolTarget(x,first currentEnv) => u
   while (currentEnv:= rest currentEnv) repeat
-    u:= QLASSQ(x,first currentEnv) => u
+    u:= symbolTarget(x,first currentEnv) => u
 
 transformCollect [:itrl,body] ==
   -- syntactic transformation for COLLECT form, called from mkAtree1

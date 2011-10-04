@@ -141,10 +141,10 @@ bcMatrixGen htPage ==
   nrows := htpProperty(htPage,'nrows)
   ncols := htpProperty(htPage,'ncols)
   mat := htpProperty(htPage,'matrix)
-  formula := symbolLassoc('formula,mat) =>
+  formula := symbolTarget('formula,mat) =>
     formula := formula.0
-    rowVar := (symbolLassoc('rowVar,mat)).0
-    colVar := (symbolLAssoc('colVar,mat)).0
+    rowVar := (symbolTarget('rowVar,mat)).0
+    colVar := (symbolTarget('colVar,mat)).0
     strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
       STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
   mat := htpProperty(htPage,'matrix) =>
