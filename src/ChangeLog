@@ -1,5 +1,13 @@
 2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot: Add support for Token abstract datatype.
+	* interp/bootlex.lisp: Use it.
+	* interp/fnewmeta.lisp: Likewise.
+	* interp/metalex.lisp: Likewise.  Remove old token structure and
+	associated functions.
+
+2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot (stackClear!): Fix typo.
 	Add new grammar reduction abstract datatype facility.
 	* interp/fnewmeta.lisp: Use it.
