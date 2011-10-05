@@ -98,10 +98,12 @@
 	   "outputTextFile"
 	   "closeFile"
 	   "closeStream"
+	   "eof?"
 	   "prettyPrint"
 	   "readLine"
 	   "readExpr"
 	   "readIntegerIfCan"
+	   "formatToString"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -138,6 +140,7 @@
 	   "makeByteArray"
 	   "makeBitVector"
 	   "makeString"
+	   "listToString"
 
            "%hasFeature"
 	   "%systemOptions"
@@ -525,6 +528,9 @@
 (defmacro |closeStream| (s)
   `(close ,s))
 
+(defmacro |eof?| (s)
+  `(null (peek-char nil ,s nil nil nil)))
+
 ;; Read a line from the input text file.  Quietly return
 ;; %nothing at end of file.
 (defmacro |readLine| (f)
@@ -549,6 +555,9 @@
 	(*print-length* nil)
 	(*print-level* nil))
     (prin1 x s)))
+
+(defmacro |formatToString| (&rest args)
+  `(format nil ,@args))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-
@@ -1372,6 +1381,14 @@
 
 (defun |makeString| (n &optional (c (code-char 0)))
   (make-string n :initial-element c))
+
+(defun |listToString| (l)
+  (let ((s (|makeString| (list-length l))))
+    (do ((i 0 (1+ i))) 
+	(null l)
+	(setf (schar s i) (car l))
+	(setq l (cdr l)))
+    s))
 
 ;; native data type translation table
 (defconstant |$NativeTypeTable|

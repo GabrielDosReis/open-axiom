@@ -1,3 +1,10 @@
+2011-10-05  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* lisp/core.lisp.in (eof?): New.
+	(listToString): Likewise.
+	(formatToString): Likewise.
+	* boot/tokens.boot: Add fifth as builtin library function.
+
 2011-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot: Add support for Token abstract datatype.

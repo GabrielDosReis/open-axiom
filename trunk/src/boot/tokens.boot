@@ -260,6 +260,7 @@ for i in [ _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
+  ["fifth",      "FIFTH"]  , _
   ["first",        "CAR"]  , _
   ["float?",   "FLOATP"] , _
   ["flushOutput", "FORCE-OUTPUT"], _
