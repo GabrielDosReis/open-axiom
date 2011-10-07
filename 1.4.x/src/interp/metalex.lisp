@@ -47,7 +47,6 @@
 
 ; 0. Current I/O Stream definition
 
-(defparameter in-stream  t "Current input stream.")
 (defparameter out-stream t "Current output stream.")
 (defparameter File-Closed nil   "Way to stop EOF tests for console input.")
 
@@ -70,58 +69,12 @@
 
 ; FUNCTIONS DEFINED IN THIS SECTION:
 ;
-;       Line-Buffer, Line-Current-Char, Line-Current-Index, Line-Last-Index, Line-Number
 ;       Line-New-Line, Line-Advance-Char, Line-Past-End-P, Line-At-End-P
 ;       Make-Line
 
-(defstruct Line "Line of input file to parse."
-           (Buffer (make-string 0) :type string)
-           (Current-Char #\Return :type character)
-           (Current-Index 1 :type fixnum)
-           (Last-Index 0 :type fixnum)
-           (Number 0 :type fixnum))
-
 (defun Line-Print (line)
-  (format out-stream "~&~5D> ~A~%" (Line-Number line) (Line-Buffer Line))
-  (format out-stream "~v@T^~%" (+ 7 (Line-Current-Index line))))
-
-(defmacro Line-Clear (line)
-  `(let ((l ,line))
-     (setf (Line-Buffer l) (make-string 0)
-           (Line-Current-Char l) #\Return
-           (Line-Current-Index l) 1
-           (Line-Last-Index l) 0
-           (Line-Number l) 0)))
-
-(defun Line-Current-Segment (line)
-  "Buffer from current index to last index."
-  (if (line-at-end-p line) (make-string 0)
-      (subseq (Line-Buffer line)
-              (Line-Current-Index line)
-              (Line-Last-Index line))))
-
-(defun Line-New-Line (string line &optional (linenum nil))
-  "Sets string to be the next line stored in line."
-  (setf (Line-Last-Index line) (1- (length string))
-        (Line-Current-Index line) 0
-        (Line-Current-Char line) (or (and (> (length string) 0) (elt string 0)) #\Return)
-        (Line-Buffer line) string
-        (Line-Number line) (or linenum (1+ (Line-Number line)))))
-
-(defun Line-Advance-Char (line)
-  (setf (Line-Current-Char line)
-        (elt (Line-Buffer line) (incf (Line-Current-Index line)))))
-
-(defun Line-Next-Char (line)
-  (elt (Line-Buffer line) (1+ (Line-Current-Index line))))
-
-(defun Line-Past-End-P (line)
-  "Tests if line is empty or positioned past the last character."
-  (> (line-current-index line) (line-last-index line)))
-
-(defun Line-At-End-P (line)
-  "Tests if line is empty or positioned past the last character."
-  (>= (line-current-index line) (line-last-index line)))
+  (format out-stream "~&~5D> ~A~%" (|lineNumber| line) (|lineBuffer| Line))
+  (format out-stream "~v@T^~%" (+ 7 (|lineCurrentIndex| line))))
 
 ; *** Next Line
 
@@ -142,16 +95,13 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 
 (defun input-clear () (setq Current-Fragment nil))
 
-
-(defparameter Boot-Line-Stack nil       "List of lines returned from PREPARSE.")
-
-(defun Next-Lines-Clear () (setq Boot-Line-Stack nil))
+(defun Next-Lines-Clear () (setq |$lineStack| nil))
 
 (defun Next-Lines-Show ()
-  (and Boot-Line-Stack (format t "Currently preparsed lines are:~%~%"))
+  (and |$lineStack| (format t "Currently preparsed lines are:~%~%"))
   (mapcar #'(lambda (line)
               (format t "~&~5D> ~A~%" (car line) (cdr Line)))
-          Boot-Line-Stack))
+          |$lineStack|))
 
 
 ; 3. Routines for handling lexical scanning
@@ -159,20 +109,18 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 ; Lexical scanning of tokens is performed off of the current line.  No
 ; token can span more than 1 line.  All real I/O is handled in a line-oriented
 ; fashion (in a slight paradox) below the character level.  All character
-; routines implicitly assume the parameter Current-Line.  We do not make
-; Current-Line an explicit optional parameter for reasons of efficiency.
+; routines implicitly assume the parameter |$spadLine|.  We do not make
+; |$spadLine| an explicit optional parameter for reasons of efficiency.
 
-(defparameter Current-Line (make-line)  "Current input line.")
-
-(defmacro current-line-print () '(Line-Print Current-Line))
+(defmacro current-line-print () '(Line-Print |$spadLine|))
 
 (defmacro current-line-show ()
-  `(if (line-past-end-p current-line)
+  `(if (|linePastEnd?| |$spadLine|)
        (format t "~&The current line is empty.~%")
        (progn (format t "~&The current line is:~%~%")
               (current-line-print))))
 
-(defmacro current-line-clear () `(Line-Clear Current-Line))
+(defmacro current-line-clear () `(|lineClear!| |$spadLine|))
 
 (defun read-a-line (&optional (stream t))
   (let (cp)
@@ -185,7 +133,7 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
         (prog nil
               (if (stream-eof in-stream)
                   (progn (setq File-Closed t *EOF* t)
-                         (Line-New-Line (make-string 0) Current-Line)
+                         (|lineNewLine!| (make-string 0) |$spadLine|)
                          (return nil)))
               (if (setq Current-Fragment (read-line stream))
                   (return (read-a-line stream)))))))
@@ -206,34 +154,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
              (|stackClear!| Printer-Line-Stack)
              (format strm "~&; ~A~%" string))))
 
-
-; 3A (2) Character handling.
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Current-Char, Next-Char, Advance-Char
-
-; *** Current Char, Next Char, Advance Char
-
-(defun Current-Char ()
-  "Returns the current character of the line, initially blank for an unread line."
-  (if (Line-Past-End-P Current-Line) #\Return (Line-Current-Char Current-Line)))
-
-(defun Next-Char ()
-   "Returns the character after the current character, blank if at end of line.
-The blank-at-end-of-line assumption is allowable because we assume that end-of-line
-is a token separator, which blank is equivalent to."
-
-  (if (Line-At-End-P Current-Line) #\Return (Line-Next-Char Current-Line)))
-
-(defun Advance-Char ()
-  "Advances IN-STREAM, invoking Next Line if necessary."
-  (loop (cond ((not (Line-At-End-P Current-Line))
-               (return (Line-Advance-Char Current-Line)))
-              ((next-boot-line in-stream)
-               (return (current-char)))
-              ((return nil)))))
-
 ; 1C. Token
 (defun Token-Print (token)
   (format out-stream "(token (symbol ~S) (type ~S))~%"
@@ -251,36 +171,6 @@ is a token separator, which blank is equivalent to."
                        (|stackStore| |$reduceStack|)))
         (format t "~%There is nothing on the reduction stack.~%"))))
 
- 
-; *** 2. META Line Handling
-(defparameter Comment-Character #\% "Delimiter of comments in Meta code.")
- 
-(defun kill-comments (string)
-  "Deletes from comment character % to end of STRING."
-  (subseq string 0
-          (let ((mi (maxindex string)))
-            (do ((i 0 (1+ i)))
-                ((> i mi) i)
-              (if (and (char= (elt string i) Comment-Character)
-                       (or (eq i 0) (char/= (elt string (1- i)) #\\)))
-                  (return i))))))
- 
-(defun kill-trailing-blanks (string)
- 
-  "Remove white space from end of STRING."
- 
-  ; Coding note: yes, I know, use string-trim --  but it is broken
-  ; in Symbolics Common Lisp for short strings
- 
-  (let* ((sl (length string))
-         (right (if (= sl 0) -1
-                    (or
-                      (position-if-not
-                        #'(lambda (x)
-                            (member x '(#\Space #\Tab #\Newline) :test #'char=))
-                        string :from-end t)
-                      -1))))
-    (if (>= right 0) (subseq string 0 (1+ right)) (make-string 0))))
  
 ; *** 3. META Token Handling
  
@@ -322,90 +212,6 @@ is a token separator, which blank is equivalent to."
       (progn (format t "The prior token was~%")
              (describe |$priorToken|))))
 
-(defmacro token-stack-clear ()
-  `(progn (setq |$validTokens| 0)
-          (|tokenInstall| nil nil |$currentToken| nil)
-          (|tokenInstall| nil nil |$nextToken| nil)
-          (|tokenInstall| nil nil |$priorToken| nil)))
-
-; Unget-Tokens
-
-(defun quote-if-string (token)
-  (if token   ;only use |tokenType| on non-null tokens
-  (case (|tokenType| token)
-    (bstring            (strconc "[" (|tokenSymbol| token) "]*"))
-    (string             (strconc "'" (|tokenSymbol| token) "'"))
-    (spadstring         (strconc "\"" (underscore (|tokenSymbol| token)) "\""))
-    (number             (format nil "~v,'0D" (|tokenNonblank?| token)
-                                (|tokenSymbol| token)))
-    (special-char       (string (|tokenSymbol| token)))
-    (identifier         (let ((id (symbol-name (|tokenSymbol| token)))
-                              (pack (package-name (symbol-package
-                                                   (|tokenSymbol| token)))))
-                          (if $SPAD
-                              (if (equal pack "BOOT")
-                                  (escape-keywords (underscore id) (|tokenSymbol| token))
-                                (concatenate 'string
-                                             (underscore pack) "'" (underscore id)))
-                            id)))
-    (t                  (|tokenSymbol| token)))
-   nil))
-
-
-(defconstant Keywords 
-  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist| |try|
-    |has| |with| |add| |case| |in| |by| |pretend| |mod| |finally|
-    |exquo| |div| |quo| |else| |rem| |then| |suchthat| |catch| |throw|
-    |if| |yield| |iterate| |break| |from| |exit| |leave| |return|
-    |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
-
-"Alphabetic literal strings occurring in the New Meta code constitute
-keywords.   These are recognized specifically by the AnyId production,
-GET-BOOT-IDENTIFIER will recognize keywords but flag them
-as keywords.")
-
-
-
-(defun escape-keywords (pname id)
-  (if (member id keywords)
-      (concatenate 'string "_" pname)
-    pname))
-
-(defun underscore (string)
-  (if (every #'alpha-char-p string) string
-    (let* ((size (length string))
-           (out-string (make-array (* 2 size)
-                                   :element-type 'character
-                                   :fill-pointer 0))
-           next-char)
-      (dotimes (i size)
-               (setq next-char (char string i))
-               (if (not (alpha-char-p next-char))
-                   (vector-push #\_ out-string))
-               (vector-push next-char out-string))
-      out-string)))
-
-(defun Unget-Tokens ()
-  (case |$validTokens|
-    (0 t)
-    (1 (let* ((cursym (quote-if-string |$currentToken|))
-              (curline (line-current-segment current-line))
-              (revised-line (strconc cursym curline (copy-seq " "))))
-         (line-new-line revised-line current-line (line-number current-line))
-         (setq |$nonblank| (|tokenNonblank?| |$currentToken|))
-         (setq |$validTokens| 0)))
-    (2 (let* ((cursym (quote-if-string |$currentToken|))
-              (nextsym (quote-if-string |$nextToken|))
-              (curline (line-current-segment current-line))
-              (revised-line
-                (strconc (if (|tokenNonblank?| |$currentToken|) "" " ")
-                         cursym
-                         (if (|tokenNonblank?| |$nextToken|) "" " ")
-                         nextsym curline " ")))
-         (setq |$nonblank| (|tokenNonblank?| |$currentToken|))
-         (line-new-line revised-line current-line (line-number current-line))
-         (setq |$validTokens| 0)))
-    (t (error "How many tokens do you think you have?"))))
  
 (defun-parse-token STRING)
 (defun-parse-token BSTRING)
@@ -425,131 +231,27 @@ as keywords.")
     (when (and id (member id |$OperatorFunctionNames|))
       (|pushReduction| '|PARSE-OperatorFunctionName| id)
       (action (|advanceToken|)))))
-
-; Meta tokens fall into the following categories:
-;
-;               Number
-;               Identifier
-;               Dollar-sign
-;               Special character
-;
-; Special characters are represented as characters, numbers as numbers, and
-; identifiers as strings.  The reason identifiers are represented as strings is
-; that the full print-name of the intern of a string depends on the package you
-; are currently executing in; this can lead to very confusing results!
- 
-(defun get-META-token (token)
-  (prog nil
-   loop (if (not (skip-blanks)) (return nil))
-        (case (token-lookahead-type (current-char))
-          (id           (return (get-identifier-token token)))
-          (num          (return (get-number-token token)))
-          (string       (return (get-string-token token)))
-          (bstring      (return (get-bstring-token token)))
-;         (dollar       (return (get-identifier-token token)))
-          (special-char (return (get-special-token token)))
-          (eof          (return nil)))))
- 
-(defun skip-blanks ()
-  (loop (let ((cc (current-char)))
-          (if (not cc) (return nil))
-          (if (eq (token-lookahead-type cc) 'white)
-              (if (not (advance-char)) (return nil))
-              (return t)))))
- 
-(defparameter Escape-Character #\\ "Superquoting character.")
- 
-(defun token-lookahead-type (char)
-  "Predicts the kind of token to follow, based on the given initial character."
-  (cond ((not char)                                             'eof)
-        ((or (char= char Escape-Character) (alpha-char-p char)) 'id)
-        ((digitp char)                                          'num)
-        ((char= char #\')                                       'string)
-        ((char= char #\[)                                       'bstring)
-;       ((char= char #\$) (advance-char)                        'dollar)
-        ((member char '(#\Space #\Tab #\Return) :test #'char=)  'white)
-        (t                                                      'special-char)))
  
 (defun make-adjustable-string (n)
   (make-array (list n) :element-type 'character :adjustable t))
-
-(defun get-identifier-token (token)
-  "Take an identifier off the input stream."
-  (prog ((buf (make-adjustable-string 0)))
-   id (let ((cur-char (current-char)))
-         (cond ((equal cur-char Escape-Character)
-                (if (not (advance-char)) (go bye))
-                (suffix (current-char) buf)
-                (if (not (advance-char)) (go bye))
-                (go id))
-               ((or (alpha-char-p cur-char)
-                    (char= cur-char #\-)
-                    (digitp cur-char)
-                    (char= cur-char #\_))
-                (suffix (current-char) buf)
-                (if (not (advance-char)) (go bye))
-                (go id))))
-  bye (return (|tokenInstall| (intern buf) 'identifier token))))
- 
-(defun get-string-token (token)
-  "With 'ABC' on IN-STREAM, extracts and stacks String 'ABC'."
-  (let ((buf (make-adjustable-string 0)))
-    (if (char= (current-char) #\')
-        (progn (advance-char)
-               (loop (case (current-char)
-                       (#\' (advance-char)
-                        (return (|tokenInstall| buf 'string token)))
-                       (#\\ (advance-char)
-                        (suffix (current-char) buf)
-                        (advance-char))
-                       (#\Return
-                        (moan "String should fit on one line!")
-                        (advance-char)
-                        (spad_syntax_error)
-                        (return nil))
-                       (t (suffix (current-char) buf)
-                          (advance-char))))))))
- 
-(defun get-bstring-token (token)
-  "With ABC]* on in-stream, extracts and stacks string ABC."
-  (let ((buf (make-adjustable-string 0)))
-    (if (char= (current-char) #\[)
-        (progn (advance-char)
-               (loop (case (current-char)
-                       (#\] (if (char= (next-char) #\*)
-                                (progn (advance-char)
-                                       (advance-char)
-                                       (return (|tokenInstall| buf 'bstring token)))
-                                (progn (suffix (current-char) buf)
-                                       (advance-char))))
-                       (#\\ (advance-char)
-                        (suffix (current-char) buf)
-                        (advance-char))
-                       (#\Return
-                        (moan "String should fit on one line!")
-                        (advance-char)
-                        (spad_syntax_error)
-                        (return nil))
-                       (t (suffix (current-char) buf)
-                          (advance-char))))))))
  
 (defun get-special-token (token)
   "Take a special character off the input stream.  We let the type name of each
 special character be the atom whose print name is the character itself."
-  (let ((symbol (current-char)))
-    (advance-char)
+  (let ((symbol (|currentChar|)))
+    (|advanceChar!|)
     (|tokenInstall| symbol 'special-char token)))
  
 (defun get-number-token (token)
   "Take a number off the input stream."
   (prog ((buf (make-adjustable-string 0)))
 	nu1 
-	(suffix (current-char) buf)                     ; Integer part
-        (let ((next-chr (next-char)))
+	(suffix (|currentChar|) buf)                     ; Integer part
+        (let ((next-chr (|nextChar|)))
           (cond ((digitp next-chr)
-                 (advance-char)
+                 (|advanceChar!|)
                  (go nu1))))
-        (advance-char) 
+        (|advanceChar!|) 
 	(return (|tokenInstall| (read-from-string buf)
 			       'number token
 			       (size buf) ;used to keep track of digit count

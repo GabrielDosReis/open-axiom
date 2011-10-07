@@ -58,7 +58,7 @@
   (setq SPADERRORSTREAM |$OutputStream|)
   (setq File-Closed nil)
   (Next-Lines-Clear)
-  (setq Boot-Line-Stack nil)
+  (setq |$lineStack| nil)
   (ioclear))
 
 (defmacro test (x &rest y)
@@ -118,8 +118,8 @@
       (loop
        (if (or *eof* file-closed) (return nil))
        (catch 'SPAD_READER
-         (if (setq Boot-Line-Stack (PREPARSE in-stream))
-             (let ((LINE (cdar Boot-Line-Stack)))
+         (if (setq |$lineStack| (PREPARSE in-stream))
+             (let ((LINE (cdar |$lineStack|)))
                (declare (special LINE))
                (|PARSE-NewExpr|)
                (let ((parseout (|popStack1|)) )
@@ -152,25 +152,6 @@
       (+ (ELT $SPAD_ERRORS 0) (ELT $SPAD_ERRORS 1) (ELT $SPAD_ERRORS 2))))
 
 
-;  *** 2. BOOT Line Handling ***
-
-; See the file PREPARSE.LISP for the hard parts of BOOT line processing.
-
-(defun next-BOOT-line (&optional (in-stream t))
-
-  "Get next line, trimming trailing blanks and trailing comments.
-One trailing blank is added to a non-blank line to ease between-line
-processing for Next Token (i.e., blank takes place of return).  Returns T
-if it gets a non-blank line, and NIL at end of stream."
-
-  (if Boot-Line-Stack
-      (let ((Line-Number (caar Boot-Line-Stack))
-            (Line-Buffer (suffix #\Space (cdar Boot-Line-Stack))))
-        (pop Boot-Line-Stack)
-        (Line-New-Line Line-Buffer Current-Line Line-Number)
-        (setq |$currentLine| (setq LINE Line-Buffer))
-        Line-Buffer)))
-
 ;  *** 3. BOOT Token Handling ***
 
 (defun get-BOOT-token (token)
@@ -181,10 +162,10 @@ Otherwise, get a .. identifier."
 
   (if (not (boot-skip-blanks))
       nil
-      (let ((token-type (boot-token-lookahead-type (current-char))))
+      (let ((token-type (boot-token-lookahead-type (|currentChar|))))
         (case token-type
           (eof                  (|tokenInstall| nil '*eof token |$nonblank|))
-          (escape               (advance-char)
+          (escape               (|advanceChar!|)
                                 (get-boot-identifier-token token t))
           (argument-designator  (get-argument-designator-token token))
           (id                   (get-boot-identifier-token token))
@@ -195,20 +176,20 @@ Otherwise, get a .. identifier."
 
 (defun boot-skip-blanks ()
   (setq |$nonblank| t)
-  (loop (let ((cc (current-char)))
+  (loop (let ((cc (|currentChar|)))
           (if (not cc) (return nil))
           (if (eq (boot-token-lookahead-type cc) 'white)
-              (progn (setq |$nonblank| nil) (if (not (advance-char)) (return nil)))
+              (progn (setq |$nonblank| nil) (if (not (|advanceChar!|)) (return nil)))
               (return t)))))
 
 (defun boot-token-lookahead-type (char)
   "Predicts the kind of token to follow, based on the given initial character."
   (cond ((not char)                                        'eof)
         ((char= char #\_)                                  'escape)
-        ((and (char= char #\#) (digitp (next-char)))       'argument-designator)
+        ((and (char= char #\#) (digitp (|nextChar|)))       'argument-designator)
         ((digitp char)                                     'num)
         ((and (char= char #\$) $boot
-              (alpha-char-p (next-char)))                  'id)
+              (alpha-char-p (|nextChar|)))                  'id)
         ((or (char= char #\%) (char= char #\?)
              (char= char #\!) (alpha-char-p char))         'id)
         ((char= char #\")                                  'string)
@@ -219,7 +200,7 @@ Otherwise, get a .. identifier."
         (t                                                 'special-char)))
 
 (defun get-argument-designator-token (token)
-  (advance-char)
+  (|advanceChar!|)
   (get-number-token token)
   (|tokenInstall| (intern (strconc "#" (format nil "~D" (|tokenSymbol| token))))
                  'argument-designator token |$nonblank|))
@@ -231,26 +212,26 @@ or an alphabetic, followed by any number of escaped characters, digits,
 or the chracters ?, !, ' or %"
   (prog ((buf (make-adjustable-string 0))
          (default-package NIL))
-      (suffix (current-char) buf)
-      (advance-char)
-   id (let ((cur-char (current-char)))
+      (suffix (|currentChar|) buf)
+      (|advanceChar!|)
+   id (let ((cur-char (|currentChar|)))
          (cond ((char= cur-char #\_)
-                (if (not (advance-char)) (go bye))
-                (suffix (current-char) buf)
+                (if (not (|advanceChar!|)) (go bye))
+                (suffix (|currentChar|) buf)
                 (setq escaped? t)
-                (if (not (advance-char)) (go bye))
+                (if (not (|advanceChar!|)) (go bye))
                 (go id))
                ((and (null default-package)
                      (char= cur-char #\'))
                 (setq default-package buf)
                 (setq buf (make-adjustable-string 0))
-                (if (not (advance-char)) (go bye))
+                (if (not (|advanceChar!|)) (go bye))
                 (go id))
                ((or (alpha-char-p cur-char)
                     (digitp cur-char)
                     (member cur-char '(#\% #\' #\? #\!) :test #'char=))
-                (suffix (current-char) buf)
-                (if (not (advance-char)) (go bye))
+                (suffix (|currentChar|) buf)
+                (if (not (|advanceChar!|)) (go bye))
                 (go id))))
   bye (if (and (stringp default-package)
                (or (not (find-package default-package))  ;; not a package name
@@ -261,20 +242,20 @@ or the chracters ?, !, ' or %"
       (return (|tokenInstall|
                 buf
                 (if (and (not escaped?)
-                         (member buf Keywords :test #'eq))
+                         (member buf |Keywords| :test #'eq))
                     'keyword 'identifier)
                 token
                 |$nonblank|))))
 
 (defun get-gliph-token (token gliph-list)
   (prog ((buf (make-adjustable-string 0)))
-        (suffix (current-char) buf)
-        (advance-char)
-   loop (setq gliph-list (assoc (intern (string (current-char))) gliph-list))
+        (suffix (|currentChar|) buf)
+        (|advanceChar!|)
+   loop (setq gliph-list (assoc (intern (string (|currentChar|))) gliph-list))
         (if gliph-list
-            (progn (suffix (current-char) buf)
+            (progn (suffix (|currentChar|) buf)
                    (pop gliph-list)
-                   (advance-char)
+                   (|advanceChar!|)
                    (go loop))
             (let ((new-token (intern buf)))
               (return (|tokenInstall| (or (get new-token 'renametok) new-token)
@@ -283,17 +264,17 @@ or the chracters ?, !, ' or %"
 (defun get-SPADSTRING-token (token)
    "With TOK=\" and ABC\" on IN-STREAM, extracts and stacks string ABC"
   (PROG ((BUF (make-adjustable-string 0)))
-        (if (char/= (current-char) #\") (RETURN NIL) (advance-char))
+        (if (char/= (|currentChar|) #\") (RETURN NIL) (|advanceChar!|))
         (loop
-         (if (char= (current-char) #\") (return nil))
-         (SUFFIX (if (char= (current-char) #\_)
-                     (advance-char)
-                   (current-char))
+         (if (char= (|currentChar|) #\") (return nil))
+         (SUFFIX (if (char= (|currentChar|) #\_)
+                     (|advanceChar!|)
+                   (|currentChar|))
                  BUF)
-         (if (null  (advance-char)) ;;end of line
+         (if (null  (|advanceChar!|)) ;;end of line
              (PROGN (|sayBrightly| "Close quote inserted") (RETURN nil)))
          )
-        (advance-char)
+        (|advanceChar!|)
         (return (|tokenInstall| (copy-seq buf) ;should make a simple string
                                'spadstring token))))
 
@@ -307,10 +288,10 @@ or the chracters ?, !, ' or %"
 ;; value.
 (defun get-decimal-number-token (buf)
   (tagbody lp 
-	   (suffix (current-char) buf)
-	   (let ((next-chr (next-char)))
+	   (suffix (|currentChar|) buf)
+	   (let ((next-chr (|nextChar|)))
 	     (cond ((digitp next-chr)
-		    (advance-char)
+		    (|advanceChar!|)
 		    (go lp)))))
   (parse-integer buf))
 
@@ -322,13 +303,13 @@ or the chracters ?, !, ' or %"
     (spad_syntax_error))
   (let ((mark (1+ (size buf))))
     (tagbody lp
-	     (suffix (current-char) buf)
-	     (let* ((nxt (next-char))
+	     (suffix (|currentChar|) buf)
+	     (let* ((nxt (|nextChar|))
 		    (dig (|rdigit?| nxt)))
 	       (when dig
 		 (unless (< dig r)
 		   (spad_syntax_error))
-		 (advance-char)
+		 (|advanceChar!|)
 		 (go lp))))
     (parse-integer buf :start mark :radix r)))
 
@@ -341,10 +322,10 @@ or the chracters ?, !, ' or %"
 (defun get-spad-integer-token (token)
   (let* ((buf (make-adjustable-string 0))
 	 (val (get-decimal-number-token buf)))
-    (advance-char)
-    (when (is-radix-char (current-char))
+    (|advanceChar!|)
+    (when (is-radix-char (|currentChar|))
       (setq val (get-integer-in-radix buf val))
-      (advance-char))
+      (|advanceChar!|))
     (|tokenInstall| val 'number token (size buf))))
 
 ; **** 4. BOOT token parsing actions

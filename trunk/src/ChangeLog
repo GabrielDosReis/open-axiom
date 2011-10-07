@@ -1,4 +1,19 @@
-2011-10-05  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot: Include sys-macros.
+	Add more tokenizer functions.
+	* interp/fnewmeta.lisp: Use them.
+	* interp/parsing.lisp: Likewise.
+	* interp/bootlex.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	(NEXT-BOOT-LINE): Remove.
+	* interp/metalex.lisp: Remove old lexing routines.
+	* interp/Makefile.in (lexing.$(FASLEXT)): Adjust dependency.
+	* boot/tokens.boot: newString is no longer builtin library function.
+	(shoeDictCons): Use makeString not newString.
+	* lisp/core.lisp.in (listToString): Fix typo.
+
+2011-10-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (eof?): New.
 	(listToString): Likewise.
