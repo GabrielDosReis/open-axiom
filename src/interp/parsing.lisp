@@ -178,24 +178,24 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun Match-String (x)
   "Returns length of X if X matches initial segment of inputstream."
-  (unget-tokens)                        ; So we don't get out of synch with token stream
-  (skip-blanks)
-  (if (and (not (Line-Past-End-P Current-Line)) (Current-Char) )
+  (|ungetTokens|)                        ; So we don't get out of synch with token stream
+  (boot-skip-blanks)
+  (if (and (not (|linePastEnd?| |$spadLine|)) (|currentChar|) )
       (initial-substring-p x
-           (subseq (Line-Buffer Current-Line) (Line-Current-Index Current-Line)))))
+           (subseq (|lineBuffer| |$spadLine|) (|lineCurrentIndex| |$spadLine|)))))
 
 (defun Match-Advance-String (x)
   "Same as MATCH-STRING except if successful, advance inputstream past X."
   (let ((y (if (>= (length (string x))
-                   (length (string (quote-if-string (|currentToken|)))))
+                   (length (string (|quoteIfString| (|currentToken|)))))
                (Match-String x)
                nil))) ; must match at least the current token
-    (if y (progn (incf (Line-Current-Index Current-Line) y)
-                 (if (not (Line-Past-End-P Current-Line))
-                     (setf (Line-Current-Char Current-Line)
-                           (elt (Line-Buffer Current-Line)
-                                (Line-Current-Index Current-Line)))
-                     (setf (Line-Current-Char Current-Line) #\Space))
+    (if y (progn (incf (|lineCurrentIndex| |$spadLine|) y)
+                 (if (not (|linePastEnd?| |$spadLine|))
+                     (setf (|lineCurrentChar| |$spadLine|)
+                           (elt (|lineBuffer| |$spadLine|)
+                                (|lineCurrentIndex| |$spadLine|)))
+                     (setf (|lineCurrentChar| |$spadLine|) #\Space))
                  (setq |$priorToken|
                        (|makeToken| (intern (string x)) 'identifier |$nonblank|))
                  t))))
@@ -236,7 +236,7 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun conversation1 (firstfun procfun)
   (prog nil
-     top(cond ((not (Current-Char)) (return nil))
+     top(cond ((not (|currentChar|)) (return nil))
               ((and (|currentToken|) (|nextToken|)) (go top))
               ((compfin) (return 't))
               ((and (funcall firstfun)
@@ -247,7 +247,7 @@ the stack, then stack a NIL. Return the value of prod."
         (go top)))
 
 (defun termchr ()  "Is CHR a terminating character?"
-  (position (current-char) " *,;<>()[]/\\"))
+  (position (|currentChar|) " *,;<>()[]/\\"))
 
 (defun compfin () (or (match-string ")fin") (match-string ".FIN")))
 
@@ -414,9 +414,9 @@ the stack, then stack a NIL. Return the value of prod."
          (trblanks (* 2 /depth))          (setq /depth (+ 1 /depth))
          (princ (stringimage /depth))  (princ "<")
          (princ nam*)              (trargprint argl*)   (princ "/")
-         (princ "chr= ")           (prin1 (Current-Char))
+         (princ "chr= ")           (prin1 (|currentChar|))
          (princ "/tok= ")          (prin1 (setq tok (current-symbol)))
-         (princ "/col= ")          (prin1 (line-current-index current-line))
+         (princ "/col= ")          (prin1 (|lineCurrentIndex| |$spadLine|))
  ;;      (princ "/icol= ")         (prin1 initcolumn)
          (cond ( (not nonblank) (go a1)))     (princ "/nblnk= T")
      a1  ;;(cond (ok (go b1)))               (princ "/ok= NIL")
@@ -430,9 +430,9 @@ the stack, then stack a NIL. Return the value of prod."
          (terpri)
          (trblanks (* 2 /depth))          (princ (stringimage (\1+ /depth)))
          (princ ">")                       (princ nam*)
-         (princ "/chr= ")                  (prin1 (Current-Char))
+         (princ "/chr= ")                  (prin1 (|currentChar|))
          (princ "/tok= ")                  (prin1 (setq tok (current-symbol)))
-         (princ "/col= ")            (prin1 (line-current-index current-line))
+         (princ "/col= ")            (prin1 (|lineCurrentIndex| |$spadLine|))
          (if (not nonblank) (go a2))          (princ "/nblnk= ")
          (princ (if nonblank "T" "NIL"))
      a2  ;;(if ok (go b2))                   (princ "/ok= ")          (prin1 ok)
@@ -504,7 +504,7 @@ the stack, then stack a NIL. Return the value of prod."
   ;(IOStreams-clear in out)
   (input-clear)
   (current-line-clear)
-  (token-stack-clear)
+  (|tokenStackClear!|)
   (|reduceStackClear|)
   (if $SPAD (next-lines-clear))
   nil)

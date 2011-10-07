@@ -158,9 +158,9 @@
 (defun READLISP (UPPER_CASE_FG)
   (let (v expr val )
     (setq EXPR (READ-FROM-STRING
-                  (IF UPPER_CASE_FG (string-upcase (line-buffer CURRENT-LINE))
-                      (line-buffer CURRENT-LINE))
-                  t nil :start (Line-CURRENT-INDEX CURRENT-LINE)))
+                  (IF UPPER_CASE_FG (string-upcase (line-buffer |$spadLine|))
+                      (line-buffer |$spadLine|))
+                  t nil :start (Line-CURRENT-INDEX |$spadLine|)))
     (VMPRINT EXPR)
     (setq VAL ((LAMBDA (|$InteractiveMode|)  (EVAL EXPR)) NIL))
     (FORMAT t "~&VALUE = ~S" VAL)

@@ -1384,8 +1384,8 @@
 
 (defun |listToString| (l)
   (let ((s (|makeString| (list-length l))))
-    (do ((i 0 (1+ i))) 
-	(null l)
+    (do ((i 0 (1+ i)))
+	((null l))
 	(setf (schar s i) (car l))
 	(setq l (cdr l)))
     s))

@@ -174,7 +174,7 @@
                    (CONS 'CATEGORY
                          (CONS (|popStack2|)
                                (APPEND (|popStack1|) NIL)))))
-          (AND (ACTION (SETQ G1 (LINE-NUMBER CURRENT-LINE)))
+          (AND (ACTION (SETQ G1 (|lineNumber| |$spadLine|)))
                (OR (|PARSE-Application|)
 		   (|PARSE-OperatorFunctionName|))
                (MUST (OR (AND (MATCH-ADVANCE-STRING ":")
@@ -299,10 +299,10 @@
   (PROG (G1)
     (RETURN
       (AND (EQ (|currentSymbol|) '$)
-           (OR (ALPHA-CHAR-P (CURRENT-CHAR))
-               (CHAR-EQ (CURRENT-CHAR) "$")
-               (CHAR-EQ (CURRENT-CHAR) "%")
-               (CHAR-EQ (CURRENT-CHAR) "("))
+           (OR (ALPHA-CHAR-P (|currentChar|))
+               (CHAR-EQ (|currentChar|) "$")
+               (CHAR-EQ (|currentChar|) "%")
+               (CHAR-EQ (|currentChar|) "("))
            (ACTION (SETQ G1 (|copyToken| |$priorToken|)))
            (|PARSE-Qualification|) (ACTION (SETQ |$priorToken| G1)))))) 
 
@@ -577,7 +577,7 @@
 
 (DEFUN |PARSE-Selector| ()
   (OR (AND |$nonblank| (EQ (|currentSymbol|) '|.|)
-           (CHAR-NE (CURRENT-CHAR) '| |) (MATCH-ADVANCE-STRING ".")
+           (CHAR-NE (|currentChar|) '| |) (MATCH-ADVANCE-STRING ".")
            (MUST (|PARSE-PrimaryNoFloat|))
            (MUST (|pushReduction| '|PARSE-Selector|
                      (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))
@@ -621,21 +621,21 @@
 
 
 (DEFUN |PARSE-FloatBase| ()
-  (OR (AND (INTEGERP (|currentSymbol|)) (CHAR-EQ (CURRENT-CHAR) ".")
-           (CHAR-NE (NEXT-CHAR) ".") (|PARSE-IntegerTok|)
+  (OR (AND (INTEGERP (|currentSymbol|)) (CHAR-EQ (|currentChar|) ".")
+           (CHAR-NE (|nextChar|) ".") (|PARSE-IntegerTok|)
            (MUST (|PARSE-FloatBasePart|)))
       (AND (INTEGERP (|currentSymbol|))
-           (CHAR-EQ (CHAR-UPCASE (CURRENT-CHAR)) 'E)
+           (CHAR-EQ (CHAR-UPCASE (|currentChar|)) 'E)
            (|PARSE-IntegerTok|) (|pushReduction| '|PARSE-FloatBase| 0)
            (|pushReduction| '|PARSE-FloatBase| 0))
-      (AND (DIGITP (CURRENT-CHAR)) (EQ (|currentSymbol|) '|.|)
+      (AND (DIGITP (|currentChar|)) (EQ (|currentSymbol|) '|.|)
            (|pushReduction| '|PARSE-FloatBase| 0)
            (|PARSE-FloatBasePart|)))) 
 
 
 (DEFUN |PARSE-FloatBasePart| ()
   (AND (MATCH-ADVANCE-STRING ".")
-       (MUST (OR (AND (DIGITP (CURRENT-CHAR))
+       (MUST (OR (AND (DIGITP (|currentChar|))
                       (|pushReduction| '|PARSE-FloatBasePart|
                           (|tokenNonblank?| (|currentToken|)))
                       (|PARSE-IntegerTok|))
@@ -647,7 +647,7 @@
   (PROG (G1)
     (RETURN
       (OR (AND (MEMBER (|currentSymbol|) '(E |e|))
-               (FIND (CURRENT-CHAR) "+-") (ACTION (|advanceToken|))
+               (FIND (|currentChar|) "+-") (ACTION (|advanceToken|))
                (MUST (OR (|PARSE-IntegerTok|)
                          (AND (MATCH-ADVANCE-STRING "+")
                               (MUST (|PARSE-IntegerTok|)))

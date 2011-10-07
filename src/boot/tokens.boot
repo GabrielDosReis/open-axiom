@@ -152,7 +152,7 @@ shoeDictCons()==
   d :=
     a := newVector 256
     b := newVector 1
-    b.0 := newString 0
+    b.0 := makeString 0
     for i in 0..255 repeat
       a.i := b
     a
@@ -277,7 +277,6 @@ for i in [ _
   ["makeSymbol", "INTERN"] , _
   ["maxIndex", "MAXINDEX"] , _
   ["mkpf",        "MKPF"]  , _
-  ["newString", "MAKE-STRING"], _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _

@@ -35,10 +35,110 @@
 --%
 
 import sys_-utility
+import sys_-macros
 
 namespace BOOT
 
 module lexing
+
+--%
+--% Line abstract datatype
+--%   structure Line ==
+--%     Record(buffer: String, curChar: Character,
+--%       curIdx: SingleInteger, lstIdx: SingleInteger, lineNo: SingleInteger)
+--%
+makeLine(buf == makeString 0, ch == charByName "Return",
+          curIdx == 1, lstIdx == 0, no == 0) ==
+  [buf,ch,curIdx,lstIdx,no]
+
+macro lineBuffer l ==
+  first l
+
+macro lineCurrentChar l ==
+  second l
+
+macro lineCurrentIndex l ==
+  third l
+
+macro lineLastIndex l ==
+  fourth l
+
+macro lineNumber l ==
+  fifth l
+
+lineClear! l ==
+  lineBuffer(l) := makeString 0
+  lineCurrentChar(l) := charByName "Return"
+  lineCurrentIndex(l) := 1
+  lineLastIndex(l) := 0
+  lineNumber(l) := 0
+
+++ Sets string to be the next line stored in line
+lineNewLine!(s,l,no == nil) ==
+  sz := #s
+  lineLastIndex(l) := sz - 1
+  lineCurrentIndex(l) := 0
+  lineCurrentChar(l) := sz > 0 and s.0 or charByName '"Return"
+  lineBuffer(l) := s
+  lineNumber(l) := no or (lineNumber l + 1)
+
+++ Tests if line is empty or positioned past the last character
+lineAtEnd? l ==
+  lineCurrentIndex l >= lineLastIndex l
+
+++ Tests if line is empty or positioned past the last character
+linePastEnd? l ==
+  lineCurrentIndex l > lineLastIndex l
+
+++ Buffer from current index to last index
+lineCurrentSegment l ==
+  lineAtEnd? l => makeString 0
+  subSequence(lineBuffer l,lineCurrentIndex l,lineLastIndex l)
+
+lineNextChar l ==
+  lineBuffer(l).(1 + lineCurrentIndex l)
+
+lineAdvanceChar! l ==
+  n := lineCurrentIndex l + 1
+  lineCurrentIndex(l) := n
+  lineCurrentChar(l) := lineBuffer(l).n
+
+++ Current input line
+$spadLine := makeLine()
+
+++ List of lines returned from PREPARSE
+$lineStack := nil
+
+nextLine st ==
+  $lineStack = nil => nil
+  [[n,:l],:$lineStack] := $lineStack
+  l := strconc(l,'" ")
+  lineNewLine!(l,$spadLine,n)
+  SETQ(LINE,l)
+  $currentLine := l
+
+++ Current input stream.  
+IN_-STREAM := 'T
+  
+++ Advances IN-STREAM, invoking Next Line if necessary
+advanceChar!() ==
+  repeat
+    not lineAtEnd? $spadLine => return lineAdvanceChar! $spadLine
+    nextLine IN_-STREAM => return currentChar()
+    return nil
+
+--%
+
+++ Returns the current character of the line, initially blank for
+++ an unread line
+currentChar() ==
+  linePastEnd? $spadLine => charByName "Return"
+  lineCurrentChar $spadLine
+
+nextChar() ==
+  lineAtEnd? $spadLine => charByName '"Return"
+  lineNextChar $spadLine
+  
 
 --%
 --% Token abstract datatype.
@@ -137,6 +237,67 @@ makeSymbolOf tok ==
 
 currentSymbol() ==
   makeSymbolOf currentToken()
+
+tokenStackClear!() ==
+  $validTokens := 0
+  tokenInstall(nil,nil,$currentToken,nil)
+  tokenInstall(nil,nil,$nextToken,nil)
+  tokenInstall(nil,nil,$priorToken,nil)
+
+--%
+Keywords == [
+ "or", "and", "isnt", "is", "when", "where", "forall", "exist", "try",
+  "has", "with", "add", "case", "in", "by", "pretend", "mod", "finally",
+   "exquo", "div", "quo", "else", "rem", "then", "suchthat", "catch", "throw",
+    "if", "iterate", "break", "from", "exit", "leave", "return",
+     "not", "repeat", "until", "while", "for", "import", "inline" ]
+
+escapeKeywords(nm,id) ==
+  symbolMember?(id,Keywords) => strconc('"__",nm)
+  nm
+
+underscore s ==
+  n := #s - 1
+  and/[alphabetic? stringChar(s,i) for i in 0..n] => s
+  buf := nil
+  for i in 0..n repeat
+    c := stringChar(s,i)
+    if not alphabetic? c then
+      buf := [char "__",:buf]
+    buf := [c,:buf]
+  listToString reverse! buf
+
+quoteIfString tok ==
+  tok = nil => nil
+  tt := tokenType tok
+  tt is 'SPADSTRING => strconc('"_"",underscore tokenSymbol tok,'"_"")
+  tt is 'NUMBER => formatToString('"~v,'0D",tokenNonblank? tok,tokenSymbol tok)
+  tt is 'SPECIAL_-CHAR => charString tokenSymbol tok
+  tt is 'IDENTIFIER =>
+    escapeKeywords(symbolName tokenSymbol tok,tokenSymbol tok)
+  tokenSymbol tok
+
+ungetTokens() ==
+  $validTokens = 0 => true
+  $validTokens = 1 =>
+    cursym := quoteIfString $currentToken
+    curline := lineCurrentSegment $spadLine
+    revisedline := strconc(cursym,curline,'" ")
+    lineNewLine!(revisedline,$spadLine,lineNumber $spadLine)
+    $nonblank := tokenNonblank? $currentToken
+    $validTokens := 0
+  $validTokens = 2 =>
+    cursym := quoteIfString $currentToken
+    nextsym := quoteIfString $nextToken
+    curline := lineCurrentSegment $spadLine
+    revisedline := strconc((tokenNonblank? $currentToken => '""; '" "),
+      cursym,(tokenNonblank? $nextToken => '""; '" "),nextsym,curline,'" ")
+    $nonblank := tokenNonblank? $currentToken
+    lineNewLine!(revisedline,$spadLine,lineNumber $spadLine)
+    $validTokens := 0
+  coreError '"How many tokens do you think you have?"
+
+
 
 --%
 --% Stack abstract datatype.
