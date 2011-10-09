@@ -1,3 +1,11 @@
+2011-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot: New tokenizer functions.
+	* interp/parsing.lisp: Use them.
+	* interp/metalex.lisp: Likewise.
+	(GET-SPECIAL-TOKEN): Remove.
+	* interp/bootlex.lisp: Likewise.  Remove old tokenizers,
+
 2011-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot: Include sys-macros.
