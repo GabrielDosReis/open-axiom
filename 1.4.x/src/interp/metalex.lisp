@@ -235,13 +235,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
 (defun make-adjustable-string (n)
   (make-array (list n) :element-type 'character :adjustable t))
  
-(defun get-special-token (token)
-  "Take a special character off the input stream.  We let the type name of each
-special character be the atom whose print name is the character itself."
-  (let ((symbol (|currentChar|)))
-    (|advanceChar!|)
-    (|tokenInstall| symbol 'special-char token)))
- 
 (defun get-number-token (token)
   "Take a number off the input stream."
   (prog ((buf (make-adjustable-string 0)))

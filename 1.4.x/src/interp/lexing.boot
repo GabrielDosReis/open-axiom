@@ -244,13 +244,87 @@ tokenStackClear!() ==
   tokenInstall(nil,nil,$nextToken,nil)
   tokenInstall(nil,nil,$priorToken,nil)
 
---%
+++ Predicts the kind of token to follow, based on the given initial character
+tokenLookaheadType c ==
+  c = nil => 'EOF
+  c = char "__" => 'ESCAPE
+  c = char "#" and digit? nextChar() => 'ARGUMENT_-DESIGNATOR
+  digit? c => 'NUM
+  c = char "%" or c = char "?" or c = char "?" or alphabetic? c => 'ID
+  c = char "_"" => 'STRING
+  c = char " " or c = charByName "Tab" or c = charByName "Return" => 'WHITE
+  p := property(makeSymbol charString c,'GLIPH) => p
+  'SPECIAL_-CHAR
+
+skipBlankChars() ==
+  $nonblank := true
+  repeat
+    c := currentChar()
+    c = nil => return false
+    tokenLookaheadType c = 'WHITE =>
+      $nonblank := false
+      advanceChar!() = nil => return false
+    return true
+
+getSpadString tok ==
+  buf := nil
+  currentChar() ~= char "_"" => nil
+  advanceChar!()
+  repeat
+    currentChar() = char "_"" => leave nil
+    buf := [(currentChar() = char "__" => advanceChar!(); currentChar()),:buf]
+    advanceChar!() = nil =>
+      sayBrightly '"close quote inserted"
+      leave nil
+  advanceChar!()
+  tokenInstall(listToString reverse! buf,'SPADSTRING,tok)
+
+++ Take a special character off the input stream.  We let the type name
+++ of each special character be the atom whose print name is the
+++ character itself
+getSpecial tok ==
+  c := currentChar()
+  advanceChar!()
+  tokenInstall(c,'SPECIAL_-CHAR,tok)
+
+getGliph(tok,gliphs) ==
+  buf := [currentChar()]
+  advanceChar!()
+  repeat
+    gliphs := symbolAssoc(makeSymbol charString currentChar(),gliphs) =>
+      buf := [currentChar(),:buf]
+      gliphs := rest gliphs
+      advanceChar!()
+    s := makeSymbol listToString reverse! buf
+    return tokenInstall(property(s,'RENAMETOK) or s,'GLIPH,tok,$nonblank)
+
 Keywords == [
  "or", "and", "isnt", "is", "when", "where", "forall", "exist", "try",
   "has", "with", "add", "case", "in", "by", "pretend", "mod", "finally",
    "exquo", "div", "quo", "else", "rem", "then", "suchthat", "catch", "throw",
     "if", "iterate", "break", "from", "exit", "leave", "return",
      "not", "repeat", "until", "while", "for", "import", "inline" ]
+
+getIdentifier(tok,esc?) ==
+  buf := [currentChar()]
+  advanceChar!()
+  repeat 
+    c := currentChar()
+    c = char "__" =>
+      advanceChar!() = nil => leave nil
+      buf := [currentChar(),:buf]
+      esc? := true
+      advanceChar!() = nil => leave nil
+    alphabetic? c or digit? c
+      or scalarMember?(c,[char "%",char "'",char "?",char "!"]) =>
+        buf := [c,:buf]
+        advanceChar!() = nil => leave nil
+    leave nil
+  s := makeSymbol listToString reverse! buf
+  tt :=
+    not esc? and symbolMember?(s,Keywords) => 'KEYWORD
+    'IDENTIFIER
+  tokenInstall(s,tt,tok,$nonblank)
 
 escapeKeywords(nm,id) ==
   symbolMember?(id,Keywords) => strconc('"__",nm)

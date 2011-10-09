@@ -160,44 +160,19 @@
 If you have a . followed by an integer, get a floating point number.
 Otherwise, get a .. identifier."
 
-  (if (not (boot-skip-blanks))
+  (if (not (|skipBlankChars|))
       nil
-      (let ((token-type (boot-token-lookahead-type (|currentChar|))))
+      (let ((token-type (|tokenLookaheadType| (|currentChar|))))
         (case token-type
           (eof                  (|tokenInstall| nil '*eof token |$nonblank|))
           (escape               (|advanceChar!|)
-                                (get-boot-identifier-token token t))
+                                (|getIdentifier| token t))
           (argument-designator  (get-argument-designator-token token))
-          (id                   (get-boot-identifier-token token))
+          (id                   (|getIdentifier| token nil))
           (num                  (get-spad-integer-token token))
-          (string               (get-SPADSTRING-token token))
-          (special-char         (get-special-token token))
-          (t                    (get-gliph-token token token-type))))))
-
-(defun boot-skip-blanks ()
-  (setq |$nonblank| t)
-  (loop (let ((cc (|currentChar|)))
-          (if (not cc) (return nil))
-          (if (eq (boot-token-lookahead-type cc) 'white)
-              (progn (setq |$nonblank| nil) (if (not (|advanceChar!|)) (return nil)))
-              (return t)))))
-
-(defun boot-token-lookahead-type (char)
-  "Predicts the kind of token to follow, based on the given initial character."
-  (cond ((not char)                                        'eof)
-        ((char= char #\_)                                  'escape)
-        ((and (char= char #\#) (digitp (|nextChar|)))       'argument-designator)
-        ((digitp char)                                     'num)
-        ((and (char= char #\$) $boot
-              (alpha-char-p (|nextChar|)))                  'id)
-        ((or (char= char #\%) (char= char #\?)
-             (char= char #\!) (alpha-char-p char))         'id)
-        ((char= char #\")                                  'string)
-        ((member char
-                 '(#\Space #\Tab #\Return)
-                 :test #'char=)                            'white)
-        ((get (intern (string char)) 'Gliph))
-        (t                                                 'special-char)))
+          (string               (|getSpadString| token))
+          (special-char         (|getSpecial| token))
+          (t                    (|getGliph| token token-type))))))
 
 (defun get-argument-designator-token (token)
   (|advanceChar!|)
@@ -205,78 +180,6 @@ Otherwise, get a .. identifier."
   (|tokenInstall| (intern (strconc "#" (format nil "~D" (|tokenSymbol| token))))
                  'argument-designator token |$nonblank|))
 
-
-(defun get-boot-identifier-token (token &optional (escaped? nil))
-  "An identifier consists of an escape followed by any character, a %, ?,
-or an alphabetic, followed by any number of escaped characters, digits,
-or the chracters ?, !, ' or %"
-  (prog ((buf (make-adjustable-string 0))
-         (default-package NIL))
-      (suffix (|currentChar|) buf)
-      (|advanceChar!|)
-   id (let ((cur-char (|currentChar|)))
-         (cond ((char= cur-char #\_)
-                (if (not (|advanceChar!|)) (go bye))
-                (suffix (|currentChar|) buf)
-                (setq escaped? t)
-                (if (not (|advanceChar!|)) (go bye))
-                (go id))
-               ((and (null default-package)
-                     (char= cur-char #\'))
-                (setq default-package buf)
-                (setq buf (make-adjustable-string 0))
-                (if (not (|advanceChar!|)) (go bye))
-                (go id))
-               ((or (alpha-char-p cur-char)
-                    (digitp cur-char)
-                    (member cur-char '(#\% #\' #\? #\!) :test #'char=))
-                (suffix (|currentChar|) buf)
-                (if (not (|advanceChar!|)) (go bye))
-                (go id))))
-  bye (if (and (stringp default-package)
-               (or (not (find-package default-package))  ;; not a package name
-                   (every #'(lambda (x) (eql x #\')) buf))) ;;token ends with ''
-          (setq buf (concatenate 'string default-package "'" buf)
-                default-package nil))
-      (setq buf (intern buf (or default-package "BOOT")))
-      (return (|tokenInstall|
-                buf
-                (if (and (not escaped?)
-                         (member buf |Keywords| :test #'eq))
-                    'keyword 'identifier)
-                token
-                |$nonblank|))))
-
-(defun get-gliph-token (token gliph-list)
-  (prog ((buf (make-adjustable-string 0)))
-        (suffix (|currentChar|) buf)
-        (|advanceChar!|)
-   loop (setq gliph-list (assoc (intern (string (|currentChar|))) gliph-list))
-        (if gliph-list
-            (progn (suffix (|currentChar|) buf)
-                   (pop gliph-list)
-                   (|advanceChar!|)
-                   (go loop))
-            (let ((new-token (intern buf)))
-              (return (|tokenInstall| (or (get new-token 'renametok) new-token)
-                                     'gliph token |$nonblank|))))))
-
-(defun get-SPADSTRING-token (token)
-   "With TOK=\" and ABC\" on IN-STREAM, extracts and stacks string ABC"
-  (PROG ((BUF (make-adjustable-string 0)))
-        (if (char/= (|currentChar|) #\") (RETURN NIL) (|advanceChar!|))
-        (loop
-         (if (char= (|currentChar|) #\") (return nil))
-         (SUFFIX (if (char= (|currentChar|) #\_)
-                     (|advanceChar!|)
-                   (|currentChar|))
-                 BUF)
-         (if (null  (|advanceChar!|)) ;;end of line
-             (PROGN (|sayBrightly| "Close quote inserted") (RETURN nil)))
-         )
-        (|advanceChar!|)
-        (return (|tokenInstall| (copy-seq buf) ;should make a simple string
-                               'spadstring token))))
 
 ;; -*- Parse an integer number -*-
 ;; The number may be written in plain format, where the radix

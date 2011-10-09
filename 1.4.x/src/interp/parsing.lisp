@@ -179,7 +179,7 @@ the stack, then stack a NIL. Return the value of prod."
 (defun Match-String (x)
   "Returns length of X if X matches initial segment of inputstream."
   (|ungetTokens|)                        ; So we don't get out of synch with token stream
-  (boot-skip-blanks)
+  (|skipBlankChars|)
   (if (and (not (|linePastEnd?| |$spadLine|)) (|currentChar|) )
       (initial-substring-p x
            (subseq (|lineBuffer| |$spadLine|) (|lineCurrentIndex| |$spadLine|)))))
