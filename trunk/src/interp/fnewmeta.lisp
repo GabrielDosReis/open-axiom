@@ -51,7 +51,7 @@
        (MEMBER (|currentSymbol|) '(\) END\_UNIT NIL)))
 
 (DEFUN |PARSE-NewExpr| ()
-  (OR (AND (MATCH-STRING ")") (ACTION (|processSynonyms|))
+  (OR (AND (|matchString| ")") (ACTION (|processSynonyms|))
            (MUST (|PARSE-Command|)))
       (AND (ACTION (SETQ DEFINITION_NAME (|currentSymbol|)))
            (|PARSE-Statement|)))) 
@@ -779,7 +779,7 @@
 
 (DEFUN |PARSE-AnyId| ()
   (OR (|parseName|)
-      (OR (AND (MATCH-STRING "$")
+      (OR (AND (|matchString| "$")
                (|pushReduction| '|PARSE-AnyId| (|currentSymbol|))
                (ACTION (|advanceToken|)))
           (|parseToken| 'KEYWORD)

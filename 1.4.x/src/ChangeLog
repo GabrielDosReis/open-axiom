@@ -1,5 +1,12 @@
 2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (matchString): New.
+	* interp/fnewmeta.lisp: Use it.
+	* interp/parsing.lisp: Likewise.
+	(MATCH-STRING): Remove.
+
+2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/metalex.lisp (DEFUN-PARSE-TOKEN): Remove.
 	Move remaining to parsing.lisp.
 	* interp/fnewmeta.lisp (PARSE-IntegerTok): Remove.

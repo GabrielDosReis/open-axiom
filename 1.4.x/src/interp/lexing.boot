@@ -372,6 +372,18 @@ ungetTokens() ==
   coreError '"How many tokens do you think you have?"
 
 
+++ Returns length of X if X matches initial segment of IN-STREAM.
+++ Otherwise, return nil.
+matchString x ==
+  ungetTokens()
+  skipBlankChars()
+  not linePastEnd? $spadLine and currentChar() ~= nil =>
+    nx := #x
+    buf := lineBuffer $spadLine
+    idx := lineCurrentIndex $spadLine
+    nx + idx > #buf => nil
+    and/[stringChar(x,i) = stringChar(buf,idx + i) for i in 0..nx-1] and nx
+  nil
 
 --%
 --% Stack abstract datatype.

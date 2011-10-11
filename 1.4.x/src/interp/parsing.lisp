@@ -350,21 +350,13 @@ the stack, then stack a NIL. Return the value of prod."
 
 ; FUNCTIONS DEFINED IN THIS SECTION:
 ;
-;       Match-String, Match-Advance-String
-
-(defun Match-String (x)
-  "Returns length of X if X matches initial segment of inputstream."
-  (|ungetTokens|)                        ; So we don't get out of synch with token stream
-  (|skipBlankChars|)
-  (if (and (not (|linePastEnd?| |$spadLine|)) (|currentChar|) )
-      (initial-substring-p x
-           (subseq (|lineBuffer| |$spadLine|) (|lineCurrentIndex| |$spadLine|)))))
+;       Match-Advance-String
 
 (defun Match-Advance-String (x)
-  "Same as MATCH-STRING except if successful, advance inputstream past X."
+  "Same as matchString except if successful, advance inputstream past X."
   (let ((y (if (>= (length (string x))
                    (length (string (|quoteIfString| (|currentToken|)))))
-               (Match-String x)
+               (|matchString| x)
                nil))) ; must match at least the current token
     (if y (progn (incf (|lineCurrentIndex| |$spadLine|) y)
                  (if (not (|linePastEnd?| |$spadLine|))
@@ -425,7 +417,7 @@ the stack, then stack a NIL. Return the value of prod."
 (defun termchr ()  "Is CHR a terminating character?"
   (position (|currentChar|) " *,;<>()[]/\\"))
 
-(defun compfin () (or (match-string ")fin") (match-string ".FIN")))
+(defun compfin () (or (|matchString| ")fin") (|matchString| ".FIN")))
 
 ; 3 C. Constructing parsing procedures
 
