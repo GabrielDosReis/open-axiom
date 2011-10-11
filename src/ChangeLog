@@ -1,5 +1,16 @@
 2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/metalex.lisp (DEFUN-PARSE-TOKEN): Remove.
+	Move remaining to parsing.lisp.
+	* interp/fnewmeta.lisp (PARSE-IntegerTok): Remove.
+	(PARSE-FloatTok): Likewise.
+	(PARSE-FormalParameter): Likewise.
+	(PARSE-FormalParameterTok): Likewise.
+	(PARSE-String): Likewise.
+	(PARSE-Name): Likewise.
+
+2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/postpar.boot: Remove functions and references to Scripts.
 
 2011-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
