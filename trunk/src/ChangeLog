@@ -1,3 +1,7 @@
+2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/postpar.boot: Remove functions and references to Scripts.
+
 2011-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot: New tokenizer functions.

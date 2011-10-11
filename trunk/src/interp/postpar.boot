@@ -87,8 +87,6 @@ postTran x ==
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
-  op is ["Scripts",:.] =>
-    postScriptsForm(op,"append"/[unComma postTran y for y in rest x])
   op ~= (y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
@@ -301,7 +299,6 @@ postForm u ==
         numOfArgs:= (argl' is [["%Comma",:l]] => #l; 1)
         INTERNL("*",STRINGIMAGE numOfArgs,PNAME op)
       [op',:argl']
-    op is ["Scripts",:.] => [:postTran op,:postTranList argl]
     u:= postTranList u
     if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
@@ -314,43 +311,6 @@ postForm u ==
 postQuote: %ParseTree -> %ParseForm
 postQuote [.,a] == 
   quote a
-
-
-postScriptsForm: (%ParseTree,%List %ParseTree) -> %ParseForm
-postScriptsForm(t,argl) ==
-  t isnt ["Scripts",op,a] => systemErrorHere ["postScriptsForm",t]
-  [getScriptName(op,a,#argl),:postTranScripts a,:argl]
-
-postScripts: %ParseTree -> %ParseForm
-postScripts t ==
-  t isnt ["Scripts",op,a] => systemErrorHere ["postScripts",t]
-  [getScriptName(op,a,0),:postTranScripts a]
-
-getScriptName: (%Symbol,%ParseTree, %Short) -> %ParseForm
-getScriptName(op,a,numberOfFunctionalArgs) ==
-  if not ident? op then
-    postError ['"   ",op,'" cannot have scripts"]
-  INTERNL("*",STRINGIMAGE numberOfFunctionalArgs,
-    decodeScripts a,symbolName op)
-
-postTranScripts: %ParseTree -> %ParseForm
-postTranScripts a ==
-  a is ["PrefixSC",b] => postTranScripts b
-  a is [";",:b] => "append"/[postTranScripts y for y in b]
-  a is [",",:b] =>
-    ("append"/[fn postTran y for y in b]) where
-      fn x ==
-        x is ["%Comma",:y] => y
-        [x]
-  [postTran a]
-
-decodeScripts: %ParseTree -> %ParseForm
-decodeScripts a ==
-  a is ["PrefixSC",b] => strconc(STRINGIMAGE 0,decodeScripts b)
-  a is [";",:b] => APPLX(function strconc,[decodeScripts x for x in b])
-  a is [",",:b] =>
-    STRINGIMAGE fn a where fn a == (a is [",",:b] => +/[fn x for x in b]; 1)
-  STRINGIMAGE 1
 
 postIf: %ParseTree -> %ParseForm
 postIf t ==
@@ -601,7 +561,6 @@ postMatch t ==
 --% Register special parse tree tranformers.
 
 for x in [["with", :"postWith"],_
-	  ["Scripts", :"postScripts"],_
 	  ["/", :"postSlash"],_
 	  ["construct", :"postConstruct"],_
 	  ["%Block", :"postBlock"],_
