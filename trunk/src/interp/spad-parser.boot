@@ -42,9 +42,32 @@
 -- -- gdr/2007-11-02
 --
 
-import metalex
+import parsing
 import parse
 namespace BOOT
+
+--%
+
+parseToken tt ==
+  tok := matchCurrentToken tt =>
+    pushReduction(makeSymbol strconc(symbolName tt,'"Token"),tokenSymbol tok)
+    advanceToken()
+    true
+  false
+
+parseString() ==
+  parseToken 'SPADSTRING
+
+parseInteger() ==
+  parseToken 'NUMBER
+
+parseName() ==
+  parseToken 'IDENTIFIER and pushReduction('parseName,popStack1())
+  
+parseFormalParameter() ==
+  parseToken 'ARGUMENT_-DESIGNATOR
+
+--%
 
 ++ Given a pathname to a source file containing Spad code, returns
 ++ a list of (old) AST objects representing the toplevel expressions

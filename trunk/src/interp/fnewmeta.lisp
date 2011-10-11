@@ -263,7 +263,7 @@
        (MUST (MATCH-ADVANCE-STRING ")"))))
 
 (DEFUN |PARSE-QuantifiedVariable| ()
-  (AND (|PARSE-Name|)
+  (AND (|parseName|)
        (MUST (MATCH-ADVANCE-STRING ":"))
        (MUST (|PARSE-Application|))
        (MUST (|pushReduction| '|PARSE-QuantifiedVariable|
@@ -438,7 +438,7 @@
 
 
 (DEFUN |PARSE-Variable| ()
-  (OR (AND (|PARSE-Name|)
+  (OR (AND (|parseName|)
 	   (OPTIONAL (AND (MATCH-ADVANCE-STRING ":")
 			  (MUST (|PARSE-Application|))
 			  (MUST (|pushReduction| '|PARSE-Variable|
@@ -493,7 +493,7 @@
 
 
 (DEFUN |PARSE-Label| ()
-  (AND (MATCH-ADVANCE-STRING "<<") (MUST (|PARSE-Name|))
+  (AND (MATCH-ADVANCE-STRING "<<") (MUST (|parseName|))
        (MUST (MATCH-ADVANCE-STRING ">>")))) 
 
 
@@ -603,8 +603,8 @@
                     (MUST (|PARSE-Primary1|))
                     (|pushReduction| '|PARSE-Primary1|
                         (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))
-      (|PARSE-Quad|) (|PARSE-String|) (|PARSE-IntegerTok|)
-      (|PARSE-FormalParameter|)
+      (|PARSE-Quad|) (|parseString|) (|parseInteger|)
+      (|parseFormalParameter|)
       (AND (MATCH-ADVANCE-STRING "'")
            (MUST (AND (MUST (|PARSE-Data|))
                       (|pushReduction| '|PARSE-Primary1| (|popStack1|)))))
@@ -622,11 +622,11 @@
 
 (DEFUN |PARSE-FloatBase| ()
   (OR (AND (INTEGERP (|currentSymbol|)) (CHAR-EQ (|currentChar|) ".")
-           (CHAR-NE (|nextChar|) ".") (|PARSE-IntegerTok|)
+           (CHAR-NE (|nextChar|) ".") (|parseInteger|)
            (MUST (|PARSE-FloatBasePart|)))
       (AND (INTEGERP (|currentSymbol|))
            (CHAR-EQ (CHAR-UPCASE (|currentChar|)) 'E)
-           (|PARSE-IntegerTok|) (|pushReduction| '|PARSE-FloatBase| 0)
+           (|parseInteger|) (|pushReduction| '|PARSE-FloatBase| 0)
            (|pushReduction| '|PARSE-FloatBase| 0))
       (AND (DIGITP (|currentChar|)) (EQ (|currentSymbol|) '|.|)
            (|pushReduction| '|PARSE-FloatBase| 0)
@@ -638,7 +638,7 @@
        (MUST (OR (AND (DIGITP (|currentChar|))
                       (|pushReduction| '|PARSE-FloatBasePart|
                           (|tokenNonblank?| (|currentToken|)))
-                      (|PARSE-IntegerTok|))
+                      (|parseInteger|))
                  (AND (|pushReduction| '|PARSE-FloatBasePart| 0)
                       (|pushReduction| '|PARSE-FloatBasePart| 0)))))) 
 
@@ -648,11 +648,11 @@
     (RETURN
       (OR (AND (MEMBER (|currentSymbol|) '(E |e|))
                (FIND (|currentChar|) "+-") (ACTION (|advanceToken|))
-               (MUST (OR (|PARSE-IntegerTok|)
+               (MUST (OR (|parseInteger|)
                          (AND (MATCH-ADVANCE-STRING "+")
-                              (MUST (|PARSE-IntegerTok|)))
+                              (MUST (|parseInteger|)))
                          (AND (MATCH-ADVANCE-STRING "-")
-                              (MUST (|PARSE-IntegerTok|))
+                              (MUST (|parseInteger|))
                               (|pushReduction| '|PARSE-FloatExponent|
                                   (MINUS (|popStack1|))))
                          (|pushReduction| '|PARSE-FloatExponent| 0))))
@@ -690,31 +690,12 @@
 		      )))
       )) 
 
-
-(DEFUN |PARSE-IntegerTok| () (PARSE-NUMBER)) 
-
-
-(DEFUN |PARSE-FloatTok| ()
-  (AND (PARSE-NUMBER)
-       (|pushReduction| '|PARSE-FloatTok| (|popStack1|)))) 
-
-
-(DEFUN |PARSE-FormalParameter| () (|PARSE-FormalParameterTok|)) 
-
-
-(DEFUN |PARSE-FormalParameterTok| () (PARSE-ARGUMENT-DESIGNATOR)) 
-
-
 (DEFUN |PARSE-Quad| ()
   (AND (MATCH-ADVANCE-STRING "$")
        (|pushReduction| '|PARSE-Quad| '$)))
 
-
-(DEFUN |PARSE-String| () (PARSE-SPADSTRING)) 
-
-
 (DEFUN |PARSE-VarForm| ()
-  (AND (|PARSE-Name|)
+  (AND (|parseName|)
        (OPTIONAL
            (AND (|PARSE-Scripts|)
                 (|pushReduction| '|PARSE-VarForm|
@@ -742,11 +723,6 @@
            (|pushReduction| '|PARSE-ScriptItem|
                (CONS '|PrefixSC| (CONS (|popStack1|) NIL)))))) 
 
-
-(DEFUN |PARSE-Name| ()
-  (AND (PARSE-IDENTIFIER) (|pushReduction| '|PARSE-Name| (|popStack1|)))) 
-
-
 (DEFUN |PARSE-Data| ()
   (AND (ACTION (SETQ LABLASOC NIL)) (|PARSE-Sexpr|)
        (|pushReduction| '|PARSE-Data|
@@ -758,8 +734,8 @@
 
 
 (DEFUN |PARSE-Sexpr1| ()
-  (OR (|PARSE-IntegerTok|)
-      (|PARSE-String|)
+  (OR (|parseInteger|)
+      (|parseString|)
       (AND (|PARSE-AnyId|)
            (OPTIONAL
                (AND (|PARSE-NBGliphTok| '=) (MUST (|PARSE-Sexpr1|))
@@ -771,7 +747,7 @@
            (|pushReduction| '|PARSE-Sexpr1|
                (CONS 'QUOTE (CONS (|popStack1|) NIL))))
       ;; next form disabled -- gdr, 2009-06-15.
-;      (AND (MATCH-ADVANCE-STRING "-") (MUST (|PARSE-IntegerTok|))
+;      (AND (MATCH-ADVANCE-STRING "-") (MUST (|parseInteger|))
 ;           (|pushReduction| '|PARSE-Sexpr1| (MINUS (|popStack1|))))
       (AND (MATCH-ADVANCE-STRING "[")
            (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-Sexpr1|))))
@@ -802,11 +778,11 @@
 
 
 (DEFUN |PARSE-AnyId| ()
-  (OR (|PARSE-Name|)
+  (OR (|parseName|)
       (OR (AND (MATCH-STRING "$")
                (|pushReduction| '|PARSE-AnyId| (|currentSymbol|))
                (ACTION (|advanceToken|)))
-          (PARSE-KEYWORD)
+          (|parseToken| 'KEYWORD)
 	  (|PARSE-OperatorFunctionName|))))
 
 

@@ -76,8 +76,184 @@
 ;       NEWMETA.LISP:  Boot parsing
 
 
-(import-module "metalex")
+(import-module "lexing")
+(import-module "macros")
+
 (in-package "BOOT")
+
+
+; 0. Current I/O Stream definition
+
+(defparameter out-stream t "Current output stream.")
+(defparameter File-Closed nil   "Way to stop EOF tests for console input.")
+
+
+; 1. Data structure declarations (defstructs) for parsing objects
+;
+;               A. Line Buffer
+
+; 1A. A Line Buffer
+;
+; The philosophy of lines is that
+;
+;       a) NEXT LINE will always get you a non-blank line or fail.
+;       b) Every line is terminated by a blank character.
+;
+; Hence there is always a current character, because there is never a non-blank line,
+; and there is always a separator character between tokens on separate lines.
+; Also, when a line is read, the character pointer is always positioned ON the first
+; character.
+
+; FUNCTIONS DEFINED IN THIS SECTION:
+;
+;       Line-New-Line, Line-Advance-Char, Line-Past-End-P, Line-At-End-P
+;       Make-Line
+
+(defun Line-Print (line)
+  (format out-stream "~&~5D> ~A~%" (|lineNumber| line) (|lineBuffer| Line))
+  (format out-stream "~v@T^~%" (+ 7 (|lineCurrentIndex| line))))
+
+; *** Next Line
+
+(defun make-string-adjustable (s)
+  (cond ((adjustable-array-p s) s)
+        (t (make-array (array-dimensions s) :element-type 'character
+                       :adjustable t :initial-contents s))))
+
+(defun get-a-line (stream)
+  (if (and (IS-CONSOLE stream) (not |$leanMode|))
+      (|printPrompt|))
+  (let ((ll (read-a-line stream)))
+    (if (stringp ll) (make-string-adjustable ll) ll)))
+
+(defparameter Current-Fragment nil
+  "A string containing remaining chars from readline; needed because
+Symbolics read-line returns embedded newlines in a c-m-Y.")
+
+(defun input-clear () (setq Current-Fragment nil))
+
+(defun Next-Lines-Clear () (setq |$lineStack| nil))
+
+(defun Next-Lines-Show ()
+  (and |$lineStack| (format t "Currently preparsed lines are:~%~%"))
+  (mapcar #'(lambda (line)
+              (format t "~&~5D> ~A~%" (car line) (cdr Line)))
+          |$lineStack|))
+
+
+; 3. Routines for handling lexical scanning
+;
+; Lexical scanning of tokens is performed off of the current line.  No
+; token can span more than 1 line.  All real I/O is handled in a line-oriented
+; fashion (in a slight paradox) below the character level.  All character
+; routines implicitly assume the parameter |$spadLine|.  We do not make
+; |$spadLine| an explicit optional parameter for reasons of efficiency.
+
+(defmacro current-line-print () '(Line-Print |$spadLine|))
+
+(defmacro current-line-show ()
+  `(if (|linePastEnd?| |$spadLine|)
+       (format t "~&The current line is empty.~%")
+       (progn (format t "~&The current line is:~%~%")
+              (current-line-print))))
+
+(defmacro current-line-clear () `(|lineClear!| |$spadLine|))
+
+(defun read-a-line (&optional (stream t))
+  (let (cp)
+    (if (and Current-Fragment (> (length Current-Fragment) 0))
+        (let ((line (with-input-from-string
+                      (s Current-Fragment :index cp :start 0)
+                      (read-line s nil nil))))
+          (setq Current-Fragment (subseq Current-Fragment cp))
+          line)
+        (prog nil
+              (if (stream-eof in-stream)
+                  (progn (setq File-Closed t *EOF* t)
+                         (|lineNewLine!| (make-string 0) |$spadLine|)
+                         (return nil)))
+              (if (setq Current-Fragment (read-line stream))
+                  (return (read-a-line stream)))))))
+
+; *** Print New Line
+
+(defparameter Printer-Line-Stack (|makeStack|)
+  "Stack of output listing lines waiting to print. [local to PRINT-NEW-LINE]")
+
+(defparameter Read-Quietly nil
+  "Whether or not to produce an output listing. [local to PRINT-NEW-LINE]")
+
+(defun Print-New-Line (string &optional (strm |$OutputStream|))
+  "Makes output listings."
+  (if Read-Quietly (|stackPush!| (copy-tree string) Printer-Line-Stack)
+      (progn (mapc #'(lambda (x) (format strm "; ~A~%" x) (terpri))
+                   (|reverse!| (|stackStore| Printer-Line-Stack)))
+             (|stackClear!| Printer-Line-Stack)
+             (format strm "~&; ~A~%" string))))
+
+; 1C. Token
+(defun Token-Print (token)
+  (format out-stream "(token (symbol ~S) (type ~S))~%"
+          (|tokenSymbol| token) (|tokenType| token)))
+
+(defun reduce-stack-show ()
+  (let ((store (|stackStore| |$reduceStack|))
+        (*print-pretty* t))
+    (if store
+        (progn (format t "~%Reduction stack contains:~%")
+               (mapcar #'(lambda (x)
+			   (if (eq (type-of x) 'token)
+                               (describe x)
+			     (print x)))
+                       (|stackStore| |$reduceStack|)))
+        (format t "~%There is nothing on the reduction stack.~%"))))
+
+(defun token-stack-show ()
+  (if (= |$validTokens| 0) (format t "~%There are no valid tokens.~%")
+      (format t "~%The number of valid tokens is ~S.~%" |$validTokens|))
+  (if (> |$validTokens| 0)
+      (progn (format t "The current token is~%")
+             (describe |$currentToken|)))
+  (if (> |$validTokens| 1)
+      (progn (format t "The next token is~%")
+             (describe |$nextToken|)))
+  (if (|tokenType| |$priorToken|)
+      (progn (format t "The prior token was~%")
+             (describe |$priorToken|))))
+ 
+; Parsing of operator tokens depends on tables initialized by BOTTOMUP.LISP
+
+(defun |PARSE-OperatorFunctionName| ()
+  (let ((id (|makeSymbolOf| (or (|matchCurrentToken| 'keyword)
+				(|matchCurrentToken| 'gliph)
+				(|matchCurrentToken| 'special-char)))))
+    (when (and id (member id |$OperatorFunctionNames|))
+      (|pushReduction| '|PARSE-OperatorFunctionName| id)
+      (action (|advanceToken|)))))
+ 
+(defun make-adjustable-string (n)
+  (make-array (list n) :element-type 'character :adjustable t))
+ 
+(defun get-number-token (token)
+  "Take a number off the input stream."
+  (prog ((buf (make-adjustable-string 0)))
+	nu1 
+	(suffix (|currentChar|) buf)                     ; Integer part
+        (let ((next-chr (|nextChar|)))
+          (cond ((digitp next-chr)
+                 (|advanceChar!|)
+                 (go nu1))))
+        (|advanceChar!|) 
+	(return (|tokenInstall| (read-from-string buf)
+			       'number token
+			       (size buf) ;used to keep track of digit count
+			       ))))
+ 
+; *** 5. META Error Handling
+
+(defparameter $num_of_meta_errors 0)
+
+(defparameter Meta_Errors_Occurred nil  "Did any errors occur")
 
 (defun IOStreams-Show ()
   (format t "~&Input is coming from ~A, and output is going to ~A.~%"

@@ -59,7 +59,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	sys-utility.$(FASLEXT)  lexing.$(FASLEXT)        \
 	diagnostics.$(FASLEXT)	                         \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
-	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
+	macros.$(FASLEXT)	                         \
 	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
 	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
@@ -322,8 +322,8 @@ server.$(FASLEXT): macros.$(FASLEXT)
 
 ## The old parser component roughtly is:
 ##
-spad-parser.$(FASLEXT): parse.$(FASLEXT)
-parse.$(FASLEXT): metalex.$(FASLEXT) postpar.$(FASLEXT)
+spad-parser.$(FASLEXT): parsing.$(FASLEXT) parse.$(FASLEXT)
+parse.$(FASLEXT): parsing.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
 bootlex.$(FASLEXT): preparse.$(FASLEXT) macros.$(FASLEXT) \
@@ -331,8 +331,7 @@ bootlex.$(FASLEXT): preparse.$(FASLEXT) macros.$(FASLEXT) \
 newaux.$(FASLEXT): macros.$(FASLEXT)
 preparse.$(FASLEXT): fnewmeta.$(FASLEXT)
 fnewmeta.$(FASLEXT): parsing.$(FASLEXT)
-parsing.$(FASLEXT): metalex.$(FASLEXT)
-metalex.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
+parsing.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
 nlib.$(FASLEXT): macros.$(FASLEXT)
 macros.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT)
