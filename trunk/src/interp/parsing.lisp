@@ -46,15 +46,6 @@
 
 ; CONTENTS:
 ;
-;       0. Current I/O Stream definition
-;
-;       1. Data structure declarations (defstructs) for parsing objects
-;
-;               A. Line Buffer
-;               B. Stack
-;               C. Token
-;               D. Reduction
-;
 ;       2. Recursive descent parsing support routines
 ;               A. Stacking and retrieving reductions of rules.
 ;               B. Applying metagrammatical elements of a production (e.g., Star).
@@ -70,10 +61,6 @@
 ;
 ;       5. Routines for inspecting and resetting total I/O system state
 ;
-;       METALEX.LISP:  Meta file handling, auxiliary parsing actions and tokenizing
-;
-;       BOOTLEX.LISP:  Boot file handling, auxiliary parsing actions and tokenizing
-;       NEWMETA.LISP:  Boot parsing
 
 
 (import-module "lexing")
@@ -87,33 +74,9 @@
 (defparameter out-stream t "Current output stream.")
 (defparameter File-Closed nil   "Way to stop EOF tests for console input.")
 
-
-; 1. Data structure declarations (defstructs) for parsing objects
-;
-;               A. Line Buffer
-
-; 1A. A Line Buffer
-;
-; The philosophy of lines is that
-;
-;       a) NEXT LINE will always get you a non-blank line or fail.
-;       b) Every line is terminated by a blank character.
-;
-; Hence there is always a current character, because there is never a non-blank line,
-; and there is always a separator character between tokens on separate lines.
-; Also, when a line is read, the character pointer is always positioned ON the first
-; character.
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Line-New-Line, Line-Advance-Char, Line-Past-End-P, Line-At-End-P
-;       Make-Line
-
 (defun Line-Print (line)
   (format out-stream "~&~5D> ~A~%" (|lineNumber| line) (|lineBuffer| Line))
   (format out-stream "~v@T^~%" (+ 7 (|lineCurrentIndex| line))))
-
-; *** Next Line
 
 (defun make-string-adjustable (s)
   (cond ((adjustable-array-p s) s)
@@ -220,16 +183,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
   (if (|tokenType| |$priorToken|)
       (progn (format t "The prior token was~%")
              (describe |$priorToken|))))
- 
-; Parsing of operator tokens depends on tables initialized by BOTTOMUP.LISP
-
-(defun |PARSE-OperatorFunctionName| ()
-  (let ((id (|makeSymbolOf| (or (|matchCurrentToken| 'keyword)
-				(|matchCurrentToken| 'gliph)
-				(|matchCurrentToken| 'special-char)))))
-    (when (and id (member id |$OperatorFunctionNames|))
-      (|pushReduction| '|PARSE-OperatorFunctionName| id)
-      (action (|advanceToken|)))))
  
 (defun make-adjustable-string (n)
   (make-array (list n) :element-type 'character :adjustable t))
@@ -341,32 +294,6 @@ the stack, then stack a NIL. Return the value of prod."
 ;       (2) Character handling: Current Char, Next Char, Advance Char
 ;       (3) Line handling:      Next Line, Print Next Line
 ;       (X) Random Stuff
-
-; 3A (0). String grabbing
-
-; String grabbing is the art of matching initial segments of the current
-; line, and removing them from the line before the get tokenized if they
-; match (or removing the corresponding current tokens).
-
-; FUNCTIONS DEFINED IN THIS SECTION:
-;
-;       Match-Advance-String
-
-(defun Match-Advance-String (x)
-  "Same as matchString except if successful, advance inputstream past X."
-  (let ((y (if (>= (length (string x))
-                   (length (string (|quoteIfString| (|currentToken|)))))
-               (|matchString| x)
-               nil))) ; must match at least the current token
-    (if y (progn (incf (|lineCurrentIndex| |$spadLine|) y)
-                 (if (not (|linePastEnd?| |$spadLine|))
-                     (setf (|lineCurrentChar| |$spadLine|)
-                           (elt (|lineBuffer| |$spadLine|)
-                                (|lineCurrentIndex| |$spadLine|)))
-                     (setf (|lineCurrentChar| |$spadLine|) #\Space))
-                 (setq |$priorToken|
-                       (|makeToken| (intern (string x)) 'identifier |$nonblank|))
-                 t))))
 
 (defun match-advance-keyword (str)
   (and (|matchToken| (|currentToken|) 'keyword (intern str))

@@ -67,6 +67,24 @@ parseName() ==
 parseFormalParameter() ==
   parseToken 'ARGUMENT_-DESIGNATOR
 
+parseOperatorFunctionName() ==
+  id := makeSymbolOf(matchCurrentToken 'KEYWORD
+          or matchCurrentToken 'GLIPH
+            or matchCurrentToken 'SPECIAL_-CHAR)
+  symbolMember?(id,$OperatorFunctionNames) =>
+    pushReduction('parseOperatorFunctionName,id)
+    advanceToken()
+    true
+  false
+
+parseAnyId() ==
+  parseName() => true
+  matchString '"$" =>
+    pushReduction('parseAnyId,currentSymbol())
+    advanceToken()
+    true
+  parseOperatorFunctionName()
+
 --%
 
 ++ Given a pathname to a source file containing Spad code, returns

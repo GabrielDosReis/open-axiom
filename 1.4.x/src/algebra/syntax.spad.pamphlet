@@ -724,7 +724,7 @@ ImportAst(): Public == Private where
   Private == add
     import Pair
     Rep == Pair(Identifier, List TypeAst)
-    coerce(ts: List TypeAst): % == per pair('import,ts)
+    coerce(ts: List TypeAst): % == per pair('_import,ts)
     imports x == second rep x
     coerce(x: %): OutputForm ==
       elt('ImportAst::OutputForm,
@@ -1694,7 +1694,7 @@ SpadAst(): SpadAstExports() == add
   isAst(x: %, tag: Identifier): Boolean ==
     (op := getOperator(x::Syntax)) case Identifier and op = tag
 
-  x case ImportAst == isAst(x,'import)
+  x case ImportAst == isAst(x,'_import)
   autoCoerce(x: %): ImportAst == x : ImportAst
 
   x case DefinitionAst == isAst(x,'DEF)
@@ -1703,7 +1703,7 @@ SpadAst(): SpadAstExports() == add
   x case MacroAst == isAst(x,'MDEF)
   autoCoerce(x: %): MacroAst == x : MacroAst
 
-  x case WhereAst == isAst(x,'where)
+  x case WhereAst == isAst(x,'_where)
   autoCoerce(x: %): WhereAst == x : WhereAst
 
   x case CategoryAst == isAst(x,'CATEGORY)
@@ -1745,16 +1745,16 @@ SpadAst(): SpadAstExports() == add
   x case ConstructAst == isAst(x,'construct)
   autoCoerce(x: %): ConstructAst == x : ConstructAst
 
-  x case ExitAst == isAst(x,'exit)
+  x case ExitAst == isAst(x,'_exit)
   autoCoerce(x: %): ExitAst == x : ExitAst
 
-  x case ReturnAst == isAst(x,'return)
+  x case ReturnAst == isAst(x,'_return)
   autoCoerce(x: %): ReturnAst == x : ReturnAst
 
   x case CoerceAst == isAst(x,'_:_:)
   autoCoerce(x: %): CoerceAst == x : CoerceAst
 
-  x case PretendAst == isAst(x,'pretend)
+  x case PretendAst == isAst(x,'_pretend)
   autoCoerce(x: %): PretendAst == x : PretendAst
 
   x case RestrictAst == isAst(x,'_@)
@@ -1775,13 +1775,13 @@ SpadAst(): SpadAstExports() == add
   x case ColonAst == isAst(x,'_:)
   autoCoerce(x: %): ColonAst == x : ColonAst
 
-  x case CaseAst == isAst(x,'case)
+  x case CaseAst == isAst(x,'_case)
   autoCoerce(x: %): CaseAst == x : CaseAst
 
-  x case HasAst == isAst(x,'has)
+  x case HasAst == isAst(x,'_has)
   autoCoerce(x: %): HasAst == x : HasAst
 
-  x case IsAst == isAst(x,'is)
+  x case IsAst == isAst(x,'_is)
   autoCoerce(x: %): IsAst == x : IsAst
 
   x case Identifier == (x::Syntax) case Identifier
@@ -1803,21 +1803,21 @@ SpadAst(): SpadAstExports() == add
       op = 'STEP => x:StepAst::OutputForm
       op = 'COLLECT => x:CollectAst::OutputForm
       op = 'construct => x:ConstructAst::OutputForm
-      op = 'exit => x:ExitAst::OutputForm
-      op = 'return => x:ReturnAst::OutputForm
+      op = '_exit => x:ExitAst::OutputForm
+      op = '_return => x:ReturnAst::OutputForm
       op = 'SEQ => x:SequenceAst::OutputForm
       op = '%LET => x:LetAst::OutputForm
-      op = 'pretend => x:PretendAst::OutputForm
+      op = '_pretend => x:PretendAst::OutputForm
       op = '_:_: => x:CoerceAst::OutputForm
       op = '_@ => x:RestrictAst::OutputForm
       op = 'SEGMENT => x:SegmentAst::OutputForm
       op = '_| => x:SuchThatAst::OutputForm
       op = '_: => x:ColonAst::OutputForm
-      op = 'add => x:AddAst::OutputForm
-      op = 'case => x:CaseAst::OutputForm
-      op = 'has => x:CaseAst::OutputForm
-      op = 'is => x:CaseAst::OutputForm
-      op = 'where => x:WhereAst::OutputForm
+      op = '_add => x:AddAst::OutputForm
+      op = '_case => x:CaseAst::OutputForm
+      op = '_has => x:CaseAst::OutputForm
+      op = '_is => x:CaseAst::OutputForm
+      op = '_where => x:WhereAst::OutputForm
       op = '%Comma => x:CommaAst::OutputForm
       op = 'Mapping => x:MappingAst::OutputForm
       op = 'DEF => x:DefinitionAst::OutputForm
@@ -1827,7 +1827,7 @@ SpadAst(): SpadAstExports() == add
       op = 'CATEGORY => x:CategoryAst::OutputForm
       op = 'Join => x:JoinAst::OutputForm
       op = 'CAPSULE => x:CapsuleAst::OutputForm
-      op = 'import => x:ImportAst::OutputForm
+      op = '_import => x:ImportAst::OutputForm
       x'::OutputForm
     x'::OutputForm
   

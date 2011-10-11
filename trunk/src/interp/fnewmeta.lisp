@@ -58,7 +58,7 @@
 
 
 (DEFUN |PARSE-Command| ()
-  (AND (MATCH-ADVANCE-STRING ")") (MUST (|PARSE-SpecialKeyWord|))
+  (AND (|matchAdvanceString| ")") (MUST (|PARSE-SpecialKeyWord|))
        (MUST (|PARSE-SpecialCommand|))
        (|pushReduction| '|PARSE-Command| NIL))) 
 
@@ -70,10 +70,10 @@
 
 
 (DEFUN |PARSE-SpecialCommand| ()
-  (OR (AND (MATCH-ADVANCE-STRING "show")
+  (OR (AND (|matchAdvanceString| "show")
            (BANG FIL_TEST
                  (OPTIONAL
-                     (OR (MATCH-ADVANCE-STRING "?")
+                     (OR (|matchAdvanceString| "?")
                          (|PARSE-Expression|))))
            (|pushReduction| '|PARSE-SpecialCommand|
                (CONS '|show| (CONS (|popStack1|) NIL)))
@@ -102,7 +102,7 @@
 
 
 (DEFUN |PARSE-TokenOption| ()
-  (AND (MATCH-ADVANCE-STRING ")") (MUST (|PARSE-TokenList|)))) 
+  (AND (|matchAdvanceString| ")") (MUST (|PARSE-TokenList|)))) 
 
 
 (DEFUN |PARSE-CommandTail| ()
@@ -114,13 +114,13 @@
 
 
 (DEFUN |PARSE-PrimaryOrQM| ()
-  (OR (AND (MATCH-ADVANCE-STRING "?")
+  (OR (AND (|matchAdvanceString| "?")
            (|pushReduction| '|PARSE-PrimaryOrQM| '?))
       (|PARSE-Primary|))) 
 
 
 (DEFUN |PARSE-Option| ()
-  (AND (MATCH-ADVANCE-STRING ")")
+  (AND (|matchAdvanceString| ")")
        (MUST (STAR REPEATOR (|PARSE-PrimaryOrQM|))))) 
 
 
@@ -128,7 +128,7 @@
   (AND (|PARSE-Expr| 0)
        (OPTIONAL
            (AND (STAR REPEATOR
-                      (AND (MATCH-ADVANCE-STRING ",")
+                      (AND (|matchAdvanceString| ",")
                            (MUST (|PARSE-Expr| 0))))
                 (|pushReduction| '|PARSE-Statement|
                     (CONS '|Series|
@@ -163,21 +163,21 @@
                          (CONS (|popStack3|)
                                (CONS (|popStack2|)
                                      (CONS (|popStack1|) NIL))))))
-          (AND (MATCH-ADVANCE-STRING "(") (MUST (|PARSE-Category|))
+          (AND (|matchAdvanceString| "(") (MUST (|PARSE-Category|))
                (BANG FIL_TEST
                      (OPTIONAL
                          (STAR REPEATOR
-                               (AND (MATCH-ADVANCE-STRING ";")
+                               (AND (|matchAdvanceString| ";")
                                     (MUST (|PARSE-Category|))))))
-               (MUST (MATCH-ADVANCE-STRING ")"))
+               (MUST (|matchAdvanceString| ")"))
                (|pushReduction| '|PARSE-Category|
                    (CONS 'CATEGORY
                          (CONS (|popStack2|)
                                (APPEND (|popStack1|) NIL)))))
           (AND (ACTION (SETQ G1 (|lineNumber| |$spadLine|)))
                (OR (|PARSE-Application|)
-		   (|PARSE-OperatorFunctionName|))
-               (MUST (OR (AND (MATCH-ADVANCE-STRING ":")
+		   (|parseOperatorFunctionName|))
+               (MUST (OR (AND (|matchAdvanceString| ":")
                               (MUST (|PARSE-Expression|))
                               (|pushReduction| '|PARSE-Category|
                                   (CONS '|%Signature|
@@ -202,7 +202,7 @@
 (DEFUN |PARSE-Import| ()
   (AND (MATCH-ADVANCE-KEYWORD "import") 
        (MUST (|PARSE-Expr| 1000))
-       (OR (AND (MATCH-ADVANCE-STRING ":")
+       (OR (AND (|matchAdvanceString| ":")
                 (MUST (|PARSE-Expression|))
                 (MUST (MATCH-ADVANCE-KEYWORD "from"))
                 (MUST (|PARSE-Expr| 1000))
@@ -214,7 +214,7 @@
            (AND (BANG FIL_TEST
 		      (OPTIONAL
 		       (STAR REPEATOR
-			     (AND (MATCH-ADVANCE-STRING ",")
+			     (AND (|matchAdvanceString| ",")
 				  (MUST (|PARSE-Expr| 1000))))))
 		(|pushReduction| '|PARSE-Import|
                     (CONS '|import|
@@ -235,7 +235,7 @@
 (DEFUN |PARSE-Scheme| ()
   (OR (AND (|PARSE-Quantifier|)
 	   (MUST (|PARSE-QuantifiedVariableList|))
-	   (MUST (MATCH-ADVANCE-STRING "."))
+	   (MUST (|matchAdvanceString| "."))
 	   (MUST (|PARSE-Expr| 200))
 	   (MUST (|pushReduction| '|PARSE-Forall|
 				 (CONS (|popStack3|)
@@ -250,21 +250,21 @@
 	   (MUST (|pushReduction| '|PARSE-Quantifier| '|%Exist|)))))
 
 (DEFUN |PARSE-QuantifiedVariableList| ()
-  (AND (MATCH-ADVANCE-STRING "(")
+  (AND (|matchAdvanceString| "(")
        (MUST (|PARSE-QuantifiedVariable|))
        (OPTIONAL 
 	(AND (STAR REPEATOR 
-		   (AND (MATCH-ADVANCE-STRING ",")
+		   (AND (|matchAdvanceString| ",")
 			(MUST (|PARSE-QuantifiedVariable|))))
 	     (|pushReduction| '|PARSE-QuantifiedVariableList|
 			     (CONS '|%Sequence|
 				   (CONS (|popStack2|) 
 					 (APPEND (|popStack1|) NIL))))))
-       (MUST (MATCH-ADVANCE-STRING ")"))))
+       (MUST (|matchAdvanceString| ")"))))
 
 (DEFUN |PARSE-QuantifiedVariable| ()
   (AND (|parseName|)
-       (MUST (MATCH-ADVANCE-STRING ":"))
+       (MUST (|matchAdvanceString| ":"))
        (MUST (|PARSE-Application|))
        (MUST (|pushReduction| '|PARSE-QuantifiedVariable|
 			     (CONS '|:| 
@@ -308,13 +308,13 @@
 
 
 (DEFUN |PARSE-Qualification| ()
-  (AND (MATCH-ADVANCE-STRING "$") (MUST (|PARSE-Primary1|))
+  (AND (|matchAdvanceString| "$") (MUST (|PARSE-Primary1|))
        (|pushReduction| '|PARSE-Qualification|
            (|dollarTran| (|popStack1|) (|popStack1|))))) 
 
 
 (DEFUN |PARSE-SemiColon| ()
-  (AND (MATCH-ADVANCE-STRING ";")
+  (AND (|matchAdvanceString| ";")
        (MUST (OR (|PARSE-Expr| 82)
                  (|pushReduction| '|PARSE-SemiColon| '|/throwAway|)))
        (|pushReduction| '|PARSE-SemiColon|
@@ -439,7 +439,7 @@
 
 (DEFUN |PARSE-Variable| ()
   (OR (AND (|parseName|)
-	   (OPTIONAL (AND (MATCH-ADVANCE-STRING ":")
+	   (OPTIONAL (AND (|matchAdvanceString| ":")
 			  (MUST (|PARSE-Application|))
 			  (MUST (|pushReduction| '|PARSE-Variable|
 				   (CONS '|:| 
@@ -463,7 +463,7 @@
                                (CONS (|popStack2|)
                                      (CONS (|popStack1|) NIL))))))
            (OPTIONAL
-               (AND (MATCH-ADVANCE-STRING "|")
+               (AND (|matchAdvanceString| "|")
                     (MUST (|PARSE-Expr| 111))
                     (|pushReduction| '|PARSE-Iterator|
                         (CONS '|\|| (CONS (|popStack1|) NIL))))))
@@ -493,8 +493,8 @@
 
 
 (DEFUN |PARSE-Label| ()
-  (AND (MATCH-ADVANCE-STRING "<<") (MUST (|parseName|))
-       (MUST (MATCH-ADVANCE-STRING ">>")))) 
+  (AND (|matchAdvanceString| "<<") (MUST (|parseName|))
+       (MUST (|matchAdvanceString| ">>")))) 
 
 
 (DEFUN |PARSE-LedPart| (RBP)
@@ -577,12 +577,12 @@
 
 (DEFUN |PARSE-Selector| ()
   (OR (AND |$nonblank| (EQ (|currentSymbol|) '|.|)
-           (CHAR-NE (|currentChar|) '| |) (MATCH-ADVANCE-STRING ".")
+           (CHAR-NE (|currentChar|) '| |) (|matchAdvanceString| ".")
            (MUST (|PARSE-PrimaryNoFloat|))
            (MUST (|pushReduction| '|PARSE-Selector|
                      (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))
       (AND (OR (|PARSE-Float|)
-               (AND (MATCH-ADVANCE-STRING ".")
+               (AND (|matchAdvanceString| ".")
                     (MUST (|PARSE-Primary|))))
            (MUST (|pushReduction| '|PARSE-Selector|
                      (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))) 
@@ -597,7 +597,7 @@
 
 
 (DEFUN |PARSE-Primary1| ()
-  (OR (AND (|PARSE-VarForm|)
+  (OR (AND (|parseName|)
            (OPTIONAL
                (AND |$nonblank| (EQ (|currentSymbol|) '|(|)
                     (MUST (|PARSE-Primary1|))
@@ -605,7 +605,7 @@
                         (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))
       (|PARSE-Quad|) (|parseString|) (|parseInteger|)
       (|parseFormalParameter|)
-      (AND (MATCH-ADVANCE-STRING "'")
+      (AND (|matchAdvanceString| "'")
            (MUST (AND (MUST (|PARSE-Data|))
                       (|pushReduction| '|PARSE-Primary1| (|popStack1|)))))
       (|PARSE-Sequence|) (|PARSE-Enclosure|))) 
@@ -634,7 +634,7 @@
 
 
 (DEFUN |PARSE-FloatBasePart| ()
-  (AND (MATCH-ADVANCE-STRING ".")
+  (AND (|matchAdvanceString| ".")
        (MUST (OR (AND (DIGITP (|currentChar|))
                       (|pushReduction| '|PARSE-FloatBasePart|
                           (|tokenNonblank?| (|currentToken|)))
@@ -649,9 +649,9 @@
       (OR (AND (MEMBER (|currentSymbol|) '(E |e|))
                (FIND (|currentChar|) "+-") (ACTION (|advanceToken|))
                (MUST (OR (|parseInteger|)
-                         (AND (MATCH-ADVANCE-STRING "+")
+                         (AND (|matchAdvanceString| "+")
                               (MUST (|parseInteger|)))
-                         (AND (MATCH-ADVANCE-STRING "-")
+                         (AND (|matchAdvanceString| "-")
                               (MUST (|parseInteger|))
                               (|pushReduction| '|PARSE-FloatExponent|
                                   (MINUS (|popStack1|))))
@@ -663,27 +663,27 @@
 
 
 (DEFUN |PARSE-Enclosure| ()
-  (OR (AND (MATCH-ADVANCE-STRING "(")
+  (OR (AND (|matchAdvanceString| "(")
            (MUST (OR (AND (|PARSE-Expr| 6)
-                          (MUST (MATCH-ADVANCE-STRING ")")))
-                     (AND (MATCH-ADVANCE-STRING ")")
+                          (MUST (|matchAdvanceString| ")")))
+                     (AND (|matchAdvanceString| ")")
                           (|pushReduction| '|PARSE-Enclosure|
                               (CONS '|%Comma| NIL))))))
-      (AND (MATCH-ADVANCE-STRING "{")
+      (AND (|matchAdvanceString| "{")
            (MUST (OR (AND (|PARSE-Expr| 6)
-                          (MUST (MATCH-ADVANCE-STRING "}"))
+                          (MUST (|matchAdvanceString| "}"))
                           (|pushReduction| '|PARSE-Enclosure|
                               (CONS '|brace|
                                     (CONS
                                      (CONS '|construct|
                                       (CONS (|popStack1|) NIL))
                                      NIL))))
-                     (AND (MATCH-ADVANCE-STRING "}")
+                     (AND (|matchAdvanceString| "}")
                           (|pushReduction| '|PARSE-Enclosure|
                               (CONS '|brace| NIL))))))
-      (AND (MATCH-ADVANCE-STRING "[|")
+      (AND (|matchAdvanceString| "[|")
 	   (MUST (AND (|PARSE-Statement|)
-		      (MUST (MATCH-ADVANCE-STRING "|]"))
+		      (MUST (|matchAdvanceString| "|]"))
 		      (|pushReduction| '|PARSE-Enclosure|
 				      (CONS '|[\|\|]|
 					    (CONS (|popStack1|) NIL)))
@@ -691,37 +691,8 @@
       )) 
 
 (DEFUN |PARSE-Quad| ()
-  (AND (MATCH-ADVANCE-STRING "$")
+  (AND (|matchAdvanceString| "$")
        (|pushReduction| '|PARSE-Quad| '$)))
-
-(DEFUN |PARSE-VarForm| ()
-  (AND (|parseName|)
-       (OPTIONAL
-           (AND (|PARSE-Scripts|)
-                (|pushReduction| '|PARSE-VarForm|
-                    (CONS '|Scripts|
-                          (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))
-       (|pushReduction| '|PARSE-VarForm| (|popStack1|)))) 
-
-
-(DEFUN |PARSE-Scripts| ()
-  (AND |$nonblank| (MATCH-ADVANCE-STRING "[") (MUST (|PARSE-ScriptItem|))
-       (MUST (MATCH-ADVANCE-STRING "]")))) 
-
-
-(DEFUN |PARSE-ScriptItem| ()
-  (OR (AND (|PARSE-Expr| 90)
-           (OPTIONAL
-               (AND (STAR REPEATOR
-                          (AND (MATCH-ADVANCE-STRING ";")
-                               (MUST (|PARSE-ScriptItem|))))
-                    (|pushReduction| '|PARSE-ScriptItem|
-                        (CONS '|;|
-                              (CONS (|popStack2|)
-                                    (APPEND (|popStack1|) NIL)))))))
-      (AND (MATCH-ADVANCE-STRING ";") (MUST (|PARSE-ScriptItem|))
-           (|pushReduction| '|PARSE-ScriptItem|
-               (CONS '|PrefixSC| (CONS (|popStack1|) NIL)))))) 
 
 (DEFUN |PARSE-Data| ()
   (AND (ACTION (SETQ LABLASOC NIL)) (|PARSE-Sexpr|)
@@ -736,24 +707,24 @@
 (DEFUN |PARSE-Sexpr1| ()
   (OR (|parseInteger|)
       (|parseString|)
-      (AND (|PARSE-AnyId|)
+      (AND (|parseAnyId|)
            (OPTIONAL
                (AND (|PARSE-NBGliphTok| '=) (MUST (|PARSE-Sexpr1|))
                     (ACTION (SETQ LABLASOC
                                   (CONS (CONS (|popStack2|)
                                          (|nthStack| 1))
                                         LABLASOC))))))
-      (AND (MATCH-ADVANCE-STRING "'") (MUST (|PARSE-Sexpr1|))
+      (AND (|matchAdvanceString| "'") (MUST (|PARSE-Sexpr1|))
            (|pushReduction| '|PARSE-Sexpr1|
                (CONS 'QUOTE (CONS (|popStack1|) NIL))))
       ;; next form disabled -- gdr, 2009-06-15.
-;      (AND (MATCH-ADVANCE-STRING "-") (MUST (|parseInteger|))
+;      (AND (|matchAdvanceString| "-") (MUST (|parseInteger|))
 ;           (|pushReduction| '|PARSE-Sexpr1| (MINUS (|popStack1|))))
-      (AND (MATCH-ADVANCE-STRING "[")
+      (AND (|matchAdvanceString| "[")
            (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-Sexpr1|))))
-           (MUST (MATCH-ADVANCE-STRING "]"))
+           (MUST (|matchAdvanceString| "]"))
            (|pushReduction| '|PARSE-Sexpr1| (LIST2VEC (|popStack1|))))
-      (AND (MATCH-ADVANCE-STRING "(")
+      (AND (|matchAdvanceString| "(")
            (BANG FIL_TEST
                  (OPTIONAL
                      (AND (STAR REPEATOR (|PARSE-Sexpr1|))
@@ -762,7 +733,7 @@
                                    (MUST (|PARSE-Sexpr1|))
                                    (|pushReduction| '|PARSE-Sexpr1|
                                     (|append!| (|popStack2|) (|popStack1|))))))))
-           (MUST (MATCH-ADVANCE-STRING ")"))))) 
+           (MUST (|matchAdvanceString| ")"))))) 
 
 
 (DEFUN |PARSE-NBGliphTok| (|tok|)
@@ -776,21 +747,11 @@
   (AND (|matchCurrentToken| 'GLIPH (INTERN |tok|))
        (ACTION (|advanceToken|)))) 
 
-
-(DEFUN |PARSE-AnyId| ()
-  (OR (|parseName|)
-      (OR (AND (|matchString| "$")
-               (|pushReduction| '|PARSE-AnyId| (|currentSymbol|))
-               (ACTION (|advanceToken|)))
-          (|parseToken| 'KEYWORD)
-	  (|PARSE-OperatorFunctionName|))))
-
-
 (DEFUN |PARSE-Sequence| ()
   (OR (AND (|PARSE-OpenBracket|) (MUST (|PARSE-Sequence1|))
-           (MUST (MATCH-ADVANCE-STRING "]")))
+           (MUST (|matchAdvanceString| "]")))
       (AND (|PARSE-OpenBrace|) (MUST (|PARSE-Sequence1|))
-           (MUST (MATCH-ADVANCE-STRING "}"))
+           (MUST (|matchAdvanceString| "}"))
            (|pushReduction| '|PARSE-Sequence|
                (CONS '|brace| (CONS (|popStack1|) NIL)))))) 
 

@@ -1,3 +1,15 @@
+2011-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot (matchAdvanceString): New.
+	* interp/spad-parser.boot: New parsing functions.
+	* interp/fnewmeta.lisp: Use them.
+	(PARSE-VarForm): Remove.
+	(PARSE-Scripts): Likewise.
+	(PARSE-ScriptItem): Likewise.
+	(PARSE-AnyId): Likewise.
+	* interp/parsing.lisp (PARSE-OperatorFunctionName): Remove.
+	(MATCH-ADVANCE-STRING): Likewise.
+
 2011-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot (matchString): New.

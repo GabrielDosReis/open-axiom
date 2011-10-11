@@ -238,7 +238,7 @@ JVMOpcode(): Public == Private where
        'ifge, 'ifle, 'if__icmpeq, 'if__icmpne, 'if__icmplt,        _
        'if__cmpge, 'if__cmpgt, 'if__cmple, 'if__cmpeq, 'if__acmpeq,_
        'if__acmpne, 'goto, 'jsr, 'ret, 'tableswitch, 'lookupswitch,_
-       'ireturn, 'lreturn, 'freturn, 'dreturn, 'areturn, 'return,  _
+       'ireturn, 'lreturn, 'freturn, 'dreturn, 'areturn, '_return,  _
        'getstatic, 'putstatic, 'getfield,'putfield, 'invokevirtual,_
        'invokespecial, 'invokestatic, 'invokeinterface,            _
        'xxxunusedxxx, 'new, 'newarray, 'anewarray, 'arraylength,   _
