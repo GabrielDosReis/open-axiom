@@ -39,7 +39,9 @@ import sys_-macros
 
 namespace BOOT
 
-module lexing
+module lexing where
+  matchString: %String -> %Maybe %Short
+  matchAdvanceString: %String -> %Maybe %Short
 
 --%
 --% Line abstract datatype
@@ -326,10 +328,12 @@ getIdentifier(tok,esc?) ==
     'IDENTIFIER
   tokenInstall(s,tt,tok,$nonblank)
 
+escapeKeywords: (%String,%Symbol) -> %String
 escapeKeywords(nm,id) ==
   symbolMember?(id,Keywords) => strconc('"__",nm)
   nm
 
+underscore: %String -> %String
 underscore s ==
   n := #s - 1
   and/[alphabetic? stringChar(s,i) for i in 0..n] => s
@@ -341,6 +345,7 @@ underscore s ==
     buf := [c,:buf]
   listToString reverse! buf
 
+quoteIfString: %Thing -> %Maybe %String
 quoteIfString tok ==
   tok = nil => nil
   tt := tokenType tok
@@ -349,7 +354,7 @@ quoteIfString tok ==
   tt is 'SPECIAL_-CHAR => charString tokenSymbol tok
   tt is 'IDENTIFIER =>
     escapeKeywords(symbolName tokenSymbol tok,tokenSymbol tok)
-  tokenSymbol tok
+  symbolName tokenSymbol tok
 
 ungetTokens() ==
   $validTokens = 0 => true
@@ -383,6 +388,18 @@ matchString x ==
     idx := lineCurrentIndex $spadLine
     nx + idx > #buf => nil
     and/[stringChar(x,i) = stringChar(buf,idx + i) for i in 0..nx-1] and nx
+  nil
+
+++ Same as matchString except if successful, advance inputstream past `x'.
+matchAdvanceString x ==
+  n := #x >= #quoteIfString currentToken() and matchString x =>
+    lineCurrentIndex($spadLine) := lineCurrentIndex $spadLine + n
+    c :=
+      linePastEnd? $spadLine => charByName '"Space"
+      lineBuffer($spadLine).(lineCurrentIndex $spadLine)
+    lineCurrentChar($spadLine) := c
+    $priorToken := makeToken(makeSymbol x,'IDENTIFIER,$nonblank)
+    n
   nil
 
 --%
