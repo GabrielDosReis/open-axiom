@@ -566,25 +566,25 @@ ThreeDimensionalViewport(): Exports == Implementation where
       viewport
          -- the key (now set to 0) should be what the viewport returns
 
-    viewThetaDefault    == convert(defaultTheta())@F
+    viewThetaDefault    == convert(deref defaultTheta)@F
     viewThetaDefault  t == 
-      defaultTheta() := convert(t)@SF
+      setref(defaultTheta,convert(t)@SF)
       t
-    viewPhiDefault      == convert(defaultPhi())@F
+    viewPhiDefault      == convert(deref defaultPhi)@F
     viewPhiDefault    t == 
-      defaultPhi() := convert(t)@SF
+      setref(defaultPhi,convert(t)@SF)
       t
-    viewZoomDefault     == convert(defaultZoom())@F
+    viewZoomDefault     == convert(deref defaultZoom)@F
     viewZoomDefault   t == 
-      defaultZoom() := convert(t)@SF
+      setref(defaultZoom,convert(t)@SF)
       t
-    viewDeltaXDefault   == convert(defaultDeltaX())@F
+    viewDeltaXDefault   == convert(deref defaultDeltaX)@F
     viewDeltaXDefault t == 
-      defaultDeltaX() := convert(t)@SF
+      setref(defaultDeltaX,convert(t)@SF)
       t
-    viewDeltaYDefault   == convert(defaultDeltaY())@F
+    viewDeltaYDefault   == convert(deref defaultDeltaY)@F
     viewDeltaYDefault t == 
-      defaultDeltaY() := convert(t)@SF
+      setref(defaultDeltaY,convert(t)@SF)
       t
 
 --Exported Functions: Available features for 3D viewports

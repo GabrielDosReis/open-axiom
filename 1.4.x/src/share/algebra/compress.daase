@@ -1,5 +1,5 @@
 
-(30 . 3526439782)            
+(30 . 3527410768)            
 (3982 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
@@ -752,20 +752,21 @@
  |leaves| |nodes| |rename| |rename!| |mainValue| |mainDefiningPolynomial|
  |mainForm| |sqrt| |rischDE| |rischDEsys| |monomRDE| |baseRDE| |polyRDE|
  |monomRDEsys| |baseRDEsys| |weighted| |rdHack1| |midpoint| |midpoints|
- |realZeros| |mainCharacterization| |algebraicOf| |ReduceOrder| = |setref|
- |deref| |ref| |radicalEigenvectors| |radicalEigenvector| |radicalEigenvalues|
- |eigenMatrix| |normalise| |gramschmidt| |orthonormalBasis|
- |antisymmetricTensors| |createGenericMatrix| |symmetricTensors|
- |tensorProduct| |permutationRepresentation| |completeEchelonBasis|
- |createRandomElement| |cyclicSubmodule| |standardBasisOfCyclicSubmodule|
- |areEquivalent?| |isAbsolutelyIrreducible?| |meatAxe| |scanOneDimSubspaces|
- |double| |expt| |lift| |solveRetract| |variables| |mainVariable| |univariate|
- |multivariate| |uniform01| |normal01| |exponential1| |chiSquare1| |normal|
- |exponential| |chiSquare| F |t| |factorFraction| |componentUpperBound| |blue|
- |green| |red| |whitePoint| |uniform| |binomial| |poisson| |geometric|
- |ridHack1| |interpolate| |nullSpace| |nullity| |rank| |rowEchelon| |column|
- |row| |qelt| |ncols| |nrows| |maxColIndex| |minColIndex| |maxRowIndex|
- |minRowIndex| |antisymmetric?| |symmetric?| |diagonal?| |square?| |matrix|
+ |realZeros| |mainCharacterization| |algebraicOf| |ReduceOrder| |setref|
+ |deref| |ref| = |radicalEigenvectors| |radicalEigenvector|
+ |radicalEigenvalues| |eigenMatrix| |normalise| |gramschmidt|
+ |orthonormalBasis| |antisymmetricTensors| |createGenericMatrix|
+ |symmetricTensors| |tensorProduct| |permutationRepresentation|
+ |completeEchelonBasis| |createRandomElement| |cyclicSubmodule|
+ |standardBasisOfCyclicSubmodule| |areEquivalent?| |isAbsolutelyIrreducible?|
+ |meatAxe| |scanOneDimSubspaces| |double| |expt| |lift| |solveRetract|
+ |variables| |mainVariable| |univariate| |multivariate| |uniform01| |normal01|
+ |exponential1| |chiSquare1| |normal| |exponential| |chiSquare| F |t|
+ |factorFraction| |componentUpperBound| |blue| |green| |red| |whitePoint|
+ |uniform| |binomial| |poisson| |geometric| |ridHack1| |interpolate|
+ |nullSpace| |nullity| |rank| |rowEchelon| |column| |row| |qelt| |ncols|
+ |nrows| |maxColIndex| |minColIndex| |maxRowIndex| |minRowIndex|
+ |antisymmetric?| |symmetric?| |diagonal?| |square?| |matrix|
  |rectangularMatrix| |characteristic| |round| |fractionPart| |wholePart|
  |floor| |ceiling| |norm| |mightHaveRoots| |refine| |middle| |size| |right|
  |left| |roman| |mainSquareFreePart| |mainPrimitivePart| |mainContent|

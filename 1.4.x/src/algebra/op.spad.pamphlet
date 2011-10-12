@@ -462,7 +462,7 @@ CommonOperators(): Exports == Implementation where
       e ** x
 
     startUp b ==
-      brandNew?() := b
+      setref(brandNew?,b)
       display(oppren, paren)
       display(opbox, commaSeparate)
       display(oppi, dpi)

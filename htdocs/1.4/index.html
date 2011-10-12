@@ -212,6 +212,18 @@
       <code>IndxedList</code> were removed.
     </li>
 
+    <li>The domain <code>Reference</code> now satisfies the
+      category <code>SetCategory</code>.  In addition, the following
+      operations 
+        <pre>
+           elt: % -> S
+           setelt: (%,S) -> S
+        </pre>
+      were removed because they were redundant with <code>deref</code>
+      and <code>setref</code>, and they were sort of syntax abuse
+      leading to hard read codes.   
+    </li>
+
   </ul>
 
 

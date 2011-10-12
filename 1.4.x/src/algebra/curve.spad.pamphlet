@@ -603,8 +603,8 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
     invinfbasis:Vector(RF):= new(n, 0)
     mini := minIndex ibasis
 
-    discriminant()                   == (INIT; discPoly())
-    radcand()                        == (INIT; newrad())
+    discriminant()                   == (INIT; deref discPoly)
+    radcand()                        == (INIT; deref newrad)
     integralBasis()                  == (INIT; diag ibasis)
     integralBasisAtInfinity()        == (INIT; diag infbasis)
     basisvec()                       == (INIT; ibasis)
@@ -696,19 +696,19 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
       charPintbas(r.poly, (r.coef) x, infbasis, invinfbasis)
 
     startUp b ==
-      brandNew?() := b
+      setref(brandNew?,b)
       if zero?(p := characteristic$F) or p > n then char0StartUp()
                                                else charPStartUp()
       dsc:RF := ((-1)$Z ** ((n *$N n1) quo 2::N) * (n::Z)**n)$Z *
                radicnd ** n1 *
                   */[qelt(ibasis, i) ** 2 for i in mini..maxIndex ibasis]
-      discPoly() := primitivePart(numer dsc) / denom(dsc)
+      setref(discPoly,primitivePart(numer dsc) / denom(dsc))
 
     char0StartUp() ==
       rp          := rootPoly(radicnd, n)
       rp.exponent ~= n => error "RadicalFunctionField: curve is not irreducible"
-      newrad()    := rp.radicand
-      ib          := iBasis(newrad(), n)
+      setref(newrad,rp.radicand)
+      ib          := iBasis(deref newrad, n)
       infb        := inftyBasis(radicnd, n)
       invden:RF   := 1
       for i in mini..maxIndex ib repeat
@@ -791,8 +791,8 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
     infbasis:Matrix(RF)   := copy ibasis
     invinfbasis:Matrix(RF):= copy ibasis
 
-    branchPointAtInfinity?()   == (INIT; infBr?())
-    discriminant()             == (INIT; discPoly())
+    branchPointAtInfinity?()   == (INIT; deref infBr?)
+    discriminant()             == (INIT; deref discPoly)
     integralBasis()            == (INIT; vect ibasis)
     integralBasisAtInfinity()  == (INIT; vect infbasis)
     integralMatrix()           == (INIT; ibasis)
@@ -842,7 +842,7 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
           invinfbasis(i, j) := invib2(i, j)
 
     startUp b ==
-      brandNew?() := b
+      setref(brandNew?,b)
       nmod:UP2    := map(retract, modulus)
       ib          := integralBasis()$FunctionFieldIntegralBasis(UP, UP2,
                                 SimpleAlgebraicExtension(UP, UP2, nmod))
@@ -861,9 +861,9 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
       dsc  := resultant(modulus, differentiate modulus)
       dsc0 := dsc * determinant(infbasis) ** 2
       degree(numer dsc0) > degree(denom dsc0) =>error "Shouldn't happen"
-      infBr?() := degree(numer dsc0) < degree(denom dsc0)
+      setref(infBr?,degree(numer dsc0) < degree(denom dsc0))
       dsc := dsc * determinant(ibasis) ** 2
-      discPoly() := primitivePart(numer dsc) / denom(dsc)
+      setref(discPoly,primitivePart(numer dsc) / denom(dsc))
 
     integralDerivationMatrix d ==
       w := integralBasis()

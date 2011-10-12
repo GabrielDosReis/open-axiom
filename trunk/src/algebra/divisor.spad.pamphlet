@@ -531,11 +531,11 @@ FramedModule(R, F, UP, A, ibasis): Exports == Implementation where
       false
 
     invintmat() ==
-      if iflag?() then iflag?() := getinvintmat()
+      if deref iflag? then setref(iflag?,getinvintmat())
       imat
 
     intmat() ==
-      if wflag?() then wflag?() := getintmat()
+      if deref wflag? then setref(wflag?,getintmat())
       wmat
 
     vectProd(v1, v2) ==

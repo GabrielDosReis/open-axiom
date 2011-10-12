@@ -63,8 +63,8 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
     member?(p, s)          == s.bits.p
  
     enumerate() ==
-      if empty? all() then all() := reallyEnumerate()
-      all()
+      if empty? deref all then setref(all,reallyEnumerate())
+      deref all
  
 -- enumerates the sets of p integers in 1..q, returns them as sets in 1..n
 -- must have p <= q
@@ -81,19 +81,19 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
       concat!(enum(p, q1, n), l)
  
     size() ==
-      if zero? sz() then
-         sz() := binomial(n, m)$IntegerCombinatoricFunctions(Integer) :: N
-      sz()
+      if zero? deref sz then
+        setref(sz,binomial(n, m)$IntegerCombinatoricFunctions(Integer) :: N)
+      deref sz
  
     lookup s ==
-      if empty? all() then all() := reallyEnumerate()
-      if zero?(s.pos) then s.pos := position(s, all()) :: N
+      if empty? deref all then setref(all,reallyEnumerate())
+      if zero?(s.pos) then s.pos := position(s, deref all) :: N
       s.pos :: PI
       
     index p ==
       p > size() => error "index: argument too large"
-      if empty? all() then all() := reallyEnumerate()
-      all().p
+      if empty? deref all then setref(all,reallyEnumerate())
+      deref(all).p
  
     setOfMinN l ==
       s := new(n, false)$Bits

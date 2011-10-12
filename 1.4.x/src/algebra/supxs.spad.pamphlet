@@ -85,7 +85,7 @@ SparseUnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
       sups : SUPS := laurentRep(x) pretend SUPS
       st := getStream sups; refer := getRef sups
       if not(explicitlyEmpty? st or explicitEntries? st) _
-        and (nx := retractIfCan(elt refer)@Union(I,"failed")) case I then
+        and (nx := retractIfCan(deref refer)@Union(I,"failed")) case I then
         count : NNI := _$streamCount$Lisp
         degr := min(count,(nx :: I) + count + 1)
         extend(sups,degr)

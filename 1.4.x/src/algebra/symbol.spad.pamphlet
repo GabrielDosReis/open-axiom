@@ -213,8 +213,8 @@ Symbol(): Exports == Implementation where
         if zero?(n) then return ns
       
     new() ==
-      sym := anyRadix(count()::Integer,ALPHAS)
-      count() := count() + 1
+      sym := anyRadix(deref count,ALPHAS)
+      setref(count, deref count + 1)
       concat("%",sym)::%
 
     new x ==
@@ -234,7 +234,7 @@ Symbol(): Exports == Implementation where
       script(xx::%,scripts x)
 
     resetNew() ==
-      count() := 0
+      setref(count,0)
       for k in keys xcount repeat remove!(k, xcount)
 
     scripted? sy ==
