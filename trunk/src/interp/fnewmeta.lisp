@@ -50,25 +50,6 @@
 (defun |isTokenDelimiter| () 
        (MEMBER (|currentSymbol|) '(\) END\_UNIT NIL)))
 
-(DEFUN |PARSE-NewExpr| ()
-  (OR (AND (|matchString| ")") (ACTION (|processSynonyms|))
-           (MUST (|PARSE-Command|)))
-      (AND (ACTION (SETQ DEFINITION_NAME (|currentSymbol|)))
-           (|PARSE-Statement|)))) 
-
-
-(DEFUN |PARSE-Command| ()
-  (AND (|matchAdvanceString| ")") (MUST (|PARSE-SpecialKeyWord|))
-       (MUST (|PARSE-SpecialCommand|))
-       (|pushReduction| '|PARSE-Command| NIL))) 
-
-
-(DEFUN |PARSE-SpecialKeyWord| ()
-  (AND (|matchCurrentToken| 'IDENTIFIER)
-       (ACTION (SETF (|tokenSymbol| (|currentToken|))
-                     (|unAbbreviateKeyword| (|currentSymbol|)))))) 
-
-
 (DEFUN |PARSE-SpecialCommand| ()
   (OR (AND (|matchAdvanceString| "show")
            (BANG FIL_TEST
@@ -82,7 +63,7 @@
            (ACTION (FUNCALL (|currentSymbol|))))
       (AND (MEMBER (|currentSymbol|) |$tokenCommands|)
            (|PARSE-TokenList|) (MUST (|PARSE-TokenCommandTail|)))
-      (AND (STAR REPEATOR (|PARSE-PrimaryOrQM|))
+      (AND (STAR REPEATOR (|parsePrimaryOrQM|))
            (MUST (|PARSE-CommandTail|))))) 
 
 
@@ -94,16 +75,11 @@
 
 
 (DEFUN |PARSE-TokenCommandTail| ()
-  (AND (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-TokenOption|))))
+  (AND (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|parseTokenOption|))))
        (|atEndOfLine|)
        (|pushReduction| '|PARSE-TokenCommandTail|
            (CONS (|popStack2|) (APPEND (|popStack1|) NIL)))
        (ACTION (|systemCommand| (|popStack1|))))) 
-
-
-(DEFUN |PARSE-TokenOption| ()
-  (AND (|matchAdvanceString| ")") (MUST (|PARSE-TokenList|)))) 
-
 
 (DEFUN |PARSE-CommandTail| ()
   (AND (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-Option|))))
@@ -112,16 +88,9 @@
            (CONS (|popStack2|) (APPEND (|popStack1|) NIL)))
        (ACTION (|systemCommand| (|popStack1|))))) 
 
-
-(DEFUN |PARSE-PrimaryOrQM| ()
-  (OR (AND (|matchAdvanceString| "?")
-           (|pushReduction| '|PARSE-PrimaryOrQM| '?))
-      (|PARSE-Primary|))) 
-
-
 (DEFUN |PARSE-Option| ()
   (AND (|matchAdvanceString| ")")
-       (MUST (STAR REPEATOR (|PARSE-PrimaryOrQM|))))) 
+       (MUST (STAR REPEATOR (|parsePrimaryOrQM|))))) 
 
 
 (DEFUN |PARSE-Statement| ()
@@ -134,19 +103,6 @@
                     (CONS '|Series|
                           (CONS (|popStack2|)
                                 (APPEND (|popStack1|) NIL)))))))) 
-
-
-(DEFUN |PARSE-InfixWith| ()
-  (AND (|PARSE-With|)
-       (|pushReduction| '|PARSE-InfixWith|
-           (CONS '|Join| (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))) 
-
-
-(DEFUN |PARSE-With| ()
-  (AND (MATCH-ADVANCE-KEYWORD "with") (MUST (|PARSE-Category|))
-       (|pushReduction| '|PARSE-With|
-           (CONS '|with| (CONS (|popStack1|) NIL))))) 
-
 
 (DEFUN |PARSE-Category| ()
   (PROG (G1)
@@ -220,20 +176,11 @@
                     (CONS '|import|
 			  (CONS (|popStack2|) (APPEND (|popStack1|) NIL))))))))
 
-;; domain inlining.  Same syntax as import directive; except
-;; deliberate restriction on naming one type at a time.
-;; -- gdr, 2009-02-28.
-(DEFUN |PARSE-Inline| ()
-  (AND (MATCH-ADVANCE-KEYWORD "inline")
-       (MUST (|PARSE-Expr| 1000))
-       (|pushReduction| '|PARSE-Inline|
-           (CONS '|%Inline| (CONS (|popStack1|) NIL)))))
-
 ;; quantified types.  At the moment, these are used only in
 ;; pattern-mathing cases.
 ;; -- gdr, 2009-06-14.
 (DEFUN |PARSE-Scheme| ()
-  (OR (AND (|PARSE-Quantifier|)
+  (OR (AND (|parseQuantifier|)
 	   (MUST (|PARSE-QuantifiedVariableList|))
 	   (MUST (|matchAdvanceString| "."))
 	   (MUST (|PARSE-Expr| 200))
@@ -243,75 +190,18 @@
 					     (CONS (|popStack1|) NIL))))))
       (|PARSE-Application|)))
 
-(DEFUN |PARSE-Quantifier| ()
-  (OR (AND (MATCH-ADVANCE-KEYWORD "forall")
-	   (MUST (|pushReduction| '|PARSE-Quantifier| '|%Forall|)))
-      (AND (MATCH-ADVANCE-KEYWORD "exist")
-	   (MUST (|pushReduction| '|PARSE-Quantifier| '|%Exist|)))))
-
 (DEFUN |PARSE-QuantifiedVariableList| ()
   (AND (|matchAdvanceString| "(")
-       (MUST (|PARSE-QuantifiedVariable|))
+       (MUST (|parseQuantifiedVariable|))
        (OPTIONAL 
 	(AND (STAR REPEATOR 
 		   (AND (|matchAdvanceString| ",")
-			(MUST (|PARSE-QuantifiedVariable|))))
+			(MUST (|parseQuantifiedVariable|))))
 	     (|pushReduction| '|PARSE-QuantifiedVariableList|
 			     (CONS '|%Sequence|
 				   (CONS (|popStack2|) 
 					 (APPEND (|popStack1|) NIL))))))
        (MUST (|matchAdvanceString| ")"))))
-
-(DEFUN |PARSE-QuantifiedVariable| ()
-  (AND (|parseName|)
-       (MUST (|matchAdvanceString| ":"))
-       (MUST (|PARSE-Application|))
-       (MUST (|pushReduction| '|PARSE-QuantifiedVariable|
-			     (CONS '|:| 
-				   (CONS (|popStack2|)
-					 (CONS (|popStack1|) NIL)))))))
-
-(DEFUN |PARSE-Infix| ()
-  (AND (|pushReduction| '|PARSE-Infix| (|currentSymbol|))
-       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
-       (MUST (|PARSE-Expression|))
-       (|pushReduction| '|PARSE-Infix|
-           (CONS (|popStack2|)
-                 (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))) 
-
-
-(DEFUN |PARSE-Prefix| ()
-  (AND (|pushReduction| '|PARSE-Prefix| (|currentSymbol|))
-       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
-       (MUST (|PARSE-Expression|))
-       (|pushReduction| '|PARSE-Prefix|
-           (CONS (|popStack2|) (CONS (|popStack1|) NIL))))) 
-
-
-(DEFUN |PARSE-Suffix| ()
-  (AND (|pushReduction| '|PARSE-Suffix| (|currentSymbol|))
-       (ACTION (|advanceToken|)) (OPTIONAL (|PARSE-TokTail|))
-       (|pushReduction| '|PARSE-Suffix|
-           (CONS (|popStack1|) (CONS (|popStack1|) NIL))))) 
-
-
-(DEFUN |PARSE-TokTail| ()
-  (PROG (G1)
-    (RETURN
-      (AND (EQ (|currentSymbol|) '$)
-           (OR (ALPHA-CHAR-P (|currentChar|))
-               (CHAR-EQ (|currentChar|) "$")
-               (CHAR-EQ (|currentChar|) "%")
-               (CHAR-EQ (|currentChar|) "("))
-           (ACTION (SETQ G1 (|copyToken| |$priorToken|)))
-           (|PARSE-Qualification|) (ACTION (SETQ |$priorToken| G1)))))) 
-
-
-(DEFUN |PARSE-Qualification| ()
-  (AND (|matchAdvanceString| "$") (MUST (|PARSE-Primary1|))
-       (|pushReduction| '|PARSE-Qualification|
-           (|dollarTran| (|popStack1|) (|popStack1|))))) 
-
 
 (DEFUN |PARSE-SemiColon| ()
   (AND (|matchAdvanceString| ";")
@@ -338,7 +228,7 @@
        (ACTION (|advanceToken|))
        (ACTION (|advanceToken|))
        (MUST (|PARSE-GlyphTok| "("))
-       (MUST (|PARSE-QuantifiedVariable|))
+       (MUST (|parseQuantifiedVariable|))
        (MUST (MATCH-ADVANCE-SPECIAL ")"))
        (MUST (|PARSE-GlyphTok| "=>"))
        (MUST (|PARSE-Expression|))
@@ -445,7 +335,7 @@
 				   (CONS '|:| 
 				      (CONS (|popStack2|)
 					    (CONS (|popStack1|) NIL))))))))
-      (|PARSE-Primary|)))
+      (|parsePrimary|)))
 
 (DEFUN |PARSE-Iterator| ()
   (OR (AND (MATCH-ADVANCE-KEYWORD "for") (MUST (|PARSE-Variable|))
@@ -533,8 +423,8 @@
 
 (DEFUN |PARSE-getSemanticForm| (X IND Y)
   (DECLARE (SPECIAL X IND Y))
-  (OR (AND Y (EVAL Y)) (AND (EQ IND '|Nud|) (|PARSE-Prefix|))
-      (AND (EQ IND '|Led|) (|PARSE-Infix|)))) 
+  (OR (AND Y (EVAL Y)) (AND (EQ IND '|Nud|) (|parsePrefix|))
+      (AND (EQ IND '|Led|) (|parseInfix|)))) 
 
 
 (DEFUN |PARSE-Reduction| ()
@@ -568,7 +458,7 @@
 
 
 (DEFUN |PARSE-Application| ()
-  (AND (|PARSE-Primary|) (OPTIONAL (STAR OPT_EXPR (|PARSE-Selector|)))
+  (AND (|parsePrimary|) (OPTIONAL (STAR OPT_EXPR (|PARSE-Selector|)))
        (OPTIONAL
            (AND (|PARSE-Application|)
                 (|pushReduction| '|PARSE-Application|
@@ -583,18 +473,13 @@
                      (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))
       (AND (OR (|PARSE-Float|)
                (AND (|matchAdvanceString| ".")
-                    (MUST (|PARSE-Primary|))))
+                    (MUST (|parsePrimary|))))
            (MUST (|pushReduction| '|PARSE-Selector|
                      (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))) 
 
 
 (DEFUN |PARSE-PrimaryNoFloat| ()
-  (AND (|PARSE-Primary1|) (OPTIONAL (|PARSE-TokTail|)))) 
-
-
-(DEFUN |PARSE-Primary| ()
-  (OR (|PARSE-Float|) (|PARSE-PrimaryNoFloat|))) 
-
+  (AND (|PARSE-Primary1|) (OPTIONAL (|parseTokenTail|)))) 
 
 (DEFUN |PARSE-Primary1| ()
   (OR (AND (|parseName|)
@@ -603,7 +488,7 @@
                     (MUST (|PARSE-Primary1|))
                     (|pushReduction| '|PARSE-Primary1|
                         (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))
-      (|PARSE-Quad|) (|parseString|) (|parseInteger|)
+      (|parseQuad|) (|parseString|) (|parseInteger|)
       (|parseFormalParameter|)
       (AND (|matchAdvanceString| "'")
            (MUST (AND (MUST (|PARSE-Data|))
@@ -689,10 +574,6 @@
 					    (CONS (|popStack1|) NIL)))
 		      )))
       )) 
-
-(DEFUN |PARSE-Quad| ()
-  (AND (|matchAdvanceString| "$")
-       (|pushReduction| '|PARSE-Quad| '$)))
 
 (DEFUN |PARSE-Data| ()
   (AND (ACTION (SETQ LABLASOC NIL)) (|PARSE-Sexpr|)

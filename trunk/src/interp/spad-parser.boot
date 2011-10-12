@@ -44,7 +44,12 @@
 
 import parsing
 import parse
+import fnewmeta
 namespace BOOT
+
+--%
+macro compulsorySyntax s ==
+  s or SPAD__SYNTAX__ERROR()
 
 --%
 
@@ -85,6 +90,100 @@ parseAnyId() ==
     true
   parseOperatorFunctionName()
 
+parseQuad() ==
+  matchAdvanceString '"$" and pushReduction('parseQuad,"$")
+
+parsePrimary() ==
+  PARSE_-Float() or PARSE_-PrimaryNoFloat()
+
+parsePrimaryOrQM() ==
+  matchAdvanceString '"?" => pushReduction('parsePrimaryOrQM,"?")
+  parsePrimary()
+
+parseSpecialKeyWord() ==
+  matchCurrentToken 'IDENTIFIER =>
+    tokenSymbol(currentToken()) := unAbbreviateKeyword currentSymbol()
+  nil
+
+parseCommand() ==
+  matchAdvanceString '")" =>
+    compulsorySyntax parseSpecialKeyWord()
+    compulsorySyntax parseSpecialCommand()
+    pushReduction('parseStatement,nil)
+  nil
+
+parseTokenOption() ==
+  matchAdvanceString '")" and compulsorySyntax PARSE_-TokenList()
+  
+parseQualification() ==
+  matchAdvanceString '"$" =>
+    compulsorySyntax PARSE_-Primary1()
+    pushReduction('parseQualification,dollarTran(popStack1(),popStack1()))
+  nil
+
+parseTokenTail() ==
+  currentSymbol() is "$" and
+    (alphabetic? currentChar() or currentChar() = char "$"
+      or currentChar() = char "%" or currentChar() = char "(") =>
+        tok := copyToken $priorToken
+        parseQualification()
+        $priorToken := tok
+  nil
+
+parseInfix() ==
+  pushReduction('parseInfix,currentSymbol())
+  advanceToken()
+  parseTokenTail()
+  compulsorySyntax PARSE_-Expression()
+  pushReduction('parseInfix,[popStack2(),popStack2(),popStack1()])
+
+parsePrefix() ==
+  pushReduction('parsePrefix,currentSymbol())
+  advanceToken()
+  parseTokenTail()
+  compulsorySyntax PARSE_-Expression()
+  pushReduction('parsePrefix,[popStack2(),popStack1()])
+
+parseWith() ==
+  matchAdvanceKeyword "with" =>
+    compulsorySyntax PARSE_-Category()
+    pushReduction('parseWith,["with",popStack1()])
+  nil
+
+parseInfixWith() ==
+  parseWith() and
+    pushReduction('parseInfixWith,["Join",popStack2(),popStack1()])
+
+++ domain inlining.  Same syntax as import directive; except
+++ deliberate restriction on naming one type at a time.
+++ -- gdr, 2009-02-28.
+parseInline() ==
+  matchAdvanceKeyword "inline" =>
+    compulsorySyntax PARSE_-Expr 1000
+    pushReduction('parseInline,["%Inline",popStack1()])
+  nil
+
+parseQuantifier() ==
+  matchAdvanceKeyword "forall" =>
+    pushReduction('parseQuantifier,'%Forall)
+  matchAdvanceKeyword "exist" =>
+    pushReduction('parseQuantifier,'%Exist)
+  nil
+
+parseQuantifiedVariable() ==
+  parseName() =>
+    compulsorySyntax matchAdvanceString '":"
+    compulsorySyntax PARSE_-Application()
+    pushReduction('parseQuantifiedVariable,[":",popStack2(),popStack1()])
+  nil
+
+parseNewExpr() ==
+  matchString '")" =>
+    processSynonyms()
+    compulsorySyntax parseCommand()
+  SETQ(DEFINITION__NAME,currentSymbol())
+  PARSE_-Statement()
+
 --%
 
 ++ Given a pathname to a source file containing Spad code, returns
@@ -120,7 +219,7 @@ parseSpadFile sourceFile ==
   while not (_*EOF_* or FILE_-CLOSED) repeat
     BOOT_-LINE_-STACK : local := PREPARSE IN_-STREAM
     LINE : local := CDAR BOOT_-LINE_-STACK
-    CATCH('SPAD__READER,PARSE_-NewExpr())
+    CATCH('SPAD__READER,parseNewExpr())
     asts := [parseTransform postTransform popStack1(), :asts]
   -- clean up the mess, and get out of here
   IOCLEAR(IN_-STREAM, OUT_-STREAM)             
