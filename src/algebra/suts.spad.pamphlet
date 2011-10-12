@@ -144,7 +144,7 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
       -- if terms up to order n have not been computed,
       -- apply lazy evaluation
       nn := n :: COM
-      while (nx := elt refer) < nn repeat lazyEvaluate x
+      while (nx := deref refer) < nn repeat lazyEvaluate x
       -- must have nx >= n
       explicitEntries? x =>
         xCoef := getCoef(xTerm := frst x); xExpon := getExpon xTerm
@@ -163,8 +163,8 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
     iSeries(st,n,refer) == delay
       -- when this function is called, we are creating the nth order
       -- term of a series
-      empty? st => (setelt(refer,plusInfinity()); empty())
-      setelt(refer,n :: COM)
+      empty? st => (setref(refer,plusInfinity()); empty())
+      setref(refer,n :: COM)
       zero? (coef := frst st) => iSeries(rst st,n + 1,refer)
       concat(makeTerm(n,coef),iSeries(rst st,n + 1,refer))
 

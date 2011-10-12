@@ -1,3 +1,22 @@
+2011-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (Reference) [elt]: Remove.
+	[setelt]: Likewise.
+	* algebra/lodof.spad.pamphlet: Adjust use.
+	* algebra/float.spad.pamphlet: Likewise.
+	* algebra/divisor.spad.pamphlet: Likewise.
+	* algebra/curve.spad.pamphlet: Likewise.
+	* algebra/card.spad.pamphlet: Likewise.
+	* algebra/algext.spad.pamphlet: Likewise.
+	* algebra/op.spad.pamphlet: Likewise.
+	* algebra/suls.spad.pamphlet: Likewise.
+	* algebra/sups.spad.pamphlet: Likewise.
+	* algebra/supxs.spad.pamphlet: Likewise.
+	* algebra/suts.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/view3D.spad.pamphlet: Likewise.
+	* algebra/viewDef.spad.pamphlet: Likewise.
+
 2011-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot (matchAdvanceKeyword): New.

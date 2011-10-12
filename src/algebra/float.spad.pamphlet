@@ -541,8 +541,8 @@ Float():
       i := ISQRT i
       normalize [i,(e-p) quo 2]
 
-   bits() == BITS()
-   bits(n) == (t := bits(); BITS() := n; t)
+   bits() == deref BITS
+   bits(n) == (t := bits(); setref(BITS,n); t)
    precision() == bits()
    precision(n) == bits(n)
    increasePrecision n == (b := bits(); bits((b + n)::PI); b)
@@ -736,7 +736,6 @@ Float():
 
    ceilLength10 n == 146 * LENGTH n quo 485 + 1
    floorLength10 n == 643 *  LENGTH n quo 2136
---   length10 n == DECIMAL_-LENGTH(n)$Lisp
    length10 n ==
       ln := LENGTH(n:=abs n)
       upper := 76573 * ln quo 254370
@@ -800,20 +799,20 @@ Float():
    general : % -> S
 
    padFromLeft(s:S):S ==
-      zero? SPACING() => s
+      zero? deref SPACING => s
       n:I := #s - 1
-      t := new( (n + 1 + n quo SPACING()) :: N , separator )
+      t := new( (n + 1 + n quo deref SPACING) :: N , separator )
       for i in 0..n for j in minIndex t .. repeat
          t.j := s.(i + minIndex s)
-         if (i+1) rem SPACING() = 0 then j := j+1
+         if (i+1) rem deref SPACING = 0 then j := j+1
       t
    padFromRight(s:S):S ==
-      SPACING() = 0 => s
+      deref SPACING = 0 => s
       n:I := #s - 1
-      t := new( (n + 1 + n quo SPACING()) :: N , separator )
+      t := new( (n + 1 + n quo deref SPACING) :: N , separator )
       for i in n..0 by -1 for j in maxIndex t .. by -1 repeat
          t.j := s.(i + minIndex s)
-         if (n-i+1) rem SPACING() = 0 then j := j-1
+         if (n-i+1) rem deref SPACING = 0 then j := j-1
       t
 
    fixed f ==
@@ -821,17 +820,17 @@ Float():
       zero? exponent f =>
         padFromRight concat(string mantissa f, ".0")
       negative? f => concat("-", fixed abs f)
-      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
+      d := if deref OUTPREC = -1 then digits()::I else deref OUTPREC
 --    g := convert10(abs f,digits); m := g.mantissa; e := g.exponent
       g := convert10(abs f,d); m := g.mantissa; e := g.exponent
-      if OUTPREC() ~= -1 then
+      if deref OUTPREC ~= -1 then
          -- round g to OUTPREC digits after the decimal point
          l := length10 m
-         if -e > OUTPREC() and -e < 2*digits()::I then
-            g := normalize10(g,l+e+OUTPREC())
+         if -e > deref OUTPREC and -e < 2*digits()::I then
+            g := normalize10(g,l+e+deref OUTPREC)
             m := g.mantissa; e := g.exponent
       s := string m; n := #s; o := e+n
-      p := if OUTPREC() = -1 then n::I else OUTPREC()
+      p := if deref OUTPREC = -1 then n::I else deref OUTPREC
       t:S
       if e >= 0 then
          s := concat(s, new(e::N, zero))
@@ -843,7 +842,7 @@ Float():
          t := s(o + minIndex s .. n + minIndex s - 1)
          s := s(minIndex s .. o + minIndex s - 1)
       n := #t
-      if OUTPREC() = -1 then
+      if deref OUTPREC = -1 then
          t := rightTrim(t,zero)
          if t = "" then t := "0"
       else if n > p then t := t(minIndex t .. p + minIndex t- 1)
@@ -853,12 +852,12 @@ Float():
    floating f ==
       zero? f => "0.0"
       negative? f => concat("-", floating abs f)
-      t:S := if zero? SPACING() then "E" else " E "
+      t:S := if zero? deref SPACING then "E" else " E "
       zero? exponent f =>
         s := string mantissa f
         concat ["0.", padFromLeft s, t, string(#s)]
       -- base conversion to decimal rounded to the requested precision
-      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
+      d := if deref OUTPREC = -1 then digits()::I else deref OUTPREC
       g := convert10(f,d); m := g.mantissa; e := g.exponent
       -- I'm assuming that length10 m = # s given n > 0
       s := string m; n := #s; o := e+n
@@ -868,12 +867,12 @@ Float():
    general(f) ==
       zero? f => "0.0"
       negative? f => concat("-", general abs f)
-      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
+      d := if deref OUTPREC = -1 then digits()::I else deref OUTPREC
       zero? exponent f =>
         d := d + 1
         s := string mantissa f
-        OUTPREC() ~= -1 and (e := #s) > d =>
-          t:S := if zero? SPACING() then "E" else " E "
+        deref OUTPREC ~= -1 and (e := #s) > d =>
+          t:S := if zero? deref SPACING then "E" else " E "
           concat ["0.", padFromLeft s, t, string e]
         padFromRight concat(s, ".0")
       -- base conversion to decimal rounded to the requested precision
@@ -895,26 +894,26 @@ Float():
       else
          -- print using E format written  0.mantissa E exponent
          t := padFromLeft rightTrim(s,zero)
-         s := if zero? SPACING() then "E" else " E "
+         s := if zero? deref SPACING then "E" else " E "
          concat ["0.", t, s, string(e+n)]
 
-   outputSpacing n == SPACING() := n
-   outputFixed() == (OUTMODE() := "fixed"; OUTPREC() := -1)
-   outputFixed n == (OUTMODE() := "fixed"; OUTPREC() := n::I)
-   outputGeneral() == (OUTMODE() := "general"; OUTPREC() := -1)
-   outputGeneral n == (OUTMODE() := "general"; OUTPREC() := n::I)
-   outputFloating() == (OUTMODE() := "floating"; OUTPREC() := -1)
-   outputFloating n == (OUTMODE() := "floating"; OUTPREC() := n::I)
+   outputSpacing n == setref(SPACING,n)
+   outputFixed() == (setref(OUTMODE,"fixed"); setref(OUTPREC, -1))
+   outputFixed n == (setref(OUTMODE,"fixed"); setref(OUTPREC,n::I))
+   outputGeneral() == (setref(OUTMODE,"general"); setref(OUTPREC,-1))
+   outputGeneral n == (setref(OUTMODE,"general"); setref(OUTPREC,n::I))
+   outputFloating() == (setref(OUTMODE,"floating"); setref(OUTPREC,-1))
+   outputFloating n == (setref(OUTMODE,"floating"); setref(OUTPREC,n::I))
 
    convert(f):S ==
       b:Integer :=
-        OUTPREC() = -1 and not zero? f =>
+        deref OUTPREC = -1 and not zero? f =>
           bits(length(abs mantissa f)::PositiveInteger)
         0
       s :=
-        OUTMODE() = "fixed" => fixed f
-        OUTMODE() = "floating" => floating f
-        OUTMODE() = "general" => general f
+        deref OUTMODE = "fixed" => fixed f
+        deref OUTMODE = "floating" => floating f
+        deref OUTMODE = "general" => general f
         empty()$String
       if positive? b then bits(b::PositiveInteger)
       s = empty()$String => error "bad output mode"

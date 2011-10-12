@@ -152,15 +152,15 @@ ViewDefaultsPackage():Exports == Implementation where
     defaultClosed     : Reference(B)    := ref(false)
 
 --%Viewport window dimensions specifications
-    viewPosDefault   == [defaultXPos(),defaultYPos()]
+    viewPosDefault   == [deref defaultXPos,deref defaultYPos]
     viewPosDefault l ==
       #l < 2 => error "viewPosDefault expects a list with two elements"
-      [defaultXPos() := first l,defaultYPos() := last l]
+      [setref(defaultXPos,first l),setref(defaultYPos,last l)]
 
-    viewSizeDefault   == [defaultWidth(),defaultHeight()]
+    viewSizeDefault   == [deref defaultWidth,deref defaultHeight]
     viewSizeDefault l ==
       #l < 2 => error "viewSizeDefault expects a list with two elements"
-      [defaultWidth() := first l,defaultHeight() := last l]
+      [setref(defaultWidth,first l),setref(defaultHeight,last l)]
 
     viewDefaults ==
       defaultPointColor : Reference(PAL)  := ref bright red()
@@ -174,39 +174,39 @@ ViewDefaultsPackage():Exports == Implementation where
       defaultHeight     : Reference(PI)   := ref(427::PI)
 
 --%2D graphical output specifications
-    pointColorDefault   == defaultPointColor()
-    pointColorDefault p == defaultPointColor() := p
+    pointColorDefault   == deref defaultPointColor
+    pointColorDefault p == setref(defaultPointColor,p)
 
-    lineColorDefault   == defaultLineColor()
-    lineColorDefault p == defaultLineColor() := p
+    lineColorDefault   == deref defaultLineColor
+    lineColorDefault p == setref(defaultLineColor,p)
 
-    axesColorDefault   == defaultAxesColor()
-    axesColorDefault p == defaultAxesColor() := p
+    axesColorDefault   == deref defaultAxesColor
+    axesColorDefault p == setref(defaultAxesColor,p)
 
-    unitsColorDefault   == defaultUnitsColor()
-    unitsColorDefault p == defaultUnitsColor() := p
+    unitsColorDefault   == deref defaultUnitsColor
+    unitsColorDefault p == setref(defaultUnitsColor,p)
 
-    pointSizeDefault   == defaultPointSize()
-    pointSizeDefault x == defaultPointSize() := x
+    pointSizeDefault   == deref defaultPointSize
+    pointSizeDefault x == setref(defaultPointSize,x)
 
 
 --%3D specific stuff
-    var1StepsDefault   == defaultVar1Steps()
-    var1StepsDefault i == defaultVar1Steps() := i
+    var1StepsDefault   == deref defaultVar1Steps
+    var1StepsDefault i == setref(defaultVar1Steps,i)
 
-    var2StepsDefault   == defaultVar2Steps()
-    var2StepsDefault i == defaultVar2Steps() := i
+    var2StepsDefault   == deref defaultVar2Steps
+    var2StepsDefault i == setref(defaultVar2Steps,i)
 
-    tubePointsDefault   == defaultTubePoints()
-    tubePointsDefault i == defaultTubePoints() := i
+    tubePointsDefault   == deref defaultTubePoints
+    tubePointsDefault i == setref(defaultTubePoints,i)
 
-    tubeRadiusDefault   == defaultTubeRadius()
-    tubeRadiusDefault f == defaultTubeRadius() := convert(f)@SF
+    tubeRadiusDefault   == deref defaultTubeRadius
+    tubeRadiusDefault f == setref(defaultTubeRadius,convert(f)@SF)
 
 --%File output stuff
     viewWriteAvailable == writeAvailable
 
-    viewWriteDefault == defaultThingsToWrite()
+    viewWriteDefault == deref defaultThingsToWrite
 
     viewWriteDefault listOfThings ==
       thingsToWrite : L S := []
@@ -216,7 +216,7 @@ ViewDefaultsPackage():Exports == Implementation where
                        " is not a valid file type for writing a viewport")])$Lisp
         else
           thingsToWrite := append(thingsToWrite,[aTypeOfFile])
-      defaultThingsToWrite() := thingsToWrite
+      setref(defaultThingsToWrite,thingsToWrite)
 
 @
 \section{License}
