@@ -115,7 +115,7 @@
           (|in| 400 400) 
 	  (|case| 400 400)
           (|add| 400 120)
-	  (|with| 2000 400 (|PARSE-InfixWith|))
+	  (|with| 2000 400 (|parseInfixWith|))
           (|has| 400 400)
           (|where| 121 104)     ; must be 121 for SPAD, 126 for boot--> nboot
           (|when| 112 190)
@@ -136,12 +136,12 @@
           (|until| 130 190 (|PARSE-Loop|))
           (|repeat| 130 190 (|PARSE-Loop|))
           (|import| 120 0 (|PARSE-Import|) )
-          (|inline| 120 0 (|PARSE-Inline|) )
+          (|inline| 120 0 (|parseInline|) )
 	  (|forall| 998 999 (|PARSE-Scheme|))
 	  (|exist| 998 999 (|PARSE-Scheme|))
           (|unless|)
           (|add| 900 120)
-          (|with| 1000 300 (|PARSE-With|))
+          (|with| 1000 300 (|parseWith|))
           (|has| 400 400)
           (- 701 700)  ; right-prec. wants to be -1 + left-prec
 ;;        (\+ 701 700)

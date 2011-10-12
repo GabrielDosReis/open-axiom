@@ -121,7 +121,7 @@
          (if (setq |$lineStack| (PREPARSE in-stream))
              (let ((LINE (cdar |$lineStack|)))
                (declare (special LINE))
-               (|PARSE-NewExpr|)
+               (|parseNewExpr|)
                (let ((parseout (|popStack1|)) )
                  (when parseout
                        (let ((|$OutputStream| out-stream))

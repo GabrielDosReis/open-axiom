@@ -1,5 +1,29 @@
 2011-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (matchAdvanceKeyword): New.
+	* interp/spad-parser.boot: New parsing functions.
+	* interp/fnewmeta.lisp: Use them.
+	(PARSE-NewExpr): Remove.
+	(PARSE-Command): Likewise.
+	(PARSE-SpecialKeyWord): Likewise.
+	(PARSE-TokenOption): Likewise.
+	(PARSE-PrimaryOrQM): Likewise.
+	(PARSE-InfixWith): Likewise.
+	(PARSE-With): Likewise.
+	(PARSE-Inline): Likewise.
+	(PARSE-Quanifier): Likewise.
+	(PARSE-QuantifiedVariable): Likewise.
+	(PARSE-Infix): Likewise.
+	(PARSE-Prefix): Likewise.
+	(PARSE-Suffix): Likewise.
+	(PARSE-TokTail): Likewise.
+	(PARSE-Qualification): Likewise.
+	(PARSE-Primary): Likewise.
+	(PARSE-PrimaryNoFloat): Likewise.
+	(PARSE-Quad): Likewise.
+
+2011-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot (matchAdvanceString): New.
 	* interp/spad-parser.boot: New parsing functions.
 	* interp/fnewmeta.lisp: Use them.

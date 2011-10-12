@@ -42,6 +42,7 @@ namespace BOOT
 module lexing where
   matchString: %String -> %Maybe %Short
   matchAdvanceString: %String -> %Maybe %Short
+  matchAdvanceKeyword: %Symbol -> %Thing
 
 --%
 --% Line abstract datatype
@@ -401,6 +402,12 @@ matchAdvanceString x ==
     $priorToken := makeToken(makeSymbol x,'IDENTIFIER,$nonblank)
     n
   nil
+
+matchAdvanceKeyword kwd ==
+  matchToken(currentToken(),'KEYWORD,kwd) =>
+    advanceToken()
+    true
+  false
 
 --%
 --% Stack abstract datatype.

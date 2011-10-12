@@ -322,7 +322,7 @@ server.$(FASLEXT): macros.$(FASLEXT)
 
 ## The old parser component roughtly is:
 ##
-spad-parser.$(FASLEXT): parsing.$(FASLEXT) parse.$(FASLEXT)
+spad-parser.$(FASLEXT): parsing.$(FASLEXT) parse.$(FASLEXT) fnewmeta.$(FASLEXT)
 parse.$(FASLEXT): parsing.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
