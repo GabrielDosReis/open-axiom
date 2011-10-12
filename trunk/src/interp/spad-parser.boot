@@ -154,6 +154,10 @@ parseInfixWith() ==
   parseWith() and
     pushReduction('parseInfixWith,["Join",popStack2(),popStack1()])
 
+parseElseClause() ==
+  currentSymbol() is "if" => PARSE_-Conditional()
+  PARSE_-Expression()
+
 ++ domain inlining.  Same syntax as import directive; except
 ++ deliberate restriction on naming one type at a time.
 ++ -- gdr, 2009-02-28.
@@ -175,6 +179,41 @@ parseQuantifiedVariable() ==
     compulsorySyntax matchAdvanceString '":"
     compulsorySyntax PARSE_-Application()
     pushReduction('parseQuantifiedVariable,[":",popStack2(),popStack1()])
+  nil
+
+++ We should factorize these boilerplates
+parseReturn() ==
+  matchAdvanceKeyword "return" =>
+    compulsorySyntax PARSE_-Expression()
+    pushReduction('parseReturn,["return",popStack1()])
+  nil
+
+parseThrow() ==
+  matchAdvanceKeyword "throw" =>
+    compulsorySyntax PARSE_-Expression()
+    pushReduction('parseReturn,["%Throw",popStack1()])
+  nil
+
+parseExit() ==
+  matchAdvanceKeyword "exit" =>
+    x :=
+      PARSE_-Expression() => popStack1()
+      "$NoValue"
+    pushReduction('parseExit,["exit",x])
+  nil
+
+parseLeave() ==
+  matchAdvanceKeyword "leave" =>
+    x :=
+      PARSE_-Expression() => popStack1()
+      "$NoValue"
+    pushReduction('parseLeave,["leave",x])
+  nil
+
+parseJump() ==
+  s := currentSymbol() =>
+    advanceToken()
+    pushReduction('parseJump,s)
   nil
 
 parseNewExpr() ==

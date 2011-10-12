@@ -210,18 +210,6 @@
        (|pushReduction| '|PARSE-SemiColon|
            (CONS '|;| (CONS (|popStack2|) (CONS (|popStack1|) NIL)))))) 
 
-;; We should factorize these boilerplates
-(DEFUN |PARSE-Return| ()
-  (AND (MATCH-ADVANCE-KEYWORD "return") (MUST (|PARSE-Expression|))
-       (|pushReduction| '|PARSE-Return|
-           (CONS '|return| (CONS (|popStack1|) NIL))))) 
-
-(DEFUN |PARSE-Throw| ()
-  (AND (MATCH-ADVANCE-KEYWORD "throw")
-       (MUST (|PARSE-Expression|))
-       (|pushReduction| '|PARSE-Throw|
-           (CONS '|%Throw| (CONS (|popStack1|) NIL))))) 
-
 (DEFUN |PARSE-Catch| ()
   (AND (MATCH-SPECIAL ";")
        (MATCH-KEYWORD-NEXT "catch")
@@ -265,30 +253,6 @@
 					   (CONS (|popStack1|) 
 						 NIL))))))))))
 
-
-(DEFUN |PARSE-Jump| ()
-  (LET ((S (|currentSymbol|)))
-       (AND S 
-	    (ACTION (|advanceToken|))
-	    (|pushReduction| '|PARSE-Jump| S))))
-
-
-(DEFUN |PARSE-Exit| ()
-  (AND (MATCH-ADVANCE-KEYWORD "exit")
-       (MUST (OR (|PARSE-Expression|)
-                 (|pushReduction| '|PARSE-Exit| '|$NoValue|)))
-       (|pushReduction| '|PARSE-Exit|
-           (CONS '|exit| (CONS (|popStack1|) NIL)))))
-
-
-(DEFUN |PARSE-Leave| ()
-  (AND (MATCH-ADVANCE-KEYWORD "leave")
-       (MUST (OR (|PARSE-Expression|)
-                 (|pushReduction| '|PARSE-Leave| '|$NoValue|)))
-       (MUST (|pushReduction| '|PARSE-Leave|
-                 (CONS '|leave| (CONS (|popStack1|) NIL))))))
-
-
 (DEFUN |PARSE-Seg| ()
   (AND (|PARSE-GlyphTok| "..")
        (BANG FIL_TEST (OPTIONAL (|PARSE-Expression|)))
@@ -303,17 +267,11 @@
        (BANG FIL_TEST
              (OPTIONAL
                  (AND (MATCH-ADVANCE-KEYWORD "else")
-                      (MUST (|PARSE-ElseClause|)))))
+                      (MUST (|parseElseClause|)))))
        (|pushReduction| '|PARSE-Conditional|
            (CONS '|if|
                  (CONS (|popStack3|)
                        (CONS (|popStack2|) (CONS (|popStack1|) NIL))))))) 
-
-
-(DEFUN |PARSE-ElseClause| ()
-  (OR (AND (EQ (|currentSymbol|) '|if|) (|PARSE-Conditional|))
-      (|PARSE-Expression|))) 
-
 
 (DEFUN |PARSE-Loop| ()
   (OR (AND (STAR REPEATOR (|PARSE-Iterator|))
@@ -381,12 +339,6 @@
        (OPTIONAL (STAR OPT_EXPR (|PARSE-LedPart| RBP)))
        (|pushReduction| '|PARSE-Expr| (|popStack1|)))) 
 
-
-(DEFUN |PARSE-Label| ()
-  (AND (|matchAdvanceString| "<<") (MUST (|parseName|))
-       (MUST (|matchAdvanceString| ">>")))) 
-
-
 (DEFUN |PARSE-LedPart| (RBP)
   (DECLARE (SPECIAL RBP))
   (AND (|PARSE-Operation| '|Led| RBP)
@@ -443,14 +395,7 @@
 
 (DEFUN |PARSE-Form| ()
   (OR (AND (MATCH-ADVANCE-KEYWORD "iterate")
-           (BANG FIL_TEST
-                 (OPTIONAL
-                     (AND (MATCH-ADVANCE-KEYWORD "from")
-                          (MUST (|PARSE-Label|))
-                          (|pushReduction| '|PARSE-Form|
-                              (CONS (|popStack1|) NIL)))))
-           (|pushReduction| '|PARSE-Form|
-               (CONS '|iterate| (APPEND (|popStack1|) NIL))))
+           (|pushReduction| '|PARSE-Form| (CONS '|iterate| NIL)))
       (AND (MATCH-ADVANCE-KEYWORD "yield") (MUST (|PARSE-Application|))
            (|pushReduction| '|PARSE-Form|
                (CONS '|yield| (CONS (|popStack1|) NIL))))

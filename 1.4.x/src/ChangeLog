@@ -1,5 +1,17 @@
 2011-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad-parser.spad: New parsing functions.
+	* interp/fnewmeta.lisp: Use them,
+	(PARSE-Return): Remove.
+	(PARSE-Throw): Likewise.
+	(PARSE-Jump): Likewise.
+	(PARSE-Exit): Likewise.
+	(PARSE-Leave): Likewise.
+	(PARSE-ElseClause): Likewise.
+	(PARSE-Label): Likewise.
+
+2011-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (Reference) [elt]: Remove.
 	[setelt]: Likewise.
 	* algebra/lodof.spad.pamphlet: Adjust use.

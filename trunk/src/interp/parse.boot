@@ -264,9 +264,9 @@ parseOr t ==
     parseIf ["IF",y,parseOr ["or",:rest u],"true"]
   parseIf ["IF",x,"true",parseOr ["or",:rest u]]
  
-parseExit: %ParseForm -> %Form
-parseExit t ==
-  t isnt ["exit",a,:b] => systemErrorHere ["parseExit",t]
+doParseExit: %ParseForm -> %Form
+doParseExit t ==
+  t isnt ["exit",a,:b] => systemErrorHere ["doParseExit",t]
   --  note: I wanted to convert 1s to 0s here to facilitate indexing in
   --   comp code; unfortunately, parseTran-ning is sometimes done more
   --   than once so that the count can be decremented more than once
@@ -279,9 +279,9 @@ parseExit t ==
   ["exit",1,a]
  
 
-parseLeave: %ParseForm -> %Form
-parseLeave t ==
-  t isnt ["leave",a,:b] => systemErrorHere ["parseLeave",t]
+doParseLeave: %ParseForm -> %Form
+doParseLeave t ==
+  t isnt ["leave",a,:b] => systemErrorHere ["doParseLeave",t]
   a:= parseTran a
   b:= parseTran b
   b =>
@@ -448,7 +448,7 @@ for x in [[":", :"parseColon"],_
 	  ["CATEGORY", :"parseCategory"],_
 	  ["construct", :"parseConstruct"],_
 	  ["DEF", :"parseDEF"],_
-	  ["exit", :"parseExit"],_
+	  ["exit", :"doParseExit"],_
 	  ["has", :"parseHas"],_
 	  ["IF", :"parseIf"],_
 	  ["IN", :"parseIn"],_
@@ -456,7 +456,7 @@ for x in [[":", :"parseColon"],_
 	  ["is", :"parseIs"],_
 	  ["isnt", :"parseIsnt"],_
 	  ["Join", :"parseJoin"],_
-	  ["leave", :"parseLeave"],_
+	  ["leave", :"doParseLeave"],_
 	  ["%LET", :"parseLET"],_
 	  ["LETD", :"parseLETD"],_
 	  ["MDEF", :"parseMDEF"],_
