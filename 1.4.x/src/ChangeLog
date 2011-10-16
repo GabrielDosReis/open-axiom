@@ -1,3 +1,12 @@
+2011-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (Boolean): Implement default
+	Boolean operators in terms of Logic operators.
+	(PropositionalFormula): Implement Logic operators instead of
+	Boolean operators.
+	* algebra/exposed.lsp.pamphlet: Expose
+	PropositionalFormulaFunctions1 and PropositionalFormulaFunctions2.
+
 2011-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad-parser.spad: New parsing functions.

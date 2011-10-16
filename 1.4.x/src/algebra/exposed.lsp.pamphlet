@@ -337,6 +337,8 @@
   (|PrintPackage| . PRINT)
   (|Property| . PROPERTY)
   (|PropositionalFormula| . PROPFRML)
+  (|PropositionalFormulaFunctions1| . PROPFUN1)
+  (|PropositionalFormulaFunctions2| . PROPFUN2)
   (|QuadraticForm| . QFORM)
   (|QuasiComponentPackage| . QCMPACK)
   (|QuasiquoteAst| . QQUTAST)

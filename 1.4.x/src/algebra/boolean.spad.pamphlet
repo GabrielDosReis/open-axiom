@@ -29,7 +29,9 @@ BooleanLogic(): Category == Logic with
     or: (%,%) -> %
       ++ \spad{x or y} returns the disjunction of \spad{x} and \spad{y}.
   add
-    ~ x == not x
+    not x == ~ x
+    x and y == x /\ y
+    x or y == x \/ y
 @
 
 <<category PROPLOG PropositionalLogic>>=
@@ -126,18 +128,18 @@ PropositionalFormula(T: SetCategory): Public == Private where
     false == per constantKernel FALSE
     true == per constantKernel TRUE
 
-    not p ==
+    ~ p ==
       per kernel(operator(NOT, 1::Arity), [p], 1 + level p)
 
     conjunction(p,q) ==
       per kernel(operator(AND, 2), [p, q], 1 + max(level p, level q))
 
-    p and q == conjunction(p,q)
+    p /\ q == conjunction(p,q)
 
     disjunction(p,q) ==
       per kernel(operator(OR, 2), [p, q], 1 + max(level p, level q))
 
-    p or q == disjunction(p,q)
+    p \/ q == disjunction(p,q)
 
     implies(p,q) ==
       per kernel(operator(IMP, 2), [p, q], 1 + max(level p, level q))
@@ -230,11 +232,14 @@ PropositionalFormula(T: SetCategory): Public == Private where
     primaryFormula(p: %): OutputForm ==
       p' := rep p
       p' case T => p'@T::OutputForm
-      is?(p', IMP) or is?(p', EQV) =>
-        args := argument p'
-        elt(operator(p')::OutputForm, 
-		    [formula first args, formula second args])$OutputForm
-      paren(formula p)$OutputForm
+      case constantIfCan p' is
+        c@Identifier => c::OutputForm
+        otherwise =>
+          is?(p', IMP) or is?(p', EQV) =>
+            args := argument p'
+            elt(operator(p')::OutputForm, 
+                  [formula first args, formula second args])$OutputForm
+          paren(formula p)$OutputForm
 
     notFormula(p: %): OutputForm ==
       case isNot p is
