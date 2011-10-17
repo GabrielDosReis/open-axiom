@@ -700,7 +700,7 @@ $defaultOptimizationLevel == 2
 $OperatorFunctionNames ==
   ["**", "^", "*", "/", "rem", "quo", "mod", "div", "exquo",
     "+", "-", ">", ">=", "=", "~=", "<", "<=", "#", "~", "not",
-     "case", "and", "or", "<<", ">>", "/\", "\/" ]
+     "case", "and", "or", "<<", ">>", "/\", "\/", "..", "by" ]
 
 --%
 %categoryKind == 'category

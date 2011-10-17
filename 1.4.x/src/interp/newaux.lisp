@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@
 ;
 ;               1. Led and Nud Tables
 ;               2. GLIPH  Table
-;               3. RENAMETOK Table
 ;               4. GENERIC Table
 ;               5. Character syntax class predicates
 
@@ -106,7 +105,7 @@
           (\@ 996 997)    (|pretend| 995 996)
           (\.)            (\! \! 1002 1001)
           (\, 110 111)
-          (\; 81 82 (|PARSE-SemiColon|))
+          (\; 81 82 (|parseSemicolon|))
           (< 400 400)    (> 400 400)
           (<< 400 400)  (>> 400 400)
           (<= 400 400)   (>= 400 400)
@@ -122,7 +121,7 @@
           (|is| 400 400)    (|isnt| 400 400)
           (|and| 250 251)   (|or| 200 201)
           (/\\ 250 251)   (\\/ 200 201)
-          (\.\. SEGMENT 401 699 (|PARSE-Seg|))
+          (\.\. SEGMENT 401 699 (|parseSegmentTail|))
           (=> 123 103)
           (+-> 998 121)
           (== DEF 122 121)
@@ -131,14 +130,14 @@
           (\:- LETD 125 124) (\:= %LET 125 124)))
  
 (mapcar #'(LAMBDA (J) (MAKENEWOP J `|Nud|))
-        '((|for| 130 350 (|PARSE-Loop|))
-          (|while| 130 190 (|PARSE-Loop|))
-          (|until| 130 190 (|PARSE-Loop|))
-          (|repeat| 130 190 (|PARSE-Loop|))
-          (|import| 120 0 (|PARSE-Import|) )
+        '((|for| 130 350 (|parseLoop|))
+          (|while| 130 190 (|parseLoop|))
+          (|until| 130 190 (|parseLoop|))
+          (|repeat| 130 190 (|parseLoop|))
+          (|import| 120 0 (|parseImport|) )
           (|inline| 120 0 (|parseInline|) )
-	  (|forall| 998 999 (|PARSE-Scheme|))
-	  (|exist| 998 999 (|PARSE-Scheme|))
+	  (|forall| 998 999 (|parseScheme|))
+	  (|exist| 998 999 (|parseScheme|))
           (|unless|)
           (|add| 900 120)
           (|with| 1000 300 (|parseWith|))
@@ -147,14 +146,14 @@
 ;;        (\+ 701 700)
           (\# 999 998)
           (\! 1002 1001)
-          (\' 999 999 (|PARSE-Data|))
+          (\' 999 999 (|parseData|))
           (-> 1001 1002)
           (\: 194 195)
           (|not| 260 259 NIL)
           (~ 260 259 nil)
           (= 400 700)
           (|return| 202 201 (|parseReturn|))
-          (|try| 202 201 (|PARSE-Try|))
+          (|try| 202 201 (|parseTry|))
 	  (|throw| 202 201 (|parseThrow|))
           (|leave| 202 201 (|parseLeave|))
           (|exit| 202 201 (|parseExit|))
@@ -162,44 +161,12 @@
 	  (|iterate| 202 201 (|parseJump|))
           (|from|)
           (|yield|)
-          (|if| 130 0 (|PARSE-Conditional|))    ; was 130
-          (|case| 130 190 (|PARSE-Match|))
+          (|if| 130 0 (|parseConditional|))    ; was 130
+          (|case| 130 190 (|parseMatch|))
           (\| 0 190)
           (|suchthat|)
           (|then| 0 114)
           (|else| 0 114)))
-
-
-;; Gliphs are symbol clumps. The gliph property of a symbol gives
-;; the tree describing the tokens which begin with that symbol.
-;; The token reader uses the gliph property to determine the longest token.
-;; Thus `:=' is read as one token not as `:' followed by `='.
-
-(mapcar #'(lambda (x) (makeprop (car x) 'gliph (cdr x)))
-        `(
-          ( \| (\))  (])   )
-          ( *  (*)         )
-          ( \( (\|)        )
-          ( +  (- (>))     )
-          ( -  (>)         )
-          ( <  (=) (<)     )
-	  ( /  (\\)        )
-          ( \\ (/)         )
-          ( >  (=) (>)     )
-          ( =  (= (>)) (>) )
-          ( \. (\.)        )
-          ( ^  (=)         )
-          ( \~ (=)         )
-          ( [  (\|)        )
-          ( \: (=) (-) (\:))))
-
-;; GENERIC operators be suffixed by `$' qualifications in SPAD code.  
-;; `$' is then followed by a domain label, such as I for Integer, which 
-;; signifies which domain the operator refers to.  For example `+$Integer' 
-;; is `+' for Integers.
- 
-(mapcar #'(lambda (x) (MAKEPROP X 'GENERIC 'TRUE))
-        '(- = * |rem| |mod| |quo| |div| / ** |exquo| + - < > <= >= ~= ))
 
 (defun SPECIALCASESYNTAX () (OR (AND (char= TOK '#\#) (DIGITP CHR))))
  

@@ -237,9 +237,9 @@ parseTranCheckForRecord(x,op) ==
     x
   x
  
-parseCategory: %ParseForm -> %Form
-parseCategory t ==
-  t isnt ["CATEGORY",:x] => systemErrorHere ["parseCategory",t]
+doParseCategory: %ParseForm -> %Form
+doParseCategory t ==
+  t isnt ["CATEGORY",:x] => systemErrorHere ["doParseCategory",t]
   $parsingType: local := true
   l := parseTranList x
   key :=
@@ -445,7 +445,7 @@ for x in [[":", :"parseColon"],_
 	  ["::", :"parseCoerce"],_
 	  ["@", :"parseAtSign"],_
 	  ["and", :"parseAnd"],_
-	  ["CATEGORY", :"parseCategory"],_
+	  ["CATEGORY", :"doParseCategory"],_
 	  ["construct", :"parseConstruct"],_
 	  ["DEF", :"parseDEF"],_
 	  ["exit", :"doParseExit"],_

@@ -1,3 +1,29 @@
+2011-10-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Add ref and deref to support references.
+	* interp/sys-constants.boot ($OperatorFunctionNames): Add "by" and
+	"..".
+	* interp/spad.lisp: Tidy.
+	* interp/spad-parser.boot: New parsers.
+	* interp/preparse.lisp: Remove dead codes.
+	* interp/parsing.lisp (MATCH-ADVANCE-KEYWORD): Remove.
+	* interp/parse.boot (doParseCategory): Rename from parseCategory.
+	* interp/newaux.lisp: Tidy.
+	* interp/lexing.boot (getSpadToken): New.
+	(Keywords): Remove 'when'.
+	(matchKeywordNext): New.
+	(matchSpecial): Likewise.
+	(matchAdvanceSpecial): Likewise.
+	(matchAdvanceGlyph): Likewise.
+	* interp/fnewmeta.lisp: Move variable definitions to preparse.lisp.
+	Remove Lisp based parsers.
+	Remove file.
+	* interp/c-doc.boot (recordAttributeDocumentation): Fix thinko.
+	* interp/bootlex.lisp (GET-BOOT-TOKEN): Remove.
+	* interp/Makefile.in: Adjust dependencies.
+	* boot/parser.boot (bpChar): New.
+	(bpPattern): Allow character constants.
+
 2011-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (Boolean): Implement default

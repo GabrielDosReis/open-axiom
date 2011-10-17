@@ -57,7 +57,7 @@
  
 
 
-(IMPORT-MODULE "fnewmeta")
+(IMPORT-MODULE "parsing")
  
 (in-package "BOOT")
  
@@ -70,29 +70,14 @@
 (defparameter $EchoLineStack nil                "Stack of lines to list.")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
  
+(DEFPARAMETER TOK NIL)
+(DEFPARAMETER DEFINITION_NAME NIL)
+(DEFPARAMETER LABLASOC NIL)
+
 (defun Initialize-Preparse (strm)
   (setq $INDEX 0 $LineList nil $EchoLineStack nil)
   (setq $preparse-last-line (get-a-line strm)))
  
-(defmacro pptest () `(/rp ">scratchpad>test.boot"))
- 
-(defun /RP (&optional (*boot-input-file* nil) (*boot-output-file* nil)
-                      ($preparseReportIfTrue t))
-  (with-open-stream
-    (in-stream (or (and *boot-input-file* 
-			(open *boot-input-file* :direction :input))
-                   |$InputStream|))
-    (declare (special in-stream))
-    (with-open-stream
-      (out-stream (if *boot-output-file*
-                      (open *boot-output-file* :direction :output)
-                      |$OutputStream|))
-      (declare (special out-stream))
-      (initialize-preparse in-stream)
-      (do ((lines (PREPARSE in-stream) (PREPARSE in-stream))) ((null lines)))))
-  T)
-
-
 (defvar $skipme)
  
 (defun PREPARSE (Strm &aux (stack ()))

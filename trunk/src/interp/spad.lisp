@@ -42,7 +42,6 @@
 
 ;;; Common  Block
 
-(defvar |$preserveSystemLisplib| t "if nil finalizeLisplib does MA REP")
 (defvar |$reportInstantiations| nil)
 (defvar |$reportEachInstantiation| nil)
 (defvar |$reportCounts| nil)
@@ -55,13 +54,10 @@
 (defvar |$algebraFormat| t "produce 2-d algebra output")
 (defvar |$HiFiAccess| nil "if true maintain history file")
 
-(defvar |boot-NewKEY| NIL)
-
 (DEFVAR _ '&)
 (defvar /EDIT-FM 'A1)
 (defvar /EDIT-FT 'SPAD)
 (defvar /RELEASE '"UNKNOWN")
-(defvar /rp '/RP)
 (defvar error-print)
 (defvar ind)
 (defvar INITCOLUMN 0)
@@ -69,18 +65,14 @@
 (defvar m-chrbuffer)
 (defvar m-chrindex)
 (defvar MARG 0 "Margin for testing by ?OP")
-(defvar NewFlag)
-(defvar ParseMode)
 (defvar RLGENSYMFG NIL)
 (defvar RLGENSYMLST NIL)
 (defvar S-SPADTOK 'SPADSYSTOK)
 (defvar sortpred)
 (defvar SPADSYSKEY '(EOI EOL))
 (defvar STAKCOLUMN -1)
-(defvar xtrans '|boot-new|)
 (defvar |$IOAlist| '((|%i| . (|gauss| 0 1))))
 (defvar |InteractiveMode|)
-(defvar |NewFLAG| t)
 (defvar |uc| 'UC)
 
 (DEFUN INTEGER-BIT (N I) (LOGBITP I N))
@@ -181,7 +173,6 @@
   (COND
     (Q  (/RQ))
     ('T (/RF)) )
-  (FLAG |boot-NewKEY| 'KEY)
   (|terminateSystemCommand|))
 
 (defun /EDIT (L)
@@ -263,17 +254,14 @@
          (S-PROCESS x))))
 
 (defun |New,ENTRY,1| ()
-    (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG|
+    (let (ZZ str N RLGENSYMFG RLGENSYMLST
           SINGLELINEMODE OK ISID NBLNK COUNT CHR ULCASEFG ($LINESTACK 'BEGIN_UNIT)
-          $TOKSTACK COMMENTCHR TOK LINE BACK INPUTSTREAM XTRANS
+          $TOKSTACK COMMENTCHR TOK LINE BACK INPUTSTREAM
           STACK STACKX TRAPFLAG)
-      (SETQ XTRANS '|boot-New|)
-      (FLAG |boot-NewKEY| 'KEY)
       (PROMPT)
       (SETQ COMMENTCHR 'IGNORE)
       (SETQ INITCOLUMN 0)
       (SETQ SINGLELINEMODE T)   ; SEE NewSYSTOK
-      (SETQ NewFLAG T)
       (SETQ ULCASEFG T)
       (setq STR (|New,ENTRY,2| '|PARSE-NewEXPR| '|process| |$InputStream|))
       (if (/= 0 (setq N (NOTE STR)))
@@ -286,7 +274,6 @@
       (INITIALIZE)
       (SETQ |$previousTime| (TEMPUS-FUGIT))
       (setq ZZ (CONVERSATION '|PARSE-NewExpr| '|process|))
-      (REMFLAG |boot-NewKEY| 'KEY)
       INPUTSTREAM))
 
 (defun INITIALIZE () 

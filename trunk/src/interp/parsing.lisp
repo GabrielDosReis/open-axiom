@@ -295,10 +295,6 @@ the stack, then stack a NIL. Return the value of prod."
 ;       (3) Line handling:      Next Line, Print Next Line
 ;       (X) Random Stuff
 
-(defun match-advance-keyword (str)
-  (and (|matchToken| (|currentToken|) 'keyword (intern str))
-       (action (|advanceToken|))))
-
 (defun match-advance-special (str)
   (and (|matchToken| (|currentToken|) 'special-char (character str))
        (action (|advanceToken|))))
