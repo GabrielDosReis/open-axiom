@@ -188,8 +188,22 @@ tokenInstall(sym,typ,tok,nonblank == true) ==
   tokenNonblank?(tok) := nonblank
   tok
 
+getSpadToken tok ==
+  not skipBlankChars() => nil
+  tt := tokenLookaheadType currentChar()
+  tt is 'EOF => tokenInstall(nil,'_*EOF,tok,$nonblank)
+  tt is 'ESCAPE =>
+    advanceChar!()
+    getIdentifier(tok,true)
+  tt is 'ARGUMENT_-DESIGNATOR => GET_-ARGUMENT_-DESIGNATOR_-TOKEN tok
+  tt is 'ID => getIdentifier(tok,false)
+  tt is 'NUM => GET_-SPAD_-INTEGER_-TOKEN tok
+  tt is 'STRING => getSpadString tok
+  tt is 'SPECIAL_-CHAR => getSpecial tok
+  getGliph(tok,tt)
+
 tryGetToken tok ==
-  GET_-BOOT_-TOKEN tok =>
+  getSpadToken tok =>
    $validTokens := $validTokens + 1
    tok
   nil
@@ -205,9 +219,10 @@ nextToken() ==
   $validTokens > 1 => $nextToken
   tryGetToken $nextToken
 
-matchToken(tok,typ,sym == false) ==
+matchToken(tok,typ,sym == nil) ==
   tok ~= nil and symbolEq?(tokenType tok,typ) and
-    (sym = nil or symbolEq?(sym,tokenSymbol tok)) and tok
+    (sym = nil or sym = tokenSymbol tok) => tok
+  nil
 
 ++ Return the current token if it has type `typ', and possibly the
 ++ same spelling as `sym'.
@@ -299,10 +314,10 @@ getGliph(tok,gliphs) ==
       gliphs := rest gliphs
       advanceChar!()
     s := makeSymbol listToString reverse! buf
-    return tokenInstall(property(s,'RENAMETOK) or s,'GLIPH,tok,$nonblank)
+    return tokenInstall(s,'GLIPH,tok,$nonblank)
 
 Keywords == [
- "or", "and", "isnt", "is", "when", "where", "forall", "exist", "try",
+ "or", "and", "isnt", "is", "where", "forall", "exist", "try",
   "has", "with", "add", "case", "in", "by", "pretend", "mod", "finally",
    "exquo", "div", "quo", "else", "rem", "then", "suchthat", "catch", "throw",
     "if", "iterate", "break", "from", "exit", "leave", "return",
@@ -405,6 +420,24 @@ matchAdvanceString x ==
 
 matchAdvanceKeyword kwd ==
   matchToken(currentToken(),'KEYWORD,kwd) =>
+    advanceToken()
+    true
+  false
+
+matchKeywordNext kwd ==
+  matchToken(nextToken(),'KEYWORD,kwd)
+
+matchSpecial c ==
+  matchToken(currentToken(),'SPECIAL_-CHAR,c)
+
+matchAdvanceSpecial c ==
+  matchSpecial c =>
+    advanceToken()
+    true
+  false
+
+matchAdvanceGlyph s ==
+  matchToken(currentToken(),'GLIPH,s) =>
     advanceToken()
     true
   false

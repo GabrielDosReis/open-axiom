@@ -383,6 +383,16 @@ bpConstTok() ==
          bpPush bfSymbol bpPop1()
   bpString()
 
+bpChar() ==
+  $stok is ["ID",:.] and $ttok is "char" =>
+    a := bpState()
+    bpApplication() =>
+      s := bpPop1()
+      s is ["char",.] => bpPush s
+      bpRestore a
+      false
+    false
+  false
 
 ++ Subroutine of bpExportItem.  Parses tails of ExportItem.
 bpExportItemTail() ==
@@ -1004,7 +1014,7 @@ bpDConstruction()==
  
 bpPattern()==
   bpBracketConstruct function bpPatternL
-    or bpName() or bpConstTok()
+    or bpChar() or bpName() or bpConstTok()
  
 bpEqual()==
    bpEqKey "SHOEEQ" and (bpApplication() or bpConstTok() or

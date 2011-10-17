@@ -97,7 +97,7 @@ readForDoc fn ==
 recordSignatureDocumentation(opSig,lineno) ==
   recordDocumentation(rest postTransform opSig,lineno)
 
-recordAttributeDocumentation(['Attribute,att],lineno) ==
+recordAttributeDocumentation(['%Attribute,att],lineno) ==
   name := opOf att
   upperCase? stringChar(symbolName name,0) => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)

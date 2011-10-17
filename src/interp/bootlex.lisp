@@ -154,26 +154,6 @@
 
 ;  *** 3. BOOT Token Handling ***
 
-(defun get-BOOT-token (token)
-
-  "If you have an _, go to the next line.
-If you have a . followed by an integer, get a floating point number.
-Otherwise, get a .. identifier."
-
-  (if (not (|skipBlankChars|))
-      nil
-      (let ((token-type (|tokenLookaheadType| (|currentChar|))))
-        (case token-type
-          (eof                  (|tokenInstall| nil '*eof token |$nonblank|))
-          (escape               (|advanceChar!|)
-                                (|getIdentifier| token t))
-          (argument-designator  (get-argument-designator-token token))
-          (id                   (|getIdentifier| token nil))
-          (num                  (get-spad-integer-token token))
-          (string               (|getSpadString| token))
-          (special-char         (|getSpecial| token))
-          (t                    (|getGliph| token token-type))))))
-
 (defun get-argument-designator-token (token)
   (|advanceChar!|)
   (get-number-token token)

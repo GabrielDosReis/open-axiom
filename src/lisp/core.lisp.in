@@ -86,6 +86,8 @@
 	   "tableValue"	  ; value associated with a key in a table
 	   "tableLength"  ; number of entries in the table.
 	   "tableRemove!" ; remove an entry from a table
+	   "ref"
+	   "deref"
 
 	   ;; IO
 	   "$InputStream"
@@ -493,6 +495,13 @@
 
 (defmacro |tableLength| (ht)
   `(hash-table-count ,ht))
+
+;; -*- Reference -*-
+(defmacro |ref| (v)
+  `(cons ,v nil))
+
+(defmacro |deref| (r)
+  `(car ,r))
 
 ;; -*- File IO -*-
 
