@@ -188,7 +188,7 @@ tokenInstall(sym,typ,tok,nonblank == true) ==
   tokenNonblank?(tok) := nonblank
   tok
 
-getSpadToken tok ==
+getToken tok ==
   not skipBlankChars() => nil
   tt := tokenLookaheadType currentChar()
   tt is 'EOF => tokenInstall(nil,'_*EOF,tok,$nonblank)
@@ -203,7 +203,7 @@ getSpadToken tok ==
   getGliph(tok,tt)
 
 tryGetToken tok ==
-  getSpadToken tok =>
+  getToken tok =>
    $validTokens := $validTokens + 1
    tok
   nil

@@ -602,10 +602,6 @@ the stack, then stack a NIL. Return the value of prod."
 
 ;; auxiliary functions needed by the parser
 
-(defun char-eq (x y) (char= (character x) (character y)))
-
-(defun char-ne (x y) (char/= (character x) (character y)))
-
 (Defun FLOATEXPID (X &aux S)
   (if (AND (IDENTP X) (char= (char-upcase (ELT (SETQ S (PNAME X)) 0)) #\E)
            (> (LENGTH S) 1)
@@ -613,8 +609,6 @@ the stack, then stack a NIL. Return the value of prod."
                                       (DIGITP (ELT S I)))))
        (READ-FROM-STRING S t nil :start 1)
     NIL))
-
-(defun |getToken| (x) (if (EQCAR x '|elt|) (third x) x))
 
 (defun |dollarTran| (dom rand)
        (let ((eltWord (if |$InteractiveMode| '|$elt| '|elt|)))

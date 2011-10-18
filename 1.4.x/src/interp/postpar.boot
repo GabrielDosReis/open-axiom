@@ -346,12 +346,6 @@ postRepeat t ==
   t isnt ["REPEAT",:m,x] => systemErrorHere ["postRepeat",t]
   ["REPEAT",:postIteratorList m,postTran x]
 
-postSEGMENT: %ParseTree -> %ParseForm
-postSEGMENT t ==
-  t isnt ["SEGMENT",a,b] => systemErrorHere ["postSEGMENT",t]
-  key:= [a,'"..",:(b => [b]; nil)]
-  postError ['"   Improper placement of segment",:bright key]
-
 postCollect: %ParseTree -> %ParseForm
 postCollect t ==
   t isnt [constructOp,:m,x] => systemErrorHere ["postCollect",t]
@@ -370,11 +364,6 @@ postCollect t ==
           ["construct",:postTranList l]
         ["REDUCE","append",0,[op,:itl,newBody]]
       [op,:itl,y]
-
-postTupleCollect: %ParseTree -> %ParseForm
-postTupleCollect t ==
-  t isnt [constructOp,:m,x] => systemErrorHere ["postTupleCollect",t]
-  postCollect [constructOp,:m,["construct",x]]
 
 postIteratorList: %List %ParseTree -> %List %ParseForm
 postIteratorList x ==
@@ -530,15 +519,6 @@ unComma x ==
   x is ["%Comma",:y] => y
   [x]
 
---% `^='
-++ check that `^=' is not used in Spad code to mean `not equal'.
-postBootNotEqual: %ParseTree -> %ParseForm
-postBootNotEqual u ==
-  checkWarning ['"Operator ", :bright '"^=", 
-   '"is not valid Spad.  Please use",:bright '"~=",'"instead."]
-  ["~=",:postTran rest u]
-
-
 --% %Match
 
 postAlternatives alts ==
@@ -570,7 +550,6 @@ for x in [["with", :"postWith"],_
 	  ["in", :"postin"],_
 	  ["IN", :"postIn"],_
 	  ["REPEAT", :"postRepeat"],_
-	  ["TupleCollect", :"postTupleCollect"],_
 	  ["add", :"postAdd"],_
 	  ["%Reduce", :"postReduce"],_
 	  [",", :"postComma"],_
@@ -588,7 +567,6 @@ for x in [["with", :"postWith"],_
 	  ["->", :"postMapping"],_
 	  ["=>", :"postExit"],_
           ["%Match",:"postMatch"],_
-          ["^=", :"postBootNotEqual"],_
 	  ["%Comma", :"post%Comma"]] repeat
   property(first x, 'postTran) := rest x
 

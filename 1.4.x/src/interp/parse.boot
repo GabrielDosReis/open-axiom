@@ -311,8 +311,8 @@ parseInBy t ==
 
 parseSegment: %ParseForm -> %Form 
 parseSegment p ==
-  p is ["SEGMENT",a,b] =>
-    b => ["SEGMENT",parseTran a, parseTran b]
+  p is ["SEGMENT",a,:b] =>
+    b => ["SEGMENT",parseTran a, parseTran first b]
     ["SEGMENT",parseTran a]
   -- SEGMENT is being elted from a domain
   ["SEGMENT",:rest p]

@@ -334,11 +334,10 @@ parseExpression() ==
 
 parseSegmentTail() ==
   parseGlyph ".." =>
-    stackUpdated?($reduceStack) := false
-    parseExpression()
-    if not stackUpdated? $reduceStack then
-      pushReduction('segmentTail,nil)
-    pushReduction('parseSegmentTail,["SEGMENT",popStack2(),popStack1()])
+    seg :=     
+      parseExpression() => ["SEGMENT",popStack2(),popStack1()]
+      ["SEGMENT",popStack1()]
+    pushReduction('parseSegmentTail,seg)
   nil
 
 parseReductionOp() ==
@@ -547,7 +546,7 @@ parseLoop() ==
 
 parseOpenBracket() ==
   s := currentSymbol()
-  getToken s is "[" =>
+  s is "[" or s is ["elt",.,"["] =>
     do 
       s is ["elt",:.] =>
         pushReduction('parseOpenBracket,["elt",second s,"construct"])
@@ -558,7 +557,7 @@ parseOpenBracket() ==
 
 parseOpenBrace() ==
   s := currentSymbol()
-  getToken s is "{" =>
+  s is "{" or s is ["elt",.,"{"] =>
     do 
       s is ["elt",:.] =>
         pushReduction('parseOpenBracket,["elt",second s,"brace"])
@@ -805,7 +804,6 @@ for x in [
   [">", ["="], [">"]],_
   ["=", ["=", [">"]] ,[">"]],_
   [".", ["."]],_
-  ["^", ["="]],_
   ["~", ["="]],_
   ["[", ["|"]],_
   [":", ["="], ["-"], [":"]]_

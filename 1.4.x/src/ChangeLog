@@ -1,5 +1,23 @@
 2011-10-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad-parser.boot (parseSegmentTail): Tidy.
+	* interp/postpar.boot (postSEGMENT): Remove.
+	(postTupleCollect): Likewise.
+	(postBootNotEqual): Likewise.
+	* interp/parsing.lisp (CHAR-EQ): Remove.
+	(CHAR-NE): Likewise.
+	(getToken): Likewise.
+	* interp/newaux.lisp: Remove "^=" as legitimate operator.
+	* interp/lexing.boot (geToken): Rename from getSpadToken.
+	* interp/i-intern.boot (mkAtree3): Check for new form of universal
+	segment.
+	* interp/parse.boot (parseSegment): Likewise.
+	* algebra/seg.spad.pamphlet (Segment): Use .. instead of SEGMENT.
+	(SegmentFunctions2): Likewise.
+	(UniversalSegment): Likewise.
+
+2011-10-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Add ref and deref to support references.
 	* interp/sys-constants.boot ($OperatorFunctionNames): Add "by" and
 	"..".
