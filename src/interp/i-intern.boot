@@ -195,10 +195,10 @@ mkAtree3(x,op,argl) ==
   op="=" => [mkAtreeNode "equation",:[mkAtree1 arg for arg in argl]]
   op="not" and argl is [["=",lhs,rhs]] =>
     [mkAtreeNode "not",[mkAtreeNode "=",mkAtree1 lhs,mkAtree1 rhs]]
-  op="in" and argl is [var ,["SEGMENT",lb,ul]] =>
+  op="in" and argl is [var ,["SEGMENT",lb,:ul]] =>
     upTest:=
-      null ul => nil
-      mkLessOrEqual(var,ul)
+      ul = nil => nil
+      mkLessOrEqual(var,first ul)
     lowTest:=mkLessOrEqual(lb,var)
     z :=
       ul => ['and,lowTest,upTest]
