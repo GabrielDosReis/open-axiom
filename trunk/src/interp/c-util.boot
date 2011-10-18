@@ -510,7 +510,7 @@ makeCommonEnvironment(e,e') ==
 
 ++ Return the lexically leftmost location in an assignment for.
 lhsOfAssignment x ==
-  x is ["%LET",lhs,:.] => lhsOfAssignment lhs
+  x is [":=",lhs,:.] => lhsOfAssignment lhs
   x
 
 getSuccessEnvironment(a,e) ==
@@ -793,9 +793,9 @@ isAlmostSimple x ==
         [op,y,:l]:= x
         op="has" => x
         op="is" => x
-        op="%LET" =>
+        op=":=" =>
           ident? y => (setAssignment [x]; y)
-          (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
+          (setAssignment [[":=",g:= genVariable(),:l],[":=",y,g]]; g)
         op = "case" and ident? y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
         $assignmentList:= "failed"

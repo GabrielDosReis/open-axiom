@@ -371,7 +371,7 @@ getTypeOfSyntax t ==
   op = "pretend" => '(PretendAst)
   op = "::" => '(CoerceAst)
   op = "@" => '(RestrictAst)
-  op = "%LET" => '(LetAst)
+  op = "%LET" or op = ":=" => '(LetAst)
   op = "|" => '(SuchThatAst)
   op = ":" => '(ColonAst)
   op = ":=" => '(LetAst)

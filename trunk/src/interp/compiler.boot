@@ -780,7 +780,7 @@ compCons1(["CONS",x,y],m,e) ==
 compSetq: (%Instantiation,%Mode,%Env) -> %Maybe %Triple
 compSetq1: (%Form,%Form,%Mode,%Env) -> %Maybe %Triple
 
-compSetq(["%LET",form,val],m,E) == 
+compSetq([":=",form,val],m,E) == 
   compSetq1(form,val,m,E)
 
 compSetq1(form,val,m,E) ==
@@ -2078,7 +2078,7 @@ compRecoverGuard(x,t,sn,sm,e) ==
     -- assignment scope (e.g. "%LET") as opposed to local assignment
     -- because the recovered type may be needed in the body of
     -- the alternative.
-    varDef := ["%LET",[":",var',$Type],
+    varDef := [":=",[":",var',$Type],
                 [["elt",["Foreign","Builtin"],"evalDomain"],
                   [["elt",["Foreign","Builtin"],"CAR"], sn]]]
     [def,.,e] := compOrCroak(varDef,$EmptyMode,e)
@@ -2247,11 +2247,11 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   itl := [([.,e]:= compIterator(x,e) or return "failed").0 for x in itl]
   itl="failed" => return nil
   b := gensym()          -- holds value of the body
-  [bval,bmode,e] := comp(['%LET,b,body],$EmptyMode,e) or return nil
+  [bval,bmode,e] := comp([":=",b,body],$EmptyMode,e) or return nil
   accu := gensym()       -- holds value of the accumulator
-  [move,.,e] := comp(['%LET,accu,b],$EmptyMode,e) or return nil
+  [move,.,e] := comp([":=",accu,b],$EmptyMode,e) or return nil
   move.op := '%store     -- in reality, we are not defining a new variable
-  [update,mode,e] := comp(['%LET,accu,[op,accu,b]],m,e) or return nil
+  [update,mode,e] := comp([":=",accu,[op,accu,b]],m,e) or return nil
   update.op := '%store   -- just update the accumulation variable.
   nval :=
     id := getIdentity(op,e) => u.expr where
@@ -2674,7 +2674,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["is", :"compIs"],_
 	  ["Join", :"compJoin"],_
 	  ["leave", :"compLeave"],_
-	  ["%LET", :"compSetq"],_
+	  [":=", :"compSetq"],_
 	  ["MDEF", :"compMacro"],_
           ["not", :"compLogicalNot"],_
 	  ["pretend", :"compPretend"],_

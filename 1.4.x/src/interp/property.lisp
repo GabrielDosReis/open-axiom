@@ -63,9 +63,12 @@
 (MAKEPROP 'SEGMENT '|Led| '(|..| SEGMENT 401 699 (|P:Seg|)))
 (MAKEPROP 'SEGMENT '|isSuffix| 'T)
 (MAKEPROP 'EQUAL1 'CHRYBNAM 'EQ)
+(MAKEPROP 'COND '|Nud| '(|if| |if| 130 0))
+(MAKEPROP 'CONS '|Led| '(CONS CONS 1000 1000))
+(MAKEPROP 'APPEND '|Led| '(APPEND APPEND 1000 1000))
 
 (REPEAT (IN X '(
-   (%LET " := ")
+   (|:=| " := ")
    (= "=")
    (|/| "/")
    (+ "+")

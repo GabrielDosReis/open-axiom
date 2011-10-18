@@ -1,3 +1,32 @@
+2011-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/postpar.boot (displayPreCompilationErrors): Dot not check
+	for interactive mode.
+	(postBigFloat): Likewise.
+	(postDef): Likewise.
+	(postMDef): Likewise.
+	(tuple2List): Likewise.
+	(postReduce): Likewise.
+	(postQUOTE): Remove.
+	(postQuot): Likewise.
+	(postOp): Likewise.
+	(postTran): Adjust.
+	* interp/newaux.lisp: Replace %LET with ':='.
+	* interp/property.lisp: Likewise.
+	* interp/g-util.boot (getTypeOfSyntax): Likewise.
+	* interp/define.boot (checkRepresentation): Likewise.
+	(doIt): Likewise.
+	* interp/compiler.boot (compSetq): Likewise.
+	(compRecoverGuard): Likewise.
+	(compReduce1): Likewise.
+	* interp/c-util.boot (lhsOfAssignment): Likewise.
+	(isAlmostSimple): Likewise.
+	* interp/c-doc.boot (recordAttributeDocumentation): Likewise.
+	* interp/parse.boot (parseLeftArrow): Remove.
+	(parseLETD): Likewise.
+	(parseAssign): Rename from parseLET.
+	* algebra/syntax.spad.pamphlet (SpadAst): Handle both cases.
+
 2011-10-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad-parser.boot (parseSegmentTail): Tidy.

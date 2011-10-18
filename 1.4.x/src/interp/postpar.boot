@@ -66,13 +66,10 @@ displayPreCompilationErrors() ==
   errors:=
     1<n => '"errors"
     '"error"
-  if $InteractiveMode
-    then sayBrightly ['"   Semantic ",errors,'" detected: "]
-    else
-      heading:=
-        $topOp ~= '$topOp => ['"   ",$topOp,'" has"]
-        ['"   You have"]
-      sayBrightly [:heading,'"%b",n,'"%d",'"precompilation ",errors,'":"]
+  heading:=
+    $topOp ~= '$topOp => ['"   ",$topOp,'" has"]
+    ['"   You have"]
+  sayBrightly [:heading,'"%b",n,'"%d",'"precompilation ",errors,'":"]
   if 1<n then
     (for x in $postStack for i in 1.. repeat sayMath ['"   ",i,'"_) ",:x])
     else sayMath ['"    ",:first $postStack]
@@ -83,11 +80,11 @@ postTran x ==
   x isnt [.,:.] =>
     postAtom x
   op := first x
+  op is 'QUOTE => x
   symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
-  op ~= (y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
 postTranList: %List %ParseTree -> %List %ParseForm
@@ -97,8 +94,7 @@ postTranList x ==
 postBigFloat: %ParseTree -> %ParseTree
 postBigFloat x ==
   [.,mant,:expon] := x
-  eltword := if $InteractiveMode then "$elt" else "elt"
-  postTran [[eltword,$Float,"float"],[",",[",",mant,expon],10]]
+  postTran [['elt,$Float,"float"],[",",[",",mant,expon],10]]
 
 postAdd: %ParseTree -> %ParseForm
 postAdd x ==
@@ -121,10 +117,6 @@ postCapsule x ==
   op = ";" => ["CAPSULE",:postBlockItemList postFlatten(x,";")]
   op = "if" => ["CAPSULE",postBlockItem x]
   checkWarningIndentation()
-
-postQUOTE: %ParseTree -> %ParseForm
-postQUOTE x == 
-  x
 
 postColon: %ParseTree -> %ParseForm
 postColon u ==
@@ -157,7 +149,7 @@ postError: %Thing -> %Thing
 postError msg ==
   BUMPERRORCOUNT 'precompilation
   xmsg:=
-    $defOp ~= nil and not $InteractiveMode => [$defOp,'": ",:msg]
+    $defOp ~= nil => [$defOp,'": ",:msg]
     msg
   $postStack:= [xmsg,:$postStack]
   nil
@@ -226,7 +218,7 @@ postDef t ==
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
-  if not $InteractiveMode and form isnt [.,:.] then form := [form]
+  if form isnt [.,:.] then form := [form]
   newLhs:=
     form isnt [.,:.] => form
     [op,:argl]:= [(x is [":",a,.] => a; x) for x in form]
@@ -253,11 +245,7 @@ postDefArgs argl ==
 postMDef: %ParseTree -> %ParseForm
 postMDef(t) ==
   [.,lhs,rhs] := t
-  $InteractiveMode =>
-    lhs := postTran lhs
-    not ident? lhs => throwKeyedMsg("S2IP0001",nil)
-    ["MDEF",lhs,nil,nil,postTran rhs]
-  lhs:= postTran lhs
+  lhs := postTran lhs
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
@@ -308,10 +296,6 @@ postForm u ==
   x is [.,["%Comma",:y]] => [first x,:y]
   x
 
-postQuote: %ParseTree -> %ParseForm
-postQuote [.,a] == 
-  quote a
-
 postIf: %ParseTree -> %ParseForm
 postIf t ==
   t isnt ["if",:l] => t
@@ -333,13 +317,6 @@ postMapping: %ParseTree -> %ParseForm
 postMapping u  ==
   u isnt ["->",source,target] => u
   ["Mapping",postTran target,:unComma postTran source]
-
-postOp: %ParseTree -> %ParseForm
-postOp x ==
-  x=":=" => "%LET"
-  x=":-" => "LETD"
-  x="%Attribute" => "ATTRIBUTE"
-  x
 
 postRepeat: %ParseTree -> %ParseForm
 postRepeat t == 
@@ -400,8 +377,6 @@ tuple2List l ==
     u:= tuple2List l'
     a is ["SEGMENT",p,q] =>
       null u => ["construct",postTranSegment(p,q)]
-      $InteractiveMode =>
-        ["append",["construct",postTranSegment(p,q)],tuple2List l']
       ["nconc",["construct",postTranSegment(p,q)],tuple2List l']
     null u => ["construct",postTran a]
     ["cons",postTran a,tuple2List l']
@@ -414,7 +389,7 @@ SEGMENT(a,b) ==
 postReduce: %ParseTree -> %ParseForm
 postReduce t ==
   t isnt ["%Reduce",op,expr] => systemErrorHere ["postReduce",t]
-  $InteractiveMode or expr is ["COLLECT",:.] =>
+  expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
   postReduce ["%Reduce",op,["COLLECT",["IN",g:= gensym(),expr],
     ["construct",  g]]]
@@ -544,7 +519,6 @@ for x in [["with", :"postWith"],_
 	  ["/", :"postSlash"],_
 	  ["construct", :"postConstruct"],_
 	  ["%Block", :"postBlock"],_
-	  ["QUOTE", :"postQUOTE"],_
 	  ["COLLECT", :"postCollect"],_
 	  [":BF:", :"postBigFloat"],_
 	  ["in", :"postin"],_

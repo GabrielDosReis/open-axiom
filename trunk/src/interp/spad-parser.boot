@@ -383,7 +383,7 @@ parseCategory() ==
       pushReduction('parseCategory,["%Signature",popStack2(),popStack1()])
       recordSignatureDocumentation(nthStack 1,g)
       true
-    pushReduction('parseCategory,["%Attribute",popStack1()])
+    pushReduction('parseCategory,["ATTRIBUTE",popStack1()])
     recordAttributeDocumentation(nthStack 1,g)
     true
   nil

@@ -732,7 +732,7 @@ checkRepresentation(addForm,body,env) ==
   
   -- Locate possible Rep definition
   for [stmt,:.] in tails body repeat
-    stmt is ["%LET","Rep",val] =>
+    stmt is [":=","Rep",val] =>
       domainRep ~= nil =>
         stackAndThrow('"You cannot assign to constant domain %1b",["Rep"])
       if addForm = val then
@@ -766,7 +766,7 @@ checkRepresentation(addForm,body,env) ==
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
-    stmt.op := "%LET"
+    stmt.op := ":="
     stmt.rest := ["Rep",domainRep]
     $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
 
@@ -2224,7 +2224,7 @@ doIt(item,$predl) ==
     item.op := u.op
     item.rest := rest u
     doIt(item,$predl)
-  item is ["%LET",lhs,rhs,:.] =>
+  item is [":=",lhs,rhs,:.] =>
     compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
     not (code is ["%LET",lhs',rhs',:.] and lhs' isnt [.,:.]) =>

@@ -1766,7 +1766,7 @@ SpadAst(): SpadAstExports() == add
   x case SequenceAst == isAst(x,'SEQ)
   autoCoerce(x: %): SequenceAst == x : SequenceAst
 
-  x case LetAst == isAst(x,'_%LET)
+  x case LetAst == isAst(x,'_%LET) or isAst(x,'_:_=)
   autoCoerce(x: %): LetAst == x : LetAst
 
   x case SuchThatAst == isAst(x,'_|)
@@ -1806,7 +1806,7 @@ SpadAst(): SpadAstExports() == add
       op = '_exit => x:ExitAst::OutputForm
       op = '_return => x:ReturnAst::OutputForm
       op = 'SEQ => x:SequenceAst::OutputForm
-      op = '%LET => x:LetAst::OutputForm
+      op = '%LET or op = '_:_= => x:LetAst::OutputForm
       op = '_pretend => x:PretendAst::OutputForm
       op = '_:_: => x:CoerceAst::OutputForm
       op = '_@ => x:RestrictAst::OutputForm
