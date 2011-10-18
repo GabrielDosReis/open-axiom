@@ -340,15 +340,6 @@
 
 (FLAG TEMPGENSYMLIST 'IS-GENSYM)
 
-(MAKEPROP 'COND '|Nud| '(|if| |if| 130 0))
-(MAKEPROP 'CONS '|Led| '(CONS CONS 1000 1000))
-(MAKEPROP 'APPEND '|Led| '(APPEND APPEND 1000 1000))
-(MAKEPROP 'TAG '|Led| '(TAG TAG 122 121))
-(MAKEPROP 'EQUATNUM '|Nud| '(|dummy| |dummy| 0 0))
-(MAKEPROP 'EQUATNUM '|Led| '(|dummy| |dummy| 10000 0))
-(MAKEPROP '%LET '|Led| '(:= %LET 125 124))
-(MAKEPROP 'RARROW '|Led| '(== DEF 122 121))
-(MAKEPROP 'SEGMENT '|Led| '(\.\. SEGMENT 401 699 (|boot-Seg|)))
 
 ;; NAME:    DECIMAL-LENGTH
 ;; PURPOSE: Computes number of decimal digits in print representation of x

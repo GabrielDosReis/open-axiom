@@ -97,11 +97,6 @@ parseConstruct u ==
   $insideConstructIfTrue: local:= true
   [first u,:parseTranList rest u]
 
--- ??? This parser is unused at the moment.
-parseLeftArrow: %ParseForm -> %Form
-parseLeftArrow u == 
-  parseTran ["%LET",:rest u]
-
 parseIs: %ParseForm -> %Form 
 parseIs t == 
   t isnt ["is",a,b] => systemErrorHere ["parseIs",t]
@@ -139,18 +134,13 @@ transIs1 u ==
     [h,:v]
   u
  
-parseLET: %ParseForm -> %Form
-parseLET t ==
-  t isnt ["%LET",x,y] => systemErrorHere ["parseLET",t]
-  p := ["%LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
-  opOf x = "cons" => ["%LET",transIs p.1,p.2]
+parseAssign: %ParseForm -> %Form
+parseAssign t ==
+  t isnt [":=",x,y] => systemErrorHere ["parseAssign",t]
+  p := [":=",parseTran x,parseTranCheckForRecord(y,opOf x)]
+  opOf x = "cons" => [":=",transIs p.1,p.2]
   p
  
-
-parseLETD: %ParseForm -> %Form
-parseLETD t == 
-  t isnt ["LETD",x,y] => systemErrorHere ["parseLETD",t]
-  ["%Decl",parseTran x,parseTran y]
 
 parseColon: %ParseForm -> %Form 
 parseColon u ==
@@ -355,7 +345,7 @@ makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
-  wrapSEQExit [["%LET",g:= gensym(),p],g]
+  wrapSEQExit [[":=",g:= gensym(),p],g]
  
 
 parseWhere: %List %Form -> %Form
@@ -378,7 +368,7 @@ transSeq l ==
   l is [x] => decExitLevel x
   [item,:tail] := l
   item is ["SEQ",:l,["exit",1,["IF",p,["exit", =2,q],"%noBranch"]]] and
-    (and/[x is ["%LET",:.] for x in l]) =>
+    (and/[x is [":=",:.] for x in l]) =>
       ["SEQ",:[decExitLevel x for x in l],["exit",1,["IF",decExitLevel p,
         decExitLevel q,transSeq tail]]]
   item is ["IF",a,["exit",1,b],"%noBranch"] =>
@@ -457,8 +447,7 @@ for x in [[":", :"parseColon"],_
 	  ["isnt", :"parseIsnt"],_
 	  ["Join", :"parseJoin"],_
 	  ["leave", :"doParseLeave"],_
-	  ["%LET", :"parseLET"],_
-	  ["LETD", :"parseLETD"],_
+	  [":=", :"parseAssign"],_
 	  ["MDEF", :"parseMDEF"],_
 	  ["or", :"parseOr"],_
 	  ["pretend", :"parsePretend"],_
