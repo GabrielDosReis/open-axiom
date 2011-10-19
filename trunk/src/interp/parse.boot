@@ -213,11 +213,9 @@ parseLhs x ==
 
 parseMDEF: %ParseForm -> %Form
 parseMDEF t ==
-  t isnt ["MDEF",$lhs,tList,specialList,body] => 
-    systemErrorHere ["parseMDEF",t]
-  ["MDEF",parseTran $lhs,parseTypeList tList,parseTranList specialList,
-    parseTranCheckForRecord(body,opOf $lhs)]
- 
+  t isnt ["MDEF",$lhs,tList,body] => systemErrorHere ["parseMDEF",t]
+  ["MDEF",$lhs,parseTypeList tList,parseTranCheckForRecord(body,opOf $lhs)]
+
 parseTranCheckForRecord: (%ParseForm,%ParseForm) -> %Form
 parseTranCheckForRecord(x,op) ==
   x := parseTran x

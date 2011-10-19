@@ -1,5 +1,16 @@
 2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/postpar.boot (postNormalizeName): New.
+	(postAtom): Use it.
+	(postMDef): Do not generate artificial list of nils.
+	Leave left-hand-side as written in source code.
+	* interp/compiler.boot (compMacro): Tidy.
+	* interp/define.boot (checkRepresentation): Likewise.
+	* interp/parse.boot (parseMDEF): Likewise.
+	* algebra/syntax.spad.pamphlet (MacroAst): Adjust.
+
+2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/property.lisp: Move output-related content to i-output.boo.
 	Remove.
 

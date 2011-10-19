@@ -740,7 +740,7 @@ checkRepresentation(addForm,body,env) ==
       else if addForm ~= nil then
         stackWarning('"%1b differs from the base domain",["Rep"])
       return hasAssignRep := true
-    stmt is ["MDEF",["Rep",:.],:.] =>
+    stmt is ["MDEF","Rep",:.] =>
       stackWarning('"Consider using == definition for %1b",["Rep"])
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>

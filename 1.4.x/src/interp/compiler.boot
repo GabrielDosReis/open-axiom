@@ -995,7 +995,7 @@ $macroIfTrue := false
 
 compMacro(form,m,e) ==
   $macroIfTrue: local:= true
-  ["MDEF",lhs,signature,specialCases,rhs] := form
+  ["MDEF",lhs,signature,rhs] := form
   if $verbose then
     prhs :=
       rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
@@ -1007,13 +1007,14 @@ compMacro(form,m,e) ==
       :formatUnabbreviated lhs,'" ==> ",:prhs,'"%d"]
   m=$EmptyMode or m=$NoValueMode =>
     -- Macro names shall be identifiers.
-    not ident? lhs.op =>
-      stackMessage('"invalid left-hand-side in macro definition",nil)
-      e
+    (lhs isnt [.,:.] and not ident? lhs)
+      or (lhs is [op,:.] and not ident? op) =>
+        stackMessage('"invalid left-hand-side in macro definition",nil)
+        e
     -- We do not have the means, at this late stage, to make a distinction
     -- between a niladic functional macro and an identifier that is
     -- defined as a macro.
-    if lhs.args = nil then lhs := lhs.op
+    if lhs is [op] then lhs := op
     ["/throwAway",$NoValueMode,putMacro(lhs,macroExpand(rhs,e),e)]
   nil
 

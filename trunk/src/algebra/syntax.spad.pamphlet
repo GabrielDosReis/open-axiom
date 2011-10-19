@@ -1671,7 +1671,10 @@ MacroAst(): Public == Private where
       ++ body(m) returns the right hand side of the definition `m'.
   Private == add
     Rep == List SpadAst
-    head x == (second rep x) : HeadAst
+    head x ==
+      z := second rep x
+      z case Identifier => [z] : HeadAst
+      z : HeadAst
     body x == last rep x
     coerce(x: %): OutputForm ==
      elt('MacroAst::OutputForm,
