@@ -199,9 +199,9 @@ parseHas t ==
  
 parseDEF: %ParseForm -> %Form
 parseDEF t ==
-  t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere ["parseDEF",t]
+  t isnt ["DEF",$lhs,tList,body] => systemErrorHere ["parseDEF",t]
   setDefOp $lhs
-  ["DEF",parseLhs $lhs,parseTypeList tList,parseTranList specialList,
+  ["DEF",parseLhs $lhs,parseTypeList tList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
 parseLhs: %ParseForm -> %Form

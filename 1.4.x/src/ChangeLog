@@ -1,5 +1,20 @@
 2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/postpar.boot (postDef): Do not include list of nil forms
+	as special cases.
+	* interp/parse.boot (parseDEF): Tidy.
+	* interp/define.boot (checkRepresentation): Likewise.
+	(compDefine1): Likewise.
+	(macroExpand): Likewise.
+	(compDefineCategory1): Likewise.
+	(compDefineCategory2): Likewise.
+	(compDefineFunctor1): Likewise.
+	(compDefWhereClause): Likewise.
+	(compDefineCapsuleFunction): Likewise.
+	(isMacro): Likewise.
+
+2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/postpar.boot (postNormalizeName): New.
 	(postAtom): Use it.
 	(postMDef): Do not generate artificial list of nils.
