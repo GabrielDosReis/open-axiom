@@ -162,14 +162,20 @@ postMakeCons l ==
     postTran a
   ["cons",postTran first l,postMakeCons rest l]
 
+postNormalizeName: %Symbol -> %Symbol
+postNormalizeName x ==
+  x = "T" => "T$" -- rename T in spad code to avoid clash with Lisp
+  x = "^" => "**" -- always use `**' internally for exponentiation
+  x
+
 postAtom: %Atom -> %ParseForm
 postAtom x ==
-  x=0 => $Zero
-  x=1 => $One
-  x='T => "T$" -- rename T in spad code to T$
-  ident? x and niladicConstructor? x => [x]
-  x="," => "%Comma"
-  x = "^" => "**"  -- always use `**' internally for exponentiation
+  x is 0 => $Zero
+  x is 1 => $One
+  x is "," => "%Comma"
+  ident? x =>
+    niladicConstructor? x => [x]
+    postNormalizeName x
   x
 
 postBlock: %ParseTree -> %ParseForm
@@ -245,21 +251,26 @@ postDefArgs argl ==
 postMDef: %ParseTree -> %ParseForm
 postMDef(t) ==
   [.,lhs,rhs] := t
-  lhs := postTran lhs
+  lhs :=
+    ident? lhs => postNormalizeName lhs
+    lhs is [.,:.] => [postNormalizeName x for x in lhs]
+    lhs
   [form,targetType]:=
-    lhs is [":",:.] => rest lhs
+    lhs is [":",:.] => lhs.args
     [lhs,nil]
-  form:=
-    form isnt [.,:.] => [form]
+  newLhs :=
+    form is [.,:.] => [(x is [":",a,:.] => a; x) for x in form]
     form
-  newLhs:= [(x is [":",a,:.] => a; x) for x in form]
-  typeList:= [targetType,:[(x is [":",.,t] => t; nil) for x in rest form]]
-  ["MDEF",newLhs,typeList,[nil for x in form],postTran rhs]
+  typeList :=
+    form is [.,:.] =>
+      [targetType,:[(x is [":",.,t] => t; nil) for x in rest form]]
+    nil
+  ["MDEF",newLhs,typeList,postTran rhs]
 
 postElt: %ParseTree -> %ParseForm
 postElt u ==
   u isnt [.,a,b] => systemErrorHere ["postElt",u]
-  a:= postTran a
+  a := postTran a
   b is ["%Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
   ["elt",a,postTran b]
 
