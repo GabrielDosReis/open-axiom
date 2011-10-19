@@ -745,7 +745,7 @@ checkRepresentation(addForm,body,env) ==
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
       checkRepresentation(nil,l,env)
-    stmt isnt ["DEF",[op,:args],sig,.,val] => nil -- skip for now.
+    stmt isnt ["DEF",[op,:args],sig,val] => nil -- skip for now.
     op in '(rep per) =>
       domainRep ~= nil =>
         stackAndThrow('"You cannot define implicitly generated %1b",[op])
@@ -791,14 +791,14 @@ compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple
 compDefine1(form,m,e) ==
   $insideExpressionIfTrue: local:= false
   --1. decompose after macro-expanding form
-  ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
+  ['DEF,lhs,signature,rhs] := form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
      => [lhs,m,putMacro(lhs.op,rhs,e)]
   checkParameterNames lhs.args
   null signature.target and symbol? KAR rhs and not builtinConstructor? KAR rhs and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
-      compDefine1(['DEF,lhs,[sig.target,:signature.source],specialCases,rhs],m,e)
+      compDefine1(['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
   if signature.target=$Category then $insideCategoryIfTrue:= true
  
 -- RDJ (11/83): when argument and return types are all declared,
@@ -817,8 +817,7 @@ compDefine1(form,m,e) ==
       [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(lhs.args,e)),:
           signature.source]
     rhs:= addEmptyCapsuleIfNecessary(signature.target,rhs)
-    compDefineFunctor(['DEF,lhs,signature,specialCases,rhs],m,e,nil,
-      $formalArgList)
+    compDefineFunctor(['DEF,lhs,signature,rhs],m,e,nil,$formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
     $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
@@ -879,9 +878,8 @@ macroExpand(x,e) ==   --not worked out yet
     -- Don't expand a functional macro name by itself.
     u is ['%mlambda,:.] => x
     macroExpand(u,e)
-  x is ['DEF,lhs,sig,spCases,rhs] =>
-    ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpandList(spCases,e),
-      macroExpand(rhs,e)]
+  x is ['DEF,lhs,sig,rhs] =>
+    ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpand(rhs,e)]
   -- macros should override niladic props
   [op,:args] := x
   ident? op and args = nil and niladicConstructor? op and
@@ -924,13 +922,13 @@ mkEvalableCategoryForm c ==
 skipCategoryPackage? capsule ==
   null capsule or $bootStrapMode
 
-compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
+compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
   categoryCapsule :=
     body is ['add,cat,capsule] =>
       body := cat
       capsule
     nil
-  [d,m,e]:= compDefineCategory2(form,sig,sc,body,m,e,prefix,fal)
+  [d,m,e]:= compDefineCategory2(form,sig,body,m,e,prefix,fal)
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
@@ -986,11 +984,9 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   nils:= [nil for x in argl]
   packageSig := [packageCategory,form,:nils]
   $categoryPredicateList := substitute(nameForDollar,'$,$categoryPredicateList)
-  substitute(nameForDollar,'$,
-      ['DEF,[packageName,:packageArgl],packageSig,[nil,:nils],def])
+  substitute(nameForDollar,'$,['DEF,[packageName,:packageArgl],packageSig,def])
  
-compDefineCategory2(form,signature,specialCases,body,m,e,
-  $prefix,$formalArgList) ==
+compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local := true
     $definition: local := form   --used by DomainSubstitutionFunction
@@ -1323,7 +1319,7 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $profileAlist:    local := nil
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
-compDefineFunctor1(df is ['DEF,form,signature,nils,body],
+compDefineFunctor1(df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     --  1. bind global variables
     $addForm: local := nil
@@ -1615,12 +1611,10 @@ mkOpVec(dom,siglist) ==
 
 ++ form is lhs (f a1 ... an) of definition; body is rhs;
 ++ signature is (t0 t1 ... tn) where t0= target type, ti=type of ai, i > 0;
-++ specialCases is (NIL l1 ... ln) where li is list of special cases
-++ which can be given for each ti
 ++ removes declarative and assignment information from form and
 ++ signature, placing it in list L, replacing form by ("where",form',:L),
 ++ signature by a list of NILs (signifying declarations are in e)
-compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
+compDefWhereClause(['DEF,form,signature,body],m,e) ==
   $sigAlist: local := nil
   $predAlist: local := nil
   -- 1. create sigList= list of all signatures which have embedded
@@ -1669,7 +1663,7 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
   --    all argument parameters of form' are bound/declared in WhereList
   comp(form',m,e) where
     form' := ["where",defform,:whereList] where
-      defform := ['DEF,form'',signature',specialCases,body] where
+      defform := ['DEF,form'',signature',body] where
         form'' := [form.op,:argList]
         signature' := [signature.target,:[nil for x in signature.source]]
  
@@ -1690,9 +1684,8 @@ orderByDependency(vl,dl) ==
     dl := dl'
   removeDuplicates reverse! orderedVarList --ordered so ith is indep. of jth if i < j
  
-compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
+compDefineCapsuleFunction(df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
-    [lineNumber,:specialCases] := specialCases
     e := $e
     --1. bind global variables
     $form: local := nil
@@ -1734,8 +1727,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     e:= giveFormalParametersValues(argl,e)
  
     $signatureOfForm:= signature' --this global is bound in compCapsuleItems
-    $functionLocations := [[[$op,$signatureOfForm],:lineNumber],
-      :$functionLocations]
+    $functionLocations := [[[$op,$signatureOfForm]],:$functionLocations]
     e:= addDomain(signature'.target,e)
     e:= compArgumentConditions e
  
@@ -2278,7 +2270,7 @@ doIt(item,$predl) ==
   systemErrorHere ["doIt", item]
  
 isMacro(x,e) ==
-  x is ['DEF,[op,:args],signature,specialCases,body] and
+  x is ['DEF,[op,:args],signature,body] and
     null get(op,'modemap,e) and null args and null get(op,'mode,e)
       and signature is [nil] => body
 

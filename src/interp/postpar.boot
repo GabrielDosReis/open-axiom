@@ -234,8 +234,7 @@ postDef t ==
     [(x is [":",.,t] => t; nil) for x in rest form]
   typeList:= [targetType,:argTypeList]
   if form isnt [.,:.] then form := [form]
-  specialCaseForm := [nil for x in form]
-  ["DEF",newLhs,typeList,specialCaseForm,postTran rhs]
+  ["DEF",newLhs,typeList,postTran rhs]
 
 postDefArgs: %List %ParseTree -> %List %ParseForm
 postDefArgs argl ==
