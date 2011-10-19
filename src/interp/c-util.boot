@@ -1568,7 +1568,7 @@ massageBackendCode x ==
     -- special variable.
     u is 'SETQ and isLispSpecialVariable second x =>
       noteSpecialVariable second x
-  ident? u and GET(u,"ILAM") ~= nil =>
+  ident? u and property(u,"ILAM") ~= nil =>
     x.first := eval u
     massageBackendCode x
   u in '(LET LET_*) =>

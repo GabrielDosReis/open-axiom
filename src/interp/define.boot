@@ -2393,7 +2393,7 @@ makeCategoryForm(c,e) ==
 mustInstantiate: %Form -> %Thing 
 mustInstantiate D ==
   D is [fn,:.] and 
-    not (symbolMember?(fn,$DummyFunctorNames) or GET(fn,"makeFunctionList"))
+    not (symbolMember?(fn,$DummyFunctorNames) or property(fn,"makeFunctionList"))
 
 wrapDomainSub: (%List %Form, %Form) -> %Form 
 wrapDomainSub(parameters,x) ==
