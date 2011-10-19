@@ -381,6 +381,74 @@ for x in '((+ APP plusApp)
   repeat
     property(first x, second x) := third x
 
+for x in ["*","+","AND","OR","PROGN"] repeat
+  property(x,'NARY) := true
+
+for x in '((_= "=")
+          (_: ":")
+          (_not "not ")
+          (_| " | ")
+          (_SEGMENT ".."))
+  repeat
+    property(first x,'PREFIXOP) := second x
+
+for x in '((_:_= " := ")
+           (_/ "/")
+           (_+ "+")
+           (_* "*")
+           (_*_* "**")
+           (_^ "^")
+           (_: ":")
+           (_:_: "::")
+           (_@ "@")
+           (SEL ".")
+           (_exquo " exquo ")
+           (_div " div ")
+           (_quo " quo ")
+           (_rem " rem ")
+           (_case " case ")
+           (_and " and ")
+           (_/_\ " /\ ")
+           (_or " or ")
+           (_\_/ " \/ ")
+           (TAG ": ")
+           (_+_-_> " +-> ")
+           (RARROW " -> ")
+           (SEGMENT "..")
+           (_in " in ")
+           (EL* ":")
+           (JOIN " JOIN ")
+           (EQUATNUM "  ")
+           (IQUOTIENT "//")
+           (_= "= ")
+           (_>_= " >= ")
+           (_> " > ")
+           (_<_= " <= ")
+           (_< " < ")
+           (_| " | ")
+           (_+ " + ")
+           (_- " - ")
+           (MEMBER " in ")
+           (NMEMBER " nin ")
+           (WHERE " WHERE ")
+           (AT " AT ")
+           (MAX " MAX ")
+           (MIN " MIN "))
+   repeat
+     property(first x,'INFIXOP) := second x
+
+property('TAG,'Led) := '(TAG TAG 122 121)
+property('EQUATNUM,'Nud) := '(dummy dummy 0 0)
+property('EQUATNUM,'Led) := '(dummy dummy 10000 0)
+property('%LET,'Led) := '(_:_= %LET 125 124)
+property('RARROW,'Led) := '(_=_= DEF 122 121)
+property('SEGMENT,'Led) := '(_._. SEGMENT 401 699 (P_:Seg))
+property('SEGMENT,'isSuffix) := true
+property('EQUAL1,'CHRYBNAM) := 'EQ
+property('COND,'Nud) := '(_if _if 130 0)
+property('CONS,'Led) := '(CONS CONS 1000 1000)
+property('APPEND,'Led) := '(APPEND APPEND 1000 1000)
+
 --%
 
 $collectOutput := false

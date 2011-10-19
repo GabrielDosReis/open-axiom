@@ -71,6 +71,8 @@
 
 ; 0. Current I/O Stream definition
 
+(MAKEPROP 'END_UNIT 'KEY 'T)
+
 (defparameter out-stream t "Current output stream.")
 (defparameter File-Closed nil   "Way to stop EOF tests for console input.")
 

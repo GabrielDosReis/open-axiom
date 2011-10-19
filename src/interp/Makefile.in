@@ -95,7 +95,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	nrunfast.$(FASLEXT)	osyscmd.$(FASLEXT)	\
 	packtran.$(FASLEXT)	pf2sex.$(FASLEXT)	\
 	scan.$(FASLEXT)		pile.$(FASLEXT)		\
-	property.$(FASLEXT)	postpar.$(FASLEXT)	\
+	                      	postpar.$(FASLEXT)	\
 	parse.$(FASLEXT)	spad-parser.$(FASLEXT) \
 	record.$(FASLEXT)	rulesets.$(FASLEXT)	\
 	server.$(FASLEXT)	setvars.$(FASLEXT)	\
@@ -363,7 +363,6 @@ spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)
-property.$(FASLEXT): sys-macros.$(FASLEXT)
 sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
 trace.$(FASLEXT): debug.$(FASLEXT)
 termrw.$(FASLEXT): macros.$(FASLEXT)
