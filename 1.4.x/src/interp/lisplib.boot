@@ -717,7 +717,7 @@ getSlotFromCategoryForm (x,index) ==
 isDomainForm(D,e) ==
   op := opOf D
   not ident? op => false
-  --added for MPOLY 3/83 by RDJ
+  op is '%when => and/[isDomainForm(e,c) for [.,c] in D.args]
   symbolMember?(op,$SpecialDomainNames) or isFunctor op or
      ((getmode(op,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
        isCategoryForm(getmode(op,e),e) or isDomainConstructorForm(D,e)

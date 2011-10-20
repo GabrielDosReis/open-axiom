@@ -1,3 +1,7 @@
+2011-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (isDomainForm): Handle conditionals.
+
 2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/postpar.boot (postDef): Do not include list of nil forms
