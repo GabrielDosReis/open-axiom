@@ -1,5 +1,16 @@
 2011-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (checkRepresentation): Prepare for general
+	constant definition syntax.
+	(compDefine1): Likewise.
+	(compDefineCategory1): Likewise.
+	(compDefineFunctor1): Likewise.
+	(compDefineCapsuleFunction): Likewise.
+	(doIt): Likewise.
+	(isMacro): Tidy.
+
+2011-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (isDomainForm): Handle conditionals.
 
 2011-10-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>

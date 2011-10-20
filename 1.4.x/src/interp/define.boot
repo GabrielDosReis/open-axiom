@@ -745,7 +745,8 @@ checkRepresentation(addForm,body,env) ==
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
       checkRepresentation(nil,l,env)
-    stmt isnt ["DEF",[op,:args],sig,val] => nil -- skip for now.
+    stmt isnt ["DEF",lhs,sig,val] => nil -- skip for now.
+    op := opOf lhs
     op in '(rep per) =>
       domainRep ~= nil =>
         stackAndThrow('"You cannot define implicitly generated %1b",[op])
@@ -760,14 +761,14 @@ checkRepresentation(addForm,body,env) ==
     -- It is a mistake to define Rep in category defaults
     $insideCategoryPackageIfTrue =>
       stackAndThrow('"You cannot define %1b in category defaults",["Rep"])
-    if args ~= nil then
+    if lhs is [.,.,:.] then   --FIXME: ideally should be 'lhs is [.,:.]'
       stackAndThrow('"%1b does take arguments",["Rep"])
     if sig.target ~= nil then
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
     stmt.op := ":="
-    stmt.rest := ["Rep",domainRep]
+    stmt.args := ["Rep",domainRep]
     $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
 
   -- Shall we perform the dirty tricks?
@@ -791,12 +792,13 @@ compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple
 compDefine1(form,m,e) ==
   $insideExpressionIfTrue: local:= false
   --1. decompose after macro-expanding form
-  ['DEF,lhs,signature,rhs] := form:= macroExpand(form,e)
+  ['DEF,lhs,signature,rhs] := form := macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
      => [lhs,m,putMacro(lhs.op,rhs,e)]
-  checkParameterNames lhs.args
+  if lhs is [.,:.] then
+    checkParameterNames lhs.args
   null signature.target and symbol? KAR rhs and not builtinConstructor? KAR rhs and
-    (sig:= getSignatureFromMode(lhs,e)) =>
+    (sig := getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
       compDefine1(['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
   if signature.target=$Category then $insideCategoryIfTrue:= true
@@ -805,20 +807,23 @@ compDefine1(form,m,e) ==
 --  or arguments have types declared in the environment,
 --  and there is no existing modemap for this signature, add
 --  the modemap by a declaration, then strip off declarations and recurse
-  e := compDefineAddSignature(lhs,signature,e)
+  if lhs is [.,:.] then
+    e := compDefineAddSignature(lhs,signature,e)
 -- 2. if signature list for arguments is not empty, replace ('DEF,..) by
 --       ('where,('DEF,..),..) with an empty signature list;
 --     otherwise, fill in all NILs in the signature
-  or/[x ~= nil for x in signature.source] => compDefWhereClause(form,m,e)
+  lhs is [.,:.] and (or/[x ~= nil for x in signature.source]) =>
+    compDefWhereClause(form,m,e)
   signature.target=$Category =>
     compDefineCategory(form,m,e,nil,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
-    if null signature.target then signature:=
-      [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(lhs.args,e)),:
-          signature.source]
-    rhs:= addEmptyCapsuleIfNecessary(signature.target,rhs)
+    if lhs is [.,:.] then
+      e := giveFormalParametersValues(lhs.args,e)
+    if null signature.target then
+      signature := [getTargetFromRhs(lhs,rhs,e),:signature.source]
+    rhs := addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,rhs],m,e,nil,$formalArgList)
-  null $form => stackAndThrow ['"bad == form ",form]
+  $form = nil => stackAndThrow ['"bad == form ",form]
   newPrefix:=
     $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
     dbAbbreviation constructorDB $op
@@ -928,6 +933,8 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
       body := cat
       capsule
     nil
+  if form isnt [.,:.] then
+    form := [form]
   [d,m,e]:= compDefineCategory2(form,sig,body,m,e,prefix,fal)
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
@@ -1321,6 +1328,9 @@ compDefineFunctor(df,m,e,prefix,fal) ==
  
 compDefineFunctor1(df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
+    -- 0.  Make `form' a constructor instantiation form
+    if form isnt [.,:.] then
+      form := [form]
     --  1. bind global variables
     $addForm: local := nil
     $subdomain: local := false
@@ -1702,11 +1712,11 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,body],
     $returnMode:= m
     -- Change "^" to "**" in definitions.  All other places have 
     -- been changed before we get here.
-    if form.op = "^" then 
+    if form is ["^",:.] then 
       sayBrightly ['"Replacing", :bright '"^", '"with",:bright '"**"]
       form.op := "**"
-    [$op,:argl]:= form
-    $form:= [$op,:argl]
+    [$op,:argl] := form
+    $form := [$op,:argl]
     argl:= stripOffArgumentConditions argl
     $formalArgList:= [:argl,:$formalArgList]
  
@@ -2255,17 +2265,17 @@ doIt(item,$predl) ==
   item is ["IF",p,x,y] => doItConditionally(item,$predl)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
-  item is ['DEF,[op,:.],:.] =>
+  item is ['DEF,lhs,:.] =>
+    op := opOf lhs
     body := isMacro(item,$e) => $e := putMacro(op,body,$e)
-    [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
+    [.,.,$e] := t := compOrCroak(item,$EmptyMode,$e)
     item.op := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-    second(item).rest := [$signatureOfForm]
+    second(item) := [op,$signatureOfForm]
       --This is how the signature is updated for buildFunctor to recognise
-    functionPart:= ['dispatchFunction,t.expr]
-    item.rest.rest.first := functionPart
+    third(item) := ['dispatchFunction,t.expr]
     item.rest.rest.rest := nil
-  u:= compOrCroak(item,$EmptyMode,$e) =>
+  u := compOrCroak(item,$EmptyMode,$e) =>
     ([code,.,$e]:= u; item.first := first code; item.rest := rest code)
   systemErrorHere ["doIt", item]
  
@@ -2273,6 +2283,7 @@ isMacro(x,e) ==
   x is ['DEF,[op,:args],signature,body] and
     null get(op,'modemap,e) and null args and null get(op,'mode,e)
       and signature is [nil] => body
+  nil
 
 ++ Compile capsule-level `item' which is a conditional expression.
 ++ OpenAxiom's take on prepositional logical is a constructive
