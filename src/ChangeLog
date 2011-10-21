@@ -1,3 +1,10 @@
+2011-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compDefineCapsuleFunction): Reimplement
+	signature inference.
+	(hasSigInTargetCategory): Implement what the documentation says:
+	infer the signature from the target category, not local declaration.
+
 2011-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (checkRepresentation): Prepare for general
