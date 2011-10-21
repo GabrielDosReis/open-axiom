@@ -99,7 +99,7 @@
               (PROGN
                (SETQ |a| (MAKE-ARRAY 256))
                (SETQ |b| (MAKE-ARRAY 1))
-               (SETF (ELT |b| 0) (MAKE-STRING 0))
+               (SETF (ELT |b| 0) (|makeString| 0))
                (LET ((|i| 0))
                  (LOOP
                   (COND ((> |i| 255) (RETURN NIL))
@@ -194,10 +194,10 @@
              (LIST '|list| 'LIST) (LIST '|listEq?| 'EQUAL)
              (LIST '|lowerCase?| 'LOWER-CASE-P) (LIST '|makeSymbol| 'INTERN)
              (LIST '|maxIndex| 'MAXINDEX) (LIST '|mkpf| 'MKPF)
-             (LIST '|newString| 'MAKE-STRING) (LIST '|newVector| 'MAKE-ARRAY)
-             (LIST '|nil| NIL) (LIST '|not| 'NOT) (LIST '|null| 'NULL)
-             (LIST '|odd?| 'ODDP) (LIST '|or| 'OR) (LIST '|otherwise| 'T)
-             (LIST '|property| 'GET) (LIST '|readInteger| 'PARSE-INTEGER)
+             (LIST '|newVector| 'MAKE-ARRAY) (LIST '|nil| NIL)
+             (LIST '|not| 'NOT) (LIST '|null| 'NULL) (LIST '|odd?| 'ODDP)
+             (LIST '|or| 'OR) (LIST '|otherwise| 'T) (LIST '|property| 'GET)
+             (LIST '|readInteger| 'PARSE-INTEGER)
              (LIST '|readLispFromString| 'READ-FROM-STRING)
              (LIST '|readOnly?| 'CONSTANTP) (LIST '|removeDuplicates| 'REMDUP)
              (LIST '|rest| 'CDR) (LIST '|sameObject?| 'EQ)

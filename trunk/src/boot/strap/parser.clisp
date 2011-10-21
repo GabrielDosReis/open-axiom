@@ -396,6 +396,25 @@
     (AND (OR (|bpSexp|) (|bpTrap|)) (|bpPush| (|bfSymbol| (|bpPop1|)))))
    (T (|bpString|))))
 
+(DEFUN |bpChar| ()
+  (PROG (|ISTMP#1| |s| |a|)
+    (DECLARE (SPECIAL |$stok| |$ttok|))
+    (RETURN
+     (COND
+      ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID) (EQ |$ttok| '|char|))
+       (SETQ |a| (|bpState|))
+       (COND
+        ((|bpApplication|) (SETQ |s| (|bpPop1|))
+         (COND
+          ((AND (CONSP |s|) (EQ (CAR |s|) '|char|)
+                (PROGN
+                 (SETQ |ISTMP#1| (CDR |s|))
+                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+           (|bpPush| |s|))
+          (T (|bpRestore| |a|) NIL)))
+        (T NIL)))
+      (T NIL)))))
+
 (DEFUN |bpExportItemTail| ()
   (OR
    (AND (|bpEqKey| 'BEC) (OR (|bpAssign|) (|bpTrap|))
@@ -976,7 +995,8 @@
         (|bpPush| (|bfDTuple| (|bpPop1|))))))
 
 (DEFUN |bpPattern| ()
-  (OR (|bpBracketConstruct| #'|bpPatternL|) (|bpName|) (|bpConstTok|)))
+  (OR (|bpBracketConstruct| #'|bpPatternL|) (|bpChar|) (|bpName|)
+      (|bpConstTok|)))
 
 (DEFUN |bpEqual| ()
   (AND (|bpEqKey| 'SHOEEQ) (OR (|bpApplication|) (|bpConstTok|) (|bpTrap|))

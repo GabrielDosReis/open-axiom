@@ -78,10 +78,6 @@
 
 (DECLAIM
  (FTYPE (FUNCTION (|%String| |%Short|) (|%Maybe| |%Short|))
-  |firstNonblankPosition|))
-
-(DECLAIM
- (FTYPE (FUNCTION (|%String| |%Short|) (|%Maybe| |%Short|))
   |firstBlankPosition|))
 
 (|%defaultReadAndLoadSettings|)
