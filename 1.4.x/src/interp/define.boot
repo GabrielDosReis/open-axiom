@@ -1721,20 +1721,18 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,body],
     $formalArgList:= [:argl,:$formalArgList]
  
     --let target and local signatures help determine modes of arguments
-    argModeList :=
-      identSig := hasSigInTargetCategory(argl,form,signature.target,e) =>
-        (e:= checkAndDeclare(argl,form,identSig,e); identSig.source)
-      [getArgumentModeOrMoan(a,form,e) for a in argl]
-    argModeList := stripOffSubdomainConditions(argModeList,argl)
-    signature' := [signature.target,:argModeList]
-    if null identSig then  --make $op a local function
-      $e := put($op,'mode,['Mapping,:signature'],$e)
+    signature' :=
+      sig := hasSigInTargetCategory(argl,form,signature.target,e) => sig
+      sig := getSignatureFromMode(form,e) => sig
+      [signature.target,:[getArgumentModeOrMoan(a,form,e) for a in argl]]
+    signature'.source := stripOffSubdomainConditions(signature'.source,argl)
  
     --obtain target type if not given
-    if null signature'.target then signature':=
-      identSig => identSig
-      getSignature($op,signature'.source,e) or return nil
-    e:= giveFormalParametersValues(argl,e)
+    if signature'.target = nil then
+      signature'.target :=
+        getSignature($op,signature'.source,e).target or return nil
+    e := checkAndDeclare(argl,form,sig,e)
+    e := giveFormalParametersValues(argl,e)
  
     $signatureOfForm:= signature' --this global is bound in compCapsuleItems
     $functionLocations := [[[$op,$signatureOfForm]],:$functionLocations]
@@ -1851,14 +1849,10 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
             fn(sig,opsig,mList) ==
               (null opsig or opsig=sig.target) and
                 (and/[compareMode2Arg(x,m) for x in mList for m in sig.source])
-  c:= #potentialSigList
-  1=c => first potentialSigList
-    --accept only those signatures op right length which match declared modes
-  0=c => (#(sig:= getSignatureFromMode(form,e))=#form => sig; nil)
-  1<c =>
-    ambiguousSignatureError($op,potentialSigList)
-    first potentialSigList
-  nil --this branch will force all arguments to be declared
+  potentialSigList is [sig] => sig
+  potentialSigList = nil => nil
+  ambiguousSignatureError($op,potentialSigList)
+  first potentialSigList
  
 compareMode2Arg(x,m) == null x or modeEqual(x,m)
  
