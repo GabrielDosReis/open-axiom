@@ -485,7 +485,6 @@ Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
 
     true          == %true
     false         == %false
-    sample()      == %true
     not b         == %not b
     ~b            == %not b
     a and b       == %and(a,b)
