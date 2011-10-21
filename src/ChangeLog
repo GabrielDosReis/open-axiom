@@ -1,5 +1,10 @@
 2011-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Workaround proclamation bug in GCL
+	* boot/utility.boot (firstNonblankPosition): Do not declare.
+
+2011-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (compDefineCapsuleFunction): Reimplement
 	signature inference.
 	(hasSigInTargetCategory): Implement what the documentation says:

@@ -64,7 +64,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
     setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
     finishLine: %Thing -> %Void
-    firstNonblankPosition: (%String,%Short) -> %Maybe %Short
+    --FIXME: Next signature commented out because of GCL bugs
+    -- firstNonblankPosition: (%String,%Short) -> %Maybe %Short
     firstBlankPosition: (%String,%Short) -> %Maybe %Short
 
 %defaultReadAndLoadSettings()
