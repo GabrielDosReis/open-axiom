@@ -368,6 +368,11 @@ for i in [ _
   ["mmSignature",       "CDAR"] , _
   ["mmTarget",         "CADAR"] , _
   ["mmSource",         "CDDAR"] , _
+  ["mapOperation",     "CAAR" ] , _
+  ["mapSignature",    "CADAR" ] , _
+  ["mapTarget",      "CAADAR" ] , _
+  ["mapSource",      "CDADAR" ] , _
+  ["mapKind",        "CAADDR" ] , _
   ["mode",              "CADR"] , _
   ["op",                 "CAR"] , _
   ["opcode",            "CADR"] , _

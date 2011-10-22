@@ -650,7 +650,7 @@ divisor of the order of the multiplicative group"
 
     extensionDegree(): PositiveInteger == extdeg
 
-    sizeOfGroundField() == size()$GF pretend NNI
+    sizeOfGroundField == size()$GF pretend NNI
 
     definingPolynomial() == defpol
 

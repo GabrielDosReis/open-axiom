@@ -114,12 +114,12 @@ SystemInteger(N: PositiveInteger): Public == Private where
   Private == SubDomain(Integer, length #1 <= N) add
     import %icst0: % from Foreign Builtin
     sample == %icst0
-    min == per(-shift(1,N-1))
-    max == per(shift(1,N-1)-1)
+    min: % == per(-shift(1,N-1))
+    max: % == per(shift(1,N-1)-1)
     size() == (rep max - rep min + 1)::NonNegativeInteger
     index i == per (i + rep min - 1)
     lookup x == (rep x - rep min + 1)::PositiveInteger
-    random() == per random(rep max())$Integer
+    random() == per random(rep max)$Integer
 
 @
 
@@ -200,8 +200,8 @@ SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
     import %bitior: (%,%) -> % from Foreign Builtin
     import %bitnot: % -> %     from Foreign Builtin
 
-    min == %icst0
-    max == per((shift(1,N)-1) : NonNegativeInteger)
+    min: % == %icst0
+    max: % == per((shift(1,N)-1) : NonNegativeInteger)
     sample == min
     bitand(x,y) == %bitand(x,y)
     bitior(x,y) == %bitior(x,y)

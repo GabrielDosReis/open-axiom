@@ -130,7 +130,7 @@ Color(): Exports == Implementation where
     yellow()  == [11::I,1]
     green()   == [14::I,1]
     blue()    == [22::I,1]
-    sample()  == red()
+    sample    == red()
     hue c     == c.hue
     i:PositiveInteger * c:% == i::SF * c
     numberOfHues() == totalHues 

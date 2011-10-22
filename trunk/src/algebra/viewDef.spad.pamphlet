@@ -152,12 +152,12 @@ ViewDefaultsPackage():Exports == Implementation where
     defaultClosed     : Reference(B)    := ref(false)
 
 --%Viewport window dimensions specifications
-    viewPosDefault   == [deref defaultXPos,deref defaultYPos]
+    viewPosDefault() == [deref defaultXPos,deref defaultYPos]
     viewPosDefault l ==
       #l < 2 => error "viewPosDefault expects a list with two elements"
       [setref(defaultXPos,first l),setref(defaultYPos,last l)]
 
-    viewSizeDefault   == [deref defaultWidth,deref defaultHeight]
+    viewSizeDefault() == [deref defaultWidth,deref defaultHeight]
     viewSizeDefault l ==
       #l < 2 => error "viewSizeDefault expects a list with two elements"
       [setref(defaultWidth,first l),setref(defaultHeight,last l)]
@@ -174,39 +174,39 @@ ViewDefaultsPackage():Exports == Implementation where
       defaultHeight     : Reference(PI)   := ref(427::PI)
 
 --%2D graphical output specifications
-    pointColorDefault   == deref defaultPointColor
+    pointColorDefault() == deref defaultPointColor
     pointColorDefault p == setref(defaultPointColor,p)
 
-    lineColorDefault   == deref defaultLineColor
+    lineColorDefault() == deref defaultLineColor
     lineColorDefault p == setref(defaultLineColor,p)
 
-    axesColorDefault   == deref defaultAxesColor
+    axesColorDefault() == deref defaultAxesColor
     axesColorDefault p == setref(defaultAxesColor,p)
 
-    unitsColorDefault   == deref defaultUnitsColor
+    unitsColorDefault() == deref defaultUnitsColor
     unitsColorDefault p == setref(defaultUnitsColor,p)
 
-    pointSizeDefault   == deref defaultPointSize
+    pointSizeDefault() == deref defaultPointSize
     pointSizeDefault x == setref(defaultPointSize,x)
 
 
 --%3D specific stuff
-    var1StepsDefault   == deref defaultVar1Steps
+    var1StepsDefault() == deref defaultVar1Steps
     var1StepsDefault i == setref(defaultVar1Steps,i)
 
-    var2StepsDefault   == deref defaultVar2Steps
+    var2StepsDefault() == deref defaultVar2Steps
     var2StepsDefault i == setref(defaultVar2Steps,i)
 
-    tubePointsDefault   == deref defaultTubePoints
+    tubePointsDefault() == deref defaultTubePoints
     tubePointsDefault i == setref(defaultTubePoints,i)
 
-    tubeRadiusDefault   == deref defaultTubeRadius
+    tubeRadiusDefault() == deref defaultTubeRadius
     tubeRadiusDefault f == setref(defaultTubeRadius,convert(f)@SF)
 
 --%File output stuff
-    viewWriteAvailable == writeAvailable
+    viewWriteAvailable() == writeAvailable
 
-    viewWriteDefault == deref defaultThingsToWrite
+    viewWriteDefault() == deref defaultThingsToWrite
 
     viewWriteDefault listOfThings ==
       thingsToWrite : L S := []

@@ -244,11 +244,13 @@
              (LIST '|mmCondition| 'CAADR) (LIST '|mmDC| 'CAAR)
              (LIST '|mmImplementation| 'CADADR) (LIST '|mmSignature| 'CDAR)
              (LIST '|mmTarget| 'CADAR) (LIST '|mmSource| 'CDDAR)
-             (LIST '|mode| 'CADR) (LIST '|op| 'CAR) (LIST '|opcode| 'CADR)
-             (LIST '|opSig| 'CADR) (LIST 'CDR 'CDR) (LIST '|sig| 'CDDR)
-             (LIST '|source| 'CDR) (LIST '|streamCode| 'CADDDR)
-             (LIST '|streamDef| 'CADDR) (LIST '|streamName| 'CADR)
-             (LIST '|target| 'CAR)))
+             (LIST '|mapOperation| 'CAAR) (LIST '|mapSignature| 'CADAR)
+             (LIST '|mapTarget| 'CAADAR) (LIST '|mapSource| 'CDADAR)
+             (LIST '|mapKind| 'CAADDR) (LIST '|mode| 'CADR) (LIST '|op| 'CAR)
+             (LIST '|opcode| 'CADR) (LIST '|opSig| 'CADR) (LIST 'CDR 'CDR)
+             (LIST '|sig| 'CDDR) (LIST '|source| 'CDR)
+             (LIST '|streamCode| 'CADDDR) (LIST '|streamDef| 'CADDR)
+             (LIST '|streamName| 'CADR) (LIST '|target| 'CAR)))
       (|i| NIL))
   (LOOP
    (COND

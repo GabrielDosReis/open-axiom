@@ -464,7 +464,7 @@ SquareMatrix(ndim,R): Exports == Implementation where
  
     if R has Field then
  
-      dimension() == (m * n) :: CardinalNumber
+      dimension == (m * n) :: CardinalNumber
  
       inverse x ==
         (u := inverse rep x) case "failed" => "failed"

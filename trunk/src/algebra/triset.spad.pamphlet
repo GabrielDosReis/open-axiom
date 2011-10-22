@@ -550,8 +550,6 @@ GeneralTriangularSet(R,E,V,P) : Exports == Implementation where
      member? (p,ts) ==
        member?(p,rep(ts))$LP
 
-     unitIdealIfCan() ==
-       "failed"::Union($,"failed")
      roughUnitIdeal? ts ==
        false
 
