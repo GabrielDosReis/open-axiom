@@ -1,5 +1,26 @@
 2011-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Add new selectors: mapOperation, mapSignature,
+	mapTarget, mapSource, mapKind.
+	* algebra/data.spad.pamphlet (SystemInteger) [min, max]: Disambiguate
+	with explicit type annotation.
+	(SystemNonNetativeInteger) [min, max]: Likewise.
+	* algebra/color.spad.pamphlet (Color) [sample]: Remove parenthesis.
+	* algebra/ffnb.spad.pamphlet
+	(FiniteFieldNormalBasisExtensionByPolynomial) [sizeOfGroundField]:
+	Likewise.
+	* algebra/matrix.spad.pamphlet (SquareMatrix) [dimension]: Likewise.
+	* algebra/view3D.spad.pamphlet: Likewise.
+	* algebra/viewDef.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet (RegularTriangularSetCategory)
+	[unitIdealIfCan]:  Remove, was useless.
+	* algebra/sregset.spad.pamphlet (SquareFreeRegularTriangularSet)
+	[unitIdealIfCan]:  Likewise.
+	* algebra/triset.spad.pamphlet (GeneralTriangularSet)
+	[unitIdealIfCan]:  Likewise.
+
+2011-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (Boolean) [sample]: Remove
 	definition, as it is not exported.
 
