@@ -200,9 +200,9 @@ makeOrdinal i ==
 
 evaluateSignature sig ==
   -- calls evaluateType on a signature
-  sig is ['SIGNATURE,fun,sigl] =>
+  sig is ['SIGNATURE,fun,sigl,:q] =>
     ['SIGNATURE,fun,
-      [(t = '_$ => t; evaluateType(t)) for t in sigl]]
+      [(t = '_$ => t; evaluateType(t)) for t in sigl],:q]
   sig
 
 --% Code Evaluation
