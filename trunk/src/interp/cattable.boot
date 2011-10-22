@@ -118,7 +118,7 @@ simpHasPred(pred,:options) == main where
   simpDevaluate a == eval substitute('QUOTE,'devaluate,a)
   simpHas(pred,a,b) ==
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
-    b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
+    b is ['SIGNATURE,op,sig,:.] => simpHasSignature(pred,a,op,sig)
     ident? a or hasIdent b => pred
     npred := evalHas pred
     ident? npred or null hasIdent npred => npred

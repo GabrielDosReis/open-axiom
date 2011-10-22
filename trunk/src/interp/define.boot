@@ -574,7 +574,8 @@ extendsCategory(dom,u,v,env) ==
   v := substSlotNumbers(v,$template,$functorForm)
   extendsCategoryBasic(dom,u,v,env) => true
   $why :=
-    v is ['SIGNATURE,op,sig] => [u,['"  has no ",:formatOpSignature(op,sig)]]
+    v is ['SIGNATURE,op,sig,:.] =>
+      [u,['"  has no ",:formatOpSignature(op,sig)]]
     [u,'" has no",v]
   nil
  
@@ -592,7 +593,7 @@ extendsCategoryBasic(dom,u,v,env) ==
     uVec := compMakeCategoryObject(u,env).expr or return false
     LASSOC(c,categoryAttributes uVec) is [=true]
   isCategoryForm(v,env) => catExtendsCat?(u,v,env)
-  v is ['SIGNATURE,op,sig] =>
+  v is ['SIGNATURE,op,sig,:.] =>
     uVec := compMakeCategoryObject(u,env).expr or return false
     or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
@@ -617,8 +618,8 @@ catExtendsCat?(u,v,env) ==
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and
     symbolMember?(op,allConstructors()) => expandType(form,template,domain)
-  form is ['SIGNATURE,op,sig] =>
-    ['SIGNATURE,op,[substSlotNumbers(x,template,domain) for x in sig]]
+  form is ['SIGNATURE,op,sig,:q] =>
+    ['SIGNATURE,op,[substSlotNumbers(x,template,domain) for x in sig],:q]
   form is ['CATEGORY,k,:u] =>
     ['CATEGORY,k,:[substSlotNumbers(x,template,domain) for x in u]]
   expandType(form,template,domain)
@@ -964,6 +965,14 @@ makeCategoryPredicates(form,u) ==
           for x in u repeat pl := fn(x,pl)
           pl
  
+++ Subroutine of mkCategoryPackage.
+++ Return a category-level declaration of an operation described by `desc'.
+mkExportFromDescription desc ==
+  t :=
+    desc.mapKind = 'CONST => ['constant]
+    nil
+  ['SIGNATURE,desc.mapOperation,desc.mapSignature,:t]
+
 mkCategoryPackage(form is [op,:argl],cat,def) ==
   catdb := constructorDB op
   packageName:= makeDefaultPackageName symbolName op
@@ -977,13 +986,13 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   packageArgl := [nameForDollar,:argl]
   capsuleDefAlist := fn(def,nil) where fn(x,oplist) ==
     x isnt [.,:.] => oplist
-    x is ['DEF,y,:.] => [y,:oplist]
+    x is ['DEF,y,:.] => [opOf y,:oplist]
     fn(x.args,fn(x.op,oplist))
   catvec := eval mkEvalableCategoryForm form
   fullCatOpList := categoryExports JoinInner([catvec],$e)
   catOpList :=
-    [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
-        | assoc(op1,capsuleDefAlist)]
+    [mkExportFromDescription desc for desc in fullCatOpList
+        | symbolMember?(desc.mapOperation,capsuleDefAlist)]
   null catOpList => nil
   packageCategory :=
     ['CATEGORY,'package,

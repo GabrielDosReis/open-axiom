@@ -434,7 +434,7 @@ form2String1 u ==
     argl' := form2String1 first argl
     ['"(",:(argl' isnt [.,:.] => [argl']; argl'),'")"]
   op = "SIGNATURE" =>
-     [operation,sig] := argl
+     [operation,sig,:q] := argl
      concat(operation,'": ",formatSignature sig)
   op = 'COLLECT => formCollect2String argl
   op = 'construct =>
@@ -513,7 +513,7 @@ formatJoinKey(r,key) ==
     '"?? unknown mkCategory format ??"
   -- otherwise we have the CATEGORY form
   "append"/[fn for x in r] where fn() ==
-    x is ['SIGNATURE,op,sig] => concat("%l",formatOpSignature(op,sig))
+    x is ['SIGNATURE,op,sig,:.] => concat("%l",formatOpSignature(op,sig))
     x is ['ATTRIBUTE,a] => concat("%l",formatAttribute a)
     x
 

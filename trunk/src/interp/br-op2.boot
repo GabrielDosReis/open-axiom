@@ -80,7 +80,7 @@ htSayExplicitExports r ==
   htSay '":"
   for x in r repeat
     htSay '"\newline "
-    x is ['SIGNATURE,op,sig] =>
+    x is ['SIGNATURE,op,sig,:.] =>
       ops := escapeSpecialChars STRINGIMAGE op
       htMakePage [['bcLinks,[ops,'"",'oPage,ops]]]
       htSay '": "
