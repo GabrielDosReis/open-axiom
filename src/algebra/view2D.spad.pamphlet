@@ -779,7 +779,7 @@ TwoDimensionalViewport ():Exports == Implementation where
         -- the viewports in its list. a -1 means it doesn't
         -- exist.
       sendI(VIEW,viewport.key)$Lisp
-      i := getI(VIEW)$Lisp
+      i: Integer := getI(VIEW)$Lisp
       negative? i => 
         viewport.key := 0$I
         error "This viewport has already been closed!"

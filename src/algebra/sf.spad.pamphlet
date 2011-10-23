@@ -286,7 +286,6 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
    import %fmaxval: () -> %             from Foreign Builtin
    import %fbase: () -> PositiveInteger from Foreign Builtin
    import %fprec: () -> PositiveInteger from Foreign Builtin
-   import %fmanexp: % -> Record(man: %,exp: Integer) from Foreign Builtin
    import %i2f: Integer -> %            from Foreign Builtin
    import %fabs: % -> %                 from Foreign Builtin
    import %fneg: % -> %                 from Foreign Builtin
@@ -327,12 +326,16 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
    import %fatanh: % -> %               from Foreign Builtin
    import %fcstpi: () -> %              from Foreign Builtin
    import %fNaN?: % -> Boolean          from Foreign Builtin
-
-   manexp: % -> MER
+   import %fdecode: % -> List Integer   from Foreign Builtin
+   import %lfirst: List Integer -> Integer from Foreign Builtin
+   import %lsecond: List Integer -> Integer from Foreign Builtin
+   import %lthird: List Integer -> Integer from Foreign Builtin
 
    base()           == %fbase()
-   mantissa x       == manexp(x).MANTISSA
-   exponent x       == manexp(x).EXPONENT
+   mantissa x       ==
+     fp := %fdecode x
+     %lfirst fp * %lthird fp
+   exponent x       == %lsecond %fdecode x
    precision()      == %fprec()
    bits()           ==
      base() = 2 => precision()
@@ -394,7 +397,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
    acoth x          == atanh(1/x)
    asech x          == acosh(1/x)
    x:% / y:%        == %fdiv(x,y)
-   negative? x      == x < 0
+   negative? x      == sign x < 0
    zero? x          == x = 0
    one? x           == x = 1
    hash x           == %hash x
@@ -438,18 +441,14 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
      x = (%i2f(n := wholePart x)) => n
      "failed"
 
-   sign(x) == retract FLOAT_-SIGN(x,1)$Lisp
+   sign(x) == %lthird %fdecode x
    abs x   == %fabs x
-   positive? x == 0 < x
-   manexp(x) ==
-      zero? x => [0,0]
-      s := sign x
-      x := abs x
-      if x > max()$% then
-        return [s*mantissa(max())+1,exponent max()]
-      me: Record(man: %,exp: Integer) := %fmanexp x
-      two53 := base()**precision()
-      [s*wholePart(two53 * me.man ),me.exp-precision()]
+   positive? x == sign x > 0
+   manexp(x: %): MER ==
+      fp := %fdecode x
+      m := %lfirst fp
+      zero? m => [m,0]
+      [%lfirst fp * %lthird fp, %lsecond fp]
 
 -- rationalApproximation(y,d,b) ==
 --    this is the quotient remainder algorithm (requires wholePart operation)
