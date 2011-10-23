@@ -499,30 +499,13 @@ compForm1(form is [op,:argl],m,e) ==
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
 
-  (mmList:= getFormModemaps(form,e)) and (T:= compForm2(form,m,e,mmList)) => T
+  T:= compForm2(form,m,e,getFormModemaps(form,e)) => T
   compToApply(op,argl,m,e)
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
+  modemapList = nil => nil
   aList := pairList($TriangleVariableList,argl)
   modemapList := applySubst(aList,modemapList)
-  deleteList := []
-  newList := []
-  -- now delete any modemaps that are subsumed by something else, 
-  -- provided the conditions are right (i.e. subsumer true 
-  -- whenever subsumee true)
-  for u in modemapList repeat
-    if u is [[dc,:.],[cond,["Subsumed",.,nsig]]] and
-       (v:=assoc([dc,:nsig],modemapList)) and v is [.,[ncond,:.]] then
-           deleteList := [u,:deleteList]
-           if not PredImplies(ncond,cond) then
-             newList := [[first u,[cond,['ELT,dc,nil]]],:newList]
-  if deleteList ~= nil then 
-    modemapList := [u for u in modemapList | not objectMember?(u,deleteList)]
-  -- We can use objectMember? since deleteList was built out of members of modemapList
-  -- its important that subsumed ops (newList) be considered last
-  if newList then 
-    modemapList := append(modemapList,newList)
-
   -- The calling convention vector is used to determine when it is
   -- appropriate to infer type by compiling the argument vs. just
   -- looking up the parameter type for flag arguments.
