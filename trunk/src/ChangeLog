@@ -1,5 +1,18 @@
 2011-10-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %fdecode.
+	* interp/lisp-backend.boot: Expand it.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Remove %fmanexpr import.
+	Use %fdecode to access Lisp-level double-float decoding.
+	[mantissa]: Rewrite.
+	[exponent]: Likewise.
+	[negative?]: Likewise.
+	[positive?]: Likewise.
+	[manexp]: Likewise.
+	* algebra/view2D.spad.pamphlet (TwoDimensionalViewport): Tidy.
+
+2011-10-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compForm2): Simplify. Don't bother with
 	subsumption.  Exit early on empty modemap candidate list.
 

@@ -322,6 +322,9 @@ expandFatanh ['%fatanh,x] ==
 expandFacoth ['%facoth,x] ==
   ['C_-TO_-R,['ACOTH,expandToVMForm x]]
 
+expandFdecode ['%fdecode,x] ==
+  ['MULTIPLE_-VALUE_-CALL,['FUNCTION,'LIST],
+    ['INTEGER_-DECODE_-FLOAT,expandToVMForm x]]
 
 -- String operations
 
@@ -655,6 +658,7 @@ for x in [
    ['%idivide, :function expandIdivide],
 
    ['%i2f,     :function expandI2f],
+   ['%fdecode, :function expandFdecode],
    ['%fbase,   :function expandFbase],
    ['%feq,     :function expandFeq],
    ['%fgt,     :function expandFgt],
