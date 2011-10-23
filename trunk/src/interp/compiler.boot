@@ -363,12 +363,21 @@ compExpression(x,m,e) ==
 ++ Elaborate use of an overloaded constant.
 compAtomWithModemap: (%Symbol,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,mmList) ==
-  -- 1. Get out of here f `x' cannot possibly be a constant.
-  mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
   mmList = nil => nil
-  -- 2. If the context is not specified, give up on ambigiuity.
-  $compUniquelyIfTrue: local := m = $EmptyMode or m = $NoValueMode
-  CATCH("compUniquely", compForm3([x],m,e,mmList))
+  -- Try constants with exact type matches, first.
+  Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
+           mm.mmImplementation is ['CONST,:.] and
+             mm.mmTarget = m and
+               (y := compViableModemap(x,nil,mm,e))]
+  Ts is [T] => T            -- Only one possibility, take it.
+  Ts ~= nil => nil          -- Ambiguous constant.
+  -- Fallback to constants that are coercible to the target.
+  Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
+           mm.mmImplementation is ['CONST,:.] and
+             coerceable(mm.mmTarget,m,e) and
+               (y := compViableModemap(x,nil,mm,e))]
+  Ts is [T] => coerce(T,m)
+  nil                       -- Couldn't make sense of it.
 
 compAtom(x,m,e) ==
   x is "break" => compBreak(x,m,e)

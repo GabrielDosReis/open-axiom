@@ -1,5 +1,9 @@
 2011-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compAtomWithModemap): Handle code-gen here.
+
+2011-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-op2.boot (htSayExplicitExports): Don't forget possible
 	constant marker in exported signatures.
 	* interp/cattable.boot (simpHas): Likewise.
