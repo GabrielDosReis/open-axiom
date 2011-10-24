@@ -423,7 +423,10 @@ Float():
       p := bits(); inc 5
       -- apply  log(x) = n log 2 + log(x/2**n)  so that  1/2 < x < 2
       if negative?(n := order x) then n := n+1
-      l := if n = 0 then 0 else (x := shift(x,-n); n * log2())
+      l: % :=
+        n = 0 => 0
+        x := shift(x,-n)
+        n * log2()
       -- speed the series convergence by finding m and k such that
       -- | exp(m/2**k) x - 1 |  <  1 / 2 ** O(sqrt p)
       -- write  log(exp(m/2**k) x) as m/2**k + log x

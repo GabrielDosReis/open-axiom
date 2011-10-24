@@ -1,5 +1,19 @@
 2011-10-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compOrCroak1): Drop last argument.  Tidy.
+	(mostSpecificTriple): New.
+	(compAtomWithModemap): Use it to resolve ambiguous constants.
+	(formatConstantCandidates): New.
+	(compForm1): Do try to compile constants 0 and 1 with compToApply.
+	* algebra/polycat.spad.pamphlet (FiniteAbelianMonoidRing)
+	[binomThmExpt]:  Tidy.
+	(UnivariatePolynomialCategory) [pseudoDivide]: Likewise.
+	* algebra/float.spad.pamphlet (Float) [log]: Specificy type for
+	local variable `l'.
+	* interp/format.boot (formatUnabbreviatedSig): Handle constants.
+
+2011-10-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %fdecode.
 	* interp/lisp-backend.boot: Expand it.
 	* algebra/sf.spad.pamphlet (DoubleFloat): Remove %fmanexpr import.
