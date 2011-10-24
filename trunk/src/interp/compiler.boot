@@ -494,8 +494,7 @@ compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
   -- modemap with selector b
   form is ["elt",a,.] =>
     ([.,.,e]:= comp(a,$EmptyMode,e) or return nil; compForm1(form,m,e))
-  u := for x in argl repeat [.,.,e]:= comp(x,$EmptyMode,e) or return "failed"
-  u is "failed" => nil
+  +/[(e := T.env; 1) for x in argl | T := comp(x,$EmptyMode,e)] = 0 => nil
   compForm1(form,m,e)
 
 outputComp(x,e) ==
