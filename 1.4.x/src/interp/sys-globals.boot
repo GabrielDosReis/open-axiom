@@ -76,9 +76,6 @@ $clamList :=
 $compCount := 0
 
 ++
-$compUniquelyIfTrue := false
-
-++
 $createUpdateFiles := false
 
 ++

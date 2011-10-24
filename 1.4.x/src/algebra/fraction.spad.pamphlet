@@ -543,7 +543,7 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
           makeFR(map(#1::%/den1,unit(ff)),lfact)
        factorSquareFreePolynomial(pp) ==
           zero? pp => 0
-          degree pp = 0 => makeFR(pp,empty())
+          zero? degree pp => makeFR(pp,empty())
           lcpp:=leadingCoefficient pp
           pp:=pp/lcpp
           denpp:="lcm"/[denom u for u in coefficients pp]

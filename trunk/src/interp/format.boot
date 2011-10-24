@@ -818,6 +818,7 @@ formatUnabbreviatedSig sig ==
   [target,:args] := dollarPercentTran sig
   target := formatUnabbreviated target
   null args => ['"() -> ",:target]
+  args is ['constant] => target
   null rest args => [:formatUnabbreviated first args,'" -> ",:target]
   args := formatUnabbreviatedTuple args
   ['"(",:args,'") -> ",:target]

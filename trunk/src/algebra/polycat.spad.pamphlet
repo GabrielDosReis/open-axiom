@@ -142,7 +142,10 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
                bincoef: Integer
                powl: List(%):= [x]
                for i in 2..nn repeat powl:=[x * powl.first, :powl]
-               yn:=y; ans:=powl.first; i:=1; bincoef:=nn
+               yn := y
+               ans := powl.first
+               i: Integer := 1
+               bincoef := nn
                for xn in powl.rest repeat
                   ans:= bincoef * xn * yn + ans
                   bincoef:= (nn-i) * bincoef quo (i+1);  i:= i+1
@@ -918,7 +921,8 @@ UnivariatePolynomialCategory(R:Ring): Category ==
           - pseudoRemainder(p, q)) exquo q)::%
 
       pseudoDivide(p, q) ==
-        (n := degree(p)::Integer - degree q + 1) < 1 => [1, 0, p]
+        n: Integer := degree(p)::Integer - degree q + 1
+        n < 1 => [1, 0, p]
         prem := pseudoRemainder(p, q)
         lc   := leadingCoefficient(q)**(n::NonNegativeInteger)
         [lc,((lc*p - prem) exquo q)::%, prem]

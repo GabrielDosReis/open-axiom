@@ -50,7 +50,7 @@ module compiler where
 compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
 compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
 compNoStacking1: (%Form,%Mode,%Env,%List %Thing) -> %Maybe %Triple
-compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
+compOrCroak1: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -106,17 +106,21 @@ compTopLevel(x,m,e) ==
         --keep old environment after top level function defs
   compOrCroak(x,m,e)
 
+
+++ True if no ambiguity is allowed in overload resolution.
+$compUniquelyIfTrue := false
+
 compUniquely(x,m,e) ==
   $compUniquelyIfTrue: local:= true
   CATCH("compUniquely",comp(x,m,e))
 
 compOrCroak(x,m,e) == 
-  compOrCroak1(x,m,e,'comp)
+  compOrCroak1(x,m,e)
 
-compOrCroak1(x,m,e,compFn) ==
-  fn(x,m,e,nil,nil,compFn) where
-    fn(x,m,e,$compStack,$compErrorMessageStack,compFn) ==
-      T:= CATCH("compOrCroak",FUNCALL(compFn,x,m,e)) => T
+compOrCroak1(x,m,e) ==
+  fn(x,m,e,nil,nil) where
+    fn(x,m,e,$compStack,$compErrorMessageStack) ==
+      T:= CATCH("compOrCroak",comp(x,m,e)) => T
       --stackAndThrow here and moan in UT LISP K does the appropriate THROW
       $compStack:= [[x,m,e,$exitModeStack],:$compStack]
       $s: local :=
@@ -359,25 +363,49 @@ compExpression(x,m,e) ==
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
-++ Subroutine of compAtom.
+++ Subroutine of compAtomWithModemap.
+++ `Ts' is list of (at least 2) triples.  Return the one with most
+++ specific mode.  Otherwise, return nil.
+mostSpecificTriple(Ts,e) ==
+  [T,:Ts] := Ts
+  and/[T := lesser(T,T',e) for T' in Ts] where
+    lesser(t,t',e) ==
+      isSubset(t.mode,t'.mode,e) => t
+      isSubset(t'.mode,t.mode,e) => t'
+      nil
+
 ++ Elaborate use of an overloaded constant.
 compAtomWithModemap: (%Symbol,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,mmList) ==
+  mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
   mmList = nil => nil
+  name := -- constant name displayed in diagnostics.
+    -- FIXME: Remove when the parser is fixed.
+    x is 'Zero => "0"
+    x is 'One => "1"
+    x
   -- Try constants with exact type matches, first.
   Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
-           mm.mmImplementation is ['CONST,:.] and
              mm.mmTarget = m and
                (y := compViableModemap(x,nil,mm,e))]
   Ts is [T] => T            -- Only one possibility, take it.
-  Ts ~= nil => nil          -- Ambiguous constant.
+  Ts ~= nil =>              -- Ambiguous constant.
+    stackMessage('"Too many (%1b) constants named %2b with type %3pb",
+                  [#Ts,name,m])
   -- Fallback to constants that are coercible to the target.
-  Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
-           mm.mmImplementation is ['CONST,:.] and
+  Ts := [[['%call,first y],mm.mmTarget,nil] for mm in mmList |
              coerceable(mm.mmTarget,m,e) and
                (y := compViableModemap(x,nil,mm,e))]
-  Ts is [T] => coerce(T,m)
-  nil                       -- Couldn't make sense of it.
+  Ts = nil =>
+    stackMessage('"No viable constant named %1b in %2pb context",[name,m])
+  Ts is [T] or (T := mostSpecificTriple(Ts,e)) =>
+    coerce([T.expr,T.mode,e],m)
+  stackMessage('"Ambiguous constant %1b in %2pb constext.  Candidates are %3f",
+    [name,m,[function formatConstantCandidates,name,Ts]])
+
+++ Format constants named `op' with mode given in the list of triples `Ts'.
+formatConstantCandidates(op,Ts) ==
+  displayAmbiguousSignatures(op,[[T.mode,'constant] for T in Ts])
 
 compAtom(x,m,e) ==
   x is "break" => compBreak(x,m,e)
@@ -499,7 +527,9 @@ compForm1(form is [op,:argl],m,e) ==
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
 
-  T:= compForm2(form,m,e,getFormModemaps(form,e)) => T
+  T := compForm2(form,m,e,getFormModemaps(form,e)) => T
+  --FIXME: remove next line when the parser is fixed.
+  form = $Zero or form = $One => nil
   compToApply(op,argl,m,e)
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
