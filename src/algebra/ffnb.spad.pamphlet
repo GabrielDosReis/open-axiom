@@ -590,7 +590,7 @@ FiniteFieldNormalBasisExtensionByPolynomial(GF,uni): Exports == _
             one? x.i => b
             ((x.i)::OUT) *$OUT b
           l:=cons(mon,l)$(List OUT)
-      null(l)$(List OUT) => (0::OUT)
+      null(l)$(List OUT) => (0@GF::OUT)
       r:=reduce("+",l)$(List OUT)
       r
 
