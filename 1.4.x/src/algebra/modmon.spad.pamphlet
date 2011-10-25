@@ -15,19 +15,19 @@
 ++ Description:
 ++ This package \undocumented
  
-ModMonic(R,Rep): C == T
+ModMonic(R,P): C == T
  where
   R: Ring
-  Rep: UnivariatePolynomialCategory(R)
-  C == Join(UnivariatePolynomialCategory(R),CoercibleFrom Rep) with
+  P: UnivariatePolynomialCategory(R)
+  C == Join(UnivariatePolynomialCategory(R),CoercibleFrom P) with
   --operations
-    setPoly : Rep -> Rep
+    setPoly : P -> P
 	++ setPoly(x) \undocumented
-    modulus : -> Rep
+    modulus : -> P
 	++ modulus() \undocumented
-    reduce: Rep -> %
+    reduce: P -> %
 	++ reduce(x) \undocumented
-    lift: % -> Rep --reduce lift = identity
+    lift: % -> P --reduce lift = identity
 	++ lift(x) \undocumented
     Vectorise: % -> Vector(R)
 	++ Vectorise(x) \undocumented
@@ -46,6 +46,7 @@ ModMonic(R,Rep): C == T
   --assertions
     if R has Finite then Finite
   T == add
+      Rep := P
     --constants
       m:Rep := monomial(1,1)$Rep --| degree(m) > 0 and LeadingCoef(m) = R$1
       d := degree(m)$Rep
@@ -55,20 +56,17 @@ ModMonic(R,Rep): C == T
       --VectorRep:= DirectProduct(d:NonNegativeInteger,R)
     --declarations
       x,y: %
-      p: Rep
       d,n: Integer
       e,k1,k2: NonNegativeInteger
       c: R
       --vect: Vector(R)
-      power:PrimitiveArray(%)
-      frobeniusPower:PrimitiveArray(%)
+      power: PrimitiveArray(%) := new(0,0)
+      frobeniusPower: PrimitiveArray(%) := new(0,0)
       computeFrobeniusPowers : () -> PrimitiveArray(%)
     --representations
     --mutable m    --take this out??
     --define
-      power := new(0,0)
-      frobeniusPower := new(0,0)
-      setPoly (mon : Rep) ==
+      setPoly (mon : P) ==
         mon =$Rep m => mon
         oldm := m
         not one? leadingCoefficient mon => error "polynomial must be monic"
@@ -104,7 +102,7 @@ ModMonic(R,Rep): C == T
       degree x == (degree x)$Rep
       lift(x) == x pretend Rep
       reduce(p) == (monicDivide(p,m)$Rep).remainder
-      coerce(p) == reduce(p)
+      coerce(p: P): % == reduce(p)
       x = y == x =$Rep y
       x + y == x +$Rep y
       - x == -$Rep x
@@ -117,7 +115,7 @@ ModMonic(R,Rep): C == T
         ans+p
       Vectorise(x) == [coefficient(lift(x),i) for i in 0..d1]
       UnVectorise(vect) ==
-        reduce(+/[monomial(vect.(i+1),i) for i in 0..d1])
+        reduce(+/[monomial(vect.(i+1),i) for i in 0..d1]@%::Rep)
       computePowers ==
            mat : PrimitiveArray(%):= new(d,0)
            mat.0:= reductum(-m)$Rep
@@ -151,13 +149,13 @@ ModMonic(R,Rep): C == T
             else
                k1:=e quo twod
                k2 := (e-k1*twod)::NonNegativeInteger
-               reduce((power.d1 **k1)*monomial(c,k2))
+               reduce(((power.d1 **k1)*monomial(c,k2))::Rep)
       if R has Field then
 
          (x:% exquo y:%):Union(%, "failed") ==
             uv := extendedEuclidean(y, modulus(), x)$Rep
             uv case "failed" => "failed"
-            return reduce(uv.coef1)
+            return reduce(uv.coef1::Rep)
 
          recip(y:%):Union(%, "failed") ==  1 exquo y
          divide(x:%, y:%) ==
