@@ -1,5 +1,41 @@
 2011-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/perman.spad.pamphlet (Permanent): Specify type of local
+	variable j.
+	* algebra/patmatch1.spad.pamphlet (PatternMatchTools): Tidy.
+	* algebra/padic.spad.pamphlet: Restrict type of literal constants.
+	* algebra/sttf.spad.pamphlet: Likewise.
+	* algebra/puiseux.spad.pamphlet: Likewise.
+	* algebra/odealg.spad.pamphlet (SystemODESolver) [applyLodo0]:
+	Specify type of local variable ans.
+	* algebra/numtheor.spad.pamphlet (IntegerNumberTheoryFunctions): Tidy.
+	* algebra/naalgc.spad.pamphlet (MonadWithUnit) [rightPower]:
+	Specify type of local variable res.
+	[leftPower]: Likewise.
+	* algebra/lodop.spad.pamphlet (NonCommutativeOperatorDivision)
+	[leftLcm]: Specify type of local variable v.
+	* algebra/intfact.spad.pamphlet (IntegerRoots) [approxSqrt]:
+	Specify type of local variables old and new.
+	* algebra/elfuts.spad.pamphlet
+	(EllipticFunctionsUnivariateTaylorSeries):  Restrict types of
+	literal constants.
+	* algebra/ffnb.spad.pamphlet
+	(FiniteFieldNormalBasisExtensionByPolynomial): Likewise.
+	* algebra/fnla.spad.pamphlet (FreeNilpotentLie): Likewise.
+	* algebra/intaux.spad.pamphlet (IntegrationResult): Likewise.
+	* algebra/defintef.spad.pamphlet
+	(ElementaryFunctionDefiniteIntegration) [checkSMP]:  Specify type
+	in the 	definition of local variable n.
+	* algebra/combinat.spad.pamphlet (IntegerCombinatoricFunctions):
+	Tidy definition of local variables.
+	* algebra/clifford.spad.pamphlet (CliffordAlgebra): Specify type in
+	the definition of local variables k, exchanges, bz.
+	* algebra/catdef.spad.pamphlet (CartesianTensor): Specify type in the
+	definition of local varibles rx and offz.
+	Remove useless variables zol, xol, oly, and zoly.
+
+2011-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compArgumentsAndTryAgain): Fail only if
 	elaboration of all arguments fails.
 

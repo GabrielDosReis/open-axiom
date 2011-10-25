@@ -186,7 +186,7 @@ NonCommutativeOperatorDivision(P, F): PDcat == PDdef  where
             b = 0 =>a
             b0 := b
             u  := monomial(1,0)$P
-            v  := 0
+            v: P := 0
             while leadingCoefficient b ~= 0 repeat
                 qr     := leftDivide(a,b)
                 (a, b) := (b, qr.remainder)

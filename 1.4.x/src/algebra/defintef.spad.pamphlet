@@ -131,7 +131,7 @@ ElementaryFunctionDefiniteIntegration(R, F): Exports == Implementation where
            ((w := checkSMP(t, x, k, a, b)) case "failed") or (w::B) => return w
          false
       (v := isPlus p) case List(P) =>
-         n := 0              -- number of summand having a pole
+         n: Z := 0              -- number of summand having a pole
          for t in v::List(P) repeat
            (w := checkSMP(t, x, k, a, b)) case "failed" => return w
            if w::B then n := n + 1

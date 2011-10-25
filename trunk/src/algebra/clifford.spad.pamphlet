@@ -316,7 +316,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
             bz := b2
             for i in 0..n-1 | bit?(b1,i) repeat
                 -- Apply rule  ei*ej = -ej*ei for i~=j
-                k := 0
+                k: NNI := 0
                 for j in i+1..n-1 | bit?(b1, j) repeat k := k+1
                 for j in 0..i-1   | bit?(bz, j) repeat k := k+1
                 if odd? k then c := -c
@@ -344,7 +344,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
             -- The Rep assumes n is small so bubble sort is ok.
             -- Using bubble sort keeps the exchange info obvious.
             wasordered   := false
-            exchanges := 0
+            exchanges: NNI := 0
             while not wasordered repeat
                 wasordered := true
                 for i in 1..#lb-1 repeat
@@ -356,7 +356,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
  
             -- 2. Prepare the basis element
             -- Apply identity ei*ei = Q(ei).
-            bz := 0
+            bz: NNI := 0
             for b in lb repeat
                 bn := (b-1)::NNI
                 if bit?(bz, bn) then
@@ -364,7 +364,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
                     bz:= ( bz - 2**bn )::NNI
                 else
                     bz:= bz + 2**bn
-            [c, bz::NNI]
+            [c, bz]
  
         monomial(c, lb) ==
             r := canonMonom(c, lb)

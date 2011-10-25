@@ -119,12 +119,12 @@ MonadWithUnit(): Category == Monad with
          expt(x,n pretend PositiveInteger)
       rightPower(a: %,n: NonNegativeInteger) ==
         zero? n => 1
-        res := 1
+        res: % := 1
         for i in 1..n repeat res := res * a
         res
       leftPower(a: %,n: NonNegativeInteger) ==
         zero? n => 1
-        res := 1
+        res: % := 1
         for i in 1..n repeat res := a * res
         res
 

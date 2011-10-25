@@ -72,8 +72,8 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
       n < m::I => P(convert(n)@Z)
       concat!(P, new((convert(n+1)@Z - m)::N,0)$IndexedFlexibleArray(I,0))
       for i in m..convert(n)@Z repeat
-         s:I := 1
-         t:I := 0
+         s: I := 1
+         t: I := 0
          for k in 1.. repeat
             l := (3*k*k-k) quo 2
             l > i => leave
@@ -96,18 +96,23 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
       F.Fv := f
  
    binomial(n, m) ==
-      s,b:I
       negative? n or negative? m or m > n => 0
       m = 0 => 1
       n < 2*m => binomial(n, n-m)
-      (s,b) := (0,1)
+      s: I := 0
+      b: I := 1
       if B.Bn = n then
          B.Bm = m+1 =>
             b := (B.Bv * (m+1)) quo (n-m)
             B.Bn := n
             B.Bm := m
             return(B.Bv := b)
-         if m >= B.Bm then (s := B.Bm; b := B.Bv) else (s,b) := (0,1)
+         if m >= B.Bm then
+           s := B.Bm
+           b := B.Bv
+         else
+           s := 0
+           b := 1
       for k in convert(s+1)@Z .. convert(m)@Z repeat
         b := (b*(n-k::I+1)) quo k::I
       B.Bn := n
@@ -122,12 +127,13 @@ IntegerCombinatoricFunctions(I:IntegerNumberSystem): with
       factorial n quo s
  
    permutation(n, m) ==
-      t:I
       negative? m or n < m => 0
       m := n-m
       p:I := 1
       for k in convert(m+1)@Z .. convert(n)@Z by 2 repeat
-         if k::I = n then t := n else t := (k*(k+1))::I
+         t: I :=
+           k::I = n => n
+           (k*(k+1))::I
          p := p * t
       p
  

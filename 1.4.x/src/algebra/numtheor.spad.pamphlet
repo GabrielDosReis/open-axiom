@@ -335,8 +335,8 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
   fibonacci n ==
     n = 0 => 0
     negative? n => (odd? n => 1; -1) * fibonacci(-n)
-    f1, f2 : I
-    (f1,f2) := (0,1)
+    f1: I := 0
+    f2: I := 1
     for k in length(n)-2 .. 0 by -1 repeat
       t := f2**2
       (f1,f2) := (t+f1**2,t+2*f1*f2)

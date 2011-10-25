@@ -113,7 +113,7 @@ RadixExpansion(bb): Exports == Implementation where
     coerce(a):RN == (wholePart a) :: RN + fractionPart a
     coerce(n):%  == n :: RN :: %
     coerce(q):%  ==
-      s := 1; if negative? q then (s := -1; q := -q)
+      s: I := 1; if negative? q then (s := -1; q := -q)
       qr      := divide(numer q,denom q)
       whole   := radixInt (qr.quotient,bb)
       fractn  := radixFrac(qr.remainder,denom q,bb)
@@ -130,11 +130,11 @@ RadixExpansion(bb): Exports == Implementation where
     floor a == floor(a::RN)
 
     wholePart a ==
-      n0 := 0
+      n0: I := 0
       for r in a.int repeat n0 := bb*n0 + r
       a.sgn*n0
     fractionPart(a: %): Fraction Integer ==
-      n0 := 0
+      n0: I := 0
       for r in a.pfx repeat n0 := bb*n0 + r
       null a.cyc =>
           a.sgn*n0/bb**((#a.pfx)::NNI)
@@ -188,7 +188,7 @@ RadixExpansion(bb): Exports == Implementation where
       if not null a.pfx then le := concat(intgroup a.pfx,le)
       if not null le    then le := concat("." :: OUT,le)
       if not null a.int then le := concat(intgroup a.int,le)
-      else le := concat(0 :: OUT,le)
+      else le := concat(0@I :: OUT,le)
       rex := exprgroup le
       if negative? a.sgn then -rex else rex
 

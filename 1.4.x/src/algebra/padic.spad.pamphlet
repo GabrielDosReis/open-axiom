@@ -289,7 +289,7 @@ InnerPAdicInteger(p,unBalanced?): Exports == Implementation where
     showAll?() == true
 
     coerce(x:%):OUT ==
-      empty?(st := stream x) => 0 :: OUT
+      empty?(st := stream x) => 0@I :: OUT
       count : NNI := _$streamCount$Lisp
       l : L OUT := empty()
       n : NNI := 0
@@ -309,8 +309,8 @@ InnerPAdicInteger(p,unBalanced?): Exports == Implementation where
         explicitlyEmpty? st => l
         eq?(st,rst st) and frst st = 0 => l
         concat(prefix("O" :: OUT,[PEXPR ** (n :: OUT)]),l)
-      empty? l => 0 :: OUT
-      reduce("+",reverse! l)
+      empty? l => 0@I :: OUT
+      reduce(_+,reverse! l)
 
 @
 \section{domain PADIC PAdicInteger}
@@ -515,7 +515,7 @@ PAdicRationalConstructor(p,PADIC): Exports == Implementation where
       m := getExpon x; zp := getZp x
       uu := digits zp
       l : L OUT := empty()
-      empty? uu => 0 :: OUT
+      empty? uu => 0@I :: OUT
       count : NNI := _$streamCount$Lisp
       n : NNI := 0
       while n <= count and not empty? uu repeat
@@ -535,7 +535,7 @@ PAdicRationalConstructor(p,PADIC): Exports == Implementation where
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l
         concat(prefix("O" :: OUT,[PEXPR ** ((n :: I) + m) :: OUT]),l)
-      empty? l => 0 :: OUT
+      empty? l => 0@I :: OUT
       reduce("+",reverse! l)
 
 @

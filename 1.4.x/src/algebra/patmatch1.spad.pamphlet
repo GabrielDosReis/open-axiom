@@ -532,10 +532,10 @@ PatternMatchTools(S, R, P): Exports == Implementation where
       l1:PRS := failed()
       t : P
       for x in setDifference(ls, bad)
-        while (t := x; failed?(l1 := pmatch(x, p, l))) repeat 0
+        while (t := x; failed?(l1 := pmatch(x, p, l))) repeat nil
       failed? l1 =>
         for x in bad
-          while (t := x; failed?(l1 := pmatch(x, p, l))) repeat 0
+          while (t := x; failed?(l1 := pmatch(x, p, l))) repeat nil
         failed? l1 => [addMatchRestricted(p, ident, l, ident), ls]
         [l1, remove(t, ls)]
       [l1, remove(t, ls)]

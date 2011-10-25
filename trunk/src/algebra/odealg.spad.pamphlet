@@ -205,7 +205,7 @@ SystemODESolver(F, LO): Exports == Implementation where
 
 -- computes +/[m(r, i) mm(i, c) for i ranging over the last n columns of m]
     applyLodo0(m, r, mm, c, n) ==
-      ans := 0
+      ans: F := 0
       rr := maxRowIndex mm
       cc := maxColIndex m
       for i in 1..n repeat

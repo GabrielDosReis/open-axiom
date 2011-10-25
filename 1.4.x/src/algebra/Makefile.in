@@ -1164,6 +1164,7 @@ axiom_algebra_layer_10_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_10)))
 $(OUT)/ARRAY2.$(FASLEXT): $(OUT)/IFARRAY.$(FASLEXT)
+$(OUT)/ORESUP.$(FASLEXT): $(OUT)/PR.$(FASLEXT)
 
 axiom_algebra_layer_11 = \
   APPLYORE ARRAY1   ARRAY12  ARRAY2   \

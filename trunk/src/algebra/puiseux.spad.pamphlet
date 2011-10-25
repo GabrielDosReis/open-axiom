@@ -532,7 +532,7 @@ UnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
     termsToOutputForm:(RN,RN,ST,OUT) -> OUT
     termsToOutputForm(m,rat,uu,xxx) ==
       l : L OUT := empty()
-      empty? uu => 0 :: OUT
+      empty? uu => 0@Coef :: OUT
       count : NNI := _$streamCount$Lisp
       n : NNI := 0
       while n <= count and not empty? uu repeat
@@ -552,7 +552,7 @@ UnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l
         concat(prefix("O" :: OUT,[xxx ** (((n::I) * rat + m) :: OUT)]),l)
-      empty? l => 0 :: OUT
+      empty? l => 0@Coef :: OUT
       reduce("+",reverse! l)
 
     coerce(upxs:%):OUT ==

@@ -156,7 +156,7 @@ DiophantineSolutionPackage(): Cat == Capsule where
     verifyMinimality(sol, graph, flag) ==
       -- test whether sol contains a minimal homogeneous solution
       flag =>  -- sol is a homogeneous solution
-        i := 1
+        i: I := 1
         while sol.i = 0 repeat
           i := i + 1
         x := sol.i

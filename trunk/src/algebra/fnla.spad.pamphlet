@@ -283,12 +283,12 @@ FreeNilpotentLie(n:NNI,class:NNI,R: CommutativeRing): Export == Implement where
        r::O * mkcomm(mkcomm(coms(k).1)$Com,mkcomm(coms(k).3)$Com)$Com::O
 
      shallowExpand(f) ==
-       f = 0           => 0::O
+       f = 0           => 0@R::O
        reductum(f) = 0 => shallowE(lC f,lS f)
        shallowE(lC f,lS f) + shallowExpand(reductum f)
 
      deepExpand(f) ==
-       f = 0          => 0::O
+       f = 0          => 0@R::O
        reductum(f) = 0 =>
          lC(f)=1 => Fac(value(lS f))::O
          lC(f)::O * Fac(value(lS f))::O
