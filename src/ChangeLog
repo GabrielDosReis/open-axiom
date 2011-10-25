@@ -1,3 +1,12 @@
+2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/modmon.spad.pamphlet (ModMonic): Rename second parameter
+	from Rep to P.  Addd capsule-level definition for Rep.
+	[setPoly]: Adjust parameter type.
+	[coerce]: Likewise.
+	[UnVectorise]: Restrict reduction to %, then coerce to Rep.
+	[monomial]: Add appropriate coercion to Rep.
+
 2011-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/perman.spad.pamphlet (Permanent): Specify type of local
