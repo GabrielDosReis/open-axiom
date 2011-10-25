@@ -1,5 +1,10 @@
 2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (getFormModemaps): Tidy checking of "elt"
+	and "setelt" modemaps.
+
+2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/modmon.spad.pamphlet (ModMonic): Rename second parameter
 	from Rep to P.  Addd capsule-level definition for Rep.
 	[setPoly]: Adjust parameter type.
