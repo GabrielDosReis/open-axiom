@@ -625,19 +625,18 @@ compFormWithModemap(form,m,e,modemap) ==
 ++ case is made for a modemap whose sole parameter type is a Tuple.
 ++ In that case, it matches any number of supplied arguments.
 getFormModemaps(form is [op,:argl],e) ==
-  op is ["elt",domain,op1] =>
+  op is ["elt",domain,op1] and isDomainForm(domain,e) =>
     [x for x in getFormModemaps([op1,:argl],e) | x.mmDC = domain]
-  cons? op => nil
-  modemapList:= get(op,"modemap",e)
+  op is [.,:.] => nil
+  modemapList := get(op,"modemap",e)
   -- Within default implementations, modemaps cannot mention the
   -- current domain. 
   if $insideCategoryPackageIfTrue then
     modemapList := [x for x in modemapList | x.mmDC isnt '$]
-  if op is "elt"
-     then modemapList:= eltModemapFilter(last argl,modemapList,e) or return nil
-     else
-      if op is "setelt" then modemapList:=
-        seteltModemapFilter(second argl,modemapList,e) or return nil
+  if form is ["elt",.,f] then
+    modemapList := eltModemapFilter(f,modemapList,e) or return nil
+  else if form is ["setelt",.,f,.] then
+    modemapList := seteltModemapFilter(f,modemapList,e) or return nil
   nargs := #argl
   finalModemapList:= [mm for mm in modemapList 
                        | enoughArguments(argl,mm.mmSource)]
