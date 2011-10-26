@@ -1,5 +1,10 @@
 2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (AxiomCore) [CCL]: Import and export
+	FFI-related symbols.
+
+2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (getFormModemaps): Tidy checking of "elt"
 	and "setelt" modemaps.
 

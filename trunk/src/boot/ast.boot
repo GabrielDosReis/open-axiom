@@ -1799,7 +1799,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   -- If the foreign call returns a C-string, turn it into a Lisp string.
   -- Note that if the C-string was malloc-ed, this will leak storage.
   if t is "string" then
-    call := [bfColonColon("CCL","GET-CSTRING"), call]
+    call := [bfColonColon("CCL","%GET-CSTRING"), call]
 
   -- If we have array arguments from Boot, bind pointers to initial data.
   for arg in aryPairs repeat

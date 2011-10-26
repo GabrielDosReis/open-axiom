@@ -58,6 +58,13 @@
   ;; Clozure CL sequesters most of its useful extensions, in particular
   ;; threads, in the CCL package.
   ;; #+:clozure (:use "CCL")
+  #+:clozure (:import-from "CCL"
+			   external-call %get-cstring
+			   with-pointer-to-ivector with-cstrs)
+  #+:clozure (:export "CCL"
+			   external-call %get-cstring
+			   with-pointer-to-ivector with-cstrs)
+			   
   (:export "%Thing"
 	   "%Void"
 	   "%Boolean"
