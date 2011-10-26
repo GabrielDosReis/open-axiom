@@ -47,7 +47,7 @@ Byte(): Public == Private where
     import %bcompl: % -> %        from Foreign Builtin
 
     byte(x: NonNegativeInteger): % == per x
-    sample = %icst0
+    sample == %icst0
     x = y == %beq(x,y)
     x < y == %blt(x,y)
     x > y == %bgt(x,y)
