@@ -526,7 +526,7 @@ finalizeLisplib(ctor,libName) ==
   mm := getConstructorModemap ctor
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
-  writeConstructorModemap(ctor,removeZeroOne mm,$libFile)
+  writeConstructorModemap(ctor,mm,$libFile)
   writeDualSignature(db,$libFile)
   $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;
@@ -534,22 +534,22 @@ finalizeLisplib(ctor,libName) ==
   if dbConstructorKind db = 'category then
     writeCategory(ctor,$lisplibCategory,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
-  lisplibWrite('"modemaps",removeZeroOne $lisplibModemapAlist,$libFile)
+  lisplibWrite('"modemaps",$lisplibModemapAlist,$libFile)
   opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
-  writeOperations(ctor,removeZeroOne first opsAndAtts,$libFile)
+  writeOperations(ctor,first opsAndAtts,$libFile)
   if kind='category then
      $pairlis : local := pairList(form,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain(ctor,dbSuperDomain db,$libFile)
   lisplibWrite('"signaturesAndLocals",
-    removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
+    mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
                                     $lisplibVariableAlist),$libFile)
-  writeAttributes(ctor,removeZeroOne dbAttributes db,$libFile)
-  writePredicates(ctor,removeZeroOne  $lisplibPredicates,$libFile)
+  writeAttributes(ctor,dbAttributes db,$libFile)
+  writePredicates(ctor,$lisplibPredicates,$libFile)
   writeAbbreviation(db,$libFile)
-  writePrincipals(ctor,removeZeroOne dbPrincipals db,$libFile)
-  writeAncestors(ctor,removeZeroOne dbAncestors db,$libFile)
+  writePrincipals(ctor,dbPrincipals db,$libFile)
+  writeAncestors(ctor,dbAncestors db,$libFile)
   if not $bootStrapMode then
     lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
   if $profileCompiler then profileWrite()

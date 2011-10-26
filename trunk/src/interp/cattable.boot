@@ -384,8 +384,7 @@ categoryParts(conform,category,:options) == main where
       res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
   build(item,pred) ==
-    item is ['SIGNATURE,op,sig,:.] => $oplist   := [[opOf op,sig,:pred],:$oplist]
-    --note: opOf is needed!!! Bug in compiler puts in (One) and (Zero)
+    item is ['SIGNATURE,op,sig,:.] => $oplist := [[op,sig,:pred],:$oplist]
     item is ['ATTRIBUTE,attr] =>
       constructor? opOf attr =>
         $conslist := [[attr,:pred],:$conslist]
