@@ -378,28 +378,6 @@ transSeq l ==
   (y:= transSeq tail) is ["SEQ",:s] => ["SEQ",item,:s]
   ["SEQ",item,["exit",1,incExitLevel y]]
  
-transCategoryItem: %ParseForm -> %Form
-transCategoryItem x ==
-  x is ["SIGNATURE",lhs,rhs] =>
-    lhs is ["LISTOF",:y] =>
-      "append" /[transCategoryItem ["SIGNATURE",z,rhs] for z in y]
-    lhs isnt [.,:.] =>
-      lhs := washOperatorName lhs
-      rhs is ["Mapping",:m] =>
-        m is [.,"constant"] => [["SIGNATURE",lhs,[first m],"constant"]]
-        [["SIGNATURE",lhs,m]]
-      $transCategoryAssoc:= [[lhs,:rhs],:$transCategoryAssoc]
-      postError ['"  Invalid signature: ",x]
-    [op,:argl]:= lhs
-    extra := nil
-    if rhs is ["Mapping",:m] then
-      if rest m then extra:= rest m
-                 --should only be 'constant' or 'variable'
-      rhs:= first m
-    [["SIGNATURE",op,[rhs,:applySubst($transCategoryAssoc,argl)],:extra]]
-  [x]
- 
-
 superSub: (%Symbol, %List %Form ) -> %Form
 superSub(name,x) ==
   for u in x repeat y:= [:y,:u]

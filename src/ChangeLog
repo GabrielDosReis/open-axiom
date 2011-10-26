@@ -1,5 +1,12 @@
 2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/postpar.boot (postSignature): Tidy.
+	* interp/parse.boot (transCategoryItem): Remove as dead code.
+	* interp/lisplib.boot (finalizeLisplib): Remove use of removeZeroOne.
+	* interp/cattable.boot (categoryParts): Tidy.
+
+2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (AxiomCore) [CCL]: Import and export
 	FFI-related symbols.
 

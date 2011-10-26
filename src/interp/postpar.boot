@@ -421,11 +421,18 @@ postSequence t ==
 postSignature: %ParseTree -> %ParseForm
 postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
+  op :=
+     op is 0 => 'Zero
+     op is 1 => 'One
+     postAtom
+       string? op =>
+         stackWarning('"String syntax for %1b in signature is deprecated.",[op])
+         makeSymbol op
+       op
   sig is ["->",:.] =>
-    sig1:= postType sig
-    op:= postAtom (string? op => makeSymbol op; op)
+    sig1 := postType sig
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
-  ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
+  ["SIGNATURE",op,:postType ["->","constant",sig]]
 
 killColons: %ParseTree -> %ParseForm
 killColons x ==
