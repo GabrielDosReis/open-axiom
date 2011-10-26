@@ -638,8 +638,8 @@ KleeneTrivalentLogic(): Public == Private where
     unknown == per(1::Byte)
     true == per(2::Byte)
     x = y == rep x = rep y
-    x case true == x = true
-    x case false == x = false
+    x case true == x = true@%
+    x case false == x = false@%
     x case unknown == x = unknown
     not x ==
       x case false => true
