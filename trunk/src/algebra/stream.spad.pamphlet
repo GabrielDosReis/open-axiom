@@ -649,20 +649,22 @@ Stream(S): Exports == Implementation where
 
 --% representation
 
-    -- The Rep is a pair of one of three forms:
-    --    [value: S,             rest: %]
-    --    [nullstream:    Magic, NIL    ]
-    --    [nonnullstream: Magic, fun: () -> %]
+    -- The Rep is a pair of one of three kinds:
+    --    [value: S,              rest: %]
+    --    [%nullStream: Magic,    %nil    ]
+    --    [%nonNullStream: Magic, fun: () -> %]
     -- Could use a record of unions if we could guarantee no tags.
 
-    macro NullStream == _$NullStream$Foreign(Builtin)
-    macro NonNullStream == _$NonNullStream$Foreign(Builtin)
+    import %nil: %          from Foreign Builtin  -- to indicate nil stream
+    import %nullStream: S   from Foreign Builtin  -- end-of-stream token
+    import %nonNullStream: S from Foreign Builtin -- plentyfull stream token
 
-    import %head: % -> S from Foreign Builtin
-    import %tail: % -> % from Foreign Builtin
+    import %head: % -> S     from Foreign Builtin
+    import %tail: % -> %     from Foreign Builtin
+    import %pair: (S,%) -> % from Foreign Builtin
 
-    explicitlyEmpty? x == %peq(frst x,NullStream)$Foreign(Builtin)
-    lazy? x            == %peq(frst x,NonNullStream)$Foreign(Builtin)
+    explicitlyEmpty? x == %peq(frst x,%nullStream)$Foreign(Builtin)
+    lazy? x            == %peq(frst x,%nonNullStream)$Foreign(Builtin)
 
 --% signatures of local functions
 
@@ -683,8 +685,8 @@ Stream(S): Exports == Implementation where
 
     -- destructively changes x to a null stream
     setToNil!(x: %): % ==
-      setfrst!(x,NullStream)
-      setrst!(x,%nil$Foreign(Builtin))
+      setfrst!(x,%nullStream)
+      setrst!(x,%nil)
       x
 
 --% SETCAT functions
@@ -914,7 +916,7 @@ Stream(S): Exports == Implementation where
 --% RCAGG functions
 
     empty() ==
-      %pair(NullStream,%nil$Foreign(Builtin))$Foreign(Builtin)
+      %pair(%nullStream,%nil)
 
     lazyEval(x: %): % ==
       (rst(x):(()-> %)) ()
@@ -949,7 +951,7 @@ Stream(S): Exports == Implementation where
       (concat(frst x, first(rst x,(n-1) :: NNI)))
 
     concat(s:S,x:%) ==
-      %pair(s,x)$Foreign(Builtin)
+      %pair(s,x)
 
     cons(s,x) == concat(s,x)
 
@@ -1070,7 +1072,7 @@ Stream(S): Exports == Implementation where
       [true, npp, periode]
 
     delay(fs:()->%) ==
-      %pair(NonNullStream,fs)$Foreign(Builtin)
+      %pair(%nonNullStream,fs : %)
 
     explicitEntries? x ==
       not explicitlyEmpty? x and not lazy? x

@@ -1,5 +1,9 @@
 2011-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/stream.spad.pamphlet (Stream): Tidy accessors.
+
+2011-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Support use of any natural number literal as constant name.
 	* interp/postpar.boot (postNormalizeName): Remove.
 	(postLhsOfDefinition): New.

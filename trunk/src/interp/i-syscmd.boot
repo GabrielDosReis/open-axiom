@@ -46,12 +46,6 @@ $existingFiles := hashTable "EQUAL"
 
 $SYSCOMMANDS := [first x for x in $systemCommands]
 
-$NonNullStream ==
-  '"NonNullStream"
-
-$NullStream ==
-  '"NullStream"
-
 $whatOptions := '( _
     operations _
     categories _
@@ -1832,8 +1826,8 @@ writify ob ==
                 THROW('writifyTag, 'writifyFailed)
             -- Default case: return the object itself.
             string? ob =>
-                sameObject?(ob, $NullStream) => ['WRITIFIED!!, 'NULLSTREAM]
-                sameObject?(ob, $NonNullStream) => ['WRITIFIED!!, 'NONNULLSTREAM]
+                sameObject?(ob, %nullStream) => ['WRITIFIED!!, 'NULLSTREAM]
+                sameObject?(ob, %nonNullStream) => ['WRITIFIED!!, 'NONNULLSTREAM]
                 ob
             FLOATP ob =>
                 ob = READ_-FROM_-STRING STRINGIMAGE ob => ob
@@ -1920,8 +1914,8 @@ dewritify ob ==
                     nob
                 type is 'READTABLE =>
                     error '"Cannot de-writify a read table."
-                type is 'NULLSTREAM => $NullStream
-                type is 'NONNULLSTREAM => $NonNullStream
+                type is 'NULLSTREAM => %nullStream
+                type is 'NONNULLSTREAM => %nonNullStream
                 type is 'FLOAT =>
                    [fval, signif, expon, sign] := CDDR ob
                    fval := SCALE_-FLOAT( FLOAT(signif, fval), expon)

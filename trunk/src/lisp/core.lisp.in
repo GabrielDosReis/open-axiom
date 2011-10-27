@@ -157,6 +157,8 @@
 	   "%basicSystemIsComplete"
 	   "%algebraSystemIsComplete"
 	   "%nothing"
+	   "%nullStream"
+	   "%nonNullStream"
 	   "%escapeSequenceAverseHost?"
 	   "%defaultReadAndLoadSettings"
 	   
@@ -453,6 +455,12 @@
 ;; Token expression to indicate absence of value or bottom value.
 ;; This is also the bottom value of the Maybe domain.
 (defconstant |%nothing| :|OpenAxiomNoValue|)
+
+;; Token expression to indicate the end of a stream of values.
+(defconstant |%nullStream| :|OpenAxiomNullStream|)
+
+;; Token expression to indicate there are move to come in a stream of values.
+(defconstant |%nonNullStream| :|OpenAxiomNonNullStream|)
 
 ;; Base name of the native core runtime library
 (defconstant |$CoreLibName|
