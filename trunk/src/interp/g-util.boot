@@ -921,6 +921,27 @@ defaultPackageForm? x ==
 makeDefaultPackageName x ==
   makeSymbol strconc(x,'"&")
 
+normalizeName: %Symbol -> %Symbol
+normalizeName x ==
+  x = "T" => "T$" -- rename T in spad code to avoid clash with Lisp
+  x = "^" => "**" -- always use `**' internally for exponentiation
+  x
+
+++ Return the internal exported name of a potential operator `x'.
+internalName x ==
+  ident? x => normalizeName x
+  not integer? x or x < 0 => x
+  x = 0 => 'Zero
+  x = 1 => 'One
+  makeSymbol toString x
+
+++ Return the external exported name of th potential operator `x'.
+externalName: %Symbol -> %Symbol
+externalName x ==
+  x is 'Zero => "0"
+  x is 'One => "1"
+  x
+
 -- gensym utils
 
 charDigitVal c ==

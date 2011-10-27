@@ -380,10 +380,8 @@ compAtomWithModemap(x,m,e,mmList) ==
   mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
   mmList = nil => nil
   name := -- constant name displayed in diagnostics.
-    -- FIXME: Remove when the parser is fixed.
-    x is 'Zero => "0"
-    x is 'One => "1"
-    x
+    externalName x  -- FIXME: Remove when the parser is fixed.
+
   -- Try constants with exact type matches, first.
   Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
              mm.mmTarget = m and
@@ -407,10 +405,17 @@ compAtomWithModemap(x,m,e,mmList) ==
 formatConstantCandidates(op,Ts) ==
   displayAmbiguousSignatures(op,[[T.mode,'constant] for T in Ts])
 
+++ Attempt to elaborate the integer literal `x' as an exported operator
+++ in the type context `m' and assumption environment `e'.
+compIntegerLiteral(x,m,e) ==
+  x := internalName x
+  compAtomWithModemap(x,m,e,get(x,'modemap,e))
+
 compAtom(x,m,e) ==
   x is "break" => compBreak(x,m,e)
   x is "iterate" => compIterate(x,m,e)
   T := ident? x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
+  T := integer? x and x > 1 and compIntegerLiteral(x,m,e) => T
   t :=
     ident? x => compSymbol(x,m,e) or return nil
     listMember?(m,$IOFormDomains) and primitiveType x => [x,m,e]
@@ -510,7 +515,6 @@ compForm1(form is [op,:argl],m,e) ==
     [[op,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],m,e]
   op is ["elt",domain,op'] =>
     domain="Lisp" =>
-      --op'='QUOTE and null rest argl => [first argl,m,e]
       [[op',:[([.,.,e]:= compOrCroak(x,$EmptyMode,e)).expr for x in argl]],m,e]
     domain is ["Foreign",lang] => compForeignPackageCall(lang,op',argl,m,e)
     (op'="COLLECT") and coerceable(domain,m,e) =>
@@ -1214,8 +1218,8 @@ compElt(form,m,E) ==
     op := get(anOp,"%Link",E) or anOp
     coerce([op,opMode,E],m)
   isDomainForm(aDomain,E) =>
-    E:= addDomain(aDomain,E)
-    mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
+    E := addDomain(aDomain,E)
+    mmList:= getModemapListFromDomain(internalName anOp,0,aDomain,E)
     modemap:=
       -- FIXME: do this only for constants.
       n:=#mmList
@@ -1525,10 +1529,10 @@ compExclusiveOr(x,m,e) ==
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCase1: (%Form,%Mode,%Env) -> %Maybe %Triple
 
-getModemapList(op,numOfArgs,e) ==
-  op is ['elt,D,op'] => getModemapListFromDomain(op',numOfArgs,D,e)
+getModemapList(op,nargs,e) ==
+  op is ['elt,D,op'] => getModemapListFromDomain(internalName op',nargs,D,e)
   [mm for
-    (mm:= [[.,.,:sigl],:.]) in get(op,'modemap,e) | numOfArgs=#sigl]
+    (mm:= [[.,.,:sigl],:.]) in get(op,'modemap,e) | nargs=#sigl]
  
 --Will the jerk who commented out these two functions please NOT do so
 --again.  These functions ARE needed, and case can NOT be done by

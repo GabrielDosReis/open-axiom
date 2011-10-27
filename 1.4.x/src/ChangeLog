@@ -1,3 +1,24 @@
+2011-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support use of any natural number literal as constant name.
+	* interp/postpar.boot (postNormalizeName): Remove.
+	(postLhsOfDefinition): New.
+	(postDef): Use it.
+	(postMDef): Likewise.
+	(postForm): Remove dead code.
+	(postSignature): Internalize names of exported operators.
+	* interp/i-intern.boot (mkAtree2): For package call resolution,
+	use internal names.
+	* interp/compiler.boot (compAtomWithModemap): Use externalName for
+	name reported in diagnostic.
+	(compIntegerLiteral): New.
+	(compAtom): Use it.
+	(compElt): Look up modemaps for internal names.
+	(getModemapList): Likewise.
+	* interp/g-util.boot (normalizeName): New.
+	(internalName): Likewise.
+	(externalName): Likewise.
+
 2011-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/postpar.boot (postSignature): Tidy.

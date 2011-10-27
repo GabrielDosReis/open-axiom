@@ -174,8 +174,7 @@ mkAtree2(x,op,argl) ==
   op='_$elt =>
     argl is [D,a] =>
       integer? a =>
-        a = 0 => mkAtree1 [['_$elt,D,'Zero]]
-        a = 1 => mkAtree1 [['_$elt,D,'One]]
+        a >= 0 => mkAtree1 [['_$elt,D,internalName a]]
         t := evaluateType unabbrev [D]
         typeIsASmallInteger(t) and SINTP a =>
             v := mkAtreeNode $immediateDataSymbol

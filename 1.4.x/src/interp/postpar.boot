@@ -162,12 +162,6 @@ postMakeCons l ==
     postTran a
   ["cons",postTran first l,postMakeCons rest l]
 
-postNormalizeName: %Symbol -> %Symbol
-postNormalizeName x ==
-  x = "T" => "T$" -- rename T in spad code to avoid clash with Lisp
-  x = "^" => "**" -- always use `**' internally for exponentiation
-  x
-
 postAtom: %Atom -> %ParseForm
 postAtom x ==
   x is 0 => $Zero
@@ -175,7 +169,7 @@ postAtom x ==
   x is "," => "%Comma"
   ident? x =>
     niladicConstructor? x => [x]
-    postNormalizeName x
+    normalizeName x
   x
 
 postBlock: %ParseTree -> %ParseForm
@@ -210,6 +204,16 @@ postComma: %ParseTree -> %ParseForm
 postComma u == 
   post%Comma ["%Comma",:postFlatten(u,",")]
 
+++ post-parse `x' as the left hand side of a definition.
+postLhsOfDefinition x ==
+  x is [":",op,t] => [":",postLhsOfDefinition op,:postType t]
+  x is [op,:args] =>
+    args := postTranList args
+    if args is [['%Comma,:args']] then
+      args := args'
+    [internalName op,:args]
+  internalName x
+
 postDef: %ParseTree -> %ParseForm
 postDef t ==
   t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
@@ -220,7 +224,7 @@ postDef t ==
     $docList := [["constructor",:$headerDocumentation],:$docList]
     $maxSignatureLineNumber := 0
     --reset this for next constructor; see recordDocumentation
-  lhs:= postTran lhs
+  lhs := postLhsOfDefinition lhs
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
@@ -251,9 +255,8 @@ postMDef: %ParseTree -> %ParseForm
 postMDef(t) ==
   [.,lhs,rhs] := t
   lhs :=
-    ident? lhs => postNormalizeName lhs
-    lhs is [.,:.] => [postNormalizeName x for x in lhs]
-    lhs
+    lhs is [.,:.] => [internalName x for x in lhs]
+    internalName lhs
   [form,targetType]:=
     lhs is [":",:.] => lhs.args
     [lhs,nil]
@@ -289,15 +292,8 @@ postForm: %ParseTree -> %ParseForm
 postForm u ==
   u isnt [op,:argl] => systemErrorHere ["postForm",u]
   x:=
-    op isnt [.,:.] =>
-      argl':= postTranList argl
-      op':=
-        true=> op
-        GETL(op,'Led) or GETL(op,'Nud) or op = 'IN => op
-        numOfArgs:= (argl' is [["%Comma",:l]] => #l; 1)
-        INTERNL("*",STRINGIMAGE numOfArgs,PNAME op)
-      [op',:argl']
-    u:= postTranList u
+    op isnt [.,:.] => [op,:postTranList argl]
+    u := postTranList u
     if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
         '"is illegal because tuples cannot be applied!",'"%l",
@@ -422,8 +418,7 @@ postSignature: %ParseTree -> %ParseForm
 postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   op :=
-     op is 0 => 'Zero
-     op is 1 => 'One
+     integer? op => internalName op
      postAtom
        string? op =>
          stackWarning('"String syntax for %1b in signature is deprecated.",[op])
