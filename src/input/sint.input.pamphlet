@@ -17,7 +17,7 @@
 min()$SingleInteger
 max()$SingleInteger
 a := 1234 :: SingleInteger
-b := 124$SingleInteger
+b := 124@SingleInteger
 gcd(a,b)
 lcm(a,b)
 mulmod(5,6,13)$SingleInteger
