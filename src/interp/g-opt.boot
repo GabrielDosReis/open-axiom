@@ -422,7 +422,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(SPADfirst ASH FLOAT FLOAT_-SIGN %function
+  '(SPADfirst ASH FLOAT FLOAT_-SIGN %function %nullStream %nonNullStream
     %funcall %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
