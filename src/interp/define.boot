@@ -66,7 +66,6 @@ $forceAdd := false
 $functionStats := nil
 $functorStats := nil
 
-$lisplibCategory := nil
 $CheckVectorList := []
 $pairlis := []
 $functorTarget := nil
@@ -940,7 +939,7 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
-        makeCategoryPredicates(form,$lisplibCategory)
+        makeCategoryPredicates(form,dbCategory constructorDB form.op)
     T := compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
@@ -1046,6 +1045,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
+    dbCategory(db) := formalBody
     body := optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
     if $extraParms ~= nil then
       formals := nil
@@ -1073,8 +1073,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     dbDualSignature(db) :=
       [isCategoryForm(t,e) for t in dbConstructorModemap(db).mmSource]
     dbDualSignature(db) := [true,:dbDualSignature db]
-    $lisplibCategory:= formalBody
-    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
+    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
     dbAncestors(db) := computeAncestorsOf($form,nil)
     dbModemaps(db) := modemapsFromCategory([op',:sargl],formalBody,signature')
     dbBeingDefined?(db) := false
@@ -1088,7 +1087,6 @@ mkConstructor form ==
  
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
-  $lisplibCategory: local := nil
   -- since we have so many ways to say state the kind of a constructor,
   -- make sure we do have some minimal internal coherence.
   lhs := second df
@@ -1405,6 +1403,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     --  3. give operator a 'modemap property
     modemap := [[parForm,:parSignature],[true,$op]]
     dbConstructorModemap(db) := modemap
+    dbCategory(db) := modemap.mmTarget
     dbDualSignature(db) := [isCategoryForm(t,$e) for t in modemap.mmSource]
     dbDualSignature(db) := [false,:dbDualSignature db]
 
@@ -1443,8 +1442,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     reportOnFunctorCompilation()
  
     --  5.
-    $lisplibCategory := modemap.mmTarget
-    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
+    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
