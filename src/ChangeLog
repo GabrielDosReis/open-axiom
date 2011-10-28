@@ -1,5 +1,17 @@
 2011-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (orderPredTran): Tidy.
+	(interactiveModemapForm): Likewise.
+	(getDCFromSystemModemap): Likewise.
+	(getDomainFromMm): Likewise.
+	(getAllModemapsFromDatabase): Likewise.
+	(getModemapsFromDatabase): Likewise.
+	(getSystemModemaps): Likewise.
+	(getInCoreModemaps): Likewise.
+	(flattenSignatureList): Likewise.
+
+2011-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($lisplibCategory): Remove.
 	(compDefineCategory1): Adjust.
 	(compDefineCategory2): Likewise.
