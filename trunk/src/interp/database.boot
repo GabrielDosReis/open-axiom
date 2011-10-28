@@ -305,49 +305,37 @@ orderPredicateItems(pred1,sig,skip) ==
   pred
 
 orderPredTran(oldList,sig,skip) ==
-  lastPreds:=nil
+  lastPreds := nil
   --(1) make two kinds of predicates appear last:
   -----  (op *target ..) when *target does not appear later in sig
   -----  (isDomain *1 ..)
   for pred in oldList repeat
     ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
-       and pvar=first sig and not symbolMember?(pvar,rest sig)) or
-        (not skip and pred is ['isDomain,pvar,.] and pvar is "*1")) =>
+       and pvar = sig.target and not symbolMember?(pvar,sig.source)) or
+        (not skip and pred is ['isDomain,"*1",.])) =>
           oldList := remove(oldList,pred)
-          lastPreds:=[pred,:lastPreds]
---sayBrightlyNT "lastPreds="
---pp lastPreds
+          lastPreds := [pred,:lastPreds]
 
   --(2a) lastDependList=list of all variables that lastPred forms depend upon
   lastDependList := setUnion/[listOfPatternIds x for x in lastPreds]
---sayBrightlyNT "lastDependList="
---pp lastDependList
 
   --(2b) dependList=list of all variables that isDom/ofCat forms depend upon
   dependList :=
     setUnion/[listOfPatternIds y for x in oldList |
       x is ['isDomain,.,y] or x is ['ofCategory,.,y]]
---sayBrightlyNT "dependList="
---pp dependList
 
   --(3a) newList= list of ofCat/isDom entries that don't depend on
   for x in oldList repeat
     if (x is ['ofCategory,v,body]) or (x is ['isDomain,v,body]) then
-      indepvl:=listOfPatternIds v
-      depvl:=listOfPatternIds body
+      indepvl := listOfPatternIds v
+      depvl := listOfPatternIds body
     else
       indepvl := listOfPatternIds x
       depvl := nil
     setIntersection(indepvl,dependList) = nil
         and setIntersection(indepvl,lastDependList) =>
-      somethingDone := true
       lastPreds := [:lastPreds,x]
       oldList := remove(oldList,x)
---if somethingDone then
---  sayBrightlyNT "Again lastPreds="
---  pp lastPreds
---  sayBrightlyNT "Again oldList="
---  pp oldList
 
   --(3b) newList= list of ofCat/isDom entries that don't depend on
   while oldList ~= nil repeat
@@ -361,8 +349,6 @@ orderPredTran(oldList,sig,skip) ==
       setIntersection(indepvl,dependList) = nil =>
         dependList := setDifference(dependList,depvl)
         newList := [:newList,x]
---  sayBrightlyNT "newList="
---  pp newList
 
   --(4) noldList= what is left over
     (noldList:= setDifference(oldList,newList)) = oldList =>
@@ -370,23 +356,19 @@ orderPredTran(oldList,sig,skip) ==
       newList := [:newList,:oldList]
       return nil
     oldList:=noldList
---  sayBrightlyNT "noldList="
---  pp noldList
 
   for pred in newList repeat
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
-      ids:= listOfPatternIds y
+      ids := listOfPatternIds y
       if "and"/[symbolMember?(id,fullDependList) for id in ids] then
         fullDependList := insertWOC(x,fullDependList)
       fullDependList := setUnion(fullDependList,ids)
 
-  newList:=[:newList,:lastPreds]
+  newList := [:newList,:lastPreds]
 
 --substitute (isDomain ..) forms as completely as possible to avoid false paths
   newList := isDomainSubst newList
-  answer := [['AND,:newList],:setIntersection(fullDependList,sig)]
---sayBrightlyNT '"answer="
---pp answer
+  [['AND,:newList],:setIntersection(fullDependList,sig)]
 
 isDomainSubst u == main where
   main() ==
@@ -417,20 +399,14 @@ interactiveModemapForm mm ==
   --  replaces all specific domains mentioned in the modemap with pattern
   --  variables, and predicates
   mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
-  [pattern:=[dc,:sig],pred] := mm
+  [pattern := [dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
     x is [a,b,c] and a isnt 'isFreeFunction and c isnt [.,:.] => [a,b,[c]]
     x
---pp pred
-  [mmpat, patternAlist, partial, patvars] :=
-    modemapPattern(pattern,sig)
---pp [pattern, mmpat, patternAlist, partial, patvars]
-  [pred,domainPredicateList] :=
-    substVars(pred,patternAlist,patvars)
---pp [pred,domainPredicateList]
-  [pred,:dependList]:=
+  [mmpat, patternAlist, partial, patvars] := modemapPattern(pattern,sig)
+  [pred,domainPredicateList] := substVars(pred,patternAlist,patvars)
+  [pred,:dependList] := 
     fixUpPredicate(pred,domainPredicateList,partial,rest mmpat)
---pp [pred,dependList]
   [cond, :.] := pred
   [mmpat, cond]
 
@@ -480,7 +456,6 @@ fixUpPredicate(predClause, domainPreds, partial, sig) ==
   if first predicate = "AND" then
     predicates := append(domainPreds,rest predicate)
   else if predicate ~= MKQ "T"
---was->then predicates:= reverse [predicate, :domainPreds]
        then predicates:= [predicate, :domainPreds]
        else predicates := domainPreds or [predicate]
   if #predicates > 1 then
@@ -521,18 +496,15 @@ getConditionListFromMm mm ==
 ++ to be confused with `getDomainFromMm' below, which can also return
 ++ a category.
 getDCFromSystemModemap mm ==
-  for cond in getConditionListFromMm mm repeat
-    cond is ["isDomain","*1",dom] => return dom
+  or/[dom for cond in getConditionListFromMm mm |
+       cond is ["isDomain","*1",dom]]
 
 getDomainFromMm mm ==
   -- Returns the Domain (or package or category) of origin from a pattern
   -- modemap
-  condList := getConditionListFromMm mm
-  val :=
-    for condition in condList repeat
-      condition is ['isDomain, "*1", dom] => return opOf dom
-      condition is ['ofCategory, "*1", cat] => return opOf cat
-  null val =>
+  val := or/[opOf t for cond in getConditionListFromMm mm |
+              cond is ['isDomain,"*1",t] or cond is ['ofCategory,"*1",t]]
+  val = nil =>
     keyedSystemError("S2GE0016",
       ['"getDomainFromMm",'"Can't find domain in modemap condition"])
   val
@@ -574,23 +546,22 @@ isFreeFunctionFromMmCond cond ==
 
 getAllModemapsFromDatabase(op,nargs) ==
   $getUnexposedOperations: local := true
-  startTimingProcess 'diskread
-  ans := getSystemModemaps(op,nargs)
-  stopTimingProcess 'diskread
-  ans
+  try
+    startTimingProcess 'diskread
+    getSystemModemaps(op,nargs)
+  finally stopTimingProcess 'diskread
 
 getModemapsFromDatabase(op,nargs) ==
   $getUnexposedOperations: local := false
-  startTimingProcess 'diskread
-  ans := getSystemModemaps(op,nargs)
-  stopTimingProcess 'diskread
-  ans
+  try
+    startTimingProcess 'diskread
+    getSystemModemaps(op,nargs)
+  finally stopTimingProcess 'diskread
 
 getSystemModemaps(op,nargs) ==
-  mml:= getOperationFromDB op =>
+  mml := getOperationFromDB op =>
     mms := nil
-    for (x := [[.,:sig],.]) in mml repeat
-      (integer? nargs) and (nargs ~= # sig.source) => 'iterate
+    for x in mml | not integer? nargs or nargs = #x.mmSource repeat
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
         isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
@@ -598,10 +569,10 @@ getSystemModemaps(op,nargs) ==
   nil
 
 getInCoreModemaps(modemapList,op,nargs) ==
-  mml:= LASSOC (op,modemapList) =>
-    mml:= first mml
-    [x for (x:= [[dc,:sig],.]) in mml |
-      (integer? nargs => nargs=#rest sig; true) and
+  mml := LASSOC (op,modemapList) =>
+    mml := first mml
+    [x for x in mml |
+      (not integer? nargs or nargs = #x.mmSource) and
         (cfn := abbreviate (domName := getDomainFromMm x)) and
           ($getUnexposedOperations or isExposedConstructor(domName))]
   nil
@@ -612,16 +583,10 @@ mkAlistOfExplicitCategoryOps target ==
   target is ['Join,:l] =>
     "union"/[mkAlistOfExplicitCategoryOps cat for cat in l]
   target is ['CATEGORY,.,:l] =>
-    l:= flattenSignatureList ['PROGN,:l]
-    u:=
-      [[atomizeOp op,:sig] for x in l | x is ['SIGNATURE,op,sig,:.]]
-            where
-              atomizeOp op ==
-                op isnt [.,:.] => op
-                op is [a] => a
-                keyedSystemError("S2GE0016",
-                  ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
-    opList:= removeDuplicates ASSOCLEFT u
+    l := flattenSignatureList ['PROGN,:l]
+    u :=
+      [[op,:sig] for x in l | x is ['SIGNATURE,op,sig,:.]]
+    opList := removeDuplicates ASSOCLEFT u
     [[x,:fn(x,u)] for x in opList] where
       fn(op,u) ==
         u is [[a,:b],:c] => (a=op => [b,:fn(op,c)]; fn(op,c))
@@ -633,7 +598,7 @@ flattenSignatureList(x) ==
   x isnt [.,:.] => nil
   x is ['SIGNATURE,:.] => [x]
   x is ['IF,cond,b1,b2] =>
-     append(flattenSignatureList b1, flattenSignatureList b2)
+    [:flattenSignatureList b1,:flattenSignatureList b2]
   x is ['PROGN,:l] =>
      ll:= []
      for x in l repeat
