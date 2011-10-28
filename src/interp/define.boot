@@ -1076,7 +1076,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     $lisplibCategory:= formalBody
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList,$lisplibCategory)
     dbAncestors(db) := computeAncestorsOf($form,nil)
-    augLisplibModemapsFromCategory([op',:sargl],formalBody,signature')
+    dbModemaps(db) := modemapsFromCategory([op',:sargl],formalBody,signature')
     dbBeingDefined?(db) := false
     [fun,$Category,e]
 
@@ -1439,7 +1439,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
     operationAlist := applySubst($pairlis,$lisplibOperationAlist)
-    augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
+    dbModemaps(db) := modemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
  
     --  5.

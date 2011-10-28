@@ -163,9 +163,6 @@ $letAssoc := false
 $libFile := nil
 
 ++
-$lisplibModemapAlist := []
-
-++
 $lisplibOperationAlist := []
 
 ++
