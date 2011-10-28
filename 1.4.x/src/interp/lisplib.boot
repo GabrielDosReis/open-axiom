@@ -387,7 +387,6 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $lisplibPredicates: local := nil
-  $lisplibModemapAlist: local := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
   $lisplibVariableAlist: local := nil
@@ -409,7 +408,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
-  $lisplibModemapAlist: local := nil
   $lisplibOperationAlist: local := nil
   $lisplibSignatureAlist: local := nil
   $libFile: local := nil
@@ -534,7 +532,7 @@ finalizeLisplib(ctor,libName) ==
   if dbConstructorKind db = 'category then
     writeCategory(ctor,$lisplibCategory,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
-  lisplibWrite('"modemaps",$lisplibModemapAlist,$libFile)
+  lisplibWrite('"modemaps",dbModemaps db,$libFile)
   opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
   writeOperations(ctor,first opsAndAtts,$libFile)
   if kind='category then

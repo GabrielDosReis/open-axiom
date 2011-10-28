@@ -1,3 +1,17 @@
+2011-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($lisplibModemapAlist): Remove.
+	* interp/lisplib.boot (compileConstructorLib): Do not bind
+	$lisplibModemapAlist.
+	(compDefineLisplib): Likewise.
+	* interp/database.boot (modemapsFromCategory): Rename from
+	augLisplibModmapsFromCategory.  Tidy.  Avoid use of special
+	variable $lisplibModemapAlist.
+	(modemapsFromFunctor): Rename from augmentLisplibFromFunctor.
+	Tidy.  Avoid use of special variable $lisplibModemapAlist.
+	* interp/define.boot (compDefineCategory2): Adjust.
+	(compDefineFunctor1): Likewise.
+
 2011-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/stream.spad.pamphlet (Stream): Tidy accessors.

@@ -172,58 +172,70 @@ getConstructorKind ctor ==
 
 --% Functions for manipulating MODEMAP DATABASE
 
-augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
-  sl := [["$",:"*1"],:pairList(argl,rest $PatternVariableList)]
-  form:= applySubst(sl,form)
-  body:= applySubst(sl,body)
-  signature:= applySubst(sl,signature)
-  opAlist:= applySubst(sl,categoryExports $domainShell) or return nil
-  nonCategorySigAlist:=
+++ We are about to finish the elaboration of the category `form' with
+++ given `body' and `signature'.  Return the list of all modemaps
+++ of operators exported by generic instantiation of the category constructor.
+++ Note: The structure of the modemaps is that understood by the
+++ interpreter, but that of the of the compiler.
+modemapsFromCategory(form,body,signature) ==
+  sl := [["$",:"*1"],:pairList(form.args,rest $PatternVariableList)]
+  form := applySubst(sl,form)
+  body := applySubst(sl,body)
+  signature := applySubst(sl,signature)
+  opAlist := applySubst(sl,categoryExports $domainShell) or return nil
+  nonCategorySigAlist :=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
-  domainList:=
-    [[a,m] for a in rest form for m in rest signature |
+  domainList :=
+    [[a,m] for a in form.args for m in signature.source |
       isCategoryForm(m,$EmptyEnvironment)]
-  catPredList:= [['ofCategory,:u] for u in [["*1",form],:domainList]]
+  catPredList := [['ofCategory,:u] for u in [["*1",form],:domainList]]
+  op := form.op
+  mms := nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
     listMember?(sig,LASSOC(op,nonCategorySigAlist)) repeat
-      pred':= MKPF([pred,:catPredList],'AND)
-      modemap:= [["*1",:sig],[pred',sel]]
-      $lisplibModemapAlist:=
-        [[op,:interactiveModemapForm modemap],:$lisplibModemapAlist]
+      pred' := MKPF([pred,:catPredList],'AND)
+      modemap := [["*1",:sig],[pred',sel]]
+      mms := [[op,:interactiveModemapForm modemap],:mms]
+  mms
 
-augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
-  form:= [formOp,:argl]:= formal2Pattern form
-  opAlist:= formal2Pattern opAlist
-  signature:= formal2Pattern signature
+++ We are about to finish the elaboration of the generic instantiation
+++ of the function `form.op' with `signature'. Return a list of modemaps
+++ for operations from `opAlist' explicitly exported by the functor.
+++ Note: the structure of modemaps same as for modemapsFromCategory.
+modemapsFromFunctor(form,opAlist,signature) ==
+  form := [.,:argl] := formal2Pattern form
+  opAlist := formal2Pattern opAlist
+  signature := formal2Pattern signature
   for u in form for v in signature repeat
     if symbolMember?(u,$PatternVariableList) then
       -- we are going to be EVALing categories containing these
       -- pattern variables
-      $e:=put(u,'mode,v,$e)
-  nonCategorySigAlist:=
-    mkAlistOfExplicitCategoryOps first signature or return nil
-  for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
+      $e := put(u,'mode,v,$e)
+  nonCategorySigAlist :=
+    mkAlistOfExplicitCategoryOps signature.target or return nil
+  mms := nil
+  for (entry := [[op,sig,:.],pred,sel]) in opAlist |
     or/[listMember?(sig,catSig) for catSig in
       allLASSOCs(op,nonCategorySigAlist)] repeat
-        skip:=
-          argl and CONTAINED("$",rest sig) => 'SKIP
+        skip :=
+          argl ~= nil and CONTAINED("$",sig.source) => 'SKIP
           nil
-        sel:= substitute(form,"$",sel)
-        patternList:= listOfPatternIds sig
+        sel := substitute(form,"$",sel)
+        patternList := listOfPatternIds sig
         --get relevant predicates
-        predList:=
-          [[a,m] for a in argl for m in rest signature
+        predList :=
+          [[a,m] for a in argl for m in signature.source
             | symbolMember?(a,$PatternVariableList)]
-        sig:= substitute(form,"$",sig)
-        pred':= MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
-        l:=listOfPatternIds predList
-        if "OR"/[null symbolMember?(u,l) for u in argl] then
+        sig := substitute(form,"$",sig)
+        pred' := MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
+        l := listOfPatternIds predList
+        if "OR"/[not symbolMember?(u,l) for u in argl] then
           sayMSG ['"cannot handle modemap for",:bright op,
                           '"by pattern match" ]
-          skip:= 'SKIP
-        modemap:= [[form,:sig],[pred',sel,:skip]]
-        $lisplibModemapAlist:= [[op,:interactiveModemapForm modemap],
-          :$lisplibModemapAlist]
+          skip := 'SKIP
+        modemap := [[form,:sig],[pred',sel,:skip]]
+        mms := [[op,:interactiveModemapForm modemap],:mms]
+  mms
 
 rebuildCDT(filemode) ==
   clearConstructorAndLisplibCaches()
