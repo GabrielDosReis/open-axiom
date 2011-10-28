@@ -800,8 +800,8 @@ encodeFunctionName(db,fun,signature,sep,count) ==
           strconc(toString n,encodeItem x)
     encodedName:= INTERNL(symbolName dbAbbreviation db,'";",
         encodeItem fun,'";",encodedSig,sep,toString count)
-    $lisplibSignatureAlist :=
-      [[encodedName,:signature'],:$lisplibSignatureAlist]
+    dbCapsuleDefinitions(db) :=
+      [[encodedName,signature'],:dbCapsuleDefinitions db]
     encodedName
 
 ++ Return the linkage name of the local operation named `op'.

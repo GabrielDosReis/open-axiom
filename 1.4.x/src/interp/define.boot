@@ -2438,7 +2438,7 @@ DomainSubstitutionFunction(parameters,body) ==
   body isnt ["Join",:.] => body
   $definition isnt [.,:.] => body
   $definition.args = nil => body 
-  name := makeSymbol strconc(KAR $definition,";CAT")
+  name := mkDomainCatName $definition.op
   SETANDFILE(name,nil)
   body := ['%when,[name],['%otherwise,['%store,name,body]]]
   body

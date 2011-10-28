@@ -166,12 +166,6 @@ $libFile := nil
 $lisplibOperationAlist := []
 
 ++
-$lisplibSignatureAlist := []
-
-++
-$lisplibVariableAlist := []
-
-++
 $mapSubNameAlist := []
 
 ++

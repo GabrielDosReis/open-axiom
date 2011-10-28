@@ -358,7 +358,7 @@ clearCategoryCaches() ==
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
             then symbolValue(cacheName) := nil
-    if BOUNDP(cacheName:= INTERNL strconc(symbolName name,'";CAT"))
+    if BOUNDP(cacheName:= mkDomainCatName name)
           then symbolValue(cacheName) := nil
  
 clearCategoryCache catName ==

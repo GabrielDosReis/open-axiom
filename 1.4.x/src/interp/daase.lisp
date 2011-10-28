@@ -228,6 +228,7 @@
  instantiations		    ; nil if mutable constructor
  being-defined		    ; T is definition of constructor is being processed
  load-path		    ; full object path name, when loaded.
+ capsule-definitions	    ; capsule-level definitions
  ) ; database structure
 
 
@@ -293,6 +294,9 @@
 
 (defmacro |dbLoadPath| (db)
   `(database-load-path ,db))
+
+(defmacro |dbCapsuleDefinitions| (db)
+  `(database-capsule-definitions ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))
