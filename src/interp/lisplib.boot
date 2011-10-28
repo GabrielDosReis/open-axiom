@@ -389,8 +389,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibPredicates: local := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
-  $lisplibVariableAlist: local := nil
-  $lisplibSignatureAlist: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
@@ -409,9 +407,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibPredicates: local := nil -- set by makePredicateBitVector
   $lisplibOperationAlist: local := nil
-  $lisplibSignatureAlist: local := nil
   $libFile: local := nil
-  $lisplibVariableAlist: local := nil
 --  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
@@ -507,6 +503,9 @@ writeAncestors(ctor,x,file) ==
 writePrincipals(ctor,x,file) ==
   writeInfo(ctor,x,'parents,'dbPrincipals,file)
 
+writeCapsuleLevelDefinitions(ctor,x,file) ==
+  writeInfo(ctor,x,'signaturesAndLocals,'dbCapsuleDefinitions,file)
+
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
 leaveIfErrors(libName,kind) ==
@@ -538,9 +537,7 @@ finalizeLisplib(ctor,libName) ==
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain(ctor,dbSuperDomain db,$libFile)
-  lisplibWrite('"signaturesAndLocals",
-    mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
-                                    $lisplibVariableAlist),$libFile)
+  writeCapsuleLevelDefinitions(ctor,dbCapsuleDefinitions db,$libFile)
   writeAttributes(ctor,dbAttributes db,$libFile)
   writePredicates(ctor,$lisplibPredicates,$libFile)
   writeAbbreviation(db,$libFile)
@@ -567,13 +564,6 @@ lisplibError(cname,fname,type,cn,fn,typ,error) ==
 getPartialConstructorModemapSig(c) ==
   (s := getConstructorSignature c) => rest s
   throwEvalTypeMsg("S2IL0015",[c])
- 
-mergeSignatureAndLocalVarAlists(signatureAlist, localVarAlist) ==
-  -- this function makes a single Alist for both signatures
-  -- and local variable types, to be stored in the LISPLIB
-  -- for the function being compiled
-  [[funcName,:[signature,:LASSOC(funcName,localVarAlist)]] for
-    [funcName, :signature] in signatureAlist]
  
 getConstructorOpsAndAtts(form,kind,modemap) ==
   kind is 'category => getCategoryOpsAndAtts(form)
