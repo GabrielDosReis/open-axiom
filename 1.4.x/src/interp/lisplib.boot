@@ -413,7 +413,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $libFile: local := nil
   $lisplibVariableAlist: local := nil
 --  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
-  $lisplibCategory: local := nil        
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
@@ -526,11 +525,10 @@ finalizeLisplib(ctor,libName) ==
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,mm,$libFile)
   writeDualSignature(db,$libFile)
-  $lisplibCategory := $lisplibCategory or mm.mmTarget
   -- set to target of mm for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
   if dbConstructorKind db = 'category then
-    writeCategory(ctor,$lisplibCategory,$libFile)
+    writeCategory(ctor,dbCategory db,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
   lisplibWrite('"modemaps",dbModemaps db,$libFile)
   opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)

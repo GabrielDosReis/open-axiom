@@ -493,12 +493,12 @@ getImports conname == --called by mkUsersHashTable
 --============================================================================
 --                 Get Hierarchical Information
 --============================================================================
-getParentsFor(db,formalParams,constructorCategory) ==
+getParentsFor(db,formalParams) ==
 --called by compDefineFunctor1
   acc := nil
   formals := TAKE(#formalParams,$TriangleVariableList)
   constructorForm := dbConstructorForm db
-  for x in folks constructorCategory repeat
+  for x in folks dbCategory db repeat
     x := applySubst(pairList(formals,formalParams),x)
     x := applySubst(pairList(formalParams,IFCDR constructorForm),x)
     acc := [:explodeIfs x,:acc]
