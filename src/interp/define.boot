@@ -67,7 +67,6 @@ $functionStats := nil
 $functorStats := nil
 
 $CheckVectorList := []
-$pairlis := []
 $functorTarget := nil
 $condAlist := []
 $uncondAlist := []
@@ -479,12 +478,12 @@ NRTmakeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
-  newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
-  slot1 := [[a,:k] for [a,:b] in applySubst($pairlis,opcAlist)
+  newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
+  slot1 := [[a,:k] for [a,:b] in dbSubstituteFormals(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
-  sixEtc := [5 + i for i in 1..#$pairlis]
-  formals := ASSOCRIGHT $pairlis
+  sixEtc := [5 + i for i in 1..dbArity db]
+  formals := ASSOCRIGHT dbFormalSubst db
   for x in slot1 repeat
     x.first := applySubst(pairList(['$,:formals],["$$",:sixEtc]),first x)
   -----------code to make a new style slot4 -----------------
@@ -522,14 +521,14 @@ getXmode(x,e) ==
 --=======================================================================
 NRTgetLookupFunction(db,domform,exCategory,addForm,env) ==
   $why: local := nil
-  domform := applySubst($pairlis,domform)
+  domform := dbSubstituteFormals(db,domform)
   addForm isnt [.,:.] =>
-    ident? addForm and (m := getmode(addForm,env)) ~= nil
-      and isCategoryForm(m,env) 
-        and extendsCategory(db,domform,exCategory,applySubst($pairlis,m),env) =>
+    ident? addForm and (m := getmode(addForm,env)) ~= nil and
+      isCategoryForm(m,env) and
+        extendsCategory(db,domform,exCategory,dbSubstituteFormals(db,m),env) =>
           'lookupIncomplete
     'lookupComplete
-  addForm := applySubst($pairlis,addForm)
+  addForm := dbSubstituteFormals(db,addForm)
   NRTextendsCategory1(db,domform,exCategory,getExportCategory addForm,env) =>
     'lookupIncomplete
   [u,msg,:v] := $why
@@ -1011,7 +1010,8 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     -- 1.1  augment e to add declaration $: <form>
     [$op,:argl] := $definition
     db := constructorDB $op
-    dbBeingDefined?(db) := true
+    dbCompilerData(db) := makeCompilationData()
+    dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
     dbInstanceCache(db) := true
     e:= addBinding("$",[['mode,:$definition]],e)
  
@@ -1026,9 +1026,8 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     sargl:= TAKE(# argl, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
-    aList := pairList(argl,sargl)
-    formalBody:= applySubst(aList,body)
-    signature' := applySubst(aList,signature')
+    formalBody := dbSubstituteFormals(db,body)
+    signature' := dbSubstituteFormals(db,signature')
     --Begin lines for category default definitions
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
@@ -1073,7 +1072,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
     dbAncestors(db) := computeAncestorsOf($form,nil)
     dbModemaps(db) := modemapsFromCategory([op',:sargl],formalBody,signature')
-    dbBeingDefined?(db) := false
+    dbCompilerData(db) := nil
     [fun,$Category,e]
 
 mkConstructor: %Form -> %Form
@@ -1355,10 +1354,10 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     originale:= $e
     [$op,:argl]:= form
     db := constructorDB $op
-    dbBeingDefined?(db) := true
     dbConstructorForm(db) := form
+    dbCompilerData(db) := makeCompilationData()
+    dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
     $formalArgList:= [:argl,:$formalArgList]
-    $pairlis: local := pairList(argl,$FormalMapVariableList)
     -- all defaulting packages should have caching turned off
     dbInstanceCache(db) := not isCategoryPackageName $op
     signature':=
@@ -1393,8 +1392,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
       $e := augModemapsFromCategory('_$,'_$,target,$e)
       $e := put('$,'%form,form,$e)
     $signature:= signature'
-    parSignature:= applySubst($pairlis,signature')
-    parForm:= applySubst($pairlis,form)
+    parSignature := dbSubstituteFormals(db,signature')
+    parForm := dbSubstituteFormals(db,form)
  
     --  3. give operator a 'modemap property
     modemap := [[parForm,:parSignature],[true,$op]]
@@ -1431,9 +1430,9 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
       'SPADSLAM
-    fun:= compile applySubst($pairlis, [op',[lamOrSlam,argl,body']])
+    fun := compile dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
-    operationAlist := applySubst($pairlis,$lisplibOperationAlist)
+    operationAlist := dbSubstituteFormals(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
  
@@ -1458,7 +1457,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     if $bootStrapMode then
       evalAndRwriteLispForm('%incomplete,
             ['MAKEPROP,quote op',quote '%incomplete,true])
-    dbBeingDefined?(db) := false
+    dbBeingDefined?(db) := nil
     [fun,['Mapping,:signature'],originale]
 
 
