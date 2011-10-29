@@ -2438,10 +2438,10 @@ DomainSubstitutionFunction(parameters,body) ==
   body isnt ["Join",:.] => body
   $definition isnt [.,:.] => body
   $definition.args = nil => body 
-  name := mkDomainCatName $definition.op
-  SETANDFILE(name,nil)
-  body := ['%when,[name],['%otherwise,['%store,name,body]]]
-  body
+  g := gensym()
+  ['%bind,[[g,['constructorDB,quote $definition.op]]],
+    ['%when,[['dbTemplate,g]],
+      ['%otherwise,['%store,['dbTemplate,g],body]]]]
 
 
 ++ Subroutine of compCategoryItem.

@@ -229,6 +229,8 @@
  being-defined		    ; T is definition of constructor is being processed
  load-path		    ; full object path name, when loaded.
  capsule-definitions	    ; capsule-level definitions
+ template		    ; for a category, this the generic instantce.
+                            ; for a functor, this is the template.
  ) ; database structure
 
 
@@ -297,6 +299,9 @@
 
 (defmacro |dbCapsuleDefinitions| (db)
   `(database-capsule-definitions ,db))
+
+(defmacro |dbTemplate| (db)
+  `(database-template ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))
