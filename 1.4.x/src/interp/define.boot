@@ -75,7 +75,6 @@ $NRTslot1PredicateList := []
 $NRTattributeAlist := []
 $NRTslot1Info := nil
 $NRTdeltaListComp := []
-$template := nil
 $signature := nil
 $lookupFunction := nil
 $byteAddress := nil
@@ -352,7 +351,7 @@ chaseInferences(pred,$e) ==
 getInfovecCode db == 
 --Function called by compDefineFunctor1 to create infovec at compile time
   ['LIST,
-    MKQ makeDomainTemplate(db,$template),
+    MKQ makeDomainTemplate db,
       MKQ makeCompactDirect(db,$NRTslot1Info),
         MKQ NRTgenFinalAttributeAlist(db,$e),
           NRTmakeCategoryAlist(db,$e),
@@ -361,19 +360,19 @@ getInfovecCode db ==
 --=======================================================================
 --         Generation of Domain Vector Template (Compile Time)
 --=======================================================================
-makeDomainTemplate(db,vec) ==   
+makeDomainTemplate db ==   
 --NOTES: This function is called at compile time to create the template
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
-  newVec := newShell # vec
+  vec := dbTemplate db
   for index in 0..maxIndex vec repeat
-    item := vectorRef(vec,index)
-    null item => nil
-    vectorRef(newVec,index) :=
+    item := domainRef(vec,index)
+    item = nil => nil
+    domainRef(vec,index) :=
       item isnt [.,:.] => item
       cons? first item => makeGoGetSlot(item,index)
       item   
   $byteVec := "append"/reverse! $byteVec
-  newVec
+  vec
  
 makeGoGetSlot(item,index) ==
 --NOTES: creates byte vec strings for LATCH slots
@@ -521,17 +520,17 @@ getXmode(x,e) ==
 --=======================================================================
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
-NRTgetLookupFunction(domform,exCategory,addForm,env) ==
+NRTgetLookupFunction(db,domform,exCategory,addForm,env) ==
   $why: local := nil
   domform := applySubst($pairlis,domform)
   addForm isnt [.,:.] =>
     ident? addForm and (m := getmode(addForm,env)) ~= nil
       and isCategoryForm(m,env) 
-        and extendsCategory(domform,exCategory,applySubst($pairlis,m),env) =>
+        and extendsCategory(db,domform,exCategory,applySubst($pairlis,m),env) =>
           'lookupIncomplete
     'lookupComplete
   addForm := applySubst($pairlis,addForm)
-  NRTextendsCategory1(domform,exCategory,getExportCategory addForm,env) =>
+  NRTextendsCategory1(db,domform,exCategory,getExportCategory addForm,env) =>
     'lookupIncomplete
   [u,msg,:v] := $why
   SAY '"--------------non extending category----------------------"
@@ -552,23 +551,23 @@ getExportCategory form ==
   [[.,target,:tl],:.] := getConstructorModemap op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
-NRTextendsCategory1(domform,exCategory,addForm,env) ==
+NRTextendsCategory1(db,domform,exCategory,addForm,env) ==
   addForm is ["%Comma",:r] => 
-    and/[extendsCategory(domform,exCategory,x,env) for x in r]
-  extendsCategory(domform,exCategory,addForm,env)
+    and/[extendsCategory(db,domform,exCategory,x,env) for x in r]
+  extendsCategory(db,domform,exCategory,addForm,env)
 
 --=======================================================================
 --         Compute if a domain constructor is forgetful functor
 --=======================================================================
-extendsCategory(dom,u,v,env) ==
+extendsCategory(db,dom,u,v,env) ==
   --does category u extend category v (yes iff u contains everything in v)
   --is dom of category u also of category v?
   u=v => true
-  v is ["Join",:l] => and/[extendsCategory(dom,u,x,env) for x in l]
-  v is ["CATEGORY",.,:l] => and/[extendsCategory(dom,u,x,env) for x in l]
+  v is ["Join",:l] => and/[extendsCategory(db,dom,u,x,env) for x in l]
+  v is ["CATEGORY",.,:l] => and/[extendsCategory(db,dom,u,x,env) for x in l]
   v is ["SubsetCategory",cat,d] =>
-    extendsCategory(dom,u,cat,env) and isSubset(dom,d,env)
-  v := substSlotNumbers(v,$template,$functorForm)
+    extendsCategory(db,dom,u,cat,env) and isSubset(dom,d,env)
+  v := substSlotNumbers(v,dbTemplate db,$functorForm)
   extendsCategoryBasic(dom,u,v,env) => true
   $why :=
     v is ['SIGNATURE,op,sig,:.] =>
@@ -1386,7 +1385,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $template: local:= nil --stored in the lisplib
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
@@ -1447,7 +1445,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
       $NRTslot1Info := NRTmakeSlot1Info()
       libFn := dbAbbreviation db
       $lookupFunction: local :=
-          NRTgetLookupFunction($functorForm,modemap.mmTarget,$NRTaddForm,$e)
+          NRTgetLookupFunction(db,$functorForm,modemap.mmTarget,$NRTaddForm,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $byteAddress :local := 0
       $byteVec :local := nil

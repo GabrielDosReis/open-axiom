@@ -1,5 +1,17 @@
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (NRTaddDeltaCode): Take a DB parameter.
+	Adjust callers.
+	(NRTdescendCodeTran): Likewise.
+	* interp/define.boot (makeDomainTemplate): Lose second argument.
+	Adjust callers.
+	(NRTgetLookupFunction): Take a DB as first argument.  Adjust callers.
+	(NRTextendsCategory1): Likewise.
+	(extendsCategory): Likewise.
+	(compDefineFunctor1): Do not find $template.  Set dbTemplate.
+
+2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($atList, $sigList): Remove.
 	(compSignature): Take a fourth parameter.
 	(compCategoryItem): Take two more parameters.
