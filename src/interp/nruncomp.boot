@@ -515,7 +515,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
     makePredicateBitVector([:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList],$e)
 
-  storeOperationCode := DescendCode(code,true,nil)
+  storeOperationCode := DescendCode(db,code,true,nil)
   NRTaddDeltaCode()
   storeOperationCode:= NRTputInLocalReferences storeOperationCode
   NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode

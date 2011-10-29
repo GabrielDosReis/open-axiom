@@ -428,7 +428,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       code:=[v,:code]
   [["%LET",instantiatedBase,base],:code]
  
-DescendCode(code,flag,viewAssoc) ==
+DescendCode(db,code,flag,viewAssoc) ==
   -- flag = true if we are walking down code always executed;
   -- otherwise set to conditions in which
   code = nil => nil
@@ -436,16 +436,16 @@ DescendCode(code,flag,viewAssoc) ==
   isMacro(code,$e) => nil --RDJ: added 3/16/83
   code is ['add,base,:codelist] =>
     codelist:=
-      [v for u in codelist | (v:= DescendCode(u,flag,viewAssoc))~=nil]
+      [v for u in codelist | (v:= DescendCode(db,u,flag,viewAssoc))~=nil]
                   -- must do this first, to get this overriding Add code
     ['PROGN,:DescendCodeAdd(base,flag),:codelist]
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
       reverse! [v for u in reverse codelist |
-                    (v:= DescendCode(u,flag,viewAssoc))~=nil]]
+                    (v:= DescendCode(db,u,flag,viewAssoc))~=nil]]
   code is ['%when,:condlist] =>
-    c:= [[u2:= ProcessCond(first u,$e),:q] for u in condlist] where q() ==
+    c:= [[u2:= ProcessCond(db,first u,$e),:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
             TruthP u2 => flag;
@@ -454,7 +454,7 @@ DescendCode(code,flag,viewAssoc) ==
                u2
             flag := ['AND,flag,['NOT,u2]];
             ['AND,flag,u2]
-          [DescendCode(v, f,
+          [DescendCode(db,v, f,
             if first u is ['HasCategory,dom,cat]
               then [[dom,:cat],:viewAssoc]
               else viewAssoc) for v in rest u]
@@ -473,7 +473,7 @@ DescendCode(code,flag,viewAssoc) ==
           code:=['%store,['%tref,['%tref,'$,5],#$locals-#u],code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
-            [['%when,[ProcessCond(flag,$e),code]],:$epilogue]
+            [['%when,[ProcessCond(db,flag,$e),code]],:$epilogue]
           nil
         code
     code -- doItIf deletes entries from $locals so can't optimize this
@@ -488,7 +488,7 @@ DescendCode(code,flag,viewAssoc) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([second(u).args,third u],flag)
     ConstantCreator u =>
-      if flag ~= true then u:= ['%when,[ProcessCond(flag,$e),u]]
+      if flag ~= true then u:= ['%when,[ProcessCond(db,flag,$e),u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
@@ -508,7 +508,7 @@ ConstantCreator u ==
   u is ['CONS,:.] => false
   true
  
-ProcessCond(cond,e) ==
+ProcessCond(db,cond,e) ==
   ncond := applySubst($pairlis,cond)
   valuePosition(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
   cond
