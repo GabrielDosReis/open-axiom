@@ -513,7 +513,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [$uncondAlist,:$condAlist] :=    --bound in compDefineFunctor1
       NRTsetVector4Part1(viewNames,catvecListMaker,condCats)
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
-    makePredicateBitVector([:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList],$e)
+    makePredicateBitVector(db,[:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList],$e)
 
   storeOperationCode := DescendCode(db,code,true,nil)
   NRTaddDeltaCode()
