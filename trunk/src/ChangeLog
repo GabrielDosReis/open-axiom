@@ -1,5 +1,14 @@
 2011-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (mkDomainCatName): Remove.
+	* interp/daase.lisp (DATABSE): Add new field TEMPLATE.
+	(dbTemplate): New macro accessor.
+	* interp/clam.boot (clearCategoryCaches): Clear dbTemplate.
+	* interp/define.boot (DomainSubstitutionFunction): Generate code
+	to access or set dbTemplate.
+
+2011-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp (DATABASE): Add new field CAPSULE-DEFINITIONS.
 	(dbCapsuleDefinitions): New macro accessor.
 	* interp/functor.boot (encodeFunctionName): Set it.

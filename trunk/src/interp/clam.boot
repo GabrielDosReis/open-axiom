@@ -358,8 +358,8 @@ clearCategoryCaches() ==
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
             then symbolValue(cacheName) := nil
-    if BOUNDP(cacheName:= mkDomainCatName name)
-          then symbolValue(cacheName) := nil
+      db := constructorDB name =>
+        dbTemplate(db) := nil
  
 clearCategoryCache catName ==
   symbolValue(mkCacheName catName) := nil
