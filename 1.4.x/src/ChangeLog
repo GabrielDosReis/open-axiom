@@ -1,5 +1,22 @@
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/daase.lisp (dbCompilerData): New accessor macro.
+	(dbBeingDefined?): Adjust.
+	* interp/c-util.boot (makeCompilationData): New.
+	(dbFormalSubst): New accessor macro.
+	(dbSubstituteFormals): New.
+	* interp/define.boot ($pairlis): Remove.
+	(NRTmakeCategoryAlist): Use dbSubstituteFormals.
+	(NRTgetLookupFunction): Likewise.
+	(compDefineCategory2): Likewise.  Set dbCompilerData and dbFormalSubst.
+	(compDefineFunctor1): Likewise.
+	* interp/functor.boot (ProcessCond): Use dbSubstituteFormals.
+	* interp/lisplib.boot (NRTgenInitialAttributeAlist): Likewise.
+	(makePredicateBitVector): Likewise.
+	(finalizeLisplib): Do not set $pairlis.
+
+2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (NRTaddDeltaCode): Take a DB parameter.
 	Adjust callers.
 	(NRTdescendCodeTran): Likewise.

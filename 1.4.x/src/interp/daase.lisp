@@ -226,7 +226,7 @@
  dependents                 ; browse.
  superdomain                ; interp.
  instantiations		    ; nil if mutable constructor
- being-defined		    ; T is definition of constructor is being processed
+ compiler-data		    ; holds compiler data when processing constructor
  load-path		    ; full object path name, when loaded.
  capsule-definitions	    ; capsule-level definitions
  template		    ; for a category, this the generic instantce.
@@ -291,8 +291,11 @@
 (defmacro |dbInstanceCache| (db)
   `(database-instantiations ,db))
 
+(defmacro |dbCompilerData| (db)
+  `(database-compiler-data ,db))
+
 (defmacro |dbBeingDefined?| (db)
-  `(database-being-defined ,db))
+  `(|dbCompilerData| ,db))
 
 (defmacro |dbLoadPath| (db)
   `(database-load-path ,db))

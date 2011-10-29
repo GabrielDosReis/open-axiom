@@ -509,7 +509,7 @@ ConstantCreator u ==
   true
  
 ProcessCond(db,cond,e) ==
-  ncond := applySubst($pairlis,cond)
+  ncond := dbSubstituteFormals(db,cond)
   valuePosition(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
   cond
 

@@ -35,7 +35,6 @@
 import nlib
 import c_-util
 import debug
-import daase
 
 namespace BOOT
 module lisplib
@@ -52,7 +51,7 @@ NRTgenInitialAttributeAlist(db,attributeList) ==
   alist := [x for x in attributeList | -- throw out constructors
     not symbolMember?(opOf first x,allConstructors())]
   dbAttributes(db) := simplifyAttributeAlist(db,
-    [[a,:b] for [a,b] in applySubst($pairlis,alist) | a isnt 'nothing])
+    [[a,:b] for [a,b] in dbSubstituteFormals(db,alist) | a isnt 'nothing])
 
 simplifyAttributeAlist(db,al) ==
   al is [[a,:b],:r] =>
@@ -109,13 +108,13 @@ makePredicateBitVector(db,pl,e) ==   --called by buildFunctor
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
     else 
       firsts := insert(pred,firsts)
-  firstPl := applySubst($pairlis,reverse! orderByContainment firsts)
-  lastPl  := applySubst($pairlis,reverse! orderByContainment lasts)
+  firstPl := dbSubstituteFormals(db,reverse! orderByContainment firsts)
+  lastPl  := dbSubstituteFormals(db,reverse! orderByContainment lasts)
   firstCode:= 
     ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
   lastCode := augmentPredCode(# firstPl,lastPl)
-  dbPredicates(db) := [:firstPl,:lastPl] --what is stored under 'predicates
-  [dbPredicates db,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
+  dbPredicates(db) := [:firstPl,:lastPl]
+  [dbPredicates db,firstCode,:lastCode]
 
 augmentPredCode(n,lastPl) ==
   ['%list,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
@@ -533,7 +532,6 @@ finalizeLisplib(ctor,libName) ==
   opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
   writeOperations(ctor,first opsAndAtts,$libFile)
   if kind='category then
-     $pairlis : local := pairList(form,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain(ctor,dbSuperDomain db,$libFile)

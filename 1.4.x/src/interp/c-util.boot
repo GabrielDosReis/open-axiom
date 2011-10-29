@@ -131,6 +131,24 @@ macro domainPredicates d ==
 macro domainData d ==
   domainRef(d,4)
 
+--%  
+--% Constructor Compilation Data.
+--% Operational Semantics:
+--%    structure CompilationData ==
+--%       Record(formalSubst: Substitution)
+--%
+
+++ Make a fresh compilation data structure.
+makeCompilationData() ==
+  [nil]
+
+macro dbFormalSubst db ==
+  first dbCompilerData db
+
+++ Apply the formal substitution or `db'to th form `x'.
+dbSubstituteFormals(db,x) ==
+  applySubst(dbFormalSubst db,x)
+
 --%
 $SetCategory ==
   '(SetCategory)
