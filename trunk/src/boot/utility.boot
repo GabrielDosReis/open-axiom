@@ -48,7 +48,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
-  remove,removeSymbol,atomic?,finishLine) where
+  remove,removeSymbol,atomic?,copyTree,finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -63,6 +63,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     setUnion: (%List %Thing,%List %Thing) -> %List %Thing
     setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
+    copyTree: %Thing -> %Thing
     finishLine: %Thing -> %Void
     --FIXME: Next signature commented out because of GCL bugs
     -- firstNonblankPosition: (%String,%Short) -> %Maybe %Short
@@ -75,6 +76,10 @@ module utility (objectMember?, symbolMember?, stringMember?,
 ++ Return true if `x' is an atom of a quotation.
 atomic? x ==
   x isnt [.,:.] or x.op is 'QUOTE
+
+copyTree t ==
+  t is [.,:.] => [copyTree first t,:copyTree rest t]
+  t
 
 --% membership operators
 

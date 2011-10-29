@@ -182,7 +182,7 @@
              (LIST '|charUpcase| 'CHAR-UPCASE) (LIST '|charString| 'STRING)
              (LIST '|char?| 'CHARACTERP) (LIST '|codePoint| 'CHAR-CODE)
              (LIST '|cons?| 'CONSP) (LIST '|copy| 'COPY)
-             (LIST '|copyString| 'COPY-SEQ) (LIST '|copyTree| 'COPY-TREE)
+             (LIST '|copyString| 'COPY-SEQ)
              (LIST '|copyVector| 'COPY-SEQ) (LIST '|croak| 'CROAK)
              (LIST '|digit?| 'DIGIT-CHAR-P) (LIST '|drop| 'DROP)
              (LIST '|exit| 'EXIT) (LIST '|false| 'NIL) (LIST '|fifth| 'FIFTH)

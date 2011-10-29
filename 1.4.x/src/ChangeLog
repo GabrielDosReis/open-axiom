@@ -1,5 +1,15 @@
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (makePredicateBitVector): Take a DB argument.
+	Set dbPredicates.
+	(compConLib1): Set dbPredicates to nil.
+	(compDefineLisplib): Likewise.
+	(finalizeLisplib): Write dbPredicates.
+	* boot/tokens.boot (copyTree): Do not translate.
+	* boot/utility.boot (topyTree): Implement.  Export.
+
+2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (getInfovecCode): Take a DB argument.  Pass
 	it to callees.  Adjust caller.
 	* interp/database.boot (getConstructorPredicates): If contructor

@@ -97,7 +97,7 @@ makePrefixForm(u,op) ==
 --=======================================================================
 --               Generate Slot 3 Predicate Vector
 --=======================================================================
-makePredicateBitVector(pl,e) ==   --called by buildFunctor
+makePredicateBitVector(db,pl,e) ==   --called by buildFunctor
   if $insideCategoryPackageIfTrue then
     pl := union(pl,$categoryPredicateList)
   $predGensymAlist := nil --bound by buildFunctor, used by optHas
@@ -114,8 +114,8 @@ makePredicateBitVector(pl,e) ==   --called by buildFunctor
   firstCode:= 
     ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
   lastCode := augmentPredCode(# firstPl,lastPl)
-  $lisplibPredicates := [:firstPl,:lastPl] --what is stored under 'predicates
-  [$lisplibPredicates,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
+  dbPredicates(db) := [:firstPl,:lastPl] --what is stored under 'predicates
+  [dbPredicates db,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
 
 augmentPredCode(n,lastPl) ==
   ['%list,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
@@ -386,7 +386,7 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
  
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
-  $lisplibPredicates: local := nil
+  dbPredicates(constructorDB fun) := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
@@ -405,7 +405,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
-  $lisplibPredicates: local := nil -- set by makePredicateBitVector
+  dbPredicates(constructorDB op) := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
 --  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
@@ -539,7 +539,7 @@ finalizeLisplib(ctor,libName) ==
   writeSuperDomain(ctor,dbSuperDomain db,$libFile)
   writeCapsuleLevelDefinitions(ctor,dbCapsuleDefinitions db,$libFile)
   writeAttributes(ctor,dbAttributes db,$libFile)
-  writePredicates(ctor,$lisplibPredicates,$libFile)
+  writePredicates(ctor,dbPredicates db,$libFile)
   writeAbbreviation(db,$libFile)
   writePrincipals(ctor,dbPrincipals db,$libFile)
   writeAncestors(ctor,dbAncestors db,$libFile)
