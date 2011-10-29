@@ -351,19 +351,19 @@ chaseInferences(pred,$e) ==
 --=======================================================================
 --            Generate Code to Create Infovec
 --=======================================================================
-getInfovecCode() == 
+getInfovecCode db == 
 --Function called by compDefineFunctor1 to create infovec at compile time
   ['LIST,
-    MKQ makeDomainTemplate $template,
-      MKQ makeCompactDirect $NRTslot1Info,
-        MKQ NRTgenFinalAttributeAlist $e,
-          NRTmakeCategoryAlist $e,
+    MKQ makeDomainTemplate(db,$template),
+      MKQ makeCompactDirect(db,$NRTslot1Info),
+        MKQ NRTgenFinalAttributeAlist(db,$e),
+          NRTmakeCategoryAlist(db,$e),
             MKQ $lookupFunction]
 
 --=======================================================================
 --         Generation of Domain Vector Template (Compile Time)
 --=======================================================================
-makeDomainTemplate vec ==   
+makeDomainTemplate(db,vec) ==   
 --NOTES: This function is called at compile time to create the template
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
   newVec := newShell # vec
@@ -392,24 +392,24 @@ makeGoGetSlot(item,index) ==
 --                Generate OpTable at Compile Time
 --=======================================================================
 --> called by getInfovecCode (see top of this file) from compDefineFunctor1
-makeCompactDirect u ==
+makeCompactDirect(db,u) ==
   $predListLength :local := # $NRTslot1PredicateList
   $byteVecAcc: local := nil
   [nam,[addForm,:opList]] := u
   --pp opList 
-  d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(op,items)]
+  d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(db,op,items)]
   $byteVec := [:$byteVec,:"append"/reverse! $byteVecAcc]
   vector("append"/d)
  
-makeCompactDirect1(op,items) ==
+makeCompactDirect1(db,op,items) ==
 --NOTES: creates byte codes for ops implemented by the domain
     curAddress := $byteAddress
     $op: local := op  --temp hack by RDJ 8/90 (see orderBySubsumption)
-    newcodes :=
-      "append"/[u for y in orderBySubsumption items | u := fn y] or return nil
+    newcodes := "append"/[u for y in orderBySubsumption items |
+                            u := fn(db,y)] or return nil
     $byteVecAcc := [newcodes,:$byteVecAcc]
     curAddress
- where fn y ==
+ where fn(db,y) ==
   [sig,:r] := y
   r = ['Subsumed] =>
     n := #sig - 1
@@ -476,7 +476,7 @@ depthAssoc x ==
  
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  
-NRTmakeCategoryAlist e ==
+NRTmakeCategoryAlist(db,e) ==
   $depthAssocCache: local := hashTable 'EQ
   $catAncestorAlist: local := nil
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
@@ -1456,7 +1456,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
       LAM_,FILEACTQ('loadTimeStuff,
-        ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
+        ['MAKEPROP,MKQ $op,''infovec,getInfovecCode db])
     $lisplibOperationAlist:= operationAlist
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then

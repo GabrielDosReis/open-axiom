@@ -1,5 +1,14 @@
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (getInfovecCode): Take a DB argument.  Pass
+	it to callees.  Adjust caller.
+	* interp/database.boot (getConstructorPredicates): If contructor
+	is being defined, return the predicates as currently known.
+	* interp/daase.lisp (INITIAL-GETDATABASE): Remove
+	(fillDatabasesInCore): Adjust.
+
+2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compHasFormat): Simplify type form.
 
 2011-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>

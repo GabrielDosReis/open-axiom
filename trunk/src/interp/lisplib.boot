@@ -64,7 +64,7 @@ simplifyAttributeAlist(db,al) ==
     [[a,:pred],:simplifyAttributeAlist(db,s)]
   nil
  
-NRTgenFinalAttributeAlist e ==
+NRTgenFinalAttributeAlist(db,e) ==
   [[a,:k] for [a,:b] in $NRTattributeAlist
      | (k := predicateBitIndex(b,e)) ~= -1]
  

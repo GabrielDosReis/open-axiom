@@ -120,7 +120,9 @@ getDualSignature ctor ==
 
 getConstructorPredicates: %Constructor -> %List %Thing
 getConstructorPredicates ctor ==
-  dbPredicates loadDBIfNecessary constructorDB ctor
+  db := constructorDB ctor
+  dbBeingDefined? db => dbPredicates db
+  dbPredicates loadDBIfNecessary db
 
 getConstructorParentsFromDB: %Constructor -> %List %Constructor
 getConstructorParentsFromDB ctor ==
