@@ -1248,7 +1248,7 @@ compHas(pred is ["has",a,b],m,e) ==
       --used in various other places to make the discrimination
 
 compHasFormat(pred is ["has",olda,b],e) ==
-  argl := rest $form
+  argl := $form.args
   formals := TAKE(#argl,$FormalMapVariableList)
   a := applySubst(pairList(formals,argl),olda)
   [a,.,e] := comp(a,$EmptyMode,e) or return nil
@@ -1259,7 +1259,7 @@ compHasFormat(pred is ["has",olda,b],e) ==
        mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
   b is ["Join",:l] or b is ["CATEGORY",.,:l] => 
      ["AND",:[compHasFormat(["has",olda,c],e) for c in l]]
-  isCategoryForm(b,e) => ["HasCategory",a,mkTypeForm b]
+  isCategoryForm(b,e) => ["HasCategory",a,simplifyVMForm mkTypeForm b]
   stackAndThrow('"Second argument to %1b must be a category, or a signature or an attribute",["has"])
 
 --% IF

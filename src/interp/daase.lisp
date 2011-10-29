@@ -229,7 +229,7 @@
  being-defined		    ; T is definition of constructor is being processed
  load-path		    ; full object path name, when loaded.
  capsule-definitions	    ; capsule-level definitions
- template		    ; for a category, this the generic instantce.
+ template		    ; for a category, this is the generic instance.
                             ; for a functor, this is the template.
  ) ; database structure
 
