@@ -1,5 +1,13 @@
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot ($atList, $sigList): Remove.
+	(compSignature): Take a fourth parameter.
+	(compCategoryItem): Take two more parameters.
+	(compCategory): Create references to signature and attribute lists
+	and pass them to callees.
+
+2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (makePredicateBitVector): Take a DB argument.
 	Set dbPredicates.
 	(compConLib1): Set dbPredicates to nil.
