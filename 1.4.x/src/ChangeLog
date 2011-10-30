@@ -2,8 +2,12 @@
 
 	* interp/define.boot (compDefineCategory2): Compute dual signature
 	early on.
+	(compDefineFunctor1): Likewise.
 	* interp/database.boot (modemapsFromCategory): Take a first
 	argument as a DB.  Tidy.  Adjust caller.
+	(modemapsFromFunctor): Likewise. Lose last argument.
+	(mkDatabasePred): Remove.
+	(formal2Pattern): Likewise.
 
 2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

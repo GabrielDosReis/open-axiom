@@ -203,10 +203,11 @@ modemapsFromCategory(db,form,body,signature) ==
 ++ of the function `form.op' with `signature'. Return a list of modemaps
 ++ for operations from `opAlist' explicitly exported by the functor.
 ++ Note: the structure of modemaps same as for modemapsFromCategory.
-modemapsFromFunctor(form,opAlist,signature) ==
-  form := [.,:argl] := formal2Pattern form
-  opAlist := formal2Pattern opAlist
-  signature := formal2Pattern signature
+modemapsFromFunctor(db,form,opAlist) ==
+  f2p := pairList(form.args,rest $PatternVariableList) -- "*1" is for "$"
+  form := [.,:argl] := applySubst(f2p,form)
+  opAlist := applySubst(f2p,opAlist)
+  signature := applySubst(f2p,dbConstructorModemap(db).mmSignature)
   for u in form for v in signature repeat
     if symbolMember?(u,$PatternVariableList) then
       -- we are going to be EVALing categories containing these
@@ -221,20 +222,21 @@ modemapsFromFunctor(form,opAlist,signature) ==
         skip :=
           argl ~= nil and CONTAINED("$",sig.source) => 'SKIP
           nil
-        sel := substitute(form,"$",sel)
         patternList := listOfPatternIds sig
         --get relevant predicates
         predList :=
-          [[a,m] for a in argl for m in signature.source
-            | symbolMember?(a,$PatternVariableList)]
-        sig := substitute(form,"$",sig)
-        pred' := MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
+          [[(cat? => 'ofCategory; 'ofType),a,m]
+            for a in argl for m in signature.source
+              for cat? in dbDualSignature(db).source
+                | symbolMember?(a,$PatternVariableList)]
         l := listOfPatternIds predList
         if "OR"/[not symbolMember?(u,l) for u in argl] then
           sayMSG ['"cannot handle modemap for",:bright op,
                           '"by pattern match" ]
           skip := 'SKIP
-        modemap := [[form,:sig],[pred',sel,:skip]]
+        modemap := [[form,:substitute(form,"$",sig)],
+                     [mkpf([pred,:predList],'AND),
+                       substitute(form,"$",sel),:skip]]
         mms := [[op,:interactiveModemapForm modemap],:mms]
   mms
 
@@ -606,13 +608,6 @@ flattenSignatureList(x) ==
         ll:= append(flattenSignatureList x,ll)
      ll
   nil
-
-mkDatabasePred [a,t] ==
-  isCategoryForm(t,$e) => ['ofCategory,a,t]
-  ['ofType,a,t]
-
-formal2Pattern x ==
-  applySubst(pairList($FormalMapVariableList,rest $PatternVariableList),x)
 
 updateDatabase(fname,cname,systemdir?) ==
  -- for now in NRUNTIME do database update only if forced

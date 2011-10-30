@@ -1380,8 +1380,11 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     signature':=
       [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
     $functorForm := $form := [$op,:argl]
-    if null signature'.target then signature':=
-      modemap2Signature getModemap($form,$e)
+    if signature'.target = nil then
+      signature' := modemap2Signature getModemap($form,$e)
+    dbDualSignature(db) :=
+      [false,:[isCategoryForm(t,$e) for t in signature'.source]]
+
     $functorTarget := target := signature'.target
     $e := giveFormalParametersValues(argl,$e)
     [ds,.,$e] := compMakeCategoryObject(target,$e) or return
@@ -1414,8 +1417,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     modemap := [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbConstructorModemap(db) := modemap
     dbCategory(db) := modemap.mmTarget
-    dbDualSignature(db) :=
-      [false,:[isCategoryForm(t,$e) for t in modemap.mmSource]]
 
     --  (3.1) now make a list of the functor's local parameters; for
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
@@ -1448,7 +1449,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     fun := compile dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteFormals(db,$lisplibOperationAlist)
-    dbModemaps(db) := modemapsFromFunctor(parForm,operationAlist,parSignature)
+    dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
     reportOnFunctorCompilation()
  
     --  5.
