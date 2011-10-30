@@ -1,5 +1,12 @@
 2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineCategory2): Compute dual signature
+	early on.
+	* interp/database.boot (modemapsFromCategory): Take a first
+	argument as a DB.  Tidy.  Adjust caller.
+
+2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-macros.lisp (MKPF1): Tidy.
 	* interp/sys-constants.boot ($QueryVariables): New.
 	* interp/define.boot ($whreDecls): Remove.

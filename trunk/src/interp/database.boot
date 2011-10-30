@@ -179,7 +179,7 @@ getConstructorKind ctor ==
 ++ of operators exported by generic instantiation of the category constructor.
 ++ Note: The structure of the modemaps is that understood by the
 ++ interpreter, but that of the of the compiler.
-modemapsFromCategory(form,body,signature) ==
+modemapsFromCategory(db,form,body,signature) ==
   sl := [["$",:"*1"],:pairList(form.args,rest $PatternVariableList)]
   form := applySubst(sl,form)
   body := applySubst(sl,body)
@@ -187,11 +187,10 @@ modemapsFromCategory(form,body,signature) ==
   opAlist := applySubst(sl,categoryExports $domainShell) or return nil
   nonCategorySigAlist :=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
-  domainList :=
-    [[a,m] for a in form.args for m in signature.source |
-      isCategoryForm(m,$EmptyEnvironment)]
-  catPredList := [['ofCategory,:u] for u in [["*1",form],:domainList]]
-  op := form.op
+  catPredList := [['ofCategory,"*1",form],
+    :[['ofCategory,a,m] for a in form.args for m in signature.source
+       for cat? in dbDualSignature(db).source | cat? ]]
+  op := dbConstructor db
   mms := nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
     listMember?(sig,LASSOC(op,nonCategorySigAlist)) repeat

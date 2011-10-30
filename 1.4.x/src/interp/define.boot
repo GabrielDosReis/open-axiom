@@ -1057,8 +1057,10 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     signature':=
       [signature.target,
         :[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
-    e:= giveFormalParametersValues(argl,e)
- 
+    e := giveFormalParametersValues(argl,e)
+    dbDualSignature(db) :=
+      [true,:[isCategoryForm(t,e) for t in signature'.source]]
+
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
     sargl:= TAKE(# argl, $TriangleVariableList)
@@ -1105,11 +1107,9 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     $domainShell := eval [op',:[MKQ f for f in sargl]]
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
-    dbDualSignature(db) :=
-      [true,:[isCategoryForm(t,e) for t in dbConstructorModemap(db).mmSource]]
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
     dbAncestors(db) := computeAncestorsOf($form,nil)
-    dbModemaps(db) := modemapsFromCategory([op',:sargl],formalBody,signature')
+    dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
     dbCompilerData(db) := nil
     [fun,$Category,e]
 
