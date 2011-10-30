@@ -455,11 +455,10 @@ fixUpPredicate(predClause, domainPreds, partial, sig) ==
   --  merge the predicates in predClause and domainPreds into a
   --  single predicate
   [predicate, fn, :skip] := predClause
-  if first predicate = "AND" then
-    predicates := append(domainPreds,rest predicate)
-  else if predicate ~= MKQ "T"
-       then predicates:= [predicate, :domainPreds]
-       else predicates := domainPreds or [predicate]
+  predicates :=
+    predicate is true => domainPreds or [predicate]
+    predicate is ["AND",:.] => [:domainPreds,:predicate.args]
+    [predicate,:domainPreds]
   if #predicates > 1 then
     pred := ["AND",:predicates]
     [pred,:dependList]:=orderPredicateItems(pred,sig,skip)

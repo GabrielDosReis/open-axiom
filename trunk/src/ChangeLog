@@ -1,3 +1,33 @@
+2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-macros.lisp (MKPF1): Tidy.
+	* interp/sys-constants.boot ($QueryVariables): New.
+	* interp/define.boot ($whreDecls): Remove.
+	(checkRepresentation): Take a DB as first parameter.  Adjust Callers.
+	(buildConstructorCondition): New
+	(deduceImplicitParameters): Likewise
+	(compDefineCategory2): Use it.
+	(compDefineFunctor1): Likewise.
+	(typeDependencyPath): Remove.
+	(inferConstructorImplicitParameters): Likewise.
+	* interp/compiler.boot (compTopLevel): Do not bind $whereDecls.
+	(recordDeclarationInSideCondition): Take additional reference
+	parameter to the list of processed decls.  Adjust callers.
+	(compWhere): Record any side decls in compilation environment.
+	* interp/c-util.boot (makeCompilationData): Initialize implicit data.
+	(dbParameters): New.
+	(dbImplicitData): New accessor macro.
+	(dbImplicitParameters): New.
+	(dbImplicitConstraints): Likewise.
+	(dbSubstituteFormals): Likewise.
+	(dbSubstituteQueries): Likewise.
+	* interp/database.boot (fixUpPredicate): Tidy.
+	* boot/utility.boot (applySubst): Early exit on identity substitution.
+	(applySubst!): Likewise.
+	(applySubstNQ): Likewise.
+	* boot/ast.boot (bfIS1): Accept pattern matching against Boolean
+	constant true.
+
 2011-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/daase.lisp (dbCompilerData): New accessor macro.

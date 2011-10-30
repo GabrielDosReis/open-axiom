@@ -135,19 +135,46 @@ macro domainData d ==
 --% Constructor Compilation Data.
 --% Operational Semantics:
 --%    structure CompilationData ==
---%       Record(formalSubst: Substitution)
+--%       Record(formalSubst: Substitution,implicits: List Identifier)
 --%
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  [nil]
+  [nil,nil]
 
+++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
   first dbCompilerData db
 
-++ Apply the formal substitution or `db'to th form `x'.
-dbSubstituteFormals(db,x) ==
+++ Return source-level parameters of this constructor.
+dbParameters db ==
+  dbConstructorForm(db).args
+
+++ Return implicit parameter data associated to `db'.  This
+++ information is active only during the elaboration of the
+++ constructor associated with `db'.
+macro dbImplicitData db ==
+  second dbCompilerData db
+
+++ Return the existential substitution of `db'.
+dbQuerySubst db ==
+  x := dbImplicitData db => first x
+  nil
+
+++ List of implicit parameters to the constructor.
+dbImplicitParameters db ==
+  ASSOCLEFT dbQuerySubst db
+
+dbImplicitConstraints db ==
+  x := dbImplicitData db => second x
+
+++ Apply the formal substitution or `db'to the form `x'.
+macro dbSubstituteFormals(db,x) ==
   applySubst(dbFormalSubst db,x)
+
+++ Apply the query substitution of`db' to the form `x'.  
+macro dbSubstituteQueries(db,x) ==
+  applySubst(dbQuerySubst db,x)
 
 --%
 $SetCategory ==

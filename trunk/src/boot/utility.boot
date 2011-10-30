@@ -214,6 +214,7 @@ substitute(y,x,s) ==
   s
   
 applySubst(sl,t) ==
+  sl = nil => t
   cons? t =>
     hd := applySubst(sl,first t)
     tl := applySubst(sl,rest t)
@@ -223,6 +224,7 @@ applySubst(sl,t) ==
   t
 
 applySubst!(sl,t) ==
+  sl = nil => t
   cons? t =>
     hd := applySubst!(sl,first t)
     tl := applySubst!(sl,rest t)
@@ -233,6 +235,7 @@ applySubst!(sl,t) ==
 
 ++ Like applySubst, but skip quoted materials.
 applySubstNQ(sl,t) ==
+  sl = nil => t
   t is [hd,:tl] =>
     hd is 'QUOTE => t
     hd := applySubstNQ(sl,hd)

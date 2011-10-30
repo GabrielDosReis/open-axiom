@@ -442,20 +442,20 @@
 		     (CAR L))
 		    ((CONS 'EXPT L)) ))
 	     (OR 
-	      (COND ((MEMBER 'T L) 
-		     ''T)
+	      (COND ((MEMBER T L) 
+		     T)
 		    ((EQL 0 (SETQ X (LENGTH (SETQ L (REMOVE NIL L)))))
 		     NIL)
 		    ((EQL 1 X)
 		     (CAR L))
 		    ((CONS 'OR L)) ))
 	     (|or| 
-	      (COND ((MEMBER 'T L) 'T)
+	      (COND ((MEMBER T L) T)
 		    ((EQL 0 (SETQ X (LENGTH (SETQ L (REMOVE NIL L)))))
 		     NIL)
 		    ((EQL 1 X)
 		     (CAR L))
-		    ((CONS 'or L)) ))
+		    ((CONS '|or| L)) ))
 	     (NULL
 	      (COND ((CDR L)
 		     (FAIL))
@@ -469,15 +469,15 @@
 	     (|and|
 	      (COND ((EQL 0 (SETQ X 
 				  (LENGTH 
-				   (SETQ L (REMOVE T (REMOVE '|true| L))))))
+				   (SETQ L (REMOVE T L)))))
 		     T)
 		    ((EQL 1 X)
 		     (CAR L))
 		    ((CONS '|and| L)) ))
 	     (AND 
 	      (COND ((EQL 0 (SETQ X (LENGTH
-				     (SETQ L (REMOVE T (REMOVE '|true| L)))))) 
-		     ''T)
+				     (SETQ L (REMOVE T L))))) 
+		     T)
 		    ((EQL 1 X)
 		     (CAR L))
 		    ((CONS 'AND L)) ))

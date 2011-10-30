@@ -88,9 +88,6 @@ $CapsuleDomainsInScope := nil
 $signatureOfForm := nil
 $addFormLhs := nil
 
-++ List of declarations appearing as side conditions of a where-expression.
-$whereDecls := nil
-
 ++ True if the current functor definition refines a domain.
 $subdomain := false
 
@@ -718,8 +715,8 @@ compDefine(form,m,e) ==
 ++     per: Rep -> %
 ++     rep: % -> Rep
 ++ as local inline functions.
-checkRepresentation: (%Form,%List %Form,%Env) -> %Env
-checkRepresentation(addForm,body,env) ==
+checkRepresentation: (%Thing, %Form,%List %Form,%Env) -> %Env
+checkRepresentation(db,addForm,body,env) ==
   domainRep := nil
   hasAssignRep := false        -- assume code does not assign to Rep.
   viewFuns := nil
@@ -740,7 +737,7 @@ checkRepresentation(addForm,body,env) ==
       stackWarning('"Consider using == definition for %1b",["Rep"])
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
-      checkRepresentation(nil,l,env)
+      checkRepresentation(db,nil,l,env)
     stmt isnt ["DEF",lhs,sig,val] => nil -- skip for now.
     op := opOf lhs
     op in '(rep per) =>
@@ -752,7 +749,7 @@ checkRepresentation(addForm,body,env) ==
     viewFuns ~= nil =>
       stackAndThrow('"You cannot define both %1b and %2b",["Rep",:viewFuns])
     -- A package has no "%".
-    $functorKind = "package" =>
+    dbConstructorKind db = "package" =>
       stackAndThrow('"You cannot define %1b in a package",["Rep"])
     -- It is a mistake to define Rep in category defaults
     $insideCategoryPackageIfTrue =>
@@ -773,7 +770,7 @@ checkRepresentation(addForm,body,env) ==
   -- Domain extensions with no explicit Rep definition have the
   -- the base domain as representation (at least operationally).
   else if null domainRep and addForm ~= nil then
-    if $functorKind = "domain" and addForm isnt ["%Comma",:.] then
+    if dbConstructorKind db = "domain" and addForm isnt ["%Comma",:.] then
       domainRep :=
         addForm is ["SubDomain",dom,.] => 
           $subdomain := true
@@ -997,6 +994,46 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   $categoryPredicateList := substitute(nameForDollar,'$,$categoryPredicateList)
   substitute(nameForDollar,'$,['DEF,[packageName,:packageArgl],packageSig,def])
  
+++ Subroutine of compDefineFunctor1 and compDefineCategory2.
+++ Given a constructor definition defining `db', compute implicit
+++ parameters and store that list in `db'.
+deduceImplicitParameters(db,e) ==
+  parms := dbParameters db
+  nonparms := [x for [x,:.] in get('%compilerData,'%whereDecls,e)
+                 | not symbolMember?(x,parms)]
+  nonparms = nil => true
+  -- Collect all first-order dependencies.
+  preds := nil
+  qvars := $QueryVariables
+  subst := nil
+  for p in parms for i in 1.. repeat
+    m := getXmode(p,e)
+    ident? m and symbolMember?(m,nonparms) =>
+      stackAndThrow('"Parameter %1b cannot be of type implicit parameter %2pb",
+                      [p,m])
+    m isnt [.,:.] => nil
+    q :=
+      isCategoryForm(m,e) => 'ofCategory
+      'isDomain
+    preds := [[q,dbSubstituteFormals(db,p),m],:preds]
+    st := [[a,:v] for a in m.args for [v,:qvars] in tails qvars
+                | ident? a and symbolMember?(a,nonparms)]
+    subst := [:st,:subst]
+  -- Now, build the predicate for implicit parameters.
+  for s in nonparms repeat
+    x := [rest y for y in subst | symbolEq?(s,first y)]
+    x = nil =>
+      stackAndThrow('"Implicit parameter %1b has no visible constraint",[s])
+    x is [.] => nil -- OK.
+    stackAndThrow("Too many constraints for implicit parameter %1b",[s])
+  dbImplicitData(db) := [subst,preds]
+    
+buildConstructorCondition db ==
+  dbImplicitData db is [subst,cond] =>
+    ['%exist,ASSOCRIGHT subst,mkpf(applySubst(subst,cond),'AND)]
+  true
+
+
 compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local := true
@@ -1013,6 +1050,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
     dbInstanceCache(db) := true
+    deduceImplicitParameters(db,e)
     e:= addBinding("$",[['mode,:$definition]],e)
  
     -- 2. obtain signature
@@ -1056,19 +1094,19 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%store,['%tref,g,0],mkConstructor $form],g]
-    fun:= compile [op',["LAM",sargl,body]]
+    fun := compile [op',["LAM",sargl,body]]
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(argl,$FormalMapVariableList)
-    parSignature:= applySubst(pairlis,signature')
-    parForm:= applySubst(pairlis,form)
+    parSignature := applySubst(pairlis,dbSubstituteQueries(db,signature'))
+    parForm := applySubst(pairlis,form)
  
     -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:[MKQ f for f in sargl]]
-    dbConstructorModemap(db) := [[parForm,:parSignature],[true,$op]]
+    dbConstructorModemap(db) :=
+      [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbDualSignature(db) :=
-      [isCategoryForm(t,e) for t in dbConstructorModemap(db).mmSource]
-    dbDualSignature(db) := [true,:dbDualSignature db]
+      [true,:[isCategoryForm(t,e) for t in dbConstructorModemap(db).mmSource]]
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
     dbAncestors(db) := computeAncestorsOf($form,nil)
     dbModemaps(db) := modemapsFromCategory([op',:sargl],formalBody,signature')
@@ -1299,29 +1337,7 @@ AMFCR_,redefined(opname,u) ==
 
 substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
-  arglAssoc := [[INTERNL("#",STRINGIMAGE i),:a] for i in 1.. for a in argl]
-  applySubst(arglAssoc,catform)
- 
-++ Subroutine of inferConstructorImplicitParameters.
-typeDependencyPath(m,path,e) ==
-  ident? m and assoc(m,$whereDecls) =>
-    get(m,'value,e) => nil  -- parameter was given value
-    [[m,:reverse path],:typeDependencyPath(getmode(m,e),path,e)]
-  atomic? m => nil
-  [ctor,:args] := m
-  -- We don't expect implicit parameters in builtin constructors.
-  builtinConstructor? ctor => nil
-  -- FIXME: assume constructors cannot be parameters
-  not constructor? ctor => nil
-  [:typeDependencyPath(m',[i,:path],e) for m' in args for i in 0..]
-
-++ Given the list `parms' of explicit constructor parameters, compute
-++ a list of pairs `(p . path)' where `p' is a parameter implicitly
-++ introduced (either directly or indirectly) by a declaration of
-++ one of the explicit parameters.
-inferConstructorImplicitParameters(parms,e) ==
-  removeDuplicates
-    [:typeDependencyPath(getmode(p,e),[i],e) for p in parms for i in 0..]
+  applySubst(pairList($FormalMapVariableList,argl),catform)
  
 compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -1357,6 +1373,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbConstructorForm(db) := form
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
+    deduceImplicitParameters(db,$e)
     $formalArgList:= [:argl,:$formalArgList]
     -- all defaulting packages should have caching turned off
     dbInstanceCache(db) := not isCategoryPackageName $op
@@ -1366,12 +1383,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     if null signature'.target then signature':=
       modemap2Signature getModemap($form,$e)
     $functorTarget := target := signature'.target
-    $functorKind: local :=
-      $functorTarget is ["CATEGORY",key,:.] => key
-      "domain"
     $e := giveFormalParametersValues(argl,$e)
-    $implicitParameters: local := inferConstructorImplicitParameters(argl,$e)
-    [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
+    [ds,.,$e] := compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $domainShell: local := copyVector ds
     attributeList := categoryAttributes ds --see below under "loadTimeAlist"
@@ -1385,22 +1398,24 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
     $functionLocations: local := nil --locations of defined functions in source
-    -- generate slots for arguments first, then for $NRTaddForm in compAdd
+    -- Generate slots for arguments first, then implicit parameters,
+    -- then for $NRTaddForm (if any) in compAdd
     for x in argl repeat NRTgetLocalIndex x
+    for x in dbImplicitParameters db repeat NRTgetLocalIndex x
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
       $e := augModemapsFromCategory('_$,'_$,target,$e)
       $e := put('$,'%form,form,$e)
-    $signature:= signature'
-    parSignature := dbSubstituteFormals(db,signature')
+    $signature := signature'
+    parSignature := dbSubstituteFormals(db,dbSubstituteQueries(db,signature'))
     parForm := dbSubstituteFormals(db,form)
  
     --  3. give operator a 'modemap property
-    modemap := [[parForm,:parSignature],[true,$op]]
+    modemap := [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbConstructorModemap(db) := modemap
     dbCategory(db) := modemap.mmTarget
-    dbDualSignature(db) := [isCategoryForm(t,$e) for t in modemap.mmSource]
-    dbDualSignature(db) := [false,:dbDualSignature db]
+    dbDualSignature(db) :=
+      [false,:[isCategoryForm(t,$e) for t in modemap.mmSource]]
 
     --  (3.1) now make a list of the functor's local parameters; for
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
@@ -2148,7 +2163,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   clearCapsuleFunctionTable()
-  e := checkRepresentation($addFormLhs,itemList,e)
+  e := checkRepresentation(constructorDB $form.op,$addFormLhs,itemList,e)
   compCapsuleInner(constructorDB $form.op,itemList,m,addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==

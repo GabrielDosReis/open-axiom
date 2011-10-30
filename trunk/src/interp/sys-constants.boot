@@ -272,6 +272,9 @@ $TriangleVariableList ==
 $AtVariables ==
   [makeSymbol strconc('"@",toString i) for i in 1..50]
 
+$QueryVariables ==
+  [makeSymbol strconc('"?",toString i) for i in 1..50]
+
 ++ List of basic predicates the system has a built-in optimization
 ++ support for.
 $BasicPredicates ==

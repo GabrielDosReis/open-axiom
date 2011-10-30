@@ -20,7 +20,7 @@
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
-                     |objectAssoc| |remove| |removeSymbol| |atomic?|
+                     |objectAssoc| |remove| |removeSymbol| |atomic?| |copyTree|
                      |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
@@ -74,6 +74,8 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |copyTree|))
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Void|) |finishLine|))
 
 (DECLAIM
@@ -83,6 +85,10 @@
 (|%defaultReadAndLoadSettings|)
 
 (DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
+
+(DEFUN |copyTree| (|t|)
+  (COND ((CONSP |t|) (CONS (|copyTree| (CAR |t|)) (|copyTree| (CDR |t|))))
+        (T |t|)))
 
 (DEFUN |objectMember?| (|x| |l|)
   (LOOP
@@ -216,36 +222,37 @@
 (DEFUN |applySubst| (|sl| |t|)
   (PROG (|p| |tl| |hd|)
     (RETURN
-     (COND
-      ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
-       (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
-       (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
-             (T (CONS |hd| |tl|))))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-      (T |t|)))))
+     (COND ((NULL |sl|) |t|)
+           ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
+            (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
+            (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+                  (T (CONS |hd| |tl|))))
+           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+           (T |t|)))))
 
 (DEFUN |applySubst!| (|sl| |t|)
   (PROG (|p| |tl| |hd|)
     (RETURN
-     (COND
-      ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
-       (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
-       (RPLACD |t| |tl|))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-      (T |t|)))))
+     (COND ((NULL |sl|) |t|)
+           ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
+            (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
+            (RPLACD |t| |tl|))
+           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+           (T |t|)))))
 
 (DEFUN |applySubstNQ| (|sl| |t|)
   (PROG (|p| |tl| |hd|)
     (RETURN
-     (COND
-      ((AND (CONSP |t|) (PROGN (SETQ |hd| (CAR |t|)) (SETQ |tl| (CDR |t|)) T))
-       (COND ((EQ |hd| 'QUOTE) |t|)
-             (T (SETQ |hd| (|applySubstNQ| |sl| |hd|))
-              (SETQ |tl| (|applySubstNQ| |sl| |tl|))
-              (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
-                    (T (CONS |hd| |tl|))))))
-      ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-      (T |t|)))))
+     (COND ((NULL |sl|) |t|)
+           ((AND (CONSP |t|)
+                 (PROGN (SETQ |hd| (CAR |t|)) (SETQ |tl| (CDR |t|)) T))
+            (COND ((EQ |hd| 'QUOTE) |t|)
+                  (T (SETQ |hd| (|applySubstNQ| |sl| |hd|))
+                   (SETQ |tl| (|applySubstNQ| |sl| |tl|))
+                   (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+                         (T (CONS |hd| |tl|))))))
+           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+           (T |t|)))))
 
 (DEFUN |setDifference| (|x| |y|)
   (PROG (|a| |l| |p|)

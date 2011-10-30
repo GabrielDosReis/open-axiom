@@ -720,6 +720,7 @@ bfISReverse(x,a) ==
  
 bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
+  rhs = true => ['EQ,lhs,rhs]
   bfString? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
   bfChar? rhs or integer? rhs => ['EQL,lhs,rhs]
   rhs isnt [.,:.] => ['PROGN,bfLetForm(rhs,lhs),'T]
