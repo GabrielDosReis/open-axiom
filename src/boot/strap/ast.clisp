@@ -1053,6 +1053,7 @@
          |d| |c| |a|)
     (RETURN
      (COND ((NULL |rhs|) (LIST 'NULL |lhs|))
+           ((EQ |rhs| T) (LIST 'EQ |lhs| |rhs|))
            ((|bfString?| |rhs|)
             (|bfAND| (LIST (LIST 'STRINGP |lhs|) (LIST 'STRING= |lhs| |rhs|))))
            ((OR (|bfChar?| |rhs|) (INTEGERP |rhs|)) (LIST 'EQL |lhs| |rhs|))
@@ -3281,7 +3282,7 @@
                            (CONS |rettype| NIL)))))
       (COND
        ((EQ |t| '|string|)
-        (SETQ |call| (LIST (|bfColonColon| 'CCL 'GET-CSTRING) |call|))))
+        (SETQ |call| (LIST (|bfColonColon| 'CCL '%GET-CSTRING) |call|))))
       (LET ((|bfVar#14| |aryPairs|) (|arg| NIL))
         (LOOP
          (COND
