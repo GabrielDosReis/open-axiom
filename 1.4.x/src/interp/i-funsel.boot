@@ -1200,9 +1200,9 @@ evalMmCond(op,sig,st) ==
 evalMmCond0(op,sig,st) ==
   -- evaluates the nonempty list of modemap conditions st
   -- the result is either 'failed or a substitution list
-  SL:= evalMmDom st
+  SL := evalMmDom st
   SL is 'failed => 'failed
-  for p in SL until p1 and not b repeat b:=
+  for p in SL until p1 ~= nil and not b repeat b:=
     p1 := objectAssoc(first p,$Subst)
     p1 and
       t1:= rest p1
@@ -1221,7 +1221,8 @@ evalMmCond0(op,sig,st) ==
           canCoerceFrom(t1,t) => 'T
           isSubDomain(t,t1) => p.rest := t1
           t1 = $Symbol and canCoerceFrom(getSymbolType first p,t)
-  ( SL and p1 and not b and 'failed ) or evalMmCat(op,sig,st,SL)
+  SL ~= nil and p1 ~= nil and not b => 'failed
+  evalMmGuard(op,sig,st,SL)
 
 fixUpTypeArgs SL ==
   for (p := [v, :t2]) in SL repeat
@@ -1298,7 +1299,7 @@ orderMmCatStack st ==
   -- tries to reorder stack so that free pattern variables appear
   -- as parameters first
   st = nil or rest(st) = nil => st
-  vars := DELETE_-DUPLICATES [second(s) for s in st | isPatternVar(second(s))]
+  vars := removeDuplicates [v for [.,v,.] in st | isPatternVar v]
   vars = nil => st
   havevars := nil
   haventvars := nil
@@ -1320,11 +1321,28 @@ mmCatComp(c1, c2) ==
   b1 and b2 = nil => true
   false
 
+++ Evaluate the non-domain equality constraints of the predicates,
+++ given by `stack', guarding the selection of operator `op' with
+++ signature `sig'.  If successful, return the resulting augmented
+++ substitution `SL', otherwise failed.
+evalMmGuard(op,sig,stack,SL) ==
+  SL := evalMmCat(op,sig,
+          orderMmCatStack [c for c in stack | c is ['ofCategory,:.]],SL)
+  SL is 'failed => 'failed
+  stack := [c for c in stack | c is ['%exist,:.]] or return SL
+  and/[SL := check(op,sig,vars,conds,SL) for [.,vars,conds] in stack
+         | SL isnt 'failed or leave 'failed] where
+            check(op,sig,vars,conds,SL) ==
+              -- Each query variable must have an assigned value
+              and/[symbolTarget(v,SL) for v in vars] or return 'failed
+              -- All constraints on query variables must be satisfied.
+              evalMmCat(op,sig,
+                orderMmCatStack [c for c in conds | c is ['ofCategory,:.]],SL)
+
+++ Like evalMmGuard, but evaluate only category satisfaction contraints.
 evalMmCat(op,sig,stack,SL) ==
   -- evaluates all ofCategory's of stack as soon as possible
   $hope:local:= nil
-  numConds:= #stack
-  stack:= orderMmCatStack [mmC for mmC in stack | mmC is ["ofCategory",:.]]
   while stack until not makingProgress repeat
     st := stack
     stack := nil
@@ -1360,15 +1378,15 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
     -- If c is not Set, Ring or Field then the more general mechanism
     dom := defaultTypeForCategory(c, SL)
     dom = nil =>
-      op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
+      op isnt 'coerce => 'failed
     null (p := objectAssoc(d,$Subst)) =>
       dom =>
         NSL := [[d,:dom]]
-      op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
+      op isnt 'coerce => 'failed
     if containsVars dom then dom := resolveTM(rest p, dom)
     $Coerce and canCoerce(rest p, dom) =>
       NSL := [[d,:dom]]
-    op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
+    op isnt 'coerce => 'failed
   NSL
 
 hasCate(dom,cat,SL) ==
@@ -1387,6 +1405,11 @@ hasCate(dom,cat,SL) ==
     'failed
   SL1 := [[v,:d] for [v,:d] in SL | not containsVariables d]
   if SL1 then cat := subCopy(cat, SL1)
+  -- Replace query variables by their values and try again
+  ident? dom and queryVar? dom =>
+    dom' := symbolTarget(dom,SL) =>
+      hasCate(dom',substitute(dom',dom,cat),SL)
+    'failed
   hasCaty(dom,cat,SL)
 
 hasCate1(dom, cat, SL, domPvar) ==
@@ -1641,6 +1664,8 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
+  ident? s1 and queryVar? s1 => unifyQueryStruct(s1,s2,SL)
+  ident? s2 and queryVar? s2 => unifyQueryStruct(s2,s1,SL)
   s1 isnt [.,:.] or s2 isnt [.,:.] => 'failed
   until s1 = nil or s2 = nil or SL is 'failed repeat
     SL:= unifyStruct(first s1,first s2,SL)
@@ -1685,6 +1710,15 @@ unifyStructVar(v,s,SL) ==
       'failed
     augmentSub(v,s,S)
   augmentSub(v,s,SL)
+
+++ `v' is a query variable; we are asked to unify it with
+++ structure `s' and existing substitution `SL'.
+unifyQueryStruct(v,s,SL) ==
+  CONTAINED(v,s) => 'failed
+  s' := LASSOC(v,SL) =>
+    s = s' => SL
+    'failed
+  [[v,:s],:SL]
 
 ofCategory(dom,cat) ==
   -- entry point to category evaluation from other points than type

@@ -497,6 +497,9 @@ insertWOC(x,y) ==
     fn(x,t)
 
 
+++ Post-compose substitution `subst' with `s +-> v'
+postComposeSubst(subst,s,v) ==
+  [[x,:substitute(v,s,y)] for [x,:y] in subst]
 
 --% Miscellaneous Functions for Working with Strings
 
@@ -959,6 +962,12 @@ gensymInt g ==
   for i in 2..maxIndex p repeat
     n := 10 * n + charDigitVal stringChar(p,i)
   n
+
+++ Return true if var is a query variable, e.g. any identifier
+++ that starts with a question mark.
+queryVar? var ==
+  s := symbolName var
+  #s > 1 and stringChar(s,0) = char "?" and digit? stringChar(s,1)
 
 ++ Returns a newly allocated domain shell (a simple vector) of length `n'.
 newShell: %Short -> SIMPLE_-ARRAY

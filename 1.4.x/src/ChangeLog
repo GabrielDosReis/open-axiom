@@ -1,3 +1,16 @@
+2011-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-funsel.boot (evalMmCond0): Tidy. Call evalMmGuard to
+	validate modemap evaluation.
+	(evalMmGuard): New.
+	(evalMmCat): Do not call orderMmCatStack here. The stack is
+	already ordered by evalMmGuard, sole caller.
+	(hasCate): Handle domain query variables.
+	(unifyStruct): Call unifyQueryStruct for query variables.
+	(unifyQueryStruct): New.
+	* interp/g-util.boot (postComposeSubst): New.
+	(queryVar?): Likewise.
+
 2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (evaluateConstructorModemap): Rename from
