@@ -191,10 +191,14 @@ modemapsFromCategory(db,form,body,signature) ==
     :[['ofCategory,a,m] for a in form.args for m in signature.source
        for cat? in dbDualSignature(db).source | cat? ]]
   op := dbConstructor db
+  cond :=
+    dbImplicitData db is [isubst,icond] =>
+      [['%exist,ASSOCRIGHT isubst,applySubst(sl,applySubst(isubst,icond))]]
+    nil
   mms := nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
     listMember?(sig,LASSOC(op,nonCategorySigAlist)) repeat
-      pred' := MKPF([pred,:catPredList],'AND)
+      pred' := mkpf([pred,:catPredList,:cond],'AND)
       modemap := [["*1",:sig],[pred',sel]]
       mms := [[op,:interactiveModemapForm modemap],:mms]
   mms
@@ -215,6 +219,10 @@ modemapsFromFunctor(db,form,opAlist) ==
       $e := put(u,'mode,v,$e)
   nonCategorySigAlist :=
     mkAlistOfExplicitCategoryOps signature.target or return nil
+  catCond :=
+    dbImplicitData db is [isubst,icond] =>
+      [['%exist,ASSOCRIGHT isubst,applySubst(f2p,applySubst(isubst,icond))]]
+    nil
   mms := nil
   for (entry := [[op,sig,:.],pred,sel]) in opAlist |
     or/[listMember?(sig,catSig) for catSig in
@@ -235,7 +243,7 @@ modemapsFromFunctor(db,form,opAlist) ==
                           '"by pattern match" ]
           skip := 'SKIP
         modemap := [[form,:substitute(form,"$",sig)],
-                     [mkpf([pred,:predList],'AND),
+                     [mkpf([pred,:predList,:catCond],'AND),
                        substitute(form,"$",sel),:skip]]
         mms := [[op,:interactiveModemapForm modemap],:mms]
   mms
