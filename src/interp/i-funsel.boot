@@ -93,7 +93,7 @@ selectMms(op,args,$declaredMode) ==
   tar := getTarget op
   dc  := getAtree(op,'dollar)
 
-  null dc and val and objMode(val) = $AnonymousFunction =>
+  dc = nil and val and objMode(val) = $AnonymousFunction =>
       tree := mkAtree objValUnwrap getValue op
       putTarget(tree,['Mapping,tar,:types1])
       bottomUp tree
@@ -115,7 +115,7 @@ selectMms(op,args,$declaredMode) ==
       args.first := tree
 
   if numArgs = 1 and (n is "numer" or n is "denom") and
-    isEqualOrSubDomain(first types1,$Integer) and null dc then
+    isEqualOrSubDomain(first types1,$Integer) and dc = nil then
       dc := ['Fraction, $Integer]
       putAtree(op, 'dollar, dc)
 
@@ -203,7 +203,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     a' := nil
     a := reverse! removeDuplicates a
     for x in a repeat
-      null x => 'iterate
+      x = nil => 'iterate
       x is '(RationalRadicals) => a' := [$RationalNumber,:a']
       x is ['Union,:l] =>
         -- check if we have a tagged union
@@ -231,7 +231,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     -- step 2. if we didn't get one, trying coercing (if we are
     --         suppose to)
 
-    if null(mmS) and $Coerce then
+    if mmS = nil and $Coerce then
       a := a'
       while a repeat
         x:= first a
@@ -481,7 +481,7 @@ getOpArgTypes(opname, args) ==
       x
 
 getOpArgTypes1(opname, args) ==
-  null args => nil
+  args = nil => nil
   -- special cases first
   opname is 'coef and args is [b,n] =>
     [first getModeSet b, first getModeSetUseSubdomain n]
@@ -512,7 +512,7 @@ argCouldBelongToSubdomain(op, nargs) ==
   v := GETZEROVEC nargs
   isMap(op) => v
   mms := getModemapsFromDatabase(op,nargs)
-  null mms => v
+  mms = nil => v
   nargs:=nargs-1
   -- each signature has form
   -- [domain of implementation, target, arg1, arg2, ...]
@@ -553,7 +553,7 @@ selectLocalMms(op,name,types,tar) ==
 -- selectLocalMms(op,name,types,tar) ==
 --  mmS := getLocalMms(name,types,tar)
 --  -- if no target, just return what we got
---  mmS and null tar => mmS
+--  mmS and tar = nil => mmS
 --  matchingMms := nil
 --  for mm in mmS repeat
 --    [., targ, :.] := mm
@@ -599,8 +599,8 @@ mmCost(name, sig,cond,tar,args1,args2) ==
 
 mmCost0(name, sig,cond,tar,args1,args2) ==
   sigArgs := CDDR sig
-  n:=
-    null cond => 1
+  n :=
+    cond = nil => 1
     not (or/cond) => 1
     0
 
@@ -630,19 +630,19 @@ mmCost0(name, sig,cond,tar,args1,args2) ==
 orderMms(name, mmS,args1,args2,tar) ==
   -- it counts the number of necessary coercions of the argument types
   -- if this isn't enough, it compares the target types
-  mmS and null rest mmS => mmS
+  mmS and rest mmS = nil => mmS
   mS:= nil
   N:= nil
   for mm in MSORT mmS repeat
     [sig,.,cond]:= mm
     b:= 'T
     p:= [m := mmCost(name, sig,cond,tar,args1,args2),:mm]
-    mS:=
-      null mS => list p
+    mS :=
+      mS = nil => list p
       m < CAAR mS => [p,:mS]
       S:= mS
       until b repeat
-        b:= null rest S or m < CAADR S =>
+        b := rest S = nil or m < CAADR S =>
           S.rest := [p,:rest S]
         S:= rest S
       mS
@@ -692,7 +692,7 @@ isOpInDomain(opName,dom,nargs) ==
   -- the given number of arguments
   mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
-  null mmList => nil
+  mmList = nil => nil
   gotOne := nil
   nargs := nargs + 1
   for mm in rest mmList while not gotOne repeat
@@ -707,13 +707,13 @@ findCommonSigInDomain(opName,dom,nargs) ==
   dom.op in '(Union Record Mapping) => nil
   mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
-  null mmList => nil
+  mmList = nil => nil
   gotOne := nil
   nargs := nargs + 1
   vec := nil
   for mm in rest mmList repeat
     nargs = #first mm =>
-      null vec  => vec := vector first mm
+      vec = nil  => vec := vector first mm
       for i in 0.. for x in first mm repeat
         if vec.i and vec.i ~= x then vec.i := nil
   VEC2LIST vec
@@ -722,13 +722,13 @@ findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
   mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
-  null mmList =>
+  mmList = nil =>
     throwKeyedMsg("S2IS0021",[opName,dom])
   mmList := rest mmList   -- ignore the operator name
   -- use evaluation type context to narrow down the candidate set
   if target := getTarget op then
     mmList := [mm for mm in mmList | mm is [=rest target,:.]]
-    null mmList => throwKeyedMsg("S2IS0062",[opName,target,dom])
+    mmList = nil => throwKeyedMsg("S2IS0062",[opName,target,dom])
   if #mmList > 1 then
     mm := selectMostGeneralMm mmList
     sayKeyedMsg("S2IS0022",[opName,dom,['Mapping,:first mm]])
@@ -771,7 +771,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   -- looks for a modemap for op with signature  args1 -> tar
   --   in the domain of computation dc
   -- tar may be nil (= unknown)
-  null isLegitimateMode(tar, nil, nil) => nil
+  not isLegitimateMode(tar, nil, nil) => nil
   dcName:= dc.op
   dcName in '(Union Record Mapping Enumeration) =>
     -- First cut code that ignores args2, $Coerce and $SubDom
@@ -820,7 +820,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
 allOrMatchingMms(mms,args1,tar,dc) ==
   -- if there are exact matches on the arg types, return them
   -- otherwise return the original list
-  null mms or null rest mms => mms
+  mms = nil or rest mms = nil => mms
   x := nil
   for mm in mms repeat
     [sig,:.] := mm
@@ -925,7 +925,7 @@ matchMmSig(mm,tar,args1,args2) ==
   [sig,:.]:= mm
   if CONTAINED('_#, sig) then
     sig := [replaceSharpCalls COPY t for t in sig]
-  null args1 => matchMmSigTar(tar,first sig)
+  args1 = nil => matchMmSigTar(tar,first sig)
   a:= rest sig
   arg:= nil
   for i in 1.. while args1 and args2 and a until not b repeat
@@ -943,12 +943,12 @@ matchMmSig(mm,tar,args1,args2) ==
         $Coerce => x2=x or canCoerceFrom(x1,x)
         x1 is ['Variable,:.] and x = $Symbol
     $RTC:= [rtc,:$RTC]
-  null args1 and null a and b and matchMmSigTar(tar,first sig)
+  args1 = nil and a = nil and b and matchMmSigTar(tar,first sig)
 
 matchMmSigTar(t1,t2) ==
   -- t1 is a target type specified by :: or by a declared variable
   -- t2 is the target of a modemap signature
-  null t1 or
+  t1 = nil or
     isEqualOrSubDomain(t2,t1) => true
     if t2 is ['Union,a,b] then
       if a is '"failed" then return matchMmSigTar(t1, b)
@@ -984,7 +984,7 @@ filterModemapsFromPackages(mms, names, op) ==
   for mm in mms repeat
     isFreeFunctionFromMm(mm) => bad := [mm,:bad]
     type := getDomainFromMm mm
-    null type => bad := [mm,:bad]
+    type = nil => bad := [mm,:bad]
     if cons? type then type := first type
     getConstructorKindFromDB type is "category" => bad := [mm,:bad]
     name := object2String type
@@ -1150,13 +1150,13 @@ evalMm(op,tar,sig,mmC) ==
            mS:= append!(m,mS)
         "or"/[not isValidType(arg) for arg in sig] => nil
         [dc,t,:args]:= sig
-        $Coerce or null tar or tar=t =>
+        $Coerce or tar = nil or tar=t =>
           mS:= append!(findFunctionInDomain(op,dc,t,args,args,nil,'T),mS)
   mS
 
 evalMmFreeFunction(op,tar,sig,mmC) ==
   [dc,t,:args]:= sig
-  $Coerce or null tar or tar=t =>
+  $Coerce or tar = nil or tar=t =>
      nilArgs := nil
      for a in args repeat nilArgs := [nil,:nilArgs]
      [[[["__FreeFunction__",:dc],t,:args], [t, :args], nilArgs]]
@@ -1226,7 +1226,7 @@ evalMmCond0(op,sig,st) ==
 fixUpTypeArgs SL ==
   for (p := [v, :t2]) in SL repeat
     t1 := LASSOC(v, $Subst)
-    null t1 => p.rest := replaceSharpCalls t2
+    t1 = nil => p.rest := replaceSharpCalls t2
     p.rest := coerceTypeArgs(t1, t2, SL)
   SL
 
@@ -1277,7 +1277,7 @@ makeConstrArg(arg1, arg2, t1, t2, cs) ==
   t1 = t2 => arg2
   obj1 := objNewWrap(arg1, t1)
   obj2 := coerceInt(obj1, t2)
-  null obj2 => throwKeyedMsgCannotCoerceWithValue(wrap arg1,t1,t2)
+  obj2 = nil => throwKeyedMsgCannotCoerceWithValue(wrap arg1,t1,t2)
   objValUnwrap obj2
 
 evalMmDom(st) ==
@@ -1286,7 +1286,7 @@ evalMmDom(st) ==
   for mmC in st until SL is 'failed repeat
     mmC is ['isDomain,v,d] =>
       string? d => SL:= 'failed
-      p := objectAssoc(v,SL) and not (d=rest p) => SL:= 'failed
+      (p := objectAssoc(v,SL)) and d ~= rest p => SL:= 'failed
       d1:= subCopy(d,SL)
       cons?(d1) and symbolMember?(v,d1) => SL:= 'failed
       SL:= augmentSub(v,d1,SL)
@@ -1297,9 +1297,9 @@ evalMmDom(st) ==
 orderMmCatStack st ==
   -- tries to reorder stack so that free pattern variables appear
   -- as parameters first
-  null(st) or null rest(st) => st
+  st = nil or rest(st) = nil => st
   vars := DELETE_-DUPLICATES [second(s) for s in st | isPatternVar(second(s))]
-  null vars => st
+  vars = nil => st
   havevars := nil
   haventvars := nil
   for s in st repeat
@@ -1310,14 +1310,14 @@ orderMmCatStack st ==
         mem := true
         havevars := [s,:havevars]
     if not mem then haventvars := [s,:haventvars]
-  null havevars => st
+  havevars = nil => st
   st := reverse! append!(haventvars,havevars)
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==
   b1 := objectAssoc(second c1, $Subst)
   b2 := objectAssoc(second c2, $Subst)
-  b1 and null(b2) => true
+  b1 and b2 = nil => true
   false
 
 evalMmCat(op,sig,stack,SL) ==
@@ -1359,7 +1359,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
     -- modemap used.       RSS 12-22-85
     -- If c is not Set, Ring or Field then the more general mechanism
     dom := defaultTypeForCategory(c, SL)
-    null dom =>
+    dom = nil =>
       op isnt 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
     null (p := objectAssoc(d,$Subst)) =>
       dom =>
@@ -1642,7 +1642,7 @@ unifyStruct(s1,s2,SL) ==
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
   s1 isnt [.,:.] or s2 isnt [.,:.] => 'failed
-  until null s1 or null s2 or SL is 'failed repeat
+  until s1 = nil or s2 = nil or SL is 'failed repeat
     SL:= unifyStruct(first s1,first s2,SL)
     s1:= rest s1
     s2:= rest s2
