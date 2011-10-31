@@ -1,10 +1,15 @@
 2011-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (evaluateConstructorModemap): Rename from
+	substituteInfoFunctorModemap.
+	(constructorCondition): New.
 	* interp/define.boot (compDefineCategory2): Compute dual signature
 	early on.
 	(compDefineFunctor1): Likewise.
+	(typingKind): New.
+	(deduceImplicitParameters): Use it.
 	* interp/database.boot (modemapsFromCategory): Take a first
-	argument as a DB.  Tidy.  Adjust caller.
+	argument as a DB.  Tidy.  Adjust caller.  Add constructor condition.
 	(modemapsFromFunctor): Likewise. Lose last argument.
 	(mkDatabasePred): Remove.
 	(formal2Pattern): Likewise.

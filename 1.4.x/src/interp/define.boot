@@ -994,6 +994,11 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   $categoryPredicateList := substitute(nameForDollar,'$,$categoryPredicateList)
   substitute(nameForDollar,'$,['DEF,[packageName,:packageArgl],packageSig,def])
  
+++ Return the typing constraint operator for `t' in the environment `e'.
+typingKind(t,e) ==
+  isCategoryForm(t,e) => 'ofCategory
+  'ofType
+
 ++ Subroutine of compDefineFunctor1 and compDefineCategory2.
 ++ Given a constructor definition defining `db', compute implicit
 ++ parameters and store that list in `db'.
@@ -1012,12 +1017,13 @@ deduceImplicitParameters(db,e) ==
       stackAndThrow('"Parameter %1b cannot be of type implicit parameter %2pb",
                       [p,m])
     m isnt [.,:.] => nil
-    q :=
-      isCategoryForm(m,e) => 'ofCategory
-      'isDomain
-    preds := [[q,dbSubstituteFormals(db,p),m],:preds]
-    st := [[a,:v] for a in m.args for [v,:qvars] in tails qvars
-                | ident? a and symbolMember?(a,nonparms)]
+    preds := [[typingKind(m,e),dbSubstituteFormals(db,p),m],:preds]
+    st := [qpair for a in m.args for [v,:qvars] in tails qvars
+            | ident? a and symbolMember?(a,nonparms)] where
+                 qpair() ==
+                   t := getXmode(a,e)
+                   preds := [[typingKind(t,e),a,t],:preds]
+                   [a,:v]
     subst := [:st,:subst]
   -- Now, build the predicate for implicit parameters.
   for s in nonparms repeat

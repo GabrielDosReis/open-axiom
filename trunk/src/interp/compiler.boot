@@ -589,8 +589,8 @@ compFormWithModemap(form,m,e,modemap) ==
   [map:= [.,target,:sig],[pred,impl]]:= modemap
   [op,:argl] := form := reshapeArgumentList(form,sig)
   if isCategoryForm(target,e) and isFunctor op then
-    [modemap,e]:= substituteIntoFunctorModemap(argl,modemap,e) or return nil
-    [map:= [.,target,:.],:cexpr]:= modemap
+    [modemap,e] := evaluateConstructorModemap(argl,modemap,e) or return nil
+    [map:=[.,target,:.],:cexpr] := modemap
   sv := listOfSharpVars map
   if sv ~= nil then
      -- SAY [ "compiling ", op, " in compFormWithModemap,
@@ -721,18 +721,27 @@ reshapeArgumentList(form,sig) ==
   wantArgumentsAsTuple(args,sig) => [op,["%Comma",:args]]
   form
 
-substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
-  #dc~=#sig =>
-    keyedSystemError("S2GE0016",['"substituteIntoFunctorModemap",
+++ Return true is the constructor condition `cond' holds in the
+++ elaboration environmemt `e'.
+constructorCondition(cond,e) ==
+  cond --FIXME: solve it!
+
+++ The argument list `argl' is used to instantiate a constructor
+++ with `modemap' in environment `e'.  Return the resulting
+++ modemap is instantiation is legit.
+evaluateConstructorModemap(argl,modemap is [[dc,:sig],:.],e) ==
+  #dc ~= #sig =>
+    keyedSystemError("S2GE0016",['"evaluateConstructorModemap",
       '"Incompatible maps"])
-  #argl=#sig.source =>
-                        --here, we actually have a functor form
-    sig := applySubst(pairList(dc.args,argl),sig)
-      --make new modemap, subst. actual for formal parametersinto modemap
-    Tl:= [[.,.,e]:= compOrCroak(a,m,e) for a in argl for m in rest sig]
-    substitutionList:= [[x,:T.expr] for x in dc.args for T in Tl]
-    [applySubst(substitutionList,modemap),e]
-  nil
+  #argl ~= #sig.source => nil
+  constructorCondition(applySubst(sl,modemap.mmCondition),e) isnt true => nil
+  sl := pairList(dc.args,argl)
+    --make new modemap, subst. actual for formal parameters into modemap
+  Tl := [[.,.,e] := compOrCroak(a,m,e)
+           for a in argl for m in applySubst(sl,modemap.mmSource)]
+  sl := [[x,:T.expr] for x in dc.args for T in Tl]
+  [applySubst(sl,modemap),e]
+
 
 --% SPECIAL EVALUATION FUNCTIONS
 
