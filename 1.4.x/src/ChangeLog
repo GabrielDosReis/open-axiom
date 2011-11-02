@@ -927,7 +927,7 @@
 	export with CoercibleTo %.
 	* algebra/constant.spad.pamphlet (InnerAlgebraicNumber): Likewise.
 	* algebra/dpolcat.spad.pamphlet (DifferentialVariableCategory):
-	Likewise. 
+	Likewise.
 
 2011-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
@@ -1193,7 +1193,7 @@
 	* interp/lisplib.boot (writeAbbreviation): New.
 	(writePredicates): Likewise.
 	(finalizeLisplib): Use them.
-	* interp/daase.lisp (squeezeCopy): New,  
+	* interp/daase.lisp (squeezeCopy): New,
 	Use it in place of SQUEEZE.
 
 2011-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
@@ -1492,11 +1492,11 @@
 
 2011-08-18  Alfredo Portes  <doyenatccny@gmail.com>
 
-	* sman/sman.c: Do not try to start graphic components
-	if binaries are not present.
-	* include/cfuns.h: Make writeablep and readablep 
-	arguments const. 
-	* lib/cfuns-c.c: Likewise.
+        * sman/sman.c: Do not try to start graphic components
+        if binaries are not present.
+        * include/cfuns.h: Make writeablep and readablep
+        arguments const.
+        * lib/cfuns-c.c: Likewise.
 
 2011-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
@@ -1968,11 +1968,6 @@
 
 2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* utils/storage.H (Memory::Arena): Extend.
-	(Memory::Factory): Add iterators.  Make bidirectional.
-
-2011-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
 	* algebra/sf.spad.pamphlet (DoubleFloat) [nan?]: New export.
 	* algebra/clip.spad.pamphlet (TwoDimensionalPlotClipping): Use it
           instead of %fNan?.
@@ -2120,6 +2115,7 @@
 2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/sman.c: utils.h no longer exists.
+	* sman/Makefile.in (sman_LDADD): Include OpenAxiom library.
 
 2011-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

@@ -229,7 +229,7 @@
  compiler-data		    ; holds compiler data when processing constructor
  load-path		    ; full object path name, when loaded.
  capsule-definitions	    ; capsule-level definitions
- template		    ; for a category, this is the generic instance.
+ template		    ; for a category, this the generic instantce.
                             ; for a functor, this is the template.
  ) ; database structure
 
