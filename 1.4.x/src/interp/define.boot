@@ -476,7 +476,7 @@ NRTmakeCategoryAlist(db,e) ==
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
-  slot1 := [[a,:k] for [a,:b] in dbSubstituteFormals(db,opcAlist)
+  slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..dbArity db]
@@ -1416,8 +1416,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
       $e := augModemapsFromCategory('_$,'_$,target,$e)
       $e := put('$,'%form,form,$e)
     $signature := signature'
-    parSignature := dbSubstituteFormals(db,dbSubstituteQueries(db,signature'))
-    parForm := dbSubstituteFormals(db,form)
+    parSignature := dbSubstituteAllQuantified(db,signature')
+    parForm := dbSubstituteAllQuantified(db,form)
  
     --  3. give operator a 'modemap property
     modemap := [[parForm,:parSignature],[buildConstructorCondition db,$op]]
@@ -1454,7 +1454,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
       'SPADSLAM
     fun := compile dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
-    operationAlist := dbSubstituteFormals(db,$lisplibOperationAlist)
+    operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
     reportOnFunctorCompilation()
  

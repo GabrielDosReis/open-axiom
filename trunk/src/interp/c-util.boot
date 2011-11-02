@@ -172,9 +172,13 @@ dbImplicitConstraints db ==
 macro dbSubstituteFormals(db,x) ==
   applySubst(dbFormalSubst db,x)
 
-++ Apply the query substitution of`db' to the form `x'.  
+++ Apply the query substitution of `db' to the form `x'.  
 macro dbSubstituteQueries(db,x) ==
   applySubst(dbQuerySubst db,x)
+
+++ Apply both query and formal variable substitutions of `db' to `x'.
+dbSubstituteAllQuantified(db,x) ==
+  applySubst([:dbQuerySubst db,:dbFormalSubst db],x)
 
 --%
 $SetCategory ==
