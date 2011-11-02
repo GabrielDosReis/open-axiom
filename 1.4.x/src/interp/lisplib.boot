@@ -238,7 +238,11 @@ rwriteLispForm(key,form) ==
 ++ Error if the file container of the module does not exist.
 findModule: %Symbol -> %Maybe %String
 findModule cname ==
-  m := getConstructorModuleFromDB cname or return nil
+  db := constructorDB cname or return nil
+  m :=
+    $buildingSystemAlgebra =>
+      getSystemModulePath symbolName dbAbbreviation db
+    getConstructorModuleFromDB cname
   existingFile? m => m
   strap := algebraBootstrapDir() =>
     m := strconc(strap,PATHNAME_-NAME m,'".",$faslType)
@@ -254,6 +258,7 @@ loadLibIfNotLoaded libName ==
   loadLib libName
  
 loadLib cname ==
+  builtinConstructor? cname => nil  -- these don't have nrlib yet.
   startTimingProcess 'load
   fullLibName := findModule cname or return nil
   systemdir? := isSystemDirectory(pathnameDirectory fullLibName)
@@ -308,10 +313,11 @@ loadDB db ==
     dbBeingDefined? db => nil
     dbLoaded? db => db
     ctor := dbConstructor db
+    builtinConstructor? ctor => nil
     lib := findModule ctor or return nil
     loadModule(lib,ctor)
     dbLoadPath(db) := lib
-    constructorDB ctor
+    db
   finally stopTimingProcess 'load
  
 convertOpAlist2compilerInfo(opalist) ==

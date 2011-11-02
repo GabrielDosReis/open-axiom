@@ -1,5 +1,11 @@
 2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (findModule): Tidy.
+	(loadLib): Exit early on builtin constructors.
+	(loadDB): Likewise.
+
+2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad-parser.boot (parseSpadFile): Use $lineStack not
 	BOOT-LINE-STACK.  Use try/finally to ensure streams are closed.
 	* interp/spad.lisp (New,ENTRY,2): Use parseNewExpr.
