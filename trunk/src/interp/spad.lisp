@@ -273,7 +273,7 @@
   (let (zz)
       (INITIALIZE)
       (SETQ |$previousTime| (TEMPUS-FUGIT))
-      (setq ZZ (CONVERSATION '|PARSE-NewExpr| '|process|))
+      (setq ZZ (CONVERSATION '|parseNewExpr| '|process|))
       INPUTSTREAM))
 
 (defun INITIALIZE () 

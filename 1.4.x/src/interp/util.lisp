@@ -266,10 +266,10 @@
   (if (and (> (LENGTH LINE) 0) (EQ (CHAR LINE 0) #\) ))
     (|processSynonyms|))
   (ioclear)
-  (LET* ((BOOT-LINE-STACK (LIST (CONS 1 LINE)))
+  (LET* ((|$lineStack| (LIST (CONS 1 LINE)))
      ($SPAD T)
-     (PARSEOUT (PROG2 (|PARSE-NewExpr|) (|popStack1|))))
-    (DECLARE (SPECIAL BOOT-LINE-STACK $SPAD))
+     (PARSEOUT (PROG2 (|parseNewExpr|) (|popStack1|))))
+    (DECLARE (SPECIAL |$lineStack| $SPAD))
     PARSEOUT))
 
 
