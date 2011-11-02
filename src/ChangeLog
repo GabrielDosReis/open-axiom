@@ -1,5 +1,11 @@
 2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (dbSubstituteAllQuantified): New.
+	* interp/define.boot (NRTmakeCategoryAlist): Use it.
+	(compDefineFunctor1): Likewise.
+
+2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Add compiler support for implicit parameters.
 	* interp/compiler.boot (bindPredicateExistentials): Rename from
 	constructorCondition.  Now return a substitution on success,
