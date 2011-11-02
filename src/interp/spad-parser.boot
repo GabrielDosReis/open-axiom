@@ -751,40 +751,39 @@ parseSpecialCommand() ==
 ++ ??? meaningful.  Eventually this code will go away when we 
 ++ ??? finally use the new parser everwhere.
 parseSpadFile sourceFile ==
-  $SPAD := true                          -- we are parsing Spad, 
-  SETQ(_*EOF_*, false)                   -- end of current input?
+  $SPAD: local := true                   -- we are parsing Spad, 
+  _*EOF_*: local := false                -- end of current input?
   FILE_-CLOSED : local := false          -- current stream closed?
+  try
+    -- noise to standard output  
+    $OutputStream: local := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+    -- we need to tell the post-parsing transformers that we're compiling
+    -- Spad because few parse forms have slightly different representations
+    -- depending on whether we are interpreter mode or compiler mode.
+    $InteractiveMode: local := false
+    INIT_-BOOT_/SPAD_-READER()
+    -- we need to restore the global input stream state after we
+    -- finished messing with it.
+    IN_-STREAM: local := MAKE_-INSTREAM sourceFile
 
-  $OutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"    -- noise to standard output
-  -- we need to tell the post-parsing transformers that we're compiling
-  -- Spad because few parse forms have slightly different representations
-  -- depending on whether we are interpreter mode or compiler mode.
-  $InteractiveMode: local := false
-  INIT_-BOOT_/SPAD_-READER()
-  -- we need to restore the global input stream state after we
-  -- finished messing with it.
-  savedInStream := (IN_-STREAM : local)
+    -- If soureFile cannot be processed for whatever reasons
+    -- get out of here instead of being stuck later.
+    IN_-STREAM = nil =>
+      systemError '"cannot open input source file"
+    INITIALIZE_-PREPARSE IN_-STREAM
 
-  -- If soureFile cannot be processed for whatever reasons
-  -- get out of here instead of being stuck later.
-  not (IN_-STREAM := MAKE_-INSTREAM sourceFile) =>
-    IN_-STREAM := savedInStream
-    systemError '"cannot open input source file"
-  INITIALIZE_-PREPARSE IN_-STREAM
-
-  -- gather parse trees for all toplevel expressions in sourceFile.
-  asts := []                                   
-  while not (_*EOF_* or FILE_-CLOSED) repeat
-    BOOT_-LINE_-STACK : local := PREPARSE IN_-STREAM
-    LINE : local := CDAR BOOT_-LINE_-STACK
-    CATCH('SPAD__READER,parseNewExpr())
-    asts := [parseTransform postTransform popStack1(), :asts]
-  -- clean up the mess, and get out of here
-  IOCLEAR(IN_-STREAM, OUT_-STREAM)             
-  SHUT IN_-STREAM                              
-  IN_-STREAM := savedInStream
-  -- we accumulated the parse trees in reverse order
-  reverse! asts
+    -- gather parse trees for all toplevel expressions in sourceFile.
+    asts := []                                   
+    while not (_*EOF_* or FILE_-CLOSED) repeat
+      $lineStack: local := PREPARSE IN_-STREAM
+      LINE: local := CDAR $lineStack
+      CATCH('SPAD__READER,parseNewExpr())
+      asts := [parseTransform postTransform popStack1(), :asts]
+    -- we accumulated the parse trees in reverse order
+    reverse! asts
+  finally                      -- clean up the mess, and get out of here
+    IOCLEAR(IN_-STREAM, OUT_-STREAM)             
+    SHUT IN_-STREAM                              
 
 --%
 
