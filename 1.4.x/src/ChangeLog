@@ -1,5 +1,17 @@
+2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add compiler support for implicit parameters.
+	* interp/compiler.boot (bindPredicateExistentials): Rename from
+	constructorCondition.  Now return a substitution on success,
+	otherwise failure.
+	(solveEquation): New.
+	(solveSubsumption): Likewise.
+	(deduceImplicitParameters): Likewise.
+	(evaluateConstructorModemap): Use it. Tidy.
+
 2011-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Add interpreter support for implicit parameters.
 	* interp/i-funsel.boot (evalMmCond0): Tidy. Call evalMmGuard to
 	validate modemap evaluation.
 	(evalMmGuard): New.
