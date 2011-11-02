@@ -721,10 +721,77 @@ reshapeArgumentList(form,sig) ==
   wantArgumentsAsTuple(args,sig) => [op,["%Comma",:args]]
   form
 
-++ Return true is the constructor condition `cond' holds in the
-++ elaboration environmemt `e'.
-constructorCondition(cond,e) ==
-  cond --FIXME: solve it!
+++ Attempt to find values for queries variables `vars' so that
+++ the category expression `x' equals the category expression `p'.
+solveEquation(x,p,sl,vars) ==
+  ident? p and symbolMember?(p,vars) =>
+    z := symbolTarget(p,sl) =>
+      x = z => sl
+      'failed
+    [[p,:x],:sl]
+  x isnt [.,:.] or p isnt [.,:.] =>
+    x = p => sl
+    'failed
+  symbolEq?(x.op,p.op) =>
+    #x.args ~= #p.args => 'failed
+    x.args = nil => sl
+    and/[sl := solveEquation(x',p',sl,vars)
+           for x' in x.args for p' in p.args
+             | sl isnt 'failed or leave 'failed]
+  'failed
+
+++ Attempt to find values for queries variables `vars' so that
+++ the category expression `x' subsumes the category expression `p'.
+solveSubsumption(x,p,sl,vars,typings,e) ==
+  x isnt [.,:.] or p isnt [.,:.] => solveEquation(x,p,sl,vars)
+  p = $Type => sl
+  symbolEq?(x.op,p.op) => solveEquation(x,p,sl,vars)
+  x.op is 'Join =>
+    x.args = nil => 'failed
+    or/[sl' := solveSubsumption(x',p,sl,vars,typings,e) for x' in x.args
+          | sl' isnt 'failed] or 'failed
+  x is ['CATEGORY,.,:xs] =>
+    or/[sl' := solveSubsumption(x',p,sl,vars,typings,e) for x' in xs
+          | sl' isnt 'failed] or 'failed
+  x.op in '(SIGNATURE ATTRIBUTE) => 'failed
+  getConstructorKind x.op isnt 'category => 'failed  --FIXME: for now.
+  x := applySubst(constructSubst x,getConstructorCategory x.op)
+  solveSubsumption(x,p,sl,vars,typings,e)
+
+++ Subroutine of bindPredicateExistentials, with similar semantics.
+++ `vars' is the list of quantified variables, and `conds' is a
+++ of conditions the conjunction of which makes the whole predicate.
+deduceImplicitArguments(vars,conds,e) ==
+  eqs := nil       -- equation constraints
+  typings := nil   -- typing constraints
+  sl := nil
+  for c in conds while sl isnt 'failed repeat
+    c is ['ofCategory,x,y] =>  -- subsumption constraint
+      ident? x and symbolMember?(x,vars) =>
+         typings := [[x,:y],:typings]
+      eqs := [[x,:y],:eqs]
+    c is ['ofType,x,y] =>      -- exact type constraints
+      T := comp(x,$EmptyMode,e)
+      T = nil => sl := 'failed
+      sl := solveEquation(T.mode,y,sl,vars)
+  for [x,:y] in eqs while sl isnt 'failed repeat
+    cat :=
+      x isnt [.,:.] => getXmode(x,e)
+      applySubst(constructSubst x,getConstructorCategory x.op)
+    sl := solveSubsumption(cat,y,sl,vars,typings,e)
+  sl is 'failed => sl
+  -- Every existential must have a value
+  or/[symbolTarget(v,sl) = nil for v in vars] => 'failed
+  sl  --FIXME: check typing constraints
+
+++ Attempt to find values for existentially quantified variables in
+++ the predicate `cond' so that it holds in the environment `e'.
+++ Return a substitution on success; otherwise fail.
+bindPredicateExistentials(cond,e) ==
+  cond is true => nil -- identity substitution
+  cond is ['%exist,vars,['AND,:conds]] =>
+    deduceImplicitArguments(vars,conds,e)
+  'failed
 
 ++ The argument list `argl' is used to instantiate a constructor
 ++ with `modemap' in environment `e'.  Return the resulting
@@ -734,13 +801,22 @@ evaluateConstructorModemap(argl,modemap is [[dc,:sig],:.],e) ==
     keyedSystemError("S2GE0016",['"evaluateConstructorModemap",
       '"Incompatible maps"])
   #argl ~= #sig.source => nil
-  constructorCondition(applySubst(sl,modemap.mmCondition),e) isnt true => nil
+  -- Get `source-level' subtitution in an attempt to deduce implicits.
   sl := pairList(dc.args,argl)
-    --make new modemap, subst. actual for formal parameters into modemap
-  Tl := [[.,.,e] := compOrCroak(a,m,e)
-           for a in argl for m in applySubst(sl,modemap.mmSource)]
-  sl := [[x,:T.expr] for x in dc.args for T in Tl]
-  [applySubst(sl,modemap),e]
+  sl' := bindPredicateExistentials(applySubst(sl,modemap.mmCondition),e)
+  sl' is 'failed => nil
+  -- Subtitute values for implicit in formal modemap.  Then substitute
+  -- the `source-level' arguments into the resulting modemap, before
+  -- compiling them.  Note the sort of bootstrapping process.
+  signature := applySubst(sl',modemap.mmSignature)
+  args' := [x for a in argl for m in applySubst(sl,signature.source)
+              | [x,.,e] := compOrCroak(a,m,e)]
+  -- Now substitutte elaborations of actual arguments into the formal
+  -- signature to construct the final result.
+  signature := applySubst(pairList(dc.args,args'),signature)
+  -- At this point, the modemap condition was evaluated successfully,
+  -- so we return plain `true' for that part of the modemap.
+  [[[[dc.op,:args'],:signature],[true,dc.op]],e]
 
 
 --% SPECIAL EVALUATION FUNCTIONS
