@@ -42,6 +42,7 @@
 #include <new>
 #include <cmath>
 #include <string>
+#include <iterator>
 
 #include <open-axiom/config>
 
@@ -195,6 +196,28 @@ namespace OpenAxiom {
          size_t population() const;
 
       protected:
+         // +----+----+--+-----
+         // |    |    |  |
+         // +----+----+--+-----
+         // ^    ^    ^  ^
+         // |    |    |  `-- first allocatable T object
+         // |    |    `-- possible padding for proper T alignment
+         // |    `-- link to next storage pages
+         // `-- link to previous storage pages
+         enum {
+            link_size = sizeof(Storage*)
+         };
+
+         // The `previous' link in the chain of storage.
+         static Storage*& previous(Storage* s) {
+            return *static_cast<Storage**>(s->at_offset(0));
+         }
+
+         // The `next' link in the chain of storage.
+         static Storage*& next(Storage* s) {
+            return *static_cast<Storage**>(s->at_offset(link_size));
+         }
+
          // Address of the first object of type `T' in a storage.
          static T* first_object(Handle* h) {
             return static_cast<T*>(BlockStorage::begin(h));
@@ -264,6 +287,18 @@ namespace OpenAxiom {
          Factory() : Arena<T>(nominal_population()) { }
          ~Factory();
 
+         iterator begin() {
+            Storage* s = this->store;
+            while (Storage* p = Arena<T>::previous(s))
+               s = p;
+            return iterator(s, Arena<T>::first_object(s));
+         }
+
+         iterator end() {
+            Storage* s = this->store;
+            return iterator(s, static_cast<T*>(s->next_available()));
+         }
+
          // Allocate storage and value-construct an object of type `T'.
          T* make() {
             return new(this->allocate(1)) T();
@@ -306,6 +341,47 @@ namespace OpenAxiom {
                last->~T();
          }
       }
+
+      template<typename T>
+      struct Factory<T>::iterator:
+         std::iterator<std::forward_iterator_tag, T> {
+
+         iterator& operator++() {
+            if (ptr < store->next_available()) {
+               ++ptr;
+               return *this;
+            }
+            store = Arena<T>::next(store);
+            ptr = Arena<T>::first_object(store);
+            return *this;
+         }
+         
+         iterator operator++(int) {
+            iterator t = *this;
+            ++*this;
+            return t;
+         }
+         
+         T* operator->() { return ptr; }
+
+         T& operator*() { return *ptr; }
+
+         friend bool operator==(iterator p, iterator q) {
+            return p.store == q.store and p.ptr == q.ptr;
+         }
+
+         friend bool operator!=(iterator p, iterator q) {
+            return not(p == q);
+         }
+         
+      private:
+         Storage* store;
+         T* ptr;
+         friend class Factory<T>;
+
+         iterator(Storage* s, T* p) : store(s), ptr(p) { }
+         
+      };
 
       // -----------------
       // -- FileMapping --
