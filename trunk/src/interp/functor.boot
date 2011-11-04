@@ -211,15 +211,15 @@ CategoriesFromGDC x ==
     union([[a']],"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
-compCategories u ==
+compCategories(u,e) ==
   u isnt [.,:.] => u
   cons? u.op =>
     error ['"compCategories: need an atom in operator position", u.op]
   u.op in '(Record Union Mapping) =>
     -- There is no modemap property for these guys so do it by hand.
-    [u.op, :[compCategories1(a,$SetCategory) for a in u.args]]
-  u is ['SubDomain,D,.] => compCategories D
-  v := get(u.op,'modemap,$e)
+    [u.op, :[compCategories1(a,$SetCategory,e) for a in u.args]]
+  u is ['SubDomain,D,.] => compCategories(D,e)
+  v := get(u.op,'modemap,e)
   v isnt [.,:.] =>
     error ['"compCategories: could not get proper modemap for operator",u.op]
   if rest v then
@@ -232,22 +232,15 @@ compCategories u ==
     v := rest v
   v := resolvePatternVars(first(v).mmSource, u.args) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
-  [u.op,:[compCategories1(a,b) for a in u.args for b in v]]
+  [u.op,:[compCategories1(a,b,e) for a in u.args for b in v]]
  
-compCategories1(u,v) ==
+compCategories1(u,v,e) ==
 -- v is the mode of u
   u isnt [.,:.] => u
-  u is [":",x,t] => [u.op,x,compCategories1(t,v)]
-  isCategoryForm(v,$e) => compCategories u
-  [c,:.] := comp(macroExpand(u,$e),v,$e) => c
+  u is [":",x,t] => [u.op,x,compCategories1(t,v,e)]
+  isCategoryForm(v,e) => compCategories(u,e)
+  [c,:.] := comp(macroExpand(u,e),v,e) => c
   error 'compCategories1
- 
-NewbFVectorCopy(u,domName) ==
-  v := newShell # u
-  for i in 0..5 repeat vectorRef(v,i) := vectorRef(u,i)
-  for i in 6..maxIndex v | cons? vectorRef(u,i) repeat
-    vectorRef(v,i) := [function Undef,[domName,i],:first vectorRef(u,i)]
-  v
  
 optFunctorBody x ==
   atomic? x => x
@@ -300,10 +293,10 @@ optFunctorPROGN l ==
   l
  
 worthlessCode x ==
-  x is ['%when,:l] and (and/[x is [.,y] and worthlessCode y for x in l]) => true
-  x is ['PROGN,:l] => (null (l':= optFunctorPROGN l) => true; false)
+  x is ['%when,:l] => and/[x is [.,y] and worthlessCode y for x in l]
+  x is ['PROGN,:l] => optFunctorPROGN l = nil
   x is ['%list] => true
-  null x => true
+  x = nil => true
   false
  
 cons5(p,l) ==
@@ -428,24 +421,24 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       code:=[v,:code]
   [["%LET",instantiatedBase,base],:code]
  
-DescendCode(db,code,flag,viewAssoc) ==
+DescendCode(db,code,flag,viewAssoc,e) ==
   -- flag = true if we are walking down code always executed;
   -- otherwise set to conditions in which
   code = nil => nil
   code is '%noBranch => nil
-  isMacro(code,$e) => nil --RDJ: added 3/16/83
+  isMacro(code,e) => nil --RDJ: added 3/16/83
   code is ['add,base,:codelist] =>
     codelist:=
-      [v for u in codelist | (v:= DescendCode(db,u,flag,viewAssoc))~=nil]
+      [v for u in codelist | v := DescendCode(db,u,flag,viewAssoc,e)]
                   -- must do this first, to get this overriding Add code
     ['PROGN,:DescendCodeAdd(base,flag),:codelist]
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
       reverse! [v for u in reverse codelist |
-                    (v:= DescendCode(db,u,flag,viewAssoc))~=nil]]
+                    v := DescendCode(db,u,flag,viewAssoc,e)]]
   code is ['%when,:condlist] =>
-    c:= [[u2:= ProcessCond(db,first u,$e),:q] for u in condlist] where q() ==
+    c:= [[u2:= ProcessCond(db,first u,e),:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
             TruthP u2 => flag;
@@ -457,7 +450,7 @@ DescendCode(db,code,flag,viewAssoc) ==
           [DescendCode(db,v, f,
             if first u is ['HasCategory,dom,cat]
               then [[dom,:cat],:viewAssoc]
-              else viewAssoc) for v in rest u]
+              else viewAssoc,e) for v in rest u]
     TruthP CAAR c => ['PROGN,:CDAR c]
     while (c and (last c is [c1] or last c is [c1,[]]) and
             (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
@@ -468,12 +461,12 @@ DescendCode(db,code,flag,viewAssoc) ==
   code is ["%LET",name,body,:.] =>
                     --only keep the names that are useful
     u := member(name,$locals) =>
-        CONTAINED('$,body) and isDomainForm(body,$e) =>
+        CONTAINED('$,body) and isDomainForm(body,e) =>
           --instantiate domains which depend on $ after constants are set
           code:=['%store,['%tref,['%tref,'$,5],#$locals-#u],code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
-            [['%when,[ProcessCond(db,flag,$e),code]],:$epilogue]
+            [['%when,[ProcessCond(db,flag,e),code]],:$epilogue]
           nil
         code
     code -- doItIf deletes entries from $locals so can't optimize this
@@ -488,7 +481,7 @@ DescendCode(db,code,flag,viewAssoc) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([second(u).args,third u],flag)
     ConstantCreator u =>
-      if flag ~= true then u:= ['%when,[ProcessCond(db,flag,$e),u]]
+      if flag ~= true then u:= ['%when,[ProcessCond(db,flag,e),u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u

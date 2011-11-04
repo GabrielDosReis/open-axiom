@@ -489,7 +489,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [$catsig,:argsig] := sig
   catvecListMaker := removeDuplicates
     [comp($catsig,$EmptyMode,$e).expr,
-      :[compCategories u for [u,:.] in categoryAncestors $domainShell]]
+      :[compCategories(u,$e) for [u,:.] in categoryAncestors $domainShell]]
   condCats := InvestigateConditions([$catsig,:rest catvecListMaker],$e)
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
@@ -515,7 +515,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
     makePredicateBitVector(db,[:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList],$e)
 
-  storeOperationCode := DescendCode(db,code,true,nil)
+  storeOperationCode := DescendCode(db,code,true,nil,$e)
   NRTaddDeltaCode db
   storeOperationCode := NRTputInLocalReferences storeOperationCode
   NRTdescendCodeTran(db,storeOperationCode,nil) --side effects storeOperationCode

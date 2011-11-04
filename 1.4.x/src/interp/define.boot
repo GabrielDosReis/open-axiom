@@ -2298,9 +2298,8 @@ doIt(item,$predl) ==
   systemErrorHere ["doIt", item]
  
 isMacro(x,e) ==
-  x is ['DEF,[op,:args],signature,body] and
-    null get(op,'modemap,e) and null args and null get(op,'mode,e)
-      and signature is [nil] => body
+  x is ['DEF,[op],[nil],body] and
+    get(op,'modemap,e) = nil and get(op,'mode,e) = nil => body
   nil
 
 ++ Compile capsule-level `item' which is a conditional expression.
@@ -2398,7 +2397,7 @@ compJoin(["Join",:argl],m,e) ==
         ident? x and getXmode(x,e) = $Category => x
         stackSemanticError(["invalid argument to Join: ",x],nil)
         x
-  T:= [wrapDomainSub(parameters,["Join",:catList']),$Category,e]
+  T := [['DomainSubstitutionMacro,parameters,["Join",:catList']],$Category,e]
   convert(T,m)
 
 compForMode: (%Form,%Mode,%Env) -> %Maybe %Triple 
@@ -2416,10 +2415,6 @@ mustInstantiate D ==
   D is [fn,:.] and 
     not (symbolMember?(fn,$DummyFunctorNames) or property(fn,"makeFunctionList"))
 
-wrapDomainSub: (%List %Form, %Form) -> %Form 
-wrapDomainSub(parameters,x) ==
-   ["DomainSubstitutionMacro",parameters,x]
- 
 mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   body:=
     ["mkCategory",MKQ domainOrPackage,['%list,:reverse sigList],
@@ -2432,7 +2427,7 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
       ("append"/
         [[x for x in sig | ident? x and x~='_$]
           for ['QUOTE,[[.,sig,:.],:.]] in sigList])
-  wrapDomainSub(parameters,body)
+  ['DomainSubstitutionMacro,parameters,body]
 
 DomainSubstitutionFunction(parameters,body) ==
   if parameters ~= nil then

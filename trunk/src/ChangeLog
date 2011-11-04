@@ -1,3 +1,15 @@
+2011-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/functor.boot (compCategories): Take second parameter as
+	environment.  Adjust callers.
+	(compCategories1): Likewise.
+	(NewbFVectorCopy): Remove as deadcode.
+	(worthlessCode): Tidy.
+	(DescendCode): Take additional environment parameter.  Adjust callers.
+	* interp/define.boot (isMacro): Simplify.
+	(wrapDomainSub): Remove.  Adjust callers.
+	* algebra/Makefile.in (strap-2/%.$(FASLEXT)): Fix typo.
+
 2011-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (findModule): Tidy.

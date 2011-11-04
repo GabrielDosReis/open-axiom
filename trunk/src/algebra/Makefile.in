@@ -585,7 +585,7 @@ strap-2/%.$(FASLEXT): %.spad | strap-2
 		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
 			strap-2/$*-.$(FASLEXT); else : ; fi && \
 		if test x@oa_keep_files@ = xyes; then \
-			cp $*.NRLIB/code.lsp strap-1/$*.lsp; fi
+			cp $*.NRLIB/code.lsp strap-2/$*.lsp; fi
 
 
 SPADFILES= \
