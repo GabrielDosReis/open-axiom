@@ -1009,23 +1009,20 @@ checkSplitOn(x) ==
 checkBalance u ==
   checkBeginEnd u
   stack := nil
-  while u repeat
-    do
-      x := first u
-      closer := scalarTarget(x,$checkPrenAlist)  --is it an open bracket?
-        => stack := [closer,:stack] --yes, push the open bracket
-      open  := rassoc(x,$checkPrenAlist) =>  --it is a close bracket!
-        stack is [top,:restStack] => --does corresponding open bracket match?
-          if open ~= top then          --yes: just pop the stack
-            checkDocError
-              ['"Mismatch: left ",checkSayBracket top,'" matches right ",checkSayBracket open]
-          stack := restStack
-        checkDocError ['"Missing left ",checkSayBracket open]
-    u := rest u
-  if stack then
+  while u is [x,:u] repeat
+    not char? x => nil
+    closer := scalarTarget(x,$checkPrenAlist) => --is it an open bracket?
+      stack := [closer,:stack]                   --yes, push the open bracket
+    open := rassoc(x,$checkPrenAlist) =>         --it is a close bracket!
+      stack is [top,:restStack] => --does corresponding open bracket match?
+        x = top => stack := restStack            --yes: just pop the stack
+        checkDocError
+          ['"Mismatch: left ",checkSayBracket open,'" matches right ",checkSayBracket x]
+      checkDocError ['"Missing left ",checkSayBracket x]
+  stack ~= nil =>
     for x in reverse! stack repeat
       checkDocError ['"Missing right ",checkSayBracket x]
-  u
+  nil
 
 ++ returns the class of the parenthesis x
 ++    pren    ::= '(' | ')'
