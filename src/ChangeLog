@@ -1,5 +1,10 @@
 2011-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-doc.boot (checkBalance): Fix a latent logic bug.
+	* algebra/Makefile.in: Tidy.
+
+2011-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.in: Rework bootstrap dependency.
 
 2011-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>

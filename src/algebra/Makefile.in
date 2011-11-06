@@ -100,6 +100,7 @@ BOOTSTRAP = $(DRIVER) --execpath=$(INTERPSYS) \
 ## They are needed only for their being known as constructors.
 ## Consequently, the dependencies listed here are at the categories
 ## inheritance level; not necessarily at the use level.
+strap-0/TYPE.$(FASLEXT): initdb.daase
 strap-0/UTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/BASTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/KOERCE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
@@ -1214,9 +1215,12 @@ subdir = src/algebra/
 ## the built of several other domains and categories as essential
 ## to ignite the algebra build.  We require Category only because
 ## we would like not to have too many special cases for it.
-$(OUT)/TYPE.$(FASLEXT): strap-2/CATEGORY.$(FASLEXT) \
+strap-stamp: strap-2/CATEGORY.$(FASLEXT) \
 	strap-2/SINT.$(FASLEXT) strap-2/NNI.$(FASLEXT) \
 	strap-2/PI.$(FASLEXT)
+	$(STAMP) $@
+
+$(OUT)/TYPE.$(FASLEXT): strap-stamp
 
 $(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
 $(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
@@ -2135,7 +2139,7 @@ ${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
 ${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
  
-$(oa_algebra_layer_0_objects): initdb-stamp
+$(oa_algebra_layer_0_objects): strap-stamp
 $(axiom_algebra_layer_1_objects): 0-stamp
 $(axiom_algebra_layer_2_objects): 1-stamp
 $(axiom_algebra_layer_3_objects): 2-stamp
@@ -2165,7 +2169,7 @@ $(oa_algebra_layer_0_objects): | $(OUT)
 $(OUT):
 	$(mkdir_p) $@
 
-0-stamp: initdb-stamp $(oa_algebra_layer_0_objects)
+0-stamp: $(oa_algebra_layer_0_objects)
 	@ rm -f 0-stamp
 	@ $(STAMP) 0-stamp
 	@ echo ==================================
@@ -2351,16 +2355,11 @@ $(SPADFILES): | $(OUTSRC)
 .PHONY: all-initdb
 all-initdb: initdb.daase
 
-.PRECIOUS: initdb.daase
 initdb.daase: $(SPADFILES)
 	$(DRIVER) --execpath=$(INTERPSYS) --system="$(AXIOM)" \
 		--spad-srcdir=$(OUTSRC) \
 		--output=initdb.$$$$ --build-initdb && \
 		$(top_confdir)/move-if-change initdb.$$$$ $@
-
-initdb-stamp: initdb.daase
-	$(STAMP) $@
-
 
 mostlyclean-local:
 	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
