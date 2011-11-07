@@ -1,3 +1,7 @@
+2011-11-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/vm.H: Redefine value representation.
+
 2011-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-doc.boot (checkBalance): Fix a latent logic bug.
