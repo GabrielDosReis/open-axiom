@@ -1768,7 +1768,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,body],
       not symbolMember?($op,$formalArgList) and
         getXmode($op,e) is ['Mapping,:.] => 'local
       'exported
-    formattedSig := formatUnabbreviatedSig ['Mapping,:signature']
+    formattedSig := formatUnabbreviatedSig signature'
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
