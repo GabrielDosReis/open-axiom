@@ -614,7 +614,7 @@ NRTsetVector4a(sig,form,cond) ==
     $uncondList := [form,:append(categoryPrincipals evalform,$uncondList)]
   $condList := [[cond,[form,:categoryPrincipals evalform]],:$condList]
 
-NRTmakeSlot1Info() ==
+NRTmakeSlot1Info db ==
 -- 4 cases:
 -- a:T == b add c  --- slot1 directory has #s for entries defined in c
 -- a:T == b        --- slot1 has all slot #s = nil (see compFunctorBody)
@@ -622,9 +622,8 @@ NRTmakeSlot1Info() ==
 -- a == b          --- $NRTderivedTargetIfTrue = true; set directory to nil
   pairlis :=
     $insideCategoryPackageIfTrue =>
-      [:argl,dollarName] := rest $form
-      [[dollarName,:'_$],:mkSlot1sublis argl]
-    mkSlot1sublis rest $form
+      [[first dbParameters db,:'_$],:dbFormalSubst db]
+    dbFormalSubst db
   exports :=
     transformOperationAlist applySubst(pairlis,categoryExports $domainShell)
   opList :=
@@ -632,10 +631,7 @@ NRTmakeSlot1Info() ==
     $insideCategoryPackageIfTrue => slot1Filter exports
     exports
   addList := applySubst(pairlis,$NRTaddForm)
-  [$form.op,[addList,:opList]]
-
-mkSlot1sublis argl ==
-  pairList(argl,$FormalMapVariableList)
+  [dbConstructor db,[addList,:opList]]
 
 slot1Filter opList ==
 --include only those ops which are defined within the capsule
