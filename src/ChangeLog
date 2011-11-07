@@ -1,3 +1,13 @@
+2011-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (getConstructorOpsAndAtts): Fold content in
+	called. Remove.
+	(getFunctorOpsAndAtts): Simplify.
+	(getSlotFromFunctor): Rework.
+	* interp/define.boot (getInfovecCode): Bind $byteVec and
+	$byteAddress here.
+	(compDefineFunctor1): Not here.
+
 2011-11-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot ($compileOnlyCertainItems): Remove.
