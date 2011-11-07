@@ -72,7 +72,6 @@ $condAlist := []
 $uncondAlist := []
 $NRTslot1PredicateList := []
 $NRTattributeAlist := []
-$NRTslot1Info := nil
 $NRTdeltaListComp := []
 $signature := nil
 $lookupFunction := nil
@@ -344,13 +343,13 @@ chaseInferences(pred,$e) ==
 --=======================================================================
 --            Generate Code to Create Infovec
 --=======================================================================
-getInfovecCode db == 
+getInfovecCode(db,e) == 
 --Function called by compDefineFunctor1 to create infovec at compile time
   ['LIST,
     MKQ makeDomainTemplate db,
-      MKQ makeCompactDirect(db,$NRTslot1Info),
-        MKQ NRTgenFinalAttributeAlist(db,$e),
-          NRTmakeCategoryAlist(db,$e),
+      MKQ makeCompactDirect(db,NRTmakeSlot1Info db),
+        MKQ NRTgenFinalAttributeAlist(db,e),
+          NRTmakeCategoryAlist(db,e),
             MKQ $lookupFunction]
 
 --=======================================================================
@@ -516,9 +515,10 @@ getXmode(x,e) ==
 --=======================================================================
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
-NRTgetLookupFunction(db,domform,exCategory,addForm,env) ==
+NRTgetLookupFunction(db,addForm,env) ==
   $why: local := nil
-  domform := dbSubstituteFormals(db,domform)
+  domform := dbSubstituteFormals(db,dbConstructorForm db)
+  exCategory := dbCategory db
   addForm isnt [.,:.] =>
     ident? addForm and (m := getmode(addForm,env)) ~= nil and
       isCategoryForm(m,env) and
@@ -1401,7 +1401,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist(db,attributeList)
-    $NRTslot1Info: local := nil  --set in NRTmakeSlot1Info
     $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
@@ -1443,11 +1442,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
            u := sublisFormal(rhsArgs,u,$AtVariables)
            emitSubdomainInfo($form,first u, second u)
     T:= compFunctorBody(body,rettype,$e,parForm)
-    -- If only compiling certain items, then ignore the body shell.
-    $compileOnlyCertainItems =>
-       reportOnFunctorCompilation()
-       [nil, ['Mapping, :signature'], originale]
- 
     body':= T.expr
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
@@ -1463,17 +1457,15 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
-      $NRTslot1Info := NRTmakeSlot1Info()
       libFn := dbAbbreviation db
-      $lookupFunction: local :=
-          NRTgetLookupFunction(db,$functorForm,modemap.mmTarget,$NRTaddForm,$e)
+      $lookupFunction: local := NRTgetLookupFunction(db,$NRTaddForm,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $byteAddress :local := 0
       $byteVec :local := nil
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
       LAM_,FILEACTQ('loadTimeStuff,
-        ['MAKEPROP,MKQ $op,''infovec,getInfovecCode db])
+        ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
     -- Functors are incomplete during bootstrap
     if $bootStrapMode then
@@ -1777,14 +1769,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,body],
       not symbolMember?($op,$formalArgList) and
         getXmode($op,e) is ['Mapping,:.] => 'local
       'exported
- 
-    --6a skip if compiling only certain items but not this one
-    -- could be moved closer to the top
-    formattedSig := formatUnabbreviated ['Mapping,:signature']
-    $compileOnlyCertainItems and _
-      not symbolMember?($op, $compileOnlyCertainItems) =>
-        sayBrightly ['"   skipping ", localOrExported,:bright $op]
-        [nil,['Mapping,:signature'],$e]
+    formattedSig := formatUnabbreviatedSig ['Mapping,:signature']
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
@@ -1974,8 +1959,6 @@ putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   def
  
  
-$savableItems := nil
- 
 compile u ==
   [op,lamExpr] := u
   if $suffix then
@@ -1996,23 +1979,6 @@ compile u ==
          null symbolMember?(op,$formalArgList) and
            getXmode(op,$e) is ['Mapping,:.]
     u:= [op',lamExpr]
-  -- If just updating certain functions, check for previous existence.
-  -- Deduce old sequence number and use it (items have been skipped).
-  if $compileOnlyCertainItems then
-    parts := splitEncodedFunctionName(u.op, ";")
-  --  Next line JHD/SMWATT 7/17/86 to deal with inner functions
-    parts='inner => $savableItems:=[u.op,:$savableItems]
-    unew  := nil
-    for [s,t] in $splitUpItemsAlreadyThere repeat
-       if parts.0=s.0 and parts.1=s.1 and parts.2=s.2 then unew := t
-    null unew =>
-      sayBrightly ['"   Error: Item did not previously exist"]
-      sayBrightly ['"   Item not saved: ", :bright u.op]
-      sayBrightly ['"   What's there is: ", $lisplibItemsAlreadyThere]
-      nil
-    sayBrightly ['"   Renaming ", u.op, '" as ", unew]
-    u := [unew, :rest u]
-    $savableItems := [unew, :$saveableItems] -- tested by embedded RWRITE
   optimizedBody:= optimizeFunctionDef u
   stuffToCompile:=
     if not $insideCapsuleFunctionIfTrue

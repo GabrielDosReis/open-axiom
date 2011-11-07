@@ -86,10 +86,6 @@ $coreDiagnosticFunctions ==
 $IOFormDomains == 
   [$InputForm,$OutputForm,$Syntax]
 
-++ list of functions to compile
-$compileOnlyCertainItems := []
-
-
 --%
 
 compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple

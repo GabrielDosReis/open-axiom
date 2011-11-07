@@ -1,5 +1,22 @@
 2011-11-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot ($compileOnlyCertainItems): Remove.
+	* interp/define.boot ($NRTslot1Info): Likewise.
+	(getInfovecCode): Add additional environment argument.  Adjust caller.
+	Call NRTmakeSlot1Info here.
+	(NRTgetLookupFunction): Lose second and third arguments.  They are
+	derivable from the DB argument.  Adjust caller.
+	(compDefineFunctor1): Do not bind $NRTslot1Info.
+	(compDefineCapsuleFunction): Adjust.
+	(compile): Likewise.
+	* interp/i-syscmd.boot (compilerDoitWithScreenedLisplib):
+	Remove. Adjust caller.
+	* interp/nruncomp.boot (NRTmakeSlot1Info): Tak a DB argument.
+	Adjust caller.
+	(mkSlot1sublis): Remove.
+
+2011-11-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* utils/vm.H: Redefine value representation.
 
 2011-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>

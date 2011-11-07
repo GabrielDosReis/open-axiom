@@ -527,7 +527,6 @@ compileSpad2Cmd args ==
     optList :=  '( _
       break _
       constructor _
-      functions _
       library _
       lisp _
       new _
@@ -543,7 +542,6 @@ compileSpad2Cmd args ==
         )
 
     $scanIfTrue              : local := false
-    $compileOnlyCertainItems : local := nil
     $f                       : local := nil  -- compiler
     $m                       : local := nil  --   variables
 
@@ -571,10 +569,6 @@ compileSpad2Cmd args ==
         fullopt is 'break       => $scanIfTrue := nil
         fullopt is 'vartrace    => $QuickLet  := false
         fullopt is 'lisp        => throwKeyedMsg("S2IZ0036",['")lisp"])
-        fullopt is 'functions   =>
-            null optargs =>
-              throwKeyedMsg("S2IZ0037",['")functions"])
-            $compileOnlyCertainItems := optargs
         fullopt is 'constructor =>
             null optargs =>
               throwKeyedMsg("S2IZ0037",['")constructor"])
@@ -590,11 +584,7 @@ compileSpad2Cmd args ==
     $InteractiveMode : local := nil
     -- avoid Boolean semantics transformations based on syntax only
     $normalizeTree: local := false
-    if $compileOnlyCertainItems then
-        null constructor => sayKeyedMsg("S2IZ0040",nil)
-        compilerDoitWithScreenedLisplib(constructor, fun)
-    else
-        compilerDoit(constructor, fun)
+    compilerDoit(constructor, fun)
     if not $buildingSystemAlgebra then 
       extendLocalLibdb $newConlist
     terminateSystemCommand()
@@ -614,17 +604,6 @@ compilerDoit(constructor, fun) ==
       for ii in $byConstructors repeat
         null member(ii,$constructorsSeen) =>
           sayBrightly ['">>> Warning ",'"%b",ii,'"%d",'" was not found"]
-
-compilerDoitWithScreenedLisplib(constructor, fun) ==
-    EMBED('RWRITE,
-          '(LAMBDA (KEY VALUE STREAM)
-                   (COND ((AND (EQ STREAM $libFile)
-                               (NOT (MEMBER KEY $saveableItems)))
-                          VALUE)
-                         ((NOT NIL)
-                          (RWRITE KEY VALUE STREAM)))) )
-    (try compilerDoit(constructor,fun); finally SEQ(UNEMBED 'RWRITE))
-
 
 --% )copyright -- display copyright notice
 
