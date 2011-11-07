@@ -1,5 +1,9 @@
 2011-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (isDomainForm): Tidy.
+
+2011-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (getConstructorOpsAndAtts): Fold content in
 	called. Remove.
 	(getFunctorOpsAndAtts): Simplify.
