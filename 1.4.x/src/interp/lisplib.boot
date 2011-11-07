@@ -535,7 +535,9 @@ finalizeLisplib(ctor,libName) ==
     writeCategory(ctor,dbCategory db,$libFile)
   lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
   lisplibWrite('"modemaps",dbModemaps db,$libFile)
-  opsAndAtts := getConstructorOpsAndAtts(form,kind,mm)
+  opsAndAtts :=
+    kind = 'category => getCategoryOpsAndAtts form
+    getFunctorOpsAndAtts(form,mm.mmTarget)
   writeOperations(ctor,first opsAndAtts,$libFile)
   if kind='category then
      $NRTslot1PredicateList : local := []
@@ -569,24 +571,19 @@ getPartialConstructorModemapSig(c) ==
   (s := getConstructorSignature c) => rest s
   throwEvalTypeMsg("S2IL0015",[c])
  
-getConstructorOpsAndAtts(form,kind,modemap) ==
-  kind is 'category => getCategoryOpsAndAtts(form)
-  getFunctorOpsAndAtts(form,modemap)
- 
 getCategoryOpsAndAtts(catForm) ==
   -- returns [operations,:attributes] of first catForm
   [transformOperationAlist getSlotFromCategoryForm(catForm,1),
     :getSlotFromCategoryForm(catForm,2)]
  
-getFunctorOpsAndAtts(form,modemap) ==
-  [transformOperationAlist getSlotFromFunctor(form,1,modemap),
-    :getSlotFromFunctor(form,2,modemap)]
+getFunctorOpsAndAtts(form,target) ==
+  [transformOperationAlist $lisplibOperationAlist,
+    :getSlotFromFunctor target]
  
-getSlotFromFunctor([name,:args],slot,[[.,target,:argMml],:.]) ==
-  slot = 1 => $lisplibOperationAlist
+getSlotFromFunctor(target) ==
   t := compMakeCategoryObject(target,$e) or
       systemErrorHere "getSlotFromFunctor"
-  t.expr.slot
+  categoryRef(t.expr,2)
  
 getSlot1 domainName ==
   $e: local:= $CategoryFrame

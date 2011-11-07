@@ -343,8 +343,10 @@ chaseInferences(pred,$e) ==
 --=======================================================================
 --            Generate Code to Create Infovec
 --=======================================================================
+++ Called by compDefineFunctor1 to create infovec at compile time
 getInfovecCode(db,e) == 
---Function called by compDefineFunctor1 to create infovec at compile time
+  $byteVec: local := nil
+  $byteAddress: local := 0
   ['LIST,
     MKQ makeDomainTemplate db,
       MKQ makeCompactDirect(db,NRTmakeSlot1Info db),
@@ -1457,11 +1459,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
-      libFn := dbAbbreviation db
       $lookupFunction: local := NRTgetLookupFunction(db,$NRTaddForm,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
-      $byteAddress :local := 0
-      $byteVec :local := nil
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
       LAM_,FILEACTQ('loadTimeStuff,
