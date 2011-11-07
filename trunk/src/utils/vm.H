@@ -55,29 +55,30 @@ namespace OpenAxiom {
       // that is the vast majority and most interesting values, have to
       // be stored in allocated objects and addresses of their container
       // objects used in place of the actual values.  This is folklore
-      // in the communities of garbage collected language implementations.
+      // in the communities of garbage collected languages.
+      // 
       // An unfortunate but widely held belief is that AXIOM-based
       // systems (and computer algebra systems in general) are
       // Lisp-based systems.  Nothing could be further from the truth
       // for OpenAxiom.  The type system is believed to support
       // erasure semantics, at least for values.
       //
-      // However,the current implementation being Lisp-based, it does
-      // unwittingly make use of some Lisp features that are not
-      // strictly necessary, but which would take a certain amount
-      // of effort to get rid of.  Consequently, we must cope -- at least
+      // However the current implementation, being Lisp-based,
+      // unwittingly makes use of some Lisp features that are not
+      // strictly necessary.  It would take a certain amount of effort
+      // to get rid of them.  Consequently, we must cope -- at least
       // for now -- with the notion of uniform value representation and
       // use runtime predicates to descriminate between values.
-      // However, we do not want to carry an unduly expensive abstraction
-      // penalty for perfectly well behaved and well disciplined programs.
-      // Here are a few constraints:
-      //   1. Small integers should represent themselves, not allocated.
-      //      Furthermore, the maximum range should be sought.
+      // On the other hand, we do not want to carry an unduly expensive
+      // abstraction penalty for perfectly well behaved and well
+      // disciplined programs.  So, here are a few constraints:
+      //   1. Small integers should represent themselves -- not allocated.
+      //      Furthermore, the maximum range should be sought where possible.
       //   2. Since we have to deal with characters, they should be
-      //      directly represented.
+      //      directly represented -- not allocated.
       //   3. List values and list manipulation should be efficient.
       //      Ideally, a pair should not occupy more than what it
-      //      takes to store two values.
+      //      takes to store two values in a type-erasure semantics.
       //   4. Idealy, pointers to foreign objects (at least) should be
       //      left unmolested.
       // 
@@ -91,43 +92,52 @@ namespace OpenAxiom {
       //   -- we allocate the first cell in each cons-storage arena
       //      on a 8-byte boundary
       //   -- we use exactly 2 * sizeof(Value) to store a cons cell
-      //      therefore realizing constraint (1)
+      //      therefore realizing constraint (3)
       // then:
-      //   each pointer to a cons cell will have its last 3 bits cleared.
+      //   every pointer to a cons cell will have its last 3 bits cleared.
       //
       // Therefore, we can use the last 3 bits to tag a cons value, instead
       // of storing the tag inside the cons cell.  we can't leave those
       // bits cleared for we would not be able to easily and cheaply
-      // distinguish a pointer to a cons cell from a pointer to other objects.
+      // distinguish a pointer to a cons cell from a pointer to other
+      // objects, in particular foreign objects.
       //
       // To meet constraint (1), we must logically use at least one bit
       // to distinguish a small integer from a pointer to a cons cell.
-      // The good news is that we need not need more than that if pointers
+      // The good news is that we need no more than that if pointers
       // to foreign pointers do not have the last bit set.  Which is
-      // pretty much the case in practice as crystallized in assumption (a).
+      // the case with assumption (a).  Furthermore, if we align all
+      // other internal data on 16 byte boundary, then we have 4 bits
+      // that we can use to categorize values.
       // Therefore we arrive at the first design:
       //    I. the value representation of small integer always have the
       //       the least significant bit set.  All other bits are
-      //       significant in representing small integers.
+      //       significant in representing small integers.  In other words,
+      //       the last four bits of a small integer are 0bxxx1
+      // 
       // As a consequence, the last bit of all other values must be cleared.
       //
-      // Next, cons cell values:
-      //    II. Cons cells are represented by their addresses with the
-      //        last 3 bits set to 0b110.
+      // Next,
+      //   II. All foreign pointers must have the last two bits cleared.
+      //       In consequence, the last four bits of all foreign addresses
+      //       follow the pattern 0bxx00.
+      // 
+      // As a consequence, the second bit of a cons cell value must be set
+      // so that we can distinguish it from foreign pointers.
+      // 
+      //  III. Cons cells are represented by their addresses with the
+      //       last 4 bits matching the pattern 0bx010.
       //
-      //    III. Any allocated object obj shall saisfy sizeof obj quo  4 = 0.
-      //         All allocated objects shall have alignment divisible by 4.
-      //         In consequence, the last two bits of object addresses
-      //         are cleared, i.e. 0b00.
+      //   IV. All internal objects are allocated on 16-byte boundary.
+      //       We set their last 4 bit to the pattern 0b0110.
+      //
       // Finally:
-      //    IV.  The representation of a character shall have the last two
-      //         bits set to 0b10.
+      //    V. The representation of a character shall have the last four
+      //       bits set to 0b1110.
       //
-      // Note: These choices do not satisfy constraint 4.  If we could
-      //     restrict pointer to foreign objects to address aligned
-      //     to multiple of 4 boundaries, then we can make different choices
-      //     that represents foreign address directly.
-      //     In the current design, foriegn addresses are allocated.
+      // Note: These choices do not fully satisfy constraint 4.  This is 
+      //     because we restrict foreign pointers to address aligned
+      //     to 4-byte boundaries.
 
 
       // -----------
@@ -135,26 +145,6 @@ namespace OpenAxiom {
       // -----------
       // All VM values fit in a universal value datatype.
       typedef uintptr_t Value;
-
-      // -------------
-      // -- Pointer --
-      // -------------
-      // Allocated objects are represented by their addresses.
-      using Memory::Pointer;
-
-      const Value ptr_tag = 0x0;
-
-      inline bool is_pointer(Value v) {
-         return (v & 0x3) == ptr_tag;
-      }
-
-      inline Pointer to_pointer(Value v) {
-         return Pointer(v);
-      }
-
-      inline Value from_pointer(Pointer p) {
-         return Value(p);
-      }
 
       // -------------
       // -- Fixnum ---
@@ -178,26 +168,24 @@ namespace OpenAxiom {
          return (Fixnum(i) << 1 ) | fix_tag;
       }
 
-      // ---------------
-      // -- Character --
-      // ---------------
+      // -------------
+      // -- Pointer --
+      // -------------
+      // Allocated objects are represented by their addresses.
+      using Memory::Pointer;
 
-      // This datatype is prepared for Uncode characters even if
-      // we do not handle UCN characters.
-      typedef Value Character;
+      const Value ptr_tag = 0x0;
 
-      const Value char_tag = 0x2;
-
-      inline bool is_character(Value v) {
-         return (v & 0x3) == char_tag;
+      inline bool is_pointer(Value v) {
+         return (v & 0x3) == ptr_tag;
       }
 
-      inline Character to_character(Value v) {
-         return Character(v >> 2);
+      inline Pointer to_pointer(Value v) {
+         return Pointer(v);
       }
 
-      inline Value from_character(Character c) {
-         return (Value(c) << 2) | char_tag;
+      inline Value from_pointer(Pointer p) {
+         return Value(p);
       }
 
       // ----------
@@ -211,7 +199,7 @@ namespace OpenAxiom {
 
       typedef ConsCell* Pair;
 
-      const Value pair_tag = 0x6;
+      const Value pair_tag = 0x2;
 
       inline bool is_pair(Value v) {
          return (v & 0x7) == pair_tag;
@@ -231,6 +219,48 @@ namespace OpenAxiom {
          return is_pair(v) ? to_pair(v) : 0;
       }
 
+      // ------------
+      // -- Object --
+      // ------------
+      struct BasicObject;
+      typedef BasicObject* Object;
+
+      const Value obj_tag = 0x6;
+
+      inline bool is_object(Value v) {
+         return (v & 0xF) == obj_tag;
+      }
+
+      inline Object to_object(Value v) {
+         return Object(v & ~0xF);
+      }
+
+      inline Value from_object(Object* o) {
+         return Value(o) | obj_tag;
+      }
+
+      // ---------------
+      // -- Character --
+      // ---------------
+
+      // This datatype is prepared for Uncode characters even if
+      // we do not handle UCN characters.
+      typedef Value Character;
+
+      const Value char_tag = 0xE;
+
+      inline bool is_character(Value v) {
+         return (v & 0xF) == char_tag;
+      }
+
+      inline Character to_character(Value v) {
+         return Character(v >> 4);
+      }
+
+      inline Value from_character(Character c) {
+         return (Value(c) << 4) | char_tag;
+      }
+
       // --
       // -- Builtin Operations
       // --
@@ -240,15 +270,6 @@ namespace OpenAxiom {
       typedef Value (*UnaryCode)(BasicContext*, Value);
       typedef Value (*BinaryCode)(BasicContext*, Value, Value);
       typedef Value (*TernaryCode)(BasicContext*, Value, Value, Value);
-
-      // ------------
-      // -- Object --
-      // ------------
-      template<typename T>
-      struct Object {
-         Value dict;
-         T data;
-      };
 
       // ------------------
       // -- BasicContext --
