@@ -1033,7 +1033,7 @@ deduceImplicitParameters(db,e) ==
     x = nil =>
       stackAndThrow('"Implicit parameter %1b has no visible constraint",[s])
     x is [.] => nil -- OK.
-    stackAndThrow("Too many constraints for implicit parameter %1b",[s])
+    stackAndThrow('"Too many constraints for implicit parameter %1b",[s])
   dbImplicitData(db) := [subst,preds]
     
 buildConstructorCondition db ==
