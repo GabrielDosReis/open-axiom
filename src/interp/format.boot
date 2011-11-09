@@ -345,7 +345,7 @@ prefix2String0 form ==
 --    ident? form => 
 --      constructor? form => app2StringWrap(formWrapId form, [form])
 --      formWrapId form
---    formWrapId STRINGIMAGE form
+--    formWrapId symbolName form
 
 form2StringWithWhere u ==
   $permitWhere : local := true
@@ -447,7 +447,6 @@ form2String1 u ==
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
   isBinaryInfix op => formatAsFortranExpression [op,:argl]
-  -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,nil)
   application2String(op,[form2String1 x for x in argl], u1)
 
 formWrapId id == 
@@ -796,7 +795,7 @@ form2Fence1 x ==
   ['"  ", x]
 
 form2FenceQuote x ==
-  integer? x => [STRINGIMAGE x]
+  integer? x => [toString x]
   symbol? x => [FORMAT(nil, '"|~a|", x)]
   string? x => ['"_"",x,'"_""]
   x isnt [.,:.] => systemErrorHere ["form2FenceQuote",x]

@@ -1322,7 +1322,7 @@ PushMatrix m ==
     for v in $MatrixList repeat
         m = rest v => return first v
   name => name
-  name:=INTERNL('"matrix",STRINGIMAGE($MatrixCount:=$MatrixCount+1))
+  name := makeSymbol strconc('"matrix",toString($MatrixCount:=$MatrixCount+1))
   $MatrixList:=[[name,:m],:$MatrixList]
   name
 
@@ -1684,7 +1684,7 @@ outputDomainConstructor form ==
   if VECTORP form then form := devaluate form
   (u:= prefix2String form) isnt [.,:.] => u
   v:= [object2String(x) for x in u]
-  return INTERNL apply(function strconc,v)
+  return makeSymbol apply(function strconc,v)
 
 getOutputAbbreviatedForm form ==
   form is [op,:argl] =>
@@ -1706,7 +1706,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= makeSymbol strconc('"*",STRINGIMAGE n,PNAME op)
+    newop:= makeSymbol strconc('"*",toString n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 

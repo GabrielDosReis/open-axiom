@@ -127,13 +127,13 @@ bcNotReady htPage ==
   htShowPage()
 
 htStringPad(n,w) ==
-  s := STRINGIMAGE n
+  s := toString n
   ws := #s
-  strconc('"\space{",STRINGIMAGE (w - ws + 1),'"}",s)
+  strconc('"\space{",toString (w - ws + 1),'"}",s)
 
 stringList2String x ==
   null x => '"()"
   strconc('"(",first x,strconc/[strconc('",",y) for y in rest x],'")")
 
-htMkName(s,n) == strconc(s,STRINGIMAGE n)
+htMkName(s,n) == strconc(s,toString n)
 

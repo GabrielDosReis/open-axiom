@@ -694,7 +694,7 @@ countCache n ==
       for x in l repeat
         not ident? x => sayKeyedMsg("S2IF0007",[x])
         $cacheAlist:= insertAlist(x,n,$cacheAlist)
-        cacheCountName:= INTERNL(x,'";COUNT")
+        cacheCountName:= makeSymbol strconc(x,'";COUNT")
         symbolValue(cacheCountName) := n
         sayCacheCount(x,n)
     optionError(CAAR $options,nil)

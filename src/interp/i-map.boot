@@ -48,8 +48,8 @@ $insideCompileBodyIfTrue := false
 $specialMapNameSuffix := nil
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
-  name := strconc('"*",STRINGIMAGE numArgs,'";",
-    object2String userName,'";",STRINGIMAGE numMms,'";",
+  name := strconc('"*",toString numArgs,'";",
+    object2String userName,'";",toString numMms,'";",
       object2String frameName first $interpreterFrameRing )
   if extraPart then name := strconc(name,'";",extraPart)
   if $specialMapNameSuffix then
@@ -485,7 +485,7 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
 --% User function analysis
 
 mapCatchName mapname ==
-   makeSymbol strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
+   makeSymbol strconc('"$",symbolName mapname,'"CatchMapIdentifier$")
 
 analyzeMap(op,argTypes,mapDef, tar) ==
   -- Top level enty point for map type analysis.  Sets up catch point
@@ -988,7 +988,7 @@ mkValCheck(val,i) ==
 
 mkSharpVar i ==
   -- create #i
-  makeSymbol strconc('"#",STRINGIMAGE i)
+  makeSymbol strconc('"#",toString i)
 
 mapPredTran pred ==
   -- transforms "x in i..j" to "x>=i and x<=j"

@@ -208,7 +208,7 @@ issueHTSaturn line == --called by htMakePageNoScroll and htMakeErrorPage
 writeSaturnPrefix() ==
   $saturnContextMenuLines =>
     index :=
-      STRINGIMAGE ($saturnContextMenuIndex := $saturnContextMenuIndex + 1)
+      toString ($saturnContextMenuIndex := $saturnContextMenuIndex + 1)
     writeSaturnLines
       ['"\newmenu{BCM", index,
           '"}{",:reverse! $saturnContextMenuLines,
@@ -950,7 +950,7 @@ kPageArgs([op,:args],[.,.,:source]) ==
     if pred = true
       then htMakePage [['bcLinks,[x,'"",'kArgPage,x]]]
       else htSay('"{\em ",x,'"}")
-    htSayStandard( '"\tab{",STRINGIMAGE( # PNAME x),'"}, ")
+    htSayStandard( '"\tab{",toString(#PNAME x),'"}, ")
     htSaySaturnAmpersand()
     htSay
       pred => '"a domain of category "
@@ -1395,8 +1395,8 @@ htSayIndentRel(n,:options) ==
   if flag then m := m + 2
   if $standard then htSayStandard
     n > 0 =>
-      flag => ['"\indent{",STRINGIMAGE m,'"}\tab{-2}"]
-      ['"\indent{",STRINGIMAGE m,'"}\tab{0}"]
+      flag => ['"\indent{",toString m,'"}\tab{-2}"]
+      ['"\indent{",toString m,'"}\tab{0}"]
     n < 0 => ['"\indent{0}\newline "]
 
 htSayUnexposed() ==
@@ -1474,7 +1474,7 @@ htSaySaturnAmpersand() == htSaySaturn $saturnAmpersand
 htBlank(:options) ==
   options is [n] =>
     htSaySaturn(strconc/['"\phantom{*}" for i in 1..n])
-    htSayStandard strconc('"\space{",STRINGIMAGE n,'"}")
+    htSayStandard strconc('"\space{",toString n,'"}")
   htSaySaturn '"\phantom{*}"
   htSayStandard '"\space{1}"
 

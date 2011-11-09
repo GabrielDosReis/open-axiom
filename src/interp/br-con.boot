@@ -109,7 +109,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
       if abbrev ~= name then bcHt '" and"
       bcHt
         nargs = 1 => '" takes one argument:"
-        [" takes ",STRINGIMAGE nargs," arguments:"]
+        [" takes ",toString nargs," arguments:"]
   htSaturnBreak()
   htSayStandard '"\indentrel{2}"
   if nargs > 0 then kPageArgs(conform,signature)
@@ -292,9 +292,9 @@ kePageDisplay(htPage,which,opAlist) ==
   if count ~= total then
     if count = 1
     then htSay('"1 name for ")
-    else htSay(STRINGIMAGE count,'" names for ")
+    else htSay(toString count,'" names for ")
   if total > 1
-    then htSay(STRINGIMAGE total,'" ",pluralize which,'" are explicitly exported:")
+    then htSay(toString total,'" ",pluralize which,'" are explicitly exported:")
     else htSay('"1 ",which,'" is explicitly exported:")
   htSaySaturn '"\\"
   data := dbGatherData(htPage,opAlist,which,'names)
@@ -568,7 +568,7 @@ kcnPage(htPage,junk) ==
   dbShowCons(htPage,'names)
 
 koPageInputAreaUnchanged?(htPage, nargs) ==
-  [htpLabelInputString(htPage,makeSymbol strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
+  [htpLabelInputString(htPage,makeSymbol strconc('"*",toString i)) for i in 1..nargs]
       = htpProperty(htPage,'inputAreaList)
 
 kDomainName(htPage,kind,name,nargs) ==
@@ -1014,7 +1014,7 @@ dbConsHeading(htPage,conlist,view,kind) ==
   count := #(removeDuplicates conlist)
   -- count := #conlist
   thing = '"benefactor" =>
-    [STRINGIMAGE count,'" Constructors Used by ",form2HtString(place,nil,true)]
+    [toString count,'" Constructors Used by ",form2HtString(place,nil,true)]
   modifier :=
     thing = '"argument" =>
       rank := htPage and htpProperty(htPage,'rank)
@@ -1027,8 +1027,8 @@ dbConsHeading(htPage,conlist,view,kind) ==
     $exposedOnlyIfTrue => '(" Exposed ")
     nil
   prefix :=
-    count = 1 => [STRINGIMAGE count,:modifier,capitalize thing]
-    firstWord := (count = 0 => '"No "; STRINGIMAGE count)
+    count = 1 => [toString count,:modifier,capitalize thing]
+    firstWord := (count = 0 => '"No "; toString count)
     [firstWord,:exposureWord, :modifier,capitalize pluralize thing]
   placepart :=
     place => ['" of {\em ",form2HtString(place,nil,true),"}"]

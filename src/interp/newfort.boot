@@ -79,7 +79,7 @@ expression2Fortran1(name,e) ==
 
 newFortranTempVar() ==
   $exp2FortTempVarIndex := 1 + $exp2FortTempVarIndex
-  newVar := makeSymbol strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
+  newVar := makeSymbol strconc('"T",toString $exp2FortTempVarIndex)
   updateSymbolTable(newVar,$defaultFortranType)
   newVar
  
@@ -909,7 +909,7 @@ fortSize e ==
       z isnt [.,:.] => z
       first z
  
-tempLen () == 1 + # STRINGIMAGE $exp2FortTempVarIndex
+tempLen () == 1 + # toString $exp2FortTempVarIndex
  
 segment l ==
   not $fortranSegment => l

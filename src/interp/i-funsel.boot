@@ -892,7 +892,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   if maxargs ~= -1 then
     SL:= nil
     for i in 1..maxargs repeat
-      impls := substitute(gensym(),INTERNL('"#",STRINGIMAGE i),impls)
+      impls := substitute(gensym(),makeSymbol strconc('"#",toString i),impls)
   impls and
     SL:= constructSubst dc
     for mm in impls repeat
@@ -964,7 +964,7 @@ constructSubst(d) ==
   -- and the arguments of d for #1, #2 ..
   SL:= list ['$,:d]
   for x in rest d for i in 1.. repeat
-    SL:= [[INTERNL('"#",STRINGIMAGE i),:x],:SL]
+    SL:= [[makeSymbol strconc('"#",toString i),:x],:SL]
   SL
 
 filterModemapsFromPackages(mms, names, op) ==
@@ -1734,7 +1734,7 @@ printMms(mmS) ==
   -- mmS a list of modemap signatures
   sayMSG '" "
   for [sig,imp,.] in mmS for i in 1.. repeat
-    istr := strconc('"[",STRINGIMAGE i,'"]")
+    istr := strconc('"[",toString i,'"]")
     if #istr = 3 then istr := strconc(istr,'" ")
     sayMSG [:bright istr,'"signature:   ",:formatSignature rest sig]
     first sig is 'local =>
