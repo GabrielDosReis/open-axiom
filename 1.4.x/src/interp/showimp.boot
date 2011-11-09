@@ -281,7 +281,7 @@ dcSlots con ==
     sayBrightlyNT bright i
     item := template.i
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
-    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
+    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",toString(i - 5))]
     item isnt [.,:.] => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
@@ -319,7 +319,7 @@ formatSlotDomain x ==
   x = 2 => ["$$"]
   integer? x =>
     val := $infovec.0.x
-    null val => [strconc('"#",STRINGIMAGE (x  - 5))]
+    null val => [strconc('"#",toString (x  - 5))]
     formatSlotDomain val
   x isnt [.,:.] => x
   x is ['NRTEVAL,y] => (y isnt [.,:.] => [y]; y)
@@ -449,7 +449,7 @@ dcData1 vec ==
   tens := n quo 10
   for i in 0..tens repeat
     start := 10*i
-    sayBrightlyNT rightJustifyString(STRINGIMAGE start,6)
+    sayBrightlyNT rightJustifyString(toString start,6)
     sayBrightlyNT '"  |"
     for j in start..MIN(start + 9,n) repeat
       sayBrightlyNT rightJustifyString(STRINGIMAGE vec.j,6)

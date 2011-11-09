@@ -2418,7 +2418,7 @@ undoCount(n) ==  --computes the number of undo's, given $IOindex
   m :=
     n >= 0 => $IOindex - n - 1
     -n
-  m >= $IOindex => userError strconc('"Magnitude of undo argument must be less than step number (",STRINGIMAGE $IOindex,'").")
+  m >= $IOindex => userError strconc('"Magnitude of undo argument must be less than step number (",toString $IOindex,'").")
   m
 
 
@@ -2507,7 +2507,7 @@ removeUndoLines u == --called by writeInputLines
            s1 = '")redo" => 0
            s2 ~= '"" => undoCount readInteger s2
            -1
-        y.first := strconc('">",code,STRINGIMAGE n)
+        y.first := strconc('">",code,toString n)
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil

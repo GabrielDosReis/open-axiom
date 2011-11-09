@@ -516,7 +516,7 @@ makeMsgFromLine line ==
     globalNumOfLine := poGlobalLinePosn posOfLine
     localNumOfLine  :=
         i := poLinePosn posOfLine
-        stNum := STRINGIMAGE i
+        stNum := toString i
         strconc(rep(char " ", ($preLength - 7 - # stNum)),_
          stNum)
     ['line,posOfLine,nil,nil, strconc('"Line", localNumOfLine),_

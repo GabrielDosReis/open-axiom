@@ -154,11 +154,11 @@ finalizeDocumentation ctor ==
         litcnt := 1
         if noHeading then
           sayKeyedMsg("S2CD0003",
-            [strconc('"(",STRINGIMAGE litcnt,'")"),ctor])
+            [strconc('"(",toString litcnt,'")"),ctor])
           litcnt := litcnt + 1
         if signatures then
           sayKeyedMsg("S2CD0004",
-            [strconc('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",toString litcnt,'")")])
           litcnt := litcnt + 1
           for [op,sig] in signatures repeat
             s := formatOpSignature(op,sig)
@@ -167,7 +167,7 @@ finalizeDocumentation ctor ==
               ['%x9,:s]
         if attributes then
           sayKeyedMsg("S2CD0005",
-            [strconc('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",toString litcnt,'")")])
           litcnt := litcnt + 1
           for x in attributes repeat
             a := form2String x
@@ -175,7 +175,7 @@ finalizeDocumentation ctor ==
               a isnt [.,:.] => ['%x9,a]
               ['%x9,:a]
       if unusedCommentLineNumbers then
-        sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),ctor])
+        sayKeyedMsg("S2CD0006",[strconc(toString bigcnt,'"."),ctor])
         for [n,r] in unusedCommentLineNumbers repeat
           sayMSG ['"   ",:bright n,'"   ",r]
   form := dbConstructorForm constructorDB ctor
@@ -618,7 +618,7 @@ checkIndentedLines(u, margin) ==
         u2 := [:u2, s]
     verbatim => u2 := [:u2, subString(x, margin)]
     margin = k => u2 := [:u2, s]
-    u2 := [:u2, strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
+    u2 := [:u2, strconc('"\indented{",toString(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
   u2
 
 newString2Words l ==
@@ -687,7 +687,7 @@ checkAddIndented(x,margin) ==
   k := firstNonBlankPosition x
   k = -1 => '"\blankline "
   margin = k => x
-  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(subString(x,k),0),'"}")
+  strconc('"\indented{",toString(k-margin),'"}{",checkAddSpaceSegments(subString(x,k),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
   m := maxIndex u
@@ -697,7 +697,7 @@ checkAddSpaceSegments(u,k) ==
   while (j := j + 1) < m and stringChar(u,j) = char " " repeat 'continue
   n := j - i   --number of blanks
   n > 1 => strconc(subString(u,0,i),'"\space{",
-             STRINGIMAGE n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
+             toString n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
   checkAddSpaceSegments(u,j)
 
 checkTrim($x,lines) == main where

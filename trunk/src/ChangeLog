@@ -1,3 +1,38 @@
+2011-11-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compFunctorBody): First argument is now a DB.
+	Adjustt caller.
+	(incompleteFunctorBody): Likewise.
+	* interp/bc-matrix.boot: Use toString instead of STRINGIMAGE where
+	appropriate.
+	* interp/bc-solve.boot: Likewise.
+	* interp/bc-util.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-special.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/pathname.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
 2011-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (isDomainForm): Tidy.

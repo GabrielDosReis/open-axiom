@@ -68,13 +68,13 @@ MKPROMPT() ==
   $inputPromptType = 'none    => '""
   $inputPromptType = 'plain   => '"-> "
   $inputPromptType = 'step    =>
-    strconc('"(",STRINGIMAGE $IOindex,'") -> ")
+    strconc('"(",toString $IOindex,'") -> ")
   $inputPromptType = 'frame   =>
     strconc(STRINGIMAGE $interpreterFrameName,
-      '" (",STRINGIMAGE $IOindex,'") -> ")
+      '" (",toString $IOindex,'") -> ")
   strconc(STRINGIMAGE $interpreterFrameName,
    '" [", subString(CURRENTTIME(),8),'"] [",
-    STRINGIMAGE $IOindex, '"] -> ")
+    toString $IOindex, '"] -> ")
  
 
 printPrompt(flush? == false) ==

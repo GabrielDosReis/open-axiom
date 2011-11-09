@@ -392,9 +392,9 @@ displayComp level ==
   sayBrightly ['"****** level",:bright level,'" ******"]
   [$x,$m,$f,$exitModeStack]:= ELEM($s,level)
   SAY("$x:= ",$x)
-  SAY("$m:= ",$m)
-  SAY "$f:="
-  F_,PRINT_-ONE $f
+  sayBrightly ['"$m := ",form2String $m]
+  --SAY "$f:="
+  --F_,PRINT_-ONE $f
   nil
  
 mkErrorExpr level ==
@@ -903,13 +903,13 @@ flatten(l,key) ==
  
 genDomainVar() ==
   $Index:= $Index+1
-  INTERNL strconc('"#D",STRINGIMAGE $Index)
+  makeSymbol strconc('"#D",toString $Index)
  
 genVariable() ==
-  INTERNL strconc('"#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  makeSymbol strconc('"#G",toString ($genSDVar:= $genSDVar+1))
  
 genSomeVariable() ==
-  INTERNL strconc('"##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  makeSymbol strconc('"##",toString ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
   ident? x => [x]
@@ -1454,7 +1454,7 @@ backendCompileILAM(name,args,body) ==
 $CLOSEDFNS := nil
 
 MAKE_-CLOSEDFN_-NAME() ==
-  INTERNL($FUNNAME,'"!", STRINGIMAGE # $CLOSEDFNS)
+  makeSymbol strconc($FUNNAME,'"!", toString # $CLOSEDFNS)
 
 backendCompileNEWNAM: %Form -> %Void
 backendCompileNEWNAM x ==
@@ -1479,7 +1479,7 @@ backendCompileNEWNAM x ==
 backendCompileSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
   al := mkCacheName name        -- name of the cache alist.
-  auxfn := INTERNL(name,'";")   -- name of the worker function.
+  auxfn := makeSymbol strconc(name,'";")   -- name of the worker function.
   g1 := gensym()                -- name for the parameter.
   g2 := gensym()                -- name for the cache value
   u :=                          -- body of the stub function
@@ -1511,7 +1511,7 @@ backendCompileSLAM(name,args,body) ==
 backendCompileSPADSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
   al := mkCacheName name       -- name of the cache hash table.
-  auxfn := INTERNL(name,'";")  -- name of the worker function.
+  auxfn := makeSymbol strconc(name,'";")  -- name of the worker function.
   g1 := gensym()               -- name of the worker function parameter
   g2 := gensym()               -- name for the cache value.
   u := 

@@ -98,15 +98,15 @@ compClam(op,argl,body,$clamList) ==
     cacheCount=1 => ['"computed value only"]
     [:bright cacheCount,'"computed values"]
   sayBrightly [:bright op,'"will save last",:phrase]
-  auxfn:= INTERNL(op,'";")
+  auxfn:= makeSymbol strconc(op,'";")
   g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
   cacheName:= mkCacheName op
   if $reportCounts then
-    hitCounter:= INTERNL(op,'";hit")
-    callCounter:= INTERNL(op,'";calls")
+    hitCounter:= makeSymbol strconc(op,'";hit")
+    callCounter:= makeSymbol strconc(op,'";calls")
     symbolValue(hitCounter) := 0
     symbolValue(callCounter) := 0
     callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
@@ -190,7 +190,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --  '"privately "
 --sayBrightly
 --  ["%b",op,"%d","hashes ",:middle,withWithout," reference counts"]
-  auxfn:= INTERNL(op,'";")
+  auxfn:= makeSymbol strconc(op,'";")
   g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
@@ -204,8 +204,8 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
   if $reportCounts then
-    hitCounter:= INTERNL(op,'";hit")
-    callCounter:= INTERNL(op,'";calls")
+    hitCounter:= makeSymbol strconc(op,'";hit")
+    callCounter:= makeSymbol strconc(op,'";calls")
     symbolValue(hitCounter) := 0
     symbolValue(callCounter) := 0
     callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
@@ -283,7 +283,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
  
   if (not (eqEtc in '(UEQUAL))) then
     sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
-  auxfn:= INTERNL(op,'";")
+  auxfn:= makeSymbol strconc(op,'";")
   g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
@@ -492,8 +492,8 @@ clamStats() ==
     cacheVec:= property(op,'cacheInfo) or systemErrorHere ["clamStats",op]
     prefix:=
       $reportCounts ~= true => nil
-      hitCounter:= INTERNL(op,'";hit")
-      callCounter:= INTERNL(op,'";calls")
+      hitCounter:= makeSymbol strconc(op,'";hit")
+      callCounter:= makeSymbol strconc(op,'";calls")
       res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
       symbolValue(hitCounter) := 0
       symbolValue(callCounter) := 0

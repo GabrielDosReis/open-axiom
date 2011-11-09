@@ -48,13 +48,13 @@ printNamedStatsByProperty(listofnames, prop) ==
   total := +/[property(name,prop) for [name,:.] in listofnames]
   for [name,:.] in listofnames repeat
     n := property(name, prop)
-    strname := STRINGIMAGE name
-    strval  := STRINGIMAGE n
+    strname := symbolName name
+    strval  := toString n
     sayBrightly concat(bright strname,
       fillerSpaces(70-#strname-#strval,char "."),bright strval)
   sayBrightly bright fillerSpaces(72,char "-")
   sayBrightly concat(bright '"Total",
-    fillerSpaces(65-# STRINGIMAGE total,char "."),bright STRINGIMAGE total)
+    fillerSpaces(65-# toString total,char "."),bright toString total)
  
 makeLongStatStringByProperty _
  (listofnames, listofclasses, prop, classprop, units, flag) ==
@@ -102,9 +102,9 @@ normalizeStatAndStringify t ==
   integer? t =>
       K := 1024
       M := K*K
-      t > 9*M => strconc(STRINGIMAGE((t + 512*K) quo M), '"M")
-      t > 9*K => strconc(STRINGIMAGE((t + 512) quo K),   '"K")
-      STRINGIMAGE t
+      t > 9*M => strconc(toString((t + 512*K) quo M), '"M")
+      t > 9*K => strconc(toString((t + 512) quo K),   '"K")
+      toString t
   STRINGIMAGE t
  
 significantStat t ==

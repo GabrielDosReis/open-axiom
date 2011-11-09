@@ -150,10 +150,10 @@ dbShowOp1(htPage,opAlist,which,key) ==
     opCount = 0 => ['"No ",:exposurePart, pluralize capitalize which]
     dataCount = 1 or dataCount = opCount =>
       opCount = 1 => [:exposurePart, capitalize which,:namedPart]
-      [STRINGIMAGE opCount,'" ",:exposurePart,
+      [toString opCount,'" ",:exposurePart,
          pluralize capitalize which,:namedPart]
     prefix := pluralSay(dataCount,what,whats)
-    [:prefix,'" for ",STRINGIMAGE opCount,'" ",pluralize capitalize which,:namedPart]
+    [:prefix,'" for ",toString opCount,'" ",pluralize capitalize which,:namedPart]
   page := htInitPageNoScroll(htCopyProplist htPage)
   ------------>above line used to call htInitPageHoHeading<----------
   htAddHeading dbShowOpHeading([:firstPart,:fromHeading page], branch)

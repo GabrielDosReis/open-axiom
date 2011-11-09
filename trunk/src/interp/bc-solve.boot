@@ -144,10 +144,10 @@ bcInputEquations(htPage,solutionMethod) ==
       (bcStrings (6 0 r1 P)))
     "append"/[f(i,numEqs,linearPred) for i in 1..numEqs] where f(i,n,linearp) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
-      prefix := strconc('"\newline\tab{2}{\em Equation ",STRINGIMAGE i,'":}")
-      prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      lnam := makeSymbol strconc('"l",STRINGIMAGE i)
-      rnam := makeSymbol strconc('"r",STRINGIMAGE i)
+      prefix := strconc('"\newline\tab{2}{\em Equation ",toString i,'":}")
+      prefix := strconc(prefix,'"\space{",toString spacer,'"}")
+      lnam := makeSymbol strconc('"l",toString i)
+      rnam := makeSymbol strconc('"r",toString i)
       var:= 
         linearp => bcMakeLinearEquations(i,n)
         bcMakeEquations(i,n)
@@ -181,7 +181,7 @@ bcInputEquations(htPage,solutionMethod) ==
   htShowPage()
 
 bcCreateVariableString(i) == 
-   strconc('"x",STRINGIMAGE i)
+   strconc('"x",toString i)
 
 bcMakeUnknowns(number)==
    apply(function strconc,[strconc(bcCreateVariableString(i),'" ") for i in 1..number])
@@ -275,10 +275,10 @@ bcLinearSolveMatrixInhomo(htPage,junk) ==
   labelList := 
     [f(i) for i in 1..ncols] where f(i) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
-      prefix := strconc('"{\em Coefficient ",STRINGIMAGE i,'":}")
+      prefix := strconc('"{\em Coefficient ",toString i,'":}")
       if spacer ~= 0 then
-        prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      name := makeSymbol strconc('"c",STRINGIMAGE i)
+        prefix := strconc(prefix,'"\space{",toString spacer,'"}")
+      name := makeSymbol strconc('"c",toString i)
       [prefix,"",30, 0,name, 'P]
   page := htInitPage('"Linear Solve Basic Command",htpPropertyList htPage)
   htpSetProperty(page,'matrix,htpProperty(htPage,'matrix))

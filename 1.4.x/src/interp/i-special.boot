@@ -2496,7 +2496,7 @@ up%Add t ==
 --  them on the property list of the function name
 
 for name in $specialOps repeat
-   functionName:=INTERNL('up,name)
+   functionName := makeSymbol strconc('up,name)
    property(name,'up) := functionName
 
   

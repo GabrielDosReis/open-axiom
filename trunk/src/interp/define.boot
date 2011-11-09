@@ -1443,7 +1443,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
          and (u := getSuperDomainFromDB rhsCtor) then 
            u := sublisFormal(rhsArgs,u,$AtVariables)
            emitSubdomainInfo($form,first u, second u)
-    T:= compFunctorBody(body,rettype,$e,parForm)
+    T:= compFunctorBody(db,body,rettype,$e)
     body':= T.expr
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
@@ -1475,28 +1475,28 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
 
 
 ++ Finish the incomplete compilation of a functor body.
-incompleteFunctorBody(form,m,body,e) ==
+incompleteFunctorBody(db,m,body,e) ==
   -- The slot numbers from the category shell are bogus at this point.
   -- Nullify them so people don't think they bear any meaningful
   -- semantics (well, they should not think these are forwarding either).
   ops := nil
   for [opsig,pred,funsel] in categoryExports $domainShell repeat
-    if pred isnt 'T then
+    if pred isnt true then
       pred := simpBool pred
     if funsel is [op,.,.] and op in '(ELT CONST) then
       third(funsel) := nil
     ops := [[opsig,pred,funsel],:ops]
   $lisplibOperationAlist := listSort(function GGREATERP,ops,function first)
-  dbSuperDomain(constructorDB form.op) :=
+  dbSuperDomain(db) :=
     body is ['SubDomain,dom,pred] => [dom,pred]
     body is ['add,['SubDomain,dom,pred],:.] => [dom,pred]
     nil
-  [bootStrapError(form, _/EDITFILE),m,e]
+  [bootStrapError(dbConstructorForm db, _/EDITFILE),m,e]
 
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code
 ++ for a functor definition. 
-compFunctorBody(body,m,e,parForm) ==
-  $bootStrapMode => incompleteFunctorBody($functorForm,m,body,e)
+compFunctorBody(db,body,m,e) ==
+  $bootStrapMode => incompleteFunctorBody(db,m,body,e)
   clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
   $capsuleFunctionStack := reverse! $capsuleFunctionStack
@@ -1821,7 +1821,7 @@ addDomain(domain,e) ==
   domain isnt [.,:.] =>
     domain="$EmptyMode" => e
     domain="$NoValueMode" => e
-    not ident? domain or 2 < #(s:= STRINGIMAGE domain) and
+    not ident? domain or 2 < #(s:= symbolName domain) and
       char "#" = stringChar(s,0) and char "#" = stringChar(s,1) => e
     symbolMember?(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e

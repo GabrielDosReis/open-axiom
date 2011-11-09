@@ -138,7 +138,7 @@ getFunctionSourceFile1 fun ==
   (file := KDR GETL(fun,'DEFLOC)) => pathname file
   null ((fileinfo := FUNLOC fun) or
     (fileinfo := FUNLOC unabbrev fun)) =>
-      u := bootFind fun => getFunctionSourceFile1 SETQ($FUNCTION,INTERN u)
+      u := bootFind fun => getFunctionSourceFile1 SETQ($FUNCTION,makeSymbol u)
       nil
   3 = #fileinfo =>
     [fn,ft,$FUNCTION] := fileinfo

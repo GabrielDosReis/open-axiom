@@ -395,7 +395,7 @@ resolveTCat1(t,c) ==
   t1 := nil
 
   for ut in rest t for i in 1.. while (argN = 0) repeat
-    sharp := INTERNL('"#",STRINGIMAGE i)
+    sharp := makeSymbol strconc('"#",toString i)
     sharp = pat =>
       argN := i
       t1 := ut

@@ -659,7 +659,7 @@ shortenForPrinting val ==
   val
 
 spadTraceAlias(domainId,op,n) ==
-  INTERNL(domainId,".",op,",",STRINGIMAGE n)
+  makeSymbol strconc(domainId,".",op,",",STRINGIMAGE n)
 
 getOption(opt,l) ==
   y:= ASSOC(opt,l) => rest y

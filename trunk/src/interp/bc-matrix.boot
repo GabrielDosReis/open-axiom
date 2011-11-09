@@ -100,7 +100,7 @@ bcInputMatrixByFormulaGen htPage ==
   nrows := htpProperty(htPage,'nrows)
   ncols := htpProperty(htPage,'ncols)
   bcGen strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
-    STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
+    toString ncols,'"] for ",rowVar,'" in 1..",toString nrows,'"])")
 
 bcInputExplicitMatrix(htPage,junk) ==
   nrows := 
@@ -111,15 +111,15 @@ bcInputExplicitMatrix(htPage,junk) ==
     readInteger htpLabelInputString(htPage,'cols)
   cond := nil
   k := 0
-  wrows := # STRINGIMAGE nrows
-  wcols := # STRINGIMAGE ncols
+  wrows := #toString nrows
+  wcols := #toString ncols
   labelList := 
     "append"/[[f for j in 1..ncols] for i in 1..nrows] where f() ==
       rowpart := strconc('"{\em Row",htStringPad(i,wrows))
       colpart := strconc('", Column",htStringPad(j,wcols),'":}\space{2}")
       prefix := strconc(rowpart,colpart)
  --     name := makeSymbol strconc(htMkName('"row",i),htMkName('"col",j))
-      name := makeSymbol STRINGIMAGE (k := k + 1)
+      name := makeSymbol toString (k := k + 1)
       [prefix,'"",30, 0,name,'P]
   labelList := 
     [['domainConditions, '(isDomain P (Polynomial $EmptyMode)), cond],
@@ -146,7 +146,7 @@ bcMatrixGen htPage ==
     rowVar := (symbolTarget('rowVar,mat)).0
     colVar := (symbolTarget('colVar,mat)).0
     strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
-      STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
+      toString ncols,'"] for ",rowVar,'" in 1..",toString nrows,'"])")
   mat := htpProperty(htPage,'matrix) =>
     mat := reverse mat
     k := -1

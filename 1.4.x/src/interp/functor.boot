@@ -133,7 +133,7 @@ DomainPrint1(D,brief,$e) ==
     PRETTYPRINT uu
  
 DPname() ==
-  name := INTERNL strconc('"Where",toString $WhereCounter)
+  name := makeSymbol strconc('"Where",toString $WhereCounter)
   $WhereCounter := $WhereCounter+1
   name
  
@@ -791,7 +791,7 @@ encodeFunctionName(db,fun,signature,sep,count) ==
         encodedPair() ==
           n=1 => encodeItem x
           strconc(toString n,encodeItem x)
-    encodedName:= INTERNL(symbolName dbAbbreviation db,'";",
+    encodedName:= makeSymbol strconc(symbolName dbAbbreviation db,'";",
         encodeItem fun,'";",encodedSig,sep,toString count)
     dbCapsuleDefinitions(db) :=
       [[encodedName,signature'],:dbCapsuleDefinitions db]
