@@ -1,3 +1,11 @@
+2011-11-09  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/define.boot (compDefineFunctor1): Clear dbTemplate before
+	compilation starts.
+	* interp/lisplib.boot (writeLoadInfo): New.
+	(writeTemplate): Likewise.
+	(finalizeLisplib): Use it to write template.
+
 2011-11-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compFunctorBody): First argument is now a DB.

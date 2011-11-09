@@ -1381,6 +1381,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbConstructorForm(db) := form
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
+    dbTemplate(db) := nil
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:argl,:$formalArgList]
     -- all defaulting packages should have caching turned off

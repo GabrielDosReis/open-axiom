@@ -469,7 +469,22 @@ writeInfo(ctor,info,key,prop,file) ==
     insn := ['%store,[prop,mkCtorDBForm ctor],quote info]
     LAM_,FILEACTQ(key,expandToVMForm insn)
   lisplibWrite(symbolName key,info,file)
-  
+
+++ Like writeInfo, but only write to the load unit.
+writeLoadInfo(ctor,info,key,prop,file) ==
+  info = nil => nil
+  insn := ['%store,[prop,mkCtorDBForm ctor],info]
+  LAM_,FILEACTQ(key,expandToVMForm insn)
+
+literalData x ==
+  x = nil => nil
+  quote x
+
+writeTemplate(db,file) ==
+  dbConstructorKind db = 'category => nil
+  writeLoadInfo(dbConstructor db,literalData dbTemplate db,
+    'template,'dbTemplate,file)
+
 writeKind(ctor,kind,file) ==
   writeInfo(ctor,kind,'constructorKind,'dbConstructorKind,file)
 
@@ -525,6 +540,7 @@ finalizeLisplib(ctor,libName) ==
   kind := dbConstructorKind db
   form := dbConstructorForm db
   mm := getConstructorModemap ctor
+  writeTemplate(db,$libFile)
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,mm,$libFile)
