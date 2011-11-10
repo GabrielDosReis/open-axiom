@@ -195,15 +195,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    xor: (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.
-   Not  : % -> %
-      ++ Not(n) returns the bit-by-bit logical {\em not} of the single integer n.
-   And  : (%,%) -> %
-      ++ And(n,m)  returns the bit-by-bit logical {\em and} of
-      ++ the single integers n and m.
-   Or   : (%,%) -> %
-      ++ Or(n,m)  returns the bit-by-bit logical {\em or} of
-      ++ the single integers n and m.
-
  == SubDomain(Integer, %ismall?(#1)$Foreign(Builtin)) add
 
    import %icst0: %                 from Foreign Builtin
@@ -251,10 +242,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    not(x)    == %bitnot x
    x /\ y    == %bitand(x,y)
    x \/ y    == %bitior(x,y)
-   Not(x)    == %bitnot x
-   And(x,y)  == %bitand(x,y)
    x and y   == %bitand(x,y)
-   Or(x,y)   == %bitior(x,y)
    x or y    == %bitior(x,y)
    xor(x,y)  == %bitxor(x,y)
    x < y     == %ilt(x,y)
