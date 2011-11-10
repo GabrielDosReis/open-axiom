@@ -534,16 +534,7 @@ Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
 ++ Description: \spadtype{IndexedBits} is a domain to compactly represent
 ++ large quantities of Boolean data.
 
-IndexedBits(mn:Integer): BitAggregate() with
-        -- temporaries until parser gets better
-        Not: % -> %
-            ++ Not(n) returns the bit-by-bit logical {\em Not} of n.
-        Or : (%, %) -> %
-            ++ Or(n,m)  returns the bit-by-bit logical {\em Or} of
-            ++ n and m.
-        And: (%, %) -> %
-            ++ And(n,m)  returns the bit-by-bit logical {\em And} of
-            ++ n and m.
+IndexedBits(mn:Integer): BitAggregate()
     == add
         import %2bool: NonNegativeInteger -> Boolean  from Foreign Builtin
         import %2bit: Boolean -> NonNegativeInteger   from Foreign Builtin
@@ -589,9 +580,9 @@ IndexedBits(mn:Integer): BitAggregate() with
         elt(v:%, i:Integer) ==
           %2bool %bitvecref(v,range(v,i-mn))
 
-        Not v           == %bitvecnot v
-        And(u, v)       == (#v=#u => %bitvecand(v,u); map("and",v,u))
-        Or(u, v)        == (#v=#u => %bitvecor(v,u); map("or", v,u))
+        ~v           == %bitvecnot v
+        u /\ v       == (#v=#u => %bitvecand(v,u); map("and",v,u))
+        u \/ v       == (#v=#u => %bitvecor(v,u); map("or", v,u))
 
 @
 \section{domain BITS Bits}

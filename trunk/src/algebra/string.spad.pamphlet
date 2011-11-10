@@ -217,10 +217,10 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	a = b		== a =$Rep b
 
 	member?(c, a)	== a(ord c)
-	union(a,b)	== Or(a, b)
-	intersect (a,b) == And(a, b)
-	difference(a,b) == And(a, Not b)
-	complement a	== Not a
+	union(a,b)	== a \/ b
+	intersect (a,b) == a /\ b
+	difference(a,b) == a /\ (~b)
+	complement a	== ~a
 
 	convert(cl):String ==
 	  construct(convert(cl)@List(Character))

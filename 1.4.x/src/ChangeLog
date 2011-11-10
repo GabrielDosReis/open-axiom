@@ -1,3 +1,11 @@
+2011-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (IndexedBits) [Not, Or, And]: Remove.
+	Implement ~. \/, and /\ instead.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/pattern.spad.pamphlet (Pattern): Adjust.
+	* algebra/string.spad.pamphlet (CharacterClass): Likewise.
+
 2011-11-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/daase.lisp (dbLookupFunction): New accessor macro.
