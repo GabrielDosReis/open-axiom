@@ -476,14 +476,16 @@ writeLoadInfo(ctor,info,key,prop,file) ==
   insn := ['%store,[prop,mkCtorDBForm ctor],info]
   LAM_,FILEACTQ(key,expandToVMForm insn)
 
-literalData x ==
-  x = nil => nil
-  quote x
-
 writeTemplate(db,file) ==
   dbConstructorKind db = 'category => nil
-  writeLoadInfo(dbConstructor db,literalData dbTemplate db,
+  writeLoadInfo(dbConstructor db,dbTemplate db,
     'template,'dbTemplate,file)
+
+writeLookupFunction(db,file) ==
+  fun := dbLookupFunction db =>
+    writeLoadInfo(dbConstructor db,quote fun,
+      'lookupFunction,'dbLookupFunction,file)
+  nil
 
 writeKind(ctor,kind,file) ==
   writeInfo(ctor,kind,'constructorKind,'dbConstructorKind,file)
@@ -541,6 +543,7 @@ finalizeLisplib(ctor,libName) ==
   form := dbConstructorForm db
   mm := getConstructorModemap ctor
   writeTemplate(db,$libFile)
+  writeLookupFunction(db,$libFile)
   writeConstructorForm(ctor,form,$libFile)
   writeKind(ctor,kind,$libFile)
   writeConstructorModemap(ctor,mm,$libFile)
