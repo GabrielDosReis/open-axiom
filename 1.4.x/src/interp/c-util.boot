@@ -1879,8 +1879,9 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 1. Read domain information, if available.  Silently give up if
   -- the constructor is just not there
   [ctor,:args] := dc
-  loadLibIfNotLoaded ctor
-  property(ctor,'%incomplete) => nil
+  db := constructorDB ctor or return nil -- we only deal with instantiations
+  loadDBIfNecessary db
+  dbTemplate db = nil => nil  -- incomplete functor
   -- 1.1. Niladic constructors don't need approximation.
   --      FIXME: However, there may be cylic dependencies
   --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
@@ -1891,10 +1892,10 @@ lookupDefiningFunction(op,sig,dc) ==
   isDefaultPackageName ctor => nil
   infovec := property(ctor,'infovec) or return nil
   -- 1.3. We need information about the original domain template
-  shell := first infovec               -- domain template
+  shell := dbTemplate db               -- domain template
   opTable := second infovec            -- operator-code table
   opTableLength := #opTable
-  forgetful := infovec.4 is 'lookupIncomplete
+  forgetful := dbLookupFunction db is 'lookupIncomplete
 
   -- 2. Get the address range of op's descriptor set
   [.,.,.,:funDesc] := fourth infovec

@@ -231,6 +231,7 @@
  capsule-definitions	    ; capsule-level definitions
  template		    ; for a category, this is the generic instance.
                             ; for a functor, this is the template.
+ lookup-function	    ; for a functor, lookup function.
  ) ; database structure
 
 
@@ -305,6 +306,9 @@
 
 (defmacro |dbTemplate| (db)
   `(database-template ,db))
+
+(defmacro |dbLookupFunction| (db)
+  `(database-lookup-function ,db))
 
 (defun |makeDB| (c)
   (let ((db (make-database)))

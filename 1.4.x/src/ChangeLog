@@ -1,4 +1,14 @@
-2011-11-09  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-11-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/daase.lisp (dbLookupFunction): New accessor macro.
+	* interp/c-util.boot (lookupDefiningFunction): Use it.  Tidy.
+	* interp/define.boot ($lookupFunction): Remove.
+	(getInfovecCode): Use dbLookupFunction.
+	(compDefineFunctor1): Set it.  Do not emit %incomplete anymore.
+	* interp/lisplib.boot (writeLookupFunction): New.
+	(finalizeLisplib): Use it.
+
+2011-11-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compDefineFunctor1): Clear dbTemplate before
 	compilation starts.

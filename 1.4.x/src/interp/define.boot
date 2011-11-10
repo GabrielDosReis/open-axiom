@@ -74,7 +74,6 @@ $NRTslot1PredicateList := []
 $NRTattributeAlist := []
 $NRTdeltaListComp := []
 $signature := nil
-$lookupFunction := nil
 $byteAddress := nil
 $byteVec := nil
 $sigAlist := []
@@ -352,7 +351,7 @@ getInfovecCode(db,e) ==
       MKQ makeCompactDirect(db,NRTmakeSlot1Info db),
         MKQ NRTgenFinalAttributeAlist(db,e),
           NRTmakeCategoryAlist(db,e),
-            MKQ $lookupFunction]
+            MKQ dbLookupFunction db]
 
 --=======================================================================
 --         Generation of Domain Vector Template (Compile Time)
@@ -421,7 +420,7 @@ makeCompactDirect1(db,op,items) ==
   predCode = -1 => return nil
   --> drop items with nil slots if lookup function is incomplete
   if null slot then
-     $lookupFunction is 'lookupIncomplete => return nil
+     dbLookupFunction db is 'lookupIncomplete => return nil
      slot := 1   --signals that operation is not present
   n := #sig - 1
   $byteAddress := $byteAddress + n + 4
@@ -1382,6 +1381,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
     dbTemplate(db) := nil
+    dbLookupFunction(db) := nil
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:argl,:$formalArgList]
     -- all defaulting packages should have caching turned off
@@ -1460,17 +1460,13 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
-      $lookupFunction: local := NRTgetLookupFunction(db,$NRTaddForm,$e)
+      dbLookupFunction(db) := NRTgetLookupFunction(db,$NRTaddForm,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
       LAM_,FILEACTQ('loadTimeStuff,
         ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
-    -- Functors are incomplete during bootstrap
-    if $bootStrapMode then
-      evalAndRwriteLispForm('%incomplete,
-            ['MAKEPROP,quote op',quote '%incomplete,true])
     dbBeingDefined?(db) := nil
     [fun,['Mapping,:signature'],originale]
 
