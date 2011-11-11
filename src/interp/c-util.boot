@@ -135,12 +135,13 @@ macro domainData d ==
 --% Constructor Compilation Data.
 --% Operational Semantics:
 --%    structure CompilationData ==
---%       Record(formalSubst: Substitution,implicits: List Identifier)
+--%       Record(formalSubst: Substitution,implicits: List Identifier,
+--%         byteList: List SingleInteger)
 --%
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  [nil,nil]
+  [nil,nil,nil]
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -155,6 +156,11 @@ dbParameters db ==
 ++ constructor associated with `db'.
 macro dbImplicitData db ==
   second dbCompilerData db
+
+++ Return the list of encoding bytes for a function during elaboration.
+++ Transcient data.
+macro dbByteList db ==
+  third dbCompilerData db
 
 ++ Return the existential substitution of `db'.
 dbQuerySubst db ==
