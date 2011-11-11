@@ -1,5 +1,14 @@
 2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineCapsuleFunction): Take first
+	argument as a DB for the current constructor.  Adjust callers.
+	(compile): Likewise.
+	(spadCompileOrSetq): Likewise.
+	(compileConstructor): Likewise.
+	(compileConstructor1): Likewise.
+
+2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-data.boot: Change NRTEVAL to %eval.
 	* interp/c-util.boot: Likewise.
 	* interp/define.boot: Likewise.
