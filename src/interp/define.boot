@@ -816,10 +816,11 @@ compDefine1(form,m,e) ==
     rhs := addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,rhs],m,e,nil,$formalArgList)
   $form = nil => stackAndThrow ['"bad == form ",form]
-  newPrefix:=
+  db := constructorDB $op
+  newPrefix :=
     $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
-    dbAbbreviation constructorDB $op
-  compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
+    dbAbbreviation db
+  compDefineCapsuleFunction(db,form,m,e,newPrefix,$formalArgList)
 
 compDefineAddSignature([op,:argl],signature,e) ==
   (sig:= hasFullSignature(argl,signature,e)) and
@@ -1101,7 +1102,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%store,['%tref,g,0],mkConstructor $form],g]
-    fun := compile [op',["LAM",sargl,body]]
+    fun := compile(db,[op',["LAM",sargl,body]])
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(argl,$FormalMapVariableList)
@@ -1447,7 +1448,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
       'SPADSLAM
-    fun := compile dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']])
+    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']]))
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
@@ -1704,7 +1705,7 @@ orderByDependency(vl,dl) ==
     dl := dl'
   removeDuplicates reverse! orderedVarList --ordered so ith is indep. of jth if i < j
  
-compDefineCapsuleFunction(df is ['DEF,form,signature,body],
+compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
     --1. bind global variables
@@ -1781,7 +1782,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,body],
       body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body':= addArgumentConditions(body',$op)
       finalBody:= ["CATCH",catchTag,body']
-      compile [$op,["LAM",[:argl,'_$],finalBody]]
+      compile(db,[$op,["LAM",[:argl,'_$],finalBody]])
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
@@ -1953,7 +1954,7 @@ putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   def
  
  
-compile u ==
+compile(db,u) ==
   [op,lamExpr] := u
   if $suffix then
     $suffix:= $suffix+1
@@ -1967,17 +1968,16 @@ compile u ==
       isLocalFunction op =>
         if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem op) 
-      encodeFunctionName(constructorDB $functorForm.op,op,$signatureOfForm,'";",$suffix)
+      encodeFunctionName(db,op,$signatureOfForm,'";",$suffix)
      where
        isLocalFunction op ==
-         null symbolMember?(op,$formalArgList) and
+         not symbolMember?(op,$formalArgList) and
            getXmode(op,$e) is ['Mapping,:.]
     u:= [op',lamExpr]
   optimizedBody:= optimizeFunctionDef u
   stuffToCompile:=
-    if not $insideCapsuleFunctionIfTrue
-       then optimizedBody
-       else putInLocalDomainReferences optimizedBody
+    $insideCapsuleFunctionIfTrue => putInLocalDomainReferences optimizedBody
+    optimizedBody
   $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; op')
   $macroIfTrue => constructMacro stuffToCompile
 
@@ -1985,7 +1985,7 @@ compile u ==
   if $insideCapsuleFunctionIfTrue and $optProclaim then
     proclaimCapsuleFunction(op',$signatureOfForm)
 
-  result:= spadCompileOrSetq stuffToCompile
+  result:= spadCompileOrSetq(db,stuffToCompile)
   functionStats:=[0,elapsedTime()]
   $functionStats:= addStats($functionStats,functionStats)
   printStats functionStats
@@ -1994,7 +1994,7 @@ compile u ==
 ++ Subroutine of compile.  Called to generate backend code for
 ++ items defined directly or indirectly at capsule level.   This is
 ++ also used to compile functors.
-spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
+spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
   CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
@@ -2028,19 +2028,18 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]
       first form
     first backendCompile [form]
-  compileConstructor form
+  compileConstructor(db,form)
  
-compileConstructor form ==
-  u:= compileConstructor1 form
+compileConstructor(db,form) ==
+  u:= compileConstructor1(db,form)
   clearClams()                  --clear all CLAMmed functions
   u
  
-compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
+compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 -- fn is the name of some category/domain/package constructor;
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
   $clamList: local := nil
-  db := constructorDB fn
   lambdaOrSlam :=
     dbConstructorKind db = 'category => 'SPADSLAM
     dbInstanceCache db = nil => 'LAMBDA
@@ -2048,9 +2047,9 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA
   compForm:= [[fn,[lambdaOrSlam,vl,:bodyl]]]
-  if dbConstructorKind db = 'category
-      then u:= compAndDefine compForm
-      else u:= backendCompile compForm
+  u := 
+    dbConstructorKind db = 'category => compAndDefine compForm
+    backendCompile compForm
   clearConstructorCache fn      --clear cache for constructor
   first u
  
