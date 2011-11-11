@@ -628,7 +628,7 @@ expandType(lazyt,template,domform) ==
 expandTypeArgs(u,template,domform) ==
   u is '$ => u
   integer? u => expandType(vectorRef(template,u),template,domform)
-  u is [.,y] and u.op in '(NRTEVAL QUOTE) => y
+  u is [.,y] and u.op in '(%eval QUOTE) => y
   u isnt [.,:.] => u
   expandType(u,template,domform)
 
