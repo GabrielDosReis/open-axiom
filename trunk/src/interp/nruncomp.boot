@@ -123,7 +123,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
       [op,:[encode(y,z,false) for y in x.args for z in compForm.args]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
-    ["NRTEVAL",NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
+    ['%eval,NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
   symbolMember?(x,$formalArgList) =>
     v := $FormalMapVariableList.(symbolPosition(x,$formalArgList))
     firstTime => ["local",v]
@@ -131,7 +131,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   x is "$" => x
   x is "$$" => x
   compForm is [.,:.] =>
-    ["NRTEVAL",NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
+    ['%eval,NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
   quote compForm
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------

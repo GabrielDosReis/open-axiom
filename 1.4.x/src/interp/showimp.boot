@@ -154,7 +154,7 @@ getDomainExtensionsOfDomain domain ==
 devaluateSlotDomain(u,dollar) ==
   u = '$ => devaluate dollar
   integer? u and vector? (y := dollar.u) => devaluate y
-  u is ['NRTEVAL,y] => MKQ eval y
+  u is ['%eval,y] => MKQ eval y
   u is ['QUOTE,y] => u
   u is [op,:argl] => [op,:[devaluateSlotDomain(x,dollar) for x in argl]]
   devaluate evalSlotDomain(u,dollar)
@@ -247,7 +247,7 @@ formatLazyDomainForm(dom,x) ==
   x = 0 => ["$"]
   integer? x => formatLazyDomain(dom,dom.x)
   x isnt [.,:.] => x
-  x is ['NRTEVAL,y] => (y isnt [.,:.] => [y]; y)
+  x is ['%eval,y] => (y isnt [.,:.] => [y]; y)
   [first x,:[formatLazyDomainForm(dom,y) for y in rest x]]
  
 
@@ -322,7 +322,7 @@ formatSlotDomain x ==
     null val => [strconc('"#",toString (x  - 5))]
     formatSlotDomain val
   x isnt [.,:.] => x
-  x is ['NRTEVAL,y] => (y isnt [.,:.] => [y]; y)
+  x is ['%eval,y] => (y isnt [.,:.] => [y]; y)
   [first x,:[formatSlotDomain y for y in rest x]]
  
 --=======================================================================

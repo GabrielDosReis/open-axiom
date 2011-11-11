@@ -469,7 +469,7 @@ getImports conname == --called by mkUsersHashTable
               and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
       x is [op,:args] =>
-        op = 'QUOTE or op = 'NRTEVAL => first args
+        op = 'QUOTE or op = '%eval => first args
         op = 'local => first args
         op = 'Record =>
           ['Record,:[[":",second y,doImport(third y,template)] for y in args]]

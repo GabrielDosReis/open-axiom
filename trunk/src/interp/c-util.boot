@@ -1817,7 +1817,7 @@ expandFormTemplate(shell,args,slot) ==
   slot isnt [.,:.] => slot
   slot is ["local",parm] and (n := isFormal parm) => 
     args.n   -- FIXME: we should probably expand with dual signature
-  slot is ["NRTEVAL",val] => val
+  slot is ['%eval,val] => val
   slot is ['QUOTE,val] => 
     string? val => val
     slot

@@ -1,5 +1,14 @@
 2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-data.boot: Change NRTEVAL to %eval.
+	* interp/c-util.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+
+2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (dbByteList): New accessor macro.
 	* interp/define.boot ($byteVec): Remove.
 	(getInfovecCode): Do not bind it.

@@ -102,7 +102,7 @@ evalSlotDomain(u,dollar) ==
            lazyDomainSet(y,dollar,u)        --new style has lazyt
       y
     y
-  u is ['NRTEVAL,y] => eval y
+  u is ['%eval,y] => eval y
   u is ['QUOTE,y] => y
   u is [":",tag,dom] => [":",tag,evalSlotDomain(dom,dollar)]
   u is ["Enumeration",:.] => eval u
@@ -371,7 +371,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     ident? s and symbolName s = a
   a isnt [.,:.] =>  a = s
   op := a.op
-  op is 'NRTEVAL => s = nrtEval(second a,domain)
+  op is '%eval => s = nrtEval(second a,domain)
   op is 'QUOTE => s = second a
   lazyMatch(s,a,dollar,domain)
   --above line is temporarily necessary until system is compiled 8/15/90
@@ -481,7 +481,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   integer? u =>
      typeFlag => newExpandTypeSlot(u, dollar,domain)
      domainRef(domain,u)
-  u is ['NRTEVAL,y] => nrtEval(y,domain)
+  u is ['%eval,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
   u is "$$" => canonicalForm domain
   u isnt [.,:.] => u   --can be first, rest, etc.
