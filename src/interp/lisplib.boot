@@ -72,7 +72,7 @@ predicateBitIndex(x,e) ==
     pn(x,flag,e) ==
       u := simpBool transHasCode(x,e)
       u is 'T  =>  0
-      u = nil => -1
+      u is false => -1
       p := valuePosition(u,$NRTslot1PredicateList) => p + 1
       not flag => pn(predicateBitIndexRemop x,true,e)
       systemError nil

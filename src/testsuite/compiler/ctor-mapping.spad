@@ -1,0 +1,17 @@
+++ Contributed by Gabriel Dos Reis; November 2011.
+++ Test conversion of constructors to function objects and
+++ elaboration of domain producting function parameters.
+
+)abbrev package BAR Bar
+Bar(F: Type -> Type): Public == Private where
+  Public == Type with
+     bar: () -> Type
+  Private == add
+    bar() == F Integer
+
+    
+)abbrev package FOO Foo
+Foo(): Type with
+     foo: () -> Type
+  == add
+     foo() == bar()$Bar(List)
