@@ -224,8 +224,12 @@ applyMapping([op,:argl],m,e,ml) ==
     argl' :=
       [T.expr for x in argl for m' in rest ml'] where
         T() == [.,.,e]:= comp(x,m',e) or return "failed"
-    if argl'="failed" then return nil
-    form:= [op,:argl']
+    argl' is "failed"  => nil
+    form :=
+      ident? op and symbolMember?(op,$formalArgList) =>
+        -- this domain form is given by a general function application
+        ['%funcall,op,:argl'] -- constructor call linkage is special
+      [op,:argl']
     convert([form,first ml',e],m)
   argl':=
     [T.expr for x in argl for m' in rest ml] where
@@ -328,7 +332,8 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   isFunctor x =>
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
-        ) and extendsCategoryForm("$",target,m') then return [x,m,e]
+        ) and extendsCategoryForm("$",target,m') then
+            return [['%function,x],m,e]
   x is ["+->",:.] => compLambda(x,m,oldE)
   if string? x then x := makeSymbol x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
@@ -603,7 +608,11 @@ compFormWithModemap(form,m,e,modemap) ==
     [x',target,e'] where
       x':=
         form':= [f,:[t.expr for t in Tl]]
-        target=$Category or isCategoryForm(target,e) => form'
+        target = $Category or isCategoryForm(target,e) =>
+          -- Constructor instantiations are direct calls
+          ident? f and constructorDB f ~= nil => form'
+          -- Otherwise, this is an indirect call
+          ['%call,:form']
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and ident?(z := first argl) and
           (c := get(z,'condition,e)) and

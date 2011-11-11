@@ -1,5 +1,17 @@
 2011-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (applyMapping): Emit special call for
+	domain producing mapping variables.
+	(compWithMappingMode): Coerce constructors to function objets.
+	(compFormWithModemap):  Constructor calls are direct calls.
+	Everything else is ordinary indirect call.
+	* interp/g-opt.boot (optCall): Handle function objects.
+	* interp/nruncomp.boot (NRTencode): Encode the elaboration of
+	atomic forms, not the source level form.
+	* testsuite/compiler/ctor-mapping.spad: New.
+
+2011-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (IndexedBits) [Not, Or, And]: Remove.
 	Implement ~. \/, and /\ instead.
 	* algebra/si.spad.pamphlet (SingleInteger): Likewise.

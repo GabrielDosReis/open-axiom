@@ -309,6 +309,10 @@ optCall (x is ['%call,:u]) ==
     x.first := op
     x.rest := [:a,env]
     x
+  fn is ['%function,op] =>
+    x.first := op
+    x.rest := a
+    x
   fn is [q,R,n] and q in '(ELT CONST) =>
     q is 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)

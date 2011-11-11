@@ -130,7 +130,9 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     v
   x is "$" => x
   x is "$$" => x
-  quote x
+  compForm is [.,:.] =>
+    ["NRTEVAL",NRTreplaceAllLocalReferences copyTree simplifyVMForm compForm]
+  quote compForm
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
 listOfBoundVars form ==
