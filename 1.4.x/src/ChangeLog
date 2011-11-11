@@ -1,3 +1,12 @@
+2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (dbByteList): New accessor macro.
+	* interp/define.boot ($byteVec): Remove.
+	(getInfovecCode): Do not bind it.
+	(makeGoGetSlot): Take DB as first parameter.  Adjust caller.
+	Update dbByteList.
+	(NRTmakeCategoryAlist): Adjust.
+
 2011-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (applyMapping): Emit special call for

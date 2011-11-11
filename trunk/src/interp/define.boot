@@ -75,7 +75,6 @@ $NRTattributeAlist := []
 $NRTdeltaListComp := []
 $signature := nil
 $byteAddress := nil
-$byteVec := nil
 $sigAlist := []
 $predAlist := []
 $argumentConditionList := []
@@ -344,7 +343,6 @@ chaseInferences(pred,$e) ==
 --=======================================================================
 ++ Called by compDefineFunctor1 to create infovec at compile time
 getInfovecCode(db,e) == 
-  $byteVec: local := nil
   $byteAddress: local := 0
   ['LIST,
     MKQ makeDomainTemplate db,
@@ -365,18 +363,18 @@ makeDomainTemplate db ==
     item = nil => nil
     domainRef(vec,index) :=
       item isnt [.,:.] => item
-      cons? first item => makeGoGetSlot(item,index)
+      cons? first item => makeGoGetSlot(db,item,index)
       item   
-  $byteVec := "append"/reverse! $byteVec
+  dbByteList(db) := "append"/reverse! dbByteList db
   vec
  
-makeGoGetSlot(item,index) ==
+makeGoGetSlot(db,item,index) ==
 --NOTES: creates byte vec strings for LATCH slots
---these parts of the $byteVec are created first; see also makeCompactDirect
+--these parts of the dbByteList are created first; see also makeCompactDirect
   [sig,whereToGo,op,:flag] := item
   n := #sig - 1
   newcode := [n,whereToGo,:makeCompactSigCode sig,index]
-  $byteVec := [newcode,:$byteVec]
+  dbByteList(db) := [newcode,:dbByteList db]
   curAddress := $byteAddress
   $byteAddress := $byteAddress + n + 4
   [curAddress,:op]
@@ -391,7 +389,7 @@ makeCompactDirect(db,u) ==
   [nam,[addForm,:opList]] := u
   --pp opList 
   d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(db,op,items)]
-  $byteVec := [:$byteVec,:"append"/reverse! $byteVecAcc]
+  dbByteList(db) := [:dbByteList db,:"append"/reverse! $byteVecAcc]
   vector("append"/d)
  
 makeCompactDirect1(db,op,items) ==
@@ -487,11 +485,11 @@ NRTmakeCategoryAlist(db,e) ==
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
   catformvec := ASSOCLEFT slot1
-  maxElement := "MAX"/$byteVec
+  maxElement := "MAX"/dbByteList db
   ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
     ['CONS, MKQ vector slot0,
       ['CONS, MKQ vector [encodeCatform x for x in catformvec],
-        ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
+        ['makeByteWordVec2,maxElement,MKQ dbByteList db]]]]
   --NOTE: this is new form: old form satisfies vector? CDDR form
 
 encodeCatform x ==
