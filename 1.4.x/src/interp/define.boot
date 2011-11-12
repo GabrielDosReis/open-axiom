@@ -811,7 +811,7 @@ compDefine1(form,m,e) ==
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
     if lhs is [.,:.] then
       e := giveFormalParametersValues(lhs.args,e)
-    if null signature.target then
+    if signature.target = nil then
       signature := [getTargetFromRhs(lhs,rhs,e),:signature.source]
     rhs := addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,rhs],m,e,nil,$formalArgList)
@@ -843,6 +843,9 @@ addEmptyCapsuleIfNecessary(target,rhs) ==
   symbolMember?(KAR rhs,$SpecialDomainNames) => rhs
   ['add,rhs,['CAPSULE]]
 
+++ We are about to elaborate a functor definition, but there
+++ is no source-level user-supplied target mode on the result.
+++ Attempt to infer the target type by compiling the body.
 getTargetFromRhs: (%Form, %Form, %Env) -> %Form 
 getTargetFromRhs(lhs,rhs,e) ==
   --undeclared target mode obtained from rhs expression
@@ -853,7 +856,10 @@ getTargetFromRhs(lhs,rhs,e) ==
   rhs is ['add,D,['CAPSULE,:.]] => getTargetFromRhs(lhs,D,e)
   rhs is ['Record,:l] => ['RecordCategory,:l]
   rhs is ['Union,:l] => ['UnionCategory,:l]
-  (compOrCroak(rhs,$EmptyMode,e)).mode
+  mode(rhs,e) where
+    mode(x,e) ==
+      $killOptimizeIfTrue: local := true -- not yet in codegen phase.
+      compOrCroak(x,$EmptyMode,e).mode
  
 giveFormalParametersValues(argl,e) ==
   for x in argl | ident? x repeat

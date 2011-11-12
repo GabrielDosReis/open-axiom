@@ -1,5 +1,10 @@
 2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (getTargetFromRhs): Do not try to record
+	references to used entities.
+
+2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (compDefineCapsuleFunction): Take first
 	argument as a DB for the current constructor.  Adjust callers.
 	(compile): Likewise.
