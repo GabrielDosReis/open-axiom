@@ -1,5 +1,9 @@
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot (JoinInner): Tidy.
+
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (initializeDatabases): Honor --initial-db.
 	(initializeGlobalState): Don't bind $compileDefaultsOnly.
 	* interp/sys-globals.boot ($compileDefaultsOnly): Remove.
