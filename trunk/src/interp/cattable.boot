@@ -61,7 +61,8 @@ genCategoryTable() ==
   genTempCategoryTable()
   domainTable :=
     [addDomainToTable(con,getConstrCat getConstructorCategory con)
-      for con in allConstructors() | getConstructorKindFromDB con is "domain"]
+      for con in allConstructors() | not builtinFunctorName? con
+        and getConstructorKindFromDB con is "domain"]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := setDifference($nonLisplibDomains,$noCategoryDomains)
   domainTable:= [:[addDomainToTable(id, getConstrCat eval([id]).3)

@@ -82,7 +82,8 @@ getConstructorAncestorsFromDB ctor ==
 getConstructorModemap: %Constructor -> %Mode
 getConstructorModemap ctor ==
   GETDATABASE(ctor, 'CONSTRUCTORMODEMAP)
- 
+    or dbConstructorModemap loadDBIfNecessary constructorDB ctor
+
 getConstructorFormFromDB: %Constructor -> %Form
 getConstructorFormFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORFORM")

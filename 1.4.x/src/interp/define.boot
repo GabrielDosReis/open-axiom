@@ -517,15 +517,15 @@ getXmode(x,e) ==
 NRTgetLookupFunction(db,addForm,env) ==
   $why: local := nil
   domform := dbSubstituteFormals(db,dbConstructorForm db)
-  exCategory := dbCategory db
+  cat := dbCategory db
   addForm isnt [.,:.] =>
     ident? addForm and (m := getmode(addForm,env)) ~= nil and
       isCategoryForm(m,env) and
-        extendsCategory(db,domform,exCategory,dbSubstituteFormals(db,m),env) =>
+        extendsCategory(db,domform,cat,dbSubstituteFormals(db,m),env) =>
           'lookupIncomplete
     'lookupComplete
   addForm := dbSubstituteFormals(db,addForm)
-  NRTextendsCategory1(db,domform,exCategory,getExportCategory addForm,env) =>
+  NRTextendsCategory1(db,domform,cat,getBaseExports(db,addForm),env) =>
     'lookupIncomplete
   [u,msg,:v] := $why
   SAY '"--------------non extending category----------------------"
@@ -537,12 +537,15 @@ NRTgetLookupFunction(db,addForm,env) ==
   SAY '"----------------------------------------------------------"
   'lookupComplete
 
-getExportCategory form ==
+getBaseExports(db,form) ==
   [op,:argl] := form
   op is 'Record => ['RecordCategory,:argl]
   op is 'Union => ['UnionCategory,:argl]
   op is 'Enumeration => ['EnumerationCategory,:argl]
   op is 'Mapping => ['MappingCategory,:argl]
+  op is '%Comma => ['Join,
+    :[getBaseExports(db,substSlotNumbers(x,dbTemplate db,dbConstructorForm db))
+        for x in argl]]
   [[.,target,:tl],:.] := getConstructorModemap op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
@@ -562,7 +565,7 @@ extendsCategory(db,dom,u,v,env) ==
   v is ["CATEGORY",.,:l] => and/[extendsCategory(db,dom,u,x,env) for x in l]
   v is ["SubsetCategory",cat,d] =>
     extendsCategory(db,dom,u,cat,env) and isSubset(dom,d,env)
-  v := substSlotNumbers(v,dbTemplate db,$functorForm)
+  v := substSlotNumbers(v,dbTemplate db,dbConstructorForm db)
   extendsCategoryBasic(dom,u,v,env) => true
   $why :=
     v is ['SIGNATURE,op,sig,:.] =>
