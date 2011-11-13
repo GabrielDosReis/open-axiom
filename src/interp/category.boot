@@ -375,29 +375,23 @@ JoinInner(l,$e) ==
   $NewCatVec: local := nil
   CondList:= nil
   for u in l repeat
-    for at in categoryAttributes u repeat
-      at2:= first at
-      if at2 isnt [.,:.] then at2 := [at2]
+    for [at,pred] in categoryAttributes u repeat
+      if at isnt [.,:.] then at := [at]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      symbolMember?(first at2,$Attributes) => nil
-      null isCategoryForm(at2,$e) =>
-        $Attributes:=[first at2,:$Attributes]
-        nil
-      pred:= second at
-        -- The predicate under which this category is conditional
+      symbolMember?(first at,$Attributes) => nil
+      not isCategoryForm(at,$e) => $Attributes:=[first at,:$Attributes]
       listMember?(pred,get("$Information","special",$e)) =>
-        l:= [:l,CatEval(at2,$e)]
+        l := [:l,CatEval(at,$e)]
           --It's true, so we add this as unconditional
       pred isnt ["and",:.] =>
-        CondList := [[CatEval(at2,$e),pred],:CondList]
-      pred':=
-        [u
-          for u in rest pred | not listMember?(u,get("$Information","special",$e))
-            and not (u=true)]
-      null pred' => l:= [:l,CatEval(at2,$e)]
-      # pred'=1 => CondList:= [[CatEval(at2,$e),pred'],:CondList]
-      CondList:= [[CatEval(at2,$e),["and",:pred']],:CondList]
+        CondList := [[CatEval(at,$e),pred],:CondList]
+      pred' := [u for u in pred.args |
+                  not listMember?(u,get("$Information","special",$e))
+                    and u isnt true]
+      pred' = nil => l := [:l,CatEval(at,$e)]
+      pred' is [.] => CondList := [[CatEval(at,$e),pred'],:CondList]
+      CondList := [[CatEval(at,$e),["and",:pred']],:CondList]
   [$NewCatVec,:l]:= l
   l':= [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
@@ -476,15 +470,15 @@ JoinInner(l,$e) ==
                 for u in categoryExports $NewCatVec repeat
                   if not listMember?(u,sigl) then
                     [s,c,i]:= u
-                    if c=true
-                       then sigl:= [[s,condition,i],:sigl]
-                       else sigl:= [[s,["and",condition,c],i],:sigl]
+                    sigl := 
+                      c is true => [[s,condition,i],:sigl]
+                      [[s,["and",condition,c],i],:sigl]
                 for u in categoryAttributes $NewCatVec repeat
                   if not listMember?(u,attl) then
                     [a,c]:= u
-                    if c=true
-                       then attl:= [[a,condition],:attl]
-                       else attl:= [[a,["and",condition,c]],:attl]
+                    attl := 
+                      c is true => [[a,condition],:attl]
+                      [[a,["and",condition,c]],:attl]
       if reallynew then
         n:= # $NewCatVec
         FundamentalAncestors:= [[b.0,condition,n],:FundamentalAncestors]
@@ -511,19 +505,19 @@ JoinInner(l,$e) ==
       v:= assoc(first u,attl)
       null v =>
         attl:=
-          second u=true => [[first u,newpred],:attl]
+          second u is true => [[first u,newpred],:attl]
           [[first u,["and",newpred,second u]],:attl]
       second v=true => nil
       attl:= remove(attl,v)
       attl:=
-        second u=true => [[first u,mkOr(second v,newpred,$e)],:attl]
+        second u is true => [[first u,mkOr(second v,newpred,$e)],:attl]
         [[first u,mkOr(second v,mkAnd(newpred,second u,$e),$e)],:attl]
     sigl:=
       SigListUnion(
         [AddPredicate(DropImplementations u,newpred) for u in categoryExports(first b)],sigl) where
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
-            newpred=true => op
-            oldpred=true => [sig,newpred,:implem]
+            newpred is true => op
+            oldpred is true => [sig,newpred,:implem]
             [sig,mkpf([oldpred,newpred],"and"),:implem]
   FundamentalAncestors:= [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
