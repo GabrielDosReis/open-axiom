@@ -410,29 +410,28 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
-  dbPredicates(constructorDB op) := nil
+  db := constructorDB op
+  dbPredicates(db) := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
---  $lisplibRelatedDomains: local := nil   --from ++ Related Domains: see c-doc
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
-  libName := getConstructorAbbreviation op
+  libName := dbAbbreviation db
+  if dbSourceFile db = nil then
+    dbSourceFile(db) := namestring _/EDITFILE
   $compileDocumentation => compileDocumentation(op,libName)
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
   initializeLisplib libName
   sayMSG ['"   compiling into ",$spadLibFT,:bright libName]
-  -- res:= FUNCALL(fn,df,m,e,prefix,fal)
-  -- sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
-  -- finalizeLisplib libName
   -- following guarantee's compiler output files get closed.
   ok := false;
   try
     res:= FUNCALL(fn,df,m,e,prefix,fal)
-    leaveIfErrors(libName,dbConstructorKind constructorDB $op)
+    leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
-    ok := finalizeLisplib(op,libName)
+    ok := finalizeLisplib(db,libName)
   finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
@@ -441,7 +440,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor op
   $buildingSystemAlgebra => res
-  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],nil)
+  LOCALDATABASE([symbolName dbAbbreviation db],nil)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
@@ -487,46 +486,54 @@ writeLookupFunction(db,file) ==
       'lookupFunction,'dbLookupFunction,file)
   nil
 
-writeKind(ctor,kind,file) ==
-  writeInfo(ctor,kind,'constructorKind,'dbConstructorKind,file)
+writeKind(db,file) ==
+  writeInfo(dbConstructor db,dbConstructorKind db,
+    'constructorKind,'dbConstructorKind,file)
 
 writeAbbreviation(db,file) ==
   writeInfo(dbConstructor db,dbAbbreviation db,
     'abbreviation,'dbAbbreviation,file)
 
-writeConstructorForm(ctor,form,file) ==
-  writeInfo(ctor,form,'constructorForm,'dbConstructorForm,file)
+writeConstructorForm(db,file) ==
+  writeInfo(dbConstructor db,dbConstructorForm db,
+    'constructorForm,'dbConstructorForm,file)
 
-writeCategory(ctor,cat,file) ==
-  writeInfo(ctor,cat,'constructorCategory,'dbCategory,file)
+writeCategory(db,file) ==
+  writeInfo(dbConstructor db,dbCategory db,
+    'constructorCategory,'dbCategory,file)
 
-writeSuperDomain(ctor,domPred,file) ==
-  writeInfo(ctor,domPred,'superDomain,'dbSuperDomain,file)
+writeSuperDomain(db,file) ==
+  writeInfo(dbConstructor db,dbSuperDomain db,
+    'superDomain,'dbSuperDomain,file)
 
-writePredicates(ctor,preds,file) ==
-  writeInfo(ctor,preds,'predicates,'dbPredicates,file)
+writePredicates(db,file) ==
+  writeInfo(dbConstructor db,dbPredicates db,
+    'predicates,'dbPredicates,file)
 
 writeOperations(ctor,ops,file) ==
   writeInfo(ctor,ops,'operationAlist,'dbOperations,file)
 
-writeAttributes(ctor,ats,file) ==
- writeInfo(ctor,ats,'attributes,'dbAttributes,file)
+writeAttributes(db,file) ==
+ writeInfo(dbConstructor db,dbAttributes db,
+   'attributes,'dbAttributes,file)
 
-writeConstructorModemap(ctor,mm,file) ==
-  writeInfo(ctor,mm,'constructorModemap,'dbConstructorModemap,file)
+writeConstructorModemap(db,file) ==
+  writeInfo(dbConstructor db,dbConstructorModemap db,
+    'constructorModemap,'dbConstructorModemap,file)
 
 writeDualSignature(db,file) ==
   writeInfo(dbConstructor db,dbDualSignature db,
     'dualSignature,'dbDualSignature,file)
 
-writeAncestors(ctor,x,file) ==
-  writeInfo(ctor,x,'ancestors,'dbAncestors,file)
+writeAncestors(db,file) ==
+  writeInfo(dbConstructor db,dbAncestors db,'ancestors,'dbAncestors,file)
 
-writePrincipals(ctor,x,file) ==
-  writeInfo(ctor,x,'parents,'dbPrincipals,file)
+writePrincipals(db,file) ==
+  writeInfo(dbConstructor db,dbPrincipals db,'parents,'dbPrincipals,file)
 
-writeCapsuleLevelDefinitions(ctor,x,file) ==
-  writeInfo(ctor,x,'signaturesAndLocals,'dbCapsuleDefinitions,file)
+writeCapsuleLevelDefinitions(db,file) ==
+  writeInfo(dbConstructor db,dbCapsuleDefinitions db,
+    'signaturesAndLocals,'dbCapsuleDefinitions,file)
 
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
@@ -537,41 +544,39 @@ leaveIfErrors(libName,kind) ==
     spadThrow()
 
 ++ Finalize `libName' compilation; returns true if everything is OK.
-finalizeLisplib(ctor,libName) ==
-  db := constructorDB ctor
-  kind := dbConstructorKind db
+finalizeLisplib(db,libName) ==
   form := dbConstructorForm db
-  mm := getConstructorModemap ctor
   writeTemplate(db,$libFile)
   writeLookupFunction(db,$libFile)
-  writeConstructorForm(ctor,form,$libFile)
-  writeKind(ctor,kind,$libFile)
-  writeConstructorModemap(ctor,mm,$libFile)
+  writeConstructorForm(db,$libFile)
+  writeKind(db,$libFile)
+  writeConstructorModemap(db,$libFile)
   writeDualSignature(db,$libFile)
-  -- set to target of mm for package/domain constructors;
+  -- set to target of dbConstructorModemap for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
   if dbConstructorKind db = 'category then
-    writeCategory(ctor,dbCategory db,$libFile)
-  lisplibWrite('"sourceFile",namestring _/EDITFILE,$libFile)
+    writeCategory(db,$libFile)
+  lisplibWrite('"sourceFile",dbSourceFile db,$libFile)
   lisplibWrite('"modemaps",dbModemaps db,$libFile)
   opsAndAtts :=
-    kind = 'category => getCategoryOpsAndAtts form
-    getFunctorOpsAndAtts(form,mm.mmTarget)
-  writeOperations(ctor,first opsAndAtts,$libFile)
-  if kind='category then
+    dbConstructorKind db = 'category => getCategoryOpsAndAtts db
+    getFunctorOpsAndAtts db
+  writeOperations(dbConstructor db,first opsAndAtts,$libFile)
+  if dbConstructorKind db = 'category then
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
-  writeSuperDomain(ctor,dbSuperDomain db,$libFile)
-  writeCapsuleLevelDefinitions(ctor,dbCapsuleDefinitions db,$libFile)
-  writeAttributes(ctor,dbAttributes db,$libFile)
-  writePredicates(ctor,dbPredicates db,$libFile)
+  writeSuperDomain(db,$libFile)
+  writeCapsuleLevelDefinitions(db,$libFile)
+  writeAttributes(db,$libFile)
+  writePredicates(db,$libFile)
   writeAbbreviation(db,$libFile)
-  writePrincipals(ctor,dbPrincipals db,$libFile)
-  writeAncestors(ctor,dbAncestors db,$libFile)
+  writePrincipals(db,$libFile)
+  writeAncestors(db,$libFile)
   if not $bootStrapMode then
-    lisplibWrite('"documentation",finalizeDocumentation ctor,$libFile)
+    lisplibWrite('"documentation",
+      finalizeDocumentation dbConstructor db,$libFile)
   if $profileCompiler then profileWrite()
-  leaveIfErrors(libName,kind)
+  leaveIfErrors(libName,dbConstructorKind db)
   true
 
 lisplibDoRename(libName) ==
@@ -590,14 +595,15 @@ getPartialConstructorModemapSig(c) ==
   (s := getConstructorSignature c) => rest s
   throwEvalTypeMsg("S2IL0015",[c])
  
-getCategoryOpsAndAtts(catForm) ==
+getCategoryOpsAndAtts db ==
+  catForm := dbConstructorForm db
   -- returns [operations,:attributes] of first catForm
   [transformOperationAlist getSlotFromCategoryForm(catForm,1),
     :getSlotFromCategoryForm(catForm,2)]
  
-getFunctorOpsAndAtts(form,target) ==
+getFunctorOpsAndAtts db ==
   [transformOperationAlist $lisplibOperationAlist,
-    :getSlotFromFunctor target]
+    :getSlotFromFunctor dbConstructorModemap(db).mmTarget]
  
 getSlotFromFunctor(target) ==
   t := compMakeCategoryObject(target,$e) or

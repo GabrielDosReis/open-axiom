@@ -1,3 +1,19 @@
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (initializeDatabases): Honor --initial-db.
+	(initializeGlobalState): Don't bind $compileDefaultsOnly.
+	* interp/sys-globals.boot ($compileDefaultsOnly): Remove.
+	* interp/define.boot (compDefineCategory): Adjust.
+	(compDefineCategory1): Likewise.
+	(compDefineFunctor1): Clear dbCapsuleDefinitions.
+	* interp/lisplib.boot (compDefineLisplib): Tidy.
+	* interp/daase.lisp (BROWSEOPEN): Use dbSourceFile.
+	(GETDATABASE): Likewise.
+	(LOCALNRLIB): Likewise.
+	(WRITE-BROWSEDB): Likewise.
+	* algebra/Makefile.in (COMPILE_SPAD): Specifiy initial DB.
+	(BOOTSTRAP): Likewise.
+
 2011-11-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-data.boot (buildLibdbConEntry): Exit early if argument

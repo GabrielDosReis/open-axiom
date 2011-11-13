@@ -945,8 +945,6 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
     T := compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
-    if $compileDefaultsOnly then 
-      [d,m,e] := T
   [d,m,e]
 
 makeCategoryPredicates(form,u) ==
@@ -1144,8 +1142,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
   kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
   dbConstructorForm(db) := lhs
-  $insideFunctorIfTrue or $compileDefaultsOnly =>
-    compDefineCategory1(df,m,e,prefix,fal)
+  $insideFunctorIfTrue => compDefineCategory1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
 
 
@@ -1390,6 +1387,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
     dbTemplate(db) := nil
     dbLookupFunction(db) := nil
+    dbCapsuleDefinitions(db) := nil
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:argl,:$formalArgList]
     -- all defaulting packages should have caching turned off

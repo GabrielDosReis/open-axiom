@@ -176,7 +176,11 @@ restart() ==
 
 initializeDatabases firstTime? ==
   getOptionValue "build-initdb" => nil
-  initdb := getOptionValue "initial-db" => populateDBFromFile initdb
+  --initdb := getOptionValue "initial-db" => populateDBFromFile initdb
+  --FIXME: Ideally we should execute the previous line.  The next line is
+  --FIXME: a short-term stopgap until build dependencies are in place.
+  if initdb := getOptionValue "initial-db" then
+    populateDBFromFile initdb
   not firstTime? => openDatabases()
   fillDatabasesInCore()
   mkLowerCaseConTable()
@@ -196,7 +200,6 @@ initializeGlobalState() ==
   $buildingSystemAlgebra := getOptionValue "system-algebra"
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"
-  $compileDefaultsOnly := getOptionValue "defaults-only"
   $reportOptimization := getOptionValue "show-insn"
   $optimizeRep := getOptionValue "inline-rep"
   setCompilerOptimizations(getOptionValue "optimize" or

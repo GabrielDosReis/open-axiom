@@ -84,18 +84,17 @@ constructor? name ==
  
 domainForm?: %Form -> %Boolean
 domainForm? d ==
-  getConstructorKindFromDB opOf d = "domain"
+  getConstructorKindFromDB opOf d is "domain"
 
 packageForm?: %Form -> %Boolean
 packageForm? d ==
-  getConstructorKindFromDB opOf d = "package"
+  getConstructorKindFromDB opOf d is "package"
 
 categoryFrom?: %Form -> %Boolean
 categoryForm? c ==
   op := opOf c
   builtinCategoryName? op => true
-  getConstructorKindFromDB op is "category" => true
-  false
+  getConstructorKindFromDB op is "category"
 
 -- probably will switch over to 'libName soon
 getLisplibName(c) == getConstructorAbbreviation(c)
