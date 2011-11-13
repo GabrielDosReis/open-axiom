@@ -1,3 +1,8 @@
+2011-11-13  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	Fix SF/3436999
+	* utils/storage.H: Revert accidental commit of unfinished changes.
+
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (initializeDatabases): Honor --initial-db.
