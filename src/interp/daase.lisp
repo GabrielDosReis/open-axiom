@@ -528,7 +528,7 @@
 	  (warn "will create a new one~%")
 	  (setq dbstruct (|makeDB| (first item)))
 	  (setq *allconstructors* (adjoin item *allconstructors*)))
-	(setf (database-sourcefile dbstruct) (second item))
+	(setf (|dbSourceFile| dbstruct) (second item))
 	(setf (|dbConstructorForm| dbstruct) (third item))
 	(setf (database-documentation dbstruct) (fourth item))
 	(setf (|dbAttributes| dbstruct) (fifth item))
@@ -719,7 +719,7 @@
 	      (sourcefile
 	       (setq stream *browse-stream*)
 	       (when struct
-		 (setq data (database-sourcefile struct))))
+		 (setq data (|dbSourceFile| struct))))
 	      (constructorform
 	       (setq stream *browse-stream*)
 	       (when struct
@@ -791,7 +791,7 @@
 		(dependents
 		 (setf (database-dependents struct) data))
 		(sourcefile
-		 (setf (database-sourcefile struct) data))))
+		 (setf (|dbSourceFile| struct) data))))
 	(case key ; fixup the special cases
 	      (sourcefile
 	       (when (and data (string= (directory-namestring data) "")
@@ -922,11 +922,11 @@
 			   (fetchdata alist in "constructorModemap"))
 		     (setf (|dbModemaps| dbstruct) 
 			   (fetchdata alist in "modemaps"))
-		     (setf (database-sourcefile dbstruct) 
+		     (setf (|dbSourceFile| dbstruct) 
 			   (fetchdata alist in "sourceFile"))
 		     (when make-database?
-		       (setf (database-sourcefile dbstruct)
-			     (file-namestring  (database-sourcefile dbstruct))))
+		       (setf (|dbSourceFile| dbstruct)
+			     (file-namestring  (|dbSourceFile| dbstruct))))
 		     (setf (|dbConstructorKind| dbstruct)
 			   (setq kind (fetchdata alist in "constructorKind")))
 		     (setf (|dbCategory| dbstruct)
@@ -1222,7 +1222,7 @@
    (let (struct)
     (setq struct (|constructorDB| constructor))
      ; sourcefile is small. store the string directly
-    (setq src (database-sourcefile struct))
+    (setq src (|dbSourceFile| struct))
     (setq formpos (file-position out))
     (print (|squeezeCopy| (|dbConstructorForm| struct)) out)
     (finish-output out)

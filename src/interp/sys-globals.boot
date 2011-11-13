@@ -428,11 +428,6 @@ $buildingSystemAlgebra := false
 ++ code generation, etc.
 $verbose := true
 
-++ True if the compiler is invoked to produce implementation
-++ of category defaults only.  This is meaningful only when
-++ compiling categories.
-$compileDefaultsOnly := false
-
 ++ True if we should consider the representation domain (`Rep')
 ++ as candidate for inlining, for the purpose of reducing
 ++ abstraction penalty.
