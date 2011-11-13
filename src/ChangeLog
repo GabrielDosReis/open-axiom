@@ -1,3 +1,19 @@
+2011-11-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-data.boot (buildLibdbConEntry): Exit early if argument
+	is a builtin constructor.
+	(mkDependentsHashTable): Filter out builtin constructors.
+	* interp/cattable.boot (genCategoryTable): Likewise.
+	* interp/database.boot (getConstructorModemap): Load the
+	contructor if necessary and try again before failing.
+	* interp/define.boot (NRTgetLookupFunction): Handle multiple
+	inheritance of domains.
+	(getBaseExports): Rename from getExportCategory.  Adjust caller.
+	Handle multiple inheritance of domains.
+	(extendsCategory): Do not reference $functorForm.  Take it from
+	the DB argument.
+	(getTargetFromRhs): Do not optimize codegen.
+
 2011-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (getTargetFromRhs): Do not try to record

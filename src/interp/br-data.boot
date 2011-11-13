@@ -94,11 +94,11 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
   removeFile '"temp.text"
 
 buildLibdbConEntry conname ==
-    null getConstructorModemap conname => nil
+    builtinConstructor? conname => nil
     abb:= getConstructorAbbreviationFromDB conname
     $conname := conname
-    conform := getConstructorFormFromDB conname or [conname] --hack for Category,..
-    $conform := dbMkForm substitute('T,"T$",conform)
+    conform := getConstructorFormFromDB conname
+    $conform := dbMkForm substitute("T","T$",conform)
     null $conform => nil
     $exposed? := (isExposedConstructor conname => '"x"; '"n")
     $doc      := getConstructorDocumentationFromDB conname
@@ -441,7 +441,7 @@ getDefaultPackageClients con ==  --called by mkUsersHashTable
 --============================================================================
 mkDependentsHashTable() == --called by buildDatabase (database.boot)
   $depTb := MAKE_-HASH_-TABLE()
-  for nam in allConstructors() repeat
+  for nam in allConstructors() | not builtinConstructor? nam repeat
     for con in getArgumentConstructors nam repeat
       tableValue($depTb,con) := [nam,:tableValue($depTb,con)]
   for [k,:v] in entries $depTb repeat
