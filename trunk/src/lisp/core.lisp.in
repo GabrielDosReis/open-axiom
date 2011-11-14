@@ -154,6 +154,7 @@
            "%hasFeature"
 	   "%systemOptions"
 	   "%systemArguments"
+	   "%sysInit"
 	   "%basicSystemIsComplete"
 	   "%algebraSystemIsComplete"
 	   "%nothing"

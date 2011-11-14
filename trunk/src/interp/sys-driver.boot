@@ -56,7 +56,7 @@ $options := []
 +++ Initialization routine run by the core system before handing off
 +++ to the interpreter or compiler.  
 +++ ??? This part is still in flux.
-AxiomCore::%sysInit() ==
+symbolFunction('%sysInit) := () +->
   SETQ(_*READ_-DEFAULT_-FLOAT_-FORMAT_*, "DOUBLE-FLOAT")
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
   SETQ(_*LOAD_-VERBOSE_*,false)
