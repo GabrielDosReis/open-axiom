@@ -257,22 +257,11 @@ mkAnd2(a,b,e) ==
     [a,:b]
   [a,:b]
  
-SigListMember(m,list) ==
-  list=nil => false
-  SigEqual(m,first list) => true
-  SigListMember(m,rest list)
- 
-SigEqual([sig1,pred1,:.],[sig2,pred2,:.]) ==
-  -- Notice asymmetry: checks that arg1 is a consequence of arg2
-  sig1=sig2 and PredImplies(pred2,pred1)
- 
-PredImplies(a,b) ==
-    --true if a => b in the sense of logical implication
---a = "true" => true
-  a=true => true
-  a=b => true
-  false         -- added by RDJ: 12/21/82
---error()       -- for the time being
+++ Return true if `a implies b' in the logical sense.  
+predicateImplies(a,b) ==
+  b is true => true
+  a is true => false
+  a = b -- for now.
  
 SigListOpSubsume([[name1,sig1,:.],:.],list) ==
   --does m subsume another operator in the list?
@@ -352,7 +341,7 @@ CondAncestorP(xname,leaves,condition,env) ==
       null rest u => true
       second u
     xname = u' or listMember?(xname,categoryPrincipals CatEval(u',env)) =>
-      PredImplies(ucond,condition) => return u'
+      predicateImplies(condition,ucond) => return u'
 
 
 ++ Returns true if the form `a' designates a category that is any 
@@ -427,16 +416,12 @@ JoinInner(l,$e) ==
           if rest anc
              then (anccond:= second anc; ancindex:= third anc)
              else (anccond:= true; ancindex:= nil)
-          if PredImplies(condition,anccond)
+          if predicateImplies(anccond,condition)
              then FundamentalAncestors:=
- 
-               -- the new 'b' is more often true than the old one 'anc'
+                -- the new 'b' is more often true than the old one 'anc'
               [[bname,condition,ancindex],:remove(FundamentalAncestors,anc)]
            else
-            if ancindex and (PredImplies(anccond,condition); true)
--- I have no idea who effectively commented out the predImplies
--- JHD 25/8/86
-               then
+            if ancindex then
                      --the new 'b' is less often true
                 newentry:=[bname,condition,ancindex]
                 if not listMember?(newentry,FundamentalAncestors) then
