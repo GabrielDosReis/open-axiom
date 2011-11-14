@@ -1,11 +1,17 @@
-2011-11-13  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	Fix SF/3436999
-	* utils/storage.H: Revert accidental commit of unfinished changes.
+	* lisp/core.lisp.in: Export %sysInit.
+	* interp/sys-driver.boot (%sysInit):  Don't redefine.  Reset
+	function binding.
 
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot (JoinInner): Tidy.
+
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/3436999
+	* utils/storage.H: Revert accidental commit of unfinished changes.
 
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
