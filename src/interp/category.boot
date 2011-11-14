@@ -359,30 +359,43 @@ DescendantP(a,b,e) ==
   false
  
 --% The implementation of Join
+
+++ We have a list `l' of category objects to be joined.
+++ Some of them may harbor other categories that exist only under
+++ certain conditions.  Collect all those that are indisputably conditional
+++ and attempt to detect those apparent conditional categories whose
+++ predicates are satified in the current elaboration environment.
+++ The end result is a 2-list, the first component being a list of
+++ (catobj,pred) pairs and the second component being the list of
+++ newly discovered unconditional categories.
+filterConditionalCategories(l,e) ==
+  conditionals := nil
+  unconditionals := nil
+  for cat in l repeat
+    for [at,pred] in categoryAttributes cat repeat
+      if at isnt [.,:.] then at := [at]
+      -- the variable $Attributes is built globally, so that true
+      -- attributes can be detected without calling isCategoryForm
+      symbolMember?(first at,$Attributes) => nil
+      not isCategoryForm(at,e) => $Attributes := [first at,:$Attributes]
+      listMember?(pred,get("$Information","special",e)) =>
+        --It's true, so we add it as unconditional
+        unconditionals := [CatEval(at,e),:unconditionals]
+      pred isnt ["and",:.] =>
+        conditionals := [[CatEval(at,e),pred],:conditionals]
+      pred' := [x for x in pred.args |
+                  not listMember?(x,get("$Information","special",e))
+                    and x isnt true]
+      pred' = nil => unconditionals := [CatEval(at,e),:unconditionals]
+      pred' is [.] => conditionals := [[CatEval(at,e),pred'],:conditionals]
+      conditionals := [[CatEval(at,e),["and",:pred']],:conditionals]
+  [conditionals,reverse! unconditionals]
  
 JoinInner(l,$e) ==
   $NewCatVec: local := nil
-  CondList:= nil
-  for u in l repeat
-    for [at,pred] in categoryAttributes u repeat
-      if at isnt [.,:.] then at := [at]
-        -- the variable $Attributes is built globally, so that true
-        -- attributes can be detected without calling isCategoryForm
-      symbolMember?(first at,$Attributes) => nil
-      not isCategoryForm(at,$e) => $Attributes:=[first at,:$Attributes]
-      listMember?(pred,get("$Information","special",$e)) =>
-        l := [:l,CatEval(at,$e)]
-          --It's true, so we add this as unconditional
-      pred isnt ["and",:.] =>
-        CondList := [[CatEval(at,$e),pred],:CondList]
-      pred' := [u for u in pred.args |
-                  not listMember?(u,get("$Information","special",$e))
-                    and u isnt true]
-      pred' = nil => l := [:l,CatEval(at,$e)]
-      pred' is [.] => CondList := [[CatEval(at,$e),pred'],:CondList]
-      CondList := [[CatEval(at,$e),["and",:pred']],:CondList]
-  [$NewCatVec,:l]:= l
-  l':= [:CondList,:[[u,true] for u in l]]
+  [CondList,uncondList] := filterConditionalCategories(l,$e)
+  [$NewCatVec,:l] := [:l,:uncondList]
+  l' := [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
   sigl := categoryExports $NewCatVec

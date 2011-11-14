@@ -1,5 +1,11 @@
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot (filterConditionalCategories): Split out of
+	JoinInner.
+	(JoinInner): Call it.
+
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot (SigListMember): Remove as deadcode.
 	(SigEqual): Remove.
 	(predicateImplies): Rename from PredImplies.  Rework it to match
