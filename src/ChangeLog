@@ -1,5 +1,14 @@
 2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot (SigListMember): Remove as deadcode.
+	(SigEqual): Remove.
+	(predicateImplies): Rename from PredImplies.  Rework it to match
+	documentation.  Adjust callers.
+	(CondAncestorP): Adjust arguments in call to predicateImplies.
+	(JoinInner): Likewise.
+
+2011-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Export %sysInit.
 	* interp/sys-driver.boot (%sysInit):  Don't redefine.  Reset
 	function binding.
