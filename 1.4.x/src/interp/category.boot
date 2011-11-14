@@ -41,8 +41,6 @@ namespace BOOT
 ++ List of global attributes.
 $Attributes := []
 
-$NewCatVec := nil
-
 --%
 
 ++ Returns true if `a' is a category (runtime) object.
@@ -139,7 +137,7 @@ DropImplementations a ==
     [[:sig,'constant],pred]
   a
  
-SigListUnion(extra,original) ==
+SigListUnion(extra,original,principal) ==
   --augments original %with everything in extra that is not in original
   for (o:=[[ofn,osig,:.],opred,:.]) in original repeat
     -- The purpose of this loop is to detect cases when the
@@ -187,7 +185,7 @@ SigListUnion(extra,original) ==
         -- We must pick up the previous implementation, if any
 --+
       if ximplem is [[q,.,index]] and integer? index and (q="ELT" or q="CONST")
-        then $NewCatVec. index:= e
+        then principal . index:= e
     original:= [e,:original]
   original
  
@@ -392,20 +390,18 @@ filterConditionalCategories(l,e) ==
   [conditionals,reverse! unconditionals]
  
 JoinInner(l,$e) ==
-  $NewCatVec: local := nil
   [CondList,uncondList] := filterConditionalCategories(l,$e)
-  [$NewCatVec,:l] := [:l,:uncondList]
+  [principal,:l] := [:l,:uncondList]
   l' := [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
-  sigl := categoryExports $NewCatVec
-  attl := categoryAttributes $NewCatVec
-  globalDomains := categoryParameters $NewCatVec
-  FundamentalAncestors := categoryAncestors $NewCatVec
-  if $NewCatVec.0 then FundamentalAncestors:=
-    [[$NewCatVec.0],:FundamentalAncestors]
-                    --principal ancestor . all those already included
-  copied:= nil
+  sigl := categoryExports principal
+  attl := categoryAttributes principal
+  globalDomains := categoryParameters principal
+  FundamentalAncestors := categoryAncestors principal
+  if principal.0 then
+    FundamentalAncestors := [[principal.0],:FundamentalAncestors]
+  copied := false
   -- we can not decide to extend the vector in multiple ways
   -- this flag helps us detect this case
   originalVector := false
@@ -413,118 +409,121 @@ JoinInner(l,$e) ==
   for [b,condition] in FindFundAncs(l',$e) repeat
       --This loop implements Category Subsumption
           --as described in JHD's report
-    if not (b.0=nil) then
-                   --It's a named category
-      bname:= b.0
+    if bname := b.0 then
       CondAncestorP(bname,FundamentalAncestors,condition,$e) => nil
-      (f:=AncestorP(bname,[first u for u in FundamentalAncestors],$e)) =>
-        [.,.,index]:=assoc(f,FundamentalAncestors)
-        FundamentalAncestors:=[[bname,condition,index],:FundamentalAncestors]
+      f := AncestorP(bname,[first u for u in FundamentalAncestors],$e) =>
+        [.,.,index] := assoc(f,FundamentalAncestors)
+        FundamentalAncestors := [[bname,condition,index],:FundamentalAncestors]
       PrinAncb := categoryPrincipals CatEval(bname,$e)
                --Principal Ancestors of b
-      reallynew:= true
+      reallynew := true
       for anc in FundamentalAncestors repeat
         if listMember?(first anc,PrinAncb) then
                   --This is the check for "Category Subsumption"
-          if rest anc
-             then (anccond:= second anc; ancindex:= third anc)
-             else (anccond:= true; ancindex:= nil)
-          if predicateImplies(anccond,condition)
-             then FundamentalAncestors:=
+          if rest anc then
+            anccond := second anc
+            ancindex := third anc
+          else
+            anccond := true
+            ancindex := nil
+          if predicateImplies(anccond,condition) then
+            FundamentalAncestors :=
                 -- the new 'b' is more often true than the old one 'anc'
               [[bname,condition,ancindex],:remove(FundamentalAncestors,anc)]
-           else
-            if ancindex then
+          else if ancindex then
                      --the new 'b' is less often true
-                newentry:=[bname,condition,ancindex]
-                if not listMember?(newentry,FundamentalAncestors) then
-                  FundamentalAncestors:= [newentry,:FundamentalAncestors]
-             else ancindex:= nil
+              newentry := [bname,condition,ancindex]
+              if not listMember?(newentry,FundamentalAncestors) then
+                FundamentalAncestors := [newentry,:FundamentalAncestors]
+          else ancindex := nil
           if not copied then
-            $NewCatVec:= copyVector $NewCatVec
-            copied:= true
-          if ancindex
-             then ($NewCatVec.ancindex:= bname; reallynew:= nil)
-             else
-              if originalVector and (condition=true) then
-                $NewCatVec:= CatEval(bname,$e)
-                copied:= nil
-                FundamentalAncestors:= [[bname],:categoryAncestors $NewCatVec]
-                         --bname is Principal, so comes first
-                reallynew:= nil
-                objectMember?(b,l) =>
-                  --objectMember? since category vectors are guaranteed unique
-                  (sigl:= categoryExports $NewCatVec; attl:= categoryAttributes $NewCatVec; l:= remove(l,b))
-             --     SAY("domain ",bname," subsumes")
-             --     SAY("adding a conditional domain ",
-             --         bname,
-             --         " replacing",
-             --         first anc)
-                bCond := objectAssoc(b,CondList)
-                CondList := remove(CondList,bCond)
-             -- value of bCond not used and could be nil
-             -- bCond:= second bCond
-                globalDomains := categoryParameters $NewCatVec
-                for u in categoryExports $NewCatVec repeat
-                  if not listMember?(u,sigl) then
-                    [s,c,i]:= u
-                    sigl := 
-                      c is true => [[s,condition,i],:sigl]
-                      [[s,["and",condition,c],i],:sigl]
-                for u in categoryAttributes $NewCatVec repeat
-                  if not listMember?(u,attl) then
-                    [a,c]:= u
-                    attl := 
-                      c is true => [[a,condition],:attl]
-                      [[a,["and",condition,c]],:attl]
+            principal := copyVector principal
+            copied := true
+          if ancindex then
+            principal.ancindex := bname
+            reallynew := nil
+          else if originalVector and condition is true then
+            principal := CatEval(bname,$e)
+            copied := nil
+            FundamentalAncestors := [[bname],:categoryAncestors principal]
+                     --bname is Principal, so comes first
+            reallynew := nil
+            objectMember?(b,l) =>
+              --objectMember? since category vectors are guaranteed unique
+              sigl := categoryExports principal
+              attl := categoryAttributes principal
+              l := remove(l,b)
+         --     SAY("domain ",bname," subsumes")
+         --     SAY("adding a conditional domain ",
+         --         bname,
+         --         " replacing",
+         --         first anc)
+            bCond := objectAssoc(b,CondList)
+            CondList := remove(CondList,bCond)
+         -- value of bCond not used and could be nil
+         -- bCond:= second bCond
+            globalDomains := categoryParameters principal
+            for u in categoryExports principal repeat
+              if not listMember?(u,sigl) then
+                [s,c,i] := u
+                sigl := 
+                  c is true => [[s,condition,i],:sigl]
+                  [[s,["and",condition,c],i],:sigl]
+            for u in categoryAttributes principal repeat
+              if not listMember?(u,attl) then
+                [a,c] := u
+                attl := 
+                  c is true => [[a,condition],:attl]
+                  [[a,["and",condition,c]],:attl]
       if reallynew then
-        n:= # $NewCatVec
-        FundamentalAncestors:= [[b.0,condition,n],:FundamentalAncestors]
-        $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
+        n := # principal
+        FundamentalAncestors := [[b.0,condition,n],:FundamentalAncestors]
+        principal := LENGTHENVEC(principal,n+1)
 -- We need to copy the vector otherwise the FundamentalAncestors
 -- list will get stepped on while compiling "If R has ... " code
 -- Camm Maguire July 26, 2003
---        copied:= true
-        copied:= false
-        originalvector:= false
-        $NewCatVec.n:= b.0
+--        copied := true
+        copied := false
+        originalvector := false
+        principal.n := b.0
   if not copied then
-    $NewCatVec:= copyVector $NewCatVec
+    principal := copyVector principal
     -- It is important to copy the vector now,
     -- in case SigListUnion alters it while
     -- performing Operator Subsumption
   for b in l repeat
-    sigl:= SigListUnion([DropImplementations u for u in categoryExports b],sigl)
+    sigl := SigListUnion([DropImplementations u for u in categoryExports b],
+             sigl,principal)
     attl := S_+(categoryAttributes b,attl)
-    globalDomains:= [:globalDomains,:S_-(categoryParameters b,globalDomains)]
+    globalDomains := [:globalDomains,:S_-(categoryParameters b,globalDomains)]
   for b in CondList repeat
-    newpred:= second b
+    newpred := second b
     for u in categoryAttributes first b repeat
-      v:= assoc(first u,attl)
+      v := assoc(first u,attl)
       null v =>
-        attl:=
+        attl :=
           second u is true => [[first u,newpred],:attl]
           [[first u,["and",newpred,second u]],:attl]
-      second v=true => nil
-      attl:= remove(attl,v)
-      attl:=
+      second v is true => nil
+      attl := remove(attl,v)
+      attl :=
         second u is true => [[first u,mkOr(second v,newpred,$e)],:attl]
         [[first u,mkOr(second v,mkAnd(newpred,second u,$e),$e)],:attl]
-    sigl:=
-      SigListUnion(
-        [AddPredicate(DropImplementations u,newpred) for u in categoryExports(first b)],sigl) where
+    sigl := SigListUnion(
+        [AddPredicate(DropImplementations u,newpred)
+           for u in categoryExports(first b)],sigl,principal) where
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
             newpred is true => op
             oldpred is true => [sig,newpred,:implem]
             [sig,mkpf([oldpred,newpred],"and"),:implem]
-  FundamentalAncestors:= [x for x in FundamentalAncestors | rest x]
+  FundamentalAncestors := [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
-  c := categoryPrincipals $NewCatVec
-  pName:= $NewCatVec.0
-  if pName and not listMember?(pName,c) then c:= [pName,:c]
-  categoryAssociatedTypes($NewCatVec) :=
-    [c,FundamentalAncestors,categoryLocals $NewCatVec]
-  mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
+  c := categoryPrincipals principal
+  pName := principal.0
+  if pName and not listMember?(pName,c) then c := [pName,:c]
+  categoryAssociatedTypes(principal) :=
+    [c,FundamentalAncestors,categoryLocals principal]
+  mkCategory("domain",sigl,attl,globalDomains,principal)
 
 Join(:l) ==
   e :=
