@@ -1,5 +1,10 @@
 2011-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot (JoinInner): Remove effective dead code
+	controlled by originalvector which has non-changing value false.
+
+2011-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot (JoinInner): Use idiomatic Boot for loops.
 
 2011-11-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
