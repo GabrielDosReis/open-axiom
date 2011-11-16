@@ -401,10 +401,9 @@ JoinInner(l,$e) ==
   FundamentalAncestors := categoryAncestors principal
   if principal.0 then
     FundamentalAncestors := [[principal.0],:FundamentalAncestors]
-  copied := false
   -- we can not decide to extend the vector in multiple ways
   -- this flag helps us detect this case
-  originalVector := false
+  copied := false
   -- this skips buggy code which discards needed categories
   for [b,condition] in FindFundAncs(l',$e) | bname := b.0 repeat
     CondAncestorP(bname,FundamentalAncestors,condition,$e) => nil
@@ -437,32 +436,7 @@ JoinInner(l,$e) ==
         copied := true
       if ancindex then
         principal.ancindex := bname
-        reallynew := nil
-      else if originalVector and condition is true then
-        principal := CatEval(bname,$e)
-        copied := nil
-        FundamentalAncestors := [[bname],:categoryAncestors principal]
-                 --bname is Principal, so comes first
-        reallynew := nil
-        objectMember?(b,l) =>
-          --objectMember? since category vectors are guaranteed unique
-          sigl := categoryExports principal
-          attl := categoryAttributes principal
-          l := remove(l,b)
-        CondList := remove(CondList,objectAssoc(b,CondList))
-        globalDomains := categoryParameters principal
-        for u in categoryExports principal repeat
-          if not listMember?(u,sigl) then
-            [s,c,i] := u
-            sigl := 
-              c is true => [[s,condition,i],:sigl]
-              [[s,["and",condition,c],i],:sigl]
-        for u in categoryAttributes principal repeat
-          if not listMember?(u,attl) then
-            [a,c] := u
-            attl := 
-              c is true => [[a,condition],:attl]
-              [[a,["and",condition,c]],:attl]
+        reallynew := false
     if reallynew then
       n := # principal
       FundamentalAncestors := [[b.0,condition,n],:FundamentalAncestors]
