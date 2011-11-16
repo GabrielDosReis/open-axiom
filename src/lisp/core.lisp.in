@@ -149,6 +149,7 @@
 	   "makeByteArray"
 	   "makeBitVector"
 	   "makeString"
+	   "mkVector"
 	   "listToString"
 
            "%hasFeature"
@@ -1414,6 +1415,9 @@
 	(setf (schar s i) (car l))
 	(setq l (cdr l)))
     s))
+
+(defmacro |mkVector| (n)
+  `(make-array ,n :initial-element nil))
 
 ;; native data type translation table
 (defconstant |$NativeTypeTable|
