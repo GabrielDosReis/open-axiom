@@ -149,6 +149,38 @@ isSharpVarWithNum x ==
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
+
+mkBuffer v ==
+  [copyVector v,:#v]
+
+macro bufferData buf ==
+  first buf
+
+macro bufferLength buf ==
+  rest buf
+
+macro bufferRef(buf,i) ==
+  vectorRef(bufferData buf,i)
+
+resizeBuffer(buf,n) ==
+  #bufferData buf >= n =>
+    bufferLength(buf) := n
+    buf
+  v := mkVector(2 * n)
+  for i in 0..(bufferLength buf - 1) repeat
+    vectorRef(v,i) := vectorRef(bufferData buf,i)
+  bufferData(buf) := v
+  bufferLength(buf) := n
+  buf
+
+bufferToVector buf ==
+  n := bufferLength buf
+  v := mkVector n
+  for i in 0..(n-1) repeat
+    vectorRef(v,i) := vectorRef(bufferData buf,i)
+  v
+
+
 --% Sub-domains information handlers
 
 ++ If `dom' is a subdomain, return its immediate super-domain.  

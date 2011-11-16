@@ -62,15 +62,15 @@ isCategoryForm(x,e) ==
 ++ (as indicated by `domainOrPackage'), with signature list
 ++ designated by `sigList', attribute list designated by `attList',
 ++ used domains list designated by `domList', and a princical ancestor
-++ category object designated by `PrincipalAncestor'.
+++ category object designated by `principal'.
 mkCategory: (%ConstructorKind,%List %Sig,%List %Form,%List %Instantiation, %Maybe %Shell) -> %Shell
-mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
+mkCategory(domainOrPackage,sigList,attList,domList,principal) ==
   NSigList := nil
   -- Unless extending a principal ancestor (from the end), start
   -- from the first free, unencumbered slot.
   count := 
-    PrincipalAncestor = nil => $NRTbase
-    #PrincipalAncestor
+    principal = nil => $NRTbase
+    #principal
   sigList:=
     [if s is [sig,pred]
        then
@@ -102,8 +102,8 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
         [v]
   OldLocals:= nil
   -- Remove possible duplicate local domain caches.
-  if PrincipalAncestor then 
-    for u in (OldLocals := categoryLocals PrincipalAncestor) repeat 
+  if principal then 
+    for u in (OldLocals := categoryLocals principal) repeat 
       NewLocals := remove(NewLocals,first u)
   -- New local domains caches are hosted in slots at the end onward
   for u in NewLocals repeat
@@ -115,12 +115,12 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   categoryExports(v) := sigList
   categoryAttributes(v) := attList
   categoryRef(v,3) := $Category
-  if PrincipalAncestor ~= nil then
-    for x in 6..#PrincipalAncestor-1 repeat 
-      categoryRef(v,x) := PrincipalAncestor.x
+  if principal ~= nil then
+    for x in 6..#principal-1 repeat 
+      categoryRef(v,x) := categoryRef(principal,x)
     categoryAssociatedTypes(v) :=
-      [categoryPrincipals PrincipalAncestor,
-        categoryAncestors PrincipalAncestor,
+      [categoryPrincipals principal,
+        categoryAncestors principal,
           OldLocals]
   else
     categoryAssociatedTypes(v) := [nil,nil,OldLocals]
@@ -185,7 +185,7 @@ SigListUnion(extra,original,principal) ==
         -- We must pick up the previous implementation, if any
 --+
       if ximplem is [[q,.,index]] and integer? index and (q="ELT" or q="CONST")
-        then principal . index:= e
+        then bufferRef(principal,index) := e
     original:= [e,:original]
   original
  
@@ -392,18 +392,16 @@ filterConditionalCategories(l,e) ==
 JoinInner(l,$e) ==
   [CondList,uncondList] := filterConditionalCategories(l,$e)
   [principal,:l] := [:l,:uncondList]
+  principal := mkBuffer principal
   l' := [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
-  sigl := categoryExports principal
-  attl := categoryAttributes principal
-  globalDomains := categoryParameters principal
-  FundamentalAncestors := categoryAncestors principal
-  if principal.0 then
-    FundamentalAncestors := [[principal.0],:FundamentalAncestors]
-  -- we can not decide to extend the vector in multiple ways
-  -- this flag helps us detect this case
-  copied := false
+  sigl := categoryExports bufferData principal
+  attl := categoryAttributes bufferData principal
+  globalDomains := categoryParameters bufferData principal
+  FundamentalAncestors := categoryAncestors bufferData principal
+  if name := canonicalForm bufferData principal then
+    FundamentalAncestors := [[name],:FundamentalAncestors]
   -- this skips buggy code which discards needed categories
   for [b,condition] in FindFundAncs(l',$e) | bname := b.0 repeat
     CondAncestorP(bname,FundamentalAncestors,condition,$e) => nil
@@ -431,28 +429,14 @@ JoinInner(l,$e) ==
           if not listMember?(newentry,FundamentalAncestors) then
             FundamentalAncestors := [newentry,:FundamentalAncestors]
       else ancindex := nil
-      if not copied then
-        principal := copyVector principal
-        copied := true
       if ancindex then
-        principal.ancindex := bname
+        bufferRef(principal,ancindex) := bname
         reallynew := false
     if reallynew then
-      n := # principal
+      n := bufferLength principal
       FundamentalAncestors := [[b.0,condition,n],:FundamentalAncestors]
-      principal := LENGTHENVEC(principal,n+1)
--- We need to copy the vector otherwise the FundamentalAncestors
--- list will get stepped on while compiling "If R has ... " code
--- Camm Maguire July 26, 2003
---        copied := true
-      copied := false
-      originalvector := false
-      principal.n := b.0
-  if not copied then
-    principal := copyVector principal
-    -- It is important to copy the vector now,
-    -- in case SigListUnion alters it while
-    -- performing Operator Subsumption
+      resizeBuffer(principal,n + 1)
+      bufferRef(principal,n) := b.0
   for b in l repeat
     sigl := SigListUnion([DropImplementations u for u in categoryExports b],
              sigl,principal)
@@ -480,12 +464,12 @@ JoinInner(l,$e) ==
             [sig,mkpf([oldpred,newpred],"and"),:implem]
   FundamentalAncestors := [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
-  c := categoryPrincipals principal
-  pName := principal.0
+  c := categoryPrincipals bufferData principal
+  pName := canonicalForm bufferData principal
   if pName and not listMember?(pName,c) then c := [pName,:c]
-  categoryAssociatedTypes(principal) :=
-    [c,FundamentalAncestors,categoryLocals principal]
-  mkCategory("domain",sigl,attl,globalDomains,principal)
+  categoryAssociatedTypes(bufferData principal) :=
+    [c,FundamentalAncestors,categoryLocals bufferData principal]
+  mkCategory("domain",sigl,attl,globalDomains,bufferToVector principal)
 
 Join(:l) ==
   e :=
