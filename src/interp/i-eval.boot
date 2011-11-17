@@ -119,11 +119,12 @@ evaluateType form ==
   --  on non-type valued arguemnts to the constructor
   --  and finally checking to see whether the type satisfies the
   --  conditions of its modemap
-  domain:= isDomainValuedVariable form => domain
+  form is "$" => form
+  form is "%" => "$"   --FIXME we should switch to "%" wholesale
   form = $EmptyMode => form
-  form = "?"        => $EmptyMode
+  form is "?"        => $EmptyMode
   string? form => form
-  form = "$" => form
+  domain := isDomainValuedVariable form => domain
   $expandSegments : local := nil
   form is ['typeOf,.] =>
     objVal getValue elaborateForm form
@@ -149,6 +150,7 @@ evaluateType form ==
       for [arg,:args] in tails argl repeat
         symbolMember?(arg,args) => throwKeyedMsg("S2IL0032",[arg])
       form
+    op is ":" and argl is [x,t] => [op,x,evaluateType t]
     evaluateFormAsType form
   ident? form and niladicConstructor? form => evaluateType [form]
   ident? form and (constructor? form or builtinConstructor? form) =>
@@ -161,6 +163,8 @@ evaluateType form ==
 ++ canonical form of the type.
 evaluateFormAsType form ==
   form is [op,:args] and constructor? op => evaluateType1 form
+  form is [op,:args] and ident? op and builtinConstructor? op =>
+    [op,:[evaluateFormAsType x for x in args]]
   t := mkAtree form
   -- ??? Maybe we should be more careful about generalized types.
   bottomUp t is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e)) =>
