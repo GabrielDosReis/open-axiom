@@ -1,3 +1,8 @@
+2011-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (evaluateType): Handle % and and signatures.
+	(evaluateFormAsType): Handle builtin constructor instantiations.
+
 2011-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot (mkCategory): Tidy.
