@@ -289,30 +289,31 @@ MachineLevelSubset(a,b) ==
              --we assume all subsets are true at the machine level
  
 --% Ancestor chasing code
- 
+
+++ Subroutine of JoinInner. 
+++ Given a list `l' of 2-list [cat,pred] of category object and associated
+++ predicate, return a list of similar structures of all fundamental
+++ ancestors with appropriate conditions.
 FindFundAncs(l,e) ==
-  --l is a list of categories and associated conditions (a list of 2-lists
-  --returns a list of them and all their fundamental ancestors
-  --also as two-lists with the appropriate conditions
-  l=nil => nil
-  f1 := CatEval(CAAR l,e)
-  canonicalForm f1 = nil => FindFundAncs(rest l,e)
-  ans := FindFundAncs(rest l,e)
-  for u in FindFundAncs([[CatEval(first x,e),mkAnd(CADAR l,second x,e)]
+  l = nil => nil
+  [hd:=[f1,p1],:l] := l
+  canonicalForm f1 = nil => FindFundAncs(l,e)
+  ans := FindFundAncs(l,e)
+  for u in FindFundAncs([[CatEval(first x,e),mkAnd(p1,second x,e)]
    for x in categoryAncestors f1],e) repeat
-    x:= objectAssoc(first u,ans) =>
-      ans:= [[first u,mkOr(second x,second u,e)],:remove(ans,x)]
-    ans:= [u,:ans]
-        --testing to see if first l is already there
-  x := objectAssoc(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x,e)],:remove(ans,x)]
-  CADAR l=true =>
+    x := objectAssoc(first u,ans) =>
+      ans := [[first u,mkOr(second x,second u,e)],:remove(ans,x)]
+    ans := [u,:ans]
+  --testing to see if hd is already there
+  x := objectAssoc(f1,ans) => [[f1,mkOr(p1,second x,e)],:remove(ans,x)]
+  p1 is true =>
     for x in categoryPrincipals f1 repeat
       if y := objectAssoc(CatEval(x,e),ans) then ans := remove(ans,y)
-    [first l,:ans]
+    [hd,:ans]
   for x in categoryPrincipals f1 repeat
     if y := objectAssoc(CatEval(x,e),ans) then ans:=
-      [[first y,mkOr(CADAR l,second y,e)],:remove(ans,y)]
-  [first l,:ans]
+      [[first y,mkOr(p1,second y,e)],:remove(ans,y)]
+  [hd,:ans]
   -- Our new thing may have, as an alternate view, a principal
   -- descendant of something previously added which is therefore
   -- subsumed
