@@ -439,7 +439,7 @@ compSymbol(s,m,e) ==
   sameObject?(s,m) or isLiteral(s,e) => [quote s,s,e]
   v := get(s,"value",e) =>
     symbolMember?(s,$functorLocalParameters) =>
-        NRTgetLocalIndex s
+        getLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
     [s,v.mode,e] --s has been SETQd

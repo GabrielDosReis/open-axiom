@@ -207,7 +207,7 @@ genDeltaEntry(opMmPair,e) ==
   if cons? dc then 
     dc := substitute("$$","$",dc)
   opModemapPair :=
-    [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
+    [op,[dc,:[getLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or cons? dc) then
     --create "%domain" entry to $NRTdeltaList
@@ -240,8 +240,8 @@ NRTassocIndex x ==
     $NRTbase + $NRTdeltaLength - k
   nil
 
-NRTgetLocalIndex: %Form -> %Short
-NRTgetLocalIndex item ==
+getLocalIndex: %Form -> %Short
+getLocalIndex item ==
   k := NRTassocIndex item => k
   item = "$" => 0
   item = "$$" => 2
@@ -277,7 +277,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
     --if opSig is not exported, it is local and need not be assigned
   if $insideCategoryPackageIfTrue then
       sig := substitute('$,second($functorForm),sig)
-  sig := [NRTgetLocalIndex x for x in sig]
+  sig := [getLocalIndex x for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
   valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
@@ -285,14 +285,14 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
   $NRTdeltaLength := $NRTdeltaLength+1
 
 
-++ NRTaddInner should call following function instead of NRTgetLocalIndex
+++ NRTaddInner should call following function instead of getLocalIndex
 ++ This would prevent putting spurious items in $NRTdeltaList
 NRTinnerGetLocalIndex x ==
   x isnt [.,:.] => x
   op := x.op
   ident? op and (constructor? op or builtinConstructor? op) =>
-    NRTgetLocalIndex x
-  op is "[||]" => NRTgetLocalIndex x
+    getLocalIndex x
+  op is "[||]" => getLocalIndex x
   NRTaddInner x
 
 
@@ -336,9 +336,8 @@ consDomainName(x,dc) ==
         mkList [MKQ op,:[consDomainName(y,dc) for y in argl]]
     substitute('$,"$$",x)
   x = [] => x
-  (y := LASSOC(x,$devaluateList)) => y
-  k:=NRTassocIndex x =>
-    ['devaluate,['ELT,'$,k]]
+  y := LASSOC(x,$devaluateList) => y
+  k := NRTassocIndex x => ['devaluate,['%vref,'$,k]]
   get(x,'value,$e) =>
     isDomainForm(x,$e) => ['devaluate,x]
     x
@@ -351,7 +350,7 @@ consDomainForm(x,dc) ==
      [op,:[consDomainForm(y,dc) for y in argl]]
   x = [] => x
   (y := LASSOC(x,$devaluateList)) => y
-  k:=NRTassocIndex x => ['ELT,'$,k]
+  k := NRTassocIndex x => ['%vref,'$,k]
   get(x,'value,$e) or get(x,'mode,$e) => x
   MKQ x
 
@@ -691,7 +690,7 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
        [[op, genSlotSig(sig,$newEnv)] ,pred,newfnsel]
 
 genSlotSig(sig,$e) ==
-   [NRTgetLocalIndex t for t in sig]
+   [getLocalIndex t for t in sig]
 
 deepChaseInferences(pred,$e) ==
     pred is [op,:preds] and op in '(AND and %and) =>
