@@ -1,3 +1,10 @@
+2011-11-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (getLocalIndex): Rename from NRTgetLocalIndex.
+	Adjust callers.
+	* interp/compiler.boot: Adjust.
+	* interp/define.boot: Likewise.
+
 2011-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot (FindFundAncs): Tidy.  Access input in

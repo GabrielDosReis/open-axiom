@@ -1417,8 +1417,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $functionLocations: local := nil --locations of defined functions in source
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
-    for x in argl repeat NRTgetLocalIndex x
-    for x in dbImplicitParameters db repeat NRTgetLocalIndex x
+    for x in argl repeat getLocalIndex x
+    for x in dbImplicitParameters db repeat getLocalIndex x
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
       $e := augModemapsFromCategory('_$,'_$,target,$e)
@@ -2111,7 +2111,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
-    NRTgetLocalIndex domainForm
+    getLocalIndex domainForm
     registerInlinableDomain(domainForm,e)
     --need to generate slot for add form since all $ go-get
     --  slots will need to access it
@@ -2120,7 +2120,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
-        $NRTaddForm := ["%Comma",:[NRTgetLocalIndex x for x in $addForm.args]]
+        $NRTaddForm := ["%Comma",:[getLocalIndex x for x in $addForm.args]]
         for x in $addForm.args repeat registerInlinableDomain(x,e)
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
       registerInlinableDomain($addForm,e)
@@ -2231,7 +2231,7 @@ doIt(item,$predl) ==
     code is ["%LET",:.] =>
       item.op := '%store
       rhsCode := rhs'
-      item.args := [['%tref,'$,NRTgetLocalIndex lhs],rhsCode]
+      item.args := [['%tref,'$,getLocalIndex lhs],rhsCode]
     item.op := code.op
     item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
