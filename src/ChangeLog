@@ -1,3 +1,10 @@
+2011-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (assignCapsuleFunctionSlot): Move from
+	nruncomp.boot.  Rename from NRTassignCapsuleFunctionSlot.  Take
+	first parameter as a DB.  Adjust callers.
+	(compDefineCapsuleFunction): Tidy.
+
 2011-11-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (getLocalIndex): Rename from NRTgetLocalIndex.
