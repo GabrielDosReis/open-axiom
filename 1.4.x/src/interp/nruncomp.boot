@@ -270,21 +270,6 @@ getLocalIndex item ==
   saveNRTdeltaListComp.first := compEntry
   saveIndex
 
-NRTassignCapsuleFunctionSlot(op,sig) ==
---called from compDefineCapsuleFunction
-  opSig := [op,sig]
-  [.,.,implementation] := NRTisExported? opSig or return nil
-    --if opSig is not exported, it is local and need not be assigned
-  if $insideCategoryPackageIfTrue then
-      sig := substitute('$,second($functorForm),sig)
-  sig := [getLocalIndex x for x in sig]
-  opModemapPair := [op,['_$,:sig],["T",implementation]]
-  valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
-  $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
-  $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
-  $NRTdeltaLength := $NRTdeltaLength+1
-
-
 ++ NRTaddInner should call following function instead of getLocalIndex
 ++ This would prevent putting spurious items in $NRTdeltaList
 NRTinnerGetLocalIndex x ==

@@ -49,8 +49,6 @@ module define where
 
 --%
 
-$newCompCompare := false
-
 ++ when non nil, holds the declaration number of a function in a capsule.
 $suffix := nil
 
@@ -1712,6 +1710,20 @@ orderByDependency(vl,dl) ==
     dl := dl'
   removeDuplicates reverse! orderedVarList --ordered so ith is indep. of jth if i < j
  
+++ Subroutine of compDefineCapsuleFunction.
+assignCapsuleFunctionSlot(db,op,sig) ==
+  opSig := [op,sig]
+  [.,.,implementation] := NRTisExported? opSig or return nil
+    --if opSig is not exported, it is local and need not be assigned
+  if $insideCategoryPackageIfTrue then
+    sig := substitute('$,second dbConstructorForm db,sig)
+  sig := [getLocalIndex x for x in sig]
+  opModemapPair := [op,['_$,:sig],["T",implementation]]
+  valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
+  $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
+  $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
+  $NRTdeltaLength := $NRTdeltaLength+1
+
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
@@ -1727,7 +1739,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $CapsuleModemapFrame: local:= e
     $CapsuleDomainsInScope: local:= get("$DomainsInScope","special",e)
     $insideExpressionIfTrue: local:= true
-    $returnMode:= m
+    $returnMode: local := m
     -- Change "^" to "**" in definitions.  All other places have 
     -- been changed before we get here.
     if form is ["^",:.] then 
@@ -1778,10 +1790,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     noteCapsuleFunctionDefinition($op,signature', makePredicate $predl)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
-    NRTassignCapsuleFunctionSlot($op,signature')
-    if $newCompCompare=true then
-       SAY '"The old compiler generates:"
-       prTriple T
+    assignCapsuleFunctionSlot(db,$op,signature')
     --  A THROW to the above CATCH occurs if too many semantic errors occur
     --  see stackSemanticError
     catchTag:= MKQ gensym()
@@ -1793,7 +1802,6 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
-    val:= [fun,signature',e]
     [fun,['Mapping,:signature'],$e]
  
 getSignatureFromMode(form,e) ==
