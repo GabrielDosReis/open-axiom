@@ -1107,7 +1107,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%store,['%tref,g,0],mkConstructor $form],g]
-    fun := compile(db,[op',["LAM",sargl,body]])
+    fun := compile(db,[op',["LAM",sargl,body]],signature')
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(argl,$FormalMapVariableList)
@@ -1412,7 +1412,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $functionLocations: local := nil --locations of defined functions in source
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
     for x in argl repeat getLocalIndex x
@@ -1453,7 +1452,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
       'SPADSLAM
-    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']]))
+    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']]),signature')
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
@@ -1765,7 +1764,6 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     e := giveFormalParametersValues(argl,e)
  
     $signatureOfForm:= signature' --this global is bound in compCapsuleItems
-    $functionLocations := [[[$op,$signatureOfForm]],:$functionLocations]
     e:= addDomain(signature'.target,e)
     e:= compArgumentConditions e
  
@@ -1798,7 +1796,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body':= addArgumentConditions(body',$op)
       finalBody:= ["CATCH",catchTag,body']
-      compile(db,[$op,["LAM",[:argl,'_$],finalBody]])
+      compile(db,[$op,["LAM",[:argl,'_$],finalBody]],signature')
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
@@ -1969,7 +1967,7 @@ putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   def
  
  
-compile(db,u) ==
+compile(db,u,signature) ==
   [op,lamExpr] := u
   if $suffix then
     $suffix:= $suffix+1
@@ -1979,11 +1977,11 @@ compile(db,u) ==
         [sel
           for [[DC,:sig],[.,sel]] in get(op,'modemap,$e) |
             DC='_$ and (opexport:=true) and
-             (and/[modeEqual(x,y) for x in sig for y in $signatureOfForm])]
+             (and/[modeEqual(x,y) for x in sig for y in signature])]
       isLocalFunction op =>
         if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem op) 
-      encodeFunctionName(db,op,$signatureOfForm,'";",$suffix)
+      encodeFunctionName(db,op,signature,'";",$suffix)
      where
        isLocalFunction op ==
          not symbolMember?(op,$formalArgList) and
@@ -1998,7 +1996,7 @@ compile(db,u) ==
 
   -- Let the backend know about this function's type
   if $insideCapsuleFunctionIfTrue and $optProclaim then
-    proclaimCapsuleFunction(op',$signatureOfForm)
+    proclaimCapsuleFunction(op',signature)
 
   result:= spadCompileOrSetq(db,stuffToCompile)
   functionStats:=[0,elapsedTime()]

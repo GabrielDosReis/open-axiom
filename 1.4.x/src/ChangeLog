@@ -1,5 +1,14 @@
 2011-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compile): Take the signature as third argument.
+	Adjust callers.
+	(compDefineFunctor1): Do not bind $functionLocations.
+	(compDefineCapsuleFunction): Do not update.
+	* interp/lisplib.boot (transformOperationAlist): Do not consult
+	$functionLocations.
+
+2011-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (assignCapsuleFunctionSlot): Move from
 	nruncomp.boot.  Rename from NRTassignCapsuleFunctionSlot.  Take
 	first parameter as a DB.  Adjust callers.
