@@ -1,5 +1,10 @@
 2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (NRTaddDeltaCode): Do not guard the loop by
+	the values in the first vector in $catvecList.  It is pointless.
+
+2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/functor.boot (SigSlotsMatch): Remove.  Adjust caller.
 	(LookUpSigSlots): Tidy.
 

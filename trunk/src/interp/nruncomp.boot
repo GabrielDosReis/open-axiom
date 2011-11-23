@@ -79,10 +79,8 @@ NRTaddDeltaCode db ==
 --  (5) identifiers/strings, parts of signatures (now parts of signatures
 --      now must all have slot numbers, represented by (QUOTE <entry>)
 --  (6) constants, like 0 and 1, represented by (CONS .. ) form
-  kvec := first $catvecList
   for i in $NRTbase.. for item in reverse $NRTdeltaList
-    for compItem in reverse $NRTdeltaListComp
-      | null vectorRef(kvec,i) repeat
+    for compItem in reverse $NRTdeltaListComp repeat
         domainRef(dbTemplate db,i) := deltaTran(item,compItem)
   domainRef(dbTemplate db,5) :=
     $NRTaddForm =>
