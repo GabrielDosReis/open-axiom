@@ -549,19 +549,8 @@ LookUpSigSlots(sig,siglist) ==
   if $insideCategoryPackageIfTrue then
            sig := substitute('$,second($functorForm),sig)
   siglist := $lisplibOperationAlist
-  removeDuplicates [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
-              and KADDR implem]
- 
-SigSlotsMatch(sig,pattern,implem) ==
-  sig=pattern => true
-  #second sig ~= # second pattern => nil
-                       --second sig is the actual signature part
-  first sig ~= first pattern => nil
-  pat' := substitute($definition,'$,second pattern)
-  sig' := substitute($definition,'$,second sig)
-  sig' = pat' => true
-  implem is ['Subsumed,:.] => nil
-  sig' = pat'
+  removeDuplicates [u.mapImpl for u in siglist |
+                      sig = u.mapOpsig and u.mapImpl isnt [.,.,nil]]
  
 makeMissingFunctionEntry(alist,i) ==
   tran applySubst(alist,$SetFunctions.i) where

@@ -1,3 +1,8 @@
+2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/functor.boot (SigSlotsMatch): Remove.  Adjust caller.
+	(LookUpSigSlots): Tidy.
+
 2011-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compile): Take the signature as third argument.
