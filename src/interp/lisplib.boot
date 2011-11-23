@@ -39,10 +39,6 @@ import debug
 namespace BOOT
 module lisplib
 
-
-++
-$functionLocations := []
-
 --=======================================================================
 --                Generate Slot 2 Attribute Alist
 --=======================================================================
@@ -646,11 +642,8 @@ transformOperationAlist operationAlist ==
         impOp in '(CONST Subsumed) => impOp
         keyedSystemError("S2IL0025",[impOp])
       keyedSystemError("S2IL0025",[implementation])
-    signatureItem:=
-      if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
-      [sig,n,condition,kind]
-    itemList:= [signatureItem,:symbolTarget(op,newAlist)]
-    newAlist:= insertAlist(op,itemList,newAlist)
+    itemList := [[sig,n,condition,kind],:symbolTarget(op,newAlist)]
+    newAlist := insertAlist(op,itemList,newAlist)
   newAlist
  
 sayNonUnique x ==
