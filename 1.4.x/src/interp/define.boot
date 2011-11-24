@@ -1657,7 +1657,7 @@ compDefWhereClause(['DEF,form,signature,body],m,e) ==
  
   -- 4. construct a WhereList which declares and/or defines the xi's in
   --    the order constructed in step 3
-  whereList := [addSuchthat(x,[":",x,LASSOC(x,argSigAlist)]) for x in varList]
+  whereList := [addSuchthat(x,[":",x,symbolTarget(x,argSigAlist)]) for x in varList]
      where addSuchthat(x,y) ==
              p := LASSOC(x,$predAlist) => ["|",y,p]
              y

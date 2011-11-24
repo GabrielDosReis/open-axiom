@@ -254,7 +254,7 @@ filterByTopic(opAlist,topic) ==
 
 listOfTopics(conname) ==
   doc := getConstructorDocumentationFromDB conname
-  u := ASSOC('constructor,doc) or return nil
+  u := symbolTarget('constructor,doc) or return nil
   code := myLastAtom u
 --not integer? code => nil
   mySort [key for [key,:val] in entries $topicHash | LOGBITP(val,code)]

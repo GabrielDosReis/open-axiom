@@ -308,7 +308,7 @@ get1(x,prop,e) ==
   prop = "modemap" and $insideCapsuleFunctionIfTrue =>
     symbolTarget("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
-  LASSOC(prop,getProplist(x,e)) or get2(x,prop)
+  symbolTarget(prop,getProplist(x,e)) or get2(x,prop)
 
 get2(x,prop) ==
   prop = "modemap" and ident? x and constructor? x =>
@@ -784,7 +784,7 @@ searchTailEnv(x,e) ==
 augProplist(proplist,prop,val) ==
   $InteractiveMode => augProplistInteractive(proplist,prop,val)
   while (proplist is [[ =prop,:.],:proplist']) repeat proplist:= proplist'
-  val=(u:= LASSOC(prop,proplist)) => proplist
+  val = (u := symbolTarget(prop,proplist)) => proplist
   null val =>
     null u => proplist
     DELLASOS(prop,proplist)
