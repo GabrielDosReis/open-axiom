@@ -1,5 +1,17 @@
 2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot ($CheckVectorList): Remove.
+	(compDefineFunctor1): Do not bind it.
+	(reportOnFunctorCompilation): Do not call displayMissingFunctions.
+	(displayMissingFunctions): Remove as useless.
+	* interp/functor.boot (SetFunctionSlots): Do not set slot in the
+	first vector of $catvecList.
+	* interp/nruncomp.boot (buildFunctor): Remove makeCatvecCode,
+	emptyVector, domainShell.  Do not call NRTcheckVector.
+	(NRTcheckVector): Remove as useless.
+
+2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (NRTaddDeltaCode): Do not guard the loop by
 	the values in the first vector in $catvecList.  It is pointless.
 

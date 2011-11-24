@@ -454,7 +454,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
 
   --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
-  $catvecList: local := nil   --list of vectors v1..vn for each view
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
   $catsig: local := nil        --target category
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
@@ -478,16 +477,8 @@ buildFunctor(db,sig,code,$locals,$e) ==
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
   -- category should be present.  true => always
-  makeCatvecCode := first catvecListMaker
-  emptyVector := vector []
-  domainShell := newShell($NRTbase + $NRTdeltaLength)
-  for i in 0..4 repeat
-    vectorRef(domainShell,i) := vectorRef($domainShell,i)
-    --we will clobber elements; copy since $domainShell may be a cached vector
   dbTemplate(db) := newShell($NRTbase + $NRTdeltaLength)
-  $SetFunctions := newShell # domainShell
-  $catvecList :=
-    [domainShell,:[emptyVector for u in categoryAncestors domainShell]]
+  $SetFunctions := newShell # dbTemplate db
   -- list of names n1..nn for each view
   viewNames := ['$,:[genvar() for u in rest catvecListMaker]]
   domname := 'dv_$
@@ -513,7 +504,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
     [['stuffDomainSlots,'$],:argStuffCode,
        :predBitVectorCode2,storeOperationCode]
 
-  $CheckVectorList := NRTcheckVector domainShell
   -- Local bindings
   bindings := [:devaluateCode,createDomainCode,
                  createViewCode,createPredVecCode] where
@@ -542,24 +532,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
     --if we didn't kill this, DEFINE would insert it in the wrong place
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
   ans
-
-NRTcheckVector domainShell ==
---RETURNS: an alist (((op,sig),:pred) ...) of missing functions
-  alist := nil
-  for i in $NRTbase..maxIndex domainShell repeat
---Vector elements can be one of
--- (a) T           -- item was marked
--- (b) nil         -- ???
--- (c) categoryForm-- it was a domain view; now irrelevant
--- (d) op-signature-- store missing function info in $CheckVectorList
-    v := vectorRef(domainShell,i)
-    v=true => nil  --item is marked; ignore
-    v=nil => nil
-    v isnt [.,:.] => systemErrorHere '"CheckVector"
-    first v isnt [.,:.] => nil  --category form; ignore
-    assoc(first v,alist) => nil
-    alist := [[first v,:vectorRef($SetFunctions,i)],:alist]
-  alist
 
 NRTsetVector4Part1(siglist,formlist,condlist) ==
   $uncondList: local := nil

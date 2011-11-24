@@ -521,15 +521,12 @@ TryGDC cond ==
  
 SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   null body => return nil
-  u := first $catvecList
-  for catImplem in LookUpSigSlots(sig,categoryExports u) repeat
+  for catImplem in LookUpSigSlots(sig,categoryExports $domainShell) repeat
     catImplem is [q,.,index] and q in '(ELT CONST) =>
       if q = 'CONST and body is ['CONS,a,b] then
          body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
       body:= ['%store,['%tref,'$,index],body]
       not vector? $SetFunctions => nil --packages don't set it
-      if TruthP flag then             -- unconditionally defined function
-        vectorRef(u,index) := true
       TruthP vectorRef($SetFunctions,index) =>   -- the function was already assigned
         return body := nil
       vectorRef($SetFunctions,index) :=
