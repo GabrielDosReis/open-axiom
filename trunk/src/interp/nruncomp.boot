@@ -619,14 +619,14 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
   --  if called inside buildFunctor, $NRTdeltaLength gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
   --    $NRTdeltaList = nil  ===> all slot numbers become nil
-  $lisplibOperationAlist := [sigloc entry for entry in categoryExports $domainShell] where
-    sigloc [opsig,pred,fnsel] ==
+  $lisplibOperationAlist := [sigloc(db,entry) for entry in categoryExports $domainShell] where
+    sigloc(db,[opsig,pred,fnsel]) ==
         if pred isnt 'T then
           pred := simpBool pred
           $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
-        fnsel is [op,a,:.] and (op is 'ELT or op is 'CONST) =>
+        fnsel is [op,a,:.] and op in '(ELT CONST) =>
           if $insideCategoryPackageIfTrue then
-              opsig := substitute('$,second($functorForm),opsig)
+            opsig := substitute('$,first dbParameters db,opsig)
           [opsig,pred,[op,a,vectorLocation(first opsig,second opsig)]]
         [opsig,pred,fnsel]
   sortedOplist := listSort(function GLESSEQP,
@@ -662,19 +662,21 @@ vectorLocation(op,sig) ==
   u => $NRTdeltaLength - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
 
-NRTsubstDelta(initSig) ==
-  sig := [replaceSlotTypes s for s in initSig] where
-     replaceSlotTypes(t) ==
+NRTsubstDelta sig ==
+  [replaceSlotTypes t for t in sig] where
+     replaceSlotTypes t ==
         t isnt [.,:.] =>
           not integer? t => t
-          t = 0 => '$
-          t = 2 => '_$_$
+          t = 0 => "$"
+          t = 2 => "$$"
           t = 5 => $NRTaddForm
-          u:= $NRTdeltaList.($NRTdeltaLength+5-t)
+          u := $NRTdeltaList.($NRTdeltaLength+5-t)
           first u = "%domain" => second u
           error "bad $NRTdeltaList entry"
-        first t in '(Mapping Union Record _:) =>
-           [first t,:[replaceSlotTypes(x) for x in rest t]]
+        t is [":",x,t'] => [t.op,x,replaceSlotTypes t']
+        first t in '(Enumeration EnumerationCategory) => t
+        ident? first t and builtinConstructor? first t =>
+          [t.op,:[replaceSlotTypes(x) for x in t.args]]
         t
 
 -----------------------------SLOT1 DATABASE------------------------------------
