@@ -1,5 +1,14 @@
 2011-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot: Tidy.
+	* interp/functor.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
+2011-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (changeDirectoryInSlot1,sigloc): Add first
 	parameter as a DB.  Adjust caller.
 	(NRTsubstDelta): Tidy.

@@ -145,7 +145,7 @@ trace1 l ==
         traceList => [["ops",:traceList]]
         nil
       varList:=
-        y:= LASSOC("vars",optionList) => [["vars",:y]]
+        y := symbolTarget("vars",optionList) => [["vars",:y]]
         nil
       [:domainList,:opList,:varList]
     optionList => [:traceList,:optionList]

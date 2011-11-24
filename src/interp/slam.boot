@@ -204,7 +204,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   nam
  
 getCacheCount fn ==
-  n:= LASSOC(fn,$cacheAlist) => n
+  n:= symbolTarget(fn,$cacheAlist) => n
   $cacheCount
  
 reportFunctionCacheAll(op,nam,argl,body) ==
@@ -446,7 +446,7 @@ clearAllSlams x ==
         symbolValue(slamListName) := nil
         thoseCleared:= ADJOIN(x,thoseCleared)
         someMoreToClear:=
-          setDifference(LASSOC(x,$functorDependencyAlist),[:thoseToClear,:
+          setDifference(symbolTarget(x,$functorDependencyAlist),[:thoseToClear,:
             thoseCleared])
         append!(thoseToClear,someMoreToClear)
  
