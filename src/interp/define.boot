@@ -64,7 +64,6 @@ $forceAdd := false
 $functionStats := nil
 $functorStats := nil
 
-$CheckVectorList := []
 $functorTarget := nil
 $condAlist := []
 $uncondAlist := []
@@ -1373,7 +1372,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
          --Set in doIt, accessed in the compiler - compNoStacking
     $functorForm: local := nil
     $functorLocalParameters: local := nil
-    $CheckVectorList: local := nil
     $getDomainCode: local := nil -- code for getting views
     $insideFunctorIfTrue: local:= true
     $genSDVar: local:= 0
@@ -1512,7 +1510,6 @@ compFunctorBody(db,body,m,e) ==
   T
  
 reportOnFunctorCompilation() ==
-  displayMissingFunctions()
   if $semanticErrorStack then sayBrightly '" "
   displaySemanticErrors()
   if $warningStack then sayBrightly '" "
@@ -1524,25 +1521,6 @@ reportOnFunctorCompilation() ==
   sayBrightly ['"      Time:",:bright timeString,'"seconds"]
   sayBrightly '" "
   'done
- 
-displayMissingFunctions() ==
-  null $CheckVectorList => nil
-  loc := nil              -- list of local operation signatures
-  exp := nil              -- list of exported operation signatures
-  for [[op,sig,:.],:pred] in $CheckVectorList  | not pred repeat
-    not symbolMember?(op,$formalArgList) and getXmode(op,$e) is ['Mapping,:.] =>
-      loc := [[op,sig],:loc]
-    exp := [[op,sig],:exp]
-  if loc then
-    sayBrightly ['"%l",:bright '"  Missing Local Functions:"]
-    for [op,sig] in loc for i in 1.. repeat
-      sayBrightly ['"      [",i,'"]",:bright op,
-        ": ",:formatUnabbreviatedSig sig]
-  if exp then
-    sayBrightly ['"%l",:bright '"  Missing Exported Functions:"]
-    for [op,sig] in exp for i in 1.. repeat
-      sayBrightly ['"      [",i,'"]",:bright op,
-        ": ",:formatUnabbreviatedSig sig]
  
 --% domain view code
  
