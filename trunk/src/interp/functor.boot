@@ -519,9 +519,15 @@ TryGDC cond ==
     cond
   cond
  
+findOperatorImplementations opsig ==
+  if $insideCategoryPackageIfTrue then
+    opsig := substitute('$,second($functorForm),opsig)
+  removeDuplicates [u.mapImpl for u in $lisplibOperationAlist |
+                      opsig = u.mapOpsig and u.mapImpl isnt [.,.,nil]]
+ 
 SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   null body => return nil
-  for catImplem in LookUpSigSlots(sig,categoryExports $domainShell) repeat
+  for catImplem in findOperatorImplementations sig repeat
     catImplem is [q,.,index] and q in '(ELT CONST) =>
       if q = 'CONST and body is ['CONS,a,b] then
          body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
@@ -540,21 +546,6 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
     keyedSystemError("S2OR0002",[catImplem])
   body is ['%store,:.] => body
   nil
- 
-LookUpSigSlots(sig,siglist) ==
---+ must kill any implementations below of the form (ELT $ NIL)
-  if $insideCategoryPackageIfTrue then
-           sig := substitute('$,second($functorForm),sig)
-  siglist := $lisplibOperationAlist
-  removeDuplicates [u.mapImpl for u in siglist |
-                      sig = u.mapOpsig and u.mapImpl isnt [.,.,nil]]
- 
-makeMissingFunctionEntry(alist,i) ==
-  tran applySubst(alist,$SetFunctions.i) where
-    tran x ==
-      x is ["HasCategory",a,['QUOTE,b]] => ["has",a,b]
-      x is [op,:l] and op in '(AND OR NOT) => [op,:[tran y for y in l]]
-      x
  
 --%  Under what conditions may views exist?
  

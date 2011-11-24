@@ -1,5 +1,11 @@
 2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/functor.boot (findOperatorImplementations): Rename from
+	LookUpSigSlots.  Tidy.  Adjust caller.
+	(makeMissingFunctionEntry): Remove as unused.
+
+2011-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($CheckVectorList): Remove.
 	(compDefineFunctor1): Do not bind it.
 	(reportOnFunctorCompilation): Do not call displayMissingFunctions.
