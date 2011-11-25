@@ -1048,8 +1048,7 @@ buildConstructorCondition db ==
 getArgumentMode: (%Form,%Env) -> %Maybe %Mode 
 getArgumentMode(x,e) ==
   string? x => x
-  m := get(x,'mode,e) => m
-  nil
+  get(x,'mode,e)
  
 getArgumentModeOrMoan: (%Form, %Form, %Env) -> %Mode
 getArgumentModeOrMoan(x,form,e) ==
@@ -1727,11 +1726,11 @@ compareMode2Arg(x,m) == null x or modeEqual(x,m)
 ++ Determine whether the function with possibly partial signature `target'
 ++ is exported.  Return the complete signature if yes; otherwise
 ++ return nil, with diagnostic in ambiguity case.
-hasSigInTargetCategory(argl,form,target,e) ==
-  sigs := candidateSignatures($op,#form,categoryExports $domainShell)
-  cc := checkCallingConvention(sigs,#argl)
+hasSigInTargetCategory(form,target,e) ==
+  sigs := candidateSignatures(form.op,#form,categoryExports $domainShell)
+  cc := checkCallingConvention(sigs,#form.args)
   mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
-            for x in argl for i in 0..]
+            for x in form.args for i in 0..]
     --each element is a declared mode for the variable or nil if none exists
   potentialSigList :=
     removeDuplicates [sig for sig in sigs | fn(sig,target,mList)] where
@@ -1740,7 +1739,7 @@ hasSigInTargetCategory(argl,form,target,e) ==
           "and"/[compareMode2Arg(x,m) for x in mList for m in sig.source]
   potentialSigList is [sig] => sig
   potentialSigList = nil => nil
-  ambiguousSignatureError($op,potentialSigList)
+  ambiguousSignatureError(form.op,potentialSigList)
   first potentialSigList
  
 ++ Subroutine of compDefineCapsuleFunction.
@@ -1779,10 +1778,27 @@ compArgumentConditions e ==
   $argumentConditionList:=
     [f for [n,a,x] in $argumentConditionList] where
       f() ==
-        y:= substitute(a,'_#1,x)
+        y:= substitute(a,"#1",x)
         T := [.,.,e]:= compOrCroak(y,$Boolean,e)
         [n,x,T.expr]
   e
+
+++ Subroutine of compDefineCapsuleFunction.
+++ We are about to elaborate a definition with `form' as head, and
+++ parameter types specified in `signature'.  Refine that signature
+++ in case some or all of the parameter types are missing.
+refineDefinitionSignature(form,signature,e) ==
+  --let target and local signatures help determine modes of arguments
+  signature' :=
+    x := hasSigInTargetCategory(form,signature.target,e) => x
+    x := getSignatureFromMode(form,e) => x
+    [signature.target,:[getArgumentModeOrMoan(a,form,e) for a in form.args]]
+  signature'.source := stripOffSubdomainConditions(signature'.source,form.args)
+  --obtain target type if not given
+  if signature'.target = nil then
+    signature'.target :=
+      getSignature(form.op,signature'.source,e).target or return nil
+  signature'
 
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
@@ -1811,46 +1827,36 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     argl:= stripOffArgumentConditions argl
     $formalArgList:= [:argl,:$formalArgList]
  
-    --let target and local signatures help determine modes of arguments
-    signature' :=
-      sig := hasSigInTargetCategory(argl,form,signature.target,e) => sig
-      sig := getSignatureFromMode(form,e) => sig
-      [signature.target,:[getArgumentModeOrMoan(a,form,e) for a in argl]]
-    signature'.source := stripOffSubdomainConditions(signature'.source,argl)
- 
-    --obtain target type if not given
-    if signature'.target = nil then
-      signature'.target :=
-        getSignature($op,signature'.source,e).target or return nil
-    e := checkAndDeclare(argl,form,sig,e)
+    signature := refineDefinitionSignature(form,signature,e) or return nil
+    e := checkAndDeclare(argl,form,signature,e)
     e := giveFormalParametersValues(argl,e)
  
-    $signatureOfForm:= signature' --this global is bound in compCapsuleItems
-    e:= addDomain(signature'.target,e)
+    $signatureOfForm := signature --this global is bound in compCapsuleItems
+    e:= addDomain(signature.target,e)
     e:= compArgumentConditions e
  
     if $profileCompiler then
-      for x in argl for t in signature'.source repeat 
+      for x in argl for t in signature.source repeat 
         profileRecord('arguments,x,t)
 
     --4. introduce needed domains into extendedEnv
-    for domain in signature' repeat
+    for domain in signature repeat
       e := addDomain(domain,e)
  
     --6. compile body in environment with extended environment
-    rettype := resolve(signature'.target,$returnMode)
+    rettype := resolve(signature.target,$returnMode)
  
     localOrExported :=
       localOperation?($op,e) => 'local
       'exported
-    formattedSig := formatUnabbreviatedSig signature'
+    formattedSig := formatUnabbreviatedSig signature
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
-    noteCapsuleFunctionDefinition($op,signature',makePredicate $predl)
+    noteCapsuleFunctionDefinition($op,signature,makePredicate $predl)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
-    assignCapsuleFunctionSlot(db,$op,signature')
+    assignCapsuleFunctionSlot(db,$op,signature)
     --  A THROW to the above CATCH occurs if too many semantic errors occur
     --  see stackSemanticError
     -- Build a name for the implementation.
@@ -1860,21 +1866,21 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
         if or/[mm.mmDC is '$ for mm in get($op,'modemap,e)] then
           userError ['"%b",$op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem $op) 
-      encodeFunctionName(db,$op,signature','";",$suffix)
+      encodeFunctionName(db,$op,signature,'";",$suffix)
     -- Let the backend know about this function's type
     if $optProclaim then
-      proclaimCapsuleFunction(op',signature')
+      proclaimCapsuleFunction(op',signature)
     -- Finally, build a lambda expression for this function.
     fun :=
       catchTag := MKQ gensym()
       body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body' := addArgumentConditions(body',$op)
       finalBody := ["CATCH",catchTag,body']
-      compile(db,[op',["LAM",[:argl,'_$],finalBody]],signature')
+      compile(db,[op',["LAM",[:argl,'_$],finalBody]],signature)
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
-    [fun,['Mapping,:signature'],$e]
+    [fun,['Mapping,:signature],$e]
  
 domainMember(dom,domList) ==
   or/[modeEqual(dom,d) for d in domList]

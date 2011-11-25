@@ -1,6 +1,11 @@
 2011-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot: Rearrange order of some definitions.
+	(getArgumentMode): Tidy.
+	(hasSigInTargetCategory): Likewise.
+	(refineDefinitionSignature): New. Abstract from
+	compDefineCapsuleFunction. 
+	(compDefineCapsuleFunction): Use it.  Tidy.
 
 2011-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
