@@ -777,6 +777,11 @@ checkRepresentation(db,addForm,body,env) ==
   env
 
 
+getSignatureFromMode(form,e) ==
+  getXmode(opOf form,e) is ['Mapping,:signature] =>
+    #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
+    applySubst(pairList($FormalMapVariableList,form.args),signature)
+
 compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine1(form,m,e) ==
   $insideExpressionIfTrue: local:= false
@@ -1040,6 +1045,16 @@ buildConstructorCondition db ==
     ['%exist,ASSOCRIGHT subst,mkpf(applySubst(subst,cond),'AND)]
   true
 
+getArgumentMode: (%Form,%Env) -> %Maybe %Mode 
+getArgumentMode(x,e) ==
+  string? x => x
+  m := get(x,'mode,e) => m
+  nil
+ 
+getArgumentModeOrMoan: (%Form, %Form, %Env) -> %Mode
+getArgumentModeOrMoan(x,form,e) ==
+  getArgumentMode(x,e) or
+    stackSemanticError(["argument ",x," of ",form," is not declared"],nil)
 
 compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     --1. bind global variables
@@ -1701,6 +1716,74 @@ assignCapsuleFunctionSlot(db,op,sig) ==
 localOperation?(op,e) ==
   not symbolMember?(op,$formalArgList) and getXmode(op,e) is ['Mapping,:.]
 
+++ Subroutine of hasSigInTargetCategory.  
+candidateSignatures(op,nmodes,slot1) ==
+  [sig for [[=op,sig,:.],:.] in slot1 | #sig = nmodes]
+
+compareMode2Arg(x,m) == null x or modeEqual(x,m)
+ 
+++ Subroutine of compDefineCapsuleFunction.  
+++ We are compiling a capsule function definition with head given by `form'.
+++ Determine whether the function with possibly partial signature `target'
+++ is exported.  Return the complete signature if yes; otherwise
+++ return nil, with diagnostic in ambiguity case.
+hasSigInTargetCategory(argl,form,target,e) ==
+  sigs := candidateSignatures($op,#form,categoryExports $domainShell)
+  cc := checkCallingConvention(sigs,#argl)
+  mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
+            for x in argl for i in 0..]
+    --each element is a declared mode for the variable or nil if none exists
+  potentialSigList :=
+    removeDuplicates [sig for sig in sigs | fn(sig,target,mList)] where
+      fn(sig,target,mList) ==
+        (target = nil or target=sig.target) and
+          "and"/[compareMode2Arg(x,m) for x in mList for m in sig.source]
+  potentialSigList is [sig] => sig
+  potentialSigList = nil => nil
+  ambiguousSignatureError($op,potentialSigList)
+  first potentialSigList
+ 
+++ Subroutine of compDefineCapsuleFunction.
+checkAndDeclare(argl,form,sig,e) ==
+-- arguments with declared types must agree with those in sig;
+-- those that don't get declarations put into e
+  for a in argl for m in sig.source repeat
+    isQuasiquote m => nil	  -- we just built m from a.
+    m1:= getArgumentMode(a,e) =>
+      not modeEqual(m1,m) =>
+        stack:= ["   ",:bright a,'"must have type ",m,
+          '" not ",m1,'"%l",:stack]
+    e:= put(a,'mode,m,e)
+  if stack then
+    sayBrightly ['"   Parameters of ",:bright form.op,
+      '" are of wrong type:",'"%l",:stack]
+  e
+
+++ Subroutine of compDefineCapsuleFunction.  
+addArgumentConditions($body,$functionName) ==
+  $argumentConditionList =>
+               --$body is only used in this function
+    fn $argumentConditionList where
+      fn clist ==
+        clist is [[n,untypedCondition,typedCondition],:.] =>
+          ['%when,[typedCondition,fn rest clist],
+            ['%otherwise,["argumentDataError",n,
+              MKQ untypedCondition,MKQ $functionName]]]
+        null clist => $body
+        systemErrorHere ["addArgumentConditions",clist]
+  $body
+ 
+++ Subroutine of compDefineCapsuleFunction.
+compArgumentConditions: %Env -> %Env
+compArgumentConditions e ==
+  $argumentConditionList:=
+    [f for [n,a,x] in $argumentConditionList] where
+      f() ==
+        y:= substitute(a,'_#1,x)
+        T := [.,.,e]:= compOrCroak(y,$Boolean,e)
+        [n,x,T.expr]
+  e
+
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
@@ -1751,20 +1834,20 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
         profileRecord('arguments,x,t)
 
     --4. introduce needed domains into extendedEnv
-    for domain in signature' repeat e:= addDomain(domain,e)
+    for domain in signature' repeat
+      e := addDomain(domain,e)
  
     --6. compile body in environment with extended environment
     rettype := resolve(signature'.target,$returnMode)
  
     localOrExported :=
-      not symbolMember?($op,$formalArgList) and
-        getXmode($op,e) is ['Mapping,:.] => 'local
+      localOperation?($op,e) => 'local
       'exported
     formattedSig := formatUnabbreviatedSig signature'
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
-    noteCapsuleFunctionDefinition($op,signature', makePredicate $predl)
+    noteCapsuleFunctionDefinition($op,signature',makePredicate $predl)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
     assignCapsuleFunctionSlot(db,$op,signature')
@@ -1772,14 +1855,9 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     --  see stackSemanticError
     -- Build a name for the implementation.
     op' :=
-      opexport := false
-      opmodes :=
-        [sel
-          for [[DC,:sig],[.,sel]] in get($op,'modemap,e) |
-            DC is '$ and (opexport := true) and
-             (and/[modeEqual(x,y) for x in sig for y in signature])]
       localOperation?($op,e) =>
-        if opexport then
+        -- object if the operation is both local and exported.
+        if or/[mm.mmDC is '$ for mm in get($op,'modemap,e)] then
           userError ['"%b",$op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem $op) 
       encodeFunctionName(db,$op,signature','";",$suffix)
@@ -1798,14 +1876,6 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     --7. give operator a 'value property
     [fun,['Mapping,:signature'],$e]
  
-getSignatureFromMode(form,e) ==
-  getXmode(opOf form,e) is ['Mapping,:signature] =>
-    #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
-    applySubst(pairList($FormalMapVariableList,form.args),signature)
-
-candidateSignatures(op,nmodes,slot1) ==
-  [sig for [[=op,sig,:.],:.] in slot1 | #sig = nmodes]
-
 domainMember(dom,domList) ==
   or/[modeEqual(dom,d) for d in domList]
  
@@ -1845,55 +1915,6 @@ addDomain(domain,e) ==
   e        --is not a functor
  
 
-++ We are compiling a capsule function definition with head given by `form'.
-++ Determine whether the function with possibly partial signature `opsig'
-++ is exported.  Return the complete signature if yes; otherwise
-++ return nil, with diagnostic in ambiguity case.
-hasSigInTargetCategory(argl,form,opsig,e) ==
-  sigs := candidateSignatures($op,#form,categoryExports $domainShell)
-  cc := checkCallingConvention(sigs,#argl)
-  mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
-            for x in argl for i in 0..]
-    --each element is a declared mode for the variable or nil if none exists
-  potentialSigList:=
-    removeDuplicates
-      [sig for sig in sigs |
-          fn(sig,opsig,mList)] where
-            fn(sig,opsig,mList) ==
-              (null opsig or opsig=sig.target) and
-                (and/[compareMode2Arg(x,m) for x in mList for m in sig.source])
-  potentialSigList is [sig] => sig
-  potentialSigList = nil => nil
-  ambiguousSignatureError($op,potentialSigList)
-  first potentialSigList
- 
-compareMode2Arg(x,m) == null x or modeEqual(x,m)
- 
-getArgumentModeOrMoan: (%Form, %Form, %Env) -> %Mode
-getArgumentModeOrMoan(x,form,e) ==
-  getArgumentMode(x,e) or
-    stackSemanticError(["argument ",x," of ",form," is not declared"],nil)
-
-getArgumentMode: (%Form,%Env) -> %Mode 
-getArgumentMode(x,e) ==
-  string? x => x
-  m:= get(x,'mode,e) => m
- 
-checkAndDeclare(argl,form,sig,e) ==
--- arguments with declared types must agree with those in sig;
--- those that don't get declarations put into e
-  for a in argl for m in sig.source repeat
-    isQuasiquote m => nil	  -- we just built m from a.
-    m1:= getArgumentMode(a,e) =>
-      not modeEqual(m1,m) =>
-        stack:= ["   ",:bright a,'"must have type ",m,
-          '" not ",m1,'"%l",:stack]
-    e:= put(a,'mode,m,e)
-  if stack then
-    sayBrightly ['"   Parameters of ",:bright form.op,
-      '" are of wrong type:",'"%l",:stack]
-  e
- 
 getSignature(op,argModeList,$e) ==
   1=#
     (sigl:=
@@ -1934,29 +1955,6 @@ stripOffSubdomainConditions(margl,argl) ==
         $argumentConditionList:= [[i,arg,condition],:$argumentConditionList]
         marg
       x
- 
-compArgumentConditions: %Env -> %Env
-compArgumentConditions e ==
-  $argumentConditionList:=
-    [f for [n,a,x] in $argumentConditionList] where
-      f() ==
-        y:= substitute(a,'_#1,x)
-        T := [.,.,e]:= compOrCroak(y,$Boolean,e)
-        [n,x,T.expr]
-  e
-
-addArgumentConditions($body,$functionName) ==
-  $argumentConditionList =>
-               --$body is only used in this function
-    fn $argumentConditionList where
-      fn clist ==
-        clist is [[n,untypedCondition,typedCondition],:.] =>
-          ['%when,[typedCondition,fn rest clist],
-            ['%otherwise,["argumentDataError",n,
-              MKQ untypedCondition,MKQ $functionName]]]
-        null clist => $body
-        systemErrorHere ["addArgumentConditions",clist]
-  $body
  
 putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   NRTputInTail CDDADR def
