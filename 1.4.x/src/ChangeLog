@@ -1,5 +1,13 @@
 2011-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot ($suffix): Remove toplevel declaration.
+	(localOperation?): New.
+	(compDefineCapsuleFunction): Increment $suffix.  Check for local
+	and exported function definition here.
+	(compile): Move capsule-local function processing out.
+
+2011-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot: Tidy.
 	* interp/functor.boot: Likewise.
 	* interp/g-util.boot: Likewise.

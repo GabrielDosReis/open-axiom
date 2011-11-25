@@ -49,9 +49,6 @@ module define where
 
 --%
 
-++ when non nil, holds the declaration number of a function in a capsule.
-$suffix := nil
-
 $doNotCompileJustPrint := false
 
 ++ stack of pending capsule function definitions.
@@ -1701,6 +1698,9 @@ assignCapsuleFunctionSlot(db,op,sig) ==
   $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
   $NRTdeltaLength := $NRTdeltaLength+1
 
+localOperation?(op,e) ==
+  not symbolMember?(op,$formalArgList) and getXmode(op,e) is ['Mapping,:.]
+
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
@@ -1717,6 +1717,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $CapsuleDomainsInScope: local:= get("$DomainsInScope","special",e)
     $insideExpressionIfTrue: local:= true
     $returnMode: local := m
+    $suffix := $suffix + 1
     -- Change "^" to "**" in definitions.  All other places have 
     -- been changed before we get here.
     if form is ["^",:.] then 
@@ -1753,7 +1754,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     for domain in signature' repeat e:= addDomain(domain,e)
  
     --6. compile body in environment with extended environment
-    rettype:= resolve(signature'.target,$returnMode)
+    rettype := resolve(signature'.target,$returnMode)
  
     localOrExported :=
       not symbolMember?($op,$formalArgList) and
@@ -1769,12 +1770,29 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     assignCapsuleFunctionSlot(db,$op,signature')
     --  A THROW to the above CATCH occurs if too many semantic errors occur
     --  see stackSemanticError
-    catchTag:= MKQ gensym()
-    fun:=
-      body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
-      body':= addArgumentConditions(body',$op)
-      finalBody:= ["CATCH",catchTag,body']
-      compile(db,[$op,["LAM",[:argl,'_$],finalBody]],signature')
+    -- Build a name for the implementation.
+    op' :=
+      opexport := false
+      opmodes :=
+        [sel
+          for [[DC,:sig],[.,sel]] in get($op,'modemap,e) |
+            DC is '$ and (opexport := true) and
+             (and/[modeEqual(x,y) for x in sig for y in signature])]
+      localOperation?($op,e) =>
+        if opexport then
+          userError ['"%b",$op,'"%d",'" is local and exported"]
+        makeSymbol strconc(encodeItem $prefix,'";",encodeItem $op) 
+      encodeFunctionName(db,$op,signature','";",$suffix)
+    -- Let the backend know about this function's type
+    if $optProclaim then
+      proclaimCapsuleFunction(op',signature')
+    -- Finally, build a lambda expression for this function.
+    fun :=
+      catchTag := MKQ gensym()
+      body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
+      body' := addArgumentConditions(body',$op)
+      finalBody := ["CATCH",catchTag,body']
+      compile(db,[op',["LAM",[:argl,'_$],finalBody]],signature')
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
@@ -1946,41 +1964,17 @@ putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
  
  
 compile(db,u,signature) ==
-  [op,lamExpr] := u
-  if $suffix then
-    $suffix:= $suffix+1
-    op':=
-      opexport:=nil
-      opmodes:=
-        [sel
-          for [[DC,:sig],[.,sel]] in get(op,'modemap,$e) |
-            DC='_$ and (opexport:=true) and
-             (and/[modeEqual(x,y) for x in sig for y in signature])]
-      isLocalFunction op =>
-        if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
-        makeSymbol strconc(encodeItem $prefix,'";",encodeItem op) 
-      encodeFunctionName(db,op,signature,'";",$suffix)
-     where
-       isLocalFunction op ==
-         not symbolMember?(op,$formalArgList) and
-           getXmode(op,$e) is ['Mapping,:.]
-    u:= [op',lamExpr]
-  optimizedBody:= optimizeFunctionDef u
-  stuffToCompile:=
+  optimizedBody := optimizeFunctionDef u
+  stuffToCompile :=
     $insideCapsuleFunctionIfTrue => putInLocalDomainReferences optimizedBody
     optimizedBody
-  $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; op')
+  $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; first u)
   $macroIfTrue => constructMacro stuffToCompile
-
-  -- Let the backend know about this function's type
-  if $insideCapsuleFunctionIfTrue and $optProclaim then
-    proclaimCapsuleFunction(op',signature)
-
-  result:= spadCompileOrSetq(db,stuffToCompile)
-  functionStats:=[0,elapsedTime()]
-  $functionStats:= addStats($functionStats,functionStats)
-  printStats functionStats
-  result
+  try spadCompileOrSetq(db,stuffToCompile)
+  finally
+    functionStats := [0,elapsedTime()]
+    $functionStats := addStats($functionStats,functionStats)
+    printStats functionStats
 
 ++ Subroutine of compile.  Called to generate backend code for
 ++ items defined directly or indirectly at capsule level.   This is
