@@ -1743,10 +1743,10 @@ hasSigInTargetCategory(form,target,e) ==
   first potentialSigList
  
 ++ Subroutine of compDefineCapsuleFunction.
-checkAndDeclare(argl,form,sig,e) ==
+checkAndDeclare(form,sig,e) ==
 -- arguments with declared types must agree with those in sig;
 -- those that don't get declarations put into e
-  for a in argl for m in sig.source repeat
+  for a in form.args for m in sig.source repeat
     isQuasiquote m => nil	  -- we just built m from a.
     m1:= getArgumentMode(a,e) =>
       not modeEqual(m1,m) =>
@@ -1800,6 +1800,19 @@ refineDefinitionSignature(form,signature,e) ==
       getSignature(form.op,signature'.source,e).target or return nil
   signature'
 
+++ Subroutine of compDefineCapsuleFunction.
+processDefinitionParameters(form,signature,e) ==
+  e := checkAndDeclare(form,signature,e)
+  e := giveFormalParametersValues(form.args,e)
+  e := addDomain(signature.target,e)
+  e := compArgumentConditions e
+  if $profileCompiler then
+    for x in form.args for t in signature.source repeat 
+      profileRecord('arguments,x,t)
+  for domain in signature repeat
+    e := addDomain(domain,e)
+  e
+ 
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
@@ -1826,24 +1839,9 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $form := [$op,:argl]
     argl:= stripOffArgumentConditions argl
     $formalArgList:= [:argl,:$formalArgList]
- 
     signature := refineDefinitionSignature(form,signature,e) or return nil
-    e := checkAndDeclare(argl,form,signature,e)
-    e := giveFormalParametersValues(argl,e)
- 
     $signatureOfForm := signature --this global is bound in compCapsuleItems
-    e:= addDomain(signature.target,e)
-    e:= compArgumentConditions e
- 
-    if $profileCompiler then
-      for x in argl for t in signature.source repeat 
-        profileRecord('arguments,x,t)
-
-    --4. introduce needed domains into extendedEnv
-    for domain in signature repeat
-      e := addDomain(domain,e)
- 
-    --6. compile body in environment with extended environment
+    e := processDefinitionParameters(form,signature,e)
     rettype := resolve(signature.target,$returnMode)
  
     localOrExported :=
