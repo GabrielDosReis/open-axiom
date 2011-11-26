@@ -1327,7 +1327,7 @@ compElt(form,m,E) ==
       mmList.0
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
-    val := genDeltaEntry([opOf anOp,:modemap],E)
+    val := genDeltaEntry(opOf anOp,modemap,E)
     coerce([['%call,val],second sig,E], m)
   compForm(form,m,E)
 
@@ -1649,7 +1649,7 @@ compCase1(x,m,e) ==
       | mm.mmSignature is [=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
             and modeEqual(s,m')] or return nil
   fn := (or/[mm for mm in u | mm.mmCondition = true]) or return nil
-  fn := genDeltaEntry(["case",:fn],e)
+  fn := genDeltaEntry("case",fn,e)
   [['%call,fn,x',MKQ m],$Boolean,e']
 
 
@@ -1918,7 +1918,7 @@ coerceByModemap([x,m,e],m') ==
 
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
   mm:=first u  -- patch for non-trival conditons
-  fn := genDeltaEntry(['coerce,:mm],e)
+  fn := genDeltaEntry('coerce,mm,e)
   [['%call,fn,x],m',e]
 
 autoCoerceByModemap([x,source,e],target) ==
@@ -1930,11 +1930,11 @@ autoCoerceByModemap([x,source,e],target) ==
 
   source is ["Union",:l] and listMember?(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+       => [['%call,genDeltaEntry("autoCoerce",fn,e),x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
-  [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+  [['%call,genDeltaEntry("autoCoerce",fn,e),x],target,e]
 
 
 ++ Compile a comma separated expression list. These typically are
@@ -2031,7 +2031,7 @@ compViableModemap(op,argTl,mm,e) ==
   -- information which is no longer valid; thus ignore this index and
   -- store the signature instead.
   f is [op1,.,.] and op1 in '(ELT CONST Subsumed) =>
-    [genDeltaEntry([op,:mm],e),argTl]
+    [genDeltaEntry(op,mm,e),argTl]
   [f,argTl]
 
 compApplyModemap(form,modemap,$e) ==
