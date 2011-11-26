@@ -46,6 +46,8 @@ module c_-util where
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
   giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
+  registerConstructor: (%Symbol,%Env) -> %Env
+  currentConstructor: %Env -> %Maybe %Symbol
   -- functor data manipulation
   dbInfovec: %Constructor -> %Maybe %FunctorData
 
@@ -136,12 +138,13 @@ macro domainData d ==
 --% Operational Semantics:
 --%    structure CompilationData ==
 --%       Record(formalSubst: Substitution,implicits: List Identifier,
---%         byteList: List SingleInteger)
+--%         byteList: List SingleInteger,
+--%           usedEntities: VectorBuffer Pair(SourceEntity,Elaboration))
 --%
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  [nil,nil,nil]
+  [nil,nil,nil,[nil,:0]]
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -161,6 +164,20 @@ macro dbImplicitData db ==
 ++ Transcient data.
 macro dbByteList db ==
   third dbCompilerData db
+
+++ Return a buffer of entities referenced during elaboration
+++ of current functor.
+macro dbEntityBuffer db ==
+  fourth dbCompilerData db
+
+++ List (in reverse order) of used entities during elaboration of
+++ current functor.
+macro dbUsedEntities db ==
+  first dbEntityBuffer db
+
+++ Number of used entities during elaboration of current functor.
+macro dbEntityCount db ==
+  rest dbEntityBuffer db
 
 ++ Return the existential substitution of `db'.
 dbQuerySubst db ==
@@ -782,7 +799,14 @@ isLiteral: (%Symbol,%Env) -> %Boolean
 isLiteral(x,e) == 
   get(x,"isLiteral",e) => true
   false
- 
+
+++ Remember the name of the constructor definition being processed.
+registerConstructor(x,e) ==
+  put('%compilerData,'%ctor,x,e)
+
+++ Retrieve the name of the constructor definition being processed.
+currentConstructor e ==
+  get('%compilerData,'%ctor,e) 
 
 makeLiteral: (%Symbol,%Env) -> %Thing
 makeLiteral(x,e) == 
@@ -810,7 +834,7 @@ isSubset(x,y,e) ==
   -- Expand domain representation form
   x is 'Rep and not $useRepresentationHack =>
     isSubset(getRepresentation e,y,e)
-  y is '$ and get(y,'%form,e) = x => true
+  y is '$ and get(y,'%dc,e) = x => true
   -- Or, if x has the Subsets property set by SubsetCategory.
   pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
   -- Or, they are related by subdomain chain.

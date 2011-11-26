@@ -1,5 +1,19 @@
 2011-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-con.boot (conOpPage1): Fix typo.
+	* interp/c-util.boot (registerConstructor): New.
+	(currentConstructor): Likewise.
+	(makeCompilationData): Initialize dbEntityBuffer.
+	(dbEntityBuffer): New.
+	(dbUsedEntities): Likewise.
+	(dbEntityCount): Likewise.
+	* interp/compiler.boot: Adjust call to getLocalIndex, NRTassocIndex
+	* interp/define.boot: Likewise.
+	($NRTdeltaLength): Remove.
+	* interp/nruncomp.boot: Likewise.
+
+2011-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (processDefinitionParameters): New.  Abstract
 	from compDefineCapsuleFunction.
 	(compDefineCapsuleFunction): Use it.  Tidy.

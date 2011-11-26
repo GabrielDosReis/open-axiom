@@ -482,14 +482,14 @@ NRTmakeCategoryAlist(db,e) ==
   maxElement := "MAX"/dbByteList db
   ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
     ['CONS, MKQ vector slot0,
-      ['CONS, MKQ vector [encodeCatform x for x in catformvec],
+      ['CONS, MKQ vector [encodeCatform(db,x) for x in catformvec],
         ['makeByteWordVec2,maxElement,MKQ dbByteList db]]]]
   --NOTE: this is new form: old form satisfies vector? CDDR form
 
-encodeCatform x ==
-  k := NRTassocIndex x => k
+encodeCatform(db,x) ==
+  k := NRTassocIndex(db,x) => k
   x isnt [.,:.] or rest x isnt [.,:.] => x
-  [first x,:[encodeCatform y for y in rest x]]
+  [first x,:[encodeCatform(db,y) for y in rest x]]
  
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
@@ -860,7 +860,7 @@ getTargetFromRhs(lhs,rhs,e) ==
   rhs is ['Union,:l] => ['UnionCategory,:l]
   mode(rhs,e) where
     mode(x,e) ==
-      $killOptimizeIfTrue: local := true -- not yet in codegen phase.
+      $onlyAbstractSlot: local := true -- not yet in codegen phase.
       compOrCroak(x,$EmptyMode,e).mode
  
 giveFormalParametersValues(argl,e) ==
@@ -1395,6 +1395,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbTemplate(db) := nil
     dbLookupFunction(db) := nil
     dbCapsuleDefinitions(db) := nil
+    $e := registerConstructor($op,$e)
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:argl,:$formalArgList]
     -- all defaulting packages should have caching turned off
@@ -1420,15 +1421,14 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
-    $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
-    for x in argl repeat getLocalIndex x
-    for x in dbImplicitParameters db repeat getLocalIndex x
+    for x in argl repeat getLocalIndex(db,x)
+    for x in dbImplicitParameters db repeat getLocalIndex(db,x)
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
       $e := augModemapsFromCategory('_$,'_$,target,$e)
-      $e := put('$,'%form,form,$e)
+      $e := put('$,'%dc,form,$e)
     $signature := signature'
     parSignature := dbSubstituteAllQuantified(db,signature')
     parForm := dbSubstituteAllQuantified(db,form)
@@ -1705,12 +1705,12 @@ assignCapsuleFunctionSlot(db,op,sig) ==
     --if opSig is not exported, it is local and need not be assigned
   if $insideCategoryPackageIfTrue then
     sig := substitute('$,second dbConstructorForm db,sig)
-  sig := [getLocalIndex x for x in sig]
+  sig := [getLocalIndex(db,x) for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
   valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
   $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
-  $NRTdeltaLength := $NRTdeltaLength+1
+  dbEntityCount(db) := dbEntityCount db + 1
 
 localOperation?(op,e) ==
   not symbolMember?(op,$formalArgList) and getXmode(op,e) is ['Mapping,:.]
@@ -1960,15 +1960,16 @@ stripOffSubdomainConditions(margl,argl) ==
         marg
       x
  
-putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
-  NRTputInTail CDDADR def
+putInLocalDomainReferences(db,def := [opName,[lam,varl,body]]) ==
+  NRTputInTail(db,CDDADR def)
   def
  
  
 compile(db,u,signature) ==
   optimizedBody := optimizeFunctionDef u
   stuffToCompile :=
-    $insideCapsuleFunctionIfTrue => putInLocalDomainReferences optimizedBody
+    $insideCapsuleFunctionIfTrue =>
+      putInLocalDomainReferences(db,optimizedBody)
     optimizedBody
   $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; first u)
   $macroIfTrue => constructMacro stuffToCompile
@@ -2089,9 +2090,10 @@ compAdd(['add,$addForm,capsule],m,e) ==
        ['%otherwise, ['systemError,['%list,'"%b",MKQ $functorForm.op,'"%d",'"from", _
          '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
+  db := constructorDB currentConstructor e
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
-    getLocalIndex domainForm
+    getLocalIndex(db,domainForm)
     registerInlinableDomain(domainForm,e)
     --need to generate slot for add form since all $ go-get
     --  slots will need to access it
@@ -2100,7 +2102,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
-        $NRTaddForm := ["%Comma",:[getLocalIndex x for x in $addForm.args]]
+        $NRTaddForm := ["%Comma",:[getLocalIndex(db,x) for x in $addForm.args]]
         for x in $addForm.args repeat registerInlinableDomain(x,e)
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
       registerInlinableDomain($addForm,e)
@@ -2209,9 +2211,10 @@ doIt(item,$predl) ==
         if $optimizeRep then
           registerInlinableDomain($Representation,$e)
     code is ["%LET",:.] =>
+      db := constructorDB currentConstructor $e
       item.op := '%store
       rhsCode := rhs'
-      item.args := [['%tref,'$,getLocalIndex lhs],rhsCode]
+      item.args := [['%tref,'$,getLocalIndex(db,lhs)],rhsCode]
     item.op := code.op
     item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)

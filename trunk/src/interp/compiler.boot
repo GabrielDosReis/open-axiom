@@ -439,7 +439,7 @@ compSymbol(s,m,e) ==
   sameObject?(s,m) or isLiteral(s,e) => [quote s,s,e]
   v := get(s,"value",e) =>
     symbolMember?(s,$functorLocalParameters) =>
-        getLocalIndex s
+        getLocalIndex(constructorDB currentConstructor e,s)
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
     [s,v.mode,e] --s has been SETQd
@@ -952,7 +952,8 @@ setqSingle(id,val,m,E) ==
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
-    k := NRTassocIndex(id) => ['%store,['%tref,'$,k],x]
+    db := constructorDB currentConstructor e'
+    k := NRTassocIndex(db,id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
 
@@ -2407,9 +2408,9 @@ numberize x ==
   [numberize first x,:numberize rest x]
 
 ++ If there is a local reference to mode `m', return it.  
-localReferenceIfThere m ==
+localReferenceIfThere(m,e) ==
   m is "$" => m
-  idx := NRTassocIndex m => ['%tref,'$,idx]
+  idx := NRTassocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
   quote m
 
 massageLoop x == main x where
@@ -2479,7 +2480,7 @@ compRepeatOrCollect(form,m,e) ==
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
         form':= 
            $loopKind = "%CollectV" => 
-             ["%CollectV",localReferenceIfThere m',:itl',body']
+             ["%CollectV",localReferenceIfThere(m',e'),:itl',body']
            -- We are phasing out use of LISP macros COLLECT and REPEAT.
            $loopKind = "COLLECT" => ['%collect,:itl',body']
            [$loopKind,:itl',body']
