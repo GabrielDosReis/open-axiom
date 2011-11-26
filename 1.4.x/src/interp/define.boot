@@ -2004,8 +2004,10 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
       registerFunctionReplacement(nam,nam')
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
   else if macform := expandableDefinition?(vl,body) then
-           registerFunctionReplacement(nam,macform)
-           sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
+    registerFunctionReplacement(nam,macform)
+    [:vl',.] := vl
+    sayBrightly ['"     ",:bright prefix2String [nam,:vl'],
+                   '"is replaced by",:bright prefix2String body]
 
   form := 
     getFunctionReplacement nam => 

@@ -446,7 +446,7 @@ form2String1 u ==
     argl := rest argl
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
-  isBinaryInfix op => formatAsFortranExpression [op,:argl]
+  binaryInfix? op => formatAsFortranExpression [op,:argl]
   application2String(op,[form2String1 x for x in argl], u1)
 
 formWrapId id == 

@@ -132,8 +132,11 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
        0  == nil$List(Term) pretend %
        zero? x ==  null terms x
 
+       import %tail: List Term -> List Term from Foreign Builtin
+
        qsetrest!: (List Term, List Term) -> List Term
-       qsetrest!(l, e) == RPLACD(l, e)$Lisp
+       qsetrest!(l, e) ==
+         %store(%tail l,e)$Foreign(Builtin)
 
        -- PERFORMANCE CRITICAL; Should build list up
        --  by merging 2 sorted lists.   Doing this will
@@ -285,8 +288,11 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
          [[termIndex u,a] for u in terms x
             | not zero?(a := n * termValue u)] pretend %
 
+       import %tail: List Term -> List Term from Foreign Builtin
+
        qsetrest!: (List Term, List Term) -> List Term
-       qsetrest!(l, e) == RPLACD(l, e)$Lisp
+       qsetrest!(l, e) ==
+         %store(%tail l,e)$Foreign(Builtin)
 
        x - y ==
          x' := terms x

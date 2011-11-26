@@ -1,5 +1,13 @@
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/indexedp.spad.pamphlet: Avoid direct use or RPLACD.
+	* algebra/poly.spad.pamphlet: Likewise.
+	* interp/define.boot (spadCompileOrSetq): Tidy replacement info.
+	* interp/i-output.boot ($BinaryOperators): New.
+	(binaryInfix?): Tidy.
+
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (genDeltaEntry): Split first argument into
 	separate arguments (operation and modemap).  Adjust callers.
 

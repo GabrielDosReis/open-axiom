@@ -469,8 +469,17 @@ rbrkSch() == symbolName specialChar 'rbrk
 lbrkSch() == symbolName specialChar 'lbrk
 quadSch() == symbolName specialChar 'quad
 
-isBinaryInfix x ==
-  member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
+++ List of binary operators
+$BinaryOperators ==
+  ["**", "^", "*", "/", "//", "\", "\\", "rem", "quo", "exquo", "+", "-",
+    "/\", "\/", "=", "~=", "<", "<=", ">", ">=", "and", "or", ">>", "<<",
+      "by", "has", "case", "->", "..", "|"]
+  
+
+binaryInfix? x ==
+  ident? x => symbolMember?(x,$BinaryOperators)
+  string? x => symbolMember?(makeSymbol x,$BinaryOperators)
+  false
 
 stringApp([.,u],x,y,d) ==
   appChar(strconc($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
