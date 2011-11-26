@@ -151,8 +151,11 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
 
        ground?(p): Boolean == empty? p or (empty? rest p and zero? degree p)
 
+       import %tail: Rep -> Rep from Foreign Builtin
+
        qsetrest!: (Rep, Rep) -> Rep
-       qsetrest!(l: Rep, e: Rep): Rep == RPLACD(l, e)$Lisp
+       qsetrest!(l: Rep, e: Rep): Rep ==
+         %store(%tail l,e)$Foreign(Builtin)
 
        entireRing? := R has EntireRing
 
