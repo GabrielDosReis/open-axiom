@@ -691,7 +691,7 @@ conOpPage1(conform,:options) ==
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := getContructorSourceFileFromDB makeSymbol name
+  sourceFileName  := getConstructorSourceFileFromDB makeSymbol name
   emString        := ['"{\sf ",constring,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
