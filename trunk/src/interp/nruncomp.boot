@@ -53,9 +53,6 @@ $insideCategoryPackageIfTrue := false
 $profileCompiler := false
 
 ++
-$NRTdeltaList := []
-
-++
 $NRTaddForm := nil
 
 ++
@@ -78,9 +75,9 @@ NRTaddDeltaCode db ==
 --  (5) identifiers/strings, parts of signatures (now parts of signatures
 --      now must all have slot numbers, represented by (QUOTE <entry>)
 --  (6) constants, like 0 and 1, represented by (CONS .. ) form
-  for i in $NRTbase.. for item in reverse $NRTdeltaList
-    for compItem in reverse $NRTdeltaListComp repeat
-        domainRef(dbTemplate db,i) := deltaTran(db,item,compItem)
+  for i in $NRTbase..
+    for [item,:compItem] in reverse dbUsedEntities db repeat
+      domainRef(dbTemplate db,i) := deltaTran(db,item,compItem)
   domainRef(dbTemplate db,5) :=
     $NRTaddForm =>
       $NRTaddForm is ["%Comma",:y] => reverse! y
@@ -93,7 +90,7 @@ deltaTran(db,item,compItem) ==
   [op,:modemap] := item
   [dcSig,[.,[kind,:.]]] := modemap
   [dc,:sig] := dcSig
-  -- NOTE: sig is already in encoded form since it comes from $NRTdeltaList;
+  -- NOTE: sig is already in encoded form since it comes from dbUsedEntities;
   --       so we need only encode dc. -- gdr 2008-11-28.
   dcCode :=
     dc is '$ => 0
@@ -146,6 +143,11 @@ listOfBoundVars form ==
   first form = "Enumeration" => []
   "union"/[listOfBoundVars x for x in rest form]
 
+
+dbEntitySlot(db,x) ==
+  n := or/[i for i in 1.. for [z,:.] in dbUsedEntities db | x = z] =>
+    $NRTbase + dbEntityCount db - n
+  nil
 
 ++ Subroutine of optDeltaEntry
 ++ Return true if the signature `sig' contains flag types
@@ -212,19 +214,18 @@ genDeltaEntry(opMmPair,e) ==
     [op,[dc,:[getLocalIndex(db,x) for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex(db,dc) and
     (member(dc,$functorLocalParameters) or cons? dc) then
-    --create "%domain" entry to $NRTdeltaList
-      $NRTdeltaList:= [["%domain",NRTaddInner(db,dc)],:$NRTdeltaList]
-      saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
+    --create "%domain" entry to dbUsedEntities
+      entry := [["%domain",NRTaddInner(db,dc)]]
+      dbUsedEntities(db) := [entry,:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
-      compEntry:= (compOrCroak(odc,$EmptyMode,e)).expr
-      saveNRTdeltaListComp.first := compEntry
+      entry.rest := compOrCroak(odc,$EmptyMode,e).expr
   u :=
-    [eltOrConst,'$,$NRTbase + dbEntityCount db - index] where index() ==
-      (n := valuePosition(opModemapPair,$NRTdeltaList)) => n + 1
-      $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
-      $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
+    [eltOrConst,'$,index] where index() ==
+      n := dbEntitySlot(db,opModemapPair) => n
+      n := dbEntityCount db + $NRTbase
+      dbUsedEntities(db) := [[opModemapPair],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
-      0
+      n
   impl := optDeltaEntry(op,nsig,odc,eltOrConst) => impl
   u
 
@@ -236,10 +237,7 @@ NRTassocIndex: (%Thing,%Form) -> %Maybe %Short
 NRTassocIndex(db,x) ==
   null x => x
   x = $NRTaddForm => 5
-  k := or/[i for i in 1.. for y in $NRTdeltaList
-            | first y = "%domain" and second y = x] =>
-    $NRTbase + dbEntityCount db - k
-  nil
+  dbEntitySlot(db,['%domain,x])
 
 getLocalIndex: (%Thing,%Form) -> %Short
 getLocalIndex(db,item) ==
@@ -247,32 +245,28 @@ getLocalIndex(db,item) ==
   item = "$" => 0
   item = "$$" => 2
   item isnt [.,:.] and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
-    $NRTdeltaList:= [["%domain",NRTaddInner(db,item)],:$NRTdeltaList]
-    $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
+    entry := [["%domain",NRTaddInner(db,item)],:item]
+    dbUsedEntities(db) := [entry,:dbUsedEntities db]
     index := $NRTbase + dbEntityCount db      -- slot number to return
     dbEntityCount(db) := dbEntityCount db + 1
     index
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
-  $NRTdeltaList:= [["%domain", NRTaddInner(db,item)], :$NRTdeltaList]
-  -- remember the item's place in the `delta list' and its slot number
-  -- before the recursive call to the compiler, as that might generate
-  -- more references that would extend the `delta list'.
-  saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
+  entry := [["%domain",NRTaddInner(db,item)]]
+  dbUsedEntities(db) := [entry,:dbUsedEntities db]
   saveIndex := $NRTbase + dbEntityCount db
   dbEntityCount(db) := dbEntityCount db + 1
-  compEntry:= 
+  entry.rest := 
     -- we don't need to compile the flag again.
     -- ??? In fact we should not be compiling again at this phase.
     -- ??? That we do is likely a bug.
     flag => item  
-    (compOrCroak(item,$EmptyMode,$e)).expr
-  saveNRTdeltaListComp.first := compEntry
+    compOrCroak(item,$EmptyMode,$e).expr
   saveIndex
 
 ++ NRTaddInner should call following function instead of getLocalIndex
-++ This would prevent putting spurious items in $NRTdeltaList
+++ This would prevent putting spurious items in dbUsedEntities
 NRTinnerGetLocalIndex(db,x) ==
   x isnt [.,:.] => x
   op := x.op
@@ -283,7 +277,7 @@ NRTinnerGetLocalIndex(db,x) ==
 
 
 NRTaddInner(db,x) ==
---called by genDeltaEntry and others that affect $NRTdeltaList
+--called by genDeltaEntry and others that affect dbUsedEntities
   do
     x isnt [.,:.] => nil
     x is [":",y,z] => [x.op,y,NRTinnerGetLocalIndex(db,z)]
@@ -616,7 +610,7 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
   --3 cases:
   --  if called inside buildFunctor, dbEntityCount gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
-  --    $NRTdeltaList = nil  ===> all slot numbers become nil
+  --    dbUsedEntities = nil  ===> all slot numbers become nil
   $lisplibOperationAlist := [sigloc(db,entry) for entry in categoryExports $domainShell] where
     sigloc(db,[opsig,pred,fnsel]) ==
         if pred isnt 'T then
@@ -655,7 +649,7 @@ deepChaseInferences(pred,$e) ==
     chaseInferences(pred,$e)
 
 vectorLocation(db,op,sig) ==
-  u := or/[i for i in 1.. for u in $NRTdeltaList
+  u := or/[i for i in 1.. for [u,:.] in dbUsedEntities db
         | u is [=op,['$,: xsig],:.] and sig = NRTsubstDelta(db,xsig) ]
   u => dbEntityCount db - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
@@ -668,9 +662,9 @@ NRTsubstDelta(db,sig) ==
           t = 0 => "$"
           t = 2 => "$$"
           t = 5 => $NRTaddForm
-          u := $NRTdeltaList.(dbEntityCount db + 5 - t)
+          [u,:.] := dbUsedEntities(db).(dbEntityCount db + 5 - t)
           first u = "%domain" => second u
-          error "bad $NRTdeltaList entry"
+          error "bad dbUsedEntities entry"
         t is [":",x,t'] => [t.op,x,replaceSlotTypes(db,t')]
         first t in '(Enumeration EnumerationCategory) => t
         ident? first t and builtinConstructor? first t =>

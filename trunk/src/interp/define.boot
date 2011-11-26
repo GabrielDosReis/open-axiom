@@ -66,7 +66,6 @@ $condAlist := []
 $uncondAlist := []
 $NRTslot1PredicateList := []
 $NRTattributeAlist := []
-$NRTdeltaListComp := []
 $signature := nil
 $byteAddress := nil
 $sigAlist := []
@@ -1419,8 +1418,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist(db,attributeList)
     $NRTaddForm: local := nil   -- see compAdd
-    $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
-    $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
     for x in argl repeat getLocalIndex(db,x)
@@ -1707,10 +1704,11 @@ assignCapsuleFunctionSlot(db,op,sig) ==
     sig := substitute('$,second dbConstructorForm db,sig)
   sig := [getLocalIndex(db,x) for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
-  valuePosition(opModemapPair,$NRTdeltaList) => nil   --already there
-  $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
-  $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
+  n := dbEntitySlot(db,opModemapPair) => n   --already there
+  n := dbEntityCount db + $NRTbase
+  dbUsedEntities(db) := [[opModemapPair],:dbUsedEntities db]
   dbEntityCount(db) := dbEntityCount db + 1
+  n
 
 localOperation?(op,e) ==
   not symbolMember?(op,$formalArgList) and getXmode(op,e) is ['Mapping,:.]

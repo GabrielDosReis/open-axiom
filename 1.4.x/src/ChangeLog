@@ -1,3 +1,17 @@
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot ($NRTdeltaList): Remove.
+	($NRTdeltaListComp): Likeewise.
+	(compDefineFunctor1): Do not bind them.
+	(assignCapsuleFunctionSlot): Use dbUsedEntities.
+	* interp/nruncomp.boot (NRTaddDeltaCode): Likewise.
+	(dbEntitySlot): New.
+	(NRTassocIndex): Use it.
+	(genDeltaEntry): Use dbUsedEntities.
+	(getLocalIndex): Likewise.
+	(vectorLocation): Likewise.
+	(NRTsubstDelta): Likewise.
+
 2011-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-con.boot (conOpPage1): Fix typo.
