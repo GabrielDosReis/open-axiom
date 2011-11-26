@@ -1,5 +1,10 @@
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (genDeltaEntry): Split first argument into
+	separate arguments (operation and modemap).  Adjust callers.
+
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (updateCapsuleDirectory): Simplify.
 	* interp/define.boot (compDefineCapsuleFunction): Call it from here.
 	* interp/functor.boot (DescendCode): Not here.

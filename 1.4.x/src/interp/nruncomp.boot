@@ -157,7 +157,7 @@ needToQuoteFlags?(sig,env) ==
     selector?(t,e) ==
       ident? t and null get(t,"value",e)
 
-optDeltaEntry(op,sig,dc,eltOrConst) ==
+optDeltaEntry(op,sig,dc,kind) ==
   $killOptimizeIfTrue => nil
   -- references to modemaps from current domain are folded in a later
   -- stage of the compilation process.
@@ -184,7 +184,6 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     fun is ['makeSpadConstant,:.] and
       (fun' := getFunctionReplacement second fun) =>
          return fun'
-    --eltOrConst = 'CONST => return ['XLAM,nil, SPADCALL fun]
     cons? fun => first fun
     fun
   getFunctionReplacement fun
@@ -193,13 +192,12 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
 ++ slot number in the template vector.
 $onlyAbstractSlot := false
 
-genDeltaEntry(opMmPair,e) ==
---called from compApplyModemap
-  [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
+genDeltaEntry(op,mm,e) ==
+  [[dc,:sig],[.,cform:=[kind,.,nsig]]] := mm
   if $profileCompiler then profileRecord(dc,op,sig)
-  eltOrConst is 'XLAM => cform
-  if eltOrConst is 'Subsumed then eltOrConst := 'ELT
-  $onlyAbstractSlot => [eltOrConst,'$,[op,[dc,:sig]]]
+  kind is 'XLAM => cform
+  if kind is 'Subsumed then kind := 'ELT
+  $onlyAbstractSlot => [kind,'$,[op,[dc,:sig]]]
   db := constructorDB currentConstructor e
   if dc isnt [.,:.] then
     dc = "$" => nsig := sig
@@ -212,21 +210,22 @@ genDeltaEntry(opMmPair,e) ==
     dc := substitute("$$","$",dc)
   opModemapPair :=
     [op,[dc,:[getLocalIndex(db,x) for x in nsig]],["T",cform]] -- force pred to T
-  if null NRTassocIndex(db,dc) and
-    (member(dc,$functorLocalParameters) or cons? dc) then
-    --create "%domain" entry to dbUsedEntities
+  if NRTassocIndex(db,dc) = nil and (dc is [.,:.] or
+    ident? dc and symbolMember?(dc,$functorLocalParameters)) then
+      -- This modemap's domain of computation did not contributte an
+      -- an operation before; give it  a slot before the modemap itself.
       entry := [["%domain",NRTaddInner(db,dc)]]
       dbUsedEntities(db) := [entry,:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       entry.rest := compOrCroak(odc,$EmptyMode,e).expr
   u :=
-    [eltOrConst,'$,index] where index() ==
+    [kind,'$,index] where index() ==
       n := dbEntitySlot(db,opModemapPair) => n
       n := dbEntityCount db + $NRTbase
       dbUsedEntities(db) := [[opModemapPair],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       n
-  impl := optDeltaEntry(op,nsig,odc,eltOrConst) => impl
+  impl := optDeltaEntry(op,nsig,odc,kind) => impl
   u
 
 ++ Return the slot number (within the template vector of the functor
