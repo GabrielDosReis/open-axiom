@@ -87,9 +87,7 @@ NRTaddDeltaCode db ==
 deltaTran(db,item,compItem) ==
   --NOTE: all items but signatures are wrapped with %domain forms
   item is ["%domain",lhs,:.] => NRTencode(db,lhs,compItem)
-  [op,:modemap] := item
-  [dcSig,[.,[kind,:.]]] := modemap
-  [dc,:sig] := dcSig
+  [op,dc,:sig,kind] := item
   -- NOTE: sig is already in encoded form since it comes from dbUsedEntities;
   --       so we need only encode dc. -- gdr 2008-11-28.
   dcCode :=
@@ -208,8 +206,6 @@ genDeltaEntry(op,mm,e) ==
   odc := dc
   if cons? dc then 
     dc := substitute("$$","$",dc)
-  opModemapPair :=
-    [op,[dc,:[getLocalIndex(db,x) for x in nsig]],["T",cform]] -- force pred to T
   if NRTassocIndex(db,dc) = nil and (dc is [.,:.] or
     ident? dc and symbolMember?(dc,$functorLocalParameters)) then
       -- This modemap's domain of computation did not contributte an
@@ -220,9 +216,10 @@ genDeltaEntry(op,mm,e) ==
       entry.rest := compOrCroak(odc,$EmptyMode,e).expr
   u :=
     [kind,'$,index] where index() ==
-      n := dbEntitySlot(db,opModemapPair) => n
+      desc := [op,dc,:[getLocalIndex(db,x) for x in nsig],kind]
+      n := dbEntitySlot(db,desc) => n
       n := dbEntityCount db + $NRTbase
-      dbUsedEntities(db) := [[opModemapPair],:dbUsedEntities db]
+      dbUsedEntities(db) := [[desc],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       n
   impl := optDeltaEntry(op,nsig,odc,kind) => impl
@@ -290,9 +287,6 @@ NRTaddInner(db,x) ==
     keyedSystemError("S2NR0003",[x])
   x
 
-
-NRTisExported? opSig ==
-  or/[u for u in categoryExports $domainShell | u.0 = opSig]
 
 consSig(db,sig,dc) == [consDomainName(db,sigpart,dc) for sigpart in sig]
 
@@ -649,7 +643,7 @@ deepChaseInferences(pred,$e) ==
 
 vectorLocation(db,op,sig) ==
   u := or/[i for i in 1.. for [u,:.] in dbUsedEntities db
-        | u is [=op,['$,: xsig],:.] and sig = NRTsubstDelta(db,xsig) ]
+        | u is [=op,'$,:xsig,.] and sig = NRTsubstDelta(db,xsig) ]
   u => dbEntityCount db - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
 

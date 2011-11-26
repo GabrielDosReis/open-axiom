@@ -1697,16 +1697,16 @@ orderByDependency(vl,dl) ==
  
 ++ Subroutine of compDefineCapsuleFunction.
 assignCapsuleFunctionSlot(db,op,sig) ==
-  opSig := [op,sig]
-  [.,.,implementation] := NRTisExported? opSig or return nil
-    --if opSig is not exported, it is local and need not be assigned
+  kind := or/[u.mapKind for u in categoryExports $domainShell
+                | symbolEq?(op,u.mapOperation) and sig = u.mapSignature]
+  kind = nil => nil -- op is local and need not be assigned
   if $insideCategoryPackageIfTrue then
     sig := substitute('$,second dbConstructorForm db,sig)
   sig := [getLocalIndex(db,x) for x in sig]
-  opModemapPair := [op,['_$,:sig],["T",implementation]]
-  n := dbEntitySlot(db,opModemapPair) => n   --already there
+  desc := [op,'$,:sig,kind]
+  n := dbEntitySlot(db,desc) => n   --already there
   n := dbEntityCount db + $NRTbase
-  dbUsedEntities(db) := [[opModemapPair],:dbUsedEntities db]
+  dbUsedEntities(db) := [[desc],:dbUsedEntities db]
   dbEntityCount(db) := dbEntityCount db + 1
   n
 

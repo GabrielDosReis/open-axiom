@@ -1,5 +1,15 @@
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (assignCapsuleFunctionSlot): Do not call
+	NRTisExported?.  Determine operation kind locally.  Do not store
+	implement slot on the used entity list.
+	* interp/nruncomp.boot (genDeltaEntry): Likewise.
+	(deltaTran): Simplify.
+	(NRTisExported?): Remove.
+	(vectorLocation): Adjust.
+
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/indexedp.spad.pamphlet: Avoid direct use or RPLACD.
 	* algebra/poly.spad.pamphlet: Likewise.
 	* interp/define.boot (spadCompileOrSetq): Tidy replacement info.
