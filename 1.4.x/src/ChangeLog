@@ -1,5 +1,11 @@
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (updateCapsuleDirectory): Simplify.
+	* interp/define.boot (compDefineCapsuleFunction): Call it from here.
+	* interp/functor.boot (DescendCode): Not here.
+
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot ($NRTdeltaList): Remove.
 	($NRTdeltaListComp): Likeewise.
 	(compDefineFunctor1): Do not bind them.

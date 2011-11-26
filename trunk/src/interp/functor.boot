@@ -477,9 +477,6 @@ DescendCode(db,code,flag,viewAssoc,e) ==
       '$
     body:= ['CONS,implem,dom]
     u := SetFunctionSlots(sig,body,flag,'original)
-    -- ??? We do not resolve default definitions, yet.
-    if not $insideCategoryPackageIfTrue then
-      updateCapsuleDirectory([second(u).args,third u],flag)
     ConstantCreator u =>
       if flag ~= true then u:= ['%when,[ProcessCond(db,flag,e),u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]

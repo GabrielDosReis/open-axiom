@@ -1211,18 +1211,12 @@ clearCapsuleDirectory() ==
 ++ slot number `slot'.  A nil entry means that either the operation
 ++ is not defined, or it is conditional.
 getCapsuleDirectoryEntry slot ==
-  rest ASSOC(slot,$capsuleDirectory)
+  scalarTarget(slot,$capsuleDirectory)
 
 ++ Update the current capsule directory with entry controlled by 
 ++ predicate `pred'.
-updateCapsuleDirectory(item,pred) ==
-  pred ~= true => nil
-  entry :=
-    item is [['$,slot],['CONS,['dispatchFunction,fun],:.],:.] => [slot,:fun]
-    item is [['$,slot],['CONS,'IDENTITY,
-              ['FUNCALL,['dispatchFunction,fun],'$]]] => [slot,:fun]
-    nil
-  entry = nil => nil
+updateCapsuleDirectory(entry,pred) ==
+  pred isnt true => nil
   $capsuleDirectory := [entry,:$capsuleDirectory]
 
 

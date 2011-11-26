@@ -1848,13 +1848,14 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     formattedSig := formatUnabbreviatedSig signature
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
- 
-    noteCapsuleFunctionDefinition($op,signature,makePredicate $predl)
+
+    pred := makePredicate $predl
+    noteCapsuleFunctionDefinition($op,signature,pred)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
-    assignCapsuleFunctionSlot(db,$op,signature)
     --  A THROW to the above CATCH occurs if too many semantic errors occur
     --  see stackSemanticError
+    n := assignCapsuleFunctionSlot(db,$op,signature)
     -- Build a name for the implementation.
     op' :=
       localOperation?($op,e) =>
@@ -1863,6 +1864,8 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
           userError ['"%b",$op,'"%d",'" is local and exported"]
         makeSymbol strconc(encodeItem $prefix,'";",encodeItem $op) 
       encodeFunctionName(db,$op,signature,'";",$suffix)
+    if n ~= nil and not $insideCategoryPackageIfTrue then
+      updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type
     if $optProclaim then
       proclaimCapsuleFunction(op',signature)
