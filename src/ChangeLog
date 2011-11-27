@@ -1,3 +1,14 @@
+2011-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (assignCapsuleFunctionSlot): Slot original
+	signature too.
+	* interp/nruncomp.boot (genDeltaEntry): Likewise.
+	(getLocalIndex): Tidy.
+	(changeDirectoryInSlot1):  Tidy.
+	(vectorLocation): Add a kind of operation as fourth argument.
+	Adjust caller. Do not reconstruct the signature.
+	(NRTsubstDelta): Remove as no longer used.
+
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (assocIndex): Rename from NRTassocIndex.
