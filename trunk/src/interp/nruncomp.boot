@@ -92,7 +92,7 @@ deltaTran(db,item,compItem) ==
   --       so we need only encode dc. -- gdr 2008-11-28.
   dcCode :=
     dc is '$ => 0
-    NRTassocIndex(db,dc) or keyedSystemError("S2NR0004",[dc])
+    assocIndex(db,dc) or keyedSystemError("S2NR0004",[dc])
   kindFlag:= (kind is 'CONST => 'CONST; nil)
   [sig,dcCode,op,:kindFlag]
 
@@ -103,7 +103,7 @@ NRTreplaceAllLocalReferences(db,form) ==
 NRTencode(db,x,y) == encode(db,x,y,true) where encode(db,x,compForm,firstTime) ==
   --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
-  not firstTime and (k := NRTassocIndex(db,x)) => k
+  not firstTime and (k := assocIndex(db,x)) => k
   vector? x => systemErrorHere '"NRTencode"
   cons? x =>
     op := x.op
@@ -206,7 +206,7 @@ genDeltaEntry(op,mm,e) ==
   odc := dc
   if cons? dc then 
     dc := substitute("$$","$",dc)
-  if NRTassocIndex(db,dc) = nil and (dc is [.,:.] or
+  if assocIndex(db,dc) = nil and (dc is [.,:.] or
     ident? dc and symbolMember?(dc,$functorLocalParameters)) then
       -- This modemap's domain of computation did not contributte an
       -- an operation before; give it  a slot before the modemap itself.
@@ -229,17 +229,17 @@ genDeltaEntry(op,mm,e) ==
 ++ being compiled) of the domain or value referenced by the form `x'.
 ++ Otherwise, return nil this is the first time `x' is referenced, or
 ++ if `x' designates neither a domain nor a value (e.g. a modemap).
-NRTassocIndex: (%Thing,%Form) -> %Maybe %Short
-NRTassocIndex(db,x) ==
+assocIndex: (%Thing,%Form) -> %Maybe %Short
+assocIndex(db,x) ==
   null x => x
   x = $NRTaddForm => 5
   dbEntitySlot(db,['%domain,x])
 
 getLocalIndex: (%Thing,%Form) -> %Short
 getLocalIndex(db,item) ==
-  k := NRTassocIndex(db,item) => k
-  item = "$" => 0
-  item = "$$" => 2
+  item is "$" => 0
+  item is "$$" => 2
+  k := assocIndex(db,item) => k
   item isnt [.,:.] and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
     entry := [["%domain",NRTaddInner(db,item)],:item]
     dbUsedEntities(db) := [entry,:dbUsedEntities db]
@@ -305,7 +305,7 @@ consDomainName(db,x,dc) ==
     substitute('$,"$$",x)
   x = [] => x
   y := LASSOC(x,$devaluateList) => y
-  k := NRTassocIndex(db,x) => ['devaluate,['%vref,'$,k]]
+  k := assocIndex(db,x) => ['devaluate,['%vref,'$,k]]
   get(x,'value,$e) =>
     isDomainForm(x,$e) => ['devaluate,x]
     x
@@ -318,7 +318,7 @@ consDomainForm(db,x,dc) ==
      [op,:[consDomainForm(db,y,dc) for y in argl]]
   x = [] => x
   (y := LASSOC(x,$devaluateList)) => y
-  k := NRTassocIndex(db,x) => ['%vref,'$,k]
+  k := assocIndex(db,x) => ['%vref,'$,k]
   get(x,'value,$e) or get(x,'mode,$e) => x
   MKQ x
 
@@ -675,7 +675,7 @@ NRTputInHead(db,bod) ==
     NRTputInTail(db,rest bod) --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
     fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
-      k := NRTassocIndex(db,dom) => lastNode(bod).first := ['%vref,'_$,k]
+      k := assocIndex(db,dom) => lastNode(bod).first := ['%vref,'_$,k]
       nil
     NRTputInHead(db,fn)
     bod
@@ -691,8 +691,8 @@ NRTputInHead(db,bod) ==
 NRTputInTail(db,x) ==
   for y in tails x repeat
     (u := first y) isnt [.,:.] =>
-      u='$ or LASSOC(u,$devaluateList) => nil
-      k:= NRTassocIndex(db,u) =>
+      u is '$ or LASSOC(u,$devaluateList) => nil
+      k := assocIndex(db,u) =>
         u isnt [.,:.] => y.first := ['%vref,'_$,k]
         -- u atomic means that the slot will always contain a vector
         y.first := ['SPADCHECKELT,'_$,k]
