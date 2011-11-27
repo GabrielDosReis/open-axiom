@@ -1,5 +1,10 @@
 2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (assocIndex): Rename from NRTassocIndex.
+	Adjust callers.
+
+2011-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (assignCapsuleFunctionSlot): Do not call
 	NRTisExported?.  Determine operation kind locally.  Do not store
 	implement slot on the used entity list.

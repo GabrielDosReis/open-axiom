@@ -953,7 +953,7 @@ setqSingle(id,val,m,E) ==
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
     db := constructorDB currentConstructor e'
-    k := NRTassocIndex(db,id) => ['%store,['%tref,'$,k],x]
+    k := assocIndex(db,id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
 
@@ -2410,7 +2410,7 @@ numberize x ==
 ++ If there is a local reference to mode `m', return it.  
 localReferenceIfThere(m,e) ==
   m is "$" => m
-  idx := NRTassocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
+  idx := assocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
   quote m
 
 massageLoop x == main x where
