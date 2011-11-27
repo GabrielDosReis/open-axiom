@@ -1202,7 +1202,7 @@ S2NR0002
 S2NR0003
  Error while instantiating type %1b
 S2NR0004
- Cannot find domain in template: %1s
+ Cannot find domain in template: %1p
 S2OO0001
  Irregular slot entry: %1s
 S2OO0002

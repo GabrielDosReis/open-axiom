@@ -1702,11 +1702,10 @@ assignCapsuleFunctionSlot(db,op,sig) ==
   kind = nil => nil -- op is local and need not be assigned
   if $insideCategoryPackageIfTrue then
     sig := substitute('$,second dbConstructorForm db,sig)
-  sig := [getLocalIndex(db,x) for x in sig]
-  desc := [op,'$,:sig,kind]
+  desc := [op,'$,:[getLocalIndex(db,x) for x in sig],kind]
   n := dbEntitySlot(db,desc) => n   --already there
   n := dbEntityCount db + $NRTbase
-  dbUsedEntities(db) := [[desc],:dbUsedEntities db]
+  dbUsedEntities(db) := [[desc,op,'$,:sig,kind],:dbUsedEntities db]
   dbEntityCount(db) := dbEntityCount db + 1
   n
 

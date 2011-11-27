@@ -219,7 +219,7 @@ genDeltaEntry(op,mm,e) ==
       desc := [op,dc,:[getLocalIndex(db,x) for x in nsig],kind]
       n := dbEntitySlot(db,desc) => n
       n := dbEntityCount db + $NRTbase
-      dbUsedEntities(db) := [[desc],:dbUsedEntities db]
+      dbUsedEntities(db) := [[desc,op,dc,:nsig,kind],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       n
   impl := optDeltaEntry(op,nsig,odc,kind) => impl
@@ -246,18 +246,17 @@ getLocalIndex(db,item) ==
     index := $NRTbase + dbEntityCount db      -- slot number to return
     dbEntityCount(db) := dbEntityCount db + 1
     index
-  -- when assigning slot to flag values, we don't really want to
-  -- compile them.  Rather, we want to record them as if they were atoms.
-  flag := isQuasiquote item
   entry := [["%domain",NRTaddInner(db,item)]]
   dbUsedEntities(db) := [entry,:dbUsedEntities db]
   saveIndex := $NRTbase + dbEntityCount db
   dbEntityCount(db) := dbEntityCount db + 1
   entry.rest := 
+    -- when assigning slot to flag values, we don't really want to
+    -- compile them.  Rather, we want to record them as if they were atoms.
     -- we don't need to compile the flag again.
     -- ??? In fact we should not be compiling again at this phase.
     -- ??? That we do is likely a bug.
-    flag => item  
+    isQuasiquote item => item  
     compOrCroak(item,$EmptyMode,$e).expr
   saveIndex
 
@@ -606,14 +605,14 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
   --    dbUsedEntities = nil  ===> all slot numbers become nil
   $lisplibOperationAlist := [sigloc(db,entry) for entry in categoryExports $domainShell] where
     sigloc(db,[opsig,pred,fnsel]) ==
-        if pred isnt 'T then
-          pred := simpBool pred
-          $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
-        fnsel is [op,a,:.] and op in '(ELT CONST) =>
-          if $insideCategoryPackageIfTrue then
-            opsig := substitute('$,first dbParameters db,opsig)
-          [opsig,pred,[op,a,vectorLocation(db,first opsig,second opsig)]]
-        [opsig,pred,fnsel]
+      if pred isnt true then
+        pred := simpBool pred
+        $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
+      fnsel is [kind,a,:.] and kind in '(ELT CONST) =>
+        if $insideCategoryPackageIfTrue then
+          opsig := substitute('$,first dbParameters db,opsig)
+        [opsig,pred,[kind,a,vectorLocation(db,first opsig,second opsig,kind)]]
+      [opsig,pred,fnsel]
   sortedOplist := listSort(function GLESSEQP,
                            copyList $lisplibOperationAlist,function second)
   $lastPred: local := false
@@ -641,28 +640,11 @@ deepChaseInferences(pred,$e) ==
     pred is 'T or pred is [op,:.] and op in '(NOT not %not) => $e
     chaseInferences(pred,$e)
 
-vectorLocation(db,op,sig) ==
-  u := or/[i for i in 1.. for [u,:.] in dbUsedEntities db
-        | u is [=op,'$,:xsig,.] and sig = NRTsubstDelta(db,xsig) ]
+vectorLocation(db,op,sig,kind) ==
+  u := or/[i for i in 1.. for [.,:u] in dbUsedEntities db
+        | u is [=op,'$,:xsig,=kind] and sig = xsig]
   u => dbEntityCount db - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
-
-NRTsubstDelta(db,sig) ==
-  [replaceSlotTypes(db,t) for t in sig] where
-     replaceSlotTypes(db,t) ==
-        t isnt [.,:.] =>
-          not integer? t => t
-          t = 0 => "$"
-          t = 2 => "$$"
-          t = 5 => $NRTaddForm
-          [u,:.] := dbUsedEntities(db).(dbEntityCount db + 5 - t)
-          first u = "%domain" => second u
-          error "bad dbUsedEntities entry"
-        t is [":",x,t'] => [t.op,x,replaceSlotTypes(db,t')]
-        first t in '(Enumeration EnumerationCategory) => t
-        ident? first t and builtinConstructor? first t =>
-          [t.op,:[replaceSlotTypes(db,x) for x in t.args]]
-        t
 
 -----------------------------SLOT1 DATABASE------------------------------------
 
