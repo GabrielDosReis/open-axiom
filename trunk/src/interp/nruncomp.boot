@@ -191,6 +191,8 @@ optDeltaEntry(op,sig,dc,kind) ==
 $onlyAbstractSlot := false
 
 genDeltaEntry(op,mm,e) ==
+  if mm.mmDC is 'Rep then
+    mm := substitute(getRepresentation e,'Rep,mm)
   [[dc,:sig],[.,cform:=[kind,.,nsig]]] := mm
   if $profileCompiler then profileRecord(dc,op,sig)
   kind is 'XLAM => cform
