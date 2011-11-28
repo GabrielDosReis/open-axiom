@@ -1,5 +1,10 @@
 2011-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (genDeltaEntry): Use $ for the domain of
+	computation it if is the expanded form of the current domain.
+
+2011-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (inlineDirectCall): Inline a non-side effect
 	free argument in a unary pure function call if it is used exactly once.
 	* algebra/integer.spad.pamphlet (Integer) [reducedSystem]: Fix typo.
