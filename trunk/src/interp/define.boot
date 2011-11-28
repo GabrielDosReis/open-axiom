@@ -819,7 +819,7 @@ compDefine1(form,m,e) ==
   $form = nil => stackAndThrow ['"bad == form ",form]
   db := constructorDB $op
   newPrefix :=
-    $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => makeSymbol strconc(symbolName $prefix,'",",symbolName $op)
     dbAbbreviation db
   compDefineCapsuleFunction(db,form,m,e,newPrefix,$formalArgList)
 
@@ -1810,6 +1810,41 @@ processDefinitionParameters(form,signature,e) ==
     e := addDomain(domain,e)
   e
  
+mkRepititionAssoc l ==
+  mkRepfun(l,1) where
+    mkRepfun(l,n) ==
+      null l => nil
+      l is [x] => [[n,:x]]
+      l is [x, =x,:l'] => mkRepfun(rest l,n+1)
+      [[n,:first l],:mkRepfun(rest l,1)]
+ 
+encodeItem x ==
+  x is [op,:argl] => getCaps op
+  ident? x => symbolName x
+  STRINGIMAGE x
+ 
+getCaps x ==
+  s := symbolName x
+  clist := [c for i in 0..maxIndex s | upperCase? (c := stringChar(s,i))]
+  clist = nil => '"__"
+  strconc/[charString first clist,
+             :[charString charDowncase u for u in rest clist]]
+
+encodeFunctionName(db,fun,signature,count) ==
+    if dbDefaultPackage? db then
+      signature := substitute('$,first dbParameters db,signature)
+    reducedSig := mkRepititionAssoc [:signature.source,signature.target]
+    encodedSig :=
+      (strconc/[encodedPair for [n,:x] in reducedSig]) where
+        encodedPair() ==
+          n=1 => encodeItem x
+          strconc(toString n,encodeItem x)
+    encodedName:= makeSymbol strconc(symbolName dbAbbreviation db,'";",
+        symbolName fun,'";",encodedSig,'";",toString count)
+    dbCapsuleDefinitions(db) :=
+      [[encodedName,signature],:dbCapsuleDefinitions db]
+    encodedName
+
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
   m,$e,$prefix,$formalArgList) ==
     e := $e
@@ -1861,8 +1896,8 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
         -- object if the operation is both local and exported.
         if or/[mm.mmDC is '$ for mm in get($op,'modemap,e)] then
           userError ['"%b",$op,'"%d",'" is local and exported"]
-        makeSymbol strconc(encodeItem $prefix,'";",encodeItem $op) 
-      encodeFunctionName(db,$op,signature,'";",$suffix)
+        makeSymbol strconc(symbolName $prefix,'";",symbolName $op) 
+      encodeFunctionName(db,$op,signature,$suffix)
     if n ~= nil and not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type

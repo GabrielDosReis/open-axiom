@@ -815,3 +815,7 @@ loadDBIfNecessary db ==
   ctor := dbConstructor db
   dbLoaded? db => db
   loadDB db
+
+++ Return true if this DB is for a category default package.
+macro dbDefaultPackage? db ==
+  isDefaultPackageName dbConstructor db

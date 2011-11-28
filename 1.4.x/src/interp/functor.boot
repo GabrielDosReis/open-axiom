@@ -757,27 +757,13 @@ mkOperatorEntry(opSig is [op,sig,:flag],pred,count) ==
  
 --% Code for encoding function names inside package or domain
  
-encodeFunctionName(db,fun,signature,sep,count) ==
-    signature':= MSUBST("$",dbConstructorForm db,signature)
-    reducedSig:= mkRepititionAssoc [:rest signature',first signature']
-    encodedSig:=
-      (strconc/[encodedPair for [n,:x] in reducedSig]) where
-        encodedPair() ==
-          n=1 => encodeItem x
-          strconc(toString n,encodeItem x)
-    encodedName:= makeSymbol strconc(symbolName dbAbbreviation db,'";",
-        encodeItem fun,'";",encodedSig,sep,toString count)
-    dbCapsuleDefinitions(db) :=
-      [[encodedName,signature'],:dbCapsuleDefinitions db]
-    encodedName
-
 ++ Return the linkage name of the local operation named `op'.
 encodeLocalFunctionName op ==
   prefix :=
     $prefix => $prefix
     $functorForm => symbolName dbAbbreviation constructorDB $functorForm.op
     stackAndThrow('"There is no context for local function %1b",[op]) 
-  makeSymbol strconc(prefix,'";",encodeItem op)
+  makeSymbol strconc(prefix,'";",symbolName op)
  
 splitEncodedFunctionName(encodedName, sep) ==
     -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or nil
@@ -795,21 +781,3 @@ splitEncodedFunctionName(encodedName, sep) ==
     s4 := subString(encodedName, p3+1)
     [s1, s2, s3, s4]
  
-mkRepititionAssoc l ==
-  mkRepfun(l,1) where
-    mkRepfun(l,n) ==
-      null l => nil
-      l is [x] => [[n,:x]]
-      l is [x, =x,:l'] => mkRepfun(rest l,n+1)
-      [[n,:first l],:mkRepfun(rest l,1)]
- 
-encodeItem x ==
-  x is [op,:argl] => getCaps op
-  ident? x => symbolName x
-  STRINGIMAGE x
- 
-getCaps x ==
-  s:= STRINGIMAGE x
-  clist:= [c for i in 0..maxIndex s | upperCase? (c:= s.i)]
-  null clist => '"__"
-  strconc/[first clist,:[L_-CASE u for u in rest clist]]
