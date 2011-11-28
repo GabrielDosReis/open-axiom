@@ -1,5 +1,15 @@
 2011-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (dbDefaultPackage?): New.
+	* interp/define.boot (compDefine1): Avoid encodeItem when
+	symbolName is meant.
+	(mkRepititionAssoc): Move from functor.boot
+	(encodeItem): Likewise.
+	(getCaps): Likewise. Tidy.
+	(encodeFunctionName): Likewise.
+
+2011-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (assignCapsuleFunctionSlot): Slot original
 	signature too.
 	* interp/nruncomp.boot (genDeltaEntry): Likewise.
