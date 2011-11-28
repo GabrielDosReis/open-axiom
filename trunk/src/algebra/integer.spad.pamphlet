@@ -152,7 +152,7 @@ Integer: IntegerNumberSystem with
 
       reducedSystem(m:Matrix %, v:Vector %):
        Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
-        [m pretend Matrix(Integer), vec pretend Vector(Integer)]
+        [m pretend Matrix(Integer), v pretend Vector(Integer)]
 
       abs(x) == %iabs x
       random() == random()$Lisp
