@@ -1321,6 +1321,9 @@ inlineDirectCall call ==
       newparms := [gensym() for p in parms]
       body := applySubst(pairList(parms,newparms),body)
       applySubst!(pairList(newparms,call.args),body)
+    -- a non-side effect free argument used exactly once is OK.
+    parms is [p] and numOfOccurencesOf(p,body) = 1 =>
+      substitute(first call.args,p,body)
     -- get cute later.
     call
   call
