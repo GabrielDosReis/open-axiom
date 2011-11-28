@@ -1,3 +1,11 @@
+2011-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (encodeCatform): Handle $ here.
+	* interp/nruncomp.boot (deltaTran): assocIndex now handles $.
+	(getLocalIndex): Likewise.
+	(NRTencode): Handle $ before calling assocIndex.
+	(assocIndex): Handle $.
+
 2011-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (genDeltaEntry): Replace Rep with its value

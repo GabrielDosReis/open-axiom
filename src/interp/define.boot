@@ -486,6 +486,7 @@ NRTmakeCategoryAlist(db,e) ==
   --NOTE: this is new form: old form satisfies vector? CDDR form
 
 encodeCatform(db,x) ==
+  x is '$ => x
   k := assocIndex(db,x) => k
   x isnt [.,:.] or rest x isnt [.,:.] => x
   [first x,:[encodeCatform(db,y) for y in rest x]]

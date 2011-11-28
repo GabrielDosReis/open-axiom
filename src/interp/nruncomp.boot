@@ -90,9 +90,7 @@ deltaTran(db,item,compItem) ==
   [op,dc,:sig,kind] := item
   -- NOTE: sig is already in encoded form since it comes from dbUsedEntities;
   --       so we need only encode dc. -- gdr 2008-11-28.
-  dcCode :=
-    dc is '$ => 0
-    assocIndex(db,dc) or keyedSystemError("S2NR0004",[dc])
+  dcCode := assocIndex(db,dc) or keyedSystemError("S2NR0004",[dc])
   kindFlag:= (kind is 'CONST => 'CONST; nil)
   [sig,dcCode,op,:kindFlag]
 
@@ -103,6 +101,7 @@ NRTreplaceAllLocalReferences(db,form) ==
 NRTencode(db,x,y) == encode(db,x,y,true) where encode(db,x,compForm,firstTime) ==
   --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
+  x is "$" => x
   not firstTime and (k := assocIndex(db,x)) => k
   vector? x => systemErrorHere '"NRTencode"
   cons? x =>
@@ -120,7 +119,6 @@ NRTencode(db,x,y) == encode(db,x,y,true) where encode(db,x,compForm,firstTime) =
     v := $FormalMapVariableList.(symbolPosition(x,$formalArgList))
     firstTime => ["local",v]
     v
-  x is "$" => x
   x is "$$" => x
   compForm is [.,:.] =>
     ['%eval,NRTreplaceAllLocalReferences(db,copyTree simplifyVMForm compForm)]
@@ -233,13 +231,13 @@ genDeltaEntry(op,mm,e) ==
 ++ if `x' designates neither a domain nor a value (e.g. a modemap).
 assocIndex: (%Thing,%Form) -> %Maybe %Short
 assocIndex(db,x) ==
-  null x => x
+  x = nil => x
+  x is '$ => 0
   x = $NRTaddForm => 5
   dbEntitySlot(db,['%domain,x])
 
 getLocalIndex: (%Thing,%Form) -> %Short
 getLocalIndex(db,item) ==
-  item is "$" => 0
   item is "$$" => 2
   k := assocIndex(db,item) => k
   item isnt [.,:.] and not symbolMember?(item,$formalArgList) =>  --give slots to atoms
