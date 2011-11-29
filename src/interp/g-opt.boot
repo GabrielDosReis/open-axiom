@@ -95,7 +95,7 @@ changeVariableDefinitionToStore(form,vars) ==
     changeVariableDefinitionToStore(third form,vars')
     vars
   abstractionOperator? form.op =>
-    changeVariableDefinitionToStore(third form,[:second form,:vars])
+    changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
   for x in form repeat
     vars := changeVariableDefinitionToStore(x,vars)
@@ -180,8 +180,8 @@ simplifyVMForm x ==
   atomic? x => x
   x.op is 'CLOSEDFN => x
   x.op isnt [.,:.] =>
-    x is [op,vars,body] and abstractionOperator? op =>
-      third(x) := simplifyVMForm body
+    symbol? x.op and abstractionOperator? x.op =>
+      x.absBody := simplifyVMForm x.absBody
       x
     if x.op is 'IF then
       resetTo(x,optIF2COND x)
@@ -455,7 +455,7 @@ $VMsideEffectFreeOperators ==
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
     %writeString %writeNewline %writeLine
-    %void %retract %pullback)
+    %void %retract %pullback %lambda %closure)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

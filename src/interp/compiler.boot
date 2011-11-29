@@ -1379,7 +1379,7 @@ compIf(["IF",a,b,c],m,E) ==
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   expr isnt [.,:.] => ValueFlag and level=exitCount
   op := expr.op
-  op in '(QUOTE CLOSEDFN) => ValueFlag and level=exitCount
+  op in '(QUOTE CLOSEDFN %lambda) => ValueFlag and level=exitCount
   op is "TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
@@ -2684,8 +2684,7 @@ compUnnamedMapping(parms,source,target,body,env) ==
     [.,.,env] := compMakeDeclaration(p,s,env)
     env := giveVariableSomeValue(p,get(p,'mode,env),env)
   T := comp(body,target,env) or return nil
-  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",parms,T.expr]]
-  fun := finishLambdaExpression(fun,env)
+  fun := ['%closure,['%lambda,[:parms,'$],T.expr],'$]
   [fun,["Mapping",T.mode,:source],savedEnv]
 
 gatherParameterList vars == main(vars,nil,nil) where
