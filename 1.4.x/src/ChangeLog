@@ -1,5 +1,14 @@
 2011-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot (absKind, absParms, absBody): New selectors.
+	* interp/compiler.boot (canReturn): Handle %lambda forms.
+	(compUnnamedMapping): Generate %lambda forms. Don't optimize them
+	yet. 
+	* interp/g-opt.boot: %lambda forms are side-effect free.
+	* interp/lisp-backend.boot: Translate them.
+
+2011-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (isSimpleForm): Remove as unused.
 	(floatableVMForm?): New.
 	(modified?): Rename form varIsAssigned.

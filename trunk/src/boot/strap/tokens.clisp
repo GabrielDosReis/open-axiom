@@ -232,11 +232,12 @@
    (SETQ |bfVar#1| (CDR |bfVar#1|))))
 
 (LET ((|bfVar#1|
-       (LIST (LIST '|setName| 0) (LIST '|setLabel| 1) (LIST '|setLevel| 2)
-             (LIST '|setType| 3) (LIST '|setVar| 4) (LIST '|setLeaf| 5)
-             (LIST '|setDef| 6) (LIST '|aGeneral| 4) (LIST '|aMode| 1)
-             (LIST '|aModeSet| 3) (LIST '|aTree| 0) (LIST '|aValue| 2)
-             (LIST '|args| 'CDR) (LIST '|attributes| 'CADDR)
+       (LIST (LIST '|absKind| 'CAR) (LIST '|absParms| 'CADR)
+             (LIST '|absBody| 'CADDR) (LIST '|setName| 0) (LIST '|setLabel| 1)
+             (LIST '|setLevel| 2) (LIST '|setType| 3) (LIST '|setVar| 4)
+             (LIST '|setLeaf| 5) (LIST '|setDef| 6) (LIST '|aGeneral| 4)
+             (LIST '|aMode| 1) (LIST '|aModeSet| 3) (LIST '|aTree| 0)
+             (LIST '|aValue| 2) (LIST '|args| 'CDR) (LIST '|attributes| 'CADDR)
              (LIST '|cacheCount| 'CADDDDR) (LIST '|cacheName| 'CADR)
              (LIST '|cacheReset| 'CADDDR) (LIST '|cacheType| 'CADDR)
              (LIST '|env| 'CADDR) (LIST '|expr| 'CAR) (LIST 'CAR 'CAR)

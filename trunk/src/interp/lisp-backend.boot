@@ -629,8 +629,10 @@ for x in [
     ['%lam,      :'LAMBDA],
     ['%leave,    :'RETURN],
     ['%otherwise,:'T],
+    ['%closure,  :'CONS],
     ['%funcall,  :'FUNCALL],
     ['%function, :'FUNCTION],
+    ['%lambda,   :'LAMBDA],
     ['%when,     :'COND],
 
     -- I/O stream functions

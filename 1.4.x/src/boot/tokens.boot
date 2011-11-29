@@ -340,6 +340,9 @@ for i in [ _
 
  
 for i in [ _
+  ["absKind",           "CAR"] ,_
+  ["absParms",         "CADR"] ,_
+  ["absBody",         "CADDR"] ,_
   ["setName",               0] , _
   ["setLabel",              1] , _
   ["setLevel",              2] , _

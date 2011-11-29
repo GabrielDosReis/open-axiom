@@ -666,8 +666,7 @@ NRTputInHead(db,bod) ==
   bod is ['%when,:clauses] =>
     for cc in clauses repeat NRTputInTail(db,cc)
     bod
-  bod is ['QUOTE,:.] => bod
-  bod is ["CLOSEDFN",:.] => bod
+  bod.op in '(QUOTE CLOSEDFN) => bod
   NRTputInHead(db,first bod)
   NRTputInTail(db,rest bod)
   bod

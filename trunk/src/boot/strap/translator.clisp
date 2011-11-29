@@ -93,7 +93,7 @@
   (|reallyPrettyPrint|
    (LIST 'PROCLAIM (|quote| (CONS 'OPTIMIZE |$LispOptimizeOptions|))) |stream|))
 
-(DEFUN |AxiomCore|::|%sysInit| ()
+(DEFUN |%sysInit| ()
   (PROGN
    (SETQ *LOAD-VERBOSE* NIL)
    (COND

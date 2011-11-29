@@ -86,7 +86,7 @@ macro builtinConstructor? s ==
 --%  
 
 $AbstractionOperator ==
-  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA)
+  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA %lambda)
 
 ++ Return true if the symbol 's' is used in the form 'x'.  
 usedSymbol?(s,x) ==
