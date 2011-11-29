@@ -459,9 +459,8 @@ $VMsideEffectFreeOperators ==
 
 ++ List of simple VM operators
 $simpleVMoperators == 
-  append($VMsideEffectFreeOperators,
-    ['SPADCALL,'%apply, '%gensym, '%lreverse!,
-      '%strstc])
+  [:$VMsideEffectFreeOperators,
+    :['SPADCALL,'%apply, '%gensym, '%lreverse!, '%strstc]]
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
@@ -477,20 +476,14 @@ semiSimpleRelativeTo?(form,ops) ==
 sideEffectFree? form ==
   semiSimpleRelativeTo?(form,$VMsideEffectFreeOperators)
 
-++ Return true if `form' is a simple VM form.
-++ See $simpleVMoperators for the definition of simple operators.
-isSimpleVMForm form ==
-  semiSimpleRelativeTo?(form,$simpleVMoperators)
-
 ++ Return true if `form' is a VM form whose evaluation does not depend
-++ on the program point where it is evaluated. 
-isFloatableVMForm: %Code -> %Boolean
-isFloatableVMForm form ==
-  form isnt [.,:.] => form isnt "$"
-  form is ['QUOTE,:.] => true
-  symbolMember?(form.op, $simpleVMoperators) and
-    "and"/[isFloatableVMForm arg for arg in form.args]
-    
+++ on the program point where it is evaluated.
+$FloatableOperators ==
+  ['%bind,:$VMsideEffectFreeOperators]
+
+floatableVMForm?: %Code -> %Boolean
+floatableVMForm? form ==
+  semiSimpleRelativeTo?(form,$FloatableOperators)
 
 ++ Return true if the VM form `form' is one that we certify to 
 ++ evaluate to a (compile time) constant.  Note that this is a
@@ -514,12 +507,12 @@ findVMFreeVars form ==
 
 ++ Return true is `var' is the left hand side of an assignment
 ++ in `form'.
-varIsAssigned(var,form) ==
+modified?(var,form) ==
   atomic? form => false
   form is [op,var',:.] and op in '(%LET LETT SETQ %store) =>
     symbol? var' => var' = var   -- whole var is assigned
     var' is [.,=var]             -- only part of it is modified
-  or/[varIsAssigned(var,f) for f in form]
+  or/[modified?(var,f) for f in form]
 
 
 ++ Return the list of variables referenced in `expr'.  
@@ -544,22 +537,25 @@ canInlineVarDefinition(var,expr,body) ==
   gensym? var and sameObject?(var,body) => true
   -- FIXME: We should not be inlining a side-effecting initializer.
   -- If the variable is assigned to, that is a no no.
-  varIsAssigned(var,body) => false
+  modified?(var,body) => false
   -- Similarly, if the initial value depends on variables that are
-  -- side-effected latter, it is alos a no no.
-  or/[varIsAssigned(x,body) for x in dependentVars expr] => false
-  -- Conversatively preserve order of inialization
-  cons? body and body.op in '(%bind LET %loop %collect) => false
+  -- side-effected latter, it is also a no no.
+  or/[modified?(x,body) for x in dependentVars expr] => false
+  -- If the initializer is a variable and not modified in body,
+  -- and the new var is not modified, then we can inline.
+  ident? expr => true
+  -- Conversatively stay out of loops
+  cons? body and body.op in '(%loop %collect) => false
   -- Linearly used internal temporaries should be replaced, and
   -- so should side-effet free initializers for linear variables.
   usageCount := numOfOccurencesOf(var,body)
-  usageCount < 2 and sideEffectFree? expr => true
+  usageCount < 2 and floatableVMForm? expr => true
   gensym? var and usageCount = 1 => true
   -- If the initializer is a variable and the body is
-  -- a series of choices with side-effect free predicates, then
-  -- no harm is done by removing the local `var'.
+  -- a series of choices with floatable predicates, then
+  -- no harm is done by inlining the local `var'.
   ident? expr and body is ['%when,:branches] =>
-    and/[sideEffectFree? pred for [pred,:.] in branches]
+    and/[floatableVMForm? pred for [pred,:.] in branches]
   false
 
 ++ Implement simple-minded LET-inlining.  It seems we can't count
@@ -569,21 +565,20 @@ canInlineVarDefinition(var,expr,body) ==
 ++ have a type directed compilation throughout. 
 optBind form ==
   form isnt ['%bind,inits,.] => form           -- accept only simple bodies
-  ok := true
-  while ok and inits ~= nil repeat
+  while inits ~= nil repeat
     [var,expr] := first inits
-    usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
+    usedSymbol?(var,rest inits) => leave nil -- no dependency, please.
     body := third form
     canInlineVarDefinition(var,expr,body) =>
       third(form) := substitute!(expr,var,body)
       inits := rest inits
-    ok := false
+    leave nil
   null inits => third form                        -- no local var left
   second(form) := inits
   form
 
 optTry form ==
-  form isnt ['%try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
+  form isnt ['%try,e,hs,f] or not(floatableVMForm? e) or f ~= nil => form
   e
 
 optList form ==
