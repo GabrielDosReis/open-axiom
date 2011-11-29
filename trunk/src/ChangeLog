@@ -1,3 +1,12 @@
+2011-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (isSimpleForm): Remove as unused.
+	(floatableVMForm?): New.
+	(modified?): Rename form varIsAssigned.
+	(canInlineVarDefinition):  Tidy.  Allow intermediate temporaries
+	initialized from variables to be inlined if not modified.
+	(optBind): Tidy.
+
 2011-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (genDeltaEntry): Use $ for the domain of
