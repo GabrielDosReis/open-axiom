@@ -1281,10 +1281,20 @@ getFunctionReplacement name ==
 ++ remove any replacement info possibly associated with `name'.
 clearReplacement name ==
   property(name,"SPADreplace") := nil
+  property(name,'%redex) := nil
 
 ++ Register the inlinable form of a function.
 registerFunctionReplacement(name,body) ==
   LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
+
+++ Remember the redex form of this function
+registerRedexForm(name,parms,body) ==
+  LAM_,EVALANDFILEACTQ
+    ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]]
+
+++ Retrieve the redex form of the function `name'.
+redexForm name ==
+  property(name,'%redex) 
 
 ++ Attempt to resolve the indirect reference to a constant form
 ++ `[spadConstant,$,n]' to a simpler expression
@@ -1304,6 +1314,7 @@ mutateArgumentList(args,fun) ==
   args
 
 inlineDirectCall call ==
+  x := redexForm call.op => doInlineCall(call.args,x.absParms,x.absBody)
   fun := getFunctionReplacement call.op or return call
   -- the renaming case
   symbol? fun =>
@@ -1410,12 +1421,15 @@ expandableDefinition?(vars,body) ==
 foldExportedFunctionReferences defs ==
   for fun in defs repeat
     fun isnt [name,lamex] => nil
+    getFunctionReplacement name => nil
     lamex isnt ["LAM",vars,body] => nil
     body := replaceSimpleFunctions body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
-      fun.rest.first := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
-    lamex.rest.rest.first := body
+      second(fun) := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
+    if sideEffectFree? body then
+      registerRedexForm(name,vars,body)
+    lamex.absBody := body
   defs
 
 ++ record optimizations permitted at level `level'.
@@ -1468,15 +1482,6 @@ proclaimCapsuleFunction(op,sig) ==
           getmode(d,$e) => "*"
           d
         [first d, :[normalize(first args,false) for args in tails rest d]]
-
-++ Lisp back end compiler for ILAM with `name', formal `args', and `body'.
-backendCompileILAM: (%Symbol,%List %Symbol, %Code) -> %Symbol
-backendCompileILAM(name,args,body) ==
-  args' := [gensym() for . in 1..#args]
-  body' := applySubst!(pairList(args,args'),body)
-  property(name,'ILAM) := true
-  symbolValue(name) := ["LAMBDA",args',:body']
-  name
 
 $CLOSEDFNS := nil
 
@@ -1575,7 +1580,6 @@ backendCompile2 code ==
   type = "SLAM" => backendCompileSLAM(name,args,body)
   symbolTarget(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
-  type = "ILAM" => backendCompileILAM(name,args,body)
   body := [name,[type,args,:body]]
   if $PrettyPrint then PRETTYPRINT body
   if not $COMPILE then SAY '"No Compilation"
@@ -1644,9 +1648,6 @@ massageBackendCode x ==
     -- special variable.
     u is 'SETQ and isLispSpecialVariable second x =>
       noteSpecialVariable second x
-  ident? u and property(u,"ILAM") ~= nil =>
-    x.first := eval u
-    massageBackendCode x
   u in '(LET LET_*) =>
     oldVars := $LocalVars
     vars := nil
