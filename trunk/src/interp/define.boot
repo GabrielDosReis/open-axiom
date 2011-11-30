@@ -1904,6 +1904,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     -- Let the backend know about this function's type
     if $optProclaim then
       proclaimCapsuleFunction(op',signature)
+    clearReplacement op'   -- Make sure we have fresh info
     -- Finally, build a lambda expression for this function.
     fun :=
       catchTag := MKQ gensym()
@@ -2031,7 +2032,6 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
     renameParameter() ==
       integer? v or ident? v or string? v => v
       gensym '"flag"
-  clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
 

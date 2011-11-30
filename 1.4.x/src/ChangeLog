@@ -1,3 +1,16 @@
+2011-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (clearReplacement): Clear redex replacement.
+	(registerRedexForm): New.
+	(redexForm): Likewise.
+	(inlineDirectCall): Inline functions with known redex forms.
+	(foldExportedFunctionReferences): Compute redex forms.
+	(backendCompileILAM): Remove as unused.
+	(backendCompile2): Adjust.
+	(massageBackendCode): Likeiwse.
+	* interp/define.boot (compDefineCapsuleFunction): Clear
+	replacement info.
+
 2011-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot (absKind, absParms, absBody): New selectors.
