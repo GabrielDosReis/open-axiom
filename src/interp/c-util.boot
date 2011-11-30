@@ -1874,7 +1874,7 @@ getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
   nargs := #rest sig
   loc := nil                           -- candidate locations
   while loc ~= "ambiguous" and start < end repeat
-    n := funDesc.start                 -- arity of current operator
+    n := arrayRef(funDesc,start)       -- arity of current operator
     PROGN
       -- Skip if arity mismatch
       i := start
@@ -1887,7 +1887,7 @@ getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
       -- Grab the location of this match
       loc := 
         integer? loc => "ambiguous"
-        funDesc.(i + n + 1)
+        arrayRef(funDesc,i + n + 1)
     start := start + n + 4
   loc
 
@@ -1934,28 +1934,29 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 2.2. The operation is either defined here, or is available
   --      from category package defaults.
   limit := 
-    index + 2 < opTableLength => opTable.(index + 2)
+    index + 2 < opTableLength => vectorRef(opTable,index + 2)
     #funDesc 
 
   -- 3. Locate the descriptor with matching signature
   loc := getFunctionTemplate(sig,opTable.index,limit,shell,args,funDesc)
 
   -- 4. Look into the add-chain if necessary
-  loc = nil => lookupInheritedDefiningFunction(op,sig,shell,args,shell.5)
+  loc = nil =>
+    lookupInheritedDefiningFunction(op,sig,shell,args,domainRef(shell,5))
 
   -- 5. Give up if the operation is overloaded on semantics predicates.
   loc is 'ambiguous => nil
 
   -- 6. We have a location to a function descriptor.
-  fun := shell.loc
+  fun := domainRef(shell,loc)
   -- 6.1. A constant producing functions?
   fun is [.,.,[.,['dispatchFunction,fun'],.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
     not integer? idx => nil          -- a UFO?
-    loc := funDesc.(idx + 1)
+    loc := arrayRef(funDesc,idx + 1)
     if loc = 0 then loc := 5
-    shell.loc = nil => nil
+    domainRef(shell,loc) = nil => nil
     lookupInheritedDefiningFunction(op,sig,shell,args,shell.loc)
   -- 6.3. Whatever.
   fun
