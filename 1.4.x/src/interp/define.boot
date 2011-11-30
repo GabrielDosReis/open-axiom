@@ -2107,14 +2107,18 @@ bootStrapError(functorForm,sourceFile) ==
     ['%otherwise, ['systemError,['%list,'"%b",MKQ functorForm.op,'"%d",'"from", _
       '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 
-registerInlinableDomain(x,e) ==
-  x := macroExpand(x,e)
+registerInlinableDomain x ==
   x is [ctor,:.] =>
-    constructor? ctor => nominateForInlining ctor
-    ctor is ":" => registerInlinableDomain(third x,e)
+    constructor? ctor =>
+      nominateForInlining ctor
+      cosig := getDualSignature ctor or return nil
+      for a in x.args for t in cosig.source | t and a is [.,:.] repeat
+        registerInlinableDomain a
+    ctor is ":" => registerInlinableDomain third x
+    ctor is 'Enumeration => nil
     builtinFunctorName? ctor =>
       for t in x.args repeat
-        registerInlinableDomain(t,e)
+        registerInlinableDomain t
     nil
   nil
 
@@ -2132,7 +2136,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
     getLocalIndex(db,domainForm)
-    registerInlinableDomain(domainForm,e)
+    registerInlinableDomain domainForm
     --need to generate slot for add form since all $ go-get
     --  slots will need to access it
     [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
@@ -2141,9 +2145,10 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
         $NRTaddForm := ["%Comma",:[getLocalIndex(db,x) for x in $addForm.args]]
-        for x in $addForm.args repeat registerInlinableDomain(x,e)
+        for x in $addForm.args repeat
+          registerInlinableDomain x
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
-      registerInlinableDomain($addForm,e)
+      registerInlinableDomain $addForm
       compOrCroak($addForm,$EmptyMode,e)
   compCapsule(capsule,m,e)
  
@@ -2247,7 +2252,7 @@ doIt(item,$predl) ==
         --$Representation bound by compDefineFunctor, used in compNoStacking
         $Representation := getRepresentation $e
         if $optimizeRep then
-          registerInlinableDomain($Representation,$e)
+          registerInlinableDomain $Representation
     code is ["%LET",:.] =>
       db := constructorDB currentConstructor $e
       item.op := '%store

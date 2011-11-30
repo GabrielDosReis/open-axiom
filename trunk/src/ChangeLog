@@ -1,5 +1,12 @@
 2011-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (registerInlinableDomain): Lose last argument.
+	Recursively nominate constructor argument for inlining. Adjust callers.
+	* interp/c-util.boot: Tidy.
+	* algebra/Makefile.in: Tidy.
+
+2011-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (clearReplacement): Clear redex replacement.
 	(registerRedexForm): New.
 	(redexForm): Likewise.

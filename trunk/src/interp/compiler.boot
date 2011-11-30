@@ -2347,7 +2347,7 @@ processInlineRequest(t,e) ==
     stackAndThrow('"%1b does not designate a domain",[t])
   T.expr isnt [.,:.] =>
     stackWarning('"inline request for type variable %1bp is meaningless",[t])
-  nominateForInlining T.expr
+  registerInlinableDomain T.expr
 
 
 --%
