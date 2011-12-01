@@ -1,5 +1,13 @@
 2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (groupVariableDefinitions): Look through
+	%labelled and %lambda.
+	(optimizeFunctionDef): Use copyTree, not COPY. Simplify.
+	(simplifyVMForm): Perform changeVariableDefinitionToStore and
+	groupVariableDefinitions on abstraction forms.
+
+2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (compDefineCategory): Lose prefix parameter.
 	It is always nil. Adjust caller.
 	(compDefineCategory1): Likewise.
