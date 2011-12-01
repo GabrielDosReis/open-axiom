@@ -1910,7 +1910,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       catchTag := MKQ gensym()
       body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body' := addArgumentConditions(body',$op)
-      finalBody := ["CATCH",catchTag,body']
+      finalBody := ['%labelled,catchTag,body']
       compile(db,[op',["LAM",[:argl,'_$],finalBody]],signature)
     $functorStats:= addStats($functorStats,$functionStats)
  
