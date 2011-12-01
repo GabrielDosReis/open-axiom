@@ -196,6 +196,11 @@ expandList(x is ['%list,:args]) ==
   args' = 'failed => ['LIST,:args]
   quote args'
 
+expandLeave ['%leave,l,x] ==
+  x := expandToVMForm x
+  l = nil => ['RETURN,x]
+  ['RETURN_-FROM,l,x]
+
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
   ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
@@ -626,8 +631,6 @@ for x in [
     ['%equal,    :'EQUAL],
     ['%tref,     :'shellEntry],
     ['%sptreq,    :'EQL],               -- system pointer equality
-    ['%lam,      :'LAMBDA],
-    ['%leave,    :'RETURN],
     ['%otherwise,:'T],
     ['%closure,  :'CONS],
     ['%funcall,  :'FUNCALL],
@@ -647,6 +650,7 @@ for x in [
    ['%collect, :function expandCollect],
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
+   ['%leave,  :function expandLeave],
 
    ['%bcompl,  :function expandBcompl],
 

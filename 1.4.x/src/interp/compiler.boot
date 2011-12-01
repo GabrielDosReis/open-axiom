@@ -2429,7 +2429,7 @@ massageLoop x == main x where
         x.args := expr.args
       else
         x.op := '%leave
-        x.args := rest x.args
+        x.args := [nil,:rest x.args]
     for x' in x repeat replaceThrowWithLeave(x',tag)
   containsNonLocalControl?(x,tags) ==
     atomic? x => false
