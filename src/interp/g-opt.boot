@@ -123,6 +123,10 @@ groupVariableDefinitions form ==
     for clause in form.args while not CONTAINED('%LET, first clause) repeat
       second(clause) := groupVariableDefinitions second clause
     form
+  form is ['%labelled,tag,expr] =>
+    [form.op,tag,groupVariableDefinitions expr]
+  form is ['%lambda,:.] =>
+    [form.absKind,form.absParms,groupVariableDefinitions form.absBody]
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
   for x in stmts while nonExitingSingleAssignment? x  repeat
@@ -139,7 +143,7 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  def' := simplifyVMForm COPY def
+  def' := simplifyVMForm copyTree def
  
   if $reportOptimization then
     sayBrightlyI bright '"Intermediate VM code:"
@@ -147,7 +151,7 @@ optimizeFunctionDef(def) ==
 
   [name,[slamOrLam,args,body]] := def'
  
-  body':=
+  body' :=
     removeTopLevelLabel body where
       removeTopLevelLabel body ==
         body is ['%labelled,g,u] =>
@@ -163,8 +167,7 @@ optimizeFunctionDef(def) ==
         x isnt [.,:.] => nil
         replaceLeaveByReturn(first x,g)
         replaceLeaveByReturn(rest x,g)
-  changeVariableDefinitionToStore(body',args)
-  [name,[slamOrLam,args,groupVariableDefinitions body']]
+  [name,[slamOrLam,args,body']]
 
 resetTo(x,y) ==
   y isnt [.,:.] => x := y
@@ -182,6 +185,8 @@ simplifyVMForm x ==
   x.op isnt [.,:.] =>
     symbol? x.op and abstractionOperator? x.op =>
       x.absBody := simplifyVMForm x.absBody
+      changeVariableDefinitionToStore(x.absBody,x.absParms)
+      x.absBody := groupVariableDefinitions x.absBody
       x
     if x.op is 'IF then
       resetTo(x,optIF2COND x)
