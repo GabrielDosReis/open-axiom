@@ -1154,7 +1154,7 @@ compSeq1(l,$exitModeStack,e) ==
   if c is "failed" then return nil
   catchTag := MKQ gensym()
   form := ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",first $exitModeStack)]
-  [["CATCH",catchTag,form],first $exitModeStack,$finalEnv]
+  [['%labelled,catchTag,form],first $exitModeStack,$finalEnv]
 
 compSeqItem(x,m,e) ==
   $insideExpressionIfTrue := false
@@ -1170,10 +1170,10 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
           $finalEnv :=
             $finalEnv ~= nil => intersectionEnvironment($finalEnv,t.env)
             t.env
-          first(x) :=
+          x.op :=
             opFlag is 'TAGGEDreturn => '%return
             second(x) := tag
-            "THROW"
+            '%leave
           third(x) := convertOrCroak(t,opMode).expr
         second(x) := n-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
@@ -1242,7 +1242,7 @@ compIterate(x,m,e) ==
   modifyModeStack(u.mode,index)
   if $loopBodyTag = nil then       -- bound in compRepeatOrCollect
     $loopBodyTag := MKQ gensym()
-  [['THROW,$loopBodyTag,u.expr],u.mode,e]
+  [['%leave,$loopBodyTag,u.expr],u.mode,e]
 
 --% return
 
@@ -1385,12 +1385,12 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   level=exitCount and not ValueFlag => nil
   op is "SEQ" => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
   op is "TAGGEDreturn" => nil
-  op is "CATCH" =>
+  op is '%labelled =>
     [.,gs,data]:= expr
     (findThrow(gs,data,level,exitCount,ValueFlag) => true) where
       findThrow(gs,expr,level,exitCount,ValueFlag) ==
         expr isnt [.,:.] => nil
-        expr is ["THROW", =gs,data] => true
+        expr is ['%leave, =gs,data] => true
             --this is pessimistic, but I know of no more accurate idea
         expr is ["SEQ",:l] =>
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
@@ -1865,7 +1865,7 @@ coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m' := resolve(m,m')
   x' := replaceExitEtc(x,catchTag := MKQ gensym(),"TAGGEDexit",$exitMode)
-  coerce([["CATCH",catchTag,x'],m,e],m')
+  coerce([['%labelled,catchTag,x'],m,e],m')
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtSign(["@",x,m'],m,e) ==
@@ -2413,29 +2413,36 @@ localReferenceIfThere(m,e) ==
   idx := assocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
   quote m
 
+++ We are processing a loop with entrypoint labelled `tag'.
+++ Attempt to nullify targets of all enclosed %leave forms
+++ that designate `tag'.
+++ NOTES: A %leave form with null target exits the innermost
+++        enclosing labelled expression.
+nullifyTargetingLeaves(x,tag) ==
+  atomic? x => nil
+  x is ['%leave,=tag,expr] =>
+    nullifyTargetingLeaves(expr,tag)
+    -- Avoid redundant %leave for return-expressions.
+    expr is ['TAGGEDreturn,:.] =>
+      x.op := expr.op
+      x.args := expr.args
+    second(x) := nil
+  for x' in x repeat
+    nullifyTargetingLeaves(x',tag)
+
+
 massageLoop x == main x where
   main x ==
-    x isnt ['CATCH,tag,['REPEAT,:iters,body]] => x
-    replaceThrowWithLeave(body,tag)
+    x isnt ['%labelled,tag,['REPEAT,:iters,body]] => x
+    nullifyTargetingLeaves(body,tag)
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
-    ['CATCH,tag,['%loop,:iters,body,'%nil]]
-  replaceThrowWithLeave(x,tag) ==
-    atomic? x => nil
-    x is ['THROW,=tag,expr] =>
-      replaceThrowWithLeave(expr,tag)
-      -- Avoid redudant THROW for return-expressions.
-      if expr is ['TAGGEDreturn,:.] then
-        x.op := expr.op
-        x.args := expr.args
-      else
-        x.op := '%leave
-        x.args := [nil,:rest x.args]
-    for x' in x repeat replaceThrowWithLeave(x',tag)
+    ['%labelled,tag,['%loop,:iters,body,'%nil]]
   containsNonLocalControl?(x,tags) ==
     atomic? x => false
-    x is ['THROW,tag,x'] =>
+    x is ['%leave,tag,x'] =>
+      tag = nil => false  -- see NOTES in nullifyTargetingLeaves.
       not symbolMember?(tag,tags) or containsNonLocalControl?(x',tags)
-    x is ['CATCH,tag,x'] =>
+    x is ['%labelled,tag,x'] =>
       containsNonLocalControl?(x',[tag,:tags])
     or/[containsNonLocalControl?(x',tags) for x' in x]
 
@@ -2474,7 +2481,7 @@ compRepeatOrCollect(form,m,e) ==
         [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
-           body' := ["CATCH",$loopBodyTag,body']
+           body' := ['%labelled,$loopBodyTag,body']
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')

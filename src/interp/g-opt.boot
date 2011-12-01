@@ -105,8 +105,8 @@ changeVariableDefinitionToStore(form,vars) ==
 jumpToToplevel? x ==
   atomic? x => false
   op := x.op
-  op is 'SEQ => CONTAINED('THROW,x.args) -- FIXME: what about GO?
-  op in '(EXIT THROW %leave) => true
+  op is 'SEQ => CONTAINED('%leave,x.args) -- FIXME: what about GO?
+  op in '(EXIT %leave) => true
   or/[jumpToToplevel? x' for x' in x]
 
 ++ Return true if `form' is just one assignment expression.
@@ -148,21 +148,21 @@ optimizeFunctionDef(def) ==
   [name,[slamOrLam,args,body]] := def'
  
   body':=
-    removeTopLevelCatch body where
-      removeTopLevelCatch body ==
-        body is ["CATCH",g,u] =>
-          removeTopLevelCatch replaceThrowByReturn(u,g)
+    removeTopLevelLabel body where
+      removeTopLevelLabel body ==
+        body is ['%labelled,g,u] =>
+          removeTopLevelLabel replaceLeaveByReturn(u,g)
         body
-      replaceThrowByReturn(x,g) ==
+      replaceLeaveByReturn(x,g) ==
         fn(x,g)
         x
       fn(x,g) ==
-        x is ["THROW", =g,:u] =>
+        x is ['%leave,=g,:u] =>
           x.first := "RETURN"
-          x.rest := replaceThrowByReturn(u,g)
+          x.rest := replaceLeaveByReturn(u,g)
         x isnt [.,:.] => nil
-        replaceThrowByReturn(first x,g)
-        replaceThrowByReturn(rest x,g)
+        replaceLeaveByReturn(first x,g)
+        replaceLeaveByReturn(rest x,g)
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
 
@@ -198,54 +198,53 @@ subrname u ==
   COMPILED_-FUNCTION_-P u or MBPIP u => BPINAME u
   nil
  
-changeThrowToExit(s,g) ==
+changeLeaveToExit(s,g) ==
   s isnt [.,:.] or s.op in '(QUOTE SEQ REPEAT COLLECT %collect %loop) => nil
-  s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
-  changeThrowToExit(first s,g)
-  changeThrowToExit(rest s,g)
+  s is ['%leave, =g,:u] => (s.first := "EXIT"; s.rest := u)
+  changeLeaveToExit(first s,g)
+  changeLeaveToExit(rest s,g)
 
-hasNoThrows(a,g) ==
-  a is ["THROW", =g,:.] => false
+hasNoLeave(a,g) ==
+  a is ['%leave, =g,:.] => false
   a isnt [.,:.] => true
-  hasNoThrows(first a,g) and hasNoThrows(rest a,g)
+  hasNoLeave(first a,g) and hasNoLeave(rest a,g)
 
-changeThrowToGo(s,g) ==
+changeLeaveToGo(s,g) ==
   s isnt [.,:.] or s.op is 'QUOTE => nil
-  s is ["THROW", =g,u] =>
-    changeThrowToGo(u,g)
+  s is ['%leave, =g,u] =>
+    changeLeaveToGo(u,g)
     s.first := "PROGN"
     s.rest := [["%LET",second g,u],["GO",second g]]
-  changeThrowToGo(first s,g)
-  changeThrowToGo(rest s,g)
+  changeLeaveToGo(first s,g)
+  changeLeaveToGo(rest s,g)
 
-++ Change any `(THROW tag (%return expr))' in x to just
+++ Change any `(%leave tag (%return expr))' in x to just
 ++ `(%return expr) since a %return-expression transfers control
 ++ out of the function body anyway.  Similarly, transform
-++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
-removeNeedlessThrow x ==
+++ reudant `('%leave tag (%leave tag expr))' to `(%leave tag expr)'.
+removeNeedlessLeave x ==
   atomic? x => x
-  x is ['THROW,.,y] and y is ['%return,:.] =>
-    removeNeedlessThrow third y
+  x is ['%leave,.,y] and y is ['%return,:.] =>
+    removeNeedlessLeave third y
     x.op := y.op
     x.args := y.args
-  x is ['THROW,g,y] and y is ['THROW,=g,z] =>
-    removeNeedlessThrow z
+  x is ['%leave,g,y] and y is ['%leave,=g,z] =>
+    removeNeedlessLeave z
     second(x.args) := z
   for x' in x repeat
-    removeNeedlessThrow x'
+    removeNeedlessLeave x'
 
-optCatch (x is ["CATCH",g,a]) ==
-  $InteractiveMode => x
+optLabelled (x is ['%labelled,g,a]) ==
   a isnt [.,:.] => a
-  removeNeedlessThrow a
-  if a is ["SEQ",:s,["THROW", =g,u]] then
-    changeThrowToExit(s,g)
+  removeNeedlessLeave a
+  if a is ["SEQ",:s,['%leave,=g,u]] then
+    changeLeaveToExit(s,g)
     a.rest := [:s,["EXIT",u]]
     a := simplifyVMForm a
-  if hasNoThrows(a,g) then
+  if hasNoLeave(a,g) then
     resetTo(x,a)
   else
-    changeThrowToGo(a,g)
+    changeLeaveToGo(a,g)
     x.first := "SEQ"
     x.rest := [["EXIT",a],second g,["EXIT",second g]]
   x
@@ -389,10 +388,10 @@ optIF2COND ["IF",a,b,c] ==
 
 ++ Determine whether the symbol `g' is the name of a temporary that
 ++ can be replaced in the form `x', if it is of linear usage and not
-++ the name of a program point.  The latter occurs when THROW forms
-++ are changed to %LET form followed by a GO form -- see optCatch.
+++ the name of a program point.  The latter occurs when %leave forms
+++ are changed to %LET form followed by a GO form -- see optLabelled.
 replaceableTemporary?(g,x) ==
-  GENSYMP g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
+  gensym? g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
     jumpTarget?(g,x) ==
       atomic? x => false
       x is ['GO,=g] => true
@@ -419,7 +418,7 @@ optSEQ ["SEQ",:l] ==
       null aft => ['%when,:transform,'(%otherwise (conderr))]
       optCond ['%when,:transform,['%otherwise,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
-      l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
+      l is ["SEQ",[op,a]] and op in '(EXIT RETURN %leave %return) => a
       l
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
@@ -841,7 +840,7 @@ for x in '((%call         optCall) _
            (%list        optList)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
-           (CATCH        optCatch)_
+           (%labelled    optLabelled)_
            (%when        optCond)_
            (%retract     optRetract)_
            (%pullback    optPullback)_

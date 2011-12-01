@@ -1,5 +1,20 @@
 2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compSeq1): Generate %labelled forms.
+	(coerceExit): Likewise.
+	(compRepeatOrCollect): Likewise.
+	(replaceExitEtc): Tidy.
+	(canReturn): Likewise.
+	(compIterate): Generate %lave form.
+	(nullifyTargetingLeaves): Move out of massageLoop.
+	(massageLoop): Adjust.
+	* interp/define.boot (compDefineCapsuleFunction): Generate
+	%labelled form for the body.
+	* interp/g-opt.boot: Now handle %labelled and %leave forms.
+	(optLabelled): Rename from optCatch.
+
+2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (UnionEqual): Use %lambda, not %lam.
 	(coerceUn2E): Likewise.
 	* interp/compiler.boot (massageLoop): %leave now takes a label as
