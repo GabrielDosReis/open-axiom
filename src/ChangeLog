@@ -1,5 +1,15 @@
 2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineCategory): Lose prefix parameter.
+	It is always nil. Adjust caller.
+	(compDefineCategory1): Likewise.
+	(compDefineCategory2): Likewise.
+	(compDefineFunctor): Likewise.
+	(compDefineFunctor1): Likewise.  Bind it to nil.
+	* interp/lisplib.boot (compDefineLisplib): Likewise.
+
+2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compSeq1): Generate %labelled forms.
 	(coerceExit): Likewise.
 	(compRepeatOrCollect): Likewise.

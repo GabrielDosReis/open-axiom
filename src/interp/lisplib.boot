@@ -402,7 +402,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   val:= _/D_,2_,LIB(fun,infile,outstream,auxOp,editFlag,traceFlag)
   val
  
-compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
+compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
@@ -424,7 +424,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   -- following guarantee's compiler output files get closed.
   ok := false;
   try
-    res:= FUNCALL(fn,df,m,e,prefix,fal)
+    res:= FUNCALL(fn,df,m,e,fal)
     leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     ok := finalizeLisplib(db,libName)

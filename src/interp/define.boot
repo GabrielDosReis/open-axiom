@@ -809,14 +809,14 @@ compDefine1(form,m,e) ==
   lhs is [.,:.] and (or/[x ~= nil for x in signature.source]) =>
     compDefWhereClause(form,m,e)
   signature.target=$Category =>
-    compDefineCategory(form,m,e,nil,$formalArgList)
+    compDefineCategory(form,m,e,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
     if lhs is [.,:.] then
       e := giveFormalParametersValues(lhs.args,e)
     if signature.target = nil then
       signature := [getTargetFromRhs(lhs,rhs,e),:signature.source]
     rhs := addEmptyCapsuleIfNecessary(signature.target,rhs)
-    compDefineFunctor(['DEF,lhs,signature,rhs],m,e,nil,$formalArgList)
+    compDefineFunctor(['DEF,lhs,signature,rhs],m,e,$formalArgList)
   $form = nil => stackAndThrow ['"bad == form ",form]
   db := constructorDB $op
   newPrefix :=
@@ -928,7 +928,7 @@ mkEvalableCategoryForm c ==
 skipCategoryPackage? capsule ==
   null capsule or $bootStrapMode
 
-compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
+compDefineCategory1(df is ['DEF,form,sig,body],m,e,fal) ==
   categoryCapsule :=
     body is ['add,cat,capsule] =>
       body := cat
@@ -936,7 +936,7 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,prefix,fal) ==
     nil
   if form isnt [.,:.] then
     form := [form]
-  [d,m,e]:= compDefineCategory2(form,sig,body,m,e,prefix,fal)
+  [d,m,e]:= compDefineCategory2(form,sig,body,m,e,fal)
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
@@ -1055,18 +1055,18 @@ getArgumentModeOrMoan(x,form,e) ==
   getArgumentMode(x,e) or
     stackSemanticError(["argument ",x," of ",form," is not declared"],nil)
 
-compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
+compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     --1. bind global variables
+    $prefix: local := nil
+    $op: local := form.op
     $insideCategoryIfTrue: local := true
     $definition: local := form   --used by DomainSubstitutionFunction
     $form: local := nil
-    $op: local := nil
     $extraParms: local := nil
     -- Remember the body for checking the current instantiation.
     $currentCategoryBody : local := body
          --Set in DomainSubstitutionFunction, used further down
     -- 1.1  augment e to add declaration $: <form>
-    [$op,:argl] := $definition
     db := constructorDB $op
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
@@ -1077,14 +1077,14 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     -- 2. obtain signature
     signature':=
       [signature.target,
-        :[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
-    e := giveFormalParametersValues(argl,e)
+        :[getArgumentModeOrMoan(a,$definition,e) for a in form.args]]
+    e := giveFormalParametersValues(form.args,e)
     dbDualSignature(db) :=
       [true,:[isCategoryForm(t,e) for t in signature'.source]]
 
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
-    sargl:= TAKE(# argl, $TriangleVariableList)
+    sargl:= TAKE(# form.args, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     formalBody := dbSubstituteFormals(db,body)
@@ -1111,7 +1111,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
         formals := [u,:formals]
         actuals := [MKQ v,:actuals]
       body := ['sublisV,['pairList,quote formals,['%list,:actuals]],body]
-    if argl then body:=  -- always subst for args after extraparms
+    if form.args then body :=  -- always subst for args after extraparms
         ['sublisV,['pairList,quote sargl,['%list,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
@@ -1120,7 +1120,7 @@ compDefineCategory2(form,signature,body,m,e,$prefix,$formalArgList) ==
     fun := compile(db,[op',["LAM",sargl,body]],signature')
  
     -- 5. give operator a 'modemap property
-    pairlis := pairList(argl,$FormalMapVariableList)
+    pairlis := pairList(form.args,$FormalMapVariableList)
     parSignature := applySubst(pairlis,dbSubstituteQueries(db,signature'))
     parForm := applySubst(pairlis,form)
  
@@ -1140,7 +1140,7 @@ mkConstructor form ==
   null form.args => quote [form.op]
   ['%list,MKQ form.op,:[mkConstructor x for x in form.args]]
  
-compDefineCategory(df,m,e,prefix,fal) ==
+compDefineCategory(df,m,e,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   -- since we have so many ways to say state the kind of a constructor,
   -- make sure we do have some minimal internal coherence.
@@ -1150,8 +1150,8 @@ compDefineCategory(df,m,e,prefix,fal) ==
   kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
   dbConstructorForm(db) := lhs
-  $insideFunctorIfTrue => compDefineCategory1(df,m,e,prefix,fal)
-  compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
+  $insideFunctorIfTrue => compDefineCategory1(df,m,e,fal)
+  compDefineLisplib(df,m,e,fal,'compDefineCategory1)
 
 
 %CatObjRes                   -- result of compiling a category
@@ -1359,35 +1359,34 @@ substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
   applySubst(pairList($FormalMapVariableList,argl),catform)
  
-compDefineFunctor(df,m,e,prefix,fal) ==
+compDefineFunctor(df,m,e,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
-  compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
+  compDefineLisplib(df,m,e,fal,'compDefineFunctor1)
  
-compDefineFunctor1(df is ['DEF,form,signature,body],
-  m,$e,$prefix,$formalArgList) ==
+compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     -- 0.  Make `form' a constructor instantiation form
     if form isnt [.,:.] then
       form := [form]
     --  1. bind global variables
+    $prefix: local := nil
+    $op: local := form.op
     $addForm: local := nil
     $subdomain: local := false
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
-    $form: local := nil
-    $op: local := nil
+    $form: local := form
     $signature: local := nil
     $functorTarget: local := nil
     $Representation: local := nil
          --Set in doIt, accessed in the compiler - compNoStacking
-    $functorForm: local := nil
+    $functorForm: local := form
     $functorLocalParameters: local := nil
     $getDomainCode: local := nil -- code for getting views
     $insideFunctorIfTrue: local:= true
     $genSDVar: local:= 0
     originale:= $e
-    [$op,:argl]:= form
     db := constructorDB $op
     dbConstructorForm(db) := form
     dbCompilerData(db) := makeCompilationData()
@@ -1397,19 +1396,18 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbCapsuleDefinitions(db) := nil
     $e := registerConstructor($op,$e)
     deduceImplicitParameters(db,$e)
-    $formalArgList:= [:argl,:$formalArgList]
+    $formalArgList:= [:form.args,:$formalArgList]
     -- all defaulting packages should have caching turned off
     dbInstanceCache(db) := not isCategoryPackageName $op
     signature':=
-      [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
-    $functorForm := $form := [$op,:argl]
+      [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in form.args]]
     if signature'.target = nil then
       signature' := modemap2Signature getModemap($form,$e)
     dbDualSignature(db) :=
       [false,:[isCategoryForm(t,$e) for t in signature'.source]]
 
     $functorTarget := target := signature'.target
-    $e := giveFormalParametersValues(argl,$e)
+    $e := giveFormalParametersValues(form.args,$e)
     [ds,.,$e] := compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $domainShell: local := copyVector ds
@@ -1421,7 +1419,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     $NRTaddForm: local := nil   -- see compAdd
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
-    for x in argl repeat getLocalIndex(db,x)
+    for x in form.args repeat getLocalIndex(db,x)
     for x in dbImplicitParameters db repeat getLocalIndex(db,x)
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
@@ -1437,11 +1435,11 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     dbCategory(db) := modemap.mmTarget
 
     --  (3.1) now make a list of the functor's local parameters; for
-    --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
+    --  domain D in form.args,check its signature: if domain, its type is Join(A1,..,An);
     --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
     --  to the A1,..,An view of D
-    makeFunctorArgumentParameters(argl,signature'.source,signature'.target)
-    $functorLocalParameters := argl
+    makeFunctorArgumentParameters(form.args,signature'.source,signature'.target)
+    $functorLocalParameters := form.args
 
     --  4. compile body in environment of %type declarations for arguments
     op':= $op
@@ -1459,7 +1457,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],
     lamOrSlam :=
       dbInstanceCache db = nil => 'LAM
       'SPADSLAM
-    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,argl,body']]),signature')
+    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,form.args,body']]),signature')
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
