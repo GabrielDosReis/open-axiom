@@ -1,3 +1,11 @@
+2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (UnionEqual): Use %lambda, not %lam.
+	(coerceUn2E): Likewise.
+	* interp/compiler.boot (massageLoop): %leave now takes a label as
+	first argument.
+	* interp/lisp-backend.boot (expandLeave): New.  Expand accordingly.
+
 2011-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (registerInlinableDomain): Lose last argument.
