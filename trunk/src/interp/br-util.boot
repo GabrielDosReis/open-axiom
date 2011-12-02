@@ -415,7 +415,7 @@ bcConPredTable(u,conname,:options) ==
   htEndTable()
 
 bcPred(pred,:options) ==
-  pred = '"" or pred = true or null pred => 'skip
+  pred is true or pred = nil => 'skip
   italicList := IFCAR options
   if not IFCAR IFCDR options then htSay '" {\em if} "
   htPred2English(pred,italicList)
