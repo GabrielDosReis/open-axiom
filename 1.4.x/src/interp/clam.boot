@@ -229,7 +229,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
           ['tableValue,cacheNameOrNil,MKQ op],MKQ eqEtc]
       ['lassocShift,cacheArgKey,['tableValue,cacheNameOrNil,MKQ op]]
     ['tableValue,cacheName,g1]
-  secondPredPair:= [g2,optSeq ['%seq,:hitCountCode,['EXIT,returnFoundValue]]]
+  secondPredPair:= [g2,optSeq ['%seq,:hitCountCode,['%exit,returnFoundValue]]]
   putCode:=
     null argl =>
       cacheNameOrNil =>
@@ -249,7 +249,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   thirdPredPair:= ['%otherwise,putCode]
   codeBody:= optSeq
     ['%seq,:callCountCode,
-      ['EXIT,['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]]]
+      ['%exit,['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]

@@ -1,5 +1,17 @@
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (seteltRecordFun): Change EXIT to %exit.
+	* interp/clam.boot (compHash):Likewise.
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Likewise.
+	(jumpToToplevel?): Likewise.
+	(groupVariableDefinitions): Likewise.
+	(changeLeaveToExit): Likewise.
+	(optLabelled): Likewise.
+	(optSeq): Likewise.
+	* interp/lisp-backend.boot: Translate %exit to EXIT.
+
+2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (setelt): Change SEQ to %seq.
 	* interp/clam.boot (compHash): Likewise.
 	* interp/compiler.boot (freeVarUsage): Likewise.
