@@ -168,9 +168,10 @@ expandLoop ['%loop,:iters,body,ret] ==
     body := mkpf([:filters,body],"AND")
   -- If there is any body-wide initialization, now is the time.
   body := massageFreeVarInits(body,bodyInits)
-  exits := ["COND",
-             [mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
-               [true,body]]
+  exits :=
+    exits = nil => body
+    ["COND",[mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
+       [true,body]]
   body := ["LOOP",exits,:cont]
   -- Finally, set up loop-wide initializations.
   massageFreeVarInits(body,loopInits)

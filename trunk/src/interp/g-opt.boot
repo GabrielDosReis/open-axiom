@@ -81,7 +81,7 @@ changeVariableDefinitionToStore(form,vars) ==
   form.op is '%when =>
     for clause in form.args repeat
       -- variable defined in clause predicates are visible
-      -- subsequent predicates
+      -- in subsequent predicates
       vars := changeVariableDefinitionToStore(first clause,vars)
       -- but those defined in branches are local.
       changeVariableDefinitionToStore(rest clause,vars)
@@ -97,6 +97,10 @@ changeVariableDefinitionToStore(form,vars) ==
   abstractionOperator? form.op =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
+  form is ['SEQ,:stmts,['EXIT,val]] =>
+    for s in stmts repeat
+      vars := changeVariableDefinitionToStore(s,vars)
+    changeVariableDefinitionToStore(val,vars)
   for x in form repeat
     vars := changeVariableDefinitionToStore(x,vars)
   vars
@@ -125,8 +129,12 @@ groupVariableDefinitions form ==
     form
   form is ['%labelled,tag,expr] =>
     [form.op,tag,groupVariableDefinitions expr]
+  form is ['%bind,inits,expr] =>
+    [form.op,inits,groupVariableDefinitions expr]
   form is ['%lambda,:.] =>
     [form.absKind,form.absParms,groupVariableDefinitions form.absBody]
+  form is ['%loop,:iters,body,val] =>
+    [form.op,:iters,groupVariableDefinitions body,val]
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
   for x in stmts while nonExitingSingleAssignment? x  repeat

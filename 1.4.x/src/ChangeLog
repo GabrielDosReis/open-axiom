@@ -1,5 +1,13 @@
 2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Handle SEQ
+	forms too.
+	(groupVariableDefinitions): Handle %bind and %loop forms.
+	* interp/lisp-backend.boot (expandLoop): Special code for case
+	where there is explicit exit condition, for better pretty-printing.
+
+2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (groupVariableDefinitions): Look through
 	%labelled and %lambda.
 	(optimizeFunctionDef): Use copyTree, not COPY. Simplify.
