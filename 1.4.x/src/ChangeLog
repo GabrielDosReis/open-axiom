@@ -1,5 +1,20 @@
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (setelt): Change SEQ to %seq.
+	* interp/clam.boot (compHash): Likewise.
+	* interp/compiler.boot (freeVarUsage): Likewise.
+	(canReturn): Likewise.
+	* interp/i-special.boot (compileIs): Likewise.
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Likewise.
+	(jumpToToplevel?): Likewise.
+	(groupVariableDefinitions): Likewise.
+	(changeLeaveToExit): Likewise.
+	(optLabelled): Likewise.
+	(optSeq): Rename from optSEQ.  Adjust callers.
+	* interp/lisp-backend.boot: Translate %seq to SEQ.
+
+2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/3448433
 	* interp/br-util.boot (bcPred): Do not compare pred against a string.
 

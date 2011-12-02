@@ -276,7 +276,7 @@ freeVarUsage([.,vars,body],env) ==
         for v in CDDR u | cons? v repeat
           free := freeList(v,bound,free,e)
         free
-      op = "SEQ" =>
+      op = '%seq =>
         for v in rest u | cons? v repeat
           free := freeList(v,bound,free,e)
         free
@@ -1153,7 +1153,7 @@ compSeq1(l,$exitModeStack,e) ==
       for x in l]
   if c is "failed" then return nil
   catchTag := MKQ gensym()
-  form := ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",first $exitModeStack)]
+  form := ['%seq,:replaceExitEtc(c,catchTag,"TAGGEDexit",first $exitModeStack)]
   [['%labelled,catchTag,form],first $exitModeStack,$finalEnv]
 
 compSeqItem(x,m,e) ==
@@ -1383,7 +1383,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   op is "TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
-  op is "SEQ" => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
+  op is '%seq => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
   op is "TAGGEDreturn" => nil
   op is '%labelled =>
     [.,gs,data]:= expr
@@ -1392,7 +1392,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
         expr isnt [.,:.] => nil
         expr is ['%leave, =gs,data] => true
             --this is pessimistic, but I know of no more accurate idea
-        expr is ["SEQ",:l] =>
+        expr is ['%seq,:l] =>
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
         or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)

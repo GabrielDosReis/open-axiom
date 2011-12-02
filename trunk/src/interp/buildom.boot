@@ -605,7 +605,7 @@ seteltRecordFun(n,i) ==
   field := formalRecordField(n,i)
   body := 
     n > 2 => ['%store,field,"#3"]
-    ['SEQ,['%store,field,"#3"],['EXIT,field]]
+    ['%seq,['%store,field,"#3"],['EXIT,field]]
   ["XLAM",args,body]
 
 copyRecordFun n ==

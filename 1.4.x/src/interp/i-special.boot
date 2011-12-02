@@ -1649,8 +1649,8 @@ compileIs(val,pattern) ==
   for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["objectAssoc",MKQ var,g]]],:assignCode]
   null $opIsIs =>
-    ['%when,[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,'%true]]]
-  ['%when,[['%not,["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,'%true]]]
+    ['%when,[["EQ",predCode,MKQ "failed"],['%seq,:assignCode,'%true]]]
+  ['%when,[['%not,["EQ",predCode,MKQ "failed"]],['%seq,:assignCode,'%true]]]
 
 evalIsPredicate(value,pattern,mode) ==
   --This function pattern matches value to pattern, and returns
