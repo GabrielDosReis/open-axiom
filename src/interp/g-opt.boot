@@ -66,6 +66,37 @@ emitIndirectCall(fn,args,x) ==
 
 --% OPTIMIZER
 
+++ Return the name of the iterator variable `it'.
+++ NOTES: iterator variables are usually of the form `[sc,:id]'
+++        where `sc' is a storage class, i.e. `%local' or `%free'.
+++        Occasionally, they are just symbols with the storage
+++        class `%local' implied.
+iteratorName it ==
+  ident? it => it
+  rest it
+
+++ Subroutine of changeVariableDefinitionToStore.
+++ Same semantics as changeVariableDefinitionToStore for a loop
+++ with body `body', iterator list `iters', return value `val' and
+++ currently bound variable list `vars'.
+changeLoopVarDefsToStore(iters,body,val,vars) ==
+  vars' := vars
+  -- Iterator variables are local to the the loop.
+  for it in iters repeat
+    it is ['STEP,idx,start,inc,:final] =>
+      vars' := changeVariableDefinitionToStore(start,vars')
+      vars' := changeVariableDefinitionToStore(inc,vars')
+      vars' := changeVariableDefinitionToStore(final,vars')
+      vars' := [iteratorName it,:vars']
+    it is [op,v,l] and op in '(IN ON) =>
+      vars' := changeVariableDefinitionToStore(l,vars')
+      vars' := [iteratorName it,:vars']
+    vars' := changeVariableDefinitionToStore(it,vars')
+  changeVariableDefinitionToStore(val,vars')
+  -- Variables defined in the loop body are also local to the loop
+  changeVariableDefinitionToStore(body,vars')
+  vars
+
 ++ Change (%LET id expr) to (%store id expr) if `id' is being
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
@@ -73,10 +104,14 @@ changeVariableDefinitionToStore(form,vars) ==
   atomic? form or form.op is 'CLOSEDFN => vars
   form is ['%LET,v,expr] =>
     vars := changeVariableDefinitionToStore(expr,vars)
-    if symbolMember?(v,vars) then
-      form.op := '%store
-    else
+    do
+      symbolMember?(v,vars) => form.op := '%store
       vars := [v,:vars]
+    vars
+  form is ['%when,[p,s1],['%otherwise,s2]] =>
+    vars' := changeVariableDefinitionToStore(p,vars)
+    changeVariableDefinitionToStore(s1,vars')
+    changeVariableDefinitionToStore(s2,vars')
     vars
   form.op is '%when =>
     for clause in form.args repeat
@@ -94,13 +129,18 @@ changeVariableDefinitionToStore(form,vars) ==
       vars' := [v,:vars']
     changeVariableDefinitionToStore(third form,vars')
     vars
-  abstractionOperator? form.op =>
+  ident? form.op and abstractionOperator? form.op =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
   form is ['%seq,:stmts,['%exit,val]] =>
     for s in stmts repeat
       vars := changeVariableDefinitionToStore(s,vars)
     changeVariableDefinitionToStore(val,vars)
+  form.op is 'XLAM => vars -- by definition, there is no assignment there
+  form is ['%loop,:iters,body,val] =>
+    changeLoopVarDefsToStore(iters,body,val,vars)
+  ident? form.op and form.op in '(%labelled %leave) =>
+    changeVariableDefinitionToStore(third form,vars)
   for x in form repeat
     vars := changeVariableDefinitionToStore(x,vars)
   vars
@@ -122,15 +162,24 @@ nonExitingSingleAssignment? form ==
 ++ a sequence of first-time variable definitions.
 groupVariableDefinitions form ==
   atomic? form => form
+  form is ['%when,[p,s1],['%otherwise,s2]] and sideEffectFree? p =>
+    [form.op,[p,groupVariableDefinitions s1],
+      ['%otherwise,groupVariableDefinitions s2]]
   form.op is '%when =>
     -- FIXME: we should not be generating store-modifying predicates
     for clause in form.args while not CONTAINED('%LET, first clause) repeat
       second(clause) := groupVariableDefinitions second clause
     form
   form is ['%labelled,tag,expr] =>
-    [form.op,tag,groupVariableDefinitions expr]
+    expr := groupVariableDefinitions expr
+    expr is ['%bind,inits,expr'] and
+      (and/[hasNoLeave init for [.,init] in inits]) =>
+        ['%bind,inits,['%labelled,tag,expr']]
+    [form.op,tag,expr]
   form is ['%bind,inits,expr] =>
-    [form.op,inits,groupVariableDefinitions expr]
+    expr := groupVariableDefinitions expr
+    expr is ['%bind,inits',expr'] => ['%bind,[:inits,:inits'],expr']
+    [form.op,inits,expr]
   form is ['%lambda,:.] =>
     [form.absKind,form.absParms,groupVariableDefinitions form.absBody]
   form is ['%loop,:iters,body,val] =>
