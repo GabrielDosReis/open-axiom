@@ -637,6 +637,7 @@ for x in [
     ['%funcall,  :'FUNCALL],
     ['%function, :'FUNCTION],
     ['%lambda,   :'LAMBDA],
+    ['%seq,      :'SEQ],
     ['%when,     :'COND],
 
     -- I/O stream functions
