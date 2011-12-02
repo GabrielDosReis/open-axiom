@@ -521,7 +521,8 @@ findVMFreeVars form ==
 ++ in `form'.
 modified?(var,form) ==
   atomic? form => false
-  form is [op,var',:.] and op in '(%LET LETT SETQ %store) =>
+  form is [op,var',expr,:.] and op in '(%LET LETT SETQ %store) =>
+    modified?(var,expr) => true
     symbol? var' => var' = var   -- whole var is assigned
     var' is [.,=var]             -- only part of it is modified
   or/[modified?(var,f) for f in form]

@@ -1,3 +1,7 @@
+2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (modified?): Examine the rhs too.
+
 2011-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (changeVariableDefinitionToStore): Handle SEQ
