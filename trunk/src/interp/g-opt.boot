@@ -165,8 +165,8 @@ groupVariableDefinitions form ==
     for clause in form.args while not CONTAINED('%LET, first clause) repeat
       second(clause) := groupVariableDefinitions second clause
     form
-  form is ['%labelled,tag,expr] =>
-    mkLabelled(tag,groupVariableDefinitions expr)
+  form is ['%scope,tag,expr] =>
+    mkScope(tag,groupVariableDefinitions expr)
   form is ['%bind,inits,expr] =>
     mkBind(inits,groupVariableDefinitions expr)
   form is ['%lambda,:.] =>
@@ -200,7 +200,7 @@ optimizeFunctionDef(def) ==
   expr.absBody :=
     removeTopLevelLabel expr.absBody where
       removeTopLevelLabel body ==
-        body is ['%labelled,g,u] =>
+        body is ['%scope,g,u] =>
           removeTopLevelLabel replaceLeaveByReturn(u,g)
         body
       replaceLeaveByReturn(x,g) ==
@@ -278,7 +278,7 @@ removeNeedlessLeave x ==
   for x' in x repeat
     removeNeedlessLeave x'
 
-optLabelled (x is ['%labelled,g,a]) ==
+optScope (x is ['%scope,g,a]) ==
   a isnt [.,:.] => a
   removeNeedlessLeave a
   if a is ['%seq,:s,['%leave,=g,u]] then
@@ -433,7 +433,7 @@ optIF2COND ["IF",a,b,c] ==
 ++ Determine whether the symbol `g' is the name of a temporary that
 ++ can be replaced in the form `x', if it is of linear usage and not
 ++ the name of a program point.  The latter occurs when %leave forms
-++ are changed to %LET form followed by a GO form -- see optLabelled.
+++ are changed to %LET form followed by a GO form -- see optScope.
 replaceableTemporary?(g,x) ==
   gensym? g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
     jumpTarget?(g,x) ==
@@ -885,7 +885,7 @@ for x in '((%call         optCall) _
            (%list        optList)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
-           (%labelled    optLabelled)_
+           (%scope       optScope)_
            (%when        optCond)_
            (%retract     optRetract)_
            (%pullback    optPullback)_

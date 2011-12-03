@@ -1154,7 +1154,7 @@ compSeq1(l,$exitModeStack,e) ==
   if c is "failed" then return nil
   catchTag := MKQ gensym()
   form := ['%seq,:replaceExitEtc(c,catchTag,"TAGGEDexit",first $exitModeStack)]
-  [['%labelled,catchTag,form],first $exitModeStack,$finalEnv]
+  [['%scope,catchTag,form],first $exitModeStack,$finalEnv]
 
 compSeqItem(x,m,e) ==
   $insideExpressionIfTrue := false
@@ -1385,7 +1385,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   level=exitCount and not ValueFlag => nil
   op is '%seq => or/[canReturn(u,level+1,exitCount,false) for u in rest expr]
   op is "TAGGEDreturn" => nil
-  op is '%labelled =>
+  op is '%scope =>
     [.,gs,data]:= expr
     (findThrow(gs,data,level,exitCount,ValueFlag) => true) where
       findThrow(gs,expr,level,exitCount,ValueFlag) ==
@@ -1865,7 +1865,7 @@ coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m' := resolve(m,m')
   x' := replaceExitEtc(x,catchTag := MKQ gensym(),"TAGGEDexit",$exitMode)
-  coerce([['%labelled,catchTag,x'],m,e],m')
+  coerce([['%scope,catchTag,x'],m,e],m')
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtSign(["@",x,m'],m,e) ==
@@ -2433,16 +2433,16 @@ nullifyTargetingLeaves(x,tag) ==
 
 massageLoop x == main x where
   main x ==
-    x isnt ['%labelled,tag,['REPEAT,:iters,body]] => x
+    x isnt ['%scope,tag,['REPEAT,:iters,body]] => x
     nullifyTargetingLeaves(body,tag)
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
-    ['%labelled,tag,['%loop,:iters,body,'%nil]]
+    ['%scope,tag,['%loop,:iters,body,'%nil]]
   containsNonLocalControl?(x,tags) ==
     atomic? x => false
     x is ['%leave,tag,x'] =>
       tag = nil => false  -- see NOTES in nullifyTargetingLeaves.
       not symbolMember?(tag,tags) or containsNonLocalControl?(x',tags)
-    x is ['%labelled,tag,x'] =>
+    x is ['%scope,tag,x'] =>
       containsNonLocalControl?(x',[tag,:tags])
     or/[containsNonLocalControl?(x',tags) for x' in x]
 
@@ -2481,7 +2481,7 @@ compRepeatOrCollect(form,m,e) ==
         [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
-           body' := ['%labelled,$loopBodyTag,body']
+           body' := ['%scope,$loopBodyTag,body']
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')

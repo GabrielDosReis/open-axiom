@@ -53,12 +53,12 @@ hasNoLeave?(expr,g) ==
   expr isnt [.,:.] => true
   hasNoLeave?(first expr,g) and hasNoLeave?(rest expr,g)
 
-mkLabelled(tag,expr) ==
+mkScope(tag,expr) ==
   expr is ['%leave,=tag,expr'] and hasNoLeave?(expr',tag) => expr'
   expr is ['%bind,inits,expr'] and hasNoLeave?(inits,tag) =>
-    mkBind(inits,mkLabelled(tag,expr'))
+    mkBind(inits,mkScope(tag,expr'))
   hasNoLeave?(expr,tag) => expr
-  ['%labelled,tag,expr]
+  ['%scope,tag,expr]
 
 mkBind(inits,expr) ==
   expr is ['%leave,tag,expr'] =>
