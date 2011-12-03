@@ -361,6 +361,10 @@ washFunctorBody form == main form where
       stmts = nil => nil
       rest stmts = nil => first stmts
       ["PROGN",:stmts]
+    x is ['%when,:.] =>
+      for cl in x.args | cl is [.,s] repeat
+        second(cl) := clean s
+      x
     x is ['%list] => nil
     x
 

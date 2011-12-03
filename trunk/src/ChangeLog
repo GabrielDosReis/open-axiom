@@ -1,5 +1,10 @@
 2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (washFunctorBody) [clean]: Clean %when
+	forms too.
+
+2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot: Replace %labelled with %scope.
 	* interp/define.boot: Likewise.
 	* interp/g-opt.boot: Likewise.
