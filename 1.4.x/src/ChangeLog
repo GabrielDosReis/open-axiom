@@ -1,5 +1,12 @@
 2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot: Use %seq in lieu of PROGN.
+	* interp/g-util.boot (spliceSeqArgs): New.
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Call it
+	before recursing on %seq forms.
+
+2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (setqMultiple): Handle lhs and rhs of type
 	Cross instance.
 	* interp/g-util.boot ($DomainNames): Include Cross.

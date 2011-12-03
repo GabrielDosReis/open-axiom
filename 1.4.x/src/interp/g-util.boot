@@ -45,6 +45,7 @@ module g_-util where
   usedSymbol?: (%Symbol,%Code) -> %Boolean
   isDefaultPackageName: %Symbol -> %Boolean
   makeDefaultPackageName: %String -> %Symbol
+  spliceSeqArgs: %List %Code -> %Code
 
 --%
 
@@ -67,7 +68,20 @@ mkBind(inits,expr) ==
     mkBind([:inits,:inits'],expr')
   ['%bind,inits,expr]
 
-
+++ We have a list `l' of expressions to be executed sequentially.
+++ Splice in any directly-embedded sequence of expressions.
+++ NOTES: This function should not be called on any program with
+++        an %exit-form in it.  In particular, it should be called
+++        (if at all) before any call to simplifyVMForm.
+spliceSeqArgs l ==
+  atomic? l => l
+  l is [['%seq,:stmts],:.] =>
+    stmts = nil => spliceSeqArgs rest l
+    lastNode(stmts).rest := spliceSeqArgs rest l
+    stmts
+  rest l = nil => l
+  l.rest := spliceSeqArgs rest l
+  l
 
 --%
 
