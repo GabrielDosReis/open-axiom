@@ -136,6 +136,8 @@ changeVariableDefinitionToStore(form,vars) ==
     vars
   form is ['%loop,:iters,body,val] =>
     changeLoopVarDefsToStore(iters,body,val,vars)
+  if form is ['%seq,:.] then
+    form.args := spliceSeqArgs form.args
   for x in form repeat
     vars := changeVariableDefinitionToStore(x,vars)
   vars

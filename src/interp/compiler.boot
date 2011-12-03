@@ -271,7 +271,7 @@ freeVarUsage([.,vars,body],env) ==
         for v in CDDR u repeat
           free := freeList(v,bound,free,e)
         free
-      op = "PROG" =>
+      op = 'PROG =>
         bound := setUnion(bound, second u)
         for v in CDDR u | cons? v repeat
           free := freeList(v,bound,free,e)
@@ -978,7 +978,7 @@ setqMultiple(nameList,val,m,e) ==
   m1 is ["List",D] =>
     for y in nameList repeat 
       e:= giveVariableSomeValue(y,D,e)
-    coerce([["PROGN",x,["%LET",nameList,g],g],m',e],m)
+    coerce([['%seq,x,["%LET",nameList,g],g],m',e],m)
   -- 3. For a cross, do it by hand here instead of general mm.  FIXME.
   m1 is ['Cross,:.] =>
     n := #m1.args
@@ -988,7 +988,7 @@ setqMultiple(nameList,val,m,e) ==
     for y in nameList for t in m1.args for i in 0.. repeat
       e := giveVariableSomeValue(y,t,e)
       stmts := [['%LET,y,['%call,eltRecordFun(n,i),g,i]],:stmts]
-    coerce([['PROGN,x,:reverse! stmts,g],m1,e],m)
+    coerce([['%seq,x,:reverse! stmts,g],m1,e],m)
   -- 4. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
@@ -1005,7 +1005,7 @@ setqMultiple(nameList,val,m,e) ==
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
   assignList="failed" => nil
-  [mkpf([x,:assignList,g],'PROGN),m',e]
+  [['%seq,x,:assignList,g],m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList~=#valList =>
@@ -1020,7 +1020,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
     [[.,.,e]:= compSetq1(name,g,$EmptyMode,e) or return "failed"
       for g in gensymList for name in nameList]
   reAssignList="failed" => nil
-  [["PROGN",:[T.expr for T in assignList],:[T.expr for T in reAssignList]],
+  [['%seq,:[T.expr for T in assignList],:[T.expr for T in reAssignList]],
     $NoValueMode, last(reAssignList).env]
 
 --% Quasiquotation
@@ -1781,8 +1781,7 @@ coerceEasy(T,m) ==
   m=$NoValueMode or m=$Void => [T.expr,m,T.env]
   T.mode =m => T
   T.mode =$Exit =>
-      [["PROGN", T.expr, ["userError", '"Did not really exit."]],
-        m,T.env]
+      [['%seq,T.expr,["userError", '"Did not really exit."]],m,T.env]
   T.mode=$EmptyMode or modeEqualSubst(T.mode,m,T.env) =>
     [T.expr,m,T.env]
 
@@ -2141,7 +2140,7 @@ compRetractGuard(x,t,sn,sm,e) ==
     -- the condition and the body of the alternative, so just use 
     -- assignment here and let the rest of the compiler deal with it.
     z := gensym()
-    caseCode := ["PROGN",["%LET",z,retractCode],['%ieq,['%head,z],0]]
+    caseCode := ['%seq,["%LET",z,retractCode],['%ieq,['%head,z],0]]
     restrictCode := ["%tail",z]
   -- 1.3. Everything else failed; nice try.
   else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])
@@ -2213,7 +2212,7 @@ compRecoverGuard(x,t,sn,sm,e) ==
     [def,.,e] := compOrCroak(varDef,$EmptyMode,e)
     [hasTest,.,e] := compOrCroak(["has",var',cat'],$EmptyMode,e)
     [guard,inits,e,envFalse] := compRecoverDomain(x,var',sn,e)
-    [["PROGN",def,hasTest],inits,e,envFalse]
+    [['%seq,def,hasTest],inits,e,envFalse]
   -- 2. Hand it to whoever is in charge.
   compRecoverDomain(x,t,sn,e)
 
