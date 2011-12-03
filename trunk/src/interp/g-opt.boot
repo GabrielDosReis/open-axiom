@@ -101,14 +101,16 @@ changeLoopVarDefsToStore(iters,body,val,vars) ==
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
 changeVariableDefinitionToStore(form,vars) ==
-  atomic? form or form.op is 'CLOSEDFN => vars
+  atomic? form or form.op is 'CLOSEDFN or form.op is 'XLAM => vars
   form is ['%LET,v,expr] =>
     vars := changeVariableDefinitionToStore(expr,vars)
     do
       symbolMember?(v,vars) => form.op := '%store
       vars := [v,:vars]
     vars
-  form is ['%when,[p,s1],['%otherwise,s2]] =>
+  form is ['IF,p,s1,s2] =>
+    -- variables defined in the predicate are visible in both branches, but
+    -- no variable locally defined in one branch is visible in the other.
     vars' := changeVariableDefinitionToStore(p,vars)
     changeVariableDefinitionToStore(s1,vars')
     changeVariableDefinitionToStore(s2,vars')
@@ -116,7 +118,7 @@ changeVariableDefinitionToStore(form,vars) ==
   form.op is '%when =>
     for clause in form.args repeat
       -- variable defined in clause predicates are visible
-      -- in subsequent predicates
+      -- in subsequent predicates.  See the case for IF forms.
       vars := changeVariableDefinitionToStore(first clause,vars)
       -- but those defined in branches are local.
       changeVariableDefinitionToStore(rest clause,vars)
@@ -132,15 +134,8 @@ changeVariableDefinitionToStore(form,vars) ==
   ident? form.op and abstractionOperator? form.op =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
-  form is ['%seq,:stmts,['%exit,val]] =>
-    for s in stmts repeat
-      vars := changeVariableDefinitionToStore(s,vars)
-    changeVariableDefinitionToStore(val,vars)
-  form.op is 'XLAM => vars -- by definition, there is no assignment there
   form is ['%loop,:iters,body,val] =>
     changeLoopVarDefsToStore(iters,body,val,vars)
-  ident? form.op and form.op in '(%labelled %leave) =>
-    changeVariableDefinitionToStore(third form,vars)
   for x in form repeat
     vars := changeVariableDefinitionToStore(x,vars)
   vars
@@ -194,16 +189,16 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  def' := simplifyVMForm copyTree def
+  expr := copyTree second def
+  changeVariableDefinitionToStore(expr.absBody,expr.absParms)
+  expr := simplifyVMForm expr
  
   if $reportOptimization then
     sayBrightlyI bright '"Intermediate VM code:"
-    pp def'
+    pp expr
 
-  [name,[slamOrLam,args,body]] := def'
- 
-  body' :=
-    removeTopLevelLabel body where
+  expr.absBody :=
+    removeTopLevelLabel expr.absBody where
       removeTopLevelLabel body ==
         body is ['%labelled,g,u] =>
           removeTopLevelLabel replaceLeaveByReturn(u,g)
@@ -218,7 +213,7 @@ optimizeFunctionDef(def) ==
         x isnt [.,:.] => nil
         replaceLeaveByReturn(first x,g)
         replaceLeaveByReturn(rest x,g)
-  [name,[slamOrLam,args,body']]
+  [first def,expr]
 
 resetTo(x,y) ==
   y isnt [.,:.] => y
@@ -235,9 +230,7 @@ simplifyVMForm x ==
   x.op is 'CLOSEDFN => x
   x.op isnt [.,:.] =>
     symbol? x.op and abstractionOperator? x.op =>
-      x.absBody := simplifyVMForm x.absBody
-      changeVariableDefinitionToStore(x.absBody,x.absParms)
-      x.absBody := groupVariableDefinitions x.absBody
+      x.absBody := groupVariableDefinitions simplifyVMForm x.absBody
       x
     if x.op is 'IF then
       resetTo(x,optIF2COND x)

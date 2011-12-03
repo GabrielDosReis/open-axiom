@@ -1,5 +1,12 @@
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (groupVariableDefinitions): Simplify a bit.
+	(optimizeFunctionDef): Likewise.  Change %LET to %store before
+	simplification. 
+	(simplifyVMForm): Do not call changeVariableDefinitionToStore.
+
+2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-util.boot (hasNoLeave?): Move from g-opt.boot.
 	(mkLabelled): New.
 	(mkBind): Likewise.
