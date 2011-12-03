@@ -93,7 +93,8 @@ $DomainNames ==
     SubDomain _
     Union _
     Record _
-    Enumeration)
+    Enumeration _
+    Cross)
 
 macro builtinFunctorName? x ==
   symbolMember?(x,$DomainNames)

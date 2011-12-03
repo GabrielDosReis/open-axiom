@@ -1365,11 +1365,9 @@ PolynomialSetUtilitiesPackage (R,E,V,P) : Exports == Implementation where
        while not empty? toSee repeat
          b := first toSee
          toSee := rest toSee
-         if not infRittWu?(b,a) 
-           then
-             (c,d) := (a,b)
-           else
-             (c,d) := (b,a)
+         (c,d) :=
+           not infRittWu?(b,a) => (a,b)
+           (b,a)
          rrf := unprotectedRemoveRedundantFactors(c,d)
          empty? rrf => error"in removeRedundantFactors : (LP,P) -> LP from PSETPK"
          c := first rrf
