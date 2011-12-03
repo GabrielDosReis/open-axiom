@@ -1,5 +1,16 @@
 2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (setqMultiple): Handle lhs and rhs of type
+	Cross instance.
+	* interp/g-util.boot ($DomainNames): Include Cross.
+	* interp/cattable.boot (genCategoryTable): Do not eval Cross.
+	It is bogus to prepopulate the table with builtin functors anyway.
+	* algebra/triset.spad.pamphlet
+	(PolynomialSetUtilitiesPackage)[removeRedundantFactors]: Do not
+	define `c' and `d' in conditional.  Make the initializer conditional.
+
+2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (washFunctorBody) [clean]: Clean %when
 	forms too.
 
@@ -14,7 +25,7 @@
 
 	* interp/g-opt.boot (groupVariableDefinitions): Simplify a bit.
 	(optimizeFunctionDef): Likewise.  Change %LET to %store before
-	simplification. 
+	simplification.
 	(simplifyVMForm): Do not call changeVariableDefinitionToStore.
 
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>

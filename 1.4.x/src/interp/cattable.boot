@@ -66,7 +66,7 @@ genCategoryTable() ==
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := setDifference($nonLisplibDomains,$noCategoryDomains)
   domainTable:= [:[addDomainToTable(id, getConstrCat eval([id]).3)
-    for id in specialDs], :domainTable]
+    for id in specialDs | id ~= 'Cross], :domainTable]
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
       tableValue(_*HASCATEGORY_-HASH_*,[id,:a]) := b

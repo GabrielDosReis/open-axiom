@@ -974,12 +974,22 @@ setqMultiple(nameList,val,m,e) ==
   T:= [.,m1,.]:= compSetq1(g,val,$EmptyMode,e) or return nil
   e:= put(g,"mode",m1,e)
   [x,m',e]:= coerce(T,m) or return nil
-  -- 1.1. exit if result is a list
+  -- 2. exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat 
       e:= giveVariableSomeValue(y,D,e)
     coerce([["PROGN",x,["%LET",nameList,g],g],m',e],m)
-  -- 2. verify that the #nameList = number of parts of right-hand-side
+  -- 3. For a cross, do it by hand here instead of general mm.  FIXME.
+  m1 is ['Cross,:.] =>
+    n := #m1.args
+    #nameList ~= n =>
+      stackMessage('"%1b must decompose into %2 components",[val,n])
+    stmts := nil
+    for y in nameList for t in m1.args for i in 0.. repeat
+      e := giveVariableSomeValue(y,t,e)
+      stmts := [['%LET,y,['%call,eltRecordFun(n,i),g,i]],:stmts]
+    coerce([['PROGN,x,:reverse! stmts,g],m1,e],m)
+  -- 4. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
     decompose(m1,#nameList,e) or return nil where
@@ -990,7 +1000,7 @@ setqMultiple(nameList,val,m,e) ==
         stackMessage('"no multiple assigns to mode: %1p",[t])
   #nameList~=#selectorModePairs =>
     stackMessage('"%1b must decompose into %2 components",[val,#nameList])
-  -- 3. generate code; return
+  -- 5. generate code; return
   assignList:=
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
@@ -1956,7 +1966,7 @@ compComma(form,m,e) ==
     Tl' := [coerce(T,t) or return "failed" for T in Tl]
     Tl' = "failed" => nil
     [["asTupleNew0", ["getVMType",t], [T.expr for T in Tl']], m, e]
-  T := [['%vector, :[T.expr for T in Tl]], 
+  T := [['%call,mkRecordFun #argl,:[T.expr for T in Tl]], 
         ["Cross",:[T.mode for T in Tl]], e]
   coerce(T,m)
 
