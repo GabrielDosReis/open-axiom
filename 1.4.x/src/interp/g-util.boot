@@ -48,6 +48,29 @@ module g_-util where
 
 --%
 
+hasNoLeave?(expr,g) ==
+  expr is ['%leave, =g,:.] => false
+  expr isnt [.,:.] => true
+  hasNoLeave?(first expr,g) and hasNoLeave?(rest expr,g)
+
+mkLabelled(tag,expr) ==
+  expr is ['%leave,=tag,expr'] and hasNoLeave?(expr',tag) => expr'
+  expr is ['%bind,inits,expr'] and hasNoLeave?(inits,tag) =>
+    mkBind(inits,mkLabelled(tag,expr'))
+  hasNoLeave?(expr,tag) => expr
+  ['%labelled,tag,expr]
+
+mkBind(inits,expr) ==
+  expr is ['%leave,tag,expr'] =>
+    ['%leave,tag,mkBind(inits,expr')]
+  expr is ['%bind,inits',expr'] =>
+    mkBind([:inits,:inits'],expr')
+  ['%bind,inits,expr]
+
+
+
+--%
+
 ++ List of category constructors that do not have entries in the 
 ++ constructor database. So, they are mostly recognized by their names.
 $CategoryNames ==

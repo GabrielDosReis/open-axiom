@@ -1,5 +1,14 @@
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (hasNoLeave?): Move from g-opt.boot.
+	(mkLabelled): New.
+	(mkBind): Likewise.
+	* interp/g-opt.boot (groupVariableDefinitions): Use them.
+	* algebra/aggcat.spad.pamphlet (ListAggregate) [merge!]: Declare
+	local variables `r' and `s' before assigning to them.
+
+2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (iteratorName): New.
 	(changeLoopVarDefsToStore): Likewise.
 	(changeVariableDefinitionToStore): Use it.  Tidy.

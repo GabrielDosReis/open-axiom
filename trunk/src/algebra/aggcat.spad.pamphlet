@@ -2353,6 +2353,8 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      empty? p => q
      empty? q => p
      eq?(p, q) => error "cannot merge a list into itself"
+     r: %
+     t: %
      if f(first p, first q)
        then (r := t := p; p := rest p)
        else (r := t := q; q := rest q)
