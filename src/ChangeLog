@@ -1,3 +1,10 @@
+2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot: Replace %labelled with %scope.
+	* interp/define.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-util.boot: Likewise. Rename mkLabelled to mkScope.
+
 2011-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (groupVariableDefinitions): Simplify a bit.
