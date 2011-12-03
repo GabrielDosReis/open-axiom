@@ -171,29 +171,23 @@ groupVariableDefinitions form ==
       second(clause) := groupVariableDefinitions second clause
     form
   form is ['%labelled,tag,expr] =>
-    expr := groupVariableDefinitions expr
-    expr is ['%bind,inits,expr'] and
-      (and/[hasNoLeave init for [.,init] in inits]) =>
-        ['%bind,inits,['%labelled,tag,expr']]
-    [form.op,tag,expr]
+    mkLabelled(tag,groupVariableDefinitions expr)
   form is ['%bind,inits,expr] =>
-    expr := groupVariableDefinitions expr
-    expr is ['%bind,inits',expr'] => ['%bind,[:inits,:inits'],expr']
-    [form.op,inits,expr]
+    mkBind(inits,groupVariableDefinitions expr)
   form is ['%lambda,:.] =>
     [form.absKind,form.absParms,groupVariableDefinitions form.absBody]
   form is ['%loop,:iters,body,val] =>
     [form.op,:iters,groupVariableDefinitions body,val]
   form isnt ['%seq,:stmts,['%exit,val]] => form
-  defs := nil
-  for x in stmts while nonExitingSingleAssignment? x  repeat
-    defs := [x.args,:defs]
-  defs = nil or jumpToToplevel? defs => form
+  form.args = nil => nil
+  form.args is [s] => groupVariableDefinitions s
+  defs := [s.args for s in stmts while nonExitingSingleAssignment? s]
+  defs = nil => form
   stmts := drop(#defs,stmts)
   expr :=
     stmts = nil => val
     ['%seq,:stmts,['%exit,val]]
-  ['%bind,reverse! defs,expr]
+  mkBind(defs,expr)
 
 optimizeFunctionDef(def) ==
   if $reportOptimization then
@@ -227,8 +221,8 @@ optimizeFunctionDef(def) ==
   [name,[slamOrLam,args,body']]
 
 resetTo(x,y) ==
-  y isnt [.,:.] => x := y
-  sameObject?(x,y) => x
+  y isnt [.,:.] => y
+  sameObject?(x,y) => y
   x.first := y.first
   x.rest := y.rest
   x
@@ -266,11 +260,6 @@ changeLeaveToExit(s,g) ==
   changeLeaveToExit(first s,g)
   changeLeaveToExit(rest s,g)
 
-hasNoLeave(a,g) ==
-  a is ['%leave, =g,:.] => false
-  a isnt [.,:.] => true
-  hasNoLeave(first a,g) and hasNoLeave(rest a,g)
-
 changeLeaveToGo(s,g) ==
   s isnt [.,:.] or s.op is 'QUOTE => nil
   s is ['%leave, =g,u] =>
@@ -303,9 +292,9 @@ optLabelled (x is ['%labelled,g,a]) ==
     changeLeaveToExit(s,g)
     a.rest := [:s,['%exit,u]]
     a := simplifyVMForm a
-  if hasNoLeave(a,g) then
-    resetTo(x,a)
-  else
+  a isnt [.,:.] => a
+  do
+    hasNoLeave?(a,g) => resetTo(x,a)
     changeLeaveToGo(a,g)
     x.first := '%seq
     x.rest := [['%exit,a],second g,['%exit,second g]]
