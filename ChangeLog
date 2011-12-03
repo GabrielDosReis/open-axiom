@@ -1,3 +1,9 @@
+2011-12-03  Alfredo Portes  <doyenatccny@gmail.com>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (CXX): Define as substituted.
+	(LD): Likewise.
+
 2011-09-03  Igor Pashev  <pashev.igor@gmail.com>
 	    Gabriel Dos Reis <gdr@cs.tamu.edu>
 
