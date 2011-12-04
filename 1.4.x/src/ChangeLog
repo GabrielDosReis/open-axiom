@@ -1,5 +1,9 @@
 2011-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (freeVarUsage): Handle %bind and LET.
+
+2011-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-util.boot (splitAssignments): New.
 	(spliceSeqArgs): Use it.
 

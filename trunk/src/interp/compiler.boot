@@ -266,8 +266,8 @@ freeVarUsage([.,vars,body],env) ==
         [[u,:1],:free]
       op := u.op
       op in '(QUOTE GO function) => free
-      op = "LAMBDA" =>
-        bound := setUnion(bound, second u)
+      op in '(LAMBDA %lambda) =>
+        bound := setUnion(u.absParms,bound)
         for v in CDDR u repeat
           free := freeList(v,bound,free,e)
         free
@@ -276,6 +276,17 @@ freeVarUsage([.,vars,body],env) ==
         for v in CDDR u | cons? v repeat
           free := freeList(v,bound,free,e)
         free
+      op = '%bind =>
+        for [v,init] in second u repeat
+          bound := [v,:bound]
+          free := freeList(init,bound,free,e)
+        freeList(third u,bound,free,e)
+      op = 'LET =>
+        locals := nil
+        for [v,init] in second u repeat
+          free := freeList(init,bound,free,e)
+          locals := [v,:locals]
+        freeList(third u,setUnion(locals,bound),free,e)
       op = '%seq =>
         for v in rest u | cons? v repeat
           free := freeList(v,bound,free,e)
