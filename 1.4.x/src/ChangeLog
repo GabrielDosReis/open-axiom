@@ -1,3 +1,8 @@
+2011-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (splitAssignments): New.
+	(spliceSeqArgs): Use it.
+
 2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisp-backend.boot (hasNoExit?): New.
