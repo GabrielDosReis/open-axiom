@@ -206,6 +206,24 @@ expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
   ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
   
+
+++ Subroutine of expandSeq.
+++ Return true if the form `x' contains no %exit form.
+hasNoExit? x ==
+  atomic? x => true
+  x is ['%exit,:.] => false
+  and/[hasNoExit? s for s in x]
+
+++ Expand a sequence of statements with possible non-local
+++ lexical control transfer.  Attempt to recognize those with
+++ normal lexical exit.
+expandSeq(x is ['%seq,:stmts]) ==
+  [:stmts',val] := stmts
+  and/[hasNoExit? s for s in stmts'] and
+    val is ['%exit,val'] and hasNoExit? val' =>
+      ['PROGN,:[expandToVMForm s for s in stmts'],expandToVMForm val']
+  ['SEQ,:[expandToVMForm s for s in stmts]]
+
 -- Pointer operations
 expandPeq ['%peq,x,y] ==
   x = '%nil => ['NULL,expandToVMForm y]
@@ -637,7 +655,6 @@ for x in [
     ['%funcall,  :'FUNCALL],
     ['%function, :'FUNCTION],
     ['%lambda,   :'LAMBDA],
-    ['%seq,      :'SEQ],
     ['%exit,     :'EXIT],
     ['%when,     :'COND],
 
@@ -653,7 +670,8 @@ for x in [
    ['%collect, :function expandCollect],
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
-   ['%leave,  :function expandLeave],
+   ['%leave,   :function expandLeave],
+   ['%seq,     :function expandSeq],
 
    ['%bcompl,  :function expandBcompl],
 

@@ -1,5 +1,10 @@
 2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisp-backend.boot (hasNoExit?): New.
+	(expandSeq): Likewise.  Use it.  Expand %seq forms.
+
+2011-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot: Use %seq in lieu of PROGN.
 	* interp/g-util.boot (spliceSeqArgs): New.
 	* interp/g-opt.boot (changeVariableDefinitionToStore): Call it
