@@ -68,6 +68,13 @@ mkBind(inits,expr) ==
     mkBind([:inits,:inits'],expr')
   ['%bind,inits,expr]
 
+splitAssignments u == main(u,nil) where
+   main(u,l) ==
+     u is ['%LET,x,v] =>
+       v is ['%LET,y,.] => main(v,[['%LET,x,y],:l])
+       [u,:l]
+     nil
+
 ++ We have a list `l' of expressions to be executed sequentially.
 ++ Splice in any directly-embedded sequence of expressions.
 ++ NOTES: This function should not be called on any program with
@@ -78,6 +85,10 @@ spliceSeqArgs l ==
   l is [['%seq,:stmts],:.] =>
     stmts = nil => spliceSeqArgs rest l
     lastNode(stmts).rest := spliceSeqArgs rest l
+    stmts
+  s := first l
+  s is ['%LET,x,y] and (stmts := splitAssignments y) =>
+    lastNode(stmts).rest := [['%LET,x,second y],:spliceSeqArgs rest l]
     stmts
   rest l = nil => l
   l.rest := spliceSeqArgs rest l
