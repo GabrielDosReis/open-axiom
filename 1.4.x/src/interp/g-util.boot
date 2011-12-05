@@ -82,11 +82,12 @@ splitAssignments u == main(u,nil) where
 ++        (if at all) before any call to simplifyVMForm.
 spliceSeqArgs l ==
   atomic? l => l
-  l is [['%seq,:stmts],:.] =>
+  s := first l
+  s is ['%seq,:.] =>
+    stmts := spliceSeqArgs s.args
     stmts = nil => spliceSeqArgs rest l
     lastNode(stmts).rest := spliceSeqArgs rest l
     stmts
-  s := first l
   s is ['%LET,x,y] and (stmts := splitAssignments y) =>
     lastNode(stmts).rest := [['%LET,x,second y],:spliceSeqArgs rest l]
     stmts

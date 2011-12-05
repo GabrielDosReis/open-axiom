@@ -115,7 +115,7 @@ changeVariableDefinitionToStore(form,vars) ==
     changeVariableDefinitionToStore(s1,vars')
     changeVariableDefinitionToStore(s2,vars')
     vars
-  form.op is '%when =>
+  form is ['%when,:.] =>
     for clause in form.args repeat
       -- variable defined in clause predicates are visible
       -- in subsequent predicates.  See the case for IF forms.
@@ -123,13 +123,21 @@ changeVariableDefinitionToStore(form,vars) ==
       -- but those defined in branches are local.
       changeVariableDefinitionToStore(rest clause,vars)
     vars
-  -- local bindings are, well, local.
-  form.op in '(%bind LET) =>
+  -- recursive binding
+  form is ['%bind,:.] =>
     vars' := vars
     for [v,init] in second form repeat
       vars' := changeVariableDefinitionToStore(init,vars')
       vars' := [v,:vars']
     changeVariableDefinitionToStore(third form,vars')
+    vars
+  -- non-recursive binding.
+  form is ['LET,:.] =>
+    vars' := nil
+    for [v,init] in second form repeat
+      changeVariableDefinitionToStore(init,vars')
+      vars' := [v,:vars']
+    changeVariableDefinitionToStore(third form,[:vars',:vars])
     vars
   ident? form.op and abstractionOperator? form.op =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])

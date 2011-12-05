@@ -1,3 +1,9 @@
+2011-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Separately
+	handle %bind and LET forms.
+	* interp/g-util.boot (spliceSeqArgs): Recurse into %seq forms.
+
 2011-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (freeVarUsage): Handle %bind and LET.
