@@ -68,12 +68,18 @@ mkBind(inits,expr) ==
     mkBind([:inits,:inits'],expr')
   ['%bind,inits,expr]
 
-splitAssignments u == main(u,nil) where
+++ Given a (possibly multiple) assignment expression `u', return
+++ the list of all assignment sub-expressions that must be evaluated before
+++ effecting the toplevel assignment indicated by `u'.  In that case,
+++ modify `u' in place to reflect the new right-hand-side.
+splitAssignments! u == main(u,nil) where
    main(u,l) ==
      u is ['%LET,x,v] =>
-       v is ['%LET,y,.] => main(v,[['%LET,x,y],:l])
-       [u,:l]
-     nil
+       v is ['%LET,y,.] =>
+         second(u.args) := y
+         [:main(v,l),v]
+       l
+     l
 
 ++ We have a list `l' of expressions to be executed sequentially.
 ++ Splice in any directly-embedded sequence of expressions.
