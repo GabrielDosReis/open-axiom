@@ -1,5 +1,10 @@
 2011-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (setqMultipleExplicit): Introduced
+	temporary variables are local to the assignment.
+
+2011-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compResolveCall): Update description.
 	(compRetractGuard): Tidy.
 	(compRecoverDomain): Likewise.
