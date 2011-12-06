@@ -1022,17 +1022,16 @@ setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList~=#valList =>
     stackMessage('"Multiple assignment error; # of items in: %1b must = # in: %2",[nameList,valList])
   gensymList:= [genVariable() for name in nameList]
-  assignList:=
-             --should be fixed to declare genVar when possible
-    [[.,.,e]:= compSetq1(g,val,$EmptyMode,e) or return "failed"
-      for g in gensymList for val in valList]
-  assignList="failed" => nil
-  reAssignList:=
-    [[.,.,e]:= compSetq1(name,g,$EmptyMode,e) or return "failed"
+  bindings := --should be fixed to declare genVar when possible
+    [insn.args for g in gensymList for val in valList
+      | [insn,.,e] := compSetq1(g,val,$EmptyMode,e) or leave "failed" ]
+  bindings is "failed" => nil
+  reAssignList :=
+    [[.,.,e] := compSetq1(name,g,$EmptyMode,e) or return "failed"
       for g in gensymList for name in nameList]
-  reAssignList="failed" => nil
-  [['%seq,:[T.expr for T in assignList],:[T.expr for T in reAssignList]],
-    $NoValueMode, last(reAssignList).env]
+  reAssignList is "failed" => nil
+  [['%bind,bindings,['%seq,:[T.expr for T in reAssignList]]],
+      $NoValueMode, last(reAssignList).env]
 
 --% Quasiquotation
 
