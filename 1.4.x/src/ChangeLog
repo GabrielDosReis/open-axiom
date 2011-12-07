@@ -1,3 +1,11 @@
+2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compReduce1): Tidy.
+	* interp/define.boot (compDefineCategory2): Likewise.
+	* interp/nruncomp.boot (buildFunctor): Likewise.
+	* interp/slam.boot (compileRecurrenceRelation): Likewise.
+	* interp/lisp-backend.boot (expandSeq): Use PROGN in absence of EXIT.
+
 2011-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (setqMultipleExplicit): Introduced

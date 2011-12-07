@@ -294,7 +294,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     returnValue:= ["PROGN",newStateCode,first gsList]
     cbody:=
       endTest:=
-        ['%when, [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
+        ['%when, [['%ieq,sharpArg,gIndex],['RETURN,returnValue]]]
       newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
         applySubst(pairList(rest $TriangleVariableList,gsList),body))]
       ['%bind,decomposeBindings,

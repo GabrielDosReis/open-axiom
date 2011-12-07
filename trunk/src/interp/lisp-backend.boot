@@ -219,10 +219,13 @@ hasNoExit? x ==
 ++ normal lexical exit.
 expandSeq(x is ['%seq,:stmts]) ==
   [:stmts',val] := stmts
-  and/[hasNoExit? s for s in stmts'] and
-    val is ['%exit,val'] and hasNoExit? val' =>
+  val is ['%exit,val'] and hasNoExit? val' and
+    (and/[hasNoExit? s for s in stmts']) =>
       ['PROGN,:[expandToVMForm s for s in stmts'],expandToVMForm val']
-  ['SEQ,:[expandToVMForm s for s in stmts]]
+  op :=
+    and/[hasNoExit? s for s in stmts] => 'PROGN
+    'SEQ
+  [op,:[expandToVMForm s for s in stmts]]
 
 -- Pointer operations
 expandPeq ['%peq,x,y] ==

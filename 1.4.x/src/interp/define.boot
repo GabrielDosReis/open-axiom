@@ -1116,7 +1116,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ["%bind",[[g:= gensym(),body]],
-         ['%store,['%tref,g,0],mkConstructor $form],g]
+         ['%seq,['%store,['%tref,g,0],mkConstructor $form],g]]
     fun := compile(db,[op',["LAM",sargl,body]],signature')
  
     -- 5. give operator a 'modemap property
