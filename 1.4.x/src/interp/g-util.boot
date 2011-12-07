@@ -38,6 +38,7 @@ import daase
 namespace BOOT
 
 module g_-util where
+  abstraction?: %Form -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List %Form,%List %Form) -> %List %Pair(%Form,%Form)
   mkList: %List %Form -> %Form
@@ -46,8 +47,12 @@ module g_-util where
   isDefaultPackageName: %Symbol -> %Boolean
   makeDefaultPackageName: %String -> %Symbol
   spliceSeqArgs: %List %Code -> %Code
+  mkSeq: %List %Code -> %Code
 
 --%
+
+abstraction? x ==
+  x is [op,:.] and ident? op and abstractionOperator? op
 
 hasNoLeave?(expr,g) ==
   expr is ['%leave, =g,:.] => false
@@ -67,6 +72,10 @@ mkBind(inits,expr) ==
   expr is ['%bind,inits',expr'] =>
     mkBind([:inits,:inits'],expr')
   ['%bind,inits,expr]
+
+mkSeq stmts ==
+  stmts is [s] => s
+  ['%seq,:stmts]
 
 ++ Given a (possibly multiple) assignment expression `u', return
 ++ the list of all assignment sub-expressions that must be evaluated before
@@ -100,6 +109,18 @@ spliceSeqArgs l ==
   rest l = nil => l
   l.rest := spliceSeqArgs rest l
   l
+
+++ Apply the function `f' on all non-atomic subforms of `x' in
+++ depth-first walk.  Mutate `x' in place, replacing each sub-form
+++ with the result of applying `f' to that subform.
+walkWith!(x,f) ==
+  atomic? x => x
+  abstraction? x =>
+    x.absBody := walkWith!(x.absBody,f)
+    x
+  for ys in tails x | not atomic? first ys repeat
+    ys.first := walkWith!(first ys,f)
+  apply(f,x,nil)
 
 --%
 

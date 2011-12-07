@@ -194,6 +194,26 @@ groupVariableDefinitions form ==
     ['%seq,:stmts,['%exit,val]]
   mkBind(defs,expr)
 
+++ Group all %LET-definitions of artificial/temporary variables
+++ into %bind-forms, appropriate for inlining in later stages.
+groupTranscients! x == walkWith!(x,function f) where
+  f x ==
+    x is ['%scope,tag,y] and y is ['%seq,:.] =>
+      defs := [s.args for s in y.args while s is ['%LET,z,u]
+                 and gensym? z and hasNoLeave?(u,tag)]
+      defs = nil => x
+      resetTo(x,mkBind(defs,mkScope(tag,mkSeq drop(#defs,y.args))))
+    x
+
+++ Reduce all applications of XLAM-abstractions to arguments.
+++ This is done before simplifyVMForm to expose more opportunities
+++ for further reductions.
+reduceXLAM! x == walkWith!(x,function f) where
+  f x ==
+    x is ['%call,y,:args] and y is ['XLAM,:.] =>
+     resetTo(x,doInlineCall(args,y.absParms,copyTree y.absBody))
+    x
+
 optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Original LISP code:"
@@ -201,7 +221,7 @@ optimizeFunctionDef(def) ==
  
   expr := copyTree second def
   changeVariableDefinitionToStore(expr.absBody,expr.absParms)
-  expr := simplifyVMForm expr
+  expr := simplifyVMForm reduceXLAM! groupTranscients! expr
  
   if $reportOptimization then
     sayBrightlyI bright '"Intermediate VM code:"

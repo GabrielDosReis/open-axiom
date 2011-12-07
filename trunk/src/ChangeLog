@@ -1,5 +1,14 @@
 2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (groupTranscients!): New.
+	(reduceXLAM!): Likewise.
+	(optimizeFunctionDef): Call them before simplifyVMForm.
+	* interp/g-util.boot (mkSeq): New.
+	(abstraction?): Likewise.
+	(walkWith!): Likewise.
+
+2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compReduce1): Tidy.
 	* interp/define.boot (compDefineCategory2): Likewise.
 	* interp/nruncomp.boot (buildFunctor): Likewise.
