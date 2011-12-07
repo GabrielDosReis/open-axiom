@@ -2418,9 +2418,10 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   finalCode := ['%loop,
                  ['%init,accu,'%nil],['%init,firstTime,'%true],:itl,
                    ['%bind,[[b,third bval]],
-                     ['%when,[firstTime,move],['%otherwise,update]],
-                       ['%store,firstTime,'%false]],
-                         ['%when,[firstTime,nval],['%otherwise,accu]]]
+                     ['%seq, 
+                       ['%when,[firstTime,move],['%otherwise,update]],
+                         ['%store,firstTime,'%false]]],
+                           ['%when,[firstTime,nval],['%otherwise,accu]]]
   T := coerce([finalCode,mode,e],m) or return nil
   [T.expr,T.mode,oldEnv]
 
