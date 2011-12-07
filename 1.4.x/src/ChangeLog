@@ -1,5 +1,14 @@
 2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (removeSeq!): New.
+	(inlineLocals!): Likewise.
+	(optimizeFunctionDef): Use them.
+	(optSeq): Tidy.
+	* interp/buildom.boot (seteltRecordFun): Tidy.
+	* interp/clam.boot (compHash): Likewise.
+
+2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (groupTranscients!): New.
 	(reduceXLAM!): Likewise.
 	(optimizeFunctionDef): Call them before simplifyVMForm.
