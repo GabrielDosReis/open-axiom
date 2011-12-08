@@ -228,11 +228,12 @@ removeSeq! x == walkWith!(x,function f) where
     x := first xs
     x is "/throwAway" => g rest xs          -- skip garbages
     x is ['%seq,:.] =>                      -- splice sub-sequences
-      ys := g x.args =>
-        lastNode(ys).rest := g rest xs
-        ys
+      ys := x.args =>
+        lastNode(ys).rest := rest xs
+        g ys
       g rest xs                             -- skip empty statements
     rest xs = nil => xs
+    sideEffectFree? x => g rest xs          -- skip effect-less statements.
     xs.rest := g rest xs
     xs
 
@@ -564,7 +565,6 @@ $VMsideEffectFreeOperators ==
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
-    %writeString %writeNewline %writeLine
     %void %retract %pullback %lambda %closure)
 
 ++ List of simple VM operators
