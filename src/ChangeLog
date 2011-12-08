@@ -1,5 +1,18 @@
 2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (tranformIF!): New.
+	(optimize!): Likewise.  Abstract from optimizeFunctionDef.
+	(optimize): New.
+	(optimizeFunctionDef): Use optimize!.
+	(simplifyVMForm): Do not call optIF2COND.
+	(optIF2COND): Remove.
+	* interp/compiler.boot (compHasFormat): Use optimize! in lieu of
+	simplifyVMForm.
+	* interp/nruncomp.boot (NRTencode): Use optimize.
+	(NRTsetVector4a): Likewise.
+
+2011-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot: %writeString, %writeNewline and %writeLine
 	are side-effect full.
 	(removeSeq!): Tidy.  Skip side-effectfree statements.

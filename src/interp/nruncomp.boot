@@ -114,14 +114,14 @@ NRTencode(db,x,y) == encode(db,x,y,true) where encode(db,x,compForm,firstTime) =
       [op,:[encode(db,y,z,false) for y in x.args for z in compForm.args]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
-    ['%eval,NRTreplaceAllLocalReferences(db,copyTree simplifyVMForm compForm)]
+    ['%eval,NRTreplaceAllLocalReferences(db,optimize compForm)]
   symbolMember?(x,$formalArgList) =>
     v := $FormalMapVariableList.(symbolPosition(x,$formalArgList))
     firstTime => ["local",v]
     v
   x is "$$" => x
   compForm is [.,:.] =>
-    ['%eval,NRTreplaceAllLocalReferences(db,copyTree simplifyVMForm compForm)]
+    ['%eval,NRTreplaceAllLocalReferences(db,optimize compForm)]
   quote compForm
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
@@ -550,7 +550,7 @@ reverseCondlist cl ==
 NRTsetVector4a(sig,form,cond) ==
   sig is '$ =>
      domainList :=
-       [simplifyVMForm COPY comp(d,$EmptyMode,$e).expr or d
+       [optimize comp(d,$EmptyMode,$e).expr or d
          for d in categoryPrincipals $domainShell]
      $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
