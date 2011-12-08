@@ -253,6 +253,27 @@ inlineLocals! x == walkWith!(x,function f) where
       x
     x
 
+++ Transform an IF-expression into a tower of %when-form.
+transformIF! x == walkWith!(x,function f) where
+  f x ==
+    x is ['IF,p,s1,s2] =>
+      s2 is '%noBranch => resetTo(x,['%when,[p,s1]])
+      s1 is '%noBranch => resetTo(x,['%when,[['%not,p],s2]])
+      s2 is ['%when,:.] => resetTo(x,['%when,[p,s1],:s2.args])
+      resetTo(x,['%when,[p,s1],['%otherwise,s2]])
+    x
+
+++ Transform an intermediate form (output of the elaborator) to
+++ a lower intermediate form, applying several transformations
+++ generaly intended to improve quality and efficiency.
+optimize! x ==
+  simplifyVMForm transformIF! removeSeq! inlineLocals!
+    groupTranscients! reduceXLAM! x
+
+++ A non-mutating version of `optimize!'.
+optimize x ==
+  optimize! copyTree x
+
 optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Original LISP code:"
@@ -260,8 +281,7 @@ optimizeFunctionDef(def) ==
  
   expr := copyTree second def
   changeVariableDefinitionToStore(expr.absBody,expr.absParms)
-  expr := simplifyVMForm removeSeq! inlineLocals!
-            groupTranscients! reduceXLAM! expr
+  expr := optimize! expr
  
   if $reportOptimization then
     sayBrightlyI bright '"Intermediate VM code:"
@@ -302,8 +322,6 @@ simplifyVMForm x ==
     symbol? x.op and abstractionOperator? x.op =>
       x.absBody := groupVariableDefinitions simplifyVMForm x.absBody
       x
-    if x.op is 'IF then
-      resetTo(x,optIF2COND x)
     for args in tails x.args repeat
       args.first := simplifyVMForm first args
     opt := subrname x.op has OPTIMIZE => resetTo(x,FUNCALL(opt,x))
@@ -491,15 +509,6 @@ EqualBarGensym(x,y) ==
       x isnt [.,:.] or y isnt [.,:.] => false
       fn(first x,first y) and fn(rest x,rest y)
  
---Called early, to change IF to conditional form
- 
-optIF2COND ["IF",a,b,c] ==
-  b is "%noBranch" => ['%when,[['%not,a],c]]
-  c is "%noBranch" => ['%when,[a,b]]
-  c is ["IF",:.] => ['%when,[a,b],:rest optIF2COND c]
-  c is ['%when,:p] => ['%when,[a,b],:p]
-  ['%when,[a,b],['%otherwise,c]]
-
 ++ Determine whether the symbol `g' is the name of a temporary that
 ++ can be replaced in the form `x', if it is of linear usage and not
 ++ the name of a program point.  The latter occurs when %leave forms
