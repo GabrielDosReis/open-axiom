@@ -59,33 +59,31 @@ module lisp_-backend where
 $freeVarName == KEYWORD::freeVar
 
 loopVarInit(x,y) ==
-  x is ['%free,:id] => [id,[$freeVarName,middleEndExpand ['%LET,id,y]]]
+  x is ['%free,:id] => [id,[$freeVarName,['%LET,id,y]]]
   if x is ['%local,:.] then
     x := x.rest
-  [x,[x,middleEndExpand y]]
+  [x,[x,y]]
 
 ++ Generate code that sequentially visits each component of a list.
 expandIN(x,l,early?) ==
   g := gensym()           -- rest of the list yet to be visited
   early? =>               -- give the loop variable a wider scope.
     [x,init] := loopVarInit(x,'%nil)
-    [[[g,middleEndExpand l],init],
-      nil,[['SETQ,g,['CDR,g]]],
-        nil,[['NOT,['CONSP,g]],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
+    [[[g,l],init],
+      nil,[['%store,g,['%tail,g]]],
+        nil,[['%not,['%pair?,g]],['%seq,['%store,x,['%head,g]],'%nil]]]
   [x,init] := loopVarInit(x,['%head,g])
-  [[[g,middleEndExpand l]],
-    [init],[['SETQ,g,['CDR,g]]],
-      nil,[['NOT,['CONSP,g]]]]
+  [[[g,l]],
+    [init],[['%store,g,['%tail,g]]],
+      nil,[['%not,['%pair?,g]]]]
 
 expandON(x,l) ==
   [x,init] := loopVarInit(x,l)
-  [[init],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
+  [[init],nil,[['%store,x,['%tail,x]]],nil,[['%not,['%pair?,x]]]]
   
 ++ Generate code that traverses an interval with lower bound 'lo',
 ++ arithmetic progression `step, and possible upper bound `final'.
 expandSTEP(id,lo,step,final)==
-  step := middleEndExpand step
-  final := middleEndExpand final
   [id,init] := loopVarInit(id,lo)
   loopvar := [init]
   inc :=
@@ -103,30 +101,30 @@ expandSTEP(id,lo,step,final)==
      final = nil => nil
      integer? inc =>
        pred :=
-	 inc < 0 => "<"
-	 ">"
+	 inc < 0 => '%ilt
+	 '%igt
        [[pred,id,final]]
-     [['COND,[['MINUSP,inc],
-	   ["<",id,final]],['T,[">",id,final]]]]
-  suc := [["SETQ",id,["+",id,inc]]]
+     [['%when,[['%ilt,inc,0],
+	   ['%ilt,id,final]],['%otherwise,['%igt,id,final]]]]
+  suc := [['%store,id,['%iadd,id,inc]]]
   [loopvar,nil,suc,nil,ex]
 
 ++ Generate code for iterators that filter out execution state
 ++ not satisfying predicate `p'.
 expandSUCHTHAT p == 
-  [nil,nil,nil,[middleEndExpand p],nil]
+  [nil,nil,nil,[p],nil]
 
 ++ Generate code for iterators that stop loop iteration when the
 ++ state fails predicate `p'.
 expandWHILE p == 
-  [nil,nil,nil,nil,[["NOT",middleEndExpand p]]]
+  [nil,nil,nil,nil,[['%not,p]]]
 
 expandUNTIL p ==
   g := gensym()
-  [[[g,false]],nil,[["SETQ",g,middleEndExpand p]],nil,[g]]
+  [[[g,'%false]],nil,[['%store,g,p]],nil,[g]]
 
 expandInit(var,val) ==
-  [[[var,middleEndExpand val]],nil,nil,nil,nil]
+  [[[var,val]],nil,nil,nil,nil]
 
 expandIterators iters ==
   -- Exit predicates may reference iterator variables.  In that case,
@@ -148,7 +146,7 @@ expandIterators iters ==
 massageFreeVarInits(body,inits) ==
   inits = nil => body
   inits is [[var,init]] and sameObject?(var,$freeVarName) =>
-    ['SEQ,init,['EXIT,body]]
+    ['%scope,nil,['%seq,init,['%leave,nil,body]]]
   for init in inits repeat
     sameObject?(init.first,$freeVarName) =>
       init.first := gensym()
@@ -170,11 +168,11 @@ expandLoop ['%loop,:iters,body,ret] ==
   body := massageFreeVarInits(body,bodyInits)
   exits :=
     exits = nil => body
-    ["COND",[mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
+    ['%when,[mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
        [true,body]]
-  body := ["LOOP",exits,:cont]
+  body := ['%forever,exits,:cont]
   -- Finally, set up loop-wide initializations.
-  massageFreeVarInits(body,loopInits)
+  expandToVMForm optimize! massageFreeVarInits(body,loopInits)
 
 ++ Generate code for list comprehension.
 expandCollect ['%collect,:iters,body] ==
@@ -655,6 +653,7 @@ for x in [
     ['%sptreq,    :'EQL],               -- system pointer equality
     ['%otherwise,:'T],
     ['%closure,  :'CONS],
+    ['%forever,  :'LOOP],
     ['%funcall,  :'FUNCALL],
     ['%function, :'FUNCTION],
     ['%lambda,   :'LAMBDA],
