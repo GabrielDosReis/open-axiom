@@ -263,11 +263,23 @@ transformIF! x == walkWith!(x,function f) where
       resetTo(x,['%when,[p,s1],['%otherwise,s2]])
     x
 
+++ Transform nested-to-tower.
+packWhen! x == walkWith!(x,function f) where
+  f x ==
+    x is ['%when,[p1,['%when,[p2,s]]]] =>
+      resetTo(x,f ['%when,[['%and,p1,p2],s]])
+    x is ['%when,:cl,['%otherwise,y]] and y is ['%when,:.] =>
+      resetTo(x,f ['%when,:cl,:y.args])
+    x is ['%scope,g,['%seq,['%when,[p,['%leave,=g,y]]],['%leave,=g,z]]]
+      and hasNoLeave?(p,g) =>
+        resetTo(x,f ['%when,[p,y],['%otherwise,mkScope(g,z)]])
+    x
+
 ++ Transform an intermediate form (output of the elaborator) to
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  simplifyVMForm transformIF! removeSeq! inlineLocals!
+  simplifyVMForm packWhen! transformIF! removeSeq! inlineLocals!
     groupTranscients! reduceXLAM! x
 
 ++ A non-mutating version of `optimize!'.
