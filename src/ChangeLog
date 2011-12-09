@@ -1,5 +1,19 @@
 2011-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisp-backend.boot (loopVarInit): Generate VM forms, not Lisp.
+	(expandIN): Likewise.
+	(expandON): Likewise.
+	(expandSTEP): Likewise.
+	(expandUNTIL): Likewise.
+	(expandWHILE): Likewise.
+	(expandSUCHTHAT): Likewise.
+	(expandInit): Likewise.
+	(expandIterators): Likewise.
+	(massageFreeVarInits): Likewise.
+	(expandLoop): optimize! then expand.
+
+2011-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (packWehn!): New.
 	(optimize!): Use it.
 
