@@ -263,6 +263,27 @@ transformIF! x == walkWith!(x,function f) where
       resetTo(x,['%when,[p,s1],['%otherwise,s2]])
     x
 
+++ Subroutine of packWhen!
+mkDefault(g,l) ==
+  l = nil => ['CONDERR]
+  mkScope(g,mkSeq l)
+
+coagulateWhenSeries(x,tag) ==
+  x is ['%seq,:.] => f(x.args,tag) where
+    f(l,tag) ==
+      cl := nil
+      while l is [s,:.] and (cl' := g(s,tag)) repeat
+        cl := [:cl,:cl']
+        l := rest l
+      cl = nil => nil
+      [cl,l]
+    g(s,tag) ==
+      -- return list of reduced clauses if they all exit from same scope.
+      s is ['%when,:.] =>
+        [[p,y] for x in s.args while x is [p,['%leave,=tag,y]] or leave nil]
+      nil
+  nil
+
 ++ Transform nested-to-tower.
 packWhen! x == walkWith!(x,function f) where
   f x ==
@@ -270,9 +291,10 @@ packWhen! x == walkWith!(x,function f) where
       resetTo(x,f ['%when,[['%and,p1,p2],s]])
     x is ['%when,:cl,['%otherwise,y]] and y is ['%when,:.] =>
       resetTo(x,f ['%when,:cl,:y.args])
-    x is ['%scope,g,['%seq,['%when,[p,['%leave,=g,y]]],['%leave,=g,z]]]
-      and hasNoLeave?(p,g) =>
-        resetTo(x,f ['%when,[p,y],['%otherwise,mkScope(g,z)]])
+    x is ['%scope,g,['%seq,['%when,[p,['%leave,=g,y]]],['%leave,=g,z]]] =>
+      resetTo(x,f ['%when,[p,y],['%otherwise,f mkScope(g,z)]])
+    x is ['%scope,g,y] and coagulateWhenSeries(y,g) is [u,v] =>
+     resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
     x
 
 ++ Transform an intermediate form (output of the elaborator) to
