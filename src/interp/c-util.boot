@@ -415,7 +415,7 @@ displayComp level ==
   sayBrightly ['"****** level",:bright level,'" ******"]
   [$x,$m,$f,$exitModeStack]:= ELEM($s,level)
   SAY("$x:= ",$x)
-  sayBrightly ['"$m := ",form2String $m]
+  sayBrightly ['"$m := ",:listify form2String $m]
   --SAY "$f:="
   --F_,PRINT_-ONE $f
   nil
