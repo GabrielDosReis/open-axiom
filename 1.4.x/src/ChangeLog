@@ -1,5 +1,10 @@
 2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optSeq): Remove seqToCOND as now redundant
+	with packWhen!.
+
+2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpArgtypeList): Accept mapping types.
 	* boot/ast.boot (bfType): New.
 	* boot/translator.boot (genDeclaration): Use it.
