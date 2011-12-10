@@ -20,8 +20,8 @@
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
-                     |objectAssoc| |remove| |removeSymbol| |atomic?| |copyTree|
-                     |finishLine|)))
+                     |objectAssoc| |remove| |removeSymbol| |atomic?| |every?|
+                     |any?| |takeWhile| |copyTree| |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -74,6 +74,20 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |atomic?|))
 
+(DECLAIM
+ (FTYPE (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) (|%List| |%Thing|)) |%Thing|)
+  |every?|))
+
+(DECLAIM
+ (FTYPE (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) (|%List| |%Thing|)) |%Thing|)
+  |any?|))
+
+(DECLAIM
+ (FTYPE
+  (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) (|%List| |%Thing|))
+   (|%List| |%Thing|))
+  |takeWhile|))
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |copyTree|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Void|) |finishLine|))
@@ -85,6 +99,38 @@
 (|%defaultReadAndLoadSettings|)
 
 (DEFUN |atomic?| (|x|) (OR (NOT (CONSP |x|)) (EQ (CAR |x|) 'QUOTE)))
+
+(DEFUN |every?| (|f| |l|)
+  (LET ((|bfVar#2| T) (|bfVar#1| |l|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      (T (SETQ |bfVar#2| (APPLY |f| |x| NIL))
+       (COND ((NOT |bfVar#2|) (RETURN NIL)))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |any?| (|f| |l|)
+  (LET ((|bfVar#2| NIL) (|bfVar#1| |l|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      (T (SETQ |bfVar#2| (APPLY |f| |x| NIL))
+       (COND (|bfVar#2| (RETURN |bfVar#2|)))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |takeWhile| (|f| |l|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |l|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL)
+           (NOT (APPLY |f| |x| NIL)))
+       (RETURN |bfVar#2|))
+      ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS |x| NIL))
+       (SETQ |bfVar#3| |bfVar#2|))
+      (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
 (DEFUN |copyTree| (|t|)
   (COND ((CONSP |t|) (CONS (|copyTree| (CAR |t|)) (|copyTree| (CDR |t|))))

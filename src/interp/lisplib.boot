@@ -124,7 +124,7 @@ augmentPredVector(dollar,value) ==
 isHasDollarPred pred ==
   pred is [op,:r] =>
     op in '(AND and %and OR or %or NOT not %not) => 
-      or/[isHasDollarPred x for x in r]
+      any?(function isHasDollarPred,r)
     op in '(HasCategory HasAttribute) => first r is '$
   false
 

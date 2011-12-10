@@ -494,7 +494,7 @@
     T)
    (T NIL)))
 
-(DEFUN |bpArgtypeList| () (|bpTuple| #'|bpApplication|))
+(DEFUN |bpArgtypeList| () (|bpTuple| #'|bpSimpleMapping|))
 
 (DEFUN |bpMapping| ()
   (AND (|bpParenthesized| #'|bpArgtypeList|) (|bpEqKey| 'ARROW)

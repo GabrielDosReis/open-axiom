@@ -1327,7 +1327,7 @@ inlineDirectCall call ==
     -- identity function too
     parms is [=body] => first call.args
     -- conservatively approximate eager semantics
-    and/[sideEffectFree? arg for arg in call.args] =>
+    every?(function sideEffectFree?,call.args) =>
       -- alpha rename before substitution.
       newparms := [gensym() for p in parms]
       body := applySubst(pairList(parms,newparms),body)
@@ -1406,7 +1406,7 @@ expandableDefinition?(vars,body) ==
     atomic? body => true
     [op,:args] := body
     not ident? op or symbolMember?(op,$NonExpandableOperators) => false
-    and/[atomic? x for x in args] 
+    every?(function atomic?,args)
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
     false
@@ -1714,7 +1714,7 @@ needsPROG? form ==
   op is 'RETURN => true
   op in '(LOOP PROG) => false
   form is ['BLOCK,=nil,:.] => false
-  or/[needsPROG? x for x in form]
+  any?(function needsPROG?,form)
 
 ++ We are processing the complete `body' of a function definition.
 ++ If this body is a multiway test, there is no need to have
