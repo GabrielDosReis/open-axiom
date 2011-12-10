@@ -1,5 +1,12 @@
 2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optSeq): Remove splicePROGN as redundant.
+	* interp/functor.boot (optFunctorBody): Generate %seq form, not PROGN.
+	(DescendCode): Likewise.
+	* interp/c-util.boot (displayComp): Fix thinko.
+
+2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optSeq): Remove seqToCOND as now redundant
 	with packWhen!.
 

@@ -252,7 +252,7 @@ optFunctorBody x ==
     every?(function optFunctorBodyQuotable,l) =>
       quote [optFunctorBodyRequote u for u in l]
     ['%list,:l]
-  x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
+  x is ['PROGN,:l] => ['%seq,:optFunctorPROGN l]
   x is ['%when,:l] =>
     l := [v for u in l | v := relevantClause u] where
             relevantClause u ==
@@ -263,7 +263,7 @@ optFunctorBody x ==
               nil
     l = nil => nil
     CAAR l='%otherwise =>
-      (null CDAR l => nil; null CDDAR l => CADAR l; ["PROGN",:CDAR l])
+      (null CDAR l => nil; null CDDAR l => CADAR l; ['%seq,:CDAR l])
     null rest l and null CDAR l =>
             --there is no meat to this conditional form
       pred:= CAAR l
@@ -451,7 +451,7 @@ DescendCode(db,code,flag,viewAssoc,e) ==
             if first u is ['HasCategory,dom,cat]
               then [[dom,:cat],:viewAssoc]
               else viewAssoc,e) for v in rest u]
-    TruthP CAAR c => ['PROGN,:CDAR c]
+    TruthP CAAR c => ['%seq,:CDAR c]
     while (c and (last c is [c1] or last c is [c1,[]]) and
             (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end

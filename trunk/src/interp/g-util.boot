@@ -122,6 +122,10 @@ walkWith!(x,f) ==
     ys.first := walkWith!(first ys,f)
   apply(f,x,nil)
 
+listify x ==
+  x is [.,:.] => x
+  [x]
+
 --%
 
 ++ List of category constructors that do not have entries in the 

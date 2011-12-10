@@ -163,9 +163,6 @@ applyPrefix2String args ==
     g x ==
       $texFormatting => prefix2StringAsTeX x
       prefix2String x
-    listify x ==
-      cons? x => x
-      [x]
 
 substituteSegmentedMsg(msg,args) ==
   -- this does substitution of the parameters

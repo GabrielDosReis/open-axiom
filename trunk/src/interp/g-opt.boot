@@ -555,11 +555,7 @@ replaceableTemporary?(g,x) ==
       or/[jumpTarget?(g,x') for x' in x]
 
 optSeq ['%seq,:l] ==
-  tryToRemoveSeq ['%seq,:getRidOfTemps splicePROGN l] where
-    splicePROGN l ==
-      atomic? l => l
-      l is [["PROGN",:stmts],:l'] => [:stmts,:l']
-      l.rest := splicePROGN rest l
+  tryToRemoveSeq ['%seq,:getRidOfTemps l] where
     getRidOfTemps l ==
       null l => nil
       l is [["%LET",g,x],:r] and replaceableTemporary?(g,r) =>
