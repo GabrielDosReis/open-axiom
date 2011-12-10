@@ -380,17 +380,13 @@ shoeOutParse stream ==
  
 ++ Generate a global signature declaration for symbol `n'.
 genDeclaration(n,t) ==
-  t is ["%Mapping",valType,argTypes] =>
-    if bfTupleP argTypes then argTypes := rest argTypes
-    if argTypes ~= nil and symbol? argTypes 
-    then argTypes := [argTypes]
-    ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
+  t is ["%Mapping",:.] => ["DECLAIM",["FTYPE",bfType t,n]]
   t is ["%Forall",vars,t'] =>
     vars = nil => genDeclaration(n,t')
     if symbol? vars then
       vars := [vars]
     genDeclaration(n,applySubst([[v,:"*"] for v in vars],t'))
-  ["DECLAIM",["TYPE",t,n]]
+  ["DECLAIM",["TYPE",bfType t,n]]
 
 ++ Translate the signature declaration `d' to its Lisp equivalent.
 translateSignatureDeclaration d ==

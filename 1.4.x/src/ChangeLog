@@ -1,5 +1,14 @@
 2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot (bpArgtypeList): Accept mapping types.
+	* boot/ast.boot (bfType): New.
+	* boot/translator.boot (genDeclaration): Use it.
+	* boot/utility.boot (every?): New.  Export.
+	(any?): Likewise.
+	(takeWhile): Lilkewise.
+
+2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (mkDefault): New.
 	(coagulateWhenSeries): Likewise.
 	(packWhen!): Likewise.  Use them.

@@ -249,7 +249,7 @@ optFunctorBody x ==
   x is ['%list,:l] =>
     null l => nil
     l:= [optFunctorBody u for u in l]
-    and/[optFunctorBodyQuotable u for u in l] =>
+    every?(function optFunctorBodyQuotable,l) =>
       quote [optFunctorBodyRequote u for u in l]
     ['%list,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]

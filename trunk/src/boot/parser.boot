@@ -507,10 +507,10 @@ bpSimpleMapping() ==
 ++ ArgtypeList:
 ++   ( ArgtypeSequence )
 ++ ArgtypeSequence:
-++   Application
-++   Application , ArgtypeSequence
+++   SimpleMapping
+++   SimpleMapping , ArgtypeSequence
 bpArgtypeList() ==
-  bpTuple function bpApplication
+  bpTuple function bpSimpleMapping
 
 ++ Parse a mapping expression
 ++   Mapping:

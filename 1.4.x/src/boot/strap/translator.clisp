@@ -484,23 +484,11 @@
             ((NULL |$stack|) (|bpGeneralErrorHere|) NIL) (T (CAR |$stack|)))))))
 
 (DEFUN |genDeclaration| (|n| |t|)
-  (PROG (|t'| |vars| |argTypes| |ISTMP#2| |valType| |ISTMP#1|)
+  (PROG (|t'| |ISTMP#2| |vars| |ISTMP#1|)
     (RETURN
      (COND
-      ((AND (CONSP |t|) (EQ (CAR |t|) '|%Mapping|)
-            (PROGN
-             (SETQ |ISTMP#1| (CDR |t|))
-             (AND (CONSP |ISTMP#1|)
-                  (PROGN
-                   (SETQ |valType| (CAR |ISTMP#1|))
-                   (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                   (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
-                        (PROGN (SETQ |argTypes| (CAR |ISTMP#2|)) T))))))
-       (COND ((|bfTupleP| |argTypes|) (SETQ |argTypes| (CDR |argTypes|))))
-       (COND
-        ((AND |argTypes| (SYMBOLP |argTypes|))
-         (SETQ |argTypes| (LIST |argTypes|))))
-       (LIST 'DECLAIM (LIST 'FTYPE (LIST 'FUNCTION |argTypes| |valType|) |n|)))
+      ((AND (CONSP |t|) (EQ (CAR |t|) '|%Mapping|))
+       (LIST 'DECLAIM (LIST 'FTYPE (|bfType| |t|) |n|)))
       ((AND (CONSP |t|) (EQ (CAR |t|) '|%Forall|)
             (PROGN
              (SETQ |ISTMP#1| (CDR |t|))
@@ -533,7 +521,7 @@
                                       (SETQ |bfVar#3| (CDR |bfVar#3|))))
                                     (SETQ |bfVar#1| (CDR |bfVar#1|))))
                                  |t'|)))))
-      (T (LIST 'DECLAIM (LIST 'TYPE |t| |n|)))))))
+      (T (LIST 'DECLAIM (LIST 'TYPE (|bfType| |t|) |n|)))))))
 
 (DEFUN |translateSignatureDeclaration| (|d|)
   (CASE (CAR |d|)

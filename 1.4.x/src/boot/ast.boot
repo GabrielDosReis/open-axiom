@@ -1344,6 +1344,18 @@ bfThrow e ==
   ["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,
     ["CONS",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,["CONS",t,x]]]
 
+--%
+
+bfType x ==
+  x is ['%Mapping,t,s] =>
+    if bfTupleP s then
+      s := s.args
+    if ident? s then
+      s := [s]
+    ['FUNCTION,[bfType y for y in s],bfType t]
+  x is [.,:.] => [x.op,:[bfType y for y in x.args]]
+  x
+
 --% Type alias definition
 
 backquote: (%Form,%List %Symbol) -> %Form

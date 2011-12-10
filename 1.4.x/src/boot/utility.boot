@@ -48,7 +48,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
-  remove,removeSymbol,atomic?,copyTree,finishLine) where
+  remove, removeSymbol, atomic?, every?, any?, takeWhile, copyTree,
+  finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -63,6 +64,9 @@ module utility (objectMember?, symbolMember?, stringMember?,
     setUnion: (%List %Thing,%List %Thing) -> %List %Thing
     setIntersection: (%List %Thing,%List %Thing) -> %List %Thing
     atomic?: %Thing -> %Boolean
+    every?: (%Thing -> %Thing, %List %Thing) -> %Thing
+    any?: (%Thing -> %Thing, %List %Thing) -> %Thing
+    takeWhile: (%Thing -> %Thing, %List %Thing) -> %List %Thing
     copyTree: %Thing -> %Thing
     finishLine: %Thing -> %Void
     --FIXME: Next signature commented out because of GCL bugs
@@ -76,6 +80,19 @@ module utility (objectMember?, symbolMember?, stringMember?,
 ++ Return true if `x' is an atom of a quotation.
 atomic? x ==
   x isnt [.,:.] or x.op is 'QUOTE
+
+++ Return the last image of `f' if all images of elements in `l'
+++ are non-nil.  Otherwise return nil.
+every?(f,l) ==
+  and/[apply(f,x,nil) for x in l]
+
+++ Return the first non-nil image of `f' of elements in `l'.
+any?(f,l) ==
+  or/[apply(f,x,nil) for x in l]
+
+++ Return the sublist of `l' whose elements have non-nil image by `f'.
+takeWhile(f,l) ==
+  [x for x in l while apply(f,x,nil)]
 
 copyTree t ==
   t is [.,:.] => [copyTree first t,:copyTree rest t]
