@@ -103,6 +103,10 @@ spliceSeqArgs l ==
     stmts = nil => spliceSeqArgs rest l
     lastNode(stmts).rest := spliceSeqArgs rest l
     stmts
+  s is ['%scope,tag,['%seq,:ys,['%leave,=tag,z]]] and hasNoLeave?(ys,tag) =>
+    stmts := spliceSeqArgs [:ys,z]
+    lastNode(stmts).rest := spliceSeqArgs rest l
+    stmts
   s is ['%LET,:.] and (stmts := splitAssignments! s) =>
     lastNode(stmts).rest := [s,:spliceSeqArgs rest l]
     stmts

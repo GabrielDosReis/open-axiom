@@ -207,6 +207,7 @@ List(S:Type): Exports == Implementation where
     merge!(f, p, q) ==
       empty? p => q
       empty? q => p
+      r,t: %
       %peq(p, q) => error "cannot merge a list into itself"
       if f(%head p, %head q)
         then (r := t := p; p := %tail p)
