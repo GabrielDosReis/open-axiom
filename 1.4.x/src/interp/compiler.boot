@@ -1715,7 +1715,10 @@ compColon([":",f,t],m,e) ==
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
         e := giveVariableSomeValue(f,t,e)
-  ["/throwAway",getmode(f,e),e]
+  val :=
+    $insideCapsuleFunctionIfTrue => ['%LET,f,'%undefined]
+    "/throwAway"
+  [val,getmode(f,e),e]
 
 unknownTypeError name ==
   name:=

@@ -1,3 +1,9 @@
+2011-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compColon): Give initial %undefined value
+	to local variable declarations which are not definitions.
+	* interp/lisp-backend.boot (expandToVMForm): Translate %undefined.
+
 2011-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optSeq): Remove splicePROGN as redundant.

@@ -749,7 +749,8 @@ getOpcodeExpander op ==
 ++ Expand all opcodes contained in the form `x' into a form
 ++ suitable for evaluation by the VM.
 expandToVMForm x ==
-  x = '%false or x = '%nil => 'NIL
+  x is '%false or x is '%nil => 'NIL
+  x is '%undefined => 'NIL     -- for the time being.  FIXME.
   ident? x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
