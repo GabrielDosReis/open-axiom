@@ -239,6 +239,8 @@ removeSeq! x == walkWith!(x,function f) where
 
 inlineLocals! x == walkWith!(x,function f) where
   f x ==
+    x is ['%bind,[[y,a]],z] and gensym? y and numOfOccurencesOf(y,z) = 1 =>
+      resetTo(x,f substitute!(a,y,z))
     x is ['%bind,inits,:.] =>
       kept := nil
       while inits is [u,:inits] repeat

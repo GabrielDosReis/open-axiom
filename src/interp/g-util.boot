@@ -96,15 +96,19 @@ splitAssignments! u == main(u,nil) where
 ++        an %exit-form in it.  In particular, it should be called
 ++        (if at all) before any call to simplifyVMForm.
 spliceSeqArgs l ==
-  atomic? l => l
+  l = nil => l
   s := first l
   s is ['%seq,:.] =>
     stmts := spliceSeqArgs s.args
     stmts = nil => spliceSeqArgs rest l
     lastNode(stmts).rest := spliceSeqArgs rest l
     stmts
-  s is ['%LET,x,y] and (stmts := splitAssignments y) =>
-    lastNode(stmts).rest := [['%LET,x,second y],:spliceSeqArgs rest l]
+  s is ['%scope,tag,['%seq,:ys,['%leave,=tag,z]]] and hasNoLeave?(ys,tag) =>
+    stmts := spliceSeqArgs [:ys,z]
+    lastNode(stmts).rest := spliceSeqArgs rest l
+    stmts
+  s is ['%LET,:.] and (stmts := splitAssignments! s) =>
+    lastNode(stmts).rest := [s,:spliceSeqArgs rest l]
     stmts
   rest l = nil => l
   l.rest := spliceSeqArgs rest l
