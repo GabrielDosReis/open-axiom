@@ -573,7 +573,7 @@ SparseMultivariatePolynomial(R: Ring,VarSet: OrderedSet): C == T where
         nlvar := sort(#1 > #2,Lvar)
         nlpval :=
            Lvar = nlvar => Lpval
-           nlpval := [Lpval.position(mvar,Lvar) for mvar in nlvar]
+           [Lpval.position(mvar,Lvar) for mvar in nlvar]
         evalSortedVarlist(p,nlvar,nlpval)
 
       eval(p,Lvar,Lval) ==

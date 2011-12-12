@@ -1,5 +1,12 @@
 2011-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (liftAassignments!): New.
+	(splitAssignments!): Use it.
+	* algebra/multpoly.spad.pamphlet (SparseMultivariatePolynomial):
+	Fix thinko.
+
+2011-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (inlineLocals!): Single-used temporaries should go.
 	(spliceSeqArgs): Splice sequences drapped in %scope cloths too.
 
