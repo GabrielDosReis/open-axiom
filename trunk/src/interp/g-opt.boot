@@ -289,22 +289,37 @@ coagulateWhenSeries(x,tag) ==
 ++ Transform nested-to-tower.
 packWhen! x == walkWith!(x,function f) where
   f x ==
+    x is ['%scope,g,y] and y is ['%seq,:stmts] =>
+      repeat
+        stmts = nil => leave nil
+        s := first stmts
+        s is ['%when,[p,u:=['%leave,=g,.]],['%otherwise,v]] =>
+          stmts.first := ['%when,[p,u]]
+          stmts.rest := [v,:rest stmts]
+        stmts := rest stmts
+      y.args is [['%when,[p,['%leave,=g,u]]],['%leave,=g,v]] =>
+        resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
+      coagulateWhenSeries(y,g) is [u,v] =>
+        resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
+      x
     x is ['%when,[p1,['%when,[p2,s]]]] =>
       resetTo(x,f ['%when,[['%and,p1,p2],s]])
     x is ['%when,:cl,['%otherwise,y]] and y is ['%when,:.] =>
       resetTo(x,f ['%when,:cl,:y.args])
-    x is ['%scope,g,['%seq,['%when,[p,['%leave,=g,y]]],['%leave,=g,z]]] =>
-      resetTo(x,f ['%when,[p,y],['%otherwise,f mkScope(g,z)]])
-    x is ['%scope,g,y] and coagulateWhenSeries(y,g) is [u,v] =>
-     resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
+    x
+
+spliceSeq! x == walkWith!(x,function f) where
+  f x ==
+    if x is ['%seq,:.] then
+      x.args := spliceSeqArgs x.args
     x
 
 ++ Transform an intermediate form (output of the elaborator) to
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  simplifyVMForm packWhen! transformIF! removeSeq! inlineLocals!
-    groupTranscients! reduceXLAM! x
+  simplifyVMForm spliceSeq! packWhen! spliceSeq! packWhen! transformIF!
+    removeSeq! inlineLocals! groupTranscients! reduceXLAM! x
 
 ++ A non-mutating version of `optimize!'.
 optimize x ==
