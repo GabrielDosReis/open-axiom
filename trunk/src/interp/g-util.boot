@@ -87,8 +87,19 @@ splitAssignments! u == main(u,nil) where
        v is ['%LET,y,.] =>
          second(u.args) := y
          [:main(v,l),v]
-       l
+       [:liftAssignments! v,:l]
      l
+
+liftAssignments! x ==
+  x is ['%call,:.] => [:lift! for args in tails x.args] where
+    lift!() ==
+      s := first args
+      atomic? s => nil
+      s is ['%LET,y,:.] =>
+        args.first := y
+        [:splitAssignments! s,s]
+      splitAssignments! s
+  splitAssignments! x
 
 ++ We have a list `l' of expressions to be executed sequentially.
 ++ Splice in any directly-embedded sequence of expressions.
@@ -107,7 +118,7 @@ spliceSeqArgs l ==
     stmts := spliceSeqArgs [:ys,z]
     lastNode(stmts).rest := spliceSeqArgs rest l
     stmts
-  s is ['%LET,:.] and (stmts := splitAssignments! s) =>
+  s is [op,:.] and op in '(%LET %call) and (stmts := liftAssignments! s) =>
     lastNode(stmts).rest := [s,:spliceSeqArgs rest l]
     stmts
   rest l = nil => l
