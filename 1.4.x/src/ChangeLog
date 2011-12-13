@@ -1,5 +1,12 @@
 2011-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (replaceableTemporary?): Remove.
+	(optSeq,getRidOfTemps): Likewise.
+	(optSeq): Rewrite.
+	* interp/slam.boot (compileRecurrenceRelation): Tidy.
+
+2011-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (removeJunk!): Rename from removeSeq!
 	(cancelScopeLeave!): New.
 	(inlineLocals!): Tidy.

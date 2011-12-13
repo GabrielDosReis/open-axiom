@@ -573,27 +573,9 @@ EqualBarGensym(x,y) ==
       x isnt [.,:.] or y isnt [.,:.] => false
       fn(first x,first y) and fn(rest x,rest y)
  
-++ Determine whether the symbol `g' is the name of a temporary that
-++ can be replaced in the form `x', if it is of linear usage and not
-++ the name of a program point.  The latter occurs when %leave forms
-++ are changed to %LET form followed by a GO form -- see optScope.
-replaceableTemporary?(g,x) ==
-  gensym? g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
-    jumpTarget?(g,x) ==
-      atomic? x => false
-      x is ['GO,=g] => true
-      or/[jumpTarget?(g,x') for x' in x]
-
-optSeq ['%seq,:l] ==
-  tryToRemoveSeq ['%seq,:getRidOfTemps l] where
-    getRidOfTemps l ==
-      null l => nil
-      l is [["%LET",g,x],:r] and replaceableTemporary?(g,r) =>
-        getRidOfTemps substitute(x,g,r)
-      [first l,:getRidOfTemps rest l]
-    tryToRemoveSeq l ==
-      l is ['%seq,[op,a]] and op in '(%exit RETURN %leave %return) => a
-      l
+optSeq x ==
+  x is ['%seq,[op,a]] and op in '(%exit RETURN %leave %return) => a
+  x
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
