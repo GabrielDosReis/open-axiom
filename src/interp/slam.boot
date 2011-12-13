@@ -303,8 +303,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   fromScratchInit:=
     [["%LET",gIndex,n],:[["%LET",g,x] for g in gsList for x in initCode]]
   continueInit:=
-    [["%LET",gIndex,["%ELT",stateVar,0]],
-      :[["%LET",g,["%ELT",stateVar,i]] for g in gsList for i in 1..]]
+    [["%LET",gIndex,["ELT",stateVar,0]],
+      :[["%LET",g,["ELT",stateVar,i]] for g in gsList for i in 1..]]
   mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
