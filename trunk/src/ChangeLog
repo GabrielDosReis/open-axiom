@@ -1,3 +1,10 @@
+2011-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (removeJunk!): Rename from removeSeq!
+	(cancelScopeLeave!): New.
+	(inlineLocals!): Tidy.
+	(optimize!): Run cancelScopeLeave! right after removeJunk!.
+
 2011-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot: Rework.  Schedule conditional splitting
