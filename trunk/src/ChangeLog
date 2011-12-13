@@ -1,5 +1,12 @@
 2011-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot: Rework.  Schedule conditional splitting
+	before changing %LETs to %stores.  Run beta reduction and
+	condtional splitting afterward, one more time.
+	(optimizeFunctionDef): Simplify.
+
+2011-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (packWhen!): Tidy.
 	(spliceSeq!): New.
 	(optimize!): Run splice! packWhen! twice.

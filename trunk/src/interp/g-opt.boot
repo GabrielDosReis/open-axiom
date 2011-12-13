@@ -318,8 +318,10 @@ spliceSeq! x == walkWith!(x,function f) where
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  simplifyVMForm spliceSeq! packWhen! spliceSeq! packWhen! transformIF!
-    removeSeq! inlineLocals! groupTranscients! reduceXLAM! x
+  x := spliceSeq! packWhen! transformIF! x
+  changeVariableDefinitionToStore(x,nil)
+  simplifyVMForm spliceSeq! packWhen! inlineLocals!
+    groupTranscients! removeSeq! reduceXLAM! x
 
 ++ A non-mutating version of `optimize!'.
 optimize x ==
@@ -330,9 +332,7 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  expr := copyTree second def
-  changeVariableDefinitionToStore(expr.absBody,expr.absParms)
-  expr := optimize! expr
+  expr := optimize! copyTree second def
  
   if $reportOptimization then
     sayBrightlyI bright '"Intermediate VM code:"
