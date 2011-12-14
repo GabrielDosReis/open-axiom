@@ -248,8 +248,6 @@ inlineLocals! x == walkWith!(x,function f) where
       kept := nil
       while inits is [u,:inits] repeat
         [y,z] := u
-        gensym? y and numOfOccurencesOf(y,x.absBody) = 1 =>
-          x.absBody := substitute!(z,y,x.absBody)
         usedSymbol?(y,z) or usedSymbol?(y,inits) => kept := [u,:kept]
         or/[usedSymbol?(v,z) for [v,.] in kept] => kept := [u,:kept]
         canInlineVarDefinition(y,z,x.absBody) =>
