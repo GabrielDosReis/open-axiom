@@ -333,7 +333,7 @@ cancelScopeLeave! x == walkWith!(x,function f) where
 optimize! x ==
   x := spliceSeq! packWhen! transformIF! x
   changeVariableDefinitionToStore(x,nil)
-  simplifyVMForm spliceSeq! packWhen! inlineLocals!
+  simplifyVMForm cancelScopeLeave! spliceSeq! packWhen! inlineLocals!
     groupTranscients! cancelScopeLeave! removeJunk! reduceXLAM! x
 
 ++ A non-mutating version of `optimize!'.
@@ -572,10 +572,6 @@ EqualBarGensym(x,y) ==
       null y => x is [g] and GENSYMP g
       x isnt [.,:.] or y isnt [.,:.] => false
       fn(first x,first y) and fn(rest x,rest y)
- 
-optSeq x ==
-  x is ['%seq,[op,a]] and op in '(%exit RETURN %leave %return) => a
-  x
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
@@ -970,7 +966,6 @@ optIquo(x is ['%iquo,a,b]) ==
 --%
  
 for x in '((%call         optCall) _
-           (%seq          optSeq)_
            (%bind        optBind)_
            (%try         optTry)_
            (%not         optNot)_
