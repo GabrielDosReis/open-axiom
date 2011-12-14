@@ -1,3 +1,10 @@
+2011-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (removeNeedleesLeave): Remove.
+	(optScope): Adjust.
+	(removeLeave!): New.
+	(optimize!): Run it at the very beginning.
+
 2011-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optSeq): Remove.  Adjust callers.

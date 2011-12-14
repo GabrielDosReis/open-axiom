@@ -325,11 +325,16 @@ cancelScopeLeave! x == walkWith!(x,function f) where
       resetTo(x,f y)
     x
 
+removeLeave! x == walkWith!(x,function f) where
+  f x ==
+    x is ['%leave,.,y] and y is ['%return,:.] => resetTo(x,y)
+    x
+
 ++ Transform an intermediate form (output of the elaborator) to
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  x := spliceSeq! packWhen! transformIF! x
+  x := spliceSeq! packWhen! transformIF! removeLeave! x
   changeVariableDefinitionToStore(x,nil)
   simplifyVMForm cancelScopeLeave! spliceSeq! packWhen! inlineLocals!
     groupTranscients! cancelScopeLeave! removeJunk! reduceXLAM! x
@@ -412,25 +417,8 @@ changeLeaveToGo(s,g) ==
   changeLeaveToGo(first s,g)
   changeLeaveToGo(rest s,g)
 
-++ Change any `(%leave tag (%return expr))' in x to just
-++ `(%return expr) since a %return-expression transfers control
-++ out of the function body anyway.  Similarly, transform
-++ reudant `('%leave tag (%leave tag expr))' to `(%leave tag expr)'.
-removeNeedlessLeave x ==
-  atomic? x => x
-  x is ['%leave,.,y] and y is ['%return,:.] =>
-    removeNeedlessLeave third y
-    x.op := y.op
-    x.args := y.args
-  x is ['%leave,g,y] and y is ['%leave,=g,z] =>
-    removeNeedlessLeave z
-    second(x.args) := z
-  for x' in x repeat
-    removeNeedlessLeave x'
-
 optScope (x is ['%scope,g,a]) ==
   a isnt [.,:.] => a
-  removeNeedlessLeave a
   if a is ['%seq,:s,['%leave,=g,u]] then
     changeLeaveToExit(s,g)
     a.rest := [:s,['%exit,u]]
