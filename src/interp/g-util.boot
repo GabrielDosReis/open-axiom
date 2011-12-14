@@ -340,7 +340,7 @@ isSubDomain(d1,d2) ==
 
   -- 4.  Otherwise, lookup in the super-domain chain.
   pred' := isSubDomain(sup,d2) => 
-    MKPF([pred',sublisFormal(args,pred,$AtVariables)],"AND")
+    ['%and,pred',sublisFormal(args,pred,$AtVariables)]
 
   -- 5.  Lot of smoke, no fire.
   false
