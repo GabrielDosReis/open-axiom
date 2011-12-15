@@ -1,5 +1,11 @@
 2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (prefixWalk!): New.
+	* interp/g-opt.boot (cleanLoop!): Rename from removeLoopExitTag!.
+	Adjust caller.  Rewrite as a prefix walk.
+
+2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (removeLoopExitTag!): New.
 	(optimize!): Run it first.
 	* interp/compiler.boot (nullifyTargetingLeaves): Remove.

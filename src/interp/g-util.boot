@@ -137,6 +137,14 @@ walkWith!(x,f) ==
     ys.first := walkWith!(first ys,f)
   apply(f,x,nil)
 
+prefixWalk!(x,f) ==
+  atomic? x => x
+  x := apply(f,x,nil)
+  atomic? x => x
+  for xs in tails x | not atomic? first xs repeat
+    xs.first := prefixWalk!(first xs,f)
+  x
+
 listify x ==
   x is [.,:.] => x
   [x]
