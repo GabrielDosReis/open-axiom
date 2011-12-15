@@ -1,5 +1,9 @@
 2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (modified?): Tidy.
+
+2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Do not require SB-SPROF or SB-POSIX on Windows.
 
 2011-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>

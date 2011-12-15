@@ -657,13 +657,18 @@ findVMFreeVars form ==
   setUnion(findVMFreeVars op,vars)
 
 ++ Return true is `var' is the left hand side of an assignment
-++ in `form'.
+++ or a sort of binding in `form'.
 modified?(var,form) ==
   atomic? form => false
   form is [op,var',expr,:.] and op in '(%LET LETT SETQ %store) =>
     modified?(var,expr) => true
     symbol? var' => var' = var   -- whole var is assigned
-    var' is [.,=var]             -- only part of it is modified
+    var' is [.,=var,:.]             -- only part of it is modified
+  form is ['%bind,:.] and
+    (or/[symbolEq?(var,var') for [var',.] in form.absParms]) => true
+  form is ['%loop,:iters,.,.] and
+    (or/[symbolEq?(var,iteratorName i) for i in iters]) => true
+  abstraction? form and symbolMember?(var,form.absParms) => true
   or/[modified?(var,f) for f in form]
 
 
@@ -695,6 +700,7 @@ canInlineVarDefinition(var,expr,body) ==
   or/[modified?(x,body) for x in dependentVars expr] => false
   -- If the initializer is a variable and not modified in body,
   -- and the new var is not modified, then we can inline.
+  -- FIXME: except if the modification is done via normal function calls.
   ident? expr => true
   -- Conversatively stay out of loops
   cons? body and body.op in '(%loop %collect) => false
