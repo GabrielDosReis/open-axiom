@@ -369,7 +369,7 @@
 	   (defconstant |$EnableLispProfiling| @oa_enable_profiling@))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-	   (progn #+sbcl (require :sb-sprof)))
+	   (progn #+(and :sbcl (not :win32)) (require :sb-sprof)))
 
 ;; Return true if the full OpenAxiom algebra system is completed
 ;; built.
@@ -1358,7 +1358,7 @@
 
 ;; -*- Lisp Implementatiom-dependent Supports -*-
 
-#+ :sbcl
+#+(and :sbcl (not :win32))
 (require "sb-posix")
 
 #+ :sbcl
