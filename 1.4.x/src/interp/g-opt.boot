@@ -142,7 +142,7 @@ changeVariableDefinitionToStore(form,vars) ==
   ident? form.op and abstractionOperator? form.op =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
-  form is ['%loop,:iters,body,val] =>
+  form is ['%repeat,:iters,body,val] =>
     changeLoopVarDefsToStore(iters,body,val,vars)
   if form is ['%seq,:.] then
     form.args := spliceSeqArgs form.args
@@ -181,7 +181,7 @@ groupVariableDefinitions form ==
     mkBind(inits,groupVariableDefinitions expr)
   form is ['%lambda,:.] =>
     [form.absKind,form.absParms,groupVariableDefinitions form.absBody]
-  form is ['%loop,:iters,body,val] =>
+  form is ['%repeat,:iters,body,val] =>
     [form.op,:iters,groupVariableDefinitions body,val]
   form isnt ['%seq,:stmts,['%exit,val]] => form
   form.args = nil => nil
@@ -418,7 +418,7 @@ subrname u ==
   nil
  
 changeLeaveToExit(s,g) ==
-  s isnt [.,:.] or s.op in '(QUOTE %seq REPEAT COLLECT %collect %loop) => nil
+  s isnt [.,:.] or s.op in '(QUOTE %seq REPEAT COLLECT %collect %repeat) => nil
   s is ['%leave, =g,:u] => (s.first := '%exit; s.rest := u)
   changeLeaveToExit(first s,g)
   changeLeaveToExit(rest s,g)
@@ -666,7 +666,7 @@ modified?(var,form) ==
     var' is [.,=var,:.]             -- only part of it is modified
   form is ['%bind,:.] and
     (or/[symbolEq?(var,var') for [var',.] in form.absParms]) => true
-  form is ['%loop,:iters,.,.] and
+  form is ['%repeat,:iters,.,.] and
     (or/[symbolEq?(var,iteratorName i) for i in iters]) => true
   abstraction? form and symbolMember?(var,form.absParms) => true
   or/[modified?(var,f) for f in form]
@@ -703,7 +703,7 @@ canInlineVarDefinition(var,expr,body) ==
   -- FIXME: except if the modification is done via normal function calls.
   ident? expr => true
   -- Conversatively stay out of loops
-  cons? body and body.op in '(%loop %collect) => false
+  cons? body and body.op in '(%repeat %collect) => false
   -- Linearly used internal temporaries should be replaced, and
   -- so should side-effet free initializers for linear variables.
   usageCount := numOfOccurencesOf(var,body)
@@ -786,7 +786,7 @@ optCollectVector form ==
     iters := [:iters,['STEP,index,0,1]]
   vec := gensym()
   ['%bind,[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
-    ['%loop,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
+    ['%repeat,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
 
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',

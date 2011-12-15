@@ -1,5 +1,14 @@
 2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot: Rename %loop to %repeat.  Propagate.
+	* interp/g-opt.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-special.boot: Likewise.
+	* interp/lisp-backend.boot: Likewise.
+	* interp/slam.boot: Likewise.
+
+2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (modified?): Tidy.
 
 2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>

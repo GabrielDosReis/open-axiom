@@ -2418,7 +2418,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
     [untilCode,.,e]:= comp($until,$Boolean,e) or return nil
     itl := substitute(["UNTIL",untilCode],'$until,itl)
   firstTime := gensym()
-  finalCode := ['%loop,
+  finalCode := ['%repeat,
                  ['%init,accu,'%nil],['%init,firstTime,'%true],:itl,
                    ['%bind,[[b,third bval]],
                      ['%seq, 
@@ -2475,7 +2475,7 @@ massageLoop x == main x where
     x isnt ['%scope,tag,['REPEAT,:iters,body]] => x
     nullifyTargetingLeaves(body,tag)
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
-    ['%scope,tag,['%loop,:iters,body,'%nil]]
+    ['%scope,tag,['%repeat,:iters,body,'%nil]]
   containsNonLocalControl?(x,tags) ==
     atomic? x => false
     x is ['%leave,tag,x'] =>

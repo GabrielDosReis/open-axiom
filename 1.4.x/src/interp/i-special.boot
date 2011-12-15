@@ -826,7 +826,7 @@ checkForFreeVariables(v,locals) ==
     op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op in '(COLLECT REPEAT %collect %loop) =>
+    op in '(COLLECT REPEAT %collect %repeat) =>
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
        r := [op,:[checkForFreeVariables(a,locals) for a in args]]
@@ -2226,7 +2226,7 @@ evalREPEAT(op,[:itrl,body],repeatMode) ==
   bodyCode := getArgValue(body,bodyMode)
   if $iterateCount > 0 then
     bodyCode := ["CATCH",$repeatBodyLabel,bodyCode]
-  code := ['%loop,:[evalLoopIter itr for itr in itrl],bodyCode,voidValue()]
+  code := ['%repeat,:[evalLoopIter itr for itr in itrl],bodyCode,voidValue()]
   code := timedOptimization code
   if $breakCount > 0 then code := ['CATCH,$repeatLabel,code]
   val :=
@@ -2248,7 +2248,7 @@ interpREPEAT(op,itrl,body,repeatMode) ==
   $indexTypes: local := nil
   code :=
       -- we must insert a CATCH for the iterate clause
-      ['%loop,:[interpIter itr for itr in itrl],
+      ['%repeat,:[interpIter itr for itr in itrl],
         ["CATCH",$repeatBodyLabel,interpLoop(body,$indexVars,
           $indexTypes,nil)],voidValue()]
   SPADCATCH(eval $repeatLabel,timedEVALFUN code)
