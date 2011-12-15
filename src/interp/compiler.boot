@@ -2452,39 +2452,6 @@ localReferenceIfThere(m,e) ==
   idx := assocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
   quote m
 
-++ We are processing a loop with entrypoint labelled `tag'.
-++ Attempt to nullify targets of all enclosed %leave forms
-++ that designate `tag'.
-++ NOTES: A %leave form with null target exits the innermost
-++        enclosing labelled expression.
-nullifyTargetingLeaves(x,tag) ==
-  atomic? x => nil
-  x is ['%leave,=tag,expr] =>
-    nullifyTargetingLeaves(expr,tag)
-    -- Avoid redundant %leave for return-expressions.
-    expr is ['TAGGEDreturn,:.] =>
-      x.op := expr.op
-      x.args := expr.args
-    second(x) := nil
-  for x' in x repeat
-    nullifyTargetingLeaves(x',tag)
-
-
-massageLoop x == main x where
-  main x ==
-    x isnt ['%scope,tag,['REPEAT,:iters,body]] => x
-    nullifyTargetingLeaves(body,tag)
-    containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
-    ['%scope,tag,['%repeat,:iters,body,'%nil]]
-  containsNonLocalControl?(x,tags) ==
-    atomic? x => false
-    x is ['%leave,tag,x'] =>
-      tag = nil => false  -- see NOTES in nullifyTargetingLeaves.
-      not symbolMember?(tag,tags) or containsNonLocalControl?(x',tags)
-    x is ['%scope,tag,x'] =>
-      containsNonLocalControl?(x',[tag,:tags])
-    or/[containsNonLocalControl?(x',tags) for x' in x]
-
 compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
     ,e) where
@@ -2529,14 +2496,14 @@ compRepeatOrCollect(form,m,e) ==
              ["%CollectV",localReferenceIfThere(m',e'),:itl',body']
            -- We are phasing out use of LISP macros COLLECT and REPEAT.
            $loopKind = "COLLECT" => ['%collect,:itl',body']
-           [$loopKind,:itl',body']
+           ['%repeat,:itl',body','%nil]
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
           m'
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
         -- in a loop are local to the loop.
-        [massageLoop T.expr,T.mode,oldEnv]
+        [T.expr,T.mode,oldEnv]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=
