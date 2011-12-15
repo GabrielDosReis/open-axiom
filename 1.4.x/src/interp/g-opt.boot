@@ -345,10 +345,10 @@ removeLeave! x == walkWith!(x,function f) where
     x is ['%leave,.,y] and y is ['%return,:.] => resetTo(x,y)
     x
 
-removeLoopExitTag! x == walkWith!(x,function f) where
+cleanLoop! x == prefixWalk!(x,function f) where
   f x ==
     x is ['%scope,tag,['%repeat,:itl,body,val]] =>
-      resetTo(x,['%repeat,:itl,g(body,tag),g(val,tag)])
+      resetTo(x,f ['%repeat,:itl,g(body,tag),g(val,tag)])
     x
   g(x,tag) ==
     atomic? x => x
@@ -364,7 +364,7 @@ removeLoopExitTag! x == walkWith!(x,function f) where
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  x := spliceSeq! packWhen! transformIF! removeLeave! removeLoopExitTag! x
+  x := spliceSeq! packWhen! transformIF! removeLeave! cleanLoop! x
   changeVariableDefinitionToStore(x,nil)
   simplifyVMForm cancelScopeLeave! spliceSeq! packWhen! inlineLocals!
     groupTranscients! cancelScopeLeave! removeJunk! reduceXLAM! x
