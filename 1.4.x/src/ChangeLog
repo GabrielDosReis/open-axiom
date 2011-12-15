@@ -1,5 +1,13 @@
 2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (removeLoopExitTag!): New.
+	(optimize!): Run it first.
+	* interp/compiler.boot (nullifyTargetingLeaves): Remove.
+	(massageLoop): Likewise.
+	(compRepeatOrCollect): Don't call it anymore.
+
+2011-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot: Rename %loop to %repeat.  Propagate.
 	* interp/g-opt.boot: Likewise.
 	* interp/i-map.boot: Likewise.

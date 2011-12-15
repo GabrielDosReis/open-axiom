@@ -345,11 +345,26 @@ removeLeave! x == walkWith!(x,function f) where
     x is ['%leave,.,y] and y is ['%return,:.] => resetTo(x,y)
     x
 
+removeLoopExitTag! x == walkWith!(x,function f) where
+  f x ==
+    x is ['%scope,tag,['%repeat,:itl,body,val]] =>
+      resetTo(x,['%repeat,:itl,g(body,tag),g(val,tag)])
+    x
+  g(x,tag) ==
+    atomic? x => x
+    x is ['%leave,=tag,y] =>
+      first(x.args) := nil
+      second(x.args) := g(y,tag)
+      x
+    for xs in tails x repeat
+      xs.first := g(first xs,tag)
+    x
+
 ++ Transform an intermediate form (output of the elaborator) to
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  x := spliceSeq! packWhen! transformIF! removeLeave! x
+  x := spliceSeq! packWhen! transformIF! removeLeave! removeLoopExitTag! x
   changeVariableDefinitionToStore(x,nil)
   simplifyVMForm cancelScopeLeave! spliceSeq! packWhen! inlineLocals!
     groupTranscients! cancelScopeLeave! removeJunk! reduceXLAM! x
