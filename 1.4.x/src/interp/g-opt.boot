@@ -285,9 +285,19 @@ coagulateWhenSeries(x,tag) ==
     g(s,tag) ==
       -- return list of reduced clauses if they all exit from same scope.
       s is ['%when,:.] =>
-        [[p,y] for x in s.args while x is [p,['%leave,=tag,y]] or leave nil]
+        [u for x in s.args while (u := h(x,tag) or leave nil)]
+           where h(x,tag) ==
+             x is [p,['%leave,=tag,y]] => [p,y]
+             x is [p,['%return,:.]] => x
+             nil
       nil
   nil
+
+++ Return true if the expression `x' exist the scope with tag `g'
+++ by normal local transfer or by exiting the enclosing function
+++ with a `return' statement.
+exitScope?(x,g) ==
+  x is ['%leave,=g,:.] or x is ['%return,:.]
 
 ++ Transform nested-to-tower.
 packWhen! x == walkWith!(x,function f) where
@@ -296,11 +306,13 @@ packWhen! x == walkWith!(x,function f) where
       repeat
         stmts = nil => leave nil
         s := first stmts
-        s is ['%when,[p,u:=['%leave,=g,.]],['%otherwise,v]] =>
+        s is ['%when,[p,u],['%otherwise,v]] and exitScope?(u,g) =>
           stmts.first := ['%when,[p,u]]
           stmts.rest := [v,:rest stmts]
         stmts := rest stmts
       y.args is [['%when,[p,['%leave,=g,u]]],['%leave,=g,v]] =>
+        resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
+      y.args is [['%when,[p,u:=['%return,:.]]],['%leave,=g,v]] =>
         resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
       coagulateWhenSeries(y,g) is [u,v] =>
         resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
@@ -323,6 +335,7 @@ cancelScopeLeave! x == walkWith!(x,function f) where
   f x ==
     x is ['%scope,g,['%leave,=g,y]] and hasNoLeave?(y,g) =>
       resetTo(x,f y)
+    x is ['%scope,g,u:=['%return,.,y]] => resetTo(x,u)
     x
 
 removeLeave! x == walkWith!(x,function f) where
