@@ -302,6 +302,12 @@ exitScope?(x,g) ==
 ++ Transform nested-to-tower.
 packWhen! x == walkWith!(x,function f) where
   f x ==
+    x is ['%when,[p1,['%when,[p2,s]]]] =>
+      resetTo(x,f ['%when,[['%and,p1,p2],s]])
+    x is ['%when,:cl,['%otherwise,y]] and y is ['%when,:.] =>
+      resetTo(x,f ['%when,:cl,:y.args])
+    x is ['%leave,g,['%when,[p,['%leave,=g,s]]]] =>
+      resetTo(x,['%leave,g,['%when,[p,s]]])
     x is ['%scope,g,y] and y is ['%seq,:stmts] =>
       repeat
         stmts = nil => leave nil
@@ -317,10 +323,6 @@ packWhen! x == walkWith!(x,function f) where
       coagulateWhenSeries(y,g) is [u,v] =>
         resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
       x
-    x is ['%when,[p1,['%when,[p2,s]]]] =>
-      resetTo(x,f ['%when,[['%and,p1,p2],s]])
-    x is ['%when,:cl,['%otherwise,y]] and y is ['%when,:.] =>
-      resetTo(x,f ['%when,:cl,:y.args])
     x
 
 spliceSeq! x == walkWith!(x,function f) where

@@ -1,5 +1,9 @@
 2011-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (packWhen!): Tidy.
+
+2011-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (exitScope?): New.
 	(packWhen!): Use it.
 	(coagulateWhenSeries): Tidy.
