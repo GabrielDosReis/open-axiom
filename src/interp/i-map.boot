@@ -231,7 +231,7 @@ getUserIdentifiersIn body ==
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     S_-(userIds,getIteratorIds itl)
-  body is ['%loop,:itl,val,body1] =>
+  body is ['%repeat,:itl,val,body1] =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     userIds := S_+(getUserIdentifiersIn val,userIds)
@@ -1036,7 +1036,7 @@ findLocalVars1(op,form) ==
       mkLocalVar(op,var)
   form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
     findLocalsInLoop(op,itrl,body)
-  form is ['%loop,:itrl,val,body] =>
+  form is ['%repeat,:itrl,val,body] =>
     findLocalsInLoop(op,itrl,[body,val])
   form is ['%bind,bindings,:body] =>
     findExternalVarsInBindExpr(op,bindings,body)

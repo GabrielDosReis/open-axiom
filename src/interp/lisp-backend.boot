@@ -153,7 +153,7 @@ massageFreeVarInits(body,inits) ==
   ['LET,inits,body]
 
 
-expandLoop ['%loop,:iters,body,ret] ==
+expandRepeat ['%repeat,:iters,body,ret] ==
   itersCode := expandIterators iters
   itersCode = "failed" => systemErrorHere ["expandLoop",iters]
   body := middleEndExpand body
@@ -170,7 +170,7 @@ expandLoop ['%loop,:iters,body,ret] ==
     exits = nil => body
     ['%when,[mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
        [true,body]]
-  body := ['%forever,exits,:cont]
+  body := ['%loop,exits,:cont]
   -- Finally, set up loop-wide initializations.
   expandToVMForm optimize! massageFreeVarInits(body,loopInits)
 
@@ -182,7 +182,7 @@ expandCollect ['%collect,:iters,body] ==
   -- Initialize the variable holding the result; expand as 
   -- if ordinary loop.  But don't forget we built the result
   -- in reverse order.
-  expandLoop ['%loop,:iters,["%init",val,nil],body,['%lreverse!,val]]
+  expandRepeat ['%repeat,:iters,["%init",val,nil],body,['%lreverse!,val]]
 
 expandList(x is ['%list,:args]) ==
   args := [expandToVMForm arg for arg in args]
@@ -653,7 +653,7 @@ for x in [
     ['%sptreq,    :'EQL],               -- system pointer equality
     ['%otherwise,:'T],
     ['%closure,  :'CONS],
-    ['%forever,  :'LOOP],
+    ['%loop,     :'LOOP],
     ['%funcall,  :'FUNCALL],
     ['%function, :'FUNCTION],
     ['%lambda,   :'LAMBDA],
@@ -670,7 +670,7 @@ for x in [
 for x in [
    ['%list,    :function expandList],
    ['%collect, :function expandCollect],
-   ['%loop,    :function expandLoop],
+   ['%repeat,  :function expandRepeat],
    ['%return,  :function expandReturn],
    ['%leave,   :function expandLeave],
    ['%seq,     :function expandSeq],
