@@ -513,7 +513,7 @@ eval shared_ext=\"$shrext_cmds\"
 case $host in
     *mingw*|*cygwin*)
        oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags="-shared --export-all-symbols"
+       oa_shrlib_flags="-shared -Wl,--export-all-symbols"
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'

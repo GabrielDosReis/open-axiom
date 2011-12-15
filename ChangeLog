@@ -1,3 +1,8 @@
+2011-12-15  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* config/open-axiom.m4 (OPENAXIOM_DYNAMIC_MODULE_SUPPORT): Fix
+	linker flags when building for Windows.
+
 2011-12-03  Alfredo Portes  <doyenatccny@gmail.com>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
