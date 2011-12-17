@@ -2392,6 +2392,13 @@ processInlineRequest(t,e) ==
 --% ITERATORS
 --%
  
+finishListCollect(iters,body) ==
+  val := gensym()    -- result of the list comprehension
+  -- Transform the body to build the list as we go.
+  body := ['%store,val,['%pair,body,val]]
+  -- Don't forget we built the result in reverse order.
+  ['%repeat,:iters,['%init,val,'%nil],body,['%lreverse!,val]]
+
 compReduce(form,m,e) ==
  compReduce1(form,m,e,$formalArgList)
 
@@ -2495,7 +2502,7 @@ compRepeatOrCollect(form,m,e) ==
            $loopKind = "%CollectV" => 
              ["%CollectV",localReferenceIfThere(m',e'),:itl',body']
            -- We are phasing out use of LISP macros COLLECT and REPEAT.
-           $loopKind = "COLLECT" => ['%collect,:itl',body']
+           $loopKind = "COLLECT" => finishListCollect(itl',body')
            ['%repeat,:itl',body','%nil]
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
