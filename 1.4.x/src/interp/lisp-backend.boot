@@ -176,13 +176,7 @@ expandRepeat ['%repeat,:iters,body,ret] ==
 
 ++ Generate code for list comprehension.
 expandCollect ['%collect,:iters,body] ==
-  val := gensym()    -- result of the list comprehension
-  -- Transform the body to build the list as we go.
-  body := ['%store,val,['%pair,body,val]]
-  -- Initialize the variable holding the result; expand as 
-  -- if ordinary loop.  But don't forget we built the result
-  -- in reverse order.
-  expandRepeat ['%repeat,:iters,["%init",val,nil],body,['%lreverse!,val]]
+  expandRepeat finishListCollect(iters,body)
 
 expandList(x is ['%list,:args]) ==
   args := [expandToVMForm arg for arg in args]

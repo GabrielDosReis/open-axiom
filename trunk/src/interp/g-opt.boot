@@ -433,7 +433,8 @@ subrname u ==
   nil
  
 changeLeaveToExit(s,g) ==
-  s isnt [.,:.] or s.op in '(QUOTE %seq REPEAT COLLECT %collect %repeat) => nil
+  atomic? s => nil
+  s.op in '(QUOTE %seq REPEAT COLLECT %collect %repeat) => nil
   s is ['%leave, =g,:u] => (s.first := '%exit; s.rest := u)
   changeLeaveToExit(first s,g)
   changeLeaveToExit(rest s,g)
@@ -789,7 +790,8 @@ optCollectVector form ==
     systemErrorHere ["optCollectVector", iter]
   -- if we draw from a list, then just build a list and convert to vector.
   fromList => 
-    ["homogeneousListToVector",["getVMType",eltType], ['%collect,:iters,body]]
+    ["homogeneousListToVector",["getVMType",eltType],
+      finishListCollect(iters,body)]
   vecSize = nil => systemErrorHere ["optCollectVector",form]
   -- get the actual size of the vector.
   vecSize :=
