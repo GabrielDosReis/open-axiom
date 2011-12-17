@@ -1698,7 +1698,8 @@ compColon([":",f,t],m,e) ==
     unknownTypeError t
     t
   f is ["LISTOF",:l] =>
-    (for x in l repeat T:= [.,.,e]:= compColon([":",x,t],m,e); T)
+    z := [T.expr for x in l while ([.,.,e] := T := compColon([":",x,t],m,e))]
+    [['%seq,:z],t,e]
   e:=
     f is [op,:argl] =>
       --for MPOLY--replace parameters by formal arguments: RDJ 3/83
