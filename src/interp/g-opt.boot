@@ -772,50 +772,6 @@ optList form ==
   literalElts is "failed" => form
   quote literalElts
 
-optCollectVector form ==
-  [.,eltType,:iters,body] := form
-  fromList := false      -- are we drawing from a list?
-  vecSize := nil         -- size of vector
-  index := nil           -- loop/vector index.
-  for iter in iters while not fromList repeat
-    [op,:.] := iter
-    op in '(| SUCHTHAT WHILE UNTIL) => fromList := true
-    op in '(IN ON) => vecSize := [['%llength,third iter],:vecSize]
-    op in '(STEP ISTEP) =>
-      -- pick a loop variable that we can use as the loop index.
-      [.,var,lo,inc,:etc] := iter
-      if lo = 0 and inc = 1 then
-        index :=
-          var is [.,:var'] => var'
-          var
-      if [hi] := etc then
-        sz :=
-          inc = 1 =>
-            lo = 1 => hi
-            lo = 0 => ['%iinc,hi]
-            ['%iinc,['%isub,hi,lo]]
-          lo = 1 => ['%idiv,hi,inc]
-          lo = 0 => ['%idiv,['%iinc,hi],inc]
-          ['%idiv,['%isub,['%iinc,hi], lo],inc]
-        vecSize := [sz, :vecSize]
-    systemErrorHere ["optCollectVector", iter]
-  -- if we draw from a list, then just build a list and convert to vector.
-  fromList => 
-    ["homogeneousListToVector",["getVMType",eltType],
-      finishListCollect(iters,body)]
-  vecSize = nil => systemErrorHere ["optCollectVector",form]
-  -- get the actual size of the vector.
-  vecSize :=
-    vecSize is [hi] => hi
-    ['%imin,:reverse! vecSize]
-  -- if no suitable loop index was found, introduce one.
-  if index = nil then
-    index := gensym()
-    iters := [:iters,['STEP,index,0,1]]
-  vec := gensym()
-  ['%bind,[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
-    ['%repeat,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
-
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
 optRetract ["%retract",e,m,pred] ==
@@ -1029,8 +985,7 @@ for x in '((%call         optCall) _
            (%scope       optScope)_
            (%when        optCond)_
            (%retract     optRetract)_
-           (%pullback    optPullback)_
-           (%CollectV    optCollectVector)) _
+           (%pullback    optPullback)) _
    repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 
