@@ -1,3 +1,9 @@
+2011-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (finishVectorCollect): Rename from
+	optCollectVector. Move here.
+	(compRepeatOrCollect): Use it.
+
 2011-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (freeIteratorFirstValues): New.
