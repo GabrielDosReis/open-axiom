@@ -1,5 +1,14 @@
 2011-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (freeIteratorFirstValues): New.
+	(cleanLoop!): Use it.
+	* interp/lisp-backend.boot ($freeVarName): Remove.
+	(loopVarInit): Do not generate initializer for free iterators.
+	Adjust callers.
+	(massageFreeVarInits): Remove.  Adjust caller.
+
+2011-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (finishListCollect): New.
 	(compRepeatOrCollect): Use it.
 	* interp/g-opt.boot (optCollectVector): Likewise.
