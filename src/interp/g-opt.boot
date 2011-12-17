@@ -345,10 +345,21 @@ removeLeave! x == walkWith!(x,function f) where
     x is ['%leave,.,y] and y is ['%return,:.] => resetTo(x,y)
     x
 
+freeIteratorFirstValues iters ==
+  [u for it in iters | u := f it] where
+    f it ==
+      it is ['STEP,['%free,:id],lo,:.] => ['%LET,id,lo]
+      it is ['ON,['%free,:id],l] => ['%LET,id,l]
+      nil
+
 cleanLoop! x == prefixWalk!(x,function f) where
   f x ==
     x is ['%scope,tag,['%repeat,:itl,body,val]] =>
-      resetTo(x,f ['%repeat,:itl,g(body,tag),g(val,tag)])
+      body := g(body,tag)
+      val := g(val,tag)
+      firstVals := freeIteratorFirstValues itl =>
+        resetTo(x,mkSeq [:firstVals,f ['%repeat,:itl,body,val]])
+      resetTo(x,f ['%repeat,:itl,body,val])
     x
   g(x,tag) ==
     atomic? x => x
