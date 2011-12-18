@@ -299,6 +299,28 @@ coagulateWhenSeries(x,tag) ==
 exitScope?(x,g) ==
   x is ['%leave,=g,:.] or x is ['%return,:.]
 
+unnestWhen! x == f x where
+  f x ==
+    x is ['%scope,tag,y] =>
+      y is ['%seq,:stmts] =>
+        repeat
+          stmts = nil => leave nil
+          s := f first stmts
+          s is ['%when,[p,u],['%otherwise,v]] and exitScope?(u,tag) =>
+            stmts.first := ['%when,[p,u]]
+            stmts.rest := spliceSeqArgs [f v,:rest stmts]
+          stmts.first := s
+          stmts := rest stmts
+        x
+      y is ['%when,[p,u:=['%leave,=tag,.]],['%otherwise,v]] =>
+        reset(x,f mkScope(tag,mkSeq [['%when,[p,u]],f v]))
+      second(x.args) := f y
+      x
+    do
+      abstraction? x => x.absBody := f x.absBody
+      x is ['%leave,.,y] => second(x.args) := f y
+    x
+
 ++ Transform nested-to-tower.
 packWhen! x == walkWith!(x,function f) where
   f x ==
@@ -309,13 +331,6 @@ packWhen! x == walkWith!(x,function f) where
     x is ['%leave,g,['%when,[p,['%leave,=g,s]]]] =>
       resetTo(x,['%leave,g,['%when,[p,s]]])
     x is ['%scope,g,y] and y is ['%seq,:stmts] =>
-      repeat
-        stmts = nil => leave nil
-        s := first stmts
-        s is ['%when,[p,u],['%otherwise,v]] and exitScope?(u,g) =>
-          stmts.first := ['%when,[p,u]]
-          stmts.rest := [v,:rest stmts]
-        stmts := rest stmts
       y.args is [['%when,[p,['%leave,=g,u]]],['%leave,=g,v]] =>
         resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
       y.args is [['%when,[p,u:=['%return,:.]]],['%leave,=g,v]] =>
@@ -382,7 +397,7 @@ removeScope! x == prefixWalk!(x,function f) where
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
-  x := spliceSeq! packWhen! transformIF! removeLeave! cleanLoop! x
+  x := unnestWhen! spliceSeq! packWhen! transformIF! removeLeave! cleanLoop! x
   changeVariableDefinitionToStore(x,nil)
   simplifyVMForm removeScope! cancelScopeLeave! spliceSeq! packWhen!
     inlineLocals! groupTranscients! cancelScopeLeave!
