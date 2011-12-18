@@ -649,6 +649,7 @@ for x in [
     ['%lambda,   :'LAMBDA],
     ['%exit,     :'EXIT],
     ['%when,     :'COND],
+    ['%scope,    :'BLOCK],
 
     -- I/O stream functions
     ['%writeString,  :'WRITE_-STRING],

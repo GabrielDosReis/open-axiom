@@ -55,8 +55,8 @@ abstraction? x ==
   x is [op,:.] and ident? op and abstractionOperator? op
 
 hasNoLeave?(expr,g) ==
+  atomic? expr => true
   expr is ['%leave, =g,:.] => false
-  expr isnt [.,:.] => true
   hasNoLeave?(first expr,g) and hasNoLeave?(rest expr,g)
 
 mkScope(tag,expr) ==

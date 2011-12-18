@@ -371,14 +371,22 @@ cleanLoop! x == prefixWalk!(x,function f) where
       xs.first := g(first xs,tag)
     x
 
+removeScope! x == prefixWalk!(x,function f) where
+  f x ==
+    x is ['%scope,g,y] =>
+      hasNoLeave?(y,g) => resetTo(x,f y)
+      x
+    x
+
 ++ Transform an intermediate form (output of the elaborator) to
 ++ a lower intermediate form, applying several transformations
 ++ generaly intended to improve quality and efficiency.
 optimize! x ==
   x := spliceSeq! packWhen! transformIF! removeLeave! cleanLoop! x
   changeVariableDefinitionToStore(x,nil)
-  simplifyVMForm cancelScopeLeave! spliceSeq! packWhen! inlineLocals!
-    groupTranscients! cancelScopeLeave! removeJunk! reduceXLAM! x
+  simplifyVMForm removeScope! cancelScopeLeave! spliceSeq! packWhen!
+    inlineLocals! groupTranscients! cancelScopeLeave!
+      removeJunk! reduceXLAM! x
 
 ++ A non-mutating version of `optimize!'.
 optimize x ==
@@ -395,22 +403,6 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Intermediate VM code:"
     pp expr
 
-  expr.absBody :=
-    removeTopLevelLabel expr.absBody where
-      removeTopLevelLabel body ==
-        body is ['%scope,g,u] =>
-          removeTopLevelLabel replaceLeaveByReturn(u,g)
-        body
-      replaceLeaveByReturn(x,g) ==
-        fn(x,g)
-        x
-      fn(x,g) ==
-        x is ['%leave,=g,:u] =>
-          x.first := "RETURN"
-          x.rest := replaceLeaveByReturn(u,g)
-        x isnt [.,:.] => nil
-        replaceLeaveByReturn(first x,g)
-        replaceLeaveByReturn(rest x,g)
   [first def,expr]
 
 resetTo(x,y) ==
