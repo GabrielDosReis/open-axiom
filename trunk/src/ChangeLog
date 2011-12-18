@@ -1,7 +1,13 @@
 2011-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (removeScope!): New.
+	(optimize!): Call it.
+	(optimizeFunctionDef): Simplify.
+
+2011-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compColon): Handle multiple declarations
-	properly. 
+	properly.
 
 2011-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
