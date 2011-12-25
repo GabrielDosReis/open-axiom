@@ -479,11 +479,12 @@ RepresentationPackage2(R): public == private where
           -- need a start value for creating random matrices:
           -- if we switch to randomelements later, we take the last
           -- fingerprint.
+          x0,x1: M R
           if randomelements then   -- random should not be from I
              --randomIndex  : I   := randnum numberOfGenerators
              randomIndex := 1+(random()$Integer rem numberOfGenerators)
-             x0 : M R := aG0.randomIndex
-             x1 : M R := aG1.randomIndex
+             x0 := aG0.randomIndex
+             x1 := aG1.randomIndex
           n : NNI := #row(x0,1)   -- degree  of representation
           foundResult : B := false
           for i in 1..numberOfTries until foundResult repeat
