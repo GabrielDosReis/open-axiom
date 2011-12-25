@@ -318,7 +318,13 @@ unnestWhen! x == f x where
       x
     do
       abstraction? x => x.absBody := f x.absBody
-      x is ['%leave,.,y] => second(x.args) := f y
+      x is ['%leave,.,y] or x is ['%return,.,y] => second(x.args) := f y
+      x is ['%when,:.] =>
+        for cl in x.args repeat
+          second(cl) := f second cl
+      x is ['%seq,:.] =>
+        for stmts in tails x.args repeat
+          stmts.first := f first stmts
     x
 
 ++ Transform nested-to-tower.
