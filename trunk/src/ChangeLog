@@ -1,5 +1,10 @@
 2011-12-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (unnestWhen!): Recurse into more control
+	structures. 
+
+2011-12-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/rep2.spad.pamphlet (RepresentationPackage2)
 	[areEquivalent?]:  Tidy.
 
