@@ -1,5 +1,10 @@
 2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (exitScope?): Now return an expression or nil.
+	(cancelScopeLeave!): Tidy.
+
+2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/prs.spad.pamphlet (PseudoRemainderSequence): Tidy.
 
 2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
