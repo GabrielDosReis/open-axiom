@@ -858,15 +858,13 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
        dP : polR := differentiate P
        rE := resultantEuclidean(P, dP)
        d := d - degree(dP) - 1
-       if zero?(d) then 
-          c1 : polR := a * (rE.coef1 exquo LC(P))::polR
-          c2 : polR := a * (rE.coef2 exquo LC(P))::polR
-          cr : R := a * (rE.resultant exquo LC(P))::R
-       else
-          c1 : polR := a * rE.coef1 * LC(P)**(d-1)::NNI
-          c2 : polR := a * rE.coef2 * LC(P)**(d-1)::NNI
-          cr : R := a * rE.resultant * LC(P)**(d-1)::NNI
-       return construct(c1, c2, cr)
+       zero? d =>
+         [a * (rE.coef1 exquo LC(P))::polR,
+            a * (rE.coef2 exquo LC(P))::polR,
+              a * (rE.resultant exquo LC(P))::R]
+       [a * rE.coef1 * LC(P)**(d-1)::NNI,
+          a * rE.coef2 * LC(P)**(d-1)::NNI,
+            a * rE.resultant * LC(P)**(d-1)::NNI]
 
     semiDiscriminantEuclidean(P : polR) : 
                             Record(coef2 : polR, discriminant : R) ==
@@ -877,13 +875,11 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
        dP : polR := differentiate P
        rE := semiResultantEuclidean2(P, dP)
        d := d - degree(dP) - 1
-       if zero?(d) then 
-          c2 : polR := a * (rE.coef2 exquo LC(P))::polR
-          cr : R := a * (rE.resultant exquo LC(P))::R
-       else
-          c2 : polR := a * rE.coef2 * LC(P)**(d-1)::NNI
-          cr : R := a * rE.resultant * LC(P)**(d-1)::NNI
-       return construct(c2, cr)
+       zero? d =>
+         [a * (rE.coef2 exquo LC(P))::polR,
+            a * (rE.resultant exquo LC(P))::R]
+       [a * rE.coef2 * LC(P)**(d-1)::NNI,
+          a * rE.resultant * LC(P)**(d-1)::NNI]
 
     if R has GcdDomain then
        resultantReduit(P : polR, Q : polR) : R ==

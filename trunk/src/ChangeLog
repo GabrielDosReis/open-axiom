@@ -1,5 +1,9 @@
 2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/prs.spad.pamphlet (PseudoRemainderSequence): Tidy.
+
+2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (changeVariableDefinitionToStore): Tidy.
 	Remove handling of IF forms as no longer relevant.
 	* algebra/matfuns.spad.pamphlet
