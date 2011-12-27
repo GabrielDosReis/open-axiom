@@ -1,7 +1,12 @@
+2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/matfuns.spad.pamphlet
+	(InnerMatrixLinearAlgebraFunctions) [rank]: Tidy.
+
 2011-12-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (unnestWhen!): Recurse into more control
-	structures. 
+	structures.
 
 2011-12-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
