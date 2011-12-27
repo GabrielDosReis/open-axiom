@@ -108,17 +108,13 @@ changeVariableDefinitionToStore(form,vars) ==
       symbolMember?(v,vars) => form.op := '%store
       vars := [v,:vars]
     vars
-  form is ['IF,p,s1,s2] =>
-    -- variables defined in the predicate are visible in both branches, but
-    -- no variable locally defined in one branch is visible in the other.
-    vars' := changeVariableDefinitionToStore(p,vars)
-    changeVariableDefinitionToStore(s1,vars')
-    changeVariableDefinitionToStore(s2,vars')
+  form is ['%scope,.,expr] and expr is ['%seq,:.] => 
+    changeVariableDefinitionToStore(expr,vars)
     vars
   form is ['%when,:.] =>
     for clause in form.args repeat
       -- variable defined in clause predicates are visible
-      -- in subsequent predicates.  See the case for IF forms.
+      -- in subsequent predicates.
       vars := changeVariableDefinitionToStore(first clause,vars)
       -- but those defined in branches are local.
       changeVariableDefinitionToStore(rest clause,vars)
@@ -139,7 +135,7 @@ changeVariableDefinitionToStore(form,vars) ==
       vars' := [v,:vars']
     changeVariableDefinitionToStore(third form,[:vars',:vars])
     vars
-  ident? form.op and abstractionOperator? form.op =>
+  abstraction? form =>
     changeVariableDefinitionToStore(form.absBody,[:form.absParms,:vars])
     vars
   form is ['%repeat,:iters,body,val] =>

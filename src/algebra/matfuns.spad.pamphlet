@@ -676,8 +676,10 @@ MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
         fm(maxRowIndex fm,maxColIndex fm)
 
       rank x ==
+        rk := nrows x
         y :=
-          (rk := nrows x) > (rh := ncols x) =>
+          rh := ncols x
+          rk > rh =>
               rk := rh
               transpose x
           copy x
