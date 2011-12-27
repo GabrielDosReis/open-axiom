@@ -289,11 +289,14 @@ coagulateWhenSeries(x,tag) ==
       nil
   nil
 
-++ Return true if the expression `x' exist the scope with tag `g'
+++ Return non-nil if the expression `x' exist the scope with tag `g'
 ++ by normal local transfer or by exiting the enclosing function
-++ with a `return' statement.
+++ with a `return' statement.  If non-nil, the return value is the
+++ expression operand to the normal exit.
 exitScope?(x,g) ==
-  x is ['%leave,=g,:.] or x is ['%return,:.]
+  x is ['%leave,=g,y] and hasNoLeave?(y,g) => y
+  x is ['%return,:.] => x
+  nil
 
 unnestWhen! x == f x where
   f x ==
@@ -348,15 +351,23 @@ spliceSeq! x == walkWith!(x,function f) where
       x.args := spliceSeqArgs x.args
     x
 
+++ Return the list of reduced clauses if every branch is a simple
+++ normal exiting expression.  Otherwise, return nil.
+exitClauses(l,g) ==
+  [[p,x] for cl in l | cl is [p,u] and (x := exitScope?(u,g)) or leave nil]
+
 ++ Remove superfluous cancel/scope pairs exposed by running
 ++ removeJunk!.
 cancelScopeLeave! x == walkWith!(x,function f) where
   f x ==
-    x is ['%scope,g,['%leave,=g,y]] and hasNoLeave?(y,g) =>
-      resetTo(x,f y)
-    x is ['%scope,g,u:=['%return,.,y]] => resetTo(x,u)
+    x is ['%scope,g,u] =>
+      u is ['%when,:.] and (v := exitClauses(u.args,g)) =>
+        resetTo(x,['%when,:v])
+      y := exitScope?(u,g) => resetTo(x,f y)
+      x
     x
 
+++ Remove redundant %leave opode around %return forms.
 removeLeave! x == walkWith!(x,function f) where
   f x ==
     x is ['%leave,.,y] and y is ['%return,:.] => resetTo(x,y)
