@@ -108,8 +108,10 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
       x
 
     rank x ==
+      rk := nrows x
       y :=
-        (rk := nrows x) > (rh := ncols x) =>
+        rh := ncols x
+        rk > rh  =>
           rk := rh
           transpose x
         copy x
