@@ -269,8 +269,8 @@ mkDefault(g,l) ==
   l = nil => ['CONDERR]
   mkScope(g,mkSeq l)
 
-coagulateWhenSeries(x,tag) ==
-  x is ['%seq,:.] => f(x.args,tag) where
+coagulateWhenSeries(l,tag) ==
+  f(l,tag) where
     f(l,tag) ==
       cl := nil
       while l is [s,:.] and (cl' := g(s,tag)) repeat
@@ -280,14 +280,8 @@ coagulateWhenSeries(x,tag) ==
       [cl,l]
     g(s,tag) ==
       -- return list of reduced clauses if they all exit from same scope.
-      s is ['%when,:.] =>
-        [u for x in s.args while (u := h(x,tag) or leave nil)]
-           where h(x,tag) ==
-             x is [p,['%leave,=tag,y]] => [p,y]
-             x is [p,['%return,:.]] => x
-             nil
+      s is ['%when,:.] => exitClauses(s.args,tag)
       nil
-  nil
 
 ++ Return non-nil if the expression `x' exist the scope with tag `g'
 ++ by normal local transfer or by exiting the enclosing function
@@ -302,9 +296,8 @@ unnestWhen! x == f x where
   f x ==
     x is ['%scope,tag,y] =>
       y is ['%seq,:stmts] =>
-        repeat
-          stmts = nil => leave nil
-          s := f first stmts
+        while stmts is [s,:.] repeat
+          s := f s
           s is ['%when,[p,u],['%otherwise,v]] and exitScope?(u,tag) =>
             stmts.first := ['%when,[p,u]]
             stmts.rest := spliceSeqArgs [f v,:rest stmts]
@@ -335,14 +328,8 @@ packWhen! x == walkWith!(x,function f) where
       resetTo(x,f ['%when,:cl,:y.args])
     x is ['%leave,g,['%when,[p,['%leave,=g,s]]]] =>
       resetTo(x,['%leave,g,['%when,[p,s]]])
-    x is ['%scope,g,y] and y is ['%seq,:stmts] =>
-      y.args is [['%when,[p,['%leave,=g,u]]],['%leave,=g,v]] =>
-        resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
-      y.args is [['%when,[p,u:=['%return,:.]]],['%leave,=g,v]] =>
-        resetTo(x,f ['%when,[p,u],['%otherwise,f mkScope(g,v)]])
-      coagulateWhenSeries(y,g) is [u,v] =>
+    x is ['%scope,g,['%seq,:w]] and coagulateWhenSeries(w,g) is [u,v] =>
         resetTo(x,f ['%when,:u,['%otherwise,f mkDefault(g,v)]])
-      x
     x
 
 spliceSeq! x == walkWith!(x,function f) where
@@ -362,7 +349,7 @@ cancelScopeLeave! x == walkWith!(x,function f) where
   f x ==
     x is ['%scope,g,u] =>
       u is ['%when,:.] and (v := exitClauses(u.args,g)) =>
-        resetTo(x,['%when,:v])
+        resetTo(x,[u.op,:v])
       y := exitScope?(u,g) => resetTo(x,f y)
       x
     x
@@ -402,6 +389,8 @@ cleanLoop! x == prefixWalk!(x,function f) where
 removeScope! x == prefixWalk!(x,function f) where
   f x ==
     x is ['%scope,g,y] =>
+      y is ['%when,[p,['%leave,=g,u]],['%leave,=g,v]] =>
+        resetTo(x,['%when,[p,u],['%otherwise,v]])
       hasNoLeave?(y,g) => resetTo(x,f y)
       x
     x
