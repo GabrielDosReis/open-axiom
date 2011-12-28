@@ -72,6 +72,7 @@ structure %Ast ==
   %Colon(%Symbol)                       -- :x
   %QualifiedName(%Symbol,%Symbol)       -- m::x
   %DefaultValue(%Symbol,%Ast)           -- opt. value for function param.
+  %Key(%Symbol,%Ast)                    -- k <- x
   %Bracket(%Ast)                        -- [x, y]
   %UnboundedSegment(%Ast)               -- 3..
   %BoundedSgement(%Ast,%Ast)            -- 2..4
@@ -770,8 +771,19 @@ bfHas(expr,prop) ==
   symbol? prop => ["GET",expr, quote prop]
   bpSpecificErrorHere('"expected identifier as property name")
   
+bfKeyArg(k,x) ==
+  ['%Key,k,x]
+
+bfExpandKeys l ==
+  args := nil
+  while l is [a,:l] repeat
+    a is ['%Key,k,x] =>
+      args := [x,makeSymbol(stringUpcase symbolName k,'"KEYWORD"),:args]
+    args := [a,:args]
+  reverse! args      
+
 bfApplication(bfop, bfarg) ==
-  bfTupleP bfarg => [bfop,:rest bfarg]
+  bfTupleP bfarg => [bfop,:bfExpandKeys rest bfarg]
   [bfop,bfarg]
  
 -- returns the meaning of x in the appropriate Boot dialect.

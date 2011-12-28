@@ -1825,9 +1825,9 @@ compileQuietly fn ==
 
 ++ If `x' is a formal map variable, returns its position.
 ++ Otherwise return nil.
-isFormal: %Symbol -> %Maybe %Short
-isFormal x ==
-  POSITION(x,$FormalMapVariableList,KEYWORD::TEST, function EQ)
+formal?: %Symbol -> %Maybe %Short
+formal? x ==
+  or/[i for i in 0.. for y in $FormalMapVariableList | symbolEq?(x,y)]
 
 ++ Expand the form at position `slot' in the domain template `shell'
 ++ with argument list `args'.
@@ -1837,7 +1837,7 @@ expandFormTemplate(shell,args,slot) ==
     slot = 2 => "$$"
     expandFormTemplate(shell,args,vectorRef(shell,slot))
   slot isnt [.,:.] => slot
-  slot is ["local",parm] and (n := isFormal parm) => 
+  slot is ["local",parm] and (n := formal? parm) => 
     args.n   -- FIXME: we should probably expand with dual signature
   slot is ['%eval,val] => val
   slot is ['QUOTE,val] => 
@@ -1852,9 +1852,9 @@ equalFormTemplate(shell,args,slot,form) ==
     slot = 0 => form = "$"
     slot = 2 => form = "$$"
     equalFormTemplate(shell,args,vectorRef(shell,slot),form)
-  slot is ["local",parm] and (n := isFormal parm) => 
+  slot is ["local",parm] and (n := formal? parm) => 
     equalFormTemplate(shell,args,args.n,form)
-  slot is ["NTREVAL",val] => form = val
+  slot is ['%eval,val] => form = val
   slot is ['QUOTE,val] => 
      string? val or symbol? val or integer? val => val = form
      slot = form

@@ -465,7 +465,7 @@ NRTmakeCategoryAlist(db,e) ==
   $catAncestorAlist: local := nil
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
-  opcAlist := reverse! SORTBY(function NRTcatCompare,pcAlist)
+  opcAlist := sortBy(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]

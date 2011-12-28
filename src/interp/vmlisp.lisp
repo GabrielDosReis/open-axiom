@@ -676,16 +676,6 @@
                (SETQ Y (CDR Y))
                (GO A)))))
 
-; 14.6 Miscellaneous
-
-(defun QSORT (l)
- (declare (special sortgreaterp))
-  (|reverse!| (sort (copy-seq l) SORTGREATERP)))
-
-(defun SORTBY (keyfn l)
- (declare (special sortgreaterp))
-  (|reverse!| (sort (copy-seq l) SORTGREATERP :key keyfn)))
-
 ; 16.0 Operations on Vectors
 
 ; 16.1 Creation
