@@ -70,7 +70,7 @@ showImp(dom,:options) ==
   missingOnlyFlag => 'done
 
   --first display those exported by the domain, then add chain guys
-  u := [:domexports,:constants,:SORTBY('CDDR,others)]
+  u := [:domexports,:constants,:reverse! sortBy(function CDDR,others)]
   while u repeat
     [.,.,:key] := first u
     sayBrightly
@@ -78,14 +78,14 @@ showImp(dom,:options) ==
         ["Constants implemented by",:bright form2String key,'":"]
       ["Functions implemented by",:bright form2String key,'":"]
     u := showDomainsOp1(u,key)
-  u := SORTBY('CDDR,defexports)
+  u := reverse! sortBy(function CDDR,defexports)
   while u repeat
     [.,.,:key] := first u
     defop := makeSymbol(subString((s := PNAME first key),0,maxIndex s))
     domainForm := [defop,:CDDR key]
     sayBrightly ["Default functions from",:bright form2String domainForm,'":"]
     u := showDomainsOp1(u,key)
-  u := SORTBY('CDDR,unexports)
+  u := reverse! sortBy(function CDDR,unexports)
   while u repeat
     [.,.,:key] := first u
     sayBrightly ["Not exported: "]

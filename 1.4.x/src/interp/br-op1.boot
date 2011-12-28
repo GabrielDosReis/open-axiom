@@ -405,8 +405,8 @@ dbGatherDataImplementation(htPage,opAlist) ==
     key is 'nowhere => nowheres := [x,:nowheres]
     key is 'constant =>constants := [x,:constants]
     others := [x,:others]   --add chain domains go here
-  fn [nowheres,constants,domexports,SORTBY('CDDR,reverse! others),SORTBY('CDDR,
-               reverse! defexports),SORTBY('CDDR,reverse! unexports)] where
+  fn [nowheres,constants,domexports,sortBy('CDDR,others),
+       sortBy('CDDR,defexports),sortBy('CDDR,unexports)] where
     fn l ==
       alist := nil
       for u in l repeat

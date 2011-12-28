@@ -858,6 +858,9 @@ bpAssign()==
     bpEqPeek "GIVES" =>
       bpRestore a
       bpLambda() or bpTrap()
+    bpEqPeek "LARROW" =>
+      bpRestore a
+      bpKeyArg() or bpTrap()
     true
   bpRestore a
   false
@@ -875,6 +878,10 @@ bpLambda() ==
     bpEqKey "GIVES" and
       (bpAssign() or bpTrap()) and
         bpPush bfLambda(bpPop2(),bpPop1())
+
+bpKeyArg() ==
+  bpName() and bpEqKey "LARROW" and bpLogical() and
+    bpPush bfKeyArg(bpPop2(),bpPop1())
 
 -- should only be allowed in sequences
 bpExit()==

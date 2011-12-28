@@ -287,7 +287,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
 
   -- only one variable in DMP case
   null vl' =>
-    u' := reverse! SORTBY('CAR,[[e.0,:c] for [e,:c] in u])
+    u' := sortBy(function first,[[e.0,:c] for [e,:c] in u])
     (u' := coerceInt(objNewWrap(u',[up,var,S]),target)) or
       coercionFailure()
     objValUnwrap u'
@@ -308,7 +308,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
         p.rest := c'
       zero = objValUnwrap(y) => 'iterate
       x := [[exp,:objValUnwrap(y)],:x]
-  y => reverse! SORTBY('CAR,x)
+  y => sortBy(function first,x)
   coercionFailure()
 
 removeVectorElt(v,pos) ==

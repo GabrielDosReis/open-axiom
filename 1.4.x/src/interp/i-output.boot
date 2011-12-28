@@ -1773,7 +1773,7 @@ charyTop(u,start,linelength) ==
 -->
   $testOutputLineFlag =>
     $testOutputLineList :=
-      [:ASSOCRIGHT SORTBY('CAR,d),:$testOutputLineList]
+      [:ASSOCRIGHT reverse! sortBy(function first,d),:$testOutputLineList]
   until n < m repeat
     scylla(n,d)
     n := n - 1

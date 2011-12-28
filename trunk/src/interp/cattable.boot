@@ -272,7 +272,7 @@ formalSubstitute(form:=[.,:argl],u) ==
   applySubst(pairList($FormalMapVariableList,argl),u)
 
 isFormalArgumentList argl ==
-  and/[x=fa for x in argl for fa in $FormalMapVariableList]
+  and/[symbolEq?(x,fa) for x in argl for fa in $FormalMapVariableList]
 
 mkCategoryExtensionAlist cform ==
   not cons? cform => nil

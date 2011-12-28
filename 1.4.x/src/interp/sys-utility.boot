@@ -388,6 +388,9 @@ remove!(l,x) ==
       return l
     p := rest p
       
+sortBy(k,l) ==
+  SORT(copyList l,function GGREATERP,key <- k)
+
 ++ Return the list of objects that follow x in l, including x itself.
 ++ Otherwise return nil.
 upwardCut(x,l) ==

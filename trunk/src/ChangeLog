@@ -1,5 +1,25 @@
 2011-12-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (SORTBY): Remove.
+	(QSORT): Likewise.
+	* interp/c-util.boot (formal?): Rename from isFormal.  Avoid POSITION.
+	* interp/sys-utility.boot (sortBy): New.
+	* interp/br-op1.boot: Use it.
+	* interp/clam.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* boot/tokens.boot: "<-" is now a token.
+	* boot/ast.boot (bfKeyArg): New.
+	(bfExpandKeys): Likewise.
+	(bfApplication): Use it.
+	* boot/parser.boot (bpKeyArg): New.
+	(bpAssign): Use it.  Parse named arguments.
+
+2011-12-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Remove redundant renaming of REM.
 	loopBody and loopExit are not selectors.
 	* interp/i-output.boot: Include sys-utility.

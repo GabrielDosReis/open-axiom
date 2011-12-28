@@ -2703,7 +2703,7 @@ workfilesSpad2Cmd args ==
   centerAndHighlight(" User-specified work files ",$LINELENGTH,specialChar 'hbar)
   SAY " "
   null $sourceFiles => SAY '"   no files specified"
-  SETQ($sourceFiles,SORTBY('pathnameType,$sourceFiles))
+  SETQ($sourceFiles,sortBy(function pathnameType,$sourceFiles))
   for fl in $sourceFiles repeat sayBrightly ["   " ,namestring fl]
 
 --% )zsystemdevelopment
