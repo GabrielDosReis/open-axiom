@@ -109,7 +109,7 @@ $InitialCommandSynonymAlist == [
  ]
 
 $CommandSynonymAlist := 
-  COPY $InitialCommandSynonymAlist
+  copyTree $InitialCommandSynonymAlist
 
 -- The `set' function in this file handles the top level `)set'
 -- command line functions.

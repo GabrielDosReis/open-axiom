@@ -256,7 +256,6 @@ for i in [ _
   ["copyVector", "COPY-SEQ"] , _
   ["croak",      "CROAK"]  , _
   ["digit?",    "DIGIT-CHAR-P"]  , _
-  ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
   ["fifth",      "FIFTH"]  , _
@@ -307,7 +306,6 @@ for i in [ _
   ["symbolName", "SYMBOL-NAME"], _
   ["symbolValue", "SYMBOL-VALUE"], _
   ["symbol?",  "SYMBOLP"]  , _
-  ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["toString", "WRITE-TO-STRING"], _
   ["true",           "T"]  , _

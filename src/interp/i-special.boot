@@ -1707,7 +1707,7 @@ isPatMatch(l,pats) ==
       m<0 => $subs:="failed"
       ZEROP n => $subs:=[[var,:l],:$subs]
       $subs:=[[var,:[x for x in l for i in 1..m]],:$subs]
-      isPatMatch(DROP(m,l),restPats)
+      isPatMatch(drop(m,l),restPats)
     isPatMatch(first l,pat) = "failed" => "failed"
     isPatMatch(rest l,restPats)
   keyedSystemError("S2GE0016",['"isPatMatch",

@@ -374,7 +374,7 @@
 			      ((and (eq next-column start-column)
 				    (rplaca nlocs (- (car nlocs)))
 				    (not (infixtok next-line)))
-			       (setq next-lines (drop (1- i) slines))
+			       (setq next-lines (|drop| (1- i) slines))
 			       (rplaca next-lines 
 				       (addclose (car next-lines) #\;))
 			       (setq count (1+ count))))))))
@@ -383,7 +383,7 @@
               (progn 
 		(setf (char (car slines) (1- (nonblankloc (car slines))))
 		      #\( )
-		(setq slines (drop (1- i) slines))
+		(setq slines (|drop| (1- i) slines))
 		(rplaca slines (addclose (car slines) #\) ))))))))
  
 (defun INFIXTOK (S) (MEMBER (STRING2ID-N S 1) '(|then| |else|) :test #'eq))

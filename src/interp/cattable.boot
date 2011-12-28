@@ -381,7 +381,7 @@ categoryParts(conform,category,:options) == main where
     if addCtor? then
       res := [listSort(function GLESSEQP,$conslist),:res]
     if getConstructorKindFromDB conname is "category" then
-      tvl := TAKE(#rest conform,$TriangleVariableList)
+      tvl := take(#rest conform,$TriangleVariableList)
       res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
   build(item,pred) ==

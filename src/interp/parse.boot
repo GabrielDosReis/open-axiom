@@ -328,7 +328,7 @@ parseIf t ==
       p="true"  => a
       p="false"  => b
       p is ["not",p'] => ifTran(p',b,a)
-      p is ["IF",p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
+      p is ["IF",p',a',b'] => ifTran(p',ifTran(a',copyTree a,copyTree b),ifTran(b',a,b))
       p is ["SEQ",:l,["exit",1,p']] =>
         ["SEQ",:l,["exit",1,ifTran(p',incExitLevel a,incExitLevel b)]]
          --this assumes that l has no exits

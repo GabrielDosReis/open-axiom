@@ -660,7 +660,7 @@ NRTputInLocalReferences(db,bod) ==
 NRTputInHead(db,bod) ==
   bod isnt [.,:.] => bod
   bod is ['SPADCALL,:args,fn] =>
-    NRTputInTail(db,rest bod) --NOTE: args = COPY of rest bod
+    NRTputInTail(db,rest bod) --NOTE: args = copyTree of rest bod
     -- The following test allows function-returning expressions
     fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
       k := assocIndex(db,dom) => lastNode(bod).first := ['%vref,'_$,k]

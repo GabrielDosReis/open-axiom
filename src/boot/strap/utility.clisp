@@ -21,7 +21,7 @@
                      |substitute!| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
                      |objectAssoc| |remove| |removeSymbol| |atomic?| |every?|
-                     |any?| |takeWhile| |copyTree| |finishLine|)))
+                     |any?| |take| |takeWhile| |drop| |copyTree| |finishLine|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -83,10 +83,16 @@
   |any?|))
 
 (DECLAIM
+ (FTYPE (FUNCTION (|%Short| (|%List| |%Thing|)) (|%List| |%Thing|)) |take|))
+
+(DECLAIM
  (FTYPE
   (FUNCTION ((FUNCTION (|%Thing|) |%Thing|) (|%List| |%Thing|))
    (|%List| |%Thing|))
   |takeWhile|))
+
+(DECLAIM
+ (FTYPE (FUNCTION (|%Short| (|%List| |%Thing|)) (|%List| |%Thing|)) |drop|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |copyTree|))
 
@@ -120,6 +126,26 @@
        (COND (|bfVar#2| (RETURN |bfVar#2|)))))
      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
+(DEFUN |take| (|n| |l|)
+  (COND
+   ((NOT (MINUSP |n|))
+    (LET ((|bfVar#3| NIL)
+          (|bfVar#4| NIL)
+          (|bfVar#1| |l|)
+          (|x| NIL)
+          (|bfVar#2| 1))
+      (LOOP
+       (COND
+        ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL)
+             (> |bfVar#2| |n|))
+         (RETURN |bfVar#3|))
+        ((NULL |bfVar#3|) (SETQ |bfVar#3| #1=(CONS |x| NIL))
+         (SETQ |bfVar#4| |bfVar#3|))
+        (T (RPLACD |bfVar#4| #1#) (SETQ |bfVar#4| (CDR |bfVar#4|))))
+       (SETQ |bfVar#1| (CDR |bfVar#1|))
+       (SETQ |bfVar#2| (+ |bfVar#2| 1)))))
+   (T (|drop| (+ (LENGTH |l|) |n|) |l|))))
+
 (DEFUN |takeWhile| (|f| |l|)
   (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |l|) (|x| NIL))
     (LOOP
@@ -131,6 +157,17 @@
        (SETQ |bfVar#3| |bfVar#2|))
       (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |drop| (|n| |l|)
+  (COND
+   ((NOT (MINUSP |n|))
+    (LOOP
+     (COND
+      ((NOT (AND (PLUSP |n|) (CONSP |l|) (PROGN (SETQ |l| (CDR |l|)) T)))
+       (RETURN NIL))
+      (T (SETQ |n| (- |n| 1)))))
+    |l|)
+   (T (|take| (+ (LENGTH |l|) |n|) |l|))))
 
 (DEFUN |copyTree| (|t|)
   (COND ((CONSP |t|) (CONS (|copyTree| (CAR |t|)) (|copyTree| (CDR |t|))))

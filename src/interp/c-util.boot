@@ -421,7 +421,7 @@ displayComp level ==
   nil
  
 mkErrorExpr level ==
-  bracket ASSOCLEFT DROP(level-#$s,$s) where
+  bracket ASSOCLEFT drop(level-#$s,$s) where
     bracket l ==
       #l<2 => l
       l is [a,b] =>
@@ -668,7 +668,7 @@ printEnv E ==
           printString ": "
           PRETTYPRINT tran(rest u,first u) where
             tran(val,prop) ==
-              prop="value" => DROP(-1,val)
+              prop="value" => drop(-1,val)
               val
  
 prEnv E ==
@@ -683,7 +683,7 @@ prEnv E ==
           printString ": "
           PRETTYPRINT tran(rest u,first u) where
             tran(val,prop) ==
-              prop="value" => DROP(-1,val)
+              prop="value" => drop(-1,val)
               val
  
 prModemaps E ==
@@ -1180,7 +1180,7 @@ displayModemaps E ==
  
 --% General object traversal functions
  
-GCOPY ob == COPY ob  -- for now
+GCOPY ob == copyTree ob  -- for now
  
 --%
 ++ format the set of candidate operations.
