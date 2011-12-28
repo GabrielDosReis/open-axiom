@@ -323,7 +323,6 @@ for i in [ _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _
   ["POWER",          "EXPT"]  , _
-  ['REM,          'REM],_
   ['QUO,     'TRUNCATE],_
   ["SLASH",       "/"]  , _
   ["LT",              "<"], _
@@ -341,6 +340,8 @@ for i in [ _
   ["absKind",           "CAR"] ,_
   ["absParms",         "CADR"] ,_
   ["absBody",         "CADDR"] ,_
+  ["loopBody",     "loopBody"] ,_
+  ["loopExit",         "last"] ,_
   ["setName",               0] , _
   ["setLabel",              1] , _
   ["setLevel",              2] , _

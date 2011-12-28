@@ -317,6 +317,8 @@ unnestWhen! x == f x where
       x is ['%seq,:.] =>
         for stmts in tails x.args repeat
           stmts.first := f first stmts
+      x is ['%repeat,:.] =>
+        x.loopBody := unnestWhen! x.loopBody
     x
 
 ++ Transform nested-to-tower.

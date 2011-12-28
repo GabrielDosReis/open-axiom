@@ -174,12 +174,6 @@
 (defmacro lam (&rest body)
  (list 'quote (*lam (copy-tree body))))
 
-(defmacro lastnode (l)
- `(last ,l))
-
-(defmacro lastpair (l)
- `(last ,l))
-
 (defmacro lessp (&rest args)
  `(< ,@args))
 
@@ -664,10 +658,6 @@
          ((stringp item) (member item sequence :test #'equal))
          ((and (atom item) (not (arrayp item))) (member item sequence))
          (T (member item sequence :test #'equalp))))
-
-; 14.2 Accessing
-
-(defun |last| (x) (car (lastpair x)))
 
 ; 14.3 Searching
 

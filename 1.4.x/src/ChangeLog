@@ -1,3 +1,14 @@
+2011-12-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Remove redundant renaming of REM.
+	loopBody and loopExit are not selectors.
+	* interp/i-output.boot: Include sys-utility.
+	* interp/sys-utility.boot (last): New macro.
+	(loopBody): Likewise.
+	* interp/vmlisp.lisp (LASTNODE): Remove.
+	(LASTPAIR): Likewise.
+	(last): Do not define here.
+
 2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Do not rewrite drop and take.

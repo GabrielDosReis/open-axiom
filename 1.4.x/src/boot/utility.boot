@@ -120,7 +120,7 @@ copyTree t ==
 objectMember?(x,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       sameObject?(x,first l) => return true
       l := rest l
     return sameObject?(x,l)
@@ -128,7 +128,7 @@ objectMember?(x,l) ==
 symbolMember?(s,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       symbolEq?(s,first l) => return true
       l := rest l
     return symbolEq?(s,l)
@@ -136,7 +136,7 @@ symbolMember?(s,l) ==
 stringMember?(s,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       stringEq?(s,first l) => return true
       l := rest l
     return stringEq?(s,l)
@@ -144,7 +144,7 @@ stringMember?(s,l) ==
 charMember?(c,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       charEq?(c,first l) => return true
       l := rest l
     return charEq?(c,l)
@@ -152,7 +152,7 @@ charMember?(c,l) ==
 scalarMember?(s,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       scalarEq?(s,first l) => return true
       l := rest l
     return scalarEq?(s,l)
@@ -160,7 +160,7 @@ scalarMember?(s,l) ==
 listMember?(x,l) ==
   repeat
     l = nil => return false
-    cons? l =>
+    l is [.,:.] =>
       listEq?(x,first l) => return true
       l := rest l
     return listEq?(x,l)
@@ -170,7 +170,7 @@ listMember?(x,l) ==
 reverse l ==
   r := nil
   repeat
-    cons? l =>
+    l is [.,:.] =>
       r := [first l,:r]
       l := rest l
     return r
@@ -178,7 +178,7 @@ reverse l ==
 reverse! l ==
   l1 := nil
   repeat
-    cons? l =>
+    l is [.,:.] =>
       l2 := rest l
       l.rest := l1
       l1 := l
@@ -188,17 +188,17 @@ reverse! l ==
 --% return a pointer to the last cons-cell in the list `l'.
 
 lastNode l ==
-  while l is [.,:l'] and cons? l' repeat
+  while l is [.,:l'] and l' is [.,:.] repeat
     l := l'
   l
 
 --% list copying
 copyList l ==
-  not cons? l => l
+  l isnt [.,:.] => l
   l' := t := [first l]
   repeat
     l := rest l
-    cons? l =>
+    l is [.,:.] =>
       t.rest := [first l]
       t := rest t
     t.rest := l
@@ -232,7 +232,7 @@ objectAssoc(x,l) ==
 substitute!(y,x,s) ==
   s = nil => nil
   sameObject?(x,s) => y
-  if cons? s then
+  if s is [.,:.] then
     s.first := substitute!(y,x,first s)
     s.rest := substitute!(y,x,rest s)
   s
@@ -240,7 +240,7 @@ substitute!(y,x,s) ==
 substitute(y,x,s) ==
   s = nil => nil
   sameObject?(x,s) => y
-  cons? s =>
+  s is [.,:.] =>
     h := substitute(y,x,first s)
     t := substitute(y,x,rest s)
     sameObject?(h,first s) and sameObject?(t,rest s) => s
@@ -249,7 +249,7 @@ substitute(y,x,s) ==
   
 applySubst(sl,t) ==
   sl = nil => t
-  cons? t =>
+  t is [.,:.] =>
     hd := applySubst(sl,first t)
     tl := applySubst(sl,rest t)
     sameObject?(hd,first t) and sameObject?(tl,rest t) => t
@@ -259,7 +259,7 @@ applySubst(sl,t) ==
 
 applySubst!(sl,t) ==
   sl = nil => t
-  cons? t =>
+  t is [.,:.] =>
     hd := applySubst!(sl,first t)
     tl := applySubst!(sl,rest t)
     t.first := hd
@@ -309,7 +309,7 @@ removeSymbol(l,x) ==
   before := nil
   l' := l
   repeat
-    not cons? l' => return l
+    l' isnt [.,:.] => return l
     [y,:l'] := l'
     symbolEq?(x,y) => return append!(reverse! before,l')
     before := [y,:before]
@@ -318,7 +318,7 @@ removeScalar(l,x) ==
   before := nil
   l' := l
   repeat
-    not cons? l' => return l
+    l' isnt [.,:.] => return l
     [y,:l'] := l'
     scalarEq?(x,y) => return append!(reverse! before,l')
     before := [y,:before]
@@ -327,7 +327,7 @@ removeValue(l,x) ==
   before := nil
   l' := l
   repeat
-    not cons? l' => return l
+    l' isnt [.,:.] => return l
     [y,:l'] := l'
     valueEq?(x,y) => return append!(reverse! before,l')
     before := [y,:before]
