@@ -924,7 +924,7 @@ matchMmSig(mm,tar,args1,args2) ==
   -- then the modemap condition is evaluated
   [sig,:.]:= mm
   if CONTAINED('_#, sig) then
-    sig := [replaceSharpCalls COPY t for t in sig]
+    sig := [replaceSharpCalls copyTree t for t in sig]
   args1 = nil => matchMmSigTar(tar,first sig)
   a:= rest sig
   arg:= nil

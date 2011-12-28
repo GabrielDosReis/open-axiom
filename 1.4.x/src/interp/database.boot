@@ -410,7 +410,7 @@ interactiveModemapForm mm ==
   --  create modemap form for use by the interpreter.  This function
   --  replaces all specific domains mentioned in the modemap with pattern
   --  variables, and predicates
-  mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
+  mm := replaceVars(copyTree mm,$PatternVariableList,$FormalMapVariableList)
   [pattern := [dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
     x is [a,b,c] and a isnt 'isFreeFunction and c isnt [.,:.] => [a,b,[c]]

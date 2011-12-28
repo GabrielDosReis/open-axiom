@@ -302,7 +302,7 @@ makePattern(args,pred) ==
     pred is ["=","#1",n] => n
     addPatternPred("#1",pred)
   u:= canMakeTuple(nargs,pred) => u
-  addPatternPred(["tuple",:TAKE(nargs,$FormalMapVariableList)],pred)
+  addPatternPred(["tuple",:take(nargs,$FormalMapVariableList)],pred)
 
 addPatternPred(arg,pred) ==
   pred=true => arg
@@ -375,7 +375,7 @@ putDependencies (op, dependencies) ==
   putFlag ("$dependencies", newDependencies)
 
 clearDependencies(x,clearLocalModemapsIfTrue) ==
-  $dependencies: local:= COPY getFlag "$dependencies"
+  $dependencies: local:= copyTree getFlag "$dependencies"
   clearDep1(x,nil,nil,$dependencies)
 
 clearDep1(x,toDoList,doneList,depList) ==
@@ -659,7 +659,7 @@ interpMap(opName,tar) ==
   $mapName : local := opName
   $mapTarget : local := tar
   body:= get(opName,'mapBody,$e)
-  savedTimerStack := COPY $timedNameStack
+  savedTimerStack := copyTree $timedNameStack
   catchName := mapCatchName $mapName
   c := CATCH(catchName, interpret1(body,tar,nil))
 --  $interpMapTag and $interpMapTag ~= mapCatchName $mapName =>

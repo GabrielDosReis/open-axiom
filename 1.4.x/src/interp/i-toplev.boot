@@ -267,7 +267,7 @@ printStatisticsSummary() ==
 interpretTopLevel(x, posnForm) ==
   --  Top level entry point from processInteractive1.  Sets up catch
   --  for a thrown result
-  savedTimerStack := COPY $timedNameStack
+  savedTimerStack := copyTree $timedNameStack
   c := CATCH('interpreter,interpret(x, posnForm))
   while savedTimerStack ~= $timedNameStack repeat
     stopTimingProcess peekTimedName()

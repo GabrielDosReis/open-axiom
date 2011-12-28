@@ -127,7 +127,7 @@ buildLibdbString [x,:u] ==
 
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemap conname
-  formals := TAKE(#argl,$FormalMapVariableList)
+  formals := take(#argl,$FormalMapVariableList)
   sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
     g(x,u,i) ==  --does x appear in any but i-th element of u?
@@ -496,7 +496,7 @@ getImports conname == --called by mkUsersHashTable
 getParentsFor(db,formalParams) ==
 --called by compDefineFunctor1
   acc := nil
-  formals := TAKE(#formalParams,$TriangleVariableList)
+  formals := take(#formalParams,$TriangleVariableList)
   constructorForm := dbConstructorForm db
   for x in folks dbCategory db repeat
     x := applySubst(pairList(formals,formalParams),x)
@@ -653,7 +653,7 @@ domainsOf(conform,domname,:options) ==
     | key is [anc,: =conname]]
   --u is list of pairs (a . b) where b() = conname
   --we sort u then replace each b by the predicate for which this is true
-  s := listSort(function GLESSEQP,COPY u)
+  s := listSort(function GLESSEQP,copyTree u)
   s := [[first pair,:constructorHasCategoryFromDB pair] for pair in s]
   transKCatAlist(conform,domname,listSort(function GLESSEQP,s))
 
@@ -696,7 +696,7 @@ transKCatAlist(conform,domname,s) == main where
     --no domname, so look for special argument combinations
     acc := nil
     KDR conform =>
-      farglist := TAKE(#rest conform,$FormalMapVariableList)
+      farglist := take(#rest conform,$FormalMapVariableList)
       for pair in s repeat --pair has form [con,[conargs,:pred],...]]
         leftForm := getConstructorForm first pair
         for (ap := [args,:pred]) in rest pair repeat

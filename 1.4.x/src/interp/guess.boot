@@ -65,7 +65,7 @@ removeDupOrderedAlist u ==
  
 wordsOfString(s) == [stringUpcase x for x in wordsOfStringKeepCase s]
  
-wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
+wordsOfStringKeepCase s == wordsOfString1(s,0) or [copyTree s]
  
 wordsOfString1(s,j) ==
   k := or/[i for i in j..(maxIndex(s)-1) | upperCase? stringChar(s,i)] =>
@@ -149,7 +149,7 @@ moreWords(word,table) ==
 findApproximateWords(word,table) ==
   count := $countThreshold
   words:= wordsOfString word
-  upperWord:= UPCASE COPY word
+  upperWord:= UPCASE copyTree word
   n := #words
   threshold:=
     n = 1 => count

@@ -1121,7 +1121,7 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
       (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
     #u
   u isnt [.,:.] => # atom2String u
-  WIDTH COPY u
+  WIDTH copyTree u
 
 WIDTH u ==
   string? u =>
@@ -1913,7 +1913,7 @@ charyElse(u,v,start,linelength) ==
 scylla(n,v) ==
   y := LASSOC(n,v)
   null y => nil
-  if string?(y) then y := DROPTRAILINGBLANKS COPY y
+  if string?(y) then y := DROPTRAILINGBLANKS copyTree y
   if $collectOutput then
     $outputLines := [y, :$outputLines]
   else
@@ -2646,7 +2646,7 @@ maPrin u ==
   null u => nil
 -->
   if $runTestFlag or $mkTestFlag then
-    $mkTestOutputStack := [COPY u, :$mkTestOutputStack]
+    $mkTestOutputStack := [copyTree u, :$mkTestOutputStack]
   $highlightDelta := 0
   c := CATCH('outputFailure,charybdis(u, $MARGIN, $LINELENGTH))
   c ~= 'outputFailure => c

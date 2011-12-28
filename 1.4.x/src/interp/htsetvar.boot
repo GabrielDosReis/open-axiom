@@ -46,7 +46,7 @@ htSetVars() ==
   htShowSetTree($setOptions)
 
 htShowSetTree(setTree) ==
-  $path := TAKE(- LASTATOM setTree,$path)
+  $path := take(- LASTATOM setTree,$path)
   page := htInitPage(mkSetTitle(),nil)
   htpSetProperty(page, 'setTree, setTree)
   links := nil
@@ -100,7 +100,7 @@ listOfStrings2String u ==
 
 htShowSetPage(htPage, branch) ==
   setTree := htpProperty(htPage, 'setTree)
-  $path := [branch,:TAKE(- LASTATOM setTree,$path)]
+  $path := [branch,:take(- LASTATOM setTree,$path)]
   setData := assoc(branch, setTree)
   null setData =>
     systemError('"No Set Data")

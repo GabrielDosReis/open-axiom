@@ -140,7 +140,7 @@ Undef(:u) ==
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 
-  COPY $InitialModemapFrame
+  copyTree $InitialModemapFrame
  
 isCapitalWord x ==
   (y := PNAME x) and and/[upperCase? y.i for i in 0..maxIndex y]

@@ -2440,7 +2440,7 @@ undoSteps(m,beforeOrAfter) ==
   writeInputLines('redo,$IOindex - m)
   recordFrame('normal)  --do NOT mark this as a system command change
                        --do this undo FIRST (i=0 case)
-  env := COPY CAAR $InteractiveFrame
+  env := copyTree CAAR $InteractiveFrame
   for i in 0..m for framelist in tails $frameRecord repeat
     env := undoSingleStep(first framelist,env)
     framelist is [.,['systemCommand,:systemDelta],:.] =>
@@ -2672,7 +2672,7 @@ filterListOfStringsWithFn(patterns,names,fn) ==
 satisfiesRegularExpressions(name,patterns) ==
   -- this is a first cut
   nf := true
-  dname := DOWNCASE COPY name
+  dname := DOWNCASE copyTree name
   for pattern in patterns while nf repeat
     -- use @ as a wildcard
     STRPOS(pattern,dname,0,'"@") => nf := nil

@@ -182,7 +182,7 @@ finalizeDocumentation ctor ==
   hn [[:fn(sig,$e,form.args),:doc] for [sig,:doc] in docList] where
     fn(x,e,args) ==
       x isnt [.,:.] => [x,nil]
-      if #x > 2 then x := TAKE(2,x)
+      if #x > 2 then x := take(2,x)
       applySubst(pairList(args,$FormalMapVariableList),macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)

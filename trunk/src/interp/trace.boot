@@ -290,7 +290,7 @@ genDomainTraceName y ==
 --this is now called from trace with the )off option
 untrace l ==
   $lastUntraced:=
-    null l => COPY _/TRACENAMES
+    null l => copyTree _/TRACENAMES
     l
   untraceList:= [transTraceItem x for x in l]
   _/UNTRACE_,0 [lassocSub(funName,$mapSubNameAlist) for

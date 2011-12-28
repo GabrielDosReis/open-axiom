@@ -118,7 +118,7 @@ testPrin(u,w) == --same as maPrin but lines are stored in $testOutputLineList
   $mkTestFlag: local := nil
   $testOutputLineFlag: local := true
   $testOutputLineList: local := nil
-  maPrin COPY u
+  maPrin copyTree u
   res := reverse $testOutputLineList
   for x in res repeat sayBrightly x
   res
@@ -131,7 +131,7 @@ hyperize(u,w) ==
   $mkTestFlag: local := nil
   $testOutputLineFlag: local := true
   $testOutputLineList: local := nil
-  maPrin COPY u
+  maPrin copyTree u
   res := reverse $testOutputLineList
   null res => '""
   null rest res => first res

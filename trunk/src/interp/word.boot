@@ -105,7 +105,7 @@ getListOfFunctionNames(fnames) ==
 wordsOfString(s) ==
   [stringUpcase x for x in wordsOfStringKeepCase s]
  
-wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
+wordsOfStringKeepCase s == wordsOfString1(s,0) or [copyTree s]
  
 wordsOfString1(s,j) ==
   k := or/[i for i in j..(maxIndex(s)-1) | isBreakCharacter stringChar(s,i)] =>
@@ -169,8 +169,8 @@ pickANumber(word,list) ==
     REMAINDER(length := # short,2) ~= 0 => 1
     0
   halfLength:= length/2
-  firstList:= TAKE(halfLength,short)
-  secondList:= TAKE(-halfLength,short)
+  firstList:= take(halfLength,short)
+  secondList:= take(-halfLength,short)
   secondStartIndex:= halfLength + extra
   shortList:=
     "append"/[[[:bright i,fillerSpaces(xx-WIDTH i,char " "),x],
@@ -198,15 +198,15 @@ bootSearch word ==
       pattern := patternTran key -- converts * to &
       pattern.0 ~= char "&" =>
         [x for [x,:.] in tableValue($functionTable,UPCASE pattern.0)|
-          match?(pattern,COPY x)]
-      "append"/[[x for [x,:.] in v | match?(pattern,COPY x)]
+          match?(pattern,copyTree x)]
+      "append"/[[x for [x,:.] in v | match?(pattern,copyTree x)]
                   for [k,:v] in entries $functionTable]
     findApproximateWords(PNAME word,$functionTable)
   list
  
 findApproximateWords(word,table) ==
   words:= wordsOfString word
-  upperWord:= UPCASE COPY word
+  upperWord:= UPCASE copyTree word
   n := #words
   threshold:=
     n = 1 => 3
@@ -272,7 +272,7 @@ findApproximateWords(word,table) ==
   lastThreshold := MAX(3,wordSize/2)
   vec := GETREFV lastThreshold
   for [x,:.] in alist repeat
-    k := deltaWordEntry(upperWord,UPCASE COPY x)
+    k := deltaWordEntry(upperWord,UPCASE copyTree x)
     k < lastThreshold => vec.k := [x,:vec.k]
   or/[vec.k for k in 0..maxIndex vec]
  
@@ -399,5 +399,5 @@ obSearch x ==
   vec:= OBARRAY()
   pattern:= PNAME x
   [y for i in 0..maxIndex OBARRAY() |
-    (ident? (y := vec.i) or CVEC y) and match?(pattern,COPY y)]
+    (ident? (y := vec.i) or CVEC y) and match?(pattern,copyTree y)]
  

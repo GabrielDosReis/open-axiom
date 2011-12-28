@@ -1225,7 +1225,7 @@ compExit(["exit",level,x],m,e) ==
 
 modifyModeStack(m,index) ==
   $reportExitModeStack =>
-    SAY("exitModeStack: ",COPY $exitModeStack," ====> ",
+    SAY("exitModeStack: ",copyTree $exitModeStack," ====> ",
       ($exitModeStack.index:= resolve(m,$exitModeStack.index); $exitModeStack))
   $exitModeStack.index:= resolve(m,$exitModeStack.index)
 
@@ -1363,7 +1363,7 @@ compHas(pred is ["has",a,b],m,e) ==
 
 compHasFormat(pred is ["has",olda,b],e) ==
   argl := $form.args
-  formals := TAKE(#argl,$FormalMapVariableList)
+  formals := take(#argl,$FormalMapVariableList)
   a := applySubst(pairList(formals,argl),olda)
   [a,.,e] := comp(a,$EmptyMode,e) or return nil
   a := applySubst(pairList(argl,formals),a)
@@ -1871,7 +1871,7 @@ coerceExtraHard(T is [x,m',e],m) ==
   -- FIXME: inherently difficult to comprehend and likely broken.
   T' := autoCoerceByModemap(T,m) => T'
   m' is ['Record,:.] and m = $OutputForm =>
-      [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
+      [['coerceRe2E,x,['ELT,copyTree m',0]],m,e]
   -- Domain instantiations are first class objects
   m = $Domain =>
     m' = $Category => nil

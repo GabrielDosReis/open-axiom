@@ -144,7 +144,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   minivectorName := makeInternalMapMinivectorName nam
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   symbolValue(minivectorName) := vector $minivector
-  argl := COPY argl     -- play it safe for optimization
+  argl := copyTree argl     -- play it safe for optimization
   init :=
     not(isRecursive and $compileRecurrence and #argl = 1) => nil
     isRecurrenceRelation(nam,body,minivectorName)

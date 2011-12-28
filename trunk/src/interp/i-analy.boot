@@ -513,7 +513,7 @@ bottomUpForm(t,op,opName,argl,argModeSetList) ==
   bottomUpForm2(t,op,opName,argl,argModeSetList)
 
 bottomUpForm3(t,op,opName,argl,argModeSetList) ==
-  $origArgModeSetList:local  := COPY argModeSetList
+  $origArgModeSetList:local  := copyTree argModeSetList
   bottomUpForm2(t,op,opName,argl,argModeSetList)
 
 bottomUpForm2(t,op,opName,argl,argModeSetList) ==

@@ -186,20 +186,6 @@
  
 (DEFUN LASTATOM (L) (if (ATOM L) L (LASTATOM (CDR L))))
  
-(defun DROP (N X &aux m)
-  "Return a pointer to the Nth cons of X, counting 0 as the first cons."
-  (COND ((EQL N 0) X)
-        ((> N 0) (DROP (1- N) (CDR X)))
-        ((>= (setq m (+ (length x) N)) 0) (take m x))
-        ((CROAK (list "Bad args to DROP" N X)))))
- 
-(DEFUN TAKE (N X &aux m)
-  "Returns a list of the first N elements of list X."
-  (COND ((EQL N 0) NIL)
-        ((> N 0) (CONS (CAR X) (TAKE (1- N) (CDR X))))
-        ((>= (setq m (+ (length x) N)) 0) (drop m x))
-        ((CROAK (list "Bad args to DROP" N X)))))
- 
 (DEFUN NUMOFNODES (X) (if (ATOM X) 0 (+ 1 (NUMOFNODES (CAR X)) (NUMOFNODES (CDR X)))))
  
 (DEFUN TRUNCLIST (L TL) "Truncate list L at the point marked by TL."

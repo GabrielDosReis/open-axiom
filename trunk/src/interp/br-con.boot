@@ -510,7 +510,7 @@ augmentHasArgs(alist,conform) ==
   n       := #args
   [[name,:pred] for [name,:p] in alist] where pred() ==
      extractHasArgs p is [a,:b] => p
-     quickAnd(p,['hasArgs,:TAKE(n,KDR getConstructorForm opOf name)])
+     quickAnd(p,['hasArgs,:take(n,KDR getConstructorForm opOf name)])
 
 kcdePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)

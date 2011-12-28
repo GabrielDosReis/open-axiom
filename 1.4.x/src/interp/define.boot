@@ -947,8 +947,8 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,fal) ==
   [d,m,e]
 
 makeCategoryPredicates(form,u) ==
-      $tvl: local := TAKE(#rest form,$TriangleVariableList)
-      $mvl: local := TAKE(#rest form,rest $FormalMapVariableList)
+      $tvl: local := take(#rest form,$TriangleVariableList)
+      $mvl: local := take(#rest form,rest $FormalMapVariableList)
       fn(u,nil) where
         fn(u,pl) ==
           u is ['Join,:.,a] => fn(a,pl)
@@ -1084,7 +1084,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
 
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
-    sargl:= TAKE(# form.args, $TriangleVariableList)
+    sargl:= take(# form.args, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     formalBody := dbSubstituteFormals(db,body)
@@ -2308,11 +2308,11 @@ doItConditionally(item,predl) ==
     doItConditionally(item,predl)
   p is ["and",p',p''] =>
     item.rest.first := p'
-    item.rest.rest.first := ["IF",p'',x,COPY y]
+    item.rest.rest.first := ["IF",p'',x,copyTree y]
     doItConditionally(item,predl)
   p is ["or",p',p''] =>
     item.rest.first := p'
-    item.rest.rest.rest.first := ["IF",p'',COPY x,y]
+    item.rest.rest.rest.first := ["IF",p'',copyTree x,y]
     doItConditionally(item,predl)
   doItIf(item,predl,$e)
     
@@ -2476,9 +2476,9 @@ compCategoryItem(x,predl,env,sigs,atts) ==
   x is ["IF",a,b,c] =>
     a is ["not",p] => compCategoryItem(["IF",p,c,b],predl,env,sigs,atts)
     a is ["and",p,q] =>
-      compCategoryItem(["IF",p,["IF",q,b,c],COPY c],predl,env,sigs,atts)
+      compCategoryItem(["IF",p,["IF",q,b,c],copyTree c],predl,env,sigs,atts)
     a is ["or",p,q] =>
-      compCategoryItem(["IF",p,b,["IF",q,COPY b,c]],predl,env,sigs,atts)
+      compCategoryItem(["IF",p,b,["IF",q,copyTree b,c]],predl,env,sigs,atts)
     predl':= [a,:predl]
     if b~="%noBranch" then
       b is ["PROGN",:l] => 

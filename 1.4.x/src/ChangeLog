@@ -1,5 +1,42 @@
 2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Do not rewrite drop and take.
+	* boot/utility.boot (drop): Define and export.
+	(take): Likewise.
+	* interp/br-con.boot: Use take, not TAKE; use drop, not DROP.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-special.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/record.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/word.boot: Likewise.
+	* interp/macros.lisp (DROP): Remove.
+	(TAKE): Likewise.
+
+2011-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (coagulateWhenSeries): Simplify.
 	(packWhen!): Likewise.
 	(unnestWhen!): Tidy.

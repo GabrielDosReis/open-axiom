@@ -48,8 +48,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
-  remove, removeSymbol, atomic?, every?, any?, takeWhile, copyTree,
-  finishLine) where
+  remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
+  copyTree, finishLine) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -66,7 +66,9 @@ module utility (objectMember?, symbolMember?, stringMember?,
     atomic?: %Thing -> %Boolean
     every?: (%Thing -> %Thing, %List %Thing) -> %Thing
     any?: (%Thing -> %Thing, %List %Thing) -> %Thing
+    take: (%Short,%List %Thing) -> %List %Thing
     takeWhile: (%Thing -> %Thing, %List %Thing) -> %List %Thing
+    drop: (%Short,%List %Thing) -> %List %Thing
     copyTree: %Thing -> %Thing
     finishLine: %Thing -> %Void
     --FIXME: Next signature commented out because of GCL bugs
@@ -90,9 +92,24 @@ every?(f,l) ==
 any?(f,l) ==
   or/[apply(f,x,nil) for x in l]
 
+++ Return the `n' node prefixes of the list `l'.  If `n' is negative,
+++ take from the end of the list.
+take(n,l) ==
+  n >= 0 => [x for x in l for . in 1..n]
+  drop(#l+n,l)
+
 ++ Return the sublist of `l' whose elements have non-nil image by `f'.
 takeWhile(f,l) ==
   [x for x in l while apply(f,x,nil)]
+
+++ Return the `n+1'th node and its successors of the list `l'.
+++ If `n' is negative, drop from the end.
+drop(n,l) ==
+  n >= 0 =>
+    while n > 0 and l is [.,:l] repeat
+      n := n - 1
+    l
+  take(#l+n,l)
 
 copyTree t ==
   t is [.,:.] => [copyTree first t,:copyTree rest t]
