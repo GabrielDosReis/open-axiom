@@ -38,41 +38,46 @@ Localize(M:Module R,
          ++ denom x returns the denominator of x.
  ==
   add
-    --representation
-      Rep:= Record(num:M,den:S)
-    --declarations
+      Rep == Record(num:M,den:S)
       x,y: %
       n: Integer
       m: M
       r: R
       d: S
-    --definitions
-      0 == [0,1]
-      zero? x == zero? (x.num)
-      -x== [-x.num,x.den]
-      x=y == y.den*x.num = x.den*y.num
-      before?(x,y) == before?(y.den*x.num, x.den*y.num)
-      numer x == x.num
-      denom x == x.den
+      0 == per [0,1]
+      zero? x == zero? rep(x).num
+      -x ==
+        per [-rep(x).num,rep(x).den]
+      x=y ==
+        rep(y).den*rep(x).num = rep(x).den*rep(y).num
+      before?(x,y) ==
+        before?(rep(y).den*rep(x).num, rep(x).den*rep(y).num)
+      numer x == rep(x).num
+      denom x == rep(x).den
       if M has OrderedAbelianGroup then
         x < y == 
---             if y.den::R < 0 then (x,y):=(y,x)
---             if x.den::R < 0 then (x,y):=(y,x)
-             y.den*x.num < x.den*y.num
-      x+y == [y.den*x.num+x.den*y.num, x.den*y.den]
-      n*x == [n*x.num,x.den]
-      r*x == if r=x.den then [x.num,1] else [r*x.num,x.den]
+          rep(y).den*rep(x).num < rep(x).den*rep(y).num
+      x+y ==
+        per [rep(y).den*rep(x).num+rep(x).den*rep(y).num, rep(x).den*rep(y).den]
+      n*x ==
+        per [n*rep(x).num,rep(x).den]
+      r*x ==
+        r=rep(x).den => per [rep(x).num,1]
+        per [r*rep(x).num,rep(x).den]
       x/d ==
-        zero?(u:S:=d*x.den) => error "division by zero"
-        [x.num,u]
-      m/d == if zero? d then error "division by zero" else [m,d]
+        u: S := d*rep(x).den
+        zero? u => error "division by zero"
+        per [rep(x).num,u]
+      m/d ==
+        zero? d => error "division by zero"
+        per [m,d]
       coerce(x:%):OutputForm ==
-        one?(xd:=x.den) => (x.num)::OutputForm
-        (x.num)::OutputForm / (xd::OutputForm)
+        one?(xd:=rep(x).den) => rep(x).num::OutputForm
+        rep(x).num::OutputForm / (xd::OutputForm)
       latex(x:%): String ==
-        one?(xd:=x.den) => latex(x.num)
-        nl : String := concat("{", concat(latex(x.num), "}")$String)$String
-        dl : String := concat("{", concat(latex(x.den), "}")$String)$String
+        one?(xd:=rep(x).den) => latex rep(x).num
+        nl : String := concat("{", concat(latex rep(x).num, "}")$String)$String
+        dl : String := concat("{", concat(latex rep(x).den, "}")$String)$String
         concat("{ ", concat(nl, concat(" \over ", concat(dl, " }")$String)$String)$String)$String
 
 @
