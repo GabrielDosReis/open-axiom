@@ -44,7 +44,8 @@ module define where
   compCapsule: (%Form, %Mode, %Env) -> %Maybe %Triple
   compJoin: (%Form,%Mode,%Env) -> %Maybe %Triple 
   compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
-  compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
+  compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
+  evalCategoryForm: (%Form,%Env) -> %Maybe %Shell
 
 
 --%
@@ -909,7 +910,7 @@ macroExpandList(l,e) ==
  
 mkEvalableCategoryForm c ==
   c is [op,:argl] =>
-    op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
+    op is "Join" => [op,:[mkEvalableCategoryForm x for x in argl]]
     op is "DomainSubstitutionMacro" => mkEvalableCategoryForm second argl
     op is "mkCategory" => c
     builtinCategoryName? op =>
@@ -922,6 +923,9 @@ mkEvalableCategoryForm c ==
     m=$Category => x
   MKQ c
  
+evalCategoryForm(x,e) ==
+  eval mkEvalableCategoryForm x
+
 ++ Return true if we should skip compilation of category package.
 ++ This situation happens either when there is no default, of we are in
 ++ bootstrap mode.
@@ -986,7 +990,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     x isnt [.,:.] => oplist
     x is ['DEF,y,:.] => [opOf y,:oplist]
     fn(x.args,fn(x.op,oplist))
-  catvec := eval mkEvalableCategoryForm form
+  catvec := evalCategoryForm(form,$e)
   fullCatOpList := categoryExports JoinInner([catvec],$e)
   catOpList :=
     [mkExportFromDescription desc for desc in fullCatOpList
@@ -1160,7 +1164,7 @@ compDefineCategory(df,m,e,fal) ==
 compMakeCategoryObject: (%Form,%Env) -> %Maybe %CatObjRes
 compMakeCategoryObject(c,$e) ==
   not isCategoryForm(c,$e) => nil
-  u:= mkEvalableCategoryForm c => [eval u,$Category,$e]
+  u := evalCategoryForm(c,$e) => [u,$Category,$e]
   nil
 
 predicatesFromAttributes: %List %Form -> %List %Form
