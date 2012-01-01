@@ -1,0 +1,7 @@
+2012-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (evalCategoryForm): New.
+	(mkCategoryPackage): Use it.
+	(compMakeCategoryObject): Likewise.
+	* interp/nruncomp.boot (NRTsetVector4a): Likewise.
+

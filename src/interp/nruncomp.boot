@@ -555,8 +555,8 @@ NRTsetVector4a(sig,form,cond) ==
      $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
      $uncondList
-  evalform := eval mkEvalableCategoryForm form
-  cond = true =>
+  evalform := evalCategoryForm(form,$e)
+  cond is true =>
     $uncondList := [form,:append(categoryPrincipals evalform,$uncondList)]
   $condList := [[cond,[form,:categoryPrincipals evalform]],:$condList]
 
