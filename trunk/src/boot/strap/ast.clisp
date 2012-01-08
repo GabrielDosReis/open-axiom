@@ -2329,6 +2329,9 @@
 
 (DEFUN |bfDs| (|n|) (COND ((EQL |n| 0) "") (T (CONCAT "D" (|bfDs| (- |n| 1))))))
 
+(DEFUN |bfEnum| (|t| |csts|)
+  (LIST 'DEFTYPE |t| NIL (|backquote| (CONS 'MEMBER |csts|) NIL)))
+
 (DEFUN |bfHandlers| (|n| |e| |hs|) (|bfHandlers,main| |n| |e| |hs| NIL))
 
 (DEFUN |bfHandlers,main| (|n| |e| |hs| |xs|)

@@ -43,5 +43,5 @@ namespace BOOT
 
 %Modemap <=> %List(%Form)                      -- modemap
 
-%ConstructorKind <=>                           -- kind of ctor instances
-  MEMBER(category,domain,package)
+structure %ConstructorKind ==                  -- kind of ctor instances
+  Enumeration(category,domain,package)

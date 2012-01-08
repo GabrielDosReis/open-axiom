@@ -479,7 +479,9 @@ translateToplevel(b,export?) ==
 
     %Macro(op,args,body) => bfMDef(op,args,body)
 
-    %Structure(t,alts) => [bfCreateDef alt for alt in alts]
+    %Structure(t,alts) =>
+      alts is [['Enumeration,:csts]] => [bfEnum(t,csts)]
+      [bfCreateDef alt for alt in alts]
 
     %Namespace n =>
       $activeNamespace := symbolName n

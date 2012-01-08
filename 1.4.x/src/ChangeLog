@@ -1,3 +1,10 @@
+2012-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfEnum): New.
+	* boot/translator.boot (translateToplevel): Use it to translate
+	enumeration definitions.
+	* interp/types.boot (%ConstructorKind): Use new syntax.
+
 2012-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (evalCategoryForm): New.

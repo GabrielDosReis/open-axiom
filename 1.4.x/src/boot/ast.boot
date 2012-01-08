@@ -1312,6 +1312,9 @@ bfDs n ==
   n = 0 => '""
   strconc('"D",bfDs(n-1))
 
+bfEnum(t,csts) ==
+  ['DEFTYPE,t,nil,backquote(['MEMBER,:csts],nil)]
+
 bfHandlers(n,e,hs) == main(n,e,hs,nil) where
   main(n,e,hs,xs) ==
     hs = nil =>
