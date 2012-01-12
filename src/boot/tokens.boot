@@ -132,6 +132,11 @@ shoeKeyTableCons()==
  
 shoeKeyTable:=shoeKeyTableCons()
  
+keywordId t ==
+  s := or/[k for [k,:v] in entries shoeKeyTable | symbolEq?(v,t)] =>
+    makeSymbol s
+  t
+
 shoeInsert(s,d) ==
   l := #s
   h := codePoint stringChar(s,0)

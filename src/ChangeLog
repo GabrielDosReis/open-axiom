@@ -1,3 +1,9 @@
+2012-01-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot (keywordId): New.
+	* boot/parser.boot (bpSexpKey): Use it.
+	* interp/i-map.boot (mapPredTran): Fix thinko.
+
 2012-01-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot (bpRequire): New.  Use it throughout this module.
