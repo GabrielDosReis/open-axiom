@@ -388,7 +388,7 @@
     (AND (|bpPush| (LIST '+LINE |$ttok|)) (|bpNext|)))
    ((|bpEqPeek| 'QUOTE) (|bpNext|)
     (AND (|bpRequire| #'|bpSexp|) (|bpPush| (|bfSymbol| (|bpPop1|)))))
-   (T (|bpString|))))
+   (T (OR (|bpString|) (|bpFunction|)))))
 
 (DEFUN |bpChar| ()
   (PROG (|ISTMP#1| |s| |a|)
@@ -530,7 +530,7 @@
      (COND
       ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (NOT (|bpExceptions|)))
        (SETQ |a| (GET |$ttok| 'SHOEINF))
-       (COND ((NULL |a|) (AND (|bpPush| |$ttok|) (|bpNext|)))
+       (COND ((NULL |a|) (AND (|bpPush| (|keywordId| |$ttok|)) (|bpNext|)))
              (T (AND (|bpPush| |a|) (|bpNext|)))))
       (T NIL)))))
 
@@ -654,6 +654,10 @@
   (DECLARE (SPECIAL |$stok| |$ttok|))
   (AND (EQ (|shoeTokType| |$stok|) 'STRING)
        (|bpPush| (|quote| (INTERN |$ttok|))) (|bpNext|)))
+
+(DEFUN |bpFunction| ()
+  (AND (|bpEqKey| 'FUNCTION) (|bpRequire| #'|bpPrimary1|)
+       (|bpPush| (|bfFunction| (|bpPop1|)))))
 
 (DEFUN |bpThetaName| ()
   (DECLARE (SPECIAL |$stok| |$ttok|))

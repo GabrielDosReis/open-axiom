@@ -385,7 +385,7 @@ bpConstTok() ==
     bpNext()
     bpRequire function bpSexp and
       bpPush bfSymbol bpPop1()
-  bpString()
+  bpString() or bpFunction()
 
 bpChar() ==
   $stok is ["ID",:.] and $ttok is "char" =>
@@ -663,6 +663,10 @@ bpString()==
   shoeTokType $stok is "STRING" and
     bpPush(quote makeSymbol $ttok) and bpNext()
  
+bpFunction() ==
+  bpEqKey "FUNCTION" and bpRequire function bpPrimary1
+    and bpPush bfFunction bpPop1()
+
 bpThetaName() ==
   $stok is ["ID",:.] and $ttok has SHOETHETA =>
     bpPushId()

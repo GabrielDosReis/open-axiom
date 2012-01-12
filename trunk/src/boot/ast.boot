@@ -151,6 +151,8 @@ bfSymbol x==
   string? x=> x
   quote x
 
+bfFunction x ==
+  ["FUNCTION",x]
  
 bfDot: () -> %Symbol
 bfDot() == 

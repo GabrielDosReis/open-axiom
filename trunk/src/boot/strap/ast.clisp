@@ -179,6 +179,8 @@
 
 (DEFUN |bfSymbol| (|x|) (COND ((STRINGP |x|) |x|) (T (|quote| |x|))))
 
+(DEFUN |bfFunction| (|x|) (LIST 'FUNCTION |x|))
+
 (DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfDot|))
 
 (DEFUN |bfDot| () 'DOT)

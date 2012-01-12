@@ -1,3 +1,10 @@
+2012-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpFunction): New.
+	(bpConstTok): Include it.
+	* boot/ast.boot (bfFunction): New.
+	* boot/tokens.boot: `function' is now a keyword.
+
 2012-01-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot (keywordId): New.
