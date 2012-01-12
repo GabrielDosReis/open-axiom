@@ -549,15 +549,15 @@ bpExceptions()==
  
  
 bpSexpKey()==
-  $stok is ["KEY",:.] and not bpExceptions()=>
+  $stok is ["KEY",:.] and not bpExceptions() =>
     a := $ttok has SHOEINF
-    a = nil =>  bpPush $ttok and bpNext()
+    a = nil =>  bpPush keywordId $ttok and bpNext()
     bpPush a and bpNext()
   false
  
 bpAnyId()==
   bpEqKey "MINUS"  and ($stok is ["INTEGER",:.] or bpTrap()) and
-          bpPush MINUS $ttok and bpNext() or
+          bpPush(-$ttok) and bpNext() or
              bpSexpKey() or
                    shoeTokType $stok in '(ID INTEGER STRING FLOAT)
                       and  bpPush $ttok and  bpNext()
