@@ -67,6 +67,7 @@ shoeKeyWords == [  _
             ['"finally", "FINALLY"], _
             ['"for",  "FOR"] , _
             ['"forall", "FORALL"] , _
+            ['"function", "FUNCTION"] , _
             ['"has", "HAS"] , _
             ['"if", "IF"], _
             ['"import", "IMPORT"], _
@@ -269,7 +270,6 @@ for i in [ _
   ["float?",   "FLOATP"] , _
   ["flushOutput", "FORCE-OUTPUT"], _
   ["fourth",    "CADDDR"]  , _
-  ["function","FUNCTION"] , _
   ["function?","FUNCTIONP"] , _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
