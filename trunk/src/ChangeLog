@@ -1,5 +1,12 @@
 2012-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot: Rename AncestorP to ancestor?.
+	Rename DescendantP to descendant?.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+
+2012-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpFunction): New.
 	(bpConstTok): Include it.
 	* boot/ast.boot (bfFunction): New.

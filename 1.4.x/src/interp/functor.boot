@@ -631,7 +631,7 @@ InvestigateConditions(catvecListMaker,env) ==
               old=true => old
               for [newS2,:morecond] in newS repeat
                 old:=
-                  not AncestorP(sec,[newS2],env) => old
+                  not ancestor?(sec,[newS2],env) => old
                   cond2 := mkAnd(cond,morecond,env)
                   null old => cond2
                   mkOr(cond2,old,env)
@@ -678,7 +678,7 @@ ICformat(u,env) ==
                                   --check that v causes descendants to go
                 for v in l | not (v=u) and v is ['HasCategory, =name,['QUOTE,
                   cond2]] repeat
-                       if DescendantP(cond,cond2,env) then l:= remove(l,u)
+                       if descendant?(cond,cond2,env) then l:= remove(l,u)
                        --v subsumes u
             for u in l | u is ['AND,:l'] or u is ['and,:l'] repeat
               for u' in l' | u' is ['HasCategory,name,cond] and cond is ['QUOTE,
@@ -686,7 +686,7 @@ ICformat(u,env) ==
                                     --check that v causes descendants to go
                   for v in l | v is ['HasCategory, =name,['QUOTE,
                     cond2]] repeat
-                        if DescendantP(cond,cond2,env) then l:= remove(l,u)
+                        if descendant?(cond,cond2,env) then l:= remove(l,u)
                          --v subsumes u
             l
         # l=1 => first l

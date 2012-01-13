@@ -199,8 +199,8 @@ mkOr(a,b,e) ==
       (b is ["OR",:b'] => union(a',b'); mkOr2(b,a',e) )
     b is ["OR",:b'] => mkOr2(a,b',e)
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat,e) => [b]
-      DescendantP(bcat,acat,e) => [a]
+      descendant?(acat,bcat,e) => [b]
+      descendant?(bcat,acat,e) => [a]
       [a,b]
     a is ['AND,:a'] and listMember?(b,a') => [b]
     b is ['AND,:b'] and listMember?(a,b') => [a]
@@ -217,9 +217,9 @@ mkOr2(a,b,e) ==
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
-      DescendantP(acat,ccat,e) =>
+      descendant?(acat,ccat,e) =>
         return (aRedundant:=true)
-      if DescendantP(ccat,acat,e) then b := remove(b,c)
+      if descendant?(ccat,acat,e) then b := remove(b,c)
     aRedundant => b
     [a,:b]
   [a,:b]
@@ -234,8 +234,8 @@ mkAnd(a,b,e) ==
       (b is ["AND",:b'] => union(a',b'); mkAnd2(b,a',e) )
     b is ["AND",:b'] => mkAnd2(a,b',e)
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat,e) => [a]
-      DescendantP(bcat,acat,e) => [b]
+      descendant?(acat,bcat,e) => [a]
+      descendant?(bcat,acat,e) => [b]
       [a,b]
     [a,b]
   #l = 1 => first l
@@ -248,9 +248,9 @@ mkAnd2(a,b,e) ==
   a is ["has",avar,acat] =>
     aRedundant:=false
     for c in b | c is ["has",=avar,ccat] repeat
-      DescendantP(ccat,acat,e) =>
+      descendant?(ccat,acat,e) =>
         return (aRedundant:=true)
-      if DescendantP(acat,ccat,e) then b := remove(b,c)
+      if descendant?(acat,ccat,e) then b := remove(b,c)
     aRedundant => b
     [a,:b]
   [a,:b]
@@ -325,8 +325,8 @@ CatEval(x,e) ==
     e := $CategoryFrame
   compMakeCategoryObject(x,e).expr
  
-AncestorP: (%Form,%List %Instantiation,%Env) -> %Form
-AncestorP(xname,leaves,env) ==
+ancestor?: (%Form,%List %Instantiation,%Env) -> %Form
+ancestor?(xname,leaves,env) ==
   -- checks for being a principal ancestor of one of the leaves
   listMember?(xname,leaves) => xname
   for y in leaves repeat
@@ -345,8 +345,8 @@ CondAncestorP(xname,leaves,condition,env) ==
 
 ++ Returns true if the form `a' designates a category that is any 
 ++ kind of descendant of the category designated by the form `b'.
-DescendantP: (%Form,%Form,%Env) -> %Boolean
-DescendantP(a,b,e) ==
+descendant?: (%Form,%Form,%Env) -> %Boolean
+descendant?(a,b,e) ==
   a=b => true
   a is ["ATTRIBUTE",:.] => false
   a is ["SIGNATURE",:.] => false
@@ -354,7 +354,7 @@ DescendantP(a,b,e) ==
   b is ["ATTRIBUTE",b'] =>
     (l := assoc(b',categoryAttributes a)) => TruthP second l
   listMember?(b,categoryPrincipals a) => true
-  AncestorP(b,[first u for u in categoryAncestors a],e) => true
+  ancestor?(b,[first u for u in categoryAncestors a],e) => true
   false
  
 --% The implementation of Join
@@ -406,7 +406,7 @@ JoinInner(l,$e) ==
   -- this skips buggy code which discards needed categories
   for [b,condition] in FindFundAncs(l',$e) | bname := b.0 repeat
     CondAncestorP(bname,FundamentalAncestors,condition,$e) => nil
-    f := AncestorP(bname,[first u for u in FundamentalAncestors],$e) =>
+    f := ancestor?(bname,[first u for u in FundamentalAncestors],$e) =>
       [.,.,index] := assoc(f,FundamentalAncestors)
       FundamentalAncestors := [[bname,condition,index],:FundamentalAncestors]
     PrinAncb := categoryPrincipals CatEval(bname,$e)
