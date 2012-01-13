@@ -210,7 +210,7 @@ knownInfo(pred,env) ==
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
-    or/[AncestorP(cat,[first u],env) 
+    or/[ancestor?(cat,[first u],env) 
          for u in categoryAncestors vv | knownInfo(second u,env)] => true
     false
   pred is ["SIGNATURE",name,op,sig,:.] =>
