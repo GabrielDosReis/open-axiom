@@ -611,11 +611,11 @@ Bits(): Exports == Implementation where
 )abbrev domain KTVLOGIC KleeneTrivalentLogic
 ++ Author: Gabriel Dos Reis
 ++ Date Created: September 20, 2008
-++ Date Last Modified: May 27, 2009
+++ Date Last Modified: January 14, 2012
 ++ Description: 
 ++   This domain implements Kleene's 3-valued propositional logic.
 KleeneTrivalentLogic(): Public == Private where
-  Public == PropositionalLogic with
+  Public == Join(PropositionalLogic,Finite) with
     unknown: %     ++ the indefinite `unknown' 
     case: (%,[| false |]) -> Boolean
       ++ x case false holds if the value of `x' is `false'
@@ -623,54 +623,69 @@ KleeneTrivalentLogic(): Public == Private where
       ++ x case unknown holds if the value of `x' is `unknown'
     case: (%,[| true |]) -> Boolean
       ++ s case true holds if the value of `x' is `true'.
-  Private == add
-    Rep == Byte    -- We need only 3 bits, in fact.
-    false == per(0::Byte)
-    unknown == per(1::Byte)
-    true == per(2::Byte)
+  Private == Maybe Boolean add
+    false == per just(false@Boolean)
+    unknown == per nothing
+    true == per just(true@Boolean)
     x = y == rep x = rep y
     x case true == x = true@%
     x case false == x = false@%
     x case unknown == x = unknown
+
     not x ==
       x case false => true
       x case unknown => unknown
       false
+
     x and y ==
       x case false => false
       x case unknown =>
         y case false => false
         unknown
       y
+
     x or y ==
       x case false => y
       x case true => x
       y case true => y
       unknown
+
     implies(x,y) ==
       x case false => true
       x case true => y
       y case true => true
       unknown
+
     equiv(x,y) ==
       x case unknown => x
       x case true => y
       not y
+
     coerce(x: %): OutputForm ==
-      x case true => outputForm 'true
-      x case false => outputForm 'false
-      outputForm 'unknown
+      case rep x is
+        y@Boolean => y::OutputForm
+        otherwise => outputForm 'unknown
+
+    size() == 3
+
+    index n ==
+      n > 3 => error "index: argument out of bound"
+      n = 1 => false
+      n = 2 => unknown
+      true
+
+    lookup x ==
+      x = false => 1
+      x = unknown => 2
+      3
 @
-
-
-
 
 \section{License}
 
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2010, Gabriel Dos Reis.
+--Copyright (C) 2007-2012, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

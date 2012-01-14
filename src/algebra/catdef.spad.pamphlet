@@ -915,7 +915,6 @@ Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
 ++   \spad{index(lookup(s)) = s}
 
 Finite(): Category == SetCategory with
-    --operations
       size: () ->  NonNegativeInteger
         ++ size() returns the number of elements in the set.
       index: PositiveInteger -> %
@@ -928,7 +927,15 @@ Finite(): Category == SetCategory with
         ++ \spad{x = index lookup x}.
       random: () -> %
         ++ random() returns a random element from the set.
-
+  add
+      --FIXME: Tthe only purpose of this local function is to bring
+      --FIXME: the compiler to admission that the successor of a
+      --FIXME: nonnegative integer has positive value.
+      --FIXME: Take it out when the its logic is sufficiently advanced.
+      succ(x: NonNegativeInteger): PositiveInteger ==
+        (1 + x) : PositiveInteger
+      random() ==
+        index succ random(size())$NonNegativeInteger
 @
 \section{category FLINEXP FullyLinearlyExplicitRingOver}
 <<category FLINEXP FullyLinearlyExplicitRingOver>>=
