@@ -102,8 +102,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	slam.$(FASLEXT)		                        \
 	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
-	spad.$(FASLEXT)		spaderror.$(FASLEXT)	\
-	                       	termrw.$(FASLEXT)	\
+	spad.$(FASLEXT)		termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	word.$(FASLEXT)        	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
 	$(OCOBJS) $(BROBJS)     setvart.$(FASLEXT)
@@ -354,7 +353,6 @@ dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
 daase.$(FASLEXT): sys-utility.$(FASLEXT)
-spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
 spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)

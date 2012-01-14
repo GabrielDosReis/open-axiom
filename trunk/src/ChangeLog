@@ -1,5 +1,9 @@
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spaderror.lisp: Move convent to spad.lisp.  Remove.
+
+2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/patches.lisp: Move content to msgdb.boot.  Remove.
 
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
