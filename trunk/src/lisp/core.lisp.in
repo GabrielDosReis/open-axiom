@@ -150,6 +150,7 @@
 	   "makeBitVector"
 	   "makeString"
 	   "mkVector"
+	   "mkIntArray"
 	   "listToString"
 
            "%hasFeature"
@@ -1418,6 +1419,9 @@
 
 (defmacro |mkVector| (n)
   `(make-array ,n :initial-element nil))
+
+(defmacro |mkIntArray| (n)
+  `(make-array ,n :initial-element 0))
 
 ;; native data type translation table
 (defconstant |$NativeTypeTable|

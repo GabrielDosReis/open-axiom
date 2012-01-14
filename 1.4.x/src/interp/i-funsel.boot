@@ -509,7 +509,7 @@ argCouldBelongToSubdomain(op, nargs) ==
   -- if ^0, this indicates that there exists a modemap for the
   -- op that needs a subdomain in that position
   nargs = 0 => nil
-  v := GETZEROVEC nargs
+  v := mkIntArray nargs
   isMap(op) => v
   mms := getModemapsFromDatabase(op,nargs)
   mms = nil => v

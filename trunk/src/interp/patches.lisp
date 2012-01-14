@@ -40,8 +40,6 @@
 (defun CATCHALL (a &rest b) a) ;; not correct but ok for now
 (defvar |$demoFlag| nil)
 
-(define-function '|construct| #'list) ;; NEEDED , SPAD-COMPILER generated Lisp code
-
 (defmacro dribinit (streamvar)
   `(if (is-console ,streamvar)
        (setq ,streamvar *terminal-io*)))
@@ -64,56 +62,6 @@
 #+(and :GCL :IEEE-FLOATING-POINT )
  (setq system:*print-nans* T)
 
-(defun /RF (&rest foo &aux (|$Echo| 'T))
-  (declare (special |$Echo|))
-  (/RF-1 nil))
-
-(defun /RQ (&rest foo &aux (|$Echo| nil))
-  (declare (special |$Echo|))
-  (/RF-1 nil))
-
-(defun |/RQ,LIB| (&rest foo &aux (|$Echo| nil))
-  (declare (special |$Echo|))
-  (/RF-1 nil))
-
-(defun /RF-1 (ignore)
- (declare (ignore ignore))
- (declare (special |$Echo|))
-  (let* ((input-file (make-input-filename /EDITFILE))
-     (lfile ())
-     (type (pathname-type input-file)))
-    (cond
-     ((string= type "boot")
-      (boot input-file
-         (setq lfile (make-pathname :type "lisp"
-                           :defaults input-file)))
-      (load lfile))
-     ((string= type "lisp") (load input-file))
-     ((string= type "bbin") (load input-file))
-     ((string= type "input")
-      (|ncINTERPFILE| input-file |$Echo|))
-     (t (spad input-file)))))
-
-(defun /EF (&rest foo)
-  (|runCommand| (concat "vi " (namestring (make-input-filename /EDITFILE)))))
-
-(defun SHAREDITEMS (x) T) ;;checked in history code
-
-(defun GETZEROVEC (n) (MAKE-ARRAY n :initial-element 0))
-
-(defun READSPADEXPR ()
-  (declare (special in-stream))
-  (let* ((line (cdar (preparse in-stream))))
-    (cond ((or (not (stringp line)) (zerop (SIZE line)))
-       (SAY "   Scratchpad -- input")
-       (READSPADEXPR))
-      (t (|parseTransform| (|postTransform| (|string2SpadTree| line)))))))
-
-;; following are defined in spadtest.boot and stantest.boot
-(defun |installStandardTestPackages| () ())
-(defun |spadtestValueHook| (val type) ())
-(defun |testError| (errotype erroValue) ())
-(defvar |$TestOptions| ())
 ;; following in defined in word.boot
 (defun |bootFind| (word) ())
 
@@ -147,43 +95,4 @@
   (cacheKeyedMsg |$defaultMsgDatabaseName|))
  (gethash key *msghash*))
 
-#+:AKCL (proclaim '(ftype (function (t) t) identity))
-#+:AKCL (defun identity (x) x)
-
 (|initializeTimedNames| |$interpreterTimedNames| |$interpreterTimedClasses|)
-
-(defun |rebuild| (filemode)
- "rebuild MODEMAP.DAASE, exit lisp with bad return code on failure"
- (let ((returncode -16))
-  (unwind-protect
-   (let (|$databaseQueue| |$e|)
-    (declare (special |$databaseQueue| |$e|))
-    (|clearConstructorAndLisplibCaches|)
-    (setq |$databaseQueue| nil)
-    (setq |$e| (cons (cons nil nil) nil))
-    (|buildDatabase| filemode t)
-    (setq |$IOindex| 1)
-    (setq |$InteractiveFrame| (cons (cons nil nil) nil))
-    (setq returncode 0))
-   (unless (zerop returncode) (bye returncode)))))
-
-(defvar |$ViewportProcessToWatch| nil)
-(defun |setViewportProcess| ()
-  (setq |$ViewportProcessToWatch|
-     (stringimage (CDR
-          (|processInteractive|  '(|key| (|%%| -2)) NIL) ))))
-
-(defun |waitForViewport| ()
-  (progn
-   (do ()
-       ((not (zerop (|runCommand|
-         (concat
-          "ps "
-          |$ViewportProcessToWatch|
-          " > /dev/null")))))
-       ())
-   (|sockSendInt| |$MenuServer| 1)
-   (|setIOindex| (- |$IOindex| 3))
-  )
-)
-

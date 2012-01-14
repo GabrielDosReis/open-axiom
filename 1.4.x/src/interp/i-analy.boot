@@ -188,7 +188,7 @@ pushDownOp?(op,n) ==
   -- [domain of implementation, target, arg1, arg2, ...]
   -- sameAsTarg is a vector that counts the number of modemaps that
   -- have the corresponding argument equal to the target type
-  sameAsTarg := GETZEROVEC n
+  sameAsTarg := mkIntArray n
   numMms := # ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat

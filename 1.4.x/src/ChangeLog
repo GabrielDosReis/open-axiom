@@ -1,3 +1,27 @@
+2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (mkIntArray): New.  Export.
+	* interp/patches.lisp (/RF): Move to cparse.boot.
+	(/RQ): Likewise.
+	(/RQ,LIB): Likewise.
+	(/RF-1): Likewise.
+	(/EF): Move to spad.lisp.
+	(construct): Remove.
+	(READSPADEXPR): Likewise.
+	(SHAREDITEMS): Likewise.
+	(installStandardTestPackages): Likewise.
+	(spadtestValueHook): Likewise.
+	(testError): Likewise.
+	($TestOptions): Likewise.
+	(rebuild): Likewise.
+	($ViewportProcessToWatch): Likewise.
+	(setViewportProcess): Likewise.
+	(waitForViewport): Likewise.
+	* interp/i-analy.boot (pushDownOp?): Use mkIntArray in place of
+	GETZEROVEC.
+	* interp/i-funsel.boot (argCouldBelongToSubdomain): Likewise.
+	* interp/i-intern.boot (flagArguments): Likewise.
+
 2012-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot: Rename AncestorP to ancestor?.

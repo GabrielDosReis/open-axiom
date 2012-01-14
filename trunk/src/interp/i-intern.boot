@@ -298,7 +298,7 @@ mkAtree3(x,op,argl) ==
 ++ positive entry indicates that modemaps for `op' takes flag arguments
 ++ in that position.
 flagArguments(op, nargs) ==
-  v := GETZEROVEC nargs
+  v := mkIntArray nargs
   sigs := [signatureFromModemap m for m in getModemapsFromDatabase(op, nargs)]
   checkCallingConvention(sigs, nargs)
 
