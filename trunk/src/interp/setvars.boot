@@ -151,7 +151,6 @@ resetWorkspaceVariables() ==
   SETQ($slamFlag                    , nil)
   SETQ($CommandSynonymAlist         , COPY($InitialCommandSynonymAlist))
   SETQ($UserAbbreviationsAlist      , nil)
-  SETQ($msgAlist                    , nil)
   SETQ($msgDatabase                 , nil)
   SETQ($msgDatabaseName             , nil)
   SETQ($IOindex                     , 1  )

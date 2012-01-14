@@ -106,11 +106,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	                       	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	word.$(FASLEXT)        	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
-	$(OCOBJS) $(BROBJS) $(INOBJS)
-
-# Last minite patches.
-# FIXMEL: should be folded into the main object list.
-INOBJS=	setvart.$(FASLEXT) patches.$(FASLEXT)
+	$(OCOBJS) $(BROBJS)     setvart.$(FASLEXT)
 
 # Main compiler files.
 OCOBJS=	\
@@ -271,7 +267,6 @@ hypertex.$(FASLEXT): types.$(FASLEXT)
 
 ## OpenAxiom's interpreter.
 makeint.$(FASLEXT): util.$(FASLEXT)
-patches.$(FASLEXT): macros.$(FASLEXT) g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
 setvars.$(FASLEXT): macros.$(FASLEXT) debug.$(FASLEXT)
 profile.$(FASLEXT): macros.$(FASLEXT)
 rulesets.$(FASLEXT): vmlisp.$(FASLEXT)
