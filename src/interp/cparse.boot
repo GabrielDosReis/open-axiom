@@ -1087,3 +1087,30 @@ npMoveTo n==
     (npNext();npMoveTo n)
   npEqKey "SETTAB" => npMoveTo(n+1)
   (npNext();npMoveTo n)
+
+--%
+
+_/RF(:x) ==
+  $Echo: local := true
+  _/RF_-1 nil
+
+_/RQ(:x) ==
+  $Echo: local := false
+  _/RF_-1 nil
+
+_/RQ_,LIB(:x) ==
+  $Echo: local := false
+  _/RF_-1 nil
+
+
+_/RF_-1 x ==
+  ifile := MAKE_-INPUT_-FILENAME _/EDITFILE
+  lfile := nil
+  type := PATHNAME_-TYPE ifile
+  type = '"boot" =>
+    lfile := MAKE_-PATHNAME(type <- '"lisp",defaults <- ifile)
+    BOOT(ifile,lfile)
+    LOAD lfile
+  type = '"lisp" => LOAD ifile
+  type = '"input" => ncINTERPFILE(ifile,$Echo)
+  SPAD ifile

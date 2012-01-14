@@ -175,6 +175,9 @@
     ('T (/RF)) )
   (|terminateSystemCommand|))
 
+(defun /EF (&rest foo)
+  (|runCommand| (concat "vi " (namestring (make-input-filename /EDITFILE)))))
+
 (defun /EDIT (L)
   (SETQ /EDITFILE L)
   (/EF)
