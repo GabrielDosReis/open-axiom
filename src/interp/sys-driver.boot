@@ -57,6 +57,7 @@ $options := []
 +++ to the interpreter or compiler.  
 +++ ??? This part is still in flux.
 symbolFunction('%sysInit) := () +->
+  SETQ(_*PRINT_-ESCAPE_*,false)
   SETQ(_*READ_-DEFAULT_-FLOAT_-FORMAT_*, "DOUBLE-FLOAT")
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
   SETQ(_*LOAD_-VERBOSE_*,false)
@@ -72,6 +73,7 @@ symbolFunction('%sysInit) := () +->
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-WARNINGS_*,true)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-NOTES_*,true)
+  SETQ(SYSTEM::_*PRINT_-NANS_*,true)
 )endif
 
 --%

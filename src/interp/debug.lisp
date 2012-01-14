@@ -174,7 +174,7 @@
                            (SETQ INFILE FILE)
                            (RETURN RECNO)))) )
         (if (NOT RECNO)
-            (if (SETQ INFILE (/MKINFILENAM '(NIL))) (GO LOOP) (UNWIND)))
+            (if (SETQ INFILE (/MKINFILENAM '(NIL))) (GO LOOP) (|spadThrow|)))
         (TERPRI)
         (TERPRI)
         (SETQ INFILE (|pathname| INFILE))
