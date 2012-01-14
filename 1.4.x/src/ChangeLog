@@ -1,5 +1,12 @@
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (Finite) [random]: Provide default
+	implementation. 
+	* algebra/boolean.spad.pamphlet (KleeneTrivalentLogic): Now
+	satisfy Finite.  Use Maybe Boolean as representation.
+
+2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-util.boot ($intTopLevel): Move to sys-constants.boot.
 	* interp/g-error.boot (returnToTopLevel): Tidy.
 	* interp/macros.lisp (applyWithOutputToString): Likewise.
