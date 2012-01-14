@@ -143,7 +143,7 @@ TOP() == returnToTopLevel()
 returnToTopLevel() ==
   SETQ(CHR, "ENDOFLINECHR")
   SETQ(TOK, 'END__UNIT)
-  TOPLEVEL()
+  THROW('TOP__LEVEL,'restart)
 
 returnToReader() ==
   not $ReadingFile => returnToTopLevel()

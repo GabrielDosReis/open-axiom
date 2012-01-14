@@ -31,6 +31,8 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import g_-util
+namespace BOOT
 
 --=======================================================================
 --                        Build Directories
@@ -214,7 +216,7 @@ findApproximateWords(word,table) ==
   alist:= tableValue(table,UPCASE word.0)
  
   --first try to break up as list of words
-  firstTry := [x for [x,:wordList] in alist | p] where p ==
+  firstTry := [x for [x,:wordList] in alist | p] where p() ==
     n = #wordList =>
       sum := 0
       for entry in wordList for part in words while sum < threshold repeat
@@ -384,20 +386,3 @@ maskConvert str ==
      else if c = char "?" then c := char "&"
     SUFFIX(c,buf)
   buf
- 
- 
-infix?(s,t,x) == #s + #t >= #x and prefix?(s,x) and suffix?(t,x)
- 
-prefix?(s,t) == substring?(s,t,0)
- 
-suffix?(s,t) ==
-  m := #s; n := #t
-  if m > n then return false
-  substring?(s,t,(n-m))
- 
-obSearch x ==
-  vec:= OBARRAY()
-  pattern:= PNAME x
-  [y for i in 0..maxIndex OBARRAY() |
-    (ident? (y := vec.i) or CVEC y) and match?(pattern,copyTree y)]
- 

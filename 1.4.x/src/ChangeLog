@@ -1,5 +1,22 @@
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/word.boot: Add import and scope statements.  Include in
+	final executables.
+	(infix?): Remove as duplicate in match.boot.
+	(prefix?): Likewise.
+	(suffix?): Likewise.
+	* interp/g-error.boot (returnToTopLevel): Tidy.
+	* interp/debug.lisp (/D-2): Use spadThrow in lieu of UNWIND.
+	* interp/patches.lisp (CATCHALL): Remove.
+	(DBRINIT): Likewise.
+	(TOPLEVEL): Likewise.
+	(TOP-LEVEL): Likewise.
+	(UNWIND): Likewise.
+	(RESUME): Likewise.
+	(booFind): Likewise.
+
+2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (mkIntArray): New.  Export.
 	* interp/patches.lisp (/RF): Move to cparse.boot.
 	(/RQ): Likewise.

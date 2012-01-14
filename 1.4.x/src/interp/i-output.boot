@@ -1214,6 +1214,9 @@ widthSC u == 10000
 
 --% The over-large matrix package
 
+$demoFlag := false
+
+
 maprinSpecial(x,$MARGIN,$LINELENGTH) == maprin0 x
 -- above line changed JHD 13/2/93 since it used to call maPrin
 

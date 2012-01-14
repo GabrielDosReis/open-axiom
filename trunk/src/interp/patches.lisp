@@ -37,33 +37,7 @@
 (in-package "BOOT")
 ;;patches for now
 
-(defun CATCHALL (a &rest b) a) ;; not correct but ok for now
-(defvar |$demoFlag| nil)
-
-(defmacro dribinit (streamvar)
-  `(if (is-console ,streamvar)
-       (setq ,streamvar *terminal-io*)))
-
-;; The function top-level is the very root of the normal invocation
-;; history stack. Control will pass to the restart function which is 
-;; also in this file.
-;; For some unknown reason toplevel was redefined to incorrectly
-;; call lisp::unwind whereas it is defined (in this file) to be
-;; interned in the boot package. We've returned toplevel to its
-;; previous definition.
-(defun toplevel (&rest foo) (throw '|top_level| '|restart|))
-;;(defun toplevel (&rest foo) (lisp::unwind))
-
-(define-function 'top-level #'toplevel)
-(define-function 'unwind #'|spadThrow|)
-(define-function 'resume #'|spadThrow|)
-
 (setq *print-escape* nil) ;; so stringimage doesn't escape idents?
-#+(and :GCL :IEEE-FLOATING-POINT )
- (setq system:*print-nans* T)
-
-;; following in defined in word.boot
-(defun |bootFind| (word) ())
 
 (defvar *msghash* nil "hash table keyed by msg number")
 
@@ -94,5 +68,3 @@
   (setq *msghash* (make-hash-table))
   (cacheKeyedMsg |$defaultMsgDatabaseName|))
  (gethash key *msghash*))
-
-(|initializeTimedNames| |$interpreterTimedNames| |$interpreterTimedClasses|)
