@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -524,8 +524,8 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
          (|$OutputStream| out-stream)
         val)
     (declare (special curoutstream |$algebraOutputStream|))
-    (setq val (catch 'spad_reader
-                (catch 'TOP_LEVEL
+    (setq val (catch |$SpadReaderTag|
+                (catch |$intTopLevel|
                   (apply (symbol-function func) args))))
     (cons val (get-output-stream-string |$OutputStream|))))
 
