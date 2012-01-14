@@ -1,5 +1,9 @@
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/patches.lisp: Move content to msgdb.boot.  Remove.
+
+2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/word.boot: Add import and scope statements.  Include in
 	final executables.
 	(infix?): Remove as duplicate in match.boot.

@@ -81,9 +81,9 @@ namespace BOOT
 
 --% Message Database Code and Message Utility Functions
 
+$msgHash := nil
 $msgDatabase := nil
 $cacheMessages := 'T  -- for debugging purposes
-$msgAlist := nil
 $msgDatabaseName := nil
 $testingErrorPrefix :=  '"Daly Bug"
 $testingSystem := false
@@ -113,6 +113,32 @@ wordFrom(l,i) ==
   [buf,k+1]
 
 getKeyedMsg key == fetchKeyedMsg(key,false)
+
+fetchKeyedMsg(key,x) ==
+  if $msgHash = nil then
+    $msgHash := hashTable 'EQ
+    cacheKeyedMsg $defaultMsgDatabaseName
+  tableValue($msgHash,object2Identifier key)
+
+cacheKeyedMsg p ==
+  try
+    instream := inputTextFile p
+    msg := '""
+    key := nil
+    repeat
+      line := readLine instream
+      line = %nothing =>
+        key ~= nil =>
+          tableValue($msgHash,key) := msg
+          leave nil
+      #line = 0 => nil
+      stringChar(line,0) = char "S" =>
+        if key ~= nil then
+          tableValue($msgHash,key) := msg
+        key := makeSymbol line
+        msg := '""
+      msg := strconc(msg,line)
+  finally closeStream instream
 
 --% Formatting and Printing Keyed Messages
 
@@ -559,7 +585,6 @@ spadStartUpMsgs() ==
   sayKeyedMsg("S2GL0018D",nil)
   sayKeyedMsg("S2GL0003B",[$opSysName])
   sayMSG bar
-  $msgAlist := nil    -- these msgs need not be saved
   sayMSG " "
 
 HELP() == sayKeyedMsg("S2GL0019",nil)
