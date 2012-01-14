@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -392,4 +392,61 @@
   (if (null (rest fn)) (setq fn (list (pathname (car fn)))))
   (rdefiostream (list (cons 'FILE fn) '(mode . OUTPUT))))
 
+(defun error-format (message args)
+  (let ((|$BreakMode| '|break|))
+    (declare (special |$BreakMode|))
+   (if (stringp message) (apply #'format nil message args) nil)))
+
+#+:gcl
+(defun |resetStackLimits| () (system:reset-stack-limits))
+#-:gcl
+(defun |resetStackLimits| () nil)
+
+(defvar |$oldBreakMode|)
+
+;; following macro evaluates form returning Maybe type-of form
+#+:gcl
+(defmacro |trapNumericErrors| (form)
+  `(let ((|$oldBreakMode| |$BreakMode|)
+         (|$BreakMode| '|trapNumerics|)
+	 (val))
+     (catch '|trapNumerics| ,form)))
+
+#-:gcl
+(defmacro |trapNumericErrors| (form)
+  `(handler-case ,form
+		 (arithmetic-error () |%nothing|)))
+
+;; the following form embeds around the akcl error handler
+#+:gcl
+(eval-when
+ (load eval)
+ (unembed 'system:universal-error-handler)
+ (embed 'system:universal-error-handler
+            '(lambda (type correctable? op
+                           continue-string error-string &rest args)
+               (block
+                nil
+                (setq |$NeedToSignalSessionManager| T)
+                (if (and (boundp '|$inLispVM|) (boundp '|$BreakMode|))
+                    (cond ((eq |$BreakMode| '|validate|)
+                           (|systemError| (error-format error-string args)))
+                          ((and (eq |$BreakMode| '|trapNumerics|)
+                                (eq type :ERROR))
+                           (setq |$BreakMode| nil)
+			   (throw '|trapNumerics| |%nothing|))
+                          ((and (eq |$BreakMode| '|trapNumerics|)
+                                (boundp '|$oldBreakMode|)
+                                (setq |$BreakMode| |$oldBreakMode|)
+                                nil)) ;; resets error handler
+                          ((and (null |$inLispVM|)
+                                (|symbolMember?| |$BreakMode| '(|nobreak| |query| |resume|)))
+                           (let ((|$inLispVM| T)) ;; turn off handler
+                             (return
+                              (|systemError| (error-format error-string args)))))
+                          ((eq |$BreakMode| '|letPrint2|)
+                           (setq |$BreakMode| nil)
+                           (throw '|letPrint2| nil))))
+                (apply system:universal-error-handler type correctable? op
+                       continue-string error-string args )))))
 
