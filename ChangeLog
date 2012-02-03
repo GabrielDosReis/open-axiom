@@ -1,0 +1,5 @@
+2012-02-03  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNAS_SPECIFIER): New.
+	(OPENAXIOM_CHECK_MISC): Use it.
+

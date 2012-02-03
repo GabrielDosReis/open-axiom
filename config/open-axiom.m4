@@ -1006,11 +1006,30 @@ AC_COMPILE_IFELSE([int a = __alignof(int);],
                   [oa_alignment="__alignof"],
                   [AC_COMPILE_IFELSE([int a = alignof(int);],
                                      [oa_alignment="alignof"],
-                                     [AC_MSG_ERROR([C/C++ compiler does not support alignment query operator])])])
+                                     [AC_MSG_ERROR([C++ compiler does not support alignment query operator])])])
 AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
                    [Alignment query operator])
 AC_MSG_RESULT([$oa_alignment])
 ])
+
+dnl ---------------------------------
+dnl -- OPENAXIOM_ALIGNAS_SPECIFIER --
+dnl ---------------------------------
+dnl check for alignment specifier support.
+dnl Vendor lock-ins are of the attribute form.
+AC_DEFUN([OPENAXIOM_ALIGNAS_SPECIFIER],[
+AC_MSG_CHECKING([alignment boundary specifier syntax])
+oa_alignas=
+AC_COMPILE_IFELSE([alignas(16) int a = 42;],
+  [oa_alignas="alignas(N)"],
+  [AC_COMPILE_IFELSE([__attribute__((__aligned__(16))) int a = 42;],
+     [oa_alignas="__attribute__((__aligned__(N)))"],
+     [AC_MSG_ERROR([C++ compiler does not support alignment specifier])])])
+AC_DEFINE_UNQUOTED([openaxiom_alignas(N)],[$oa_alignas],
+                   [Alignment specifier operator])
+AC_MSG_RESULT([$oa_alignas])
+])
+
 
 dnl -------------------------
 dnl -- OPENAXIOM_CHECK_GMP --
@@ -1025,6 +1044,7 @@ dnl -- OPENAXIOM_CHECK_MISC --
 dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
 OPENAXIOM_ALIGNMENT_OPERATOR
+OPENAXIOM_ALIGNAS_SPECIFIER
 case $oa_gnu_compiler in
   yes)
      CFLAGS="$CFLAGS -O2 -Wall"
