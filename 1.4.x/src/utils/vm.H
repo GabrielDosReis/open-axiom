@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2012, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,11 @@
 #  include <stdint.h>
 #endif 
 #include <open-axiom/string-pool>
+#include <utility>
+#include <map>
+
+#define internal_type struct openaxiom_alignas(16)
+#define internal_data  openaxiom_alignas(16)
 
 namespace OpenAxiom {
    namespace VM {
@@ -77,7 +82,7 @@ namespace OpenAxiom {
       //   2. Since we have to deal with characters, they should be
       //      directly represented -- not allocated.
       //   3. List values and list manipulation should be efficient.
-      //      Ideally, a pair should not occupy more than what it
+      //      Ideally, a pair should occupy no more than what it
       //      takes to store two values in a type-erasure semantics.
       //   4. Idealy, pointers to foreign objects (at least) should be
       //      left unmolested.
@@ -97,7 +102,7 @@ namespace OpenAxiom {
       //   every pointer to a cons cell will have its last 3 bits cleared.
       //
       // Therefore, we can use the last 3 bits to tag a cons value, instead
-      // of storing the tag inside the cons cell.  we can't leave those
+      // of storing the tag inside the cons cell.  We can't leave those
       // bits cleared for we would not be able to easily and cheaply
       // distinguish a pointer to a cons cell from a pointer to other
       // objects, in particular foreign objects.
@@ -107,19 +112,19 @@ namespace OpenAxiom {
       // The good news is that we need no more than that if pointers
       // to foreign pointers do not have the last bit set.  Which is
       // the case with assumption (a).  Furthermore, if we align all
-      // other internal data on 16 byte boundary, then we have 4 bits
-      // that we can use to categorize values.
+      // other internal data on 16 byte boundary, then we have 4 spare bits
+      // for use to categorize values.
       // Therefore we arrive at the first design:
-      //    I. the value representation of small integer always have the
+      //    I. the value representation of a small integer always has the
       //       the least significant bit set.  All other bits are
-      //       significant in representing small integers.  In other words,
-      //       the last four bits of a small integer are 0bxxx1
+      //       significant.  In other words, the last four bits of a small
+      //       integer are 0bxxx1
       // 
       // As a consequence, the last bit of all other values must be cleared.
       //
       // Next,
       //   II. All foreign pointers must have the last two bits cleared.
-      //       In consequence, the last four bits of all foreign addresses
+      //       As a consequence, the last four bits of all foreign addresses
       //       follow the pattern 0bxx00.
       // 
       // As a consequence, the second bit of a cons cell value must be set
@@ -129,7 +134,7 @@ namespace OpenAxiom {
       //       last 4 bits matching the pattern 0bx010.
       //
       //   IV. All internal objects are allocated on 16-byte boundary.
-      //       We set their last 4 bit to the pattern 0b0110.
+      //       Their last 4 bits are set to the pattern 0b0110.
       //
       // Finally:
       //    V. The representation of a character shall have the last four
@@ -145,6 +150,7 @@ namespace OpenAxiom {
       // -----------
       // All VM values fit in a universal value datatype.
       typedef uintptr_t Value;
+      const Value nil = Value();
 
       // -------------
       // -- Fixnum ---
@@ -219,32 +225,22 @@ namespace OpenAxiom {
          return is_pair(v) ? to_pair(v) : 0;
       }
 
-      // ------------
-      // -- Object --
-      // ------------
-      struct BasicObject;
-      typedef BasicObject* Object;
-
-      const Value obj_tag = 0x6;
-
-      inline bool is_object(Value v) {
-         return (v & 0xF) == obj_tag;
-      }
-
-      inline Object to_object(Value v) {
-         return Object(v & ~0xF);
-      }
-
-      inline Value from_object(Object* o) {
-         return Value(o) | obj_tag;
-      }
+      // -- List<T> --
+      // There is no dedicated list type.  Any pair that ends with
+      // nil is considered a list.  Similarly, the notion of homogeneous
+      // list is dynamic.
+      template<typename T>
+      struct List : ConsCell {
+         List<T> rest() const {
+            return static_cast<List<T>*>(pair_if_can(tail));
+         }
+      };
 
       // ---------------
       // -- Character --
       // ---------------
-
       // This datatype is prepared for Uncode characters even if
-      // we do not handle UCN characters.
+      // we do not handle UCN characters at the moment.
       typedef Value Character;
 
       const Value char_tag = 0xE;
@@ -261,15 +257,93 @@ namespace OpenAxiom {
          return (Value(c) << 4) | char_tag;
       }
 
-      // --
-      // -- Builtin Operations
-      // --
+      // ------------
+      // -- Object --
+      // ------------
+      // Any internal object is of a class derived from this.
+      internal_type BasicObject {
+         Value kind;
+      };
+
+      typedef BasicObject* Object;
+
+      const Value obj_tag = 0x6;
+
+      inline bool is_object(Value v) {
+         return (v & 0xF) == obj_tag;
+      }
+
+      inline Object to_object(Value v) {
+         return Object(v & ~0xF);
+      }
+
+      inline Value from_object(Object* o) {
+         return Value(o) | obj_tag;
+      }
+
+      // ------------
+      // -- Symbol --
+      // ------------
+      struct SymbolObject : BasicObject, std::pair<BasicString, Value> {
+         SymbolObject(BasicString n, Value s = nil)
+               : std::pair<BasicString, Value>(n, s) { }
+         BasicString name() const { return first; }
+         Value scope() const { return second; }
+      };
+
+      typedef SymbolObject* Symbol;
+
+      // -----------
+      // -- Scope --
+      // -----------
+      struct ScopeObject : BasicObject, private std::map<Symbol, Value> {
+         explicit ScopeObject(BasicString n) : id(n) { }
+         BasicString name() const { return id; }
+         Value* lookup(Symbol) const;
+         Value* define(Symbol, Value);
+      private:
+         const BasicString id;
+      };
+
+      typedef ScopeObject* Scope;
+
+      // --------------
+      // -- Function --
+      // --------------
+      struct FunctionBase : BasicObject {
+         const Symbol name;
+         Value type;
+         FunctionBase(Symbol n, Value t = nil)
+               : name(n), type(t) { }
+      };
+
+      // ------------------------
+      // -- Builtin Operations --
+      // ------------------------
       // Types for native implementation of builtin operators.
       struct BasicContext;
       typedef Value (*NullaryCode)(BasicContext*);
       typedef Value (*UnaryCode)(BasicContext*, Value);
       typedef Value (*BinaryCode)(BasicContext*, Value, Value);
       typedef Value (*TernaryCode)(BasicContext*, Value, Value, Value);
+
+      template<typename Code>
+      struct BuiltinFunction : FunctionBase {
+         Code code;
+         BuiltinFunction(Symbol n, Code c) : FunctionBase(n), code(c) { }
+      };
+
+      typedef BuiltinFunction<NullaryCode> NullaryOperatorObject;
+      typedef NullaryOperatorObject* NullaryOperator;
+
+      typedef BuiltinFunction<UnaryCode> UnaryOperatorObject;
+      typedef UnaryOperatorObject* UnaryOperator;
+      
+      typedef BuiltinFunction<BinaryCode> BinaryOperatorObject;
+      typedef BinaryOperatorObject* BinaryOperator;
+
+      typedef BuiltinFunction<TernaryCode> TernaryOperatorObject;
+      typedef TernaryOperatorObject* TernaryOperator;
 
       // ------------------
       // -- BasicContext --
@@ -279,9 +353,17 @@ namespace OpenAxiom {
          BasicContext();
 
          Pair make_cons(Value, Value);
+         NullaryOperator make_operator(Symbol, NullaryCode);
+         UnaryOperator make_operator(Symbol, UnaryCode);
+         BinaryOperator make_operator(Symbol, BinaryCode);
+         TernaryOperator make_operator(Symbol, TernaryCode);
 
       protected:
          Memory::Factory<ConsCell> conses;
+         Memory::Factory<NullaryOperatorObject> nullaries;
+         Memory::Factory<UnaryOperatorObject> unaries;
+         Memory::Factory<BinaryOperatorObject> binaries;
+         Memory::Factory<TernaryOperatorObject> ternaries;
       };
    };
 }

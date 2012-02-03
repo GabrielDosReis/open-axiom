@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2012, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,10 @@ namespace OpenAxiom {
       // -- BasicContext --
       Pair BasicContext::make_cons(Value h, Value t) {
          return conses.make(h, t);
+      }
+
+      NullaryOperator BasicContext::make_operator(Symbol n, NullaryCode c) {
+         return nullaries.make(n,c);
       }
       
       BasicContext::BasicContext() {

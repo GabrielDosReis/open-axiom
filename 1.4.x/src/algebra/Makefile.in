@@ -1248,11 +1248,13 @@ SPADFILES= \
  ${OUTSRC}/sign.spad ${OUTSRC}/si.spad ${OUTSRC}/smith.spad \
  ${OUTSRC}/solvedio.spad ${OUTSRC}/solvefor.spad ${OUTSRC}/solvelin.spad \
  ${OUTSRC}/solverad.spad ${OUTSRC}/sortpak.spad ${OUTSRC}/space.spad \
+ $(srcdir)/spad-parser.spad \
  ${OUTSRC}/special.spad ${OUTSRC}/sregset.spad ${OUTSRC}/s.spad \
  ${OUTSRC}/stream.spad ${OUTSRC}/string.spad ${OUTSRC}/sttaylor.spad \
  ${OUTSRC}/sttf.spad ${OUTSRC}/sturm.spad ${OUTSRC}/suchthat.spad \
  ${OUTSRC}/suls.spad ${OUTSRC}/sum.spad ${OUTSRC}/sups.spad \
  ${OUTSRC}/supxs.spad ${OUTSRC}/suts.spad ${OUTSRC}/symbol.spad \
+ $(OUTSRC)/syntax.spad \
  ${OUTSRC}/syssolp.spad ${OUTSRC}/system.spad \
  ${OUTSRC}/tableau.spad ${OUTSRC}/table.spad ${OUTSRC}/taylor.spad \
  ${OUTSRC}/tex.spad ${OUTSRC}/tools.spad ${OUTSRC}/transsolve.spad \

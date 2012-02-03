@@ -1,3 +1,10 @@
+2012-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/vm.H: Add more VM data structures.
+	* utils/vm.cc (BasicContext::make_operator): Define.
+	* algebra/Makefile.in (SPADFILES): Include syntax.spad and
+	spad-parser.spad. 
+
 2012-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (Finite) [random]: Provide default

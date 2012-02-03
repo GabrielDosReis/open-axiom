@@ -274,6 +274,9 @@
    if such a type exists, and if the system does not define it. */
 #undef intptr_t
 
+/* Alignment specifier operator */
+#undef openaxiom_alignas
+
 /* Alignment query operator */
 #undef openaxiom_alignment
 
