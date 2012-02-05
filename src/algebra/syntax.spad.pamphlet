@@ -722,7 +722,6 @@ ImportAst(): Public == Private where
     imports: % -> List TypeAst
       ++ imports(x) returns the list of imported types.
   Private == add
-    import Pair
     Rep == Pair(Identifier, List TypeAst)
     coerce(ts: List TypeAst): % == per pair('_import,ts)
     imports x == second rep x
@@ -753,7 +752,6 @@ MappingAst(): Public == Private where
     target: % -> TypeAst
       ++ target(s) returns the result type AST for `s'.
   Private == add
-    import Pair
     Rep == Pair(Identifier,Signature)
     coerce(sig: Signature): % == per pair('Mapping,sig)
     mappingAst(s,t) == 
@@ -787,7 +785,6 @@ SignatureAst(): Public == Private where
     signature: % -> Signature
       ++ signature(s) returns AST of the declared signature for `s'.
   Private == add
-    import List
     Rep == Pair(Identifier, Pair(Identifier,List Signature))
     signatureAst(n,sig) == 
       per pair('SIGNATURE,pair(n,[sig]))
@@ -1083,7 +1080,6 @@ ConstructAst(): Public == Private where
       ++ elements(e) returns the list of expressions in the
       ++ `literal' list `e'.
   Private == add
-    import Pair
     Rep == Pair(Identifier, List SpadAst)
     elements x == second rep x
     coerce(x: %): OutputForm ==
@@ -1135,7 +1131,6 @@ ReturnAst(): Public == Private where
     expression: % -> SpadAst
       ++ expression(e) returns the expression returned by `e'.
   Private == add
-    import Pair
     Rep == Pair(Identifier,SpadAst)
     expression x == second rep x
     coerce(x: %): OutputForm ==
@@ -1162,7 +1157,6 @@ SequenceAst(): Public == Private where
     last: % -> SpadAst
       ++ last(e) returns the last instruction in `e'.
   Private == add
-    import Pair
     Rep == Pair(Identifier,List SpadAst)
     body x == second rep x
     last x == last(second rep x)$List(SpadAst)

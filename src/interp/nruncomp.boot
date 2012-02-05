@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -282,6 +282,7 @@ NRTaddInner(db,x) ==
     builtinConstructor? x.op or x.op is "[||]" =>
       for y in x.args repeat
         NRTinnerGetLocalIndex(db,y)
+    niladicConstructor? x.op => nil
     cosig := getDualSignature x.op =>
       for y in x.args for t in cosig.source | y isnt '$ and t repeat
         NRTinnerGetLocalIndex(db,y)
