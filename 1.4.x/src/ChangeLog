@@ -1,3 +1,9 @@
+2012-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (getLocalIndex): Fast track niladic
+	constructors.
+	* algebra/syntax.spad.pamphlet: Miscellaneous cleanup.
+
 2012-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/vm.H: Add more VM data structures.

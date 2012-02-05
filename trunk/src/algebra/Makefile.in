@@ -1,6 +1,6 @@
 ## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ## All rights reserved.
-## Copyright (C) 2007-2011, Gabriel Dos Reis.
+## Copyright (C) 2007-2012, Gabriel Dos Reis.
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -2110,6 +2110,8 @@ $(OUT)/COMMAAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
 $(OUT)/QQUTAST.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
 $(OUT)/DEFAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT) $(OUT)/SPADAST.$(FASLEXT)
 $(OUT)/MACROAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/SPADAST.$(FASLEXT): $(OUT)/SIGAST.$(FASLEXT) \
+	$(OUT)/RSTRCAST.$(FASLEXT) $(OUT)/SEQAST.$(FASLEXT)
 
 $(OUT)/INBFILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
 	$(OUT)/INBCON.$(FASLEXT) $(OUT)/STRING.$(FASLEXT)
