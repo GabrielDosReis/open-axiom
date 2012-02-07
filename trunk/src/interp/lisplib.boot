@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -229,22 +229,26 @@ rwriteLispForm(key,form) ==
  
 --% Loading
 
-++ Return a path to the loadable module that contains the
-++ definition of the constructor indicated by `cname'.  
-++ Error if the file container of the module does not exist.
-findModule: %Symbol -> %Maybe %String
-findModule cname ==
-  db := constructorDB cname or return nil
+++ Return a path to the loadable module that contains the definition
+++ of the constructor indicated by `db' if it exists.  Otherwise return nil.
+dbLocateModule db ==
   m :=
     $buildingSystemAlgebra =>
       getSystemModulePath symbolName dbAbbreviation db
-    getConstructorModuleFromDB cname
+    getConstructorModuleFromDB dbConstructor db
   existingFile? m => m
   strap := algebraBootstrapDir() =>
     m := strconc(strap,PATHNAME_-NAME m,'".",$faslType)
     existingFile? m => m
-    systemError ['"missing module for ",:bright cname]
-  systemError ['"missing module for ",:bright cname]
+    nil
+  nil
+
+++ Return a path to the loadable module that contains the
+++ definition of the constructor indicated by `cname'.  
+++ Error if the file container of the module does not exist.
+findModule db ==
+  dbLocateModule db
+    or systemError ['"missing module for ",:bright dbConstructor db]
  
 loadLibIfNotLoaded libName ==
   -- loads is library is not already loaded
@@ -256,12 +260,13 @@ loadLibIfNotLoaded libName ==
 loadLib cname ==
   builtinConstructor? cname => nil  -- these don't have nrlib yet.
   startTimingProcess 'load
-  fullLibName := findModule cname or return nil
+  db := constructorDB cname or return nil
+  fullLibName := findModule db
   systemdir? := isSystemDirectory(pathnameDirectory fullLibName)
   update? := $forceDatabaseUpdate or not systemdir? 
   not update? =>
      loadLibNoUpdate(cname, cname, fullLibName)
-  kind := getConstructorKindFromDB cname
+  kind := dbConstructorKind db
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
   loadModule(fullLibName,cname)
@@ -269,7 +274,7 @@ loadLib cname ==
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
   updateCategoryTable(cname,kind)
-  dbLoadPath(constructorDB cname) := fullLibName
+  dbLoadPath(db) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
   'T
@@ -302,19 +307,26 @@ loadIfNecessary u ==
       throwKeyedMsg("S2IL0005",[u])
   value
 
-++ Load the module associated with `db' and return the module's path.
-loadDB db ==
+genericLoadDB(db,f) ==
   try
     startTimingProcess 'load
     dbBeingDefined? db => nil
     dbLoaded? db => db
     ctor := dbConstructor db
     builtinConstructor? ctor => nil
-    lib := findModule ctor or return nil
+    lib := apply(f,db,nil) or return nil
     loadModule(lib,ctor)
     dbLoadPath(db) := lib
     db
   finally stopTimingProcess 'load
+
+++ Load the module associated with `db' and return the module's path.
+loadDB db ==
+  genericLoadDB(db,function findModule)
+
+loadDBIfCan db ==
+  dbLoaded? db => db
+  genericLoadDB(db,function dbLocateModule)
  
 convertOpAlist2compilerInfo(opalist) ==
    "append"/[[formatSig(op,sig) for sig in siglist]

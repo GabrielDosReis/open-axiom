@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1908,7 +1908,7 @@ lookupDefiningFunction(op,sig,dc) ==
   -- the constructor is just not there
   [ctor,:args] := dc
   db := constructorDB ctor or return nil -- we only deal with instantiations
-  loadDBIfNecessary db
+  loadDBIfCan db
   dbTemplate db = nil => nil  -- incomplete functor
   -- 1.1. Niladic constructors don't need approximation.
   --      FIXME: However, there may be cylic dependencies

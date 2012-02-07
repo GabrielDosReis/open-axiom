@@ -1,3 +1,16 @@
+2012-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (dbLocateModule): New.
+	(findModule): Use it.  Simplify.
+	(loadLib): Tidy.
+	(genericLoadDB): New.
+	(loadDB): Use it.
+	(loadDBIfCan): New.
+	* interp/c-util.boot (lookupDefiningFunction): Give up gracefully
+	if the domain of computation is not compiled yet.
+	* algebra/Makefile.in ($(OUT)/SPADAST.$(FASLEXT)): Require
+	$(OUT)/SUCHTAST.$(FASLEXT).
+
 2012-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (getLocalIndex): Fast track niladic
