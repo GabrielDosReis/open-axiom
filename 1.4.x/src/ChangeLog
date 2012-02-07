@@ -1,3 +1,7 @@
+2012-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.in (oa_algebra_layer_0): Include FINITE-.
+
 2012-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (dbLocateModule): New.
