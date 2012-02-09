@@ -1,3 +1,10 @@
+2012-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCall): Simplify SPADCALL of atomic
+	function expressions.
+	($VMsideEffectFreeOperators): Don't include %funcall.
+	($simpleVMoperators): Include it.
+
 2012-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/Makefile.in (oa_algebra_layer_0): Include FINITE-.

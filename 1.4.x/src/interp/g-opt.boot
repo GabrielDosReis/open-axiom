@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -536,8 +536,12 @@ optCall (x is ['%call,:u]) ==
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
     resetTo(x,u)
   fn is ['applyFun,name] =>
-    x.first := 'SPADCALL
-    x.rest := [:a,name]
+    do
+      ident? name =>
+        x.first := '%funcall
+        x.rest := [['%head,name],:a,['%tail,name]]
+      x.first := 'SPADCALL
+      x.rest := [:a,name]
     x
   fn is ['%pair,['%function,op],env] =>
     x.first := op
@@ -617,7 +621,7 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(SPADfirst ASH FLOAT FLOAT_-SIGN %function %nullStream %nonNullStream
-    %funcall %nothing %when %false %true %otherwise %2bit %2bool
+    %nothing %when %false %true %otherwise %2bit %2bool
     %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
     %ilength %ibit %icst0 %icst1 %icstmin %icstmax
@@ -649,7 +653,7 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   [:$VMsideEffectFreeOperators,
-    :['SPADCALL,'%apply, '%gensym, '%lreverse!, '%strstc]]
+    :['SPADCALL,'%apply, '%funcall, '%gensym, '%lreverse!, '%strstc]]
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
