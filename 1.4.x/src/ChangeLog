@@ -1,5 +1,10 @@
 2012-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (mkEvalableCategoryForm): Compile only
+	CATEGORY and SubsetCategory forms.
+
+2012-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/database.boot (categoryConstructor?): New.
 	* interp/define.boot (mkEvalableCategoryForm): Use it.  Tidy.
 
