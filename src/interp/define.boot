@@ -910,14 +910,15 @@ macroExpandList(l,e) ==
  
 mkEvalableCategoryForm c ==
   c is [op,:argl] =>
-    op is "Join" => [op,:[mkEvalableCategoryForm x for x in argl]]
     op is "DomainSubstitutionMacro" => mkEvalableCategoryForm second argl
-    op is "mkCategory" => c
-    builtinCategoryName? op =>
-      ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
-    categoryConstructor? op => [op,:[MKQ x for x in argl]]
-    [x,m,$e]:= compOrCroak(c,$EmptyMode,$e)
-    m=$Category => x
+    op in '(QUOTE mkCategory EnumerationCategory) => c
+    op is ":" => [op,second c,mkEvalableCategoryForm third c]
+    op in '(CATEGORY SubsetCategory) =>
+      [x,m,$e] := compOrCroak(c,$EmptyMode,$e)
+      m = $Category => x
+      MKQ c
+    categoryConstructor? op =>
+      [op,:[mkEvalableCategoryForm x for x in argl]]
     MKQ c
   MKQ c
  
