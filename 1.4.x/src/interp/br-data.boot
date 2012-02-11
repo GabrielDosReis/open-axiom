@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -493,16 +493,6 @@ getImports conname == --called by mkUsersHashTable
 --============================================================================
 --                 Get Hierarchical Information
 --============================================================================
-getParentsFor(db,formalParams) ==
---called by compDefineFunctor1
-  acc := nil
-  formals := take(#formalParams,$TriangleVariableList)
-  constructorForm := dbConstructorForm db
-  for x in folks dbCategory db repeat
-    x := applySubst(pairList(formals,formalParams),x)
-    x := applySubst(pairList(formalParams,IFCDR constructorForm),x)
-    acc := [:explodeIfs x,:acc]
-  reverse! acc
 
 $parentsCache := nil
 
@@ -516,7 +506,7 @@ parentsOf con == --called by kcpPage, ancestorsRecur
 
 parentsOfForm [op,:argl] ==
   parents := parentsOf op
-  null argl or argl = (newArgl := rest getConstructorFormFromDB op) =>
+  argl = nil or argl = (newArgl := getConstructorFormFromDB(op).args) =>
     parents
   applySubst(pairList(newArgl,argl),parents)
 
@@ -529,16 +519,6 @@ getParentsForDomain domname  == --called by parentsOf
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
   reverse! acc
-
-explodeIfs x == main where  --called by getParents, getParentsForDomain
-  main() ==
-    x is ['IF,p,a,b] => fn(p,a,b)
-    [[x,:true]]
-  fn(p,a,b) ==
-    [:"append"/[gn(p,y) for y in a],:"append"/[gn(['NOT,p],y) for y in b]]
-  gn(p,a) ==
-    a is ['IF,q,b,:.] => fn(MKPF([p,q],'AND),b,nil)
-    [[a,:p]]
 
 folks u == --called by getParents and getParentsForDomain
   u isnt [.,:.] => nil
@@ -583,19 +563,6 @@ childArgCheck(argl, nargl) ==
       isSharpVar y => i = symbolPosition(y,$FormalMapVariableList)
       false
 
---computeDescendantsOf cat ==
---dynamically generates descendants
---  hash := hashTable 'EQUAL
---  for [child,:pred] in childrenOf cat repeat
---    childForm := getConstructorForm child
---    tableValue(hash,childForm) := pred
---    for [form,:pred] in descendantsOf(childForm,nil) repeat
---      newPred :=
---        oldPred := tableValue(hash,form) => quickOr(oldPred,pred)
---        pred
---      tableValue(hash,form) := newPred
---  mySort [[key,:val] for [key,:val] in entries hash]
-
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   "category" = getConstructorKindFromDB(conname := opOf conform) =>
        alist := getConstructorAncestorsFromDB conname
@@ -604,7 +571,7 @@ ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
          left :=  sublisFormal(argl,a)
          right := sublisFormal(argl,b)
          if domform then right := simpHasPred right
-         null right => false
+         right = false => nil
          [left,:right]
   computeAncestorsOf(conform,domform)
 
@@ -630,7 +597,7 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   if conform ~= originalConform then
     parents := applySubst(pairList(IFCDR originalConform,IFCDR conform),parents)
   for [newform,:p] in parents repeat
-    if domform and rest domform then
+    if domform and domform.args then
       newdomform := applySubst(pairList(conform.args,domform.args),newform)
       p          := applySubst(pairList(conform.args,domform.args),p)
     newPred := quickAnd(pred,p)

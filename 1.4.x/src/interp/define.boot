@@ -630,6 +630,26 @@ expandTypeArgs(u,template,domform) ==
   u isnt [.,:.] => u
   expandType(u,template,domform)
 
+explodeIfs x == main where  --called by getParents, getParentsForDomain
+  main() ==
+    x is ['IF,p,a,b] => fn(p,a,b)
+    [[x,:true]]
+  fn(p,a,b) ==
+    [:"append"/[gn(p,y) for y in a],:"append"/[gn(['NOT,p],y) for y in b]]
+  gn(p,a) ==
+    a is ['IF,q,b,:.] => fn(MKPF([p,q],'AND),b,nil)
+    [[a,:p]]
+
+getParentsFor(db,formalParams) ==
+  acc := nil
+  formals := take(#formalParams,$TriangleVariableList)
+  constructorForm := dbConstructorForm db
+  for x in folks dbCategory db repeat
+    x := applySubst(pairList(formals,formalParams),x)
+    x := applySubst(pairList(formalParams,constructorForm.args),x)
+    acc := [:explodeIfs x,:acc]
+  reverse! acc
+
 --% Subdomains
 
 ++ We are defining a functor with head given by `form', as a subdomain
