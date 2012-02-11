@@ -523,11 +523,10 @@ getParentsForDomain domname  == --called by parentsOf
 folks u == --called by getParents and getParentsForDomain
   u isnt [.,:.] => nil
   u is [op,:v] and op in '(Join PROGN)
-    or u is ['CATEGORY,a,:v] => "append"/[folks x for x in v]
+    or u is ['CATEGORY,.,:v] => "append"/[folks x for x in v]
   u is ['SIGNATURE,:.] => nil
-  u is ['TYPE,:.] => nil
   u is ['ATTRIBUTE,a] =>
-    cons? a and constructor? opOf a => folks a
+    a is [.,:.] and constructor? a.op => folks a
     nil
   u is ['IF,p,q,r] =>
     q1 := folks q

@@ -2,6 +2,7 @@
 
 	* interp/br-data.boot (getParentsFor): Move to define.boot.
 	(explodeIfs): Likewise.
+	(getParentsForDomain): Tidy.
 
 2012-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
