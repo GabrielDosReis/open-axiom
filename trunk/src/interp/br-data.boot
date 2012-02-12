@@ -589,9 +589,7 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   parents :=
     firstTime? => dbPrincipals constructorDB op
     parentsOf op
-  originalConform :=
-    firstTime? and ($insideCategoryIfTrue or $insideFunctorIfTrue) => $form
-    getConstructorForm op
+  originalConform := getConstructorForm op
   if conform ~= originalConform then
     parents := applySubst(pairList(originalConform.args,conform.args),parents)
   for [newform,:p] in parents repeat

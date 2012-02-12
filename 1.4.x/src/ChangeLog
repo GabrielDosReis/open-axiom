@@ -1,5 +1,10 @@
 2012-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-data.boot (ancestorsRecur): Tidy.
+	* interp/define.boot (compDefineCategory2): Likewise.
+
+2012-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-data.boot (getParentsFor): Move to define.boot.
 	(explodeIfs): Likewise.
 	(getParentsForDomain): Tidy.
