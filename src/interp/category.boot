@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -473,6 +473,7 @@ JoinInner(l,$e) ==
   mkCategory("domain",sigl,attl,globalDomains,bufferToVector principal)
 
 Join(:l) ==
+  l = nil => mkCategory("domain",nil,nil,nil,nil)
   e :=
     null $e or $InteractiveMode => $CategoryFrame
     $e
