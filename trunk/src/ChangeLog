@@ -1,5 +1,13 @@
 2012-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (getParentsFor): Lose second parameter.  Tidy.
+	Adjust callers.
+	* interp/br-data.boot (getParentsForDomain): Remove.
+	(parentsOf): Call getParentsFor in lieu of getParentsForDomain.
+	(folks): Move to define.boot.
+
+2012-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-data.boot (ancestorsRecur): Tidy.
 	* interp/define.boot (compDefineCategory2): Likewise.
 

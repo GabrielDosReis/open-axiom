@@ -630,7 +630,22 @@ expandTypeArgs(u,template,domform) ==
   u isnt [.,:.] => u
   expandType(u,template,domform)
 
-explodeIfs x == main where  --called by getParents, getParentsForDomain
+folks u == --called by getParentsFor
+  u isnt [.,:.] => nil
+  u is [op,:v] and op in '(Join PROGN)
+    or u is ['CATEGORY,.,:v] => "append"/[folks x for x in v]
+  u is ['SIGNATURE,:.] => nil
+  u is ['ATTRIBUTE,a] =>
+    a is [.,:.] and constructor? a.op => folks a
+    nil
+  u is ['IF,p,q,r] =>
+    q1 := folks q
+    r1 := folks r
+    q1 or r1 => [['IF,p,q1,r1]]
+    nil
+  [u]
+
+explodeIfs x == main where  --called by getParentsFor
   main() ==
     x is ['IF,p,a,b] => fn(p,a,b)
     [[x,:true]]
@@ -640,15 +655,12 @@ explodeIfs x == main where  --called by getParents, getParentsForDomain
     a is ['IF,q,b,:.] => fn(MKPF([p,q],'AND),b,nil)
     [[a,:p]]
 
-getParentsFor(db,formalParams) ==
-  acc := nil
-  formals := take(#formalParams,$TriangleVariableList)
+getParentsFor db ==
   constructorForm := dbConstructorForm db
-  for x in folks dbCategory db repeat
-    x := applySubst(pairList(formals,formalParams),x)
-    x := applySubst(pairList(formalParams,constructorForm.args),x)
-    acc := [:explodeIfs x,:acc]
-  reverse! acc
+  n := #constructorForm.args
+  s1 := pairList(take(n,$TriangleVariableList),$FormalMapVariableList)
+  s2 := pairList($FormalMapVariableList,constructorForm.args)
+  [:explodeIfs applySubst(s2,applySubst(s1,x)) for x in folks dbCategory db]
 
 --% Subdomains
 
@@ -1151,7 +1163,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     $domainShell := eval [op',:[MKQ f for f in sargl]]
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
-    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
+    dbPrincipals(db) := getParentsFor db
     dbAncestors(db) := computeAncestorsOf(form,nil)
     dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
     dbCompilerData(db) := nil
@@ -1487,7 +1499,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     reportOnFunctorCompilation()
  
     --  5.
-    dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
+    dbPrincipals(db) := getParentsFor db
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then

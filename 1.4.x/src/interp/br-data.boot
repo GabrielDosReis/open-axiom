@@ -500,7 +500,7 @@ parentsOf con == --called by kcpPage, ancestorsRecur
   if null $parentsCache then 
      $parentsCache := hashTable 'EQ
   tableValue($parentsCache,con) or
-    parents := getParentsForDomain con
+    parents := getParentsFor loadDBIfNecessary constructorDB con
     tableValue($parentsCache,con) := parents
     parents
 
@@ -509,31 +509,6 @@ parentsOfForm [op,:argl] ==
   argl = nil or argl = (newArgl := getConstructorFormFromDB(op).args) =>
     parents
   applySubst(pairList(newArgl,argl),parents)
-
-getParentsForDomain domname  == --called by parentsOf
-  acc := nil
-  for x in folks getConstructorCategory domname repeat
-    x :=
-      getConstructorKindFromDB domname = "category" =>
-        sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
-      sublisFormal(IFCDR getConstructorForm domname,x)
-    acc := [:explodeIfs x,:acc]
-  reverse! acc
-
-folks u == --called by getParents and getParentsForDomain
-  u isnt [.,:.] => nil
-  u is [op,:v] and op in '(Join PROGN)
-    or u is ['CATEGORY,.,:v] => "append"/[folks x for x in v]
-  u is ['SIGNATURE,:.] => nil
-  u is ['ATTRIBUTE,a] =>
-    a is [.,:.] and constructor? a.op => folks a
-    nil
-  u is ['IF,p,q,r] =>
-    q1 := folks q
-    r1 := folks r
-    q1 or r1 => [['IF,p,q1,r1]]
-    nil
-  [u]
 
 descendantsOf(conform,domform) ==  --called by kcdPage
   "category" = getConstructorKindFromDB(conname := opOf conform) =>
