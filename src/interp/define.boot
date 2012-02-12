@@ -447,25 +447,23 @@ makeCompactSigCode sig == [fn for x in sig] where
 --=======================================================================
 --               Generate Slot 4 Constructor Vectors
 --=======================================================================
-depthAssocList u == 
+depthAssocList(u,cache) == 
   u := removeSymbol(u,'DomainSubstitutionMacro)  --hack by RDJ 8/90
-  removeDuplicates ("append"/[depthAssoc(y) for y in u])
+  removeDuplicates ("append"/[depthAssoc(y,cache) for y in u])
  
-depthAssoc x ==
-  y := tableValue($depthAssocCache,x) => y
+depthAssoc(x,cache) ==
+  y := tableValue(cache,x) => y
   x is ['Join,:u] or (u := getCatAncestors x) =>
-    v := depthAssocList u
-    tableValue($depthAssocCache,x) := [[x,:n],:v]
+    v := depthAssocList(u,cache)
+    tableValue(cache,x) := [[x,:n],:v]
       where n() == 1 + "MAX"/[rest y for y in v]
-  tableValue($depthAssocCache,x) := [[x,:0]]
+  tableValue(cache,x) := [[x,:0]]
  
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  
 NRTmakeCategoryAlist(db,e) ==
-  $depthAssocCache: local := hashTable 'EQ
-  $catAncestorAlist: local := nil
-  pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
-  $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
+  pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
+  $levelAlist: local := depthAssocList([CAAR x for x in pcAlist],hashTable 'EQ)
   opcAlist := sortBy(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
