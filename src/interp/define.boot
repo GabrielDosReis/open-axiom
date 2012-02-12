@@ -1095,19 +1095,19 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
     dbInstanceCache(db) := true
     deduceImplicitParameters(db,e)
-    e:= addBinding("$",[['mode,:$definition]],e)
+    e:= addBinding("$",[['mode,:form]],e)
  
     -- 2. obtain signature
     signature':=
       [signature.target,
-        :[getArgumentModeOrMoan(a,$definition,e) for a in form.args]]
+        :[getArgumentModeOrMoan(a,form,e) for a in form.args]]
     e := giveFormalParametersValues(form.args,e)
     dbDualSignature(db) :=
       [true,:[isCategoryForm(t,e) for t in signature'.source]]
 
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
-    sargl:= take(# form.args, $TriangleVariableList)
+    sargl := take(# form.args, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     formalBody := dbSubstituteFormals(db,body)
@@ -1152,7 +1152,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbPrincipals(db) := getParentsFor(db,$FormalMapVariableList)
-    dbAncestors(db) := computeAncestorsOf($form,nil)
+    dbAncestors(db) := computeAncestorsOf(form,nil)
     dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
     dbCompilerData(db) := nil
     [fun,$Category,e]
