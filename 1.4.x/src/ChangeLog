@@ -1,4 +1,11 @@
-2012-02-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (depthAssocList): Take the cache as second
+	argument. Avoid globals.  Adjust Callers.
+	(depthAssoc): Likewise.  Adjust Caller.
+	(NRTmakeCategoryAlist):  Remove uses of $depthAssocCache.
+
+2012-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/coerce.spad.pamphlet (Type): Redefine as empty Join.
 	* interp/category.boot (Join): Handle empty argument list.
