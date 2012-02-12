@@ -1,3 +1,8 @@
+2012-02-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/coerce.spad.pamphlet (Type): Redefine as empty Join.
+	* interp/category.boot (Join): Handle empty argument list.
+
 2012-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (getParentsFor): Lose second parameter.  Tidy.
