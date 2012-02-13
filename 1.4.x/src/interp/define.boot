@@ -453,18 +453,16 @@ depthAssocList(u,cache) ==
  
 depthAssoc(x,cache) ==
   y := tableValue(cache,x) => y
-  x is ['Join,:u] or (u := getCatAncestors x) =>
+  x is ['Join,:u] or (u := ASSOCLEFT parentsOfForm x) =>
     v := depthAssocList(u,cache)
     tableValue(cache,x) := [[x,:n],:v]
       where n() == 1 + "MAX"/[rest y for y in v]
   tableValue(cache,x) := [[x,:0]]
  
-getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
- 
 NRTmakeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
-  levelAlist := depthAssocList([CAAR x for x in pcAlist],hashTable 'EQ)
-  opcAlist := sortBy(function(x +-> LASSOC(first(x).op,levelAlist)),pcAlist)
+  levelAlist := depthAssocList(ASSOCLEFT pcAlist,hashTable 'EQUAL)
+  opcAlist := sortBy(function(x +-> LASSOC(first x,levelAlist)),pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
