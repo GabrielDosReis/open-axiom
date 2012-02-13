@@ -1,4 +1,16 @@
-2012-02-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (stripTags): Rename from stripUnionTags.
+	Adjust callers.
+	* interp/database.boot (genericInstanceForm): New.
+	* interp/buildom.boot (parentsOfBuiltinInstance): New.
+	(builtinInstanceForm): Likewise.
+	* interp/br-data.boot (genericParentsOf): New.
+	(parentsOfForm): Use it,
+	(ancestorsRecur): Likewise.
+	* interp/br-con.boot (originInOrder): Use parentsOfForm.
+
+2012-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (getCatAncestors): Remove.  Adjust caller.
 	(depthAssoc): Tidy.

@@ -95,7 +95,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,principal) ==
         string? v => nil
         v isnt [.,:.] => [v]
         v.op is 'Union =>
-          "union"/[Prepare2 x for x in stripUnionTags v.args]
+          "union"/[Prepare2 x for x in stripTags v.args]
         v.op is 'Mapping => "union"/[Prepare2 x for x in v.args]
         v.op is 'Record => "union"/[Prepare2 third x for x in v.args]
         v.op is 'Enumeration => nil

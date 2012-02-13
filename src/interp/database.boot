@@ -88,6 +88,14 @@ getConstructorFormFromDB: %Constructor -> %Form
 getConstructorFormFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORFORM")
 
+++ Return the generic instantiation form of a constructor,
+++ where the arguments are the parameters used in its
+++ original definition.  Builtin constructors are also handled.
+genericInstanceForm form ==
+  [op,:args] := form
+  builtinConstructor? op => builtinInstanceForm form
+  getConstructorFormFromDB op
+
 getConstructorSourceFileFromDB: %Constructor -> %Maybe %String
 getConstructorSourceFileFromDB ctor ==
   GETDATABASE(ctor,"SOURCEFILE")

@@ -971,7 +971,7 @@ thisUnionBranch?(pred,val) ==
 coerceUnion2Branch(object) ==
   [.,:doms] := objMode object
   predList:= mkPredList doms
-  doms := stripUnionTags doms
+  doms := stripTags doms
   val' := objValUnwrap object
   predicate := nil
   targetType:= nil
@@ -987,7 +987,7 @@ coerceBranch2Union(object,union) ==
   -- assumes type is a member of doms
   doms := rest union
   predList:= mkPredList doms
-  doms := stripUnionTags doms
+  doms := stripTags doms
   p := position(objMode object,doms)
   p = -1 => keyedSystemError("S2IC0014",[objMode object,union])
   val := objVal object
@@ -998,7 +998,7 @@ coerceBranch2Union(object,union) ==
 coerceInt2Union(object,union) ==
   -- coerces to a Union type, adding numeric tags
   -- first cut
-  unionDoms := stripUnionTags rest union
+  unionDoms := stripTags rest union
   t1 := objMode object
   member(t1,unionDoms) => coerceBranch2Union(object,union)
   val := objVal object
