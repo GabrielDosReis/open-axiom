@@ -463,12 +463,12 @@ getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
  
 NRTmakeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
-  $levelAlist: local := depthAssocList([CAAR x for x in pcAlist],hashTable 'EQ)
-  opcAlist := sortBy(function NRTcatCompare,pcAlist)
+  levelAlist := depthAssocList([CAAR x for x in pcAlist],hashTable 'EQ)
+  opcAlist := sortBy(function(x +-> LASSOC(first(x).op,levelAlist)),pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
-  slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
+  slot0 := [hasDefaultPackage a.op for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..dbArity db]
   formals := ASSOCRIGHT dbFormalSubst db
   for x in slot1 repeat
@@ -489,8 +489,6 @@ encodeCatform(db,x) ==
   k := assocIndex(db,x) => k
   x isnt [.,:.] or rest x isnt [.,:.] => x
   [first x,:[encodeCatform(db,y) for y in rest x]]
- 
-NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
 hasDefaultPackage catname ==
   defname := makeDefaultPackageName symbolName catname
