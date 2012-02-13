@@ -1,3 +1,9 @@
+2012-02-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/define.boot (getCatAncestors): Remove.  Adjust caller.
+	(depthAssoc): Tidy.
+	(NRTmakeCategoryAlist): Tidy.
+
 2012-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (NRTcatCompare): Remove.
