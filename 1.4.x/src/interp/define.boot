@@ -1953,7 +1953,7 @@ augModemapsFromDomain(name,functorForm,e) ==
   listMember?(name,getDomainsInScope e) => e
   if super := superType functorForm then
     e := addNewDomain(super,e)
-  if name is ["Union",:dl] then for d in stripUnionTags dl
+  if name is ["Union",:dl] then for d in stripTags dl
                          repeat e:= addDomain(d,e)
   augModemapsFromDomain1(name,functorForm,e)
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -789,7 +789,7 @@ originsInOrder conform ==  --domain = nil or set to live domain
   [con,:argl] := conform
   getConstructorKindFromDB con = "category" =>
       ASSOCLEFT ancestorsOf(conform,nil)
-  acc := ASSOCLEFT parentsOf con
+  acc := ASSOCLEFT parentsOfForm conform
   for x in acc repeat
     for y in originsInOrder x repeat acc := insert(y,acc)
   acc

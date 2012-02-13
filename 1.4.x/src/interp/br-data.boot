@@ -504,8 +504,13 @@ parentsOf con == --called by kcpPage, ancestorsRecur
     tableValue($parentsCache,con) := parents
     parents
 
-parentsOfForm [op,:argl] ==
-  parents := parentsOf op
+++ Like `parentsOf', except that also handles builtin constructors.
+genericParentsOf form ==
+  builtinConstructor? form.op => parentsOfBuiltinInstance form
+  parentsOf form.op
+
+parentsOfForm(form is [op,:argl]) ==
+  parents := genericParentsOf form
   argl = nil or argl = (newArgl := getConstructorFormFromDB(op).args) =>
     parents
   applySubst(pairList(newArgl,argl),parents)
@@ -563,8 +568,8 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   pred = tableValue($done,conform) => nil   --skip if already processed
   parents :=
     firstTime? => dbPrincipals constructorDB op
-    parentsOf op
-  originalConform := getConstructorForm op
+    genericParentsOf conform
+  originalConform := genericInstanceForm conform
   if conform ~= originalConform then
     parents := applySubst(pairList(originalConform.args,conform.args),parents)
   for [newform,:p] in parents repeat

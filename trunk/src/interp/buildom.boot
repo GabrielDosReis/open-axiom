@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -422,7 +422,7 @@ UnionEqual(x, y, dom) ==
   ["Union",:branches] := canonicalForm dom
   predlist := mkPredList branches
   same := false
-  for b in stripUnionTags branches for p in predlist while not same repeat
+  for b in stripTags branches for p in predlist while not same repeat
     typeFun := eval ['%lambda,'(_#1),p]
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
       string? b => same := (x = y)
@@ -437,7 +437,7 @@ coerceUn2E(x,source) ==
   ["Union",:branches] := source
   predlist := mkPredList branches
   byGeorge := byJane := gensym()
-  for b in stripUnionTags branches for p in predlist  repeat
+  for b in stripTags branches for p in predlist  repeat
     typeFun := eval ['%lambda,'(_#1),p]
     if FUNCALL(typeFun,x) then return
       if p is ['%ieq,['%head,.],:.] then x := rest x
@@ -685,6 +685,36 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		typeFun() == ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],n]]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
+
+--%
+
+parentsOfBuiltinInstance form ==
+  [op,:args] := form
+  -- builtin categories
+  op in '(RecordCategory UnionCategory) =>
+    [[$SetCategory,:['AND,:[['has,t,$SetCategory] for t in stripTags args]]]]
+  op is 'MappingCategory => nil -- [[$Type,:true]]
+  op is 'EnumerationCategory => [[$SetCategory,:true]]
+  -- builtin domains
+  op is 'Mapping => [['MappingCategory,:args],:true]
+  op is 'Record => [['RecordCategory,:args],:true]
+  op is 'Union => [['UnionCategory,:args],:true]
+  op is 'Enumeration => [['EnumerationCategory,:args],:true]
+  nil
+
+$CapitalLetters ==
+  '(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
+
+builtinInstanceForm form ==
+  [op,:args] := form
+  op in '(Mapping MappingCategory Enumeration EnumerationCategory) =>
+    [op,:take(#args,$CapitalLetters)]
+  op in '(Record RecordCategory Union UnionCategory) =>
+    [op,:[T for a in args for t in $CapitalLetters]] where
+      T() ==
+        a is [":",x,.] => [":",x,t]
+        t
+  nil
 
 --%
 for x in '((Record mkRecordFunList)
