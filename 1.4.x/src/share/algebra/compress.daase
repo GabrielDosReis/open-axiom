@@ -1,6 +1,6 @@
 
-(30 . 3537569209)            
-(3980 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3538276717)            
+(3981 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -52,7 +52,7 @@
  |DoubleFloat| |DoubleFloatSpecialFunctions| |DenavitHartenbergMatrix|
  |Dictionary&| |Dictionary| |DifferentialExtension| |DifferentialDomain&|
  |DifferentialDomain| |DifferentialModule| |DifferentialSpace&|
- |DifferentialSpace| |DifferentialRing| |DictionaryOperations&|
+ |DifferentialSpace| |DifferentialRing| |Dioid| |DictionaryOperations&|
  |DictionaryOperations| |DiophantineSolutionPackage| |DirectProductCategory&|
  |DirectProductCategory| |DirectProduct| |DirectProductFunctions2|
  |DisplayPackage| |DivisionRing&| |DivisionRing| |DoublyLinkedAggregate|

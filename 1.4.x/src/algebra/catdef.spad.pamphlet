@@ -1831,7 +1831,7 @@ SemiRing(): Category == Join(AbelianMonoid,Monoid)
 )abbrev category RING Ring
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: February 14, 2012
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1842,7 +1842,7 @@ SemiRing(): Category == Join(AbelianMonoid,Monoid)
 ++ The category of rings with unity, always associative, but
 ++ not necessarily commutative.
 
-Ring(): Category == Join(Rng,Monoid,LeftModule(%),CoercibleFrom Integer) with
+Ring(): Category == Join(Rng,SemiRing,LeftModule(%),CoercibleFrom Integer) with
     --operations
       characteristic: NonNegativeInteger
         ++ characteristic() returns the characteristic of the ring
@@ -1860,6 +1860,19 @@ Ring(): Category == Join(Rng,Monoid,LeftModule(%),CoercibleFrom Integer) with
 
 @
 
+\section{Dioid category}
+
+<<category DIOID Dioid>>=
+)abbrev category DIOID Dioid
+++ Author: Gabriel Dos Reis
+++ Date Created: February 14, 2012
+++ Date Last Modified: February 14, 2012
+++ Description:
+++   Dioid is the class of semirings where the addition operation
+++   induces a canonical order relation.
+Dioid(): Category == Join(OrderedAbelianMonoid,SemiRing)
+
+@
 
 \section{category RNG Rng}
 <<category RNG Rng>>=
@@ -2104,7 +2117,9 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category LINSET LinearSet>>
 <<category LMODULE LeftModule>>
 <<category RMODULE RightModule>>
+<<category SRING SemiRing>>
 <<category RING Ring>>
+<<category DIOID Dioid>>
 <<category BMODULE BiModule>>
 <<category ENTIRER EntireRing>>
 <<category CHARZ CharacteristicZero>>
