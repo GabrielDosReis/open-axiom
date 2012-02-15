@@ -1098,6 +1098,8 @@ strap-2/BOOLEAN.$(FASLEXT): strap-2/PROPLOG.$(FASLEXT) \
 ##
 ##
 
+strap-2/%.$(FASLEXT): initdb.daase
+
 .PRECIOUS: strap-0 strap-1 strap-2
 strap-0 strap-1 strap-2:
 	$(mkdir_p) $@
@@ -1121,7 +1123,7 @@ strap-1/%.$(FASLEXT): %.spad | strap-1
 		rm -rf $*.NRLIB $*-.NRLIB
 
 .PRECIOUS: strap-2/%.$(FASLEXT)
-strap-2/%.$(FASLEXT): %.spad initdb.daase | strap-2
+strap-2/%.$(FASLEXT): %.spad | strap-2
 	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 --optimize=3 $< && \
 		cp $*.NRLIB/code.$(FASLEXT) $@ && \
 		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
@@ -1277,14 +1279,15 @@ TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
 subdir = src/algebra/
 
 ## The root of the category hierarchy is the Type category.
-## We require the basic integer domains are available at the
-## of bootstrap stage 2.  This has the property of setting in motion
-## the built of several other domains and categories as essential
+## We require the basic integer domains are available at stage 2 of
+## bootstrap.  This has the property of setting in motion
+## the built of several other domains and categories as needed
 ## to ignite the algebra build.  We require Category only because
 ## we would like not to have too many special cases for it.
 strap-stamp: strap-2/CATEGORY.$(FASLEXT) \
 	strap-2/SINT.$(FASLEXT) strap-2/NNI.$(FASLEXT) \
 	strap-2/PI.$(FASLEXT)
+	-rm -f $@
 	$(STAMP) $@
 
 $(OUT)/TYPE.$(FASLEXT): strap-stamp
@@ -2149,7 +2152,7 @@ $(OUT)/JVMFDACC.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 $(OUT)/JVMMDACC.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
 
-.PHONY: all all-algebra
+.PHONY: all all-algebra all-algstrap
 all: all-ax
 
 all-ax all-algebra: stamp
@@ -2158,6 +2161,9 @@ all-ax all-algebra: stamp
 stamp: ${SPADFILES} user-stamp ${TESTS}
 	-rm -f stamp
 	$(STAMP) stamp
+
+all-algstrap: all-initdb
+	$(MAKE) $(AM_MAKEFLAGS) strap-stamp
 
 .PRECIOUS: $(OUT)/%.$(FASLEXT)
 ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
@@ -2168,8 +2174,10 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	$(COMPILE_SPAD)
 
+$(SPADFILES): | $(OUTSRC)
+
 .PRECIOUS: $(OUTSRC)/%.spad
-${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
+$(OUTSRC)/%.spad: $(srcdir)/%.spad.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
 
 .PRECIOUS: $(builddir)/%.tex
@@ -2424,9 +2432,6 @@ user-stamp: $(axiom_algebra_layer_user_objects)
 	@ rm -f user-stamp
 	@ $(STAMP) user-stamp
 
-
-.PRECIOUS: $(SPADFILES)
-$(SPADFILES): | $(OUTSRC)
 
 .PHONY: all-initdb
 all-initdb: initdb.daase
