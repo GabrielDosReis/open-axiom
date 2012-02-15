@@ -148,8 +148,9 @@ strap-0/SRING.$(FASLEXT): strap-0/ABELMON.$(FASLEXT) \
 strap-0/ORDRING.$(FASLEXT): strap-0/OAGROUP.$(FASLEXT) \
 	strap-0/RING.$(FASLEXT) strap-0/MONOID.$(FASLEXT)
 strap-0/RING.$(FASLEXT): strap-0/RNG.$(FASLEXT) \
-	strap-0/MONOID.$(FASLEXT) \
+	strap-0/SRING.$(FASLEXT) \
 	strap-0/LMODULE.$(FASLEXT) strap-0/KRCFROM.$(FASLEXT)
+strap-0/DIOID.$(FASLEXT): strap-0/OAMON.$(FASLEXT) strap-0/SRING.$(FASLEXT)
 strap-0/COMRING.$(FASLEXT): strap-0/RING.$(FASLEXT) \
 	strap-0/BMODULE.$(FASLEXT)
 strap-0/INTDOM.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
@@ -449,9 +450,14 @@ strap-1/RMODULE.$(FASLEXT): strap-1/ABELGRP.$(FASLEXT) \
 strap-1/BMODULE.$(FASLEXT): strap-1/LMODULE.$(FASLEXT) \
 	strap-1/RMODULE.$(FASLEXT)
 
+strap-1/SRING.$(FASLEXT): strap-1/ABELMON.$(FASLEXT) \
+	strap-1/MONOID.$(FASLEXT)
+
 strap-1/RING.$(FASLEXT): strap-1/RNG.$(FASLEXT) \
-	strap-1/MONOID.$(FASLEXT) \
+	strap-1/SRING.$(FASLEXT) \
 	strap-1/LMODULE.$(FASLEXT) strap-1/KRCFROM.$(FASLEXT)
+
+strap-1/DIOID.$(FASLEXT): strap-1/OAMON.$(FASLEXT) strap-1/SRING.$(FASLEXT)
 
 strap-1/SRING.$(FASLEXT): strap-1/ABELMON.$(FASLEXT) \
 	strap-1/MONOID.$(FASLEXT)
@@ -803,11 +809,18 @@ strap-2/RMODULE.$(FASLEXT): strap-2/ABELGRP.$(FASLEXT) \
 	strap-2/RLINSET.$(FASLEXT)
 strap-2/BMODULE.$(FASLEXT): strap-2/LMODULE.$(FASLEXT) \
 	strap-2/RMODULE.$(FASLEXT)
-strap-2/RING.$(FASLEXT): strap-2/RNG.$(FASLEXT) \
-	strap-2/MONOID.$(FASLEXT) \
-	strap-2/LMODULE.$(FASLEXT) strap-2/KRCFROM.$(FASLEXT)
+
 strap-2/SRING.$(FASLEXT): strap-2/ABELMON.$(FASLEXT) \
 	strap-2/MONOID.$(FASLEXT)
+
+strap-2/RING.$(FASLEXT): strap-2/RNG.$(FASLEXT) \
+	strap-2/SRING.$(FASLEXT) \
+	strap-2/LMODULE.$(FASLEXT) strap-2/KRCFROM.$(FASLEXT)
+
+strap-2/SRING.$(FASLEXT): strap-2/ABELMON.$(FASLEXT) \
+	strap-2/MONOID.$(FASLEXT)
+
+strap-2/DIOID.$(FASLEXT): strap-2/OAMON.$(FASLEXT) strap-2/SRING.$(FASLEXT)
 
 strap-2/ORDRING.$(FASLEXT): strap-2/OAGROUP.$(FASLEXT) \
 	strap-2/RING.$(FASLEXT) strap-2/MONOID.$(FASLEXT)
@@ -1098,8 +1111,6 @@ strap-2/BOOLEAN.$(FASLEXT): strap-2/PROPLOG.$(FASLEXT) \
 ##
 ##
 
-strap-2/%.$(FASLEXT): initdb.daase
-
 .PRECIOUS: strap-0 strap-1 strap-2
 strap-0 strap-1 strap-2:
 	$(mkdir_p) $@
@@ -1123,7 +1134,7 @@ strap-1/%.$(FASLEXT): %.spad | strap-1
 		rm -rf $*.NRLIB $*-.NRLIB
 
 .PRECIOUS: strap-2/%.$(FASLEXT)
-strap-2/%.$(FASLEXT): %.spad | strap-2
+strap-2/%.$(FASLEXT): %.spad initdb.daase | strap-2
 	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 --optimize=3 $< && \
 		cp $*.NRLIB/code.$(FASLEXT) $@ && \
 		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
@@ -1392,6 +1403,7 @@ $(OUT)/OAMON.$(FASLEXT): $(OUT)/OASGP.$(FASLEXT)
 $(OUT)/OAMONS.$(FASLEXT): $(OUT)/OAMON.$(FASLEXT)
 $(OUT)/OASGP.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT) $(OUT)/ABELSG.$(FASLEXT)
 $(OUT)/RNG.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
+$(OUT)/DIOID.$(FASLEXT): $(OUT)/OAMON.$(FASLEXT) $(OUT)/SRING.$(FASLEXT)
 
 $(OUT)/LLINSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/RLINSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
@@ -1426,7 +1438,7 @@ oa_algebra_layer_0 = \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
   ABELSG-  ORDSET            OASGP    FILECAT  SEXCAT   \
   MODULE   MODULE-  PID      OAGROUP  OAGROUP- OCAMON   \
-  OAMON    OAMON- \
+  OAMON    OAMON-   DIOID                               \
   RNG      ORDFIN   LLINSET  RLINSET  LINSET   OAMONS   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
@@ -1475,7 +1487,7 @@ $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 $(OUT)/BYTEORD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
 $(OUT)/SRING.$(FASLEXT): $(OUT)/ABELMON.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT)
-$(OUT)/RING.$(FASLEXT): $(OUT)/RNG.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT) \
+$(OUT)/RING.$(FASLEXT): $(OUT)/RNG.$(FASLEXT) $(OUT)/SRING.$(FASLEXT) \
 	$(OUT)/LMODULE.$(FASLEXT) $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/MONOID.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
 $(OUT)/ABELGRP.$(FASLEXT): $(OUT)/CABMON.$(FASLEXT) $(OUT)/LLINSET.$(FASLEXT)
@@ -1514,7 +1526,7 @@ $(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- ITUPLE   \
   CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
-  DIFRING           ENTIRER  INTDOM   INTDOM-   OINTDOM  \
+  DIFRING  SRING    ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC            \
   IDENT    OUTFORM  BINDING           BOOLEAN            \

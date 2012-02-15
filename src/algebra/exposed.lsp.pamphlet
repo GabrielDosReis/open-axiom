@@ -507,6 +507,7 @@
   (|DifferentialSpace| . DIFFSPC)
   (|DifferentialSpaceExtension| . DSEXT)
   (|DifferentialVariableCategory| . DVARCAT)
+  (|Dioid| . DIOID)
   (|DirectProductCategory| . DIRPCAT)
   (|DivisionRing| . DIVRING)
   (|DoublyLinkedAggregate| . DLAGG)
