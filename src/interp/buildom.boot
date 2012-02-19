@@ -696,10 +696,10 @@ parentsOfBuiltinInstance form ==
   op is 'MappingCategory => nil -- [[$Type,:true]]
   op is 'EnumerationCategory => [[$SetCategory,:true]]
   -- builtin domains
-  op is 'Mapping => [['MappingCategory,:args],:true]
-  op is 'Record => [['RecordCategory,:args],:true]
-  op is 'Union => [['UnionCategory,:args],:true]
-  op is 'Enumeration => [['EnumerationCategory,:args],:true]
+  op is 'Mapping => [[['MappingCategory,:args],:true],[$SetCategory,:true]]
+  op is 'Record => [[['RecordCategory,:args],:true]]
+  op is 'Union => [[['UnionCategory,:args],:true]]
+  op is 'Enumeration => [[['EnumerationCategory,:args],:true]]
   nil
 
 $CapitalLetters ==
