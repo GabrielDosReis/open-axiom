@@ -1,5 +1,9 @@
 2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compBuiltinDomain): Rename from compCat.
+
+2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-data.boot (libConstructorSig): Rename T$ to T for
 	external name printing.  Do not call ncParseFromString.
 
