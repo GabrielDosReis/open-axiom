@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -2027,8 +2027,12 @@ compBuiltinDomain(form is [functorName,:argl],m,e) ==
   fn := property(functorName,"makeFunctionList") or return nil
   diagnoseUnknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
+  exports := [cat for x in parentsOfBuiltinInstance form]
+    where cat() ==
+            x.rest is true => x.first
+            ['IF,x.rest,['ATTRIBUTE,x.first],'%noBranch]
   catForm:=
-    ["Join",$SetCategory,["CATEGORY","domain",:
+    ["Join",:exports,["CATEGORY","domain",:
       [["SIGNATURE",op,sig] for [op,sig,.] in funList | op~="="]]]
   --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
   --sure if it uses any of the other signatures(see extendsCategoryForm)

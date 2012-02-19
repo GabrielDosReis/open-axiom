@@ -1,5 +1,11 @@
 2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compBuiltinDomain): Compute the exports
+	from parentsOfBuiltinInstance.
+	* interp/buildom.boot (parentsOfBuiltinInstance): Tidy.
+
+2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compBuiltinDomain): Rename from compCat.
 
 2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
