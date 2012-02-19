@@ -1,3 +1,8 @@
+2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-data.boot (libConstructorSig): Rename T$ to T for
+	external name printing.  Do not call ncParseFromString.
+
 2012-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (Ring): Extends SemiRing.
