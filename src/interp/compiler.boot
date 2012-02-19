@@ -2023,7 +2023,7 @@ modeEqualSubst(m1,m,e) ==
 
 --% Categories
 
-compCat(form is [functorName,:argl],m,e) ==
+compBuiltinDomain(form is [functorName,:argl],m,e) ==
   fn := property(functorName,"makeFunctionList") or return nil
   diagnoseUnknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
@@ -2852,7 +2852,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["construct", :"compConstruct"],_
 	  ["DEF", :"compDefine"],_
 	  ["elt", :"compElt"],_
-	  ["Enumeration", :"compCat"],_
+	  ["Enumeration", :"compBuiltinDomain"],_
           ["EnumerationCategory", :"compEnumCat"],_
 	  ["exit", :"compExit"],_
 	  ["has", :"compHas"],_
@@ -2866,7 +2866,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["MDEF", :"compMacro"],_
           ["not", :"compLogicalNot"],_
 	  ["pretend", :"compPretend"],_
-	  ["Record", :"compCat"],_
+	  ["Record", :"compBuiltinDomain"],_
 	  ["RecordCategory", :"compConstructorCategory"],_
 	  ["REDUCE", :"compReduce"],_
 	  ["REPEAT", :"compRepeatOrCollect"],_
@@ -2874,9 +2874,9 @@ for x in [["|", :"compSuchthat"],_
 	  ["SEQ", :"compSeq"],_
 	  ["SubDomain", :"compSubDomain"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
-	  ["Mapping", :"compCat"],_
+	  ["Mapping", :"compBuiltinDomain"],_
           ["MappingCategory", :"compConstructorCategory"],_
-	  ["Union", :"compCat"],_
+	  ["Union", :"compBuiltinDomain"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["per",:"compPer"],_
