@@ -126,7 +126,7 @@ buildLibdbString [x,:u] ==
   strconc(STRINGIMAGE x,strconc/[strconc('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
-  [[.,:sig],:.] := getConstructorModemap conname
+  [[.,:sig],:.] := substitute("T","T$",getConstructorModemap conname)
   formals := take(#argl,$FormalMapVariableList)
   sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
@@ -140,10 +140,7 @@ libConstructorSig [conname,:argl] ==
       [fn y for y in x]
   sig := [first sig,:[(k => [":",a,s]; s)
             for a in argl for s in rest sig for k in keys]]
-  sigpart:= form2LispString ['Mapping,:sig]
-  if null ncParseFromString sigpart then
-    sayBrightly ['"Won't parse: ",sigpart]
-  sigpart
+  form2LispString ['Mapping,:sig]
 
 concatWithBlanks r ==
   r is [head,:tail] =>
