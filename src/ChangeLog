@@ -1,3 +1,15 @@
+2012-02-19  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/lexing.boot (getNumberToken): New.
+	(getArgumentDesignator): Likewise.
+	(getToken): Use it.
+	* interp/parsing.lisp (GET-NUMBER-TOKEN): Remove.
+	* interp/bootlex.lisp (INIT-BOOT/SPAD-READER): Move to spad.lisp.
+	(SPAD): Likewise.
+	(READ-SPAD1): Likewise.
+	(TEST): Remove.
+	(GET-ARGUMENT-DESIGNATOR-TOKEN): Likewise.
+
 2012-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compBuiltinDomain): Compute the exports
