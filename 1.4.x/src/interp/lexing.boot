@@ -1,4 +1,4 @@
--- Copyright (C) 2011, Gabriel Dos Reis.
+-- Copyright (C) 2011-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -188,6 +188,22 @@ tokenInstall(sym,typ,tok,nonblank == true) ==
   tokenNonblank?(tok) := nonblank
   tok
 
+getNumberToken tok ==
+  buf := nil
+  repeat
+    buf := [currentChar(),:buf]
+    digit? nextChar() => advanceChar!()
+    leave nil
+  advanceChar!()
+  sz := #buf  -- keep track of digit count
+  tokenInstall(readIntegerIfCan listToString reverse! buf,'NUMBER,tok,sz)
+
+getArgumentDesignator tok ==
+  advanceChar!()
+  getNumberToken tok
+  tokenInstall(makeSymbol strconc('"#",formatToString('"~D",tokenSymbol tok)),
+     'ARGUMENT_-DESIGNATOR,tok,$nonblank)
+
 getToken tok ==
   not skipBlankChars() => nil
   tt := tokenLookaheadType currentChar()
@@ -195,7 +211,7 @@ getToken tok ==
   tt is 'ESCAPE =>
     advanceChar!()
     getIdentifier(tok,true)
-  tt is 'ARGUMENT_-DESIGNATOR => GET_-ARGUMENT_-DESIGNATOR_-TOKEN tok
+  tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator tok
   tt is 'ID => getIdentifier(tok,false)
   tt is 'NUM => GET_-SPAD_-INTEGER_-TOKEN tok
   tt is 'STRING => getSpadString tok

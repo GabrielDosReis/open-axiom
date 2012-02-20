@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -188,21 +188,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
  
 (defun make-adjustable-string (n)
   (make-array (list n) :element-type 'character :adjustable t))
- 
-(defun get-number-token (token)
-  "Take a number off the input stream."
-  (prog ((buf (make-adjustable-string 0)))
-	nu1 
-	(suffix (|currentChar|) buf)                     ; Integer part
-        (let ((next-chr (|nextChar|)))
-          (cond ((digitp next-chr)
-                 (|advanceChar!|)
-                 (go nu1))))
-        (|advanceChar!|) 
-	(return (|tokenInstall| (read-from-string buf)
-			       'number token
-			       (size buf) ;used to keep track of digit count
-			       ))))
  
 ; *** 5. META Error Handling
 

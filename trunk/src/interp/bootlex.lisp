@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -49,24 +49,7 @@
 (IMPORT-MODULE "nlib")
 (in-package "BOOT")
 
-; *** 0. Global parameters
-
 ; *** 1. BOOT file handling
-
-(defun init-boot/spad-reader ()
-  (setq $SPAD_ERRORS (VECTOR 0 0 0))
-  (setq SPADERRORSTREAM |$OutputStream|)
-  (setq File-Closed nil)
-  (Next-Lines-Clear)
-  (setq |$lineStack| nil)
-  (ioclear))
-
-(defmacro test (x &rest y)
-  `(progn
-     (setq spaderrorstream t)
-     (in-boot)
-     (initialize-preparse |$InputStream|)
-     (,(intern (strconc "PARSE-" x)) . ,y)))
 
 (defun print-defun (name body)
    (let* ((sp (assoc 'compiler-output-stream optionlist))
@@ -77,89 +60,8 @@
      (when (or |$PrettyPrint| (not (is-console st)))
            (print-full body st) (force-output st))))
 
-(defun spad (&optional
-              (*spad-input-file* nil)
-              (*spad-output-file* nil)
-             &aux
-         ;;  (*comp370-apply* (function print-and-eval-defun))
-           (*comp370-apply* (function print-defun))
-           (*fileactq-apply* (function print-defun))
-           ($SPAD T)
-           (OPTIONLIST nil)
-           (*EOF* NIL)
-           (File-Closed NIL)
-           (/editfile *spad-input-file*)
-           in-stream out-stream)
-  (declare (special |$Echo| /editfile *comp370-apply* *EOF*
-                    File-Closed Xcape))
-  (setq |$InteractiveMode| nil)
-  ;; only rebind |$InteractiveFrame| if compiling
-  (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
-         (if (not |$InteractiveMode|)
-             (list (|addBinding|
-                    '|$DomainsInScope|
-                    `((FLUID . |true|)
-                      (|special| . ,(COPY-TREE |$InitialDomainsInScope|)))
-                    (|addBinding| '|$Information| NIL (|makeInitialModemapFrame|)))))
-  (init-boot/spad-reader)
-  (unwind-protect
-    (progn
-      (setq in-stream (if *spad-input-file*
-                         (open *spad-input-file* :direction :input)
-			|$InputStream|))
-      (initialize-preparse in-stream)
-      (setq out-stream (if *spad-output-file*
-                           (open *spad-output-file* :direction :output)
-                         |$OutputStream|))
-      (when *spad-output-file*
-         (format out-stream "~&;;; -*- Mode:Lisp; Package:Boot  -*-~%~%")
-         (print-package "BOOT"))
-      (setq |$OutputStream| out-stream)
-      (loop
-       (if (or *eof* file-closed) (return nil))
-       (catch 'SPAD_READER
-         (if (setq |$lineStack| (PREPARSE in-stream))
-             (let ((LINE (cdar |$lineStack|)))
-               (declare (special LINE))
-               (|parseNewExpr|)
-               (let ((parseout (|popStack1|)) )
-                 (when parseout
-                       (let ((|$OutputStream| out-stream))
-                         (S-PROCESS parseout))
-                       (format out-stream "~&")))
-               ;(IOClear in-stream out-stream)
-               )))
-      (IOClear in-stream out-stream)))
-    (if *spad-input-file* (shut in-stream))
-    (if *spad-output-file* (shut out-stream)))
-  T))
-
-(defun READ-SPAD1 (FN FT FM TO)
-    (LET ((STRM IN-STREAM))
-      (SETQ $MAXLINENUMBER 0)
-      (SETQ $SPAD_ERRORS (VECTOR 0 0 0))
-      (SETQ IN-STREAM (open (strconc fm ">" fn "." ft) :direction :input))
-      ($ERASE (LIST FN 'ERROR 'A))
-      (SETQ OUT-STREAM (if TO (open to :direction :output) OUT-STREAM))
-      (SETQ SPADERRORSTREAM (open (strconc "a>" fn ".error") :direction :output))
-      (READ-SPAD-1)
-      (close SPADERRORSTREAM)
-      (SETQ IN-STREAM STRM)
-      (OR (EQUAL #(0 0 0) $SPAD_ERRORS)
-          (|sayBrightly| (LIST '|%b| (ELT $SPAD_ERRORS 0) '|%d| '|syntax errors|
-            '|%l| '|%b| (ELT $SPAD_ERRORS 1) '|%d| '|precompilation errors|
-            '|%l| '|%b| (ELT $SPAD_ERRORS 2) '|%d| '|semantic errors| '|%l|)))
-      (+ (ELT $SPAD_ERRORS 0) (ELT $SPAD_ERRORS 1) (ELT $SPAD_ERRORS 2))))
-
 
 ;  *** 3. BOOT Token Handling ***
-
-(defun get-argument-designator-token (token)
-  (|advanceChar!|)
-  (get-number-token token)
-  (|tokenInstall| (intern (strconc "#" (format nil "~D" (|tokenSymbol| token))))
-                 'argument-designator token |$nonblank|))
-
 
 ;; -*- Parse an integer number -*-
 ;; The number may be written in plain format, where the radix
