@@ -1,3 +1,15 @@
+2012-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (genDeltaEntry): Replace applyFun with %apply.
+	* interp/lisp-backend.boot (expandApply): Remove.
+	Unregister expander.
+	* interp/g-opt.boot (optCall): applyFun is not longer an opcode.
+	Look for %apply.
+	* interp/compiler.boot (applyMapping): Generate ['%call,['%apply,.]]
+	form, not ['%apply,..] form.
+	(extractCodeAndConstructTriple): Tidy.
+	(compApplication): Likewise.
+
 2012-02-19  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/lexing.boot (getNumberToken): New.

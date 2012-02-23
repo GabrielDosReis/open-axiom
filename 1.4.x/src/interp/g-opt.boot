@@ -535,7 +535,7 @@ optCall (x is ['%call,:u]) ==
   fn isnt [.,:.] =>
     opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
     resetTo(x,u)
-  fn is ['applyFun,name] =>
+  fn is ['%apply,name] =>
     do
       ident? name =>
         x.first := '%funcall

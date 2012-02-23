@@ -203,7 +203,7 @@ genDeltaEntry(op,mm,e) ==
     dc = "$" => nsig := sig
     if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
-    ['applyFun,['compiledLookupCheck,MKQ op,
+    ['%apply,['compiledLookupCheck,MKQ op,
          mkList consSig(db,nsig,dc),consDomainForm(db,dc,nil)]]
   odc := dc
   if cons? dc then 
