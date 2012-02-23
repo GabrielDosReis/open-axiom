@@ -1,4 +1,4 @@
--- Copyright (C) 2011, Gabriel Dos Reis.
+-- Copyright (C) 2011-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -479,9 +479,6 @@ expandTry ['%try,expr,handlers,cleanup] ==
   cleanup = nil => tryBlock
   ['UNWIND_-PROTECT,tryBlock,:expandToVMForm rest cleanup]
   
-expandApply ['%apply,op,:args] ==
-  ['SPADCALL,:args,op]
-
 ++ Opcodes with direct mapping to target operations.
 for x in [
     -- Boolean constants
@@ -729,8 +726,7 @@ for x in [
    ['%store,  :function expandStore],
    ['%dynval, :function expandDynval],
    ['%throw,  :function expandThrow],
-   ['%try,    :function expandTry],
-   ['%apply,  :function expandApply]
+   ['%try,    :function expandTry]
  ] repeat property(first x,'%Expander) := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
