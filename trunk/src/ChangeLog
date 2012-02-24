@@ -1,3 +1,9 @@
+2012-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot: "assume" is now also a keyword for the compiler.
+	* interp/spad-parser.boot (parseCategory): Accept exported properties.
+	(parseFormula): New.
+
 2012-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (genDeltaEntry): Replace applyFun with %apply.

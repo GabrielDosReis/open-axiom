@@ -333,7 +333,7 @@ getGliph(tok,gliphs) ==
     return tokenInstall(s,'GLIPH,tok,$nonblank)
 
 Keywords == [
- "or", "and", "isnt", "is", "where", "forall", "exist", "try",
+ "or", "and", "isnt", "is", "where", "forall", "exist", "try", "assume",
   "has", "with", "add", "case", "in", "by", "pretend", "mod", "finally",
    "exquo", "div", "quo", "else", "rem", "then", "suchthat", "catch", "throw",
     "if", "iterate", "break", "from", "exit", "leave", "return",

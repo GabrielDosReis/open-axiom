@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -376,6 +376,11 @@ parseCategory() ==
       pushReduction('unnamedCategory,nil)
     compulsorySyntax matchAdvanceSpecial char ")"
     pushReduction('parseCategory,["CATEGORY",popStack2(),:popStack1()])
+  matchAdvanceKeyword "assume" =>
+    compulsorySyntax parseName()
+    compulsorySyntax matchAdvanceGlyph "=="
+    compulsorySyntax parseFormula()
+    pushReduction('assumption,['ATTRIBUTE,['%Rule,popStack2(),popStack1()]])
   g := lineNumber $spadLine
   parseApplication() or parseOperatorFunctionName() =>
     matchAdvanceGlyph ":" =>
@@ -425,6 +430,14 @@ parseQuantifiedVariableList() ==
               ["%Sequence",popStack2(),:popStack1()])
     compulsorySyntax matchAdvanceSpecial char ")"
   nil
+
+parseFormula() ==
+  parseQuantifier() =>
+    compulsorySyntax parseQuantifiedVariableList()
+    compulsorySyntax matchAdvanceGlyph "."
+    compulsorySyntax parseExpression()
+    pushReduction('parseFormula,[popStack3(),popStack2(),popStack1()])
+  parseExpression()
 
 ++ quantified types.  At the moment, these are used only in
 ++ pattern-mathing cases.
