@@ -598,7 +598,7 @@ for x in [
     -- ['%nil, :'NIL],
     -- unary list operations
     ['%head,      :'CAR],
-    ['%pair,  :'CONS],
+    ['%pair,      :'CONS],
     ['%lempty?,   :'NULL],
     ['%lfirst,    :'CAR],
     ['%llength,   :'LIST_-LENGTH],

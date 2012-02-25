@@ -92,7 +92,7 @@ compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
   -- signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
-  $killOptimizeIfTrue: local:= false
+  $killOptimizeIfTrue: local := false
   $forceAdd: local:= false
   -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames
@@ -335,10 +335,10 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
     vec := ['%vector,:reverse! vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
-  ['%pair,fname,vec]
+  ['%closure,fname,vec]
 
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
-  $killOptimizeIfTrue: local:= true
+  $killOptimizeIfTrue: local := true
   e := oldE
   isFunctor x =>
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
@@ -364,7 +364,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
     if fn is ['%apply,a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
-  [['%pair,['%function,op],env],m,oldE]
+  [['%closure,['%function,op],env],m,oldE]
 
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true

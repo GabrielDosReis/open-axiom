@@ -543,7 +543,7 @@ optCall (x is ['%call,:u]) ==
       x.first := 'SPADCALL
       x.rest := [:a,name]
     x
-  fn is ['%pair,['%function,op],env] =>
+  fn is ['%closure,['%function,op],env] =>
     x.first := op
     x.rest := [:a,env]
     x
