@@ -1,5 +1,10 @@
 2012-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (extractCode): Rename from
+	extractCodeAndConstructTriple.  Change Arity.  Tidy. Adjust callers.
+
+2012-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (finishLambdaExpression):  Use %closure.
 	(extractCodeAndConstructTriple): Likewise.
 	* interp/g-opt.boot (optCall): Adjust.

@@ -351,20 +351,21 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) =>
     [u,.,.] := comp([x,:vl],m',e) or return nil
-    extractCodeAndConstructTriple(u, m, oldE)
+    [extractCode(u,vl),m,oldE]
   null vl and (t := comp([x], m', e)) =>
     [u,.,.] := t
-    extractCodeAndConstructTriple(u, m, oldE)
+    [extractCode(u,nil),m,oldE]
   [u,.,.]:= comp(x,m',e) or return nil
   [.,fun] := optimizeFunctionDef [nil,["LAMBDA",vl,u]]
   [finishLambdaExpression(fun,e),m,oldE]
 
-extractCodeAndConstructTriple(u, m, oldE) ==
-  u is ['%call,fn,:.] =>
-    if fn is ['%apply,a] then fn := a
-    [fn,m,oldE]
+extractCode(u,vars) ==
+  u is ['%call,fn,: =vars] =>
+    fn is ['%apply,a] => a
+    fn is [q,:.] and q in '(ELT CONST) => ['%tref,:fn.args]
+    fn
   [op,:.,env] := u
-  [['%closure,['%function,op],env],m,oldE]
+  ['%closure,['%function,op],env]
 
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
