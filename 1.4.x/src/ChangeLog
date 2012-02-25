@@ -1,5 +1,19 @@
 2012-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (BinaryOperatorCategory): New.
+	(BinaryOperation): Likewise.
+	(IdempotentOperatorCategory): Likewise.
+	(SemiGroupOperatorCategory): Likewise.
+	(SemiGroupOperation): Likewise.
+	(MonoidOperatorCategory): Likewise.
+	(MonoidOperation): Likewise.
+	* algebra/exposed.lsp.pamphlet: Expose them.
+	* algebra/Makefile.in (oa_algebra_layer_0): Include IDEMOPC,
+	SGPOPC, SPGOP, MONOPC, BINOPC.
+	(axiom_algebra_layer_1): Include MONOP.
+
+2012-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot: "assume" is now also a keyword for the compiler.
 	* interp/spad-parser.boot (parseCategory): Accept exported properties.
 	(parseFormula): New.

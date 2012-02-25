@@ -12,6 +12,126 @@
 \tableofcontents
 \eject
 
+\section{Binary operations}
+
+<<category BINOPC BinaryOperatorCategory>>=
+)abbrev category BINOPC BinaryOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement binary operations.
+BinaryOperatorCategory(T: Type): Category == MappingCategory(T,T,T)
+
+@
+
+<<domain BINOP BinaryOperation>>=
+)abbrev domain BINOP BinaryOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements binary operations.
+BinaryOperation(T: Type): Join(BinaryOperatorCategory T, SetCategory) with
+    binaryOperation: ((T,T) -> T) -> %
+      ++ \spad{binaryOperation f} constructs a binary operation value
+      ++ out of any homogeneous mapping of arity 2.
+  == (T,T) -> T add
+    binaryOperation f == per f
+    elt(f,x,y) == rep(f)(x,y)
+
+@
+
+
+\section{Idempotent operations}
+
+<<category IDEMOPC IdempotentOperatorCategory>>=
+)abbrev category IDEMOPC IdempotentOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement idempotent operations.
+IdempotentOperatorCategory(T: BasicType): Category ==
+  BinaryOperatorCategory T with
+    assume idempotence ==
+      forall(f: %, x: T) . f(x,x) = x
+@
+
+
+\section{Semigroup operations}
+
+<<category SGPOPC SemiGroupOperatorCategory>>=
+)abbrev category SGPOPC SemiGroupOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement semigroup operations
+SemiGroupOperatorCategory(T: BasicType): Category ==
+  BinaryOperatorCategory T with
+    assume associativity ==
+      forall(f: %, x: T, y:T, z: T) . f(f(x,y),z) = f(x,f(y,z))
+
+@
+
+<<domain SGPOP SemiGroupOperation>>=
+)abbrev domain SGPOP SemiGroupOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements semigroup operations.
+SemiGroupOperation(T: BasicType): Public == Private where
+  Public == Join(SemiGroupOperatorCategory T,SetCategory) with
+    semiGroupOperation: ((T,T) -> T) -> %
+      ++ \spad{semiGroupOperation f} constructs a semigroup operation
+      ++ out of a binary homogeneous mapping known to be associative.
+  Private == BinaryOperation T
+
+@
+
+
+\section{Monoid operations}
+
+<<category MONOPC MonoidOperatorCategory>>=
+)abbrev category MONOPC MonoidOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement monoid operations
+MonoidOperatorCategory(T: BasicType): Category ==
+  SemiGroupOperatorCategory T with
+    neutralValue: % -> T
+      ++ \spad{neutralValue f} returns the neutral value of the
+      ++ monoid operation \spad{f}.
+    assume neutrality ==
+      forall(f: %, x: T) .
+         f(x, neutralValue f) = x
+         f(neutralValue f, x) = x
+
+@
+
+<<domain MONOP MonoidOperation>>=
+)abbrev domain MONOP MonoidOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements monoid operations.
+MonoidOperation(T: BasicType): Public == Private where
+  Public == Join(MonoidOperatorCategory T,SetCategory) with
+    monoidOperation: ((T,T) -> T, T) -> %
+      ++ \spad{monoidOperation(f,e)} constructs a operation from
+      ++ the binary mapping \spad{f} with neutral value \spad{e}.
+  Private == Pair((T,T) -> T,T) add
+    monoidOperation(f,e) == per pair(f,e)
+    elt(op,x,y) == first(rep op)(x,y)
+    neutralValue op == second rep op
+@
+
+
 \section{Linear sets}
 
 <<category LLINSET LeftLinearSet>>=
@@ -2065,7 +2185,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2010, Gabriel Dos Reis.
+--Copyright (C) 2007-2012, Gabriel Dos Reis.
 --All rights reversed.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -2098,6 +2218,14 @@ VectorSpace(S:Field): Category ==  Module(S) with
 @
 <<*>>=
 <<license>>
+
+<<category BINOPC BinaryOperatorCategory>>
+<<domain BINOP BinaryOperation>>
+<<category IDEMOPC IdempotentOperatorCategory>>
+<<category SGPOPC SemiGroupOperatorCategory>>
+<<domain SGPOP SemiGroupOperation>>
+<<category MONOPC MonoidOperatorCategory>>
+<<domain MONOP MonoidOperation>>
 
 <<category BASTYPE BasicType>>
 <<category ORDTYPE OrderedType>>
