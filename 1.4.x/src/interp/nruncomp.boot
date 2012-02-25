@@ -224,7 +224,7 @@ genDeltaEntry(op,mm,e) ==
       dbUsedEntities(db) := [[desc,op,dc,:nsig,kind],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       n
-  impl := optDeltaEntry(op,nsig,odc,kind) => impl
+  impl := optDeltaEntry(op,nsig,dc,kind) => impl
   u
 
 ++ Return the slot number (within the template vector of the functor
