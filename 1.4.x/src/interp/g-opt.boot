@@ -551,11 +551,19 @@ optCall (x is ['%call,:u]) ==
     x.first := op
     x.rest := a
     x
-  fn is [q,R,n] and q in '(ELT CONST) =>
-    q is 'CONST => ['spadConstant,R,n]
-    emitIndirectCall(fn,a,x)
+  fn is ['ELT,:.] => emitIndirectCall(fn,a,x)
+  fn is ['CONST,R,n] => ['spadConstant,R,n]
   systemErrorHere ['optCall,x]
  
+optClosure(x is ['%closure,fun,env]) ==
+  fun is ['%function,['%lambda,vars,body]] =>
+    do
+      vars is [:vars',=env] =>
+        body is [op,: =vars] => x.args := [['%function,op],env]
+        not CONTAINED(env,body) => x.args := [fun,'%nil]
+    x
+  x
+
 optCons (x is ["CONS",a,b]) ==
   a is "NIL" =>
     b is 'NIL => (x.first := 'QUOTE; x.rest := ['NIL,:'NIL]; x)
@@ -660,6 +668,7 @@ $simpleVMoperators ==
 semiSimpleRelativeTo?(form,ops) ==
   atomic? form => true
   not symbol?(form.op) or not symbolMember?(form.op,ops) => false
+  abstraction? form.op => true  -- always, regardless of body
   form.op is '%when =>
     and/[sideEffectFree? p and semiSimpleRelativeTo?(c,ops)
            for [p,c] in form.args]
@@ -996,6 +1005,7 @@ for x in '((%call         optCall) _
            (%2bool       opt2bool)_
            (%list        optList)_
            (SPADCALL     optSPADCALL)_
+           (%closure     optClosure)_
            (_|           optSuchthat)_
            (%scope       optScope)_
            (%when        optCond)_

@@ -1,5 +1,16 @@
 2012-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compTopLevel): Do not bind $killOptimizeIfTrue.
+	(compWithMappingMode): Likewise.
+	(compUnnamedMapping): Likewise.
+	(extractCode): Simplify.
+	* interp/g-opt.boot (optClosure): New.  Register.
+	(semiSimpleRelativeTo?): An abstraction is always semisimple.
+	* interp/nruncomp.boot ($killOptimizeIfTrue): Remove.
+	(optDeltaEntry): Don't test for it.
+
+2012-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (extractCode): Rename from
 	extractCodeAndConstructTriple.  Change Arity.  Tidy. Adjust callers.
 

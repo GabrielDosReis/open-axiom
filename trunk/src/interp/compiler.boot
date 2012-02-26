@@ -92,7 +92,6 @@ compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
   -- signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
-  $killOptimizeIfTrue: local := false
   $forceAdd: local:= false
   -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames
@@ -338,7 +337,6 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
   ['%closure,fname,vec]
 
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
-  $killOptimizeIfTrue: local := true
   e := oldE
   isFunctor x =>
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
@@ -360,12 +358,9 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   [finishLambdaExpression(fun,e),m,oldE]
 
 extractCode(u,vars) ==
-  u is ['%call,fn,: =vars] =>
-    fn is ['%apply,a] => a
-    fn is [q,:.] and q in '(ELT CONST) => ['%tref,:fn.args]
-    fn
-  [op,:.,env] := u
-  ['%closure,['%function,op],env]
+  u is ['%call,['%apply,a],: =vars] => a
+  u is ['%call,[q,:etc],: =vars] and q in '(ELT CONST) => ['%tref,:etc]
+  ['%closure,['%function,['%lambda,[:vars,'$],u]],'$]
 
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
@@ -2751,7 +2746,6 @@ compRep(["rep",x],m,e) ==
 --% Lambda expressions
 
 compUnnamedMapping(parms,source,target,body,env) ==
-  $killOptimizeIfTrue: local := true
   savedEnv := env
   for p in parms for s in source repeat
     [.,.,env] := compMakeDeclaration(p,s,env)

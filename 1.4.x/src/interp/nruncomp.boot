@@ -57,7 +57,6 @@ $NRTaddForm := nil
 
 ++
 $NRTderivedTargetIfTrue := false
-$killOptimizeIfTrue := false
 
 NRTaddDeltaCode db ==
 --NOTES: This function is called from buildFunctor to initially
@@ -154,7 +153,6 @@ needToQuoteFlags?(sig,env) ==
       ident? t and null get(t,"value",e)
 
 optDeltaEntry(op,sig,dc,kind) ==
-  $killOptimizeIfTrue => nil
   -- references to modemaps from current domain are folded in a later
   -- stage of the compilation process.
   dc is '$ => nil
