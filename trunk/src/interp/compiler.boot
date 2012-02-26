@@ -2751,7 +2751,7 @@ compUnnamedMapping(parms,source,target,body,env) ==
     [.,.,env] := compMakeDeclaration(p,s,env)
     env := giveVariableSomeValue(p,get(p,'mode,env),env)
   T := comp(body,target,env) or return nil
-  fun := ['%closure,['%lambda,[:parms,'$],T.expr],'$]
+  fun := ['%closure,['%function,['%lambda,[:parms,'$],T.expr]],'$]
   [fun,["Mapping",T.mode,:source],savedEnv]
 
 gatherParameterList vars == main(vars,nil,nil) where
