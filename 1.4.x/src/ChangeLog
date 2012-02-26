@@ -1,5 +1,16 @@
 2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (usedSymbol?): Remove.
+	(bindingForm?): New.
+	(usesVariable?): Likewise.
+	* interp/compiler.boot (declareUnusedParameters): Use it.
+	* interp/g-opt.boot (inlineLocals): Likewise.
+	(optClosure): Likewise.
+	(optBind): Likewise.
+	* interp/define.boot (compContained): Remove.
+
+2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (numOfOccurencesOf): Tidy.
 	* interp/compiler.boot (compUnnamedMapping): Fix thinko.
 	* interp/g-opt.boot (semiSimpleRelativeTo?): Likewise.

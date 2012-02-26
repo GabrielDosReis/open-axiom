@@ -336,7 +336,7 @@ declareUnusedParameters x == (augment x; x) where
     atomic? x => nil
     x is [op,parms,body] and abstractionOperator? op =>
       augment body
-      unused := [p for p in parms | not usedSymbol?(p,body)]
+      unused := [p for p in parms | not usesVariable?(body,p)]
       null unused => [body]
       x.rest.rest := [["DECLARE",["IGNORE",:unused]],body]
     for x' in x repeat
@@ -1398,7 +1398,7 @@ expandableDefinition?(vars,body) ==
   expand? :=
     -- We definitely don't want to expand a form that uses
     -- the domain of computation environment.
-    vars isnt [:vars',env] or CONTAINED(env,body) => false
+    vars isnt [:vars',env] or usesVariable?(body,env) => false
 
     -- Constants are currently implemented as niladic functions, and
     -- we want to avoid disturbing object identity, so we rule

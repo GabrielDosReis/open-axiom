@@ -244,8 +244,8 @@ inlineLocals! x == walkWith!(x,function f) where
       kept := nil
       while inits is [u,:inits] repeat
         [y,z] := u
-        usedSymbol?(y,z) or usedSymbol?(y,inits) => kept := [u,:kept]
-        or/[usedSymbol?(v,z) for [v,.] in kept] => kept := [u,:kept]
+        usesVariable?(z,y) or usesVariable?(inits,y) => kept := [u,:kept]
+        or/[usesVariable?(z,v) for [v,.] in kept] => kept := [u,:kept]
         canInlineVarDefinition(y,z,x.absBody) =>
           x.absBody := substitute!(z,y,x.absBody)
         kept := [u,:kept]
@@ -560,7 +560,7 @@ optClosure(x is ['%closure,fun,env]) ==
     do
       vars is [:vars',=env] =>
         body is [op,: =vars] => x.args := [['%function,op],env]
-        not CONTAINED(env,body) => x.args := [fun,'%nil]
+        not usesVariable?(body,env) => x.args := [fun,'%nil]
     x
   x
 
@@ -776,7 +776,7 @@ optBind form ==
   form isnt ['%bind,inits,.] => form           -- accept only simple bodies
   while inits ~= nil repeat
     [var,expr] := first inits
-    usedSymbol?(var,rest inits) => leave nil -- no dependency, please.
+    usesVariable?(rest inits,var) => leave nil -- no dependency, please.
     body := third form
     canInlineVarDefinition(var,expr,body) =>
       third(form) := substitute!(expr,var,body)

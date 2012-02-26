@@ -2207,7 +2207,7 @@ compSubDomain1(domainForm,predicate,m,e) ==
         " cannot be interpreted with #1: ",domainForm],nil)
   pred := simplifyVMForm u.expr
   -- For now, reject predicates that directly reference domains
-  CONTAINED("$",pred) => 
+  usesVariable?(pred,'$) => 
     stackAndThrow('"predicate %1pb is not simple enough",[predicate])
   emitSubdomainInfo($form,domainForm,pred)
   [domainForm,m,e]
@@ -2385,14 +2385,6 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    reverse! ans
  
 --% CATEGORY AND DOMAIN FUNCTIONS
-
-compContained: (%Form, %Mode, %Env) -> %Maybe %Triple
-compContained(["CONTAINED",a,b],m,e) ==
-  [a,ma,e]:= comp(a,$EmptyMode,e) or return nil
-  [b,mb,e]:= comp(b,$EmptyMode,e) or return nil
-  isCategoryForm(ma,e) and isCategoryForm(mb,e) =>
-    (T:= [["CONTAINED",a,b],$Boolean,e]; convert(T,m))
-  nil
 
 compJoin(["Join",:argl],m,e) ==
   catList:= [(compForMode(x,$Category,e) or return 'failed).expr for x in argl]

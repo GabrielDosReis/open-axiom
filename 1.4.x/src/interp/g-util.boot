@@ -43,16 +43,36 @@ module g_-util where
   pairList: (%List %Form,%List %Form) -> %List %Pair(%Form,%Form)
   mkList: %List %Form -> %Form
   isSubDomain: (%Mode,%Mode) -> %Form
-  usedSymbol?: (%Symbol,%Code) -> %Boolean
   isDefaultPackageName: %Symbol -> %Boolean
   makeDefaultPackageName: %String -> %Symbol
   spliceSeqArgs: %List %Code -> %Code
   mkSeq: %List %Code -> %Code
+  usesVariable?: (%Code,%Symbol) -> %Boolean
 
 --%
 
 abstraction? x ==
   x is [op,:.] and ident? op and abstractionOperator? op
+
+bindingForm? x ==
+  x is [op,:.] and ident? op and op in '(%bind LET)
+
+++ Return true if `form' uses symbol `var'.
+usesVariable?(form,var) ==
+  symbol? form => symbolEq?(form,var)
+  atomic? form => false
+  abstraction? form =>
+    not symbolMember?(var,form.absParms) and usesVariable?(form.absBody,var)
+  form.op is [.,:.] and usesVariable?(form.op,var) => true
+  bindingForm? form =>
+    x := 
+      or/[usesVariable?(second parm,var)
+           or symbolEq?(first parm,var) and leave 'bound
+             for parm in form.absParms]
+    x is 'bound => false
+    x or usesVariable?(form.absBody,var)
+  -- a variable can be used only in argument position.
+  or/[usesVariable?(x,var) for x in form.args]
 
 hasNoLeave?(expr,g) ==
   atomic? expr => true
@@ -191,17 +211,6 @@ macro builtinConstructor? s ==
 
 $AbstractionOperator ==
   '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA %lambda)
-
-++ Return true if the symbol 's' is used in the form 'x'.  
-usedSymbol?(s,x) ==
-  symbol? x => s = x
-  x isnt [.,:.] => false
-  x is ['QUOTE,:.] => false
-  x is [op,parms,:body] and abstractionOperator? op =>
-    symbolMember?(s,parms) => false
-    usedSymbol?(s,body)
-  or/[usedSymbol?(s,x') for x' in x]
-  
 
 ++ Return the character designated by the string `s'.
 stringToChar: %String -> %Char
