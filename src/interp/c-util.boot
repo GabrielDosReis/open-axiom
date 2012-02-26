@@ -953,7 +953,10 @@ numOfOccurencesOf(x,y) ==
     fn(x,y,n) ==
       null y => 0
       x=y => n+1
-      y isnt [.,:.] => n
+      atomic? y => n
+      symbol? x and abstraction? y =>
+        symbolMember?(x,y.absParms) => n
+        fn(x,y.absBody,n)
       fn(x,first y,n)+fn(x,rest y,n)
  
 compilerMessage(msg,args) ==

@@ -668,7 +668,7 @@ $simpleVMoperators ==
 semiSimpleRelativeTo?(form,ops) ==
   atomic? form => true
   not symbol?(form.op) or not symbolMember?(form.op,ops) => false
-  abstraction? form.op => true  -- always, regardless of body
+  abstraction? form => true    -- always, regardless of body
   form.op is '%when =>
     and/[sideEffectFree? p and semiSimpleRelativeTo?(c,ops)
            for [p,c] in form.args]
