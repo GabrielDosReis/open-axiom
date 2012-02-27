@@ -217,8 +217,7 @@ emitLocalCallInsn(op,args,e) ==
 
 applyMapping([op,:argl],m,e,ml) ==
   #argl ~= #ml-1 => nil
-  isCategoryForm(first ml,e) =>
-                                --is op a functor?
+  isCategoryForm(first ml,e) => --is op a functor?
     pairlis := pairList($FormalMapVariableList,argl)
     ml' := applySubst(pairlis,ml)
     argl' :=
@@ -616,12 +615,12 @@ compFormWithModemap(form,m,e,modemap) ==
   T :=
     [x',target,e'] where
       x':=
-        args := [t.expr for t in Tl]
+        form' := [f,:[t.expr for t in Tl]]
         target = $Category or isCategoryForm(target,e) =>
           -- Constructor instantiations are direct calls
-          ident? f and constructorDB f ~= nil => [f,:args]
+          ident? f and constructorDB f ~= nil => form'
           -- Otherwise, this is an indirect call
-          ['%call,f,:args]
+          ['%call,:form']
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and ident?(z := first argl) and
           (c := get(z,'condition,e)) and
@@ -630,9 +629,7 @@ compFormWithModemap(form,m,e,modemap) ==
                 -- first is a full tag, as placed by getInverseEnvironment
                 -- second is what getSuccessEnvironment will place there
                 ['%tail,z]
-        -- Mark atomic implementations as external
-        f isnt [.,:.] => ['%call,['%external,f],:args]
-        ['%call,f,:args]
+        ['%call,:form']
       e':=
         Tl ~= nil => last(Tl).env
         e

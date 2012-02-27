@@ -1,3 +1,9 @@
+2012-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (markOperation): New.
+	(optDeltaEntry): Implement better patch for last change.
+	* interp/compiler.boot (compFormWithModemap): Undo last change.
+
 2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compFormWithModemap): Mark implementation

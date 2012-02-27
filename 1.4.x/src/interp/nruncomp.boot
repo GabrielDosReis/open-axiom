@@ -152,6 +152,11 @@ needToQuoteFlags?(sig,env) ==
     selector?(t,e) ==
       ident? t and null get(t,"value",e)
 
+markOperation f ==
+  f = nil => f
+  ident? f => ['%external,f]
+  f
+
 optDeltaEntry(op,sig,dc,kind) ==
   -- references to modemaps from current domain are folded in a later
   -- stage of the compilation process.
@@ -180,7 +185,7 @@ optDeltaEntry(op,sig,dc,kind) ==
          return fun'
     cons? fun => first fun
     fun
-  getFunctionReplacement fun
+  markOperation getFunctionReplacement fun
 
 ++ True if we are interested only in abstract slot, not the actual
 ++ slot number in the template vector.
