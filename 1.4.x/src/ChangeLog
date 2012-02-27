@@ -1,5 +1,15 @@
 2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (emitLocalCallInsn): Mark external
+	operators as such, and local functions as such.
+	(freeVarUsage): Do not count external and local functions.
+	(extractCode): Tidy.  Handle closure literals.
+	* interp/g-opt.boot (optCall): Optimize external calls where
+	possible.
+	%external is a side-effect free operator.
+
+2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-util.boot (usedSymbol?): Remove.
 	(bindingForm?): New.
 	(usesVariable?): Likewise.
