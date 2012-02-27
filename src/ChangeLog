@@ -1,5 +1,10 @@
 2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compFormWithModemap): Mark implementation
+	resolution as appropriate.
+
+2012-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (emitLocalCallInsn): Mark external
 	operators as such, and local functions as such.
 	(freeVarUsage): Do not count external and local functions.

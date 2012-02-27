@@ -616,21 +616,23 @@ compFormWithModemap(form,m,e,modemap) ==
   T :=
     [x',target,e'] where
       x':=
-        form':= [f,:[t.expr for t in Tl]]
+        args := [t.expr for t in Tl]
         target = $Category or isCategoryForm(target,e) =>
           -- Constructor instantiations are direct calls
-          ident? f and constructorDB f ~= nil => form'
+          ident? f and constructorDB f ~= nil => [f,:args]
           -- Otherwise, this is an indirect call
-          ['%call,:form']
+          ['%call,f,:args]
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and ident?(z := first argl) and
           (c := get(z,'condition,e)) and
             c is [["case",=z,c1]] and
               (c1 is [":",=(second argl),=m] or sameObject?(c1,second argl) ) =>
-      -- first is a full tag, as placed by getInverseEnvironment
-      -- second is what getSuccessEnvironment will place there
+                -- first is a full tag, as placed by getInverseEnvironment
+                -- second is what getSuccessEnvironment will place there
                 ['%tail,z]
-        ['%call,:form']
+        -- Mark atomic implementations as external
+        f isnt [.,:.] => ['%call,['%external,f],:args]
+        ['%call,f,:args]
       e':=
         Tl ~= nil => last(Tl).env
         e
