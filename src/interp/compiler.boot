@@ -211,8 +211,9 @@ emitLocalCallInsn: (%Symbol,%List %Code,%Env) -> %Code
 emitLocalCallInsn(op,args,e) ==
   op' :=          -- Find out the linkage name for `op'.
     get(op,"%Link",e) or encodeLocalFunctionName op
-  get(op,"%Lang",e) => [op',:args]  -- non-Spad calling convention
-  [op',:args,"$"]   
+  get(op,"%Lang",e) =>  -- non-Spad calling convention
+    ['%call,['%external,op'],:args]
+  ['%call,['%closure,['%function,op'],'$],:args]   
 
 applyMapping([op,:argl],m,e,ml) ==
   #argl ~= #ml-1 => nil
@@ -235,8 +236,8 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl' is "failed" then return nil
   form:=
-    symbol? op and not symbolMember?(op,$formalArgList) and null (u := get(op,"value",e)) =>
-      emitLocalCallInsn(op,argl',e)
+    symbol? op and not symbolMember?(op,$formalArgList)
+      and (u := get(op,"value",e)) = nil => emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
     ['%call,['%apply,op],:argl']
@@ -263,8 +264,9 @@ freeVarUsage([.,vars,body],env) ==
           free
         getmode(u,e) = nil => free
         [[u,:1],:free]
+      atomic? u => free
       op := u.op
-      op in '(QUOTE GO function) => free
+      op in '(GO %external %function function) => free
       op in '(LAMBDA %lambda) =>
         bound := setUnion(u.absParms,bound)
         for v in CDDR u repeat
@@ -358,8 +360,9 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   [finishLambdaExpression(fun,e),m,oldE]
 
 extractCode(u,vars) ==
-  u is ['%call,['%apply,a],: =vars] => a
   u is ['%call,[q,:etc],: =vars] and q in '(ELT CONST) => ['%tref,:etc]
+  u is ['%call,['%apply,a],: =vars] => a
+  u is ['%call,['%closure,:.],: =vars] => first u.args
   ['%closure,['%function,['%lambda,[:vars,'$],u]],'$]
 
 compExpression(x,m,e) ==

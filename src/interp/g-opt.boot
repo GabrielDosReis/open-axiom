@@ -547,9 +547,10 @@ optCall (x is ['%call,:u]) ==
     x.first := op
     x.rest := [:a,env]
     x
-  fn is ['%function,op] =>
+  fn is ['%external,op] =>
     x.first := op
     x.rest := a
+    opt := op has OPTIMIZE => resetTo(x,apply(opt,x,nil))
     x
   fn is ['ELT,:.] => emitIndirectCall(fn,a,x)
   fn is ['CONST,R,n] => ['spadConstant,R,n]
@@ -656,7 +657,7 @@ $VMsideEffectFreeOperators ==
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
-    %void %retract %pullback %lambda %closure)
+    %void %retract %pullback %lambda %closure %external)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
