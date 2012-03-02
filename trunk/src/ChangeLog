@@ -1,3 +1,8 @@
+2012-03-02  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (MonoidOperation): Noew CoercibleTo
+	SemiGroupOperation T.
+
 2012-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (markOperation): New.

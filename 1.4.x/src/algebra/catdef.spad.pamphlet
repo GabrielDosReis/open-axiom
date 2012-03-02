@@ -121,14 +121,17 @@ MonoidOperatorCategory(T: BasicType): Category ==
 ++ Description:
 ++   This domain implements monoid operations.
 MonoidOperation(T: BasicType): Public == Private where
-  Public == Join(MonoidOperatorCategory T,SetCategory) with
+  Public == Join(MonoidOperatorCategory T,SetCategory,_
+              CoercibleTo SemiGroupOperation T) with
     monoidOperation: ((T,T) -> T, T) -> %
       ++ \spad{monoidOperation(f,e)} constructs a operation from
       ++ the binary mapping \spad{f} with neutral value \spad{e}.
-  Private == Pair((T,T) -> T,T) add
-    monoidOperation(f,e) == per pair(f,e)
+  Private == Pair(SemiGroupOperation T,T) add
+    monoidOperation(f,e) == per pair(semiGroupOperation f,e)
     elt(op,x,y) == first(rep op)(x,y)
     neutralValue op == second rep op
+    coerce(f: %): SemiGroupOperation T == first rep f
+
 @
 
 
