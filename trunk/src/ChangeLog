@@ -1,5 +1,11 @@
 2012-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (finishLambdaExpression): Tidy.
+	(compWithMappingMode): Use %lambda not LAMBDA.
+	* interp/g-opt.boot (changeVariableDefinitionToStore): Handle %closure.
+
+2012-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/boot-pkg.lisp (gensym?): Check for non-null object.
 	* interp/clammed.boot: Use it in lieu of GENSYMP.
 	* interp/debug.lisp: Likewise.

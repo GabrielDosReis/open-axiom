@@ -304,7 +304,7 @@ freeVarUsage([.,vars,body],env) ==
 
 ++ Finish processing a lambda expression with parameter list `vars',
 ++ and `env' as the environement after the compilation its body. 
-finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
+finishLambdaExpression(expr is ['%lambda,vars,.],env) ==
   $FUNNAME: local := nil
   $FUNNAME__TAIL: local := [nil]
   expandedFunction := transformToBackendCode expr
@@ -355,7 +355,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     [u,.,.] := t
     [extractCode(u,nil),m,oldE]
   [u,.,.]:= comp(x,m',e) or return nil
-  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",vl,u]]
+  [.,fun] := optimizeFunctionDef [nil,['%lambda,vl,u]]
   [finishLambdaExpression(fun,e),m,oldE]
 
 extractCode(u,vars) ==
