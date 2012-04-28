@@ -70,24 +70,21 @@
   <h4 name="1.4.0-changes-comp">2.1.2. Compiler</h4>
 
   <ul>
-    <li>The compiler now accepts interpreter-style unnamed functions.
-    </li>
-
-    <li>The compiler now generate far better (Lisp) codes for Spad
+    <li>The compiler generates far better (Lisp) codes for Spad
         libraries or scripts.  The compiler now applies more
         aggressive (but sound) optimizations, including domain
-        inlining, type propagations.
+        inlining, and type propagations.
      </li>
 
     <li>The compiler now accepts interpreter-style unnamed functions.
     </li>
 
-    <li>Parameterized macros are now supported by the compiler.
+    <li>Support for parameterized macros by the compiler.
     </li>
 
-    <li>The compiler now support exception handling.  In particular,
+    <li>The compiler supports exception handling.  In particular,
         the <code>try/finally</code> programming construct was added
-        to support reliable resource management (e.g. opening/closing
+        for reliable resource management (e.g. opening/closing
         or creating/removing files.)
     </li>
   </ul>
@@ -102,8 +99,8 @@
         now satisfies <code>BooleanLogic</code>.
     </li>
 
-    <li>It it now possible to obtain the string representation of
-       a <code>DoubleFloat</code> value.  The function
+    <li>It is now possible to obtain the string representation of
+       a <code>DoubleFloat</code> value:  The function
        <pre>
            string: DoubleFloat -> %
        </pre>
@@ -122,7 +119,7 @@
    </li>
 
    <li>The category <code>StringCategory</code> was removed as it was
-       essentially redundant with the category <code>StringAggregate</code>.
+       essentially redundant with <code>StringAggregate</code>.
    </li>
 
    <li>The category <code>MappingCategory</code> is now part of the
@@ -144,7 +141,7 @@
   </li>
 
   <li>The domains <code>FreeModule</code>
-       and <code>OrderedFreeMonoid</code> now satisfy the newly added
+       and <code>OrderedFreeMonoid</code> satisfy the newly added
       <code>FreeMonoidCategory</code>.  
   </li>
 
@@ -201,7 +198,7 @@
       properties <code>CoercibleTo Symbol</code> and
       <code>CoercibleTo String</code>.  Rather, the domain
       <code>Symbol</code> now satisfies
-      <code>RetractableTo Symbol</code> and a new operation
+      <code>RetractableTo String</code> and a new operation
       <pre>
 	      string: Identifier -> %
       </pre>
@@ -221,7 +218,7 @@
         </pre>
       were removed because they were redundant with <code>deref</code>
       and <code>setref</code>, and they were sort of syntax abuse
-      leading to hard read codes.   
+      leading to hard to read codes.   
     </li>
 
     <li>A new category <code>Dioid</code> of canonically ordered
@@ -268,7 +265,7 @@
       situation is still correctly compiled as a forgetful functor.
     </li>
 
-    <li>The library compiler now allows storage class and type specifier
+    <li>The library compiler allows storage class and type specifier
       in a <code>for</code> iterator.  A storage class for a
       loop variable can be one of <code>local</code> or <code>free</code>.
       <ul>
@@ -296,7 +293,7 @@
       in the interpreter.
     </li>
 
-    <li>A domain inlining bug has been fixed.</li>
+    <li>A domain inlining bug was fixed.</li>
 
   </ul>
 

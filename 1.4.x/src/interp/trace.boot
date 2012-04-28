@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -420,7 +420,7 @@ funfind("functor","opname") ==
 isDomainOrPackage dom ==
   vector? dom and #dom>0 and isFunctor opOf dom.0
 
-isTraceGensym x == GENSYMP x
+isTraceGensym x == gensym? x
 
 spadTrace(domain,options) ==
   $fromSpadTrace:= true
@@ -453,7 +453,7 @@ spadTrace(domain,options) ==
             isTraceable(x is [.,.,n,:.],domain) ==
               domain.n  isnt [.,:.] => nil
               functionSlot:= first domain.n
-              GENSYMP functionSlot =>
+              gensym? functionSlot =>
                 (reportSpadTrace("Already Traced",x); nil)
               null (BPINAME functionSlot) =>
                 (reportSpadTrace("No function for",x); nil)
@@ -588,13 +588,13 @@ letPrint(x,val,currentFunction) ==
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
-        not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
+        not (IS__GENVAR(x) or isSharpVarWithNum(x) or gensym? x) then
          sayBrightlyNT [:bright x,": "]
          PRIN1 shortenForPrinting val
          TERPRI()
       if (y:= hasPair("BREAK",y)) and
         (y="all" or symbolMember?(x,y) and
-          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not gensym? x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               shortenForPrinting val]
   val
@@ -606,14 +606,14 @@ letPrint2(x,printform,currentFunction) ==
   if $letAssoc and
     ((y:= symbolTarget(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
-        not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
+        not (IS__GENVAR(x) or isSharpVarWithNum(x) or gensym? x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,printform],flag)
          if flag='letPrint2 then print printform
       if (y:= hasPair("BREAK",y)) and
         (y="all" or symbolMember?(x,y) and
-          (not symbolMember?(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+          (not symbolMember?(PNAME(x).0,'($ _#)) and not gensym? x)) then
             break [:bright currentFunction,'"breaks after",:bright x,":= ",
               printform]
   x
@@ -626,14 +626,14 @@ letPrint3(x,xval,printfn,currentFunction) ==
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= symbolTarget("all",$letAssoc))) then
       if (y="all" or symbolMember?(x,y)) and
-        not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
+        not (IS__GENVAR(x) or isSharpVarWithNum(x) or gensym? x) then
          $BreakMode:='letPrint2
          flag:=nil
          CATCH('letPrint2,mathprint ["=",x,SPADCALL(xval,printfn)],flag)
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
         (y="all" or symbolMember?(x,y) and
-          (not (PNAME(x).0 in '($ _#)) and not GENSYMP x)) then
+          (not (PNAME(x).0 in '($ _#)) and not gensym? x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
   x
@@ -766,7 +766,7 @@ addTraceItem d ==
   constructor? d => $constructors:=[d,:$constructors]
 
 tracelet(fn,vars) ==
-  if GENSYMP fn and stupidIsSpadFunction eval fn then
+  if gensym? fn and stupidIsSpadFunction eval fn then
     fn := eval fn
     if COMPILED_-FUNCTION_-P fn then fn:=BPINAME fn
   fn = 'Undef => nil
@@ -779,14 +779,14 @@ tracelet(fn,vars) ==
   $TRACELETFLAG : local := true
   $QuickLet : local := false
   not symbolMember?(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
-    and not stupidIsSpadFunction fn and not GENSYMP fn =>
+    and not stupidIsSpadFunction fn and not gensym? fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
        $traceletFunctions:= remove($traceletFunctions,fn) )
 
 breaklet(fn,vars) ==
                        --vars is "all" or a list of variables
   --$letAssoc ==> (.. (=fn .. (BREAK . all))) OR (.. (=fn .. (BREAK . vl)))
-  if GENSYMP fn and stupidIsSpadFunction eval fn then
+  if gensym? fn and stupidIsSpadFunction eval fn then
     fn := eval fn
     if COMPILED_-FUNCTION_-P fn then fn:= BPINAME fn
   fn = "Undef" => nil
@@ -800,7 +800,7 @@ breaklet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
   not symbolMember?(fn,$traceletFunctions) and not stupidIsSpadFunction fn
-    and not GENSYMP fn =>
+    and not gensym? fn =>
       $traceletFunctions:= [fn,:$traceletFunctions]
       compileBoot fn
       $traceletFunctions:= removeSymbol($traceletFunctions,fn)

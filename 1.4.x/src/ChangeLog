@@ -1,3 +1,14 @@
+2012-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/boot-pkg.lisp (gensym?): Check for non-null object.
+	* interp/clammed.boot: Use it in lieu of GENSYMP.
+	* interp/debug.lisp: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/vmlisp.lisp (GENSYMP): Remove.
+
 2012-03-02  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (MonoidOperation): Noew CoercibleTo
