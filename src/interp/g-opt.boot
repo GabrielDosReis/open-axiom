@@ -101,7 +101,7 @@ changeLoopVarDefsToStore(iters,body,val,vars) ==
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
 changeVariableDefinitionToStore(form,vars) ==
-  atomic? form or form.op is 'CLOSEDFN or form.op is 'XLAM => vars
+  atomic? form or form.op in '(CLOSEDFN XLAM) => vars
   form is ['%LET,v,expr] =>
     vars := changeVariableDefinitionToStore(expr,vars)
     do
@@ -140,6 +140,9 @@ changeVariableDefinitionToStore(form,vars) ==
     vars
   form is ['%repeat,:iters,body,val] =>
     changeLoopVarDefsToStore(iters,body,val,vars)
+  form is ['%closure,fun,env] =>
+    changeVariableDefinitionToStore(fun,vars)
+    vars
   if form is ['%seq,:.] then
     form.args := spliceSeqArgs form.args
   for x in form repeat
@@ -149,6 +152,7 @@ changeVariableDefinitionToStore(form,vars) ==
 ++ Return true if `x' contains control transfer to a point outside itself.
 jumpToToplevel? x ==
   atomic? x => false
+  abstraction? x or op is '%closure => false
   op := x.op
   op is '%seq => CONTAINED('%leave,x.args) -- FIXME: what about GO?
   op in '(%exit %leave) => true
