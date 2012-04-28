@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -438,7 +438,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
         (if (AND |$traceDomains| (|isFunctor| FN) (ATOM FN))
             (RETURN (|traceDomainConstructor| FN OPTIONS)))
         (SETQ MATHTRACE (/GETTRACEOPTIONS OPTIONS 'MATHPRINT))
-        (if (AND MATHTRACE (NOT (EQL (ELT (PNAME FN) 0) #\$)) (NOT (GENSYMP FN)))
+        (if (AND MATHTRACE (NOT (EQL (ELT (PNAME FN) 0) #\$)) (NOT (|gensym?| FN)))
             (if (RASSOC FN |$mapSubNameAlist|)
                 (SETQ |$mathTraceList| (CONS FN |$mathTraceList|))
                 (|spadThrowBrightly|

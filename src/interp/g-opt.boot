@@ -616,12 +616,12 @@ EqualBarGensym(x,y) ==
   fn(x,y) where
     fn(x,y) ==
       x=y => true
-      GENSYMP x and GENSYMP y =>
+      gensym? x and gensym? y =>
         z:= assoc(x,$GensymAssoc) => y=rest z
         $GensymAssoc:= [[x,:y],:$GensymAssoc]
         true
-      null x => y is [g] and GENSYMP g
-      null y => x is [g] and GENSYMP g
+      null x => y is [g] and gensym? g
+      null y => x is [g] and gensym? g
       x isnt [.,:.] or y isnt [.,:.] => false
       fn(first x,first y) and fn(rest x,rest y)
  

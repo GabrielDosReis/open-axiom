@@ -1101,7 +1101,7 @@ charDigitVal c ==
   n
 
 gensymInt g ==
-  not GENSYMP g => error '"Need a GENSYM"
+  not gensym? g => error '"Need a GENSYM"
   p := symbolName g
   n := 0
   for i in 2..maxIndex p repeat

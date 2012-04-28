@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ isValidType form ==
     null (sig := getConstructorSignature op) => nil
     [.,:cl] := sig
     -- following line is needed to deal with mutable domains
-    if # cl ~= # argl and GENSYMP last argl then argl:= drop(-1,argl)
+    if # cl ~= # argl and gensym? last argl then argl:= drop(-1,argl)
     # cl ~= # argl => nil
     cl:= replaceSharps(cl,form)
     and/[isValid for x in argl for c in cl] where isValid() ==
