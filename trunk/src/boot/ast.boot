@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -876,9 +876,9 @@ defQuoteId x==
 bfChar? x ==
   char? x or cons? x and x.op in '(char CODE_-CHAR SCHAR)
  
-bfSmintable x==
-  integer? x or cons? x and
-    x.op in '(SIZE LENGTH CHAR_-CODE MAXINDEX _+ _-)
+bfNumber? x==
+  integer? x or float? x or
+    cons? x and x.op in '(SIZE LENGTH CHAR_-CODE MAXINDEX _+ _-)
 
 bfString? x ==
   string? x
@@ -886,7 +886,7 @@ bfString? x ==
 
 bfQ(l,r)==
   bfChar? l or bfChar? r => ["CHAR=",l,r]
-  bfSmintable l or bfSmintable r => ["EQL",l,r]
+  bfNumber? l or bfNumber? r => ["EQL",l,r]
   defQuoteId l or defQuoteId r => ["EQ",l,r]
   l = nil => ["NULL",r]
   r = nil => ["NULL",l]
@@ -896,8 +896,8 @@ bfQ(l,r)==
   ["EQUAL",l,r]
  
 bfLessp(l,r)==
-  l = 0 => ["PLUSP",r]
-  r = 0 => ["MINUSP", l]
+  (integer? l or float? l) and l = 0 => ["PLUSP",r]
+  (integer? r or float? r) and r = 0 => ["MINUSP", l]
   bfChar? l or bfChar? r => ["CHAR<",l,r]
   bfString? l or bfString? r => ["STRING<",l,r]
   ["<",l,r]

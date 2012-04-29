@@ -1431,8 +1431,8 @@
   (OR (CHARACTERP |x|)
       (AND (CONSP |x|) (|symbolMember?| (CAR |x|) '(|char| CODE-CHAR SCHAR)))))
 
-(DEFUN |bfSmintable| (|x|)
-  (OR (INTEGERP |x|)
+(DEFUN |bfNumber?| (|x|)
+  (OR (INTEGERP |x|) (FLOATP |x|)
       (AND (CONSP |x|)
            (|symbolMember?| (CAR |x|) '(SIZE LENGTH CHAR-CODE MAXINDEX + -)))))
 
@@ -1443,7 +1443,7 @@
 
 (DEFUN |bfQ| (|l| |r|)
   (COND ((OR (|bfChar?| |l|) (|bfChar?| |r|)) (LIST 'CHAR= |l| |r|))
-        ((OR (|bfSmintable| |l|) (|bfSmintable| |r|)) (LIST 'EQL |l| |r|))
+        ((OR (|bfNumber?| |l|) (|bfNumber?| |r|)) (LIST 'EQL |l| |r|))
         ((OR (|defQuoteId| |l|) (|defQuoteId| |r|)) (LIST 'EQ |l| |r|))
         ((NULL |l|) (LIST 'NULL |r|)) ((NULL |r|) (LIST 'NULL |l|))
         ((OR (EQ |l| T) (EQ |r| T)) (LIST 'EQ |l| |r|))
@@ -1452,7 +1452,8 @@
         (T (LIST 'EQUAL |l| |r|))))
 
 (DEFUN |bfLessp| (|l| |r|)
-  (COND ((EQL |l| 0) (LIST 'PLUSP |r|)) ((EQL |r| 0) (LIST 'MINUSP |l|))
+  (COND ((AND (OR (INTEGERP |l|) (FLOATP |l|)) (EQL |l| 0)) (LIST 'PLUSP |r|))
+        ((AND (OR (INTEGERP |r|) (FLOATP |r|)) (EQL |r| 0)) (LIST 'MINUSP |l|))
         ((OR (|bfChar?| |l|) (|bfChar?| |r|)) (LIST 'CHAR< |l| |r|))
         ((OR (|bfString?| |l|) (|bfString?| |r|)) (LIST 'STRING< |l| |r|))
         (T (LIST '< |l| |r|))))
