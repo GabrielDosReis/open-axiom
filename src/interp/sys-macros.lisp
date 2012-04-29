@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@
  #-:common-lisp (compile load eval)
  (defun IDENT-CHAR-LIT (x)
    (and (EQCAR x 'quote) 
-	(IDENTP (cadr x))
+	(|ident?| (cadr x))
 	(= (length (PNAME (cadr x))) 1)))) 
 
 (defmacro BOOT-EQUAL (a b)
@@ -690,7 +690,7 @@
 	   ((CONS (|reverse!| LP) (MKPF L 'PROGN)))))
    
    (defun MK_LEFORM (U)
-     (COND ((IDENTP U) 
+     (COND ((|ident?| U) 
 	    (PNAME U))
 	   ((STRINGP U)
 	    U)
@@ -956,7 +956,7 @@
 	(if (OR (ATOM L) (ATOM (CDR L)))
 	    (GO BADO))
 	(setq vl (POP L))
-	(COND ((IDENTP VL)
+	(COND ((|ident?| VL)
 	       (SETQ VARS (LIST VL))
 	       (AND (OR (ATOM L)
 			(ATOM (progn (setq inits (POP L)) L))
@@ -974,7 +974,7 @@
 		     G180   
 		     (AND (NOT (CONSP (SETQ V (CAR VL)))) 
 			  (SETQ V (LIST V)))
-		     (AND (NOT (IDENTP (CAR V)))
+		     (AND (NOT (|ident?| (CAR V)))
 			  (GO BADO))
 		     (PUSH (CAR V) VARS)
 		     (PUSH (COND ((CONSP (CDR V)) (CADR V))) INITS)

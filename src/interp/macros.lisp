@@ -81,8 +81,8 @@
          (if (ATOM V)
              (COND ((NUMBERP U) (if (NUMBERP V) (> V U) T))
                    ((NUMBERP V) NIL)
-                   ((IDENTP U) (AND (IDENTP V) (string> (SYMBOL-NAME V) (SYMBOL-NAME U))))
-                   ((IDENTP V) NIL)
+                   ((|ident?| U) (AND (|ident?| V) (string> (SYMBOL-NAME V) (SYMBOL-NAME U))))
+                   ((|ident?| V) NIL)
                    ((STRINGP U) (AND (STRINGP V) (string> V U)))
                    ((STRINGP V) NIL)
                    ((AND (simple-vector-p U) (simple-vector-p V))
@@ -128,12 +128,12 @@
 (DEFUN GENVAR () (INTERNL "$" (STRINGIMAGE (SETQ $GENNO (1+ $GENNO)))))
  
 (DEFUN IS_GENVAR (X)
-  (AND (IDENTP X)
+  (AND (|ident?| X)
        (let ((y (symbol-name x)))
          (and (char= #\$ (elt y 0)) (> (size y) 1) (digitp (elt y 1))))))
  
 (DEFUN IS_\#GENVAR (X)
-  (AND (IDENTP X)
+  (AND (|ident?| X)
        (let ((y (symbol-name x)))
          (and (char= #\# (ELT y 0)) (> (SIZE Y) 1) (DIGITP (ELT Y 1))))))
  
@@ -155,7 +155,7 @@
 ; 14.1 Simple Sequence Functions
  
 (defun GETCHARN (A M) "Return the code of the Mth character of A"
-  (let ((a (if (identp a) (symbol-name a) a))) (char-code (elt A M))))
+  (let ((a (if (|ident?| a) (symbol-name a) a))) (char-code (elt A M))))
  
 ; 14.2 Concatenating, Mapping, and Reducing Sequences
  
