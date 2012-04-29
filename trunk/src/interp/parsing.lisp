@@ -500,7 +500,7 @@ the stack, then stack a NIL. Return the value of prod."
      a1  ;;(cond (ok (go b1)))               (princ "/ok= NIL")
      b1  ;;(cond ( (not stackx) (go c1)))   (princ "/stackx= ")
          ;;(prin1 stackx)
-     c1  (cond ( (not (identp tok)) (go d1)))
+     c1  (cond ( (not (|ident?| tok)) (go d1)))
          (princ "/isid= ")
         ;; (princ (cond (isid "T") (t "NIL")))
      d1  (princ "/stack= ")            (prin1 (|stackStore| |$reduceStack|))
@@ -515,7 +515,7 @@ the stack, then stack a NIL. Return the value of prod."
          (princ (if nonblank "T" "NIL"))
      a2  ;;(if ok (go b2))                   (princ "/ok= ")          (prin1 ok)
      b2  ;;(if (not stackx) (go c2))        (princ "/stackx1= ")     (prin1 stackx)
-     c2  (if (not (identp tok)) (go d2))
+     c2  (if (not (|ident?| tok)) (go d2))
          (princ "/isid= ")
         ;; (princ (if isid "T" "NIL"))
      d2  (princ "/stack= ")            (prin1 (|stackStore| |$reduceStack|))
@@ -590,7 +590,7 @@ the stack, then stack a NIL. Return the value of prod."
 ;; auxiliary functions needed by the parser
 
 (Defun FLOATEXPID (X &aux S)
-  (if (AND (IDENTP X) (char= (char-upcase (ELT (SETQ S (PNAME X)) 0)) #\E)
+  (if (AND (|ident?| X) (char= (char-upcase (ELT (SETQ S (PNAME X)) 0)) #\E)
            (> (LENGTH S) 1)
            (SPADREDUCE AND 0 (COLLECT (STEP I 1 1 (MAXINDEX S))
                                       (DIGITP (ELT S I)))))

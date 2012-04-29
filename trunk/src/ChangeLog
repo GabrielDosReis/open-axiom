@@ -1,5 +1,14 @@
 2012-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/debug.lisp: ident? in lieu of IDENTP.
+	* interp/macros.lisp: Likewise.
+	* interp/parsing.lisp: Likewise.
+	* interp/sys-macros.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	(IDENTP): Remove.
+
+2012-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfNumber?): Rename from bfSmintable.  Check for
 	floating point literals too. Adjust callers.
 	(bfLessp): Check for integer or floating pointer numbers.

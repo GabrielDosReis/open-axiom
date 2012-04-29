@@ -147,13 +147,6 @@
 (defmacro |idChar?| (x)
  `(or (alphanumericp ,x) (member ,x '(#\? #\% #\' #\!) :test #'char=)))
  
-(defmacro identp (x) 
- (if (atom x)
-  `(and ,x (symbolp ,x))
-   (let ((xx (gensym)))
-    `(let ((,xx ,x))
-      (and ,xx (symbolp ,xx))))))
-
 (defmacro ifcar (x)
   (if (atom x)
       `(and (consp ,x) (qcar ,x))
@@ -494,7 +487,7 @@
                (eq f 'fluid)
                (listp (cdr arglist))
                (setq v (cadr arglist))
-               (identp v)
+               (|ident?| v)
                (null (cddr arglist)))
           (push v *decl*)
           (push v *vars*)
@@ -564,7 +557,7 @@
 
 (defun upcase (l)
   (cond ((stringp l) (string-upcase l))
-        ((identp l) (intern (string-upcase (symbol-name l))))
+        ((|ident?| l) (intern (string-upcase (symbol-name l))))
         ((characterp l) (char-upcase l))
         ((atom l) l)
         (t (mapcar #'upcase l))))
@@ -574,7 +567,7 @@
 
 (defun downcase (l)
   (cond ((stringp l) (string-downcase l))
-        ((identp l) (intern (string-downcase (symbol-name l))))
+        ((|ident?| l) (intern (string-downcase (symbol-name l))))
         ((characterp l) (char-downcase L))
         ((atom l) l)
         (t (mapcar #'downcase l))))
@@ -701,7 +694,7 @@
 ; 17.0 Operations on Character and Bit Vectors
 
 (defun charp (a) (or (characterp a)
-                     (and (identp a) (= (length (symbol-name a)) 1))))
+                     (and (|ident?| a) (= (length (symbol-name a)) 1))))
 
 (defun NUM2CHAR (n) (code-char n))
 
@@ -876,7 +869,7 @@
   (PROG (D A I L C W)
         (declare (special pvl avl))
     (COND ((EQ FORM SV) (RETURN NIL))
-          ((IDENTP FORM) (RETURN `((setq ,form ,sv)) ))
+          ((|ident?| FORM) (RETURN `((setq ,form ,sv)) ))
           ((simple-vector-p FORM)
            (RETURN (SEQ
              (setq L (length FORM))
@@ -888,7 +881,7 @@
              (COND ((AND (NULL W) (OR (consp A) (simple-vector-p A)))
                     (COND ((consp AVL) (setq W (car (RESETQ AVL (cdr AVL)))))
                           ((setq PVL (CONS (setq W (GENSYM)) PVL))))))
-             (setq C (|append!| (COND ((IDENTP A) `((setq ,a (ELT ,sv ,i))))
+             (setq C (|append!| (COND ((|ident?| A) `((setq ,a (ELT ,sv ,i))))
                                   ((OR (consp A) (simple-vector-p A))
                                    `((setq ,w (ELT ,sv ,i))
                                      ,@(dcqgenexp w a eqtag qflag))))
@@ -906,24 +899,24 @@
           ((AND EQTAG (EQ (car FORM) EQTAG))
            (RETURN
              (COND
-               ((OR (NOT (EQ 3 (LENGTH FORM))) (NOT (IDENTP (car (setq FORM (cdr FORM))))))
+               ((OR (NOT (EQ 3 (LENGTH FORM))) (NOT (|ident?| (car (setq FORM (cdr FORM))))))
                 (MACRO-INVALIDARGS 'DCQ\/QDCQ FORM (MAKESTRING "invalid pattern.")))
                (`((setq ,(car form) ,sv)  ,@(DCQGENEXP SV (CADR FORM) EQTAG QFLAG)))))))
     (setq A (car FORM))
     (setq D (cdr FORM))
-    (setq C (COND ((IDENTP A) `((setq ,a (CAR ,sv))))
+    (setq C (COND ((|ident?| A) `((setq ,a (CAR ,sv))))
                   ((OR (consp A) (simple-vector-p A))
-                   (COND ((AND (NULL D) (IDENTP SV)) )
+                   (COND ((AND (NULL D) (|ident?| SV)) )
                          ((COND ((consp AVL) (setq W (car (RESETQ AVL (cdr AVL)))))
                                 ((setq PVL (CONS (setq W (GENSYM)) PVL)) ) ) ) )
                    (COND ((AND (consp A) EQTAG (EQ (car A) EQTAG))
                           (DCQGENEXP (LIST 'CAR SV) A EQTAG QFLAG) )
                          (`((setq ,(or w sv) (CAR ,sv))
                             ,@(DCQGENEXP (OR W SV) A EQTAG QFLAG)))))))
-    (setq C (|append!| C (COND ((IDENTP D) `((setq ,d (CDR ,sv))))
+    (setq C (|append!| C (COND ((|ident?| D) `((setq ,d (CDR ,sv))))
                            ((OR (consp D) (simple-vector-p D))
                             (COND
-                              ((OR W (IDENTP SV)) )
+                              ((OR W (|ident?| SV)) )
                               ((COND ((consp AVL)
                                       (setq W (car (RESETQ AVL (cdr AVL)))) )
                                      ((setq PVL (CONS (setq W (GENSYM)) PVL)) ) ) ) )
@@ -967,7 +960,7 @@
         (COND
           ((EQ FORM SV) (RETURN NIL))
           ((OR
-              (IDENTP FORM)
+              (|ident?| FORM)
               (NUMP FORM)
               (AND (consp FORM) (EQ (qcar FORM) 'QUOTE)))
            (RETURN
@@ -988,7 +981,7 @@
                     (|append!|
                       (COND
                         ( (OR
-                            (IDENTP A)
+                            (|ident?| A)
                             (NUMP A)
                             (AND (consp A) (EQ (qcar A) 'QUOTE)))
                          `((COND ( (NOT (EQ ,a (ELT ,sv ,i)))
@@ -1017,7 +1010,7 @@
            (setq PVL (CONS (setq W (GENSYM)) PVL)))
         (setq C
               (COND
-                ( (OR (IDENTP A) (NUMP A) (AND (consp A) (EQ (car A) 'QUOTE)))
+                ( (OR (|ident?| A) (NUMP A) (AND (consp A) (EQ (car A) 'QUOTE)))
                  `((COND ((NOT (EQ ,a (CAR ,sv))) (GO BAD))) ))
                 ( (OR (consp A) (simple-vector-p A))
                  `((setq ,w (CAR ,sv))
@@ -1026,7 +1019,7 @@
               (|append!|
                 C
                 (COND
-                  ( (OR (IDENTP D) (NUMP D) (AND (consp D)
+                  ( (OR (|ident?| D) (NUMP D) (AND (consp D)
                                                  (EQ (car D) 'QUOTE)))
                    `((COND ((NOT (EQ ,d (CDR ,sv))) (GO BAD))) ))
                   ( (OR (consp D) (simple-vector-p D))
@@ -1089,7 +1082,7 @@
               (|append!|
                 (COND
                   ( (OR
-                      (IDENTP A)
+                      (|ident?| A)
                       (NUMP A)
                       (AND (consp A) (EQ (car A) 'QUOTE)))
                     `((SETF (ELT ,sv ,i) ,a)))
@@ -1121,7 +1114,7 @@
           (setq PVL (CONS (setq W (GENSYM)) PVL)) ) )
       (setq C
         (COND
-          ( (OR (IDENTP A) (NUMP A) (AND (consp A) (EQ (car A) 'QUOTE)))
+          ( (OR (|ident?| A) (NUMP A) (AND (consp A) (EQ (car A) 'QUOTE)))
             `((rplaca ,sv ,a)))
           ( (OR (consp A) (simple-vector-p A))
             `((setq ,w (CAR ,sv))
@@ -1130,7 +1123,7 @@
         (|append!|
           C
           (COND
-            ( (OR (IDENTP D) (NUMP D) (AND (consp D) (EQ (car D) 'QUOTE)))
+            ( (OR (|ident?| D) (NUMP D) (AND (consp D) (EQ (car D) 'QUOTE)))
               `((RPLACD ,sv ,d)))
             ( (OR (consp D) (simple-vector-p D))
               `((setq ,sv (CDR ,sv))
@@ -1237,7 +1230,7 @@
 (defun EMBED (CURRENT-BINDING NEW-DEFINITION)
   (PROG (OP BV BODY OLD-DEF)
       (COND
-        ( (NOT (IDENTP CURRENT-BINDING))
+        ( (NOT (|ident?| CURRENT-BINDING))
           (SETQ CURRENT-BINDING
                 (error (format nil "invalid argument ~s to EMBED" CURRENT-BINDING))) ) )
       (SETQ OLD-DEF (symbol-function CURRENT-BINDING))
@@ -1309,13 +1302,13 @@
 
 (defun VARP (TEST-ITEM)
     (COND
-      ( (IDENTP TEST-ITEM)
+      ( (|ident?| TEST-ITEM)
         TEST-ITEM )
       ( (AND
           (consp TEST-ITEM)
           (OR (EQ (QCAR TEST-ITEM) 'FLUID) (EQ (QCAR TEST-ITEM) 'LEX))
           (consp (QCDR TEST-ITEM))
-          (IDENTP (QCADR TEST-ITEM)))
+          (|ident?| (QCADR TEST-ITEM)))
         TEST-ITEM )
       ( 'T
         NIL ) ) )
@@ -1340,7 +1333,7 @@
 (defun doDSETQ (form pattern exp)
   (let (PVL AVL)
     (declare (special PVL AVL))
-    (COND ((IDENTP PATTERN)
+    (COND ((|ident?| PATTERN)
            (LIST 'SETQ PATTERN EXP))
           ((AND (NOT (consp PATTERN)) (NOT (simple-vector-p PATTERN)))
            (MACRO-INVALIDARGS 'DSETQ FORM "constant target."))

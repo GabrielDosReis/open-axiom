@@ -704,7 +704,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
         ((OR (HAS_SHARP_VAR (CAR X)) (HAS_SHARP_VAR (CDR X))))))
  
 (DEFUN IS_SHARP_VAR (X)
-  (AND (IDENTP X)
+  (AND (|ident?| X)
        (EQL (ELT (PNAME X) 0) #\#)
        (INTEGERP (parse-integer (symbol-name X) :start 1))))
  
@@ -1043,7 +1043,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  
 (defun BPITRACE (BPI ALIAS &optional OPTIONS)
   (let ((NEWNAME (GENSYM)))
-    (IF (identp bpi) (setq bpi (symbol-function bpi)))
+    (IF (|ident?| bpi) (setq bpi (symbol-function bpi)))
     (SETF (SYMBOL-VALUE NEWNAME) BPI)
     (SETF (symbol-function NEWNAME) BPI)
     (/TRACE-0 (APPEND (LIST NEWNAME (LIST 'ALIAS ALIAS)) OPTIONS))
