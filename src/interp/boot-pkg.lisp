@@ -54,6 +54,27 @@
 (defun |gensym?| (s)
   (and (symbolp s) (null (symbol-package s))))
 
+(defmacro |complex?| (x)
+  `(complexp ,x))
+
+(defmacro |complex| (x (&optional (y 0.0)))
+  `(complex ,x ,y))
+
+(defmacro |realPart| (z)
+  `(realpart ,z))
+
+(defmacro |imagPart| (z)
+  `(imagpart ,z))
+
+(defmacro |conjugate| (z)
+  `(conjugate ,z))
+
+(defmacro |integerAndFractionalParts| (x)
+  `(multiple-value-list (floor ,x)))
+
+(defmacro |sqrt| (x)
+  `(sqrt ,x))
+
 ;; Below are some missing functions.  There here for lack of better
 ;; place (sys-funs.lisp?)
 ;;
