@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -750,7 +750,7 @@ multiToUnivariate f ==
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
-  body := COPY_-TREE third f
+  body := copyTree third f
   newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
@@ -769,7 +769,7 @@ functionAndJacobian f ==
     vars := [second f]
   #(vars) ~= #(CDADDR f) => 
     error "number of variables should equal number of functions"
-  funBodies := COPY_-TREE CDADDR f
+  funBodies := copyTree CDADDR f
   jacBodies := [:[DF(f,v) for v in vars] for f in funBodies] where
     DF(fn,var) == 
       ["@",["convert",["differentiate",fn,var]],"InputForm"]
@@ -795,7 +795,7 @@ vectorOfFunctions f ==
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
-  funBodies := COPY_-TREE CDADDR f
+  funBodies := copyTree CDADDR f
   newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
