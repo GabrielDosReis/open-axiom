@@ -1,5 +1,26 @@
 2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot: Use float? in lieu of FLOATP.
+	* interp/fortcall.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/i-analy.boot: Compare to 0 in lieu of ZEROP.
+	* interp/i-special.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/sfsfun.boot: Likewise.
+	* interp/sys-driver.boot: Likewise.
+	* interp/macros.lisp: Directly use 1+ instead of QADD1.
+	* interp/preparse.lisp: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/sys-macros.lisp: Likewise.
+	* interp/sys-constants.boot ($BasicPredicates): Remove as unused.
+	* interp/vmlisp.lisp (ADD1): Remove.
+	(QSADD1): Likewise.
+	(QSSUB1): Likewise.
+	(QSTIMES): Likewise.
+
+2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/fortcall.boot: Use copyTree, not COPY-TREE.
 	* interp/i-intern.boot: Likewise.
 	* interp/setvars.boot: Likewise.

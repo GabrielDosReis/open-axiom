@@ -651,7 +651,7 @@ writeData(tmpFile,indata) ==
         integer? v => 
                 xdrWrite(xstr,v)
         -- floats
-        FLOATP v => 
+        float? v => 
                 xdrWrite(xstr,v)
   SHUT(str)
   tmpFile
@@ -663,7 +663,7 @@ readData(tmpFile,results) ==
   xstr := xdrOpen(str,false)
   results := [xdrRead1(xstr,r) for r in results] where
     xdrRead1(x,dummy) ==
-      VECTORP(dummy) and ZEROP(# dummy) => dummy
+      VECTORP(dummy) and #dummy = 0 => dummy
       xdrRead(x,dummy)
   SHUT(str)
   results

@@ -66,10 +66,6 @@
 
 ;; DEFMACROS
 
-
-(defmacro add1 (x)
- `(1+ ,x))
-
 (defmacro applx (&rest args)
  `(apply ,@args))
 
@@ -221,9 +217,6 @@
   `(,(rcqexp pattern) ,exp)
    (macro-invalidargs 'qrplq form "form must be updateable.")))
 
-(defmacro qsadd1 (x)
- `(the fixnum (1+ (the fixnum ,x))))
-
 (defmacro qsdifference (x y)
  `(the fixnum (- (the fixnum ,x) (the fixnum ,y))))
 
@@ -256,12 +249,6 @@
 
 (defmacro qsplus (x y)
  `(the fixnum (+ (the fixnum ,x) (the fixnum ,y))))
-
-(defmacro qssub1 (x)
- `(the fixnum (1- (the fixnum ,x))))
-
-(defmacro qstimes (x y)
- `(the fixnum (* (the fixnum ,x) (the fixnum ,y))))
 
 (defmacro qszerop (x)
  `(zerop (the fixnum ,x)))

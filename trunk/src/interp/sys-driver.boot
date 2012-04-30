@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2011 Gabriel Dos Reis
+-- Copyright (C) 2007-2012 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -154,7 +154,7 @@ restart() ==
 )endif
   if $openServerIfTrue and FBOUNDP "openServer" then
     os := openServer $SpadServerName
-    if ZEROP os then
+    if os = 0 then
       $openServerIfTrue := false
       $SpadServer := true
   $IOindex := 1

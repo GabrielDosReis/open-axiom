@@ -441,7 +441,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
                 ((EQL |l| 0) NIL)
                 ('T (SPADLET |n| 0) (SPADLET |word| '||)
                  (SPADLET |inWord| NIL)
-                 (DO ((|i| 0 (QSADD1 |i|))) ((QSGREATERP |i| |l|) NIL)
+                 (DO ((|i| 0 (1+ |i|))) ((QSGREATERP |i| |l|) NIL)
                (declare (fixnum |i|))
                    (SEQ (EXIT (COND
                                 ((eql (aref |str| |i|) #\space)

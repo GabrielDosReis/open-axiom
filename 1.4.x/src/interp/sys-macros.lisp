@@ -530,11 +530,11 @@
 
    (defun MKQSADD1 (X)
      (COND ((ATOM X)
-	    `(QSADD1 ,X))
+	    `(1+ ,X))
 	   ((AND (member (CAR X) '(-DIFFERENCE QSDIFFERENCE -) :test #'eq)
 		 (EQL 1 (CADDR X)))
 	    (CADR X))
-	   (`(QSADD1 ,X))))
+	   (`(1+ ,X))))
 
 
    (defun SEQOPT (U)

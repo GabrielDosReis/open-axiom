@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -847,7 +847,7 @@ fix2FortranFloat e ==
   strconc(STRINGIMAGE(e),'".")
  
 isFloat e ==
-  FLOATP(e) or string?(e) and FIND(char ".",e)
+  float?(e) or string?(e) and FIND(char ".",e)
  
 removeCharFromString(c,s) ==
   -- find c's position in s.

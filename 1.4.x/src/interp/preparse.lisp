@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -220,7 +220,7 @@
              (format t "~%"))))
  
 (DEFUN STOREBLANKS (LINE N)
-   (DO ((I 0 (ADD1 I))) ((= I N) LINE) (SETF (CHAR LINE I) #\ )))
+   (DO ((I 0 (1+ I))) ((= I N) LINE) (SETF (CHAR LINE I) #\ )))
  
 (DEFUN INITIAL-SUBSTRING (PATTERN LINE)
    (let ((ind (mismatch PATTERN LINE)))

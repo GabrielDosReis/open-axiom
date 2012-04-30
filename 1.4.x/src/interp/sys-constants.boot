@@ -275,13 +275,6 @@ $AtVariables ==
 $QueryVariables ==
   [makeSymbol strconc('"?",toString i) for i in 1..50]
 
-++ List of basic predicates the system has a built-in optimization
-++ support for.
-$BasicPredicates ==
-  '(INTEGERP STRINGP FLOATP SYMBOLP)
-
-
-
 ++ List of functions known to be free of side effects
 ++ FIXME: Check that the names on this list are not renamed.
 $SideEffectFreeFunctionList ==

@@ -864,13 +864,13 @@ isEltable(op,argl,numArgs) ==
   -- determines if the object might possible have an elt function
   -- we exclude Mapping and Variable types explicitly
   v := getValue op =>
-    ZEROP numArgs => true
+    numArgs = 0 => true
     not(m := objMode(v)) => nil
     m is ['Mapping, :.] => nil
     objVal(v) is ["%Map",:mapDef] and numMapArgs(mapDef) > 0 => nil
     true
   m := getMode op =>
-    ZEROP numArgs => true
+    numArgs = 0 => true
     m is ['Mapping, :.] => nil
     true
   numArgs ~= 1 => nil

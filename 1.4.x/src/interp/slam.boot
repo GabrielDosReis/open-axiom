@@ -239,7 +239,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   nam
  
 hashCount table ==
-  +/[ADD1 nodeCount val for [key,:val] in entries table]
+  +/[1 + nodeCount val for [key,:val] in entries table]
  
 mkCircularAlist n ==
   l:= [[$failed,:$failed] for i in 1..n]
@@ -281,7 +281,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       for g in gsList for i in 1..]]
   gsRev:= reverse gsList
   rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
-  advanceCode:= ["%LET",gIndex,['ADD1,gIndex]]
+  advanceCode:= ["%LET",gIndex,['%iinc,gIndex]]
  
   newTripleCode := ['%list,sharpArg,:gsList]
   newStateCode :=

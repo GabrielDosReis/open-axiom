@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -726,15 +726,15 @@ BesselJ(v,z) ==
         B2:= 10
         n := 50         --- number of terms in Chebychev series.
         --- tests for negative integer order
-        (FLOATP(v) and ZEROP fracpart(v) and (v<0)) or (COMPLEXP(v) and ZEROP IMAGPART(v) and ZEROP fracpart(REALPART(v)) and REALPART(v)<0.0) =>
+        (float?(v) and ZEROP fracpart(v) and (v<0)) or (COMPLEXP(v) and ZEROP IMAGPART(v) and ZEROP fracpart(REALPART(v)) and REALPART(v)<0.0) =>
              --- odd or even according to v (9.1.5 A&S)
              --- $J_{-n}(z)=(-1)^{n} J_{n}(z)$
              BesselJ(-v,z)*EXPT(-1.0,v)
-        (FLOATP(z) and  (z<0)) or (COMPLEXP(z) and REALPART(z)<0.0) =>
+        (float?(z) and  (z<0)) or (COMPLEXP(z) and REALPART(z)<0.0) =>
           --- negative argument (9.1.35 A&S) 
           --- $J_{\nu}(z e^{m \pi i}) = e^{m \nu \pi i} J_{\nu}(z)$
              BesselJ(v,-z)*EXPT(-1.0,v)
-        ZEROP z and ((FLOATP(v) and (v>=0.0)) or (COMPLEXP(v) and 
+        ZEROP z and ((float?(v) and (v>=0.0)) or (COMPLEXP(v) and 
            ZEROP IMAGPART(v) and REALPART(v)>=0.0)) =>  --- zero arg, pos. real order
             ZEROP v => 1.0  --- J(0,0)=1
             0.0  --- J(v,0)=0 for real v>0
@@ -776,15 +776,15 @@ BesselJRecur(v,z) ==
 BesselI(v,z) ==
         B1 := 15.0
         B2 := 10.0
-        ZEROP(z) and FLOATP(v) and (v>=0.0) =>  --- zero arg, pos. real order
+        ZEROP(z) and float?(v) and (v>=0.0) =>  --- zero arg, pos. real order
             ZEROP(v) => 1.0  --- I(0,0)=1
             0.0             --- I(v,0)=0 for real v>0
 --- Transformations for negative integer orders
-        FLOATP(v) and ZEROP(fracpart(v)) and (v<0) => BesselI(-v,z)
+        float?(v) and ZEROP(fracpart(v)) and (v<0) => BesselI(-v,z)
 --- Halfplane transformations for Re(z)<0
         REALPART(z)<0.0 => BesselI(v,-z)*EXPT(-1.0,v)
 --- Conjugation for complex order and real argument
-        REALPART(v)<0.0 and not ZEROP IMAGPART(v) and FLOATP(z) =>
+        REALPART(v)<0.0 and not ZEROP IMAGPART(v) and float?(z) =>
               CONJUGATE(BesselI(CONJUGATE(v),z))
 ---We now know that Re(z)>= 0.0
         abs(z) > B1 =>    --- asymptotic argument case

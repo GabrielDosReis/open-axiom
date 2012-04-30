@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,7 @@ getBasicMode0(x,useIntegerSubdomain) ==
       x = 0 => $NonNegativeInteger
       $Integer
     $Integer
-  FLOATP x => $DoubleFloat
+  float? x => $DoubleFloat
   (x='%noBranch) or (x='noValue) => $NoValueMode
   nil
 
@@ -192,7 +192,7 @@ getBasicObject x ==
       $Integer
     objNewWrap(x,t)
   string? x => objNewWrap(x,$String)
-  FLOATP  x => objNewWrap(x,$DoubleFloat)
+  float?  x => objNewWrap(x,$DoubleFloat)
   nil
 
 
