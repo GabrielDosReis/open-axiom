@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,103 +46,103 @@ namespace BOOT
 --% Output display routines
 
 $defaultSpecialCharacters == [
-    EBCDIC( 28),      -- upper left corner
-    EBCDIC( 27),      -- upper right corner
-    EBCDIC( 30),      -- lower left corner
-    EBCDIC( 31),      -- lower right corner
-    EBCDIC( 79),      -- vertical bar
-    EBCDIC( 45),      -- horizontal bar
-    EBCDIC(144),      -- APL quad
-    EBCDIC(173),      -- left bracket
-    EBCDIC(189),      -- right bracket
-    EBCDIC(192),      -- left brace
-    EBCDIC(208),      -- right brace
-    EBCDIC( 59),      -- top    box tee
-    EBCDIC( 62),      -- bottom box tee
-    EBCDIC( 63),      -- right  box tee
-    EBCDIC( 61),      -- left   box tee
-    EBCDIC( 44),      -- center box tee
-    EBCDIC(224)       -- back slash
+    abstractChar( 28),      -- upper left corner
+    abstractChar( 27),      -- upper right corner
+    abstractChar( 30),      -- lower left corner
+    abstractChar( 31),      -- lower right corner
+    abstractChar( 79),      -- vertical bar
+    abstractChar( 45),      -- horizontal bar
+    abstractChar(144),      -- APL quad
+    abstractChar(173),      -- left bracket
+    abstractChar(189),      -- right bracket
+    abstractChar(192),      -- left brace
+    abstractChar(208),      -- right brace
+    abstractChar( 59),      -- top    box tee
+    abstractChar( 62),      -- bottom box tee
+    abstractChar( 63),      -- right  box tee
+    abstractChar( 61),      -- left   box tee
+    abstractChar( 44),      -- center box tee
+    abstractChar(224)       -- back slash
      ]
 
 $plainSpecialCharacters0 == [
-    EBCDIC( 78),      -- upper left corner   (+)
-    EBCDIC( 78),      -- upper right corner  (+)
-    EBCDIC( 78),      -- lower left corner   (+)
-    EBCDIC( 78),      -- lower right corner  (+)
-    EBCDIC( 79),      -- vertical bar
-    EBCDIC( 96),      -- horizontal bar      (-)
-    EBCDIC(111),      -- APL quad            (?)
-    EBCDIC(173),      -- left bracket
-    EBCDIC(189),      -- right bracket
-    EBCDIC(192),      -- left brace
-    EBCDIC(208),      -- right brace
-    EBCDIC( 78),      -- top    box tee      (+)
-    EBCDIC( 78),      -- bottom box tee      (+)
-    EBCDIC( 78),      -- right  box tee      (+)
-    EBCDIC( 78),      -- left   box tee      (+)
-    EBCDIC( 78),      -- center box tee      (+)
-    EBCDIC(224)       -- back slash
+    abstractChar( 78),      -- upper left corner   (+)
+    abstractChar( 78),      -- upper right corner  (+)
+    abstractChar( 78),      -- lower left corner   (+)
+    abstractChar( 78),      -- lower right corner  (+)
+    abstractChar( 79),      -- vertical bar
+    abstractChar( 96),      -- horizontal bar      (-)
+    abstractChar(111),      -- APL quad            (?)
+    abstractChar(173),      -- left bracket
+    abstractChar(189),      -- right bracket
+    abstractChar(192),      -- left brace
+    abstractChar(208),      -- right brace
+    abstractChar( 78),      -- top    box tee      (+)
+    abstractChar( 78),      -- bottom box tee      (+)
+    abstractChar( 78),      -- right  box tee      (+)
+    abstractChar( 78),      -- left   box tee      (+)
+    abstractChar( 78),      -- center box tee      (+)
+    abstractChar(224)       -- back slash
      ]
 
 $plainSpecialCharacters1 == [
-    EBCDIC(107),      -- upper left corner   (,)
-    EBCDIC(107),      -- upper right corner  (,)
-    EBCDIC(125),      -- lower left corner   (')
-    EBCDIC(125),      -- lower right corner  (')
-    EBCDIC( 79),      -- vertical bar
-    EBCDIC( 96),      -- horizontal bar      (-)
-    EBCDIC(111),      -- APL quad            (?)
-    EBCDIC(173),      -- left bracket
-    EBCDIC(189),      -- right bracket
-    EBCDIC(192),      -- left brace
-    EBCDIC(208),      -- right brace
-    EBCDIC( 78),      -- top    box tee      (+)
-    EBCDIC( 78),      -- bottom box tee      (+)
-    EBCDIC( 78),      -- right  box tee      (+)
-    EBCDIC( 78),      -- left   box tee      (+)
-    EBCDIC( 78),      -- center box tee      (+)
-    EBCDIC(224)       -- back slash
+    abstractChar(107),      -- upper left corner   (,)
+    abstractChar(107),      -- upper right corner  (,)
+    abstractChar(125),      -- lower left corner   (')
+    abstractChar(125),      -- lower right corner  (')
+    abstractChar( 79),      -- vertical bar
+    abstractChar( 96),      -- horizontal bar      (-)
+    abstractChar(111),      -- APL quad            (?)
+    abstractChar(173),      -- left bracket
+    abstractChar(189),      -- right bracket
+    abstractChar(192),      -- left brace
+    abstractChar(208),      -- right brace
+    abstractChar( 78),      -- top    box tee      (+)
+    abstractChar( 78),      -- bottom box tee      (+)
+    abstractChar( 78),      -- right  box tee      (+)
+    abstractChar( 78),      -- left   box tee      (+)
+    abstractChar( 78),      -- center box tee      (+)
+    abstractChar(224)       -- back slash
      ]
 
 $plainSpecialCharacters2 == [
-    EBCDIC( 79),      -- upper left corner   (|)
-    EBCDIC( 79),      -- upper right corner  (|)
-    EBCDIC( 79),      -- lower left corner   (|)
-    EBCDIC( 79),      -- lower right corner  (|)
-    EBCDIC( 79),      -- vertical bar
-    EBCDIC( 96),      -- horizontal bar      (-)
-    EBCDIC(111),      -- APL quad            (?)
-    EBCDIC(173),      -- left bracket
-    EBCDIC(189),      -- right bracket
-    EBCDIC(192),      -- left brace
-    EBCDIC(208),      -- right brace
-    EBCDIC( 78),      -- top    box tee      (+)
-    EBCDIC( 78),      -- bottom box tee      (+)
-    EBCDIC( 78),      -- right  box tee      (+)
-    EBCDIC( 78),      -- left   box tee      (+)
-    EBCDIC( 78),      -- center box tee      (+)
-    EBCDIC(224)       -- back slash
+    abstractChar( 79),      -- upper left corner   (|)
+    abstractChar( 79),      -- upper right corner  (|)
+    abstractChar( 79),      -- lower left corner   (|)
+    abstractChar( 79),      -- lower right corner  (|)
+    abstractChar( 79),      -- vertical bar
+    abstractChar( 96),      -- horizontal bar      (-)
+    abstractChar(111),      -- APL quad            (?)
+    abstractChar(173),      -- left bracket
+    abstractChar(189),      -- right bracket
+    abstractChar(192),      -- left brace
+    abstractChar(208),      -- right brace
+    abstractChar( 78),      -- top    box tee      (+)
+    abstractChar( 78),      -- bottom box tee      (+)
+    abstractChar( 78),      -- right  box tee      (+)
+    abstractChar( 78),      -- left   box tee      (+)
+    abstractChar( 78),      -- center box tee      (+)
+    abstractChar(224)       -- back slash
      ]
 
 $plainSpecialCharacters3 == [
-    EBCDIC( 96),      -- upper left corner   (-)
-    EBCDIC( 96),      -- upper right corner  (-)
-    EBCDIC( 96),      -- lower left corner   (-)
-    EBCDIC( 96),      -- lower right corner  (-)
-    EBCDIC( 79),      -- vertical bar
-    EBCDIC( 96),      -- horizontal bar      (-)
-    EBCDIC(111),      -- APL quad            (?)
-    EBCDIC(173),      -- left bracket
-    EBCDIC(189),      -- right bracket
-    EBCDIC(192),      -- left brace
-    EBCDIC(208),      -- right brace
-    EBCDIC( 78),      -- top    box tee      (+)
-    EBCDIC( 78),      -- bottom box tee      (+)
-    EBCDIC( 78),      -- right  box tee      (+)
-    EBCDIC( 78),      -- left   box tee      (+)
-    EBCDIC( 78),      -- center box tee      (+)
-    EBCDIC(224)       -- back slash
+    abstractChar( 96),      -- upper left corner   (-)
+    abstractChar( 96),      -- upper right corner  (-)
+    abstractChar( 96),      -- lower left corner   (-)
+    abstractChar( 96),      -- lower right corner  (-)
+    abstractChar( 79),      -- vertical bar
+    abstractChar( 96),      -- horizontal bar      (-)
+    abstractChar(111),      -- APL quad            (?)
+    abstractChar(173),      -- left bracket
+    abstractChar(189),      -- right bracket
+    abstractChar(192),      -- left brace
+    abstractChar(208),      -- right brace
+    abstractChar( 78),      -- top    box tee      (+)
+    abstractChar( 78),      -- bottom box tee      (+)
+    abstractChar( 78),      -- right  box tee      (+)
+    abstractChar( 78),      -- left   box tee      (+)
+    abstractChar( 78),      -- center box tee      (+)
+    abstractChar(224)       -- back slash
      ]
 
 $plainRTspecialCharacters == [
@@ -462,7 +462,7 @@ newlineIfDisplaying() ==
 
 specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
-  -- into the EBCDIC table, and returns the appropriate character
+  -- into the abstractChar table, and returns the appropriate character
   null (code := IFCDR objectAssoc(symbol,$specialCharacterAlist)) => '"?"
   $specialCharacters.code
 
@@ -529,12 +529,12 @@ appChar(string,x,y,d) ==
     if maxIndex string = 1 and stringChar(string,0) = char "%" then
       stringChar(string,1) = char "b" =>
         bumpDeltaIfTrue:= true
-        stringChar(string,0) := EBCDIC 29
-        stringChar(string,1) := EBCDIC 200
+        stringChar(string,0) := abstractChar 29
+        stringChar(string,1) := abstractChar 200
       stringChar(string,1) = char "d" =>
         bumpDeltaIfTrue:= true
-        stringChar(string,0) := EBCDIC 29
-        stringChar(string,1) := EBCDIC 65
+        stringChar(string,0) := abstractChar 29
+        stringChar(string,1) := abstractChar 65
     shiftedX:= (y=0 => x+$highlightDelta; x)
       --shift x for brightening characters -- presently only if y=0
     RPLACSTR(line,shiftedX,n:=#string,string,0,n)

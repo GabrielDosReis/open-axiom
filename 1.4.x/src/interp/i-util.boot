@@ -45,18 +45,18 @@ inputPrompt str ==
   p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,nil)
-  y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
+  y => _$SHOWLINE(strconc(str,abstractChar 19,y),p)
   0 = # str => nil
-  _$SHOWLINE(strconc(str,EBCDIC 19),p)
+  _$SHOWLINE(strconc(str,abstractChar 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
   0 = # str => inputPrompt str
-  msg := EBCDIC 29                       -- start of field
+  msg := abstractChar 29                       -- start of field
   msg :=
-    if br then strconc(msg,EBCDIC 232)   -- bright write protect
-    else       strconc(msg,EBCDIC  96)   -- write protect
-  msg := strconc(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
+    if br then strconc(msg,abstractChar 232)   -- bright write protect
+    else       strconc(msg,abstractChar  96)   -- write protect
+  msg := strconc(msg,str,abstractChar 29,abstractChar 64)  -- unprotect again
   inputPrompt msg
  
 MKPROMPT() ==

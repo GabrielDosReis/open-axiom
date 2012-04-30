@@ -1,3 +1,15 @@
+2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/fortcall.boot: Use copyTree, not COPY-TREE.
+	* interp/i-intern.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/i-output.boot: Use abstractChar, not EBCDIC.
+	* interp/i-util.boot: Likewise.
+	* interp/vmlisp.lisp (EBCDIC): Remove.
+	(CALLBELOW): Likewise.
+	(RE-ENABLE-INT): Likewise.
+	(QUOREM): Likewise.
+
 2012-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (fixnum?): New.

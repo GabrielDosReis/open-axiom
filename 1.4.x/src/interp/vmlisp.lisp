@@ -1293,10 +1293,6 @@
 
 (defun $screensize () '(24 80))          ; You tell me!!
 
-; 97.0 Stuff In The Manual But Wierdly Documented
-
-(defun EBCDIC (x) (code-char x))
-
 ;; This isn't really compatible but is as close as you can get in common lisp
 ;; In place of ((one-of 1 2 3) l)  you should use
 ;;   (funcall (one-of 1 2 3) l)
@@ -1385,8 +1381,6 @@
 (defun LAM\,FILEACTQ (name form)
        (if *FILEACTQ-APPLY* (FUNCALL *FILEACTQ-APPLY* name form)))
 
-(defun CALLBELOW (&rest junk) junk) ; to invoke system dependent code?
-
 (defun PLACEP (item) (eq item *read-place-holder*))
 (defun VMREAD (&optional (st |$InputStream|) (eofval *read-place-holder*))
   (read st nil eofval))
@@ -1426,11 +1420,3 @@
                                  (function-lambda-expression func)
 				 (declare (ignore l c))
 				 n)))
-
-  
-(defun RE-ENABLE-INT (number-of-handler) number-of-handler)
-
-
-(defun QUOREM (i j r) ; never used, refed in parini.boot
-  (multiple-value-bind (x y) (truncate i j)
-   (rplaca (the cons r) x) (rplacd (the cons r) y)))

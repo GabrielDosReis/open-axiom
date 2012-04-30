@@ -757,7 +757,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
         ms := [m, :ms]
     b:= true
     m.first := objMode(object)
-    ms := [COPY_-TREE m, :ms]
+    ms := [copyTree m, :ms]
     putAtree(x,'retracted,true)
     putValue(x,object)
     putModeSet(x,[objMode(object)])
