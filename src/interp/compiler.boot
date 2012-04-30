@@ -438,7 +438,7 @@ primitiveType x ==
     x = 0 => $NonNegativeInteger
     x > 0 => $PositiveInteger
     $Integer
-  FLOATP x => $DoubleFloat
+  float? x => $DoubleFloat
   nil
 
 compSymbol(s,m,e) ==

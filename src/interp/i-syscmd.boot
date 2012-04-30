@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1808,7 +1808,7 @@ writify ob ==
                 sameObject?(ob, %nullStream) => ['WRITIFIED!!, 'NULLSTREAM]
                 sameObject?(ob, %nonNullStream) => ['WRITIFIED!!, 'NONNULLSTREAM]
                 ob
-            FLOATP ob =>
+            float? ob =>
                 ob = READ_-FROM_-STRING STRINGIMAGE ob => ob
                 ['WRITIFIED!!, 'FLOAT, ob,:
                    MULTIPLE_-VALUE_-LIST INTEGER_-DECODE_-FLOAT ob]
@@ -1819,7 +1819,7 @@ unwritable? ob ==
     cons?  ob or vector? ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
-    FLOATP ob => true
+    float? ob => true
     false
 
 -- Create a full isomorphic object which can be saved in a lisplib.
