@@ -639,7 +639,7 @@ $VMsideEffectFreeOperators ==
     %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
     %ilength %ibit %icst0 %icst1 %icstmin %icstmax
     %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-    %idec %irem %iquo %idivide %idec %irandom
+    %idec %irem %iquo %idivide %idec %irandom %imulmod %iaddmod %isubmod
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
     %fsqrt %fpowf %flog %flog2 %flog10 %fmanexp %fNaN? %fdecode
@@ -917,6 +917,9 @@ optIadd(x is ['%iadd,a,b]) ==
     x
   x
 
+optIaddmod ['%iaddmod,a,b,c] ==
+  optIrem ['%irem,optIadd ['%iadd,a,b],c]
+
 optIinc(x is ['%iinc,a]) ==
   integer? a => a + 1
   a is [op,b,c] and op in '(%isub %iadd) =>
@@ -951,6 +954,9 @@ optIsub(x is ['%isub,a,b]) ==
     x
   x
 
+optIsubmod ['%isubmod,a,b,c] ==
+  optIrem ['%irem,optIsub ['%isub,a,b],c]
+
 optIdec(x is ['%idec,a]) ==
   integer? a => a - 1
   a is ['%iadd,b,c] =>
@@ -968,6 +974,9 @@ optImul(x is ['%imul,a,b]) ==
   integer? a and a = 1 => b
   integer? b and b = 1 => a
   x
+
+optImulmod(x is ['%imulmod,a,b,c]) ==
+  optIrem ['%irem,optImul ['%imul,a,b],c]
 
 optIneg(x is ['%ineg,a]) ==
   integer? a => -a
@@ -1001,11 +1010,14 @@ for x in '((%call         optCall) _
            (%ige         optIge)_
            (%ineg        optIneg)_
            (%iadd        optIadd)_
+           (%iaddmod     optIaddmod)_
            (%iinc        optIinc)_
            (%isub        optIsub)_
+           (%isubmod     optIsubmod)_
            (%irem        optIrem)_
            (%iquo        optIquo)_
            (%imul        optImul)_
+           (%imulmod     optImulmod)_
            (%2bit        opt2bit)_
            (%2bool       opt2bool)_
            (%list        optList)_

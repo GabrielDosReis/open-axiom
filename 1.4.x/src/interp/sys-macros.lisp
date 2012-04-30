@@ -269,25 +269,6 @@
 (defmacro SPADDIFFERENCE (&rest x)
   `(- . ,x))
 
-;; following macros assume 0 <= x,y < z
-
-(defmacro QSADDMOD (x y z)
-  `(let* ((sum (QSPLUS ,x ,y))
-	  (rsum (QSDIFFERENCE sum ,z)))
-     (if (QSMINUSP rsum) 
-	 sum
-       rsum)))
- 
-(defmacro QSDIFMOD (x y z)
-  `(let ((dif (QSDIFFERENCE ,x ,y)))
-     (if (QSMINUSP dif)
-	 (QSPLUS dif ,z)
-       dif)))
- 
-(defmacro QSMULTMOD (x y z)
-  `(REM (* ,x ,y) ,z))
- 
-
 ;; 
 ;; -*- Pattern Matching -*-
 ;; 

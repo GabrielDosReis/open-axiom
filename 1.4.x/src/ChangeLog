@@ -1,5 +1,17 @@
 2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/si.spad.pamphlet (SingleInteger): Use %iaddmod,
+	%isubmod, and %imulmod.
+	* interp/g-opt.boot: These are now builtin side-effect operators.
+	(optIaddmod): New optimizer.  Register.
+	(optIsubmod): Likewise.
+	(optImulmod): Likewise.
+	* interp/sys-macros.lisp (QSADDMOD): Remove.
+	(QSDIFMOD): Likewise.
+	(QSMULMOD): Likewise.
+
+2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot: Use float? in lieu of FLOATP.
 	* interp/fortcall.boot: Likewise.
 	* interp/i-object.boot: Likewise.
