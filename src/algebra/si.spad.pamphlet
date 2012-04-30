@@ -180,7 +180,7 @@ IntegerNumberSystem(): Category ==
 
 
 -- Lisp dependencies
--- QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
+-- QSLEFTSHIFT
 
 
 SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
@@ -202,8 +202,11 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    import %icstmin: %               from Foreign Builtin
    import %icstmax: %               from Foreign Builtin
    import %iadd: (%,%) -> %         from Foreign Builtin
+   import %iaddmod: (%,%,%) -> %    from Foreign Builtin
    import %isub: (%,%) -> %         from Foreign Builtin
+   import %isubmod: (%,%) -> %      from Foreign Builtin
    import %imul: (%,%) -> %         from Foreign Builtin
+   import %imulmod: (%,%,%) -> %    from Foreign Builtin
    import %irem: (%,%) -> %         from Foreign Builtin
    import %iquo: (%,%) -> %         from Foreign Builtin
    import %ineg: % -> %             from Foreign Builtin
@@ -271,9 +274,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    hash(x)   == %hash x
    length(x) == %ilength x
    shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
-   mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
-   addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
-   submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
+   mulmod(a,b,p) == %imulmod(a,b,p)
+   addmod(a,b,p) == %iaddmod(a,b,p)$Lisp
+   submod(a,b,p) == %isubmod(a,b,p)$Lisp
    negative?(x)  == %ilt(x,%icst0)
    size() ==
      (%icstmax - %icstmin + %icst1)  pretend NonNegativeInteger
