@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -130,7 +130,7 @@ mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
   body is [fn,:argl] =>
     (fn = op) and argl.(sharpPosition-1) is
       ['SPADCALL,=sharpArg,n,["ELT",["%dynval",=MKQ vecname],=diffSlot]] =>
-          NUMP n and n > 0 and n <= k =>
+          integer? n and n > 0 and n <= k =>
             [[body,:$TriangleVariableList.n]]
           ['$failed]
     "union"/[mkDiffAssoc(op,x,k,sharpPosition,sharpArg,diffSlot,vecname) for x in argl]

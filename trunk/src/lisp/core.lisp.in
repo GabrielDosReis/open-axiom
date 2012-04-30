@@ -3,7 +3,7 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -204,6 +204,7 @@
 
 	   "ident?"
 	   ;; numeric support
+	   "fixnum?"
 	   "double"
 	   "%fNaN?"
            ))
@@ -1379,6 +1380,9 @@
 ;; 
 ;; -*-* Numerics support -*-
 ;; 
+(defmacro |fixnum?| (x)
+  `(typep ,x 'fixnum))
+
 (defmacro |%fNaN?| (x)
   #+:sbcl `(sb-ext:float-nan-p ,x)
   #+:ecl `(ext:float-nan-p ,x)

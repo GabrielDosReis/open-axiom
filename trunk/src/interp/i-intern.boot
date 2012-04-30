@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -176,7 +176,7 @@ mkAtree2(x,op,argl) ==
       integer? a =>
         a >= 0 => mkAtree1 [['_$elt,D,internalName a]]
         t := evaluateType unabbrev [D]
-        typeIsASmallInteger(t) and SINTP a =>
+        typeIsASmallInteger(t) and fixnum? a =>
             v := mkAtreeNode $immediateDataSymbol
             putValue(v,objNewWrap(a, t))
             v

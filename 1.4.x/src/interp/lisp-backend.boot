@@ -517,7 +517,7 @@ for x in [
     ['%ieven?,  :'EVENP],
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
-    ['%ismall?, :'SMINTP],
+    ['%ismall?, :'fixnum?],
     ['%i2s,   :'WRITE_-TO_-STRING],
     ['%ilength, :'INTEGER_-LENGTH],
     ['%ibit,    :'INTEGER_-BIT],

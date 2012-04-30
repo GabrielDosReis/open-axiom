@@ -1,5 +1,28 @@
 2012-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (fixnum?): New.
+	* algebra/sex.spad.pamphlet: Use %float? instead of RNUM.
+	Use %integer? instead of INTP.
+	* interp/g-timer.boot: Use float? instead of RNUMP.
+	* interp/i-coerce.boot: Use fixnum? instead of SINTP or SMINTP.
+	* interp/i-intern.boot: Likewise.
+	* interp/lisp-backend.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	(INTP): Remove.
+	(BINTP): Likewise.
+	(LESSP): Likewise.
+	(LINTP): Likewise.
+	(MAKESTRING): Likewise.
+	(MAPELT): Likewise.
+	(NUMP): Likewise.
+	(RNUMP): Likewise.
+	(SINTP): Likewise.
+	(SMINTP): Likewise.
+
+2012-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/debug.lisp: ident? in lieu of IDENTP.
 	* interp/macros.lisp: Likewise.
 	* interp/parsing.lisp: Likewise.
