@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,7 @@ retract1 object ==
   val := objVal object
   type = $PositiveInteger =>    objNew(val,$NonNegativeInteger)
   type = $NonNegativeInteger => objNew(val,$Integer)
-  type = $Integer and SINTP unwrap val => objNew(val, $SingleInteger)
+  type = $Integer and fixnum? unwrap val => objNew(val, $SingleInteger)
   type' := equiType(type)
   if not sameObject?(type,type') then object := objNew(val,type')
   (1 = #type') or (type' is ['Union,:.]) or
@@ -261,7 +261,7 @@ coerceRetract(object,t2) ==
   (val := objValUnwrap(object)) = "$fromCoerceable$" => nil
   t1 := objMode object
   t2 = $OutputForm => nil
-  isEqualOrSubDomain(t1,$Integer) and typeIsASmallInteger(t2) and SMINTP(val) =>
+  isEqualOrSubDomain(t1,$Integer) and typeIsASmallInteger(t2) and fixnum?(val) =>
     objNewWrap(val,t2)
   t1 = $Integer    => nil
   t1 = $Symbol     => nil
@@ -820,12 +820,12 @@ coerceInt1(triple,t2) ==
 
   if typeIsASmallInteger(t1) then
     (t2 = $Integer) or typeIsASmallInteger(t2) => return objNew(val,t2)
-    sintp := SINTP val
+    sintp := fixnum? val
     sintp and (t2 = $PositiveInteger) and val > 0 => return objNew(val,t2)
     sintp and (t2 = $NonNegativeInteger) and val >= 0 => return objNew(val,t2)
 
-  typeIsASmallInteger(t2) and isEqualOrSubDomain(t1, $Integer) and INTP val =>
-    SINTP val => objNew(val,t2)
+  typeIsASmallInteger(t2) and isEqualOrSubDomain(t1, $Integer) and integer? val =>
+    fixnum? val => objNew(val,t2)
     nil
 
   t2 = $Void => objNew(voidValue(),$Void)

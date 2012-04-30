@@ -678,7 +678,7 @@ orderBySlotNumber l ==
   ASSOCRIGHT orderList [[n,:x] for (x:= [.,.,n,:.]) in l]
 
 _/TRACEREPLY() ==
-  null _/TRACENAMES => MAKESTRING '"   Nothing is traced."
+  null _/TRACENAMES => '"   Nothing is traced."
   for x in _/TRACENAMES repeat
     x is [d,:.] and isDomainOrPackage d =>
       domainList:= [devaluate d,:domainList]

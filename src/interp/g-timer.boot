@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ makeLongStatStringByProperty _
   strconc(str, '" = ", total)
  
 normalizeStatAndStringify t ==
-  RNUMP t =>
+  float? t =>
       t := roundStat t
       t = 0.0 => '"0"
       FORMAT(nil,'"~,2F",t)
@@ -108,12 +108,12 @@ normalizeStatAndStringify t ==
   STRINGIMAGE t
  
 significantStat t ==
-   RNUMP t => (t > 0.01)
+   float? t => (t > 0.01)
    integer?  t => (t > 100)
    true
  
 roundStat t ==
-  not RNUMP t => t
+  not float? t => t
   QUOTIENT(FIX (0.5 + t * 1000.0), 1000.0)
  
 makeStatString(oldstr,time,abb,flag) ==
