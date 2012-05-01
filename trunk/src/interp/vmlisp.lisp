@@ -343,17 +343,7 @@
  (declare (ignore sd))
   (macroexpand `(,arg ,item)))
 
-; 8.0 Operator Definition and Transformation
-
 ; 8.1 Definition and Transformation Operations
-
-(defun COMP370 (fnlist)
-  (cond ((atom (car fnlist)) (list (COMPILE1 fnlist)))
-        (t (MAPCAR #'(lambda (x) (COMPILE1 x)) fnlist))))
-
-(defun |compileLispDefinition| (name def)
-  (when *COMP370-APPLY* 
-    (funcall *COMP370-APPLY* name def)))
 
 (defun COMPILE1 (fn)
   (let* (nargs

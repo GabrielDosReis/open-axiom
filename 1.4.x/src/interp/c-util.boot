@@ -1822,6 +1822,11 @@ compileQuietly fn ==
 
 
 
+COMP370 x ==
+  first x is [.,:.] => [COMPILE1 y for y in x]
+  [COMPILE1 x]
+
+
 --%
 --% Compile Time operation lookup for the benefit of domain inlining.
 --%
