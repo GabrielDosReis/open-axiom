@@ -1,5 +1,12 @@
 2012-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (REMOVE-FLUIDS): Move to lisp-backend.boot.
+	Rename to removeFluids.
+	(SIMPLE-ARGLIST): Move to lisp-backend.boot.  Rename to
+	simpleParameterList?.
+
+2012-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (COMP370): Move to c-util.boot
 	(compileLispDefinition): Move to lisp-backend.boot.
 
