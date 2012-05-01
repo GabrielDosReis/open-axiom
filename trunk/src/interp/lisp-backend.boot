@@ -760,3 +760,24 @@ eval x ==
 compileLispDefinition(name,def) ==
   _*COMP370_-APPLY_* ~= nil => apply(_*COMP370_-APPLY_*,name,def,nil)
   nil
+
+++ Return true if `parms' is the empty list
+++ of is a proper list of identifiers.
+simpleParameterList? parms ==
+  parms = nil => true
+  parms is [.,:.] and lastNode parms is [.] and (and/[ident? p for p in parms])
+
+removeFluids args ==
+  args = nil => args
+  ident? args =>
+    $Vars := [args,:$Vars]
+    args
+  args isnt [.,:.] =>
+    args := GENTEMP()
+    $Vars := [args,:$Vars]
+    args
+  args is ['FLUID,v] and ident? v =>
+    $Decls := [v,:$Decls]
+    $Vars := [v,:$Vars]
+    v
+  [removeFluids first args,:removeFluids rest args]

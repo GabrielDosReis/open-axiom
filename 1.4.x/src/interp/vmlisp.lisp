@@ -350,53 +350,31 @@
          (fname (car fn))
          (lamda (cadr fn))
          (ltype (car lamda))
-         *vars* *decl* args
+         |$Vars| |$Decls| args
          (body (cddr lamda)))
-    (declare (special *vars* *decl*))
+    (declare (special |$Vars| |$Decls|))
     (if (eq ltype 'LAM)
         (let ((*lam-name* (intern (concat fname "\,LAM"))))
           (setq lamda (eval lamda) ltype (car lamda) body (cddr lamda))))
     (let ((dectest (car body)))
       (if (and (eqcar dectest 'declare) (eqcar (cadr dectest) 'special))
-          (setq *decl* (cdr (cadr dectest)) body (cdr body))))
-    (setq args (remove-fluids (cadr lamda)))
-    (cond ((and (eq ltype 'lambda) (simple-arglist args)) (setq nargs args))
+          (setq |$Decls| (cdr (cadr dectest)) body (cdr body))))
+    (setq args (|removeFluids| (cadr lamda)))
+    (cond ((and (eq ltype 'lambda) (|simpleParameterList?| args))
+	   (setq nargs args))
           (t (setq nargs (gensym))
              (setq body `((dsetq ,args  ,nargs) ,@body))
-             (cond ((eq ltype 'lambda) (setq nargs `(&rest ,nargs &aux ,@*vars*)))
+             (cond ((eq ltype 'lambda) (setq nargs `(&rest ,nargs &aux ,@ |$Vars|)))
                    ((eq ltype 'mlambda)
-                    (setq nargs `(&whole ,nargs &rest ,(gensym) &aux ,@*vars*)))
+                    (setq nargs `(&whole ,nargs &rest ,(gensym) &aux ,@ |$Vars|)))
                    (t (error "bad function type")))))
-    (cond (*decl* (setq body (cons `(declare (special ,@ *decl*)) body))))
+    (cond (|$Decls| (setq body (cons `(declare (special ,@ |$Decls|)) body))))
     (setq body
           (cond ((eq ltype 'lambda) `(defun ,fname ,nargs . ,body))
                 ((eq ltype 'mlambda) `(defmacro ,fname ,nargs . ,body))))
     (|compileLispDefinition| fname body)
 
     body))
-
-(defun simple-arglist (arglist)
-  (or (null arglist)
-      (and (consp arglist) (null (cdr (last arglist)))
-           (every #'symbolp arglist))))
-
-(defun remove-fluids (arglist &aux f v) ;updates specials *decl* and *vars*
-  (declare (special *decl* *vars*))
-   (cond ((null arglist) arglist)
-         ((symbolp arglist) (push arglist *vars*) arglist)
-                ;if atom but not symbol, ignore value
-         ((atom arglist) (push (setq arglist (gentemp)) *vars*) arglist)
-         ((and (setq f (car arglist))
-               (eq f 'fluid)
-               (listp (cdr arglist))
-               (setq v (cadr arglist))
-               (|ident?| v)
-               (null (cddr arglist)))
-          (push v *decl*)
-          (push v *vars*)
-          v)
-         (t (cons (remove-fluids (car arglist))
-                  (remove-fluids (cdr arglist))))))
 
 ; 9.4 Vectors and Bpis
 
