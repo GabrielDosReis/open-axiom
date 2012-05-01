@@ -830,7 +830,7 @@ mergeSort(f,g,p,n) ==
    q := rest t
    t.rest := nil
    p := mergeSort(f,g,p,l)
-   q := mergeSort(f,g,q,QSDIFFERENCE(n,l))
+   q := mergeSort(f,g,q,n-l)
    mergeInPlace(f,g,p,q)
 
 --% Throwing with glorious highlighting (maybe)

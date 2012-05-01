@@ -535,6 +535,8 @@ for x in [
     ['%imul,    :"*"],
     ['%imulf,   :"*"],                   -- integer * float
     ['%irem,    :'REM],
+    ['%ilshift, :'ASH],
+    ['%irshift, :'ASH],
     ['%iquo,    :'TRUNCATE],
     ['%ipow,    :'EXPT],
     ['%isub,    :"-"],

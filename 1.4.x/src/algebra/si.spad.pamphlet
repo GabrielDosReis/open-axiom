@@ -179,10 +179,6 @@ IntegerNumberSystem(): Category ==
 -- MODULUS, MULTIPLIER (random number generator constants)
 
 
--- Lisp dependencies
--- QSLEFTSHIFT
-
-
 SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
@@ -204,11 +200,12 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    import %iadd: (%,%) -> %         from Foreign Builtin
    import %iaddmod: (%,%,%) -> %    from Foreign Builtin
    import %isub: (%,%) -> %         from Foreign Builtin
-   import %isubmod: (%,%) -> %      from Foreign Builtin
+   import %isubmod: (%,%,%) -> %    from Foreign Builtin
    import %imul: (%,%) -> %         from Foreign Builtin
    import %imulmod: (%,%,%) -> %    from Foreign Builtin
    import %irem: (%,%) -> %         from Foreign Builtin
    import %iquo: (%,%) -> %         from Foreign Builtin
+   import %ilshift: (%,%) -> %      from Foreign Builtin
    import %ineg: % -> %             from Foreign Builtin
    import %iinc: % -> %             from Foreign Builtin
    import %idec: % -> %             from Foreign Builtin
@@ -273,10 +270,10 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    min(x,y)  == %imin(x,y)
    hash(x)   == %hash x
    length(x) == %ilength x
-   shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
+   shift(x,n)    == %ilshift(x,n)
    mulmod(a,b,p) == %imulmod(a,b,p)
-   addmod(a,b,p) == %iaddmod(a,b,p)$Lisp
-   submod(a,b,p) == %isubmod(a,b,p)$Lisp
+   addmod(a,b,p) == %iaddmod(a,b,p)
+   submod(a,b,p) == %isubmod(a,b,p)
    negative?(x)  == %ilt(x,%icst0)
    size() ==
      (%icstmax - %icstmin + %icst1)  pretend NonNegativeInteger

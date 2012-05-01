@@ -147,7 +147,7 @@
   (declare (simple-vector vec))
   (let ((n (position 0 vec :from-end t :test-not #'eql)))
      (cond ((null n) (vector))
-           ((eql n (qvmaxindex vec)) vec)
+           ((eql n (maxindex vec)) vec)
            (t (subseq vec 0 (+ n 1))))))
  
 ; 14 SEQUENCES
@@ -441,7 +441,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
                 ((EQL |l| 0) NIL)
                 ('T (SPADLET |n| 0) (SPADLET |word| '||)
                  (SPADLET |inWord| NIL)
-                 (DO ((|i| 0 (1+ |i|))) ((QSGREATERP |i| |l|) NIL)
+                 (DO ((|i| 0 (1+ |i|))) ((> |i| |l|) NIL)
                (declare (fixnum |i|))
                    (SEQ (EXIT (COND
                                 ((eql (aref |str| |i|) #\space)

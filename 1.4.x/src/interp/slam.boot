@@ -335,10 +335,10 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       phrase1:= [['%and,["%LET",max,["ELT",stateVar,0]],['%ige,sharpArg,max]],
                   [auxfn,:argl,stateVar]]
       phrase2:= [['%igt,sharpArg,['%store,max,["DIFFERENCE",max,k]]],
-                  ["ELT",stateVar,['%iinc,["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
+                  ["ELT",stateVar,['%iinc,["%isub",k,["DIFFERENCE",sharpArg,max]]]]]
       phrase3:= [['%igt,sharpArg,n],[auxfn,:argl,['%list,n,:initCode]]]
       phrase4:= [['%igt,sharpArg,n-k],
-        ["ELT",['%list,:initCode],["QSDIFFERENCE",n,sharpArg]]]
+        ["ELT",['%list,:initCode],["%isub",n,sharpArg]]]
       phrase5:= ['%otherwise,['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['%when,phrase1,phrase2,phrase3,phrase4,phrase5]]
   if $verbose then

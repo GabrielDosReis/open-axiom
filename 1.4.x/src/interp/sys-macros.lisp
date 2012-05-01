@@ -512,7 +512,7 @@
    (defun MKQSADD1 (X)
      (COND ((ATOM X)
 	    `(1+ ,X))
-	   ((AND (member (CAR X) '(-DIFFERENCE QSDIFFERENCE -) :test #'eq)
+	   ((AND (member (CAR X) '(-DIFFERENCE |%isub| -) :test #'eq)
 		 (EQL 1 (CADDR X)))
 	    (CADR X))
 	   (`(1+ ,X))))
@@ -605,19 +605,19 @@
 			 ;; If CADDDR U is not an atom, only compute the value once
 			 (PUSH
 			  (if (INTEGERP INC)
-			      (LIST (if  (QSMINUSP INC)
-					'QSLESSP
-				      'QSGREATERP)
+			      (LIST (if  (MINUSP INC)
+					'<
+				      '>)
 				    (CAR U)
 				    FINAL)
-			    `(if (QSMINUSP ,INC)
-				 (QSLESSP ,(CAR U) ,FINAL)
-			       (QSGREATERP ,(CAR U) ,FINAL)))
+			    `(if (MINUSP ,INC)
+				 (< ,(CAR U) ,FINAL)
+			       (> ,(CAR U) ,FINAL)))
 			  XCL)))
 		  (PUSH (LIST (CAR U) (CADR U)
 			      (COND ((|member| INC '(1 (|One|)))
 				     (MKQSADD1 (CAR U)))
-				    ((LIST 'QSPLUS (CAR U) INC)) ))
+				    ((LIST '+ (CAR U) INC)) ))
 			IL))
 		 (ON 
 		  (PUSH (LIST 'ATOM (CAR U)) XCL)

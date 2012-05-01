@@ -89,10 +89,14 @@ Integer: IntegerNumberSystem with
       import %ieven?: % -> Boolean     from Foreign Builtin
       import %hash: % -> SingleInteger from Foreign Builtin
       import %iadd: (%,%) -> %         from Foreign Builtin
+      import %iaddmod: (%,%,%) -> %    from Foreign Builtin
       import %isub: (%,%) -> %         from Foreign Builtin
+      import %isubmod: (%,%,%) -> %    from Foreign Builtin
       import %imul: (%,%) -> %         from Foreign Builtin
+      import %imulmod: (%,%,%) -> %    from Foreign Builtin
       import %irem: (%,%) -> %         from Foreign Builtin
       import %iquo: (%,%) -> %         from Foreign Builtin
+      import %ilshift: (%,%) -> %      from Foreign Builtin
       import %imax: (%,%) -> %         from Foreign Builtin
       import %imin: (%,%) -> %         from Foreign Builtin
       import %igcd: (%,%) -> %         from Foreign Builtin
@@ -123,15 +127,9 @@ Integer: IntegerNumberSystem with
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
       length a == %ilength a
-      addmod(a, b, p) ==
-         c := %iadd(a,b)
-         c >= p => c - p
-         c
-      submod(a, b, p) ==
-         c := %isub(a,b)
-         negative? c => c + p
-         c
-      mulmod(a, b, p) == %imul(a,b) rem p
+      addmod(a, b, p) == %iaddmod(a,b,p)
+      submod(a, b, p) == %isubmod(a,b,p)
+      mulmod(a, b, p) == %imulmod(a,b,p)
       convert(x:%):Float       == coerce(x)$Float
       convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
       convert(x:%):InputForm   == convert(x)$InputForm
@@ -175,7 +173,7 @@ Integer: IntegerNumberSystem with
       divide(x,y) == %idivide(x,y)$Foreign(Builtin)
       x quo y == %iquo(x,y)
       x rem y == %irem(x,y)
-      shift(x, y) == ASH(x,y)$Lisp
+      shift(x, y) == %ilshift(x,y)
       recip(x) == if one? x or x=-1 then x else "failed"
       gcd(x,y) == %igcd(x,y)
       UCA ==> Record(unit:%,canonical:%,associate:%)

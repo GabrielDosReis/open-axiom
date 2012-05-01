@@ -217,48 +217,6 @@
   `(,(rcqexp pattern) ,exp)
    (macro-invalidargs 'qrplq form "form must be updateable.")))
 
-(defmacro qsdifference (x y)
- `(the fixnum (- (the fixnum ,x) (the fixnum ,y))))
-
-(defmacro qsgreaterp (a b)
- `(> (the fixnum ,a) (the fixnum ,b)))
-
-(defmacro qsleftshift (a b)
- `(the fixnum (ash (the fixnum ,a) (the fixnum ,b))))
-
-(defmacro qslessp (a b)
- `(< (the fixnum ,a) (the fixnum ,b)))
-
-(defmacro qsmax (x y)
- `(the fixnum (max (the fixnum ,x) (the fixnum ,y))))
-
-(defmacro qsmin (x y)
- `(the fixnum (min (the fixnum ,x) (the fixnum ,y))))
-
-(defmacro qsminus (x)
- `(the fixnum (minus (the fixnum ,x))))
-
-(defmacro qsminusp (x)
- `(minusp (the fixnum ,x)))
-
-(defmacro qsoddp (x)
- `(oddp (the fixnum ,x)))
-
-(defmacro qsabsval (x)
-  `(the fixnum (abs (the fixnum ,x))))
-
-(defmacro qsplus (x y)
- `(the fixnum (+ (the fixnum ,x) (the fixnum ,y))))
-
-(defmacro qszerop (x)
- `(zerop (the fixnum ,x)))
-
-(defmacro qvmaxindex (x)
- `(the fixnum (1- (the fixnum (length (the simple-vector ,x))))))
-
-(defmacro qvsize (x)
- `(the fixnum (length (the simple-vector ,x))))
-
 (defmacro resetq (a b)
  `(prog1 ,a (setq ,a ,b)))
 
@@ -294,9 +252,6 @@
 
 (defmacro times (&rest args)
  `(* ,@args))
-
-(defmacro zero? (x)
-  `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
 
 ;; defuns
 

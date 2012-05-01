@@ -345,7 +345,7 @@ declareUnusedParameters x == (augment x; x) where
 devaluate d ==
   not vector? d => d
   categoryObject? d => canonicalForm d
-  QVSIZE d > 0 =>
+  #d > 0 =>
     d' := canonicalForm d
     isFunctor d' => d'
     d

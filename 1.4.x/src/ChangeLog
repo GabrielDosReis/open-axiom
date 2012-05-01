@@ -1,8 +1,37 @@
 2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/integer.spad.pamphlet (Integer): Use %iaddmod, %isubmod,
+	%imulmod.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* interp/c-util.boot (devaluate): Use # in lieu of QVSIZE.
+	* interp/g-opt.boot: %ilfshift and %irshift are now builtin
+	side-effect free operations.
+	* interp/lisp-backend.boot: Translate them.
+	* interp/g-util.boot (mergeSort): Avoid QSDIFFERENCE.
+	* interp/slam.boot: Likewise.
+	* interp/sys-macros.lisp: Likewise.
+	* interp/macros.lisp: Avoid QVMAXINDEX.
+	* interp/vmlisp.lisp (QSDIFFERENCE): Remove.
+	(QSGREATERP): Likewise.
+	(QSLEFTSHIFT): Likewise.
+	(QSLESSP): Likewise.
+	(QSMAX): Likewise.
+	(QSMIN): Likewise.
+	(QSMINUS): Likewise.
+	(QSMINUSP): Likewise.
+	(QSODDP): Likewise.
+	(QSABSVAL): Likewise.
+	(QSPLUS): Likewise.
+	(QSZEROP): Likewise.
+	(QVMAXINDEX): Likewise.
+	(QVSIZE): Likewise.
+	(ZERO?): Likewise.
+
+2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/si.spad.pamphlet (SingleInteger): Use %iaddmod,
 	%isubmod, and %imulmod.
-	* interp/g-opt.boot: These are now builtin side-effect operators.
+	* interp/g-opt.boot: These are now builtin side-effect free operators.
 	(optIaddmod): New optimizer.  Register.
 	(optIsubmod): Likewise.
 	(optImulmod): Likewise.
