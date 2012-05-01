@@ -1,3 +1,15 @@
+2012-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-special.boot (interpREPEAT): Use CATCH directly.
+	* interp/int-top.boot (intloopSpadProcess): Likewise.
+	* interp/sys-macros.lisp (funcall): Remove.
+	(Catch): Likewise.
+	(Throw): Likewise.
+	(UnwindProtect): Likewise.
+	(SPADCATCH): Likewise.
+	(SPADTHROW): Likewise.
+	(YIELD): Likewise.
+
 2012-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/integer.spad.pamphlet (Integer): Use %iaddmod, %isubmod,

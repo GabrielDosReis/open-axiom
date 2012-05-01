@@ -1050,23 +1050,6 @@
 (defmacro SPADREDUCE (OP AXIS BOD)
   (REDUCE-1 OP AXIS BOD))
 
-;;
-;; -*- Control -*-
-;;
-
-           
-(defmacro |funcall| (&rest args)
-  (cons 'funcall args) )
-
-(defmacro |Catch| (tag expr) 
-  `(catch ,tag ,expr) )
-
-(defmacro |Throw| (tag expr) 
-  `(Throw ,tag ,expr) )
-
-(defmacro |UnwindProtect| (a b)
-  `(unwind-protect ,a ,b) )
-
 ;; 
 ;; -*- List Comprehension -*-
 ;; 
@@ -1074,22 +1057,6 @@
 (defmacro COLLECT (&rest L)
   (let ((U (REPEAT-TRAN L NIL)))
     (CONS 'THETA (CONS '\, (|append!| (CAR U) (LIST (CDR U)))))))
-
-;; 
-;; -*- Non-Local Gotos -*-
-;; 
- 
-(defmacro SPADCATCH (&rest form)
-  (CONS 'CATCH form))
- 
-(defmacro SPADTHROW (&rest form)
-  (CONS 'THROW form))
-
-(defmacro YIELD (L)
-  (let ((g (gensym)))
-    `(let ((,g (state)))
-       (if (STATEP ,g) 
-	   (throw 'YIELD (list 'pair ,L) ,g)))))
 
 ;; 
 ;; -*- Input/Output -*-
