@@ -756,3 +756,7 @@ expandToVMForm x ==
 eval x ==
   EVAL expandToVMForm x
 
+
+compileLispDefinition(name,def) ==
+  _*COMP370_-APPLY_* ~= nil => apply(_*COMP370_-APPLY_*,name,def,nil)
+  nil
