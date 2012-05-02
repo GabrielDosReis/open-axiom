@@ -781,3 +781,33 @@ removeFluids args ==
     $Vars := [v,:$Vars]
     v
   [removeFluids first args,:removeFluids rest args]
+
+COMPILE1 fun ==
+  $Vars: local := nil
+  $Decls: local := nil
+  [name,lambda] := fun
+  [type,args,:body] := lambda
+  if type is 'LAM then
+    lambda := f(name,lambda) where
+      f(n,x) ==
+        $lamName: local := makeSymbol strconc(n,'",LAM")
+        EVAL x
+    [type,args,:body] := lambda
+  if body is [['DECLARE,['SPECIAL,:xs]],:body'] then
+    $Decls := xs
+    body := body'
+  args := removeFluids args
+  newArgs :=
+    type is 'LAMBDA and simpleParameterList? args => args
+    args' := gensym()
+    body := [['DSETQ,args,args'],:body]
+    type is 'LAMBDA => ["&REST",args',"&AUX",:$Vars]
+    type is 'MLAMBDA => ["&WHOLE",args',"&REST",gensym(),"&AUX",:$Vars]
+    coreError '"bad function type"
+  if $Decls ~= nil then
+    body := [['DECLARE,['SPECIAL,:$Decls]],:body]
+  body :=
+    type is 'LAMBDA => ['DEFUN,name,newArgs,:body]
+    ['DEFMACRO,name,newArgs,:body]
+  compileLispDefinition(name,body)
+  body
