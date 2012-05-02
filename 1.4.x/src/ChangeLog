@@ -1,5 +1,10 @@
 2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (backendCompileSPADSLAM): Do not devaluate
+	argument list.  Tidy.
+
+2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (backendCompileSPADSLAM): Tidy.  Do not
 	devaluate argument of unary constructors.
 
