@@ -57,7 +57,7 @@
 
 (defvar *fileactq-apply* nil "function to apply in fileactq")
 
-(defvar *lam-name* nil "name to be used by lam macro if non-nil")
+(defvar |$lamName| nil "name to be used by lam macro if non-nil")
 
 (defvar macerrorcount 0  "Put some documentation in here someday")
 
@@ -293,7 +293,7 @@
                  (CONTROL (QUOTESOF (first BODY)))
                  (BODY (cdr BODY))
                  (ARGS (GENSYM))
-                 (INNER-FUNC (or *lam-name* (gentemp))))
+                 (INNER-FUNC (or |$lamName| (gentemp))))
             (COMP370 (LIST INNER-FUNC `(LAMBDA ,BV . ,BODY)))
             `(MLAMBDA ,ARGS
                       (CONS (QUOTE ,INNER-FUNC)
@@ -342,39 +342,6 @@
 (defun MDEF (arg item &optional sd)
  (declare (ignore sd))
   (macroexpand `(,arg ,item)))
-
-; 8.1 Definition and Transformation Operations
-
-(defun COMPILE1 (fn)
-  (let* (nargs
-         (fname (car fn))
-         (lamda (cadr fn))
-         (ltype (car lamda))
-         |$Vars| |$Decls| args
-         (body (cddr lamda)))
-    (declare (special |$Vars| |$Decls|))
-    (if (eq ltype 'LAM)
-        (let ((*lam-name* (intern (concat fname "\,LAM"))))
-          (setq lamda (eval lamda) ltype (car lamda) body (cddr lamda))))
-    (let ((dectest (car body)))
-      (if (and (eqcar dectest 'declare) (eqcar (cadr dectest) 'special))
-          (setq |$Decls| (cdr (cadr dectest)) body (cdr body))))
-    (setq args (|removeFluids| (cadr lamda)))
-    (cond ((and (eq ltype 'lambda) (|simpleParameterList?| args))
-	   (setq nargs args))
-          (t (setq nargs (gensym))
-             (setq body `((dsetq ,args  ,nargs) ,@body))
-             (cond ((eq ltype 'lambda) (setq nargs `(&rest ,nargs &aux ,@ |$Vars|)))
-                   ((eq ltype 'mlambda)
-                    (setq nargs `(&whole ,nargs &rest ,(gensym) &aux ,@ |$Vars|)))
-                   (t (error "bad function type")))))
-    (cond (|$Decls| (setq body (cons `(declare (special ,@ |$Decls|)) body))))
-    (setq body
-          (cond ((eq ltype 'lambda) `(defun ,fname ,nargs . ,body))
-                ((eq ltype 'mlambda) `(defmacro ,fname ,nargs . ,body))))
-    (|compileLispDefinition| fname body)
-
-    body))
 
 ; 9.4 Vectors and Bpis
 
