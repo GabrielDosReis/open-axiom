@@ -1,3 +1,8 @@
+2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (backendCompileSPADSLAM): Tidy.  Do not
+	devaluate argument of unary constructors.
+
 2012-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (COMPILE1): Move to lisp-backend.boot.
