@@ -1549,28 +1549,29 @@ backendCompileSPADSLAM(name,args,body) ==
   auxfn := makeSymbol strconc(name,'";")  -- name of the worker function.
   g2 := gensym()               -- local name for the cache value.
   u := 
-    args = nil => [nil,nil,[auxfn]]
-    args is [g] => [args,g,[auxfn,g]]
-    g1 := gensym()             -- local binding to the worker parameter list
-    [g1,["devaluateList",g1],["APPLY",["FUNCTION",auxfn],g1]]
-  arg := first u               -- parameter list
-  argtran := second u          -- argument to the worker
-  app := third u               -- code to compute value
+    args = nil => [nil,[auxfn]]
+    args is [g] => [g,[auxfn,g]]
+    [gensym(),[auxfn,:args]]
+  key := first u              -- key into the instantiation table cache
+  app := second u             -- code to compute value
   code := 
     args = nil => ["COND",[al],[true,["SETQ",al,app]]]
-    ["LET",[[g2,["assoc",argtran,al]]],
+    [binder,:inits] :=
+      args is [.] => ["LET",[g2,["assoc",key,al]]]
+      ["LET*",[key,["LIST",:args]],[g2,["assoc",key,al]]]
+    [binder,inits,
       ["COND",
         [g2,["CDR",g2]],
           [true, 
             ["PROGN",["SETQ",g2,app],
-               ["SETQ",al,["cons5",["CONS",argtran, g2],al]],g2]]]]
+               ["SETQ",al,["cons5",["CONS",key,g2],al]],g2]]]]
   SETANDFILE(al,nil)           -- define the global cache.
   -- compile the worker function first.
   u := [auxfn,["LAMBDA",args,:body]]
   if $PrettyPrint then PRETTYPRINT u
   COMP370 [u]
   -- then compile the wrapper (which is the user-visible constructor).
-  u := [name,["LAM",arg,code]]
+  u := [name,["LAM",args,code]]
   if $PrettyPrint then PRETTYPRINT u
   COMP370 [u]
   name
