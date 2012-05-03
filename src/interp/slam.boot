@@ -188,8 +188,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     ["PROG",[g2,g3],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   -- cannot use envArg in next statement without redoing much
   -- of above.
-  lamex:= ["LAM",arg,codeBody]
-  mainFunction:= [nam,lamex]
+  mainFunction:= [nam,["LAMBDA",arg,codeBody]]
   computeFunction:= [auxfn,["LAMBDA",parms,body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
@@ -223,8 +222,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
                       ['%store,['tableValue,['%dynval,MKQ cacheName],g1],
                          computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
-  lamex:= ["LAM",arg,codeBody]
-  mainFunction:= [nam,lamex]
+  mainFunction:= [nam,["LAMBDA",arg,codeBody]]
   parms := [:argl, "envArg"]
   computeFunction:= [auxfn,["LAMBDA",parms,body]]
   compileInteractive mainFunction
@@ -289,7 +287,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     ['store,['tableValue,["%dynval", MKQ stateNam],extraArgumentCode],
        newTripleCode]
  
-  computeFunction:= [auxfn,["LAM",cargl,cbody]] where
+  computeFunction:= [auxfn,["LAMBDA",cargl,cbody]] where
     cargl:= [:argl,lastArg]
     returnValue:= ["PROGN",newStateCode,first gsList]
     cbody:=
@@ -305,7 +303,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   continueInit:=
     [["%LET",gIndex,["ELT",stateVar,0]],
       :[["%LET",g,["ELT",stateVar,i]] for g in gsList for i in 1..]]
-  mainFunction:= [nam,["LAM",margl,mbody]] where
+  mainFunction:= [nam,["LAMBDA",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
     tripleCode := ['%pair,n,['%list,:initCode]]
