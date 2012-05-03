@@ -929,7 +929,7 @@ getSubDomainPredicate(tSuper, tSub, pred) ==
   predfn := tableValue($superHash, [tSuper,:tSub]) => predfn
   arg := gensym()
   [predfn] := compileInteractive
-                [gensym(),['LAM,[arg],substitute(arg,"#1", pred)]]
+                [gensym(),['%lambda,[arg],substitute(arg,"#1", pred)]]
   tableValue($superHash, [tSuper,:tSub]) := predfn
   predfn
 

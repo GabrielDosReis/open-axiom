@@ -1,5 +1,15 @@
 2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineFunctor1): Use LAMBDA for the
+	resulting functor if not cachable.
+	* interp/clam.boot (compClam): Tidy.
+	(compHash): Likewise.
+	(compHashGlobal): Likewise.
+	* interp/i-eval.boot (evalForm): Use LAMBDA, not LAM.
+	* interp/i-coerce.boot (getSubDomainPredicate): Use %lambda not LAM.
+
+2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (makeWorkerName): New.
 	(backendCompileSLAM): Use it.
 	(backendCompileSPADSLAM): Likewise.

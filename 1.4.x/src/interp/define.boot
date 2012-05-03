@@ -1484,7 +1484,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     T:= compFunctorBody(db,body,rettype,$e)
     body':= T.expr
     lamOrSlam :=
-      dbInstanceCache db = nil => 'LAM
+      dbInstanceCache db = nil => 'LAMBDA
       'SPADSLAM
     fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,form.args,body']]),signature')
     --The above statement stops substitutions gettting in one another's way
