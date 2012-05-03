@@ -1,5 +1,15 @@
 2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp ($lamName): Remove.
+	(LAM): Likewise.
+	(*LAM): Likewise.
+	(ISQUOTEDP): Likewise.
+	(QUOTESOF): Likewise.
+	(DDQUOTE): Likewise.
+	* interp/lisp-backend.boot (COMPILE1): Simplify.
+
+2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot: Use LAMBDA type in lieu of LAM.
 	* interp/clam.boot: Likewise.
 	* interp/define.boot: Likewise.
