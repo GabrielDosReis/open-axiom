@@ -143,8 +143,7 @@ compClam(op,argl,body,$clamList) ==
   codeBody:= ['PROG,[g2,g3],
                 :callCountCode,
                   ['RETURN,['%when,secondPredPair,thirdPredPair]]]
-  lamex:= ['LAM,arg,codeBody]
-  mainFunction:= [op,lamex]
+  mainFunction:= [op,['LAM,arg,codeBody]]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
  
   -- compile generated function stub
@@ -243,8 +242,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   thirdPredPair:= ['%otherwise,putCode]
   codeBody:= mkSeq [:callCountCode,
                mkBind([[g2,getCode]],['%when,secondPredPair,thirdPredPair])]
-  lamex:= ['LAM,arg,codeBody]
-  mainFunction:= [op,lamex]
+  mainFunction:= [op,['LAM,arg,codeBody]]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
  
   -- compile generated function stub
@@ -300,8 +298,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
     ['%store,['tableValue,cacheName,putForm],computeValue]
   thirdPredPair := ['%otherwise,putCode]
   codeBody := ['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]
-  lamex := ['LAM,arg,codeBody]
-  mainFunction:= [op,lamex]
+  mainFunction:= [op,['LAM,arg,codeBody]]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
