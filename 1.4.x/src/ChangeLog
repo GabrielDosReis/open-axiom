@@ -1,5 +1,13 @@
 2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Use LAMBDA type in lieu of LAM.
+	* interp/clam.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/lisp-backend.boot (COMPILE1): Tidy.
+	* interp/slam.boot: Likewise.
+
+2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($AbstractionOperator): Remove SLAM.
 	* interp/c-util.boot (backendCompileSLAM): Remove.
 	(backendCompileSPADSLAM): Tidy.

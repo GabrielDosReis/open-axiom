@@ -1427,11 +1427,11 @@ foldExportedFunctionReferences defs ==
   for fun in defs repeat
     fun isnt [name,lamex] => nil
     getFunctionReplacement name => nil
-    lamex isnt ["LAM",vars,body] => nil
+    lamex isnt ["LAMBDA",vars,body] => nil
     body := replaceSimpleFunctions body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
-      second(fun) := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
+      second(fun) := ["LAMBDA",vars,["DECLARE",["IGNORE",last vars]],body]
     if sideEffectFree? body then
       registerRedexForm(name,vars,body)
     lamex.absBody := body
@@ -1540,7 +1540,7 @@ backendCompileSPADSLAM(name,args,body) ==
   if $PrettyPrint then PRETTYPRINT u
   COMP370 u
   -- then compile the wrapper (which is the user-visible constructor).
-  u := [name,["LAM",args,code]]
+  u := [name,["LAMBDA",args,code]]
   if $PrettyPrint then PRETTYPRINT u
   COMP370 u
   name

@@ -1146,7 +1146,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%seq,['%store,['%tref,g,0],mkConstructor $form],g]]
-    fun := compile(db,[op',["LAM",sargl,body]],signature')
+    fun := compile(db,[op',["LAMBDA",sargl,body]],signature')
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(form.args,$FormalMapVariableList)
@@ -1938,7 +1938,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body' := addArgumentConditions(body',$op)
       finalBody := ['%scope,catchTag,body']
-      compile(db,[op',["LAM",[:argl,'_$],finalBody]],signature)
+      compile(db,[op',["LAMBDA",[:argl,'_$],finalBody]],signature)
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property

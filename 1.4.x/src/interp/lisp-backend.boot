@@ -803,7 +803,7 @@ COMPILE1 fun ==
     body := [['DSETQ,args,args'],:body]
     type is 'LAMBDA => ["&REST",args',"&AUX",:$Vars]
     type is 'MLAMBDA => ["&WHOLE",args',"&REST",gensym(),"&AUX",:$Vars]
-    coreError '"bad function type"
+    systemError ['"bad function type: ",:bright symbolName type]
   if $Decls ~= nil then
     body := [['DECLARE,['SPECIAL,:$Decls]],:body]
   body :=
