@@ -37,6 +37,7 @@ import g_-opt
 namespace BOOT
 
 module c_-util where
+  makeWorkerName: %Symbol -> %Symbol
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List %Form -> %List %Form
@@ -911,7 +912,8 @@ wrapSEQExit l ==
  
 --% UTILITY FUNCTIONS
  
---appendOver x == "append"/x
+makeWorkerName op ==
+  makeSymbol strconc(symbolName op,'";")
  
 removeEnv t == [t.expr,t.mode,$EmptyEnvironment]  -- t is a triple
  
@@ -1514,7 +1516,7 @@ backendCompileNEWNAM x ==
 backendCompileSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
   al := mkCacheName name        -- name of the cache alist.
-  auxfn := makeSymbol strconc(name,'";")   -- name of the worker function.
+  auxfn := makeWorkerName name  -- name of the worker function.
   g1 := gensym()                -- name for the parameter.
   g2 := gensym()                -- name for the cache value
   u :=                          -- body of the stub function
@@ -1546,7 +1548,7 @@ backendCompileSLAM(name,args,body) ==
 backendCompileSPADSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
   al := mkCacheName name       -- global name for the cache hash table.
-  auxfn := makeSymbol strconc(name,'";")  -- name of the worker function.
+  auxfn := makeWorkerName name -- name of the worker function.
   g2 := gensym()               -- local name for the cache value.
   u := 
     args = nil => [nil,[auxfn]]
