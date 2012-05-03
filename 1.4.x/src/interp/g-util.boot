@@ -210,7 +210,7 @@ macro builtinConstructor? s ==
 --%  
 
 $AbstractionOperator ==
-  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA %lambda)
+  '(LAM ILAM XLAM SPADSLAM LAMBDA %lambda)
 
 ++ Return the character designated by the string `s'.
 stringToChar: %String -> %Char

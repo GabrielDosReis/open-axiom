@@ -1507,44 +1507,11 @@ backendCompileNEWNAM x ==
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
 
-
-++ Lisp back end compiler for SLAM forms [namd,args,:body].
-++ A SLAM form is one that is `functional' in the sense that
+++ Lisp back end compiler for SPADSLAM forms [namd,args,:body].
+++ A SPADSLAM form is one that is `functional' in the sense that
 ++ its values are cached, so that equal lists of argument values
 ++ yield equal values.  The arguments-value pairs are stored
-++ as alists.
-backendCompileSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
-backendCompileSLAM(name,args,body) ==
-  al := mkCacheName name        -- name of the cache alist.
-  auxfn := makeWorkerName name  -- name of the worker function.
-  g1 := gensym()                -- name for the parameter.
-  g2 := gensym()                -- name for the cache value
-  u :=                          -- body of the stub function
-    null args => [nil,[auxfn]]
-    null rest args => [[g1],[auxfn,g1]]
-    [g1,["APPLY", ["FUNCTION",auxfn], g1]]
-  arg := first u
-  app := second u
-  codePart1 :=                  -- look up the value if it is already there
-    args ~= nil => [["SETQ", g2, ["assoc",g1,al]], ["CDR",g2]]
-    [al]
-  codePart2 :=                  -- otherwise, compute it.
-    args ~= nil => [true,["SETQ",g2,app],["SETQ",al,[[g1,:g2],:al]],g2]
-    [true,["SETQ",al,app]]
-  lamex := ["LAM",arg,["PROG",[g2],
-                        ["RETURN",["COND",codePart1,codePart2]]]]
-  symbolValue(al) := nil     -- clear the cache
-  -- compile the worker function, first.
-  u := [auxfn,["LAMBDA",args,:body]]
-  COMP370 [u]
-  -- then compile the original function.
-  u := [name,lamex]
-  if $PrettyPrint then PRETTYPRINT u
-  COMP370 [u]
-  name
-
-++ Same as backendCompileSLAM, except that the cache is a hash
-++ table.  This backend compiler is used to compile constructors.
+++ in a hash table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
   al := mkCacheName name       -- global name for the cache hash table.
@@ -1571,24 +1538,23 @@ backendCompileSPADSLAM(name,args,body) ==
   -- compile the worker function first.
   u := [auxfn,["LAMBDA",args,:body]]
   if $PrettyPrint then PRETTYPRINT u
-  COMP370 [u]
+  COMP370 u
   -- then compile the wrapper (which is the user-visible constructor).
   u := [name,["LAM",args,code]]
   if $PrettyPrint then PRETTYPRINT u
-  COMP370 [u]
+  COMP370 u
   name
 
 backendCompile2: %Code -> %Symbol
 backendCompile2 code ==
-  code isnt [name,[type,args,:body],:junk] or junk ~= nil =>
+  code isnt [name,[type,args,:body]] =>
     systemError ['"parenthesis error in: ", code]
-  type = "SLAM" => backendCompileSLAM(name,args,body)
   symbolTarget(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
   body := [name,[type,args,:body]]
   if $PrettyPrint then PRETTYPRINT body
   if not $COMPILE then SAY '"No Compilation"
-  else COMP370 [body]
+  else COMP370 body
   name
 
 ++ returns all fuild variables contained in `x'.  Fuild variables are
