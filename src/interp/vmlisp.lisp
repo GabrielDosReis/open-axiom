@@ -57,8 +57,6 @@
 
 (defvar *fileactq-apply* nil "function to apply in fileactq")
 
-(defvar |$lamName| nil "name to be used by lam macro if non-nil")
-
 (defvar macerrorcount 0  "Put some documentation in here someday")
 
 (defvar *read-place-holder* (make-symbol "%.EOF")
@@ -150,9 +148,6 @@
     (let ((xx (gensym)))
       `(let ((,xx ,x))
          (and (consp ,xx) (qcdr ,xx))))))
-
-(defmacro lam (&rest body)
- (list 'quote (*lam (copy-tree body))))
 
 (defmacro maxindex (x)
  `(the fixnum (1- (the fixnum (length ,x)))))
@@ -276,25 +271,7 @@
  (declare (special ext::*gc-runtime* ext::*gc-walltime*))
  (list ext::*gc-runtime* ext::*gc-walltime*))
 
-; 7.0 Macros
-
-; 7.2 Creating Macro Expressions
-
-; 5.2 Functions
-
 ; 5.2.2 Lambda Expressions
-
-(defun *LAM (body)
-  (cond  ((NOT (ISQUOTEDP (first BODY))) (cons 'LAMBDA BODY))
-         ((LET* ((BV (DEQUOTE (first BODY)))
-                 (CONTROL (QUOTESOF (first BODY)))
-                 (BODY (cdr BODY))
-                 (ARGS (GENSYM))
-                 (INNER-FUNC (or |$lamName| (gentemp))))
-            (COMP370 (LIST INNER-FUNC `(LAMBDA ,BV . ,BODY)))
-            `(MLAMBDA ,ARGS
-                      (CONS (QUOTE ,INNER-FUNC)
-                            (WRAP (cdr ,ARGS) ',CONTROL)))))))
 
 (defun WRAP (LIST-OF-ITEMS WRAPPER)
  (prog nil
@@ -307,26 +284,6 @@
               `(,(first WRAPPER) ,(first LIST-OF-ITEMS))
               (first LIST-OF-ITEMS))
           (WRAP (cdr LIST-OF-ITEMS) (cdr WRAPPER))))))
-
-(defun ISQUOTEDP (bv)
-  (COND ((NOT (consp BV)) NIL)
-        ((EQ (first BV) 'QUOTE))
-        ((AND (consp (first BV)) (EQ (QCAAR BV) 'QUOTE)))
-        ((ISQUOTEDP (cdr BV)))))
-
-(defun QUOTESOF (BV)
-  (COND ((NOT (consp BV)) NIL)
-      ((EQ (first BV) 'QUOTE) 'QUOTE)
-      ((CONS (COND ((NOT (consp (first BV))) nil)
-                   ((EQ (QCAAR BV) 'QUOTE) 'QUOTE)
-                   (T NIL))
-             (QUOTESOF (cdr BV))))))
-
-(defun DEQUOTE (BV)
-  (COND ((NOT (consp BV)) BV)
-        ((EQ 'QUOTE (first BV)) (second BV))
-        ((CONS (if (EQ 'QUOTE (IFCAR (CAR BV))) (CADAR BV) (first BV))
-               (DEQUOTE (cdr BV))))))
 
 (defun lotsof (&rest items)
   (setq items (|copyList| items))

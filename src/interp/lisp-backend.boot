@@ -787,12 +787,6 @@ COMPILE1 fun ==
   $Decls: local := nil
   [name,lambda] := fun
   [type,args,:body] := lambda
-  if type is 'LAM then
-    lambda := f(name,lambda) where
-      f(n,x) ==
-        $lamName: local := makeSymbol strconc(n,'",LAM")
-        EVAL x
-    [type,args,:body] := lambda
   if body is [['DECLARE,['SPECIAL,:xs]],:body'] then
     $Decls := xs
     body := body'
