@@ -1,5 +1,13 @@
 2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Use APPLY, not APPLX.
+	* interp/clam.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/vmlisp.lisp (APPLX): Remove.
+
+2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (backendCompileSPADSLAM): Do not devaluate
 	argument list.  Tidy.
 

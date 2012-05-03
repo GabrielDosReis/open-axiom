@@ -1520,7 +1520,7 @@ backendCompileSLAM(name,args,body) ==
   u :=                          -- body of the stub function
     null args => [nil,[auxfn]]
     null rest args => [[g1],[auxfn,g1]]
-    [g1,["APPLX", ["FUNCTION",auxfn], g1]]
+    [g1,["APPLY", ["FUNCTION",auxfn], g1]]
   arg := first u
   app := second u
   codePart1 :=                  -- look up the value if it is already there

@@ -1953,7 +1953,7 @@ subspan u ==
    CAAR u isnt [.,:.]        and_
    not integer? CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUBSPAN), [u])
+   apply(GETL(CAAR u, 'SUBSPAN), [u])
   MAX(subspan first u, subspan rest u)
 
 agggsub u == subspan rest u
@@ -1965,7 +1965,7 @@ superspan u ==
    CAAR u isnt [.,:.]          and_
    not integer? CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
+   apply(GETL(CAAR u, 'SUPERSPAN), [u])
   MAX(superspan first u, superspan rest u)
 
 agggsuper u == superspan rest u

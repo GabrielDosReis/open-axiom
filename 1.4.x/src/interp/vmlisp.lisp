@@ -66,9 +66,6 @@
 
 ;; DEFMACROS
 
-(defmacro applx (&rest args)
- `(apply ,@args))
-
 (defmacro closedfn (form)
  `(function ,form))
 

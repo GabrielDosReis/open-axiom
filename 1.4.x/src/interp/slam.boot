@@ -167,7 +167,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   [arg,computeValue] :=
     null argl => [nil,[auxfn]]
     argl is [.] => [[g1, 'envArg],[auxfn,g1, 'envArg]]  --g1 is a parameter
-    [g1,['APPLX,MKQ auxfn,g1]]          --g1 is a parameter list
+    [g1,['APPLY,MKQ auxfn,g1]]          --g1 is a parameter list
   cacheName := mkCacheName nam
   g2:= gensym()  --length of cache or arg-value pair
   g3:= gensym()  --value computed by calling function
@@ -214,7 +214,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   [arg,computeValue] :=
     null argl => [['envArg],[auxfn, 'envArg]]
     argl is [.] => [[g1, 'envArg],[auxfn,g1, 'envArg]]  --g1 is a parameter
-    [g1,["APPLX",MKQ auxfn,g1]]          --g1 is a parameter list
+    [g1,["APPLY",MKQ auxfn,g1]]          --g1 is a parameter list
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function

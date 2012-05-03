@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ compClam(op,argl,body,$clamList) ==
   g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
-    [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
+    [g1,['APPLY,['function,auxfn],g1]]          --g1 is a parameter list
   cacheName:= mkCacheName op
   if $reportCounts then
     hitCounter:= makeSymbol strconc(op,'";hit")
@@ -291,7 +291,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
     application:=
       null argl => [auxfn]
       argl is [.] => [auxfn,g1]  --g1 is a parameter
-      ['APPLX,['function,auxfn],g1]          --g1 is a parameter list
+      ['APPLY,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
   g2 := gensym()  --value computed by calling function
   returnFoundValue:=
