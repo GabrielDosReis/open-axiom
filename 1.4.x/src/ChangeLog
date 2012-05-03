@@ -1,3 +1,11 @@
+2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (makeWorkerName): New.
+	(backendCompileSLAM): Use it.
+	(backendCompileSPADSLAM): Likewise.
+	* interp/clam.boot (compHash): Likewise.
+	Do not synthetize new parameter for unary constructors.
+
 2012-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot: Use APPLY, not APPLX.

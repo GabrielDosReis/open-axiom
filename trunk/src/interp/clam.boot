@@ -179,27 +179,21 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     keyedSystemError("S2GE0010",[op])
     --restriction due to omission of call to hputNewValue (see *** lines below)
  
-  if null argl then
-    null cacheNameOrNil => keyedSystemError("S2GE0011",[op])
-    nil
-  (not cacheNameOrNil) and not (eqEtc in '(EQ EQL EQUAL CVEC UEQUAL)) =>
+  argl = nil and cacheNameOrNil = nil => keyedSystemError("S2GE0011",[op])
+  cacheNameOrNil = nil and not (eqEtc in '(EQ EQL EQUAL CVEC UEQUAL)) =>
     keyedSystemError("S2GE0012",[op])
---withWithout := (countFl => "with"; "without")
---middle:=
---  cacheNameOrNil => ["on","%b",cacheNameOrNil,"%d"]
---  '"privately "
---sayBrightly
---  ["%b",op,"%d","hashes ",:middle,withWithout," reference counts"]
-  auxfn:= makeSymbol strconc(op,'";")
-  g1:= gensym()  --argument or argument list
+  auxfn := makeWorkerName op
+  g1 :=              --argument or argument list
+    argl is [g] => g
+    gensym()
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
   --    computeValue: the form used to compute the value from arg
     null argl => [nil,nil,[auxfn]]
     argl is [.] =>
-      key:= (cacheNameOrNil => ['devaluate,g1]; g1)
-      [[g1],['%list,key],[auxfn,g1]]  --g1 is a parameter
+      key := (cacheNameOrNil => ['devaluate,g1]; g1)
+      [argl,['%list,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
