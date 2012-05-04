@@ -1,5 +1,12 @@
 2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (THROW-PROTECT): Remove.
+	(MDEF): Likewise.
+	(NUM2CHAR): Likewise.
+	(CHAR2NUM): Likewise.
+
+2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp ($lamName): Remove.
 	(LAM): Likewise.
 	(*LAM): Likewise.
