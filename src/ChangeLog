@@ -1,5 +1,10 @@
 2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/clam.boot (compHash): Use compQuietly in lieu of
+	compileInteractive. 
+
+2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisp-backend.boot (assembleCode): New.
 	* interp/c-util.boot (backendCompileSPADSLAM): Use it.
 	(backendCompile2): Likewise.
