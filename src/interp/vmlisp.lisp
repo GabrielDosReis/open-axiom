@@ -239,9 +239,6 @@
 (defmacro subrp (x)
  `(compiled-function-p ,x))
 
-(defmacro throw-protect (exp1 exp2)
- `(unwind-protect ,exp1 ,exp2))
-
 (defmacro times (&rest args)
  `(* ,@args))
 
@@ -288,14 +285,6 @@
 (defun lotsof (&rest items)
   (setq items (|copyList| items))
   (|append!| items items))
-
-; 7.4 Using Macros
-
-; Beats me how to simulate macro expansion "in the environment of sd"...:
-
-(defun MDEF (arg item &optional sd)
- (declare (ignore sd))
-  (macroexpand `(,arg ,item)))
 
 ; 9.4 Vectors and Bpis
 
@@ -497,10 +486,6 @@
 
 (defun charp (a) (or (characterp a)
                      (and (|ident?| a) (= (length (symbol-name a)) 1))))
-
-(defun NUM2CHAR (n) (code-char n))
-
-(defun CHAR2NUM (c) (char-code (character c)))
 
 ;; Returns truthvalue (nil or t) if s1 compares lexicographically 
 ;; greater than s2.  Note: It is essential that this function returns
