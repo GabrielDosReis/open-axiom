@@ -1,3 +1,7 @@
+2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/clam.boot (compHash): Avoid unnecessary gensyms.
+
 2012-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot (lookupDisplay): Tidy.

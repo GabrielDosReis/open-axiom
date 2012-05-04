@@ -93,7 +93,7 @@ compClam(op,argl,body,$clamList) ==
     shiftFl => keyedSystemError("S2GE0008",[op])
     compHash(op,argl,body,(kind='hash => nil; kind),eqEtc,countFl)
   cacheCount:= kind
-  if null argl then keyedSystemError("S2GE0009",[op])
+  if argl = nil then keyedSystemError("S2GE0009",[op])
   phrase:=
     cacheCount=1 => ['"computed value only"]
     [:bright cacheCount,'"computed values"]
@@ -126,7 +126,6 @@ compClam(op,argl,body,$clamList) ==
     countFl => cacheName
     MKQ cacheName
   secondPredPair:=
---   null argl => [cacheName]
     [['%store,g3,[lookUpFunction,g1,namePart,eqEtc]],
       :hitCountCode,
         returnFoundValue]
@@ -183,13 +182,14 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     keyedSystemError("S2GE0012",[op])
   auxfn := makeWorkerName op
   g1 :=              --argument or argument list
+    argl = nil => nil
     argl is [g] => g
     gensym()
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
   --    computeValue: the form used to compute the value from arg
-    null argl => [nil,nil,[auxfn]]
+    argl = nil => [nil,nil,[auxfn]]
     argl is [.] =>
       key := (cacheNameOrNil => ['devaluate,g1]; g1)
       [argl,['%list,key],[auxfn,g1]]  --g1 is a parameter
@@ -205,7 +205,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --value computed by calling function
   returnFoundValue:=
-    null argl =>
+    argl = nil =>
     --  if we have a global hastable, functions with no arguments are
     --  stored in the same format as those with several arguments, e.g.
     --  to cache the value <val> given by f(), the structure
@@ -215,7 +215,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:=
-    null argl => ['tableValue,cacheName,MKQ op]
+    argl = nil => ['tableValue,cacheName,MKQ op]
     cacheNameOrNil =>
       eqEtc ~= 'EQUAL =>
         ['lassocShiftWithFunction,cacheArgKey,
@@ -224,7 +224,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     ['tableValue,cacheName,g1]
   secondPredPair:= [g2,mkSeq [:hitCountCode,returnFoundValue]]
   putCode:=
-    null argl =>
+    argl = nil =>
       cacheNameOrNil =>
         countFl =>
           ['CDDAR,['%store,['tableValue,cacheNameOrNil,MKQ op],
@@ -254,7 +254,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     pp computeFunction
   compileQuietly [computeFunction]
  
-  if null cacheNameOrNil then
+  if cacheNameOrNil = nil then
     cacheType:=
       countFl => 'hash_-tableWithCounts
       'hash_-table
@@ -281,7 +281,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   --    cacheArgKey: the form used to look up the value in the cache
   --    computeValue: the form used to compute the value from arg
     application:=
-      null argl => [auxfn]
+      argl = nil => [auxfn]
       argl is [.] => [auxfn,g1]  --g1 is a parameter
       ['APPLY,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
@@ -533,14 +533,14 @@ recordInstantiation1(op,prop,dropIfTrue) ==
     trailer:= (dropIfTrue => '"  dropped"; '"  instantiated")
     if $insideCoerceInteractive= true then
       $instantCoerceCount:= 1+$instantCoerceCount
-    if $insideCanCoerceFrom is [m1,m2] and null dropIfTrue then
+    if $insideCanCoerceFrom is [m1,m2] and not dropIfTrue then
       $instantCanCoerceCount:= 1+$instantCanCoerceCount
       xtra:=
         ['" for ",outputDomainConstructor m1,'"-->",outputDomainConstructor m2]
     if $insideEvalMmCondIfTrue and not dropIfTrue then
       $instantMmCondCount:= $instantMmCondCount + 1
     typeTimePrin ["CONCAT",outputDomainConstructor [op,:prop],trailer,:xtra]
-  null $reportInstantiations => nil
+  not $reportInstantiations => nil
   u:= tableValue($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
       dropIfTrue => v.rest := 1+rest v
@@ -681,7 +681,7 @@ domainEqualList(argl1,argl2) ==
     partsMatch:=
       item1 = item2 => true
       false
-    null partsMatch => return nil
+    not partsMatch => return nil
     argl1:= rest argl1; argl2 := rest argl2
   argl1 or argl2 => nil
   true
