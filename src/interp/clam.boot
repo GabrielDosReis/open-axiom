@@ -219,7 +219,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     cacheNameOrNil =>
       eqEtc ~= 'EQUAL =>
         ['lassocShiftWithFunction,cacheArgKey,
-          ['tableValue,cacheNameOrNil,MKQ op],MKQ eqEtc]
+          ['tableValue,cacheNameOrNil,MKQ op],['%function,eqEtc]]
       ['lassocShift,cacheArgKey,['tableValue,cacheNameOrNil,MKQ op]]
     ['tableValue,cacheName,g1]
   secondPredPair:= [g2,mkSeq [:hitCountCode,returnFoundValue]]
