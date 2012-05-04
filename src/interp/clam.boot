@@ -68,12 +68,7 @@ namespace BOOT
 -- see definition of backendCompile2 in c-util which calls clamComp below
 
 ++
-$hashNode := [[]]
-
-++
 $failed := '"failed"
- 
--- see SETQ LISP for initial def of $hashNode
  
 compClam(op,argl,body,$clamList) ==
   --similar to reportFunctionCompilation in SLAM BOOT
@@ -165,11 +160,7 @@ compClam(op,argl,body,$clamList) ==
   op
  
 compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
-  --Note: when cacheNameOrNil~=nil, it names a global hashtable
- 
--- cacheNameOrNil => compHashGlobal(op,argl,body,cacheNameOrNil,eqEtc,countFl)
---   This branch to compHashGlobal is now omitted; as a result,
---   entries will be stored on the global hashtable in a uniform way:
+--   Entries will be stored on the global hashtable in a uniform way:
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
  
@@ -268,46 +259,6 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     LAM_,EVALANDFILEACTQ ['PUT, MKQ op, MKQ 'cacheInfo, MKQ cacheVector]
     LAM_,EVALANDFILEACTQ cacheResetCode
   op
- 
-compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
-  --Note: when cacheNameOrNil~=nil, it names a global hashtable
- 
-  if (not (eqEtc in '(UEQUAL))) then
-    sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
-  auxfn:= makeSymbol strconc(op,'";")
-  g1:= gensym()  --argument or argument list
-  [arg,cacheArgKey,computeValue] :=
-  --    arg: to be used as formal argument of lambda construction;
-  --    cacheArgKey: the form used to look up the value in the cache
-  --    computeValue: the form used to compute the value from arg
-    application:=
-      argl = nil => [auxfn]
-      argl is [.] => [auxfn,g1]  --g1 is a parameter
-      ['APPLY,['function,auxfn],g1]          --g1 is a parameter list
-    [g1,['consForHashLookup,MKQ op,g1],application]
-  g2 := gensym()  --value computed by calling function
-  returnFoundValue:=
-    countFl => ['CDRwithIncrement,g2]
-    g2
-  getCode:= ['tableValue,cacheName,cacheArgKey]
-  secondPredPair:= [g2,returnFoundValue]
-  putForm:= ['%pair,MKQ op,g1]
-  putCode:=
-    countFl =>
-      ['%store,['tableValue,cacheName,putForm],['%pair,1,computeValue]]
-    ['%store,['tableValue,cacheName,putForm],computeValue]
-  thirdPredPair := ['%otherwise,putCode]
-  codeBody := ['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]
-  mainFunction:= [op,['LAMBDA,arg,codeBody]]
-  computeFunction:= [auxfn,['LAMBDA,argl,:body]]
-  compileInteractive mainFunction
-  compileInteractive computeFunction
-  op
- 
-consForHashLookup(a,b) ==
-  $hashNode.first := a
-  $hashNode.rest := b
-  $hashNode
  
 CDRwithIncrement x ==
   x.first := first x + 1
