@@ -1535,15 +1535,8 @@ backendCompileSPADSLAM(name,args,body) ==
             ["PROGN",["SETQ",g2,app],
                ["SETQ",al,["cons5",["CONS",key,g2],al]],g2]]]]
   SETANDFILE(al,nil)           -- define the global cache.
-  -- compile the worker function first.
-  u := [auxfn,["LAMBDA",args,:body]]
-  if $PrettyPrint then PRETTYPRINT u
-  COMP370 u
-  -- then compile the wrapper (which is the user-visible constructor).
-  u := [name,["LAMBDA",args,code]]
-  if $PrettyPrint then PRETTYPRINT u
-  COMP370 u
-  name
+  assembleCode [auxfn,["LAMBDA",args,:body]]
+  assembleCode [name,["LAMBDA",args,code]]
 
 backendCompile2: %Code -> %Symbol
 backendCompile2 code ==
@@ -1551,11 +1544,7 @@ backendCompile2 code ==
     systemError ['"parenthesis error in: ", code]
   symbolTarget(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
-  body := [name,[type,args,:body]]
-  if $PrettyPrint then PRETTYPRINT body
-  if not $COMPILE then SAY '"No Compilation"
-  else COMP370 body
-  name
+  assembleCode [name,[type,args,:body]]
 
 ++ returns all fuild variables contained in `x'.  Fuild variables are
 ++ identifiers starting with '$', except domain variable names.

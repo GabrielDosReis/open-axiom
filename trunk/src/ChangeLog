@@ -1,5 +1,11 @@
 2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisp-backend.boot (assembleCode): New.
+	* interp/c-util.boot (backendCompileSPADSLAM): Use it.
+	(backendCompile2): Likewise.
+
+2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/clam.boot ($hashNode): Remove.
 	(compHashGlobal): Likewise.
 

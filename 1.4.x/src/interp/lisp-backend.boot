@@ -805,3 +805,9 @@ COMPILE1 fun ==
     ['DEFMACRO,name,newArgs,:body]
   compileLispDefinition(name,body)
   body
+
+assembleCode x ==
+  if $PrettyPrint then PRETTYPRINT x
+  if not $COMPILE then SAY '"No Compilation"
+  else COMP370 x
+  first x
