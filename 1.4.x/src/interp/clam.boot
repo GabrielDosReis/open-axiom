@@ -237,7 +237,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
  
   -- compile generated function stub
-  compileInteractive mainFunction
+  compQuietly [mainFunction]
  
   -- compile main body: this has already been compTran'ed
   if $reportCompilation then
