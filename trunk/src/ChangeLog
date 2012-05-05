@@ -1,5 +1,12 @@
 2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/preparse.lisp (ADDCLOSE): Move to spad-parser.boot.
+	Renamed addClose.
+	(ESCAPED): Move to spad-parser.boot.  Renamed escaped?.
+	(INFIXTOK): Move spad-parser.boot.  Renamed infixToken?.
+
+2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/clam.boot (HGETandCount): Remove as unused.
 	(clearHashReferenceCounts): Likewise.
 	(remHashEntriesWithCount): Likewise.
