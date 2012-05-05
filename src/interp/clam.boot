@@ -84,66 +84,35 @@ compHash(op,argl,body) ==
 --   Entries will be stored on the global hashtable in a uniform way:
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
- 
   auxfn := makeWorkerName op
-  g1 :=              --argument or argument list
-    argl = nil => nil
-    argl is [g] => g
-    gensym()
-  [arg,cacheArgKey,computeValue] :=
-  --    arg: to be used as formal argument of lambda construction;
-  --    cacheArgKey: the form used to look up the value in the cache
-  --    computeValue: the form used to compute the value from arg
-    argl = nil => [nil,nil,[auxfn]]
-    argl is [.] =>
-      key := ['devaluate,g1]
-      [argl,['%list,key],[auxfn,g1]]  --g1 is a parameter
-    key := ['devaluateList,g1]
-    [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName := "$ConstructorCache"
-  if $reportCounts then
-    hitCounter:= makeSymbol strconc(op,'";hit")
-    callCounter:= makeSymbol strconc(op,'";calls")
-    symbolValue(hitCounter) := 0
-    symbolValue(callCounter) := 0
-    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
-    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
-  g2:= gensym()  --value computed by calling function
-  returnFoundValue:=
-    argl = nil =>
-    --  if we have a global hastable, functions with no arguments are
-    --  stored in the same format as those with several arguments, e.g.
-    --  to cache the value <val> given by f(), the structure
-    --  ((nil <count> <val>)) is stored in the cache
-      ['CDRwithIncrement,['CDAR,g2]]
-    ['CDRwithIncrement,g2]
-  getCode:=
-    argl = nil => ['tableValue,cacheName,MKQ op]
-    ['lassocShiftWithFunction,cacheArgKey,
-      ['tableValue,cacheName,MKQ op],['%function,'domainEqualList]]
-  secondPredPair:= [g2,mkSeq [:hitCountCode,returnFoundValue]]
-  putCode:=
+  g2 := gensym()  --value computed by calling function
+  putCode :=
     argl = nil =>
       ['CDDAR,['%store,['tableValue,cacheName,MKQ op],
-        ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
-    computeValue
+        ['%list,['%pair,'%nil,['%pair,1,[auxfn]]]]]]
+    [auxfn,:argl]
   putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
                   ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
-  thirdPredPair:= ['%otherwise,putCode]
-  codeBody:= mkSeq [:callCountCode,
-               mkBind([[g2,getCode]],['%when,secondPredPair,thirdPredPair])]
-  mainFunction:= [op,['LAMBDA,arg,codeBody]]
-  computeFunction:= [auxfn,['LAMBDA,argl,:body]]
+  getCode :=
+    argl = nil => ['tableValue,cacheName,MKQ op]
+    key :=
+      argl is [g] => ['%list,['devaluate,g]]
+      ['%list,:[['devaluate,x] for x in argl]]
+    ['lassocShiftWithFunction,key,
+      ['tableValue,cacheName,MKQ op],['%function,'domainEqualList]]
+  returnFoundValue :=
+    argl = nil => ['CDRwithIncrement,['CDAR,g2]]
+    ['CDRwithIncrement,g2]
+  codeBody := mkBind([[g2,getCode]],
+                ['%when,[g2,returnFoundValue],['%otherwise,putCode]])
  
-  -- compile generated function stub
-  compQuietly [mainFunction]
- 
-  -- compile main body: this has already been compTran'ed
+  computeFunction := [auxfn,['LAMBDA,argl,:body]]
   if $reportCompilation then
-    sayBrightlyI bright '"Generated LISP code for function:"
+    sayBrightlyI bright '"Generated code for function:"
     pp computeFunction
-  compQuietly [computeFunction]
+  compQuietly [[op,['LAMBDA,argl,codeBody]],computeFunction]
   op
  
 CDRwithIncrement x ==
@@ -317,22 +286,13 @@ assocCacheShiftCount(x,al,fn) ==
 clamStats() ==
   for [op,kind,:.] in $clamList repeat
     cacheVec:= property(op,'cacheInfo) or systemErrorHere ["clamStats",op]
-    prefix:=
-      $reportCounts ~= true => nil
-      hitCounter:= makeSymbol strconc(op,'";hit")
-      callCounter:= makeSymbol strconc(op,'";calls")
-      res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
-      symbolValue(hitCounter) := 0
-      symbolValue(callCounter) := 0
-      res
     postString:=
       cacheValue:= eval cacheVec.cacheName
       kind = 'hash => [" (","%b",tableLength cacheValue,"%d","entries)"]
       empties:= numberOfEmptySlots eval cacheVec.cacheName
       empties = 0 => nil
       [" (","%b",kind-empties,"/",kind,"%d","slots used)"]
-    sayBrightly
-      [:prefix,op,:postString]
+    sayBrightly [op,:postString]
  
 numberOfEmptySlots cache==
   count:= (CAAR cache ='$failed => 1; 0)
