@@ -103,7 +103,7 @@
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
  READLOOP (DCQ (NUM . A) (preparseReadLine LineList))
-         (cond ((atEndOfUnit A)
+         (cond ((|atEndOfUnit?| A)
                 (PREPARSE-ECHO LineList)
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
@@ -128,7 +128,7 @@
          (setq CPARSYM (OR (position #\) A :start I ) L))
          (setq N (MIN STRSYM COMSYM NCOMSYM OPARSYM CPARSYM))
          (cond ((= N L) (GO NOCOMS))
-               ((ESCAPED A N))
+               ((|escaped?| A N))
                ((= N STRSYM) (setq INSTRING (NOT INSTRING)))
                (INSTRING)
                ((= N COMSYM) (setq A (subseq A 0 N)) (GO NOCOMS)) ; discard trailing comment
@@ -331,10 +331,6 @@
                         (format out-stream "~&;~A~%" X)))
   (setq $EchoLineStack ()))
  
-(defun ESCAPED (STR N) (and (> N 0) (EQ (CHAR STR (1- N)) #\_)))
- 
-(defun atEndOfUnit (X) (NULL (STRINGP X)) )
- 
 (defun PARSEPILES (LOCS LINES)
   "Add parens and semis to lines to aid parsing."
   (mapl #'add-parens-and-semis-to-line 
@@ -373,10 +369,10 @@
 			     (cond 
 			      ((and (eq next-column start-column)
 				    (rplaca nlocs (- (car nlocs)))
-				    (not (infixtok next-line)))
+				    (not (|infixToken?| next-line)))
 			       (setq next-lines (|drop| (1- i) slines))
 			       (rplaca next-lines 
-				       (addclose (car next-lines) #\;))
+				       (|addClose| (car next-lines) #\;))
 			       (setq count (1+ count))))))))
                  (cdr slines) (cdr slocs)))
           (if (> count 0)
@@ -384,13 +380,4 @@
 		(setf (char (car slines) (1- (nonblankloc (car slines))))
 		      #\( )
 		(setq slines (|drop| (1- i) slines))
-		(rplaca slines (addclose (car slines) #\) ))))))))
- 
-(defun INFIXTOK (S) (MEMBER (STRING2ID-N S 1) '(|then| |else|) :test #'eq))
- 
- 
-(defun ADDCLOSE (LINE CHAR)
-  (cond ((char= (FETCHCHAR LINE (MAXINDEX LINE)) #\; )
-         (SETF (ELT LINE (MAXINDEX LINE)) CHAR)
-         (if (char= CHAR #\;) LINE (suffix #\; LINE)))
-        ((suffix char LINE))))
+		(rplaca slines (|addClose| (car slines) #\) ))))))))
