@@ -356,35 +356,6 @@ recurrenceError(op,arg) == throwKeyedMsg("S2IX0002",[op,arg])
 mkCacheVec(op,nam,kind,resetCode,countCode) ==
   [op,nam,kind,resetCode,countCode]
  
--- reportCacheStore vl ==
---   sayMSG concat(centerString('"Name",22,'" "),"   Kind          #Cells")
---   sayMSG concat(centerString('"----",22,'" "),"   ----          ------")
---   for x in vl repeat reportCacheStoreFor x
---
--- op2String op ==
---   u:= linearFormatName op
---   u isnt [.,:.] => PNAME u
---   strconc/u
---
--- reportCacheStorePrint(op,kind,count) ==
---   ops:= op2String op
---   opString:= centerString(ops,22,'" ")
---   kindString:= centerString(PNAME kind,10,'" ")
---   countString:= centerString(count,19,'" ")
---   sayMSG concat(opString,kindString,countString)
---
--- reportCacheStoreFor op ==
---   u:= getI(op,'localModemap) =>
---     for [['local,target,:.],[.,fn],:.] in u repeat
---       [op1,cacheName,kind,.,countCode]:= getI(fn,'cacheInfo) or
---         keyedSystemError("S2GE0016",['"reportCacheStoreFor",
---           '"missing cache information vector"])
---       reportCacheStorePrint(op,kind,eval countCode)
---     true
---   u:= getI(op,"cache") =>
---     reportCacheStorePrint(op,'variable,nodeCount u)
---   nil
-
 ++ We are about to clear local modemaps associated with `x'.
 ++ It is insufficient to just remove the internal functions
 ++ form the 'localModemap property list in the current environment.
