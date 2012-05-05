@@ -119,11 +119,6 @@ CDRwithIncrement x ==
   x.first := first x + 1
   rest x
  
-HGETandCount(ht,prop) ==
-  u:= tableValue(ht,prop) or return nil
-  u.first := first u + 1
-  u
- 
 clearClams() ==
   for [fn,kind,:.] in $clamList | kind = 'hash or integer? kind repeat
     clearClam fn
@@ -211,77 +206,6 @@ mkHashCountAlist vl ==
     u:= assoc(count,al) => u.rest := 1 + rest u
     al:= [[count,:1],:al]
   al
- 
-clearHashReferenceCounts() ==
-  --free all cells with 0 reference counts; clear other counts to 0
-  for x in $clamList repeat
-    x.cacheType='hash_-tableWithCounts =>
-      remHashEntriesWith0Count eval x.cacheName
-    x.cacheType='hash_-table => CLRHASH eval x.cacheName
- 
-remHashEntriesWith0Count $hashTable ==
-  MAPHASH(function fn,$hashTable) where fn(key,obj) ==
-    first obj = 0 => tableRemove!($hashTable,key)  --free store
-    nil
- 
-initCache n ==
-  tail:= '(0 . $failed)
-  l:= [[$failed,:tail] for i in 1..n]
-  lastNode(l).rest := l
- 
-assocCache(x,cacheName,fn) ==
-  --fn=equality function; do not SHIFT or COUNT
-  al:= eval cacheName
-  forwardPointer:= al
-  val:= nil
-  until sameObject?(forwardPointer,al) repeat
-    FUNCALL(fn,CAAR forwardPointer,x) => return (val:= first forwardPointer)
-    backPointer:= forwardPointer
-    forwardPointer:= rest forwardPointer
-  val ~= nil => val
-  symbolValue(cacheName) := backPointer
-  nil
- 
-assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
-  --fn=equality function; SHIFT but do not COUNT
-  al:= eval cacheName
-  forwardPointer:= al
-  val:= nil
-  until sameObject?(forwardPointer,al) repeat
-    FUNCALL(fn, first (y:=first forwardPointer),x) =>
-      if not sameObject?(forwardPointer,al) then   --shift referenced entry to front
-        forwardPointer.first := first al
-        al.first := y
-      return (val:= y)
-    backPointer := forwardPointer      --first is slot replaced on failure
-    forwardPointer:= rest forwardPointer
-  val => val
-  symbolValue(cacheName) := backPointer
-  nil
- 
-assocCacheShiftCount(x,al,fn) ==
-  -- if x is found, entry containing x becomes first element of list; if
-  -- x is not found, entry with smallest use count is shifted to front so
-  -- as to be replaced
-  --fn=equality function; COUNT and SHIFT
-  forwardPointer:= al
-  val:= nil
-  minCount:= 10000 --preset minCount but not newFrontPointer here
-  until sameObject?(forwardPointer,al) repeat
-    FUNCALL(fn, first (y:=first forwardPointer),x) =>
-      newFrontPointer := forwardPointer
-      y.rest.first := second y + 1         --increment use count
-      return (val:= y)
-    c := second y
-    if c < minCount then                  --initial c is 1 so is true 1st time
-      minCount := c
-      newFrontPointer := forwardPointer   --CAR is slot replaced on failure
-    forwardPointer:= rest forwardPointer
-  if not sameObject?(newFrontPointer,al) then       --shift referenced entry to front
-    temp:= first newFrontPointer           --or entry with smallest count
-    newFrontPointer.first := first al
-    al.first := temp
-  val
  
 clamStats() ==
   for [op,kind,:.] in $clamList repeat
@@ -373,22 +297,6 @@ reportInstantiations() ==
           '"         ",mTotal,'" dropped","%l",
            '"         ",nForms,'" distinct domains instantiated/dropped"]
  
-hputNewProp(ht,op,argList,val) ==
-  --NOTE: obselete if lines *** are commented out
-  -- Warning!!!  This function should only be called for
-  -- $ConstructorCache slamming --- since it maps devaluate onto prop, an
-  -- argument list
-  --
-  -- This function may be called when property is already there; for
-  -- example, Polynomial applied to '(Integer), not finding it in the
-  -- cache will invoke Polynomial to compute it; inside of Polynomial is
-  -- a call to this function which will hputNewProp the property onto the
-  -- cache so that when this function is called by the outer Polynomial,
-  -- the value will always be there
- 
-  prop:= [devaluate x for x in argList]
-  haddProp(ht,op,prop,val)
- 
 listTruncate(l,n) ==
   u:= l
   n:= n - 1
@@ -401,18 +309,6 @@ listTruncate(l,n) ==
     u.rest := nil
   l
  
-lassocShift(x,l) ==
-  y:= l
-  while cons? y repeat
-    x = first first y => return (result := first y)
-    y:= rest y
-  result =>
-    if not sameObject?(y,l) then
-      y.first := first l
-      l.first := result
-    rest result
-  nil
- 
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
   while cons? y repeat
@@ -424,46 +320,6 @@ lassocShiftWithFunction(x,l,fn) ==
       l.first := result
     rest result
   nil
- 
-lassocShiftQ(x,l) ==
-  y:= l
-  while cons? y repeat
-    sameObject?(x,first first y) => return (result := first y)
-    y:= rest y
-  result =>
-    if not sameObject?(y,l) then
-      y.first := first l
-      l.first := result
-    rest result
-  nil
- 
--- rassocShiftQ(x,l) ==
---   y:= l
---   while cons? y repeat
---     sameObject?(x,rest first y) => return (result := first y)
---     y:= rest y
---   result =>
---     if not sameObject?(y,l) then
---       y.first := first l
---       l.first := result
---     first result
---   nil
- 
-globalHashtableStats(x,sortFn) ==
-  --assumed to be a hashtable with reference counts
-  for [key,:u] in entries x repeat
-    for [argList,n,:.] in u repeat
-      not integer? n =>   keyedSystemError("S2GE0013",[x])
-      argList1:= [constructor2ConstructorForm x for x in argList]
-      reportList:= [[n,key,argList1],:reportList]
-  sayBrightly ["%b","  USE  NAME ARGS","%d"]
-  for [n,fn,args] in sortBy(sortFn,reportList) repeat
-    sayBrightlyNT [:rightJustifyString(n,6),"  ",fn,": "]
-    pp args
- 
-constructor2ConstructorForm x ==
-  vector? x => x.0
-  x
  
 rightJustifyString(x,maxWidth) ==
   size:= entryWidth x

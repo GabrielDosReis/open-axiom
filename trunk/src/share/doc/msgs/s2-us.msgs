@@ -1066,8 +1066,6 @@ S2GE0002
 S2GE0003
  The cache for %1b cannot be cleared because that function is not
  privately clammed.
-S2GE0013
- %1b has the wrong format: the reference counts are missing.
 S2GE0014
  %1b is too large
 S2GE0015

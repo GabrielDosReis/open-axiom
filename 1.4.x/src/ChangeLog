@@ -1,5 +1,20 @@
 2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/clam.boot (HGETandCount): Remove as unused.
+	(clearHashReferenceCounts): Likewise.
+	(remHashEntriesWithCount): Likewise.
+	(initCache): Likewise.
+	(assocCache): Likewise.
+	(assocCacheShift): Likewise.
+	(assocCacheShiftCount): Likewise.
+	(hputNewProp): Likewise.
+	(lassocShift): Likewise.
+	(lassocShiftQ): Likewise.
+	(globalHashtableStats): Likewise.
+	(constructor2ConstructorForm): Likewise.
+
+2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/clam.boot (compHash): Rework.
 	* interp/spad.lisp ($reportCounts): Remove.
 
