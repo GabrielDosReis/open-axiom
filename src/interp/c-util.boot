@@ -1542,7 +1542,6 @@ backendCompile2: %Code -> %Symbol
 backendCompile2 code ==
   code isnt [name,[type,args,:body]] =>
     systemError ['"parenthesis error in: ", code]
-  symbolTarget(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
   assembleCode [name,[type,args,:body]]
 
