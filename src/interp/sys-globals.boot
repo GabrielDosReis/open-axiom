@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -59,18 +59,6 @@ $BreakMode := "query"
 ++
 $cacheAlist := nil
 $cacheCount := 0
-
-
-++
-$clamList :=
-  '((canCoerce hash UEQUAL count)                 _
-    (canCoerceFrom hash UEQUAL count)             _
-    (coerceConvertMmSelection hash UEQUAL count)  _
-    (isLegitimateMode hash UEQUAL count)          _
-    (isValidType hash UEQUAL count)               _
-    (resolveTT hash UEQUAL count)                 _
-    (selectMms1 hash UEQUAL count)                _
-    (underDomainOf hash UEQUAL count))
 
 ++
 $compCount := 0

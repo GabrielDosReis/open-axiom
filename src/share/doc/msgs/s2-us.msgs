@@ -1066,32 +1066,6 @@ S2GE0002
 S2GE0003
  The cache for %1b cannot be cleared because that function is not
  privately clammed.
-S2GE0004
- The structure for the clammed function %1b
- on $clammedList is not correct. It must have three entries after the
- function name.
-S2GE0005
- Illegal cache count for %1b
-S2GE0006
- Illegal options for  CLAMming function %1b: %2 %3 %4
-S2GE0007
- EQ cannot be used to CLAM a function with more than 1 argument and you
- are trying to that for %1b
-S2GE0008
- The shift option not meaningful for hash type of cache and you
- are trying to that for %1b
-S2GE0009
- Circular CLAMing illegal for 0-argument functions and you
- are trying to that for %1b
-S2GE0010
- Private CLAMing illegal for 0-argument functions and you
- are trying to that for %1b
-S2GE0011
- $ConstructorCache is only global cache now allowed and you are trying
- to do otherwise for %1b
-S2GE0012
- For hash option, only EQ, CVEC, and UEQUAL are allowed and you are
- trying to do otherwise for %1b
 S2GE0013
  %1b has the wrong format: the reference counts are missing.
 S2GE0014
