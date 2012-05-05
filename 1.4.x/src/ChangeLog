@@ -1,5 +1,10 @@
 2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/clam.boot (compHash): Rework.
+	* interp/spad.lisp ($reportCounts): Remove.
+
+2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/clam.boot (compClam): Remove.
 	(compHash): Simplify.  Now take only 3 parameters.
 	* interp/c-util.boot (compileQuietly): Remove as unused.
