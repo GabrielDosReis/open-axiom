@@ -243,7 +243,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if $reportCompilation then
     sayBrightlyI bright '"Generated LISP code for function:"
     pp computeFunction
-  compileQuietly [computeFunction]
+  compQuietly [computeFunction]
  
   if cacheNameOrNil = nil then
     cacheType:=

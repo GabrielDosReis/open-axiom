@@ -2084,27 +2084,20 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
   compileConstructor(db,form)
  
 compileConstructor(db,form) ==
-  u:= compileConstructor1(db,form)
+  u := compileConstructor1(db,form)
   clearClams()                  --clear all CLAMmed functions
+  clearConstructorCache u      --clear cache for constructor
   u
  
 compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 -- fn is the name of some category/domain/package constructor;
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
-  $clamList: local := nil
-  lambdaOrSlam :=
-    dbConstructorKind db = 'category => 'SPADSLAM
-    dbInstanceCache db = nil => 'LAMBDA
-    $clamList:=
-      [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
-    'LAMBDA
-  compForm:= [[fn,[lambdaOrSlam,vl,:bodyl]]]
-  u := 
-    dbConstructorKind db = 'category => compAndDefine compForm
-    backendCompile compForm
-  clearConstructorCache fn      --clear cache for constructor
-  first u
+  dbConstructorKind db = 'category =>
+    first compAndDefine [[fn,['SPADSLAM,vl,:bodyl]]]
+  dbInstanceCache db = nil =>
+    first backendCompile [[fn,['LAMBDA,vl,:bodyl]]]
+  compClam(fn,vl,bodyl,[[fn,"$ConstructorCache",'domainEqualList,'count]])
  
 constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
