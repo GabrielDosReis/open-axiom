@@ -65,112 +65,26 @@ namespace BOOT
 --     entries have their use count set
 --     to 0 on garbage collection; those with 0 use count at garbage collection
 --     are cleared
--- see definition of backendCompile2 in c-util which calls clamComp below
+
+++
+$clamList ==
+  '((canCoerce hash UEQUAL count)                 _
+    (canCoerceFrom hash UEQUAL count)             _
+    (coerceConvertMmSelection hash UEQUAL count)  _
+    (isLegitimateMode hash UEQUAL count)          _
+    (isValidType hash UEQUAL count)               _
+    (resolveTT hash UEQUAL count)                 _
+    (selectMms1 hash UEQUAL count)                _
+    (underDomainOf hash UEQUAL count))
 
 ++
 $failed := '"failed"
  
-compClam(op,argl,body,$clamList) ==
-  --similar to reportFunctionCompilation in SLAM BOOT
-  if $InteractiveMode then startTimingProcess 'compilation
-  if (u := symbolTarget(op,$clamList)) isnt [kind,eqEtc,:options]
-    then keyedSystemError("S2GE0004",[op])
-  $clamList:= nil            --clear to avoid looping
-  if u:= S_-(options,'(shift count)) then
-    keyedSystemError("S2GE0006",[op,:u])
-  shiftFl := 'shift in options
-  countFl := 'count in options
-  if #argl > 1 and eqEtc= 'EQ then
-    keyedSystemError("S2GE0007",[op])
-  (not ident? kind) and (not integer? kind or kind < 1) =>
-    keyedSystemError("S2GE0005",[op])
-  ident? kind =>
-    shiftFl => keyedSystemError("S2GE0008",[op])
-    compHash(op,argl,body,(kind='hash => nil; kind),eqEtc,countFl)
-  cacheCount:= kind
-  if argl = nil then keyedSystemError("S2GE0009",[op])
-  phrase:=
-    cacheCount=1 => ['"computed value only"]
-    [:bright cacheCount,'"computed values"]
-  sayBrightly [:bright op,'"will save last",:phrase]
-  auxfn:= makeSymbol strconc(op,'";")
-  g1:= gensym()  --argument or argument list
-  [arg,computeValue] :=
-    argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
-    [g1,['APPLY,['function,auxfn],g1]]          --g1 is a parameter list
-  cacheName:= mkCacheName op
-  if $reportCounts then
-    hitCounter:= makeSymbol strconc(op,'";hit")
-    callCounter:= makeSymbol strconc(op,'";calls")
-    symbolValue(hitCounter) := 0
-    symbolValue(callCounter) := 0
-    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
-    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
-  g2:= gensym()  --length of cache or arg-value pair
-  g3:= gensym()  --value computed by calling function
-  lookUpFunction:=
-    shiftFl =>
-      countFl => 'assocCacheShiftCount
-      'assocCacheShift
-    countFl => 'assocCacheCount
-    'assocCache
-  returnFoundValue:=
-    countFl => ['CDDR,g3]
-    ['%tail,g3]
-  namePart:=
-    countFl => cacheName
-    MKQ cacheName
-  secondPredPair:=
-    [['%store,g3,[lookUpFunction,g1,namePart,eqEtc]],
-      :hitCountCode,
-        returnFoundValue]
-  resetCacheEntry:=
-    countFl => ['%pair,1,g2]
-    g2
-  thirdPredPair:=
-    ['%otherwise,
-      ['%store,g2,computeValue],
-        ['%store,g3,['%head,cacheName]],
-          ['%store,['%head,g3],g1],
-            ['%store,['%tail,g3],resetCacheEntry],
-              g2]
-  codeBody:= ['PROG,[g2,g3],
-                :callCountCode,
-                  ['RETURN,['%when,secondPredPair,thirdPredPair]]]
-  mainFunction:= [op,['LAMBDA,arg,codeBody]]
-  computeFunction:= [auxfn,['LAMBDA,argl,:body]]
- 
-  -- compile generated function stub
-  compileInteractive mainFunction
- 
-  -- compile main body: this has already been compTran'ed
-  if $reportCompilation then
-    sayBrightlyI bright '"Generated LISP code for function:"
-    pp computeFunction
-  compileQuietly [computeFunction]
- 
-  cacheType:= 'function
-  cacheResetCode:= ['%store,cacheName,['initCache,cacheCount]]
-  cacheCountCode:= ['countCircularAlist,cacheName,cacheCount]
-  cacheVector:= mkCacheVec(op,cacheName,cacheType,
-    cacheResetCode,cacheCountCode)
-  LAM_,EVALANDFILEACTQ ['PUT, MKQ op, MKQ 'cacheInfo, MKQ cacheVector]
-  LAM_,EVALANDFILEACTQ cacheResetCode
-  if $InteractiveMode then stopTimingProcess 'compilation
-  op
- 
-compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
+compHash(op,argl,body) ==
 --   Entries will be stored on the global hashtable in a uniform way:
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
  
-  if cacheNameOrNil and cacheNameOrNil ~= '_$ConstructorCache then
-    keyedSystemError("S2GE0010",[op])
-    --restriction due to omission of call to hputNewValue (see *** lines below)
- 
-  argl = nil and cacheNameOrNil = nil => keyedSystemError("S2GE0011",[op])
-  cacheNameOrNil = nil and not (eqEtc in '(EQ EQL EQUAL CVEC UEQUAL)) =>
-    keyedSystemError("S2GE0012",[op])
   auxfn := makeWorkerName op
   g1 :=              --argument or argument list
     argl = nil => nil
@@ -182,11 +96,11 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   --    computeValue: the form used to compute the value from arg
     argl = nil => [nil,nil,[auxfn]]
     argl is [.] =>
-      key := (cacheNameOrNil => ['devaluate,g1]; g1)
+      key := ['devaluate,g1]
       [argl,['%list,key],[auxfn,g1]]  --g1 is a parameter
-    key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
+    key := ['devaluateList,g1]
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
-  cacheName:= cacheNameOrNil or mkCacheName op
+  cacheName := "$ConstructorCache"
   if $reportCounts then
     hitCounter:= makeSymbol strconc(op,'";hit")
     callCounter:= makeSymbol strconc(op,'";calls")
@@ -201,33 +115,19 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     --  stored in the same format as those with several arguments, e.g.
     --  to cache the value <val> given by f(), the structure
     --  ((nil <count> <val>)) is stored in the cache
-      countFl => ['CDRwithIncrement,['CDAR,g2]]
-      ['CDAR,g2]
-    countFl => ['CDRwithIncrement,g2]
-    g2
+      ['CDRwithIncrement,['CDAR,g2]]
+    ['CDRwithIncrement,g2]
   getCode:=
     argl = nil => ['tableValue,cacheName,MKQ op]
-    cacheNameOrNil =>
-      eqEtc ~= 'EQUAL =>
-        ['lassocShiftWithFunction,cacheArgKey,
-          ['tableValue,cacheNameOrNil,MKQ op],['%function,eqEtc]]
-      ['lassocShift,cacheArgKey,['tableValue,cacheNameOrNil,MKQ op]]
-    ['tableValue,cacheName,g1]
+    ['lassocShiftWithFunction,cacheArgKey,
+      ['tableValue,cacheName,MKQ op],['%function,'domainEqualList]]
   secondPredPair:= [g2,mkSeq [:hitCountCode,returnFoundValue]]
   putCode:=
     argl = nil =>
-      cacheNameOrNil =>
-        countFl =>
-          ['CDDAR,['%store,['tableValue,cacheNameOrNil,MKQ op],
-            ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
-        ['%store,['tableValue,cacheNameOrNil,MKQ op],
-          ['%list,['%pair,'%nil,computeValue]]]
-      systemError '"unexpected"
-    cacheNameOrNil => computeValue
-    countFl =>
-      ['%tail,['%store,['tableValue,cacheName,g1],['%pair,1,computeValue]]]
-    ['%store,['tableValue,cacheName,g1],computeValue]
-  if cacheNameOrNil then putCode :=
+      ['CDDAR,['%store,['tableValue,cacheName,MKQ op],
+        ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
+    computeValue
+  putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
                   ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
   thirdPredPair:= ['%otherwise,putCode]
@@ -244,20 +144,6 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     sayBrightlyI bright '"Generated LISP code for function:"
     pp computeFunction
   compQuietly [computeFunction]
- 
-  if cacheNameOrNil = nil then
-    cacheType:=
-      countFl => 'hash_-tableWithCounts
-      'hash_-table
-    weakStrong:= (countFl => 'STRONG; 'WEAK)
-      --note: WEAK means that key/value pairs disappear at garbage collection
-    cacheResetCode:=
-      ['SETQ,cacheName,['hashTable,MKQ eqEtc]]
-    cacheCountCode:= ['hashCount,cacheName]
-    cacheVector:=
-      mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
-    LAM_,EVALANDFILEACTQ ['PUT, MKQ op, MKQ 'cacheInfo, MKQ cacheVector]
-    LAM_,EVALANDFILEACTQ cacheResetCode
   op
  
 CDRwithIncrement x ==

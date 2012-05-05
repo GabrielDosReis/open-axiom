@@ -2097,7 +2097,7 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
     first compAndDefine [[fn,['SPADSLAM,vl,:bodyl]]]
   dbInstanceCache db = nil =>
     first backendCompile [[fn,['LAMBDA,vl,:bodyl]]]
-  compClam(fn,vl,bodyl,[[fn,"$ConstructorCache",'domainEqualList,'count]])
+  compHash(fn,vl,bodyl)
  
 constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==

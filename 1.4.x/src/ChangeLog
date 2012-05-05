@@ -1,3 +1,14 @@
+2012-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/clam.boot (compClam): Remove.
+	(compHash): Simplify.  Now take only 3 parameters.
+	* interp/c-util.boot (compileQuietly): Remove as unused.
+	* interp/sys-globals.boot ($clamList): Move to clam.boot.
+	* interp/define.boot (compileConstructor1): Call compHash in lieu
+	of compClam.
+	* share/doc/msgs/s2-us.msgs: Remove unused diagnostics, due to
+	compClam removal and compHash simplification.
+
 2012-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compileConstructor1): Don't call

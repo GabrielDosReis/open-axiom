@@ -1768,16 +1768,6 @@ compQuietly fn ==
     "PRINT-DEFUN"
   quietlyIfInteractive backendCompile fn
 
-compileQuietly fn ==
-  _*COMP370_-APPLY_* :=
-     $InteractiveMode =>
-       $compileDontDefineFunctions => "COMPILE-DEFUN"
-       "EVAL-DEFUN"
-     "PRINT-DEFUN"
-  quietlyIfInteractive COMP370 fn
-
-
-
 COMP370 x ==
   first x is [.,:.] => [COMPILE1 y for y in x]
   [COMPILE1 x]
