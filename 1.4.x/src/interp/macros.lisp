@@ -475,29 +475,10 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (terpri stream)
      (finish-output stream)))
 
-;; moved here from preparse.lisp
-
-(defun NEXT-TAB-LOC (i) (* (1+ (truncate i 8)) 8))
- 
-(defun INDENT-POS (STR)
-  (do ((i 0 (1+ i))
-       (pos 0))
-      ((>= i (length str)) nil)
-      (case (char str i)
-            (#\space (incf pos))
-            (#\tab (setq pos (next-tab-loc pos)))
-            (otherwise (return pos)))))
-
-;;(defun expand-tabs (str)
-;;  (let ((bpos (nonblankloc str))
-;;      (tpos (indent-pos str)))
-;;    (if (eql bpos tpos) str
-;;      (concatenate 'string (make-string tpos :initial-element #\space)
-;;                 (subseq str bpos)))))
 (defun expand-tabs (str)
    (if (and (stringp str) (> (length str) 0))
       (let ((bpos (nonblankloc str))
-            (tpos (indent-pos str)))
+            (tpos (|indentationLocation| str)))
         (setq str 
               (if (eql bpos tpos)
                   str

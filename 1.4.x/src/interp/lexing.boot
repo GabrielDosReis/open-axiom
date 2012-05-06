@@ -44,6 +44,22 @@ module lexing where
   matchString: %String -> %Maybe %Short
   matchAdvanceString: %String -> %Maybe %Short
   matchAdvanceKeyword: %Symbol -> %Thing
+  indentationLocation: %String -> %Maybe %Short
+
+--%
+
+++ Return the logical indentation position in the `line', after
+++ expansion of leading vertical tab characters.
+indentationLocation line ==
+  loc := 0
+  n := #line
+  for i in 0.. repeat
+    i >= n => return nil
+    spaceChar? line.i => loc := loc + 1
+    tabChar? line.i => loc := 8 * (loc quo 8 + 1)
+    return loc
+
+--%  
 
 --%
 --% Line abstract datatype
