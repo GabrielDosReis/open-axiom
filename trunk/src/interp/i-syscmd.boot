@@ -1932,40 +1932,6 @@ load args == loadSpad2Cmd args
 loadSpad2Cmd args ==
     sayKeyedMsg("S2IU0003", nil)
     nil
---  load1(args,$forceDatabaseUpdate)
-
---load1(args,$forceDatabaseUpdate) ==  -- $ var is now local
---  null args => helpSpad2Cmd '(load)
---  loadfun := 'loadLib
---  justWondering := nil
---  compiler := 'old
---  doExpose := true
---  $forceDatabaseUpdate := true  -- BMT request, 5/14/90
---  for [opt,:.] in $options repeat
---    fullopt := selectOptionLC(opt,
---      '(cond update query new noexpose noupdate),
---        'optionError)
---    fullopt is 'cond     => loadfun := 'loadLibIfNotLoaded
---    fullopt is 'query    => justWondering := true
---    fullopt is 'update   => $forceDatabaseUpdate := true
---    fullopt is 'noexpose => doExpose := false
---    fullopt is 'noupdate => $forceDatabaseUpdate := false
---  if $forceDatabaseUpdate then clearClams()
---  for lib in args repeat
---    lib := object2Identifier lib
---    justWondering =>
---      dbLoaded? constructorDB lib => sayKeyedMsg("S2IZ0028",[lib])
---      sayKeyedMsg("S2IZ0029",[lib])
---    null getConstructorModuleFromDB lib and
---     null (lib := getConstructorFullNameFromDB lib) =>
---      sayKeyedMsg("S2IL0020", [namestring [lib,$spadLibFT,"*"]])
---    null FUNCALL(loadfun,lib) =>
---      sayKeyedMsg("S2IZ0029",[lib])
---    sayKeyedMsg("S2IZ0028",[lib])
---    if doExpose and
---       not isExposedConstructor(lib) then
---          setExposeAddConstr([lib])
---  'EndOfLoad
 
 reportCount () ==
   centerAndHighlight(" Current Count Settings ",$LINELENGTH,specialChar 'hbar)
@@ -2784,14 +2750,6 @@ processSynonyms() ==
 
 -- functions for interfacing to system commands from algebra code
 -- common lisp dependent
-
-tabsToBlanks s ==
-   k := charPosition($charTab,s,0)
-   n := #s
-   k < n =>
-      k = 0 => tabsToBlanks subString(s,1)
-      strconc(subString(s,0,k),$charBlank, tabsToBlanks subString(s,k + 1))
-   s
 
 doSystemCommand string ==
    string := strconc('")", EXPAND_-TABS string)

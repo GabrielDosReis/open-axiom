@@ -49,14 +49,14 @@ namespace BOOT
 --%
 
 addClose(line,ch) ==
-  FETCHCHAR(line,maxIndex line) = char ";" =>
+  line.(maxIndex line) = char ";" =>
     ch = char ";" => line
     line.(maxIndex line) := ch
     SUFFIX(char ";",line)
   SUFFIX(ch,line)
 
 escaped?(s,n) ==
-  n > 0 and FETCHCHAR(s,n-1) = char "__"
+  n > 0 and s.(n-1) = char "__"
 
 infixToken? s ==
   STRING2ID_-N(s,1) in '(_then _else)
