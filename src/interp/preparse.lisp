@@ -133,7 +133,7 @@
                (INSTRING)
                ((= N COMSYM) (setq A (subseq A 0 N)) (GO NOCOMS)) ; discard trailing comment
                ((= N NCOMSYM)
-                (setq SLOC (INDENT-POS A))
+                (setq SLOC (|indentationLocation| A))
                 (COND
                   ((= SLOC N)
                    (COND ((AND NCOMBLOCK (NOT (= N (CAR NCOMBLOCK))))
@@ -150,7 +150,7 @@
                ((= N CPARSYM) (setq PCOUNT (1- PCOUNT))))
          (setq I (1+ N))
          (GO STRLOOP)
- NOCOMS  (setq SLOC (INDENT-POS A))
+ NOCOMS  (setq SLOC (|indentationLocation| A))
          (setq A (DROPTRAILINGBLANKS A))
          (cond ((NULL SLOC) (setq SLOC PSLOC) (GO READLOOP)))
          (cond ((EQ (ELT A (MAXINDEX A)) #\_)

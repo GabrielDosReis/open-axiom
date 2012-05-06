@@ -1,5 +1,11 @@
 2012-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (indentationLocation): New.
+	* interp/macros.lisp (expand-tabs): Use it in lieu of NDENT-POS.
+	* interp/preparse.lisp (PREPARSE1): Likewise.
+
+2012-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/Makefile.in (OBJS): Include io.$(FASLEXT).
 	(io.$(FASLEXT)): New rule.
 	* interp/io.boot: New.
