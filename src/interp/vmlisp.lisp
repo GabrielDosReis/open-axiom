@@ -115,9 +115,6 @@
 (defmacro exit (&rest value)
  `(return-from seq ,@value))
 
-(defmacro fetchchar (x i)
- `(char ,x ,i))
-
 (defmacro greaterp (&rest args)
  `(> ,@args))
 
