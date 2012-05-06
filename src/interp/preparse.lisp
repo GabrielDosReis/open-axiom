@@ -219,9 +219,6 @@
              (dolist (X L) (format t "~5d. ~a~%" (car x) (cdr x)))
              (format t "~%"))))
  
-(DEFUN STOREBLANKS (LINE N)
-   (DO ((I 0 (1+ I))) ((= I N) LINE) (SETF (CHAR LINE I) #\ )))
- 
 (DEFUN INITIAL-SUBSTRING (PATTERN LINE)
    (let ((ind (mismatch PATTERN LINE)))
      (OR (NULL IND) (EQL IND (SIZE PATTERN)))))
@@ -234,11 +231,11 @@
       (COND ((CHAR= (ELT LINE 0) #\) )
           (COND
             ((INITIAL-SUBSTRING ")if" LINE)
-                (COND ((EVAL (|string2BootTree| (STOREBLANKS LINE 3)))
+                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 3)))
                        (RETURN (preparseReadLine X)))
                       ('T (RETURN (SKIP-IFBLOCK X)))))
             ((INITIAL-SUBSTRING ")elseif" LINE)
-                (COND ((EVAL (|string2BootTree| (STOREBLANKS LINE 7)))
+                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 7)))
                        (RETURN (preparseReadLine X)))
                       ('T (RETURN (SKIP-IFBLOCK X)))))
             ((INITIAL-SUBSTRING ")else" LINE)
@@ -267,7 +264,7 @@
       (COND ((CHAR= (ELT LINE 0) #\) )
           (COND
             ((INITIAL-SUBSTRING ")if" LINE)
-                (COND ((EVAL (|string2BootTree| (STOREBLANKS LINE 3)))
+                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 3)))
                        (RETURN (preparseReadLine X)))
                       ('T (RETURN (SKIP-IFBLOCK X)))))
             ((INITIAL-SUBSTRING ")elseif" LINE)

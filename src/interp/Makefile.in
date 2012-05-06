@@ -55,7 +55,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	sys-driver.$(FASLEXT)	sys-constants.$(FASLEXT) \
 	hash.$(FASLEXT) 	lisp-backend.$(FASLEXT)	 \
 	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
-	                    	sys-os.$(FASLEXT)	 \
+	io.$(FASLEXT)          	sys-os.$(FASLEXT)	 \
 	sys-utility.$(FASLEXT)  lexing.$(FASLEXT)        \
 	diagnostics.$(FASLEXT)	                         \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
@@ -327,7 +327,8 @@ preparse.$(FASLEXT): parsing.$(FASLEXT)
 parsing.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
 nlib.$(FASLEXT): macros.$(FASLEXT)
 macros.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
-lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT)
+lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT) \
+	io.$(FASLEXT)
 
 ## The new parser component roughtly is:
 ##   astr.boot dq.boot incl.boot pile.boot ptrees.boot
@@ -389,6 +390,7 @@ ggreater.$(FASLEXT): vmlisp.$(FASLEXT)
 lisp-backend.$(FASLEXT): sys-macros.$(FASLEXT)
 sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT) hash.$(FASLEXT)
 vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
+io.$(FASLEXT): sys-constants.$(FASLEXT)
 types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 
