@@ -36,6 +36,7 @@
 
 import sys_-utility
 import sys_-macros
+import io
 
 namespace BOOT
 
