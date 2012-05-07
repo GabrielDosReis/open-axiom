@@ -56,7 +56,6 @@ comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
-compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm2: (%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
@@ -190,19 +189,10 @@ comp3(x,m,$e) ==
     and (T := applyMapping(x,m,e,ml)) => T
   op is ":" => compColon(x,m,e)
   op is "::" => compCoerce(x,m,e)
-  not $insideCompTypeOf and stringPrefix?('"TypeOf",PNAME op) =>
-    compTypeOf(x,m,e)
   t:= compExpression(x,m,e)
   t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
     [x',m',addDomain(m',e')]
   t
-
-compTypeOf(x:=[op,:argl],m,e) ==
-  $insideCompTypeOf: local := true
-  newModemap :=
-    applySubst(pairList(argl,$FormalMapVariableList),get(op,'modemap,e))
-  e:= put(op,'modemap,newModemap,e)
-  comp3(x,m,e)
 
 ++ We just determined that `op' is called with argument list `args', where
 ++  `op' is either a local capsule function, or an external function 

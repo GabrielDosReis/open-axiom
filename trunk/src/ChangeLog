@@ -1,3 +1,11 @@
+2012-05-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/sys-globals.boot ($insideCompTypeOf): Remove.
+	* interp/preparse.lisp (INITIAL-SUBSTRING): Remove.
+	* interp/g-util.boot (stringPrefix?): Remove.
+	* interp/compiler.boot (compTypeOf): Remove.
+	(comp3): Don't call it.
+
 2012-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot (indentationLocation): New.
