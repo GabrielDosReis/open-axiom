@@ -1,4 +1,15 @@
-2012-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (ioTerminal?): Rename form IS-CONSOLE.
+	* interp/bootlex.lisp: Adjust.
+	* interp/diagnostics.boot: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/parsing.lisp: Likewise.
+	* interp/preparse.lisp: Likewise.
+	* interp/server.boot: Likewise.
+
+2012-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/preparse.lisp (SKIP-IFBLOCK): Move to spad-parser.boot.
 	Renamed skipIfBlock.
@@ -6,7 +17,7 @@
 	(PREPARSEREADLINE): Move to spad-parser.boot.  Renamed
 	preparseReadLine.
 
-2012-05-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-globals.boot ($insideCompTypeOf): Remove.
 	* interp/preparse.lisp (INITIAL-SUBSTRING): Remove.

@@ -255,7 +255,7 @@
   "T if input stream STRM is at the end or saw a ~."
   (not (peek-char nil STRM nil nil nil))     )
  
-(DEFUN CONSOLEINPUTP (STRM) (IS-CONSOLE STRM))
+(DEFUN CONSOLEINPUTP (STRM) (|ioTerminal?| STRM))
  
 (defvar $filelinenumber 0)
 (defvar $prompt "--->")
@@ -333,10 +333,10 @@
 "Attempts to return the current record number of a file stream.  This is 0 for
 terminals and empty or at-end files.  In Common Lisp, we must assume record sizes of 1!"
    (COND ((STREAM-EOF STRM) 0)
-         ((IS-CONSOLE STRM) 0)
+         ((|ioTerminal?| STRM) 0)
          ((file-position STRM))))
  
-(DEFUN IS-CONSOLE-NOT-XEDIT (S) (not (OR (NULL (IS-CONSOLE S)))))
+(DEFUN |ioTerminal?|-NOT-XEDIT (S) (not (OR (NULL (|ioTerminal?| S)))))
  
 (DEFUN POINTW (RECNO STRM)
 "Does something obscure and VM-specific with respect to streams."

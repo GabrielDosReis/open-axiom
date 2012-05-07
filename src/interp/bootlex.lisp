@@ -54,10 +54,10 @@
 (defun print-defun (name body)
    (let* ((sp (assoc 'compiler-output-stream optionlist))
           (st (if sp (cdr sp) |$OutputStream|)))
-     (if (and (is-console st) (symbolp name) (fboundp name)
+     (if (and (|ioTerminal?| st) (symbolp name) (fboundp name)
               (not (compiled-function-p (symbol-function name))))
          (compile name))
-     (when (or |$PrettyPrint| (not (is-console st)))
+     (when (or |$PrettyPrint| (not (|ioTerminal?| st)))
            (print-full body st) (force-output st))))
 
 

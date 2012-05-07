@@ -86,7 +86,7 @@
                        :adjustable t :initial-contents s))))
 
 (defun get-a-line (stream)
-  (if (and (IS-CONSOLE stream) (not |$leanMode|))
+  (if (and (|ioTerminal?| stream) (not |$leanMode|))
       (|printPrompt|))
   (let ((ll (read-a-line stream)))
     (if (stringp ll) (make-string-adjustable ll) ll)))
