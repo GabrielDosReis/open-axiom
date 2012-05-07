@@ -85,6 +85,47 @@ stringPrefix?(s1,s2) ==
   n1 > #s2 => false
   and/[s1.i = s2.i for i in 0..(n1-1)]
 
+skipIfBlock st ==
+  [n,:line] := z := preparseReadLine1 st
+  not string? line => z
+  #line = 0 => skipIfBlock st
+  line.0 = char ")" =>
+    stringPrefix?('")if",line) =>
+      EVAL string2BootTree storeBlanks!(line,2) => preparseReadLine st
+      skipIfBlock st
+    stringPrefix?('")elseif",line) =>
+      EVAL string2BootTree storeBlanks!(line,7) => preparseReadLine st
+      skipIfBlock st
+    stringPrefix?('")else",line) or stringPrefix?('")endif",line) =>
+      preparseReadLine st
+    stringPrefix?('")fin",line) => [n]
+    skipIfBlock st
+  skipIfBlock st
+
+skipToEndif st ==
+  [n,:line] := z := preparseReadLine1 st
+  not string? line => z
+  stringPrefix?(line,'")endif") => preparseReadLine st
+  stringPrefix?(line,'")fin") => [n]
+  skipToEndif st
+
+
+preparseReadLine st ==
+  [n,:line] := z := preparseReadLine1 st
+  not string? line or #line = 0 => z
+  line.0 = char ")" =>
+    stringPrefix?('")if",line) =>
+      EVAL string2BootTree storeBlanks!(line,3) => preparseReadLine st
+      skipIfBlock st
+    stringPrefix?('")elseif",line) or stringPrefix?('")else",line) =>
+      skipToEndif st
+    stringPrefix?('")endif",line) => preparseReadLine st
+    stringPrefix?('")fin",line) =>
+      SETQ(_*EOF_*,true)
+      [n]
+    z
+  z
+
 --%  
 macro compulsorySyntax s ==
   s or SPAD__SYNTAX__ERROR()

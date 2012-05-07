@@ -1,3 +1,11 @@
+2012-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/preparse.lisp (SKIP-IFBLOCK): Move to spad-parser.boot.
+	Renamed skipIfBlock.
+	(SKIP-IF-BLOCK): Move to spad-parser.boot.  Renamed skipToEndif.
+	(PREPARSEREADLINE): Move to spad-parser.boot.  Renamed
+	preparseReadLine.
+
 2012-05-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/sys-globals.boot ($insideCompTypeOf): Remove.

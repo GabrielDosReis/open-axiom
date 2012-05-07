@@ -102,7 +102,7 @@
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
- READLOOP (DCQ (NUM . A) (preparseReadLine LineList))
+ READLOOP (DCQ (NUM . A) (|preparseReadLine| LineList))
          (cond ((|atEndOfUnit?| A)
                 (PREPARSE-ECHO LineList)
                 (COND ((NULL LINES) (RETURN NIL))
@@ -219,62 +219,7 @@
              (dolist (X L) (format t "~5d. ~a~%" (car x) (cdr x)))
              (format t "~%"))))
  
-(DEFUN SKIP-IFBLOCK (X)
-   (PROG (LINE IND)
-     (DCQ (IND . LINE) (preparseReadLine1 X))
-      (IF (NOT (STRINGP LINE))  (RETURN (CONS IND LINE)))
-      (IF (ZEROP (SIZE LINE)) (RETURN (SKIP-IFBLOCK X)))
-      (COND ((CHAR= (ELT LINE 0) #\) )
-          (COND
-            ((|stringPrefix?| ")if" LINE)
-                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 3)))
-                       (RETURN (preparseReadLine X)))
-                      ('T (RETURN (SKIP-IFBLOCK X)))))
-            ((|stringPrefix?| ")elseif" LINE)
-                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 7)))
-                       (RETURN (preparseReadLine X)))
-                      ('T (RETURN (SKIP-IFBLOCK X)))))
-            ((|stringPrefix?| ")else" LINE)
-             (RETURN (preparseReadLine X)))
-            ((|stringPrefix?| ")endif" LINE)
-             (RETURN (preparseReadLine X)))
-            ((|stringPrefix?| ")fin" LINE)
-             (RETURN (CONS IND NIL))))))
-      (RETURN (SKIP-IFBLOCK X)) ) )
- 
-(DEFUN SKIP-TO-ENDIF (X)
-   (PROG (LINE IND)
-     (DCQ (IND . LINE) (preparseReadLine1 X))
-      (COND ((NOT (STRINGP LINE)) (RETURN (CONS IND LINE)))
-            ((|stringPrefix?| LINE ")endif")
-             (RETURN (preparseReadLine X)))
-            ((|stringPrefix?| LINE ")fin") (RETURN (CONS IND NIL)))
-            ('T (RETURN (SKIP-TO-ENDIF X))))))
- 
-(DEFUN preparseReadLine (X)
-    (PROG (LINE IND)
-      (DCQ (IND . LINE) (preparseReadLine1 X))
-      (COND ((NOT (STRINGP LINE)) (RETURN (CONS IND LINE))))
-      (COND ((ZEROP (SIZE LINE))
-             (RETURN (CONS IND LINE))))
-      (COND ((CHAR= (ELT LINE 0) #\) )
-          (COND
-            ((|stringPrefix?| ")if" LINE)
-                (COND ((EVAL (|string2BootTree| (|storeBlanks!| LINE 3)))
-                       (RETURN (preparseReadLine X)))
-                      ('T (RETURN (SKIP-IFBLOCK X)))))
-            ((|stringPrefix?| ")elseif" LINE)
-             (RETURN (SKIP-TO-ENDIF X)))
-            ((|stringPrefix?| ")else" LINE)
-             (RETURN (SKIP-TO-ENDIF X)))
-            ((|stringPrefix?| ")endif" LINE)
-             (RETURN (preparseReadLine X)))
-            ((|stringPrefix?| ")fin" LINE)
-             (SETQ *EOF* T)
-             (RETURN (CONS IND NIL)) ) )))
-      (RETURN (CONS IND LINE)) ))
- 
-(DEFUN preparseReadLine1 (X)
+(DEFUN |preparseReadLine1| (X)
     (PROG (LINE IND)
       (SETQ LINE (if $LINELIST
                      (pop $LINELIST)
@@ -293,31 +238,9 @@
           (COND
             ( (AND (> (SETQ IND (MAXINDEX LINE)) -1) (char= (ELT LINE IND) #\_))
               (setq $preparse-last-line
-                    (STRCONC (SUBSTRING LINE 0 IND) (CDR (preparseReadLine1 X))) ))
+                    (STRCONC (SUBSTRING LINE 0 IND) (CDR (|preparseReadLine1| X))) ))
             ( 'T
               LINE ) ))) ) )
- 
-;;(defun preparseReadLine (X)
-;;  (declare (special $LINELIST $echoLineStack))
-;;  (PROG (LINE IND)
-;;        (setq LINE
-;;              (if $LINELIST
-;;                  (pop $LINELIST)
-;;                  (get-a-line in-stream)))
-;;        (setq $preparse-last-line LINE)
-;;        (and (stringp line) (incf $INDEX))
-;;        (if (NOT (STRINGP LINE)) (RETURN (CONS $INDEX LINE)))
-;;        (setq LINE (DROPTRAILINGBLANKS LINE))
-;;        (if |$Echo| (PUSH (COPY-SEQ LINE) $EchoLineStack))
-;;        ; next line must evaluate $INDEX before recursive call
-;;        (RETURN
-;;          (CONS $INDEX
-;;                (if (and (> (setq IND (MAXINDEX LINE)) -1)
-;;                       (EQ (ELT LINE IND) #\_))
-;;                    (setq $preparse-last-line
-;;                        (STRCONC (SUBSEQ LINE 0 IND)
-;;                                 (CDR (preparseReadLine X))))
-;;                    LINE)))))
  
 (defun PREPARSE-ECHO (linelist)
   (if |$Echo| (REPEAT (IN X (|reverse| $EchoLineStack))
