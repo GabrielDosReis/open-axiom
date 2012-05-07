@@ -663,19 +663,6 @@ centerString(text,width,fillchar) ==
   if f.1 ~= 0 then fill1 := strconc(fillchar,fill1)
   [fill1,text,fill2]
 
-stringPrefix?(pref,str) ==
-  -- sees if the first #pref letters of str are pref
-  -- replaces STRINGPREFIXP
-  not (string?(pref) and string?(str)) => nil
-  (lp := # pref) = 0 => true
-  lp > # str => nil
-  ok := true
-  i := 0
-  while ok and (i < lp) repeat
-    stringChar(pref,i) ~= stringChar(str,i) => ok := nil
-    i := i + 1
-  ok
-
 stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns nil if not a digit or other error.

@@ -46,6 +46,10 @@ import preparse
 import parse
 namespace BOOT
 
+module spad_-parser where
+  indentationLocation: %String -> %Maybe %Short
+  stringPrefix?: (%String,%String) -> %Boolean
+
 --%
 
 addClose(line,ch) ==
@@ -64,7 +68,24 @@ infixToken? s ==
 atEndOfUnit? x ==
   not string? x
   
---%
+++ Return the logical indentation position in the `line', after
+++ expansion of leading vertical tab characters.
+indentationLocation line ==
+  loc := 0
+  n := #line
+  for i in 0.. repeat
+    i >= n => return nil
+    spaceChar? line.i => loc := loc + 1
+    tabChar? line.i => loc := 8 * (loc quo 8 + 1)
+    return loc
+
+++ Return true if the string `s1' is a prefix of `s2'.
+stringPrefix?(s1,s2) ==
+  n1 := #s1
+  n1 > #s2 => false
+  and/[s1.i = s2.i for i in 0..(n1-1)]
+
+--%  
 macro compulsorySyntax s ==
   s or SPAD__SYNTAX__ERROR()
 

@@ -115,9 +115,6 @@ $insideCategoryIfTrue := false
 $insideCoerceInteractiveHardIfTrue := false
 
 ++
-$insideCompTypeOf := false
-
-++
 $insideConstructIfTrue := false
 
 ++
