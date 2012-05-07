@@ -315,13 +315,13 @@
 ; 9.13 Streams
 
 #+KCL
-(defun IS-CONSOLE (stream)
+(defun |ioTerminal?| (stream)
   (and (streamp stream) (output-stream-p stream)
        (eq (system:fp-output-stream stream)
            (system:fp-output-stream *terminal-io*))))
 
 #-KCL
-(defun IS-CONSOLE (stream)
+(defun |ioTerminal?| (stream)
   (cond ((not (streamp stream))
 	 nil)
 	((not (typep stream 'synonym-stream))
@@ -998,7 +998,7 @@
               (file-position strm char-position))
           strm))))
 
-(defun shut (st) (if (is-console st) st
+(defun shut (st) (if (|ioTerminal?| st) st
                    (if (streamp st) (close st) -1)))
 
 (defun EOFP (stream) (null (peek-char nil stream nil nil)))

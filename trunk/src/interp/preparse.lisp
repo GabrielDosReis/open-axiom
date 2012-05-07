@@ -167,7 +167,7 @@
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
-             (IF (NOT (IS-CONSOLE in-stream))
+             (IF (NOT (|ioTerminal?| in-stream))
                  (setq $preparse-last-line
                        (|reverse!| $echolinestack)))
              (RETURN (|pairList| (|reverse!| NUMS)
@@ -181,7 +181,7 @@
          (PUSH A LINES)
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))
-         (when (and (is-console in-stream) (not continue))
+         (when (and (|ioTerminal?| in-stream) (not continue))
             (setq $preparse-last-line nil)
              (RETURN (|pairList| (|reverse!| NUMS)
                            (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))

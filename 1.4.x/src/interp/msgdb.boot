@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -626,13 +626,13 @@ brightPrint0(x,out == $OutputStream) ==
   x = '"%b" =>
     -- FIXME: this kludge is GCL-specific.  Find way to support
     -- highlighting on all supported Lisp.
-    not IS_-CONSOLE out or %escapeSequenceAverseHost?()
+    not ioTerminal? out or %escapeSequenceAverseHost?()
       or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
     not $highlightAllowed => sayString('" ",out)
     sayString($highlightFontOn,out)
   k := blankIndicator x => BLANKS(k,out)
   x = '"%d" =>
-    not IS_-CONSOLE out or %escapeSequenceAverseHost?()
+    not ioTerminal? out or %escapeSequenceAverseHost?()
       or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
     not $highlightAllowed => sayString('" ",out)
     sayString($highlightFontOff,out)

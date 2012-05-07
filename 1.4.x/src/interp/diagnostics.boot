@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis
+-- Copyright (C) 2007-2012, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -128,14 +128,14 @@ sayBrightly1(x,out) ==
 sayBrightlyNT(x,out == $OutputStream) ==
   x = nil => nil
   $sayBrightlyStream ~= nil => sayBrightlyNT1(x,$sayBrightlyStream)
-  IS_-CONSOLE out => sayBrightlyNT1(x,out)
+  ioTerminal? out => sayBrightlyNT1(x,out)
   sayBrightly1(x,out) => sayBrightlyNT1(x,out)
   nil
 
 sayBrightly(x,out == $OutputStream) ==
   x = nil => nil
   $sayBrightlyStream ~= nil => sayBrightly1(x,$sayBrightlyStream)
-  IS_-CONSOLE out => sayBrightly1(x,out)
+  ioTerminal? out => sayBrightly1(x,out)
   sayBrightly1(x,out) => sayBrightly1(x,$OutputStream)
   nil
 

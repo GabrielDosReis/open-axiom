@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ $sockBufferLength := 9217
 serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
   flushOutput()
-  not $SpadServer or not IS_-CONSOLE stream =>
+  not $SpadServer or not ioTerminal? stream =>
     line := readLine stream
     line ~= %nothing => line
     nil
