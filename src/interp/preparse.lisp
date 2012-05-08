@@ -76,7 +76,7 @@
 
 (defun Initialize-Preparse (strm)
   (setq $INDEX 0 $LineList nil $EchoLineStack nil)
-  (setq $preparse-last-line (get-a-line strm)))
+  (setq $preparse-last-line (|readLine| strm)))
  
 (defvar $skipme)
  
@@ -223,12 +223,12 @@
     (PROG (LINE IND)
       (SETQ LINE (if $LINELIST
                      (pop $LINELIST)
-              (expand-tabs (get-a-line in-stream))))
+              (expand-tabs (|readLine| in-stream))))
       (setq $preparse-last-line LINE)
       (and (stringp line) (incf $INDEX))
       (COND
         ( (NOT (STRINGP LINE))
-          (RETURN (CONS $INDEX LINE)) ) )
+          (RETURN (LIST $INDEX)) ) )
       (SETQ LINE (DROPTRAILINGBLANKS LINE))
       (PUSH (COPY-SEQ LINE) $EchoLineStack)
     ;; next line must evaluate $INDEX before recursive call

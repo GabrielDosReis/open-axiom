@@ -1,5 +1,21 @@
 2012-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad.lisp (INIT-BOOT/SPAD-READER): Don't set FILE-CLOSED.
+	(SPAD): Tidy.
+	* interp/spad-parser.boot (parseSpadFile): Do not test for *EOF*
+	or FILE-CLOSED.
+	* interp/preparse.lisp (INITIALIZED-PREPARSE): Use readLine.
+	(preparseReadLine1): Likewise.
+	* interp/parsing.lisp (FILE-CLOSED): Remove.
+	(GET-A-LINE): Likewise.
+	(CURRENT-FRAGMENT): Likewise.
+	(INPUT-CLEAR): Likewise.
+	(READ-A-LINE): Likewise.
+	(IOSTREAMS-CLEAR): Don't set FILE-CLOSED.
+	(IOCLEAR): Don't call INPUT-CLEAR.
+
+2012-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (ioTerminal?): Rename form IS-CONSOLE.
 	* interp/bootlex.lisp: Adjust.
 	* interp/diagnostics.boot: Likewise.
