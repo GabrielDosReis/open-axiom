@@ -6,7 +6,9 @@
 (PROVIDE "tokens")
 
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
-  (EXPORT '|$InteractiveMode|))
+  (EXPORT '(|$InteractiveMode| |char|)))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Char|) |char|))
 
 (DEFPARAMETER |$InteractiveMode| NIL)
 
@@ -211,11 +213,10 @@
              (LIST '|genvar| 'GENVAR) (LIST '|integer?| 'INTEGERP)
              (LIST 'LAST '|last|) (LIST '|list| 'LIST) (LIST '|listEq?| 'EQUAL)
              (LIST '|lowerCase?| 'LOWER-CASE-P) (LIST '|makeSymbol| 'INTERN)
-             (LIST '|maxIndex| 'MAXINDEX) (LIST '|mkpf| 'MKPF)
-             (LIST '|newVector| 'MAKE-ARRAY) (LIST '|nil| NIL)
-             (LIST '|not| 'NOT) (LIST '|null| 'NULL) (LIST '|odd?| 'ODDP)
-             (LIST '|or| 'OR) (LIST '|otherwise| 'T) (LIST '|property| 'GET)
-             (LIST '|readInteger| 'PARSE-INTEGER)
+             (LIST '|mkpf| 'MKPF) (LIST '|newVector| 'MAKE-ARRAY)
+             (LIST '|nil| NIL) (LIST '|not| 'NOT) (LIST '|null| 'NULL)
+             (LIST '|odd?| 'ODDP) (LIST '|or| 'OR) (LIST '|otherwise| 'T)
+             (LIST '|property| 'GET) (LIST '|readInteger| 'PARSE-INTEGER)
              (LIST '|readLispFromString| 'READ-FROM-STRING)
              (LIST '|readOnly?| 'CONSTANTP) (LIST '|removeDuplicates| 'REMDUP)
              (LIST '|rest| 'CDR) (LIST '|sameObject?| 'EQ)

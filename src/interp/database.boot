@@ -701,7 +701,7 @@ dropPrefix(fn) ==
 --++  egName  := nil
 --++  egFiles := nil
 --++  while (x:= readLine stream) ~= %nothing repeat
---++    x := DROPTRAILINGBLANKS x
+--++    x := trimTrailingBlank x
 --++    # x = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment
 --++    x.0 = char " " =>

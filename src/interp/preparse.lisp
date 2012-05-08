@@ -151,10 +151,10 @@
          (setq I (1+ N))
          (GO STRLOOP)
  NOCOMS  (setq SLOC (|indentationLocation| A))
-         (setq A (DROPTRAILINGBLANKS A))
+         (setq A (|trimTrailingBlank| A))
          (cond ((NULL SLOC) (setq SLOC PSLOC) (GO READLOOP)))
-         (cond ((EQ (ELT A (MAXINDEX A)) #\_)
-                (setq CONTINUE T a (subseq A (MAXINDEX A))))
+         (cond ((EQ (ELT A (|maxIndex| A)) #\_)
+                (setq CONTINUE T a (subseq A (|maxIndex| A))))
                ((setq CONTINUE NIL)))
          (if (and (null LINES) (= SLOC 0)) ;;test for skipping constructors
              (if (and |$byConstructors|
@@ -229,14 +229,14 @@
       (COND
         ( (NOT (STRINGP LINE))
           (RETURN (LIST $INDEX)) ) )
-      (SETQ LINE (DROPTRAILINGBLANKS LINE))
+      (SETQ LINE (|trimTrailingBlank| LINE))
       (PUSH (COPY-SEQ LINE) $EchoLineStack)
     ;; next line must evaluate $INDEX before recursive call
       (RETURN
         (CONS
           $INDEX
           (COND
-            ( (AND (> (SETQ IND (MAXINDEX LINE)) -1) (char= (ELT LINE IND) #\_))
+            ( (AND (> (SETQ IND (|maxIndex| LINE)) -1) (char= (ELT LINE IND) #\_))
               (setq $preparse-last-line
                     (STRCONC (SUBSTRING LINE 0 IND) (CDR (|preparseReadLine1| X))) ))
             ( 'T
@@ -293,7 +293,7 @@
                  (cdr slines) (cdr slocs)))
           (if (> count 0)
               (progn 
-		(setf (char (car slines) (1- (nonblankloc (car slines))))
+		(setf (char (car slines) (1- (|firstNonblankCharPosition| (car slines))))
 		      #\( )
 		(setq slines (|drop| (1- i) slines))
 		(rplaca slines (|addClose| (car slines) #\) ))))))))

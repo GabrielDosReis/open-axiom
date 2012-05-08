@@ -152,6 +152,7 @@
 	   "mkVector"
 	   "mkIntArray"
 	   "listToString"
+	   "maxIndex"
 
            "%hasFeature"
 	   "%systemOptions"
@@ -1395,6 +1396,10 @@
 ;; 
 ;; -*- Native Datatype correspondance -*-
 ;; 
+
+(defmacro |maxIndex| (x)
+  `(1- (length ,x)))
+
 
 ;; Datatype for buffers mostly used for transmitting data between
 ;; the Lisp world and Native World.
