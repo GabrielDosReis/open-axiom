@@ -215,7 +215,7 @@ $AbstractionOperator ==
 ++ Return the character designated by the string `s'.
 stringToChar: %String -> %Char
 stringToChar s ==
-  #s = 1 => char s
+  #s = 1 => stringChar(s,0)
   s = '"\a" => $Bell
   s = '"\n" => $Newline
   s = '"\f" => $FormFeed

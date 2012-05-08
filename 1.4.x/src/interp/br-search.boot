@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -143,7 +143,7 @@ pmTransFilter s ==
     => (parse := pmParseFromString s) and checkPmParse parse or
         ['error,'"Illegal search string",'"\vspace{3}\center{{\em Your search string} ",escapeSpecialChars s,'" {\em has incorrect syntax}}"]
   or/[s . i = char "*" and s.(i + 1) = char "*"
-      and (i=0 or stringChar(s,i - 1) ~= char $charUnderscore) for i in 0..(maxIndex s - 1)]
+      and (i=0 or stringChar(s,i - 1) ~= $charUnderscore) for i in 0..(maxIndex s - 1)]
        => ['error,'"Illegal search string",'"\vspace{3}\center{Consecutive {\em *}'s are not allowed in search patterns}"]
   s
 

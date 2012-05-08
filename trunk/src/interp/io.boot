@@ -35,6 +35,8 @@ namespace BOOT
 
 module io where
   blankChar? : %Char -> %Boolean
+  firstNonblankCharPosition: %String -> %Maybe %Short
+  trimTrailingBlank: %String -> %String
 
 --%
 --%  Individual character routines
@@ -63,3 +65,14 @@ storeBlank!(s,n) ==
   for i in 0..maxIndex s repeat
     s.i := char " "
   s
+
+++ Return the position of the first nonblank character in line, if any.
+firstNonblankCharPosition line ==
+  or/[i for i in 0..maxIndex line | not blankChar? line.i]
+
+trimTrailingBlank line ==
+  n := sz := #line
+  for i in (sz-1)..0 by -1 while blankChar? line.i repeat
+    n := n - 1
+  n = sz => line
+  subString(line,0,n)

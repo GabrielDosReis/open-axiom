@@ -1,3 +1,25 @@
+2012-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Export char.  Do not rename maxIndex.
+	* lisp/core.lisp.in (maxIndex): Define and export.
+	* interp/bootlex.lisp: Adjust.
+	* interp/parsing.lisp: Likewise.
+	* interp/macros.lisp: Likewise.
+	(DROPTRAILINGBLANKS): Remove.
+	(BLANKP): Likewise.
+	(NONBLANKLOC): Likewise.
+	* interp/io.boot (trimTrailingBlank): New.
+	(firstNonblankCharPosition): Likewise.
+	* interp/preparse.lisp: Use them. Adjust.
+	* interp/sys-macros.lisp (char): Remove.
+	* interp/vmlisp.lisp (MAXINDEX): Likewise.
+	* interp/br-search.boot (pmTransFilter): Fix bogus uses of char.
+	* interp/debug.lisp: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+
 2012-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad.lisp (INIT-BOOT/SPAD-READER): Don't set FILE-CLOSED.

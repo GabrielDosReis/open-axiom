@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,8 @@
 
 import utility
 namespace BOOTTRAN
-module tokens ($InteractiveMode)
+module tokens ($InteractiveMode, char) where
+  char: %Symbol -> %Char
 
 ++ If true, means the system is in interactive mode.
 $InteractiveMode := false
@@ -279,7 +280,6 @@ for i in [ _
   ["listEq?",    "EQUAL"] , _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["makeSymbol", "INTERN"] , _
-  ["maxIndex", "MAXINDEX"] , _
   ["mkpf",        "MKPF"]  , _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _

@@ -147,7 +147,7 @@
   (declare (simple-vector vec))
   (let ((n (position 0 vec :from-end t :test-not #'eql)))
      (cond ((null n) (vector))
-           ((eql n (maxindex vec)) vec)
+           ((eql n (|maxIndex| vec)) vec)
            (t (subseq vec 0 (+ n 1))))))
  
 ; 14 SEQUENCES
@@ -374,8 +374,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 #-(OR IBCL AKCL)
 (defmacro |elapsedGcTime| () '0)
  
-(defun DROPTRAILINGBLANKS  (LINE) (string-right-trim " " LINE))
-
 ; This function was modified by Greg Vanuxem on March 31, 2005
 ; to handle the special case of #'(lambda ..... which expands
 ; into (function (lambda .....
@@ -477,7 +475,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 (defun expand-tabs (str)
    (if (and (stringp str) (> (length str) 0))
-      (let ((bpos (nonblankloc str))
+      (let ((bpos (|firstNonblankCharPosition| str))
             (tpos (|indentationLocation| str)))
         (setq str 
               (if (eql bpos tpos)
@@ -486,14 +484,10 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
                                (make-string tpos :initial-element #\space)
                                (subseq str bpos))))
          ;; remove dos CR
-        (let ((lpos (maxindex str)))
+        (let ((lpos (|maxIndex| str)))
           (if (eq (char str lpos) #\Return) (subseq str 0 lpos) str)))
     str))
 
-(defun blankp (char) (or (eq char #\Space) (eq char #\tab)))
- 
-(defun nonblankloc (str) (position-if-not #'blankp str))
- 
 ;; stream handling for paste-in generation
 
 (defun |applyWithOutputToString| (func args)

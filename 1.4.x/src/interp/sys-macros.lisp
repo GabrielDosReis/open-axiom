@@ -52,17 +52,6 @@
 (defconstant |$CarriageReturn| #\Return)
 
 
-(defmacro |char| (arg)
-  (cond ((stringp arg)
-	 (character arg))
-        ((integerp arg)
-	 (code-char arg))
-	((and (consp arg)
-	      (eq (car arg) 'quote))
-	 (character (cadr arg)))
-	(t `(character ,arg))))
-
-
 (defmacro |startsId?| (x)
  `(or (alpha-char-p ,x)
       (member ,x '(#\? #\% #\!) :test #'char=)))

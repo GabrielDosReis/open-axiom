@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import ht_-util
 namespace BOOT
 
 $historyDisplayWidth := 120
-$newline := char 10
+$newline := abstractChar 10
 
 downlink page ==
   htInitPage('"Bridge",nil)

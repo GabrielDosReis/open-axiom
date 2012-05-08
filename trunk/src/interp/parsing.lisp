@@ -562,7 +562,7 @@ the stack, then stack a NIL. Return the value of prod."
 (Defun FLOATEXPID (X &aux S)
   (if (AND (|ident?| X) (char= (char-upcase (ELT (SETQ S (PNAME X)) 0)) #\E)
            (> (LENGTH S) 1)
-           (SPADREDUCE AND 0 (COLLECT (STEP I 1 1 (MAXINDEX S))
+           (SPADREDUCE AND 0 (COLLECT (STEP I 1 1 (|maxIndex| S))
                                       (DIGITP (ELT S I)))))
        (READ-FROM-STRING S t nil :start 1)
     NIL))

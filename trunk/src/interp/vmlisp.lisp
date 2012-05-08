@@ -146,9 +146,6 @@
       `(let ((,xx ,x))
          (and (consp ,xx) (qcdr ,xx))))))
 
-(defmacro maxindex (x)
- `(the fixnum (1- (the fixnum (length ,x)))))
-
 (defmacro minus (x)
  `(- ,x))
 

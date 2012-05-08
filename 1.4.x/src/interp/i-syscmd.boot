@@ -2814,8 +2814,7 @@ stripLisp str ==
   strIndex := 0
   lispStr := '"lisp"
   for c0 in 0..#str-1 for c1 in 0..#lispStr-1 repeat
-    (char str.c0) ~= (char lispStr.c1) =>
-      return nil
+    str.c0 ~= lispStr.c1 => return nil
     strIndex := c0+1
   subSequence(str, strIndex)
 

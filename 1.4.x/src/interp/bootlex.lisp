@@ -122,7 +122,7 @@
  "Transforms X according to AL = ((<label> . Sexpr) ..)."
   (COND ((simple-vector-p X)
          (do ((i 0 (1+ i))
-              (k (maxindex x)))
+              (k (|maxIndex| x)))
              ((> i k))
            (if (LET ((Y (LASSOC (ELT X I) AL))) (SETF (ELT X I) Y))
                (TRANSLABEL1 (ELT X I) AL))))

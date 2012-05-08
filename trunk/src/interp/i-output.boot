@@ -1917,7 +1917,7 @@ charyElse(u,v,start,linelength) ==
 scylla(n,v) ==
   y := LASSOC(n,v)
   null y => nil
-  if string?(y) then y := DROPTRAILINGBLANKS copyTree y
+  if string?(y) then y := trimTrailingBlank copyString y
   if $collectOutput then
     $outputLines := [y, :$outputLines]
   else
