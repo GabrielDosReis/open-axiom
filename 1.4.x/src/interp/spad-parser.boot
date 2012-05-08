@@ -85,44 +85,42 @@ stringPrefix?(s1,s2) ==
   n1 > #s2 => false
   and/[s1.i = s2.i for i in 0..(n1-1)]
 
-skipIfBlock st ==
-  [n,:line] := z := preparseReadLine1 st
+skipIfBlock x ==
+  [n,:line] := z := preparseReadLine1 x
   not string? line => z
-  #line = 0 => skipIfBlock st
+  #line = 0 => skipIfBlock x
   line.0 = char ")" =>
     stringPrefix?('")if",line) =>
-      EVAL string2BootTree storeBlanks!(line,2) => preparseReadLine st
-      skipIfBlock st
+      EVAL string2BootTree storeBlanks!(line,2) => preparseReadLine x
+      skipIfBlock x
     stringPrefix?('")elseif",line) =>
-      EVAL string2BootTree storeBlanks!(line,7) => preparseReadLine st
-      skipIfBlock st
+      EVAL string2BootTree storeBlanks!(line,7) => preparseReadLine x
+      skipIfBlock x
     stringPrefix?('")else",line) or stringPrefix?('")endif",line) =>
-      preparseReadLine st
-    stringPrefix?('")fin",line) => [n]
-    skipIfBlock st
-  skipIfBlock st
+      preparseReadLine x
+    stringPrefix?('")fin",line) => [n,:%nothing]
+    skipIfBlock x
+  skipIfBlock x
 
-skipToEndif st ==
-  [n,:line] := z := preparseReadLine1 st
+skipToEndif x ==
+  [n,:line] := z := preparseReadLine1 x
   not string? line => z
-  stringPrefix?(line,'")endif") => preparseReadLine st
-  stringPrefix?(line,'")fin") => [n]
-  skipToEndif st
+  stringPrefix?(line,'")endif") => preparseReadLine x
+  stringPrefix?(line,'")fin") => [n,:%nothing]
+  skipToEndif x
 
 
-preparseReadLine st ==
-  [n,:line] := z := preparseReadLine1 st
+preparseReadLine x ==
+  [n,:line] := z := preparseReadLine1 x
   not string? line or #line = 0 => z
   line.0 = char ")" =>
     stringPrefix?('")if",line) =>
-      EVAL string2BootTree storeBlanks!(line,3) => preparseReadLine st
-      skipIfBlock st
+      EVAL string2BootTree storeBlanks!(line,3) => preparseReadLine x
+      skipIfBlock x
     stringPrefix?('")elseif",line) or stringPrefix?('")else",line) =>
-      skipToEndif st
-    stringPrefix?('")endif",line) => preparseReadLine st
-    stringPrefix?('")fin",line) =>
-      SETQ(_*EOF_*,true)
-      [n]
+      skipToEndif x
+    stringPrefix?('")endif",line) => preparseReadLine x
+    stringPrefix?('")fin",line) => [n,:%nothing]
     z
   z
 
@@ -867,8 +865,9 @@ parseSpadFile sourceFile ==
 
     -- gather parse trees for all toplevel expressions in sourceFile.
     asts := []                                   
-    while not (_*EOF_* or FILE_-CLOSED) repeat
+    while not eof? IN_-STREAM repeat
       $lineStack: local := PREPARSE IN_-STREAM
+      $lineStack = nil => leave nil -- explicit end of input
       LINE: local := CDAR $lineStack
       CATCH('SPAD__READER,parseNewExpr())
       asts := [parseTransform postTransform popStack1(), :asts]

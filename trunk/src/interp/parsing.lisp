@@ -74,7 +74,6 @@
 (MAKEPROP 'END_UNIT 'KEY 'T)
 
 (defparameter out-stream t "Current output stream.")
-(defparameter File-Closed nil   "Way to stop EOF tests for console input.")
 
 (defun Line-Print (line)
   (format out-stream "~&~5D> ~A~%" (|lineNumber| line) (|lineBuffer| Line))
@@ -84,18 +83,6 @@
   (cond ((adjustable-array-p s) s)
         (t (make-array (array-dimensions s) :element-type 'character
                        :adjustable t :initial-contents s))))
-
-(defun get-a-line (stream)
-  (if (and (|ioTerminal?| stream) (not |$leanMode|))
-      (|printPrompt|))
-  (let ((ll (read-a-line stream)))
-    (if (stringp ll) (make-string-adjustable ll) ll)))
-
-(defparameter Current-Fragment nil
-  "A string containing remaining chars from readline; needed because
-Symbolics read-line returns embedded newlines in a c-m-Y.")
-
-(defun input-clear () (setq Current-Fragment nil))
 
 (defun Next-Lines-Clear () (setq |$lineStack| nil))
 
@@ -123,22 +110,6 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
               (current-line-print))))
 
 (defmacro current-line-clear () `(|lineClear!| |$spadLine|))
-
-(defun read-a-line (&optional (stream t))
-  (let (cp)
-    (if (and Current-Fragment (> (length Current-Fragment) 0))
-        (let ((line (with-input-from-string
-                      (s Current-Fragment :index cp :start 0)
-                      (read-line s nil nil))))
-          (setq Current-Fragment (subseq Current-Fragment cp))
-          line)
-        (prog nil
-              (if (stream-eof in-stream)
-                  (progn (setq File-Closed t *EOF* t)
-                         (|lineNewLine!| (make-string 0) |$spadLine|)
-                         (return nil)))
-              (if (setq Current-Fragment (read-line stream))
-                  (return (read-a-line stream)))))))
 
 ; *** Print New Line
 
@@ -199,14 +170,14 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
   (format t "~&Input is coming from ~A, and output is going to ~A.~%"
            (or (streamp in-stream) "the keyboard")
            (or (streamp out-stream) "the screen"))
-  (format t "~:[~;The current input stream is logically closed.~%~]~%" File-Closed))
+  (format t "~:[~;The current input stream is logically closed.~%~]~%"
+	  (|eof?| in-stream)))
 
 (defmacro IOStreams-Set (input output) `(setq in-stream ,input out-stream ,output))
 
 (defmacro IOStreams-Clear (&optional (in t) (out t))
   `(progn (and (streamp in-stream) (close in-stream))
           (and (streamp out-stream) (close out-stream))
-          (setq File-Closed nil)
           (IOStreams-Set ,in ,out)))
 
 ; 2B. Routines for applying certain metagrammatical elements
@@ -580,7 +551,6 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun IOClear (&optional (in t) (out t))
   ;(IOStreams-clear in out)
-  (input-clear)
   (current-line-clear)
   (|tokenStackClear!|)
   (|reduceStackClear|)

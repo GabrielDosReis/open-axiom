@@ -77,7 +77,6 @@
 (defun init-boot/spad-reader ()
   (setq $SPAD_ERRORS (VECTOR 0 0 0))
   (setq SPADERRORSTREAM |$OutputStream|)
-  (setq File-Closed nil)
   (Next-Lines-Clear)
   (setq |$lineStack| nil)
   (ioclear))
@@ -92,11 +91,9 @@
            ($SPAD T)
            (OPTIONLIST nil)
            (*EOF* NIL)
-           (File-Closed NIL)
            (/editfile *spad-input-file*)
            in-stream out-stream)
-  (declare (special |$Echo| /editfile *comp370-apply* *EOF*
-                    File-Closed Xcape))
+  (declare (special |$Echo| /editfile *comp370-apply* *EOF* Xcape))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
@@ -121,11 +118,15 @@
          (print-package "BOOT"))
       (setq |$OutputStream| out-stream)
       (loop
-       (if (or *eof* file-closed) (return nil))
+       (if (|eof?| in-stream) (return nil))
        (catch 'SPAD_READER
-         (if (setq |$lineStack| (PREPARSE in-stream))
-             (let ((LINE (cdar |$lineStack|)))
-               (declare (special LINE))
+	 (progn 
+	   (setq |$lineStack| (PREPARSE in-stream))
+	   (when (null |$lineStack|)
+	     (return nil))
+	   (when |$lineStack|
+	     (let ((LINE (cdar |$lineStack|)))
+	       (declare (special LINE))
                (|parseNewExpr|)
                (let ((parseout (|popStack1|)) )
                  (when parseout
@@ -133,7 +134,7 @@
                          (S-PROCESS parseout))
                        (format out-stream "~&")))
                ;(IOClear in-stream out-stream)
-               )))
+               ))))
       (IOClear in-stream out-stream)))
     (if *spad-input-file* (shut in-stream))
     (if *spad-output-file* (shut out-stream)))
