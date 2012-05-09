@@ -145,6 +145,26 @@ preparseEcho lines ==
       formatToStream(OUT_-STREAM,'"~&;~A~%",x)
   $EchoLineStack := nil
 
+preparse st ==
+  $COMBLOCKLIST := nil
+  $SKIPME := false
+  stack := 
+    $preparseLastLine =>
+      $preparseLastLine is [.,:.] => $preparseLastLine
+      [$preparseLastLine]
+    nil
+  $INDEX := $INDEX - #stack
+  u := preparse1 stack
+  $SKIPME => preparse st
+  if $preparseReportIfTrue then
+    PARSEPRINT u
+  $headerDocumentation := nil
+  $docList := nil
+  $maxSignatureLineNumber := 0
+  $constructorLineNumber := IFCAR IFCAR u
+  u
+      
+
 --%  
 macro compulsorySyntax s ==
   s or SPAD__SYNTAX__ERROR()
@@ -887,7 +907,7 @@ parseSpadFile sourceFile ==
     -- gather parse trees for all toplevel expressions in sourceFile.
     asts := []                                   
     while not eof? IN_-STREAM repeat
-      $lineStack: local := PREPARSE IN_-STREAM
+      $lineStack: local := preparse IN_-STREAM
       $lineStack = nil => leave nil -- explicit end of input
       LINE: local := CDAR $lineStack
       CATCH('SPAD__READER,parseNewExpr())

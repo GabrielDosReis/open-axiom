@@ -110,7 +110,7 @@ lineAdvanceChar! l ==
 ++ Current input line
 $spadLine := makeLine()
 
-++ List of lines returned from PREPARSE
+++ List of lines returned from preparse
 $lineStack := nil
 
 nextLine st ==

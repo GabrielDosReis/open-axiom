@@ -121,7 +121,7 @@
        (if (|eof?| in-stream) (return nil))
        (catch 'SPAD_READER
 	 (progn 
-	   (setq |$lineStack| (PREPARSE in-stream))
+	   (setq |$lineStack| (|preparse| in-stream))
 	   (when (null |$lineStack|)
 	     (return nil))
 	   (when |$lineStack|
