@@ -32,7 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; NAME:    Pre-Parsing Code
-;; PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
+;; PURPOSE: BOOT lines are massaged by preparse to make them easier to parse:
 ;;        1. Trailing -- comments are removed (this is already done, actually).
 ;;        2. Comments between { and } are removed.
 ;;        3. BOOT code is column-sensitive. Code which lines up columnarly is
@@ -64,8 +64,8 @@
 ; Global storage
  
 (defparameter $INDEX 0                          "File line number of most recently read line.")
-(defparameter $preparse-last-line ()            "Most recently read line.")
-(defparameter $preparseReportIfTrue NIL         "Should we print listings?")
+(defparameter |$preparseLastLine| ()            "Most recently read line.")
+(defparameter |$preparseReportIfTrue| NIL         "Should we print listings?")
 (defparameter $LineList nil                     "Stack of preparsed lines.")
 (defparameter |$EchoLineStack| nil                "Stack of lines to list.")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
@@ -76,28 +76,11 @@
 
 (defun Initialize-Preparse (strm)
   (setq $INDEX 0 $LineList nil |$EchoLineStack| nil)
-  (setq $preparse-last-line (|readLine| strm)))
+  (setq |$preparseLastLine| (|readLine| strm)))
  
 (defvar $skipme)
  
-(defun PREPARSE (Strm &aux (stack ()))
-  (SETQ $COMBLOCKLIST NIL $skipme NIL)
-  (when $preparse-last-line
-        (if (consp $preparse-last-line)
-            (setq stack $preparse-last-line)
-          (push $preparse-last-line stack))
-        (setq $INDEX (- $INDEX (length stack))))
-  (let ((U (PREPARSE1 stack)))
-    (if $skipme (preparse strm)
-      (progn
-        (if $preparseReportIfTrue (PARSEPRINT U))
-        (setq |$headerDocumentation| NIL)
-        (SETQ |$docList| NIL)
-        (SETQ |$maxSignatureLineNumber| 0)
-        (SETQ |$constructorLineNumber| (IFCAR (IFCAR U)))
-        U))))
- 
-(defun PREPARSE1 (LineList)
+(defun |preparse1| (LineList)
  (PROG (($LINELIST LineList) |$EchoLineStack| NUM A I L PSLOC
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
@@ -113,7 +96,7 @@
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
                 (|preparseEcho| LineList)
-                (setq $preparse-last-line nil) ;don't reread this line
+                (setq |$preparseLastLine| nil) ;don't reread this line
                 (SETQ LINE a)
                 (CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
                 (GO READLOOP)))
@@ -168,7 +151,7 @@
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist))
              (IF (NOT (|ioTerminal?| in-stream))
-                 (setq $preparse-last-line
+                 (setq |$preparseLastLine|
                        (|reverse!| |$EchoLineStack|)))
              (RETURN (|pairList| (|reverse!| NUMS)
                         (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
@@ -182,7 +165,7 @@
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))
          (when (and (|ioTerminal?| in-stream) (not continue))
-            (setq $preparse-last-line nil)
+            (setq |$preparseLastLine| nil)
              (RETURN (|pairList| (|reverse!| NUMS)
                            (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
  
@@ -199,7 +182,7 @@
       (SETQ LINE (if $LINELIST
                      (pop $LINELIST)
               (expand-tabs (|readLine| in-stream))))
-      (setq $preparse-last-line LINE)
+      (setq |$preparseLastLine| LINE)
       (and (stringp line) (incf $INDEX))
       (COND
         ( (NOT (STRINGP LINE))
@@ -212,7 +195,7 @@
           $INDEX
           (COND
             ( (AND (> (SETQ IND (|maxIndex| LINE)) -1) (char= (ELT LINE IND) #\_))
-              (setq $preparse-last-line
+              (setq |$preparseLastLine|
                     (STRCONC (SUBSTRING LINE 0 IND) (CDR (|preparseReadLine1| X))) ))
             ( 'T
               LINE ) ))) ) )
