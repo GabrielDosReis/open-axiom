@@ -107,7 +107,7 @@
                 (|preparseEcho| LineList)
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
-                       (FINCOMBLOCK NIL NUMS LOCS NCOMBLOCK NIL)))
+                       (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK NIL)))
                 (RETURN (|pairList| (|reverse!| NUMS)
 			 (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
@@ -137,7 +137,7 @@
                 (COND
                   ((= SLOC N)
                    (COND ((AND NCOMBLOCK (NOT (= N (CAR NCOMBLOCK))))
-                          (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist)
+                          (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist)
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
@@ -166,7 +166,7 @@
                (progn (push functor |$constructorsSeen|) (setq $skipme nil))))
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
-               (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
+               (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist))
              (IF (NOT (|ioTerminal?| in-stream))
                  (setq $preparse-last-line
                        (|reverse!| |$EchoLineStack|)))
@@ -174,7 +174,7 @@
                         (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
          (COND (NCOMBLOCK
-                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist)
+                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist)
                 (setq NCOMBLOCK ())))
          (PUSH SLOC LOCS)
  REREAD  (|preparseEcho| LineList)
@@ -187,31 +187,6 @@
                            (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))
- 
-;; NUM is the line number of the current line
-;; OLDNUMS is the list of line numbers of previous lines
-;; OLDLOCS is the list of previous indentation locations
-;; NCBLOCK is the current comment block
-(DEFUN FINCOMBLOCK (NUM OLDNUMS OLDLOCS NCBLOCK linelist)
-  (PUSH
-    (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (|reverse| (CDR NCBLOCK))))
-              ;; comment for constructor itself paired with 1st line -1
-          ('T
-           (COND (|$EchoLineStack|
-                  (setq NUM (POP |$EchoLineStack|))
-                  (|preparseEcho| linelist)
-                  (SETQ |$EchoLineStack| (LIST NUM))))
-           (cons
-            ;; scan backwards for line to left of current
-            (DO ((onums oldnums (cdr onums))
-                 (olocs oldlocs (cdr olocs))
-                 (sloc (car ncblock)))
-                ((null onums) nil)
-                (if (and (numberp (car olocs))
-                         (<= (car olocs) sloc))
-                    (return (car onums))))
-            (|reverse| (CDR NCBLOCK)))))
-    $COMBLOCKLIST))
  
 (defun PARSEPRINT (L)
   (if L

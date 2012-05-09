@@ -109,6 +109,21 @@ skipToEndif x ==
   stringPrefix?(line,'")fin") => [n,:%nothing]
   skipToEndif x
 
+++ `n' is the line number of the current line
+++ `oldnums' is the list of line numbers of previous lines
+++ `oldlocs' is the list of previous indentation locations
+++ `ncblock' is the current comment block
+findCommentBlock(n,oldnums,oldlocs,ncblock,lines) ==
+  x :=
+    [nc,:block] := ncblock
+    nc = 0 => [n - 1,:reverse block]
+    if $EchoLineStack then
+      [n,:$EchoLineStack] := $EchoLineStack
+      preparseEcho lines
+      $EchoLineStack := [n]
+    [or/[n for n in oldnums for l in oldlocs | integer? l and l <= nc],
+       :reverse block]
+  $COMBLOCKLIST := [x,:$COMBLOCKLIST]
 
 preparseReadLine x ==
   [n,:line] := z := preparseReadLine1 x
