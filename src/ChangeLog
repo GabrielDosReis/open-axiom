@@ -1,5 +1,10 @@
 2012-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/preparse.lisp (FINCOMBLOCK): Move to spad-parser.boot.
+	Rename to findCommentBlock.
+
+2012-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/preparse.lisp (PREPARSE-ECHO): Move to spad-parser.boot.
 	Rename to preparseEcho.
 	* lisp/core.lisp.in (formatToStream): New.
