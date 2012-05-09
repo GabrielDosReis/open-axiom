@@ -113,6 +113,7 @@
 	   "readExpr"
 	   "readIntegerIfCan"
 	   "formatToString"
+	   "formatToStream"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -587,6 +588,9 @@
 
 (defmacro |formatToString| (&rest args)
   `(format nil ,@args))
+
+(defmacro |formatToStream| (&rest x)
+  `(format ,@x))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-

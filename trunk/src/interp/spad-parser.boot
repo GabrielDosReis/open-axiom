@@ -124,6 +124,12 @@ preparseReadLine x ==
     z
   z
 
+preparseEcho lines ==
+  if $Echo then
+    for x in reverse lines repeat
+      formatToStream(OUT_-STREAM,'"~&;~A~%",x)
+  $EchoLineStack := nil
+
 --%  
 macro compulsorySyntax s ==
   s or SPAD__SYNTAX__ERROR()

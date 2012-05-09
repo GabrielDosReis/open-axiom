@@ -1,3 +1,9 @@
+2012-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/preparse.lisp (PREPARSE-ECHO): Move to spad-parser.boot.
+	Rename to preparseEcho.
+	* lisp/core.lisp.in (formatToStream): New.
+
 2012-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Export char.  Do not rename maxIndex.
