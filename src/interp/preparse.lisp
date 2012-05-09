@@ -67,7 +67,7 @@
 (defparameter $preparse-last-line ()            "Most recently read line.")
 (defparameter $preparseReportIfTrue NIL         "Should we print listings?")
 (defparameter $LineList nil                     "Stack of preparsed lines.")
-(defparameter $EchoLineStack nil                "Stack of lines to list.")
+(defparameter |$EchoLineStack| nil                "Stack of lines to list.")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
  
 (DEFPARAMETER TOK NIL)
@@ -75,7 +75,7 @@
 (DEFPARAMETER LABLASOC NIL)
 
 (defun Initialize-Preparse (strm)
-  (setq $INDEX 0 $LineList nil $EchoLineStack nil)
+  (setq $INDEX 0 $LineList nil |$EchoLineStack| nil)
   (setq $preparse-last-line (|readLine| strm)))
  
 (defvar $skipme)
@@ -98,13 +98,13 @@
         U))))
  
 (defun PREPARSE1 (LineList)
- (PROG (($LINELIST LineList) $EchoLineStack NUM A I L PSLOC
+ (PROG (($LINELIST LineList) |$EchoLineStack| NUM A I L PSLOC
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
  READLOOP (DCQ (NUM . A) (|preparseReadLine| LineList))
          (cond ((|atEndOfUnit?| A)
-                (PREPARSE-ECHO LineList)
+                (|preparseEcho| LineList)
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (FINCOMBLOCK NIL NUMS LOCS NCOMBLOCK NIL)))
@@ -112,7 +112,7 @@
 			 (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
-                (PREPARSE-ECHO LineList)
+                (|preparseEcho| LineList)
                 (setq $preparse-last-line nil) ;don't reread this line
                 (SETQ LINE a)
                 (CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
@@ -169,7 +169,7 @@
                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
              (IF (NOT (|ioTerminal?| in-stream))
                  (setq $preparse-last-line
-                       (|reverse!| $echolinestack)))
+                       (|reverse!| |$EchoLineStack|)))
              (RETURN (|pairList| (|reverse!| NUMS)
                         (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
@@ -177,7 +177,7 @@
                 (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist)
                 (setq NCOMBLOCK ())))
          (PUSH SLOC LOCS)
- REREAD  (PREPARSE-ECHO LineList)
+ REREAD  (|preparseEcho| LineList)
          (PUSH A LINES)
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))
@@ -197,10 +197,10 @@
     (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (|reverse| (CDR NCBLOCK))))
               ;; comment for constructor itself paired with 1st line -1
           ('T
-           (COND ($EchoLineStack
-                  (setq NUM (POP $EchoLineStack))
-                  (PREPARSE-ECHO linelist)
-                  (SETQ $EchoLineStack (LIST NUM))))
+           (COND (|$EchoLineStack|
+                  (setq NUM (POP |$EchoLineStack|))
+                  (|preparseEcho| linelist)
+                  (SETQ |$EchoLineStack| (LIST NUM))))
            (cons
             ;; scan backwards for line to left of current
             (DO ((onums oldnums (cdr onums))
@@ -230,7 +230,7 @@
         ( (NOT (STRINGP LINE))
           (RETURN (LIST $INDEX)) ) )
       (SETQ LINE (|trimTrailingBlank| LINE))
-      (PUSH (COPY-SEQ LINE) $EchoLineStack)
+      (PUSH (COPY-SEQ LINE) |$EchoLineStack|)
     ;; next line must evaluate $INDEX before recursive call
       (RETURN
         (CONS
@@ -241,11 +241,6 @@
                     (STRCONC (SUBSTRING LINE 0 IND) (CDR (|preparseReadLine1| X))) ))
             ( 'T
               LINE ) ))) ) )
- 
-(defun PREPARSE-ECHO (linelist)
-  (if |$Echo| (REPEAT (IN X (|reverse| $EchoLineStack))
-                        (format out-stream "~&;~A~%" X)))
-  (setq $EchoLineStack ()))
  
 (defun PARSEPILES (LOCS LINES)
   "Add parens and semis to lines to aid parsing."
