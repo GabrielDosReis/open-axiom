@@ -1,3 +1,9 @@
+2012-05-10  Igor Pashev  <pashev.igor@gmail.com>
+
+	* hyper/initx.c: Fixed spelling errors.
+	* hyper/macro.c (parse_macro): Likewise.
+	* sman/sman.c (manage_spad_io): Likewise.
+
 2012-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/io.boot (carriageRetChar?): New.
