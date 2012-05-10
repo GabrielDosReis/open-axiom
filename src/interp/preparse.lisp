@@ -181,7 +181,7 @@
     (PROG (LINE IND)
       (SETQ LINE (if $LINELIST
                      (pop $LINELIST)
-              (expand-tabs (|readLine| in-stream))))
+              (|expandLeadingTabs| (|readLine| in-stream))))
       (setq |$preparseLastLine| LINE)
       (and (stringp line) (incf $INDEX))
       (COND
