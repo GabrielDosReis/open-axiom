@@ -55,6 +55,9 @@ macro tabChar? c ==
 blankChar? c ==
   spaceChar? c or tabChar? c
 
+carriageRetChar? c ==
+  c = abstractChar 13
+
 
 --%
 --% String manipulation routines.
@@ -76,3 +79,16 @@ trimTrailingBlank line ==
     n := n - 1
   n = sz => line
   subString(line,0,n)
+
+trimCarriageReturn line ==
+  carriageRetChar? line.maxIndex(line) =>
+    subString(line,0,maxIndex line)
+  line
+
+expandLeadingTabs line ==
+  not string? line or #line = 0 => line
+  line := trimCarriageReturn line
+  nbLoc := firstNonblankCharPosition line
+  indLoc := indentationLocation line
+  nbLoc = indLoc => line
+  strconc(makeString(indLoc,char " "), subString(line,nbLoc))

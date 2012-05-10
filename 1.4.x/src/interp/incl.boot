@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis
+-- Copyright (C) 2007-2012, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -270,7 +270,7 @@ incLude1(eb,ss,ln,ufos,states) ==
       [xlPrematureEOF(eb, '")--premature end",  lno,ufos), :StreamNil]
     StreamNil
 
-  str  :=  EXPAND_-TABS first ss
+  str  :=  expandLeadingTabs first ss
   info :=  incClassify str
 
   not info.0 =>

@@ -2752,7 +2752,7 @@ processSynonyms() ==
 -- common lisp dependent
 
 doSystemCommand string ==
-   string := strconc('")", EXPAND_-TABS string)
+   string := strconc('")", expandLeadingTabs string)
    LINE: local := string
    processSynonyms()
    string := LINE
