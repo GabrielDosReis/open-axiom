@@ -1,5 +1,11 @@
 2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/preparse.lisp (ADD-PARENS-AND-SEMIS-TO-LINE): Move to
+	spad-parser.boot Rename as addParensAndSemisToLine.
+	(PARSEPILES): Move spad-parser.boot.  Rename as parsePiles.
+
+2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/preparse.lisp (preparseReadLine1): Move to spad-parser.boot.
 
 2012-05-10  Igor Pashev  <pashev.igor@gmail.com>

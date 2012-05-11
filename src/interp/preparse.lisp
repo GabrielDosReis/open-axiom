@@ -92,7 +92,7 @@
                       (NCOMBLOCK
                        (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK NIL)))
                 (RETURN (|pairList| (|reverse!| NUMS)
-			 (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES))))))
+			 (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
                 (|preparseEcho| LineList)
@@ -154,7 +154,7 @@
                  (setq |$preparseLastLine|
                        (|reverse!| |$EchoLineStack|)))
              (RETURN (|pairList| (|reverse!| NUMS)
-                        (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
+                        (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
          (COND (NCOMBLOCK
                 (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist)
@@ -167,7 +167,7 @@
          (when (and (|ioTerminal?| in-stream) (not continue))
             (setq |$preparseLastLine| nil)
              (RETURN (|pairList| (|reverse!| NUMS)
-                           (PARSEPILES (|reverse!| LOCS) (|reverse!| LINES)))))
+                           (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))
  
@@ -176,54 +176,3 @@
       (progn (format t "~&~%       ***       PREPARSE      ***~%~%")
              (dolist (X L) (format t "~5d. ~a~%" (car x) (cdr x)))
              (format t "~%"))))
- 
-(defun PARSEPILES (LOCS LINES)
-  "Add parens and semis to lines to aid parsing."
-  (mapl #'add-parens-and-semis-to-line 
-	(|append!| LINES '(" ")) 
-	(|append!| locs '(nil)))
-  LINES)
- 
-(defun add-parens-and-semis-to-line (slines slocs)
- 
-  "The line to be worked on is (CAR SLINES).  
-   It's indentation is (CAR SLOCS).  
-   There is a notion of current indentation. Then:
- 
-    A. Add open paren to beginning of following line if following 
-       line's indentation is greater than current, and add close paren
-       to end of last succeeding line with following line's indentation.
-    B. Add semicolon to end of line if following line's indentation is
-       the same.
-    C. If the entire line consists of the single keyword then or else, 
-       leave it alone."
- 
-  (let ((start-column (car slocs)))
-    (if (and start-column (> start-column 0))
-        (let ((count 0)
-	      (i 0))
-          (seq
-           (mapl #'(lambda (next-lines nlocs)
-                     (let ((next-line (car next-lines))
-			   (next-column (car nlocs)))
-                       (incf i)
-                       (if next-column
-                           (progn 
-			     (setq next-column (abs next-column))
-			     (if (< next-column start-column)
-				 (exit nil))
-			     (cond 
-			      ((and (eq next-column start-column)
-				    (rplaca nlocs (- (car nlocs)))
-				    (not (|infixToken?| next-line)))
-			       (setq next-lines (|drop| (1- i) slines))
-			       (rplaca next-lines 
-				       (|addClose| (car next-lines) #\;))
-			       (setq count (1+ count))))))))
-                 (cdr slines) (cdr slocs)))
-          (if (> count 0)
-              (progn 
-		(setf (char (car slines) (1- (|firstNonblankCharPosition| (car slines))))
-		      #\( )
-		(setq slines (|drop| (1- i) slines))
-		(rplaca slines (|addClose| (car slines) #\) ))))))))
