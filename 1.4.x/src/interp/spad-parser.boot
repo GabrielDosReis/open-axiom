@@ -161,6 +161,45 @@ preparseEcho lines ==
       formatToStream(OUT_-STREAM,'"~&;~A~%",x)
   $EchoLineStack := nil
 
+++ The line to be worked on is (CAR SLINES).  
+++ It's indentation is (CAR SLOCS).  
+++ There is a notion of current indentation. Then:
+++
+++  A. Add open paren to beginning of following line if following 
+++     line's indentation is greater than current, and add close paren
+++     to end of last succeeding line with following line's indentation.
+++  B. Add semicolon to end of line if following line's indentation is
+++     the same.
+++  C. If the entire line consists of the single keyword then or else, 
+++     leave it alone. 
+addParensAndSemisToLine(lines,locs) ==
+  sc := first locs   -- first line column number
+  sc = nil or sc <= 0 => nil
+  count := 0         -- number of semicolons added
+  i := 0             -- running local line number
+  for x in tails rest lines for y in tails rest locs repeat
+    i := i + 1
+    nc := first y
+    nc = nil => nil
+    nc := abs nc
+    nc < sc => leave nil
+    nc = sc and (y.first := -nc) and not infixToken? first x =>
+      z := drop(i - 1,lines)
+      z.first := addClose(first z,char ";")
+      count := count + 1
+  count > 0 =>
+    first(lines).(firstNonblankCharPosition first lines - 1) := char "("
+    lines := drop(i - 1,lines)
+    lines.first := addClose(first lines,char ")")
+  nil
+
+++ Add parens and semis to lines to aid parsing.  
+parsePiles(locs,lines) ==
+  for x in tails append!(lines,['" "])
+    for y in tails append!(locs,[nil]) repeat
+      addParensAndSemisToLine(x,y)
+  lines
+
 preparse st ==
   $COMBLOCKLIST := nil
   $SKIPME := false
