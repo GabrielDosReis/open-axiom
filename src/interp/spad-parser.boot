@@ -200,6 +200,14 @@ parsePiles(locs,lines) ==
       addParensAndSemisToLine(x,y)
   lines
 
+parsePrint l ==
+  $preparseReportIfTrue and l ~= nil =>
+    formatToStdout '"~&~%       ***       PREPARSE      ***~%~%"
+    for x in l repeat
+      formatToStdout('"~5d. ~a~%",first x,rest x)
+    formatToStdout '"~%"
+  nil
+
 preparse st ==
   $COMBLOCKLIST := nil
   $SKIPME := false
@@ -211,8 +219,7 @@ preparse st ==
   $INDEX := $INDEX - #stack
   u := preparse1 stack
   $SKIPME => preparse st
-  if $preparseReportIfTrue then
-    PARSEPRINT u
+  parsePrint u
   $headerDocumentation := nil
   $docList := nil
   $maxSignatureLineNumber := 0

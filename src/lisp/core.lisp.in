@@ -97,6 +97,8 @@
 	   "deref"
 
 	   ;; IO
+	   "$stdin"
+	   "$stdout"
 	   "$InputStream"
 	   "$OutputStream"
 	   "$ErrorStream"
@@ -114,6 +116,7 @@
 	   "readIntegerIfCan"
 	   "formatToString"
 	   "formatToStream"
+	   "formatToStdout"
 
 	   ;; compiler data structures
 	   "%Mode"
@@ -526,6 +529,9 @@
 
 ;; -*- File IO -*-
 
+(defconstant |$stdout| *standard-output*)
+(defconstant |$stdin| *standard-input*)
+
 (defparameter |$InputStream| (make-synonym-stream '*standard-input*))
 (defparameter |$OutputStream| (make-synonym-stream '*standard-output*))
 (defparameter |$ErrorStream| (make-synonym-stream '*standard-output*))
@@ -591,6 +597,9 @@
 
 (defmacro |formatToStream| (&rest x)
   `(format ,@x))
+
+(defmacro |formatToStdout| (&rest args)
+  `(format |$stdout| ,@args))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-

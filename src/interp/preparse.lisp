@@ -170,9 +170,3 @@
                            (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
  
          (GO READLOOP)))
- 
-(defun PARSEPRINT (L)
-  (if L
-      (progn (format t "~&~%       ***       PREPARSE      ***~%~%")
-             (dolist (X L) (format t "~5d. ~a~%" (car x) (cdr x)))
-             (format t "~%"))))
