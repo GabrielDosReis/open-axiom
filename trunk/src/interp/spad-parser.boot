@@ -139,6 +139,22 @@ preparseReadLine x ==
     z
   z
 
+preparseReadLine1 x ==
+  if $LineList then
+    [line,:$LineList] := $LineList
+  else
+    line := expandLeadingTabs readLine IN_-STREAM
+  $preparseLastLine := line
+  not string? line => [$INDEX]
+  $INDEX := $INDEX + 1
+  line := trimTrailingBlank line
+  $EchoLineStack := [copyString line,:$EchoLineStack]
+  n := $INDEX
+  if #line > 0 and line.maxIndex(line) = char "__" then
+    line := strconc(subString(line,0,maxIndex line),rest preparseReadLine1 x)
+    $preparseLastLine := line
+  [n,:line]
+
 preparseEcho lines ==
   if $Echo then
     for x in reverse lines repeat
