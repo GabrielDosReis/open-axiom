@@ -1,3 +1,7 @@
+2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/preparse.lisp (preparseReadLine1): Move to spad-parser.boot.
+
 2012-05-10  Igor Pashev  <pashev.igor@gmail.com>
 
 	* hyper/initx.c: Fixed spelling errors.

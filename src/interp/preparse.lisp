@@ -66,7 +66,7 @@
 (defparameter $INDEX 0                          "File line number of most recently read line.")
 (defparameter |$preparseLastLine| ()            "Most recently read line.")
 (defparameter |$preparseReportIfTrue| NIL         "Should we print listings?")
-(defparameter $LineList nil                     "Stack of preparsed lines.")
+(defparameter |$LineList| nil                     "Stack of preparsed lines.")
 (defparameter |$EchoLineStack| nil                "Stack of lines to list.")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
  
@@ -75,13 +75,13 @@
 (DEFPARAMETER LABLASOC NIL)
 
 (defun Initialize-Preparse (strm)
-  (setq $INDEX 0 $LineList nil |$EchoLineStack| nil)
+  (setq $INDEX 0 |$LineList| nil |$EchoLineStack| nil)
   (setq |$preparseLastLine| (|readLine| strm)))
  
 (defvar $skipme)
  
 (defun |preparse1| (LineList)
- (PROG (($LINELIST LineList) |$EchoLineStack| NUM A I L PSLOC
+ (PROG ((|$LineList| LineList) |$EchoLineStack| NUM A I L PSLOC
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
@@ -125,7 +125,7 @@
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
                   ('T (PUSH (STRCONC (|makeString| N #\Space)
-                                  (SUBSTRING A N ())) $LINELIST)
+                                  (SUBSTRING A N ())) |$LineList|)
                       (SETQ $INDEX (1- $INDEX))
                       (SETQ A (SUBSEQ A 0 N))))
          (GO NOCOMS))
@@ -176,29 +176,6 @@
       (progn (format t "~&~%       ***       PREPARSE      ***~%~%")
              (dolist (X L) (format t "~5d. ~a~%" (car x) (cdr x)))
              (format t "~%"))))
- 
-(DEFUN |preparseReadLine1| (X)
-    (PROG (LINE IND)
-      (SETQ LINE (if $LINELIST
-                     (pop $LINELIST)
-              (|expandLeadingTabs| (|readLine| in-stream))))
-      (setq |$preparseLastLine| LINE)
-      (and (stringp line) (incf $INDEX))
-      (COND
-        ( (NOT (STRINGP LINE))
-          (RETURN (LIST $INDEX)) ) )
-      (SETQ LINE (|trimTrailingBlank| LINE))
-      (PUSH (COPY-SEQ LINE) |$EchoLineStack|)
-    ;; next line must evaluate $INDEX before recursive call
-      (RETURN
-        (CONS
-          $INDEX
-          (COND
-            ( (AND (> (SETQ IND (|maxIndex| LINE)) -1) (char= (ELT LINE IND) #\_))
-              (setq |$preparseLastLine|
-                    (STRCONC (SUBSTRING LINE 0 IND) (CDR (|preparseReadLine1| X))) ))
-            ( 'T
-              LINE ) ))) ) )
  
 (defun PARSEPILES (LOCS LINES)
   "Add parens and semis to lines to aid parsing."
