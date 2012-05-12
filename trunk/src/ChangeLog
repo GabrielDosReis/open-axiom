@@ -1,5 +1,10 @@
 2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/io.boot (findChar): New.
+	* interp/preparse.lisp (preparse1): Use it instead of POSITION.
+
+2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/preparse.lisp (PARSEPRINT): Move to spad-parser.boot.
 	Rename as parsePrint.
 
