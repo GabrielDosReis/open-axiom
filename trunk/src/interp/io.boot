@@ -96,4 +96,7 @@ expandLeadingTabs line ==
 findChar(c,s,k == 0) ==
   or/[i for i in k..maxIndex s | stringChar(s,i) = c]
 
-  
+findString(s1,s2,k == 0) ==
+  n1 := #s1
+  or/[i for i in k..(#s2 - n1) |
+        and/[stringChar(s1,j) = stringChar(s2,i+j) for j in 0..(n1-1)]]

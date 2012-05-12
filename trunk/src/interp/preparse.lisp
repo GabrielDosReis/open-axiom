@@ -105,8 +105,8 @@
          (setq PSLOC SLOC)
          (setq I 0 INSTRING () PCOUNT 0)
  STRLOOP (setq STRSYM (OR (|findChar| #\" A I) L))
-         (setq COMSYM (OR (search "--" A :start2 I ) L))
-         (setq NCOMSYM (OR (search "++" A :start2 I ) L))
+         (setq COMSYM (OR (|findString| "--" A I) L))
+         (setq NCOMSYM (OR (|findString| "++" A I) L))
          (setq OPARSYM (OR (|findChar| #\( A I) L))
          (setq CPARSYM (OR (|findChar| #\) A I) L))
          (setq N (MIN STRSYM COMSYM NCOMSYM OPARSYM CPARSYM))
@@ -141,7 +141,7 @@
                ((setq CONTINUE NIL)))
          (if (and (null LINES) (= SLOC 0)) ;;test for skipping constructors
              (if (and |$byConstructors|
-                      (null (search "==>" a))
+                      (null (|findString| "==>" a))
                       (not (member (setq functor (intern
                                     (substring a 0 (STRPOSL ": (=" A 0 NIL))))
                                    |$byConstructors|)))
