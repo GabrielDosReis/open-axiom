@@ -92,3 +92,8 @@ expandLeadingTabs line ==
   indLoc := indentationLocation line
   nbLoc = indLoc => line
   strconc(makeString(indLoc,char " "), subString(line,nbLoc))
+
+findChar(c,s,k == 0) ==
+  or/[i for i in k..maxIndex s | stringChar(s,i) = c]
+
+  
