@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -400,8 +400,8 @@ htMakeTemplates(templateList, numLabels) ==
       template
 
 templateParts template ==
-  null string? template => template
-  i := SEARCH('"%l", template)
+  not string? template => template
+  i := findString('"%l", template)
   null i => template
   [subSequence(template, 0, i), : subSequence(template, i+2)]
 

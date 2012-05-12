@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -453,7 +453,7 @@ formWrapId id ==
   $formatSigAsTeX = 1 => PNAME id
   $formatSigAsTeX = 2 => 
     sep := '"`"
-    FORMAT(nil,'"\verb~a~a~a",sep, id, sep)
+    formatToString('"\verb~a~a~a",sep, id, sep)
   error '"Bad formatSigValue"
 
 formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
@@ -659,7 +659,7 @@ application2String(op,argl, linkInfo) ==
                         concat('"(",concat(tuple2String argl,'")")))
 
 app2StringConcat0(x,y) ==
-  FORMAT(nil, '"~a ~a", x, y)
+  formatToString('"~a ~a", x, y)
 
 app2StringWrap(string, linkInfo) ==
   not linkInfo => string
@@ -667,8 +667,7 @@ app2StringWrap(string, linkInfo) ==
   $formatSigAsTeX = 2 =>
     str2 :=  "app2StringConcat0"/form2Fence linkInfo
     sep := '"`"
-    FORMAT(nil, '"\lispLink{\verb!(|conPage| '~a)!}{~a}", 
-          str2, string)
+    formatToString('"\lispLink{\verb!(|conPage| '~a)!}{~a}", str2, string)
   error "Bad value for $formatSigAsTeX"
 
 record2String x ==
@@ -789,14 +788,14 @@ form2Fence form ==
 form2Fence1 x ==
   x is [op,:argl] =>
     op = 'QUOTE => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
-    ['"(", FORMAT(nil, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
+    ['"(", formatToString('"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
   null x => '""
-  ident? x => FORMAT(nil, '"|~a|", x)
+  ident? x => formatToString('"|~a|", x)
   ['"  ", x]
 
 form2FenceQuote x ==
   integer? x => [toString x]
-  symbol? x => [FORMAT(nil, '"|~a|", x)]
+  symbol? x => [formatToString('"|~a|", x)]
   string? x => ['"_"",x,'"_""]
   x isnt [.,:.] => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]

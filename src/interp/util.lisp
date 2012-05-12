@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -173,7 +173,7 @@
 ;; of the information in an NRLIB is now kept in the daase files. Thus
 ;; we lift the FOO.NRLIB/code.o to FOO.o in the final system.
 (defun lift-NRLIB-name (f)
-  (|runCommand| (concat "cp " f "/code.o " (subseq f 0 (position #\. f)) ".o"))
+  (|runCommand| (concat "cp " f "/code.o " (subseq f 0 (|findChar| #\. f)) ".o"))
   nil)
 
 ;; Translate a directory of boot code to common lisp if the boot code
@@ -429,7 +429,7 @@
        (when (eq expr 'done) (throw 'done nil))
        (when (and (> (length expr) 4)
                 (string= ")abb" (subseq expr 0 4))
-                (search nrlib expr :test #'string=)
+                (|findString| nrlib expr)
                 (setq start (position #\space expr :from-end t :test #'char=)))
         (throw 'done (string-trim '(#\space) (subseq expr start)))))))))
   (SRCABBREVS (sourcefile)

@@ -98,7 +98,7 @@ normalizeStatAndStringify t ==
   float? t =>
       t := roundStat t
       t = 0.0 => '"0"
-      FORMAT(nil,'"~,2F",t)
+      formatToString('"~,2F",t)
   integer? t =>
       K := 1024
       M := K*K

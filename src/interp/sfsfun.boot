@@ -72,7 +72,7 @@ namespace BOOT
 
 FloatError(formatstring,arg) ==
 --        ERROR(formatstring,arg)
-        ERROR FORMAT([],formatstring,arg)
+        ERROR formatToString(formatstring,arg)
 
 nangenericcomplex () ==
         COMPLEX NaNQ()

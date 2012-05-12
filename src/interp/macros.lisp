@@ -507,7 +507,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 (defun |breakIntoLines| (str)
   (let ((bol 0) (eol) (line-list nil))
     (loop
-     (setq eol (position #\Newline str :start bol))
+     (setq eol (|findChar| #\Newline str bol))
      (if (null eol) (return))
      (if (> eol bol) 
          (setq line-list (cons (subseq str bol eol) line-list)))
