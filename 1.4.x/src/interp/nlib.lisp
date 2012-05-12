@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -239,7 +239,7 @@
 (defun spad-fixed-arg (fname )
    (and (equal (symbol-package fname) (find-package "BOOT"))
         (not (get fname 'compiler::spad-var-arg))
-        (search ";" (symbol-name fname))
+        (|findChar| #\; (symbol-name fname))
         (or (get fname 'compiler::fixed-args)
             (setf (get fname 'compiler::fixed-args) t)))
    nil)

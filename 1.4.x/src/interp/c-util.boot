@@ -1742,7 +1742,7 @@ backendCompile1 x ==
   -- Note that category constructors are evaluated before they
   -- their compiled, so this noise is not very helpful.
   if $verbose and FBOUNDP fname then
-    FORMAT(true,'"~&~%;;;     ***       ~S REDEFINED~%",fname)
+    formatToStdout('"~&~%;;;     ***       ~S REDEFINED~%",fname)
   [[fname,lamex],:$CLOSEDFNS]
 
 backendCompile l ==

@@ -868,8 +868,8 @@ checkPrecision e ==
   string? e and codePoint stringChar(e,0) = 34 => e
   e := removeCharFromString(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
-    iPart := subSequence(e,0,(period:=POSITION(char ".",e))+1)
-    expt  := if ePos := POSITION(char "E",e) then subSequence(e,ePos+1) else "0"
+    iPart := subSequence(e,0,(period:=findChar(char ".",e))+1)
+    expt  := if ePos := findChar(char "E",e) then subSequence(e,ePos+1) else "0"
     rPart :=
       ePos => subSequence(e,period+1,ePos)
       period+1 < # e => subSequence(e,period+1)

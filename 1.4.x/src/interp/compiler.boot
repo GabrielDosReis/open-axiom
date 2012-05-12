@@ -2806,7 +2806,7 @@ compileParseTree pt ==
   pf = nil => nil       -- stop if preprocessing was a disaster.
   -- Don't go further if only preprocessing was requested.
   $PrintOnly =>
-    FORMAT(true,'"~S   =====>~%",$currentLine)
+    formatToStdout('"~S   =====>~%",$currentLine)
     PRETTYPRINT pf
   -- Now start actual compilation.
   $x: local := nil         -- ???

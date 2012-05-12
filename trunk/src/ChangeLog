@@ -1,5 +1,27 @@
 2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Miscellaneous cleanup.
+	* interp/compiler.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/debug.lisp: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/monitor.lisp: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nlib.lisp: Likewise.
+	* interp/parsing.lisp: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/posit.boot: Likewise.
+	* interp/sfsfun.boot: Likewise.
+	* interp/util.lisp: Likewise.
+
+2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/io.boot (findString): New.
 	* interp/preparse.lisp: Use it instead of SEARCH.
 

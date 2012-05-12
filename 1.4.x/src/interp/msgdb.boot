@@ -330,7 +330,7 @@ cleanUpSegmentedMsg msg ==
   msg1
 
 operationLink name ==
-  FORMAT(nil, '"\lispLink{\verb!(|oSearch| _"~a_")!}{~a}",
+  formatToString('"\lispLink{\verb!(|oSearch| _"~a_")!}{~a}",
          name,
          escapeSpecialChars STRINGIMAGE name)
 

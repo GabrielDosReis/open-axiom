@@ -2772,7 +2772,7 @@ doSystemCommand string ==
 
 handleNoParseCommands(unab, string) ==
   string := stripSpaces string
-  spaceIndex := SEARCH('" ", string)
+  spaceIndex := findChar(char " ", string)
   unab is "lisp" =>
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", nil)
@@ -2805,9 +2805,9 @@ handleNoParseCommands(unab, string) ==
 
 npboot str ==
   sex := string2BootTree str
-  FORMAT(true, '"~&~S~%", sex)
+  formatToStdout('"~&~S~%", sex)
   $ans := eval sex
-  FORMAT(true, '"~&Value = ~S~%", $ans)
+  formatToStdout('"~&Value = ~S~%", $ans)
 
 stripLisp str ==
   found := false
@@ -2821,16 +2821,16 @@ stripLisp str ==
 
 nplisp str ==
   $ans := eval READ_-FROM_-STRING str
-  FORMAT(true, '"~&Value = ~S~%", $ans)
+  formatToStdout('"~&Value = ~S~%", $ans)
 
 npsystem(unab, str) ==
-  spaceIndex := SEARCH('" ", str)
+  spaceIndex := findChar(char " ", str)
   null spaceIndex =>
     sayKeyedMsg('"S2IZ0080", [str])
   sysPart := subSequence(str, 0, spaceIndex)
   -- The following is a hack required by the fact that unAbbreviateKeyword
   -- returns the word "system" for unknown words
-  null SEARCH(sysPart, STRING unab) =>
+  null findString(sysPart, STRING unab) =>
     sayKeyedMsg('"S2IZ0080", [sysPart])
   command := subSequence(str, spaceIndex+1)
   runCommand command
@@ -2902,7 +2902,7 @@ handleParsedSystemCommands(unabr, optionList) ==
   systemCommand parcmd
 
 parseSystemCmd opt ==
-  spaceIndex := SEARCH('" ", opt)
+  spaceIndex := findChar(char " ", opt)
   spaceIndex =>
     commandString := stripSpaces subSequence(opt, 0, spaceIndex)
     argString := stripSpaces subSequence(opt, spaceIndex)
@@ -2923,7 +2923,7 @@ handleTokensizeSystemCommands(unabr, optionList) ==
   parcmd => tokenSystemCommand(unabr, parcmd)
 
 getFirstWord string ==
-  spaceIndex := SEARCH('" ", string)
+  spaceIndex := findChar(char " ", string)
   null spaceIndex => string
   stripSpaces subSequence(string, 0, spaceIndex)
 

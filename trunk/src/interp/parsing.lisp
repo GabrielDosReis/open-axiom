@@ -296,7 +296,7 @@ the stack, then stack a NIL. Return the value of prod."
         (go top)))
 
 (defun termchr ()  "Is CHR a terminating character?"
-  (position (|currentChar|) " *,;<>()[]/\\"))
+  (|findChar| (|currentChar|) " *,;<>()[]/\\"))
 
 (defun compfin () (or (|matchString| ")fin") (|matchString| ".FIN")))
 

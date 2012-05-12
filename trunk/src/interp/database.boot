@@ -51,7 +51,7 @@ pathToDatabase name ==
   if dbdir := systemDatabaseDirectory() then
     path := strconc(dbdir,name)
     if $verbose then
-      FORMAT(true,'"   Using local database ~a..",path)
+      formatToStdout('"   Using local database ~a..",path)
   else
     path := strconc(systemRootDirectory(),'"algebra/",name)
   path

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -242,6 +242,6 @@ pfPrintSrcLines(pf) ==
   for l in lines repeat
     line := first l
     if lno < lnGlobalNum(line) then 
-      FORMAT(true, '"   ~A~%",  lnString line)
+      formatToStdout('"   ~A~%",  lnString line)
       lno := lnGlobalNum(line)
 

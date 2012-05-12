@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -428,11 +428,11 @@
       
 (defun monitor-parse (expr)
   (let (point1 point2)
-   (setq point1 (position #\space expr :test #'char=))
+   (setq point1 (|findChar| #\space expr))
    (setq point1 (position #\space expr :start point1 :test-not #'char=))
-   (setq point1 (position #\space expr :start point1 :test #'char=))
+   (setq point1 (|findChar| #\space expr point1))
    (setq point1 (position #\space expr :start point1 :test-not #'char=))
-   (setq point2 (position #\space expr :start point1 :test #'char=))
+   (setq point2 (|findChar| #\space expr point1))
    (subseq expr point1 point2)))
 
 (defun monitor-spadfile (name)
@@ -467,9 +467,7 @@
   (maphash 
    #'(lambda (k v)
       (when
-       (search (string-upcase str) 
-               (string-upcase (symbol-name k)) 
-               :test #'string=)
+       (|findString| (string-upcase str) (string-upcase (symbol-name k)))
         (push v result)))
    *monitor-table*)
  result))
