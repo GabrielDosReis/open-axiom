@@ -306,6 +306,7 @@ for i in [ _
   ["stringEq?","STRING="] , _
   ["stringUpcase", "STRING-UPCASE"] , _
   ["subSequence", "SUBSEQ"] , _
+  ["symbolBinding", "FIND-SYMBOL"] , _
   ["symbolScope", "SYMBOL-PACKAGE"] , _
   ["symbolEq?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _

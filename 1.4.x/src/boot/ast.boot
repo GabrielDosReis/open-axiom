@@ -66,6 +66,7 @@ structure %Ast ==
   %Signature(%Symbol,%Mapping)          -- op: S -> T
   %Mapping(%Ast, %List)                 -- (S1, S2) -> T
   %Forall(%List,%Ast)                   -- forall a . a -> a
+  %Dynamic %Ast                         -- x: local
   %SuffixDot(%Ast)                      -- x . 
   %Quote(%Ast)                          -- 'x
   %EqualPattern(%Ast)                   -- =x        -- patterns
@@ -87,7 +88,7 @@ structure %Ast ==
   %InfixExpr(%Symbol,%Ast,%Ast)         -- x + y
   %ConstantDefinition(%Symbol,%Ast)     -- x == y
   %Definition(%Symbol,%Ast,%Ast)        -- f x == y
-  %Macro(%Symbol,%List,%Ast)            -- m x ==> y
+  %Macro(%Symbol,%List,%Ast)            -- macro m x == y
   %Lambda(%List,%Ast)                   -- x +-> x**2
   %SuchThat(%Ast)                       -- | p
   %Assignment(%Ast,%Ast)                -- x := y
@@ -143,7 +144,7 @@ bfColon x==
 bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
   %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
-    FIND_-SYMBOL(symbolName name,package)
+    symbolBinding(symbolName name,package)
   makeSymbol(symbolName name, package)
 
 bfSymbol: %Thing -> %Thing 
@@ -203,7 +204,7 @@ bfBeginsDollar x ==
   stringChar(symbolName x,0) = char "$"
  
 compFluid id == 
-  ["FLUID",id]
+  ["%Dynamic",id]
  
 compFluidize x==
   x = nil => nil
@@ -536,7 +537,6 @@ bfForin(lhs,U)==
   bfFor(lhs,U,1)
  
 bfLocal(a,b)==
-  b is "FLUID" =>  compFluid a
   b is "local" =>  compFluid a
   a
  
@@ -600,7 +600,7 @@ bfLetForm(lhs,rhs) ==
  
 bfLET1(lhs,rhs) ==
   symbol? lhs        => bfLetForm(lhs,rhs)
-  lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
+  lhs is ['%Dynamic,.] => bfLetForm(lhs,rhs)
   symbol? rhs and not bfCONTAINED(rhs,lhs) =>
     rhs1 := bfLET2(lhs,rhs)
     rhs1 is ["L%T",:.]   => bfMKPROGN [rhs1,rhs]
@@ -629,7 +629,7 @@ bfCONTAINED(x,y)==
 bfLET2(lhs,rhs) ==
   lhs = nil => nil
   symbol? lhs => bfLetForm(lhs,rhs)
-  lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
+  lhs is ['%Dynamic,.] => bfLetForm(lhs,rhs)
   lhs is ['L%T,a,b] =>
     a := bfLET2(a,rhs)
     (b := bfLET2(b,rhs)) = nil => a
@@ -1013,12 +1013,8 @@ shoeCompTran x==
       body' := [fvars,:body']
     lvars or needsPROG body => shoePROG(lvars,body')
     body'
-  fl := shoeFluids args
-  body :=
-    fl =>
-      fvs:=["DECLARE",["SPECIAL",:fl]]
-      [fvs,:body]
-    body
+  if fl := shoeFluids args then
+    body := [["DECLARE",["SPECIAL",:fl]],:body]
   [lamtype,args,:body]
 
 needsPROG body ==
@@ -1050,7 +1046,7 @@ isDynamicVariable x ==
     symbolMember?(x,$constantIdentifiers) => false
     CONSTANTP x => false
     BOUNDP x or $activeNamespace = nil => true
-    y := FIND_-SYMBOL(symbolName x,$activeNamespace) => not CONSTANTP y
+    y := symbolBinding(symbolName x,$activeNamespace) => not CONSTANTP y
     true
   false
  
@@ -1078,7 +1074,7 @@ shoeCompTran1 x ==
       if not symbolMember?(l,$locVars) then
         $locVars := [l,:$locVars]
       x
-    l is ["FLUID",:.] =>
+    l is ['%Dynamic,:.] =>
       if not symbolMember?(second l,$fluidVars) then
         $fluidVars := [second l,:$fluidVars]
       x.rest.first := second l
@@ -1119,7 +1115,6 @@ shoeCompTran1 x ==
 bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
   symbol? a =>
-    b is "FLUID" =>  bfLET(compFluid a,nil)
     b is "local" =>  bfLET(compFluid a,nil)
     $typings := [["TYPE",b,a],:$typings]
     a
