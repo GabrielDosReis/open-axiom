@@ -1,3 +1,13 @@
+2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: symbolBinding is now builtin.
+	* boot/ast.boot (%Ast): Add %Dynamic variant.
+	(bfColonColon): Use symbolBinding instead of FIND-SYMBOLS.
+	(compFluid): Return a %Dynamic form.  Adjust callers.
+	(shoeCompTran): Tidy.
+	* boot/translator.boot (BOOTLOOP): Tidy.
+	(BOOTPO): Likewise.
+
 2012-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot: Miscellaneous cleanup.

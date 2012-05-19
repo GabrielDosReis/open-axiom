@@ -226,7 +226,7 @@
              (LIST '|stringDowncase| 'STRING-DOWNCASE)
              (LIST '|string?| 'STRINGP) (LIST '|stringEq?| 'STRING=)
              (LIST '|stringUpcase| 'STRING-UPCASE)
-             (LIST '|subSequence| 'SUBSEQ)
+             (LIST '|subSequence| 'SUBSEQ) (LIST '|symbolBinding| 'FIND-SYMBOL)
              (LIST '|symbolScope| 'SYMBOL-PACKAGE) (LIST '|symbolEq?| 'EQ)
              (LIST '|symbolFunction| 'SYMBOL-FUNCTION)
              (LIST '|symbolName| 'SYMBOL-NAME)

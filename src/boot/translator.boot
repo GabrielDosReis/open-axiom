@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -695,8 +695,7 @@ BOOTLOOP() ==
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTLOOP()
-  b:=shoePrefix? ('")console",a)
-  b =>
+  shoePrefix? ('")console",a) =>
     stream:= _*TERMINAL_-IO_*
     PSTTOMC bRgen stream
     BOOTLOOP()
@@ -709,8 +708,7 @@ BOOTPO() ==
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTPO()
-  b:=shoePrefix? ('")console",a)
-  b =>
+  shoePrefix? ('")console",a) =>
     stream:= _*TERMINAL_-IO_*
     PSTOUT bRgen stream
     BOOTPO()
