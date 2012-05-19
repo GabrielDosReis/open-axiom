@@ -108,14 +108,11 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	INSTALL NEWS TODO config/config.guess config/config.sub \
 	config/install-sh config/ltmain.sh config/missing \
 	config/mkinstalldirs
-am__aclocal_m4_deps = $(top_srcdir)/config/aclocal.m4 \
-	$(top_srcdir)/config/libtool.m4 \
-	$(top_srcdir)/config/ltoptions.m4 \
-	$(top_srcdir)/config/ltsugar.m4 \
-	$(top_srcdir)/config/ltversion.m4 \
-	$(top_srcdir)/config/lt~obsolete.m4 \
-	$(top_srcdir)/config/open-axiom.m4 $(top_srcdir)/configure.ac
-am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES)
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+am__aclocal_m4_deps = $(top_srcdir)/config/open-axiom.m4 \
+	$(top_srcdir)/configure.ac
+am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -234,6 +231,7 @@ LTLIBOBJS = @LTLIBOBJS@
 MAKE = @MAKE@
 MAKEINDEX = @MAKEINDEX@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MKTEMP = @MKTEMP@
 NM = @NM@
@@ -270,6 +268,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
@@ -314,7 +313,6 @@ libexecdir = @libexecdir@
 libext = @libext@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oa_c_runtime = @oa_c_runtime@
@@ -414,6 +412,9 @@ $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENC
 
 $(top_srcdir)/configure:  $(am__configure_deps)
 	$(am__cd) $(srcdir) && $(AUTOCONF)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+$(am__aclocal_m4_deps):
 
 config/openaxiom-c-macros.h: config/stamp-h1
 	@if test ! -f $@; then \
