@@ -1,4 +1,16 @@
-2012-02-03  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.in: Regenerate.
+	* config/aclocal.m4: Move to toplevel.
+	* config/libtool.m4: Remove.
+	* config/ltoptions.m4: Likewise.
+	* config/ltversion.m4: Likewise.
+	* config/lt~obsolete.m4: Likewise.
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNMENT_OPERATOR): Use
+	AC_LANG_SOURCE to generate test program.
+	(OPENAXIOM_ALIGNAS_SPECIFIER): Likewise.
+
+2012-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_ALIGNAS_SPECIFIER): New.
 	(OPENAXIOM_CHECK_MISC): Use it.

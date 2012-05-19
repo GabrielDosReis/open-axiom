@@ -1002,9 +1002,9 @@ dnl or vendor lock-ins such as `__alignof'.
 AC_DEFUN([OPENAXIOM_ALIGNMENT_OPERATOR],[
 AC_MSG_CHECKING([name of alignment query operator])
 oa_alignment=
-AC_COMPILE_IFELSE([int a = __alignof(int);],
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = __alignof(int);]])],
                   [oa_alignment="__alignof"],
-                  [AC_COMPILE_IFELSE([int a = alignof(int);],
+                  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = alignof(int);]])],
                                      [oa_alignment="alignof"],
                                      [AC_MSG_ERROR([C++ compiler does not support alignment query operator])])])
 AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
@@ -1020,9 +1020,9 @@ dnl Vendor lock-ins are of the attribute form.
 AC_DEFUN([OPENAXIOM_ALIGNAS_SPECIFIER],[
 AC_MSG_CHECKING([alignment boundary specifier syntax])
 oa_alignas=
-AC_COMPILE_IFELSE([alignas(16) int a = 42;],
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[alignas(16) int a = 42;]])],
   [oa_alignas="alignas(N)"],
-  [AC_COMPILE_IFELSE([__attribute__((__aligned__(16))) int a = 42;],
+  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[__attribute__((__aligned__(16))) int a = 42;]])],
      [oa_alignas="__attribute__((__aligned__(N)))"],
      [AC_MSG_ERROR([C++ compiler does not support alignment specifier])])])
 AC_DEFINE_UNQUOTED([openaxiom_alignas(N)],[$oa_alignas],
