@@ -806,6 +806,10 @@ COMPILE1 fun ==
   compileLispDefinition(name,body)
   body
 
+COMP370 x ==
+  first x is [.,:.] => [COMPILE1 y for y in x]
+  [COMPILE1 x]
+
 assembleCode x ==
   if $PrettyPrint then PRETTYPRINT x
   if not $COMPILE then SAY '"No Compilation"
