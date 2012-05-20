@@ -401,9 +401,6 @@ $texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 $fortranOutputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-conOutStream := 
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
 --%
 
 ++ True if we are building the system algebra.

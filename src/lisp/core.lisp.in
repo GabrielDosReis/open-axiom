@@ -529,8 +529,8 @@
 
 ;; -*- File IO -*-
 
-(defconstant |$stdout| *standard-output*)
-(defconstant |$stdin| *standard-input*)
+(defparameter |$stdout| *standard-output*)
+(defparameter |$stdin| *standard-input*)
 
 (defparameter |$InputStream| (make-synonym-stream '*standard-input*))
 (defparameter |$OutputStream| (make-synonym-stream '*standard-output*))

@@ -1,5 +1,11 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix build breakage with CLozure CL.
+	* lisp/core.lisp.in ($stdin): Demote to DEFPARAMETER.
+	($stdout): Likewise.
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (shoeCompTran): Simplify.
 	(shoeCompTran1): Partially defer translation of fluid variable
 	definition.
