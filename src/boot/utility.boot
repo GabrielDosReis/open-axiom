@@ -49,7 +49,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
   remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
-  copyTree, finishLine) where
+  copyTree, finishLine, stringSuffix?) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -74,6 +74,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     --FIXME: Next signature commented out because of GCL bugs
     -- firstNonblankPosition: (%String,%Short) -> %Maybe %Short
     firstBlankPosition: (%String,%Short) -> %Maybe %Short
+    stringSuffix?: (%String,%String) -> %Maybe %Short
 
 %defaultReadAndLoadSettings()
 
@@ -354,6 +355,15 @@ firstNonblankPosition(s,k) ==
 firstBlankPosition(s,k) ==
   or/[i for i in k..#s - 1 | stringChar(s,i) = char " "]
     
+++ If `suf' is a suffix of `str' return the index into `str' at which the
+++ match occurs.  Otherwise return nil.
+stringSuffix?(suf,str) ==
+  n1 := #suf
+  n2 := #str
+  n1 > n2 => nil
+  n := n2 - n1
+  and/[stringChar(suf,i) = stringChar(str,j) for i in 0..n1-1 for j in n..] => n
+  nil
 
 --% I/O
 

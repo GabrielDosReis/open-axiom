@@ -503,9 +503,8 @@ shoeRemovebootIfNec s ==
   shoeRemoveStringIfNec('".boot",s)
 
 shoeRemoveStringIfNec(str,s)==
-  n := SEARCH(str,s,KEYWORD::FROM_-END,true)
-  n = nil => s
-  subString(s,0,n)
+  n := stringSuffix?(str,s) => subString(s,0,n)
+  s
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
