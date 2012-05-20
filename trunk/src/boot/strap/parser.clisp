@@ -91,29 +91,31 @@
       |a|))))
 
 (DEFUN |bpIndentParenthesized| (|f|)
-  (PROG (|$bpCount| |a|)
-    (DECLARE (SPECIAL |$bpCount| |$inputStream| |$bpParenCount| |$stok|))
+  (PROG (|a|)
+    (DECLARE (SPECIAL |$inputStream| |$bpParenCount| |$stok|))
     (RETURN
-     (PROGN
-      (SETQ |$bpCount| 0)
-      (SETQ |a| |$stok|)
-      (COND
-       ((|bpEqPeek| 'OPAREN) (SETQ |$bpParenCount| (+ |$bpParenCount| 1))
-        (|bpNext|)
+     (LET ((|$bpCount| 0))
+       (DECLARE (SPECIAL |$bpCount|))
+       (PROGN
+        (SETQ |a| |$stok|)
         (COND
-         ((AND (APPLY |f| NIL) (|bpFirstTok|)
-               (OR (|bpEqPeek| 'CPAREN) (|bpParenTrap| |a|)))
-          (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken|)
-          (COND ((EQL |$bpCount| 0) T)
-                (T
-                 (SETQ |$inputStream|
-                         (|append| (|bpAddTokens| |$bpCount|) |$inputStream|))
-                 (|bpFirstToken|)
-                 (COND ((EQL |$bpParenCount| 0) (|bpCancel|) T) (T T)))))
-         ((|bpEqPeek| 'CPAREN) (|bpPush| (|bfTuple| NIL))
-          (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken|) T)
-         (T (|bpParenTrap| |a|))))
-       (T NIL))))))
+         ((|bpEqPeek| 'OPAREN) (SETQ |$bpParenCount| (+ |$bpParenCount| 1))
+          (|bpNext|)
+          (COND
+           ((AND (APPLY |f| NIL) (|bpFirstTok|)
+                 (OR (|bpEqPeek| 'CPAREN) (|bpParenTrap| |a|)))
+            (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken|)
+            (COND ((EQL |$bpCount| 0) T)
+                  (T
+                   (SETQ |$inputStream|
+                           (|append| (|bpAddTokens| |$bpCount|)
+                                     |$inputStream|))
+                   (|bpFirstToken|)
+                   (COND ((EQL |$bpParenCount| 0) (|bpCancel|) T) (T T)))))
+           ((|bpEqPeek| 'CPAREN) (|bpPush| (|bfTuple| NIL))
+            (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken|) T)
+           (T (|bpParenTrap| |a|))))
+         (T NIL)))))))
 
 (DEFUN |bpParenthesized| (|f|)
   (PROG (|a|)
@@ -1170,27 +1172,27 @@
        (|bpPush| (|bfCaseItem| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpOutItem| ()
-  (PROG (|$GenVarCounter| |$op| |r| |ISTMP#2| |l| |ISTMP#1| |b|)
-    (DECLARE (SPECIAL |$GenVarCounter| |$op| |$InteractiveMode|))
+  (PROG (|r| |ISTMP#2| |l| |ISTMP#1| |b|)
+    (DECLARE (SPECIAL |$InteractiveMode|))
     (RETURN
-     (PROGN
-      (SETQ |$op| NIL)
-      (SETQ |$GenVarCounter| 0)
-      (|bpRequire| #'|bpComma|)
-      (SETQ |b| (|bpPop1|))
-      (|bpPush|
-       (COND ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
-             ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
-                   (PROGN
-                    (SETQ |ISTMP#1| (CDR |b|))
-                    (AND (CONSP |ISTMP#1|)
-                         (PROGN
-                          (SETQ |l| (CAR |ISTMP#1|))
-                          (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                          (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
-                               (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
-                   (SYMBOLP |l|))
-              (COND (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
-                    (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
-             (T (|translateToplevel| |b| NIL))))))))
+     (LET* ((|$op| NIL) (|$GenVarCounter| 0))
+       (DECLARE (SPECIAL |$op| |$GenVarCounter|))
+       (PROGN
+        (|bpRequire| #'|bpComma|)
+        (SETQ |b| (|bpPop1|))
+        (|bpPush|
+         (COND ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
+               ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
+                     (PROGN
+                      (SETQ |ISTMP#1| (CDR |b|))
+                      (AND (CONSP |ISTMP#1|)
+                           (PROGN
+                            (SETQ |l| (CAR |ISTMP#1|))
+                            (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                            (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                                 (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
+                     (SYMBOLP |l|))
+                (COND (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
+                      (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
+               (T (|translateToplevel| |b| NIL)))))))))
 

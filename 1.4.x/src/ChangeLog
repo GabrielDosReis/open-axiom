@@ -1,3 +1,12 @@
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (shoeCompTran): Simplify.
+	(shoeCompTran1): Partially defer translation of fluid variable
+	definition.
+	(bindFluidVars!): New. Complete translation.
+	(groupFluidVars): New.
+	* interp/newfort.boot (fortFormatIntrinsics): Remove redundant return.
+
 2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (shoeCompTran1): Take variable sets by reference.

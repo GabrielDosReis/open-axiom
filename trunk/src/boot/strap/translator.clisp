@@ -122,9 +122,9 @@
     (|endCompileDuration|)))
 
 (DEFUN BOOTCLAM (|fn| |out|)
-  (PROG (|$bfClamming|)
+  (LET ((|$bfClamming| T))
     (DECLARE (SPECIAL |$bfClamming|))
-    (RETURN (PROGN (SETQ |$bfClamming| T) (BOOTCLAMLINES NIL |fn| |out|)))))
+    (BOOTCLAMLINES NIL |fn| |out|)))
 
 (DEFUN BOOTCLAMLINES (|lines| |fn| |out|) (BOOTTOCLLINES |lines| |fn| |out|))
 
@@ -252,18 +252,20 @@
         (PROGN (|closeStream| |a|) (|setCurrentPackage| |b|)))))))
 
 (DEFUN BOCLAM (|fn|)
-  (PROG (|$bfClamming| |a| |callingPackage|)
-    (DECLARE (SPECIAL |$bfClamming|))
+  (PROG (|a| |callingPackage|)
     (RETURN
      (PROGN
       (SETQ |callingPackage| *PACKAGE*)
       (IN-PACKAGE "BOOTTRAN")
-      (SETQ |$bfClamming| T)
-      (UNWIND-PROTECT
+      (LET ((|$bfClamming| T))
+        (DECLARE (SPECIAL |$bfClamming|))
+        (UNWIND-PROTECT
+            (PROGN
+             (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
+             (|shoeToConsole| |a| |fn|))
           (PROGN
-           (SETQ |a| (|inputTextFile| (|shoeAddbootIfNec| |fn|)))
-           (|shoeToConsole| |a| |fn|))
-        (PROGN (|closeStream| |a|) (|setCurrentPackage| |callingPackage|)))))))
+           (|closeStream| |a|)
+           (|setCurrentPackage| |callingPackage|))))))))
 
 (DEFUN |shoeToConsole| (|a| |fn|)
   (COND ((NULL |a|) (|shoeNotFound| |fn|))
@@ -805,25 +807,30 @@
 (DEFPARAMETER |$lispWordTable| NIL)
 
 (DEFUN |shoeDfu| (|a| |fn|)
-  (PROG (|$bfClamming| |$bootDefinedTwice| |$bootUsed| |$bootDefined|
-         |$lispWordTable| |stream|)
-    (DECLARE
-     (SPECIAL |$bfClamming| |$bootDefinedTwice| |$bootUsed| |$bootDefined|
-      |$lispWordTable|))
+  (PROG (|stream|)
     (RETURN
      (COND ((NULL |a|) (|shoeNotFound| |fn|))
-           (T (SETQ |$lispWordTable| (|makeTable| #'EQ))
-            (DO-SYMBOLS (|i| (FIND-PACKAGE "LISP"))
-              (SETF (|tableValue| |$lispWordTable| |i|) T))
-            (SETQ |$bootDefined| (|makeTable| #'EQ))
-            (SETQ |$bootUsed| (|makeTable| #'EQ))
-            (SETQ |$bootDefinedTwice| NIL) (SETQ |$bfClamming| NIL)
-            (|shoeDefUse| (|shoeTransformStream| |a|))
-            (UNWIND-PROTECT
-                (PROGN
-                 (SETQ |stream| (|outputTextFile| (CONCAT |fn| ".defuse")))
-                 (|shoeReport| |stream|))
-              (|closeStream| |stream|)))))))
+           (T
+            (LET ((|$lispWordTable| (|makeTable| #'EQ)))
+              (DECLARE (SPECIAL |$lispWordTable|))
+              (PROGN
+               (DO-SYMBOLS (|i| (FIND-PACKAGE "LISP"))
+                 (SETF (|tableValue| |$lispWordTable| |i|) T))
+               (LET* ((|$bootDefined| (|makeTable| #'EQ))
+                      (|$bootUsed| (|makeTable| #'EQ))
+                      (|$bootDefinedTwice| NIL)
+                      (|$bfClamming| NIL))
+                 (DECLARE
+                  (SPECIAL |$bootDefined| |$bootUsed| |$bootDefinedTwice|
+                   |$bfClamming|))
+                 (PROGN
+                  (|shoeDefUse| (|shoeTransformStream| |a|))
+                  (UNWIND-PROTECT
+                      (PROGN
+                       (SETQ |stream|
+                               (|outputTextFile| (CONCAT |fn| ".defuse")))
+                       (|shoeReport| |stream|))
+                    (|closeStream| |stream|)))))))))))
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
@@ -1082,25 +1089,28 @@
        (|closeStream| |a|)))))
 
 (DEFUN |shoeXref| (|a| |fn|)
-  (PROG (|$bfClamming| |$bootUsed| |$bootDefined| |$lispWordTable| |stream|
-         |out|)
-    (DECLARE
-     (SPECIAL |$bfClamming| |$bootUsed| |$bootDefined| |$lispWordTable|))
+  (PROG (|stream| |out|)
     (RETURN
      (COND ((NULL |a|) (|shoeNotFound| |fn|))
-           (T (SETQ |$lispWordTable| (|makeTable| #'EQ))
-            (DO-SYMBOLS (|i| (FIND-PACKAGE "LISP"))
-              (SETF (|tableValue| |$lispWordTable| |i|) T))
-            (SETQ |$bootDefined| (|makeTable| #'EQ))
-            (SETQ |$bootUsed| (|makeTable| #'EQ)) (SETQ |$bfClamming| NIL)
-            (|shoeDefUse| (|shoeTransformStream| |a|))
-            (SETQ |out| (CONCAT |fn| ".xref"))
-            (UNWIND-PROTECT
-                (PROGN
-                 (SETQ |stream| (|outputTextFile| |out|))
-                 (|shoeXReport| |stream|)
-                 |out|)
-              (|closeStream| |stream|)))))))
+           (T
+            (LET ((|$lispWordTable| (|makeTable| #'EQ)))
+              (DECLARE (SPECIAL |$lispWordTable|))
+              (PROGN
+               (DO-SYMBOLS (|i| (FIND-PACKAGE "LISP"))
+                 (SETF (|tableValue| |$lispWordTable| |i|) T))
+               (LET* ((|$bootDefined| (|makeTable| #'EQ))
+                      (|$bootUsed| (|makeTable| #'EQ))
+                      (|$bfClamming| NIL))
+                 (DECLARE (SPECIAL |$bootDefined| |$bootUsed| |$bfClamming|))
+                 (PROGN
+                  (|shoeDefUse| (|shoeTransformStream| |a|))
+                  (SETQ |out| (CONCAT |fn| ".xref"))
+                  (UNWIND-PROTECT
+                      (PROGN
+                       (SETQ |stream| (|outputTextFile| |out|))
+                       (|shoeXReport| |stream|)
+                       |out|)
+                    (|closeStream| |stream|)))))))))))
 
 (DEFUN |shoeXReport| (|stream|)
   (PROG (|a| |c|)

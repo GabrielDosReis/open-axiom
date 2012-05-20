@@ -727,7 +727,7 @@ fortFormatCharacterTypes(names) ==
 
 fortFormatIntrinsics(l) ==
   $fortError : local := nil
-  null l => return nil
+  null l => nil
   displayLines fortran2Lines ['"INTRINSIC ",:addCommas(l)]
   
  

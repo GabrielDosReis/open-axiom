@@ -995,9 +995,9 @@
             (LIST 'COND (LIST |isPred| |rhs|)))))))
 
 (DEFUN |bfLET| (|lhs| |rhs|)
-  (PROG (|$letGenVarCounter|)
+  (LET ((|$letGenVarCounter| 0))
     (DECLARE (SPECIAL |$letGenVarCounter|))
-    (RETURN (PROGN (SETQ |$letGenVarCounter| 0) (|bfLET1| |lhs| |rhs|)))))
+    (|bfLET1| |lhs| |rhs|)))
 
 (DEFUN |addCARorCDR| (|acc| |expr|)
   (PROG (|funsR| |funsA| |p| |funs|)
@@ -1034,13 +1034,9 @@
         (T (LIST |op| |left| |right|))))
 
 (DEFUN |bfIS| (|left| |right|)
-  (PROG (|$inDefIS| |$isGenVarCounter|)
-    (DECLARE (SPECIAL |$inDefIS| |$isGenVarCounter|))
-    (RETURN
-     (PROGN
-      (SETQ |$isGenVarCounter| 0)
-      (SETQ |$inDefIS| T)
-      (|bfIS1| |left| |right|)))))
+  (LET* ((|$isGenVarCounter| 0) (|$inDefIS| T))
+    (DECLARE (SPECIAL |$isGenVarCounter| |$inDefIS|))
+    (|bfIS1| |left| |right|)))
 
 (DEFUN |bfISReverse| (|x| |a|)
   (PROG (|y|)
@@ -1707,8 +1703,8 @@
                               |body|))))))))))))
 
 (DEFUN |shoeCompTran| (|x|)
-  (PROG (|fl| |fvars| |body'| |lvars| |dollarVars| |locVars| |fluidVars| |body|
-         |args| |lamtype|)
+  (PROG (|fl| |fvars| |body'| |dollarVars| |locVars| |fluidVars| |body| |args|
+         |lamtype|)
     (DECLARE (SPECIAL |$typings|))
     (RETURN
      (PROGN
@@ -1725,23 +1721,20 @@
                (|shoeATOMs| |args|)))
       (SETQ |body|
               (PROGN
-               (SETQ |lvars|
-                       (|append| (|deref| |fluidVars|) (|deref| |locVars|)))
-               (SETF (|deref| |fluidVars|)
-                       (|setUnion| (|deref| |fluidVars|)
-                                   (|deref| |dollarVars|)))
                (SETQ |body'| |body|)
                (COND
                 (|$typings|
                  (SETQ |body'| (CONS (CONS 'DECLARE |$typings|) |body'|))))
                (COND
-                ((|deref| |fluidVars|)
-                 (SETQ |fvars|
-                         (LIST 'DECLARE (CONS 'SPECIAL (|deref| |fluidVars|))))
-                 (SETQ |body'| (CONS |fvars| |body'|))))
+                ((SETQ |fvars|
+                         (|setDifference| (|deref| |dollarVars|)
+                                          (|deref| |fluidVars|)))
+                 (SETQ |body'|
+                         (CONS (LIST 'DECLARE (CONS 'SPECIAL |fvars|))
+                               |body'|))))
                (COND
-                ((OR |lvars| (|needsPROG| |body|))
-                 (|shoePROG| |lvars| |body'|))
+                ((OR (|deref| |locVars|) (|needsPROG| |body'|))
+                 (|shoePROG| (|deref| |locVars|) |body'|))
                 (T |body'|))))
       (COND
        ((SETQ |fl| (|shoeFluids| |args|))
@@ -1755,7 +1748,8 @@
            (T (SETQ |op| (CAR |body|)) (SETQ |args| (CDR |body|))
             (COND ((|symbolMember?| |op| '(RETURN RETURN-FROM)) T)
                   ((|symbolMember?| |op|
-                                    '(LET PROG
+                                    '(LET LET*
+                                       PROG
                                        LOOP
                                        BLOCK
                                        DECLARE
@@ -1846,29 +1840,36 @@
                           (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                           (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                                (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
-              (RPLACA |x| 'SETQ)
               (SETF (CADDR |x|)
                       (|shoeCompTran1| |r| |fluidVars| |locVars| |dollarVars|))
               (COND
-               ((SYMBOLP |l|)
+               ((AND (CONSP |l|) (EQ (CAR |l|) '|%Dynamic|)
+                     (PROGN
+                      (SETQ |ISTMP#1| (CDR |l|))
+                      (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                           (PROGN (SETQ |y| (CAR |ISTMP#1|)) T))))
                 (COND
-                 ((|bfBeginsDollar| |l|)
-                  (COND
-                   ((NOT (|symbolMember?| |l| (|deref| |dollarVars|)))
-                    (SETF (|deref| |dollarVars|)
-                            (CONS |l| (|deref| |dollarVars|)))))
-                  |x|)
-                 (T
-                  (COND
-                   ((NOT (|symbolMember?| |l| (|deref| |locVars|)))
-                    (SETF (|deref| |locVars|) (CONS |l| (|deref| |locVars|)))))
-                  |x|)))
-               ((AND (CONSP |l|) (EQ (CAR |l|) '|%Dynamic|))
-                (COND
-                 ((NOT (|symbolMember?| (CADR |l|) (|deref| |fluidVars|)))
+                 ((NOT (|symbolMember?| |y| (|deref| |fluidVars|)))
                   (SETF (|deref| |fluidVars|)
-                          (CONS (CADR |l|) (|deref| |fluidVars|)))))
-                (RPLACA (CDR |x|) (CADR |l|)) |x|)))
+                          (CONS |y| (|deref| |fluidVars|)))))
+                (SETF (CADR |x|) |y|) |x|)
+               (T (RPLACA |x| 'SETQ)
+                (COND
+                 ((SYMBOLP |l|)
+                  (COND
+                   ((|bfBeginsDollar| |l|)
+                    (COND
+                     ((NOT (|symbolMember?| |l| (|deref| |dollarVars|)))
+                      (SETF (|deref| |dollarVars|)
+                              (CONS |l| (|deref| |dollarVars|)))))
+                    |x|)
+                   (T
+                    (COND
+                     ((NOT (|symbolMember?| |l| (|deref| |locVars|)))
+                      (SETF (|deref| |locVars|)
+                              (CONS |l| (|deref| |locVars|)))))
+                    |x|)))
+                 (T |x|)))))
              ((EQ U '|%Leave|) (RPLACA |x| 'RETURN) |x|)
              ((|symbolMember?| U '(PROG LAMBDA)) (SETQ |newbindings| NIL)
               (LET ((|bfVar#1| (CADR |x|)) (|y| NIL))
@@ -1946,7 +1947,101 @@
               (RPLACD |x|
                       (|shoeCompTran1| (CDR |x|) |fluidVars| |locVars|
                                        |dollarVars|))
-              |x|)))))))
+              (|bindFluidVars!| |x|))))))))
+
+(DEFUN |bindFluidVars!| (|x|)
+  (PROG (|y| |stmts| |init| |ISTMP#1|)
+    (RETURN
+     (PROGN
+      (COND
+       ((AND (CONSP |x|)
+             (PROGN
+              (SETQ |ISTMP#1| (CAR |x|))
+              (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'L%T)
+                   (PROGN (SETQ |init| (CDR |ISTMP#1|)) T)))
+             (PROGN (SETQ |stmts| (CDR |x|)) T))
+        (RPLACA |x|
+                (|groupFluidVars| (LIST |init|) (LIST (CAR |init|)) |stmts|))
+        (RPLACD |x| NIL)))
+      (COND
+       ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN)
+             (PROGN
+              (SETQ |ISTMP#1| (CDR |x|))
+              (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                   (PROGN (SETQ |y| (CAR |ISTMP#1|)) T))))
+        |y|)
+       (T |x|))))))
+
+(DEFUN |groupFluidVars| (|inits| |vars| |stmts|)
+  (PROG (|stmts'| |vars'| |ISTMP#6| |ISTMP#5| |ISTMP#4| |ISTMP#3| |inits'|
+         |ISTMP#2| |ISTMP#1|)
+    (RETURN
+     (COND
+      ((AND (CONSP |stmts|) (NULL (CDR |stmts|))
+            (PROGN
+             (SETQ |ISTMP#1| (CAR |stmts|))
+             (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'LET)
+                  (PROGN
+                   (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                   (AND (CONSP |ISTMP#2|)
+                        (PROGN
+                         (SETQ |inits'| (CAR |ISTMP#2|))
+                         (SETQ |ISTMP#3| (CDR |ISTMP#2|))
+                         (AND (CONSP |ISTMP#3|)
+                              (PROGN
+                               (SETQ |ISTMP#4| (CAR |ISTMP#3|))
+                               (AND (CONSP |ISTMP#4|)
+                                    (EQ (CAR |ISTMP#4|) 'DECLARE)
+                                    (PROGN
+                                     (SETQ |ISTMP#5| (CDR |ISTMP#4|))
+                                     (AND (CONSP |ISTMP#5|)
+                                          (NULL (CDR |ISTMP#5|))
+                                          (PROGN
+                                           (SETQ |ISTMP#6| (CAR |ISTMP#5|))
+                                           (AND (CONSP |ISTMP#6|)
+                                                (EQ (CAR |ISTMP#6|) 'SPECIAL)
+                                                (PROGN
+                                                 (SETQ |vars'| (CDR |ISTMP#6|))
+                                                 T)))))))
+                              (PROGN (SETQ |stmts'| (CDR |ISTMP#3|)) T)))))))
+            (CONSP |inits'|) (NULL (CDR |inits'|)))
+       (|groupFluidVars| (|append| |inits| |inits'|) (|append| |vars| |vars'|)
+                         |stmts'|))
+      ((AND (CONSP |stmts|) (NULL (CDR |stmts|))
+            (PROGN
+             (SETQ |ISTMP#1| (CAR |stmts|))
+             (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'LET*)
+                  (PROGN
+                   (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                   (AND (CONSP |ISTMP#2|)
+                        (PROGN
+                         (SETQ |inits'| (CAR |ISTMP#2|))
+                         (SETQ |ISTMP#3| (CDR |ISTMP#2|))
+                         (AND (CONSP |ISTMP#3|)
+                              (PROGN
+                               (SETQ |ISTMP#4| (CAR |ISTMP#3|))
+                               (AND (CONSP |ISTMP#4|)
+                                    (EQ (CAR |ISTMP#4|) 'DECLARE)
+                                    (PROGN
+                                     (SETQ |ISTMP#5| (CDR |ISTMP#4|))
+                                     (AND (CONSP |ISTMP#5|)
+                                          (NULL (CDR |ISTMP#5|))
+                                          (PROGN
+                                           (SETQ |ISTMP#6| (CAR |ISTMP#5|))
+                                           (AND (CONSP |ISTMP#6|)
+                                                (EQ (CAR |ISTMP#6|) 'SPECIAL)
+                                                (PROGN
+                                                 (SETQ |vars'| (CDR |ISTMP#6|))
+                                                 T)))))))
+                              (PROGN (SETQ |stmts'| (CDR |ISTMP#3|)) T))))))))
+       (|groupFluidVars| (|append| |inits| |inits'|) (|append| |vars| |vars'|)
+                         |stmts'|))
+      ((AND (CONSP |inits|) (NULL (CDR |inits|)))
+       (LIST 'LET |inits| (LIST 'DECLARE (CONS 'SPECIAL |vars|))
+             (|bfMKPROGN| |stmts|)))
+      (T
+       (LIST 'LET* |inits| (LIST 'DECLARE (CONS 'SPECIAL |vars|))
+             (|bfMKPROGN| |stmts|)))))))
 
 (DEFUN |bfTagged| (|a| |b|)
   (DECLARE (SPECIAL |$typings| |$op|))
