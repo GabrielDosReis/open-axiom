@@ -1,5 +1,11 @@
 2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (shoeCompTran1): Take variable sets by reference.
+	Remove globals.  Adjust caller.
+	(shoeCompTran): Replace fluid variables by references.
+
+2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: symbolBinding is now builtin.
 	* boot/ast.boot (%Ast): Add %Dynamic variant.
 	(bfColonColon): Use symbolBinding instead of FIND-SYMBOLS.

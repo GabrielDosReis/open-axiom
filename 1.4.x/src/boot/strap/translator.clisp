@@ -27,7 +27,7 @@
 
 (DEFUN |genModuleFinalization| (|stream|)
   (PROG (|init|)
-    (DECLARE (SPECIAL |$foreignsDefsForCLisp| |$currentModuleName|))
+    (DECLARE (SPECIAL |$currentModuleName| |$foreignsDefsForCLisp|))
     (RETURN
      (COND
       ((|%hasFeature| :CLISP)
@@ -454,8 +454,8 @@
 (DEFUN |shoeOutParse| (|stream|)
   (PROG (|found|)
     (DECLARE
-     (SPECIAL |$inputStream| |$stack| |$stok| |$ttok| |$op| |$wheredefs|
-      |$typings| |$returns| |$bpCount| |$bpParenCount|))
+     (SPECIAL |$bpParenCount| |$bpCount| |$returns| |$typings| |$wheredefs|
+      |$op| |$ttok| |$stok| |$stack| |$inputStream|))
     (RETURN
      (PROGN
       (SETQ |$inputStream| |stream|)
@@ -611,8 +611,8 @@
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|csts| |lhs| |t| |ISTMP#2| |sig| |ns| |n| |ISTMP#1| |xs|)
     (DECLARE
-     (SPECIAL |$currentModuleName| |$foreignsDefsForCLisp|
-      |$constantIdentifiers| |$InteractiveMode| |$activeNamespace|))
+     (SPECIAL |$activeNamespace| |$InteractiveMode| |$constantIdentifiers|
+      |$foreignsDefsForCLisp| |$currentModuleName|))
     (RETURN
      (COND ((NOT (CONSP |b|)) (LIST |b|))
            ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)) (SETQ |xs| (CDR |b|))
@@ -808,7 +808,7 @@
   (PROG (|$bfClamming| |$bootDefinedTwice| |$bootUsed| |$bootDefined|
          |$lispWordTable| |stream|)
     (DECLARE
-     (SPECIAL |$bootDefined| |$bootUsed| |$bootDefinedTwice| |$bfClamming|
+     (SPECIAL |$bfClamming| |$bootDefinedTwice| |$bootUsed| |$bootDefined|
       |$lispWordTable|))
     (RETURN
      (COND ((NULL |a|) (|shoeNotFound| |fn|))
@@ -827,7 +827,7 @@
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
-    (DECLARE (SPECIAL |$bootDefined| |$bootDefinedTwice| |$bootUsed|))
+    (DECLARE (SPECIAL |$bootUsed| |$bootDefinedTwice| |$bootDefined|))
     (RETURN
      (PROGN
       (|shoeFileLine| "DEFINED and not USED" |stream|)
@@ -885,7 +885,7 @@
 (DEFUN |defuse| (|e| |x|)
   (PROG (|niens| |nee| |LETTMP#1| |exp| |ISTMP#5| |id| |ISTMP#4| |ISTMP#3|
          |body| |bv| |ISTMP#2| |name| |ISTMP#1|)
-    (DECLARE (SPECIAL |$used| |$bootDefined| |$bootDefinedTwice| |$bootUsed|))
+    (DECLARE (SPECIAL |$bootUsed| |$bootDefinedTwice| |$bootDefined| |$used|))
     (RETURN
      (PROGN
       (SETQ |x| (|stripm| |x| *PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
@@ -974,7 +974,7 @@
 
 (DEFUN |defuse1| (|e| |y|)
   (PROG (|ndol| |dol| |LETTMP#1| |b| |a| |ISTMP#1|)
-    (DECLARE (SPECIAL |$used| |$bootDefined|))
+    (DECLARE (SPECIAL |$bootDefined| |$used|))
     (RETURN
      (COND
       ((NOT (CONSP |y|))
@@ -1085,7 +1085,7 @@
   (PROG (|$bfClamming| |$bootUsed| |$bootDefined| |$lispWordTable| |stream|
          |out|)
     (DECLARE
-     (SPECIAL |$bootDefined| |$bootUsed| |$bfClamming| |$lispWordTable|))
+     (SPECIAL |$bfClamming| |$bootUsed| |$bootDefined| |$lispWordTable|))
     (RETURN
      (COND ((NULL |a|) (|shoeNotFound| |fn|))
            (T (SETQ |$lispWordTable| (|makeTable| #'EQ))
@@ -1198,34 +1198,30 @@
   (|shoePCompileTrees| (|shoeTransformString| |string|)))
 
 (DEFUN BOOTLOOP ()
-  (PROG (|stream| |b| |a|)
+  (PROG (|stream| |a|)
     (RETURN
      (PROGN
       (SETQ |a| (|readLine| *STANDARD-INPUT*))
       (COND
        ((EQL (LENGTH |a|) 0) (WRITE-LINE "Boot Loop; to exit type ] ")
         (BOOTLOOP))
-       (T (SETQ |b| (|shoePrefix?| ")console" |a|))
-        (COND
-         (|b| (SETQ |stream| *TERMINAL-IO*) (PSTTOMC (|bRgen| |stream|))
-          (BOOTLOOP))
-         ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
-         (T (PSTTOMC (LIST |a|)) (BOOTLOOP)))))))))
+       ((|shoePrefix?| ")console" |a|) (SETQ |stream| *TERMINAL-IO*)
+        (PSTTOMC (|bRgen| |stream|)) (BOOTLOOP))
+       ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
+       (T (PSTTOMC (LIST |a|)) (BOOTLOOP)))))))
 
 (DEFUN BOOTPO ()
-  (PROG (|stream| |b| |a|)
+  (PROG (|stream| |a|)
     (RETURN
      (PROGN
       (SETQ |a| (|readLine| *STANDARD-INPUT*))
       (COND
        ((EQL (LENGTH |a|) 0) (WRITE-LINE "Boot Loop; to exit type ] ")
         (BOOTPO))
-       (T (SETQ |b| (|shoePrefix?| ")console" |a|))
-        (COND
-         (|b| (SETQ |stream| *TERMINAL-IO*) (PSTOUT (|bRgen| |stream|))
-          (BOOTPO))
-         ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
-         (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
+       ((|shoePrefix?| ")console" |a|) (SETQ |stream| *TERMINAL-IO*)
+        (PSTOUT (|bRgen| |stream|)) (BOOTPO))
+       ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
+       (T (PSTOUT (LIST |a|)) (BOOTPO)))))))
 
 (DEFUN PSTOUT (|string|)
   (LET ((*PACKAGE* (FIND-PACKAGE "BOOTTRAN")))
