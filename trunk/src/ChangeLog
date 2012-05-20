@@ -1,5 +1,10 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/utility.boot (strinSuffix?): New.
+	* boot/translator.boot (shoeRemovebootIfNec): Use it.
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix build breakage with CLozure CL.
 	* lisp/core.lisp.in ($stdin): Demote to DEFPARAMETER.
 	($stdout): Likewise.

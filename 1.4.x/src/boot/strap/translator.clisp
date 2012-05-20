@@ -785,9 +785,8 @@
 (DEFUN |shoeRemoveStringIfNec| (|str| |s|)
   (PROG (|n|)
     (RETURN
-     (PROGN
-      (SETQ |n| (SEARCH |str| |s| :FROM-END T))
-      (COND ((NULL |n|) |s|) (T (|subString| |s| 0 |n|)))))))
+     (COND ((SETQ |n| (|stringSuffix?| |str| |s|)) (|subString| |s| 0 |n|))
+           (T |s|)))))
 
 (DEFUN DEFUSE (|fn|)
   (PROG (|a|)
