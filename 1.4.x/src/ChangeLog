@@ -1,5 +1,35 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parsing.lisp (CONVERSATION): Remove.
+	(CONVERSATION1): Likewise.
+	(MAKE-PARSE-FUNCTION): Likewise.
+	(MAKE-PARSE-FUNCTION1): Likewise.
+	(MAKE-PARSE-FUNC-FLATTEN): Likewise.
+	(MAKE-PARSE-FUNC-FLATTEN-1): Likewise.
+	(TRANSPGVAR): Likewise.
+	(GETRULEFUNLISTS): Likewise.
+	(REDUCTION-PRINT): Likewise.
+	(TRACEMETA): Likewise.
+	(TRMETA): Likewise.
+	(TRMETA1): Likewise.
+	(/MDEF): Likewise.
+	* interp/macros.lisp (EXPAND-TABS): Likewise.
+	* interp/spad.lisp (READ-SPAD): Likewise.
+	(READ-INPUT): Likewise.
+	(READ-SPAD0): Likewise.
+	(READ-SPAD1): Likewise.
+	(READ-SPAD-1): Likewise.
+	(New,ENTRY,1): Likewise.
+	(New,ENTRY,2): Likewise.
+	* interp/bootlex.lisp (SPAD_SYNTAX_ERROR): Move to debug.lisp.
+	(SPAD_LONG_ERROR): Likewise.
+	(SPAD_SHORT_ERROR): Likewise.
+	(SPAD_ERROR_LOC): Likewise.
+	* interp/c-util.boot (COMP370): Move to lisp-backend.boot.
+	(compQuietly): Move to slam.boot.
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/utility.boot (strinSuffix?): New.
 	* boot/translator.boot (shoeRemovebootIfNec): Use it.
 

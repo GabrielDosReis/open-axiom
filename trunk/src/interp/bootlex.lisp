@@ -131,26 +131,3 @@
            (if Y (setf (FIRST X) Y) (TRANSLABEL1 (CDR X) AL))))
         ((TRANSLABEL1 (FIRST X) AL) (TRANSLABEL1 (CDR X) AL))))
 
-; **** 5. BOOT Error Handling
-
-(defun SPAD_SYNTAX_ERROR (&rest byebye)
-  "Print syntax error indication, underline character, scrub line."
-  (BUMPERRORCOUNT '|syntax|)
-  (COND ((AND (EQ DEBUGMODE 'YES) (NOT(CONSOLEINPUTP IN-STREAM)))
-         (SPAD_LONG_ERROR))
-        ((SPAD_SHORT_ERROR)))
-  (IOClear)
-  (throw 'spad_reader nil))
-
-(defun SPAD_LONG_ERROR ()
-  (SPAD_ERROR_LOC SPADERRORSTREAM)
-  (iostat)
-  (unless (EQUAL OUT-STREAM SPADERRORSTREAM)
-    (SPAD_ERROR_LOC OUT-STREAM)
-    (TERPRI OUT-STREAM)))
-
-(defun SPAD_SHORT_ERROR () (current-line-show))
-
-(defun SPAD_ERROR_LOC (STR)
-  (format str "******** Spad Syntax Error detected ********"))
-

@@ -473,21 +473,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (terpri stream)
      (finish-output stream)))
 
-(defun expand-tabs (str)
-   (if (and (stringp str) (> (length str) 0))
-      (let ((bpos (|firstNonblankCharPosition| str))
-            (tpos (|indentationLocation| str)))
-        (setq str 
-              (if (eql bpos tpos)
-                  str
-                  (concatenate 'string
-                               (make-string tpos :initial-element #\space)
-                               (subseq str bpos))))
-         ;; remove dos CR
-        (let ((lpos (|maxIndex| str)))
-          (if (eq (char str lpos) #\Return) (subseq str 0 lpos) str)))
-    str))
-
 ;; stream handling for paste-in generation
 
 (defun |applyWithOutputToString| (func args)

@@ -99,6 +99,41 @@
  
 (defvar /fn nil)
 
+(DEFPARAMETER /DEPTH 0)
+
+(defparameter debugmode 'yes "Can be either YES or NO")
+
+(defun reduction-print (y rule)
+  (format t "~&")
+  (cond ((eq y t) (|sayBrightly| `(|%b| ,rule |%d| " reduced")))
+        (y (|sayBrightlyNT| `(|%b| ,rule |%d|))
+           (format t " reduced ~A~%" y)))
+  y)
+
+(defun /embed-1 (x y)
+   (princ (strconc (pname x) " embedded"))
+   (terpri)
+   (/embed-q x y))
+
+(defvar /embednames)
+
+(defun /embed-q (x y)
+   (setq /embednames (cons x /embednames))
+   (embed x
+          (cond ((eqcar y 'lambda) y)
+                ((eqcar y 'before)
+                 `(lambda ,(cadr y)
+                    (prog2 ,(caddr y) ,(cons 'funcall (cons x (cadr y))))))
+                ((eqcar y 'after)
+                 `(lambda ,(cadr y)
+                    (prog1 ,(cons 'funcall (cons x (cadr y))) ,(caddr y))))))
+   (/embedreply))
+
+(defun /embedreply ()
+  (if (atom (embedded)) '(|none| |embedded|)
+      (append (embedded) (list '|embedded|))))
+
+
 (DEFUN /D-1 (L OP EFLG TFLG)
   (CATCH 'FILENAM
     (PROG (TO OPTIONL OPTIONS FNL INFILE OUTSTREAM FN )
@@ -130,13 +165,13 @@
          ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-         TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE
+         TRAPFLAG |$InteractiveMode| TOK COLUMN *QUERY CHR LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
         (declare (special |$Echo| SINGLINEMODE INPUTSTREAM
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-                     TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE))
+                     TRAPFLAG |$InteractiveMode| TOK COLUMN *QUERY CHR LINE))
         (if (CONSP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
           ;; $FUNCTION is freely set in getFunctionSourceFile
@@ -1095,4 +1130,27 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
     (boot::|handleLispBreakLoop| boot::|$BreakMode|))
 
 (defun interrupt (&rest ignore))
+
+; **** 5. BOOT Error Handling
+
+(defun SPAD_SYNTAX_ERROR (&rest byebye)
+  "Print syntax error indication, underline character, scrub line."
+  (BUMPERRORCOUNT '|syntax|)
+  (COND ((AND (EQ DEBUGMODE 'YES) (NOT(CONSOLEINPUTP IN-STREAM)))
+         (SPAD_LONG_ERROR))
+        ((SPAD_SHORT_ERROR)))
+  (IOClear)
+  (throw 'spad_reader nil))
+
+(defun SPAD_LONG_ERROR ()
+  (SPAD_ERROR_LOC SPADERRORSTREAM)
+  (iostat)
+  (unless (EQUAL OUT-STREAM SPADERRORSTREAM)
+    (SPAD_ERROR_LOC OUT-STREAM)
+    (TERPRI OUT-STREAM)))
+
+(defun SPAD_SHORT_ERROR () (current-line-show))
+
+(defun SPAD_ERROR_LOC (STR)
+  (format str "******** Spad Syntax Error detected ********"))
 

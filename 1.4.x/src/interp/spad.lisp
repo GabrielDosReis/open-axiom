@@ -140,23 +140,6 @@
     (if *spad-output-file* (shut out-stream)))
   T))
 
-(defun READ-SPAD1 (FN FT FM TO)
-    (LET ((STRM IN-STREAM))
-      (SETQ $MAXLINENUMBER 0)
-      (SETQ $SPAD_ERRORS (VECTOR 0 0 0))
-      (SETQ IN-STREAM (open (strconc fm ">" fn "." ft) :direction :input))
-      ($ERASE (LIST FN 'ERROR 'A))
-      (SETQ OUT-STREAM (if TO (open to :direction :output) OUT-STREAM))
-      (SETQ SPADERRORSTREAM (open (strconc "a>" fn ".error") :direction :output))
-      (READ-SPAD-1)
-      (close SPADERRORSTREAM)
-      (SETQ IN-STREAM STRM)
-      (OR (EQUAL #(0 0 0) $SPAD_ERRORS)
-          (|sayBrightly| (LIST '|%b| (ELT $SPAD_ERRORS 0) '|%d| '|syntax errors|
-            '|%l| '|%b| (ELT $SPAD_ERRORS 1) '|%d| '|precompilation errors|
-            '|%l| '|%b| (ELT $SPAD_ERRORS 2) '|%d| '|semantic errors| '|%l|)))
-      (+ (ELT $SPAD_ERRORS 0) (ELT $SPAD_ERRORS 1) (ELT $SPAD_ERRORS 2))))
-
 (DEFUN INTEGER-BIT (N I) (LOGBITP I N))
 
 (DEFUN /TRANSPAD (X)
@@ -187,23 +170,6 @@
                (RETURN U)  )))
   (|comp| |$x| |$m| |$f|)
   (UNEMBED '|comp|))
-
-(defun READ-SPAD (FN FM TO)
-  (LET ((proplist
-          (LIST '(FLUID . |true|)
-                (CONS '|special| (COPY-TREE |$InitialDomainsInScope|)))))
-    (SETQ |$InteractiveFrame|
-          (|addBinding| '|$DomainsInScope| proplist
-                      (|addBinding| '|$Information| NIL
-                                  (|makeInitialModemapFrame|))))
-    (READ-SPAD0 FN 'SPAD FM TO)))
-
-(defun READ-INPUT (FN FM TO) (READ-SPAD0 FN 'INPUT FM TO))
-
-(defun READ-SPAD0 (FN FT FM TO)
-  (let (($newspad t)) (READ-SPAD1 FN FT FM TO)))
-
-(defun READ-SPAD-1 () (|New,ENTRY,1|))
 
 (defun UNCONS (X)
   (COND ((ATOM X) X)
@@ -337,29 +303,6 @@
          (SPAD_SYNTAX_ERROR)
          (if |$InteractiveMode| (|spadThrow|))
          (S-PROCESS x))))
-
-(defun |New,ENTRY,1| ()
-    (let (ZZ str N RLGENSYMFG RLGENSYMLST
-          SINGLELINEMODE OK ISID NBLNK COUNT CHR ULCASEFG ($LINESTACK 'BEGIN_UNIT)
-          $TOKSTACK COMMENTCHR TOK LINE BACK INPUTSTREAM
-          STACK STACKX TRAPFLAG)
-      (PROMPT)
-      (SETQ COMMENTCHR 'IGNORE)
-      (SETQ INITCOLUMN 0)
-      (SETQ SINGLELINEMODE T)   ; SEE NewSYSTOK
-      (SETQ ULCASEFG T)
-      (setq STR (|New,ENTRY,2| '|PARSE-NewEXPR| '|process| |$InputStream|))
-      (if (/= 0 (setq N (NOTE STR)))
-          (progn  (SETQ |$InputStream| (POINTW N |$InputStream|)))
-          )
-      '|END_OF_New|))
-
-(defun |New,ENTRY,2| (RULE FN INPUTSTREAM) (declare (special INPUTSTREAM))
-  (let (zz)
-      (INITIALIZE)
-      (SETQ |$previousTime| (TEMPUS-FUGIT))
-      (setq ZZ (CONVERSATION '|parseNewExpr| '|process|))
-      INPUTSTREAM))
 
 (defun INITIALIZE () 
   (init-boot/spad-reader)

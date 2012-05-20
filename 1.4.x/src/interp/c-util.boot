@@ -1759,20 +1759,6 @@ compAndDefine l ==
 
 $compileDontDefineFunctions := true
 
-++ Subroutine of compileInteractive.
-compQuietly fn ==
-  _*COMP370_-APPLY_* :=
-    $InteractiveMode =>
-      $compileDontDefineFunctions => "COMPILE-DEFUN"
-      "EVAL-DEFUN"
-    "PRINT-DEFUN"
-  quietlyIfInteractive backendCompile fn
-
-COMP370 x ==
-  first x is [.,:.] => [COMPILE1 y for y in x]
-  [COMPILE1 x]
-
-
 --%
 --% Compile Time operation lookup for the benefit of domain inlining.
 --%

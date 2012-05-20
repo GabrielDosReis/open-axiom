@@ -161,8 +161,8 @@ preparseEcho lines ==
       formatToStream(OUT_-STREAM,'"~&;~A~%",x)
   $EchoLineStack := nil
 
-++ The line to be worked on is (CAR SLINES).  
-++ It's indentation is (CAR SLOCS).  
+++ The line to be worked on is the first in `lines.
+++ It's indentation is the first in `locs'.
 ++ There is a notion of current indentation. Then:
 ++
 ++  A. Add open paren to beginning of following line if following 
@@ -171,7 +171,8 @@ preparseEcho lines ==
 ++  B. Add semicolon to end of line if following line's indentation is
 ++     the same.
 ++  C. If the entire line consists of the single keyword then or else, 
-++     leave it alone. 
+++     leave it alone.
+addParensAndSemisToLine: (%List %String,%List %Maybe %Short) -> %Void
 addParensAndSemisToLine(lines,locs) ==
   sc := first locs   -- first line column number
   sc = nil or sc <= 0 => nil
