@@ -997,19 +997,19 @@ bfInsertLet1(y,body)==
  
 shoeCompTran x==
   [lamtype,args,:body] := x
-  $fluidVars: local := nil
-  $locVars: local := nil
-  $dollarVars: local :=nil
-  shoeCompTran1 body
-  $locVars := setDifference(setDifference($locVars,$fluidVars),shoeATOMs args)
+  fluidVars := ref []
+  locVars := ref []
+  dollarVars := ref []
+  shoeCompTran1(body,fluidVars,locVars,dollarVars)
+  deref(locVars) := setDifference(setDifference(deref locVars,deref fluidVars),shoeATOMs args)
   body :=
-    lvars := append($fluidVars,$locVars)
-    $fluidVars := UNION($fluidVars,$dollarVars)
+    lvars := append(deref fluidVars,deref locVars)
+    deref(fluidVars) := setUnion(deref fluidVars,deref dollarVars)
     body' := body
     if $typings then
       body' := [["DECLARE",:$typings],:body']
-    if $fluidVars then
-      fvars := ["DECLARE",["SPECIAL",:$fluidVars]]
+    if deref fluidVars then
+      fvars := ["DECLARE",["SPECIAL",:deref fluidVars]]
       body' := [fvars,:body']
     lvars or needsPROG body => shoePROG(lvars,body')
     body'
@@ -1050,44 +1050,46 @@ isDynamicVariable x ==
     true
   false
  
-shoeCompTran1 x ==
+shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
   x isnt [.,:.] =>
-    if isDynamicVariable x and not symbolMember?(x,$dollarVars) then
-      $dollarVars := [x,:$dollarVars]
+    if isDynamicVariable x and not symbolMember?(x,deref dollarVars) then
+      deref(dollarVars) := [x,:deref dollarVars]
     x
   U := first x
   U is 'QUOTE => x
   x is ["CASE",y,:zs] =>
-    second(x) := shoeCompTran1 y
+    second(x) := shoeCompTran1(y,fluidVars,locVars,dollarVars)
     while zs ~= nil repeat
-      second(first zs) := shoeCompTran1 second first zs
+      second(first zs) :=
+        shoeCompTran1(second first zs,fluidVars,locVars,dollarVars)
       zs := rest zs
     x
   x is ["L%T",l,r] =>
     x.op := "SETQ"
-    third(x) := shoeCompTran1 r
+    third(x) := shoeCompTran1(r,fluidVars,locVars,dollarVars)
     symbol? l =>
       bfBeginsDollar l =>
-        if not symbolMember?(l,$dollarVars) then
-          $dollarVars := [l,:$dollarVars]
+        if not symbolMember?(l,deref dollarVars) then
+          deref(dollarVars) := [l,:deref dollarVars]
         x
-      if not symbolMember?(l,$locVars) then
-        $locVars := [l,:$locVars]
+      if not symbolMember?(l,deref locVars) then
+        deref(locVars) := [l,:deref locVars]
       x
     l is ['%Dynamic,:.] =>
-      if not symbolMember?(second l,$fluidVars) then
-        $fluidVars := [second l,:$fluidVars]
+      if not symbolMember?(second l,deref fluidVars) then
+        deref(fluidVars) := [second l,:deref fluidVars]
       x.rest.first := second l
       x
   U is "%Leave" => (x.op := "RETURN"; x)
   U in '(PROG LAMBDA) =>
     newbindings := nil
     for y in second x repeat
-      not symbolMember?(y,$locVars)=>
-	$locVars := [y,:$locVars]
+      not symbolMember?(y,deref locVars)=>
+	deref(locVars) := [y,:deref(locVars)]
 	newbindings := [y,:newbindings]
-    rest(x).rest := shoeCompTran1 CDDR x
-    $locVars := [y for y in $locVars | not symbolMember?(y,newbindings)]
+    rest(x).rest := shoeCompTran1(CDDR x,fluidVars,locVars,dollarVars)
+    deref(locVars) := [y for y in deref locVars |
+                         not symbolMember?(y,newbindings)]
     x
   -- literal vectors.
   x is ['vector,elts] =>
@@ -1097,19 +1099,19 @@ shoeCompTran1 x ==
         x.args := nil
       elts is ['LIST,:.] =>
         x.op := 'VECTOR
-        x.args := shoeCompTran1 elts.args
+        x.args := shoeCompTran1(elts.args,fluidVars,locVars,dollarVars)
       elts isnt [.,:.] =>
-        elts := shoeCompTran1 elts
+        elts := shoeCompTran1(elts,fluidVars,locVars,dollarVars)
         x.op := 'MAKE_-ARRAY
         x.args := [['LIST_-LENGTH,elts],KEYWORD::INITIAL_-CONTENTS,elts]
       x.op := 'COERCE
-      x.args := [shoeCompTran1 elts,quote 'VECTOR]
+      x.args := [shoeCompTran1(elts,fluidVars,locVars,dollarVars),quote 'VECTOR]
     x
   x is ['%Namespace,n] =>
     n is "DOT" => "*PACKAGE*"
     ["FIND-PACKAGE",symbolName n]
-  x.first := shoeCompTran1 first x
-  x.rest := shoeCompTran1 rest x
+  x.first := shoeCompTran1(first x,fluidVars,locVars,dollarVars)
+  x.rest := shoeCompTran1(rest x,fluidVars,locVars,dollarVars)
   x
  
 bfTagged(a,b)==
