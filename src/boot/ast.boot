@@ -1003,15 +1003,12 @@ shoeCompTran x==
   shoeCompTran1(body,fluidVars,locVars,dollarVars)
   deref(locVars) := setDifference(setDifference(deref locVars,deref fluidVars),shoeATOMs args)
   body :=
-    lvars := append(deref fluidVars,deref locVars)
-    deref(fluidVars) := setUnion(deref fluidVars,deref dollarVars)
     body' := body
     if $typings then
       body' := [["DECLARE",:$typings],:body']
-    if deref fluidVars then
-      fvars := ["DECLARE",["SPECIAL",:deref fluidVars]]
-      body' := [fvars,:body']
-    lvars or needsPROG body => shoePROG(lvars,body')
+    if fvars := setDifference(deref dollarVars,deref fluidVars) then
+      body' := [["DECLARE",["SPECIAL",:fvars]],:body']
+    deref locVars or needsPROG body' => shoePROG(deref locVars,body')
     body'
   if fl := shoeFluids args then
     body := [["DECLARE",["SPECIAL",:fl]],:body]
@@ -1021,7 +1018,7 @@ needsPROG body ==
   body isnt [.,:.] => false
   [op,:args] := body
   op in '(RETURN RETURN_-FROM) => true
-  op in '(LET PROG LOOP BLOCK DECLARE LAMBDA) => false
+  op in '(LET LET_*  PROG LOOP BLOCK DECLARE LAMBDA) => false
   or/[needsPROG t for t in body]
 
 shoePROG(v,b)==
@@ -1065,8 +1062,14 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
       zs := rest zs
     x
   x is ["L%T",l,r] =>
-    x.op := "SETQ"
     third(x) := shoeCompTran1(r,fluidVars,locVars,dollarVars)
+    l is ['%Dynamic,y] =>
+      if not symbolMember?(y,deref fluidVars) then
+        deref(fluidVars) := [y,:deref fluidVars]
+      -- Defer translation of operator for this form.
+      second(x) := y
+      x
+    x.op := "SETQ"
     symbol? l =>
       bfBeginsDollar l =>
         if not symbolMember?(l,deref dollarVars) then
@@ -1075,11 +1078,7 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
       if not symbolMember?(l,deref locVars) then
         deref(locVars) := [l,:deref locVars]
       x
-    l is ['%Dynamic,:.] =>
-      if not symbolMember?(second l,deref fluidVars) then
-        deref(fluidVars) := [second l,:deref fluidVars]
-      x.rest.first := second l
-      x
+    x
   U is "%Leave" => (x.op := "RETURN"; x)
   U in '(PROG LAMBDA) =>
     newbindings := nil
@@ -1112,8 +1111,25 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
     ["FIND-PACKAGE",symbolName n]
   x.first := shoeCompTran1(first x,fluidVars,locVars,dollarVars)
   x.rest := shoeCompTran1(rest x,fluidVars,locVars,dollarVars)
-  x
+  bindFluidVars! x
  
+bindFluidVars! x ==
+  if x is [["L%T",:init],:stmts] then
+    x.first := groupFluidVars([init],[first init],stmts)
+    x.rest := nil
+  x is ["PROGN",y] => y
+  x
+
+groupFluidVars(inits,vars,stmts) ==
+  stmts is [["LET",inits',["DECLARE",["SPECIAL",:vars']],:stmts']]
+    and inits' is [.] =>
+      groupFluidVars([:inits,:inits'],[:vars,:vars'],stmts')
+  stmts is [["LET*",inits',["DECLARE",["SPECIAL",:vars']],:stmts']] =>
+    groupFluidVars([:inits,:inits'],[:vars,:vars'],stmts')
+  inits is [.] =>
+    ["LET",inits,["DECLARE",["SPECIAL",:vars]],bfMKPROGN stmts]
+  ["LET*",inits,["DECLARE",["SPECIAL",:vars]],bfMKPROGN stmts]
+
 bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
   symbol? a =>

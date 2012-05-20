@@ -53,37 +53,35 @@
                   (T T)))))))
 
 (DEFUN |shoeLineToks| (|s|)
-  (PROG (|$linepos| |$floatok| |$sz| |$n| |$ln| |$r| |$f| |toks| |dq|
-         |command|)
-    (DECLARE (SPECIAL |$linepos| |$floatok| |$sz| |$n| |$ln| |$r| |$f|))
+  (PROG (|toks| |dq| |command|)
     (RETURN
-     (PROGN
-      (SETQ |$f| NIL)
-      (SETQ |$r| NIL)
-      (SETQ |$ln| NIL)
-      (SETQ |$n| NIL)
-      (SETQ |$sz| NIL)
-      (SETQ |$floatok| T)
-      (SETQ |$linepos| |s|)
-      (COND ((NOT (|shoeNextLine| |s|)) (CONS NIL NIL))
-            ((NULL |$n|) (|shoeLineToks| |$r|))
-            ((CHAR= (SCHAR |$ln| 0) (|char| '|)|))
-             (COND
-              ((SETQ |command| (|shoeLine?| |$ln|))
-               (SETQ |dq|
-                       (|dqUnit|
-                        (|shoeConstructToken| |$linepos|
-                                              (|shoeLeafLine| |command|) 0)))
-               (CONS (LIST |dq|) |$r|))
-              ((SETQ |command| (|shoeLisp?| |$ln|))
-               (|shoeLispToken| |$r| |command|))
-              (T (|shoeLineToks| |$r|))))
-            (T (SETQ |toks| NIL)
-             (LOOP
-              (COND ((NOT (< |$n| |$sz|)) (RETURN NIL))
-                    (T (SETQ |toks| (|dqAppend| |toks| (|shoeToken|))))))
-             (COND ((NULL |toks|) (|shoeLineToks| |$r|))
-                   (T (CONS (LIST |toks|) |$r|)))))))))
+     (LET* ((|$f| NIL)
+            (|$r| NIL)
+            (|$ln| NIL)
+            (|$n| NIL)
+            (|$sz| NIL)
+            (|$floatok| T)
+            (|$linepos| |s|))
+       (DECLARE (SPECIAL |$f| |$r| |$ln| |$n| |$sz| |$floatok| |$linepos|))
+       (COND ((NOT (|shoeNextLine| |s|)) (CONS NIL NIL))
+             ((NULL |$n|) (|shoeLineToks| |$r|))
+             ((CHAR= (SCHAR |$ln| 0) (|char| '|)|))
+              (COND
+               ((SETQ |command| (|shoeLine?| |$ln|))
+                (SETQ |dq|
+                        (|dqUnit|
+                         (|shoeConstructToken| |$linepos|
+                                               (|shoeLeafLine| |command|) 0)))
+                (CONS (LIST |dq|) |$r|))
+               ((SETQ |command| (|shoeLisp?| |$ln|))
+                (|shoeLispToken| |$r| |command|))
+               (T (|shoeLineToks| |$r|))))
+             (T (SETQ |toks| NIL)
+              (LOOP
+               (COND ((NOT (< |$n| |$sz|)) (RETURN NIL))
+                     (T (SETQ |toks| (|dqAppend| |toks| (|shoeToken|))))))
+              (COND ((NULL |toks|) (|shoeLineToks| |$r|))
+                    (T (CONS (LIST |toks|) |$r|)))))))))
 
 (DEFUN |shoeLispToken| (|s| |string|)
   (PROG (|dq| |st| |r| |LETTMP#1| |linepos| |ln|)
