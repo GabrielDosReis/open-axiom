@@ -1,5 +1,14 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad-parser.boot (parseSexpr1): Simplify.
+	(parseDara): Likewise.  Do not set LABLASOC.
+	* interp/bootlex.lisp (PRINT-DEFUN): Remove.
+	(TRANSLABEL): Likewise.
+	(TRANSLABEL1): Likewise.
+	* interp/preparse.lisp (LABLASOC): Likewise.
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (SETANDFILE): Remove.
 	(LAM,EVALANDFILEACTQ): Likewise.
 	* interp/sys-utility.boot (PRINT-AND-EVAL-DEFUN): Likewise.

@@ -381,13 +381,7 @@ parseSpecialKeyWord() ==
   nil
 
 parseSexpr1() ==
-  parseInteger() or parseString() => true
-  parseAnyId() =>
-    parseNBGlyph "=" =>
-      compulsorySyntax parseSexpr1()
-      SETQ(LABLASOC,[[popStack2(),:nthStack 1],:LABLASOC])
-      true
-    true
+  parseInteger() or parseString() or parseAnyId() => true
   matchAdvanceSpecial char "'" =>
     compulsorySyntax parseSexpr1()
     pushReduction('parseSexpr1,["QUOTE",popStack1()])
@@ -414,9 +408,7 @@ parseSexpr() ==
   parseSexpr1()
 
 parseData() ==
-  SETQ(LABLASOC,nil)
-  parseSexpr() and
-    pushReduction('parseData,["QUOTE",TRANSLABEL(popStack1(),LABLASOC)])
+  parseSexpr() and pushReduction('parseData,["QUOTE",popStack1()])
 
 parseCommand() ==
   matchAdvanceString '")" => --FIXME: remove matchAdvanceString
