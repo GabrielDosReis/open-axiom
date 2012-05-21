@@ -177,28 +177,26 @@ addParensAndSemisToLine(lines,locs) ==
   sc := first locs   -- first line column number
   sc = nil or sc <= 0 => nil
   count := 0         -- number of semicolons added
-  i := 0             -- running local line number
+  z := lines
   for x in tails rest lines for y in tails rest locs repeat
-    i := i + 1
-    nc := first y
-    nc = nil => nil
-    nc := abs nc
-    nc < sc => leave nil
-    nc = sc and (y.first := -nc) and not infixToken? first x =>
-      z := drop(i - 1,lines)
-      z.first := addClose(first z,char ";")
-      count := count + 1
+    do
+      nc := first y
+      nc = nil => nil
+      nc := abs nc
+      nc < sc => leave nil
+      nc = sc and (y.first := -nc) and not infixToken? first x =>
+        z.first := addClose(first z,char ";")
+        count := count + 1
+    z := rest z
   count > 0 =>
     first(lines).(firstNonblankCharPosition first lines - 1) := char "("
-    lines := drop(i - 1,lines)
-    lines.first := addClose(first lines,char ")")
+    z.first := addClose(first z,char ")")
   nil
 
 ++ Add parens and semis to lines to aid parsing.  
 parsePiles(locs,lines) ==
-  for x in tails append!(lines,['" "])
-    for y in tails append!(locs,[nil]) repeat
-      addParensAndSemisToLine(x,y)
+  for x in tails lines for y in tails locs repeat
+    addParensAndSemisToLine(x,y)
   lines
 
 parsePrint l ==

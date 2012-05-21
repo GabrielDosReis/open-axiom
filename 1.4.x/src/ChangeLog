@@ -1,5 +1,11 @@
 2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad-parser.boot (addParensAndSemisToLine): Drop 'drop',
+	avoiding awakening GCL bug and quadratic traversal of lines.
+	(parsePiles): Simplify.
+
+2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad.lisp (S-PROCESS): Rename to translateSpad and move
 	to spad-parser.boot.
 	* interp/parsing.lisp (MATCH-ADVANCE-SPECIAL): Remove.
