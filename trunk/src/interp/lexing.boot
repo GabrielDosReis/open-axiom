@@ -189,6 +189,46 @@ tokenInstall(sym,typ,tok,nonblank == true) ==
   tokenNonblank?(tok) := nonblank
   tok
 
+++ Subroutine of getSpadIntegerToken.
+++ Read a the characters of a decimal integer and returns its value.
+getDecimalNumberToken buf ==
+  repeat
+    SUFFIX(currentChar(),buf)
+    not DIGITP nextChar() => leave nil
+    advanceChar!()
+  readIntegerIfCan buf
+
+++ Subroutine of getSpadIntegerToken.
+++ We just read the radix of an integer number; parse the
+++ digits forming that integer token.
+getIntegerInRadix(buf,r) ==
+  r < 2 => SPAD__SYNTAX__ERROR()
+  mark := #buf + 1
+  repeat
+    SUFFIX(currentChar(),buf)
+    d := rdigit? nextChar()
+    d = nil => leave nil
+    d >= r => SPAD__SYNTAX__ERROR()
+    advanceChar!()
+  PARSE_-INTEGER(buf,KEYWORD::START,mark,KEYWORD::RADIX,r)
+
+radixSuffix? c ==
+  c = char "r" or c = char "R"
+
+++ Parse an integer token, written either implicitly in decimal form,
+++ or explicitly specified radix.  The number may be written in plain
+++ format, where the radix is implicitly taken to be 10.  Or the spelling
+++ can explicitly specify a radix.  That radix can be anything
+++ in the range 2..36
+getSpadIntegerToken tok ==
+  buf := MAKE_-ADJUSTABLE_-STRING 0
+  val := getDecimalNumberToken buf
+  advanceChar!()
+  if radixSuffix? currentChar() then
+    val := getIntegerInRadix(buf,val)
+    advanceChar!()
+  tokenInstall(val,'NUMBER,tok,#buf)
+
 getNumberToken tok ==
   buf := nil
   repeat
@@ -214,7 +254,7 @@ getToken tok ==
     getIdentifier(tok,true)
   tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator tok
   tt is 'ID => getIdentifier(tok,false)
-  tt is 'NUM => GET_-SPAD_-INTEGER_-TOKEN tok
+  tt is 'NUM => getSpadIntegerToken tok
   tt is 'STRING => getSpadString tok
   tt is 'SPECIAL_-CHAR => getSpecial tok
   getGliph(tok,tt)
