@@ -1896,7 +1896,7 @@ commuteMPolyCat(u,source,S,target,T) ==
 -- a function like deconstructTower.  RSS 8-1-85
 ------------------------------------------------------------------------
 
-SETANDFILEQ($CoerceTable, '(                                          _
+$CoerceTable ==  '(                                          _
   (Complex . ( _
     (Expression                       indeterm   Complex2Expr) _
     (Factored                         indeterm   Complex2FR) _
@@ -1976,9 +1976,9 @@ SETANDFILEQ($CoerceTable, '(                                          _
     (Tuple                                indeterm   L2Tuple) _
     (Vector                               indeterm   L2V) _
     ))_
-  ))
+  )
 
-SETANDFILEQ($CoerceTable,append!($CoerceTable,'( _
+$CoerceTable == append!($CoerceTable,'( _
   (Matrix . ( _
     (List                                 indeterm   M2L) _
     (RectangularMatrix                    partial    M2Rm) _
@@ -2099,12 +2099,12 @@ SETANDFILEQ($CoerceTable,append!($CoerceTable,'( _
     (SquareMatrix                         indeterm   V2Sm) _
     (Stream                               indeterm   Agg2Agg) _
     ) ) _
-  ) ) )
+  ) )
 
 -- this list is too long for the parser, so it has to be split into parts
 -- specifies the commute functions
 -- commute stands for partial commute function
---SETANDFILEQ($CommuteTable, '(                                           _
+-- $CommuteTable == '(                                           _
 --  (DistributedMultivariatePolynomial . (                                _
 --    (DistributedMultivariatePolynomial    commute    commuteMultPol)    _
 --    (Complex                              commute    commuteMultPol)    _
@@ -2177,9 +2177,9 @@ SETANDFILEQ($CoerceTable,append!($CoerceTable,'( _
 --    (SquareMatrix                         commute    commuteUp2)        _
 --    (UnivariatePolynomial                 commute    commuteUp2)        _
 --    ))                                                                  _
---  ))
+--  )
 
-SETANDFILEQ($CommuteTable, '(                                           _
+$CommuteTable ==  '(                                           _
   (Complex . (                                                         _
     (DistributedMultivariatePolynomial    commute    commuteG2)         _
     (MultivariatePolynomial               commute    commuteG2)         _
@@ -2209,5 +2209,5 @@ SETANDFILEQ($CommuteTable, '(                                           _
     (SparseUnivariatePolynomial           commute    commuteSm1)        _
     (UnivariatePolynomial                 commute    commuteSm2)        _
     ))                                                                  _
-  ))
+  )
 

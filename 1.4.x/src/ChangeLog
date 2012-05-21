@@ -1,5 +1,20 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (SETANDFILE): Remove.
+	(LAM,EVALANDFILEACTQ): Likewise.
+	* interp/sys-utility.boot (PRINT-AND-EVAL-DEFUN): Likewise.
+	* interp/slam.boot (reportFunctionCompilation): Tidy.
+	* interp/lisp-backend.boot (evalAndPrintBackendDecl): New.
+	* interp/c-util.boot (backendCompileSPADSLAM): Use it in lieu of
+	SETANDFILE.
+	(compAndDefine): Use evalAndPrintBackendDecl in lieu of
+	PRINT-AND-EVAL-DEFUN.
+	* interp/hypertex.boot: Clean up.
+	* interp/nhyper.boot: Likewise.
+	* interp/word.boot: Likewise.
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (EVALANDFILEACTQ): Second argument is no
 	longer optional.  Adjust callers.
 	(LAM\,EVALANDFILEACTQ): Likewise.

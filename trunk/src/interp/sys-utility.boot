@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2011 Gabriel Dos Reis.
+-- Copyright (C) 2007-2012 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -251,11 +251,6 @@ COMPILE_-DEFUN(name,body) ==
 ++ Augment the current evaluation environment with a function definition.
 EVAL_-DEFUN(name,body) ==
   eval MACROEXPANDALL body
-
-PRINT_-AND_-EVAL_-DEFUN(name,body) ==
-  eval body
-  printBackendDecl(name,body)
-
 
 --% Hash table
 

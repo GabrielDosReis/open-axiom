@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ namespace BOOT
 
 -- HyperTex Spad interface
 
--- SETANDFILEQ($SendXEventToHyperTeX, 8)
 $LinkToPage == 96
 $StartPage == 97
 $SendLine == 98

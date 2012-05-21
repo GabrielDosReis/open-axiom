@@ -106,12 +106,6 @@
 (defmacro |equal| (x y)
  `(equalp ,x ,y))
 
-(defmacro evalandfileactq (name form)
- `(eval-when 
-   #+:common-lisp (:load-toplevel :execute)
-   #-:common-lisp (eval load)
-   ,form))  
-
 (defmacro exit (&rest value)
  `(return-from seq ,@value))
 
@@ -1184,12 +1178,6 @@
 (defun $showline (cvec sint) (terpri) sint (princ cvec))
 
 ; 99.0 Ancient Stuff We Decided To Keep
-
-(defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ x `(defparameter ,x ',y)))
- 
-(defun LAM\,EVALANDFILEACTQ (name form)
-  (LAM\,FILEACTQ name form)
-  (eval form))
 
 (defun LAM\,FILEACTQ (name form)
   (if *FILEACTQ-APPLY*

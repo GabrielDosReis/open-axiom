@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -33,19 +33,6 @@
 
 
 -- HyperTex Spad interface
-
---SETANDFILEQ($SendXEventToHyperTeX, 8)
---SETANDFILEQ($LinkToPage, 96)
---SETANDFILEQ($StartPage, 97)
---SETANDFILEQ($SendLine, 98)
---SETANDFILEQ($EndOfPage, 99)
---SETANDFILEQ($PopUpPage, 95)
---SETANDFILEQ($PopUpNamedPage, 94)
---SETANDFILEQ($KillPage, 93)
---SETANDFILEQ($ReplacePage, 92)
---SETANDFILEQ($ReplaceNamedPage, 91)
---SETANDFILEQ($SpadError, 90)
---SETANDFILEQ($PageStuff, 100)
 
 -- Issue a line of HyperTex
 issueHT line ==
