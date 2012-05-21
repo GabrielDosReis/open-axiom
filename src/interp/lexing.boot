@@ -121,9 +121,15 @@ nextLine st ==
   SETQ(LINE,l)
   $currentLine := l
 
+nextLinesClear!() ==
+  $lineStack := nil
+
 ++ Current input stream.  
 IN_-STREAM := 'T
   
+++ Current output stream
+OUT_-STREAM := 'T
+
 ++ Advances IN-STREAM, invoking Next Line if necessary
 advanceChar!() ==
   repeat
@@ -603,3 +609,13 @@ popStack4() ==
 
 nthStack n ==
   reductionValue stackStore($reduceStack).(n - 1)
+
+
+--%
+
+ioClear!() ==
+  lineClear! $spadLine
+  tokenStackClear!()
+  reduceStackClear()
+  $SPAD => nextLinesClear!()
+  nil
