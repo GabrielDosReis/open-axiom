@@ -72,7 +72,6 @@
  
 (DEFPARAMETER TOK NIL)
 (DEFPARAMETER DEFINITION_NAME NIL)
-(DEFPARAMETER LABLASOC NIL)
 
 (defun Initialize-Preparse (strm)
   (setq $INDEX 0 |$LineList| nil |$EchoLineStack| nil)

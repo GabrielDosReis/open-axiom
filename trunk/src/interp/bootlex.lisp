@@ -49,18 +49,6 @@
 (IMPORT-MODULE "nlib")
 (in-package "BOOT")
 
-; *** 1. BOOT file handling
-
-(defun print-defun (name body)
-   (let* ((sp (assoc 'compiler-output-stream optionlist))
-          (st (if sp (cdr sp) |$OutputStream|)))
-     (if (and (|ioTerminal?| st) (symbolp name) (fboundp name)
-              (not (compiled-function-p (symbol-function name))))
-         (compile name))
-     (when (or |$PrettyPrint| (not (|ioTerminal?| st)))
-           (print-full body st) (force-output st))))
-
-
 ;  *** 3. BOOT Token Handling ***
 
 ;; -*- Parse an integer number -*-
@@ -112,22 +100,3 @@
       (setq val (get-integer-in-radix buf val))
       (|advanceChar!|))
     (|tokenInstall| val 'number token (size buf))))
-
-; **** 4. BOOT token parsing actions
-
-
-(defun TRANSLABEL (X AL) (TRANSLABEL1 X AL) X)
-
-(defun TRANSLABEL1 (X AL)
- "Transforms X according to AL = ((<label> . Sexpr) ..)."
-  (COND ((simple-vector-p X)
-         (do ((i 0 (1+ i))
-              (k (|maxIndex| x)))
-             ((> i k))
-           (if (LET ((Y (LASSOC (ELT X I) AL))) (SETF (ELT X I) Y))
-               (TRANSLABEL1 (ELT X I) AL))))
-        ((ATOM X) NIL)
-        ((LET ((Y (LASSOC (FIRST X) AL)))
-           (if Y (setf (FIRST X) Y) (TRANSLABEL1 (CDR X) AL))))
-        ((TRANSLABEL1 (FIRST X) AL) (TRANSLABEL1 (CDR X) AL))))
-
