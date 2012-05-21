@@ -60,7 +60,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	diagnostics.$(FASLEXT)	                         \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	macros.$(FASLEXT)	                         \
-	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
+	                     	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
 	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
 	astr.$(FASLEXT)		bits.$(FASLEXT)		\
@@ -317,12 +317,11 @@ server.$(FASLEXT): macros.$(FASLEXT)
 ## The old parser component roughtly is:
 ##
 spad-parser.$(FASLEXT): parse.$(FASLEXT) preparse.$(FASLEXT)
-parse.$(FASLEXT): parsing.$(FASLEXT) postpar.$(FASLEXT)
+parse.$(FASLEXT): postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
 newaux.$(FASLEXT): macros.$(FASLEXT)
-preparse.$(FASLEXT): parsing.$(FASLEXT)
-parsing.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
+preparse.$(FASLEXT): lexing.$(FASLEXT)
 nlib.$(FASLEXT): macros.$(FASLEXT)
 macros.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT) \
@@ -352,7 +351,7 @@ dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
 daase.$(FASLEXT): sys-utility.$(FASLEXT)
-debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
+debug.$(FASLEXT): macros.$(FASLEXT) lexing.$(FASLEXT)
 spad.$(FASLEXT): spad-parser.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)
 sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
@@ -373,7 +372,7 @@ word.$(FASLEXT): g-util.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) daase.$(FASLEXT)
 g-cndata.$(FASLEXT): sys-macros.$(FASLEXT) c-util.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
-util.$(FASLEXT): parsing.$(FASLEXT)
+util.$(FASLEXT): lexing.$(FASLEXT)
 fname.$(FASLEXT): macros.$(FASLEXT)
 sys-macros.$(FASLEXT): diagnostics.$(FASLEXT) union.$(FASLEXT)
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT) c-util.$(FASLEXT)

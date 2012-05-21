@@ -293,6 +293,15 @@ parseFloatBase() ==
     pushReduction('parseBase,0)
   nil
 
+floatExponent x ==
+  ident? x =>
+    s := symbolName x
+    charUpcase stringChar(s,0) = char "E" and #s > 1
+      and (and/[DIGITP stringChar(s,i) for i in 1..maxIndex s]) =>
+        READ_-FROM_-STRING(s,true,nil,KEYWORD::START,1)
+    nil
+  nil
+
 parseFloatExponent() ==
   not ident? currentSymbol() => nil
   symbolMember?(currentSymbol(),'(e E)) and
@@ -304,7 +313,7 @@ parseFloatExponent() ==
         compulsorySyntax parseInteger()
         pushReduction('parseFloatExponent,-popStack1())
       pushReduction('parseFloatExponent,0)
-  g := FLOATEXPID currentSymbol() =>
+  g := floatExponent currentSymbol() =>
     advanceToken()
     pushReduction('parseFloatExponent,g)
   nil
@@ -997,7 +1006,7 @@ parseSpadFile sourceFile ==
     -- we accumulated the parse trees in reverse order
     reverse! asts
   finally                      -- clean up the mess, and get out of here
-    IOCLEAR(IN_-STREAM, OUT_-STREAM)             
+    ioClear!()
     SHUT IN_-STREAM                              
 
 --%

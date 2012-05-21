@@ -57,7 +57,7 @@
  
 
 
-(IMPORT-MODULE "parsing")
+(IMPORT-MODULE "lexing")
  
 (in-package "BOOT")
  

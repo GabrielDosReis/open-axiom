@@ -1222,3 +1222,12 @@
                                  (function-lambda-expression func)
 				 (declare (ignore l c))
 				 n)))
+
+(defun make-string-adjustable (s)
+  (cond ((adjustable-array-p s) s)
+        (t (make-array (array-dimensions s) :element-type 'character
+                       :adjustable t :initial-contents s))))
+
+(defun make-adjustable-string (n)
+  (make-array (list n) :element-type 'character :adjustable t))
+ 

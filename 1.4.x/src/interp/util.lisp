@@ -50,7 +50,7 @@
 
 
 (IMPORT-MODULE "vmlisp")
-(import-module "parsing")
+(import-module "lexing")
 
 (in-package "BOOT")
 
@@ -265,7 +265,7 @@
   (DECLARE (SPECIAL LINE))
   (if (and (> (LENGTH LINE) 0) (EQ (CHAR LINE 0) #\) ))
     (|processSynonyms|))
-  (ioclear)
+  (|ioClear!|)
   (LET* ((|$lineStack| (LIST (CONS 1 LINE)))
      ($SPAD T)
      (PARSEOUT (PROG2 (|parseNewExpr|) (|popStack1|))))

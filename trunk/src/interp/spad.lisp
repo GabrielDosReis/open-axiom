@@ -77,9 +77,8 @@
 (defun init-boot/spad-reader ()
   (setq $SPAD_ERRORS (VECTOR 0 0 0))
   (setq SPADERRORSTREAM |$OutputStream|)
-  (Next-Lines-Clear)
-  (setq |$lineStack| nil)
-  (ioclear))
+  (|nextLinesClear!|)
+  (|ioClear!|))
 
 (defun spad (&optional
               (*spad-input-file* nil)
@@ -132,9 +131,8 @@
                        (let ((|$OutputStream| out-stream))
                          (|translateSpad| parseout))
                        (format out-stream "~&")))
-               ;(IOClear in-stream out-stream)
                ))))
-      (IOClear in-stream out-stream)))
+      (|ioClear!|)))
     (if *spad-input-file* (shut in-stream))
     (if *spad-output-file* (shut out-stream)))
   T))

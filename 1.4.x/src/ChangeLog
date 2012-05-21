@@ -1,5 +1,20 @@
 2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parsing.lisp: Remove.
+	* interp/spad-parser.boot (floatExponent): New.
+	(parseFloatExponent): Use it instead of FLOATEXPID.
+	* interp/lexing.boot (nextLinesClear!): New.
+	(ioClear!): Likewise.
+	(OUT-STREAM): Define here.
+	* interp/debug.lisp: Import lexing instead of parsing.  Tidy.
+	* interp/preparse.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/Makefile.in (OBJS): Do not include parsing.$(FASLEXT).
+	(parsing.$(FASLEXT)): Remove.  Adjust dependents.
+
+2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad-parser.boot (addParensAndSemisToLine): Drop 'drop',
 	avoiding awakening GCL bug and quadratic traversal of lines.
 	(parsePiles): Simplify.

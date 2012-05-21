@@ -44,7 +44,7 @@
 ; PURPOSE: Debugging hooks for Boot code
 
 (import-module "macros") 
-(import-module "parsing")
+(import-module "lexing")
 (in-package "BOOT")
 
 (defvar S-SPADKEY NIL) ;" this is augmented by MAKESPADOP"
@@ -1139,7 +1139,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
   (COND ((AND (EQ DEBUGMODE 'YES) (NOT(CONSOLEINPUTP IN-STREAM)))
          (SPAD_LONG_ERROR))
         ((SPAD_SHORT_ERROR)))
-  (IOClear)
+  (|ioClear!|)
   (throw 'spad_reader nil))
 
 (defun SPAD_LONG_ERROR ()
