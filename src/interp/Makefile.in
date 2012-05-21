@@ -101,7 +101,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	server.$(FASLEXT)	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	slam.$(FASLEXT)		                        \
-	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
+	preparse.$(FASLEXT)	                   	\
 	spad.$(FASLEXT)		termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	word.$(FASLEXT)        	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
@@ -320,8 +320,6 @@ spad-parser.$(FASLEXT): parse.$(FASLEXT) preparse.$(FASLEXT)
 parse.$(FASLEXT): parsing.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
-bootlex.$(FASLEXT): preparse.$(FASLEXT) macros.$(FASLEXT) \
-			nlib.$(FASLEXT) sys-globals.$(FASLEXT)
 newaux.$(FASLEXT): macros.$(FASLEXT)
 preparse.$(FASLEXT): parsing.$(FASLEXT)
 parsing.$(FASLEXT): lexing.$(FASLEXT) macros.$(FASLEXT)
@@ -355,7 +353,7 @@ dq.$(FASLEXT): types.$(FASLEXT)
 ## General support and utilities.
 daase.$(FASLEXT): sys-utility.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
-spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
+spad.$(FASLEXT): spad-parser.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
 monitor.$(FASLEXT): macros.$(FASLEXT)
 sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
 trace.$(FASLEXT): debug.$(FASLEXT)

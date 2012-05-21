@@ -35,7 +35,7 @@
 ; NAME:    Scratchpad Package
 ; PURPOSE: This is an initialization and system-building file for Scratchpad.
 
-(IMPORT-MODULE "bootlex")
+(IMPORT-MODULE "spad-parser")
 (import-module "postpar")
 (import-module "debug")
 (in-package "BOOT")
