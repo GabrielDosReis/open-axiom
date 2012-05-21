@@ -1,5 +1,23 @@
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (EVALANDFILEACTQ): Second argument is no
+	longer optional.  Adjust callers.
+	(LAM\,EVALANDFILEACTQ): Likewise.
+	* interp/slam.boot (compQuietly): Use printBackendDecl.
+	* interp/spad.lisp (SPAD): Likewise.
+	* interp/sys-utility.boot (PRINT-AND-EVAL-DEFUN): Likewise.
+	* interp/macros.lisp (SETANDFILE): Move to vmlisp.lisp.
+	* interp/lisp-backend.boot (printBackendStmt): New.
+	(evalAndPrintBackendStmt): Likewise.
+	(printBackendDecl): Likewise.
+	* interp/c-util.boot (registerFunctionReplacement): Use
+	evalAndPrintBackendStmt.
+	(registerRedexForm): Likewise.
+	(proclaimCapsuleFunction): Use printBackendStmt.
+	* interp/Makefile.in (lisp-backend.$(FASLEXT)): Require nlib.$(FASLEXT)
+
+2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parsing.lisp (CONVERSATION): Remove.
 	(CONVERSATION1): Likewise.
 	(MAKE-PARSE-FUNCTION): Likewise.

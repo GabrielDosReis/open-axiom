@@ -37,11 +37,15 @@
 --%
 
 import sys_-macros
+import nlib
 namespace BOOT
 
 module lisp_-backend where
   expandToVMForm: %Thing -> %Thing
   eval: %Thing -> %Thing
+  printBackendStmt: %Code -> %Void
+  printBackendDecl: (%Symbol,%Code) -> %Void
+  evalAndPrintBackendStmt: %Code -> %Void
 
 
 --%
@@ -815,3 +819,21 @@ assembleCode x ==
   if not $COMPILE then SAY '"No Compilation"
   else COMP370 x
   first x
+
+printBackendStmt stmt ==
+  printBackendDecl(nil,stmt)
+
+evalAndPrintBackendStmt stmt ==
+  eval stmt
+  printBackendStmt stmt
+
+printBackendDecl(label,decl) ==
+  st :=
+    sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,OPTIONLIST) => rest sp
+    $OutputStream
+  if label ~= nil and ioTerminal? st and FBOUNDP label
+    and not COMPILED_-FUNCTION_-P symbolFunction label then
+      COMPILE label
+  if $PrettyPrint or not ioTerminal? st then
+    PRINT_-FULL(decl,st)
+    flushOutput st

@@ -86,8 +86,8 @@
               (*spad-output-file* nil)
              &aux
          ;;  (*comp370-apply* (function print-and-eval-defun))
-           (*comp370-apply* (function print-defun))
-           (*fileactq-apply* (function print-defun))
+           (*comp370-apply* (function |printBackendDecl|))
+           (*fileactq-apply* (function |printBackendDecl|))
            ($SPAD T)
            (OPTIONLIST nil)
            (*EOF* NIL)
