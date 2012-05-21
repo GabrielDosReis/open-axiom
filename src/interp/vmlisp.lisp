@@ -106,7 +106,7 @@
 (defmacro |equal| (x y)
  `(equalp ,x ,y))
 
-(defmacro evalandfileactq (name &optional (form name))
+(defmacro evalandfileactq (name form)
  `(eval-when 
    #+:common-lisp (:load-toplevel :execute)
    #-:common-lisp (eval load)
@@ -1185,11 +1185,15 @@
 
 ; 99.0 Ancient Stuff We Decided To Keep
 
-(defun LAM\,EVALANDFILEACTQ (name &optional (form name))
-    (LAM\,FILEACTQ name form) (eval form))
+(defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ x `(defparameter ,x ',y)))
+ 
+(defun LAM\,EVALANDFILEACTQ (name form)
+  (LAM\,FILEACTQ name form)
+  (eval form))
 
 (defun LAM\,FILEACTQ (name form)
-       (if *FILEACTQ-APPLY* (FUNCALL *FILEACTQ-APPLY* name form)))
+  (if *FILEACTQ-APPLY*
+      (FUNCALL *FILEACTQ-APPLY* name form)))
 
 (defun PLACEP (item) (eq item *read-place-holder*))
 (defun VMREAD (&optional (st |$InputStream|) (eofval *read-place-holder*))

@@ -1290,11 +1290,12 @@ clearReplacement name ==
 
 ++ Register the inlinable form of a function.
 registerFunctionReplacement(name,body) ==
-  LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
+  evalAndPrintBackendStmt
+    ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
 
 ++ Remember the redex form of this function
 registerRedexForm(name,parms,body) ==
-  LAM_,EVALANDFILEACTQ
+  evalAndPrintBackendStmt
     ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]]
 
 ++ Retrieve the redex form of the function `name'.
@@ -1461,7 +1462,7 @@ setCompilerOptimizations level ==
 ++ Note that all capsule functions take an additional argument 
 ++ standing for the domain of computation object.
 proclaimCapsuleFunction(op,sig) ==
-  LAM_,EVALANDFILEACTQ
+  printBackendStmt
     ["DECLAIM",["FTYPE",
        ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
           vmType first sig],op]] where

@@ -413,7 +413,7 @@ compQuietly fn ==
     $InteractiveMode =>
       $compileDontDefineFunctions => "COMPILE-DEFUN"
       "EVAL-DEFUN"
-    "PRINT-DEFUN"
+    function printBackendDecl
   quietlyIfInteractive backendCompile fn
 
 clearAllSlams x ==

@@ -61,8 +61,6 @@
  
 ; 5.3 Top-Level Forms
  
-(defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ `(defparameter ,x ',y)))
- 
 ; 6 PREDICATES
  
 ; 6.3 Equality Predicates

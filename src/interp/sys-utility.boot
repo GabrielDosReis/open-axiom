@@ -254,7 +254,7 @@ EVAL_-DEFUN(name,body) ==
 
 PRINT_-AND_-EVAL_-DEFUN(name,body) ==
   eval body
-  PRINT_-DEFUN(name,body)
+  printBackendDecl(name,body)
 
 
 --% Hash table
