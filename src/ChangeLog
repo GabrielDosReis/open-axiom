@@ -1,3 +1,14 @@
+2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/spad.lisp (S-PROCESS): Rename to translateSpad and move
+	to spad-parser.boot.
+	* interp/parsing.lisp (MATCH-ADVANCE-SPECIAL): Remove.
+	(MATCH-SPECIAL): Likewise.
+	(MATCH-KEYWORD-NEXT): Likewise.
+	(INITIAL-SUBSTRING-P): Likewise.
+	(TERMCHR): Likewise.
+	(dollarTran): Simplify and move to spad-parser.boot.
+
 2012-05-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot (getDecimalNumberToken): New.
