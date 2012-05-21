@@ -420,6 +420,10 @@ parseCommand() ==
 parseTokenOption() ==
   matchAdvanceString '")" and compulsorySyntax PARSE_-TokenList()
   
+dollarTran(dom,x) ==
+  x is [.,:.] => [['elt,dom,first x],:rest x]
+  ['elt,dom,x]
+
 parseQualification() ==
   matchAdvanceString '"$" =>
     compulsorySyntax parsePrimary1()
@@ -928,6 +932,31 @@ parseSpecialCommand() ==
     compulsorySyntax parseTokenCommandTail()
   repeatedSyntax('parseSpecialCommand,function parsePrimaryOrQM) and
     compulsorySyntax parseCommandTail()
+
+--%
+
+translateSpad x ==
+  $Index: local := 0
+  _*PRETTY_-PRINT_*: local := true
+  $MACROASSOC: local := nil
+  $NEWSPAD: local := true
+  $currentFunction: local := nil
+  $topOp: local := nil
+  $semanticErrorStack: local := []
+  $warningStack: local := []
+  $returnMode: local := $EmptyMode
+  $leaveLevelStack: local := []
+  $insideFunctorIfTrue: local := false
+  $insideExpressionIfTrue: local := false
+  $insideCoerceInteractiveHardIfTrue: local := false
+  $insideWhereIfTrue: local := false
+  $insideCategoryIfTrue: local := false
+  $insideCapsuleFunctionIfTrue: local := false
+  $form: local := nil
+  $e: local := $EmptyEnvironment
+  $genSDVar: local := 0
+  $previousTime: local := TEMPUS_-FUGIT()
+  compileParseTree x  
 
 --%
 

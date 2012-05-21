@@ -243,37 +243,9 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun action (dothis) (or dothis t))
 
-; 3A.  Manipulating the token stack and reading tokens
-
-; This section is broken up into 3 levels:
-;
-;       (0) String grabbing:    Match String, Match Advance String
-;       (1) Token handling:     Current Token, Next Token, Advance Token
-;       (2) Character handling: Current Char, Next Char, Advance Char
-;       (3) Line handling:      Next Line, Print Next Line
-;       (X) Random Stuff
-
-(defun match-advance-special (str)
-  (and (|matchToken| (|currentToken|) 'special-char (character str))
-       (action (|advanceToken|))))
-
-(defun match-special (str)
-  (|matchToken| (|currentToken|) 'special-char (character str)))
-
-(defun match-keyword-next (str)
-  (|matchToken| (|nextToken|) 'keyword (intern str)))
-
-(defun initial-substring-p (part whole)
-  "Returns length of part if part matches initial segment of whole."
-  (let ((x (string<= part whole)))
-    (and x (= x (length part)) x)))
-
 ; 3B. Error handling
 
 (defparameter line nil)
-
-(defun termchr ()  "Is CHR a terminating character?"
-  (|findChar| (|currentChar|) " *,;<>()[]/\\"))
 
 ;       5. Routines for inspecting and resetting total I/O system state
 ;
@@ -310,9 +282,3 @@ the stack, then stack a NIL. Return the value of prod."
                                       (DIGITP (ELT S I)))))
        (READ-FROM-STRING S t nil :start 1)
     NIL))
-
-(defun |dollarTran| (dom rand)
-       (let ((eltWord (if |$InteractiveMode| '|$elt| '|elt|)))
-         (if (and (not (atom rand)) (cdr rand))
-             (cons (list eltWord dom (car rand)) (cdr rand))
-             (list eltWord dom rand))))
