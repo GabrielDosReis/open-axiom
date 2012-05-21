@@ -46,6 +46,7 @@ module lisp_-backend where
   printBackendStmt: %Code -> %Void
   printBackendDecl: (%Symbol,%Code) -> %Void
   evalAndPrintBackendStmt: %Code -> %Void
+  evalAndPrintBackendDecl: (%Symbol,%Code) -> %Void
 
 
 --%
@@ -837,3 +838,7 @@ printBackendDecl(label,decl) ==
   if $PrettyPrint or not ioTerminal? st then
     PRINT_-FULL(decl,st)
     flushOutput st
+
+evalAndPrintBackendDecl(label,decl) ==    
+  eval decl
+  printBackendDecl(label,decl)

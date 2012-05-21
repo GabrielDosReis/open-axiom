@@ -1535,7 +1535,8 @@ backendCompileSPADSLAM(name,args,body) ==
           [true, 
             ["PROGN",["SETQ",g2,app],
                ["SETQ",al,["cons5",["CONS",key,g2],al]],g2]]]]
-  SETANDFILE(al,nil)           -- define the global cache.
+  -- define the global cache.
+  evalAndPrintBackendDecl(al,['DEFPARAMETER,al,nil])
   assembleCode [auxfn,["LAMBDA",args,:body]]
   assembleCode [name,["LAMBDA",args,code]]
 
@@ -1755,7 +1756,7 @@ compileFileQuietly path ==
 ++ Subroutine of compileConstructor1.  Called to compile the body
 ++ of a category constructor definition.
 compAndDefine l ==
-  _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
+  _*COMP370_-APPLY_* := function evalAndPrintBackendDecl
   backendCompile l
 
 $compileDontDefineFunctions := true
