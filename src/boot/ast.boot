@@ -1008,23 +1008,29 @@ shoeCompTran x==
       body' := [["DECLARE",:$typings],:body']
     if fvars := setDifference(deref dollarVars,deref fluidVars) then
       body' := [["DECLARE",["SPECIAL",:fvars]],:body']
-    deref locVars or needsPROG body' => shoePROG(deref locVars,body')
-    body'
+    vars := deref locVars => declareLocalVars(vars,body')
+    maybeAddBlock body'
   if fl := shoeFluids args then
     body := [["DECLARE",["SPECIAL",:fl]],:body]
   [lamtype,args,:body]
 
-needsPROG body ==
-  body isnt [.,:.] => false
-  [op,:args] := body
-  op in '(RETURN RETURN_-FROM) => true
-  op in '(LET LET_*  PROG LOOP BLOCK DECLARE LAMBDA) => false
-  or/[needsPROG t for t in body]
+declareLocalVars(vars,stmts) ==
+  stmts is [["LET*",inits,:stmts]] =>
+    [["LET*",[:inits,:vars],:maybeAddBlock stmts]]
+  [["LET*",vars,:maybeAddBlock stmts]]
 
-shoePROG(v,b)==
-  b = nil => [["PROG", v]]
-  [:blist,blast] := b
-  [["PROG",v,:blist,["RETURN", blast]]]
+maybeAddBlock stmts ==
+  [:decls,expr] := stmts
+  hasReturn? expr =>
+    decls = nil => [["BLOCK","NIL",:stmts]]
+    [:decls,["BLOCK","NIL",expr]]
+  stmts
+
+hasReturn? x ==
+  x isnt [.,:.] => false
+  x.op is 'RETURN => true
+  x.op in '(LOOP PROG BLOCK LAMBDA DECLARE) => false
+  or/[hasReturn? t for t in x]
 
 shoeFluids x==
   ident? x and bfBeginsDollar x => [x]
