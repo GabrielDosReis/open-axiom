@@ -2515,34 +2515,37 @@
      (SETQ |ctor| (INTERN (CONCAT "MAKE-" (SYMBOL-NAME |s|))))
      (SETQ |recDef|
              (CONS 'DEFSTRUCT
-                   (CONS |s|
-                         (LET ((|bfVar#6| NIL)
-                               (|bfVar#7| NIL)
-                               (|bfVar#5| |fields|)
-                               (|bfVar#4| NIL))
-                           (LOOP
-                            (COND
-                             ((OR (NOT (CONSP |bfVar#5|))
-                                  (PROGN (SETQ |bfVar#4| (CAR |bfVar#5|)) NIL))
-                              (RETURN |bfVar#6|))
-                             (T
-                              (AND (CONSP |bfVar#4|)
-                                   (EQ (CAR |bfVar#4|) '|%Signature|)
-                                   (PROGN
-                                    (SETQ |ISTMP#1| (CDR |bfVar#4|))
-                                    (AND (CONSP |ISTMP#1|)
-                                         (PROGN
-                                          (SETQ |x| (CAR |ISTMP#1|))
-                                          (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                                          (AND (CONSP |ISTMP#2|)
-                                               (NULL (CDR |ISTMP#2|))))))
-                                   (COND
-                                    ((NULL |bfVar#6|)
-                                     (SETQ |bfVar#6| #2=(CONS |x| NIL))
-                                     (SETQ |bfVar#7| |bfVar#6|))
-                                    (T (RPLACD |bfVar#7| #2#)
-                                     (SETQ |bfVar#7| (CDR |bfVar#7|)))))))
-                            (SETQ |bfVar#5| (CDR |bfVar#5|)))))))
+                   (CONS
+                    (LIST |s|
+                          (LIST (|bfColonColon| 'KEYWORD 'COPIER)
+                                (INTERN (CONCAT "copy" (SYMBOL-NAME |s|)))))
+                    (LET ((|bfVar#6| NIL)
+                          (|bfVar#7| NIL)
+                          (|bfVar#5| |fields|)
+                          (|bfVar#4| NIL))
+                      (LOOP
+                       (COND
+                        ((OR (NOT (CONSP |bfVar#5|))
+                             (PROGN (SETQ |bfVar#4| (CAR |bfVar#5|)) NIL))
+                         (RETURN |bfVar#6|))
+                        (T
+                         (AND (CONSP |bfVar#4|)
+                              (EQ (CAR |bfVar#4|) '|%Signature|)
+                              (PROGN
+                               (SETQ |ISTMP#1| (CDR |bfVar#4|))
+                               (AND (CONSP |ISTMP#1|)
+                                    (PROGN
+                                     (SETQ |x| (CAR |ISTMP#1|))
+                                     (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                                     (AND (CONSP |ISTMP#2|)
+                                          (NULL (CDR |ISTMP#2|))))))
+                              (COND
+                               ((NULL |bfVar#6|)
+                                (SETQ |bfVar#6| #2=(CONS |x| NIL))
+                                (SETQ |bfVar#7| |bfVar#6|))
+                               (T (RPLACD |bfVar#7| #2#)
+                                (SETQ |bfVar#7| (CDR |bfVar#7|)))))))
+                       (SETQ |bfVar#5| (CDR |bfVar#5|)))))))
      (SETQ |ctorDef|
              (PROGN
               (SETQ |args|

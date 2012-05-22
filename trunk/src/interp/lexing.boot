@@ -152,27 +152,18 @@ nextChar() ==
 
 --%
 --% Token abstract datatype.
---%   Operational semantics:
---%      structure Token ==
---%         Record(symbol: Identifier, type: TokenType, nonBlank?: Boolean)
 --%
---%   type in '(NUMBER IDENTIFIER SPECIAL_-CHAR)
---%   nonBlank? if token is not preceded by a blank.
---%
+structure %Token ==
+  Record(sym: %Symbol, typ: %Thing, nb?: %Boolean) with
+    tokenSymbol == (.sym)
+    tokenType == (.typ)       -- typ in '(NUMBER IDENTIFIER SPECIAL_-CHAR)
+    tokenNonblank? == (.nb?)  -- true if token is not preceded by a blank.
+
 makeToken(sym == nil, typ == nil, blnk? == true) ==
-  [sym,typ,blnk?]
+  mk%Token(sym,typ,blnk?)
 
 macro copyToken t ==
-  copyList t
-
-macro tokenSymbol t ==
-  first t
-
-macro tokenType t ==
-  second t
-
-macro tokenNonblank? t ==
-  third t
+  copy%Token t
 
 ++ Last seen token
 $priorToken := makeToken()

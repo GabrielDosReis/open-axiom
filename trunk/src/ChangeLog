@@ -1,5 +1,15 @@
 2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (%Token): Now an actual type defined as a
+	record structure.
+	(copyToken): Adjust.
+	(tokenSymbol): Remove as now automatically generated.
+	(tokenType): Likewise.
+	(tokenNonblank?): Likewise.
+	* boot/ast.boot (bfRecordDef): Specify a name for a copier function.
+
+2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (translateToplevel): Handle record structures.
 	* boot/tokens.boot: "with" is now a keyword in Boot.
 	* boot/parser.boot (bpSignature): The typing is required afte the

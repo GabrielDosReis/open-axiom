@@ -1342,7 +1342,10 @@ bfRecordDef(s,fields,accessors) ==
   parms := [x for f in fields | f is ['%Signature,x,.]]
   fun := makeSymbol strconc('"mk",symbolName s)
   ctor := makeSymbol strconc('"MAKE-",symbolName s)
-  recDef := ["DEFSTRUCT",s,:[x for ['%Signature,x,.] in fields]]
+  recDef := ["DEFSTRUCT",
+               [s,[bfColonColon("KEYWORD","COPIER"),
+                    makeSymbol strconc('"copy",symbolName s)]],
+                      :[x for ['%Signature,x,.] in fields]]
   ctorDef :=
     args := [:[bfColonColon("KEYWORD",p),p] for p in parms]
     ["DEFMACRO",fun,parms,["LIST",quote ctor,:args]]
