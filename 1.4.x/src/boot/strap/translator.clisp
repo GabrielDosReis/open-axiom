@@ -585,7 +585,17 @@
        (T |x|)))))
 
 (DEFUN |translateToplevel| (|b| |export?|)
-  (LET* (|csts| |lhs| |t| |ISTMP#2| |sig| |ns| |n| |ISTMP#1| |xs|)
+  (LET* (|csts|
+         |accessors|
+         |fields|
+         |lhs|
+         |t|
+         |ISTMP#2|
+         |sig|
+         |ns|
+         |n|
+         |ISTMP#1|
+         |xs|)
     (DECLARE
      (SPECIAL |$activeNamespace| |$InteractiveMode| |$constantIdentifiers|
       |$foreignsDefsForCLisp| |$currentModuleName|))
@@ -700,6 +710,18 @@
              (|%Structure|
               (LET ((|t| (CADR |b|)) (|alts| (CADDR |b|)))
                 (COND
+                 ((AND (CONSP |alts|) (EQ (CAR |alts|) '|%Record|)
+                       (PROGN
+                        (SETQ |ISTMP#1| (CDR |alts|))
+                        (AND (CONSP |ISTMP#1|)
+                             (PROGN
+                              (SETQ |fields| (CAR |ISTMP#1|))
+                              (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                              (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                                   (PROGN
+                                    (SETQ |accessors| (CAR |ISTMP#2|))
+                                    T))))))
+                  (|bfRecordDef| |t| |fields| |accessors|))
                  ((AND (CONSP |alts|) (NULL (CDR |alts|))
                        (PROGN
                         (SETQ |ISTMP#1| (CAR |alts|))

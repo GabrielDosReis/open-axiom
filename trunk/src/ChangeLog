@@ -1,3 +1,20 @@
+2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (translateToplevel): Handle record structures.
+	* boot/tokens.boot: "with" is now a keyword in Boot.
+	* boot/parser.boot (bpSignature): The typing is required afte the
+	colong.
+	(bpFieldList): New.
+	(bpGlobalAccessors): Likewise.
+	(bpAccessorDefinitionList): Likewise.
+	(bpAccessorDefinition): Likewise.
+	(bpFieldSection): Likewise.
+	(bpSelectField): Likewise.
+	(bpRecord): Likewise.
+	(bpStruct): Use it to implement record structures.
+	* boot/ast.boot (%Ast): Add %Record and %AccessorDef.
+	(bfRecordDef): New.
+
 2012-05-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* boot/ast.boot (needsPROG): Remove.

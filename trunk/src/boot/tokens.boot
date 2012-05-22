@@ -90,6 +90,7 @@ shoeKeyWords == [  _
             ['"throw", "THROW"], _
             ['"try",   "TRY"], _
             ['"until",  "UNTIL"], _
+            ['"with",   "WITH" ], _
             ['"where",  "WHERE"], _
             ['"while",  "WHILE"], _
             ['".", "DOT"], _

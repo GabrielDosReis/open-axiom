@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -495,7 +495,7 @@ bpTypeAliasDefition() ==
 ++  Signature:
 ++    Name COLON Mapping
 bpSignature() ==
-  bpName() and bpEqKey "COLON" and bpTyping()
+  bpName() and bpEqKey "COLON" and bpRequire function bpTyping
     and bpPush %Signature(bpPop2(), bpPop1())
 
 ++ SimpleMapping:
@@ -1153,8 +1153,50 @@ bpStruct()==
    bpEqKey "STRUCTURE" and
       bpRequire function bpName and
         (bpEqKey "DEF" or bpTrap()) and
-           bpTypeList() and bpPush %Structure(bpPop2(),bpPop1())
+           (bpRecord() or bpTypeList()) and
+             bpPush %Structure(bpPop2(),bpPop1())
  
+++ Record:
+++   "Record" "(" FieldList ")"
+bpRecord() ==
+  s := bpState()
+  bpName() and bpPop1() is "Record" =>
+    (bpParenthesized function bpFieldList or bpTrap()) and
+      bpGlobalAccessors() and
+        bpPush %Record(bfUntuple bpPop2(),bpPop1())
+  bpRestore s
+  false
+
+++ FieldList:
+++    Signature
+++    Signature , FieldList
+bpFieldList() ==
+  bpTuple function bpSignature
+
+bpGlobalAccessors() ==
+  bpEqKey "WITH" =>
+    bpPileBracketed function bpAccessorDefinitionList or bpTrap()
+  bpPush nil
+
+bpAccessorDefinitionList() ==
+  bpListAndRecover function bpAccessorDefinition
+
+++ AccessorDefinition:
+++   Name DEF FieldSection
+bpAccessorDefinition() ==
+  bpRequire function bpName and
+    (bpEqKey "DEF" or bpTrap()) and
+       bpRequire function bpFieldSection and
+         bpPush %AccessorDef(bpPop2(),bpPop1())
+
+++ FieldSection:
+++    "(" DOT Name ")"
+bpFieldSection() ==
+  bpParenthesized function bpSelectField
+
+bpSelectField() ==
+  bpEqKey "DOT" and bpName()
+
 bpTypeList() == 
   bpPileBracketed function bpTypeItemList
     or bpTypeItem() and bpPush [bpPop1()]
