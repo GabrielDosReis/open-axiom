@@ -462,7 +462,7 @@
        (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSignature| ()
-  (AND (|bpName|) (|bpEqKey| 'COLON) (|bpTyping|)
+  (AND (|bpName|) (|bpEqKey| 'COLON) (|bpRequire| #'|bpTyping|)
        (|bpPush| (|%Signature| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSimpleMapping| ()
@@ -1098,8 +1098,39 @@
 
 (DEFUN |bpStruct| ()
   (AND (|bpEqKey| 'STRUCTURE) (|bpRequire| #'|bpName|)
-       (OR (|bpEqKey| 'DEF) (|bpTrap|)) (|bpTypeList|)
+       (OR (|bpEqKey| 'DEF) (|bpTrap|)) (OR (|bpRecord|) (|bpTypeList|))
        (|bpPush| (|%Structure| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpRecord| ()
+  (LET* (|s|)
+    (PROGN
+     (SETQ |s| (|bpState|))
+     (COND
+      ((AND (|bpName|) (EQ (|bpPop1|) '|Record|))
+       (AND (OR (|bpParenthesized| #'|bpFieldList|) (|bpTrap|))
+            (|bpGlobalAccessors|)
+            (|bpPush| (|%Record| (|bfUntuple| (|bpPop2|)) (|bpPop1|)))))
+      (T (|bpRestore| |s|) NIL)))))
+
+(DEFUN |bpFieldList| () (|bpTuple| #'|bpSignature|))
+
+(DEFUN |bpGlobalAccessors| ()
+  (COND
+   ((|bpEqKey| 'WITH)
+    (OR (|bpPileBracketed| #'|bpAccessorDefinitionList|) (|bpTrap|)))
+   (T (|bpPush| NIL))))
+
+(DEFUN |bpAccessorDefinitionList| ()
+  (|bpListAndRecover| #'|bpAccessorDefinition|))
+
+(DEFUN |bpAccessorDefinition| ()
+  (AND (|bpRequire| #'|bpName|) (OR (|bpEqKey| 'DEF) (|bpTrap|))
+       (|bpRequire| #'|bpFieldSection|)
+       (|bpPush| (|%AccessorDef| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpFieldSection| () (|bpParenthesized| #'|bpSelectField|))
+
+(DEFUN |bpSelectField| () (AND (|bpEqKey| 'DOT) (|bpName|)))
 
 (DEFUN |bpTypeList| ()
   (OR (|bpPileBracketed| #'|bpTypeItemList|)

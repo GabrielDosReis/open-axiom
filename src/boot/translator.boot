@@ -480,6 +480,7 @@ translateToplevel(b,export?) ==
     %Macro(op,args,body) => bfMDef(op,args,body)
 
     %Structure(t,alts) =>
+      alts is ['%Record,fields,accessors] => bfRecordDef(t,fields,accessors)
       alts is [['Enumeration,:csts]] => [bfEnum(t,csts)]
       [bfCreateDef alt for alt in alts]
 

@@ -62,6 +62,8 @@ structure %Ast ==
   %Namespace(%Symbol)                   -- namespace AxiomCore
   %Import(%Ast)                         -- import module; import namespace foo
   %ImportSignature(%Symbol,%Signature)  -- import function declaration
+  %Record(%List,%List)                  -- Record(num: %Short, den: %Short)
+  %AccessorDef(%Symbol,%Ast)            -- numerator == (.num)
   %TypeAlias(%Head, %List)              -- type alias definition
   %Signature(%Symbol,%Mapping)          -- op: S -> T
   %Mapping(%Ast, %List)                 -- (S1, S2) -> T
@@ -1335,6 +1337,22 @@ bfDs n ==
 
 bfEnum(t,csts) ==
   ['DEFTYPE,t,nil,backquote(['MEMBER,:csts],nil)]
+
+bfRecordDef(s,fields,accessors) ==
+  parms := [x for f in fields | f is ['%Signature,x,.]]
+  fun := makeSymbol strconc('"mk",symbolName s)
+  ctor := makeSymbol strconc('"MAKE-",symbolName s)
+  recDef := ["DEFSTRUCT",s,:[x for ['%Signature,x,.] in fields]]
+  ctorDef :=
+    args := [:[bfColonColon("KEYWORD",p),p] for p in parms]
+    ["DEFMACRO",fun,parms,["LIST",quote ctor,:args]]
+  accDefs :=
+    accessors = nil => nil
+    x := bfGenSymbol()
+    [["DEFMACRO",acc,[x],
+       ["LIST",quote makeSymbol strconc(symbolName s,'"-",symbolName f),x]]
+         for ['%AccessorDef,acc,f] in accessors]
+  [recDef,ctorDef,:accDefs]
 
 bfHandlers(n,e,hs) == main(n,e,hs,nil) where
   main(n,e,hs,xs) ==
