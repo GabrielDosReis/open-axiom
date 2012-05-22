@@ -220,47 +220,43 @@
          (T (RETURN (EQUAL |x| |l|))))))
 
 (DEFUN |reverse| (|l|)
-  (PROG (|r|)
-    (RETURN
-     (PROGN
-      (SETQ |r| NIL)
-      (LOOP
-       (COND ((CONSP |l|) (SETQ |r| (CONS (CAR |l|) |r|)) (SETQ |l| (CDR |l|)))
-             (T (RETURN |r|))))))))
+  (LET* (|r|)
+    (PROGN
+     (SETQ |r| NIL)
+     (LOOP
+      (COND ((CONSP |l|) (SETQ |r| (CONS (CAR |l|) |r|)) (SETQ |l| (CDR |l|)))
+            (T (RETURN |r|)))))))
 
 (DEFUN |reverse!| (|l|)
-  (PROG (|l2| |l1|)
-    (RETURN
-     (PROGN
-      (SETQ |l1| NIL)
-      (LOOP
-       (COND
-        ((CONSP |l|) (SETQ |l2| (CDR |l|)) (RPLACD |l| |l1|) (SETQ |l1| |l|)
-         (SETQ |l| |l2|))
-        (T (RETURN |l1|))))))))
+  (LET* (|l2| |l1|)
+    (PROGN
+     (SETQ |l1| NIL)
+     (LOOP
+      (COND
+       ((CONSP |l|) (SETQ |l2| (CDR |l|)) (RPLACD |l| |l1|) (SETQ |l1| |l|)
+        (SETQ |l| |l2|))
+       (T (RETURN |l1|)))))))
 
 (DEFUN |lastNode| (|l|)
-  (PROG (|l'|)
-    (RETURN
-     (PROGN
-      (LOOP
-       (COND
-        ((NOT (AND (CONSP |l|) (PROGN (SETQ |l'| (CDR |l|)) T) (CONSP |l'|)))
-         (RETURN NIL))
-        (T (SETQ |l| |l'|))))
-      |l|))))
+  (LET* (|l'|)
+    (PROGN
+     (LOOP
+      (COND
+       ((NOT (AND (CONSP |l|) (PROGN (SETQ |l'| (CDR |l|)) T) (CONSP |l'|)))
+        (RETURN NIL))
+       (T (SETQ |l| |l'|))))
+     |l|)))
 
 (DEFUN |copyList| (|l|)
-  (PROG (|l'| |t|)
-    (RETURN
-     (COND ((NOT (CONSP |l|)) |l|)
-           (T (SETQ |l'| (SETQ |t| (LIST (CAR |l|))))
-            (LOOP
-             (PROGN
-              (SETQ |l| (CDR |l|))
-              (COND
-               ((CONSP |l|) (RPLACD |t| (LIST (CAR |l|))) (SETQ |t| (CDR |t|)))
-               (T (RPLACD |t| |l|) (RETURN |l'|))))))))))
+  (LET* (|l'| |t|)
+    (COND ((NOT (CONSP |l|)) |l|)
+          (T (SETQ |l'| (SETQ |t| (LIST (CAR |l|))))
+           (LOOP
+            (PROGN
+             (SETQ |l| (CDR |l|))
+             (COND
+              ((CONSP |l|) (RPLACD |t| (LIST (CAR |l|))) (SETQ |t| (CDR |t|)))
+              (T (RPLACD |t| |l|) (RETURN |l'|)))))))))
 
 (DEFUN |append!| (|x| |y|)
   (COND ((NULL |x|) |y|) ((NULL |y|) |x|)
@@ -269,24 +265,22 @@
 (DEFUN |append| (|x| |y|) (|append!| (|copyList| |x|) |y|))
 
 (DEFUN |symbolAssoc| (|s| |l|)
-  (PROG (|x|)
-    (RETURN
-     (LOOP
-      (COND
-       ((NOT
-         (AND (CONSP |l|) (PROGN (SETQ |x| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
-        (RETURN NIL))
-       ((AND (CONSP |x|) (EQ |s| (CAR |x|))) (RETURN |x|)))))))
+  (LET* (|x|)
+    (LOOP
+     (COND
+      ((NOT
+        (AND (CONSP |l|) (PROGN (SETQ |x| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
+       (RETURN NIL))
+      ((AND (CONSP |x|) (EQ |s| (CAR |x|))) (RETURN |x|))))))
 
 (DEFUN |objectAssoc| (|x| |l|)
-  (PROG (|p|)
-    (RETURN
-     (LOOP
-      (COND
-       ((NOT
-         (AND (CONSP |l|) (PROGN (SETQ |p| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
-        (RETURN NIL))
-       ((AND (CONSP |p|) (EQ (CAR |p|) |x|)) (RETURN |p|)))))))
+  (LET* (|p|)
+    (LOOP
+     (COND
+      ((NOT
+        (AND (CONSP |l|) (PROGN (SETQ |p| (CAR |l|)) (SETQ |l| (CDR |l|)) T)))
+       (RETURN NIL))
+      ((AND (CONSP |p|) (EQ (CAR |p|) |x|)) (RETURN |p|))))))
 
 (DEFUN |substitute!| (|y| |x| |s|)
   (COND ((NULL |s|) NIL) ((EQ |x| |s|) |y|)
@@ -297,88 +291,82 @@
          |s|)))
 
 (DEFUN |substitute| (|y| |x| |s|)
-  (PROG (|t| |h|)
-    (RETURN
-     (COND ((NULL |s|) NIL) ((EQ |x| |s|) |y|)
-           ((CONSP |s|) (SETQ |h| (|substitute| |y| |x| (CAR |s|)))
-            (SETQ |t| (|substitute| |y| |x| (CDR |s|)))
-            (COND ((AND (EQ |h| (CAR |s|)) (EQ |t| (CDR |s|))) |s|)
-                  (T (CONS |h| |t|))))
-           (T |s|)))))
+  (LET* (|t| |h|)
+    (COND ((NULL |s|) NIL) ((EQ |x| |s|) |y|)
+          ((CONSP |s|) (SETQ |h| (|substitute| |y| |x| (CAR |s|)))
+           (SETQ |t| (|substitute| |y| |x| (CDR |s|)))
+           (COND ((AND (EQ |h| (CAR |s|)) (EQ |t| (CDR |s|))) |s|)
+                 (T (CONS |h| |t|))))
+          (T |s|))))
 
 (DEFUN |applySubst| (|sl| |t|)
-  (PROG (|p| |tl| |hd|)
-    (RETURN
-     (COND ((NULL |sl|) |t|)
-           ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
-            (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
-            (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
-                  (T (CONS |hd| |tl|))))
-           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-           (T |t|)))))
+  (LET* (|p| |tl| |hd|)
+    (COND ((NULL |sl|) |t|)
+          ((CONSP |t|) (SETQ |hd| (|applySubst| |sl| (CAR |t|)))
+           (SETQ |tl| (|applySubst| |sl| (CDR |t|)))
+           (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+                 (T (CONS |hd| |tl|))))
+          ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+          (T |t|))))
 
 (DEFUN |applySubst!| (|sl| |t|)
-  (PROG (|p| |tl| |hd|)
-    (RETURN
-     (COND ((NULL |sl|) |t|)
-           ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
-            (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
-            (RPLACD |t| |tl|))
-           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-           (T |t|)))))
+  (LET* (|p| |tl| |hd|)
+    (COND ((NULL |sl|) |t|)
+          ((CONSP |t|) (SETQ |hd| (|applySubst!| |sl| (CAR |t|)))
+           (SETQ |tl| (|applySubst!| |sl| (CDR |t|))) (RPLACA |t| |hd|)
+           (RPLACD |t| |tl|))
+          ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+          (T |t|))))
 
 (DEFUN |applySubstNQ| (|sl| |t|)
-  (PROG (|p| |tl| |hd|)
-    (RETURN
-     (COND ((NULL |sl|) |t|)
-           ((AND (CONSP |t|)
-                 (PROGN (SETQ |hd| (CAR |t|)) (SETQ |tl| (CDR |t|)) T))
-            (COND ((EQ |hd| 'QUOTE) |t|)
-                  (T (SETQ |hd| (|applySubstNQ| |sl| |hd|))
-                   (SETQ |tl| (|applySubstNQ| |sl| |tl|))
-                   (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
-                         (T (CONS |hd| |tl|))))))
-           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
-           (T |t|)))))
+  (LET* (|p| |tl| |hd|)
+    (COND ((NULL |sl|) |t|)
+          ((AND (CONSP |t|)
+                (PROGN (SETQ |hd| (CAR |t|)) (SETQ |tl| (CDR |t|)) T))
+           (COND ((EQ |hd| 'QUOTE) |t|)
+                 (T (SETQ |hd| (|applySubstNQ| |sl| |hd|))
+                  (SETQ |tl| (|applySubstNQ| |sl| |tl|))
+                  (COND ((AND (EQ |hd| (CAR |t|)) (EQ |tl| (CDR |t|))) |t|)
+                        (T (CONS |hd| |tl|))))))
+          ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
+          (T |t|))))
 
 (DEFUN |setDifference| (|x| |y|)
-  (PROG (|a| |l| |p|)
-    (RETURN
-     (COND ((NULL |x|) NIL) ((NULL |y|) |x|)
-           (T (SETQ |l| (SETQ |p| (LIST NIL)))
-            (LET ((|bfVar#1| |x|))
-              (LOOP
-               (COND ((NOT (CONSP |bfVar#1|)) (RETURN NIL))
-                     (T
-                      (AND (CONSP |bfVar#1|)
-                           (PROGN (SETQ |a| (CAR |bfVar#1|)) T)
-                           (NOT (|objectMember?| |a| |y|))
-                           (PROGN
-                            (RPLACD |p| (LIST |a|))
-                            (SETQ |p| (CDR |p|))))))
-               (SETQ |bfVar#1| (CDR |bfVar#1|))))
-            (CDR |l|))))))
+  (LET* (|a| |l| |p|)
+    (COND ((NULL |x|) NIL) ((NULL |y|) |x|)
+          (T (SETQ |l| (SETQ |p| (LIST NIL)))
+           (LET ((|bfVar#1| |x|))
+             (LOOP
+              (COND ((NOT (CONSP |bfVar#1|)) (RETURN NIL))
+                    (T
+                     (AND (CONSP |bfVar#1|)
+                          (PROGN (SETQ |a| (CAR |bfVar#1|)) T)
+                          (NOT (|objectMember?| |a| |y|))
+                          (PROGN
+                           (RPLACD |p| (LIST |a|))
+                           (SETQ |p| (CDR |p|))))))
+              (SETQ |bfVar#1| (CDR |bfVar#1|))))
+           (CDR |l|)))))
 
 (DEFUN |setUnion| (|x| |y|)
-  (PROG (|z|)
-    (RETURN
-     (PROGN
-      (SETQ |z| NIL)
-      (LET ((|bfVar#1| |x|) (|a| NIL))
-        (LOOP
-         (COND
-          ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |a| (CAR |bfVar#1|)) NIL))
-           (RETURN NIL))
-          (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
-         (SETQ |bfVar#1| (CDR |bfVar#1|))))
-      (LET ((|bfVar#2| |y|) (|a| NIL))
-        (LOOP
-         (COND
-          ((OR (NOT (CONSP |bfVar#2|)) (PROGN (SETQ |a| (CAR |bfVar#2|)) NIL))
-           (RETURN NIL))
-          (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
-         (SETQ |bfVar#2| (CDR |bfVar#2|))))
-      (|reverse!| |z|)))))
+  (LET* (|z|)
+    (PROGN
+     (SETQ |z| NIL)
+     (LET ((|bfVar#1| |x|) (|a| NIL))
+       (LOOP
+        (COND
+         ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |a| (CAR |bfVar#1|)) NIL))
+          (RETURN NIL))
+         (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
+        (SETQ |bfVar#1| (CDR |bfVar#1|))))
+     (LET ((|bfVar#2| |y|) (|a| NIL))
+       (LOOP
+        (COND
+         ((OR (NOT (CONSP |bfVar#2|)) (PROGN (SETQ |a| (CAR |bfVar#2|)) NIL))
+          (RETURN NIL))
+         (T (AND (NOT (|objectMember?| |a| |z|)) (SETQ |z| (CONS |a| |z|)))))
+        (SETQ |bfVar#2| (CDR |bfVar#2|))))
+     (|reverse!| |z|))))
 
 (DEFUN |setIntersection| (|x| |y|)
   (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |x|) (|a| NIL))
@@ -395,47 +383,43 @@
      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
 (DEFUN |removeSymbol| (|l| |x|)
-  (PROG (|y| |LETTMP#1| |l'| |before|)
-    (RETURN
-     (PROGN
-      (SETQ |before| NIL)
-      (SETQ |l'| |l|)
-      (LOOP
-       (COND ((NOT (CONSP |l'|)) (RETURN |l|))
-             (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
-              (SETQ |l'| (CDR |LETTMP#1|))
-              (COND
-               ((EQ |x| |y|) (RETURN (|append!| (|reverse!| |before|) |l'|)))
-               (T (SETQ |before| (CONS |y| |before|)))))))))))
+  (LET* (|y| |LETTMP#1| |l'| |before|)
+    (PROGN
+     (SETQ |before| NIL)
+     (SETQ |l'| |l|)
+     (LOOP
+      (COND ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+             (SETQ |l'| (CDR |LETTMP#1|))
+             (COND
+              ((EQ |x| |y|) (RETURN (|append!| (|reverse!| |before|) |l'|)))
+              (T (SETQ |before| (CONS |y| |before|))))))))))
 
 (DEFUN |removeScalar| (|l| |x|)
-  (PROG (|y| |LETTMP#1| |l'| |before|)
-    (RETURN
-     (PROGN
-      (SETQ |before| NIL)
-      (SETQ |l'| |l|)
-      (LOOP
-       (COND ((NOT (CONSP |l'|)) (RETURN |l|))
-             (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
-              (SETQ |l'| (CDR |LETTMP#1|))
-              (COND
-               ((EQL |x| |y|) (RETURN (|append!| (|reverse!| |before|) |l'|)))
-               (T (SETQ |before| (CONS |y| |before|)))))))))))
+  (LET* (|y| |LETTMP#1| |l'| |before|)
+    (PROGN
+     (SETQ |before| NIL)
+     (SETQ |l'| |l|)
+     (LOOP
+      (COND ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+             (SETQ |l'| (CDR |LETTMP#1|))
+             (COND
+              ((EQL |x| |y|) (RETURN (|append!| (|reverse!| |before|) |l'|)))
+              (T (SETQ |before| (CONS |y| |before|))))))))))
 
 (DEFUN |removeValue| (|l| |x|)
-  (PROG (|y| |LETTMP#1| |l'| |before|)
-    (RETURN
-     (PROGN
-      (SETQ |before| NIL)
-      (SETQ |l'| |l|)
-      (LOOP
-       (COND ((NOT (CONSP |l'|)) (RETURN |l|))
-             (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
-              (SETQ |l'| (CDR |LETTMP#1|))
-              (COND
-               ((EQUAL |x| |y|)
-                (RETURN (|append!| (|reverse!| |before|) |l'|)))
-               (T (SETQ |before| (CONS |y| |before|)))))))))))
+  (LET* (|y| |LETTMP#1| |l'| |before|)
+    (PROGN
+     (SETQ |before| NIL)
+     (SETQ |l'| |l|)
+     (LOOP
+      (COND ((NOT (CONSP |l'|)) (RETURN |l|))
+            (T (SETQ |LETTMP#1| |l'|) (SETQ |y| (CAR |LETTMP#1|))
+             (SETQ |l'| (CDR |LETTMP#1|))
+             (COND
+              ((EQUAL |x| |y|) (RETURN (|append!| (|reverse!| |before|) |l'|)))
+              (T (SETQ |before| (CONS |y| |before|))))))))))
 
 (DEFUN |remove| (|l| |x|)
   (COND ((SYMBOLP |x|) (|removeSymbol| |l| |x|))
@@ -443,14 +427,13 @@
         (T (|removeValue| |l| |x|))))
 
 (DEFUN |charPosition| (|c| |s| |k|)
-  (PROG (|n|)
-    (RETURN
-     (PROGN
-      (SETQ |n| (LENGTH |s|))
-      (LOOP
-       (COND ((NOT (< |k| |n|)) (RETURN NIL))
-             ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
-             (T (SETQ |k| (+ |k| 1)))))))))
+  (LET* (|n|)
+    (PROGN
+     (SETQ |n| (LENGTH |s|))
+     (LOOP
+      (COND ((NOT (< |k| |n|)) (RETURN NIL))
+            ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
+            (T (SETQ |k| (+ |k| 1))))))))
 
 (DEFUN |firstNonblankPosition| (|s| |k|)
   (LET ((|bfVar#2| NIL) (|bfVar#1| (- (LENGTH |s|) 1)) (|i| |k|))
@@ -475,25 +458,24 @@
      (SETQ |i| (+ |i| 1)))))
 
 (DEFUN |stringSuffix?| (|suf| |str|)
-  (PROG (|n| |n2| |n1|)
-    (RETURN
-     (PROGN
-      (SETQ |n1| (LENGTH |suf|))
-      (SETQ |n2| (LENGTH |str|))
-      (COND ((< |n2| |n1|) NIL)
-            (T (SETQ |n| (- |n2| |n1|))
-             (COND
-              ((LET ((|bfVar#2| T) (|bfVar#1| (- |n1| 1)) (|i| 0) (|j| |n|))
-                 (LOOP
-                  (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
-                        (T
-                         (SETQ |bfVar#2|
-                                 (CHAR= (SCHAR |suf| |i|) (SCHAR |str| |j|)))
-                         (COND ((NOT |bfVar#2|) (RETURN NIL)))))
-                  (SETQ |i| (+ |i| 1))
-                  (SETQ |j| (+ |j| 1))))
-               |n|)
-              (T NIL))))))))
+  (LET* (|n| |n2| |n1|)
+    (PROGN
+     (SETQ |n1| (LENGTH |suf|))
+     (SETQ |n2| (LENGTH |str|))
+     (COND ((< |n2| |n1|) NIL)
+           (T (SETQ |n| (- |n2| |n1|))
+            (COND
+             ((LET ((|bfVar#2| T) (|bfVar#1| (- |n1| 1)) (|i| 0) (|j| |n|))
+                (LOOP
+                 (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
+                       (T
+                        (SETQ |bfVar#2|
+                                (CHAR= (SCHAR |suf| |i|) (SCHAR |str| |j|)))
+                        (COND ((NOT |bfVar#2|) (RETURN NIL)))))
+                 (SETQ |i| (+ |i| 1))
+                 (SETQ |j| (+ |j| 1))))
+              |n|)
+             (T NIL)))))))
 
 (DEFUN |finishLine| (|out|) (PROGN (TERPRI |out|) (FORCE-OUTPUT |out|)))
 

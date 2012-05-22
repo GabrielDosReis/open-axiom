@@ -14,115 +14,106 @@
 (DEFUN |shoePileColumn| (|t|) (CDR (|shoeTokPosn| (CAAR |t|))))
 
 (DEFUN |shoePileInsert| (|s|)
-  (PROG (|a| |toktype|)
-    (RETURN
-     (COND ((|bStreamNull| |s|) (CONS NIL |s|))
-           (T (SETQ |toktype| (|shoeTokType| (CAAAR |s|)))
-            (COND
-             ((OR (EQ |toktype| 'LISP) (EQ |toktype| 'LINE))
-              (CONS (LIST (CAR |s|)) (CDR |s|)))
-             (T (SETQ |a| (|shoePileTree| (- 1) |s|))
-              (CONS (LIST (ELT |a| 2)) (ELT |a| 3)))))))))
+  (LET* (|a| |toktype|)
+    (COND ((|bStreamNull| |s|) (CONS NIL |s|))
+          (T (SETQ |toktype| (|shoeTokType| (CAAAR |s|)))
+           (COND
+            ((OR (EQ |toktype| 'LISP) (EQ |toktype| 'LINE))
+             (CONS (LIST (CAR |s|)) (CDR |s|)))
+            (T (SETQ |a| (|shoePileTree| (- 1) |s|))
+             (CONS (LIST (ELT |a| 2)) (ELT |a| 3))))))))
 
 (DEFUN |shoePileTree| (|n| |s|)
-  (PROG (|hh| |t| |h| |LETTMP#1|)
-    (RETURN
-     (COND ((|bStreamNull| |s|) (LIST NIL |n| NIL |s|))
-           (T (SETQ |LETTMP#1| (LIST (CAR |s|) (CDR |s|)))
-            (SETQ |h| (CAR |LETTMP#1|)) (SETQ |t| (CADR |LETTMP#1|))
-            (SETQ |hh| (|shoePileColumn| |h|))
-            (COND ((< |n| |hh|) (|shoePileForests| |h| |hh| |t|))
-                  (T (LIST NIL |n| NIL |s|))))))))
+  (LET* (|hh| |t| |h| |LETTMP#1|)
+    (COND ((|bStreamNull| |s|) (LIST NIL |n| NIL |s|))
+          (T (SETQ |LETTMP#1| (LIST (CAR |s|) (CDR |s|)))
+           (SETQ |h| (CAR |LETTMP#1|)) (SETQ |t| (CADR |LETTMP#1|))
+           (SETQ |hh| (|shoePileColumn| |h|))
+           (COND ((< |n| |hh|) (|shoePileForests| |h| |hh| |t|))
+                 (T (LIST NIL |n| NIL |s|)))))))
 
 (DEFUN |eqshoePileTree| (|n| |s|)
-  (PROG (|hh| |t| |h| |LETTMP#1|)
-    (RETURN
-     (COND ((|bStreamNull| |s|) (LIST NIL |n| NIL |s|))
-           (T (SETQ |LETTMP#1| (LIST (CAR |s|) (CDR |s|)))
-            (SETQ |h| (CAR |LETTMP#1|)) (SETQ |t| (CADR |LETTMP#1|))
-            (SETQ |hh| (|shoePileColumn| |h|))
-            (COND ((EQUAL |hh| |n|) (|shoePileForests| |h| |hh| |t|))
-                  (T (LIST NIL |n| NIL |s|))))))))
+  (LET* (|hh| |t| |h| |LETTMP#1|)
+    (COND ((|bStreamNull| |s|) (LIST NIL |n| NIL |s|))
+          (T (SETQ |LETTMP#1| (LIST (CAR |s|) (CDR |s|)))
+           (SETQ |h| (CAR |LETTMP#1|)) (SETQ |t| (CADR |LETTMP#1|))
+           (SETQ |hh| (|shoePileColumn| |h|))
+           (COND ((EQUAL |hh| |n|) (|shoePileForests| |h| |hh| |t|))
+                 (T (LIST NIL |n| NIL |s|)))))))
 
 (DEFUN |shoePileForest| (|n| |s|)
-  (PROG (|t1| |h1| |t| |h| |hh| |b| |LETTMP#1|)
-    (RETURN
-     (PROGN
-      (SETQ |LETTMP#1| (|shoePileTree| |n| |s|))
-      (SETQ |b| (CAR |LETTMP#1|))
-      (SETQ |hh| (CADR . #1=(|LETTMP#1|)))
-      (SETQ |h| (CADDR . #1#))
-      (SETQ |t| (CADDDR . #1#))
-      (COND
-       (|b| (SETQ |LETTMP#1| (|shoePileForest1| |hh| |t|))
-        (SETQ |h1| (CAR |LETTMP#1|)) (SETQ |t1| (CADR |LETTMP#1|))
-        (LIST (CONS |h| |h1|) |t1|))
-       (T (LIST NIL |s|)))))))
+  (LET* (|t1| |h1| |t| |h| |hh| |b| |LETTMP#1|)
+    (PROGN
+     (SETQ |LETTMP#1| (|shoePileTree| |n| |s|))
+     (SETQ |b| (CAR |LETTMP#1|))
+     (SETQ |hh| (CADR . #1=(|LETTMP#1|)))
+     (SETQ |h| (CADDR . #1#))
+     (SETQ |t| (CADDDR . #1#))
+     (COND
+      (|b| (SETQ |LETTMP#1| (|shoePileForest1| |hh| |t|))
+       (SETQ |h1| (CAR |LETTMP#1|)) (SETQ |t1| (CADR |LETTMP#1|))
+       (LIST (CONS |h| |h1|) |t1|))
+      (T (LIST NIL |s|))))))
 
 (DEFUN |shoePileForest1| (|n| |s|)
-  (PROG (|t1| |h1| |t| |h| |n1| |b| |LETTMP#1|)
-    (RETURN
-     (PROGN
-      (SETQ |LETTMP#1| (|eqshoePileTree| |n| |s|))
-      (SETQ |b| (CAR |LETTMP#1|))
-      (SETQ |n1| (CADR . #1=(|LETTMP#1|)))
-      (SETQ |h| (CADDR . #1#))
-      (SETQ |t| (CADDDR . #1#))
-      (COND
-       (|b| (SETQ |LETTMP#1| (|shoePileForest1| |n| |t|))
-        (SETQ |h1| (CAR |LETTMP#1|)) (SETQ |t1| (CADR |LETTMP#1|))
-        (LIST (CONS |h| |h1|) |t1|))
-       (T (LIST NIL |s|)))))))
+  (LET* (|t1| |h1| |t| |h| |n1| |b| |LETTMP#1|)
+    (PROGN
+     (SETQ |LETTMP#1| (|eqshoePileTree| |n| |s|))
+     (SETQ |b| (CAR |LETTMP#1|))
+     (SETQ |n1| (CADR . #1=(|LETTMP#1|)))
+     (SETQ |h| (CADDR . #1#))
+     (SETQ |t| (CADDDR . #1#))
+     (COND
+      (|b| (SETQ |LETTMP#1| (|shoePileForest1| |n| |t|))
+       (SETQ |h1| (CAR |LETTMP#1|)) (SETQ |t1| (CADR |LETTMP#1|))
+       (LIST (CONS |h| |h1|) |t1|))
+      (T (LIST NIL |s|))))))
 
 (DEFUN |shoePileForests| (|h| |n| |s|)
-  (PROG (|t1| |h1| |LETTMP#1|)
-    (RETURN
-     (PROGN
-      (SETQ |LETTMP#1| (|shoePileForest| |n| |s|))
-      (SETQ |h1| (CAR |LETTMP#1|))
-      (SETQ |t1| (CADR |LETTMP#1|))
-      (COND ((|bStreamNull| |h1|) (LIST T |n| |h| |s|))
-            (T (|shoePileForests| (|shoePileCtree| |h| |h1|) |n| |t1|)))))))
+  (LET* (|t1| |h1| |LETTMP#1|)
+    (PROGN
+     (SETQ |LETTMP#1| (|shoePileForest| |n| |s|))
+     (SETQ |h1| (CAR |LETTMP#1|))
+     (SETQ |t1| (CADR |LETTMP#1|))
+     (COND ((|bStreamNull| |h1|) (LIST T |n| |h| |s|))
+           (T (|shoePileForests| (|shoePileCtree| |h| |h1|) |n| |t1|))))))
 
 (DEFUN |shoePileCtree| (|x| |y|) (|dqAppend| |x| (|shoePileCforest| |y|)))
 
 (DEFUN |shoePileCforest| (|x|)
-  (PROG (|b| |a|)
-    (RETURN
-     (COND ((NULL |x|) NIL) ((NULL (CDR |x|)) (CAR |x|))
-           (T (SETQ |a| (CAR |x|))
-            (SETQ |b| (|shoePileCoagulate| |a| (CDR |x|)))
-            (COND ((NULL (CDR |b|)) (CAR |b|))
-                  (T (|shoeEnPile| (|shoeSeparatePiles| |b|)))))))))
+  (LET* (|b| |a|)
+    (COND ((NULL |x|) NIL) ((NULL (CDR |x|)) (CAR |x|))
+          (T (SETQ |a| (CAR |x|))
+           (SETQ |b| (|shoePileCoagulate| |a| (CDR |x|)))
+           (COND ((NULL (CDR |b|)) (CAR |b|))
+                 (T (|shoeEnPile| (|shoeSeparatePiles| |b|))))))))
 
 (DEFUN |shoePileCoagulate| (|a| |b|)
-  (PROG (|e| |d| |c|)
-    (RETURN
-     (COND ((NULL |b|) (LIST |a|))
-           (T (SETQ |c| (CAR |b|))
-            (COND
-             ((OR (EQ (|shoeTokPart| (CAAR |c|)) 'THEN)
-                  (EQ (|shoeTokPart| (CAAR |c|)) 'ELSE))
-              (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
-             (T (SETQ |d| (CADR |a|)) (SETQ |e| (|shoeTokPart| |d|))
-              (COND
-               ((AND (CONSP |d|) (EQ (CAR |d|) 'KEY)
-                     (OR (GET |e| 'SHOEINF) (EQ |e| 'COMMA)
-                         (EQ |e| 'SEMICOLON)))
-                (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
-               (T (CONS |a| (|shoePileCoagulate| |c| (CDR |b|))))))))))))
+  (LET* (|e| |d| |c|)
+    (COND ((NULL |b|) (LIST |a|))
+          (T (SETQ |c| (CAR |b|))
+           (COND
+            ((OR (EQ (|shoeTokPart| (CAAR |c|)) 'THEN)
+                 (EQ (|shoeTokPart| (CAAR |c|)) 'ELSE))
+             (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
+            (T (SETQ |d| (CADR |a|)) (SETQ |e| (|shoeTokPart| |d|))
+             (COND
+              ((AND (CONSP |d|) (EQ (CAR |d|) 'KEY)
+                    (OR (GET |e| 'SHOEINF) (EQ |e| 'COMMA)
+                        (EQ |e| 'SEMICOLON)))
+               (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
+              (T (CONS |a| (|shoePileCoagulate| |c| (CDR |b|)))))))))))
 
 (DEFUN |shoeSeparatePiles| (|x|)
-  (PROG (|semicolon| |a|)
-    (RETURN
-     (COND ((NULL |x|) NIL) ((NULL (CDR |x|)) (CAR |x|))
-           (T (SETQ |a| (CAR |x|))
-            (SETQ |semicolon|
-                    (|dqUnit|
-                     (|shoeTokConstruct| 'KEY 'BACKSET
-                                         (|shoeLastTokPosn| |a|))))
-            (|dqConcat|
-             (LIST |a| |semicolon| (|shoeSeparatePiles| (CDR |x|)))))))))
+  (LET* (|semicolon| |a|)
+    (COND ((NULL |x|) NIL) ((NULL (CDR |x|)) (CAR |x|))
+          (T (SETQ |a| (CAR |x|))
+           (SETQ |semicolon|
+                   (|dqUnit|
+                    (|shoeTokConstruct| 'KEY 'BACKSET
+                                        (|shoeLastTokPosn| |a|))))
+           (|dqConcat|
+            (LIST |a| |semicolon| (|shoeSeparatePiles| (CDR |x|))))))))
 
 (DEFUN |shoeEnPile| (|x|)
   (|dqConcat|

@@ -51,107 +51,101 @@
         (LIST "'" 'QUOTE) (LIST "|" 'BAR)))
 
 (DEFUN |shoeKeyTableCons| ()
-  (PROG (|KeyTable|)
-    (RETURN
-     (PROGN
-      (SETQ |KeyTable| (|makeTable| #'EQUAL))
-      (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
-        (LOOP
-         (COND
-          ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
-           (RETURN NIL))
-          (T (SETF (|tableValue| |KeyTable| (CAR |st|)) (CADR |st|))))
-         (SETQ |bfVar#1| (CDR |bfVar#1|))))
-      |KeyTable|))))
+  (LET* (|KeyTable|)
+    (PROGN
+     (SETQ |KeyTable| (|makeTable| #'EQUAL))
+     (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
+       (LOOP
+        (COND
+         ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
+          (RETURN NIL))
+         (T (SETF (|tableValue| |KeyTable| (CAR |st|)) (CADR |st|))))
+        (SETQ |bfVar#1| (CDR |bfVar#1|))))
+     |KeyTable|)))
 
 (DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
 
 (DEFUN |keywordId| (|t|)
-  (PROG (|s|)
-    (RETURN
-     (COND
-      ((SETQ |s|
-               (WITH-HASH-TABLE-ITERATOR (#1=#:G719 |shoeKeyTable|)
-                 (LET ((|bfVar#1| NIL))
-                   (LOOP
-                    (MULTIPLE-VALUE-BIND (#2=#:G720 |k| |v|)
-                        (#1#)
-                      (COND ((NOT #2#) (RETURN |bfVar#1|))
-                            (T
-                             (AND (EQ |v| |t|)
-                                  (PROGN
-                                   (SETQ |bfVar#1| |k|)
-                                   (COND
-                                    (|bfVar#1| (RETURN |bfVar#1|))))))))))))
-       (INTERN |s|))
-      (T |t|)))))
+  (LET* (|s|)
+    (COND
+     ((SETQ |s|
+              (WITH-HASH-TABLE-ITERATOR (#1=#:G719 |shoeKeyTable|)
+                (LET ((|bfVar#1| NIL))
+                  (LOOP
+                   (MULTIPLE-VALUE-BIND (#2=#:G720 |k| |v|)
+                       (#1#)
+                     (COND ((NOT #2#) (RETURN |bfVar#1|))
+                           (T
+                            (AND (EQ |v| |t|)
+                                 (PROGN
+                                  (SETQ |bfVar#1| |k|)
+                                  (COND
+                                   (|bfVar#1| (RETURN |bfVar#1|))))))))))))
+      (INTERN |s|))
+     (T |t|))))
 
 (DEFUN |shoeInsert| (|s| |d|)
-  (PROG (|v| |k| |n| |u| |h| |l|)
-    (RETURN
-     (PROGN
-      (SETQ |l| (LENGTH |s|))
-      (SETQ |h| (CHAR-CODE (SCHAR |s| 0)))
-      (SETQ |u| (ELT |d| |h|))
-      (SETQ |n| (LENGTH |u|))
-      (SETQ |k| 0)
-      (LOOP
-       (COND ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
-             (T (SETQ |k| (+ |k| 1)))))
-      (SETQ |v| (MAKE-ARRAY (+ |n| 1)))
-      (LET ((|bfVar#1| (- |k| 1)) (|i| 0))
-        (LOOP
-         (COND ((> |i| |bfVar#1|) (RETURN NIL))
-               (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
-         (SETQ |i| (+ |i| 1))))
-      (SETF (ELT |v| |k|) |s|)
-      (LET ((|bfVar#2| (- |n| 1)) (|i| |k|))
-        (LOOP
-         (COND ((> |i| |bfVar#2|) (RETURN NIL))
-               (T (SETF (ELT |v| (+ |i| 1)) (ELT |u| |i|))))
-         (SETQ |i| (+ |i| 1))))
-      (SETF (ELT |d| |h|) |v|)
-      |s|))))
+  (LET* (|v| |k| |n| |u| |h| |l|)
+    (PROGN
+     (SETQ |l| (LENGTH |s|))
+     (SETQ |h| (CHAR-CODE (SCHAR |s| 0)))
+     (SETQ |u| (ELT |d| |h|))
+     (SETQ |n| (LENGTH |u|))
+     (SETQ |k| 0)
+     (LOOP
+      (COND ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
+            (T (SETQ |k| (+ |k| 1)))))
+     (SETQ |v| (MAKE-ARRAY (+ |n| 1)))
+     (LET ((|bfVar#1| (- |k| 1)) (|i| 0))
+       (LOOP
+        (COND ((> |i| |bfVar#1|) (RETURN NIL))
+              (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
+        (SETQ |i| (+ |i| 1))))
+     (SETF (ELT |v| |k|) |s|)
+     (LET ((|bfVar#2| (- |n| 1)) (|i| |k|))
+       (LOOP
+        (COND ((> |i| |bfVar#2|) (RETURN NIL))
+              (T (SETF (ELT |v| (+ |i| 1)) (ELT |u| |i|))))
+        (SETQ |i| (+ |i| 1))))
+     (SETF (ELT |d| |h|) |v|)
+     |s|)))
 
 (DEFUN |shoeDictCons| ()
-  (PROG (|d| |b| |a|)
-    (RETURN
-     (PROGN
-      (SETQ |d|
-              (PROGN
-               (SETQ |a| (MAKE-ARRAY 256))
-               (SETQ |b| (MAKE-ARRAY 1))
-               (SETF (ELT |b| 0) (|makeString| 0))
-               (LET ((|i| 0))
-                 (LOOP
-                  (COND ((> |i| 255) (RETURN NIL))
-                        (T (SETF (ELT |a| |i|) |b|)))
-                  (SETQ |i| (+ |i| 1))))
-               |a|))
-      (WITH-HASH-TABLE-ITERATOR (#1=#:G721 |shoeKeyTable|)
-        (LOOP
-         (MULTIPLE-VALUE-BIND (#2=#:G722 |s| #:G723)
-             (#1#)
-           (COND ((NOT #2#) (RETURN NIL)) (T (|shoeInsert| |s| |d|))))))
-      |d|))))
+  (LET* (|d| |b| |a|)
+    (PROGN
+     (SETQ |d|
+             (PROGN
+              (SETQ |a| (MAKE-ARRAY 256))
+              (SETQ |b| (MAKE-ARRAY 1))
+              (SETF (ELT |b| 0) (|makeString| 0))
+              (LET ((|i| 0))
+                (LOOP
+                 (COND ((> |i| 255) (RETURN NIL)) (T (SETF (ELT |a| |i|) |b|)))
+                 (SETQ |i| (+ |i| 1))))
+              |a|))
+     (WITH-HASH-TABLE-ITERATOR (#1=#:G721 |shoeKeyTable|)
+       (LOOP
+        (MULTIPLE-VALUE-BIND (#2=#:G722 |s| #:G723)
+            (#1#)
+          (COND ((NOT #2#) (RETURN NIL)) (T (|shoeInsert| |s| |d|))))))
+     |d|)))
 
 (DEFPARAMETER |shoeDict| (|shoeDictCons|))
 
 (DEFUN |shoePunCons| ()
-  (PROG (|a|)
-    (RETURN
-     (PROGN
-      (SETQ |a| (|makeBitVector| 256))
-      (LET ((|i| 0))
-        (LOOP (COND ((> |i| 255) (RETURN NIL)) (T (SETF (SBIT |a| |i|) 0)))
-              (SETQ |i| (+ |i| 1))))
-      (WITH-HASH-TABLE-ITERATOR (#1=#:G724 |shoeKeyTable|)
-        (LOOP
-         (MULTIPLE-VALUE-BIND (#2=#:G725 |k| #:G726)
-             (#1#)
-           (COND ((NOT #2#) (RETURN NIL)) ((|shoeStartsId| (SCHAR |k| 0)) NIL)
-                 (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1))))))
-      |a|))))
+  (LET* (|a|)
+    (PROGN
+     (SETQ |a| (|makeBitVector| 256))
+     (LET ((|i| 0))
+       (LOOP (COND ((> |i| 255) (RETURN NIL)) (T (SETF (SBIT |a| |i|) 0)))
+             (SETQ |i| (+ |i| 1))))
+     (WITH-HASH-TABLE-ITERATOR (#1=#:G724 |shoeKeyTable|)
+       (LOOP
+        (MULTIPLE-VALUE-BIND (#2=#:G725 |k| #:G726)
+            (#1#)
+          (COND ((NOT #2#) (RETURN NIL)) ((|shoeStartsId| (SCHAR |k| 0)) NIL)
+                (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1))))))
+     |a|)))
 
 (DEFPARAMETER |shoePun| (|shoePunCons|))
 

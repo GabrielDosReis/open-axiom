@@ -1,3 +1,12 @@
+2012-05-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* boot/ast.boot (needsPROG): Remove.
+	(shoePROG): Likewise.
+	(declareLocalVars): New.
+	(maybeAddBlock): Likewise.
+	(hasReturn?): Likewise.
+	(shoeCompTran): Tidy.
+
 2012-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parsing.lisp: Remove.
