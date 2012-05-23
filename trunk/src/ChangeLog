@@ -1,5 +1,13 @@
 2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (%Constructor): New.
+	(makeConstructor): Likewise.
+	(makeInitialDB): Tidy.
+	* interp/daase.lisp (makeDB): Take two more parameters.  Build a
+	%Constructor structure object too.
+
+2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (initializeDatabases): Load initidb if
 	specified.
 	* interp/database.boot (populateDFFromFile): Remove.

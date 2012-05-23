@@ -50,7 +50,7 @@ module c_-util where
   registerConstructor: (%Symbol,%Env) -> %Env
   currentConstructor: %Env -> %Maybe %Symbol
   -- functor data manipulation
-  dbInfovec: %Constructor -> %Maybe %FunctorData
+  dbInfovec: %Symbol -> %Maybe %FunctorData
 
 --% Accessors of domain and category objects
 

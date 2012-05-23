@@ -310,9 +310,12 @@
 (defmacro |dbLookupFunction| (db)
   `(database-lookup-function ,db))
 
-(defun |makeDB| (c)
+(defun |makeDB| (c &optional (k nil) (a nil))
   (let ((db (make-database)))
+    (|makeConstructor| c k a)
     (setf (|dbConstructor| db) c)
+    (setf (|dbConstructorKind| db) k)
+    (setf (|dbAbbreviation| db) a)
     (setf (|constructorDB| c) db)))
 
 ; there are only a small number of domains that have default domains.
@@ -464,16 +467,14 @@
       (dolist (item constructors)
 	(setq item (unsqueeze item))
 	(setq *allconstructors* (adjoin (first item) *allconstructors*))
-	(setq dbstruct (|makeDB| (first item)))
+	(setq dbstruct (|makeDB| (first item) (ninth item) (seventh item)))
 	(setf (|dbOperations| dbstruct) (second item))
 	(setf (|dbConstructorModemap| dbstruct) (third item))
 	(setf (|dbModemaps| dbstruct) (fourth item))
 	(setf (|dbModule| dbstruct) (fifth item))
 	(setf (|dbCategory| dbstruct) (sixth item))
-	(setf (|dbAbbreviation| dbstruct) (seventh item))
 	(setf (get (seventh item) 'abbreviationfor) (first item)) ;invert
 	(setf (|dbDualSignature| dbstruct) (eighth item))
-	(setf (|dbConstructorKind| dbstruct) (ninth item))
 	(setf (|dbAncestors| dbstruct) (nth 10 item))
 	(setf (|dbSuperDomain| dbstruct) (nth 11 item))
 	))
