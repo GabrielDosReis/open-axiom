@@ -178,11 +178,11 @@ restart() ==
 
 initializeDatabases firstTime? ==
   getOptionValue "build-initdb" => nil
-  --initdb := getOptionValue "initial-db" => populateDBFromFile initdb
+  --initdb := getOptionValue "initial-db" => LOAD initdb
   --FIXME: Ideally we should execute the previous line.  The next line is
   --FIXME: a short-term stopgap until build dependencies are in place.
   if initdb := getOptionValue "initial-db" then
-    populateDBFromFile initdb
+    LOAD initdb
   not firstTime? => openDatabases()
   fillDatabasesInCore()
   mkLowerCaseConTable()
