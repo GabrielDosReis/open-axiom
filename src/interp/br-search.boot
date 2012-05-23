@@ -899,7 +899,7 @@ replaceGrepStar s ==
 
 standardizeSignature(s) == underscoreDollars
   stringChar(s,0) = char "(" => s
-  k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
+  k := findString('"->",s) or return s --will fail except perhaps on constants
   stringChar(s,k - 1) = char ")" => strconc('"(",s)
   strconc('"(",subString(s,0,k),'")",subString(s,k))
 

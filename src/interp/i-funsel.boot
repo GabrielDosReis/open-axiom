@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -990,7 +990,7 @@ filterModemapsFromPackages(mms, names, op) ==
     name := object2String type
     found := nil
     for n in names while not found repeat
-      STRPOS(n,name,0,nil) => found := true
+      findString(n,name) => found := true
       -- hack, hack
       (op is 'factor) and member(n,mpolys) and member(name,mpacks) =>
         found := true

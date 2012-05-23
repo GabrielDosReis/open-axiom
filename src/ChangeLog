@@ -1,5 +1,16 @@
 2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-search.boot: Use findChar and findString in lieu of STRPOS.
+	* interp/database.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/match.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
+2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot (%Token): New datatype.
 	(makeToken): New.
 	* boot/includer.boot: Use %token accessors.

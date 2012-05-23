@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -446,8 +446,8 @@ scanS()==
     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0001",[])
     '""
   n := $n
-  strsym := STRPOS ('"_"",$ln,$n,nil) or $sz
-  escsym := STRPOS ('"__",$ln,$n,nil) or $sz
+  strsym := findChar(char "_"",$ln,$n) or $sz
+  escsym := findChar(char "__",$ln,$n) or $sz
   mn := MIN(strsym,escsym)
   mn = $sz =>
     $n:=$sz
@@ -606,8 +606,8 @@ scanExponent(a,w)==
   lffloat(a,w,'"0")
 
 rdigit? x==
-   d := STRPOS(x,$RDigits,0,nil) => d
-   d := STRPOS(x,$smallLetters,0,nil) => 10 + d
+   d := findChar(x,$RDigits) => d
+   d := findChar(x,$smallLetters) => 10 + d
    nil
 
 scanError()==

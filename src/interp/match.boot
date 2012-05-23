@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -73,8 +73,8 @@ rightCharPosition(c,t,startpos) == --startpos often equals maxIndex t (rightmost
 stringPosition(s,t,startpos) ==
   n := # t
   if startpos < 0 or startpos > n then error '"index out of range"
-  if # s = 0 then return startpos -- bug in STRPOS
-  r := STRPOS(s,t,startpos,nil)
+  if # s = 0 then return startpos
+  r := findString(s,t,startpos)
   if r = nil then n else r
 
 superMatch?(opattern,subject) ==  --subject assumed to be DOWNCASEd

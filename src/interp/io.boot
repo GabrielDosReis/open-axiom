@@ -96,6 +96,8 @@ expandLeadingTabs line ==
 findChar(c,s,k == 0) ==
   or/[i for i in k..maxIndex s | stringChar(s,i) = c]
 
+++ Find the position at which `s1' matches a substring of `s2',
+++ starting from `k'.  Return nil on failure.
 findString(s1,s2,k == 0) ==
   n1 := #s1
   or/[i for i in k..(#s2 - n1) |
