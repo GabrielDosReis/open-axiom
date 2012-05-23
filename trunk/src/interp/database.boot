@@ -710,7 +710,7 @@ dropPrefix(fn) ==
 --++     throwKeyedMsg("S2IZ0069A",[namestring egFile,x])
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
---++       p := STRPOS('" ",x,1,nil)
+--++       p := findChar(char " ",x,1)
 --++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier subString(x,0,p)
@@ -722,7 +722,7 @@ dropPrefix(fn) ==
 --++    if egName then $globalExposureGroupAlist :=
 --++      [[egName,:reverse! egFiles],:$globalExposureGroupAlist]
 --++    egFiles := nil
---++    STRPOS('" ",x,1,nil) =>
+--++    findChar(char " ",x,1) =>
 --++      throwKeyedMsg("S2IZ0069C",[namestring egFile,x])
 --++    egName := object2Identifier x
 --++  if egFiles then $globalExposureGroupAlist :=

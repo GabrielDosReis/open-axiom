@@ -197,7 +197,7 @@ commandAmbiguityError(kind,x,u) ==
 --% Utility for access to original command line
 
 getSystemCommandLine() ==
-  p := STRPOS('")",$currentLine,0,nil)
+  p := findChar(char ")",$currentLine)
   line := if p then subString($currentLine,p) else $currentLine
   idxmax:= maxIndex line
   for i in 0..idxmax while stringChar(line,i) ~= char " " repeat
@@ -2719,7 +2719,7 @@ zsystemdevelopment1(l,im) ==
 --% Synonym File Reader
 
 processSynonyms() ==
-  p := STRPOS('")",LINE,0,nil)
+  p := findChar(char ")",LINE)
   fill := '""
   if p
     then
@@ -2728,13 +2728,13 @@ processSynonyms() ==
     else
       p := 0
       line := LINE
-  to := STRPOS ('" ", line, 1, nil)
+  to := findChar(char " ", line,1)
   if to then to := to - 1
   synstr := subString(line, 1, to)
   syn := STRING2ID_-N (synstr, 1)
   null (fun := LASSOC (syn, $CommandSynonymAlist)) => nil
   fun := eval fun              -- fun may have been a suspension
-  to := STRPOS('")",fun,1,nil)
+  to := findChar(char ")",fun,1)
   if to and to ~= #(fun)-1 then
     opt := strconc('" ",subString(fun,to))
     fun := subString(fun,0,to-1)

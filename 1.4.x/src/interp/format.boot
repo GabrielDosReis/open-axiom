@@ -628,7 +628,7 @@ isInternalFunctionName(op) ==
   1 = #op' or char "*" ~= stringChar(op',0) => nil
   -- if there is a semicolon in the name then it is the name of
   -- a compiled spad function
-  null (e := STRPOS('"_;",op',1,nil)) => nil
+  null (e := findChar(char ";",op',1)) => nil
   char " " = stringChar(op',1) or char "*" = stringChar(op',1) => nil
   table := MAKETRTTABLE('"0123456789",nil)
   s := STRPOSL(table,op',1,true)

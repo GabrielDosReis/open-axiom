@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ isInternalMapName name ==
   sz := # (name' := symbolName name)
   (sz < 7) or (char "*" ~= name'.0) => false
   not digit? name'.1 => false
-  null STRPOS('"_;",name',1,nil) => false
+  null findChar(char ";",name',1) => false
   -- good enough
   true
 

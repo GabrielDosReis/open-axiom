@@ -808,7 +808,7 @@ breaklet(fn,vars) ==
 stupidIsSpadFunction fn ==
   -- returns true if the function pname has a semi-colon in it
   -- eventually, this will use isSpadFunction from luke boot
-  STRPOS('"_;",PNAME fn,0,nil)
+  findChar(char ";",PNAME fn)
 
 break msg ==
   condition:= MONITOR_,EVALTRAN(_/BREAKCONDITION,nil)
