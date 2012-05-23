@@ -34,11 +34,25 @@
 
 import utility
 namespace BOOTTRAN
-module tokens ($InteractiveMode, char) where
+module tokens ($InteractiveMode, char, subString) where
   char: %Symbol -> %Char
 
 ++ If true, means the system is in interactive mode.
 $InteractiveMode := false
+
+--%
+
+structure %Token ==
+  Record(cls: %Symbol, val: %Thing, pos: %Position) with
+    tokenClass == (.cls)
+    tokenValue == (.val)
+    tokenPosition == (.pos)
+
+makeToken(lp,b,n) ==
+  mk%Token(first b,second b,[lp,:n])
+
+
+--%
 
 ++ converts `x', a 1-length symbol, to a character.
 char x ==

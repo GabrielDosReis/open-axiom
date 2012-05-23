@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -60,22 +60,6 @@ dqToList s ==
   s = nil => nil
   first s
  
-shoeTokConstruct(x,y,z) ==
-  [x,y,:z]
- 
-shoeConstructToken(lp,b,n) == 
-  shoeTokConstruct(b.0,b.1,[lp,:n])
-
-shoeTokType x == 
-  first x
-
-shoeTokPart x == 
-  second x
-
-shoeTokPosn x == 
-  [.,.,:p] := x
-  p
-
 shoeNextLine s==
   bStreamNull s => false
   $linepos := s
@@ -104,7 +88,7 @@ shoeLineToks s ==
   $n = nil => shoeLineToks $r
   stringChar($ln,0) = char ")" =>
     command := shoeLine? $ln =>
-      dq := dqUnit shoeConstructToken($linepos,shoeLeafLine command,0)
+      dq := dqUnit makeToken($linepos,shoeLeafLine command,0)
       [[dq],:$r]
     command := shoeLisp? $ln => shoeLispToken($r,command)
     shoeLineToks $r
@@ -120,7 +104,7 @@ shoeLispToken(s,string)==
   ln := $ln
   linepos := $linepos
   [r,:st] := shoeAccumulateLines(s,string)
-  dq := dqUnit shoeConstructToken(linepos,shoeLeafLisp st,0)
+  dq := dqUnit makeToken(linepos,shoeLeafLisp st,0)
   [[dq],:r]
  
 shoeAccumulateLines(s,string)==
@@ -168,7 +152,7 @@ shoeToken() ==
       []
     shoeError()
   b = nil => nil
-  dqUnit shoeConstructToken(linepos,b,n)
+  dqUnit makeToken(linepos,b,n)
  
 -- to pair badge and badgee
 shoeLeafId x ==  

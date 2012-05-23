@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ shoeSpaces n  ==
 --%
 
 diagnosticLocation tok ==
-  pos := shoeTokPosn tok
+  pos := tokenPosition tok
   strconc('"line ", toString lineNo pos, '", column ", 
     toString lineCharacter pos)
 
@@ -99,7 +99,7 @@ SoftShoeError(posn,key)==
   shoeConsole key
  
 bpSpecificErrorAtToken(tok, key) ==
-  a := shoeTokPosn tok
+  a := tokenPosition tok
   SoftShoeError(a,key)
  
 bpSpecificErrorHere(key) ==

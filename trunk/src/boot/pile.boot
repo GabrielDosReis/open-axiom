@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -38,19 +38,19 @@ namespace BOOTTRAN
 module pile
 
 shoeFirstTokPosn t == 
-  shoeTokPosn CAAR t
+  tokenPosition CAAR t
 
 shoeLastTokPosn  t== 
-  shoeTokPosn second t
+  tokenPosition second t
 
 shoePileColumn t==
-  rest shoeTokPosn CAAR t
+  rest tokenPosition CAAR t
  
 -- s is a token-dq-stream
  
 shoePileInsert (s)==
   bStreamNull s => [[],:s]
-  toktype := shoeTokType CAAAR s
+  toktype := tokenClass CAAAR s
   toktype = "LISP"  or toktype = "LINE" => [[first s],:rest s]
   a:=shoePileTree(-1,s)
   [[a.2],:a.3]
@@ -104,11 +104,11 @@ shoePileCforest x==
 shoePileCoagulate(a,b)==
   b = nil => [a]
   c := first b
-  shoeTokPart CAAR c = "THEN" or shoeTokPart CAAR c = "ELSE" =>
+  tokenValue CAAR c = "THEN" or tokenValue CAAR c = "ELSE" =>
     shoePileCoagulate (dqAppend(a,c),rest b)
   d := second a
-  e := shoeTokPart d
-  d is ["KEY",:.] and
+  e := tokenValue d
+  tokenClass d  = "KEY" and
 	(e has SHOEINF or e = "COMMA" or e = "SEMICOLON") =>
     shoePileCoagulate(dqAppend(a,c),rest b)
   [a,:shoePileCoagulate(c,rest b)]
@@ -117,11 +117,11 @@ shoeSeparatePiles x==
   x = nil => []
   rest x = nil => first x
   a := first x
-  semicolon := dqUnit shoeTokConstruct("KEY", "BACKSET",shoeLastTokPosn a)
+  semicolon := dqUnit mk%Token("KEY", "BACKSET",shoeLastTokPosn a)
   dqConcat [a,semicolon,shoeSeparatePiles rest x]
  
 shoeEnPile x==
-   dqConcat [dqUnit shoeTokConstruct("KEY","SETTAB",shoeFirstTokPosn x),
+   dqConcat [dqUnit mk%Token("KEY","SETTAB",shoeFirstTokPosn x),
              x, _
-             dqUnit shoeTokConstruct("KEY","BACKTAB",shoeLastTokPosn  x)]
+             dqUnit mk%Token("KEY","BACKTAB",shoeLastTokPosn  x)]
  

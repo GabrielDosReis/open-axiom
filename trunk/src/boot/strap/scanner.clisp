@@ -23,19 +23,6 @@
 
 (DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) (T (CAR |s|))))
 
-(DEFUN |shoeTokConstruct| (|x| |y| |z|) (CONS |x| (CONS |y| |z|)))
-
-(DEFUN |shoeConstructToken| (|lp| |b| |n|)
-  (|shoeTokConstruct| (ELT |b| 0) (ELT |b| 1) (CONS |lp| |n|)))
-
-(DEFUN |shoeTokType| (|x|) (CAR |x|))
-
-(DEFUN |shoeTokPart| (|x|) (CADR |x|))
-
-(DEFUN |shoeTokPosn| (|x|)
-  (LET* (|p|)
-    (PROGN (SETQ |p| (CDDR |x|)) |p|)))
-
 (DEFUN |shoeNextLine| (|s|)
   (LET* (|s1| |a|)
     (DECLARE (SPECIAL |$sz| |$n| |$ln| |$r| |$f| |$linepos|))
@@ -72,8 +59,7 @@
             ((SETQ |command| (|shoeLine?| |$ln|))
              (SETQ |dq|
                      (|dqUnit|
-                      (|shoeConstructToken| |$linepos|
-                                            (|shoeLeafLine| |command|) 0)))
+                      (|makeToken| |$linepos| (|shoeLeafLine| |command|) 0)))
              (CONS (LIST |dq|) |$r|))
             ((SETQ |command| (|shoeLisp?| |$ln|))
              (|shoeLispToken| |$r| |command|))
@@ -97,9 +83,7 @@
      (SETQ |LETTMP#1| (|shoeAccumulateLines| |s| |string|))
      (SETQ |r| (CAR |LETTMP#1|))
      (SETQ |st| (CDR |LETTMP#1|))
-     (SETQ |dq|
-             (|dqUnit|
-              (|shoeConstructToken| |linepos| (|shoeLeafLisp| |st|) 0)))
+     (SETQ |dq| (|dqUnit| (|makeToken| |linepos| (|shoeLeafLisp| |st|) 0)))
      (CONS (LIST |dq|) |r|))))
 
 (DEFUN |shoeAccumulateLines| (|s| |string|)
@@ -146,8 +130,7 @@
                    ((CHAR= |ch| (|char| '_)) (|shoeEscape|))
                    ((EQUAL |ch| |shoeTAB|) (SETQ |$n| (+ |$n| 1)) NIL)
                    (T (|shoeError|))))
-     (COND ((NULL |b|) NIL)
-           (T (|dqUnit| (|shoeConstructToken| |linepos| |b| |n|)))))))
+     (COND ((NULL |b|) NIL) (T (|dqUnit| (|makeToken| |linepos| |b| |n|)))))))
 
 (DEFUN |shoeLeafId| (|x|) (LIST 'ID (INTERN |x|)))
 

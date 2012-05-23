@@ -1,5 +1,15 @@
 2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot (%Token): New datatype.
+	(makeToken): New.
+	* boot/includer.boot: Use %token accessors.
+	* boot/parser.boot: Likewise.
+	* boot/pile.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/utility.boot: Export subString.
+
+2012-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot (%Token): Now an actual type defined as a
 	record structure.
 	(copyToken): Adjust.

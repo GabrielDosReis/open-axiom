@@ -6,11 +6,25 @@
 (PROVIDE "tokens")
 
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
-  (EXPORT '(|$InteractiveMode| |char|)))
+  (EXPORT '(|$InteractiveMode| |char| |subString|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Char|) |char|))
 
 (DEFPARAMETER |$InteractiveMode| NIL)
+
+(DEFSTRUCT (|%Token| (:COPIER |copy%Token|)) |cls| |val| |pos|)
+
+(DEFMACRO |mk%Token| (|cls| |val| |pos|)
+  (LIST '|MAKE-%Token| :|cls| |cls| :|val| |val| :|pos| |pos|))
+
+(DEFMACRO |tokenClass| (|bfVar#1|) (LIST '|%Token-cls| |bfVar#1|))
+
+(DEFMACRO |tokenValue| (|bfVar#1|) (LIST '|%Token-val| |bfVar#1|))
+
+(DEFMACRO |tokenPosition| (|bfVar#1|) (LIST '|%Token-pos| |bfVar#1|))
+
+(DEFUN |makeToken| (|lp| |b| |n|)
+  (|mk%Token| (CAR |b|) (CADR |b|) (CONS |lp| |n|)))
 
 (DEFUN |char| (|x|) (SCHAR (SYMBOL-NAME |x|) 0))
 

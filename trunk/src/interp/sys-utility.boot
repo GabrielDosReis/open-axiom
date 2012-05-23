@@ -339,12 +339,6 @@ writeByteToStreamSocket(s,b) ==
 makeByteBuffer(n,b == 0) ==
   MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",KEYWORD::INITIAL_-ELEMENT,b)
 
-++ return the sub-string of `s' starting from `f'.
-++ When non-nil, `n' designates the length of the sub-string.
-subString(s,f,n == nil) ==
-  n = nil => subSequence(s,f)
-  subSequence(s,f,f + n)
-
 ++ Return the position of the symbol `s' in the list `l', if present.
 ++ Otherwise return nil.
 symbolPosition(s,l) ==
