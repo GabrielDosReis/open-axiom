@@ -116,13 +116,22 @@ bpIgnoredFromTo(pos1, pos2) ==
   shoeConsole lineString pos2
   shoeConsole strconc(shoeSpaces lineCharacter pos2,'"|")
 
+--%
+structure %SourceLine ==
+  Record(str: %String, num: %Short) with
+    sourceLineString == (.str)
+    sourceLineNumber == (.num)
+
+macro makeSourceLine(s,n) ==
+  mk%SourceLine(s,n)
+
 -- Line inclusion support.
  
 lineNo p ==
-  CDAAR p
+  sourceLineNumber CAAR p
 
 lineString p == 
-  CAAAR p
+  sourceLineString CAAR p
 
 lineCharacter p == 
   rest p
@@ -147,7 +156,7 @@ bMap1(f,x)==
   [apply(f,[first x]),:bMap(f,rest x)]
 
 bDelay(f,x) ==
-  ["nonnullstream",:[f,:x]]
+  ["nonnullstream",f,:x]
  
 bAppend(x,y) ==
   bDelay(function bAppend1,[x,y])
@@ -187,7 +196,7 @@ bAddLineNumber(f1,f2) ==
 bAddLineNumber1(f1,f2)==
   bStreamNull f1 =>  ["nullstream"]
   bStreamNull f2 =>  ["nullstream"]
-  [[first f1,:first f2],:bAddLineNumber(rest f1,rest f2)]
+  [makeSourceLine(first f1,first f2),:bAddLineNumber(rest f1,rest f2)]
 
 
 shoePrefixLisp x == 
@@ -224,13 +233,13 @@ shoeInclude s ==
 shoeInclude1 s ==
   bStreamNull s => s
   [h,:t]  := s
-  string  := first h
+  string  := sourceLineString h
   command := shoeFin? string  => $bStreamNil
   command := shoeIf? string   => shoeThen([true],[STTOMC command],t)
   bAppend(shoeSimpleLine h,shoeInclude t)
  
 shoeSimpleLine(h) ==
-  string := first h
+  string := sourceLineString h
   shoePlainLine? string=> [h]
   command := shoeLisp? string => [h]
   command := shoeLine? string => [h]
@@ -249,7 +258,7 @@ shoeThen(keep,b,s) ==
 shoeThen1(keep,b,s)==
   bPremStreamNull s=> s
   [h,:t] := s
-  string := first h
+  string := sourceLineString h
   command := shoeFin? string  => bPremStreamNil(h)
   keep1 := first keep
   b1 := first b
@@ -275,7 +284,7 @@ shoeElse(keep,b,s) ==
 shoeElse1(keep,b,s)==
   bPremStreamNull s=> s
   [h,:t] := s
-  string := first h
+  string := sourceLineString h
   command := shoeFin? string => bPremStreamNil(h)
   b1 := first b
   keep1 := first keep
@@ -290,13 +299,13 @@ shoeElse1(keep,b,s)==
  
 shoeLineSyntaxError(h)==
   shoeConsole strconc('"INCLUSION SYNTAX ERROR IN LINE ",
-			     toString rest h)
-  shoeConsole first h
+			     toString sourceLineNumber h)
+  shoeConsole sourceLineString h
   shoeConsole '"LINE IGNORED"
  
 bPremStreamNil(h)==
-  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",toString rest h)
-  shoeConsole first h
+  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",toString sourceLineNumber h)
+  shoeConsole sourceLineString h
   shoeConsole '"REST OF FILE IGNORED"
   $bStreamNil
  
