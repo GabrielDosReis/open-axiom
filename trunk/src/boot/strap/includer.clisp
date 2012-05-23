@@ -59,9 +59,22 @@
    (|shoeConsole| (|lineString| |pos2|))
    (|shoeConsole| (CONCAT (|shoeSpaces| (|lineCharacter| |pos2|)) "|"))))
 
-(DEFUN |lineNo| (|p|) (CDAAR |p|))
+(DEFSTRUCT (|%SourceLine| (:COPIER |copy%SourceLine|)) |str| |num|)
 
-(DEFUN |lineString| (|p|) (CAAAR |p|))
+(DEFMACRO |mk%SourceLine| (|str| |num|)
+  (LIST '|MAKE-%SourceLine| :|str| |str| :|num| |num|))
+
+(DEFMACRO |sourceLineString| (|bfVar#1|) (LIST '|%SourceLine-str| |bfVar#1|))
+
+(DEFMACRO |sourceLineNumber| (|bfVar#1|) (LIST '|%SourceLine-num| |bfVar#1|))
+
+(DEFMACRO |makeSourceLine| (|bfVar#2| |bfVar#1|)
+  (|applySubst| (LIST (CONS '|bfVar#2| |bfVar#2|) (CONS '|bfVar#1| |bfVar#1|))
+                '(|mk%SourceLine| |bfVar#2| |bfVar#1|)))
+
+(DEFUN |lineNo| (|p|) (|sourceLineNumber| (CAAR |p|)))
+
+(DEFUN |lineString| (|p|) (|sourceLineString| (CAAR |p|)))
 
 (DEFUN |lineCharacter| (|p|) (CDR |p|))
 
@@ -131,7 +144,7 @@
   (COND ((|bStreamNull| |f1|) (LIST '|nullstream|))
         ((|bStreamNull| |f2|) (LIST '|nullstream|))
         (T
-         (CONS (CONS (CAR |f1|) (CAR |f2|))
+         (CONS (|makeSourceLine| (CAR |f1|) (CAR |f2|))
                (|bAddLineNumber| (CDR |f1|) (CDR |f2|))))))
 
 (DEFUN |shoePrefixLisp| (|x|) (CONCAT ")lisp" |x|))
@@ -181,7 +194,7 @@
   (LET* (|command| |string| |t| |h|)
     (COND ((|bStreamNull| |s|) |s|)
           (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
-           (SETQ |string| (CAR |h|))
+           (SETQ |string| (|sourceLineString| |h|))
            (COND ((SETQ |command| (|shoeFin?| |string|)) |$bStreamNil|)
                  ((SETQ |command| (|shoeIf?| |string|))
                   (|shoeThen| (LIST T) (LIST (STTOMC |command|)) |t|))
@@ -190,7 +203,7 @@
 (DEFUN |shoeSimpleLine| (|h|)
   (LET* (|command| |string|)
     (PROGN
-     (SETQ |string| (CAR |h|))
+     (SETQ |string| (|sourceLineString| |h|))
      (COND ((|shoePlainLine?| |string|) (LIST |h|))
            ((SETQ |command| (|shoeLisp?| |string|)) (LIST |h|))
            ((SETQ |command| (|shoeLine?| |string|)) (LIST |h|))
@@ -206,7 +219,7 @@
   (LET* (|b1| |keep1| |command| |string| |t| |h|)
     (COND ((|bPremStreamNull| |s|) |s|)
           (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
-           (SETQ |string| (CAR |h|))
+           (SETQ |string| (|sourceLineString| |h|))
            (COND
             ((SETQ |command| (|shoeFin?| |string|)) (|bPremStreamNil| |h|))
             (T (SETQ |keep1| (CAR |keep|)) (SETQ |b1| (CAR |b|))
@@ -246,7 +259,7 @@
   (LET* (|keep1| |b1| |command| |string| |t| |h|)
     (COND ((|bPremStreamNull| |s|) |s|)
           (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
-           (SETQ |string| (CAR |h|))
+           (SETQ |string| (|sourceLineString| |h|))
            (COND
             ((SETQ |command| (|shoeFin?| |string|)) (|bPremStreamNil| |h|))
             (T (SETQ |b1| (CAR |b|)) (SETQ |keep1| (CAR |keep|))
@@ -267,15 +280,17 @@
 (DEFUN |shoeLineSyntaxError| (|h|)
   (PROGN
    (|shoeConsole|
-    (CONCAT "INCLUSION SYNTAX ERROR IN LINE " (WRITE-TO-STRING (CDR |h|))))
-   (|shoeConsole| (CAR |h|))
+    (CONCAT "INCLUSION SYNTAX ERROR IN LINE "
+            (WRITE-TO-STRING (|sourceLineNumber| |h|))))
+   (|shoeConsole| (|sourceLineString| |h|))
    (|shoeConsole| "LINE IGNORED")))
 
 (DEFUN |bPremStreamNil| (|h|)
   (PROGN
    (|shoeConsole|
-    (CONCAT "UNEXPECTED )fin IN LINE " (WRITE-TO-STRING (CDR |h|))))
-   (|shoeConsole| (CAR |h|))
+    (CONCAT "UNEXPECTED )fin IN LINE "
+            (WRITE-TO-STRING (|sourceLineNumber| |h|))))
+   (|shoeConsole| (|sourceLineString| |h|))
    (|shoeConsole| "REST OF FILE IGNORED")
    |$bStreamNil|))
 

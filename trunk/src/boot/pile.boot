@@ -57,14 +57,14 @@ shoePileInsert (s)==
  
 shoePileTree(n,s)==
   bStreamNull s => [false,n,[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   hh := shoePileColumn h
   hh > n => shoePileForests(h,hh,t)
   [false,n,[],s]
  
 eqshoePileTree(n,s)==
   bStreamNull s => [false,n,[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   hh := shoePileColumn h
   hh = n => shoePileForests(h,hh,t)
   [false,n,[],s]

@@ -28,7 +28,7 @@
     (DECLARE (SPECIAL |$sz| |$n| |$ln| |$r| |$f| |$linepos|))
     (COND ((|bStreamNull| |s|) NIL)
           (T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|)) (SETQ |$r| (CDR |s|))
-           (SETQ |$ln| (CAR |$f|))
+           (SETQ |$ln| (|sourceLineString| |$f|))
            (SETQ |$n| (|firstNonblankPosition| |$ln| 0))
            (SETQ |$sz| (LENGTH |$ln|))
            (COND ((NULL |$n|) T)
@@ -36,7 +36,10 @@
                   (SETQ |a| (|makeString| (- 7 (REM |$n| 8)) (|char| '| |)))
                   (SETF (SCHAR |$ln| |$n|) (|char| '| |))
                   (SETQ |$ln| (CONCAT |a| |$ln|))
-                  (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))
+                  (SETQ |s1|
+                          (CONS
+                           (|makeSourceLine| |$ln| (|sourceLineNumber| |$f|))
+                           |$r|))
                   (|shoeNextLine| |s1|))
                  (T T))))))
 

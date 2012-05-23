@@ -64,7 +64,7 @@ shoeNextLine s==
   bStreamNull s => false
   $linepos := s
   [$f,:$r] := s
-  $ln := first $f
+  $ln := sourceLineString $f
   $n := firstNonblankPosition($ln,0)
   $sz := #$ln
   $n = nil => true
@@ -72,7 +72,7 @@ shoeNextLine s==
     a := makeString(7-($n rem 8),char " ")
     stringChar($ln,$n) := char " "
     $ln := strconc(a,$ln)
-    s1 := [[$ln,:rest $f],:$r]
+    s1 := [makeSourceLine($ln,sourceLineNumber $f),:$r]
     shoeNextLine s1
   true
  
