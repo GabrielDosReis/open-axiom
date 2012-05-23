@@ -27,7 +27,7 @@
 (DEFUN |diagnosticLocation| (|tok|)
   (LET* (|pos|)
     (PROGN
-     (SETQ |pos| (|shoeTokPosn| |tok|))
+     (SETQ |pos| (|tokenPosition| |tok|))
      (CONCAT "line " (WRITE-TO-STRING (|lineNo| |pos|)) ", column "
              (WRITE-TO-STRING (|lineCharacter| |pos|))))))
 
@@ -40,7 +40,7 @@
 
 (DEFUN |bpSpecificErrorAtToken| (|tok| |key|)
   (LET* (|a|)
-    (PROGN (SETQ |a| (|shoeTokPosn| |tok|)) (|SoftShoeError| |a| |key|))))
+    (PROGN (SETQ |a| (|tokenPosition| |tok|)) (|SoftShoeError| |a| |key|))))
 
 (DEFUN |bpSpecificErrorHere| (|key|)
   (DECLARE (SPECIAL |$stok|))

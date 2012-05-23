@@ -48,17 +48,17 @@ module parser
 
 bpFirstToken()==
   $stok:=
-    $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+    $inputStream = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
     first $inputStream
-  $ttok := shoeTokPart $stok
+  $ttok := tokenValue $stok
   true
  
 bpFirstTok()==
   $stok:=
-    $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+    $inputStream = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
     first $inputStream
-  $ttok:=shoeTokPart $stok
-  $bpParenCount>0 and $stok is ["KEY",:.] =>
+  $ttok := tokenValue $stok
+  $bpParenCount > 0 and tokenClass $stok = "KEY" =>
     $ttok is "SETTAB" =>
       $bpCount:=$bpCount+1
       bpNext()
@@ -244,13 +244,13 @@ bpBacksetElse()==
   bpEqKey "ELSE"
  
 bpEqPeek s == 
-  $stok is ["KEY",:.] and symbolEq?(s,$ttok)
+  tokenClass $stok = "KEY" and symbolEq?(s,$ttok)
  
 bpEqKey s ==
-  $stok is ["KEY",:.] and symbolEq?(s,$ttok) and bpNext()
+  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNext()
 
 bpEqKeyNextTok s ==   
-  $stok is ["KEY",:.] and symbolEq?(s,$ttok) and bpNextToken()
+  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNextToken()
  
 bpPileTrap()   == bpMissing  "BACKTAB"
 bpBrackTrap(x) == bpMissingMate("]",x)
@@ -272,9 +272,9 @@ bpTrap()==
  
 bpRecoverTrap()==
   bpFirstToken()
-  pos1 := shoeTokPosn $stok
+  pos1 := tokenPosition $stok
   bpMoveTo 0
-  pos2 := shoeTokPosn $stok
+  pos2 := tokenPosition $stok
   bpIgnoredFromTo(pos1, pos2)
   bpPush  [['"pile syntax error"]]
  
@@ -352,7 +352,7 @@ bpMoveTo n==
 bpQualifiedName() ==
   bpEqPeek "COLON-COLON" =>
     bpNext()
-    $stok is ["ID",:.] and bpPushId() and bpNext()
+    tokenClass $stok = "ID" and bpPushId() and bpNext()
       and bpPush bfColonColon(bpPop2(), bpPop1())
   false
 
@@ -360,7 +360,7 @@ bpQualifiedName() ==
 ++   ID
 ++   Name :: ID
 bpName() ==
-  $stok is ["ID",:.] =>
+  tokenClass $stok = "ID" =>
     bpPushId()
     bpNext()
     bpAnyNo function bpQualifiedName
@@ -375,12 +375,12 @@ bpName() ==
 ++   QUOTE S-Expression
 ++   STRING
 bpConstTok() ==
-  shoeTokType $stok in '(INTEGER FLOAT) =>
+  tokenClass $stok in '(INTEGER FLOAT) =>
     bpPush $ttok
     bpNext()
-  $stok is ["LISP",:.] => bpPush %Lisp $ttok and bpNext()
-  $stok is ["LISPEXP",:.] => bpPush $ttok and bpNext()
-  $stok is ["LINE",:.] => bpPush ["+LINE", $ttok] and bpNext()
+  tokenClass $stok = "LISP" => bpPush %Lisp $ttok and bpNext()
+  tokenClass $stok = "LISPEXP" => bpPush $ttok and bpNext()
+  tokenClass $stok = "LINE" => bpPush ["+LINE", $ttok] and bpNext()
   bpEqPeek "QUOTE" =>
     bpNext()
     bpRequire function bpSexp and
@@ -388,7 +388,7 @@ bpConstTok() ==
   bpString() or bpFunction()
 
 bpChar() ==
-  $stok is ["ID",:.] and $ttok is "char" =>
+  tokenClass $stok = "ID" and $ttok is "char" =>
     a := bpState()
     bpApplication() =>
       s := bpPop1()
@@ -538,8 +538,8 @@ bpCancel()==
 
 bpAddTokens n==
   n=0 => nil
-  n>0=> [shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),:bpAddTokens(n-1)]
-  [shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),:bpAddTokens(n+1)]
+  n>0=> [mk%Token("KEY","SETTAB",tokenPosition $stok),:bpAddTokens(n-1)]
+  [mk%Token("KEY","BACKTAB",tokenPosition $stok),:bpAddTokens(n+1)]
  
 bpExceptions()==
   bpEqPeek "DOT" or bpEqPeek "QUOTE" or
@@ -549,17 +549,17 @@ bpExceptions()==
  
  
 bpSexpKey()==
-  $stok is ["KEY",:.] and not bpExceptions() =>
+  tokenClass $stok = "KEY" and not bpExceptions() =>
     a := $ttok has SHOEINF
     a = nil =>  bpPush keywordId $ttok and bpNext()
     bpPush a and bpNext()
   false
  
 bpAnyId()==
-  bpEqKey "MINUS"  and ($stok is ["INTEGER",:.] or bpTrap()) and
+  bpEqKey "MINUS"  and (tokenClass $stok = "INTEGER" or bpTrap()) and
           bpPush(-$ttok) and bpNext() or
              bpSexpKey() or
-                   shoeTokType $stok in '(ID INTEGER STRING FLOAT)
+                   tokenClass $stok in '(ID INTEGER STRING FLOAT)
                       and  bpPush $ttok and  bpNext()
  
 bpSexp()==
@@ -596,11 +596,11 @@ bpPrimary()==  bpFirstTok() and (bpPrimary1() or bpPrefixOperator())
 bpDot()== bpEqKey "DOT" and bpPush bfDot ()
  
 bpPrefixOperator()==
-   $stok is ["KEY",:.] and
+   tokenClass $stok = "KEY" and
      $ttok has SHOEPRE and bpPushId() and  bpNext()
  
 bpInfixOperator()==
-  $stok is ["KEY",:.] and
+  tokenClass $stok = "KEY" and
     $ttok has SHOEINF and bpPushId() and  bpNext()
  
 bpSelector()==
@@ -636,8 +636,8 @@ bpTagged()==
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
  
 bpInfKey s ==
- $stok is ["KEY",:.] and
-   symbolMember?($ttok,s) and bpPushId() and bpNext()
+  tokenClass $stok = "KEY" and
+    symbolMember?($ttok,s) and bpPushId() and bpNext()
  
 bpInfGeneric s==
   bpInfKey s and  (bpEqKey "BACKSET" or true)
@@ -660,7 +660,7 @@ bpLeftAssoc(operations,parser)==
   false
  
 bpString()==
-  shoeTokType $stok is "STRING" and
+  tokenClass $stok = "STRING" and
     bpPush(quote makeSymbol $ttok) and bpNext()
  
 bpFunction() ==
@@ -668,7 +668,7 @@ bpFunction() ==
     and bpPush bfFunction bpPop1()
 
 bpThetaName() ==
-  $stok is ["ID",:.] and $ttok has SHOETHETA =>
+  tokenClass $stok = "ID" and $ttok has SHOETHETA =>
     bpPushId()
     bpNext()
   false
@@ -1098,7 +1098,7 @@ bpRegularBVItem() ==
         or bpBracketConstruct function bpPatternL
  
 bpBVString()==
-  shoeTokType $stok is "STRING" and
+  tokenClass $stok = "STRING" and
       bpPush(["BVQUOTE",makeSymbol $ttok]) and bpNext()
  
 bpRegularBVItemL() ==

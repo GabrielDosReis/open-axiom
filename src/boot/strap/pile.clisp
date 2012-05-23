@@ -7,16 +7,16 @@
 
 (PROVIDE "pile")
 
-(DEFUN |shoeFirstTokPosn| (|t|) (|shoeTokPosn| (CAAR |t|)))
+(DEFUN |shoeFirstTokPosn| (|t|) (|tokenPosition| (CAAR |t|)))
 
-(DEFUN |shoeLastTokPosn| (|t|) (|shoeTokPosn| (CADR |t|)))
+(DEFUN |shoeLastTokPosn| (|t|) (|tokenPosition| (CADR |t|)))
 
-(DEFUN |shoePileColumn| (|t|) (CDR (|shoeTokPosn| (CAAR |t|))))
+(DEFUN |shoePileColumn| (|t|) (CDR (|tokenPosition| (CAAR |t|))))
 
 (DEFUN |shoePileInsert| (|s|)
   (LET* (|a| |toktype|)
     (COND ((|bStreamNull| |s|) (CONS NIL |s|))
-          (T (SETQ |toktype| (|shoeTokType| (CAAAR |s|)))
+          (T (SETQ |toktype| (|tokenClass| (CAAAR |s|)))
            (COND
             ((OR (EQ |toktype| 'LISP) (EQ |toktype| 'LINE))
              (CONS (LIST (CAR |s|)) (CDR |s|)))
@@ -93,12 +93,12 @@
     (COND ((NULL |b|) (LIST |a|))
           (T (SETQ |c| (CAR |b|))
            (COND
-            ((OR (EQ (|shoeTokPart| (CAAR |c|)) 'THEN)
-                 (EQ (|shoeTokPart| (CAAR |c|)) 'ELSE))
+            ((OR (EQ (|tokenValue| (CAAR |c|)) 'THEN)
+                 (EQ (|tokenValue| (CAAR |c|)) 'ELSE))
              (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
-            (T (SETQ |d| (CADR |a|)) (SETQ |e| (|shoeTokPart| |d|))
+            (T (SETQ |d| (CADR |a|)) (SETQ |e| (|tokenValue| |d|))
              (COND
-              ((AND (CONSP |d|) (EQ (CAR |d|) 'KEY)
+              ((AND (EQ (|tokenClass| |d|) 'KEY)
                     (OR (GET |e| 'SHOEINF) (EQ |e| 'COMMA)
                         (EQ |e| 'SEMICOLON)))
                (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
@@ -110,15 +110,12 @@
           (T (SETQ |a| (CAR |x|))
            (SETQ |semicolon|
                    (|dqUnit|
-                    (|shoeTokConstruct| 'KEY 'BACKSET
-                                        (|shoeLastTokPosn| |a|))))
+                    (|mk%Token| 'KEY 'BACKSET (|shoeLastTokPosn| |a|))))
            (|dqConcat|
             (LIST |a| |semicolon| (|shoeSeparatePiles| (CDR |x|))))))))
 
 (DEFUN |shoeEnPile| (|x|)
   (|dqConcat|
-   (LIST (|dqUnit| (|shoeTokConstruct| 'KEY 'SETTAB (|shoeFirstTokPosn| |x|)))
-         |x|
-         (|dqUnit|
-          (|shoeTokConstruct| 'KEY 'BACKTAB (|shoeLastTokPosn| |x|))))))
+   (LIST (|dqUnit| (|mk%Token| 'KEY 'SETTAB (|shoeFirstTokPosn| |x|))) |x|
+         (|dqUnit| (|mk%Token| 'KEY 'BACKTAB (|shoeLastTokPosn| |x|))))))
 
