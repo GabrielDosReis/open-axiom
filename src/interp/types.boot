@@ -38,8 +38,7 @@ namespace BOOT
 
 %Alist(s,t) <=> %List %Pair(s,t)               -- association list
 
-%Constructor <=> %Symbol                       -- constructor
-%Instantiation <=> [%Constructor,:%Form]       -- constructor instance
+%Instantiation <=> [%Symbol,:%Form]       -- constructor instance
 
 %Modemap <=> %List(%Form)                      -- modemap
 

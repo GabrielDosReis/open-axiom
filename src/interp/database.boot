@@ -59,32 +59,45 @@ pathToDatabase name ==
 
 --%
 
-getConstructorAbbreviationFromDB: %Constructor -> %Symbol
+structure %Constructor ==
+  Record(name: %Symbol,kind: %ConstructorKind,abbrev: %Symbol,
+    xparms: %List %Symbol) with
+        constructorName == (.name)
+        constructtorKind == (.kind)
+        constructrorAbbreviation == (.abbrev)
+        constructorExplicitParameters == (.xparms)
+
+makeConstructor(s,k == nil,a == nil) ==
+  symbolValue(s) := mk%Constructor(s,k,a,nil)
+
+--%
+
+getConstructorAbbreviationFromDB: %Symbol -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
   GETDATABASE(ctor,"ABBREVIATION")
 
-getConstructorCategory: %Constructor -> %Form
+getConstructorCategory: %Symbol -> %Form
 getConstructorCategory ctor ==
   getConstructorKindFromDB ctor = 'category =>
     GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
   getConstructorModemap(ctor).mmTarget
 
-getConstructorKindFromDB: %Constructor -> %Maybe %ConstructorKind
+getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORKIND")
 
-getConstructorAncestorsFromDB: %Constructor -> %List %Constructor
+getConstructorAncestorsFromDB: %Symbol -> %List %Constructor
 getConstructorAncestorsFromDB ctor ==
   GETDATABASE(ctor,"ANCESTORS")
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
-getConstructorModemap: %Constructor -> %Mode
+getConstructorModemap: %Symbol -> %Mode
 getConstructorModemap ctor ==
   GETDATABASE(ctor, 'CONSTRUCTORMODEMAP)
     or dbConstructorModemap loadDBIfNecessary constructorDB ctor
 
-getConstructorFormFromDB: %Constructor -> %Form
+getConstructorFormFromDB: %Symbol -> %Form
 getConstructorFormFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORFORM")
 
@@ -96,56 +109,56 @@ genericInstanceForm form ==
   builtinConstructor? op => builtinInstanceForm form
   getConstructorFormFromDB op
 
-getConstructorSourceFileFromDB: %Constructor -> %Maybe %String
+getConstructorSourceFileFromDB: %Symbol -> %Maybe %String
 getConstructorSourceFileFromDB ctor ==
   GETDATABASE(ctor,"SOURCEFILE")
 
-getConstructorModuleFromDB: %Constructor -> %Maybe %String
+getConstructorModuleFromDB: %Symbol -> %Maybe %String
 getConstructorModuleFromDB ctor ==
   GETDATABASE(ctor,"OBJECT")
 
-getConstructorDocumentationFromDB: %Constructor -> %List %Form
+getConstructorDocumentationFromDB: %Symbol -> %List %Form
 getConstructorDocumentationFromDB ctor ==
   GETDATABASE(ctor,"DOCUMENTATION")
 
-getConstructorOperationsFromDB: %Constructor -> %List %List %Form
+getConstructorOperationsFromDB: %Symbol -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
   GETDATABASE(ctor,"OPERATIONALIST")
 
-getConstructorFullNameFromDB: %Symbol -> %Constructor
+getConstructorFullNameFromDB: %Symbol -> %Symbol
 getConstructorFullNameFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTOR")
 
-getConstructorArgsFromDB: %Constructor -> %List %Symbol
+getConstructorArgsFromDB: %Symbol -> %List %Symbol
 getConstructorArgsFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTORARGS")
 
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
-getDualSignature: %Constructor -> %Form
+getDualSignature: %Symbol -> %Form
 getDualSignature ctor ==
   db := constructorDB ctor or return nil
   dbDualSignature db or GETDATABASE(ctor,'COSIG)
 
-getConstructorPredicates: %Constructor -> %List %Thing
+getConstructorPredicates: %Symbol -> %List %Thing
 getConstructorPredicates ctor ==
   db := constructorDB ctor
   dbBeingDefined? db => dbPredicates db
   dbPredicates loadDBIfNecessary db
 
-getConstructorParentsFromDB: %Constructor -> %List %Constructor
+getConstructorParentsFromDB: %Symbol -> %List %Symbol
 getConstructorParentsFromDB ctor ==
   GETDATABASE(ctor,"PARENTS")
 
-getSuperDomainFromDB: %Constructor -> %Form
+getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==
   GETDATABASE(ctor,"SUPERDOMAIN")
   
-getConstructorAttributes: %Constructor -> %Form
+getConstructorAttributes: %Symbol -> %Form
 getConstructorAttributes ctor ==
   dbAttributes loadDBIfNecessary constructorDB ctor
 
-niladicConstructor?: %Constructor -> %Boolean
+niladicConstructor?: %Symbol -> %Boolean
 niladicConstructor? ctor ==
   form := getConstructorFormFromDB ctor => form.args = nil
   false
@@ -154,7 +167,7 @@ constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
 constructorHasCategoryFromDB p ==
   GETDATABASE(p,"HASCATEGORY")
 
-getConstructorDefaultFromDB: %Constructor -> %Maybe %Symbol
+getConstructorDefaultFromDB: %Symbol -> %Maybe %Symbol
 getConstructorDefaultFromDB ctor ==
   GETDATABASE(ctor,"DEFAULTDOMAIN")
 
@@ -167,12 +180,12 @@ getOperationModemapsFromDB op ==
   GETDATABASE(op,"MODEMAPS")
 
 
-getConstructorArity: %Constructor -> %Short
+getConstructorArity: %Symbol -> %Short
 getConstructorArity ctor ==
   sig := getConstructorSignature ctor => #rest sig
   -1
 
-getConstructorKind: %Constructor -> %Maybe %ConstructorKind
+getConstructorKind: %Symbol -> %Maybe %ConstructorKind
 getConstructorKind ctor ==
   kind := getConstructorKindFromDB ctor =>
     kind is "domain" and isDefaultPackageName ctor => "package"
@@ -779,10 +792,8 @@ squeezeAll x ==
   [SQUEEZE t for t in x]
 
 makeInitialDB [form,kind,abbrev,srcfile] ==
-  db := makeDB form.op
+  db := makeDB(form.op,kind,abbrev)
   dbConstructorForm(db) := form
-  dbConstructorKind(db) := kind
-  dbAbbreviation(db) := abbrev
   property(abbrev,'ABBREVIATIONFOR) := form.op
   dbSourceFile(db) := srcfile
   setAutoLoadProperty form.op
