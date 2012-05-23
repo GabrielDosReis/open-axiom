@@ -81,15 +81,16 @@ INPUT=../input
 DRIVER = ../driver/open-axiom$(EXEEXT)
 
 INTERPSYS = ../interp/interpsys$(EXEEXT)
+BOOTSYS = $(axiom_target_bindir)/bootsys$(EXEEXT)
 
 COMPILE_SPAD = $(DRIVER) --execpath=$(INTERPSYS) \
-		--system="$(AXIOM)" --initial-db=initdb.daase \
+		--system="$(AXIOM)" --initial-db=initdb.$(FASLEXT) \
 		--sysdb="$(axiom_src_datadir)/algebra/" \
 		--strap=strap-2 --optimize=3 \
 		--system-algebra --compile $<
 
 BOOTSTRAP = $(DRIVER) --execpath=$(INTERPSYS) \
-		--system="$(AXIOM)" --initial-db=initdb.daase \
+		--system="$(AXIOM)" --initial-db=initdb.$(FASLEXT) \
 		--sysdb="$(axiom_src_datadir)/algebra/" \
 		--system-algebra --compile
 
@@ -1134,7 +1135,7 @@ strap-1/%.$(FASLEXT): %.spad | strap-1
 		rm -rf $*.NRLIB $*-.NRLIB
 
 .PRECIOUS: strap-2/%.$(FASLEXT)
-strap-2/%.$(FASLEXT): %.spad initdb.daase | strap-2
+strap-2/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-2
 	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 --optimize=3 $< && \
 		cp $*.NRLIB/code.$(FASLEXT) $@ && \
 		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
@@ -2185,8 +2186,7 @@ stamp: ${SPADFILES} user-stamp ${TESTS}
 	-rm -f stamp
 	$(STAMP) stamp
 
-all-algstrap: all-initdb
-	$(MAKE) $(AM_MAKEFLAGS) strap-stamp
+all-algstrap: strap-stamp
 
 .PRECIOUS: $(OUT)/%.$(FASLEXT)
 ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
@@ -2457,19 +2457,23 @@ user-stamp: $(axiom_algebra_layer_user_objects)
 
 
 .PHONY: all-initdb
-all-initdb: initdb.daase
+all-initdb: initdb.$(FASLEXT)
 
-initdb.daase: $(SPADFILES)
+initdb.clisp: $(SPADFILES)
 	$(DRIVER) --execpath=$(INTERPSYS) --system="$(AXIOM)" \
 		--spad-srcdir=$(OUTSRC) \
 		--output=initdb.$$$$ --build-initdb && \
 		$(top_confdir)/move-if-change initdb.$$$$ $@
 
+initdb.$(FASLEXT): initdb.clisp
+	$(DRIVER) --execpath=$(BOOTSYS) \
+		--compile --output=$@ --load-directory=../interp $<
+
 mostlyclean-local:
 	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
 	@rm -rf *.NRLIB
 	@rm -rf *.DAASE *.daase libdb.text
-	@rm -rf strap*
+	@rm -rf strap* initdb.*
 	@rm -f *stamp
 
 clean-local: mostlyclean-local

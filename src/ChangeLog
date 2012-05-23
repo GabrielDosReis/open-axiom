@@ -1,5 +1,16 @@
 2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (initializeDatabases): Load initidb if
+	specified.
+	* interp/database.boot (populateDFFromFile): Remove.
+	(printAllInitdbInfo): Write as as Lisp file.
+	* algebra/Makefile.in (COMPILE_SPAD): initdb is now a FASL.
+	(BOOTSTRAP): Likewise.
+	(strap-2/%.$(FASLEXT)): Likewise.
+	(initdb.$(FASLEXT)): New.
+
+2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (MAKE-CVEC): Remove.
 	(GETSTR): Likewise.
 	* interp/sys-macros.lisp (INTERNL): Likewise.

@@ -787,13 +787,6 @@ makeInitialDB [form,kind,abbrev,srcfile] ==
   dbSourceFile(db) := srcfile
   setAutoLoadProperty form.op
   
-populateDBFromFile path ==
-  try
-    dbfile := inputTextFile path
-    while (entry := readExpr dbfile) ~= %nothing repeat
-      makeInitialDB entry
-  finally closeStream dbfile
-
 printInitdbInfo(path,dbfile) == main(path,dbfile) where
   main(path,dbfile) ==
     for x in parseSpadFile path repeat
@@ -803,10 +796,10 @@ printInitdbInfo(path,dbfile) == main(path,dbfile) where
     if lhs isnt [.,:.] then lhs := [lhs]
     db := constructorDB lhs.op
     db = nil => nil
-    form := [id for x in lhs.args]
+    args := [id for x in lhs.args]
               where id() == (x is [":",x',:.] => x'; x)
-    form := [lhs.op,:form]
-    prettyPrint([form,dbConstructorKind db,dbAbbreviation db,path],dbfile)
+    data := [[lhs.op,:args],dbConstructorKind db,dbAbbreviation db,path]
+    prettyPrint(['makeInitialDB,quote data],dbfile)
     writeNewline dbfile
 
 printAllInitdbInfo(srcdir,dbfile) ==
@@ -814,6 +807,10 @@ printAllInitdbInfo(srcdir,dbfile) ==
     or coreError strconc('"no .spad file in directory ",srcdir)
   try
     out := outputTextFile dbfile
+    prettyPrint(['IMPORT_-MODULE,'"database"],out)
+    writeNewline out
+    prettyPrint(['IN_-PACKAGE,'"BOOT"],out)
+    writeNewline out
     for path in paths repeat
       printInitdbInfo(NAMESTRING path,out)
   finally closeStream out
