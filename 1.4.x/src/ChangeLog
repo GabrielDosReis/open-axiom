@@ -1,5 +1,35 @@
 2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (MAKE-CVEC): Remove.
+	(GETSTR): Likewise.
+	* interp/sys-macros.lisp (INTERNL): Likewise.
+	* interp/macros.lisp: Move content to vmlisp.lisp.  Remove.
+	* interp/Makefile.in: Adjust.
+	* interp/debug.lisp: Now import sys-macros
+	* interp/fname.lisp: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/monitor.lisp: Likewise.
+	* interp/newaux.lisp: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nlib.lisp: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/profile.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/setvart.boot: Likewise.
+	* interp/sfsfun.boot: Likewise.
+	* interp/simpbool.boot: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/termrw.boot: Likewise.
+	* interp/topics.boot: Likewise.
+
+2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/includer.boot (%SourceLine): New datatype.
 	(makeSourceLine): New.
 	Use source line macro accessors.

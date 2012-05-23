@@ -43,7 +43,7 @@
 ; NAME:    Debugging Package
 ; PURPOSE: Debugging hooks for Boot code
 
-(import-module "macros") 
+(import-module "sys-macros") 
 (import-module "lexing")
 (in-package "BOOT")
 
@@ -602,7 +602,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                         (if (NOT (OR A V C NL))
                             (if Caller (return "119") (return "019")))
                         (SETQ NL (APPEND NL '(\0)))
-                        (SETQ BUF (GETSTR 12))
+                        (SETQ BUF (|makeString| 12))
                         (SUFFIX (if (or C Caller) #\1 #\0) BUF)
                         (SUFFIX (if V #\1 #\0) BUF)
                         (if A (suffix #\9 BUF)

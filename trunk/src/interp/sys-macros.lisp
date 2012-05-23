@@ -97,15 +97,6 @@
 
 
 ;; 
-;; -*- Symbols and Properties -*-
-;; 
-
-(defmacro INTERNL (a &rest b)
-  (if (not b) 
-      `(intern ,a) 
-    `(intern (strconc ,a . ,b))))
-
-;; 
 ;; -*- Equality Predicates -*-
 ;; 
 

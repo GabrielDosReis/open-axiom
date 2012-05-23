@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import macros
+import sys_-macros
 namespace BOOT
 
 --% Functions for display formatting system objects

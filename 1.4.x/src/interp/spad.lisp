@@ -311,7 +311,7 @@
                 (reverse x)
                 (push (setq newchr (nextcharacter)) x))))
     (if (EQUAL NEWCHR '\.) (RETURN (ISLOCALOP-1 IND)))
-    (setq BUF (GETSTR (LENGTH SELECTOR)))
+    (setq BUF (|makeString| (LENGTH SELECTOR)))
     (mapc #'(lambda (x) (suffix x buf)) selector)
     (setq buf (copy-seq selector))
     (setq TERMTOK (INTERN BUF))

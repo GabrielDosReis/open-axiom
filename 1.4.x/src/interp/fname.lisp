@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 ;; Created: June 20, 1991 (Stephen Watt)
 ;; 
 
-(import-module "macros")
+(import-module "sys-macros")
 (in-package "BOOT")
 
 ;; E.g.  "/"  "/u/smwatt"  "../src"

@@ -373,7 +373,7 @@ hasWildCard? str ==
  
 maskConvert str ==
 --replace all ? not preceded by an underscore by &
-  buf:= GETSTR(#str)
+  buf:= makeString #str
   j:= 0  --index into res
   final := maxIndex str
   for i in 0..final repeat

@@ -32,7 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(IMPORT-MODULE "macros")
+(IMPORT-MODULE "sys-macros")
 (in-package "BOOT")
 
 ;; definition of our stream structure

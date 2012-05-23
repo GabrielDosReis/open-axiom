@@ -32,7 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(import-module "macros")
+(import-module "sys-macros")
 (in-package "BOOT")
 
 (defun monitor-help ()
