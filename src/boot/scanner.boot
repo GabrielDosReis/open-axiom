@@ -69,6 +69,9 @@ structure %Lexer ==
 makeLexer() ==
   mk%Lexer(nil,nil)
 
+macro lexerLineLength lex ==
+  #lexerLineString lex
+
 --%  
 
 shoeNextLine(lex,s) ==
@@ -77,7 +80,6 @@ shoeNextLine(lex,s) ==
   [$f,:$r] := s
   lexerLineString(lex) := sourceLineString $f
   $n := firstNonblankPosition(lexerLineString lex,0)
-  $sz := #lexerLineString lex
   $n = nil => true
   stringChar(lexerLineString lex,$n) = shoeTAB =>
     a := makeString(7-($n rem 8),char " ")
@@ -91,7 +93,6 @@ shoeLineToks s ==
   $f: local := nil
   $r: local := nil
   $n: local := nil
-  $sz: local := nil
   $floatok: local := true
   $linepos: local := s
   lex := makeLexer()
@@ -104,7 +105,7 @@ shoeLineToks s ==
     command := shoeLisp? lexerLineString lex => shoeLispToken(lex,$r,command)
     shoeLineToks $r
   toks := []
-  while $n < $sz repeat
+  while $n < lexerLineLength lex repeat
     toks := dqAppend(toks,shoeToken lex)
   toks = nil => shoeLineToks $r
   [[toks],:$r]
@@ -121,7 +122,7 @@ shoeLispToken(lex,s,string)==
 shoeAccumulateLines(lex,s,string)==
   not shoeNextLine(lex,s) =>  [s,:string]
   $n = nil => shoeAccumulateLines(lex,$r,string)
-  #lexerLineString lex = 0 => shoeAccumulateLines(lex,$r,string)
+  lexerLineLength lex = 0 => shoeAccumulateLines(lex,$r,string)
   stringChar(lexerLineString lex,0) = char ")" =>
     command := shoeLisp? lexerLineString lex
     command and #command > 0 =>
@@ -206,7 +207,7 @@ shoeLeafSpaces x  ==
  
 shoeLispEscape lex ==
   $n := $n + 1
-  $n >= $sz =>
+  $n >= lexerLineLength lex =>
     SoftShoeError([$linepos,:$n],'"lisp escape error")
     shoeLeafError stringChar(lexerLineString lex,$n)
   a := shoeReadLispString(lexerLineString lex,$n)
@@ -215,7 +216,7 @@ shoeLispEscape lex ==
     shoeLeafError stringChar(lexerLineString lex,$n)
   [exp,n] := a
   n = nil =>
-    $n := $sz
+    $n := lexerLineLength lex
     shoeLeafLispExp exp
   $n := n
   shoeLeafLispExp  exp
@@ -226,7 +227,7 @@ shoeEscape lex ==
   nil
  
 shoeEsc lex ==
-  $n >= $sz =>
+  $n >= lexerLineLength lex =>
     shoeNextLine(lex,$r) =>
       while $n = nil repeat shoeNextLine(lex,$r)
       shoeEsc lex
@@ -242,31 +243,31 @@ shoeEsc lex ==
   true
  
 shoeStartsComment lex ==
-  $n < $sz =>
+  $n < lexerLineLength lex =>
     stringChar(lexerLineString lex,$n) = char "+" => 
        www := $n + 1
-       www >= $sz => false
+       www >= lexerLineLength lex => false
        stringChar(lexerLineString lex,www) = char "+"
     false
   false
  
 shoeStartsNegComment lex ==
-  $n < $sz =>
+  $n < lexerLineLength lex =>
     stringChar(lexerLineString lex,$n) = char "-" =>
       www := $n + 1
-      www >= $sz => false
+      www >= lexerLineLength lex => false
       stringChar(lexerLineString lex,www) = char "-"
     false
   false
  
 shoeNegComment lex ==
   n := $n
-  $n := $sz
+  $n := lexerLineLength lex
   shoeLeafNegComment subString(lexerLineString lex,n)
  
 shoeComment lex ==
   n := $n
-  $n := $sz
+  $n := lexerLineLength lex
   shoeLeafComment subString(lexerLineString lex,n)
  
 shoePunct lex ==
@@ -282,7 +283,7 @@ shoeKeyTr(lex,w) ==
   shoeLeafKey w
  
 shoePossFloat(lex,w)==
-  $n >= $sz or not digit? stringChar(lexerLineString lex,$n) => shoeLeafKey w
+  $n >= lexerLineLength lex or not digit? stringChar(lexerLineString lex,$n) => shoeLeafKey w
   w := shoeInteger lex
   shoeExponent(lex,'"0",w)
  
@@ -292,7 +293,7 @@ shoeSpace lex ==
   $floatok := true
   $n = nil =>
      shoeLeafSpaces 0
-     $n:= # lexerLineString lex
+     $n:= lexerLineLength lex
   shoeLeafSpaces ($n-n)
  
 shoeString lex ==
@@ -301,15 +302,15 @@ shoeString lex ==
   shoeLeafString shoeS lex
  
 shoeS lex ==
-  $n >= $sz =>
+  $n >= lexerLineLength lex =>
     SoftShoeError([$linepos,:$n],'"quote added")
     '""
   n := $n
-  strsym := charPosition(char "_"",lexerLineString lex,$n) or $sz
-  escsym := charPosition(char "__",lexerLineString lex,$n) or $sz
+  strsym := charPosition(char "_"",lexerLineString lex,$n) or lexerLineLength lex
+  escsym := charPosition(char "__",lexerLineString lex,$n) or lexerLineLength lex
   mn := MIN(strsym,escsym)
-  mn=$sz =>
-    $n := $sz
+  mn = lexerLineLength lex =>
+    $n := lexerLineLength lex
     SoftShoeError([$linepos,:$n],'"quote added")
     subString(lexerLineString lex,n)
   mn = strsym =>
@@ -334,7 +335,7 @@ shoeIdEnd(line,n)==
 shoeW(lex,b) ==
   n1 := $n
   $n := $n+1
-  l := $sz
+  l := lexerLineLength lex
   endid := shoeIdEnd(lexerLineString lex,$n)
   endid = l or stringChar(lexerLineString lex,endid) ~= char "__" => 
     $n := endid
@@ -362,7 +363,7 @@ shoeInteger lex ==
  
 shoeInteger1(lex,zro) ==
   n := $n
-  l := $sz
+  l := lexerLineLength lex
   while $n <l and digit? stringChar(lexerLineString lex,$n) repeat 
     $n := $n+1
   $n = l or stringChar(lexerLineString lex,$n) ~= char "__" =>
@@ -384,11 +385,11 @@ shoeIntValue(s) ==
  
 shoeNumber lex ==
   a := shoeInteger lex
-  $n >= $sz => shoeLeafInteger a
+  $n >= lexerLineLength lex => shoeLeafInteger a
   $floatok and stringChar(lexerLineString lex,$n) = char "." => 
     n := $n
     $n := $n+1
-    $n < $sz and stringChar(lexerLineString lex,$n) = char "." =>
+    $n < lexerLineLength lex and stringChar(lexerLineString lex,$n) = char "." =>
       $n := n
       shoeLeafInteger a
     w := shoeInteger1(lex,true)
@@ -396,12 +397,12 @@ shoeNumber lex ==
   shoeLeafInteger a
  
 shoeExponent(lex,a,w)==
-  $n >= $sz => shoeLeafFloat(a,w,0)
+  $n >= lexerLineLength lex => shoeLeafFloat(a,w,0)
   n := $n
   c := stringChar(lexerLineString lex,$n)
   c = char "E" or c = char "e" =>
     $n := $n+1
-    $n >= $sz =>
+    $n >= lexerLineLength lex =>
       $n := n
       shoeLeafFloat(a,w,0)
     digit? stringChar(lexerLineString lex,$n) =>
@@ -411,7 +412,7 @@ shoeExponent(lex,a,w)==
     c1 := stringChar(lexerLineString lex,$n)
     c1 = char "+" or c1 = char "-" =>
       $n := $n+1
-      $n >= $sz =>
+      $n >= lexerLineLength lex =>
 	$n := n
 	shoeLeafFloat(a,w,0)
       digit? stringChar(lexerLineString lex,$n) =>

@@ -60,9 +60,9 @@ pathToDatabase name ==
 --%
 
 structure %Constructor ==
-  Record(name: %Symbol,kind: %ConstructorKind,abbrev: %Symbol,
+  Record(id: %Symbol,kind: %ConstructorKind,abbrev: %Symbol,
     xparms: %List %Symbol) with
-        constructorName == (.name)
+        constructorIdentifier == (.id)
         constructtorKind == (.kind)
         constructrorAbbreviation == (.abbrev)
         constructorExplicitParameters == (.xparms)
