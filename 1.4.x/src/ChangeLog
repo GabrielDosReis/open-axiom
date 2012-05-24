@@ -1,5 +1,19 @@
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/scanner.boot: Eliminate fluid variable $n.
+	(lexerRefresh?): New.
+	(lexerSetLine!): Likewise.
+	(lexerSkipBlank!): Likewise.
+	(lexerSkipToEnd!): Likewise.
+	(lexerAdvancePosition!): Likewise.
+	(lexerCharCountToCompleteTab): Likewise.
+	(lexerCurrentChar): Likewise.
+	(lexerCharPosition): Likewise.
+	(lexerCharacterAt): Likewise.
+	(lexerEol?): Likewise.
+
+2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/scanner.boot (lexerLineLength): New.
 	(shoeNextLine): Use it in replacement of $sz.
 	(shoeLineToks): Likewise.

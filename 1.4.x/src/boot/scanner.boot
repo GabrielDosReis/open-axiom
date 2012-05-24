@@ -62,28 +62,80 @@ dqToList s ==
  
 --%
 structure %Lexer ==
-  Record(line: %String, pos: %Short) with
+  Record(line: %String, pos: %Maybe %Short) with
     lexerLineString == (.line)
     lexerCurrentPosition == (.pos)
 
 makeLexer() ==
   mk%Lexer(nil,nil)
 
+++ Return true if the lexer wants a fresh input line.
+macro lexerRefresh? lex ==
+  lexerCurrentPosition lex = nil
+
 macro lexerLineLength lex ==
   #lexerLineString lex
 
+++ Make the lexer ready to process a new input line.
+lexerSetLine!(lex,line) ==
+  lexerLineString(lex) := line
+  lexerCurrentPosition(lex) := 0
+
+++ Adjust the current position to the next non-blank character.
+lexerSkipBlank! lex ==
+  lexerCurrentPosition(lex) :=
+    firstNonblankPosition(lexerLineString lex,lexerCurrentPosition lex)
+
+++ Move the current position by a given amount   
+lexerAdvancePosition!(lex,n == 1) ==
+  lexerCurrentPosition(lex) := lexerCurrentPosition lex + n
+
+++ Move the current position to end of line.
+lexerSkipToEnd! lex ==
+  lexerCurrentPosition(lex) := lexerLineLength lex
+
+++ Set the current position at a given index.
+lexerPosition!(lex,k) ==
+  lexerCurrentPosition(lex) := k
+
+++ Return the amount of space characters need to complete a tab
+++ to its next logical stop.
+lexerCharCountToCompleteTab lex ==
+  7 - (lexerCurrentPosition lex rem 8)
+
+
+++ Access the character the current position.
+macro lexerCurrentChar lex ==
+  stringChar(lexerLineString lex,lexerCurrentPosition lex)
+
+++ Access the character at a given position.
+macro lexerCharacterAt(lex,k) ==
+  stringChar(lexerLineString lex,k)
+
+++ Return the position of next character `c', or end of line.
+lexerCharPosition(lex,c) ==
+  charPosition(c,lexerLineString lex,lexerCurrentPosition lex)
+    or lexerLineLength lex
+
+++ Return true if the current position is at end of line.
+lexerEol? lex ==
+  lexerCurrentPosition lex >= lexerLineLength lex
+
 --%  
+
+lexerReadLisp lex ==
+  shoeReadLispString(lexerLineString lex,lexerCurrentPosition lex)
 
 shoeNextLine(lex,s) ==
   bStreamNull s => false
   $linepos := s
   [$f,:$r] := s
-  lexerLineString(lex) := sourceLineString $f
-  $n := firstNonblankPosition(lexerLineString lex,0)
-  $n = nil => true
-  stringChar(lexerLineString lex,$n) = shoeTAB =>
-    a := makeString(7-($n rem 8),char " ")
-    stringChar(lexerLineString lex,$n) := char " "
+  lexerSetLine!(lex,sourceLineString $f)
+  lexerSkipBlank! lex
+  lexerRefresh? lex => true
+  lexerCurrentChar lex = shoeTAB =>
+    a := makeString(lexerCharCountToCompleteTab lex,char " ")
+    lexerCurrentChar(lex) := char " "
     lexerLineString(lex) := strconc(a,lexerLineString lex)
     s1 := [makeSourceLine(lexerLineString lex,sourceLineNumber $f),:$r]
     shoeNextLine(lex,s1)
@@ -92,20 +144,19 @@ shoeNextLine(lex,s) ==
 shoeLineToks s ==
   $f: local := nil
   $r: local := nil
-  $n: local := nil
   $floatok: local := true
   $linepos: local := s
   lex := makeLexer()
   not shoeNextLine(lex,s) =>  [nil,:nil]
-  $n = nil => shoeLineToks $r
-  stringChar(lexerLineString lex,0) = char ")" =>
+  lexerRefresh? lex => shoeLineToks $r
+  lexerCharacterAt(lex,0) = char ")" =>
     command := shoeLine? lexerLineString lex =>
       dq := dqUnit makeToken($linepos,shoeLeafLine command,0)
       [[dq],:$r]
     command := shoeLisp? lexerLineString lex => shoeLispToken(lex,$r,command)
     shoeLineToks $r
   toks := []
-  while $n < lexerLineLength lex repeat
+  while not lexerEol? lex repeat
     toks := dqAppend(toks,shoeToken lex)
   toks = nil => shoeLineToks $r
   [[toks],:$r]
@@ -121,9 +172,9 @@ shoeLispToken(lex,s,string)==
  
 shoeAccumulateLines(lex,s,string)==
   not shoeNextLine(lex,s) =>  [s,:string]
-  $n = nil => shoeAccumulateLines(lex,$r,string)
+  lexerRefresh? lex => shoeAccumulateLines(lex,$r,string)
   lexerLineLength lex = 0 => shoeAccumulateLines(lex,$r,string)
-  stringChar(lexerLineString lex,0) = char ")" =>
+  lexerCharacterAt(lex,0) = char ")" =>
     command := shoeLisp? lexerLineString lex
     command and #command > 0 =>
       stringChar(command,0) = char ";" =>
@@ -141,8 +192,8 @@ shoeCloser t ==
  
 shoeToken lex ==
   linepos := $linepos
-  n := $n
-  ch := stringChar(lexerLineString lex,$n)
+  n := lexerCurrentPosition lex
+  ch := lexerCurrentChar lex
   b :=
     shoeStartsComment lex =>
       shoeComment lex
@@ -160,7 +211,7 @@ shoeToken lex ==
     digit? ch => shoeNumber lex
     ch = char "__" => shoeEscape lex
     ch = shoeTAB =>
-      $n := $n + 1
+      lexerAdvancePosition! lex
       []
     shoeError lex
   b = nil => nil
@@ -206,73 +257,74 @@ shoeLeafSpaces x  ==
   ["SPACES",x]
  
 shoeLispEscape lex ==
-  $n := $n + 1
-  $n >= lexerLineLength lex =>
-    SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError stringChar(lexerLineString lex,$n)
-  a := shoeReadLispString(lexerLineString lex,$n)
+  lexerAdvancePosition! lex
+  lexerEol? lex =>
+    SoftShoeError([$linepos,:lexerCurrentPosition lex],'"lisp escape error")
+    shoeLeafError lexerCurrentChar lex
+  a := lexerReadLisp lex
   a = nil =>
-    SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError stringChar(lexerLineString lex,$n)
+    SoftShoeError([$linepos,:lexerCurrentPosition lex],'"lisp escape error")
+    shoeLeafError lexerCurrentChar lex
   [exp,n] := a
   n = nil =>
-    $n := lexerLineLength lex
+    lexerSkipToEnd! lex
     shoeLeafLispExp exp
-  $n := n
+  lexerPosition!(lex,n)
   shoeLeafLispExp  exp
 
 shoeEscape lex ==
-  $n := $n + 1
+  lexerAdvancePosition! lex
   shoeEsc lex => shoeWord(lex,true)
   nil
  
 shoeEsc lex ==
-  $n >= lexerLineLength lex =>
+  lexerEol? lex =>
     shoeNextLine(lex,$r) =>
-      while $n = nil repeat shoeNextLine(lex,$r)
+      while lexerRefresh? lex repeat
+        shoeNextLine(lex,$r)
       shoeEsc lex
       false
     false
-  n1 := firstNonblankPosition(lexerLineString lex,$n)
+  n1 := firstNonblankPosition(lexerLineString lex,lexerCurrentPosition lex)
   n1 = nil =>
     shoeNextLine(lex,$r)
-    while $n = nil repeat 
+    while lexerRefresh? lex repeat 
       shoeNextLine(lex,$r)
     shoeEsc lex
     false
   true
  
 shoeStartsComment lex ==
-  $n < lexerLineLength lex =>
-    stringChar(lexerLineString lex,$n) = char "+" => 
-       www := $n + 1
+  not lexerEol? lex =>
+    lexerCurrentChar lex = char "+" => 
+       www := lexerCurrentPosition lex + 1
        www >= lexerLineLength lex => false
-       stringChar(lexerLineString lex,www) = char "+"
+       lexerCharacterAt(lex,www) = char "+"
     false
   false
  
 shoeStartsNegComment lex ==
-  $n < lexerLineLength lex =>
-    stringChar(lexerLineString lex,$n) = char "-" =>
-      www := $n + 1
+  not lexerEol? lex =>
+    lexerCurrentChar lex = char "-" =>
+      www := lexerCurrentPosition lex + 1
       www >= lexerLineLength lex => false
-      stringChar(lexerLineString lex,www) = char "-"
+      lexerCharacterAt(lex,www) = char "-"
     false
   false
  
 shoeNegComment lex ==
-  n := $n
-  $n := lexerLineLength lex
+  n := lexerCurrentPosition lex
+  lexerSkipToEnd! lex
   shoeLeafNegComment subString(lexerLineString lex,n)
  
 shoeComment lex ==
-  n := $n
-  $n := lexerLineLength lex
+  n := lexerCurrentPosition lex
+  lexerSkipToEnd! lex
   shoeLeafComment subString(lexerLineString lex,n)
  
 shoePunct lex ==
-  sss := shoeMatch(lexerLineString lex,$n)
-  $n := $n + #sss
+  sss := shoeMatch lex
+  lexerAdvancePosition!(lex,#sss)
   shoeKeyTr(lex,sss)
  
 shoeKeyTr(lex,w) ==
@@ -283,65 +335,66 @@ shoeKeyTr(lex,w) ==
   shoeLeafKey w
  
 shoePossFloat(lex,w)==
-  $n >= lexerLineLength lex or not digit? stringChar(lexerLineString lex,$n) => shoeLeafKey w
+  lexerEol? lex or not digit? lexerCurrentChar lex => shoeLeafKey w
   w := shoeInteger lex
   shoeExponent(lex,'"0",w)
  
 shoeSpace lex ==
-  n := $n
-  $n := firstNonblankPosition(lexerLineString lex,$n)
+  n := lexerCurrentPosition lex
+  lexerSkipBlank! lex
   $floatok := true
-  $n = nil =>
+  lexerRefresh? lex =>
      shoeLeafSpaces 0
-     $n:= lexerLineLength lex
-  shoeLeafSpaces ($n-n)
+     lexerSkipToEnd! lex
+  shoeLeafSpaces(lexerCurrentPosition lex - n)
  
 shoeString lex ==
-  $n := $n+1
+  lexerAdvancePosition! lex
   $floatok := false
   shoeLeafString shoeS lex
  
 shoeS lex ==
-  $n >= lexerLineLength lex =>
-    SoftShoeError([$linepos,:$n],'"quote added")
+  lexerEol? lex =>
+    SoftShoeError([$linepos,:lexerCurrentPosition lex],'"quote added")
     '""
-  n := $n
-  strsym := charPosition(char "_"",lexerLineString lex,$n) or lexerLineLength lex
-  escsym := charPosition(char "__",lexerLineString lex,$n) or lexerLineLength lex
+  n := lexerCurrentPosition lex
+  strsym := lexerCharPosition(lex,char "_"")
+  escsym := lexerCharPosition(lex,char "__")
   mn := MIN(strsym,escsym)
   mn = lexerLineLength lex =>
-    $n := lexerLineLength lex
-    SoftShoeError([$linepos,:$n],'"quote added")
+    lexerSkipToEnd! lex
+    SoftShoeError([$linepos,:lexerCurrentPosition lex],'"quote added")
     subString(lexerLineString lex,n)
   mn = strsym =>
-    $n := mn + 1
+    lexerPosition!(lex,mn + 1)
     subString(lexerLineString lex,n,mn-n)
   str := subString(lexerLineString lex,n,mn-n)
-  $n := mn+1
+  lexerPosition!(lex,mn + 1)
   a := shoeEsc lex
   b := 
     a =>
-      str := strconc(str,charString stringChar(lexerLineString lex,$n))
-      $n := $n + 1
+      str := strconc(str,charString lexerCurrentChar lex)
+      lexerAdvancePosition! lex
       shoeS lex
     shoeS lex
   strconc(str,b)
  
-shoeIdEnd(line,n)==
-  while n<#line and shoeIdChar stringChar(line,n) repeat 
-    n := n+1
+shoeIdEnd lex ==
+  n := lexerCurrentPosition lex
+  while n < lexerLineLength lex and shoeIdChar lexerCharacterAt(lex,n) repeat 
+    n := n + 1
   n
  
 shoeW(lex,b) ==
-  n1 := $n
-  $n := $n+1
+  n1 := lexerCurrentPosition lex
+  lexerAdvancePosition! lex
   l := lexerLineLength lex
-  endid := shoeIdEnd(lexerLineString lex,$n)
-  endid = l or stringChar(lexerLineString lex,endid) ~= char "__" => 
-    $n := endid
+  endid := shoeIdEnd lex
+  endid = l or lexerCharacterAt(lex,endid) ~= char "__" => 
+    lexerPosition!(lex,endid)
     [b,subString(lexerLineString lex,n1,endid-n1)]
   str := subString(lexerLineString lex,n1,endid-n1)
-  $n := endid+1
+  lexerPosition!(lex,endid + 1)
   a := shoeEsc lex
   bb := 
     a => shoeW(lex,true)
@@ -362,15 +415,14 @@ shoeInteger lex ==
   shoeInteger1(lex,false)
  
 shoeInteger1(lex,zro) ==
-  n := $n
-  l := lexerLineLength lex
-  while $n <l and digit? stringChar(lexerLineString lex,$n) repeat 
-    $n := $n+1
-  $n = l or stringChar(lexerLineString lex,$n) ~= char "__" =>
-    n = $n and zro => '"0"
-    subString(lexerLineString lex,n,$n - n)
-  str := subString(lexerLineString lex,n,$n - n)
-  $n := $n+1
+  n := lexerCurrentPosition lex
+  while not lexerEol? lex and digit? lexerCurrentChar lex repeat 
+    lexerAdvancePosition! lex
+  lexerEol? lex or lexerCurrentChar lex ~= char "__" =>
+    n = lexerCurrentPosition lex and zro => '"0"
+    subString(lexerLineString lex,n,lexerCurrentPosition lex - n)
+  str := subString(lexerLineString lex,n,lexerCurrentPosition lex - n)
+  lexerAdvancePosition! lex
   a := shoeEsc lex
   bb := shoeInteger1(lex,zro)
   strconc(str,bb)
@@ -385,53 +437,53 @@ shoeIntValue(s) ==
  
 shoeNumber lex ==
   a := shoeInteger lex
-  $n >= lexerLineLength lex => shoeLeafInteger a
-  $floatok and stringChar(lexerLineString lex,$n) = char "." => 
-    n := $n
-    $n := $n+1
-    $n < lexerLineLength lex and stringChar(lexerLineString lex,$n) = char "." =>
-      $n := n
+  lexerEol? lex => shoeLeafInteger a
+  $floatok and lexerCurrentChar lex = char "." => 
+    n := lexerCurrentPosition lex
+    lexerAdvancePosition! lex
+    not lexerEol? lex and lexerCurrentChar lex = char "." =>
+      lexerPosition!(lex,n)
       shoeLeafInteger a
     w := shoeInteger1(lex,true)
     shoeExponent(lex,a,w)
   shoeLeafInteger a
  
 shoeExponent(lex,a,w)==
-  $n >= lexerLineLength lex => shoeLeafFloat(a,w,0)
-  n := $n
-  c := stringChar(lexerLineString lex,$n)
+  lexerEol? lex => shoeLeafFloat(a,w,0)
+  n := lexerCurrentPosition lex
+  c := lexerCurrentChar lex
   c = char "E" or c = char "e" =>
-    $n := $n+1
-    $n >= lexerLineLength lex =>
-      $n := n
+    lexerAdvancePosition! lex
+    lexerEol? lex =>
+      lexerPosition!(lex,n)
       shoeLeafFloat(a,w,0)
-    digit? stringChar(lexerLineString lex,$n) =>
+    digit? lexerCurrentChar lex =>
       e := shoeInteger lex
       e := shoeIntValue e
       shoeLeafFloat(a,w,e)
-    c1 := stringChar(lexerLineString lex,$n)
+    c1 := lexerCurrentChar lex
     c1 = char "+" or c1 = char "-" =>
-      $n := $n+1
-      $n >= lexerLineLength lex =>
-	$n := n
+      lexerAdvancePosition! lex
+      lexerEol? lex =>
+	lexerPosition!(lex,n)
 	shoeLeafFloat(a,w,0)
-      digit? stringChar(lexerLineString lex,$n) =>
+      digit? lexerCurrentChar lex =>
 	e := shoeInteger lex
 	e := shoeIntValue e
 	shoeLeafFloat(a,w,(c1 = char "-" => MINUS e; e))
-      $n := n
+      lexerPosition!(lex,n)
       shoeLeafFloat(a,w,0)
     -- FIXME: Missing alternative.
   shoeLeafFloat(a,w,0)
  
 shoeError lex ==
-  n := $n
-  $n := $n + 1
+  n := lexerCurrentPosition lex
+  lexerAdvancePosition! lex
   SoftShoeError([$linepos,:n],
     strconc( '"The character whose number is ",
-      toString codePoint stringChar(lexerLineString lex,n),
+      toString codePoint lexerCharacterAt(lex,n),
         '" is not a Boot character"))
-  shoeLeafError stringChar(lexerLineString lex,n)
+  shoeLeafError lexerCharacterAt(lex,n)
  
 shoeKeyWord st   == 
   tableValue(shoeKeyTable,st)
@@ -439,8 +491,8 @@ shoeKeyWord st   ==
 shoeKeyWordP st  ==  
   tableValue(shoeKeyTable,st) ~= nil
  
-shoeMatch(l,i) == 
-  shoeSubStringMatch(l,shoeDict,i)
+shoeMatch lex == 
+  shoeSubStringMatch(lexerLineString lex,shoeDict,lexerCurrentPosition lex)
  
 shoeSubStringMatch(l,d,i) ==
   h := codePoint stringChar(l, i)
