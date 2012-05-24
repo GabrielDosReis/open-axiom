@@ -1,5 +1,24 @@
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/scanner.boot (lexerLineLength): New.
+	(shoeNextLine): Use it in replacement of $sz.
+	(shoeLineToks): Likewise.
+	(shoeLispEscape): Likewise.
+	(shoeEsc): Likewise.
+	(shoeStartsComment): Likewise.
+	(shoeStartsNegComment): Likewise.
+	(shoeNegComment): Likewise.
+	(shoeComment): Likewise.
+	(shoePossFloat): Likewise.
+	(shoeSpace): Likewise.
+	(shoeS): Likewise.
+	(shoeW): Likewise.
+	(shoeInteger1): Likewise.
+	(shoeNumber): Likewise.
+	(shoeExponent): Likewise.
+
+2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/scanner.boot (%Lexer): New record structure.
 	Add a lexer parameter to all lexing functions that need one.
 	Adjust their callers.
