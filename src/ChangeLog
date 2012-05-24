@@ -1,3 +1,9 @@
+2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/scanner.boot (%Lexer): New record structure.
+	Add a lexer parameter to all lexing functions that need one.
+	Adjust their callers.
+
 2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: "@" is now a new keyword.
