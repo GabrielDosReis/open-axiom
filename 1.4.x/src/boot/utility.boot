@@ -107,9 +107,8 @@ takeWhile(f,l) ==
 ++ If `n' is negative, drop from the end.
 drop(n,l) ==
   n >= 0 =>
-    while n > 0 and l is [.,:l] repeat
-      n := n - 1
-    l
+    for . in 1..n while l is [.,:l] repeat nil
+    l@%List(%Thing)
   take(#l+n,l)
 
 copyTree t ==

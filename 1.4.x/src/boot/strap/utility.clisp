@@ -165,12 +165,15 @@
 (DEFUN |drop| (|n| |l|)
   (COND
    ((NOT (MINUSP |n|))
-    (LOOP
-     (COND
-      ((NOT (AND (PLUSP |n|) (CONSP |l|) (PROGN (SETQ |l| (CDR |l|)) T)))
-       (RETURN NIL))
-      (T (SETQ |n| (- |n| 1)))))
-    |l|)
+    (LET ((|bfVar#1| 1))
+      (LOOP
+       (COND
+        ((OR (> |bfVar#1| |n|)
+             (NOT (AND (CONSP |l|) (PROGN (SETQ |l| (CDR |l|)) T))))
+         (RETURN NIL))
+        (T NIL))
+       (SETQ |bfVar#1| (+ |bfVar#1| 1))))
+    (THE (|%List| |%Thing|) |l|))
    (T (|take| (+ (LENGTH |l|) |n|) |l|))))
 
 (DEFUN |copyTree| (|t|)

@@ -585,14 +585,18 @@
     (|bpPush| (|%Forall| (|bpPop2|) (|bpPop1|))))
    (T (OR (|bpMapping|) (|bpSimpleMapping|)))))
 
-(DEFUN |bpTagged| ()
+(DEFUN |bpTyped| ()
   (AND (|bpApplication|)
-       (OR
-        (AND (|bpEqKey| 'COLON) (|bpRequire| #'|bpTyping|)
-             (|bpPush| (|bfTagged| (|bpPop2|) (|bpPop1|))))
-        T)))
+       (COND
+        ((|bpEqKey| 'COLON)
+         (AND (|bpRequire| #'|bpTyping|)
+              (|bpPush| (|bfTagged| (|bpPop2|) (|bpPop1|)))))
+        ((|bpEqKey| 'AT)
+         (AND (|bpRequire| #'|bpTyping|)
+              (|bpPush| (|bfRestrict| (|bpPop2|) (|bpPop1|)))))
+        (T T))))
 
-(DEFUN |bpExpt| () (|bpRightAssoc| '(POWER) #'|bpTagged|))
+(DEFUN |bpExpt| () (|bpRightAssoc| '(POWER) #'|bpTyped|))
 
 (DEFUN |bpInfKey| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))

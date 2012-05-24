@@ -74,6 +74,7 @@ structure %Ast ==
   %EqualPattern(%Ast)                   -- =x        -- patterns
   %Colon(%Symbol)                       -- :x
   %QualifiedName(%Symbol,%Symbol)       -- m::x
+  %Restrict(%Ast,%Ast)                  -- x@t
   %DefaultValue(%Symbol,%Ast)           -- opt. value for function param.
   %Key(%Symbol,%Ast)                    -- k <- x
   %Bracket(%Ast)                        -- [x, y]
@@ -1146,6 +1147,9 @@ bfTagged(a,b)==
     a
   ["THE",b,a]
  
+bfRestrict(x,t) ==
+  ["THE",t,x]
+
 bfAssign(l,r)==
   bfTupleP l => bfSetelt(second l,CDDR l ,r)
   l is ["%Place",:l'] => ["SETF",l',r]

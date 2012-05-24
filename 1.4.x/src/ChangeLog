@@ -1,5 +1,12 @@
 2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: "@" is now a new keyword.
+	* boot/ast.boot (bfRestrict): New.
+	(bpTyped): Rename from bpTagged.  Accept type restriction.
+	* boot/utility.boot (drop): Restrict the result to a %List.
+
+2012-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/database.boot (%Constructor): New.
 	(makeConstructor): Likewise.
 	(makeInitialDB): Tidy.
