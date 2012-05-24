@@ -1,5 +1,9 @@
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.in (initdb.$(FASLEXT)): Add --syslib to fix thinko.
+
+2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/scanner.boot: Eliminate fluid variable $n.
 	(lexerRefresh?): New.
 	(lexerSetLine!): Likewise.

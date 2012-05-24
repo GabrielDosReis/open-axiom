@@ -2466,7 +2466,7 @@ initdb.clisp: $(SPADFILES)
 		$(top_confdir)/move-if-change initdb.$$$$ $@
 
 initdb.$(FASLEXT): initdb.clisp
-	$(DRIVER) --execpath=$(BOOTSYS) \
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
 		--compile --output=$@ --load-directory=../interp $<
 
 mostlyclean-local:
