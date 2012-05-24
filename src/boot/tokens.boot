@@ -110,6 +110,7 @@ shoeKeyWords == [  _
             ['".", "DOT"], _
             ['":", "COLON"], _
             ['"::", "COLON-COLON"], _
+            ['"@",  "AT" ], _
             ['",", "COMMA"], _
             ['";", "SEMICOLON"], _
             ['"*", "TIMES"], _

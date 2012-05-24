@@ -626,14 +626,20 @@ bpTyping() ==
     bpPush %Forall(bpPop2(), bpPop1())
   bpMapping() or bpSimpleMapping()
 
-++ Tagged:
-++   Name : Typing
-bpTagged()==
+++ Typed:
+++   Application : Typing
+++   Application @ Typing
+bpTyped()==
   bpApplication() and
-     (bpEqKey "COLON" and bpRequire function bpTyping and
-       bpPush bfTagged(bpPop2(),bpPop1()) or true)
+     bpEqKey "COLON" =>
+       bpRequire function bpTyping and
+         bpPush bfTagged(bpPop2(),bpPop1())
+     bpEqKey "AT" =>
+       bpRequire function bpTyping and
+         bpPush bfRestrict(bpPop2(), bpPop1())
+     true
  
-bpExpt()== bpRightAssoc('(POWER),function bpTagged)
+bpExpt()== bpRightAssoc('(POWER),function bpTyped)
  
 bpInfKey s ==
   tokenClass $stok = "KEY" and
