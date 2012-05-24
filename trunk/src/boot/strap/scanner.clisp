@@ -28,7 +28,7 @@
 (DEFMACRO |mk%Lexer| (|line| |pos|)
   (LIST '|MAKE-%Lexer| :|line| |line| :|pos| |pos|))
 
-(DEFMACRO |lexerInputLine| (|bfVar#1|) (LIST '|%Lexer-line| |bfVar#1|))
+(DEFMACRO |lexerLineString| (|bfVar#1|) (LIST '|%Lexer-line| |bfVar#1|))
 
 (DEFMACRO |lexerCurrentPosition| (|bfVar#1|) (LIST '|%Lexer-pos| |bfVar#1|))
 
@@ -39,18 +39,18 @@
     (DECLARE (SPECIAL |$sz| |$n| |$r| |$f| |$linepos|))
     (COND ((|bStreamNull| |s|) NIL)
           (T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|)) (SETQ |$r| (CDR |s|))
-           (SETF (|lexerInputLine| |lex|) (|sourceLineString| |$f|))
-           (SETQ |$n| (|firstNonblankPosition| (|lexerInputLine| |lex|) 0))
-           (SETQ |$sz| (LENGTH (|lexerInputLine| |lex|)))
+           (SETF (|lexerLineString| |lex|) (|sourceLineString| |$f|))
+           (SETQ |$n| (|firstNonblankPosition| (|lexerLineString| |lex|) 0))
+           (SETQ |$sz| (LENGTH (|lexerLineString| |lex|)))
            (COND ((NULL |$n|) T)
-                 ((CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) |shoeTAB|)
+                 ((CHAR= (SCHAR (|lexerLineString| |lex|) |$n|) |shoeTAB|)
                   (SETQ |a| (|makeString| (- 7 (REM |$n| 8)) (|char| '| |)))
-                  (SETF (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '| |))
-                  (SETF (|lexerInputLine| |lex|)
-                          (CONCAT |a| (|lexerInputLine| |lex|)))
+                  (SETF (SCHAR (|lexerLineString| |lex|) |$n|) (|char| '| |))
+                  (SETF (|lexerLineString| |lex|)
+                          (CONCAT |a| (|lexerLineString| |lex|)))
                   (SETQ |s1|
                           (CONS
-                           (|makeSourceLine| (|lexerInputLine| |lex|)
+                           (|makeSourceLine| (|lexerLineString| |lex|)
                                              (|sourceLineNumber| |$f|))
                            |$r|))
                   (|shoeNextLine| |lex| |s1|))
@@ -72,14 +72,14 @@
      (SETQ |lex| (|makeLexer|))
      (COND ((NOT (|shoeNextLine| |lex| |s|)) (CONS NIL NIL))
            ((NULL |$n|) (|shoeLineToks| |$r|))
-           ((CHAR= (SCHAR (|lexerInputLine| |lex|) 0) (|char| '|)|))
+           ((CHAR= (SCHAR (|lexerLineString| |lex|) 0) (|char| '|)|))
             (COND
-             ((SETQ |command| (|shoeLine?| (|lexerInputLine| |lex|)))
+             ((SETQ |command| (|shoeLine?| (|lexerLineString| |lex|)))
               (SETQ |dq|
                       (|dqUnit|
                        (|makeToken| |$linepos| (|shoeLeafLine| |command|) 0)))
               (CONS (LIST |dq|) |$r|))
-             ((SETQ |command| (|shoeLisp?| (|lexerInputLine| |lex|)))
+             ((SETQ |command| (|shoeLisp?| (|lexerLineString| |lex|)))
               (|shoeLispToken| |lex| |$r| |command|))
              (T (|shoeLineToks| |$r|))))
            (T (SETQ |toks| NIL)
@@ -96,7 +96,7 @@
      (COND
       ((OR (EQL (LENGTH |string|) 0) (CHAR= (SCHAR |string| 0) (|char| '|;|)))
        (SETQ |string| "")))
-     (SETQ |ln| (|lexerInputLine| |lex|))
+     (SETQ |ln| (|lexerLineString| |lex|))
      (SETQ |linepos| |$linepos|)
      (SETQ |LETTMP#1| (|shoeAccumulateLines| |lex| |s| |string|))
      (SETQ |r| (CAR |LETTMP#1|))
@@ -109,10 +109,10 @@
     (DECLARE (SPECIAL |$r| |$n|))
     (COND ((NOT (|shoeNextLine| |lex| |s|)) (CONS |s| |string|))
           ((NULL |$n|) (|shoeAccumulateLines| |lex| |$r| |string|))
-          ((EQL (LENGTH (|lexerInputLine| |lex|)) 0)
+          ((EQL (LENGTH (|lexerLineString| |lex|)) 0)
            (|shoeAccumulateLines| |lex| |$r| |string|))
-          ((CHAR= (SCHAR (|lexerInputLine| |lex|) 0) (|char| '|)|))
-           (SETQ |command| (|shoeLisp?| (|lexerInputLine| |lex|)))
+          ((CHAR= (SCHAR (|lexerLineString| |lex|) 0) (|char| '|)|))
+           (SETQ |command| (|shoeLisp?| (|lexerLineString| |lex|)))
            (COND
             ((AND |command| (PLUSP (LENGTH |command|)))
              (COND
@@ -138,7 +138,7 @@
     (PROGN
      (SETQ |linepos| |$linepos|)
      (SETQ |n| |$n|)
-     (SETQ |ch| (SCHAR (|lexerInputLine| |lex|) |$n|))
+     (SETQ |ch| (SCHAR (|lexerLineString| |lex|) |$n|))
      (SETQ |b|
              (COND ((|shoeStartsComment| |lex|) (|shoeComment| |lex|) NIL)
                    ((|shoeStartsNegComment| |lex|) (|shoeNegComment| |lex|)
@@ -191,12 +191,12 @@
      (COND
       ((NOT (< |$n| |$sz|))
        (|SoftShoeError| (CONS |$linepos| |$n|) "lisp escape error")
-       (|shoeLeafError| (SCHAR (|lexerInputLine| |lex|) |$n|)))
-      (T (SETQ |a| (|shoeReadLispString| (|lexerInputLine| |lex|) |$n|))
+       (|shoeLeafError| (SCHAR (|lexerLineString| |lex|) |$n|)))
+      (T (SETQ |a| (|shoeReadLispString| (|lexerLineString| |lex|) |$n|))
        (COND
         ((NULL |a|)
          (|SoftShoeError| (CONS |$linepos| |$n|) "lisp escape error")
-         (|shoeLeafError| (SCHAR (|lexerInputLine| |lex|) |$n|)))
+         (|shoeLeafError| (SCHAR (|lexerLineString| |lex|) |$n|)))
         (T (SETQ |exp| (CAR |a|)) (SETQ |n| (CADR |a|))
          (COND ((NULL |n|) (SETQ |$n| |$sz|) (|shoeLeafLispExp| |exp|))
                (T (SETQ |$n| |n|) (|shoeLeafLispExp| |exp|))))))))))
@@ -217,7 +217,7 @@
         (LOOP (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |lex| |$r|))))
         (|shoeEsc| |lex|) NIL)
        (T NIL)))
-     (T (SETQ |n1| (|firstNonblankPosition| (|lexerInputLine| |lex|) |$n|))
+     (T (SETQ |n1| (|firstNonblankPosition| (|lexerLineString| |lex|) |$n|))
       (COND
        ((NULL |n1|) (|shoeNextLine| |lex| |$r|)
         (LOOP (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |lex| |$r|))))
@@ -230,10 +230,10 @@
     (COND
      ((< |$n| |$sz|)
       (COND
-       ((CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '+))
+       ((CHAR= (SCHAR (|lexerLineString| |lex|) |$n|) (|char| '+))
         (SETQ |www| (+ |$n| 1))
         (COND ((NOT (< |www| |$sz|)) NIL)
-              (T (CHAR= (SCHAR (|lexerInputLine| |lex|) |www|) (|char| '+)))))
+              (T (CHAR= (SCHAR (|lexerLineString| |lex|) |www|) (|char| '+)))))
        (T NIL)))
      (T NIL))))
 
@@ -243,10 +243,10 @@
     (COND
      ((< |$n| |$sz|)
       (COND
-       ((CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '-))
+       ((CHAR= (SCHAR (|lexerLineString| |lex|) |$n|) (|char| '-))
         (SETQ |www| (+ |$n| 1))
         (COND ((NOT (< |www| |$sz|)) NIL)
-              (T (CHAR= (SCHAR (|lexerInputLine| |lex|) |www|) (|char| '-)))))
+              (T (CHAR= (SCHAR (|lexerLineString| |lex|) |www|) (|char| '-)))))
        (T NIL)))
      (T NIL))))
 
@@ -256,7 +256,7 @@
     (PROGN
      (SETQ |n| |$n|)
      (SETQ |$n| |$sz|)
-     (|shoeLeafNegComment| (|subString| (|lexerInputLine| |lex|) |n|)))))
+     (|shoeLeafNegComment| (|subString| (|lexerLineString| |lex|) |n|)))))
 
 (DEFUN |shoeComment| (|lex|)
   (LET* (|n|)
@@ -264,13 +264,13 @@
     (PROGN
      (SETQ |n| |$n|)
      (SETQ |$n| |$sz|)
-     (|shoeLeafComment| (|subString| (|lexerInputLine| |lex|) |n|)))))
+     (|shoeLeafComment| (|subString| (|lexerLineString| |lex|) |n|)))))
 
 (DEFUN |shoePunct| (|lex|)
   (LET* (|sss|)
     (DECLARE (SPECIAL |$n|))
     (PROGN
-     (SETQ |sss| (|shoeMatch| (|lexerInputLine| |lex|) |$n|))
+     (SETQ |sss| (|shoeMatch| (|lexerLineString| |lex|) |$n|))
      (SETQ |$n| (+ |$n| (LENGTH |sss|)))
      (|shoeKeyTr| |lex| |sss|))))
 
@@ -285,7 +285,7 @@
   (DECLARE (SPECIAL |$sz| |$n|))
   (COND
    ((OR (NOT (< |$n| |$sz|))
-        (NOT (DIGIT-CHAR-P (SCHAR (|lexerInputLine| |lex|) |$n|))))
+        (NOT (DIGIT-CHAR-P (SCHAR (|lexerLineString| |lex|) |$n|))))
     (|shoeLeafKey| |w|))
    (T (SETQ |w| (|shoeInteger| |lex|)) (|shoeExponent| |lex| "0" |w|))))
 
@@ -294,11 +294,11 @@
     (DECLARE (SPECIAL |$floatok| |$n|))
     (PROGN
      (SETQ |n| |$n|)
-     (SETQ |$n| (|firstNonblankPosition| (|lexerInputLine| |lex|) |$n|))
+     (SETQ |$n| (|firstNonblankPosition| (|lexerLineString| |lex|) |$n|))
      (SETQ |$floatok| T)
      (COND
       ((NULL |$n|) (|shoeLeafSpaces| 0)
-       (SETQ |$n| (LENGTH (|lexerInputLine| |lex|))))
+       (SETQ |$n| (LENGTH (|lexerLineString| |lex|))))
       (T (|shoeLeafSpaces| (- |$n| |n|)))))))
 
 (DEFUN |shoeString| (|lex|)
@@ -316,19 +316,19 @@
       (|SoftShoeError| (CONS |$linepos| |$n|) "quote added") "")
      (T (SETQ |n| |$n|)
       (SETQ |strsym|
-              (OR (|charPosition| (|char| '|"|) (|lexerInputLine| |lex|) |$n|)
+              (OR (|charPosition| (|char| '|"|) (|lexerLineString| |lex|) |$n|)
                   |$sz|))
       (SETQ |escsym|
-              (OR (|charPosition| (|char| '_) (|lexerInputLine| |lex|) |$n|)
+              (OR (|charPosition| (|char| '_) (|lexerLineString| |lex|) |$n|)
                   |$sz|))
       (SETQ |mn| (MIN |strsym| |escsym|))
       (COND
        ((EQUAL |mn| |$sz|) (SETQ |$n| |$sz|)
         (|SoftShoeError| (CONS |$linepos| |$n|) "quote added")
-        (|subString| (|lexerInputLine| |lex|) |n|))
+        (|subString| (|lexerLineString| |lex|) |n|))
        ((EQUAL |mn| |strsym|) (SETQ |$n| (+ |mn| 1))
-        (|subString| (|lexerInputLine| |lex|) |n| (- |mn| |n|)))
-       (T (SETQ |str| (|subString| (|lexerInputLine| |lex|) |n| (- |mn| |n|)))
+        (|subString| (|lexerLineString| |lex|) |n| (- |mn| |n|)))
+       (T (SETQ |str| (|subString| (|lexerLineString| |lex|) |n| (- |mn| |n|)))
         (SETQ |$n| (+ |mn| 1)) (SETQ |a| (|shoeEsc| |lex|))
         (SETQ |b|
                 (COND
@@ -336,7 +336,7 @@
                   (SETQ |str|
                           (CONCAT |str|
                                   (STRING
-                                   (SCHAR (|lexerInputLine| |lex|) |$n|))))
+                                   (SCHAR (|lexerLineString| |lex|) |$n|))))
                   (SETQ |$n| (+ |$n| 1)) (|shoeS| |lex|))
                  (T (|shoeS| |lex|))))
         (CONCAT |str| |b|)))))))
@@ -357,15 +357,16 @@
      (SETQ |n1| |$n|)
      (SETQ |$n| (+ |$n| 1))
      (SETQ |l| |$sz|)
-     (SETQ |endid| (|shoeIdEnd| (|lexerInputLine| |lex|) |$n|))
+     (SETQ |endid| (|shoeIdEnd| (|lexerLineString| |lex|) |$n|))
      (COND
       ((OR (EQUAL |endid| |l|)
-           (NOT (CHAR= (SCHAR (|lexerInputLine| |lex|) |endid|) (|char| '_))))
+           (NOT (CHAR= (SCHAR (|lexerLineString| |lex|) |endid|) (|char| '_))))
        (SETQ |$n| |endid|)
-       (LIST |b| (|subString| (|lexerInputLine| |lex|) |n1| (- |endid| |n1|))))
+       (LIST |b|
+             (|subString| (|lexerLineString| |lex|) |n1| (- |endid| |n1|))))
       (T
        (SETQ |str|
-               (|subString| (|lexerInputLine| |lex|) |n1| (- |endid| |n1|)))
+               (|subString| (|lexerLineString| |lex|) |n1| (- |endid| |n1|)))
        (SETQ |$n| (+ |endid| 1)) (SETQ |a| (|shoeEsc| |lex|))
        (SETQ |bb| (COND (|a| (|shoeW| |lex| T)) (T (LIST |b| ""))))
        (LIST (OR (ELT |bb| 0) |b|) (CONCAT |str| (ELT |bb| 1))))))))
@@ -393,15 +394,15 @@
       (COND
        ((NOT
          (AND (< |$n| |l|)
-              (DIGIT-CHAR-P (SCHAR (|lexerInputLine| |lex|) |$n|))))
+              (DIGIT-CHAR-P (SCHAR (|lexerLineString| |lex|) |$n|))))
         (RETURN NIL))
        (T (SETQ |$n| (+ |$n| 1)))))
      (COND
       ((OR (EQUAL |$n| |l|)
-           (NOT (CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '_))))
+           (NOT (CHAR= (SCHAR (|lexerLineString| |lex|) |$n|) (|char| '_))))
        (COND ((AND (EQUAL |n| |$n|) |zro|) "0")
-             (T (|subString| (|lexerInputLine| |lex|) |n| (- |$n| |n|)))))
-      (T (SETQ |str| (|subString| (|lexerInputLine| |lex|) |n| (- |$n| |n|)))
+             (T (|subString| (|lexerLineString| |lex|) |n| (- |$n| |n|)))))
+      (T (SETQ |str| (|subString| (|lexerLineString| |lex|) |n| (- |$n| |n|)))
        (SETQ |$n| (+ |$n| 1)) (SETQ |a| (|shoeEsc| |lex|))
        (SETQ |bb| (|shoeInteger1| |lex| |zro|)) (CONCAT |str| |bb|))))))
 
@@ -425,11 +426,12 @@
      (SETQ |a| (|shoeInteger| |lex|))
      (COND ((NOT (< |$n| |$sz|)) (|shoeLeafInteger| |a|))
            ((AND |$floatok|
-                 (CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '|.|)))
+                 (CHAR= (SCHAR (|lexerLineString| |lex|) |$n|) (|char| '|.|)))
             (SETQ |n| |$n|) (SETQ |$n| (+ |$n| 1))
             (COND
              ((AND (< |$n| |$sz|)
-                   (CHAR= (SCHAR (|lexerInputLine| |lex|) |$n|) (|char| '|.|)))
+                   (CHAR= (SCHAR (|lexerLineString| |lex|) |$n|)
+                          (|char| '|.|)))
               (SETQ |$n| |n|) (|shoeLeafInteger| |a|))
              (T (SETQ |w| (|shoeInteger1| |lex| T))
               (|shoeExponent| |lex| |a| |w|))))
@@ -439,24 +441,24 @@
   (LET* (|c1| |e| |c| |n|)
     (DECLARE (SPECIAL |$sz| |$n|))
     (COND ((NOT (< |$n| |$sz|)) (|shoeLeafFloat| |a| |w| 0))
-          (T (SETQ |n| |$n|) (SETQ |c| (SCHAR (|lexerInputLine| |lex|) |$n|))
+          (T (SETQ |n| |$n|) (SETQ |c| (SCHAR (|lexerLineString| |lex|) |$n|))
            (COND
             ((OR (CHAR= |c| (|char| 'E)) (CHAR= |c| (|char| '|e|)))
              (SETQ |$n| (+ |$n| 1))
              (COND
               ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
                (|shoeLeafFloat| |a| |w| 0))
-              ((DIGIT-CHAR-P (SCHAR (|lexerInputLine| |lex|) |$n|))
+              ((DIGIT-CHAR-P (SCHAR (|lexerLineString| |lex|) |$n|))
                (SETQ |e| (|shoeInteger| |lex|)) (SETQ |e| (|shoeIntValue| |e|))
                (|shoeLeafFloat| |a| |w| |e|))
-              (T (SETQ |c1| (SCHAR (|lexerInputLine| |lex|) |$n|))
+              (T (SETQ |c1| (SCHAR (|lexerLineString| |lex|) |$n|))
                (COND
                 ((OR (CHAR= |c1| (|char| '+)) (CHAR= |c1| (|char| '-)))
                  (SETQ |$n| (+ |$n| 1))
                  (COND
                   ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
                    (|shoeLeafFloat| |a| |w| 0))
-                  ((DIGIT-CHAR-P (SCHAR (|lexerInputLine| |lex|) |$n|))
+                  ((DIGIT-CHAR-P (SCHAR (|lexerLineString| |lex|) |$n|))
                    (SETQ |e| (|shoeInteger| |lex|))
                    (SETQ |e| (|shoeIntValue| |e|))
                    (|shoeLeafFloat| |a| |w|
@@ -475,9 +477,9 @@
                       (CONCAT "The character whose number is "
                               (WRITE-TO-STRING
                                (CHAR-CODE
-                                (SCHAR (|lexerInputLine| |lex|) |n|)))
+                                (SCHAR (|lexerLineString| |lex|) |n|)))
                               " is not a Boot character"))
-     (|shoeLeafError| (SCHAR (|lexerInputLine| |lex|) |n|)))))
+     (|shoeLeafError| (SCHAR (|lexerLineString| |lex|) |n|)))))
 
 (DEFUN |shoeKeyWord| (|st|) (|tableValue| |shoeKeyTable| |st|))
 
