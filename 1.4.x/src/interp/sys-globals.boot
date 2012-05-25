@@ -61,9 +61,6 @@ $cacheAlist := nil
 $cacheCount := 0
 
 ++
-$compCount := 0
-
-++
 $createUpdateFiles := false
 
 ++

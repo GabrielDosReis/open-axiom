@@ -342,7 +342,6 @@
         (t (mapcar #'upcase l))))
 
 (define-function 'U-CASE #'upcase)
-(define-function 'LC2UC #'upcase)
 
 (defun downcase (l)
   (cond ((stringp l) (string-downcase l))
@@ -913,9 +912,6 @@
 (defun prettyprin0 (x &optional (stream |$OutputStream|))
   (let ((*print-pretty* t) (*print-array* t))
     (prin1 x stream)))
-
-(defun vmprint (x &optional (stream |$OutputStream|))
-  (prin1 x stream) (terpri stream))
 
 (defun tab (sint &optional (stream t))
   (format stream "~vT" sint))

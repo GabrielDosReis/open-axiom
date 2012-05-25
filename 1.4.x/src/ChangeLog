@@ -1,5 +1,14 @@
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($compCount): Remove.
+	* interp/spad.lisp (knownEqualPred): Move to buildom.boot
+	(hashable): Likewise.
+	Remove junk.
+	* interp/debug.lisp: Remove junk.
+	* interp/vmlisp.lisp: Likewise.
+
+2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.in (initdb.$(FASLEXT)): Add --syslib to fix thinko.
 
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
