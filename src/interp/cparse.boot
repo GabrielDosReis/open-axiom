@@ -1104,7 +1104,7 @@ _/RQ_,LIB(:x) ==
 
 
 _/RF_-1 x ==
-  ifile := MAKE_-INPUT_-FILENAME _/EDITFILE
+  ifile := MAKE_-INPUT_-FILENAME $editFile
   lfile := nil
   type := PATHNAME_-TYPE ifile
   type = '"boot" =>

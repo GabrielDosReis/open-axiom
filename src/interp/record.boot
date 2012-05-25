@@ -186,9 +186,9 @@ evaluateLines lines ==
     stringPrefix?('")undo )redo",line) => 'skip
     writeLine(line, file)
   SHUT file
-  _/EDITFILE: local := '"/tmp/temp.input"
+  $editFile: local := '"/tmp/temp.input"
   _/RF()
-    -- can't use _/EDITFILE since it might be reset
+    -- can't use $editFile since it might be reset
   DELETE_-FILE '"/tmp/temp.input"
 
 

@@ -1525,7 +1525,7 @@ incompleteFunctorBody(db,m,body,e) ==
     body is ['SubDomain,dom,pred] => [dom,pred]
     body is ['add,['SubDomain,dom,pred],:.] => [dom,pred]
     nil
-  [bootStrapError(dbConstructorForm db, _/EDITFILE),m,e]
+  [bootStrapError(dbConstructorForm db,$editFile),m,e]
 
 ++ Subroutine of compDefineFunctor1.  Called to generate backend code
 ++ for a functor definition. 
@@ -2150,7 +2150,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
        ['$bootStrapMode, _
            code],_
        ['%otherwise, ['systemError,['%list,'"%b",MKQ $functorForm.op,'"%d",'"from", _
-         '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
+         '"%b",MKQ namestring $editFile,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   db := constructorDB currentConstructor e
   if $addForm is ["SubDomain",domainForm,predicate] then
@@ -2177,7 +2177,7 @@ compTuple2Record u ==
 
 compCapsule(['CAPSULE,:itemList],m,e) ==
   $bootStrapMode =>
-    [bootStrapError($functorForm, _/EDITFILE),m,e]
+    [bootStrapError($functorForm, $editFile),m,e]
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   clearCapsuleFunctionTable()

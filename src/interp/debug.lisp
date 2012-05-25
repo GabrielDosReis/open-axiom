@@ -63,9 +63,9 @@
 (MAKEPROP 'SPAD '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'BOOT '/TERMCHR '(#\:  #\<  #\  #\())
  
-(defmacro |/C,LIB| (&rest L &aux optionlist /editfile
+(defmacro |/C,LIB| (&rest L &aux optionlist |$editFile|
                           ($prettyprint 't) ($reportCompilation 't))
-  (declare (special optionlist /editfile $prettyprint $reportComilation))
+  (declare (special optionlist |$editFile| $prettyprint $reportComilation))
   `',(|compileConstructorLib| L (/COMP) NIL NIL))
  
 (defmacro /C (&rest L) `',(/D-1 L (/COMP) NIL NIL))
@@ -175,8 +175,8 @@
               (cond ( INFILE
                       (SETQ /SOURCEFILES (CONS INFILE (REMOVE INFILE /SOURCEFILES)))
                       (LIST INFILE))
-                    ( /EDITFILE
-                      (|insert| (|pathname| /EDITFILE) /SOURCEFILES))
+                    (|$editFile|
+                      (|insert| (|pathname| |$editFile|) /SOURCEFILES))
                     ( 't /SOURCEFILES)))
         (SETQ RECNO
               (dolist (file sourcefiles)
