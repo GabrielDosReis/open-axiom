@@ -411,8 +411,8 @@ constructor args ==
 
 compiler args ==
     $newConlist: local := nil    --reset by compDefineLisplib and astran
-    null args and null $options and null _/EDITFILE => helpSpad2Cmd '(compiler)
-    if null args then args := [_/EDITFILE]
+    null args and null $options and $editFile = nil => helpSpad2Cmd '(compiler)
+    if null args then args := [$editFile]
 
     -- first see if the user has explicitly specified the compiler
     -- to use.
@@ -448,8 +448,8 @@ compiler args ==
 
     af1 and pathnameType(af1) = '"spad" => compileSpad2Cmd  [af1]
 
-    -- maybe /EDITFILE has some stuff that can help us
-    ef := pathname _/EDITFILE
+    -- maybe $editFile has some stuff that can help us
+    ef := pathname $editFile
     ef := mergePathnames(af,ef)
 
     ef = af => throwKeyedMsg("S2IZ0039", nil)
@@ -520,7 +520,7 @@ compileSpad2Cmd args ==
     pathnameType path ~= '"spad" => throwKeyedMsg("S2IZ0082", nil)
     null PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
 
-    SETQ(_/EDITFILE, path)
+    $editFile := path
     updateSourceFiles path
     sayKeyedMsg("S2IZ0038",[namestring args])
 
@@ -970,7 +970,7 @@ edit l == editSpad2Cmd l
 
 editSpad2Cmd l ==
   l:= 
-    null l => _/EDITFILE
+    null l => $editFile
     first l
   l := pathname STRING l
   oldDir := pathnameDirectory l
@@ -983,7 +983,7 @@ editSpad2Cmd l ==
        oldDir = '"" => pathname $FINDFILE (pathnameName l, fileTypes)
        l
   l := pathname ll
-  SETQ(_/EDITFILE,l)
+  $editFile := l
   rc := editFile l
   updateSourceFiles l
   rc
@@ -1988,7 +1988,7 @@ readSpad2Cmd l ==
     fullopt is 'ifthere => ifthere  := true
     fullopt is 'quiet   => quiet := true
 
-  ef := pathname _/EDITFILE
+  ef := pathname $editFile
   if pathnameTypeId(ef) = 'SPAD then
     ef := makePathname(pathnameName ef,'"*",'"*")
   if l then
@@ -2011,7 +2011,7 @@ readSpad2Cmd l ==
     fs := namestring l
     member(upft,devFTs) => throwKeyedMsg("S2IZ0033",[fs])
     throwKeyedMsg("S2IZ0034",[fs])
-  SETQ(_/EDITFILE,ll)
+  $editFile := ll
   if upft = '"BOOT" then $InteractiveMode := nil
   _/READ(ll,quiet)
 

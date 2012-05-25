@@ -324,7 +324,6 @@ SPADERRORSTREAM := _*ERROR_-OUTPUT_*
 ++
 _/VERSION := 0
 _/WSNAME := "NOBOOT"
-_/EDITFILE := nil
 
 ++
 LINE := nil
@@ -356,6 +355,9 @@ SETQ(_*PRINT_-PRETTY_*, true)
 ++
 INPUT_-LIBRARIES := nil
 OUTPUT_-LIBRARY := nil
+
+++
+$editFile := nil
 
 ++
 $newConlist := nil

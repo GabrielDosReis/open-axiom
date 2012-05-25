@@ -1233,7 +1233,7 @@ docreport(nam) ==
   runCommand '"cat temp1.input docreport.trailer > docreport.input"
   removeFile '"temp.input"
   removeFile '"temp1.input"
-  SETQ(_/EDITFILE,'"docreport.input")
+  $editFile := '"docreport.input"
   _/RQ()
 
 setOutStream nam ==

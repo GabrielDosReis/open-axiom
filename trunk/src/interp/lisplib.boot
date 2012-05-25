@@ -406,7 +406,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
     throwKeyedMsg("S2IL0004",[fun])
-  SETQ(_/EDITFILE,infile)
+  $editFile := infile
   outfile := outfileOrNil or
     [libName,'OUTPUT,$listingDirectory]   --always QUIET
   _$ERASE(libName,'OUTPUT,$listingDirectory)
@@ -427,7 +427,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
   libName := dbAbbreviation db
   if dbSourceFile db = nil then
-    dbSourceFile(db) := namestring _/EDITFILE
+    dbSourceFile(db) := namestring $editFile
   $compileDocumentation => compileDocumentation(op,libName)
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]

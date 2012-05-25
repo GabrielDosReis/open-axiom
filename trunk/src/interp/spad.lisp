@@ -73,9 +73,9 @@
            ($SPAD T)
            (OPTIONLIST nil)
            (*EOF* NIL)
-           (/editfile *spad-input-file*)
+           (|$editFile| *spad-input-file*)
            in-stream out-stream)
-  (declare (special |$Echo| /editfile *comp370-apply* *EOF* Xcape))
+  (declare (special |$Echo| |$editFile| *comp370-apply* *EOF*))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
@@ -134,7 +134,7 @@
   (|spadThrow|))
 
 (defun /READ (L Q)
-  (SETQ /EDITFILE L)
+  (SETQ |$editFile| L)
   (COND
     (Q  (/RQ))
     ('T (/RF)) )
