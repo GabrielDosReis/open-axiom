@@ -62,13 +62,6 @@
 (MAKEPROP 'INPUT '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'SPAD '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'BOOT '/TERMCHR '(#\:  #\<  #\  #\())
-(MAKEPROP 'META '/READFUN 'META\,RULE)
-(MAKEPROP 'INPUT '/READFUN '|New,LEXPR,Interactive|)
-(MAKEPROP 'INPUT '/TRAN '/TRANSPAD)
-(MAKEPROP 'BOOT '/READFUN '|New,LEXPR1|)
-(MAKEPROP 'BOOT '/TRAN '/TRANSNBOOT)
-(MAKEPROP 'SPAD '/READFUN '|New,LEXPR|)
-(MAKEPROP 'SPAD '/TRAN '/TRANSPAD)
  
 (defmacro |/C,LIB| (&rest L &aux optionlist /editfile
                           ($prettyprint 't) ($reportCompilation 't))

@@ -308,6 +308,15 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
   someMatch => lookupInAddChain(op,sig,domain,dollar)
   nil
 
+knownEqualPred dom ==
+  fun := compiledLookup("=",[$Boolean,"$","$"],dom) =>
+    getFunctionReplacement BPINAME first fun
+  nil
+
+hashable dom ==
+  -- FIXME: there should test for OIL opcodes.
+  symbolMember?(knownEqualPred dom,'(EQ EQL EQUAL)) 
+
 --% Record
 --  Want to eventually have the elts and setelts.
 --  Record is a macro in BUILDOM LISP. It takes out the colons.
