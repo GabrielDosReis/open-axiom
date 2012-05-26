@@ -68,9 +68,7 @@
 
 (DEFMACRO |sourceLineNumber| (|bfVar#1|) (LIST '|%SourceLine-num| |bfVar#1|))
 
-(DEFMACRO |makeSourceLine| (|bfVar#2| |bfVar#1|)
-  (|applySubst| (LIST (CONS '|bfVar#2| |bfVar#2|) (CONS '|bfVar#1| |bfVar#1|))
-                '(|mk%SourceLine| |bfVar#2| |bfVar#1|)))
+(DEFMACRO |makeSourceLine| (|s| |n|) (LIST '|mk%SourceLine| |s| |n|))
 
 (DEFUN |lineNo| (|p|) (|sourceLineNumber| (CAAR |p|)))
 

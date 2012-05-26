@@ -916,13 +916,8 @@ bfMDef (op,args,body) ==
   argl :=
     bfTupleP args => rest args
     [args]
-  [gargl,sgargl,nargl,largl]:=bfGargl argl
-  sb := [[i,:j] for i in nargl for j in sgargl]
-  body := applySubst(sb,body)
-  sb2 := [["CONS",quote i,j] for i in sgargl for j in largl]
-  body := ["applySubst",["LIST",:sb2],quote body]
-  lamex:= ["MLAMBDA",gargl,body]
-  def:= [op,lamex]
+  lamex := ["MLAMBDA",argl,backquote(body,argl)]
+  def := [op,lamex]
   [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
  
 bfGargl argl==
@@ -1424,6 +1419,7 @@ backquote(form,params) ==
   params = nil => quote  form
   form isnt [.,:.] =>
     symbolMember?(form,params) => form
+    integer? form or string? form => form
     quote form
   ["LIST",:[backquote(t,params) for t in form]]
 

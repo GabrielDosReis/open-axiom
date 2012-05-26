@@ -1462,86 +1462,30 @@
    (LIST 'LAMBDA |vars| |body|)))
 
 (DEFUN |bfMDef| (|op| |args| |body|)
-  (LET* (|def|
-         |lamex|
-         |sb2|
-         |sb|
-         |largl|
-         |nargl|
-         |sgargl|
-         |gargl|
-         |LETTMP#1|
-         |argl|)
+  (LET* (|def| |lamex| |argl|)
     (DECLARE (SPECIAL |$wheredefs|))
     (PROGN
      (SETQ |argl| (COND ((|bfTupleP| |args|) (CDR |args|)) (T (LIST |args|))))
-     (SETQ |LETTMP#1| (|bfGargl| |argl|))
-     (SETQ |gargl| (CAR |LETTMP#1|))
-     (SETQ |sgargl| (CADR . #1=(|LETTMP#1|)))
-     (SETQ |nargl| (CADDR . #1#))
-     (SETQ |largl| (CADDDR . #1#))
-     (SETQ |sb|
-             (LET ((|bfVar#3| NIL)
-                   (|bfVar#4| NIL)
-                   (|bfVar#1| |nargl|)
-                   (|i| NIL)
-                   (|bfVar#2| |sgargl|)
-                   (|j| NIL))
-               (LOOP
-                (COND
-                 ((OR (NOT (CONSP |bfVar#1|))
-                      (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL)
-                      (NOT (CONSP |bfVar#2|))
-                      (PROGN (SETQ |j| (CAR |bfVar#2|)) NIL))
-                  (RETURN |bfVar#3|))
-                 ((NULL |bfVar#3|)
-                  (SETQ |bfVar#3| #2=(CONS (CONS |i| |j|) NIL))
-                  (SETQ |bfVar#4| |bfVar#3|))
-                 (T (RPLACD |bfVar#4| #2#) (SETQ |bfVar#4| (CDR |bfVar#4|))))
-                (SETQ |bfVar#1| (CDR |bfVar#1|))
-                (SETQ |bfVar#2| (CDR |bfVar#2|)))))
-     (SETQ |body| (|applySubst| |sb| |body|))
-     (SETQ |sb2|
-             (LET ((|bfVar#7| NIL)
-                   (|bfVar#8| NIL)
-                   (|bfVar#5| |sgargl|)
-                   (|i| NIL)
-                   (|bfVar#6| |largl|)
-                   (|j| NIL))
-               (LOOP
-                (COND
-                 ((OR (NOT (CONSP |bfVar#5|))
-                      (PROGN (SETQ |i| (CAR |bfVar#5|)) NIL)
-                      (NOT (CONSP |bfVar#6|))
-                      (PROGN (SETQ |j| (CAR |bfVar#6|)) NIL))
-                  (RETURN |bfVar#7|))
-                 ((NULL |bfVar#7|)
-                  (SETQ |bfVar#7| #3=(CONS (LIST 'CONS (|quote| |i|) |j|) NIL))
-                  (SETQ |bfVar#8| |bfVar#7|))
-                 (T (RPLACD |bfVar#8| #3#) (SETQ |bfVar#8| (CDR |bfVar#8|))))
-                (SETQ |bfVar#5| (CDR |bfVar#5|))
-                (SETQ |bfVar#6| (CDR |bfVar#6|)))))
-     (SETQ |body| (LIST '|applySubst| (CONS 'LIST |sb2|) (|quote| |body|)))
-     (SETQ |lamex| (LIST 'MLAMBDA |gargl| |body|))
+     (SETQ |lamex| (LIST 'MLAMBDA |argl| (|backquote| |body| |argl|)))
      (SETQ |def| (LIST |op| |lamex|))
      (CONS (|shoeComp| |def|)
-           (LET ((|bfVar#10| NIL)
-                 (|bfVar#11| NIL)
-                 (|bfVar#9| |$wheredefs|)
+           (LET ((|bfVar#2| NIL)
+                 (|bfVar#3| NIL)
+                 (|bfVar#1| |$wheredefs|)
                  (|d| NIL))
              (LOOP
               (COND
-               ((OR (NOT (CONSP |bfVar#9|))
-                    (PROGN (SETQ |d| (CAR |bfVar#9|)) NIL))
-                (RETURN |bfVar#10|))
+               ((OR (NOT (CONSP |bfVar#1|))
+                    (PROGN (SETQ |d| (CAR |bfVar#1|)) NIL))
+                (RETURN |bfVar#2|))
                (T
-                (LET ((|bfVar#12| (|copyList| (|shoeComps| (|bfDef1| |d|)))))
-                  (COND ((NULL |bfVar#12|) NIL)
-                        ((NULL |bfVar#10|) (SETQ |bfVar#10| |bfVar#12|)
-                         (SETQ |bfVar#11| (|lastNode| |bfVar#10|)))
-                        (T (RPLACD |bfVar#11| |bfVar#12|)
-                         (SETQ |bfVar#11| (|lastNode| |bfVar#11|)))))))
-              (SETQ |bfVar#9| (CDR |bfVar#9|))))))))
+                (LET ((|bfVar#4| (|copyList| (|shoeComps| (|bfDef1| |d|)))))
+                  (COND ((NULL |bfVar#4|) NIL)
+                        ((NULL |bfVar#2|) (SETQ |bfVar#2| |bfVar#4|)
+                         (SETQ |bfVar#3| (|lastNode| |bfVar#2|)))
+                        (T (RPLACD |bfVar#3| |bfVar#4|)
+                         (SETQ |bfVar#3| (|lastNode| |bfVar#3|)))))))
+              (SETQ |bfVar#1| (CDR |bfVar#1|))))))))
 
 (DEFUN |bfGargl| (|argl|)
   (LET* (|f| |d| |c| |b| |a| |LETTMP#1|)
@@ -2769,6 +2713,7 @@
   (COND ((NULL |params|) (|quote| |form|))
         ((NOT (CONSP |form|))
          (COND ((|symbolMember?| |form| |params|) |form|)
+               ((OR (INTEGERP |form|) (STRINGP |form|)) |form|)
                (T (|quote| |form|))))
         (T
          (CONS 'LIST

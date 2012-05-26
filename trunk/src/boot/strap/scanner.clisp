@@ -34,13 +34,11 @@
 
 (DEFUN |makeLexer| () (|mk%Lexer| NIL NIL))
 
-(DEFMACRO |lexerRefresh?| (|bfVar#1|)
-  (|applySubst| (LIST (CONS '|bfVar#1| |bfVar#1|))
-                '(NULL (|lexerCurrentPosition| |bfVar#1|))))
+(DEFMACRO |lexerRefresh?| (|lex|)
+  (LIST 'NULL (LIST '|lexerCurrentPosition| |lex|)))
 
-(DEFMACRO |lexerLineLength| (|bfVar#1|)
-  (|applySubst| (LIST (CONS '|bfVar#1| |bfVar#1|))
-                '(LENGTH (|lexerLineString| |bfVar#1|))))
+(DEFMACRO |lexerLineLength| (|lex|)
+  (LIST 'LENGTH (LIST '|lexerLineString| |lex|)))
 
 (DEFUN |lexerSetLine!| (|lex| |line|)
   (PROGN
@@ -63,14 +61,12 @@
 (DEFUN |lexerCharCountToCompleteTab| (|lex|)
   (- 7 (REM (|lexerCurrentPosition| |lex|) 8)))
 
-(DEFMACRO |lexerCurrentChar| (|bfVar#1|)
-  (|applySubst| (LIST (CONS '|bfVar#1| |bfVar#1|))
-                '(SCHAR (|lexerLineString| |bfVar#1|)
-                        (|lexerCurrentPosition| |bfVar#1|))))
+(DEFMACRO |lexerCurrentChar| (|lex|)
+  (LIST 'SCHAR (LIST '|lexerLineString| |lex|)
+        (LIST '|lexerCurrentPosition| |lex|)))
 
-(DEFMACRO |lexerCharacterAt| (|bfVar#2| |bfVar#1|)
-  (|applySubst| (LIST (CONS '|bfVar#2| |bfVar#2|) (CONS '|bfVar#1| |bfVar#1|))
-                '(SCHAR (|lexerLineString| |bfVar#2|) |bfVar#1|)))
+(DEFMACRO |lexerCharacterAt| (|lex| |k|)
+  (LIST 'SCHAR (LIST '|lexerLineString| |lex|) |k|))
 
 (DEFUN |lexerCharPosition| (|lex| |c|)
   (OR
