@@ -287,7 +287,9 @@ for i in [ _
   ["float?",   "FLOATP"] , _
   ["flushOutput", "FORCE-OUTPUT"], _
   ["fourth",    "CADDDR"]  , _
+  ["freshLine", "FRESH-LINE" ], _
   ["function?","FUNCTIONP"] , _
+  ["functionSymbol?", "FBOUNDP"] , _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
   ["integer?","INTEGERP"]  , _
@@ -326,6 +328,7 @@ for i in [ _
   ["symbolScope", "SYMBOL-PACKAGE"] , _
   ["symbolEq?", "EQ"], _
   ["symbolFunction", "SYMBOL-FUNCTION"], _
+  ["symbolGlobal?", "BOUNDP"], _
   ["symbolName", "SYMBOL-NAME"], _
   ["symbolValue", "SYMBOL-VALUE"], _
   ["symbol?",  "SYMBOLP"]  , _

@@ -113,7 +113,7 @@ macrop f ==
 ++ returns true if `f' is bound to a function
 functionp: %Thing -> %Boolean
 functionp f ==
-  ident? f => FBOUNDP f and null MACRO_-FUNCTION f
+  ident? f => functionSymbol? f and null MACRO_-FUNCTION f
   function? f
 
 ++ returns true if `x' is contained in `y'.

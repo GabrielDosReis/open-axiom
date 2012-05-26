@@ -1050,9 +1050,9 @@ shoeATOMs x ==
 isDynamicVariable x ==
   symbol? x and bfBeginsDollar x =>
     symbolMember?(x,$constantIdentifiers) => false
-    CONSTANTP x => false
-    BOUNDP x or $activeNamespace = nil => true
-    y := symbolBinding(symbolName x,$activeNamespace) => not CONSTANTP y
+    readOnly? x => false
+    symbolGlobal? x or $activeNamespace = nil => true
+    y := symbolBinding(symbolName x,$activeNamespace) => not readOnly? y
     true
   false
  

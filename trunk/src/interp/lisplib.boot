@@ -358,7 +358,7 @@ makeConstructorsAutoLoad() ==
     systemDependentMkAutoload(getConstructorAbbreviationFromDB cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
-    FBOUNDP cnam => "next"
+    functionSymbol? cnam => "next"
     symbolFunction(cnam) := mkAutoLoad cnam
 
 mkAutoLoad ctor ==
@@ -444,7 +444,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
   RPACKFILE filearg
-  FRESH_-LINE $algebraOutputStream
+  freshLine $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor op
   $buildingSystemAlgebra => res

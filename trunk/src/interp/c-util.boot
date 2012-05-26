@@ -1743,7 +1743,7 @@ backendCompile1 x ==
   backendCompileNEWNAM lamex
   -- Note that category constructors are evaluated before they
   -- their compiled, so this noise is not very helpful.
-  if $verbose and FBOUNDP fname then
+  if $verbose and functionSymbol? fname then
     formatToStdout('"~&~%;;;     ***       ~S REDEFINED~%",fname)
   [[fname,lamex],:$CLOSEDFNS]
 

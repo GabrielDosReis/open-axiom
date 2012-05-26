@@ -1,3 +1,19 @@
+2012-05-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: freshLine, functionSymbol?, and symbolGlobal?
+	are now builin.
+	* boot/ast.boot: Tidy.
+	* interp/c-util.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/sys-utility.boot: Likewise.
+	* interp/sys-driver.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/lisp-backend.boot: Likewise.
+
 2012-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-globals.boot ($compCount): Remove.

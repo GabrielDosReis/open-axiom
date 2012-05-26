@@ -546,7 +546,7 @@ traceDomainConstructor(domainConstructor,options) ==
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
   innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
-  if FBOUNDP innerDomainConstructor then domainConstructor := innerDomainConstructor
+  if functionSymbol? innerDomainConstructor then domainConstructor := innerDomainConstructor
   EMBED(domainConstructor,
     ['LAMBDA, ['_&REST, 'args],
       ['PROG, ['domain],
@@ -566,7 +566,7 @@ untraceDomainConstructor domainConstructor ==
         true
   untraceAllDomainLocalOps domainConstructor
   innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
-  if FBOUNDP innerDomainConstructor then UNEMBED innerDomainConstructor
+  if functionSymbol? innerDomainConstructor then UNEMBED innerDomainConstructor
     else UNEMBED domainConstructor
   SETQ(_/TRACENAMES,removeSymbol(_/TRACENAMES,domainConstructor))
 

@@ -147,7 +147,7 @@ clearConstructorAndLisplibCaches() ==
 clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
-      if BOUNDP(cacheName:= mkCacheName name)
+      if symbolGlobal?(cacheName:= mkCacheName name)
             then symbolValue(cacheName) := nil
       db := constructorDB name =>
         dbTemplate(db) := nil

@@ -1880,7 +1880,7 @@ dewritify ob ==
                 type is 'SPADCLOSURE =>
                     vec := dewritifyInner ob.2
                     name := ob.3
-                    not FBOUNDP name => 
+                    not functionSymbol? name => 
                        error strconc('"undefined function: ", symbolName name)
                     nob := [symbolFunction name,:vec]
                     tableValue($seen, ob) := nob
