@@ -552,7 +552,7 @@ print(x,domain) ==
 outputAsgardForm(x,t) ==
   f := ['%OBJECT,x,devaluate t]
   WRITE(f,KEYWORD::STREAM,$algebraOutputStream)
-  FRESH_-LINE $algebraOutputStream
+  freshLine $algebraOutputStream
 
 mathprintWithNumber(x,t) ==
   x:= outputTran x

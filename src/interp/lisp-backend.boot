@@ -832,7 +832,7 @@ printBackendDecl(label,decl) ==
   st :=
     sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,OPTIONLIST) => rest sp
     $OutputStream
-  if label ~= nil and ioTerminal? st and FBOUNDP label
+  if label ~= nil and ioTerminal? st and functionSymbol? label
     and not COMPILED_-FUNCTION_-P symbolFunction label then
       COMPILE label
   if $PrettyPrint or not ioTerminal? st then
