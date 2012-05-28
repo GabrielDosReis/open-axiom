@@ -56,15 +56,6 @@ anySubstring?(part,whole,startpos) ==
   or/[((k := i) and "and"/[CHAR_-EQUAL(part.ip,whole.iw)
        for ip in 0..np - 1 for iw in i..]) for i in startpos..nw - np] => k
 
-charPosition(c,t,startpos) ==
-  n := # t
-  startpos < 0 or startpos > n => n
-  k:= startpos
-  for i in startpos .. n-1 repeat
-    c = t.i => return nil
-    k := k+1
-  k
-
 rightCharPosition(c,t,startpos) == --startpos often equals maxIndex t (rightmost)
   k := startpos
   for i in startpos..0 by -1 while c ~= stringChar(t,i) repeat (k := k - 1)

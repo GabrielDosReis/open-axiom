@@ -49,7 +49,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
   remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
-  copyTree, finishLine, stringSuffix?) where
+  copyTree, finishLine, stringSuffix?, findChar, charPosition) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -339,12 +339,19 @@ remove(l,x) ==
 
 --% search
 
+++ Return the index of the first match of character `c' in string `s'
+++ starting from `k', if any.  Otherwise return nil.
+findChar(c,s,k == 0) ==
+  or/[i for i in k..maxIndex s | stringChar(s,i) = c]
+
 ++ Return the index of the character `c' in the string `s', if present.
-++ Otherwise, return nil.
+++ Otherwise return the one-past-the-end index of `s' or k, whichever
+++ is greater.
 charPosition(c,s,k) ==
   n := # s
+  k < 0 => n
   repeat
-    k >= n => return nil
+    k >= n => return k
     stringChar(s,k) = c => return k
     k := k + 1
 

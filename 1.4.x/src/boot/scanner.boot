@@ -115,7 +115,6 @@ macro lexerCharacterAt(lex,k) ==
 ++ Return the position of next character `c', or end of line.
 lexerCharPosition(lex,c) ==
   charPosition(c,lexerLineString lex,lexerCurrentPosition lex)
-    or lexerLineLength lex
 
 ++ Return true if the current position is at end of line.
 lexerEol? lex ==
@@ -179,7 +178,7 @@ shoeAccumulateLines(lex,s,string)==
     command and #command > 0 =>
       stringChar(command,0) = char ";" =>
 		  shoeAccumulateLines(lex,$r,string)
-      a := charPosition(char ";",command,0) =>
+      a := findChar(char ";",command) =>
 	shoeAccumulateLines(lex,$r,
 	   strconc(string,subString(command,0,a-1)))
       shoeAccumulateLines(lex,$r,strconc(string,command))

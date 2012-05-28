@@ -22,7 +22,7 @@
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
                      |objectAssoc| |remove| |removeSymbol| |atomic?| |every?|
                      |any?| |take| |takeWhile| |drop| |copyTree| |finishLine|
-                     |stringSuffix?|)))
+                     |stringSuffix?| |findChar| |charPosition|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -429,14 +429,27 @@
         ((OR (CHARACTERP |x|) (INTEGERP |x|)) (|removeScalar| |l| |x|))
         (T (|removeValue| |l| |x|))))
 
+(DEFUN |findChar| (|c| |s| &OPTIONAL (|k| 0))
+  (LET ((|bfVar#2| NIL) (|bfVar#1| (|maxIndex| |s|)) (|i| |k|))
+    (LOOP
+     (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
+           (T
+            (AND (CHAR= (SCHAR |s| |i|) |c|)
+                 (PROGN
+                  (SETQ |bfVar#2| |i|)
+                  (COND (|bfVar#2| (RETURN |bfVar#2|)))))))
+     (SETQ |i| (+ |i| 1)))))
+
 (DEFUN |charPosition| (|c| |s| |k|)
   (LET* (|n|)
     (PROGN
      (SETQ |n| (LENGTH |s|))
-     (LOOP
-      (COND ((NOT (< |k| |n|)) (RETURN NIL))
-            ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
-            (T (SETQ |k| (+ |k| 1))))))))
+     (COND ((MINUSP |k|) |n|)
+           (T
+            (LOOP
+             (COND ((NOT (< |k| |n|)) (RETURN |k|))
+                   ((CHAR= (SCHAR |s| |k|) |c|) (RETURN |k|))
+                   (T (SETQ |k| (+ |k| 1))))))))))
 
 (DEFUN |firstNonblankPosition| (|s| |k|)
   (LET ((|bfVar#2| NIL) (|bfVar#1| (- (LENGTH |s|) 1)) (|i| |k|))
