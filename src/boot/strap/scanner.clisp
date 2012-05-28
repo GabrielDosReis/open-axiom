@@ -69,10 +69,7 @@
   (LIST 'SCHAR (LIST '|lexerLineString| |lex|) |k|))
 
 (DEFUN |lexerCharPosition| (|lex| |c|)
-  (OR
-   (|charPosition| |c| (|lexerLineString| |lex|)
-                   (|lexerCurrentPosition| |lex|))
-   (|lexerLineLength| |lex|)))
+  (|charPosition| |c| (|lexerLineString| |lex|) (|lexerCurrentPosition| |lex|)))
 
 (DEFUN |lexerEol?| (|lex|)
   (NOT (< (|lexerCurrentPosition| |lex|) (|lexerLineLength| |lex|))))
@@ -164,7 +161,7 @@
              (COND
               ((CHAR= (SCHAR |command| 0) (|char| '|;|))
                (|shoeAccumulateLines| |lex| |$r| |string|))
-              ((SETQ |a| (|charPosition| (|char| '|;|) |command| 0))
+              ((SETQ |a| (|findChar| (|char| '|;|) |command|))
                (|shoeAccumulateLines| |lex| |$r|
                                       (CONCAT |string|
                                               (|subString| |command| 0
