@@ -180,12 +180,6 @@ $nextToken := makeToken()
 ++ Number of token in the buffer (0, 1, 2)
 $validTokens := 0
 
-tokenInstall(sym,typ,tok,nonblank == true) ==
-  tokenSymbol(tok) := sym
-  tokenType(tok) := typ
-  tokenNonblank?(tok) := nonblank
-  tok
-
 ++ Subroutine of getSpadIntegerToken.
 ++ Read a the characters of a decimal integer and returns its value.
 getDecimalNumberToken buf ==
@@ -217,16 +211,16 @@ radixSuffix? c ==
 ++ format, where the radix is implicitly taken to be 10.  Or the spelling
 ++ can explicitly specify a radix.  That radix can be anything
 ++ in the range 2..36
-getSpadIntegerToken tok ==
+getSpadIntegerToken() ==
   buf := MAKE_-ADJUSTABLE_-STRING 0
   val := getDecimalNumberToken buf
   advanceChar!()
   if radixSuffix? currentChar() then
     val := getIntegerInRadix(buf,val)
     advanceChar!()
-  tokenInstall(val,'NUMBER,tok,#buf)
+  makeToken(val,'NUMBER,#buf)
 
-getNumberToken tok ==
+getNumberToken() ==
   buf := nil
   repeat
     buf := [currentChar(),:buf]
@@ -234,30 +228,30 @@ getNumberToken tok ==
     leave nil
   advanceChar!()
   sz := #buf  -- keep track of digit count
-  tokenInstall(readIntegerIfCan listToString reverse! buf,'NUMBER,tok,sz)
+  makeToken(readIntegerIfCan listToString reverse! buf,'NUMBER,sz)
 
-getArgumentDesignator tok ==
+getArgumentDesignator() ==
   advanceChar!()
-  getNumberToken tok
-  tokenInstall(makeSymbol strconc('"#",formatToString('"~D",tokenSymbol tok)),
-     'ARGUMENT_-DESIGNATOR,tok,$nonblank)
+  tok := getNumberToken()
+  makeToken(makeSymbol strconc('"#",formatToString('"~D",tokenSymbol tok)),
+     'ARGUMENT_-DESIGNATOR,$nonblank)
 
-getToken tok ==
+getToken() ==
   not skipBlankChars() => nil
   tt := tokenLookaheadType currentChar()
-  tt is 'EOF => tokenInstall(nil,'_*EOF,tok,$nonblank)
+  tt is 'EOF => makeToken(nil,'_*EOF,$nonblank)
   tt is 'ESCAPE =>
     advanceChar!()
-    getIdentifier(tok,true)
-  tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator tok
-  tt is 'ID => getIdentifier(tok,false)
-  tt is 'NUM => getSpadIntegerToken tok
-  tt is 'STRING => getSpadString tok
-  tt is 'SPECIAL_-CHAR => getSpecial tok
-  getGliph(tok,tt)
+    getIdentifier(true)
+  tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator()
+  tt is 'ID => getIdentifier(false)
+  tt is 'NUM => getSpadIntegerToken()
+  tt is 'STRING => getSpadString()
+  tt is 'SPECIAL_-CHAR => getSpecial()
+  getGliph(tt)
 
-tryGetToken tok ==
-  getToken tok =>
+tryGetToken() ==
+  tok := getToken() =>
    $validTokens := $validTokens + 1
    tok
   nil
@@ -265,13 +259,13 @@ tryGetToken tok ==
 ++ Returns the current token or gets a new one if necessary
 currentToken() ==
   $validTokens > 0 => $currentToken
-  tryGetToken $currentToken
+  $currentToken := tryGetToken()
 
 ++ Returns the token after the current token, or nil if there is none after
 nextToken() ==
   currentToken()
   $validTokens > 1 => $nextToken
-  tryGetToken $nextToken
+  $nextToken := tryGetToken()
 
 matchToken(tok,typ,sym == nil) ==
   tok ~= nil and symbolEq?(tokenType tok,typ) and
@@ -290,11 +284,11 @@ matchNextToken(typ,sym == nil) ==
 
 ++ Makes the next token be the current token.
 advanceToken() ==
-  $validTokens = 0 => tryGetToken $currentToken
+  $validTokens = 0 => $currentToken := tryGetToken()
   $validTokens = 1 =>
     $validTokens := $validTokens - 1
     $priorToken := copyToken $currentToken
-    tryGetToken $currentToken
+    $currentToken := tryGetToken()
   $validTokens = 2 =>
     $priorToken := copyToken $currentToken
     $currentToken := copyToken $nextToken
@@ -312,9 +306,9 @@ currentSymbol() ==
 
 tokenStackClear!() ==
   $validTokens := 0
-  tokenInstall(nil,nil,$currentToken,nil)
-  tokenInstall(nil,nil,$nextToken,nil)
-  tokenInstall(nil,nil,$priorToken,nil)
+  $currentToken := makeToken(nil,nil,nil)
+  $nextToken := makeToken(nil,nil,nil)
+  $priorToken := makeToken(nil,nil,nil)
 
 ++ Predicts the kind of token to follow, based on the given initial character
 tokenLookaheadType c ==
@@ -338,7 +332,7 @@ skipBlankChars() ==
       advanceChar!() = nil => return false
     return true
 
-getSpadString tok ==
+getSpadString() ==
   buf := nil
   currentChar() ~= char "_"" => nil
   advanceChar!()
@@ -349,17 +343,17 @@ getSpadString tok ==
       sayBrightly '"close quote inserted"
       leave nil
   advanceChar!()
-  tokenInstall(listToString reverse! buf,'SPADSTRING,tok)
+  makeToken(listToString reverse! buf,'SPADSTRING)
 
 ++ Take a special character off the input stream.  We let the type name
 ++ of each special character be the atom whose print name is the
 ++ character itself
-getSpecial tok ==
+getSpecial() ==
   c := currentChar()
   advanceChar!()
-  tokenInstall(c,'SPECIAL_-CHAR,tok)
+  makeToken(c,'SPECIAL_-CHAR)
 
-getGliph(tok,gliphs) ==
+getGliph(gliphs) ==
   buf := [currentChar()]
   advanceChar!()
   repeat
@@ -368,7 +362,7 @@ getGliph(tok,gliphs) ==
       gliphs := rest gliphs
       advanceChar!()
     s := makeSymbol listToString reverse! buf
-    return tokenInstall(s,'GLIPH,tok,$nonblank)
+    return makeToken(s,'GLIPH,$nonblank)
 
 Keywords == [
  "or", "and", "isnt", "is", "where", "forall", "exist", "try", "assume",
@@ -377,7 +371,7 @@ Keywords == [
     "if", "iterate", "break", "from", "exit", "leave", "return",
      "not", "repeat", "until", "while", "for", "import", "inline" ]
 
-getIdentifier(tok,esc?) ==
+getIdentifier(esc?) ==
   buf := [currentChar()]
   advanceChar!()
   repeat 
@@ -396,7 +390,7 @@ getIdentifier(tok,esc?) ==
   tt :=
     not esc? and symbolMember?(s,Keywords) => 'KEYWORD
     'IDENTIFIER
-  tokenInstall(s,tt,tok,$nonblank)
+  makeToken(s,tt,$nonblank)
 
 escapeKeywords: (%String,%Symbol) -> %String
 escapeKeywords(nm,id) ==

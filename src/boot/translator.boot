@@ -691,12 +691,12 @@ PSTTOMC string==
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
-  a := readLine _*STANDARD_-INPUT_*
+  a := readLine $stdin
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTLOOP()
   shoePrefix? ('")console",a) =>
-    stream:= _*TERMINAL_-IO_*
+    stream := $stdio
     PSTTOMC bRgen stream
     BOOTLOOP()
   stringChar(a,0) = char "]" => nil
@@ -704,12 +704,12 @@ BOOTLOOP() ==
   BOOTLOOP()
  
 BOOTPO() ==
-  a := readLine _*STANDARD_-INPUT_*
+  a := readLine $stdin
   #a=0=>
     writeLine '"Boot Loop; to exit type ] "
     BOOTPO()
   shoePrefix? ('")console",a) =>
-    stream:= _*TERMINAL_-IO_*
+    stream := $stdio
     PSTOUT bRgen stream
     BOOTPO()
   stringChar(a,0) = char "]" => nil
