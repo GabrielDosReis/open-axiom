@@ -99,6 +99,7 @@
 	   ;; IO
 	   "$stdin"
 	   "$stdout"
+	   "$stdio"
 	   "$InputStream"
 	   "$OutputStream"
 	   "$ErrorStream"
@@ -531,6 +532,7 @@
 
 (defparameter |$stdout| *standard-output*)
 (defparameter |$stdin| *standard-input*)
+(defparameter |$stdio| *terminal-io*)
 
 (defparameter |$InputStream| (make-synonym-stream '*standard-input*))
 (defparameter |$OutputStream| (make-synonym-stream '*standard-output*))

@@ -49,7 +49,8 @@ module utility (objectMember?, symbolMember?, stringMember?,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
   remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
-  copyTree, finishLine, stringSuffix?, findChar, charPosition) where
+  copyTree, finishLine, stringPrefix?, stringSuffix?,
+  findChar, charPosition) where
     substitute: (%Thing,%Thing,%Thing) -> %Thing
     substitute!: (%Thing,%Thing,%Thing) -> %Thing
     append: (%List %Thing,%List %Thing) -> %List %Thing
@@ -75,6 +76,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     -- firstNonblankPosition: (%String,%Short) -> %Maybe %Short
     firstBlankPosition: (%String,%Short) -> %Maybe %Short
     stringSuffix?: (%String,%String) -> %Maybe %Short
+    stringPrefix?: (%String,%String) -> %Maybe %Short
 
 %defaultReadAndLoadSettings()
 
@@ -369,6 +371,15 @@ stringSuffix?(suf,str) ==
   n1 > n2 => nil
   n := n2 - n1
   and/[stringChar(suf,i) = stringChar(str,j) for i in 0..n1-1 for j in n..] => n
+  nil
+
+++ If the string `s1' is a prefix of `s2', return its length which is
+++ also the one-past-the-last index into of the last character in `s2';
+++ otherise return nil.
+stringPrefix?(s1,s2) ==
+  n1 := #s1
+  n1 > #s2 => nil
+  and/[s1.i = s2.i for i in 0..(n1-1)] => n1
   nil
 
 --% I/O

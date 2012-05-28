@@ -79,7 +79,7 @@ shoeReadLispString(s,n) ==
 
 -- write LINE to standard terminal I/O.
 shoeConsole line ==
-  writeLine(line, _*TERMINAL_-IO_*)
+  writeLine(line,$stdio)
  
 shoeSpaces n  ==  
   makeString(n,char ".")
