@@ -354,8 +354,9 @@ shoeConsoleTrees s ==
 shoeAddComment l==  
   strconc('"; ", first l)
 
-shoeOutParse stream ==
-  $inputStream := stream
+shoeOutParse toks ==
+  $inputStream := toks
+  ps := makeParserState toks
   $stack := []
   $stok := nil
   $ttok := nil
@@ -367,7 +368,7 @@ shoeOutParse stream ==
   $bpParenCount := 0
   bpFirstTok()
   found :=
-    try bpOutItem()
+    try bpOutItem ps
     catch(e: BootParserException) => e
   found = 'TRAPPED => nil
   not bStreamNull $inputStream =>

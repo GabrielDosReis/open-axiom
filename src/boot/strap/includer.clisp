@@ -20,7 +20,9 @@
             (READ-FROM-STRING
              (CONCAT "(" (|subString| |s| |n| (- |l| |n|)) ")")))))))
 
-(DEFUN |shoeConsole| (|line|) (WRITE-LINE |line| *TERMINAL-IO*))
+(DEFUN |shoeConsole| (|line|)
+  (DECLARE (SPECIAL |$stdio|))
+  (WRITE-LINE |line| |$stdio|))
 
 (DEFUN |shoeSpaces| (|n|) (|makeString| |n| (|char| '|.|)))
 
