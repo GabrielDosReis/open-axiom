@@ -431,13 +431,14 @@
 
 (DEFUN |shoeAddComment| (|l|) (CONCAT "; " (CAR |l|)))
 
-(DEFUN |shoeOutParse| (|stream|)
-  (LET* (|found|)
+(DEFUN |shoeOutParse| (|toks|)
+  (LET* (|found| |ps|)
     (DECLARE
      (SPECIAL |$bpParenCount| |$bpCount| |$returns| |$typings| |$wheredefs|
       |$op| |$ttok| |$stok| |$stack| |$inputStream|))
     (PROGN
-     (SETQ |$inputStream| |stream|)
+     (SETQ |$inputStream| |toks|)
+     (SETQ |ps| (|makeParserState| |toks|))
      (SETQ |$stack| NIL)
      (SETQ |$stok| NIL)
      (SETQ |$ttok| NIL)
@@ -449,7 +450,8 @@
      (SETQ |$bpParenCount| 0)
      (|bpFirstTok|)
      (SETQ |found|
-             (LET ((#1=#:G729 (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
+             (LET ((#1=#:G729
+                    (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem| |ps|))))
                (COND
                 ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
                  (COND
@@ -1196,23 +1198,25 @@
 
 (DEFUN BOOTLOOP ()
   (LET* (|stream| |a|)
+    (DECLARE (SPECIAL |$stdio| |$stdin|))
     (PROGN
-     (SETQ |a| (|readLine| *STANDARD-INPUT*))
+     (SETQ |a| (|readLine| |$stdin|))
      (COND
       ((EQL (LENGTH |a|) 0) (WRITE-LINE "Boot Loop; to exit type ] ")
        (BOOTLOOP))
-      ((|shoePrefix?| ")console" |a|) (SETQ |stream| *TERMINAL-IO*)
+      ((|shoePrefix?| ")console" |a|) (SETQ |stream| |$stdio|)
        (PSTTOMC (|bRgen| |stream|)) (BOOTLOOP))
       ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
       (T (PSTTOMC (LIST |a|)) (BOOTLOOP))))))
 
 (DEFUN BOOTPO ()
   (LET* (|stream| |a|)
+    (DECLARE (SPECIAL |$stdio| |$stdin|))
     (PROGN
-     (SETQ |a| (|readLine| *STANDARD-INPUT*))
+     (SETQ |a| (|readLine| |$stdin|))
      (COND
       ((EQL (LENGTH |a|) 0) (WRITE-LINE "Boot Loop; to exit type ] ") (BOOTPO))
-      ((|shoePrefix?| ")console" |a|) (SETQ |stream| *TERMINAL-IO*)
+      ((|shoePrefix?| ")console" |a|) (SETQ |stream| |$stdio|)
        (PSTOUT (|bRgen| |stream|)) (BOOTPO))
       ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
       (T (PSTOUT (LIST |a|)) (BOOTPO))))))

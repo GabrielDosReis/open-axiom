@@ -1,3 +1,13 @@
+2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (%ParserState): New.
+	(makeParserState): Likewise.
+	(%Translator): Likewise.
+	(makeTranslator): Likewise.
+	Make all parsing functions take a parser state argument.
+	* boot/translator.boot (shoeOutParse): Adjust.
+	* interp/spad-parser.boot (stringPrefix?): Remove redudant definition.
+
 2012-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lexing.boot: Use makeToken directly.

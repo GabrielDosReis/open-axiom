@@ -22,7 +22,8 @@
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
                      |objectAssoc| |remove| |removeSymbol| |atomic?| |every?|
                      |any?| |take| |takeWhile| |drop| |copyTree| |finishLine|
-                     |stringSuffix?| |findChar| |charPosition|)))
+                     |stringPrefix?| |stringSuffix?| |findChar|
+                     |charPosition|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -105,6 +106,9 @@
 
 (DECLAIM
  (FTYPE (FUNCTION (|%String| |%String|) (|%Maybe| |%Short|)) |stringSuffix?|))
+
+(DECLAIM
+ (FTYPE (FUNCTION (|%String| |%String|) (|%Maybe| |%Short|)) |stringPrefix?|))
 
 (|%defaultReadAndLoadSettings|)
 
@@ -492,6 +496,20 @@
                  (SETQ |j| (+ |j| 1))))
               |n|)
              (T NIL)))))))
+
+(DEFUN |stringPrefix?| (|s1| |s2|)
+  (LET* (|n1|)
+    (PROGN
+     (SETQ |n1| (LENGTH |s1|))
+     (COND ((< (LENGTH |s2|) |n1|) NIL)
+           ((LET ((|bfVar#2| T) (|bfVar#1| (- |n1| 1)) (|i| 0))
+              (LOOP
+               (COND ((> |i| |bfVar#1|) (RETURN |bfVar#2|))
+                     (T (SETQ |bfVar#2| (EQUAL (ELT |s1| |i|) (ELT |s2| |i|)))
+                      (COND ((NOT |bfVar#2|) (RETURN NIL)))))
+               (SETQ |i| (+ |i| 1))))
+            |n1|)
+           (T NIL)))))
 
 (DEFUN |finishLine| (|out|) (PROGN (TERPRI |out|) (FORCE-OUTPUT |out|)))
 
