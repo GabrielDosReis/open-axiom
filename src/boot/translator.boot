@@ -355,7 +355,6 @@ shoeAddComment l==
   strconc('"; ", first l)
 
 shoeOutParse toks ==
-  $inputStream := toks
   ps := makeParserState toks
   $stack := []
   $stok := nil
@@ -366,12 +365,12 @@ shoeOutParse toks ==
   $returns := []
   $bpCount := 0
   $bpParenCount := 0
-  bpFirstTok()
+  bpFirstTok ps
   found :=
     try bpOutItem ps
     catch(e: BootParserException) => e
   found = 'TRAPPED => nil
-  not bStreamNull $inputStream =>
+  not bStreamNull parserTokens ps =>
     bpGeneralErrorHere()
     nil
   $stack = nil =>

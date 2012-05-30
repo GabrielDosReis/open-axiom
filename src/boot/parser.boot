@@ -78,48 +78,48 @@ makeTranslator ip ==
 --%
 
 
-bpFirstToken()==
+bpFirstToken ps ==
   $stok:=
-    $inputStream = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
-    first $inputStream
+    parserTokens ps = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
+    first parserTokens ps
   $ttok := tokenValue $stok
   true
  
-bpFirstTok()==
+bpFirstTok ps ==
   $stok:=
-    $inputStream = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
-    first $inputStream
+    parserTokens ps = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
+    first parserTokens ps
   $ttok := tokenValue $stok
   $bpParenCount > 0 and tokenClass $stok = "KEY" =>
     $ttok is "SETTAB" =>
       $bpCount:=$bpCount+1
-      bpNext()
+      bpNext ps
     $ttok is "BACKTAB" =>
       $bpCount:=$bpCount-1
-      bpNext()
+      bpNext ps
     $ttok is "BACKSET" =>
-      bpNext()
+      bpNext ps
     true
   true
  
-bpNext() ==
-  $inputStream := rest($inputStream)
-  bpFirstTok()
+bpNext ps ==
+  parserTokens(ps) := rest parserTokens ps
+  bpFirstTok ps
  
-bpNextToken() ==
-  $inputStream := rest($inputStream)
-  bpFirstToken()
+bpNextToken ps ==
+  parserTokens(ps) := rest parserTokens ps
+  bpFirstToken ps
  
 bpRequire(ps,f) ==
   apply(f,ps,nil) or bpTrap()
 
-bpState() ==
-  [$inputStream,$stack,$bpParenCount,$bpCount]
+bpState ps ==
+  [parserTokens ps,$stack,$bpParenCount,$bpCount]
 
  
-bpRestore(x)==
-  $inputStream:=first x
-  bpFirstToken()
+bpRestore(ps,x)==
+  parserTokens(ps) := first x
+  bpFirstToken ps
   $stack:=second x
   $bpParenCount:=third x
   $bpCount:=CADDDR x
@@ -131,17 +131,17 @@ bpPush(ps,x) ==
 bpPushId ps ==
   $stack:= [bfReName $ttok,:$stack]
  
-bpPop1()==
+bpPop1 ps ==
   a:=first $stack
   $stack:=rest $stack
   a
  
-bpPop2()==
+bpPop2 ps ==
   a:=second $stack
   $stack.rest := CDDR $stack
   a
  
-bpPop3()==
+bpPop3 ps ==
   a:=third $stack
   $stack.rest.rest := CDDDR $stack
   a
@@ -151,31 +151,31 @@ bpIndentParenthesized(ps,f) ==
   a:=$stok
   bpEqPeek "OPAREN" =>
     $bpParenCount:=$bpParenCount+1
-    bpNext()
-    apply(f,ps,nil) and bpFirstTok() and
+    bpNext ps
+    apply(f,ps,nil) and bpFirstTok ps and
 	    (bpEqPeek "CPAREN" or bpParenTrap(a)) =>
       $bpParenCount:=$bpParenCount-1
-      bpNextToken()
+      bpNextToken ps
       $bpCount=0 => true
-      $inputStream:=append( bpAddTokens $bpCount,$inputStream)
-      bpFirstToken()
+      parserTokens(ps) := append(bpAddTokens $bpCount,parserTokens ps)
+      bpFirstToken ps
       $bpParenCount=0 =>
-	bpCancel()
+	bpCancel ps
 	true
       true
     bpEqPeek "CPAREN" =>
       bpPush(ps,bfTuple [])
       $bpParenCount:=$bpParenCount-1
-      bpNextToken()
+      bpNextToken ps
       true
     bpParenTrap(a)
   false
  
 bpParenthesized(ps,f) ==
   a := $stok
-  bpEqKey "OPAREN" =>
-    apply(f,ps,nil) and (bpEqKey "CPAREN" or bpParenTrap(a)) => true
-    bpEqKey "CPAREN" =>
+  bpEqKey(ps,"OPAREN") =>
+    apply(f,ps,nil) and (bpEqKey(ps,"CPAREN") or bpParenTrap(a)) => true
+    bpEqKey(ps,"CPAREN") =>
       bpPush(ps,bfTuple [])
       true
     bpParenTrap(a)
@@ -183,29 +183,29 @@ bpParenthesized(ps,f) ==
  
 bpBracket(ps,f) ==
   a := $stok
-  bpEqKey "OBRACK" =>
-    apply(f,ps,nil) and (bpEqKey "CBRACK" or bpBrackTrap(a)) =>
-      bpPush(ps,bfBracket bpPop1())
-    bpEqKey "CBRACK" => bpPush(ps,[])
+  bpEqKey(ps,"OBRACK") =>
+    apply(f,ps,nil) and (bpEqKey(ps,"CBRACK") or bpBrackTrap(a)) =>
+      bpPush(ps,bfBracket bpPop1 ps)
+    bpEqKey(ps,"CBRACK") => bpPush(ps,[])
     bpBrackTrap(a)
   false
  
 bpPileBracketed(ps,f) ==
-  bpEqKey "SETTAB" => 
-    bpEqKey "BACKTAB" => true
-    apply(f,ps,nil) and (bpEqKey "BACKTAB" or bpPileTrap()) =>
-      bpPush(ps,bfPile bpPop1())
+  bpEqKey(ps,"SETTAB") => 
+    bpEqKey(ps,"BACKTAB") => true
+    apply(f,ps,nil) and (bpEqKey(ps,"BACKTAB") or bpPileTrap()) =>
+      bpPush(ps,bfPile bpPop1 ps)
     false
   false
  
 bpListof(ps,f,str1,g)==
   apply(f,ps,nil) =>
-    bpEqKey str1 and bpRequire(ps,f) =>
+    bpEqKey(ps,str1) and bpRequire(ps,f) =>
       a:=$stack
       $stack:=nil
-      while bpEqKey str1 and bpRequire(ps,f) repeat nil
+      while bpEqKey(ps,str1) and bpRequire(ps,f) repeat nil
       $stack:=[reverse! $stack,:a]
-      bpPush(ps,FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()]))
+      bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
     true
   false
  
@@ -218,19 +218,19 @@ bpListofFun(ps,f,h,g)==
       $stack:=nil
       while apply(h,ps,nil) and bpRequire(ps,f) repeat nil
       $stack:=[reverse! $stack,:a]
-      bpPush(ps,FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()]))
+      bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
     true
   false
  
 bpList(ps,f,str1)==
   apply(f,ps,nil) =>
-    bpEqKey str1 and bpRequire(ps,f) =>
+    bpEqKey(ps,str1) and bpRequire(ps,f) =>
       a:=$stack
       $stack:=nil
-      while bpEqKey str1 and bpRequire(ps,f) repeat nil
+      while bpEqKey(ps,str1) and bpRequire(ps,f) repeat nil
       $stack:=[reverse! $stack,:a]
-      bpPush(ps,[bpPop3(),bpPop2(),:bpPop1()])
-    bpPush(ps,[bpPop1()])
+      bpPush(ps,[bpPop3 ps,bpPop2 ps,:bpPop1 ps])
+    bpPush(ps,[bpPop1 ps])
   bpPush(ps,nil)
  
 bpOneOrMore(ps,f) ==
@@ -239,7 +239,7 @@ bpOneOrMore(ps,f) ==
     $stack:=nil
     while apply(f,ps,nil) repeat nil
     $stack:=[reverse! $stack,:a]
-    bpPush(ps,[bpPop2(),:bpPop1()])
+    bpPush(ps,[bpPop2 ps,:bpPop1 ps])
   false
  
  
@@ -251,39 +251,39 @@ bpAnyNo(ps,s) ==
  
 -- AndOr(k,p,f)= k p
 bpAndOr(ps,keyword,p,f)==
-  bpEqKey keyword and bpRequire(ps,p)
-    and bpPush(ps,FUNCALL(f, bpPop1()))
+  bpEqKey(ps,keyword) and bpRequire(ps,p)
+    and bpPush(ps,FUNCALL(f, bpPop1 ps))
  
 bpConditional(ps,f) ==
-  bpEqKey "IF" and bpRequire(ps,function bpWhere) and (bpEqKey "BACKSET" or true) =>
-    bpEqKey "SETTAB" =>
-      bpEqKey "THEN" =>
-	bpRequire(ps,f) and bpElse(ps,f) and bpEqKey "BACKTAB"
+  bpEqKey(ps,"IF") and bpRequire(ps,function bpWhere) and (bpEqKey(ps,"BACKSET") or true) =>
+    bpEqKey(ps,"SETTAB") =>
+      bpEqKey(ps,"THEN") =>
+	bpRequire(ps,f) and bpElse(ps,f) and bpEqKey(ps,"BACKTAB")
       bpMissing "THEN"
-    bpEqKey "THEN" => bpRequire(ps,f) and bpElse(ps,f)
+    bpEqKey(ps,"THEN") => bpRequire(ps,f) and bpElse(ps,f)
     bpMissing "then"
   false
  
 bpElse(ps,f)==
-  a:=bpState()
-  bpBacksetElse() =>
+  a := bpState ps
+  bpBacksetElse ps =>
     bpRequire(ps,f) and
-      bpPush(ps,bfIf(bpPop3(),bpPop2(),bpPop1()))
-  bpRestore a
-  bpPush(ps,bfIfThenOnly(bpPop2(),bpPop1()))
+      bpPush(ps,bfIf(bpPop3 ps,bpPop2 ps,bpPop1 ps))
+  bpRestore(ps,a)
+  bpPush(ps,bfIfThenOnly(bpPop2 ps,bpPop1 ps))
  
-bpBacksetElse()==
-  bpEqKey "BACKSET" => bpEqKey "ELSE"
-  bpEqKey "ELSE"
+bpBacksetElse ps ==
+  bpEqKey(ps,"BACKSET") => bpEqKey(ps,"ELSE")
+  bpEqKey(ps,"ELSE")
  
 bpEqPeek s == 
   tokenClass $stok = "KEY" and symbolEq?(s,$ttok)
  
-bpEqKey s ==
-  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNext()
+bpEqKey(ps,s) ==
+  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNext ps
 
-bpEqKeyNextTok s ==   
-  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNextToken()
+bpEqKeyNextTok(ps,s) ==   
+  tokenClass $stok = "KEY" and symbolEq?(s,$ttok) and bpNextToken ps
  
 bpPileTrap()   == bpMissing  "BACKTAB"
 bpBrackTrap(x) == bpMissingMate("]",x)
@@ -297,16 +297,17 @@ bpMissing s==
   bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
   throw 'TRAPPED : BootParserException
  
-bpCompMissing s == bpEqKey s or bpMissing s
+bpCompMissing(ps,s) ==
+  bpEqKey(ps,s) or bpMissing s
  
 bpTrap()==
   bpGeneralErrorHere()
   throw 'TRAPPED : BootParserException
  
 bpRecoverTrap ps ==
-  bpFirstToken()
+  bpFirstToken ps
   pos1 := tokenPosition $stok
-  bpMoveTo 0
+  bpMoveTo(ps,0)
   pos2 := tokenPosition $stok
   bpIgnoredFromTo(pos1, pos2)
   bpPush(ps,[['"pile syntax error"]])
@@ -316,63 +317,63 @@ bpListAndRecover(ps,f)==
   b := nil
   $stack := nil
   done := false
-  c := $inputStream
+  c := parserTokens ps
   while not done repeat
     found :=
       try apply(f,ps,nil)
       catch(e: BootParserException) => e
     if found is "TRAPPED"
     then
-       $inputStream:=c
+       parserTokens(ps) := c
        bpRecoverTrap ps
     else if not found
 	 then
-	   $inputStream:=c
+	   parserTokens(ps) := c
 	   bpGeneralErrorHere()
 	   bpRecoverTrap ps
-    if bpEqKey "BACKSET"
+    if bpEqKey(ps,"BACKSET")
     then
-       c := $inputStream
-    else if bpEqPeek "BACKTAB"  or $inputStream = nil
+       c := parserTokens ps
+    else if bpEqPeek "BACKTAB" or parserTokens ps = nil
 	 then
 	    done := true
 	 else
-	   $inputStream := c
+	   parserTokens(ps) := c
 	   bpGeneralErrorHere()
 	   bpRecoverTrap ps
-	   if bpEqPeek "BACKTAB"  or $inputStream = nil
+	   if bpEqPeek "BACKTAB"  or parserTokens ps = nil
 	   then done:=true
 	   else
-	       bpNext()
-	       c := $inputStream
-    b := [bpPop1(),:b]
+	       bpNext ps
+	       c := parserTokens ps
+    b := [bpPop1 ps,:b]
   $stack := a
   bpPush(ps,reverse! b)
  
-bpMoveTo n==
-   $inputStream = nil  => true
+bpMoveTo(ps,n) ==
+   parserTokens ps = nil  => true
    bpEqPeek "BACKTAB" =>
      n=0  => true
-     bpNextToken()
+     bpNextToken ps
      $bpCount:=$bpCount-1
-     bpMoveTo(n-1)
+     bpMoveTo(ps,n-1)
    bpEqPeek "BACKSET" =>
      n=0  => true
-     bpNextToken()
-     bpMoveTo n
+     bpNextToken ps
+     bpMoveTo(ps,n)
    bpEqPeek "SETTAB"  =>
-     bpNextToken()
-     bpMoveTo(n+1)
+     bpNextToken ps
+     bpMoveTo(ps,n+1)
    bpEqPeek "OPAREN"  =>
-     bpNextToken()
+     bpNextToken ps
      $bpParenCount:=$bpParenCount+1
-     bpMoveTo n
+     bpMoveTo(ps,n)
    bpEqPeek "CPAREN"  =>
-     bpNextToken()
+     bpNextToken ps
      $bpParenCount:=$bpParenCount-1
-     bpMoveTo n
-   bpNextToken()
-   bpMoveTo n
+     bpMoveTo(ps,n)
+   bpNextToken ps
+   bpMoveTo(ps,n)
  
 -- A fully qualified name could be interpreted as a left reduction
 -- of an '::' infix operator.  At the moment, we don't use
@@ -384,9 +385,9 @@ bpMoveTo n==
 -- symbol is present on the stack.
 bpQualifiedName ps ==
   bpEqPeek "COLON-COLON" =>
-    bpNext()
-    tokenClass $stok = "ID" and bpPushId ps and bpNext()
-      and bpPush(ps,bfColonColon(bpPop2(), bpPop1()))
+    bpNext ps
+    tokenClass $stok = "ID" and bpPushId ps and bpNext ps
+      and bpPush(ps,bfColonColon(bpPop2 ps, bpPop1 ps))
   false
 
 ++ Name:
@@ -395,7 +396,7 @@ bpQualifiedName ps ==
 bpName ps ==
   tokenClass $stok = "ID" =>
     bpPushId ps
-    bpNext()
+    bpNext ps
     bpAnyNo(ps,function bpQualifiedName)
   false
 
@@ -410,31 +411,31 @@ bpName ps ==
 bpConstTok ps ==
   tokenClass $stok in '(INTEGER FLOAT) =>
     bpPush(ps,$ttok)
-    bpNext()
-  tokenClass $stok = "LISP" => bpPush(ps,%Lisp $ttok) and bpNext()
-  tokenClass $stok = "LISPEXP" => bpPush(ps,$ttok) and bpNext()
-  tokenClass $stok = "LINE" => bpPush(ps,["+LINE", $ttok]) and bpNext()
+    bpNext ps
+  tokenClass $stok = "LISP" => bpPush(ps,%Lisp $ttok) and bpNext ps
+  tokenClass $stok = "LISPEXP" => bpPush(ps,$ttok) and bpNext ps
+  tokenClass $stok = "LINE" => bpPush(ps,["+LINE", $ttok]) and bpNext ps
   bpEqPeek "QUOTE" =>
-    bpNext()
+    bpNext ps
     bpRequire(ps,function bpSexp) and
-      bpPush(ps,bfSymbol bpPop1())
+      bpPush(ps,bfSymbol bpPop1 ps)
   bpString ps or bpFunction ps
 
 bpChar ps ==
   tokenClass $stok = "ID" and $ttok is "char" =>
-    a := bpState()
+    a := bpState ps
     bpApplication ps =>
-      s := bpPop1()
+      s := bpPop1 ps
       s is ["char",.] => bpPush(ps,s)
-      bpRestore a
+      bpRestore(ps,a)
       false
     false
   false
 
 ++ Subroutine of bpExportItem.  Parses tails of ExportItem.
 bpExportItemTail ps ==
-  bpEqKey "BEC" and bpRequire(ps,function bpAssign) and
-    bpPush(ps,%Assignment(bpPop2(), bpPop1()))
+  bpEqKey(ps,"BEC") and bpRequire(ps,function bpAssign) and
+    bpPush(ps,%Assignment(bpPop2 ps, bpPop1 ps))
       or bpSimpleDefinitionTail ps
 
 ++ ExportItem:
@@ -445,13 +446,13 @@ bpExportItemTail ps ==
 ++   Signature  == Where
 bpExportItem ps ==
   bpEqPeek "STRUCTURE" => bpStruct ps
-  a := bpState()
+  a := bpState ps
   bpName ps =>
     bpEqPeek "COLON" =>
-      bpRestore a
+      bpRestore(ps,a)
       bpRequire(ps,function bpSignature)
       bpExportItemTail ps or true
-    bpRestore a
+    bpRestore(ps,a)
     bpTypeAliasDefition ps
   false
 
@@ -464,27 +465,27 @@ bpExportItemList ps ==
 ++ ModuleInterface:
 ++   WHERE pile-bracketed ExporItemList
 bpModuleInterface ps ==
-  bpEqKey "WHERE" =>
+  bpEqKey(ps,"WHERE") =>
     bpPileBracketed(ps,function bpExportItemList)
-      or (bpExportItem ps and bpPush(ps,[bpPop1()]))
+      or (bpExportItem ps and bpPush(ps,[bpPop1 ps]))
         or bpTrap()
   bpPush(ps,nil)
 
 ++ ModuleExports:
 ++   OPAREN IdList CPAREN
 bpModuleExports ps ==
-  bpParenthesized(ps,function bpIdList) => bpPush(ps,bfUntuple bpPop1())
+  bpParenthesized(ps,function bpIdList) => bpPush(ps,bfUntuple bpPop1 ps)
   bpPush(ps,nil)
 
 ++ Parse a module definitoin
 ++   Module:
 ++     MODULE Name OptionalModuleExports OptionalModuleInterface
 bpModule ps ==
-  bpEqKey "MODULE" => 
+  bpEqKey(ps,"MODULE") => 
     bpRequire(ps,function bpName)
     bpModuleExports ps
     bpModuleInterface ps
-    bpPush(ps,%Module(bpPop3(),bpPop2(),bpPop1()))
+    bpPush(ps,%Module(bpPop3 ps,bpPop2 ps,bpPop1 ps))
   nil
 
 ++ Parse a module import, or a import declaration for a foreign entity.
@@ -493,51 +494,51 @@ bpModule ps ==
 ++    IMPORT Name
 ++    IMPORT NAMESPACE LongName
 bpImport ps ==
-  bpEqKey "IMPORT" =>
-    bpEqKey "NAMESPACE" =>
+  bpEqKey(ps,"IMPORT") =>
+    bpEqKey(ps,"NAMESPACE") =>
       bpLeftAssoc(ps,'(DOT),function bpName) and
-        bpPush(ps,%Import bfNamespace bpPop1())
+        bpPush(ps,%Import bfNamespace bpPop1 ps)
           or bpTrap()
-    a := bpState()
+    a := bpState ps
     bpRequire(ps,function bpName)
     bpEqPeek "COLON" =>
-      bpRestore a
+      bpRestore(ps,a)
       bpRequire(ps,function bpSignature) and 
-        (bpEqKey "FOR" or bpTrap()) and
+        (bpEqKey(ps,"FOR") or bpTrap()) and
            bpRequire(ps,function bpName) and
-              bpPush(ps,%ImportSignature(bpPop1(), bpPop1()))
-    bpPush(ps,%Import bpPop1())
+              bpPush(ps,%ImportSignature(bpPop1 ps, bpPop1 ps))
+    bpPush(ps,%Import bpPop1 ps)
   false
 
 ++
 ++ Namespace:
 ++    NAMESPACE Name
 bpNamespace ps ==
-  bpEqKey "NAMESPACE" and (bpName ps or bpDot ps) and
-    bpPush(ps,bfNamespace bpPop1())
+  bpEqKey(ps,"NAMESPACE") and (bpName ps or bpDot ps) and
+    bpPush(ps,bfNamespace bpPop1 ps)
 
 -- Parse a type alias defnition:
 --    type-alias-definition: 
 --          identifier <=> logical-expression
 bpTypeAliasDefition ps ==
   (bpTerm(ps,function bpIdList) or bpTrap()) and 
-    bpEqKey "TDEF" and bpLogical ps and
-      bpPush(ps,%TypeAlias(bpPop2(), bpPop1()))
+    bpEqKey(ps,"TDEF") and bpLogical ps and
+      bpPush(ps,%TypeAlias(bpPop2 ps, bpPop1 ps))
 
 ++ Parse a signature declaration
 ++  Signature:
 ++    Name COLON Mapping
 bpSignature ps ==
-  bpName ps and bpEqKey "COLON" and bpRequire(ps,function bpTyping)
-    and bpPush(ps,%Signature(bpPop2(), bpPop1()))
+  bpName ps and bpEqKey(ps,"COLON") and bpRequire(ps,function bpTyping)
+    and bpPush(ps,%Signature(bpPop2 ps, bpPop1 ps))
 
 ++ SimpleMapping:
 ++   Application
 ++   Application -> Application
 bpSimpleMapping ps ==
   bpApplication ps =>
-    bpEqKey "ARROW" and bpRequire(ps,function bpApplication) and
-      bpPush(ps,%Mapping(bpPop1(), [bpPop1()]))
+    bpEqKey(ps,"ARROW") and bpRequire(ps,function bpApplication) and
+      bpPush(ps,%Mapping(bpPop1 ps, [bpPop1 ps]))
     true
   false
 
@@ -554,18 +555,18 @@ bpArgtypeList ps ==
 ++     ArgtypeList -> Application
 bpMapping ps ==
   bpParenthesized(ps,function bpArgtypeList) and 
-     bpEqKey "ARROW" and bpApplication ps and 
-       bpPush(ps,%Mapping(bpPop1(), bfUntuple bpPop1()))
+     bpEqKey(ps,"ARROW") and bpApplication ps and 
+       bpPush(ps,%Mapping(bpPop1 ps, bfUntuple bpPop1 ps))
 
-bpCancel()==
-  a := bpState()
-  bpEqKeyNextTok  "SETTAB" =>
-    bpCancel() =>
-      bpEqKeyNextTok  "BACKTAB" => true
-      bpRestore a
+bpCancel ps ==
+  a := bpState ps
+  bpEqKeyNextTok(ps,"SETTAB") =>
+    bpCancel ps =>
+      bpEqKeyNextTok(ps,"BACKTAB") => true
+      bpRestore(ps,a)
       false
-    bpEqKeyNextTok "BACKTAB" => true
-    bpRestore a
+    bpEqKeyNextTok(ps,"BACKTAB") => true
+    bpRestore(ps,a)
     false
   false
 
@@ -584,27 +585,27 @@ bpExceptions()==
 bpSexpKey ps ==
   tokenClass $stok = "KEY" and not bpExceptions() =>
     a := $ttok has SHOEINF
-    a = nil => bpPush(ps,keywordId $ttok) and bpNext()
-    bpPush(ps,a) and bpNext()
+    a = nil => bpPush(ps,keywordId $ttok) and bpNext ps
+    bpPush(ps,a) and bpNext ps
   false
  
 bpAnyId ps ==
-  bpEqKey "MINUS"  and (tokenClass $stok = "INTEGER" or bpTrap()) and
-          bpPush(ps,-$ttok) and bpNext() or
+  bpEqKey(ps,"MINUS")  and (tokenClass $stok = "INTEGER" or bpTrap()) and
+          bpPush(ps,-$ttok) and bpNext ps or
              bpSexpKey ps or
                    tokenClass $stok in '(ID INTEGER STRING FLOAT)
-                      and  bpPush(ps,$ttok) and  bpNext()
+                      and  bpPush(ps,$ttok) and  bpNext ps
  
 bpSexp ps ==
   bpAnyId ps or
-      bpEqKey "QUOTE"  and bpRequire(ps,function bpSexp)
-         and bpPush(ps,bfSymbol bpPop1()) or
+      bpEqKey(ps,"QUOTE") and bpRequire(ps,function bpSexp)
+         and bpPush(ps,bfSymbol bpPop1 ps) or
              bpIndentParenthesized(ps,function bpSexp1)
  
-bpSexp1 ps == bpFirstTok() and
+bpSexp1 ps == bpFirstTok ps and
   bpSexp ps and
-   (bpEqKey "DOT" and bpSexp ps and bpPush(ps,[bpPop2(),:bpPop1()]) or
-         bpSexp1 ps and bpPush(ps,[bpPop2(),:bpPop1()])) or
+   (bpEqKey(ps,"DOT") and bpSexp ps and bpPush(ps,[bpPop2 ps,:bpPop1 ps]) or
+         bpSexp1 ps and bpPush(ps,[bpPop2 ps,:bpPop1 ps])) or
              bpPush(ps,nil)
  
 bpPrimary1 ps ==
@@ -622,31 +623,31 @@ bpParenthesizedApplication ps ==
 
 bpArgumentList ps ==
   bpPDefinition ps and 
-    bpPush(ps,bfApplication(bpPop2(), bpPop1()))
+    bpPush(ps,bfApplication(bpPop2 ps, bpPop1 ps))
  
 bpPrimary ps ==
-  bpFirstTok() and (bpPrimary1 ps or bpPrefixOperator ps )
+  bpFirstTok ps and (bpPrimary1 ps or bpPrefixOperator ps )
  
 bpDot ps ==
-  bpEqKey "DOT" and bpPush(ps,bfDot())
+  bpEqKey(ps,"DOT") and bpPush(ps,bfDot())
  
 bpPrefixOperator ps ==
    tokenClass $stok = "KEY" and
-     $ttok has SHOEPRE and bpPushId ps and  bpNext()
+     $ttok has SHOEPRE and bpPushId ps and  bpNext ps
  
 bpInfixOperator ps ==
   tokenClass $stok = "KEY" and
-    $ttok has SHOEINF and bpPushId ps and  bpNext()
+    $ttok has SHOEINF and bpPushId ps and  bpNext ps
  
 bpSelector ps ==
-  bpEqKey "DOT" and (bpPrimary ps
-     and bpPush(ps,bfElt(bpPop2(),bpPop1()))
-	or bpPush(ps,bfSuffixDot bpPop1()))
+  bpEqKey(ps,"DOT") and (bpPrimary ps
+     and bpPush(ps,bfElt(bpPop2 ps,bpPop1 ps))
+	or bpPush(ps,bfSuffixDot bpPop1 ps))
  
 bpApplication ps==
    bpPrimary ps and bpAnyNo(ps,function bpSelector) and
       (bpApplication ps and
-            bpPush(ps,bfApplication(bpPop2(),bpPop1())) or true)
+            bpPush(ps,bfApplication(bpPop2 ps,bpPop1 ps)) or true)
               or bpNamespace ps
  
 ++ Typing:
@@ -654,11 +655,11 @@ bpApplication ps==
 ++   Mapping
 ++   FORALL Variable DOT Typing
 bpTyping ps ==
-  bpEqKey "FORALL" =>
+  bpEqKey(ps,"FORALL") =>
     bpRequire(ps,function bpVariable)
-    (bpDot ps and bpPop1()) or bpTrap()
+    (bpDot ps and bpPop1 ps) or bpTrap()
     bpRequire(ps,function bpTyping)
-    bpPush(ps,%Forall(bpPop2(), bpPop1()))
+    bpPush(ps,%Forall(bpPop2 ps, bpPop1 ps))
   bpMapping ps or bpSimpleMapping ps
 
 ++ Typed:
@@ -666,66 +667,66 @@ bpTyping ps ==
 ++   Application @ Typing
 bpTyped ps ==
   bpApplication ps and
-     bpEqKey "COLON" =>
+     bpEqKey(ps,"COLON") =>
        bpRequire(ps,function bpTyping) and
-         bpPush(ps,bfTagged(bpPop2(),bpPop1()))
-     bpEqKey "AT" =>
+         bpPush(ps,bfTagged(bpPop2 ps,bpPop1 ps))
+     bpEqKey(ps,"AT") =>
        bpRequire(ps,function bpTyping) and
-         bpPush(ps,bfRestrict(bpPop2(), bpPop1()))
+         bpPush(ps,bfRestrict(bpPop2 ps, bpPop1 ps))
      true
  
 bpExpt ps == bpRightAssoc(ps,'(POWER),function bpTyped)
  
 bpInfKey(ps,s) ==
   tokenClass $stok = "KEY" and
-    symbolMember?($ttok,s) and bpPushId ps and bpNext()
+    symbolMember?($ttok,s) and bpPushId ps and bpNext ps
  
 bpInfGeneric(ps,s) ==
-  bpInfKey(ps,s) and (bpEqKey "BACKSET" or true)
+  bpInfKey(ps,s) and (bpEqKey(ps,"BACKSET") or true)
  
 bpRightAssoc(ps,o,p)==
-  a := bpState()
+  a := bpState ps
   apply(p,ps,nil) =>
     while  bpInfGeneric(ps,o) and (bpRightAssoc(ps,o,p) or bpTrap()) repeat
-      bpPush(ps,bfInfApplication(bpPop2(),bpPop2(),bpPop1()))
+      bpPush(ps,bfInfApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
     true
-  bpRestore a
+  bpRestore(ps,a)
   false
  
 bpLeftAssoc(ps,operations,parser)==
   apply(parser,ps,nil) =>
     while bpInfGeneric(ps,operations) and bpRequire(ps,parser)
      repeat
-       bpPush(ps,bfInfApplication(bpPop2(),bpPop2(),bpPop1()))
+       bpPush(ps,bfInfApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
     true
   false
  
 bpString ps ==
   tokenClass $stok = "STRING" and
-    bpPush(ps,quote makeSymbol $ttok) and bpNext()
+    bpPush(ps,quote makeSymbol $ttok) and bpNext ps
  
 bpFunction ps ==
-  bpEqKey "FUNCTION" and bpRequire(ps,function bpPrimary1)
-    and bpPush(ps,bfFunction bpPop1())
+  bpEqKey(ps,"FUNCTION") and bpRequire(ps,function bpPrimary1)
+    and bpPush(ps,bfFunction bpPop1 ps)
 
 bpThetaName ps ==
   tokenClass $stok = "ID" and $ttok has SHOETHETA =>
     bpPushId ps
-    bpNext()
+    bpNext ps
   false
  
 bpReduceOperator ps ==
    bpInfixOperator ps or bpString ps or bpThetaName ps
  
-bpReduce ps==
-  a := bpState()
-  bpReduceOperator ps and bpEqKey "SLASH" =>
+bpReduce ps ==
+  a := bpState ps
+  bpReduceOperator ps and bpEqKey(ps,"SLASH") =>
     bpEqPeek "OBRACK" => 
       bpRequire(ps,function bpDConstruct) and
-	bpPush(ps,bfReduceCollect(bpPop2(),bpPop1()))
+	bpPush(ps,bfReduceCollect(bpPop2 ps,bpPop1 ps))
     bpRequire(ps,function bpApplication) and
-      bpPush(ps,bfReduce(bpPop2(),bpPop1()))
-  bpRestore a
+      bpPush(ps,bfReduce(bpPop2 ps,bpPop1 ps))
+  bpRestore(ps,a)
   false
  
 bpTimes ps ==
@@ -736,7 +737,7 @@ bpEuclid ps ==
  
 bpMinus ps ==
   bpInfGeneric(ps,'(MINUS)) and bpRequire(ps,function bpEuclid)
-    and bpPush(ps,bfApplication(bpPop2(),bpPop1()))
+    and bpPush(ps,bfApplication(bpPop2 ps,bpPop1 ps))
       or bpEuclid ps
  
 bpArith ps ==
@@ -745,18 +746,18 @@ bpArith ps ==
 bpIs ps ==
   bpArith ps and
      bpInfKey(ps,'(IS ISNT)) and bpRequire(ps,function bpPattern) =>
-       bpPush(ps,bfISApplication(bpPop2(),bpPop2(),bpPop1()))
-     bpEqKey "HAS" and bpRequire(ps,function bpApplication) =>
-       bpPush(ps,bfHas(bpPop2(), bpPop1()))
+       bpPush(ps,bfISApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
+     bpEqKey(ps,"HAS") and bpRequire(ps,function bpApplication) =>
+       bpPush(ps,bfHas(bpPop2 ps, bpPop1 ps))
      true
  
 bpBracketConstruct(ps,f)==
-  bpBracket(ps,f) and bpPush(ps,bfConstruct bpPop1())
+  bpBracket(ps,f) and bpPush(ps,bfConstruct bpPop1 ps)
  
 bpCompare ps ==
   bpIs ps and (bpInfKey(ps,'(SHOEEQ SHOENE LT LE GT GE IN))
      and bpRequire(ps,function bpIs)
-	and bpPush(ps,bfInfApplication(bpPop2(),bpPop2(),bpPop1()))
+	and bpPush(ps,bfInfApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
 	    or true)
               or bpLeave ps
                 or bpThrow ps
@@ -765,69 +766,69 @@ bpAnd ps ==
   bpLeftAssoc(ps,'(AND),function bpCompare)
 
 bpThrow ps ==
-  bpEqKey "THROW" and bpApplication ps =>
+  bpEqKey(ps,"THROW") and bpApplication ps =>
     -- Allow user-supplied matching type tag
-    if bpEqKey "COLON" then
+    if bpEqKey(ps,"COLON") then
       bpRequire(ps,function bpApplication)
-      bpPush(ps,%Pretend(bpPop2(),bpPop1()))
-    bpPush(ps,bfThrow bpPop1())
+      bpPush(ps,%Pretend(bpPop2 ps,bpPop1 ps))
+    bpPush(ps,bfThrow bpPop1 ps)
   nil
 
 ++  Try:
 ++    try Assign CatchItems
 bpTry ps ==
-  bpEqKey "TRY" =>
+  bpEqKey(ps,"TRY") =>
     bpAssign ps
     cs := []
-    while bpHandler "CATCH" repeat
+    while bpHandler(ps,"CATCH") repeat
       bpCatchItem ps
-      cs := [bpPop1(),:cs]
-    bpHandler "FINALLY" =>
+      cs := [bpPop1 ps,:cs]
+    bpHandler(ps,"FINALLY") =>
       bpFinally ps and
-        bpPush(ps,bfTry(bpPop2(),reverse! [bpPop1(),:cs]))
+        bpPush(ps,bfTry(bpPop2 ps,reverse! [bpPop1 ps,:cs]))
     cs = nil => bpTrap() -- missing handlers
-    bpPush(ps,bfTry(bpPop1(),reverse! cs))
+    bpPush(ps,bfTry(bpPop1 ps,reverse! cs))
   nil            
 
 bpCatchItem ps ==
   bpRequire(ps,function bpExceptionVariable) and
-    (bpEqKey "EXIT" or bpTrap()) and
+    (bpEqKey(ps,"EXIT") or bpTrap()) and
       bpRequire(ps,function bpAssign) and
-        bpPush(ps,%Catch(bpPop2(),bpPop1()))
+        bpPush(ps,%Catch(bpPop2 ps,bpPop1 ps))
 
 bpExceptionVariable ps ==
   t := $stok
-  bpEqKey "OPAREN" and 
+  bpEqKey(ps,"OPAREN") and 
     bpRequire(ps,function bpSignature) and
-      (bpEqKey "CPAREN" or bpMissing t)
+      (bpEqKey(ps,"CPAREN") or bpMissing t)
         or bpTrap()
 
 bpFinally ps ==
   bpRequire(ps,function bpAssign) and
-    bpPush(ps,%Finally bpPop1())
+    bpPush(ps,%Finally bpPop1 ps)
 
-bpHandler key ==
-  s := bpState()
-  (bpEqKey "BACKSET" or bpEqKey "SEMICOLON") and bpEqKey key => true
-  bpRestore s
+bpHandler(ps,key) ==
+  s := bpState ps
+  (bpEqKey(ps,"BACKSET") or bpEqKey(ps,"SEMICOLON")) and bpEqKey(ps,key) => true
+  bpRestore(ps,s)
   false
 
 ++ Leave:
 ++   LEAVE Logical
 bpLeave ps ==
-  bpEqKey "LEAVE" and bpRequire(ps,function bpLogical) and
-    bpPush(ps,bfLeave bpPop1())
+  bpEqKey(ps,"LEAVE") and bpRequire(ps,function bpLogical) and
+    bpPush(ps,bfLeave bpPop1 ps)
 
 ++ Do:
 ++  IN Namespace Do
 ++  DO Assign
 bpDo ps ==
-  bpEqKey "IN" =>
+  bpEqKey(ps,"IN") =>
     bpRequire(ps,function bpNamespace)
     bpRequire(ps,function bpDo)
-    bpPush(ps,bfAtScope(bpPop2(),bpPop1()))
-  bpEqKey "DO" and bpRequire(ps,function bpAssign) and
-    bpPush(ps,bfDo bpPop1())
+    bpPush(ps,bfAtScope(bpPop2 ps,bpPop1 ps))
+  bpEqKey(ps,"DO") and bpRequire(ps,function bpAssign) and
+    bpPush(ps,bfDo bpPop1 ps)
 
 ++ Return:
 ++   RETURN Assign
@@ -835,8 +836,8 @@ bpDo ps ==
 ++   Throw
 ++   And
 bpReturn ps==
-  (bpEqKey "RETURN" and bpRequire(ps,function bpAssign) and
-	 bpPush(ps,bfReturnNoName bpPop1())) 
+  (bpEqKey(ps,"RETURN") and bpRequire(ps,function bpAssign) and
+	 bpPush(ps,bfReturnNoName bpPop1 ps)) 
     or bpLeave ps
       or bpThrow ps
         or bpAnd ps
@@ -847,8 +848,8 @@ bpLogical ps ==
   bpLeftAssoc(ps,'(OR),function bpReturn)
  
 bpExpression ps ==
-  bpEqKey "COLON" and (bpLogical ps and
-     bpPush(ps,bfApplication ("COLON",bpPop1()))
+  bpEqKey(ps,"COLON") and (bpLogical ps and
+     bpPush(ps,bfApplication ("COLON",bpPop1 ps))
            or bpTrap()) or bpLogical ps
  
 bpStatement ps ==
@@ -858,12 +859,12 @@ bpStatement ps ==
  
 bpLoop ps ==
   bpIterators ps and
-   (bpCompMissing "REPEAT" and
+   (bpCompMissing(ps,"REPEAT") and
       bpRequire(ps,function bpWhere) and
-         bpPush(ps,bfLp(bpPop2(),bpPop1())))
+         bpPush(ps,bfLp(bpPop2 ps,bpPop1 ps)))
              or
-               bpEqKey "REPEAT" and bpRequire(ps,function bpLogical) and
-                    bpPush(ps,bfLoop1 bpPop1())
+               bpEqKey(ps,"REPEAT") and bpRequire(ps,function bpLogical) and
+                    bpPush(ps,bfLoop1 bpPop1 ps)
  
 bpSuchThat ps ==
   bpAndOr(ps,"BAR",function bpWhere,function bfSuchthat)
@@ -878,88 +879,88 @@ bpFormal ps ==
   bpVariable ps or bpDot ps
 
 bpForIn ps ==
-  bpEqKey "FOR" and bpRequire(ps,function bpFormal) and (bpCompMissing "IN")
+  bpEqKey(ps,"FOR") and bpRequire(ps,function bpFormal) and (bpCompMissing(ps,"IN"))
       and (bpRequire(ps,function bpSeg) and
-       (bpEqKey "BY" and bpRequire(ps,function bpArith) and
-        bpPush(ps,bfForInBy(bpPop3(),bpPop2(),bpPop1()))) or
-         bpPush(ps,bfForin(bpPop2(),bpPop1())))
+       (bpEqKey(ps,"BY") and bpRequire(ps,function bpArith) and
+        bpPush(ps,bfForInBy(bpPop3 ps,bpPop2 ps,bpPop1 ps))) or
+         bpPush(ps,bfForin(bpPop2 ps,bpPop1 ps)))
  
 bpSeg ps ==
    bpArith ps and
-      (bpEqKey "SEG" and
-       (bpArith ps and bpPush(ps,bfSegment2(bpPop2(),bpPop1()))
-         or bpPush(ps,bfSegment1(bpPop1()))) or true)
+      (bpEqKey(ps,"SEG") and
+       (bpArith ps and bpPush(ps,bfSegment2(bpPop2 ps,bpPop1 ps))
+         or bpPush(ps,bfSegment1(bpPop1 ps))) or true)
  
 bpIterator ps ==
   bpForIn ps or bpSuchThat ps or bpWhile ps or bpUntil ps
  
 bpIteratorList ps ==
   bpOneOrMore(ps,function bpIterator)
-    and bpPush(ps,bfIterators bpPop1())
+    and bpPush(ps,bfIterators bpPop1 ps)
  
 bpCrossBackSet ps ==
-  bpEqKey "CROSS" and (bpEqKey "BACKSET" or true)
+  bpEqKey(ps,"CROSS") and (bpEqKey(ps,"BACKSET") or true)
  
 bpIterators ps ==
   bpListofFun(ps,function bpIteratorList,
     function bpCrossBackSet,function bfCross)
  
 bpAssign ps ==
-  a := bpState()
+  a := bpState ps
   bpStatement ps =>
     bpEqPeek "BEC" =>
-      bpRestore a
+      bpRestore(ps,a)
       bpRequire(ps,function bpAssignment)
     bpEqPeek "GIVES" =>
-      bpRestore a
+      bpRestore(ps,a)
       bpRequire(ps,function bpLambda)
     bpEqPeek "LARROW" =>
-      bpRestore a
+      bpRestore(ps,a)
       bpRequire(ps,function bpKeyArg)
     true
-  bpRestore a
+  bpRestore(ps,a)
   false
  
 bpAssignment ps ==
   bpAssignVariable ps and
-    bpEqKey "BEC" and
+    bpEqKey(ps,"BEC") and
       bpRequire(ps,function bpAssign) and
-	 bpPush(ps,bfAssign(bpPop2(),bpPop1()))
+	 bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
  
 ++ Parse a lambda expression
 ++   Lambda ::= Variable +-> Assign
 bpLambda ps ==
   bpVariable ps and
-    bpEqKey "GIVES" and
+    bpEqKey(ps,"GIVES") and
       bpRequire(ps,function bpAssign) and
-        bpPush(ps,bfLambda(bpPop2(),bpPop1()))
+        bpPush(ps,bfLambda(bpPop2 ps,bpPop1 ps))
 
 bpKeyArg ps ==
-  bpName ps and bpEqKey "LARROW" and bpLogical ps and
-    bpPush(ps,bfKeyArg(bpPop2(),bpPop1()))
+  bpName ps and bpEqKey(ps,"LARROW") and bpLogical ps and
+    bpPush(ps,bfKeyArg(bpPop2 ps,bpPop1 ps))
 
 -- should only be allowed in sequences
 bpExit ps ==
-  bpAssign ps and (bpEqKey "EXIT" and
+  bpAssign ps and (bpEqKey(ps,"EXIT") and
       (bpRequire(ps,function bpWhere) and
-	 bpPush(ps,bfExit(bpPop2(),bpPop1())))
+	 bpPush(ps,bfExit(bpPop2 ps,bpPop1 ps)))
 	   or true)
 
 bpDefinition ps ==
-  bpEqKey "MACRO" =>
+  bpEqKey(ps,"MACRO") =>
     bpName ps and bpStoreName() and
       bpCompoundDefinitionTail(ps,function %Macro)
         or bpTrap()
-  a := bpState()
+  a := bpState ps
   bpExit ps =>
     bpEqPeek "DEF" =>
-       bpRestore a
+       bpRestore(ps,a)
        bpDef ps
     bpEqPeek "TDEF" =>
-       bpRestore a
+       bpRestore(ps,a)
        bpTypeAliasDefition ps
     true
-  bpRestore a
+  bpRestore(ps,a)
   false
  
 bpStoreName()==
@@ -977,15 +978,15 @@ bpDDef ps ==
 
 ++ Parse the remaining of a simple definition.
 bpSimpleDefinitionTail ps ==
-  bpEqKey "DEF" and
+  bpEqKey(ps,"DEF") and
     bpRequire(ps,function bpWhere)
-      and bpPush(ps,%ConstantDefinition(bpPop2(), bpPop1()))
+      and bpPush(ps,%ConstantDefinition(bpPop2 ps, bpPop1 ps))
 
 ++ Parse the remaining of a compound definition.
 bpCompoundDefinitionTail(ps,f) ==
   bpVariable ps and 
-    bpEqKey "DEF" and bpRequire(ps,function bpWhere) and 
-      bpPush(ps,apply(f,[bpPop3(),bpPop2(),bpPop1()]))
+    bpEqKey(ps,"DEF") and bpRequire(ps,function bpWhere) and 
+      bpPush(ps,apply(f,[bpPop3 ps,bpPop2 ps,bpPop1 ps]))
 
 
 ++ Parse the remainding of a definition.  When we reach this point
@@ -997,22 +998,22 @@ bpDefTail(ps,f) ==
  
 bpWhere ps ==
     bpDefinition ps and
-       (bpEqKey "WHERE" and bpRequire(ps,function bpDefinitionItem)
-           and bpPush(ps,bfWhere(bpPop1(),bpPop1())) or true)
+       (bpEqKey(ps,"WHERE") and bpRequire(ps,function bpDefinitionItem)
+           and bpPush(ps,bfWhere(bpPop1 ps,bpPop1 ps)) or true)
  
 bpDefinitionItem ps ==
-  a := bpState()
+  a := bpState ps
   bpDDef ps => true
-  bpRestore a
+  bpRestore(ps,a)
   bpBDefinitionPileItems ps => true
-  bpRestore a
+  bpRestore(ps,a)
   bpPDefinitionItems ps => true
-  bpRestore a
+  bpRestore(ps,a)
   bpWhere ps
  
 bpDefinitionPileItems ps ==
   bpListAndRecover(ps,function bpDefinitionItem)
-    and bpPush(ps,%Pile bpPop1())
+    and bpPush(ps,%Pile bpPop1 ps)
  
 bpBDefinitionPileItems ps ==
   bpPileBracketed(ps,function bpDefinitionPileItems)
@@ -1030,7 +1031,7 @@ bpTuple(ps,p) ==
   bpListofFun(ps,p,function bpCommaBackSet,function bfTuple)
  
 bpCommaBackSet ps == 
-  bpEqKey "COMMA" and (bpEqKey "BACKSET" or true)
+  bpEqKey(ps,"COMMA") and (bpEqKey(ps,"BACKSET") or true)
  
 bpSemiColon ps == 
   bpSemiListing(ps,function bpComma,function bfSequence)
@@ -1039,19 +1040,19 @@ bpSemiListing(ps,p,f) ==
   bpListofFun(ps,p,function bpSemiBackSet,f)
  
 bpSemiBackSet ps == 
-  bpEqKey "SEMICOLON" and (bpEqKey "BACKSET" or true)
+  bpEqKey(ps,"SEMICOLON") and (bpEqKey(ps,"BACKSET") or true)
  
 bpPDefinition ps ==
   bpIndentParenthesized(ps,function bpSemiColon)
  
 bpPileItems ps ==
-  bpListAndRecover(ps,function bpSemiColon) and bpPush(ps,bfSequence bpPop1())
+  bpListAndRecover(ps,function bpSemiColon) and bpPush(ps,bfSequence bpPop1 ps)
  
 bpBPileDefinition ps ==
   bpPileBracketed(ps,function bpPileItems)
  
 bpIteratorTail ps ==
-  (bpEqKey "REPEAT" or true) and bpIterators ps
+  (bpEqKey(ps,"REPEAT") or true) and bpIterators ps
  
 bpConstruct ps ==
   bpBracket(ps,function bpConstruction)
@@ -1059,8 +1060,8 @@ bpConstruct ps ==
 bpConstruction ps==
   bpComma ps and
      (bpIteratorTail ps and
-	  bpPush(ps,bfCollect(bpPop2(),bpPop1())) or
-	     bpPush(ps,bfTupleConstruct bpPop1()))
+	  bpPush(ps,bfCollect(bpPop2 ps,bpPop1 ps)) or
+	     bpPush(ps,bfTupleConstruct bpPop1 ps))
  
 bpDConstruct ps ==
   bpBracket(ps,function bpDConstruction)
@@ -1068,8 +1069,8 @@ bpDConstruct ps ==
 bpDConstruction ps ==
   bpComma ps and
      (bpIteratorTail ps and
-	  bpPush(ps,bfDCollect(bpPop2(),bpPop1())) or
-	     bpPush(ps,bfDTuple bpPop1()))
+	  bpPush(ps,bfDCollect(bpPop2 ps,bpPop1 ps)) or
+	     bpPush(ps,bfDTuple bpPop1 ps))
  
  
  
@@ -1080,46 +1081,46 @@ bpPattern ps ==
     or bpChar ps or bpName ps or bpConstTok ps
  
 bpEqual ps ==
-   bpEqKey "SHOEEQ" and (bpApplication ps or bpConstTok ps or
-                bpTrap()) and bpPush(ps,bfEqual bpPop1())
+   bpEqKey(ps,"SHOEEQ") and (bpApplication ps or bpConstTok ps or
+                bpTrap()) and bpPush(ps,bfEqual bpPop1 ps)
  
 bpRegularPatternItem ps ==
    bpEqual ps or
      bpConstTok ps or bpDot ps or
       bpName ps and
-         ((bpEqKey "BEC" and bpRequire(ps,function bpPattern)
-              and bpPush(ps,bfAssign(bpPop2(),bpPop1()))) or true)
+         ((bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern)
+              and bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))) or true)
                     or bpBracketConstruct(ps,function bpPatternL)
  
 bpRegularPatternItemL ps ==
-      bpRegularPatternItem ps and bpPush(ps,[bpPop1()])
+      bpRegularPatternItem ps and bpPush(ps,[bpPop1 ps])
  
 bpRegularList ps ==
        bpListof(ps,function bpRegularPatternItemL,"COMMA",function bfAppend)
  
 bpPatternColon ps ==
-     bpEqKey "COLON" and bpRequire(ps,function bpRegularPatternItem)
-              and bpPush(ps,[bfColon bpPop1()])
+  bpEqKey(ps,"COLON") and bpRequire(ps,function bpRegularPatternItem)
+    and bpPush(ps,[bfColon bpPop1 ps])
  
  
 -- only one colon
 bpPatternL ps ==
-  bpPatternList ps and bpPush(ps,bfTuple bpPop1())
+  bpPatternList ps and bpPush(ps,bfTuple bpPop1 ps)
  
 bpPatternList ps ==
   bpRegularPatternItemL ps =>
-    while (bpEqKey  "COMMA" and (bpRegularPatternItemL ps or
+    while (bpEqKey(ps,"COMMA") and (bpRegularPatternItemL ps or
 	(bpPatternTail ps
-	  and bpPush(ps,append(bpPop2(),bpPop1()))
+	  and bpPush(ps,append(bpPop2 ps,bpPop1 ps))
 	    or bpTrap();false) )) repeat
-	      bpPush(ps,append(bpPop2(),bpPop1()))
+	      bpPush(ps,append(bpPop2 ps,bpPop1 ps))
     true
   bpPatternTail ps
  
 bpPatternTail ps ==
   bpPatternColon ps and
-      (bpEqKey "COMMA" and bpRequire(ps,function bpRegularList)
-	   and bpPush(ps,append(bpPop2(),bpPop1())) or true)
+      (bpEqKey(ps,"COMMA") and bpRequire(ps,function bpRegularList)
+	   and bpPush(ps,append(bpPop2 ps,bpPop1 ps)) or true)
  
 -- BOUND VARIABLE
 
@@ -1129,14 +1130,14 @@ bpPatternTail ps ==
 ++ a form with a specific pattern structure, or whether it has
 ++ a default value.
 bpRegularBVItemTail ps ==
-  bpEqKey "COLON" and bpRequire(ps,function bpApplication) and 
-    bpPush(ps,bfTagged(bpPop2(), bpPop1()))
-      or bpEqKey "BEC" and bpRequire(ps,function bpPattern) and
-	 bpPush(ps,bfAssign(bpPop2(),bpPop1()))
-	   or bpEqKey "IS" and bpRequire(ps,function bpPattern) and
-	      bpPush(ps,bfAssign(bpPop2(),bpPop1()))
-             or bpEqKey "DEF" and bpRequire(ps,function bpApplication) and
-                bpPush(ps,%DefaultValue(bpPop2(), bpPop1()))
+  bpEqKey(ps,"COLON") and bpRequire(ps,function bpApplication) and 
+    bpPush(ps,bfTagged(bpPop2 ps, bpPop1 ps))
+      or bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern) and
+	 bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
+	   or bpEqKey(ps,"IS") and bpRequire(ps,function bpPattern) and
+	      bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
+             or bpEqKey(ps,"DEF") and bpRequire(ps,function bpApplication) and
+                bpPush(ps,%DefaultValue(bpPop2 ps, bpPop1 ps))
 
 
 bpRegularBVItem ps ==
@@ -1147,30 +1148,30 @@ bpRegularBVItem ps ==
  
 bpBVString ps ==
   tokenClass $stok = "STRING" and
-      bpPush(ps,["BVQUOTE",makeSymbol $ttok]) and bpNext()
+      bpPush(ps,["BVQUOTE",makeSymbol $ttok]) and bpNext ps
  
 bpRegularBVItemL ps ==
-  bpRegularBVItem ps and bpPush(ps,[bpPop1()])
+  bpRegularBVItem ps and bpPush(ps,[bpPop1 ps])
  
 bpColonName ps ==
-  bpEqKey "COLON" and (bpName ps or bpBVString ps or bpTrap())
+  bpEqKey(ps,"COLON") and (bpName ps or bpBVString ps or bpTrap())
  
  
 -- at most one colon at end
 bpBoundVariablelist ps ==
   bpRegularBVItemL ps =>
-    while (bpEqKey  "COMMA" and (bpRegularBVItemL ps or
+    while (bpEqKey(ps,"COMMA") and (bpRegularBVItemL ps or
 	(bpColonName ps
-	  and bpPush(ps,bfColonAppend(bpPop2(),bpPop1()))
+	  and bpPush(ps,bfColonAppend(bpPop2 ps,bpPop1 ps))
 	    or bpTrap();false) )) repeat
-	       bpPush(ps,append(bpPop2(),bpPop1()))
+	       bpPush(ps,append(bpPop2 ps,bpPop1 ps))
     true
-  bpColonName ps and bpPush(ps,bfColonAppend(nil,bpPop1()))
+  bpColonName ps and bpPush(ps,bfColonAppend(nil,bpPop1 ps))
  
 
 bpVariable ps ==
     bpParenthesized(ps,function bpBoundVariablelist) and
-       bpPush(ps,bfTupleIf bpPop1())
+       bpPush(ps,bfTupleIf bpPop1 ps)
          or bpBracketConstruct(ps,function bpPatternL)
                 or bpName ps or bpConstTok ps
  
@@ -1179,40 +1180,40 @@ bpAssignVariable ps ==
  
 bpAssignLHS ps ==
   not bpName ps => false
-  bpEqKey "COLON" =>          -- variable declaration
+  bpEqKey(ps,"COLON") =>          -- variable declaration
     bpRequire(ps,function bpApplication)
-    bpPush(ps,bfLocal(bpPop2(),bpPop1()))
+    bpPush(ps,bfLocal(bpPop2 ps,bpPop1 ps))
   bpArgumentList ps and 
     (bpEqPeek "DOT" 
-      or (bpEqPeek "BEC" and bpPush(ps,bfPlace bpPop1())) 
+      or (bpEqPeek "BEC" and bpPush(ps,bfPlace bpPop1 ps)) 
         or bpTrap())
-  bpEqKey "DOT" =>            -- field path
+  bpEqKey(ps,"DOT") =>            -- field path
     bpList(ps,function bpPrimary,"DOT") and 
       bpChecknull ps and
-        bpPush(ps,bfTuple([bpPop2(),:bpPop1()]))
+        bpPush(ps,bfTuple([bpPop2 ps,:bpPop1 ps]))
   true
 
 bpChecknull ps ==
-  a := bpPop1()
+  a := bpPop1 ps
   a = nil => bpTrap()
   bpPush(ps,a)
 
 bpStruct ps ==
-   bpEqKey "STRUCTURE" and
+   bpEqKey(ps,"STRUCTURE") and
       bpRequire(ps,function bpName) and
-        (bpEqKey "DEF" or bpTrap()) and
+        (bpEqKey(ps,"DEF") or bpTrap()) and
            (bpRecord ps or bpTypeList ps) and
-             bpPush(ps,%Structure(bpPop2(),bpPop1()))
+             bpPush(ps,%Structure(bpPop2 ps,bpPop1 ps))
  
 ++ Record:
 ++   "Record" "(" FieldList ")"
 bpRecord ps ==
-  s := bpState()
-  bpName ps and bpPop1() is "Record" =>
+  s := bpState ps
+  bpName ps and bpPop1 ps is "Record" =>
     (bpParenthesized(ps,function bpFieldList) or bpTrap()) and
       bpGlobalAccessors ps and
-        bpPush(ps,%Record(bfUntuple bpPop2(),bpPop1()))
-  bpRestore s
+        bpPush(ps,%Record(bfUntuple bpPop2 ps,bpPop1 ps))
+  bpRestore(ps,s)
   false
 
 ++ FieldList:
@@ -1222,7 +1223,7 @@ bpFieldList ps ==
   bpTuple(ps,function bpSignature)
 
 bpGlobalAccessors ps ==
-  bpEqKey "WITH" =>
+  bpEqKey(ps,"WITH") =>
     bpPileBracketed(ps,function bpAccessorDefinitionList) or bpTrap()
   bpPush(ps,nil)
 
@@ -1233,9 +1234,9 @@ bpAccessorDefinitionList ps ==
 ++   Name DEF FieldSection
 bpAccessorDefinition ps ==
   bpRequire(ps,function bpName) and
-    (bpEqKey "DEF" or bpTrap()) and
+    (bpEqKey(ps,"DEF") or bpTrap()) and
        bpRequire(ps,function bpFieldSection) and
-         bpPush(ps,%AccessorDef(bpPop2(),bpPop1()))
+         bpPush(ps,%AccessorDef(bpPop2 ps,bpPop1 ps))
 
 ++ FieldSection:
 ++    "(" DOT Name ")"
@@ -1243,11 +1244,11 @@ bpFieldSection ps ==
   bpParenthesized(ps,function bpSelectField)
 
 bpSelectField ps ==
-  bpEqKey "DOT" and bpName ps
+  bpEqKey(ps,"DOT") and bpName ps
 
 bpTypeList ps == 
   bpPileBracketed(ps,function bpTypeItemList)
-    or bpTypeItem ps and bpPush(ps,[bpPop1()])
+    or bpTypeItem ps and bpPush(ps,[bpPop1 ps])
 
 bpTypeItem ps ==
   bpTerm(ps,function bpIdList)
@@ -1258,22 +1259,22 @@ bpTypeItemList ps ==
 bpTerm(ps,idListParser) ==
   bpRequire(ps,function bpName) and
     ((bpParenthesized(ps,idListParser) and
-      bpPush(ps,bfNameArgs(bpPop2(),bpPop1())))
-	or bpName ps and bpPush(ps,bfNameArgs(bpPop2(),bpPop1())))
-	 or bpPush(ps,bfNameOnly bpPop1())
+      bpPush(ps,bfNameArgs(bpPop2 ps,bpPop1 ps)))
+	or bpName ps and bpPush(ps,bfNameArgs(bpPop2 ps,bpPop1 ps)))
+	 or bpPush(ps,bfNameOnly bpPop1 ps)
  
 bpIdList ps == 
   bpTuple(ps,function bpName)
  
 bpCase ps ==
-  bpEqKey "CASE" and
+  bpEqKey(ps,"CASE") and
     bpRequire(ps,function bpWhere) and
-       (bpEqKey "OF" or bpMissing "OF") and
+       (bpEqKey(ps,"OF") or bpMissing "OF") and
 	     bpPiledCaseItems ps
  
 bpPiledCaseItems ps ==
    bpPileBracketed(ps,function bpCaseItemList) and
-       bpPush(ps,bfCase(bpPop2(),bpPop1()))
+       bpPush(ps,bfCase(bpPop2 ps,bpPop1 ps))
 
 bpCaseItemList ps ==
    bpListAndRecover(ps,function bpCaseItem)
@@ -1286,9 +1287,9 @@ bpCasePatternVarList ps ==
  
 bpCaseItem ps ==
     (bpTerm(ps,function bpCasePatternVarList) or bpTrap()) and
-       (bpEqKey "EXIT" or bpTrap()) and
+       (bpEqKey(ps,"EXIT") or bpTrap()) and
          bpRequire(ps,function bpWhere) and
-            bpPush(ps,bfCaseItem(bpPop2(),bpPop1()))
+            bpPush(ps,bfCaseItem(bpPop2 ps,bpPop1 ps))
 
 
 ++ Main entry point into the parser module.
@@ -1296,7 +1297,7 @@ bpOutItem ps ==
   $op: local := nil
   $GenVarCounter: local := 0
   bpRequire(ps,function bpComma)
-  b := bpPop1()
+  b := bpPop1 ps
   t :=
     b is ["+LINE",:.] => [ b ]
     b is ["L%T",l,r] and symbol? l => 

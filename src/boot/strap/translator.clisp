@@ -448,7 +448,7 @@
      (SETQ |$returns| NIL)
      (SETQ |$bpCount| 0)
      (SETQ |$bpParenCount| 0)
-     (|bpFirstTok|)
+     (|bpFirstTok| |ps|)
      (SETQ |found|
              (LET ((#1=#:G729
                     (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem| |ps|))))

@@ -1,5 +1,11 @@
 2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot: Add parser state argument to more functions.
+	Remove references to $inputStream.
+	* boot/translator.boot (shoeOutParse): Remove $inputStream.
+
+2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (%ParserState): New.
 	(makeParserState): Likewise.
 	(%Translator): Likewise.
