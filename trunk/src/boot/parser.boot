@@ -90,7 +90,7 @@ bpFirstTok ps ==
     parserTokens ps = nil => mk%Token("ERROR","NOMORE",tokenPosition $stok)
     first parserTokens ps
   $ttok := tokenValue $stok
-  $bpParenCount > 0 and tokenClass $stok = "KEY" =>
+  parserNesting ps > 0 and tokenClass $stok = "KEY" =>
     $ttok is "SETTAB" =>
       $bpCount:=$bpCount+1
       bpNext ps
@@ -114,14 +114,14 @@ bpRequire(ps,f) ==
   apply(f,ps,nil) or bpTrap()
 
 bpState ps ==
-  [parserTokens ps,parserTrees ps,$bpParenCount,$bpCount]
+  [parserTokens ps,parserTrees ps,parserNesting ps,$bpCount]
 
  
 bpRestore(ps,x)==
   parserTokens(ps) := first x
   bpFirstToken ps
   parserTrees(ps) := second x
-  $bpParenCount:=third x
+  parserNesting(ps) := third x
   $bpCount:=CADDDR x
   true
  
@@ -150,22 +150,22 @@ bpIndentParenthesized(ps,f) ==
   $bpCount:local:=0
   a:=$stok
   bpEqPeek "OPAREN" =>
-    $bpParenCount:=$bpParenCount+1
+    parserNesting(ps) := parserNesting ps + 1
     bpNext ps
     apply(f,ps,nil) and bpFirstTok ps and
 	    (bpEqPeek "CPAREN" or bpParenTrap(a)) =>
-      $bpParenCount:=$bpParenCount-1
+      parserNesting(ps) := parserNesting ps - 1
       bpNextToken ps
       $bpCount=0 => true
       parserTokens(ps) := append(bpAddTokens $bpCount,parserTokens ps)
       bpFirstToken ps
-      $bpParenCount=0 =>
+      parserNesting ps = 0 =>
 	bpCancel ps
 	true
       true
     bpEqPeek "CPAREN" =>
       bpPush(ps,bfTuple [])
-      $bpParenCount:=$bpParenCount-1
+      parserNesting(ps) := parserNesting ps - 1
       bpNextToken ps
       true
     bpParenTrap(a)
@@ -366,11 +366,11 @@ bpMoveTo(ps,n) ==
      bpMoveTo(ps,n+1)
    bpEqPeek "OPAREN"  =>
      bpNextToken ps
-     $bpParenCount:=$bpParenCount+1
+     parserNesting(ps) := parserNesting(ps) + 1
      bpMoveTo(ps,n)
    bpEqPeek "CPAREN"  =>
      bpNextToken ps
-     $bpParenCount:=$bpParenCount-1
+     parserNesting(ps) := parserNesting ps - 1
      bpMoveTo(ps,n)
    bpNextToken ps
    bpMoveTo(ps,n)
