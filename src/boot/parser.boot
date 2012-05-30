@@ -114,36 +114,36 @@ bpRequire(ps,f) ==
   apply(f,ps,nil) or bpTrap()
 
 bpState ps ==
-  [parserTokens ps,$stack,$bpParenCount,$bpCount]
+  [parserTokens ps,parserTrees ps,$bpParenCount,$bpCount]
 
  
 bpRestore(ps,x)==
   parserTokens(ps) := first x
   bpFirstToken ps
-  $stack:=second x
+  parserTrees(ps) := second x
   $bpParenCount:=third x
   $bpCount:=CADDDR x
   true
  
 bpPush(ps,x) ==
-  $stack:=[x,:$stack]
+  parserTrees(ps) := [x,:parserTrees ps]
  
 bpPushId ps ==
-  $stack:= [bfReName $ttok,:$stack]
+  parserTrees(ps) := [bfReName $ttok,:parserTrees ps]
  
 bpPop1 ps ==
-  a:=first $stack
-  $stack:=rest $stack
+  a := first parserTrees ps
+  parserTrees(ps) := rest parserTrees ps
   a
  
 bpPop2 ps ==
-  a:=second $stack
-  $stack.rest := CDDR $stack
+  a := second parserTrees ps
+  parserTrees(ps).rest := CDDR parserTrees ps
   a
  
 bpPop3 ps ==
-  a:=third $stack
-  $stack.rest.rest := CDDDR $stack
+  a := third parserTrees ps
+  parserTrees(ps).rest.rest := CDDDR parserTrees ps
   a
  
 bpIndentParenthesized(ps,f) ==
@@ -201,10 +201,10 @@ bpPileBracketed(ps,f) ==
 bpListof(ps,f,str1,g)==
   apply(f,ps,nil) =>
     bpEqKey(ps,str1) and bpRequire(ps,f) =>
-      a:=$stack
-      $stack:=nil
+      a := parserTrees ps
+      parserTrees(ps) := nil
       while bpEqKey(ps,str1) and bpRequire(ps,f) repeat nil
-      $stack:=[reverse! $stack,:a]
+      parserTrees(ps) := [reverse! parserTrees ps,:a]
       bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
     true
   false
@@ -214,10 +214,10 @@ bpListof(ps,f,str1,g)==
 bpListofFun(ps,f,h,g)==
   apply(f,ps,nil) =>
     apply(h,ps,nil) and bpRequire(ps,f) =>
-      a:=$stack
-      $stack:=nil
+      a := parserTrees ps
+      parserTrees(ps) := nil
       while apply(h,ps,nil) and bpRequire(ps,f) repeat nil
-      $stack:=[reverse! $stack,:a]
+      parserTrees(ps) := [reverse! parserTrees ps,:a]
       bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
     true
   false
@@ -225,20 +225,20 @@ bpListofFun(ps,f,h,g)==
 bpList(ps,f,str1)==
   apply(f,ps,nil) =>
     bpEqKey(ps,str1) and bpRequire(ps,f) =>
-      a:=$stack
-      $stack:=nil
+      a := parserTrees ps
+      parserTrees(ps) := nil
       while bpEqKey(ps,str1) and bpRequire(ps,f) repeat nil
-      $stack:=[reverse! $stack,:a]
+      parserTrees(ps) := [reverse! parserTrees ps,:a]
       bpPush(ps,[bpPop3 ps,bpPop2 ps,:bpPop1 ps])
     bpPush(ps,[bpPop1 ps])
   bpPush(ps,nil)
  
 bpOneOrMore(ps,f) ==
   apply(f,ps,nil)=>
-    a:=$stack
-    $stack:=nil
+    a := parserTrees ps
+    parserTrees(ps) := nil
     while apply(f,ps,nil) repeat nil
-    $stack:=[reverse! $stack,:a]
+    parserTrees(ps) := [reverse! parserTrees ps,:a]
     bpPush(ps,[bpPop2 ps,:bpPop1 ps])
   false
  
@@ -313,9 +313,9 @@ bpRecoverTrap ps ==
   bpPush(ps,[['"pile syntax error"]])
  
 bpListAndRecover(ps,f)==
-  a := $stack
+  a := parserTrees ps
   b := nil
-  $stack := nil
+  parserTrees(ps) := nil
   done := false
   c := parserTokens ps
   while not done repeat
@@ -347,7 +347,7 @@ bpListAndRecover(ps,f)==
 	       bpNext ps
 	       c := parserTokens ps
     b := [bpPop1 ps,:b]
-  $stack := a
+  parserTrees(ps) := a
   bpPush(ps,reverse! b)
  
 bpMoveTo(ps,n) ==
@@ -948,7 +948,7 @@ bpExit ps ==
 
 bpDefinition ps ==
   bpEqKey(ps,"MACRO") =>
-    bpName ps and bpStoreName() and
+    bpName ps and bpStoreName ps and
       bpCompoundDefinitionTail(ps,function %Macro)
         or bpTrap()
   a := bpState ps
@@ -963,14 +963,14 @@ bpDefinition ps ==
   bpRestore(ps,a)
   false
  
-bpStoreName()==
-  $op := first $stack
+bpStoreName ps ==
+  $op := first parserTrees ps
   $wheredefs := nil
   $typings := nil
   true
 
 bpDef ps ==  
-  bpName ps and bpStoreName() and bpDefTail(ps,function %Definition)
+  bpName ps and bpStoreName ps and bpDefTail(ps,function %Definition)
     or bpNamespace ps and bpSimpleDefinitionTail ps
  
 bpDDef ps ==
