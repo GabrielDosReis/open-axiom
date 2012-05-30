@@ -434,8 +434,8 @@
 (DEFUN |shoeOutParse| (|toks|)
   (LET* (|found| |ps|)
     (DECLARE
-     (SPECIAL |$bpParenCount| |$bpCount| |$returns| |$typings| |$wheredefs|
-      |$op| |$ttok| |$stok|))
+     (SPECIAL |$bpCount| |$returns| |$typings| |$wheredefs| |$op| |$ttok|
+      |$stok|))
     (PROGN
      (SETQ |ps| (|makeParserState| |toks|))
      (SETQ |$stok| NIL)
@@ -445,7 +445,6 @@
      (SETQ |$typings| NIL)
      (SETQ |$returns| NIL)
      (SETQ |$bpCount| 0)
-     (SETQ |$bpParenCount| 0)
      (|bpFirstTok| |ps|)
      (SETQ |found|
              (LET ((#1=#:G729

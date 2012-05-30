@@ -65,7 +65,7 @@
    T))
 
 (DEFUN |bpFirstTok| (|ps|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount| |$ttok| |$stok|))
+  (DECLARE (SPECIAL |$bpCount| |$ttok| |$stok|))
   (PROGN
    (SETQ |$stok|
            (COND
@@ -74,7 +74,7 @@
             (T (CAR (|parserTokens| |ps|)))))
    (SETQ |$ttok| (|tokenValue| |$stok|))
    (COND
-    ((AND (PLUSP |$bpParenCount|) (EQ (|tokenClass| |$stok|) 'KEY))
+    ((AND (PLUSP (|parserNesting| |ps|)) (EQ (|tokenClass| |$stok|) 'KEY))
      (COND
       ((EQ |$ttok| 'SETTAB) (SETQ |$bpCount| (+ |$bpCount| 1)) (|bpNext| |ps|))
       ((EQ |$ttok| 'BACKTAB) (SETQ |$bpCount| (- |$bpCount| 1))
@@ -95,16 +95,17 @@
 (DEFUN |bpRequire| (|ps| |f|) (OR (APPLY |f| |ps| NIL) (|bpTrap|)))
 
 (DEFUN |bpState| (|ps|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount|))
-  (LIST (|parserTokens| |ps|) (|parserTrees| |ps|) |$bpParenCount| |$bpCount|))
+  (DECLARE (SPECIAL |$bpCount|))
+  (LIST (|parserTokens| |ps|) (|parserTrees| |ps|) (|parserNesting| |ps|)
+        |$bpCount|))
 
 (DEFUN |bpRestore| (|ps| |x|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount|))
+  (DECLARE (SPECIAL |$bpCount|))
   (PROGN
    (SETF (|parserTokens| |ps|) (CAR |x|))
    (|bpFirstToken| |ps|)
    (SETF (|parserTrees| |ps|) (CADR |x|))
-   (SETQ |$bpParenCount| (CADDR |x|))
+   (SETF (|parserNesting| |ps|) (CADDR |x|))
    (SETQ |$bpCount| (CADDDR |x|))
    T))
 
@@ -138,27 +139,31 @@
 
 (DEFUN |bpIndentParenthesized| (|ps| |f|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$bpParenCount| |$stok|))
+    (DECLARE (SPECIAL |$stok|))
     (LET ((|$bpCount| 0))
       (DECLARE (SPECIAL |$bpCount|))
       (PROGN
        (SETQ |a| |$stok|)
        (COND
-        ((|bpEqPeek| 'OPAREN) (SETQ |$bpParenCount| (+ |$bpParenCount| 1))
+        ((|bpEqPeek| 'OPAREN)
+         (SETF (|parserNesting| |ps|) (+ (|parserNesting| |ps|) 1))
          (|bpNext| |ps|)
          (COND
           ((AND (APPLY |f| |ps| NIL) (|bpFirstTok| |ps|)
                 (OR (|bpEqPeek| 'CPAREN) (|bpParenTrap| |a|)))
-           (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken| |ps|)
+           (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
+           (|bpNextToken| |ps|)
            (COND ((EQL |$bpCount| 0) T)
                  (T
                   (SETF (|parserTokens| |ps|)
                           (|append| (|bpAddTokens| |$bpCount|)
                                     (|parserTokens| |ps|)))
                   (|bpFirstToken| |ps|)
-                  (COND ((EQL |$bpParenCount| 0) (|bpCancel| |ps|) T) (T T)))))
+                  (COND ((EQL (|parserNesting| |ps|) 0) (|bpCancel| |ps|) T)
+                        (T T)))))
           ((|bpEqPeek| 'CPAREN) (|bpPush| |ps| (|bfTuple| NIL))
-           (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken| |ps|) T)
+           (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
+           (|bpNextToken| |ps|) T)
           (T (|bpParenTrap| |a|))))
         (T NIL))))))
 
@@ -404,7 +409,7 @@
      (|bpPush| |ps| (|reverse!| |b|)))))
 
 (DEFUN |bpMoveTo| (|ps| |n|)
-  (DECLARE (SPECIAL |$bpParenCount| |$bpCount|))
+  (DECLARE (SPECIAL |$bpCount|))
   (COND ((NULL (|parserTokens| |ps|)) T)
         ((|bpEqPeek| 'BACKTAB)
          (COND ((EQL |n| 0) T)
@@ -414,9 +419,11 @@
          (COND ((EQL |n| 0) T) (T (|bpNextToken| |ps|) (|bpMoveTo| |ps| |n|))))
         ((|bpEqPeek| 'SETTAB) (|bpNextToken| |ps|) (|bpMoveTo| |ps| (+ |n| 1)))
         ((|bpEqPeek| 'OPAREN) (|bpNextToken| |ps|)
-         (SETQ |$bpParenCount| (+ |$bpParenCount| 1)) (|bpMoveTo| |ps| |n|))
+         (SETF (|parserNesting| |ps|) (+ (|parserNesting| |ps|) 1))
+         (|bpMoveTo| |ps| |n|))
         ((|bpEqPeek| 'CPAREN) (|bpNextToken| |ps|)
-         (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpMoveTo| |ps| |n|))
+         (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
+         (|bpMoveTo| |ps| |n|))
         (T (|bpNextToken| |ps|) (|bpMoveTo| |ps| |n|))))
 
 (DEFUN |bpQualifiedName| (|ps|)
