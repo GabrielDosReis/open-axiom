@@ -66,33 +66,29 @@
 (DEFUN |makeTranslator| (|ip|) (|mk%Translator| |ip| NIL NIL NIL NIL))
 
 (DEFUN |bpFirstToken| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (PROGN
    (SETF (|parserCurrentToken| |ps|)
            (COND
             ((NULL (|parserTokens| |ps|))
              (|mk%Token| 'ERROR 'NOMORE (|parserTokenPosition| |ps|)))
             (T (CAR (|parserTokens| |ps|)))))
-   (SETQ |$ttok| (|parserTokenValue| |ps|))
    T))
 
 (DEFUN |bpFirstTok| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (PROGN
    (SETF (|parserCurrentToken| |ps|)
            (COND
             ((NULL (|parserTokens| |ps|))
              (|mk%Token| 'ERROR 'NOMORE (|parserTokenPosition| |ps|)))
             (T (CAR (|parserTokens| |ps|)))))
-   (SETQ |$ttok| (|parserTokenValue| |ps|))
    (COND
     ((AND (PLUSP (|parserNesting| |ps|)) (EQ (|parserTokenClass| |ps|) 'KEY))
      (COND
-      ((EQ |$ttok| 'SETTAB)
+      ((EQ (|parserTokenValue| |ps|) 'SETTAB)
        (SETF (|parserScope| |ps|) (+ (|parserScope| |ps|) 1)) (|bpNext| |ps|))
-      ((EQ |$ttok| 'BACKTAB)
+      ((EQ (|parserTokenValue| |ps|) 'BACKTAB)
        (SETF (|parserScope| |ps|) (- (|parserScope| |ps|) 1)) (|bpNext| |ps|))
-      ((EQ |$ttok| 'BACKSET) (|bpNext| |ps|)) (T T)))
+      ((EQ (|parserTokenValue| |ps|) 'BACKSET) (|bpNext| |ps|)) (T T)))
     (T T))))
 
 (DEFUN |bpNext| (|ps|)
@@ -124,8 +120,8 @@
   (SETF (|parserTrees| |ps|) (CONS |x| (|parserTrees| |ps|))))
 
 (DEFUN |bpPushId| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
-  (SETF (|parserTrees| |ps|) (CONS (|bfReName| |$ttok|) (|parserTrees| |ps|))))
+  (SETF (|parserTrees| |ps|)
+          (CONS (|bfReName| (|parserTokenValue| |ps|)) (|parserTrees| |ps|))))
 
 (DEFUN |bpPop1| (|ps|)
   (LET* (|a|)
@@ -331,16 +327,14 @@
         (T (|bpEqKey| |ps| 'ELSE))))
 
 (DEFUN |bpEqPeek| (|ps| |s|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| |$ttok|)))
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| (|parserTokenValue| |ps|))))
 
 (DEFUN |bpEqKey| (|ps| |s|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| |$ttok|) (|bpNext| |ps|)))
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| (|parserTokenValue| |ps|))
+       (|bpNext| |ps|)))
 
 (DEFUN |bpEqKeyNextTok| (|ps| |s|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| |$ttok|)
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (EQ |s| (|parserTokenValue| |ps|))
        (|bpNextToken| |ps|)))
 
 (DEFUN |bpPileTrap| (|ps|) (|bpMissing| |ps| 'BACKTAB))
@@ -476,16 +470,16 @@
    (T NIL)))
 
 (DEFUN |bpConstTok| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (COND
    ((|symbolMember?| (|parserTokenClass| |ps|) '(INTEGER FLOAT))
-    (|bpPush| |ps| |$ttok|) (|bpNext| |ps|))
+    (|bpPush| |ps| (|parserTokenValue| |ps|)) (|bpNext| |ps|))
    ((EQ (|parserTokenClass| |ps|) 'LISP)
-    (AND (|bpPush| |ps| (|%Lisp| |$ttok|)) (|bpNext| |ps|)))
+    (AND (|bpPush| |ps| (|%Lisp| (|parserTokenValue| |ps|))) (|bpNext| |ps|)))
    ((EQ (|parserTokenClass| |ps|) 'LISPEXP)
-    (AND (|bpPush| |ps| |$ttok|) (|bpNext| |ps|)))
+    (AND (|bpPush| |ps| (|parserTokenValue| |ps|)) (|bpNext| |ps|)))
    ((EQ (|parserTokenClass| |ps|) 'LINE)
-    (AND (|bpPush| |ps| (LIST '+LINE |$ttok|)) (|bpNext| |ps|)))
+    (AND (|bpPush| |ps| (LIST '+LINE (|parserTokenValue| |ps|)))
+         (|bpNext| |ps|)))
    ((|bpEqPeek| |ps| 'QUOTE) (|bpNext| |ps|)
     (AND (|bpRequire| |ps| #'|bpSexp|)
          (|bpPush| |ps| (|bfSymbol| (|bpPop1| |ps|)))))
@@ -493,9 +487,9 @@
 
 (DEFUN |bpChar| (|ps|)
   (LET* (|ISTMP#1| |s| |a|)
-    (DECLARE (SPECIAL |$ttok|))
     (COND
-     ((AND (EQ (|parserTokenClass| |ps|) 'ID) (EQ |$ttok| '|char|))
+     ((AND (EQ (|parserTokenClass| |ps|) 'ID)
+           (EQ (|parserTokenValue| |ps|) '|char|))
       (SETQ |a| (|bpState| |ps|))
       (COND
        ((|bpApplication| |ps|) (SETQ |s| (|bpPop1| |ps|))
@@ -632,24 +626,24 @@
 
 (DEFUN |bpSexpKey| (|ps|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$ttok|))
     (COND
      ((AND (EQ (|parserTokenClass| |ps|) 'KEY) (NOT (|bpExceptions| |ps|)))
-      (SETQ |a| (GET |$ttok| 'SHOEINF))
+      (SETQ |a| (GET (|parserTokenValue| |ps|) 'SHOEINF))
       (COND
-       ((NULL |a|) (AND (|bpPush| |ps| (|keywordId| |$ttok|)) (|bpNext| |ps|)))
+       ((NULL |a|)
+        (AND (|bpPush| |ps| (|keywordId| (|parserTokenValue| |ps|)))
+             (|bpNext| |ps|)))
        (T (AND (|bpPush| |ps| |a|) (|bpNext| |ps|)))))
      (T NIL))))
 
 (DEFUN |bpAnyId| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (OR
    (AND (|bpEqKey| |ps| 'MINUS)
         (OR (EQ (|parserTokenClass| |ps|) 'INTEGER) (|bpTrap| |ps|))
-        (|bpPush| |ps| (- |$ttok|)) (|bpNext| |ps|))
+        (|bpPush| |ps| (- (|parserTokenValue| |ps|))) (|bpNext| |ps|))
    (|bpSexpKey| |ps|)
    (AND (|symbolMember?| (|parserTokenClass| |ps|) '(ID INTEGER STRING FLOAT))
-        (|bpPush| |ps| |$ttok|) (|bpNext| |ps|))))
+        (|bpPush| |ps| (|parserTokenValue| |ps|)) (|bpNext| |ps|))))
 
 (DEFUN |bpSexp| (|ps|)
   (OR (|bpAnyId| |ps|)
@@ -685,14 +679,14 @@
 (DEFUN |bpDot| (|ps|) (AND (|bpEqKey| |ps| 'DOT) (|bpPush| |ps| (|bfDot|))))
 
 (DEFUN |bpPrefixOperator| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (GET |$ttok| 'SHOEPRE)
-       (|bpPushId| |ps|) (|bpNext| |ps|)))
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY)
+       (GET (|parserTokenValue| |ps|) 'SHOEPRE) (|bpPushId| |ps|)
+       (|bpNext| |ps|)))
 
 (DEFUN |bpInfixOperator| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (GET |$ttok| 'SHOEINF)
-       (|bpPushId| |ps|) (|bpNext| |ps|)))
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY)
+       (GET (|parserTokenValue| |ps|) 'SHOEINF) (|bpPushId| |ps|)
+       (|bpNext| |ps|)))
 
 (DEFUN |bpSelector| (|ps|)
   (AND (|bpEqKey| |ps| 'DOT)
@@ -733,9 +727,9 @@
 (DEFUN |bpExpt| (|ps|) (|bpRightAssoc| |ps| '(POWER) #'|bpTyped|))
 
 (DEFUN |bpInfKey| (|ps| |s|)
-  (DECLARE (SPECIAL |$ttok|))
-  (AND (EQ (|parserTokenClass| |ps|) 'KEY) (|symbolMember?| |$ttok| |s|)
-       (|bpPushId| |ps|) (|bpNext| |ps|)))
+  (AND (EQ (|parserTokenClass| |ps|) 'KEY)
+       (|symbolMember?| (|parserTokenValue| |ps|) |s|) (|bpPushId| |ps|)
+       (|bpNext| |ps|)))
 
 (DEFUN |bpInfGeneric| (|ps| |s|)
   (AND (|bpInfKey| |ps| |s|) (OR (|bpEqKey| |ps| 'BACKSET) T)))
@@ -775,18 +769,18 @@
    (T NIL)))
 
 (DEFUN |bpString| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (AND (EQ (|parserTokenClass| |ps|) 'STRING)
-       (|bpPush| |ps| (|quote| (INTERN |$ttok|))) (|bpNext| |ps|)))
+       (|bpPush| |ps| (|quote| (INTERN (|parserTokenValue| |ps|))))
+       (|bpNext| |ps|)))
 
 (DEFUN |bpFunction| (|ps|)
   (AND (|bpEqKey| |ps| 'FUNCTION) (|bpRequire| |ps| #'|bpPrimary1|)
        (|bpPush| |ps| (|bfFunction| (|bpPop1| |ps|)))))
 
 (DEFUN |bpThetaName| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (COND
-   ((AND (EQ (|parserTokenClass| |ps|) 'ID) (GET |$ttok| 'SHOETHETA))
+   ((AND (EQ (|parserTokenClass| |ps|) 'ID)
+         (GET (|parserTokenValue| |ps|) 'SHOETHETA))
     (|bpPushId| |ps|) (|bpNext| |ps|))
    (T NIL)))
 
@@ -1226,9 +1220,9 @@
       (|bpBracketConstruct| |ps| #'|bpPatternL|)))
 
 (DEFUN |bpBVString| (|ps|)
-  (DECLARE (SPECIAL |$ttok|))
   (AND (EQ (|parserTokenClass| |ps|) 'STRING)
-       (|bpPush| |ps| (LIST 'BVQUOTE (INTERN |$ttok|))) (|bpNext| |ps|)))
+       (|bpPush| |ps| (LIST 'BVQUOTE (INTERN (|parserTokenValue| |ps|))))
+       (|bpNext| |ps|)))
 
 (DEFUN |bpRegularBVItemL| (|ps|)
   (AND (|bpRegularBVItem| |ps|) (|bpPush| |ps| (LIST (|bpPop1| |ps|)))))
