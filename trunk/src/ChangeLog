@@ -1,5 +1,15 @@
 2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfSpecificErrorHere): New.
+	(bfISReverse) Use it.  Don't use bpTrap.
+	(bfIS1): Likewise.
+	(bfParameterList): Likewise.
+	(bfHandlers): Likewise.
+	* boot/parser.boot (bpTrap): Take a parser state argument.
+	Adjust callers.
+
+2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot: Remove references to $bpCount.
 	* boot/translator.boot (shoeOutParse): Likewise.
 

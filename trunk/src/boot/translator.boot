@@ -427,7 +427,7 @@ packageBody(x,p) ==
         %hasFeature KEYWORD::ECL => 'FFI
         return nil
       ident? ns => ns
-      bpTrap()
+      bfSpecificErrorHere '"invalid namespace"
     ['USE_-PACKAGE,symbolName z,:user]
   x is ['PROGN,:.] => [x.op,:[packageBody(y,p) for y in x.args]]
   x

@@ -148,6 +148,10 @@
 
 (DEFUN |quote| (|x|) (LIST 'QUOTE |x|))
 
+(DEFUN |bfSpecificErrorHere| (|msg|)
+  (THROW :OPEN-AXIOM-CATCH-POINT
+    (CONS :OPEN-AXIOM-CATCH-POINT (CONS '(|BootSpecificError|) |msg|))))
+
 (DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfGenSymbol|))
 
 (DEFUN |bfGenSymbol| ()
@@ -1042,7 +1046,7 @@
       (COND ((NULL (CADDR |x|)) (LIST 'CONS (CADR |x|) |a|))
             (T (SETQ |y| (|bfISReverse| (CADDR |x|) NIL))
              (RPLACA (CDR (CDR |y|)) (LIST 'CONS (CADR |x|) |a|)) |y|)))
-     (T (|bpSpecificErrorHere| "Error in bfISReverse") (|bpTrap|)))))
+     (T (|bfSpecificErrorHere| "Error in bfISReverse")))))
 
 (DEFUN |bfIS1| (|lhs| |rhs|)
   (LET* (|l2|
@@ -1152,11 +1156,11 @@
                                                        (LIST '|reverse!| |a|))
                                           'T)
                                     NIL)))))))
-          (T (|bpSpecificErrorHere| "bad IS code is generated") (|bpTrap|)))))
+          (T (|bfSpecificErrorHere| "bad IS code is generated")))))
 
 (DEFUN |bfHas| (|expr| |prop|)
   (COND ((SYMBOLP |prop|) (LIST 'GET |expr| (|quote| |prop|)))
-        (T (|bpSpecificErrorHere| "expected identifier as property name"))))
+        (T (|bfSpecificErrorHere| "expected identifier as property name"))))
 
 (DEFUN |bfKeyArg| (|k| |x|) (LIST '|%Key| |k| |x|))
 
@@ -1579,7 +1583,7 @@
         ((AND (CONSP |p1|) (EQ (CAR |p1|) '&OPTIONAL))
          (COND
           ((NOT (AND (CONSP |p2|) (EQ (CAR |p2|) '&OPTIONAL)))
-           (|bpSpecificErrorHere| "default value required"))
+           (|bfSpecificErrorHere| "default value required"))
           (T (CONS (CAR |p1|) (|append| (CDR |p1|) (CDR |p2|))))))
         ((AND (CONSP |p2|) (EQ (CAR |p2|) '&OPTIONAL))
          (CONS |p1| (CONS (CAR |p2|) (CDR |p2|))))
@@ -2617,7 +2621,7 @@
                                 (LIST 'LET (LIST (LIST |v| (LIST 'CDR |e|)))
                                       |s|))
                           |xs|)))
-     (T (|bpTrap|)))))
+     (T (|bfSpecificErrorHere| "invalid handler message")))))
 
 (DEFUN |codeForCatchHandlers| (|g| |e| |cs|)
   (LET* (|ehTest|)

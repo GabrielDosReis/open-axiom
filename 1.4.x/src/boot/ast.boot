@@ -123,6 +123,9 @@ $inDefIS := false
 quote x ==
   ['QUOTE,x]
 
+bfSpecificErrorHere msg ==
+  throw msg : BootSpecificError
+
 --%
 
 bfGenSymbol: () -> %Symbol 
@@ -721,8 +724,7 @@ bfISReverse(x,a) ==
     y := bfISReverse(third x, nil)
     y.rest.rest.first := ['CONS,second x,a]
     y
-  bpSpecificErrorHere '"Error in bfISReverse"
-  bpTrap()
+  bfSpecificErrorHere '"Error in bfISReverse"
  
 bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
@@ -768,13 +770,12 @@ bfIS1(lhs,rhs) ==
       l2 := [l2,:nil]
     a is "DOT" => bfAND [rev,:l2]
     bfAND [rev,:l2,['PROGN,bfLetForm(a,['reverse!,a]),'T]]
-  bpSpecificErrorHere '"bad IS code is generated"
-  bpTrap()
+  bfSpecificErrorHere '"bad IS code is generated"
 
 
 bfHas(expr,prop) ==
   symbol? prop => ["GET",expr, quote prop]
-  bpSpecificErrorHere('"expected identifier as property name")
+  bfSpecificErrorHere('"expected identifier as property name")
   
 bfKeyArg(k,x) ==
   ['%Key,k,x]
@@ -969,7 +970,7 @@ shoeComp x==
 bfParameterList(p1,p2) ==
   p2=nil and p1 is [.,:.] => p1
   p1 is ["&OPTIONAL",:.] =>
-    p2 isnt ["&OPTIONAL",:.] => bpSpecificErrorHere '"default value required"
+    p2 isnt ["&OPTIONAL",:.] => bfSpecificErrorHere '"default value required"
     [first p1,:rest p1,:rest p2]
   p2 is ["&OPTIONAL",:.] =>   [p1,first p2,:rest p2]
   [p1,:p2]
@@ -1367,7 +1368,7 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
         symbol? t => quote [t] -- instantiate niladic type ctor
         quote t
       main(n,e,hs',[[bfQ(["CAR",e],t),["LET",[[v,["CDR",e]]],s]],:xs])
-    bpTrap()
+    bfSpecificErrorHere '"invalid handler message"
 
 codeForCatchHandlers(g,e,cs) ==
   ehTest := ['AND,['CONSP,g],
