@@ -95,22 +95,20 @@ bpFirstToken ps ==
   parserCurrentToken(ps) :=
     parserTokens ps = nil => mk%Token("ERROR","NOMORE",parserTokenPosition ps)
     first parserTokens ps
-  $ttok := parserTokenValue ps
   true
  
 bpFirstTok ps ==
   parserCurrentToken(ps) :=
     parserTokens ps = nil => mk%Token("ERROR","NOMORE",parserTokenPosition ps)
     first parserTokens ps
-  $ttok := parserTokenValue ps
   parserNesting ps > 0 and parserTokenClass ps = "KEY" =>
-    $ttok is "SETTAB" =>
+    parserTokenValue ps is "SETTAB" =>
       parserScope(ps) := parserScope ps + 1
       bpNext ps
-    $ttok is "BACKTAB" =>
+    parserTokenValue ps is "BACKTAB" =>
       parserScope(ps) := parserScope ps - 1
       bpNext ps
-    $ttok is "BACKSET" =>
+    parserTokenValue ps is "BACKSET" =>
       bpNext ps
     true
   true
@@ -142,7 +140,7 @@ bpPush(ps,x) ==
   parserTrees(ps) := [x,:parserTrees ps]
  
 bpPushId ps ==
-  parserTrees(ps) := [bfReName $ttok,:parserTrees ps]
+  parserTrees(ps) := [bfReName parserTokenValue ps,:parserTrees ps]
  
 bpPop1 ps ==
   a := first parserTrees ps
@@ -293,13 +291,13 @@ bpBacksetElse ps ==
   bpEqKey(ps,"ELSE")
  
 bpEqPeek(ps,s) == 
-  parserTokenClass ps = "KEY" and symbolEq?(s,$ttok)
+  parserTokenClass ps = "KEY" and symbolEq?(s,parserTokenValue ps)
  
 bpEqKey(ps,s) ==
-  parserTokenClass ps = "KEY" and symbolEq?(s,$ttok) and bpNext ps
+  parserTokenClass ps = "KEY" and symbolEq?(s,parserTokenValue ps) and bpNext ps
 
 bpEqKeyNextTok(ps,s) ==   
-  parserTokenClass ps = "KEY" and symbolEq?(s,$ttok) and bpNextToken ps
+  parserTokenClass ps = "KEY" and symbolEq?(s,parserTokenValue ps) and bpNextToken ps
  
 bpPileTrap ps   == bpMissing(ps,"BACKTAB")
 bpBrackTrap(ps,x) == bpMissingMate(ps,"]",x)
@@ -444,11 +442,14 @@ bpName ps ==
 ++   STRING
 bpConstTok ps ==
   parserTokenClass ps in '(INTEGER FLOAT) =>
-    bpPush(ps,$ttok)
+    bpPush(ps,parserTokenValue ps)
     bpNext ps
-  parserTokenClass ps = "LISP" => bpPush(ps,%Lisp $ttok) and bpNext ps
-  parserTokenClass ps = "LISPEXP" => bpPush(ps,$ttok) and bpNext ps
-  parserTokenClass ps = "LINE" => bpPush(ps,["+LINE", $ttok]) and bpNext ps
+  parserTokenClass ps = "LISP" =>
+    bpPush(ps,%Lisp parserTokenValue ps) and bpNext ps
+  parserTokenClass ps = "LISPEXP" =>
+    bpPush(ps,parserTokenValue ps) and bpNext ps
+  parserTokenClass ps = "LINE" =>
+    bpPush(ps,["+LINE",parserTokenValue ps]) and bpNext ps
   bpEqPeek(ps,"QUOTE") =>
     bpNext ps
     bpRequire(ps,function bpSexp) and
@@ -456,7 +457,7 @@ bpConstTok ps ==
   bpString ps or bpFunction ps
 
 bpChar ps ==
-  parserTokenClass ps = "ID" and $ttok is "char" =>
+  parserTokenClass ps = "ID" and parserTokenValue ps is "char" =>
     a := bpState ps
     bpApplication ps =>
       s := bpPop1 ps
@@ -618,17 +619,17 @@ bpExceptions ps ==
  
 bpSexpKey ps ==
   parserTokenClass ps = "KEY" and not bpExceptions ps =>
-    a := $ttok has SHOEINF
-    a = nil => bpPush(ps,keywordId $ttok) and bpNext ps
+    a := parserTokenValue ps has SHOEINF
+    a = nil => bpPush(ps,keywordId parserTokenValue ps) and bpNext ps
     bpPush(ps,a) and bpNext ps
   false
  
 bpAnyId ps ==
   bpEqKey(ps,"MINUS") and (parserTokenClass ps = "INTEGER" or bpTrap ps) and
-    bpPush(ps,-$ttok) and bpNext ps
+    bpPush(ps,-parserTokenValue ps) and bpNext ps
       or bpSexpKey ps
         or parserTokenClass ps in '(ID INTEGER STRING FLOAT) and
-             bpPush(ps,$ttok) and  bpNext ps
+             bpPush(ps,parserTokenValue ps) and  bpNext ps
  
 bpSexp ps ==
   bpAnyId ps or
@@ -667,11 +668,11 @@ bpDot ps ==
  
 bpPrefixOperator ps ==
    parserTokenClass ps = "KEY" and
-     $ttok has SHOEPRE and bpPushId ps and  bpNext ps
+     parserTokenValue ps has SHOEPRE and bpPushId ps and  bpNext ps
  
 bpInfixOperator ps ==
   parserTokenClass ps = "KEY" and
-    $ttok has SHOEINF and bpPushId ps and  bpNext ps
+    parserTokenValue ps has SHOEINF and bpPushId ps and  bpNext ps
  
 bpSelector ps ==
   bpEqKey(ps,"DOT") and (bpPrimary ps
@@ -713,7 +714,7 @@ bpExpt ps == bpRightAssoc(ps,'(POWER),function bpTyped)
  
 bpInfKey(ps,s) ==
   parserTokenClass ps = "KEY" and
-    symbolMember?($ttok,s) and bpPushId ps and bpNext ps
+    symbolMember?(parserTokenValue ps,s) and bpPushId ps and bpNext ps
  
 bpInfGeneric(ps,s) ==
   bpInfKey(ps,s) and (bpEqKey(ps,"BACKSET") or true)
@@ -737,14 +738,14 @@ bpLeftAssoc(ps,operations,parser)==
  
 bpString ps ==
   parserTokenClass ps = "STRING" and
-    bpPush(ps,quote makeSymbol $ttok) and bpNext ps
+    bpPush(ps,quote makeSymbol parserTokenValue ps) and bpNext ps
  
 bpFunction ps ==
   bpEqKey(ps,"FUNCTION") and bpRequire(ps,function bpPrimary1)
     and bpPush(ps,bfFunction bpPop1 ps)
 
 bpThetaName ps ==
-  parserTokenClass ps = "ID" and $ttok has SHOETHETA =>
+  parserTokenClass ps = "ID" and parserTokenValue ps has SHOETHETA =>
     bpPushId ps
     bpNext ps
   false
@@ -1182,7 +1183,7 @@ bpRegularBVItem ps ==
  
 bpBVString ps ==
   parserTokenClass ps = "STRING" and
-      bpPush(ps,["BVQUOTE",makeSymbol $ttok]) and bpNext ps
+    bpPush(ps,["BVQUOTE",makeSymbol parserTokenValue ps]) and bpNext ps
  
 bpRegularBVItemL ps ==
   bpRegularBVItem ps and bpPush(ps,[bpPop1 ps])

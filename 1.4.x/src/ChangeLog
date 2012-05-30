@@ -1,5 +1,9 @@
 2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot: Replace references to $ttok.
+
+2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (%ParserState): Add field for current token.
 	Replace references to $stok.
 
