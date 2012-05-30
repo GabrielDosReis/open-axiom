@@ -364,7 +364,7 @@ bfSep(iters)==
   iters = nil => [[],[],[],[],[],[]]
   f := first iters
   r := bfSep rest iters
-  [append(i,j) for i in f for j in r]
+  [[:i,:j] for i in f for j in r]
  
 bfReduce(op,y)==
   a :=
@@ -597,7 +597,7 @@ defSheepAndGoatsList(x)==
   x = nil => [[],[],[]]
   [opassoc,defs,nondefs]    := defSheepAndGoats first x
   [opassoc1,defs1,nondefs1] := defSheepAndGoatsList rest x
-  [append(opassoc,opassoc1),append(defs,defs1), append(nondefs,nondefs1)]
+  [[:opassoc,:opassoc1],[:defs,:defs1],[:nondefs,:nondefs1]]
 
 --% LET
  
@@ -1236,7 +1236,7 @@ bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
   a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
                for d in defs]
-  $wheredefs:=append(a,$wheredefs)
+  $wheredefs := [:a,:$wheredefs]
   bfMKPROGN bfSUBLIS(opassoc,append!(nondefs,[expr]))
  
 --shoeReadLispString(s,n)==

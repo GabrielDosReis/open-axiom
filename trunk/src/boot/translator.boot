@@ -578,12 +578,12 @@ defuse1(e,y)==
 	      defusebuiltin y =>$used
 	      UNION([y],$used)
       []
-  y is ["LAMBDA",a,:b]=> defuse1 (append(unfluidlist a,e),b)
+  y is ["LAMBDA",a,:b] => defuse1([:unfluidlist a,:e],b)
   y is ["PROG",a,:b]=>
 	 [dol,ndol]:=defSeparate a
 	 for i in dol repeat
 	       tableValue($bootDefined,i) := true
-	 defuse1 (append(ndol,e),b)
+	 defuse1([:ndol,:e],b)
   y is ['QUOTE,:a] => []
   y is ["+LINE",:a] => []
   for i in y repeat defuse1(e,i)

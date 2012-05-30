@@ -170,7 +170,7 @@ bpIndentParenthesized(ps,f) ==
         parserNesting(ps) := parserNesting ps - 1
         bpNextToken ps
         parserScope ps = 0 => true
-        parserTokens(ps) := append(bpAddTokens(ps,parserScope ps),parserTokens ps)
+        parserTokens(ps) := [:bpAddTokens(ps,parserScope ps),:parserTokens ps]
         bpFirstToken ps
         parserNesting ps = 0 =>
           bpCancel ps
@@ -1146,16 +1146,16 @@ bpPatternList ps ==
   bpRegularPatternItemL ps =>
     while (bpEqKey(ps,"COMMA") and (bpRegularPatternItemL ps or
 	(bpPatternTail ps
-	  and bpPush(ps,append(bpPop2 ps,bpPop1 ps))
+	  and bpPush(ps,[:bpPop2 ps,:bpPop1 ps])
 	    or bpTrap ps;false) )) repeat
-	      bpPush(ps,append(bpPop2 ps,bpPop1 ps))
+	      bpPush(ps,[:bpPop2 ps,:bpPop1 ps])
     true
   bpPatternTail ps
  
 bpPatternTail ps ==
   bpPatternColon ps and
       (bpEqKey(ps,"COMMA") and bpRequire(ps,function bpRegularList)
-	   and bpPush(ps,append(bpPop2 ps,bpPop1 ps)) or true)
+	   and bpPush(ps,[:bpPop2 ps,:bpPop1 ps]) or true)
  
 -- BOUND VARIABLE
 
@@ -1199,7 +1199,7 @@ bpBoundVariablelist ps ==
 	(bpColonName ps
 	  and bpPush(ps,bfColonAppend(bpPop2 ps,bpPop1 ps))
 	    or bpTrap ps;false) )) repeat
-	       bpPush(ps,append(bpPop2 ps,bpPop1 ps))
+	       bpPush(ps,[:bpPop2 ps,:bpPop1 ps])
     true
   bpColonName ps and bpPush(ps,bfColonAppend(nil,bpPop1 ps))
  
