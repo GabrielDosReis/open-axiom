@@ -435,11 +435,9 @@
   (LET* (|found| |ps|)
     (DECLARE
      (SPECIAL |$bpParenCount| |$bpCount| |$returns| |$typings| |$wheredefs|
-      |$op| |$ttok| |$stok| |$stack| |$inputStream|))
+      |$op| |$ttok| |$stok|))
     (PROGN
-     (SETQ |$inputStream| |toks|)
      (SETQ |ps| (|makeParserState| |toks|))
-     (SETQ |$stack| NIL)
      (SETQ |$stok| NIL)
      (SETQ |$ttok| NIL)
      (SETQ |$op| NIL)
@@ -461,8 +459,10 @@
                   (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
                 (T #1#))))
      (COND ((EQ |found| 'TRAPPED) NIL)
-           ((NOT (|bStreamNull| |$inputStream|)) (|bpGeneralErrorHere|) NIL)
-           ((NULL |$stack|) (|bpGeneralErrorHere|) NIL) (T (CAR |$stack|))))))
+           ((NOT (|bStreamNull| (|parserTokens| |ps|))) (|bpGeneralErrorHere|)
+            NIL)
+           ((NULL (|parserTrees| |ps|)) (|bpGeneralErrorHere|) NIL)
+           (T (CAR (|parserTrees| |ps|)))))))
 
 (DEFUN |genDeclaration| (|n| |t|)
   (LET* (|t'| |ISTMP#2| |vars| |ISTMP#1|)

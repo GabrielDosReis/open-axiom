@@ -54,24 +54,24 @@
 (DEFUN |makeTranslator| (|ip|) (|mk%Translator| |ip| NIL NIL NIL NIL))
 
 (DEFUN |bpFirstToken| (|ps|)
-  (DECLARE (SPECIAL |$ttok| |$stok| |$inputStream|))
+  (DECLARE (SPECIAL |$ttok| |$stok|))
   (PROGN
    (SETQ |$stok|
            (COND
-            ((NULL |$inputStream|)
+            ((NULL (|parserTokens| |ps|))
              (|mk%Token| 'ERROR 'NOMORE (|tokenPosition| |$stok|)))
-            (T (CAR |$inputStream|))))
+            (T (CAR (|parserTokens| |ps|)))))
    (SETQ |$ttok| (|tokenValue| |$stok|))
    T))
 
 (DEFUN |bpFirstTok| (|ps|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount| |$ttok| |$stok| |$inputStream|))
+  (DECLARE (SPECIAL |$bpCount| |$bpParenCount| |$ttok| |$stok|))
   (PROGN
    (SETQ |$stok|
            (COND
-            ((NULL |$inputStream|)
+            ((NULL (|parserTokens| |ps|))
              (|mk%Token| 'ERROR 'NOMORE (|tokenPosition| |$stok|)))
-            (T (CAR |$inputStream|))))
+            (T (CAR (|parserTokens| |ps|)))))
    (SETQ |$ttok| (|tokenValue| |$stok|))
    (COND
     ((AND (PLUSP |$bpParenCount|) (EQ (|tokenClass| |$stok|) 'KEY))
@@ -83,58 +83,62 @@
     (T T))))
 
 (DEFUN |bpNext| (|ps|)
-  (DECLARE (SPECIAL |$inputStream|))
-  (PROGN (SETQ |$inputStream| (CDR |$inputStream|)) (|bpFirstTok| |ps|)))
+  (PROGN
+   (SETF (|parserTokens| |ps|) (CDR (|parserTokens| |ps|)))
+   (|bpFirstTok| |ps|)))
 
 (DEFUN |bpNextToken| (|ps|)
-  (DECLARE (SPECIAL |$inputStream|))
-  (PROGN (SETQ |$inputStream| (CDR |$inputStream|)) (|bpFirstToken| |ps|)))
+  (PROGN
+   (SETF (|parserTokens| |ps|) (CDR (|parserTokens| |ps|)))
+   (|bpFirstToken| |ps|)))
 
 (DEFUN |bpRequire| (|ps| |f|) (OR (APPLY |f| |ps| NIL) (|bpTrap|)))
 
 (DEFUN |bpState| (|ps|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount| |$stack| |$inputStream|))
-  (LIST |$inputStream| |$stack| |$bpParenCount| |$bpCount|))
+  (DECLARE (SPECIAL |$bpCount| |$bpParenCount|))
+  (LIST (|parserTokens| |ps|) (|parserTrees| |ps|) |$bpParenCount| |$bpCount|))
 
 (DEFUN |bpRestore| (|ps| |x|)
-  (DECLARE (SPECIAL |$bpCount| |$bpParenCount| |$stack| |$inputStream|))
+  (DECLARE (SPECIAL |$bpCount| |$bpParenCount|))
   (PROGN
-   (SETQ |$inputStream| (CAR |x|))
+   (SETF (|parserTokens| |ps|) (CAR |x|))
    (|bpFirstToken| |ps|)
-   (SETQ |$stack| (CADR |x|))
+   (SETF (|parserTrees| |ps|) (CADR |x|))
    (SETQ |$bpParenCount| (CADDR |x|))
    (SETQ |$bpCount| (CADDDR |x|))
    T))
 
 (DEFUN |bpPush| (|ps| |x|)
-  (DECLARE (SPECIAL |$stack|))
-  (SETQ |$stack| (CONS |x| |$stack|)))
+  (SETF (|parserTrees| |ps|) (CONS |x| (|parserTrees| |ps|))))
 
 (DEFUN |bpPushId| (|ps|)
-  (DECLARE (SPECIAL |$stack| |$ttok|))
-  (SETQ |$stack| (CONS (|bfReName| |$ttok|) |$stack|)))
+  (DECLARE (SPECIAL |$ttok|))
+  (SETF (|parserTrees| |ps|) (CONS (|bfReName| |$ttok|) (|parserTrees| |ps|))))
 
 (DEFUN |bpPop1| (|ps|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
-    (PROGN (SETQ |a| (CAR |$stack|)) (SETQ |$stack| (CDR |$stack|)) |a|)))
+    (PROGN
+     (SETQ |a| (CAR (|parserTrees| |ps|)))
+     (SETF (|parserTrees| |ps|) (CDR (|parserTrees| |ps|)))
+     |a|)))
 
 (DEFUN |bpPop2| (|ps|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
-    (PROGN (SETQ |a| (CADR |$stack|)) (RPLACD |$stack| (CDDR |$stack|)) |a|)))
+    (PROGN
+     (SETQ |a| (CADR (|parserTrees| |ps|)))
+     (RPLACD (|parserTrees| |ps|) (CDDR (|parserTrees| |ps|)))
+     |a|)))
 
 (DEFUN |bpPop3| (|ps|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
     (PROGN
-     (SETQ |a| (CADDR |$stack|))
-     (RPLACD (CDR |$stack|) (CDDDR |$stack|))
+     (SETQ |a| (CADDR (|parserTrees| |ps|)))
+     (RPLACD (CDR (|parserTrees| |ps|)) (CDDDR (|parserTrees| |ps|)))
      |a|)))
 
 (DEFUN |bpIndentParenthesized| (|ps| |f|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$inputStream| |$bpParenCount| |$stok|))
+    (DECLARE (SPECIAL |$bpParenCount| |$stok|))
     (LET ((|$bpCount| 0))
       (DECLARE (SPECIAL |$bpCount|))
       (PROGN
@@ -148,8 +152,9 @@
            (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpNextToken| |ps|)
            (COND ((EQL |$bpCount| 0) T)
                  (T
-                  (SETQ |$inputStream|
-                          (|append| (|bpAddTokens| |$bpCount|) |$inputStream|))
+                  (SETF (|parserTokens| |ps|)
+                          (|append| (|bpAddTokens| |$bpCount|)
+                                    (|parserTokens| |ps|)))
                   (|bpFirstToken| |ps|)
                   (COND ((EQL |$bpParenCount| 0) (|bpCancel| |ps|) T) (T T)))))
           ((|bpEqPeek| 'CPAREN) (|bpPush| |ps| (|bfTuple| NIL))
@@ -199,18 +204,18 @@
 
 (DEFUN |bpListof| (|ps| |f| |str1| |g|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
     (COND
      ((APPLY |f| |ps| NIL)
       (COND
        ((AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|))
-        (SETQ |a| |$stack|) (SETQ |$stack| NIL)
+        (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
         (LOOP
          (COND
           ((NOT (AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|)))
            (RETURN NIL))
           (T NIL)))
-        (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
+        (SETF (|parserTrees| |ps|)
+                (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
         (|bpPush| |ps|
                   (FUNCALL |g|
                            (CONS (|bpPop3| |ps|)
@@ -220,18 +225,18 @@
 
 (DEFUN |bpListofFun| (|ps| |f| |h| |g|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
     (COND
      ((APPLY |f| |ps| NIL)
       (COND
-       ((AND (APPLY |h| |ps| NIL) (|bpRequire| |ps| |f|)) (SETQ |a| |$stack|)
-        (SETQ |$stack| NIL)
+       ((AND (APPLY |h| |ps| NIL) (|bpRequire| |ps| |f|))
+        (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
         (LOOP
          (COND
           ((NOT (AND (APPLY |h| |ps| NIL) (|bpRequire| |ps| |f|)))
            (RETURN NIL))
           (T NIL)))
-        (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
+        (SETF (|parserTrees| |ps|)
+                (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
         (|bpPush| |ps|
                   (FUNCALL |g|
                            (CONS (|bpPop3| |ps|)
@@ -241,18 +246,18 @@
 
 (DEFUN |bpList| (|ps| |f| |str1|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
     (COND
      ((APPLY |f| |ps| NIL)
       (COND
        ((AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|))
-        (SETQ |a| |$stack|) (SETQ |$stack| NIL)
+        (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
         (LOOP
          (COND
           ((NOT (AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|)))
            (RETURN NIL))
           (T NIL)))
-        (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
+        (SETF (|parserTrees| |ps|)
+                (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
         (|bpPush| |ps|
                   (CONS (|bpPop3| |ps|)
                         (CONS (|bpPop2| |ps|) (|bpPop1| |ps|)))))
@@ -261,11 +266,11 @@
 
 (DEFUN |bpOneOrMore| (|ps| |f|)
   (LET* (|a|)
-    (DECLARE (SPECIAL |$stack|))
     (COND
-     ((APPLY |f| |ps| NIL) (SETQ |a| |$stack|) (SETQ |$stack| NIL)
+     ((APPLY |f| |ps| NIL) (SETQ |a| (|parserTrees| |ps|))
+      (SETF (|parserTrees| |ps|) NIL)
       (LOOP (COND ((NOT (APPLY |f| |ps| NIL)) (RETURN NIL)) (T NIL)))
-      (SETQ |$stack| (CONS (|reverse!| |$stack|) |a|))
+      (SETF (|parserTrees| |ps|) (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
       (|bpPush| |ps| (CONS (|bpPop2| |ps|) (|bpPop1| |ps|))))
      (T NIL))))
 
@@ -358,13 +363,12 @@
 
 (DEFUN |bpListAndRecover| (|ps| |f|)
   (LET* (|found| |c| |done| |b| |a|)
-    (DECLARE (SPECIAL |$inputStream| |$stack|))
     (PROGN
-     (SETQ |a| |$stack|)
+     (SETQ |a| (|parserTrees| |ps|))
      (SETQ |b| NIL)
-     (SETQ |$stack| NIL)
+     (SETF (|parserTrees| |ps|) NIL)
      (SETQ |done| NIL)
-     (SETQ |c| |$inputStream|)
+     (SETQ |c| (|parserTokens| |ps|))
      (LOOP
       (COND (|done| (RETURN NIL))
             (T
@@ -382,26 +386,26 @@
                           (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
                         (T #1#))))
              (COND
-              ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
+              ((EQ |found| 'TRAPPED) (SETF (|parserTokens| |ps|) |c|)
                (|bpRecoverTrap| |ps|))
-              ((NOT |found|) (SETQ |$inputStream| |c|) (|bpGeneralErrorHere|)
-               (|bpRecoverTrap| |ps|)))
-             (COND ((|bpEqKey| |ps| 'BACKSET) (SETQ |c| |$inputStream|))
-                   ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
+              ((NOT |found|) (SETF (|parserTokens| |ps|) |c|)
+               (|bpGeneralErrorHere|) (|bpRecoverTrap| |ps|)))
+             (COND ((|bpEqKey| |ps| 'BACKSET) (SETQ |c| (|parserTokens| |ps|)))
+                   ((OR (|bpEqPeek| 'BACKTAB) (NULL (|parserTokens| |ps|)))
                     (SETQ |done| T))
-                   (T (SETQ |$inputStream| |c|) (|bpGeneralErrorHere|)
+                   (T (SETF (|parserTokens| |ps|) |c|) (|bpGeneralErrorHere|)
                     (|bpRecoverTrap| |ps|)
                     (COND
-                     ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
+                     ((OR (|bpEqPeek| 'BACKTAB) (NULL (|parserTokens| |ps|)))
                       (SETQ |done| T))
-                     (T (|bpNext| |ps|) (SETQ |c| |$inputStream|)))))
+                     (T (|bpNext| |ps|) (SETQ |c| (|parserTokens| |ps|))))))
              (SETQ |b| (CONS (|bpPop1| |ps|) |b|)))))
-     (SETQ |$stack| |a|)
+     (SETF (|parserTrees| |ps|) |a|)
      (|bpPush| |ps| (|reverse!| |b|)))))
 
 (DEFUN |bpMoveTo| (|ps| |n|)
-  (DECLARE (SPECIAL |$bpParenCount| |$bpCount| |$inputStream|))
-  (COND ((NULL |$inputStream|) T)
+  (DECLARE (SPECIAL |$bpParenCount| |$bpCount|))
+  (COND ((NULL (|parserTokens| |ps|)) T)
         ((|bpEqPeek| 'BACKTAB)
          (COND ((EQL |n| 0) T)
                (T (|bpNextToken| |ps|) (SETQ |$bpCount| (- |$bpCount| 1))
@@ -988,7 +992,7 @@
     (COND
      ((|bpEqKey| |ps| 'MACRO)
       (OR
-       (AND (|bpName| |ps|) (|bpStoreName|)
+       (AND (|bpName| |ps|) (|bpStoreName| |ps|)
             (|bpCompoundDefinitionTail| |ps| #'|%Macro|))
        (|bpTrap|)))
      (T (SETQ |a| (|bpState| |ps|))
@@ -1000,17 +1004,19 @@
               (T T)))
        (T (|bpRestore| |ps| |a|) NIL))))))
 
-(DEFUN |bpStoreName| ()
-  (DECLARE (SPECIAL |$typings| |$wheredefs| |$op| |$stack|))
+(DEFUN |bpStoreName| (|ps|)
+  (DECLARE (SPECIAL |$typings| |$wheredefs| |$op|))
   (PROGN
-   (SETQ |$op| (CAR |$stack|))
+   (SETQ |$op| (CAR (|parserTrees| |ps|)))
    (SETQ |$wheredefs| NIL)
    (SETQ |$typings| NIL)
    T))
 
 (DEFUN |bpDef| (|ps|)
-  (OR (AND (|bpName| |ps|) (|bpStoreName|) (|bpDefTail| |ps| #'|%Definition|))
-      (AND (|bpNamespace| |ps|) (|bpSimpleDefinitionTail| |ps|))))
+  (OR
+   (AND (|bpName| |ps|) (|bpStoreName| |ps|)
+        (|bpDefTail| |ps| #'|%Definition|))
+   (AND (|bpNamespace| |ps|) (|bpSimpleDefinitionTail| |ps|))))
 
 (DEFUN |bpDDef| (|ps|) (AND (|bpName| |ps|) (|bpDefTail| |ps| #'|%Definition|)))
 

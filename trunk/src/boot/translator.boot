@@ -356,7 +356,6 @@ shoeAddComment l==
 
 shoeOutParse toks ==
   ps := makeParserState toks
-  $stack := []
   $stok := nil
   $ttok := nil
   $op :=nil
@@ -373,10 +372,10 @@ shoeOutParse toks ==
   not bStreamNull parserTokens ps =>
     bpGeneralErrorHere()
     nil
-  $stack = nil =>
+  parserTrees ps = nil =>
     bpGeneralErrorHere()
     nil
-  first $stack
+  first parserTrees ps
  
 ++ Generate a global signature declaration for symbol `n'.
 genDeclaration(n,t) ==

@@ -1,5 +1,10 @@
 2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot: Remove references to $stack.
+	* boot/translator.boot: Likewise.
+
+2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot: Add parser state argument to more functions.
 	Remove references to $inputStream.
 	* boot/translator.boot (shoeOutParse): Remove $inputStream.
