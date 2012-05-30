@@ -92,10 +92,10 @@ bpFirstTok ps ==
   $ttok := tokenValue $stok
   parserNesting ps > 0 and tokenClass $stok = "KEY" =>
     $ttok is "SETTAB" =>
-      $bpCount:=$bpCount+1
+      parserScope(ps) := parserScope ps + 1
       bpNext ps
     $ttok is "BACKTAB" =>
-      $bpCount:=$bpCount-1
+      parserScope(ps) := parserScope ps - 1
       bpNext ps
     $ttok is "BACKSET" =>
       bpNext ps
@@ -114,7 +114,7 @@ bpRequire(ps,f) ==
   apply(f,ps,nil) or bpTrap()
 
 bpState ps ==
-  [parserTokens ps,parserTrees ps,parserNesting ps,$bpCount]
+  [parserTokens ps,parserTrees ps,parserNesting ps,parserScope ps]
 
  
 bpRestore(ps,x)==
@@ -122,7 +122,7 @@ bpRestore(ps,x)==
   bpFirstToken ps
   parserTrees(ps) := second x
   parserNesting(ps) := third x
-  $bpCount:=CADDDR x
+  parserScope(ps) := CADDDR x
   true
  
 bpPush(ps,x) ==
@@ -147,29 +147,32 @@ bpPop3 ps ==
   a
  
 bpIndentParenthesized(ps,f) ==
-  $bpCount:local:=0
-  a:=$stok
-  bpEqPeek "OPAREN" =>
-    parserNesting(ps) := parserNesting ps + 1
-    bpNext ps
-    apply(f,ps,nil) and bpFirstTok ps and
-	    (bpEqPeek "CPAREN" or bpParenTrap(a)) =>
-      parserNesting(ps) := parserNesting ps - 1
-      bpNextToken ps
-      $bpCount=0 => true
-      parserTokens(ps) := append(bpAddTokens $bpCount,parserTokens ps)
-      bpFirstToken ps
-      parserNesting ps = 0 =>
-	bpCancel ps
-	true
-      true
-    bpEqPeek "CPAREN" =>
-      bpPush(ps,bfTuple [])
-      parserNesting(ps) := parserNesting ps - 1
-      bpNextToken ps
-      true
-    bpParenTrap(a)
-  false
+  scope := parserScope ps
+  try
+    parserScope(ps) := 0
+    a:=$stok
+    bpEqPeek "OPAREN" =>
+      parserNesting(ps) := parserNesting ps + 1
+      bpNext ps
+      apply(f,ps,nil) and bpFirstTok ps and
+              (bpEqPeek "CPAREN" or bpParenTrap(a)) =>
+        parserNesting(ps) := parserNesting ps - 1
+        bpNextToken ps
+        parserScope ps = 0 => true
+        parserTokens(ps) := append(bpAddTokens parserScope ps,parserTokens ps)
+        bpFirstToken ps
+        parserNesting ps = 0 =>
+          bpCancel ps
+          true
+        true
+      bpEqPeek "CPAREN" =>
+        bpPush(ps,bfTuple [])
+        parserNesting(ps) := parserNesting ps - 1
+        bpNextToken ps
+        true
+      bpParenTrap(a)
+    false
+  finally parserScope(ps) := scope
  
 bpParenthesized(ps,f) ==
   a := $stok
@@ -355,7 +358,7 @@ bpMoveTo(ps,n) ==
    bpEqPeek "BACKTAB" =>
      n=0  => true
      bpNextToken ps
-     $bpCount:=$bpCount-1
+     parserScope(ps) := parserScope ps - 1
      bpMoveTo(ps,n-1)
    bpEqPeek "BACKSET" =>
      n=0  => true

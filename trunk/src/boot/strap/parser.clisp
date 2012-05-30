@@ -65,7 +65,7 @@
    T))
 
 (DEFUN |bpFirstTok| (|ps|)
-  (DECLARE (SPECIAL |$bpCount| |$ttok| |$stok|))
+  (DECLARE (SPECIAL |$ttok| |$stok|))
   (PROGN
    (SETQ |$stok|
            (COND
@@ -76,9 +76,10 @@
    (COND
     ((AND (PLUSP (|parserNesting| |ps|)) (EQ (|tokenClass| |$stok|) 'KEY))
      (COND
-      ((EQ |$ttok| 'SETTAB) (SETQ |$bpCount| (+ |$bpCount| 1)) (|bpNext| |ps|))
-      ((EQ |$ttok| 'BACKTAB) (SETQ |$bpCount| (- |$bpCount| 1))
-       (|bpNext| |ps|))
+      ((EQ |$ttok| 'SETTAB)
+       (SETF (|parserScope| |ps|) (+ (|parserScope| |ps|) 1)) (|bpNext| |ps|))
+      ((EQ |$ttok| 'BACKTAB)
+       (SETF (|parserScope| |ps|) (- (|parserScope| |ps|) 1)) (|bpNext| |ps|))
       ((EQ |$ttok| 'BACKSET) (|bpNext| |ps|)) (T T)))
     (T T))))
 
@@ -95,18 +96,16 @@
 (DEFUN |bpRequire| (|ps| |f|) (OR (APPLY |f| |ps| NIL) (|bpTrap|)))
 
 (DEFUN |bpState| (|ps|)
-  (DECLARE (SPECIAL |$bpCount|))
   (LIST (|parserTokens| |ps|) (|parserTrees| |ps|) (|parserNesting| |ps|)
-        |$bpCount|))
+        (|parserScope| |ps|)))
 
 (DEFUN |bpRestore| (|ps| |x|)
-  (DECLARE (SPECIAL |$bpCount|))
   (PROGN
    (SETF (|parserTokens| |ps|) (CAR |x|))
    (|bpFirstToken| |ps|)
    (SETF (|parserTrees| |ps|) (CADR |x|))
    (SETF (|parserNesting| |ps|) (CADDR |x|))
-   (SETQ |$bpCount| (CADDDR |x|))
+   (SETF (|parserScope| |ps|) (CADDDR |x|))
    T))
 
 (DEFUN |bpPush| (|ps| |x|)
@@ -138,34 +137,37 @@
      |a|)))
 
 (DEFUN |bpIndentParenthesized| (|ps| |f|)
-  (LET* (|a|)
+  (LET* (|a| |scope|)
     (DECLARE (SPECIAL |$stok|))
-    (LET ((|$bpCount| 0))
-      (DECLARE (SPECIAL |$bpCount|))
-      (PROGN
-       (SETQ |a| |$stok|)
-       (COND
-        ((|bpEqPeek| 'OPAREN)
-         (SETF (|parserNesting| |ps|) (+ (|parserNesting| |ps|) 1))
-         (|bpNext| |ps|)
-         (COND
-          ((AND (APPLY |f| |ps| NIL) (|bpFirstTok| |ps|)
-                (OR (|bpEqPeek| 'CPAREN) (|bpParenTrap| |a|)))
-           (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
-           (|bpNextToken| |ps|)
-           (COND ((EQL |$bpCount| 0) T)
-                 (T
-                  (SETF (|parserTokens| |ps|)
-                          (|append| (|bpAddTokens| |$bpCount|)
-                                    (|parserTokens| |ps|)))
-                  (|bpFirstToken| |ps|)
-                  (COND ((EQL (|parserNesting| |ps|) 0) (|bpCancel| |ps|) T)
-                        (T T)))))
-          ((|bpEqPeek| 'CPAREN) (|bpPush| |ps| (|bfTuple| NIL))
-           (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
-           (|bpNextToken| |ps|) T)
-          (T (|bpParenTrap| |a|))))
-        (T NIL))))))
+    (PROGN
+     (SETQ |scope| (|parserScope| |ps|))
+     (UNWIND-PROTECT
+         (PROGN
+          (SETF (|parserScope| |ps|) 0)
+          (SETQ |a| |$stok|)
+          (COND
+           ((|bpEqPeek| 'OPAREN)
+            (SETF (|parserNesting| |ps|) (+ (|parserNesting| |ps|) 1))
+            (|bpNext| |ps|)
+            (COND
+             ((AND (APPLY |f| |ps| NIL) (|bpFirstTok| |ps|)
+                   (OR (|bpEqPeek| 'CPAREN) (|bpParenTrap| |a|)))
+              (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
+              (|bpNextToken| |ps|)
+              (COND ((EQL (|parserScope| |ps|) 0) T)
+                    (T
+                     (SETF (|parserTokens| |ps|)
+                             (|append| (|bpAddTokens| (|parserScope| |ps|))
+                                       (|parserTokens| |ps|)))
+                     (|bpFirstToken| |ps|)
+                     (COND ((EQL (|parserNesting| |ps|) 0) (|bpCancel| |ps|) T)
+                           (T T)))))
+             ((|bpEqPeek| 'CPAREN) (|bpPush| |ps| (|bfTuple| NIL))
+              (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
+              (|bpNextToken| |ps|) T)
+             (T (|bpParenTrap| |a|))))
+           (T NIL)))
+       (SETF (|parserScope| |ps|) |scope|)))))
 
 (DEFUN |bpParenthesized| (|ps| |f|)
   (LET* (|a|)
@@ -378,7 +380,7 @@
       (COND (|done| (RETURN NIL))
             (T
              (SETQ |found|
-                     (LET ((#1=#:G719
+                     (LET ((#1=#:G720
                             (CATCH :OPEN-AXIOM-CATCH-POINT
                               (APPLY |f| |ps| NIL))))
                        (COND
@@ -409,11 +411,11 @@
      (|bpPush| |ps| (|reverse!| |b|)))))
 
 (DEFUN |bpMoveTo| (|ps| |n|)
-  (DECLARE (SPECIAL |$bpCount|))
   (COND ((NULL (|parserTokens| |ps|)) T)
         ((|bpEqPeek| 'BACKTAB)
          (COND ((EQL |n| 0) T)
-               (T (|bpNextToken| |ps|) (SETQ |$bpCount| (- |$bpCount| 1))
+               (T (|bpNextToken| |ps|)
+                (SETF (|parserScope| |ps|) (- (|parserScope| |ps|) 1))
                 (|bpMoveTo| |ps| (- |n| 1)))))
         ((|bpEqPeek| 'BACKSET)
          (COND ((EQL |n| 0) T) (T (|bpNextToken| |ps|) (|bpMoveTo| |ps| |n|))))

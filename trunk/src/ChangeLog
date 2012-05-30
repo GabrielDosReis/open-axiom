@@ -1,3 +1,8 @@
+2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot: Remove references to $bpCount.
+	* boot/translator.boot (shoeOutParse): Likewise.
+
 2012-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot: Remove references to $bpParentCount.

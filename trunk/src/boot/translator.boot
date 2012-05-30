@@ -362,7 +362,6 @@ shoeOutParse toks ==
   $wheredefs := []
   $typings := []
   $returns := []
-  $bpCount := 0
   bpFirstTok ps
   found :=
     try bpOutItem ps
