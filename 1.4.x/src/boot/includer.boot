@@ -98,24 +98,6 @@ SoftShoeError(posn,key)==
   shoeConsole strconc(shoeSpaces lineCharacter posn,'"|")
   shoeConsole key
  
-bpSpecificErrorAtToken(tok, key) ==
-  a := tokenPosition tok
-  SoftShoeError(a,key)
- 
-bpSpecificErrorHere(key) ==
-  bpSpecificErrorAtToken($stok, key)
-
-bpGeneralErrorHere() ==
-  bpSpecificErrorHere('"syntax error")
- 
-bpIgnoredFromTo(pos1, pos2) ==
-  shoeConsole strconc('"ignored from line ", toString lineNo pos1)
-  shoeConsole lineString pos1
-  shoeConsole strconc(shoeSpaces lineCharacter pos1,'"|")
-  shoeConsole strconc('"ignored through line ", toString lineNo pos2)
-  shoeConsole lineString pos2
-  shoeConsole strconc(shoeSpaces lineCharacter pos2,'"|")
-
 --%
 structure %SourceLine ==
   Record(str: %String, num: %Short) with

@@ -356,7 +356,6 @@ shoeAddComment l==
 
 shoeOutParse toks ==
   ps := makeParserState toks
-  $stok := nil
   $ttok := nil
   $op :=nil
   $wheredefs := []

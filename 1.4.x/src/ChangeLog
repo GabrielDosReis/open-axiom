@@ -1,5 +1,10 @@
 2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot (%ParserState): Add field for current token.
+	Replace references to $stok.
+
+2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfSpecificErrorHere): New.
 	(bfISReverse) Use it.  Don't use bpTrap.
 	(bfIS1): Likewise.

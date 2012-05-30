@@ -40,27 +40,6 @@
    (|shoeConsole| (CONCAT (|shoeSpaces| (|lineCharacter| |posn|)) "|"))
    (|shoeConsole| |key|)))
 
-(DEFUN |bpSpecificErrorAtToken| (|tok| |key|)
-  (LET* (|a|)
-    (PROGN (SETQ |a| (|tokenPosition| |tok|)) (|SoftShoeError| |a| |key|))))
-
-(DEFUN |bpSpecificErrorHere| (|key|)
-  (DECLARE (SPECIAL |$stok|))
-  (|bpSpecificErrorAtToken| |$stok| |key|))
-
-(DEFUN |bpGeneralErrorHere| () (|bpSpecificErrorHere| "syntax error"))
-
-(DEFUN |bpIgnoredFromTo| (|pos1| |pos2|)
-  (PROGN
-   (|shoeConsole|
-    (CONCAT "ignored from line " (WRITE-TO-STRING (|lineNo| |pos1|))))
-   (|shoeConsole| (|lineString| |pos1|))
-   (|shoeConsole| (CONCAT (|shoeSpaces| (|lineCharacter| |pos1|)) "|"))
-   (|shoeConsole|
-    (CONCAT "ignored through line " (WRITE-TO-STRING (|lineNo| |pos2|))))
-   (|shoeConsole| (|lineString| |pos2|))
-   (|shoeConsole| (CONCAT (|shoeSpaces| (|lineCharacter| |pos2|)) "|"))))
-
 (DEFSTRUCT (|%SourceLine| (:COPIER |copy%SourceLine|)) |str| |num|)
 
 (DEFMACRO |mk%SourceLine| (|str| |num|)
