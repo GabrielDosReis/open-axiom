@@ -1,3 +1,9 @@
+2012-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Add a %LoadUnit parameter to most functions.
+	Adjust callers.
+	* boot/translator.boot: Tidy.
+
 2012-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot: Replace references to $ttok.

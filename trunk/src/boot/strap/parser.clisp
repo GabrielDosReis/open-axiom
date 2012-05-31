@@ -14,11 +14,12 @@
   |trees|
   |pren|
   |scp|
-  |cur|)
+  |cur|
+  |tu|)
 
-(DEFMACRO |mk%ParserState| (|toks| |trees| |pren| |scp| |cur|)
+(DEFMACRO |mk%ParserState| (|toks| |trees| |pren| |scp| |cur| |tu|)
   (LIST '|MAKE-%ParserState| :|toks| |toks| :|trees| |trees| :|pren| |pren|
-        :|scp| |scp| :|cur| |cur|))
+        :|scp| |scp| :|cur| |cur| :|tu| |tu|))
 
 (DEFMACRO |parserTokens| (|bfVar#1|) (LIST '|%ParserState-toks| |bfVar#1|))
 
@@ -30,7 +31,10 @@
 
 (DEFMACRO |parserCurrentToken| (|bfVar#1|) (LIST '|%ParserState-cur| |bfVar#1|))
 
-(DEFUN |makeParserState| (|toks|) (|mk%ParserState| |toks| NIL 0 0 NIL))
+(DEFMACRO |parserLoadUnit| (|bfVar#1|) (LIST '|%ParserState-tu| |bfVar#1|))
+
+(DEFUN |makeParserState| (|toks|)
+  (|mk%ParserState| |toks| NIL 0 0 NIL (|makeLoadUnit|)))
 
 (DEFMACRO |parserTokenValue| (|ps|)
   (LIST '|tokenValue| (LIST '|parserCurrentToken| |ps|)))
@@ -41,29 +45,8 @@
 (DEFMACRO |parserTokenPosition| (|ps|)
   (LIST '|tokenPosition| (LIST '|parserCurrentToken| |ps|)))
 
-(DEFSTRUCT (|%Translator| (:COPIER |copy%Translator|))
-  |ipath|
-  |fdefs|
-  |sigs|
-  |xports|
-  |csts|)
-
-(DEFMACRO |mk%Translator| (|ipath| |fdefs| |sigs| |xports| |csts|)
-  (LIST '|MAKE-%Translator| :|ipath| |ipath| :|fdefs| |fdefs| :|sigs| |sigs|
-        :|xports| |xports| :|csts| |csts|))
-
-(DEFMACRO |inputFilePath| (|bfVar#1|) (LIST '|%Translator-ifile| |bfVar#1|))
-
-(DEFMACRO |functionDefinitions| (|bfVar#1|)
-  (LIST '|%Translator-fdefs| |bfVar#1|))
-
-(DEFMACRO |globalSignatures| (|bfVar#1|) (LIST '|%Translator-sigs| |bfVar#1|))
-
-(DEFMACRO |exportedNames| (|bfVar#1|) (LIST '|%Translator-xports| |bfVar#1|))
-
-(DEFMACRO |constantBindings| (|bfVar#1|) (LIST '|%Translator-csts| |bfVar#1|))
-
-(DEFUN |makeTranslator| (|ip|) (|mk%Translator| |ip| NIL NIL NIL NIL))
+(DEFMACRO |parserGensymSequenceNumber| (|ps|)
+  (LIST '|currentGensymNumber| (LIST '|parserLoadUnit| |ps|)))
 
 (DEFUN |bpFirstToken| (|ps|)
   (PROGN
@@ -292,7 +275,7 @@
 
 (DEFUN |bpAndOr| (|ps| |keyword| |p| |f|)
   (AND (|bpEqKey| |ps| |keyword|) (|bpRequire| |ps| |p|)
-       (|bpPush| |ps| (FUNCALL |f| (|bpPop1| |ps|)))))
+       (|bpPush| |ps| (FUNCALL |f| (|parserLoadUnit| |ps|) (|bpPop1| |ps|)))))
 
 (DEFUN |bpConditional| (|ps| |f|)
   (COND
@@ -718,7 +701,9 @@
        (COND
         ((|bpEqKey| |ps| 'COLON)
          (AND (|bpRequire| |ps| #'|bpTyping|)
-              (|bpPush| |ps| (|bfTagged| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+              (|bpPush| |ps|
+                        (|bfTagged| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                    (|bpPop1| |ps|)))))
         ((|bpEqKey| |ps| 'AT)
          (AND (|bpRequire| |ps| #'|bpTyping|)
               (|bpPush| |ps| (|bfRestrict| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
@@ -797,10 +782,13 @@
         ((|bpEqPeek| |ps| 'OBRACK)
          (AND (|bpRequire| |ps| #'|bpDConstruct|)
               (|bpPush| |ps|
-                        (|bfReduceCollect| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+                        (|bfReduceCollect| (|parserLoadUnit| |ps|)
+                                           (|bpPop2| |ps|) (|bpPop1| |ps|)))))
         (T
          (AND (|bpRequire| |ps| #'|bpApplication|)
-              (|bpPush| |ps| (|bfReduce| (|bpPop2| |ps|) (|bpPop1| |ps|)))))))
+              (|bpPush| |ps|
+                        (|bfReduce| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                    (|bpPop1| |ps|)))))))
       (T (|bpRestore| |ps| |a|) NIL)))))
 
 (DEFUN |bpTimes| (|ps|)
@@ -821,8 +809,8 @@
        (COND
         ((AND (|bpInfKey| |ps| '(IS ISNT)) (|bpRequire| |ps| #'|bpPattern|))
          (|bpPush| |ps|
-                   (|bfISApplication| (|bpPop2| |ps|) (|bpPop2| |ps|)
-                                      (|bpPop1| |ps|))))
+                   (|bfISApplication| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                      (|bpPop2| |ps|) (|bpPop1| |ps|))))
         ((AND (|bpEqKey| |ps| 'HAS) (|bpRequire| |ps| #'|bpApplication|))
          (|bpPush| |ps| (|bfHas| (|bpPop2| |ps|) (|bpPop1| |ps|))))
         (T T))))
@@ -937,9 +925,11 @@
   (OR
    (AND (|bpIterators| |ps|) (|bpCompMissing| |ps| 'REPEAT)
         (|bpRequire| |ps| #'|bpWhere|)
-        (|bpPush| |ps| (|bfLp| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+        (|bpPush| |ps|
+                  (|bfLp| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                          (|bpPop1| |ps|))))
    (AND (|bpEqKey| |ps| 'REPEAT) (|bpRequire| |ps| #'|bpLogical|)
-        (|bpPush| |ps| (|bfLoop1| (|bpPop1| |ps|))))))
+        (|bpPush| |ps| (|bfLoop1| (|parserLoadUnit| |ps|) (|bpPop1| |ps|))))))
 
 (DEFUN |bpSuchThat| (|ps|) (|bpAndOr| |ps| 'BAR #'|bpWhere| #'|bfSuchthat|))
 
@@ -956,9 +946,11 @@
         (AND (|bpRequire| |ps| #'|bpSeg|) (|bpEqKey| |ps| 'BY)
              (|bpRequire| |ps| #'|bpArith|)
              (|bpPush| |ps|
-                       (|bfForInBy| (|bpPop3| |ps|) (|bpPop2| |ps|)
-                                    (|bpPop1| |ps|))))
-        (|bpPush| |ps| (|bfForin| (|bpPop2| |ps|) (|bpPop1| |ps|))))))
+                       (|bfForInBy| (|parserLoadUnit| |ps|) (|bpPop3| |ps|)
+                                    (|bpPop2| |ps|) (|bpPop1| |ps|))))
+        (|bpPush| |ps|
+                  (|bfForin| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                             (|bpPop1| |ps|))))))
 
 (DEFUN |bpSeg| (|ps|)
   (AND (|bpArith| |ps|)
@@ -1003,7 +995,9 @@
 (DEFUN |bpAssignment| (|ps|)
   (AND (|bpAssignVariable| |ps|) (|bpEqKey| |ps| 'BEC)
        (|bpRequire| |ps| #'|bpAssign|)
-       (|bpPush| |ps| (|bfAssign| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+       (|bpPush| |ps|
+                 (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                             (|bpPop1| |ps|)))))
 
 (DEFUN |bpLambda| (|ps|)
   (AND (|bpVariable| |ps|) (|bpEqKey| |ps| 'GIVES)
@@ -1133,7 +1127,9 @@
   (AND (|bpComma| |ps|)
        (OR
         (AND (|bpIteratorTail| |ps|)
-             (|bpPush| |ps| (|bfCollect| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+             (|bpPush| |ps|
+                       (|bfCollect| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                    (|bpPop1| |ps|))))
         (|bpPush| |ps| (|bfTupleConstruct| (|bpPop1| |ps|))))))
 
 (DEFUN |bpDConstruct| (|ps|) (|bpBracket| |ps| #'|bpDConstruction|))
@@ -1159,7 +1155,9 @@
       (AND (|bpName| |ps|)
            (OR
             (AND (|bpEqKey| |ps| 'BEC) (|bpRequire| |ps| #'|bpPattern|)
-                 (|bpPush| |ps| (|bfAssign| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+                 (|bpPush| |ps|
+                           (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                       (|bpPop1| |ps|))))
             T))
       (|bpBracketConstruct| |ps| #'|bpPatternL|)))
 
@@ -1206,11 +1204,17 @@
 (DEFUN |bpRegularBVItemTail| (|ps|)
   (OR
    (AND (|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpApplication|)
-        (|bpPush| |ps| (|bfTagged| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+        (|bpPush| |ps|
+                  (|bfTagged| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                              (|bpPop1| |ps|))))
    (AND (|bpEqKey| |ps| 'BEC) (|bpRequire| |ps| #'|bpPattern|)
-        (|bpPush| |ps| (|bfAssign| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+        (|bpPush| |ps|
+                  (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                              (|bpPop1| |ps|))))
    (AND (|bpEqKey| |ps| 'IS) (|bpRequire| |ps| #'|bpPattern|)
-        (|bpPush| |ps| (|bfAssign| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+        (|bpPush| |ps|
+                  (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                              (|bpPop1| |ps|))))
    (AND (|bpEqKey| |ps| 'DEF) (|bpRequire| |ps| #'|bpApplication|)
         (|bpPush| |ps| (|%DefaultValue| (|bpPop2| |ps|) (|bpPop1| |ps|))))))
 
@@ -1353,7 +1357,9 @@
 
 (DEFUN |bpPiledCaseItems| (|ps|)
   (AND (|bpPileBracketed| |ps| #'|bpCaseItemList|)
-       (|bpPush| |ps| (|bfCase| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+       (|bpPush| |ps|
+                 (|bfCase| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                           (|bpPop1| |ps|)))))
 
 (DEFUN |bpCaseItemList| (|ps|) (|bpListAndRecover| |ps| #'|bpCaseItem|))
 
@@ -1368,21 +1374,27 @@
        (|bpPush| |ps| (|bfCaseItem| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
 
 (DEFUN |bpOutItem| (|ps|)
-  (LET* (|t| |r| |ISTMP#2| |l| |ISTMP#1| |b|)
+  (LET* (|t| |r| |ISTMP#2| |l| |ISTMP#1| |b| |varno|)
     (DECLARE (SPECIAL |$InteractiveMode|))
-    (LET* ((|$op| NIL) (|$GenVarCounter| 0))
-      (DECLARE (SPECIAL |$op| |$GenVarCounter|))
+    (LET ((|$op| NIL))
+      (DECLARE (SPECIAL |$op|))
       (PROGN
-       (LET ((#1=#:G721
-              (CATCH :OPEN-AXIOM-CATCH-POINT (|bpRequire| |ps| #'|bpComma|))))
-         (COND
-          ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
-           (COND
-            ((EQUAL (CAR #2=(CDR #1#)) '(|BootSpecificError|))
-             (LET ((|e| (CDR #2#)))
-               (PROGN (|bpSpecificErrorHere| |ps| |e|) (|bpTrap| |ps|))))
-            (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
-          (T #1#)))
+       (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
+       (UNWIND-PROTECT
+           (LET ((#1=#:G721
+                  (CATCH :OPEN-AXIOM-CATCH-POINT
+                    (PROGN
+                     (SETF (|parserGensymSequenceNumber| |ps|) 0)
+                     (|bpRequire| |ps| #'|bpComma|)))))
+             (COND
+              ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
+               (COND
+                ((EQUAL (CAR #2=(CDR #1#)) '(|BootSpecificError|))
+                 (LET ((|e| (CDR #2#)))
+                   (PROGN (|bpSpecificErrorHere| |ps| |e|) (|bpTrap| |ps|))))
+                (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
+              (T #1#)))
+         (SETF (|parserGensymSequenceNumber| |ps|) |varno|))
        (SETQ |b| (|bpPop1| |ps|))
        (SETQ |t|
                (COND ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
@@ -1398,6 +1410,6 @@
                            (SYMBOLP |l|))
                       (COND (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
                             (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
-                     (T (|translateToplevel| |b| NIL))))
+                     (T (|translateToplevel| |ps| |b| NIL))))
        (|bpPush| |ps| |t|)))))
 

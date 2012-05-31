@@ -581,7 +581,7 @@
                  (SETQ |bfVar#1| (CDR |bfVar#1|))))))
        (T |x|)))))
 
-(DEFUN |translateToplevel| (|b| |export?|)
+(DEFUN |translateToplevel| (|ps| |b| |export?|)
   (LET* (|csts|
          |accessors|
          |fields|
@@ -608,7 +608,7 @@
               (LET ((|op| (CADR |b|))
                     (|args| (CADDR |b|))
                     (|body| (CADDDR |b|)))
-                (CDR (|bfDef| |op| |args| |body|))))
+                (CDR (|bfDef| (|parserLoadUnit| |ps|) |op| |args| |body|))))
              (|%Module|
               (LET ((|m| (CADR |b|)) (|ns| (CADDR |b|)) (|ds| (CADDDR |b|)))
                 (PROGN
@@ -631,7 +631,8 @@
                                       (SETQ |bfVar#2|
                                               #1=(CONS
                                                   (CAR
-                                                   (|translateToplevel| |d| T))
+                                                   (|translateToplevel| |ps|
+                                                                        |d| T))
                                                   NIL))
                                       (SETQ |bfVar#3| |bfVar#2|))
                                      (T (RPLACD |bfVar#3| #1#)
@@ -703,7 +704,7 @@
               (LET ((|op| (CADR |b|))
                     (|args| (CADDR |b|))
                     (|body| (CADDDR |b|)))
-                (|bfMDef| |op| |args| |body|)))
+                (|bfMDef| (|parserLoadUnit| |ps|) |op| |args| |body|)))
              (|%Structure|
               (LET ((|t| (CADR |b|)) (|alts| (CADDR |b|)))
                 (COND
@@ -718,7 +719,8 @@
                                    (PROGN
                                     (SETQ |accessors| (CAR |ISTMP#2|))
                                     T))))))
-                  (|bfRecordDef| |t| |fields| |accessors|))
+                  (|bfRecordDef| (|parserLoadUnit| |ps|) |t| |fields|
+                                 |accessors|))
                  ((AND (CONSP |alts|) (NULL (CDR |alts|))
                        (PROGN
                         (SETQ |ISTMP#1| (CAR |alts|))
@@ -737,7 +739,11 @@
                            (PROGN (SETQ |alt| (CAR |bfVar#4|)) NIL))
                        (RETURN |bfVar#5|))
                       ((NULL |bfVar#5|)
-                       (SETQ |bfVar#5| #2=(CONS (|bfCreateDef| |alt|) NIL))
+                       (SETQ |bfVar#5|
+                               #2=(CONS
+                                   (|bfCreateDef| (|parserLoadUnit| |ps|)
+                                                  |alt|)
+                                   NIL))
                        (SETQ |bfVar#6| |bfVar#5|))
                       (T (RPLACD |bfVar#6| #2#)
                        (SETQ |bfVar#6| (CDR |bfVar#6|))))

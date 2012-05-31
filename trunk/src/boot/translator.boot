@@ -430,18 +430,18 @@ packageBody(x,p) ==
   x is ['PROGN,:.] => [x.op,:[packageBody(y,p) for y in x.args]]
   x
 
-translateToplevel(b,export?) ==
+translateToplevel(ps,b,export?) ==
   b isnt [.,:.] => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
     %Signature(op,t) => [genDeclaration(op,t)]
-    %Definition(op,args,body) => bfDef(op,args,body).args
+    %Definition(op,args,body) => bfDef(parserLoadUnit ps,op,args,body).args
 
     %Module(m,ns,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
       [["PROVIDE", symbolName m], :exportNames ns,
-        :[first translateToplevel(d,true) for d in ds]]
+        :[first translateToplevel(ps,d,true) for d in ds]]
 
     %Import(m) =>
       m is ['%Namespace,n] => [inAllContexts packageBody(b,nil)]
@@ -472,12 +472,13 @@ translateToplevel(b,export?) ==
       $InteractiveMode => [["SETF",lhs,rhs]]
       [["DEFPARAMETER",lhs,rhs]]
 
-    %Macro(op,args,body) => bfMDef(op,args,body)
+    %Macro(op,args,body) => bfMDef(parserLoadUnit ps,op,args,body)
 
     %Structure(t,alts) =>
-      alts is ['%Record,fields,accessors] => bfRecordDef(t,fields,accessors)
+      alts is ['%Record,fields,accessors] =>
+        bfRecordDef(parserLoadUnit ps,t,fields,accessors)
       alts is [['Enumeration,:csts]] => [bfEnum(t,csts)]
-      [bfCreateDef alt for alt in alts]
+      [bfCreateDef(parserLoadUnit ps,alt) for alt in alts]
 
     %Namespace n =>
       $activeNamespace := symbolName n
