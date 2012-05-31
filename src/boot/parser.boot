@@ -51,15 +51,16 @@ module parser
 
 structure %ParserState ==
   Record(toks: %List %Tokens, trees: %List %Ast, pren: %Short, scp: %Short,
-    cur: %Token) with
+    cur: %Token,tu: %LoadUnit) with
       parserTokens == (.toks)       -- remaining token sequence
       parserTrees == (.trees)       -- list of successful parse trees
       parserNesting == (.pren)      -- parenthesis nesting level
       parserScope == (.scp)         -- scope nesting level
       parserCurrentToken == (.cur)  -- current token
+      parserLoadUnit == (.tu)       -- current translation unit
 
 makeParserState toks ==
-  mk%ParserState(toks,nil,0,0,nil)
+  mk%ParserState(toks,nil,0,0,nil,makeLoadUnit())
 
 ++ Access the value of the current token
 macro parserTokenValue ps ==
@@ -73,20 +74,8 @@ macro parserTokenClass ps ==
 macro parserTokenPosition ps ==
   tokenPosition parserCurrentToken ps
 
---%
---% Translator global state
---%
-structure %Translator ==
-  Record(ipath: %String, fdefs: %List %Thing, sigs: %List %Thing,
-    xports: %List %Identifier, csts: %List %Binding) with
-      inputFilePath == (.ifile)        -- path to the input file
-      functionDefinitions == (.fdefs)  -- functions defined in this TU
-      globalSignatures == (.sigs)      -- signatures proclaimed by this TU
-      exportedNames == (.xports)       -- names exported by this TU
-      constantBindings == (.csts)      -- constants defined in this TU
-
-makeTranslator ip ==
-  mk%Translator(ip,nil,nil,nil,nil)
+macro parserGensymSequenceNumber ps ==
+  currentGensymNumber parserLoadUnit ps
 
 --%
 
@@ -266,7 +255,7 @@ bpAnyNo(ps,s) ==
 -- AndOr(k,p,f)= k p
 bpAndOr(ps,keyword,p,f)==
   bpEqKey(ps,keyword) and bpRequire(ps,p)
-    and bpPush(ps,FUNCALL(f, bpPop1 ps))
+    and bpPush(ps,FUNCALL(f,parserLoadUnit ps,bpPop1 ps))
  
 bpConditional(ps,f) ==
   bpEqKey(ps,"IF") and bpRequire(ps,function bpWhere) and (bpEqKey(ps,"BACKSET") or true) =>
@@ -704,7 +693,7 @@ bpTyped ps ==
   bpApplication ps and
      bpEqKey(ps,"COLON") =>
        bpRequire(ps,function bpTyping) and
-         bpPush(ps,bfTagged(bpPop2 ps,bpPop1 ps))
+         bpPush(ps,bfTagged(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
      bpEqKey(ps,"AT") =>
        bpRequire(ps,function bpTyping) and
          bpPush(ps,bfRestrict(bpPop2 ps, bpPop1 ps))
@@ -758,9 +747,9 @@ bpReduce ps ==
   bpReduceOperator ps and bpEqKey(ps,"SLASH") =>
     bpEqPeek(ps,"OBRACK") => 
       bpRequire(ps,function bpDConstruct) and
-	bpPush(ps,bfReduceCollect(bpPop2 ps,bpPop1 ps))
+	bpPush(ps,bfReduceCollect(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
     bpRequire(ps,function bpApplication) and
-      bpPush(ps,bfReduce(bpPop2 ps,bpPop1 ps))
+      bpPush(ps,bfReduce(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
   bpRestore(ps,a)
   false
  
@@ -781,7 +770,7 @@ bpArith ps ==
 bpIs ps ==
   bpArith ps and
      bpInfKey(ps,'(IS ISNT)) and bpRequire(ps,function bpPattern) =>
-       bpPush(ps,bfISApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
+       bpPush(ps,bfISApplication(parserLoadUnit ps,bpPop2 ps,bpPop2 ps,bpPop1 ps))
      bpEqKey(ps,"HAS") and bpRequire(ps,function bpApplication) =>
        bpPush(ps,bfHas(bpPop2 ps, bpPop1 ps))
      true
@@ -896,10 +885,9 @@ bpLoop ps ==
   bpIterators ps and
    (bpCompMissing(ps,"REPEAT") and
       bpRequire(ps,function bpWhere) and
-         bpPush(ps,bfLp(bpPop2 ps,bpPop1 ps)))
-             or
-               bpEqKey(ps,"REPEAT") and bpRequire(ps,function bpLogical) and
-                    bpPush(ps,bfLoop1 bpPop1 ps)
+         bpPush(ps,bfLp(parserLoadUnit ps,bpPop2 ps,bpPop1 ps)))
+           or bpEqKey(ps,"REPEAT") and bpRequire(ps,function bpLogical) and
+               bpPush(ps,bfLoop1(parserLoadUnit ps,bpPop1 ps))
  
 bpSuchThat ps ==
   bpAndOr(ps,"BAR",function bpWhere,function bfSuchthat)
@@ -917,8 +905,8 @@ bpForIn ps ==
   bpEqKey(ps,"FOR") and bpRequire(ps,function bpFormal) and (bpCompMissing(ps,"IN"))
       and (bpRequire(ps,function bpSeg) and
        (bpEqKey(ps,"BY") and bpRequire(ps,function bpArith) and
-        bpPush(ps,bfForInBy(bpPop3 ps,bpPop2 ps,bpPop1 ps))) or
-         bpPush(ps,bfForin(bpPop2 ps,bpPop1 ps)))
+        bpPush(ps,bfForInBy(parserLoadUnit ps,bpPop3 ps,bpPop2 ps,bpPop1 ps))) or
+         bpPush(ps,bfForin(parserLoadUnit ps,bpPop2 ps,bpPop1 ps)))
  
 bpSeg ps ==
    bpArith ps and
@@ -960,7 +948,7 @@ bpAssignment ps ==
   bpAssignVariable ps and
     bpEqKey(ps,"BEC") and
       bpRequire(ps,function bpAssign) and
-	 bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
+	 bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
  
 ++ Parse a lambda expression
 ++   Lambda ::= Variable +-> Assign
@@ -1095,8 +1083,8 @@ bpConstruct ps ==
 bpConstruction ps==
   bpComma ps and
      (bpIteratorTail ps and
-	  bpPush(ps,bfCollect(bpPop2 ps,bpPop1 ps)) or
-	     bpPush(ps,bfTupleConstruct bpPop1 ps))
+       bpPush(ps,bfCollect(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
+         or bpPush(ps,bfTupleConstruct bpPop1 ps))
  
 bpDConstruct ps ==
   bpBracket(ps,function bpDConstruction)
@@ -1120,12 +1108,12 @@ bpEqual ps ==
                 bpTrap ps) and bpPush(ps,bfEqual bpPop1 ps)
  
 bpRegularPatternItem ps ==
-   bpEqual ps or
-     bpConstTok ps or bpDot ps or
+  bpEqual ps
+    or bpConstTok ps or bpDot ps or
       bpName ps and
-         ((bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern)
-              and bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))) or true)
-                    or bpBracketConstruct(ps,function bpPatternL)
+        ((bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern)
+           and bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))) or true)
+               or bpBracketConstruct(ps,function bpPatternL)
  
 bpRegularPatternItemL ps ==
       bpRegularPatternItem ps and bpPush(ps,[bpPop1 ps])
@@ -1166,11 +1154,11 @@ bpPatternTail ps ==
 ++ a default value.
 bpRegularBVItemTail ps ==
   bpEqKey(ps,"COLON") and bpRequire(ps,function bpApplication) and 
-    bpPush(ps,bfTagged(bpPop2 ps, bpPop1 ps))
+    bpPush(ps,bfTagged(parserLoadUnit ps,bpPop2 ps, bpPop1 ps))
       or bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern) and
-	 bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
+	 bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
 	   or bpEqKey(ps,"IS") and bpRequire(ps,function bpPattern) and
-	      bpPush(ps,bfAssign(bpPop2 ps,bpPop1 ps))
+	      bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
              or bpEqKey(ps,"DEF") and bpRequire(ps,function bpApplication) and
                 bpPush(ps,%DefaultValue(bpPop2 ps, bpPop1 ps))
 
@@ -1309,7 +1297,7 @@ bpCase ps ==
  
 bpPiledCaseItems ps ==
    bpPileBracketed(ps,function bpCaseItemList) and
-       bpPush(ps,bfCase(bpPop2 ps,bpPop1 ps))
+       bpPush(ps,bfCase(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
 
 bpCaseItemList ps ==
    bpListAndRecover(ps,function bpCaseItem)
@@ -1330,17 +1318,20 @@ bpCaseItem ps ==
 ++ Main entry point into the parser module.
 bpOutItem ps ==
   $op: local := nil
-  $GenVarCounter: local := 0
-  try bpRequire(ps,function bpComma)
+  varno := parserGensymSequenceNumber ps
+  try
+    parserGensymSequenceNumber(ps) := 0
+    bpRequire(ps,function bpComma)
   catch(e: BootSpecificError) =>
     bpSpecificErrorHere(ps,e)
     bpTrap ps
+  finally parserGensymSequenceNumber(ps) := varno
   b := bpPop1 ps
   t :=
     b is ["+LINE",:.] => [ b ]
     b is ["L%T",l,r] and symbol? l => 
       $InteractiveMode => [["SETQ",l,r]]
       [["DEFPARAMETER",l,r]]
-    translateToplevel(b,false)
+    translateToplevel(ps,b,false)
   bpPush(ps,t)
  
