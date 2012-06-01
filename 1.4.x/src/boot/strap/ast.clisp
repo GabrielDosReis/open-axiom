@@ -149,11 +149,13 @@
   |sigs|
   |xports|
   |csts|
-  |varno|)
+  |varno|
+  |letno|
+  |isno|)
 
-(DEFMACRO |mk%LoadUnit| (|fdefs| |sigs| |xports| |csts| |varno|)
+(DEFMACRO |mk%LoadUnit| (|fdefs| |sigs| |xports| |csts| |varno| |letno| |isno|)
   (LIST '|MAKE-%LoadUnit| :|fdefs| |fdefs| :|sigs| |sigs| :|xports| |xports|
-        :|csts| |csts| :|varno| |varno|))
+        :|csts| |csts| :|varno| |varno| :|letno| |letno| :|isno| |isno|))
 
 (DEFMACRO |functionDefinitions| (|bfVar#1|) (LIST '|%LoadUnit-fdefs| |bfVar#1|))
 
@@ -165,7 +167,11 @@
 
 (DEFMACRO |currentGensymNumber| (|bfVar#1|) (LIST '|%LoadUnit-varno| |bfVar#1|))
 
-(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0))
+(DEFMACRO |letVariableNumer| (|bfVar#1|) (LIST '|%LoadUnit-letno| |bfVar#1|))
+
+(DEFMACRO |isVariableNumber| (|bfVar#1|) (LIST '|%LoadUnit-isno| |bfVar#1|))
+
+(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0 0 0))
 
 (DEFUN |pushFunctionDefinition| (|tu| |def|)
   (SETF (|functionDefinitions| |tu|) (CONS |def| (|functionDefinitions| |tu|))))
@@ -185,21 +191,19 @@
    (SETF (|currentGensymNumber| |tu|) (+ (|currentGensymNumber| |tu|) 1))
    (INTERN (CONCAT "bfVar#" (WRITE-TO-STRING (|currentGensymNumber| |tu|))))))
 
-(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfLetVar|))
+(DECLAIM (FTYPE (FUNCTION (|%LoadUnit|) |%Symbol|) |bfLetVar|))
 
-(DEFUN |bfLetVar| ()
-  (DECLARE (SPECIAL |$letGenVarCounter|))
+(DEFUN |bfLetVar| (|tu|)
   (PROGN
-   (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
-   (INTERN (CONCAT "LETTMP#" (WRITE-TO-STRING |$letGenVarCounter|)))))
+   (SETF (|letVariableNumer| |tu|) (+ (|letVariableNumer| |tu|) 1))
+   (INTERN (CONCAT "LETTMP#" (WRITE-TO-STRING (|letVariableNumer| |tu|))))))
 
-(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfIsVar|))
+(DECLAIM (FTYPE (FUNCTION (|%LoadUnit|) |%Symbol|) |bfIsVar|))
 
-(DEFUN |bfIsVar| ()
-  (DECLARE (SPECIAL |$isGenVarCounter|))
+(DEFUN |bfIsVar| (|tu|)
   (PROGN
-   (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
-   (INTERN (CONCAT "ISTMP#" (WRITE-TO-STRING |$isGenVarCounter|)))))
+   (SETF (|isVariableNumber| |tu|) (+ (|isVariableNumber| |tu|) 1))
+   (INTERN (CONCAT "ISTMP#" (WRITE-TO-STRING (|isVariableNumber| |tu|))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Form|) |bfColon|))
 
@@ -896,7 +900,7 @@
              (|bfMKPROGN| (CONS |l1| (CDR |l2|))))
             (T (COND ((SYMBOLP (CAR |l2|)) (SETQ |l2| (CONS |l2| NIL))))
              (|bfMKPROGN| (CONS |l1| (|append| |l2| (CONS |name| NIL)))))))
-          (T (SETQ |g| (|bfLetVar|)) (SETQ |rhs1| (LIST 'L%T |g| |rhs|))
+          (T (SETQ |g| (|bfLetVar| |tu|)) (SETQ |rhs1| (LIST 'L%T |g| |rhs|))
            (SETQ |let1| (|bfLET1| |tu| |lhs| |g|))
            (COND
             ((AND (CONSP |let1|) (EQ (CAR |let1|) 'PROGN))
@@ -987,7 +991,7 @@
                        (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |var2| (CAR |ISTMP#2|)) T))))))
            (SETQ |patrev| (|bfISReverse| |var2| |var1|))
-           (SETQ |rev| (LIST '|reverse| |rhs|)) (SETQ |g| (|bfLetVar|))
+           (SETQ |rev| (LIST '|reverse| |rhs|)) (SETQ |g| (|bfLetVar| |tu|))
            (SETQ |l2| (|bfLET2| |tu| |patrev| |g|))
            (COND
             ((AND (CONSP |l2|) (NOT (CONSP (CAR |l2|))))
@@ -1031,9 +1035,12 @@
            (LIST 'COND (LIST |isPred| |rhs|))))))
 
 (DEFUN |bfLET| (|tu| |lhs| |rhs|)
-  (LET ((|$letGenVarCounter| 0))
-    (DECLARE (SPECIAL |$letGenVarCounter|))
-    (|bfLET1| |tu| |lhs| |rhs|)))
+  (LET* (|letno|)
+    (PROGN
+     (SETQ |letno| (|letVariableNumer| |tu|))
+     (UNWIND-PROTECT
+         (PROGN (SETF (|letVariableNumer| |tu|) 0) (|bfLET1| |tu| |lhs| |rhs|))
+       (SETF (|letVariableNumer| |tu|) |letno|)))))
 
 (DEFUN |addCARorCDR| (|acc| |expr|)
   (LET* (|funsR| |funsA| |p| |funs|)
@@ -1068,9 +1075,16 @@
         (T (LIST |op| |left| |right|))))
 
 (DEFUN |bfIS| (|tu| |left| |right|)
-  (LET* ((|$isGenVarCounter| 0) (|$inDefIS| T))
-    (DECLARE (SPECIAL |$isGenVarCounter| |$inDefIS|))
-    (|bfIS1| |tu| |left| |right|)))
+  (LET* (|isno|)
+    (PROGN
+     (SETQ |isno| (|isVariableNumber| |tu|))
+     (UNWIND-PROTECT
+         (PROGN
+          (SETF (|isVariableNumber| |tu|) 0)
+          (LET ((|$inDefIS| T))
+            (DECLARE (SPECIAL |$inDefIS|))
+            (|bfIS1| |tu| |left| |right|)))
+       (SETF (|isVariableNumber| |tu|) |isno|)))))
 
 (DEFUN |bfISReverse| (|x| |a|)
   (LET* (|y|)
@@ -1129,7 +1143,7 @@
                             (PROGN (SETQ |b| (CAR |ISTMP#2|)) T)))))
                 (EQ |a| 'DOT) (EQ |b| 'DOT))
            (LIST 'CONSP |lhs|))
-          ((CONSP |lhs|) (SETQ |g| (|bfIsVar|))
+          ((CONSP |lhs|) (SETQ |g| (|bfIsVar| |tu|))
            (|bfMKPROGN| (LIST (LIST 'L%T |g| |lhs|) (|bfIS1| |tu| |g| |rhs|))))
           ((EQ (CAR |rhs|) 'CONS) (SETQ |a| (CADR . #2=(|rhs|)))
            (SETQ |b| (CADDR . #2#))
@@ -1170,7 +1184,7 @@
               (T (|bfAND| (LIST (LIST 'CONSP |lhs|) |a1| |b1|)))))))
           ((EQ (CAR |rhs|) '|append|) (SETQ |a| (CADR . #3=(|rhs|)))
            (SETQ |b| (CADDR . #3#)) (SETQ |patrev| (|bfISReverse| |b| |a|))
-           (SETQ |g| (|bfIsVar|))
+           (SETQ |g| (|bfIsVar| |tu|))
            (SETQ |rev|
                    (|bfAND|
                     (LIST (LIST 'CONSP |lhs|)

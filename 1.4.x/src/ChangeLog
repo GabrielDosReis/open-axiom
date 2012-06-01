@@ -1,5 +1,11 @@
 2012-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (%LoadUnit): Add fields for let var and is var
+	sequence numbers.
+	Eliminate $letGenVarCounter and $isGenVarCounter.
+
+2012-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot: Add a %LoadUnit parameter to most functions.
 	Adjust callers.
 	* boot/translator.boot: Tidy.
