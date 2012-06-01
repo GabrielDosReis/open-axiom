@@ -433,10 +433,9 @@
 
 (DEFUN |shoeOutParse| (|toks|)
   (LET* (|found| |ps|)
-    (DECLARE (SPECIAL |$returns| |$typings| |$op|))
+    (DECLARE (SPECIAL |$returns| |$typings|))
     (PROGN
      (SETQ |ps| (|makeParserState| |toks|))
-     (SETQ |$op| NIL)
      (SETQ |$typings| NIL)
      (SETQ |$returns| NIL)
      (|bpFirstTok| |ps|)

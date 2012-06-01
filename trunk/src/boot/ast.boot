@@ -120,7 +120,7 @@ structure %Ast ==
 structure %LoadUnit ==
   Record(fdefs: %List %Thing,sigs: %List %Thing,xports: %List %Identifier,_
     csts: %List %Binding,varno: %Short,letno: %Short,isno: %Short,_
-    sconds: %List %Thing) with
+    sconds: %List %Thing,op: %Identifier) with
       functionDefinitions == (.fdefs)  -- functions defined in this TU
       globalSignatures == (.sigs)      -- signatures proclaimed by this TU
       exportedNames == (.xports)       -- names exported by this TU
@@ -129,9 +129,10 @@ structure %LoadUnit ==
       letVariableNumer == (.letno)     -- let variable sequence number
       isVariableNumber == (.isno)      -- is variable sequence number
       sideConditions == (.sconds)      -- list of side declarations
+      enclosingFunction  == (.op)      -- name of current enclosing function
 
 makeLoadUnit() ==
-  mk%LoadUnit(nil,nil,nil,nil,0,0,0,nil)
+  mk%LoadUnit(nil,nil,nil,nil,0,0,0,nil,nil)
 
 pushFunctionDefinition(tu,def) ==
   functionDefinitions(tu) := [def,:functionDefinitions tu]
@@ -601,7 +602,7 @@ bfSUBLIS1(p,e)==
    sameObject?(first f,e) => bfSUBLIS(p, rest f)
    bfSUBLIS1(rest p,e)
  
-defSheepAndGoats(x)==
+defSheepAndGoats(tu,x)==
   case x of 
     %Definition(op,args,body) =>
       argl :=
@@ -610,17 +611,17 @@ defSheepAndGoats(x)==
       argl = nil =>
 	opassoc := [[op,:body]]
 	[opassoc,[],[]]
-      op1 := makeSymbol strconc(symbolName $op,'",",symbolName op)
+      op1 := makeSymbol strconc(symbolName enclosingFunction tu,'",",symbolName op)
       opassoc := [[op,:op1]]
       defstack := [[op1,args,body]]
       [opassoc,defstack,[]]
-    %Pile defs => defSheepAndGoatsList defs
+    %Pile defs => defSheepAndGoatsList(tu,defs)
     otherwise => [[],[],[x]]
  
-defSheepAndGoatsList(x)==
+defSheepAndGoatsList(tu,x)==
   x = nil => [[],[],[]]
-  [opassoc,defs,nondefs]    := defSheepAndGoats first x
-  [opassoc1,defs1,nondefs1] := defSheepAndGoatsList rest x
+  [opassoc,defs,nondefs]    := defSheepAndGoats(tu,first x)
+  [opassoc1,defs1,nondefs1] := defSheepAndGoatsList(tu,rest x)
   [[:opassoc,:opassoc1],[:defs,:defs1],[:nondefs,:nondefs1]]
 
 --% LET
@@ -1166,7 +1167,7 @@ groupFluidVars(inits,vars,stmts) ==
   ["LET*",inits,["DECLARE",["SPECIAL",:vars]],bfMKPROGN stmts]
 
 bfTagged(tu,a,b)==
-  $op = nil => %Signature(a,b)        -- surely a toplevel decl
+  enclosingFunction tu = nil => %Signature(a,b)  -- surely a toplevel decl
   symbol? a =>
     b is "local" =>  bfLET(tu,compFluid a,nil)
     $typings := [["TYPE",b,a],:$typings]
@@ -1263,7 +1264,7 @@ bfSequence l ==
   ["COND",:transform,bfAlternative('T,bfSequence aft)]
  
 bfWhere(tu,context,expr)==
-  [opassoc,defs,nondefs] := defSheepAndGoats context
+  [opassoc,defs,nondefs] := defSheepAndGoats(tu,context)
   a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
                for d in defs]
   sideConditions(tu) := [:a,:sideConditions tu]

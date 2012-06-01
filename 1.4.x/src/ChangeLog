@@ -1,5 +1,10 @@
 2012-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (%LoadUnit): Add field for enclosing function.
+	Remove references to $op.
+
+2012-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (%LoadUnit): Add fields for side conditions.
 	* boot/parser.boot: Adjust.
 

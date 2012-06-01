@@ -152,13 +152,14 @@
   |varno|
   |letno|
   |isno|
-  |sconds|)
+  |sconds|
+  |op|)
 
 (DEFMACRO |mk%LoadUnit|
-          (|fdefs| |sigs| |xports| |csts| |varno| |letno| |isno| |sconds|)
+          (|fdefs| |sigs| |xports| |csts| |varno| |letno| |isno| |sconds| |op|)
   (LIST '|MAKE-%LoadUnit| :|fdefs| |fdefs| :|sigs| |sigs| :|xports| |xports|
         :|csts| |csts| :|varno| |varno| :|letno| |letno| :|isno| |isno|
-        :|sconds| |sconds|))
+        :|sconds| |sconds| :|op| |op|))
 
 (DEFMACRO |functionDefinitions| (|bfVar#1|) (LIST '|%LoadUnit-fdefs| |bfVar#1|))
 
@@ -176,7 +177,9 @@
 
 (DEFMACRO |sideConditions| (|bfVar#1|) (LIST '|%LoadUnit-sconds| |bfVar#1|))
 
-(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0 0 0 NIL))
+(DEFMACRO |enclosingFunction| (|bfVar#1|) (LIST '|%LoadUnit-op| |bfVar#1|))
+
+(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0 0 0 NIL NIL))
 
 (DEFUN |pushFunctionDefinition| (|tu| |def|)
   (SETF (|functionDefinitions| |tu|) (CONS |def| (|functionDefinitions| |tu|))))
@@ -839,9 +842,8 @@
            (COND ((EQ (CAR |f|) |e|) (|bfSUBLIS| |p| (CDR |f|)))
                  (T (|bfSUBLIS1| (CDR |p|) |e|)))))))
 
-(DEFUN |defSheepAndGoats| (|x|)
+(DEFUN |defSheepAndGoats| (|tu| |x|)
   (LET* (|defstack| |op1| |opassoc| |argl|)
-    (DECLARE (SPECIAL |$op|))
     (CASE (CAR |x|)
       (|%Definition|
        (LET ((|op| (CADR |x|)) (|args| (CADDR |x|)) (|body| (CADDDR |x|)))
@@ -854,23 +856,24 @@
            (T
             (SETQ |op1|
                     (INTERN
-                     (CONCAT (SYMBOL-NAME |$op|) "," (SYMBOL-NAME |op|))))
+                     (CONCAT (SYMBOL-NAME (|enclosingFunction| |tu|)) ","
+                             (SYMBOL-NAME |op|))))
             (SETQ |opassoc| (LIST (CONS |op| |op1|)))
             (SETQ |defstack| (LIST (LIST |op1| |args| |body|)))
             (LIST |opassoc| |defstack| NIL))))))
       (|%Pile|
        (LET ((|defs| (CADR |x|)))
-         (|defSheepAndGoatsList| |defs|)))
+         (|defSheepAndGoatsList| |tu| |defs|)))
       (T (LIST NIL NIL (LIST |x|))))))
 
-(DEFUN |defSheepAndGoatsList| (|x|)
+(DEFUN |defSheepAndGoatsList| (|tu| |x|)
   (LET* (|nondefs1| |defs1| |opassoc1| |nondefs| |defs| |opassoc| |LETTMP#1|)
     (COND ((NULL |x|) (LIST NIL NIL NIL))
-          (T (SETQ |LETTMP#1| (|defSheepAndGoats| (CAR |x|)))
+          (T (SETQ |LETTMP#1| (|defSheepAndGoats| |tu| (CAR |x|)))
            (SETQ |opassoc| (CAR |LETTMP#1|))
            (SETQ |defs| (CADR . #1=(|LETTMP#1|)))
            (SETQ |nondefs| (CADDR . #1#))
-           (SETQ |LETTMP#1| (|defSheepAndGoatsList| (CDR |x|)))
+           (SETQ |LETTMP#1| (|defSheepAndGoatsList| |tu| (CDR |x|)))
            (SETQ |opassoc1| (CAR |LETTMP#1|))
            (SETQ |defs1| (CADR . #2=(|LETTMP#1|)))
            (SETQ |nondefs1| (CADDR . #2#))
@@ -2073,8 +2076,8 @@
             (|bfMKPROGN| |stmts|))))))
 
 (DEFUN |bfTagged| (|tu| |a| |b|)
-  (DECLARE (SPECIAL |$typings| |$op|))
-  (COND ((NULL |$op|) (|%Signature| |a| |b|))
+  (DECLARE (SPECIAL |$typings|))
+  (COND ((NULL (|enclosingFunction| |tu|)) (|%Signature| |a| |b|))
         ((SYMBOLP |a|)
          (COND ((EQ |b| '|local|) (|bfLET| |tu| (|compFluid| |a|) NIL))
                (T (SETQ |$typings| (CONS (LIST 'TYPE |b| |a|) |$typings|))
@@ -2273,7 +2276,7 @@
 (DEFUN |bfWhere| (|tu| |context| |expr|)
   (LET* (|a| |nondefs| |defs| |opassoc| |LETTMP#1|)
     (PROGN
-     (SETQ |LETTMP#1| (|defSheepAndGoats| |context|))
+     (SETQ |LETTMP#1| (|defSheepAndGoats| |tu| |context|))
      (SETQ |opassoc| (CAR |LETTMP#1|))
      (SETQ |defs| (CADR . #1=(|LETTMP#1|)))
      (SETQ |nondefs| (CADDR . #1#))
