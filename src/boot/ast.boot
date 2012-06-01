@@ -118,16 +118,18 @@ structure %Ast ==
 --% Data type for translation units data
 --%
 structure %LoadUnit ==
-  Record(fdefs: %List %Thing, sigs: %List %Thing,
-    xports: %List %Identifier, csts: %List %Binding, varno: %Short) with
+  Record(fdefs: %List %Thing,sigs: %List %Thing,xports: %List %Identifier,
+    csts: %List %Binding,varno: %Short,letno: %Short,isno: %Short) with
       functionDefinitions == (.fdefs)  -- functions defined in this TU
       globalSignatures == (.sigs)      -- signatures proclaimed by this TU
       exportedNames == (.xports)       -- names exported by this TU
       constantBindings == (.csts)      -- constants defined in this TU
       currentGensymNumber == (.varno)  -- current gensym sequence number
+      letVariableNumer == (.letno)     -- let variable sequence number
+      isVariableNumber == (.isno)      -- is variable sequence number
 
 makeLoadUnit() ==
-  mk%LoadUnit(nil,nil,nil,nil,0)
+  mk%LoadUnit(nil,nil,nil,nil,0,0,0)
 
 pushFunctionDefinition(tu,def) ==
   functionDefinitions(tu) := [def,:functionDefinitions tu]
@@ -153,15 +155,15 @@ bfGenSymbol tu ==
   currentGensymNumber(tu) := currentGensymNumber tu + 1
   makeSymbol strconc('"bfVar#",toString currentGensymNumber tu)
 
-bfLetVar: () -> %Symbol
-bfLetVar() ==
-  $letGenVarCounter := $letGenVarCounter + 1
-  makeSymbol strconc('"LETTMP#",toString $letGenVarCounter)
+bfLetVar: %LoadUnit -> %Symbol
+bfLetVar tu ==
+  letVariableNumer(tu) := letVariableNumer tu + 1
+  makeSymbol strconc('"LETTMP#",toString letVariableNumer tu)
 
-bfIsVar: () -> %Symbol
-bfIsVar() ==
-  $isGenVarCounter := $isGenVarCounter + 1
-  makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
+bfIsVar: %LoadUnit -> %Symbol
+bfIsVar tu ==
+  isVariableNumber(tu) := isVariableNumber tu + 1
+  makeSymbol strconc('"ISTMP#",toString isVariableNumber tu)
 
 bfColon: %Thing -> %Form
 bfColon x== 
@@ -640,7 +642,7 @@ bfLET1(tu,lhs,rhs) ==
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
     if symbol? first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
-  g := bfLetVar()
+  g := bfLetVar tu
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(tu,lhs,g)
   let1 is ["PROGN",:.] => bfMKPROGN [rhs1,:rest let1]
@@ -678,7 +680,7 @@ bfLET2(tu,lhs,rhs) ==
   lhs is ['append,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['reverse,rhs]
-    g := bfLetVar()
+    g := bfLetVar tu
     l2 := bfLET2(tu,patrev,g)
     if cons? l2 and first l2 isnt [.,:.] then
       l2 := [l2,:nil]
@@ -702,8 +704,11 @@ bfLET2(tu,lhs,rhs) ==
  
  
 bfLET(tu,lhs,rhs) ==
-  $letGenVarCounter : local := 0
-  bfLET1(tu,lhs,rhs)
+  letno := letVariableNumer tu
+  try
+    letVariableNumer(tu) := 0
+    bfLET1(tu,lhs,rhs)
+  finally letVariableNumer(tu) := letno
  
 addCARorCDR(acc,expr) ==
   expr isnt [.,:.] => [acc,expr]
@@ -734,9 +739,12 @@ bfISApplication(tu,op,left,right)==
   [op ,left,right]
  
 bfIS(tu,left,right)==
-  $isGenVarCounter: local := 0
-  $inDefIS: local :=true
-  bfIS1(tu,left,right)
+  isno := isVariableNumber tu
+  try
+    isVariableNumber(tu) := 0
+    $inDefIS: local :=true
+    bfIS1(tu,left,right)
+  finally isVariableNumber(tu) := isno
  
 bfISReverse(x,a) ==
   x is ['CONS,:.] =>
@@ -764,7 +772,7 @@ bfIS1(tu,lhs,rhs) ==
   rhs is ["EQUAL",a] => bfQ(lhs,a)
   rhs is ['CONS,a,b] and a is "DOT" and b is "DOT" => ['CONSP,lhs]
   cons? lhs =>
-    g := bfIsVar()
+    g := bfIsVar tu
     bfMKPROGN [['L%T,g,lhs],bfIS1(tu,g,rhs)]
   rhs.op is 'CONS =>
     [.,a,b] := rhs
@@ -783,7 +791,7 @@ bfIS1(tu,lhs,rhs) ==
   rhs.op is 'append =>
     [.,a,b] := rhs
     patrev := bfISReverse(b,a)
-    g := bfIsVar()
+    g := bfIsVar tu
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['reverse,lhs]],'T]]
     l2 := bfIS1(tu,g,patrev)
     if cons? l2 and first l2 isnt [.,:.] then
