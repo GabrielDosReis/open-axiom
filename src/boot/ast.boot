@@ -118,8 +118,9 @@ structure %Ast ==
 --% Data type for translation units data
 --%
 structure %LoadUnit ==
-  Record(fdefs: %List %Thing,sigs: %List %Thing,xports: %List %Identifier,
-    csts: %List %Binding,varno: %Short,letno: %Short,isno: %Short) with
+  Record(fdefs: %List %Thing,sigs: %List %Thing,xports: %List %Identifier,_
+    csts: %List %Binding,varno: %Short,letno: %Short,isno: %Short,_
+    sconds: %List %Thing) with
       functionDefinitions == (.fdefs)  -- functions defined in this TU
       globalSignatures == (.sigs)      -- signatures proclaimed by this TU
       exportedNames == (.xports)       -- names exported by this TU
@@ -127,9 +128,10 @@ structure %LoadUnit ==
       currentGensymNumber == (.varno)  -- current gensym sequence number
       letVariableNumer == (.letno)     -- let variable sequence number
       isVariableNumber == (.isno)      -- is variable sequence number
+      sideConditions == (.sconds)      -- list of side declarations
 
 makeLoadUnit() ==
-  mk%LoadUnit(nil,nil,nil,nil,0,0,0)
+  mk%LoadUnit(nil,nil,nil,nil,0,0,0,nil)
 
 pushFunctionDefinition(tu,def) ==
   functionDefinitions(tu) := [def,:functionDefinitions tu]
@@ -947,7 +949,7 @@ bfMDef(tu,op,args,body) ==
     [args]
   lamex := ["MLAMBDA",argl,backquote(body,argl)]
   def := [op,lamex]
-  [shoeComp def,:[:shoeComps bfDef1(tu,d) for d in $wheredefs]]
+  [shoeComp def,:[:shoeComps bfDef1(tu,d) for d in sideConditions tu]]
  
 bfGargl(tu,argl) ==
   argl = nil => [[],[],[],[]]
@@ -978,7 +980,7 @@ bfDef(tu,op,args,body) ==
    [.,op1,arg1,:body1] := shoeComp first bfDef1(tu,[op,args,body])
    bfCompHash(tu,op1,arg1,body1)
  bfTuple
-  [:shoeComps bfDef1(tu,d) for d in  [[op,args,body],:$wheredefs]]
+  [:shoeComps bfDef1(tu,d) for d in  [[op,args,body],:sideConditions tu]]
  
 shoeComps  x==
   [shoeComp def for def in x]
@@ -1260,11 +1262,11 @@ bfSequence l ==
   aft = nil => ["COND",:transform]
   ["COND",:transform,bfAlternative('T,bfSequence aft)]
  
-bfWhere (context,expr)==
+bfWhere(tu,context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
   a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
                for d in defs]
-  $wheredefs := [:a,:$wheredefs]
+  sideConditions(tu) := [:a,:sideConditions tu]
   bfMKPROGN bfSUBLIS(opassoc,append!(nondefs,[expr]))
  
 --shoeReadLispString(s,n)==

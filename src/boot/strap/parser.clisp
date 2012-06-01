@@ -1033,10 +1033,10 @@
        (T (|bpRestore| |ps| |a|) NIL))))))
 
 (DEFUN |bpStoreName| (|ps|)
-  (DECLARE (SPECIAL |$typings| |$wheredefs| |$op|))
+  (DECLARE (SPECIAL |$typings| |$op|))
   (PROGN
    (SETQ |$op| (CAR (|parserTrees| |ps|)))
-   (SETQ |$wheredefs| NIL)
+   (SETF (|sideConditions| (|parserLoadUnit| |ps|)) NIL)
    (SETQ |$typings| NIL)
    T))
 
@@ -1066,7 +1066,9 @@
   (AND (|bpDefinition| |ps|)
        (OR
         (AND (|bpEqKey| |ps| 'WHERE) (|bpRequire| |ps| #'|bpDefinitionItem|)
-             (|bpPush| |ps| (|bfWhere| (|bpPop1| |ps|) (|bpPop1| |ps|))))
+             (|bpPush| |ps|
+                       (|bfWhere| (|parserLoadUnit| |ps|) (|bpPop1| |ps|)
+                                  (|bpPop1| |ps|))))
         T)))
 
 (DEFUN |bpDefinitionItem| (|ps|)
