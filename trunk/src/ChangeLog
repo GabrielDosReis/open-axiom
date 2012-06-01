@@ -1,5 +1,13 @@
 2012-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/translator.boot: Remove DEFUSE, $booDefined,
+	$bootDefinedTwice, $bootUsed, $lispWordTable, shoeDfu, shoeReport,
+	shoeDefUse, defuse, defuse1, defSeparate, unfluidlist,
+	defusebuiltin, bootOut, CLESSP, SSORT, bootOutLines, XREF,
+	shoeXref, shoeXreport.
+
+2012-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (%LoadUnit): Add field for enclosing function.
 	Remove references to $op.
 
