@@ -1033,9 +1033,10 @@
        (T (|bpRestore| |ps| |a|) NIL))))))
 
 (DEFUN |bpStoreName| (|ps|)
-  (DECLARE (SPECIAL |$typings| |$op|))
+  (DECLARE (SPECIAL |$typings|))
   (PROGN
-   (SETQ |$op| (CAR (|parserTrees| |ps|)))
+   (SETF (|enclosingFunction| (|parserLoadUnit| |ps|))
+           (CAR (|parserTrees| |ps|)))
    (SETF (|sideConditions| (|parserLoadUnit| |ps|)) NIL)
    (SETQ |$typings| NIL)
    T))
@@ -1376,42 +1377,44 @@
        (|bpPush| |ps| (|bfCaseItem| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
 
 (DEFUN |bpOutItem| (|ps|)
-  (LET* (|t| |r| |ISTMP#2| |l| |ISTMP#1| |b| |varno|)
+  (LET* (|t| |r| |ISTMP#2| |l| |ISTMP#1| |b| |varno| |op|)
     (DECLARE (SPECIAL |$InteractiveMode|))
-    (LET ((|$op| NIL))
-      (DECLARE (SPECIAL |$op|))
-      (PROGN
-       (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
-       (UNWIND-PROTECT
-           (LET ((#1=#:G721
-                  (CATCH :OPEN-AXIOM-CATCH-POINT
-                    (PROGN
-                     (SETF (|parserGensymSequenceNumber| |ps|) 0)
-                     (|bpRequire| |ps| #'|bpComma|)))))
+    (PROGN
+     (SETQ |op| (|enclosingFunction| (|parserLoadUnit| |ps|)))
+     (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
+     (UNWIND-PROTECT
+         (LET ((#1=#:G721
+                (CATCH :OPEN-AXIOM-CATCH-POINT
+                  (PROGN
+                   (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) NIL)
+                   (SETF (|parserGensymSequenceNumber| |ps|) 0)
+                   (|bpRequire| |ps| #'|bpComma|)))))
+           (COND
+            ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
              (COND
-              ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
-               (COND
-                ((EQUAL (CAR #2=(CDR #1#)) '(|BootSpecificError|))
-                 (LET ((|e| (CDR #2#)))
-                   (PROGN (|bpSpecificErrorHere| |ps| |e|) (|bpTrap| |ps|))))
-                (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
-              (T #1#)))
-         (SETF (|parserGensymSequenceNumber| |ps|) |varno|))
-       (SETQ |b| (|bpPop1| |ps|))
-       (SETQ |t|
-               (COND ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
-                     ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
-                           (PROGN
-                            (SETQ |ISTMP#1| (CDR |b|))
-                            (AND (CONSP |ISTMP#1|)
-                                 (PROGN
-                                  (SETQ |l| (CAR |ISTMP#1|))
-                                  (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                                  (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
-                                       (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
-                           (SYMBOLP |l|))
-                      (COND (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
-                            (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
-                     (T (|translateToplevel| |ps| |b| NIL))))
-       (|bpPush| |ps| |t|)))))
+              ((EQUAL (CAR #2=(CDR #1#)) '(|BootSpecificError|))
+               (LET ((|e| (CDR #2#)))
+                 (PROGN (|bpSpecificErrorHere| |ps| |e|) (|bpTrap| |ps|))))
+              (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
+            (T #1#)))
+       (PROGN
+        (SETF (|parserGensymSequenceNumber| |ps|) |varno|)
+        (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) |op|)))
+     (SETQ |b| (|bpPop1| |ps|))
+     (SETQ |t|
+             (COND ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
+                   ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
+                         (PROGN
+                          (SETQ |ISTMP#1| (CDR |b|))
+                          (AND (CONSP |ISTMP#1|)
+                               (PROGN
+                                (SETQ |l| (CAR |ISTMP#1|))
+                                (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                                (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                                     (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
+                         (SYMBOLP |l|))
+                    (COND (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
+                          (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
+                   (T (|translateToplevel| |ps| |b| NIL))))
+     (|bpPush| |ps| |t|))))
 

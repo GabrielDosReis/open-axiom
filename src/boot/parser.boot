@@ -987,7 +987,7 @@ bpDefinition ps ==
   false
  
 bpStoreName ps ==
-  $op := first parserTrees ps
+  enclosingFunction(parserLoadUnit ps) := first parserTrees ps
   sideConditions(parserLoadUnit ps) := nil
   $typings := nil
   true
@@ -1318,15 +1318,18 @@ bpCaseItem ps ==
 
 ++ Main entry point into the parser module.
 bpOutItem ps ==
-  $op: local := nil
+  op := enclosingFunction parserLoadUnit ps
   varno := parserGensymSequenceNumber ps
   try
+    enclosingFunction(parserLoadUnit ps) := nil
     parserGensymSequenceNumber(ps) := 0
     bpRequire(ps,function bpComma)
   catch(e: BootSpecificError) =>
     bpSpecificErrorHere(ps,e)
     bpTrap ps
-  finally parserGensymSequenceNumber(ps) := varno
+  finally
+    parserGensymSequenceNumber(ps) := varno
+    enclosingFunction(parserLoadUnit ps) := op
   b := bpPop1 ps
   t :=
     b is ["+LINE",:.] => [ b ]
