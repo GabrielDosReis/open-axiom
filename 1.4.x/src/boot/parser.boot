@@ -988,7 +988,7 @@ bpDefinition ps ==
  
 bpStoreName ps ==
   $op := first parserTrees ps
-  $wheredefs := nil
+  sideConditions(parserLoadUnit ps) := nil
   $typings := nil
   true
 
@@ -1020,9 +1020,10 @@ bpDefTail(ps,f) ==
     or bpCompoundDefinitionTail(ps,f)
  
 bpWhere ps ==
-    bpDefinition ps and
-       (bpEqKey(ps,"WHERE") and bpRequire(ps,function bpDefinitionItem)
-           and bpPush(ps,bfWhere(bpPop1 ps,bpPop1 ps)) or true)
+  bpDefinition ps and
+     (bpEqKey(ps,"WHERE") and bpRequire(ps,function bpDefinitionItem)
+         and bpPush(ps,bfWhere(parserLoadUnit ps,bpPop1 ps,bpPop1 ps))
+           or true)
  
 bpDefinitionItem ps ==
   a := bpState ps

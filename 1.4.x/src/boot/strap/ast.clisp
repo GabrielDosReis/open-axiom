@@ -151,11 +151,14 @@
   |csts|
   |varno|
   |letno|
-  |isno|)
+  |isno|
+  |sconds|)
 
-(DEFMACRO |mk%LoadUnit| (|fdefs| |sigs| |xports| |csts| |varno| |letno| |isno|)
+(DEFMACRO |mk%LoadUnit|
+          (|fdefs| |sigs| |xports| |csts| |varno| |letno| |isno| |sconds|)
   (LIST '|MAKE-%LoadUnit| :|fdefs| |fdefs| :|sigs| |sigs| :|xports| |xports|
-        :|csts| |csts| :|varno| |varno| :|letno| |letno| :|isno| |isno|))
+        :|csts| |csts| :|varno| |varno| :|letno| |letno| :|isno| |isno|
+        :|sconds| |sconds|))
 
 (DEFMACRO |functionDefinitions| (|bfVar#1|) (LIST '|%LoadUnit-fdefs| |bfVar#1|))
 
@@ -171,7 +174,9 @@
 
 (DEFMACRO |isVariableNumber| (|bfVar#1|) (LIST '|%LoadUnit-isno| |bfVar#1|))
 
-(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0 0 0))
+(DEFMACRO |sideConditions| (|bfVar#1|) (LIST '|%LoadUnit-sconds| |bfVar#1|))
+
+(DEFUN |makeLoadUnit| () (|mk%LoadUnit| NIL NIL NIL NIL 0 0 0 NIL))
 
 (DEFUN |pushFunctionDefinition| (|tu| |def|)
   (SETF (|functionDefinitions| |tu|) (CONS |def| (|functionDefinitions| |tu|))))
@@ -1516,7 +1521,6 @@
 
 (DEFUN |bfMDef| (|tu| |op| |args| |body|)
   (LET* (|def| |lamex| |argl|)
-    (DECLARE (SPECIAL |$wheredefs|))
     (PROGN
      (SETQ |argl| (COND ((|bfTupleP| |args|) (CDR |args|)) (T (LIST |args|))))
      (SETQ |lamex| (LIST 'MLAMBDA |argl| (|backquote| |body| |argl|)))
@@ -1524,7 +1528,7 @@
      (CONS (|shoeComp| |def|)
            (LET ((|bfVar#2| NIL)
                  (|bfVar#3| NIL)
-                 (|bfVar#1| |$wheredefs|)
+                 (|bfVar#1| (|sideConditions| |tu|))
                  (|d| NIL))
              (LOOP
               (COND
@@ -1583,7 +1587,7 @@
 
 (DEFUN |bfDef| (|tu| |op| |args| |body|)
   (LET* (|body1| |arg1| |op1| |LETTMP#1|)
-    (DECLARE (SPECIAL |$wheredefs| |$bfClamming|))
+    (DECLARE (SPECIAL |$bfClamming|))
     (COND
      (|$bfClamming|
       (SETQ |LETTMP#1|
@@ -1594,7 +1598,8 @@
       (|bfTuple|
        (LET ((|bfVar#2| NIL)
              (|bfVar#3| NIL)
-             (|bfVar#1| (CONS (LIST |op| |args| |body|) |$wheredefs|))
+             (|bfVar#1|
+              (CONS (LIST |op| |args| |body|) (|sideConditions| |tu|)))
              (|d| NIL))
          (LOOP
           (COND
@@ -2265,9 +2270,8 @@
                              (CONS (|bfAlternative| 'T (|bfSequence| |aft|))
                                    NIL)))))))))
 
-(DEFUN |bfWhere| (|context| |expr|)
+(DEFUN |bfWhere| (|tu| |context| |expr|)
   (LET* (|a| |nondefs| |defs| |opassoc| |LETTMP#1|)
-    (DECLARE (SPECIAL |$wheredefs|))
     (PROGN
      (SETQ |LETTMP#1| (|defSheepAndGoats| |context|))
      (SETQ |opassoc| (CAR |LETTMP#1|))
@@ -2289,7 +2293,7 @@
                   (SETQ |bfVar#3| |bfVar#2|))
                  (T (RPLACD |bfVar#3| #2#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
                 (SETQ |bfVar#1| (CDR |bfVar#1|)))))
-     (SETQ |$wheredefs| (|append| |a| |$wheredefs|))
+     (SETF (|sideConditions| |tu|) (|append| |a| (|sideConditions| |tu|)))
      (|bfMKPROGN| (|bfSUBLIS| |opassoc| (|append!| |nondefs| (LIST |expr|)))))))
 
 (DEFUN |bfCompHash| (|tu| |op| |argl| |body|)
