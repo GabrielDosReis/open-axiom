@@ -433,11 +433,8 @@
 
 (DEFUN |shoeOutParse| (|toks|)
   (LET* (|found| |ps|)
-    (DECLARE (SPECIAL |$returns| |$typings|))
     (PROGN
      (SETQ |ps| (|makeParserState| |toks|))
-     (SETQ |$typings| NIL)
-     (SETQ |$returns| NIL)
      (|bpFirstTok| |ps|)
      (SETQ |found|
              (LET ((#1=#:G729

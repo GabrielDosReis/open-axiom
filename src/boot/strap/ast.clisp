@@ -75,73 +75,71 @@
 (DEFUN |%ColonAppend| #1=(|bfVar#40| |bfVar#41|)
   (CONS '|%ColonAppend| (LIST . #1#)))
 
-(DEFUN |%Pretend| #1=(|bfVar#42| |bfVar#43|) (CONS '|%Pretend| (LIST . #1#)))
+(DEFUN |%Is| #1=(|bfVar#42| |bfVar#43|) (CONS '|%Is| (LIST . #1#)))
 
-(DEFUN |%Is| #1=(|bfVar#44| |bfVar#45|) (CONS '|%Is| (LIST . #1#)))
+(DEFUN |%Isnt| #1=(|bfVar#44| |bfVar#45|) (CONS '|%Isnt| (LIST . #1#)))
 
-(DEFUN |%Isnt| #1=(|bfVar#46| |bfVar#47|) (CONS '|%Isnt| (LIST . #1#)))
+(DEFUN |%Reduce| #1=(|bfVar#46| |bfVar#47|) (CONS '|%Reduce| (LIST . #1#)))
 
-(DEFUN |%Reduce| #1=(|bfVar#48| |bfVar#49|) (CONS '|%Reduce| (LIST . #1#)))
-
-(DEFUN |%PrefixExpr| #1=(|bfVar#50| |bfVar#51|)
+(DEFUN |%PrefixExpr| #1=(|bfVar#48| |bfVar#49|)
   (CONS '|%PrefixExpr| (LIST . #1#)))
 
-(DEFUN |%Call| #1=(|bfVar#52| |bfVar#53|) (CONS '|%Call| (LIST . #1#)))
+(DEFUN |%Call| #1=(|bfVar#50| |bfVar#51|) (CONS '|%Call| (LIST . #1#)))
 
-(DEFUN |%InfixExpr| #1=(|bfVar#54| |bfVar#55| |bfVar#56|)
+(DEFUN |%InfixExpr| #1=(|bfVar#52| |bfVar#53| |bfVar#54|)
   (CONS '|%InfixExpr| (LIST . #1#)))
 
-(DEFUN |%ConstantDefinition| #1=(|bfVar#57| |bfVar#58|)
+(DEFUN |%ConstantDefinition| #1=(|bfVar#55| |bfVar#56|)
   (CONS '|%ConstantDefinition| (LIST . #1#)))
 
-(DEFUN |%Definition| #1=(|bfVar#59| |bfVar#60| |bfVar#61|)
+(DEFUN |%Definition| #1=(|bfVar#57| |bfVar#58| |bfVar#59|)
   (CONS '|%Definition| (LIST . #1#)))
 
-(DEFUN |%Macro| #1=(|bfVar#62| |bfVar#63| |bfVar#64|)
+(DEFUN |%Macro| #1=(|bfVar#60| |bfVar#61| |bfVar#62|)
   (CONS '|%Macro| (LIST . #1#)))
 
-(DEFUN |%Lambda| #1=(|bfVar#65| |bfVar#66|) (CONS '|%Lambda| (LIST . #1#)))
+(DEFUN |%Lambda| #1=(|bfVar#63| |bfVar#64|) (CONS '|%Lambda| (LIST . #1#)))
 
-(DEFUN |%SuchThat| #1=(|bfVar#67|) (CONS '|%SuchThat| (LIST . #1#)))
+(DEFUN |%SuchThat| #1=(|bfVar#65|) (CONS '|%SuchThat| (LIST . #1#)))
 
-(DEFUN |%Assignment| #1=(|bfVar#68| |bfVar#69|)
+(DEFUN |%Assignment| #1=(|bfVar#66| |bfVar#67|)
   (CONS '|%Assignment| (LIST . #1#)))
 
-(DEFUN |%While| #1=(|bfVar#70|) (CONS '|%While| (LIST . #1#)))
+(DEFUN |%While| #1=(|bfVar#68|) (CONS '|%While| (LIST . #1#)))
 
-(DEFUN |%Until| #1=(|bfVar#71|) (CONS '|%Until| (LIST . #1#)))
+(DEFUN |%Until| #1=(|bfVar#69|) (CONS '|%Until| (LIST . #1#)))
 
-(DEFUN |%For| #1=(|bfVar#72| |bfVar#73| |bfVar#74|) (CONS '|%For| (LIST . #1#)))
+(DEFUN |%For| #1=(|bfVar#70| |bfVar#71| |bfVar#72|) (CONS '|%For| (LIST . #1#)))
 
-(DEFUN |%Implies| #1=(|bfVar#75| |bfVar#76|) (CONS '|%Implies| (LIST . #1#)))
+(DEFUN |%Implies| #1=(|bfVar#73| |bfVar#74|) (CONS '|%Implies| (LIST . #1#)))
 
-(DEFUN |%Iterators| #1=(|bfVar#77|) (CONS '|%Iterators| (LIST . #1#)))
+(DEFUN |%Iterators| #1=(|bfVar#75|) (CONS '|%Iterators| (LIST . #1#)))
 
-(DEFUN |%Cross| #1=(|bfVar#78|) (CONS '|%Cross| (LIST . #1#)))
+(DEFUN |%Cross| #1=(|bfVar#76|) (CONS '|%Cross| (LIST . #1#)))
 
-(DEFUN |%Repeat| #1=(|bfVar#79| |bfVar#80|) (CONS '|%Repeat| (LIST . #1#)))
+(DEFUN |%Repeat| #1=(|bfVar#77| |bfVar#78|) (CONS '|%Repeat| (LIST . #1#)))
 
-(DEFUN |%Pile| #1=(|bfVar#81|) (CONS '|%Pile| (LIST . #1#)))
+(DEFUN |%Pile| #1=(|bfVar#79|) (CONS '|%Pile| (LIST . #1#)))
 
-(DEFUN |%Append| #1=(|bfVar#82|) (CONS '|%Append| (LIST . #1#)))
+(DEFUN |%Append| #1=(|bfVar#80|) (CONS '|%Append| (LIST . #1#)))
 
-(DEFUN |%Case| #1=(|bfVar#83| |bfVar#84|) (CONS '|%Case| (LIST . #1#)))
+(DEFUN |%Case| #1=(|bfVar#81| |bfVar#82|) (CONS '|%Case| (LIST . #1#)))
 
-(DEFUN |%Return| #1=(|bfVar#85|) (CONS '|%Return| (LIST . #1#)))
+(DEFUN |%Return| #1=(|bfVar#83|) (CONS '|%Return| (LIST . #1#)))
 
-(DEFUN |%Leave| #1=(|bfVar#86|) (CONS '|%Leave| (LIST . #1#)))
+(DEFUN |%Leave| #1=(|bfVar#84|) (CONS '|%Leave| (LIST . #1#)))
 
-(DEFUN |%Throw| #1=(|bfVar#87|) (CONS '|%Throw| (LIST . #1#)))
+(DEFUN |%Throw| #1=(|bfVar#85|) (CONS '|%Throw| (LIST . #1#)))
 
-(DEFUN |%Catch| #1=(|bfVar#88| |bfVar#89|) (CONS '|%Catch| (LIST . #1#)))
+(DEFUN |%Catch| #1=(|bfVar#86| |bfVar#87|) (CONS '|%Catch| (LIST . #1#)))
 
-(DEFUN |%Finally| #1=(|bfVar#90|) (CONS '|%Finally| (LIST . #1#)))
+(DEFUN |%Finally| #1=(|bfVar#88|) (CONS '|%Finally| (LIST . #1#)))
 
-(DEFUN |%Try| #1=(|bfVar#91| |bfVar#92|) (CONS '|%Try| (LIST . #1#)))
+(DEFUN |%Try| #1=(|bfVar#89| |bfVar#90|) (CONS '|%Try| (LIST . #1#)))
 
-(DEFUN |%Where| #1=(|bfVar#93| |bfVar#94|) (CONS '|%Where| (LIST . #1#)))
+(DEFUN |%Where| #1=(|bfVar#91| |bfVar#92|) (CONS '|%Where| (LIST . #1#)))
 
-(DEFUN |%Structure| #1=(|bfVar#95| |bfVar#96|)
+(DEFUN |%Structure| #1=(|bfVar#93| |bfVar#94|)
   (CONS '|%Structure| (LIST . #1#)))
 
 (DEFSTRUCT (|%LoadUnit| (:COPIER |copy%LoadUnit|))
@@ -818,7 +816,8 @@
 
 (DEFUN |bfForin| (|tu| |lhs| U) (|bfFor| |tu| |lhs| U 1))
 
-(DEFUN |bfLocal| (|a| |b|) (COND ((EQ |b| '|local|) (|compFluid| |a|)) (T |a|)))
+(DEFUN |bfSignature| (|a| |b|)
+  (COND ((EQ |b| '|local|) (|compFluid| |a|)) (T (LIST '|%Signature| |a| |b|))))
 
 (DEFUN |bfTake| (|n| |x|)
   (COND ((NULL |x|) |x|) ((EQL |n| 0) NIL)
@@ -885,10 +884,12 @@
 (DEFUN |bfLET1| (|tu| |lhs| |rhs|)
   (LET* (|let1| |g| |l2| |l1| |name| |rhs1| |ISTMP#1|)
     (COND ((SYMBOLP |lhs|) (|bfLetForm| |lhs| |rhs|))
-          ((AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Dynamic|)
-                (PROGN
-                 (SETQ |ISTMP#1| (CDR |lhs|))
-                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+          ((OR
+            (AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Dynamic|)
+                 (PROGN
+                  (SETQ |ISTMP#1| (CDR |lhs|))
+                  (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+            (AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Signature|)))
            (|bfLetForm| |lhs| |rhs|))
           ((AND (SYMBOLP |rhs|) (NOT (|bfCONTAINED| |rhs| |lhs|)))
            (SETQ |rhs1| (|bfLET2| |tu| |lhs| |rhs|))
@@ -1727,7 +1728,6 @@
          |body|
          |args|
          |lamtype|)
-    (DECLARE (SPECIAL |$typings|))
     (PROGN
      (SETQ |lamtype| (CAR |x|))
      (SETQ |args| (CADR . #1=(|x|)))
@@ -1743,9 +1743,6 @@
      (SETQ |body|
              (PROGN
               (SETQ |body'| |body|)
-              (COND
-               (|$typings|
-                (SETQ |body'| (CONS (CONS 'DECLARE |$typings|) |body'|))))
               (COND
                ((SETQ |fvars|
                         (|setDifference| (|deref| |dollarVars|)
@@ -1880,6 +1877,7 @@
                  (SETF (|deref| |fluidVars|)
                          (CONS |y| (|deref| |fluidVars|)))))
                (SETF (CADR |x|) |y|) |x|)
+              ((AND (CONSP |l|) (EQ (CAR |l|) '|%Signature|)) |x|)
               (T (RPLACA |x| 'SETQ)
                (COND
                 ((SYMBOLP |l|)
@@ -1977,26 +1975,76 @@
              (|bindFluidVars!| |x|)))))))
 
 (DEFUN |bindFluidVars!| (|x|)
-  (LET* (|y| |stmts| |init| |ISTMP#1|)
-    (PROGN
-     (COND
-      ((AND (CONSP |x|)
-            (PROGN
-             (SETQ |ISTMP#1| (CAR |x|))
-             (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'L%T)
-                  (PROGN (SETQ |init| (CDR |ISTMP#1|)) T)))
-            (PROGN (SETQ |stmts| (CDR |x|)) T))
-       (RPLACA |x|
-               (|groupFluidVars| (LIST |init|) (LIST (CAR |init|)) |stmts|))
-       (RPLACD |x| NIL)))
-     (COND
-      ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN)
-            (PROGN
-             (SETQ |ISTMP#1| (CDR |x|))
-             (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
-                  (PROGN (SETQ |y| (CAR |ISTMP#1|)) T))))
-       |y|)
-      (T |x|)))))
+  (LET* (|y|
+         |init|
+         |stmts|
+         |expr|
+         |ISTMP#6|
+         |t|
+         |ISTMP#5|
+         |v|
+         |ISTMP#4|
+         |ISTMP#3|
+         |ISTMP#2|
+         |ISTMP#1|)
+    (COND
+     ((AND (CONSP |x|)
+           (PROGN
+            (SETQ |ISTMP#1| (CAR |x|))
+            (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'L%T)
+                 (PROGN
+                  (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                  (AND (CONSP |ISTMP#2|)
+                       (PROGN
+                        (SETQ |ISTMP#3| (CAR |ISTMP#2|))
+                        (AND (CONSP |ISTMP#3|)
+                             (EQ (CAR |ISTMP#3|) '|%Signature|)
+                             (PROGN
+                              (SETQ |ISTMP#4| (CDR |ISTMP#3|))
+                              (AND (CONSP |ISTMP#4|)
+                                   (PROGN
+                                    (SETQ |v| (CAR |ISTMP#4|))
+                                    (SETQ |ISTMP#5| (CDR |ISTMP#4|))
+                                    (AND (CONSP |ISTMP#5|)
+                                         (NULL (CDR |ISTMP#5|))
+                                         (PROGN
+                                          (SETQ |t| (CAR |ISTMP#5|))
+                                          T)))))))
+                       (PROGN
+                        (SETQ |ISTMP#6| (CDR |ISTMP#2|))
+                        (AND (CONSP |ISTMP#6|) (NULL (CDR |ISTMP#6|))
+                             (PROGN (SETQ |expr| (CAR |ISTMP#6|)) T))))))))
+      (SETQ |stmts| (CDR |x|))
+      (RPLACA |x|
+              (COND
+               ((NULL |stmts|)
+                (LIST 'LET (LIST (LIST |v| |expr|))
+                      (LIST 'DECLARE (LIST 'TYPE |t|)) |v|))
+               (T
+                (CONS 'LET
+                      (CONS (LIST (LIST |v| |expr|))
+                            (CONS (LIST 'DECLARE (LIST 'TYPE |t|))
+                                  (|bindFluidVars!| |stmts|)))))))
+      (RPLACD |x| NIL) |x|)
+     (T
+      (COND
+       ((AND (CONSP |x|)
+             (PROGN
+              (SETQ |ISTMP#1| (CAR |x|))
+              (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'L%T)
+                   (PROGN (SETQ |init| (CDR |ISTMP#1|)) T)))
+             (PROGN (SETQ |stmts| (CDR |x|)) T))
+        (RPLACA |x|
+                (|groupFluidVars| (LIST |init|) (LIST (CAR |init|)) |stmts|))
+        (RPLACD |x| NIL)))
+      (COND
+       ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN)
+             (PROGN
+              (SETQ |ISTMP#1| (CDR |x|))
+              (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                   (PROGN (SETQ |y| (CAR |ISTMP#1|)) T))))
+        |y|)
+       (T |x|))))))
 
 (DEFUN |groupFluidVars| (|inits| |vars| |stmts|)
   (LET* (|stmts'|
@@ -2074,15 +2122,6 @@
      (T
       (LIST 'LET* |inits| (LIST 'DECLARE (CONS 'SPECIAL |vars|))
             (|bfMKPROGN| |stmts|))))))
-
-(DEFUN |bfTagged| (|tu| |a| |b|)
-  (DECLARE (SPECIAL |$typings|))
-  (COND ((NULL (|enclosingFunction| |tu|)) (|%Signature| |a| |b|))
-        ((SYMBOLP |a|)
-         (COND ((EQ |b| '|local|) (|bfLET| |tu| (|compFluid| |a|) NIL))
-               (T (SETQ |$typings| (CONS (LIST 'TYPE |b| |a|) |$typings|))
-                |a|)))
-        (T (LIST 'THE |b| |a|))))
 
 (DEFUN |bfRestrict| (|x| |t|) (LIST 'THE |t| |x|))
 
@@ -2719,7 +2758,7 @@
      (SETQ |t| NIL)
      (SETQ |x| NIL)
      (COND
-      ((AND (CONSP |e|) (EQ (CAR |e|) '|%Pretend|)) (SETQ |t| (CADDR |e|))
+      ((AND (CONSP |e|) (EQ (CAR |e|) '|%Signature|)) (SETQ |t| (CADDR |e|))
        (SETQ |x| (CADR |e|)))
       (T (SETQ |t| '|SystemException|) (SETQ |x| |e|)))
      (SETQ |t| (COND ((SYMBOLP |t|) (|quote| (LIST |t|))) (T (|quote| |t|))))
