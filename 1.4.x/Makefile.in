@@ -354,7 +354,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
-ACLOCAL_AMFLAGS = -I config --install --output=config/aclocal.m4
+ACLOCAL_AMFLAGS = -I config #--install --output=config/aclocal.m4
 DIST_SUBDIRS = src
 oa_builddir = $(abs_top_builddir)/build/$(target)
 oa_installdir = @open_axiom_installdir@

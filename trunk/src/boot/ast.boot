@@ -1362,10 +1362,15 @@ bfDs n ==
   n = 0 => '""
   strconc('"D",bfDs(n-1))
 
+ctorName x ==
+  x is [.,:.] => ctorName first x
+  x
+
 bfEnum(t,csts) ==
-  ['DEFTYPE,t,nil,backquote(['MEMBER,:csts],nil)]
+  ['DEFTYPE,ctorName t,nil,backquote(['MEMBER,:csts],nil)]
 
 bfRecordDef(tu,s,fields,accessors) ==
+  s := ctorName s            -- forget parameters
   parms := [x for f in fields | f is ['%Signature,x,.]]
   fun := makeSymbol strconc('"mk",symbolName s)
   ctor := makeSymbol strconc('"MAKE-",symbolName s)

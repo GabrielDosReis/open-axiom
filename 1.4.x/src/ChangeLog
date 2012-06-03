@@ -1,5 +1,14 @@
 2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lexing.boot (%Line): Now a record structure.
+	* boot/parser.boot (bpTypeName): Split out of bpTypeAliasDefinition.
+	(bpStruct): Use it.  Support parameterized structures.
+	* boot/ast.boot (ctorName): New.
+	(bfEnum): Use it for parameterized enums.
+	(bfRecord): Use it for parameterized records.
+
+2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpSignatureTail): Split out of bpSignature.
 	(bpTyped): Use it.
 	(bpThrow): Lilkewise.

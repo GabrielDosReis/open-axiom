@@ -556,9 +556,10 @@
        (|bpPush| |ps| (|bfNamespace| (|bpPop1| |ps|)))))
 
 (DEFUN |bpTypeAliasDefition| (|ps|)
-  (AND (OR (|bpTerm| |ps| #'|bpIdList|) (|bpTrap| |ps|)) (|bpEqKey| |ps| 'TDEF)
-       (|bpLogical| |ps|)
+  (AND (|bpTypeName| |ps|) (|bpEqKey| |ps| 'TDEF) (|bpLogical| |ps|)
        (|bpPush| |ps| (|%TypeAlias| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+
+(DEFUN |bpTypeName| (|ps|) (OR (|bpTerm| |ps| #'|bpIdList|) (|bpTrap| |ps|)))
 
 (DEFUN |bpSignature| (|ps|) (AND (|bpName| |ps|) (|bpSignatureTail| |ps|)))
 
@@ -1282,7 +1283,7 @@
      (COND ((NULL |a|) (|bpTrap| |ps|)) (T (|bpPush| |ps| |a|))))))
 
 (DEFUN |bpStruct| (|ps|)
-  (AND (|bpEqKey| |ps| 'STRUCTURE) (|bpRequire| |ps| #'|bpName|)
+  (AND (|bpEqKey| |ps| 'STRUCTURE) (|bpRequire| |ps| #'|bpTypeName|)
        (OR (|bpEqKey| |ps| 'DEF) (|bpTrap| |ps|))
        (OR (|bpRecord| |ps|) (|bpTypeList| |ps|))
        (|bpPush| |ps| (|%Structure| (|bpPop2| |ps|) (|bpPop1| |ps|)))))

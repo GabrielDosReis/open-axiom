@@ -47,28 +47,20 @@ module lexing where
 
 --%
 --% Line abstract datatype
---%   structure Line ==
---%     Record(buffer: String, curChar: Character,
---%       curIdx: SingleInteger, lstIdx: SingleInteger, lineNo: SingleInteger)
 --%
+structure %Line ==
+   Record(buf: %String, cchar: %Char, cidx: %Short,
+     lidx: %Short, no: %Short) with
+       lineBuffer == (.buf)           -- input string buffer
+       lineCurrentChar == (.cchar)    -- current character
+       lineCurrentIndex == (.cidx)    -- current index
+       lineLastIndex == (.lidx)       -- last valid index
+       lineNumber == (.no)            -- line number
+
+
 makeLine(buf == makeString 0, ch == charByName "Return",
           curIdx == 1, lstIdx == 0, no == 0) ==
-  [buf,ch,curIdx,lstIdx,no]
-
-macro lineBuffer l ==
-  first l
-
-macro lineCurrentChar l ==
-  second l
-
-macro lineCurrentIndex l ==
-  third l
-
-macro lineLastIndex l ==
-  fourth l
-
-macro lineNumber l ==
-  fifth l
+  mk%Line(buf,ch,curIdx,lstIdx,no)
 
 lineClear! l ==
   lineBuffer(l) := makeString 0

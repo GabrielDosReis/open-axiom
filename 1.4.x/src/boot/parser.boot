@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
@@ -477,7 +477,7 @@ bpExportItem ps ==
       bpRequire(ps,function bpSignature)
       bpExportItemTail ps or true
     bpRestore(ps,a)
-    bpTypeAliasDefition ps
+    bpTypeAliasDefinition ps
   false
 
 ++ ExportItemList:
@@ -542,12 +542,15 @@ bpNamespace ps ==
     bpPush(ps,bfNamespace bpPop1 ps)
 
 -- Parse a type alias defnition:
---    type-alias-definition: 
---          identifier <=> logical-expression
-bpTypeAliasDefition ps ==
-  (bpTerm(ps,function bpIdList) or bpTrap ps) and 
+--    TypeAliasDefinition: 
+--       TypeName <=> logical-expression
+bpTypeAliasDefinition ps ==
+  bpTypeName ps and 
     bpEqKey(ps,"TDEF") and bpLogical ps and
-      bpPush(ps,%TypeAlias(bpPop2 ps, bpPop1 ps))
+      bpPush(ps,%TypeAlias(bpPop2 ps,bpPop1 ps))
+
+bpTypeName ps ==
+  bpTerm(ps,function bpIdList) or bpTrap ps
 
 ++ Parse a signature declaration
 ++  Signature:
@@ -981,7 +984,7 @@ bpDefinition ps ==
        bpDef ps
     bpEqPeek(ps,"TDEF") =>
        bpRestore(ps,a)
-       bpTypeAliasDefition ps
+       bpTypeAliasDefinition ps
     true
   bpRestore(ps,a)
   false
@@ -1220,7 +1223,7 @@ bpChecknull ps ==
 
 bpStruct ps ==
    bpEqKey(ps,"STRUCTURE") and
-      bpRequire(ps,function bpName) and
+      bpRequire(ps,function bpTypeName) and
         (bpEqKey(ps,"DEF") or bpTrap ps) and
            (bpRecord ps or bpTypeList ps) and
              bpPush(ps,%Structure(bpPop2 ps,bpPop1 ps))

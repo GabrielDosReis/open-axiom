@@ -2518,8 +2518,10 @@
 
 (DEFUN |bfDs| (|n|) (COND ((EQL |n| 0) "") (T (CONCAT "D" (|bfDs| (- |n| 1))))))
 
+(DEFUN |ctorName| (|x|) (COND ((CONSP |x|) (|ctorName| (CAR |x|))) (T |x|)))
+
 (DEFUN |bfEnum| (|t| |csts|)
-  (LIST 'DEFTYPE |t| NIL (|backquote| (CONS 'MEMBER |csts|) NIL)))
+  (LIST 'DEFTYPE (|ctorName| |t|) NIL (|backquote| (CONS 'MEMBER |csts|) NIL)))
 
 (DEFUN |bfRecordDef| (|tu| |s| |fields| |accessors|)
   (LET* (|accDefs|
@@ -2535,6 +2537,7 @@
          |x|
          |ISTMP#1|)
     (PROGN
+     (SETQ |s| (|ctorName| |s|))
      (SETQ |parms|
              (LET ((|bfVar#2| NIL)
                    (|bfVar#3| NIL)
