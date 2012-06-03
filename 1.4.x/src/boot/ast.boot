@@ -82,7 +82,6 @@ structure %Ast ==
   %BoundedSgement(%Ast,%Ast)            -- 2..4
   %Tuple(%List)                         -- a, b, c, d
   %ColonAppend(%Ast,%Ast)               -- [:y] or [x, :y]
-  %Pretend(%Ast,%Ast)                   -- e : t     -- hard coercion
   %Is(%Ast,%Ast)                        -- e is p    -- patterns
   %Isnt(%Ast,%Ast)                      -- e isnt p  -- patterns
   %Reduce(%Ast,%Ast)                    -- +/[...]
@@ -567,9 +566,9 @@ bfForInBy(tu,variable,collection,step)==
 bfForin(tu,lhs,U)==
   bfFor(tu,lhs,U,1)
  
-bfLocal(a,b)==
+bfSignature(a,b)==
   b is "local" =>  compFluid a
-  a
+  ['%Signature,a,b]
  
 bfTake(n,x)==
   x = nil => x
@@ -631,7 +630,7 @@ bfLetForm(lhs,rhs) ==
  
 bfLET1(tu,lhs,rhs) ==
   symbol? lhs        => bfLetForm(lhs,rhs)
-  lhs is ['%Dynamic,.] => bfLetForm(lhs,rhs)
+  lhs is ['%Dynamic,.] or lhs is ['%Signature,:.] => bfLetForm(lhs,rhs)
   symbol? rhs and not bfCONTAINED(rhs,lhs) =>
     rhs1 := bfLET2(tu,lhs,rhs)
     rhs1 is ["L%T",:.]   => bfMKPROGN [rhs1,rhs]
@@ -1034,8 +1033,6 @@ shoeCompTran x==
   deref(locVars) := setDifference(setDifference(deref locVars,deref fluidVars),shoeATOMs args)
   body :=
     body' := body
-    if $typings then
-      body' := [["DECLARE",:$typings],:body']
     if fvars := setDifference(deref dollarVars,deref fluidVars) then
       body' := [["DECLARE",["SPECIAL",:fvars]],:body']
     vars := deref locVars => declareLocalVars(vars,body')
@@ -1105,6 +1102,7 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
       -- Defer translation of operator for this form.
       second(x) := y
       x
+    l is ['%Signature,:.] => x    -- local binding with explicit typing
     x.op := "SETQ"
     symbol? l =>
       bfBeginsDollar l =>
@@ -1150,6 +1148,12 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
   bindFluidVars! x
  
 bindFluidVars! x ==
+  x is [["L%T",['%Signature,v,t],expr],:stmts] =>
+    x.first :=
+      stmts = nil => ["LET",[[v,expr]],['DECLARE,['TYPE,t]],v]
+      ["LET",[[v,expr]],['DECLARE,['TYPE,t]],:bindFluidVars! stmts]
+    x.rest := nil
+    x
   if x is [["L%T",:init],:stmts] then
     x.first := groupFluidVars([init],[first init],stmts)
     x.rest := nil
@@ -1166,14 +1170,6 @@ groupFluidVars(inits,vars,stmts) ==
     ["LET",inits,["DECLARE",["SPECIAL",:vars]],bfMKPROGN stmts]
   ["LET*",inits,["DECLARE",["SPECIAL",:vars]],bfMKPROGN stmts]
 
-bfTagged(tu,a,b)==
-  enclosingFunction tu = nil => %Signature(a,b)  -- surely a toplevel decl
-  symbol? a =>
-    b is "local" =>  bfLET(tu,compFluid a,nil)
-    $typings := [["TYPE",b,a],:$typings]
-    a
-  ["THE",b,a]
- 
 bfRestrict(x,t) ==
   ["THE",t,x]
 
@@ -1420,7 +1416,7 @@ bfTry(e,cs) ==
 bfThrow e ==
   t := nil
   x := nil
-  if e is ["%Pretend",:.] then
+  if e is ['%Signature,:.] then
     t := third e
     x := second e
   else

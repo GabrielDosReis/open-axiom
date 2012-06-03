@@ -1,3 +1,23 @@
+2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpSignatureTail): Split out of bpSignature.
+	(bpTyped): Use it.
+	(bpThrow): Lilkewise.
+	(bpRegularBVItemTail): Likewise.
+	(bpAssignLHS): Likewise.
+	(bpStoreName): Do not reference $typings.
+	* boot/ast.boot (%Ast): Remove %Pretend variant.
+	(bfSignature): Rename from bfLocal.  Build %Signature variant.
+	(bfLET1): Handle assignment to typed variable.
+	(shoeCompTran): Do not reference $typings.
+	(shoeCompTran1): Do not translate assignment to typed variables.
+	(bindFluidVars): Handle them here.
+	(bfTagged): Remove.
+	(bfTry): Tidy.
+	* boot/translator.boot (shoeOutParse): Do not reference $typings
+	and $returns.
+	* interp/c-util.boot (isAlmostSimple): Initialize $assignmentList.
+
 2012-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot: Remove DEFUSE, $booDefined,

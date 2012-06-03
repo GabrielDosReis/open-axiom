@@ -553,8 +553,12 @@ bpTypeAliasDefition ps ==
 ++  Signature:
 ++    Name COLON Mapping
 bpSignature ps ==
-  bpName ps and bpEqKey(ps,"COLON") and bpRequire(ps,function bpTyping)
-    and bpPush(ps,%Signature(bpPop2 ps, bpPop1 ps))
+  bpName ps and bpSignatureTail ps
+
+bpSignatureTail ps ==
+  bpEqKey(ps,"COLON") and bpRequire(ps,function bpTyping) and
+    bpPush(ps,bfSignature(bpPop2 ps,bpPop1 ps))
+
 
 ++ SimpleMapping:
 ++   Application
@@ -691,9 +695,7 @@ bpTyping ps ==
 ++   Application @ Typing
 bpTyped ps ==
   bpApplication ps and
-     bpEqKey(ps,"COLON") =>
-       bpRequire(ps,function bpTyping) and
-         bpPush(ps,bfTagged(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
+     bpSignatureTail ps => true
      bpEqKey(ps,"AT") =>
        bpRequire(ps,function bpTyping) and
          bpPush(ps,bfRestrict(bpPop2 ps, bpPop1 ps))
@@ -792,9 +794,7 @@ bpAnd ps ==
 bpThrow ps ==
   bpEqKey(ps,"THROW") and bpApplication ps =>
     -- Allow user-supplied matching type tag
-    if bpEqKey(ps,"COLON") then
-      bpRequire(ps,function bpApplication)
-      bpPush(ps,%Pretend(bpPop2 ps,bpPop1 ps))
+    bpSignatureTail ps
     bpPush(ps,bfThrow bpPop1 ps)
   nil
 
@@ -989,7 +989,6 @@ bpDefinition ps ==
 bpStoreName ps ==
   enclosingFunction(parserLoadUnit ps) := first parserTrees ps
   sideConditions(parserLoadUnit ps) := nil
-  $typings := nil
   true
 
 bpDef ps ==  
@@ -1154,14 +1153,13 @@ bpPatternTail ps ==
 ++ a form with a specific pattern structure, or whether it has
 ++ a default value.
 bpRegularBVItemTail ps ==
-  bpEqKey(ps,"COLON") and bpRequire(ps,function bpApplication) and 
-    bpPush(ps,bfTagged(parserLoadUnit ps,bpPop2 ps, bpPop1 ps))
-      or bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern) and
-	 bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
-	   or bpEqKey(ps,"IS") and bpRequire(ps,function bpPattern) and
-	      bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
-             or bpEqKey(ps,"DEF") and bpRequire(ps,function bpApplication) and
-                bpPush(ps,%DefaultValue(bpPop2 ps, bpPop1 ps))
+  bpSignatureTail ps
+    or bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern) and
+       bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
+         or bpEqKey(ps,"IS") and bpRequire(ps,function bpPattern) and
+            bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))
+           or bpEqKey(ps,"DEF") and bpRequire(ps,function bpApplication) and
+              bpPush(ps,%DefaultValue(bpPop2 ps, bpPop1 ps))
 
 
 bpRegularBVItem ps ==
@@ -1204,9 +1202,7 @@ bpAssignVariable ps ==
  
 bpAssignLHS ps ==
   not bpName ps => false
-  bpEqKey(ps,"COLON") =>          -- variable declaration
-    bpRequire(ps,function bpApplication)
-    bpPush(ps,bfLocal(bpPop2 ps,bpPop1 ps))
+  bpSignatureTail ps => true -- variable declaration
   bpArgumentList ps and 
     (bpEqPeek(ps,"DOT")
       or (bpEqPeek(ps,"BEC") and bpPush(ps,bfPlace bpPop1 ps)) 

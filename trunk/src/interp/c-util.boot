@@ -865,7 +865,7 @@ isSideEffectFree op ==
  
 isAlmostSimple x ==
   --returns (<new predicate> . <list of assignments>) or nil
-  $assignmentList: local --$assigmentList is only used in this function
+  $assignmentList: local := nil --$assigmentList is only used in this function
   transform:=
     fn x where
       fn x ==

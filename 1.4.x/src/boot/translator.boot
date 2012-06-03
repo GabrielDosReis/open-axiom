@@ -356,8 +356,6 @@ shoeAddComment l==
 
 shoeOutParse toks ==
   ps := makeParserState toks
-  $typings := []
-  $returns := []
   bpFirstTok ps
   found :=
     try bpOutItem ps

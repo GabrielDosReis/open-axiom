@@ -560,9 +560,11 @@
        (|bpLogical| |ps|)
        (|bpPush| |ps| (|%TypeAlias| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
 
-(DEFUN |bpSignature| (|ps|)
-  (AND (|bpName| |ps|) (|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpTyping|)
-       (|bpPush| |ps| (|%Signature| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+(DEFUN |bpSignature| (|ps|) (AND (|bpName| |ps|) (|bpSignatureTail| |ps|)))
+
+(DEFUN |bpSignatureTail| (|ps|)
+  (AND (|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpTyping|)
+       (|bpPush| |ps| (|bfSignature| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
 
 (DEFUN |bpSimpleMapping| (|ps|)
   (COND
@@ -698,16 +700,12 @@
 
 (DEFUN |bpTyped| (|ps|)
   (AND (|bpApplication| |ps|)
-       (COND
-        ((|bpEqKey| |ps| 'COLON)
-         (AND (|bpRequire| |ps| #'|bpTyping|)
-              (|bpPush| |ps|
-                        (|bfTagged| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
-                                    (|bpPop1| |ps|)))))
-        ((|bpEqKey| |ps| 'AT)
-         (AND (|bpRequire| |ps| #'|bpTyping|)
-              (|bpPush| |ps| (|bfRestrict| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
-        (T T))))
+       (COND ((|bpSignatureTail| |ps|) T)
+             ((|bpEqKey| |ps| 'AT)
+              (AND (|bpRequire| |ps| #'|bpTyping|)
+                   (|bpPush| |ps|
+                             (|bfRestrict| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
+             (T T))))
 
 (DEFUN |bpExpt| (|ps|) (|bpRightAssoc| |ps| '(POWER) #'|bpTyped|))
 
@@ -835,10 +833,7 @@
 (DEFUN |bpThrow| (|ps|)
   (COND
    ((AND (|bpEqKey| |ps| 'THROW) (|bpApplication| |ps|))
-    (COND
-     ((|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpApplication|)
-      (|bpPush| |ps| (|%Pretend| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
-    (|bpPush| |ps| (|bfThrow| (|bpPop1| |ps|))))
+    (|bpSignatureTail| |ps|) (|bpPush| |ps| (|bfThrow| (|bpPop1| |ps|))))
    (T NIL)))
 
 (DEFUN |bpTry| (|ps|)
@@ -1033,12 +1028,10 @@
        (T (|bpRestore| |ps| |a|) NIL))))))
 
 (DEFUN |bpStoreName| (|ps|)
-  (DECLARE (SPECIAL |$typings|))
   (PROGN
    (SETF (|enclosingFunction| (|parserLoadUnit| |ps|))
            (CAR (|parserTrees| |ps|)))
    (SETF (|sideConditions| (|parserLoadUnit| |ps|)) NIL)
-   (SETQ |$typings| NIL)
    T))
 
 (DEFUN |bpDef| (|ps|)
@@ -1205,21 +1198,17 @@
         T)))
 
 (DEFUN |bpRegularBVItemTail| (|ps|)
-  (OR
-   (AND (|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpApplication|)
-        (|bpPush| |ps|
-                  (|bfTagged| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
-                              (|bpPop1| |ps|))))
-   (AND (|bpEqKey| |ps| 'BEC) (|bpRequire| |ps| #'|bpPattern|)
-        (|bpPush| |ps|
-                  (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
-                              (|bpPop1| |ps|))))
-   (AND (|bpEqKey| |ps| 'IS) (|bpRequire| |ps| #'|bpPattern|)
-        (|bpPush| |ps|
-                  (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
-                              (|bpPop1| |ps|))))
-   (AND (|bpEqKey| |ps| 'DEF) (|bpRequire| |ps| #'|bpApplication|)
-        (|bpPush| |ps| (|%DefaultValue| (|bpPop2| |ps|) (|bpPop1| |ps|))))))
+  (OR (|bpSignatureTail| |ps|)
+      (AND (|bpEqKey| |ps| 'BEC) (|bpRequire| |ps| #'|bpPattern|)
+           (|bpPush| |ps|
+                     (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                 (|bpPop1| |ps|))))
+      (AND (|bpEqKey| |ps| 'IS) (|bpRequire| |ps| #'|bpPattern|)
+           (|bpPush| |ps|
+                     (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
+                                 (|bpPop1| |ps|))))
+      (AND (|bpEqKey| |ps| 'DEF) (|bpRequire| |ps| #'|bpApplication|)
+           (|bpPush| |ps| (|%DefaultValue| (|bpPop2| |ps|) (|bpPop1| |ps|))))))
 
 (DEFUN |bpRegularBVItem| (|ps|)
   (OR (|bpBVString| |ps|) (|bpConstTok| |ps|)
@@ -1272,9 +1261,7 @@
   (OR (|bpBracketConstruct| |ps| #'|bpPatternL|) (|bpAssignLHS| |ps|)))
 
 (DEFUN |bpAssignLHS| (|ps|)
-  (COND ((NOT (|bpName| |ps|)) NIL)
-        ((|bpEqKey| |ps| 'COLON) (|bpRequire| |ps| #'|bpApplication|)
-         (|bpPush| |ps| (|bfLocal| (|bpPop2| |ps|) (|bpPop1| |ps|))))
+  (COND ((NOT (|bpName| |ps|)) NIL) ((|bpSignatureTail| |ps|) T)
         (T
          (AND (|bpArgumentList| |ps|)
               (OR (|bpEqPeek| |ps| 'DOT)
