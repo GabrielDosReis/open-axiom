@@ -41,7 +41,7 @@
 # describe.  This description is STILL IN WORK IN PROGRESS.  Therefore
 # it is incorrekt, incomplet, and iNconSiStenT.
 
-ACLOCAL_AMFLAGS = -I config --install --output=config/aclocal.m4
+ACLOCAL_AMFLAGS = -I config #--install --output=config/aclocal.m4
 
 DIST_SUBDIRS = src
 
