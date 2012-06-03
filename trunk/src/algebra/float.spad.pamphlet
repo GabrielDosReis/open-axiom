@@ -116,8 +116,6 @@ N ==> NonNegativeInteger
 ++      \spad{*}, \spad{/}, \spad{sqrt}, \spad{pi}, \spad{exp1}, \spad{log2}, \spad{log10}: \spad{ O( n**2 )}
 ++      \spad{exp}, \spad{log}, \spad{sin}, \spad{atan}:  \spad{ O( sqrt(n) n**2 )}
 ++ The other elementary functions are coded in terms of the ones above.
-
-
 Float():
  Join(FloatingPointSystem, DifferentialRing, ConvertibleTo String,_
   CoercibleTo DoubleFloat, TranscendentalFunctionCategory, _

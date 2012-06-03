@@ -110,10 +110,6 @@ findCommentBlock(n,oldnums,oldlocs,ncblock,lines) ==
   x :=
     [nc,:block] := ncblock
     nc = 0 => [n - 1,:reverse block]
-    if $EchoLineStack then
-      [n,:$EchoLineStack] := $EchoLineStack
-      preparseEcho lines
-      $EchoLineStack := [n]
     [or/[n for n in oldnums for l in oldlocs | integer? l and l <= nc],
        :reverse block]
   $COMBLOCKLIST := [x,:$COMBLOCKLIST]
@@ -133,15 +129,15 @@ preparseReadLine rs ==
   z
 
 preparseReadLine1 rs ==
-  if $LineList then
-    [line,:$LineList] := $LineList
+  if lines := readerLines rs then
+    line := first lines
+    readerLines(rs) := rest lines
   else
     line := expandLeadingTabs readLine readerInput rs
   $preparseLastLine := line
   not string? line => [$INDEX]
   $INDEX := $INDEX + 1
   line := trimTrailingBlank line
-  $EchoLineStack := [copyString line,:$EchoLineStack]
   n := $INDEX
   if #line > 0 and line.maxIndex(line) = char "__" then
     line := strconc(subString(line,0,maxIndex line),rest preparseReadLine1 rs)
@@ -152,7 +148,6 @@ preparseEcho lines ==
   if $Echo then
     for x in reverse lines repeat
       formatToStream(OUT_-STREAM,'"~&;~A~%",x)
-  $EchoLineStack := nil
 
 ++ The line to be worked on is the first in `lines.
 ++ It's indentation is the first in `locs'.

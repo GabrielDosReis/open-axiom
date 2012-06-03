@@ -83,7 +83,6 @@ import UnivariatePolynomial
 import SparseUnivariatePolynomial
 import Point
 import List
---% PlaneAlgebraicCurvePlot
 ++ Plot a NON-SINGULAR plane algebraic curve p(x,y) = 0.
 ++ Author: Clifton J. Williamson
 ++ Date Created: Fall 1988

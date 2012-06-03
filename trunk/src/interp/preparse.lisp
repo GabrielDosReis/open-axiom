@@ -66,21 +66,19 @@
 (defparameter $INDEX 0                          "File line number of most recently read line.")
 (defparameter |$preparseLastLine| ()            "Most recently read line.")
 (defparameter |$preparseReportIfTrue| NIL         "Should we print listings?")
-(defparameter |$LineList| nil                     "Stack of preparsed lines.")
-(defparameter |$EchoLineStack| nil                "Stack of lines to list.")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
  
 (DEFPARAMETER TOK NIL)
 (DEFPARAMETER DEFINITION_NAME NIL)
 
 (defun Initialize-Preparse (rd)
-  (setq $INDEX 0 |$LineList| nil |$EchoLineStack| nil)
+  (setq $INDEX 0)
   (setq |$preparseLastLine| (|readLine| (|readerInput| rd))))
  
 (defvar $skipme)
  
 (defun |preparse1| (rd)
- (PROG ((|$LineList| (|readerLines| rd)) |$EchoLineStack| NUM A I L PSLOC
+ (PROG (NUM A I L PSLOC
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
@@ -97,7 +95,7 @@
                 (|preparseEcho| (|readerLines| rd))
                 (setq |$preparseLastLine| nil) ;don't reread this line
                 (SETQ LINE a)
-                (CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
+                (CATCH |$SpadReaderTag| (|doSystemCommand| (subseq LINE 1)))
                 (GO READLOOP)))
          (setq L (LENGTH A))
          (if (EQ L 0)
@@ -129,10 +127,13 @@
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
-                  ('T (PUSH (STRCONC (|makeString| N #\Space)
-                                  (SUBSTRING A N ())) |$LineList|)
-                      (SETQ $INDEX (1- $INDEX))
-                      (SETQ A (SUBSEQ A 0 N))))
+                  ('T 
+		   (SETF (|readerLines| rd)
+			 (CONS (STRCONC (|makeString| N #\Space)
+					(SUBSTRING A N ()))
+			       (|readerLines| rd)))
+		   (SETQ $INDEX (1- $INDEX))
+		   (SETQ A (SUBSEQ A 0 N))))
 		(GO NOCOMS))
                ((= N OPARSYM) (setq PCOUNT (1+ PCOUNT)))
                ((= N CPARSYM) (setq PCOUNT (1- PCOUNT))))
@@ -158,9 +159,6 @@
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK (|readerLines| rd)))
-             (IF (NOT (|ioTerminal?| (|readerInput| rd)))
-                 (setq |$preparseLastLine|
-                       (|reverse!| |$EchoLineStack|)))
              (RETURN (|pairList| (|reverse!| NUMS)
                         (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0)
@@ -175,9 +173,4 @@
          (PUSH A LINES)
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))
-         (when (and (|ioTerminal?| (|readerInput| rd)) (not continue))
-	   (setq |$preparseLastLine| nil)
-	   (RETURN (|pairList| (|reverse!| NUMS)
-		    (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
- 
          (GO READLOOP)))

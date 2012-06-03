@@ -1,5 +1,15 @@
 2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/preparse.lisp ($LineList): Remove.
+	(INITIALIZE-PREPARSE): Do not set it.
+	(preparse1): Do not reference it.  Do not test for ioTerminal? and
+	the input is always a disk file.
+	* interp/spad-parser.boot (findCommentBlock): Do not reference
+	$EchoLineStack.
+	(preparseReadLine1): Do not reference $LineList.
+
+2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/io.boot (%Reader): New data structure.
 	* interp/preparse.lisp (INITIALIZE-PREPARSE): Parameter is now a
 	reader.
