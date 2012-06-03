@@ -1,5 +1,18 @@
 2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/io.boot (%Reader): New data structure.
+	* interp/preparse.lisp (INITIALIZE-PREPARSE): Parameter is now a
+	reader.
+	(preparse1): Likewise.  Tidy.
+	* interp/spad-parser.boot (preparseReadLine): Likewise.
+	(preparseReadLine1): Likewise.
+	(preparse): Likewise.
+	(parseSpadFile): Likewise.
+	* interp/spad.lisp (SPAD): Make it a unary function.  Simplify.
+	(INITIALIZE): Remove.
+
+2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lexing.boot (%Line): Now a record structure.
 	* boot/parser.boot (bpTypeName): Split out of bpTypeAliasDefinition.
 	(bpStruct): Use it.  Support parameterized structures.

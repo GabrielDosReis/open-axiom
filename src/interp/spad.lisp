@@ -64,17 +64,15 @@
   (|nextLinesClear!|)
   (|ioClear!|))
 
-(defun spad (&optional
-              (*spad-input-file* nil)
-              (*spad-output-file* nil)
+(defun spad (ifile
              &aux
            (*comp370-apply* (function |printBackendDecl|))
            (*fileactq-apply* (function |printBackendDecl|))
            ($SPAD T)
            (OPTIONLIST nil)
            (*EOF* NIL)
-           (|$editFile| *spad-input-file*)
-           in-stream out-stream)
+           (|$editFile| ifile)
+           rd in-stream out-stream)
   (declare (special |$Echo| |$editFile| *comp370-apply* *EOF*))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
@@ -88,22 +86,15 @@
   (init-boot/spad-reader)
   (unwind-protect
     (progn
-      (setq in-stream (if *spad-input-file*
-                         (open *spad-input-file* :direction :input)
-			|$InputStream|))
-      (initialize-preparse in-stream)
-      (setq out-stream (if *spad-output-file*
-                           (open *spad-output-file* :direction :output)
-                         |$OutputStream|))
-      (when *spad-output-file*
-         (format out-stream "~&;;; -*- Mode:Lisp; Package:Boot  -*-~%~%")
-         (print-package "BOOT"))
-      (setq |$OutputStream| out-stream)
+      (setq in-stream (open ifile :direction :input))
+      (setq rd (|makeReader| in-stream))
+      (initialize-preparse rd)
+      (setq out-stream |$OutputStream|)
       (loop
        (if (|eof?| in-stream) (return nil))
-       (catch 'SPAD_READER
+       (catch |$SpadReaderTag|
 	 (progn 
-	   (setq |$lineStack| (|preparse| in-stream))
+	   (setq |$lineStack| (|preparse| rd))
 	   (when (null |$lineStack|)
 	     (return nil))
 	   (when |$lineStack|
@@ -117,8 +108,7 @@
                        (format out-stream "~&")))
                ))))
       (|ioClear!|)))
-    (if *spad-input-file* (shut in-stream))
-    (if *spad-output-file* (shut out-stream)))
+    (shut in-stream))
   T))
 
 (DEFUN INTEGER-BIT (N I) (LOGBITP I N))
@@ -169,10 +159,6 @@
          (SPAD_SYNTAX_ERROR)
          (if |$InteractiveMode| (|spadThrow|))
          (|translateSpad| x))))
-
-(defun INITIALIZE () 
-  (init-boot/spad-reader)
-  (initialize-preparse |$InputStream|))
 
 (defmacro try (X)
   `(LET ((|$autoLine|))
