@@ -99,3 +99,14 @@ findString(s1,s2,k == 0) ==
   n1 := #s1
   or/[i for i in k..(#s2 - n1) |
         and/[stringChar(s1,j) = stringChar(s2,i+j) for j in 0..(n1-1)]]
+
+--%
+--% Reader
+--%
+structure %Reader ==
+  Record(ins: %InputStream, lines: %List %Line) with
+    readerInput == (.ins)
+    readerLines == (.lines)
+
+makeReader ist ==
+  mk%Reader(ist,nil)

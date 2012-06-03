@@ -78,29 +78,29 @@ indentationLocation line ==
     tabChar? line.i => loc := 8 * (loc quo 8 + 1)
     return loc
 
-skipIfBlock x ==
-  [n,:line] := z := preparseReadLine1 x
+skipIfBlock rs ==
+  [n,:line] := z := preparseReadLine1 rs
   not string? line => z
-  #line = 0 => skipIfBlock x
+  #line = 0 => skipIfBlock rs
   line.0 = char ")" =>
     stringPrefix?('")if",line) =>
-      EVAL string2BootTree storeBlanks!(line,2) => preparseReadLine x
-      skipIfBlock x
+      EVAL string2BootTree storeBlanks!(line,2) => preparseReadLine rs
+      skipIfBlock rs
     stringPrefix?('")elseif",line) =>
-      EVAL string2BootTree storeBlanks!(line,7) => preparseReadLine x
-      skipIfBlock x
+      EVAL string2BootTree storeBlanks!(line,7) => preparseReadLine rs
+      skipIfBlock rs
     stringPrefix?('")else",line) or stringPrefix?('")endif",line) =>
-      preparseReadLine x
+      preparseReadLine rs
     stringPrefix?('")fin",line) => [n,:%nothing]
-    skipIfBlock x
-  skipIfBlock x
+    skipIfBlock rs
+  skipIfBlock rs
 
-skipToEndif x ==
-  [n,:line] := z := preparseReadLine1 x
+skipToEndif rs ==
+  [n,:line] := z := preparseReadLine1 rs
   not string? line => z
-  stringPrefix?(line,'")endif") => preparseReadLine x
+  stringPrefix?(line,'")endif") => preparseReadLine rs
   stringPrefix?(line,'")fin") => [n,:%nothing]
-  skipToEndif x
+  skipToEndif rs
 
 ++ `n' is the line number of the current line
 ++ `oldnums' is the list of line numbers of previous lines
@@ -118,25 +118,25 @@ findCommentBlock(n,oldnums,oldlocs,ncblock,lines) ==
        :reverse block]
   $COMBLOCKLIST := [x,:$COMBLOCKLIST]
 
-preparseReadLine x ==
-  [n,:line] := z := preparseReadLine1 x
+preparseReadLine rs ==
+  [n,:line] := z := preparseReadLine1 rs
   not string? line or #line = 0 => z
   line.0 = char ")" =>
     stringPrefix?('")if",line) =>
-      EVAL string2BootTree storeBlanks!(line,3) => preparseReadLine x
-      skipIfBlock x
+      EVAL string2BootTree storeBlanks!(line,3) => preparseReadLine rs
+      skipIfBlock rs
     stringPrefix?('")elseif",line) or stringPrefix?('")else",line) =>
-      skipToEndif x
-    stringPrefix?('")endif",line) => preparseReadLine x
+      skipToEndif rs
+    stringPrefix?('")endif",line) => preparseReadLine rs
     stringPrefix?('")fin",line) => [n,:%nothing]
     z
   z
 
-preparseReadLine1 x ==
+preparseReadLine1 rs ==
   if $LineList then
     [line,:$LineList] := $LineList
   else
-    line := expandLeadingTabs readLine IN_-STREAM
+    line := expandLeadingTabs readLine readerInput rs
   $preparseLastLine := line
   not string? line => [$INDEX]
   $INDEX := $INDEX + 1
@@ -144,7 +144,7 @@ preparseReadLine1 x ==
   $EchoLineStack := [copyString line,:$EchoLineStack]
   n := $INDEX
   if #line > 0 and line.maxIndex(line) = char "__" then
-    line := strconc(subString(line,0,maxIndex line),rest preparseReadLine1 x)
+    line := strconc(subString(line,0,maxIndex line),rest preparseReadLine1 rs)
     $preparseLastLine := line
   [n,:line]
 
@@ -200,17 +200,17 @@ parsePrint l ==
     formatToStdout '"~%"
   nil
 
-preparse st ==
+preparse rd ==
   $COMBLOCKLIST := nil
   $SKIPME := false
-  stack := 
+  readerLines(rd) := 
     $preparseLastLine =>
       $preparseLastLine is [.,:.] => $preparseLastLine
       [$preparseLastLine]
     nil
-  $INDEX := $INDEX - #stack
-  u := preparse1 stack
-  $SKIPME => preparse st
+  $INDEX := $INDEX - #readerLines rd
+  u := preparse1 rd
+  $SKIPME => preparse rd
   parsePrint u
   $headerDocumentation := nil
   $docList := nil
@@ -981,26 +981,26 @@ parseSpadFile sourceFile ==
     -- we need to restore the global input stream state after we
     -- finished messing with it.
     IN_-STREAM: local := MAKE_-INSTREAM sourceFile
+    rd := makeReader IN_-STREAM
 
     -- If soureFile cannot be processed for whatever reasons
     -- get out of here instead of being stuck later.
-    IN_-STREAM = nil =>
-      systemError '"cannot open input source file"
-    INITIALIZE_-PREPARSE IN_-STREAM
+    readerInput rd = nil => systemError '"cannot open input source file"
+    INITIALIZE_-PREPARSE rd
 
     -- gather parse trees for all toplevel expressions in sourceFile.
     asts := []                                   
-    while not eof? IN_-STREAM repeat
-      $lineStack: local := preparse IN_-STREAM
+    while not eof? readerInput rd repeat
+      $lineStack: local := preparse rd
       $lineStack = nil => leave nil -- explicit end of input
       LINE: local := CDAR $lineStack
-      CATCH('SPAD__READER,parseNewExpr())
+      CATCH($SpadReaderTag,parseNewExpr())
       asts := [parseTransform postTransform popStack1(), :asts]
     -- we accumulated the parse trees in reverse order
     reverse! asts
   finally                      -- clean up the mess, and get out of here
     ioClear!()
-    SHUT IN_-STREAM                              
+    SHUT readerInput rd
 
 --%
 

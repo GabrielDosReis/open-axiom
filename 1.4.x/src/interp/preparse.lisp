@@ -73,20 +73,20 @@
 (DEFPARAMETER TOK NIL)
 (DEFPARAMETER DEFINITION_NAME NIL)
 
-(defun Initialize-Preparse (strm)
+(defun Initialize-Preparse (rd)
   (setq $INDEX 0 |$LineList| nil |$EchoLineStack| nil)
-  (setq |$preparseLastLine| (|readLine| strm)))
+  (setq |$preparseLastLine| (|readLine| (|readerInput| rd))))
  
 (defvar $skipme)
  
-(defun |preparse1| (LineList)
- (PROG ((|$LineList| LineList) |$EchoLineStack| NUM A I L PSLOC
+(defun |preparse1| (rd)
+ (PROG ((|$LineList| (|readerLines| rd)) |$EchoLineStack| NUM A I L PSLOC
         INSTRING PCOUNT COMSYM STRSYM OPARSYM CPARSYM N NCOMSYM
         (SLOC -1) (CONTINUE NIL)  (PARENLEV 0) (NCOMBLOCK ())
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
- READLOOP (DCQ (NUM . A) (|preparseReadLine| LineList))
+ READLOOP (DCQ (NUM . A) (|preparseReadLine| rd))
          (cond ((|atEndOfUnit?| A)
-                (|preparseEcho| LineList)
+                (|preparseEcho| (|readerLines| rd))
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK NIL)))
@@ -94,7 +94,7 @@
 			 (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
-                (|preparseEcho| LineList)
+                (|preparseEcho| (|readerLines| rd))
                 (setq |$preparseLastLine| nil) ;don't reread this line
                 (SETQ LINE a)
                 (CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
@@ -125,7 +125,7 @@
                 (COND
                   ((= SLOC N)
                    (COND ((AND NCOMBLOCK (NOT (= N (CAR NCOMBLOCK))))
-                          (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist)
+                          (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK  (|readerLines| rd))
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
@@ -157,8 +157,8 @@
 		      (setq $skipme nil))))
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
-               (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist))
-             (IF (NOT (|ioTerminal?| in-stream))
+               (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK (|readerLines| rd)))
+             (IF (NOT (|ioTerminal?| (|readerInput| rd)))
                  (setq |$preparseLastLine|
                        (|reverse!| |$EchoLineStack|)))
              (RETURN (|pairList| (|reverse!| NUMS)
@@ -168,14 +168,14 @@
 		(setq SLOC PSLOC)
 		(GO REREAD)))
          (COND (NCOMBLOCK
-                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK linelist)
+                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK (|readerLines| rd))
                 (setq NCOMBLOCK ())))
          (PUSH SLOC LOCS)
- REREAD  (|preparseEcho| LineList)
+ REREAD  (|preparseEcho| (|readerLines| rd))
          (PUSH A LINES)
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))
-         (when (and (|ioTerminal?| in-stream) (not continue))
+         (when (and (|ioTerminal?| (|readerInput| rd)) (not continue))
 	   (setq |$preparseLastLine| nil)
 	   (RETURN (|pairList| (|reverse!| NUMS)
 		    (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
