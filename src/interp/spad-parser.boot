@@ -106,7 +106,7 @@ skipToEndif rs ==
 ++ `oldnums' is the list of line numbers of previous lines
 ++ `oldlocs' is the list of previous indentation locations
 ++ `ncblock' is the current comment block
-findCommentBlock(n,oldnums,oldlocs,ncblock,lines) ==
+findCommentBlock(n,oldnums,oldlocs,ncblock) ==
   x :=
     [nc,:block] := ncblock
     nc = 0 => [n - 1,:reverse block]

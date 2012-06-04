@@ -1,3 +1,8 @@
+2012-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/spad-parser.boot (findCommentBlock): Lose last
+	parameter.  Adjust callers.
+
 2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad.lisp (SPAD): Adjust.
