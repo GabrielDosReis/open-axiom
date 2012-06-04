@@ -198,11 +198,8 @@ parsePrint l ==
 preparse rd ==
   $COMBLOCKLIST := nil
   $SKIPME := false
-  readerLines(rd) := 
-    $preparseLastLine =>
-      $preparseLastLine is [.,:.] => $preparseLastLine
-      [$preparseLastLine]
-    nil
+  if $preparseLastLine ~= nil then
+    readerLines(rd) := [$preparseLastLine,:readerLines rd]
   $INDEX := $INDEX - #readerLines rd
   u := preparse1 rd
   $SKIPME => preparse rd
