@@ -104,9 +104,10 @@ findString(s1,s2,k == 0) ==
 --% Reader
 --%
 structure %Reader ==
-  Record(ins: %InputStream, lines: %List %Line) with
+  Record(ins: %InputStream, lines: %List %Line,sline: %Line) with
     readerInput == (.ins)
     readerLines == (.lines)
+    readerSourceLine == (.sline)  -- current input line
 
 makeReader ist ==
-  mk%Reader(ist,nil)
+  mk%Reader(ist,nil,makeLine())

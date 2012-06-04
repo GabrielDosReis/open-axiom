@@ -260,19 +260,6 @@
   (|closeAllDatabaseStreams|)
  )
 
-
-(DEFUN |string2SpadTree| (LINE)
-  (DECLARE (SPECIAL LINE))
-  (if (and (> (LENGTH LINE) 0) (EQ (CHAR LINE 0) #\) ))
-    (|processSynonyms|))
-  (|ioClear!|)
-  (LET* ((|$lineStack| (LIST (CONS 1 LINE)))
-     ($SPAD T)
-     (PARSEOUT (PROG2 (|parseNewExpr|) (|popStack1|))))
-    (DECLARE (SPECIAL |$lineStack| $SPAD))
-    PARSEOUT))
-
-
 ;; the following are for conditional reading
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)

@@ -40,10 +40,7 @@ import io
 
 namespace BOOT
 
-module lexing where
-  matchString: %String -> %Maybe %Short
-  matchAdvanceString: %String -> %Maybe %Short
-  matchAdvanceKeyword: %Symbol -> %Thing
+module lexing
 
 --%
 --% Line abstract datatype
@@ -99,17 +96,14 @@ lineAdvanceChar! l ==
   lineCurrentIndex(l) := n
   lineCurrentChar(l) := lineBuffer(l).n
 
-++ Current input line
-$spadLine := makeLine()
-
 ++ List of lines returned from preparse
 $lineStack := nil
 
-nextLine st ==
+nextLine rd ==
   $lineStack = nil => nil
   [[n,:l],:$lineStack] := $lineStack
   l := strconc(l,'" ")
-  lineNewLine!(l,$spadLine,n)
+  lineNewLine!(l,readerSourceLine rd,n)
   SETQ(LINE,l)
   $currentLine := l
 
@@ -123,23 +117,24 @@ IN_-STREAM := 'T
 OUT_-STREAM := 'T
 
 ++ Advances IN-STREAM, invoking Next Line if necessary
-advanceChar!() ==
+advanceChar! rd ==
   repeat
-    not lineAtEnd? $spadLine => return lineAdvanceChar! $spadLine
-    nextLine IN_-STREAM => return currentChar()
+    not lineAtEnd? readerSourceLine rd =>
+      return lineAdvanceChar! readerSourceLine rd
+    nextLine rd => return currentChar rd
     return nil
 
 --%
 
 ++ Returns the current character of the line, initially blank for
 ++ an unread line
-currentChar() ==
-  linePastEnd? $spadLine => charByName "Return"
-  lineCurrentChar $spadLine
+currentChar rd ==
+  linePastEnd? readerSourceLine rd => charByName "Return"
+  lineCurrentChar readerSourceLine rd
 
-nextChar() ==
-  lineAtEnd? $spadLine => charByName '"Return"
-  lineNextChar $spadLine
+nextChar rd ==
+  lineAtEnd? readerSourceLine rd => charByName '"Return"
+  lineNextChar readerSourceLine rd
   
 
 --%
@@ -174,25 +169,25 @@ $validTokens := 0
 
 ++ Subroutine of getSpadIntegerToken.
 ++ Read a the characters of a decimal integer and returns its value.
-getDecimalNumberToken buf ==
+getDecimalNumberToken(rd,buf) ==
   repeat
-    SUFFIX(currentChar(),buf)
-    not DIGITP nextChar() => leave nil
-    advanceChar!()
+    SUFFIX(currentChar rd,buf)
+    not DIGITP nextChar rd => leave nil
+    advanceChar! rd
   readIntegerIfCan buf
 
 ++ Subroutine of getSpadIntegerToken.
 ++ We just read the radix of an integer number; parse the
 ++ digits forming that integer token.
-getIntegerInRadix(buf,r) ==
-  r < 2 => SPAD__SYNTAX__ERROR()
+getIntegerInRadix(rd,buf,r) ==
+  r < 2 => SPAD__SYNTAX__ERROR rd
   mark := #buf + 1
   repeat
-    SUFFIX(currentChar(),buf)
-    d := rdigit? nextChar()
+    SUFFIX(currentChar rd,buf)
+    d := rdigit? nextChar rd
     d = nil => leave nil
-    d >= r => SPAD__SYNTAX__ERROR()
-    advanceChar!()
+    d >= r => SPAD__SYNTAX__ERROR rd
+    advanceChar! rd
   PARSE_-INTEGER(buf,KEYWORD::START,mark,KEYWORD::RADIX,r)
 
 radixSuffix? c ==
@@ -203,61 +198,61 @@ radixSuffix? c ==
 ++ format, where the radix is implicitly taken to be 10.  Or the spelling
 ++ can explicitly specify a radix.  That radix can be anything
 ++ in the range 2..36
-getSpadIntegerToken() ==
+getSpadIntegerToken rd ==
   buf := MAKE_-ADJUSTABLE_-STRING 0
-  val := getDecimalNumberToken buf
-  advanceChar!()
-  if radixSuffix? currentChar() then
-    val := getIntegerInRadix(buf,val)
-    advanceChar!()
+  val := getDecimalNumberToken(rd,buf)
+  advanceChar! rd
+  if radixSuffix? currentChar rd then
+    val := getIntegerInRadix(rd,buf,val)
+    advanceChar! rd
   makeToken(val,'NUMBER,#buf)
 
-getNumberToken() ==
+getNumberToken rd ==
   buf := nil
   repeat
-    buf := [currentChar(),:buf]
-    digit? nextChar() => advanceChar!()
+    buf := [currentChar rd,:buf]
+    digit? nextChar rd => advanceChar! rd
     leave nil
-  advanceChar!()
+  advanceChar! rd
   sz := #buf  -- keep track of digit count
   makeToken(readIntegerIfCan listToString reverse! buf,'NUMBER,sz)
 
-getArgumentDesignator() ==
-  advanceChar!()
-  tok := getNumberToken()
+getArgumentDesignator rd ==
+  advanceChar! rd
+  tok := getNumberToken rd
   makeToken(makeSymbol strconc('"#",formatToString('"~D",tokenSymbol tok)),
      'ARGUMENT_-DESIGNATOR,$nonblank)
 
-getToken() ==
-  not skipBlankChars() => nil
-  tt := tokenLookaheadType currentChar()
+getToken rd ==
+  not skipBlankChars rd => nil
+  tt := tokenLookaheadType(rd,currentChar rd)
   tt is 'EOF => makeToken(nil,'_*EOF,$nonblank)
   tt is 'ESCAPE =>
-    advanceChar!()
-    getIdentifier(true)
-  tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator()
-  tt is 'ID => getIdentifier(false)
-  tt is 'NUM => getSpadIntegerToken()
-  tt is 'STRING => getSpadString()
-  tt is 'SPECIAL_-CHAR => getSpecial()
-  getGliph(tt)
+    advanceChar! rd
+    getIdentifier(rd,true)
+  tt is 'ARGUMENT_-DESIGNATOR => getArgumentDesignator rd
+  tt is 'ID => getIdentifier(rd,false)
+  tt is 'NUM => getSpadIntegerToken rd
+  tt is 'STRING => getSpadString rd
+  tt is 'SPECIAL_-CHAR => getSpecial rd
+  getGliph(rd,tt)
 
-tryGetToken() ==
-  tok := getToken() =>
+tryGetToken rd ==
+  tok := getToken rd =>
    $validTokens := $validTokens + 1
    tok
   nil
 
 ++ Returns the current token or gets a new one if necessary
-currentToken() ==
+currentToken rd ==
   $validTokens > 0 => $currentToken
-  $currentToken := tryGetToken()
+  $currentToken := tryGetToken rd
 
 ++ Returns the token after the current token, or nil if there is none after
-nextToken() ==
-  currentToken()
+nextToken rd ==
+  currentToken rd
   $validTokens > 1 => $nextToken
-  $nextToken := tryGetToken()
+  $nextToken := tryGetToken rd
 
 matchToken(tok,typ,sym == nil) ==
   tok ~= nil and symbolEq?(tokenType tok,typ) and
@@ -266,21 +261,21 @@ matchToken(tok,typ,sym == nil) ==
 
 ++ Return the current token if it has type `typ', and possibly the
 ++ same spelling as `sym'.
-matchCurrentToken(typ,sym == nil) ==
-  matchToken(currentToken(),typ,sym)
+matchCurrentToken(rd,typ,sym == nil) ==
+  matchToken(currentToken rd,typ,sym)
 
 ++ Return the next token if it has type `typ;, and possibly the same
 ++ spelling as `sym'.
-matchNextToken(typ,sym == nil) ==
-  matchToken(nextToken(),typ,sym)
+matchNextToken(rd,typ,sym == nil) ==
+  matchToken(nextToken rd,typ,sym)
 
 ++ Makes the next token be the current token.
-advanceToken() ==
-  $validTokens = 0 => $currentToken := tryGetToken()
+advanceToken rd ==
+  $validTokens = 0 => $currentToken := tryGetToken rd
   $validTokens = 1 =>
     $validTokens := $validTokens - 1
     $priorToken := copyToken $currentToken
-    $currentToken := tryGetToken()
+    $currentToken := tryGetToken rd
   $validTokens = 2 =>
     $priorToken := copyToken $currentToken
     $currentToken := copyToken $nextToken
@@ -293,8 +288,8 @@ makeSymbolOf tok ==
   char? tokenSymbol tok => makeSymbol charString tokenSymbol tok
   tokenSymbol tok
 
-currentSymbol() ==
-  makeSymbolOf currentToken()
+currentSymbol rd ==
+  makeSymbolOf currentToken rd
 
 tokenStackClear!() ==
   $validTokens := 0
@@ -303,10 +298,10 @@ tokenStackClear!() ==
   $priorToken := makeToken(nil,nil,nil)
 
 ++ Predicts the kind of token to follow, based on the given initial character
-tokenLookaheadType c ==
+tokenLookaheadType(rd,c) ==
   c = nil => 'EOF
   c = char "__" => 'ESCAPE
-  c = char "#" and digit? nextChar() => 'ARGUMENT_-DESIGNATOR
+  c = char "#" and digit? nextChar rd => 'ARGUMENT_-DESIGNATOR
   digit? c => 'NUM
   c = char "%" or c = char "?" or c = char "?" or alphabetic? c => 'ID
   c = char "_"" => 'STRING
@@ -314,45 +309,45 @@ tokenLookaheadType c ==
   p := property(makeSymbol charString c,'GLIPH) => p
   'SPECIAL_-CHAR
 
-skipBlankChars() ==
+skipBlankChars rd ==
   $nonblank := true
   repeat
-    c := currentChar()
+    c := currentChar rd
     c = nil => return false
-    tokenLookaheadType c = 'WHITE =>
+    tokenLookaheadType(rd,c) = 'WHITE =>
       $nonblank := false
-      advanceChar!() = nil => return false
+      advanceChar! rd = nil => return false
     return true
 
-getSpadString() ==
+getSpadString rd ==
   buf := nil
-  currentChar() ~= char "_"" => nil
-  advanceChar!()
+  currentChar rd ~= char "_"" => nil
+  advanceChar! rd
   repeat
-    currentChar() = char "_"" => leave nil
-    buf := [(currentChar() = char "__" => advanceChar!(); currentChar()),:buf]
-    advanceChar!() = nil =>
+    currentChar rd = char "_"" => leave nil
+    buf := [(currentChar rd = char "__" => advanceChar! rd; currentChar rd),:buf]
+    advanceChar! rd = nil =>
       sayBrightly '"close quote inserted"
       leave nil
-  advanceChar!()
+  advanceChar! rd
   makeToken(listToString reverse! buf,'SPADSTRING)
 
 ++ Take a special character off the input stream.  We let the type name
 ++ of each special character be the atom whose print name is the
 ++ character itself
-getSpecial() ==
-  c := currentChar()
-  advanceChar!()
+getSpecial rd ==
+  c := currentChar rd
+  advanceChar! rd
   makeToken(c,'SPECIAL_-CHAR)
 
-getGliph(gliphs) ==
-  buf := [currentChar()]
-  advanceChar!()
+getGliph(rd,gliphs) ==
+  buf := [currentChar rd]
+  advanceChar! rd
   repeat
-    gliphs := symbolAssoc(makeSymbol charString currentChar(),gliphs) =>
-      buf := [currentChar(),:buf]
+    gliphs := symbolAssoc(makeSymbol charString currentChar rd,gliphs) =>
+      buf := [currentChar rd,:buf]
       gliphs := rest gliphs
-      advanceChar!()
+      advanceChar! rd
     s := makeSymbol listToString reverse! buf
     return makeToken(s,'GLIPH,$nonblank)
 
@@ -363,20 +358,20 @@ Keywords == [
     "if", "iterate", "break", "from", "exit", "leave", "return",
      "not", "repeat", "until", "while", "for", "import", "inline" ]
 
-getIdentifier(esc?) ==
-  buf := [currentChar()]
-  advanceChar!()
+getIdentifier(rd,esc?) ==
+  buf := [currentChar rd]
+  advanceChar! rd
   repeat 
-    c := currentChar()
+    c := currentChar rd
     c = char "__" =>
-      advanceChar!() = nil => leave nil
-      buf := [currentChar(),:buf]
+      advanceChar! rd = nil => leave nil
+      buf := [currentChar rd,:buf]
       esc? := true
-      advanceChar!() = nil => leave nil
+      advanceChar! rd = nil => leave nil
     alphabetic? c or digit? c
       or scalarMember?(c,[char "%",char "'",char "?",char "!"]) =>
         buf := [c,:buf]
-        advanceChar!() = nil => leave nil
+        advanceChar! rd = nil => leave nil
     leave nil
   s := makeSymbol listToString reverse! buf
   tt :=
@@ -412,73 +407,74 @@ quoteIfString tok ==
     escapeKeywords(symbolName tokenSymbol tok,tokenSymbol tok)
   symbolName tokenSymbol tok
 
-ungetTokens() ==
+ungetTokens rd ==
   $validTokens = 0 => true
   $validTokens = 1 =>
     cursym := quoteIfString $currentToken
-    curline := lineCurrentSegment $spadLine
+    curline := lineCurrentSegment readerSourceLine rd
     revisedline := strconc(cursym,curline,'" ")
-    lineNewLine!(revisedline,$spadLine,lineNumber $spadLine)
+    lineNewLine!(revisedline,readerSourceLine rd,lineNumber readerSourceLine rd)
     $nonblank := tokenNonblank? $currentToken
     $validTokens := 0
   $validTokens = 2 =>
     cursym := quoteIfString $currentToken
     nextsym := quoteIfString $nextToken
-    curline := lineCurrentSegment $spadLine
+    curline := lineCurrentSegment readerSourceLine rd
     revisedline := strconc((tokenNonblank? $currentToken => '""; '" "),
       cursym,(tokenNonblank? $nextToken => '""; '" "),nextsym,curline,'" ")
     $nonblank := tokenNonblank? $currentToken
-    lineNewLine!(revisedline,$spadLine,lineNumber $spadLine)
+    lineNewLine!(revisedline,readerSourceLine rd,lineNumber readerSourceLine rd)
     $validTokens := 0
   coreError '"How many tokens do you think you have?"
 
 
 ++ Returns length of X if X matches initial segment of IN-STREAM.
 ++ Otherwise, return nil.
-matchString x ==
-  ungetTokens()
-  skipBlankChars()
-  not linePastEnd? $spadLine and currentChar() ~= nil =>
+matchString(rd,x) ==
+  ungetTokens rd
+  skipBlankChars rd
+  not linePastEnd? readerSourceLine rd and currentChar rd ~= nil =>
     nx := #x
-    buf := lineBuffer $spadLine
-    idx := lineCurrentIndex $spadLine
+    buf := lineBuffer readerSourceLine rd
+    idx := lineCurrentIndex readerSourceLine rd
     nx + idx > #buf => nil
     and/[stringChar(x,i) = stringChar(buf,idx + i) for i in 0..nx-1] and nx
   nil
 
 ++ Same as matchString except if successful, advance inputstream past `x'.
-matchAdvanceString x ==
-  n := #x >= #quoteIfString currentToken() and matchString x =>
-    lineCurrentIndex($spadLine) := lineCurrentIndex $spadLine + n
+matchAdvanceString(rd,x) ==
+  n := #x >= #quoteIfString currentToken rd and matchString(rd,x) =>
+    lineCurrentIndex(readerSourceLine rd) :=
+      lineCurrentIndex readerSourceLine rd + n
     c :=
-      linePastEnd? $spadLine => charByName '"Space"
-      lineBuffer($spadLine).(lineCurrentIndex $spadLine)
-    lineCurrentChar($spadLine) := c
+      linePastEnd? readerSourceLine rd => charByName '"Space"
+      lineBuffer(readerSourceLine rd).(lineCurrentIndex readerSourceLine rd)
+    lineCurrentChar(readerSourceLine rd) := c
     $priorToken := makeToken(makeSymbol x,'IDENTIFIER,$nonblank)
     n
   nil
 
-matchAdvanceKeyword kwd ==
-  matchToken(currentToken(),'KEYWORD,kwd) =>
-    advanceToken()
+matchAdvanceKeyword(rd,kwd) ==
+  matchToken(currentToken rd,'KEYWORD,kwd) =>
+    advanceToken rd
     true
   false
 
-matchKeywordNext kwd ==
-  matchToken(nextToken(),'KEYWORD,kwd)
+matchKeywordNext(rd,kwd) ==
+  matchToken(nextToken rd,'KEYWORD,kwd)
 
-matchSpecial c ==
-  matchToken(currentToken(),'SPECIAL_-CHAR,c)
+matchSpecial(rd,c) ==
+  matchToken(currentToken rd,'SPECIAL_-CHAR,c)
 
-matchAdvanceSpecial c ==
-  matchSpecial c =>
-    advanceToken()
+matchAdvanceSpecial(rd,c) ==
+  matchSpecial(rd,c) =>
+    advanceToken rd
     true
   false
 
-matchAdvanceGlyph s ==
-  matchToken(currentToken(),'GLIPH,s) =>
-    advanceToken()
+matchAdvanceGlyph(rd,s) ==
+  matchToken(currentToken rd,'GLIPH,s) =>
+    advanceToken rd
     true
   false
 
@@ -590,8 +586,8 @@ nthStack n ==
 
 --%
 
-ioClear!() ==
-  lineClear! $spadLine
+ioClear! rd ==
+  lineClear! readerSourceLine rd
   tokenStackClear!()
   reduceStackClear()
   $SPAD => nextLinesClear!()

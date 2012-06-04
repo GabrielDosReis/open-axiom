@@ -58,11 +58,11 @@
 (defvar MARG 0 "Margin for testing by ?OP")
 (defvar |uc| 'UC)
 
-(defun init-boot/spad-reader ()
+(defun init-boot/spad-reader (rd)
   (setq $SPAD_ERRORS (VECTOR 0 0 0))
   (setq SPADERRORSTREAM |$OutputStream|)
   (|nextLinesClear!|)
-  (|ioClear!|))
+  (|ioClear!| rd))
 
 (defun spad (ifile
              &aux
@@ -83,11 +83,11 @@
                     `((FLUID . |true|)
                       (|special| . ,(COPY-TREE |$InitialDomainsInScope|)))
                     (|addBinding| '|$Information| NIL (|makeInitialModemapFrame|)))))
-  (init-boot/spad-reader)
   (unwind-protect
     (progn
       (setq in-stream (open ifile :direction :input))
       (setq rd (|makeReader| in-stream))
+      (init-boot/spad-reader rd)
       (initialize-preparse rd)
       (setq out-stream |$OutputStream|)
       (loop
@@ -100,14 +100,14 @@
 	   (when |$lineStack|
 	     (let ((LINE (cdar |$lineStack|)))
 	       (declare (special LINE))
-               (|parseNewExpr|)
+               (|parseNewExpr| rd)
                (let ((parseout (|popStack1|)) )
                  (when parseout
                        (let ((|$OutputStream| out-stream))
                          (|translateSpad| parseout))
                        (format out-stream "~&")))
                ))))
-      (|ioClear!|)))
+      (|ioClear!| rd)))
     (shut in-stream))
   T))
 

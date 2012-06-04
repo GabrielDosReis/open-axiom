@@ -1126,14 +1126,14 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 
 ; **** 5. BOOT Error Handling
 
-(defun SPAD_SYNTAX_ERROR (&rest byebye)
+(defun SPAD_SYNTAX_ERROR (rd)
   "Print syntax error indication, underline character, scrub line."
   (BUMPERRORCOUNT '|syntax|)
   (COND ((AND (EQ DEBUGMODE 'YES) (NOT(CONSOLEINPUTP IN-STREAM)))
          (SPAD_LONG_ERROR))
         ((SPAD_SHORT_ERROR)))
-  (|ioClear!|)
-  (throw 'spad_reader nil))
+  (|ioClear!| rd)
+  (throw |$SpadReaderTag| nil))
 
 (defun SPAD_LONG_ERROR ()
   (SPAD_ERROR_LOC SPADERRORSTREAM)
