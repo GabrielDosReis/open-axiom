@@ -215,13 +215,13 @@ preparse rd ==
       
 
 --%  
-macro compulsorySyntax s ==
-  s or SPAD__SYNTAX__ERROR()
+macro compulsorySyntax(rd,s) ==
+  s or SPAD__SYNTAX__ERROR rd
 
-repeatedSyntax(l,p) ==
+repeatedSyntax(rd,l,p) ==
   n := stackSize $reduceStack
   once := false
-  while apply(p,nil) repeat
+  while apply(p,rd,nil) repeat
     once := true
   not once => nil
   x := nil
@@ -232,51 +232,51 @@ repeatedSyntax(l,p) ==
 
 --%
 
-parseToken tt ==
-  tok := matchCurrentToken tt =>
+parseToken(rd,tt) ==
+  tok := matchCurrentToken(rd,tt) =>
     pushReduction(makeSymbol strconc(symbolName tt,'"Token"),tokenSymbol tok)
-    advanceToken()
+    advanceToken rd
     true
   false
 
-parseGlyph s ==
-  matchCurrentToken('GLIPH,s) =>
-    advanceToken()
+parseGlyph(rd,s) ==
+  matchCurrentToken(rd,'GLIPH,s) =>
+    advanceToken rd
     true
   false
 
-parseNBGlyph tok ==
-  matchCurrentToken('GLIPH,tok) and $nonblank =>
-    advanceToken()
+parseNBGlyph(rd,tok) ==
+  matchCurrentToken(rd,'GLIPH,tok) and $nonblank =>
+    advanceToken rd
     true
   false
 
-parseString() ==
-  parseToken 'SPADSTRING
+parseString rd ==
+  parseToken(rd,'SPADSTRING)
 
-parseInteger() ==
-  parseToken 'NUMBER
+parseInteger rd ==
+  parseToken(rd,'NUMBER)
 
-parseFloatBasePart() ==
-  matchAdvanceGlyph "." =>
-    $nonblank and (t := matchCurrentToken 'NUMBER) =>
+parseFloatBasePart rd ==
+  matchAdvanceGlyph(rd,".") =>
+    $nonblank and (t := matchCurrentToken(rd,'NUMBER)) =>
       t := copyToken t
-      advanceToken()
+      advanceToken rd
       pushReduction('parseFloatBasePart,tokenNonblank? t)
       pushReduction('parseFloatBasePart,tokenSymbol t)
     pushReduction('parseFloatBasePart,0)
     pushReduction('parseFloatBasePart,0)
   nil
 
-parseFloatBase() ==
-  integer? currentSymbol() and currentChar() = char "." and
-    nextChar() ~= char "." and parseInteger() =>
-      compulsorySyntax parseFloatBasePart()
-  integer? currentSymbol() and charUpcase currentChar() = char "E"
-    and parseInteger() =>
+parseFloatBase rd ==
+  integer? currentSymbol rd and currentChar rd = char "." and
+    nextChar rd ~= char "." and parseInteger rd =>
+      compulsorySyntax(rd,parseFloatBasePart rd)
+  integer? currentSymbol rd and charUpcase currentChar rd = char "E"
+    and parseInteger rd =>
       pushReduction('parseBase,0)
       pushReduction('parseBase,0)
-  digit? currentChar() and currentSymbol() is "." =>
+  digit? currentChar rd and currentSymbol rd is "." =>
     pushReduction('parseBase,0)
     pushReduction('parseBase,0)
   nil
@@ -290,201 +290,201 @@ floatExponent x ==
     nil
   nil
 
-parseFloatExponent() ==
-  not ident? currentSymbol() => nil
-  symbolMember?(currentSymbol(),'(e E)) and
-    charMember?(currentChar(),[char "+",char "-"]) =>
-      advanceToken()
-      parseInteger() => true
-      matchAdvanceGlyph "+" => compulsorySyntax parseInteger()
-      matchAdvanceGlyph "-" =>
-        compulsorySyntax parseInteger()
+parseFloatExponent rd ==
+  not ident? currentSymbol rd => nil
+  symbolMember?(currentSymbol rd,'(e E)) and
+    charMember?(currentChar rd,[char "+",char "-"]) =>
+      advanceToken rd
+      parseInteger rd => true
+      matchAdvanceGlyph(rd,"+") => compulsorySyntax(rd,parseInteger rd)
+      matchAdvanceGlyph(rd,"-") =>
+        compulsorySyntax(rd,parseInteger rd)
         pushReduction('parseFloatExponent,-popStack1())
       pushReduction('parseFloatExponent,0)
-  g := floatExponent currentSymbol() =>
-    advanceToken()
+  g := floatExponent currentSymbol rd =>
+    advanceToken rd
     pushReduction('parseFloatExponent,g)
   nil
 
-parseFloat() ==
-  parseFloatBase() =>
-    $nonblank and parseFloatExponent()
+parseFloat rd ==
+  parseFloatBase rd =>
+    $nonblank and parseFloatExponent rd
       or pushReduction('parseFloat,0)
     pushReduction('parseFloat,
       MAKE_-FLOAT(popStack4(),popStack2(),popStack2(),popStack1()))
   nil
 
-parseName() ==
-  parseToken 'IDENTIFIER and pushReduction('parseName,popStack1())
+parseName rd ==
+  parseToken(rd,'IDENTIFIER) and pushReduction('parseName,popStack1())
 
-parseKeyword() ==
-  parseToken 'KEYWORD and pushReduction('parseKeyword,popStack1())
+parseKeyword rd ==
+  parseToken(rd,'KEYWORD) and pushReduction('parseKeyword,popStack1())
   
-parseFormalParameter() ==
-  parseToken 'ARGUMENT_-DESIGNATOR
+parseFormalParameter rd ==
+  parseToken(rd,'ARGUMENT_-DESIGNATOR)
 
-parseOperatorFunctionName() ==
-  id := makeSymbolOf(matchCurrentToken 'KEYWORD
-          or matchCurrentToken 'GLIPH
-            or matchCurrentToken 'SPECIAL_-CHAR)
+parseOperatorFunctionName rd ==
+  id := makeSymbolOf(matchCurrentToken(rd,'KEYWORD)
+          or matchCurrentToken(rd,'GLIPH)
+            or matchCurrentToken(rd,'SPECIAL_-CHAR))
   symbolMember?(id,$OperatorFunctionNames) =>
     pushReduction('parseOperatorFunctionName,id)
-    advanceToken()
+    advanceToken rd
     true
   false
 
-parseAnyId() ==
-  parseName() => true
-  parseKeyword() => true
-  matchString '"$" =>
-    pushReduction('parseAnyId,currentSymbol())
-    advanceToken()
+parseAnyId rd ==
+  parseName rd => true
+  parseKeyword rd => true
+  matchString(rd,'"$") =>
+    pushReduction('parseAnyId,currentSymbol rd)
+    advanceToken rd
     true
-  parseOperatorFunctionName()
+  parseOperatorFunctionName rd
 
-parseQuad() ==
-  matchAdvanceString '"$" and pushReduction('parseQuad,"$")
+parseQuad rd ==
+  matchAdvanceString(rd,'"$") and pushReduction('parseQuad,"$")
 
-parsePrimary1() ==
-  parseName() =>
-    $nonblank and currentSymbol() is "(" =>
-      compulsorySyntax parsePrimary1()
+parsePrimary1 rd ==
+  parseName rd =>
+    $nonblank and currentSymbol rd is "(" =>
+      compulsorySyntax(rd,parsePrimary1 rd)
       pushReduction('parsePrimary1,[popStack2(),popStack1()])
     true
-  parseQuad() or parseString() or parseInteger() or
-    parseFormalParameter() => true
-  matchSpecial char "'" =>
-    compulsorySyntax parseData()
+  parseQuad rd or parseString rd or parseInteger rd or
+    parseFormalParameter rd => true
+  matchSpecial(rd,char "'") =>
+    compulsorySyntax(rd,parseData rd)
     pushReduction('parsePrimary1,popStack1())
-  parseSequence() or parseEnclosure()
+  parseSequence rd or parseEnclosure rd
 
-parsePrimaryNoFloat() ==
-  parsePrimary1() =>
-    parseTokenTail() or true
+parsePrimaryNoFloat rd ==
+  parsePrimary1 rd =>
+    parseTokenTail rd or true
   false
 
-parsePrimary() ==
-  parseFloat() or parsePrimaryNoFloat()
+parsePrimary rd ==
+  parseFloat rd or parsePrimaryNoFloat rd
 
-parsePrimaryOrQM() ==
-  matchAdvanceString '"?" => pushReduction('parsePrimaryOrQM,"?")
-  parsePrimary()
+parsePrimaryOrQM rd ==
+  matchAdvanceString(rd,'"?") => pushReduction('parsePrimaryOrQM,"?")
+  parsePrimary rd
 
-parseSpecialKeyWord() ==
-  matchCurrentToken 'IDENTIFIER =>
-    tokenSymbol(currentToken()) := unAbbreviateKeyword currentSymbol()
+parseSpecialKeyWord rd ==
+  matchCurrentToken(rd,'IDENTIFIER) =>
+    tokenSymbol(currentToken rd) := unAbbreviateKeyword currentSymbol rd
   nil
 
-parseSexpr1() ==
-  parseInteger() or parseString() or parseAnyId() => true
-  matchAdvanceSpecial char "'" =>
-    compulsorySyntax parseSexpr1()
+parseSexpr1 rd ==
+  parseInteger rd or parseString rd or parseAnyId rd => true
+  matchAdvanceSpecial(rd,char "'") =>
+    compulsorySyntax(rd,parseSexpr1 rd)
     pushReduction('parseSexpr1,["QUOTE",popStack1()])
-  matchAdvanceGlyph "[" =>
+  matchAdvanceGlyph(rd,"[") =>
     stackUpdated?($reduceStack) := false
-    repeatedSyntax('parseSexpr1,function PARSE_-Sexpr1)
+    repeatedSyntax(rd,'parseSexpr1,function PARSE_-Sexpr1)
     if not stackUpdated? $reduceStack then
       pushReduction('parseSexpr1,nil)
-    compulsorySyntax matchAdvanceGlyph "]"
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,"]"))
     pushReduction('parseSexpr1,LIST2VEC popStack1())
-  matchAdvanceGlyph "(" =>
+  matchAdvanceGlyph(rd,"(") =>
     stackUpdated?($reduceStack) := false
-    repeatedSyntax('parseSexpr1,function PARSE_-Sexpr1)
-    if parseGlyph "." then
-      compulsorySyntax parseSexpr1()
+    repeatedSyntax(rd,'parseSexpr1,function PARSE_-Sexpr1)
+    if parseGlyph(rd,".") then
+      compulsorySyntax(rd,parseSexpr1 rd)
       pushReduction('parseSexpr1,append!(popStack2(),popStack1()))
     if not stackUpdated? $reduceStack then
       pushReduction('parseSexpr1,nil)
-    compulsorySyntax matchAdvanceGlyph ")"
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,")"))
   nil
 
-parseSexpr() ==
-  advanceToken()
-  parseSexpr1()
+parseSexpr rd ==
+  advanceToken rd
+  parseSexpr1 rd
 
-parseData() ==
-  parseSexpr() and pushReduction('parseData,["QUOTE",popStack1()])
+parseData rd ==
+  parseSexpr rd and pushReduction('parseData,["QUOTE",popStack1()])
 
-parseCommand() ==
-  matchAdvanceString '")" => --FIXME: remove matchAdvanceString
-    compulsorySyntax parseSpecialKeyWord()
-    compulsorySyntax parseSpecialCommand()
+parseCommand rd ==
+  matchAdvanceString(rd,'")") => --FIXME: remove matchAdvanceString
+    compulsorySyntax(rd,parseSpecialKeyWord rd)
+    compulsorySyntax(rd,parseSpecialCommand rd)
     pushReduction('parseStatement,nil)
   nil
 
-parseTokenOption() ==
-  matchAdvanceString '")" and compulsorySyntax PARSE_-TokenList()
+parseTokenOption rd ==
+  matchAdvanceString(rd,'")") and compulsorySyntax(rd,PARSE_-TokenList rd)
   
 dollarTran(dom,x) ==
   x is [.,:.] => [['elt,dom,first x],:rest x]
   ['elt,dom,x]
 
-parseQualification() ==
-  matchAdvanceString '"$" =>
-    compulsorySyntax parsePrimary1()
+parseQualification rd ==
+  matchAdvanceString(rd,'"$") =>
+    compulsorySyntax(rd,parsePrimary1 rd)
     pushReduction('parseQualification,dollarTran(popStack1(),popStack1()))
   nil
 
-parseTokenTail() ==
-  currentSymbol() is "$" and
-    (alphabetic? currentChar() or currentChar() = char "$"
-      or currentChar() = char "%" or currentChar() = char "(") =>
+parseTokenTail rd ==
+  currentSymbol rd is "$" and
+    (alphabetic? currentChar rd or currentChar rd = char "$"
+      or currentChar rd = char "%" or currentChar rd = char "(") =>
         tok := copyToken $priorToken
-        parseQualification()
+        parseQualification rd
         $priorToken := tok
   nil
 
-parseSelector() ==
-  $nonblank and currentSymbol() is "." and currentChar() ~= char " "
-    and matchAdvanceGlyph "." =>
-      compulsorySyntax parsePrimaryNoFloat()
+parseSelector rd ==
+  $nonblank and currentSymbol rd is "." and currentChar rd ~= char " "
+    and matchAdvanceGlyph(rd,".") =>
+      compulsorySyntax(rd,parsePrimaryNoFloat rd)
       pushReduction('parseSelector,[popStack2(),popStack1()])
-  parseFloat()
-    or matchAdvanceGlyph "." and compulsorySyntax parsePrimary() =>
+  parseFloat rd
+    or matchAdvanceGlyph(rd,".") and compulsorySyntax(rd,parsePrimary rd) =>
       pushReduction('parseSelector,[popStack2(),popStack1()])
   nil
 
-parseApplication() ==
-  parsePrimary() =>
-    repeatedSyntax('selectors,function parseSelector)
-    parseApplication() and
+parseApplication rd ==
+  parsePrimary rd =>
+    repeatedSyntax(rd,'selectors,function parseSelector)
+    parseApplication rd and
       pushReduction('parseApplication,[popStack2(),popStack1()])
     true
   nil
 
-parseOperation($ParseMode,rbp) ==
-  matchCurrentToken 'IDENTIFIER => nil
-  s := currentSymbol()
+parseOperation(rd,$ParseMode,rbp) ==
+  matchCurrentToken(rd,'IDENTIFIER) => nil
+  s := currentSymbol rd
   not symbol? s or property(s,$ParseMode) = nil => nil
   rbp >= parseLeftBindingPowerOf(s,$ParseMode) => nil
-  parseGetSemanticForm(s,$ParseMode,ELEMN(property(s,$ParseMode),5,nil))
+  parseGetSemanticForm(rd,s,$ParseMode,ELEMN(property(s,$ParseMode),5,nil))
 
-parseLedPart rbp ==
-  parseOperation('Led,rbp) and
+parseLedPart(rd,rbp) ==
+  parseOperation(rd,'Led,rbp) and
     pushReduction('parseLedPart,popStack1())
 
-parseNudPart rbp ==
-  parseOperation('Nud,rbp) or parseReduction() or parseForm() =>
+parseNudPart(rd,rbp) ==
+  parseOperation(rd,'Nud,rbp) or parseReduction rd or parseForm rd =>
     pushReduction('parseNudPart,popStack1())
 
-parseExpr rbp ==
-  parseNudPart rbp =>
-    repeatedSyntax('parseExpr,function(() +-> parseLedPart rbp))
+parseExpr(rd,rbp) ==
+  parseNudPart(rd,rbp) =>
+    repeatedSyntax(rd,'parseExpr,function(rd +-> parseLedPart(rd,rbp)))
     pushReduction('parseExpr,popStack1())
   nil
 
-parseInfix() ==
-  pushReduction('parseInfix,currentSymbol())
-  advanceToken()
-  parseTokenTail()
-  compulsorySyntax parseExpression()
+parseInfix rd ==
+  pushReduction('parseInfix,currentSymbol rd)
+  advanceToken rd
+  parseTokenTail rd
+  compulsorySyntax(rd,parseExpression rd)
   pushReduction('parseInfix,[popStack2(),popStack2(),popStack1()])
 
-parsePrefix() ==
-  pushReduction('parsePrefix,currentSymbol())
-  advanceToken()
-  parseTokenTail()
-  compulsorySyntax parseExpression()
+parsePrefix rd ==
+  pushReduction('parsePrefix,currentSymbol rd)
+  advanceToken rd
+  parseTokenTail rd
+  compulsorySyntax(rd,parseExpression rd)
   pushReduction('parsePrefix,[popStack2(),popStack1()])
 
 parseLeftBindingPowerOf(x,p) ==
@@ -495,69 +495,72 @@ parseRightBindingPowerOf(x,p) ==
   y := property(x,p) => ELEMN(y,4,105)
   105
 
-parseGetSemanticForm(x,p,y) ==
-  z := EVAL y => z  -- FIXME get rid of EVAL.
-  p = "Nud" => parsePrefix()
-  p = "Led" => parseInfix()
+parseGetSemanticForm(rd,x,p,y) ==
+  z :=
+    ident? y => apply(y,rd,nil)
+    EVAL y  -- FIXME get rid of EVAL.
+  z ~= nil => z
+  p = "Nud" => parsePrefix rd
+  p = "Led" => parseInfix rd
   nil
 
-parseExpression() ==
-  parseExpr parseRightBindingPowerOf(makeSymbolOf $priorToken,$ParseMode)
+parseExpression rd ==
+  parseExpr(rd,parseRightBindingPowerOf(makeSymbolOf $priorToken,$ParseMode))
     and pushReduction('parseExpression,popStack1())
 
-parseSegmentTail() ==
-  parseGlyph ".." =>
+parseSegmentTail rd ==
+  parseGlyph(rd,"..") =>
     seg :=     
-      parseExpression() => ["SEGMENT",popStack2(),popStack1()]
+      parseExpression rd => ["SEGMENT",popStack2(),popStack1()]
       ["SEGMENT",popStack1()]
     pushReduction('parseSegmentTail,seg)
   nil
 
-parseReductionOp() ==
-  s := currentSymbol()
+parseReductionOp rd ==
+  s := currentSymbol rd
   if string? s then
     s := makeSymbol s -- FIXME: abolish string-quoted operators
-  ident? s and property(s,'Led) and matchNextToken('GLIPH,"/") =>
+  ident? s and property(s,'Led) and matchNextToken(rd,'GLIPH,"/") =>
     pushReduction('parseReductionOp,s)
-    advanceToken()
-    advanceToken()
+    advanceToken rd
+    advanceToken rd
     true
   false
 
-parseReduction() ==
-  parseReductionOp() =>
-    compulsorySyntax parseExpr 1000
+parseReduction rd ==
+  parseReductionOp rd =>
+    compulsorySyntax(rd,parseExpr(rd,1000))
     pushReduction('parseReduction,["%Reduce",popStack2(),popStack1()])
   nil
 
-parseCategory() ==
-  matchAdvanceKeyword "if" =>
-    compulsorySyntax parseExpression()
-    compulsorySyntax matchAdvanceKeyword "then"
-    compulsorySyntax parseCategory()
+parseCategory rd ==
+  matchAdvanceKeyword(rd,"if") =>
+    compulsorySyntax(rd,parseExpression rd)
+    compulsorySyntax(rd,matchAdvanceKeyword(rd,"then"))
+    compulsorySyntax(rd,parseCategory rd)
     stackUpdated?($reduceStack) := false
-    matchAdvanceKeyword "else" and compulsorySyntax parseCategory()
+    matchAdvanceKeyword(rd,"else") and compulsorySyntax(rd,parseCategory rd)
     if not stackUpdated? $reduceStack then
       pushReduction('alternateCategory,nil)
     pushReduction('parseCategory,["if",popStack3(),popStack2(),popStack1()])
-  matchAdvanceGlyph "(" =>
-    compulsorySyntax parseCategory()
+  matchAdvanceGlyph(rd,"(") =>
+    compulsorySyntax(rd,parseCategory rd)
     stackUpdated?($reduceStack) := false
-    repeatedSyntax('unnamedCategory,function(() +->
-      matchAdvanceSpecial char ";" and compulsorySyntax parseCategory()))
+    repeatedSyntax(rd,'unnamedCategory,function( rd +->
+      matchAdvanceSpecial(rd,char ";") and compulsorySyntax(rd,parseCategory rd)))
     if not stackUpdated? $reduceStack then
       pushReduction('unnamedCategory,nil)
-    compulsorySyntax matchAdvanceSpecial char ")"
+    compulsorySyntax(rd,matchAdvanceSpecial(rd,char ")"))
     pushReduction('parseCategory,["CATEGORY",popStack2(),:popStack1()])
-  matchAdvanceKeyword "assume" =>
-    compulsorySyntax parseName()
-    compulsorySyntax matchAdvanceGlyph "=="
-    compulsorySyntax parseFormula()
+  matchAdvanceKeyword(rd,"assume") =>
+    compulsorySyntax(rd,parseName rd)
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,"=="))
+    compulsorySyntax(rd,parseFormula rd)
     pushReduction('assumption,['ATTRIBUTE,['%Rule,popStack2(),popStack1()]])
-  g := lineNumber $spadLine
-  parseApplication() or parseOperatorFunctionName() =>
-    matchAdvanceGlyph ":" =>
-      compulsorySyntax parseExpression()
+  g := lineNumber readerSourceLine rd
+  parseApplication rd or parseOperatorFunctionName rd =>
+    matchAdvanceGlyph(rd,":") =>
+      compulsorySyntax(rd,parseExpression rd)
       pushReduction('parseCategory,["%Signature",popStack2(),popStack1()])
       recordSignatureDocumentation(nthStack 1,g)
       true
@@ -566,367 +569,367 @@ parseCategory() ==
     true
   nil
 
-parseWith() ==
-  matchAdvanceKeyword "with" =>
-    compulsorySyntax parseCategory()
+parseWith rd ==
+  matchAdvanceKeyword(rd,"with") =>
+    compulsorySyntax(rd,parseCategory rd)
     pushReduction('parseWith,["with",popStack1()])
   nil
 
-parseInfixWith() ==
-  parseWith() and
+parseInfixWith rd ==
+  parseWith rd and
     pushReduction('parseInfixWith,["Join",popStack2(),popStack1()])
 
-parseElseClause() ==
-  currentSymbol() is "if" => parseConditional()
-  parseExpression()
+parseElseClause rd ==
+  currentSymbol rd is "if" => parseConditional rd
+  parseExpression rd
 
-parseQuantifier() ==
-  matchAdvanceKeyword "forall" =>
+parseQuantifier rd ==
+  matchAdvanceKeyword(rd,"forall") =>
     pushReduction('parseQuantifier,'%Forall)
-  matchAdvanceKeyword "exist" =>
+  matchAdvanceKeyword(rd,"exist") =>
     pushReduction('parseQuantifier,'%Exist)
   nil
 
-parseQuantifiedVariable() ==
-  parseName() =>
-    compulsorySyntax matchAdvanceGlyph ":"
-    compulsorySyntax parseApplication()
+parseQuantifiedVariable rd ==
+  parseName rd =>
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,":"))
+    compulsorySyntax(rd,parseApplication rd)
     pushReduction('parseQuantifiedVariable,[":",popStack2(),popStack1()])
   nil
 
-parseQuantifiedVariableList() ==
-  matchAdvanceGlyph "(" =>
-    compulsorySyntax parseQuantifiedVariable()
-    repeatedSyntax('repeatedVars,function(() +->
-      matchAdvanceSpecial char "," and parseQuantifiedVariable()))
+parseQuantifiedVariableList rd ==
+  matchAdvanceGlyph(rd,"(") =>
+    compulsorySyntax(rd,parseQuantifiedVariable rd)
+    repeatedSyntax(rd,'repeatedVars,function(rd +->
+      matchAdvanceSpecial(rd,char ",") and parseQuantifiedVariable rd))
         and pushReduction('parseQuantifiedVariableList,
               ["%Sequence",popStack2(),:popStack1()])
-    compulsorySyntax matchAdvanceSpecial char ")"
+    compulsorySyntax(rd,matchAdvanceSpecial(rd,char ")"))
   nil
 
-parseFormula() ==
-  parseQuantifier() =>
-    compulsorySyntax parseQuantifiedVariableList()
-    compulsorySyntax matchAdvanceGlyph "."
-    compulsorySyntax parseExpression()
+parseFormula rd ==
+  parseQuantifier rd =>
+    compulsorySyntax(rd,parseQuantifiedVariableList rd)
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,"."))
+    compulsorySyntax(rd,parseExpression rd)
     pushReduction('parseFormula,[popStack3(),popStack2(),popStack1()])
-  parseExpression()
+  parseExpression rd
 
 ++ quantified types.  At the moment, these are used only in
 ++ pattern-mathing cases.
 ++ -- gdr, 2009-06-14.
-parseScheme() ==
-  parseQuantifier() =>
-    compulsorySyntax parseQuantifiedVariableList()
-    compulsorySyntax matchAdvanceGlyph "."
-    compulsorySyntax parseExpr 200
+parseScheme rd ==
+  parseQuantifier rd =>
+    compulsorySyntax(rd,parseQuantifiedVariableList rd)
+    compulsorySyntax(rd,matchAdvanceGlyph(rd,"."))
+    compulsorySyntax(rd,parseExpr(rd,200))
     pushReduction('parseScheme,[popStack3(),popStack2(),popStack1()])
-  parseApplication()
+  parseApplication rd
 
-parseConditional() ==
-  matchAdvanceKeyword "if" =>
-    compulsorySyntax parseExpression()
-    compulsorySyntax matchAdvanceKeyword "then"
-    compulsorySyntax parseExpression()
+parseConditional rd ==
+  matchAdvanceKeyword(rd,"if") =>
+    compulsorySyntax(rd,parseExpression rd)
+    compulsorySyntax(rd,matchAdvanceKeyword(rd,"then"))
+    compulsorySyntax(rd,parseExpression rd)
     stackUpdated?($reduceStack) := false
-    if matchAdvanceKeyword "else" then
-      parseElseClause()
+    if matchAdvanceKeyword(rd,"else") then
+      parseElseClause rd
     if not stackUpdated? $reduceStack then
       pushReduction('elseBranch,nil)
     pushReduction('parseConditional,["if",popStack3(),popStack2(),popStack1()])
   nil
 
-parseSemicolon() ==
-  matchAdvanceSpecial char ";" =>
-    parseExpr 82 or pushReduction('parseSemicolon,"/throwAway")
+parseSemicolon rd ==
+  matchAdvanceSpecial(rd,char ";") =>
+    parseExpr(rd,82) or pushReduction('parseSemicolon,"/throwAway")
     pushReduction('parseSemicolon,[";",popStack2(),popStack1()])
   nil
 
 ++ We should factorize these boilerplates
-parseReturn() ==
-  matchAdvanceKeyword "return" =>
-    compulsorySyntax parseExpression()
+parseReturn rd ==
+  matchAdvanceKeyword(rd,"return") =>
+    compulsorySyntax(rd,parseExpression rd)
     pushReduction('parseReturn,["return",popStack1()])
   nil
 
-parseThrow() ==
-  matchAdvanceKeyword "throw" =>
-    compulsorySyntax parseExpression()
+parseThrow rd ==
+  matchAdvanceKeyword(rd,"throw") =>
+    compulsorySyntax(rd,parseExpression rd)
     pushReduction('parseReturn,["%Throw",popStack1()])
   nil
 
-parseExit() ==
-  matchAdvanceKeyword "exit" =>
+parseExit rd ==
+  matchAdvanceKeyword(rd,"exit") =>
     x :=
-      parseExpression() => popStack1()
+      parseExpression rd => popStack1()
       "$NoValue"
     pushReduction('parseExit,["exit",x])
   nil
 
-parseLeave() ==
-  matchAdvanceKeyword "leave" =>
+parseLeave rd ==
+  matchAdvanceKeyword(rd,"leave") =>
     x :=
-      parseExpression() => popStack1()
+      parseExpression rd => popStack1()
       "$NoValue"
     pushReduction('parseLeave,["leave",x])
   nil
 
-parseJump() ==
-  s := currentSymbol() =>
-    advanceToken()
+parseJump rd ==
+  s := currentSymbol rd =>
+    advanceToken rd
     pushReduction('parseJump,s)
   nil
 
-parseForm() ==
-  matchAdvanceKeyword "iterate" =>
+parseForm rd ==
+  matchAdvanceKeyword(rd,"iterate") =>
     pushReduction('parseForm,["iterate"])
-  matchAdvanceKeyword "yield" =>
-    compulsorySyntax parseApplication()
+  matchAdvanceKeyword(rd,"yield") =>
+    compulsorySyntax(rd,parseApplication rd)
     pushReduction('parseForm,["yield",popStack1()])
-  parseApplication()
+  parseApplication rd
 
-parseVariable() ==
-  parseName() =>
-    matchAdvanceGlyph ":" =>
-      compulsorySyntax parseApplication()
+parseVariable rd ==
+  parseName rd =>
+    matchAdvanceGlyph(rd,":") =>
+      compulsorySyntax(rd,parseApplication rd)
       pushReduction('parseVariable,[":",popStack2(),popStack1()])
     true
-  parsePrimary()
+  parsePrimary rd
 
-parseIterator() ==
-  matchAdvanceKeyword "for" =>
-    compulsorySyntax parseVariable()
-    compulsorySyntax matchAdvanceKeyword "in"
-    compulsorySyntax parseExpression()
-    matchAdvanceKeyword "by" and compulsorySyntax parseExpr 200 and
+parseIterator rd ==
+  matchAdvanceKeyword(rd,"for") =>
+    compulsorySyntax(rd,parseVariable rd)
+    compulsorySyntax(rd,matchAdvanceKeyword(rd,"in"))
+    compulsorySyntax(rd,parseExpression rd)
+    matchAdvanceKeyword(rd,"by") and compulsorySyntax(rd,parseExpr(rd,200)) and
       pushReduction('parseIterator,["INBY",popStack3(),popStack2(),popStack1()])
         or pushReduction('parseIterator,["IN",popStack2(),popStack1()])
-    matchAdvanceGlyph "|" and compulsorySyntax parseExpr 111 and
+    matchAdvanceGlyph(rd,"|") and compulsorySyntax(rd,parseExpr(rd,111)) and
       pushReduction('parseIterator,["|",popStack1()])
     true
-  matchAdvanceKeyword "while" =>
-    compulsorySyntax parseExpr 190
+  matchAdvanceKeyword(rd,"while") =>
+    compulsorySyntax(rd,parseExpr(rd,190))
     pushReduction('parseIterator,["WHILE",popStack1()])
-  matchAdvanceKeyword "until" =>
-    compulsorySyntax parseExpr 190
+  matchAdvanceKeyword(rd,"until") =>
+    compulsorySyntax(rd,parseExpr(rd,190))
     pushReduction('parseIterator,["UNTIL",popStack1()])
   nil
 
-parseIteratorTails() ==
-  matchAdvanceKeyword "repeat" =>
+parseIteratorTails rd ==
+  matchAdvanceKeyword(rd,"repeat") =>
     stackUpdated?($reduceStack) := false
-    repeatedSyntax('parseIteratorTails,function parseIterator)
+    repeatedSyntax(rd,'parseIteratorTails,function parseIterator)
     if not stackUpdated? $reduceStack then
       pushReduction('crossIterators,nil)
-  repeatedSyntax('parseIteratorTails,function parseIterator)
+  repeatedSyntax(rd,'parseIteratorTails,function parseIterator)
 
-parseLoop() ==
-  repeatedSyntax('iterators,function parseIterator) =>
-    compulsorySyntax matchAdvanceKeyword "repeat"
-    compulsorySyntax parseExpr 110
+parseLoop rd ==
+  repeatedSyntax(rd,'iterators,function parseIterator) =>
+    compulsorySyntax(rd,matchAdvanceKeyword(rd,"repeat"))
+    compulsorySyntax(rd,parseExpr(rd,110))
     pushReduction('parseLoop,["REPEAT",:popStack2(),popStack1()])
-  matchAdvanceKeyword "repeat" =>
-    compulsorySyntax parseExpr 110
+  matchAdvanceKeyword(rd,"repeat") =>
+    compulsorySyntax(rd,parseExpr(rd,110))
     pushReduction('parseLoop,["REPEAT",popStack1()])
   nil
 
-parseOpenBracket() ==
-  s := currentSymbol()
+parseOpenBracket rd ==
+  s := currentSymbol rd
   s is "[" or s is ["elt",.,"["] =>
     do 
       s is ["elt",:.] =>
         pushReduction('parseOpenBracket,["elt",second s,"construct"])
       pushReduction('parseOpenBracket,"construct")
-    advanceToken()
+    advanceToken rd
     true
   false
 
-parseOpenBrace() ==
-  s := currentSymbol()
+parseOpenBrace rd ==
+  s := currentSymbol rd
   s is "{" or s is ["elt",.,"{"] =>
     do 
       s is ["elt",:.] =>
         pushReduction('parseOpenBracket,["elt",second s,"brace"])
       pushReduction('parseOpenBracket,"construct") --FIXME: should be brace
-    advanceToken()
+    advanceToken rd
     true
   false
 
-parseSequence1() ==
+parseSequence1 rd ==
   do
-    parseExpression() =>
+    parseExpression rd =>
       pushReduction('parseSequence1,[popStack2(),popStack1()])
     pushReduction('parseSequence1,[popStack1()])
-  parseIteratorTails() and
+  parseIteratorTails rd and
     pushReduction('parseSequence1,["COLLECT",:popStack1(),popStack1()])
   true
 
-parseSequence() ==
-  parseOpenBracket() =>
-    compulsorySyntax parseSequence1()
-    compulsorySyntax matchAdvanceSpecial char "]"
-  parseOpenBrace() =>
-    compulsorySyntax parseSequence1()
-    compulsorySyntax matchAdvanceSpecial char "}"
+parseSequence rd ==
+  parseOpenBracket rd =>
+    compulsorySyntax(rd,parseSequence1 rd)
+    compulsorySyntax(rd,matchAdvanceSpecial(rd,char "]"))
+  parseOpenBrace rd =>
+    compulsorySyntax(rd,parseSequence1 rd)
+    compulsorySyntax(rd,matchAdvanceSpecial(rd,char "}"))
     pushReduction('parseSequence,["brace",popStack1()])
   nil
     
-parseEnclosure() ==
-  matchAdvanceGlyph "(" =>
-    parseExpr 6 =>
-      compulsorySyntax matchAdvanceSpecial char ")"
-    matchAdvanceSpecial char ")" =>
+parseEnclosure rd ==
+  matchAdvanceGlyph(rd,"(") =>
+    parseExpr(rd,6) =>
+      compulsorySyntax(rd,matchAdvanceSpecial(rd,char ")"))
+    matchAdvanceSpecial(rd,char ")") =>
       pushReduction('parseEnclosure,["%Comma"])
-    SPAD__SYNTAX__ERROR()
-  matchAdvanceGlyph "{" =>
-    parseExpr 6 =>
-      compulsorySyntax matchAdvanceSpecial char "}"
+    SPAD__SYNTAX__ERROR rd
+  matchAdvanceGlyph(rd,"{") =>
+    parseExpr(rd,6) =>
+      compulsorySyntax(rd,matchAdvanceSpecial(rd,char "}"))
       pushReduction('parseEnclosure,["brace",["construct",popStack1()]])
-    matchAdvanceSpecial char "}" =>
+    matchAdvanceSpecial(rd,char "}") =>
       pushReduction('parseEnclosure,["brace"])
-    SPAD__SYNTAX__ERROR()
-  matchAdvanceGlyph "[|" =>
-    parseStatement() =>
-      compulsorySyntax matchAdvanceGlyph "|]"
+    SPAD__SYNTAX__ERROR rd
+  matchAdvanceGlyph(rd,"[|") =>
+    parseStatement rd =>
+      compulsorySyntax(rd,matchAdvanceGlyph(rd,"|]"))
       pushReduction('parseEnclosure,["[||]",popStack1()])
-    SPAD__SYNTAX__ERROR()
+    SPAD__SYNTAX__ERROR rd
   nil
 
-parseCatch() ==
-  matchSpecial char ";" and matchKeywordNext "catch" =>
-    advanceToken()
-    advanceToken()
-    compulsorySyntax parseGlyph "("
-    compulsorySyntax parseQuantifiedVariable()
-    compulsorySyntax matchAdvanceSpecial char ")"
-    compulsorySyntax parseGlyph "=>"
-    compulsorySyntax parseExpression()
+parseCatch rd ==
+  matchSpecial(rd,char ";") and matchKeywordNext(rd,"catch") =>
+    advanceToken rd
+    advanceToken rd
+    compulsorySyntax(rd,parseGlyph(rd,"("))
+    compulsorySyntax(rd,parseQuantifiedVariable rd)
+    compulsorySyntax(rd,matchAdvanceSpecial(rd,char ")"))
+    compulsorySyntax(rd,parseGlyph(rd,"=>"))
+    compulsorySyntax(rd,parseExpression rd)
     pushReduction('parseCatch,[popStack2(),popStack1()])
   nil
 
-parseFinally() ==
-  matchSpecial char ";" and matchKeywordNext "finally" =>
-    advanceToken()
-    advanceToken()
-    compulsorySyntax parseExpression()
+parseFinally rd ==
+  matchSpecial(rd,char ";") and matchKeywordNext(rd,"finally") =>
+    advanceToken rd
+    advanceToken rd
+    compulsorySyntax(rd,parseExpression rd)
   nil
 
-parseTry() ==
-  matchAdvanceKeyword "try" =>
-    compulsorySyntax parseExpression()
+parseTry rd ==
+  matchAdvanceKeyword(rd,"try") =>
+    compulsorySyntax(rd,parseExpression rd)
     -- exception handlers: either a finally-expression, or
     -- a series of catch-expressions optionally followed by
     -- a finally-expression.
-    parseFinally() =>
+    parseFinally rd =>
       pushReduction('parseTry,["%Try",popStack2(),nil,popStack1()])
-    compulsorySyntax repeatedSyntax('handlers,function parseCatch) =>
+    compulsorySyntax(rd,repeatedSyntax(rd,'handlers,function parseCatch)) =>
       stackUpdated?($reduceStack) := false
-      parseFinally()
+      parseFinally rd
       if not stackUpdated? $reduceStack then
         pushReduction('finalizer,nil)
       pushReduction('parseTry,["%Try",popStack3(),popStack2(),popStack1()])
-    SPAD__SYNTAX__ERROR()
+    SPAD__SYNTAX__ERROR rd
   nil
 
-parseMatch() ==
-  matchAdvanceKeyword "case" =>
-    compulsorySyntax parseExpr 400
-    compulsorySyntax matchAdvanceKeyword "is"
-    compulsorySyntax parseExpr 110
+parseMatch rd ==
+  matchAdvanceKeyword(rd,"case") =>
+    compulsorySyntax(rd,parseExpr(rd,400))
+    compulsorySyntax(rd,matchAdvanceKeyword(rd,"is"))
+    compulsorySyntax(rd,parseExpr(rd,110))
     pushReduction('parseMatch,["%Match",popStack2(),popStack1()])
   nil
 
 ++ domain inlining.  Same syntax as import directive; except
 ++ deliberate restriction on naming one type at a time.
 ++ -- gdr, 2009-02-28.
-parseInline() ==
-  matchAdvanceKeyword "inline" =>
-    compulsorySyntax parseExpr 1000
+parseInline rd ==
+  matchAdvanceKeyword(rd,"inline") =>
+    compulsorySyntax(rd,parseExpr(rd,1000))
     pushReduction('parseInline,["%Inline",popStack1()])
   nil
 
-parseImport() ==
-  matchAdvanceKeyword "import" =>
-    compulsorySyntax parseExpr 1000
-    matchAdvanceGlyph ":" =>
-      compulsorySyntax parseExpression()
-      compulsorySyntax matchAdvanceKeyword "from"
-      compulsorySyntax parseExpr 1000
+parseImport rd ==
+  matchAdvanceKeyword(rd,"import") =>
+    compulsorySyntax(rd,parseExpr(rd,1000))
+    matchAdvanceGlyph(rd,":") =>
+      compulsorySyntax(rd,parseExpression rd)
+      compulsorySyntax(rd,matchAdvanceKeyword(rd,"from"))
+      compulsorySyntax(rd,parseExpr(rd,1000))
       pushReduction('parseImport,
         ["%SignatureImport",popStack3(),popStack2(),popStack1()])
     stackUpdated?($reduceStack) := false
-    repeatedSyntax('imports,function(() +-> matchAdvanceSpecial char ","
-      and compulsorySyntax parseExpr 1000))
+    repeatedSyntax(rd,'imports,function(rd +-> matchAdvanceSpecial(rd,char ",")
+      and compulsorySyntax(rd,parseExpr(rd,1000))))
     if not stackUpdated? $reduceStack then
       pushReduction('imports,nil)
     pushReduction('parseImport,["import",popStack2(),:popStack1()])
   nil
 
-parseStatement() ==
-  parseExpr 0 =>
-    repeatedSyntax('statements,function(() +-> matchAdvanceGlyph ","
-      and compulsorySyntax parseExpr 0)) =>
+parseStatement rd ==
+  parseExpr(rd,0) =>
+    repeatedSyntax(rd,'statements,function(rd +-> matchAdvanceGlyph(rd,",")
+      and compulsorySyntax(rd,parseExpr(rd,0)))) =>
         pushReduction('parseStatement,["Series",popStack2(),:popStack1()])
     true
   false
 
-parseNewExpr() ==
-  matchString '")" =>
+parseNewExpr rd ==
+  matchString(rd,'")") =>
     processSynonyms()
-    compulsorySyntax parseCommand()
-  SETQ(DEFINITION__NAME,currentSymbol())
-  parseStatement()
+    compulsorySyntax(rd,parseCommand rd)
+  SETQ(DEFINITION__NAME,currentSymbol rd)
+  parseStatement rd
 
 --%
 
-isTokenDelimiter() ==
-  symbolMember?(currentSymbol(),[")","END__UNIT","NIL"])
+isTokenDelimiter rd ==
+  symbolMember?(currentSymbol rd,[")","END__UNIT","NIL"])
 
-parseTokenList() ==
-  repeatedSyntax('tokenList,function(() +->
-    (isTokenDelimiter() => nil; pushReduction('parseTokenList,currentSymbol());
-      advanceToken(); true)))
+parseTokenList rd ==
+  repeatedSyntax(rd,'tokenList,function(rd +->
+    (isTokenDelimiter rd => nil; pushReduction('parseTokenList,currentSymbol rd);
+      advanceToken rd; true)))
 
-parseCommandTail() ==
+parseCommandTail rd ==
   stackUpdated?($reduceStack) := false
-  repeatedSyntax('options,function parseTokenOption)
+  repeatedSyntax(rd,'options,function parseTokenOption)
   if not stackUpdated? $reduceStack then
     pushReduction('options,nil)
-  atEndOfLine() and
+  atEndOfLine rd and
     pushReduction('parseCommandTail,[popStack2(),:popStack1()])
   systemCommand popStack1()
   true
 
-parseOption() ==
-  matchAdvanceString '")" =>  --FIXME: kill matchAdvanceString
-    compulsorySyntax repeatedSyntax('options,function parsePrimaryOrQM)
+parseOption rd ==
+  matchAdvanceString(rd,'")") =>  --FIXME: kill matchAdvanceString
+    compulsorySyntax(rd,repeatedSyntax(rd,'options,function parsePrimaryOrQM))
 
-parseTokenCommandTail() ==  
+parseTokenCommandTail rd ==  
   stackUpdated?($reduceStack) := false
-  repeatedSyntax('options,function parseOption)
+  repeatedSyntax(rd,'options,function parseOption)
   if not stackUpdated? $reduceStack then
     pushReduction('options,nil)
-  atEndOfLine() and
+  atEndOfLine rd and
     pushReduction('parseCommandTail,[popStack2(),:popStack1()])
   systemCommand popStack1()
   true
 
-parseSpecialCommand() ==
-  matchAdvanceString '"show" =>   --FIXME: kill matchAdvanceString
+parseSpecialCommand rd ==
+  matchAdvanceString(rd,'"show") =>   --FIXME: kill matchAdvanceString
     stackUpdated?($reduceStack) := true
-    repeatedSyntax('commands,function(() +-> matchAdvanceString '"?"
-      or parseExpression()))
+    repeatedSyntax(rd,'commands,function(rd +-> matchAdvanceString(rd,'"?")
+      or parseExpression rd))
     if not stackUpdated? $reduceStack then
       pushReduction('commdnds,nil)
     pushReduction('parseSpecialCommand,["show",popStack1()])
-    compulsorySyntax parseCommandTail()
-  symbolMember?(currentSymbol(),$noParseCommands) =>
-    apply(currentSymbol(),nil)
+    compulsorySyntax(rd,parseCommandTail rd)
+  symbolMember?(currentSymbol rd,$noParseCommands) =>
+    apply(currentSymbol rd,nil)
     true
-  symbolMember?(currentSymbol(),$tokenCommands) and parseTokenList() =>
-    compulsorySyntax parseTokenCommandTail()
-  repeatedSyntax('parseSpecialCommand,function parsePrimaryOrQM) and
-    compulsorySyntax parseCommandTail()
+  symbolMember?(currentSymbol rd,$tokenCommands) and parseTokenList rd =>
+    compulsorySyntax(rd,parseTokenCommandTail rd)
+  repeatedSyntax(rd,'parseSpecialCommand,function parsePrimaryOrQM) and
+    compulsorySyntax(rd,parseCommandTail rd)
 
 --%
 
@@ -972,11 +975,11 @@ parseSpadFile sourceFile ==
     -- Spad because few parse forms have slightly different representations
     -- depending on whether we are interpreter mode or compiler mode.
     $InteractiveMode: local := false
-    INIT_-BOOT_/SPAD_-READER()
     -- we need to restore the global input stream state after we
     -- finished messing with it.
     IN_-STREAM: local := MAKE_-INSTREAM sourceFile
     rd := makeReader IN_-STREAM
+    INIT_-BOOT_/SPAD_-READER rd
 
     -- If soureFile cannot be processed for whatever reasons
     -- get out of here instead of being stuck later.
@@ -989,12 +992,12 @@ parseSpadFile sourceFile ==
       $lineStack: local := preparse rd
       $lineStack = nil => leave nil -- explicit end of input
       LINE: local := CDAR $lineStack
-      CATCH($SpadReaderTag,parseNewExpr())
+      CATCH($SpadReaderTag,parseNewExpr rd)
       asts := [parseTransform postTransform popStack1(), :asts]
     -- we accumulated the parse trees in reverse order
     reverse! asts
   finally                      -- clean up the mess, and get out of here
-    ioClear!()
+    ioClear! rd
     SHUT readerInput rd
 
 --%

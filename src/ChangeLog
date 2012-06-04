@@ -1,5 +1,17 @@
 2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad.lisp (SPAD): Adjust.
+	* interp/spad-parser.boot: Add a reader parameter to all parsing
+	functions.  Adjust callers.
+	* interp/newaux.lisp: Adjust form of specialized parsers.
+	* interp/lexing.boot: Add a reader parameter to all lexing
+	functions.  Adjust Callers.
+	* interp/io.boot (%Reader): Add source line field.
+	* interp/debug.lisp: Adjust IO and lexer calls.
+	* interp/util.lisp (string2SpadTree): Remove as unused.
+
+2012-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/preparse.lisp ($LineList): Remove.
 	(INITIALIZE-PREPARSE): Do not set it.
 	(preparse1): Do not reference it.  Do not test for ioTerminal? and
