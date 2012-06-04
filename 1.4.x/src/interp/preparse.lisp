@@ -87,7 +87,7 @@
                 (|preparseEcho| (|readerLines| rd))
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
-                       (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK NIL)))
+                       (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK)))
                 (RETURN (|pairList| (|reverse!| NUMS)
 			 (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
@@ -123,7 +123,7 @@
                 (COND
                   ((= SLOC N)
                    (COND ((AND NCOMBLOCK (NOT (= N (CAR NCOMBLOCK))))
-                          (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK  (|readerLines| rd))
+                          (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK)
                           (SETQ NCOMBLOCK NIL)))
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
@@ -158,7 +158,7 @@
 		      (setq $skipme nil))))
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
-               (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK (|readerLines| rd)))
+		 (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK))
              (RETURN (|pairList| (|reverse!| NUMS)
                         (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES)))))
          (cond ((> PARENLEV 0)
@@ -166,7 +166,7 @@
 		(setq SLOC PSLOC)
 		(GO REREAD)))
          (COND (NCOMBLOCK
-                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK (|readerLines| rd))
+                (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK)
                 (setq NCOMBLOCK ())))
          (PUSH SLOC LOCS)
  REREAD  (|preparseEcho| (|readerLines| rd))
