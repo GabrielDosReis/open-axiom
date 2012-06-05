@@ -1,3 +1,9 @@
+2012-06-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/io.boot (readerDeferLine): New.
+	* interp/preparse.lisp (preparse1): Use it.
+	* interp/spad-parser.boot (preparse): Likewise.
+
 2012-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad-parser.boot (preparse): Tidy.

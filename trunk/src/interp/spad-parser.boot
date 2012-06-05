@@ -199,7 +199,7 @@ preparse rd ==
   $COMBLOCKLIST := nil
   $SKIPME := false
   if $preparseLastLine ~= nil then
-    readerLines(rd) := [$preparseLastLine,:readerLines rd]
+    readerDeferLine(rd,$preparseLastLine)
   $INDEX := $INDEX - #readerLines rd
   u := preparse1 rd
   $SKIPME => preparse rd

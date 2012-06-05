@@ -111,3 +111,7 @@ structure %Reader ==
 
 makeReader ist ==
   mk%Reader(ist,nil,makeLine())
+
+++ Add line `l' to the stack of pending lines.
+readerDeferLine(rd,l) ==
+  readerLines(rd) := [l,:readerLines rd]

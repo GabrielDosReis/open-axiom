@@ -128,10 +128,8 @@
                    (SETQ NCOMBLOCK (CONS N (CONS A (IFCDR NCOMBLOCK))))
                    (SETQ A ""))
                   ('T 
-		   (SETF (|readerLines| rd)
-			 (CONS (STRCONC (|makeString| N #\Space)
-					(SUBSTRING A N ()))
-			       (|readerLines| rd)))
+		   (|readerDeferLine| rd (STRCONC (|makeString| N #\Space)
+						  (SUBSTRING A N NIL)))
 		   (SETQ $INDEX (1- $INDEX))
 		   (SETQ A (SUBSEQ A 0 N))))
 		(GO NOCOMS))
