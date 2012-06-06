@@ -129,9 +129,9 @@ preparseReadLine rs ==
   z
 
 preparseReadLine1 rs ==
-  if lines := readerLines rs then
+  if lines := readerPendingLines rs then
     line := first lines
-    readerLines(rs) := rest lines
+    readerPendingLines(rs) := rest lines
   else
     line := expandLeadingTabs readLine readerInput rs
   $preparseLastLine := line
@@ -200,7 +200,7 @@ preparse rd ==
   $SKIPME := false
   if $preparseLastLine ~= nil then
     readerDeferLine(rd,$preparseLastLine)
-  $INDEX := $INDEX - #readerLines rd
+  $INDEX := $INDEX - #readerPendingLines rd
   u := preparse1 rd
   $SKIPME => preparse rd
   parsePrint u

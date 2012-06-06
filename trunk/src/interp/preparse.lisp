@@ -84,7 +84,7 @@
         (LINES ()) (LOCS ()) (NUMS ()) functor  )
  READLOOP (DCQ (NUM . A) (|preparseReadLine| rd))
          (cond ((|atEndOfUnit?| A)
-                (|preparseEcho| (|readerLines| rd))
+                (|preparseEcho| (|readerPendingLines| rd))
                 (COND ((NULL LINES) (RETURN NIL))
                       (NCOMBLOCK
                        (|findCommentBlock| NIL NUMS LOCS NCOMBLOCK)))
@@ -92,7 +92,7 @@
 			 (|parsePiles| (|reverse!| LOCS) (|reverse!| LINES))))))
          (cond ((and (NULL LINES) (> (LENGTH A) 0) (EQ (CHAR A 0) #\) ))
                 ; this is a command line, don't parse it
-                (|preparseEcho| (|readerLines| rd))
+                (|preparseEcho| (|readerPendingLines| rd))
                 (setq |$preparseLastLine| nil) ;don't reread this line
                 (SETQ LINE a)
                 (CATCH |$SpadReaderTag| (|doSystemCommand| (subseq LINE 1)))
@@ -167,7 +167,7 @@
                 (|findCommentBlock| NUM NUMS LOCS NCOMBLOCK)
                 (setq NCOMBLOCK ())))
          (PUSH SLOC LOCS)
- REREAD  (|preparseEcho| (|readerLines| rd))
+ REREAD  (|preparseEcho| (|readerPendingLines| rd))
          (PUSH A LINES)
          (PUSH NUM NUMS)
          (setq PARENLEV (+ PARENLEV PCOUNT))

@@ -104,9 +104,9 @@ findString(s1,s2,k == 0) ==
 --% Reader
 --%
 structure %Reader ==
-  Record(ins: %InputStream, lines: %List %Line,sline: %Line) with
+  Record(ins: %InputStream, lines: %List %String,sline: %Line) with
     readerInput == (.ins)
-    readerLines == (.lines)
+    readerPendingLines == (.lines)
     readerSourceLine == (.sline)  -- current input line
 
 makeReader ist ==
@@ -114,4 +114,4 @@ makeReader ist ==
 
 ++ Add line `l' to the stack of pending lines.
 readerDeferLine(rd,l) ==
-  readerLines(rd) := [l,:readerLines rd]
+  readerPendingLines(rd) := [l,:readerPendingLines rd]
