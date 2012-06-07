@@ -160,7 +160,7 @@ structure %Reader ==
   Record(ins: %InputStream,est: %OutputStream,
     lines: %List %String,sline: %Line) with
       readerInput == (.ins)
-      readerError == (.ost)    -- error output stream
+      readerError == (.est)    -- error output stream
       readerPendingLines == (.lines)
       readerSourceLine == (.sline)  -- current input line
 
