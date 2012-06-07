@@ -101,17 +101,82 @@ findString(s1,s2,k == 0) ==
         and/[stringChar(s1,j) = stringChar(s2,i+j) for j in 0..(n1-1)]]
 
 --%
+--% Line abstract datatype
+--%
+structure %Line ==
+   Record(buf: %String, cchar: %Char, cidx: %Short,
+     lidx: %Short, no: %Short) with
+       lineBuffer == (.buf)           -- input string buffer
+       lineCurrentChar == (.cchar)    -- current character
+       lineCurrentIndex == (.cidx)    -- current index
+       lineLastIndex == (.lidx)       -- last valid index
+       lineNumber == (.no)            -- line number
+
+makeLine(buf == makeString 0, ch == charByName "Return",
+          curIdx == 1, lstIdx == 0, no == 0) ==
+  mk%Line(buf,ch,curIdx,lstIdx,no)
+
+lineClear! l ==
+  lineBuffer(l) := makeString 0
+  lineCurrentChar(l) := charByName "Return"
+  lineCurrentIndex(l) := 1
+  lineLastIndex(l) := 0
+  lineNumber(l) := 0
+
+++ Sets string to be the next line stored in line
+lineNewLine!(s,l,no == nil) ==
+  sz := #s
+  lineLastIndex(l) := sz - 1
+  lineCurrentIndex(l) := 0
+  lineCurrentChar(l) := sz > 0 and s.0 or charByName '"Return"
+  lineBuffer(l) := s
+  lineNumber(l) := no or (lineNumber l + 1)
+
+++ Tests if line is empty or positioned past the last character
+lineAtEnd? l ==
+  lineCurrentIndex l >= lineLastIndex l
+
+++ Tests if line is empty or positioned past the last character
+linePastEnd? l ==
+  lineCurrentIndex l > lineLastIndex l
+
+++ Buffer from current index to last index
+lineCurrentSegment l ==
+  lineAtEnd? l => makeString 0
+  subSequence(lineBuffer l,lineCurrentIndex l,lineLastIndex l)
+
+lineNextChar l ==
+  lineBuffer(l).(1 + lineCurrentIndex l)
+
+lineAdvanceChar! l ==
+  n := lineCurrentIndex l + 1
+  lineCurrentIndex(l) := n
+  lineCurrentChar(l) := lineBuffer(l).n
+
+--%
 --% Reader
 --%
 structure %Reader ==
-  Record(ins: %InputStream, lines: %List %String,sline: %Line) with
-    readerInput == (.ins)
-    readerPendingLines == (.lines)
-    readerSourceLine == (.sline)  -- current input line
+  Record(ins: %InputStream,est: %OutputStream,
+    lines: %List %String,sline: %Line) with
+      readerInput == (.ins)
+      readerError == (.ost)    -- error output stream
+      readerPendingLines == (.lines)
+      readerSourceLine == (.sline)  -- current input line
 
-makeReader ist ==
-  mk%Reader(ist,nil,makeLine())
+makeReader(ist,ost == 'T) ==
+  mk%Reader(ist,ost,nil,makeLine())
 
 ++ Add line `l' to the stack of pending lines.
 readerDeferLine(rd,l) ==
   readerPendingLines(rd) := [l,:readerPendingLines rd]
+
+++ Print current line into to the reader's error stream.
+readerPrintCurrentLine rd ==
+  l := readerSourceLine rd
+  if linePastEnd? l then
+    formatToStream(readerError rd,'"~&The current line is empty.~%")
+  else
+    formatToStream(readerError rd,'"~&The current line is:~%~%")
+    formatToStream(readerError rd,'"~&~5D> ~A~%",lineNumber l,lineBuffer l)
+    formatToStream(readerError rd,'"~v@T^~%",lineCurrentIndex l + 7)

@@ -86,7 +86,7 @@
   (unwind-protect
     (progn
       (setq in-stream (open ifile :direction :input))
-      (setq rd (|makeReader| in-stream))
+      (setq rd (|makeReader| in-stream |$OutputStream|))
       (init-boot/spad-reader rd)
       (initialize-preparse rd)
       (setq out-stream |$OutputStream|)

@@ -42,60 +42,6 @@ namespace BOOT
 
 module lexing
 
---%
---% Line abstract datatype
---%
-structure %Line ==
-   Record(buf: %String, cchar: %Char, cidx: %Short,
-     lidx: %Short, no: %Short) with
-       lineBuffer == (.buf)           -- input string buffer
-       lineCurrentChar == (.cchar)    -- current character
-       lineCurrentIndex == (.cidx)    -- current index
-       lineLastIndex == (.lidx)       -- last valid index
-       lineNumber == (.no)            -- line number
-
-
-makeLine(buf == makeString 0, ch == charByName "Return",
-          curIdx == 1, lstIdx == 0, no == 0) ==
-  mk%Line(buf,ch,curIdx,lstIdx,no)
-
-lineClear! l ==
-  lineBuffer(l) := makeString 0
-  lineCurrentChar(l) := charByName "Return"
-  lineCurrentIndex(l) := 1
-  lineLastIndex(l) := 0
-  lineNumber(l) := 0
-
-++ Sets string to be the next line stored in line
-lineNewLine!(s,l,no == nil) ==
-  sz := #s
-  lineLastIndex(l) := sz - 1
-  lineCurrentIndex(l) := 0
-  lineCurrentChar(l) := sz > 0 and s.0 or charByName '"Return"
-  lineBuffer(l) := s
-  lineNumber(l) := no or (lineNumber l + 1)
-
-++ Tests if line is empty or positioned past the last character
-lineAtEnd? l ==
-  lineCurrentIndex l >= lineLastIndex l
-
-++ Tests if line is empty or positioned past the last character
-linePastEnd? l ==
-  lineCurrentIndex l > lineLastIndex l
-
-++ Buffer from current index to last index
-lineCurrentSegment l ==
-  lineAtEnd? l => makeString 0
-  subSequence(lineBuffer l,lineCurrentIndex l,lineLastIndex l)
-
-lineNextChar l ==
-  lineBuffer(l).(1 + lineCurrentIndex l)
-
-lineAdvanceChar! l ==
-  n := lineCurrentIndex l + 1
-  lineCurrentIndex(l) := n
-  lineCurrentChar(l) := lineBuffer(l).n
-
 ++ List of lines returned from preparse
 $lineStack := nil
 

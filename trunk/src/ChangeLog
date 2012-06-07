@@ -1,4 +1,9 @@
-2012-06-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2012-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lexing.boot: Move %Line to io.boot.
+	* interp/debug.lisp (SPAD_LONG_ERROR): Take a reader parameter.  Tidy.
+
+2012-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/io.boot (readePendingLines): Rename from readerLines.
 	Adjust callers.
