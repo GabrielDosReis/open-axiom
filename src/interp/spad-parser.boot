@@ -975,7 +975,7 @@ parseSpadFile sourceFile ==
     -- we need to restore the global input stream state after we
     -- finished messing with it.
     IN_-STREAM: local := MAKE_-INSTREAM sourceFile
-    rd := makeReader IN_-STREAM
+    rd := makeReader(IN_-STREAM,$OutputStream)
     INIT_-BOOT_/SPAD_-READER rd
 
     -- If soureFile cannot be processed for whatever reasons
