@@ -135,10 +135,10 @@ preparseReadLine1 rs ==
   else
     line := expandLeadingTabs readLine readerInput rs
   $preparseLastLine := line
-  not string? line => [$INDEX]
-  $INDEX := $INDEX + 1
+  not string? line => [readerLineNumber rs]
+  readerLineNumber(rs) := readerLineNumber rs + 1
   line := trimTrailingBlank line
-  n := $INDEX
+  n := readerLineNumber rs
   if #line > 0 and line.maxIndex(line) = char "__" then
     line := strconc(subString(line,0,maxIndex line),rest preparseReadLine1 rs)
     $preparseLastLine := line
@@ -200,7 +200,7 @@ preparse rd ==
   $SKIPME := false
   if $preparseLastLine ~= nil then
     readerDeferLine(rd,$preparseLastLine)
-  $INDEX := $INDEX - #readerPendingLines rd
+  readerLineNumber(rd) := readerLineNumber rd - #readerPendingLines rd
   u := preparse1 rd
   $SKIPME => preparse rd
   parsePrint u
