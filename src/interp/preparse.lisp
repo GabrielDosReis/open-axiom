@@ -63,7 +63,6 @@
  
 ; Global storage
  
-(defparameter $INDEX 0                          "File line number of most recently read line.")
 (defparameter |$preparseLastLine| ()            "Most recently read line.")
 (defparameter |$preparseReportIfTrue| NIL         "Should we print listings?")
 (defparameter $IOIndex 0                        "Number of latest terminal input line.")
@@ -72,7 +71,7 @@
 (DEFPARAMETER DEFINITION_NAME NIL)
 
 (defun Initialize-Preparse (rd)
-  (setq $INDEX 0)
+  (SETF (|readerLineNumber| rd) 0)
   (setq |$preparseLastLine| (|readLine| (|readerInput| rd))))
  
 (defvar $skipme)
@@ -130,7 +129,7 @@
                   ('T 
 		   (|readerDeferLine| rd (STRCONC (|makeString| N #\Space)
 						  (SUBSTRING A N NIL)))
-		   (SETQ $INDEX (1- $INDEX))
+		   (SETF (|readerLineNumber| rd) (1- (|readerLineNumber| rd)))
 		   (SETQ A (SUBSEQ A 0 N))))
 		(GO NOCOMS))
                ((= N OPARSYM) (setq PCOUNT (1+ PCOUNT)))

@@ -158,14 +158,15 @@ lineAdvanceChar! l ==
 --%
 structure %Reader ==
   Record(ins: %InputStream,est: %OutputStream,
-    lines: %List %String,sline: %Line) with
+    lines: %List %String,sline: %Line,idx: %Short) with
       readerInput == (.ins)
       readerError == (.est)    -- error output stream
       readerPendingLines == (.lines)
       readerSourceLine == (.sline)  -- current input line
+      readerLineNumber == (.idx)    -- current line number
 
 makeReader(ist,ost == 'T) ==
-  mk%Reader(ist,ost,nil,makeLine())
+  mk%Reader(ist,ost,nil,makeLine(),0)
 
 ++ Add line `l' to the stack of pending lines.
 readerDeferLine(rd,l) ==
