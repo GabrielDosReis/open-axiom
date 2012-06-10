@@ -66,14 +66,13 @@
 
 (defun spad (ifile
              &aux
-           (*comp370-apply* (function |printBackendDecl|))
-           (*fileactq-apply* (function |printBackendDecl|))
-           ($SPAD T)
-           (OPTIONLIST nil)
-           (*EOF* NIL)
-           (|$editFile| ifile)
-           rd in-stream out-stream)
-  (declare (special |$Echo| |$editFile| *comp370-apply* *EOF*))
+	     (*comp370-apply* (function |printBackendDecl|))
+	     (*fileactq-apply* (function |printBackendDecl|))
+	     ($SPAD T)
+	     (OPTIONLIST nil)
+	     (|$editFile| ifile)
+	     rd out-stream)
+  (declare (special |$Echo| |$editFile| *comp370-apply*))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
@@ -83,33 +82,30 @@
                     `((FLUID . |true|)
                       (|special| . ,(COPY-TREE |$InitialDomainsInScope|)))
                     (|addBinding| '|$Information| NIL (|makeInitialModemapFrame|)))))
-  (unwind-protect
-    (progn
-      (setq in-stream (open ifile :direction :input))
-      (setq rd (|makeReader| in-stream |$OutputStream|))
-      (init-boot/spad-reader rd)
-      (initialize-preparse rd)
-      (setq out-stream |$OutputStream|)
-      (loop
-       (if (|eof?| in-stream) (return nil))
-       (catch |$SpadReaderTag|
-	 (progn 
-	   (setq |$lineStack| (|preparse| rd))
-	   (when (null |$lineStack|)
-	     (return nil))
-	   (when |$lineStack|
-	     (let ((LINE (cdar |$lineStack|)))
-	       (declare (special LINE))
-               (|parseNewExpr| rd)
-               (let ((parseout (|popStack1|)) )
-                 (when parseout
-                       (let ((|$OutputStream| out-stream))
-                         (|translateSpad| parseout))
-                       (format out-stream "~&")))
-               ))))
-      (|ioClear!| rd)))
-    (shut in-stream))
-  T))
+	 (progn
+	   (setq rd (|makeReader| ifile |$OutputStream|))
+	   (init-boot/spad-reader rd)
+	   (initialize-preparse rd)
+	   (setq out-stream |$OutputStream|)
+	   (loop
+	    (if (|readerEoi?| rd) (return nil))
+	    (catch |$SpadReaderTag|
+	      (progn 
+		(setq |$lineStack| (|preparse| rd))
+		(when (null |$lineStack|)
+		  (return nil))
+		(when |$lineStack|
+		  (let ((LINE (cdar |$lineStack|)))
+		    (declare (special LINE))
+		    (|parseNewExpr| rd)
+		    (let ((parseout (|popStack1|)) )
+		      (when parseout
+			(let ((|$OutputStream| out-stream))
+			  (|translateSpad| parseout))
+			(format out-stream "~&")))
+		    ))))
+	    (|ioClear!| rd)))
+	 T))
 
 (DEFUN INTEGER-BIT (N I) (LOGBITP I N))
 

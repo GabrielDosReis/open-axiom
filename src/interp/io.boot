@@ -101,6 +101,37 @@ findString(s1,s2,k == 0) ==
         and/[stringChar(s1,j) = stringChar(s2,i+j) for j in 0..(n1-1)]]
 
 --%
+--% Source line
+--%   string and line number
+--%
+structure %SourceLine ==
+  Record(str: %String,no: %Short) with
+    sourceLineString == (.str)
+    sourceLineNumber == (.no)
+
+makeSourceLine(s,n) ==
+  mk%SourceLine(s,n)
+
+--%
+--% Load Unit
+--%
+structure %LoadUnit ==
+  Record(path: %Path,lines: %List %SourceLine) with
+    loadUnitPath == (.path)
+    loadUnitLines == (.lines)
+
+readLoadUnitSource path ==
+  lines := 
+    istream := inputTextFile path
+      or systemError ['"could not open file: ",:bright path]
+    try
+      [makeSourceLine(s,n) for n in 1.. while not eof? istream
+         | (s := readLine istream) and s ~= %nothing]
+    finally
+      closeStream istream
+  mk%LoadUnit(path,lines)
+
+--%
 --% Line abstract datatype
 --%
 structure %Line ==
@@ -157,16 +188,27 @@ lineAdvanceChar! l ==
 --% Reader
 --%
 structure %Reader ==
-  Record(ins: %InputStream,est: %OutputStream,
-    lines: %List %String,sline: %Line,idx: %Short) with
-      readerInput == (.ins)
-      readerError == (.est)    -- error output stream
+  Record(lu: %LoadUnit,est: %OutputStream,
+    lines: %List %String,sline: %Line,idx: %Short,nxt: %SourceLine) with
+      readerUnitSource == (.lu)     -- current load unit source
+      readerError == (.est)         -- error output stream
       readerPendingLines == (.lines)
       readerSourceLine == (.sline)  -- current input line
       readerLineNumber == (.idx)    -- current line number
+      readerNextLines == (.nxt)     -- next source line to process
 
-makeReader(ist,ost == 'T) ==
-  mk%Reader(ist,ost,nil,makeLine(),0)
+makeReader(path,est) ==
+  lu := readLoadUnitSource path
+  mk%Reader(lu,est,nil,makeLine(),0,loadUnitLines lu)
+
+readerEoi? rd ==
+  readerNextLines rd = nil
+
+readerReadLine rd ==
+  readerNextLines rd is [x,:xs] =>
+    readerNextLines(rd) := xs
+    sourceLineString x
+  %nothing    
 
 ++ Add line `l' to the stack of pending lines.
 readerDeferLine(rd,l) ==
