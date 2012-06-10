@@ -1113,7 +1113,10 @@ shoeCompTran1(x,fluidVars,locVars,dollarVars) ==
         deref(locVars) := [l,:deref locVars]
       x
     x
-  U is "%Leave" => (x.op := "RETURN"; x)
+  U is "%Leave" =>
+    x.op := "RETURN"
+    x.args := shoeCompTran1(x.args,fluidVars,locVars,dollarVars)
+    x
   U in '(PROG LAMBDA) =>
     newbindings := nil
     for y in second x repeat

@@ -100,7 +100,6 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	server.$(FASLEXT)	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	slam.$(FASLEXT)		                        \
-	preparse.$(FASLEXT)	                   	\
 	spad.$(FASLEXT)		termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	word.$(FASLEXT)        	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
@@ -315,12 +314,11 @@ server.$(FASLEXT): sys-macros.$(FASLEXT)
 
 ## The old parser component roughtly is:
 ##
-spad-parser.$(FASLEXT): parse.$(FASLEXT) preparse.$(FASLEXT)
+spad-parser.$(FASLEXT): parse.$(FASLEXT) lexing.$(FASLEXT)
 parse.$(FASLEXT): postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): sys-macros.$(FASLEXT)
 newaux.$(FASLEXT): sys-macros.$(FASLEXT)
-preparse.$(FASLEXT): lexing.$(FASLEXT)
 nlib.$(FASLEXT): sys-macros.$(FASLEXT)
 lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT) \
 	io.$(FASLEXT)

@@ -42,7 +42,7 @@
 -- -- gdr/2007-11-02
 --
 
-import preparse
+import lexing
 import parse
 namespace BOOT
 
@@ -194,6 +194,92 @@ parsePrint l ==
       formatToStdout('"~5d. ~a~%",first x,rest x)
     formatToStdout '"~%"
   nil
+
+preparse1 rd ==
+  sloc := -1
+  parenlev := 0
+  ncomblock := nil
+  lines := nil
+  locs := nil
+  nums := nil
+  instring := false
+  repeat
+    [num,:l] := preparseReadLine rd
+    atEndOfUnit? l =>
+      preparseEcho readerPendingLines rd
+      lines = nil => return nil
+      if ncomblock ~= nil then
+        findCommentBlock(nil,nums,locs,ncomblock)
+      return pairList(reverse! nums,parsePiles(reverse! locs,reverse! lines))
+    lines = nil and #l > 0 and l.0 = char ")" =>
+      preparseEcho readerPendingLines rd
+      $preparseLastLine := nil
+      SETQ(LINE,l)
+      CATCH($SpadReaderTag,doSystemCommand SUBSEQ(LINE,1))
+    sz := #l
+    sz = 0 => nil
+    -- analyze the line just read
+    psloc := sloc
+    i := 0
+    instring := false
+    pcount := 0
+    repeat
+      strsym := charPosition(char "_"",l,i)
+      comsym := findString('"--",l,i) or sz
+      ncomsym := findString('"++",l,i) or sz
+      oparsym := charPosition(char "(",l,i)
+      cparsym := charPosition(char ")",l,i)
+      n := MIN(strsym,comsym,ncomsym,oparsym,cparsym)
+      do
+        n = sz => leave nil -- empty line
+        escaped?(l,n) => nil
+        n = strsym => instring := not instring
+        instring => nil
+        n = comsym => -- comment
+          l := SUBSEQ(l,0,n)
+          leave nil
+        n = ncomsym => -- description
+          sloc := indentationLocation l
+          if sloc = n then
+            if ncomblock ~= nil and n ~= first ncomblock then
+              findCommentBlock(num,nums,locs,ncomblock)
+              ncomblock := nil
+            ncomblock := [n,l,:IFCDR ncomblock]
+            l := '""
+          else
+            readerDeferLine(rd,strconc(makeString(n,char " "),subString(l,n)))
+            readerLineNumber(rd) := readerLineNumber rd - 1
+            l := SUBSEQ(l,0,n)
+          leave nil
+        n = oparsym => pcount := pcount + 1
+        n = cparsym => pcount := pcount - 1
+      i := n + 1
+    sloc := indentationLocation l
+    sloc = nil => sloc := psloc
+    l := trimTrailingBlank l
+    if lines = nil and sloc = 0 then
+      if $byConstructors and findString('"==>",l) = nil and
+        not symbolMember?(functor := makeSymbol subString(l,0,STRPOSL('": (=",l,0,nil)),$byConstructors) then
+          $SKIPME := true
+      else
+        $constructorsSeen := [functor,:$constructorsSeen]
+        $SKIPME := false
+    lines ~= nil and sloc = 0 =>
+      if ncomblock ~= nil and first ncomblock ~= 0 then
+        findCommentBlock(num,nums,locs,ncomblock)
+      return pairList(reverse! nums,parsePiles(reverse! locs,reverse! lines))
+    do
+      parenlev > 0 =>
+        locs := [nil,:locs]
+        sloc := psloc
+      if ncomblock ~= nil then
+        findCommentBlock(num,nums,locs,ncomblock)
+        ncomblock := nil
+      locs := [sloc,:locs]
+    preparseEcho readerPendingLines rd
+    lines := [l,:lines]
+    nums := [num,:nums]
+    parenlev := parenlev + pcount
 
 preparse rd ==
   $COMBLOCKLIST := nil

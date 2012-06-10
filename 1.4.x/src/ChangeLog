@@ -1,5 +1,11 @@
 2012-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/preparse.lisp: Remove.
+	* interp/spad-parser.boot: Do not include.  Import lexing instead.
+	* interp/Makefile.in: Adjust.
+
+2012-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/io.boot (%Reader): Add idx field.
 	* interp/preparse.lisp ($INDEX): Remove.  Adjust users.
 

@@ -1895,7 +1895,11 @@
                              (CONS |l| (|deref| |locVars|)))))
                    |x|)))
                 (T |x|)))))
-            ((EQ U '|%Leave|) (RPLACA |x| 'RETURN) |x|)
+            ((EQ U '|%Leave|) (RPLACA |x| 'RETURN)
+             (RPLACD |x|
+                     (|shoeCompTran1| (CDR |x|) |fluidVars| |locVars|
+                                      |dollarVars|))
+             |x|)
             ((|symbolMember?| U '(PROG LAMBDA)) (SETQ |newbindings| NIL)
              (LET ((|bfVar#1| (CADR |x|)) (|y| NIL))
                (LOOP

@@ -502,7 +502,7 @@
               ((|bpEqPeek| |ps| 'COLON) (|bpRestore| |ps| |a|)
                (|bpRequire| |ps| #'|bpSignature|)
                (OR (|bpExportItemTail| |ps|) T))
-              (T (|bpRestore| |ps| |a|) (|bpTypeAliasDefition| |ps|))))
+              (T (|bpRestore| |ps| |a|) (|bpTypeAliasDefinition| |ps|))))
             (T NIL))))))
 
 (DEFUN |bpExportItemList| (|ps|) (|bpListAndRecover| |ps| #'|bpExportItem|))
@@ -555,7 +555,7 @@
   (AND (|bpEqKey| |ps| 'NAMESPACE) (OR (|bpName| |ps|) (|bpDot| |ps|))
        (|bpPush| |ps| (|bfNamespace| (|bpPop1| |ps|)))))
 
-(DEFUN |bpTypeAliasDefition| (|ps|)
+(DEFUN |bpTypeAliasDefinition| (|ps|)
   (AND (|bpTypeName| |ps|) (|bpEqKey| |ps| 'TDEF) (|bpLogical| |ps|)
        (|bpPush| |ps| (|%TypeAlias| (|bpPop2| |ps|) (|bpPop1| |ps|)))))
 
@@ -1024,7 +1024,7 @@
        ((|bpExit| |ps|)
         (COND ((|bpEqPeek| |ps| 'DEF) (|bpRestore| |ps| |a|) (|bpDef| |ps|))
               ((|bpEqPeek| |ps| 'TDEF) (|bpRestore| |ps| |a|)
-               (|bpTypeAliasDefition| |ps|))
+               (|bpTypeAliasDefinition| |ps|))
               (T T)))
        (T (|bpRestore| |ps| |a|) NIL))))))
 
