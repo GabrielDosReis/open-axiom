@@ -82,8 +82,6 @@
 (defparameter OpAssoc nil 
   "Information used by OUT BOOT operator pretty printing routines")
 
-(defun MAKENEWOP (X Y) (MAKEOP X Y '|PARSE-NewKEY|))
- 
 (defun MAKEOP (X Y KEYNAME)
   (if (OR (NOT (CDR X)) (NUMBERP (SECOND X)))
       (SETQ X (CONS (FIRST X) X)))
@@ -96,40 +94,6 @@
  
 (defvar |PARSE-NewKEY| nil) ;;list of keywords
  
-(mapcar #'(LAMBDA(J) (MAKENEWOP J '|Led|))
-        '((* 800 801)   (|rem| 800 801)   (|mod| 800 801)
-          (|quo| 800 801)   (|div| 800 801)
-          (/ 800 801)    (** 900 901)  (^ 900 901)
-          (|exquo| 800 801) (+ 700 701)
-          (- 700 701)    (-> 1001 1002)  (<- 1001 1002)
-          (\: 996 997)    (\:\: 996 997)
-          (\@ 996 997)    (|pretend| 995 996)
-          (\.)            (\! \! 1002 1001)
-          (\, 110 111)
-          (\; 81 82 |parseSemicolon|)
-          (< 400 400)    (> 400 400)
-          (<< 400 400)  (>> 400 400)
-          (<= 400 400)   (>= 400 400)
-          (= 400 400)
-          (~= 400 400)
-          (|in| 400 400) 
-	  (|case| 400 400)
-          (|add| 400 120)
-	  (|with| 2000 400 |parseInfixWith|)
-          (|has| 400 400)
-          (|where| 121 104)     ; must be 121 for SPAD, 126 for boot--> nboot
-          (|when| 112 190)
-          (|is| 400 400)    (|isnt| 400 400)
-          (|and| 250 251)   (|or| 200 201)
-          (/\\ 250 251)   (\\/ 200 201)
-          (\.\. SEGMENT 401 699 |parseSegmentTail|)
-          (=> 123 103)
-          (+-> 998 121)
-          (== DEF 122 121)
-          (==> MDEF 122 121)
-          (\| 108 111)                          ;was 190 190
-          (\:- 125 124) (\:= 125 124)))
-
 (defun SPECIALCASESYNTAX () (OR (AND (char= TOK '#\#) (DIGITP CHR))))
  
 (defun TERMINATOR (CHR)
