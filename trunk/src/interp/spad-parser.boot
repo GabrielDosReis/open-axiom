@@ -42,6 +42,7 @@
 -- -- gdr/2007-11-02
 --
 
+import newaux
 import lexing
 import parse
 namespace BOOT
@@ -594,8 +595,8 @@ parseRightBindingPowerOf(x,p) ==
 
 parseGetSemanticForm(rd,x,p,y) ==
   z :=
-    ident? y => apply(y,rd,nil)
-    EVAL y  -- FIXME get rid of EVAL.
+    y = nil => nil
+    apply(y,rd,nil)
   z ~= nil => z
   p = "Nud" => parsePrefix rd
   p = "Led" => parseInfix rd
@@ -1128,3 +1129,43 @@ for x in ["-", "=", "*", "rem", "mod", "quo", "div", "/", "^",
      repeat
        property(x,'GENERIC) := true
        
+--%
+
+for j in [
+    ["for",130,350,function parseLoop],
+    ["while",130,190,function parseLoop],
+    ["until",130,190,function parseLoop],
+    ["repeat",130,190,function parseLoop],
+    ["import",120,0,function parseImport],
+    ["inline",120,0,function parseInline],
+    ["forall",998,999,function parseScheme],
+    ["exist",998,999,function parseScheme],
+    ["unless"],
+    ["add",900,120],
+    ["with",1000,300,function parseWith],
+    ["has",400,400],
+    ["-",701,700],
+    ["#",999,998],
+    ["!",1002,1001],
+    ["'",999,999,function parseData],
+    ["->",1001,1002],
+    [":",194,195],
+    ["not",260,259],
+    ["~",260,259],
+    ["=",400,700],
+    ["return",202,201,function parseReturn],
+    ["try",202,201,function parseTry],
+    ["throw",202,201,function parseThrow],
+    ["leave",202,201,function parseLeave],
+    ["exit",202,201,function parseExit],
+    ["break",202,201,function parseJump],
+    ["iterate",202,201,function parseJump],
+    ["from"],
+    ["yield"],
+    ["if",130,0,function parseConditional],
+    ["case",130,190,function parseMatch],
+    ["|",0,190],
+    ["suchthat"],
+    ["then",0,114],
+    ["else",0,114]
+  ] repeat MAKENEWOP(j,'Nud)

@@ -1,3 +1,9 @@
+2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/newaux.lisp: Move Nud property setting to spad-parser.boot.
+	Import sys-utility.
+	* interp/Makefile.in: Adjust.
+
 2012-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad-parser.boot: Fix thinkos from previous commit.
