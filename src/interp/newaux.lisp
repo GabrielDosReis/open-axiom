@@ -74,6 +74,7 @@
 
 
 (IMPORT-MODULE "sys-macros") 
+(IMPORT-MODULE "sys-utility") 
 (in-package "BOOT")
  
 ; ** TABLE CREATION
@@ -128,45 +129,6 @@
           (==> MDEF 122 121)
           (\| 108 111)                          ;was 190 190
           (\:- 125 124) (\:= 125 124)))
- 
-(mapcar #'(LAMBDA (J) (MAKENEWOP J `|Nud|))
-        '((|for| 130 350 |parseLoop|)
-          (|while| 130 190 |parseLoop|)
-          (|until| 130 190 |parseLoop|)
-          (|repeat| 130 190 |parseLoop|)
-          (|import| 120 0 |parseImport|)
-          (|inline| 120 0 |parseInline|)
-	  (|forall| 998 999 |parseScheme|)
-	  (|exist| 998 999 |parseScheme|)
-          (|unless|)
-          (|add| 900 120)
-          (|with| 1000 300 |parseWith|)
-          (|has| 400 400)
-          (- 701 700)  ; right-prec. wants to be -1 + left-prec
-;;        (\+ 701 700)
-          (\# 999 998)
-          (\! 1002 1001)
-          (\' 999 999 |parseData|)
-          (-> 1001 1002)
-          (\: 194 195)
-          (|not| 260 259 NIL)
-          (~ 260 259 nil)
-          (= 400 700)
-          (|return| 202 201 |parseReturn|)
-          (|try| 202 201 |parseTry|)
-	  (|throw| 202 201 |parseThrow|)
-          (|leave| 202 201 |parseLeave|)
-          (|exit| 202 201 |parseExit|)
-	  (|break| 202 201 |parseJump|)
-	  (|iterate| 202 201 |parseJump|)
-          (|from|)
-          (|yield|)
-          (|if| 130 0 |parseConditional|)    ; was 130
-          (|case| 130 190 |parseMatch|)
-          (\| 0 190)
-          (|suchthat|)
-          (|then| 0 114)
-          (|else| 0 114)))
 
 (defun SPECIALCASESYNTAX () (OR (AND (char= TOK '#\#) (DIGITP CHR))))
  
