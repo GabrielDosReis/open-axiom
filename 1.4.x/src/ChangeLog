@@ -1,5 +1,9 @@
 2012-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad-parser.boot: Fix thinkos from previous commit.
+
+2012-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/preparse.lisp: Remove.
 	* interp/spad-parser.boot: Do not include.  Import lexing instead.
 	* interp/Makefile.in: Adjust.

@@ -51,6 +51,20 @@ module spad_-parser where
 
 --%
 
+$SKIPME := false
+TOK := nil
+DEFINITION__NAME := nil
+$preparseLastLine := nil
+$preparseReportIfTrue := false
+
+--%
+
+INITIALIZE_-PREPARSE rd ==
+  readerLineNumber(rd) := 0
+  $preparseLastLine := readLine readerInput rd
+
+--%
+
 addClose(line,ch) ==
   line.(maxIndex line) = char ";" =>
     ch = char ";" => line
