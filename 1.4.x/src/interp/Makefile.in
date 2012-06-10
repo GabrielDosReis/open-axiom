@@ -90,7 +90,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
 	match.$(FASLEXT)	monitor.$(FASLEXT)	\
 	msg.$(FASLEXT)		msgdb.$(FASLEXT)	\
-	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
+	                    	newfort.$(FASLEXT)	\
 	nrunfast.$(FASLEXT)	osyscmd.$(FASLEXT)	\
 	packtran.$(FASLEXT)	pf2sex.$(FASLEXT)	\
 	scan.$(FASLEXT)		pile.$(FASLEXT)		\
@@ -314,11 +314,10 @@ server.$(FASLEXT): sys-macros.$(FASLEXT)
 
 ## The old parser component roughtly is:
 ##
-spad-parser.$(FASLEXT): parse.$(FASLEXT) lexing.$(FASLEXT) newaux.$(FASLEXT)
+spad-parser.$(FASLEXT): parse.$(FASLEXT) lexing.$(FASLEXT)
 parse.$(FASLEXT): postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): sys-macros.$(FASLEXT)
-newaux.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 nlib.$(FASLEXT): sys-macros.$(FASLEXT)
 lexing.$(FASLEXT): sys-utility.$(FASLEXT) sys-macros.$(FASLEXT) \
 	io.$(FASLEXT)

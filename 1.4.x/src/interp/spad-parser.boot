@@ -42,7 +42,6 @@
 -- -- gdr/2007-11-02
 --
 
-import newaux
 import lexing
 import parse
 namespace BOOT
@@ -1130,6 +1129,41 @@ for x in ["-", "=", "*", "rem", "mod", "quo", "div", "/", "^",
        property(x,'GENERIC) := true
        
 --%
+
+--%
+--% Led and Nud have to do with operators. An operator with a Led property
+--% takes an operand on its left (infix/suffix operator).
+--% 
+--% An operator with a Nud takes no operand on its left (prefix/nilfix).
+--% Some have both (e.g. - ).  This terminology is from the Pratt parser.
+--% The translator for Scratchpad II is a modification of the Pratt parser
+--% which branches to special handlers when it is most convenient and
+--% practical to do so (Pratt's scheme cannot handle local contexts very
+--% easily).
+--% 
+--% Both LEDs and NUDs have right and left binding powers.  This is meaningful 
+--% for prefix and infix operators.  These powers are stored as the values of 
+--% the LED and NUD properties of an atom, if the atom has such a property. 
+--% The format is:
+--%       <Operator Left-Binding-Power  Right-Binding-Power <Special-Handler>>
+--% where the Special-Handler is the name of a function to be evaluated when
+--% that keyword is encountered.
+--%
+--% The default values of Left and Right Binding-Power are NIL.  NIL is a 
+--% legitimate value signifying no precedence.  If the Special-Handler is NIL,
+--% this is just an ordinary operator (as opposed to a surfix operator like 
+--% if-then-else).
+--%
+
+PARSE_-NewKEY := nil
+
+MAKEOP(x,y,keyname) ==
+  if rest x = nil or integer? second x then
+    x := [first x,:x]
+  if alphabetic? stringChar(symbolName first x,0) and
+    not symbolMember?(first x,symbolValue keyname) then
+      symbolValue(keyname) := [first x,:symbolValue keyname]
+  property(first x,y) := x
 
 MAKENEWOP(x,y) ==
   MAKEOP(x,y,'PARSE_-NewKEY)

@@ -1,5 +1,11 @@
 2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/newaux.lisp (MAKEOP): Move to spad-parser.boot.
+	Remove file.
+	* interp/Makefile.in: Adjust.
+
+2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/newaux.lisp: Move Led property setting to spad-parser.boot.
 
 2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
