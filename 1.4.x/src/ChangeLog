@@ -1,5 +1,13 @@
 2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/io.boot (%SourceLine): New.
+	(%LoadUnit): Likewise.
+	(readLoadUnitSource): Likewise.
+	(%Reader):  Remove input stream field.  Include load unit and next
+	lines fields.  Adjust users.
+
+2012-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/newaux.lisp (MAKEOP): Move to spad-parser.boot.
 	Remove file.
 	* interp/Makefile.in: Adjust.

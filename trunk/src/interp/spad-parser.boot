@@ -61,7 +61,7 @@ $preparseReportIfTrue := false
 
 INITIALIZE_-PREPARSE rd ==
   readerLineNumber(rd) := 0
-  $preparseLastLine := readLine readerInput rd
+  $preparseLastLine := readerReadLine rd
 
 --%
 
@@ -147,7 +147,7 @@ preparseReadLine1 rs ==
     line := first lines
     readerPendingLines(rs) := rest lines
   else
-    line := expandLeadingTabs readLine readerInput rs
+    line := expandLeadingTabs readerReadLine rs
   $preparseLastLine := line
   not string? line => [readerLineNumber rs]
   readerLineNumber(rs) := readerLineNumber rs + 1
@@ -1063,7 +1063,6 @@ translateSpad x ==
 ++ ??? finally use the new parser everwhere.
 parseSpadFile sourceFile ==
   $SPAD: local := true                   -- we are parsing Spad, 
-  _*EOF_*: local := false                -- end of current input?
   FILE_-CLOSED : local := false          -- current stream closed?
   try
     -- noise to standard output  
@@ -1074,18 +1073,13 @@ parseSpadFile sourceFile ==
     $InteractiveMode: local := false
     -- we need to restore the global input stream state after we
     -- finished messing with it.
-    IN_-STREAM: local := MAKE_-INSTREAM sourceFile
-    rd := makeReader(IN_-STREAM,$OutputStream)
+    rd := makeReader(sourceFile,$OutputStream)
     INIT_-BOOT_/SPAD_-READER rd
-
-    -- If soureFile cannot be processed for whatever reasons
-    -- get out of here instead of being stuck later.
-    readerInput rd = nil => systemError '"cannot open input source file"
     INITIALIZE_-PREPARSE rd
 
     -- gather parse trees for all toplevel expressions in sourceFile.
     asts := []                                   
-    while not eof? readerInput rd repeat
+    while not readerEoi? rd repeat
       $lineStack: local := preparse rd
       $lineStack = nil => leave nil -- explicit end of input
       LINE: local := CDAR $lineStack
@@ -1095,7 +1089,6 @@ parseSpadFile sourceFile ==
     reverse! asts
   finally                      -- clean up the mess, and get out of here
     ioClear! rd
-    SHUT readerInput rd
 
 --%
 
