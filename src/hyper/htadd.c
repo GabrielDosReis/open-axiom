@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <string.h>
 #include <locale.h>
 
 #include "cfuns.h"
