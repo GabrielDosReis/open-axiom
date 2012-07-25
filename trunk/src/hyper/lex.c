@@ -62,6 +62,7 @@
 #include <ctype.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "debug.h"
 #include "sockio.h"
