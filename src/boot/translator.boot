@@ -362,10 +362,10 @@ shoeOutParse toks ==
     catch(e: BootParserException) => e
   found = 'TRAPPED => nil
   not bStreamNull parserTokens ps =>
-    bpGeneralErrorHere()
+    bpGeneralErrorHere ps
     nil
   parserTrees ps = nil =>
-    bpGeneralErrorHere()
+    bpGeneralErrorHere ps
     nil
   first parserTrees ps
  

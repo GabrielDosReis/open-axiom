@@ -611,10 +611,10 @@ oa_setenv(const char* var, const char* val)
 OPENAXIOM_C_EXPORT char*
 oa_getcwd(void)
 {
-   int bufsz = 256;
+   size_t bufsz = 256;
    char* buf = (char*) malloc(bufsz);
 #ifdef __WIN32__
-   int n = GetCurrentDirectory(bufsz, buf);
+   DWORD n = GetCurrentDirectory(bufsz, buf);
    if (n == 0) {
       perror("oa_getcwd");
       exit(-1);
@@ -800,7 +800,7 @@ oa_spawn(Process* proc, SpawnFlags flags)
                     /* lpCurrentDirectory */ NULL,
                     /* lpstartupInfo */ &startup_info,
                     /* lpProcessInformation */ &proc_info) == 0) {
-      fprintf(stderr, "oa_spawn: error %d\n", GetLastError());
+      fprintf(stderr, "oa_spawn: error %lu\n", GetLastError());
       return proc->id = -1;
    }
    proc->id = proc_info.dwProcessId;
