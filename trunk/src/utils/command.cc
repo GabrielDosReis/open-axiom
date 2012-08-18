@@ -113,7 +113,7 @@ namespace OpenAxiom {
 
    const char*
    option_value(const Command* command, const char* opt) {
-      const int n = strlen(opt);
+      const size_t n = strlen(opt);
       for (int i = 1; i < command->core.argc; ++i) {
          const char* arg = command->core.argv[i];
          if (strlen(arg) < n)
@@ -506,7 +506,7 @@ execute_core(const Command* command, Driver driver)
                     /* lpCurrentDirectory */ NULL,
                     /* lpstartupInfo */ &startupInfo,
                     /* lpProcessInformation */ &procInfo) == 0) {
-      fprintf(stderr, "error %d\n", GetLastError());
+      fprintf(stderr, "error %lu\n", GetLastError());
       abort();
    }
    WaitForSingleObject(procInfo.hProcess, INFINITE);

@@ -448,9 +448,9 @@
                   (T (THROW :OPEN-AXIOM-CATCH-POINT #1#))))
                 (T #1#))))
      (COND ((EQ |found| 'TRAPPED) NIL)
-           ((NOT (|bStreamNull| (|parserTokens| |ps|))) (|bpGeneralErrorHere|)
-            NIL)
-           ((NULL (|parserTrees| |ps|)) (|bpGeneralErrorHere|) NIL)
+           ((NOT (|bStreamNull| (|parserTokens| |ps|)))
+            (|bpGeneralErrorHere| |ps|) NIL)
+           ((NULL (|parserTrees| |ps|)) (|bpGeneralErrorHere| |ps|) NIL)
            (T (CAR (|parserTrees| |ps|)))))))
 
 (DEFUN |genDeclaration| (|n| |t|)

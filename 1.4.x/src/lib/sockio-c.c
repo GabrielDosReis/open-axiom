@@ -663,7 +663,7 @@ send_string_len(openaxiom_sio *sock, const char *str,int len)
     val = swrite(sock, (const Byte*) buf, len+1, "send_string_len");
   }
   if (val == -1) {
-    return -1;
+    return val;
   }
   return 0;
 }

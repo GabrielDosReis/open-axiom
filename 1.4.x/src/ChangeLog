@@ -1,3 +1,12 @@
+2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (shoeOutParse): Fix thinko.
+	* lib/cfuns-c.c (oa_getcwd): Tidy.
+	(oa_spawn): Likewise.
+	* lib/sockio-c.c (send_string_len): Likewise.
+	* utils/command.cc (option_value): Likewise.
+	(execute_core): Likewise.
+
 2012-07-25  Aleksej Saushev <asau@inbox.ru>
 
 	* hyper/htadd.c: Include <string.h>
