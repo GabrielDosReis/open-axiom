@@ -66,8 +66,8 @@ checker(int code, int lineNumber, char *errorStr)
 
 
 
-char *
-getmemWithLine(int nbytes, char *str, int lineNum)
+const char*
+getmemWithLine(int nbytes, const char* str, int lineNum)
 {
   char *p;
 
@@ -80,14 +80,10 @@ getmemWithLine(int nbytes, char *str, int lineNum)
 }
 
 
-char *
-saymemWithLine(char *str, int num, int size, int lineNum)
+const char *
+saymemWithLine(const char *str, int num, int size, int lineNum)
 {
-  char *p;
-
-  p = getmemWithLine(num * size, str, lineNum);
-  return p;
-
+   return getmemWithLine(num * size, str, lineNum);
 }
 
 

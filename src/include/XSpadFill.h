@@ -38,7 +38,7 @@
 
 extern int XInitSpadFill(Display *  , int  , Colormap *  , int *  , int *  , int *  , int * );
 extern void XSpadFillSetArcMode(Display *  , int );
-extern GC SpadFillGC(Display *  , int  , int  , char * );
+extern GC SpadFillGC(Display *  , int  , int  , const char* );
 extern unsigned long XSolidColor(int  , int );
 extern void XSpadFillRectangle(Display *  , Drawable  , int  , int  , unsigned int  , unsigned int  , int  , int );
 extern void XSpadFillRectangles(Display *  , Drawable  , XRectangle *  , int  , int  , int );
