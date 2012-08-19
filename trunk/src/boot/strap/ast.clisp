@@ -3578,9 +3578,7 @@
             (SETQ |unstableArgs| (CONS |a| |unstableArgs|))))))
         (SETQ |bfVar#7| (CDR |bfVar#7|))
         (SETQ |bfVar#8| (CDR |bfVar#8|))))
-     (SETQ |op'|
-             (COND ((|%hasFeature| :WIN32) (CONCAT "_" (SYMBOL-NAME |op'|)))
-                   (T (SYMBOL-NAME |op'|))))
+     (SETQ |op'| (SYMBOL-NAME |op'|))
      (COND
       ((NULL |unstableArgs|)
        (LIST

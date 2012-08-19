@@ -1,5 +1,11 @@
 2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (genSBCLnativeTranslation): Do no prepend an
+	underbar when WIN32 (no longer necessary.)
+	* include/open-axiom.h (OPENAXIOM_EXPORT): Fix thino.
+
+2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/sockio.h (connect_to_local_server): First parameter now
 	const char*.
 	* include/pixmap.h (zzopen): Second parameter now const char*.
