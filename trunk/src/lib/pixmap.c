@@ -70,7 +70,7 @@ file_exists(char *file)
 }
 
 FILE *
-zzopen(char *file,char * mode)
+zzopen(char *file, const char* mode)
 {
     char com[512], zfile[512];
 

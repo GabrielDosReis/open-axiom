@@ -83,11 +83,11 @@ static char *noopfile = "noop.bitmap";
 
 #else
 
-static char *tw1file  = "exit3d.bitmap";
-static char *tw2file  = "help3d.bitmap";
-static char *tw3file  = "home3d.bitmap";
-static char *tw4file  = "up3d.bitmap";
-static char *noopfile = "noop3d.bitmap";
+static const char* tw1file  = "exit3d.bitmap";
+static const char* tw2file  = "help3d.bitmap";
+static const char* tw3file  = "home3d.bitmap";
+static const char* tw4file  = "up3d.bitmap";
+static const char* noopfile = "noop3d.bitmap";
 
 #define BACKCOLOR gControlBackgroundColor
 #define BUTTGC    fControlGC

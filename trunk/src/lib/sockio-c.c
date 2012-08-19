@@ -971,7 +971,7 @@ sock_send_wakeup(int purpose)
 }
 
 OPENAXIOM_C_EXPORT openaxiom_sio *
-connect_to_local_server_new(char *server_name, int purpose, int time_out)
+connect_to_local_server_new(const char *server_name, int purpose, int time_out)
 {
   int max_con=(time_out == 0 ? 1000000 : time_out), i, code=-1;
   openaxiom_sio *sock;
@@ -1023,7 +1023,7 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
 }
 
 OPENAXIOM_C_EXPORT openaxiom_sio *
-connect_to_local_server(char *server_name, int purpose, int time_out)
+connect_to_local_server(const char *server_name, int purpose, int time_out)
 {
   int max_con=(time_out == 0 ? 1000000 : time_out), i, code=-1;
   openaxiom_sio *sock;

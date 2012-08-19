@@ -1,5 +1,23 @@
 2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/sockio.h (connect_to_local_server): First parameter now
+	const char*.
+	* include/pixmap.h (zzopen): Second parameter now const char*.
+	* lib/pixmap.c: Propagate change.
+	* lib/sockio-c.c: Likewise.
+	* hyper/parse-types.c (parse_verbatim): Tidy.
+	* hyper/spadint.c (print_source_to_string1): Likewise.
+	* hyper/initx.h (init_top_window): Change parameter type to const
+	char*.
+	* hyper/initx.c: Propagate change.
+	* hyper/titlebar.c: Tidy.
+	(set_name_and_icon): icon_name is now of type const char*.
+	(get_border_properties): bwidth is not of type const char*.
+	(mergeDatabases): classname is now of type const char*.
+	(is_it_850): probtbl.name is now of type const char*.
+
+2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/util.H1 (getmemWithLine): Second argument is now const char*.
 	(saymemWithLine): First argument is now char*.
 	* lib/util.c: Propogate change.

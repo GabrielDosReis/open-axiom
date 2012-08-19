@@ -920,7 +920,7 @@ char *
 print_source_to_string1(TextNode *command,int * sizeBuf)
 {
     char *c = p2sBuf;
-    char *s;
+    const char *s;
     InputItem *item;
     LineStruct *curr_line;
     int lcount;

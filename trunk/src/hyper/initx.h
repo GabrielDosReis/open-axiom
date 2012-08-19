@@ -40,7 +40,7 @@
 
 extern void change_text(int color , XFontStruct * font);
 extern int init_form_window(char * name , int cols);
-extern int init_top_window(char * name);
+extern int init_top_window(const char * name);
 extern void initializeWindowSystem(void);
 extern int is_it_850(XFontStruct * fontarg);
 
