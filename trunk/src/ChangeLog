@@ -1,5 +1,14 @@
 2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/util.H1 (getmemWithLine): Second argument is now const char*.
+	(saymemWithLine): First argument is now char*.
+	* lib/util.c: Propogate change.
+	* include/XSpadFill.h (SpadFillGC): Change last parameter type to
+	const char*.
+	* lib/XSpadFill.c (SpadFillGC): Likewise.
+
+2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (shoeOutParse): Fix thinko.
 	* lib/cfuns-c.c (oa_getcwd): Tidy.
 	(oa_spawn): Likewise.

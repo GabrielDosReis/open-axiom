@@ -172,7 +172,7 @@ XSpadFillSetArcMode(Display *dsply, int mode)
 }
 
 GC
-SpadFillGC(Display *dsply,int  hue, int theshade,char * fill_routine)
+SpadFillGC(Display *dsply,int  hue, int theshade, const char* fill_routine)
 {
     int dither;
     int color;
