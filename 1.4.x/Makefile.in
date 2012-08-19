@@ -321,6 +321,7 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oa_c_runtime = @oa_c_runtime@
 oa_c_runtime_extra = @oa_c_runtime_extra@
+oa_delay_ffi = @oa_delay_ffi@
 oa_editor = @oa_editor@
 oa_enable_checking = @oa_enable_checking@
 oa_enable_profiling = @oa_enable_profiling@

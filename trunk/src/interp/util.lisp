@@ -249,6 +249,7 @@
   (reroot)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
+  (|loadDelayedFFI|)
   (|buildHtMacroTable|)
   (|initHist|)
   (|initNewWorld|)

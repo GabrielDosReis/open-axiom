@@ -1933,6 +1933,3 @@ genImportDeclaration(op, sig) ==
   %hasFeature KEYWORD::ECL => genECLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::CLOZURE => genCLOZUREnativeTranslation(op,s,t,op')
   fatalError '"import declaration not implemented for this Lisp"
-
-
-

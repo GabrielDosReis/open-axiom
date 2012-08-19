@@ -1,3 +1,28 @@
+2012-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (primitiveLoad): New.  Export.
+	($delayedFFI): Likewise.
+	* lisp/Makefile.in (oa_delay_ffi): New.
+	(edit): Update.
+	* interp/sys-utility.boot: import sys-constants instead of sys-os.
+	* interp/sys-driver.boot (%sysInit): Do not loadSystemRuntimeCore.
+	(loadDelayedFFI): New.
+	(executeSpadScript): Call it.
+	(compileSpadLibrary): Likewise.
+	(buildInitdbHandler): Likewise.
+	(systemMain): Likewise.
+	* interp/util.lisp (BUILD-INTERPSYS): Likewise.
+	* interp/Makefile.in (oa_target_moddir): New.
+	(OA_FFI_MOD): Likewise.
+	(OA_FFI_OBJ): Define conditionally.
+	(OBJS): Use it.
+	($(oa_target_delayed)): New rule.
+	(oa_target_delayed): New.
+	(oa_target_ffi): Define conditionally.
+	(${SAVESYS}): Require it.
+	(${AXIOMSYS}): Likewise.
+	(sys-utility.$(FASLEXT)): Now require sys-constants.$(FASLEXT).
+
 2012-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (genSBCLnativeTranslation): Do no prepend an

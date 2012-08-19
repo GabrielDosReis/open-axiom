@@ -81,6 +81,7 @@ AC_LANG([C++])
 
 OPENAXIOM_HOST_COMPILERS
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
+AM_CONDITIONAL([OA_DELAYED_FFI], [test x$oa_delay_ffi = xyes])
 
 OPENAXIOM_HOST_DATA_PROPERTIES
 

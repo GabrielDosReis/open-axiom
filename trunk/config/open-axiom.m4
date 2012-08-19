@@ -176,6 +176,24 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [The kind of base runtime system for this build.])
 ])
 
+dnl ---------------------------------
+dnl -- OPENAXIOM_CHECK_DELAYED_FFI --
+dnl ---------------------------------
+dnl Check whether loading modules for dynamic FFI support
+dnl should be delayed to runtime.  This is needed for Lisp
+dnl systems that have trouble with DLLs.
+AC_DEFUN([OPENAXIOM_CHECK_DELAYED_FFI], [
+case ${axiom_lisp_flavor},$host in
+  sbcl,* | clozure,* | clisp,*) 
+     oa_delay_ffi=yes
+     ;;
+  *)
+     oa_delay_ffi=no
+     ;;
+esac
+AC_SUBST([oa_delay_ffi])
+])
+
 dnl --------------------------------------------
 dnl -- OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS --
 dnl --------------------------------------------
@@ -207,6 +225,7 @@ OPENAXIOM_PROG_LISP
 OPENAXIOM_LISP_FLAVOR
 OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
+OPENAXIOM_CHECK_DELAYED_FFI
 ## Are we using compilers from GNU?
 oa_gnu_compiler=no
 AC_PROG_CC

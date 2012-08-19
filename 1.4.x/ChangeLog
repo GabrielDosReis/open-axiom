@@ -1,3 +1,9 @@
+2012-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Define Automake conditional OA_DELAYED_FFI.
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_DELAYED_FFI): New.
+	(OPENAXIOM_HOST_COMPILERS): Call it.
+
 2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.in: Regenerate.
