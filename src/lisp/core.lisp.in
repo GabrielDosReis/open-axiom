@@ -139,6 +139,7 @@
 	   "%FunctorDefaultTable"
 	   "%FunctorLookupFunction"
 
+	   "primitiveLoad"
 	   "coreQuit"
            "fatalError"
            "internalError"
@@ -176,6 +177,7 @@
 	   "$targetPlatform"
 
 	   "$faslType"
+	   "$delayedFFI"
 	   "$effectiveFaslType"
 	   "$NativeModuleExt"
 	   "$systemInstallationDirectory"
@@ -419,6 +421,10 @@
   #+:ecl (member :dffi *features*)
   #+:gcl nil
   #-(or :ecl :gcl) t)
+
+;; True if FFI modules were delayed till runtime.
+(defconstant |$delayedFFI|
+  (eq '@oa_delay_ffi@ 'yes))
 
 ;; The top level read-eval-print loop function of the base
 ;; Lisp system we are using.  This is a very brittle way
@@ -851,6 +857,10 @@
 	       (return-from |saveCore|))
   (error "don't know how to save Lisp image"))
 
+
+;; Load a module designated by `f'.
+(defmacro |primitiveLoad| (f)
+  `(load ,f))
 
 ;; 
 ;; -*- Program Termination -*-

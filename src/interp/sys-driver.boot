@@ -62,7 +62,6 @@ symbolFunction('%sysInit) := () +->
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
   SETQ(_*LOAD_-VERBOSE_*,false)
   initMemoryConfig()
-  loadSystemRuntimeCore()
 )if %hasFeature KEYWORD::CLISP
   -- a goat for CLisp FFI, please.
   sys_-osInitCLispFFI()
@@ -187,6 +186,11 @@ initializeDatabases firstTime? ==
   fillDatabasesInCore()
   mkLowerCaseConTable()
 
+++ If the FFI was delayed to runtime, load it.
+loadDelayedFFI() ==
+  not $delayedFFI => nil
+  primitiveLoad strconc(systemRootDirectory(),'"interp/sys-os")
+
 ++ Initialize all global states that need to.  Sub-routine of the command
 ++ line compiler, the script executor, etc.  Mess with care.
 initializeGlobalState() ==
@@ -261,6 +265,7 @@ executeSpadScript(progname,options,file) ==
   $ReadingFile: local := true
   -- $ProcessInteractiveValue: local := true
   $verbose: local := false
+  loadDelayedFFI()
   initializeGlobalState()
   outfile := getOptionValue "output"
   testing := getOptionValue "test"
@@ -290,6 +295,7 @@ associateRequestWithFileType(Option '"script", '"input",
 ++ compiler Spad Library File.
 compileSpadLibrary(progname,options,file) ==
   $displayStartMsgs := false
+  loadDelayedFFI()
   initializeGlobalState()
   $Echo: local := false
   $verbose := false
@@ -306,6 +312,7 @@ associateRequestWithFileType(Option '"compile", '"spad",
 
 buildDatabasesHandler(prog,options,args) ==
   $displayStartMsgs := false
+  loadDelayedFFI()
   initializeGlobalState()
   MAKE_-DATABASES args
   coreQuit(errorCount() > 0 => 1; 0)
@@ -315,6 +322,7 @@ installDriver(Option '"build-databases",function buildDatabasesHandler)
 
 buildInitdbHandler(prog,options,args) ==
   $displayStartMsgs := false
+  loadDelayedFFI()
   initializeGlobalState()
   srcdir := getOptionValue "spad-srcdir" or
      coreError '"missing --spad-srcdir=<dir> argument"
@@ -337,6 +345,7 @@ systemMain() ==
   -- ??? do any substantial work if we call from it.
   AxiomCore::topLevel()
   REROOT()
+  loadDelayedFFI()
   -- ??? Make this call unconditional
   if $StandardLinking then 
     initializeGlobalState()

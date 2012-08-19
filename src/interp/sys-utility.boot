@@ -33,7 +33,7 @@
 -- This file defines some utility functions common to both the compiler
 -- and interpreter.
 
-import sys_-os
+import sys_-constants
 import vmlisp
 import hash
 namespace BOOT

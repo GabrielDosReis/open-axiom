@@ -685,6 +685,8 @@ oa_shrobj_flags
 oa_use_libtool_for_shared_lib
 EGREP
 GREP
+OA_DELAYED_FFI_FALSE
+OA_DELAYED_FFI_TRUE
 OA_BUILD_GCL_FALSE
 OA_BUILD_GCL_TRUE
 CXXCPP
@@ -712,6 +714,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+oa_delay_ffi
 oa_standard_linking
 axiom_lisp_flavor
 AXIOM_LISP
@@ -3833,6 +3836,17 @@ $as_echo_n "checking CPU precision as seen by $AXIOM_LISP... " >&6; }
 $as_echo "$openaxiom_host_lisp_precision" >&6; }
 fi
 
+
+case ${axiom_lisp_flavor},$host in
+  sbcl,* | clozure,* | clisp,*)
+     oa_delay_ffi=yes
+     ;;
+  *)
+     oa_delay_ffi=no
+     ;;
+esac
+
+
 ## Are we using compilers from GNU?
 oa_gnu_compiler=no
 ac_ext=c
@@ -5456,6 +5470,14 @@ esac
 else
   OA_BUILD_GCL_TRUE='#'
   OA_BUILD_GCL_FALSE=
+fi
+
+ if test x$oa_delay_ffi = xyes; then
+  OA_DELAYED_FFI_TRUE=
+  OA_DELAYED_FFI_FALSE='#'
+else
+  OA_DELAYED_FFI_TRUE='#'
+  OA_DELAYED_FFI_FALSE=
 fi
 
 
@@ -19852,6 +19874,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OA_BUILD_GCL_TRUE}" && test -z "${OA_BUILD_GCL_FALSE}"; then
   as_fn_error $? "conditional \"OA_BUILD_GCL\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OA_DELAYED_FFI_TRUE}" && test -z "${OA_DELAYED_FFI_FALSE}"; then
+  as_fn_error $? "conditional \"OA_DELAYED_FFI\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
