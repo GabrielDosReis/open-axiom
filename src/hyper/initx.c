@@ -219,7 +219,7 @@ initializeWindowSystem(void)
  */
 
 int
-init_top_window(char *name)
+init_top_window(const char *name)
 {
     HyperDocPage *page;
     XSetWindowAttributes wa;    /* The X attributes structure */
@@ -377,7 +377,7 @@ init_form_window(char *name, int cols)
 static void
 set_name_and_icon(void)
 {
-    char *icon_name = "HyperDoc";
+    const char *icon_name = "HyperDoc";
     char *s;
     Pixmap icon_pixmap;
     XWMHints wmhints;
@@ -410,7 +410,7 @@ set_name_and_icon(void)
 static int
 get_border_properties(void)
 {
-    char *bwidth;
+    const char *bwidth;
     /*char *bc = NULL;*/
     int bw;
     /*XColor color_def, color_db;*/
@@ -953,7 +953,7 @@ mergeDatabases(void)
     XrmDatabase homeDB, serverDB, applicationDB;
     char filenamebuf[1024];
     char *filename = &filenamebuf[0];
-    char *classname = "OpenAxiom";
+    const char *classname = "OpenAxiom";
     char name[255];
 
 /*    fprintf(stderr,"initx:mergeDatabases:entered\n");*/
@@ -1003,7 +1003,7 @@ is_it_850(XFontStruct *fontarg)
  char *s;
  int i,val;
  static struct {
-      char *name;
+      const char *name;
       Atom format;
       Atom atom;
       } proptbl = { "CHARSET_ENCODING", XA_ATOM };

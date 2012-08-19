@@ -356,7 +356,9 @@ void
 parse_verbatim(int type)
 {
     int size = 0, c;
-    char *end_string, *vb = vbuf, *es;
+    char *vb = vbuf;
+    const char *end_string;
+    const char* es;
 
     curr_node->type = type;
     if (token.id[-1])

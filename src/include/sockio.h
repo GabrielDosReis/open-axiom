@@ -121,7 +121,7 @@ OPENAXIOM_C_EXPORT int wait_for_client_write(openaxiom_sio*,
 
 OPENAXIOM_C_EXPORT int make_server_name(char*, const char*);
 OPENAXIOM_C_EXPORT int make_server_number(void);
-OPENAXIOM_C_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
+OPENAXIOM_C_EXPORT openaxiom_sio* connect_to_local_server(const char*, int, int);
 OPENAXIOM_C_EXPORT int open_server(const char*);
 OPENAXIOM_C_EXPORT int accept_connection(openaxiom_sio*);
 OPENAXIOM_C_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
