@@ -1854,9 +1854,7 @@ genSBCLnativeTranslation(op,s,t,op') ==
     if needsStableReference? x then
       unstableArgs := [a,:unstableArgs]
   
-  op' :=
-    %hasFeature KEYWORD::WIN32 => strconc('"__",symbolName op')
-    symbolName op'
+  op' := symbolName op'
     
   unstableArgs = nil =>
     [["DEFUN",op,args,

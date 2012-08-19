@@ -50,7 +50,7 @@
 #ifdef __WIN32__
 #  ifdef  DLL_EXPORT
 #    define OPENAXIOM_EXPORT  __declspec(dllexport)
-#  elif defined(OPENAXIOM_DLL_IMPORT)
+#  elif defined(DLL_IMPORT)
 #    define OPENAXIOM_EXPORT  __declspec(dllimport)
 #  endif  /* DLL_EXPORT */
 #  ifndef WIN32_LEAN_AND_MEAN
