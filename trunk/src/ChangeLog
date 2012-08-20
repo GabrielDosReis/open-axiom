@@ -1,5 +1,10 @@
 2012-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* input/sint.input.pamphlet: Use /\$SingleInteger, not defunct
+	And$SingleInteger.
+
+2012-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-coerfn.boot: Do not import i-coerce.  Import i-analy
 	and i-resolv intead.
 	($CoerceTable): Fix embarrassing thinko.
