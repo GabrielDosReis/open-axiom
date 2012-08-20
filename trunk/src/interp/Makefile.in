@@ -159,23 +159,13 @@ UNUSED= ${DOC}/guess.boot.dvi \
 
 all: all-ax
 
-all-ax: stamp
+all-ax: all-interpsys
 	@echo finished $(srcdir)
-
-stamp: remove-stamp build-images
-	$(STAMP) stamp
-
-.PHONY: remove-stamp
-remove-stamp:
-	-rm -f stamp
-
-.PHONY: build-images
-build-images: remove-stamp all-interpsys
 
 all-interpsys:
 	$(MAKE) $(SAVESYS)
 
-all-axiomsys: all-interpsys
+all-axiomsys:
 	$(MAKE) $(AXIOMSYS)
 
 mostlyclean-local:
