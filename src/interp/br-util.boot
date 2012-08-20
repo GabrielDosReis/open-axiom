@@ -162,11 +162,14 @@ htPred2English(x,:options) ==
         bcConform(first l,$emList)
         htSay('" has ")
         fnAttr CADADR l
-      op in '(_has ofCategory) =>
+      op in '(has ofCategory) =>
         bcConform(first l,$emList)
         htSay('" has ")
         [a,b] := l
-        b is ['ATTRIBUTE,c] and not constructor? c => fnAttr c
+        b is ['ATTRIBUTE,c] =>
+          symbol? c and not constructor? c => fnAttr c
+          c is [.,:.] and symbol? c.op and not constructor? c.op => fnAttr c
+          bcConform(c,$emList)
         bcConform(b, $emList)
       bcConform(x,$emList)
     fnAttr c ==
