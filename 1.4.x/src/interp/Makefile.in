@@ -92,7 +92,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	g-error.$(FASLEXT)	ggreater.$(FASLEXT)	\
 	hypertex.$(FASLEXT)	i-object.$(FASLEXT)	\
 	i-analy.$(FASLEXT)	i-resolv.$(FASLEXT)	\
-	i-coerce.$(FASLEXT)	i-coerfn.$(FASLEXT)	\
+	i-coerfn.$(FASLEXT)	i-coerce.$(FASLEXT)	\
 	i-eval.$(FASLEXT)	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
 	i-output.$(FASLEXT)	i-special.$(FASLEXT)	\
@@ -291,8 +291,8 @@ i-special.$(FASLEXT): i-analy.$(FASLEXT)
 i-funsel.$(FASLEXT): i-coerfn.$(FASLEXT)
 i-map.$(FASLEXT): i-object.$(FASLEXT)
 i-eval.$(FASLEXT): i-analy.$(FASLEXT)
-i-coerfn.$(FASLEXT): i-coerce.$(FASLEXT)
-i-coerce.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
+i-coerce.$(FASLEXT): i-coerfn.$(FASLEXT)
+i-coerfn.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
 i-resolv.$(FASLEXT): i-object.$(FASLEXT)
 i-analy.$(FASLEXT): i-object.$(FASLEXT)
 i-intern.$(FASLEXT): i-object.$(FASLEXT) ptrees.$(FASLEXT)

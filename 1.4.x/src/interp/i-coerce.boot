@@ -32,8 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import i_-analy
-import i_-resolv
+import i_-coerfn
 namespace BOOT
 
 $useCoerceOrCroak := true
@@ -1133,13 +1132,13 @@ coerceIntTableOrFunction(triple,t2) ==
   null isValidType t2 => nil  -- added 9-18-85 by RSS
   null isLegitimateMode(t2,nil,nil) => nil  -- added 6-28-87 by RSS
   t1 := objMode triple
-  p := objectAssoc(first t1,$CoerceTable)
-  p and objectAssoc(first t2,rest p) is [.,:[tag,fun]] =>
+  p := symbolAssoc(first t1,$CoerceTable)
+  p and symbolTarget(first t2,rest p) is [tag,fun] =>
     val := objVal triple
     fun='Identity => objNew(val,t2)
     tag='total =>
-      coerceByTable(fun,val,t1,t2,'T) or coerceByFunction(triple,t2)
-    coerceByTable(fun,val,t1,t2,nil) or coerceByFunction(triple,t2)
+      coerceByTable(fun,val,t1,t2,true) or coerceByFunction(triple,t2)
+    coerceByTable(fun,val,t1,t2,false) or coerceByFunction(triple,t2)
   coerceByFunction(triple,t2)
 
 coerceCommuteTest(t1,t2) ==

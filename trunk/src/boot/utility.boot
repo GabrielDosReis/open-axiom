@@ -227,7 +227,7 @@ symbolAssoc(s,l) ==
 objectAssoc(x,l) ==
   repeat
     l isnt [p,:l] => return nil
-    p is [.,:.] and sameObject?(first p,x) => return p
+    p is [.,:.] and sameObject?(x,first p) => return p
 
 --% substitution
 

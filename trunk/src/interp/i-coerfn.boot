@@ -32,7 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import i_-coerce
+import i_-analy
+import i_-resolv
 namespace BOOT
 
 $coerceFailure := gensym()
@@ -1976,9 +1977,7 @@ $CoerceTable ==  '(                                          _
     (Tuple                                indeterm   L2Tuple) _
     (Vector                               indeterm   L2V) _
     ))_
-  )
 
-$CoerceTable == append!($CoerceTable,'( _
   (Matrix . ( _
     (List                                 indeterm   M2L) _
     (RectangularMatrix                    partial    M2Rm) _
@@ -2099,7 +2098,7 @@ $CoerceTable == append!($CoerceTable,'( _
     (SquareMatrix                         indeterm   V2Sm) _
     (Stream                               indeterm   Agg2Agg) _
     ) ) _
-  ) )
+  )
 
 -- this list is too long for the parser, so it has to be split into parts
 -- specifies the commute functions
