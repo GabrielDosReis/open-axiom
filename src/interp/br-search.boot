@@ -957,8 +957,9 @@ mkGrepTextfile s ==
   strconc(systemRootDirectory(),'"/algebra/", STRINGIMAGE s, '".text")
 
 getTemporaryDirectory() ==
-  getEnv '"TMP" or getEnv '"TEMP"
-    or strconc(systemRootDirectory(),'"/algebra/")
+  t := getEnv '"TMPDIR" or getEnv '"TEMP" or
+        getEnv '"TEMPDIR" or getEnv '"TMP" => ensureTrailingSlash t
+  strconc(systemRootDirectory(),'"/algebra/")
 
 mkGrepFile s ==  --called to generate a path name for a temporary grep file
   suffix := getEnv '"SPADNUM"
