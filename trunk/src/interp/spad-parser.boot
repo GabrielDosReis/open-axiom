@@ -161,7 +161,7 @@ preparseReadLine1 rs ==
 preparseEcho lines ==
   if $Echo then
     for x in reverse lines repeat
-      formatToStream(OUT_-STREAM,'"~&;~A~%",x)
+      formatToStream($OutputStream,'"~&;~A~%",x)
 
 ++ The line to be worked on is the first in `lines.
 ++ It's indentation is the first in `locs'.

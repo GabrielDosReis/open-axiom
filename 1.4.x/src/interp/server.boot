@@ -53,10 +53,8 @@ serverReadLine(stream) ==
     line := readLine stream
     line ~= %nothing => line
     nil
-  IN_-STREAM: local := stream
-  _*EOF_*: local := nil
   line :=
-   while not $EndServerSession and not _*EOF_* repeat
+   while not $EndServerSession and line ~= %nothing repeat
      if $NeedToSignalSessionManager then
        sockSendInt($SessionManager, $EndOfOutput)
      $NeedToSignalSessionManager := false
@@ -64,7 +62,7 @@ serverReadLine(stream) ==
      action = $CallInterp =>
        l := readLine stream
        $NeedToSignalSessionManager := true
-       return l
+       leave l
      action = $CreateFrame =>
        frameName := gensym('"frame")
        addNewInterpreterFrame(frameName)

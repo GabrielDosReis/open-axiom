@@ -71,7 +71,7 @@
 	     ($SPAD T)
 	     (OPTIONLIST nil)
 	     (|$editFile| ifile)
-	     rd out-stream)
+	     rd)
   (declare (special |$Echo| |$editFile| *comp370-apply*))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
@@ -86,7 +86,6 @@
 	   (setq rd (|makeReader| ifile |$OutputStream|))
 	   (init-boot/spad-reader rd)
 	   (initialize-preparse rd)
-	   (setq out-stream |$OutputStream|)
 	   (loop
 	    (if (|readerEoi?| rd) (return nil))
 	    (catch |$SpadReaderTag|
@@ -100,9 +99,8 @@
 		    (|parseNewExpr| rd)
 		    (let ((parseout (|popStack1|)) )
 		      (when parseout
-			(let ((|$OutputStream| out-stream))
-			  (|translateSpad| parseout))
-			(format out-stream "~&")))
+			(|translateSpad| parseout)
+			(format |$OutputStream| "~&")))
 		    ))))
 	    (|ioClear!| rd)))
 	 T))
