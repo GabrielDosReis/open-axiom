@@ -56,13 +56,7 @@ nextLine rd ==
 nextLinesClear!() ==
   $lineStack := nil
 
-++ Current input stream.  
-IN_-STREAM := 'T
-  
-++ Current output stream
-OUT_-STREAM := 'T
-
-++ Advances IN-STREAM, invoking Next Line if necessary
+++ Advances `rd', invoking nextLine if necessary
 advanceChar! rd ==
   repeat
     not lineAtEnd? readerSourceLine rd =>
@@ -374,7 +368,7 @@ ungetTokens rd ==
   coreError '"How many tokens do you think you have?"
 
 
-++ Returns length of X if X matches initial segment of IN-STREAM.
+++ Returns length of X if X matches initial segment of `rd'.
 ++ Otherwise, return nil.
 matchString(rd,x) ==
   ungetTokens rd

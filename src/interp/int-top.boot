@@ -85,8 +85,6 @@ runspad() ==
 ncTopLevel() ==
 -- Top-level read-parse-eval-print loop for the interpreter.  Uses
 -- the Bill Burge's parser.
-  IN_-STREAM: local := $InputStream
-  _*EOF_*: local := nil
   $InteractiveMode: local := true
   $NEWSPAD: local := true
   $SPAD: local := true
@@ -133,7 +131,6 @@ SpadInterpretStream(str, source, interactive?) ==
     $ncMsgList             : local := nil
  
     $systemCommandFunction : local := function InterpExecuteSpadSystemCommand
-    $shoeReadLineFunction  : local := function serverReadLine
     $promptMsg             : local := 'S2CTP023
  
     interactive? =>
