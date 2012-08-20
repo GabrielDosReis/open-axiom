@@ -149,13 +149,6 @@
 
 (MAKEPROP 'END_UNIT 'KEY T)
 
-(defun |process| (x)
-  (COND ((NOT (EQ TOK 'END_UNIT))
-         (SETQ DEBUGMODE 'NO)
-         (SPAD_SYNTAX_ERROR)
-         (if |$InteractiveMode| (|spadThrow|))
-         (|translateSpad| x))))
-
 (defmacro try (X)
   `(LET ((|$autoLine|))
         (declare (special |$autoLine|))

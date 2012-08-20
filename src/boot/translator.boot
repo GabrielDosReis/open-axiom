@@ -58,10 +58,11 @@ genModuleFinalization(stream) ==
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
-      ["DEFUN", makeSymbol strconc($currentModuleName,'"InitCLispFFI"), nil,
-        ["MAPC",["FUNCTION", "FMAKUNBOUND"],
-          quote [second d for d in $foreignsDefsForCLisp]],
-          :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]
+      ["EVAL-WHEN", [KEYWORD::LOAD_-TOPLEVEL,KEYWORD::EXECUTE],
+        ["PROGN",
+          ["MAPC",["FUNCTION", "FMAKUNBOUND"],
+            quote [second d for d in $foreignsDefsForCLisp]],
+            :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]]
     reallyPrettyPrint(init,stream)
   nil
 
