@@ -180,15 +180,14 @@ pmParseFromString s ==
       [op,:[flatten x for x in argl]]
     s
 
-pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct parse
-  hn x == SUBLISLIS('(and or not),'("and" "or" "not"),x)
+pmPreparse s == fn(s,0,#s) where--stupid insertion of chars to get correct parse
   fn(s,n,siz) ==  --main function: s is string, n is origin
     n = siz => '""
     i := firstNonDelim(s,n) or return subString(s,n)
     j := firstDelim(s,i + 1) or siz
     t := gn(s,i,j - 1)
     middle :=
-      t in '("and" "or" "not") => t
+      member(t,'("and" "or" "not")) => t
       --the following 2 lines make commutative("*") parse correctly!!!!
       stringChar(t,0) = char "_"" => t
       j < siz - 1 and s.j = char "(" => t

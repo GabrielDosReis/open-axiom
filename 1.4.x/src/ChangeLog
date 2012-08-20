@@ -1,5 +1,12 @@
 2012-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-util.boot (htPred2English,gn): Tidy.
+	* interp/br-search.boot (pmPreparse): Do not apply pmPreparse,hn.
+	Tidy.
+	(pmPreparse,hn): Remove.
+
+2012-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad.lisp (SPAD): Remove obfuscated binding of OUT-STREAM.
 	* interp/spad-parser.boot (paarseEcho): Use $OutputStream in lieu
 	of OUT-STREAM.
