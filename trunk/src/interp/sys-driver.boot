@@ -63,8 +63,6 @@ symbolFunction('%sysInit) := () +->
   SETQ(_*LOAD_-VERBOSE_*,false)
   initMemoryConfig()
 )if %hasFeature KEYWORD::CLISP
-  -- a goat for CLisp FFI, please.
-  sys_-osInitCLispFFI()
   -- Tell CLISP to stop being anal retentive, please.
   SETF(CUSTOM::_*WARN_-ON_-FLOATING_-POINT_-CONTAGION_*,false)
 )endif

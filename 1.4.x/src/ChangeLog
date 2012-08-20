@@ -1,5 +1,14 @@
 2012-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/util.lisp (BUILD-INTERPSYS): loadDelayedFFI early.
+	* interp/sys-driver.boot (%sysInit): Do not call
+	sys-osInitCLispFFI (no longer necessary.)
+	* boot/translator.boot (genModuleFinalization): Generate forms to
+	be evaluated at load and execution time, instead of a function call.
+	* interp/spad.lisp (process): Remove.
+
+2012-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (primitiveLoad): New.  Export.
 	($delayedFFI): Likewise.
 	* lisp/Makefile.in (oa_delay_ffi): New.

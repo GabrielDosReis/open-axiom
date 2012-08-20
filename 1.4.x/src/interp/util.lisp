@@ -247,9 +247,9 @@
 
 (defun build-interpsys ()
   (reroot)
+  (|loadDelayedFFI|)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
-  (|loadDelayedFFI|)
   (|buildHtMacroTable|)
   (|initHist|)
   (|initNewWorld|)

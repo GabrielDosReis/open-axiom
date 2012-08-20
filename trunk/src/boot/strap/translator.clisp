@@ -35,56 +35,52 @@
              (|coreError| "current module has no name"))
             (T
              (SETQ |init|
-                     (CONS 'DEFUN
-                           (CONS
-                            (INTERN
-                             (CONCAT |$currentModuleName| "InitCLispFFI"))
-                            (CONS NIL
-                                  (CONS
-                                   (LIST 'MAPC (LIST 'FUNCTION 'FMAKUNBOUND)
-                                         (|quote|
-                                          (LET ((|bfVar#2| NIL)
-                                                (|bfVar#3| NIL)
-                                                (|bfVar#1|
-                                                 |$foreignsDefsForCLisp|)
-                                                (|d| NIL))
-                                            (LOOP
-                                             (COND
-                                              ((OR (NOT (CONSP |bfVar#1|))
-                                                   (PROGN
-                                                    (SETQ |d| (CAR |bfVar#1|))
-                                                    NIL))
-                                               (RETURN |bfVar#2|))
-                                              ((NULL |bfVar#2|)
-                                               (SETQ |bfVar#2|
-                                                       #1=(CONS (CADR |d|)
-                                                                NIL))
-                                               (SETQ |bfVar#3| |bfVar#2|))
-                                              (T (RPLACD |bfVar#3| #1#)
-                                               (SETQ |bfVar#3|
-                                                       (CDR |bfVar#3|))))
-                                             (SETQ |bfVar#1|
-                                                     (CDR |bfVar#1|))))))
-                                   (LET ((|bfVar#5| NIL)
-                                         (|bfVar#6| NIL)
-                                         (|bfVar#4| |$foreignsDefsForCLisp|)
-                                         (|d| NIL))
-                                     (LOOP
-                                      (COND
-                                       ((OR (NOT (CONSP |bfVar#4|))
-                                            (PROGN
-                                             (SETQ |d| (CAR |bfVar#4|))
-                                             NIL))
-                                        (RETURN |bfVar#5|))
-                                       ((NULL |bfVar#5|)
-                                        (SETQ |bfVar#5|
-                                                #2=(CONS
-                                                    (LIST 'EVAL (|quote| |d|))
-                                                    NIL))
-                                        (SETQ |bfVar#6| |bfVar#5|))
-                                       (T (RPLACD |bfVar#6| #2#)
-                                        (SETQ |bfVar#6| (CDR |bfVar#6|))))
-                                      (SETQ |bfVar#4| (CDR |bfVar#4|)))))))))
+                     (LIST 'EVAL-WHEN (LIST :LOAD-TOPLEVEL :EXECUTE)
+                           (CONS 'PROGN
+                                 (CONS
+                                  (LIST 'MAPC (LIST 'FUNCTION 'FMAKUNBOUND)
+                                        (|quote|
+                                         (LET ((|bfVar#2| NIL)
+                                               (|bfVar#3| NIL)
+                                               (|bfVar#1|
+                                                |$foreignsDefsForCLisp|)
+                                               (|d| NIL))
+                                           (LOOP
+                                            (COND
+                                             ((OR (NOT (CONSP |bfVar#1|))
+                                                  (PROGN
+                                                   (SETQ |d| (CAR |bfVar#1|))
+                                                   NIL))
+                                              (RETURN |bfVar#2|))
+                                             ((NULL |bfVar#2|)
+                                              (SETQ |bfVar#2|
+                                                      #1=(CONS (CADR |d|) NIL))
+                                              (SETQ |bfVar#3| |bfVar#2|))
+                                             (T (RPLACD |bfVar#3| #1#)
+                                              (SETQ |bfVar#3|
+                                                      (CDR |bfVar#3|))))
+                                            (SETQ |bfVar#1|
+                                                    (CDR |bfVar#1|))))))
+                                  (LET ((|bfVar#5| NIL)
+                                        (|bfVar#6| NIL)
+                                        (|bfVar#4| |$foreignsDefsForCLisp|)
+                                        (|d| NIL))
+                                    (LOOP
+                                     (COND
+                                      ((OR (NOT (CONSP |bfVar#4|))
+                                           (PROGN
+                                            (SETQ |d| (CAR |bfVar#4|))
+                                            NIL))
+                                       (RETURN |bfVar#5|))
+                                      ((NULL |bfVar#5|)
+                                       (SETQ |bfVar#5|
+                                               #2=(CONS
+                                                   (LIST 'EVAL (|quote| |d|))
+                                                   NIL))
+                                       (SETQ |bfVar#6| |bfVar#5|))
+                                      (T (RPLACD |bfVar#6| #2#)
+                                       (SETQ |bfVar#6| (CDR |bfVar#6|))))
+                                     (SETQ |bfVar#4| (CDR |bfVar#4|))))))))
              (|reallyPrettyPrint| |init| |stream|))))
      (T NIL))))
 
