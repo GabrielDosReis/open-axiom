@@ -186,6 +186,7 @@
 	   "$StandardLinking"
 	   "$ECLVersionNumber"
 	   "$FilesToRetain"
+	   "$dynamicForeignFunctions"
 
 	   "getOptionValue"
            "getCommandLineArguments"
@@ -367,6 +368,11 @@
 ;; File kinds to retain.
 (defconstant |$FilesToRetain|
   '(@oa_keep_files@))
+
+;; List of foreign function symbols to unload before saving the
+;; Lisp image.  This is meaningful only for those systems not
+;; using standard linking and that delay FFI modules to runtime.
+(defparameter |$dynamicForeignFunctions| nil)
 
 ;; Lisp compiler optimization settings.
 (defconstant |$LispOptimizeOptions|
@@ -817,6 +823,18 @@
   (let ((prologue (|getOptionValue| (|Option| "prologue") options)))
     (if prologue (read-from-string prologue) nil)))
 
+;; This is meaningful only for systems that delay FFI.
+;; Unbind foreign function symbols in case delaying FFI modules
+;; is needed.  Indeed, these systems should not have references to
+;; foreign symbols that cannot be guaranteed to work properly
+;; when the saved image is restarted.
+(defun unbind-foreign-function-symbols ()
+  (when |$delayedFFI|
+    (mapc #'(lambda (s)
+	      (when (fboundp s)
+		(fmakunbound s)))
+	  |$dynamicForeignFunctions|)))
+
 ;; Save current image on disk as executable and quit.
 (defun |saveCore| (core-image &optional (entry-point nil))
   ;; When building the OpenAxiom system, and in many other cases I suspect,
@@ -827,6 +845,7 @@
   (when (consp entry-point)
     (setq entry-point (apply (car entry-point) 
                              (cdr entry-point))))
+  (unbind-foreign-function-symbols)
   #+:sbcl (if (null entry-point)
               (sb-ext::save-lisp-and-die core-image :executable t)
             (sb-ext::save-lisp-and-die core-image 
@@ -994,7 +1013,6 @@
           #+:clisp (coerce (ext::argv) 'list))
          (args (member "--" all-args :test #'equal)))
     (cons (car all-args) (if args (cdr args) args))))
-
 
 ;; 
 ;; -*- Building Standalone Executable -*-
