@@ -53,17 +53,15 @@ reallyPrettyPrint(x,st == _*STANDARD_-OUTPUT_*) ==
   writeNewline st
 
 genModuleFinalization(stream) ==
+  $ffs = nil => nil
+  $currentModuleName = nil => coreError '"current module has no name"
+  setFFS := ["SETQ","$dynamicForeignFunctions",
+              ["append!",quote $ffs,"$dynamicForeignFunctions"]]
+  reallyPrettyPrint(atLoadOrExecutionTime setFFS,stream)
   %hasFeature KEYWORD::CLISP =>
     $foreignsDefsForCLisp = nil => nil
-    $currentModuleName = nil =>
-       coreError '"current module has no name"
-    init := 
-      ["EVAL-WHEN", [KEYWORD::LOAD_-TOPLEVEL,KEYWORD::EXECUTE],
-        ["PROGN",
-          ["MAPC",["FUNCTION", "FMAKUNBOUND"],
-            quote [second d for d in $foreignsDefsForCLisp]],
-            :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]]
-    reallyPrettyPrint(init,stream)
+    init := ["PROGN", :[["EVAL",quote d] for d in $foreignsDefsForCLisp]]
+    reallyPrettyPrint(atLoadOrExecutionTime init,stream)
   nil
 
 genOptimizeOptions stream ==
@@ -402,6 +400,9 @@ inAllContexts x ==
   ["EVAL-WHEN",[KEYWORD::COMPILE_-TOPLEVEL,
                   KEYWORD::LOAD_-TOPLEVEL,
                     KEYWORD::EXECUTE], x]
+
+atLoadOrExecutionTime x ==
+  ["EVAL-WHEN",[KEYWORD::LOAD_-TOPLEVEL,KEYWORD::EXECUTE],x]
 
 exportNames ns ==
   ns = nil => nil

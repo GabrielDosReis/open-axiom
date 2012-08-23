@@ -1919,6 +1919,9 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   -- Finally, return the definition form
   [["DEFUN", op, parms, call]]
 
+++ List of foreign function symbols defined in this module.
+$ffs := nil
+  
 ++ Generate an import declaration for `op' as equivalent of the
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
@@ -1926,6 +1929,7 @@ genImportDeclaration(op, sig) ==
   sig isnt ["%Signature", op', m] => coreError '"invalid signature"
   m isnt ["%Mapping", t, s] => coreError '"invalid function type"
   if s ~= nil and symbol? s then s := [s]
+  $ffs := [op,:$ffs]
 
   %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')
