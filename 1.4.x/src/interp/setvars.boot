@@ -99,7 +99,7 @@ $InitialCommandSynonymAlist == [
    ["type"       , :'"set message type"],_
    ["unexpose"   , :'"set expose drop constructor"],_
    ["up"         , :'"zsystemdevelopment )update"],_
-   ["version"    , :'"lisp *yearweek*"],_
+   ["version"    , :'"lisp *build-version*"],_
    ["w"          , :'"what"],_
    ["wc"         , :'"what categories"],_
    ["wd"         , :'"what domains"],_
