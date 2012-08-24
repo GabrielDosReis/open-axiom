@@ -1,3 +1,8 @@
+2012-08-24  Alfredo Portes  <doyenatccny@gmail.com>
+
+        * interp/setvars.boot ()version):  Use *build-version*
+        instead of *yearweek*.
+
 2012-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot ($ffs): New.
