@@ -1,5 +1,11 @@
 2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-os.boot (flushStdout): Remove as unused.
+	* interp/i-toplev.boot (recordAndPrint): Do not print a newline
+	before formatting the result.
+
+2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/debug.lisp: Remove reference to TOK and CHR.
 	* interp/spad-parser.boot: Likewise.
 	* interp/g-error.boot: Likewise.
