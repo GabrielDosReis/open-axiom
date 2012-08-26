@@ -52,7 +52,7 @@ using namespace OpenAxiom;
 
 
 int
-checker(int code, int lineNumber, char *errorStr)
+checker(int code, int lineNumber, const char* errorStr)
 {
   if (code < 0) {
     fprintf(stderr, "Error occured during %s\n", errorStr);

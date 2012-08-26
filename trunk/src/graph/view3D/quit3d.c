@@ -132,7 +132,7 @@ void
 drawQuitPanel(void)
 {
 
-  char *s;
+  const char* s;
   int i,strlength;
 
   s = "Really?";

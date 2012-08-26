@@ -42,7 +42,8 @@ extern GC gc;
 void
 Gdraws_draw_menu(Window menu, char *str, int width, int height)
 {
-   char *str1 = "y e s", *str2 = "n o";
+   const char* str1 = "y e s";
+   const char* str2 = "n o";
    int x0=0, y0=0;
 
    XDrawString(dsply, menu, gc, 30, height/4+3, str, strlen(str));

@@ -133,7 +133,7 @@ void
 drawSavePanel(void)
 {
 
-  char *s;
+  const char* s;
   int i,strlength;
 
   GSetForeground(saveGC,(float)saveButtonColor,Xoption);

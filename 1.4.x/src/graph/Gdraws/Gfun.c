@@ -246,7 +246,7 @@ GDrawImageString(
                  GC gc,         /* graphics context */
                  Window wid,    /* window id */
                  int x, int y,
-                 char *string,
+                 const char* string,
                  int length, int dFlag)
 {
   int s;
@@ -562,7 +562,7 @@ GDrawPushButton(
                 GC gc1, GC gc2, GC gc3,
                 Window windowId,
                 short int x,short int y,short  int width,short  int height,
-                int isOn, char *text,
+                int isOn, const char *text,
                 unsigned long buttonColor, unsigned long color,
                 int dFlag)
 {
@@ -597,7 +597,7 @@ GDrawString(
             GC gc,              /* graphics context */
             Window wid,         /* window id */
             int x, int y,
-            char *string,       /* string to be drawn */
+            const char* string,       /* string to be drawn */
             int length, int dFlag)
 {
   int s;
@@ -827,7 +827,7 @@ PSInit(Window vw, Window tw)
 int
 PSCreateContext(
                 GC gc,       /* graphics context */
-                char *C_gc,     /* GC name to be used as postscript variable */
+                const char *C_gc,     /* GC name to be used as postscript variable */
                 int lineWidth, int capStyle, int joinStyle,
                 float bg, float fg)
 {
@@ -1074,7 +1074,7 @@ PSClose(void)
 
 
 int 
-centerX (GC viewGCx,char * theString,int strlength,int windowWidth)
+centerX (GC viewGCx, const char* theString,int strlength,int windowWidth)
 {
   XFontStruct *fontStruct;
   GContext con;

@@ -559,7 +559,7 @@ drawTheViewport(int dFlag)
  ************************************/
 
 viewPoints *
-makeViewport(char *title,int vX,int vY,int vW,int vH,int showCP)
+makeViewport(const char* title,int vX,int vY,int vW,int vH,int showCP)
 {
   Pixmap               spadbits,spadmask;
   XSetWindowAttributes viewAttrib;

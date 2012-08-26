@@ -377,7 +377,7 @@ void
 drawLightingPanel(void)
 {
 
-  char *s;
+  const char* s;
   int i,strlength;
 
   /* Draw border lines to separate the lighting window, potentiometers,

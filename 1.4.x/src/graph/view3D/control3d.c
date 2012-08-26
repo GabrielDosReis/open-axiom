@@ -229,7 +229,7 @@ drawControlPanel(void )
   int                   offShade=14;
   controlPanelStruct    *cp;
   int                   i, strlength;
-  char                  *s;
+  const char* s;
 
   cp = viewport->controlPanel;
 

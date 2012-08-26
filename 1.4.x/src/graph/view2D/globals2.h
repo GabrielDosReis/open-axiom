@@ -54,7 +54,7 @@ extern  GC  processGC;
 extern  viewPoints *viewport;
 extern  controlPanelStruct *control;
 extern  XGCValues gcVals;
-extern  char *s;
+extern  const char* s;
 extern  int someInt;
 
 extern unsigned long foregroundColor, backgroundColor; 

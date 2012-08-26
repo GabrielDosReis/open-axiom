@@ -96,17 +96,17 @@
    /* someotherFont holds title font (see main.c) */
 #define clipMessDy (globalFont->max_bounds.ascent/2 + \
                     globalFont->max_bounds.descent)
-static char *clipMess = "Clip Volume";
+static const char* clipMess = "Clip Volume";
 
 #define eyeMess1Dy clipMessDy
 #define eyeMess1X 7
 #define eyeMess1Y (frustrumY + 40 + 3*eyeMess1Dy)
-static char *eyeMess1 = "Eye";
+static const char* eyeMess1 = "Eye";
 
 #define eyeMess2X (globalFont->max_bounds.width + 14)
 #define eyeMess2Y (frustrumY + 40)
 #define eyeMess2Dy eyeMess1Dy
-static char *eyeMess2 = "Reference";
+static const char* eyeMess2 = "Reference";
 
 
  /*  global stuff  */

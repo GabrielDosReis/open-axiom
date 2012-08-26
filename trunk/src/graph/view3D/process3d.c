@@ -68,7 +68,8 @@ void
 buttonAction (int bKey)
 {
 
-  char *s1, *s2;
+   const char* s1;
+   const char* s2;
   int strL, strL1, strL2, offShade=14;
 
   /* Button colors which are offColor, RED, are turned off, and those which

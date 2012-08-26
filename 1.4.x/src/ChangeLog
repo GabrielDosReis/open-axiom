@@ -1,5 +1,15 @@
 2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* graph/Gdraws/Gfun.c (GDrawLine): Make string parameter of type
+	const char*.
+	(GDrawPushButton): Likewise.
+	(GDrawString): Likewise.
+	(PSCreateContext): Likewise.
+	(centerX): Likewise.
+	* Makefile.am (all-graph): Require all-utils.
+
+2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-os.boot (flushStdout): Remove as unused.
 	* interp/i-toplev.boot (recordAndPrint): Do not print a newline
 	before formatting the result.

@@ -1,4 +1,4 @@
-extern int checker(int  , int  , char * );
+extern int checker(int  , int  , const char*);
 extern const char* getmemWithLine(int  , const char*  , int );
 extern const char* saymemWithLine(const char*  , int  , int  , int );
 extern void myfree(void *  , int );
