@@ -141,8 +141,6 @@ handleLispBreakLoop($BreakMode) ==
 TOP() == returnToTopLevel()
 
 returnToTopLevel() ==
-  SETQ(CHR, "ENDOFLINECHR")
-  SETQ(TOK, 'END__UNIT)
   THROW($intTopLevel,'restart)
 
 returnToReader() ==
