@@ -110,7 +110,7 @@ static int openaxiom_socket_module_loaded = 0;
    we can even think about talking about sockets. */
 
 static void
-openaxiom_unload_socket_module(void)
+openaxiom_unload_socket_module()
 {
    WSACleanup();
    openaxiom_socket_module_loaded = 0;
@@ -119,7 +119,7 @@ openaxiom_unload_socket_module(void)
 
 
 static void
-openaxiom_load_socket_module(void)
+openaxiom_load_socket_module()
 {
   if (!openaxiom_socket_module_loaded) {
 #ifdef __WIN32__
@@ -426,7 +426,7 @@ oa_socket_write_byte(openaxiom_socket sock, Byte byte)
 /* Return 1 is the last call was cancelled. */
 
 static inline int
-openaxiom_syscall_was_cancelled(void)
+openaxiom_syscall_was_cancelled()
 {
 #ifdef __WIN32__
    return WSAGetLastError() == WSAEINTR;
@@ -438,7 +438,7 @@ openaxiom_syscall_was_cancelled(void)
 /* Return 1 is last connect() was refused.  */
 
 static inline int
-openaxiom_connection_refused(void)
+openaxiom_connection_refused()
 {
 #ifdef __WIN32__
    return WSAGetLastError() == WSAECONNREFUSED;
@@ -1111,8 +1111,8 @@ remote_stdio(openaxiom_sio *sock)
 }
 
 /* initialize the table of dedicated sockets */
-OPENAXIOM_C_EXPORT void 
-init_purpose_table(void)
+static void 
+init_purpose_table()
 {
   int i;
   for(i=0; i<TotalMaxPurposes; i++) {
@@ -1122,7 +1122,7 @@ init_purpose_table(void)
 
 
 OPENAXIOM_C_EXPORT int 
-make_server_number(void)
+make_server_number()
 {
   spad_server_number = oa_getpid();
   return spad_server_number;
@@ -1152,6 +1152,17 @@ make_server_name(char *name, const char* base)
   }
   sprintf(name, "%s%s", base, num);
   return 0;
+}
+
+static void
+init_socks()
+{
+  int i;
+  FD_ZERO(&socket_mask);
+  FD_ZERO(&server_mask);
+  init_purpose_table();
+  for(i=0; i<2; i++) server[i].socket = 0;
+  for(i=0; i<MaxClients; i++) clients[i].socket = 0;
 }
 
 /* client Spad server sockets.  Two sockets are created: server[0]
@@ -1252,17 +1263,6 @@ get_socket_type(openaxiom_sio *sock)
   send_int(sock, oa_getpid());
   send_int(sock, sock->socket);
   purpose_table[sock->purpose] = sock;
-  switch (sock->purpose) {
-  case SessionManager:
-    break;
-  case ViewportServer:
-    break;
-  case MenuServer:
-    break;
-  case SessionIO:
-/*    redirect_stdio(sock); */
-    break;
-  }
 }
 
 OPENAXIOM_C_EXPORT int 
@@ -1288,41 +1288,10 @@ sock_accept_connection(int purpose)
   }
 }
 
-/* direct stdin and stdout from the given socket */
-OPENAXIOM_C_EXPORT void 
-redirect_stdio(openaxiom_sio *sock)
-{
-  int fd;
-/*  setbuf(stdout, NULL);  */
-  fd = dup2(sock->socket, 1);
-  if (fd != 1) {
-    fprintf(stderr, "Error connecting stdout to socket\n");
-    return;
-  }
-  fd = dup2(sock->socket, 0);
-  if (fd != 0) {
-    fprintf(stderr, "Error connecting stdin to socket\n");
-    return;
-  }
-  fprintf(stderr, "Redirected standard IO\n");
-  FD_CLR(sock->socket, &socket_mask);
-}
-
-OPENAXIOM_C_EXPORT void
-init_socks(void)
-{
-  int i;
-  FD_ZERO(&socket_mask);
-  FD_ZERO(&server_mask);
-  init_purpose_table();
-  for(i=0; i<2; i++) server[i].socket = 0;
-  for(i=0; i<MaxClients; i++) clients[i].socket = 0;
-}
-
 /* Socket I/O selection called from the BOOT serverLoop function */
 
 OPENAXIOM_C_EXPORT int 
-server_switch(void)
+server_switch()
 {
   int ret_val, i, cmd = 0;
   fd_set rd, wr, ex, fds_mask;
@@ -1366,26 +1335,6 @@ server_switch(void)
       return cmd;
     }
   }
-}
-
-OPENAXIOM_C_EXPORT void 
-flush_stdout(void)
-{
-  static FILE *fp = NULL;
-  if (fp == NULL) {
-    fp = fdopen(purpose_table[SessionIO]->socket, "w");
-    if (fp == NULL) {
-      perror("fdopen");
-      return;
-    }
-  }
-  fflush(fp);
-}
-
-OPENAXIOM_C_EXPORT void 
-print_line(const char* s)
-{
-  printf("%s\n", s);
 }
 
 }
