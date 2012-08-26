@@ -662,11 +662,8 @@ $SessionManager == 1
 $ViewportServer == 2
 $MenuServer == 3
 $SessionIO == 4
-$MessageServer == 5
-$InterpWindow == 6
-$KillSpad == 7
-$DebugWindow == 8
-$Forker == 9
+$InterpWindow == 5
+$KillSpad == 6
 
 $CreateFrame == 1
 $SwitchFrames == 2

@@ -120,7 +120,7 @@ OPENAXIOM_C_EXPORT int wait_for_client_write(openaxiom_sio*,
                                            const char*);
 
 OPENAXIOM_C_EXPORT int make_server_name(char*, const char*);
-OPENAXIOM_C_EXPORT int make_server_number(void);
+OPENAXIOM_C_EXPORT int make_server_number();
 OPENAXIOM_C_EXPORT openaxiom_sio* connect_to_local_server(const char*, int, int);
 OPENAXIOM_C_EXPORT int open_server(const char*);
 OPENAXIOM_C_EXPORT int accept_connection(openaxiom_sio*);
@@ -169,14 +169,9 @@ OPENAXIOM_C_EXPORT int sock_send_signal(int, int);
 OPENAXIOM_C_EXPORT int send_wakeup(openaxiom_sio*);
 OPENAXIOM_C_EXPORT int sock_send_wakeup(int);
 OPENAXIOM_C_EXPORT void remote_stdio(openaxiom_sio*);
-OPENAXIOM_C_EXPORT void init_purpose_table(void);
 OPENAXIOM_C_EXPORT void get_socket_type(openaxiom_sio*);
 OPENAXIOM_C_EXPORT int sock_accept_connection(int);
-OPENAXIOM_C_EXPORT void redirect_stdio(openaxiom_sio*);
-OPENAXIOM_C_EXPORT void init_socks(void);
-OPENAXIOM_C_EXPORT int server_switch(void);
-OPENAXIOM_C_EXPORT void flush_stdout(void);
-OPENAXIOM_C_EXPORT void print_line(const char*);
+OPENAXIOM_C_EXPORT int server_switch();
 
 #define MaxClients      150
 
@@ -186,12 +181,8 @@ OPENAXIOM_C_EXPORT void print_line(const char*);
 #define ViewportServer  2
 #define MenuServer      3
 #define SessionIO       4
-#define BaloonServer    5
-#define InterpWindow    6
-#define KillSpad        7
-#define DebugWindow     8  /* used for nagman */
-#define Forker          9
-#define AV              10 /*Simon's algebraic viewer */
+#define InterpWindow    5
+#define KillSpad        6
 
 #define Acknowledge     255
 

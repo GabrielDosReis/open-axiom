@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2011 Gabriel Dos Reis.
+-- Copyright (C) 2007-2012 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -178,8 +178,6 @@ import server__switch: () -> int for serverSwitch
 import flush__stdout: () -> int for flushStdout
 
 import sock__send__signal: (int,int) -> int for sockSendSignal
-
-import print__line: string -> int for printLine
 
 --%
 

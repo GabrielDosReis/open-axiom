@@ -1,3 +1,26 @@
+2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/sockio.h (init_purpose_table): Remove declaration.
+	(redirect_stdio): Likewise.
+	(init_socks): Likewise.
+	(flush_stdout): Likewise.
+	(print_line): Likewise.
+	(BaloonServer): Remove.
+	(DebugWindow): Likewise.
+	(Forker): Likewise.
+	(AV): Likewise.
+	* interp/server.boot (serverReadLine): Do not flushOutput.
+	* interp/sys-constants.boot ($MessageServer): Remove.
+	($DebugWindow): Likewise.
+	($Forker): Likewise.
+	* interp/sys-os.boot (printLine): Remove associated foreign import.
+	* lib/sockio-c.c (init_purpose_table): Do not export.
+	(init_socks): Likewise.
+	(get_socket_type): Simplify.  Remove dead code.
+	(redirect_stdio): Remove.
+	(flush_stdio): Likewise.
+	(print_line): Likewise.
+
 2012-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-saturn.boot: Replace TERPRI with finishLine.
