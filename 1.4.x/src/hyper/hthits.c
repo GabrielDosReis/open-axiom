@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2012, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -136,7 +136,7 @@ static void
 splitpage(char* buf, char** ptitle, char** pbody)
 {
    int n, depth, tno;
-   const char* s;
+   char* s;
    
    switch (buf[1]) {
    case 'p':

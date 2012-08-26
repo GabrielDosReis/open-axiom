@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2012, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -1000,7 +1000,7 @@ mergeDatabases(void)
 int 
 is_it_850(XFontStruct *fontarg)
 {
- const char* s;
+ char* s;
  int i,val;
  static struct {
       const char *name;
