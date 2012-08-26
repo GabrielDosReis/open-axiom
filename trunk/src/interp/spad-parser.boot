@@ -52,7 +52,6 @@ module spad_-parser where
 --%
 
 $SKIPME := false
-TOK := nil
 DEFINITION__NAME := nil
 $preparseLastLine := nil
 $preparseReportIfTrue := false

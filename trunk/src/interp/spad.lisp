@@ -111,12 +111,6 @@
 ;         SYSTEM COMMANDS
 ;************************************************************************
 
-(defun TERSYSCOMMAND ()
-  (FRESH-LINE)
-  (SETQ CHR 'ENDOFLINECHR)
-  (SETQ TOK 'END_UNIT)
-  (|spadThrow|))
-
 (defun /READ (L Q)
   (SETQ |$editFile| L)
   (COND

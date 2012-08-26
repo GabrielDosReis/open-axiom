@@ -200,9 +200,6 @@ $topOp := nil
 $streamCount := 0
 
 ++
-$TOKSTACK := nil
-
-++
 $FUNCTION := nil
 
 ++
@@ -327,8 +324,6 @@ _/WSNAME := "NOBOOT"
 
 ++
 LINE := nil
-CHR := nil
-TOK := nil
 
 $Echo := false
 

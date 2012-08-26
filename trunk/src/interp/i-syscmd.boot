@@ -161,7 +161,8 @@ selectOption(x,l,errorFunction) ==
   errorFunction => FUNCALL(errorFunction,x,u)
   nil
 
-terminateSystemCommand() == TERSYSCOMMAND()
+terminateSystemCommand() ==
+  spadThrow()
 
 commandUserLevelError(x,u) == userLevelErrorMessage("command",x,u)
 
@@ -1953,7 +1954,7 @@ library args ==
   LOCALDATABASE([STRING a for a in args],$options)
   extendLocalLibdb $newConlist
   changeDirectory origDir
-  TERSYSCOMMAND()
+  terminateSystemCommand()
 
 --% )quit
 
@@ -1970,7 +1971,7 @@ quitSpad2Cmd() ==
   x := UPCASE queryUserKeyedMsg("S2IZ0031",nil)
   STRING2ID_-N(x,1) in '(Y YES) => leaveScratchpad()
   sayKeyedMsg("S2IZ0032",nil)
-  TERSYSCOMMAND ()
+  terminateSystemCommand()
 
 leaveScratchpad () ==
   coreQuit() -- ??? should be coreQuit errorCount()
@@ -2745,7 +2746,6 @@ processSynonyms() ==
 --  $currentLine := strconc(fill,RPLACSTR(line, 1, # synstr, fun),opt)
   cl := strconc(fill,RPLACSTR(line, 1, # synstr, fun),opt)
   SETQ(LINE,cl)
-  SETQ(CHR,LINE.(p+1))
   processSynonyms ()
 
 -- functions for interfacing to system commands from algebra code

@@ -585,7 +585,6 @@ spadStartUpMsgs() ==
   sayKeyedMsg("S2GL0018D",nil)
   sayKeyedMsg("S2GL0003B",[$opSysName])
   sayMSG bar
-  sayMSG " "
 
 HELP() == sayKeyedMsg("S2GL0019",nil)
 

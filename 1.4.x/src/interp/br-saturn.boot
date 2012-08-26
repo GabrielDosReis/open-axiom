@@ -1730,6 +1730,6 @@ purgeLocalLibdb() ==   --called by the user through a clear command?
 --  $newConlist: local := nil
 --  LOCALDATABASE(args,$options)
 --  extendLocalLibdb $newConlist
---  TERSYSCOMMAND()
+--  terminateSystemCommand()
 
 

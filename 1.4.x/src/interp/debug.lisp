@@ -57,8 +57,6 @@
 (DEFVAR /PRETTY () "controls pretty printing of trace output")
 (defparameter /ECHO NIL) ;;"prevents echo of SPAD or BOOT code with /c"
 (MAKEPROP 'LISP '/TERMCHR '(#\  #\())
-(MAKEPROP 'LSP '/TERMCHR '(#\  #\())
-(MAKEPROP 'META '/TERMCHR '(#\:  #\())
 (MAKEPROP 'INPUT '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'SPAD '/TERMCHR '(#\:  #\<  #\  #\())
 (MAKEPROP 'BOOT '/TERMCHR '(#\:  #\<  #\  #\())
@@ -155,16 +153,16 @@
        (declare (special OUTPUTSTREAM))
   (PROG (FT oft SFN X EDINFILE FILE DEF KEY RECNO U W SOURCEFILES
          |$Echo| SINGLINEMODE INPUTSTREAM SPADERRORSTREAM
-         ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
+         ISID NBLNK COMMENTCHR (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-         TRAPFLAG |$InteractiveMode| TOK COLUMN *QUERY CHR LINE
+         TRAPFLAG |$InteractiveMode| COLUMN *QUERY LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
         (declare (special |$Echo| SINGLINEMODE INPUTSTREAM
-                     SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
+                     SPADERRORSTREAM ISID NBLNK COMMENTCHR /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-                     TRAPFLAG |$InteractiveMode| TOK COLUMN *QUERY CHR LINE))
+                     TRAPFLAG |$InteractiveMode| COLUMN *QUERY LINE))
         (if (CONSP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
           ;; $FUNCTION is freely set in getFunctionSourceFile

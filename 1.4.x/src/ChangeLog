@@ -1,5 +1,17 @@
 2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/debug.lisp: Remove reference to TOK and CHR.
+	* interp/spad-parser.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/sys-globals.boot: Likewise.
+	* interp/br-saturn.boot: Replace TERSYSCOMAND by
+	terminateSystemCommand.
+	* interp/i-syscmd.boot: Likewise.
+	(terminateSystemCommand): Simplify.
+	* interp/spad.lisp (TERSYSCOMMAND): Remove.
+
+2012-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/sockio.h (init_purpose_table): Remove declaration.
 	(redirect_stdio): Likewise.
 	(init_socks): Likewise.
