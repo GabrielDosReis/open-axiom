@@ -464,7 +464,7 @@ doDoitButton(htPage, command) ==
 
 executeInterpreterCommand command ==
   PRINC command
-  TERPRI()
+  finishLine $OutputStream
   ncSetCurrentLine(command)
   CATCH($SpadReaderTag, parseAndInterpret command)
   not $leanMode and printPrompt()

@@ -2247,13 +2247,13 @@ spool filename ==
   null filename =>
     DRIBBLE()
     SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
-    TERPRI()
+    finishLine $OutputStream
     resetHighlight()
   PROBE_-FILE STRING first filename =>
     systemError strconc('"file ", STRING first filename, '" already exists")
   DRIBBLE STRING first filename
   SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
-  TERPRI()
+  finishLine $OutputStream
   clearHighlight()
 
 --% )synonym

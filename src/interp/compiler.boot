@@ -2819,7 +2819,7 @@ compileParseTree pt ==
     processInteractive(pf,nil)
   else if T := compTopLevel(pf,$EmptyMode,$InteractiveFrame) then
     [.,.,$InteractiveFrame] := T
-  TERPRI()
+  finishLine $OutputStream
 
 
 --%
