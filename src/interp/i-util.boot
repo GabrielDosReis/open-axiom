@@ -72,10 +72,9 @@ MKPROMPT() ==
     toString $IOindex, '"] -> ")
  
 
-printPrompt(flush? == false) ==
+printPrompt() ==
   writeString(MKPROMPT(), $OutputStream)
-  if flush? then
-    flushOutput $OutputStream
+  flushOutput $OutputStream
 
 ++ Return the name of a text editor, if possible.
 textEditor() ==
