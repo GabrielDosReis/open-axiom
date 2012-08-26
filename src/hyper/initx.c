@@ -1000,7 +1000,7 @@ mergeDatabases(void)
 int 
 is_it_850(XFontStruct *fontarg)
 {
- char *s;
+ const char* s;
  int i,val;
  static struct {
       const char *name;

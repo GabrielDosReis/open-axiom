@@ -267,7 +267,7 @@ typedef struct _buttonStruct {
   int           buttonKey, pot, mask;
   short         buttonX, buttonY, buttonWidth, buttonHeight, xHalf, yHalf;
   Window        self;
-  char          *text;
+  const char*   text;
   int           textColor,textHue,textShade;
 } buttonStruct;
 

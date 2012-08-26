@@ -40,7 +40,7 @@ extern fd_set         filedes;
 extern int             acknow;
 extern int         graphKey; 
 extern graphStruct *graphList;
-extern char *s1;
+extern const char* s1;
 extern Display *dsply;
 extern int     defDsply;
 extern Window  root;

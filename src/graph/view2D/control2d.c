@@ -164,7 +164,7 @@ drawControlPanel(void)
 
   controlPanelStruct *cp;
   int i,strlength;
-  char *s;
+  const char* s;
 
   cp = viewport->controlPanel;
   /* Draw border lines to separate the potentiometer, message, graph select

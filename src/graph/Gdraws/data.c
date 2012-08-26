@@ -47,12 +47,12 @@ Gdraws_data(int dFlag)
     static Vertex vlist[5];
     static int vcount = 5;
     static int x0, y0, x1, y1;
-    static char *str = "This is a text string.";
+    static const char* str = "This is a text string.";
     static int x, y;
     static int FirstTime = yes;
     static int Rx, Ry, Rwidth, Rheight;
     static int Ix, Iy;
-    static char *Istr = "Image text string.";
+    static const char* Istr = "Image text string.";
     static XPoint points[7];
     static XPoint p1[7];
     static int np1 = 7;

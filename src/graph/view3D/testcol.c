@@ -96,7 +96,7 @@ XSizeHints      viewSizeHints;
 GC              processGC;
 viewPoints      *viewport;
 controlPanelStruct      *control;
-char            *s;
+const char* s;
 int             someInt;  
 
 /* check /usr/include/X11 for current implementation of

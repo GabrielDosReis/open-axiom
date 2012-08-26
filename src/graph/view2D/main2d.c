@@ -86,10 +86,10 @@ char          scaleXReport[5],
   scaleYReport[5],
   deltaXReport[5],
   deltaYReport[5],
-  *s,
   errorStr[80],
   filename[256], /** For writing viewport data out to a file **/
   *xDefault;     /** used for accessing .XDefaults **/
+const char* s;
 
 
 unsigned long *spadColors;

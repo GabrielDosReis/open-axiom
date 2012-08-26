@@ -136,7 +136,7 @@ static void
 splitpage(char* buf, char** ptitle, char** pbody)
 {
    int n, depth, tno;
-   char *s;
+   const char* s;
    
    switch (buf[1]) {
    case 'p':

@@ -81,7 +81,7 @@ GC              processGC;
 viewPoints      *viewport;
 controlPanelStruct      *control;
 XGCValues       gcVals;
-char            *s;
+const char* s;
 int             someInt;  
 
 /* check /usr/include/X11 for current implementation of
@@ -601,7 +601,7 @@ mergeDatabases(void)
   XrmDatabase homeDB,serverDB,applicationDB;
   char filenamebuf[1024];
   char *filename = &filenamebuf[0];
-  char *classname = "OpenAxiom";
+  const char *classname = "OpenAxiom";
   char name[255];
 
   (void) XrmInitialize();

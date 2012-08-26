@@ -146,7 +146,7 @@ all-databases:  all-interpsys all-doc
 all-hyper-post: all-algebra  all-doc
 	cd hyper && $(MAKE) $(AM_MAKEFLAGS) all-hyper-post
 
-all-graph: all-lib
+all-graph: all-lib all-utils
 	cd graph && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-check

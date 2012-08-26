@@ -82,8 +82,8 @@ int         viewType,
 fd_set      filedes;
 graphStruct *graphList;
 graphStateStruct currentGraphState;
-char        *s1,
-  propertyBuffer[256];/* XProperty buffer */
+const char* s1;
+char  propertyBuffer[256];/* XProperty buffer */
 
 
 int
