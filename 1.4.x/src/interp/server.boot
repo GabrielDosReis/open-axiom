@@ -90,7 +90,7 @@ serverReadLine(stream) ==
        stringBuf := sockGetString $MenuServer
        CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
 	 parseAndInterpret stringBuf)))
-       not $leanMode and printPrompt "andFlush"
+       not $leanMode and printPrompt()
      action = $NonSmanSession =>
        $SpadServer := nil
      action = $KillLispSystem => 

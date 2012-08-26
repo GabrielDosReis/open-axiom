@@ -1,3 +1,8 @@
+2012-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-util.boot: Lose paramater.  Unconditional flush the
+	output stream.  Adjust callers.
+
 2012-08-24  Alfredo Portes  <doyenatccny@gmail.com>
 
         * interp/setvars.boot ()version):  Use *build-version*
