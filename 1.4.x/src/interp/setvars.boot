@@ -278,7 +278,7 @@ displaySetOptionInformation(arg,setData) ==
   sayBrightly ['"%l",:bright '"Description:",setData.setLabel]
 
   st = 'FUNCTION =>
-    TERPRI()
+    finishLine $OutputStream
     if functionp(setData.setVar)
       then FUNCALL(setData.setVar,"%describe%")
       else sayMSG '"   Function not implemented."
@@ -316,7 +316,7 @@ displaySetVariableSettings(setTree,label) ==
     else label := strconc('" ",object2String label,'" ")
   centerAndHighlight(strconc('"Current Values of ",label,
     '" Variables"),$LINELENGTH," ")
-  TERPRI()
+  finishLine $OutputStream
   sayBrightly ["Variable     ",
                "Description                                ",
                  "Current Value"]
@@ -348,7 +348,7 @@ displaySetVariableSettings(setTree,label) ==
       sayBrightly [setOption,:bright '"..."]
       subtree := true
       subname := object2String setData.setName
-  TERPRI()
+  finishLine $OutputStream
   subtree =>
     sayBrightly ['"Variables with current values of",:bright '"...",
       '"have further sub-options. For example,"]
@@ -676,7 +676,7 @@ setFunctionsCache arg ==
     '"..."
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetFunctionsCache()
-    TERPRI()
+    finishLine $OutputStream
     sayAllCacheCounts()
   n := first arg
   (n ~= 'all) and ((not integer? n) or (n < 0)) =>
@@ -717,7 +717,7 @@ describeSetFunctionsCache() ==
 sayAllCacheCounts () ==
   sayCacheCount(nil,$cacheCount)
   $cacheAlist =>
-    TERPRI()
+    finishLine $OutputStream
 --    SAY '" However,"
     for [x,:n] in $cacheAlist | n ~= $cacheCount repeat sayCacheCount(x,n)
 
@@ -766,7 +766,7 @@ setHistory arg ==
       if name = current
         then sayBrightly ['" ->",:bright name]
         else sayBrightly ['"    ",name]
-    TERPRI()
+    finishLine $OutputStream
     sayBrightly '" The current setting is indicated within the list."
     sayBrightly [:bright '"yes",'"and",:bright '"no",
      '"have the same effect as",:bright '"on",'"and",:bright '"off",
@@ -1019,7 +1019,7 @@ setOutputCharacters arg ==
       if name = current
         then sayBrightly ['" ->",:bright name]
         else sayBrightly ['"    ",name]
-    TERPRI()
+    finishLine $OutputStream
     sayBrightly '" The current setting is indicated within the list.  This option determines "
     sayBrightly '" the special characters used for algebraic output.  This is what the"
     sayBrightly '" current choice of special characters looks like:"

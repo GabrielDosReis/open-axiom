@@ -89,7 +89,7 @@ THETA__ERROR op ==
 
 SAY(:x) ==
   MESSAGEPRINT x
-  TERPRI()
+  finishLine $OutputStream
 
 MESSAGEPRINT x ==
   MAPC(function MESSAGEPRINT_-1, x)
@@ -100,7 +100,7 @@ MESSAGEPRINT_-1 x ==
     MESSAGEPRINT_-1 first x
     MESSAGEPRINT_-2 rest x
     writeString '")"
-  x = "%l" or x is '"%l" => TERPRI()
+  x = "%l" or x is '"%l" => finishLine $OutputStream
   PRINC x
 
 MESSAGEPRINT_-2 x ==

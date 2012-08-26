@@ -104,7 +104,7 @@ start(:l) ==
         sayKeyedMsg("S2IZ0051",nil)
       else sayKeyedMsg("S2IZ0052",nil)
     SAY fillerSpaces($LINELENGTH,char "=")
-    TERPRI()
+    finishLine $OutputStream
     $OLDLINE := nil
   $superHash := hashTable 'EQUAL
   if null l then runspad()

@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2012, Gabriel Dos Reis.
 -- All rights reserved.
@@ -207,7 +207,7 @@ tdPrint hash ==
     sayBrightly [key,'":"]
     sayBrightlyNT '"   "
     for x in tableValue(hash,key) repeat sayBrightlyNT ['" ",x]
-    TERPRI()
+    finishLine $OutputStream
 
 topics con ==
   --assumes that DOCUMENTATION property already has #s added

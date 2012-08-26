@@ -73,7 +73,7 @@ displayPreCompilationErrors() ==
   if 1<n then
     (for x in $postStack for i in 1.. repeat sayMath ['"   ",i,'"_) ",:x])
     else sayMath ['"    ",:first $postStack]
-  TERPRI()
+  finishLine $OutputStream
 
 postTran: %ParseTree -> %ParseForm
 postTran x ==

@@ -591,7 +591,7 @@ letPrint(x,val,currentFunction) ==
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or gensym? x) then
          sayBrightlyNT [:bright x,": "]
          PRIN1 shortenForPrinting val
-         TERPRI()
+         finishLine $OutputStream
       if (y:= hasPair("BREAK",y)) and
         (y="all" or symbolMember?(x,y) and
           (not symbolMember?(PNAME(x).0,'($ _#)) and not gensym? x)) then

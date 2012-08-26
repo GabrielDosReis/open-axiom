@@ -104,7 +104,7 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   handleLispBreakLoop($BreakMode)
 
 handleLispBreakLoop($BreakMode) ==
-  TERPRI()
+  finishLine $OutputStream
   $BreakMode = 'break =>
     sayBrightly '" "
     BREAK()

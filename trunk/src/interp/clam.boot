@@ -176,13 +176,13 @@ reportCircularCacheStats(fn,n) ==
     +/[1 for i in 1..n for x in circList while x isnt ['_$failed,:.]]
   sayBrightly ["%b",fn,"%d","has","%b",numberUsed,"%d","/ ",n," values cached"]
   displayCacheFrequency mkCircularCountAlist(circList,n)
-  TERPRI()
+  finishLine $OutputStream
  
 displayCacheFrequency al ==
   al := sortBy(function first,al)
   sayBrightlyNT "    #hits/#occurrences: "
   for [a,:b] in al repeat sayBrightlyNT [a,"/",b,"  "]
-  TERPRI()
+  finishLine $OutputStream
  
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
@@ -199,7 +199,7 @@ reportHashCacheStats fn ==
   hashValues:= [val for [.,:val] in entries ht]
   sayBrightly [:bright fn,'"has",:bright(# hashValues),'"values cached."]
   displayCacheFrequency mkHashCountAlist hashValues
-  TERPRI()
+  finishLine $OutputStream
  
 mkHashCountAlist vl ==
   for [count,:.] in vl repeat

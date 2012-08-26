@@ -1,5 +1,23 @@
 2012-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-saturn.boot: Replace TERPRI with finishLine.
+	* interp/c-util.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/diagnostics.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
+2012-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-util.boot: Lose paramater.  Unconditional flush the
 	output stream.  Adjust callers.
 

@@ -662,7 +662,7 @@ printEnv E ==
     for y in x for j in 1.. repeat
       SAY('"******CONTOUR ",j,'", LEVEL ",i,'":******")
       for z in y repeat
-        TERPRI()
+        finishLine $OutputStream
         SAY("Properties Of: ",first z)
         for u in rest z repeat
           PRIN1 first u
@@ -677,7 +677,7 @@ prEnv E ==
     for y in x for j in 1.. repeat
       SAY('"******CONTOUR ",j,'", LEVEL ",i,'":******")
       for z in y | null symbolTarget("modemap",rest z) repeat
-        TERPRI()
+        finishLine $OutputStream
         SAY("Properties Of: ",first z)
         for u in rest z repeat
           PRIN1 first u
@@ -694,7 +694,7 @@ prModemaps E ==
       for z in y | not member(first z,listOfOperatorsSeenSoFar) and
         (modemap := symbolTarget("modemap",rest z)) repeat
           listOfOperatorsSeenSoFar:= [first z,:listOfOperatorsSeenSoFar]
-          TERPRI()
+          finishLine $OutputStream
           PRIN1 first z
           printString ": "
           PRETTYPRINT modemap
@@ -1024,7 +1024,7 @@ printSignature(before,op,[target,:argSigList]) ==
     for m in rest argSigList repeat (printString ","; printAny m)
   printString "_) -> "
   printAny target
-  TERPRI()
+  finishLine $OutputStream
  
 elapsedTime() ==
   currentTime:= TEMPUS_-FUGIT()
@@ -1038,7 +1038,7 @@ printStats [byteCount,elapsedSeconds] ==
   timeString := normalizeStatAndStringify elapsedSeconds
   if byteCount = 0 then SAY('"Time: ",timeString,'" SEC.") else
     SAY('"Size: ",byteCount,'" BYTES     Time: ",timeString,'" SEC.")
-  TERPRI()
+  finishLine $OutputStream
   nil
  
 extendsCategoryForm(domain,form,form') ==

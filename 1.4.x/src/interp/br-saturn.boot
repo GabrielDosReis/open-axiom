@@ -338,7 +338,7 @@ saturnPRINTEXP s ==
 
 saturnTERPRI() ==
   $browserOutputStream => writeNewline $browserOutputStream
-  TERPRI()
+  finishLine $OutputStream
 
 writeSaturnTable line ==
   open := charPosition(char "{",line,0)
@@ -1566,7 +1566,7 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --  PRINC(0,    comstream)
 --  PRINC($tick,comstream)
 --  PRINC('"",  comstream)
---  TERPRI(comstream)
+--  finishLine(comstream)
 --  while (line := readLine instream) ~= %nothing repeat
 --    comP := FILE_-POSITION comstream
 --    if key ~= line.0 then
@@ -1579,20 +1579,20 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --    PRINC($tick ,outstream)
 --    null comments =>
 --      PRINC(0,outstream)
---      TERPRI(outstream)
+--      finishLine(outstream)
 --    PRINC(comP,outstream)
---    TERPRI(outstream)
+--    finishLine(outstream)
 --    PRINC(key,   comstream)   --identifies file the backpointer is to
 --    PRINC(outP  ,comstream)
 --    PRINC($tick ,comstream)
 --    PRINC(first comments,comstream)
---    TERPRI(comstream)
+--    finishLine(comstream)
 --    for c in rest comments repeat
 --      PRINC(key,   comstream)   --identifies file the backpointer is to
 --      PRINC(outP  ,comstream)
 --      PRINC($tick ,comstream)
 --      PRINC(c, comstream)
---      TERPRI(comstream)
+--      finishLine(comstream)
 --  SHUT instream
 --  SHUT outstream
 --  SHUT comstream

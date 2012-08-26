@@ -57,7 +57,7 @@ sayModemapWithNumber(m,n) ==
   sayMSG flowSegmentedMsg(reverse msg,$LINELENGTH,3)
 
 displayOpModemaps(op,modemaps) ==
-  TERPRI()
+  finishLine $OutputStream
   count:= #modemaps
   phrase:= (count=1 => 'modemap;'modemaps)
   sayMSG ['"%b",count,'"%d",phrase,'" for",'"%b",op,'"%d",'":"]
