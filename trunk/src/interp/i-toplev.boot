@@ -194,7 +194,6 @@ recordAndPrint(x,md) ==
   $outputMode: local := md   --used by DEMO BOOT
   mode:= (md=$EmptyMode => quadSch(); md)
   if (md ~= $Void) or $printVoidIfTrue then
-    newlineIfDisplaying()
     if not $QuietCommand then
       output(x',md')
   putHist('%,'value,objNewWrap(x,md),$e)

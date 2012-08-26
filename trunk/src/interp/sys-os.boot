@@ -175,8 +175,6 @@ import sock__send__wakeup: (int,int) -> int for sockSendWakeup
 
 import server__switch: () -> int for serverSwitch
 
-import flush__stdout: () -> int for flushStdout
-
 import sock__send__signal: (int,int) -> int for sockSendSignal
 
 --%
