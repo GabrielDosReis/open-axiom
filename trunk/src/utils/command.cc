@@ -214,11 +214,13 @@ build_rts_options(Command* command, Driver driver)
          break;
 
       case sbcl_runtime:
-         command->rt_args.allocate(4);
+         command->rt_args.allocate(6);
          command->rt_args[0] = (char*) "--noinform";
          command->rt_args[1] = (char*) "--end-runtime-options";
          command->rt_args[2] = (char*) "--noprint";
-         command->rt_args[3] = (char*) "--end-toplevel-options";
+         command->rt_args[3] = (char*) "--no-sysinit";
+         command->rt_args[4] = (char*) "--no-userinit";
+         command->rt_args[5] = (char*) "--end-toplevel-options";
          break;
 
       case clozure_runtime:
