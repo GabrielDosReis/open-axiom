@@ -332,7 +332,7 @@ case $axiom_lisp_flavor in
        ;;
     sbcl) 
        axiom_quiet_flags='--noinform --noprint'
-       axiom_eval_flags='--eval'
+       axiom_eval_flags='--no-sysinit --no-userinit --eval'
        ;;
     clisp) 
        axiom_quiet_flags='--quiet'
