@@ -1,0 +1,30 @@
+2012-10-10  Igor Pashev  <pashev.igor@gmail.com>
+	    Andrey G, Grozin  <A.G.Grozin@inp.nsk.su>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_LISP_FLAGS): Inhibit system-wide
+	or user-supplied initialization files.
+
+2012-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Define Automake conditional OA_DELAYED_FFI.
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_DELAYED_FFI): New.
+	(OPENAXIOM_HOST_COMPILERS): Call it.
+
+2012-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.in: Regenerate.
+	* config/aclocal.m4: Move to toplevel.
+	* config/libtool.m4: Remove.
+	* config/ltoptions.m4: Likewise.
+	* config/ltversion.m4: Likewise.
+	* config/lt~obsolete.m4: Likewise.
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNMENT_OPERATOR): Use
+	AC_LANG_SOURCE to generate test program.
+	(OPENAXIOM_ALIGNAS_SPECIFIER): Likewise.
+
+2012-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNAS_SPECIFIER): New.
+	(OPENAXIOM_CHECK_MISC): Use it.
+
