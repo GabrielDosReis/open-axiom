@@ -1,0 +1,7 @@
+2013-03-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/pile.boot (insertpile): Tidy.
+	(pilePlusComments): Likewise.
+	(pileTree): Likewise.
+	(eqpileTree): Likewise.
+

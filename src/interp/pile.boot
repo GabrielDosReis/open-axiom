@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ pilePlusComment t ==
  
 insertpile (s)==
   npNull s => [false,0,[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   pilePlusComment h =>
     [h1,t1] := pilePlusComments s
     a := pileTree(-1,t1)
@@ -71,7 +71,7 @@ insertpile (s)==
  
 pilePlusComments s==
   npNull s => [[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   pilePlusComment h =>
     [h1,t1]:=pilePlusComments t
     [[h,:h1],t1]
@@ -79,14 +79,14 @@ pilePlusComments s==
  
 pileTree(n,s)==
   npNull s => [false,n,[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   hh := pileColumn first h
   hh > n => pileForests(first h,hh,t)
   [false,n,[],s]
  
 eqpileTree(n,s)==
   npNull s => [false,n,[],s]
-  [h,t] := [first s,rest s]
+  [h,:t] := s
   hh := pileColumn first h
   hh = n => pileForests(first h,hh,t)
   [false,n,[],s]
