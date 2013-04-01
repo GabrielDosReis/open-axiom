@@ -266,9 +266,11 @@ makeVolumePanel (void)
   Pixmap volumebits, volumemask;
   XColor foreColor, backColor;
 
-  volumebits = XCreateBitmapFromData(dsply,rtWindow,volumeBitmap_bits,
+  volumebits = XCreateBitmapFromData(dsply,rtWindow,
+                                     (const char*) volumeBitmap_bits,
                                      volumeBitmap_width,volumeBitmap_height);
-  volumemask = XCreateBitmapFromData(dsply,rtWindow,volumeMask_bits,
+  volumemask = XCreateBitmapFromData(dsply,rtWindow,
+                                     (const char*) volumeMask_bits,
                                      volumeMask_width,volumeMask_height);
   cwAttrib.background_pixel = backgroundColor;
   cwAttrib.border_pixel = foregroundColor;

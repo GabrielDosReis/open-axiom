@@ -631,10 +631,10 @@ makeViewport (void)
   TRANSLATE(-viewport->deltaX,-viewport->deltaY,0.0,T);
            /**** make the windows for the viewport ****/
   spadbits = XCreateBitmapFromData(dsply,rtWindow,
-                                   spadBitmap_bits,
+                                   (const char*) spadBitmap_bits,
                                    spadBitmap_width,spadBitmap_height);
   spadmask = XCreateBitmapFromData(dsply,rtWindow,
-                                   spadMask_bits,
+                                   (const char*) spadMask_bits,
                                    spadMask_width,spadMask_height);
   viewAttrib.background_pixel = backgroundColor;
   viewAttrib.border_pixel = foregroundColor;

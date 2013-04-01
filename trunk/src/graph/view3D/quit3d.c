@@ -70,9 +70,11 @@ makeQuitPanel(void)
   Pixmap quitbits, quitmask;
   XColor quitterColor,qColor;
 
-  quitbits = XCreateBitmapFromData(dsply,rtWindow, volumeBitmap_bits,
+  quitbits = XCreateBitmapFromData(dsply,rtWindow,
+                                   (const char*) volumeBitmap_bits,
                                    volumeBitmap_width,volumeBitmap_height);
-  quitmask = XCreateBitmapFromData(dsply,rtWindow,volumeMask_bits,
+  quitmask = XCreateBitmapFromData(dsply,rtWindow,
+                                   (const char*) volumeMask_bits,
                                    volumeMask_width,volumeMask_height);
   quitter.background_pixel = backgroundColor;
   quitter.border_pixel = foregroundColor;
