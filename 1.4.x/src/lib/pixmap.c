@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2011, Gabriel Dos Reis.
+    Copyright (C) 2007-2013, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -271,7 +271,6 @@ read_pixmap_file(Display *display, int screen, char *filename,
 {
   XpmAttributes attr;
   XImage *xireturn;
-  int status;
 
   attr.valuemask = 0;
 
@@ -289,7 +288,7 @@ read_pixmap_file(Display *display, int screen, char *filename,
   attr.valuemask |= XpmAllocCloseColors;  /* we don't allocate close colors*/
 
   
-  status=XpmReadFileToImage(display,filename,xi,&xireturn, &attr );
+  XpmReadFileToImage(display,filename,xi,&xireturn, &attr );
   *width= (*xi)->width;
   *height=(*xi)->height;
 #ifdef DEBUG
@@ -306,12 +305,11 @@ write_pixmap_file(Display *dsp, int scr, char  *fn,
                   Window wid, int x, int y, int width,int height)
 {
   XImage *xi;
-  int status;
   
   /* reads image structure in ZPixmap format */
   xi = XGetImage(dsp, wid, x, y, width, height, AllPlanes, ZPixmap);
   if (xi==0) return ;
-  status=XpmWriteFileFromImage(dsp,fn,xi,0,0);
+  XpmWriteFileFromImage(dsp,fn,xi,0,0);
   
 }
 

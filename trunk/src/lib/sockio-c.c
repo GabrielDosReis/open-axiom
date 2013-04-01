@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2010, Gabriel Dos Reis.
+    Copyright (C) 2007-2013, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -846,9 +846,8 @@ sock_send_floats(int purpose, const double  *vals, int num)
 OPENAXIOM_C_EXPORT double 
 get_float(openaxiom_sio *sock)
 {
-  int val;
   double num = -1.0;
-  val = fill_buf(sock, byte_address(num), sizeof(double), "get_float");
+  fill_buf(sock, byte_address(num), sizeof(double), "get_float");
 #ifdef DEBUG
   fprintf(stderr,"get_float: received %f\n",num);
 #endif

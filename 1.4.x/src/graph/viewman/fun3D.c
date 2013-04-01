@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@ void
 funView3D(int viewCommand)
 {
 
-  int code;
   int viewPID;
   float f1,f2,f3,f4;
   int i1,i2;
@@ -75,34 +74,34 @@ funView3D(int viewCommand)
 
     viewmanEvent.xclient.window = viewport->viewWindow;
 
-    code = write(viewport->viewOut,&viewCommand,intSize);
+    write(viewport->viewOut,&viewCommand,intSize);
     switch (viewCommand) {
     case rotate:
       f1 = get_float(spadSock);
       f2 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
       break;
 
     case zoom:
       f1 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
       break;
 
     case zoomx:
       f1 = get_float(spadSock);
       f2 = get_float(spadSock);
       f3 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
-      code = write(viewport->viewOut,&f3,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&f3,floatSize);
       break;
 
     case translate:
       f1 = get_float(spadSock);
       f2 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
       break;
 
     case modifyPOINT:
@@ -111,16 +110,16 @@ funView3D(int viewCommand)
       f2 = get_float(spadSock);
       f3 = get_float(spadSock);
       f4 = get_float(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
-      code = write(viewport->viewOut,&f3,floatSize);
-      code = write(viewport->viewOut,&f4,floatSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&f3,floatSize);
+      write(viewport->viewOut,&f4,floatSize);
       break;
 
     case hideControl:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     case axesOnOff:
@@ -129,34 +128,34 @@ funView3D(int viewCommand)
     case clipRegionOnOff:
     case clipSurfaceOnOff:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     case eyeDistanceData:
     case hitherPlaneData:
       f1 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
       break;
 
     case colorDef:
       i1 = get_int(spadSock);
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       break;
 
     case moveViewport:
       i1 = get_int(spadSock);
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       break;
 
     case resizeViewport:
       i1 = get_int(spadSock);
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       break;
 
     case transparent:
@@ -168,56 +167,56 @@ funView3D(int viewCommand)
       f1 = get_float(spadSock);
       f2 = get_float(spadSock);
       f3 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
-      code = write(viewport->viewOut,&f3,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&f3,floatSize);
       break;
 
     case translucenceDef:
       f1 = get_float(spadSock);
-      code = write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f1,floatSize);
       break;
 
 
     case changeTitle:
       s1 = get_string(spadSock);
       i1 = strlen(s1);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,s1,i1);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,s1,i1);
       break;
 
     case writeView:
       s1 = get_string(spadSock);
       i1 = strlen(s1);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,s1,i1);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,s1,i1);
       /* write out the types of things to be written */
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i2,intSize);
       while (i2) {
         i2 = get_int(spadSock);
-        code = write(viewport->viewOut,&i2,intSize);
+        write(viewport->viewOut,&i2,intSize);
       }
       break;
 
     case diagOnOff:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     case outlineOnOff:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     case spadPressedAButton:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
     }  /* switch */
     /*** get acknowledge from viewport */
 
-    code = readViewport(viewport,&acknow,intSize);
+    readViewport(viewport,&acknow,intSize);
     send_int(spadSock,1);  /* acknowledge to spad */
   } else {  /* if (viewport) */
     send_int(spadSock,-1);  /* send error value in acknowledge to spad */

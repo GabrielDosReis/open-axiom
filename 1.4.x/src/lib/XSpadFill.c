@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2010, Gabriel Dos Reis.
+    Copyright (C) 2007-2013, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,6 @@ int
 XInitSpadFill(Display *dsply, int scr, Colormap * mapOfColors, int * hues,
               int *solid, int * dithered, int * shades)
 {
-    int maxDither;
     XColor BlackColor, WhiteColor;
     XColor retColor;
     int maxSolid;
@@ -120,7 +119,6 @@ XInitSpadFill(Display *dsply, int scr, Colormap * mapOfColors, int * hues,
 
     if (DisplayPlanes(dsply, scr) < 8) {
         *dithered = totalDithered = maxGreyShade = XInitShades(dsply, scr);
-        maxDither = *dithered - 1;
         spadColors = (unsigned long *) malloc(2 * sizeof(unsigned long));
         spadColors[0] = BlackColor.pixel;
         spadColors[1] = WhiteColor.pixel;
@@ -137,7 +135,6 @@ XInitSpadFill(Display *dsply, int scr, Colormap * mapOfColors, int * hues,
 
     *dithered = totalDithered =
         XInitDither(dsply, scr, stippleGC, black, white);
-    maxDither = *dithered - 1;
 
     if ((maxSolid = makeColors(dsply, scr, &cmap, &spadColors, &totalSolid)) > 0) {
         *solid = totalSolid + 2;
@@ -152,7 +149,6 @@ XInitSpadFill(Display *dsply, int scr, Colormap * mapOfColors, int * hues,
          * makeColors managed to fail -- switch to mono
          */
         *dithered = totalDithered = maxGreyShade = XInitShades(dsply, scr);
-        maxDither = *dithered - 1;
         spadColors = (unsigned long *) malloc(2 * sizeof(unsigned long));
         spadColors[0] = BlackColor.pixel;
         spadColors[1] = WhiteColor.pixel;

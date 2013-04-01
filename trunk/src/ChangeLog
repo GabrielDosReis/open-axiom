@@ -1,5 +1,18 @@
 2013-03-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* lib/sockio-c.c (get_float): Remove unused local variable val.
+	* lib/pixmap.c (read_pixmap_file): Remove unused local variable status.
+	* lib/openpty.c (makeNextPtyNames): Guard declaration by CPP macro.
+	* lib/fnct_key.c (define_function_keys): Remove unused local
+	variable saved_echo.
+	* lib/XSpadFill.c (XInitSpadFill): Remove unused local variable
+	maxDither.
+	* graph/viewman/fun2D.c (funView2D): Remove declaration of unused
+	local variable code.
+	* graph/viewman/fun3D.c (funView3D): Likewise.
+
+2013-03-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/pile.boot (insertpile): Tidy.
 	(pilePlusComments): Likewise.
 	(pileTree): Likewise.

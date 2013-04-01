@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,6 @@ void
 funView2D(int viewCommand)
 {
 
-  int code;
   int viewPID;
   float f1,f2;
   int i1,i2,i3;
@@ -76,7 +75,7 @@ funView2D(int viewCommand)
   
   if (viewport) {
     send_int(spadSock,1);  /* acknowledge to spad */
-    code = write(viewport->viewOut,&viewCommand,intSize);
+    write(viewport->viewOut,&viewCommand,intSize);
 
 
     switch (viewCommand) {
@@ -85,10 +84,10 @@ funView2D(int viewCommand)
       i1 = get_int(spadSock);  /* graph key */
       i2 = get_int(spadSock);  /* viewport slot 1..9 */
       i2--; /* 0..8*/
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       i3 = 1; /* continue*/
-      code = write(viewport->viewOut,&i3,intSize);      
+      write(viewport->viewOut,&i3,intSize);      
       sendGraphToView2D(0,i1,viewport,&currentGraphState);
      
       break;
@@ -97,23 +96,23 @@ funView2D(int viewCommand)
       i1 = get_int(spadSock);   /* graph index */
       f1 = get_float(spadSock); /* translate in the x direction */
       f2 = get_float(spadSock); /* translate in the y direction */
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
       break;
 
     case scale2D:
       i1 = get_int(spadSock);   /* graph index */
       f1 = get_float(spadSock); /* scale in the x direction */
       f2 = get_float(spadSock); /* scale in the y direction */
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&f1,floatSize);
-      code = write(viewport->viewOut,&f2,floatSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&f1,floatSize);
+      write(viewport->viewOut,&f2,floatSize);
       break;
 
     case hideControl2D:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     case axesOnOff2D:
@@ -124,47 +123,47 @@ funView2D(int viewCommand)
     case showing2D:
       i1 = get_int(spadSock);   /* graph index */
       i2 = get_int(spadSock);   /* axes status */
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       break;
 
     case moveViewport:
     case resizeViewport:
       i1 = get_int(spadSock);
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i2,intSize);
       break;
 
     case changeTitle:
       s1 = get_string(spadSock);
       i1 = strlen(s1);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,s1,i1);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,s1,i1);
       break;
 
     case writeView:
       s1 = get_string(spadSock);
       i1 = strlen(s1);
-      code = write(viewport->viewOut,&i1,intSize);
-      code = write(viewport->viewOut,s1,i1);
+      write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,s1,i1);
         /* write out the types of things to be written */
       i2 = get_int(spadSock);
-      code = write(viewport->viewOut,&i2,intSize);
+      write(viewport->viewOut,&i2,intSize);
       while (i2) {
         i2 = get_int(spadSock);
-        code = write(viewport->viewOut,&i2,intSize);
+        write(viewport->viewOut,&i2,intSize);
       }
       break;
 
     case spadPressedAButton:
       i1 = get_int(spadSock);
-      code = write(viewport->viewOut,&i1,intSize);
+      write(viewport->viewOut,&i1,intSize);
       break;
 
     }  /* switch */
          /*** get acknowledge from viewport */
-    code = readViewport(viewport,&acknow,intSize);
+    readViewport(viewport,&acknow,intSize);
     send_int(spadSock,1);  /* acknowledge to spad */
   } else {  
     send_int(spadSock,-1);  /* send error value in acknowledge to spad */

@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2009, Gabriel Dos Reis.
+    Copyright (C) 2007-2013, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,24 @@
 
 #include "openpty.h"
 
-static void makeNextPtyNames(char *  , char * );
+#if defined(SUNplatform)
+static void 
+makeNextPtyNames(char *cont,char * serv)
+{
+        static int channelNo = 0;
+        static char group[] = "pqrstuvwxyzPQRST";
+        static int groupNo = 0;
+
+        sprintf(cont, "/dev/pty%c%x", group[groupNo], channelNo);
+        sprintf(serv, "/dev/tty%c%x", group[groupNo], channelNo);
+        channelNo++;                /* try next */
+        if (channelNo == 16) {      /* move to new group */
+                channelNo = 0;
+                groupNo++;
+                if (groupNo == 16) groupNo = 0;        /* recycle */
+                }
+}
+#endif
 
 
 /*
@@ -149,21 +166,3 @@ extern char* ptsname(int);
 }
 
 
-static void 
-makeNextPtyNames(char *cont,char * serv)
-{
-#if defined(SUNplatform)
-        static int channelNo = 0;
-        static char group[] = "pqrstuvwxyzPQRST";
-        static int groupNo = 0;
-
-        sprintf(cont, "/dev/pty%c%x", group[groupNo], channelNo);
-        sprintf(serv, "/dev/tty%c%x", group[groupNo], channelNo);
-        channelNo++;                /* try next */
-        if (channelNo == 16) {      /* move to new group */
-                channelNo = 0;
-                groupNo++;
-                if (groupNo == 16) groupNo = 0;        /* recycle */
-                }
-#endif
-}
