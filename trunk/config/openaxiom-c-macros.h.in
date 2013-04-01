@@ -90,6 +90,12 @@
 /* Define to 1 if you have the <pty.h> header file. */
 #undef HAVE_PTY_H
 
+/* Define to 1 if you have the <putenv> header file. */
+#undef HAVE_PUTENV
+
+/* Define to 1 if you have the <setenv,> header file. */
+#undef HAVE_SETENV_
+
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
 

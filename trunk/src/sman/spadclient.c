@@ -63,7 +63,8 @@ inter_handler(int sig)
 int 
 main(void)
 {
-  putenv("LC_ALL=C");
+   using namespace OpenAxiom;
+   oa_setenv("LC_ALL", "C");
   setlocale(LC_ALL, "");
   sock = connect_to_local_server(SessionServer, InterpWindow, Forever);
   bsdSignal(SIGINT, inter_handler,RestartSystemCalls); 

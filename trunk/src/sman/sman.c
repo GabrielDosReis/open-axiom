@@ -776,7 +776,7 @@ main(int argc, char *argv[])
   command.root_dir = get_systemdir(argc, argv);
   process_options(&command, argc, argv);
 
-  putenv((char*) "LC_ALL=C");
+  oa_setenv("LC_ALL", "C");
   setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();

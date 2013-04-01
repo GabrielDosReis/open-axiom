@@ -595,6 +595,8 @@ oa_setenv(const char* var, const char* val)
 {
 #ifdef __WIN32__
    return SetEnvironmentVariable(var, val);
+#elif HAVE_DECL_SETENV
+   return !setenv(var, val, true);
 #else
    const int var_length = strlen(var);
    const int val_length = strlen(val);

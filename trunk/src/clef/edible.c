@@ -127,6 +127,7 @@ char logpath[30];
 int
 main(int argc, char *argv[])
 {
+   using namespace OpenAxiom;
   fd_set rfds;                  /* the structure for the select call */
   int code;                    /* return code from system calls */
   char out_buff[MAXLINE];       /* from child and stdin */
@@ -137,7 +138,7 @@ main(int argc, char *argv[])
   
   
 
-  putenv((char*) "LC_ALL=C");
+  oa_setenv("LC_ALL", "C");
   setlocale(LC_ALL, "");
   /* try to get a pseudoterminal to play with */
   if (ptyopen(&contNum, &serverNum, serverPath) == -1) {
