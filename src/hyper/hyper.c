@@ -52,6 +52,7 @@
 #include <locale.h>
 
 #include "debug.h"
+#include "cfuns.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "lex.h"
@@ -196,11 +197,12 @@ clean_socket(void )
 int
 main(int argc, char **argv)
 {
+   using namespace OpenAxiom;
     int ret_status;
 
     /* Initialize some global values */
 /*    fprintf(stderr,"hyper:main:entered\n");*/
-    putenv("LC_ALL=C");
+    oa_setenv("LC_ALL", "C");
     setlocale(LC_ALL, "");
     gArgc = argc;
     gArgv = argv;

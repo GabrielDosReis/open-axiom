@@ -466,13 +466,13 @@ fprintf(stderr,"rd=%u]\n",*((long *)rd.fds_bits));
 int
 main(void)
 {
-
+   using namespace OpenAxiom;
 #ifdef DEBUG2
   /* delay for attaching with debugger before interesting things happen */
    openaxiom_sleep(30);
 #endif
 
-  putenv("LC_ALL=C");
+   oa_setenv("LC_ALL", "C");
   setlocale(LC_ALL, "");
  /* spad_server connects to Lisp server socket         
     read_SpadServer_command handles requests */
