@@ -18099,6 +18099,29 @@ rm -f conftest*
 
 
 
+ac_fn_cxx_check_decl "$LINENO" "setenv" "ac_cv_have_decl_setenv" "#include <stdlib.h>
+"
+if test "x$ac_cv_have_decl_setenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SETENV $ac_have_decl
+_ACEOF
+ac_fn_cxx_check_decl "$LINENO" "putenv" "ac_cv_have_decl_putenv" "#include <stdlib.h>
+"
+if test "x$ac_cv_have_decl_putenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_PUTENV $ac_have_decl
+_ACEOF
+
 ac_fn_cxx_check_decl "$LINENO" "getuid" "ac_cv_have_decl_getuid" "#include <unistd.h>
 "
 if test "x$ac_cv_have_decl_getuid" = xyes; then :

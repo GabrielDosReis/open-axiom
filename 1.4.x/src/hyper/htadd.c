@@ -91,6 +91,7 @@ int fresh = 0;
 int
 main(int argc, char **argv)
 {
+   using namespace OpenAxiom;
     /*int i;*/
     char db_dir[256];           /* the directory where the db file is */
     char dbfilename[256];       /* the database filename */
@@ -98,7 +99,7 @@ main(int argc, char **argv)
     char **fnames = filenames;
     short flag;                 /* flag for deleting or adding */
 
-    putenv("LC_ALL=C");
+    oa_setenv("LC_ALL", "C");
     setlocale(LC_ALL, "");
     parse_args(argv, db_dir, filenames, &flag);
 

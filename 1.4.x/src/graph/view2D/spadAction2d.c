@@ -69,7 +69,7 @@ extern int viewAloned;
 int 
 spadAction(void)
 {
-  int code,viewCommand;
+  int viewCommand;
   float f1,f2;
   int i1,i2,i3,viewGoAhead;
   static int ack = 1;
@@ -121,7 +121,7 @@ spadAction(void)
     break;
 
   case closeAll2D:
-    code = check(write(Socket,&ack,intSize));
+    check(write(Socket,&ack,intSize));
     goodbye(-1);
 
   case ps2D:
@@ -282,7 +282,7 @@ spadAction(void)
 
 
   ack++;
-  code = check(write(Socket,&ack,intSize));
+  check(write(Socket,&ack,intSize));
   return(0);
 
 }

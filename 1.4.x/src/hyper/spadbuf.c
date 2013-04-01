@@ -49,6 +49,7 @@
 #include <locale.h>
 #include "halloc.h"
 #include "bsdsignal.h"
+#include "cfuns.h"
 #include "sockio.h"
 #include "edible.h"
 #include "com.h"
@@ -215,6 +216,7 @@ init_parent(void)
 int
 main(int argc,char **  argv)
 {
+   using namespace OpenAxiom;
     /*
      * Modified on 6/13/90 for the command line completion abiltities of
      * Since I am only calling this program from within spadint, I decided
@@ -223,7 +225,7 @@ main(int argc,char **  argv)
      * spadbuf page_name [completion_ files]
      *
      */
-    putenv("LC_ALL=C");
+   oa_setenv("LC_ALL", "C");
     setlocale(LC_ALL, "");
     if (argc < 2) {
         fprintf(stderr, "Usage : spadbuf page_name [completion_files] \n");

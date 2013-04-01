@@ -785,6 +785,7 @@ dnl -----------------------------
 dnl -- OPENAXIOM_CHECK_PROCESS --
 dnl -----------------------------
 AC_DEFUN([OPENAXIOM_CHECK_PROCESS],[
+AC_CHECK_DECLS([setenv, putenv], [], [], [#include <stdlib.h>])
 AC_CHECK_DECLS([getuid, geteuid, getgid, getegid], [], [],
                [#include <unistd.h>])
 AC_CHECK_HEADERS([sys/wait.h])
