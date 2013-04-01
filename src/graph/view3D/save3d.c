@@ -70,9 +70,11 @@ makeSavePanel(void)
   Pixmap savebits, savemask;
   XColor saveColor,sColor;
 
-  savebits = XCreateBitmapFromData(dsply,rtWindow, volumeBitmap_bits,
+  savebits = XCreateBitmapFromData(dsply,rtWindow,
+                                   (const char*) volumeBitmap_bits,
                                    volumeBitmap_width,volumeBitmap_height);
-  savemask = XCreateBitmapFromData(dsply,rtWindow,volumeMask_bits,
+  savemask = XCreateBitmapFromData(dsply,rtWindow,
+                                   (const char*) volumeMask_bits,
                                    volumeMask_width,volumeMask_height);
   saver.background_pixel = backgroundColor;
   saver.border_pixel = foregroundColor;

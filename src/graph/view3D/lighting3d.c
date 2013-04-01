@@ -94,9 +94,11 @@ makeLightingPanel(void)
   Pixmap lightbits,lightmask;
   XColor foreColor, backColor;
 
-  lightbits = XCreateBitmapFromData(dsply,rtWindow, lightBitmap_bits,
+  lightbits = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) lightBitmap_bits,
                                     lightBitmap_width,lightBitmap_height);
-  lightmask = XCreateBitmapFromData(dsply,rtWindow, lightMask_bits,
+  lightmask = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) lightMask_bits,
                                     lightMask_width,lightMask_height);
   cwAttrib.background_pixel = backgroundColor;
   cwAttrib.border_pixel = foregroundColor;
