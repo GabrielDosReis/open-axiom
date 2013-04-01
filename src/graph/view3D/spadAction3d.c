@@ -81,7 +81,7 @@ scalePoint (viewTriple *p)
 int 
 spadAction (void)
 {
-  int code, viewCommand;
+  int viewCommand;
   float f1, f2, f3;
   int i1, i2, i3;
 
@@ -271,7 +271,7 @@ spadAction (void)
     break;
 
   case closeAll:
-    code = check(write(Socket,&ack,intSize));
+    check(write(Socket,&ack,intSize));
     goodbye(-1);
     
 
@@ -387,7 +387,7 @@ spadAction (void)
 
 
   ack++;
-  code = check(write(Socket,&ack,intSize));
+  check(write(Socket,&ack,intSize));
   return(0);
 
 }

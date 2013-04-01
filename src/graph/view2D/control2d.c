@@ -450,9 +450,11 @@ makeControlPanel(void)
   cXY = getControlXY(0);
 
   /* Define and assign a mouse cursor. */
-  mousebits = XCreateBitmapFromData(dsply,rtWindow,mouseBitmap_bits,
+  mousebits = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) mouseBitmap_bits,
                                     mouseBitmap_width,mouseBitmap_height);
-  mousemask = XCreateBitmapFromData(dsply,rtWindow,mouseMask_bits,
+  mousemask = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) mouseMask_bits,
                                     mouseMask_width,mouseMask_height);
   cwAttrib.background_pixel = backgroundColor; /* controlBackground; */
   cwAttrib.border_pixel = foregroundColor;

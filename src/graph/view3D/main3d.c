@@ -253,7 +253,7 @@ main(void)
 {
 
   XGCValues     controlGCVals;
-  int           i, code;
+  int           i;
 
   char property[256];
   char *prop = &property[0];
@@ -520,7 +520,7 @@ main(void)
   /**** Get Data from the Viewport Manager ****/
 
   i    = 123;   /* Used in viewman, what is this for? */
-  code = check(write(Socket,&i,intSize));
+  check(write(Socket,&i,intSize));
 
   /* Check if I am getting stuff from OpenAxiom or, if I am viewAlone. */
   readViewman(&viewAloned,intSize);

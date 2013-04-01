@@ -58,7 +58,7 @@ int
 writeViewport (int thingsToWrite)
 {
 
-  int               i, j, k, ii, code, *anIndex;
+  int               i, j, k, ii, *anIndex;
   LLPoint           *anLLPoint;
   LPoint            *anLPoint;
   viewTriple        *aPt;
@@ -71,7 +71,7 @@ writeViewport (int thingsToWrite)
   XGetWindowAttributes(dsply,viewport->titleWindow,&vwInfo);
   sprintf(viewDirName,"%s%s",filename,".VIEW"); 
   sprintf(command,"%s%s%s","rm -r ",viewDirName," >  /dev/null 2>&1");
-  code = system(command);
+  system(command);
   sprintf(command,"%s%s%s","mkdir ",viewDirName," > /dev/null 2>&1");
   system(command);
   if (0) {
@@ -142,7 +142,7 @@ writeViewport (int thingsToWrite)
             /*** Create the pixmap (bitmaps need leaf name) ***/
           sprintf(viewBitmapFilename,"%s%s%s",viewDirName,"/","image.bm");
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
-          code = XWriteBitmapFile(dsply,viewBitmapFilename,
+          XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
                                   vwInfo.height+vwInfo.border_width+20,-1,-1);
           break;
@@ -183,7 +183,7 @@ writeViewport (int thingsToWrite)
           drawViewport(Xoption);
           writeTitle();
           sprintf(viewBitmapFilename,"%s%s%s",viewDirName,"/","image.bm");
-          code = XWriteBitmapFile(dsply,viewBitmapFilename,
+          XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
                                   vwInfo.height+vwInfo.border_width+20,-1,-1);
                                   
