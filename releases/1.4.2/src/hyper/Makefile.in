@@ -151,7 +151,7 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@ mkdir -p "${HYPER}"/pages
 	@ cp "$(srcdir)"/pages/*.ht "$(HYPER)"/pages/
 	@ for A in `ls "$(srcdir)"/pages/*.pht`; do \
-	     sed 's,/doc/viewports/,/share/viewports/,g' $$A \
+	     LC_CTYPE=C sed 's,/doc/viewports/,/share/viewports/,g' $$A \
 			> ${HYPER}/pages/`basename $$A`; \
 	     done
 	@ rm -f "${HYPER}"/pages/ht.db

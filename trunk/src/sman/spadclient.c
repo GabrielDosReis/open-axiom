@@ -44,6 +44,7 @@
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
+#include "cfuns.h"
 #include <locale.h>
 
 #include "sockio.h"
