@@ -874,7 +874,7 @@ makeControlPanel (void)
 {
 
   Window                cw;
-  int                   i, num;
+  int                   i;
   controlPanelStruct    *control;
   buttonStruct          *buttons;
   controlXY             cXY;
@@ -891,9 +891,11 @@ makeControlPanel (void)
 
   cXY = getControlXY(0);
 
-  mousebits = XCreateBitmapFromData(dsply,rtWindow, mouseBitmap_bits,
+  mousebits = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) mouseBitmap_bits,
                                     mouseBitmap_width, mouseBitmap_height);
-  mousemask = XCreateBitmapFromData(dsply,rtWindow, mouseMask_bits,
+  mousemask = XCreateBitmapFromData(dsply,rtWindow,
+                                    (const char*) mouseMask_bits,
                                     mouseMask_width, mouseMask_height);
   cwAttrib.background_pixel     = backgroundColor;
   cwAttrib.border_pixel         = foregroundColor;
@@ -925,7 +927,7 @@ makeControlPanel (void)
   /* Define and assign a mouse cursor */
   control->controlWindow = cw;
 
-  num = initButtons(control->buttonQueue);
+  initButtons(control->buttonQueue);
   buttons = control->buttonQueue;
   for (i=controlButtonsStart3D; i<(controlButtonsEnd3D); i++) {
     controlAttrib.event_mask = (control->buttonQueue[i]).mask;

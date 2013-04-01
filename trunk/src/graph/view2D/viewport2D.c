@@ -107,7 +107,7 @@ drawTheViewport(int dFlag)
   Vertex            *anX10Point;
   float             jj,diffX, diffY, tickStart,oneTickUnit;
   int               i,j,k,ii,halfSize;
-  int               charlength,strlength,halflength,halfheight;
+  int               charlength,strlength,halflength;
   int               ptX,ptY,ptX1,ptY1,clipped, clipped1;
   int               xAxis,yAxis,dummyInt, ascent, descent;
   int               unitWidth,boxX,boxY,boxW,boxH;
@@ -120,7 +120,6 @@ drawTheViewport(int dFlag)
   aspectR = (float)vwInfo.width/(float)vwInfo.height;
 
   XTextExtents(unitFont,"o",1,&dummyInt,&ascent,&descent,&overall);
-  halfheight = (ascent + descent) / 2;
 
   /* Calculate various factors for use in projection. */
   /* Scale the plot, so that the scaling between the axes remains 
@@ -594,10 +593,10 @@ makeViewport(const char* title,int vX,int vY,int vW,int vH,int showCP)
 
   /**** Make the windows for the viewport ****/
   spadbits = XCreateBitmapFromData(dsply,rtWindow,
-                                   spadBitmap_bits,
+                                   (const char*) spadBitmap_bits,
                                    spadBitmap_width,spadBitmap_height);
   spadmask = XCreateBitmapFromData(dsply,rtWindow,
-                                   spadMask_bits,
+                                   (const char*) spadMask_bits,
                                    spadMask_width,spadMask_height);
   viewAttrib.background_pixel = backgroundColor;
   viewAttrib.border_pixel = foregroundColor;

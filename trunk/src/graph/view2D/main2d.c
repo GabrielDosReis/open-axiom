@@ -156,7 +156,7 @@ main(void)
 {
 
   XGCValues       controlGCVals;
-  int             i,code;
+  int             i;
   view2DStruct    viewData;
   
   char property[256];
@@ -418,7 +418,7 @@ main(void)
   /**** Get Data from the Viewport Manager ****/
   
   i = 123;
-  code=check(write(Socket,&i,intSize));
+  check(write(Socket,&i,intSize));
   
   /* Check if I am getting stuff from OpenAxiom or, if I am viewAlone. */
   readViewman(&viewAloned,intSize);
@@ -464,7 +464,7 @@ mergeDatabases(void)
   XrmDatabase homeDB,serverDB,applicationDB;
   char filenamebuf[1024];
   char *filename = &filenamebuf[0];
-  char *classname = "OpenAxiom";
+  const char *classname = "OpenAxiom";
   char name[255];
   
   (void) XrmInitialize();
