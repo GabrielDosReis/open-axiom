@@ -4,6 +4,7 @@
 \beginscroll
 \beginmenu
     \menudownlink{Online information}{onlineInformation}
+    \menudownlink{Version 1.4.2}{apr2013}
     \menudownlink{Version 1.4.1}{jul2011}
     \menudownlink{Version 1.4.0}{jun2011}
     \menudownlink{Version 1.3.0}{aug2009}
@@ -24,12 +25,25 @@
 \end{page}
 
 % =====================================================================
+\begin{page}{apr2013}{OpenAxiom 1.4.2 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.4.2 was released on April 1, 2013.  It a bug fix
+release of \Language{} system, in the 1.4.x series.  It contains 
+bug fixes for regressions introduced in previous releases, and several
+improvements for the GUI interface on the Windows platform.
+
+\endscroll
+\autobuttons
+\end{page}
+
+% =====================================================================
 \begin{page}{jul2011}{OpenAxiom 1.4.1 release}
 % =====================================================================
 \beginscroll
 OpenAxiom-1.4.1 was released on July 7, 2011.  It is the first bug fix
 release of \Language{} system, in the 1.4.x series.  It contains 
-bug fixes for regressions introduces in the 1.4.0 release, and several
+bug fixes for regressions introduced in the 1.4.0 release, and several
 improvements for the GUI interface on the Windows platform.
 
 \endscroll
