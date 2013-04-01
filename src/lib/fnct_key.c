@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2011 Gabriel Dos Reis.
+    Copyright (C) 2007-2013 Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -103,7 +103,6 @@ define_function_keys(void)
     int key;
     int fd;
     char type;
-    int length;
 
     /** lets initialize the key pointers **/
     for (key = 0; key < 13; key++)
@@ -117,7 +116,7 @@ define_function_keys(void)
     else {
         /*** If so, then get the key bindings **/
         while ((key = get_key(fd, &type))) {
-            length = get_str(fd, string);
+            get_str(fd, string);
             switch (type) {
               case 'D':
                 if (key == 12) {
@@ -228,7 +227,6 @@ handle_function_key(int key,int  chann)
     int count, fd;
     int amount = strlen(function_key[key].str);
     int id;
-    int save_echo;
 
     /*** This procedure takes the character at in_buff[num_proc] and adds
       it to the buffer. It first checks to see if we should be inserting
@@ -335,7 +333,6 @@ handle_function_key(int key,int  chann)
         buff_pntr = curr_pntr = 0;
         /** reset the ring pointer **/
         current = NULL;
-        save_echo = ECHOIT;
         ECHOIT = 0;
         while ((num_read = read(fd, in_buff, MAXLINE))) {
             do_reading();
