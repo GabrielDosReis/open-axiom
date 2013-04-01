@@ -48,6 +48,7 @@
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
+#include "cfuns.h"
 #include "sockio.h"
 
 using namespace OpenAxiom;
