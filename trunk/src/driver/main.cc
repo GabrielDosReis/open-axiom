@@ -137,7 +137,7 @@ main(int argc, char* argv[])
    case translator_driver:
    case linker_driver:
    case gui_driver:
-      putenv("LC_ALL=C");
+      oa_setenv("LC_ALL", "C");
       setlocale(LC_ALL, "");
       return execute_core(&command, driver);
 
@@ -156,7 +156,7 @@ main(int argc, char* argv[])
    /* Should not happen on MS platforms.  */
    abort();
 #else  /* __WIN32__ */
-   execv(make_path_for(command.root_dir, sman_driver), argv);
+   execv(make_path_for(command.root_dir, driver), argv);
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */
