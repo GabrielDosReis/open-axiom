@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,12 +36,12 @@
 int
 main(int argc, char* argv[]) {
    using namespace OpenAxiom;
+   QApplication app(argc, argv);
    Command command;
    // The toplevel driver may be have called us with the
    // path to the gui interface (argv[0]) and the full name
    // of the toplevel driver itself (argv[1].)  Skip.
    preprocess_arguments(&command, argc - 1, argv + 1);
-   QApplication app(argc, argv);
    QApplication::setApplicationName("OpenAxiom");
    QApplication::setOrganizationDomain("www.open-axiom.org");
    MainWindow main_win(command);
