@@ -1,5 +1,11 @@
 2013-04-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* gui/conversation.h (Question::leaveEvent): Remove.
+	(Question::focusOutEvent): Likewise.
+	* gui/conversation.cc: Remove corresponding definitions.
+
+2013-04-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* gui/conversation.cc (font_units): Rename from em_metrics.
 	Adjust callers.
 	(Answer::Answer): Use raised frame style.

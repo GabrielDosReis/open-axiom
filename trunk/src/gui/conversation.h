@@ -81,10 +81,8 @@ namespace OpenAxiom {
       Exchange* exchange() const { return parent; }
 
    protected:
-     void enterEvent(QEvent*);
-     void leaveEvent(QEvent*);
-     void focusInEvent(QFocusEvent*);
-     void focusOutEvent(QFocusEvent*);
+      void enterEvent(QEvent*);
+      void focusInEvent(QFocusEvent*);
 
    private:
       Exchange* const parent;
