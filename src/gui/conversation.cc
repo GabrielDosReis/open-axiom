@@ -40,10 +40,11 @@
 #include "debate.h"
 
 namespace OpenAxiom {
-   // Measurement in pixel of the em unit in the given font `f'.
-   static QSize em_metrics(const QWidget* w) {
+   // Largest width and line spacing, in pixel, of the font metrics
+   // associated with `w'.
+   static QSize font_units(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
-      return QSize(fm.width(QLatin1Char('m')), fm.height());
+      return QSize(fm.maxWidth(), fm.lineSpacing());
    }
 
    // Return true if the QString `s' is morally an empty string.
@@ -83,7 +84,8 @@ namespace OpenAxiom {
    // scrollbars.
    QSize
    OutputTextArea::sizeHint() const {
-      return QSize(width(), document()->lineCount() * fontMetrics().height());
+      const QSize s = font_units(this);
+      return QSize(width(), (1 + document()->lineCount()) * s.height());
    }
 
    // Concatenate two paragraphs.
@@ -150,7 +152,7 @@ namespace OpenAxiom {
    // -- Answer --
    // ------------
    Answer::Answer(Exchange& e) : Base(&e), parent(&e) {
-      setFrameStyle(StyledPanel | Sunken);
+      setFrameStyle(StyledPanel | Raised);
    }
 
    // --------------
@@ -275,8 +277,8 @@ namespace OpenAxiom {
 
    static QSize
    minimum_preferred_size(const Conversation* conv) {
-      const QSize em = em_metrics(conv);
-      return QSize(columns * em.width(), lines * em.height());
+      const QSize s = font_units(conv);
+      return QSize(columns * s.width(), lines * s.height());
    }
 
    // Set a minimum preferred widget size, so no layout manager
