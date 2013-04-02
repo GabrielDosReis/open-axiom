@@ -351,6 +351,8 @@ preprocess_arguments(Command* command, int argc, char** argv)
          driver = core_driver;
       else if (strcmp(argv[i], "--server") == 0)
          driver = sman_driver;
+      else if (strcmp(argv[i], "--gui") == 0)
+         driver = gui_driver;
       else if (strcmp(argv[i], "--config") == 0)
          driver = config_driver;
       else if (strcmp(argv[i], "--execute") == 0) {

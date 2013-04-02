@@ -32,7 +32,6 @@
 #include <QApplication>
 #include "main-window.h"
 
-
 int
 main(int argc, char* argv[]) {
    using namespace OpenAxiom;
