@@ -121,6 +121,7 @@ namespace OpenAxiom {
    // --------------
    Question::Question(Exchange& e) : Base(&e), parent(&e) {
       setBackgroundRole(QPalette::AlternateBase);
+      setFrame(true);
    }
 
    void Question::focusInEvent(QFocusEvent* e) {
@@ -129,23 +130,10 @@ namespace OpenAxiom {
       Base::focusInEvent(e);
    }
 
-   void Question::focusOutEvent(QFocusEvent* e) {
-      setFrame(false);
-      update();
-      Base::focusOutEvent(e);
-   }
-
    void Question::enterEvent(QEvent* e) {
       setFrame(true);
       update();
       Base::enterEvent(e);
-   }
-
-   void Question::leaveEvent(QEvent* e) {
-      if (not hasFocus())
-         setFrame(false);
-      update();
-      Base::leaveEvent(e);
    }
 
    // ------------
@@ -163,7 +151,7 @@ namespace OpenAxiom {
 
    // Return a monospace font
    static QFont monospace_font() {
-      QFont f("Courier");
+      QFont f("Monaco", 11);
       f.setStyleHint(QFont::TypeWriter);
       return f;
    }
@@ -273,7 +261,7 @@ namespace OpenAxiom {
    
    // Default number of characters per question line.
    const int columns = 80;
-   const int lines = 25;
+   const int lines = 40;
 
    static QSize
    minimum_preferred_size(const Conversation* conv) {
