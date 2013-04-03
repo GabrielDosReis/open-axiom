@@ -43,9 +43,9 @@ namespace OpenAxiom {
       args << "--" << "--role=server";
       for (int i = 1; i < cmd.core.argc; ++i)
          args << cmd.core.argv[i];
-      conv->oracle()->start(make_path_for(cmd.root_dir, core_driver), args);
+      conv->oracle()->start(make_path_for(cmd.root_dir, Driver::core), args);
       // When invoked in a --role=server mode, OpenAxiom would
-      // wait to be pinged before displayed a prompt.  This is
+      // wait to be pinged before displaying a prompt.  This is
       // an unfortunate result of a rather awkward hack.
       conv->submit_query("");
    }

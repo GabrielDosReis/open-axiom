@@ -749,9 +749,9 @@ OPENAXIOM_C_EXPORT Byteorder
 oa_get_host_byteorder(void)
 {
 #ifdef WORDS_BIGENDIAN
-   return big_endian;
+   return Byteorder::big;
 #else
-   return little_endian;
+   return Byteorder::little;
 #endif   
 }
 
@@ -816,16 +816,16 @@ oa_spawn(Process* proc, SpawnFlags flags)
 
 #else
    proc->id = 0;
-   if ((flags & spawn_replace) == 0)
+   if ((flags & SpawnFlags::replace) == 0)
       proc->id = fork();
    if (proc->id == 0) {
-      if (flags & spawn_search_path)
+      if (flags & SpawnFlags::search_path)
          execvp(proc->argv[0], proc->argv);
       else
          execv(proc->argv[0], proc->argv);
       perror(strerror(errno));
       /* Don't keep useless clones around.  */
-      if ((flags & spawn_replace) == 0)
+      if ((flags & SpawnFlags::replace) == 0)
          exit(-1);
    }
    return proc->id;

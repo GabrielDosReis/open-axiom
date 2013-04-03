@@ -72,8 +72,8 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIBTOOL = $(top_builddir)/libtool
 
 ## Command used to compile a C program 
-COMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) -c $(CPPFLAGS)
-CXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS)
+COMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) -c $(CPPFLAGS) $(CFLAGS)
+CXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS) $(CXXFLAGS)
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries

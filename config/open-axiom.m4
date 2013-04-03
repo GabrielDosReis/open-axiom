@@ -172,7 +172,7 @@ fi
 AC_MSG_RESULT([$axiom_lisp_flavor])
 
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
-                   [${axiom_lisp_flavor}_runtime],
+                   [Runtime::${axiom_lisp_flavor}],
                    [The kind of base runtime system for this build.])
 ])
 
