@@ -38,4 +38,4 @@ LIBS += $$OA_LIB
 
 ## C++ compiler
 #QMAKE_CXX = @CXX@
-#QMAKE_CXXFLAGS += @CXXFLAGS@
+QMAKE_CXXFLAGS += -std=c++11

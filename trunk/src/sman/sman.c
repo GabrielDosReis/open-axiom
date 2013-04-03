@@ -543,9 +543,9 @@ fork_Axiom(Command* cmd)
 
     /* Tell the Core that it is being invoked in server mode.   */
     oa_allocate_process_argv(&cmd->core, 2);
-    cmd->core.argv[0] = (char*) make_path_for(cmd->root_dir, core_driver);
+    cmd->core.argv[0] = (char*) make_path_for(cmd->root_dir, Driver::core);
     cmd->core.argv[1] = (char*) "--role=server";
-    execute_core(cmd, core_driver);
+    execute_core(cmd, Driver::core);
   }
 }
 

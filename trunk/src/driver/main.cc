@@ -125,27 +125,27 @@ main(int argc, char* argv[])
    upgrade_environment(&command);
 
    switch (driver) {
-   case null_driver:
+   case Driver::null:
       return 0;                 /* Bye.  */
 
-   case config_driver:
+   case Driver::config:
       return print_configuration_info(&command);
 
-   case core_driver:
-   case script_driver:
-   case compiler_driver:
-   case translator_driver:
-   case linker_driver:
-   case gui_driver:
+   case Driver::core:
+   case Driver::script:
+   case Driver::compiler:
+   case Driver::translator:
+   case Driver::linker:
+   case Driver::gui:
       oa_setenv("LC_ALL", "C");
       setlocale(LC_ALL, "");
       return execute_core(&command, driver);
 
-   case execute_driver:
+   case Driver::execute:
       return oa_spawn(&command.core,
-                      SpawnFlags(spawn_search_path | spawn_replace));
-
-   case sman_driver:
+                      SpawnFlags::search_path | SpawnFlags::replace);
+   
+   case Driver::sman:
       break;
 
    default:

@@ -3808,7 +3808,7 @@ $as_echo "$axiom_lisp_flavor" >&6; }
 
 
 cat >>confdefs.h <<_ACEOF
-#define OPENAXIOM_BASE_RTS ${axiom_lisp_flavor}_runtime
+#define OPENAXIOM_BASE_RTS Runtime::${axiom_lisp_flavor}
 _ACEOF
 
 

@@ -153,17 +153,17 @@ static const char*
 get_driver_subpath(Driver driver)
 {
    switch (driver) {
-   case sman_driver:
+   case Driver::sman:
       return OPENAXIOM_SMAN_PATH;
 
-   case gui_driver:
+   case Driver::gui:
       return OPENAXIOM_GUI_SUBPATH;
 
-   case script_driver:
-   case compiler_driver:
-   case core_driver:
-   case translator_driver:
-   case linker_driver:
+   case Driver::script:
+   case Driver::compiler:
+   case Driver::core:
+   case Driver::translator:
+   case Driver::linker:
       return OPENAXIOM_CORE_PATH;
 
    default:
@@ -190,22 +190,20 @@ void
 build_rts_options(Command* command, Driver driver)
 {
    switch (driver) {
-   case config_driver:
-   case sman_driver:
-   case gui_driver:
-   case execute_driver:
-   case unknown_driver:
+   case Driver::config:
+   case Driver::sman:
+   case Driver::gui:
+   case Driver::execute:
+   case Driver::unknown:
+   case Driver::core:
       break;
 
-   case core_driver:
-      break;
-
-   case compiler_driver:
-   case script_driver:
-   case translator_driver:
-   case linker_driver:
+   case Driver::compiler:
+   case Driver::script:
+   case Driver::translator:
+   case Driver::linker:
       switch (OPENAXIOM_BASE_RTS) {
-      case gcl_runtime:
+      case Runtime::gcl:
          command->rt_args.allocate(3);
          command->rt_args[0] = (char*) "-batch";
          command->rt_args[1] = (char*) "-eval";
@@ -213,7 +211,7 @@ build_rts_options(Command* command, Driver driver)
             (char*) ("(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")");
          break;
 
-      case sbcl_runtime:
+      case Runtime::sbcl:
          command->rt_args.allocate(6);
          command->rt_args[0] = (char*) "--noinform";
          command->rt_args[1] = (char*) "--end-runtime-options";
@@ -223,19 +221,19 @@ build_rts_options(Command* command, Driver driver)
          command->rt_args[5] = (char*) "--end-toplevel-options";
          break;
 
-      case clozure_runtime:
+      case Runtime::clozure:
          command->rt_args.allocate(2);
          command->rt_args[0] = (char*) "--no-init";
          command->rt_args[1] = (char*) "--batch";
          break;
 
-      case clisp_runtime:
+      case Runtime::clisp:
          command->rt_args.allocate(2);
          command->rt_args[0] = (char*) "--quiet";
          command->rt_args[1] = (char*) "-norc";
          break;
          
-      case ecl_runtime:
+      case Runtime::ecl:
          command->rt_args.allocate(2);
          command->rt_args[0] = (char*) "-q";
          command->rt_args[1] = (char*) "-norc";
@@ -254,11 +252,11 @@ build_rts_options(Command* command, Driver driver)
 // Return a description of the driver to invokve by default.
 static Driver default_driver(bool explicit_no_gui) {
    if (OPENAXIOM_USE_SMAN)
-      return sman_driver;
+      return Driver::sman;
    else if (OPENAXIOM_USE_GUI and not explicit_no_gui)
-      return gui_driver;
+      return Driver::gui;
    else
-      return core_driver;
+      return Driver::core;
 }
 
 
@@ -317,12 +315,12 @@ static void print_usage(void) {
    };
 
    static const DriverMap driver_table[] = {
-      { "--script", script_driver },
-      { "--compile", compiler_driver },
-      { "--translate", compiler_driver },
-      { "--build-databases", compiler_driver },
-      { "--build-initdb", core_driver },
-      { "--make", linker_driver },
+      { "--script", Driver::script },
+      { "--compile", Driver::compiler },
+      { "--translate", Driver::compiler },
+      { "--build-databases", Driver::compiler },
+      { "--build-initdb", Driver::core },
+      { "--make", Driver::linker },
    };
 
    // Obtain the driver that implement a specific action requested
@@ -332,7 +330,7 @@ static void print_usage(void) {
       for (int i = 0; i < length(driver_table); ++i)
          if (strcmp(opt, driver_table[i].action) == 0)
             return driver_table[i].driver;
-      return unknown_driver;
+      return Driver::unknown;
    }
    
 /* Determine driver to be used for executing `command'.  */
@@ -342,31 +340,31 @@ preprocess_arguments(Command* command, int argc, char** argv)
    int i;
    int other = 1;
    int files = 0;
-   Driver driver = unknown_driver;
+   Driver driver = Driver::unknown;
    bool explicit_no_gui = false; // True if --no-gui explicitly specified.
 
    command->root_dir = get_systemdir(argc, argv);
    for (i = 1; i < argc; ++i)
       if(strcmp(argv[i], "--no-server") == 0)
-         driver = core_driver;
+         driver = Driver::core;
       else if (strcmp(argv[i], "--server") == 0)
-         driver = sman_driver;
+         driver = Driver::sman;
       else if (strcmp(argv[i], "--gui") == 0)
-         driver = gui_driver;
+         driver = Driver::gui;
       else if (strcmp(argv[i], "--config") == 0)
-         driver = config_driver;
+         driver = Driver::config;
       else if (strcmp(argv[i], "--execute") == 0) {
-         driver = execute_driver;
+         driver = Driver::execute;
          break;
       }
       else if (strcmp(argv[i], "--help") == 0) {
          print_usage();
-         driver = null_driver;
+         driver = Driver::null;
          break;
       }
       else if (strcmp(argv[i], "--version") == 0) {
          print_version();
-         driver = null_driver;
+         driver = Driver::null;
          break;
       }
       else if (const char* val = is_prefix("--execpath=", argv[i])) {
@@ -375,7 +373,8 @@ preprocess_arguments(Command* command, int argc, char** argv)
       else {
          /* Apparently we will invoke the Core system; we need to
             pass on this option.  */
-         if (const Driver d = option_driver(argv[i]))
+         const Driver d = option_driver(argv[i]);
+         if (d != Driver::unknown)
             driver = d;
          else {
             /* Maybe option for the driver.  */
@@ -397,7 +396,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
       }
 
    /* Determine argument vector.  */
-   if (driver == execute_driver) {
+   if (driver == Driver::execute) {
       command->core.argc = argc - i - 1;
       command->core.argv = argv + i + 1;
    }
@@ -406,14 +405,14 @@ preprocess_arguments(Command* command, int argc, char** argv)
       command->core.argv = argv;
    }
 
-   if (driver != null_driver) {
+   if (driver != Driver::null) {
       /* If we have a file but not instructed to compile, assume
          we are asked to interpret a script.  */
       if (files > 0)
          switch (driver) {
-         case unknown_driver:
-         case sman_driver:
-         case gui_driver:
+         case Driver::unknown:
+         case Driver::sman:
+         case Driver::gui:
             command->core.argc += 1;
             command->core.argv =
                (char**) malloc((other + 2) * sizeof(char*));
@@ -421,13 +420,13 @@ preprocess_arguments(Command* command, int argc, char** argv)
             command->core.argv[1] = (char*) "--script";
             for (i = 0; i < other; ++i)
                command->core.argv[2 + i] = argv[1 + i];
-            driver = script_driver;
+            driver = Driver::script;
             break;
          default:
             /* Driver specified by user.  */
             break;
          }
-      else if (driver == unknown_driver)
+      else if (driver == Driver::unknown)
          driver = default_driver(explicit_no_gui);
       command->core.argv[command->core.argc] = NULL;
       
@@ -524,7 +523,7 @@ execute_core(const Command* command, Driver driver)
    Arguments args(command->rt_args.size() + command->core.argc + 2);
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
-   if (OPENAXIOM_BASE_RTS == gcl_runtime)
+   if (OPENAXIOM_BASE_RTS == Runtime::gcl)
       args[0] = (char*) "";
    /* And CLISP wants to believe that argv[0] is where it hides stuff
       from the saved image.  */

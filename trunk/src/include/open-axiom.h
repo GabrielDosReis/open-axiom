@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2011, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -94,9 +94,13 @@ namespace OpenAxiom {
    typedef void* Handle;
 #endif
 
+   // Data types for labeling positions and counting items.
+   using Ordinal = size_t;
+   using Cardinal = size_t;
+
    // Byte order of machine word data.
-   enum Byteorder {
-      unknown_endian, little_endian, big_endian
+   enum class Byteorder {
+      unknown, little, big
    };
    
    // Datatype for packaging information necessary tolaunch a process.
@@ -107,9 +111,19 @@ namespace OpenAxiom {
    };
 
    enum SpawnFlags {
-      spawn_search_path = 0x01,
-      spawn_replace     = 0x02,
+      search_path = 0x01,
+      replace     = 0x02,
    };
+
+   constexpr SpawnFlags
+   operator&(SpawnFlags x, SpawnFlags y) {
+      return SpawnFlags(int(x) & int(y));
+   }
+
+   constexpr SpawnFlags
+   operator|(SpawnFlags x, SpawnFlags y) {
+      return SpawnFlags(int(x) | int(y));
+   }
 
    
    // Return the address of the byte array object representation of `t'.
@@ -154,33 +168,33 @@ namespace OpenAxiom {
    // -- Driver --
    // ------------
    // A list of drivers for OpenAxiom. 
-   enum Driver {
-      unknown_driver,    // unknown driver
-      null_driver,       // do nothing
-      config_driver,     // print out configuration information
-      sman_driver,       // start Superman as master process
-      gui_driver,        // start the GUI interface
-      core_driver,       // start the core system as master process
-      script_driver,     // start the core system in script mode.
-      compiler_driver,   // start the core system in compiler mode.
-      execute_driver,    // Execute a command.
-      translator_driver, // Start the core system in translator mode.
-      linker_driver      // start the core system in linking mode.
+   enum class Driver {
+      unknown,            // unknown driver
+      null,               // do nothing
+      config,             // print out configuration information
+      sman,               // start Superman as master process
+      gui,                // start the GUI interface
+      core,               // start the core system as master process
+      script,             // start the core system in script mode.
+      compiler,           // start the core system in compiler mode.
+      execute,            // Execute a command.
+      translator,         // Start the core system in translator mode.
+      linker              // start the core system in linking mode.
    };
 
    // -------------
    // -- Runtime --
    // -------------
    // A list of runtime support systems for OpenAxiom.
-   enum Runtime {
-      unknown_runtime,
-      gcl_runtime,       // GCL-based runtime 
-      sbcl_runtime,      // SBCL-based runtime
-      clisp_runtime,     // CLISP-based runtime
-      ecl_runtime,       // ECL-based runtime
-      clozure_runtime,   // Clozure CL-based runtime
-      bemol_runtime,     // Bemol-based runtime
-      polyml_runtome     // Poly/ML abstract machine-based runtime
+   enum class Runtime {
+      unknown,               // unknown runtime
+      gcl,                   // GCL-based runtime 
+      sbcl,                  // SBCL-based runtime
+      clisp,                 // CLISP-based runtime
+      ecl,                   // ECL-based runtime
+      clozure,               // Clozure CL-based runtime
+      bemol,                 // Bemol-based runtime
+      polyml                 // Poly/ML abstract machine-based runtime
    };
 
    // ---------------
