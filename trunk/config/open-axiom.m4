@@ -216,6 +216,19 @@ case $host in
 esac
 ])
 
+dnl -----------------------------
+dnl -- OPENAXIOM_REQUIRE_CXX11 --
+dnl -----------------------------
+AC_DEFUN([OPENAXIOM_REQUIRE_CXX11],[
+oa_saved_cxxflags=$CXXFLAGS
+CXXFLAGS="-std=c++11"
+AC_MSG_CHECKING([whether $CXX supports $CXXFLAGS])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+  [AC_MSG_RESULT([yes])]
+  [CXXFLAGS="$CXXFLAGS $oa_saved_cxxflags"],
+  [AC_MSG_ERROR([OpenAxiom requires a C++11 compiler])])
+])
+
 dnl ------------------------------
 dnl -- OPENAXIOM_HOST_COMPILERS --
 dnl ------------------------------
@@ -229,7 +242,7 @@ OPENAXIOM_CHECK_DELAYED_FFI
 ## Are we using compilers from GNU?
 oa_gnu_compiler=no
 AC_PROG_CC
-AC_PROG_CXX
+AC_PROG_CXX([g++ clang++ icpc icc CC xlC c++])
 if test x$GCC = xyes || test x$GXX = xyes; then
   oa_gnu_compiler=yes
 fi

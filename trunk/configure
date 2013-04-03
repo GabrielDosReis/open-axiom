@@ -4816,7 +4816,7 @@ if test -z "$CXX"; then
     CXX=$CCC
   else
     if test -n "$ac_tool_prefix"; then
-  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
+  for ac_prog in g++ clang++ icpc icc CC xlC c++
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -4860,7 +4860,7 @@ fi
 fi
 if test -z "$CXX"; then
   ac_ct_CXX=$CXX
-  for ac_prog in g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC
+  for ac_prog in g++ clang++ icpc icc CC xlC c++
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -5505,6 +5505,32 @@ case $host in
 esac
 
 
+
+
+oa_saved_cxxflags=$CXXFLAGS
+CXXFLAGS="-std=c++11"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $CXXFLAGS" >&5
+$as_echo_n "checking whether $CXX supports $CXXFLAGS... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  CXXFLAGS="$CXXFLAGS $oa_saved_cxxflags"
+else
+  as_fn_error $? "OpenAxiom requires a C++11 compiler" "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
  if test x$oa_include_gcl = xyes; then
   OA_BUILD_GCL_TRUE=
   OA_BUILD_GCL_FALSE='#'
@@ -5520,7 +5546,6 @@ else
   OA_DELAYED_FFI_TRUE='#'
   OA_DELAYED_FFI_FALSE=
 fi
-
 
 
 

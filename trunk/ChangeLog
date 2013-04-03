@@ -1,0 +1,5 @@
+2013-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_REQUIRE_CXX11): New.
+	* configure.ac: Use it.
+
