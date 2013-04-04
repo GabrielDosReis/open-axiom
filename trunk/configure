@@ -19754,7 +19754,7 @@ esac
 
 
 ## We are ready to instantiate makefiles.
-ac_config_files="$ac_config_files Makefile src/Makefile src/io/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/io/Makefile src/algebra/Makefile"
 
 ac_config_files="$ac_config_files src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk"
 
@@ -19771,8 +19771,6 @@ ac_config_files="$ac_config_files src/boot/Makefile:config/var-def.mk:src/boot/M
 ac_config_files="$ac_config_files src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk"
 
 ac_config_files="$ac_config_files src/share/Makefile:config/var-def.mk:src/share/Makefile.in:config/setup-dep.mk"
-
-ac_config_files="$ac_config_files src/algebra/Makefile:config/var-def.mk:src/algebra/Makefile.in:config/setup-dep.mk"
 
 ac_config_files="$ac_config_files src/input/Makefile:config/var-def.mk:src/input/Makefile.in:config/setup-dep.mk"
 
@@ -20934,6 +20932,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/io/Makefile") CONFIG_FILES="$CONFIG_FILES src/io/Makefile" ;;
+    "src/algebra/Makefile") CONFIG_FILES="$CONFIG_FILES src/algebra/Makefile" ;;
     "src/lib/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk" ;;
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile:config/var-def.mk:src/utils/Makefile.in:config/setup-dep.mk" ;;
     "src/hyper/Makefile") CONFIG_FILES="$CONFIG_FILES src/hyper/Makefile:config/var-def.mk:src/hyper/Makefile.in:config/setup-dep.mk" ;;
@@ -20942,7 +20941,6 @@ do
     "src/boot/Makefile") CONFIG_FILES="$CONFIG_FILES src/boot/Makefile:config/var-def.mk:src/boot/Makefile.in:config/setup-dep.mk" ;;
     "src/interp/Makefile") CONFIG_FILES="$CONFIG_FILES src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk" ;;
     "src/share/Makefile") CONFIG_FILES="$CONFIG_FILES src/share/Makefile:config/var-def.mk:src/share/Makefile.in:config/setup-dep.mk" ;;
-    "src/algebra/Makefile") CONFIG_FILES="$CONFIG_FILES src/algebra/Makefile:config/var-def.mk:src/algebra/Makefile.in:config/setup-dep.mk" ;;
     "src/input/Makefile") CONFIG_FILES="$CONFIG_FILES src/input/Makefile:config/var-def.mk:src/input/Makefile.in:config/setup-dep.mk" ;;
     "src/etc/Makefile") CONFIG_FILES="$CONFIG_FILES src/etc/Makefile:config/var-def.mk:src/etc/Makefile.in:config/setup-dep.mk" ;;
     "src/doc/Makefile") CONFIG_FILES="$CONFIG_FILES src/doc/Makefile:config/var-def.mk:src/doc/Makefile.in:config/setup-dep.mk" ;;
@@ -22506,7 +22504,7 @@ egrep '<<(category|domain|package) .*>>=' \
     while IFS=':' read spad_file chunk_desc; do
         chunk_desc=`echo $chunk_desc | sed -e 's,<<,,' -e 's,>>=,,'`
         set $chunk_desc; spad_abbrev=$2
-        cat >> src/algebra/tmp-extract-spad.mk <<EOF
+        cat >> src/algebra/tmp-extract.mk <<EOF
 $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
     @\$(oa_hammer) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
     \$(top_confdir)/move-if-change \$@.tmp \$@
@@ -22514,7 +22512,7 @@ EOF
     done
 echo done
 $srcdir/config/move-if-change \
-    src/algebra/tmp-extract-spad.mk src/algebra/extract-spad.mk
+    src/algebra/tmp-extract.mk src/algebra/extract.mk
 
 
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"

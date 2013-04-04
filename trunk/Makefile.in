@@ -104,7 +104,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/openaxiom-c-macros.h.in \
 	$(top_srcdir)/config/setup-dep.mk \
 	$(top_srcdir)/config/var-def.mk $(top_srcdir)/configure \
-	$(top_srcdir)/src/algebra/Makefile.in \
 	$(top_srcdir)/src/boot/Makefile.in \
 	$(top_srcdir)/src/clef/Makefile.in \
 	$(top_srcdir)/src/doc/Makefile.in \
@@ -144,12 +143,11 @@ CONFIG_HEADER = $(top_builddir)/config/openaxiom-c-macros.h
 CONFIG_CLEAN_FILES = src/lib/Makefile src/utils/Makefile \
 	src/hyper/Makefile src/driver/Makefile src/lisp/Makefile \
 	src/boot/Makefile src/interp/Makefile src/share/Makefile \
-	src/algebra/Makefile src/input/Makefile src/etc/Makefile \
-	src/doc/Makefile src/clef/Makefile src/sman/Makefile \
-	src/graph/Makefile src/graph/Gdraws/Makefile \
-	src/graph/view2D/Makefile src/graph/view3D/Makefile \
-	src/graph/viewAlone/Makefile src/graph/viewman/Makefile \
-	src/gui/gui.pro
+	src/input/Makefile src/etc/Makefile src/doc/Makefile \
+	src/clef/Makefile src/sman/Makefile src/graph/Makefile \
+	src/graph/Gdraws/Makefile src/graph/view2D/Makefile \
+	src/graph/view3D/Makefile src/graph/viewAlone/Makefile \
+	src/graph/viewman/Makefile src/gui/gui.pro
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -483,8 +481,6 @@ src/boot/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk
 src/interp/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/interp/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/share/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/share/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/algebra/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/algebra/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/input/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/input/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
