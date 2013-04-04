@@ -113,7 +113,7 @@
   </p>
 
 
-  <h4>Read-Only Access</h4>
+  <h4 name="ro-access">Read-Only Access</h4>
   <p>
   The development sources or `live sources' of OpenAxiom are available
   in an SVN repository at SourceForge.
@@ -122,14 +122,13 @@
   To get the mainline version of OpenAxiom, you may want to issue
   the following command
   <pre>
- svn co https://open-axiom.svn.sf.net/svnroot/open-axiom/trunk \
-	  open-axiom.trunk
+ svn co svn://svn.code.sf.net/p/open-axiom/code/trunk oa-trunk.svn
   </pre>
 
   <p>
   That will pull the sources from SourceForge repository and put them 
-  in a directory named <code>open-axiom.trunk</code>.  You should feel
-  free to replace <code>open-axiom.trunk</code> with any name of your like.
+  in a directory named <code>oa-trunk.svn</code>.  You should feel
+  free to replace <code>oa-trunk.svn</code> with any name of your like.
   </p>
 
   <p>
@@ -138,7 +137,7 @@
   SVN repository online</a> using viewvc. 
   </p>
 
-  <h4>Read-Write Access</h4>
+  <h4 name="rw-access">Read-Write Access</h4>
   <p>
   Regular contributors to OpenAxiom will prefer to have read-write
   access to our SVN repository.  In that case, you need to have a
@@ -147,8 +146,12 @@
 
   <p>
   To obtain a working copy with write privilege to the OpenAxiom
-  repository, you might want to append <code>--username=</code><em>user-id</em>
-  where <em>user-id</em> is your SourceForge user id.
+  repository, you would need to execute the equivalent of:
+  <pre>
+   svn co --username=your-sf-id \
+      svn+ssh://svn.code.sf.net/p/open-axiom/code/trunk oa-trunk.svn
+  </pre>
+  where <em>your-sf-id</em> is your SourceForge user id.
   </p>
 
 </div>
