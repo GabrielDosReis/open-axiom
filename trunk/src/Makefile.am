@@ -35,14 +35,23 @@ DIST_SUBDIRS = \
 	driver etc graph hyper \
 	include input interp lib \
 	lisp scripts share sman \
-	testsuite utils
+	testsuite utils io
 
 subdirs = \
 	algebra boot clef doc driver \
 	etc graph hyper input interp \
-	lib lisp share sman utils
+	lib io lisp share sman utils
 
 oa_targetdir = $(top_builddir)/$(target)
+
+## Where do we put installed include header files?
+oa_incdir = $(oa_targetdir)/include/open-axiom
+
+oa_src_include_headers = \
+	defaults.H \
+	structure.H \
+	iterator.H \
+	Input.H
 
 if OA_BUILD_SMAN
 OA_SMAN_TARGETS = all-sman all-clef
@@ -60,8 +69,8 @@ OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 
 all-local: all-src
 
-.PHONY: all-src $(OA_GRAPHICS_TARGETS)
-all-src: all-lib all-utils all-driver all-lisp all-boot \
+.PHONY: all-src all-io all-headers $(OA_GRAPHICS_TARGETS)
+all-src: all-lib all-utils all-driver all-lisp all-boot all-io \
 	all-interpsys all-algebra all-axiomsys all-share \
 	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
 
@@ -83,16 +92,19 @@ all-driver: all-utils all-lib
 all-utils: stamp-subdirs
 	cd utils && $(MAKE) $(AM_MAKEFLAGS) $@
 
+all-io: all-headers
+	cd io && $(MAKE) $(AM_MAKEFLAGS) $@
+
 all-clef: all-lib
 	cd clef && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-gui: all-driver
+all-gui: all-driver all-io
 	cd gui && $(MAKE) $(AM_MAKEFLAGS)
 
-all-hyper: all-lib
+all-hyper: all-lib all-io
 	cd hyper && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-share:
@@ -149,11 +161,22 @@ all-hyper-post: all-algebra  all-doc
 all-graph: all-lib all-utils
 	cd graph && $(MAKE) $(AM_MAKEFLAGS) $@
 
+## Install include headers
+.PHONY: all-headers
+all-headers: $(patsubst %.H,$(oa_incdir)/%,$(oa_src_include_headers))
+
+$(oa_incdir)/%: $(srcdir)/include/%.H | $(oa_incdir)
+	$(RM) $@ && cp -p $< $@
+
+$(oa_incdir):
+	$(MKDIR_P) $@
+
 .PHONY: all-check
 all-check:
 	cd input && $(MAKE) $(AM_MAKEFLAGS) all-check
 
 mostlyclean-local:
+	rm -fr $(oa_incdir)
 	for d in $(subdirs); do \
 	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) mostlyclean); \
 	done

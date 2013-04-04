@@ -107,7 +107,7 @@ OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/io/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])

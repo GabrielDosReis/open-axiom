@@ -126,8 +126,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/src/sman/Makefile.in \
 	$(top_srcdir)/src/utils/Makefile.in AUTHORS COPYING ChangeLog \
 	INSTALL NEWS TODO config/config.guess config/config.sub \
-	config/install-sh config/ltmain.sh config/missing \
-	config/mkinstalldirs
+	config/depcomp config/install-sh config/ltmain.sh \
+	config/missing config/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/libtool.m4 \
 	$(top_srcdir)/config/ltoptions.m4 \
@@ -413,7 +413,8 @@ OA_SRC_TARGETS = \
 	all-sman \
 	all-driver \
 	all-databases \
-	all-utils
+	all-utils \
+	all-io
 
 all: all-recursive
 
