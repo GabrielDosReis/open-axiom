@@ -107,7 +107,11 @@ OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
-AC_CONFIG_FILES([Makefile src/Makefile src/io/Makefile])
+AC_CONFIG_FILES([
+  Makefile
+  src/Makefile
+  src/io/Makefile 
+  src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])
@@ -116,7 +120,6 @@ OPENAXIOM_MAKEFILE([src/lisp/Makefile])
 OPENAXIOM_MAKEFILE([src/boot/Makefile])
 OPENAXIOM_MAKEFILE([src/interp/Makefile])
 OPENAXIOM_MAKEFILE([src/share/Makefile])
-OPENAXIOM_MAKEFILE([src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/input/Makefile])
 OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
@@ -151,7 +154,7 @@ egrep '<<(category|domain|package) .*>>=' \
     while IFS=':' read spad_file chunk_desc; do 
         chunk_desc=`echo $chunk_desc | sed -e 's,<<,,' -e 's,>>=,,'`
         set $chunk_desc; spad_abbrev=$2
-        cat >> src/algebra/tmp-extract-spad.mk <<EOF
+        cat >> src/algebra/tmp-extract.mk <<EOF
 $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
     @\$(oa_hammer) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
     \$(top_confdir)/move-if-change \$@.tmp \$@
@@ -159,7 +162,7 @@ EOF
     done 
 echo done
 $srcdir/config/move-if-change \
-    src/algebra/tmp-extract-spad.mk src/algebra/extract-spad.mk
+    src/algebra/tmp-extract.mk src/algebra/extract.mk
 
 
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"

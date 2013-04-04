@@ -1,3 +1,8 @@
+2013-04-04  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/Makefile.am: New.
+	* algebra/Makefile.in: Generate content from Makefile.am.
+
 2013-04-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/Input.H: New.

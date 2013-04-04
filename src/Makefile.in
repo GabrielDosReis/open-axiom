@@ -774,7 +774,7 @@ all-axiomsys: all-asq
 	cd interp && $(MAKE) $(AM_MAKEFLAGS) all-axiomsys
 
 all-algebra: all-driver all-interpsys all-share all-hyper-pre
-	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
+	cd algebra && $(MAKE) -f Makefile -f extract.mk $(AM_MAKEFLAGS) $@
 
 .PHONY: all-algstrap
 all-algstrap: all-driver all-interpsys
