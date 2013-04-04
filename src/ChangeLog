@@ -1,3 +1,17 @@
+2013-04-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/Input.H: New.
+	* include/defaults.H: Likewise.
+	* include/iterator.H: Likewise.
+	* include/structure.H: Likewise.
+	* io/Input.cc: Likewise.
+	* Makefile.am (DIST_SUBDIRS): Include io.
+	(subdirs): Likewise.
+	(oa_src_include_headers): New.
+	(all-headers): New rule.
+	(mostlyclean-local): Remove target include directory too.
+	* gui/gui.pro.in: Update with new dependency.
+
 2013-04-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* gui/conversation.h (Question::leaveEvent): Remove.

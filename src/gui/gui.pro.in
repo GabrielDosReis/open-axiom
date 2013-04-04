@@ -3,8 +3,11 @@
 ## Autoconf template file for the benefit of QMake 
 ## Written by Gabriel Dos Reis.
 
-OA_INC =
+oa_targetdir = @top_builddir@/@target@
+
+OA_INC = $${oa_targetdir}/include
 OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
+OA_IOLIB = -L@top_builddir@/src/io -lio
 
 ## We build in release mode.
 CONFIG += release
@@ -25,6 +28,7 @@ VPATH += @srcdir@
 
 ## Our headers
 HEADERS += conversation.h main-window.h debate.h
+INCLUDEPATH += $$OA_INC
 INCLUDEPATH +=  @srcdir@
 INCLUDEPATH += @top_srcdir@/src/include
 INCLUDEPATH += @top_builddir@/config
@@ -34,7 +38,7 @@ DEPENDPATH += @srcdir@
 SOURCES += conversation.cc main-window.cc debate.cc main.cc
 
 ## Additional support libraries
-LIBS += $$OA_LIB
+LIBS += $$OA_LIB $$OA_IOLIB
 
 ## C++ compiler
 #QMAKE_CXX = @CXX@

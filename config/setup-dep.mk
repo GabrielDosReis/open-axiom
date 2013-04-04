@@ -103,28 +103,6 @@ $(axiom_target_docdir)/$(subdir)%.dvi: $(builddir)/%.dvi
 	$(oa_hammer) --weave --output=$@ $<
 
 
-## Rules for regenerating configure.ac and configure from
-## pamphlet files.  
-$(top_srcdir)/configure.ac: $(top_srcdir)/configure.ac.pamphlet
-	cd $(top_srcdir) && \
-	notangle ./configure.ac.pamphlet > configure.ac-tmp && \
-	config/move-if-change configure.ac-tmp configure.ac
-
-$(top_srcdir)/configure: $(top_srcdir)/configure.ac \
-			 $(top_srcdir)/config/axiom.m4
-	cd $(top_srcdir) && $(AUTOCONF)
-
-$(top_builddir)/libtool: $(LIBTOOL_DEPS)
-	cd $(top_builddir) && $(SHELL) ./config.status --recheck
-
-
-# ## Rules for regenerating Makefile.in from pamphlets.
-# $(srcdir)/Makefile.in: $(srcdir)/Makefile.pamphlet 
-# 	notangle -t8 $(srcdir)/Makefile.pamphlet > \
-# 		$(srcdir)/Makefile.in-tmp && \
-# 	$(top_srcdir)/config/move-if-change $(srcdir)/Makefile.in-tmp \
-# 		$(srcdir)/Makefile.in
-
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_srcdir)/config/var-def.mk \
 	  $(top_srcdir)/config/setup-dep.mk \

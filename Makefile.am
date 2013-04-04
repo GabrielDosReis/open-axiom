@@ -73,7 +73,8 @@ OA_SRC_TARGETS = \
 	all-sman \
 	all-driver \
 	all-databases \
-	all-utils
+	all-utils \
+	all-io
 
 .PHONY: $(OA_SRC_TARGETS)
 
