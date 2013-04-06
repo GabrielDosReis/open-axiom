@@ -30,15 +30,15 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-noinst_LIBRARIES = libio.a
+noinst_LIBRARIES = libsyntax.a
 
-libio_a_SOURCES = Input.cc
+libsyntax_a_SOURCES = token.cc
 
 oa_target_incdir = $(top_builddir)/$(target)/include
 
-libio_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
+libsyntax_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
 
 
-.PHONY: all-io
-all-io: all-am
+.PHONY: all-syntax
+all-syntax: all-am
 

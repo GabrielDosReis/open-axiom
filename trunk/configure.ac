@@ -110,7 +110,8 @@ OPENAXIOM_CHECK_MISC
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  src/io/Makefile 
+  src/io/Makefile
+  src/syntax/Makefile
   src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])

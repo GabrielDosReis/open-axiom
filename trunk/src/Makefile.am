@@ -35,7 +35,7 @@ DIST_SUBDIRS = \
 	driver etc graph hyper \
 	include input interp lib \
 	lisp scripts share sman \
-	testsuite utils io
+	testsuite utils io syntax
 
 subdirs = \
 	algebra boot clef doc driver \
@@ -51,7 +51,8 @@ oa_src_include_headers = \
 	defaults.H \
 	structure.H \
 	iterator.H \
-	Input.H
+	Input.H    \
+	token.H
 
 if OA_BUILD_SMAN
 OA_SMAN_TARGETS = all-sman all-clef
@@ -69,8 +70,8 @@ OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 
 all-local: all-src
 
-.PHONY: all-src all-io all-headers $(OA_GRAPHICS_TARGETS)
-all-src: all-lib all-utils all-driver all-lisp all-boot all-io \
+.PHONY: all-src all-io all-headers all-syntax $(OA_GRAPHICS_TARGETS)
+all-src: all-lib all-utils all-driver all-lisp all-boot all-io all-syntax \
 	all-interpsys all-algebra all-axiomsys all-share \
 	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
 
@@ -94,6 +95,9 @@ all-utils: stamp-subdirs
 
 all-io: all-headers
 	cd io && $(MAKE) $(AM_MAKEFLAGS) $@
+
+all-syntax: all-io
+	cd syntax && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-clef: all-lib
 	cd clef && $(MAKE) $(AM_MAKEFLAGS) $@

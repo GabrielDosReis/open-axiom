@@ -83,7 +83,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/io
+subdir = src/syntax
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/mkinstalldirs \
 	$(top_srcdir)/config/depcomp
@@ -106,10 +106,10 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libio_a_AR = $(AR) $(ARFLAGS)
-libio_a_LIBADD =
-am_libio_a_OBJECTS = libio_a-Input.$(OBJEXT)
-libio_a_OBJECTS = $(am_libio_a_OBJECTS)
+libsyntax_a_AR = $(AR) $(ARFLAGS)
+libsyntax_a_LIBADD =
+am_libsyntax_a_OBJECTS = libsyntax_a-token.$(OBJEXT)
+libsyntax_a_OBJECTS = $(am_libsyntax_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -148,8 +148,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libio_a_SOURCES)
-DIST_SOURCES = $(libio_a_SOURCES)
+SOURCES = $(libsyntax_a_SOURCES)
+DIST_SOURCES = $(libsyntax_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -346,10 +346,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
-noinst_LIBRARIES = libio.a
-libio_a_SOURCES = Input.cc
+noinst_LIBRARIES = libsyntax.a
+libsyntax_a_SOURCES = token.cc
 oa_target_incdir = $(top_builddir)/$(target)/include
-libio_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
+libsyntax_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
 all: all-am
 
 .SUFFIXES:
@@ -363,9 +363,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/io/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/syntax/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/io/Makefile
+	  $(AUTOMAKE) --foreign src/syntax/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -387,10 +387,10 @@ $(am__aclocal_m4_deps):
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libio.a: $(libio_a_OBJECTS) $(libio_a_DEPENDENCIES) $(EXTRA_libio_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libio.a
-	$(AM_V_AR)$(libio_a_AR) libio.a $(libio_a_OBJECTS) $(libio_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libio.a
+libsyntax.a: $(libsyntax_a_OBJECTS) $(libsyntax_a_DEPENDENCIES) $(EXTRA_libsyntax_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libsyntax.a
+	$(AM_V_AR)$(libsyntax_a_AR) libsyntax.a $(libsyntax_a_OBJECTS) $(libsyntax_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libsyntax.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -398,7 +398,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_a-Input.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsyntax_a-token.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -421,19 +421,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-libio_a-Input.o: Input.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libio_a-Input.o -MD -MP -MF $(DEPDIR)/libio_a-Input.Tpo -c -o libio_a-Input.o `test -f 'Input.cc' || echo '$(srcdir)/'`Input.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libio_a-Input.Tpo $(DEPDIR)/libio_a-Input.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Input.cc' object='libio_a-Input.o' libtool=no @AMDEPBACKSLASH@
+libsyntax_a-token.o: token.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsyntax_a-token.o -MD -MP -MF $(DEPDIR)/libsyntax_a-token.Tpo -c -o libsyntax_a-token.o `test -f 'token.cc' || echo '$(srcdir)/'`token.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsyntax_a-token.Tpo $(DEPDIR)/libsyntax_a-token.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='token.cc' object='libsyntax_a-token.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libio_a-Input.o `test -f 'Input.cc' || echo '$(srcdir)/'`Input.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsyntax_a-token.o `test -f 'token.cc' || echo '$(srcdir)/'`token.cc
 
-libio_a-Input.obj: Input.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libio_a-Input.obj -MD -MP -MF $(DEPDIR)/libio_a-Input.Tpo -c -o libio_a-Input.obj `if test -f 'Input.cc'; then $(CYGPATH_W) 'Input.cc'; else $(CYGPATH_W) '$(srcdir)/Input.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libio_a-Input.Tpo $(DEPDIR)/libio_a-Input.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Input.cc' object='libio_a-Input.obj' libtool=no @AMDEPBACKSLASH@
+libsyntax_a-token.obj: token.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsyntax_a-token.obj -MD -MP -MF $(DEPDIR)/libsyntax_a-token.Tpo -c -o libsyntax_a-token.obj `if test -f 'token.cc'; then $(CYGPATH_W) 'token.cc'; else $(CYGPATH_W) '$(srcdir)/token.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsyntax_a-token.Tpo $(DEPDIR)/libsyntax_a-token.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='token.cc' object='libsyntax_a-token.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libio_a-Input.obj `if test -f 'Input.cc'; then $(CYGPATH_W) 'Input.cc'; else $(CYGPATH_W) '$(srcdir)/Input.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsyntax_a-token.obj `if test -f 'token.cc'; then $(CYGPATH_W) 'token.cc'; else $(CYGPATH_W) '$(srcdir)/token.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -645,8 +645,8 @@ uninstall-am:
 	tags tags-am uninstall uninstall-am
 
 
-.PHONY: all-io
-all-io: all-am
+.PHONY: all-syntax
+all-syntax: all-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
