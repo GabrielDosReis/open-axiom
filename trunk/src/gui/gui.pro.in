@@ -27,7 +27,7 @@ TARGET = gui
 VPATH += @srcdir@
 
 ## Our headers
-HEADERS += conversation.h main-window.h debate.h
+HEADERS += server.h conversation.h main-window.h debate.h
 INCLUDEPATH += $$OA_INC
 INCLUDEPATH +=  @srcdir@
 INCLUDEPATH += @top_srcdir@/src/include
@@ -35,7 +35,7 @@ INCLUDEPATH += @top_builddir@/config
 DEPENDPATH += @srcdir@
 
 ## Source files
-SOURCES += conversation.cc main-window.cc debate.cc main.cc
+SOURCES += server.cc conversation.cc main-window.cc debate.cc main.cc
 
 ## Additional support libraries
 LIBS += $$OA_LIB $$OA_IOLIB
