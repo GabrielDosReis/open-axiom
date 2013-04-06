@@ -234,7 +234,7 @@ namespace OpenAxiom {
       QString input = question()->text().trimmed();
       if (empty_string(input))
          return;
-      topic()->submit_query(input);
+      topic()->server()->input(input);
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    }
 
@@ -271,13 +271,12 @@ namespace OpenAxiom {
 
    // Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
-   Conversation::Conversation(Debate& parent)
-         : group(&parent), greatings(this), cur_ex(), cur_out(&greatings) {
+   Conversation::Conversation(Debate& parent, const Command& cmd)
+         : group(&parent), greatings(this), srv(cmd), cur_ex(), cur_out(&greatings) {
       setFont(monospace_font());
       setBackgroundRole(QPalette::Base);
       greatings.setFont(font());
-      oracle()->setProcessChannelMode(QProcess::MergedChannels);
-      connect(oracle(), SIGNAL(readyReadStandardOutput()),
+      connect(server(), SIGNAL(readyReadStandardOutput()),
               this, SLOT(read_reply()));
       // connect(oracle(), SIGNAL(readyReadStandardError()),
       //         this, SLOT(read_reply()));
@@ -286,8 +285,6 @@ namespace OpenAxiom {
    Conversation::~Conversation() {
       for (int i = children.size() -1 ; i >= 0; --i)
          delete children[i];
-      if (oracle()->state() == QProcess::Running)
-         oracle()->terminate();
    }
 
    QPoint Conversation::bottom_left() const {
@@ -358,9 +355,9 @@ namespace OpenAxiom {
    };
 
    static OracleOutput
-   read_output(QProcess& proc) {
+   read_output(Server* server) {
       OracleOutput output;
-      QStringList strs = QString::fromLocal8Bit(proc.readAll()).split('\n');
+      QStringList strs = QString::fromLocal8Bit(server->readAll()).split('\n');
       QStringList new_list;
       QRegExp rx("\\(\\d+\\)\\s->");
       while (not strs.isEmpty()) {
@@ -384,7 +381,7 @@ namespace OpenAxiom {
 
    void
    Conversation::read_reply() {
-      OracleOutput output = read_output(proc);
+      OracleOutput output = read_output(server());
       if (empty(output))
          return;
       if (not empty_string(output.result)) {
@@ -406,11 +403,5 @@ namespace OpenAxiom {
             QApplication::restoreOverrideCursor();
 	 }
       }
-   }
-
-   void
-   Conversation::submit_query(const QString& s) {
-      oracle()->write(s.toAscii());
-      oracle()->write("\n");
    }
 }

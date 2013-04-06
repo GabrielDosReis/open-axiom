@@ -35,23 +35,8 @@
 
 namespace OpenAxiom {
 
-   static void
-   start_interpreter(Conversation* conv, Command& cmd) {
-      QStringList args;
-      for (int i = 0; i < cmd.rt_args.size(); ++i)
-         args << cmd.rt_args[i];
-      args << "--" << "--role=server";
-      for (int i = 1; i < cmd.core.argc; ++i)
-         args << cmd.core.argv[i];
-      conv->oracle()->start(make_path_for(cmd.root_dir, Driver::core), args);
-      // When invoked in a --role=server mode, OpenAxiom would
-      // wait to be pinged before displaying a prompt.  This is
-      // an unfortunate result of a rather awkward hack.
-      conv->submit_query("");
-   }
-
   Debate::Debate(QTabWidget* parent, Command& cmd)
-        : QScrollArea(parent), conv(*this) {
+        : QScrollArea(parent), conv(*this, cmd) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
@@ -59,8 +44,14 @@ namespace OpenAxiom {
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
       adjustSize();
-      start_interpreter(exchanges(), cmd);
-      connect(conv.oracle(),
+
+      exchanges()->server()->launch();
+      // When invoked in a --role=server mode, OpenAxiom would
+      // wait to be pinged before displaying a prompt.  This is
+      // an unfortunate result of a rather awkward hack.
+      exchanges()->server()->input("");
+
+      connect(exchanges()->server(),
               SIGNAL(finished(int,QProcess::ExitStatus)),
               this, SLOT(done(int)));
    }
