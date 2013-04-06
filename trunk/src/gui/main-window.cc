@@ -55,7 +55,7 @@ namespace OpenAxiom {
       w->resize(w->size() + diff);
    }
 
-   MainWindow::MainWindow(Command& cmd) : fs(cmd.root_dir), tabs(this) {
+   MainWindow::MainWindow(Command& cmd) : fs(cmd.root_dir), srv(cmd), tabs(this) {
       setCentralWidget(&tabs);
       Debate* debate = new Debate(&tabs, cmd);
       tabs.addTab(debate, "Main Frame");
