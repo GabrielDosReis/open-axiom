@@ -272,7 +272,7 @@ namespace OpenAxiom {
    // Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate& parent)
-         : group(parent), greatings(this), cur_ex(), cur_out(&greatings) {
+         : group(&parent), greatings(this), cur_ex(), cur_out(&greatings) {
       setFont(monospace_font());
       setBackgroundRole(QPalette::Base);
       greatings.setFont(font());

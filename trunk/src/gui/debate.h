@@ -38,16 +38,20 @@
 #include <QResizeEvent>
 #include "open-axiom.h"
 #include "conversation.h"
+#include "main-window.h"
 
 namespace OpenAxiom {
    
    class Debate : public QScrollArea {
       Q_OBJECT;
    public:
-     explicit Debate(QWidget*, Command&);
+     explicit Debate(QTabWidget*, Command&);
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
+      MainWindow* main_window() const {
+         return qobject_cast<MainWindow*>(parent()->parent());
+      }
 
    protected:
       void resizeEvent(QResizeEvent*);

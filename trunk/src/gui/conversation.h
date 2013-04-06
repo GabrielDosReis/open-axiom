@@ -184,7 +184,7 @@ namespace OpenAxiom {
       Exchange* exchange() { return cur_ex; }
       
       // Return the parent engine widget.
-      Debate* debate() const { return const_cast<Debate*>(&group); }
+      Debate* debate() const { return group; }
 
       void submit_query(const QString&);
 
@@ -201,7 +201,7 @@ namespace OpenAxiom {
 
    private:
       typedef std::vector<Exchange*> Children;
-      Debate& group;
+      Debate* group;
       Banner greatings;
       Children children;
       QProcess proc;
