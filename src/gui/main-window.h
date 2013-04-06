@@ -35,6 +35,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include "open-axiom.h"
+#include "server.h"
 
 namespace OpenAxiom {
    // -- Main application window --
@@ -46,9 +47,11 @@ namespace OpenAxiom {
 
       // Pointer to the root file system of the OpenAxiom installation
       Filesystem* filesystem() { return &fs; }
+      Server* server() { return &srv; }
       
    private:
       Filesystem fs;
+      Server srv;
       QTabWidget tabs;
    };
 }

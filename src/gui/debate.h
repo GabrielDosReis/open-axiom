@@ -52,6 +52,7 @@ namespace OpenAxiom {
       MainWindow* main_window() const {
          return qobject_cast<MainWindow*>(parent()->parent());
       }
+      Server* server() const { return main_window()->server(); }
 
    protected:
       void resizeEvent(QResizeEvent*);

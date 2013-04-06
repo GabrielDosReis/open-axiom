@@ -41,11 +41,14 @@ namespace OpenAxiom {
       explicit Server(const Command&);
       ~Server();
 
+      const Filesystem& system_root() const { return fs; }
+      
       void launch();
       void input(const QString&);
 
    private:
       Command cmd;
+      Filesystem fs;
    };   
 }
 

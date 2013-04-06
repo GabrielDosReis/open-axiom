@@ -33,7 +33,7 @@
 #include "server.h"
 
 namespace OpenAxiom {
-   Server::Server(const Command& c) : cmd(c) {
+   Server::Server(const Command& c) : cmd(c), fs(c.root_dir) {
       setProcessChannelMode(QProcess::MergedChannels);
    }
 
