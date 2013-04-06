@@ -1,3 +1,8 @@
+2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* configure.ac: Output src/syntax/Makefile.
+	* Makefile.am (OA_SRC_TARGETS): Add all-syntax.
+
 2013-04-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* Makefile.am (OA_SRC_TARGETS): Include all-io.

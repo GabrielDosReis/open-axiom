@@ -1,3 +1,11 @@
+2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/token.H: New.
+	* syntax/token.cc: Likewise.
+	* syntax/Makefile.am: Likewise.
+	* Makefile.am (DIST_SUBDIRS): Add syntax.
+	(oa_src_include_headers): Add Input.H, token.H.
+
 2013-04-04  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/Makefile.am: New.
