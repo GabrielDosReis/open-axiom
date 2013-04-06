@@ -50,7 +50,7 @@ namespace OpenAxiom {
       conv->submit_query("");
    }
 
-  Debate::Debate(QWidget* parent, Command& cmd)
+  Debate::Debate(QTabWidget* parent, Command& cmd)
         : QScrollArea(parent), conv(*this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
