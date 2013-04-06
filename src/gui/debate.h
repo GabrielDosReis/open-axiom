@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ namespace OpenAxiom {
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
-      Filesystem* filesystem() { return &fs; }
 
    protected:
       void resizeEvent(QResizeEvent*);
@@ -58,7 +57,6 @@ namespace OpenAxiom {
 
    private:
       Conversation conv;
-      Filesystem fs;
    };
 }
 

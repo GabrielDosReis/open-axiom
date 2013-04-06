@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ namespace OpenAxiom {
    }
 
   Debate::Debate(QWidget* parent, Command& cmd)
-        : QScrollArea(parent), conv(*this), fs(cmd.root_dir) {
+        : QScrollArea(parent), conv(*this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
