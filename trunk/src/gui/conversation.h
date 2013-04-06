@@ -40,7 +40,7 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#include <QProcess>
+#include "server.h"
 
 namespace OpenAxiom {
    // A conversation is a set of exchanges.  An exchange is a question
@@ -154,7 +154,7 @@ namespace OpenAxiom {
       Q_OBJECT;
       typedef QWidget Base;
    public:
-      explicit Conversation(Debate&);
+      explicit Conversation(Debate&, const Command&);
       ~Conversation();
 
       // Holds if this conversation just started.
@@ -178,15 +178,13 @@ namespace OpenAxiom {
       QSize sizeHint() const;
 
       // Return a pointer to the oracle in this conversation.
-      QProcess* oracle() { return &proc; }
+      Server* server() { return &srv; }
 
       // Return a pointer to the current exchange, if any.
       Exchange* exchange() { return cur_ex; }
       
       // Return the parent engine widget.
       Debate* debate() const { return group; }
-
-      void submit_query(const QString&);
 
    public slots:
       // Return the topic following a given topic in this set of conversations
@@ -204,7 +202,7 @@ namespace OpenAxiom {
       Debate* group;
       Banner greatings;
       Children children;
-      QProcess proc;
+      Server srv;
       Exchange* cur_ex;
       OutputTextArea* cur_out;
    };
