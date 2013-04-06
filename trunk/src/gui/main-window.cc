@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ namespace OpenAxiom {
       w->resize(w->size() + diff);
    }
 
-  MainWindow::MainWindow(Command& cmd) : tabs(this) {
+   MainWindow::MainWindow(Command& cmd) : fs(cmd.root_dir), tabs(this) {
       setCentralWidget(&tabs);
       Debate* debate = new Debate(&tabs, cmd);
       tabs.addTab(debate, "Main Frame");

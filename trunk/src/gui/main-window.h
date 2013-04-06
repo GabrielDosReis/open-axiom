@@ -44,7 +44,11 @@ namespace OpenAxiom {
      MainWindow(Command&);
       ~MainWindow();
 
+      // Pointer to the root file system of the OpenAxiom installation
+      Filesystem* filesystem() { return &fs; }
+      
    private:
+      Filesystem fs;
       QTabWidget tabs;
    };
 }
