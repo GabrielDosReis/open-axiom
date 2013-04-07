@@ -44,7 +44,6 @@ main(int argc, char* argv[]) {
    QApplication::setApplicationName("OpenAxiom");
    QApplication::setOrganizationDomain("www.open-axiom.org");
    MainWindow main_win(command);
-   main_win.setWindowTitle("OpenAxiom");
    main_win.show();
    return app.exec();
 }

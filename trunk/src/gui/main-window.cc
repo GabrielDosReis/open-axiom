@@ -40,6 +40,7 @@
 namespace OpenAxiom {
    MainWindow::MainWindow(Command& cmd) : srv(cmd), tabs(this) {
       setCentralWidget(&tabs);
+      setWindowTitle("OpenAxiom");
       Debate* debate = new Debate(this, &tabs);
       tabs.addTab(debate, "Main Frame");
       QMenu* file = menuBar()->addMenu(tr("&File"));
