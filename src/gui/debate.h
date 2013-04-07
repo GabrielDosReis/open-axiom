@@ -43,22 +43,21 @@
 
 namespace OpenAxiom {
    
-   class Debate : public managed_by<QScrollArea, QTabWidget> {
+   class Debate : public QScrollArea {
       Q_OBJECT;
    public:
-     explicit Debate(QTabWidget*);
+      explicit Debate(MainWindow*, QTabWidget*);
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
-      MainWindow* main_window() const {
-         return qobject_cast<MainWindow*>(parent()->parent());
-      }
+      MainWindow* main_window() const { return main_win; }
       Server* server() const { return main_window()->server(); }
 
    protected:
       void resizeEvent(QResizeEvent*);
 
    private:
+      MainWindow* const main_win;
       Conversation conv;
    };
 }
