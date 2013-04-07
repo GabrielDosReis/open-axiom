@@ -123,6 +123,8 @@ main(int argc, char* argv[])
    Command command;
    Driver driver = preprocess_arguments(&command, argc, argv);
    upgrade_environment(&command);
+   oa_setenv("LC_ALL", "C");
+   setlocale(LC_ALL, "");
 
    switch (driver) {
    case Driver::null:
@@ -137,8 +139,6 @@ main(int argc, char* argv[])
    case Driver::translator:
    case Driver::linker:
    case Driver::gui:
-      oa_setenv("LC_ALL", "C");
-      setlocale(LC_ALL, "");
       return execute_core(&command, driver);
 
    case Driver::execute:
