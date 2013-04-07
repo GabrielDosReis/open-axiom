@@ -30,31 +30,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "server.h"
+#ifndef OPENAXIOM_WIDGET_included
+#define OPENAXIOM_WIDGET_included
+
+#include <QWidget>
 
 namespace OpenAxiom {
-   Server::Server(const Command& c) : cmd(c), fs(c.root_dir) {
-   }
-
-   Server::~Server() {
-      if (state() == QProcess::Running)
-         terminate();
-   }
-
-   void
-   Server::input(const QString& s) {
-      write(s.toAscii());
-      write("\n");
-   }
-
-   void
-   Server::launch() {
-      QStringList args;
-      for (auto arg : cmd.rt_args)
-         args << arg;
-      args << "--" << "--role=server";
-      for (int i = 1; i < cmd.core.argc; ++i)
-         args << cmd.core.argv[i];
-      start(make_path_for(cmd.root_dir, Driver::core), args);
-   }
+   template<typename S, typename T>
+   struct managed_by : S {
+      using super = managed_by<S, T>;
+      managed_by(T* t) : S(t) { }
+      T* parent() const { return qobject_cast<T*>(S::parent()); }
+   };
 }
+
+#endif  // OPENAXIOM_WIDGET_included
+
+// Local Variables:
+// mode: c++
+// End:

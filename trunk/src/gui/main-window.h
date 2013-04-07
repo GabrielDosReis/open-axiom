@@ -45,12 +45,13 @@ namespace OpenAxiom {
      MainWindow(Command&);
       ~MainWindow();
 
-      // Pointer to the root file system of the OpenAxiom installation
-      Filesystem* filesystem() { return &fs; }
       Server* server() { return &srv; }
+
+   private slots:
+      void done(int, QProcess::ExitStatus);
+      void display_error();
       
    private:
-      Filesystem fs;
       Server srv;
       QTabWidget tabs;
    };

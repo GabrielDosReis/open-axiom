@@ -40,6 +40,7 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
+#include "widget.h"
 #include "server.h"
 
 namespace OpenAxiom {
@@ -74,43 +75,28 @@ namespace OpenAxiom {
    // -- Question --
    // ---------------
    // A question is just a one-liner query area.
-   class Question : public QLineEdit {
-      typedef QLineEdit Base;
-   public:
-      explicit Question(Exchange&);
-      Exchange* exchange() const { return parent; }
+   struct Question : managed_by<QLineEdit, Exchange> {
+      explicit Question(Exchange*);
 
    protected:
       void enterEvent(QEvent*);
       void focusInEvent(QFocusEvent*);
-
-   private:
-      Exchange* const parent;
    };
 
    // ------------
    // -- Answer --
    // ------------
-   class Answer : public OutputTextArea {
-      typedef OutputTextArea Base;
-   public:
-      explicit Answer(Exchange&);
-      Exchange* exchange() const { return parent; }
-
-   private:
-      Exchange* const parent;
+   struct Answer : managed_by<OutputTextArea, Exchange> {
+      explicit Answer(Exchange*);
    };
 
    // --------------
    // -- Exchange --
    // --------------
-   class Exchange : public QFrame {
+   class Exchange : public managed_by<QFrame, Conversation> {
       Q_OBJECT;
    public:
-      Exchange(Conversation&, int);
-
-      // Return the parent widget of this conversation topic
-      Conversation* topic() const { return parent; }
+      Exchange(Conversation*, int);
 
       // The widget holding the query area
       Question* question() { return &query; }
@@ -130,7 +116,6 @@ namespace OpenAxiom {
       void resizeEvent(QResizeEvent*);
 
    private:
-      Conversation* const parent;
       const int no;
       Question query;
       Answer reply;
@@ -150,11 +135,10 @@ namespace OpenAxiom {
    // -- We remember and number each topic so that we
    // -- can go back in the conversation set and reevaluate
    // -- queries.
-   class Conversation : public QWidget {
+   class Conversation : public managed_by<QWidget, Debate> {
       Q_OBJECT;
-      typedef QWidget Base;
    public:
-      explicit Conversation(Debate&, const Command&);
+      explicit Conversation(Debate*);
       ~Conversation();
 
       // Holds if this conversation just started.
@@ -177,14 +161,8 @@ namespace OpenAxiom {
       // of all conversations so far.
       QSize sizeHint() const;
 
-      // Return a pointer to the oracle in this conversation.
-      Server* server() { return &srv; }
-
       // Return a pointer to the current exchange, if any.
       Exchange* exchange() { return cur_ex; }
-      
-      // Return the parent engine widget.
-      Debate* debate() const { return group; }
 
    public slots:
       // Return the topic following a given topic in this set of conversations
@@ -199,10 +177,8 @@ namespace OpenAxiom {
 
    private:
       typedef std::vector<Exchange*> Children;
-      Debate* group;
       Banner greatings;
       Children children;
-      Server srv;
       Exchange* cur_ex;
       OutputTextArea* cur_out;
    };
