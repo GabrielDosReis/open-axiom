@@ -35,25 +35,15 @@
 
 namespace OpenAxiom {
 
-  Debate::Debate(QTabWidget* parent, Command& cmd)
-        : QScrollArea(parent), conv(*this, cmd) {
+  Debate::Debate(QTabWidget* tab)
+        : super(tab), conv(this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
       setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-      adjustSize();
-
-      exchanges()->server()->launch();
-      // When invoked in a --role=server mode, OpenAxiom would
-      // wait to be pinged before displaying a prompt.  This is
-      // an unfortunate result of a rather awkward hack.
-      exchanges()->server()->input("");
-
-      connect(exchanges()->server(),
-              SIGNAL(finished(int,QProcess::ExitStatus)),
-              this, SLOT(done(int)));
+      // adjustSize();
    }
 
    Debate::~Debate() { }
@@ -65,11 +55,4 @@ namespace OpenAxiom {
       setSizePolicy(QSizePolicy::MinimumExpanding,
                     QSizePolicy::MinimumExpanding);
    }
-
-   void Debate::done(int exit_code) {
-      // For the time being, shut done the whole application
-      // if the interpreter quits.  FIXME.
-      QApplication::exit(exit_code);
-   }
-   
 }

@@ -37,15 +37,16 @@
 #include <QScrollArea>
 #include <QResizeEvent>
 #include "open-axiom.h"
+#include "widget.h"
 #include "conversation.h"
 #include "main-window.h"
 
 namespace OpenAxiom {
    
-   class Debate : public QScrollArea {
+   class Debate : public managed_by<QScrollArea, QTabWidget> {
       Q_OBJECT;
    public:
-     explicit Debate(QTabWidget*, Command&);
+     explicit Debate(QTabWidget*);
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
@@ -56,9 +57,6 @@ namespace OpenAxiom {
 
    protected:
       void resizeEvent(QResizeEvent*);
-
-   private slots:
-      void done(int);
 
    private:
       Conversation conv;
