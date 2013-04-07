@@ -1,3 +1,9 @@
+2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* utils/command.cc (args_count): New.
+	(execute_core): Use it.  Tidy.
+	(Arguments::Arguments): Tidy.
+
 2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/token.H: New.

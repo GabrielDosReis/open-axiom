@@ -69,11 +69,11 @@ namespace OpenAxiom {
    "|AxiomCore|::|topLevel|"
 
    // -- Arguments --
-   Arguments::Arguments(int n) : std::vector<char*>(n > 0 ? n + 1 : 0)
+   Arguments::Arguments(int n) : std::vector<char*>(n + 1)
    { }
 
    int Arguments::size() const {
-      return empty() ? 0 : std::vector<char*>::size() - 1;
+      return std::vector<char*>::size() - 1;
    }
    
    void Arguments::allocate(int n) {
@@ -444,6 +444,13 @@ preprocess_arguments(Command* command, int argc, char** argv)
          : make_path_for(command->root_dir, driver);
    }
 
+   // Return the total number of command-line arguments.
+   static int
+   args_count(const Command* cmd) {
+      return cmd->core.argc > 0
+         ? cmd->rt_args.size() + cmd->core.argc + 1
+         : cmd->rt_args.size();
+   }
 
 /* Execute the Core Executable as described by `command'.  On
    POSIX systems, this is a non-return function on success.
@@ -520,7 +527,7 @@ execute_core(const Command* command, Driver driver)
                         
 #else  /* __WIN32__ */
    int i;
-   Arguments args(command->rt_args.size() + command->core.argc + 2);
+   Arguments args(args_count(command));
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
    if (OPENAXIOM_BASE_RTS == Runtime::gcl)
@@ -543,10 +550,7 @@ execute_core(const Command* command, Driver driver)
       /* Then, copy over the arguments received from the command line.  */
       for (i = 1; i < command->core.argc; ++i)
          args[command->rt_args.size() + i + 1] = command->core.argv[i];
-      args[command->rt_args.size() + command->core.argc + 1] = NULL;
    }
-   else
-      args[command->rt_args.size() + command->core.argc] = NULL;
 
    execv(execpath, args.data());
    perror(execpath);
