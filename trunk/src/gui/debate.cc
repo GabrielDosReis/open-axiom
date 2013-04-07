@@ -35,8 +35,8 @@
 
 namespace OpenAxiom {
 
-  Debate::Debate(QTabWidget* tab)
-        : super(tab), conv(this) {
+   Debate::Debate(MainWindow* win, QTabWidget* tab)
+         : QScrollArea(tab), main_win(win), conv(this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
