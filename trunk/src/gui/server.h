@@ -38,7 +38,7 @@
 
 namespace OpenAxiom {
    struct Server : QProcess {
-      explicit Server(const Command&);
+      Server(int, char*[]);
       ~Server();
 
       const Filesystem& system_root() const { return fs; }

@@ -38,7 +38,8 @@
 #include "main-window.h"
 
 namespace OpenAxiom {
-   MainWindow::MainWindow(Command& cmd) : srv(cmd), tabs(this) {
+   MainWindow::MainWindow(int argc, char* argv[])
+         : srv(argc, argv), tabs(this) {
       setCentralWidget(&tabs);
       setWindowTitle("OpenAxiom");
       Debate* debate = new Debate(this, &tabs);

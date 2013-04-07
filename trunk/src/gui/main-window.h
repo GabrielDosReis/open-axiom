@@ -42,7 +42,7 @@ namespace OpenAxiom {
    class MainWindow : public QMainWindow {
       Q_OBJECT;
    public:
-     MainWindow(Command&);
+      MainWindow(int, char*[]);
       ~MainWindow();
 
       Server* server() { return &srv; }

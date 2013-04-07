@@ -33,7 +33,15 @@
 #include "server.h"
 
 namespace OpenAxiom {
-   Server::Server(const Command& c) : cmd(c), fs(c.root_dir) {
+   static Command
+   process_arguments(int argc, char* argv[]) {
+      Command cmd;
+      preprocess_arguments(&cmd, argc, argv);
+      return cmd;
+   }
+   
+   Server::Server(int argc, char* argv[])
+         : cmd(process_arguments(argc, argv)), fs(cmd.root_dir) {
    }
 
    Server::~Server() {
