@@ -447,9 +447,9 @@ preprocess_arguments(Command* command, int argc, char** argv)
    // Return the total number of command-line arguments.
    static int
    args_count(const Command* cmd) {
-      return cmd->core.argc > 0
-         ? cmd->rt_args.size() + cmd->core.argc + 1
-         : cmd->rt_args.size();
+      return cmd->core.argc > 1
+         ? cmd->rt_args.size() + cmd->core.argc + 2
+         : cmd->rt_args.size() + 1;
    }
 
 /* Execute the Core Executable as described by `command'.  On
