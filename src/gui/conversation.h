@@ -40,7 +40,6 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#include "widget.h"
 #include "server.h"
 
 namespace OpenAxiom {
@@ -77,7 +76,7 @@ namespace OpenAxiom {
    // -- Question --
    // ---------------
    // A question is just a one-liner query area.
-   struct Question : managed_by<QLineEdit, Exchange> {
+   struct Question : QLineEdit {
       explicit Question(Exchange*);
 
    protected:
@@ -88,14 +87,14 @@ namespace OpenAxiom {
    // ------------
    // -- Answer --
    // ------------
-   struct Answer : managed_by<OutputTextArea, Exchange> {
+   struct Answer : OutputTextArea {
       explicit Answer(Exchange*);
    };
 
    // --------------
    // -- Exchange --
    // --------------
-   class Exchange : public managed_by<QFrame, Conversation> {
+   class Exchange : public QFrame {
       Q_OBJECT;
    public:
       Exchange(Conversation*, int);
@@ -103,6 +102,7 @@ namespace OpenAxiom {
       // The widget holding the query area
       Question* question() { return &query; }
       const Question* question() const { return &query; }
+      Server* server() const;
 
       // The widget holding the reply area.
       Answer* answer() { return &reply; }
@@ -118,6 +118,7 @@ namespace OpenAxiom {
       void resizeEvent(QResizeEvent*);
 
    private:
+      Conversation* const win;
       const int no;
       Question query;
       Answer reply;
@@ -137,11 +138,13 @@ namespace OpenAxiom {
    // -- We remember and number each topic so that we
    // -- can go back in the conversation set and reevaluate
    // -- queries.
-   class Conversation : public managed_by<QWidget, Debate> {
+   class Conversation : public QWidget {
       Q_OBJECT;
    public:
       explicit Conversation(Debate*);
       ~Conversation();
+
+      Debate* debate() const { return win; }
 
       // Holds if this conversation just started.
       bool fresh() const { return children.empty(); }
@@ -179,6 +182,7 @@ namespace OpenAxiom {
 
    private:
       typedef std::vector<Exchange*> Children;
+      Debate* const win;
       Banner greatings;
       Children children;
       Exchange* cur_ex;

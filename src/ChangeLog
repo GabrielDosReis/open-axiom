@@ -1,8 +1,20 @@
 2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* gui/widget.h: Remove.  Qt's meta object system does no play nice
+	with modern C++ idioms.
+
+2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* utils/command.cc (args_count): New.
 	(execute_core): Use it.  Tidy.
 	(Arguments::Arguments): Tidy.
+
+2013-04-06  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/server.h: New.
+	* gui/server.cc: Likewise..
+	* gui/gui.pro.in (HEADERS): Update.
+	(SOURCES): Likewise.
 
 2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 

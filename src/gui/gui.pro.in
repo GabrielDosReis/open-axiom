@@ -27,7 +27,7 @@ TARGET = gui
 VPATH += @srcdir@
 
 ## Our headers
-HEADERS += widget.h server.h conversation.h main-window.h debate.h
+HEADERS += server.h conversation.h main-window.h debate.h
 INCLUDEPATH += $$OA_INC
 INCLUDEPATH +=  @srcdir@
 INCLUDEPATH += @top_srcdir@/src/include
