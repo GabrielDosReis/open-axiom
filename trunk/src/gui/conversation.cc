@@ -279,8 +279,7 @@ namespace OpenAxiom {
       setFont(monospace_font());
       setBackgroundRole(QPalette::Base);
       greatings.setFont(font());
-      connect(win->server(), SIGNAL(readyReadStandardOutput()),
-              this, SLOT(read_reply()));
+      setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
    }
 
    Conversation::~Conversation() {

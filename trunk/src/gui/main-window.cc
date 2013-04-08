@@ -33,26 +33,35 @@
 #include <QAction>
 #include <QApplication>
 #include <QMessageBox>
+#include <QScrollBar>
 
 #include "debate.h"
 #include "main-window.h"
 
 namespace OpenAxiom {
+   static void connect_server_io(MainWindow* win, Debate* debate) {
+      QObject::connect(win->server(), SIGNAL(readyReadStandardError()),
+                       win, SLOT(display_error()));
+      QObject::connect(win->server(), SIGNAL(readyReadStandardOutput()),
+                       debate->exchanges(), SLOT(read_reply()));
+   }
+
+   
    MainWindow::MainWindow(int argc, char* argv[])
          : srv(argc, argv), debate(this) {
       setCentralWidget(&debate);
       setWindowTitle("OpenAxiom");
+      auto s = debate.widget()->frameSize();
+      s.rwidth() += debate.verticalScrollBar()->width();
+      s.rheight() += debate.horizontalScrollBar()->width();
+      resize(s);
       QMenu* file = menuBar()->addMenu(tr("&File"));
       QAction* action = new QAction(tr("Quit"), this);
       file->addAction(action);
       action->setShortcut(tr("Ctrl+Q"));
       connect(action, SIGNAL(triggered()), this, SLOT(close()));
 
-      connect(server(), SIGNAL(finished(int, QProcess::ExitStatus)),
-              this, SLOT(done(int, QProcess::ExitStatus)));
-      connect(server(), SIGNAL(readyReadStandardError()),
-              this, SLOT(display_error()));
-
+      connect_server_io(this, &debate);
       server()->launch();
       // When invoked in a --role=server mode, OpenAxiom would
       // wait to be pinged before displaying a prompt.  This is

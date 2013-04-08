@@ -50,9 +50,6 @@ namespace OpenAxiom {
       Conversation* exchanges() { return &conv; }
       Server* server() const;
 
-   protected:
-      void resizeEvent(QResizeEvent*);
-
    private:
       MainWindow* const win;
       Conversation conv;
