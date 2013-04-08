@@ -36,8 +36,8 @@
 
 namespace OpenAxiom {
 
-   Debate::Debate(MainWindow* win)
-         : QScrollArea(win), conv(this) {
+   Debate::Debate(MainWindow* w)
+         : QScrollArea(w), win(w), conv(this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
@@ -51,7 +51,7 @@ namespace OpenAxiom {
 
    Server*
    Debate::server() const {
-      return qobject_cast<MainWindow*>(parent())->server();
+      return win->server();
    }
 
    void Debate::resizeEvent(QResizeEvent* e) {

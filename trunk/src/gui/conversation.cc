@@ -119,7 +119,7 @@ namespace OpenAxiom {
    // --------------
    // -- Question --
    // --------------
-   Question::Question(Exchange* e) : super(e) {
+   Question::Question(Exchange* e) : QLineEdit(e) {
       setBackgroundRole(QPalette::AlternateBase);
       setFrame(true);
    }
@@ -127,19 +127,19 @@ namespace OpenAxiom {
    void Question::focusInEvent(QFocusEvent* e) {
       setFrame(true);
       update();
-      super::focusInEvent(e);
+      QLineEdit::focusInEvent(e);
    }
 
    void Question::enterEvent(QEvent* e) {
       setFrame(true);
       update();
-      super::enterEvent(e);
+      QLineEdit::enterEvent(e);
    }
 
    // ------------
    // -- Answer --
    // ------------
-   Answer::Answer(Exchange* e) : super(e) {
+   Answer::Answer(Exchange* e) : OutputTextArea(e) {
       setFrameStyle(StyledPanel | Raised);
    }
 
@@ -166,6 +166,10 @@ namespace OpenAxiom {
       if (not answer()->isHidden())
          sz.rheight() += answer()->height() + spacing;
       return sz;
+   }
+
+   Server* Exchange::server() const {
+      return win->debate()->server();
    }
 
    // Dress the query area with initial properties.
@@ -200,7 +204,7 @@ namespace OpenAxiom {
    }
    
    Exchange::Exchange(Conversation* conv, int n)
-         : super(conv), no(n), query(this), reply(this) {
+         : QFrame(conv), win(conv), no(n), query(this), reply(this) {
       setLineWidth(1);
       setFont(conv->font());
       prepare_query_widget(conv, this);
@@ -233,7 +237,7 @@ namespace OpenAxiom {
       QString input = question()->text().trimmed();
       if (empty_string(input))
          return;
-      parent()->parent()->server()->input(input);
+      server()->input(input);
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    }
 
@@ -270,13 +274,13 @@ namespace OpenAxiom {
 
    // Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
-   Conversation::Conversation(Debate* debate)
-         : super(debate), greatings(this), cur_ex(), cur_out(&greatings) {
+   Conversation::Conversation(Debate* d)
+         : QWidget(d), win(d), greatings(this), cur_ex(), cur_out(&greatings) {
       setFont(monospace_font());
       setBackgroundRole(QPalette::Base);
       greatings.setFont(font());
-      // connect(parent()->server(), SIGNAL(readyReadStandardOutput()),
-      //         this, SLOT(read_reply()));
+      connect(win->server(), SIGNAL(readyReadStandardOutput()),
+              this, SLOT(read_reply()));
    }
 
    Conversation::~Conversation() {
@@ -302,7 +306,7 @@ namespace OpenAxiom {
       const int n = length();
       if (n == 0)
          return minimum_preferred_size(this);
-      const int view_height = parent()->viewport()->height();
+      const int view_height = debate()->viewport()->height();
       QSize sz = greatings.size();
       for (int i = 0; i < n; ++i)
          sz.rheight() += children[i]->height();
@@ -310,7 +314,7 @@ namespace OpenAxiom {
    }
 
    void Conversation::resizeEvent(QResizeEvent* e) {
-      super::resizeEvent(e);
+      QWidget::resizeEvent(e);
       setMinimumSize(size());
       const QSize sz = size();
       if (e->oldSize() == sz)
@@ -378,7 +382,7 @@ namespace OpenAxiom {
 
    void
    Conversation::read_reply() {
-      OracleOutput output = read_output(parent()->server());
+      OracleOutput output = read_output(debate()->server());
       if (empty(output))
          return;
       if (not empty_string(output.result)) {
@@ -387,16 +391,16 @@ namespace OpenAxiom {
       }
       if (length() == 0) {
          if (not empty_string(output.prompt))
-            ensure_visibility(parent(), new_topic());
+            ensure_visibility(debate(), new_topic());
       }
       else {
          exchange()->adjustSize();
          exchange()->update();
          exchange()->updateGeometry();
          if (empty_string(output.prompt))
-            ensure_visibility(parent(), exchange());
+            ensure_visibility(debate(), exchange());
          else {
-            ensure_visibility(parent(), next(exchange()));
+            ensure_visibility(debate(), next(exchange()));
             QApplication::restoreOverrideCursor();
 	 }
       }

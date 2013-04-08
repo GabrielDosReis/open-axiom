@@ -37,7 +37,6 @@
 #include <QScrollArea>
 #include <QResizeEvent>
 #include "open-axiom.h"
-#include "widget.h"
 #include "conversation.h"
 
 namespace OpenAxiom {
@@ -55,6 +54,7 @@ namespace OpenAxiom {
       void resizeEvent(QResizeEvent*);
 
    private:
+      MainWindow* const win;
       Conversation conv;
    };
 }
