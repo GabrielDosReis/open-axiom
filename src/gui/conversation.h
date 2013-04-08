@@ -53,6 +53,8 @@ namespace OpenAxiom {
    class Question;
    class Answer;
 
+   class MainWindow;
+
    // --------------------
    // -- OutputTextArea --
    // --------------------

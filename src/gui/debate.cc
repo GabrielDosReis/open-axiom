@@ -32,11 +32,12 @@
 #include <QApplication>
 #include <QScrollBar>
 #include "debate.h"
+#include "main-window.h"
 
 namespace OpenAxiom {
 
-   Debate::Debate(MainWindow* win, QTabWidget* tab)
-         : QScrollArea(tab), main_win(win), conv(this) {
+   Debate::Debate(MainWindow* win)
+         : super(win), conv(this) {
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
@@ -47,6 +48,11 @@ namespace OpenAxiom {
    }
 
    Debate::~Debate() { }
+
+   Server*
+   Debate::server() const {
+      return parent()->server();
+   }
 
    void Debate::resizeEvent(QResizeEvent* e) {
       QScrollArea::resizeEvent(e);

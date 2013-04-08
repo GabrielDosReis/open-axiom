@@ -39,25 +39,22 @@
 #include "open-axiom.h"
 #include "widget.h"
 #include "conversation.h"
-#include "main-window.h"
 
 namespace OpenAxiom {
    
-   class Debate : public QScrollArea {
+   class Debate : public managed_by<QScrollArea, MainWindow> {
       Q_OBJECT;
    public:
-      explicit Debate(MainWindow*, QTabWidget*);
+      explicit Debate(MainWindow*);
       ~Debate();
 
       Conversation* exchanges() { return &conv; }
-      MainWindow* main_window() const { return main_win; }
-      Server* server() const { return main_window()->server(); }
+      Server* server() const;
 
    protected:
       void resizeEvent(QResizeEvent*);
 
    private:
-      MainWindow* const main_win;
       Conversation conv;
    };
 }
