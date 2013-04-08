@@ -42,7 +42,7 @@
 
 namespace OpenAxiom {
    
-   class Debate : public managed_by<QScrollArea, MainWindow> {
+   class Debate : public QScrollArea {
       Q_OBJECT;
    public:
       explicit Debate(MainWindow*);
