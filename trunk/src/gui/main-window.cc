@@ -39,11 +39,9 @@
 
 namespace OpenAxiom {
    MainWindow::MainWindow(int argc, char* argv[])
-         : srv(argc, argv), tabs(this) {
-      setCentralWidget(&tabs);
+         : srv(argc, argv), debate(this) {
+      setCentralWidget(&debate);
       setWindowTitle("OpenAxiom");
-      Debate* debate = new Debate(this, &tabs);
-      tabs.addTab(debate, "Main Frame");
       QMenu* file = menuBar()->addMenu(tr("&File"));
       QAction* action = new QAction(tr("Quit"), this);
       file->addAction(action);

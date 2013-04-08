@@ -33,9 +33,9 @@
 #define OPENAXIOM_GUI_MAIN_WINDOW_INCLUDED
 
 #include <QMainWindow>
-#include <QTabWidget>
 #include "open-axiom.h"
 #include "server.h"
+#include "debate.h"
 
 namespace OpenAxiom {
    // -- Main application window --
@@ -53,7 +53,7 @@ namespace OpenAxiom {
       
    private:
       Server srv;
-      QTabWidget tabs;
+      Debate debate;
    };
 }
 
