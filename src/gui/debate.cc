@@ -38,13 +38,13 @@ namespace OpenAxiom {
 
    Debate::Debate(MainWindow* w)
          : QScrollArea(w), win(w), conv(this) {
+      setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
       setWidget(&conv);
       setViewportMargins(0, 0, 0, 0);
       viewport()->setAutoFillBackground(true);
       viewport()->setBackgroundRole(conv.backgroundRole());
       setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-      setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-      // adjustSize();
+      setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    }
 
    Debate::~Debate() { }
@@ -52,13 +52,5 @@ namespace OpenAxiom {
    Server*
    Debate::server() const {
       return win->server();
-   }
-
-   void Debate::resizeEvent(QResizeEvent* e) {
-      QScrollArea::resizeEvent(e);
-      if (conv.length() != 0)
-         conv.resize(viewport()->size());
-      setSizePolicy(QSizePolicy::MinimumExpanding,
-                    QSizePolicy::MinimumExpanding);
    }
 }
