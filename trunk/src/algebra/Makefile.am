@@ -1639,6 +1639,7 @@ oa_algebra_layer_4_objects = \
 $(OUT)/KERNEL.$(FASLEXT): $(OUT)/KERNEL2.$(FASLEXT)
 $(OUT)/DVARCAT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/PDRING.$(FASLEXT): $(OUT)/PDSPC.$(FASLEXT)
+$(OUT)/IDPAM.$(FASLEXT): $(OUT)/IDPO.$(FASLEXT)
 
 oa_algebra_layer_5 = \
            CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
@@ -1677,7 +1678,10 @@ oa_algebra_layer_6_nrlibs = \
 oa_algebra_layer_6_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_6)))
+
 $(OUT)/IFAMON.$(FASLEXT): $(OUT)/LMOPS.$(FASLEXT)
+$(OUT)/IDPOAM.$(FASLEXT): $(OUT)/IDPAM.$(FASLEXT)
+
 oa_algebra_layer_7 = \
   BTCAT   BTCAT-  LMOPS             FMCAT   IDPOAM   \
   IFAMON  GRALG   GRALG-                             \
@@ -1707,7 +1711,10 @@ oa_algebra_layer_8_nrlibs = \
 oa_algebra_layer_8_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_8)))
+
 $(OUT)/FT.$(FASLEXT): $(OUT)/FST.$(FASLEXT) $(OUT)/POLY.$(FASLEXT)
+$(OUT)/IDPOAMS.$(FASLEXT): $(OUT)/IDPOAM.$(FASLEXT)
+$(OUT)/IDPAG.$(FASLEXT): $(OUT)/IDPAM.$(FASLEXT)
 
 oa_algebra_layer_9 = \
   AMR      AMR-     DEGRED   DLP      EAB      \

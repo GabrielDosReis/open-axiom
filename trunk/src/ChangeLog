@@ -1,5 +1,13 @@
 2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory):
+	Now extends ConvertibleFrom IndexedProductTerm(A,S).
+	(IndexedDirectProductObject): Simplify.
+	(IndexedDirectProductAbelianMonoid): Tidy.
+	(IndexedDirectProductOrderedAbelianMonoid): Likewise.
+
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/indexedp.spad.pamphlet (IndexedProductTerm): New domain.
 
 2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
