@@ -4,6 +4,7 @@
 \beginscroll
 \beginmenu
     \menudownlink{Online information}{onlineInformation}
+    \menudownlink{Version 1.5.0}{1502013}
     \menudownlink{Version 1.4.2}{apr2013}
     \menudownlink{Version 1.4.1}{jul2011}
     \menudownlink{Version 1.4.0}{jun2011}
@@ -20,6 +21,19 @@
 \beginscroll
 \Language{} information can be found online at
 {http://www.open-axiom.org/}
+\endscroll
+\autobuttons
+\end{page}
+
+% =====================================================================
+\begin{page}{1502013}{OpenAxiom 1.5.0 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.5.0 was released on XXX, 2013.  It was the first major
+release of \Language{} system, in the 1.5.x series.  It contains 
+contains additions of new features and domains including:
+  IndexedProductTerm
+
 \endscroll
 \autobuttons
 \end{page}

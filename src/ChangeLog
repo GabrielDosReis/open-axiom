@@ -1,3 +1,7 @@
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedProductTerm): New domain.
+
 2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* gui/widget.h: Remove.  Qt's meta object system does no play nice
