@@ -26,7 +26,7 @@
 ++ respect to an ordered indexing set.
 
 IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
-  BasicType with
+  Join(BasicType,ConvertibleFrom List IndexedProductTerm(A,S)) with
     if A has SetCategory and S has SetCategory then SetCategory
     map:           (A -> A, %) -> %
        ++ map(f,z) returns the new element created by applying the
@@ -47,7 +47,7 @@ IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
        ++ reductum(z) returns a new element created by removing the
        ++ leading coefficient/support pair from the element z.
        ++ Error: if z has no support.
-    terms: % -> List Pair(S,A)
+    terms: % -> List IndexedProductTerm(A,S)
       ++ \spad{terms x} returns the list of terms in \spad{x}.
       ++ Each term is a pair of a support (the first component)
       ++ and the corresponding value (the second component).
@@ -94,46 +94,25 @@ IndexedDirectProductObject(A,S): Public == Private where
   A: BasicType
   S: OrderedType
   Public == IndexedDirectProductCategory(A,S)
-  Private == add
-    Term == Pair(S,A)
-    Rep == List Term
-    -- Return the index of a term
-    termIndex(t: Term): S == first t
-    -- Return the value of a term
-    termValue(t: Term): A == second t
-
-    x = y ==
-      x' := rep x
-      y' := rep y
-      while not null x' and not null y' repeat
-        termIndex first x' ~= termIndex first y' => return false
-        termValue first x' ~= termValue first y' => return false
-        x' := rest x'
-        y' := rest y'
-      null x' and null y'
-
+  Private == List IndexedProductTerm(A,S) add
     if A has CoercibleTo OutputForm and S has CoercibleTo OutputForm then
       coerce(x:%):OutputForm ==
-         bracket [rarrow(termIndex(t)::OutputForm, termValue(t)::OutputForm)
+         bracket [rarrow(index(t)::OutputForm, coefficient(t)::OutputForm)
                    for t in rep x]
 
-    -- sample():% == [[sample()$S,sample()$A]$Term]$Rep
-
-    monomial(r,s) == per [[s,r]]
-    map(f,x) == per [[termIndex tm,f termValue tm] for tm in rep x]
-
-    reductum x ==
-       per rest rep x
+    monomial(r,s) == per [term(s,r)]
+    map(f,x) == per [term(index tm,f coefficient tm) for tm in rep x]
+    reductum x == per rest rep x
     leadingCoefficient x  ==
        null rep x =>
          error "Can't take leadingCoefficient of empty product element"
-       termValue first rep x
+       coefficient first rep x
     leadingSupport x  ==
        null rep x =>
          error "Can't take leadingCoefficient of empty product element"
-       termIndex first rep x
-
+       index first rep x
     terms x == rep x
+    convert l == per l
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}
@@ -145,18 +124,14 @@ IndexedDirectProductObject(A,S): Public == Private where
 IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
     Join(AbelianMonoid,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductObject(A,S) add
-    --representations
-       Term ==  Pair(S,A)
+       Term == IndexedProductTerm(A,S)
        import Term
-       import List Term
-       termIndex(t: Term): S == first t
-       termValue(t: Term): A == second t
 
        r: A
        n: NonNegativeInteger
        f: A -> A
        s: S
-       0  == nil$List(Term) pretend %
+       0  == convert nil$List(Term)
        zero? x ==  null terms x
 
        import %tail: List Term -> List Term from Foreign Builtin
@@ -178,17 +153,17 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
          res: List Term := nil
          while not empty? x' and not empty? y' repeat 
            newcell: List Term := nil
-           if termIndex x'.first = termIndex y'.first then
-             r := termValue x'.first + termValue y'.first
+           if index x'.first = index y'.first then
+             r := coefficient x'.first + coefficient y'.first
              if not zero? r then 
-               newcell := cons([termIndex x'.first, r], empty())
+               newcell := [term(index x'.first, r)]
              x' := rest x'
              y' := rest y'
-           else if termIndex x'.first > termIndex y'.first then
-             newcell := cons(x'.first, empty())
+           else if index x'.first > index y'.first then
+             newcell := [x'.first]
              x' := rest x'
            else
-             newcell := cons(y'.first, empty())
+             newcell := [y'.first]
              y' := rest y'
            if not empty? newcell then 
              if not empty? endcell then
@@ -202,32 +177,29 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
            x'
          if empty? res then res := end
          else qsetrest!(endcell, end)
-         res pretend %
+         convert res
 
        n * x  ==
-         n = 0 => 0
-         n = 1 => x
-         [[termIndex u,a] for u in terms x
-            | not zero?(a:=n * termValue u)] pretend %
+         zero? n => 0
+         one? n => x
+         convert [term(index u,a) for u in terms x
+                    | not zero?(a:=n * coefficient u)]
 
        monomial(r,s) ==
          zero? r => 0
-         [[s,r]] pretend %
+         convert [term(s,r)]
 
        map(f,x) ==
-         [[termIndex tm,a] for tm in terms x
-            | not zero?(a:=f termValue tm)] pretend %
+         convert [term(index tm,a) for tm in terms x
+                    | not zero?(a:=f coefficient tm)]
 
        reductum x ==
          null terms x => 0
-         rest(terms x) pretend %
+         convert rest(terms x)
 
        leadingCoefficient x  ==
          null terms x => 0
-         termValue terms(x).first
-
-       pair2Term(t: Pair(A,S)): Term ==
-         [second t, first t]
+         coefficient terms(x).first
 
 @
 \section{domain IDPOAM IndexedDirectProductOrderedAbelianMonoid}
@@ -304,16 +276,14 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
     Join(AbelianGroup,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductAbelianMonoid(A,S) add
     --representations
-       Term == Pair(S,A)
-       termIndex(t: Term): S == first t
-       termValue(t: Term): A == second t
+       Term == IndexedProductTerm(A,S)
 
-       -x == [[termIndex u,-termValue u] for u in terms x] pretend %
+       -x == convert [term(index u,-coefficient u) for u in terms x]
        n:Integer * x:% ==
-         n = 0 => 0
-         n = 1 => x
-         [[termIndex u,a] for u in terms x
-            | not zero?(a := n * termValue u)] pretend %
+         zero? n => 0
+         one? n => x
+         convert [term(index u,a) for u in terms x
+                    | not zero?(a := n * coefficient u)]
 
        import %tail: List Term -> List Term from Foreign Builtin
 
@@ -330,17 +300,17 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
          res: List Term := nil
          while not empty? x' and not empty? y' repeat
            newcell: List Term := nil
-           if termIndex x'.first = termIndex y'.first then
-             r := termValue x'.first - termValue y'.first
+           if index x'.first = index y'.first then
+             r := coefficient x'.first - coefficient y'.first
              if not zero? r then
-               newcell := cons([termIndex x'.first, r], empty())
+               newcell := [term(index x'.first, r)]
              x' := rest x'
              y' := rest y'
-           else if termIndex x'.first > termIndex y'.first then
-             newcell := cons(x'.first, empty())
+           else if index x'.first > index y'.first then
+             newcell := [x'.first]
              x' := rest x'
            else
-             newcell := cons([termIndex y'.first,-termValue y'.first], empty())
+             newcell := [term(index y'.first,-coefficient y'.first)]
              y' := rest y'
            if not empty? newcell then
              if not empty? endcell then
@@ -350,11 +320,11 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
                res     := newcell;
                endcell := res
          end := 
-           empty? x' => terms(-(y' pretend %))
+           empty? x' => terms(-convert y')
            x'
          if empty? res then res := end
          else qsetrest!(endcell, end)
-         res pretend %
+         convert res
 
 @
 \section{License}
