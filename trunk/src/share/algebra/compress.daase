@@ -1,6 +1,6 @@
 
-(30 . 3539125282)            
-(3992 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3576902404)            
+(3994 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -144,8 +144,9 @@
  |IdempotentOperatorCategory| |Identifier| |IndexedDirectProductAbelianGroup|
  |IndexedDirectProductAbelianMonoid| |IndexedDirectProductCategory|
  |IndexedDirectProductObject| |IndexedDirectProductOrderedAbelianMonoid|
- |IndexedDirectProductOrderedAbelianMonoidSup| |InnerEvalable&| |InnerEvalable|
- |InnerFreeAbelianMonoid| |IndexedFlexibleArray| |IfAst| |InnerFiniteField|
+ |IndexedDirectProductOrderedAbelianMonoidSup| |IndexedProductTerm|
+ |InnerEvalable&| |InnerEvalable| |InnerFreeAbelianMonoid|
+ |IndexedFlexibleArray| |IfAst| |InnerFiniteField|
  |InnerIndexedTwoDimensionalArray| |InnerMatrixLinearAlgebraFunctions|
  |InnerMatrixQuotientFieldFunctions| |IndexedMatrix| |ImportAst| |InAst|
  |InputByteConduit&| |InputByteConduit| |InnerNormalBasisFieldFunctions|
@@ -551,7 +552,7 @@
  |relationsIdeal| |saturate| |groebner?| |groebnerIdeal| |ideal| |leadingIdeal|
  |backOldPos| |generalPosition| |quotient| |zeroDim?| |inRadical?| |in?|
  |element?| |zeroDimPrime?| |zeroDimPrimary?| |radical| |primaryDecomp|
- |contract| |gensym| |leadingSupport| |shrinkable| |physicalLength!|
+ |contract| |gensym| |leadingSupport| |term| |shrinkable| |physicalLength!|
  |physicalLength| |flexibleArray| |elseBranch| |thenBranch|
  |generalizedInverse| |imports| |sequence| |readBytes!| |readUInt32!|
  |readInt32!| |readUInt16!| |readInt16!| |readUInt8!| |readInt8!| |readByte!|

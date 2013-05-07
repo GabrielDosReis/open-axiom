@@ -54,6 +54,33 @@ IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
 
 @
 
+\section{domain IDPT IndexedProductTerm}
+
+<<domain IDPT IndexedProductTerm>>=
+)abbrev domain IDPT IndexedProductTerm
+++ Author: Gabriel Dos Reis
+++ Date Last Updated: May 7, 2013
+++ Description:
+++  An indexed product term is a utility domain used in the
+++  representation of indexed direct product objects.
+IndexedProductTerm(A,S): Public == Private where
+   A: BasicType
+   S: OrderedType
+   Public == Join(BasicType,CoercibleTo Pair(S,A)) with
+     term : (S, A) -> %
+       ++ \spad{term(s,a)} constructs a term with index \spad{s}
+       ++ and coefficient \spad{a}.
+     index : % -> S
+       ++ \spad{index t} returns the index of the term \spad{t}.
+     coefficient : % -> A
+       ++ \spad{coefficient t} returns the coefficient of the tern \spad{t}.
+   Private == Pair(S,A) add
+     term(s,a) == per [s,a]
+     index t == first rep t
+     coefficient t == second rep t
+     coerce(t: %): Pair(S,A) == rep t
+@
+
 \section{domain IDPO IndexedDirectProductObject}
 <<domain IDPO IndexedDirectProductObject>>=
 )abbrev domain IDPO IndexedDirectProductObject
@@ -334,7 +361,7 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
 <<license>>=
 --Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2010, Gabriel Dos Reis.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -369,6 +396,7 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
 <<license>>
 
 <<category IDPC IndexedDirectProductCategory>>
+<<domain IDPT IndexedProductTerm>>
 <<domain IDPO IndexedDirectProductObject>>
 <<domain IDPAM IndexedDirectProductAbelianMonoid>>
 <<domain IDPOAM IndexedDirectProductOrderedAbelianMonoid>>
