@@ -527,8 +527,8 @@ LinearElement(K,B): Public == Private where
       ts := terms rep x
       for i in 1..n repeat
         t := first ts
-        lookup first t = i => 
-          v.i := second t
+        lookup index t = i => 
+          v.i := coefficient t
           ts := rest ts
       v
 @
@@ -568,8 +568,8 @@ LinearForm(K,B): Public == Private where
       ts := terms rep f
       for i in 1..n repeat
         t := first ts
-        lookup first t = i => 
-          v.i := second t
+        lookup index t = i => 
+          v.i := coefficient t
           ts := rest ts
       v
 
@@ -584,7 +584,7 @@ LinearForm(K,B): Public == Private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2010, Gabriel Dos Reis.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

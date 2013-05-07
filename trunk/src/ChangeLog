@@ -1,5 +1,10 @@
 2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/vector.spad.pamphlet (LinearElement) [corodinates]: Tidy.
+	(LineraForm) [coordinates]: Likewise.
+
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory):
 	Now extends ConvertibleFrom IndexedProductTerm(A,S).
 	(IndexedDirectProductObject): Simplify.
