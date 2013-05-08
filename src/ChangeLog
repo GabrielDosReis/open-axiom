@@ -1,3 +1,8 @@
+2013-05-08  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-util.boot (almostPure?): New.
+	(foldExportedFunctionReferences): Use it.
+
 2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/vector.spad.pamphlet (LinearElement) [corodinates]: Tidy.

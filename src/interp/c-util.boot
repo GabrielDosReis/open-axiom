@@ -1421,6 +1421,16 @@ expandableDefinition?(vars,body) ==
     ['XLAM,vars',body]
   nil
 
+++ A list of routines for diagnostic reports.  These functions, in an
+++ abstract sense, have type: forall T: Type . String -> T, so they
+++ can be used in T-returning functions, for any T.  
+$coreDiagnosticFunctions == 
+  '(error userError systemError)
+
+almostPure? x ==
+  ops := [:$coreDiagnosticFunctions,:$VMsideEffectFreeOperators]
+  semiSimpleRelativeTo?(x,ops)
+
 ++ `defs' is a list of function definitions from the current domain.
 ++ Walk that list and replace references to unconditional operations
 ++ with their corresponding linkage names.  
@@ -1433,7 +1443,7 @@ foldExportedFunctionReferences defs ==
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
       second(fun) := ["LAMBDA",vars,["DECLARE",["IGNORE",last vars]],body]
-    if sideEffectFree? body then
+    if almostPure? body then
       registerRedexForm(name,vars,body)
     lamex.absBody := body
   defs
