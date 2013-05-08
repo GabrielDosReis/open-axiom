@@ -76,12 +76,6 @@ reshapeArgumentList: (%Form,%Sig) -> %Form
 applyMapping: (%Form,%Mode,%Env,%List %Mode) -> %Maybe %Triple
 
 
-++ A list of routines for diagnostic reports.  These functions, in an
-++ abstract sense, have type: forall T: Type . String -> T, so they
-++ can be used in T-returning functions, for any T.  
-$coreDiagnosticFunctions == 
-  '(error userError systemError)
-
 $IOFormDomains == 
   [$InputForm,$OutputForm,$Syntax]
 
