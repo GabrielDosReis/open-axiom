@@ -1,6 +1,6 @@
 
-(30 . 3576910160)            
-(3994 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577105534)            
+(3995 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -552,8 +552,8 @@
  |relationsIdeal| |saturate| |groebner?| |groebnerIdeal| |ideal| |leadingIdeal|
  |backOldPos| |generalPosition| |quotient| |zeroDim?| |inRadical?| |in?|
  |element?| |zeroDimPrime?| |zeroDimPrimary?| |radical| |primaryDecomp|
- |contract| |gensym| |leadingSupport| |term| |shrinkable| |physicalLength!|
- |physicalLength| |flexibleArray| |elseBranch| |thenBranch|
+ |contract| |gensym| |leadingSupport| |combineWithIf| |term| |shrinkable|
+ |physicalLength!| |physicalLength| |flexibleArray| |elseBranch| |thenBranch|
  |generalizedInverse| |imports| |sequence| |readBytes!| |readUInt32!|
  |readInt32!| |readUInt16!| |readInt16!| |readUInt8!| |readInt8!| |readByte!|
  |setFieldInfo| |pol| |xn| |dAndcExp| |repSq| |expPot| |qPot| |lookup|
