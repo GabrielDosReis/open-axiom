@@ -1,5 +1,10 @@
 2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject)
+	[combineWithIf]: New.
+
+2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/i-special.boot (evalIF): Generate OIL intermediate
 	instruction %otherwise, not Lisp expression T.
 	* interp/slam.boot (isRecurrenceRelation): Likewise.

@@ -93,7 +93,12 @@ IndexedProductTerm(A,S): Public == Private where
 IndexedDirectProductObject(A,S): Public == Private where
   A: BasicType
   S: OrderedType
-  Public == IndexedDirectProductCategory(A,S)
+  Public == IndexedDirectProductCategory(A,S) with
+    combineWithIf: (%,%, (A,A) -> A, (A,A) -> Boolean) -> %
+      ++ \spad{combineWithIf(u,v,f,p)} returns the result of combining
+      ++ index-wise, coefficients of \spad{u} and \spad{u} if when
+      ++ satisfy the predicate \spad{p}.  Those pairs of coefficients
+      ++ which fail\spad{p} are implicitly ignored.
   Private == List IndexedProductTerm(A,S) add
     if A has CoercibleTo OutputForm and S has CoercibleTo OutputForm then
       coerce(x:%):OutputForm ==
@@ -113,6 +118,38 @@ IndexedDirectProductObject(A,S): Public == Private where
        index first rep x
     terms x == rep x
     convert l == per l
+    combineWithIf(u, v, f, p) ==
+      x := rep u
+      y := rep v
+      empty? x => v
+      empty? y => u
+      z: Rep := nil
+      prev: Rep := nil
+      while not empty? x and not empty? y repeat
+        xt := first x
+        yt := first y
+        index xt > index yt =>
+          t := [xt]
+          if empty? z then z := t
+          else setrest!(prev,t)
+          prev := t
+          x := rest x
+        index xt < index yt =>
+          t := [yt]
+          if empty? z then z := t
+          else setrest!(prev,t)
+          prev := t
+          y := rest y
+        not p(coefficient xt, coefficient yt) => iterate
+        t := [term(index xt, f(coefficient xt, coefficient yt))]
+        if empty? z then z := t
+        else setrest!(prev,t)
+        prev := t
+        x := rest x
+        y := rest y
+      if empty? x then setrest!(prev,y)
+      else if empty? y then setrest!(prev,x)
+      per z
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}
