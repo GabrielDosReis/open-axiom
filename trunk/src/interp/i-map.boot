@@ -86,10 +86,10 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   -- next check is for bad forms on the lhs of the ==, such as
   -- numbers, constants.
 
-  -- FIXME: this function miguidedly characterizes constant definitions
+  -- FIXME: this function misguidedly characterizes constant definitions
   -- as rules definitions.  In particular, typed constant definitions
-  -- are characterized are rules in one part, and announced to user
-  -- a niladic functions.  We try to limit the damage as much as we can.
+  -- are characterized as rules in one part, and announced to user
+  -- as niladic functions.  We try to limit the damage as much as we can.
   defineeIsConstant := false
 
   if lhs isnt [.,:.] then
