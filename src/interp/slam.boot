@@ -50,8 +50,6 @@ isRecurrenceRelation(op,body,minivectorName) ==
   -- body should have a conditional expression which
   -- gives k boundary values, one general term plus possibly an
   -- "out of domain" condition
-  --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
-  --  CONTAINED('throwKeyedMsg,mess)) => nil
   pcl := [x for x in pcl | not (x is ['%otherwise,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]
@@ -86,7 +84,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   n:= k+minIndex
   --Check general predicate
   predOk :=
-    generalPred = '%true => true
+    generalPred = '%otherwise => true
     generalPred is ['SPADCALL,m,=sharpArg,
       ["ELT",["%dynval",=MKQ minivectorName],slot]]
         and sameObject?(lesspSlot,$minivector.slot)=> m+1
@@ -95,7 +93,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
         ["ELT",["%dynval",=MKQ minivectorName],notSlot]]
           and sameObject?(lesspSlot,$minivector.slot)
             and sameObject?(notpSlot,$minivector.notSlot) => m
-    generalPred is ['NOT,['SPADCALL,=sharpArg,m,
+    generalPred is ['%not,['SPADCALL,=sharpArg,m,
       ["ELT",["%dynval",=MKQ minivectorName], =lesspSlot]]]
         and sameObject?(lesspSlot,$minivector.slot) => m
     return nil
@@ -108,7 +106,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   diffSlot := or/[i for i in 0.. for x in $minivector | sameObject?(x,diffCell)]
                 or return nil
   --Check general term for references to just the k previous values
-  sharpPosition := readInteger subString(sharpArg,1)
+  sharpPosition := readInteger subString(symbolName sharpArg,1)
   al:= mkDiffAssoc(op,generalTerm,k,sharpPosition,sharpArg,diffSlot,minivectorName)
   null al => false
   "$failed" in al => false

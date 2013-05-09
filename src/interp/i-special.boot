@@ -1535,12 +1535,12 @@ evalIF(op,[cond,a,b],m) ==
   -- generate code form compiled IF
   elseCode:=
     b="%noMapVal" =>
-      [[MKQ true, ["throwKeyedMsg",MKQ "S2IM0018",
+      [['%otherwise, ["throwKeyedMsg",MKQ "S2IM0018",
         ["CONS",MKQ object2Identifier $mapName,nil]]]]
     b='%noBranch =>
-      $lastLineInSEQ => [[MKQ true,["voidValue"]]]
+      $lastLineInSEQ => [['%otherwise,["voidValue"]]]
       nil
-    [[MKQ true,genIFvalCode(b,m)]]
+    [['%otherwise,genIFvalCode(b,m)]]
   code:=['%when,[getArgValue(cond,$Boolean),
     genIFvalCode(a,m)],:elseCode]
   triple:= objNew(code,m)
