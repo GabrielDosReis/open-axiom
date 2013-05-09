@@ -72,19 +72,18 @@ List(S:Type): Exports == Implementation where
     import %tail: % -> %                     from Foreign Builtin
     import %lreverse: % -> %                 from Foreign Builtin
     import %lreverse!: % -> %                from Foreign Builtin
+    import %lcopy: % -> %                    from Foreign Builtin
     import %llength: % -> NonNegativeInteger from Foreign Builtin
     import %icst0: NonNegativeInteger        from Foreign Builtin
     import %icst1: NonNegativeInteger        from Foreign Builtin
     import %idec: Integer -> Integer         from Foreign Builtin
 
     Qpush   ==> PUSH$Lisp
-    cycleMax ==> 1000        -- value used in checking for cycles
 
     nil                == %nil
     null l             == %peq(l,%nil)
     cons(s, l)         == %pair(s,l)
     append(l:%, t:%)   == %lconcat(l,t)
-
     #x                 == %llength x
     concat(s:S,x:%)    == %pair(s,x)
     eq?(x,y)           == %peq(x,y)
@@ -110,11 +109,11 @@ List(S:Type): Exports == Implementation where
        empty? x => error "Cannot update an empty list"
        %store(%tail x,y)$Foreign(Builtin)
        %tail x
-    construct l         == l pretend %
-    parts s             == s pretend List S
+    construct l         == l
+    parts s             == s
     reverse! x         == %lreverse! x
     reverse x           == %lreverse x
-    minIndex x          == 1
+    minIndex x          == %icst1
 
     rest(x, n) ==
        for i in %icst1..n repeat
@@ -122,13 +121,7 @@ List(S:Type): Exports == Implementation where
           x := %tail x
        x
 
-    copy x ==
-       y := empty()
-       for i in %icst0.. while not empty? x repeat
-          if i = cycleMax and cyclic? x then error "cyclic list"
-          y := %pair(%head x,y)
-          x := %tail x
-       %lreverse! y
+    copy x == %lcopy x
 
     if S has CoercibleTo(OutputForm) then
       coerce(x):OutputForm ==

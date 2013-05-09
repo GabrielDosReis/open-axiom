@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -652,7 +652,7 @@ $VMsideEffectFreeOperators ==
     %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
     %nil %pair %list %pair? %lconcat %llength %lfirst %lsecond %lthird
-    %lreverse %lempty? %hash %ismall? %string? %f2s STRINGIMAGE
+    %lreverse %lempty? %lcopy %hash %ismall? %string? %f2s STRINGIMAGE
     %ccst %ccstmax %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %c2s %cup %cdown
     %sname
     %strlength %streq %i2s %schar %strlt %strconc
