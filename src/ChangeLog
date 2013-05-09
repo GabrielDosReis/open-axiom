@@ -1,5 +1,11 @@
 2013-05-08  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/list.spad.pamphlet (List) [copy]: Simplify.
+	* interp/g-opt.boot (%lcopy): New side-effect free builtin.
+	* interp/lisp-backend.boot: Translate it.
+
+2013-05-08  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/c-util.boot (almostPure?): New.
 	(foldExportedFunctionReferences): Use it.
 

@@ -1,4 +1,4 @@
--- Copyright (C) 2011-2012, Gabriel Dos Reis.
+-- Copyright (C) 2011-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -615,6 +615,7 @@ for x in [
     ['%lthird,    :'CADDR],
     ['%pair?,     :'CONSP],
     ['%tail,      :'CDR],
+    ['%lcopy,     :'COPY_-LIST],
     -- binary list operations
     ['%lconcat,   :'APPEND],
 
