@@ -249,18 +249,21 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
 IndexedDirectProductOrderedAbelianMonoid(A:OrderedAbelianMonoid,S:OrderedType):
     Join(OrderedAbelianMonoid,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductAbelianMonoid(A,S) add
-    --representations
-       Term:=  Record(k:S,c:A)
-       Rep:=  List Term
-       x,y: %
        x<y ==
-         empty? y => false
-         empty? x => true   -- note careful order of these two lines
-         y.first.k > x.first.k => true
-         y.first.k < x.first.k => false
-         y.first.c > x.first.c => true
-         y.first.c < x.first.c => false
-         x.rest < y.rest
+         u := terms x
+         v := terms y
+         repeat
+           -- note careful order of next two lines
+           empty? v => return false
+           empty? u => return true
+           xt := first u
+           yt := first v
+           index xt < index yt => return true
+           index yt < index xt => return false
+           coefficient xt < coefficient yt => return true
+           coefficient yt < coefficient xt => return false
+           u := rest u
+           v := rest v
 
 @
 \section{domain IDPOAMS IndexedDirectProductOrderedAbelianMonoidSup}
