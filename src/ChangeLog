@@ -1,3 +1,10 @@
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/catdef.spad.pamphlet (AbelianMonoid) [opposite?]: New.
+	(Rng)[annihilate?]: New.
+	(EntireRing) [annihilate?]: Implement.
+	* algebra/integer.spad.pamphlet (Integer): Implement new exports.
+
 2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/lexing.boot (Keywords): Add "do".
