@@ -1,5 +1,10 @@
 2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/indexedp.spad.pamphlet
+	(IndexedDirectProductOrderedAbelianMonoid) [<]: Rewrite iteratively.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/catdef.spad.pamphlet (AbelianMonoid) [opposite?]: New.
 	(Rng)[annihilate?]: New.
 	(EntireRing) [annihilate?]: Implement.
