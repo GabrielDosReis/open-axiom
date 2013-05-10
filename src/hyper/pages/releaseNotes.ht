@@ -33,6 +33,8 @@ OpenAxiom-1.5.0 was released on XXX, 2013.  It was the first major
 release of \Language{} system, in the 1.5.x series.  It contains 
 contains additions of new features and domains including:
   IndexedProductTerm
+  The compiler now accepts and process do-statement, like the interpreter.
+  Fix for an interpreter performance regression introduced in 1.4.2.
 
 \endscroll
 \autobuttons

@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -751,7 +751,7 @@ parseReturn rd ==
 parseThrow rd ==
   matchAdvanceKeyword(rd,"throw") =>
     compulsorySyntax(rd,parseExpression rd)
-    pushReduction('parseReturn,["%Throw",popStack1()])
+    pushReduction('parseThrow,["%Throw",popStack1()])
   nil
 
 parseExit rd ==
@@ -775,6 +775,10 @@ parseJump rd ==
     advanceToken rd
     pushReduction('parseJump,s)
   nil
+
+++ Parse a block statement, e.g. a pile of expressions.  
+parseBlock rd ==
+  parseExpr(rd,110)
 
 parseForm rd ==
   matchAdvanceKeyword(rd,"iterate") =>
@@ -822,11 +826,17 @@ parseIteratorTails rd ==
 parseLoop rd ==
   repeatedSyntax(rd,'iterators,function parseIterator) =>
     compulsorySyntax(rd,matchAdvanceKeyword(rd,"repeat"))
-    compulsorySyntax(rd,parseExpr(rd,110))
+    compulsorySyntax(rd,parseBlock rd)
     pushReduction('parseLoop,["REPEAT",:popStack2(),popStack1()])
   matchAdvanceKeyword(rd,"repeat") =>
-    compulsorySyntax(rd,parseExpr(rd,110))
+    compulsorySyntax(rd,parseBlock rd)
     pushReduction('parseLoop,["REPEAT",popStack1()])
+  nil
+
+parseDo rd ==
+  matchAdvanceKeyword(rd,"do") =>
+    compulsorySyntax(rd, parseBlock rd)
+    pushReduction('parseDo,["%Do",popStack1()])
   nil
 
 parseOpenBracket rd ==
@@ -931,7 +941,7 @@ parseMatch rd ==
   matchAdvanceKeyword(rd,"case") =>
     compulsorySyntax(rd,parseExpr(rd,400))
     compulsorySyntax(rd,matchAdvanceKeyword(rd,"is"))
-    compulsorySyntax(rd,parseExpr(rd,110))
+    compulsorySyntax(rd,parseBlock rd)
     pushReduction('parseMatch,["%Match",popStack2(),popStack1()])
   nil
 
@@ -1249,5 +1259,6 @@ for j in [
     ["|",0,190],
     ["suchthat"],
     ["then",0,114],
-    ["else",0,114]
+    ["else",0,114],
+    ["do",122,121,function parseDo]
   ] repeat MAKENEWOP(j,'Nud)

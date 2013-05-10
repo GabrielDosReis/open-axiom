@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1135,6 +1135,12 @@ compMacro(form,m,e) ==
     if lhs is [op] then lhs := op
     ["/throwAway",$NoValueMode,putMacro(lhs,macroExpand(rhs,e),e)]
   nil
+
+--% %Do
+
+compDo: (%Form,%Mode,%Env) -> %Triple
+compDo(x,m,e) ==
+  compOrCroak(first x.args,m,e)
 
 --% SEQ
 
@@ -2871,5 +2877,6 @@ for x in [["|", :"compSuchthat"],_
           ["%SignatureImport",:"compSignatureImport"],_
           ['%Throw,:'compThrow],
           ['%Try, :'compTry],
+          ['%Do,  : 'compDo],
           ["[||]", :"compileQuasiquote"]] repeat
   property(first x, 'SPECIAL) := rest x

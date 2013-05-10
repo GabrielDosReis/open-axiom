@@ -1,5 +1,12 @@
 2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/lexing.boot (Keywords): Add "do".
+	* interp/spad-parser.boot (parseBlock): New.
+	(parseDo): Likewise.  Register for do-statements.
+	* interp/compiler.boot (compDo): New.  Handle do-statements.
+
+2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject)
 	[combineWithIf]: New.
 
