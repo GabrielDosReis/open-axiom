@@ -1,4 +1,4 @@
--- Copyright (C) 2011-2012, Gabriel Dos Reis.
+-- Copyright (C) 2011-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -295,7 +295,7 @@ Keywords == [
  "or", "and", "isnt", "is", "where", "forall", "exist", "try", "assume",
   "has", "with", "add", "case", "in", "by", "pretend", "mod", "finally",
    "exquo", "div", "quo", "else", "rem", "then", "suchthat", "catch", "throw",
-    "if", "iterate", "break", "from", "exit", "leave", "return",
+    "if", "iterate", "break", "from", "exit", "leave", "return", "do",
      "not", "repeat", "until", "while", "for", "import", "inline" ]
 
 getIdentifier(rd,esc?) ==
