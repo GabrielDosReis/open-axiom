@@ -35,6 +35,8 @@ contains additions of new features and domains including:
   IndexedProductTerm
   The compiler now accepts and process do-statement, like the interpreter.
   Fix for an interpreter performance regression introduced in 1.4.2.
+  The category AbelianMonoid has a new export: opposite?.
+  The category Rng has a new export: annihilate?.
 
 \endscroll
 \autobuttons

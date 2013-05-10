@@ -1,6 +1,6 @@
 
-(30 . 3577105534)            
-(3995 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577141750)            
+(3999 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -73,17 +73,17 @@
  |Elaboration| |ExtensibleLinearAggregate&| |ExtensibleLinearAggregate|
  |ElementaryFunctionCategory&| |ElementaryFunctionCategory|
  |EllipticFunctionsUnivariateTaylorSeries| |Eltable| |EltableAggregate&|
- |EltableAggregate| |EuclideanModularRing| |EntireRing| |Environment|
- |EigenPackage| |Equation| |EquationFunctions2| |EqTable| |ErrorFunctions|
- |ExpressionSpace&| |ExpressionSpace| |ExpressionSpaceFunctions1|
- |ExpressionSpaceFunctions2| |EuclideanDomain&| |EuclideanDomain| |Evalable&|
- |Evalable| |EvaluateCycleIndicators| |Exit| |ExitAst| |ExponentialExpansion|
- |Expression| |ExpressionFunctions2| |ExpressionToUnivariatePowerSeries|
- |ExpressionSpaceODESolver| |ExpressionTubePlot|
- |ExponentialOfUnivariatePuiseuxSeries| |FactoredFunctions|
- |FactoringUtilities| |FreeAbelianGroup| |FreeAbelianMonoidCategory|
- |FreeAbelianMonoid| |FiniteAbelianMonoidRing&| |FiniteAbelianMonoidRing|
- |FlexibleArray| |FiniteAlgebraicExtensionField&|
+ |EltableAggregate| |EuclideanModularRing| |EntireRing&| |EntireRing|
+ |Environment| |EigenPackage| |Equation| |EquationFunctions2| |EqTable|
+ |ErrorFunctions| |ExpressionSpace&| |ExpressionSpace|
+ |ExpressionSpaceFunctions1| |ExpressionSpaceFunctions2| |EuclideanDomain&|
+ |EuclideanDomain| |Evalable&| |Evalable| |EvaluateCycleIndicators| |Exit|
+ |ExitAst| |ExponentialExpansion| |Expression| |ExpressionFunctions2|
+ |ExpressionToUnivariatePowerSeries| |ExpressionSpaceODESolver|
+ |ExpressionTubePlot| |ExponentialOfUnivariatePuiseuxSeries|
+ |FactoredFunctions| |FactoringUtilities| |FreeAbelianGroup|
+ |FreeAbelianMonoidCategory| |FreeAbelianMonoid| |FiniteAbelianMonoidRing&|
+ |FiniteAbelianMonoidRing| |FlexibleArray| |FiniteAlgebraicExtensionField&|
  |FiniteAlgebraicExtensionField| |FourierComponent| |FunctorData|
  |FiniteDivisor| |FiniteDivisorFunctions2| |FiniteDivisorCategory&|
  |FiniteDivisorCategory| |FullyEvalableOver&| |FullyEvalableOver| |FiniteField|
@@ -312,8 +312,8 @@
  |RationalFunctionFactorizer| |RGBColorModel| |RGBColorSpace| |RegularChain|
  |RandomIntegerDistributions| |Ring&| |Ring| |RationalInterpolation|
  |RightLinearSet| |RectangularMatrixCategory&| |RectangularMatrixCategory|
- |RectangularMatrix| |RectangularMatrixCategoryFunctions2| |RightModule| |Rng|
- |RangeBinding| |RealNumberSystem&| |RealNumberSystem|
+ |RectangularMatrix| |RectangularMatrixCategoryFunctions2| |RightModule| |Rng&|
+ |Rng| |RangeBinding| |RealNumberSystem&| |RealNumberSystem|
  |RightOpenIntervalRootCharacterization| |RomanNumeral|
  |RecursivePolynomialCategory&| |RecursivePolynomialCategory| |RepeatAst|
  |RealRootCharacterizationCategory&| |RealRootCharacterizationCategory|
@@ -396,17 +396,17 @@
  |XPolynomialsCat| |XPolynomialRing| |XRecursivePolynomial| |YoungDiagram|
  |ParadoxicalCombinatorsForStreams| |ZeroDimensionalSolvePackage|
  |IntegerLinearDependence| |IntegerMod| |Enumeration| |Mapping| |Record|
- |Union| |zerosOf| |zeroOf| |rootsOf| |makeSketch| |inrootof| |droot| |iroot|
- |eq?| |assoc| |doublyTransitive?| |knownInfBasis| |rootSplit| |ratDenom|
- |ratPoly| |rootPower| |rootProduct| |rootSimp| |rootKerSimp| |leftRank|
- |rightRank| |doubleRank| |weakBiRank| |biRank| |basisOfCommutingElements|
- |basisOfLeftAnnihilator| |basisOfRightAnnihilator| |basisOfLeftNucleus|
- |basisOfRightNucleus| |basisOfMiddleNucleus| |basisOfNucleus| |basisOfCenter|
- |basisOfLeftNucloid| |basisOfRightNucloid| |basisOfCentroid|
- |radicalOfLeftTraceForm| |obj| |dom| |any| |applyRules| |localUnquote|
- |arbitrary| |setColumn!| |setRow!| |oneDimensionalArray| |associatedSystem|
- |uncouplingMatrices| |associatedEquations| |arrayStack| |morphism|
- |balancedFactorisation| |before?| |mapDown!| |mapUp!| |setleaves!|
+ |Union| |opposite?| |zerosOf| |zeroOf| |rootsOf| |makeSketch| |inrootof|
+ |droot| |iroot| |eq?| |assoc| |doublyTransitive?| |knownInfBasis| |rootSplit|
+ |ratDenom| |ratPoly| |rootPower| |rootProduct| |rootSimp| |rootKerSimp|
+ |leftRank| |rightRank| |doubleRank| |weakBiRank| |biRank|
+ |basisOfCommutingElements| |basisOfLeftAnnihilator| |basisOfRightAnnihilator|
+ |basisOfLeftNucleus| |basisOfRightNucleus| |basisOfMiddleNucleus|
+ |basisOfNucleus| |basisOfCenter| |basisOfLeftNucloid| |basisOfRightNucloid|
+ |basisOfCentroid| |radicalOfLeftTraceForm| |obj| |dom| |any| |applyRules|
+ |localUnquote| |arbitrary| |setColumn!| |setRow!| |oneDimensionalArray|
+ |associatedSystem| |uncouplingMatrices| |associatedEquations| |arrayStack|
+ |morphism| |balancedFactorisation| |before?| |mapDown!| |mapUp!| |setleaves!|
  |balancedBinaryTree| |sylvesterMatrix| |bezoutMatrix| |bezoutResultant|
  |bezoutDiscriminant| |inspect| |extract!| |bag| |binding| |binaryOperation|
  |setProperties| |setProperty| |deleteProperty!| |has?| |comparison| |equality|
@@ -769,9 +769,9 @@
  |nullSpace| |nullity| |rank| |rowEchelon| |column| |row| |qelt| |ncols|
  |nrows| |maxColIndex| |minColIndex| |maxRowIndex| |minRowIndex|
  |antisymmetric?| |symmetric?| |diagonal?| |square?| |matrix|
- |rectangularMatrix| |characteristic| |round| |fractionPart| |wholePart|
- |floor| |ceiling| |norm| |mightHaveRoots| |refine| |middle| |size| |right|
- |left| |roman| |mainSquareFreePart| |mainPrimitivePart| |mainContent|
+ |rectangularMatrix| |annihilate?| |characteristic| |round| |fractionPart|
+ |wholePart| |floor| |ceiling| |norm| |mightHaveRoots| |refine| |middle| |size|
+ |right| |left| |roman| |mainSquareFreePart| |mainPrimitivePart| |mainContent|
  |primitivePart!| |gcd| |nextsubResultant2| |LazardQuotient2| |LazardQuotient|
  |subResultantChain| |halfExtendedSubResultantGcd2|
  |halfExtendedSubResultantGcd1| |extendedSubResultantGcd| |exactQuotient!|
