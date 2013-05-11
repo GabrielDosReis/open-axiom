@@ -805,16 +805,16 @@ COMPILE1 fun ==
     body := body'
   args := removeFluids args
   newArgs :=
-    type is 'LAMBDA and simpleParameterList? args => args
+    type in '(%lambda LAMBDA) and simpleParameterList? args => args
     args' := gensym()
     body := [['DSETQ,args,args'],:body]
-    type is 'LAMBDA => ["&REST",args',"&AUX",:$Vars]
+    type in '(%lambda LAMBDA) => ["&REST",args',"&AUX",:$Vars]
     type is 'MLAMBDA => ["&WHOLE",args',"&REST",gensym(),"&AUX",:$Vars]
     systemError ['"bad function type: ",:bright symbolName type]
   if $Decls ~= nil then
     body := [['DECLARE,['SPECIAL,:$Decls]],:body]
   body :=
-    type is 'LAMBDA => ['DEFUN,name,newArgs,:body]
+    type in '(%lambda LAMBDA) => ['DEFUN,name,newArgs,:body]
     ['DEFMACRO,name,newArgs,:body]
   compileLispDefinition(name,body)
   body

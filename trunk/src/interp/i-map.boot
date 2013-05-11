@@ -774,7 +774,7 @@ compileCoerceMap(op,argTypes,mm) ==
   minivectorName := makeInternalMapMinivectorName name
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   symbolValue(minivectorName) := vector $minivector
-  compileInteractive [name,['LAMBDA,parms,body]]
+  compileInteractive [name,['%lambda,parms,body]]
   sig.target
 
 depthOfRecursion(opName,body) ==

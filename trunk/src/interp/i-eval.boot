@@ -243,7 +243,7 @@ evalForm(op,opName,argl,mmS) ==
           ['SPADCALL,:form,freeFun]
         fun is ['XLAM,xargs,:xbody] =>
           rec :=  first form
-          ['FUNCALL,['function, ['LAMBDA,xargs,:xbody]],:take(#xargs, form)]
+          ['%funcall,['%function, ['%lambda,xargs,:xbody]],:take(#xargs, form)]
         dcVector := evalDomain dc
         fun0 :=
           newType? CAAR mm =>

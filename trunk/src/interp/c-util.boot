@@ -1438,7 +1438,7 @@ foldExportedFunctionReferences defs ==
   for fun in defs repeat
     fun isnt [name,lamex] => nil
     getFunctionReplacement name => nil
-    lamex isnt ["LAMBDA",vars,body] => nil
+    lamex isnt ['%lambda,vars,body] => nil
     body := replaceSimpleFunctions body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
@@ -1518,8 +1518,8 @@ backendCompileNEWNAM x ==
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
 
-++ Lisp back end compiler for SPADSLAM forms [namd,args,:body].
-++ A SPADSLAM form is one that is `functional' in the sense that
+++ Lisp back end compiler for %slam forms [namd,args,:body].
+++ A %slam form is one that is `functional' in the sense that
 ++ its values are cached, so that equal lists of argument values
 ++ yield equal values.  The arguments-value pairs are stored
 ++ in a hash table.  This backend compiler is used to compile constructors.
@@ -1554,7 +1554,7 @@ backendCompile2: %Code -> %Symbol
 backendCompile2 code ==
   code isnt [name,[type,args,:body]] =>
     systemError ['"parenthesis error in: ", code]
-  type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
+  type = '%slam => backendCompileSPADSLAM(name,args,body)
   assembleCode [name,[type,args,:body]]
 
 ++ returns all fuild variables contained in `x'.  Fuild variables are
