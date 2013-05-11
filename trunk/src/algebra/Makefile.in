@@ -931,7 +931,7 @@ oa_algebra_layer_11 = \
   ASTACK   COMBINAT POINT    PTCAT \
   CSTTOOLS FARRAY   \
   FLALG    GALUTIL  HEAP              \
-  IARRAY2  IFARRAY  INTCAT   INTHEORY \
+  IFARRAY  INTCAT   INTHEORY \
   IRREDFFX LFCAT    LODOCAT  LODOCAT- \
                              MATSTOR  \
   ORESUP   OREPCTO  OREUP    PLOT3D   \

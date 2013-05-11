@@ -1,5 +1,14 @@
 2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/database.boot (getConstructorModemap): Try to load fresh
+	module first before looking into cached database data.
+	* algebra/Makefile.am (oa_algebra_layer_11): Remove IARRAY2.
+	* algebra/array2.spad.pamphlet (InnerIndexedTwoDimensionalArray):
+	Drop starting index parameters.  Tidy.  Adjust users.
+	(IndexedTwoDimensionalArray): Remove as unused.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/array2.spad.pamphlet: Cleanu up.
 
 2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
