@@ -238,6 +238,17 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
          null terms x => 0
          coefficient terms(x).first
 
+       opposite?(x,y) ==
+         u := terms x
+         v := terms y
+         repeat
+           empty? u => return empty? v
+           empty? v => return empty? u
+           index u.first ~= index v.first => return false
+           not opposite?(coefficient u.first,coefficient v.first) => return false
+           u := rest u
+           v := rest v
+
 @
 \section{domain IDPOAM IndexedDirectProductOrderedAbelianMonoid}
 <<domain IDPOAM IndexedDirectProductOrderedAbelianMonoid>>=
