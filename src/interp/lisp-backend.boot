@@ -775,7 +775,7 @@ compileLispDefinition(name,def) ==
   nil
 
 ++ Return true if `parms' is the empty list
-++ of is a proper list of identifiers.
+++ or is a proper list of identifiers.
 simpleParameterList? parms ==
   parms = nil => true
   parms is [.,:.] and lastNode parms is [.] and (and/[ident? p for p in parms])
