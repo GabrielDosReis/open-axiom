@@ -1,5 +1,10 @@
 2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/matrix.spad.pamphlet (IndexedMatrix): Remove as unused.
+	* algebra/Makefile.am (oa_algebra_layer_12): Remove IMATRIX.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/g-opt.boot (optEmptyArray): New expander.  Register.
 	(optSimpleArray): Likewise.
 	(optList2Array): Likewise.

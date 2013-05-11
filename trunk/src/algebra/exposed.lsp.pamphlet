@@ -822,7 +822,6 @@
   (|IndexedDirectProductOrderedAbelianMonoidSup| . IDPOAMS)
   (|IndexedExponents| . INDE)
   (|IndexedFlexibleArray| . IFARRAY)
-  (|IndexedMatrix| . IMATRIX)
   (|IndexedOneDimensionalArray| . IARRAY1)
   (|IndexedTwoDimensionalArray| . IARRAY2)
   (|IndexedVector| . IVECTOR)
