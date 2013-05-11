@@ -310,7 +310,7 @@ consDomainName(db,x,dc) ==
     substitute('$,"$$",x)
   x = [] => x
   y := LASSOC(x,$devaluateList) => y
-  k := assocIndex(db,x) => ['devaluate,['%vref,'$,k]]
+  k := assocIndex(db,x) => ['devaluate,['%tref,'$,k]]
   get(x,'value,$e) =>
     isDomainForm(x,$e) => ['devaluate,x]
     x
@@ -323,7 +323,7 @@ consDomainForm(db,x,dc) ==
      [op,:[consDomainForm(db,y,dc) for y in argl]]
   x = [] => x
   (y := LASSOC(x,$devaluateList)) => y
-  k := assocIndex(db,x) => ['%vref,'$,k]
+  k := assocIndex(db,x) => ['%tref,'$,k]
   get(x,'value,$e) or get(x,'mode,$e) => x
   MKQ x
 
@@ -667,7 +667,7 @@ NRTputInHead(db,bod) ==
     NRTputInTail(db,rest bod) --NOTE: args = copyTree of rest bod
     -- The following test allows function-returning expressions
     fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
-      k := assocIndex(db,dom) => lastNode(bod).first := ['%vref,'_$,k]
+      k := assocIndex(db,dom) => lastNode(bod).first := ['%tref,'_$,k]
       nil
     NRTputInHead(db,fn)
     bod
@@ -684,7 +684,7 @@ NRTputInTail(db,x) ==
     (u := first y) isnt [.,:.] =>
       u is '$ or LASSOC(u,$devaluateList) => nil
       k := assocIndex(db,u) =>
-        u isnt [.,:.] => y.first := ['%vref,'_$,k]
+        u isnt [.,:.] => y.first := ['%tref,'_$,k]
         -- u atomic means that the slot will always contain a vector
         y.first := ['SPADCHECKELT,'_$,k]
       --this reference must check that slot is a vector
