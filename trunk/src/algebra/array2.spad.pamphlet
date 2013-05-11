@@ -32,24 +32,17 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
   R   : Type
   Row : FiniteLinearAggregate R
   Col : FiniteLinearAggregate R
-
   Definition == HomogeneousAggregate(R) with
-
     shallowlyMutable
       ++ one may destructively alter arrays
-
     finiteAggregate
       ++ two-dimensional arrays are finite
-
 --% Array creation
-
     new: (NonNegativeInteger,NonNegativeInteger,R) -> %
       ++ new(m,n,r) is an m-by-n array all of whose entries are r
     fill!: (%,R) -> %
       ++ fill!(m,r) fills m with r's
-
 --% Size inquiries
-
     minRowIndex : % -> Integer
       ++ minRowIndex(m) returns the index of the 'first' row of the array m
     maxRowIndex : % -> Integer
@@ -62,9 +55,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       ++ nrows(m) returns the number of rows in the array m
     ncols : % -> NonNegativeInteger
       ++ ncols(m) returns the number of columns in the array m
-
 --% Part extractions
-
     elt: (%,Integer,Integer) -> R
       ++ elt(m,i,j) returns the element in the ith row and jth
       ++ column of the array m
@@ -85,9 +76,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       ++ error check to determine if index is in proper ranges
     parts: % -> List R
       ++ parts(m) returns a list of the elements of m in row major order
-
 --% Part assignments
-
     setelt: (%,Integer,Integer,R) -> R
       -- will become setelt!
       ++ setelt(m,i,j,r) sets the element in the ith row and jth
@@ -101,9 +90,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       ++ setRow!(m,i,v) sets to ith row of m to v
     setColumn!: (%,Integer,Col) -> %
       ++ setColumn!(m,j,v) sets to jth column of m to v
-
 --% Map and Zip
-
     map: (R -> R,%) -> %
       ++ map(f,a) returns \spad{b}, where \spad{b(i,j) = f(a(i,j))} for all \spad{i, j}
     map!: (R -> R,%) -> %
@@ -117,11 +104,8 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       ++ else \spad{c(i,j) = f(r, b(i,j))} when \spad{a(i,j)} does not exist;
       ++ else \spad{c(i,j) = f(a(i,j),r)} when \spad{b(i,j)} does not exist;
       ++ otherwise \spad{c(i,j) = f(r,r)}.
-
    add
-
 --% Predicates
-
     any?(f,m) ==
       for i in minRowIndex(m)..maxRowIndex(m) repeat
         for j in minColIndex(m)..maxColIndex(m) repeat
@@ -135,11 +119,9 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       true
 
 --% Size inquiries
-
     # m == nrows(m) * ncols(m)
 
 --% Part extractions
-
     elt(m,i,j,r) ==
       i < minRowIndex(m) or i > maxRowIndex(m) => r
       j < minColIndex(m) or j > maxColIndex(m) => r
@@ -289,29 +271,26 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
   Row : FiniteLinearAggregate R
   Col : FiniteLinearAggregate R
 
-  Exports ==> TwoDimensionalArrayCategory(R,Row,Col)
-
-  Implementation ==> add
-
-    Rep := PrimitiveArray PrimitiveArray R
+  Exports == TwoDimensionalArrayCategory(R,Row,Col)
+  Implementation == PrimitiveArray PrimitiveArray R add
 
 --% Predicates
 
-    empty? m == empty?(m)$Rep
+    empty? m == empty? rep m
 
 --% Primitive array creation
 
-    empty() == empty()$Rep
+    empty() == per empty()$Rep
 
     new(rows,cols,a) ==
       rows = 0 =>
         error "new: arrays with zero rows are not supported"
 --      cols = 0 =>
 --        error "new: arrays with zero columns are not supported"
-      arr : PrimitiveArray PrimitiveArray R := new(rows,empty())
-      for i in minIndex(arr)..maxIndex(arr) repeat
-        qsetelt!(arr,i,new(cols,a))
-      arr
+      arr : Rep := new(rows,empty())
+      for i in 0..rows-1 repeat
+        arr.i := new(cols,a)
+      per arr
 
 --% Size inquiries
 
@@ -319,17 +298,15 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
     minColIndex m == mnCol
     maxRowIndex m == nrows m + mnRow - 1
     maxColIndex m == ncols m + mnCol - 1
-
-    nrows m == (# m)$Rep
-
+    nrows m == # rep m
     ncols m ==
       empty? m => 0
-      # m(minIndex(m)$Rep)
+      # rep(m)(minIndex rep m)
 
 --% Part selection/assignment
 
     qelt(m,i,j) ==
-      qelt(qelt(m,i - minRowIndex m)$Rep,j - minColIndex m)
+      qelt(qelt(rep m,i - minRowIndex m),j - minColIndex m)
 
     elt(m:%,i:Integer,j:Integer) ==
       i < minRowIndex(m) or i > maxRowIndex(m) =>
@@ -339,7 +316,7 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
       qelt(m,i,j)
 
     qsetelt!(m,i,j,r) ==
-      setelt(qelt(m,i - minRowIndex m)$Rep,j - minColIndex m,r)
+      setelt(qelt(rep m,i - minRowIndex m),j - minColIndex m,r)
 
     setelt(m:%,i:Integer,j:Integer,r:R) ==
       i < minRowIndex(m) or i > maxRowIndex(m) =>
@@ -377,13 +354,10 @@ IndexedTwoDimensionalArray(R,mnRow,mnCol):Exports == Implementation where
   ++ first column in an array and vice versa.
   R : Type
   mnRow, mnCol : Integer
-  Row ==> IndexedOneDimensionalArray(R,mnCol)
-  Col ==> IndexedOneDimensionalArray(R,mnRow)
-
-  Exports ==> TwoDimensionalArrayCategory(R,Row,Col)
-
-  Implementation ==>
-    InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col)
+  macro Row == IndexedOneDimensionalArray(R,mnCol)
+  macro Col == IndexedOneDimensionalArray(R,mnRow)
+  Exports == TwoDimensionalArrayCategory(R,Row,Col)
+  Implementation == InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col)
 
 @
 \section{domain ARRAY2 TwoDimensionalArray}
@@ -393,14 +367,12 @@ TwoDimensionalArray(R):Exports == Implementation where
   ++ A TwoDimensionalArray is a two dimensional array with
   ++ 1-based indexing for both rows and columns.
   R : Type
-  Row ==> OneDimensionalArray R
-  Col ==> OneDimensionalArray R
-
-  Exports ==> TwoDimensionalArrayCategory(R,Row,Col) with
+  macro Row == OneDimensionalArray R
+  macro Col == OneDimensionalArray R
+  Exports == TwoDimensionalArrayCategory(R,Row,Col) with
     shallowlyMutable
       ++ One may destructively alter TwoDimensionalArray's.
-
-  Implementation ==> InnerIndexedTwoDimensionalArray(R,1,1,Row,Col)
+  Implementation == InnerIndexedTwoDimensionalArray(R,1,1,Row,Col)
 
 @
 \section{License}
