@@ -1146,7 +1146,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%seq,['%store,['%tref,g,0],mkConstructor $form],g]]
-    fun := compile(db,[op',["LAMBDA",sargl,body]],signature')
+    fun := compile(db,[op',['%lambda,sargl,body]],signature')
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(form.args,$FormalMapVariableList)
@@ -1484,8 +1484,8 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     T:= compFunctorBody(db,body,rettype,$e)
     body':= T.expr
     lamOrSlam :=
-      dbInstanceCache db = nil => 'LAMBDA
-      'SPADSLAM
+      dbInstanceCache db = nil => '%lambda
+      '%slam
     fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,form.args,body']]),signature')
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
@@ -1938,7 +1938,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body' := addArgumentConditions(body',$op)
       finalBody := ['%scope,catchTag,body']
-      compile(db,[op',["LAMBDA",[:argl,'_$],finalBody]],signature)
+      compile(db,[op',['%lambda,[:argl,'$],finalBody]],signature)
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
@@ -2094,9 +2094,9 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
   dbConstructorKind db = 'category =>
-    first compAndDefine [[fn,['SPADSLAM,vl,:bodyl]]]
+    first compAndDefine [[fn,['%slam,vl,:bodyl]]]
   dbInstanceCache db = nil =>
-    first backendCompile [[fn,['LAMBDA,vl,:bodyl]]]
+    first backendCompile [[fn,['%lambda,vl,:bodyl]]]
   compHash(fn,vl,bodyl)
  
 constructMacro: %Form -> %Form

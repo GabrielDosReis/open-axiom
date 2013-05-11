@@ -177,15 +177,15 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   -- MCD 13/3/96
   parms := [:vars,"envArg"]
   if not $definingMap and ($genValue or $compilingMap) then
-    code := wrap compileInteractive [$mapName,["LAMBDA",parms,body]]
+    code := wrap compileInteractive [$mapName,['%lambda,parms,body]]
   else
     $freeVariables: local := []
     $boundVariables: local := [minivectorName,:vars]
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
-    fun := ["function",["LAMBDA",parms,body]]
-    code := ["CONS", fun, ["VECTOR", :reverse $freeVariables]]
+    fun := ['%function,['%lambda,parms,body]]
+    code := ['%pair, fun, ['%vector, :reverse $freeVariables]]
 
   val := objNew(code,rt := ['Mapping,computedResultType,:rest types])
   putValue(t,val)
@@ -795,9 +795,9 @@ mkIterFun([index,:s],funBody) ==
   $boundVariables: local := [index]
   body := checkForFreeVariables(objVal getValue funBody,"ALL")
   parms := [index,"envArg"]
-  val:=['function,declareUnusedParameters ['LAMBDA,parms,body]]
+  val:=['%function,declareUnusedParameters ['%lambda,parms,body]]
   vec := mkAtreeNode gensym()
-  putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
+  putValue(vec,objNew(['%pair,val,['%vector,:reverse $freeVariables]],mapMode))
   vec
 
 checkForFreeVariables(v,locals) ==
@@ -823,7 +823,7 @@ checkForFreeVariables(v,locals) ==
       -- Might have a mode at the front of a list, or be calling a function
       -- which returns a function.
       [checkForFreeVariables(op,locals),:[checkForFreeVariables(a,locals) for a in args]]
-    op in '(LAMBDA QUOTE getValueFromEnvironment) => v
+    op in '(LAMBDA %lambda QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
     op in '(COLLECT REPEAT %collect %repeat) =>
@@ -935,9 +935,9 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   body :=
    [checkForFreeVariables(form,$localVars) for form in getValue funBody]
   parms := [$index,'envArg]
-  val:=['function,declareUnusedParameters ['LAMBDA,parms,objVal body]]
+  val:=['%function,declareUnusedParameters ['%lambda,parms,objVal body]]
   vec := mkAtreeNode gensym()
-  putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
+  putValue(vec,objNew(['%pair,val,['%vector,:reverse $freeVariables]],mapMode))
   vec
 
 subVecNodes(new,old,form) ==

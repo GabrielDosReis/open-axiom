@@ -151,7 +151,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
   parms := [:argl,"envArg"]
   cacheCount = 0 or null argl =>
-    compileInteractive [nam,["LAMBDA",parms,body]]
+    compileInteractive [nam,['%lambda,parms,body]]
     nam
   num :=
     integer? cacheCount =>
@@ -186,8 +186,8 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     ["PROG",[g2,g3],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   -- cannot use envArg in next statement without redoing much
   -- of above.
-  mainFunction:= [nam,["LAMBDA",arg,codeBody]]
-  computeFunction:= [auxfn,["LAMBDA",parms,body]]
+  mainFunction:= [nam,['%lambda,arg,codeBody]]
+  computeFunction:= [auxfn,['%lambda,parms,body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= "function"
@@ -220,9 +220,9 @@ reportFunctionCacheAll(op,nam,argl,body) ==
                       ['%store,['tableValue,['%dynval,MKQ cacheName],g1],
                          computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
-  mainFunction:= [nam,["LAMBDA",arg,codeBody]]
+  mainFunction:= [nam,['%lambda,arg,codeBody]]
   parms := [:argl, "envArg"]
-  computeFunction:= [auxfn,["LAMBDA",parms,body]]
+  computeFunction:= [auxfn,['%lambda,parms,body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
@@ -285,7 +285,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     ['store,['tableValue,["%dynval", MKQ stateNam],extraArgumentCode],
        newTripleCode]
  
-  computeFunction:= [auxfn,["LAMBDA",cargl,cbody]] where
+  computeFunction:= [auxfn,['%lambda,cargl,cbody]] where
     cargl:= [:argl,lastArg]
     returnValue:= ["PROGN",newStateCode,first gsList]
     cbody:=
@@ -301,7 +301,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   continueInit:=
     [["%LET",gIndex,["ELT",stateVar,0]],
       :[["%LET",g,["ELT",stateVar,i]] for g in gsList for i in 1..]]
-  mainFunction:= [nam,["LAMBDA",margl,mbody]] where
+  mainFunction:= [nam,['%lambda,margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
     tripleCode := ['%pair,n,['%list,:initCode]]

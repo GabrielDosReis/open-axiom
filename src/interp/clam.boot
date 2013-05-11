@@ -108,11 +108,11 @@ compHash(op,argl,body) ==
   codeBody := mkBind([[g2,getCode]],
                 ['%when,[g2,returnFoundValue],['%otherwise,putCode]])
  
-  computeFunction := [auxfn,['LAMBDA,argl,:body]]
+  computeFunction := [auxfn,['%lambda,argl,:body]]
   if $reportCompilation then
     sayBrightlyI bright '"Generated code for function:"
     pp computeFunction
-  compQuietly [[op,['LAMBDA,argl,codeBody]],computeFunction]
+  compQuietly [[op,['%lambda,argl,codeBody]],computeFunction]
   op
  
 CDRwithIncrement x ==
