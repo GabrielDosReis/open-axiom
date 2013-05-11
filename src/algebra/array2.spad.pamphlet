@@ -262,12 +262,11 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
 \section{domain IIARRAY2 InnerIndexedTwoDimensionalArray}
 <<domain IIARRAY2 InnerIndexedTwoDimensionalArray>>=
 )abbrev domain IIARRAY2 InnerIndexedTwoDimensionalArray
-InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
+InnerIndexedTwoDimensionalArray(R,Row,Col):_
        Exports == Implementation where
   ++ This is an internal type which provides an implementation of
   ++ 2-dimensional arrays as PrimitiveArray's of PrimitiveArray's.
   R : Type
-  mnRow, mnCol : Integer
   Row : FiniteLinearAggregate R
   Col : FiniteLinearAggregate R
 
@@ -294,10 +293,10 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
 
 --% Size inquiries
 
-    minRowIndex m == mnRow
-    minColIndex m == mnCol
-    maxRowIndex m == nrows m + mnRow - 1
-    maxColIndex m == ncols m + mnCol - 1
+    minRowIndex m == 1
+    minColIndex m == 1
+    maxRowIndex m == nrows m
+    maxColIndex m == ncols m
     nrows m == # rep m
     ncols m ==
       empty? m => 0
@@ -339,27 +338,7 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
           concat(s, "\end{array} \right]")$String
 
 @
-\section{domain IARRAY2 IndexedTwoDimensionalArray}
-<<domain IARRAY2 IndexedTwoDimensionalArray>>=
-)abbrev domain IARRAY2 IndexedTwoDimensionalArray
-IndexedTwoDimensionalArray(R,mnRow,mnCol):Exports == Implementation where
-  ++ An IndexedTwoDimensionalArray is a 2-dimensional array where
-  ++ the minimal row and column indices are parameters of the type.
-  ++ Rows and columns are returned as IndexedOneDimensionalArray's with
-  ++ minimal indices matching those of the IndexedTwoDimensionalArray.
-  ++ The index of the 'first' row may be obtained by calling the
-  ++ function 'minRowIndex'.  The index of the 'first' column may
-  ++ be obtained by calling the function 'minColIndex'.  The index of
-  ++ the first element of a 'Row' is the same as the index of the
-  ++ first column in an array and vice versa.
-  R : Type
-  mnRow, mnCol : Integer
-  macro Row == IndexedOneDimensionalArray(R,mnCol)
-  macro Col == IndexedOneDimensionalArray(R,mnRow)
-  Exports == TwoDimensionalArrayCategory(R,Row,Col)
-  Implementation == InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col)
 
-@
 \section{domain ARRAY2 TwoDimensionalArray}
 <<domain ARRAY2 TwoDimensionalArray>>=
 )abbrev domain ARRAY2 TwoDimensionalArray
@@ -372,7 +351,7 @@ TwoDimensionalArray(R):Exports == Implementation where
   Exports == TwoDimensionalArrayCategory(R,Row,Col) with
     shallowlyMutable
       ++ One may destructively alter TwoDimensionalArray's.
-  Implementation == InnerIndexedTwoDimensionalArray(R,1,1,Row,Col)
+  Implementation == InnerIndexedTwoDimensionalArray(R,Row,Col)
 
 @
 \section{License}
@@ -413,7 +392,6 @@ TwoDimensionalArray(R):Exports == Implementation where
 
 <<category ARR2CAT TwoDimensionalArrayCategory>>
 <<domain IIARRAY2 InnerIndexedTwoDimensionalArray>>
-<<domain IARRAY2 IndexedTwoDimensionalArray>>
 <<domain ARRAY2 TwoDimensionalArray>>
 @
 \eject

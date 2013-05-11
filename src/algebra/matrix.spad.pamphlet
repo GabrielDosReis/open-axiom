@@ -30,8 +30,6 @@ Matrix(R): Exports == Implementation where
   R : Ring
   Row ==> Vector R
   Col ==> Vector R
-  mnRow ==> 1
-  mnCol ==> 1
   MATLIN ==> MatrixLinearAlgebraFunctions(R,Row,Col,$)
   MATSTOR ==> StorageEfficientMatrixOperations(R)
  
@@ -60,7 +58,7 @@ Matrix(R): Exports == Implementation where
 --       ++ vector of vectors
  
   Implementation ==>
-   InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col) add
+   InnerIndexedTwoDimensionalArray(R,Row,Col) add
     minr ==> minRowIndex
     maxr ==> maxRowIndex
     minc ==> minColIndex
@@ -68,8 +66,8 @@ Matrix(R): Exports == Implementation where
     mini ==> minIndex
     maxi ==> maxIndex
  
-    minRowIndex x == mnRow
-    minColIndex x == mnCol
+    minRowIndex x == 1
+    minColIndex x == 1
  
     swapRows!(x,i1,i2) ==
         (i1 < minRowIndex(x)) or (i1 > maxRowIndex(x)) or _
