@@ -506,6 +506,8 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
       x ** (n::% / d::%)
 
    nan? x == %fNaN? x
+   opposite?(x,y) == x = -y
+   annihilate?(x,y) == zero? x or zero? y
 @
 
 \section{License}

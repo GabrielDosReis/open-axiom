@@ -203,7 +203,7 @@ LinearSet(S: SemiGroup): Category == Join(LeftLinearSet S, RightLinearSet S)
 -- following domain must be compiled with subsumption disabled
 AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Integer) with
       -: % -> %           ++ \spad{-x} is the additive inverse of \spad{x}    
-      "-": (%,%) -> %     ++ \spad{x-y} is the difference of \spad{x} 
+      -: (%,%) -> %       ++ \spad{x-y} is the difference of \spad{x} 
                           ++ and \spad{y} i.e. \spad{x + (-y)}.
     add
       (x:% - y:%):% == x+(-y)
@@ -215,6 +215,7 @@ AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Intege
           zero? n => 0
           positive? n => double(n pretend PositiveInteger,x)
           double((-n) pretend PositiveInteger,-x)
+      opposite?(x,y) == x = -y
 
 @
 
@@ -1438,7 +1439,6 @@ OrderedAbelianGroup(): Category ==
       positive? x => x
       negative? x => -x
       0
-    opposite?(x,y) == x = -y
 @
 
 \section{category OAMON OrderedAbelianMonoid}
