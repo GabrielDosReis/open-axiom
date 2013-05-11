@@ -1,3 +1,8 @@
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet
+	(IndexedDirectProductAbelianMonoid) [opposite?]: Implement.
+
 2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/matrix.spad.pamphlet (IndexedMatrix): Remove as unused.
