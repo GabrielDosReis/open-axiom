@@ -16,38 +16,26 @@
 ++ Minimum index is 0 in this type, cannot be changed
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    macro NNI == NonNegativeInteger
-   import %vlength: % -> NonNegativeInteger from Foreign Builtin
-   import %aref: (%,Integer) -> S           from Foreign Builtin
-   import makeSimpleArray: (Domain,NNI) -> % from Foreign Builtin
+   import %icst0: Integer                    from Foreign Builtin
+   import %vlength: % -> NNI                 from Foreign Builtin
+   import %vcopy: % -> %                     from Foreign Builtin
+   import %vfill: (%,S) -> %                 from Foreign Builtin
+   import %aref: (%,Integer) -> S            from Foreign Builtin
+   import %emptyArray: Type -> %             from Foreign Builtin
+   import %list2array: (List S,Type) -> %    from Foreign Builtin
+   import %simpleArray: (Type,NNI,S) -> %    from Foreign Builtin
 
    #x == %vlength x
-
-   minIndex x == 
-     0
- 
-   empty() == 
-     makeSimpleArray(getVMType(S)$Lisp,0)
-
-   construct l ==
-     makeSimpleArrayFromList(getVMType(S)$Foreign(Builtin),l)$Foreign(Builtin)
-
-   new(n, x) == 
-     makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
-
+   minIndex x == %icst0
+   empty() == %emptyArray S
+   construct l == %list2array(l,S)
+   new(n, x) == %simpleArray(S,n,x)
    qelt(x, i) == %aref(x,i)
    elt(x:%, i:Integer) ==  %aref(x,i)
-
-   qsetelt!(x, i, s) == 
-     setSimpleArrayEntry(x,i,s)$Lisp
-
-   setelt(x:%, i:Integer, s:S) == 
-     setSimpleArrayEntry(x,i,s)$Lisp
-     
-   fill!(x, s) == 
-     FILL(x,s)$Foreign(Builtin)
-
-   copy x ==
-     COPY_-SEQ(x)$Foreign(Builtin)
+   qsetelt!(x, i, s) == %store(%aref(x,i),s)$Foreign(Builtin)
+   setelt(x:%, i:Integer, s:S) == %store(%aref(x,i),s)$Foreign(Builtin)
+   fill!(x, s) == %vfill(x,s)
+   copy x == %vcopy x
 
 @
 
@@ -518,6 +506,8 @@ OneDimensionalArrayFunctions2(A, B): Exports == Implementation where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

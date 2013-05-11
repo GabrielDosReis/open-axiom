@@ -1,5 +1,14 @@
 2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/g-opt.boot (optEmptyArray): New expander.  Register.
+	(optSimpleArray): Likewise.
+	(optList2Array): Likewise.
+	* interp/lisp-backend.boot: Expand %elementType, %initialElement,
+	%initialContents, %array, %type2form opcodes.
+	* algebra/array1.spad.pamphlet (PrimitiveArray): Tidy.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/indexedp.spad.pamphlet
 	(IndexedDirectProductOrderedAbelianMonoid) [<]: Rewrite iteratively.
 
