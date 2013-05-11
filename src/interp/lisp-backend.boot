@@ -486,6 +486,11 @@ expandTry ['%try,expr,handlers,cleanup] ==
   
 ++ Opcodes with direct mapping to target operations.
 for x in [
+    -- Lisp keywords
+    ['%elementType,     : KEYWORD::ELEMENT_-TYPE],
+    ['%initialElement,  : KEYWORD::INITIAL_-ELEMENT],
+    ['%initialContents, : KEYWORD::INITIAL_-CONTENTS],
+    
     -- Boolean constants
     -- ['%false, :'NIL],
     ['%true,  :'T],
@@ -620,6 +625,7 @@ for x in [
     ['%lconcat,   :'APPEND],
 
     -- simple vector operations
+    ['%array,     :'MAKE_-ARRAY],
     ['%vfill,     :'FILL],
     ['%vlength,   :'sizeOfSimpleArray],
     ['%vector,    :'VECTOR],
@@ -642,6 +648,7 @@ for x in [
     ['%strcopy,   :'COPY_-SEQ],
 
     -- general utility
+    ['%type2form,:'getVMType],
     ['%hash,     :'SXHASH],
     ['%equal,    :'EQUAL],
     ['%tref,     :'shellEntry],

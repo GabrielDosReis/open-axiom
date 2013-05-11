@@ -657,12 +657,14 @@ $VMsideEffectFreeOperators ==
     %sname
     %strlength %streq %i2s %schar %strlt %strconc
     %strcopy %bytevec2str %str2bytevec
+    %array %simpleArray %emptyArray %list2array %initialElement %initialContents
     %vector %aref %vref %vlength %vcopy
     %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property %tref
-    %void %retract %pullback %lambda %closure %external)
+    %void %retract %pullback %lambda %closure %external
+    %type2form)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
@@ -991,6 +993,17 @@ optIquo(x is ['%iquo,a,b]) ==
   integer? a and integer? b => a quo b
   x
 
+--% Arrays
+
+optEmptyArray ['%emptyArray,t] ==
+  ['%array,'%icst0,'%elementType,['%type2form,t]]
+
+optSimpleArray ['%simpleArray,t,n,x] ==
+  ['%array,n,'%elementType,['%type2form,t],'%initialElement,x]
+
+optList2Array ['%list2array,l,t] ==
+  ['%array,['%llength, l],'%elementType,['%type2form,t],'%initialContents,l]
+
 --%  
 --% optimizer hash table
 --%
@@ -1028,7 +1041,10 @@ for x in '((%call         optCall) _
            (%scope       optScope)_
            (%when        optCond)_
            (%retract     optRetract)_
-           (%pullback    optPullback)) _
+           (%pullback    optPullback)_
+           (%emptyArray  optEmptyArray)_
+           (%simpleArray optSimpleArray)_
+           (%list2array  optList2Array)) _
    repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 
