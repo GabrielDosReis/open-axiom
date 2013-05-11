@@ -829,7 +829,7 @@
   (|InnerCommonDenominator| . ICDEN)
   (|InnerFiniteField| . IFF)
   (|InnerFreeAbelianMonoid| . IFAMON)
-  (|InnerIndexedTwoDimensionalArray| . IIARRAY2)
+  (|InnerTwoDimensionalArray| . IARRAY2)
   (|InnerMatrixLinearAlgebraFunctions| . IMATLIN)
   (|InnerMatrixQuotientFieldFunctions| . IMATQF)
   (|InnerModularGcd| . INMODGCD)

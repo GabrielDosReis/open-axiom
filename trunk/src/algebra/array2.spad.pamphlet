@@ -259,10 +259,10 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
         matrix l
 
 @
-\section{domain IIARRAY2 InnerIndexedTwoDimensionalArray}
-<<domain IIARRAY2 InnerIndexedTwoDimensionalArray>>=
-)abbrev domain IIARRAY2 InnerIndexedTwoDimensionalArray
-InnerIndexedTwoDimensionalArray(R,Row,Col):_
+\section{domain IARRAY2 InnerTwoDimensionalArray}
+<<domain IARRAY2 InnerTwoDimensionalArray>>=
+)abbrev domain IARRAY2 InnerTwoDimensionalArray
+InnerTwoDimensionalArray(R,Row,Col):_
        Exports == Implementation where
   ++ This is an internal type which provides an implementation of
   ++ 2-dimensional arrays as PrimitiveArray's of PrimitiveArray's.
@@ -351,7 +351,7 @@ TwoDimensionalArray(R):Exports == Implementation where
   Exports == TwoDimensionalArrayCategory(R,Row,Col) with
     shallowlyMutable
       ++ One may destructively alter TwoDimensionalArray's.
-  Implementation == InnerIndexedTwoDimensionalArray(R,Row,Col)
+  Implementation == InnerTwoDimensionalArray(R,Row,Col)
 
 @
 \section{License}
@@ -391,7 +391,7 @@ TwoDimensionalArray(R):Exports == Implementation where
 <<license>>
 
 <<category ARR2CAT TwoDimensionalArrayCategory>>
-<<domain IIARRAY2 InnerIndexedTwoDimensionalArray>>
+<<domain IARRAY2 InnerTwoDimensionalArray>>
 <<domain ARRAY2 TwoDimensionalArray>>
 @
 \eject
