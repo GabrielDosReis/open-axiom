@@ -1817,7 +1817,7 @@ oa_algebra_layer_11_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_11)))
 oa_algebra_layer_12 = \
-  ULSCAT                           BITS     DIRPROD2 IMATRIX \
+  ULSCAT                           BITS     DIRPROD2 \
            LPOLY   LSMP    LSMP1   MATCAT2           TRIMAT  \
                    SYSTEM  HOSTNAME PORTNUM
 

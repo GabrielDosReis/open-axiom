@@ -9,74 +9,7 @@
 \eject
 \tableofcontents
 \eject
-\section{domain IMATRIX IndexedMatrix}
-<<domain IMATRIX IndexedMatrix>>=
-)abbrev domain IMATRIX IndexedMatrix
-++ Author: Grabmeier, Gschnitzer, Williamson
-++ Date Created: 1987
-++ Date Last Updated: July 1990
-++ Basic Operations:
-++ Related Domains: Matrix, RectangularMatrix, SquareMatrix,
-++   StorageEfficientMatrixOperations
-++ Also See:
-++ AMS Classifications:
-++ Keywords: matrix, linear algebra
-++ Examples:
-++ References:
-++ Description:
-++   An \spad{IndexedMatrix} is a matrix where the minimal row and column
-++   indices are parameters of the type.  The domains Row and Col
-++   are both IndexedVectors.
-++   The index of the 'first' row may be obtained by calling the
-++   function \spadfun{minRowIndex}.  The index of the 'first' column may
-++   be obtained by calling the function \spadfun{minColIndex}.  The index of
-++   the first element of a 'Row' is the same as the index of the
-++   first column in a matrix and vice versa.
-IndexedMatrix(R,mnRow,mnCol): Exports == Implementation where
-  R : Ring
-  mnRow, mnCol : Integer
-  Row ==> IndexedVector(R,mnCol)
-  Col ==> IndexedVector(R,mnRow)
-  MATLIN ==> MatrixLinearAlgebraFunctions(R,Row,Col,$)
- 
-  Exports ==> MatrixCategory(R,Row,Col)
- 
-  Implementation ==>
-    InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col) add
- 
-      swapRows!(x,i1,i2) ==
-        (i1 < minRowIndex(x)) or (i1 > maxRowIndex(x)) or _
-           (i2 < minRowIndex(x)) or (i2 > maxRowIndex(x)) =>
-             error "swapRows!: index out of range"
-        i1 = i2 => x
-        minRow := minRowIndex x
-        xx := x pretend PrimitiveArray(PrimitiveArray(R))
-        n1 := i1 - minRow; n2 := i2 - minRow
-        row1 := qelt(xx,n1)
-        qsetelt!(xx,n1,qelt(xx,n2))
-        qsetelt!(xx,n2,row1)
-        xx pretend $
- 
-      if R has commutative("*") then
- 
-        determinant x == determinant(x)$MATLIN
-        minordet    x == minordet(x)$MATLIN
- 
-      if R has EuclideanDomain then
- 
-        rowEchelon  x == rowEchelon(x)$MATLIN
- 
-      if R has IntegralDomain then
- 
-        rank        x == rank(x)$MATLIN
-        nullity     x == nullity(x)$MATLIN
-        nullSpace   x == nullSpace(x)$MATLIN
- 
-      if R has Field then
- 
-        inverse     x == inverse(x)$MATLIN
 
-@
 \section{domain MATRIX Matrix}
 <<domain MATRIX Matrix>>=
 )abbrev domain MATRIX Matrix
@@ -84,7 +17,7 @@ IndexedMatrix(R,mnRow,mnCol): Exports == Implementation where
 ++ Date Created: 1987
 ++ Date Last Updated: July 1990
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix, RectangularMatrix, SquareMatrix
+++ Related Domains: RectangularMatrix, SquareMatrix
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, linear algebra
@@ -259,7 +192,7 @@ Matrix(R): Exports == Implementation where
 ++ Date Created: 1987
 ++ Date Last Updated: July 1990
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix, Matrix, SquareMatrix
+++ Related Domains: Matrix, SquareMatrix
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, linear algebra
@@ -346,7 +279,7 @@ RectangularMatrix(m,n,R): Exports == Implementation where
 ++ Date Created: 1987
 ++ Date Last Updated: July 1990
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix, Matrix, RectangularMatrix
+++ Related Domains: Matrix, RectangularMatrix
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, linear algebra
@@ -520,7 +453,6 @@ SquareMatrix(ndim,R): Exports == Implementation where
 <<*>>=
 <<license>>
 
-<<domain IMATRIX IndexedMatrix>>
 <<domain MATRIX Matrix>>
 <<domain RMATRIX RectangularMatrix>>
 <<domain SQMATRIX SquareMatrix>>

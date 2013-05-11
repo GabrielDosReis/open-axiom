@@ -1,6 +1,6 @@
 
-(30 . 3577223100)            
-(3999 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577234981)            
+(3998 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -148,16 +148,16 @@
  |InnerEvalable&| |InnerEvalable| |InnerFreeAbelianMonoid|
  |IndexedFlexibleArray| |IfAst| |InnerFiniteField|
  |InnerIndexedTwoDimensionalArray| |InnerMatrixLinearAlgebraFunctions|
- |InnerMatrixQuotientFieldFunctions| |IndexedMatrix| |ImportAst| |InAst|
- |InputByteConduit&| |InputByteConduit| |InnerNormalBasisFieldFunctions|
- |InputBinaryFile| |IncrementingMaps| |IndexedExponents|
- |InnerNumericEigenPackage| |InetClientStreamSocket| |Infinity| |InputForm|
- |InputFormFunctions1| |InfiniteProductCharacteristicZero|
- |InnerNumericFloatSolvePackage| |InnerModularGcd| |InnerMultFact|
- |InfiniteProductFiniteField| |InfiniteProductPrimeField| |InnerPolySign|
- |IntegerNumberSystem&| |IntegerNumberSystem| |Integer| |Int16| |Int32| |Int64|
- |Int8| |InnerTable| |AlgebraicIntegration| |AlgebraicIntegrate| |IntegerBits|
- |IntervalCategory| |IntegralDomain&| |IntegralDomain| |ElementaryIntegration|
+ |InnerMatrixQuotientFieldFunctions| |ImportAst| |InAst| |InputByteConduit&|
+ |InputByteConduit| |InnerNormalBasisFieldFunctions| |InputBinaryFile|
+ |IncrementingMaps| |IndexedExponents| |InnerNumericEigenPackage|
+ |InetClientStreamSocket| |Infinity| |InputForm| |InputFormFunctions1|
+ |InfiniteProductCharacteristicZero| |InnerNumericFloatSolvePackage|
+ |InnerModularGcd| |InnerMultFact| |InfiniteProductFiniteField|
+ |InfiniteProductPrimeField| |InnerPolySign| |IntegerNumberSystem&|
+ |IntegerNumberSystem| |Integer| |Int16| |Int32| |Int64| |Int8| |InnerTable|
+ |AlgebraicIntegration| |AlgebraicIntegrate| |IntegerBits| |IntervalCategory|
+ |IntegralDomain&| |IntegralDomain| |ElementaryIntegration|
  |IntegerFactorizationPackage| |GenusZeroIntegration|
  |IntegerNumberTheoryFunctions| |AlgebraicHermiteIntegration|
  |TranscendentalHermiteIntegration| |PureAlgebraicIntegration|

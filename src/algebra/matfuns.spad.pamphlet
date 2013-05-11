@@ -16,8 +16,7 @@
 ++ Date Created: 13 November 1989
 ++ Date Last Updated: September 1993
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
-++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Related Domains: Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, canonical forms, linear algebra
@@ -243,8 +242,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
 ++ Date Created: 21 November 1989
 ++ Date Last Updated: 21 March 1994
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
-++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Related Domains: Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords:
@@ -310,8 +308,7 @@ MatrixCategoryFunctions2(R1,Row1,Col1,M1,R2,Row2,Col2,M2):_
 ++ Date Created: 21 November 1989
 ++ Date Last Updated: 12 June 1991
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
-++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Related Domains: Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords:
@@ -370,7 +367,7 @@ RectangularMatrixCategoryFunctions2(m,n,R1,Row1,Col1,M1,R2,Row2,Col2,M2):_
 ++ Date Created: 22 November 1989
 ++ Date Last Updated: 22 November 1989
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Related Domains: Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, inverse, integral domain
@@ -430,8 +427,7 @@ InnerMatrixQuotientFieldFunctions(R,Row,Col,M,QF,Row2,Col2,M2):_
 ++ Date Created: 13 November 1989
 ++ Date Last Updated: December 1992
 ++ Basic Operations:
-++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
-++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Related Domains: Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords: matrix, canonical forms, linear algebra
