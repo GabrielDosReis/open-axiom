@@ -57,8 +57,7 @@ Matrix(R): Exports == Implementation where
 --       ++ \spad{vectorOfVectors(m)} returns the rows of the matrix m as a
 --       ++ vector of vectors
  
-  Implementation ==>
-   InnerIndexedTwoDimensionalArray(R,Row,Col) add
+  Implementation == InnerTwoDimensionalArray(R,Row,Col) add
     minr ==> minRowIndex
     maxr ==> maxRowIndex
     minc ==> minColIndex
