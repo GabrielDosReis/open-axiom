@@ -222,8 +222,7 @@ RectangularMatrix(m,n,R): Exports == Implementation where
     mini ==> minIndex
     maxi ==> maxIndex
  
-    ZERO := per new(m,n,0)$Matrix(R)
-    0    == ZERO
+    0 == per new(m,n,0)$Matrix(R)
  
     coerce(x:$):OutputForm == rep(x)::OutputForm
 
@@ -329,10 +328,8 @@ SquareMatrix(ndim,R): Exports == Implementation where
     mini ==> minIndex
     maxi ==> maxIndex
  
-    ZERO := scalarMatrix 0
-    0    == ZERO
-    ONE  := scalarMatrix 1
-    1    == ONE
+    0 == scalarMatrix 0
+    1 == scalarMatrix 1
 
     characteristic == characteristic$R
 
