@@ -94,8 +94,8 @@ getConstructorAncestorsFromDB ctor ==
 ++ of the constructor `form'. 
 getConstructorModemap: %Symbol -> %Mode
 getConstructorModemap ctor ==
-  db := loadDBIfCan constructorDB ctor => dbConstructorModemap db
-  GETDATABASE(ctor, 'CONSTRUCTORMODEMAP)
+  mm := GETDATABASE(ctor, 'CONSTRUCTORMODEMAP) => mm
+  dbConstructorModemap loadDBIfNecessary constructorDB ctor
 
 getConstructorFormFromDB: %Symbol -> %Form
 getConstructorFormFromDB ctor ==
