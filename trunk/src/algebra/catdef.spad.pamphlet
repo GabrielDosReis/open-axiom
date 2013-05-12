@@ -1630,7 +1630,8 @@ OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 ++ Axiom:
 ++   \spad{0<a and b<c => ab< ac}
 
-OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid)
+OrderedRing(): Category ==
+  Join(OrderedAbelianGroup,CharacteristicZero,Monoid)
 
 @
 
