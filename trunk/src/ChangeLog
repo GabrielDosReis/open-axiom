@@ -1,5 +1,9 @@
 2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/array1.spad.pamphlet (IndexedOneDimensionalArray): Tidy.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/g-opt.boot (%array2list): New side-effect free opcode.
 	* interp/lisp-backend.boot: Expand it.
 	* algebra/array1.spad.pamphlet (PrimitiveArray): Implement

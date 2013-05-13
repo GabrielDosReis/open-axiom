@@ -364,9 +364,7 @@ FlexibleArray(S: Type) == Implementation where
 ++ This is the basic one dimensional array data type.
 
 IndexedOneDimensionalArray(S:Type, mn:Integer):
- OneDimensionalArrayAggregate S == add
-   macro Qmax == maxIndexOfSimpleArray$Foreign(Builtin)
-   macro Qsetelt == setSimpleArrayEntry$Foreign(Builtin)
+ OneDimensionalArrayAggregate S == PrimitiveArray S add
    macro I == Integer
 
    import %icst0: I                         from Foreign Builtin
@@ -375,44 +373,11 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
    import %vlength: % -> NonNegativeInteger from Foreign Builtin
    import %aref: (%,Integer) -> S           from Foreign Builtin
 
-   Rep == PrimitiveArray S
-
-   newArray(n: Integer): % ==
-     makeSimpleArray(getVMType(S)$Foreign(Builtin),n)$Foreign(Builtin)
-
-   #x == # rep x
-   copy x == per copy rep x
-   fill!(x, s) == per fill!(rep x, s)
    minIndex x == mn
-
-   empty() == per empty()$Rep
-   new(n, s) == per new(n,s)$Rep
-   construct l == per construct(l)$Rep
-
-   map!(f, s1)  ==
-      n: Integer := Qmax(s1)
-      negative? n => s1
-      for i in %icst0..n repeat Qsetelt(s1,i,f %aref(s1,i))
-      s1
-
-   map(f, s1)       ==
-      n:Integer := Qmax(s1)
-      negative? n => s1
-      ss2:% := newArray(n+1)
-      for i in %icst0..n repeat Qsetelt(ss2,i,f %aref(s1,i))
-      ss2
-
-   map(f, a, b)   ==
-      maxind:Integer := min(Qmax a, Qmax b)
-      negative? maxind => empty()
-      c:% := newArray(maxind + %icst1)
-      for i in %icst0..maxind repeat
-        Qsetelt(c,i,f(%aref(a,i),%aref(b,i)))
-      c
 
    if zero? mn then
      qelt(x, i)       == %aref(x, i)
-     qsetelt!(x, i, s) == Qsetelt(x, i, s)
+     qsetelt!(x, i, s) == %store(%aref(x, i), s)$Foreign(Builtin)
 
      elt(x:%, i:I) ==
        negative? i or i > maxIndex(x) => error "index out of range"
@@ -425,7 +390,7 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
    else if one? mn then
      maxIndex x       == %vlength x
      qelt(x, i)       == %aref(x, i - %icst1)
-     qsetelt!(x, i, s) == Qsetelt(x, i - %icst1, s)
+     qsetelt!(x, i, s) == %store(%aref(x, i - %icst1), s)$Foreign(Builtin)
 
      elt(x:%, i:I) ==
        %ilt(i,%icst1) or %ilt(%vlength x,i) =>
@@ -435,11 +400,11 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
      setelt(x:%, i:I, s:S) ==
        %ilt(i,%icst1) or %ilt(%vlength x,i) =>
          error "index out of range"
-       Qsetelt(x, i - %icst1, s)
+       qsetelt!(x,i,s)
 
     else
        qelt(x, i)       == %aref(x, i - mn)
-       qsetelt!(x, i, s) == Qsetelt(x, i - mn, s)
+       qsetelt!(x, i, s) == %store(%aref(x, i - mn), s)$Foreign(Builtin)
 
        elt(x:%, i:I) ==
          i < mn or i > maxIndex(x) => error "index out of range"
