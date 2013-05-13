@@ -823,7 +823,6 @@
   (|IndexedExponents| . INDE)
   (|IndexedFlexibleArray| . IFARRAY)
   (|IndexedOneDimensionalArray| . IARRAY1)
-  (|IndexedVector| . IVECTOR)
   (|InnerAlgFactor| . IALGFACT)
   (|InnerAlgebraicNumber| . IAN)
   (|InnerCommonDenominator| . ICDEN)

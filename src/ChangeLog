@@ -1,5 +1,11 @@
 2013-05-12  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/vector.spad.pamphlet (IndexedVector): Remove.
+	(Vector): Use OneDimensionalArray as base domain for implementation.
+	* algebra/Makefile.am: Update.
+
+2013-05-12  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/carten.spad.pamphlet (CartesianTensor): Use
 	PrimitiveArray in lieu of 0-based IndexedVector.
 

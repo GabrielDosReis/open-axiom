@@ -16,7 +16,7 @@
 ++ Date Created:
 ++ Date Last Updated:
 ++ Basic Functions:
-++ Related Constructors: DirectProductCategory, Vector, IndexedVector
+++ Related Constructors: DirectProductCategory, Vector
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords:
@@ -103,26 +103,7 @@ VectorCategory(R:Type): Category == OneDimensionalArrayAggregate R with
          sqrt(dot(p,p))
  
 @
-\section{domain IVECTOR IndexedVector}
-<<domain IVECTOR IndexedVector>>=
-)abbrev domain IVECTOR IndexedVector
-++ Author:
-++ Date Created:
-++ Date Last Updated:
-++ Basic Functions:
-++ Related Constructors: Vector, DirectProduct
-++ Also See:
-++ AMS Classifications:
-++ Keywords:
-++ References:
-++ Description:
-++   This type represents vector like objects with varying lengths
-++ and a user-specified initial index.
- 
-IndexedVector(R:Type, mn:Integer):
-  VectorCategory R == IndexedOneDimensionalArray(R, mn)
- 
-@
+
 \section{domain VECTOR Vector}
 <<domain VECTOR Vector>>=
 )abbrev domain VECTOR Vector
@@ -130,7 +111,7 @@ IndexedVector(R:Type, mn:Integer):
 ++ Date Created:
 ++ Date Last Updated:
 ++ Basic Functions:
-++ Related Constructors: IndexedVector, DirectProduct
+++ Related Constructors: DirectProduct
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords:
@@ -140,11 +121,10 @@ IndexedVector(R:Type, mn:Integer):
 ++ and indexed by a finite segment of integers starting at 1.
  
 Vector(R:Type): Exports == Implementation where
- Exports ==> VectorCategory R with 
+ Exports == VectorCategory R with 
    vector: List R -> %
      ++ vector(l) converts the list l to a vector.
- Implementation ==>
-  IndexedVector(R, 1) add 
+ Implementation == OneDimensionalArray R add
      vector l == construct l
      -- We want maxIndex to be inlined.  Ideally, the definition should
      -- read
@@ -306,7 +286,7 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
 ++ Date Created:
 ++ Date Last Updated:
 ++ Basic Functions:
-++ Related Constructors: Vector, IndexedVector
+++ Related Constructors: Vector
 ++ Also See: OrderedDirectProduct
 ++ AMS Classifications:
 ++ Keywords:
@@ -619,7 +599,6 @@ LinearForm(K,B): Public == Private where
 <<license>>
  
 <<category VECTCAT VectorCategory>>
-<<domain IVECTOR IndexedVector>>
 <<domain VECTOR Vector>>
 <<package VECTOR2 VectorFunctions2>>
 <<category DIRPCAT DirectProductCategory>>
