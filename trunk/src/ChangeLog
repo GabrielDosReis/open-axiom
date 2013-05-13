@@ -1,12 +1,18 @@
 2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Move
+	row column implementation to InnerTwoDimensionalArray.
+	(InnerTwoDimensionalArray): Simplify row and column implementation.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray): Inherit
 	empty? and empty from base domain.
 	(TwoDimensionalArray): Attribute shallowlyMutable is already
 	specified by TwoDimensionalArrayCategory.
 	* algebra/matcat.spad.pamphlet (MatricCategory): Attributes
 	shallowlyMutable and finiteAggregate are already specified by
-	TwoDimensionalArrayCategory. 
+	TwoDimensionalArrayCategory.
 
 2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
