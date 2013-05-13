@@ -451,13 +451,12 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
 ++ This is the domain of 1-based one dimensional arrays
 
 OneDimensionalArray(S:Type): Exports == Implementation where
-  ARRAYMININDEX ==> 1       -- if you want to change this, be my guest
   Exports == OneDimensionalArrayAggregate S with
     oneDimensionalArray: List S -> %
 	++ oneDimensionalArray(l) creates an array from a list of elements l
     oneDimensionalArray: (NonNegativeInteger, S) -> %
 	++ oneDimensionalArray(n,s) creates an array from n copies of element s
-  Implementation == IndexedOneDimensionalArray(S, ARRAYMININDEX) add
+  Implementation == IndexedOneDimensionalArray(S, 1) add
     oneDimensionalArray(u) == construct u
     oneDimensionalArray(n,s) == new(n,s)
 
