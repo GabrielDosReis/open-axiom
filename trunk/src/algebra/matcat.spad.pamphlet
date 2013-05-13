@@ -41,14 +41,7 @@ MatrixCategory(R,Row,Col): Category == Definition where
   macro I == Integer
 
   Definition ==> TwoDimensionalArrayCategory(R,Row,Col) with
-     shallowlyMutable
-       ++ One may destructively alter matrices
-
-     finiteAggregate
-       ++ matrices are finite
-
 --% Predicates
-
      square?  : % -> Boolean
        ++ \spad{square?(m)} returns true if m is a square matrix
        ++ (i.e. if m has the same number of rows as columns) and false otherwise.
@@ -871,7 +864,7 @@ SquareMatrixCategory(ndim,R,Row,Col): Category == Definition where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

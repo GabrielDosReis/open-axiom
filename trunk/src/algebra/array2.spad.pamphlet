@@ -272,20 +272,10 @@ InnerTwoDimensionalArray(R,Row,Col):_
 
   Exports == TwoDimensionalArrayCategory(R,Row,Col)
   Implementation == PrimitiveArray PrimitiveArray R add
-
---% Predicates
-
-    empty? m == empty? rep m
-
 --% Primitive array creation
-
-    empty() == per empty()$Rep
-
     new(rows,cols,a) ==
       rows = 0 =>
         error "new: arrays with zero rows are not supported"
---      cols = 0 =>
---        error "new: arrays with zero columns are not supported"
       arr : Rep := new(rows,empty())
       for i in 0..rows-1 repeat
         arr.i := new(cols,a)
@@ -300,7 +290,7 @@ InnerTwoDimensionalArray(R,Row,Col):_
     nrows m == # rep m
     ncols m ==
       empty? m => 0
-      # rep(m)(minIndex rep m)
+      # rep(m).0
 
 --% Part selection/assignment
 
@@ -346,18 +336,17 @@ TwoDimensionalArray(R):Exports == Implementation where
   ++ A TwoDimensionalArray is a two dimensional array with
   ++ 1-based indexing for both rows and columns.
   R : Type
-  macro Row == OneDimensionalArray R
-  macro Col == OneDimensionalArray R
-  Exports == TwoDimensionalArrayCategory(R,Row,Col) with
-    shallowlyMutable
-      ++ One may destructively alter TwoDimensionalArray's.
-  Implementation == InnerTwoDimensionalArray(R,Row,Col)
+  macro V == OneDimensionalArray R
+  Exports == TwoDimensionalArrayCategory(R,V,V)
+  Implementation == InnerTwoDimensionalArray(R,V,V)
 
 @
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
+--All rights reversed.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are
