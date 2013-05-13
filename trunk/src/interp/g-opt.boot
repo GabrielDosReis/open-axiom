@@ -657,7 +657,8 @@ $VMsideEffectFreeOperators ==
     %sname
     %strlength %streq %i2s %schar %strlt %strconc
     %strcopy %bytevec2str %str2bytevec
-    %array %simpleArray %emptyArray %list2array %initialElement %initialContents
+    %array %simpleArray %emptyArray %list2array %array2list
+    %initialElement %initialContents
     %vector %aref %vref %vlength %vcopy
     %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor

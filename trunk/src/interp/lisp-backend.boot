@@ -190,6 +190,9 @@ expandList(x is ['%list,:args]) ==
   args' = 'failed => ['LIST,:args]
   quote args'
 
+expandArray2List ['%array2list,x] ==
+  ['COERCE,expandToVMForm x,quote 'LIST]
+
 expandLeave ['%leave,l,x] ==
   x := expandToVMForm x
   l = nil => ['RETURN,x]
@@ -672,6 +675,7 @@ for x in [
 ++ Table of opcode-expander pairs.  
 for x in [
    ['%list,    :function expandList],
+   ['%array2list, :function expandArray2List],
    ['%collect, :function expandCollect],
    ['%repeat,  :function expandRepeat],
    ['%return,  :function expandReturn],
