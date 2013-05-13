@@ -17,12 +17,14 @@
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    macro NNI == NonNegativeInteger
    import %icst0: Integer                    from Foreign Builtin
+   import %icst1: Integer                    from Foreign Builtin
    import %vlength: % -> NNI                 from Foreign Builtin
    import %vcopy: % -> %                     from Foreign Builtin
    import %vfill: (%,S) -> %                 from Foreign Builtin
    import %aref: (%,Integer) -> S            from Foreign Builtin
    import %emptyArray: Type -> %             from Foreign Builtin
    import %list2array: (List S,Type) -> %    from Foreign Builtin
+   import %array2list: % -> List S           from Foreign Builtin
    import %simpleArray: (Type,NNI,S) -> %    from Foreign Builtin
 
    #x == %vlength x
@@ -36,6 +38,9 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    setelt(x:%, i:Integer, s:S) == %store(%aref(x,i),s)$Foreign(Builtin)
    fill!(x, s) == %vfill(x,s)
    copy x == %vcopy x
+   maxIndex x == #x - %icst1
+   parts x == %array2list x
+   members x == parts x
 
 @
 
