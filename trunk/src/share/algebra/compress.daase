@@ -1,6 +1,6 @@
 
-(30 . 3577395493)            
-(3997 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577398025)            
+(3996 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -173,22 +173,21 @@
  |InternalRationalUnivariateRepresentationPackage| |IsAst| |InnerPolySum|
  |InnerSparseUnivariatePowerSeries| |InnerTaylorSeries| |InternalTypeForm|
  |InfiniteTupleFunctions2| |InfiniteTupleFunctions3|
- |InnerTrigonometricManipulations| |InfiniteTuple| |IndexedVector|
- |IndexedAggregate&| |IndexedAggregate| |JoinAst| |AssociatedJordanAlgebra|
- |JVMBytecode| |JVMClassFileAccess| |JVMConstantTag| |JVMFieldAccess|
- |JVMMethodAccess| |JVMOpcode| |KeyedAccessFile| |KeyedDictionary&|
- |KeyedDictionary| |Kernel| |KernelFunctions2| |CoercibleTo| |ConvertibleTo|
- |Kovacic| |CoercibleFrom| |KleeneTrivalentLogic| |ConvertibleFrom|
- |LocalAlgebra| |LeftAlgebra&| |LeftAlgebra| |LaplaceTransform|
- |LaurentPolynomial| |LazardSetSolvingPackage| |LeadingCoefDetermination|
- |LetAst| |LieExponentials| |LexTriangularPackage| |LiouvillianFunction|
- |LiouvillianFunctionCategory| |LinGroebnerPackage| |Library|
- |AssociatedLieAlgebra| |LieAlgebra&| |LieAlgebra| |PowerSeriesLimitPackage|
- |RationalFunctionLimitPackage| |LinearBasis| |LinearDependence|
- |LinearElement| |LinearlyExplicitRingOver| |LinearForm| |LinearSet| |List|
- |ListFunctions2| |ListToMap| |ListFunctions3| |Literal| |LeftLinearSet|
- |ListMultiDictionary| |LeftModule| |ListMonoidOps| |LinearAggregate&|
- |LinearAggregate| |Localize| |ElementaryFunctionLODESolver|
+ |InnerTrigonometricManipulations| |InfiniteTuple| |IndexedAggregate&|
+ |IndexedAggregate| |JoinAst| |AssociatedJordanAlgebra| |JVMBytecode|
+ |JVMClassFileAccess| |JVMConstantTag| |JVMFieldAccess| |JVMMethodAccess|
+ |JVMOpcode| |KeyedAccessFile| |KeyedDictionary&| |KeyedDictionary| |Kernel|
+ |KernelFunctions2| |CoercibleTo| |ConvertibleTo| |Kovacic| |CoercibleFrom|
+ |KleeneTrivalentLogic| |ConvertibleFrom| |LocalAlgebra| |LeftAlgebra&|
+ |LeftAlgebra| |LaplaceTransform| |LaurentPolynomial| |LazardSetSolvingPackage|
+ |LeadingCoefDetermination| |LetAst| |LieExponentials| |LexTriangularPackage|
+ |LiouvillianFunction| |LiouvillianFunctionCategory| |LinGroebnerPackage|
+ |Library| |AssociatedLieAlgebra| |LieAlgebra&| |LieAlgebra|
+ |PowerSeriesLimitPackage| |RationalFunctionLimitPackage| |LinearBasis|
+ |LinearDependence| |LinearElement| |LinearlyExplicitRingOver| |LinearForm|
+ |LinearSet| |List| |ListFunctions2| |ListToMap| |ListFunctions3| |Literal|
+ |LeftLinearSet| |ListMultiDictionary| |LeftModule| |ListMonoidOps|
+ |LinearAggregate&| |LinearAggregate| |Localize| |ElementaryFunctionLODESolver|
  |LinearOrdinaryDifferentialOperator| |LinearOrdinaryDifferentialOperator1|
  |LinearOrdinaryDifferentialOperator2|
  |LinearOrdinaryDifferentialOperatorCategory&|

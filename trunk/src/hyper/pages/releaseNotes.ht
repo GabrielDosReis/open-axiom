@@ -38,6 +38,7 @@ contains additions of new features and domains including:
   The category AbelianMonoid has a new export: opposite?.
   The category Rng has a new export: annihilate?.
   The domain IndexedMatrix was removed as it was unused.
+  The domain IndexedVector was removed.
 
 \endscroll
 \autobuttons
