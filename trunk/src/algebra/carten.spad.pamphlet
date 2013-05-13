@@ -238,7 +238,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
         -- Use row-major order:
         --   x[h,i,j] <-> x[(h-minix)*dim**2+(i-minix)*dim+(j-minix)]
 
-        Rep := IndexedVector(R,0)
+        Rep := PrimitiveArray R
 
         n:     Integer
 
