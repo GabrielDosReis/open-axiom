@@ -227,28 +227,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
 
       count(r:R,m:%) == count(#1 = r,m)
 
-    if Row has shallowlyMutable then
-
-      row(m,i) ==
-        i < minRowIndex(m) or i > maxRowIndex(m) =>
-          error "row: index out of range"
-        v : Row := new(ncols m,sampleElement())
-        for j in minColIndex(m)..maxColIndex(m) _
-          for k in minIndex(v)..maxIndex(v) repeat
-            qsetelt!(v,k,qelt(m,i,j))
-        v
-
-    if Col has shallowlyMutable then
-
-      column(m,j) ==
-        j < minColIndex(m) or j > maxColIndex(m) =>
-          error "column: index out of range"
-        v : Col := new(nrows m,sampleElement())
-        for i in minRowIndex(m)..maxRowIndex(m) _
-          for k in minIndex(v)..maxIndex(v) repeat
-            qsetelt!(v,k,qelt(m,i,j))
-        v
-
     if R has CoercibleTo(OutputForm) then
 
       coerce(m:%) ==
@@ -326,6 +304,16 @@ InnerTwoDimensionalArray(R,Row,Col):_
               if j < maxColIndex(m) then s := concat(s, " & ")$String
             if i < maxRowIndex(m) then s := concat(s, " \\ ")$String
           concat(s, "\end{array} \right]")$String
+
+    row(m,i) ==
+      i < 1 or i >= nrows m => error "row: index out of range"
+      [[rep(m).i.j for j in 0..ncols m - 1]]$Row
+
+    column(m,j) ==
+      j < 1  or j >= ncols m => error "column: index out of range"
+      [[rep(m).i.j for i in 0..nrows m - 1]]$Col
+    
+    
 
 @
 
