@@ -1,3 +1,7 @@
+2013-05-14  Edi Meier  <liste_franken@gmx.de>
+
+	* graph/include/G.h (GCstruct::GCchar): Increase length to 12.
+
 2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray)
