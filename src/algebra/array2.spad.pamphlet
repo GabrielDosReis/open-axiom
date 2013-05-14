@@ -74,8 +74,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
     column: (%,Integer) -> Col
       ++ column(m,j) returns the jth column of m
       ++ error check to determine if index is in proper ranges
-    parts: % -> List R
-      ++ parts(m) returns a list of the elements of m in row major order
 --% Part assignments
     setelt: (%,Integer,Integer,R) -> R
       -- will become setelt!
