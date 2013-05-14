@@ -82,7 +82,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
   $newcompErrorCount := $newcompErrorCount + 1
   processKeyedError 
         msgCreate('bug,$nopos, erMsgKey, erArgL,$compBugPrefix,optAttr)
-  BREAK()
+  enterBreak()
   ncAbort()
  
 --% Lower level functions
