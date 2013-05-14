@@ -47,6 +47,7 @@ module lisp_-backend where
   printBackendDecl: (%Symbol,%Code) -> %Void
   evalAndPrintBackendStmt: %Code -> %Void
   evalAndPrintBackendDecl: (%Symbol,%Code) -> %Void
+  transformToBackendCode: %Form -> %Code
 
 
 --%
@@ -854,3 +855,187 @@ printBackendDecl(label,decl) ==
 evalAndPrintBackendDecl(label,decl) ==    
   eval decl
   printBackendDecl(label,decl)
+
+++ Replace every middle end sub-forms in `x' with Lisp code.
+massageBackendCode: %Code -> %Void
+massageBackendCode x ==
+  ident? x and isLispSpecialVariable x => noteSpecialVariable x
+  atomic? x => nil
+  -- temporarily have TRACELET report MAKEPROPs.
+  if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
+    x.first := "MAKEPROP-SAY"
+  u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
+    if u isnt 'DCQ and u isnt 'SETQ then
+      append!(x,$FUNNAME__TAIL)
+      x.first := "LETT"
+    massageBackendCode CDDR x
+    if not (u in '(SETQ RELET)) then
+      ident? second x => pushLocalVariable second x
+      second x is ["FLUID",:.] =>
+        PUSH(CADADR x, $FluidVars)
+        x.rest.first := CADADR x
+      for v in LISTOFATOMS second x repeat
+        pushLocalVariable v
+    -- Even if user used Lisp-level instructions to assign to
+    -- this variable, we still want to note that it is a Lisp-level
+    -- special variable.
+    u is 'SETQ and isLispSpecialVariable second x =>
+      noteSpecialVariable second x
+  u in '(LET LET_*) =>
+    oldVars := $LocalVars
+    vars := nil
+    for [var,init] in second x repeat
+      massageBackendCode init
+      $LocalVars := [var,:$LocalVars]
+      vars := [var,:vars]
+    massageBackendCode x.rest.rest
+    newVars := setDifference($LocalVars,setUnion(vars,oldVars))
+    $LocalVars := setUnion(oldVars,newVars)
+  u in '(PROG LAMBDA) =>
+    newBindings := []
+    for y in second x repeat
+      not symbolMember?(y,$LocalVars) =>
+        $LocalVars := [y,:$LocalVars]
+        newBindings := [y,:newBindings]
+    res := massageBackendCode CDDR x
+    $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
+                     $LocalVars)
+    [u,second x,:res]
+  u = "DECLARE" => nil       -- there is nothing to do convert there
+  massageBackendCode u
+  massageBackendCode rest x
+
+skipDeclarations: %List %Code -> %List %Code
+skipDeclarations form ==
+  while first form is ["DECLARE",:.] repeat
+    form := rest form
+  form
+
+++ return the last node containing a declaration in form, otherwise nil.
+lastDeclarationNode: %List %Code -> %List %Code
+lastDeclarationNode form ==
+  while second form is ["DECLARE",:.] repeat
+     form := rest form
+  first form is ["DECLARE",:.] => form
+  nil
+
+declareGlobalVariables: %List %Symbol -> %Code
+declareGlobalVariables vars ==
+  ["DECLARE",["SPECIAL",:vars]]
+
+++ Return true if `form' contains an EXIT-form that matches
+++ the parent node of `form'.
+matchingEXIT form ==
+  atomic? form or form.op is 'SEQ => false
+  form.op is 'EXIT => true
+  or/[matchingEXIT x for x in form]
+
+simplifySEQ form ==
+  atomic? form => form
+  form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
+  form is ['SEQ,s] and not matchingEXIT s => simplifySEQ s
+  for stmts in tails form repeat
+    stmts.first := simplifySEQ first stmts
+  form
+
+++ Return true if the Lisp `form' has a `RETURN' form
+++ that needs to be enclosed in a `PROG' form.
+needsPROG? form ==
+  atomic? form => false
+  op := form.op
+  op is 'RETURN => true
+  op in '(LOOP PROG) => false
+  form is ['BLOCK,=nil,:.] => false
+  any?(function needsPROG?,form)
+
+++ We are processing the complete `body' of a function definition.
+++ If this body is a multiway test, there is no need to have
+++ a RETURN-FROM operator in the immediate consequence of a branch.
+removeToplevelRETURN_-FROM body ==
+  if body is [['COND,:stmts]] then
+    for stmt in stmts repeat
+      stmt is [.,['RETURN_-FROM,.,expr]] =>
+        second(stmt) := expr
+  body
+
+++ Generate Lisp code by lowering middle end defining form `x'.
+++ x has the strucrure: <name, parms, stmt1, ...>
+transformToBackendCode x ==
+  $FluidVars: local := nil
+  $LocalVars: local := nil
+  $SpecialVars: local := nil
+  x := middleEndExpand x
+  massageBackendCode CDDR x
+  body := skipDeclarations CDDR x
+  -- Make it explicitly a sequence of statements if it is not a one liner.
+  body := 
+    body is [stmt] and
+      (stmt isnt [.,:.]
+        or stmt.op in '(SEQ LET LET_*)
+          or not CONTAINED("EXIT",stmt)) =>
+            body
+    [simplifySEQ ["SEQ",:body]]
+  $FluidVars := removeDuplicates reverse! $FluidVars
+  $LocalVars := S_-(S_-(removeDuplicates reverse! $LocalVars,$FluidVars),
+                  LISTOFATOMS second x)
+  lvars := [:$FluidVars,:$LocalVars]
+  fluids := S_+($FluidVars,$SpecialVars)
+  body :=
+    fluids ~= nil =>
+      lvars ~= nil or needsPROG? body =>
+        [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      body is [[op,inits,:body']] and op in '(LET LET_*)
+        and $FluidVars ~= nil =>
+           [declareGlobalVariables $SpecialVars,
+              [op,inits,declareGlobalVariables fluids,:body']]
+      [declareGlobalVariables fluids,:body]
+    lvars ~= nil or needsPROG? body =>
+      [["PROG",lvars,["RETURN",:body]]]
+    removeToplevelRETURN_-FROM body
+  -- add reference parameters to the list of special variables.
+  fluids := S_+(backendFluidize second x, $SpecialVars)
+  lastdecl := lastDeclarationNode rest x
+  if lastdecl = nil then
+    x.rest.rest := body
+  else
+    null fluids =>
+      lastdecl.rest := body
+    lastdecl.rest := [declareGlobalVariables fluids,:body]
+  x
+
+$CLOSEDFNS := nil
+
+MAKE_-CLOSEDFN_-NAME() ==
+  makeSymbol strconc($FUNNAME,'"!", toString # $CLOSEDFNS)
+
+backendCompileNEWNAM: %Form -> %Void
+backendCompileNEWNAM x ==
+  atomic? x => nil
+  y := first x
+  y isnt [.,:.] =>
+    backendCompileNEWNAM rest x
+    if y is "CLOSEDFN" then
+      u := MAKE_-CLOSEDFN_-NAME()
+      PUSH([u,second x], $CLOSEDFNS)
+      x.first := "FUNCTION"
+      x.rest.first := u
+  backendCompileNEWNAM first x
+  backendCompileNEWNAM rest x
+
+backendCompile1 x ==
+  fname := first x
+  $FUNNAME: local := fname
+  $FUNNAME__TAIL: local := [fname]
+  lamex := second x
+  $CLOSEDFNS: local := []
+  lamex := transformToBackendCode lamex
+  backendCompileNEWNAM lamex
+  -- Note that category constructors are evaluated before they
+  -- their compiled, so this noise is not very helpful.
+  if $verbose and functionSymbol? fname then
+    formatToStdout('"~&~%;;;     ***       ~S REDEFINED~%",fname)
+  [[fname,lamex],:$CLOSEDFNS]
+
+backendCompile l ==
+  [backendCompile2 f2 for f2 in [:backendCompile1(f1) for f1 in l]]
+
