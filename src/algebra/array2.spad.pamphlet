@@ -149,41 +149,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       R has sample: () -> R => sample()$R
       NIL$Lisp    -- better obfuscation welcome.
 
-    copy m ==
-      ans := new(nrows m,ncols m,sampleElement())
-      for i in minRowIndex(m)..maxRowIndex(m) repeat
-        for j in minColIndex(m)..maxColIndex(m) repeat
-          qsetelt!(ans,i,j,qelt(m,i,j))
-      ans
-
-    fill!(m,r) ==
-      for i in minRowIndex(m)..maxRowIndex(m) repeat
-        for j in minColIndex(m)..maxColIndex(m) repeat
-          qsetelt!(m,i,j,r)
-      m
-
-    map(f,m) ==
-      ans := new(nrows m,ncols m,sampleElement())
-      for i in minRowIndex(m)..maxRowIndex(m) repeat
-        for j in minColIndex(m)..maxColIndex(m) repeat
-          qsetelt!(ans,i,j,f(qelt(m,i,j)))
-      ans
-
-    map!(f,m) ==
-      for i in minRowIndex(m)..maxRowIndex(m) repeat
-        for j in minColIndex(m)..maxColIndex(m) repeat
-          qsetelt!(m,i,j,f(qelt(m,i,j)))
-      m
-
-    map(f,m,n) ==
-      (nrows(m) ~= nrows(n)) or (ncols(m) ~= ncols(n)) =>
-        error "map: arguments must have same dimensions"
-      ans := new(nrows m,ncols m,sampleElement())
-      for i in minRowIndex(m)..maxRowIndex(m) repeat
-        for j in minColIndex(m)..maxColIndex(m) repeat
-          qsetelt!(ans,i,j,f(qelt(m,i,j),qelt(n,i,j)))
-      ans
-
     map(f,m,n,r) ==
       maxRow := max(maxRowIndex m,maxRowIndex n)
       maxCol := max(maxColIndex m,maxColIndex n)
@@ -314,8 +279,36 @@ InnerTwoDimensionalArray(R,Row,Col):_
       j < 1  or j > ncols m => error "column: index out of range"
       j := dec j
       [[rep(m).i.j for i in 0..nrows m - 1]]$Col
-    
-    
+
+    copy m ==
+      t: Rep := new(nrows m,sample$PrimitiveArray(R))
+      for i in 0..maxIndex rep m repeat
+        t.i := copy rep(m).i
+      per t
+
+    fill!(m,r) ==
+      for i in 0..maxIndex rep m repeat
+        fill!(rep(m).i,r)
+      m
+
+    map(f,m) ==
+      t: Rep := new(nrows m,sample$PrimitiveArray(R))
+      for i in 0..maxIndex rep m repeat
+        t.i := map(f,rep(m).i)
+      per t
+
+    map!(f,m) ==
+      for i in 0..maxIndex rep m repeat
+        map!(f,rep(m).i)
+      m
+
+    map(f,m,n) ==
+      nrows(m) ~= nrows(n) or ncols(m) ~= ncols(n) =>
+        error "map: arguments must have same dimensions"
+      t: Rep := new(nrows m,sample$PrimitiveArray(R))
+      for i in 0..maxIndex rep m repeat
+        t.i := map(f,rep(m).i,rep(n).i)
+      per t
 
 @
 
