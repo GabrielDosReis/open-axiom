@@ -306,11 +306,13 @@ InnerTwoDimensionalArray(R,Row,Col):_
           concat(s, "\end{array} \right]")$String
 
     row(m,i) ==
-      i < 1 or i >= nrows m => error "row: index out of range"
+      i < 1 or i > nrows m => error "row: index out of range"
+      i := dec i
       [[rep(m).i.j for j in 0..ncols m - 1]]$Row
 
     column(m,j) ==
-      j < 1  or j >= ncols m => error "column: index out of range"
+      j < 1  or j > ncols m => error "column: index out of range"
+      j := dec j
       [[rep(m).i.j for i in 0..nrows m - 1]]$Col
     
     
