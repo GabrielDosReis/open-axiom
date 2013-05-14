@@ -1,5 +1,10 @@
 2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory):
+	Remove redundant declaration for parts.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Test
 	for BasicType satisfaction instead of existence of =.
 
