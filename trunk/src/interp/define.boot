@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -2051,14 +2051,7 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
         --good for performance (LISPLLIB size, BPI size, NILSEC)
   CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
 
-  -- flag parameters needs to be made atomic, otherwise Lisp is confused.
-  -- We try our best to preserve
-  -- Note that we don't need substitution in the body because flag
-  -- parameters are never used in the body.
-  vl := [ renameParameter for v in vl] where
-    renameParameter() ==
-      integer? v or ident? v or string? v => v
-      gensym '"flag"
+  vl := cleanParameterList! vl
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
 

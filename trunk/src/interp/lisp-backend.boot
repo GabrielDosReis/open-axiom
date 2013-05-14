@@ -791,7 +791,7 @@ removeFluids args ==
     $Vars := [args,:$Vars]
     args
   args isnt [.,:.] =>
-    args := GENTEMP()
+    args := gensym()
     $Vars := [args,:$Vars]
     args
   args is ['FLUID,v] and ident? v =>
@@ -965,6 +965,7 @@ transformToBackendCode x ==
   $LocalVars: local := nil
   $SpecialVars: local := nil
   x := middleEndExpand x
+  cleanParameterList! x.absParms
   massageBackendCode CDDR x
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.

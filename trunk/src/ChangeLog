@@ -1,3 +1,8 @@
+2013-05-14  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/c-util.boot (cleanParameterList!): New.
+	* interp/define.boot (spadCompileOrSetq): Use it.
+
 2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory):

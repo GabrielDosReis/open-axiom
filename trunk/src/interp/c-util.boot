@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1727,3 +1727,19 @@ lookupDefiningFunction(op,sig,dc) ==
     lookupInheritedDefiningFunction(op,sig,shell,args,shell.loc)
   -- 6.3. Whatever.
   fun
+
+++ flag parameters needs to be made atomic, otherwise Lisp is confused.
+++ We try our best to preserve
+++ Note that we don't need substitution in the body because flag
+++ parameters are never used in the body.
+cleanParameterList! parms ==
+  count := 0
+  for vars in tails parms repeat
+    v := first vars
+    ident? v => nil
+    t := nil
+    until not symbolMember?(t,parms) repeat
+      count := count + 1
+      t := makeSymbol strconc('"T",toString count)
+    vars.first := t
+  parms

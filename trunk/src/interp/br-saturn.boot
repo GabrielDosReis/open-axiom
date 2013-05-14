@@ -604,7 +604,7 @@ htInitPageNoHeading(propList) ==
 
 --------------------> NEW DEFINITION <--------------------------
 htpMakeEmptyPage(propList,:options) ==
-  name := IFCAR options or GENTEMP()
+  name := IFCAR options or gensym()
   if not $saturn then
     $activePageList := [name, :$activePageList]
   val := vector [name, nil, nil, nil, nil, nil, propList, nil]
