@@ -142,21 +142,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       entryList
 
 --% Creation
-    -- array creation requires an initial element used to
-    -- populate the array.  This is a best effort attempt
-    -- to supply such element, when semantics permits.
-    sampleElement(): R ==
-      R has sample: () -> R => sample()$R
-      NIL$Lisp    -- better obfuscation welcome.
-
-    map(f,m,n,r) ==
-      maxRow := max(maxRowIndex m,maxRowIndex n)
-      maxCol := max(maxColIndex m,maxColIndex n)
-      ans := new(max(nrows m,nrows n),max(ncols m,ncols n),sampleElement())
-      for i in minRowIndex(m)..maxRow repeat
-        for j in minColIndex(m)..maxCol repeat
-          qsetelt!(ans,i,j,f(elt(m,i,j,r),elt(n,i,j,r)))
-      ans
 
     setRow!(m,i,v) ==
       i < minRowIndex(m) or i > maxRowIndex(m) =>
@@ -308,6 +293,16 @@ InnerTwoDimensionalArray(R,Row,Col):_
       t: Rep := new(nrows m,sample$PrimitiveArray(R))
       for i in 0..maxIndex rep m repeat
         t.i := map(f,rep(m).i,rep(n).i)
+      per t
+
+    map(f,m,n,r) ==
+      nrows m = nrows n and ncols m = ncols n => map(f,m,n)
+      nr := max(nrows m,nrows n)
+      nc := max(ncols m,ncols n)
+      t: Rep := new(nr,sample$PrimitiveArray(R))
+      for i in 1..nr repeat
+        t.i := [[f(elt(m,i,j,r),elt(n,i,j,r))
+                  for j in 1..nc]]$PrimitiveArray(R)
       per t
 
 @

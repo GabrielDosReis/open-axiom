@@ -1,5 +1,10 @@
 2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray) [map]:
+	Move implementation from TwoDimensionalArrayCategory.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Move
 	defaults to InnerTwoDimensionalArray.
 
