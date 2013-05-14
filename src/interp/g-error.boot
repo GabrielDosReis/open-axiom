@@ -103,11 +103,18 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   sayErrorly(errorLabel, msg)
   handleLispBreakLoop($BreakMode)
 
+enterBreak() ==
+  SETQ(_*PRINT_-ARRAY_*,true)
+  SETQ(_*PRINT_-CIRCLE_*,true)
+  SETQ(_*PRINT_-LENGTH_*,6)
+  SETQ(_*PRINT_-READABLY_*,false)
+  BREAK()
+
 handleLispBreakLoop($BreakMode) ==
   finishLine $OutputStream
   $BreakMode = 'break =>
     sayBrightly '" "
-    BREAK()
+    enterBreak()
   $BreakMode = 'query =>
     gotIt := nil
     while not gotIt repeat
@@ -130,7 +137,7 @@ handleLispBreakLoop($BreakMode) ==
 	  '"when you are ready to continue processing where you ",'"%l",_
 	  '"   interrupted the system, enter",:bright '"(TOP)",_
 	  '"when you wish to return",'"%l",'"   to top level.",'"%l",'"%l"]
-        BREAK()
+        enterBreak()
       sayBrightly
         '"   Processing will continue where it was interrupted."
       THROW($SpadReaderTag, nil)

@@ -159,7 +159,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
           qsetelt!(m,i,j,v.k)
       m
 
-    if R has _= : (R,R) -> Boolean then
+    if R has BasicType then
 
       m = n ==
         eq?(m,n) => true
