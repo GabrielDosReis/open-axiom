@@ -310,6 +310,9 @@
 (defmacro |dbLookupFunction| (db)
   `(database-lookup-function ,db))
 
+(defmacro |dbDocumentation| (db)
+  `(database-documentaion ,db))
+
 (defun |makeDB| (c &optional (k nil) (a nil))
   (let ((db (make-database)))
     (|makeConstructor| c k a)
