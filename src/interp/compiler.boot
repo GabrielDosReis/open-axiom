@@ -161,9 +161,8 @@ comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
   --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
-  m~=m' and ($bootStrapMode or isDomainForm(m',e))=>[y,m',addDomain(m',e)]
+  m~=m' and isDomainForm(m',e) => [y,m',addDomain(m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
-        --$bootStrapMode-test necessary for compiling Ring in $bootStrapMode
   [y,m',e]
 
 comp3(x,m,$e) ==
