@@ -51,7 +51,7 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
     Rep := Record(bits:Bits, pos:N)
  
     reallyEnumerate: () -> Vector %
-    enum: (N, N, PI) -> List Bits
+    enum: (N, N) -> List Bits
  
     all:Reference Vector % := ref empty()
     sz:Reference N := ref 0
@@ -59,7 +59,7 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
     s1 = s2                == s1.bits =$Bits s2.bits
     coerce(s:%):OutputForm == brace [i::OutputForm for i in elements s]
     random()               == index((1 + (random()$Integer rem size()))::PI)
-    reallyEnumerate()      == [[b, i] for b in enum(m, n, n) for i in 1..]
+    reallyEnumerate()      == [[b, i] for b in enum(m, n) for i in 1..]
     member?(p, s)          == s.bits.p
  
     enumerate() ==
@@ -68,17 +68,17 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
  
 -- enumerates the sets of p integers in 1..q, returns them as sets in 1..n
 -- must have p <= q
-    enum(p, q, n) ==
+    enum(p, q) ==
       zero? p or zero? q => empty()
       p = q =>
         b := new(n, false)$Bits
         for i in 1..p repeat b.i := true
         [b]
       q1 := (q - 1)::N
-      l := enum((p - 1)::N, q1, n)
+      l := enum((p - 1)::N, q1)
       if empty? l then l := [new(n, false)$Bits]
       for s in l repeat s.q := true
-      concat!(enum(p, q1, n), l)
+      concat!(enum(p, q1), l)
  
     size() ==
       if zero? deref sz then
