@@ -311,7 +311,7 @@
   `(database-lookup-function ,db))
 
 (defmacro |dbDocumentation| (db)
-  `(database-documentaion ,db))
+  `(database-documentation ,db))
 
 (defun |makeDB| (c &optional (k nil) (a nil))
   (let ((db (make-database)))
