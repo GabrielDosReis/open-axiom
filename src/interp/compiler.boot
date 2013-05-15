@@ -158,12 +158,13 @@ compNoStacking1(x,m,e,$compStack) ==
   nil
 
 comp2(x,m,e) ==
-  [y,m',e]:= comp3(x,m,e) or return nil
+  [y,m',e] := T := comp3(x,m,e) or return nil
+  T.mode = $Category => T
   --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
   m~=m' and isDomainForm(m',e) => [y,m',addDomain(m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
-  [y,m',e]
+  T
 
 comp3(x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
