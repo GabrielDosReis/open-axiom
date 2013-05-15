@@ -662,21 +662,22 @@ NRTputInLocalReferences(db,bod) ==
   NRTputInHead(db,bod)
 
 NRTputInHead(db,bod) ==
-  bod isnt [.,:.] => bod
-  bod is ['SPADCALL,:args,fn] =>
-    NRTputInTail(db,rest bod) --NOTE: args = copyTree of rest bod
-    -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
-      k := assocIndex(db,dom) => lastNode(bod).first := ['%tref,'_$,k]
-      nil
-    NRTputInHead(db,fn)
-    bod
-  bod is ['%when,:clauses] =>
-    for cc in clauses repeat NRTputInTail(db,cc)
-    bod
-  bod.op in '(QUOTE CLOSEDFN) => bod
-  NRTputInHead(db,first bod)
-  NRTputInTail(db,rest bod)
+  ident? bod and (k := assocIndex(db,dom)) => ['%tref,'$,k]
+  do
+    bod isnt [.,:.] => nil
+    bod is ['SPADCALL,:args,fn] =>
+      NRTputInTail(db,rest bod) --NOTE: args = copyTree of rest bod
+      -- The following test allows function-returning expressions
+      fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
+        k := assocIndex(db,dom) => lastNode(bod).first := ['%tref,'_$,k]
+      NRTputInHead(db,fn)
+    bod.op is '%when =>
+      for cc in bod.args repeat NRTputInTail(db,cc)
+    bod.op in '(QUOTE CLOSEDFN) => nil
+    abstraction? bod =>
+      bod.absBody := NRTputInHead(db,bod.absBody)
+    NRTputInHead(db,first bod)
+    NRTputInTail(db,rest bod)
   bod
 
 NRTputInTail(db,x) ==
