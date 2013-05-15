@@ -805,17 +805,23 @@ optList form ==
   literalElts is "failed" => form
   quote literalElts
 
+quoteMode x ==
+  x isnt [.,:.] => x
+  ident? x.op and constructor? x.op =>
+    ['%list,quote x.op,:[quoteMode a for a in x.args]]
+  [quoteMode y for y in x]
+
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
 optRetract ["%retract",e,m,pred] ==
   e isnt [.,:.] =>
     cond := simplifyVMForm substitute(e,"#1",pred)
     cond is '%true => e
-    ['%when,[cond,e],['%otherwise,['moanRetract,e,MKQ m]]]
+    ['%when,[cond,e],['%otherwise,['moanRetract,e,quoteMode m]]]
   g := gensym()
   ['%bind,[[g,e]],
     ['%when,[substitute(g,"#1",pred),g],
-      ['%otherwise,['moanRetract,g,MKQ m]]]]
+      ['%otherwise,['moanRetract,g,quoteMode m]]]]
 
 ++ We have an expression `x' of some Union type.  Expand an attempted
 ++ pullback to the `n'th branch of type `t'.
@@ -825,7 +831,7 @@ optPullback ['%pullback,x,t,n] ==
     gensym()
   expr :=
     ['%when,[['%ieq,['%head,y],n],['%tail,y]],
-      ['%otherwise,['moanRetract,y,MKQ t]]]
+      ['%otherwise,['moanRetract,y,quoteMode t]]]
   symbolEq?(x,y) => expr
   ['%bind,[[y,x]],expr]
 
