@@ -1768,11 +1768,13 @@ hasSigInTargetCategory(form,target,e) ==
   first potentialSigList
  
 ++ Subroutine of compDefineCapsuleFunction.
-checkAndDeclare(form,sig,e) ==
+checkAndDeclare(db,form,sig,e) ==
 -- arguments with declared types must agree with those in sig;
 -- those that don't get declarations put into e
   for a in form.args for m in sig.source repeat
     isQuasiquote m => nil	  -- we just built m from a.
+    symbolMember?(a,dbParameters db) =>
+      stackAndThrow('"Redeclaration of constructor parameter %1b",[a])
     m1:= getArgumentMode(a,e) =>
       not modeEqual(m1,m) =>
         stack:= ["   ",:bright a,'"must have type ",m,
@@ -1826,8 +1828,8 @@ refineDefinitionSignature(form,signature,e) ==
   signature'
 
 ++ Subroutine of compDefineCapsuleFunction.
-processDefinitionParameters(form,signature,e) ==
-  e := checkAndDeclare(form,signature,e)
+processDefinitionParameters(db,form,signature,e) ==
+  e := checkAndDeclare(db,form,signature,e)
   e := giveFormalParametersValues(form.args,e)
   e := addDomain(signature.target,e)
   e := compArgumentConditions e
@@ -1901,7 +1903,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $formalArgList:= [:argl,:$formalArgList]
     signature := refineDefinitionSignature(form,signature,e) or return nil
     $signatureOfForm := signature --this global is bound in compCapsuleItems
-    e := processDefinitionParameters(form,signature,e)
+    e := processDefinitionParameters(db,form,signature,e)
     rettype := resolve(signature.target,$returnMode)
  
     localOrExported :=

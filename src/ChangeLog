@@ -1,4 +1,11 @@
-2013-05-14  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (checkAndDeclare): Constructor parameter
+	shadowing.
+	* algebra/lodof.spad.pamphlet (SetOfMIntegersInOneToN): [enum]:
+	Lose last parameter.  Adjust callers.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/c-util.boot (cleanParameterList!): New.
 	* interp/define.boot (spadCompileOrSetq): Use it.
