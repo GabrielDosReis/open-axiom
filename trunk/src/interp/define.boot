@@ -1384,6 +1384,13 @@ AMFCR_,redefined(opname,u) ==
   op in '(PROGN SEQ) => AMFCR_,redefinedList(opname,l)
   op = '%when => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
 
+dbClearForCompilation! db ==
+  dbTemplate(db) := nil
+  dbLookupFunction(db) := nil
+  dbCapsuleDefinitions(db) := nil
+  dbModemaps(db) := nil
+  dbDocumentation(db) := nil
+
 substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
   applySubst(pairList($FormalMapVariableList,argl),catform)
@@ -1417,12 +1424,10 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     $genSDVar: local:= 0
     originale:= $e
     db := constructorDB $op
+    dbClearForCompilation! db
     dbConstructorForm(db) := form
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
-    dbTemplate(db) := nil
-    dbLookupFunction(db) := nil
-    dbCapsuleDefinitions(db) := nil
     $e := registerConstructor($op,$e)
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:form.args,:$formalArgList]
