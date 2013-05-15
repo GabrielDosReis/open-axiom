@@ -1,5 +1,9 @@
 2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/compiler.boot (comp2): Don't test for $bootStrapMode.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/daase.lisp (dbDocumentation): New accessor.
 
 2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
