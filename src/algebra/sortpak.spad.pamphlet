@@ -16,8 +16,7 @@
 ++ This package exports sorting algorithnms
 SortPackage(S,A) : Exports == Implementation where
   S: Type
-  A: IndexedAggregate(Integer,S)
-    with (finiteAggregate; shallowlyMutable)
+  A: Join(IndexedAggregate(Integer,S),FiniteAggregate S) with shallowlyMutable
 
   Exports == with
     bubbleSort!: (A,(S,S) -> Boolean) -> A

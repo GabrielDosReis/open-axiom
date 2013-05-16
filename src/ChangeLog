@@ -1,5 +1,13 @@
 2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/sortpak.spad.pamphlet (SortPackage): Have second
+	parameter satisfy FiniteAggregate A instead of requiring attribute
+	finiteAggregate.
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Now
+	extends FiniteAggregate.  Remove finiteAggregate attribute.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/polset.spad.pamphlet (GeneralPolynomialSet): Remove
 	redundant FiniteAggregate.
 	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.

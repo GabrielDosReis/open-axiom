@@ -15,7 +15,7 @@
 ++ Two dimensional array categories and domains
 ++ Author:
 ++ Date Created: 27 October 1989
-++ Date Last Updated: 27 June 1990
+++ Date Last Updated: May 16, 2013
 ++ Keywords: array, data structure
 ++ Examples:
 ++ References:
@@ -32,11 +32,9 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
   R   : Type
   Row : FiniteLinearAggregate R
   Col : FiniteLinearAggregate R
-  Definition == HomogeneousAggregate(R) with
+  Definition == FiniteAggregate R with
     shallowlyMutable
       ++ one may destructively alter arrays
-    finiteAggregate
-      ++ two-dimensional arrays are finite
 --% Array creation
     new: (NonNegativeInteger,NonNegativeInteger,R) -> %
       ++ new(m,n,r) is an m-by-n array all of whose entries are r
