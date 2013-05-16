@@ -1708,10 +1708,7 @@ compColon([":",f,t],m,e) ==
   [val,getmode(f,e),e]
 
 unknownTypeError name ==
-  name:=
-    name is [op,:.] => op
-    name
-  stackAndThrow('"%1b is not a known type",[name])
+  stackAndThrow('"%1pb is not a known type",[name])
 
 compPretend: (%Form,%Mode,%Env) -> %Maybe %Triple
 compPretend(["pretend",x,t],m,e) ==
