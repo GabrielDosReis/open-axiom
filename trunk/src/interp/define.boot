@@ -1390,6 +1390,15 @@ dbClearForCompilation! db ==
   dbCapsuleDefinitions(db) := nil
   dbModemaps(db) := nil
   dbDocumentation(db) := nil
+  dbOperations(db) := nil
+  dbAttributes(db) := nil
+  dbPredicates(db) := nil
+  dbAncestors(db) := nil
+  dbPrincipals(db) := nil
+  dbCategory(db) := nil
+  dbConstructorModemap(db) := nil
+  dbDefaultDomain(db) := nil
+  dbDualSignature(db) := nil
 
 substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
