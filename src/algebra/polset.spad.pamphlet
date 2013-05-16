@@ -375,7 +375,7 @@ GeneralPolynomialSet(R,E,VarSet,P) : Exports == Implementation where
   LP ==> List P
   PtoP ==> P -> P
 
-  Exports ==  Join(PolynomialSetCategory(R,E,VarSet,P),FiniteAggregate P)  with
+  Exports ==  PolynomialSetCategory(R,E,VarSet,P)  with
      convert : LP -> $
        ++ \axiom{convert(lp)} returns the polynomial set whose members 
        ++ are the polynomials of \axiom{lp}.
