@@ -30,8 +30,7 @@ import List
 ++ Each tree is either empty or else is a {\it node} consisting of a value and
 ++ a list of (sub)trees.
 Tree(S: SetCategory): T==C where
- T== RecursiveAggregate(S) with
-     finiteAggregate
+ T== Join(RecursiveAggregate S,FiniteAggregate S) with
      shallowlyMutable
      tree: (S,List %) -> %
        ++ tree(nd,ls) creates a tree with value nd, and children
@@ -329,11 +328,9 @@ Tree(S: SetCategory): T==C where
 ++ Description: \spadtype{BinaryTreeCategory(S)} is the category of
 ++ binary trees: a tree which is either empty or else is a \spadfun{node} consisting
 ++ of a value and a \spadfun{left} and \spadfun{right}, both binary trees. 
-BinaryTreeCategory(S: SetCategory): Category == BinaryRecursiveAggregate(S) with
+BinaryTreeCategory(S: SetCategory): Category == Join(BinaryRecursiveAggregate S,FiniteAggregate S) with
    shallowlyMutable
      ++ Binary trees have updateable components
-   finiteAggregate
-     ++ Binary trees have a finite number of components
    node: (%,S,%) -> %
      ++ node(left,v,right) creates a binary tree with value \spad{v}, a binary
      ++ tree \spad{left}, and a binary tree \spad{right}.

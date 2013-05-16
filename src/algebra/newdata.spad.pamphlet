@@ -316,7 +316,7 @@ SplittingNode(V,C) : Exports == Implementation where
 )abbrev domain SPLTREE SplittingTree
 ++ Author: Marc Moereno Maza
 ++ Date Created: 07/05/1996
-++ Date Last Updated:  07/19/1996
+++ Date Last Updated:  May 16, 2013
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See: 
@@ -361,9 +361,8 @@ SplittingTree(V,C) : Exports == Implementation where
   S ==> SplittingNode(V,C)
   A ==> Record(root:S,subTrees:List(%))
 
-  Exports ==  RecursiveAggregate(S) with
+  Exports ==  Join(RecursiveAggregate S,FiniteAggregate S) with
      shallowlyMutable
-     finiteAggregate
      extractSplittingLeaf : % -> Union(%,"failed")
        ++ \axiom{extractSplittingLeaf(a)} returns the left
        ++ most leaf (as a tree) whose status is false

@@ -216,9 +216,7 @@ VectorFunctions2(A, B): Exports == Implementation where
 ++ Many categorical properties are preserved under this construction.
  
 DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
-  Join(IndexedAggregate(Integer, R), CoercibleTo Vector R) with
-         finiteAggregate
-           ++ attribute to indicate an aggregate of finite size
+  Join(IndexedAggregate(Integer,R),FiniteAggregate R,CoercibleTo Vector R) with
          directProduct: Vector R -> %
            ++ directProduct(v) converts the vector v to become
            ++ a direct product. Error: if the length of v is
