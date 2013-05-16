@@ -311,7 +311,6 @@ ByteBuffer(): Public == Private where
     setLength!: (%,NNI) -> NNI
       ++ setLength!(buf,n) sets the number of active bytes in the
       ++ `buf'.  Error if `n' is more than the capacity.
-    finiteAggregate  ++ A ByteBuffer object is a finite aggregate
   Private == add
     import %bytevec2str: PrimitiveArray Byte -> String
       from Foreign Builtin

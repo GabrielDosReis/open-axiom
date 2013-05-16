@@ -350,15 +350,14 @@ BinaryTreeCategory(S: SetCategory): Category == BinaryRecursiveAggregate(S) with
          map!(f,left t)
          map!(f,right t)
          t
-     if % has finiteAggregate then
-       treeCount : (%, NonNegativeInteger) -> NonNegativeInteger
-       #t == treeCount(t,0)
-       treeCount(t,k) ==
-         empty? t => k
-         k := k + 1
-         k = cycleTreeMax and cyclic? t => error "cyclic binary tree"
-         k := treeCount(left t,k)
-         treeCount(right t,k)
+     treeCount : (%, NonNegativeInteger) -> NonNegativeInteger
+     #t == treeCount(t,0)
+     treeCount(t,k) ==
+       empty? t => k
+       k := k + 1
+       k = cycleTreeMax and cyclic? t => error "cyclic binary tree"
+       k := treeCount(left t,k)
+       treeCount(right t,k)
 
 @
 \section{domain BTREE BinaryTree}
@@ -419,7 +418,6 @@ BinaryTree(S: SetCategory): Exports == Implementation where
 BinarySearchTree(S: OrderedSet): Exports == Implementation where
   Exports == BinaryTreeCategory(S) with
     shallowlyMutable
-    finiteAggregate
     binarySearchTree: List S -> %
 	++ binarySearchTree(l) \undocumented
     insert!: (S,%) -> %
@@ -499,7 +497,6 @@ BinaryTournament(S: OrderedSet): Exports == Implementation where
 ++ by at most leaf node.
 BalancedBinaryTree(S: SetCategory): Exports == Implementation where
   Exports == BinaryTreeCategory(S) with
-    finiteAggregate
     shallowlyMutable
 --  BUG: applies wrong fnct for balancedBinaryTree(0,[1,2,3,4])
 --    balancedBinaryTree: (S, List S) -> %
