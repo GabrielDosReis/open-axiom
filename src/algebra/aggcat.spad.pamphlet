@@ -61,6 +61,8 @@ Aggregate: Category == Type with
 
 @
 
+\section{}
+
 \section{category HOAGG HomogeneousAggregate}
 
 <<category HOAGG HomogeneousAggregate>>=
@@ -153,6 +155,52 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
 	    commaSeparate [a::OutputForm for a in parts x]$List(OutputForm)
 
 @
+
+\section{Aggregates of finite extent}
+
+<<category FINAGG FiniteAggregate>>=
+)abbrev category FINAGG FiniteAggregate
+++ Author: Gabriel Dos Reis
+++ Date Created: May 15, 2013
+++ Date Last Modified: May 15, 2013
+++ Description:
+++   A finite aggregate is a homogeneous aggregate with a finite
+++   number of elements.
+FiniteAggregate(S: Type): Category == Exports where
+  Exports == HomogeneousAggregate S with
+      #: % -> NonNegativeInteger
+        ++ \spad{#u} returns the number of items in u.
+      any?: (S->Boolean,%) -> Boolean
+        ++ \spad{any?(p,u)} tests if \spad{p(x)} is true for
+        ++ any element \spad{x} of \spad{u}.
+        ++ Note: for collections,
+        ++ \axiom{any?(p,u) = reduce(or,map(f,u),false,true)}.
+      every?: (S->Boolean,%) -> Boolean
+        ++ \spad{every?(f,u)} tests if p(x) holds for all
+        ++ elements \spad{x} of \spad{u}.
+        ++ Note: for collections,
+        ++ \axiom{every?(p,u) = reduce(and,map(f,u),true,false)}.
+      count: (S->Boolean,%) -> NonNegativeInteger
+        ++ \spad{count(p,u)} returns the number of elements \spad{x}
+        ++  in \spad{u} such that \axiom{p(x)} holds. For collections,
+        ++ \axiom{count(p,u) = reduce(+,[1 for x in u | p(x)],0)}.
+      members: % -> List S
+        ++ \spad{members(u)} returns a list of the consecutive elements of u.
+        ++ For collections, \axiom{parts([x,y,...,z]) = (x,y,...,z)}.
+      if S has SetCategory then
+        count: (S,%) -> NonNegativeInteger
+          ++ \spad{count(x,u)} returns the number of occurrences
+          ++ of \spad{x} in \spad{u}.
+          ++ For collections, \axiom{count(x,u) = reduce(+,[x=y for y in u],0)}.
+        member?: (S,%) -> Boolean
+          ++ \spad{member?(x,u)} tests if \spad{x} is a member of \spad{u}.
+          ++ For collections,
+          ++ \axiom{member?(x,u) = reduce(or,[x=y for y in u],false)}.
+
+@
+
+
+
 
 \section{category CLAGG Collection}
 
@@ -2753,6 +2801,7 @@ BitAggregate(): Category ==
 
 <<category AGG Aggregate>>
 <<category HOAGG HomogeneousAggregate>>
+<<category FINAGG FiniteAggregate>>
 <<category CLAGG Collection>>
 <<category BGAGG BagAggregate>>
 <<category SKAGG StackAggregate>>

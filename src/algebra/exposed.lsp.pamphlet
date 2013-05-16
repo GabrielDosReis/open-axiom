@@ -527,6 +527,7 @@
   (|Field| . FIELD)
   (|FieldOfPrimeCharacteristic| . FPC)
   (|Finite| . FINITE)
+  (|FiniteAggregate| . FINAGG)
   (|FileCategory| . FILECAT)
   (|FileNameCategory| . FNCAT)
   (|FiniteAbelianMonoidRing| . FAMR)
