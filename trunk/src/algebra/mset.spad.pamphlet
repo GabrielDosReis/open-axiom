@@ -23,8 +23,7 @@
 ++ Examples:
 ++ References:
 ++ Description: A multiset is a set with multiplicities.
-Multiset(S: SetCategory): MultisetAggregate S with
-        finiteAggregate
+Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S) with
         shallowlyMutable
         multiset: () -> %
           ++ multiset()$D creates an empty multiset of domain D.

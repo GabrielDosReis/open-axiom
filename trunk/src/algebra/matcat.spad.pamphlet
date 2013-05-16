@@ -12,9 +12,9 @@
 \section{category MATCAT MatrixCategory}
 <<category MATCAT MatrixCategory>>=
 )abbrev category MATCAT MatrixCategory
-++ Authors: Grabmeier, Gschnitzer, Williamson
+++ Authors: Grabmeier, Gschnitzer, Williamson, Gabriel Dos Reis
 ++ Date Created: 1987
-++ Date Last Updated: July 1990
+++ Date Last Updated: May 17, 2013
 ++ Basic Operations:
 ++ Related Domains: Matrix(R)
 ++ Also See:
@@ -569,10 +569,7 @@ RectangularMatrixCategory(m,n,R,Row,Col): Category == Definition where
   Row : DirectProductCategory(n,R)
   Col : DirectProductCategory(m,R)
 
-  Definition ==> Join(BiModule(R,R),HomogeneousAggregate(R)) with
-
-    finiteAggregate
-      ++ matrices are finite
+  Definition ==> Join(BiModule(R,R),FiniteAggregate R) with
 
     if R has CommutativeRing then Module(R)
 

@@ -1,5 +1,24 @@
 2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): Temporarily
+	include attribute finiteAggregate.
+	(StackAggregate): Extend category FiniteAggregate instead of
+	attribute finiteAggregate.
+	(QueueAggregate): Likewise.
+	(PriorityQueueAggregate): Likewise.
+	(FiniteSetAggregate): Likewise.
+	* algebra/lmdict.spad.pamphlet (ListMultiDictionary): Likewise.
+	* algebra/matcat.spad.pamphlet (MatrixCategory): Likewise.
+	* algebra/mset.spad.pamphlet (Multiset): Likewise.
+	* algebra/newdata.spad.pamphlet (SplittingTree): Likewise.
+	* algebra/polset.spad.pamphlet (PolynomialSetCategory): Likewise.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+	(BinaryTreeCategory): Likewise.
+	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.
+	* algebra/vector.spad.pamphlet (DirectProductCategory): Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/data.spad.pamphlet (Byte): Remove redundant
 	finiteAggregate attribute.
 	* algebra/tree.spad.pamphlet (BinaryTreeCategory): Likewise.

@@ -168,6 +168,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
 ++   number of elements.
 FiniteAggregate(S: Type): Category == Exports where
   Exports == HomogeneousAggregate S with
+      finiteAggregate -- FIXME: TEMPORARY FOR TRANSITIONAL PURPOSE ONLY
       #: % -> NonNegativeInteger
         ++ \spad{#u} returns the number of items in u.
       any?: (S->Boolean,%) -> Boolean
@@ -346,8 +347,7 @@ import BagAggregate
 ++ References:
 ++ Description:
 ++ A stack is a bag where the last item inserted is the first item extracted.
-StackAggregate(S:Type): Category == BagAggregate S with
-   finiteAggregate
+StackAggregate(S:Type): Category == Join(BagAggregate S,FiniteAggregate S) with
    push!: (S,%) -> S
      ++ push!(x,s) pushes x onto stack s, i.e. destructively changing s
      ++ so as to have a new first (top) element x.
@@ -383,8 +383,7 @@ import BagAggregate
 ++ References:
 ++ Description:
 ++ A queue is a bag where the first item inserted is the first item extracted.
-QueueAggregate(S:Type): Category == BagAggregate S with
-   finiteAggregate
+QueueAggregate(S:Type): Category == Join(BagAggregate S,FiniteAggregate S) with
    enqueue!: (S, %) -> S
      ++ enqueue!(x,q) inserts x into the queue q at the back end.
    dequeue!: % -> S
@@ -481,8 +480,7 @@ import BagAggregate
 ++ Description:
 ++ A priority queue is a bag of items from an ordered set where the item
 ++ extracted is always the maximum element.
-PriorityQueueAggregate(S:OrderedSet): Category == BagAggregate S with
-   finiteAggregate
+PriorityQueueAggregate(S:OrderedSet): Category == Join(BagAggregate S,FiniteAggregate S) with
    max: % -> S
      ++ max(q) returns the maximum element of priority queue q.
    merge: (%,%) -> %
@@ -737,8 +735,7 @@ import SetAggregate
 ++ by order or multiplicity.
 ++ See \spadtype{Set} for an example.
 FiniteSetAggregate(S:SetCategory): Category ==
-  Join(Dictionary S, SetAggregate S) with
-    finiteAggregate
+  Join(Dictionary S, SetAggregate S,FiniteAggregate S) with
     cardinality: % -> NonNegativeInteger
       ++ cardinality(u) returns the number of elements of u.
       ++ Note: \axiom{cardinality(u) = #u}.
@@ -1937,8 +1934,7 @@ import Integer
 ++ The finite property of the aggregate adds several exports to the
 ++ list of exports from \spadtype{LinearAggregate} such as
 ++ \spadfun{reverse}, \spadfun{sort}, and so on.
-FiniteLinearAggregate(S:Type): Category == LinearAggregate S with
-   finiteAggregate
+FiniteLinearAggregate(S:Type): Category == Join(LinearAggregate S,FiniteAggregate S) with
    merge: ((S,S)->Boolean,%,%) -> %
       ++ merge(p,a,b) returns an aggregate c which merges \axiom{a} and b.
       ++ The result is produced by examining each element x of \axiom{a} and y
