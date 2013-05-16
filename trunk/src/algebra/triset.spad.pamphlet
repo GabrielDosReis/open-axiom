@@ -51,7 +51,7 @@ import List
 TriangularSetCategory(R:IntegralDomain,E:OrderedAbelianMonoidSup,_
  V:OrderedSet,P:RecursivePolynomialCategory(R,E,V)): 
          Category == 
-   Join(PolynomialSetCategory(R,E,V,P),FiniteAggregate P) with 
+   PolynomialSetCategory(R,E,V,P) with 
      shallowlyMutable
 
      infRittWu? : ($,$) -> Boolean
