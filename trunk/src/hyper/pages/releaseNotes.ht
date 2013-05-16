@@ -33,12 +33,26 @@ OpenAxiom-1.5.0 was released on XXX, 2013.  It was the first major
 release of \Language{} system, in the 1.5.x series.  It contains 
 contains additions of new features and domains including:
   IndexedProductTerm
+
   The compiler now accepts and process do-statement, like the interpreter.
+
   Fix for an interpreter performance regression introduced in 1.4.2.
+
   The category AbelianMonoid has a new export: opposite?.
+
   The category Rng has a new export: annihilate?.
+
   The domain IndexedMatrix was removed as it was unused.
+
   The domain IndexedVector was removed.
+
+  A new category, FiniteAggregate is added.  This category provides
+  a more principled alternative to the time-honored finiteAggregate
+  attribute.  The latter was removed.  In general, attributes are
+  strongly discouraged in new algebra codes.
+
+  Attributes are deprecated and will be removed in future releases.
+  
 
 \endscroll
 \autobuttons
