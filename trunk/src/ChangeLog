@@ -1,5 +1,10 @@
 2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): New.
+	* algebra/exposed.lsp.pamphlet: Expose it.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/compiler.boot (unknownTypeError): Simplify.
 	* interp/define.boot (dbClearForCompilation!): Clear more fields.
 
