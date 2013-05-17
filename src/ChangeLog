@@ -1,5 +1,13 @@
 2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/ffp.spad.pamphlet (FiniteFieldExtensionByPolynomial)
+	[tableForDiscreteLogarithm]:  Don't use pretend where checked
+	coercion is intended.
+	* algebra/pf.spad.pamphlet (InnerPrimeField)
+	[tableForDiscreteLogarithm]:  Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (AssociationListAggregate) [assoc]:
 	Change return type to instance of Maybe.
 	* algebra/list.spad.pamphle (AssociationList): Reflect change.
