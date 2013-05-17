@@ -54,6 +54,8 @@ contains additions of new features and domains including:
   Attributes are deprecated and will be removed in future releases.
 
   The category KeyedDictionary now extends EltableAggregate.
+
+  The category TableAggregate now extends FiniteAggregate.
   
 
 \endscroll

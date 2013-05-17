@@ -303,7 +303,6 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
     KAFcategory ==
         Join(FileCategory(Name, Record(key: Key, entry: Entry)),
              TableAggregate(Key, Entry)) with
-                 finiteAggregate
                  pack!: % -> %
                      ++ pack!(f) reorganizes the file f on disk to recover 
                      ++ unused space.
