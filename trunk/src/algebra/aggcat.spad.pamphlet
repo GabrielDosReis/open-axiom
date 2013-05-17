@@ -122,7 +122,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
       members: % -> List S
 	++ members(u) returns a list of the consecutive elements of u.
 	++ For collections, \axiom{parts([x,y,...,z]) = (x,y,...,z)}.
-      if S has SetCategory then
+      if S has BasicType then
 	count: (S,%) -> NonNegativeInteger
 	  ++ count(x,u) returns the number of occurrences of x in u.
 	  ++ For collections, \axiom{count(x,u) = reduce(+,[x=y for y in u],0)}.
@@ -145,7 +145,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
        x = y ==
          #x = #y and (and/[a = b for a in parts x for b in parts y])
 
-     if S has SetCategory then
+     if S has BasicType then
        count(s:S, x:%) == count(s = #1, x)
        member?(e, c)   == any?(e = #1,c)
 
@@ -188,7 +188,7 @@ FiniteAggregate(S: Type): Category == Exports where
       members: % -> List S
         ++ \spad{members(u)} returns a list of the consecutive elements of u.
         ++ For collections, \axiom{parts([x,y,...,z]) = (x,y,...,z)}.
-      if S has SetCategory then
+      if S has BasicType then
         count: (S,%) -> NonNegativeInteger
           ++ \spad{count(x,u)} returns the number of occurrences
           ++ of \spad{x} in \spad{u}.
@@ -197,6 +197,8 @@ FiniteAggregate(S: Type): Category == Exports where
           ++ \spad{member?(x,u)} tests if \spad{x} is a member of \spad{u}.
           ++ For collections,
           ++ \axiom{member?(x,u) = reduce(or,[x=y for y in u],false)}.
+    add
+      empty? x == #x = 0
 
 @
 

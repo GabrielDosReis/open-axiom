@@ -740,7 +740,7 @@ oa_algebra_layer_0 = \
   FSAGG    FSAGG-   STAGG    STAGG-   CLAGG    CLAGG-   \
   RCAGG    RCAGG-   SETAGG   SETAGG-  HOAGG    HOAGG-   \
   TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG    DIAGG-   \
-  DIOPS    DIOPS-   STRING   FINAGG                     \
+  DIOPS    DIOPS-   STRING   FINAGG   FINAGG-           \
   LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
