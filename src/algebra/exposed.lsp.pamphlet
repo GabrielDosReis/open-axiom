@@ -1120,6 +1120,7 @@
   (|Field&| . FIELD-)
   (|FieldOfPrimeCharacteristic&| . FPC-)
   (|FiniteAbelianMonoidRing&| . FAMR-)
+  (|FiniteAggregate&| . FINAGG-)
   (|FiniteAlgebraicExtensionField&| . FAXF-)
   (|FiniteDivisorCategory&| . FDIVCAT-)
   (|FiniteFieldCategory&| . FFIELDC-)

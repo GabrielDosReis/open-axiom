@@ -1,5 +1,10 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): Add default
+	implementation for empty?.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (TableAggregate): Now extend
 	FiniteAggregate Record(key:Key,entry:Entry).
 	* algebra/files.spad.pamphlet (KeyedAccessFile): Remove

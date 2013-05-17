@@ -1,6 +1,6 @@
 
-(30 . 3577755910)            
-(3997 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577772101)            
+(3998 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -99,8 +99,8 @@
  |FiniteFieldSolveLinearPolynomialEquation| |FiniteFieldExtension|
  |FGLMIfCanPackage| |FreeGroup| |Field&| |Field| |File| |FileCategory|
  |FiniteRankNonAssociativeAlgebra&| |FiniteRankNonAssociativeAlgebra|
- |FiniteAggregate| |Finite&| |Finite| |FiniteRankAlgebra&| |FiniteRankAlgebra|
- |FiniteLinearAggregate&| |FiniteLinearAggregate|
+ |FiniteAggregate&| |FiniteAggregate| |Finite&| |Finite| |FiniteRankAlgebra&|
+ |FiniteRankAlgebra| |FiniteLinearAggregate&| |FiniteLinearAggregate|
  |FiniteLinearAggregateFunctions2| |FreeLieAlgebra| |FiniteLinearAggregateSort|
  |FullyLinearlyExplicitRingOver&| |FullyLinearlyExplicitRingOver| |Float|
  |FloatingComplexPackage| |FloatingRealPackage| |FreeModule| |FreeModule1|
