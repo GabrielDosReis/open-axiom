@@ -506,8 +506,8 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
 
         assoc(k, t) ==
           for r in deref t repeat
-            k = r.key => return r
-          "failed"
+            k = r.key => return just r
+          nothing
 
         setelt(t:%, k:Key, e:Entry) ==
           (r := assoc(k, t)) case Pair => (r::Pair).entry := e

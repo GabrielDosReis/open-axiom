@@ -2599,9 +2599,9 @@ import ListAggregate
 ++ searching for a key is a linear operation.
 AssociationListAggregate(Key:SetCategory,Entry:SetCategory): Category ==
    Join(TableAggregate(Key, Entry), ListAggregate Record(key:Key,entry:Entry)) with
-      assoc: (Key, %) -> Union(Record(key:Key,entry:Entry), "failed")
+      assoc: (Key, %) -> Maybe Record(key:Key,entry:Entry)
 	++ assoc(k,u) returns the element x in association list u stored
-	++ with key k, or "failed" if u has no key k.
+	++ with key k, or \spad{nothing} if u has no key k.
 
 @
 
