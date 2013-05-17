@@ -1,5 +1,10 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): More defaults.
+	(Aggregate): Remove default implementation of empty?
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (FiniteAggregate): Add default
 	implementation for empty?.
 
