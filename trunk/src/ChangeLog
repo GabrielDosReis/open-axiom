@@ -1,5 +1,11 @@
 2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (KeyedDictionary): Now extend
+	IndexedAggregate too.  Give default implementation for elt.
+	(TableAggregate): Simplify.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/ffp.spad.pamphlet (FiniteFieldExtensionByPolynomial)
 	[tableForDiscreteLogarithm]:  Don't use pretend where checked
 	coercion is intended.
