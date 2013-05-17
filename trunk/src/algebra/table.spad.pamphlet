@@ -31,9 +31,7 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
     Key, Entry: SetCategory
     hashfn: String --  Union("EQ", "EQL", "EQUAL", "UEQUAL", "CVEC", "ID")
 
-    Exports ==> TableAggregate(Key, Entry) with
-                     finiteAggregate
-
+    Exports ==> TableAggregate(Key, Entry)
     Implementation ==> add
         import tableValue: (%,Key) -> Entry from Foreign Builtin
         import tableLength: % -> NonNegativeInteger from Foreign Builtin
@@ -80,10 +78,8 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
 ++   for the implementation of \spadtype{Table}.
 
 InnerTable(Key: SetCategory, Entry: SetCategory, addDom):Exports == Implementation where
-    addDom : TableAggregate(Key, Entry) with
-                     finiteAggregate
-    Exports ==> TableAggregate(Key, Entry) with
-                     finiteAggregate
+    addDom : TableAggregate(Key, Entry)
+    Exports ==> TableAggregate(Key, Entry)
     Implementation ==> addDom
 
 @
@@ -108,9 +104,7 @@ InnerTable(Key: SetCategory, Entry: SetCategory, addDom):Exports == Implementati
 ++   \spadtype{AssociationList}
 
 Table(Key: SetCategory, Entry: SetCategory):Exports == Implementation where
-    Exports ==> TableAggregate(Key, Entry) with
-                     finiteAggregate
-
+    Exports ==> TableAggregate(Key, Entry)
     Implementation ==> InnerTable(Key, Entry,
         if hashable(Key)$Lisp then HashTable(Key, Entry, "EQUAL")
           else AssociationList(Key, Entry))

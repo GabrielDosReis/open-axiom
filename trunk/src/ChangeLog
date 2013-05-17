@@ -1,3 +1,13 @@
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (TableAggregate): Now extend
+	FiniteAggregate Record(key:Key,entry:Entry).
+	* algebra/files.spad.pamphlet (KeyedAccessFile): Remove
+	finiteAggregate attribute.
+	* algebra/table.spad.pamphlet (HashTable): Likewise.
+	(InnerTable): Likewise.
+	(Table): Likewise.
+
 2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/aggcat.spad.pamphlet (KeyedDictionary): Now extend
