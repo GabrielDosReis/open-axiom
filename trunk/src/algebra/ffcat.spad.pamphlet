@@ -472,8 +472,7 @@ DiscreteLogarithmPackage(M): public == private where
       a := c
       b := logbase ** (-n)
       for i in 0..end while not found repeat
-        rho:= search(lookup(a),exptable)_
-              $Table(PositiveInteger,NNI)
+        rho:= search(lookup(a),exptable)$Table(PositiveInteger,NNI)
         rho case NNI =>
           found := true
           disclog:= n * i + rho pretend Integer
@@ -663,8 +662,7 @@ FiniteFieldCategory() : Category ==_
           found:=false
           disc1:Integer:=0
           for i in 0..end while not found repeat
-            rho:= search(lookup(c),exptable)_
-                  $Table(PositiveInteger,NNI)
+            rho:= search(lookup(c),exptable)$Table(PositiveInteger,NNI)
             rho case NNI =>
               found := true
               disc1:=((n * i + rho)@Integer) * mult

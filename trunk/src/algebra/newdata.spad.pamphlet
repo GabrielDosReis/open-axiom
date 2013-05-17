@@ -150,7 +150,7 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
      makingStats?() == stats?
      extractIfCan(k: Key): Union(Entry,"failed") ==
        not table? => "failed" :: Union(Entry,"failed")
-       s: Union(Entry,"failed") := search(k,t)
+       s := search(k,t)
        s case Entry => 
          if info? then iprint(ok)$iprintpack
          if stats? then used := used + 1

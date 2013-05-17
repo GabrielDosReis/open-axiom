@@ -197,7 +197,7 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
       tbl case "failed" =>
         error "tableForDiscreteLogarithm: argument must be prime divisor_
  of the order of the multiplicative group"
-      tbl pretend TBL
+      tbl :: TBL
 
     primitiveElement() ==
       if initelt? then initializeElt()
