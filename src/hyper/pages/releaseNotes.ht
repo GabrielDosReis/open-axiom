@@ -52,6 +52,8 @@ contains additions of new features and domains including:
   strongly discouraged in new algebra codes.
 
   Attributes are deprecated and will be removed in future releases.
+
+  The category KeyedDictionary now extends EltableAggregate.
   
 
 \endscroll

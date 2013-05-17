@@ -882,7 +882,7 @@ import List
 ++ A keyed dictionary is a dictionary of key-entry pairs for which there is
 ++ a unique entry for each key.
 KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
-  Dictionary Record(key:Key,entry:Entry) with
+  Join(Dictionary Record(key:Key,entry:Entry),IndexedAggregate(Key,Entry)) with
    key?: (Key, %) -> Boolean
      ++ key?(k,t) tests if k is a key in table t.
    keys: % -> List Key
@@ -899,12 +899,20 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
  add
    key?(k, t) == search(k, t) case Entry
 
-   member?(p, t) ==
+   member?(p: Record(key: Key,entry: Entry), t: %): Boolean ==
      r := search(p.key, t)
      r case Entry and r::Entry = p.entry
 
    if % has finiteAggregate then
      keys t == [x.key for x in parts t]
+
+   elt(t, k) ==
+      (r := search(k, t)) case Entry => r::Entry
+      error "key not in table"
+
+   elt(t, k, e) ==
+      (r := search(k, t)) case Entry => r::Entry
+      e
 
 @
 
@@ -1107,10 +1115,7 @@ import List
 ++ A table aggregate is a model of a table, i.e. a discrete many-to-one
 ++ mapping from keys to entries.
 TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
-  Join(KeyedDictionary(Key,Entry),IndexedAggregate(Key,Entry)) with
-   setelt: (%,Key,Entry) -> Entry	   -- setelt! later
-     ++ setelt(t,k,e) (also written \axiom{t.k := e}) is equivalent
-     ++ to \axiom{(insert([k,e],t); e)}.
+  KeyedDictionary(Key,Entry) with
    table: () -> %
      ++ table()$T creates an empty table of type T.
    table: List Record(key:Key,entry:Entry) -> %
@@ -1132,14 +1137,6 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
    coerce(t:%):OutputForm ==
      prefix("table"::OutputForm,
 		    [k::OutputForm = (t.k)::OutputForm for k in keys t])
-
-   elt(t, k) ==
-      (r := search(k, t)) case Entry => r::Entry
-      error "key not in table"
-
-   elt(t, k, e) ==
-      (r := search(k, t)) case Entry => r::Entry
-      e
 
    map!(f: Entry->Entry, t: %) ==
       for k in keys t repeat t.k := f t.k
