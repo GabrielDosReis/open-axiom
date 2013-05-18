@@ -1,5 +1,10 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate) [parts]: Remove.
+	* algebra/permgrps.spad.pamphlet: Use members, not parts.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat2.spad.pamphlet: Use members, not parts.
 	* algebra/algcat.spad.pamphlet: Likewise.
 	* algebra/cden.spad.pamphlet: Likewise.
