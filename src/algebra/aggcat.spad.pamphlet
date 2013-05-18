@@ -178,6 +178,20 @@ FiniteAggregate(S: Type): Category == Exports where
       members: % -> List S
         ++ \spad{members(u)} returns a list of the consecutive elements of u.
         ++ For collections, \axiom{members([x,y,...,z]) = (x,y,...,z)}.
+      reduce: ((S,S)->S,%) -> S
+        ++ \spad{reduce(f,u)} reduces the binary operation \spad{f}
+        ++ across \spad{u}. For example, if \spad{u} is \spad{[x,y,...,z]}
+        ++ then \spad{reduce(f,u)} returns \spad{f(..f(f(x,y),...),z)}.
+        ++ Note: if \spad{u} has one element \spad{x},
+        ++ \spad{reduce(f,u)} returns \spad{x}. Error: if \spad{u} is empty.
+      reduce: ((S,S)->S,%,S) -> S
+        ++ \spad{reduce(f,u,x)} reduces the binary operation \spad{f}
+        ++ across \spad{u}, where \spad{x} is the starting value, usually
+        ++ the identity operation of \spad{f}. Same as
+        ++ \spad{reduce(f,u)} if \spad{u} has 2 or more elements.
+        ++ Returns \spad{f(x,y)} if \spad{u} has one element \spad{y},
+        ++ \spad{x} if \spad{u} is empty.  For example,
+        ++ \spad{reduce(+,u,0)} returns the sum of the elements of \spad{u}.
       if S has BasicType then
         count: (S,%) -> NonNegativeInteger
           ++ \spad{count(x,u)} returns the number of occurrences
@@ -187,6 +201,14 @@ FiniteAggregate(S: Type): Category == Exports where
           ++ \spad{member?(x,u)} tests if \spad{x} is a member of \spad{u}.
           ++ For collections,
           ++ \axiom{member?(x,u) = reduce(or,[x=y for y in u],false)}.
+	reduce: ((S,S)->S,%,S,S) -> S
+          ++ \spad{reduce(f,u,x,z)} reduces the binary operation \spad{f}
+          ++ across \spad{u}, stopping when an "absorbing element"
+          ++ \spad{z} is encountered.  As for \spad{reduce(f,u,x)},
+          ++ \spad{x} is the identity operation of \spad{f}.
+          ++ Same as \spad{reduce(f,u,x)} when \spad{u} contains no
+          ++ element \spad{z}.  Thus the third argument \spad{x} is
+          ++ returned when u is empty.
     add
       empty? x == #x = 0
       #x == # members x
@@ -196,7 +218,7 @@ FiniteAggregate(S: Type): Category == Exports where
       if S has BasicType then
         count(s:S, x:%) == count(s = #1, x)
         member?(e, x)   == any?(e = #1,x)
-      
+        reduce(f,x,e,z) == reduce(f,members x,e,z)
 
 @
 
