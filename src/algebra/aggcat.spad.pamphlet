@@ -139,7 +139,6 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
 ++   number of elements.
 FiniteAggregate(S: Type): Category == Exports where
   Exports == HomogeneousAggregate S with
-      finiteAggregate -- FIXME: TEMPORARY FOR TRANSITIONAL PURPOSE ONLY
       #: % -> NonNegativeInteger
         ++ \spad{#u} returns the number of items in u.
       any?: (S->Boolean,%) -> Boolean
@@ -1154,8 +1153,7 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
 --    z
 
    members(t:%):List Record(key:Key,entry:Entry) == [[k, t.k] for k in keys t]
-   members(t:%):List Entry   == [t.k for k in keys t]
-   entries(t:%):List Entry == members(t)
+   entries(t:%):List Entry == [t.k for k in keys t]
 
    s:% = t:% ==
      eq?(s,t) => true
