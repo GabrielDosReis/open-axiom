@@ -162,7 +162,7 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
       if odd? i then x := rst x
       eq?(x,y) => return true
 
---  following ops count and member? are only exported if $ has finiteAggregate
+--  following ops count and member? are only exported if $ has FiniteAggregate S
 
 --  count(f:S -> Boolean,x:%) ==
 --    -- error if stream is not finite
@@ -233,7 +233,7 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
 
 --% IXAGG functions
 
--- following assumes % has finiteAggregate and S has SetCategory
+-- following assumes % has FiniteAggregate S and S has SetCategory
 --  entry?(s,x) ==
 --    -- error message only when x is a stream with lazy
 --    -- evaluation and 's' is not among the stream elements
