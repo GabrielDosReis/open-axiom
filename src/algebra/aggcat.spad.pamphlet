@@ -208,6 +208,25 @@ FiniteAggregate(S: Type): Category == Exports where
 
 @
 
+\section{}
+
+<<category SMAGG ShallowlyMutableAggregate>>=
+)abbrev category SMAGG ShallowlyMutableAggregate
+++ Author: Gabriel Dos Reis
+++ Date Created: May 17, 2013
+++ Date Last Created: May 17, 2013
+++ Description:
+++   This category describes the class of homogeneous aggregates
+++   that support in place mutation that do not change their general
+++   shapes.
+ShallowlyMutableAggregate(S: Type): Category == Exports where
+  Exports == HomogeneousAggregate S with
+      shallowlyMutable -- FIXME: TEMPORARY.
+      map!: (S->S,%) -> %
+        ++ \spad{map!(f,u)} destructively replaces each element
+        ++ \spad{x} of \spad{u} by \spad{f(x)}    
+
+@
 
 
 
@@ -2801,6 +2820,7 @@ BitAggregate(): Category ==
 
 <<category AGG Aggregate>>
 <<category HOAGG HomogeneousAggregate>>
+<<category SMAGG ShallowlyMutableAggregate>>
 <<category FINAGG FiniteAggregate>>
 <<category CLAGG Collection>>
 <<category BGAGG BagAggregate>>

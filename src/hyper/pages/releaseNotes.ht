@@ -51,6 +51,10 @@ contains additions of new features and domains including:
   attribute.  The latter was removed.  In general, attributes are
   strongly discouraged in new algebra codes.
 
+  The category ShallowlyMutableAggregate is added.  It provides a
+  more principled alternative to the time-honored shallowlyMutable
+  attribute, which is now discontinued.
+
   Attributes are deprecated and will be removed in future releases.
 
   The category KeyedDictionary now extends EltableAggregate.

@@ -661,6 +661,7 @@
   (|SetAggregate| . SETAGG)
   (|SetCategory| . SETCAT)
   (|SExpressionCategory| . SEXCAT)
+  (|ShallowlyMutableAggregate| . SMAGG)
   (|SpadAstExports| . SPADXPT)
   (|SpadSyntaxCategory| . SASTCAT)
   (|SpecialFunctionCategory| . SPFCAT)
