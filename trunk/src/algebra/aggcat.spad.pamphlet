@@ -282,7 +282,7 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
 	++ select(p,u) returns a copy of u containing only those elements such
 	++ \axiom{p(x)} is true.
 	++ Note: \axiom{select(p,u) == [x for x in u | p(x)]}.
-      if S has SetCategory then
+      if S has BasicType then
 	reduce: ((S,S)->S,%,S,S) -> S
 	  ++ reduce(f,u,x,z) reduces the binary operation f across u, stopping
 	  ++ when an "absorbing element" z is encountered.
@@ -310,7 +310,7 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
      select(f:S->Boolean, x:%) ==
        construct select(f, members x)
 
-     if S has SetCategory then
+     if S has BasicType then
        remove(s:S, x:%) == remove(#1 = s, x)
        reduce(f:(S,S)->S, x:%, s1:S, s2:S) == reduce(f, members x, s1, s2)
        removeDuplicates(x) == construct removeDuplicates members x
@@ -1060,7 +1060,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
 -- map: ((Entry,Entry)->Entry,%,%,Entry) -> %
 --    ++ exists c = map(f,a,b,x), i:Index where
 --    ++    c.i = f(a(i,x),b(i,x)) | index?(i,a) or index?(i,b)
-   if Entry has SetCategory and % has finiteAggregate then
+   if Entry has BasicType and % has finiteAggregate then
       entry?: (Entry,%) -> Boolean
 	++ entry?(x,u) tests if x equals \axiom{u . i} for some index i.
    if Index has OrderedSet then
@@ -1091,7 +1091,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
 
   if % has finiteAggregate then
     entries x == members x
-    if Entry has SetCategory then
+    if Entry has BasicType then
       entry?(x, a) == member?(x, a)
 
   if Index has OrderedSet then
@@ -1284,7 +1284,7 @@ RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
      ++ nodes of tree \axiom{t} in left-to-right order.
    distance: (%,%) -> Integer
      ++ distance(u,v) returns the path length (an integer) from node u to v.
-   if S has SetCategory then
+   if S has BasicType then
       child?: (%,%) -> Boolean
 	++ child?(u,v) tests if node u is a child of node v.
       node?: (%,%) -> Boolean
@@ -1303,7 +1303,7 @@ RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
    elt(x,"value") == value x
    if % has shallowlyMutable then
      setelt(x,"value",y) == setvalue!(x,y)
-   if S has SetCategory then
+   if S has BasicType then
      child?(x,l) == member?(x,children(l))
 
 @
@@ -1369,7 +1369,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
      empty? left x  => [right x]
      empty? right x => [left x]
      [left x, right x]
-   if % has SetAggregate(S) and S has SetCategory then
+   if % has SetAggregate(S) and S has BasicType then
      node?(u,v) ==
        empty? v => false
        u = v => true
@@ -1687,7 +1687,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
       n > (m := #x) => error "index out of range"
       copy rest(x, (m - n)::NonNegativeInteger)
 
-  if S has SetCategory then
+  if S has BasicType then
     x = y ==
       eq?(x, y) => true
       for k in 0.. while not empty? x and not empty? y repeat
@@ -1974,7 +1974,7 @@ FiniteLinearAggregate(S:Type): Category == Join(LinearAggregate S,FiniteAggregat
    position: (S->Boolean, %) -> Integer
       ++ position(p,a) returns the index i of the first x in \axiom{a} such that
       ++ \axiom{p(x)} is true, and \axiom{minIndex(a) - 1} if there is no such x.
-   if S has SetCategory then
+   if S has BasicType then
       position: (S, %)	-> Integer
 	++ position(x,a) returns the index i of the first occurrence of x in a,
 	++ and \axiom{minIndex(a) - 1} if there is no such x.
@@ -2002,7 +2002,7 @@ FiniteLinearAggregate(S:Type): Category == Join(LinearAggregate S,FiniteAggregat
       if S has OrderedSet then sort!: % -> %
 	++ sort!(u) returns u with its elements in ascending order.
  add
-    if S has SetCategory then
+    if S has BasicType then
       position(x:S, t:%) == position(x, t, minIndex t)
 
     if S has OrderedSet then
@@ -2103,7 +2103,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
 	identity := f(identity, qelt(a, k))
       identity
 
-    if S has SetCategory then
+    if S has BasicType then
        reduce(f, a, identity,absorber) ==
 	 for k in minIndex a .. maxIndex a while identity ~= absorber
 		repeat identity := f(identity, qelt(a, k))
@@ -2268,7 +2268,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
 	bracket commaSeparate
 	      [qelt(r, k)::OutputForm for k in minIndex r .. maxIndex r]
 
-    if S has SetCategory then
+    if S has BasicType then
       x = y ==
 	#x ~= #y => false
 	for i in minIndex x .. maxIndex x repeat
@@ -2338,7 +2338,7 @@ ExtensibleLinearAggregate(S:Type):Category == Join(LinearAggregate S,ShallowlyMu
    select!: (S->Boolean,%) -> %
      ++ select!(p,u) destructively changes u by keeping only values x such that
      ++ \axiom{p(x)}.
-   if S has SetCategory then
+   if S has BasicType then
      remove!: (S,%) -> %
        ++ remove!(x,u) destructively removes all values x from u.
      removeDuplicates!: % -> %
@@ -2355,7 +2355,7 @@ ExtensibleLinearAggregate(S:Type):Category == Join(LinearAggregate S,ShallowlyMu
    concat(x:%, y:%)	   == concat!(copy x, y)
    concat(x:%, y:S)	   == concat!(copy x, new(1, y))
    concat!(x:%, y:S)	   == concat!(x, new(1, y))
-   if S has SetCategory then
+   if S has BasicType then
      remove(s:S, x:%)	     == remove!(s, copy x)
      remove!(s:S, x:%)	     == remove!(#1 = s, x)
      removeDuplicates(x:%)   == removeDuplicates!(copy x)
@@ -2507,7 +2507,7 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      while not empty? x repeat (r := f(r, first x); x := rest x)
      r
 
-   if S has SetCategory then
+   if S has BasicType then
       reduce(f, x, i,a) ==
 	r := i
 	while not empty? x and r ~= a repeat
@@ -2569,7 +2569,7 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
        z := rest z
      y
 
-   if S has SetCategory then
+   if S has BasicType then
      position(w, x, s) ==
        s < (m := minIndex x) => error "index out of range"
        x := rest(x, (s - m)::NonNegativeInteger)
