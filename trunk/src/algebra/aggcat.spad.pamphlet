@@ -125,25 +125,6 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
    if S has Evalable S then
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
 
-   if % has finiteAggregate then
-     #c			  == # members c
-     any?(f, c)		  == or/[f x for x in members c]
-     every?(f, c)	  == and/[f x for x in members c]
-     count(f:S -> Boolean, c:%) == +/[1 for x in members c | f x]
-
-     if S has BasicType then
-       x = y ==
-         #x = #y and (and/[a = b for a in members x for b in members y])
-
-     if S has BasicType then
-       count(s:S, x:%) == count(s = #1, x)
-       member?(e, c)   == any?(e = #1,c)
-
-     if S has CoercibleTo(OutputForm) then
-       coerce(x:%):OutputForm ==
-	 bracket
-	    commaSeparate [a::OutputForm for a in members x]$List(OutputForm)
-
 @
 
 \section{Aggregates of finite extent}
@@ -219,6 +200,11 @@ FiniteAggregate(S: Type): Category == Exports where
         count(s:S, x:%) == count(s = #1, x)
         member?(e, x)   == any?(e = #1,x)
         reduce(f,x,e,z) == reduce(f,members x,e,z)
+        x = y == members x = members y
+      if S has CoercibleTo OutputForm then
+        coerce(x:%):OutputForm ==
+          bracket
+             commaSeparate [a::OutputForm for a in members x]$List(OutputForm)
 
 @
 

@@ -1,5 +1,10 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Move
+	defaults for = and coerce to FiniteAggregate.  Remove the rest.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (FiniteAggregate) [reduce]: Add
 	overloads.
 
