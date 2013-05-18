@@ -65,6 +65,9 @@ contains additions of new features and domains including:
   avoid semantics confusion with an operation of same name exported
   by the domain FiniteAggregate.
 
+  The operation parts from HomogeneousAggregate was remved.  It was
+  mostly redundant with members, and created opportunities for confusion.
+
 \endscroll
 \autobuttons
 \end{page}
