@@ -1,5 +1,15 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/attreg.spad.pamphlet (AttributeRegistry): Remove
+	shallowlyMutble.
+	* algebra/aggcat.spad.pamphlet (BagAggregate): Extend
+	ShallowlyMutableAggregate.
+	(ExtensibleLinearAggregate): Likewise.
+	* algebra/mset.spad.pamphlet (Multiset): Likewise.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/tree.spad.pamphlet(BinaryTreeCategory): Extend
 	ShallowlyMutableAggregate S.
 	(BinarySearchTree): Remove redundant shallowlyMutable attribute.

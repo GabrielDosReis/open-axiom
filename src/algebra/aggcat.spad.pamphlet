@@ -338,9 +338,7 @@ import List
 ++ and where the order in which objects are inserted determines the order
 ++ of extraction.
 ++ Examples of bags are stacks, queues, and dequeues.
-BagAggregate(S:Type): Category == HomogeneousAggregate S with
-   shallowlyMutable
-     ++ shallowlyMutable means that elements of bags may be destructively changed.
+BagAggregate(S:Type): Category == ShallowlyMutableAggregate S with
    bag: List S -> %
      ++ bag([x,y,...,z]) creates a bag with elements x,y,...,z.
    extract!: % -> S
@@ -2052,7 +2050,7 @@ import FiniteLinearAggregate
 ++ Insertion and deletion however is generally slow since an entirely new
 ++ data structure must be created for the result.
 OneDimensionalArrayAggregate(S:Type): Category ==
-    FiniteLinearAggregate S with shallowlyMutable
+    Join(FiniteLinearAggregate S,ShallowlyMutableAggregate S)
   add
     parts x	    == [qelt(x, i) for i in minIndex x .. maxIndex x]
     sort!(f, a) == quickSort(f, a)$FiniteLinearAggregateSort(S, %)
@@ -2318,8 +2316,7 @@ import Integer
 ++ concatenation efficient. However, access to elements of these
 ++ extensible aggregates is generally slow since access is made from the end.
 ++ See \spadtype{FlexibleArray} for an exception.
-ExtensibleLinearAggregate(S:Type):Category == LinearAggregate S with
-   shallowlyMutable
+ExtensibleLinearAggregate(S:Type):Category == Join(LinearAggregate S,ShallowlyMutableAggregate S) with
    concat!: (%,S) -> %
      ++ concat!(u,x) destructively adds element x to the end of u.
    concat!: (%,%) -> %
