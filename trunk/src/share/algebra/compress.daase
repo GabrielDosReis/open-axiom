@@ -1,6 +1,6 @@
 
-(30 . 3577831631)            
-(3998 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577834556)            
+(3999 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -139,7 +139,7 @@
  |HomogeneousAggregate&| |HomogeneousAggregate| |HomotopicTo| |Hostname|
  |HyperbolicFunctionCategory&| |HyperbolicFunctionCategory| |InnerAlgFactor|
  |InnerAlgebraicNumber| |IndexedOneDimensionalArray| |InnerTwoDimensionalArray|
- |ChineseRemainderToolsForIntegralBases| |IntegralBasisTools|
+ |ChineseRemainderToolsForIntegralBases| |IntegralBasisTools| |IndexedBits|
  |IntegralBasisPolynomialTools| |IndexCard| |InnerCommonDenominator|
  |PolynomialIdeals| |IdealDecompositionPackage| |IdempotentOperatorCategory|
  |Identifier| |IndexedDirectProductAbelianGroup|

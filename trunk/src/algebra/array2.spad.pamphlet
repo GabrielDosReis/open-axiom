@@ -32,9 +32,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
   R   : Type
   Row : FiniteLinearAggregate R
   Col : FiniteLinearAggregate R
-  Definition == FiniteAggregate R with
-    shallowlyMutable
-      ++ one may destructively alter arrays
+  Definition == Join(FiniteAggregate R,ShallowlyMutableAggregate R) with
 --% Array creation
     new: (NonNegativeInteger,NonNegativeInteger,R) -> %
       ++ new(m,n,r) is an m-by-n array all of whose entries are r
