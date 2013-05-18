@@ -30,7 +30,7 @@
 ++ a set and the usual operations such as union and intersection are available
 ++ to form new sets.
 ++ In our implementation, \Language{} maintains the entries in
-++ sorted order.  Specifically, the parts function returns the entries
+++ sorted order.  Specifically, the members function returns the entries
 ++ as a list in ascending order and
 ++ the extract operation returns the maximum entry.
 ++ Given two sets s and t where \spad{#s = m} and \spad{#t = n},
@@ -47,7 +47,7 @@ Set(S:SetCategory): FiniteSetAggregate S == add
    set()     == empty()
    empty()   == empty()$Rep
    copy s    == copy(s)$Rep
-   parts s   == parts(s)$Rep
+   members s == members(s)$Rep
    inspect s == (empty? s => error "Empty set"; s(maxIndex s))
 
    extract! s ==
@@ -72,7 +72,7 @@ Set(S:SetCategory): FiniteSetAggregate S == add
    if S has ConvertibleTo InputForm then
      convert(x:%):InputForm ==
         convert [convert('set)@InputForm,
-                          convert(parts x)@InputForm]
+                          convert(members x)@InputForm]
 
    if S has OrderedSet then
      s = t == s =$Rep t

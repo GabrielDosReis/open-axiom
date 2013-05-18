@@ -1228,8 +1228,6 @@ SquareFreeRegularTriangularSet(R,E,V,P) : Exports == Implementation where
        per([])
      empty?(ts:$) ==
        empty?(rep(ts))
-     parts ts ==
-       rep(ts)
      members ts ==
        rep(ts)
      map (f : PtoP, ts : $) : $ ==

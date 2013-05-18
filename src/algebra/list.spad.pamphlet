@@ -21,7 +21,7 @@ import ListAggregate
 ++ Basic Operations:
 ++   \#, append, concat, concat!, cons, construct, copy, elt, elt,
 ++   empty, empty?, eq?, first, member?, merge!, mergeSort, minIndex,
-++   nil, null, parts, removeDuplicates!, rest, rest, reverse,
+++   nil, null, removeDuplicates!, rest, rest, reverse,
 ++   reverse!, setDifference, setIntersection, setUnion, setelt,
 ++   setfirst!, setrest!, sort!, split!
 ++ Related Constructors: ListFunctions2, ListFunctions3, ListToMap
@@ -110,7 +110,7 @@ List(S:Type): Exports == Implementation where
        %store(%tail x,y)$Foreign(Builtin)
        %tail x
     construct l         == l
-    parts s             == s
+    members s           == s
     reverse! x         == %lreverse! x
     reverse x           == %lreverse x
     minIndex x          == %icst1
@@ -474,7 +474,7 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
         empty()                 == dictionary()
         empty? t                == empty? deref t
         entries(t:%):List(Pair) == deref t
-        parts(t:%):List(Pair)   == deref t
+        members(t:%):List(Pair) == deref t
         keys t                  == [k.key for k in deref t]
         # t                     == # deref t
         first(t:%):Pair         == first deref t

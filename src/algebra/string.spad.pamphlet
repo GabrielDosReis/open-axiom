@@ -268,7 +268,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	    for i in 0..%idec N | a.i repeat temp(ord f char i) := true
 	    copyInto!(a, temp, 0)
 
-	parts a ==
+	members a ==
 	    [char i for i in 0..%idec N | a.i]
 
 @

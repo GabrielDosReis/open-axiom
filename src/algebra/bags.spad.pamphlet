@@ -42,7 +42,7 @@ Stack(S: Type): StackAggregate S with
       s = t == 
         deref s = deref t
 
-    parts s ==                             -- from HOAGG
+    members s ==                             -- from HOAGG
       deref s
    
     map(f: S -> S, s: %) ==                -- from HOAGG

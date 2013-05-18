@@ -39,8 +39,7 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    fill!(x, s) == %vfill(x,s)
    copy x == %vcopy x
    maxIndex x == #x - %icst1
-   parts x == %array2list x
-   members x == parts x
+   members x == %array2list x
 
 @
 

@@ -128,10 +128,9 @@ Tree(S: SetCategory): T==C where
     member?(n, t) == 
       t case empty => false
       n = value t or "or"/[member?(n, c) for c in children t]
-    members t == parts t
-    parts t == --buggy?
+    members t == --buggy?
       t case empty => empty()
-      u := [parts c for c in children t]
+      u := [members c for c in children t]
       u = empty() => [value t]
       cons(value t,"append"/u)
  
