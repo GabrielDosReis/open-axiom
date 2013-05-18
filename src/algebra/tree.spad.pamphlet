@@ -328,9 +328,7 @@ Tree(S: SetCategory): T==C where
 ++ Description: \spadtype{BinaryTreeCategory(S)} is the category of
 ++ binary trees: a tree which is either empty or else is a \spadfun{node} consisting
 ++ of a value and a \spadfun{left} and \spadfun{right}, both binary trees. 
-BinaryTreeCategory(S: SetCategory): Category == Join(BinaryRecursiveAggregate S,FiniteAggregate S) with
-   shallowlyMutable
-     ++ Binary trees have updateable components
+BinaryTreeCategory(S: SetCategory): Category == Join(BinaryRecursiveAggregate S,FiniteAggregate S,ShallowlyMutableAggregate S) with
    node: (%,S,%) -> %
      ++ node(left,v,right) creates a binary tree with value \spad{v}, a binary
      ++ tree \spad{left}, and a binary tree \spad{right}.
@@ -340,13 +338,12 @@ BinaryTreeCategory(S: SetCategory): Category == Join(BinaryRecursiveAggregate S,
      copy t ==
        empty? t => empty()
        node(copy left t, value t, copy right t)
-     if % has shallowlyMutable then
-       map!(f,t) ==
-         empty? t => t
-         t.value := f(t.value)
-         map!(f,left t)
-         map!(f,right t)
-         t
+     map!(f,t) ==
+       empty? t => t
+       t.value := f(t.value)
+       map!(f,left t)
+       map!(f,right t)
+       t
      treeCount : (%, NonNegativeInteger) -> NonNegativeInteger
      #t == treeCount(t,0)
      treeCount(t,k) ==
@@ -414,7 +411,6 @@ BinaryTree(S: SetCategory): Exports == Implementation where
 ++ Elements are ordered across the tree.
 BinarySearchTree(S: OrderedSet): Exports == Implementation where
   Exports == BinaryTreeCategory(S) with
-    shallowlyMutable
     binarySearchTree: List S -> %
 	++ binarySearchTree(l) \undocumented
     insert!: (S,%) -> %
@@ -460,7 +456,6 @@ BinarySearchTree(S: OrderedSet): Exports == Implementation where
 ++ and a \spadfun{left} which are both \spadtype{BinaryTree(S)}
 BinaryTournament(S: OrderedSet): Exports == Implementation where
   Exports == BinaryTreeCategory(S) with
-    shallowlyMutable
     binaryTournament: List S -> %
       ++ binaryTournament(ls) creates a binary tournament with the
       ++ elements of ls as values at the nodes.
@@ -494,7 +489,6 @@ BinaryTournament(S: OrderedSet): Exports == Implementation where
 ++ by at most leaf node.
 BalancedBinaryTree(S: SetCategory): Exports == Implementation where
   Exports == BinaryTreeCategory(S) with
-    shallowlyMutable
 --  BUG: applies wrong fnct for balancedBinaryTree(0,[1,2,3,4])
 --    balancedBinaryTree: (S, List S) -> %
 --      ++ balancedBinaryTree(s, ls) creates a balanced binary tree with

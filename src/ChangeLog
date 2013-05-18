@@ -1,5 +1,12 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/tree.spad.pamphlet(BinaryTreeCategory): Extend
+	ShallowlyMutableAggregate S.
+	(BinarySearchTree): Remove redundant shallowlyMutable attribute.
+	(BalancedBinaryTree): Likewise.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (ShallowlyMutableAggregate): New.
 
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
