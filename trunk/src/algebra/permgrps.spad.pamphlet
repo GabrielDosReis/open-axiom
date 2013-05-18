@@ -301,7 +301,7 @@ PermutationGroup(S:SetCategory): public == private where
       s : FSET S :=  brace()   -- empty set !!
       for perm in group.gens repeat
         s := union(s, support perm)
-      parts s
+      members s
 
     orbitWithSvc ( group : L V NNI , point : NNI ) : REC ==
       -- compute orbit with Schreier vector, "-2" means not in the orbit,
@@ -590,7 +590,7 @@ PermutationGroup(S:SetCategory): public == private where
       gpset1 := initialize gp1
       gpset2 := initialize gp2
       empty? difference (gpset1, gpset2) => true
-      for el in parts gpset1 repeat
+      for el in members gpset1 repeat
         not member? (el,  gp2) => return false
       true
 
@@ -598,7 +598,7 @@ PermutationGroup(S:SetCategory): public == private where
       -- internal membership testing
       supp     := pointList gp
       outlist := nil()$(L NNI)
-      mP : L S := parts support p
+      mP : L S := members support p
       for x in mP repeat
         not member? (x, supp) => return [ false , nil()$(L NNI) ]
       if flag then
@@ -754,7 +754,7 @@ PermutationGroup(S:SetCategory): public == private where
       false
 
     orbit ( gp : % , startSet : FSET S ) : FSET FSET S ==
-      startList : L S := parts startSet
+      startList : L S := members startSet
       outList         := orbitInternal ( gp , startList )
       outSet          := brace()$(FSET FSET S)
       for i in 1..#outList repeat
