@@ -36,8 +36,6 @@ import NonNegativeInteger
 ++ An aggregate can in principle
 ++ represent everything from a string of characters to abstract sets such
 ++ as "the set of x satisfying relation {\em r(x)}"
-++ An attribute \spadatt{finiteAggregate} is used to assert that a domain
-++ has a finite number of elements.
 Aggregate: Category == Type with
    eq?: (%,%) -> Boolean
      ++ eq?(u,v) tests if u and v are same objects.
@@ -85,8 +83,6 @@ import Evalable
 ++ same type.
 ++ In the current system, all aggregates are homogeneous.
 ++ Two attributes characterize classes of aggregates.
-++ Aggregates from domains with attribute \spadatt{finiteAggregate}
-++ have a finite number of members.
 ++ Those with attribute \spadatt{shallowlyMutable} allow an element
 ++ to be modified or updated without changing its overall value.
 HomogeneousAggregate(S:Type): Category == Aggregate with
@@ -559,7 +555,7 @@ DictionaryOperations(S:SetCategory): Category ==
  add
    construct l == dictionary l
    dictionary() == empty()
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
      copy d == dictionary members d
      coerce(s:%):OutputForm ==
        prefix("dictionary"@String :: OutputForm,
@@ -1376,7 +1372,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
        empty?(x) => empty?(y)
        empty?(y) => false
        value x = value y and left x = left y and right x = right y
-     if % has finiteAggregate then
+     if % has FiniteAggregate S then
        member?(x,u) ==
 	 empty? u => false
 	 x = value u => true

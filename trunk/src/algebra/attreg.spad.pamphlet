@@ -15,9 +15,6 @@
 
 ++ This category exports the attributes in the AXIOM Library
 AttributeRegistry(): Category == with
-  finiteAggregate
-    ++ \spad{finiteAggregate} is true if it is an aggregate with a 
-    ++ finite number of elements.
   commutative("*")
     ++ \spad{commutative("*")} is true if it has an operation
     ++ \spad{"*": (D,D) -> D} which is commutative.
