@@ -418,7 +418,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
 	  ans := particularSolution(matrix(lhsEqs),
             vector(rhsEqs))$LinearSystemMatrixPackage(K, Vector K, Vector K, Matrix K)
           ans case "failed" => "failed"
-	  ansP := parts(ans)
+	  ansP := members(ans)
 	  ansC:% := 0
 	  for pj in Pn repeat
 	    cj:= first ansP

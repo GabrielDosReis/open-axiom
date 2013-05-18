@@ -504,7 +504,7 @@ ThreeDimensionalViewport(): Exports == Implementation where
       for pt in lpts repeat
         insert!(dimension pt,s)
       #s > 1 => error "All points should have the same dimension"
-      (n := first parts s) < 3 => error "Dimension of points should be greater than 2"
+      (n := first members s) < 3 => error "Dimension of points should be greater than 2"
       sendI(VIEW,viewport.fun)$Lisp
       sendI(VIEW,makeVIEW3D)$Lisp
       sendSTR(VIEW,viewport.title)$Lisp

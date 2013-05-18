@@ -517,7 +517,7 @@ RationalLODE(F, UP): Exports == Implementation where
     unitlist(i, q) ==
       v := new(q, 0)$Vector(F)
       v.i := 1
-      parts v
+      members v
 
     candidates(op, lg, d) ==
       n := degree d + infBound(op, lg)

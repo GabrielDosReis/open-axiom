@@ -438,7 +438,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
        z := mvar(f0)
        ts := collectUpper(ts,z)
        dts: N := degree(ts)
-       lp := parts(ts)
+       lp := members(ts)
        dlts: N := 0
        for us in lts repeat
          dlts := dlts + degree(us)
@@ -458,7 +458,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
      prepareRur(ts: TS): List LPWT ==
        not purelyAlgebraic?(ts)$TS => 
          error "rur$IRURPK: #1 is not zero-dimensional"
-       lp: LP := parts(ts)$TS
+       lp: LP := members(ts)$TS
        lp := sort(infRittWu?,lp)
        empty? lp =>
          error "rur$IRURPK: #1 is empty"
@@ -484,7 +484,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
        --ASSUME c and a have main degree 1
        --ASSUME c and s have a constant initial
        --ASSUME mvar(ts) < mvar(s)
-       lp: LP := parts(ts)
+       lp: LP := members(ts)
        lp := sort(infRittWu?,lp)
        newts: TS := convert(r,true)@TS
        s := remainder(s,newts).polnum
@@ -697,7 +697,7 @@ RationalUnivariateRepresentationPackage(R,ls): Exports == Implementation where
            error "rur$RURPACK: bad result with function rur$IRURPK"
          for us in lus repeat
             g: U  := univariate(select(us,newv)::Q)$Q
-            lc: LP := [convert(q)@P for q in parts(collectUpper(us,newv))]
+            lc: LP := [convert(q)@P for q in members(collectUpper(us,newv))]
             toReturn := cons([g,lc]$RUR, toReturn)
        toReturn 
 
@@ -914,7 +914,7 @@ ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
      squareFree(ts:TS):List(ST) == 
        irred?: Boolean := false
        st: ST := [[newq]$(List Q2)]      
-       lq: List(Q2) := [convert(p)@Q2 for p in parts(ts)]
+       lq: List(Q2) := [convert(p)@Q2 for p in members(ts)]
        lq := sort(infRittWu?,lq)
        toSee: List LQ2WT := []
        if irred?
@@ -973,7 +973,7 @@ ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
        convert(p)@PRC
        
      convert(sts:ST): List Q2 ==
-       lq2: List(Q2) := parts(sts)$ST
+       lq2: List(Q2) := members(sts)$ST
        lq2 := sort(infRittWu?,lq2)
        rest(lq2)
 
@@ -1128,7 +1128,7 @@ ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
          lus: List ST := rur(st,true)$rurpack 
          for us in lus repeat
            g: U  := univariate(select(us,newv)::Q2)$Q2
-           lc: LP := [convert(q2)@P for q2 in parts(collectUpper(us,newv)$ST)$ST]
+           lc: LP := [convert(q2)@P for q2 in members(collectUpper(us,newv)$ST)$ST]
            toSave := cons([g,lc]$RUR, toSave)
        toSave
 
@@ -1160,7 +1160,7 @@ ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
                   output(us::OutputForm)$OutputPackage
                   error "univariateSolve$ZDSOLVE: bad RUR"
             g: U  := univariate(select(us,newv)::Q2)$Q2
-            lc: LP := [convert(q2)@P for q2 in parts(collectUpper(us,newv)$ST)$ST]
+            lc: LP := [convert(q2)@P for q2 in members(collectUpper(us,newv)$ST)$ST]
             toSave := cons([g,lc]$RUR, toSave)
        toSave
 

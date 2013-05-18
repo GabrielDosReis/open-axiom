@@ -182,11 +182,11 @@ FiniteSetAggregateFunctions2(S, A, R, B): Exports == Implementation where
 
    Implementation ==> add
      map(fn, a) ==
-       set(map(fn, parts a)$ListFunctions2(S, R))$B
+       set(map(fn, members a)$ListFunctions2(S, R))$B
      reduce(fn, a, ident) ==
-       reduce(fn, parts a, ident)$ListFunctions2(S, R)
+       reduce(fn, members a, ident)$ListFunctions2(S, R)
      scan(fn, a, ident) ==
-       set(scan(fn, parts a, ident)$ListFunctions2(S, R))$B
+       set(scan(fn, members a, ident)$ListFunctions2(S, R))$B
 
 @
 \section{License}

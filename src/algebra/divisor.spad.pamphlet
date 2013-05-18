@@ -101,7 +101,7 @@ FractionalIdeal(R, F, UP, A): Exports == Implementation where
       cd  := splitDenominator(denom(i)::F::UP::QF * m)
       cd2 := splitDenominator coefficients(cd.den)
       invd:= cd2.den / reduce("gcd", cd2.num)
-      d   := reduce("max", [degree p for p in parts(cd.num)])
+      d   := reduce("max", [degree p for p in members(cd.num)])
       ideal
         [invd * invrep map(coefficient(#1, j), cd.num) for j in 0..d]$VA
 
@@ -285,7 +285,7 @@ ModularHermitianRowReduction(R): Exports == Implementation where
 -- returns a matrix made from the non-zero rows of x whose row number
 -- is not in l
     mkMat(x, l) ==
-      empty?(ll := [parts row(x, i)
+      empty?(ll := [members row(x, i)
          for i in minRowIndex x .. maxRowIndex x |
            (not member?(i, l)) and nonzero? row(x, i)]$List(List R)) =>
               zero(1, ncols x)

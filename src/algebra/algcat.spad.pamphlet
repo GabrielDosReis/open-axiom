@@ -92,7 +92,7 @@ FiniteRankAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
     regularRepresentation(x, b) ==
       m := minIndex b - 1
       matrix
-       [parts coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
+       [members coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
 
 @
 

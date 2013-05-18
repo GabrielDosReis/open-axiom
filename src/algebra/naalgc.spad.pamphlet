@@ -882,12 +882,12 @@ FiniteRankNonAssociativeAlgebra(R:CommutativeRing):
     leftRegularRepresentation(x, b) ==
       m := minIndex b - 1
       matrix
-       [parts coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
+       [members coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
 
     rightRegularRepresentation(x, b) ==
       m := minIndex b - 1
       matrix
-       [parts coordinates(b(i+m)*x,b) for i in 1..rank()]$List(List R)
+       [members coordinates(b(i+m)*x,b) for i in 1..rank()]$List(List R)
 
 @
 \section{category FRNAALG FramedNonAssociativeAlgebra}
