@@ -395,7 +395,7 @@ GeneralPolynomialSet(R,E,VarSet,P) : Exports == Implementation where
      empty() ==
        []
 
-     parts ps ==
+     members ps ==
        ps pretend LP
 
      map (f : PtoP, ps : $) : $ ==
@@ -408,7 +408,7 @@ GeneralPolynomialSet(R,E,VarSet,P) : Exports == Implementation where
        member?(p,members(ps))$LP
 
      ps1 = ps2 ==
-       {p for p in parts(ps1)} =$(Set P) {p for p in parts(ps2)}
+       {p for p in members(ps1)} =$(Set P) {p for p in members(ps2)}
 
      coerce(ps:$) : OutputForm ==
        lp : List(P) := sort(infRittWu?,members(ps))$(List P)

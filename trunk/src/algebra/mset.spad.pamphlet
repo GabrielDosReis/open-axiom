@@ -32,7 +32,7 @@ Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S,ShallowlyMu
           ++ multiset(ls) creates a multiset with elements from \spad{ls}.
         unique: % -> List S
           ++ \spad{unique ms} returns a list of the elements of \spad{ms}
-          ++ {\em without} their multiplicity. See also \spadfun{parts}.
+          ++ {\em without} their multiplicity. See also \spadfun{members}.
         remove: (S,%,Integer) -> %
           ++ remove(x,ms,number) removes at most \spad{number} copies of
           ++ element x if \spad{number} is positive, all of them if
@@ -97,7 +97,7 @@ Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S,ShallowlyMu
         if S has ConvertibleTo InputForm then
           convert(ms:%):InputForm ==
             convert [convert('multiset)@InputForm,
-             convert(parts ms)@InputForm]
+             convert(members ms)@InputForm]
 
         unique(ms:%):List S == keys ms.table
 
@@ -219,7 +219,7 @@ Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S,ShallowlyMu
 
 	map(f: S -> S, ms:%):% == map!(f, copy ms)	-- HomogeneousAggregate
 
-        parts(m:%):List S ==
+        members(m:%):List S ==
           l := empty()$List(S)
           t := m.table
           for e in keys t repeat

@@ -135,7 +135,7 @@ Vector(R:Type): Exports == Implementation where
      if R has ConvertibleTo InputForm then
        convert(x:%):InputForm ==
           convert [convert('vector)@InputForm,
-                          convert(parts x)@InputForm]
+                          convert(members x)@InputForm]
 
 @
 
@@ -305,7 +305,7 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
       coerce(z:%):Vector(R)        == copy rep z
       coerce(r:R):%                == per new(dim, r)$Vector(R)
  
-      parts x == VEC2LIST(x)$Lisp
+      members x == VEC2LIST(x)$Lisp
  
       directProduct z ==
         #z = dim => per copy z

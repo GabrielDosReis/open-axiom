@@ -1,5 +1,22 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/array1.spad.pamphlet: Define members, not parts.
+	* algebra/array2.spad.pamphlet: Likewise.
+	* algebra/bags.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/lmdict.spad.pamphlet: Likewise.
+	* algebra/mset.spad.pamphlet: Likewise.
+	* algebra/polset.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet: Likewise.
+	* algebra/sets.spad.pamphlet: Likewise.
+	* algebra/sregset.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+	* algebra/tree.spad.pamphlet: Likewise.
+	* algebra/triset.spad.pamphlet: Likewise.
+	* algebra/vector.spad.pamphlet: Likewise.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet: Tidy.
 
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>

@@ -128,7 +128,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
           if f(qelt(m,i,j)) then num := num + 1
       num
 
-    parts m ==
+    members m ==
       entryList : List R := nil()
       for i in maxRowIndex(m)..minRowIndex(m) by -1 repeat
         for j in maxColIndex(m)..minColIndex(m) by -1 repeat
