@@ -279,7 +279,7 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
 	  ++ removeDuplicates(u) returns a copy of u with all duplicates removed.
    if S has ConvertibleTo InputForm then ConvertibleTo InputForm
  add
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
      find(f:S -> Boolean, c:%) == find(f, members c)
      remove(f:S->Boolean, x:%) ==
        construct remove(f, members x)
@@ -524,7 +524,7 @@ DictionaryOperations(S:SetCategory): Category ==
 -- remove!: (S->Boolean,%,NonNegativeInteger) -> %
 --   ++ remove!(p,d,n) destructively changes dictionary d by removing
 --   ++ up to n entries x such that \axiom{p(x)} is true.
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
      remove!: (S,%) -> %
        ++ remove!(x,d) destructively changes dictionary d by removing
        ++ all entries y such that \axiom{y = x}.
@@ -1035,7 +1035,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
 -- map: ((Entry,Entry)->Entry,%,%,Entry) -> %
 --    ++ exists c = map(f,a,b,x), i:Index where
 --    ++    c.i = f(a(i,x),b(i,x)) | index?(i,a) or index?(i,b)
-   if Entry has BasicType and % has finiteAggregate then
+   if Entry has BasicType and % has FiniteAggregate Entry then
       entry?: (Entry,%) -> Boolean
 	++ entry?(x,u) tests if x equals \axiom{u . i} for some index i.
    if Index has OrderedSet then
