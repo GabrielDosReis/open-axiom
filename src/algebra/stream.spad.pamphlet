@@ -443,7 +443,7 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
       if odd? i then x := rst x
       eq?(x,y2) => error "last: infinite stream"
 
-  if % has finiteAggregate then -- # is only defined for finiteAggregates
+  if % has FiniteAggregate S then -- # is only defined for finite aggregates
     last(x,n) ==
       possiblyInfinite? x => error "last: infinite stream"
       m := # x
