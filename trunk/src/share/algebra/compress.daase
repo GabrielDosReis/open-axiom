@@ -1,6 +1,6 @@
 
-(30 . 3577776432)            
-(3998 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577824389)            
+(3999 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -335,12 +335,12 @@
  |SplitHomogeneousDirectProduct| |SturmHabichtPackage| |Signature|
  |SignatureAst| |ElementaryFunctionSign| |RationalFunctionSign|
  |SimplifyAlgebraicNumberConvertPackage| |SingleInteger| |StackAggregate|
- |SquareMatrixCategory&| |SquareMatrixCategory| |SmithNormalForm|
- |SparseMultivariatePolynomial| |SparseMultivariateTaylorSeries|
- |SquareFreeNormalizedTriangularSetCategory| |PolynomialSolveByFormulas|
- |RadicalSolvePackage| |TransSolvePackageService| |TransSolvePackage|
- |SortPackage| |ThreeSpace| |ThreeSpaceCategory| |SpadAst| |SpadParser|
- |SpadAstExports| |SpecialOutputPackage| |SpecialFunctionCategory|
+ |ShallowlyMutableAggregate| |SquareMatrixCategory&| |SquareMatrixCategory|
+ |SmithNormalForm| |SparseMultivariatePolynomial|
+ |SparseMultivariateTaylorSeries| |SquareFreeNormalizedTriangularSetCategory|
+ |PolynomialSolveByFormulas| |RadicalSolvePackage| |TransSolvePackageService|
+ |TransSolvePackage| |SortPackage| |ThreeSpace| |ThreeSpaceCategory| |SpadAst|
+ |SpadParser| |SpadAstExports| |SpecialOutputPackage| |SpecialFunctionCategory|
  |SplittingNode| |SplittingTree| |SquareMatrix| |StringAggregate&|
  |StringAggregate| |SquareFreeRegularSetDecompositionPackage|
  |SquareFreeRegularTriangularSet| |SemiRing| |Stack| |StreamAggregate&|
@@ -545,14 +545,14 @@
  |putColorInfo| |appendPoint| |component| |ranges| |pointLists|
  |makeGraphImage| |graphImage| |groebSolve| |testDim| |genericPosition| |lfunc|
  |inHallBasis?| |reorder| |parameters| |headAst| |heap| |gcdprim| |gcdcofact|
- |gcdcofactprim| |lintgcd| |hex| |count| |every?| |any?| |map!| |host|
- |trueEqual| |factorList| |listConjugateBases| |matrixGcd| |divideIfCan!|
- |leastPower| |idealiser| |idealiserMatrix| |moduleSum| |mapUnivariate|
- |mapUnivariateIfCan| |mapMatrixIfCan| |mapBivariate| |fullDisplay|
- |relationsIdeal| |saturate| |groebner?| |groebnerIdeal| |ideal| |leadingIdeal|
- |backOldPos| |generalPosition| |quotient| |zeroDim?| |inRadical?| |in?|
- |element?| |zeroDimPrime?| |zeroDimPrimary?| |radical| |primaryDecomp|
- |contract| |gensym| |leadingSupport| |combineWithIf| |term| |shrinkable|
+ |gcdcofactprim| |lintgcd| |hex| |count| |every?| |any?| |host| |trueEqual|
+ |factorList| |listConjugateBases| |matrixGcd| |divideIfCan!| |leastPower|
+ |idealiser| |idealiserMatrix| |moduleSum| |mapUnivariate| |mapUnivariateIfCan|
+ |mapMatrixIfCan| |mapBivariate| |fullDisplay| |relationsIdeal| |saturate|
+ |groebner?| |groebnerIdeal| |ideal| |leadingIdeal| |backOldPos|
+ |generalPosition| |quotient| |zeroDim?| |inRadical?| |in?| |element?|
+ |zeroDimPrime?| |zeroDimPrimary?| |radical| |primaryDecomp| |contract|
+ |gensym| |leadingSupport| |combineWithIf| |term| |shrinkable|
  |physicalLength!| |physicalLength| |flexibleArray| |elseBranch| |thenBranch|
  |generalizedInverse| |imports| |sequence| |readBytes!| |readUInt32!|
  |readInt32!| |readUInt16!| |readInt16!| |readUInt8!| |readInt8!| |readByte!|
@@ -812,7 +812,7 @@
  |unrankImproperPartitions1| |semiGroupOperation| |subresultantSequence|
  |SturmHabichtSequence| |SturmHabichtCoefficients| |SturmHabicht|
  |countRealRoots| |SturmHabichtMultiple| |countRealRootsMultiple| |source|
- |target| |signature| |signatureAst| |xor| |depth| |top| |pop!| |push!|
+ |target| |signature| |signatureAst| |xor| |depth| |top| |pop!| |push!| |map!|
  |minordet| |determinant| |diagonalProduct| |trace| |diagonal| |diagonalMatrix|
  |scalarMatrix| |hermite| |completeHermite| |smith| |completeSmith|
  |diophantineSystem| |csubst| |particularSolution| |mapSolve| |linear|
