@@ -21,11 +21,6 @@ AttributeRegistry(): Category == with
   commutative("*")
     ++ \spad{commutative("*")} is true if it has an operation
     ++ \spad{"*": (D,D) -> D} which is commutative.
-  shallowlyMutable
-    ++ \spad{shallowlyMutable} is true if its values
-    ++ have immediate components that are updateable (mutable).
-    ++ Note: the properties of any component domain are irrevelant to the
-    ++ \spad{shallowlyMutable} proper.
   unitsKnown
     ++ \spad{unitsKnown} is true if a monoid (a multiplicative semigroup 
     ++ with a 1) has \spad{unitsKnown} means that

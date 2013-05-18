@@ -30,8 +30,7 @@ import List
 ++ Each tree is either empty or else is a {\it node} consisting of a value and
 ++ a list of (sub)trees.
 Tree(S: SetCategory): T==C where
- T== Join(RecursiveAggregate S,FiniteAggregate S) with
-     shallowlyMutable
+ T== Join(RecursiveAggregate S,FiniteAggregate S,ShallowlyMutableAggregate S) with
      tree: (S,List %) -> %
        ++ tree(nd,ls) creates a tree with value nd, and children
        ++ ls.
