@@ -1,6 +1,6 @@
 
-(30 . 3577834556)            
-(3999 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3577838826)            
+(4000 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -629,12 +629,12 @@
  |exponent| |exQuo| |moebius| |rightRecip| |leftRecip| |leftPower| |rightPower|
  |derivationCoordinates| |generator| |one?| |monoidOperation| |neutralValue|
  |splitSquarefree| |normalDenom| |reshape| |totalfract| |pushdterm| |pushucoef|
- |pushuconst| |numberOfMonomials| |multiset| |systemCommand| |mergeDifference|
- |squareFreePrim| |compdegd| |univcase| |consnewpol| |nsqfree| |intChoose|
- |coefChoose| |myDegree| |normDeriv2| |plenaryPower| |antiCommutator|
- |commutator| |associator| |complexEigenvalues| |complexEigenvectors|
- |isConnected?| |connectTo| |shift| |normalizedAssociate| |normalize|
- |outputArgs| |normInvertible?| |normFactors| |npcoef| |listexp|
+ |pushuconst| |numberOfMonomials| |unique| |multiset| |systemCommand|
+ |mergeDifference| |squareFreePrim| |compdegd| |univcase| |consnewpol|
+ |nsqfree| |intChoose| |coefChoose| |myDegree| |normDeriv2| |plenaryPower|
+ |antiCommutator| |commutator| |associator| |complexEigenvalues|
+ |complexEigenvectors| |isConnected?| |connectTo| |shift| |normalizedAssociate|
+ |normalize| |outputArgs| |normInvertible?| |normFactors| |npcoef| |listexp|
  |characteristicPolynomial| |realEigenvalues| |realEigenvectors|
  |halfExtendedResultant2| |halfExtendedResultant1| |extendedResultant|
  |subResultantsChain| |lazyPseudoQuotient| |lazyPseudoRemainder| |bernoulliB|

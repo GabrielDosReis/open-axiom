@@ -1,5 +1,10 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/mset.spad.pamphlet (Multiset) [unique]: Rename from
+	members to avoid semantics clash.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet: Replace uses of parts by members.
 
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
