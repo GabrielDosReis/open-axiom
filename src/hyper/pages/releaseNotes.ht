@@ -60,7 +60,10 @@ contains additions of new features and domains including:
   The category KeyedDictionary now extends EltableAggregate.
 
   The category TableAggregate now extends FiniteAggregate.
-  
+
+  The operation members from Multiset has been renamed to unique, to
+  avoid semantics confusion with an operation of same name exported
+  by the domain FiniteAggregate.
 
 \endscroll
 \autobuttons

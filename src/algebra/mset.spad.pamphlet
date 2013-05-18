@@ -30,8 +30,8 @@ Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S,ShallowlyMu
           ++ multiset(s) creates a multiset with singleton s.
         multiset: List S -> %
           ++ multiset(ls) creates a multiset with elements from \spad{ls}.
-        members: % -> List S
-          ++ members(ms) returns a list of the elements of \spad{ms}
+        unique: % -> List S
+          ++ \spad{unique ms} returns a list of the elements of \spad{ms}
           ++ {\em without} their multiplicity. See also \spadfun{parts}.
         remove: (S,%,Integer) -> %
           ++ remove(x,ms,number) removes at most \spad{number} copies of
@@ -99,7 +99,7 @@ Multiset(S: SetCategory): Join(MultisetAggregate S,FiniteAggregate S,ShallowlyMu
             convert [convert('multiset)@InputForm,
              convert(parts ms)@InputForm]
 
-        members(ms:%):List S == keys ms.table
+        unique(ms:%):List S == keys ms.table
 
         coerce(ms:%):OutputForm ==
             l: List OutputForm := empty()
