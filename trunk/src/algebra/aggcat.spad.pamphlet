@@ -261,7 +261,7 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
    find: (S->Boolean, %) -> Union(S, "failed")
      ++ find(p,u) returns the first x in u such that \axiom{p(x)} is true, and
      ++ "failed" otherwise.
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
       remove: (S->Boolean,%) -> %
 	++ remove(p,u) returns a copy of u removing all elements x such that
 	++ \axiom{p(x)} is true.
