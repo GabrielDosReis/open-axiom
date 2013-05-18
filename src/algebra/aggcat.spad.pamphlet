@@ -133,15 +133,14 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
 
    if % has finiteAggregate then
-     #c			  == # parts c
-     any?(f, c)		  == or/[f x for x in parts c]
-     every?(f, c)	  == and/[f x for x in parts c]
-     count(f:S -> Boolean, c:%) == +/[1 for x in parts c | f x]
-     members x		  == parts x
+     #c			  == # members c
+     any?(f, c)		  == or/[f x for x in members c]
+     every?(f, c)	  == and/[f x for x in members c]
+     count(f:S -> Boolean, c:%) == +/[1 for x in members c | f x]
 
      if S has BasicType then
        x = y ==
-         #x = #y and (and/[a = b for a in parts x for b in parts y])
+         #x = #y and (and/[a = b for a in members x for b in members y])
 
      if S has BasicType then
        count(s:S, x:%) == count(s = #1, x)
@@ -150,7 +149,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
      if S has CoercibleTo(OutputForm) then
        coerce(x:%):OutputForm ==
 	 bracket
-	    commaSeparate [a::OutputForm for a in parts x]$List(OutputForm)
+	    commaSeparate [a::OutputForm for a in members x]$List(OutputForm)
 
 @
 
@@ -200,7 +199,7 @@ FiniteAggregate(S: Type): Category == Exports where
       #x == # members x
       any?(f, x) == or/[f e for e in members x]
       every?(f, x) == and/[f e for e in members x]
-      count(f:S -> Boolean, x:%) == +/[1 for e in parts x | f e]
+      count(f:S -> Boolean, x:%) == +/[1 for e in members x | f e]
       if S has BasicType then
         count(s:S, x:%) == count(s = #1, x)
         member?(e, x)   == any?(e = #1,x)
@@ -299,22 +298,22 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
    if S has ConvertibleTo InputForm then ConvertibleTo InputForm
  add
    if % has finiteAggregate then
-     #c			  == # parts c
-     count(f:S -> Boolean, c:%) == +/[1 for x in parts c | f x]
-     any?(f, c)		  == or/[f x for x in parts c]
-     every?(f, c)	  == and/[f x for x in parts c]
-     find(f:S -> Boolean, c:%) == find(f, parts c)
-     reduce(f:(S,S)->S, x:%) == reduce(f, parts x)
-     reduce(f:(S,S)->S, x:%, s:S) == reduce(f, parts x, s)
+     #c			  == # members c
+     count(f:S -> Boolean, c:%) == +/[1 for x in members c | f x]
+     any?(f, c)		  == or/[f x for x in members c]
+     every?(f, c)	  == and/[f x for x in members c]
+     find(f:S -> Boolean, c:%) == find(f, members c)
+     reduce(f:(S,S)->S, x:%) == reduce(f, members x)
+     reduce(f:(S,S)->S, x:%, s:S) == reduce(f, members x, s)
      remove(f:S->Boolean, x:%) ==
-       construct remove(f, parts x)
+       construct remove(f, members x)
      select(f:S->Boolean, x:%) ==
-       construct select(f, parts x)
+       construct select(f, members x)
 
      if S has SetCategory then
        remove(s:S, x:%) == remove(#1 = s, x)
-       reduce(f:(S,S)->S, x:%, s1:S, s2:S) == reduce(f, parts x, s1, s2)
-       removeDuplicates(x) == construct removeDuplicates parts x
+       reduce(f:(S,S)->S, x:%, s1:S, s2:S) == reduce(f, members x, s1, s2)
+       removeDuplicates(x) == construct removeDuplicates members x
 
 @
 
@@ -564,10 +563,10 @@ DictionaryOperations(S:SetCategory): Category ==
    construct l == dictionary l
    dictionary() == empty()
    if % has finiteAggregate then
-     copy d == dictionary parts d
+     copy d == dictionary members d
      coerce(s:%):OutputForm ==
        prefix("dictionary"@String :: OutputForm,
-				      [x::OutputForm for x in parts s])
+				      [x::OutputForm for x in members s])
 
 @
 
@@ -606,16 +605,16 @@ Dictionary(S:SetCategory): Category ==
 
      --extract! d ==
      --	 empty? d => error "empty dictionary"
-     --	 remove!(x := first parts d, d, 1)
+     --	 remove!(x := first members d, d, 1)
      --	 x
 
      s = t ==
        eq?(s,t) => true
        #s ~= #t => false
-       and/[member?(x, t) for x in parts s]
+       and/[member?(x, t) for x in members s]
 
      remove!(f:S->Boolean, t:%) ==
-       for m in parts t repeat if f m then remove!(m, t)
+       for m in members t repeat if f m then remove!(m, t)
        t
 
 @
@@ -785,30 +784,30 @@ FiniteSetAggregate(S:SetCategory): Category ==
    cardinality s   == #s
    construct l	   == (s := set(); for x in l repeat insert!(x,s); s)
    count(x:S, s:%) == (member?(x, s) => 1; 0)
-   subset?(s, t)   == #s < #t and (and/[member?(x, t) for x in parts s])
+   subset?(s, t)   == #s < #t and (and/[member?(x, t) for x in members s])
 
    coerce(s:%):OutputForm ==
-     brace [x::OutputForm for x in parts s]$List(OutputForm)
+     brace [x::OutputForm for x in members s]$List(OutputForm)
 
    intersect(s, t) ==
      i := {}
-     for x in parts s | member?(x, t) repeat insert!(x, i)
+     for x in members s | member?(x, t) repeat insert!(x, i)
      i
 
    difference(s:%, t:%) ==
      m := copy s
-     for x in parts t repeat remove!(x, m)
+     for x in members t repeat remove!(x, m)
      m
 
    symmetricDifference(s, t) ==
      d := copy s
-     for x in parts t repeat
+     for x in members t repeat
        if member?(x, s) then remove!(x, d) else insert!(x, d)
      d
 
    union(s:%, t:%) ==
       u := copy s
-      for x in parts t repeat insert!(x, u)
+      for x in members t repeat insert!(x, u)
       u
 
    if S has Finite then
@@ -820,16 +819,18 @@ FiniteSetAggregate(S:SetCategory): Category ==
 
      lookup s ==
        n:PositiveInteger := 1
-       for x in parts s repeat n := n + 2 ** ((lookup(x) - 1)::NonNegativeInteger)
+       for x in members s repeat n := n + 2 ** ((lookup(x) - 1)::NonNegativeInteger)
        n
 
    if S has OrderedSet then
      max s ==
-       empty?(l := parts s) => error "Empty set"
+       l := members s
+       empty? l => error "Empty set"
        reduce("max", l)
 
      min s ==
-       empty?(l := parts s) => error "Empty set"
+       l := members s
+       empty? l => error "Empty set"
        reduce("min", l)
 
 @
@@ -882,7 +883,6 @@ OrderedMultisetAggregate(S:OrderedSet): Category ==
    -- max: % -> S		      ++ smallest entry in the set
    -- duplicates: % -> List Record(entry:S,count:NonNegativeInteger)
         ++ to become an in order iterator
-   -- parts: % -> List S	      ++ in order iterator
       min: % -> S
 	++ min(u) returns the smallest entry in the multiset aggregate u.
 
@@ -929,7 +929,7 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
      r case Entry and r::Entry = p.entry
 
    if % has finiteAggregate then
-     keys t == [x.key for x in parts t]
+     keys t == [x.key for x in members t]
 
    elt(t, k) ==
       (r := search(k, t)) case Entry => r::Entry
@@ -1090,7 +1090,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
   elt(a, i, x) == (index?(i, a) => qelt(a, i); x)
 
   if % has finiteAggregate then
-    entries x == parts x
+    entries x == members x
     if Entry has SetCategory then
       entry?(x, a) == member?(x, a)
 
@@ -1178,9 +1178,9 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
 --    for k in keys t | not key?(k, s) repeat z.k := f(t.k, x)
 --    z
 
-   parts(t:%):List Record(key:Key,entry:Entry) == [[k, t.k] for k in keys t]
-   parts(t:%):List Entry   == [t.k for k in keys t]
-   entries(t:%):List Entry == parts(t)
+   members(t:%):List Record(key:Key,entry:Entry) == [[k, t.k] for k in keys t]
+   members(t:%):List Entry   == [t.k for k in keys t]
+   entries(t:%):List Entry == members(t)
 
    s:% = t:% ==
      eq?(s,t) => true
@@ -1210,7 +1210,7 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
      [first ks, t first ks]
 
    find(f: Record(key:Key,entry:Entry)->Boolean, t:%): Union(Record(key:Key,entry:Entry), "failed") ==
-     for ke in parts(t)@List(Record(key:Key,entry:Entry)) repeat if f ke then return ke
+     for ke in members(t)@List(Record(key:Key,entry:Entry)) repeat if f ke then return ke
      "failed"
 
    index?(k: Key, t: %): Boolean ==
@@ -2052,7 +2052,7 @@ import FiniteLinearAggregate
 OneDimensionalArrayAggregate(S:Type): Category ==
     Join(FiniteLinearAggregate S,ShallowlyMutableAggregate S)
   add
-    parts x	    == [qelt(x, i) for i in minIndex x .. maxIndex x]
+    members x	    == [qelt(x, i) for i in minIndex x .. maxIndex x]
     sort!(f, a) == quickSort(f, a)$FiniteLinearAggregateSort(S, %)
 
     any?(f, a) ==

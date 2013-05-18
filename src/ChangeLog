@@ -1,5 +1,9 @@
 2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet: Replace uses of parts by members.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/attreg.spad.pamphlet (AttributeRegistry): Remove
 	shallowlyMutble.
 	* algebra/aggcat.spad.pamphlet (BagAggregate): Extend
