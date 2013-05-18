@@ -262,19 +262,6 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
      ++ find(p,u) returns the first x in u such that \axiom{p(x)} is true, and
      ++ "failed" otherwise.
    if % has finiteAggregate then
-      reduce: ((S,S)->S,%) -> S
-	++ reduce(f,u) reduces the binary operation f across u. For example,
-	++ if u is \axiom{[x,y,...,z]} then \axiom{reduce(f,u)} returns \axiom{f(..f(f(x,y),...),z)}.
-	++ Note: if u has one element x, \axiom{reduce(f,u)} returns x.
-	++ Error: if u is empty.
-      reduce: ((S,S)->S,%,S) -> S
-	++ reduce(f,u,x) reduces the binary operation f across u, where x is
-	++ the identity operation of f.
-	++ Same as \axiom{reduce(f,u)} if u has 2 or more elements.
-	++ Returns \axiom{f(x,y)} if u has one element y,
-	++ x if u is empty.
-	++ For example, \axiom{reduce(+,u,0)} returns the
-	++ sum of the elements of u.
       remove: (S->Boolean,%) -> %
 	++ remove(p,u) returns a copy of u removing all elements x such that
 	++ \axiom{p(x)} is true.
@@ -284,12 +271,6 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
 	++ \axiom{p(x)} is true.
 	++ Note: \axiom{select(p,u) == [x for x in u | p(x)]}.
       if S has BasicType then
-	reduce: ((S,S)->S,%,S,S) -> S
-	  ++ reduce(f,u,x,z) reduces the binary operation f across u, stopping
-	  ++ when an "absorbing element" z is encountered.
-	  ++ As for \axiom{reduce(f,u,x)}, x is the identity operation of f.
-	  ++ Same as \axiom{reduce(f,u,x)} when u contains no element z.
-	  ++ Thus the third argument x is returned when u is empty.
 	remove: (S,%) -> %
 	  ++ remove(x,u) returns a copy of u with all
 	  ++ elements \axiom{y = x} removed.
@@ -299,13 +280,7 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
    if S has ConvertibleTo InputForm then ConvertibleTo InputForm
  add
    if % has finiteAggregate then
-     #c			  == # members c
-     count(f:S -> Boolean, c:%) == +/[1 for x in members c | f x]
-     any?(f, c)		  == or/[f x for x in members c]
-     every?(f, c)	  == and/[f x for x in members c]
      find(f:S -> Boolean, c:%) == find(f, members c)
-     reduce(f:(S,S)->S, x:%) == reduce(f, members x)
-     reduce(f:(S,S)->S, x:%, s:S) == reduce(f, members x, s)
      remove(f:S->Boolean, x:%) ==
        construct remove(f, members x)
      select(f:S->Boolean, x:%) ==
@@ -313,7 +288,6 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
 
      if S has BasicType then
        remove(s:S, x:%) == remove(#1 = s, x)
-       reduce(f:(S,S)->S, x:%, s1:S, s2:S) == reduce(f, members x, s1, s2)
        removeDuplicates(x) == construct removeDuplicates members x
 
 @
@@ -599,7 +573,7 @@ Dictionary(S:SetCategory): Category ==
      for x in l repeat insert!(x, d)
      d
 
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
     -- remove(f:S->Boolean,t:%)  == remove!(f, copy t)
     -- select(f, t)	   == select!(f, copy t)
      select!(f, t)	 == remove!(not f #1, t)
@@ -929,7 +903,7 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
      r := search(p.key, t)
      r case Entry and r::Entry = p.entry
 
-   if % has finiteAggregate then
+   if % has FiniteAggregate Record(key:Key,entry:Entry) then
      keys t == [x.key for x in members t]
 
    elt(t, k) ==
@@ -1090,7 +1064,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
  add
   elt(a, i, x) == (index?(i, a) => qelt(a, i); x)
 
-  if % has finiteAggregate then
+  if % has FiniteAggregate Entry then
     entries x == members x
     if Entry has BasicType then
       entry?(x, a) == member?(x, a)
@@ -1400,7 +1374,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
 	 (right t)::OutputForm
        bracket [l, v, r]
 
-   if % has finiteAggregate then
+   if % has FiniteAggregate S then
      aggCount: (%,NonNegativeInteger) -> NonNegativeInteger
      #x == aggCount(x,0)
      aggCount(x,k) ==
@@ -1683,7 +1657,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
       x := rest x
     x
 
-  if % has finiteAggregate then
+  if % has FiniteAggregate S then
     last(x, n) ==
       n > (m := #x) => error "index out of range"
       copy rest(x, (m - n)::NonNegativeInteger)
@@ -1925,7 +1899,7 @@ LinearAggregate(S:Type): Category ==
   concat(a:%, x:S)	== concat(a, new(1, x))
   concat(x:S, y:%)	== concat(new(1, x), y)
   insert(x:S, a:%, i:Integer) == insert(new(1, x), a, i)
-  if % has finiteAggregate then
+  if % has FiniteAggregate S then
     maxIndex l == #l - 1 + minIndex l
 
 --if % has shallowlyMutable then new(n, s)  == fill!(new n, s)
