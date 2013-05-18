@@ -185,9 +185,9 @@ MatrixCommonDenominator(R, Q): Exports == Implementation where
       [map(numer(d * #1), m), d]
  
     if R has GcdDomain then
-      commonDenominator m == lcm map(denom, parts m)
+      commonDenominator m == lcm map(denom, members m)
     else
-      commonDenominator m == reduce("*",map(denom, parts m),1)$List(R)
+      commonDenominator m == reduce("*",map(denom, members m),1)$List(R)
 
 @
 \section{License}

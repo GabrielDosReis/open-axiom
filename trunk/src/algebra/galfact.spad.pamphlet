@@ -274,7 +274,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       n
 
     -- local function, returns the a Set of shifted elements
-    shiftSet(s:Set N,shift:N):Set N == set [ e+shift for e in parts s ]
+    shiftSet(s:Set N,shift:N):Set N == set [ e+shift for e in members s ]
 
     -- local function, returns the "reductum" of an Integer (as chain of bits)
     reductum(n:Z):Z == n-shift(1,length(n)-1)
@@ -484,7 +484,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
     -- local function, returns the set of elements "divided" by an integer
     divideSet(s:Set N, n:N):Set N ==
       l: List N := [ 0 ]
-      for e in parts s repeat
+      for e in members s repeat
         if (ee := (e exquo n)$N) case N then l := cons(ee::N,l)
       set(l)
 

@@ -526,7 +526,7 @@ ThreeSpace(R:Ring):Exports == Implementation where
           for eachCurve in kid repeat
             insert!(#children eachCurve,whatSizes)
           #whatSizes > 1 => error "Mesh defined with curves of different sizes"
-          first parts whatSizes < 2 => 
+          first members whatSizes < 2 => 
             error "Mesh defined with single point curves (use curve())"
           true
       false

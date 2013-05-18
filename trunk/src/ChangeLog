@@ -1,5 +1,21 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat2.spad.pamphlet: Use members, not parts.
+	* algebra/algcat.spad.pamphlet: Likewise.
+	* algebra/cden.spad.pamphlet: Likewise.
+	* algebra/clifford.spad.pamphlet: Likewise.
+	* algebra/divisor.spad.pamphlet: Likewise.
+	* algebra/galfact.spad.pamphlet: Likewise.
+	* algebra/lodof.spad.pamphlet: Likewise.
+	* algebra/naalgc.spad.pamphlet: Likewise.
+	* algebra/oderf.spad.pamphlet: Likewise.
+	* algebra/rule.spad.pamphlet: Likewise.
+	* algebra/space.spad.pamphlet: Likewise.
+	* algebra/view3D.spad.pamphlet: Likewise.
+	* algebra/zerodim.spad.pamphlet: Likewise.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/array1.spad.pamphlet: Define members, not parts.
 	* algebra/array2.spad.pamphlet: Likewise.
 	* algebra/bags.spad.pamphlet: Likewise.

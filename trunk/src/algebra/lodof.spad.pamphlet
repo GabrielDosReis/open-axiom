@@ -289,7 +289,7 @@ AssociatedEquations(R, L):Exports == Implementation where
  
     diff:L := D()
  
-    makeMatrix(v, n) == matrix [parts row(v.i, n) for i in 1..#v]
+    makeMatrix(v, n) == matrix [members row(v.i, n) for i in 1..#v]
  
     associatedSystem(op, m) ==
       eq: Vector R

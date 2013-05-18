@@ -300,7 +300,7 @@ Ruleset(Base, R, F): Exports == Implementation where
     x = y                            == x =$Rep y
     elt(x:$, f:F)                    == applyRules(rules x, f)
     elt(r:$, s:F, n:PositiveInteger) == applyRules(rules r, s, n)
-    rules x                          == parts(x)$Rep
+    rules x                          == members(x)$Rep
 
 @
 \section{License}
