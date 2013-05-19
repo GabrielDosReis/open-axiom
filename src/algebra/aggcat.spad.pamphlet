@@ -1226,7 +1226,7 @@ RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
       node?: (%,%) -> Boolean
 	++ node?(u,v) tests if node u is contained in node v
 	++ (either as a child, a child of a child, etc.).
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
       setchildren!: (%,List %)->%
 	++ setchildren!(u,v) replaces the current children of node u
 	++ with the members of v in left-to-right order.
@@ -1237,7 +1237,7 @@ RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
 	++ setvalue!(u,x) sets the value of node u to x.
  add
    elt(x,"value") == value x
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
      setelt(x,"value",y) == setvalue!(x,y)
    if S has BasicType then
      child?(x,l) == member?(x,children(l))
@@ -1274,7 +1274,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
    elt: (%,"right") -> %
      ++ elt(a,"right") (also written: \axiom{a . right})
      ++ is equivalent to \axiom{right(a)}.
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
       setelt: (%,"left",%) -> %
 	++ setelt(a,"left",b) (also written \axiom{a . left := b}) is equivalent
 	++ to \axiom{setleft!(a,b)}.
@@ -1357,7 +1357,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
    eqMember?(y,l) ==
      for x in l repeat eq?(x,y) => return true
      false
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
      setelt(x,"left",b)  == setleft!(x,b)
      setelt(x,"right",b) == setright!(x,b)
 
@@ -1403,7 +1403,7 @@ DoublyLinkedAggregate(S:Type): Category == RecursiveAggregate S with
      ++ element.
      ++ Error: if l has no next element.
      ++ Note: \axiom{next(l) = rest(l)} and \axiom{previous(next(l)) = l}.
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
       concat!: (%,%) -> %
 	++ concat!(u,v) destructively concatenates doubly-linked aggregate v to the end of doubly-linked aggregate u.
       setprevious!: (%,%) -> %
@@ -1493,7 +1493,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
    cycleTail: % -> %
       ++ cycleTail(u) returns the last node in the cycle, or
       ++ empty if none exists.
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
       concat!: (%,%) -> %
 	++ concat!(u,v) destructively concatenates v to the end of u.
 	++ Note: \axiom{concat!(u,v) = setlast!(u,v)}.
@@ -1641,7 +1641,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
 	v := rest v
       u=v
 
-  if % has shallowlyMutable then
+  if % has ShallowlyMutableAggregate S then
     setelt(x, "first", a) == setfirst!(x, a)
     setelt(x,  "last", a) == setlast!(x, a)
     setelt(x,  "rest", a) == setrest!(x, a)
@@ -1738,7 +1738,7 @@ StreamAggregate(S:Type): Category ==
      (h := hi(i) - minIndex x) < l => empty()
      first(rest(x, l::NonNegativeInteger), (h - l + 1)::NonNegativeInteger)
 
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
      concat(x:%, y:%) == concat!(copy x, y)
 
      concat l ==
@@ -1864,7 +1864,7 @@ LinearAggregate(S:Type): Category ==
   if % has FiniteAggregate S then
     maxIndex l == #l - 1 + minIndex l
 
---if % has shallowlyMutable then new(n, s)  == fill!(new n, s)
+--if % has ShallowlyMutableAggregate S then new(n, s)  == fill!(new n, s)
 
 @
 
@@ -1928,7 +1928,7 @@ FiniteLinearAggregate(S:Type): Category == Join(LinearAggregate S,FiniteAggregat
 	++ Note: \axiom{sort(u) = sort(<=,u)}.
       sorted?: % -> Boolean
 	++ sorted?(u) tests if the elements of u are in ascending order.
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate S then
       copyInto!: (%,%,Integer) -> %
 	++ copyInto!(u,v,i) returns aggregate u containing a copy of
 	++ v inserted at element i.
@@ -1948,7 +1948,7 @@ FiniteLinearAggregate(S:Type): Category == Join(LinearAggregate S,FiniteAggregat
       merge(x, y) == merge(_<$S, x, y)
       sort l	  == sort(_<$S, l)
 
-    if % has shallowlyMutable then
+    if % has ShallowlyMutableAggregate S then
       reverse x	 == reverse! copy x
       sort(f, l) == sort!(f, copy l)
 
