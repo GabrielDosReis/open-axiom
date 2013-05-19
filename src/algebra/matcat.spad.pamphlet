@@ -493,7 +493,7 @@ MatrixCategory(R,Row,Col): Category == Definition where
          --convert [convert('matrix)@InputForm,
                   --convert listOfLists x]$List(InputForm)
 
-     if Col has shallowlyMutable then
+     if Col has ShallowlyMutableAggregate R then
 
        x:% * v:Col ==
          ncols(x) ~= #v =>
@@ -507,7 +507,7 @@ MatrixCategory(R,Row,Col): Category == Definition where
              sum
          w
 
-     if Row has shallowlyMutable then
+     if Row has ShallowlyMutableAggregate R then
 
        v:Row * x:% ==
          nrows(x) ~= #v =>
