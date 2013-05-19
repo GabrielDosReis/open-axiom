@@ -81,8 +81,6 @@ import Evalable
 ++ same type.
 ++ In the current system, all aggregates are homogeneous.
 ++ Two attributes characterize classes of aggregates.
-++ Those with attribute \spadatt{shallowlyMutable} allow an element
-++ to be modified or updated without changing its overall value.
 HomogeneousAggregate(S:Type): Category == Aggregate with
    if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
    if S has BasicType then BasicType
@@ -92,9 +90,6 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
    map	   : (S->S,%) -> %
      ++ map(f,u) returns a copy of u with each element x replaced by f(x).
      ++ For collections, \axiom{map(f,u) = [f(x) for x in u]}.
-   if % has shallowlyMutable then
-     map!: (S->S,%) -> %
-	++ map!(f,u) destructively replaces each element x of u by \axiom{f(x)}.
   add
    if S has Evalable S then
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
@@ -194,7 +189,6 @@ FiniteAggregate(S: Type): Category == Exports where
 ++   shapes.
 ShallowlyMutableAggregate(S: Type): Category == Exports where
   Exports == HomogeneousAggregate S with
-      shallowlyMutable -- FIXME: TEMPORARY.
       map!: (S->S,%) -> %
         ++ \spad{map!(f,u)} destructively replaces each element
         ++ \spad{x} of \spad{u} by \spad{f(x)}    
@@ -952,7 +946,7 @@ EltableAggregate(Dom:SetCategory, Im:Type): Category ==
        ++ domain of \axiom{u} a memory-access violation may occur.  If a check
        ++ on whether \axiom{x} is in the domain of \axiom{u} is required, use
        ++ the function \axiom{elt}.
-    if % has shallowlyMutable then
+    if % has ShallowlyMutableAggregate Im then
        setelt : (%, Dom, Im) -> Im
 	   ++ setelt(u,x,y) sets the image of x to be y under u,
 	   ++ assuming x is in the domain of u.
@@ -965,7 +959,7 @@ EltableAggregate(Dom:SetCategory, Im:Type): Category ==
            ++ If such a check is required use the function \axiom{setelt}.
  add
   qelt(a, x) == elt(a, x)
-  if % has shallowlyMutable then
+  if % has ShallowlyMutableAggregate Im then
     qsetelt!(a, x, y) == (a.x := y)
 
 @
@@ -1027,7 +1021,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
 	++ Note: for collections, \axiom{first([x,y,...,z]) = x}.
 	++ Error: if u is empty.
 
-   if % has shallowlyMutable then
+   if % has ShallowlyMutableAggregate Entry then
       fill!: (%,Entry) -> %
 	++ fill!(u,x) replaces each entry in aggregate u by x.
 	++ The modified u is returned as value.
@@ -1047,7 +1041,7 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
     minIndex a == "min"/indices(a)
     first a    == a minIndex a
 
-  if % has shallowlyMutable then
+  if % has ShallowlyMutableAggregate Entry then
     map(f, a) == map!(f, copy a)
 
     map!(f, a) ==
@@ -1848,7 +1842,8 @@ LinearAggregate(S:Type): Category ==
       ++ insert(v,u,k) returns a copy of u having v inserted beginning at the
       ++ \axiom{i}th element.
       ++ Note: \axiom{insert(v,u,k) = concat( u(0..k-1), v, u(k..) )}.
-   if % has shallowlyMutable then setelt: (%,UniversalSegment(Integer),S) -> S
+   if % has ShallowlyMutableAggregate S then
+     setelt: (%,UniversalSegment(Integer),S) -> S
       ++ setelt(u,i..j,x) (also written: \axiom{u(i..j) := x}) destructively
       ++ replaces each element in the segment \axiom{u(i..j)} by x.
       ++ The value x is returned.

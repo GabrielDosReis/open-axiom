@@ -1,5 +1,13 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	Eradicate attribute shallowlyMutable.
+	* algebra/aggcat.spad.pamphlet: Use ShallowlyMutableAggregate.
+	* algebra/defaults.spad.pamphlet: Likewise.
+	* algebra/smith.spad.pamphlet: Likewise.
+	* algebra/solvelin.spad.pamphlet: Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/matfuns.spad.pamphlet: Use ShallowlyMutableAggregate.
 
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>

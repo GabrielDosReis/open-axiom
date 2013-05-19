@@ -63,7 +63,7 @@ RepeatedDoubling(S):Exports ==Implementation where
 <<package FLASORT FiniteLinearAggregateSort>>=
 )abbrev package FLASORT FiniteLinearAggregateSort
 ++ FiniteLinearAggregateSort
-++ Sort package (in-place) for shallowlyMutable Finite Linear Aggregates
+++ Sort package (in-place) for ShallowlyMutable Finite Linear Aggregates
 ++ Author: Michael Monagan Sep/88
 ++ RelatedOperations: sort
 ++ Description:
@@ -72,7 +72,7 @@ RepeatedDoubling(S):Exports ==Implementation where
 
 FiniteLinearAggregateSort(S, V): Exports == Implementation where
   S: Type
-  V: FiniteLinearAggregate(S) with shallowlyMutable
+  V: Join(FiniteLinearAggregate S,ShallowlyMutableAggregate S)
  
   B ==> Boolean
   I ==> Integer
