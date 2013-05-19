@@ -1,5 +1,9 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (getSignature): Third parameter need not be fluid.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (getSignature): Tidy.
 
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
