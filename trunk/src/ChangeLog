@@ -1,5 +1,14 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	Eradicate attribute finiteAggregate.
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Remove
+	exports conditional aatribute finiteAggregate.
+	(TableAggregate): Remove spirous definitions.
+	* algebra/stream.spad.pamphlet (LazyStreamAggregate): Put
+	definitions for FiniteAgregate exports under appropriate condition.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (Aggregate) [#]: Remove export.
 	(UnaryRecursiveAggregate):  Make definiton conditional.
 	* algebra/stream.spad.pamphlet (LazyStreamAggregate): Likewise.

@@ -134,35 +134,33 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
         if odd? i then x := rst x
         eq?(x,y) => error "#: infinite stream"
 
---% CLAGG functions
+    any?(f,x) ==
+      -- error message only when x is a stream with lazy
+      -- evaluation and f(s) = false for all stream elements
+      -- 's' which have been computed when the function is
+      -- called
+      y := x
+      for i in 0.. repeat
+        explicitlyEmpty? y  => return false
+        lazy? y => error "any?: infinite stream"
+        f frst y => return true
+        y := rst y
+        if odd? i then x := rst x
+        eq?(x,y) => return false
 
-  any?(f,x) ==
-    -- error message only when x is a stream with lazy
-    -- evaluation and f(s) = false for all stream elements
-    -- 's' which have been computed when the function is
-    -- called
-    y := x
-    for i in 0.. repeat
-      explicitlyEmpty? y  => return false
-      lazy? y => error "any?: infinite stream"
-      f frst y => return true
-      y := rst y
-      if odd? i then x := rst x
-      eq?(x,y) => return false
-
-  every?(f,x) ==
-    -- error message only when x is a stream with lazy
-    -- evaluation and f(s) = true for all stream elements
-    -- 's' which have been computed when the function is
-    -- called
-    y := x
-    for i in 0.. repeat
-      explicitlyEmpty? y => return true
-      lazy? y => error "every?: infinite stream"
-      not f frst y => return false
-      y := rst y
-      if odd? i then x := rst x
-      eq?(x,y) => return true
+    every?(f,x) ==
+      -- error message only when x is a stream with lazy
+      -- evaluation and f(s) = true for all stream elements
+      -- 's' which have been computed when the function is
+      -- called
+      y := x
+      for i in 0.. repeat
+        explicitlyEmpty? y => return true
+        lazy? y => error "every?: infinite stream"
+        not f frst y => return false
+        y := rst y
+        if odd? i then x := rst x
+        eq?(x,y) => return true
 
 --  following ops count and member? are only exported if $ has FiniteAggregate S
 
@@ -197,18 +195,18 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
 --        if odd? i then x := rst x
 --        eq?(x,y) => return false
 
-  entries x ==
-    -- returns a list of elements which have been computed
-    -- error if infinite
-    y := x
-    l : L S := empty()
-    for i in 0.. repeat
-      explicitlyEmpty? y  => return reverse! l
-      lazy? y => error "infinite stream"
-      l := concat(frst y,l)
-      y := rst y
-      if odd? i then x := rst x
-      eq?(x,y) => error "infinite stream"
+    entries x ==
+      -- returns a list of elements which have been computed
+      -- error if infinite
+      y := x
+      l : L S := empty()
+      for i in 0.. repeat
+        explicitlyEmpty? y  => return reverse! l
+        lazy? y => error "infinite stream"
+        l := concat(frst y,l)
+        y := rst y
+        if odd? i then x := rst x
+        eq?(x,y) => error "infinite stream"
 
 --% CNAGG functions
 
