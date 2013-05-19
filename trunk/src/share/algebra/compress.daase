@@ -1,5 +1,5 @@
 
-(30 . 3577973675)            
+(30 . 3577976435)            
 (4000 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
@@ -501,27 +501,27 @@
  |alternative?| |flexible?| |rightAlternative?| |leftAlternative?|
  |antiAssociative?| |associative?| |antiCommutative?| |commutative?|
  |rightCharacteristicPolynomial| |leftCharacteristicPolynomial| |rightNorm|
- |leftNorm| |rightTrace| |leftTrace| |someBasis| |sort!| |copyInto!| |sorted?|
- |LiePoly| |quickSort| |heapSort| |shellSort| |outputSpacing| |outputGeneral|
- |outputFixed| |outputFloating| |exp1| |log10| |log2| |rationalApproximation|
- |relerror| |complexSolve| |complexRoots| |realRoots| |leadingTerm| |overlap|
- |hcrf| |hclf| |writable?| |readable?| |exists?| |extension| |directory|
- |filename| |shallowExpand| |deepExpand| |fracPart| |polyPart|
- |fullPartialFraction| |primeFrobenius| |discreteLog| |decreasePrecision|
- |increasePrecision| |precision| |bits| |mantissa| |unitNormalize| |unit|
- |flagFactor| |sqfrFactor| |primeFactor| |nthFlag| |nthExponent|
- |irreducibleFactor| |factors| |nilFactor| |regularRepresentation|
- |traceMatrix| |randomLC| |minimize| |module| |rightRegularRepresentation|
- |leftRegularRepresentation| |rightTraceMatrix| |leftTraceMatrix|
- |rightDiscriminant| |leftDiscriminant| |represents| |mergeFactors| |isMult|
- |applyQuote| |ground| |ground?| |exprToXXP| |exprToUPS| |exprToGenUPS|
- |localAbs| |universe| |complement| |cardinality| |internalIntegrate0|
- |makeCos| |makeSin| |iiGamma| |iiabs| |bringDown| |newReduc| |logical?|
- |character?| |doubleComplex?| |complex?| |double?| |ffactor| |qfactor|
- |UP2ifCan| |anfactor| |fortranCharacter| |fortranDoubleComplex|
- |fortranComplex| |fortranLogical| |fortranInteger| |fortranDouble|
- |fortranReal| |external?| |dimensionsOf| |scalarTypeOf| |makeFR|
- |musserTrials| |stopMusserTrials| |numberOfFactors| |modularFactor|
+ |leftNorm| |rightTrace| |leftTrace| |someBasis| |count| |every?| |any?|
+ |sort!| |copyInto!| |sorted?| |LiePoly| |quickSort| |heapSort| |shellSort|
+ |outputSpacing| |outputGeneral| |outputFixed| |outputFloating| |exp1| |log10|
+ |log2| |rationalApproximation| |relerror| |complexSolve| |complexRoots|
+ |realRoots| |leadingTerm| |overlap| |hcrf| |hclf| |writable?| |readable?|
+ |exists?| |extension| |directory| |filename| |shallowExpand| |deepExpand|
+ |fracPart| |polyPart| |fullPartialFraction| |primeFrobenius| |discreteLog|
+ |decreasePrecision| |increasePrecision| |precision| |bits| |mantissa|
+ |unitNormalize| |unit| |flagFactor| |sqfrFactor| |primeFactor| |nthFlag|
+ |nthExponent| |irreducibleFactor| |factors| |nilFactor|
+ |regularRepresentation| |traceMatrix| |randomLC| |minimize| |module|
+ |rightRegularRepresentation| |leftRegularRepresentation| |rightTraceMatrix|
+ |leftTraceMatrix| |rightDiscriminant| |leftDiscriminant| |represents|
+ |mergeFactors| |isMult| |applyQuote| |ground| |ground?| |exprToXXP|
+ |exprToUPS| |exprToGenUPS| |localAbs| |universe| |complement| |cardinality|
+ |internalIntegrate0| |makeCos| |makeSin| |iiGamma| |iiabs| |bringDown|
+ |newReduc| |logical?| |character?| |doubleComplex?| |complex?| |double?|
+ |ffactor| |qfactor| |UP2ifCan| |anfactor| |fortranCharacter|
+ |fortranDoubleComplex| |fortranComplex| |fortranLogical| |fortranInteger|
+ |fortranDouble| |fortranReal| |external?| |dimensionsOf| |scalarTypeOf|
+ |makeFR| |musserTrials| |stopMusserTrials| |numberOfFactors| |modularFactor|
  |useSingleFactorBound?| |useSingleFactorBound| |useEisensteinCriterion?|
  |useEisensteinCriterion| |eisensteinIrreducible?|
  |tryFunctionalDecomposition?| |tryFunctionalDecomposition| |btwFact|
@@ -545,9 +545,9 @@
  |putColorInfo| |appendPoint| |component| |ranges| |pointLists|
  |makeGraphImage| |graphImage| |groebSolve| |testDim| |genericPosition| |lfunc|
  |inHallBasis?| |reorder| |parameters| |headAst| |heap| |gcdprim| |gcdcofact|
- |gcdcofactprim| |lintgcd| |hex| |count| |every?| |any?| |host| |trueEqual|
- |factorList| |listConjugateBases| |matrixGcd| |divideIfCan!| |leastPower|
- |idealiser| |idealiserMatrix| |moduleSum| |mapUnivariate| |mapUnivariateIfCan|
+ |gcdcofactprim| |lintgcd| |hex| |host| |trueEqual| |factorList|
+ |listConjugateBases| |matrixGcd| |divideIfCan!| |leastPower| |idealiser|
+ |idealiserMatrix| |moduleSum| |mapUnivariate| |mapUnivariateIfCan|
  |mapMatrixIfCan| |mapBivariate| |fullDisplay| |relationsIdeal| |saturate|
  |groebner?| |groebnerIdeal| |ideal| |leadingIdeal| |backOldPos|
  |generalPosition| |quotient| |zeroDim?| |inRadical?| |in?| |element?|

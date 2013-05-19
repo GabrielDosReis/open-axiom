@@ -51,9 +51,7 @@ import List
 TriangularSetCategory(R:IntegralDomain,E:OrderedAbelianMonoidSup,_
  V:OrderedSet,P:RecursivePolynomialCategory(R,E,V)): 
          Category == 
-   PolynomialSetCategory(R,E,V,P) with 
-     shallowlyMutable
-
+   Join(PolynomialSetCategory(R,E,V,P),ShallowlyMutableAggregate P) with 
      infRittWu? : ($,$) -> Boolean
          ++ \axiom{infRittWu?(ts1,ts2)} returns true iff \axiom{ts2} has higher rank
          ++ than \axiom{ts1} in Wu Wen Tsun sense.

@@ -1975,7 +1975,7 @@ import FiniteLinearAggregate
 ++ Description:
 ++ One-dimensional-array aggregates serves as models for one-dimensional arrays.
 ++ Categorically, these aggregates are finite linear aggregates
-++ with the \spadatt{shallowlyMutable} property, that is, any component of
+++ with the shallowly mutable property, that is, any component of
 ++ the array may be changed without affecting the
 ++ identity of the overall array.
 ++ Array data structures are typically represented by a fixed area in storage and
