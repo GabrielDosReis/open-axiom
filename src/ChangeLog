@@ -1,5 +1,13 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/newdata.spad.pamphlet (SplittingTree): Include
+	ShallowlyMutableAggregate S in exports.
+	* algebra/polset.spad.pamphlet (GeneralPolynomialSet): Inlcude
+	ShallowlyMutableAggregate P.
+	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	Eradicate attribute finiteAggregate.
 	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Remove
 	exports conditional aatribute finiteAggregate.
