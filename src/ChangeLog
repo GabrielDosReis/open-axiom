@@ -1,5 +1,13 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (compDefineFunctor1): Use the current
+	instantiation form when adding modemaps from category.
+	(partialSignature?): New.
+	(refineDefinitionSignature): Use full completion from getSignature.
+	* interp/compiler.boot (compIterator): Simplify.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (sourceMatches): New.
 	(getDollarName): Likewise.
 	(getSignature): Them.  Tidy.

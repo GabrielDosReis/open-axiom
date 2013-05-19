@@ -1366,9 +1366,8 @@ augModemapsFromCategory(domainName,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,functorForm,categoryForm,e)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
-  condlist:=[]
   for [[op,sig,:.],cond,fnsel] in fnAlist repeat
-    e:= addModemapKnown(op,domainName,sig,cond,fnsel,e) -- cond was cond1
+    e:= addModemapKnown(op,domainName,sig,cond,fnsel,e)
   e
  
 addConstructorModemaps(name,form is [functorName,:.],e) ==
@@ -1500,7 +1499,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     for x in dbImplicitParameters db repeat getLocalIndex(db,x)
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
-      $e := augModemapsFromCategory('_$,'_$,target,$e)
+      $e := augModemapsFromCategory('$,form,target,$e)
       $e := put('$,'%dc,form,$e)
     $signature := signature'
     parSignature := dbSubstituteAllQuantified(db,signature')
@@ -1817,8 +1816,9 @@ hasSigInTargetCategory(form,target,e) ==
  
 ++ Subroutine of compDefineCapsuleFunction.
 checkAndDeclare(db,form,sig,e) ==
--- arguments with declared types must agree with those in sig;
--- those that don't get declarations put into e
+  stack := nil
+  -- arguments with declared types must agree with those in sig;
+  -- those that don't get declarations put into e
   for a in form.args for m in sig.source repeat
     isQuasiquote m => nil	  -- we just built m from a.
     symbolMember?(a,dbParameters db) =>
@@ -1858,6 +1858,10 @@ compArgumentConditions e ==
         [n,x,T.expr]
   e
 
+++ Return true if signature `sig' contains unspeccified modes.
+partialSignature? sig ==
+  sig.target = nil or (or/[s = nil for s in sig.source])
+
 ++ Subroutine of compDefineCapsuleFunction.
 ++ We are about to elaborate a definition with `form' as head, and
 ++ parameter types specified in `signature'.  Refine that signature
@@ -1867,12 +1871,9 @@ refineDefinitionSignature(form,signature,e) ==
   signature' :=
     x := hasSigInTargetCategory(form,signature.target,e) => x
     x := getSignatureFromMode(form,e) => x
-    [signature.target,:[getArgumentModeOrMoan(a,form,e) for a in form.args]]
+    [signature.target,:[getArgumentMode(a,e) for a in form.args]]
   signature'.source := stripOffSubdomainConditions(signature'.source,form.args)
-  --obtain target type if not given
-  if signature'.target = nil then
-    signature'.target :=
-      getSignature(form.op,signature'.source,e).target or return nil
+  partialSignature? signature' => getSignature(form.op,signature'.source,e)
   signature'
 
 ++ Subroutine of compDefineCapsuleFunction.
