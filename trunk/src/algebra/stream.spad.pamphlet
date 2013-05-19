@@ -122,15 +122,17 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
     empty? x => n = 0
     size?(rst x,(n-1) :: NNI)
 
-  # x ==
-    -- error if stream is not finite
-    y := x
-    for i in 0.. repeat
-      explicitlyEmpty? y  => return i
-      lazy? y => error "#: infinite stream"
-      y := rst y
-      if odd? i then x := rst x
-      eq?(x,y) => error "#: infinite stream"
+--% FINAGG functions
+  if % has FiniteAggregate S then
+    # x ==
+      -- error if stream is not finite
+      y := x
+      for i in 0.. repeat
+        explicitlyEmpty? y  => return i
+        lazy? y => error "#: infinite stream"
+        y := rst y
+        if odd? i then x := rst x
+        eq?(x,y) => error "#: infinite stream"
 
 --% CLAGG functions
 

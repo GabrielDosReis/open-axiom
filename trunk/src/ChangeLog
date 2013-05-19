@@ -1,5 +1,11 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (Aggregate) [#]: Remove export.
+	(UnaryRecursiveAggregate):  Make definiton conditional.
+	* algebra/stream.spad.pamphlet (LazyStreamAggregate): Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (compDefineFunctor1): Use the current
 	instantiation form when adding modemaps from category.
 	(partialSignature?): New.
