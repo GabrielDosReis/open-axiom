@@ -2674,15 +2674,11 @@ compIterator(it,e) ==
   it is ["STEP",index,start,inc,:optFinal] =>
     compStepIterator(index,start,optFinal,inc,e)
   it is ["WHILE",p] =>
-    [p',m,e]:=
-      comp(p,$Boolean,e) or return
-        stackMessage('"WHILE operand: %1b is not Boolean valued",[p])
+    [p',m,e] := compOrCroak(p,$Boolean,e)
     [["WHILE",p'],e]
   it is ["UNTIL",p] => ($until:= p; ['$until,e])
   it is ["|",x] =>
-    u:=
-      comp(x,$Boolean,e) or return
-        stackMessage('"SUCHTHAT operand: %1b is not Boolean value",[x])
+    u := compOrCroak(x,$Boolean,e)
     [["|",u.expr],u.env]
   nil
  
