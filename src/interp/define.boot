@@ -2020,14 +2020,13 @@ addDomain(domain,e) ==
  
 
 getSignature(op,argModeList,$e) ==
-  1=#
-    (sigl:=
-      removeDuplicates
-        [sig
-          for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
-            and sig.source = argModeList and knownInfo(pred,$e)]) => first sigl
+  mmList := get(op,'modemap,$e)
+  sigl := removeDuplicates
+      [sig for [[dc,:sig],[pred,:.]] in mmList
+         | dc='$ and sig.source = argModeList and knownInfo(pred,$e)]
+  sigl is [sig] => sig
   null sigl =>
-    (u:= getXmode(op,$e)) is ['Mapping,:sig] => sig
+    getXmode(op,$e) is ['Mapping,:sig] => sig
     SAY '"************* USER ERROR **********"
     SAY("available signatures for ",op,": ")
     if null mmList
@@ -2035,7 +2034,6 @@ getSignature(op,argModeList,$e) ==
        else for [[dc,:sig],:.] in mmList repeat printSignature("     ",op,sig)
     printSignature("NEED ",op,["?",:argModeList])
     nil
-  1=#sigl => first sigl
   stackSemanticError(["duplicate signatures for ",op,": ",argModeList],nil)
  
 --% ARGUMENT CONDITION CODE

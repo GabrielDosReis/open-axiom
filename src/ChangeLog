@@ -1,5 +1,9 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (getSignature): Tidy.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/cycles.spad.pamphlet (CycleIndicators) [nniBump]: New
 	local function.
 	[SFunction]: Use it.
