@@ -1,5 +1,9 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (knownPred): Take a memo-table as third parameter.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (FiniteAgregate): Remove attribute
 	finiteAggregate.
 
