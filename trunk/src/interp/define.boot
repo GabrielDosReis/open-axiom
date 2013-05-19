@@ -2019,14 +2019,14 @@ addDomain(domain,e) ==
   e        --is not a functor
  
 
-getSignature(op,argModeList,$e) ==
-  mmList := get(op,'modemap,$e)
+getSignature(op,argModeList,e) ==
+  mmList := get(op,'modemap,e)
   sigl := removeDuplicates
       [sig for [[dc,:sig],[pred,:.]] in mmList
-         | dc='$ and sig.source = argModeList and knownInfo(pred,$e)]
+         | dc='$ and sig.source = argModeList and knownInfo(pred,e)]
   sigl is [sig] => sig
   null sigl =>
-    getXmode(op,$e) is ['Mapping,:sig] => sig
+    getXmode(op,e) is ['Mapping,:sig] => sig
     SAY '"************* USER ERROR **********"
     SAY("available signatures for ",op,": ")
     if null mmList
