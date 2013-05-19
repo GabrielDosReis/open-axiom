@@ -1424,6 +1424,19 @@ substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)
   applySubst(pairList($FormalMapVariableList,argl),catform)
  
+++ Register in the current environment, the variable name for the
+++ current domain.  Usually it is $; except when we are compiling
+++ a synthesized package containing category defaults.
+setDollarName(form,env) ==
+  name :=
+    isCategoryPackageName form.op => first form.args
+    '$
+  put('%compilerData,'%dollar,name,env)
+
+++ Retrieve the variable name for the current instantiation.
+getDollarName env ==
+  get('%compilerData,'%dollar,env)
+
 compDefineFunctor(df,m,e,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
@@ -1458,6 +1471,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
     $e := registerConstructor($op,$e)
+    $e := setDollarName(form,$e)
     deduceImplicitParameters(db,$e)
     $formalArgList:= [:form.args,:$formalArgList]
     -- all defaulting packages should have caching turned off
@@ -2017,13 +2031,25 @@ addDomain(domain,e) ==
   if not isCategoryForm(domain,e) and name ~= "Mapping" then
     unknownTypeError name
   e        --is not a functor
- 
+
+++ Subroutine of getSignature.
+++ Return true if the given parameter type list `src' is a refinment of
+++ of the seed `pat'.
+sourceMatches?(src,pat) ==
+  repeat
+    src = nil => return pat = nil
+    pat = nil => return src = nil
+    pat.first ~= nil and src.first ~= pat.first => return false
+    src := src.rest
+    pat := pat.rest
 
 getSignature(op,argModeList,e) ==
   mmList := get(op,'modemap,e)
+  dollar := getDollarName e
   sigl := removeDuplicates
       [sig for [[dc,:sig],[pred,:.]] in mmList
-         | dc='$ and sig.source = argModeList and knownInfo(pred,e)]
+         | dc=dollar and sourceMatches?(sig.source,argModeList)
+            and knownInfo(pred,e)]
   sigl is [sig] => sig
   null sigl =>
     getXmode(op,e) is ['Mapping,:sig] => sig
