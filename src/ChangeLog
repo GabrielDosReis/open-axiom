@@ -1,3 +1,11 @@
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (sourceMatches): New.
+	(getDollarName): Likewise.
+	(getSignature): Them.  Tidy.
+	(setDollarName): New.
+	(compDefineFunctor1): Use it.
+
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (getSignature): Third parameter need not be fluid.
