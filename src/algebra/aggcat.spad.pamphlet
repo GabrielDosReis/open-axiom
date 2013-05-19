@@ -49,8 +49,6 @@ Aggregate: Category == Type with
    empty?: % -> Boolean
      ++ empty?(u) tests if u has 0 elements.
    sample: constant -> %    ++ sample yields a value of type %
-   if % has finiteAggregate then
-     #: % -> NonNegativeInteger     ++ # u returns the number of items in u.
  add
   eq?(a,b) == %peq(a,b)$Foreign(Builtin)
   sample() == empty()
@@ -1593,13 +1591,14 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => error "value of empty object"
     first x
 
-  #x ==
-    k: NonNegativeInteger := 0
-    while not empty? x repeat
-      k = cycleMax and cyclic? x => error "cyclic list"
-      x := rest x
-      k := k + 1
-    k
+  if % has FiniteAggregate S then
+    #x ==
+      k: NonNegativeInteger := 0
+      while not empty? x repeat
+        k = cycleMax and cyclic? x => error "cyclic list"
+        x := rest x
+        k := k + 1
+      k
 
   tail x ==
     empty? x => error "empty list"
