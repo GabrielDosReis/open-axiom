@@ -26,8 +26,8 @@
 
 LinearSystemMatrixPackage(F, Row, Col, M): Cat == Capsule where
     F: Field
-    Row: FiniteLinearAggregate F with shallowlyMutable
-    Col: FiniteLinearAggregate F with shallowlyMutable
+    Row: Join(FiniteLinearAggregate F,ShallowlyMutableAggregate F)
+    Col: Join(FiniteLinearAggregate F,ShallowlyMutableAggregate F)
     M  : MatrixCategory(F, Row, Col)
 
     N        ==> NonNegativeInteger

@@ -84,7 +84,7 @@ SmithNormalForm(R,Row,Col,M) : Exports == Implementation where
         km:= (km - 1) :: NNI
       km
 
-    if Col has shallowlyMutable then
+    if Col has ShallowlyMutableAggregate R then
 
       test2(sm : M ,b : Col, n1:NNI,dk:NNI) : Union( Col, "failed") ==
         -- test divisibility --
