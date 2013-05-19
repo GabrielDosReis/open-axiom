@@ -1,5 +1,11 @@
 2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/cycles.spad.pamphlet (CycleIndicators) [nniBump]: New
+	local function.
+	[SFunction]: Use it.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/cycles.spad.pamphlet (CycleIndicators)
 	[complete,alternating]:  Change input type to NonNegativeInteger.
 
