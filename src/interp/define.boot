@@ -172,53 +172,73 @@ hasToInfo (pred is ["has",a,b]) ==
   pred
  
 ++ Return true if we are certain that the information
-++ denotated by `pred' is derivable from the current environment. 
-knownInfo(pred,env) ==
+++ denotated by `pred' is derivable from the current environment `env'.
+++ The third parameter `tbl' serves as a memo-table to help avoid
+++ repeated computation of the same piece of information.
+++ Note that because this is a compile-time determination, the value
+++ computed by this subroutine is by necessary an approximation.
+++ If it returns true, when we know for certain that the predicate
+++ will hold also at runtime.  However, if it returns false the predicate
+++ may or may not hold at runtime.
+knownInfo(pred,env,tbl == makeTable function valueEq?) ==
   pred=true => true
   listMember?(pred,get("$Information","special",env)) => true
-  pred is ["OR",:l] => or/[knownInfo(u,env) for u in l]
-  pred is ["AND",:l] => and/[knownInfo(u,env) for u in l]
-  pred is ["or",:l] => or/[knownInfo(u,env) for u in l]
-  pred is ["and",:l] => and/[knownInfo(u,env) for u in l]
+  pred is ["OR",:l] => or/[knownInfo(u,env,tbl) for u in l]
+  pred is ["AND",:l] => and/[knownInfo(u,env,tbl) for u in l]
+  pred is ["or",:l] => or/[knownInfo(u,env,tbl) for u in l]
+  pred is ["and",:l] => and/[knownInfo(u,env,tbl) for u in l]
+  tableValue(tbl,pred) => true    -- re-use previously computed value
   pred is ["ATTRIBUTE",name,attr] =>
     v := compForMode(name,$EmptyMode,env) or return
           stackAndThrow('"can't find category of %1pb",[name])
     [vv,.,.] := compMakeCategoryObject(v.mode,env) or return
                  stackAndThrow('"can't make category of %1pb",[name])
-    listMember?(attr,categoryAttributes vv) => true
-    x := assoc(attr,categoryAttributes vv) => knownInfo(second x,env)
-          --format is a list of two elements: information, predicate
+    listMember?(attr,categoryAttributes vv) =>
+      tableTable(tbl,pred) := true
+    x := assoc(attr,categoryAttributes vv) =>
+      --format is a list of two elements: information, predicate
+      tableValue(tbl,pred) := knownInfo(second x,env,tbl)
     false
   pred is ["has",name,cat] =>
-    cat is ["ATTRIBUTE",:a] => knownInfo(["ATTRIBUTE",name,:a],env)
-    cat is ["SIGNATURE",:a] => knownInfo(["SIGNATURE",name,:a],env)
+    cat is ["ATTRIBUTE",:a] =>
+      tableValue(tbl,pred) := knownInfo(["ATTRIBUTE",name,:a],env,tbl)
+    cat is ["SIGNATURE",:a] =>
+      tableValue(tbl,pred) := knownInfo(["SIGNATURE",name,:a],env,tbl)
     -- unnamed category expressions imply structural checks.
-    cat is ["Join",:.] => and/[knownInfo(["has",name,c],env) for c in cat.args]
+    cat is ["Join",:.] =>
+      tableValue(tbl,pred) :=
+        and/[knownInfo(["has",name,c],env,tbl) for c in cat.args]
     cat is ["CATEGORY",.,:atts] =>
-      and/[knownInfo(hasToInfo ["has",name,att],env) for att in atts]
+      tableValue(tbl,pred) :=
+        and/[knownInfo(hasToInfo ["has",name,att],env,tbl) for att in atts]
     name is ['Union,:.] => false
     -- we have a named category expression
     v:= compForMode(name,$EmptyMode,env) or return
           stackAndThrow('"can't find category of %1pb",[name])
     vmode := v.mode
-    cat = vmode => true
-    vmode is ["Join",:l] and listMember?(cat,l) => true
+    cat = vmode => tableValue(tbl,pred) := true
+    vmode is ["Join",:l] and listMember?(cat,l) =>
+      tableValue(tbl,pred) := true
     [vv,.,.]:= compMakeCategoryObject(vmode,env) or return
                  stackAndThrow('"cannot find category %1pb",[vmode])
-    listMember?(cat,categoryPrincipals vv) => true  --checks princ. ancestors
-    (u:=assoc(cat,categoryAncestors vv)) and knownInfo(second u,env) => true
+    listMember?(cat,categoryPrincipals vv) =>
+      --checks princ. ancestors
+      tableValue(tbl,pred) := true
+    (u:=assoc(cat,categoryAncestors vv)) and knownInfo(second u,env,tbl) =>
+      tableValue(tbl,pred) := true
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
     or/[ancestor?(cat,[first u],env) 
-         for u in categoryAncestors vv | knownInfo(second u,env)] => true
+         for u in categoryAncestors vv | knownInfo(second u,env,tbl)] =>
+            tableValue(tbl,pred) := true
     false
   pred is ["SIGNATURE",name,op,sig,:.] =>
     v:= get(op,"modemap",env)
     for w in v repeat
       ww := w.mmSignature  --the actual signature part
       ww = sig =>
-        w.mmCondition  = true => return true
+        w.mmCondition  = true => return (tableValue(tbl,pred) := true)
         false
         --error '"knownInfo"
   false
