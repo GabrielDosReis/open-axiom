@@ -66,7 +66,7 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
         empty? l => ident
         reduce(fn, rest l, fn(first l, ident))
 
-      if B has ListAggregate(R) or not(B has shallowlyMutable) then
+      if B has ListAggregate(R) or not(B has ShallowlyMutableAggregate R) then
         -- A is a list-oid, and B is either list-oids or not mutable
         map(f, l) == construct [f s for s in entries l]
 
@@ -108,7 +108,7 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
           reverse! w
 
       else                             -- A and B are array-oid's
-        if B has shallowlyMutable then -- B is also mutable
+        if B has ShallowlyMutableAggregate R then -- B is also mutable
           map(f, v) ==
             w := new(#v,getRSample())$B
             for i in minIndex w .. maxIndex w repeat

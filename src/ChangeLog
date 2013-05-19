@@ -1,5 +1,9 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat2.spad.pamphlet: Use ShallowlyMutableAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/newdata.spad.pamphlet (SplittingTree): Include
 	ShallowlyMutableAggregate S in exports.
 	* algebra/polset.spad.pamphlet (GeneralPolynomialSet): Inlcude
