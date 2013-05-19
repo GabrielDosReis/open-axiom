@@ -36,7 +36,7 @@ CycleIndicators: Exports == Implementation where
   macro PI == PositiveInteger
   Exports ==> with
  
-    complete: PI -> SPOL RN
+    complete: NNI -> SPOL RN
       ++\spad{complete n} is the \spad{n} th complete homogeneous
       ++ symmetric function expressed in terms of power sums.
       ++ Alternatively it is the cycle index of the symmetric
@@ -46,7 +46,7 @@ CycleIndicators: Exports == Implementation where
       ++\spad{powerSum n} is the \spad{n} th power sum symmetric
       ++ function.
  
-    elementary: PI -> SPOL RN
+    elementary: NNI -> SPOL RN
       ++\spad{elementary n} is the \spad{n} th elementary symmetric
       ++ function expressed in terms of power sums.
  
