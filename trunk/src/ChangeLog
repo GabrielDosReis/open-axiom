@@ -1,5 +1,9 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/matfuns.spad.pamphlet: Use ShallowlyMutableAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/matcat.spad.pamphlet: Use ShallowlyMutableAggregate.
 
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
