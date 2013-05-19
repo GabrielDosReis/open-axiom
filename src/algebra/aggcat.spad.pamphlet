@@ -95,30 +95,6 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
    if % has shallowlyMutable then
      map!: (S->S,%) -> %
 	++ map!(f,u) destructively replaces each element x of u by \axiom{f(x)}.
-   if % has finiteAggregate then
-      any?: (S->Boolean,%) -> Boolean
-	++ any?(p,u) tests if \axiom{p(x)} is true for any element x of u.
-	++ Note: for collections,
-	++ \axiom{any?(p,u) = reduce(or,map(f,u),false,true)}.
-      every?: (S->Boolean,%) -> Boolean
-	++ every?(f,u) tests if p(x) is true for all elements x of u.
-	++ Note: for collections,
-	++ \axiom{every?(p,u) = reduce(and,map(f,u),true,false)}.
-      count: (S->Boolean,%) -> NonNegativeInteger
-	++ count(p,u) returns the number of elements x in u
-	++ such that \axiom{p(x)} is true. For collections,
-	++ \axiom{count(p,u) = reduce(+,[1 for x in u | p(x)],0)}.
-      members: % -> List S
-	++ members(u) returns a list of the consecutive elements of u.
-	++ For collections, \axiom{members([x,y,...,z]) = (x,y,...,z)}.
-      if S has BasicType then
-	count: (S,%) -> NonNegativeInteger
-	  ++ count(x,u) returns the number of occurrences of x in u.
-	  ++ For collections, \axiom{count(x,u) = reduce(+,[x=y for y in u],0)}.
-	member?: (S,%) -> Boolean
-	  ++ member?(x,u) tests if x is a member of u.
-	  ++ For collections,
-	  ++ \axiom{member?(x,u) = reduce(or,[x=y for y in u],false)}.
   add
    if S has Evalable S then
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
@@ -1194,17 +1170,6 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
      k: Record(key:Key,entry:Entry) := inspect t
      remove!(k.key, t)
      k
-
-   any?(f: Entry->Boolean, t: %): Boolean ==
-     for k in keys t | f t k repeat return true
-     false
-   every?(f: Entry->Boolean, t: %): Boolean ==
-     for k in keys t | not f t k repeat return false
-     true
-   count(f: Entry->Boolean, t: %): NonNegativeInteger ==
-     tally: NonNegativeInteger := 0
-     for k in keys t | f t k repeat tally := tally + 1
-     tally
 
 @
 
