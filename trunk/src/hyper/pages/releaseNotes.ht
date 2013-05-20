@@ -66,7 +66,11 @@ contains additions of new features and domains including:
   by the domain FiniteAggregate.
 
   The operation parts from HomogeneousAggregate was remved.  It was
-  mostly redundant with members, and created opportunities for confusion.
+  mostly redundant with members, and created opportunities for
+  confusion.
+
+  A new category, Functorial, has been added.  All homogeneous
+  aggregates with element type S satisfy Functorial S.
 
 \endscroll
 \autobuttons

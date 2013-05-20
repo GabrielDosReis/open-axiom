@@ -68,28 +68,26 @@ import CoercibleTo OutputForm
 import Evalable
 )abbrev category HOAGG HomogeneousAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++         Further revision by Gabriel Dos Reis.
 ++ Date Created: August 87 through August 88
-++ Date Last Updated: April 1991, May 1995
+++ Date Last Updated: May 17, 2013.
 ++ Basic Operations:
-++ Related Constructors:
+++ Related Constructors:  Aggregate, Functorial
 ++ Also See:
 ++ AMS Classifications:
 ++ Keywords:
 ++ References:
 ++ Description:
-++ A homogeneous aggregate is an aggregate of elements all of the
-++ same type.
+++   A homogeneous aggregate is an aggregate of elements all of the
+++   same type, and is functorial in stored elements..
 ++ In the current system, all aggregates are homogeneous.
 ++ Two attributes characterize classes of aggregates.
-HomogeneousAggregate(S:Type): Category == Aggregate with
+HomogeneousAggregate(S:Type): Category == Join(Aggregate,Functorial S) with
    if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
    if S has BasicType then BasicType
    if S has SetCategory then SetCategory
    if S has SetCategory then
       if S has Evalable S then Evalable S
-   map	   : (S->S,%) -> %
-     ++ map(f,u) returns a copy of u with each element x replaced by f(x).
-     ++ For collections, \axiom{map(f,u) = [f(x) for x in u]}.
   add
    if S has Evalable S then
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
@@ -194,8 +192,6 @@ ShallowlyMutableAggregate(S: Type): Category == Exports where
         ++ \spad{x} of \spad{u} by \spad{f(x)}    
 
 @
-
-
 
 \section{category CLAGG Collection}
 

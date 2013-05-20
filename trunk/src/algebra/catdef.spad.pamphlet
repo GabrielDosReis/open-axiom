@@ -2196,6 +2196,25 @@ VectorSpace(S:Field): Category ==  Module(S) with
     (v:% / s:S):% == inv(s) * v
 
 @
+
+\section{Functorial}
+
+<<category FUNCTOR Functorial>>=
+)abbrev category FUNCTOR Functorial
+++ Author: Gabriel Dos Reis
+++ Date Created: May 19, 2013.
+++ Date Last Modified: May 19, 2013.
+++ Description:
+++   This category describes the class of structural objects that
+++   behave functorially in distinguished class of components.
+Functorial(S: Type): Category == Type with
+    map: (S -> S, %) -> %
+      ++ \spad{map(f,x)} returns an object with similar shape and
+      ++ structure as \spad{x}, where all \spad{S}-items \spad{s}
+      ++ in \spad{x} have been replacement elementwise by \spad{f s}.
+@
+
+
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
@@ -2234,6 +2253,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<*>>=
 <<license>>
 
+<<category FUNCTOR Functorial>>
 <<category BINOPC BinaryOperatorCategory>>
 <<domain BINOP BinaryOperation>>
 <<category IDEMOPC IdempotentOperatorCategory>>
