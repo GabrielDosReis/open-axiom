@@ -1,6 +1,6 @@
 
-(30 . 3578007596)            
-(4000 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3578010131)            
+(4001 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -121,7 +121,7 @@
  |FunctionalSpecialFunction| |FunctionSpacePrimitiveElement|
  |FunctionSpaceReduce| |FortranScalarType|
  |FunctionSpaceUnivariatePolynomialFactor| |FortranType| |FunctionCalled|
- |FunctionDescriptor| |GaloisGroupFactorizer|
+ |Functorial| |FunctionDescriptor| |GaloisGroupFactorizer|
  |GaloisGroupFactorizationUtilities| |GaloisGroupPolynomialUtilities|
  |GaloisGroupUtilities| |GaussianFactorizationPackage| |GroebnerPackage|
  |EuclideanGroebnerBasisPackage| |GroebnerFactorizationPackage|

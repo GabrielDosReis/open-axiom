@@ -129,6 +129,7 @@ SUFFIXES = .spad .$(FASLEXT) $(EXEEXT) .input .pamphlet .tex .dvi
 # Consequently, the dependencies listed here are at the categories
 # inheritance level; not necessarily at the use level.
 strap-0/UTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/FUNCTOR.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/BASTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/KOERCE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/KONVERT.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
@@ -312,7 +313,7 @@ strap-0/LNAGG.$(FASLEXT): strap-0/IXAGG.$(FASLEXT) \
 	strap-0/CLAGG.$(FASLEXT) strap-0/ETLAB.$(FASLEXT)
 strap-0/IXAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT) \
 	strap-0/ELTAGG.$(FASLEXT)
-strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) \
+strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
 	strap-0/KOERCE.$(FASLEXT) strap-0/BASTYPE.$(FASLEXT) \
 	strap-0/SETCAT.$(FASLEXT) strap-0/EVALAB.$(FASLEXT)
 strap-0/AGG.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
@@ -404,6 +405,7 @@ strap-0/PATTERN.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) \
 # the bootstrap process (stage 2).  Those that were compiled at stage 0
 # were (necessarily) incomplete.
 
+strap-1/FUNCTOR.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 strap-1/BASTYPE.$(FASLEXT): strap-1/TYPE.$(FASLEXT) \
 	strap-0/BOOLEAN.$(FASLEXT)
 
@@ -642,7 +644,7 @@ strap-1/LNAGG.$(FASLEXT): strap-1/IXAGG.$(FASLEXT) \
 strap-1/IXAGG.$(FASLEXT): strap-1/HOAGG.$(FASLEXT) \
 	strap-1/ELTAGG.$(FASLEXT)
 
-strap-1/HOAGG.$(FASLEXT): strap-1/AGG.$(FASLEXT) \
+strap-1/HOAGG.$(FASLEXT): strap-1/AGG.$(FASLEXT) strap-1/FUNCTOR.$(FASLEXT) \
 	strap-1/KOERCE.$(FASLEXT) strap-1/BASTYPE.$(FASLEXT) \
 	strap-1/SETCAT.$(FASLEXT) strap-1/EVALAB.$(FASLEXT) \
 	strap-0/EQ.$(FASLEXT)
@@ -782,6 +784,7 @@ strap-1/SAOS.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 # At this stage we recompile everything from stage 1, including
 # a few more domains.
 
+strap-2/FUNCTOR.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/KOERCE.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/KONVERT.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 
@@ -1011,7 +1014,7 @@ strap-2/LNAGG.$(FASLEXT): strap-2/IXAGG.$(FASLEXT) \
 	strap-2/CLAGG.$(FASLEXT) strap-2/ETLAB.$(FASLEXT)
 strap-2/IXAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT) \
 	strap-2/ELTAGG.$(FASLEXT)
-strap-2/HOAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) \
+strap-2/HOAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) strap-2/FUNCTOR.$(FASLEXT) \
 	strap-2/KOERCE.$(FASLEXT) strap-2/BASTYPE.$(FASLEXT) \
 	strap-2/SETCAT.$(FASLEXT) strap-2/EVALAB.$(FASLEXT)
 strap-2/SETAGG.$(FASLEXT): strap-2/CLAGG.$(FASLEXT) strap-2/SETCAT.$(FASLEXT)
@@ -1462,6 +1465,8 @@ $(OUT)/SGPOP.$(FASLEXT): $(OUT)/SGPOPC.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT) \
 $(OUT)/MONOPC.$(FASLEXT): $(OUT)/SGPOPC.$(FASLEXT)
 $(OUT)/FSAGG.$(FASLEXT): $(OUT)/FINAGG.$(FASLEXT)
 
+$(OUT)/FUNCTOR.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/HOAGG.$(FASLEXT): $(OUT)/FUNCTOR.$(FASLEXT)
 $(OUT)/SMAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 $(OUT)/FINAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 $(OUT)/ELAGG.$(FASLEXT): $(OUT)/SMAGG.$(FASLEXT)
@@ -1470,7 +1475,7 @@ oa_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
   KRCFROM  KVTFROM  IEVALAB  IEVALAB- EVALAB   EVALAB-  \
   RETRACT  RETRACT- SETCAT   SETCAT-  VOID     SEGCAT   \
-  MSYSCMD  FINITE   FINITE-  IDEMOPC           OUT      \
+  MSYSCMD  FINITE   FINITE-  IDEMOPC  FUNCTOR  OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
   BMODULE  SGPOPC   BASTYPE  BASTYPE- STEP     LMODULE  \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
