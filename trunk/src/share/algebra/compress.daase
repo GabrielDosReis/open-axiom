@@ -1,5 +1,5 @@
 
-(30 . 3578013000)            
+(30 . 3578049866)            
 (4001 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
@@ -424,7 +424,7 @@
  |alphabetic?| |hexDigit?| |digit?| |escape| |verticalTab| |horizontalTab|
  |backspace| |formfeed| |linefeed| |carriageReturn| |newline| |underscore|
  |char| |ord| |mkIntegral| |radPoly| |rootPoly| |goodPoint| |chvar|
- |removeDuplicates| |find| |e| |clipParametric| |clipWithRanges| |numberOfHues|
+ |removeDuplicates| |e| |clipParametric| |clipWithRanges| |numberOfHues|
  |yellow| |iifact| |iibinom| |iiperm| |iipow| |iidsum| |iidprod| |ipow|
  |factorial| |multinomial| |permutation| |stirling1| |stirling2| |summation|
  |factorials| |mkcomm| |polarCoordinates| |complex| |imaginary| |elaborateFile|
@@ -501,7 +501,7 @@
  |alternative?| |flexible?| |rightAlternative?| |leftAlternative?|
  |antiAssociative?| |associative?| |antiCommutative?| |commutative?|
  |rightCharacteristicPolynomial| |leftCharacteristicPolynomial| |rightNorm|
- |leftNorm| |rightTrace| |leftTrace| |someBasis| |count| |every?| |any?|
+ |leftNorm| |rightTrace| |leftTrace| |someBasis| |find| |count| |every?| |any?|
  |sort!| |copyInto!| |sorted?| |LiePoly| |quickSort| |heapSort| |shellSort|
  |outputSpacing| |outputGeneral| |outputFixed| |outputFloating| |exp1| |log10|
  |log2| |rationalApproximation| |relerror| |complexSolve| |complexRoots|
