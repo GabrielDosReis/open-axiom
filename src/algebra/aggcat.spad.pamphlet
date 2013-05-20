@@ -139,6 +139,9 @@ FiniteAggregate(S: Type): Category == Exports where
         ++ Returns \spad{f(x,y)} if \spad{u} has one element \spad{y},
         ++ \spad{x} if \spad{u} is empty.  For example,
         ++ \spad{reduce(+,u,0)} returns the sum of the elements of \spad{u}.
+      find: (S->Boolean, %) -> Union(S, "failed")
+        ++ \spad{find(p,u)} returns the first \spad{x} in \spad{u} such
+        ++ that \spad{p(x)} is true, and  \spad{"failed"} otherwise.
       if S has BasicType then
         count: (S,%) -> NonNegativeInteger
           ++ \spad{count(x,u)} returns the number of occurrences
@@ -162,6 +165,7 @@ FiniteAggregate(S: Type): Category == Exports where
       any?(f, x) == or/[f e for e in members x]
       every?(f, x) == and/[f e for e in members x]
       count(f:S -> Boolean, x:%) == +/[1 for e in members x | f e]
+      find(f:S -> Boolean, c:%) == find(f, members c)
       if S has BasicType then
         count(s:S, x:%) == count(s = #1, x)
         member?(e, x)   == any?(e = #1,x)
@@ -221,9 +225,6 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
      ++ \axiom{construct(x,y,...,z)} returns the collection of elements \axiom{x,y,...,z}
      ++ ordered as given. Equivalently written as \axiom{[x,y,...,z]$D}, where
      ++ D is the domain. D may be omitted for those of type List.
-   find: (S->Boolean, %) -> Union(S, "failed")
-     ++ find(p,u) returns the first x in u such that \axiom{p(x)} is true, and
-     ++ "failed" otherwise.
    if % has FiniteAggregate S then
       remove: (S->Boolean,%) -> %
 	++ remove(p,u) returns a copy of u removing all elements x such that
@@ -243,7 +244,6 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
    if S has ConvertibleTo InputForm then ConvertibleTo InputForm
  add
    if % has FiniteAggregate S then
-     find(f:S -> Boolean, c:%) == find(f, members c)
      remove(f:S->Boolean, x:%) ==
        construct remove(f, members x)
      select(f:S->Boolean, x:%) ==
