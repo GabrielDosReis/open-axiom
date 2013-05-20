@@ -32,7 +32,7 @@ import List
 --FOR THE BENEFIT  OF LIBAX0 GENERATION
 ++ Author: Stephen M. Watt, enhancements by Johannes Grabmeier
 ++ Date Created: April 1985
-++ Date Last Updated: June 3, 1991; September 2, 1992
+++ Date Last Updated: May 19, 2013.
 ++ Basic Operations: =
 ++ Related Domains:
 ++ Also See:
@@ -50,7 +50,7 @@ import List
 
 Equation(S: Type): public == private where
   Ex ==> OutputForm
-  public ==> Type with
+  public == Functorial S with
     =: (S, S) -> $
         ++ a=b creates an equation.
     equation: (S, S) -> $
@@ -61,9 +61,6 @@ Equation(S: Type): public == private where
         ++ lhs(eqn) returns the left hand side of equation eqn.
     rhs: $ -> S
         ++ rhs(eqn) returns the right hand side of equation eqn.
-    map: (S -> S, $) -> $
-        ++ map(f,eqn) constructs a new equation by applying f to both
-        ++ sides of eqn.
     if S has InnerEvalable(Symbol,S) then
              InnerEvalable(Symbol,S)
     if S has SetCategory then
@@ -273,7 +270,7 @@ import Equation
 )abbrev category FEVALAB FullyEvalableOver
 ++ Author:
 ++ Date Created:
-++ Date Last Updated: June 3, 1991
+++ Date Last Updated: May 19, 2013
 ++ Basic Operations:
 ++ Related Domains: Equation
 ++ Also See:
@@ -284,9 +281,7 @@ import Equation
 ++ Description:
 ++    This category provides a selection of evaluation operations
 ++    depending on what the argument type R provides.
-FullyEvalableOver(R:SetCategory): Category == with
-    map: (R -> R, $) -> $
-        ++ map(f, ex) evaluates ex, applying f to values of type R in ex.
+FullyEvalableOver(R:SetCategory): Category == Functorial R with
     if R has Eltable(R, R) then Eltable(R, $)
     if R has Evalable(R) then Evalable(R)
     if R has InnerEvalable(Symbol, R) then InnerEvalable(Symbol, R)
@@ -306,6 +301,8 @@ FullyEvalableOver(R:SetCategory): Category == with
 
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

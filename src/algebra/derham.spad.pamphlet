@@ -112,7 +112,7 @@ ExtAlgBasis(): Export == Implement where
 )abbrev domain ANTISYM AntiSymm
 ++   Author: Larry A. Lambe
 ++   Date     : 01/26/91.
-++   Revised  : 30 Nov 94
+++   Revised  : May 19, 2013.
 ++
 ++   based on AntiSymmetric '89
 ++
@@ -134,7 +134,7 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
   coef ==> c
   Term ==> Record(k:EAB,c:R)
  
-  Export == Join(LALG(R), RetractableTo(R)) with
+  Export == Join(LALG(R),RetractableTo(R),Functorial R) with
       leadingCoefficient : %           -> R
 	++ leadingCoefficient(p) returns the leading
 	++ coefficient of antisymmetric polynomial p.
@@ -164,10 +164,6 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
 	++  i.e., if degree(p) = 0.
       degree             : %           -> NNI
 	++  degree(p) returns the homogeneous degree of p.
-      map                : (R -> R, %) -> %
-	++  map(f,p) changes each coefficient of p by the
-	++  application of f.
-
 
 --    1 corresponds to the empty monomial Nul = [0,...,0]
 --    from EAB.  In terms of the exterior algebra on X,
@@ -308,7 +304,7 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
 )abbrev domain DERHAM DeRhamComplex
 ++ Author: Larry A. Lambe
 ++ Date    : 01/26/91.
-++ Revised : 12/01/91.
+++ Revised : May 19, 2013.
 ++
 ++ based on code from '89 (AntiSymmetric)
 ++
@@ -332,7 +328,7 @@ DeRhamComplex(CoefRing,listIndVar:List Symbol): Export == Implement where
   O       ==> OutputForm
   R       ==> Expression(CoefRing)
  
-  Export == Join(LALG(R), RetractableTo(R)) with
+  Export == Join(LALG(R), RetractableTo(R),Functorial R) with
       leadingCoefficient : %           -> R
 	++ leadingCoefficient(df) returns the leading
 	++ coefficient of differential form df.
@@ -358,9 +354,6 @@ DeRhamComplex(CoefRing,listIndVar:List Symbol): Export == Implement where
 	++  i.e., if degree(df) = 0.
       degree             : %           -> I
 	++  degree(df) returns the homogeneous degree of differential form df.
-      map                : (R -> R, %) -> %
-	++  map(f,df) replaces each coefficient x of differential 
-        ++  form df by \spad{f(x)}.
       totalDifferential    : R -> %
 	++  totalDifferential(x) returns the total differential 
 	++  (gradient) form for element x.
@@ -417,6 +410,8 @@ DeRhamComplex(CoefRing,listIndVar:List Symbol): Export == Implement where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
+--All rights reversed.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

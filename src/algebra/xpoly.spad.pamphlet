@@ -142,7 +142,7 @@ import RetractableTo
 )abbrev category FMCAT FreeModuleCat
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
-++ Date Last Updated: 7 Juillet 92
+++ Date Last Updated: May 19, 2013.
 ++ Fix History: compilation v 2.1 le 13 dec 98
 ++ Basic Functions:
 ++ Related Constructors:
@@ -168,15 +168,12 @@ FreeModuleCat(R, Basis):Category == Exports where
    Basis: SetCategory
    TERM ==> Record(k: Basis, c: R)
    
-   Exports == Join(BiModule(R,R), RetractableTo Basis) with
+   Exports == Join(Functorial R,BiModule(R,R),RetractableTo Basis) with
         *                : (R, Basis) -> %
           ++ \spad{r*b} returns the product of \spad{r} by \spad{b}.
         coefficient        : (%, Basis) -> R
           ++ \spad{coefficient(x,b)} returns the coefficient 
           ++ of \spad{b} in \spad{x}.
-        map                : (R -> R, %) -> %
-          ++ \spad{map(fn,u)} maps function \spad{fn} onto the coefficients
-          ++  of the non-zero monomials of \spad{u}.
         monom              : (Basis, R) -> %
           ++ \spad{monom(b,r)} returns the element with the single monomial
           ++  \spad{b} and coefficient \spad{r}.
@@ -362,7 +359,7 @@ import RetractableTo
 )abbrev category XFALG XFreeAlgebra
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
-++ Date Last Updated: 7 Juillet 92
+++ Date Last Updated: May 19, 2013.
 ++ Fix History: compilation v 2.1 le 13 dec 98
 ++ Basic Functions:
 ++ Related Constructors:
@@ -381,7 +378,7 @@ XFreeAlgebra(vl:OrderedSet,R:Ring):Category == Catdef where
    I      ==> Integer
    TERM   ==> Record(k: WORD, c: R)
 
-   Catdef == Join(Ring, XAlgebra(R), RetractableTo WORD) 
+   Catdef == Join(Ring, XAlgebra(R), Functorial R,RetractableTo WORD) 
      with
        *: (vl,%) -> %
          ++ \spad{v * x} returns the product of a variable \spad{x} by \spad{x}.
@@ -432,8 +429,6 @@ XFreeAlgebra(vl:OrderedSet,R:Ring):Category == Catdef where
              ++ This multiplication is associative and commutative.
           sh :(%,NNI) -> %
              ++ \spad{sh(x,n)} returns the shuffle power of \spad{x} to the \spad{n}.
-       map   : (R -> R, %) -> %
-         ++ \spad{map(fn,x)} returns \spad{Sum(fn(r_i) w_i)} if \spad{x} writes \spad{Sum(r_i w_i)}.
        varList: % -> List vl
          ++ \spad{varList(x)} returns the list of variables which appear in \spad{x}.
 
@@ -488,7 +483,7 @@ import FreeMonoidCat
 )abbrev domain XPR XPolynomialRing
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
-++ Date Last Updated: 7 Juillet 92
+++ Date Last Updated: May 13, 2013.
 ++ Fix History: compilation v 2.1 le 13 dec 98
 ++ Basic Functions:
 ++ Related Constructors:
@@ -509,7 +504,7 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
   EX     ==> OutputForm
   NNI    ==> NonNegativeInteger
 
-  T == Join(Ring, XAlgebra(R), FreeModuleCat(R,E),CoercibleFrom E) with
+  T == Join(Ring,XAlgebra(R),FreeModuleCat(R,E),CoercibleFrom E,Functorial R) with
     --operations
       *: (%,R) -> %
         ++ \spad{p*r} returns the product of \spad{p} by \spad{r}.
@@ -536,8 +531,6 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
         ++ \spad{quasiRegular?(x)} return true if \spad{constant(p)} is zero.
       quasiRegular : % -> % 
         ++ \spad{quasiRegular(x)} return \spad{x} minus its constant term.
-      map   : (R -> R, %) -> %
-        ++ \spad{map(fn,x)} returns \spad{Sum(fn(r_i) w_i)} if \spad{x} writes \spad{Sum(r_i w_i)}.
       if R has Field then / : (%,R) -> %
         ++ \spad{p/r} returns \spad{p*(1/r)}.
 
@@ -1096,6 +1089,8 @@ XPolynomial(R:Ring) == XRecursivePolynomial(Symbol, R)
 
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

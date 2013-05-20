@@ -550,7 +550,7 @@ MatrixCategory(R,Row,Col): Category == Definition where
 )abbrev category RMATCAT RectangularMatrixCategory
 ++ Authors: Grabmeier, Gschnitzer, Williamson
 ++ Date Created: 1987
-++ Date Last Updated: July 1990
+++ Date Last Updated: May 19, 2013.
 ++ Basic Operations:
 ++ Related Domains: RectangularMatrix(m,n,R)
 ++ Also See:
@@ -643,9 +643,6 @@ RectangularMatrixCategory(m,n,R,Row,Col): Category == Definition where
       ++ Error: if the index outside the proper range.
 
 --% Map and Zip
-
-    map: (R -> R,%) -> %
-      ++ \spad{map(f,a)} returns b, where \spad{b(i,j) = a(i,j)} for all i, j.
     map:((R,R) -> R,%,%) -> %
       ++ \spad{map(f,a,b)} returns c, where c is such that
       ++ \spad{c(i,j) = f(a(i,j),b(i,j))} for all \spad{i}, j.

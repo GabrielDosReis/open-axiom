@@ -14,7 +14,7 @@
 )abbrev category AMR AbelianMonoidRing
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: May 19, 2013.
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -33,16 +33,13 @@
 ++ Conceptually at least, only the non-zero terms are ever operated on.
 
 AbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
-        Join(Ring,BiModule(R,R)) with
+        Join(Ring,BiModule(R,R),Functorial R) with
     leadingCoefficient: % -> R
       ++ leadingCoefficient(p) returns the coefficient highest degree term of p.
     leadingMonomial: % -> %
       ++ leadingMonomial(p) returns the monomial of p with the highest degree.
     degree: % -> E
       ++ degree(p) returns the maximum of the exponents of the terms of p.
-    map: (R -> R, %) -> %
-      ++ map(fn,u) maps function fn onto the coefficients
-      ++ of the non-zero monomials of u.
     monomial?: % -> Boolean
       ++ monomial?(p) tests if p is a single monomial.
     monomial: (R,E) -> %
@@ -1099,6 +1096,8 @@ CommuteUnivariatePolynomialCategory(R, UP, UPUP): Exports == Impl where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

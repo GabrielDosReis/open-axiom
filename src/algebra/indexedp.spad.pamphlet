@@ -14,7 +14,7 @@
 )abbrev category IDPC IndexedDirectProductCategory
 ++ Author: James Davenport, Gabriel Dos Reis
 ++ Date Created:
-++ Date Last Updated: June 28, 2010
+++ Date Last Updated: May 19, 2013.
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -26,11 +26,8 @@
 ++ respect to an ordered indexing set.
 
 IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
-  Join(BasicType,ConvertibleFrom List IndexedProductTerm(A,S)) with
+  Join(BasicType,Functorial A,ConvertibleFrom List IndexedProductTerm(A,S)) with
     if A has SetCategory and S has SetCategory then SetCategory
-    map:           (A -> A, %) -> %
-       ++ map(f,z) returns the new element created by applying the
-       ++ function f to each component of the direct product element z.
     monomial:         (A, S) -> %
        ++ monomial(a,s) constructs a direct product element with the s
        ++ component set to \spad{a}

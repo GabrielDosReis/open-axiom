@@ -15,7 +15,7 @@
 ++ Two dimensional array categories and domains
 ++ Author:
 ++ Date Created: 27 October 1989
-++ Date Last Updated: May 16, 2013
+++ Date Last Updated: May 19, 2013
 ++ Keywords: array, data structure
 ++ Examples:
 ++ References:
@@ -85,10 +85,6 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
     setColumn!: (%,Integer,Col) -> %
       ++ setColumn!(m,j,v) sets to jth column of m to v
 --% Map and Zip
-    map: (R -> R,%) -> %
-      ++ map(f,a) returns \spad{b}, where \spad{b(i,j) = f(a(i,j))} for all \spad{i, j}
-    map!: (R -> R,%) -> %
-      ++ map!(f,a)  assign \spad{a(i,j)} to \spad{f(a(i,j))} for all \spad{i, j}
     map:((R,R) -> R,%,%) -> %
       ++ map(f,a,b) returns \spad{c}, where \spad{c(i,j) = f(a(i,j),b(i,j))}
       ++ for all \spad{i, j}
