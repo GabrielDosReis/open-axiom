@@ -189,6 +189,7 @@ FiniteAggregate(S: Type): Category == Exports where
 ++   shapes.
 ShallowlyMutableAggregate(S: Type): Category == Exports where
   Exports == HomogeneousAggregate S with
+      shallowlyMutable
       map!: (S->S,%) -> %
         ++ \spad{map!(f,u)} destructively replaces each element
         ++ \spad{x} of \spad{u} by \spad{f(x)}    
@@ -849,7 +850,8 @@ import List
 ++ A keyed dictionary is a dictionary of key-entry pairs for which there is
 ++ a unique entry for each key.
 KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
-  Join(Dictionary Record(key:Key,entry:Entry),IndexedAggregate(Key,Entry)) with
+  Join(Dictionary Record(key:Key,entry:Entry),IndexedAggregate(Key,Entry),_
+    ShallowlyMutableAggregate Entry) with
    key?: (Key, %) -> Boolean
      ++ key?(k,t) tests if k is a key in table t.
    keys: % -> List Key
@@ -1098,7 +1100,6 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
    table l	       == dictionary l
 -- empty()	       == dictionary()
 
-   insert!(p, t)      == (t(p.key) := p.entry; t)
    indices t	       == keys t
 
    coerce(t:%):OutputForm ==
