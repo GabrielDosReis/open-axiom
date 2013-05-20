@@ -401,7 +401,7 @@ InnerMatrixQuotientFieldFunctions(R,Row,Col,M,QF,Row2,Col2,M2):_
         ++ If the matrix is not invertible, "failed" is returned.
         ++ Error: if the matrix is not square.
         ++ Note: the result will have entries in the quotient field.
-      if Col2 has ShallowlyMutableAggregate R then
+      if Col2 has ShallowlyMutableAggregate QF then
         nullSpace : M -> List Col
           ++ \spad{nullSpace(m)} returns a basis for the null space of the
           ++ matrix m.
@@ -415,7 +415,7 @@ InnerMatrixQuotientFieldFunctions(R,Row,Col,M,QF,Row2,Col2,M2):_
       (inv := inverse(qfMat m)$IMATLIN) case "failed" => "failed"
       inv :: M2
 
-    if Col2 has ShallowlyMutableAggregate R then
+    if Col2 has ShallowlyMutableAggregate QF then
       nullSpace m ==
         [clearDenominator(v)$CDEN for v in nullSpace(qfMat m)$IMATLIN]
 
