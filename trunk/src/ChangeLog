@@ -1,5 +1,19 @@
 2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/derham.spad.pamphlet: Use Functorial.
+	* algebra/equation2.spad.pamphlet: Likewise.
+	* algebra/fr.spad.pamphlet: Likewise.
+	* algebra/indexedp.spad.pamphlet: Likewise.
+	* algebra/ituple.spad.pamphlet: Likewise.
+	* algebra/mring.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/array2.spad.pamphlet: Remove redundant map export.
+	* algebra/exposed.lsp.pamphlet: Expose Functorial.
+	* algebra/matcat.spad.pamphlet: Likewise.
+	* algebra/xpoly.spad.pamphlet: Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	Eradicate attribute shallowlyMutable.
 	* algebra/aggcat.spad.pamphlet: Use ShallowlyMutableAggregate.
 	* algebra/defaults.spad.pamphlet: Likewise.

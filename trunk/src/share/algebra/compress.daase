@@ -1,5 +1,5 @@
 
-(30 . 3578010131)            
+(30 . 3578013000)            
 (4001 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
@@ -899,8 +899,8 @@
  |quoByVar| |coefficients| |series| |stFunc1| |stFunc2| |stFuncN|
  |fixedPointExquo| |ode1| |ode2| |ode| |mpsode| UP2UTS UTS2UP LODO2FUN RF2UTS
  |variable| |magnitude| |length| |cross| |outerProduct| |dot| - |zero| +
- |vector| |scan| |reduce| |graphCurves| |drawCurves| |update| |show| |scale|
- |connect| |region| |points| |units| |getGraph| |putGraph| |graphs|
+ |vector| |scan| |reduce| |map| |graphCurves| |drawCurves| |update| |show|
+ |scale| |connect| |region| |points| |units| |getGraph| |putGraph| |graphs|
  |graphStates| |graphState| |makeViewport2D| |viewport2D| |getPickedPoints|
  |key| |close| |write| |colorDef| |reset| |intensity| |lighting| |clipSurface|
  |showClipRegion| |showRegion| |hitherPlane| |eyeDistance| |perspective|
@@ -919,7 +919,7 @@
  |inGroundField?| |transcendent?| |algebraic?| |varList| |sh| |mirror|
  |monomial?| |monom| |rquo| |lquo| |mindegTerm| |log| |exp| |product|
  |LiePolyIfCan| |coerce| |trunc| |degree| / |quasiRegular| |quasiRegular?|
- |constant| |constant?| |coef| |mindeg| |maxdeg| |#| |map| |reductum| *
+ |constant| |constant?| |coef| |mindeg| |maxdeg| |#| |reductum| *
  |RemainderList| |unexpand| |expand| |shape| |youngDiagram| Y |triangSolve|
  |univariateSolve| |realSolve| |positiveSolve| |squareFree| |convert|
  |linearlyDependentOverZ?| |linearDependenceOverZ| |solveLinearlyOverQ| |nil|

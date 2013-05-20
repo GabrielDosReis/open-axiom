@@ -551,6 +551,7 @@
   (|FullyRetractableTo| . FRETRCT)
   (|FunctionFieldCategory| . FFCAT)
   (|FunctionSpace| . FS)
+  (|Functorial| . FUNCTOR)
   (|GcdDomain| . GCDDOM)
   (|GradedAlgebra| . GRALG)
   (|GradedModule| . GRMOD)

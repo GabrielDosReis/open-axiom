@@ -271,11 +271,12 @@ strap-0/MATCAT.$(FASLEXT): strap-0/ARR2CAT.$(FASLEXT) \
 	strap-0/EUCDOM.$(FASLEXT) strap-0/INTDOM.$(FASLEXT) \
 	strap-0/FIELD.$(FASLEXT) strap-0/FINAGG.$(FASLEXT)
 
-strap-0/IDPC.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
+strap-0/IDPC.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT)
 
 strap-0/AMR.$(FASLEXT): strap-0/RING.$(FASLEXT) strap-0/BMODULE.$(FASLEXT) \
 	strap-0/ALGEBRA.$(FASLEXT) strap-0/FIELD.$(FASLEXT) \
-	strap-0/CHARZ.$(FASLEXT) strap-0/CHARNZ.$(FASLEXT)
+	strap-0/CHARZ.$(FASLEXT) strap-0/CHARNZ.$(FASLEXT) \
+	strap-0/FUNCTOR.$(FASLEXT)
 
 strap-0/FAMR.$(FASLEXT): strap-0/AMR.$(FASLEXT) \
 	strap-0/FRETRCT.$(FASLEXT)
@@ -372,7 +373,7 @@ strap-0/SUP.$(FASLEXT): strap-0/UPOLYC.$(FASLEXT) strap-0/PR.$(FASLEXT)
 
 strap-0/TABLE.$(FASLEXT): strap-0/TBAGG.$(FASLEXT)
 
-strap-0/EQ.$(FASLEXT): strap-0/TYPE.$(FASLEXT) \
+strap-0/EQ.$(FASLEXT): strap-0/TYPE.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
 	strap-0/IEVALAB.$(FASLEXT) strap-0/KOERCE.$(FASLEXT) \
 	strap-0/BOOLEAN.$(FASLEXT) strap-0/EVALAB.$(FASLEXT) \
 	strap-0/ABELSG.$(FASLEXT) strap-0/ABELGRP.$(FASLEXT) \
@@ -393,7 +394,7 @@ strap-0/SYNTAX.$(FASLEXT): strap-0/UTYPE.$(FASLEXT) \
 	strap-0/IDENT.$(FASLEXT) strap-0/STRING.$(FASLEXT) \
 	strap-0/KOERCE.$(FASLEXT) strap-0/INFORM.$(FASLEXT)
 
-strap-0/FR.$(FASLEXT): strap-0/INTDOM.$(FASLEXT) \
+strap-0/FR.$(FASLEXT): strap-0/INTDOM.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
 	strap-0/DIFEXT.$(FASLEXT) strap-0/FEVALAB.$(FASLEXT) \
 	strap-0/ALGEBRA.$(FASLEXT) strap-0/FRETRCT.$(FASLEXT)
 
@@ -570,11 +571,12 @@ strap-1/HYPCAT.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 strap-1/AHYP.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 strap-1/ELEMFUN.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 
-strap-1/IDPC.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+strap-1/IDPC.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/FUNCTOR.$(FASLEXT)
 
 strap-1/AMR.$(FASLEXT): strap-1/RING.$(FASLEXT) strap-1/BMODULE.$(FASLEXT) \
 	strap-1/ALGEBRA.$(FASLEXT) strap-1/FIELD.$(FASLEXT) \
-	strap-1/CHARZ.$(FASLEXT) strap-1/CHARNZ.$(FASLEXT)
+	strap-1/CHARZ.$(FASLEXT) strap-1/CHARNZ.$(FASLEXT) \
+	strap-1/FUNCTOR.$(FASLEXT)
 
 strap-1/FAMR.$(FASLEXT): strap-1/AMR.$(FASLEXT) \
 	strap-1/FRETRCT.$(FASLEXT)
@@ -967,11 +969,12 @@ strap-2/AHYP.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/ELEMFUN.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 
 
-strap-2/IDPC.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
+strap-2/IDPC.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) strap-2/FUNCTOR.$(FASLEXT)
 
 strap-2/AMR.$(FASLEXT): strap-2/RING.$(FASLEXT) strap-2/BMODULE.$(FASLEXT) \
 	strap-2/ALGEBRA.$(FASLEXT) strap-2/FIELD.$(FASLEXT) \
-	strap-2/CHARZ.$(FASLEXT) strap-2/CHARNZ.$(FASLEXT)
+	strap-2/CHARZ.$(FASLEXT) strap-2/CHARNZ.$(FASLEXT) \
+	strap-2/FUNCTOR.$(FASLEXT)
 
 strap-2/FAMR.$(FASLEXT): strap-2/AMR.$(FASLEXT) \
 	strap-2/FRETRCT.$(FASLEXT)

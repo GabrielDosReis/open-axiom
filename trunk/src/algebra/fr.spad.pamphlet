@@ -16,6 +16,7 @@
 )abbrev domain FR Factored
 ++ Author: Robert S. Sutor
 ++ Date Created: 1985
+++ Date Last Modified: May 19, 2013.
 ++ Change History:
 ++   21 Jan 1991  J Grabmeier     Corrected a bug in exquo.
 ++   16 Aug 1994  R S Sutor       Improved convert to InputForm
@@ -48,8 +49,8 @@ Factored(R: IntegralDomain): Exports == Implementation where
   FF     ==> Record(flg: fUnion, fctr: R, xpnt: Integer)
   SRFE   ==> Set(Record(factor:R, exponent:Integer))
 
-  Exports ==> Join(IntegralDomain, DifferentialExtension R, Algebra R,
-                   FullyEvalableOver R, FullyRetractableTo R) with
+  Exports == Join(IntegralDomain, DifferentialExtension R, Algebra R,
+               FullyEvalableOver R, FullyRetractableTo R,Functorial R) with
     expand: % -> R
       ++ expand(f) multiplies the unit and factors together, yielding an
       ++ "unfactored" object. Note: this is purposely not called \spadfun{coerce} which would
@@ -125,12 +126,6 @@ Factored(R: IntegralDomain): Exports == Implementation where
       ++ unitNormalize(u) normalizes the unit part of the factorization.
       ++ For example, when working with factored integers, this operation will
       ++ ensure that the bases are all positive integers.
-
-    map:     (R -> R, %) -> %
-      ++ map(fn,u) maps the function \userfun{fn} across the factors of
-      ++ \spadvar{u} and creates a new factored object. Note: this clears
-      ++ the information flags (sets them to "nil") because the effect of
-      ++ \userfun{fn} is clearly not known in general.
 
     -- the following operations are conditional on R
 
@@ -620,6 +615,8 @@ FactoredFunctions2(R, S): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2013, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
