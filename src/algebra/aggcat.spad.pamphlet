@@ -189,7 +189,6 @@ FiniteAggregate(S: Type): Category == Exports where
 ++   shapes.
 ShallowlyMutableAggregate(S: Type): Category == Exports where
   Exports == HomogeneousAggregate S with
-      shallowlyMutable
       map!: (S->S,%) -> %
         ++ \spad{map!(f,u)} destructively replaces each element
         ++ \spad{x} of \spad{u} by \spad{f(x)}    
