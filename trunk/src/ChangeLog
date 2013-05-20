@@ -1,5 +1,10 @@
 2013-05-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/database.boot (getConstructorAbbreviationFromDB): Use DB
+	data structure directtly.
+
+2013-05-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (Collection) [find]: Move to
 	FiniteAggregate.
 

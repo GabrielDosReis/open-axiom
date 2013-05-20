@@ -74,7 +74,8 @@ makeConstructor(s,k == nil,a == nil) ==
 
 getConstructorAbbreviationFromDB: %Symbol -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
-  GETDATABASE(ctor,"ABBREVIATION")
+  db := constructorDB ctor => dbAbbreviation db
+  nil
 
 getConstructorCategory: %Symbol -> %Form
 getConstructorCategory ctor ==
