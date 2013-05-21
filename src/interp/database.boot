@@ -72,7 +72,7 @@ makeConstructor(s,k == nil,a == nil) ==
 
 --%
 
-getConstructorAbbreviationFromDB: %Symbol -> %Symbol
+getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol
 getConstructorAbbreviationFromDB ctor ==
   db := constructorDB ctor => dbAbbreviation db
   nil
@@ -85,7 +85,8 @@ getConstructorCategory ctor ==
 
 getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRUCTORKIND")
+  db := constructorDB ctor => dbConstructorKind db
+  nil
 
 getConstructorAncestorsFromDB: %Symbol -> %List %Constructor
 getConstructorAncestorsFromDB ctor ==

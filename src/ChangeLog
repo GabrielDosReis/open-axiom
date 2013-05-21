@@ -2,6 +2,7 @@
 
 	* interp/database.boot (getConstructorAbbreviationFromDB): Use DB
 	data structure directtly.
+	(getConstructorKindFromDB): Likewise.
 
 2013-05-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
