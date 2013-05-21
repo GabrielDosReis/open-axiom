@@ -253,6 +253,13 @@ List(S:Type): Exports == Implementation where
         convert concat(convert('construct)@InputForm,
               [convert a for a in (x pretend List S)]$List(InputForm))
 
+    map!(f,x) ==
+      y := x
+      while not empty? y repeat
+        y.first := f(y.first)
+        y := rest y
+      x
+
 @
 
 \section{package LIST2 ListFunctions2}
