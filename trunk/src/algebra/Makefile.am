@@ -287,7 +287,7 @@ strap-0/A1AGG.$(FASLEXT): strap-0/FLAGG.$(FASLEXT) strap-0/SMAGG.$(FASLEXT)
 strap-0/FLAGG.$(FASLEXT): strap-0/LNAGG.$(FASLEXT) strap-0/FINAGG.$(FASLEXT)
 strap-0/FINAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
 strap-0/LNAGG.$(FASLEXT): strap-0/IXAGG.$(FASLEXT) \
-	strap-0/CLAGG.$(FASLEXT) strap-0/ETLAB.$(FASLEXT)
+	strap-0/CLAGG.$(FASLEXT) strap-0/ELTAB.$(FASLEXT)
 strap-0/IXAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT) \
 	strap-0/ELTAGG.$(FASLEXT)
 strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
@@ -295,7 +295,7 @@ strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
 	strap-0/SETCAT.$(FASLEXT) strap-0/EVALAB.$(FASLEXT)
 strap-0/AGG.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/ELTAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/ELTAB.$(FASLEXT)
-strap-0/ETLAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
+strap-0/ELTAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/EVALAB.$(FASLEXT): strap-0/IEVALAB.$(FASLEXT)
 strap-0/IEVALAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/SEXCAT.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) \
@@ -593,7 +593,7 @@ strap-1/FLAGG.$(FASLEXT): strap-1/LNAGG.$(FASLEXT) strap-1/FINAGG.$(FASLEXT)
 strap-1/FINAGG.$(FASLEXT): strap-1/HOAGG.$(FASLEXT)
 
 strap-1/LNAGG.$(FASLEXT): strap-1/IXAGG.$(FASLEXT) \
-	strap-1/CLAGG.$(FASLEXT) strap-1/ETLAB.$(FASLEXT) \
+	strap-1/CLAGG.$(FASLEXT) strap-1/ELTAB.$(FASLEXT) \
 	strap-0/UNISEG.$(FASLEXT)
 
 strap-1/IXAGG.$(FASLEXT): strap-1/HOAGG.$(FASLEXT) \
@@ -610,7 +610,7 @@ strap-1/AGG.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 
 strap-1/ELTAGG.$(FASLEXT): strap-1/AGG.$(FASLEXT) strap-1/ELTAB.$(FASLEXT)
 
-strap-1/ETLAB.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
+strap-1/ELTAB.$(FASLEXT): strap-1/TYPE.$(FASLEXT)
 
 strap-1/EVALAB.$(FASLEXT): strap-1/IEVALAB.$(FASLEXT)
 
@@ -907,7 +907,7 @@ strap-2/A1AGG.$(FASLEXT): strap-2/FLAGG.$(FASLEXT) strap-2/SMAGG.$(FASLEXT)
 strap-2/FLAGG.$(FASLEXT): strap-2/LNAGG.$(FASLEXT) strap-2/FINAGG.$(FASLEXT)
 strap-2/FINAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/LNAGG.$(FASLEXT): strap-2/IXAGG.$(FASLEXT) \
-	strap-2/CLAGG.$(FASLEXT) strap-2/ETLAB.$(FASLEXT)
+	strap-2/CLAGG.$(FASLEXT) strap-2/ELTAB.$(FASLEXT)
 strap-2/IXAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT) \
 	strap-2/ELTAGG.$(FASLEXT)
 strap-2/HOAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) strap-2/FUNCTOR.$(FASLEXT) \
@@ -916,7 +916,7 @@ strap-2/HOAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) strap-2/FUNCTOR.$(FASLEXT) \
 strap-2/SETAGG.$(FASLEXT): strap-2/CLAGG.$(FASLEXT) strap-2/SETCAT.$(FASLEXT)
 strap-2/AGG.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/ELTAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) strap-2/ELTAB.$(FASLEXT)
-strap-2/ETLAB.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
+strap-2/ELTAB.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/EVALAB.$(FASLEXT): strap-2/IEVALAB.$(FASLEXT)
 strap-2/IEVALAB.$(FASLEXT): strap-2/TYPE.$(FASLEXT)
 strap-2/SEXCAT.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
