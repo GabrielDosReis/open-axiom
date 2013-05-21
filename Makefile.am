@@ -79,6 +79,10 @@ OA_SRC_TARGETS = \
 
 .PHONY: $(OA_SRC_TARGETS)
 
+.PHONY: all-layer-%
+all-layer-%:
+	cd src && $(MAKE) $(AM_MAKEFLAGS)  $@
+
 if OA_BUILD_GCL
 all-recursive all-boot all-lisp all-interpsys all-axiomsys \
   all-algebra all-algstrap all-input all-src all-local: all-gcl
@@ -86,7 +90,7 @@ endif
 
 all: all-local
 $(OA_SRC_TARGETS):
-	cd src && $(MAKE) $@
+	cd src && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-gcl
 all-gcl: $(oa_builddir)/bin/gcl$(EXEEXT)
@@ -96,7 +100,7 @@ $(oa_builddir)/bin/gcl$(EXEEXT):
 	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
 	fi; cd gcl; \
 	./configure --prefix="$(oa_builddir)" ${GCLOPTS} && \
-		$(MAKE) && $(MAKE) install
+		$(MAKE) $(AM_MAKEFLAGS) && $(MAKE) $(AM_MAKEFLAGS) install
 
 install:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
@@ -109,7 +113,7 @@ install:
 
 .PHONY: check
 check:
-	cd src && $(MAKE) all-check
+	cd src && $(MAKE) $(AM_MAKEFLAGS) all-check
 
 mostlyclean-local:
 	cd src && $(MAKE) $(AM_MAKEFLAGS) mostlyclean

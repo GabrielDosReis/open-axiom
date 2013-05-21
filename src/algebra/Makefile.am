@@ -1960,7 +1960,7 @@ oa_algebra_layer_23_nrlibs = \
 oa_algebra_layer_23_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_23)))
-oa_algebra_layer_user =  \
+oa_algebra_layer_24 =  \
 	RINTERP	 ASTCAT   ASTCAT-  SASTCAT  SASTCAT- HEADAST  \
 	LITERAL           TYPEAST  IMPTAST  MAPPAST  ATTRAST  \
 	JOINAST  IFAST    RPTAST   WHILEAST INAST    CLLCTAST \
@@ -1975,12 +1975,12 @@ oa_algebra_layer_user =  \
 	LINFORM  LINBASIS JVMOP    JVMCFACC JVMFDACC JVMMDACC \
 	JVMCSTTG
 
-oa_algebra_layer_user_nrlibs = \
-	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_user))
+oa_algebra_layer_24_nrlibs = \
+	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_24))
 
-oa_algebra_layer_user_objects = \
+oa_algebra_layer_24_objects = \
 	$(addprefix $(OUT)/, \
-	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_user)))
+	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_24)))
 
 $(OUT)/SASTCAT.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
 $(OUT)/LITERAL.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
@@ -2068,7 +2068,7 @@ all-am: all-algebra
 all-algebra: stamp
 	@ echo finished $(builddir)
 
-stamp: $(SPADFILES) user-stamp $(TESTS)
+stamp: $(SPADFILES) 24-stamp $(TESTS)
 	-rm -f stamp
 	$(STAMP) stamp
 
@@ -2156,190 +2156,74 @@ $(oa_algebra_layer_20_objects): 19-stamp
 $(oa_algebra_layer_21_objects): 20-stamp
 $(oa_algebra_layer_22_objects): 21-stamp
 $(oa_algebra_layer_23_objects): 22-stamp
-$(oa_algebra_layer_user_objects): bootstrap-stamp
+$(oa_algebra_layer_24_objects): 23-stamp
 
 $(oa_algebra_layer_0_objects): | $(OUT)
 $(OUT):
 	$(MKDIR_P) $@
 
 0-stamp: $(oa_algebra_layer_0_objects)
-	@ rm -f 0-stamp
-	@ $(STAMP) 0-stamp
-	@ echo ==================================
-	@ echo === layer 0 of 23 complete ======
-	@ echo ==================================
+1-stamp: $(oa_algebra_layer_1_objects)
+2-stamp: $(oa_algebra_layer_2_objects)
+3-stamp: $(oa_algebra_layer_3_objects)
+4-stamp: $(oa_algebra_layer_4_objects)
+5-stamp: $(oa_algebra_layer_5_objects)
+6-stamp: $(oa_algebra_layer_6_objects)
+7-stamp: $(oa_algebra_layer_7_objects)
+8-stamp: $(oa_algebra_layer_8_objects)
+9-stamp: $(oa_algebra_layer_9_objects)
+10-stamp: $(oa_algebra_layer_10_objects)
+11-stamp: $(oa_algebra_layer_11_objects)
+12-stamp: $(oa_algebra_layer_12_objects)
+13-stamp: $(oa_algebra_layer_13_objects)
+14-stamp: $(oa_algebra_layer_14_objects)
+15-stamp: $(oa_algebra_layer_15_objects)
+16-stamp: $(oa_algebra_layer_16_objects)
+17-stamp: $(oa_algebra_layer_17_objects)
+18-stamp: $(oa_algebra_layer_18_objects)
+19-stamp: $(oa_algebra_layer_19_objects)
+20-stamp: $(oa_algebra_layer_20_objects)
+21-stamp: $(oa_algebra_layer_21_objects)
+22-stamp: $(oa_algebra_layer_22_objects)
+23-stamp: $(oa_algebra_layer_23_objects)
+24-stamp: $(oa_algebra_layer_24_objects)
 
-1-stamp: 0-stamp $(oa_algebra_layer_1_objects)
-	@ rm -f 1-stamp
-	@ $(STAMP) 1-stamp
-	@ echo ==================================
-	@ echo === layer 1 of 23 complete ======
-	@ echo ==================================
+ALL_LAYERS = \
+	all-layer-0 \
+	all-layer-1 \
+	all-layer-2 \
+	all-layer-3 \
+	all-layer-4 \
+	all-layer-5 \
+	all-layer-6 \
+	all-layer-7 \
+	all-layer-8 \
+	all-layer-9 \
+	all-layer-10 \
+	all-layer-11 \
+	all-layer-12 \
+	all-layer-13 \
+	all-layer-14 \
+	all-layer-15 \
+	all-layer-16 \
+	all-layer-17 \
+	all-layer-18 \
+	all-layer-19 \
+	all-layer-20 \
+	all-layer-21 \
+	all-layer-22 \
+	all-layer-23 \
+	all-layer-24 
 
-2-stamp: 1-stamp $(oa_algebra_layer_2_objects)
-	@ rm -f 2-stamp
-	@ $(STAMP) 2-stamp
-	@ echo ==================================
-	@ echo === layer 2 of 23 complete ======
-	@ echo ==================================
+.PHONY: $(ALL_LAYERS)
+$(ALL_LAYERS): all-layer-%: %-stamp
 
-3-stamp: 2-stamp $(oa_algebra_layer_3_objects)
-	@ rm -f 3-stamp
-	@ $(STAMP) 3-stamp
+%-stamp:
+	@ rm -f $@
+	@ $(STAMP) $@
 	@ echo ==================================
-	@ echo === layer 3 of 23 complete ======
+	@ echo === layer $* of 24 complete ======
 	@ echo ==================================
-
-4-stamp: 3-stamp $(oa_algebra_layer_4_objects)
-	@ rm -f 4-stamp
-	@ $(STAMP) 4-stamp
-	@ echo ==================================
-	@ echo === layer 4 of 23 complete ======
-	@ echo ==================================
-
-5-stamp: 4-stamp $(oa_algebra_layer_5_objects)
-	@ rm -f 5-stamp
-	@ $(STAMP) 5-stamp
-	@ echo ==================================
-	@ echo === layer 5 of 23 complete ======
-	@ echo ==================================
-
-6-stamp: 5-stamp $(oa_algebra_layer_6_objects)
-	@ rm -f 6-stamp
-	@ $(STAMP) 6-stamp
-	@ echo ==================================
-	@ echo === layer 6 of 23 complete ======
-	@ echo ==================================
-
-7-stamp: 6-stamp $(oa_algebra_layer_7_objects)
-	@ rm -f 7-stamp
-	@ $(STAMP) 7-stamp
-	@ echo ==================================
-	@ echo === layer 7 of 23 complete ======
-	@ echo ==================================
-
-8-stamp: 7-stamp $(oa_algebra_layer_8_objects)
-	@ rm -f 8-stamp
-	@ $(STAMP) 8-stamp
-	@ echo ==================================
-	@ echo === layer 8 of 23 complete ======
-	@ echo ==================================
-
-9-stamp: 8-stamp $(oa_algebra_layer_9_objects)
-	@ rm -f 9-stamp
-	@ $(STAMP) 9-stamp
-	@ echo ==================================
-	@ echo === layer 9 of 23 complete ======
-	@ echo ==================================
-
-10-stamp: 9-stamp $(oa_algebra_layer_10_objects)
-	@ rm -f 10-stamp
-	@ $(STAMP) 10-stamp
-	@ echo ==================================
-	@ echo === layer 10 of 23 complete ======
-	@ echo ==================================
-
-11-stamp: 10-stamp $(oa_algebra_layer_11_objects)
-	@ rm -f 11-stamp
-	@ $(STAMP) 11-stamp
-	@ echo ==================================
-	@ echo === layer 11 of 23 complete ======
-	@ echo ==================================
-
-12-stamp: 11-stamp $(oa_algebra_layer_12_objects)
-	@ rm -f 12-stamp
-	@ $(STAMP) 12-stamp
-	@ echo ==================================
-	@ echo === layer 12 of 23 complete ======
-	@ echo ==================================
-
-13-stamp: 12-stamp $(oa_algebra_layer_13_objects)
-	@ rm -f 13-stamp
-	@ $(STAMP) 13-stamp
-	@ echo ==================================
-	@ echo === layer 13 of 23 complete ======
-	@ echo ==================================
-
-14-stamp: 13-stamp $(oa_algebra_layer_14_objects)
-	@ rm -f 14-stamp
-	@ $(STAMP) 14-stamp
-	@ echo ==================================
-	@ echo === layer 14 of 23 complete ======
-	@ echo ==================================
-
-15-stamp: 14-stamp $(oa_algebra_layer_15_objects)
-	@ rm -f 15-stamp
-	@ $(STAMP) 15-stamp
-	@ echo ==================================
-	@ echo === layer 15 of 23 complete ======
-	@ echo ==================================
-
-16-stamp: 15-stamp $(oa_algebra_layer_16_objects)
-	@ rm -f 16-stamp
-	@ $(STAMP) 16-stamp
-	@ echo ==================================
-	@ echo === layer 16 of 23 complete ======
-	@ echo ==================================
-
-17-stamp: 16-stamp $(oa_algebra_layer_17_objects)
-	@ rm -f 17-stamp
-	@ $(STAMP) 17-stamp
-	@ echo ==================================
-	@ echo === layer 17 of 23 complete ======
-	@ echo ==================================
-
-18-stamp: 17-stamp $(oa_algebra_layer_18_objects)
-	@ rm -f 18-stamp
-	@ $(STAMP) 18-stamp
-	@ echo ==================================
-	@ echo === layer 18 of 23 complete ======
-	@ echo ==================================
-
-19-stamp: 18-stamp $(oa_algebra_layer_19_objects)
-	@ rm -f 19-stamp
-	@ $(STAMP) 19-stamp
-	@ echo ==================================
-	@ echo === layer 19 of 23 complete ======
-	@ echo ==================================
-
-20-stamp: 19-stamp $(oa_algebra_layer_20_objects)
-	@ rm -f 20-stamp
-	@ $(STAMP) 20-stamp
-	@ echo ==================================
-	@ echo === layer 20 of 23 complete ======
-	@ echo ==================================
-
-21-stamp: 20-stamp $(oa_algebra_layer_21_objects)
-	@ rm -f 21-stamp
-	@ $(STAMP) 21-stamp
-	@ echo ==================================
-	@ echo === layer 21 of 23 complete ======
-	@ echo ==================================
-
-22-stamp: 21-stamp $(oa_algebra_layer_22_objects)
-	@ rm -f 22-stamp
-	@ $(STAMP) 22-stamp
-	@ echo ==================================
-	@ echo === layer 22 of 23 complete ======
-	@ echo ==================================
-
-23-stamp: 22-stamp $(oa_algebra_layer_23_objects)
-	@ rm -f 23-stamp
-	@ $(STAMP) 23-stamp
-	@ echo ==================================
-	@ echo === layer 23 of 23 complete ======
-	@ echo ==================================
-
-bootstrap-stamp: 23-stamp
-	@ rm -f bootstrap-stamp
-	@ $(STAMP) bootstrap-stamp
-	@ echo ==================================
-	@ echo ===    algebra complete     ======
-	@ echo ==================================
-
-user-stamp: $(oa_algebra_layer_user_objects)
-	@ rm -f user-stamp
-	@ $(STAMP) user-stamp
 
 
 .PHONY: all-initdb

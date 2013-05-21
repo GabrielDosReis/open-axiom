@@ -1,4 +1,4 @@
-# Copyright (C) 2012, Gabriel Dos Reis.
+# Copyright (C) 2012-2013, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -138,6 +138,10 @@ all-algebra: all-driver all-interpsys all-share all-hyper-pre
 
 .PHONY: all-algstrap
 all-algstrap: all-driver all-interpsys
+	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
+
+.PHONY: all-layer-%
+all-layer-%: all-driver all-interpsys
 	cd algebra && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-initdb
