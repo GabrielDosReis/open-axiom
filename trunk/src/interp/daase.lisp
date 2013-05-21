@@ -667,14 +667,6 @@
 	(case key
 ; note that abbreviation, constructorkind and cosig are heavy hitters
 ; thus they occur first in the list of things to check
-	      (abbreviation
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbAbbreviation| struct))))
-	      (constructorkind
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbConstructorKind| struct))))
 	      (cosig
 	       (setq stream *interp-stream*)
 	       (when struct
@@ -747,7 +739,7 @@
 	       (when struct
 		 (setq data (database-dependents struct))))
 	      (otherwise  
-	       (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
+	       (error "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
 	(when (numberp data)                 ;fetch the real data
 	  (when *miss*
 	    (format t "getdatabase miss: ~20a ~a~%" key constructor))
