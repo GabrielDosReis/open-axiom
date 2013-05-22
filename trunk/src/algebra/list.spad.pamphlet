@@ -478,6 +478,7 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
         Rep := Reference List Pair
 
         dictionary()            == ref empty()
+        dictionary l            == ref l
         empty()                 == dictionary()
         empty? t                == empty? deref t
         entries(t:%):List(Pair) == deref t
@@ -506,10 +507,6 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
             s := concat(s, concat(latex r.key, concat(" = ", latex r.entry)$String)$String)$String
             if not empty?(l) then s := concat(s, ", ")$String
           concat(s, " \right]")$String
-
---      assoc(k, l) ==
---        (r := find(#1.key=k, l)) case "failed" => "failed"
---        r
 
         assoc(k, t) ==
           for r in deref t repeat
@@ -542,7 +539,7 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

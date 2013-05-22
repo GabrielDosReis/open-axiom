@@ -1330,7 +1330,7 @@ oa_algebra_layer_0 = \
   COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND \
   AGG      AGG-     ELTAGG   ELTAGG-  IXAGG    IXAGG-   \
   BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    ELAGG-   \
-  DLAGG    DQAGG    QUAGG    SKAGG    PRQAGG   ALAGG    \
+  DLAGG    DQAGG    QUAGG    SKAGG    PRQAGG   ALAGG    ALAGG- \
   FLAGG    FLAGG-   URAGG    URAGG-   LNAGG    LNAGG-   \
   A1AGG    A1AGG-   LSAGG    LSAGG-   SRAGG    SRAGG-   \
   FSAGG    FSAGG-   STAGG    STAGG-   CLAGG    CLAGG-   \

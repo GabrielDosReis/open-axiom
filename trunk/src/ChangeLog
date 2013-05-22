@@ -1,5 +1,12 @@
 2013-05-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/aggcat.spad.pamphlet (ShallowlyMutableAggregate): Extend
+	Aggregate only.  Adjust users.
+	(BagAggregate): Explicitly extend HomogeneousAggregate.
+	(AssociationListAggregate): Extend ShallowlyMutableAggregate.
+
+2013-05-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/aggcat.spad.pamphlet (UnaryRecursiveAggregate) [map!]:
 	Implement default.
 	* algebra/list.spad.pamphlet (List) [map!]: Likewise.
