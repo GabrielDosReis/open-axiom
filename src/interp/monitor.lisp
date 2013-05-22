@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 
 
 (import-module "sys-macros")
+(import-module "sys-utility")
 (in-package "BOOT")
 
 (defun monitor-help ()
@@ -149,9 +150,6 @@
 (defvar *monitor-table* nil "a table of all of the monitored data")
 
 (defstruct monitor-data name count monitorp sourcefile)
-
-(unless (fboundp 'libstream-dirname)
- (defstruct libstream  mode dirname (indextable nil)  (indexstream nil)))
 
 (defun monitor-inittable ()
  "initialize the table"
@@ -326,7 +324,7 @@
 (defun monitor-dirname (args)
   "expects a list of 1 libstream (loadvol's arglist) and monitors the source"
    (let (name)
-    (setq name (libstream-dirname (car args)))
+    (setq name (|libDirname| (car args)))
     (setq name (file-namestring name))
     (setq name (concatenate 'string "/spad/int/algebra/" name "/code.lsp"))
     (when (probe-file name)

@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2012 Gabriel Dos Reis.
+-- Copyright (C) 2007-2013 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -409,3 +409,14 @@ macro loopBody x ==
 macro constructorDB ctor ==
   property(ctor,'DATABASE)
   
+--%
+structure %Libstream ==
+  Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, st: %Stream)
+    with
+      libIOMode == (.mode)
+      libDirname == (.dir)
+      libIndexTable == (.tbl)
+      libIndexStream == (.st)
+
+makeLibstream(m,p,idx==nil,st==nil) ==
+  mk%Libstream(m,p,idx,st)
