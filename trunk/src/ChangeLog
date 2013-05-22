@@ -1,3 +1,7 @@
+2013-05-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-utility.boot (%Libstream): New.
+
 2013-05-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/aggcat.spad.pamphlet (ShallowlyMutableAggregate): Extend

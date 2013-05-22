@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -33,19 +33,15 @@
 
 
 (IMPORT-MODULE "sys-macros")
+(IMPORT-MODULE "sys-utility")
 (in-package "BOOT")
-
-;; definition of our stream structure
-(defstruct libstream  mode dirname (indextable nil)  (indexstream nil))
-;indextable is a list of entries (key class <location or filename>)
-;filename is of the form filenumber.lsp or filenumber.o
 
 (defun addoptions (key value) "adds pairs to $compilerOptions"
   (push (cons key value) |$compilerOptions|)
   (if (equal key 'FILE)
       (push 
        (cons 'COMPILER-OUTPUT-STREAM
-                   (open (concat (libstream-dirname value) "/" "code.lsp")
+                   (open (concat (|libDirname| value) "/" "code.lsp")
                          :direction :output :if-exists :supersede))
              |$compilerOptions|)))
 
@@ -66,9 +62,9 @@
                               ;;(make-filename (cdr file) 'LISPLIB))
                               (make-filename (cdr file) 'NIL)))
                      NIL)
-               (make-libstream :mode 'input  :dirname fullname
-                               :indextable (get-index-table-from-stream stream)
-                               :indexstream stream)))
+               (|makeLibstream| 'input fullname
+                                (get-index-table-from-stream stream)
+                                stream)))
               ((equal (elt (string mode) 0) #\O)
                ;;(setq fullname (make-full-namestring (cdr file) 'LISPLIB))
                (setq fullname (make-full-namestring (cdr file) 'NIL))
@@ -80,9 +76,7 @@
 	       #-:GCL (ensure-directories-exist 
 		       (|ensureTrailingSlash| fullname))
                (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
-               (make-libstream :mode 'output  :dirname fullname
-                               :indextable indextable
-                               :indexstream stream ))
+               (|makeLibstream| 'output fullname indextable stream))
               ('t  (ERROR "Unknown MODE")))))
 
 
@@ -129,20 +123,20 @@
 
 ;; (RREAD key rstream)
 (defun rread (key rstream &optional (error-val nil error-val-p))
-  (if (equal (libstream-mode rstream) 'output) (error "not input stream"))
+  (if (equal (|libIOMode| rstream) 'output) (error "not input stream"))
   (let* ((entry
          (and (stringp key)
-              (assoc key (libstream-indextable rstream) :test #'string=)))
+              (assoc key (|libIndexTable| rstream) :test #'string=)))
          (file-or-pos (and entry (caddr entry))))
     (cond ((null entry)
            (if error-val-p error-val (error (format nil "key ~a not found" key))))
           ((null (caddr entry)) (cdddr entry))  ;; for small items
           ((numberp file-or-pos)
-           (file-position (libstream-indexstream rstream) file-or-pos)
-           (read (libstream-indexstream rstream)))
+           (file-position (|libIndexStream| rstream) file-or-pos)
+           (read (|libIndexStream| rstream)))
           (t
            (with-open-file
-            (stream (concat (libstream-dirname rstream) "/" file-or-pos))
+            (stream (concat (|libDirname| rstream) "/" file-or-pos))
             (read  stream))) )))
 
 (defvar *lib-var*)
@@ -157,9 +151,9 @@
 
 ;; (RWRITE cvec item rstream)
 (defun rwrite (key item rstream)
-  (if (equal (libstream-mode rstream) 'input) (error "not output stream"))
-  (let ((stream (libstream-indexstream rstream))
-        (pos (if item (cons (file-position (libstream-indexstream rstream)) nil)
+  (if (equal (|libIOMode| rstream) 'input) (error "not output stream"))
+  (let ((stream (|libIndexStream| rstream))
+        (pos (if item (cons (file-position (|libIndexStream| rstream)) nil)
                (cons nil item))))   ;; for small items
     (make-entry (string key) rstream pos)
     (when (numberp (car pos))
@@ -168,10 +162,10 @@
           (terpri stream))))
 
 (defun make-entry (key rstream value-or-pos)
-   (let ((entry (assoc key (libstream-indextable rstream) :test #'equal)))
+   (let ((entry (assoc key (|libIndexTable| rstream) :test #'equal)))
      (if (null entry)
          (push (setq entry (cons key (cons 0 value-or-pos)))
-               (libstream-indextable rstream))
+               (|libIndexTable| rstream))
        (progn
          (if (stringp (caddr entry)) ($erase (caddr entry)))
          (setf (cddr entry) value-or-pos)))
@@ -182,17 +176,17 @@
 ;;             (assoc 'compiler-output-stream |$compilerOptions|))
 ;;        (close (cdr (assoc 'compiler-output-stream |$compilerOptions|)))
 ;;        (setq |$compilerOptions| nil))
-;;  (if (eq (libstream-mode rstream) 'output)
-;;      (write-indextable (libstream-indextable rstream) (libstream-indexstream rstream)))
-;;  (close (libstream-indexstream rstream)))
+;;  (if (eq (|libIOMode| rstream) 'output)
+;;      (write-indextable (|libIndexTable| rstream) (|libIndexStream| rstream)))
+;;  (close (|libIndexStream| rstream)))
 (defun rshut (rstream)
   (when (and (equal rstream (cdr (assoc 'FILE |$compilerOptions|)))
              (assoc 'compiler-output-stream |$compilerOptions|))
         (close (cdr (assoc 'compiler-output-stream |$compilerOptions|)))
         (setq |$compilerOptions| (cddr |$compilerOptions|)))
-  (if (eq (libstream-mode rstream) 'output)
-      (write-indextable (libstream-indextable rstream) (libstream-indexstream rstream)))
-  (close (libstream-indexstream rstream)))
+  (if (eq (|libIOMode| rstream) 'output)
+      (write-indextable (|libIndexTable| rstream) (|libIndexStream| rstream)))
+  (close (|libIndexStream| rstream)))
 
 ;; filespec is id or list of 1, 2 or 3 ids
 ;; filearg is filespec or 1, 2 or 3 ids
@@ -213,14 +207,12 @@
                                                 :defaults index-file-name)))
       (rename-file index-file-name temp-index-file-name ) ;; stays until closed
       (multiple-value-setq (nstream nindextable) (get-io-index-stream filespec))
-      (setq nrstream (make-libstream :mode 'output  :dirname filespec
-                                     :indextable nindextable
-                                     :indexstream nstream ))
-      (dolist (entry (libstream-indextable rstream))
+      (setq nrstream (|makeLibstream| 'output filespec nindextable nstream))
+      (dolist (entry (|libIndexTable| rstream))
               (rwrite (car entry) (rread (car entry) rstream) nrstream)
               (if (stringp (caddr entry))
                   (delete-file (concat filespec "/" (caddr entry)))))
-      (close (libstream-indexstream rstream))
+      (close (|libIndexStream| rstream))
       (delete-file temp-index-file-name)
       (rshut nrstream)))
   filespec)
