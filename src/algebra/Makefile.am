@@ -128,6 +128,7 @@ SUFFIXES = .spad .$(FASLEXT) $(EXEEXT) .input .pamphlet .tex .dvi
 # They are needed only for their being known as constructors.
 # Consequently, the dependencies listed here are at the categories
 # inheritance level; not necessarily at the use level.
+strap-0/TYPE.$(FASLEXT): initdb.$(FASLEXT)
 strap-0/UTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/FUNCTOR.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/BASTYPE.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
@@ -388,7 +389,7 @@ strap-1/PID.$(FASLEXT): strap-1/GCDDOM.$(FASLEXT) \
 	strap-0/MAYBE.$(FASLEXT)
 
 strap-1/EUCDOM.$(FASLEXT): strap-1/PID.$(FASLEXT) \
-	strap-0/BOOLEAN.$(FASLEXT)
+	strap-0/BOOLEAN.$(FASLEXT) strap-0/LSAGG.$(FASLEXT)
 
 strap-1/UFD.$(FASLEXT): strap-1/GCDDOM.$(FASLEXT) \
 	strap-1/BOOLEAN.$(FASLEXT) strap-0/FR.$(FASLEXT)
@@ -809,7 +810,7 @@ strap-2/OINTDOM.$(FASLEXT): strap-2/INTDOM.$(FASLEXT) \
 strap-2/ALGEBRA.$(FASLEXT): strap-2/RING.$(FASLEXT) \
 	strap-2/MODULE.$(FASLEXT) strap-2/KOERCE.$(FASLEXT)
 strap-2/EUCDOM.$(FASLEXT): strap-2/PID.$(FASLEXT) \
-	strap-2/BOOLEAN.$(FASLEXT)
+	strap-2/BOOLEAN.$(FASLEXT) strap-1/LSAGG.$(FASLEXT)
 strap-2/PID.$(FASLEXT): strap-2/GCDDOM.$(FASLEXT) \
 	strap-2/MAYBE.$(FASLEXT)
 strap-2/OINTDOM.$(FASLEXT): strap-2/INTDOM.$(FASLEXT) \
@@ -1005,7 +1006,7 @@ strap-0 strap-1 strap-2:
 	$(MKDIR_P) $@
 
 .PRECIOUS: strap-0/%.$(FASLEXT)
-strap-0/%.$(FASLEXT): %.spad | strap-0
+strap-0/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-0
 	$(BOOTSTRAP) --sysalg=strap-0 --bootstrap $< \
 		&& cp $*.NRLIB/code.$(FASLEXT) $@ && \
 		if test x@oa_keep_files@ = xyes; then \
@@ -1013,7 +1014,7 @@ strap-0/%.$(FASLEXT): %.spad | strap-0
 		rm -rf $*.NRLIB
 
 .PRECIOUS: strap-1/%.$(FASLEXT)
-strap-1/%.$(FASLEXT): %.spad | strap-1
+strap-1/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-1
 	$(BOOTSTRAP) --strap=strap-0 --sysalg=strap-1 --optimize=3 $< && \
 		cp $*.NRLIB/code.$(FASLEXT) $@ && \
 		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
@@ -1166,17 +1167,12 @@ TESTS=$(INPUT)/INTHEORY.input $(INPUT)/VIEW2D.input $(INPUT)/TESTFR.input
 
 # The root of the category hierarchy is the Type category.
 # We require the basic integer domains are available at stage 2 of
-# bootstrap.  This has the property of setting in motion
-# the built of several other domains and categories as needed
+# bootstrap.  This sets in motion
+# the buils of several other domains and categories as needed
 # to ignite the algebra build.  We require Category only because
 # we would like not to have too many special cases for it.
-strap-stamp: strap-2/CATEGORY.$(FASLEXT) \
-	strap-2/SINT.$(FASLEXT) strap-2/NNI.$(FASLEXT) \
-	strap-2/PI.$(FASLEXT)
-	-rm -f $@
-	$(STAMP) $@
-
-$(OUT)/TYPE.$(FASLEXT): strap-stamp
+$(oa_algebra_layer_0_objects): strap-2/SINT.$(FASLEXT) \
+	strap-2/NNI.$(FASLEXT) 	strap-2/PI.$(FASLEXT) 
 
 $(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
 $(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
@@ -2080,7 +2076,7 @@ $(OUT)/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 
 .PRECIOUS: %.spad
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
-%.NRLIB/code.$(FASLEXT): %.spad
+%.NRLIB/code.$(FASLEXT): %.spad initdb.$(FASLEXT)
 	$(COMPILE_SPAD)
 
 $(SPADFILES): | $(OUTSRC)
@@ -2132,7 +2128,6 @@ $(INPUT)/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
 $(DOC)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
 	@cp -p $< $@
  
-$(oa_algebra_layer_0_objects): strap-stamp
 $(oa_algebra_layer_1_objects): 0-stamp
 $(oa_algebra_layer_2_objects): 1-stamp
 $(oa_algebra_layer_3_objects): 2-stamp
