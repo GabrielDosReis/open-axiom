@@ -69,7 +69,7 @@
 	     (*comp370-apply* (function |printBackendDecl|))
 	     (*fileactq-apply* (function |printBackendDecl|))
 	     ($SPAD T)
-	     (OPTIONLIST nil)
+	     (|$compilerOptions| nil)
 	     (|$editFile| ifile)
 	     rd)
   (declare (special |$Echo| |$editFile| *comp370-apply*))

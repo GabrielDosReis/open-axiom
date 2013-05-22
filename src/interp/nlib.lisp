@@ -40,16 +40,14 @@
 ;indextable is a list of entries (key class <location or filename>)
 ;filename is of the form filenumber.lsp or filenumber.o
 
-(defvar optionlist nil "alist which controls compiler output")
-
-(defun addoptions (key value) "adds pairs to optionlist"
-  (push (cons key value) optionlist)
+(defun addoptions (key value) "adds pairs to $compilerOptions"
+  (push (cons key value) |$compilerOptions|)
   (if (equal key 'FILE)
       (push 
        (cons 'COMPILER-OUTPUT-STREAM
                    (open (concat (libstream-dirname value) "/" "code.lsp")
                          :direction :output :if-exists :supersede))
-             optionlist)))
+             |$compilerOptions|)))
 
 ;; (RDEFIOSTREAM ((MODE . IO) (FILE fn ft dir))) IO is I,O,INPUT,OUTPUT
 (defun rdefiostream (options &optional (missing-file-error-flag t))
@@ -180,18 +178,18 @@
      entry))
 
 ;;(defun rshut (rstream)
-;;  (when (and (equal rstream (cdr (assoc 'FILE OPTIONLIST)))
-;;             (assoc 'compiler-output-stream optionlist))
-;;        (close (cdr (assoc 'compiler-output-stream optionlist)))
-;;        (setq optionlist nil))
+;;  (when (and (equal rstream (cdr (assoc 'FILE |$compilerOptions|)))
+;;             (assoc 'compiler-output-stream |$compilerOptions|))
+;;        (close (cdr (assoc 'compiler-output-stream |$compilerOptions|)))
+;;        (setq |$compilerOptions| nil))
 ;;  (if (eq (libstream-mode rstream) 'output)
 ;;      (write-indextable (libstream-indextable rstream) (libstream-indexstream rstream)))
 ;;  (close (libstream-indexstream rstream)))
 (defun rshut (rstream)
-  (when (and (equal rstream (cdr (assoc 'FILE OPTIONLIST)))
-             (assoc 'compiler-output-stream optionlist))
-        (close (cdr (assoc 'compiler-output-stream optionlist)))
-        (setq optionlist (cddr optionlist)))
+  (when (and (equal rstream (cdr (assoc 'FILE |$compilerOptions|)))
+             (assoc 'compiler-output-stream |$compilerOptions|))
+        (close (cdr (assoc 'compiler-output-stream |$compilerOptions|)))
+        (setq |$compilerOptions| (cddr |$compilerOptions|)))
   (if (eq (libstream-mode rstream) 'output)
       (write-indextable (libstream-indextable rstream) (libstream-indexstream rstream)))
   (close (libstream-indexstream rstream)))

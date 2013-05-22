@@ -843,7 +843,7 @@ evalAndPrintBackendStmt stmt ==
 
 printBackendDecl(label,decl) ==
   st :=
-    sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,OPTIONLIST) => rest sp
+    sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,$compilerOptions) => rest sp
     $OutputStream
   if label ~= nil and ioTerminal? st and functionSymbol? label
     and not COMPILED_-FUNCTION_-P symbolFunction label then

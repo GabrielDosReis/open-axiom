@@ -1743,3 +1743,8 @@ cleanParameterList! parms ==
       t := makeSymbol strconc('"T",toString count)
     vars.first := t
   parms
+
+--%
+--% Other compiler artifact support
+--%
+
