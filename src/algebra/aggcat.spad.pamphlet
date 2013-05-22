@@ -190,7 +190,7 @@ FiniteAggregate(S: Type): Category == Exports where
 ++   that support in place mutation that do not change their general
 ++   shapes.
 ShallowlyMutableAggregate(S: Type): Category == Exports where
-  Exports == HomogeneousAggregate S with
+  Exports == Aggregate with
       map!: (S->S,%) -> %
         ++ \spad{map!(f,u)} destructively replaces each element
         ++ \spad{x} of \spad{u} by \spad{f(x)}    
@@ -275,7 +275,7 @@ import List
 ++ and where the order in which objects are inserted determines the order
 ++ of extraction.
 ++ Examples of bags are stacks, queues, and dequeues.
-BagAggregate(S:Type): Category == ShallowlyMutableAggregate S with
+BagAggregate(S:Type): Category == Join(HomogeneousAggregate S,ShallowlyMutableAggregate S) with
    bag: List S -> %
      ++ bag([x,y,...,z]) creates a bag with elements x,y,...,z.
    extract!: % -> S
@@ -1095,6 +1095,7 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
    table l	       == dictionary l
 -- empty()	       == dictionary()
 
+   insert!(p,t) == (t(p.key) := p.entry; t)
    indices t	       == keys t
 
    coerce(t:%):OutputForm ==
@@ -2546,10 +2547,11 @@ import ListAggregate
 ++ as a table.	It is a poor mans version of a table:
 ++ searching for a key is a linear operation.
 AssociationListAggregate(Key:SetCategory,Entry:SetCategory): Category ==
-   Join(TableAggregate(Key, Entry), ListAggregate Record(key:Key,entry:Entry)) with
-      assoc: (Key, %) -> Maybe Record(key:Key,entry:Entry)
-	++ assoc(k,u) returns the element x in association list u stored
-	++ with key k, or \spad{nothing} if u has no key k.
+   Join(TableAggregate(Key, Entry),ListAggregate Record(key:Key,entry:Entry),_
+     ShallowlyMutableAggregate Entry) with
+        assoc: (Key, %) -> Maybe Record(key:Key,entry:Entry)
+          ++ assoc(k,u) returns the element x in association list u stored
+          ++ with key k, or \spad{nothing} if u has no key k.
 
 @
 
