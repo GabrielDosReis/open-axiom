@@ -1,3 +1,8 @@
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject):
+	Define Rep, do not use base-domain form.
+
 2013-05-23  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/stream.spad.pamphlet (LazyStreamAggregate) [entries]:
