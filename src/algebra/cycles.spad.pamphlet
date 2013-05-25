@@ -196,15 +196,14 @@ CycleIndicators: Exports == Implementation where
  
     wreath(spol1,spol2) == evspol(mtpol(#1,spol2),spol1)
  
-    nniBump(x: Integer): NNI ==
+    spol(x: Integer): SPOL RN ==
       x < 0 => 0
       x = 0 => 1
-      x::NNI
+      complete(x::NNI)
 
     SFunction li==
       a:Matrix SPOL RN :=
-        matrix [[complete nniBump(k -j+i) for k in li for j in 1..#li]
-                    for i in 1..#li]
+        matrix [[spol(k -j+i) for k in li for j in 1..#li] for i in 1..#li]
       determinant a
  
     roundup:(L I,L I)-> L I
@@ -216,7 +215,7 @@ CycleIndicators: Exports == Implementation where
       #li1 < #li2 =>
         error "skewSFunction: partition1 does not include partition2"
       li2:=roundup (li1,li2)
-      a:Matrix SPOL RN:=matrix [[complete nniBump(k-li2.i-j+i)
+      a:Matrix SPOL RN:=matrix [[spol(k-li2.i-j+i)
                for k in li1 for j in 1..#li1]  for i in 1..#li1]
       determinant a
 
