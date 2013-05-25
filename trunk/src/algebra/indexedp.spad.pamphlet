@@ -96,12 +96,14 @@ IndexedDirectProductObject(A,S): Public == Private where
       ++ index-wise, coefficients of \spad{u} and \spad{u} if when
       ++ satisfy the predicate \spad{p}.  Those pairs of coefficients
       ++ which fail\spad{p} are implicitly ignored.
-  Private == List IndexedProductTerm(A,S) add
+  Private == add
+    Rep == List IndexedProductTerm(A,S)
     if A has CoercibleTo OutputForm and S has CoercibleTo OutputForm then
       coerce(x:%):OutputForm ==
          bracket [rarrow(index(t)::OutputForm, coefficient(t)::OutputForm)
                    for t in rep x]
 
+    x = y == rep x = rep y
     monomial(r,s) == per [term(s,r)]
     map(f,x) == per [term(index tm,f coefficient tm) for tm in rep x]
     reductum x == per rest rep x
