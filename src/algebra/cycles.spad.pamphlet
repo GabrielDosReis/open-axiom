@@ -50,7 +50,7 @@ CycleIndicators: Exports == Implementation where
       ++\spad{elementary n} is the \spad{n} th elementary symmetric
       ++ function expressed in terms of power sums.
  
-    alternating: PI -> SPOL RN
+    alternating: NNI -> SPOL RN
       ++\spad{alternating n} is the cycle index of the
       ++ alternating group of degree n.
  

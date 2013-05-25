@@ -1,5 +1,9 @@
 2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* algebra/cycles.spad.pamphlet (alternating): Accept non-negative input.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* utils/command.cc (print_usage): Document --verbose.
 
 2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
