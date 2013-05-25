@@ -278,6 +278,8 @@ static void print_usage(void) {
    print_line("General options:");
    print_line("  --help           Print this information and exit.");
    print_line("  --version        Print OpenAxiom version and exit.");
+   print_line("  --verbose        Make the system more talkative.");
+   print_line("                   The interpreter echos commands and prints results as if in toplevel read-eval-print loop.");
    print_line("  --script         Execute the file argument as a Spad script.");
    print_line("                   If specified, this option should be last before file argument.");
    print_line("  --compile        Invoke the compiler on the file argument.");
