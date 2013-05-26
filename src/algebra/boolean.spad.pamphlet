@@ -238,16 +238,7 @@ Bits(): Exports == Implementation where
 <<*>>=
 <<license>>
 
-<<category BOOLE BooleanLogic>>
-<<category LOGIC Logic>>
 <<domain BOOLEAN Boolean>>
-
-<<category PROPLOG PropositionalLogic>>
-<<domain PROPFRML PropositionalFormula>>
-<<package PROPFUN1 PropositionalFormulaFunctions1>>
-<<package PROPFUN2 PropositionalFormulaFunctions2>>
-
-<<domain KTVLOGIC KleeneTrivalentLogic>>
 
 <<domain IBITS IndexedBits>>
 <<domain BITS Bits>>
