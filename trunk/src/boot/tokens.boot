@@ -305,6 +305,7 @@ for i in [ _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["makeFilePath", "MAKE-PATHNAME"] , _
   ["makeSymbol", "INTERN"] , _
+  ["mergeFilePaths", "MERGE-PATHNAMES"] , _
   ["mkpf",        "MKPF"]  , _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _

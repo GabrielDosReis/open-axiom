@@ -1,4 +1,9 @@
-2013-05-26  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (MAKE-FULL-NAMESTRING): Move to sys-utility.boot.
+	Rename to makeFullFilePath.  Adjust callers.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/boolean.spad.pamphlet (IndexedBits)[<]: Define in Spad.
 	* interp/bits.lisp: Remove.

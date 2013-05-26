@@ -56,8 +56,7 @@
                                 (get-index-table-from-stream stream)
                                 stream)))
               ((equal (elt (string mode) 0) #\O)
-               ;;(setq fullname (make-full-namestring (cdr file) 'LISPLIB))
-               (setq fullname (make-full-namestring (cdr file) 'NIL))
+               (setq fullname (|makeFullFilePath| (cdr file) 'NIL))
                (case (|directoryp| fullname)
                      (-1 (|checkMkdir| fullname))
                      (0 (error (format nil "~s is an existing file, not a library" fullname)))
@@ -242,9 +241,6 @@
   (putindextable ctable filearg))
 
 
-(defun make-full-namestring (filearg &optional (filetype nil))
-  (namestring (merge-pathnames (|makeFilename| filearg filetype))))
-
 (defun get-directory-list (ft)
   (let ((cd (get-current-directory)))
     (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
@@ -271,7 +267,7 @@
 	    (return newfn)))
       (|probeReadableFile| filename))))
 
-(defun $FILEP (&rest filearg) (make-full-namestring filearg))
+(defun $FILEP (&rest filearg) (|makeFullFilePath| filearg))
 (define-function '$OUTFILEP #'$FILEP) ;;temporary bogus def
 
 (defun $findfile (filespec filetypelist)
@@ -285,8 +281,8 @@
 ;;  (rename-file namestring1 namestring2))
 
 (defun $FCOPY (filespec1 filespec2)
-    (let ((name1 (make-full-namestring filespec1))
-          (name2 (make-full-namestring filespec2)))
+    (let ((name1 (|makeFullFilePath| filespec1))
+          (name2 (|makeFullFilePath| filespec2)))
       (if (library-file name1)
         (copy-lib-directory name1 name2)
         (copy-file name1 name2))))

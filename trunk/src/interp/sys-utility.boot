@@ -203,12 +203,12 @@ probeReadableFile file ==
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.
 $ERASE(:filearg) ==
-  -removeFile MAKE_-FULL_-NAMESTRING filearg
+  -removeFile makeFullFilePath filearg
 
 ++
 $REPLACE(filespec1,filespec2) ==
-  $ERASE(filespec1 := MAKE_-FULL_-NAMESTRING filespec1)
-  renameFile(MAKE_-FULL_-NAMESTRING filespec2, filespec1)
+  $ERASE(filespec1 := makeFullFilePath filespec1)
+  renameFile(makeFullFilePath filespec2, filespec1)
 
 ++
 checkMkdir path ==
@@ -445,3 +445,7 @@ makeFilename(filearg,filetype==nil) ==
   ft := rest symbolAssoc(filetype,$FILETYPE_-TABLE) or filetype
   ft = nil => toString filearg
   strconc(toString filearg,'".",toString ft)
+
+makeFullFilePath(filearg,filetype==nil) ==
+  filePathString mergeFilePaths makeFilename(filearg,filetype)
+  
