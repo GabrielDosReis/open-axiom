@@ -662,7 +662,7 @@ $VMsideEffectFreeOperators ==
     %vector %aref %vref %vlength %vcopy
     %bitvector
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
-    %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
+    %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
     %before? %equal %sptreq %ident? %property %tref
     %void %retract %pullback %lambda %closure %external
     %type2form)

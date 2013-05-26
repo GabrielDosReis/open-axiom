@@ -74,7 +74,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	                     	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	g-util.$(FASLEXT)	\
 	g-opt.$(FASLEXT)	c-util.$(FASLEXT)	\
-	astr.$(FASLEXT)		bits.$(FASLEXT)		\
+	astr.$(FASLEXT)		                  	\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
 	br-search.$(FASLEXT)	alql.$(FASLEXT)		\
 	buildom.$(FASLEXT)	                        \
@@ -337,7 +337,7 @@ cparse.$(FASLEXT): ptrees.$(FASLEXT)
 macex.$(FASLEXT): ptrees.$(FASLEXT)
 ptrees.$(FASLEXT): posit.$(FASLEXT) serror.$(FASLEXT)
 pile.$(FASLEXT): scan.$(FASLEXT)
-scan.$(FASLEXT): incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT) sys-utility.$(FASLEXT)
+scan.$(FASLEXT): incl.$(FASLEXT) dq.$(FASLEXT) sys-utility.$(FASLEXT)
 incl.$(FASLEXT): cstream.$(FASLEXT) cformat.$(FASLEXT)
 cformat.$(FASLEXT): unlisp.$(FASLEXT) posit.$(FASLEXT)
 serror.$(FASLEXT): posit.$(FASLEXT)
@@ -346,7 +346,6 @@ posit.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 intfile.$(FASLEXT): cstream.$(FASLEXT)
 cstream.$(FASLEXT): sys-macros.$(FASLEXT)
 astr.$(FASLEXT): vmlisp.$(FASLEXT)
-bits.$(FASLEXT): boot-pkg.$(FASLEXT)
 dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
