@@ -137,7 +137,6 @@ IndexedBits(mn:Integer): BitAggregate()
         import %bitvecref: (%,Integer) -> NonNegativeInteger
                                                       from Foreign Builtin
         import %bitveceq: (%,%) -> Boolean            from Foreign Builtin
-        import %bitveclt: (%,%) -> Boolean            from Foreign Builtin
         import %bitvecnot: % -> %                     from Foreign Builtin
         import %bitvecand: (%,%) -> %                 from Foreign Builtin
         import %bitvecor: (%,%) -> %                  from Foreign Builtin
@@ -165,7 +164,15 @@ IndexedBits(mn:Integer): BitAggregate()
         copy v          == %bitveccopy v
         #v              == %bitveclength v
         v = u           == %bitveceq(v,u)
-        v < u           == %bitveclt(v,u)
+        u < v           ==    -- lexicographic
+          nu := #u
+          nv := #v
+          for i in 0.. repeat
+            i >= nu => return or/[%bitvecref(v,j) = 1 for j in i..nv-1]
+            i >= nv => return false
+            %bitvecref(u,i) < %bitvecref(v,i) => return true
+            %bitvecref(u,i) > %bitvecref(v,i) => return false
+
         u and v         == (#v=#u => %bitvecand(v,u); map("and",v,u))
         u or v          == (#v=#u => %bitvecor(v,u); map("or", v,u))
         xor(v,u)        == (#v=#u => %bitvecxor(v,u); map("xor",v,u))
