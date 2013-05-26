@@ -54,15 +54,15 @@ CycleIndicators: Exports == Implementation where
       ++\spad{alternating n} is the cycle index of the
       ++ alternating group of degree n.
  
-    cyclic: PI -> SPOL RN    --cyclic group
+    cyclic: NNI -> SPOL RN    --cyclic group
       ++\spad{cyclic n} is the cycle index of the
       ++ cyclic group of degree n.
  
-    dihedral: PI -> SPOL RN    --dihedral group
+    dihedral: NNI -> SPOL RN    --dihedral group
       ++\spad{dihedral n} is the cycle index of the
       ++ dihedral group of degree n.
  
-    graphs: PI -> SPOL RN
+    graphs: NNI -> SPOL RN
       ++\spad{graphs n} is the cycle index of the group induced on
       ++ the edges of a graph by applying the symmetric function to the
       ++ n nodes.
@@ -100,24 +100,20 @@ CycleIndicators: Exports == Implementation where
     trm: PTN -> SPOL RN
     trm pt == monomial(inv(pdct(pt) :: RN),pt)
  
-    list: Stream PTN -> L PTN
-    list st == entries complete st
- 
     complete i ==
       i=0 => 1
-      +/[trm pt for pt in list partitions i]
- 
- 
-    even?: PTN -> B
-    even? p == even?( #([i for i in parts p | even? i]))
+      +/[trm pt for pt in entries partitions i]
+  
+    even?: L I -> B
+    even? li == even?( #([i for i in li | even? i]))
  
     alternating i ==
-      2 * _+/[trm p for p in list partitions i | even? p]
+      2 * _+/[trm p for p in entries partitions i | even? p]
 
     elementary i ==
        i=0 => 1
-       +/[(spol := trm pt; even? pt => spol; -spol)
-                          for pt in list partitions i]
+       +/[(spol := trm partition pt; even? pt => spol; -spol)
+                          for pt in entries partitions i]
  
     divisors: I -> L I
     divisors n ==
@@ -161,7 +157,7 @@ CycleIndicators: Exports == Implementation where
         prod := c * prod2 * prod
       xx * prod
  
-    graphs n == +/[trm2 p for p in list(partitions n)]
+    graphs n == +/[trm2 p for p in entries partitions n]
  
     cupp: (PTN,SPOL RN) -> SPOL RN
     cupp(pt,spol) ==
