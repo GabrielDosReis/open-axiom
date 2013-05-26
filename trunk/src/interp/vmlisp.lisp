@@ -932,7 +932,7 @@
  (declare (ignore width) (ignore recnum))
    (cond ((numberp filespec) (make-synonym-stream '*standard-output*))
          ((null filespec) (error "not handled yet"))
-         (t (open (make-filename filespec) :direction :output
+         (t (open (|makeFilename| filespec) :direction :output
 		  :if-exists :supersede))))
 
 (defun MAKE-APPENDSTREAM (filespec &optional (width nil) (recnum 0))
@@ -941,7 +941,7 @@
  (cond 
   ((numberp filespec) (make-synonym-stream '*standard-output*))
   ((null filespec) (error "make-appendstream: not handled yet"))
-  ('else (open (make-filename filespec) :direction :output
+  ('else (open (|makeFilename| filespec) :direction :output
           :if-exists :append :if-does-not-exist :create))))
 
 (defun DEFIOSTREAM (stream-alist buffer-size char-position)
@@ -954,7 +954,7 @@
 		((OUTPUT O) (make-synonym-stream '*standard-output*))
 		((INPUT I) (make-synonym-stream '*standard-input*)))
         (let ((strm (case mode
-                          ((OUTPUT O) (open (make-filename filename)
+                          ((OUTPUT O) (open (|makeFilename| filename)
                                             :direction :output))
                           ((INPUT I) (open (make-input-filename filename)
                                            :direction :input)))))

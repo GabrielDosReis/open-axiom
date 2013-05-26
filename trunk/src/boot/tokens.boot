@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -284,6 +284,12 @@ for i in [ _
   ["false",        'NIL]   , _
   ["fifth",      "FIFTH"]  , _
   ["first",        "CAR"]  , _
+  ["filePath",  "PATHNAME"] , _
+  ["filePath?", "PATHNAMEP"] , _
+  ["filePathDirectory", "PATHNAME-DIRECTORY"] , _
+  ["filePathName", "PATHNAME-NAME"] , _
+  ["filePathString", "NAMESTRING"] , _
+  ["filePathType", "PATHNAME-TYPE"] , _
   ["float?",   "FLOATP"] , _
   ["flushOutput", "FORCE-OUTPUT"], _
   ["fourth",    "CADDDR"]  , _
@@ -297,6 +303,7 @@ for i in [ _
   ["list",        "LIST"]  , _
   ["listEq?",    "EQUAL"] , _
   ["lowerCase?", "LOWER-CASE-P"], _
+  ["makeFilePath", "MAKE-PATHNAME"] , _
   ["makeSymbol", "INTERN"] , _
   ["mkpf",        "MKPF"]  , _
   ["newVector", "MAKE-ARRAY"], _

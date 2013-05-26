@@ -427,3 +427,21 @@ addCompilerOption(key,val) ==
     st := outputTextFile strconc(libDirname val,'"/code.lsp")
     $compilerOptions := [['COMPILER_-OUTPUT_-STREAM,:st],:$compilerOptions]
   nil
+
+makeFilename(filearg,filetype==nil) ==
+  if ident? filetype then
+    filetype := symbolName filetype
+  filePath? filearg => filePathString
+    filePathType filearg ~= nil => filearg
+    makeFilePath(directory <- filePathDirectory filearg,
+      name <- filePathName filearg, type <- filetype)
+  string? filearg and filePathType filearg ~= nil and filetype = nil => filearg
+  string? filearg and string? filetype and filePathType filearg ~= nil
+    and stringEq?(filePathType filearg,filetype) => filearg
+  filearg is [.,:.] =>
+    makeFilename(first filearg,second filearg or filetype)
+  if string? filetype then
+    filetype := makeSymbol filetype
+  ft := rest symbolAssoc(filetype,$FILETYPE_-TABLE) or filetype
+  ft = nil => toString filearg
+  strconc(toString filearg,'".",toString ft)

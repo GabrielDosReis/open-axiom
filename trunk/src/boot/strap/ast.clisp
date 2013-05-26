@@ -3739,8 +3739,11 @@
                      |call|))))
      (LIST (LIST 'DEFUN |op| |parms| |call|)))))
 
+(DEFPARAMETER |$ffs| NIL)
+
 (DEFUN |genImportDeclaration| (|op| |sig|)
   (LET* (|s| |t| |m| |ISTMP#2| |op'| |ISTMP#1|)
+    (DECLARE (SPECIAL |$ffs|))
     (COND
      ((NOT
        (AND (CONSP |sig|) (EQ (CAR |sig|) '|%Signature|)
@@ -3765,6 +3768,7 @@
                         (PROGN (SETQ |s| (CAR |ISTMP#2|)) T)))))))
       (|coreError| "invalid function type"))
      (T (COND ((AND |s| (SYMBOLP |s|)) (SETQ |s| (LIST |s|))))
+      (SETQ |$ffs| (CONS |op| |$ffs|))
       (COND
        ((|%hasFeature| :GCL) (|genGCLnativeTranslation| |op| |s| |t| |op'|))
        ((|%hasFeature| :SBCL) (|genSBCLnativeTranslation| |op| |s| |t| |op'|))
