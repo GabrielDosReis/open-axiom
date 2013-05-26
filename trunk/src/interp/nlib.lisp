@@ -36,15 +36,6 @@
 (IMPORT-MODULE "sys-utility")
 (in-package "BOOT")
 
-(defun addoptions (key value) "adds pairs to $compilerOptions"
-  (push (cons key value) |$compilerOptions|)
-  (if (equal key 'FILE)
-      (push 
-       (cons 'COMPILER-OUTPUT-STREAM
-                   (open (concat (|libDirname| value) "/" "code.lsp")
-                         :direction :output :if-exists :supersede))
-             |$compilerOptions|)))
-
 ;; (RDEFIOSTREAM ((MODE . IO) (FILE fn ft dir))) IO is I,O,INPUT,OUTPUT
 (defun rdefiostream (options &optional (missing-file-error-flag t))
   (let ((mode (cdr (assoc 'mode options)))

@@ -420,3 +420,10 @@ structure %Libstream ==
 
 makeLibstream(m,p,idx==nil,st==nil) ==
   mk%Libstream(m,p,idx,st)
+
+addCompilerOption(key,val) ==
+  $compilerOptions := [[key,:val],:$compilerOptions]
+  key is 'FILE =>
+    st := outputTextFile strconc(libDirname val,'"/code.lsp")
+    $compilerOptions := [['COMPILER_-OUTPUT_-STREAM,:st],:$compilerOptions]
+  nil
