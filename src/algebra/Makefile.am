@@ -1091,7 +1091,7 @@ SPADFILES= \
  $(OUTSRC)/lie.spad $(OUTSRC)/limitps.spad $(OUTSRC)/lindep.spad \
  $(OUTSRC)/lingrob.spad $(OUTSRC)/liouv.spad $(OUTSRC)/listgcd.spad \
  $(OUTSRC)/list.spad $(OUTSRC)/lmdict.spad $(OUTSRC)/lodof.spad \
- $(OUTSRC)/lodop.spad $(OUTSRC)/lodo.spad \
+ $(OUTSRC)/lodop.spad $(OUTSRC)/lodo.spad $(OUTSRC)/logic.spad \
  $(OUTSRC)/manip.spad $(OUTSRC)/mappkg.spad $(OUTSRC)/matcat.spad \
  $(OUTSRC)/matfuns.spad $(OUTSRC)/mathml.spad \
  $(OUTSRC)/matrix.spad $(OUTSRC)/matstor.spad \
