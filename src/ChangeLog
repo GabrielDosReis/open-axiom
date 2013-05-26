@@ -1,3 +1,8 @@
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (ADDOPTIONS): Move to sys-utility.boot.
+	* interp/sys-utility.boot (addCompilerOption): Rename from ADDOPTIONS.
+
 2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/logic.spad.pamphlet: New file.

@@ -466,7 +466,7 @@ initializeLisplib libName ==
   _$ERASE(libName,'ERRORLIB,$libraryDirectory)
   resetErrorCount()
   $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
-  ADDOPTIONS('FILE,$libFile)
+  addCompilerOption('FILE,$libFile)
 
 mkCtorDBForm ctor ==
   ['constructorDB,quote ctor]
