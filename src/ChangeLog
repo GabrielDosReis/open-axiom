@@ -1,5 +1,14 @@
 2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/sys-utility.boot (makeFilename): Move from nlib.lisp.
+	* interp/nlib.lisp (MAKE-FILENAME): Move to sys-utility.boot.
+	Adjust callers.
+	* boot/tokens.boot: Add new builtins: filePath, filePath?,
+	filePathDirectory, filePathName, filePathString, filePathType,
+	makeFilePath.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/nlib.lisp (ADDOPTIONS): Move to sys-utility.boot.
 	* interp/sys-utility.boot (addCompilerOption): Rename from ADDOPTIONS.
 

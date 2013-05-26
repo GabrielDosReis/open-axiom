@@ -50,8 +50,7 @@
                (if (null stream)
                    (if missing-file-error-flag
                        (ERROR (format nil "Library ~s doesn't exist"
-                              ;;(make-filename (cdr file) 'LISPLIB))
-                              (make-filename (cdr file) 'NIL)))
+                              (|makeFilename| (cdr file) 'NIL)))
                      NIL)
                (|makeLibstream| 'input fullname
                                 (get-index-table-from-stream stream)
@@ -183,7 +182,7 @@
 ;; filearg is filespec or 1, 2 or 3 ids
 ;; (RPACKFILE filearg)  -- compiles code files and converts to compressed format
 (defun rpackfile (filespec)
-  (setq filespec (make-filename filespec))
+  (setq filespec (|makeFilename| filespec))
   (if (string= (pathname-type filespec) "NRLIB")
       (recompile-lib-file-if-necessary 
        (concat (namestring filespec) "/code.lsp"))
@@ -242,37 +241,9 @@
            (mapcar #'string keys))
   (putindextable ctable filearg))
 
-;; cms file operations
-(defun make-filename (filearg &optional (filetype nil))
-  (let ((filetype (if (symbolp filetype) 
-                      (symbol-name filetype)
-                      filetype)))
-    (cond
-     ((pathnamep filearg) 
-      (cond ((pathname-type filearg) (namestring filearg))
-            (t (namestring (make-pathname :directory (pathname-directory filearg)
-                                          :name (pathname-name filearg)
-                                          :type filetype)))))
-     ;; Previously, given a filename containing "." and
-     ;; an extension this function would return filearg. MCD 23-8-95.
-     ((and (stringp filearg) (pathname-type filearg) (null filetype)) filearg)
-     ;;  ((and (stringp filearg)
-     ;;    (or (pathname-type filearg) (null filetype)))
-     ;;     filearg)
-     ((and (stringp filearg) (stringp filetype)
-           (pathname-type filearg) 
-           (string-equal (pathname-type filearg) filetype))
-      filearg)
-     ((consp filearg)
-      (make-filename (car filearg) (or (cadr filearg) filetype)))
-     (t (if (stringp filetype) (setq filetype (intern filetype "BOOT")))
-        (let ((ft (or (cdr (assoc filetype $filetype-table)) filetype)))
-          (if ft 
-              (concatenate 'string (string filearg) "." (string ft))
-              (string filearg)))))))
 
 (defun make-full-namestring (filearg &optional (filetype nil))
-  (namestring (merge-pathnames (make-filename filearg filetype))))
+  (namestring (merge-pathnames (|makeFilename| filearg filetype))))
 
 (defun get-directory-list (ft)
   (let ((cd (get-current-directory)))
@@ -288,7 +259,7 @@
 
 (defun make-input-filename (filearg &optional (filetype nil))
    (let*
-     ((filename  (make-filename filearg filetype))
+     ((filename  (|makeFilename| filearg filetype))
       (dirname (pathname-directory filename))
       (ft (pathname-type filename))
       (dirs (get-directory-list ft))

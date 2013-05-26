@@ -26,63 +26,46 @@
   (PROGN (|prettyPrint| |x| |st|) (TERPRI |st|)))
 
 (DEFUN |genModuleFinalization| (|stream|)
-  (LET* (|init|)
-    (DECLARE (SPECIAL |$currentModuleName| |$foreignsDefsForCLisp|))
-    (COND
-     ((|%hasFeature| :CLISP)
-      (COND ((NULL |$foreignsDefsForCLisp|) NIL)
-            ((NULL |$currentModuleName|)
-             (|coreError| "current module has no name"))
-            (T
-             (SETQ |init|
-                     (LIST 'EVAL-WHEN (LIST :LOAD-TOPLEVEL :EXECUTE)
-                           (CONS 'PROGN
-                                 (CONS
-                                  (LIST 'MAPC (LIST 'FUNCTION 'FMAKUNBOUND)
-                                        (|quote|
-                                         (LET ((|bfVar#2| NIL)
-                                               (|bfVar#3| NIL)
-                                               (|bfVar#1|
-                                                |$foreignsDefsForCLisp|)
-                                               (|d| NIL))
-                                           (LOOP
-                                            (COND
-                                             ((OR (NOT (CONSP |bfVar#1|))
-                                                  (PROGN
-                                                   (SETQ |d| (CAR |bfVar#1|))
-                                                   NIL))
-                                              (RETURN |bfVar#2|))
-                                             ((NULL |bfVar#2|)
-                                              (SETQ |bfVar#2|
-                                                      #1=(CONS (CADR |d|) NIL))
-                                              (SETQ |bfVar#3| |bfVar#2|))
-                                             (T (RPLACD |bfVar#3| #1#)
-                                              (SETQ |bfVar#3|
-                                                      (CDR |bfVar#3|))))
-                                            (SETQ |bfVar#1|
-                                                    (CDR |bfVar#1|))))))
-                                  (LET ((|bfVar#5| NIL)
-                                        (|bfVar#6| NIL)
-                                        (|bfVar#4| |$foreignsDefsForCLisp|)
+  (LET* (|init| |setFFS|)
+    (DECLARE (SPECIAL |$foreignsDefsForCLisp| |$currentModuleName| |$ffs|))
+    (COND ((NULL |$ffs|) NIL)
+          ((NULL |$currentModuleName|)
+           (|coreError| "current module has no name"))
+          (T
+           (SETQ |setFFS|
+                   (LIST 'SETQ '|$dynamicForeignFunctions|
+                         (LIST '|append!| (|quote| |$ffs|)
+                               '|$dynamicForeignFunctions|)))
+           (|reallyPrettyPrint| (|atLoadOrExecutionTime| |setFFS|) |stream|)
+           (COND
+            ((|%hasFeature| :CLISP)
+             (COND ((NULL |$foreignsDefsForCLisp|) NIL)
+                   (T
+                    (SETQ |init|
+                            (CONS 'PROGN
+                                  (LET ((|bfVar#2| NIL)
+                                        (|bfVar#3| NIL)
+                                        (|bfVar#1| |$foreignsDefsForCLisp|)
                                         (|d| NIL))
                                     (LOOP
                                      (COND
-                                      ((OR (NOT (CONSP |bfVar#4|))
+                                      ((OR (NOT (CONSP |bfVar#1|))
                                            (PROGN
-                                            (SETQ |d| (CAR |bfVar#4|))
+                                            (SETQ |d| (CAR |bfVar#1|))
                                             NIL))
-                                       (RETURN |bfVar#5|))
-                                      ((NULL |bfVar#5|)
-                                       (SETQ |bfVar#5|
-                                               #2=(CONS
+                                       (RETURN |bfVar#2|))
+                                      ((NULL |bfVar#2|)
+                                       (SETQ |bfVar#2|
+                                               #1=(CONS
                                                    (LIST 'EVAL (|quote| |d|))
                                                    NIL))
-                                       (SETQ |bfVar#6| |bfVar#5|))
-                                      (T (RPLACD |bfVar#6| #2#)
-                                       (SETQ |bfVar#6| (CDR |bfVar#6|))))
-                                     (SETQ |bfVar#4| (CDR |bfVar#4|))))))))
-             (|reallyPrettyPrint| |init| |stream|))))
-     (T NIL))))
+                                       (SETQ |bfVar#3| |bfVar#2|))
+                                      (T (RPLACD |bfVar#3| #1#)
+                                       (SETQ |bfVar#3| (CDR |bfVar#3|))))
+                                     (SETQ |bfVar#1| (CDR |bfVar#1|))))))
+                    (|reallyPrettyPrint| (|atLoadOrExecutionTime| |init|)
+                                         |stream|))))
+            (T NIL))))))
 
 (DEFUN |genOptimizeOptions| (|stream|)
   (|reallyPrettyPrint|
@@ -433,7 +416,7 @@
      (SETQ |ps| (|makeParserState| |toks|))
      (|bpFirstTok| |ps|)
      (SETQ |found|
-             (LET ((#1=#:G729
+             (LET ((#1=#:G734
                     (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem| |ps|))))
                (COND
                 ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
@@ -511,6 +494,9 @@
 
 (DEFUN |inAllContexts| (|x|)
   (LIST 'EVAL-WHEN (LIST :COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE) |x|))
+
+(DEFUN |atLoadOrExecutionTime| (|x|)
+  (LIST 'EVAL-WHEN (LIST :LOAD-TOPLEVEL :EXECUTE) |x|))
 
 (DEFUN |exportNames| (|ns|)
   (COND ((NULL |ns|) NIL)

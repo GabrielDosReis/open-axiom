@@ -51,7 +51,7 @@ pathname p ==
   pathname? p => p
   p isnt [.,:.] => PATHNAME p
   if #p>2 then p:=[p.0,p.1]
-  PATHNAME apply(FUNCTION MAKE_-FILENAME, p)
+  PATHNAME apply(function makeFilename, p)
  
 namestring p == 
   null p => nil
