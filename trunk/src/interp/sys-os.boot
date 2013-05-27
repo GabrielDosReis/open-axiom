@@ -55,6 +55,13 @@ import oa__getcwd: () -> string for doGetWorkingDirectory
 getWorkingDirectory() ==
   ensureTrailingSlash doGetWorkingDirectory()
 
+++ Copy a file.
+import oa__copy__file: (string,string) -> int for doCopyFile
+
+copyFile(src,dst) ==
+  doCopyFile(src,dst) = 0 => nil
+  systemError ['"Could not copy file",:bright src,'"to",:bright dst]
+
 ++ change current working directory.
 import oa__chdir: string -> int for changeDirectory
        -- 0: success, -1: failure
