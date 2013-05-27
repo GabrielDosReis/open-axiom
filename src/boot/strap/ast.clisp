@@ -1124,6 +1124,7 @@
           ((|bfString?| |rhs|)
            (|bfAND| (LIST (LIST 'STRINGP |lhs|) (LIST 'STRING= |lhs| |rhs|))))
           ((OR (|bfChar?| |rhs|) (INTEGERP |rhs|)) (LIST 'EQL |lhs| |rhs|))
+          ((KEYWORDP |rhs|) (LIST 'EQ |lhs| |rhs|))
           ((NOT (CONSP |rhs|)) (LIST 'PROGN (|bfLetForm| |rhs| |lhs|) 'T))
           ((EQ (CAR |rhs|) 'QUOTE) (SETQ |a| (CADR |rhs|))
            (COND ((SYMBOLP |a|) (LIST 'EQ |lhs| |rhs|))

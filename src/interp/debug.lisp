@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -209,7 +209,7 @@
           ;;%% next form is used because $FINDFILE seems to screw up
           ;;%% sometimes. The stream is opened and closed several times
           ;;%% in case the filemode has changed during editing.
-          (SETQ EDINFILE (make-input-filename INFILE))
+          (SETQ EDINFILE (|makeInputFilename| INFILE))
           (SETQ INPUTSTREAM (DEFSTREAM EDINFILE 'INPUT))
           (|sayBrightly|
             (LIST  "   editing file" '|%b| (|namestring| EDINFILE) '|%d|))
@@ -233,7 +233,7 @@
                  (RETURN NIL)))
           ;; next is done in case the diskmode changed
           (SHUT INPUTSTREAM) ))
-        (SETQ INFILE (make-input-filename INFILE))
+        (SETQ INFILE (|makeInputFilename| INFILE))
         (MAKEPROP /FN 'DEFLOC
                   (CONS RECNO INFILE))
         (SETQ oft (|object2Identifier| (UPCASE (|pathnameType| INFILE))))
@@ -311,7 +311,7 @@
 (DEFUN /LOCATE (FN KEY INFILE INITRECNO)
        (PROG (FT RECNO KEYLENGTH LN)
         (if (AND (NOT (eq 'FROMWRITEUPDATE (|pathnameName| INFILE)))
-                    (NOT (make-input-filename INFILE)))
+                    (NOT (|makeInputFilename| INFILE)))
             (RETURN NIL))
         (SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
         (SETQ KEYLENGTH (LENGTH KEY))

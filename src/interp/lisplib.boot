@@ -453,7 +453,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   res
  
 compileDocumentation(ctor,libName) ==
-  filename := MAKE_-INPUT_-FILENAME(libName,$spadLibFT)
+  filename := makeInputFilename(libName,$spadLibFT)
   $FCOPY(filename,[libName,'DOCLB])
   stream := RDEFIOSTREAM [['FILE,libName,'DOCLB],['MODE, :'O]]
   lisplibWrite('"documentation",finalizeDocumentation ctor,stream)

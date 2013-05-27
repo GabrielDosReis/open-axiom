@@ -1,3 +1,8 @@
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (MAKE-INPUT-FILENAME): Move to sys-utility.boot.
+	* boot/ast.boot (bfIS1): Handle Lisp keywords.
+
 2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/nlib.lisp (GET-DIRECTORY-LIST): Move to sys-utility.boot.

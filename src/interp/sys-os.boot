@@ -50,7 +50,10 @@ loadSystemRuntimeCore()
 --% File System Support
 
 ++ Current working directory
-import oa__getcwd: () -> string for getWorkingDirectory
+import oa__getcwd: () -> string for doGetWorkingDirectory
+
+getWorkingDirectory() ==
+  ensureTrailingSlash doGetWorkingDirectory()
 
 ++ change current working directory.
 import oa__chdir: string -> int for changeDirectory

@@ -709,7 +709,7 @@ dropPrefix(fn) ==
 --moved to util.lisp
 --++loadExposureGroupData() ==
 --++  egFile := ['INTERP,'EXPOSED]
---++--  null MAKE_-INPUT_-FILENAME(egFile) =>
+--++--  null makeInputFilename(egFile) =>
 --++--    throwKeyedMsg("S2IL0003",[namestring egFile])
 --++  stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,:egFile]],80,0)
 --++  $globalExposureGroupAlist := nil
