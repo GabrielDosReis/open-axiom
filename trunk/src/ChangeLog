@@ -1,5 +1,9 @@
 2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/nlib.lisp (GET-DIRECTORY-LIST): Move to sys-utility.boot.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/lisplib.boot: Replace $FILEP with makeFullFilePath.
 	* interp/setvars.boot: Likewise.
 	* interp/nlib.lisp ($FILEP): Remove.
