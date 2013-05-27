@@ -409,7 +409,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $editFile := infile
   outfile := outfileOrNil or
     [libName,'OUTPUT,$listingDirectory]   --always QUIET
-  _$ERASE(libName,'OUTPUT,$listingDirectory)
+  removeFile makeFullFilePath [libName,'OUTPUT,$listingDirectory]
   outstream:= DEFSTREAM(outfile,'OUTPUT)
   val:= _/D_,2_,LIB(fun,infile,outstream,auxOp,editFlag,traceFlag)
   val
@@ -463,7 +463,7 @@ compileDocumentation(ctor,libName) ==
   ['dummy, $EmptyMode, $e]
 
 initializeLisplib libName ==
-  _$ERASE(libName,'ERRORLIB,$libraryDirectory)
+  removeFile makeFullFilePath [libName,'ERRORLIB,$libraryDirectory]
   resetErrorCount()
   $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
   addCompilerOption('FILE,$libFile)

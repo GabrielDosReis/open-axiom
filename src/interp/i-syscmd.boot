@@ -1089,7 +1089,7 @@ addNewInterpreterFrame(name) ==
   $interpreterFrameRing := [emptyInterpreterFrame(name),
     :$interpreterFrameRing]
   updateFromCurrentInterpreterFrame()
-  _$ERASE histFileName()
+  removeFile makeFullFilePath histFileName()
 
 emptyInterpreterFrame(name) ==
   [name,                                -- frame name
@@ -1118,7 +1118,7 @@ closeInterpreterFrame(name) ==
       found or (name ~= frameName(f)) => ifr := [f,:ifr]
       found := true
     not found => throwKeyedMsg("S2IZ0022",[name])
-    _$ERASE makeHistFileName(name)
+    removeFile makeFullFilePath makeHistFileName(name)
     $interpreterFrameRing := reverse! ifr
   updateFromCurrentInterpreterFrame()
 
@@ -1563,7 +1563,7 @@ restoreHistory(fn) ==
  
   curfile := histFileName()
   histFileErase curfile
-  _$FCOPY(restfile,curfile)
+  copyFile(makeFullFilePath restfile,makeFullFilePath curfile)
  
   l:= # RKEYIDS curfile
   $HiFiAccess:= true
@@ -2085,7 +2085,7 @@ reportOpsFromUnitDirectly0 D ==
 
 reportOpsFromUnitDirectly1 D ==
   showFile := pathname ['SHOW,'LISTING,$listingDirectory]
-  _$ERASE showFile
+  removeFile makeFullFilePath showFile
   $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
   sayShowWarning()
@@ -2108,7 +2108,7 @@ reportOpsFromLisplib0(unitForm,u)  ==
 
 reportOpsFromLisplib1(unitForm,u)  ==
   showFile := pathname ['SHOW,'LISTING,$listingDirectory]
-  _$ERASE showFile
+  removeFile makeFullFilePath showFile
   $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
   sayShowWarning()

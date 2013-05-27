@@ -1,5 +1,9 @@
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/sys-utility.boot ($ERASE): Remove.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/nlib.lisp ($FINDFILE): Move to sys-utility.boot.
 
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>

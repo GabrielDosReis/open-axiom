@@ -63,7 +63,7 @@ writeFunctionTables(filemode) ==
   'done
  
 writeFunctionTable(filemode,name,dicts) ==
-  _$ERASE makePathname(name,'DATABASE,filemode)
+  removeFile makeFullFilePath makePathname(name,'DATABASE,filemode)
   stream:= writeLib1(name,'DATABASE,filemode)
   if not $functionTable then
     $functionTable:= buildFunctionTable dicts

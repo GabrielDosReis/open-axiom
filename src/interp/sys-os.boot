@@ -57,6 +57,8 @@ getWorkingDirectory() ==
 
 ++ Copy a file.
 import oa__copy__file: (string,string) -> int for doCopyFile
+       -- 0: success
+       -- otherwise: error.
 
 copyFile(src,dst) ==
   doCopyFile(src,dst) = 0 => nil
@@ -80,6 +82,9 @@ import oa__mkdir: string -> int for mkdir
 
 ++ Test whether a path names a directory.
 import directoryp: string -> int for directoryp
+       -- -1: path does not exist or access denied
+       --  0: path exists but is not directory
+       --  1: path designates directory
 
 ++ Test whether a file exists and is accessible for read.
 import readablep: string -> int for readablep
