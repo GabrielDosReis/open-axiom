@@ -1117,6 +1117,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
          --Set in DomainSubstitutionFunction, used further down
     -- 1.1  augment e to add declaration $: <form>
     db := constructorDB $op
+    dbClearForCompilation! db
     dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
     dbInstanceCache(db) := true
@@ -1180,7 +1181,6 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     dbPrincipals(db) := getParentsFor db
     dbAncestors(db) := computeAncestorsOf(form,nil)
     dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
-    dbCompilerData(db) := nil
     [fun,$Category,e]
 
 mkConstructor: %Form -> %Form
@@ -1198,9 +1198,10 @@ compDefineCategory(df,m,e,fal) ==
   db := constructorDB ctor
   kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
-  dbClearForCompilation! db
   dbConstructorForm(db) := lhs
-  $insideFunctorIfTrue => compDefineCategory1(df,m,e,fal)
+  $insideFunctorIfTrue =>
+    try compDefineCategory1(df,m,e,fal)
+    finally dbCompilerData(db) := nil
   compDefineLisplib(df,m,e,fal,'compDefineCategory1)
 
 

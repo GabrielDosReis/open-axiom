@@ -143,13 +143,21 @@ macro domainData d ==
 --%           usedEntities: VectorBuffer Pair(SourceEntity,Elaboration))
 --%
 
+structure %CompilationData ==
+  Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
+    items: %Buffer %Pair(%SourceEntity,%Elaboration)) with
+      cdSubstitution == (.subst)
+      cdImplicits == (.idata)
+      cdBytes == (.bytes)
+      cdItems == (.items)
+
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  [nil,nil,nil,[nil,:0]]
+  mk%CompilationData(nil,nil,nil,[nil,:0])
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
-  first dbCompilerData db
+  cdSubstitution dbCompilerData db
 
 ++ Return source-level parameters of this constructor.
 dbParameters db ==
@@ -159,17 +167,17 @@ dbParameters db ==
 ++ information is active only during the elaboration of the
 ++ constructor associated with `db'.
 macro dbImplicitData db ==
-  second dbCompilerData db
+  cdImplicits dbCompilerData db
 
 ++ Return the list of encoding bytes for a function during elaboration.
 ++ Transcient data.
 macro dbByteList db ==
-  third dbCompilerData db
+  cdBytes dbCompilerData db
 
 ++ Return a buffer of entities referenced during elaboration
 ++ of current functor.
 macro dbEntityBuffer db ==
-  fourth dbCompilerData db
+  cdItems dbCompilerData db
 
 ++ List (in reverse order) of used entities during elaboration of
 ++ current functor.
