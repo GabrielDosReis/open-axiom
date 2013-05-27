@@ -248,7 +248,7 @@
                (cons cd $library-directory-list)
 	     $library-directory-list))
 	  (t (adjoin cd 
-		     (adjoin (namestring (user-homedir-pathname)) 
+		     (adjoin (namestring (|userHomeDirectory|)) 
 			     $directory-list 
 			     :test #'string=) 
 		     :test #'string=)))))
@@ -266,9 +266,6 @@
 	  (when (|probeReadableFile| newfn)
 	    (return newfn)))
       (|probeReadableFile| filename))))
-
-(defun $FILEP (&rest filearg) (|makeFullFilePath| filearg))
-(define-function '$OUTFILEP #'$FILEP) ;;temporary bogus def
 
 (defun $findfile (filespec filetypelist)
   (let ((file-name (if (consp filespec) (car filespec) filespec))
