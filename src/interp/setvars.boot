@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -925,7 +925,7 @@ setOutputAlgebra arg ==
       fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
-    filename := $FILEP(fn,ft,fm)
+    filename := makeFullFilePath [fn,ft,fm]
     null filename =>
       sayKeyedMsg("S2IV0003",[fn,ft,fm])
     (testStream := MAKE_-OUTSTREAM(filename,255,0)) =>
@@ -1122,7 +1122,7 @@ setOutputFortran arg ==
       fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
-    filename := $FILEP(fn,ft,fm)
+    filename := makeFullFilePath [fn,ft,fm]
     null filename => sayKeyedMsg("S2IV0003",[fn,ft,fm])
     (testStream := makeStream(append,filename,255,0)) =>
       SHUT $fortranOutputStream
@@ -1232,7 +1232,7 @@ setOutputMathml arg ==
       fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
-    filename := $FILEP(fn,ft,fm)
+    filename := makeFullFilePath [fn,ft,fm]
     null filename =>
       sayKeyedMsg("S2IV0003",[fn,ft,fm])
     (testStream := MAKE_-OUTSTREAM(filename,255,0)) =>
@@ -1342,7 +1342,7 @@ setOutputTex arg ==
       fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
-    filename := $FILEP(fn,ft,fm)
+    filename := makeFullFilePath [fn,ft,fm]
     null filename =>
       sayKeyedMsg("S2IV0003",[fn,ft,fm])
     (testStream := MAKE_-OUTSTREAM(filename,255,0)) =>

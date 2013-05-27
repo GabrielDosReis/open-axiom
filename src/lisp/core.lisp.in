@@ -203,6 +203,7 @@
            "Option"
 	   "systemRootDirectory"
 	   "systemLibraryDirectory"
+	   "userHomeDirectory"
 
 	   "pathBasename"
 
@@ -649,6 +650,9 @@
 	(|ensureTrailingSlash| (cdr dir))
       (concatenate 'string (|systemRootDirectory|) "lib/"))))
 
+
+(defmacro |userHomeDirectory| nil
+  (user-homedir-pathname))
 
 ;; Return the list of linkable fasls in in the directory `dir'.
 (defun linkset-from (dir)

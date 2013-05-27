@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -442,7 +442,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
     ok := finalizeLisplib(db,libName)
   finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
-  filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
+  filearg := makeFullFilePath [libName,$spadLibFT,$libraryDirectory]
   RPACKFILE filearg
   freshLine $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")

@@ -1,5 +1,12 @@
 2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/lisplib.boot: Replace $FILEP with makeFullFilePath.
+	* interp/setvars.boot: Likewise.
+	* interp/nlib.lisp ($FILEP): Remove.
+	($OUTFILEP): Likewise.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/sys-os.boot (getWorkingDirectory): New.  Define via FFI.
 	Replace all uses of GET-CURRENT-DIRECTORY.
 	* interp/daase.lisp (GET-CURRENT-DIRECTORY): Remove.
