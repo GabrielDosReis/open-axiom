@@ -434,18 +434,18 @@ compiler args ==
     af  := pathname args
     aft := pathnameType af
     haveOld or (aft = '"spad") =>
-        not (af1 := $FINDFILE (af, '(spad))) =>
+        not (af1 := findFile(af, '(spad))) =>
             throwKeyedMsg("S2IL0003",[NAMESTRING af])
         compileSpad2Cmd  [af1]
     aft = '"NRLIB"  =>
-        not (af1 := $FINDFILE (af, '(NRLIB))) =>
+        not (af1 := findFile(af, '(NRLIB))) =>
             throwKeyedMsg("S2IL0003",[NAMESTRING af])
         compileSpadLispCmd [af1]
 
     -- see if we something with the appropriate file extension
     -- lying around
 
-    af1 := $FINDFILE (af, '(as spad ao asy))
+    af1 := findFile(af, '(as spad ao asy))
 
     af1 and pathnameType(af1) = '"spad" => compileSpad2Cmd  [af1]
 
@@ -460,7 +460,7 @@ compiler args ==
 
     -- see if we something with the appropriate file extension
     -- lying around
-    af1 := $FINDFILE (af, '(spad))
+    af1 := findFile(af, '(spad))
 
     af1 and pathnameType(af1) = '"spad" => compileSpad2Cmd  [af1]
 
@@ -981,7 +981,7 @@ editSpad2Cmd l ==
     $UserLevel = 'compiler    => '("input" "INPUT" "spad" "SPAD")
     '("input" "INPUT" "spad" "SPAD" "boot" "BOOT" "lisp" "LISP")
   ll := 
-       oldDir = '"" => pathname $FINDFILE (pathnameName l, fileTypes)
+       oldDir = '"" => pathname findFile(pathnameName l, fileTypes)
        l
   l := pathname ll
   $editFile := l
@@ -2001,7 +2001,7 @@ readSpad2Cmd l ==
     $UserLevel = 'interpreter => '("input" "INPUT")
     $UserLevel = 'compiler    => '("input" "INPUT")
     devFTs
-  ll := $FINDFILE (l, fileTypes)
+  ll := findFile(l, fileTypes)
   if null ll then
     ifthere => return nil    -- be quiet about it
     throwKeyedMsg("S2IL0003",[namestring l])

@@ -109,7 +109,7 @@ newMKINFILENAM(infile) ==
   file := infile := pathname infile
   repeat
     fn := pathnameName file
-    nfile := $FINDFILE (file,$sourceFileTypes)
+    nfile := findFile(file,$sourceFileTypes)
     null nfile =>
       nfile := file
       if fn = '"*" or fn = '"NIL" then sayKeyedMsg("S2IL0016",NIL)

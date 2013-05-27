@@ -1053,7 +1053,7 @@ bcUnixTable(u) ==
     else htSaySaturn '"&"
     htSay '"{"
     ft := '("SPAD")
-    filename := NAMESTRING $FINDFILE(STRINGIMAGE x, ft)
+    filename := NAMESTRING findFile(STRINGIMAGE x, ft)
     htMakePage [['text, '"\unixcommand{",PATHNAME_-NAME x, '"}{",
                    textEditor(), '" ", filename, '"} "]]
     htSay '"}"
