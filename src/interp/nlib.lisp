@@ -236,17 +236,6 @@
            (mapcar #'string keys))
   (putindextable ctable filearg))
 
-
-(defun $findfile (filespec filetypelist)
-  (let ((file-name (if (consp filespec) (car filespec) filespec))
-        (file-type (if (consp filespec) (cadr filespec) nil)))
-    (if file-type (push file-type filetypelist))
-    (some #'(lambda (ft) (|makeInputFilename| file-name ft))
-          filetypelist)))
-
-;;(defun move-file (namestring1 namestring2)
-;;  (rename-file namestring1 namestring2))
-
 (defun $FCOPY (filespec1 filespec2)
     (let ((name1 (|makeFullFilePath| filespec1))
           (name2 (|makeFullFilePath| filespec2)))

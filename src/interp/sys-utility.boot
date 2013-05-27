@@ -1,5 +1,3 @@
-)eval TRACE bfIS1
-
 -- Copyright (C) 2007-2013 Gabriel Dos Reis.
 -- All rights reserved.
 --
@@ -471,3 +469,11 @@ makeInputFilename(filearg,filetype == nil) ==
          for dir in getDirectoryList filePathType filename]
            or probeReadableFile filename
   probeReadableFile filename
+
+findFile(spec,exts) ==
+  name :=
+    spec is [.,:.] => first spec
+    spec
+  if spec is [.,:.] then
+    exts := [second spec,:exts]
+  or/[makeInputFilename(name,ext) for ext in exts]

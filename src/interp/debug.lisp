@@ -206,7 +206,7 @@
         (SETQ INFILE (|pathname| INFILE))
         (COND
          ( EDITFLAG
-          ;;%% next form is used because $FINDFILE seems to screw up
+          ;;%% next form is used because findFile seems to screw up
           ;;%% sometimes. The stream is opened and closed several times
           ;;%% in case the filemode has changed during editing.
           (SETQ EDINFILE (|makeInputFilename| INFILE))
