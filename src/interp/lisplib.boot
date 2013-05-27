@@ -399,7 +399,6 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
  
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
-  dbPredicates(constructorDB fun) := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
