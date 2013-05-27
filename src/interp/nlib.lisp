@@ -241,16 +241,10 @@
           (name2 (|makeFullFilePath| filespec2)))
       (if (library-file name1)
         (copy-lib-directory name1 name2)
-        (copy-file name1 name2))))
+        (|copyFile| name1 name2))))
 
 
 #+ :AKCL
 (defun copy-lib-directory (name1 name2)
    (|checkMkdir| name2)
    (system (concat "sh -c 'cp " name1 "/* " name2 "'")))
-
-#+ :AKCL
-(defun copy-file (namestring1 namestring2)
-  (system (concat "cp " namestring1 " " namestring2)))
-
-
