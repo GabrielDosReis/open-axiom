@@ -44,8 +44,7 @@
         (fullname nil)
         (indextable nil))
         (cond ((equal (elt (string mode) 0) #\I)
-               ;;(setq fullname (make-input-filename (cdr file) 'LISPLIB))
-               (setq fullname (make-input-filename (cdr file) 'NIL))
+               (setq fullname (|makeInputFilename| (cdr file) 'NIL))
                (setq stream (|openIndexFileIfPresent| fullname))
                (if (null stream)
                    (if missing-file-error-flag
@@ -133,10 +132,7 @@
 ;; (RKEYIDS filearg) -- interned version of keys
 (defun rkeyids (&rest filearg)
   (mapcar #'intern (mapcar #'car (|getIndexTable|
-                                  (make-input-filename filearg 'NIL)))))
-;;(defun rkeyids (&rest filearg)
-;;  (mapcar #'intern (mapcar #'car (|getIndexTable|
-;;                                (make-input-filename filearg 'LISPLIB)))))
+                                  (|makeInputFilename| filearg 'NIL)))))
 
 ;; (RWRITE cvec item rstream)
 (defun rwrite (key item rstream)
@@ -241,25 +237,11 @@
   (putindextable ctable filearg))
 
 
-(defun make-input-filename (filearg &optional (filetype nil))
-   (let*
-     ((filename  (|makeFilename| filearg filetype))
-      (dirname (pathname-directory filename))
-      (ft (pathname-type filename))
-      (dirs (|getDirectoryList| ft))
-      (newfn nil))   
-    (if (or (null dirname) (eqcar dirname :relative))
-        (dolist (dir dirs (|probeReadableFile| filename))
-	  (setq newfn (concatenate 'string dir filename))
-	  (when (|probeReadableFile| newfn)
-	    (return newfn)))
-      (|probeReadableFile| filename))))
-
 (defun $findfile (filespec filetypelist)
   (let ((file-name (if (consp filespec) (car filespec) filespec))
         (file-type (if (consp filespec) (cadr filespec) nil)))
     (if file-type (push file-type filetypelist))
-    (some #'(lambda (ft) (make-input-filename file-name ft))
+    (some #'(lambda (ft) (|makeInputFilename| file-name ft))
           filetypelist)))
 
 ;;(defun move-file (namestring1 namestring2)

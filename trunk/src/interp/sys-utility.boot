@@ -1,3 +1,5 @@
+)eval TRACE bfIS1
+
 -- Copyright (C) 2007-2013 Gabriel Dos Reis.
 -- All rights reserved.
 --
@@ -460,3 +462,12 @@ getDirectoryList ft ==
     [home,:$DIRECTORY_-LIST]
   stringMember?(here,dirs) => dirs
   [here,:dirs]
+
+makeInputFilename(filearg,filetype == nil) ==
+  filename := makeFilename(filearg,filetype)
+  dirname := filePathDirectory filename
+  dirname = nil or dirname is [KEYWORD::RELATIVE,:.] =>
+    or/[probeReadableFile strconc(dir,filename)
+         for dir in getDirectoryList filePathType filename]
+           or probeReadableFile filename
+  probeReadableFile filename

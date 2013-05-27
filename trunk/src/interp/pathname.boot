@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ pathnameDirectory p ==
 isExistingFile f ==
 --  p := pathname f
   --member(p,$existingFiles) => true
-  if MAKE_-INPUT_-FILENAME f
+  if makeInputFilename f
     then
       --$existingFiles := [p,:$existingFiles]
       true
@@ -130,7 +130,7 @@ newMKINFILENAM(infile) ==
  
 getFunctionSourceFile fun ==
   null (f := getFunctionSourceFile1 fun) => nil
-  if MAKE_-INPUT_-FILENAME(f) then updateSourceFiles f
+  if makeInputFilename(f) then updateSourceFiles f
   f
  
 getFunctionSourceFile1 fun ==
@@ -149,6 +149,6 @@ getFunctionSourceFile1 fun ==
 updateSourceFiles p ==
   p := pathname p
   p := pathname [pathnameName p, pathnameType p, '"*"]
-  if MAKE_-INPUT_-FILENAME p and pathnameTypeId p in '(BOOT LISP META) then
+  if makeInputFilename p and pathnameTypeId p in '(BOOT LISP META) then
     $sourceFiles := insert(p, $sourceFiles)
   p

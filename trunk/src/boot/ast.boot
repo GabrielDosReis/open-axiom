@@ -761,6 +761,7 @@ bfIS1(tu,lhs,rhs) ==
   rhs = true => ['EQ,lhs,rhs]
   bfString? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
   bfChar? rhs or integer? rhs => ['EQL,lhs,rhs]
+  inert? rhs => ['EQ,lhs,rhs]
   rhs isnt [.,:.] => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs.op is 'QUOTE =>
     [.,a] := rhs

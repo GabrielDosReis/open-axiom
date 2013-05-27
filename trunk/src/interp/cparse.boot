@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1104,7 +1104,7 @@ _/RQ_,LIB(:x) ==
 
 
 _/RF_-1 x ==
-  ifile := MAKE_-INPUT_-FILENAME $editFile
+  ifile := makeInputFilename $editFile
   lfile := nil
   type := PATHNAME_-TYPE ifile
   type = '"boot" =>

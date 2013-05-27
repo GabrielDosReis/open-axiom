@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1016,7 +1016,7 @@ newHelpSpad2Cmd args ==
   -- see if new help file exists
 
   narg := PNAME arg
-  null (helpFile := MAKE_-INPUT_-FILENAME [narg,'HELPSPAD,'_*]) => nil
+  null (helpFile := makeInputFilename [narg,'HELPSPAD,'_*]) => nil
 
   $useFullScreenHelp =>
     editFile helpFile
@@ -1280,7 +1280,7 @@ initHist() ==
   newFile := histFileName()
   -- see if history directory is writable
   histFileErase oldFile
-  if MAKE_-INPUT_-FILENAME newFile then $REPLACE(oldFile,newFile)
+  if makeInputFilename newFile then $REPLACE(oldFile,newFile)
   $HiFiAccess:= true
   initHistList()
 
@@ -1528,7 +1528,7 @@ saveHistory(fn) ==
   $seen: local := hashTable 'EQ
   not $HiFiAccess => sayKeyedMsg("S2IH0016",nil)
   not $useInternalHistoryTable and
-    null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",nil)
+    null makeInputFilename histFileName() => sayKeyedMsg("S2IH0022",nil)
   null fn => 
     throwKeyedMsg("S2IH0037", nil)
   savefile := makeHistFileName(fn)
@@ -1554,7 +1554,7 @@ restoreHistory(fn) ==
   else if fn is [fn'] and ident?(fn') then fn' := fn'
        else throwKeyedMsg("S2IH0023",[fn'])
   restfile := makeHistFileName(fn')
-  null MAKE_-INPUT_-FILENAME restfile =>
+  null makeInputFilename restfile =>
     sayKeyedMsg("S2IH0024",[namestring(restfile)]) -- no history file
  
   -- if clear is changed to be undoable, this should be a reset-clear
@@ -2664,7 +2664,7 @@ workfilesSpad2Cmd args ==
     for file in flist repeat
       fl := pathname [file,type1,'"*"]
       deleteFlag => SETQ($sourceFiles,remove($sourceFiles,fl))
-      null (MAKE_-INPUT_-FILENAME fl) => sayKeyedMsg("S2IZ0035",[namestring fl])
+      null (makeInputFilename fl) => sayKeyedMsg("S2IZ0035",[namestring fl])
       updateSourceFiles fl
   SAY " "
   centerAndHighlight(" User-specified work files ",$LINELENGTH,specialChar 'hbar)

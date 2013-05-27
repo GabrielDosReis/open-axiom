@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -925,7 +925,7 @@
  (declare (ignore recnum))
    (cond ((numberp filespec) (make-synonym-stream '*standard-input*))
          ((null filespec) (error "not handled yet"))
-         (t (open (make-input-filename filespec)
+         (t (open (|makeInputFilename| filespec)
                   :direction :input :if-does-not-exist nil))))
 
 (defun MAKE-OUTSTREAM (filespec &optional (width nil) (recnum 0))
@@ -956,7 +956,7 @@
         (let ((strm (case mode
                           ((OUTPUT O) (open (|makeFilename| filename)
                                             :direction :output))
-                          ((INPUT I) (open (make-input-filename filename)
+                          ((INPUT I) (open (|makeInputFilename| filename)
                                            :direction :input)))))
           (if (and (numberp char-position) (> char-position 0))
               (file-position strm char-position))
