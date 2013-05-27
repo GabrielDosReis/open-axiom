@@ -1198,6 +1198,7 @@ compDefineCategory(df,m,e,fal) ==
   db := constructorDB ctor
   kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
+  dbClearForCompilation! db
   dbConstructorForm(db) := lhs
   $insideFunctorIfTrue => compDefineCategory1(df,m,e,fal)
   compDefineLisplib(df,m,e,fal,'compDefineCategory1)
@@ -1415,6 +1416,7 @@ dbClearForCompilation! db ==
   dbAncestors(db) := nil
   dbPrincipals(db) := nil
   dbCategory(db) := nil
+  dbPredicates(db) := nil
   dbConstructorModemap(db) := nil
   dbDefaultDomain(db) := nil
   dbDualSignature(db) := nil
