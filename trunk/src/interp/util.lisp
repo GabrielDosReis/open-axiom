@@ -79,7 +79,7 @@
       direc))))
 
 (defun interp-make-directory (direc)
-  (let ((current-dir (get-current-directory)))
+  (let ((current-dir (|getWorkingDirectory|)))
     (setq direc (namestring direc))
     (|ensureTrailingSlash|
      (if (string= direc "")  

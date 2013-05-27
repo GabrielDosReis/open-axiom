@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2011, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -806,17 +806,6 @@
 		   (setq data (|getSystemModulePath| data)))))))
       data)))
 
-;; Current directory
-;; Contributed by Juergen Weiss.
-#+:cmu
-(defun get-current-directory ()
-  (namestring (extensions::default-directory)))
-
-#-:cmu
-(defun get-current-directory ()
-  (namestring (truename "")))
-
-  
 ; localdatabase tries to find files in the order of:
 ;  NRLIB/index.KAF
 
@@ -851,7 +840,7 @@
    (let (thisdir nrlibs libs object only dir key 
 		 (|$forceDatabaseUpdate| t) noexpose)
      (declare (special |$forceDatabaseUpdate|))
-     (setq thisdir (get-current-directory))
+     (setq thisdir (|getWorkingDirectory|))
      (setq noexpose nil)
      (multiple-value-setq (only dir noexpose) (processOptions options))
      ;don't force exposure during database build
@@ -1025,7 +1014,7 @@
   (setq *compressvector* nil)
   (withSpecialConstructors)
   (localdatabase nil
-     (list (list '|dir| (get-current-directory) ))
+     (list (list '|dir| (|getWorkingDirectory|) ))
      'make-database)
   (dolist (dir dirlist)
           (localdatabase nil 

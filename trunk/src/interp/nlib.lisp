@@ -242,7 +242,7 @@
 
 
 (defun get-directory-list (ft)
-  (let ((cd (get-current-directory)))
+  (let ((cd (|getWorkingDirectory|)))
     (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
            (if (eq |$UserLevel| '|development|)
                (cons cd $library-directory-list)
