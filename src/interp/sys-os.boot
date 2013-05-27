@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2012 Gabriel Dos Reis.
+-- Copyright (C) 2007-2013 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,9 @@ module sys_-os
 loadSystemRuntimeCore()
 
 --% File System Support
+
+++ Current working directory
+import oa__getcwd: () -> string for getWorkingDirectory
 
 ++ change current working directory.
 import oa__chdir: string -> int for changeDirectory

@@ -1948,7 +1948,7 @@ reportCount () ==
 
 --% )library
 library args ==
-  origDir := GET_-CURRENT_-DIRECTORY()
+  origDir := getWorkingDirectory()
   $newConlist: local := nil
   -- Users typically specify abbreviations without quotes.  
   LOCALDATABASE([STRING a for a in args],$options)
