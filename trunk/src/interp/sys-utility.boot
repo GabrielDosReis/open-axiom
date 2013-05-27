@@ -200,14 +200,10 @@ probeReadableFile file ==
   readablep file > 0 => file
   nil
 
-++ original version returned 0 on success, and 1 on failure
-++ ??? fix that to return -1 on failure.
-$ERASE(:filearg) ==
-  -removeFile makeFullFilePath filearg
-
 ++
 $REPLACE(filespec1,filespec2) ==
-  $ERASE(filespec1 := makeFullFilePath filespec1)
+  filespec1 := makeFullFilePath filespec1
+  removeFile filespec1
   renameFile(makeFullFilePath filespec2, filespec1)
 
 ++

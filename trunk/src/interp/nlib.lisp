@@ -152,7 +152,8 @@
          (push (setq entry (cons key (cons 0 value-or-pos)))
                (|libIndexTable| rstream))
        (progn
-         (if (stringp (caddr entry)) ($erase (caddr entry)))
+         (if (stringp (caddr entry))
+	     (|removeFile| (|makeFullFilePath| (caddr entry))))
          (setf (cddr entry) value-or-pos)))
      entry))
 
