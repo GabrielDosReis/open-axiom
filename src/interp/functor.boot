@@ -349,8 +349,8 @@ mkTypeForm x ==
     MKQ x
   ['%list,MKQ x.op,:[mkTypeForm a for a in x.args]]
  
-DescendCodeAdd(base,flag) ==
-  base isnt [.,:.] => DescendCodeVarAdd(base,flag)
+DescendCodeAdd(db,base,flag) ==
+  base isnt [.,:.] => DescendCodeVarAdd(db,base,flag)
   modemap := get(base.op,'modemap,$CategoryFrame)
   modemap = nil  =>
       if getmode(base.op,$e) is ["Mapping",target,:formalArgModes]
@@ -358,13 +358,13 @@ DescendCodeAdd(base,flag) ==
                 --argument substitution if parameterized?
  
          else keyedSystemError("S2OR0001",[base.op])
-      DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes)
+      DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes)
   for [[[.,:formalArgs],target,:formalArgModes],.] in modemap repeat
-    (ans:= DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes))=>
+    (ans:= DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes)) =>
       return ans
   ans
  
-DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
+DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes) ==
   slist := pairList(formalArgs,rest $addFormLhs)
          --base = comp $addFormLhs-- bound in compAdd
   e:= $e
@@ -431,7 +431,7 @@ DescendCode(db,code,flag,viewAssoc,e) ==
     codelist:=
       [v for u in codelist | v := DescendCode(db,u,flag,viewAssoc,e)]
                   -- must do this first, to get this overriding Add code
-    ['PROGN,:DescendCodeAdd(base,flag),:codelist]
+    ['PROGN,:DescendCodeAdd(db,base,flag),:codelist]
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
@@ -546,7 +546,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
  
 --%  Under what conditions may views exist?
  
-InvestigateConditions(catvecListMaker,env) ==
+InvestigateConditions(db,catvecListMaker,env) ==
   -- given a principal view and a list of secondary views,
   -- discover under what conditions the secondary view are
   -- always present.
@@ -734,7 +734,7 @@ getViewsConditions u ==
       --the two lines marked  ensure that the principal view comes first
       --if you don't want it, rest it off
  
-DescendCodeVarAdd(base,flag) ==
+DescendCodeVarAdd(db,base,flag) ==
    [SetFunctionSlots(sig,implem,flag,'adding) repeat
        for i in 6..maxIndex $domainShell |
          categoryRef($domainShell,i) is [sig:=[op,types],:.] and

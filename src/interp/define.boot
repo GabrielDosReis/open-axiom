@@ -1517,7 +1517,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     --  domain D in form.args,check its signature: if domain, its type is Join(A1,..,An);
     --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
     --  to the A1,..,An view of D
-    makeFunctorArgumentParameters(form.args,signature'.source,signature'.target)
+    makeFunctorArgumentParameters(db,form.args,signature'.source,signature'.target)
     $functorLocalParameters := form.args
 
     --  4. compile body in environment of %type declarations for arguments
@@ -1610,7 +1610,7 @@ reportOnFunctorCompilation() ==
  
 --% domain view code
  
-makeFunctorArgumentParameters(argl,sigl,target) ==
+makeFunctorArgumentParameters(db,argl,sigl,target) ==
   $forceAdd: local:= true
   $ConditionalOperators: local := nil
   ("append"/[fn(a,augmentSig(s,findExtras(a,target)))

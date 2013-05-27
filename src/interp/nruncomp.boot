@@ -467,7 +467,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   catvecListMaker := removeDuplicates
     [comp($catsig,$EmptyMode,$e).expr,
       :[compCategories(u,$e) for [u,:.] in categoryAncestors $domainShell]]
-  condCats := InvestigateConditions([$catsig,:rest catvecListMaker],$e)
+  condCats := InvestigateConditions(db,[$catsig,:rest catvecListMaker],$e)
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
   -- category should be present.  true => always
@@ -480,7 +480,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   -- Do this now to create predicate vector; then DescendCode can refer
   -- to predicate vector if it can
   [$uncondAlist,:$condAlist] :=    --bound in compDefineFunctor1
-      NRTsetVector4Part1(viewNames,catvecListMaker,condCats)
+      NRTsetVector4Part1(db,viewNames,catvecListMaker,condCats)
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
     makePredicateBitVector(db,[:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList],$e)
 
@@ -527,13 +527,13 @@ buildFunctor(db,sig,code,$locals,$e) ==
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
   ans
 
-NRTsetVector4Part1(siglist,formlist,condlist) ==
+NRTsetVector4Part1(db,siglist,formlist,condlist) ==
   $uncondList: local := nil
   $condList: local := nil
   $count: local := 0
   for sig in reverse siglist for form in reverse formlist
          for cond in reverse condlist repeat
-                  NRTsetVector4a(sig,form,cond)
+                  NRTsetVector4a(db,sig,form,cond)
   reducedUncondlist := removeDuplicates $uncondList
   reducedConlist :=
     [[x,:y] for [x,z] in $condList| y := SETDIFFERENCE(z,reducedUncondlist)]
@@ -551,7 +551,7 @@ reverseCondlist cl ==
       u.rest := [x,:rest u]
   alist
 
-NRTsetVector4a(sig,form,cond) ==
+NRTsetVector4a(db,sig,form,cond) ==
   sig is '$ =>
      domainList :=
        [optimize comp(d,$EmptyMode,$e).expr or d
