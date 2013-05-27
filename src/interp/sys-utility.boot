@@ -449,3 +449,14 @@ makeFilename(filearg,filetype==nil) ==
 makeFullFilePath(filearg,filetype==nil) ==
   filePathString mergeFilePaths makeFilename(filearg,filetype)
   
+getDirectoryList ft ==
+  here := getWorkingDirectory()
+  ft in '("NRLIB" "DAASE" "EXPOSED") =>
+    $UserLevel = 'development => [here,:$LIBRARY_-DIRECTORY_-LIST]
+    $LIBRARY_-DIRECTORY_-LIST
+  home := filePathString userHomeDirectory()
+  dirs := 
+    stringMember?(home,$DIRECTORY_-LIST) => $DIRECTORY_-LIST
+    [home,:$DIRECTORY_-LIST]
+  stringMember?(here,dirs) => dirs
+  [here,:dirs]

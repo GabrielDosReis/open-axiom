@@ -241,24 +241,12 @@
   (putindextable ctable filearg))
 
 
-(defun get-directory-list (ft)
-  (let ((cd (|getWorkingDirectory|)))
-    (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
-           (if (eq |$UserLevel| '|development|)
-               (cons cd $library-directory-list)
-	     $library-directory-list))
-	  (t (adjoin cd 
-		     (adjoin (namestring (|userHomeDirectory|)) 
-			     $directory-list 
-			     :test #'string=) 
-		     :test #'string=)))))
-
 (defun make-input-filename (filearg &optional (filetype nil))
    (let*
      ((filename  (|makeFilename| filearg filetype))
       (dirname (pathname-directory filename))
       (ft (pathname-type filename))
-      (dirs (get-directory-list ft))
+      (dirs (|getDirectoryList| ft))
       (newfn nil))   
     (if (or (null dirname) (eqcar dirname :relative))
         (dolist (dir dirs (|probeReadableFile| filename))
