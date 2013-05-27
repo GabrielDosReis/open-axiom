@@ -439,7 +439,9 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
     leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     ok := finalizeLisplib(db,libName)
-  finally RSHUT $libFile
+  finally
+    RSHUT $libFile
+    dbCompilerData(db) := nil
   if ok then lisplibDoRename(libName)
   filearg := makeFullFilePath [libName,$spadLibFT,$libraryDirectory]
   RPACKFILE filearg
