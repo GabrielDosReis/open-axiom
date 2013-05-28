@@ -148,7 +148,7 @@ sayMSG x ==
   sayBrightly1(x,$algebraOutputStream)
 
 sayMSG2File msg ==
-  file := makePathname('spadmsg,'listing,$listingDirectory)
+  file := makePathname('spadmsg,'listing,nil)
   str := DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
   sayBrightly1(msg,str)
 

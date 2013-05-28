@@ -2084,7 +2084,7 @@ reportOpsFromUnitDirectly0 D ==
   reportOpsFromUnitDirectly D
 
 reportOpsFromUnitDirectly1 D ==
-  showFile := pathname ['SHOW,'LISTING,$listingDirectory]
+  showFile := pathname ['SHOW,'LISTING,nil]
   removeFile makeFullFilePath showFile
   $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
@@ -2107,7 +2107,7 @@ reportOpsFromLisplib0(unitForm,u)  ==
   reportOpsFromLisplib(unitForm,u)
 
 reportOpsFromLisplib1(unitForm,u)  ==
-  showFile := pathname ['SHOW,'LISTING,$listingDirectory]
+  showFile := pathname ['SHOW,'LISTING,nil]
   removeFile makeFullFilePath showFile
   $sayBrightlyStream: local :=
     DEFIOSTREAM([['FILE,:showFile], '(MODE . OUTPUT)],255,0)
