@@ -980,7 +980,7 @@ evalCategoryForm(x,e) ==
 skipCategoryPackage? capsule ==
   null capsule or $bootStrapMode
 
-compDefineCategory1(df is ['DEF,form,sig,body],m,e,fal) ==
+compDefineCategory1(db,df is ['DEF,form,sig,body],m,e,fal) ==
   categoryCapsule :=
     body is ['add,cat,capsule] =>
       body := cat
@@ -988,11 +988,10 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,fal) ==
     nil
   if form isnt [.,:.] then
     form := [form]
-  [d,m,e]:= compDefineCategory2(form,sig,body,m,e,fal)
+  [d,m,e]:= compDefineCategory2(db,form,sig,body,m,e,fal)
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
-    $categoryPredicateList: local :=
-        makeCategoryPredicates(form,dbCategory constructorDB form.op)
+    $categoryPredicateList: local := makeCategoryPredicates(form,dbCategory db)
     defaults := mkCategoryPackage(form,cat,categoryCapsule)
     T := compDefine1(nil,defaults,$EmptyMode,e)
            or return stackSemanticError(
@@ -1108,7 +1107,7 @@ getArgumentModeOrMoan(x,form,e) ==
   getArgumentMode(x,e) or
     stackSemanticError(["argument ",x," of ",form," is not declared"],nil)
 
-compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
+compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     --1. bind global variables
     $prefix: local := nil
     $op: local := form.op
@@ -1120,9 +1119,6 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     $currentCategoryBody : local := body
          --Set in DomainSubstitutionFunction, used further down
     -- 1.1  augment e to add declaration $: <form>
-    db := constructorDB $op
-    dbClearForCompilation! db
-    dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$TriangleVariableList)
     dbInstanceCache(db) := true
     deduceImplicitParameters(db,e)
@@ -1201,11 +1197,13 @@ compDefineCategory(df,m,e,fal) ==
   db := constructorDB ctor
   kind := dbConstructorKind db
   kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
+  dbClearForCompilation! db
   dbConstructorForm(db) := lhs
-  $insideFunctorIfTrue =>
-    try compDefineCategory1(df,m,e,fal)
-    finally dbCompilerData(db) := nil
-  compDefineLisplib(df,m,e,fal,'compDefineCategory1)
+  dbCompilerData(db) := makeCompilationData()
+  try
+    $insideFunctorIfTrue => compDefineCategory1(db,df,m,e,fal)
+    compDefineLisplib(db,df,m,e,fal,'compDefineCategory1)
+  finally dbCompilerData(db) := nil
 
 
 %CatObjRes                   -- result of compiling a category
@@ -1445,9 +1443,15 @@ getDollarName env ==
 compDefineFunctor(df,m,e,fal) ==
   $profileCompiler: local := true
   $profileAlist:    local := nil
-  compDefineLisplib(df,m,e,fal,'compDefineFunctor1)
+  form := second df
+  db := constructorDB opOf form
+  dbClearForCompilation! db
+  dbConstructorForm(db) := form
+  dbCompilerData(db) := makeCompilationData()
+  try compDefineLisplib(db,df,m,e,fal,'compDefineFunctor1)
+  finally dbCompilerData(db) := nil
  
-compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
+compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     -- 0.  Make `form' a constructor instantiation form
     if form isnt [.,:.] then
       form := [form]
@@ -1469,10 +1473,6 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     $insideFunctorIfTrue: local:= true
     $genSDVar: local:= 0
     originale:= $e
-    db := constructorDB $op
-    dbClearForCompilation! db
-    dbConstructorForm(db) := form
-    dbCompilerData(db) := makeCompilationData()
     dbFormalSubst(db) := pairList(form.args,$FormalMapVariableList)
     $e := registerConstructor($op,$e)
     $e := setDollarName(form,$e)

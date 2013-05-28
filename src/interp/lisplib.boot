@@ -413,12 +413,10 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   val:= _/D_,2_,LIB(fun,infile,outstream,auxOp,editFlag,traceFlag)
   val
  
-compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
+compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
-  db := constructorDB op
-  dbPredicates(db) := nil
   $lisplibOperationAlist: local := nil
   $libFile: local := nil
   --for categories, is rhs of definition; otherwise, is target of functor
@@ -435,13 +433,12 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   -- following guarantee's compiler output files get closed.
   ok := false;
   try
-    res:= FUNCALL(fn,df,m,e,fal)
+    res:= FUNCALL(fn,db,df,m,e,fal)
     leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     ok := finalizeLisplib(db,libName)
   finally
     RSHUT $libFile
-    dbCompilerData(db) := nil
   if ok then lisplibDoRename(libName)
   filearg := makeFullFilePath [libName,$spadLibFT,$libraryDirectory]
   RPACKFILE filearg
