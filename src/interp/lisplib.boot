@@ -208,24 +208,11 @@ readLibPathFast p ==
   --         2) file has already been checked for existence
   RDEFIOSTREAM([['FILE,:p], '(MODE . INPUT)],false)
  
-writeLib(fn,ft) == writeLib1(fn,ft,"*")
- 
-writeLib1(fn,ft,fm) == RDEFIOSTREAM [['FILE,fn,ft,fm],'(MODE . OUTPUT)]
+writeLib(fn,ft) == RDEFIOSTREAM [['FILE,fn,ft,nil],'(MODE . OUTPUT)]
  
 lisplibWrite(prop,val,filename) ==
   -- this may someday not write nil keys, but it will now
-  rwrite128(prop,val,filename)
- 
-rwrite128(key,value,stream) ==
-  rwrite(key,value,stream)
- 
-evalAndRwriteLispForm(key,form) ==
-  eval form
-  rwriteLispForm(key,form)
- 
-rwriteLispForm(key,form) ==
-  rwrite( key,form,$libFile)
-  LAM_,FILEACTQ(key,form)
+  rwrite(prop,val,filename)
  
 --% Loading
 
@@ -406,9 +393,8 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   infile:= infileOrNil or getFunctionSourceFile fun or
     throwKeyedMsg("S2IL0004",[fun])
   $editFile := infile
-  outfile := outfileOrNil or
-    [libName,'OUTPUT,$listingDirectory]   --always QUIET
-  removeFile makeFullFilePath [libName,'OUTPUT,$listingDirectory]
+  outfile := outfileOrNil or [libName,'OUTPUT,nil]   --always QUIET
+  removeFile makeFullFilePath [libName,'OUTPUT,nil]
   outstream:= DEFSTREAM(outfile,'OUTPUT)
   val:= _/D_,2_,LIB(fun,infile,outstream,auxOp,editFlag,traceFlag)
   val
@@ -440,7 +426,7 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   finally
     RSHUT $libFile
   if ok then lisplibDoRename(libName)
-  filearg := makeFullFilePath [libName,$spadLibFT,$libraryDirectory]
+  filearg := makeFullFilePath [libName,$spadLibFT,nil]
   RPACKFILE filearg
   freshLine $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
@@ -461,9 +447,9 @@ compileDocumentation(ctor,libName) ==
   ['dummy, $EmptyMode, $e]
 
 initializeLisplib libName ==
-  removeFile makeFullFilePath [libName,'ERRORLIB,$libraryDirectory]
+  removeFile makeFullFilePath [libName,'ERRORLIB,nil]
   resetErrorCount()
-  $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
+  $libFile := writeLib(libName,'ERRORLIB)
   addCompilerOption('FILE,$libFile)
 
 mkCtorDBForm ctor ==
@@ -586,8 +572,8 @@ finalizeLisplib(db,libName) ==
   true
 
 lisplibDoRename(libName) ==
-  _$REPLACE([libName,$spadLibFT,$libraryDirectory],
-    [libName,'ERRORLIB,$libraryDirectory])
+  _$REPLACE([libName,$spadLibFT,nil],
+    [libName,'ERRORLIB,nil])
  
 lisplibError(cname,fname,type,cn,fn,typ,error) ==
   sayMSG bright ['"  Illegal ",$spadLibFT]

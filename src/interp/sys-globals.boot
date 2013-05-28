@@ -284,12 +284,6 @@ $insideCoerceInteractive := false
 $insideEvalMmCondIfTrue := false
 
 ++
-$libraryDirectory := "A"
-
-++
-$listingDirectory := "A"
-
-++
 $UserLevel := "development"
 
 ++

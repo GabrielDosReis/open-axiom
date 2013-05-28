@@ -314,14 +314,14 @@ buildDatabase(filemode,expensive) ==
 
 saveUsersHashTable() ==
   removeFile makeFullFilePath ['USERS,'DATABASE,'a]
-  stream:= writeLib1('USERS,'DATABASE,'a)
+  stream:= writeLib('USERS,'DATABASE)
   for k in MSORT HKEYS $usersTb repeat
     rwrite(k, tableValue($usersTb, k), stream)
   RSHUT stream
 
 saveDependentsHashTable() ==
   removeFile makeFullFilePath ['DEPENDENTS,'DATABASE,'a]
-  stream:= writeLib1('DEPENDENTS,'DATABASE,'a)
+  stream:= writeLib('DEPENDENTS,'DATABASE)
   for k in MSORT HKEYS $depTb repeat
     rwrite(k, tableValue($depTb, k), stream)
   RSHUT stream
