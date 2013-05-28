@@ -1179,7 +1179,7 @@ compDefineCategory2(form,signature,body,m,e,$formalArgList) ==
     parForm := applySubst(pairlis,form)
  
     -- 6. put modemaps into InteractiveModemapFrame
-    $domainShell := eval [op',:[MKQ f for f in sargl]]
+    dbDomainShell(db) := eval [op',:[MKQ f for f in sargl]]
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbPrincipals(db) := getParentsFor db
@@ -1194,7 +1194,6 @@ mkConstructor form ==
   ['%list,MKQ form.op,:[mkConstructor x for x in form.args]]
  
 compDefineCategory(df,m,e,fal) ==
-  $domainShell: local := nil -- holds the category of the object being compiled
   -- since we have so many ways to say state the kind of a constructor,
   -- make sure we do have some minimal internal coherence.
   lhs := second df
@@ -1342,8 +1341,8 @@ getOperationAlist(db,name,functorForm,form) ==
   (u:= get(functorForm,'isFunctor,$CategoryFrame)) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
   $insideFunctorIfTrue and name is "$" =>
-    $domainShell => categoryExports $domainShell
-    systemError '"$ has no shell now"
+    dbDomainShell db = nil => systemError '"$ has no shell now"
+    categoryExports dbDomainShell db
   T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; categoryExports T.expr)
   stackMessage('"not a category form: %1bp",[form])
  
@@ -1444,7 +1443,6 @@ getDollarName env ==
   get('%compilerData,'%dollar,env)
 
 compDefineFunctor(df,m,e,fal) ==
-  $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
   compDefineLisplib(df,m,e,fal,'compDefineFunctor1)
@@ -1493,7 +1491,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     $e := giveFormalParametersValues(form.args,$e)
     [ds,.,$e] := compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
-    $domainShell: local := copyVector ds
+    dbDomainShell(db) := copyVector ds
     attributeList := categoryAttributes ds --see below under "loadTimeAlist"
     $condAlist: local := nil
     $uncondAlist: local := nil
@@ -1568,7 +1566,7 @@ incompleteFunctorBody(db,m,body,e) ==
   -- Nullify them so people don't think they bear any meaningful
   -- semantics (well, they should not think these are forwarding either).
   ops := nil
-  for [opsig,pred,funsel] in categoryExports $domainShell repeat
+  for [opsig,pred,funsel] in categoryExports dbDomainShell db repeat
     if pred isnt true then
       pred := simpBool pred
     if funsel is [op,.,.] and op in '(ELT CONST) then
@@ -1778,7 +1776,7 @@ orderByDependency(vl,dl) ==
  
 ++ Subroutine of compDefineCapsuleFunction.
 assignCapsuleFunctionSlot(db,op,sig) ==
-  kind := or/[u.mapKind for u in categoryExports $domainShell
+  kind := or/[u.mapKind for u in categoryExports dbDomainShell db
                 | symbolEq?(op,u.mapOperation) and sig = u.mapSignature]
   kind = nil => nil -- op is local and need not be assigned
   if $insideCategoryPackageIfTrue then
@@ -1804,8 +1802,8 @@ compareMode2Arg(x,m) == null x or modeEqual(x,m)
 ++ Determine whether the function with possibly partial signature `target'
 ++ is exported.  Return the complete signature if yes; otherwise
 ++ return nil, with diagnostic in ambiguity case.
-hasSigInTargetCategory(form,target,e) ==
-  sigs := candidateSignatures(form.op,#form,categoryExports $domainShell)
+hasSigInTargetCategory(db,form,target,e) ==
+  sigs := candidateSignatures(form.op,#form,categoryExports dbDomainShell db)
   cc := checkCallingConvention(sigs,#form.args)
   mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
             for x in form.args for i in 0..]
@@ -1872,10 +1870,10 @@ partialSignature? sig ==
 ++ We are about to elaborate a definition with `form' as head, and
 ++ parameter types specified in `signature'.  Refine that signature
 ++ in case some or all of the parameter types are missing.
-refineDefinitionSignature(form,signature,e) ==
+refineDefinitionSignature(db,form,signature,e) ==
   --let target and local signatures help determine modes of arguments
   signature' :=
-    x := hasSigInTargetCategory(form,signature.target,e) => x
+    x := hasSigInTargetCategory(db,form,signature.target,e) => x
     x := getSignatureFromMode(form,e) => x
     [signature.target,:[getArgumentMode(a,e) for a in form.args]]
   signature'.source := stripOffSubdomainConditions(signature'.source,form.args)
@@ -1956,7 +1954,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     $form := [$op,:argl]
     argl:= stripOffArgumentConditions argl
     $formalArgList:= [:argl,:$formalArgList]
-    signature := refineDefinitionSignature(form,signature,e) or return nil
+    signature := refineDefinitionSignature(db,form,signature,e) or return nil
     $signatureOfForm := signature --this global is bound in compCapsuleItems
     e := processDefinitionParameters(db,form,signature,e)
     rettype := resolve(signature.target,$returnMode)

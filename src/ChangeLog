@@ -1,3 +1,9 @@
+2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-globals.boot ($domainShell): Remove.
+	* interp/c-util.boot (%CompilationData): Add shell field.
+	(dbDomainShell): New accessor.  Replace $domainShell variable.
+
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/compiler.boot(compNoStacking): Add DB parameter.

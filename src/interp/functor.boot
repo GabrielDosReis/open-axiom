@@ -581,7 +581,7 @@ InvestigateConditions(db,catvecListMaker,env) ==
   null $Conditions => [true,:[true for u in secondaries]]
   PrincipalSecondaries:= getViewsConditions principal'
   MinimalPrimary:= first first PrincipalSecondaries
-  MaximalPrimary := first categoryPrincipals $domainShell
+  MaximalPrimary := first categoryPrincipals dbDomainShell db
   necessarySecondaries:= [first u for u in PrincipalSecondaries | rest u=true]
   and/[listMember?(u,necessarySecondaries) for u in secondaries] =>
     [true,:[true for u in secondaries]]
@@ -736,8 +736,8 @@ getViewsConditions u ==
  
 DescendCodeVarAdd(db,base,flag) ==
    [SetFunctionSlots(sig,implem,flag,'adding) repeat
-       for i in 6..maxIndex $domainShell |
-         categoryRef($domainShell,i) is [sig:=[op,types],:.] and
+       for i in 6..maxIndex dbDomainShell db |
+         categoryRef(dbDomainShell db,i) is [sig:=[op,types],:.] and
            LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
                   [[pred,implem]]]
  
