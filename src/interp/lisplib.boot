@@ -387,7 +387,6 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $PrettyPrint: local := 'T
   $lisplibOperationAlist: local := nil
-  $libFile: local := nil
   if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
@@ -404,7 +403,6 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   sayMSG fillerSpaces(72,char "-")
   $op: local := op
   $lisplibOperationAlist: local := nil
-  $libFile: local := nil
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
@@ -414,7 +412,7 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   $compileDocumentation => compileDocumentation(op,libName)
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
-  initializeLisplib libName
+  initializeLisplib(db,libName)
   sayMSG ['"   compiling into ",$spadLibFT,:bright libName]
   -- following guarantee's compiler output files get closed.
   ok := false;
@@ -424,7 +422,7 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     ok := finalizeLisplib(db,libName)
   finally
-    RSHUT $libFile
+    RSHUT dbOutputStream db
   if ok then lisplibDoRename(libName)
   filearg := makeFullFilePath [libName,$spadLibFT,nil]
   RPACKFILE filearg
@@ -446,86 +444,76 @@ compileDocumentation(ctor,libName) ==
   $REPLACE([libName,$spadLibFT],[libName,'DOCLB])
   ['dummy, $EmptyMode, $e]
 
-initializeLisplib libName ==
+initializeLisplib(db,libName) ==
   removeFile makeFullFilePath [libName,'ERRORLIB,nil]
   resetErrorCount()
-  $libFile := writeLib(libName,'ERRORLIB)
-  addCompilerOption('FILE,$libFile)
+  dbOutputStream(db) := writeLib(libName,'ERRORLIB)
+  addCompilerOption('FILE,dbOutputStream db)
 
-mkCtorDBForm ctor ==
-  ['constructorDB,quote ctor]
+mkCtorDBForm db ==
+  ['constructorDB,quote dbConstructor db]
 
-writeInfo(ctor,info,key,prop,file) ==
+writeInfo(db,info,key,prop) ==
   if info ~= nil then
-    insn := ['%store,[prop,mkCtorDBForm ctor],quote info]
+    insn := ['%store,[prop,mkCtorDBForm db],quote info]
     LAM_,FILEACTQ(key,expandToVMForm insn)
-  lisplibWrite(symbolName key,info,file)
+  lisplibWrite(symbolName key,info,dbOutputStream db)
 
 ++ Like writeInfo, but only write to the load unit.
-writeLoadInfo(ctor,info,key,prop,file) ==
+writeLoadInfo(db,info,key,prop) ==
   info = nil => nil
-  insn := ['%store,[prop,mkCtorDBForm ctor],info]
+  insn := ['%store,[prop,mkCtorDBForm db],info]
   LAM_,FILEACTQ(key,expandToVMForm insn)
 
-writeTemplate(db,file) ==
+writeTemplate db ==
   dbConstructorKind db = 'category => nil
-  writeLoadInfo(dbConstructor db,dbTemplate db,
-    'template,'dbTemplate,file)
+  writeLoadInfo(db,dbTemplate db,'template,'dbTemplate)
 
-writeLookupFunction(db,file) ==
+writeLookupFunction db ==
   fun := dbLookupFunction db =>
-    writeLoadInfo(dbConstructor db,quote fun,
-      'lookupFunction,'dbLookupFunction,file)
+    writeLoadInfo(db,quote fun,'lookupFunction,'dbLookupFunction)
   nil
 
-writeKind(db,file) ==
-  writeInfo(dbConstructor db,dbConstructorKind db,
-    'constructorKind,'dbConstructorKind,file)
+writeKind db ==
+  writeInfo(db,dbConstructorKind db,'constructorKind,'dbConstructorKind)
 
-writeAbbreviation(db,file) ==
-  writeInfo(dbConstructor db,dbAbbreviation db,
-    'abbreviation,'dbAbbreviation,file)
+writeAbbreviation db ==
+  writeInfo(db,dbAbbreviation db,'abbreviation,'dbAbbreviation)
 
-writeConstructorForm(db,file) ==
-  writeInfo(dbConstructor db,dbConstructorForm db,
-    'constructorForm,'dbConstructorForm,file)
+writeConstructorForm db ==
+  writeInfo(db,dbConstructorForm db,'constructorForm,'dbConstructorForm)
 
-writeCategory(db,file) ==
-  writeInfo(dbConstructor db,dbCategory db,
-    'constructorCategory,'dbCategory,file)
+writeCategory db ==
+  writeInfo(db,dbCategory db,'constructorCategory,'dbCategory)
 
-writeSuperDomain(db,file) ==
-  writeInfo(dbConstructor db,dbSuperDomain db,
-    'superDomain,'dbSuperDomain,file)
+writeSuperDomain db ==
+  writeInfo(db,dbSuperDomain db,'superDomain,'dbSuperDomain)
 
-writePredicates(db,file) ==
-  writeInfo(dbConstructor db,dbPredicates db,
-    'predicates,'dbPredicates,file)
+writePredicates db ==
+  writeInfo(db,dbPredicates db,'predicates,'dbPredicates)
 
-writeOperations(ctor,ops,file) ==
-  writeInfo(ctor,ops,'operationAlist,'dbOperations,file)
+writeOperations(db,ops) ==
+  writeInfo(db,ops,'operationAlist,'dbOperations)
 
-writeAttributes(db,file) ==
- writeInfo(dbConstructor db,dbAttributes db,
-   'attributes,'dbAttributes,file)
+writeAttributes db ==
+ writeInfo(db,dbAttributes db,'attributes,'dbAttributes)
 
-writeConstructorModemap(db,file) ==
-  writeInfo(dbConstructor db,dbConstructorModemap db,
-    'constructorModemap,'dbConstructorModemap,file)
+writeConstructorModemap db ==
+  writeInfo(db,dbConstructorModemap db,
+    'constructorModemap,'dbConstructorModemap)
 
-writeDualSignature(db,file) ==
-  writeInfo(dbConstructor db,dbDualSignature db,
-    'dualSignature,'dbDualSignature,file)
+writeDualSignature db ==
+  writeInfo(db,dbDualSignature db,'dualSignature,'dbDualSignature)
 
-writeAncestors(db,file) ==
-  writeInfo(dbConstructor db,dbAncestors db,'ancestors,'dbAncestors,file)
+writeAncestors db ==
+  writeInfo(db,dbAncestors db,'ancestors,'dbAncestors)
 
-writePrincipals(db,file) ==
-  writeInfo(dbConstructor db,dbPrincipals db,'parents,'dbPrincipals,file)
+writePrincipals db ==
+  writeInfo(db,dbPrincipals db,'parents,'dbPrincipals)
 
-writeCapsuleLevelDefinitions(db,file) ==
-  writeInfo(dbConstructor db,dbCapsuleDefinitions db,
-    'signaturesAndLocals,'dbCapsuleDefinitions,file)
+writeCapsuleLevelDefinitions db ==
+  writeInfo(db,dbCapsuleDefinitions db,
+    'signaturesAndLocals,'dbCapsuleDefinitions)
 
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
@@ -538,36 +526,36 @@ leaveIfErrors(libName,kind) ==
 ++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib(db,libName) ==
   form := dbConstructorForm db
-  writeTemplate(db,$libFile)
-  writeLookupFunction(db,$libFile)
-  writeConstructorForm(db,$libFile)
-  writeKind(db,$libFile)
-  writeConstructorModemap(db,$libFile)
-  writeDualSignature(db,$libFile)
+  writeTemplate db
+  writeLookupFunction db
+  writeConstructorForm db
+  writeKind db
+  writeConstructorModemap db
+  writeDualSignature db
   -- set to target of dbConstructorModemap for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
   if dbConstructorKind db = 'category then
-    writeCategory(db,$libFile)
-  lisplibWrite('"sourceFile",dbSourceFile db,$libFile)
-  lisplibWrite('"modemaps",dbModemaps db,$libFile)
+    writeCategory db
+  lisplibWrite('"sourceFile",dbSourceFile db,dbOutputStream db)
+  lisplibWrite('"modemaps",dbModemaps db,dbOutputStream db)
   opsAndAtts :=
     dbConstructorKind db = 'category => getCategoryOpsAndAtts db
     getFunctorOpsAndAtts db
-  writeOperations(dbConstructor db,first opsAndAtts,$libFile)
+  writeOperations(db,first opsAndAtts)
   if dbConstructorKind db = 'category then
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist(db,rest opsAndAtts)
-  writeSuperDomain(db,$libFile)
-  writeCapsuleLevelDefinitions(db,$libFile)
-  writeAttributes(db,$libFile)
-  writePredicates(db,$libFile)
-  writeAbbreviation(db,$libFile)
-  writePrincipals(db,$libFile)
-  writeAncestors(db,$libFile)
+  writeSuperDomain db
+  writeCapsuleLevelDefinitions db
+  writeAttributes db
+  writePredicates db
+  writeAbbreviation db
+  writePrincipals db
+  writeAncestors db
   if not $bootStrapMode then
     lisplibWrite('"documentation",
-      finalizeDocumentation dbConstructor db,$libFile)
-  if $profileCompiler then profileWrite()
+      finalizeDocumentation dbConstructor db,dbOutputStream db)
+  if $profileCompiler then profileWrite db
   leaveIfErrors(libName,dbConstructorKind db)
   true
 

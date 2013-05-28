@@ -145,17 +145,18 @@ macro domainData d ==
 
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
-    shell: %Vector %Thing,
-      items: %Buffer %Pair(%SourceEntity,%Elaboration)) with
+    shell: %Vector %Thing, items: %Buffer %Pair(%SourceEntity,%Code),
+      output: %OutputStream) with
         cdSubstitution == (.subst)
         cdImplicits == (.idata)
         cdBytes == (.bytes)
         cdShell == (.shell)
         cdItems == (.items)
+        cdOutput == (.output)
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  mk%CompilationData(nil,nil,nil,nil,[nil,:0])
+  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil)
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -194,6 +195,9 @@ macro dbUsedEntities db ==
 ++ Number of used entities during elaboration of current functor.
 macro dbEntityCount db ==
   rest dbEntityBuffer db
+
+macro dbOutputStream db ==
+  cdOutput dbCompilerData db
 
 ++ Return the existential substitution of `db'.
 dbQuerySubst db ==

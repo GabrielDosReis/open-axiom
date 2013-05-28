@@ -270,7 +270,7 @@ hypertex.$(FASLEXT): types.$(FASLEXT)
 ## OpenAxiom's interpreter.
 makeint.$(FASLEXT): util.$(FASLEXT)
 setvars.$(FASLEXT): sys-macros.$(FASLEXT) debug.$(FASLEXT)
-profile.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
+profile.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT) c-util.$(FASLEXT)
 rulesets.$(FASLEXT): vmlisp.$(FASLEXT)
 osyscmd.$(FASLEXT): int-top.$(FASLEXT)
 int-top.$(FASLEXT): incl.$(FASLEXT) i-toplev.$(FASLEXT) unlisp.$(FASLEXT)
