@@ -48,12 +48,12 @@ module compiler where
 
 --% 
 compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
-compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
-compNoStacking1: (%Form,%Mode,%Env,%List %Thing) -> %Maybe %Triple
+compNoStacking: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
+compNoStacking1: (%Maybe %Database,%Form,%Mode,%Env,%List %Thing) -> %Maybe %Triple
 compOrCroak1: (%Form,%Mode,%Env) -> %Maybe %Triple
-comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
-comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
-compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
+comp2: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
+comp3: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
+compExpression: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -136,12 +136,12 @@ compCompilerPredicate(x,e) ==
   compOrCroak(parseTran x, $Boolean, e)
 
 comp(x,m,e) ==
-  T:= compNoStacking(x,m,e) => ($compStack:= nil; T)
+  T:= compNoStacking(currentDB e,x,m,e) => ($compStack:= nil; T)
   $compStack:= [[x,m,e,$exitModeStack],:$compStack]
   nil
 
-compNoStacking(x,m,e) ==
-  T:= comp2(x,m,e) =>
+compNoStacking(db,x,m,e) ==
+  T:= comp2(db,x,m,e) =>
     $useRepresentationHack and m=$EmptyMode and T.mode=$Representation => 
       [T.expr,"$",T.env]
     T
@@ -150,15 +150,15 @@ compNoStacking(x,m,e) ==
     --preferred to the underlying representation -- RDJ 9/12/83
     --Now that `per' and `rep' are built in, we use the above
     --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
-  compNoStacking1(x,m,e,$compStack)
+  compNoStacking1(db,x,m,e,$compStack)
 
-compNoStacking1(x,m,e,$compStack) ==
+compNoStacking1(db,x,m,e,$compStack) ==
   u:= get(RepIfRepHack m,"value",e) =>
-    (T:= comp2(x,u.expr,e) => [T.expr,m,T.env]; nil)
+    (T:= comp2(db,x,u.expr,e) => [T.expr,m,T.env]; nil)
   nil
 
-comp2(x,m,e) ==
-  [y,m',e] := T := comp3(x,m,e) or return nil
+comp2(db,x,m,e) ==
+  [y,m',e] := T := comp3(db,x,m,e) or return nil
   T.mode = $Category => T
   --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
@@ -166,11 +166,8 @@ comp2(x,m,e) ==
         --isDomainForm test needed to prevent error while compiling Ring
   T
 
-comp3(x,m,$e) ==
+comp3(db,x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
-  db :=
-    ctor := currentConstructor $e => constructorDB ctor
-    nil
   $e:= addDomain(m,$e)
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
@@ -187,7 +184,7 @@ comp3(x,m,$e) ==
   op is ":" => compColon(x,m,e)
   op is "::" => compCoerce(x,m,e)
   op is 'DEF => compDefine(db,x,m,e)
-  t:= compExpression(x,m,e)
+  t:= compExpression(db,x,m,e)
   t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
     [x',m',addDomain(m',e')]
   t
@@ -352,7 +349,7 @@ extractCode(u,vars) ==
   u is ['%call,['%closure,:.],: =vars] => first u.args
   ['%closure,['%function,['%lambda,[:vars,'$],u]],'$]
 
-compExpression(x,m,e) ==
+compExpression(db,x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
   (op := x.op) and ident? op and (fn := property(op,'SPECIAL)) =>
@@ -435,7 +432,7 @@ compSymbol(s,m,e) ==
   sameObject?(s,m) or isLiteral(s,e) => [quote s,s,e]
   v := get(s,"value",e) =>
     symbolMember?(s,$functorLocalParameters) =>
-        getLocalIndex(constructorDB currentConstructor e,s)
+        getLocalIndex(currentDB e,s)
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
     [s,v.mode,e] --s has been SETQd
@@ -709,7 +706,7 @@ compApplication(op,argl,m,T) ==
   comp(eltForm, m, e)
 
 compToApply(op,argl,m,e) ==
-  T := compNoStacking(op,$EmptyMode,e) or return nil
+  T := compNoStacking(currentDB e,op,$EmptyMode,e) or return nil
   T.expr is ['QUOTE, =T.mode] => nil
   compApplication(op,argl,m,T)
 
@@ -947,7 +944,7 @@ setqSingle(id,val,m,E) ==
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
-    db := constructorDB currentConstructor e'
+    db := currentDB e'
     k := assocIndex(db,id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
@@ -2497,7 +2494,7 @@ numberize x ==
 ++ If there is a local reference to mode `m', return it.  
 localReferenceIfThere(m,e) ==
   m is "$" => m
-  idx := assocIndex(constructorDB currentConstructor e,m) => ['%tref,'$,idx]
+  idx := assocIndex(currentDB e,m) => ['%tref,'$,idx]
   quote m
 
 compRepeatOrCollect(form,m,e) ==

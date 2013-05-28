@@ -48,7 +48,7 @@ module c_-util where
   getInverseEnvironment: (%Form,%Env) -> %Env
   giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
   registerConstructor: (%Symbol,%Env) -> %Env
-  currentConstructor: %Env -> %Maybe %Symbol
+  currentDB: %Env -> %Maybe %Database
   -- functor data manipulation
   dbInfovec: %Symbol -> %Maybe %FunctorData
 
@@ -813,9 +813,10 @@ isLiteral(x,e) ==
 registerConstructor(x,e) ==
   put('%compilerData,'%ctor,x,e)
 
-++ Retrieve the name of the constructor definition being processed.
-currentConstructor e ==
-  get('%compilerData,'%ctor,e) 
+++ Retrieve the DB of the constructor definition being processed.
+currentDB e ==
+  ctor := get('%compilerData,'%ctor,e) => constructorDB ctor
+  nil
 
 makeLiteral: (%Symbol,%Env) -> %Thing
 makeLiteral(x,e) == 

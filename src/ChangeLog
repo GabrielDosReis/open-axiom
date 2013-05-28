@@ -1,5 +1,14 @@
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/compiler.boot(compNoStacking): Add DB parameter.
+	Adjust callers.
+	(comp2): Likewise.
+	(comp3): Likewise.
+	* interp/c-util.boot (currentDB): New.
+	(currentConstructor): Remove.  Adjust callers.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (compDefine): Take DB as first parameter.
 	Adjust callers.
 

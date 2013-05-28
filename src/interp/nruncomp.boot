@@ -201,7 +201,7 @@ genDeltaEntry(op,mm,e) ==
   kind is 'XLAM => cform
   if kind is 'Subsumed then kind := 'ELT
   $onlyAbstractSlot => [kind,'$,[op,[dc,:sig]]]
-  db := constructorDB currentConstructor e
+  db := currentDB e
   if dc isnt [.,:.] then
     dc = "$" => nsig := sig
     if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))

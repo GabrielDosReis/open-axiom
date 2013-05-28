@@ -2212,7 +2212,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
        ['%otherwise, ['systemError,['%list,'"%b",MKQ $functorForm.op,'"%d",'"from", _
          '"%b",MKQ namestring $editFile,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
-  db := constructorDB currentConstructor e
+  db := currentDB e
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
     getLocalIndex(db,domainForm)
@@ -2334,7 +2334,7 @@ doIt(item,$predl) ==
         if $optimizeRep then
           registerInlinableDomain $Representation
     code is ["%LET",:.] =>
-      db := constructorDB currentConstructor $e
+      db := currentDB $e
       item.op := '%store
       rhsCode := rhs'
       item.args := [['%tref,'$,getLocalIndex(db,lhs)],rhsCode]
