@@ -142,9 +142,6 @@ $leaveLevelStack := []
 $letAssoc := false
 
 ++
-$libFile := nil
-
-++
 $lisplibOperationAlist := []
 
 ++

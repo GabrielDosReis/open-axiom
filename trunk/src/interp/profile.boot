@@ -34,13 +34,14 @@
 
 import sys_-macros
 import sys_-utility
+import c_-util
 namespace BOOT
 
 --$profileCompiler := true
 $profileAlist := nil
 
-profileWrite() ==  --called from finalizeLisplib
-  outStream := MAKE_-OUTSTREAM strconc(libDirname $libFile,'"/info")
+profileWrite db ==  --called from finalizeLisplib
+  outStream := MAKE_-OUTSTREAM strconc(libDirname dbOutputStream db,'"/info")
   SETQ(_*PRINT_-PRETTY_*, true)
   PRINT_-FULL(profileTran $profileAlist,outStream)
   SHUT outStream

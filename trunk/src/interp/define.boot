@@ -1556,7 +1556,6 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
       LAM_,FILEACTQ('loadTimeStuff,
         ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
-    dbBeingDefined?(db) := nil
     [fun,['Mapping,:signature'],originale]
 
 
