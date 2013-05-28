@@ -1,5 +1,10 @@
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (compDefine): Take DB as first parameter.
+	Adjust callers.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/sys-utility.boot ($ERASE): Remove.
 
 2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>

@@ -234,6 +234,7 @@
  lookup-function	    ; for a functor, lookup function.
  ) ; database structure
 
+(deftype |%Database| nil 'database)
 
 (defmacro |dbAbbreviation| (db)
   `(database-abbreviation ,db))

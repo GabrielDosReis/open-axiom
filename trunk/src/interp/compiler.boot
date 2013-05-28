@@ -168,6 +168,9 @@ comp2(x,m,e) ==
 
 comp3(x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
+  db :=
+    ctor := currentConstructor $e => constructorDB ctor
+    nil
   $e:= addDomain(m,$e)
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
@@ -183,6 +186,7 @@ comp3(x,m,$e) ==
     and (T := applyMapping(x,m,e,ml)) => T
   op is ":" => compColon(x,m,e)
   op is "::" => compCoerce(x,m,e)
+  op is 'DEF => compDefine(db,x,m,e)
   t:= compExpression(x,m,e)
   t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
     [x',m',addDomain(m',e')]
@@ -2832,7 +2836,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["COLLECT", :"compRepeatOrCollect"],_
 	  ["CONS", :"compCons"],_
 	  ["construct", :"compConstruct"],_
-	  ["DEF", :"compDefine"],_
 	  ["elt", :"compElt"],_
 	  ["Enumeration", :"compBuiltinDomain"],_
           ["EnumerationCategory", :"compEnumCat"],_

@@ -39,7 +39,7 @@ import database
 namespace BOOT
 
 module define where
-  compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
+  compDefine: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple 
   compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
   compCapsule: (%Form, %Mode, %Env) -> %Maybe %Triple
   compJoin: (%Form,%Mode,%Env) -> %Maybe %Triple 
@@ -49,6 +49,8 @@ module define where
 
 
 --%
+
+compDefine1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple 
 
 $doNotCompileJustPrint := false
 
@@ -748,9 +750,9 @@ checkParameterNames parms ==
   for p in parms repeat
     checkVariableName p
 
-compDefine(form,m,e) ==
+compDefine(db,form,m,e) ==
   $macroIfTrue: local := false
-  compDefine1(form,m,e)
+  compDefine1(db,form,m,e)
 
 ++ We are about to process the body of a capsule.  Check the form of
 ++ `Rep' definition, and whether it is appropriate to activate the
@@ -829,8 +831,7 @@ getSignatureFromMode(form,e) ==
     #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
     applySubst(pairList($FormalMapVariableList,form.args),signature)
 
-compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple 
-compDefine1(form,m,e) ==
+compDefine1(db,form,m,e) ==
   $insideExpressionIfTrue: local:= false
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,rhs] := form := macroExpand(form,e)
@@ -841,7 +842,7 @@ compDefine1(form,m,e) ==
   null signature.target and symbol? KAR rhs and not builtinConstructor? KAR rhs and
     (sig := getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
-      compDefine1(['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
+      compDefine1(db,['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
   if signature.target=$Category then $insideCategoryIfTrue:= true
  
 -- RDJ (11/83): when argument and return types are all declared,
@@ -864,8 +865,9 @@ compDefine1(form,m,e) ==
       signature := [getTargetFromRhs(lhs,rhs,e),:signature.source]
     rhs := addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,rhs],m,e,$formalArgList)
-  $form = nil => stackAndThrow ['"bad == form ",form]
-  db := constructorDB $op
+  db = nil =>
+    -- no free function in library, yet.
+    stackAndThrow ['"malformed definition syntax:",form]
   newPrefix :=
     $prefix => makeSymbol strconc(symbolName $prefix,'",",symbolName $op)
     dbAbbreviation db
@@ -990,7 +992,8 @@ compDefineCategory1(df is ['DEF,form,sig,body],m,e,fal) ==
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
         makeCategoryPredicates(form,dbCategory constructorDB form.op)
-    T := compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
+    defaults := mkCategoryPackage(form,cat,categoryCapsule)
+    T := compDefine1(nil,defaults,$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
   [d,m,e]
