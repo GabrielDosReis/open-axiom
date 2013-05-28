@@ -258,6 +258,7 @@ GetValue name ==
 actOnInfo(u,$e) ==
   null u => $e
   u is ["PROGN",:l] => (for v in l repeat $e:= actOnInfo(v,$e); $e)
+  db := currentDB $e
   $e:=
     put("$Information","special",Info:= [u,:get("$Information","special",$e)],$e
       )
@@ -311,9 +312,9 @@ actOnInfo(u,$e) ==
          assoc(cat,categoryAncestors ocatvec) is [.,"T",.] => $e
              --what was being asserted is an ancestor of what was known
       if name="$"
-        then $e:= augModemapsFromCategory(name,name,cat,$e)
+        then $e:= augModemapsFromCategory(db,name,name,cat,$e)
         else
-          genDomainView(name,cat,"HasCategory")
+          genDomainView(db,name,cat,"HasCategory")
           -- a domain upgrade at function level is local to that function.
           if not $insideCapsuleFunctionIfTrue and 
             not symbolMember?(name,$functorLocalParameters) then
@@ -1335,7 +1336,7 @@ putDomainsInScope(x,e) ==
   $insideCapsuleFunctionIfTrue => ($CapsuleDomainsInScope:= newValue; e)
   put("$DomainsInScope","special",newValue,e)
 
-getOperationAlist(name,functorForm,form) ==
+getOperationAlist(db,name,functorForm,form) ==
   if ident? name and niladicConstructor? name then 
     functorForm := [functorForm]
   (u:= get(functorForm,'isFunctor,$CategoryFrame)) and not
@@ -1357,18 +1358,18 @@ substNames(domainName,functorForm,opalist) ==
      for [:modemapform,[sel,"$",pos]] in
        applySubst(pairList($FormalMapVariableList,KDR functorForm),opalist)]
  
-evalAndSub(domainName,functorForm,form,$e) ==
+evalAndSub(db,domainName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
   categoryObject? form =>
     [substNames(domainName,functorForm,categoryExports form),$e]
   --next lines necessary-- see MPOLY for which $ is actual arg. --- RDJ 3/83
   if CONTAINED("$$",form) then $e:= put("$$","mode",get("$","mode",$e),$e)
-  opAlist:= getOperationAlist(domainName,functorForm,form)
+  opAlist:= getOperationAlist(db,domainName,functorForm,form)
   substAlist:= substNames(domainName,functorForm,opAlist)
   [substAlist,$e]
  
-augModemapsFromCategory(domainName,functorForm,categoryForm,e) ==
-  [fnAlist,e]:= evalAndSub(domainName,functorForm,categoryForm,e)
+augModemapsFromCategory(db,domainName,functorForm,categoryForm,e) ==
+  [fnAlist,e]:= evalAndSub(db,domainName,functorForm,categoryForm,e)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   for [[op,sig,:.],cond,fnsel] in fnAlist repeat
@@ -1388,15 +1389,15 @@ addConstructorModemaps(name,form is [functorName,:.],e) ==
     e:= addModemap(op,name,sig,true,opcode,e)
   e
  
-augModemapsFromDomain1(name,functorForm,e) ==
+augModemapsFromDomain1(db,name,functorForm,e) ==
   property(KAR functorForm,"makeFunctionList") =>
     addConstructorModemaps(name,functorForm,e)
   functorForm isnt [.,:.] and (catform := getmode(functorForm,e)) =>
-    augModemapsFromCategory(name,functorForm,catform,e)
+    augModemapsFromCategory(db,name,functorForm,catform,e)
   mappingForm := getmodeOrMapping(KAR functorForm,e) =>
     ["Mapping",categoryForm,:functArgTypes] := mappingForm
     catform := substituteCategoryArguments(rest functorForm,categoryForm)
-    augModemapsFromCategory(name,functorForm,catform,e)
+    augModemapsFromCategory(db,name,functorForm,catform,e)
   stackMessage('"%1pb is an unknown mode",[functorForm])
   e
  
@@ -1505,7 +1506,7 @@ compDefineFunctor1(df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     for x in dbImplicitParameters db repeat getLocalIndex(db,x)
     [.,.,$e] := compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
-      $e := augModemapsFromCategory('$,form,target,$e)
+      $e := augModemapsFromCategory(db,'$,form,target,$e)
       $e := put('$,'%dc,form,$e)
     $signature := signature'
     parSignature := dbSubstituteAllQuantified(db,signature')
@@ -1616,7 +1617,7 @@ reportOnFunctorCompilation() ==
 makeFunctorArgumentParameters(db,argl,sigl,target) ==
   $forceAdd: local:= true
   $ConditionalOperators: local := nil
-  ("append"/[fn(a,augmentSig(s,findExtras(a,target)))
+  ("append"/[fn(db,a,augmentSig(s,findExtras(a,target)))
               for a in argl for s in sigl]) where
     findExtras(a,target) ==
       --  see if conditional information implies anything else
@@ -1645,14 +1646,14 @@ makeFunctorArgumentParameters(db,argl,sigl,target) ==
           MSUBST([:u,:ss],u,s)
         ['Join,:sl,['CATEGORY,'package,:ss]]
       ['Join,s,['CATEGORY,'package,:ss]]
-    fn(a,s) ==
+    fn(db,a,s) ==
       isCategoryForm(s,$CategoryFrame) =>
-        s is ["Join",:catlist] => genDomainViewList(a,s.args)
-        [genDomainView(a,s,"getDomainView")]
+        s is ["Join",:catlist] => genDomainViewList(db,a,s.args)
+        [genDomainView(db,a,s,"getDomainView")]
       [a]
  
-genDomainOps(dom,cat) ==
-  oplist:= getOperationAlist(dom,dom,cat)
+genDomainOps(db,dom,cat) ==
+  oplist:= getOperationAlist(db,dom,dom,cat)
   siglist:= [sig for [sig,:.] in oplist]
   oplist:= substNames(dom,dom,oplist)
   cd:=
@@ -1666,20 +1667,19 @@ genDomainOps(dom,cat) ==
     $e := addModemap(op,dom,sig,cond,['ELT,dom,i],$e)
   dom
  
-genDomainView(viewName,c,viewSelector) ==
-  c is ['CATEGORY,.,:l] => genDomainOps(viewName,c)
+genDomainView(db,viewName,c,viewSelector) ==
+  c is ['CATEGORY,.,:l] => genDomainOps(db,viewName,c)
   code:=
     c is ['SubsetCategory,c',.] => c'
     c
-  $e:= augModemapsFromCategory(viewName,nil,c,$e)
+  $e:= augModemapsFromCategory(db,viewName,nil,c,$e)
   cd:= ["%LET",viewName,[viewSelector,viewName,mkTypeForm code]]
   if not listMember?(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
 
-genDomainViewList: (%Symbol,%List %Form) -> %List %Code
-genDomainViewList(id,catlist) ==
-  [genDomainView(id,cat,"getDomainView") 
+genDomainViewList(db,id,catlist) ==
+  [genDomainView(db,id,cat,"getDomainView") 
      for cat in catlist | isCategoryForm(cat,$EmptyEnvironment)]
  
 mkOpVec(dom,siglist) ==
@@ -1886,13 +1886,13 @@ refineDefinitionSignature(form,signature,e) ==
 processDefinitionParameters(db,form,signature,e) ==
   e := checkAndDeclare(db,form,signature,e)
   e := giveFormalParametersValues(form.args,e)
-  e := addDomain(signature.target,e)
+  e := addDomain(db,signature.target,e)
   e := compArgumentConditions e
   if $profileCompiler then
     for x in form.args for t in signature.source repeat 
       profileRecord('arguments,x,t)
   for domain in signature repeat
-    e := addDomain(domain,e)
+    e := addDomain(db,domain,e)
   e
  
 mkRepititionAssoc l ==
@@ -2004,20 +2004,20 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
 domainMember(dom,domList) ==
   or/[modeEqual(dom,d) for d in domList]
  
-augModemapsFromDomain(name,functorForm,e) ==
+augModemapsFromDomain(db,name,functorForm,e) ==
   symbolMember?(KAR name or name,$DummyFunctorNames) => e
   name = $Category or isCategoryForm(name,e) => e
   listMember?(name,getDomainsInScope e) => e
   if super := superType functorForm then
-    e := addNewDomain(super,e)
+    e := addNewDomain(db,super,e)
   if name is ["Union",:dl] then for d in stripTags dl
-                         repeat e:= addDomain(d,e)
-  augModemapsFromDomain1(name,functorForm,e)
+                         repeat e:= addDomain(db,d,e)
+  augModemapsFromDomain1(db,name,functorForm,e)
 
-addNewDomain(domain,e) ==
-  augModemapsFromDomain(domain,domain,e)
+addNewDomain(db,domain,e) ==
+  augModemapsFromDomain(db,domain,domain,e)
 
-addDomain(domain,e) ==
+addDomain(db,domain,e) ==
   domain isnt [.,:.] =>
     domain="$EmptyMode" => e
     domain="$NoValueMode" => e
@@ -2025,13 +2025,13 @@ addDomain(domain,e) ==
       char "#" = stringChar(s,0) and char "#" = stringChar(s,1) => e
     symbolMember?(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e
-    addNewDomain(domain,e)
+    addNewDomain(db,domain,e)
   (name:= first domain)='Category => e
   domainMember(domain,getDomainsInScope e) => e
   getXmode(name,e) is ["Mapping",target,:.] and isCategoryForm(target,e) =>
-      addNewDomain(domain,e)
+      addNewDomain(db,domain,e)
     -- constructor? test needed for domains compiled with $bootStrapMode=true
-  isDomainForm(domain,e) => addNewDomain(domain,e)
+  isDomainForm(domain,e) => addNewDomain(db,domain,e)
   -- ??? we should probably augment $DummyFunctorNames with CATEGORY
   -- ??? so that we don't have to do this special check here.  Investigate.
   isQuasiquote domain => e 
@@ -2240,9 +2240,10 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
     [bootStrapError($functorForm, $editFile),m,e]
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
+  db := currentDB e
   clearCapsuleFunctionTable()
-  e := checkRepresentation(constructorDB $form.op,$addFormLhs,itemList,e)
-  compCapsuleInner(constructorDB $form.op,itemList,m,addDomain('_$,e))
+  e := checkRepresentation(db,$addFormLhs,itemList,e)
+  compCapsuleInner(db,itemList,m,addDomain(db,'$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
@@ -2253,7 +2254,7 @@ compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
  
 compSubDomain1(domainForm,predicate,m,e) ==
   [.,.,e]:=
-    compMakeDeclaration("#1",domainForm,addDomain(domainForm,e))
+    compMakeDeclaration("#1",domainForm,addDomain(currentDB e,domainForm,e))
   u:=
     compCompilerPredicate(predicate,e) or
       stackSemanticError(["predicate: ",predicate,
