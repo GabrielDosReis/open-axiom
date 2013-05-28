@@ -2455,7 +2455,7 @@ up%Import t ==
   t isnt [.,:types] => nil
   -- ??? shall we error in case types is nil?
   for x in types repeat
-    $e := addDomain(devaluate objVal getValue x,$e)
+    $e := addDomain(nil,devaluate objVal getValue x,$e)
   setValueToVoid t
 
 --% Macro handling

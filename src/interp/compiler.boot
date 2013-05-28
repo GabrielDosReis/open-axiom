@@ -56,11 +56,11 @@ comp3: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm2: (%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
-compForm3: (%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
-compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
+compForm1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
+compForm2: (%Maybe %Database,%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
+compForm3: (%Maybe %Database,%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
+compArgumentsAndTryAgain: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compWithMappingMode: (%Form,%Mode,%Env) -> %Maybe %Triple
 compFormMatch: (%Modemap,%List %Mode) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
@@ -160,15 +160,15 @@ compNoStacking1(db,x,m,e,$compStack) ==
 comp2(db,x,m,e) ==
   [y,m',e] := T := comp3(db,x,m,e) or return nil
   T.mode = $Category => T
-  --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
+  --if cons? y and isDomainForm(y,e) then e := addDomain(db,x,e)
         --line commented out to prevent adding derived domain forms
-  m~=m' and isDomainForm(m',e) => [y,m',addDomain(m',e)]
+  m~=m' and isDomainForm(m',e) => [y,m',addDomain(db,m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
   T
 
 comp3(db,x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
-  $e:= addDomain(m,$e)
+  $e:= addDomain(db,m,$e)
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ['QUOTE,a] => (x=a => [x,m,$e]; nil)
@@ -186,7 +186,7 @@ comp3(db,x,m,$e) ==
   op is 'DEF => compDefine(db,x,m,e)
   t:= compExpression(db,x,m,e)
   t is [x',m',e'] and not listMember?(m',getDomainsInScope e') =>
-    [x',m',addDomain(m',e')]
+    [x',m',addDomain(db,m',e')]
   t
 
 ++ We just determined that `op' is called with argument list `args', where
@@ -354,7 +354,7 @@ compExpression(db,x,m,e) ==
   -- special forms have dedicated compilers.
   (op := x.op) and ident? op and (fn := property(op,'SPECIAL)) =>
     FUNCALL(fn,x,m,e)
-  compForm(x,m,e)
+  compForm(db,x,m,e)
 
 ++ Subroutine of compAtomWithModemap.
 ++ `Ts' is list of (at least 2) triples.  Return the one with most
@@ -480,20 +480,20 @@ hasType(x,e) ==
 
 --% General Forms
 
-compForm(form,m,e) ==
+compForm(db,form,m,e) ==
   T :=
-    compForm1(form,m,e) or compArgumentsAndTryAgain(form,m,e) or return
+    compForm1(db,form,m,e) or compArgumentsAndTryAgain(db,form,m,e) or return
       stackMessageIfNone ["cannot compile","%b",form,"%d"]
   T
 
-compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
+compArgumentsAndTryAgain(db,form is [.,:argl],m,e) ==
   -- used in case: f(g(x)) where f is in domain introduced by
   -- comping g, e.g. for (ELT (ELT x a) b), environment can have no
   -- modemap with selector b
   form is ["elt",a,.] =>
-    ([.,.,e]:= comp(a,$EmptyMode,e) or return nil; compForm1(form,m,e))
+    ([.,.,e]:= comp(a,$EmptyMode,e) or return nil; compForm1(db,form,m,e))
   +/[(e := T.env; 1) for x in argl | T := comp(x,$EmptyMode,e)] = 0 => nil
-  compForm1(form,m,e)
+  compForm1(db,form,m,e)
 
 outputComp(x,e) ==
   u:=comp(['_:_:,x,$OutputForm],$OutputForm,e) => u
@@ -503,7 +503,7 @@ outputComp(x,e) ==
     [['coerceUn2E,x,v.mode],$OutputForm,e]
   [x,$OutputForm,e]
 
-compForm1(form is [op,:argl],m,e) ==
+compForm1(db,form is [op,:argl],m,e) ==
   symbolMember?(op,$coreDiagnosticFunctions) =>
     [[op,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],m,e]
   op is ["elt",domain,op'] =>
@@ -515,20 +515,20 @@ compForm1(form is [op,:argl],m,e) ==
     -- Next clause added JHD 8/Feb/94: the clause after doesn't work
     -- since addDomain refuses to add modemaps from Mapping
     (domain is ['Mapping,:.]) and
-      (ans := compForm2([op',:argl],m,e:= augModemapsFromDomain1(domain,domain,e),
+      (ans := compForm2(db,[op',:argl],m,e:= augModemapsFromDomain1(db,domain,domain,e),
         [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain]))             => ans
-    ans := compForm2([op',:argl],m,e:= addDomain(domain,e),
+    ans := compForm2(db,[op',:argl],m,e:= addDomain(db,domain,e),
       [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain])             => ans
     (op'="construct") and coerceable(domain,m,e) =>
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
 
-  T := compForm2(form,m,e,getFormModemaps(form,e)) => T
+  T := compForm2(db,form,m,e,getFormModemaps(form,e)) => T
   --FIXME: remove next line when the parser is fixed.
   form = $Zero or form = $One => nil
   compToApply(op,argl,m,e)
 
-compForm2(form is [op,:argl],m,e,modemapList) ==
+compForm2(db,form is [op,:argl],m,e,modemapList) ==
   modemapList = nil => nil
   aList := pairList($TriangleVariableList,argl)
   modemapList := applySubst(aList,modemapList)
@@ -546,9 +546,9 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
 
   or/[x for x in Tl] =>
     partialModeList := [(x => x.mode; nil) for x in Tl]
-    compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) or
-      compForm3(form,m,e,modemapList)
-  compForm3(form,m,e,modemapList)
+    compFormPartiallyBottomUp(db,form,m,e,modemapList,partialModeList) or
+      compForm3(db,form,m,e,modemapList)
+  compForm3(db,form,m,e,modemapList)
 
 ++ We are about to compile a call.  Returns true if each argument
 ++ partially matches (as could be determined by type inference) the
@@ -562,12 +562,12 @@ compFormMatch(mm,partialModeList) == main where
     first b = nil => match(rest a,rest b)
     first a=first b and match(rest a,rest b)
 
-compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) ==
+compFormPartiallyBottomUp(db,form,m,e,modemapList,partialModeList) ==
   mmList := [mm for mm in modemapList | compFormMatch(mm,partialModeList)] =>
-    compForm3(form,m,e,mmList)
+    compForm3(db,form,m,e,mmList)
   nil
 
-compForm3(form is [op,:argl],m,e,modemapList) ==
+compForm3(db,form is [op,:argl],m,e,modemapList) ==
   T :=
     or/
       [compFormWithModemap(form,m,e,first (mml:= ml))
@@ -864,7 +864,8 @@ compSubsetCategory(["SubsetCategory",cat,R],m,e) ==
 compCons: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCons1: (%Form,%Mode,%Env) -> %Maybe %Triple
 
-compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
+compCons(form,m,e) ==
+  compCons1(form,m,e) or compForm(currentDB e,form,m,e)
 
 compCons1(["CONS",x,y],m,e) ==
   [x,mx,e]:= comp(x,$EmptyMode,e) or return nil
@@ -908,6 +909,7 @@ setqSetelt([v,:s],val,m,E) ==
 
 setqSingle(id,val,m,E) ==
   checkVariableName id
+  db := currentDB E
   $insideSetqSingleIfTrue: local:= true
     --used for comping domain forms within functions
   currentProplist:= getProplist(id,E)
@@ -940,11 +942,10 @@ setqSingle(id,val,m,E) ==
     -- single domains have constant values in their scopes, we might just
     -- as well take advantage of that at compile-time where appropriate.
     e' := put(id,'%macro,val,e')
-    e':= augModemapsFromDomain1(id,val,e')
+    e':= augModemapsFromDomain1(db,id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
-    db := currentDB e'
     k := assocIndex(db,id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
@@ -1068,13 +1069,14 @@ compWhere([.,form,:exprList],m,eInit) ==
 
 compConstruct: (%Form,%Mode,%Env) -> %Maybe %Triple
 compConstruct(form is ["construct",:l],m,e) ==
+  db := currentDB e
   y:= modeIsAggregateOf("List",m,e) =>
     T:= compList(l,["List",second y],e) => coerce(T,m)
-    compForm(form,m,e)
+    compForm(db,form,m,e)
   y:= modeIsAggregateOf("Vector",m,e) =>
     T:= compVector(l,["Vector",second y],e) => coerce(T,m)
-    compForm(form,m,e)
-  T:= compForm(form,m,e) => T
+    compForm(db,form,m,e)
+  T:= compForm(db,form,m,e) => T
   for D in getDomainsInScope e repeat
     (y:=modeIsAggregateOf("List",D,e)) and
       (T:= compList(l,["List",second y],e)) and (T':= coerce(T,m)) =>
@@ -1311,7 +1313,8 @@ getExternalSymbolMode(op,lang,e) ==
 
 compElt: (%Form,%Mode,%Env) -> %Maybe %Triple
 compElt(form,m,E) ==
-  form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
+  db := currentDB E
+  form isnt ["elt",aDomain,anOp] => compForm(db,form,m,E)
   aDomain is "Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
     [anOp',m,E] where anOp'() == (anOp = $Zero => 0; anOp = $One => 1; anOp)
   lang ~= nil =>
@@ -1319,7 +1322,7 @@ compElt(form,m,E) ==
     op := get(anOp,"%Link",E) or anOp
     coerce([op,opMode,E],m)
   isDomainForm(aDomain,E) =>
-    E := addDomain(aDomain,E)
+    E := addDomain(db,aDomain,E)
     mmList:= getModemapListFromDomain(internalName anOp,0,aDomain,E)
     modemap:=
       -- FIXME: do this only for constants.
@@ -1336,7 +1339,7 @@ compElt(form,m,E) ==
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry(opOf anOp,modemap,E)
     coerce([['%call,val],second sig,E], m)
-  compForm(form,m,E)
+  compForm(db,form,m,E)
 
 --% HAS
 
@@ -1445,7 +1448,7 @@ compImport: (%Form,%Mode,%Env) -> %Triple
 compImport(["import",:doms],m,e) ==
   if not $bootStrapMode then
     for dom in doms repeat
-      e := addDomain(dom,e)
+      e := addDomain(currentDB e,dom,e)
   ["/throwAway",$NoValueMode,e]
 
 --% Foreign Function Interface
@@ -1645,7 +1648,7 @@ getModemapList(op,nargs,e) ==
 --                An angry JHD - August 15th., 1984
 
 compCase(["case",x,m'],m,e) ==
-  e:= addDomain(m',e)
+  e:= addDomain(currentDB e,m',e)
   T:= compCase1(x,m',e) => coerce(T,m)
   nil
 
@@ -1672,13 +1675,15 @@ maybeSpliceMode m ==
 
 compColon: (%Form,%Mode,%Env) -> %Maybe %Triple
 compColon([":",f,t],m,e) ==
-  $insideExpressionIfTrue => compColonInside(f,m,e,t)
+  db := currentDB e
+  $insideExpressionIfTrue => compColonInside(db,f,m,e,t)
     --if inside an expression, ":" means to convert to m "on faith"
   $lhsOfColon: local:= f
   t:=
     t isnt [.,:.] and (t':= assoc(t,getDomainsInScope e)) => t'
     isDomainForm(t,e) and not $insideCategoryIfTrue =>
-      (if not listMember?(t,getDomainsInScope e) then e:= addDomain(t,e); t)
+      e := addDomain(db,t,e)
+      t
     isDomainForm(t,e) or isCategoryForm(t,e) => t
     t is ["Mapping",m',:r] => t
     string? t => t              -- literal flag types are OK
@@ -1713,7 +1718,7 @@ unknownTypeError name ==
 
 compPretend: (%Form,%Mode,%Env) -> %Maybe %Triple
 compPretend(["pretend",x,t],m,e) ==
-  e:= addDomain(t,e)
+  e:= addDomain(currentDB e,t,e)
   T:= comp(x,t,e) or comp(x,$EmptyMode,e) or return nil
   t' := T.mode            -- save this, in case we need to make suggestions
   T:= [T.expr,t,T.env]
@@ -1725,8 +1730,8 @@ compPretend(["pretend",x,t],m,e) ==
     T'
   nil
 
-compColonInside(x,m,e,m') ==
-  e:= addDomain(m',e)
+compColonInside(db,x,m,e,m') ==
+  e:= addDomain(db,m',e)
   T:= comp(x,$EmptyMode,e) or return nil
   if (m'':=T.mode)=m' then warningMessage:= [":",m'," -- should replace by @"]
   T:= [T.expr,m',T.env]
@@ -1876,7 +1881,7 @@ coerceExit([x,m,e],m') ==
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtSign(["@",x,m'],m,e) ==
-  e:= addDomain(m',e)
+  e:= addDomain(currentDB e,m',e)
   T:= comp(x,m',e) or return nil
   coerce(T,m)
 
@@ -1886,7 +1891,7 @@ coerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 autoCoerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 
 compCoerce(["::",x,m'],m,e) ==
-  e:= addDomain(m',e)
+  e:= addDomain(currentDB e,m',e)
   T:= compCoerce1(x,m',e) => coerce(T,m)
   ident? m' and getXmode(m',e) is ["Mapping",["UnionCategory",:l]] =>
     T:= (or/[compCoerce1(x,m1,e) for m1 in l]) or return nil
