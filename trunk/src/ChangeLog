@@ -1,5 +1,12 @@
 2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (compDefineCategory1): Take DB parameter.
+	(compDefineCategory2): Likewise.
+	(compDefineFunctor1): Likewise.
+	* interp/lisplib.boot (compDefineLisplib): Likewise.
+
+2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/sys-globals.boot ($domainShell): Remove.
 	* interp/c-util.boot (%CompilationData): Add shell field.
 	(dbDomainShell): New accessor.  Replace $domainShell variable.
