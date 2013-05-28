@@ -212,7 +212,7 @@ modemapsFromCategory(db,form,body,signature) ==
   form := applySubst(sl,form)
   body := applySubst(sl,body)
   signature := applySubst(sl,signature)
-  opAlist := applySubst(sl,categoryExports $domainShell) or return nil
+  opAlist := applySubst(sl,categoryExports dbDomainShell db) or return nil
   nonCategorySigAlist :=
     mkAlistOfExplicitCategoryOps substitute("*1","$",body)
   catPredList := [['ofCategory,"*1",form],

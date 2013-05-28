@@ -145,15 +145,17 @@ macro domainData d ==
 
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
-    items: %Buffer %Pair(%SourceEntity,%Elaboration)) with
-      cdSubstitution == (.subst)
-      cdImplicits == (.idata)
-      cdBytes == (.bytes)
-      cdItems == (.items)
+    shell: %Vector %Thing,
+      items: %Buffer %Pair(%SourceEntity,%Elaboration)) with
+        cdSubstitution == (.subst)
+        cdImplicits == (.idata)
+        cdBytes == (.bytes)
+        cdShell == (.shell)
+        cdItems == (.items)
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  mk%CompilationData(nil,nil,nil,[nil,:0])
+  mk%CompilationData(nil,nil,nil,nil,[nil,:0])
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -173,6 +175,11 @@ macro dbImplicitData db ==
 ++ Transcient data.
 macro dbByteList db ==
   cdBytes dbCompilerData db
+
+++ Return the domain shell of the category object (or the category object
+++ of the domain) being elaborated.
+macro dbDomainShell db ==
+  cdShell dbCompilerData db
 
 ++ Return a buffer of entities referenced during elaboration
 ++ of current functor.

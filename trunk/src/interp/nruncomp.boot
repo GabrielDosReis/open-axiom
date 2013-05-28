@@ -437,7 +437,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
 --           this list is not augmented by this function
 --  $e: environment
 --GLOBAL VARIABLES REFERENCED:
---  $domainShell: passed in from compDefineFunctor1
 --  $QuickCode: compilation flag
   $definition: local := dbConstructorForm db
   [name,:args] := $definition
@@ -466,7 +465,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [$catsig,:argsig] := sig
   catvecListMaker := removeDuplicates
     [comp($catsig,$EmptyMode,$e).expr,
-      :[compCategories(u,$e) for [u,:.] in categoryAncestors $domainShell]]
+      :[compCategories(u,$e) for [u,:.] in categoryAncestors dbDomainShell db]]
   condCats := InvestigateConditions(db,[$catsig,:rest catvecListMaker],$e)
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
@@ -555,7 +554,7 @@ NRTsetVector4a(db,sig,form,cond) ==
   sig is '$ =>
      domainList :=
        [optimize comp(d,$EmptyMode,$e).expr or d
-         for d in categoryPrincipals $domainShell]
+         for d in categoryPrincipals dbDomainShell db]
      $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
      $uncondList
@@ -575,7 +574,7 @@ NRTmakeSlot1Info db ==
       [[first dbParameters db,:'_$],:dbFormalSubst db]
     dbFormalSubst db
   exports :=
-    transformOperationAlist applySubst(pairlis,categoryExports $domainShell)
+    transformOperationAlist applySubst(pairlis,categoryExports dbDomainShell db)
   opList :=
     $NRTderivedTargetIfTrue => 'derived
     $insideCategoryPackageIfTrue => slot1Filter exports
@@ -613,7 +612,7 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
   --  if called inside buildFunctor, dbEntityCount gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
   --    dbUsedEntities = nil  ===> all slot numbers become nil
-  $lisplibOperationAlist := [sigloc(db,entry) for entry in categoryExports $domainShell] where
+  $lisplibOperationAlist := [sigloc(db,entry) for entry in categoryExports dbDomainShell db] where
     sigloc(db,[opsig,pred,fnsel]) ==
       if pred isnt true then
         pred := simpBool pred
@@ -627,7 +626,7 @@ changeDirectoryInSlot1 db ==  --called by buildFunctor
                            copyList $lisplibOperationAlist,function second)
   $lastPred: local := false
   $newEnv: local := $e
-  categoryExports($domainShell) := [fn(db,entry) for entry in sortedOplist] where
+  categoryExports(dbDomainShell db) := [fn(db,entry) for entry in sortedOplist] where
     fn(db,[[op,sig],pred,fnsel]) ==
        if $lastPred ~= pred then
             $newEnv := deepChaseInferences(pred,$e)
