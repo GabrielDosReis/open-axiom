@@ -407,15 +407,17 @@ macro constructorDB ctor ==
   
 --%
 structure %Libstream ==
-  Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, idxst: %Stream)
-    with
+  Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, idxst: %Stream,
+    cdst: %Stream,insnst: %Stream) with
       libIOMode == (.mode)
       libDirname == (.dir)
       libIndexTable == (.tbl)
       libIndexStream == (.idxst)
+      libCodeStream == (.cdstr)
+      libInsnStream == (.insnst)
 
 makeLibstream(m,p,idx==nil,st==nil) ==
-  mk%Libstream(m,p,idx,st)
+  mk%Libstream(m,p,idx,st,nil,nil)
 
 addCompilerOption(key,val) ==
   $compilerOptions := [[key,:val],:$compilerOptions]
