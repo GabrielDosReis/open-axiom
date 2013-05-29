@@ -1200,6 +1200,7 @@ compDefineCategory(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := lhs
   dbCompilerData(db) := makeCompilationData()
+  $backend: local := function(x +-> printBackendStmt(db,x))
   try
     $insideFunctorIfTrue => compDefineCategory1(db,df,m,e,fal)
     compDefineLisplib(db,df,m,e,fal,'compDefineCategory1)
@@ -1448,6 +1449,7 @@ compDefineFunctor(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := form
   dbCompilerData(db) := makeCompilationData()
+  $backend: local := function(x +-> printBackendStmt(db,x))
   try compDefineLisplib(db,df,m,e,fal,'compDefineFunctor1)
   finally dbCompilerData(db) := nil
  

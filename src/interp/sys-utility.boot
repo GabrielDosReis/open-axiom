@@ -400,18 +400,11 @@ structure %Libstream ==
       libDirname == (.dir)
       libIndexTable == (.tbl)
       libIndexStream == (.idxst)
-      libCodeStream == (.cdstr)
+      libCodeStream == (.cdst)
       libInsnStream == (.insnst)
 
 makeLibstream(m,p,idx==nil,st==nil) ==
   mk%Libstream(m,p,idx,st,nil,nil)
-
-addCompilerOption(key,val) ==
-  $compilerOptions := [[key,:val],:$compilerOptions]
-  key is 'FILE =>
-    st := outputTextFile strconc(libDirname val,'"/code.lsp")
-    $compilerOptions := [['COMPILER_-OUTPUT_-STREAM,:st],:$compilerOptions]
-  nil
 
 makeFilename(filearg,filetype==nil) ==
   if ident? filetype then

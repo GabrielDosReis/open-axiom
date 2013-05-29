@@ -388,6 +388,3 @@ $optimizeRep := false
 
 ++
 $leanMode := false
-
-++ Table of compiler data driving compilation.
-$compilerOptions := nil

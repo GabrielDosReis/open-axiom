@@ -1060,8 +1060,7 @@ translateSpad x ==
   $e: local := $EmptyEnvironment
   $genSDVar: local := 0
   $previousTime: local := TEMPUS_-FUGIT()
-  $compilerOptions: local := nil
-  $backend: local := function printBackendDecl
+  $backend: local := function(x +-> PRINT_-FULL(x,$OutputStream))
   compileParseTree x  
 
 --%

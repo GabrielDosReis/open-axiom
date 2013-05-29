@@ -199,6 +199,12 @@ macro dbEntityCount db ==
 macro dbLibstream db ==
   cdOutput dbCompilerData db
 
+macro dbCodeStream db ==
+  libCodeStream dbLibstream db
+
+macro dbInsnStream db ==
+  libInsnStream dbLibstream db
+
 ++ Return the existential substitution of `db'.
 dbQuerySubst db ==
   x := dbImplicitData db => first x
@@ -1307,9 +1313,6 @@ getFunctionReplacement name ==
 clearReplacement name ==
   property(name,"SPADreplace") := nil
   property(name,'%redex) := nil
-
-printBackendStmt(db,stmt) ==
-  printBackendDecl stmt
 
 evalAndPrintBackendStmt(db,stmt) ==
   eval stmt
