@@ -1595,15 +1595,6 @@ noteSpecialVariable x ==
 
 --%
 
-compileFileQuietly path ==
-  quietlyIfInteractive COMPILE_-FILE path
-
-++ Subroutine of compileConstructor1.  Called to compile the body
-++ of a category constructor definition.
-compAndDefine l ==
-  _*COMP370_-APPLY_* := function evalAndPrintBackendDecl
-  backendCompile l
-
 $compileDontDefineFunctions := true
 
 --%

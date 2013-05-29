@@ -87,7 +87,7 @@
   `(CONS |$BFtag| (CONS ,MT ,EP)))
 
 (defun MAKE-FLOAT (int frac fraclen exp)
-  (if (AND $SPAD |$useBFasDefault|)
+  (if |$useBFasDefault|
       (if (= frac 0)
           (MAKE-BF int exp)
 	(MAKE-BF (+ (* int (expt 10 fraclen)) frac) 
@@ -911,7 +911,7 @@
 
 (defmacro SPADDO (&rest OL)
   (PROG (VARS L VL V U INITS U-VARS U-VALS ENDTEST EXITFORMS BODYFORMS)
-	(if (OR $BOOT (NOT $NEWSPAD))
+	(if (NOT $NEWSPAD)
 	    (return (CONS 'DO OL)))
 	(SETQ L  (COPY-LIST OL))
 	(if (OR (ATOM L) (ATOM (CDR L)))

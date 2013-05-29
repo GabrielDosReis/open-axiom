@@ -404,7 +404,7 @@ compileInteractive fn ==
 
 ++ Subroutine of compileInteractive.
 compQuietly fn ==
-  _*COMP370_-APPLY_*: local :=
+  $backend: local :=
     $compileDontDefineFunctions => "COMPILE-DEFUN"
     "EVAL-DEFUN"
   quietlyIfInteractive backendCompile fn

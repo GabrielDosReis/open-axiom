@@ -772,7 +772,7 @@ eval x ==
 
 
 compileLispDefinition(name,def) ==
-  _*COMP370_-APPLY_* ~= nil => apply(_*COMP370_-APPLY_*,name,def,nil)
+  $backend ~= nil => apply($backend,name,def,nil)
   nil
 
 ++ Return true if `parms' is the empty list

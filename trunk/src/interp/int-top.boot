@@ -87,7 +87,6 @@ ncTopLevel() ==
 -- the Bill Burge's parser.
   $InteractiveMode: local := true
   $NEWSPAD: local := true
-  $SPAD: local := true
   $e: local := $InteractiveFrame
   ncIntLoop()
 

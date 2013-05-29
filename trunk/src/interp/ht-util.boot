@@ -516,7 +516,6 @@ condErrorMsg type ==
 
 parseAndEval string ==
   $InteractiveMode: local := true
-  $SPAD: local := true
   $e: local := $InteractiveFrame
   $QuietCommand: local := true
   parseAndEval1 string

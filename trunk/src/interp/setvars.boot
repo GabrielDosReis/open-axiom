@@ -148,7 +148,6 @@ resetWorkspaceVariables() ==
   SETQ($existingFiles               , hashTable 'EQUAL)
   SETQ($functionTable               , nil)
   SETQ($echoLineStack               , nil)
-  SETQ($slamFlag                    , nil)
   SETQ($CommandSynonymAlist         , copyTree($InitialCommandSynonymAlist))
   SETQ($UserAbbreviationsAlist      , nil)
   SETQ($msgDatabase                 , nil)

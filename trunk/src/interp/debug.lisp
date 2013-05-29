@@ -157,8 +157,8 @@
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
          TRAPFLAG |$InteractiveMode| COLUMN *QUERY LINE
-         (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
-        (declare (special |$Echo| SINGLINEMODE INPUTSTREAM
+         (|$backend| (if (eq op 'define) #'eval-defun #'compile-defun)))
+        (declare (special |$Echo| SINGLINEMODE INPUTSTREAM |$backend|
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK

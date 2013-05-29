@@ -206,9 +206,6 @@ $FUNNAME := nil
 $FUNNAME__TAIL := '(())
 
 ++
-$LASTPREFIX := '"S_:"
-
-++
 $LINESTACK := "BEGIN__UNIT"
 
 ++
@@ -216,9 +213,6 @@ $MAXLINENUMBER := 0
 
 ++
 $OLDLINE := nil
-
-++
-$SPAD := false
 
 ++
 $PrintOnly := false
@@ -237,10 +231,6 @@ $returnMode := $EmptyMode
 
 ++
 $SetFunctions := nil
-
-++
-++ FIXME: Eventually remove.
-$slamFlag := false
 
 ++
 ++ FIXME: Eventually remove.
@@ -270,9 +260,6 @@ $TRACELETFLAG := false
 
 ++
 $NEWSPAD := false
-
-++
-$BOOT := false
 
 ++
 $insideCoerceInteractive := false

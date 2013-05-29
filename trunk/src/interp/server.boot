@@ -100,7 +100,6 @@ serverReadLine(stream) ==
 
 parseAndInterpret str ==
   $InteractiveMode : local := true
-  $SPAD: local := true
   $e: local := $InteractiveFrame
   ncParseAndInterpretString str
 
@@ -145,7 +144,6 @@ parseAndInterpToString str ==
 
 parseAndEvalStr string ==
   $InteractiveMode: local := true
-  $SPAD: local := true
   $e: local := $InteractiveFrame
   parseAndEvalStr1 string
 
