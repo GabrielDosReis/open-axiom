@@ -43,7 +43,7 @@ namespace BOOT
 module lisp_-backend where
   expandToVMForm: %Thing -> %Thing
   eval: %Thing -> %Thing
-  printBackendDecl: (%Symbol,%Code) -> %Void
+  printBackendDecl: %Code -> %Void
   transformToBackendCode: %Form -> %Code
 
 
@@ -767,10 +767,9 @@ expandToVMForm x ==
 eval x ==
   EVAL expandToVMForm x
 
-
-compileLispDefinition(name,def) ==
-  $backend ~= nil => apply($backend,name,def,nil)
-  nil
+++ Augment the current evaluation environment with a function definition.
+evaluateLispDefinition body ==
+  eval body
 
 ++ Return true if `parms' is the empty list
 ++ or is a proper list of identifiers.
@@ -814,7 +813,7 @@ COMPILE1 fun ==
   body :=
     type in '(%lambda LAMBDA) => ['DEFUN,name,newArgs,:body]
     ['DEFMACRO,name,newArgs,:body]
-  compileLispDefinition(name,body)
+  apply($backend,[body])
   body
 
 COMP370 x ==
@@ -827,7 +826,7 @@ assembleCode x ==
   else COMP370 x
   first x
 
-printBackendDecl(label,decl) ==
+printBackendDecl decl ==
   st :=
     sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,$compilerOptions) => rest sp
     $OutputStream

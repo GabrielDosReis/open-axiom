@@ -456,14 +456,14 @@ mkCtorDBForm db ==
 writeInfo(db,info,key,prop) ==
   if info ~= nil then
     insn := ['%store,[prop,mkCtorDBForm db],quote info]
-    printBackendDecl(key,expandToVMForm insn)
+    printBackendDecl expandToVMForm insn
   lisplibWrite(symbolName key,info,dbLibstream db)
 
 ++ Like writeInfo, but only write to the load unit.
 writeLoadInfo(db,info,key,prop) ==
   info = nil => nil
   insn := ['%store,[prop,mkCtorDBForm db],info]
-  printBackendDecl(key,expandToVMForm insn)
+  printBackendDecl expandToVMForm insn
 
 writeTemplate db ==
   dbConstructorKind db = 'category => nil

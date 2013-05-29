@@ -1,3 +1,13 @@
+2013-05-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisp-backend.boot (compileLispDefinition): Remove.
+	Adjust callers.
+	(printBackendDecl): Lose first parameter.  Adjust callers.
+	* interp/slam.boot (compQuietly): Simplify.
+	* interp/sys-utility.boot (COMPILE-DEFUN): Remove.  Adjust callers.
+	(EVAL-DEFUN): Likewise.
+	* interp/sys-macros.lisp (MACROEXPANDALL): Remove as no longer used..
+
 2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (compDefineCategory1): Take DB parameter.

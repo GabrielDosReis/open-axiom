@@ -1309,7 +1309,7 @@ clearReplacement name ==
   property(name,'%redex) := nil
 
 printBackendStmt(db,stmt) ==
-  printBackendDecl(nil,stmt)
+  printBackendDecl stmt
 
 evalAndPrintBackendStmt(db,stmt) ==
   eval stmt
@@ -1599,10 +1599,6 @@ isLispSpecialVariable x ==
   
 noteSpecialVariable x ==
   $SpecialVars := insert(x,$SpecialVars)
-
---%
-
-$compileDontDefineFunctions := true
 
 --%
 --% Compile Time operation lookup for the benefit of domain inlining.

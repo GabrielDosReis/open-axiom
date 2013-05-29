@@ -2159,7 +2159,7 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 ++ Subroutine of compileConstructor1.  Called to compile the body
 ++ of a category constructor definition.
 compAndDefine(db,l) ==
-  $backend: local := function((v,x) +-> evalAndPrintBackendStmt(db,x))
+  $backend: local := function(x +-> evalAndPrintBackendStmt(db,x))
   backendCompile(db,l)
 
 compHash(db,op,argl,body) ==

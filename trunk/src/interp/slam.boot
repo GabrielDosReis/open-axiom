@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -404,9 +404,7 @@ compileInteractive fn ==
 
 ++ Subroutine of compileInteractive.
 compQuietly fn ==
-  $backend: local :=
-    $compileDontDefineFunctions => "COMPILE-DEFUN"
-    "EVAL-DEFUN"
+  $backend: local := function evaluateLispDefinition
   quietlyIfInteractive backendCompile(nil,fn)
 
 clearAllSlams x ==
