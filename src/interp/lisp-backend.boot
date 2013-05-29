@@ -1033,6 +1033,6 @@ backendCompile1 x ==
     formatToStdout('"~&~%;;;     ***       ~S REDEFINED~%",fname)
   [[fname,lamex],:$CLOSEDFNS]
 
-backendCompile l ==
-  [backendCompile2 f2 for f2 in [:backendCompile1(f1) for f1 in l]]
+backendCompile(db,l) ==
+  [backendCompile2(db,f2) for f2 in [:backendCompile1(f1) for f1 in l]]
 
