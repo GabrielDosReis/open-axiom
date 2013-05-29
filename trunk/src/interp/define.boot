@@ -1586,7 +1586,7 @@ compFunctorBody(db,body,m,e) ==
   T:= compOrCroak(body,m,e)
   $capsuleFunctionStack := reverse! $capsuleFunctionStack
   -- ??? Don't resolve default definitions, yet.
-  backendCompile
+  backendCompile(db,defs) where defs() ==
     $insideCategoryPackageIfTrue => $capsuleFunctionStack
     foldExportedFunctionReferences(db,$capsuleFunctionStack)
   clearCapsuleDirectory()        -- release storage.
@@ -2137,7 +2137,7 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
     $optExportedFunctionReference =>
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]
       first form
-    first backendCompile [form]
+    first backendCompile(db,[form])
   compileConstructor(db,form)
  
 compileConstructor(db,form) ==
@@ -2153,14 +2153,14 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
   dbConstructorKind db = 'category =>
     first compAndDefine(db,[[fn,['%slam,vl,:bodyl]]])
   dbInstanceCache db = nil =>
-    first backendCompile [[fn,['%lambda,vl,:bodyl]]]
+    first backendCompile(db,[[fn,['%lambda,vl,:bodyl]]])
   compHash(db,fn,vl,bodyl)
  
 ++ Subroutine of compileConstructor1.  Called to compile the body
 ++ of a category constructor definition.
 compAndDefine(db,l) ==
   $backend: local := function evalAndPrintBackendDecl
-  backendCompile l
+  backendCompile(db,l)
 
 compHash(db,op,argl,body) ==
 --   Entries will be stored on the global hashtable in a uniform way:
@@ -2194,7 +2194,7 @@ compHash(db,op,argl,body) ==
   if $reportCompilation then
     sayBrightlyI bright '"Generated code for function:"
     pp computeFunction
-  backendCompile [[op,['%lambda,argl,codeBody]],computeFunction]
+  backendCompile(db,[[op,['%lambda,argl,codeBody]],computeFunction])
   op
  
 constructMacro: %Form -> %Form

@@ -407,7 +407,7 @@ compQuietly fn ==
   $backend: local :=
     $compileDontDefineFunctions => "COMPILE-DEFUN"
     "EVAL-DEFUN"
-  quietlyIfInteractive backendCompile fn
+  quietlyIfInteractive backendCompile(nil,fn)
 
 clearAllSlams x ==
   fn(x,nil) where

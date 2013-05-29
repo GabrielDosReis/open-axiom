@@ -1524,8 +1524,8 @@ proclaimCapsuleFunction(db,op,sig) ==
 ++ its values are cached, so that equal lists of argument values
 ++ yield equal values.  The arguments-value pairs are stored
 ++ in a hash table.  This backend compiler is used to compile constructors.
-backendCompileSPADSLAM: (%Symbol,%List %Symbol,%Code) -> %Symbol
-backendCompileSPADSLAM(name,args,body) ==
+backendCompileSPADSLAM: (%Database,%Symbol,%List %Symbol,%Code) -> %Symbol
+backendCompileSPADSLAM(db,name,args,body) ==
   al := mkCacheName name       -- global name for the cache hash table.
   auxfn := makeWorkerName name -- name of the worker function.
   g2 := gensym()               -- local name for the cache value.
@@ -1551,11 +1551,11 @@ backendCompileSPADSLAM(name,args,body) ==
   assembleCode [auxfn,["LAMBDA",args,:body]]
   assembleCode [name,["LAMBDA",args,code]]
 
-backendCompile2: %Code -> %Symbol
-backendCompile2 code ==
+backendCompile2: (%Maybe %Database,%Code) -> %Symbol
+backendCompile2 (db,code) ==
   code isnt [name,[type,args,:body]] =>
     systemError ['"parenthesis error in: ", code]
-  type = '%slam => backendCompileSPADSLAM(name,args,body)
+  type = '%slam => backendCompileSPADSLAM(db,name,args,body)
   assembleCode [name,[type,args,:body]]
 
 ++ returns all fuild variables contained in `x'.  Fuild variables are
