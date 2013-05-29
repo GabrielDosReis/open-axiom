@@ -1545,7 +1545,7 @@ checkExternalEntity(id,type,lang,e) ==
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
   id' := encodeLocalFunctionName id
   [def] := genImportDeclaration(id',[bootDenotation "%Signature",id,type'])
-  compileLispDefinition(id,def)
+  apply($backend,[def])
   id'
 
 

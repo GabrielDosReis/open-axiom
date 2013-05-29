@@ -1500,53 +1500,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 #-(OR IBCL AKCL)
 (defmacro |elapsedGcTime| () '0)
- 
-; This function was modified by Greg Vanuxem on March 31, 2005
-; to handle the special case of #'(lambda ..... which expands
-; into (function (lambda .....
-; 
-; The extra if clause fixes bugs #196 and #114
-;
-; an example that used to cause the failure was:
-; )set func comp off
-; f(xl:LIST FRAC INT): LIST FRAC INT == map(x +-> x, xl)
-; f [1,2,3]
-;
-; which expanded into
-;
-; (defun |xl;f;1;initial| (|#1| |envArg|)
-;  (prog (#:G1420)
-;   (return 
-;    (progn
-;     (lett #:G1420 'uninitialized_variable |f| |#1;f;1:initial|)
-;      (spadcall 
-;       (cons (|function| (lambda (#:G1420 |envArg|) #:G1420)) (vector))
-;       |#1|
-;       (svref |*1;f;1;initial;MV| 0))))))
-;
-; the (|function| (lambda form used to cause an infinite expansion loop
-;      
-(defun macroexpandall (sexpr)
- (cond
-  ((atom sexpr) sexpr)
-  ((eq (car sexpr) 'quote) sexpr)
-  ((eq (car sexpr) 'defun)
-   (cons (car sexpr) (cons (cadr sexpr)
-       (mapcar #'macroexpandall (cddr sexpr)))))
-  ((and (symbolp (car sexpr)) (macro-function (car sexpr)))
-   (do ()
-       ((not (and (consp sexpr) (symbolp (car sexpr))
-                  (macro-function (car sexpr)))))
-     (setq sexpr (macroexpand sexpr)))
-   (if (consp sexpr) 
-     (let ((a (car sexpr)) (b (caadr sexpr)))
-       (if (and (eq a 'function) (eq b 'lambda))
-         (cons a (list (cons b (mapcar #'macroexpandall (cdadr sexpr)))))
-         (mapcar #'macroexpandall sexpr)))
-       sexpr))
-  ('else        
-    (mapcar #'macroexpandall sexpr))))
-
 
 (defun |deleteWOC| (item list) (delete item list :test #'equal))
 

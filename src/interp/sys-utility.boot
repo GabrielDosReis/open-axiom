@@ -235,19 +235,6 @@ bitior: (%Short,%Short) -> %Short
 bitior(x,y) ==
   BOOLE(BOOLE_-IOR,x,y)
 
-
---% Back ends 
-
-++ compile a function definition, augmenting the current
-++ evaluation environement with the result of the compilation.
-COMPILE_-DEFUN(name,body) ==
-  eval body
-  COMPILE name
-
-++ Augment the current evaluation environment with a function definition.
-EVAL_-DEFUN(name,body) ==
-  eval MACROEXPANDALL body
-
 --% Hash table
 
 hashTable cmp ==
