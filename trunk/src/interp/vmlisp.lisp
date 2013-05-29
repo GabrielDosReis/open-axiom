@@ -55,8 +55,6 @@
 
 (defvar *embedded-functions* nil)
 
-(defvar *fileactq-apply* nil "function to apply in fileactq")
-
 (defvar macerrorcount 0  "Put some documentation in here someday")
 
 (defvar *read-place-holder* (make-symbol "%.EOF")
@@ -207,13 +205,6 @@
 
 (defmacro rvecp (v)
  `(typep ,v '(vector float)))
-
-(defmacro setandfileq (id item)
- `(eval-when
-   #+:common-lisp (:load-toplevel :execute)
-   #-:common-lisp (eval load) 
-   (setq ,id ,item)
-   (lam\,fileactq ',id (list 'setq ',id (list 'quote ,id)))))
 
 (defmacro setqp (&whole form pattern exp)
   `(,(dcqexp pattern '=) ,exp))
@@ -1151,10 +1142,6 @@
 (defun $showline (cvec sint) (terpri) sint (princ cvec))
 
 ; 99.0 Ancient Stuff We Decided To Keep
-
-(defun LAM\,FILEACTQ (name form)
-  (if *FILEACTQ-APPLY*
-      (FUNCALL *FILEACTQ-APPLY* name form)))
 
 (defun PLACEP (item) (eq item *read-place-holder*))
 (defun VMREAD (&optional (st |$InputStream|) (eofval *read-place-holder*))

@@ -67,7 +67,6 @@
 (defun spad (ifile
              &aux
 	     (*comp370-apply* (function |printBackendDecl|))
-	     (*fileactq-apply* (function |printBackendDecl|))
 	     ($SPAD T)
 	     (|$compilerOptions| nil)
 	     (|$editFile| ifile)
