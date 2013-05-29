@@ -38,12 +38,13 @@
 
 import sys_-macros
 import nlib
+import c_-util
 namespace BOOT
 
 module lisp_-backend where
   expandToVMForm: %Thing -> %Thing
   eval: %Thing -> %Thing
-  printBackendDecl: %Code -> %Void
+  printBackendStmt: (%Database,%Code) -> %Void
   transformToBackendCode: %Form -> %Code
 
 
@@ -826,11 +827,9 @@ assembleCode x ==
   else COMP370 x
   first x
 
-printBackendDecl decl ==
-  st :=
-    sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,$compilerOptions) => rest sp
-    $OutputStream
-  PRINT_-FULL(decl,st)
+printBackendStmt(db,stmt) ==
+  st := dbCodeStream db
+  PRINT_-FULL(stmt,st)
   flushOutput st
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.

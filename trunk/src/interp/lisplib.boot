@@ -426,7 +426,6 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   if ok then lisplibDoRename(libName)
   filearg := makeFullFilePath [libName,$spadLibFT,nil]
   RPACKFILE filearg
-  freshLine $algebraOutputStream
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor op
   $buildingSystemAlgebra => res
@@ -447,8 +446,9 @@ compileDocumentation(ctor,libName) ==
 initializeLisplib(db,libName) ==
   removeFile makeFullFilePath [libName,'ERRORLIB,nil]
   resetErrorCount()
-  dbLibstream(db) := writeLib(libName,'ERRORLIB)
-  addCompilerOption('FILE,dbLibstream db)
+  lib := writeLib(libName,'ERRORLIB)
+  dbLibstream(db) := lib
+  dbCodeStream(db) := outputTextFile strconc(libDirname lib,'"/code.lsp")
 
 mkCtorDBForm db ==
   ['constructorDB,quote dbConstructor db]
@@ -456,14 +456,14 @@ mkCtorDBForm db ==
 writeInfo(db,info,key,prop) ==
   if info ~= nil then
     insn := ['%store,[prop,mkCtorDBForm db],quote info]
-    printBackendDecl expandToVMForm insn
+    printBackendStmt(db,expandToVMForm insn)
   lisplibWrite(symbolName key,info,dbLibstream db)
 
 ++ Like writeInfo, but only write to the load unit.
 writeLoadInfo(db,info,key,prop) ==
   info = nil => nil
   insn := ['%store,[prop,mkCtorDBForm db],info]
-  printBackendDecl expandToVMForm insn
+  printBackendStmt(db,expandToVMForm insn)
 
 writeTemplate db ==
   dbConstructorKind db = 'category => nil
