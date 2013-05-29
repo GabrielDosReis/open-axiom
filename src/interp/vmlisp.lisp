@@ -51,8 +51,6 @@
 
 ;; DEFVARS
 
-(defvar *comp370-apply* nil "function (name def) for comp370 to apply")
-
 (defvar *embedded-functions* nil)
 
 (defvar macerrorcount 0  "Put some documentation in here someday")

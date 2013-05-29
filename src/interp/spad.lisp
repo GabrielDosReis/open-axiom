@@ -66,12 +66,9 @@
 
 (defun spad (ifile
              &aux
-	     (*comp370-apply* (function |printBackendDecl|))
-	     ($SPAD T)
-	     (|$compilerOptions| nil)
 	     (|$editFile| ifile)
 	     rd)
-  (declare (special |$Echo| |$editFile| *comp370-apply*))
+  (declare (special |$Echo| |$editFile|))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))

@@ -200,7 +200,6 @@ initializeGlobalState() ==
   $IOindex := 1
   $currentLine := nil
   $NEWSPAD := true
-  $SPAD := true
   $buildingSystemAlgebra := getOptionValue "system-algebra"
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"

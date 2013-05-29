@@ -1060,6 +1060,8 @@ translateSpad x ==
   $e: local := $EmptyEnvironment
   $genSDVar: local := 0
   $previousTime: local := TEMPUS_-FUGIT()
+  $compilerOptions: local := nil
+  $backend: local := function printBackendDecl
   compileParseTree x  
 
 --%
@@ -1071,7 +1073,6 @@ translateSpad x ==
 ++ ??? meaningful.  Eventually this code will go away when we 
 ++ ??? finally use the new parser everwhere.
 parseSpadFile sourceFile ==
-  $SPAD: local := true                   -- we are parsing Spad, 
   FILE_-CLOSED : local := false          -- current stream closed?
   try
     -- noise to standard output  

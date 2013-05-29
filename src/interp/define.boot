@@ -2151,11 +2151,17 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
   dbConstructorKind db = 'category =>
-    first compAndDefine [[fn,['%slam,vl,:bodyl]]]
+    first compAndDefine(db,[[fn,['%slam,vl,:bodyl]]])
   dbInstanceCache db = nil =>
     first backendCompile [[fn,['%lambda,vl,:bodyl]]]
   compHash(db,fn,vl,bodyl)
  
+++ Subroutine of compileConstructor1.  Called to compile the body
+++ of a category constructor definition.
+compAndDefine(db,l) ==
+  $backend: local := function evalAndPrintBackendDecl
+  backendCompile l
+
 compHash(db,op,argl,body) ==
 --   Entries will be stored on the global hashtable in a uniform way:
 --        (<argument list>, <reference count>,:<value>)

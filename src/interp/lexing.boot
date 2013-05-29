@@ -530,5 +530,4 @@ ioClear! rd ==
   lineClear! readerSourceLine rd
   tokenStackClear!()
   reduceStackClear()
-  $SPAD => nextLinesClear!()
-  nil
+  nextLinesClear!()

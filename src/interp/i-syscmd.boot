@@ -499,7 +499,6 @@ compileSpadLispCmd args ==
     lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
     if fnameReadable?(lsp) then
         if not beQuiet then sayKeyedMsg("S2IZ0089", [namestring lsp])
-        --compileFileQuietly(lsp)
         RECOMPILE_-LIB_-FILE_-IF_-NECESSARY lsp
     else
         sayKeyedMsg("S2IL0003", [namestring lsp])
