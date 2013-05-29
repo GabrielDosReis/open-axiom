@@ -392,26 +392,21 @@ clearLocalModemaps x ==
   $e
  
 compileInteractive fn ==
-  if $InteractiveMode then startTimingProcess 'compilation
-  if fn is [.,[bindOp,.,.]] and abstractionOperator? bindOp then
-    fn := [first fn,declareUnusedParameters second fn]
-  if $reportCompilation then
-    sayBrightlyI bright '"Generated LISP code for function:"
-    pp fn
-  optfn :=
-     $InteractiveMode => [timedOptimization fn]
-     [fn]
-  result := compQuietly optfn
-  if $InteractiveMode then stopTimingProcess 'compilation
-  result
+  try
+    startTimingProcess 'compilation
+    if fn is [.,[bindOp,.,.]] and abstractionOperator? bindOp then
+      fn := [first fn,declareUnusedParameters second fn]
+    if $reportCompilation then
+      sayBrightlyI bright '"Generated LISP code for function:"
+      pp fn
+    compQuietly [timedOptimization fn]
+  finally stopTimingProcess 'compilation
 
 ++ Subroutine of compileInteractive.
 compQuietly fn ==
-  _*COMP370_-APPLY_* :=
-    $InteractiveMode =>
-      $compileDontDefineFunctions => "COMPILE-DEFUN"
-      "EVAL-DEFUN"
-    function printBackendDecl
+  _*COMP370_-APPLY_*: local :=
+    $compileDontDefineFunctions => "COMPILE-DEFUN"
+    "EVAL-DEFUN"
   quietlyIfInteractive backendCompile fn
 
 clearAllSlams x ==

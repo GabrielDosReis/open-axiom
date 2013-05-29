@@ -1588,7 +1588,7 @@ compFunctorBody(db,body,m,e) ==
   -- ??? Don't resolve default definitions, yet.
   backendCompile
     $insideCategoryPackageIfTrue => $capsuleFunctionStack
-    foldExportedFunctionReferences $capsuleFunctionStack
+    foldExportedFunctionReferences(db,$capsuleFunctionStack)
   clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and op in '(add CAPSULE) => T
   $NRTaddForm :=
@@ -1984,7 +1984,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type
     if $optProclaim then
-      proclaimCapsuleFunction(op',signature)
+      proclaimCapsuleFunction(db,op',signature)
     clearReplacement op'   -- Make sure we have fresh info
     -- Finally, build a lambda expression for this function.
     fun :=
@@ -2120,10 +2120,10 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
     body := replaceSimpleFunctions body
 
   if nam' := forwardingCall?(vl,body) then
-      registerFunctionReplacement(nam,nam')
+      registerFunctionReplacement(db,nam,nam')
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
   else if macform := expandableDefinition?(vl,body) then
-    registerFunctionReplacement(nam,macform)
+    registerFunctionReplacement(db,nam,macform)
     [:vl',.] := vl
     sayBrightly ['"     ",:bright prefix2String [nam,:vl'],
                    '"is replaced by",:bright prefix2String body]
@@ -2154,7 +2154,42 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
     first compAndDefine [[fn,['%slam,vl,:bodyl]]]
   dbInstanceCache db = nil =>
     first backendCompile [[fn,['%lambda,vl,:bodyl]]]
-  compHash(fn,vl,bodyl)
+  compHash(db,fn,vl,bodyl)
+ 
+compHash(db,op,argl,body) ==
+--   Entries will be stored on the global hashtable in a uniform way:
+--        (<argument list>, <reference count>,:<value>)
+--   where the reference count is optional
+  auxfn := makeWorkerName op
+  cacheName := "$ConstructorCache"
+  g2 := gensym()  --value computed by calling function
+  putCode :=
+    argl = nil =>
+      ['CDDAR,['%store,['tableValue,cacheName,MKQ op],
+        ['%list,['%pair,'%nil,['%pair,1,[auxfn]]]]]]
+    [auxfn,:argl]
+  putCode :=
+     ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
+                  ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
+  getCode :=
+    argl = nil => ['tableValue,cacheName,MKQ op]
+    key :=
+      argl is [g] => ['%list,['devaluate,g]]
+      ['%list,:[['devaluate,x] for x in argl]]
+    ['lassocShiftWithFunction,key,
+      ['tableValue,cacheName,MKQ op],['%function,'domainEqualList]]
+  returnFoundValue :=
+    argl = nil => ['CDRwithIncrement,['CDAR,g2]]
+    ['CDRwithIncrement,g2]
+  codeBody := mkBind([[g2,getCode]],
+                ['%when,[g2,returnFoundValue],['%otherwise,putCode]])
+ 
+  computeFunction := [auxfn,['%lambda,argl,:body]]
+  if $reportCompilation then
+    sayBrightlyI bright '"Generated code for function:"
+    pp computeFunction
+  backendCompile [[op,['%lambda,argl,codeBody]],computeFunction]
+  op
  
 constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
