@@ -196,7 +196,7 @@ macro dbUsedEntities db ==
 macro dbEntityCount db ==
   rest dbEntityBuffer db
 
-macro dbOutputStream db ==
+macro dbLibstream db ==
   cdOutput dbCompilerData db
 
 ++ Return the existential substitution of `db'.

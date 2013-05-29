@@ -422,7 +422,7 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     ok := finalizeLisplib(db,libName)
   finally
-    RSHUT dbOutputStream db
+    RSHUT dbLibstream db
   if ok then lisplibDoRename(libName)
   filearg := makeFullFilePath [libName,$spadLibFT,nil]
   RPACKFILE filearg
@@ -447,8 +447,8 @@ compileDocumentation(ctor,libName) ==
 initializeLisplib(db,libName) ==
   removeFile makeFullFilePath [libName,'ERRORLIB,nil]
   resetErrorCount()
-  dbOutputStream(db) := writeLib(libName,'ERRORLIB)
-  addCompilerOption('FILE,dbOutputStream db)
+  dbLibstream(db) := writeLib(libName,'ERRORLIB)
+  addCompilerOption('FILE,dbLibstream db)
 
 mkCtorDBForm db ==
   ['constructorDB,quote dbConstructor db]
@@ -456,14 +456,14 @@ mkCtorDBForm db ==
 writeInfo(db,info,key,prop) ==
   if info ~= nil then
     insn := ['%store,[prop,mkCtorDBForm db],quote info]
-    LAM_,FILEACTQ(key,expandToVMForm insn)
-  lisplibWrite(symbolName key,info,dbOutputStream db)
+    printBackendDecl(key,expandToVMForm insn)
+  lisplibWrite(symbolName key,info,dbLibstream db)
 
 ++ Like writeInfo, but only write to the load unit.
 writeLoadInfo(db,info,key,prop) ==
   info = nil => nil
   insn := ['%store,[prop,mkCtorDBForm db],info]
-  LAM_,FILEACTQ(key,expandToVMForm insn)
+  printBackendDecl(key,expandToVMForm insn)
 
 writeTemplate db ==
   dbConstructorKind db = 'category => nil
@@ -536,8 +536,8 @@ finalizeLisplib(db,libName) ==
   -- to the right-hand sides (the definition) for category constructors
   if dbConstructorKind db = 'category then
     writeCategory db
-  lisplibWrite('"sourceFile",dbSourceFile db,dbOutputStream db)
-  lisplibWrite('"modemaps",dbModemaps db,dbOutputStream db)
+  lisplibWrite('"sourceFile",dbSourceFile db,dbLibstream db)
+  lisplibWrite('"modemaps",dbModemaps db,dbLibstream db)
   opsAndAtts :=
     dbConstructorKind db = 'category => getCategoryOpsAndAtts db
     getFunctorOpsAndAtts db
@@ -554,7 +554,7 @@ finalizeLisplib(db,libName) ==
   writeAncestors db
   if not $bootStrapMode then
     lisplibWrite('"documentation",
-      finalizeDocumentation dbConstructor db,dbOutputStream db)
+      finalizeDocumentation dbConstructor db,dbLibstream db)
   if $profileCompiler then profileWrite db
   leaveIfErrors(libName,dbConstructorKind db)
   true

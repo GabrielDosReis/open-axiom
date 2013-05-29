@@ -41,7 +41,7 @@ namespace BOOT
 $profileAlist := nil
 
 profileWrite db ==  --called from finalizeLisplib
-  outStream := MAKE_-OUTSTREAM strconc(libDirname dbOutputStream db,'"/info")
+  outStream := MAKE_-OUTSTREAM strconc(libDirname dbLibstream db,'"/info")
   SETQ(_*PRINT_-PRETTY_*, true)
   PRINT_-FULL(profileTran $profileAlist,outStream)
   SHUT outStream

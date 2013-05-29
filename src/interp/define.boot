@@ -1553,7 +1553,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
-      LAM_,FILEACTQ('loadTimeStuff,
+      printBackendDecl('loadTimeStuff,
         ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
     [fun,['Mapping,:signature'],originale]

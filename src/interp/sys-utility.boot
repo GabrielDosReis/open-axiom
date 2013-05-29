@@ -407,12 +407,12 @@ macro constructorDB ctor ==
   
 --%
 structure %Libstream ==
-  Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, st: %Stream)
+  Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, idxst: %Stream)
     with
       libIOMode == (.mode)
       libDirname == (.dir)
       libIndexTable == (.tbl)
-      libIndexStream == (.st)
+      libIndexStream == (.idxst)
 
 makeLibstream(m,p,idx==nil,st==nil) ==
   mk%Libstream(m,p,idx,st)
