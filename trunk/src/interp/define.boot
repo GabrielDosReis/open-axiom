@@ -1553,7 +1553,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
-      printBackendDecl('loadTimeStuff,
+      printBackendStmt(db,
         ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
     [fun,['Mapping,:signature'],originale]
@@ -2159,7 +2159,7 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 ++ Subroutine of compileConstructor1.  Called to compile the body
 ++ of a category constructor definition.
 compAndDefine(db,l) ==
-  $backend: local := function evalAndPrintBackendDecl
+  $backend: local := function((v,x) +-> evalAndPrintBackendStmt(db,x))
   backendCompile(db,l)
 
 compHash(db,op,argl,body) ==

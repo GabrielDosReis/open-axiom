@@ -43,10 +43,7 @@ namespace BOOT
 module lisp_-backend where
   expandToVMForm: %Thing -> %Thing
   eval: %Thing -> %Thing
-  printBackendStmt: %Code -> %Void
   printBackendDecl: (%Symbol,%Code) -> %Void
-  evalAndPrintBackendStmt: %Code -> %Void
-  evalAndPrintBackendDecl: (%Symbol,%Code) -> %Void
   transformToBackendCode: %Form -> %Code
 
 
@@ -830,27 +827,12 @@ assembleCode x ==
   else COMP370 x
   first x
 
-printBackendStmt stmt ==
-  printBackendDecl(nil,stmt)
-
-evalAndPrintBackendStmt stmt ==
-  eval stmt
-  printBackendStmt stmt
-
 printBackendDecl(label,decl) ==
   st :=
     sp := symbolAssoc('COMPILER_-OUTPUT_-STREAM,$compilerOptions) => rest sp
     $OutputStream
-  if label ~= nil and ioTerminal? st and functionSymbol? label
-    and not COMPILED_-FUNCTION_-P symbolFunction label then
-      COMPILE label
-  if $PrettyPrint or not ioTerminal? st then
-    PRINT_-FULL(decl,st)
-    flushOutput st
-
-evalAndPrintBackendDecl(label,decl) ==    
-  eval decl
-  printBackendDecl(label,decl)
+  PRINT_-FULL(decl,st)
+  flushOutput st
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 massageBackendCode: %Code -> %Void

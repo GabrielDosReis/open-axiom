@@ -1308,15 +1308,22 @@ clearReplacement name ==
   property(name,"SPADreplace") := nil
   property(name,'%redex) := nil
 
+printBackendStmt(db,stmt) ==
+  printBackendDecl(nil,stmt)
+
+evalAndPrintBackendStmt(db,stmt) ==
+  eval stmt
+  printBackendStmt(db,stmt)
+
 ++ Register the inlinable form of a function.
 registerFunctionReplacement(db,name,body) ==
-  evalAndPrintBackendStmt
-    ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
+  evalAndPrintBackendStmt(db,
+    ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body])
 
 ++ Remember the redex form of this function
 registerRedexForm(db,name,parms,body) ==
-  evalAndPrintBackendStmt
-    ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]]
+  evalAndPrintBackendStmt(db,
+    ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]])
 
 ++ Retrieve the redex form of the function `name'.
 redexForm name ==
@@ -1492,10 +1499,10 @@ setCompilerOptimizations level ==
 ++ Note that all capsule functions take an additional argument 
 ++ standing for the domain of computation object.
 proclaimCapsuleFunction(db,op,sig) ==
-  printBackendStmt
+  printBackendStmt(db,
     ["DECLAIM",["FTYPE",
        ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
-          vmType first sig],op]] where
+          vmType first sig],op]]) where
       vmType d ==
         $subdomain and d = "$" =>
           -- We want accurate approximation for subdomains/superdomains
@@ -1547,7 +1554,7 @@ backendCompileSPADSLAM(db,name,args,body) ==
             ["PROGN",["SETQ",g2,app],
                ["SETQ",al,["cons5",["CONS",key,g2],al]],g2]]]]
   -- define the global cache.
-  evalAndPrintBackendDecl(al,['DEFPARAMETER,al,nil])
+  evalAndPrintBackendStmt(db,['DEFPARAMETER,al,nil])
   assembleCode [auxfn,["LAMBDA",args,:body]]
   assembleCode [name,["LAMBDA",args,code]]
 
