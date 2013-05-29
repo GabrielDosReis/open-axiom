@@ -80,41 +80,6 @@ $clamList ==
 ++
 $failed := '"failed"
  
-compHash(op,argl,body) ==
---   Entries will be stored on the global hashtable in a uniform way:
---        (<argument list>, <reference count>,:<value>)
---   where the reference count is optional
-  auxfn := makeWorkerName op
-  cacheName := "$ConstructorCache"
-  g2 := gensym()  --value computed by calling function
-  putCode :=
-    argl = nil =>
-      ['CDDAR,['%store,['tableValue,cacheName,MKQ op],
-        ['%list,['%pair,'%nil,['%pair,1,[auxfn]]]]]]
-    [auxfn,:argl]
-  putCode :=
-     ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
-                  ['%when,[['%not,g2],['tableRemove!,cacheName,MKQ op]]]]
-  getCode :=
-    argl = nil => ['tableValue,cacheName,MKQ op]
-    key :=
-      argl is [g] => ['%list,['devaluate,g]]
-      ['%list,:[['devaluate,x] for x in argl]]
-    ['lassocShiftWithFunction,key,
-      ['tableValue,cacheName,MKQ op],['%function,'domainEqualList]]
-  returnFoundValue :=
-    argl = nil => ['CDRwithIncrement,['CDAR,g2]]
-    ['CDRwithIncrement,g2]
-  codeBody := mkBind([[g2,getCode]],
-                ['%when,[g2,returnFoundValue],['%otherwise,putCode]])
- 
-  computeFunction := [auxfn,['%lambda,argl,:body]]
-  if $reportCompilation then
-    sayBrightlyI bright '"Generated code for function:"
-    pp computeFunction
-  compQuietly [[op,['%lambda,argl,codeBody]],computeFunction]
-  op
- 
 CDRwithIncrement x ==
   x.first := first x + 1
   rest x

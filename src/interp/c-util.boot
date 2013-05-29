@@ -40,10 +40,10 @@ module c_-util where
   makeWorkerName: %Symbol -> %Symbol
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
-  foldExportedFunctionReferences: %List %Form -> %List %Form
+  foldExportedFunctionReferences: (%Database,%List %Code) -> %List %Code
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: %Code -> %Code
-  registerFunctionReplacement: (%Symbol,%Form) -> %Thing
+  registerFunctionReplacement: (%Database,%Symbol,%Form) -> %Thing
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
   giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
@@ -1309,12 +1309,12 @@ clearReplacement name ==
   property(name,'%redex) := nil
 
 ++ Register the inlinable form of a function.
-registerFunctionReplacement(name,body) ==
+registerFunctionReplacement(db,name,body) ==
   evalAndPrintBackendStmt
     ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
 
 ++ Remember the redex form of this function
-registerRedexForm(name,parms,body) ==
+registerRedexForm(db,name,parms,body) ==
   evalAndPrintBackendStmt
     ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]]
 
@@ -1454,17 +1454,17 @@ almostPure? x ==
 ++ `defs' is a list of function definitions from the current domain.
 ++ Walk that list and replace references to unconditional operations
 ++ with their corresponding linkage names.  
-foldExportedFunctionReferences defs ==
+foldExportedFunctionReferences(db,defs) ==
   for fun in defs repeat
     fun isnt [name,lamex] => nil
     getFunctionReplacement name => nil
     lamex isnt ['%lambda,vars,body] => nil
     body := replaceSimpleFunctions body
     form := expandableDefinition?(vars,body) =>
-      registerFunctionReplacement(name,form)
+      registerFunctionReplacement(db,name,form)
       second(fun) := ["LAMBDA",vars,["DECLARE",["IGNORE",last vars]],body]
     if almostPure? body then
-      registerRedexForm(name,vars,body)
+      registerRedexForm(db,name,vars,body)
     lamex.absBody := body
   defs
 
@@ -1491,7 +1491,7 @@ setCompilerOptimizations level ==
 ++ Proclaim the type of the capsule function `op' with signature `sig'.
 ++ Note that all capsule functions take an additional argument 
 ++ standing for the domain of computation object.
-proclaimCapsuleFunction(op,sig) ==
+proclaimCapsuleFunction(db,op,sig) ==
   printBackendStmt
     ["DECLAIM",["FTYPE",
        ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
