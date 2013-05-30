@@ -64,7 +64,7 @@ writeFunctionTables(filemode) ==
  
 writeFunctionTable(filemode,name,dicts) ==
   removeFile makeFullFilePath makePathname(name,'DATABASE,filemode)
-  stream:= writeLib1(name,'DATABASE)
+  stream:= writeLib(name,'DATABASE)
   if not $functionTable then
     $functionTable:= buildFunctionTable dicts
   for [key,:val] in entries $functionTable repeat
