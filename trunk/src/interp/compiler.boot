@@ -85,6 +85,7 @@ compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
   -- signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
+  $currentFunction: local := nil
   $forceAdd: local:= false
   -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames
@@ -2799,8 +2800,8 @@ preprocessParseTree pt ==
 ++ Takes a parse tree `pt', typecheck it and compile it down 
 ++ to VM instructions.
 compileParseTree pt ==
+  $topOp: local := nil
   pt = nil => nil
-  CURSTRM: local := $OutputStream
   pf := preprocessParseTree pt
   pf = nil => nil       -- stop if preprocessing was a disaster.
   -- Don't go further if only preprocessing was requested.
@@ -2811,13 +2812,11 @@ compileParseTree pt ==
   $x: local := nil         -- ???
   $m: local := nil         -- ???
   $s: local := nil         -- ???
+  $returnMode: local := $EmptyMode
   $exitModeStack: local := []    -- Used by the compiler proper
-  -- We don't usually call the compiler to process interpreter
-  -- input, however attempt to second guess nevertheless.
-  if $InteractiveMode then
-    processInteractive(pf,nil)
-  else if T := compTopLevel(pf,$EmptyMode,$InteractiveFrame) then
-    [.,.,$InteractiveFrame] := T
+  $leaveLevelStack: local := []
+  if T := compTopLevel(pf,$EmptyMode,$InteractiveFrame) then
+    $InteractiveFrame := T.env
   finishLine $OutputStream
 
 

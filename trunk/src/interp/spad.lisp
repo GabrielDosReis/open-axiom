@@ -95,7 +95,7 @@
 		    (|parseNewExpr| rd)
 		    (let ((parseout (|popStack1|)) )
 		      (when parseout
-			(|translateSpad| parseout)
+			(|translateSpad| ifile parseout)
 			(format |$OutputStream| "~&")))
 		    ))))
 	    (|ioClear!| rd)))

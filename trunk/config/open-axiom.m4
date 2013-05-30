@@ -465,17 +465,9 @@ dnl set the global variable openaxiom_host_lisp_precision.
 AC_DEFUN([OPENAXIOM_HOST_LISP_CPU_PRECISION], [
 if test x"$oa_include_gcl" != xyes; then
    AC_MSG_CHECKING([CPU precision as seen by $AXIOM_LISP])
-   # Almost all Lisp systems we support put the relevant information
-   # on the *FEATURES* list.  Except ECL.
-   case $axiom_lisp_flavor in
-     ecl)
-       features_expr='(progn (require :cmp) (eval (find-symbol "*COMPILER-FEATURES*" :c)))'
-       ;;
-      *)
-       features_expr='*features*'
-       ;;
-   esac
-   case `echo $features_expr | $AXIOM_LISP` in
+   # All Lisp systems we support put the relevant information
+   # on the *FEATURES* list. 
+   case `echo '*features*' | $AXIOM_LISP` in
      *X86-64*|*X86_64*|*WORD-SIZE=64*|*64-BIT*)
 	# PORTME: the pattern above covers only the supported free Lisps, i.e.
 	# GCL, SBCL, CLisp, ECL and Clozure CL.
