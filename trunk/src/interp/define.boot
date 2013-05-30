@@ -1200,7 +1200,7 @@ compDefineCategory(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := lhs
   dbCompilerData(db) := makeCompilationData()
-  $backend: local := function(x +-> printBackendStmt(db,x))
+  $backend: local := function(x +-> printBackendStmt(dbLibstream db,x))
   try
     $insideFunctorIfTrue => compDefineCategory1(db,df,m,e,fal)
     compDefineLisplib(db,df,m,e,fal,'compDefineCategory1)
@@ -1449,7 +1449,7 @@ compDefineFunctor(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := form
   dbCompilerData(db) := makeCompilationData()
-  $backend: local := function(x +-> printBackendStmt(db,x))
+  $backend: local := function(x +-> printBackendStmt(dbLibstream db,x))
   try compDefineLisplib(db,df,m,e,fal,'compDefineFunctor1)
   finally dbCompilerData(db) := nil
  
@@ -1555,7 +1555,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]
-      printBackendStmt(db,
+      printBackendStmt(dbLibstream db,
         ['MAKEPROP,MKQ $op,''infovec,getInfovecCode(db,$e)])
     $lisplibOperationAlist:= operationAlist
     [fun,['Mapping,:signature'],originale]
@@ -2161,7 +2161,7 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 ++ Subroutine of compileConstructor1.  Called to compile the body
 ++ of a category constructor definition.
 compAndDefine(db,l) ==
-  $backend: local := function(x +-> evalAndPrintBackendStmt(db,x))
+  $backend: local := function(x +-> evalAndPrintBackendStmt(dbLibstream db,x))
   backendCompile(db,l)
 
 compHash(db,op,argl,body) ==

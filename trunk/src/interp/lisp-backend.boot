@@ -44,7 +44,7 @@ namespace BOOT
 module lisp_-backend where
   expandToVMForm: %Thing -> %Thing
   eval: %Thing -> %Thing
-  printBackendStmt: (%Database,%Code) -> %Void
+  printBackendStmt: (%Libstream,%Code) -> %Void
   transformToBackendCode: %Form -> %Code
 
 
@@ -827,8 +827,8 @@ assembleCode x ==
   else COMP370 x
   first x
 
-printBackendStmt(db,stmt) ==
-  st := dbCodeStream db
+printBackendStmt(lib,stmt) ==
+  st := libCodeStream lib
   PRINT_-FULL(stmt,st)
   flushOutput st
 
