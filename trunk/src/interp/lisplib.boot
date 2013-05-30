@@ -409,7 +409,7 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   libName := dbAbbreviation db
   if dbSourceFile db = nil then
     dbSourceFile(db) := namestring $editFile
-  $compileDocumentation => compileDocumentation(op,libName)
+  $compileDocumentation => compileDocumentation(db,libName)
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
   initializeLisplib(db,libName)
@@ -433,11 +433,11 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
-compileDocumentation(ctor,libName) ==
-  filename := makeInputFilename(libName,$spadLibFT)
+compileDocumentation(db,libName) ==
+  filename := libDirname dbLibstream db
   $FCOPY(filename,[libName,'DOCLB])
   stream := RDEFIOSTREAM [['FILE,libName,'DOCLB],['MODE, :'O]]
-  lisplibWrite('"documentation",finalizeDocumentation ctor,stream)
+  lisplibWrite('"documentation",finalizeDocumentation db,stream)
   RSHUT(stream)
   RPACKFILE([libName,'DOCLB])
   $REPLACE([libName,$spadLibFT],[libName,'DOCLB])
@@ -485,6 +485,22 @@ writeConstructorForm db ==
 
 writeCategory db ==
   writeInfo(db,dbCategory db,'constructorCategory,'dbCategory)
+
+writeSourceFile db ==
+  $buildingSystemAlgebra =>
+    -- source file for system constructor is filled at runtime
+    -- to reflect the runtime location of the system directory.
+    lisplibWrite('"sourceFile",dbSourceFile db,dbLibstream db)
+  writeInfo(db,dbSourceFile db,'sourceFile,'dbSourceFile)
+
+writeInteractiveModemaps db ==
+  -- Note: these are never used when building the system algebra.
+  --       But we need them when building the complete set of databases
+  writeInfo(db,dbModemaps db,'modemaps,'dbModemaps)
+
+writeDocumentation(db,doc) ==
+  -- FIXME: Do we want to store documentation in object files?
+  lisplibWrite('"documentation",doc,dbLibstream db)
 
 writeSuperDomain db ==
   writeInfo(db,dbSuperDomain db,'superDomain,'dbSuperDomain)
@@ -536,8 +552,8 @@ finalizeLisplib(db,libName) ==
   -- to the right-hand sides (the definition) for category constructors
   if dbConstructorKind db = 'category then
     writeCategory db
-  lisplibWrite('"sourceFile",dbSourceFile db,dbLibstream db)
-  lisplibWrite('"modemaps",dbModemaps db,dbLibstream db)
+  writeSourceFile db
+  writeInteractiveModemaps db
   opsAndAtts :=
     dbConstructorKind db = 'category => getCategoryOpsAndAtts db
     getFunctorOpsAndAtts db
@@ -553,8 +569,7 @@ finalizeLisplib(db,libName) ==
   writePrincipals db
   writeAncestors db
   if not $bootStrapMode then
-    lisplibWrite('"documentation",
-      finalizeDocumentation dbConstructor db,dbLibstream db)
+    writeDocumentation(db,finalizeDocumentation db)
   if $profileCompiler then profileWrite db
   leaveIfErrors(libName,dbConstructorKind db)
   true
