@@ -184,19 +184,20 @@ hasToInfo (pred is ["has",a,b]) ==
 ++ may or may not hold at runtime.
 knownInfo(pred,env,tbl == makeTable function valueEq?) ==
   pred=true => true
-  listMember?(pred,get("$Information","special",env)) => true
+  tableValue(tbl,pred) => true    -- re-use previously computed value
+  listMember?(pred,get("$Information","special",env)) =>
+    tableValue(tbl,pred) := true
   pred is ["OR",:l] => or/[knownInfo(u,env,tbl) for u in l]
   pred is ["AND",:l] => and/[knownInfo(u,env,tbl) for u in l]
   pred is ["or",:l] => or/[knownInfo(u,env,tbl) for u in l]
   pred is ["and",:l] => and/[knownInfo(u,env,tbl) for u in l]
-  tableValue(tbl,pred) => true    -- re-use previously computed value
   pred is ["ATTRIBUTE",name,attr] =>
     v := compForMode(name,$EmptyMode,env) or return
           stackAndThrow('"can't find category of %1pb",[name])
     [vv,.,.] := compMakeCategoryObject(v.mode,env) or return
                  stackAndThrow('"can't make category of %1pb",[name])
     listMember?(attr,categoryAttributes vv) =>
-      tableTable(tbl,pred) := true
+      tableValue(tbl,pred) := true
     x := assoc(attr,categoryAttributes vv) =>
       --format is a list of two elements: information, predicate
       tableValue(tbl,pred) := knownInfo(second x,env,tbl)
