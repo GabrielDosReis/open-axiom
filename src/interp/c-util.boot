@@ -1314,18 +1314,18 @@ clearReplacement name ==
   property(name,"SPADreplace") := nil
   property(name,'%redex) := nil
 
-evalAndPrintBackendStmt(db,stmt) ==
+evalAndPrintBackendStmt(lib,stmt) ==
   eval stmt
-  printBackendStmt(db,stmt)
+  printBackendStmt(lib,stmt)
 
 ++ Register the inlinable form of a function.
 registerFunctionReplacement(db,name,body) ==
-  evalAndPrintBackendStmt(db,
+  evalAndPrintBackendStmt(dbLibstream db,
     ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body])
 
 ++ Remember the redex form of this function
 registerRedexForm(db,name,parms,body) ==
-  evalAndPrintBackendStmt(db,
+  evalAndPrintBackendStmt(dbLibstream db,
     ["PUT",quote name,quote '%redex,quote ['ILAM,parms,body]])
 
 ++ Retrieve the redex form of the function `name'.
@@ -1502,7 +1502,7 @@ setCompilerOptimizations level ==
 ++ Note that all capsule functions take an additional argument 
 ++ standing for the domain of computation object.
 proclaimCapsuleFunction(db,op,sig) ==
-  printBackendStmt(db,
+  printBackendStmt(dbLibstream db,
     ["DECLAIM",["FTYPE",
        ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
           vmType first sig],op]]) where
@@ -1557,7 +1557,7 @@ backendCompileSPADSLAM(db,name,args,body) ==
             ["PROGN",["SETQ",g2,app],
                ["SETQ",al,["cons5",["CONS",key,g2],al]],g2]]]]
   -- define the global cache.
-  evalAndPrintBackendStmt(db,['DEFPARAMETER,al,nil])
+  evalAndPrintBackendStmt(dbLibstream db,['DEFPARAMETER,al,nil])
   assembleCode [auxfn,["LAMBDA",args,:body]]
   assembleCode [name,["LAMBDA",args,code]]
 
