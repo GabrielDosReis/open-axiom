@@ -136,7 +136,8 @@ collectAndDeleteAssoc x ==
       y.rest := s
   res
 
-finalizeDocumentation ctor ==
+finalizeDocumentation db ==
+  ctor := dbConstructor db
   unusedCommentLineNumbers := [x for (x := [n,:r]) in $COMBLOCKLIST | r]
   docList := substitute("$","%",transDocList($op,$docList))
   if u := [sig for [sig,:doc] in docList | null doc] then
@@ -178,7 +179,7 @@ finalizeDocumentation ctor ==
         sayKeyedMsg("S2CD0006",[strconc(toString bigcnt,'"."),ctor])
         for [n,r] in unusedCommentLineNumbers repeat
           sayMSG ['"   ",:bright n,'"   ",r]
-  form := dbConstructorForm constructorDB ctor
+  form := dbConstructorForm db
   hn [[:fn(sig,$e,form.args),:doc] for [sig,:doc] in docList] where
     fn(x,e,args) ==
       x isnt [.,:.] => [x,nil]

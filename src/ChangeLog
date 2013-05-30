@@ -1,3 +1,12 @@
+2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-doc.boot (finalizeDocumentation): Take a DB parameter.
+	Adjust callers.
+	* interp/lisplib.boot (compileDocumentation): Likewise.
+	(writeSourceFile): New.
+	(writeInteractiveModemaps): Likewise.
+	(writeDocumentation): Likewise.
+
 2013-05-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/lisp-backend.boot (compileLispDefinition): Remove.
