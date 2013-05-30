@@ -1039,29 +1039,19 @@ parseSpecialCommand rd ==
 
 --%
 
-translateSpad x ==
+translateSpad(ifile,x) ==
   $Index: local := 0
   _*PRETTY_-PRINT_*: local := true
+  $InteractiveMode: local := false
   $MACROASSOC: local := nil
   $NEWSPAD: local := true
-  $currentFunction: local := nil
-  $topOp: local := nil
   $semanticErrorStack: local := []
   $warningStack: local := []
-  $returnMode: local := $EmptyMode
-  $leaveLevelStack: local := []
-  $insideFunctorIfTrue: local := false
-  $insideExpressionIfTrue: local := false
-  $insideCoerceInteractiveHardIfTrue: local := false
-  $insideWhereIfTrue: local := false
-  $insideCategoryIfTrue: local := false
-  $insideCapsuleFunctionIfTrue: local := false
-  $form: local := nil
   $e: local := $EmptyEnvironment
   $genSDVar: local := 0
   $previousTime: local := TEMPUS_-FUGIT()
   $backend: local := function(x +-> PRINT_-FULL(x,$OutputStream))
-  compileParseTree x  
+  compileParseTree x
 
 --%
 

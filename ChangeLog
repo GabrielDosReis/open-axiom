@@ -1,3 +1,8 @@
+2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_HOST_LISP_CPU_PRECISION): Update.
+	ECL since 11.1.1 puts relevant information on *FEATURES* list.
+
 2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* configure.ac: Output src/syntax/Makefile.
