@@ -1,5 +1,9 @@
 2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (knowInfo): Fix typo.
+
+2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/c-doc.boot (finalizeDocumentation): Take a DB parameter.
 	Adjust callers.
 	* interp/lisplib.boot (compileDocumentation): Likewise.
