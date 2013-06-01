@@ -587,9 +587,9 @@ InvestigateConditions(db,catvecListMaker,tbl,env) ==
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
     MaximalPrimaries :=
-      [MaximalPrimary,:categoryPrincipals CatEval(MaximalPrimary,env)]
+      [MaximalPrimary,:categoryPrincipals CatEval(MaximalPrimary,tbl,env)]
     MinimalPrimaries :=
-      [MinimalPrimary,:categoryPrincipals CatEval(MinimalPrimary,env)]
+      [MinimalPrimary,:categoryPrincipals CatEval(MinimalPrimary,tbl,env)]
     MaximalPrimaries:=S_-(MaximalPrimaries,MinimalPrimaries)
     [[x] for x in MaximalPrimaries]
   ($Conditions:= Conds($principal,nil)) where
@@ -619,31 +619,31 @@ InvestigateConditions(db,catvecListMaker,tbl,env) ==
       # u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
-      for v' in [v,:categoryPrincipals CatEval(v,env)] repeat
+      for v' in [v,:categoryPrincipals CatEval(v,tbl,env)] repeat
         if (w:=assoc(v',$HackSlot4)) then
-          w.rest := if rest w then mkOr(u,rest w,env) else u
-    (list:= update(list,u,secondaries,newS,env)) where
-      update(list,cond,secondaries,newS,env) ==
+          w.rest := if rest w then mkOr(u,rest w,tbl,env) else u
+    (list:= update(list,u,secondaries,newS,tbl,env)) where
+      update(list,cond,secondaries,newS,tbl,env) ==
         (list2:=
-          [flist(sec,newS,old,cond,env) for sec in secondaries for old in list]) where
-            flist(sec,newS,old,cond,env) ==
+          [flist(sec,newS,old,cond,tbl,env) for sec in secondaries for old in list]) where
+            flist(sec,newS,old,cond,tbl,env) ==
               old=true => old
               for [newS2,:morecond] in newS repeat
                 old:=
-                  not ancestor?(sec,[newS2],env) => old
-                  cond2 := mkAnd(cond,morecond,env)
+                  not ancestor?(sec,[newS2],tbl,env) => old
+                  cond2 := mkAnd(cond,morecond,tbl,env)
                   null old => cond2
-                  mkOr(cond2,old,env)
+                  mkOr(cond2,old,tbl,env)
               old
         list2
-  list:= [[sec,:ICformat(u,env)] for u in list for sec in secondaries]
+  list:= [[sec,:ICformat(u,tbl,env)] for u in list for sec in secondaries]
   pv:= getPossibleViews($principal,tbl)
   -- $HackSlot4 is used in SetVector4 to ensure that conditional
   -- extensions of the principal view are handles correctly
   -- here we build the code necessary to remove spurious extensions
-  ($HackSlot4:= [reshape(u,env) for u in $HackSlot4]) where
-    reshape(u,env) ==
-      ['%when,[TryGDC ICformat(rest u,env)],
+  ($HackSlot4:= [reshape(u,tbl,env) for u in $HackSlot4]) where
+    reshape(u,tbl,env) ==
+      ['%when,[TryGDC ICformat(rest u,tbl,env)],
              ['%otherwise,['RPLACA,'(CAR TrueDomain),
                              ['delete, quote first u,'(CAAR TrueDomain)]]]]
   $supplementaries:=
@@ -652,32 +652,32 @@ InvestigateConditions(db,catvecListMaker,tbl,env) ==
         and not (true=rest u) and not listMember?(first u,pv)]
   [true,:[LASSOC(ms,list) for ms in masterSecondaries]]
  
-ICformat(u,env) ==
+ICformat(u,tbl,env) ==
       u isnt [.,:.] => u
       u is ["has",:.] => compHasFormat(u,env)
       u is ['AND,:l] or u is ['and,:l] =>
-        l:= removeDuplicates [ICformat(v,env) for [v,:l'] in tails l
+        l:= removeDuplicates [ICformat(v,tbl,env) for [v,:l'] in tails l
                                 | not listMember?(v,l')]
              -- we could have duplicates after, even if not before
         # l=1 => first l
         l1:= first l
         for u in rest l repeat
-          l1 := mkAnd(u,l1,env)
+          l1 := mkAnd(u,l1,tbl,env)
         l1
       u is ['OR,:l] =>
         (l:= ORreduce l)
-        # l=1 => ICformat(first l,env)
-        l:= ORreduce removeDuplicates [ICformat(u,env) for u in l]
+        # l=1 => ICformat(first l,tbl,env)
+        l:= ORreduce removeDuplicates [ICformat(u,tbl,env) for u in l]
                  --causes multiple ANDs to be squashed, etc.
                  -- and duplicates that have been built up by tidying
-        (l:= Hasreduce(l,env)) where
-          Hasreduce(l,env) ==
+        (l:= Hasreduce(l,tbl,env)) where
+          Hasreduce(l,tbl,env) ==
             for u in l | u is ['HasCategory,name,cond] and cond is ['QUOTE,
               cond] repeat
                                   --check that v causes descendants to go
                 for v in l | not (v=u) and v is ['HasCategory, =name,['QUOTE,
                   cond2]] repeat
-                       if descendant?(cond,cond2,env) then l:= remove(l,u)
+                       if descendant?(cond,cond2,tbl,env) then l:= remove(l,u)
                        --v subsumes u
             for u in l | u is ['AND,:l'] or u is ['and,:l'] repeat
               for u' in l' | u' is ['HasCategory,name,cond] and cond is ['QUOTE,
@@ -685,7 +685,7 @@ ICformat(u,env) ==
                                     --check that v causes descendants to go
                   for v in l | v is ['HasCategory, =name,['QUOTE,
                     cond2]] repeat
-                        if descendant?(cond,cond2,env) then l:= remove(l,u)
+                        if descendant?(cond,cond2,tbl,env) then l:= remove(l,u)
                          --v subsumes u
             l
         # l=1 => first l
