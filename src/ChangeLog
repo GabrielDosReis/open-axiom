@@ -1,5 +1,17 @@
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (NRTgetLookupFunction): Take a cache table.
+	Adjust caller.
+	(NRTextendsCategory1): Likewise.
+	(extendsCategory): Likewise.
+	(extendsCategoryBasic): Likewise.
+	(catExtendsCat?): Likewise.
+	(getCategoryObjectIfCan): New.
+	(getCategoryObject): Use it.
+	* interp/lisplib.boot (getSlot1): Remove as unused.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/category.boot (SigListUnion): Take a cache table.  Adjust
 	callers.
 	(mkOr): Likewise.
