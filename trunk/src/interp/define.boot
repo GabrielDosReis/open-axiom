@@ -46,6 +46,7 @@ module define where
   compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
   compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
   evalCategoryForm: (%Form,%Env) -> %Maybe %Shell
+  getCategoryObjectIfCan: (%Table,%Form,%Env) -> %Maybe %Shell
   getCategoryObject: (%Table,%Form,%Env) -> %Shell
 
 
@@ -259,7 +260,9 @@ GetValue name ==
  
 actOnInfo(u,$e) ==
   null u => $e
-  u is ["PROGN",:l] => (for v in l repeat $e:= actOnInfo(v,$e); $e)
+  u is ["PROGN",:l] =>
+    for v in l repeat $e := actOnInfo(v,$e)
+    $e
   db := currentDB $e
   $e:=
     put("$Information","special",Info:= [u,:get("$Information","special",$e)],$e
@@ -268,7 +271,7 @@ actOnInfo(u,$e) ==
       --there is nowhere %else that this sort of thing exists
     for [ante,:conseq] in l repeat
       if listMember?(hasToInfo ante,Info) then for v in conseq repeat
-        $e:= actOnInfo(v,$e)
+        $e := actOnInfo(v,$e)
     $e
   u is ["ATTRIBUTE",name,att] =>
     [vval,vmode,.]:= GetValue name
@@ -336,7 +339,7 @@ chaseInferences(pred,$e) ==
   foo hasToInfo pred where
     foo pred ==
       knownInfo(pred,$e) => nil
-      $e:= actOnInfo(pred,$e)
+      $e := actOnInfo(pred,$e)
       pred:= infoToHas pred
       for u in get("$Information","special",$e) repeat
         u is ['%when,:l] =>
@@ -528,18 +531,18 @@ getXmode(x,e) ==
 --=======================================================================
 --              Compute the lookup function (complete or incomplete)
 --=======================================================================
-NRTgetLookupFunction(db,addForm,env) ==
+NRTgetLookupFunction(db,addForm,tbl,env) ==
   $why: local := nil
   domform := dbSubstituteFormals(db,dbConstructorForm db)
   cat := dbCategory db
   addForm isnt [.,:.] =>
     ident? addForm and (m := getmode(addForm,env)) ~= nil and
       isCategoryForm(m,env) and
-        extendsCategory(db,domform,cat,dbSubstituteFormals(db,m),env) =>
+        extendsCategory(db,domform,cat,dbSubstituteFormals(db,m),tbl,env) =>
           'lookupIncomplete
     'lookupComplete
   addForm := dbSubstituteFormals(db,addForm)
-  NRTextendsCategory1(db,domform,cat,getBaseExports(db,addForm),env) =>
+  NRTextendsCategory1(db,domform,cat,getBaseExports(db,addForm),tbl,env) =>
     'lookupIncomplete
   [u,msg,:v] := $why
   SAY '"--------------non extending category----------------------"
@@ -563,55 +566,58 @@ getBaseExports(db,form) ==
   [[.,target,:tl],:.] := getConstructorModemap op
   applySubst(pairList($FormalMapVariableList,argl),target)
  
-NRTextendsCategory1(db,domform,exCategory,addForm,env) ==
+NRTextendsCategory1(db,domform,exCategory,addForm,tbl,env) ==
   addForm is ["%Comma",:r] => 
-    and/[extendsCategory(db,domform,exCategory,x,env) for x in r]
-  extendsCategory(db,domform,exCategory,addForm,env)
+    and/[extendsCategory(db,domform,exCategory,x,tbl,env) for x in r]
+  extendsCategory(db,domform,exCategory,addForm,tbl,env)
 
 --=======================================================================
 --         Compute if a domain constructor is forgetful functor
 --=======================================================================
-extendsCategory(db,dom,u,v,env) ==
+extendsCategory(db,dom,u,v,tbl,env) ==
   --does category u extend category v (yes iff u contains everything in v)
   --is dom of category u also of category v?
   u=v => true
-  v is ["Join",:l] => and/[extendsCategory(db,dom,u,x,env) for x in l]
-  v is ["CATEGORY",.,:l] => and/[extendsCategory(db,dom,u,x,env) for x in l]
+  v is ["Join",:l] => and/[extendsCategory(db,dom,u,x,tbl,env) for x in l]
+  v is ["CATEGORY",.,:l] =>
+    and/[extendsCategory(db,dom,u,x,tbl,env) for x in l]
   v is ["SubsetCategory",cat,d] =>
-    extendsCategory(db,dom,u,cat,env) and isSubset(dom,d,env)
+    extendsCategory(db,dom,u,cat,tbl,env) and isSubset(dom,d,env)
   v := substSlotNumbers(v,dbTemplate db,dbConstructorForm db)
-  extendsCategoryBasic(dom,u,v,env) => true
+  extendsCategoryBasic(dom,u,v,tbl,env) => true
   $why :=
     v is ['SIGNATURE,op,sig,:.] =>
       [u,['"  has no ",:formatOpSignature(op,sig)]]
     [u,'" has no",v]
   nil
  
-extendsCategoryBasic(dom,u,v,env) ==
+extendsCategoryBasic(dom,u,v,tbl,env) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
-    uVec := compMakeCategoryObject(u,env).expr or return false
+    uVec := getCategoryObjectIfCan(tbl,u,env) or return false
     cons? c and isCategoryForm(c,env) =>
       LASSOC(c,categoryAncestors uVec) is [=p,:.]
     LASSOC(c,categoryAttributes uVec) is [=p,:.]
-  u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
+  u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v,tbl,env) for x in l]
   u = v => true
   v is ['ATTRIBUTE,c] =>
-    cons? c and isCategoryForm(c,env) => extendsCategoryBasic(dom,u,c,env)
-    u is ['CATEGORY,.,:l] => or/[extendsCategoryBasic(dom,x,v,env) for x in l]
-    uVec := compMakeCategoryObject(u,env).expr or return false
+    cons? c and isCategoryForm(c,env) =>
+      extendsCategoryBasic(dom,u,c,tbl,env)
+    u is ['CATEGORY,.,:l] =>
+      or/[extendsCategoryBasic(dom,x,v,tbl,env) for x in l]
+    uVec := getCategoryObjectIfCan(tbl,u,env) or return false
     LASSOC(c,categoryAttributes uVec) is [=true]
-  isCategoryForm(v,env) => catExtendsCat?(u,v,env)
+  isCategoryForm(v,env) => catExtendsCat?(u,v,tbl,env)
   v is ['SIGNATURE,op,sig,:.] =>
-    uVec := compMakeCategoryObject(u,env).expr or return false
+    uVec := getCategoryObjectIfCan(tbl,u,env) or return false
     or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
     false
   false
  
-catExtendsCat?(u,v,env) ==
+catExtendsCat?(u,v,tbl,env) ==
   u = v => true
-  uvec := compMakeCategoryObject(u,env).expr
+  uvec := getCategoryObject(tbl,u,env)
   prinAncestorList := categoryPrincipals uvec
   listMember?(v,prinAncestorList) => true
   vOp := KAR v
@@ -621,7 +627,7 @@ catExtendsCat?(u,v,env) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v,env) for x in ASSOCLEFT categoryAncestors uvec]
+  or/[catExtendsCat?(x,v,tbl,env) for x in ASSOCLEFT categoryAncestors uvec]
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and
@@ -1219,10 +1225,14 @@ compMakeCategoryObject(c,$e) ==
   u := evalCategoryForm(c,$e) => [u,$Category,$e]
   nil
 
-getCategoryObject(tbl,x,env) ==
+getCategoryObjectIfCan(tbl,x,env) ==
   obj := tableValue(tbl,x) => obj
   T := compMakeCategoryObject(x,env) => tableValue(tbl,x) := T.expr
-  systemErrorHere ['getCategoryObject]
+  nil
+
+getCategoryObject(tbl,x,env) ==
+  getCategoryObjectIfCan(tbl,x,env)
+    or systemErrorHere ['getCategoryObject]
 
 predicatesFromAttributes: %List %Form -> %List %Form
 predicatesFromAttributes attrList ==
@@ -1350,7 +1360,9 @@ getOperationAlist(db,name,functorForm,form) ==
   $insideFunctorIfTrue and name is "$" =>
     dbDomainShell db = nil => systemError '"$ has no shell now"
     categoryExports dbDomainShell db
-  T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; categoryExports T.expr)
+  T := compMakeCategoryObject(form,$e) =>
+    [.,.,$e] := T
+    categoryExports T.expr
   stackMessage('"not a category form: %1bp",[form])
  
 substNames(domainName,functorForm,opalist) ==
@@ -1510,7 +1522,8 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
 
     $functorTarget := target := signature'.target
     $e := giveFormalParametersValues(form.args,$e)
-    [ds,.,$e] := compMakeCategoryObject(target,$e) or return
+    tbl := makeTable function valueEq?  -- category-form/object table
+    ds := getCategoryObjectIfCan(tbl,target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     dbDomainShell(db) := copyVector ds
     attributeList := categoryAttributes ds --see below under "loadTimeAlist"
@@ -1570,7 +1583,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     dbAncestors(db) := computeAncestorsOf($form,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
-      dbLookupFunction(db) := NRTgetLookupFunction(db,$NRTaddForm,$e)
+      dbLookupFunction(db) := NRTgetLookupFunction(db,$NRTaddForm,tbl,$e)
           --either lookupComplete (for forgetful guys) or lookupIncomplete
       $NRTslot1PredicateList :=
         [simpBool x for x in $NRTslot1PredicateList]

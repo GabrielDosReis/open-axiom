@@ -616,23 +616,6 @@ getSlotFromFunctor(target) ==
       systemErrorHere "getSlotFromFunctor"
   categoryRef(t.expr,2)
  
-getSlot1 domainName ==
-  $e: local:= $CategoryFrame
-  fn:= getLisplibName domainName
-  p := pathname [fn,$spadLibFT,'"*"]
-  not isExistingFile(p) =>
-    sayKeyedMsg("S2IL0003",[namestring p])
-    nil
-  (sig := getConstructorSignature domainName) =>
-    [.,target,:argMml] := sig
-    for a in $FormalMapVariableList for m in argMml repeat
-      $e:= put(a,'mode,m,$e)
-    t := compMakeCategoryObject(target,$e) or
-      systemErrorHere ["getSlot1",domainName]
-    categoryExports t.expr
-  sayKeyedMsg("S2IL0022",[namestring p,'"constructor modemap"])
-  nil
- 
 transformOperationAlist operationAlist ==
   --  this transforms the operationAlist which is written out onto LISPLIBs.
   --  The original form of this list is a list of items of the form:
