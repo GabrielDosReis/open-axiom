@@ -1,3 +1,26 @@
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Support --output in compiler, for bootstrapping stage.
+	* lisp/core.lisp.in (directoryEntries): New.
+	* interp/lisplib.boot (compDefineLisplib): Tidy.  Honor --output.
+	(initializeLisplib): Rewrite.
+	(lisplibDoRename): Likewise.
+	* interp/nlib.lisp (RSHUT): Tidy.
+	* interp/define.boot (getOutputPath): New.
+	(compDefineFunctor): Use it.
+	(compDefineCategory): Likewise.
+	* interp/c-util.boot (%Libstream): Add field for output pathname.
+	(dbOutputPath): New accessor.
+	(moveLibdirByCopy): New.
+	* include/cfuns.h (oa_acquire_temporary_pathname): Declare.
+	(oa_release_temporary_pathname): Likewise.
+	* lib/cfuns-c.c: Implement them.
+	* interp/sys-os.boot: Define acquireTemporaryPathname.
+	* boot/ast.boot (lispKey): New.
+	(bfApplication): Use it.
+	(bfExpandKeys): Likewise.
+	* algebra/Makefile.am: Simplify bootstrapping rules.
+
 2013-05-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/nlib.lisp (getIndexIOStreamAndTable): New.

@@ -1,3 +1,7 @@
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_IO): Check for tempnam.
+
 2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_HOST_LISP_CPU_PRECISION): Update.

@@ -135,28 +135,21 @@ macro domainData d ==
   domainRef(d,4)
 
 --%  
---% Constructor Compilation Data.
---% Operational Semantics:
---%    structure CompilationData ==
---%       Record(formalSubst: Substitution,implicits: List Identifier,
---%         byteList: List SingleInteger,
---%           usedEntities: VectorBuffer Pair(SourceEntity,Elaboration))
---%
-
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
     shell: %Vector %Thing, items: %Buffer %Pair(%SourceEntity,%Code),
-      output: %OutputStream) with
+      lib: %Libstream,outpath: %Pathname) with
         cdSubstitution == (.subst)
         cdImplicits == (.idata)
         cdBytes == (.bytes)
         cdShell == (.shell)
         cdItems == (.items)
-        cdOutput == (.output)
+        cdLib == (.lib)
+        cdOutput == (.outpath)
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil)
+  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil,nil)
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -197,13 +190,16 @@ macro dbEntityCount db ==
   rest dbEntityBuffer db
 
 macro dbLibstream db ==
-  cdOutput dbCompilerData db
+  cdLib dbCompilerData db
 
 macro dbCodeStream db ==
   libCodeStream dbLibstream db
 
 macro dbInsnStream db ==
   libInsnStream dbLibstream db
+
+macro dbOutputPath db ==
+  cdOutput dbCompilerData db
 
 ++ Return the existential substitution of `db'.
 dbQuerySubst db ==
@@ -1765,3 +1761,12 @@ cleanParameterList! parms ==
 --% Other compiler artifact support
 --%
 
+moveLibdirByCopy lib ==
+  checkMkdir libDirname lib
+  for src in directoryEntries libStationaryDirname lib repeat
+    dst := makeFilePath(directory <- libDirname lib,
+             name <- filePathName src, type <- filePathType src)
+    copyFile(filePathString src,filePathString dst)
+  removeFile libStationaryDirname lib = 0 => libDirname lib
+  systemError ['"Could not remove stationary directory",
+                :bright libStationaryDirname lib]

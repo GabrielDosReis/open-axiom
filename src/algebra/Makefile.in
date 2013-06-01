@@ -2512,31 +2512,17 @@ strap-0 strap-1 strap-2:
 
 .PRECIOUS: strap-0/%.$(FASLEXT)
 strap-0/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-0
-	$(BOOTSTRAP) --sysalg=strap-0 --bootstrap $< \
-		&& cp $*.NRLIB/code.$(FASLEXT) $@ && \
-		if test x@oa_keep_files@ = xyes; then \
-			cp $*.NRLIB/code.lsp strap-0/$*.lsp; fi && \
-		rm -rf $*.NRLIB
+	$(BOOTSTRAP) --sysalg=strap-0 --output=$@ --bootstrap $<
 
 .PRECIOUS: strap-1/%.$(FASLEXT)
 strap-1/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-1
-	$(BOOTSTRAP) --strap=strap-0 --sysalg=strap-1 --optimize=3 $< && \
-		cp $*.NRLIB/code.$(FASLEXT) $@ && \
-		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
-			strap-1/$*-.$(FASLEXT); else : ; fi && \
-		if test x@oa_keep_files@ = xyes; then \
-			cp $*.NRLIB/code.lsp strap-1/$*.lsp; fi && \
-		rm -rf $*.NRLIB $*-.NRLIB
+	$(BOOTSTRAP) --strap=strap-0 --sysalg=strap-1 \
+		--output=$@ --optimize=3 $<
 
 .PRECIOUS: strap-2/%.$(FASLEXT)
 strap-2/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-2
-	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 --optimize=3 $< && \
-		cp $*.NRLIB/code.$(FASLEXT) $@ && \
-		if test -d $*-.NRLIB; then cp $*-.NRLIB/code.$(FASLEXT) \
-			strap-2/$*-.$(FASLEXT); else : ; fi && \
-		if test x@oa_keep_files@ = xyes; then \
-			cp $*.NRLIB/code.lsp strap-2/$*.lsp; fi && \
-		rm -rf $*.NRLIB $*-.NRLIB
+	$(BOOTSTRAP) --strap=strap-1 --sysalg=strap-2 \
+		--output=$@ --optimize=3 $<
 
 # The root of the category hierarchy is the Type category.
 # We require the basic integer domains are available at stage 2 of

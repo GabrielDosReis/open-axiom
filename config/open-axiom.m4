@@ -827,6 +827,7 @@ dnl ------------------------
 dnl -- OPENAXIOM_CHECK_IO --
 dnl ------------------------
 AC_DEFUN([OPENAXIOM_CHECK_IO],[
+AC_CHECK_DECLS([tempnam],[],[],[#include <stdio.h>])
 # Honor support for large files
 AC_SYS_LARGEFILE
 # What about long file names?

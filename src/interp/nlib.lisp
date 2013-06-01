@@ -162,11 +162,9 @@
 
 (defun rshut (rstream)
   (when (|libCodeStream| rstream)
-    (close (|libCodeStream| rstream))
-    (setf (|libCodeStream| rstream) nil))
+    (close (|libCodeStream| rstream)))
   (when (|libInsnStream| rstream)
-    (close (|libInsnStream| rstream))
-    (setf (|libInsnStream| rstream) nil))
+    (close (|libInsnStream| rstream)))
   (if (eq (|libIOMode| rstream) 'output)
       (write-indextable (|libIndexTable| rstream) (|libIndexStream| rstream)))
   (close (|libIndexStream| rstream)))
