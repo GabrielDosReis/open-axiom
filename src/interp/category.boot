@@ -382,11 +382,12 @@ filterConditionalCategories(l,e) ==
         unconditionals := [CatEval(at,e),:unconditionals]
       pred isnt ["and",:.] =>
         conditionals := [[CatEval(at,e),pred],:conditionals]
+      -- Predicate is a conjunctive; decompose it.
       pred' := [x for x in pred.args |
                   not listMember?(x,get("$Information","special",e))
                     and x isnt true]
       pred' = nil => unconditionals := [CatEval(at,e),:unconditionals]
-      pred' is [.] => conditionals := [[CatEval(at,e),pred'],:conditionals]
+      pred' is [x] => conditionals := [[CatEval(at,e),x],:conditionals]
       conditionals := [[CatEval(at,e),["and",:pred']],:conditionals]
   [conditionals,reverse! unconditionals]
  
