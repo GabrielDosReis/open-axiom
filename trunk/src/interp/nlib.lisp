@@ -91,6 +91,9 @@
              (setq indextable pos)))
     (values stream indextable)))
 
+(defun |getIndexIOStreamAndTable| (d)
+  (multiple-value-call #'cons (get-io-index-stream d)))
+
 ;substitute indextable in dirname
 
 (defun write-indextable (indextable stream)
