@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -546,7 +546,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
  
 --%  Under what conditions may views exist?
  
-InvestigateConditions(db,catvecListMaker,env) ==
+InvestigateConditions(db,catvecListMaker,tbl,env) ==
   -- given a principal view and a list of secondary views,
   -- discover under what conditions the secondary view are
   -- always present.
@@ -559,8 +559,7 @@ InvestigateConditions(db,catvecListMaker,env) ==
   null secondaries => '(T)
       --return for packages which generally have no secondary views
   if $principal is [op,:.] then
-    [principal',:.]:=compMakeCategoryObject($principal,$e)
-              --Rather like eval, but quotes parameters first
+    principal' := getCategoryObject(tbl,$principal,$e)
     for u in categoryAncestors principal' repeat
       if not TruthP(cond:=second u) then
         new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,first u], '%noBranch]]
@@ -579,7 +578,7 @@ InvestigateConditions(db,catvecListMaker,env) ==
           nil
         [pessimise first a,:pessimise rest a]
   null $Conditions => [true,:[true for u in secondaries]]
-  PrincipalSecondaries:= getViewsConditions principal'
+  PrincipalSecondaries:= getViewsConditions(principal',tbl)
   MinimalPrimary:= first first PrincipalSecondaries
   MaximalPrimary := first categoryPrincipals dbDomainShell db
   necessarySecondaries:= [first u for u in PrincipalSecondaries | rest u=true]
@@ -606,7 +605,7 @@ InvestigateConditions(db,catvecListMaker,env) ==
       [previous]
   $Conditions := remove!([remove!(u,nil) for u in $Conditions],nil)
   partList:=
-    [getViewsConditions partPessimise($principal,cond) for cond in $Conditions]
+    [getViewsConditions(partPessimise($principal,cond),tbl) for cond in $Conditions]
   masterSecondaries:= secondaries
   for u in partList repeat
     for [v,:.] in u repeat
@@ -638,7 +637,7 @@ InvestigateConditions(db,catvecListMaker,env) ==
               old
         list2
   list:= [[sec,:ICformat(u,env)] for u in list for sec in secondaries]
-  pv:= getPossibleViews $principal
+  pv:= getPossibleViews($principal,tbl)
   -- $HackSlot4 is used in SetVector4 to ensure that conditional
   -- extensions of the principal view are handles correctly
   -- here we build the code necessary to remove spurious extensions
@@ -710,22 +709,19 @@ partPessimise(a,trueconds) ==
   a is ['IF,cond,:.] => (listMember?(cond,trueconds) => a; nil)
   [partPessimise(first a,trueconds),:partPessimise(rest a,trueconds)]
  
-getPossibleViews u ==
+getPossibleViews(u,tbl) ==
   --returns a list of all the categories that can be views of this one
-  [vec,:.]:= compMakeCategoryObject(u,$e) or
-    systemErrorHere ["getPossibleViews",u]
+  vec := getCategoryObject(tbl,u,$e)
   views:= [first u for u in categoryAncestors vec]
   null vec.0 => [first categoryPrincipals vec,:views] --*
   [vec.0,:views] --*
       --the two lines marked  ensure that the principal view comes first
       --if you don't want it, rest it off
  
-getViewsConditions u ==
- 
+getViewsConditions(u,tbl) ==
   --returns a list of all the categories that can be views of this one
   --paired with the condition under which they are such views
-  [vec,:.]:= compMakeCategoryObject(u,$e) or
-    systemErrorHere ["getViewsConditions",u]
+  vec := getCategoryObject(tbl,u,$e)
   views:= [[first u,:second u] for u in categoryAncestors vec]
   null vec.0 =>
     null categoryPrincipals vec => views

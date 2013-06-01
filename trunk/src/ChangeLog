@@ -1,5 +1,12 @@
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (getCategoryObject): New.
+	* interp/functor.boot (InvestigateConditions): Use it.
+	(getViewsConditions): Likewise.
+	(getPossibleViews): Likewise.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/category.boot (filterConditionalCategories): Fix thinko.
 
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
