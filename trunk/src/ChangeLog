@@ -1,5 +1,9 @@
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/category.boot (filterConditionalCategories): Fix thinko.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	Support --output in compiler, for bootstrapping stage.
 	* lisp/core.lisp.in (directoryEntries): New.
 	* interp/lisplib.boot (compDefineLisplib): Tidy.  Honor --output.

@@ -87,6 +87,7 @@
 	   "%Vector"
 	   "%BitVector"
 	   "%SimpleArray"
+	   "%Table"
 
 	   ;; Some common data structures
 	   "makeTable"	  ; construct a hash table with a given comp function
@@ -281,6 +282,8 @@
 (deftype |%Vector| (s) `(vector ,s))
 
 (deftype |%BitVector| () '(simple-array bit))
+
+(deftype |%Table| nil 'hash-table)
 
 (deftype |%Shell| () 'simple-vector)
 
@@ -1503,5 +1506,6 @@
     (|int|     . @int_type@)
     (|float|   . @float_type@)
     (|double|  . @double_type@)
-    (|string|  . @string_type@)))
+    (|string|  . @string_type@)
+    (|address| . @pointer_type@)))
 

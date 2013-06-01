@@ -415,6 +415,7 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='string'
+      pointer_type='fixnum'  # well, this is from poking into GCL source code
       ;;
    sbcl)
       void_type='void'
@@ -423,6 +424,7 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='c-string'
+      pointer_type='(* t)'
       ;;
    clisp)
       void_type='nil'
@@ -431,6 +433,7 @@ case $axiom_lisp_flavor in
       float_type='single-float'
       double_type='double-float'
       string_type='c-string'
+      pointer_type='c-pointer'
       ;;
    ecl)
       void_type=':void'
@@ -439,6 +442,7 @@ case $axiom_lisp_flavor in
       float_type=':float'
       double_type=':double'
       string_type=':cstring'
+      pointer_type=':pointer-void'
       ;;
    clozure)
       void_type=':void'
@@ -449,6 +453,7 @@ case $axiom_lisp_flavor in
       double_type=':double-float'
       # Clozure CL wants you to deal with your own mess
       string_type=':address'
+      pointer_type=':address'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])
