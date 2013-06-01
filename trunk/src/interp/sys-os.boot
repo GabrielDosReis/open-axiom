@@ -49,6 +49,10 @@ loadSystemRuntimeCore()
 
 --% File System Support
 
+++ Get a temporary pathname
+import oa__acquire__temporary__pathname: () -> string for
+  acquireTemporaryPathname
+
 ++ Current working directory
 import oa__getcwd: () -> string for doGetWorkingDirectory
 

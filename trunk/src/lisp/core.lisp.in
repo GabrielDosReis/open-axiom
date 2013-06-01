@@ -3,7 +3,7 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; Copyright (C) 2007-2013, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -103,7 +103,8 @@
 	   "$InputStream"
 	   "$OutputStream"
 	   "$ErrorStream"
-	   
+
+	   "directoryEntries"
 	   "inputBinaryFile"
 	   "outputBinaryFile"
 	   "inputTextFile"
@@ -550,6 +551,22 @@
 (defparameter |$InputStream| (make-synonym-stream '*standard-input*))
 (defparameter |$OutputStream| (make-synonym-stream '*standard-output*))
 (defparameter |$ErrorStream| (make-synonym-stream '*standard-output*))
+
+;; Return all entries (except dot and dot-dot) in a directory
+(defun |directoryEntries| (dir &optional (pattern nil))
+  (let ((dirname (namestring dir)))
+    (cond (pattern (directory (concatenate 'string dirname "/" pattern)))
+	  (t ;; list everything.
+	   ;; There are two groups: those who do the right and obvious thing;
+	   ;; and those that are anal-retentive about it.
+	   #+(or :clisp :clozure :gcl) 
+	   (directory (concatenate 'string dirname "/*"))
+	   #-(or :clisp :clozure :gcl)
+	   (nunion
+	    (directory (concatenate 'string dirname "/*"))
+	    (directory (concatenate 'string dirname "/*.*")))))))
+	   
+	 
 
 (defun |inputBinaryFile| (f)
   (open f

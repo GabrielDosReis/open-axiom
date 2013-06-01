@@ -1201,6 +1201,7 @@ compDefineCategory(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := lhs
   dbCompilerData(db) := makeCompilationData()
+  dbOutputPath(db) := getOutputPath()
   $backend: local := function(x +-> printBackendStmt(dbLibstream db,x))
   try
     $insideFunctorIfTrue => compDefineCategory1(db,df,m,e,fal)
@@ -1442,6 +1443,16 @@ setDollarName(form,env) ==
 getDollarName env ==
   get('%compilerData,'%dollar,env)
 
+getOutputPath() ==
+  outfile := getOptionValue "output"
+  outfile = nil => nil
+  $insideCategoryPackageIfTrue =>
+    d := filePathDirectory outfile
+    n := strconc(filePathString filePathName outfile,'"-")
+    t := filePathType outfile
+    filePathString makeFilePath(directory <- d,name <- n,type <- t)
+  outfile
+
 compDefineFunctor(df,m,e,fal) ==
   $profileCompiler: local := true
   $profileAlist:    local := nil
@@ -1450,6 +1461,7 @@ compDefineFunctor(df,m,e,fal) ==
   dbClearForCompilation! db
   dbConstructorForm(db) := form
   dbCompilerData(db) := makeCompilationData()
+  dbOutputPath(db) := getOutputPath()
   $backend: local := function(x +-> printBackendStmt(dbLibstream db,x))
   try compDefineLisplib(db,df,m,e,fal,'compDefineFunctor1)
   finally dbCompilerData(db) := nil

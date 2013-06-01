@@ -1,7 +1,7 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights resrved.
 
   Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,8 @@ OPENAXIOM_C_EXPORT int copyEnvValue(char*, char*);
 OPENAXIOM_C_EXPORT int oa_chdir(const char*);
 OPENAXIOM_C_EXPORT int oa_unlink(const char*);
 OPENAXIOM_C_EXPORT int oa_rename(const char*, const char*);
+OPENAXIOM_C_EXPORT const char* oa_acquire_temporary_pathname();
+OPENAXIOM_C_EXPORT void oa_release_temporary_pathname(const char*);
 OPENAXIOM_C_EXPORT int oa_mkdir(const char*);
 OPENAXIOM_C_EXPORT int oa_system(const char*);
 OPENAXIOM_C_EXPORT char* oa_getenv(const char*);

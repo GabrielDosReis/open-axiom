@@ -410,22 +410,19 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
   if dbSourceFile db = nil then
     dbSourceFile(db) := namestring $editFile
   $compileDocumentation => compileDocumentation(db,libName)
-  sayMSG ['"   initializing ",$spadLibFT,:bright libName,
-    '"for",:bright op]
-  initializeLisplib(db,libName)
-  sayMSG ['"   compiling into ",$spadLibFT,:bright libName]
-  -- following guarantee's compiler output files get closed.
-  ok := false;
+  sayMSG ['"   initializing stationary directory for",:bright op]
+  lib := initializeLisplib(db,libName)
+  sayMSG ['"   compiling into ",:bright libStationaryDirname lib]
+  -- following guarantees compiler output files get closed.
   try
-    res:= FUNCALL(fn,db,df,m,e,fal)
+    res:= apply(fn,[db,df,m,e,fal])
     leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
-    ok := finalizeLisplib(db,libName)
+    finalizeLisplib(db,libName)
+    RECOMPILE_-LIB_-FILE_-IF_-NECESSARY filePath libCodeStream lib
   finally
     RSHUT dbLibstream db
-  if ok then lisplibDoRename(libName)
-  filearg := makeFullFilePath [libName,$spadLibFT,nil]
-  RPACKFILE filearg
+  lisplibDoRename db
   sayMSG fillerSpaces(72,char "-")
   unloadOneConstructor op
   $buildingSystemAlgebra => res
@@ -444,11 +441,15 @@ compileDocumentation(db,libName) ==
   ['dummy, $EmptyMode, $e]
 
 initializeLisplib(db,libName) ==
-  removeFile makeFullFilePath [libName,'ERRORLIB,nil]
   resetErrorCount()
-  lib := writeLib(libName,'ERRORLIB)
-  dbLibstream(db) := lib
-  dbCodeStream(db) := outputTextFile strconc(libDirname lib,'"/code.lsp")
+  tmpdir := acquireTemporaryPathname()
+  removeFile tmpdir
+  checkMkdir tmpdir
+  [stream,:table] := getIndexIOStreamAndTable tmpdir
+  lsp := outputTextFile strconc(tmpdir,'"/code.lsp")
+  libdir := makeFullFilePath [libName,$spadLibFT,nil]
+  dbLibstream(db) := mk%Libstream('OUTPUT,libdir,table,stream,lsp,nil,tmpdir)
+
 
 mkCtorDBForm db ==
   ['constructorDB,quote dbConstructor db]
@@ -570,13 +571,23 @@ finalizeLisplib(db,libName) ==
   writeAncestors db
   if not $bootStrapMode then
     writeDocumentation(db,finalizeDocumentation db)
-  if $profileCompiler then profileWrite db
+  if $profileCompiler then profileWrite dbLibstream db
   leaveIfErrors(libName,dbConstructorKind db)
   true
 
-lisplibDoRename(libName) ==
-  _$REPLACE([libName,$spadLibFT,nil],
-    [libName,'ERRORLIB,nil])
+lisplibDoRename db ==
+  lib := dbLibstream db
+  output := dbOutputPath db =>
+    modpath := filePathString
+      makeFilePath(type <- $faslType,defaults <- filePath libCodeStream lib)
+    do
+      renameFile(modpath,output) = 0 => nil
+      copyFile(modpath,output)
+      removeFile libStationaryDirname lib
+    output
+  removeFile libDirname lib
+  renameFile(libStationaryDirname lib,libDirname lib) = 0 => libDirname lib
+  moveLibdirByCopy lib
  
 lisplibError(cname,fname,type,cn,fn,typ,error) ==
   sayMSG bright ['"  Illegal ",$spadLibFT]

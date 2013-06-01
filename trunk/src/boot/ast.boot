@@ -811,16 +811,20 @@ bfHas(expr,prop) ==
 bfKeyArg(k,x) ==
   ['%Key,k,x]
 
+lispKey k ==
+  makeSymbol(stringUpcase symbolName k,'"KEYWORD")
+
 bfExpandKeys l ==
   args := nil
   while l is [a,:l] repeat
     a is ['%Key,k,x] =>
-      args := [x,makeSymbol(stringUpcase symbolName k,'"KEYWORD"),:args]
+      args := [x,lispKey k,:args]
     args := [a,:args]
   reverse! args      
 
 bfApplication(bfop, bfarg) ==
   bfTupleP bfarg => [bfop,:bfExpandKeys rest bfarg]
+  bfarg is ['%Key,k,v] => [bfop,lispKey k,v]
   [bfop,bfarg]
  
 -- returns the meaning of x in the appropriate Boot dialect.

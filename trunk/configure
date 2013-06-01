@@ -18268,6 +18268,18 @@ _ACEOF
 #OPENAXIOM_CHECK_GMP
 
 
+ac_fn_cxx_check_decl "$LINENO" "tempnam" "ac_cv_have_decl_tempnam" "#include <stdio.h>
+"
+if test "x$ac_cv_have_decl_tempnam" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TEMPNAM $ac_have_decl
+_ACEOF
+
 # Honor support for large files
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :

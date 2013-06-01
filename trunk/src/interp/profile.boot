@@ -40,8 +40,8 @@ namespace BOOT
 --$profileCompiler := true
 $profileAlist := nil
 
-profileWrite db ==  --called from finalizeLisplib
-  outStream := MAKE_-OUTSTREAM strconc(libDirname dbLibstream db,'"/info")
+profileWrite lib ==  --called from finalizeLisplib
+  outStream := outputTextFile strconc(libStationaryDirname lib,'"/info")
   SETQ(_*PRINT_-PRETTY_*, true)
   PRINT_-FULL(profileTran $profileAlist,outStream)
   SHUT outStream

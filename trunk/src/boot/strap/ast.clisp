@@ -1223,6 +1223,8 @@
 
 (DEFUN |bfKeyArg| (|k| |x|) (LIST '|%Key| |k| |x|))
 
+(DEFUN |lispKey| (|k|) (INTERN (STRING-UPCASE (SYMBOL-NAME |k|)) "KEYWORD"))
+
 (DEFUN |bfExpandKeys| (|l|)
   (LET* (|x| |ISTMP#2| |k| |ISTMP#1| |a| |args|)
     (PROGN
@@ -1241,17 +1243,24 @@
                     (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                     (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                          (PROGN (SETQ |x| (CAR |ISTMP#2|)) T))))))
-        (SETQ |args|
-                (CONS |x|
-                      (CONS
-                       (INTERN (STRING-UPCASE (SYMBOL-NAME |k|)) "KEYWORD")
-                       |args|))))
+        (SETQ |args| (CONS |x| (CONS (|lispKey| |k|) |args|))))
        (T (SETQ |args| (CONS |a| |args|)))))
      (|reverse!| |args|))))
 
 (DEFUN |bfApplication| (|bfop| |bfarg|)
-  (COND ((|bfTupleP| |bfarg|) (CONS |bfop| (|bfExpandKeys| (CDR |bfarg|))))
-        (T (LIST |bfop| |bfarg|))))
+  (LET* (|v| |ISTMP#2| |k| |ISTMP#1|)
+    (COND ((|bfTupleP| |bfarg|) (CONS |bfop| (|bfExpandKeys| (CDR |bfarg|))))
+          ((AND (CONSP |bfarg|) (EQ (CAR |bfarg|) '|%Key|)
+                (PROGN
+                 (SETQ |ISTMP#1| (CDR |bfarg|))
+                 (AND (CONSP |ISTMP#1|)
+                      (PROGN
+                       (SETQ |k| (CAR |ISTMP#1|))
+                       (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                            (PROGN (SETQ |v| (CAR |ISTMP#2|)) T))))))
+           (LIST |bfop| (|lispKey| |k|) |v|))
+          (T (LIST |bfop| |bfarg|)))))
 
 (DEFUN |bfReName| (|x|)
   (LET* (|a|)
