@@ -46,6 +46,7 @@ module define where
   compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
   compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
   evalCategoryForm: (%Form,%Env) -> %Maybe %Shell
+  getCategoryObject: (%Table,%Form,%Env) -> %Shell
 
 
 --%
@@ -1217,6 +1218,11 @@ compMakeCategoryObject(c,$e) ==
   not isCategoryForm(c,$e) => nil
   u := evalCategoryForm(c,$e) => [u,$Category,$e]
   nil
+
+getCategoryObject(tbl,x,env) ==
+  obj := tableValue(tbl,x) => obj
+  T := compMakeCategoryObject(x,env) => tableValue(tbl,x) := T.expr
+  systemErrorHere ['getCategoryObject]
 
 predicatesFromAttributes: %List %Form -> %List %Form
 predicatesFromAttributes attrList ==
