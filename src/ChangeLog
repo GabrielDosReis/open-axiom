@@ -1,3 +1,7 @@
+2013-05-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (getIndexIOStreamAndTable): New.
+
 2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (knowInfo): Fix typo.

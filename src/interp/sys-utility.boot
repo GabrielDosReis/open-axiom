@@ -395,16 +395,17 @@ macro constructorDB ctor ==
 --%
 structure %Libstream ==
   Record(mode: %IOMode, dir: %Pathname,tbl: %Thing, idxst: %Stream,
-    cdst: %Stream,insnst: %Stream) with
+    cdst: %Stream,insnst: %Stream,tmpdir: %Pathname) with
       libIOMode == (.mode)
       libDirname == (.dir)
       libIndexTable == (.tbl)
       libIndexStream == (.idxst)
       libCodeStream == (.cdst)
       libInsnStream == (.insnst)
+      libStationaryDirname == (.tmpdir)
 
 makeLibstream(m,p,idx==nil,st==nil) ==
-  mk%Libstream(m,p,idx,st,nil,nil)
+  mk%Libstream(m,p,idx,st,nil,nil,nil)
 
 makeFilename(filearg,filetype==nil) ==
   if ident? filetype then
