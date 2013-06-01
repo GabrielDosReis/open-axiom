@@ -233,7 +233,7 @@ knownInfo(pred,env,tbl == makeTable function valueEq?) ==
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
-    or/[ancestor?(cat,[first u],env) 
+    or/[ancestor?(cat,[first u],tbl,env) 
          for u in categoryAncestors vv | knownInfo(second u,env,tbl)] =>
             tableValue(tbl,pred) := true
     false

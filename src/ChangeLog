@@ -1,5 +1,20 @@
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/category.boot (SigListUnion): Take a cache table.  Adjust
+	callers.
+	(mkOr): Likewise.
+	(mkOr2): Likewise.
+	(mkAnd): Likewise.
+	(mkAnd2): Likewise.
+	(FindFundAncs): Likewise.
+	(CatEval): Likewise.
+	(ancestors?): Likewise.
+	(descendant?): Likewise.
+	(filterConditionalCategories): Likewise.
+	* interp/functor.boot (ICformat): Likewise.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (getCategoryObject): New.
 	* interp/functor.boot (InvestigateConditions): Use it.
 	(getViewsConditions): Likewise.
