@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -136,10 +136,16 @@ collectAndDeleteAssoc x ==
       y.rest := s
   res
 
+instantiateNiladicsInDoc! docList ==
+  for [x,:.] in docList | x is [.,:.] repeat
+    x.opSig := instantiateNiladicsInList! x.opSig
+  docList
+
 finalizeDocumentation db ==
   ctor := dbConstructor db
   unusedCommentLineNumbers := [x for (x := [n,:r]) in $COMBLOCKLIST | r]
-  docList := substitute("$","%",transDocList($op,$docList))
+  docList := instantiateNiladicsInDoc!
+               substitute!("$","%",transDocList($op,$docList))
   if u := [sig for [sig,:doc] in docList | null doc] then
     for y in u repeat
       y is 'constructor => noHeading := true

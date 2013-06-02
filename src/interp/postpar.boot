@@ -167,9 +167,7 @@ postAtom x ==
   x is 0 => $Zero
   x is 1 => $One
   x is "," => "%Comma"
-  ident? x =>
-    niladicConstructor? x => [x]
-    normalizeName x
+  ident? x => normalizeName x
   x
 
 postBlock: %ParseTree -> %ParseForm
