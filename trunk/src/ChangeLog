@@ -1,3 +1,12 @@
+2013-06-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Make parser non-dependent on constructor databases.
+	* interp/compiler.boot (instantiateNiladics!): New.
+	(compileParseTree): Use it to expand niladict constructors.
+	(instantiateNiladicsInList!): New.
+	* interp/c-doc.boot (instantiateNiladicsInDoc!): New.
+	(finalizeDocumentation): Use it.
+
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (addInfo): Remove.

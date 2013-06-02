@@ -2797,6 +2797,30 @@ preprocessParseTree pt ==
   displayPreCompilationErrors()
   nil
 
+++ Mutate parse form `pf' so that references to niladic constructors
+++ appear in instantiation form.
+instantiateNiladics! pf ==
+  ident? pf and niladicConstructor? pf => [pf]
+  do 
+    pf isnt [.,:.] or pf.op is 'QUOTE => nil
+    pf.op in '(DEF MDEF) =>
+      -- Note: Normally, we wouldn't want to touch the definiendum;
+      --       except that some operators such as 'case' take flags,
+      --       so we want to solve them if they are types.
+      if second(pf) is [.,:.] then
+        second(pf).args := instantiateNiladicsInList! second(pf).args
+      third(pf) := instantiateNiladicsInList! third pf
+      fourth(pf) := instantiateNiladics! fourth pf
+    pf.op is 'SIGNATURE => third(pf) := instantiateNiladicsInList! third pf
+    pf.op isnt [.,:.] => pf.args := instantiateNiladicsInList! pf.args
+    instantiateNiladicsInList! pf
+  pf
+
+instantiateNiladicsInList! l ==
+  for xs in tails l repeat
+    xs.first := instantiateNiladics! first xs
+  l
+
 ++ Takes a parse tree `pt', typecheck it and compile it down 
 ++ to VM instructions.
 compileParseTree pt ==
@@ -2815,6 +2839,7 @@ compileParseTree pt ==
   $returnMode: local := $EmptyMode
   $exitModeStack: local := []    -- Used by the compiler proper
   $leaveLevelStack: local := []
+  pf := instantiateNiladics! pf
   if T := compTopLevel(pf,$EmptyMode,$InteractiveFrame) then
     $InteractiveFrame := T.env
   finishLine $OutputStream
