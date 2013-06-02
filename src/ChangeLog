@@ -1,5 +1,10 @@
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (addInfo): Remove.
+	(addinformation): Tidy.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (NRTgetLookupFunction): Take a cache table.
 	Adjust caller.
 	(NRTextendsCategory1): Likewise.
