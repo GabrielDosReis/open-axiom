@@ -139,7 +139,6 @@ formatInfo(u,e) ==
   u is ["SIGNATURE",:v] => ["SIGNATURE","$",:v]
   u is ["PROGN",:l] => ["PROGN",:[formatInfo(v,e) for v in l]]
   u is ["ATTRIBUTE",v] =>
- 
     -- The parser can't tell between those attributes that really
     -- are attributes, and those that are category names
     v isnt [.,:.] and isCategoryForm([v],e) => ["has","$",[v]]
@@ -155,20 +154,19 @@ formatInfo(u,e) ==
       liftCond [["not",formatPred(a,e)],formatInfo(c,e)]]
   systemError ['"formatInfo",u]
  
-addInfo(u,e) == 
-  $Information:= [formatInfo(u,e),:$Information]
- 
 addInformation(m,e) ==
-  $Information: local := nil
-  info(m,e) where
-    info(m,e) ==
-      --Processes information from a mode declaration in compCapsule
+  facts := ref nil               -- list of facts to derive from `m'.
+  deduce(m,facts,e) where
+    deduce(m,facts,e) ==
       m isnt [.,:.] => nil
-      m is ["CATEGORY",.,:stuff] => for u in stuff repeat addInfo(u,e)
-      m is ["Join",:stuff] => for u in stuff repeat info(u,e)
+      m is ["CATEGORY",.,:stuff] =>
+        for u in stuff repeat
+          deref(facts) := [formatInfo(u,e),:deref facts]
+      m is ["Join",:stuff] =>
+        for u in stuff repeat deduce(u,facts,e)
       nil
   put("$Information","special",
-       [:$Information,:get("$Information","special",e)],e)
+       [:deref facts,:get("$Information","special",e)],e)
  
 hasToInfo (pred is ["has",a,b]) ==
   b is ["SIGNATURE",:data] => ["SIGNATURE",a,:data]
