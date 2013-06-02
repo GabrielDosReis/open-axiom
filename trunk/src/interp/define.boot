@@ -2538,6 +2538,12 @@ compJoin(["Join",:argl],m,e) ==
 compForMode: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compForMode(x,m,e) ==
   $compForModeIfTrue: local:= true
+  $bootStrapMode and m = $Category =>
+    op := opOf x
+    ident? op and (db := constructorDB op) =>
+      dbConstructorKind db = "category" => [x,m,e]
+      nil
+    comp(x,m,e)
   comp(x,m,e)
 
 makeCategoryForm(c,e) ==

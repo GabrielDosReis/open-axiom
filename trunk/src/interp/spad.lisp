@@ -44,7 +44,6 @@
 
 (defvar |$reportInstantiations| nil)
 (defvar |$reportEachInstantiation| nil)
-(defvar |$compForModeIfTrue| nil "checked in compSymbol")
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")

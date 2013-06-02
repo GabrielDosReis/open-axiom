@@ -361,6 +361,8 @@ $categoryPredicateList := []
 $getDomainCode := nil
 $addForm := nil
 
+$compForModeIfTrue := false
+
 --%
 
 $algebraOutputStream :=
