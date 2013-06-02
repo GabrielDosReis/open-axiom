@@ -161,6 +161,7 @@ strap-0/OCAMON.$(FASLEXT): strap-0/OAMON.$(FASLEXT) \
 strap-0/SGROUP.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
 strap-0/OAMON.$(FASLEXT): strap-0/OASGP.$(FASLEXT) \
 	strap-0/ABELMON.$(FASLEXT)
+strap-0/OASGP.$(FASLEXT): strap-0/ORDSET.$(FASLEXT)
 strap-0/MONOID.$(FASLEXT): strap-0/SGROUP.$(FASLEXT)
 strap-0/GROUP.$(FASLEXT): strap-0/MONOID.$(FASLEXT)
 strap-0/ABELGRP.$(FASLEXT): strap-0/CABMON.$(FASLEXT) \
@@ -200,6 +201,8 @@ strap-0/OINTDOM.$(FASLEXT): strap-0/INTDOM.$(FASLEXT) \
 	strap-0/ORDRING.$(FASLEXT)
 strap-0/FIELD.$(FASLEXT): strap-0/EUCDOM.$(FASLEXT) \
 	strap-0/UFD.$(FASLEXT) strap-0/DIVRING.$(FASLEXT)
+strap-0/DIVRING.$(FASLEXT): strap-0/ENTIRER.$(FASLEXT) \
+	strap-0/ALGEBRA.$(FASLEXT)
 strap-0/DIFFSPC.$(FASLEXT): strap-0/DIFFDOM.$(FASLEXT)
 strap-0/DIFFDOM.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/DIFRING.$(FASLEXT): strap-0/RING.$(FASLEXT) \
@@ -226,6 +229,7 @@ strap-0/QFCAT.$(FASLEXT): strap-0/FIELD.$(FASLEXT) \
 	strap-0/KONVERT.$(FASLEXT) strap-0/CHARZ.$(FASLEXT) \
 	strap-0/CHARNZ.$(FASLEXT) strap-0/EUCDOM.$(FASLEXT) \
 	strap-0/PFECAT.$(FASLEXT)
+strap-0/FEVALAB.$(FASLEXT): strap-0/FUNCTOR.$(FASLEXT)
 strap-0/INS.$(FASLEXT): strap-0/UFD.$(FASLEXT) strap-0/EUCDOM.$(FASLEXT) \
 	strap-0/OINTDOM.$(FASLEXT) strap-0/DIFRING.$(FASLEXT) \
 	strap-0/KONVERT.$(FASLEXT) strap-0/RETRACT.$(FASLEXT) \
@@ -289,6 +293,7 @@ strap-0/FLAGG.$(FASLEXT): strap-0/LNAGG.$(FASLEXT) strap-0/FINAGG.$(FASLEXT)
 strap-0/FINAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
 strap-0/LNAGG.$(FASLEXT): strap-0/IXAGG.$(FASLEXT) \
 	strap-0/CLAGG.$(FASLEXT) strap-0/ELTAB.$(FASLEXT)
+strap-0/CLAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT)
 strap-0/IXAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT) \
 	strap-0/ELTAGG.$(FASLEXT)
 strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
@@ -308,6 +313,7 @@ strap-0/SINT.$(FASLEXT): strap-0/INS.$(FASLEXT) strap-0/ORDFIN.$(FASLEXT) \
 strap-0/INT.$(FASLEXT): strap-0/INS.$(FASLEXT)
 strap-0/NNI.$(FASLEXT): strap-0/OAMONS.$(FASLEXT) \
 	strap-0/MONOID.$(FASLEXT) strap-0/INT.$(FASLEXT)
+strap-0/OAMONS.$(FASLEXT): strap-0/OCAMON.$(FASLEXT)
 strap-0/PI.$(FASLEXT): strap-0/OASGP.$(FASLEXT) \
 	strap-0/MONOID.$(FASLEXT) strap-0/NNI.$(FASLEXT)
 strap-0/STRING.$(FASLEXT): strap-0/SRAGG.$(FASLEXT)
@@ -388,6 +394,8 @@ strap-1/ORDFIN.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 strap-1/PID.$(FASLEXT): strap-1/GCDDOM.$(FASLEXT) \
 	strap-0/MAYBE.$(FASLEXT)
 
+strap-1/GCDDOM.$(FASLEXT): strap-0/INTDOM.$(FASLEXT)
+
 strap-1/EUCDOM.$(FASLEXT): strap-1/PID.$(FASLEXT) \
 	strap-0/BOOLEAN.$(FASLEXT) strap-0/LSAGG.$(FASLEXT)
 
@@ -416,6 +424,8 @@ strap-1/OCAMON.$(FASLEXT): strap-1/OAMON.$(FASLEXT) \
 
 strap-1/OAMON.$(FASLEXT): strap-1/OASGP.$(FASLEXT) \
 	strap-1/ABELMON.$(FASLEXT)
+
+strap-1/OASGP.$(FASLEXT): strap-1/ORDSET.$(FASLEXT)
 
 strap-1/OAMONS.$(FASLEXT): strap-1/OCAMON.$(FASLEXT)
 
@@ -452,6 +462,8 @@ strap-1/SRING.$(FASLEXT): strap-1/ABELMON.$(FASLEXT) \
 strap-1/ORDRING.$(FASLEXT): strap-1/OAGROUP.$(FASLEXT) \
 	strap-1/CHARZ.$(FASLEXT) strap-1/MONOID.$(FASLEXT)
 
+strap-1/CHARZ.$(FASLEXT): strap-1/RING.$(FASLEXT)
+
 strap-1/COMRING.$(FASLEXT): strap-1/RING.$(FASLEXT) \
 	strap-1/BMODULE.$(FASLEXT)
 
@@ -465,6 +477,9 @@ strap-1/INTDOM.$(FASLEXT): strap-1/COMRING.$(FASLEXT) \
 	strap-1/ALGEBRA.$(FASLEXT) strap-1/ENTIRER.$(FASLEXT) \
 	strap-0/FIELD.$(FASLEXT)
 
+strap-1/ENTIRER.$(FASLEXT): strap-1/RING.$(FASLEXT) \
+	strap-0/BMODULE.$(FASLEXT)
+
 strap-1/OINTDOM.$(FASLEXT): strap-1/INTDOM.$(FASLEXT) \
 	strap-1/ORDRING.$(FASLEXT)
 
@@ -476,6 +491,8 @@ strap-1/FPC.$(FASLEXT): strap-1/FIELD.$(FASLEXT) strap-1/CHARNZ.$(FASLEXT)
 strap-1/FFIELDC.$(FASLEXT): strap-1/FPC.$(FASLEXT) strap-1/FINITE.$(FASLEXT) \
 	strap-1/STEP.$(FASLEXT) strap-1/DIFRING.$(FASLEXT) \
 	strap-0/TABLE.$(FASLEXT)
+
+strap-1/STEP.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
 
 strap-1/DIVRING.$(FASLEXT): strap-1/ENTIRER.$(FASLEXT) \
 	strap-1/ALGEBRA.$(FASLEXT) strap-0/FRAC.$(FASLEXT)
@@ -490,6 +507,10 @@ strap-1/INS.$(FASLEXT): strap-1/UFD.$(FASLEXT) strap-1/EUCDOM.$(FASLEXT) \
 	strap-1/REAL.$(FASLEXT) strap-1/CHARZ.$(FASLEXT) \
 	strap-1/STEP.$(FASLEXT) strap-1/PATMAB.$(FASLEXT) \
 	strap-0/PATTERN.$(FASLEXT)
+
+strap-1/PATMAB.$(FASLEXT): strap-1/SETCAT.$(FASLEXT)
+
+strap-1/LINEXP.$(FASLEXT): strap-1/LMODULE.$(FASLEXT)
 
 strap-1/FPS.$(FASLEXT): strap-1/RNS.$(FASLEXT)
 
@@ -597,6 +618,7 @@ strap-1/LNAGG.$(FASLEXT): strap-1/IXAGG.$(FASLEXT) \
 	strap-1/CLAGG.$(FASLEXT) strap-1/ELTAB.$(FASLEXT) \
 	strap-0/UNISEG.$(FASLEXT)
 
+strap-1/CLAGG.$(FASLEXT): strap-1/HOAGG.$(FASLEXT)
 strap-1/IXAGG.$(FASLEXT): strap-1/HOAGG.$(FASLEXT) \
 	strap-1/ELTAGG.$(FASLEXT)
 
@@ -773,6 +795,7 @@ strap-2/OCAMON.$(FASLEXT): strap-2/OAMON.$(FASLEXT) \
 	strap-2/CABMON.$(FASLEXT)
 strap-2/OAMON.$(FASLEXT): strap-2/OASGP.$(FASLEXT) \
 	strap-2/ABELMON.$(FASLEXT)
+strap-2/OASGP.$(FASLEXT): strap-2/ORDSET.$(FASLEXT)
 strap-2/ABELGRP.$(FASLEXT): strap-2/CABMON.$(FASLEXT) \
 	strap-2/LLINSET.$(FASLEXT)
 strap-2/OAGROUP.$(FASLEXT): strap-2/OCAMON.$(FASLEXT) \
@@ -909,6 +932,7 @@ strap-2/FLAGG.$(FASLEXT): strap-2/LNAGG.$(FASLEXT) strap-2/FINAGG.$(FASLEXT)
 strap-2/FINAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/LNAGG.$(FASLEXT): strap-2/IXAGG.$(FASLEXT) \
 	strap-2/CLAGG.$(FASLEXT) strap-2/ELTAB.$(FASLEXT)
+strap-2/CLAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/IXAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT) \
 	strap-2/ELTAGG.$(FASLEXT)
 strap-2/HOAGG.$(FASLEXT): strap-2/AGG.$(FASLEXT) strap-2/FUNCTOR.$(FASLEXT) \
@@ -931,6 +955,7 @@ strap-2/SINT.$(FASLEXT): strap-2/INS.$(FASLEXT) strap-2/INT.$(FASLEXT)
 strap-2/PI.$(FASLEXT): strap-2/OASGP.$(FASLEXT) \
 	strap-2/MONOID.$(FASLEXT) strap-2/NNI.$(FASLEXT)
 strap-2/NNI.$(FASLEXT): strap-2/OAMONS.$(FASLEXT) strap-2/INT.$(FASLEXT)
+strap-2/OAMONS.$(FASLEXT): strap-2/OCAMON.$(FASLEXT)
 strap-2/INT.$(FASLEXT): strap-2/INS.$(FASLEXT) \
 	strap-2/SUP.$(FASLEXT) strap-2/MATRIX.$(FASLEXT) \
 	strap-2/VECTOR.$(FASLEXT) strap-2/DFLOAT.$(FASLEXT) \
@@ -1294,6 +1319,7 @@ $(OUT)/HOAGG.$(FASLEXT): $(OUT)/FUNCTOR.$(FASLEXT)
 $(OUT)/SMAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 $(OUT)/FINAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 $(OUT)/ELAGG.$(FASLEXT): $(OUT)/SMAGG.$(FASLEXT)
+$(OUT)/CLAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 
 oa_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
