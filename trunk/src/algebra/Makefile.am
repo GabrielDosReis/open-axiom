@@ -400,7 +400,7 @@ strap-1/ORDSET.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) \
 	strap-1/ORDTYPE.$(FASLEXT)
 
 strap-1/FINITE.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) \
-	strap-0/PI.$(FASLEXT)
+	strap-0/OAMONS.$(FASLEXT) strap-0/PI.$(FASLEXT)
 
 strap-1/ORDFIN.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 	strap-1/FINITE.$(FASLEXT)
