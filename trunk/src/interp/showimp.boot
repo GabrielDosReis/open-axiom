@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -258,7 +258,7 @@ formatLazyDomainForm(dom,x) ==
 dc(:r) ==
   con := KAR r
   options := KDR r
-  ok := symbolMember?(con,allConstructors()) or (con := abbreviation? con)
+  ok := constructorDB con or (con := abbreviation? con)
   null ok =>
     sayBrightly '"Format is: dc(<constructor name or abbreviation>,option)"
     sayBrightly 

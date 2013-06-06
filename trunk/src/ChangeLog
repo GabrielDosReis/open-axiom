@@ -1,3 +1,9 @@
+2013-06-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (substSlotNumbers): Remove redundant check.
+	* interp/lisplib.boot (NRTgenInitialAttributeAlist): Simplify.
+	* interp/showimp.boot (dc): Likewise.
+
 2013-06-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	Make parser non-dependent on constructor databases.
