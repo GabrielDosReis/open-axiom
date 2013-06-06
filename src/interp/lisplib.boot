@@ -45,7 +45,7 @@ module lisplib
 NRTgenInitialAttributeAlist(db,attributeList) ==
   --alist has form ((item pred)...) where some items are constructor forms
   alist := [x for x in attributeList | -- throw out constructors
-    not symbolMember?(opOf first x,allConstructors())]
+              constructorDB opOf first x = nil]
   dbAttributes(db) := simplifyAttributeAlist(db,
     [[a,:b] for [a,b] in dbSubstituteFormals(db,alist) | a isnt 'nothing])
 

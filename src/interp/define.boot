@@ -628,8 +628,6 @@ catExtendsCat?(u,v,tbl,env) ==
   or/[catExtendsCat?(x,v,tbl,env) for x in ASSOCLEFT categoryAncestors uvec]
  
 substSlotNumbers(form,template,domain) ==
-  form is [op,:.] and
-    symbolMember?(op,allConstructors()) => expandType(form,template,domain)
   form is ['SIGNATURE,op,sig,:q] =>
     ['SIGNATURE,op,[substSlotNumbers(x,template,domain) for x in sig],:q]
   form is ['CATEGORY,k,:u] =>
