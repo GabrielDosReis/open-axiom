@@ -716,7 +716,7 @@ isDomainForm(D,e) ==
   op := opOf D
   not ident? op => false
   op is '%when => and/[isDomainForm(e,c) for [.,c] in D.args]
-  --db := constructorDB op => dbAbbreviation db in '(domain package)
+  --db := constructorDB op => dbConstructorKind db in '(domain package)
   symbolMember?(op,$SpecialDomainNames) or isFunctor op or
      ((getmode(op,e) is ['Mapping,target,:.]) and isCategoryForm(target,e)) or
        isCategoryForm(getmode(op,e),e) or isDomainConstructorForm(D,e)
