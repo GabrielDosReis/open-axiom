@@ -811,6 +811,10 @@ strap-1/CATCTOR.$(FASLEXT): strap-1/CTORCAT.$(FASLEXT) \
 strap-1/SAOS.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 	strap-1/KONVERT.$(FASLEXT) strap-0/SYMBOL.$(FASLEXT)
 
+strap-1/STREAM.$(FASLEXT): strap-1/LZSTAGG.$(FASLEXT) strap-1/SMAGG.$(FASLEXT)
+
+strap-1/LZSTAGG.$(FASLEXT): strap-1/STAGG.$(FASLEXT)
+
 # Bootstrap stage 2 dependencies.
 # At this stage we recompile everything from stage 1, including
 # a few more domains.
@@ -1112,9 +1116,28 @@ strap-2/BOOLEAN.$(FASLEXT): strap-2/PROPLOG.$(FASLEXT) \
 	strap-2/ORDFIN.$(FASLEXT) strap-2/KONVERT.$(FASLEXT) \
 	strap-1/PI.$(FASLEXT)
 
+strap-2/EQ.$(FASLEXT): strap-2/FUNCTOR.$(FASLEXT) strap-2/SETCAT.$(FASLEXT) \
+	strap-2/KOERCE.$(FASLEXT) strap-2/EVALAB.$(FASLEXT) \
+	strap-2/ABELSG.$(FASLEXT) strap-2/ABELGRP.$(FASLEXT) \
+	strap-2/SGROUP.$(FASLEXT) strap-2/MONOID.$(FASLEXT) \
+	strap-2/RING.$(FASLEXT) strap-2/BMODULE.$(FASLEXT) \
+	strap-2/COMRING.$(FASLEXT) strap-2/MODULE.$(FASLEXT) \
+	strap-2/INTDOM.$(FASLEXT) strap-2/PDRING.$(FASLEXT) \
+	strap-2/FIELD.$(FASLEXT) strap-2/VSPACE.$(FASLEXT) \
+	strap-2/ES.$(FASLEXT) strap-2/GROUP.$(FASLEXT)
+
+strap-2/ES.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) strap-2/RETRACT.$(FASLEXT) \
+	strap-2/IEVALAB.$(FASLEXT) strap-2/EVALAB.$(FASLEXT) \
+	strap-2/RING.$(FASLEXT) strap-2/RETRACT.$(FASLEXT) \
+	strap-2/CACHSET.$(FASLEXT)
+
 strap-2/BTAGG.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 	strap-1/BOOLE.$(FASLEXT) strap-1/LOGIC.$(FASLEXT) \
 	strap-1/A1AGG.$(FASLEXT)
+
+strap-2/UNISEG.$(FASLEXT): strap-2/SEGCAT.$(FASLEXT) \
+	strap-2/SEGXCAT.$(FASLEXT) strap-2/ORDSET.$(FASLEXT) \
+	strap-2/SETCAT.$(FASLEXT) strap-1/STREAM.$(FASLEXT)
 
 #
 #
@@ -1275,8 +1298,12 @@ TESTS=$(INPUT)/INTHEORY.input $(INPUT)/VIEW2D.input $(INPUT)/TESTFR.input
 # the buils of several other domains and categories as needed
 # to ignite the algebra build.  We require Category only because
 # we would like not to have too many special cases for it.
-$(oa_algebra_layer_0_objects): strap-2/SINT.$(FASLEXT) \
-	strap-2/NNI.$(FASLEXT) 	strap-2/PI.$(FASLEXT) 
+oa_strap_ctors = \
+	INT SINT NNI PI \
+	LIST EQ
+oa_strap_modules = $(patsubst %,strap-2/%.$(FASLEXT),$(oa_strap_ctors))
+
+$(oa_algebra_layer_0_objects): $(oa_strap_modules)
 
 $(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
 $(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
@@ -1413,7 +1440,7 @@ $(OUT)/FUNCTOR.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/HOAGG.$(FASLEXT): $(OUT)/FUNCTOR.$(FASLEXT)
 $(OUT)/SMAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 $(OUT)/FINAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
-$(OUT)/ELAGG.$(FASLEXT): $(OUT)/SMAGG.$(FASLEXT)
+$(OUT)/ELAGG.$(FASLEXT): $(OUT)/SMAGG.$(FASLEXT) strap-2/UNISEG.$(FASLEXT)
 $(OUT)/CLAGG.$(FASLEXT): $(OUT)/HOAGG.$(FASLEXT)
 
 oa_algebra_layer_0 = \
@@ -1428,7 +1455,7 @@ oa_algebra_layer_0 = \
   MODULE   MODULE-  PID      OAGROUP  OAGROUP- OCAMON   \
   OAMON    OAMON-   DIOID    MONOPC   SMAGG             \
   RNG      RNG-     ORDFIN   LLINSET  RLINSET  LINSET   OAMONS   \
-  MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
+  MKBCFUNC MKRECORD MKUCFUNC ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
   COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND \
   AGG      AGG-     ELTAGG   ELTAGG-  IXAGG    IXAGG-   \
@@ -1523,7 +1550,7 @@ oa_algebra_layer_1 = \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC            \
   IDENT    OUTFORM  BINDING           BOOLEAN            \
-  ORDRING                    FEVALAB  FEVALAB-  IARRAY1  \
+  ORDRING  DROPT1   PLOT1    FEVALAB  FEVALAB-  IARRAY1  \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- MONOP              \
   PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
