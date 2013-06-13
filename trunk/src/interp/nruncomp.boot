@@ -124,19 +124,19 @@ NRTencode(db,x,y) == encode(db,x,y,true) where encode(db,x,compForm,firstTime) =
   quote compForm
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
-listOfBoundVars form ==
+listOfBoundVars(form,e) ==
 -- Only called from the function genDeltaEntry below
   form is '$ => []
-  ident? form and (u:=get(form,'value,$e)) =>
-    u:=u.expr
-    builtinConstructor? KAR u => listOfBoundVars u
+  ident? form and (u:=get(form,'value,e)) =>
+    u := u.expr
+    builtinConstructor? KAR u => listOfBoundVars(u,e)
     [form]
   form isnt [.,:.] => []
   first form is 'QUOTE => []
   -- We don't want to pick up the tag, only the domain
-  first form = ":" => listOfBoundVars third form
+  first form = ":" => listOfBoundVars(third form,e)
   first form = "Enumeration" => []
-  "union"/[listOfBoundVars x for x in rest form]
+  "union"/[listOfBoundVars(x,e) for x in rest form]
 
 
 dbEntitySlot(db,x) ==
@@ -157,12 +157,12 @@ markOperation f ==
   ident? f => ['%external,f]
   f
 
-optDeltaEntry(op,sig,dc,kind) ==
+optDeltaEntry(op,sig,dc,kind,e) ==
   -- references to modemaps from current domain are folded in a later
   -- stage of the compilation process.
   dc is '$ => nil
   ndc :=
-    dc isnt [.,:.] and (dcval := get(dc,'value,$e)) => dcval.expr
+    dc isnt [.,:.] and (T := get(dc,'value,e)) => T.expr
     dc
   sig := MSUBST(ndc,dc,sig)
   -- Don't bother if the domain of computation is not an instantiation
@@ -170,11 +170,11 @@ optDeltaEntry(op,sig,dc,kind) ==
   ndc isnt [.,:.] or not optimizableDomain? ndc => nil
   fun := lookupDefiningFunction(op,sig,ndc)
   -- following code is to handle selectors like first, rest
-  if fun = nil and needToQuoteFlags?(sig,$e) then
-     nsig := [quoteSelector tt for tt in sig] where
-       quoteSelector(x) ==
+  if fun = nil and needToQuoteFlags?(sig,e) then
+     nsig := [quoteSelector(tt,e) for tt in sig] where
+       quoteSelector(x,e) ==
          not(ident? x) => x
-         get(x,'value,$e) => x
+         get(x,'value,e) => x
          x='$ => x
          MKQ x
      fun := lookupDefiningFunction(op,nsig,ndc)
@@ -205,7 +205,7 @@ genDeltaEntry(op,mm,e) ==
   if dc isnt [.,:.] then
     dc = "$" => nsig := sig
     if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
-  setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
+  setDifference(listOfBoundVars(dc,e),$functorLocalParameters) ~= [] =>
     ['%apply,['compiledLookupCheck,MKQ op,
          mkList consSig(db,nsig,dc),consDomainForm(db,dc,nil)]]
   odc := dc
@@ -227,7 +227,7 @@ genDeltaEntry(op,mm,e) ==
       dbUsedEntities(db) := [[desc,op,dc,:nsig,kind],:dbUsedEntities db]
       dbEntityCount(db) := dbEntityCount db + 1
       n
-  impl := optDeltaEntry(op,nsig,dc,kind) => impl
+  impl := optDeltaEntry(op,nsig,dc,kind,e) => impl
   u
 
 ++ Return the slot number (within the template vector of the functor

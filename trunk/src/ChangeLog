@@ -1,3 +1,9 @@
+2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nruncomp.boot (listOfBoundVars): Take environment as
+	second parameter.  Adjust callers.
+	(optDeltaEntry): Likewise.
+
 2013-06-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (substSlotNumbers): Remove redundant check.
