@@ -1,3 +1,11 @@
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (categoryInstance?): New.
+	(compColon): Use it for category definitions.
+	* interp/c-util.boot: Add accessors for infovec parts.
+	* boot/utility.boot (invertSubst): New.  Export.
+	* interp/Makefile.in ($(SAVESYS)): Remove --sysdb and --system-algebra.
+
 2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/define.boot (getvalue): Rename from GetValue.

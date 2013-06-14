@@ -237,6 +237,43 @@ dbInfovec name ==
   u := property(name,'infovec) => u
   nil
 
+++ Access to the shell template  associated with an infovec.
+macro ivDomainShell iv ==
+  first iv
+
+++ Access to the operation table associated with an infovec.
+macro ivOptable iv ==
+  second iv
+
+++ Access the alist mapping an attribute to the predicate index
+++ associated with an infovec.
+macro ivAttributePredicateIndexDirectory iv ==
+  third iv
+
+++ Access to additional data in the infovec
+macro ivAdditionalData iv ==
+  fourth iv
+
+++ Access to predicate bitvector as associated with an infovec.
+macro ivPredicateBitvector iv ==
+  first ivAdditionalData iv
+
+++ Access to the vector of category default package functors
+++ associated with an infovec.
+macro ivCategoryDefaults iv ==
+  second ivAdditionalData iv
+
+++ Access to the principal ancestors of a domain shell associated
+++ with an infovec.
+macro ivPrincipalAncestors iv ==
+  third ivAdditionalData iv
+
+++ Return the exported operation descriptors bytecode vector
+++ associated with an infovec.
+ivExportBytecodes iv ==
+  [.,.,.,:vec] := ivAdditionalData iv
+  vec
+
 --% 
 
 ++ Token to indicate that a function body should be ignored.

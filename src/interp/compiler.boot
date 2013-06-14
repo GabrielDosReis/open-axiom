@@ -1675,6 +1675,9 @@ maybeSpliceMode m ==
   (m' := isQuasiquote m) => m'
   m
 
+categoryInstance? x ==
+  x is [c,:.] and ident? c and categoryConstructor? c
+
 compColon: (%Form,%Mode,%Env) -> %Maybe %Triple
 compColon([":",f,t],m,e) ==
   db := currentDB e
@@ -1683,6 +1686,7 @@ compColon([":",f,t],m,e) ==
   $lhsOfColon: local:= f
   t:=
     t isnt [.,:.] and (t':= assoc(t,getDomainsInScope e)) => t'
+    t = $Category and categoryInstance? f => t
     isDomainForm(t,e) and not $insideCategoryIfTrue =>
       e := addDomain(db,t,e)
       t

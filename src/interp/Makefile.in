@@ -1,6 +1,6 @@
 ## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ## All rights reserved.
-## Copyright (C) 2007-2012, Gabriel Dos Reis.
+## Copyright (C) 2007-2013, Gabriel Dos Reis.
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -197,11 +197,9 @@ makeint.lisp: Makefile
 	@ echo '#+:gcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
-${SAVESYS}: database.date $(axiom_target_datadir)/msgs/s2-us.msgs $(OBJS) $(oa_target_ffi)
+$(SAVESYS): database.date $(axiom_target_datadir)/msgs/s2-us.msgs $(OBJS) $(oa_target_ffi)
 	$(DRIVER) --execpath=$(BOOTSYS) \
-		--syslib=$(axiom_target_libdir) \
-		--system="$(AXIOM)/" --system-algebra \
-		--sysdb="$(axiom_src_datadir)/algebra/" \
+		--syslib=$(axiom_target_libdir) --system="$(AXIOM)/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS)
