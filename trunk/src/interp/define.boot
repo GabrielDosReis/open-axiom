@@ -251,9 +251,9 @@ mkJoin(cat,mode) ==
   ['Join,cat,mode]
  
 
-GetValue name ==
-  u:= get(name,"value",$e) => u
-  u:= comp(name,$EmptyMode,$e) => u  --name may be a form
+getvalue(name,e) ==
+  u := get(name,"value",e) => u
+  u := comp(name,$EmptyMode,e) => u  --name may be a form
   systemError [name,'" is not bound in the current environment"]
  
 actOnInfo(u,$e) ==
@@ -272,7 +272,7 @@ actOnInfo(u,$e) ==
         $e := actOnInfo(v,$e)
     $e
   u is ["ATTRIBUTE",name,att] =>
-    [vval,vmode,.]:= GetValue name
+    [vval,vmode,.] := getvalue(name,$e)
     compilerMessage('"augmenting %1: %2p", [name,["ATTRIBUTE",att]])
     key :=
       -- FIXME: there should be a better to tell whether name
@@ -292,7 +292,7 @@ actOnInfo(u,$e) ==
       name = "$" => [kind,name,-1]
       [kind,name,substitute('$,name,modemap)]
     $e:= addModemap(operator,name,modemap,true,implem,$e)
-    [vval,vmode,.]:= GetValue name
+    [vval,vmode,.] := getvalue(name,$e)
     compilerMessage('"augmenting %1: %2p", 
        [name,["SIGNATURE",operator,modemap,:q]])
     key :=
@@ -303,7 +303,7 @@ actOnInfo(u,$e) ==
     cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap,:q]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
   u is ["has",name,cat] =>
-    [vval,vmode,.]:= GetValue name
+    [vval,vmode,.] := getvalue(name,$e)
     cat=vmode => $e --stating the already known
     u:= compMakeCategoryObject(cat,$e) =>
          --we are adding information about a category

@@ -1,5 +1,10 @@
 2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/define.boot (getvalue): Rename from GetValue.
+	Take environment as second parameter.  Adjust callers.
+
+2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/nruncomp.boot (listOfBoundVars): Take environment as
 	second parameter.  Adjust callers.
 	(optDeltaEntry): Likewise.
