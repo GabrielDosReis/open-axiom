@@ -172,7 +172,9 @@ comp3(db,x,m,$e) ==
   $e:= addDomain(db,m,$e)
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
-  string? m => (x isnt [.,:.] => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m =>
+    string? x and stringEq?(x,m) => [x,m,e]
+    nil
   -- In quasiquote mode, x should match exactly
   (y := isQuasiquote m) =>
      y = x => [quote x, m, $e]
