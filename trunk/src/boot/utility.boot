@@ -1,4 +1,4 @@
--- Copyright (C) 2012, Gabriel Dos Reis.
+-- Copyright (C) 2012-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
+  invertSubst,
   remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
   copyTree, finishLine, stringPrefix?, stringSuffix?,
   findChar, charPosition) where
@@ -280,6 +281,9 @@ applySubstNQ(sl,t) ==
     [hd,:tl]
   symbol? t and (p := symbolAssoc(t,sl)) => rest p
   t
+
+invertSubst sl ==
+  [[rest x,:first x] for x in sl]
 
 --% set operations
 
