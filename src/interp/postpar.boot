@@ -77,8 +77,7 @@ displayPreCompilationErrors() ==
 
 postTran: %ParseTree -> %ParseForm
 postTran x ==
-  x isnt [.,:.] =>
-    postAtom x
+  x isnt [.,:.] => postAtom x
   op := first x
   op is 'QUOTE => x
   symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
