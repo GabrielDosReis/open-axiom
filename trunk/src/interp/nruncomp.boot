@@ -448,7 +448,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
   --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
-  $catsig: local := nil        --target category
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
   $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
@@ -462,12 +461,12 @@ buildFunctor(db,sig,code,$locals,$e) ==
    --category membership tests that may be needed(see buildFunctor for details)
 
   oldtime:= TEMPUS_-FUGIT()
-  [$catsig,:argsig] := sig
+  [catsig,:argsig] := sig
   catvecListMaker := removeDuplicates
-    [comp($catsig,$EmptyMode,$e).expr,
+    [comp(catsig,$EmptyMode,$e).expr,
       :[compCategories(u,$e) for [u,:.] in categoryAncestors dbDomainShell db]]
   tbl := makeTable function valueEq?
-  condCats := InvestigateConditions(db,[$catsig,:rest catvecListMaker],tbl,$e)
+  condCats := InvestigateConditions(db,[catsig,:rest catvecListMaker],tbl,$e)
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
   -- category should be present.  true => always
