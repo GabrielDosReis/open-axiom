@@ -327,9 +327,10 @@ finishLambdaExpression(expr is ['%lambda,vars,.],env) ==
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   e := oldE
   isFunctor x =>
+    db := currentDB e
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
-      (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
-        ) and extendsCategoryForm("$",target,m') then
+      (and/[extendsCategoryForm(db,"$",s,mode) for mode in argModeList for s in sl]
+        ) and extendsCategoryForm(db,"$",target,m') then
             return [['%function,x],m,e]
   x is ["+->",:.] => compLambda(x,m,oldE)
   if string? x then x := makeSymbol x
@@ -1843,7 +1844,7 @@ coerceHard(T,m) ==
   string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode => [T.expr,m,$e]
-      extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
+      extendsCategoryForm(currentDB $e,T.expr,T.mode,m) => [T.expr,m,$e]
       coerceExtraHard(T,m)
   (m' is "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>
     [T.expr,m,$e]

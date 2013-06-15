@@ -1,5 +1,12 @@
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/c-util.boot (extendsCategoryForm): Take a DB parameter.
+	Avoid special variables for current constructor form. Adjust callers.
+	* interp/define.boot (compDefineCategory2): Register current
+	constructor in environment.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/lisplib.boot (writeSourceFile): Always write source file.
 
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
