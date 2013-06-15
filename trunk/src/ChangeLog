@@ -1,5 +1,9 @@
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/lisplib.boot (writeSourceFile): Always write source file.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/nruncomp.boot (NRTsetVector4Part1): Add environment parameter.
 	Adjust caller.
 	(NRTsetVector4a): Likewise.  Avoid special variable for environment.
