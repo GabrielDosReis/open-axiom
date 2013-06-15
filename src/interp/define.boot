@@ -995,29 +995,27 @@ compDefineCategory1(db,df is ['DEF,form,sig,body],m,e,fal) ==
   [d,m,e]:= compDefineCategory2(db,form,sig,body,m,e,fal)
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
-    $categoryPredicateList: local := makeCategoryPredicates(form,dbCategory db)
+    $categoryPredicateList: local := makeCategoryPredicates db
     defaults := mkCategoryPackage(form,cat,categoryCapsule)
     T := compDefine1(nil,defaults,$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
   [d,m,e]
 
-makeCategoryPredicates(form,u) ==
-      $tvl: local := take(#rest form,$TriangleVariableList)
-      $mvl: local := take(#rest form,rest $FormalMapVariableList)
-      fn(u,nil) where
-        fn(u,pl) ==
-          u is ['Join,:.,a] => fn(a,pl)
-          u is ["IF",p,:x] =>
-            fnl(x,insert(applySubst(pairList($tvl,$mvl),p),pl))
-          u is ["has",:.] =>
-            insert(applySubst(pairList($tvl,$mvl),u),pl)
-          u is [op,:.] and op in '(SIGNATURE ATTRIBUTE) => pl
-          u isnt [.,:.] => pl
-          fnl(u,pl)
-        fnl(u,pl) ==
-          for x in u repeat pl := fn(x,pl)
-          pl
+makeCategoryPredicates db ==
+  n := dbArity db
+  sl := pairList(take(n,$TriangleVariableList),take(n,rest $FormalMapVariableList))
+  fn(dbCategory db,sl,nil) where
+    fn(u,sl,pl) ==
+      u is ['Join,:.,a] => fn(a,sl,pl)
+      u is ["IF",p,:x] => fnl(x,sl,insert(applySubst(sl,p),pl))
+      u is ["has",:.] => insert(applySubst(sl,u),pl)
+      u is [op,:.] and op in '(SIGNATURE ATTRIBUTE) => pl
+      u isnt [.,:.] => pl
+      fnl(u,sl,pl)
+    fnl(u,sl,pl) ==
+      for x in u repeat pl := fn(x,sl,pl)
+      pl
  
 ++ Subroutine of mkCategoryPackage.
 ++ Return a category-level declaration of an operation described by `desc'.

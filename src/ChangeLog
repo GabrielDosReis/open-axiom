@@ -1,3 +1,7 @@
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (makeCategoryPredicates): Tidy.  Adjust caller.
+
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/c-util.boot (extendsCategoryForm): Take a DB parameter.
