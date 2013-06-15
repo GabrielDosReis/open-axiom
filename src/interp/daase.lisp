@@ -231,7 +231,8 @@
  capsule-definitions	    ; capsule-level definitions
  template		    ; for a category, this is the generic instance.
                             ; for a functor, this is the template.
- lookup-function	    ; for a functor, lookup function.
+ lookup-function	    ; for a functor, lookup function.  For category
+                            ; constructor, default package constructor.
  ) ; database structure
 
 (deftype |%Database| nil 'database)

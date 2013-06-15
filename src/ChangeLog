@@ -1,5 +1,16 @@
 2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/database.boot (dbConstructorDefault): New accessor.
+	(getCategoryConstructorDefault): New.
+	* interp/define.boot (makeCategoryAlist): Use it.
+	(hasDefaultPackage): Remove.
+	(mkCategoryPackage): First parameter is now a DB.  Take
+	environment parameter too.  Adjust caller.
+	* interp/lisplib.boot (writeCategoryDefault): New.
+	(finalizeLisplib): Call it when appropriate.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/define.boot (makeCategoryPredicates): Tidy.  Adjust caller.
 
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>

@@ -72,6 +72,16 @@ makeConstructor(s,k == nil,a == nil) ==
 
 --%
 
+++ Access to the default constructor of a category.
+++ Note: Meaningful only for categories
+macro dbConstructorDefault db ==
+  dbLookupFunction db
+
+getCategoryConstructorDefault: %Symbol -> %Maybe %Symbol
+getCategoryConstructorDefault ctor ==
+  builtinConstructor? ctor => nil
+  dbConstructorDefault loadDBIfNecessary constructorDB ctor
+
 getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol
 getConstructorAbbreviationFromDB ctor ==
   db := constructorDB ctor => dbAbbreviation db

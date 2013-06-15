@@ -305,7 +305,7 @@ cattable.$(FASLEXT): simpbool.$(FASLEXT) c-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): sys-macros.$(FASLEXT)
 newfort.$(FASLEXT): sys-macros.$(FASLEXT)
-lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT)
+lisplib.$(FASLEXT): database.$(FASLEXT) debug.$(FASLEXT)
 c-doc.$(FASLEXT): c-util.$(FASLEXT)
 server.$(FASLEXT): sys-macros.$(FASLEXT)
 

@@ -380,9 +380,8 @@ makeDomainTemplate db ==
   vec := dbTemplate db
   for index in 0..maxIndex vec repeat
     item := domainRef(vec,index)
-    item = nil => nil
+    item isnt [.,:.] => nil
     domainRef(vec,index) :=
-      item isnt [.,:.] => item
       cons? first item => makeGoGetSlot(db,item,index)
       item   
   dbByteList(db) := "append"/reverse! dbByteList db
@@ -492,7 +491,7 @@ makeCategoryAlist(db,e) ==
   newPairlis := [[i,:b] for [.,:b] in dbFormalSubst db for i in 6..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
-  slot0 := [hasDefaultPackage a.op for [a,:.] in slot1]
+  slot0 := [getCategoryConstructorDefault a.op for [a,:.] in slot1]
   sixEtc := [5 + i for i in 1..dbArity db]
   formals := substTarget dbFormalSubst db
   for x in slot1 repeat
@@ -513,11 +512,6 @@ encodeCatform(db,x) ==
   k := assocIndex(db,x) => k
   x isnt [.,:.] or rest x isnt [.,:.] => x
   [first x,:[encodeCatform(db,y) for y in rest x]]
- 
-hasDefaultPackage catname ==
-  defname := makeDefaultPackageName symbolName catname
-  constructor? defname => defname
-  nil
  
 ++ Like getmode, except that if the mode is local variable with
 ++ defined value, we want that value instead.
@@ -996,7 +990,7 @@ compDefineCategory1(db,df is ['DEF,form,sig,body],m,e,fal) ==
   if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local := makeCategoryPredicates db
-    defaults := mkCategoryPackage(form,cat,categoryCapsule)
+    defaults := mkCategoryPackage(db,cat,categoryCapsule,e)
     T := compDefine1(nil,defaults,$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
@@ -1025,10 +1019,11 @@ mkExportFromDescription desc ==
     nil
   ['SIGNATURE,desc.mapOperation,desc.mapSignature,:t]
 
-mkCategoryPackage(form is [op,:argl],cat,def) ==
-  catdb := constructorDB op
+mkCategoryPackage(db,cat,def,e) ==
+  [op,:argl] := dbConstructorForm db
   packageName:= makeDefaultPackageName symbolName op
-  packageAbb := makeSymbol strconc(symbolName dbAbbreviation catdb,'"-")
+  dbConstructorDefault(db) := packageName
+  packageAbb := makeSymbol strconc(symbolName dbAbbreviation db,'"-")
   $options:local := []
   -- This stops the next line from becoming confused
   abbreviationsSpad2Cmd ['package,packageAbb,packageName]
@@ -1040,8 +1035,8 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     x isnt [.,:.] => oplist
     x is ['DEF,y,:.] => [opOf y,:oplist]
     fn(x.args,fn(x.op,oplist))
-  catvec := evalCategoryForm(form,$e)
-  fullCatOpList := categoryExports JoinInner([catvec],$e)
+  catvec := evalCategoryForm(dbConstructorForm db,e)
+  fullCatOpList := categoryExports JoinInner([catvec],e)
   catOpList :=
     [mkExportFromDescription desc for desc in fullCatOpList
         | symbolMember?(desc.mapOperation,capsuleDefAlist)]
@@ -1050,7 +1045,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     ['CATEGORY,'package,
        :applySubst(pairList($FormalMapVariableList,argl),catOpList)]
   nils:= [nil for x in argl]
-  packageSig := [packageCategory,form,:nils]
+  packageSig := [packageCategory,dbConstructorForm db,:nils]
   $categoryPredicateList := substitute(nameForDollar,'$,$categoryPredicateList)
   substitute(nameForDollar,'$,['DEF,[packageName,:packageArgl],packageSig,def])
  

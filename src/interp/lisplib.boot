@@ -32,8 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import nlib
-import c_-util
+import database
 import debug
 
 namespace BOOT
@@ -475,6 +474,11 @@ writeLookupFunction db ==
     writeLoadInfo(db,quote fun,'lookupFunction,'dbLookupFunction)
   nil
 
+writeCategoryDefault db ==
+  pac := dbConstructorDefault db
+  insn := ['%store,['dbConstructorDefault,mkCtorDBForm db],quote pac]
+  printBackendStmt(dbLibstream db,expandToVMForm insn)
+
 writeKind db ==
   writeInfo(db,dbConstructorKind db,'constructorKind,'dbConstructorKind)
 
@@ -540,7 +544,9 @@ leaveIfErrors(libName,kind) ==
 finalizeLisplib(db,libName) ==
   form := dbConstructorForm db
   writeTemplate db
-  writeLookupFunction db
+  do   -- shared slot; careful.
+    dbConstructorKind db = 'category => writeCategoryDefault db
+    writeLookupFunction db
   writeConstructorForm db
   writeKind db
   writeConstructorModemap db
