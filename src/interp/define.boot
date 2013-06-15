@@ -479,7 +479,7 @@ depthAssocList(u,cache) ==
  
 depthAssoc(x,cache) ==
   y := tableValue(cache,x) => y
-  x is ['Join,:u] or (u := ASSOCLEFT parentsOfForm x) =>
+  x is ['Join,:u] or (u := substSource parentsOfForm x) =>
     v := depthAssocList(u,cache)
     tableValue(cache,x) := [[x,:n],:v]
       where n() == 1 + "MAX"/[rest y for y in v]
@@ -487,20 +487,20 @@ depthAssoc(x,cache) ==
  
 NRTmakeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
-  levelAlist := depthAssocList(ASSOCLEFT pcAlist,hashTable 'EQUAL)
+  levelAlist := depthAssocList(substSource pcAlist,hashTable 'EQUAL)
   opcAlist := sortBy(function(x +-> LASSOC(first x,levelAlist)),pcAlist)
-  newPairlis := [[5 + i,:b] for [.,:b] in dbFormalSubst db for i in 1..]
+  newPairlis := [[i,:b] for [.,:b] in dbFormalSubst db for i in 6..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(b,e)) ~= -1]
-  slot0 := [hasDefaultPackage a.op for [a,:b] in slot1]
+  slot0 := [hasDefaultPackage a.op for [a,:.] in slot1]
   sixEtc := [5 + i for i in 1..dbArity db]
-  formals := ASSOCRIGHT dbFormalSubst db
+  formals := substTarget dbFormalSubst db
   for x in slot1 repeat
     x.first := applySubst(pairList(['$,:formals],["$$",:sixEtc]),first x)
   -----------code to make a new style slot4 -----------------
-  predList := ASSOCRIGHT slot1  --is list of predicate indices
+  predList := substTarget slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
-  catformvec := ASSOCLEFT slot1
+  catformvec := substSource slot1
   maxElement := "MAX"/dbByteList db
   ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
     ['CONS, MKQ vector slot0,
@@ -625,7 +625,7 @@ catExtendsCat?(u,v,tbl,env) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v,tbl,env) for x in ASSOCLEFT categoryAncestors uvec]
+  or/[catExtendsCat?(x,v,tbl,env) for x in substSource categoryAncestors uvec]
  
 substSlotNumbers(form,template,domain) ==
   form is ['SIGNATURE,op,sig,:q] =>
@@ -1098,7 +1098,7 @@ deduceImplicitParameters(db,e) ==
     
 buildConstructorCondition db ==
   dbImplicitData db is [subst,cond] =>
-    ['%exist,ASSOCRIGHT subst,mkpf(applySubst(subst,cond),'AND)]
+    ['%exist,substTarget subst,mkpf(applySubst(subst,cond),'AND)]
   true
 
 getArgumentMode: (%Form,%Env) -> %Maybe %Mode 
@@ -1763,7 +1763,7 @@ compDefWhereClause(['DEF,form,signature,body],m,e) ==
   -- 3. obtain a list of parameter identifiers (x1 .. xn) ordered so that
   --       the type of xi is independent of xj if i < j
   varList :=
-    orderByDependency(ASSOCLEFT argDepAlist,ASSOCRIGHT argDepAlist) where
+    orderByDependency(substSource argDepAlist,substTarget argDepAlist) where
       argDepAlist :=
         [[x,:dependencies] for [x,:y] in argSigAlist] where
           dependencies() ==

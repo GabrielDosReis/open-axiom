@@ -1,5 +1,13 @@
 2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/nruncomp.boot (NRTsetVector4Part1): Add environment parameter.
+	Adjust caller.
+	(NRTsetVector4a): Likewise.  Avoid special variable for environment.
+	* boot/utility.boot: Add and export substSource, substTarget.
+	* interp/define.boot: Use them.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/compiler.boot (categoryInstance?): New.
 	(compColon): Use it for category definitions.
 	* interp/c-util.boot: Add accessors for infovec parts.

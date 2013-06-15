@@ -48,7 +48,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
   lastNode, append, append!, copyList, substitute, substitute!,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
-  invertSubst,
+  invertSubst, substTarget, substSource,
   remove, removeSymbol, atomic?, every?, any?, take, takeWhile, drop,
   copyTree, finishLine, stringPrefix?, stringSuffix?,
   findChar, charPosition) where
@@ -284,6 +284,14 @@ applySubstNQ(sl,t) ==
 
 invertSubst sl ==
   [[rest x,:first x] for x in sl]
+
+++ Return the list of source values of a map given by a alist.
+substSource sl ==
+  [first x for x in sl]
+
+++ Return the list of target values of a map given by a alist.
+substTarget sl ==
+  [rest x for x in sl]
 
 --% set operations
 
