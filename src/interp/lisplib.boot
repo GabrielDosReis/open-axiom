@@ -488,10 +488,6 @@ writeCategory db ==
   writeInfo(db,dbCategory db,'constructorCategory,'dbCategory)
 
 writeSourceFile db ==
-  $buildingSystemAlgebra =>
-    -- source file for system constructor is filled at runtime
-    -- to reflect the runtime location of the system directory.
-    lisplibWrite('"sourceFile",dbSourceFile db,dbLibstream db)
   writeInfo(db,dbSourceFile db,'sourceFile,'dbSourceFile)
 
 writeInteractiveModemaps db ==
