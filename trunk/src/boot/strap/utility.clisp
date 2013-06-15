@@ -20,10 +20,10 @@
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
-                     |objectAssoc| |remove| |removeSymbol| |atomic?| |every?|
-                     |any?| |take| |takeWhile| |drop| |copyTree| |finishLine|
-                     |stringPrefix?| |stringSuffix?| |findChar|
-                     |charPosition|)))
+                     |objectAssoc| |invertSubst| |substTarget| |substSource|
+                     |remove| |removeSymbol| |atomic?| |every?| |any?| |take|
+                     |takeWhile| |drop| |copyTree| |finishLine| |stringPrefix?|
+                     |stringSuffix?| |findChar| |charPosition|)))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|) |substitute|))
 
@@ -337,6 +337,40 @@
                         (T (CONS |hd| |tl|))))))
           ((AND (SYMBOLP |t|) (SETQ |p| (|symbolAssoc| |t| |sl|))) (CDR |p|))
           (T |t|))))
+
+(DEFUN |invertSubst| (|sl|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |sl|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      ((NULL |bfVar#2|)
+       (SETQ |bfVar#2| #1=(CONS (CONS (CDR |x|) (CAR |x|)) NIL))
+       (SETQ |bfVar#3| |bfVar#2|))
+      (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |substSource| (|sl|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |sl|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS (CAR |x|) NIL))
+       (SETQ |bfVar#3| |bfVar#2|))
+      (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |substTarget| (|sl|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |sl|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS (CDR |x|) NIL))
+       (SETQ |bfVar#3| |bfVar#2|))
+      (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
 (DEFUN |setDifference| (|x| |y|)
   (LET* (|a| |l| |p|)
