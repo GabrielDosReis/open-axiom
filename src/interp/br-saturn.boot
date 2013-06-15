@@ -580,9 +580,9 @@ htInitPageNoScroll(propList, :options) ==
   $saturnContextMenuLines := nil
   title := IFCAR options
   $curPage :=
-    $standard => htpMakeEmptyPage(propList)
+    $standard => htpMakeEmptyPage propList
     nil
-  if $saturn then $saturnPage := htpMakeEmptyPage(propList)
+  if $saturn then $saturnPage := htpMakeEmptyPage propList
   $newPage := true
   $htLineList := nil
   if title then
@@ -596,19 +596,19 @@ htInitPageNoScroll(propList, :options) ==
 htInitPageNoHeading(propList) ==
 --start defining a hyperTeX page
   $curPage :=
-    $standard => htpMakeEmptyPage(propList)
-  if $saturn then $saturnPage := htpMakeEmptyPage(propList)
+    $standard => htpMakeEmptyPage propList
+  if $saturn then $saturnPage := htpMakeEmptyPage propList
   $newPage := true
   $htLineList := nil
   page()
 
 --------------------> NEW DEFINITION <--------------------------
-htpMakeEmptyPage(propList,:options) ==
-  name := IFCAR options or gensym()
+htpMakeEmptyPage propList ==
+  name := gensym()
+  importSymbol name
   if not $saturn then
     $activePageList := [name, :$activePageList]
-  val := vector [name, nil, nil, nil, nil, nil, propList, nil]
-  symbolValue(name) :=  val
+  symbolValue(name) := vector [name, nil, nil, nil, nil, nil, propList, nil]
 
 --=======================================================================
 --              Redefinitions from br-con.boot

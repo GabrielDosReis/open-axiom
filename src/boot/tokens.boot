@@ -298,6 +298,7 @@ for i in [ _
   ["functionSymbol?", "FBOUNDP"] , _
   ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
+  ["importSymbol", "IMPORT"] , _
   ["inert?",  "KEYWORDP"] , _
   ["integer?","INTEGERP"]  , _
   ["LAST",        "last"] , _
