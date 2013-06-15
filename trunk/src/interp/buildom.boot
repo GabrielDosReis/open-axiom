@@ -115,7 +115,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
       item is [.,[functorName,:.]] and functorName = s.op =>
         compareSigEqual(s,canonicalForm evalDomain lazyt,dollar,domain)
     nil
-  compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
+  compareSigEqual(s,replaceLocalTypes(tslot,domain),dollar,domain)
 
 
 compareSigEqual(s,t,dollar,domain) ==
@@ -207,7 +207,7 @@ goGet(:l) ==
   explicitLookupDomainIfTrue := odd? code2
   index := code2 quo 2
   kind := (isConstant => 'CONST; 'ELT)
-  sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
+  sig := [replaceLocalTypes(s,thisDomain) for s in initSig]
   sig := substDomainArgs(thisDomain,sig)
   lookupDomain :=
      domainSlot = 0 => thisDomain
@@ -223,14 +223,14 @@ goGet(:l) ==
   domainRef(thisDomain,index) := fn
   val
 
-NRTreplaceLocalTypes(t,dom) ==
+replaceLocalTypes(t,dom) ==
   t isnt [.,:.] =>
     not integer? t => t
     t := domainRef(dom,t)
     if cons? t then t := evalDomain t
     canonicalForm t
   t.op is ":" or builtinConstructor? t.op =>
-     [t.op,:[NRTreplaceLocalTypes(x,dom) for x in t.args]]
+     [t.op,:[replaceLocalTypes(x,dom) for x in t.args]]
   t
 
 substDomainArgs(domain,object) ==

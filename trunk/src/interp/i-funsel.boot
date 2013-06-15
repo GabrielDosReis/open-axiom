@@ -737,7 +737,7 @@ findUniqueOpInDomain(op,opName,dom) ==
   fun :=
       $genValue =>
          compiledLookupCheck(opName,sig,evalDomain dom)
-      NRTcompileEvalForm(opName, sig, evalDomain dom)
+      compileEvalForm(opName, sig, evalDomain dom)
   fun=nil or not cons? fun => nil
   first fun = function(Undef) => throwKeyedMsg("S2IS0023",[opName,dom])
   binVal :=

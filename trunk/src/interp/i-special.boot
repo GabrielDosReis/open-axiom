@@ -2085,10 +2085,10 @@ uppretend t ==
 --% Handlers for REDUCE
 
 -----------------------Compiler for Interpreter---------------------------------
-NRTcompileEvalForm(opName,sigTail,dcVector) ==
+compileEvalForm(opName,sigTail,dcVector) ==
   u := NRTcompiledLookup(opName,sigTail,dcVector)
   not $insideCompileBodyIfTrue => MKQ u
-  k := NRTgetMinivectorIndex(u,opName,sigTail,dcVector)
+  k := getMinivectorIndex(u,opName,sigTail,dcVector)
   ['ELT,"$$$",k]  --$$$ denotes minivector
 
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
@@ -2102,7 +2102,7 @@ NRTtypeHack t ==
   first t = '_# => # second t
   [first t,:[NRTtypeHack tt for tt in rest t]]
 
-NRTgetMinivectorIndex(u,op,sig,domVector) ==
+getMinivectorIndex(u,op,sig,domVector) ==
   s := # $minivector
   k := or/[k for k in 0..(s-1)
         for x in $minivector | sameObject?(x,u)] => k
@@ -2130,7 +2130,7 @@ getReduceFunction(op,type,result, locale) ==
   dc='local => [MKQ [fun,:'local],:first sig]
   dcVector := evalDomain dc
   $compilingMap =>
-    k := NRTgetMinivectorIndex(
+    k := getMinivectorIndex(
       NRTcompiledLookup(op,sig,dcVector),op,sig,dcVector)
     ['ELT,"$$$",k]  --$$$ denotes minivector
   env:=

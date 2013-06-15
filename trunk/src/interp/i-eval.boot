@@ -249,7 +249,7 @@ evalForm(op,opName,argl,mmS) ==
           newType? CAAR mm =>
             mm' := first ncSigTransform mm
             ncGetFunction(opName, first mm', rest mm')
-          NRTcompileEvalForm(opName,fun,dcVector)
+          compileEvalForm(opName,fun,dcVector)
         null fun0 => throwKeyedMsg("S2IE0008",[opName])
         [bpi,:domain] := fun0
         sameObject?(bpi,function Undef) =>

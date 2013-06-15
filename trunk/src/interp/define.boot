@@ -366,9 +366,9 @@ getInfovecCode(db,e) ==
   $byteAddress: local := 0
   ['LIST,
     MKQ makeDomainTemplate db,
-      MKQ makeCompactDirect(db,NRTmakeSlot1Info db),
-        MKQ NRTgenFinalAttributeAlist(db,e),
-          NRTmakeCategoryAlist(db,e),
+      MKQ makeCompactDirect(db,makeSlot1Info db),
+        MKQ genFinalAttributeAlist(db,e),
+          makeCategoryAlist(db,e),
             MKQ dbLookupFunction db]
 
 --=======================================================================
@@ -485,7 +485,7 @@ depthAssoc(x,cache) ==
       where n() == 1 + "MAX"/[rest y for y in v]
   tableValue(cache,x) := [[x,:0]]
  
-NRTmakeCategoryAlist(db,e) ==
+makeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
   levelAlist := depthAssocList(substSource pcAlist,hashTable 'EQUAL)
   opcAlist := sortBy(function(x +-> LASSOC(first x,levelAlist)),pcAlist)
@@ -1526,7 +1526,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     $condAlist: local := nil
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
-    $NRTattributeAlist: local := NRTgenInitialAttributeAlist(db,attributeList)
+    $NRTattributeAlist: local := genInitialAttributeAlist(db,attributeList)
     $NRTaddForm: local := nil   -- see compAdd
     -- Generate slots for arguments first, then implicit parameters,
     -- then for $NRTaddForm (if any) in compAdd
