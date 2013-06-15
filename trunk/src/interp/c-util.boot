@@ -1100,19 +1100,21 @@ printStats [byteCount,elapsedSeconds] ==
   finishLine $OutputStream
   nil
  
-extendsCategoryForm(domain,form,form') ==
-  --is domain of category form also of category form'?
-  --domain is only used for SubsetCategory resolution.
-  --and ensuring that X being a Ring means that it
-  --satisfies (Algebra X)
+++is domain of category form also of category form'?
+++domain is only used for SubsetCategory resolution.
+++ `db', if non-nil, is the DB for the constructor being compiled.
+++Ensuring that X being a Ring means that it satisfies (Algebra X)
+extendsCategoryForm(db,domain,form,form') ==
   form=form' => true
   form=$Category => nil
-  form' is ["Join",:l] => and/[extendsCategoryForm(domain,form,x) for x in l]
+  form' is ["Join",:l] =>
+    and/[extendsCategoryForm(db,domain,form,x) for x in l]
   form' is ["CATEGORY",.,:l] =>
-    and/[extendsCategoryForm(domain,form,x) for x in l]
+    and/[extendsCategoryForm(db,domain,form,x) for x in l]
   form' is ["SubsetCategory",cat,dom] =>
-    extendsCategoryForm(domain,form,cat) and isSubset(domain,dom,$e)
-  form is ["Join",:l] => or/[extendsCategoryForm(domain,x,form') for x in l]
+    extendsCategoryForm(db,domain,form,cat) and isSubset(domain,dom,$e)
+  form is ["Join",:l] =>
+    or/[extendsCategoryForm(db,domain,x,form') for x in l]
   form is ["CATEGORY",.,:l] =>
     listMember?(form',l) or
       stackWarning('"not known that %1 is of mode %2p",[form',form]) or true
@@ -1121,15 +1123,15 @@ extendsCategoryForm(domain,form,form') ==
   -- possibly compiled previously that may have changed.
   -- FIXME: should not we go all the way down and implement
   --        polynormic recursion?
-  domain = "$" and form = $definition => 
-    extendsCategoryForm(domain, $currentCategoryBody, form')
+  domain = "$" and form = dbConstructorForm db => 
+    extendsCategoryForm(db,domain, $currentCategoryBody, form')
   isCategoryForm(form,$EmptyEnvironment) =>
     -- -- If we have an existing definition for this category, use it.
     -- (db := constructorDB form.op) and loadDB db =>
     --   form' is ['SIGNATURE,op,types,:.] => assoc([op,args],dbOperations db)
     --   form' is ['ATTRIBUTE,a] => assoc(a,dbAttributes db)
     --   subst := pairList(dbConstructorForm(db).args,form.args)
-    --   or/[extendsCategoryForm(domain,applySubst(subst,cat),form')
+    --   or/[extendsCategoryForm(db,domain,applySubst(subst,cat),form')
     --        for [cat,:.] in dbAncestors db]
     -- Otherwise constructs the associated domain shell
     formVec:=(compMakeCategoryObject(form,$e)).expr
@@ -1142,12 +1144,10 @@ extendsCategoryForm(domain,form,form') ==
          assoc(at,categoryAttributes formVec) or
             assoc(substitute(domain,"$",at),substitute(domain,"$",categoryAttributes formVec))
     form' is ["IF",:.] => true --temporary hack so comp won't fail
-    -- Are we dealing with an Aldor category?  If so use the "has" function ...
-    # formVec = 1 => newHasTest(form,form')
     listMember?(form',categoryPrincipals formVec) or
      listMember?(form',substitute(domain,"$",categoryPrincipals formVec)) or
       (or/
-        [extendsCategoryForm(domain,substitute(domain,"$",cat),form')
+        [extendsCategoryForm(db,domain,substitute(domain,"$",cat),form')
           for [cat,:.] in categoryAncestors formVec])
   nil
  

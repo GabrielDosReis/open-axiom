@@ -1119,6 +1119,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     $definition: local := form   --used by DomainSubstitutionFunction
     $form: local := nil
     $extraParms: local := nil
+    e := registerConstructor($op,e)
     -- Remember the body for checking the current instantiation.
     $currentCategoryBody : local := body
          --Set in DomainSubstitutionFunction, used further down
