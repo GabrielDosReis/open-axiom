@@ -42,7 +42,7 @@ module lisplib
 --=======================================================================
 --                Generate Slot 2 Attribute Alist
 --=======================================================================
-NRTgenInitialAttributeAlist(db,attributeList) ==
+genInitialAttributeAlist(db,attributeList) ==
   --alist has form ((item pred)...) where some items are constructor forms
   alist := [x for x in attributeList | -- throw out constructors
               constructorDB opOf first x = nil]
@@ -59,7 +59,7 @@ simplifyAttributeAlist(db,al) ==
     [[a,:pred],:simplifyAttributeAlist(db,s)]
   nil
  
-NRTgenFinalAttributeAlist(db,e) ==
+genFinalAttributeAlist(db,e) ==
   [[a,:k] for [a,:b] in $NRTattributeAlist
      | (k := predicateBitIndex(b,e)) ~= -1]
  
@@ -557,7 +557,7 @@ finalizeLisplib(db,libName) ==
   writeOperations(db,first opsAndAtts)
   if dbConstructorKind db = 'category then
      $NRTslot1PredicateList : local := []
-     NRTgenInitialAttributeAlist(db,rest opsAndAtts)
+     genInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain db
   writeCapsuleLevelDefinitions db
   writeAttributes db

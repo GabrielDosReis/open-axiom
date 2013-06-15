@@ -871,7 +871,7 @@ coerceInt1(triple,t2) ==
     $genValue =>
       fun := getFunctionFromDomain(unwrap val,dc,argl)
       objNewWrap(fun,t2)
-    val := NRTcompileEvalForm(unwrap val, rest CAAR mms, evalDomain dc)
+    val := compileEvalForm(unwrap val, rest CAAR mms, evalDomain dc)
     objNew(val, t2)
   (t1 is ['Variable,sym]) and (t2 is ['Mapping,target,:margl]) =>
     null (mms := selectMms1(sym,target,margl,margl,nil)) => 
@@ -880,7 +880,7 @@ coerceInt1(triple,t2) ==
     targ ~= target => nil
     dc is ["__FreeFunction__",:freeFun] => objNew( freeFun, t2 )
     $genValue => objNewWrap( getFunctionFromDomain(sym,dc,argl), t2 )
-    val := NRTcompileEvalForm(sym, rest CAAR mms, evalDomain dc)
+    val := compileEvalForm(sym, rest CAAR mms, evalDomain dc)
     objNew(val, t2)
   (t1 is ['FunctionCalled,sym]) and (t2 is ['Mapping,target,:margl]) =>
     symNode := mkAtreeNode sym
@@ -1314,7 +1314,7 @@ coerceByFunction(T,m2) ==
     fun :=
       isWrapped x =>
         NRTcompiledLookup("=", [$Boolean, '$, '$], dcVector)
-      NRTcompileEvalForm("=", [$Boolean, '$, '$], dcVector)
+      compileEvalForm("=", [$Boolean, '$, '$], dcVector)
     [fn,:d]:= fun
     isWrapped x =>
       x:= unwrap x
@@ -1332,7 +1332,7 @@ coerceByFunction(T,m2) ==
 --+
       isWrapped x =>
         NRTcompiledLookup(funName,slot,dcVector)
-      NRTcompileEvalForm(funName,slot,dcVector)
+      compileEvalForm(funName,slot,dcVector)
     [fn,:d]:= fun
     fn = function Undef => nil
     isWrapped x =>
