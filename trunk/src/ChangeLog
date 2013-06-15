@@ -1,5 +1,9 @@
 2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/ht-util.boot (mkCurryFun): Import function name.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* boot/tokens.boot (importSymbol): New builtin.
 	* interp/br-saturn.boot (htpMakeEmptyPage): Use it.
 

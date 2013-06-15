@@ -753,7 +753,7 @@ multiToUnivariate f ==
   body := copyTree third f
   newVariable := gensym()
   for index in 0..#vars-1 repeat
-    -- Remember that AXIOM lists, vectors etc are indexed from 1
+    -- Remember that OpenAxiom lists, vectors etc are indexed from 1
     body := substitute!(["elt",newVariable,index+1],vars.index,body)
   -- We want a Vector DoubleFloat -> DoubleFloat
   target := [["DoubleFloat"],["Vector",["DoubleFloat"]]]
@@ -776,7 +776,7 @@ functionAndJacobian f ==
   jacBodies := CDDR interpret [["$elt",["List",["InputForm"]],"construct"],:jacBodies]
   newVariable := gensym()
   for index in 0..#vars-1 repeat
-    -- Remember that AXIOM lists, vectors etc are indexed from 1
+    -- Remember that OpenAxiom lists, vectors etc are indexed from 1
     funBodies := substitute!(["elt",newVariable,index+1],vars.index,funBodies)
     jacBodies := substitute!(["elt",newVariable,index+1],vars.index,jacBodies)
   target := [["Vector",["DoubleFloat"]],["Vector",["DoubleFloat"]],["Integer"]]
@@ -798,7 +798,7 @@ vectorOfFunctions f ==
   funBodies := copyTree CDADDR f
   newVariable := gensym()
   for index in 0..#vars-1 repeat
-    -- Remember that AXIOM lists, vectors etc are indexed from 1
+    -- Remember that OpenAxiom lists, vectors etc are indexed from 1
     funBodies := substitute!(["elt",newVariable,index+1],vars.index,funBodies)
   target := [["Vector",["DoubleFloat"]],["Vector",["DoubleFloat"]]]
   rest interpret ["ADEF",[newVariable],target,[[],[]],["vector",["construct",:funBodies]]]

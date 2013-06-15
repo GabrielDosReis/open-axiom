@@ -287,6 +287,7 @@ beforeAfter(x,u) == [[y for [y,:r] in tails u while x ~= y],r]
 
 mkCurryFun(fun, val) ==
   name := gensym()
+  importSymbol name
   code :=
     ['DEFUN, name, '(arg), ['APPLY, MKQ fun, ['CONS, 'arg, MKQ val]]]
   eval code
