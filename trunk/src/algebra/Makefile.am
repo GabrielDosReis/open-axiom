@@ -306,6 +306,7 @@ strap-0/IXAGG.$(FASLEXT): strap-0/HOAGG.$(FASLEXT) \
 strap-0/HOAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/FUNCTOR.$(FASLEXT) \
 	strap-0/KOERCE.$(FASLEXT) strap-0/BASTYPE.$(FASLEXT) \
 	strap-0/SETCAT.$(FASLEXT) strap-0/EVALAB.$(FASLEXT)
+strap-0/SETAGG.$(FASLEXT): strap-0/SETCAT.$(FASLEXT)
 strap-0/AGG.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
 strap-0/ELTAGG.$(FASLEXT): strap-0/AGG.$(FASLEXT) strap-0/ELTAB.$(FASLEXT)
 strap-0/ELTAB.$(FASLEXT): strap-0/TYPE.$(FASLEXT)
@@ -377,6 +378,12 @@ strap-0/SYMBOL.$(FASLEXT): strap-0/ORDSET.$(FASLEXT)
 strap-0/BOP.$(FASLEXT): strap-0/ORDSET.$(FASLEXT) strap-0/OPERCAT.$(FASLEXT)
 
 strap-0/ALIST.$(FASLEXT): strap-0/SETCAT.$(FASLEXT) strap-0/ALAGG.$(FASLEXT)
+
+strap-0/CHAR.$(FASLEXT): strap-0/ORDFIN.$(FASLEXT)
+
+strap-0/KERNEL.$(FASLEXT): strap-0/CACHSET.$(FASLEXT) \
+	strap-0/SETCAT.$(FASLEXT) \
+	strap-0/ORDSET.$(FASLEXT) strap-0/PATAB.$(FASLEXT)
 
 # Bootstrap stage 1 dependencies.
 # At this stage, we attempt to compile domains essential for completing
@@ -468,6 +475,9 @@ strap-1/BMODULE.$(FASLEXT): strap-1/LMODULE.$(FASLEXT) \
 
 strap-1/SRING.$(FASLEXT): strap-1/ABELMON.$(FASLEXT) \
 	strap-1/MONOID.$(FASLEXT)
+
+strap-1/GROUP.$(FASLEXT): strap-1/MONOID.$(FASLEXT) \
+	strap-0/REPSQ.$(FASLEXT) strap-0/INT.$(FASLEXT)
 
 strap-1/RING.$(FASLEXT): strap-1/RNG.$(FASLEXT) \
 	strap-1/SRING.$(FASLEXT) \
@@ -699,6 +709,9 @@ strap-1/CTORCAT.$(FASLEXT): strap-1/OPERCAT.$(FASLEXT) \
 	strap-0/CTORKIND.$(FASLEXT) strap-0/LIST.$(FASLEXT) \
 	strap-0/OVERSET.$(FASLEXT) strap-1/ARITY.$(FASLEXT)
 
+strap-1/VSPACE.$(FASLEXT): strap-1/FIELD.$(FASLEXT) \
+	strap-1/MODULE.$(FASLEXT)
+
 strap-1/MATCAT.$(FASLEXT): strap-1/ARR2CAT.$(FASLEXT) \
 	strap-1/INTDOM.$(FASLEXT) strap-1/FIELD.$(FASLEXT) \
 	strap-1/EUCDOM.$(FASLEXT) strap-1/FINAGG.$(FASLEXT)
@@ -824,6 +837,17 @@ strap-1/BOP.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) strap-1/OPERCAT.$(FASLEXT) \
 	strap-0/BOOLEAN.$(FASLEXT) strap-0/MAYBE.$(FASLEXT) \
 	strap-0/LIST.$(FASLEXT) strap-0/ALIST.$(FASLEXT) \
 	strap-0/OUTFORM.$(FASLEXT) strap-0/INFORM.$(FASLEXT)
+
+strap-1/ES.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/RETRACT.$(FASLEXT) \
+	strap-1/IEVALAB.$(FASLEXT) strap-0/BOP.$(FASLEXT) \
+	strap-0/SYMBOL.$(FASLEXT) strap-0/KERNEL.$(FASLEXT)
+
+strap-1/EQ.$(FASLEXT): strap-1/FUNCTOR.$(FASLEXT) strap-1/IEVALAB.$(FASLEXT) \
+	strap-1/SETCAT.$(FASLEXT) strap-1/KOERCE.$(FASLEXT) \
+	strap-1/ABELSG.$(FASLEXT) strap-1/ABELGRP.$(FASLEXT) \
+	strap-1/MONOID.$(FASLEXT) strap-1/GROUP.$(FASLEXT) \
+	strap-1/BMODULE.$(FASLEXT) strap-1/COMRING.$(FASLEXT) \
+	strap-1/VSPACE.$(FASLEXT) strap-1/ES.$(FASLEXT)
 
 # Bootstrap stage 2 dependencies.
 # At this stage we recompile everything from stage 1, including
@@ -1316,6 +1340,8 @@ $(OUT)/INT.$(FASLEXT): $(OUT)/INS.$(FASLEXT) \
 	strap-2/MATRIX.$(FASLEXT) strap-2/VECTOR.$(FASLEXT) \
 	strap-2/FR.$(FASLEXT)
 
+$(OUT)/BINOPC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
 $(OUT)/IEVALAB.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	strap-2/LIST.$(FASLEXT)
 
@@ -1347,7 +1373,7 @@ $(OUT)/RETRACT.$(FASLEXT): $(OUT)/KRCFROM.$(FASLEXT)
 $(OUT)/BASTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT) \
 	strap-2/BOOLEAN.$(FASLEXT)
 
-$(OUT)/SETCAT.$(FASLEXT) $(OUT)/SETCAT-.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+$(OUT)/SETCAT.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
 
 $(OUT)/FINITE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	strap-2/NNI.$(FASLEXT) strap-2/PI.$(FASLEXT)
@@ -1362,9 +1388,9 @@ $(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT)
 $(OUT)/LOGIC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BOOLE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
-$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
+$(OUT)/SGROUP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	strap-2/PI.$(FASLEXT)
-$(OUT)/ABELSG.$(FASLEXT) $(OUT)/ABELSG-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/ABELSG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	$(OUT)/LLINSET.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
 $(OUT)/RMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/RLINSET.$(FASLEXT)
@@ -1403,7 +1429,6 @@ $(OUT)/DSEXT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT)
 $(OUT)/ORDTYPE.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
 $(OUT)/ORDSTRCT.$(FASLEXT): $(OUT)/ORDTYPE.$(FASLEXT) $(OUT)/HOMOTOP.$(FASLEXT)
 
-$(OUT)/BINOPC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BINOP.$(FASLEXT): $(OUT)/BINOPC.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IDEMOPC.$(FASLEXT): $(OUT)/BINOPC.$(FASLEXT) $(OUT)/BASTYPE.$(FASLEXT)
 $(OUT)/SGPOPC.$(FASLEXT): $(OUT)/BINOPC.$(FASLEXT) $(OUT)/BASTYPE.$(FASLEXT)
@@ -1533,7 +1558,7 @@ $(OUT)/MONOP.$(FASLEXT): $(OUT)/MONOPC.$(FASLEXT) $(OUT)/PAIR.$(FASLEXT) \
 
 $(OUT)/IDPT.$(FASLEXT): $(OUT)/PAIR.$(FASLEXT)
 
-$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
+$(OUT)/AGG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
 $(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT) $(OUT)/EVALAB.$(FASLEXT)
 $(OUT)/RCAGG.$(FASLEXT): $(OUT)/EVALAB.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT) \
@@ -1594,7 +1619,7 @@ oa_algebra_layer_1 = \
   DATAARY  PROPLOG  BYTEORD  \
   AGG      AGG-     ELTAGG   ELTAGG-  IXAGG    IXAGG-   \
   BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    ELAGG-   \
-  DLAGG    DQAGG    QUAGG    SKAGG    PRQAGG   ALAGG    ALAGG- \
+  DLAGG    DQAGG    QUAGG    SKAGG    PRQAGG   ALAGG    \
   FLAGG    FLAGG-   URAGG    URAGG-   LNAGG    LNAGG-   \
   A1AGG    A1AGG-   LSAGG    LSAGG-   SRAGG    SRAGG-   \
   FSAGG    FSAGG-   STAGG    STAGG-   CLAGG    CLAGG-   \
@@ -1690,7 +1715,6 @@ oa_algebra_layer_5_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_5)))
 
-$(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
 $(OUT)/PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
 $(OUT)/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT) $(OUT)/BYTE.$(FASLEXT)
 $(OUT)/PROPFUN1.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
@@ -2146,7 +2170,7 @@ oa_algebra_layer_23_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_23)))
 oa_algebra_layer_24 =  \
-	RINTERP	 ASTCAT   ASTCAT-  SASTCAT  SASTCAT- HEADAST  \
+	RINTERP	 ASTCAT   ASTCAT-  SASTCAT  HEADAST  \
 	LITERAL           TYPEAST  IMPTAST  MAPPAST  ATTRAST  \
 	JOINAST  IFAST    RPTAST   WHILEAST INAST    CLLCTAST \
 	LSTAST   EXITAST  RETAST   SEGAST   PRTDAST  CRCEAST   \
@@ -2259,14 +2283,14 @@ stamp: $(SPADFILES) 24-stamp $(TESTS)
 
 all-algstrap: strap-stamp
 
-.PRECIOUS: $(OUT)/%.$(FASLEXT)
-$(OUT)/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
-	cp $< $@
+.PRECIOUS: $(OUT)/%.$(FASLEXT) %.spad
+$(OUT)/%.$(FASLEXT) $(OUT)/%-.$(FASLEXT): %.spad initdb.$(FASLEXT)
+	$(COMPILE_SPAD) && cp -p $*.NRLIB/code.$(FASLEXT) $@ \
+	  && if test -f $*-.NRLIB/code.$(FASLEXT); then \
+	       cp -p $*-.NRLIB/code.$(FASLEXT) $(OUT)/$*-.$(FASLEXT); \
+	     else :; fi
 
-.PRECIOUS: %.spad
-.PRECIOUS: %.NRLIB/code.$(FASLEXT)
-%.NRLIB/code.$(FASLEXT): %.spad initdb.$(FASLEXT)
-	$(COMPILE_SPAD)
+$(OUT)/%-.$(FASLEXT): $(OUT)/%.$(FASLEXT)
 
 $(SPADFILES): | $(OUTSRC)
 

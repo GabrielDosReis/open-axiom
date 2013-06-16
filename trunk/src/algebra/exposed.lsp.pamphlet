@@ -1097,7 +1097,6 @@
   (|AlgebraicallyClosedField&| . ACF-)
   (|AlgebraicallyClosedFunctionSpace&| . ACFS-)
   (|ArcTrigonometricFunctionCategory&| . ATRIG-)
-  (|AssociationListAggregate&| . ALAGG-)
   (|BagAggregate&| . BGAGG-)
   (|BasicType&| . BASTYPE-)
   (|BinaryRecursiveAggregate&| . BRAGG-)
