@@ -1231,7 +1231,6 @@ Group(): Category == Monoid with
 ++   canonicalsClosed\tab{20}the product of two canonicals is itself canonical
 
 IntegralDomain(): Category ==
---  Join(CommutativeRing, Algebra(%:CommutativeRing), EntireRing) with
   Join(CommutativeRing, Algebra(%), EntireRing) with
     --operations
       exquo: (%,%) -> Union(%,"failed")
