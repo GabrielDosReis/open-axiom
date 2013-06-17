@@ -3289,9 +3289,9 @@ all-algstrap: strap-stamp
 
 .PRECIOUS: $(OUT)/%.$(FASLEXT) %.spad
 $(OUT)/%.$(FASLEXT) $(OUT)/%-.$(FASLEXT): %.spad initdb.$(FASLEXT)
-	$(COMPILE_SPAD) && cp -p $*.NRLIB/code.$(FASLEXT) $@ \
+	$(COMPILE_SPAD) && cp $*.NRLIB/code.$(FASLEXT) $@ \
 	  && if test -f $*-.NRLIB/code.$(FASLEXT); then \
-	       cp -p $*-.NRLIB/code.$(FASLEXT) $(OUT)/$*-.$(FASLEXT); \
+	       cp $*-.NRLIB/code.$(FASLEXT) $(OUT)/$*-.$(FASLEXT); \
 	     else :; fi
 
 $(OUT)/%-.$(FASLEXT): $(OUT)/%.$(FASLEXT)
