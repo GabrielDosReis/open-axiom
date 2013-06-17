@@ -1368,7 +1368,6 @@ SPADFILES= \
  $(OUTSRC)/sign.spad $(OUTSRC)/si.spad $(OUTSRC)/smith.spad \
  $(OUTSRC)/solvedio.spad $(OUTSRC)/solvefor.spad $(OUTSRC)/solvelin.spad \
  $(OUTSRC)/solverad.spad $(OUTSRC)/sortpak.spad $(OUTSRC)/space.spad \
- $(srcdir)/spad-parser.spad \
  $(OUTSRC)/special.spad $(OUTSRC)/sregset.spad $(OUTSRC)/s.spad \
  $(OUTSRC)/stream.spad $(OUTSRC)/string.spad $(OUTSRC)/sttaylor.spad \
  $(OUTSRC)/sttf.spad $(OUTSRC)/sturm.spad $(OUTSRC)/suchthat.spad \
@@ -1384,7 +1383,7 @@ SPADFILES= \
  $(OUTSRC)/utsode.spad \
  $(OUTSRC)/variable.spad $(OUTSRC)/vector.spad $(OUTSRC)/view2D.spad \
  $(OUTSRC)/view3D.spad $(OUTSRC)/viewDef.spad $(OUTSRC)/viewpack.spad \
- $(OUTSRC)/void.spad \
+ $(OUTSRC)/void.spad $(OUTSRC)/parsers.spad \
  $(OUTSRC)/weier.spad $(OUTSRC)/wtpol.spad \
  $(OUTSRC)/xlpoly.spad $(OUTSRC)/xpoly.spad \
  $(OUTSRC)/ystream.spad \
@@ -2476,13 +2475,6 @@ $(builddir)/%.tex: $(srcdir)/%.pamphlet
 
 $(oa_build_texdir)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
 	@cp -p $< $@
-
-SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	$(COMPILE_SPAD)
-
-PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
-	$(COMPILE_SPAD)
-
 
 $(INPUT)/TESTFR.input: $(srcdir)/fr.spad.pamphlet
 	$(oa_hammer) --tangle='TEST FR' --output=$@ $<
