@@ -929,7 +929,7 @@ import SetCategory
 ++ will return the integers 1,7, and 4; thus this list may be viewed
 ++ as mapping 0 to 1, 1 to 7 and 2 to 4. In general, an aggregate
 ++ can map members of a domain {\em Dom} to an image domain {\em Im}.
-EltableAggregate(Dom:SetCategory, Im:Type): Category ==
+EltableAggregate(Dom: BasicType, Im:Type): Category ==
   Eltable(Dom, Im) with
     elt : (%, Dom, Im) -> Im
        ++ elt(u, x, y) applies u to x if x is in the domain of u,
@@ -984,7 +984,7 @@ import List
 ++ For example, a one-dimensional-array is an indexed aggregate where
 ++ the index is an integer.  Also, a table is an indexed aggregate
 ++ where the indices and entries may have any type.
-IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
+IndexedAggregate(Index: BasicType, Entry: Type): Category ==
   Join(HomogeneousAggregate(Entry), EltableAggregate(Index, Entry)) with
    entries: % -> List Entry
       ++ entries(u) returns a list of all the entries of aggregate u
