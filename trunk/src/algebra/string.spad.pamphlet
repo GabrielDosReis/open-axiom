@@ -199,7 +199,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	    ++ \spadfunFrom{alphanumeric?}{Character} is true.
 
     == add
-        import %iinc: Integer -> Integer from Foreign Builtin
+        import %iinc: NonNegativeInteger -> PositiveInteger from Foreign Builtin
         import %idec: Integer -> Integer from Foreign Builtin
 
 	Rep := IndexedBits(0)
@@ -240,7 +240,10 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	coerce(cl):OutputForm == (convert(cl)@String)::OutputForm
 
 	-- Stuff to make a legal SetAggregate view
-	# a == (n := 0; for i in 0..%idec N | a.i repeat n := %iinc n; n)
+	# a ==
+          n := 0
+          for i in 0..%idec N | a.i repeat n := %iinc n
+          n
 	empty():%	== charClass []
 	brace():%	== charClass []
 

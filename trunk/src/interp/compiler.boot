@@ -916,18 +916,13 @@ setqSingle(id,val,m,E) ==
   $insideSetqSingleIfTrue: local:= true
     --used for comping domain forms within functions
   currentProplist:= getProplist(id,E)
-  m'':=
-    get(id,"mode",E) or getmode(id,E) or
-       (if m=$NoValueMode then $EmptyMode else m)
-  T:=
-    eval or return nil where
-      eval() ==
-        T:= comp(val,m'',E) => T
-        get(id,"mode",E) = nil and m'' ~= (maxm'':=maximalSuperType m'') and
-           (T:=comp(val,maxm'',E)) => T
-        (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
-          assignError(val,T.mode,id,m'')
-  T':= [x,m',e']:= coerce(T,m) or return nil
+  tm := get(id,"mode",E) or getmode(id,E) or
+           m=$NoValueMode => $EmptyMode
+           m
+  T := comp(val,tm,E) or return nil
+  if tm = $EmptyMode then      -- newly defined variable.
+    T.env := addDomain(db,T.mode,T.env)
+  T' := [x,m',e'] := coerce(T,m) or return nil
   if $profileCompiler then
     not ident? id => nil
     key :=
@@ -952,12 +947,6 @@ setqSingle(id,val,m,E) ==
     k := assocIndex(db,id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
-
-assignError(val,m',form,m) ==
-  val =>
-    stackMessage('"CANNOT ASSIGN: %1b OF MODE: %2pb TO: %3b OF MODE: %4bp",
-      [val,m',form,m])
-  stackMessage('"CANNOT ASSIGN: %1b TO: %2b OF MODE: %3pb",[val,form,m])
 
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
@@ -1772,7 +1761,7 @@ tryCourtesyCoercion(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    T.rest.first := MSUBST("$",$Rep,second T)
+    T.mode := MSUBST("$",$Rep,second T)
   T' := coerceEasy(T,m) => T'
   T' := coerceSubset(T,m) => T'
   T' := coerceHard(T,m) => T'

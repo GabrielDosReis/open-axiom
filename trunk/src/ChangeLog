@@ -1,3 +1,11 @@
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/parsers.spad.pamphlet: New.
+	* algebra/script-parser.spad: Move content to parsers.spad.pamphlet.
+	Remove.
+	* algebra/spad-parser.spad: Likewise.
+
+
 2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* interp/ht-util.boot (mkCurryFun): Import function name.
