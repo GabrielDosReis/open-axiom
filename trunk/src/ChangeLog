@@ -1,3 +1,9 @@
+2013-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet (EltableAggregate): Weaken
+	requirement on first parameter.
+	(IndexedAggregate): Likewise.
+
 2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/catdef.spad.pamphlet (PartialDifferentialSpace): Weaken
