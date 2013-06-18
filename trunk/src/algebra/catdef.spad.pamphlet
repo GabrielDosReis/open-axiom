@@ -42,6 +42,39 @@ BinaryOperation(T: Type): Join(BinaryOperatorCategory T, SetCategory) with
 
 @
 
+\section{Commutative Operations}
+
+<<category COMOPC CommutativeOperatorCategory>>=
+)abbrev category COMOPC CommutativeOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: June 17, 2013
+++ Date Last Modified: June 17, 2013
+++ Description:
+++   This is the category of all domains that implement commutative operations.
+CommutativeOperatorCategory(T: BasicType): Category ==
+  BinaryOperatorCategory T with
+    assume commutativity ==
+      forall(f: %, x: T, y: T) . f(x,y) = f(y,x)
+@
+
+<<domain COMOP CommutativeOperation>>=
+)abbrev domain COMOP CommutativeOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: June 17, 2013
+++ Date Last Modified: June 17, 2013
+++ Description:
+++   This domain implements commutative operations.
+CommutativeOperation(T: BasicType): Public == Private where
+  Public == Join(CommutativeOperatorCategory T, CoercibleTo BinaryOperation T)
+    with
+      commutativeOperation: ((T,T) -> T) -> %
+        ++ \spad{commutativeOperation f} constructs a commutative operation
+        ++ over \spad{T}, thus asserting a commutativity property.
+  Private == BinaryOperation T add
+    commutativeOperation f == per binaryOperation f
+    coerce(x: %): BinaryOperation T == rep x
+@
+
 
 \section{Idempotent operations}
 
@@ -2255,6 +2288,8 @@ Functorial(S: Type): Category == Type with
 <<category FUNCTOR Functorial>>
 <<category BINOPC BinaryOperatorCategory>>
 <<domain BINOP BinaryOperation>>
+<<category COMOPC CommutativeOperatorCategory>>
+<<domain COMOP CommutativeOperation>>
 <<category IDEMOPC IdempotentOperatorCategory>>
 <<category SGPOPC SemiGroupOperatorCategory>>
 <<domain SGPOP SemiGroupOperation>>
