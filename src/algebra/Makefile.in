@@ -683,7 +683,6 @@ SPADFILES = \
  $(OUTSRC)/sign.spad $(OUTSRC)/si.spad $(OUTSRC)/smith.spad \
  $(OUTSRC)/solvedio.spad $(OUTSRC)/solvefor.spad $(OUTSRC)/solvelin.spad \
  $(OUTSRC)/solverad.spad $(OUTSRC)/sortpak.spad $(OUTSRC)/space.spad \
- $(srcdir)/spad-parser.spad \
  $(OUTSRC)/special.spad $(OUTSRC)/sregset.spad $(OUTSRC)/s.spad \
  $(OUTSRC)/stream.spad $(OUTSRC)/string.spad $(OUTSRC)/sttaylor.spad \
  $(OUTSRC)/sttf.spad $(OUTSRC)/sturm.spad $(OUTSRC)/suchthat.spad \
@@ -699,7 +698,7 @@ SPADFILES = \
  $(OUTSRC)/utsode.spad \
  $(OUTSRC)/variable.spad $(OUTSRC)/vector.spad $(OUTSRC)/view2D.spad \
  $(OUTSRC)/view3D.spad $(OUTSRC)/viewDef.spad $(OUTSRC)/viewpack.spad \
- $(OUTSRC)/void.spad \
+ $(OUTSRC)/void.spad $(OUTSRC)/parsers.spad \
  $(OUTSRC)/weier.spad $(OUTSRC)/wtpol.spad \
  $(OUTSRC)/xlpoly.spad $(OUTSRC)/xpoly.spad \
  $(OUTSRC)/ystream.spad \
@@ -708,7 +707,7 @@ SPADFILES = \
 TESTS = $(INPUT)/INTHEORY.input $(INPUT)/VIEW2D.input $(INPUT)/TESTFR.input
 oa_algebra_layer_0 = \
   TYPE     BINOPC   BINOP    IDEMOPC  SGPOPC   SGPOP    \
-  MONOPC   FUNCTOR  \
+  MONOPC   FUNCTOR  COMOPC   COMOP \
   BASTYPE  BASTYPE- SETCAT   SETCAT-  SGROUP   SGROUP-  \
   LLINSET  RLINSET  LINSET   ABELSG   ABELSG-  CHARNZ   \
   ABELGRP  ABELGRP- ABELMON  ABELMON- ORDTYPE  ORDTYPE- \
@@ -3034,6 +3033,10 @@ $(OUT)/SYMBOL.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT) \
 	strap-2/PRIMARR.$(FASLEXT) strap-2/REF.$(FASLEXT) \
 	strap-2/STRING.$(FASLEXT)
 
+$(OUT)/COMOPC.$(FASLEXT): $(OUT)/BINOPC.$(FASLEXT)
+
+$(OUT)/COMOP.$(FASLEXT): $(OUT)/COMOPC.$(FASLEXT) $(OUT)/KOERCE.$(FASLEXT)
+
 $(OUT)/VOID.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
 $(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/STREAM.$(FASLEXT)
@@ -3324,12 +3327,6 @@ $(builddir)/%.tex: $(srcdir)/%.pamphlet
 
 $(oa_build_texdir)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
 	@cp -p $< $@
-
-SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	$(COMPILE_SPAD)
-
-PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
-	$(COMPILE_SPAD)
 
 $(INPUT)/TESTFR.input: $(srcdir)/fr.spad.pamphlet
 	$(oa_hammer) --tangle='TEST FR' --output=$@ $<

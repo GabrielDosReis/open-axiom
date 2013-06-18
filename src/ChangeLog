@@ -1,4 +1,10 @@
-2013-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/catdef.spad.pamphlet (CommutativeOperatorCategory): New.
+	(CommutativeOperation): Likewise.
+	* algebra/Makefile.am (oa_algebra_layer_0): Include them.
+
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/aggcat.spad.pamphlet (EltableAggregate): Weaken
 	requirement on first parameter.
