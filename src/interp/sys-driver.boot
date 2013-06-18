@@ -98,10 +98,9 @@ systemDatabaseDirectory() ==
 ++ Load list of exposed categories, domains, and packages.
 ++ User-specified list takes precedence over system wide list.
 loadExposureGroupData() ==
-  LOAD('"./exposed", KEYWORD::VERBOSE,false,
-    KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
+  LOAD('"./exposed", verbose <- false, if_-does_-not_-exist <- nil) => "done"
   LOAD(getSystemModulePath '"exposed",
-    KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
+     verbose <- false,if_-does_-not_-exist <- nil) => "done"
   "failed"
 
 ++ 

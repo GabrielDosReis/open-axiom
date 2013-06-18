@@ -243,7 +243,7 @@ hashTable cmp ==
     cmp = 'EQL => function scalarEq?
     cmp = 'EQUAL => function EQUAL
     error '"bad arg to hashTable"
-  MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
+  MAKE_-HASH_-TABLE(test <- testFun)
 
 --% Trees to Graphs
 
@@ -280,12 +280,10 @@ $ClosedIOMode == KEYWORD::CLOSED
 ++ if something went wrong.  This function is used by the Algebra.
 openBinaryFile(file,mode) ==
   mode = $InputIOMode =>
-    OPEN(file,KEYWORD::DIRECTION,mode,
-      KEYWORD::IF_-DOES_-NOT_-EXIST,nil,
-        KEYWORD::ELEMENT_-TYPE,"%Byte")
-  OPEN(file,KEYWORD::DIRECTION,mode,
-    KEYWORD::IF_-EXISTS,KEYWORD::SUPERSEDE,
-      KEYWORD::ELEMENT_-TYPE,"%Byte")
+    OPEN(file,direction <- mode,
+      if_-does_-not_-exist <- nil,element_-type <- "%Byte")
+  OPEN(file,direction <- mode,
+    if_-exists <- KEYWORD::SUPERSEDE,element_-type <- "%Byte")
 
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
@@ -320,7 +318,7 @@ writeByteToStreamSocket(s,b) ==
 
 --%
 makeByteBuffer(n,b == 0) ==
-  MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",KEYWORD::INITIAL_-ELEMENT,b)
+  MAKE_-ARRAY(n,element_-type <- "%Byte",initial_-element <- b)
 
 ++ Return the position of the symbol `s' in the list `l', if present.
 ++ Otherwise return nil.

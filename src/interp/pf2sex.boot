@@ -183,10 +183,9 @@ pfLiteral2Sex pf ==
   type = 'integer =>
     txt := pfLiteralString pf
     MULTIPLE_-VALUE_-BIND(part1 pos1,
-      readInteger(txt,KEYWORD::JUNK_-ALLOWED,true),
+      readInteger(txt,junk_-allowed <- true),
         if pos1 = #txt then part1
-        else readInteger(subString(txt,pos1+1),
-               KEYWORD::RADIX, part1))
+        else readInteger(subString(txt,pos1+1), radix <- part1))
   type = 'string or type = 'char =>
     pfLiteralString pf
   type = 'float =>
