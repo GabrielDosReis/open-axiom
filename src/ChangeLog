@@ -1,3 +1,12 @@
+2013-06-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (compHasFormat): Take a DB parameter.
+	Adjust callers.
+	* interp/define.boot (ICformat): Likewise.
+	* interp/lisplib.boot (predicateBitIndex): Likewise.
+	(predicateBitRef): Likewise.
+	(transHasCode): Likewise.
+
 2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* algebra/catdef.spad.pamphlet (CommutativeOperatorCategory): New.

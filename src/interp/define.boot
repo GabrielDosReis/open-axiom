@@ -431,7 +431,7 @@ makeCompactDirect1(db,op,items) ==
       n is [p,:.] => p  --the rest is linenumber of function definition
       n
     predCode :=
-      s is [pred,:.] => predicateBitIndex(pred,$e)
+      s is [pred,:.] => predicateBitIndex(db,pred,$e)
       0
   --> drop items which are not present (predCode = -1)
   predCode = -1 => return nil
@@ -490,7 +490,7 @@ makeCategoryAlist(db,e) ==
   opcAlist := sortBy(function(x +-> LASSOC(first x,levelAlist)),pcAlist)
   newPairlis := [[i,:b] for [.,:b] in dbFormalSubst db for i in 6..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
-                   | (k := predicateBitIndex(b,e)) ~= -1]
+                   | (k := predicateBitIndex(db,b,e)) ~= -1]
   slot0 := [getCategoryConstructorDefault a.op for [a,:.] in slot1]
   sixEtc := [5 + i for i in 1..dbArity db]
   formals := substTarget dbFormalSubst db
