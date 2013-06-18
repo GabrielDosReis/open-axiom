@@ -500,7 +500,7 @@ ConstantCreator u ==
  
 ProcessCond(db,cond,e) ==
   ncond := dbSubstituteFormals(db,cond)
-  valuePosition(ncond,$NRTslot1PredicateList) => predicateBitRef(ncond,e)
+  valuePosition(ncond,$NRTslot1PredicateList) => predicateBitRef(db,ncond,e)
   cond
 
 TryGDC cond ==
@@ -636,14 +636,14 @@ InvestigateConditions(db,catvecListMaker,tbl,env) ==
                   mkOr(cond2,old,tbl,env)
               old
         list2
-  list:= [[sec,:ICformat(u,tbl,env)] for u in list for sec in secondaries]
+  list:= [[sec,:ICformat(db,u,tbl,env)] for u in list for sec in secondaries]
   pv:= getPossibleViews($principal,tbl)
   -- $HackSlot4 is used in SetVector4 to ensure that conditional
   -- extensions of the principal view are handles correctly
   -- here we build the code necessary to remove spurious extensions
-  ($HackSlot4:= [reshape(u,tbl,env) for u in $HackSlot4]) where
-    reshape(u,tbl,env) ==
-      ['%when,[TryGDC ICformat(rest u,tbl,env)],
+  ($HackSlot4:= [reshape(db,u,tbl,env) for u in $HackSlot4]) where
+    reshape(db,u,tbl,env) ==
+      ['%when,[TryGDC ICformat(db,rest u,tbl,env)],
              ['%otherwise,['RPLACA,'(CAR TrueDomain),
                              ['delete, quote first u,'(CAAR TrueDomain)]]]]
   $supplementaries:=
@@ -652,11 +652,11 @@ InvestigateConditions(db,catvecListMaker,tbl,env) ==
         and not (true=rest u) and not listMember?(first u,pv)]
   [true,:[LASSOC(ms,list) for ms in masterSecondaries]]
  
-ICformat(u,tbl,env) ==
+ICformat(db,u,tbl,env) ==
       u isnt [.,:.] => u
-      u is ["has",:.] => compHasFormat(u,env)
+      u is ["has",:.] => compHasFormat(db,u,env)
       u is ['AND,:l] or u is ['and,:l] =>
-        l:= removeDuplicates [ICformat(v,tbl,env) for [v,:l'] in tails l
+        l:= removeDuplicates [ICformat(db,v,tbl,env) for [v,:l'] in tails l
                                 | not listMember?(v,l')]
              -- we could have duplicates after, even if not before
         # l=1 => first l
@@ -666,8 +666,8 @@ ICformat(u,tbl,env) ==
         l1
       u is ['OR,:l] =>
         (l:= ORreduce l)
-        # l=1 => ICformat(first l,tbl,env)
-        l:= ORreduce removeDuplicates [ICformat(u,tbl,env) for u in l]
+        # l=1 => ICformat(db,first l,tbl,env)
+        l:= ORreduce removeDuplicates [ICformat(db,u,tbl,env) for u in l]
                  --causes multiple ANDs to be squashed, etc.
                  -- and duplicates that have been built up by tidying
         (l:= Hasreduce(l,tbl,env)) where

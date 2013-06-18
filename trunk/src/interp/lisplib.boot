@@ -60,16 +60,16 @@ simplifyAttributeAlist(db,al) ==
  
 genFinalAttributeAlist(db,e) ==
   [[a,:k] for [a,:b] in $NRTattributeAlist
-     | (k := predicateBitIndex(b,e)) ~= -1]
+     | (k := predicateBitIndex(db,b,e)) ~= -1]
  
-predicateBitIndex(x,e) == 
-  pn(x,false,e) where
-    pn(x,flag,e) ==
-      u := simpBool transHasCode(x,e)
+predicateBitIndex(db,x,e) == 
+  pn(db,x,false,e) where
+    pn(db,x,flag,e) ==
+      u := simpBool transHasCode(db,x,e)
       u is 'T  =>  0
       u is false => -1
       p := valuePosition(u,$NRTslot1PredicateList) => p + 1
-      not flag => pn(predicateBitIndexRemop x,true,e)
+      not flag => pn(db,predicateBitIndexRemop x,true,e)
       systemError nil
 
 predicateBitIndexRemop p==
@@ -79,9 +79,9 @@ predicateBitIndexRemop p==
   p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
   p
  
-predicateBitRef(x,e) ==
+predicateBitRef(db,x,e) ==
   x is 'T => 'T
-  ['testBitVector,'pv_$,predicateBitIndex(x,e)]
+  ['testBitVector,'pv_$,predicateBitIndex(db,x,e)]
  
 makePrefixForm(u,op) ==
   u := MKPF(u,op)
@@ -96,7 +96,7 @@ makePredicateBitVector(db,pl,e) ==   --called by buildFunctor
     pl := union(pl,$categoryPredicateList)
   $predGensymAlist := nil --bound by buildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
-    pred := simpBool transHasCode(p,e)
+    pred := simpBool transHasCode(db,p,e)
     pred isnt [.,:.] => 'skip                --skip over T and nil
     if isHasDollarPred pred then 
       lasts := insert(pred,lasts)
@@ -146,12 +146,12 @@ removeAttributePredicates pl ==
       p
     fnl p == [fn x for x in p]
  
-transHasCode(x,e) ==
+transHasCode(db,x,e) ==
   x isnt [.,:.] => x
   op := x.op
   op in '(HasCategory HasAttribute) => x
-  op="has" => compHasFormat(x,e)
-  [transHasCode(y,e) for y in x]
+  op="has" => compHasFormat(db,x,e)
+  [transHasCode(db,y,e) for y in x]
  
 mungeAddGensyms(u,gal) ==
   ['%list,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
