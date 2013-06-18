@@ -208,7 +208,7 @@ runProgram(prog,args) ==
 )if %hasFeature KEYWORD::GCL
   SYSTEM::SYSTEM(strconc/[prog,:[:['" ",a] for a in args]])
 )elseif %hasFeature KEYWORD::CLISP
-  EXT::RUN_-PROGRAM(prog,KEYWORD::ARGUMENTS,args)
+  EXT::RUN_-PROGRAM(prog,arguments <- args)
 )elseif %hasFeature KEYWORD::SBCL
   SB_-EXT::RUN_-PROGRAM(prog,args)
 )else

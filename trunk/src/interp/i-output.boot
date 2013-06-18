@@ -551,7 +551,7 @@ print(x,domain) ==
 ++ Write x as an asgard form on the standard output.
 outputAsgardForm(x,t) ==
   f := ['%OBJECT,x,devaluate t]
-  WRITE(f,KEYWORD::STREAM,$algebraOutputStream)
+  WRITE(f,stream <- $algebraOutputStream)
   freshLine $algebraOutputStream
 
 mathprintWithNumber(x,t) ==
@@ -1224,7 +1224,7 @@ maprin x ==
   if $demoFlag=true then recordOrCompareDemoResult x
   CATCH('output,maprin0 x)
   $leanMode and 
-    WRITE($RecordSeparator,KEYWORD::STREAM,$algebraOutputStream)
+    WRITE($RecordSeparator,stream <- $algebraOutputStream)
   nil
 
 maprin0 x ==

@@ -128,7 +128,7 @@ getIntegerInRadix(rd,buf,r) ==
     d = nil => leave nil
     d >= r => SPAD__SYNTAX__ERROR rd
     advanceChar! rd
-  PARSE_-INTEGER(buf,KEYWORD::START,mark,KEYWORD::RADIX,r)
+  PARSE_-INTEGER(buf,start <- mark,radix <- r)
 
 radixSuffix? c ==
   c = char "r" or c = char "R"

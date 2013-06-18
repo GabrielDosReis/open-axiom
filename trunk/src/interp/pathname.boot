@@ -71,7 +71,7 @@ pathnameTypeId p ==
  
 pathnameDirectory p ==
    null p => nil
-   NAMESTRING MAKE_-PATHNAME(KEYWORD::DIRECTORY,PATHNAME_-DIRECTORY pathname p)
+   NAMESTRING MAKE_-PATHNAME(directory <- PATHNAME_-DIRECTORY pathname p)
  
 isExistingFile f ==
 --  p := pathname f

@@ -1104,7 +1104,7 @@ queryVar? var ==
 ++ Returns a newly allocated domain shell (a simple vector) of length `n'.
 newShell: %Short -> SIMPLE_-ARRAY
 newShell n ==
-  MAKE_-ARRAY(n,KEYWORD::INITIAL_-ELEMENT,nil)
+  MAKE_-ARRAY(n,initial_-element <- nil)
 
 -- Push into the BOOT package when invoked in batch mode.
 AxiomCore::$sysScope := '"BOOT"

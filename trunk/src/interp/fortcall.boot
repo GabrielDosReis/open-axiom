@@ -39,11 +39,10 @@ namespace BOOT
 $nagMessages := nil
 
 makeVector(elts, t) ==
-  MAKE_-ARRAY(#elts, KEYWORD::ELEMENT_-TYPE, t or true,
-              KEYWORD::INITIAL_-CONTENTS, elts)
+  MAKE_-ARRAY(#elts, element_-type <- t or true, initial_-contents <- elts)
 
 makeList(n, e) ==
-  MAKE_-LIST(n, KEYWORD::INITIAL_-ELEMENT, e)
+  MAKE_-LIST(n, initial_-element <- e)
 
 makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- Create an executable Fortran file to call a given library function,
