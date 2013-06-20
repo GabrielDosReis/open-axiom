@@ -108,7 +108,8 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libio_a_AR = $(AR) $(ARFLAGS)
 libio_a_LIBADD =
-am_libio_a_OBJECTS = libio_a-Input.$(OBJEXT)
+am_libio_a_OBJECTS = libio_a-Input.$(OBJEXT) \
+	libio_a-std-streams.$(OBJEXT)
 libio_a_OBJECTS = $(am_libio_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -347,7 +348,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
 noinst_LIBRARIES = libio.a
-libio_a_SOURCES = Input.cc
+libio_a_SOURCES = Input.cc std-streams.cc
 oa_target_incdir = $(top_builddir)/$(target)/include
 libio_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
 all: all-am
@@ -399,6 +400,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_a-Input.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libio_a-std-streams.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -434,6 +436,20 @@ libio_a-Input.obj: Input.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Input.cc' object='libio_a-Input.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libio_a-Input.obj `if test -f 'Input.cc'; then $(CYGPATH_W) 'Input.cc'; else $(CYGPATH_W) '$(srcdir)/Input.cc'; fi`
+
+libio_a-std-streams.o: std-streams.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libio_a-std-streams.o -MD -MP -MF $(DEPDIR)/libio_a-std-streams.Tpo -c -o libio_a-std-streams.o `test -f 'std-streams.cc' || echo '$(srcdir)/'`std-streams.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libio_a-std-streams.Tpo $(DEPDIR)/libio_a-std-streams.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='std-streams.cc' object='libio_a-std-streams.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libio_a-std-streams.o `test -f 'std-streams.cc' || echo '$(srcdir)/'`std-streams.cc
+
+libio_a-std-streams.obj: std-streams.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libio_a-std-streams.obj -MD -MP -MF $(DEPDIR)/libio_a-std-streams.Tpo -c -o libio_a-std-streams.obj `if test -f 'std-streams.cc'; then $(CYGPATH_W) 'std-streams.cc'; else $(CYGPATH_W) '$(srcdir)/std-streams.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libio_a-std-streams.Tpo $(DEPDIR)/libio_a-std-streams.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='std-streams.cc' object='libio_a-std-streams.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libio_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libio_a-std-streams.obj `if test -f 'std-streams.cc'; then $(CYGPATH_W) 'std-streams.cc'; else $(CYGPATH_W) '$(srcdir)/std-streams.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

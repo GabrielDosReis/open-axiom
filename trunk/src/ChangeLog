@@ -1,5 +1,10 @@
 2013-06-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* include/diagnostics.H: New.
+	* io/std-streams.cc: Likewise.
+
+2013-06-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* boot/scanner.boot (shoeToken): Allow inerts.
 	* boot/ast.boot (bfInert): New.
 	* boot/parser.boot (bpInert): New.

@@ -32,7 +32,7 @@
 
 noinst_LIBRARIES = libio.a
 
-libio_a_SOURCES = Input.cc
+libio_a_SOURCES = Input.cc std-streams.cc
 
 oa_target_incdir = $(top_builddir)/$(target)/include
 
