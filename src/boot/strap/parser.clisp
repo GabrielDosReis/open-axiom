@@ -466,7 +466,14 @@
    ((|bpEqPeek| |ps| 'QUOTE) (|bpNext| |ps|)
     (AND (|bpRequire| |ps| #'|bpSexp|)
          (|bpPush| |ps| (|bfSymbol| (|bpPop1| |ps|)))))
-   (T (OR (|bpString| |ps|) (|bpFunction| |ps|)))))
+   (T (OR (|bpString| |ps|) (|bpFunction| |ps|) (|bpInert| |ps|)))))
+
+(DEFUN |bpInert| (|ps|)
+  (COND
+   ((EQ (|parserTokenClass| |ps|) 'INERT)
+    (AND (|bpPush| |ps| (|bfInert| (|parserTokenValue| |ps|)))
+         (|bpNext| |ps|)))
+   (T NIL)))
 
 (DEFUN |bpChar| (|ps|)
   (LET* (|ISTMP#1| |s| |a|)

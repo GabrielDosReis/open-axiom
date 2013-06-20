@@ -194,6 +194,7 @@
                    ((DIGIT-CHAR-P |ch|) (|shoeNumber| |lex|))
                    ((CHAR= |ch| (|char| '_)) (|shoeEscape| |lex|))
                    ((EQUAL |ch| |shoeTAB|) (|lexerAdvancePosition!| |lex|) NIL)
+                   ((CHAR= |ch| (|char| '&)) (|shoeInert| |lex|))
                    (T (|shoeError| |lex|))))
      (COND ((NULL |b|) NIL) (T (|dqUnit| (|makeToken| |linepos| |b| |n|)))))))
 
@@ -425,6 +426,11 @@
      (COND ((OR |esp| (ELT |aaa| 0)) (|shoeLeafId| |w|))
            ((|shoeKeyWordP| |w|) (SETQ |$floatok| T) (|shoeLeafKey| |w|))
            (T (|shoeLeafId| |w|))))))
+
+(DEFUN |shoeInert| (|lex|)
+  (PROGN
+   (|lexerAdvancePosition!| |lex|)
+   (LIST 'INERT (CADR (|shoeW| |lex| NIL)))))
 
 (DEFUN |shoeInteger| (|lex|) (|shoeInteger1| |lex| NIL))
 

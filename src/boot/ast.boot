@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -811,8 +811,11 @@ bfHas(expr,prop) ==
 bfKeyArg(k,x) ==
   ['%Key,k,x]
 
+bfInert x ==
+  makeSymbol(stringUpcase x,'"KEYWORD")
+
 lispKey k ==
-  makeSymbol(stringUpcase symbolName k,'"KEYWORD")
+  bfInert symbolName k
 
 bfExpandKeys l ==
   args := nil

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -429,6 +429,7 @@ bpName ps ==
 ++   LINE
 ++   QUOTE S-Expression
 ++   STRING
+++   INERT
 bpConstTok ps ==
   parserTokenClass ps in '(INTEGER FLOAT) =>
     bpPush(ps,parserTokenValue ps)
@@ -443,7 +444,12 @@ bpConstTok ps ==
     bpNext ps
     bpRequire(ps,function bpSexp) and
       bpPush(ps,bfSymbol bpPop1 ps)
-  bpString ps or bpFunction ps
+  bpString ps or bpFunction ps or bpInert ps
+
+bpInert ps ==
+  parserTokenClass ps = 'INERT =>
+    bpPush(ps,bfInert parserTokenValue ps) and bpNext ps
+  nil
 
 bpChar ps ==
   parserTokenClass ps = "ID" and parserTokenValue ps is "char" =>

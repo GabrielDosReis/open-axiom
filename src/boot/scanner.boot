@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -212,6 +212,7 @@ shoeToken lex ==
     ch = shoeTAB =>
       lexerAdvancePosition! lex
       []
+    ch = char "&" => shoeInert lex
     shoeError lex
   b = nil => nil
   dqUnit makeToken(linepos,b,n)
@@ -410,6 +411,10 @@ shoeWord(lex,esp) ==
      shoeLeafKey w
    shoeLeafId  w
  
+shoeInert lex ==
+  lexerAdvancePosition! lex
+  ['INERT,second shoeW(lex,false)]
+
 shoeInteger lex ==
   shoeInteger1(lex,false)
  
