@@ -52,6 +52,7 @@ oa_src_include_headers = \
 	structure.H \
 	iterator.H \
 	Input.H    \
+	diagnostics.H \
 	token.H
 
 if OA_BUILD_SMAN

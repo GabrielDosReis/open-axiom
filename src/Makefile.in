@@ -369,6 +369,7 @@ oa_src_include_headers = \
 	structure.H \
 	iterator.H \
 	Input.H    \
+	diagnostics.H \
 	token.H
 
 @OA_BUILD_SMAN_TRUE@OA_SMAN_TARGETS = all-sman all-clef
