@@ -1223,9 +1223,9 @@
 
 (DEFUN |bfKeyArg| (|k| |x|) (LIST '|%Key| |k| |x|))
 
-(DEFUN |bfInert| (|x|) (INTERN (STRING-UPCASE |x|) "KEYWORD"))
+(DEFUN |bfInert| (|x|) (INTERN |x| "KEYWORD"))
 
-(DEFUN |lispKey| (|k|) (|bfInert| (SYMBOL-NAME |k|)))
+(DEFUN |lispKey| (|k|) (|bfInert| (STRING-UPCASE (SYMBOL-NAME |k|))))
 
 (DEFUN |bfExpandKeys| (|l|)
   (LET* (|x| |ISTMP#2| |k| |ISTMP#1| |a| |args|)

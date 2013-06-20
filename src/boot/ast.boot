@@ -812,10 +812,10 @@ bfKeyArg(k,x) ==
   ['%Key,k,x]
 
 bfInert x ==
-  makeSymbol(stringUpcase x,'"KEYWORD")
+  makeSymbol(x,'"KEYWORD")
 
 lispKey k ==
-  bfInert symbolName k
+  bfInert stringUpcase symbolName k
 
 bfExpandKeys l ==
   args := nil
