@@ -1,5 +1,6 @@
-// Copyright (C) 2010-2011, Gabriel Dos Reis.
+// Copyright (C) 2010-2013, Gabriel Dos Reis.
 // All rights reserved.
+// Written by Gabriel Dos Reis.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -13,9 +14,9 @@
 //       the documentation and/or other materials provided with the
 //       distribution.
 //
-//     - Neither the name of The Numerical Algorithms Group Ltd. nor the
-//       names of its contributors may be used to endorse or promote products
-//       derived from this software without specific prior written permission.
+//     - Neither the name of OpenAxiom. nor the names of its contributors
+//       may be used to endorse or promote products derived from this
+//       software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -35,15 +36,14 @@
 // --%   from the host OS.  Provide random access read to
 // --%   files through file mapping.
 
-#ifndef OPENAXIOM_STORAGE_INCLUDED
-#define OPENAXIOM_STORAGE_INCLUDED
+#ifndef OPENAXIOM_STORAGE_included
+#define OPENAXIOM_STORAGE_included
 
+#include <open-axiom/config>
 #include <stddef.h>
 #include <new>
 #include <cmath>
 #include <string>
-
-#include <open-axiom/config>
 
 namespace OpenAxiom {
    // -----------------
@@ -65,10 +65,10 @@ namespace OpenAxiom {
    
    namespace Memory {
       // Datatype for the unit of storage.
-      typedef unsigned char Byte;
+      using Byte = unsigned char;
 
       // Datatype for pointers to data.
-      typedef void* Pointer;
+      using Pointer = void*;
 
       // Precision of the host OS storage page unit in byte count
       size_t page_size();
@@ -217,7 +217,7 @@ namespace OpenAxiom {
       size_t
       Arena<T>::population() const {
          size_t n = 0;
-         for (Handle* h = store; h != 0; h = previous(h))
+         for (Handle* h = store; h != nullptr; h = previous(h))
             n += object_count(h);
          return n;
       }
@@ -247,7 +247,7 @@ namespace OpenAxiom {
       Arena<T>::~Arena() {
          // Release storage in the reverse order of their
          // their allocation.
-         while (store != 0) {
+         while (store != nullptr) {
             Handle* current = store;
             store = BlockStorage::previous(store);
             BlockStorage::release(current);
@@ -259,7 +259,7 @@ namespace OpenAxiom {
       // -------------
       template<typename T>
       struct Factory : Arena<T> {
-         typedef typename Arena<T>::Handle Handle;
+         using Handler = typename Arena<T>::Handle;
 
          Factory() : Arena<T>(nominal_population()) { }
          ~Factory();
@@ -270,21 +270,9 @@ namespace OpenAxiom {
          }
 
          // Allocate storage and construct an object of type `T'.
-         template<typename U>
-         T* make(const U& u) {
-            return new(this->allocate(1)) T(u);
-         }
-
-         // Allocate storage and construct an object of type `T'.
-         template<typename U, typename V>
-         T* make(const U& u, const V& v) {
-            return new(this->allocate(1)) T(u, v);
-         }
-
-         // Allocate storage and construct an object of type `T'.
-         template<typename U, typename V, typename W>
-         T* make(const U& u, const V& v, const W& w) {
-            return new(this->allocate(1)) T(u, v, w);
+         template<typename... Args>
+         T* make(const Args&... args) {
+            return new(this->allocate(1)) T(args...);
          }
 
       private:
@@ -300,7 +288,7 @@ namespace OpenAxiom {
       // Destroy objects in the reverse order of their construction.
       template<typename T>
       Factory<T>::~Factory() {
-         for (Handle* s = this->store; s != 0; s = Arena<T>::previous(s)) {
+         for (auto s = this->store; s != nullptr; s = Arena<T>::previous(s)) {
             T* last = Arena<T>::last_object(s);
             for (--last; last >= Arena<T>::first_object(s); --last)
                last->~T();
@@ -312,6 +300,7 @@ namespace OpenAxiom {
       // -----------------
       struct FileMapping {
          explicit FileMapping(std::string);
+         FileMapping(FileMapping&&);
          ~FileMapping();
          const char* begin() const { return static_cast<const char*>(start); }
          const char* end() const { return begin() + extent; }
@@ -320,11 +309,12 @@ namespace OpenAxiom {
          Pointer start;         // address at the mapped storage
          size_t extent;         // length (in bytes) of the storage
       private:
-         FileMapping(const FileMapping&); // not implemented
-         FileMapping& operator=(const FileMapping&); // idem
+         FileMapping(const FileMapping&) = delete;
+         FileMapping& operator=(const FileMapping&) = delete;
       };
       
    }
 }
 
-#endif  // OPENAXIOM_STORAGE_INCLUDED
+#endif  // OPENAXIOM_STORAGE_included
+

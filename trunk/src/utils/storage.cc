@@ -31,8 +31,7 @@
 
 // --%: Gabriel Dos Reis.
 
-#include <open-axiom/config>
-
+#include <open-axiom/storage>
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
 #endif
@@ -55,8 +54,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <new>                  // for placement new.
-#include <open-axiom/storage>
 
 namespace OpenAxiom {
    // ----------------
@@ -111,7 +108,7 @@ namespace OpenAxiom {
       Pointer
       os_acquire_raw_memory(size_t nbytes) {
          Pointer p = os_allocate_read_write_raw_memory(nbytes);
-         if (p == 0)
+         if (p == nullptr)
             throw SystemError("cannot acquire more memory");
          return memset(p, nbytes, 0);
       }
@@ -206,8 +203,8 @@ namespace OpenAxiom {
          TwoWayLinkHeader* h =
             acquire_storage_with_header<TwoWayLinkHeader>(overhead + n);
          h->start = byte_address (h) + overhead;
-         h->previous = 0;
-         h->next = 0;
+         h->previous = nullptr;
+         h->next = nullptr;
          return h;
       }
 
@@ -232,7 +229,7 @@ namespace OpenAxiom {
          h->available = byte_address(h) + overhead;
          // That is also where the actual object storage starts.
          h->start = h->available;
-         h->previous = 0;
+         h->previous = nullptr;
          return h;
       }
 
@@ -293,14 +290,22 @@ namespace OpenAxiom {
 #endif  // OPENAXIOM_MS_WINDOWS_HOST
       }
 
+      FileMapping::FileMapping(FileMapping&& f)
+            : start(f.start), extent(f.extent) {
+         f.start = nullptr;
+         f.extent = 0;
+      }
+
       FileMapping::~FileMapping() {
+         if (start != nullptr) {
 #if defined(OPENAXIOM_MS_WINDOWS_HOST)
-         UnmapViewOfFile(start);
+            UnmapViewOfFile(start);
 #elif defined(HAVE_SYS_MMAN_H)
-         munmap(start, extent);
+            munmap(start, extent);
 #else
 #  error "Don't know how to unmap a file on this platform"
-#endif         
+#endif
+         }
       }
    }
 }
