@@ -51,8 +51,10 @@ oa_src_include_headers = \
 	defaults.H \
 	structure.H \
 	iterator.H \
+	storage.H \
 	Input.H    \
 	diagnostics.H \
+	dialect.H \
 	token.H
 
 if OA_BUILD_SMAN
@@ -91,10 +93,10 @@ stamp-subdirs:
 all-driver: all-utils all-lib
 	cd driver && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-utils: stamp-subdirs
+all-utils: stamp-subdirs all-headers
 	cd utils && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-io: all-headers
+all-io: all-utils
 	cd io && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-syntax: all-io
@@ -119,7 +121,7 @@ all-share:
 all-doc: stamp-subdirs
 	cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-lib: stamp-subdirs
+all-lib: stamp-subdirs all-utils
 	cd lib && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-lisp: all-lib all-driver
