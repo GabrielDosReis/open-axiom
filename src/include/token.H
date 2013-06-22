@@ -39,28 +39,31 @@
 namespace OpenAxiom {
    namespace token {
       // -- Underlying representation of a token class.
-      using class_type = uint32_t;
+      using base_type = uint32_t;
 
       // -- 8-bit byte data type
       using u8 = uint8_t;
 
-      // -- Number of bits per basic char value
-      constexpr auto char_bits = 8;
+      constexpr base_type value(u8 c) { return c; }
+      constexpr base_type value(u8 hi, u8 lo) { return (hi << 8) | lo; }
+      constexpr base_type value(u8 hi, u8 mi, u8 lo) {
+         return (value(hi, mi) << 8) | lo;
+      }
 
       // -- Type of literal strings of given number of characters.
       template<int N>
       using text_chunk = const char(&)[N+1];
 
       // -- Return the token value of certain literal strings.
-      constexpr class_type value(text_chunk<0>) { return u8(); }
-      constexpr class_type value(text_chunk<1> s) { return u8(s[0]); }
-      constexpr class_type value(text_chunk<2> s) {
-         return (u8(s[0]) << char_bits) | u8(s[0]);
+      constexpr base_type value(text_chunk<0>) { return u8(); }
+      constexpr base_type value(text_chunk<1> s) {
+         return value(s[0]);
       }
-      constexpr class_type value(text_chunk<3> s) {
-         return (u8(s[0]) << (2 * char_bits))
-            | (u8(s[1]) << char_bits)
-            | u8(s[2]);
+      constexpr base_type value(text_chunk<2> s) {
+         return value(s[0], s[1]);
+      }
+      constexpr base_type value(text_chunk<3> s) {
+         return value(s[0], s[1], s[2]);
       }
 
       // -- Abstract values of tokens.

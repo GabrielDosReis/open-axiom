@@ -1,5 +1,11 @@
 2013-06-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* include/token.H (token::base_type): Renam from class_type.
+	(token::value): Add unary, binary, and ternary overloads.
+	* utils/sexpr.H (Sexpr::Token): Use token::value.  Clean up.
+
+2013-06-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* include/SourceFile.H: New.
 
 2013-06-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
