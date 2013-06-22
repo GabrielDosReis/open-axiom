@@ -36,6 +36,7 @@
 #include <iostream>
 #include <iterator>
 #include <open-axiom/sexpr>
+#include <open-axiom/FileMapping>
 
 namespace OpenAxiom {
    namespace Sexpr {

@@ -49,6 +49,7 @@
 #include <vector>
 #include <map>
 #include <open-axiom/storage>
+#include <open-axiom/FileMapping>
 
 namespace OpenAxiom {
    namespace Hammer {
