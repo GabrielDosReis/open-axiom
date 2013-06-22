@@ -176,23 +176,6 @@ namespace OpenAxiom {
          unindent_tv,           // new line indentation, less than previous
          justify_tv,            // align indentation with preceding line.
       };
-      
-      // -- Representation of a token
-      struct Rep {
-         Value value;
-         Input::Span span;
-         Input::Line line;
-      };
-
-      // -- Random access stream of tokens.
-      struct Stream : std::vector<Rep> {
-         Stream(Stream&&) = default;
-         Stream(const Stream&) = delete;
-         Stream& operator=(const Stream&) = delete;
-      };
-
-      // Inserting a token into a stream.
-      Stream& operator<<(Stream&, const Rep&);
    }
 }
 

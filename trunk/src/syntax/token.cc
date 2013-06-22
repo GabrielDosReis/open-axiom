@@ -33,12 +33,6 @@
 #include <open-axiom/token>
 
 namespace OpenAxiom {
-   token::Stream&
-   token::operator<<(token::Stream& s, const token::Rep& t) {
-      s.push_back(t);
-      return s;
-   }
-
    namespace token {
       struct Keyword {
          const char* const key;
