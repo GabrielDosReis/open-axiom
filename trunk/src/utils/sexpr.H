@@ -1,5 +1,6 @@
-// Copyright (C) 2010-2011, Gabriel Dos Reis.
+// Copyright (C) 2010-2013, Gabriel Dos Reis.
 // All rights reserved.
+// Written by Gabriel Dos Reis.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -45,11 +46,7 @@
 #include <vector>
 #include <set>
 #include <open-axiom/string-pool>
-
-// Helpers for defining token type values for lexeme with more
-// than characters.
-#define OPENAXIOM_SEXPR_TOKEN1(C)  (C)
-#define OPENAXIOM_SEXPR_TOKEN2(C1,C2) (C1 * 256 + C2)
+#include <open-axiom/token>
 
 namespace OpenAxiom {
    namespace Sexpr {
@@ -66,22 +63,22 @@ namespace OpenAxiom {
       struct Token {
          enum Type {
             unknown,                 // unidentified token
-            semicolon        = OPENAXIOM_SEXPR_TOKEN1(';'), // comment
-            dot              = OPENAXIOM_SEXPR_TOKEN1('.'),      // "."
-            comma            = OPENAXIOM_SEXPR_TOKEN1(','),      // ","
-            open_paren       = OPENAXIOM_SEXPR_TOKEN1('('),      // "("
-            close_paren      = OPENAXIOM_SEXPR_TOKEN1(')'),      // ")"
-            apostrophe       = OPENAXIOM_SEXPR_TOKEN1('\''),     // "'"
-            backquote        = OPENAXIOM_SEXPR_TOKEN1('`'),      // "`"
-            backslash        = OPENAXIOM_SEXPR_TOKEN1('\\'),     // "\\"
-            sharp_open_paren = OPENAXIOM_SEXPR_TOKEN2('#','('),  // "#("
-            sharp_apostrophe = OPENAXIOM_SEXPR_TOKEN2('#','\''), // "#'"
-            sharp_colon      = OPENAXIOM_SEXPR_TOKEN2('#',':'),  // "#:"
-            sharp_plus       = OPENAXIOM_SEXPR_TOKEN2('#','+'),  // "#+"
-            sharp_minus      = OPENAXIOM_SEXPR_TOKEN2('#','-'),  // "#-"
-            sharp_dot        = OPENAXIOM_SEXPR_TOKEN2('#','.'),  // "#."
-            comma_at         = OPENAXIOM_SEXPR_TOKEN2(',','@'),  // ",@"
-            digraph_end      = OPENAXIOM_SEXPR_TOKEN2(256,256),
+            semicolon        = token::value(";"), // comment
+            dot              = token::value("."),
+            comma            = token::value(","),
+            open_paren       = token::value("("),
+            close_paren      = token::value(")"),
+            apostrophe       = token::value("'"),
+            backquote        = token::value("`"),
+            backslash        = token::value("\\"),
+            sharp_open_paren = token::value("#("),
+            sharp_apostrophe = token::value("#'"),
+            sharp_colon      = token::value("#:"),
+            sharp_plus       = token::value("#+"),
+            sharp_minus      = token::value("#-"),
+            sharp_dot        = token::value("#."),
+            comma_at         = token::value(",@"),
+            digraph_end      = token::value(0xff,0xff),
             integer,                // integer literal
             character,              // character literal
             string,                 // string literal

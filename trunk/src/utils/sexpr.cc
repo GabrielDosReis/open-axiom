@@ -1,5 +1,6 @@
-// Copyright (C) 2010-2011, Gabriel Dos Reis.
+// Copyright (C) 2010-2013, Gabriel Dos Reis.
 // All rights reserved.
+// Written by Gabriel Dos Reis.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -271,7 +272,7 @@ namespace OpenAxiom {
             }
                
             case '.': case '(': case ')': case '\'': case '`':
-               t.type = Token::Type(OPENAXIOM_SEXPR_TOKEN1(*cur));
+               t.type = Token::Type(token::value(*cur));
                t.lexeme = intern(cur, 1);
                ++cur;
                break;
@@ -295,7 +296,7 @@ namespace OpenAxiom {
             case '#': {
                const Byte* start = cur;
                if (cur + 1 < end and special_after_sharp(cur[1])) {
-                  t.type = Token::Type(OPENAXIOM_SEXPR_TOKEN2(cur[0], cur[1]));
+                  t.type = Token::Type(token::value(cur[0], cur[1]));
                   t.lexeme = intern(cur, 2);
                   cur += 2;
                }
