@@ -396,14 +396,9 @@ namespace OpenAxiom {
          typedef std::set<T, SyntaxComparator> base;
          typedef typename base::const_iterator const_iterator;
 
-         template<typename U>
-         const T* allocate(const U& u) {
-            return &*this->insert(T(u)).first;
-         }
-         
-         template<typename U, typename V>
-         const T* allocate(const U& u, const V& v) {
-            return &*this->insert(T(u, v)).first;
+         template<typename... Args>
+         const T* allocate(const Args&... args) {
+            return &*this->insert(T(args...)).first;
          }
       };
       
