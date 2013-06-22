@@ -39,7 +39,7 @@ namespace OpenAxiom {
    // -- StringItem --
    // ----------------
    bool
-   StringItem::equal(const char* str, size_t sz) const {
+   StringItem::equal(const Byte* str, size_t sz) const {
       if (length != sz)
          return false;
       for (size_t i = 0; i < sz; ++i)
@@ -60,23 +60,23 @@ namespace OpenAxiom {
    // Return a hash for the string starting from `str'
    // of length `sz'.
    static size_t
-   hash(const char* str, size_t sz) {
+   hash(const Byte* str, size_t sz) {
       size_t h = 0;
       for(size_t i = 0; i < sz; ++i)
          h = str[i] + (h << 6) + (h << 16) - h;
       return h;
    }
 
-   const char*
-   StringPool::make_copy(const char* f, size_t sz) {
-      char* s = strings.allocate(sz + 1);
+   const Byte*
+   StringPool::make_copy(const Byte* f, size_t sz) {
+      Byte* s = strings.allocate(sz + 1);
       memcpy(s, f, sz);
       s[sz] = '\0';
       return s;
    }
    
    StringPool::EntryType*
-   StringPool::intern(const char* src, size_t sz) {
+   StringPool::intern(const Byte* src, size_t sz) {
       const size_t h = hash(src, sz);
       EntryType* e = hash_chain(h);
       if (sz == 0)
@@ -97,6 +97,6 @@ namespace OpenAxiom {
 
    StringPool::EntryType*
    StringPool::intern(const char* s) {
-      return intern(s, strlen(s));
+      return intern(reinterpret_cast<const Byte*>(s), strlen(s));
    }
 }

@@ -47,12 +47,12 @@ namespace OpenAxiom {
    // ----------------
    // String data allocated from a stringpool.
    struct StringItem {
-      const char* begin() const { return text; }
-      const char* end() const { return text + length; }
+      const Byte* begin() const { return text; }
+      const Byte* end() const { return text + length; }
       size_t size() const { return length; }
-      bool equal(const char*, size_t) const;
+      bool equal(const Byte*, size_t) const;
    protected:
-      const char* text;         // pointer to the byte sequence
+      const Byte* text;         // pointer to the byte sequence
       size_t length;            // number of bytes in this string
       friend class StringPool;
       StringItem() : text(), length() { }
@@ -72,11 +72,11 @@ namespace OpenAxiom {
       EntryType* intern(const char*);
 
       // Intern a sequence of characters given by its start and length.
-      EntryType* intern(const char*, size_t);
+      EntryType* intern(const Byte*, size_t);
    private:
-      Memory::Arena<char> strings; // character blub
+      Memory::Arena<Byte> strings; // character blub
       // Allocate a string from the internal arena.
-      const char* make_copy(const char*, size_t);
+      const Byte* make_copy(const Byte*, size_t);
    };
 
    typedef const StringPool::EntryType* BasicString;

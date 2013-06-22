@@ -266,7 +266,8 @@ namespace OpenAxiom {
          HANDLE mapping = CreateFileMapping(file, 0, PAGE_READONLY, 0, 0, 0);
          if (mapping == 0)
             filesystem_error("could not map file " + path);
-         start = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
+         start = static_cast<Byte*>
+            (MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0));
          extent = GetFileSize(file, 0);
          CloseHandle(mapping);
          CloseHandle(file);
@@ -280,7 +281,8 @@ namespace OpenAxiom {
          int fd = open(path.c_str(), O_RDONLY);
          if (fd < 0)
             filesystem_error("could not open " + path);
-         start = mmap(Pointer(), s.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+         start = static_cast<Byte*>
+            (mmap(Pointer(), s.st_size, PROT_READ, MAP_PRIVATE, fd, 0));
          close(fd);
          if (start == MAP_FAILED)
             filesystem_error("could not map file " + path);

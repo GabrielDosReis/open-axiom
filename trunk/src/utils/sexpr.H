@@ -111,8 +111,8 @@ namespace OpenAxiom {
          Lexer(StringPool& pool, std::vector<Token>& toks)
                : strings(pool), tokens(toks) { }
 
-         const char* tokenize(const char*, const char*);
-         BasicString intern(const char* s, size_t n) {
+         const Byte* tokenize(const Byte*, const Byte*);
+         BasicString intern(const Byte* s, size_t n) {
             return strings.intern(s, n);
          }
 
