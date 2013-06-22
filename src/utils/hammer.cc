@@ -1,4 +1,4 @@
-// Copyright (C) 2010, Gabriel Dos Reis.
+// Copyright (C) 2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -65,13 +65,13 @@ namespace OpenAxiom {
       // ---------------
       // Plain text, with no reference to any chunk.  
       struct BasicText : Element {
-         BasicText(const char* f, const char* l) : span(f, l) { }
+         BasicText(const Byte* f, const Byte* l) : span(f, l) { }
          // Pointer to the start of this basic text element
-         const char* begin() const { return span.first; }
+         const Byte* begin() const { return span.first; }
          // Oone-past-the-end of the this basic text element.
-         const char* end() const { return span.second; }
+         const Byte* end() const { return span.second; }
       private:
-         std::pair<const char*, const char*> span;
+         std::pair<const Byte*, const Byte*> span;
       };
 
       // ---------------
@@ -100,7 +100,7 @@ namespace OpenAxiom {
 
          // Augment this chunk with a basic text in the open interval
          // [f,l).
-         CompositeText& add_text(const char* f, const char* l) {
+         CompositeText& add_text(const Byte* f, const Byte* l) {
             texts.push_back(BasicText(f, l));
             push_back(&texts.back());
             return *this;
@@ -109,7 +109,7 @@ namespace OpenAxiom {
          // Augment this chunk with a reference to another chunk
          // named `n'.  Note that we don't attempt to check for
          // possible circularities.
-         CompositeText reference_chunk(const char* f, const char* l) {
+         CompositeText reference_chunk(const Byte* f, const Byte* l) {
             refs.push_back(Reference(std::string(f, l)));
             push_back(&refs.back());
             return *this;
@@ -142,11 +142,11 @@ namespace OpenAxiom {
          CompositeText prose;         // the prose around the chunks.
          ChunkTable defs;             // chunk definition table.
          CompositeText* active_chunk; // chunk under construction.
-         const char* text_start;      // begining of current basic text.
+         const Byte* text_start;      // begining of current basic text.
 
          // Append basic text in the range `[text_start,last)'
          // to the current chunk.
-         void finish_chunk(const char* last) {
+         void finish_chunk(const Byte* last) {
             if (text_start != last)
                active_chunk->add_text(text_start, last);
             active_chunk = &prose;
@@ -154,7 +154,7 @@ namespace OpenAxiom {
          }
 
          // Start a new chunk or extend an existing chunk.
-         void begin_chunk(const std::string& name, const char* start) {
+         void begin_chunk(const std::string& name, const Byte* start) {
             if (CompositeText* chunk = lookup_chunk(name))
                active_chunk = chunk;
             else {
@@ -177,7 +177,7 @@ namespace OpenAxiom {
       // Attempt to advance the cursor past newline marker.
       // Return true on sucess.
       static bool
-      saw_newline(const char*& cur, const char* end) {
+      saw_newline(const Byte*& cur, const Byte* end) {
          if (*cur == '\n') {
             ++cur;
             return true;
@@ -193,7 +193,7 @@ namespace OpenAxiom {
       // Move `cur' to end of line or `end', whichever comes first.
       // Return true if the area swept consisted only of blank characters.
       static inline bool
-      trailing_blank(const char*& cur, const char* end) {
+      trailing_blank(const Byte*& cur, const Byte* end) {
          bool result = true;
          for (; cur < end and not saw_newline(cur, end); ++cur)
             result = isspace(*cur);
@@ -203,7 +203,7 @@ namespace OpenAxiom {
       // Attempt to advance `cur' past the double left angle brackets
       // starting a chunk name.  Returm true on success.
       static bool
-      chunk_name_began(const char*& cur, const char* end) {
+      chunk_name_began(const Byte*& cur, const Byte* end) {
          if (cur[0] == '<' and cur + 1 < end and cur[1] == '<') {
             cur += 2;
             return true;
@@ -214,7 +214,7 @@ namespace OpenAxiom {
       // Attempt to move `cur' past the double right angle brackets
       // terminating a chunk name.  Returm true on success.
       static bool
-      chunk_name_ended(const char*& cur, const char* end) {
+      chunk_name_ended(const Byte*& cur, const Byte* end) {
          if (cur[0] == '>' and cur + 1 < end and cur[1] == '>') {
             cur += 2;
             return true;
@@ -225,7 +225,7 @@ namespace OpenAxiom {
       // We've just seen the start of a chunk reference; skip
       // characters till we seen of the chunk's name.
       static void
-      skip_to_end_of_chunk_name(const char*& cur, const char* end) {
+      skip_to_end_of_chunk_name(const Byte*& cur, const Byte* end) {
          while (cur < end) {
             if (looking_at_newline(*cur)
                 or (cur + 1 < end and cur[0] == '>' and cur[1] == '>'))
@@ -236,7 +236,7 @@ namespace OpenAxiom {
 
       // Move the cursor until end of line.
       static void
-      skip_to_end_of_line(const char*& cur, const char* end) {
+      skip_to_end_of_line(const Byte*& cur, const Byte* end) {
          while (cur < end) {
             if (saw_newline(cur, end))
                break;
@@ -246,22 +246,22 @@ namespace OpenAxiom {
       
       void
       Document::parse(const Memory::FileMapping& file) {
-         const char* cur = text_start;
-         const char* last = file.end();
+         auto cur = text_start;
+         auto last = file.end();
          // Process one line at a time.
          while (cur < last) {
             // 1. `@' ends previous chunk
             if (*cur == '@') {
-               const char* p = cur;
+               auto p = cur;
                if (trailing_blank(++cur, last))
                   finish_chunk(p);
             }
             // 2. `<<' introduces a chunk reference or a chunk definition.
             else if (chunk_name_began(cur, last)) {
-               const char* label_start = cur;
+               auto label_start = cur;
                skip_to_end_of_chunk_name(cur, last);
                if (chunk_name_ended(cur, last)) {
-                  const char* label_end = cur - 2;
+                  auto label_end = cur - 2;
                   if (cur < last and *cur == '=') {
                      if (trailing_blank(++cur, last)) {
                         // chunk definition or extension

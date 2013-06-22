@@ -46,6 +46,9 @@
 #include <string>
 
 namespace OpenAxiom {
+   // Datatype for the unit of storage.
+   using Byte = unsigned char;
+
    // -----------------
    // -- SystemError --
    // -----------------
@@ -64,9 +67,6 @@ namespace OpenAxiom {
    void filesystem_error(const std::string&);
    
    namespace Memory {
-      // Datatype for the unit of storage.
-      using Byte = unsigned char;
-
       // Datatype for pointers to data.
       using Pointer = void*;
 
@@ -302,11 +302,11 @@ namespace OpenAxiom {
          explicit FileMapping(std::string);
          FileMapping(FileMapping&&);
          ~FileMapping();
-         const char* begin() const { return static_cast<const char*>(start); }
-         const char* end() const { return begin() + extent; }
+         const Byte* begin() const { return start; }
+         const Byte* end() const { return begin() + extent; }
          std::size_t size() const { return extent; }
       protected:
-         Pointer start;         // address at the mapped storage
+         Byte* start;           // address at the mapped storage
          size_t extent;         // length (in bytes) of the storage
       private:
          FileMapping(const FileMapping&) = delete;

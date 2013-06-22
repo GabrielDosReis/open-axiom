@@ -122,16 +122,16 @@ namespace OpenAxiom {
 
       // Move `cur' past all consecutive blank characters, and
       // return the new position.
-      static const char* 
-      skip_blank(const char*& cur, const char* end) {
+      static const Byte* 
+      skip_blank(const Byte*& cur, const Byte* end) {
          while (cur < end and is_blank(*cur))
             ++cur;
          return cur;
       }
 
       // Move `cur' to end-of-line marker.
-      static const char*
-      skip_to_eol(const char*& cur, const char* end) {
+      static const Byte*
+      skip_to_eol(const Byte*& cur, const Byte* end) {
          // FIXME: properly handle CR+LF.
          while (cur < end and *cur != '\n')
             ++cur;
@@ -139,8 +139,8 @@ namespace OpenAxiom {
       }
 
       // Move `cur' until a word boundary is reached.
-      static const char*
-      skip_to_word_boundary(const char*& cur, const char* end) {
+      static const Byte*
+      skip_to_word_boundary(const Byte*& cur, const Byte* end) {
          bool saw_escape = false;
          for (; cur < end; ++cur) {
             if (saw_escape)
@@ -156,7 +156,7 @@ namespace OpenAxiom {
       // Move `cur' one-past a non-esacaped character `c'.
       // Return true if the character was seen.
       static bool
-      skip_to_nonescaped_char(const char*& cur, const char* end, char c) {
+      skip_to_nonescaped_char(const Byte*& cur, const Byte* end, char c) {
          bool saw_escape = false;
          for (; cur < end; ++cur)
             if (saw_escape)
@@ -173,7 +173,7 @@ namespace OpenAxiom {
       // Move `cur' past the closing quote of string literal.
       // Return true if the closing fence was effectively seen.
       static inline bool
-      skip_to_quote(const char*& cur, const char* end) {
+      skip_to_quote(const Byte*& cur, const Byte* end) {
          return skip_to_nonescaped_char(cur, end, '"');
       }
 
@@ -204,7 +204,7 @@ namespace OpenAxiom {
       // an integer followrd by the equal sign or the sharp sign.
       // `cur' is moved along the way.
       static bool
-      only_digits_before_equal_or_shap(const char*& cur, const char* end) {
+      only_digits_before_equal_or_shap(const Byte*& cur, const Byte* end) {
          while (cur < end and isdigit(*cur))
             ++cur;
          return cur < end and (*cur == '#' or *cur == '=');
@@ -215,8 +215,8 @@ namespace OpenAxiom {
       // entirely of digits.
       static void
       maybe_reclassify(Token& t) {
-         const char* cur = t.lexeme->begin();
-         const char* end = t.lexeme->end();
+         const Byte* cur = t.lexeme->begin();
+         const Byte* end = t.lexeme->end();
          while (cur < end and isdigit(*cur))
             ++cur;
          if (cur == end)
@@ -226,7 +226,7 @@ namespace OpenAxiom {
       // Returns true if the first characters in the range
       // [cur, last) start an identifier.
       static bool
-      start_symbol(const char* cur, const char* last) {
+      start_symbol(const Byte* cur, const Byte* last) {
          if (cur >= last)
             return false;
          return identifier_part(*cur)
@@ -236,7 +236,7 @@ namespace OpenAxiom {
       // We are processing a symbol token.  Accumulate all
       // legitimate characters till the end of the token.
       static void
-      skip_to_end_of_symbol(const char*& cur, const char* end) {
+      skip_to_end_of_symbol(const Byte*& cur, const Byte* end) {
          const char c = *cur;
          if (*cur == '|') 
             skip_to_nonescaped_char(++cur, end, c);
@@ -247,22 +247,22 @@ namespace OpenAxiom {
       }
 
       static Token
-      match_maybe_symbol(Lexer* lexer, const char*& cur, const char* end) {
+      match_maybe_symbol(Lexer* lexer, const Byte*& cur, const Byte* end) {
          Token t = { Token::identifier, 0 };
-         const char* start = cur;
+         const Byte* start = cur;
          skip_to_end_of_symbol(cur, end);
          t.lexeme = lexer->intern(start, cur - start);
          maybe_reclassify(t);
          return t;
       }
 
-      const char*
-      Lexer::tokenize(const char* cur, const char* end) {
+      const Byte*
+      Lexer::tokenize(const Byte* cur, const Byte* end) {
          while (skip_blank(cur, end) < end) {
             Token t = { Token::unknown, 0 };
             switch (*cur) {
             case ';': {
-               const char* start = cur;
+               const Byte* start = cur;
                t.type = Token::semicolon;
                skip_to_eol(cur, end);
                t.lexeme = intern(start, cur - start);
@@ -276,7 +276,7 @@ namespace OpenAxiom {
                break;
 
             case ',': {
-               const char* start = cur;
+               const Byte* start = cur;
                if (++cur < end and *cur == '@') {
                   t.type = Token::comma_at;
                   ++cur;
@@ -292,7 +292,7 @@ namespace OpenAxiom {
                break;
 
             case '#': {
-               const char* start = cur;
+               const Byte* start = cur;
                if (cur + 1 < end and special_after_sharp(cur[1])) {
                   t.type = Token::Type(OPENAXIOM_SEXPR_TOKEN2(cur[0], cur[1]));
                   t.lexeme = intern(cur, 2);
@@ -322,7 +322,7 @@ namespace OpenAxiom {
             }
 
             case '"': {
-               const char* start = cur;
+               const Byte* start = cur;
                skip_to_quote(++cur, end);
                t.type = Token::string;
                t.lexeme = intern(start, cur - start);
@@ -333,7 +333,7 @@ namespace OpenAxiom {
                if (start_symbol(cur, end))
                   t = match_maybe_symbol(this, cur, end);
                else {
-                  const char* start = cur;
+                  const Byte* start = cur;
                   skip_to_word_boundary(++cur, end);
                   t.lexeme = intern(start, cur - start);
                }
@@ -651,7 +651,7 @@ namespace OpenAxiom {
       // The sequence of characters in [cur, last) consists
       // entirely of digits.  Return the corresponding natural value.
       static size_t
-      natural_value(const char* cur, const char* last) {
+      natural_value(const Byte* cur, const Byte* last) {
          size_t n = 0;
          for (; cur < last; ++cur)
             // FIXME: check for overflow.
@@ -678,7 +678,7 @@ namespace OpenAxiom {
       equal_character_name(BasicString lhs, const char* rhs) {
          if (lhs->size() != strlen(rhs))
             return false;
-         for (const char* cur = lhs->begin(); cur != lhs->end(); ++cur)
+         for (const Byte* cur = lhs->begin(); cur != lhs->end(); ++cur)
             if (tolower(*cur) != *rhs++)
                return false;
          return true;
@@ -839,6 +839,11 @@ namespace OpenAxiom {
       Parser::Parser(Allocator& a, std::vector<const Syntax*>& v)
             : alloc(a), syns(v) { }
 
+      static std::string
+      to_string(BasicString s) {
+         return { s->begin(), s->end() };
+      }
+
       const Syntax*
       Parser::parse_syntax(const Token*& cur, const Token* last) {
          if (not skip_ignorable_tokens(cur, last))
@@ -898,7 +903,7 @@ namespace OpenAxiom {
 
          default:
             parse_error(std::string("parse error before ")
-                        + cur->lexeme->begin());
+                        + to_string(cur->lexeme));
             return 0;           // never executed
          }
       }
@@ -915,7 +920,7 @@ namespace OpenAxiom {
          std::vector<Token> tokens;
          Memory::FileMapping input(s);
          Lexer lexer(raw_strs, tokens);
-         const char* rest = lexer.tokenize(input.begin(), input.end());
+         const Byte* rest = lexer.tokenize(input.begin(), input.end());
          if (rest != input.end())
             syntax_error("syntax error");
          Parser parser(allocator, *this);
