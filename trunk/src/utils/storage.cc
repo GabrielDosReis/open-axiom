@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2011, Gabriel Dos Reis.
+// Copyright (C) 2010-2013, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 // --%: Gabriel Dos Reis.
 
 #include <open-axiom/storage>
+#include <open-axiom/FileMapping>
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
 #endif

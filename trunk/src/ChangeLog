@@ -1,5 +1,9 @@
 2013-06-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* include/FileMapping.H: New.
+
+2013-06-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* include/dialect.H: New.
 	* include/diagnostics.H: Likewise.
 	* include/storage.H: Move from utils/.

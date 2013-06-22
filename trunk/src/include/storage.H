@@ -294,25 +294,6 @@ namespace OpenAxiom {
                last->~T();
          }
       }
-
-      // -----------------
-      // -- FileMapping --
-      // -----------------
-      struct FileMapping {
-         explicit FileMapping(std::string);
-         FileMapping(FileMapping&&);
-         ~FileMapping();
-         const Byte* begin() const { return start; }
-         const Byte* end() const { return begin() + extent; }
-         std::size_t size() const { return extent; }
-      protected:
-         Byte* start;           // address at the mapped storage
-         size_t extent;         // length (in bytes) of the storage
-      private:
-         FileMapping(const FileMapping&) = delete;
-         FileMapping& operator=(const FileMapping&) = delete;
-      };
-      
    }
 }
 
