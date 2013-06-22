@@ -53,6 +53,7 @@ oa_src_include_headers = \
 	iterator.H \
 	storage.H \
 	FileMapping.H \
+	SourceFile.H \
 	Input.H    \
 	diagnostics.H \
 	dialect.H \

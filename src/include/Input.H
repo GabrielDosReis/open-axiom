@@ -102,14 +102,6 @@ namespace OpenAxiom {
          iterator end() const { return { this, size() }; }
          Line line(LineNumber, const Text&);
       };
-
-      // -- Span --
-      struct Span : structure::binary<Ordinal, Cardinal> {
-         constexpr Span(Ordinal c, Cardinal l)
-               : structure::binary<Ordinal>(c, l) { }
-         constexpr Ordinal column() const { return first(); }
-         constexpr Cardinal size() const { return second(); }
-      };
    }
 }
 

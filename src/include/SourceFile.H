@@ -1,3 +1,4 @@
+// -*- C++ -*-
 // Copyright (C) 2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -14,9 +15,9 @@
 //       the documentation and/or other materials provided with the
 //       distribution.
 //
-//     - Neither the name of OpenAxiom. nor the names of its contributors
-//       may be used to endorse or promote products derived from this
-//       software without specific prior written permission.
+//     - Neither the name of OpenAxiom, nor the names of its contributors may
+//       be used to endorse or promote products derived from this software
+//       without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 // IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -30,14 +31,23 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OPENAXIOM_DIALECT_included
-#define OPENAXIOM_DIALECT_included
+#ifndef OPENAXIOM_SOURCEFILE_included
+#define OPENAXIOM_SOURCEFILE_included
+
+#include <open-axiom/FileMapping>
 
 namespace OpenAxiom {
-   // Languages for which we have parsers.
-   enum class Language {
-      Spad, Boot, Lisp
-   };
+   namespace Input {
+      // -- SourceFile --
+      struct SourceFile : Memory::FileMapping {
+         explicit SourceFile(const std::string&);
+         const std::string& pathname() const { return path; }
+      private:
+         std::string path;
+         SourceFile(const SourceFile&) = delete;
+         SourceFile& operator=(const SourceFile&) = delete;
+      }
+   }
 }
 
-#endif  // OPENAXIOM_DIALECT_included
+#endif  // OPENAXIOM_SOURCEFILE_included
