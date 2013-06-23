@@ -1,5 +1,6 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
+// Written by Gabriel Dos Reis.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -44,7 +45,10 @@ namespace OpenAxiom {
    // associated with `w'.
    static QSize font_units(const QWidget* w) {
       const QFontMetrics fm = w->fontMetrics();
-      return QSize(fm.maxWidth(), fm.lineSpacing());
+      const auto h = fm.lineSpacing();
+      if (auto w = fm.maxWidth())
+         return { w, h };
+      return { fm.width('W'), h };
    }
 
    // Return true if the QString `s' is morally an empty string.
