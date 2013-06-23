@@ -21,7 +21,7 @@ TEMPLATE = app
 
 ## Put the executable directly in the staged bin directory.
 DESTDIR = @top_builddir@/@target@/bin
-TARGET = gui
+TARGET = open-axiom
 
 ## Tell QT that sources are not in the build directory
 VPATH += @srcdir@

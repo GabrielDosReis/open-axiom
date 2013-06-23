@@ -237,6 +237,7 @@ namespace OpenAxiom {
       QString input = question()->text().trimmed();
       if (empty_string(input))
          return;
+      question()->setReadOnly(true); // Make query area read only.
       server()->input(input);
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    }
