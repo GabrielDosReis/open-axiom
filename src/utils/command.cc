@@ -57,7 +57,7 @@ namespace OpenAxiom {
    "/bin/" OPENAXIOM_GUI_EXECUTABLE
 
 #define OPENAXIOM_GUI_EXECUTABLE \
-   "gui" OPENAXIOM_EXEEXT
+   "open-axiom" OPENAXIOM_EXEEXT
 
 /* Path to the session manager, relative to OPENAXIOM_ROOT_DIRECTORY,
    or to the system root directory as specified on command line.  */

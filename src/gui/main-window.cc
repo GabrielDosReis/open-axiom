@@ -48,12 +48,14 @@ namespace OpenAxiom {
 
    
    MainWindow::MainWindow(int argc, char* argv[])
-         : srv(argc, argv), debate(this) {
-      setCentralWidget(&debate);
+         : srv(argc, argv), tabs(this) {
+      setCentralWidget(&tabs);
       setWindowTitle("OpenAxiom");
-      auto s = debate.widget()->frameSize();
-      s.rwidth() += debate.verticalScrollBar()->width();
-      s.rheight() += debate.horizontalScrollBar()->width();
+      auto debate = new Debate(this);
+      tabs.addTab(debate, "Interpreter");
+      auto s = debate->widget()->frameSize();
+      s.rwidth() += debate->verticalScrollBar()->width();
+      s.rheight() += debate->horizontalScrollBar()->width();
       resize(s);
       QMenu* file = menuBar()->addMenu(tr("&File"));
       QAction* action = new QAction(tr("Quit"), this);
@@ -61,7 +63,7 @@ namespace OpenAxiom {
       action->setShortcut(tr("Ctrl+Q"));
       connect(action, SIGNAL(triggered()), this, SLOT(close()));
 
-      connect_server_io(this, &debate);
+      connect_server_io(this, debate);
       server()->launch();
       // When invoked in a --role=server mode, OpenAxiom would
       // wait to be pinged before displaying a prompt.  This is
