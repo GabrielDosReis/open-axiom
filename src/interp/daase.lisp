@@ -1101,13 +1101,10 @@
   (setq masterpos (file-position out))
   (setq compresslist
         (append (|allConstructors|) (|allOperations|) |$BuiltinAttributes|))
-  (push "algebra" compresslist)
-  (push "failed" compresslist)
   (push 'signature compresslist)
   (push '|ofType| compresslist)
   (push '|Join| compresslist)
   (push 'and compresslist)
-  (push '|nobranch| compresslist)
   (push 'category compresslist)
   (push '|category| compresslist)
   (push '|domain| compresslist)

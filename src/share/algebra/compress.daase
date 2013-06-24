@@ -1,11 +1,10 @@
 
-(30 . 3580478883)            
-(4004 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
- ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
- |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
- |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
- |AbelianMonoid| |AbelianSemiGroup&| |AbelianSemiGroup|
- |AlgebraicallyClosedField&| |AlgebraicallyClosedField|
+(30 . 3581069278)            
+(3998 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+ ATTRIBUTE |package| |domain| |category| CATEGORY AND |Join| |ofType| SIGNATURE
+ |OneDimensionalArrayAggregate&| |OneDimensionalArrayAggregate| |AbelianGroup&|
+ |AbelianGroup| |AbelianMonoid&| |AbelianMonoid| |AbelianSemiGroup&|
+ |AbelianSemiGroup| |AlgebraicallyClosedField&| |AlgebraicallyClosedField|
  |AlgebraicallyClosedFunctionSpace&| |AlgebraicallyClosedFunctionSpace|
  |PlaneAlgebraicCurvePlot| |AddAst| |AlgebraicFunction| |Aggregate&|
  |Aggregate| |ArcHyperbolicFunctionCategory| |AssociationListAggregate|
@@ -925,8 +924,8 @@
  |RemainderList| |unexpand| |expand| |shape| |youngDiagram| Y |triangSolve|
  |univariateSolve| |realSolve| |positiveSolve| |squareFree| |convert|
  |linearlyDependentOverZ?| |linearDependenceOverZ| |solveLinearlyOverQ| |nil|
- |infinite| |arbitraryExponent| |approximate| |complex| |shallowMutable|
- |canonical| |noetherian| |central| |partiallyOrderedSet| |arbitraryPrecision|
+ |infinite| |arbitraryExponent| |approximate| |complex| |canonical|
+ |noetherian| |central| |partiallyOrderedSet| |arbitraryPrecision|
  |canonicalsClosed| |noZeroDivisors| |rightUnitary| |leftUnitary|
  |additiveValuation| |unitsKnown| |canonicalUnitNormal|
- |multiplicativeValuation| |finiteAggregate| |shallowlyMutable| |commutative|) 
+ |multiplicativeValuation| |commutative|) 

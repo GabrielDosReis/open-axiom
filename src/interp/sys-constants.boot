@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -632,12 +632,11 @@ $FILETYPE_-TABLE ==
 +++
 $BuiltinAttributes ==
  '(nil infinite arbitraryExponent approximate complex
-   shallowMutable canonical noetherian central
+   canonical noetherian central
    partiallyOrderedSet arbitraryPrecision canonicalsClosed
    noZeroDivisors rightUnitary leftUnitary
    additiveValuation unitsKnown canonicalUnitNormal
-   multiplicativeValuation finiteAggregate shallowlyMutable
-   commutative)
+   multiplicativeValuation commutative)
 
 +++
 BLANK == '" "
