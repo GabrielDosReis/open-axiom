@@ -72,6 +72,9 @@ contains additions of new features and domains including:
   A new category, Functorial, has been added.  All homogeneous
   aggregates with element type S satisfy Functorial S.
 
+  Databases construction has been simplified.  compress.daase no
+  longer exists.
+
 \endscroll
 \autobuttons
 \end{page}

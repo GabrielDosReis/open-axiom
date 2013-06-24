@@ -33,10 +33,9 @@
 
 
 ;; In order to understand this program you need to understand some details
-;; of the structure of the databases it reads. Axiom has 5 databases,
-;; the interp.daase, operation.daase, category.daase, compress.daase, and
-;; browse.daase. The compress.daase is special and does not follow the
-;; normal database format.
+;; of the structure of the databases it reads. Axiom has 4 databases,
+;; the interp.daase, operation.daase, category.daase, and
+;; browse.daase.
 ;;
 ;; This documentation refers to KAF files which are random access files.
 ;; NRLIB files are KAF files (look for NRLIB/index.KAF)
@@ -63,15 +62,6 @@
 ;;
 ;; One existing optimization is that if the data is a simple thing like a
 ;; symbol then the nth-entry-byte-address is replaced by immediate data.
-;;
-;; Another existing one is a compression algorithm applied to the
-;; data so that the very long names don't take up so much space.
-;; We could probably remove the compression algorithm as 64k is no
-;; longer considered 'huge'. The database-abbreviation routine
-;; handles this on read and write-compress handles this on write.
-;; The squeeze routine is used to compress the keys, the unsqueeze
-;; routine uncompresses them. Making these two routines disappear
-;; should remove all of the compression.
 ;;
 ;; Indeed, a faster optimization is to simply read the whole database
 ;; into the image before it is saved. The system would be easier to
@@ -371,18 +361,6 @@
 ; position information in the database then the database is NOT
 ; read in and is assumed to match the in-core version
 
-(defvar *compressvector* nil
-  "a vector of things to compress in the databases")
-
-(defvar *compressVectorLength* 0
-  "length of the compress vector")
-
-(defvar *compress-stream* nil 
-  "an stream containing the compress vector")
-
-(defvar *compress-stream-stamp* 0 
-  "*compress-stream* (position . time)")
-
 (defvar *interp-stream* nil
   "an open stream to the interpreter database")
 
@@ -428,9 +406,6 @@
  (setq *hascategory-hash* (make-hash-table :test #'equal))
  (setq *operation-hash* (make-hash-table))
  (setq *allconstructors* nil)
- (setq *compressvector* nil)
- (setq *compress-stream-stamp* '(0 . 0))
- (compressopen)
  (setq *interp-stream-stamp* '(0 . 0))
  (interpopen)
  (setq *operation-stream-stamp* '(0 . 0))
@@ -470,7 +445,6 @@
       (file-position *interp-stream* pos)
       (setq constructors (read *interp-stream*))
       (dolist (item constructors)
-	(setq item (unsqueeze item))
 	(setq *allconstructors* (adjoin (first item) *allconstructors*))
 	(setq dbstruct (|makeDB| (first item) (ninth item) (seventh item)))
 	(setf (|dbOperations| dbstruct) (second item))
@@ -525,7 +499,6 @@
       (file-position *browse-stream* pos)
       (setq constructors (read *browse-stream*))
       (dolist (item constructors)
-	(setq item (unsqueeze item))
 	(unless (setq dbstruct (|constructorDB| (car item)))
 	  (format t "browseOpen:~%")
 	  (format t "the browse database contains a constructor ~a~%" item)
@@ -556,7 +529,6 @@
       (setq keys (read *category-stream*))
       (setq *hasCategory-hash* (make-hash-table :test #'equal))
       (dolist (item keys)
-	(setq item (unsqueeze item))
 	(setf (gethash (first item) *hasCategory-hash*) (second item))))
     (format t "~&")))
 
@@ -573,7 +545,6 @@
       (file-position *operation-stream* pos)
       (setq operations (read *operation-stream*))
       (dolist (item operations)
-	(setq item (unsqueeze item))
 	(setf (gethash (car item) *operation-hash*) (cdr item))))
     (format t "~&")))
 
@@ -747,10 +718,6 @@
 	    (format t "getdatabase miss: ~20a ~a~%" key constructor))
 	  (file-position stream data)
 	  (setq data (read stream))
-	;; Don't attempt to uncompress codes -- they are not compressed.
-	  (cond ((eq key 'superdomain)
-		 (rplaca data (unsqueeze (car data))))
-		(t (setq data (unsqueeze data))))
 	  (case key ; cache the result of the database read
 		(operation           
 		 (setf (gethash constructor *operation-hash*) data))
@@ -952,13 +919,6 @@
 			       (apply key args)))
 		     (|sayKeyedMsg| 'S2IU0001 (list key object))))))
 
-;; The infamous SQUEEZE functions couple produces its results by
-;; in-place transmoglification.  We use this function in places
-;; where we want the arguments to remain unmolested.
-;;    -- gdr, 2011-09-03
-(defun |squeezeCopy| (x)
-  (squeeze (copy-tree x)))
-
 ; making new databases consists of:
 ;  1) reset all of the system hash tables
 ;  *) set up Union, Record and Mapping
@@ -1013,7 +973,6 @@
   (setq *hascategory-hash* (make-hash-table :test #'equal))
   (setq *operation-hash* (make-hash-table))
   (setq *allconstructors* nil)
-  (setq *compressvector* nil)
   (withSpecialConstructors)
   (localdatabase nil
      (list (list '|dir| (|getWorkingDirectory|) ))
@@ -1035,7 +994,6 @@
   (|mkDependentsHashTable|)
   (|saveDependentsHashTable|)
   (|buildGloss|)
-  (write-compress)
   (write-browsedb)
   (write-operationdb)
  ; note: genCategoryTable creates a new *hascategory-hash* table
@@ -1058,9 +1016,6 @@
                                         ; does gethash calls into it rather than doing a getdatabase call.
   (write-interpdb)
 #+:AKCL  (write-warmdata)
-  (when (probe-file (final-name "compress"))
-        (delete-file (final-name "compress")))
-  (rename-file "compress.build" (final-name "compress"))
   (when (probe-file (final-name "interp"))
         (delete-file (final-name "interp")))
   (rename-file "interp.build" (final-name "interp"))
@@ -1076,56 +1031,6 @@
   (rename-file "category.build" 
                (final-name "category")))))
 
-(defun compressOpen ()
- (let (lst stamp pos)
-  (setq *compress-stream*
-    (open (|pathToDatabase| "compress.daase") :direction :input))
-  (setq stamp (read *compress-stream*))
-  (unless (equal stamp *compress-stream-stamp*)
-    (when |$verbose|
-      (format t "   Re-reading compress.daase"))
-   (setq *compress-stream-stamp* stamp)
-   (setq pos (car stamp))
-   (file-position *compress-stream* pos)
-   (setq lst (read *compress-stream*))
-   (setq *compressVectorLength* (car lst))
-   (setq *compressvector*
-     (make-array (car lst) :initial-contents (cdr lst))))))
-
-(defun write-compress ()
- (let (compresslist masterpos out)
-  (close *compress-stream*)
-  (setq out (open "compress.build" :direction :output))
-  (princ "                              " out)
-  (finish-output out)
-  (setq masterpos (file-position out))
-  (setq compresslist
-        (append (|allConstructors|) (|allOperations|) |$BuiltinAttributes|))
-  (push 'signature compresslist)
-  (push '|ofType| compresslist)
-  (push '|Join| compresslist)
-  (push 'and compresslist)
-  (push 'category compresslist)
-  (push '|category| compresslist)
-  (push '|domain| compresslist)
-  (push '|package| compresslist)
-  (push 'attribute compresslist)
-  (push '|isDomain| compresslist)
-  (push '|ofCategory| compresslist)
-  (push '|Union| compresslist)
-  (push '|Record| compresslist)
-  (push '|Mapping| compresslist)
-  (push '|Enumeration| compresslist)
-  (setq *compressVectorLength* (length compresslist))
-  (setq *compressvector*
-    (make-array *compressVectorLength* :initial-contents compresslist))
-  (print (cons (length compresslist) compresslist) out)
-  (finish-output out)
-  (file-position out 0)
-  (print (cons masterpos (get-universal-time)) out)
-  (finish-output out)
-  (close out)))
-
 (defun write-interpdb ()
  "build interp.daase from hash tables"
  (declare (special *ancestors-hash*))
@@ -1140,13 +1045,13 @@
    (let (struct)
     (setq struct (|constructorDB| constructor))
     (setq opalistpos (file-position out))
-    (print (|squeezeCopy| (|dbOperations| struct)) out)
+    (print (|dbOperations| struct) out)
     (finish-output out)
     (setq cmodemappos (file-position out))
-    (print (|squeezeCopy| (|dbConstructorModemap| struct)) out)
+    (print (|dbConstructorModemap| struct) out)
     (finish-output out)
     (setq modemapspos (file-position out))
-    (print (|squeezeCopy| (|dbModemaps| struct)) out)
+    (print (|dbModemaps| struct) out)
     (finish-output out)
     (let ((entry (|dbModule| struct)))
       (cond ((consp entry)
@@ -1156,7 +1061,7 @@
 	     (setq obj (pathname-name
 			(first (last (pathname-directory entry))))))
 	    (t (setq obj nil))))
-    (setq concategory (|squeezeCopy| (|dbCategory| struct)))
+    (setq concategory (|dbCategory| struct))
     (if concategory  ; if category then write data else write nil
 	(progn
 	  (setq categorypos (file-position out))
@@ -1167,7 +1072,7 @@
     (setq cosig (|dbDualSignature| struct))
     (setq kind (|dbConstructorKind| struct))
     (setq defaultdomain (|dbDefaultDomain| struct))
-    (setq ancestors (|squeezeCopy| (gethash constructor *ancestors-hash*))) ;cattable.boot
+    (setq ancestors (gethash constructor *ancestors-hash*)) ;cattable.boot
     (if ancestors
 	(progn
 	  (setq ancestorspos (file-position out))
@@ -1175,12 +1080,10 @@
 	  (finish-output out))
       (setq ancestorspos nil))
     (setq superpos
-	  ;; We do NOT want to compress codes, as we may not be 
-	  ;; able to uncompress them to their original form.
 	  (let ((super (|dbSuperDomain| struct)))
 	    (when super
 	      (prog1 (file-position out)
-		(print (list (|squeezeCopy| (car super)) (second super)) out)
+		(print (list (car super) (second super)) out)
 		(finish-output out)))))
     
     (push (list constructor opalistpos cmodemappos modemapspos
@@ -1188,7 +1091,7 @@
 		ancestorspos superpos) master)))
   (finish-output out)
   (setq masterpos (file-position out))
-  (print (|squeezeAll| master) out)
+  (print master out)
   (finish-output out)
   (file-position out 0)
   (print (cons masterpos (get-universal-time)) out)
@@ -1208,21 +1111,21 @@
      ; sourcefile is small. store the string directly
     (setq src (|dbSourceFile| struct))
     (setq formpos (file-position out))
-    (print (|squeezeCopy| (|dbConstructorForm| struct)) out)
+    (print (|dbConstructorForm| struct) out)
     (finish-output out)
     (setq docpos (file-position out))
     (print (database-documentation struct) out)
     (finish-output out)
     (setq attpos (file-position out))
-    (print (|squeezeCopy| (|dbAttributes| struct)) out)
+    (print (|dbAttributes| struct) out)
     (finish-output out)
     (setq predpos (file-position out))
-    (print (|squeezeCopy| (|dbPredicates| struct)) out)
+    (print (|dbPredicates| struct) out)
     (finish-output out)
     (push (list constructor src formpos docpos attpos predpos) master)))
   (finish-output out)
   (setq masterpos (file-position out))
-  (print (|squeezeAll| master) out)
+  (print master out)
   (finish-output out)
   (file-position out 0)
   (print (cons masterpos (get-universal-time)) out)
@@ -1242,47 +1145,17 @@
      (setq pos value)
      (progn
       (setq pos (file-position out))
-      (print (|squeezeCopy| value) out)
+      (print value out)
       (finish-output out)))
      (push (list key pos) master))
      *hasCategory-hash*)
   (setq pos (file-position out))
-  (print (|squeezeAll| master) out)
+  (print master out)
   (finish-output out)
   (file-position out 0)
   (print (cons pos (get-universal-time)) out)
   (finish-output out)
   (close out)))
-
-(defun unsqueeze (expr)
-  (cond ((atom expr)
-         (cond ((and (numberp expr) (<= expr 0))
-                (svref *compressVector* (- expr)))
-               (t expr)))
-        (t (rplaca expr (unsqueeze (car expr)))
-           (rplacd expr (unsqueeze (cdr expr)))
-           expr)))
-
-(defun squeeze (expr)
- (let (leaves pos (bound (length *compressvector*)))
-  (labels (
-   (flat (expr)
-    (when (and (numberp expr) (< expr 0) (>= expr bound))
-     (print expr)
-     (break "squeeze found a negative number"))
-    (if (atom expr)
-     (unless (or (null expr)
-                 (and (symbolp expr) (char= (schar (symbol-name expr) 0) #\*)))
-      (setq leaves (adjoin expr leaves)))
-     (progn
-      (flat (car expr))
-      (flat (cdr expr))))))
-  (setq leaves nil)
-  (flat expr)
-  (dolist (leaf leaves)
-   (when (setq pos (position leaf *compressvector*))
-     (|substitute!| (- pos) leaf expr)))
-  expr)))
 
 (defun write-operationdb ()
  (let (pos master out)
@@ -1292,13 +1165,13 @@
   (finish-output out)
   (maphash #'(lambda (key value)
    (setq pos (file-position out))
-   (print (|squeezeCopy| value) out)
+   (print value out)
    (finish-output out)
    (push (cons key pos) master))
    *operation-hash*)
   (finish-output out)
   (setq pos (file-position out))
-  (print (|squeezeAll| master) out)
+  (print master out)
   (file-position out 0)
   (print (cons pos (get-universal-time)) out)
   (finish-output out)

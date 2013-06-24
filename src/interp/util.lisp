@@ -253,7 +253,6 @@
   (|buildHtMacroTable|)
   (|initHist|)
   (|initNewWorld|)
-  (compressopen)
   (interpopen)
   (|start| :fin)
   (setq *load-verbose* nil)

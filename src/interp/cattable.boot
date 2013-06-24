@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -428,28 +428,6 @@ compressSexpr(x,left,right) ==
   compressSexpr(first x,x,nil)
   compressSexpr(rest x,nil,x)
   tableValue($found,x) := x
-
-squeezeList(l) ==
--- changes the list l, so that is has maximal sharing of cells
-  $found:local:= nil
-  squeeze1 l
-
-squeeze1(l) ==
--- recursive version of squeezeList
-  x:= first l
-  y:=
-    x isnt [.,:.] => x
-    z:= member(x,$found) => first z
-    $found:= [x,:$found]
-    squeeze1 x
-  l.first := y
-  x:= rest l
-  y:=
-    x isnt [.,:.] => x
-    z:= member(x,$found) => first z
-    $found:= [x,:$found]
-    squeeze1 x
-  l.rest := y
 
 updateCategoryTable(cname,kind) ==
   $updateCatTableIfTrue =>

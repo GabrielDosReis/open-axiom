@@ -1,5 +1,21 @@
 2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* interp/cattable.boot (squeezeList): Remove.
+	(squeeze1): Likewise.
+	* interp/daase.lisp (*COMPRESSVECTOR*): Likewise.
+	(*COMPRESSVECTORLENGTH*): Likewise.
+	(*COMPRESS-STREAM*): Likewise.
+	(*COMPRESS-STREAM-STAMP*): Likewise.
+	(COMPRESSOPEN): Remove.  Adjust callers.
+	(unsqueezeCopy): Likewise.
+	(WRITE-COMPRESS): Likewise.
+	(SQUEEZE): Likewise.
+	(UNSQUEEZE): Likewise.
+	(MAKE-DATABASES): Do not write out compress.daase.
+	* interp/database.boot (squeezeAll): Likewise.
+
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/sys-constants.boot ($BuiltinAttributes): Remove
 	finiteAggregate and shallowlyMutable.
 	* interp/daase.lisp (WRITE-COMPRESS): Do not push strings.
