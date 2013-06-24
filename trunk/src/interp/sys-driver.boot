@@ -137,7 +137,6 @@ initMemoryConfig() ==
 --%
 
 openDatabases() ==
-  COMPRESSOPEN()
   INTERPOPEN()
   OPERATIONOPEN()
   CATEGORYOPEN()

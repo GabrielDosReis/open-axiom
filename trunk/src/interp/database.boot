@@ -799,10 +799,6 @@ displayHiddenConstructors() ==
       centerAndHighlight c
 
 --%
-squeezeAll: %List %Code -> %List %Code
-squeezeAll x ==
-  [SQUEEZE t for t in x]
-
 makeInitialDB [form,kind,abbrev,srcfile] ==
   db := makeDB(form.op,kind,abbrev)
   dbConstructorForm(db) := form
