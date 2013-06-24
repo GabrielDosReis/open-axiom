@@ -1,3 +1,9 @@
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-constants.boot ($BuiltinAttributes): Remove
+	finiteAggregate and shallowlyMutable.
+	* interp/daase.lisp (WRITE-COMPRESS): Do not push strings.
+
 2013-06-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/token.H (token::base_type): Renam from class_type.
