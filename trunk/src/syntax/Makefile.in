@@ -136,7 +136,8 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libsyntax_a_AR = $(AR) $(ARFLAGS)
 libsyntax_a_LIBADD =
-am_libsyntax_a_OBJECTS = libsyntax_a-token.$(OBJEXT)
+am_libsyntax_a_OBJECTS = libsyntax_a-token.$(OBJEXT) \
+	libsyntax_a-sexpr.$(OBJEXT)
 libsyntax_a_OBJECTS = $(am_libsyntax_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -375,7 +376,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
 noinst_LIBRARIES = libsyntax.a
-libsyntax_a_SOURCES = token.cc
+libsyntax_a_SOURCES = token.cc sexpr.cc
 oa_target_incdir = $(top_builddir)/$(target)/include
 libsyntax_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
 all: all-am
@@ -427,6 +428,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsyntax_a-sexpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsyntax_a-token.Po@am__quote@
 
 .cc.o:
@@ -463,6 +465,20 @@ libsyntax_a-token.obj: token.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='token.cc' object='libsyntax_a-token.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsyntax_a-token.obj `if test -f 'token.cc'; then $(CYGPATH_W) 'token.cc'; else $(CYGPATH_W) '$(srcdir)/token.cc'; fi`
+
+libsyntax_a-sexpr.o: sexpr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsyntax_a-sexpr.o -MD -MP -MF $(DEPDIR)/libsyntax_a-sexpr.Tpo -c -o libsyntax_a-sexpr.o `test -f 'sexpr.cc' || echo '$(srcdir)/'`sexpr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsyntax_a-sexpr.Tpo $(DEPDIR)/libsyntax_a-sexpr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sexpr.cc' object='libsyntax_a-sexpr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsyntax_a-sexpr.o `test -f 'sexpr.cc' || echo '$(srcdir)/'`sexpr.cc
+
+libsyntax_a-sexpr.obj: sexpr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsyntax_a-sexpr.obj -MD -MP -MF $(DEPDIR)/libsyntax_a-sexpr.Tpo -c -o libsyntax_a-sexpr.obj `if test -f 'sexpr.cc'; then $(CYGPATH_W) 'sexpr.cc'; else $(CYGPATH_W) '$(srcdir)/sexpr.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsyntax_a-sexpr.Tpo $(DEPDIR)/libsyntax_a-sexpr.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sexpr.cc' object='libsyntax_a-sexpr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsyntax_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsyntax_a-sexpr.obj `if test -f 'sexpr.cc'; then $(CYGPATH_W) 'sexpr.cc'; else $(CYGPATH_W) '$(srcdir)/sexpr.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

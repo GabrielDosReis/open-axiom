@@ -30,8 +30,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OPENAXIOM_SEXPR_INCLUDED
-#define OPENAXIOM_SEXPR_INCLUDED
+#ifndef OPENAXIOM_SEXPR_included
+#define OPENAXIOM_SEXPR_included
 
 // --% Author: Gabriel Dos Reis.
 // --% Description:
@@ -44,7 +44,7 @@
 
 #include <iosfwd>
 #include <vector>
-#include <set>
+#include <open-axiom/storage>
 #include <open-axiom/string-pool>
 #include <open-axiom/token>
 
@@ -365,40 +365,6 @@ namespace OpenAxiom {
       // ---------------
       // -- Allocator --
       // ---------------
-
-      // The next two classes are helper classes for the main
-      // allocation class Allocator.  We use std::set as allocator
-      // that guarantee uuniqueness of atomic syntax object with
-      // respect to the constituent token.  That container needs
-      // a relational comparator.  In an ideal world, this class
-      // should not exist.
-      struct SyntaxComparator {
-         bool operator()(const Atom& lhs, const Atom& rhs) const {
-            return std::less<BasicString>()(lhs.lexeme(), rhs.lexeme());
-         }
-
-         template<typename T>
-         bool
-         operator()(const unary_form<T>& lhs, const unary_form<T>& rhs) const {
-            return std::less<const void*>()(lhs.body(), rhs.body());
-         }
-
-         bool operator()(const Anchor& lhs, const Anchor& rhs) const {
-            return std::less<size_t>()(lhs.ref(), rhs.ref());
-         }
-      };
-
-      template<typename T>
-      struct UniqueAllocator : std::set<T, SyntaxComparator> {
-         typedef std::set<T, SyntaxComparator> base;
-         typedef typename base::const_iterator const_iterator;
-
-         template<typename... Args>
-         const T* allocate(const Args&... args) {
-            return &*this->insert(T(args...)).first;
-         }
-      };
-      
       // Allocator of syntax objects.
       struct Allocator {
          Allocator();
@@ -423,21 +389,21 @@ namespace OpenAxiom {
          const Vector* make_vector(const std::vector<const Syntax*>&);
          
       private:
-         UniqueAllocator<Integer> ints;
-         UniqueAllocator<Character> chars;
-         UniqueAllocator<String> strs;
-         UniqueAllocator<Symbol> syms;
-         UniqueAllocator<Anchor> ancs;
-         UniqueAllocator<Reference> refs;
-         UniqueAllocator<Quote> quotes;
-         UniqueAllocator<Antiquote> antis;
-         UniqueAllocator<Expand> exps;
-         UniqueAllocator<Function> funs;
-         UniqueAllocator<Include> incs;
-         UniqueAllocator<Exclude> excs;
-         UniqueAllocator<Eval> evls;
-         UniqueAllocator<Splice> spls;
-         UniqueAllocator<DotTail> tails;
+         Memory::Factory<Integer> ints;
+         Memory::Factory<Character> chars;
+         Memory::Factory<String> strs;
+         Memory::Factory<Symbol> syms;
+         Memory::Factory<Anchor> ancs;
+         Memory::Factory<Reference> refs;
+         Memory::Factory<Quote> quotes;
+         Memory::Factory<Antiquote> antis;
+         Memory::Factory<Expand> exps;
+         Memory::Factory<Function> funs;
+         Memory::Factory<Include> incs;
+         Memory::Factory<Exclude> excs;
+         Memory::Factory<Eval> evls;
+         Memory::Factory<Splice> spls;
+         Memory::Factory<DotTail> tails;
          Memory::Factory<List> lists;
          Memory::Factory<Vector> vectors;
          List empty_list;
@@ -492,4 +458,4 @@ namespace OpenAxiom {
    }
 }
 
-#endif  // OPENAXIOM_SEXPR_INCLUDED
+#endif  // OPENAXIOM_SEXPR_included

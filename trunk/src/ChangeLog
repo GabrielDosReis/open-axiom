@@ -1,5 +1,12 @@
 2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* include/sexpr.H: Move from utils.
+	(UniqueAllocator): Remove.
+	(SyntaxComparator): Likewise.
+	* syntax/sexpr.cc: Move from utils.
+
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/cattable.boot (squeezeList): Remove.
 	(squeeze1): Likewise.
 	* interp/daase.lisp (*COMPRESSVECTOR*): Likewise.
