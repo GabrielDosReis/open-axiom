@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -49,6 +49,9 @@ namespace OpenAxiom {
    private:
       Command cmd;
       Filesystem fs;
+      
+      Server(const Server&) = delete;
+      Server& operator=(const Server&) = delete;
    };   
 }
 
