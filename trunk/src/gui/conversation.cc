@@ -218,12 +218,6 @@ namespace OpenAxiom {
               this, SLOT(reply_to_query()));
    }
 
-   // Transfter focus to this input area.
-   static void 
-   give_focus_to(Question* q) {
-     q->setFocus(Qt::OtherFocusReason);
-   }
-
    static void ensure_visibility(Debate* debate, Exchange* e) {
       const int y = e->y() + e->height();
       QScrollBar* vbar = debate->verticalScrollBar();
@@ -233,7 +227,7 @@ namespace OpenAxiom {
          vbar->setValue(std::max(new_value, 0));
       else if (new_value > value)
          vbar->setValue(std::min(new_value, vbar->maximum()));
-      give_focus_to(e->question());
+      e->question()->setFocus(Qt::OtherFocusReason);
    }
    
    void
@@ -242,6 +236,8 @@ namespace OpenAxiom {
       if (empty_string(input))
          return;
       question()->setReadOnly(true); // Make query area read only.
+      question()->clearFocus();
+      question()->setFocusPolicy(Qt::NoFocus);
       server()->input(input);
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    }
