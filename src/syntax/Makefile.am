@@ -32,7 +32,7 @@
 
 noinst_LIBRARIES = libsyntax.a
 
-libsyntax_a_SOURCES = token.cc
+libsyntax_a_SOURCES = token.cc sexpr.cc
 
 oa_target_incdir = $(top_builddir)/$(target)/include
 

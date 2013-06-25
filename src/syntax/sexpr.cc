@@ -535,77 +535,77 @@ namespace OpenAxiom {
 
       const Character*
       Allocator::make_character(const Token& t) {
-         return chars.allocate(t);
+         return chars.make(t);
       }
 
       const Integer*
       Allocator::make_integer(const Token& t) {
-         return ints.allocate(t);
+         return ints.make(t);
       }
 
       const String*
       Allocator::make_string(const Token& t) {
-         return strs.allocate(t);
+         return strs.make(t);
       }
 
       const Symbol*
       Allocator::make_symbol(const Token& t, Symbol::Kind k) {
-         return syms.allocate(t, k);
+         return syms.make(t, k);
       }
 
       const Anchor*
       Allocator::make_anchor(size_t t, const Syntax* s) {
-         return ancs.allocate(t, s);
+         return ancs.make(t, s);
       }
 
       const Reference*
       Allocator::make_reference(const Token& t, size_t i) {
-         return refs.allocate(t, i);
+         return refs.make(t, i);
       }
 
       const Quote*
       Allocator::make_quote(const Syntax* s) {
-         return quotes.allocate(s);
+         return quotes.make(s);
       }
 
       const Antiquote*
       Allocator::make_antiquote(const Syntax* s) {
-         return antis.allocate(s);
+         return antis.make(s);
       }
 
       const Expand*
       Allocator::make_expand(const Syntax* s) {
-         return exps.allocate(s);
+         return exps.make(s);
       }
 
       const Eval*
       Allocator::make_eval(const Syntax* s) {
-         return evls.allocate(s);
+         return evls.make(s);
       }
 
       const Splice*
       Allocator::make_splice(const Syntax* s) {
-         return spls.allocate(s);
+         return spls.make(s);
       }
 
       const Function*
       Allocator::make_function(const Syntax* s) {
-         return funs.allocate(s);
+         return funs.make(s);
       }
 
       const Include*
       Allocator::make_include(const Syntax* s) {
-         return incs.allocate(s);
+         return incs.make(s);
       }
 
       const Exclude*
       Allocator::make_exclude(const Syntax* s) {
-         return excs.allocate(s);
+         return excs.make(s);
       }
 
       const DotTail*
       Allocator::make_dot_tail(const Syntax* f) {
-         return tails.allocate(f);
+         return tails.make(f);
       }
 
       const List*
