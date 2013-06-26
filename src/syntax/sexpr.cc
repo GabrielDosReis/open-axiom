@@ -38,73 +38,24 @@
 #include <iterator>
 #include <open-axiom/sexpr>
 #include <open-axiom/FileMapping>
+#include <open-axiom/diagnostics>
 
 namespace OpenAxiom {
    namespace Sexpr {
-      template<typename T, int N>
-      static inline int
-      length(const T(&)[N]) {
-         return N;
+      static void
+      invalid_character(Reader::State& s) {
+         auto line = std::to_string(s.lineno);
+         auto column = std::to_string(s.cur - s.line);
+         auto msg = "invalid character on line " + line +
+            " and column " + column;
+         if (isprint(*s.cur))
+            throw Diagnostics::BasicError(msg + ": " + std::string(1, *s.cur));
+         throw Diagnostics::BasicError(msg + " with code " + std::to_string(*s.cur));
       }
-
-      template<typename Sequence>
-      static inline typename Sequence::const_pointer
-      begin_ptr(const Sequence& s) {
-         return &*s.begin();
-      }
-
-      template<typename Sequence>
-      static inline typename Sequence::const_pointer
-      end_ptr(const Sequence& s) {
-         return s.empty() ? 0 : &*s.begin() + s.size();
-      }
-
-      std::ostream&
-      operator<<(std::ostream& os, const Token& t) {
-         switch (t.type) {
-         case Token::semicolon: os << "SEMICOLON"; break;
-         case Token::dot: os << "DOT"; break;
-         case Token::comma: os << "COMMA"; break;
-         case Token::open_paren: os << "OPEN_PAREN"; break;
-         case Token::close_paren: os << "CLOSE_PAREN"; break;
-         case Token::apostrophe: os << "APOSTROPHE"; break;
-         case Token::backquote: os << "BACKQUOTE"; break;
-         case Token::backslash: os << "BACKSLASH"; break;
-         case Token::sharp_open_paren: os << "SHARP_OPEN_PAREN"; break;
-         case Token::sharp_apostrophe: os << "SHARP_APOSTROPHE"; break;
-         case Token::sharp_colon: os << "SHARP_COLON"; break;
-         case Token::sharp_plus: os << "SHARP_PLUS"; break;
-         case Token::sharp_minus: os << "SHARP_MINUS"; break;
-         case Token::sharp_dot: os << "SHARP_DOT"; break;
-         case Token::comma_at: os << "COMMA_AT"; break;
-         case Token::integer: os << "INTEGER"; break;
-         case Token::character: os << "CHARACTER"; break;
-         case Token::string: os << "STRING"; break;
-         case Token::identifier: os << "IDENTIFIER"; break;
-         case Token::sharp_integer_sharp:
-            os << "SHARP_INTEGER_SHARP"; break;
-         case Token::sharp_integer_equal:
-            os << "SHARP_INTEGER_EQUAL"; break;
-         default: os << "UNKNOWN"; break;
-         }
-         os << '(';
-         if (t.lexeme != 0) {
-            os << '"';
-            std::copy(t.lexeme->begin(), t.lexeme->end(),
-                      std::ostream_iterator<char>(os));
-            os << '"';
-         }
-         else
-            os << "<missing>";
-         return os << ')';
-      }
-
-      // -----------
-      // -- Lexer --
-      // -----------
+      
       static void
       syntax_error(const std::string& s) {
-         throw BasicError(s);
+         throw Diagnostics::BasicError(s);
       }
 
       // Return true if character `c' introduces a blank.
@@ -122,67 +73,67 @@ namespace OpenAxiom {
             or c == '`' or c == '#';
       }
 
-      // Move `cur' past all consecutive blank characters, and
-      // return the new position.
-      static const Byte* 
-      skip_blank(const Byte*& cur, const Byte* end) {
-         while (cur < end and is_blank(*cur))
-            ++cur;
-         return cur;
+      // Move the cursor past all consecutive blank characters, and
+      // return true if there are more input characters to consider.
+      static bool
+      skip_blank(Reader::State& s) {
+         for (bool done = false; s.cur < s.end and not done; )
+            switch (*s.cur) {
+            case '\n':
+               ++s.lineno;
+               s.line = ++s.cur;
+               break;
+            case ' ': case '\t': case '\v': case '\r': case '\f':
+               ++s.cur;
+               break;
+            default: done = true; break;
+            }
+         return s.cur < s.end;
       }
 
       // Move `cur' to end-of-line marker.
-      static const Byte*
-      skip_to_eol(const Byte*& cur, const Byte* end) {
+      static void
+      skip_to_eol(Reader::State& s) {
          // FIXME: properly handle CR+LF.
-         while (cur < end and *cur != '\n')
-            ++cur;
-         return cur;
-      }
-
-      // Move `cur' until a word boundary is reached.
-      static const Byte*
-      skip_to_word_boundary(const Byte*& cur, const Byte* end) {
-         bool saw_escape = false;
-         for (; cur < end; ++cur) {
-            if (saw_escape)
-               saw_escape = false;
-            else if (*cur == '\\')
-               saw_escape = true;
-            else if (is_delimiter(*cur))
-               break;
-         }
-         return cur;
+         while (s.cur < s.end and *s.cur != '\n')
+            ++s.cur;
       }
 
       // Move `cur' one-past a non-esacaped character `c'.
       // Return true if the character was seen.
       static bool
-      skip_to_nonescaped_char(const Byte*& cur, const Byte* end, char c) {
-         bool saw_escape = false;
-         for (; cur < end; ++cur)
+      skip_to_nonescaped_char(Reader::State& s, char c) {
+         for (bool saw_escape = false; s.cur < s.end; ++s.cur)
             if (saw_escape)
                saw_escape = false;
-            else if (*cur == '\\')
+            else if (*s.cur == '\\')
                saw_escape = true;
-            else if (*cur == c) {
-               ++cur;
+            else if (*s.cur == c) {
+               ++s.cur;
                return true;
             }
          return false;
       }
 
-      // Move `cur' past the closing quote of string literal.
-      // Return true if the closing fence was effectively seen.
+      // Move the cursor past the closing quote of string literal.
+      // Return true if the closing quote was effectively seen.
       static inline bool
-      skip_to_quote(const Byte*& cur, const Byte* end) {
-         return skip_to_nonescaped_char(cur, end, '"');
+      skip_to_quote(Reader::State& s) {
+         return skip_to_nonescaped_char(s, '"');
+      }
+
+      template<typename Pred>
+      static bool
+      advance_while(Reader::State& s, Pred p) {
+         while (s.cur < s.end and p(*s.cur))
+            ++s.cur;
+         return s.cur < s.end;
       }
 
       // Return true if the character `c' be part of a non-absolute
       // identifier.
       static bool
-      identifier_part(char c) {
+      identifier_part(Byte c) {
          switch (c) {
          case '+': case '-': case '*': case '/': case '%': case '^':
          case '~': case '@': case '$': case '&': case '=':
@@ -194,296 +145,117 @@ namespace OpenAxiom {
          }
       }
 
-      // Return true if the character `c' has a special meaning after
-      // the sharp character.
-      static bool
-      special_after_sharp(char c) {
-         return c == '(' or c == '\'' or c == ':'
-            or c == '+' or c == '-' or c == '.';
-      }
-
-      // Return true if the sequence `[cur, end)' has a prefix that is 
-      // an integer followrd by the equal sign or the sharp sign.
-      // `cur' is moved along the way.
-      static bool
-      only_digits_before_equal_or_shap(const Byte*& cur, const Byte* end) {
-         while (cur < end and isdigit(*cur))
-            ++cur;
-         return cur < end and (*cur == '#' or *cur == '=');
-      }
-
-      // The token `t' was thought to designate an identifier.
-      // Reclassify it as an integer if, in fact, its lexeme consists
-      // entirely of digits.
-      static void
-      maybe_reclassify(Token& t) {
-         const Byte* cur = t.lexeme->begin();
-         const Byte* end = t.lexeme->end();
-         while (cur < end and isdigit(*cur))
-            ++cur;
-         if (cur == end)
-            t.type = Token::integer;
-      }
-
-      // Returns true if the first characters in the range
-      // [cur, last) start an identifier.
-      static bool
-      start_symbol(const Byte* cur, const Byte* last) {
-         if (cur >= last)
-            return false;
-         return identifier_part(*cur)
-            or *cur == '|' or *cur == ':';
-      }
-
-      // We are processing a symbol token.  Accumulate all
-      // legitimate characters till the end of the token.
-      static void
-      skip_to_end_of_symbol(const Byte*& cur, const Byte* end) {
-         const char c = *cur;
-         if (*cur == '|') 
-            skip_to_nonescaped_char(++cur, end, c);
-         else
-            skip_to_word_boundary(cur, end);
-         if (cur < end and *cur == ':')
-            skip_to_end_of_symbol(cur, end);
-      }
-
-      static Token
-      match_maybe_symbol(Lexer* lexer, const Byte*& cur, const Byte* end) {
-         Token t = { Token::identifier, 0 };
-         const Byte* start = cur;
-         skip_to_end_of_symbol(cur, end);
-         t.lexeme = lexer->intern(start, cur - start);
-         maybe_reclassify(t);
-         return t;
-      }
-
-      const Byte*
-      Lexer::tokenize(const Byte* cur, const Byte* end) {
-         while (skip_blank(cur, end) < end) {
-            Token t = { Token::unknown, 0 };
-            switch (*cur) {
-            case ';': {
-               const Byte* start = cur;
-               t.type = Token::semicolon;
-               skip_to_eol(cur, end);
-               t.lexeme = intern(start, cur - start);
-               break;
-            }
-               
-            case '.': case '(': case ')': case '\'': case '`':
-               t.type = Token::Type(token::value(*cur));
-               t.lexeme = intern(cur, 1);
-               ++cur;
-               break;
-
-            case ',': {
-               const Byte* start = cur;
-               if (++cur < end and *cur == '@') {
-                  t.type = Token::comma_at;
-                  ++cur;
-               }
-               else
-                  t.type = Token::comma;
-               t.lexeme = intern(start, cur - start);
-               break;
-            }
-
-            case '\\':
-               t = match_maybe_symbol(this, cur, end);
-               break;
-
-            case '#': {
-               const Byte* start = cur;
-               if (cur + 1 < end and special_after_sharp(cur[1])) {
-                  t.type = Token::Type(token::value(cur[0], cur[1]));
-                  t.lexeme = intern(cur, 2);
-                  cur += 2;
-               }
-               else if (cur + 1 < end and cur[1] == '\\') {
-                  start = cur += 2;
-                  if (not isalnum(*cur))
-                     ++cur;
-                  else
-                     skip_to_word_boundary(cur, end);
-                  t.type = Token::character;
-                  t.lexeme = intern(start, cur - start);
-               }
-               else if (only_digits_before_equal_or_shap(++cur, end)) {
-                  t.type = *cur == '#'
-                     ? Token::sharp_integer_sharp
-                     : Token::sharp_integer_equal;
-                  t.lexeme = intern(start, cur - start + 1);
-                  ++cur;
-               }
-               else {
-                  skip_to_word_boundary(cur, end);
-                  t.lexeme = intern(start, cur - start);
-               }
-               break;
-            }
-
-            case '"': {
-               const Byte* start = cur;
-               skip_to_quote(++cur, end);
-               t.type = Token::string;
-               t.lexeme = intern(start, cur - start);
-               break;
-            }
-
-            default:
-               if (start_symbol(cur, end))
-                  t = match_maybe_symbol(this, cur, end);
-               else {
-                  const Byte* start = cur;
-                  skip_to_word_boundary(++cur, end);
-                  t.lexeme = intern(start, cur - start);
-               }
-               break;
-            }
-            tokens.push_back(t);
-         }
-         return cur;
-      }
-
-      // ----------
-      // -- Atom --
-      // ----------
-      Atom::Atom(const Token& t) : tok(t) { }
+      // -- AtomSyntax --
+      AtomSyntax::AtomSyntax(const Lexeme& t) : lex(t) { }
 
       void
-      Atom::accept(Visitor& v) const {
+      AtomSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // -------------
-      // -- Integer --
-      // -------------
-      Integer::Integer(const Token& t) : Atom(t) { }
+      // -- IntegerSyntax --
+      IntegerSyntax::IntegerSyntax(const Lexeme& t) : AtomSyntax(t) { }
 
       void
-      Integer::accept(Visitor& v) const {
+      IntegerSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ---------------
-      // -- Character --
-      // ---------------
-      Character::Character(const Token& t) : Atom(t) { }
+      // -- CharacterSyntax --
+      CharacterSyntax::CharacterSyntax(const Lexeme& t) : AtomSyntax(t) { }
 
       void
-      Character::accept(Visitor& v) const {
+      CharacterSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ------------
-      // -- String --
-      // ------------
-      String::String(const Token& t) : Atom(t) { }
+      // -- StringSyntax --
+      StringSyntax::StringSyntax(const Lexeme& t) : AtomSyntax(t) { }
 
       void
-      String::accept(Visitor& v) const {
+      StringSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ------------
-      // -- Symbol --
-      // ------------
-      Symbol::Symbol(const Token& t, Kind k) : Atom(t), sort(k) { }
+      // -- SymbolSyntax --
+      SymbolSyntax::SymbolSyntax(const Lexeme& t, Kind k)
+            : AtomSyntax(t), sort(k)
+      { }
 
       void
-      Symbol::accept(Visitor& v) const {
+      SymbolSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ------------
-      // -- Anchor --
-      // ------------
-      Anchor::Anchor(size_t t, const Syntax* s) : tag(t), val(s) { }
+      // -- AnchorSyntax --
+      AnchorSyntax::AnchorSyntax(size_t t, const Syntax* s) : tag(t), val(s) { }
 
       void
-      Anchor::accept(Visitor& v) const {
+      AnchorSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ---------------
       // -- Reference --
-      // ---------------
-      Reference::Reference(const Token& t, size_t v) : Atom(t), pos(v) { }
+       Reference::Reference(const Lexeme& t, Ordinal n)
+             : AtomSyntax(t), pos(n)
+      { }
 
       void
       Reference::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // -----------
-      // -- Quote --
-      // -----------
-      Quote::Quote(const Syntax* s) : unary_form<Quote>(s) { }
+      // -- QuoteSyntax --
+      QuoteSyntax::QuoteSyntax(const Syntax* s)
+            : unary_form<QuoteSyntax>(s)
+      { }
 
-      // ---------------
-      // -- Antiquote --
-      // ---------------
-      Antiquote::Antiquote(const Syntax* s) : unary_form<Antiquote>(s) { }
+      // -- AntiquoteSyntax --
+      AntiquoteSyntax::AntiquoteSyntax(const Syntax* s)
+            : unary_form<AntiquoteSyntax>(s)
+      { }
 
-      // ------------
       // -- Expand --
-      // ------------
       Expand::Expand(const Syntax* s) : unary_form<Expand>(s) { }
 
-      // ----------
       // -- Eval --
-      // ----------
       Eval::Eval(const Syntax* s) : unary_form<Eval>(s) { }
 
-      // ------------
       // -- Splice --
-      // ------------
       Splice::Splice(const Syntax* s) : unary_form<Splice>(s) { }
 
-      // --------------
       // -- Function --
-      // --------------
       Function::Function(const Syntax* s) : unary_form<Function>(s) { }
 
-      // -------------
       // -- Include --
       Include::Include(const Syntax* s) : unary_form<Include>(s) { }
 
-      // -------------
       // -- Exclude --
       Exclude::Exclude(const Syntax* s) : unary_form<Exclude>(s) { }
 
-      // -------------
-      // -- DotTail --
-      // -------------
-      DotTail::DotTail(const Syntax* f) : unary_form<DotTail>(f) { }
+      // -- ListSyntax --
+      ListSyntax::ListSyntax() : dot(false) { }
 
-      // ----------
-      // -- List --
-      // ----------
-      List::List() { }
+      ListSyntax::ListSyntax(const base& elts, bool d)
+            : base(elts), dot(d)
+      { }
 
-      List::List(const base& elts) : base(elts) { }
-
-      List::~List() { }
+      ListSyntax::~ListSyntax() { }
 
       void
-      List::accept(Visitor& v) const {
+      ListSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
-      // ------------
-      // -- Vector --
-      // ------------
-      Vector::Vector() { }
+      // -- VectorSyntax --
+      VectorSyntax::VectorSyntax() { }
 
-      Vector::Vector(const base& elts) : base(elts) { }
+      VectorSyntax::VectorSyntax(const base& elts) : base(elts) { }
 
-      Vector::~Vector() { }
+      VectorSyntax::~VectorSyntax() { }
       
       void
-      Vector::accept(Visitor& v) const {
+      VectorSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
@@ -499,28 +271,28 @@ namespace OpenAxiom {
       }
 
       void
-      Syntax::Visitor::visit(const Integer& i) {
-         visit(as<Atom>(i));
+      Syntax::Visitor::visit(const IntegerSyntax& i) {
+         visit(as<AtomSyntax>(i));
       }
 
       void
-      Syntax::Visitor::visit(const Character& c) {
-         visit(as<Atom>(c));
+      Syntax::Visitor::visit(const CharacterSyntax& c) {
+         visit(as<AtomSyntax>(c));
       }
 
       void
-      Syntax::Visitor::visit(const String& s) {
-         visit(as<Atom>(s));
+      Syntax::Visitor::visit(const StringSyntax& s) {
+         visit(as<AtomSyntax>(s));
       }
 
       void
-      Syntax::Visitor::visit(const Symbol& s) {
-         visit(as<Atom>(s));
+      Syntax::Visitor::visit(const SymbolSyntax& s) {
+         visit(as<AtomSyntax>(s));
       }
 
       void
       Syntax::Visitor::visit(const Reference& r) {
-         visit(as<Atom>(r));
+         visit(as<AtomSyntax>(r));
       }
 
       // ---------------
@@ -533,42 +305,42 @@ namespace OpenAxiom {
       // used templates floating around.
       Allocator::~Allocator() { }
 
-      const Character*
-      Allocator::make_character(const Token& t) {
+      const CharacterSyntax*
+      Allocator::make_character(const Lexeme& t) {
          return chars.make(t);
       }
 
-      const Integer*
-      Allocator::make_integer(const Token& t) {
+      const IntegerSyntax*
+      Allocator::make_integer(const Lexeme& t) {
          return ints.make(t);
       }
 
-      const String*
-      Allocator::make_string(const Token& t) {
+      const StringSyntax*
+      Allocator::make_string(const Lexeme& t) {
          return strs.make(t);
       }
 
-      const Symbol*
-      Allocator::make_symbol(const Token& t, Symbol::Kind k) {
+      const SymbolSyntax*
+      Allocator::make_symbol(SymbolSyntax::Kind k, const Lexeme& t) {
          return syms.make(t, k);
       }
 
-      const Anchor*
+      const Reference*
+      Allocator::make_reference(size_t i, const Lexeme& t) {
+         return refs.make(t, i);
+      }
+
+      const AnchorSyntax*
       Allocator::make_anchor(size_t t, const Syntax* s) {
          return ancs.make(t, s);
       }
 
-      const Reference*
-      Allocator::make_reference(const Token& t, size_t i) {
-         return refs.make(t, i);
-      }
-
-      const Quote*
+      const QuoteSyntax*
       Allocator::make_quote(const Syntax* s) {
          return quotes.make(s);
       }
 
-      const Antiquote*
+      const AntiquoteSyntax*
       Allocator::make_antiquote(const Syntax* s) {
          return antis.make(s);
       }
@@ -603,51 +375,18 @@ namespace OpenAxiom {
          return excs.make(s);
       }
 
-      const DotTail*
-      Allocator::make_dot_tail(const Syntax* f) {
-         return tails.make(f);
-      }
-
-      const List*
-      Allocator::make_list(const std::vector<const Syntax*>& elts) {
+      const ListSyntax*
+      Allocator::make_list(const std::vector<const Syntax*>& elts, bool dot) {
          if (elts.empty())
             return &empty_list;
-         return lists.make(elts);
+         return lists.make(elts, dot);
       }
 
-      const Vector*
+      const VectorSyntax*
       Allocator::make_vector(const std::vector<const Syntax*>& elts) {
          if (elts.empty())
             return &empty_vector;
          return vectors.make(elts);
-      }
-
-      // ------------
-      // -- Parser --
-      // ------------
-
-      // Signal a parse error
-      static void
-      parse_error(const std::string& s) {
-         throw BasicError(s);
-      }
-
-      // Signal that an expected syntax object was missing
-      static void
-      expected_syntax(const std::string& s) {
-         parse_error("expected " + s);
-      }
-
-      // Signal an abrupt end of input
-      static void
-      unexpected_end_of_input(const std::string& s) {
-         parse_error("unexpected end of input after " + s);
-      }
-
-      // Signal a missing closing parenthesis
-      static void
-      missing_closer_for(const std::string& s) {
-         parse_error("missing closing parenthesis for " + s);
       }
 
       // The sequence of characters in [cur, last) consists
@@ -661,274 +400,277 @@ namespace OpenAxiom {
          return n;
       }
 
-      // Parse a plain identifier or a Lisp-style keyword identifier.
-      const Symbol*
-      Parser::parse_symbol(const Token*& cur, const Token* last) {
-         Symbol::Kind kind = *cur->lexeme->begin() == ':'
-            ? Symbol::keyword
-            : Symbol::ordinary;
-         return alloc.make_symbol(*cur++, kind);
+      // -- Reader --
+      Reader::Reader(const Byte* f, const Byte* l)
+            : st{ f, l, f, f, 1, }
+      { }
+
+      static const Syntax* read_sexpr(Reader::State&);
+
+      // Parse a string literal
+      static const Syntax*
+      read_string(Reader::State& s) {
+         auto start = s.cur++;
+         if (not skip_to_quote(s))
+            syntax_error("missing closing quote sign for string literal");
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_string(t);
       }
 
-      // List of lower case character names
-      static const char* charname[] = {
-         "newline", "space", "page", "tab",
-         "backspace", "return", "linefeed"
-      };
-
-      static bool
-      equal_character_name(BasicString lhs, const char* rhs) {
-         if (lhs->size() != strlen(rhs))
-            return false;
-         for (const Byte* cur = lhs->begin(); cur != lhs->end(); ++cur)
-            if (tolower(*cur) != *rhs++)
-               return false;
-         return true;
+      // Parse an absolute identifier.
+      static const Syntax*
+      read_absolute_symbol(Reader::State& s) {
+         auto start = ++s.cur;
+         if (not skip_to_nonescaped_char(s, '|'))
+            syntax_error("missing closing bar sign for an absolute symbol");
+         Lexeme t = { { start, s.cur - 1 }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::absolute, t);
       }
 
-      static bool
-      valid_character_name(BasicString s) {
-         for (int i = 0; i < length(charname); ++i)
-            if (equal_character_name(s, charname[i]))
-               return true;
-         return false;
-      }
-
-      const Character*
-      Parser::parse_character(const Token*& cur, const Token* last) {
-         if (cur->lexeme->size() != 1
-             and not valid_character_name(cur->lexeme))
-            parse_error("invalid literal character syntax");
-         return alloc.make_character(*cur++);
-      }
-
-      // Parse an anchor definition of the form #n=<syntax>
-      const Anchor*
-      Parser::parse_anchor(const Token*& cur, const Token* last) {
-         const size_t n = natural_value(cur->lexeme->begin() + 1,
-                                        cur->lexeme->end() - 1);
-         if (++cur == last)
-            unexpected_end_of_input("sharp-integer-equal sign");
-         return alloc.make_anchor(n, parse_syntax(cur, last));
-      }
-
-      // Parse a reference to an anchor, #n#
-      const Reference*
-      Parser::parse_reference(const Token*& cur, const Token* last) {
-         const size_t n = natural_value(cur->lexeme->begin() + 1,
-                                        cur->lexeme->end() - 1);
-         return alloc.make_reference(*cur++, n);
-      }
-
-      // Parse an uninterned symbol #:<identifier>
-      const Symbol*
-      Parser::parse_uninterned(const Token*& cur, const Token* last) {
-         if (cur == last or cur->type != Token::identifier)
-            expected_syntax("symbol after sharp-colon sign");
-         // FIXME: check that the identifier is not a keyword.
-         return alloc.make_symbol(*cur++, Symbol::uninterned);
-      }
-
-      // Parse a function syntax: #'<syntax>
-      const Function*
-      Parser::parse_function(const Token*& cur, const Token* last) {
-         if (cur == last)
-            unexpected_end_of_input("sharp-quote sign");
-         return alloc.make_function(parse_syntax(cur, last));
-      }
-
-      // Parse a quotation
-      const Quote*
-      Parser::parse_quote(const Token*& cur, const Token* last) {
-         if (cur == last)
-            unexpected_end_of_input("quote sign");
-         return alloc.make_quote(parse_syntax(cur, last));
-      }
-
-      // Parse an antiquotation
-      const Antiquote*
-      Parser::parse_antiquote(const Token*& cur, const Token* last) {
-         if (cur == last)
-            unexpected_end_of_input("backquote sign");
-         return alloc.make_antiquote(parse_syntax(cur, last));
-      }
-
-      // Parse an expansion request form
-      const Expand*
-      Parser::parse_expand(const Token*& cur, const Token* last) {
-         const Syntax* s = parse_syntax(cur, last);
-         if (s == 0)
-            unexpected_end_of_input("comma sign");
-         return alloc.make_expand(s);
-      }
-
-      // Parse conditional inclusions
-      const Include*
-      Parser::parse_include(const Token*& cur, const Token* last) {
-         const Syntax* s = parse_syntax(cur, last);
-         if (s == 0)
-            unexpected_end_of_input("sharp-plus sign");
-         return alloc.make_include(s);
-      }
-
-      const Exclude*
-      Parser::parse_exclude(const Token*& cur, const Token* last) {
-         const Syntax* s = parse_syntax(cur, last);
-         if (s == 0)
-            unexpected_end_of_input("sharp-minus sign");
-         return alloc.make_exclude(s);
-      }
-
-      const Eval*
-      Parser::parse_eval(const Token*& cur, const Token* last) {
-         const Syntax* s = parse_syntax(cur, last);
-         if (s == 0)
-            unexpected_end_of_input("sharp-dot sign");
-         return alloc.make_eval(s);
-      }
-
-      const Splice*
-      Parser::parse_splice(const Token*& cur, const Token* last) {
-         const Syntax* s = parse_syntax(cur, last);
-         if (s == 0)
-            unexpected_end_of_input("comma-at sign");
-         return alloc.make_splice(s);
-      }
-
-      // Skip tokens that are semantically blanks, e.g. comments.
-      // Return true if not at end of tokens.
-      static bool
-      skip_ignorable_tokens(const Token*& cur, const Token* last) {
-         while (cur < last and cur->type == Token::semicolon)
-            ++cur;
-         return cur != last;
-      }
-
-      // Parse a vector of syntax objects: #(s .. s)
-      const Vector*
-      Parser::parse_vector(const Token*& cur, const Token* last) {
-         std::vector<const Syntax*> elts;
-         while (skip_ignorable_tokens(cur, last)
-                and cur->type != Token::close_paren)
-            elts.push_back(parse_syntax(cur, last));
-         if (cur == last)
-            missing_closer_for("vector");
-         ++cur;
-         return alloc.make_vector(elts);
-      }
-
-      // Constructs a pair or a list syntax object.
-      const List*
-      Parser::parse_list(const Token*& cur, const Token* last) {
-         std::vector<const Syntax*> elts;
-         while (skip_ignorable_tokens(cur, last)
-                and cur->type != Token::close_paren) {
-            if (cur->type == Token::dot) {
-               skip_ignorable_tokens(++cur, last);
-               if (const Syntax* s = parse_syntax(cur, last)) {
-                  elts.push_back(alloc.make_dot_tail(s));
-                  break;
-               }
-            }
-            elts.push_back(parse_syntax(cur, last));
+      // Read an atom starting with digits.
+      static const Syntax*
+      read_maybe_natural(Reader::State& s) {
+         auto start = s.cur;
+         advance_while (s, isdigit);
+         if (s.cur >= s.end or is_delimiter(*s.cur)) {
+            Lexeme t = { { start, s.cur }, s.lineno };
+            return s.alloc.make_integer(t);
          }
-         if (cur == last or cur->type != Token::close_paren)
-            missing_closer_for("list");
-         ++cur;
-         return alloc.make_list(elts);
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
-      Parser::Parser(Allocator& a, std::vector<const Syntax*>& v)
-            : alloc(a), syns(v) { }
+      // Read an identifier.
+      static const Syntax*
+      read_identifier(Reader::State& s) {
+         auto start = s.cur;
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
+      }
 
-      static std::string
-      to_string(BasicString s) {
-         return { s->begin(), s->end() };
+      // Read an atom starting with a '+' or '-' sign; this
+      // should be identifier, or a signed integer.
+      static const Syntax*
+      read_maybe_signed_number(Reader::State& s) {
+         auto start = s.cur++;
+         if (s.cur < s.end and isdigit(*s.cur)) {
+            advance_while(s, isdigit);
+            if (s.cur >= s.end or is_delimiter(*s.cur)) {
+               Lexeme t = { { start, s.cur }, s.lineno };
+               return s.alloc.make_integer(t);
+            }
+         }
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
+      }
+
+      static const Syntax*
+      read_keyword(Reader::State& s) {
+         auto start = s.cur++;
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::keyword, t);
+      }
+
+      // Read an atom.
+      static const Syntax*
+      read_atom(Reader::State& s) {
+         switch (*s.cur) {
+         case '"': return read_string(s);
+         case ':': return read_keyword(s);
+         case '-': case '+': return read_maybe_signed_number(s);
+
+         case '0': case '1': case '2': case '3': case '4':
+         case '5': case '6': case '7': case '8': case '9':
+            return read_maybe_natural(s);
+
+         default:
+            if (identifier_part(*s.cur))
+               return read_identifier(s);
+            invalid_character(s);
+            ++s.cur;
+            return nullptr;
+         }
+      }
+
+      // Parse a quote expression.
+      static const Syntax*
+      read_quote(Reader::State& s) {
+         ++s.cur;               // skip the quote character
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("end of input reached after quote sign");
+         return s.alloc.make_quote(x);
+      }
+
+      // Parse a backquote expression.
+      static const Syntax*
+      read_backquote(Reader::State& s) {
+         ++s.cur;               // skip the backquote character
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("end of input reached after backquote sign");
+         return s.alloc.make_antiquote(x);
+      }
+
+      // We've just seen "#(" indicating the start of a literal
+      // vector.  Read the elements and return the corresponding form.
+      static const Syntax*
+      finish_literal_vector(Reader::State& s) {
+         ++s.cur;               // Skip the open paren.
+         std::vector<const Syntax*> elts { };
+         while (skip_blank(s) and *s.cur != ')') {
+            if (auto x = read_sexpr(s))
+               elts.push_back(x);
+            else
+               syntax_error("syntax error while reading vector elements");
+         }
+         if (s.cur >= s.end)
+            syntax_error("unfinished literal vector");
+         else
+            ++s.cur;
+         return s.alloc.make_vector(elts);
+      }
+
+      // We've just seen the sharp sign followed by a digit.  We assume
+      // we are about to read an anchor or a back reference.
+      static const Syntax*
+      finish_anchor_or_reference(Reader::State& s) {
+         auto start = s.cur;
+         advance_while(s, isdigit);
+         if (s.cur >= s.end)
+            syntax_error("end-of-input after sharp-number sign");
+         const Byte c = *s.cur;
+         if (c != '#' and c != '=')
+            syntax_error("syntax error after sharp-number-equal sign");
+         Lexeme t = { { start, s.cur }, s.lineno };
+         auto n = natural_value(start, s.cur);
+         ++s.cur;
+         if (c == '#')
+            return s.alloc.make_reference(n, t);
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("syntax error after sharp-number-equal sign");
+         return s.alloc.make_anchor(n, x);
+      }
+
+      static const Syntax*
+      finish_function(Reader::State& s) {
+         ++s.cur;               // skip quote sign.
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("missing function designator after sharp-quote sign");
+         return s.alloc.make_function(x);
+      }
+
+      static const Syntax*
+      finish_uninterned_symbol(Reader::State& s) {
+         ++s.cur;               // skip colon sign.
+         auto start = s.cur;
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_symbol(SymbolSyntax::uninterned, t);
+      }
+
+      static const Syntax*
+      finish_readtime_eval(Reader::State& s) {
+         ++s.cur;               // skip dot sign.
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("parse error after sharp-dot sign");
+         return s.alloc.make_eval(x);
+      }
+
+      static const Syntax*
+      finish_character(Reader::State& s) {
+         ++s.cur;               // skip backslash sign
+         auto start = s.cur;
+         advance_while(s, identifier_part);
+         Lexeme t = { { start, s.cur }, s.lineno };
+         return s.alloc.make_character(t);
+      }
+
+      static const Syntax*
+      read_sharp_et_al(Reader::State& s) {
+         if (++s.cur >= s.end)
+            syntax_error("end-of-input reached after sharp sign");
+         switch (*s.cur) {
+         case '(':  return finish_literal_vector(s);
+         case '\'': return finish_function(s);
+         case ':': return finish_uninterned_symbol(s);
+         case '.': return finish_readtime_eval(s);
+         case '\\': return finish_character(s);
+
+         default:
+            if (isdigit(*s.cur))
+               return finish_anchor_or_reference(s);
+            syntax_error("syntax error after sharp-sign");
+         }
+         return nullptr;
+      }
+
+      // We have just seen a dot; read the tail and the closing parenthesis.
+      static const Syntax*
+      finish_dotted_list(Reader::State& s, std::vector<const Syntax*>& elts) {
+         ++s.cur;               // Skip dot sign.
+         auto x = read_sexpr(s);
+         if (x == nullptr)
+            syntax_error("missing expression after dot sign");
+         if (not skip_blank(s) or *s.cur != ')')
+            syntax_error("missing closing parenthesis");
+         ++s.cur;
+         elts.push_back(x);
+         return s.alloc.make_list(elts, true);
+      }
+
+      static const Syntax*
+      read_pair(Reader::State& s) {
+         ++s.cur;               // skip opening parenthesis
+         std::vector<const Syntax*> elts { };
+         while (skip_blank(s))
+            switch (*s.cur) {
+            case '.':
+               if (elts.empty())
+                  syntax_error("missing expression before dot sign.");
+               return finish_dotted_list(s, elts);
+
+            case ')':
+               ++s.cur;
+               return s.alloc.make_list(elts);
+
+            default:
+               if (auto x = read_sexpr(s))
+                  elts.push_back(x);
+               else
+                  syntax_error("unfinished pair expression");
+               break;
+            }
+         syntax_error("end-of-input while looking for closing parenthesis");
+         return nullptr;
+      }
+
+      static const Syntax*
+      read_sexpr(Reader::State& s) {
+         while (skip_blank(s))
+            switch (*s.cur) {
+            case ';': skip_to_eol(s); break;
+            case '\'': return read_quote(s);
+            case '`': return read_backquote(s);
+            case '|': return read_absolute_symbol(s);
+            case '#': return read_sharp_et_al(s);
+            case '(': return read_pair(s);
+            default: return read_atom(s);
+            }
+         return nullptr;
       }
 
       const Syntax*
-      Parser::parse_syntax(const Token*& cur, const Token* last) {
-         if (not skip_ignorable_tokens(cur, last))
-            return 0;
-
-         switch (cur->type) {
-         case Token::integer:
-            return alloc.make_integer(*cur++);
-
-         case Token::character:
-            return parse_character(cur, last);
-            
-         case Token::string:
-            return alloc.make_string(*cur++);
-               
-         case Token::identifier:
-            return parse_symbol(cur, last);
-
-         case Token::sharp_integer_equal:
-            return parse_anchor(cur, last);
-
-         case Token::sharp_integer_sharp:
-            return parse_reference(cur, last);
-
-         case Token::sharp_colon:
-            return parse_uninterned(++cur, last);
-
-         case Token::sharp_apostrophe:
-            return parse_function(++cur, last);
-
-         case Token::sharp_open_paren:
-            return parse_vector(++cur, last);
-
-         case Token::apostrophe:
-            return parse_quote(++cur, last);
-
-         case Token::open_paren:
-            return parse_list(++cur, last);
-
-         case Token::sharp_plus:
-            return parse_include(++cur, last);
-
-         case Token::sharp_minus:
-            return parse_exclude(++cur, last);
-
-         case Token::sharp_dot:
-            return parse_eval(++cur, last);
-
-         case Token::backquote:
-            return parse_antiquote(++cur, last);
-
-         case Token::comma:
-            return parse_expand(++cur, last);
-
-         case Token::comma_at:
-            return parse_splice(++cur, last);
-
-         default:
-            parse_error(std::string("parse error before ")
-                        + to_string(cur->lexeme));
-            return 0;           // never executed
-         }
+      Reader::read() {
+         return read_sexpr(st);
       }
 
-      const Token*
-      Parser::parse(const Token* cur, const Token* last) {
-         while (cur < last)
-            if (const Syntax* s = parse_syntax(cur, last))
-               syns.push_back(s);
-         return cur;
-      }
-
-      Module::Module(const std::string& s) : nm(s) {
-         std::vector<Token> tokens;
-         Memory::FileMapping input(s);
-         Lexer lexer(raw_strs, tokens);
-         const Byte* rest = lexer.tokenize(input.begin(), input.end());
-         if (rest != input.end())
-            syntax_error("syntax error");
-         Parser parser(allocator, *this);
-         const Token* tok = parser.parse(begin_ptr(tokens), end_ptr(tokens));
-         if (tok != end_ptr(tokens))
-            parse_error("parse error");
-      }
    }
 }

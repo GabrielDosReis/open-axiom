@@ -1,3 +1,16 @@
+2013-06-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/sexpr.H (Lexer): Remove.
+	(Parser): Likewise.
+	(Reader): New.
+	* syntax/sexpr.cc: Propagate changes.
+	* gui/main-window.h (MainWindow::read_databases): Declare.
+	(MainWindow::display_error): Likewise.
+	* gui/main-window.cc: Implement.
+	* gui/gui.pro.in (LIBS): Include syntax library.
+	* Makefile.am (oa_src_include_headers): Add sexpr.H.  Fix build
+	failure from previous commit.
+
 2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/sexpr.H: Move from utils.

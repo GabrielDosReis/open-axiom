@@ -8,6 +8,7 @@ oa_targetdir = @top_builddir@/@target@
 OA_INC = $${oa_targetdir}/include
 OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
 OA_IOLIB = -L@top_builddir@/src/io -lio
+OA_SYNTAX_LIB = -L@top_builddir@/src/syntax -lsyntax
 
 ## We build in release mode.
 CONFIG += release
@@ -38,7 +39,7 @@ DEPENDPATH += @srcdir@
 SOURCES += server.cc conversation.cc main-window.cc debate.cc main.cc
 
 ## Additional support libraries
-LIBS += $$OA_LIB $$OA_IOLIB
+LIBS += $$OA_SYNTAX_LIB $$OA_LIB $$OA_IOLIB
 
 ## C++ compiler
 #QMAKE_CXX = @CXX@

@@ -1,4 +1,4 @@
-// Copyright (C) 2011, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -48,6 +48,7 @@ namespace OpenAxiom {
       ~MainWindow();
 
       Server* server() { return &srv; }
+      void display_error(const std::string&);
 
    private slots:
       void done(int, QProcess::ExitStatus);
@@ -56,6 +57,8 @@ namespace OpenAxiom {
    private:
       Server srv;
       QTabWidget tabs;
+
+      void read_databases();
    };
 }
 
