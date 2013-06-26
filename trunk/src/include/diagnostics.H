@@ -33,6 +33,7 @@
 #ifndef OPENAXIOM_DIAGNOSTICS_included
 #define OPENAXIOM_DIAGNOSTICS_included
 
+#include <string>
 #include <iostream>
 
 namespace OpenAxiom {
@@ -48,6 +49,13 @@ namespace OpenAxiom {
       private:
          std::ostream* out;
          std::ostream* err;
+      };
+      
+      struct BasicError {
+         explicit BasicError(const std::string& s) : msg(s) { }
+         const std::string& message() const { return msg; }
+      protected:
+         std::string msg;
       };
    }
 }

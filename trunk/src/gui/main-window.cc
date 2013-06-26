@@ -36,10 +36,33 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
+#include <open-axiom/diagnostics>
+#include <open-axiom/sexpr>
+#include <open-axiom/FileMapping>
 #include "debate.h"
 #include "main-window.h"
 
 namespace OpenAxiom {
+   void
+   MainWindow::display_error(const std::string& s) {
+      QMessageBox::critical(this, tr("System error"), QString(s.c_str()));
+   }
+
+   void
+   MainWindow::read_databases() {
+      try {
+         const auto& fs = server()->system_root();
+         Memory::FileMapping db { fs.dbdir() + "/interp.daase" };
+         Sexpr::Reader rd { db.begin(), db.end() };
+         while (rd.read())
+            ;
+      }
+      catch(const Diagnostics::BasicError& e) {
+         display_error(e.message());
+      }
+   }
+
+
    static void connect_server_io(MainWindow* win, Debate* debate) {
       QObject::connect(win->server(), SIGNAL(readyReadStandardError()),
                        win, SLOT(display_error()));
@@ -70,6 +93,7 @@ namespace OpenAxiom {
       // wait to be pinged before displaying a prompt.  This is
       // an unfortunate result of a rather awkward hack.
       server()->input("");
+      read_databases();
    }
    
    MainWindow::~MainWindow() {

@@ -33,8 +33,6 @@
 #ifndef OPENAXIOM_STRUCTURE_included
 #define OPENAXIOM_STRUCTURE_included
 
-#include <iterator>
-
 namespace OpenAxiom {
    // -- helper classes for structural abstractions --
    namespace structure {

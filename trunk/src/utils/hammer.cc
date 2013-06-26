@@ -69,7 +69,7 @@ namespace OpenAxiom {
          BasicText(const Byte* f, const Byte* l) : span(f, l) { }
          // Pointer to the start of this basic text element
          const Byte* begin() const { return span.first; }
-         // Oone-past-the-end of the this basic text element.
+         // One-past-the-end of the this basic text element.
          const Byte* end() const { return span.second; }
       private:
          std::pair<const Byte*, const Byte*> span;
