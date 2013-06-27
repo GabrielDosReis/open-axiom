@@ -1,5 +1,15 @@
 2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* include/Lisp.H: New.
+	* utils/Lisp.cc: Likewise.
+	* gui/server.h (Server::lisp): Give access to embedded Lisp evaluator.
+	* gui/main-window.cc (MainWind::read_databases): Use embedded Lisp
+	evaluator.
+	* include/vm.H: Move from src/utils/.
+	* Makefile.am (oa_src_include_headers): Include vm.H.
+
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* interp/lisplib.boot (compDefineLisplib): Close the file
 	contained generated code before handing over to backend.
 	* interp/c-util.boot (moveLibdirByCopy): The inferred destination

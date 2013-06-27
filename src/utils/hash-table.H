@@ -45,8 +45,11 @@ namespace OpenAxiom {
    // --------------------
    // Datatype for entries in a parameterized hash table.
    // The type parameter is required to be a value-construcitble datatype.
+   // A table bucket entry is required to be at least 8-byte aligned
+   // so that an instance of it can be used directly as a VM value.
+   // See <open-axiom/vm> for more description.
    template<typename T>
-   struct HashTableEntry : T {
+   struct openaxiom_alignas(8) HashTableEntry : T {
       HashTableEntry* chain;   // previous item in the same bucket chain
       size_t hash;             // hash code of stored data
    };

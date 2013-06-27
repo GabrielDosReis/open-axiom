@@ -57,8 +57,10 @@ oa_src_include_headers = \
 	Input.H    \
 	diagnostics.H \
 	dialect.H \
+	vm.H \
 	token.H \
-	sexpr.H
+	sexpr.H \
+	Lisp.H
 
 if OA_BUILD_SMAN
 OA_SMAN_TARGETS = all-sman all-clef

@@ -1,5 +1,6 @@
-// Copyright (C) 2011-2012, Gabriel Dos Reis.
+// Copyright (C) 2011-2013, Gabriel Dos Reis.
 // All rights reserved.
+// Written by Gabriel Dos Reis.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -31,20 +32,58 @@
 
 // --% Author: Gabriel Dos Reis
 
-#include "vm.H"
+#include <open-axiom/vm>
 
 namespace OpenAxiom {
    namespace VM {
+      Dynamic::~Dynamic() { }
+
+      Symbol::Symbol(String n, Scope* s)
+            : std::pair<String, Scope*>(n, s)
+      { }
+
+      Fixnum
+      count_nodes(Pair p) {
+         Fixnum n = 1;
+         for (; auto q = to_pair_if_can(p->tail); p = q)
+            ++n;
+         return n;
+      }
+
       // -- BasicContext --
-      Pair BasicContext::make_cons(Value h, Value t) {
+      Pair BasicContext::make_pair(Value h, Value t) {
          return conses.make(h, t);
       }
 
-      NullaryOperator BasicContext::make_operator(Symbol n, NullaryCode c) {
-         return nullaries.make(n,c);
+      const Symbol*
+      BasicContext::make_symbol(String n, Scope* s) {
+         return &*syms.insert({ n, s }).first;
+      }
+
+      const NullaryOperator*
+      BasicContext::make_operator(Symbol n, NullaryCode c) {
+         return nullaries.make(n, c);
+      }
+      
+      const UnaryOperator*
+      BasicContext::make_operator(Symbol n, UnaryCode c) {
+         return unaries.make(n, c);
+      }
+      
+      const BinaryOperator*
+      BasicContext::make_operator(Symbol n, BinaryCode c) {
+         return binaries.make(n, c);
+      }
+      
+      const TernaryOperator*
+      BasicContext::make_operator(Symbol n, TernaryCode c) {
+         return ternaries.make(n, c);
       }
       
       BasicContext::BasicContext() {
+      }
+
+      BasicContext::~BasicContext() {
       }
    }
 }

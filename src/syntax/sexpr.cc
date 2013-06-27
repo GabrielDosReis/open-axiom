@@ -148,11 +148,6 @@ namespace OpenAxiom {
       // -- AtomSyntax --
       AtomSyntax::AtomSyntax(const Lexeme& t) : lex(t) { }
 
-      void
-      AtomSyntax::accept(Visitor& v) const {
-         v.visit(*this);
-      }
-
       // -- IntegerSyntax --
       IntegerSyntax::IntegerSyntax(const Lexeme& t) : AtomSyntax(t) { }
 
@@ -195,13 +190,13 @@ namespace OpenAxiom {
          v.visit(*this);
       }
 
-      // -- Reference --
-       Reference::Reference(const Lexeme& t, Ordinal n)
+      // -- ReferenceSyntax --
+       ReferenceSyntax::ReferenceSyntax(const Lexeme& t, Ordinal n)
              : AtomSyntax(t), pos(n)
       { }
 
       void
-      Reference::accept(Visitor& v) const {
+      ReferenceSyntax::accept(Visitor& v) const {
          v.visit(*this);
       }
 
@@ -259,42 +254,6 @@ namespace OpenAxiom {
          v.visit(*this);
       }
 
-      // ---------------------
-      // -- Syntax::Visitor --
-      // ---------------------
-
-      // implicitly convert a reference to `T' to a reference to `S'.
-      template<typename S, typename T>
-      inline const S&
-      as(const T& t) {
-         return t;
-      }
-
-      void
-      Syntax::Visitor::visit(const IntegerSyntax& i) {
-         visit(as<AtomSyntax>(i));
-      }
-
-      void
-      Syntax::Visitor::visit(const CharacterSyntax& c) {
-         visit(as<AtomSyntax>(c));
-      }
-
-      void
-      Syntax::Visitor::visit(const StringSyntax& s) {
-         visit(as<AtomSyntax>(s));
-      }
-
-      void
-      Syntax::Visitor::visit(const SymbolSyntax& s) {
-         visit(as<AtomSyntax>(s));
-      }
-
-      void
-      Syntax::Visitor::visit(const Reference& r) {
-         visit(as<AtomSyntax>(r));
-      }
-
       // ---------------
       // -- Allocator --
       // ---------------
@@ -325,7 +284,7 @@ namespace OpenAxiom {
          return syms.make(t, k);
       }
 
-      const Reference*
+      const ReferenceSyntax*
       Allocator::make_reference(size_t i, const Lexeme& t) {
          return refs.make(t, i);
       }
@@ -670,6 +629,15 @@ namespace OpenAxiom {
       const Syntax*
       Reader::read() {
          return read_sexpr(st);
+      }
+
+      const Byte*
+      Reader::position(Ordinal p) {
+         st.cur = st.start + p;
+         st.line = st.cur;
+         // while (st.line > st.start and st.line[-1] != '\n')
+         //    --st.line;
+         return st.cur;
       }
 
    }
