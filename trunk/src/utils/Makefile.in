@@ -1,4 +1,4 @@
-# Copyright (C) 2013, Gabriel Dos Reis.
+# Copyright (C) 2011-2013, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,14 +36,14 @@ hammer_SOURCES = hammer.cc
 hammer_OBJECTS = $(hammer_SOURCES:.cc=.lo)
 hammer_LDADD = -L. -lOpenAxiom
 
-libOpenAxiom_HEADERS = hash-table.H string-pool.H vm.H
+libOpenAxiom_HEADERS = hash-table.H string-pool.H
 libOpenAxiom_SOURCES = \
 	storage.cc string-pool.cc command.cc \
-	filesystem.cc vm.cc
+	filesystem.cc vm.cc Lisp.cc
 
 libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
 
-oa_public_headers = hash-table string-pool vm
+oa_public_headers = hash-table string-pool
 
 ## Where we store public header files
 oa_target_headerdir = $(oa_target_includedir)/open-axiom

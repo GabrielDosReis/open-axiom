@@ -402,8 +402,10 @@ oa_src_include_headers = \
 	Input.H    \
 	diagnostics.H \
 	dialect.H \
+	vm.H \
 	token.H \
-	sexpr.H
+	sexpr.H \
+	Lisp.H
 
 @OA_BUILD_SMAN_TRUE@OA_SMAN_TARGETS = all-sman all-clef
 @OA_BUILD_GRAPHICS_TRUE@OA_GRAPHICS_GRAPH_TARGET = all-graph

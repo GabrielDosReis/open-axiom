@@ -81,6 +81,9 @@ namespace OpenAxiom {
 
          std::pair<const Byte*, const Byte*> boundary;
          Ordinal line;
+         const Byte* begin() const { return boundary.first; }
+         const Byte* end() const { return boundary.second; }
+         Ordinal size() const { return end() - begin(); }
       };
 
       // ------------
@@ -100,7 +103,6 @@ namespace OpenAxiom {
       // in Lisp languages. 
       struct AtomSyntax : Syntax {
          const Lexeme& lexeme() const { return lex; }
-         void accept(Visitor&) const;
       protected:
          Lexeme lex;
          explicit AtomSyntax(const Lexeme&);
@@ -150,12 +152,12 @@ namespace OpenAxiom {
          const Kind sort;
       };
 
-      // ---------------
-      // -- Reference --
-      // ---------------
+      // ---------------------
+      // -- ReferenceSyntax --
+      // ---------------------
       // Back reference object to a syntax object.
-      struct Reference : AtomSyntax {
-         Reference(const Lexeme&, Ordinal);
+      struct ReferenceSyntax : AtomSyntax {
+         ReferenceSyntax(const Lexeme&, Ordinal);
          size_t tag() const { return pos; }
          void accept(Visitor&) const;
       private:
@@ -251,15 +253,17 @@ namespace OpenAxiom {
          explicit Exclude(const Syntax*);
       };
 
-      // ----------
+      // ----------------
       // -- ListSyntax --
-      // ----------
+      // ----------------
       // List syntax objects.
       struct ListSyntax : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
          using base::const_iterator;
          using base::begin;
          using base::end;
+         using base::rbegin;
+         using base::rend;
          using base::size;
          using base::empty;
 
@@ -272,9 +276,9 @@ namespace OpenAxiom {
          bool dot;
       };
       
-      // ------------
+      // ------------------
       // -- VectorSyntax --
-      // ------------
+      // ------------------
       // VectorSyntax syntax objects.
       struct VectorSyntax : Syntax, private std::vector<const Syntax*> {
          typedef std::vector<const Syntax*> base;
@@ -295,12 +299,11 @@ namespace OpenAxiom {
       // -- Syntax::Visitor --
       // ---------------------
       struct Syntax::Visitor {
-         virtual void visit(const AtomSyntax&) = 0;
-         virtual void visit(const IntegerSyntax&);
-         virtual void visit(const CharacterSyntax&);
-         virtual void visit(const StringSyntax&);
-         virtual void visit(const SymbolSyntax&);
-         virtual void visit(const Reference&);
+         virtual void visit(const IntegerSyntax&) = 0;
+         virtual void visit(const CharacterSyntax&) = 0;
+         virtual void visit(const StringSyntax&) = 0;
+         virtual void visit(const SymbolSyntax&) = 0;
+         virtual void visit(const ReferenceSyntax&) = 0;
          virtual void visit(const AnchorSyntax&) = 0;
          virtual void visit(const QuoteSyntax&) = 0;
          virtual void visit(const AntiquoteSyntax&) = 0;
@@ -332,7 +335,7 @@ namespace OpenAxiom {
          const CharacterSyntax* make_character(const Lexeme&);
          const StringSyntax* make_string(const Lexeme&);
          const SymbolSyntax* make_symbol(SymbolSyntax::Kind, const Lexeme&);
-         const Reference* make_reference(size_t, const Lexeme&);
+         const ReferenceSyntax* make_reference(size_t, const Lexeme&);
          const AnchorSyntax* make_anchor(size_t, const Syntax*);
          const QuoteSyntax* make_quote(const Syntax*);
          const AntiquoteSyntax* make_antiquote(const Syntax*);
@@ -351,7 +354,7 @@ namespace OpenAxiom {
          Memory::Factory<StringSyntax> strs;
          Memory::Factory<SymbolSyntax> syms;
          Memory::Factory<AnchorSyntax> ancs;
-         Memory::Factory<Reference> refs;
+         Memory::Factory<ReferenceSyntax> refs;
          Memory::Factory<QuoteSyntax> quotes;
          Memory::Factory<AntiquoteSyntax> antis;
          Memory::Factory<Expand> exps;
@@ -378,6 +381,7 @@ namespace OpenAxiom {
          };
 
          Reader(const Byte*, const Byte*);
+         const Byte* position(Ordinal);
          const Syntax* read();
       private:
          State st;

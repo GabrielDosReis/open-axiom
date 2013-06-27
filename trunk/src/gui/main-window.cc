@@ -54,8 +54,16 @@ namespace OpenAxiom {
          const auto& fs = server()->system_root();
          Memory::FileMapping db { fs.dbdir() + "/interp.daase" };
          Sexpr::Reader rd { db.begin(), db.end() };
-         while (rd.read())
-            ;
+         auto header = server()->lisp()->make_value(rd.read());
+         if (auto p = Lisp::to_pair_if_can(header)) {
+            auto offset = Lisp::retract_to_fixnum(p->head);
+            rd.position(offset);
+            auto table = server()->lisp()->toplevel_form(rd.read());
+         }
+         else {
+            QMessageBox::critical(this, tr("Malformed Database Header"),
+                                  QString(Lisp::show(header).c_str()));
+         }
       }
       catch(const Diagnostics::BasicError& e) {
          display_error(e.message());

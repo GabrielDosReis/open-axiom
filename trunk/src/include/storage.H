@@ -266,13 +266,13 @@ namespace OpenAxiom {
 
          // Allocate storage and value-construct an object of type `T'.
          T* make() {
-            return new(this->allocate(1)) T();
+            return new(this->allocate(1)) T{ };
          }
 
          // Allocate storage and construct an object of type `T'.
          template<typename... Args>
          T* make(const Args&... args) {
-            return new(this->allocate(1)) T(args...);
+            return new(this->allocate(1)) T{args...};
          }
 
       private:

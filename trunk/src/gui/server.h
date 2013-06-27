@@ -35,6 +35,7 @@
 
 #include <QProcess>
 #include "open-axiom.h"
+#include <open-axiom/Lisp>
 
 namespace OpenAxiom {
    struct Server : QProcess {
@@ -42,6 +43,7 @@ namespace OpenAxiom {
       ~Server();
 
       const Filesystem& system_root() const { return fs; }
+      Lisp::Evaluator* lisp() { return &lsp; }
       
       void launch();
       void input(const QString&);
@@ -49,6 +51,7 @@ namespace OpenAxiom {
    private:
       Command cmd;
       Filesystem fs;
+      Lisp::Evaluator lsp;
       
       Server(const Server&) = delete;
       Server& operator=(const Server&) = delete;
