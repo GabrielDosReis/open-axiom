@@ -418,7 +418,11 @@ compDefineLisplib(db,df:=["DEF",[op,:.],:.],m,e,fal,fn) ==
     leaveIfErrors(libName,dbConstructorKind db)
     sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
     finalizeLisplib(db,libName)
-    RECOMPILE_-LIB_-FILE_-IF_-NECESSARY filePath libCodeStream lib
+    RECOMPILE_-LIB_-FILE_-IF_-NECESSARY
+      -- Let's close the code stream before handing over to the backend
+      st := libCodeStream lib
+      closeStream st
+      filePath st
   finally
     RSHUT dbLibstream db
   lisplibDoRename db
