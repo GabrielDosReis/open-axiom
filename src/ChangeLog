@@ -1,3 +1,10 @@
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisplib.boot (compDefineLisplib): Close the file
+	contained generated code before handing over to backend.
+	* interp/c-util.boot (moveLibdirByCopy): The inferred destination
+	directory is not absolute.
+
 2013-06-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/sexpr.H (Lexer): Remove.
