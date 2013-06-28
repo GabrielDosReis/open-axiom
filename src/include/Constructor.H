@@ -30,41 +30,51 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "server.h"
+#ifndef OPENAXIOM_CONSTRUCTOR_included
+#define OPENAXIOM_CONSTRUCTOR_included
+
+#include <open-axiom/string-pool>
 
 namespace OpenAxiom {
-   static Command
-   process_arguments(int argc, char* argv[]) {
-      Command cmd;
-      preprocess_arguments(&cmd, argc, argv);
-      return cmd;
-   }
-   
-   Server::Server(int argc, char* argv[])
-         : cmd(process_arguments(argc, argv)),
-           fs(cmd.root_dir),
-           interp_db(fs.dbdir() + "/interp.daase")
-   { }
+   namespace VM {
+      // -- identifier
+      using Identifier = String;
 
-   Server::~Server() {
-      if (state() == QProcess::Running)
-         terminate();
-   }
-
-   void
-   Server::input(const QString& s) {
-      write(s.toAscii());
-      write("\n");
-   }
-
-   void
-   Server::launch() {
-      QStringList args;
-      for (auto arg : cmd.rt_args)
-         args << arg;
-      args << "--" << "--role=server";
-      for (int i = 1; i < cmd.core.argc; ++i)
-         args << cmd.core.argv[i];
-      start(make_path_for(cmd.root_dir, Driver::core), args);
+      // -- A constructor kind.
+      enum class ConstructorKind { category, domain, package };
+      
+      // -- Data structure for a constructor.
+      struct Constructor {
+         Identifier name;
+         Identifier abbrev;
+         String source_file;
+         String object_file;
+         ConstructorKind kind;
+      };
    }
 }
+
+// -- specialize helper function objects
+namespace std {
+   template<>
+   struct hash<OpenAxiom::VM::Constructor> {
+      using H = hash<OpenAxiom::VM::Identifier>;
+      H::result_type operator()(const Constructor& c) const {
+         return h(c.name);
+      }
+
+      H h;
+   };
+
+   template<>
+   struct equal_to<OpenAxiom::VM::Constructor> {
+      using E = equal_to<OpenAxiom::VM::Identifier>;
+      using arg_type = OpenAxiom::VM::Constructor;
+      bool operator()(const arg_type& x, const arg_type& y) const {
+         return e(x.name, y.name);
+      }
+      E e;
+   };
+}
+
+#endif  // OPENAXIOM_CONSTRUCTOR_included

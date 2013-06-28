@@ -36,6 +36,7 @@
 #include <QProcess>
 #include "open-axiom.h"
 #include <open-axiom/Lisp>
+#include <open-axiom/Database>
 
 namespace OpenAxiom {
    struct Server : QProcess {
@@ -52,6 +53,7 @@ namespace OpenAxiom {
       Command cmd;
       Filesystem fs;
       Lisp::Evaluator lsp;
+      VM::Database interp_db;
       
       Server(const Server&) = delete;
       Server& operator=(const Server&) = delete;

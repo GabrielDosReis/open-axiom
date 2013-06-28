@@ -382,6 +382,7 @@ namespace OpenAxiom {
 
          Reader(const Byte*, const Byte*);
          const Byte* position(Ordinal);
+         bool at_start() const { return st.cur == st.start; }
          const Syntax* read();
       private:
          State st;

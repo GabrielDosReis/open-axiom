@@ -1,5 +1,16 @@
 2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* src/rt: New directory.  Move vm.cc and Lisp.cc here.
+	* rt/Database.cc: New.
+	* include/Database.H: Likewise.
+	* include/Constructor.H: Likewise.
+	* gui/server.h (Server): Cache database input souece.
+	* gui/gui.pro.in (LIBS): Add core runtime library.
+	* Makefile.am (oa_src_include_headers): Add Constructor.H and
+	Database.H.
+
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* include/Lisp.H: New.
 	* utils/Lisp.cc: Likewise.
 	* gui/server.h (Server::lisp): Give access to embedded Lisp evaluator.

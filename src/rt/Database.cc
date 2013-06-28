@@ -30,41 +30,29 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "server.h"
+#include <open-axiom/Database>
 
 namespace OpenAxiom {
-   static Command
-   process_arguments(int argc, char* argv[]) {
-      Command cmd;
-      preprocess_arguments(&cmd, argc, argv);
-      return cmd;
-   }
-   
-   Server::Server(int argc, char* argv[])
-         : cmd(process_arguments(argc, argv)),
-           fs(cmd.root_dir),
-           interp_db(fs.dbdir() + "/interp.daase")
-   { }
+   namespace VM {
+      Database::Database(const std::string& path)
+            : file(path), reader{ file.begin(), file.end() }, toc() {
+      }
 
-   Server::~Server() {
-      if (state() == QProcess::Running)
-         terminate();
-   }
-
-   void
-   Server::input(const QString& s) {
-      write(s.toAscii());
-      write("\n");
-   }
-
-   void
-   Server::launch() {
-      QStringList args;
-      for (auto arg : cmd.rt_args)
-         args << arg;
-      args << "--" << "--role=server";
-      for (int i = 1; i < cmd.core.argc; ++i)
-         args << cmd.core.argv[i];
-      start(make_path_for(cmd.root_dir, Driver::core), args);
+      Value
+      Database::find_with(Value key, Lisp::Evaluator& ctx) {
+         auto p = dict.find(key);
+         if (p != dict.end())
+            return p->second;
+         if (reader.at_start()) {
+            auto x = reader.read();
+            auto offset = Lisp::retract_to_fixnum
+               (Lisp::retract_to_pair(ctx.make_value(x))->head);
+            reader.position(offset);
+            toc = Lisp::retract_to_pair(ctx.make_value(reader.read()));
+         }
+         else if (auto data = Lisp::assoc(key, toc))
+            return dict.insert({ key, data }).first->second;
+         return nil;
+      }
    }
 }

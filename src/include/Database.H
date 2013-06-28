@@ -30,41 +30,25 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "server.h"
+#ifndef OPENAXIOM_DATABASE_included
+#define OPENAXIOM_DATABASE_included
+
+#include <open-axiom/FileMapping>
+#include <open-axiom/sexpr>
+#include <open-axiom/Lisp>
 
 namespace OpenAxiom {
-   static Command
-   process_arguments(int argc, char* argv[]) {
-      Command cmd;
-      preprocess_arguments(&cmd, argc, argv);
-      return cmd;
-   }
-   
-   Server::Server(int argc, char* argv[])
-         : cmd(process_arguments(argc, argv)),
-           fs(cmd.root_dir),
-           interp_db(fs.dbdir() + "/interp.daase")
-   { }
-
-   Server::~Server() {
-      if (state() == QProcess::Running)
-         terminate();
-   }
-
-   void
-   Server::input(const QString& s) {
-      write(s.toAscii());
-      write("\n");
-   }
-
-   void
-   Server::launch() {
-      QStringList args;
-      for (auto arg : cmd.rt_args)
-         args << arg;
-      args << "--" << "--role=server";
-      for (int i = 1; i < cmd.core.argc; ++i)
-         args << cmd.core.argv[i];
-      start(make_path_for(cmd.root_dir, Driver::core), args);
+   namespace VM {
+      struct Database {
+         explicit Database(const std::string&);
+         Value find_with(Value, Lisp::Evaluator&);
+      private:
+         Memory::FileMapping file;
+         Sexpr::Reader reader;
+         Pair toc;
+         std::map<Value, Value> dict;
+      };
    }
 }
+
+#endif  // OPENAXIOM_DATABASE_included

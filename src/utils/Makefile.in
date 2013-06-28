@@ -39,7 +39,7 @@ hammer_LDADD = -L. -lOpenAxiom
 libOpenAxiom_HEADERS = hash-table.H string-pool.H
 libOpenAxiom_SOURCES = \
 	storage.cc string-pool.cc command.cc \
-	filesystem.cc vm.cc Lisp.cc
+	filesystem.cc
 
 libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
 

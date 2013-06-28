@@ -112,6 +112,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/io/Makefile
   src/syntax/Makefile
+  src/rt/Makefile
   src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
