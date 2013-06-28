@@ -260,5 +260,18 @@ namespace OpenAxiom {
          else
             os << "<unprintable>";
       }
+
+      // -- assoc: (T, List Pair(T, S)) -> S
+      Value assoc(Value key, Pair al) {
+         while (al != nullptr) {
+            auto entry = retract_to_pair(al->head);
+            if (entry->head == key)
+               return entry->tail;
+            else if (al->tail == nil)
+               return nil;
+            al = retract_to_pair(al->tail);
+         }
+         return nil;
+      }
    }
 }

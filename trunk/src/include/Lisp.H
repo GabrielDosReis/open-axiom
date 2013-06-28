@@ -109,6 +109,9 @@ namespace OpenAxiom {
       Fixnum retract_to_fixnum(Value);
       Pair retract_to_pair(Value);
       Symbol* retract_to_symbol(Value);
+
+      // -- Alist functions
+      Value assoc(Value, Pair);
    }
 }
 
