@@ -39,11 +39,6 @@ IN=$(axiom_src_srcdir)/input
 MID=./$(top_builddir)/int/input
 OUT=$(axiom_targetdir)/input
 DOC=$(axiom_target_docdir)/src/input
- 
-
-ASFILES=${OUT}/aseg6.as   ${OUT}/aseg7.as  ${OUT}/ecfact.as \
-        ${OUT}/hilbert.as ${OUT}/matops.as ${OUT}/pdecomp0.as \
-        ${OUT}/romnum.as
 
 NAGLIB=${OUT}/c02aff.input   ${OUT}/c02agf.input     ${OUT}/c05adf.input \
        ${OUT}/c05nbf.input   ${OUT}/c05pbf.input     ${OUT}/c06eaf.input \
@@ -535,7 +530,7 @@ DOCFILES= \
 
 all: all-ax
 
-all-ax all-input: $(OUT) ${FILES} ${FILES2} ${ASFILES}
+all-ax all-input: $(OUT) ${FILES} ${FILES2}
 	@echo 1 finished $(srcdir)
 
 $(OUT):
