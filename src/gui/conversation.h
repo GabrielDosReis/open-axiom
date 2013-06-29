@@ -41,6 +41,7 @@
 #include <QEvent>
 #include <QResizeEvent>
 #include <QPaintEvent>
+#include <QRegExp>
 #include "server.h"
 
 namespace OpenAxiom {
@@ -71,6 +72,11 @@ namespace OpenAxiom {
       void add_paragraph(const QString&);
       // Add accumulate new text.
       void add_text(const QString&);
+      // Current cursor
+      QTextCursor& get_cursor() { return cur; }
+      OutputTextArea& insert_block(const QString&);
+   protected:
+      QTextCursor cur;
    };
 
    // ---------------
@@ -188,6 +194,8 @@ namespace OpenAxiom {
       Children children;
       Exchange* cur_ex;
       OutputTextArea* cur_out;
+      QRegExp rx;
+      QRegExp tx;
    };
 }
 

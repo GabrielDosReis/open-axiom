@@ -69,7 +69,8 @@ namespace OpenAxiom {
    // -- OutputTextArea --
    // --------------------
    OutputTextArea::OutputTextArea(QWidget* p)
-         : Base(p) {
+         : Base(p), cur(document()) {
+      get_cursor().movePosition(QTextCursor::End);
       setReadOnly(true);          // this is a output only area.
       setLineWrapMode(NoWrap);    // for the time being, mess with nothing.
       setFont(p->font());
@@ -92,16 +93,10 @@ namespace OpenAxiom {
       return QSize(width(), (1 + document()->lineCount()) * s.height());
    }
 
-   // Concatenate two paragraphs.
-   static QString
-   accumulate_paragaphs(const QString& before, const QString& after) {
-      if (empty_string(before))
-         return after;
-      return before + "\n" + after;
-   }
-   
    void OutputTextArea::add_paragraph(const QString& s) {
-      setPlainText(accumulate_paragaphs(toPlainText(), s));
+      if (not document()->isEmpty())
+         get_cursor().insertBlock();
+      get_cursor().insertText(s);
       QSize sz = sizeHint();
       sz.setWidth(parentWidget()->width() - our_margin(this));
       resize(sz);
@@ -118,6 +113,16 @@ namespace OpenAxiom {
       resize(sz);
       show();
       updateGeometry();
+   }
+
+   OutputTextArea&
+   OutputTextArea::insert_block(const QString& s) {
+      if (not document()->isEmpty())
+         get_cursor().insertBlock();
+      get_cursor().insertText(s);
+      resize(sizeHint());
+      updateGeometry();
+      return *this;
    }
 
    // --------------
@@ -276,7 +281,13 @@ namespace OpenAxiom {
    // Set a minimum preferred widget size, so no layout manager
    // messes with it.  Indicate we can make use of more space.
    Conversation::Conversation(Debate* d)
-         : QWidget(d), win(d), greatings(this), cur_ex(), cur_out(&greatings) {
+         : QWidget(d),
+           win(d),
+           greatings(this),
+           cur_ex(),
+           cur_out(&greatings),
+           rx("\\(\\d+\\)\\s->"),
+           tx("\\sType: ") {
       setFont(monospace_font());
       setBackgroundRole(QPalette::Base);
       greatings.setFont(font());
@@ -350,54 +361,47 @@ namespace OpenAxiom {
       return cur_ex = children[w->number()];
    }
 
-   struct OracleOutput {
-      QString result;
-      QString prompt;
-   };
-
-   static OracleOutput
-   read_output(Server* server) {
-      OracleOutput output;
-      QStringList strs = QString::fromLocal8Bit(server->readAll()).split('\n');
-      QStringList new_list;
-      QRegExp rx("\\(\\d+\\)\\s->");
-      while (not strs.isEmpty()) {
-         QString s = strs.takeFirst();
-         if (empty_string(s))
-            continue;
-         if (rx.indexIn(s) != -1) {
-            output.prompt = s;
-            break;
-         }
-         new_list.append(s);
-      }
-     output.result =new_list.join("\n");
-     return output;
+   static QTextCharFormat
+   get_type_format(OutputTextArea* area) {
+      auto format = area->get_cursor().charFormat();
+      format.setFontWeight(QFont::Bold);
+      format.setToolTip("domain of result");
+      return format;
    }
 
-   static bool
-   empty(const OracleOutput& out) {
-      return empty_string(out.result) and empty_string(out.prompt);
+   static void
+   display_type(OutputTextArea* area, QString& text, int n) {
+      area->insert_block(QString(n, ' '));
+      area->get_cursor().insertText(text.mid(n), get_type_format(area));
+      area->resize(area->sizeHint());
+      area->updateGeometry();
    }
 
    void
    Conversation::read_reply() {
-      OracleOutput output = read_output(debate()->server());
-      if (empty(output))
-         return;
-      if (not empty_string(output.result)) {
-         cur_out->add_paragraph(output.result);
-         adjustSize();
+      auto data = debate()->server()->readAll();
+      QStringList strs = QString::fromLocal8Bit(data).split('\n');
+      QString prompt;
+      for (auto& s : strs) {
+         if (rx.indexIn(s) != -1) {
+            prompt = s;
+            continue;
+         }
+         auto tpos = tx.indexIn(s);
+         if (tpos != -1)
+            display_type(cur_out, s, tpos + tx.matchedLength());
+         else
+            cur_out->add_paragraph(s);
       }
       if (length() == 0) {
-         if (not empty_string(output.prompt))
+         if (not empty_string(prompt))
             ensure_visibility(debate(), new_topic());
       }
       else {
          exchange()->adjustSize();
          exchange()->update();
          exchange()->updateGeometry();
-         if (empty_string(output.prompt))
+         if (empty_string(prompt))
             ensure_visibility(debate(), exchange());
          else {
             ensure_visibility(debate(), next(exchange()));

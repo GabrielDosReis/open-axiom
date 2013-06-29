@@ -1,3 +1,10 @@
+2013-06-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/conversation.cc (accumulate_paragraphs): Remove.
+	(read_output): Remove.
+	(OutputTextArea::add_paragraph): Rewrite.
+	(Conversation::read_reply): Likewise.
+
 2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* src/rt: New directory.  Move vm.cc and Lisp.cc here.
