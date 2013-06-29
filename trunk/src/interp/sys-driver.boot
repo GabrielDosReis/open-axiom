@@ -147,7 +147,7 @@ restart() ==
 )if %hasFeature KEYWORD::GCL
   SYSTEM::GBC_-TIME 0
 )endif
-  if $openServerIfTrue and functionSymbol? "openServer" then
+  if $openServerIfTrue then
     os := openServer $SpadServerName
     if os = 0 then
       $openServerIfTrue := false
