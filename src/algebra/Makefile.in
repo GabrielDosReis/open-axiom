@@ -3460,7 +3460,7 @@ distclean-local: clean-local
 # We use `sinclude' instead of `include' so that Automake doesn't get
 # the idea of wanting to interpret the content of a file that doesn't 
 # exist at the time it is run.
-sinclude extract.mk
+# sinclude extract.mk
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
