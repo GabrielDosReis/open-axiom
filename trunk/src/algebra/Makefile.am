@@ -1967,7 +1967,7 @@ $(OUT)/PFR.$(FASLEXT): $(OUT)/FR.$(FASLEXT)
 oa_algebra_layer_10 = \
   BPADIC   ANY      LWORD    FR \
   SEXOF    CRAPACK  DEQUEUE  DLIST    \
-  FLASORT  \
+  FLASORT  PATRES \
   FLAGG2   FGROUP   FM       FM1      \
   FPC      FPC-     FMONOID  INDE     \
   IPADIC   IROOT    IR2       \
@@ -2018,7 +2018,7 @@ oa_algebra_layer_11 = \
   TS       TUPLE    UPSCAT   UPSCAT-  \
                     XDPOLY   XEXPPKG  \
   XF       XF-               XPOLY    \
-  XRPOLY   FFIELDC  FFIELDC- MTSCAT
+  XRPOLY   
 
 oa_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_11))
@@ -2188,7 +2188,7 @@ $(OUT)/PSETCAT.$(FASLEXT): $(OUT)/RPOLCAT.$(FASLEXT)
 
 oa_algebra_layer_18 = \
 	IPF     CATCTOR DOMCTOR   CTORCALL \
-  KAFILE  PATRES TBCMPPK PSETCAT    PSETCAT-  \
+  KAFILE  TBCMPPK PSETCAT    PSETCAT-  \
   RPOLCAT  RPOLCAT-
 
 oa_algebra_layer_18_nrlibs = \
@@ -2266,8 +2266,7 @@ oa_algebra_layer_20 = \
   RDEEF    RDEEFS   RDIV     RSETCAT  \
   RSETCAT- RULE     RULESET  SIMPAN   \
   SOLVESER SUMFS    SUTS     \
-  TOOLSIGN TRIGMNIP TRMANIP  ULSCCAT  \
-  ULSCCAT- UPXSSING UTSODE   UTSODETL \
+  TOOLSIGN TRIGMNIP TRMANIP  UPXSSING UTSODE   UTSODETL \
   UTS2     WUTSET   
 
 oa_algebra_layer_20_nrlibs = \
@@ -2288,8 +2287,7 @@ oa_algebra_layer_21 = \
   GSERIES  HELLFDIV INVLAPLA IR2F     \
   IRRF2F   LAPLACE  LIMITPS  LODEEF   \
   NODE1    ODECONST ODEINT   REP      \
-  SOLVERAD SULS     SUPXS             \
-                    UPXSCONS 
+  SOLVERAD SULS     SUPXS   
 
 oa_algebra_layer_21_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_21))
