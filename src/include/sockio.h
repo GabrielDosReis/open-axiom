@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis
+  Copyright (C) 2007-2013, Gabriel Dos Reis
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -123,7 +123,7 @@ OPENAXIOM_C_EXPORT int make_server_name(char*, const char*);
 OPENAXIOM_C_EXPORT int make_server_number();
 OPENAXIOM_C_EXPORT openaxiom_sio* connect_to_local_server(const char*, int, int);
 OPENAXIOM_C_EXPORT int open_server(const char*);
-OPENAXIOM_C_EXPORT int accept_connection(openaxiom_sio*);
+OPENAXIOM_C_EXPORT int accept_connection();
 OPENAXIOM_C_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
 OPENAXIOM_C_EXPORT void close_socket(openaxiom_socket, const char*);
 
@@ -205,7 +205,7 @@ OPENAXIOM_C_EXPORT int server_switch();
 /* table of dedicated socket types */
 
 OPENAXIOM_C_EXPORT openaxiom_sio *purpose_table[];
-OPENAXIOM_C_EXPORT openaxiom_sio server[];
+OPENAXIOM_C_EXPORT openaxiom_sio server;
 OPENAXIOM_C_EXPORT openaxiom_sio clients[];
 OPENAXIOM_C_EXPORT fd_set socket_mask;
 OPENAXIOM_C_EXPORT fd_set server_mask;

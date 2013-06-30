@@ -82,8 +82,8 @@ namespace OpenAxiom {
 /* socket description of spad clients */
 openaxiom_sio clients[MaxClients];       
 
-/* AF_LOCAL and AF_INET sockets for server */
-openaxiom_sio server[2];                 
+/* Local socket for server */
+openaxiom_sio server;                 
 
 /* table of dedicated socket types */
 openaxiom_sio *purpose_table[TotalMaxPurposes]; 
@@ -990,8 +990,8 @@ connect_to_local_server_new(const char *server_name, int purpose, int time_out)
     return NULL;
   }
 
-  memset(server[1].addr.u_addr.sa_data, 0,
-         sizeof(server[1].addr.u_addr.sa_data));
+  memset(server.addr.u_addr.sa_data, 0,
+         sizeof(server.addr.u_addr.sa_data));
   sock->addr.u_addr.sa_family = OPENAXIOM_AF_LOCAL;
   strcpy(sock->addr.u_addr.sa_data, name);
   for(i=0; i<max_con; i++) {
@@ -1044,8 +1044,8 @@ connect_to_local_server(const char *server_name, int purpose, int time_out)
     return NULL;
   }
   /* connect socket using name specified in command line */
-  memset(server[1].addr.u_addr.sa_data, 0,
-         sizeof(server[1].addr.u_addr.sa_data));
+  memset(server.addr.u_addr.sa_data, 0,
+         sizeof(server.addr.u_addr.sa_data));
   sock->addr.u_addr.sa_family = OPENAXIOM_AF_LOCAL;
   strcpy(sock->addr.u_addr.sa_data, name);
   for(i=0; i<max_con; i++) {
@@ -1086,7 +1086,7 @@ remote_stdio(openaxiom_sio *sock)
     FD_ZERO(&rd);
     FD_SET(sock->socket,&rd);
     FD_SET(0, &rd);
-    len = sselect(FD_SETSIZE, (fd_set *)&rd, (fd_set *)0, (fd_set *)0, NULL);
+    len = sselect(FD_SETSIZE, &rd, nullptr, nullptr, NULL);
     if (len == -1) {
       perror("stdio select");
       return;
@@ -1156,16 +1156,15 @@ make_server_name(char *name, const char* base)
 static void
 init_socks()
 {
-  int i;
   FD_ZERO(&socket_mask);
   FD_ZERO(&server_mask);
   init_purpose_table();
-  for(i=0; i<2; i++) server[i].socket = 0;
-  for(i=0; i<MaxClients; i++) clients[i].socket = 0;
+  server.socket = 0;
+  for (int i=0; i<MaxClients; i++)
+     clients[i].socket = 0;
 }
 
-/* client Spad server sockets.  Two sockets are created: server[0]
-   is the internet server socket, and server[1] is a local domain socket. */
+/* client Spad server sockets: server is a local domain socket. */
 OPENAXIOM_C_EXPORT int 
 open_server(const char* server_name)
 {
@@ -1177,52 +1176,26 @@ open_server(const char* server_name)
 #endif  
   if (make_server_name(name, server_name) == -1)
     return -2;
-  /* create the socket internet socket */
-  server[0].socket = 0;
-/*  server[0].socket = openaxiom_socket_stream_link(AF_INET);
-  if (is_invalid_socket(&server[0])) {
-    server[0].socket = 0;
-  } else {
-    server[0].addr.i_addr.sin_family = AF_INET;
-    server[0].addr.i_addr.sin_addr.s_addr = INADDR_ANY;
-    server[0].addr.i_addr.sin_port = 0;
-    if (bind(server[0].socket, &server[0].addr.i_addr,
-             sizeof(server[0].addr.i_addr))) {
-      perror("binding INET stream socket");
-      server[0].socket = 0;
-      return -1;
-    }
-    length = sizeof(server[0].addr.i_addr);
-    if (getsockname(server[0].socket, &server[0].addr.i_addr, &length)) {
-      perror("getting INET server socket name");
-      server[0].socket = 0;
-      return -1;
-    }
-    server_port = ntohs(server[0].addr.i_addr.sin_port);
-    FD_SET(server[0].socket, &socket_mask);
-    FD_SET(server[0].socket, &server_mask);
-    listen(server[0].socket,5);
-  } */
   /* Next create the local domain socket */
-  server[1].socket = openaxiom_socket_stream_link(OPENAXIOM_AF_LOCAL);
-  if (is_invalid_socket(&server[1])) {
+  server.socket = openaxiom_socket_stream_link(OPENAXIOM_AF_LOCAL);
+  if (is_invalid_socket(&server)) {
     perror("opening local server socket");
-    server[1].socket = 0;
+    server.socket = 0;
     return -2;
   } else {
-    server[1].addr.u_addr.sa_family = OPENAXIOM_AF_LOCAL;
-    memset(server[1].addr.u_addr.sa_data, 0,
-           sizeof(server[1].addr.u_addr.sa_data));
-    strcpy(server[1].addr.u_addr.sa_data, name);
-    if (bind(server[1].socket, &server[1].addr.u_addr,
-             sizeof(server[1].addr.u_addr))) {
+    server.addr.u_addr.sa_family = OPENAXIOM_AF_LOCAL;
+    memset(server.addr.u_addr.sa_data, 0,
+           sizeof(server.addr.u_addr.sa_data));
+    strcpy(server.addr.u_addr.sa_data, name);
+    if (bind(server.socket, &server.addr.u_addr,
+             sizeof(server.addr.u_addr))) {
       perror("binding local server socket");
-      server[1].socket = 0;
+      server.socket = 0;
       return -2;
     }
-    FD_SET(server[1].socket, &socket_mask);
-    FD_SET(server[1].socket, &server_mask);
-    listen(server[1].socket, 5);
+    FD_SET(server.socket, &socket_mask);
+    FD_SET(server.socket, &server_mask);
+    listen(server.socket, 5);
   }
   s = oa_getenv("SPADSERVER");
   if (s == NULL) {
@@ -1230,26 +1203,6 @@ open_server(const char* server_name)
     return -1;
   }
   return 0;
-}
-
-OPENAXIOM_C_EXPORT int 
-accept_connection(openaxiom_sio *sock)
-{
-  int client;
-  for(client=0; client<MaxClients && clients[client].socket != 0; client++);
-  if (client == MaxClients) {
-    printf("Ran out of client openaxiom_sio structures\n");
-    return -1;
-  }
-  clients[client].socket = accept(sock->socket, 0, 0);
-  if (is_invalid_socket(&clients[client])) {
-    perror("accept_connection");
-    clients[client].socket = 0;
-    return -1;
-  }
-  FD_SET(clients[client].socket, &socket_mask);
-  get_socket_type(clients+client);
-  return clients[client].purpose;
 }
 
 /* reads a the socket purpose declaration for classification */
@@ -1265,24 +1218,42 @@ get_socket_type(openaxiom_sio *sock)
 }
 
 OPENAXIOM_C_EXPORT int 
+accept_connection()
+{
+  int client = 0;
+  while (client < MaxClients && clients[client].socket != 0)
+     ++client;
+  if (client == MaxClients) {
+    printf("Ran out of client openaxiom_sio structures\n");
+    return -1;
+  }
+  clients[client].socket = accept(server.socket, 0, 0);
+  if (is_invalid_socket(&clients[client])) {
+    perror("accept_connection");
+    clients[client].socket = 0;
+    return -1;
+  }
+  FD_SET(clients[client].socket, &socket_mask);
+  get_socket_type(&clients[client]);
+  return clients[client].purpose;
+}
+
+OPENAXIOM_C_EXPORT int 
 sock_accept_connection(int purpose)
 {
   fd_set rd;
-  int ret_val, i, p;
+  int ret_val, p;
   if (oa_getenv("SPADNUM") == NULL) return -1;
   while (1) {
     rd = server_mask;
-    ret_val = sselect(FD_SETSIZE, (fd_set *)&rd, (fd_set *)0, (fd_set *)0, NULL);
+    ret_val = sselect(FD_SETSIZE, &rd, nullptr, nullptr, NULL);
     if (ret_val == -1) {
       perror ("Select");
       return -1;
     }
-    for(i=0; i<2; i++) {
-      if (is_valid_socket(&server[i])
-          && FD_ISSET(server[i].socket, &rd)) {
-        p = accept_connection(server+i);
-        if (p == purpose) return 1;
-      }
+    if (is_valid_socket(&server) && FD_ISSET(server.socket, &rd)) {
+       p = accept_connection();
+       if (p == purpose) return 1;
     }
   }
 }
@@ -1292,7 +1263,7 @@ sock_accept_connection(int purpose)
 OPENAXIOM_C_EXPORT int 
 server_switch()
 {
-  int ret_val, i, cmd = 0;
+  int ret_val, cmd = 0;
   fd_set rd, wr, ex, fds_mask;
   FD_ZERO(&rd);
   FD_ZERO(&wr);
@@ -1314,11 +1285,8 @@ server_switch()
         /* perror ("Select in switch"); */
         return -1;
       }
-      for(i=0; i<2; i++) {
-        if (is_valid_socket(&server[i])
-            && (FD_ISSET(server[i].socket, &rd)))
-          accept_connection(server+i);
-      }
+      if (is_valid_socket(&server) && FD_ISSET(server.socket, &rd))
+         accept_connection();
     } while (purpose_table[SessionManager] == NULL);
     FD_SET(purpose_table[SessionManager]->socket, &fds_mask);
     if (FD_ISSET(purpose_table[SessionManager]->socket, &rd)) {

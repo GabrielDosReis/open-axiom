@@ -1,3 +1,13 @@
+2013-06-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/sockio.h (accept_connection): Take no argument.
+	(server): Adjust type.
+	* lib/sockio-c.c: Implement changes.
+	* hyper/spadint.c (accept_menu_server_connection): Adjust use of
+	server.
+	* sman/session.c (manage_sessions): Likewise.
+	* sman/sman.c (manage_spad_io): Likewise.
+
 2013-06-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* gui/conversation.cc (accumulate_paragraphs): Remove.
