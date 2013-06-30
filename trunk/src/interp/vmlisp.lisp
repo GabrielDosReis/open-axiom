@@ -294,14 +294,14 @@
 
 ; 9.13 Streams
 
-#+KCL
 (defun |ioTerminal?| (stream)
-  (and (streamp stream) (output-stream-p stream)
-       (eq (system:fp-output-stream stream)
-           (system:fp-output-stream *terminal-io*))))
-
-#-KCL
-(defun |ioTerminal?| (stream)
+  #+:gcl (and (streamp stream) (output-stream-p stream)
+	      (eq (system:fp-output-stream stream)
+		  (system:fp-output-stream *terminal-io*)))
+  #+:clisp (or (eq stream *terminal-io*)
+	       (and (typep stream 'synonym-stream)
+		    (|ioTerminal?| (symbol-value (synonym-stream-symbol stream)))))
+  #-(or :clisp :gcl)
   (cond ((not (streamp stream))
 	 nil)
 	((not (typep stream 'synonym-stream))
@@ -1420,10 +1420,6 @@
   (COND (*EOF* (FAIL))
         ((PROGN (NEXTSTRMLINE STRM) (STRMBLANKLINE STRM)) STRM)
         ((STRMSKIPTOBLANK STRM))))
- 
-(DEFUN CURINPUTLINE () (CURSTRMLINE |$InputStream|))
- 
-(DEFUN NEXTINPUTLINE () (NEXTSTRMLINE |$InputStream|))
  
 ; 22.3 Output Functions
  
