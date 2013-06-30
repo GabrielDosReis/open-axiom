@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,6 @@ static void clean_hypertex_socket(void);
 static void read_from_spad_io(int);
 static void read_from_manager(int);
 static void manage_spad_io(int);
-static void init_spad_process_list(void);
 static SpadProcess* find_child(int);
 static void kill_all_children(void);
 static void clean_up_terminal(void);
@@ -655,31 +654,23 @@ manage_spad_io(int ptcNum)
     if (FD_ISSET(ptcNum, &rd)) {
       read_from_spad_io(ptcNum);
     }
-    for(i=0; i<2; i++) {
-      if (server[i].socket > 0 && FD_ISSET(server[i].socket, &rd)) {
-        p = accept_connection(server+i);
-        switch(p) {
-        case SessionIO:
+    if (server.socket > 0 && FD_ISSET(server.socket, &rd)) {
+       p = accept_connection();
+       switch(p) {
+       case SessionIO:
           session_io = purpose_table[SessionIO];
           /*  printf("connected session manager\n\r");*/
           printf("\n");
           break;
-        default:
+       default:
           printf("sman: Unknown connection request type: %d\n", p);
           break;
-        }
-      }
+       }
     }
     if (session_io != NULL && FD_ISSET(session_io->socket, &rd)) {
       read_from_manager(ptcNum);
     }
   }
-}
-
-static void
-init_spad_process_list(void)
-{
-  spad_process_list = NULL;
 }
 
 #if 0
@@ -780,7 +771,7 @@ main(int argc, char *argv[])
   setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
-  init_spad_process_list();
+  spad_process_list = NULL;
   start_the_Axiom(&command);
   if (open_server(SessionIOName) == -2) {
     fprintf(stderr, "Fatal error opening I/O socket\n");

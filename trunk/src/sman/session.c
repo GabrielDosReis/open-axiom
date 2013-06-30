@@ -2,7 +2,7 @@
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
 
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2013, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -445,9 +445,9 @@ fprintf(stderr,"rd=%u]\n",*((long *)rd.fds_bits));
       read_from_spad_io(); }
     
     
-    if (FD_ISSET(server[1].socket, &rd)) {
+    if (FD_ISSET(server.socket, &rd)) {
       /* Someone wants to connect to our server socket */
-      accept_session_connection(server+1); }
+      accept_session_connection(&server); }
     
     
     for(pSock=plSock; pSock != (Sock_List *) 0 ; pSock=pSock->next) {
@@ -521,9 +521,9 @@ main(void)
   else {
 #ifdef DEBUG
     fprintf(stderr, "session: opened SessionServer , fd = %d\n",
-            server[1].socket);
+            server.socket);
 #endif  
-    FD_SET(server[1].socket,&session_socket_mask);
+    FD_SET(server.socket,&session_socket_mask);
   }
   manage_sessions();
   return(0);
