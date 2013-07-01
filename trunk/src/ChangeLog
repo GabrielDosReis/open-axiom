@@ -1,3 +1,9 @@
+2013-07-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/g-util.boot (relativeDirname): New.  Abstract differences
+	between Common Lisp semantics and traditional semantics (GCL).
+	* interp/c-util.boot (moveLibdirByCopy): Use it.
+
 2013-06-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* lisp/core.lisp.in (maxIndex): Provide function definition for

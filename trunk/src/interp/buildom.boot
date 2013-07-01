@@ -589,7 +589,7 @@ mkMappingFunList(nam,mapForm,e) ==
 
 ++ Build an inline function for constructing records of length `n'.
 mkRecordFun n ==
-  args := take(n,$FormalMapVariableList)
+  args := formalVarList n
   op := 
     n < 2 => '%list
     n = 2 => '%pair
@@ -611,7 +611,7 @@ eltRecordFun(n,i) ==
   ["XLAM",["#1","#2"],formalRecordField(n,i)]
 
 seteltRecordFun(n,i) ==
-  args := take(3,$FormalMapVariableList)
+  args := formalVarList 3
   field := formalRecordField(n,i)
   body := 
     n > 2 => ['%store,field,"#3"]

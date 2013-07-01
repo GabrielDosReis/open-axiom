@@ -334,7 +334,8 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
             return [['%function,x],m,e]
   x is ["+->",:.] => compLambda(x,m,oldE)
   if string? x then x := makeSymbol x
-  for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
+  vl := formalVarList #sl
+  for m in sl for v in vl repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) =>
     [u,.,.] := comp([x,:vl],m',e) or return nil
@@ -1356,7 +1357,7 @@ compHas(pred is ["has",a,b],m,e) ==
 
 compHasFormat(db,pred is ["has",olda,b],e) ==
   argl := $form.args
-  formals := take(#argl,$FormalMapVariableList)
+  formals := formalVarList #argl
   a := applySubst(pairList(formals,argl),olda)
   [a,.,e] := comp(a,$EmptyMode,e) or return nil
   a := applySubst(pairList(argl,formals),a)

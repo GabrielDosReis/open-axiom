@@ -146,6 +146,7 @@ openDatabases() ==
 restart() ==
 )if %hasFeature KEYWORD::GCL
   SYSTEM::GBC_-TIME 0
+  SYSTEM::USE_-FAST_-LINK false
 )endif
   if $openServerIfTrue then
     os := openServer $SpadServerName
