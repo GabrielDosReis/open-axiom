@@ -430,6 +430,7 @@ oldincludedir = @oldincludedir@
 open_axiom_installdir = @open_axiom_installdir@
 openaxiom_host_has_regex = @openaxiom_host_has_regex@
 pdfdir = @pdfdir@
+pointer_type = @pointer_type@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@

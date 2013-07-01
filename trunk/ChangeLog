@@ -1,3 +1,9 @@
+2013-06-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): Just warn
+	for unsupported GCL version; do not reset arguments.
+	(OPENAXIOM_FFI_TYPE_TABLE): Be GCL-2.6.9 ready.
+
 2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_CHECK_IO): Check for tempnam.
