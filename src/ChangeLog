@@ -1,3 +1,8 @@
+2013-06-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* lisp/core.lisp.in (maxIndex): Provide function definition for
+	the benefit of rotted GCL systems.
+
 2013-06-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/sockio.h (accept_connection): Take no argument.

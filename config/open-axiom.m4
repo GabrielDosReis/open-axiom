@@ -31,13 +31,12 @@ if test x"$oa_include_gcl" != xyes; then
    case $AXIOM_LISP in
       *gcl*)
 	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-	 AC_MSG_RESULT([$v])
+	 openaxiom_gcl_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 AC_MSG_RESULT([$openaxiom_gcl_version])
 	 case $v in
-	   *2.6.7*|*2.6.8*) ;;         # OK
+	   *2.6.7*|*2.6.8*|*2.6.9*) ;;         # OK
 	   *)
-	     AC_MSG_WARN([$v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored.])
-	     AXIOM_LISP=
+	     AC_MSG_WARN([$v is not supported by this version of OpenAxiom.])
 	     ;;
 	 esac
 	 ;;
@@ -406,6 +405,7 @@ AC_SUBST(int_type)
 AC_SUBST(float_type)
 AC_SUBST(double_type)
 AC_SUBST(string_type)
+AC_SUBST(pointer_type)
 
 case $axiom_lisp_flavor in
    gcl)
@@ -415,7 +415,10 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='string'
-      pointer_type='fixnum'  # well, this is from poking into GCL source code
+      case $openaxiom_host_lisp_precision,$openaxiom_gcl_version in
+         64,*2.6.7*|64,*2.6.8*) pointer_type='(signed-integer 64)' ;;
+         *) pointer_type='fixnum' ;;
+      esac
       ;;
    sbcl)
       void_type='void'

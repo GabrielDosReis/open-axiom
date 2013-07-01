@@ -637,6 +637,7 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
 GCLOPTS
+pointer_type
 string_type
 double_type
 float_type
@@ -3874,15 +3875,14 @@ if test x"$oa_include_gcl" != xyes; then
       *gcl*)
 	 { $as_echo "$as_me:${as_lineno-$LINENO}: checking $AXIOM_LISP version" >&5
 $as_echo_n "checking $AXIOM_LISP version... " >&6; }
-	 v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $v" >&5
-$as_echo "$v" >&6; }
+	 openaxiom_gcl_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $openaxiom_gcl_version" >&5
+$as_echo "$openaxiom_gcl_version" >&6; }
 	 case $v in
-	   *2.6.7*|*2.6.8*) ;;         # OK
+	   *2.6.7*|*2.6.8*|*2.6.9*) ;;         # OK
 	   *)
-	     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&5
-$as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&2;}
-	     AXIOM_LISP=
+	     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $v is not supported by this version of OpenAxiom." >&5
+$as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom." >&2;}
 	     ;;
 	 esac
 	 ;;
@@ -19562,6 +19562,7 @@ fi
 
 
 
+
 case $axiom_lisp_flavor in
    gcl)
       void_type='void'
@@ -19570,7 +19571,10 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='string'
-      pointer_type='fixnum'  # well, this is from poking into GCL source code
+      case $openaxiom_host_lisp_precision,$openaxiom_gcl_version in
+         64,*2.6.7*|64,*2.6.8*) pointer_type='(signed-integer 64)' ;;
+         *) pointer_type='fixnum' ;;
+      esac
       ;;
    sbcl)
       void_type='void'
