@@ -420,7 +420,10 @@ makeFilename(filearg,filetype==nil) ==
   if string? filetype then
     filetype := makeSymbol filetype
   ft := rest symbolAssoc(filetype,$FILETYPE_-TABLE) or filetype
-  ft = nil => toString filearg
+  ft = nil =>
+    string? filearg => filearg
+    ident? filearg => symbolName filearg
+    toString filearg
   strconc(toString filearg,'".",toString ft)
 
 makeFullFilePath(filearg,filetype==nil) ==
