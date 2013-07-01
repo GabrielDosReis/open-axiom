@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import sys_-macros
+import sys_-utility
 namespace BOOT
 
 $topicsDefaults := '(
