@@ -673,7 +673,7 @@ explodeIfs x == main where  --called by getParentsFor
 getParentsFor db ==
   constructorForm := dbConstructorForm db
   n := #constructorForm.args
-  s1 := pairList(take(n,$TriangleVariableList),$FormalMapVariableList)
+  s1 := pairList($TriangleVariableList,formalVarList n)
   s2 := pairList($FormalMapVariableList,constructorForm.args)
   [:explodeIfs applySubst(s2,applySubst(s1,x)) for x in folks dbCategory db]
 
@@ -998,7 +998,7 @@ compDefineCategory1(db,df is ['DEF,form,sig,body],m,e,fal) ==
 
 makeCategoryPredicates db ==
   n := dbArity db
-  sl := pairList(take(n,$TriangleVariableList),take(n,rest $FormalMapVariableList))
+  sl := pairList($TriangleVariableList,formalVarList n)
   fn(dbCategory db,sl,nil) where
     fn(u,sl,pl) ==
       u is ['Join,:.,a] => fn(a,sl,pl)
@@ -1132,7 +1132,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
 
     -- 3. replace arguments by $1,..., substitute into body,
     --    and introduce declarations into environment
-    sargl := take(# form.args, $TriangleVariableList)
+    sargl := tvarList #form.args
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     formalBody := dbSubstituteFormals(db,body)

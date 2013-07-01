@@ -1801,7 +1801,7 @@ cleanParameterList! parms ==
 moveLibdirByCopy lib ==
   checkMkdir libDirname lib
   for src in directoryEntries libStationaryDirname lib repeat
-    dst := makeFilePath(directory <- [&RELATIVE, libDirname lib],
+    dst := makeFilePath(directory <- relativeDirname libDirname lib,
              name <- filePathName src, type <- filePathType src)
     copyFile(filePathString src,filePathString dst)
   removeFile libStationaryDirname lib = 0 => libDirname lib

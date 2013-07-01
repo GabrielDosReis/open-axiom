@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2013, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,8 @@ module g_-util where
   spliceSeqArgs: %List %Code -> %Code
   mkSeq: %List %Code -> %Code
   usesVariable?: (%Code,%Symbol) -> %Boolean
+  formalVarList: %Short -> %List %Symbol
+  tvarList: %Short -> %List %Symbol
 
 --%
 
@@ -262,6 +264,11 @@ isSharpVarWithNum x ==
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
+formalVarList n ==
+  take(n,$FormalMapVariableList)
+
+tvarList n ==
+  take(n,$TriangleVariableList)
 
 mkBuffer v ==
   [copyVector v,:#v]
@@ -293,6 +300,16 @@ bufferToVector buf ==
     vectorRef(v,i) := vectorRef(bufferData buf,i)
   v
 
+
+++ Return the name of a relative path for a directory
+++ given by the string `s',  GCL does not implement
+++ Common Lisp semantics, so we have a special version for it.
+relativeDirname s ==
+)if %hasFeature &GCL and not %hasFeature &COMMON_-LISP
+  [s]
+)else
+  [&RELATIVE,s]
+)endif
 
 --% Sub-domains information handlers
 

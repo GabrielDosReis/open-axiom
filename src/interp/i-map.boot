@@ -302,7 +302,7 @@ makePattern(args,pred) ==
     pred is ["=","#1",n] => n
     addPatternPred("#1",pred)
   u:= canMakeTuple(nargs,pred) => u
-  addPatternPred(["tuple",:take(nargs,$FormalMapVariableList)],pred)
+  addPatternPred(["tuple",:formalVarList nargs],pred)
 
 addPatternPred(arg,pred) ==
   pred=true => arg

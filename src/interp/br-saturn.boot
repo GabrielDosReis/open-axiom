@@ -1235,7 +1235,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.
-    tvarlist := take(# $conargs,$TriangleVariableList)
+    tvarlist := tvarList # $conargs
     $signature := applySubst(pairList(tvarlist,$FormalMapVariableList),$signature)
   $sig :=
     which = '"attribute" or which = '"constructor" => sig
