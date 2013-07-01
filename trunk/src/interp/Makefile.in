@@ -245,7 +245,7 @@ database.date:
 fortcall.$(FASLEXT): sys-macros.$(FASLEXT)
 
 ## HyperDoc
-topics.$(FASLEXT): sys-macros.$(FASLEXT)
+topics.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 alql.$(FASLEXT): br-search.$(FASLEXT)
 br-search.$(FASLEXT): bc-util.$(FASLEXT)
 br-saturn.$(FASLEXT): bc-util.$(FASLEXT)
