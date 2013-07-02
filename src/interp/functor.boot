@@ -354,7 +354,7 @@ DescendCodeAdd(db,base,flag) ==
   modemap := get(base.op,'modemap,$CategoryFrame)
   modemap = nil  =>
       if getmode(base.op,$e) is ["Mapping",target,:formalArgModes]
-         then formalArgs := formalVarList #formalArgModes
+         then formalArgs := take(#formalArgModes,$FormalMapVariableList)
                 --argument substitution if parameterized?
  
          else keyedSystemError("S2OR0001",[base.op])
