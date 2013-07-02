@@ -1468,10 +1468,10 @@
 ;; but GCL has problems with it, for some obscure reasons.
 #-:gcl
 (defmacro |maxIndex| (x)
-  `(1- (length ,x))))
+  `(1- (length ,x)))
 #+:gcl
 (defun |maxIndex| (x)
-  (1- (length x))))
+  (1- (length x)))
 
 
 ;; Datatype for buffers mostly used for transmitting data between
