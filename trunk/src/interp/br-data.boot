@@ -127,7 +127,7 @@ buildLibdbString [x,:u] ==
 
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := substitute("T","T$",getConstructorModemap conname)
-  formals := formalVarList #argl
+  formals := take(#argl,$FormalMapVariableList)
   sig := applySubst(pairList($TriangleVariableList,formals),sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where
     g(x,u,i) ==  --does x appear in any but i-th element of u?
@@ -636,7 +636,7 @@ transKCatAlist(conform,domname,s) == main where
     --no domname, so look for special argument combinations
     acc := nil
     KDR conform =>
-      farglist := formalVarList #rest conform
+      farglist := take(#rest conform,$FormalMapVariableList)
       for pair in s repeat --pair has form [con,[conargs,:pred],...]]
         leftForm := getConstructorForm first pair
         for (ap := [args,:pred]) in rest pair repeat
