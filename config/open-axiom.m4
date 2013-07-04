@@ -31,21 +31,21 @@ if test x"$oa_include_gcl" != xyes; then
    case $AXIOM_LISP in
       *gcl*)
 	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 openaxiom_gcl_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-	 AC_MSG_RESULT([$openaxiom_gcl_version])
-	 case $v in
+	 openaxiom_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 AC_MSG_RESULT([$openaxiom_lisp_version])
+	 case $openaxiom_lisp_version in
 	   *2.6.7*|*2.6.8*|*2.6.9*) ;;         # OK
 	   *)
-	     AC_MSG_WARN([$v is not supported by this version of OpenAxiom.])
+	     AC_MSG_WARN([$openaxiom_lisp_version is not supported by this version of OpenAxiom.])
 	     ;;
 	 esac
 	 ;;
       # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
       *sbcl*)
 	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 v=`$AXIOM_LISP --version`
-	 AC_MSG_RESULT([$v])
-	 case $v in
+	 openaxiom_lisp_version=`$AXIOM_LISP --version`
+	 AC_MSG_RESULT([$openaxiom_lisp_version])
+	 case $openaxiom_lisp_version in
 	   *1.0.29)
 	      AC_MSG_ERROR([This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher.])
 	      ;;

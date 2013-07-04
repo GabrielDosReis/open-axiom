@@ -3875,14 +3875,14 @@ if test x"$oa_include_gcl" != xyes; then
       *gcl*)
 	 { $as_echo "$as_me:${as_lineno-$LINENO}: checking $AXIOM_LISP version" >&5
 $as_echo_n "checking $AXIOM_LISP version... " >&6; }
-	 openaxiom_gcl_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $openaxiom_gcl_version" >&5
-$as_echo "$openaxiom_gcl_version" >&6; }
-	 case $v in
+	 openaxiom_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $openaxiom_lisp_version" >&5
+$as_echo "$openaxiom_lisp_version" >&6; }
+	 case $openaxiom_lisp_version in
 	   *2.6.7*|*2.6.8*|*2.6.9*) ;;         # OK
 	   *)
-	     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $v is not supported by this version of OpenAxiom." >&5
-$as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom." >&2;}
+	     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $openaxiom_lisp_version is not supported by this version of OpenAxiom." >&5
+$as_echo "$as_me: WARNING: $openaxiom_lisp_version is not supported by this version of OpenAxiom." >&2;}
 	     ;;
 	 esac
 	 ;;
@@ -3890,10 +3890,10 @@ $as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom." >&
       *sbcl*)
 	 { $as_echo "$as_me:${as_lineno-$LINENO}: checking $AXIOM_LISP version" >&5
 $as_echo_n "checking $AXIOM_LISP version... " >&6; }
-	 v=`$AXIOM_LISP --version`
-	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $v" >&5
-$as_echo "$v" >&6; }
-	 case $v in
+	 openaxiom_lisp_version=`$AXIOM_LISP --version`
+	 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $openaxiom_lisp_version" >&5
+$as_echo "$openaxiom_lisp_version" >&6; }
+	 case $openaxiom_lisp_version in
 	   *1.0.29)
 	      as_fn_error $? "This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher." "$LINENO" 5
 	      ;;
