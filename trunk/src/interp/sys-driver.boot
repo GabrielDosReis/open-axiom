@@ -191,6 +191,9 @@ loadDelayedFFI() ==
 ++ Initialize all global states that need to.  Sub-routine of the command
 ++ line compiler, the script executor, etc.  Mess with care.
 initializeGlobalState() ==
+)if %hasFeature KEYWORD::GCL
+  SYSTEM::USE_-FAST_-LINKS false
+)endif
   REROOT()
   init? := $StandardLinking or not %algebraSystemIsComplete()
 
