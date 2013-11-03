@@ -52,6 +52,7 @@ oa_src_include_headers = \
 	structure.H \
 	iterator.H \
 	storage.H \
+	Charset.H \
 	FileMapping.H \
 	SourceFile.H \
 	Input.H    \
