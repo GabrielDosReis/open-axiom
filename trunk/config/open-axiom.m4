@@ -21,6 +21,17 @@ AC_CHECK_TYPES([uintmax_t],[],[AC_TYPE_UINTMAX_T])
 AC_TYPE_UID_T
 ])
 
+dnl ---------------------------------------
+dnl -- OPENXIOM_CHECK_WINDOWS_POWERSHELL --
+dnl ---------------------------------------
+dnl On Windows platforms check for availability of PowerShell.
+AC_DEFUN([OPENAXIOM_CHECK_WINDOWS_POWERSHELL],[
+case $host in
+  *mingw*)
+     AC_PATH_PROG([OA_WINDOWS_POWERSHELL],[powershell.exe])
+     ;;
+esac
+])
 
 dnl ----------------------------------
 dnl -- OPENAXIOM_REJECT_ROTTED_LISP --
@@ -34,7 +45,7 @@ if test x"$oa_include_gcl" != xyes; then
 	 openaxiom_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
 	 AC_MSG_RESULT([$openaxiom_lisp_version])
 	 case $openaxiom_lisp_version in
-	   *2.6.7*|*2.6.8*|*2.6.9*) ;;         # OK
+	   *2.6.7*|*2.6.8*|*2.6.9*|*2.6.10*) ;;         # OK
 	   *)
 	     AC_MSG_WARN([$openaxiom_lisp_version is not supported by this version of OpenAxiom.])
 	     ;;
