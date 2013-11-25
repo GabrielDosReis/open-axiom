@@ -1,3 +1,7 @@
+2013-11-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* configure.ac: Check for PowerShell on Windows platforms.
+
 2013-06-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): Just warn
