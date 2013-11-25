@@ -21,11 +21,13 @@ AC_CHECK_TYPES([uintmax_t],[],[AC_TYPE_UINTMAX_T])
 AC_TYPE_UID_T
 ])
 
-dnl ---------------------------------------
-dnl -- OPENXIOM_CHECK_WINDOWS_POWERSHELL --
-dnl ---------------------------------------
-dnl On Windows platforms check for availability of PowerShell.
-AC_DEFUN([OPENAXIOM_CHECK_WINDOWS_POWERSHELL],[
+dnl ----------------------
+dnl -- OPENAXIOM_SHELLS --
+dnl ----------------------
+dnl Check for shell availability, specifically PowerShell on 
+dnl Windows platforms.
+AC_DEFUN([OPENAXIOM_SHELLS],[
+AC_SYS_INTERPRETER
 case $host in
   *mingw*)
      AC_PATH_PROG([OA_WINDOWS_POWERSHELL],[powershell.exe])

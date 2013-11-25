@@ -740,6 +740,7 @@ oa_delay_ffi
 oa_standard_linking
 axiom_lisp_flavor
 AXIOM_LISP
+OA_WINDOWS_POWERSHELL
 open_axiom_installdir
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
@@ -3670,9 +3671,78 @@ open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
 if test $build != $target; then
    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cross build is not supported yet." >&5
 $as_echo "$as_me: WARNING: Cross build is not supported yet." >&2;}
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Please notify open-axiom-devel@open-axiom.org if you succeed." >&5
-$as_echo "$as_me: WARNING: Please notify open-axiom-devel@open-axiom.org if you succeed." >&2;}
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Please notify open-axiom-devel@lists.sf.net if you succeed." >&5
+$as_echo "$as_me: WARNING: Please notify open-axiom-devel@lists.sf.net if you succeed." >&2;}
 fi
+
+## Determine interpreters and shells.
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether #! works in shell scripts" >&5
+$as_echo_n "checking whether #! works in shell scripts... " >&6; }
+if ${ac_cv_sys_interpreter+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  echo '#! /bin/cat
+exit 69
+' >conftest
+chmod u+x conftest
+(SHELL=/bin/sh; export SHELL; ./conftest >/dev/null 2>&1)
+if test $? -ne 69; then
+   ac_cv_sys_interpreter=yes
+else
+   ac_cv_sys_interpreter=no
+fi
+rm -f conftest
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_interpreter" >&5
+$as_echo "$ac_cv_sys_interpreter" >&6; }
+interpval=$ac_cv_sys_interpreter
+
+case $host in
+  *mingw*)
+     # Extract the first word of "powershell.exe", so it can be a program name with args.
+set dummy powershell.exe; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_OA_WINDOWS_POWERSHELL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $OA_WINDOWS_POWERSHELL in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_OA_WINDOWS_POWERSHELL="$OA_WINDOWS_POWERSHELL" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_OA_WINDOWS_POWERSHELL="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+OA_WINDOWS_POWERSHELL=$ac_cv_path_OA_WINDOWS_POWERSHELL
+if test -n "$OA_WINDOWS_POWERSHELL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OA_WINDOWS_POWERSHELL" >&5
+$as_echo "$OA_WINDOWS_POWERSHELL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+     ;;
+esac
+
 
 ## Although OpenAxiom does not support cross build yet, let
 ## alone Canadian cross, we want to make sure that we do not write
