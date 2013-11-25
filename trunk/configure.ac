@@ -65,8 +65,11 @@ dnl Note that we do not stop the configuration process because we do seek
 dnl contributions for cross build support.
 if test $build != $target; then
    AC_MSG_WARN([Cross build is not supported yet.])
-   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
+   AC_MSG_WARN([Please notify open-axiom-devel@lists.sf.net if you succeed.])
 fi
+
+## Determine interpreters and shells.
+OPENAXIOM_SHELLS
 
 ## Although OpenAxiom does not support cross build yet, let
 ## alone Canadian cross, we want to make sure that we do not write
