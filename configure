@@ -19928,17 +19928,17 @@ $as_echo_n "checking name of alignment query operator... " >&6; }
 oa_alignment=
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-int a = __alignof(int);
-_ACEOF
-if ac_fn_cxx_try_compile "$LINENO"; then :
-  oa_alignment="__alignof"
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 int a = alignof(int);
 _ACEOF
 if ac_fn_cxx_try_compile "$LINENO"; then :
   oa_alignment="alignof"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int a = __alignof(int);
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  oa_alignment="__alignof"
 else
   as_fn_error $? "C++ compiler does not support alignment query operator" "$LINENO" 5
 fi
