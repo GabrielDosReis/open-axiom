@@ -1049,10 +1049,10 @@ dnl or vendor lock-ins such as `__alignof'.
 AC_DEFUN([OPENAXIOM_ALIGNMENT_OPERATOR],[
 AC_MSG_CHECKING([name of alignment query operator])
 oa_alignment=
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = __alignof(int);]])],
-                  [oa_alignment="__alignof"],
-                  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = alignof(int);]])],
-                                     [oa_alignment="alignof"],
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = alignof(int);]])],
+                  [oa_alignment="alignof"],
+                  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = __alignof(int);]])],
+                                     [oa_alignment="__alignof"],
                                      [AC_MSG_ERROR([C++ compiler does not support alignment query operator])])])
 AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
                    [Alignment query operator])
