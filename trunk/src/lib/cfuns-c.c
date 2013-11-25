@@ -492,8 +492,9 @@ oa_acquire_temporary_pathname() {
 #if OPENAXIOM_MS_WINDOWS_HOST
    char buf[MAX_PATH];
    const char* tmpdir = oa_get_tmpdir();
-   auto n = GetTempFileName(tmpdir, "oa-", rand() % SHORT_MAX, buf);
-   free(tmpdir);
+   auto n = GetTempFileName(tmpdir, "oa-", rand() % SHRT_MAX, buf);
+   /* tmpdir was malloc()ed when OPENAXIOM_MS_WINDOWS_HOST.  */
+   free(const_cast<void*>(tmpdir));
    if (n == 0) {
       perror("oa_acquire_temporary_pathname");
       exit(1);
@@ -816,7 +817,7 @@ oa_spawn(Process* proc, SpawnFlags flags)
    }
    cmd_line[curpos] = '\0';
 
-   if ((flags & spawn_search_path) == 0)
+   if ((flags & SpawnFlags::search_path) == 0)
       path = proc->argv[0];
 
    if(CreateProcess(/* lpApplicationName */ path,
@@ -833,7 +834,7 @@ oa_spawn(Process* proc, SpawnFlags flags)
       return proc->id = -1;
    }
    proc->id = proc_info.dwProcessId;
-   if ((flags & spawn_replace) == 0)
+   if ((flags & SpawnFlags::replace) == 0)
       return proc->id;
    WaitForSingleObject(proc_info.hProcess, INFINITE);
    GetExitCodeProcess(proc_info.hProcess, &status);
