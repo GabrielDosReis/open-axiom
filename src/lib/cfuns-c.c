@@ -492,9 +492,9 @@ oa_acquire_temporary_pathname() {
 #if OPENAXIOM_MS_WINDOWS_HOST
    char buf[MAX_PATH];
    const char* tmpdir = oa_get_tmpdir();
-   auto n = GetTempFileName(tmpdir, "oa-", rand() % SHRT_MAX, buf);
+   auto n = GetTempFileName(tmpdir, "oa-", random() % SHRT_MAX, buf);
    /* tmpdir was malloc()ed when OPENAXIOM_MS_WINDOWS_HOST.  */
-   free(const_cast<void*>(tmpdir));
+   free(const_cast<char*>(tmpdir));
    if (n == 0) {
       perror("oa_acquire_temporary_pathname");
       exit(1);
@@ -503,7 +503,7 @@ oa_acquire_temporary_pathname() {
 #elif HAVE_DECL_TEMPNAM
    return tempnam(oa_get_tmpdir(), "oa-");
 #else
-   std::string s = "oa-" + std::to_string(rand());
+   std::string s = "oa-" + std::to_string(random());
    return strdup(s.c_str());
 #endif   
 }
