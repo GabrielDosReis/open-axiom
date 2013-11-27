@@ -229,8 +229,7 @@ namespace OpenAxiom {
          if (BlockStorage::room(store) < sz) {
             // Not enough room left.  Make sure we allocate storage
             // at least as big as the current.
-            Handle* h = acquire(std::max(n, object_count(store)),
-                                openaxiom_alignment(T));
+            Handle* h = acquire(std::max(n, object_count(store)), alignof(T));
             previous(h) = store;
             store = h;
          }
@@ -239,8 +238,7 @@ namespace OpenAxiom {
 
       template<typename T>
       Arena<T>::Arena(size_t n)
-            : store(BlockStorage::acquire(n * sizeof (T),
-                                          openaxiom_alignment (T)))
+            : store(BlockStorage::acquire(n * sizeof (T), alignof (T)))
       { }
       
       template<typename T>

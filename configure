@@ -19945,11 +19945,13 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test -n $oa_alignment -a $oa_alignment != "alignof"; then
 
 cat >>confdefs.h <<_ACEOF
-#define openaxiom_alignment $oa_alignment
+#define alignof $oa_alignment
 _ACEOF
 
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $oa_alignment" >&5
 $as_echo "$oa_alignment" >&6; }
 
@@ -19976,11 +19978,13 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test -n $oa_alignas -a $oa_alignas != "alignas"; then
 
 cat >>confdefs.h <<_ACEOF
-#define openaxiom_alignas(N) $oa_alignas
+#define alignas(N) $oa_alignas
 _ACEOF
 
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $oa_alignas" >&5
 $as_echo "$oa_alignas" >&6; }
 

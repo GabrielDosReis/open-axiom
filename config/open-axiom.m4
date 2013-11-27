@@ -1054,8 +1054,9 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = alignof(int);]])],
                   [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = __alignof(int);]])],
                                      [oa_alignment="__alignof"],
                                      [AC_MSG_ERROR([C++ compiler does not support alignment query operator])])])
-AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
-                   [Alignment query operator])
+if test -n $oa_alignment -a $oa_alignment != "alignof"; then
+  AC_DEFINE_UNQUOTED([alignof],[$oa_alignment],[Alignment query operator])
+fi
 AC_MSG_RESULT([$oa_alignment])
 ])
 
@@ -1072,8 +1073,9 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[alignas(16) int a = 42;]])],
   [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[__attribute__((__aligned__(16))) int a = 42;]])],
      [oa_alignas="__attribute__((__aligned__(N)))"],
      [AC_MSG_ERROR([C++ compiler does not support alignment specifier])])])
-AC_DEFINE_UNQUOTED([openaxiom_alignas(N)],[$oa_alignas],
-                   [Alignment specifier operator])
+if test -n $oa_alignas -a $oa_alignas != "alignas"; then
+  AC_DEFINE_UNQUOTED([alignas(N)],[$oa_alignas],[Alignment specifier operator])
+fi
 AC_MSG_RESULT([$oa_alignas])
 ])
 
