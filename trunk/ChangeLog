@@ -1,3 +1,10 @@
+2013-11-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNMENT_OPERATOR): Define stub
+	with standard syntax.
+	(OPENAXIOM_ALIGNAS_SPECIFIER): Likewise.
+	* config/openaxiom-c-macros.h.in: Update.
+
 2013-11-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* configure.ac: Check for PowerShell on Windows platforms.

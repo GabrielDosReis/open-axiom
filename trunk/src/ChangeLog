@@ -1,3 +1,10 @@
+2013-11-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/storage.H (Arena<T>::allocate): Adjust spelling of
+	alignment query operator.
+	(Arena<T>::Arena): Likewise.
+	(HashTableEntry<T>): Adjust spelling of alignment specifier.
+
 2013-11-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* include/Charset.H (OpenAxiom): New.
