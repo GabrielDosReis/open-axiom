@@ -46,8 +46,8 @@
 #include <map>
 #include <set>
 
-#define internal_type struct openaxiom_alignas(16)
-#define internal_data  openaxiom_alignas(16)
+#define internal_type struct alignas(16)
+#define internal_data alignas(16)
 
 namespace OpenAxiom {
    namespace VM {
