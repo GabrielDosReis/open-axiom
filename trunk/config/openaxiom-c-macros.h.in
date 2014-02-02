@@ -33,6 +33,18 @@
    */
 #undef HAVE_DECL_KILL
 
+/* Define to 1 if you have the declaration of `mkdtemp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MKDTEMP
+
+/* Define to 1 if you have the declaration of `mkstemp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MKSTEMP
+
+/* Define to 1 if you have the declaration of `mktemp', and to 0 if you don't.
+   */
+#undef HAVE_DECL_MKTEMP
+
 /* Define to 1 if you have the declaration of `openpty', and to 0 if you
    don't. */
 #undef HAVE_DECL_OPENPTY

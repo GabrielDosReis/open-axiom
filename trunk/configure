@@ -18443,7 +18443,45 @@ _ACEOF
 #OPENAXIOM_CHECK_GMP
 
 
-ac_fn_cxx_check_decl "$LINENO" "tempnam" "ac_cv_have_decl_tempnam" "#include <stdio.h>
+# Utility for temporary pathnames.
+if test -n $ac_cv_header_unistd_h; then
+  ac_fn_cxx_check_decl "$LINENO" "mktemp" "ac_cv_have_decl_mktemp" "#include <unistd.h>
+"
+if test "x$ac_cv_have_decl_mktemp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MKTEMP $ac_have_decl
+_ACEOF
+ac_fn_cxx_check_decl "$LINENO" "mkdtemp" "ac_cv_have_decl_mkdtemp" "#include <unistd.h>
+"
+if test "x$ac_cv_have_decl_mkdtemp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MKDTEMP $ac_have_decl
+_ACEOF
+ac_fn_cxx_check_decl "$LINENO" "mkstemp" "ac_cv_have_decl_mkstemp" "#include <unistd.h>
+"
+if test "x$ac_cv_have_decl_mkstemp" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MKSTEMP $ac_have_decl
+_ACEOF
+
+fi
+if test -n $ac_cv_have_decl_mktemp; then
+  ac_fn_cxx_check_decl "$LINENO" "tempnam" "ac_cv_have_decl_tempnam" "#include <stdio.h>
 "
 if test "x$ac_cv_have_decl_tempnam" = xyes; then :
   ac_have_decl=1
@@ -18455,6 +18493,7 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_TEMPNAM $ac_have_decl
 _ACEOF
 
+fi
 # Honor support for large files
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :

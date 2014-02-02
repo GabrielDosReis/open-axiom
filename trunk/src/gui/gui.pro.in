@@ -18,6 +18,17 @@ macx {
   CONFIG -= app_bundle
 }
 
+macx-g++ {
+  QMAKE_CFLAGS -= -Xarch_x86_64
+  QMAKE_CFLAGS_X86_64 -= -Xarch_x86_64
+
+  QMAKE_CXXFLAGS -= -Xarch_x86_64
+  QMAKE_CXXFLAGS_X86_64 -= -Xarch_x86_64
+
+  QMAKE_LFLAGS -= -Xarch_x86_64
+  QMAKE_LFLAGS_X86_64 -= -Xarch_x86_64
+}
+
 ## We are building a GUI application.
 TEMPLATE = app
 
@@ -43,5 +54,6 @@ SOURCES += server.cc conversation.cc main-window.cc debate.cc main.cc
 LIBS += $$OA_RT_LIB $$OA_SYNTAX_LIB $$OA_LIB $$OA_IOLIB
 
 ## C++ compiler
-#QMAKE_CXX = @CXX@
+QMAKE_CXX = @CXX@
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_LINK = @CXX@

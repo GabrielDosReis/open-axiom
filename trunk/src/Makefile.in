@@ -770,7 +770,7 @@ all-clef: all-lib
 all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-gui: all-driver all-io all-rt
+all-gui: all-driver all-io all-rt all-syntax
 	cd gui && $(MAKE) $(AM_MAKEFLAGS)
 
 all-hyper: all-lib all-io
