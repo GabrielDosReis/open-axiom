@@ -1,0 +1,7 @@
+2014-02-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* Makefile.am (all-gui): Depend on all-syntax.
+	* gui/gui.pro.in: Fix qmake idiocy on mac os.
+	* lib/cfuns-c.c (make_c_str): New helper.
+	(oa_acquire_temporary_pathname): Use it.  Prefer mktemp.
+

@@ -848,7 +848,13 @@ dnl ------------------------
 dnl -- OPENAXIOM_CHECK_IO --
 dnl ------------------------
 AC_DEFUN([OPENAXIOM_CHECK_IO],[
-AC_CHECK_DECLS([tempnam],[],[],[#include <stdio.h>])
+# Utility for temporary pathnames.
+if test -n $ac_cv_header_unistd_h; then
+  AC_CHECK_DECLS([mktemp, mkdtemp, mkstemp], [], [], [[#include <unistd.h>]])
+fi
+if test -n $ac_cv_have_decl_mktemp; then
+  AC_CHECK_DECLS([tempnam],[],[],[[#include <stdio.h>]])
+fi
 # Honor support for large files
 AC_SYS_LARGEFILE
 # What about long file names?

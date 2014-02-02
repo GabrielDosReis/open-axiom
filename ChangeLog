@@ -1,0 +1,5 @@
+2014-02-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_IO): Prefer mktemp,
+	mkdtemp, mkstemp over tempnam.
+

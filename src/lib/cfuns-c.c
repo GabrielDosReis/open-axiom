@@ -79,6 +79,11 @@
 #endif
 
 namespace OpenAxiom {
+   // Make a copy of string data on free store.
+   static char*
+   copy_c_str(const std::string& s) {
+      return strdup(s.c_str());
+   }
 
 OPENAXIOM_C_EXPORT int
 addtopath(char *dir)
@@ -500,11 +505,12 @@ oa_acquire_temporary_pathname() {
       exit(1);
    }
    return strdup(buf);
+#elif HAVE_DECL_MKTEMP
+   return mktemp(copy_c_str(std::string{ oa_get_tmpdir() } + "/oa-XXXXXX"));
 #elif HAVE_DECL_TEMPNAM
    return tempnam(oa_get_tmpdir(), "oa-");
 #else
-   std::string s = "oa-" + std::to_string(random());
-   return strdup(s.c_str());
+   return copy_c_str("oa-" + std::to_string(random()));
 #endif   
 }
 
