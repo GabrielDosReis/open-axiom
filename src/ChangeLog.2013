@@ -1,0 +1,1076 @@
+2013-12-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Fix SF/95.
+	* include/vm.H (internal_type): Adjust.
+	(internal_data): Likewise.
+
+2013-11-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/storage.H (Arena<T>::allocate): Adjust spelling of
+	alignment query operator.
+	(Arena<T>::Arena): Likewise.
+	(HashTableEntry<T>): Adjust spelling of alignment specifier.
+
+2013-11-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/Charset.H (OpenAxiom): New.
+
+2013-07-04  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-driver.boot (initializeGlobalState): Tell GCL not to
+	use buggy fast links.
+
+2013-07-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-utility.boot (makeFilename): Tidy.
+
+2013-07-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/g-util.boot (relativeDirname): New.  Abstract differences
+	between Common Lisp semantics and traditional semantics (GCL).
+	* interp/c-util.boot (moveLibdirByCopy): Use it.
+
+2013-06-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* lisp/core.lisp.in (maxIndex): Provide function definition for
+	the benefit of rotted GCL systems.
+
+2013-06-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/sockio.h (accept_connection): Take no argument.
+	(server): Adjust type.
+	* lib/sockio-c.c: Implement changes.
+	* hyper/spadint.c (accept_menu_server_connection): Adjust use of
+	server.
+	* sman/session.c (manage_sessions): Likewise.
+	* sman/sman.c (manage_spad_io): Likewise.
+
+2013-06-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/conversation.cc (accumulate_paragraphs): Remove.
+	(read_output): Remove.
+	(OutputTextArea::add_paragraph): Rewrite.
+	(Conversation::read_reply): Likewise.
+
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* src/rt: New directory.  Move vm.cc and Lisp.cc here.
+	* rt/Database.cc: New.
+	* include/Database.H: Likewise.
+	* include/Constructor.H: Likewise.
+	* gui/server.h (Server): Cache database input souece.
+	* gui/gui.pro.in (LIBS): Add core runtime library.
+	* Makefile.am (oa_src_include_headers): Add Constructor.H and
+	Database.H.
+
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/Lisp.H: New.
+	* utils/Lisp.cc: Likewise.
+	* gui/server.h (Server::lisp): Give access to embedded Lisp evaluator.
+	* gui/main-window.cc (MainWind::read_databases): Use embedded Lisp
+	evaluator.
+	* include/vm.H: Move from src/utils/.
+	* Makefile.am (oa_src_include_headers): Include vm.H.
+
+2013-06-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisplib.boot (compDefineLisplib): Close the file
+	contained generated code before handing over to backend.
+	* interp/c-util.boot (moveLibdirByCopy): The inferred destination
+	directory is not absolute.
+
+2013-06-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/sexpr.H (Lexer): Remove.
+	(Parser): Likewise.
+	(Reader): New.
+	* syntax/sexpr.cc: Propagate changes.
+	* gui/main-window.h (MainWindow::read_databases): Declare.
+	(MainWindow::display_error): Likewise.
+	* gui/main-window.cc: Implement.
+	* gui/gui.pro.in (LIBS): Include syntax library.
+	* Makefile.am (oa_src_include_headers): Add sexpr.H.  Fix build
+	failure from previous commit.
+
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/sexpr.H: Move from utils.
+	(UniqueAllocator): Remove.
+	(SyntaxComparator): Likewise.
+	* syntax/sexpr.cc: Move from utils.
+
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/cattable.boot (squeezeList): Remove.
+	(squeeze1): Likewise.
+	* interp/daase.lisp (*COMPRESSVECTOR*): Likewise.
+	(*COMPRESSVECTORLENGTH*): Likewise.
+	(*COMPRESS-STREAM*): Likewise.
+	(*COMPRESS-STREAM-STAMP*): Likewise.
+	(COMPRESSOPEN): Remove.  Adjust callers.
+	(unsqueezeCopy): Likewise.
+	(WRITE-COMPRESS): Likewise.
+	(SQUEEZE): Likewise.
+	(UNSQUEEZE): Likewise.
+	(MAKE-DATABASES): Do not write out compress.daase.
+	* interp/database.boot (squeezeAll): Likewise.
+
+2013-06-24  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-constants.boot ($BuiltinAttributes): Remove
+	finiteAggregate and shallowlyMutable.
+	* interp/daase.lisp (WRITE-COMPRESS): Do not push strings.
+
+2013-06-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/token.H (token::base_type): Renam from class_type.
+	(token::value): Add unary, binary, and ternary overloads.
+	* utils/sexpr.H (Sexpr::Token): Use token::value.  Clean up.
+
+2013-06-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/SourceFile.H: New.
+
+2013-06-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/FileMapping.H: New.
+
+2013-06-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/dialect.H: New.
+	* include/diagnostics.H: Likewise.
+	* include/storage.H: Move from utils/.
+
+2013-06-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/diagnostics.H: New.
+	* io/std-streams.cc: Likewise.
+
+2013-06-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* boot/scanner.boot (shoeToken): Allow inerts.
+	* boot/ast.boot (bfInert): New.
+	* boot/parser.boot (bpInert): New.
+	(bpConstTok): Use it.
+
+2013-06-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (compHasFormat): Take a DB parameter.
+	Adjust callers.
+	* interp/define.boot (ICformat): Likewise.
+	* interp/lisplib.boot (predicateBitIndex): Likewise.
+	(predicateBitRef): Likewise.
+	(transHasCode): Likewise.
+
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/catdef.spad.pamphlet (CommutativeOperatorCategory): New.
+	(CommutativeOperation): Likewise.
+	* algebra/Makefile.am (oa_algebra_layer_0): Include them.
+
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (EltableAggregate): Weaken
+	requirement on first parameter.
+	(IndexedAggregate): Likewise.
+
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/catdef.spad.pamphlet (PartialDifferentialSpace): Weaken
+	requirement on parameter.
+	(PartialDifferentialRing): Likewise.
+	(PartialDifferentialModule): Likewise.
+
+2013-06-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/parsers.spad.pamphlet: New.
+	* algebra/script-parser.spad: Move content to parsers.spad.pamphlet.
+	Remove.
+	* algebra/spad-parser.spad: Likewise.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/ht-util.boot (mkCurryFun): Import function name.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* boot/tokens.boot (importSymbol): New builtin.
+	* interp/br-saturn.boot (htpMakeEmptyPage): Use it.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/database.boot (dbConstructorDefault): New accessor.
+	(getCategoryConstructorDefault): New.
+	* interp/define.boot (makeCategoryAlist): Use it.
+	(hasDefaultPackage): Remove.
+	(mkCategoryPackage): First parameter is now a DB.  Take
+	environment parameter too.  Adjust caller.
+	* interp/lisplib.boot (writeCategoryDefault): New.
+	(finalizeLisplib): Call it when appropriate.
+
+2013-06-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (makeCategoryPredicates): Tidy.  Adjust caller.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-util.boot (extendsCategoryForm): Take a DB parameter.
+	Avoid special variables for current constructor form. Adjust callers.
+	* interp/define.boot (compDefineCategory2): Register current
+	constructor in environment.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisplib.boot (writeSourceFile): Always write source file.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nruncomp.boot (NRTsetVector4Part1): Add environment parameter.
+	Adjust caller.
+	(NRTsetVector4a): Likewise.  Avoid special variable for environment.
+	* boot/utility.boot: Add and export substSource, substTarget.
+	* interp/define.boot: Use them.
+
+2013-06-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (categoryInstance?): New.
+	(compColon): Use it for category definitions.
+	* interp/c-util.boot: Add accessors for infovec parts.
+	* boot/utility.boot (invertSubst): New.  Export.
+	* interp/Makefile.in ($(SAVESYS)): Remove --sysdb and --system-algebra.
+
+2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (getvalue): Rename from GetValue.
+	Take environment as second parameter.  Adjust callers.
+
+2013-06-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nruncomp.boot (listOfBoundVars): Take environment as
+	second parameter.  Adjust callers.
+	(optDeltaEntry): Likewise.
+
+2013-06-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (substSlotNumbers): Remove redundant check.
+	* interp/lisplib.boot (NRTgenInitialAttributeAlist): Simplify.
+	* interp/showimp.boot (dc): Likewise.
+
+2013-06-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Make parser non-dependent on constructor databases.
+	* interp/compiler.boot (instantiateNiladics!): New.
+	(compileParseTree): Use it to expand niladict constructors.
+	(instantiateNiladicsInList!): New.
+	* interp/c-doc.boot (instantiateNiladicsInDoc!): New.
+	(finalizeDocumentation): Use it.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (addInfo): Remove.
+	(addinformation): Tidy.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (NRTgetLookupFunction): Take a cache table.
+	Adjust caller.
+	(NRTextendsCategory1): Likewise.
+	(extendsCategory): Likewise.
+	(extendsCategoryBasic): Likewise.
+	(catExtendsCat?): Likewise.
+	(getCategoryObjectIfCan): New.
+	(getCategoryObject): Use it.
+	* interp/lisplib.boot (getSlot1): Remove as unused.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/category.boot (SigListUnion): Take a cache table.  Adjust
+	callers.
+	(mkOr): Likewise.
+	(mkOr2): Likewise.
+	(mkAnd): Likewise.
+	(mkAnd2): Likewise.
+	(FindFundAncs): Likewise.
+	(CatEval): Likewise.
+	(ancestors?): Likewise.
+	(descendant?): Likewise.
+	(filterConditionalCategories): Likewise.
+	* interp/functor.boot (ICformat): Likewise.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (getCategoryObject): New.
+	* interp/functor.boot (InvestigateConditions): Use it.
+	(getViewsConditions): Likewise.
+	(getPossibleViews): Likewise.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/category.boot (filterConditionalCategories): Fix thinko.
+
+2013-06-01  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Support --output in compiler, for bootstrapping stage.
+	* lisp/core.lisp.in (directoryEntries): New.
+	* interp/lisplib.boot (compDefineLisplib): Tidy.  Honor --output.
+	(initializeLisplib): Rewrite.
+	(lisplibDoRename): Likewise.
+	* interp/nlib.lisp (RSHUT): Tidy.
+	* interp/define.boot (getOutputPath): New.
+	(compDefineFunctor): Use it.
+	(compDefineCategory): Likewise.
+	* interp/c-util.boot (%Libstream): Add field for output pathname.
+	(dbOutputPath): New accessor.
+	(moveLibdirByCopy): New.
+	* include/cfuns.h (oa_acquire_temporary_pathname): Declare.
+	(oa_release_temporary_pathname): Likewise.
+	* lib/cfuns-c.c: Implement them.
+	* interp/sys-os.boot: Define acquireTemporaryPathname.
+	* boot/ast.boot (lispKey): New.
+	(bfApplication): Use it.
+	(bfExpandKeys): Likewise.
+	* algebra/Makefile.am: Simplify bootstrapping rules.
+
+2013-05-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (getIndexIOStreamAndTable): New.
+
+2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (knowInfo): Fix typo.
+
+2013-05-30  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-doc.boot (finalizeDocumentation): Take a DB parameter.
+	Adjust callers.
+	* interp/lisplib.boot (compileDocumentation): Likewise.
+	(writeSourceFile): New.
+	(writeInteractiveModemaps): Likewise.
+	(writeDocumentation): Likewise.
+
+2013-05-29  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisp-backend.boot (compileLispDefinition): Remove.
+	Adjust callers.
+	(printBackendDecl): Lose first parameter.  Adjust callers.
+	* interp/slam.boot (compQuietly): Simplify.
+	* interp/sys-utility.boot (COMPILE-DEFUN): Remove.  Adjust callers.
+	(EVAL-DEFUN): Likewise.
+	* interp/sys-macros.lisp (MACROEXPANDALL): Remove as no longer used..
+
+2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (compDefineCategory1): Take DB parameter.
+	(compDefineCategory2): Likewise.
+	(compDefineFunctor1): Likewise.
+	* interp/lisplib.boot (compDefineLisplib): Likewise.
+
+2013-05-28  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-globals.boot ($domainShell): Remove.
+	* interp/c-util.boot (%CompilationData): Add shell field.
+	(dbDomainShell): New accessor.  Replace $domainShell variable.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot(compNoStacking): Add DB parameter.
+	Adjust callers.
+	(comp2): Likewise.
+	(comp3): Likewise.
+	* interp/c-util.boot (currentDB): New.
+	(currentConstructor): Remove.  Adjust callers.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (compDefine): Take DB as first parameter.
+	Adjust callers.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-utility.boot ($ERASE): Remove.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp ($FINDFILE): Move to sys-utility.boot.
+
+2013-05-27  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (MAKE-INPUT-FILENAME): Move to sys-utility.boot.
+	* boot/ast.boot (bfIS1): Handle Lisp keywords.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (GET-DIRECTORY-LIST): Move to sys-utility.boot.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lisplib.boot: Replace $FILEP with makeFullFilePath.
+	* interp/setvars.boot: Likewise.
+	* interp/nlib.lisp ($FILEP): Remove.
+	($OUTFILEP): Likewise.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-os.boot (getWorkingDirectory): New.  Define via FFI.
+	Replace all uses of GET-CURRENT-DIRECTORY.
+	* interp/daase.lisp (GET-CURRENT-DIRECTORY): Remove.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (MAKE-FULL-NAMESTRING): Move to sys-utility.boot.
+	Rename to makeFullFilePath.  Adjust callers.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/boolean.spad.pamphlet (IndexedBits)[<]: Define in Spad.
+	* interp/bits.lisp: Remove.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-utility.boot (makeFilename): Move from nlib.lisp.
+	* interp/nlib.lisp (MAKE-FILENAME): Move to sys-utility.boot.
+	Adjust callers.
+	* boot/tokens.boot: Add new builtins: filePath, filePath?,
+	filePathDirectory, filePathName, filePathString, filePathType,
+	makeFilePath.
+
+2013-05-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nlib.lisp (ADDOPTIONS): Move to sys-utility.boot.
+	* interp/sys-utility.boot (addCompilerOption): Rename from ADDOPTIONS.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/logic.spad.pamphlet: New file.
+	* algebra/boolean.spad.pamphlet (Logic): Move there.
+	(BooleanLogic): Likewise.
+	(PropositionalLogic): Likewise.
+	(PropositionalFormula): Likewise.
+	(PropositionalFormulaFunctions1): Likewise.
+	(PropositionalFormulaFunctions2): Likewise.
+	(KleeneTrivalentLogic): Likewise.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/cycles.spad.pamphlet (CycleIndicators) [spol]: Rename
+	from nniBump.  Fix thinko.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/cycles.spad.pamphlet (alternating): Accept non-negative input.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* utils/command.cc (print_usage): Document --verbose.
+
+2013-05-25  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject):
+	Define Rep, do not use base-domain form.
+
+2013-05-23  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/stream.spad.pamphlet (LazyStreamAggregate) [entries]:
+	Define unconditionally, even it it does not make much sense in general.
+
+2013-05-22  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/sys-utility.boot (%Libstream): New.
+
+2013-05-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (ShallowlyMutableAggregate): Extend
+	Aggregate only.  Adjust users.
+	(BagAggregate): Explicitly extend HomogeneousAggregate.
+	(AssociationListAggregate): Extend ShallowlyMutableAggregate.
+
+2013-05-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (UnaryRecursiveAggregate) [map!]:
+	Implement default.
+	* algebra/list.spad.pamphlet (List) [map!]: Likewise.
+
+2013-05-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/database.boot (getConstructorAbbreviationFromDB): Use DB
+	data structure directtly.
+	(getConstructorKindFromDB): Likewise.
+
+2013-05-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (Collection) [find]: Move to
+	FiniteAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/derham.spad.pamphlet: Use Functorial.
+	* algebra/equation2.spad.pamphlet: Likewise.
+	* algebra/fr.spad.pamphlet: Likewise.
+	* algebra/indexedp.spad.pamphlet: Likewise.
+	* algebra/ituple.spad.pamphlet: Likewise.
+	* algebra/mring.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/array2.spad.pamphlet: Remove redundant map export.
+	* algebra/exposed.lsp.pamphlet: Expose Functorial.
+	* algebra/matcat.spad.pamphlet: Likewise.
+	* algebra/xpoly.spad.pamphlet: Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Eradicate attribute shallowlyMutable.
+	* algebra/aggcat.spad.pamphlet: Use ShallowlyMutableAggregate.
+	* algebra/defaults.spad.pamphlet: Likewise.
+	* algebra/smith.spad.pamphlet: Likewise.
+	* algebra/solvelin.spad.pamphlet: Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/matfuns.spad.pamphlet: Use ShallowlyMutableAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/matcat.spad.pamphlet: Use ShallowlyMutableAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat2.spad.pamphlet: Use ShallowlyMutableAggregate.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/newdata.spad.pamphlet (SplittingTree): Include
+	ShallowlyMutableAggregate S in exports.
+	* algebra/polset.spad.pamphlet (GeneralPolynomialSet): Inlcude
+	ShallowlyMutableAggregate P.
+	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	Eradicate attribute finiteAggregate.
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Remove
+	exports conditional aatribute finiteAggregate.
+	(TableAggregate): Remove spirous definitions.
+	* algebra/stream.spad.pamphlet (LazyStreamAggregate): Put
+	definitions for FiniteAgregate exports under appropriate condition.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (Aggregate) [#]: Remove export.
+	(UnaryRecursiveAggregate):  Make definiton conditional.
+	* algebra/stream.spad.pamphlet (LazyStreamAggregate): Likewise.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (compDefineFunctor1): Use the current
+	instantiation form when adding modemaps from category.
+	(partialSignature?): New.
+	(refineDefinitionSignature): Use full completion from getSignature.
+	* interp/compiler.boot (compIterator): Simplify.
+
+2013-05-19  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (sourceMatches): New.
+	(getDollarName): Likewise.
+	(getSignature): Them.  Tidy.
+	(setDollarName): New.
+	(compDefineFunctor1): Use it.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (getSignature): Third parameter need not be fluid.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (getSignature): Tidy.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/cycles.spad.pamphlet (CycleIndicators) [nniBump]: New
+	local function.
+	[SFunction]: Use it.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/cycles.spad.pamphlet (CycleIndicators)
+	[complete,alternating]:  Change input type to NonNegativeInteger.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (knownPred): Take a memo-table as third parameter.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAgregate): Remove attribute
+	finiteAggregate.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (Collection) [reduce]: Remove.
+	Remove redundant defaults.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Move
+	defaults for = and coerce to FiniteAggregate.  Remove the rest.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate) [reduce]: Add
+	overloads.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate) [parts]: Remove.
+	* algebra/permgrps.spad.pamphlet: Use members, not parts.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat2.spad.pamphlet: Use members, not parts.
+	* algebra/algcat.spad.pamphlet: Likewise.
+	* algebra/cden.spad.pamphlet: Likewise.
+	* algebra/clifford.spad.pamphlet: Likewise.
+	* algebra/divisor.spad.pamphlet: Likewise.
+	* algebra/galfact.spad.pamphlet: Likewise.
+	* algebra/lodof.spad.pamphlet: Likewise.
+	* algebra/naalgc.spad.pamphlet: Likewise.
+	* algebra/oderf.spad.pamphlet: Likewise.
+	* algebra/rule.spad.pamphlet: Likewise.
+	* algebra/space.spad.pamphlet: Likewise.
+	* algebra/view3D.spad.pamphlet: Likewise.
+	* algebra/zerodim.spad.pamphlet: Likewise.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array1.spad.pamphlet: Define members, not parts.
+	* algebra/array2.spad.pamphlet: Likewise.
+	* algebra/bags.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/lmdict.spad.pamphlet: Likewise.
+	* algebra/mset.spad.pamphlet: Likewise.
+	* algebra/polset.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet: Likewise.
+	* algebra/sets.spad.pamphlet: Likewise.
+	* algebra/sregset.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+	* algebra/tree.spad.pamphlet: Likewise.
+	* algebra/triset.spad.pamphlet: Likewise.
+	* algebra/vector.spad.pamphlet: Likewise.
+
+2013-05-18  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet: Tidy.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/mset.spad.pamphlet (Multiset) [unique]: Rename from
+	members to avoid semantics clash.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet: Replace uses of parts by members.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/attreg.spad.pamphlet (AttributeRegistry): Remove
+	shallowlyMutble.
+	* algebra/aggcat.spad.pamphlet (BagAggregate): Extend
+	ShallowlyMutableAggregate.
+	(ExtensibleLinearAggregate): Likewise.
+	* algebra/mset.spad.pamphlet (Multiset): Likewise.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/tree.spad.pamphlet(BinaryTreeCategory): Extend
+	ShallowlyMutableAggregate S.
+	(BinarySearchTree): Remove redundant shallowlyMutable attribute.
+	(BalancedBinaryTree): Likewise.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (ShallowlyMutableAggregate): New.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): More defaults.
+	(Aggregate): Remove default implementation of empty?
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): Add default
+	implementation for empty?.
+
+2013-05-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (TableAggregate): Now extend
+	FiniteAggregate Record(key:Key,entry:Entry).
+	* algebra/files.spad.pamphlet (KeyedAccessFile): Remove
+	finiteAggregate attribute.
+	* algebra/table.spad.pamphlet (HashTable): Likewise.
+	(InnerTable): Likewise.
+	(Table): Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (KeyedDictionary): Now extend
+	IndexedAggregate too.  Give default implementation for elt.
+	(TableAggregate): Simplify.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/ffp.spad.pamphlet (FiniteFieldExtensionByPolynomial)
+	[tableForDiscreteLogarithm]:  Don't use pretend where checked
+	coercion is intended.
+	* algebra/pf.spad.pamphlet (InnerPrimeField)
+	[tableForDiscreteLogarithm]:  Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (AssociationListAggregate) [assoc]:
+	Change return type to instance of Maybe.
+	* algebra/list.spad.pamphle (AssociationList): Reflect change.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/sortpak.spad.pamphlet (SortPackage): Have second
+	parameter satisfy FiniteAggregate A instead of requiring attribute
+	finiteAggregate.
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Now
+	extends FiniteAggregate.  Remove finiteAggregate attribute.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/polset.spad.pamphlet (GeneralPolynomialSet): Remove
+	redundant FiniteAggregate.
+	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): Temporarily
+	include attribute finiteAggregate.
+	(StackAggregate): Extend category FiniteAggregate instead of
+	attribute finiteAggregate.
+	(QueueAggregate): Likewise.
+	(PriorityQueueAggregate): Likewise.
+	(FiniteSetAggregate): Likewise.
+	* algebra/lmdict.spad.pamphlet (ListMultiDictionary): Likewise.
+	* algebra/matcat.spad.pamphlet (MatrixCategory): Likewise.
+	* algebra/mset.spad.pamphlet (Multiset): Likewise.
+	* algebra/newdata.spad.pamphlet (SplittingTree): Likewise.
+	* algebra/polset.spad.pamphlet (PolynomialSetCategory): Likewise.
+	* algebra/tree.spad.pamphlet (Tree): Likewise.
+	(BinaryTreeCategory): Likewise.
+	* algebra/triset.spad.pamphlet (TriangularSetCategory): Likewise.
+	* algebra/vector.spad.pamphlet (DirectProductCategory): Likewise.
+
+2013-05-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/data.spad.pamphlet (Byte): Remove redundant
+	finiteAggregate attribute.
+	* algebra/tree.spad.pamphlet (BinaryTreeCategory): Likewise.
+	(BinarySearchTree): Likewise.
+	(BalancedBinaryTree): Likewise.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/aggcat.spad.pamphlet (FiniteAggregate): New.
+	* algebra/exposed.lsp.pamphlet: Expose it.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (unknownTypeError): Simplify.
+	* interp/define.boot (dbClearForCompilation!): Clear more fields.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (comp2): Leave categories alone.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/compiler.boot (comp2): Don't test for $bootStrapMode.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/daase.lisp (dbDocumentation): New accessor.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (dbClearForCompilation!): New.
+	(compDefineFunctor1): Use it.
+
+2013-05-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/nruncomp.boot (NRTputInHead): Tidy.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/g-opt.boot (quoteMode): New.
+	(optRetract): Use it.
+	(optPullback): Likewise.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/define.boot (checkAndDeclare): Constructor parameter
+	shadowing.
+	* algebra/lodof.spad.pamphlet (SetOfMIntegersInOneToN): [enum]:
+	Lose last parameter.  Adjust callers.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-util.boot (cleanParameterList!): New.
+	* interp/define.boot (spadCompileOrSetq): Use it.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory):
+	Remove redundant declaration for parts.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Test
+	for BasicType satisfaction instead of existence of =.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray) [map]:
+	Move implementation from TwoDimensionalArrayCategory.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Move
+	defaults to InnerTwoDimensionalArray.
+
+2013-05-14  Edi Meier  <liste_franken@gmx.de>
+
+	* graph/include/G.h (GCstruct::GCchar): Increase length to 12.
+
+2013-05-14  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray)
+	[row, column]: Fix off-by-one thinko.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Move
+	row column implementation to InnerTwoDimensionalArray.
+	(InnerTwoDimensionalArray): Simplify row and column implementation.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray): Inherit
+	empty? and empty from base domain.
+	(TwoDimensionalArray): Attribute shallowlyMutable is already
+	specified by TwoDimensionalArrayCategory.
+	* algebra/matcat.spad.pamphlet (MatricCategory): Attributes
+	shallowlyMutable and finiteAggregate are already specified by
+	TwoDimensionalArrayCategory.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array1.spad.pamphlet (IndexedOneDimensionalArray): Tidy.
+
+2013-05-13  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/g-opt.boot (%array2list): New side-effect free opcode.
+	* interp/lisp-backend.boot: Expand it.
+	* algebra/array1.spad.pamphlet (PrimitiveArray): Implement
+	maxIndex, parts, and members.
+
+2013-05-12  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/vector.spad.pamphlet (IndexedVector): Remove.
+	(Vector): Use OneDimensionalArray as base domain for implementation.
+	* algebra/Makefile.am: Update.
+
+2013-05-12  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/carten.spad.pamphlet (CartesianTensor): Use
+	PrimitiveArray in lieu of 0-based IndexedVector.
+
+2013-05-12  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/database.boot (getConstructorModemap): Revert previous change.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/matrix.spad.pamphlet (RectangularMatrix) [ZERO]: Remove.
+	(SquareMatrix) [ZERO, ONE]: Likewise.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+	    Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* algebra/catdef.spad.pamphlet (OrderedRing): Extend
+	CharactericZero too.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet (InnerTwoDimensionalArray): Rename
+	from InnerIndexedTwoDimensionalArray.  Adjust users.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/database.boot (getConstructorModemap): Try to load fresh
+	module first before looking into cached database data.
+	* algebra/Makefile.am (oa_algebra_layer_11): Remove IARRAY2.
+	* algebra/array2.spad.pamphlet (InnerIndexedTwoDimensionalArray):
+	Drop starting index parameters.  Tidy.  Adjust users.
+	(IndexedTwoDimensionalArray): Remove as unused.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/array2.spad.pamphlet: Clean up.
+
+2013-05-11  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet
+	(IndexedDirectProductAbelianMonoid) [opposite?]: Implement.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/matrix.spad.pamphlet (IndexedMatrix): Remove as unused.
+	* algebra/Makefile.am (oa_algebra_layer_12): Remove IMATRIX.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/g-opt.boot (optEmptyArray): New expander.  Register.
+	(optSimpleArray): Likewise.
+	(optList2Array): Likewise.
+	* interp/lisp-backend.boot: Expand %elementType, %initialElement,
+	%initialContents, %array, %type2form opcodes.
+	* algebra/array1.spad.pamphlet (PrimitiveArray): Tidy.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet
+	(IndexedDirectProductOrderedAbelianMonoid) [<]: Rewrite iteratively.
+
+2013-05-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/catdef.spad.pamphlet (AbelianMonoid) [opposite?]: New.
+	(Rng)[annihilate?]: New.
+	(EntireRing) [annihilate?]: Implement.
+	* algebra/integer.spad.pamphlet (Integer): Implement new exports.
+
+2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/lexing.boot (Keywords): Add "do".
+	* interp/spad-parser.boot (parseBlock): New.
+	(parseDo): Likewise.  Register for do-statements.
+	* interp/compiler.boot (compDo): New.  Handle do-statements.
+
+2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject)
+	[combineWithIf]: New.
+
+2013-05-09  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/i-special.boot (evalIF): Generate OIL intermediate
+	instruction %otherwise, not Lisp expression T.
+	* interp/slam.boot (isRecurrenceRelation): Likewise.
+
+2013-05-08  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/list.spad.pamphlet (List) [copy]: Simplify.
+	* interp/g-opt.boot (%lcopy): New side-effect free builtin.
+	* interp/lisp-backend.boot: Translate it.
+
+2013-05-08  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/c-util.boot (almostPure?): New.
+	(foldExportedFunctionReferences): Use it.
+
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/vector.spad.pamphlet (LinearElement) [corodinates]: Tidy.
+	(LineraForm) [coordinates]: Likewise.
+
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory):
+	Now extends ConvertibleFrom IndexedProductTerm(A,S).
+	(IndexedDirectProductObject): Simplify.
+	(IndexedDirectProductAbelianMonoid): Tidy.
+	(IndexedDirectProductOrderedAbelianMonoid): Likewise.
+
+2013-05-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/indexedp.spad.pamphlet (IndexedProductTerm): New domain.
+
+2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/widget.h: Remove.  Qt's meta object system does no play nice
+	with modern C++ idioms.
+
+2013-04-07  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* utils/command.cc (args_count): New.
+	(execute_core): Use it.  Tidy.
+	(Arguments::Arguments): Tidy.
+
+2013-04-06  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/server.h: New.
+	* gui/server.cc: Likewise..
+	* gui/gui.pro.in (HEADERS): Update.
+	(SOURCES): Likewise.
+
+2013-04-05  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/token.H: New.
+	* syntax/token.cc: Likewise.
+	* syntax/Makefile.am: Likewise.
+	* Makefile.am (DIST_SUBDIRS): Add syntax.
+	(oa_src_include_headers): Add Input.H, token.H.
+
+2013-04-04  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* algebra/Makefile.am: New.
+	* algebra/Makefile.in: Generate content from Makefile.am.
+
+2013-04-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* include/Input.H: New.
+	* include/defaults.H: Likewise.
+	* include/iterator.H: Likewise.
+	* include/structure.H: Likewise.
+	* io/Input.cc: Likewise.
+	* Makefile.am (DIST_SUBDIRS): Include io.
+	(subdirs): Likewise.
+	(oa_src_include_headers): New.
+	(all-headers): New rule.
+	(mostlyclean-local): Remove target include directory too.
+	* gui/gui.pro.in: Update with new dependency.
+
+2013-04-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/conversation.h (Question::leaveEvent): Remove.
+	(Question::focusOutEvent): Likewise.
+	* gui/conversation.cc: Remove corresponding definitions.
+
+2013-04-02  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/conversation.cc (font_units): Rename from em_metrics.
+	Adjust callers.
+	(Answer::Answer): Use raised frame style.
+
+2013-03-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* lib/sockio-c.c (get_float): Remove unused local variable val.
+	* lib/pixmap.c (read_pixmap_file): Remove unused local variable status.
+	* lib/openpty.c (makeNextPtyNames): Guard declaration by CPP macro.
+	* lib/fnct_key.c (define_function_keys): Remove unused local
+	variable saved_echo.
+	* lib/XSpadFill.c (XInitSpadFill): Remove unused local variable
+	maxDither.
+	* graph/viewman/fun2D.c (funView2D): Remove declaration of unused
+	local variable code.
+	* graph/viewman/fun3D.c (funView3D): Likewise.
+
+2013-03-31  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* interp/pile.boot (insertpile): Tidy.
+	(pilePlusComments): Likewise.
+	(pileTree): Likewise.
+	(eqpileTree): Likewise.
+
