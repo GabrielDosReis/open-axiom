@@ -1,4 +1,4 @@
--- Copyright (C) 2012-2013, Gabriel Dos Reis.
+-- Copyright (C) 2012-2014, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
