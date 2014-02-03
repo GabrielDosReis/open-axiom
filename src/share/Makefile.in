@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,8 @@
 subdir = src/share/
 
 FILES = \
-	$(axiom_target_libdir)/command.list \
-	$(axiom_target_texdir)/open-axiom.sty
+	$(oa_target_libdir)/command.list \
+	$(oa_target_texdir)/open-axiom.sty
 
 
 .SUFFIXES:
@@ -55,10 +55,10 @@ mostlyclean-local:
 clean-local: mostlyclean-local
 distclean-local: clean-local
 
-$(axiom_target_libdir)/command.list: $(srcdir)/algebra/command.list
+$(oa_target_libdir)/command.list: $(srcdir)/algebra/command.list
 	cp -p $< $@
 
-$(axiom_target_texdir)/open-axiom.sty: $(axiom_src_texdir)/open-axiom.sty
-	$(mkdir_p) "$(axiom_target_texdir)"
+$(oa_target_texdir)/open-axiom.sty: $(oa_src_texdir)/open-axiom.sty
+	$(mkdir_p) "$(oa_target_texdir)"
 	cp -p $< $@
 

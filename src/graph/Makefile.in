@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ all-subdirs: all-subdirs.pre all-subdirs.rest
 
 .PHONY: all-PS
 all-PS: all-Gdraws $(srcdir)/PS/*.ps
-	cp -p $(srcdir)/PS/*.ps $(axiom_target_libdir)/graph/
+	cp -p $(srcdir)/PS/*.ps $(oa_target_libdir)/graph/
 
 .PHONY: all-subdirs.pre
 all-subdirs.pre:
@@ -67,7 +67,7 @@ all-subdirs.rest: all-subdirs.pre all-Gdraws all-viewman \
 all-viewman: all-Gdraws
 	cd viewman && ${MAKE}
 all-Gdraws: 
-	@$(mkdir_p) $(axiom_target_libdir)/graph
+	@$(mkdir_p) $(oa_target_libdir)/graph
 	cd Gdraws && ${MAKE}
 all-view3D: all-Gdraws
 	cd view3D && ${MAKE}

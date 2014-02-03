@@ -1,4 +1,5 @@
-// Copyright (C) 2010-2013, Gabriel Dos Reis.
+// -*- C++ -*-
+// Copyright (C) 2010-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //

@@ -119,7 +119,7 @@ case $oa_include_gcl,$AXIOM_LISP in
        ## User may explicilty specify --enable-gcl, but may be missing
        ## the dependency tarball.
        if test -d ${srcdir}/gcl; then
-	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
+	  AXIOM_LISP='$(oa_build_bindir)/gcl'
 	  oa_include_gcl=yes
        elif test -z "$oa_include_gcl"; then
 	  AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website.])
@@ -182,6 +182,8 @@ else
    esac
 fi
 AC_MSG_RESULT([$axiom_lisp_flavor])
+AM_CONDITIONAL([OA_ECL_RT],[test $axiom_lisp_flavor = ecl])
+AM_CONDITIONAL([OA_STANDARD_LINKING],[test $oa_standard_linking = yes])
 
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [Runtime::${axiom_lisp_flavor}],

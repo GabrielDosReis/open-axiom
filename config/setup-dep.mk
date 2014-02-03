@@ -79,23 +79,23 @@ maintainer-clean-recursive:
 .PRECIOUS: %.tex
 .PRECIOUS: %.dvi
 
-DVI_FILES = $(addprefix $(axiom_target_docdir)/$(subdir), \
+DVI_FILES = $(addprefix $(oa_target_docdir)/$(subdir), \
 		$(pamphlets:.pamphlet=.dvi))
 
 pamphlets_SOURCES = $(addprefix $(srcdir)/, $(pamphlets))
 
 .PHONY: dvi dvi-ax
 dvi: dvi-recursive
-dvi-ax: $(axiom_build_texdir)/axiom.sty $(DVI_FILES)
+dvi-ax: $(oa_build_texdir)/axiom.sty $(DVI_FILES)
 
-$(axiom_target_docdir)/$(subdir)%.dvi: $(builddir)/%.dvi
-	$(mkinstalldirs) $(axiom_target_docdir)/$(subdir)
+$(oa_target_docdir)/$(subdir)%.dvi: $(builddir)/%.dvi
+	$(mkinstalldirs) $(oa_target_docdir)/$(subdir)
 	$(INSTALL_DATA) $< $@
 
-%.dvi: %.tex $(axiom_build_texdir)/axiom.sty
-	TEXINPUTS=".:$(axiom_build_texdir):$${TEXINPUTS}"; \
+%.dvi: %.tex $(oa_build_texdir)/axiom.sty
+	TEXINPUTS=".:$(oa_build_texdir):$${TEXINPUTS}"; \
 	export TEXINPUTS; \
-	BIBINPUTS=".:$(axiom_build_texdir):$${TEXINPUTS}"; \
+	BIBINPUTS=".:$(oa_build_texdir):$${TEXINPUTS}"; \
 	export BIBINPUTS; \
 	$(oa_hammer) --latex $<
 
@@ -135,7 +135,7 @@ clean-ax: clean-generic clean-local
 
 .PHONY: distclean-generic distclean-local distclean distclean-ax
 distclean-generic: clean-generic
-	@-rm -rf $(axiom_target_docdir)/$(subdir)
+	@-rm -rf $(oa_target_docdir)/$(subdir)
 
 distclean: distclean-recursive
 distclean-ax: distclean-generic distclean-local

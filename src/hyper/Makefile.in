@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,13 @@ bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
 endif
 
 # this is where to put the various commands
-OUTLIB = $(axiom_target_libdir)
+OUTLIB = $(oa_target_libdir)
 
 # this is where the include files live
-INC = $(axiom_src_srcdir)/include
+INC = $(oa_src_srcdir)/include
 
 # this is where the hypertex documentation files are
-HYPER=$(axiom_target_datadir)/hypertex
+HYPER=$(oa_target_datadir)/hypertex
 
 HTADD = $(OUTLIB)/htadd
 
@@ -147,7 +147,7 @@ distclean-local: clean-local
 	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
-	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
+	@echo making ${HYPER}/pages from $(oa_src_srcdir)/pages directory
 	@ mkdir -p "${HYPER}"/pages
 	@ cp "$(srcdir)"/pages/*.ht "$(HYPER)"/pages/
 	@ for A in `ls "$(srcdir)"/pages/*.pht`; do \
@@ -162,7 +162,7 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@ mkdir -p "$(HYPER)"/bitmaps
 	@ for f in `ls "$(srcdir)"/bitmaps/*.bitmap "$(srcdir)"/bitmaps/*.xbm`; do\
 	    cp -p $$f "$(HYPER)"/bitmaps; done
-	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
+	@ # cp -pr "$(srcdir)"/viewports "$(oa_target_datadir)"
 
 ${OUTLIB}/htsearch$(EXEEXT): $(htsearch_objects) $(htsearch_DEPENDENCIES)
 	${CXXLINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)

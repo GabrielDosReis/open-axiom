@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ open_axiom_objects = $(open_axiom_SOURCES:.cc=.lo)
 ## Ideally, we want a standalone binary driver unencounbered by
 ## any sort of dependencies.  However, static program linking is not
 ## available on all plaforms (think Mac OS, Solaris, etc.)  So we must link
-## against library archives.  Thefore we avoid using $(axiom_target_libdir)
+## against library archives.  Thefore we avoid using $(oa_target_libdir)
 ## below.  On purpose.
 open_axiom_LDADD = \
 	-L$(builddir)/../utils \

@@ -1,6 +1,6 @@
 ## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ## All rights reserved.
-## Copyright (C) 2007-2013, Gabriel Dos Reis.
+## Copyright (C) 2007-2014, Gabriel Dos Reis.
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -36,11 +36,11 @@
 subdir = src/interp/
 
 IN=$(srcdir)
-DOC=$(axiom_target_docdir)/src/interp
-BOOK=$(axiom_target_docdir)
+DOC=$(oa_target_docdir)/src/interp
+BOOK=$(oa_target_docdir)
 
 ## Where to put interp modules
-oa_target_moddir = $(axiom_targetdir)/interp
+oa_target_moddir = $(oa_targetdir)/interp
 
 ## FFI module.
 OA_FFI_MOD = sys-os.$(FASLEXT)
@@ -54,13 +54,13 @@ oa_target_delayed = $(oa_target_moddir)/$(OA_FFI_MOD)
 DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
 
 # Translator from Boot to Lisp (or machine code)
-BOOTSYS = $(axiom_target_bindir)/bootsys$(EXEEXT)
+BOOTSYS = $(oa_target_bindir)/bootsys$(EXEEXT)
 
 # Minimal OpenAxiom image necessary to build the algebra
 SAVESYS= interpsys$(EXEEXT)
 
 # Complete OpenAxiom image after completion of algebra, ready to install.
-AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
+AXIOMSYS= $(oa_target_bindir)/AXIOMsys$(EXEEXT)
 
 OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	$(OA_FFI_OBJ)           \
@@ -137,7 +137,7 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 	topics.$(FASLEXT)     br-prof.$(FASLEXT)    \
 	br-saturn.$(FASLEXT)
 
-TIMESTAMP=$(axiom_targetdir)/timestamp
+TIMESTAMP=$(oa_targetdir)/timestamp
 YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
                 (setq *build-version* "$(PACKAGE_STRING)") \
                 (yearweek))
@@ -181,9 +181,9 @@ $(oa_target_delayed): $(OA_FFI_MOD)
 	$(mkdir_p) $(oa_target_moddir)
 	cp -p $< $@
 
-$(axiom_target_datadir)/msgs/s2-us.msgs: \
-	$(axiom_src_docdir)/msgs/s2-us.msgs
-	$(mkdir_p) $(axiom_target_datadir)/msgs
+$(oa_target_datadir)/msgs/s2-us.msgs: \
+	$(oa_src_docdir)/msgs/s2-us.msgs
+	$(mkdir_p) $(oa_target_datadir)/msgs
 	cp -p $< $@
 
 makeint.lisp: Makefile
@@ -197,35 +197,35 @@ makeint.lisp: Makefile
 	@ echo '#+:gcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
-$(SAVESYS): database.date $(axiom_target_datadir)/msgs/s2-us.msgs $(OBJS) $(oa_target_ffi)
+$(SAVESYS): database.date $(oa_target_datadir)/msgs/s2-us.msgs $(OBJS) $(oa_target_ffi)
 	$(DRIVER) --execpath=$(BOOTSYS) \
-		--syslib=$(axiom_target_libdir) --system="$(AXIOM)/" \
+		--syslib=$(oa_target_libdir) --system="$(AXIOM)/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS)
-	$(mkdir_p) $(axiom_target_bindir)
+	$(mkdir_p) $(oa_target_bindir)
 .PHONY: all-axiomsys
 
 all-axiomsys: ${AXIOMSYS}
 
 ${AXIOMSYS}: database.date \
-		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
-		$(axiom_target_datadir)/msgs/s2-us.msgs \
+		$(oa_targetdir)/algebra/exposed.$(FASLEXT) \
+		$(oa_target_datadir)/msgs/s2-us.msgs \
 		$(OBJS) $(oa_target_ffi) makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
-		--syslib=$(axiom_target_libdir) \
+		--syslib=$(oa_target_libdir) \
 		--system="$(AXIOM)/" \
-		--sysalg="$(axiom_targetdir)/algebra/" \
+		--sysalg="$(oa_targetdir)/algebra/" \
 		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
 	@ echo 6a $@ created
-exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
+exposed.lsp: $(oa_src_algdir)/exposed.lsp.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
 
-$(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
-	$(mkdir_p) $(axiom_targetdir)/algebra
-	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+$(oa_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
+	$(mkdir_p) $(oa_targetdir)/algebra
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(oa_target_libdir) \
 		--compile --output=$@ --load-directory=. $<
 
 database.date:
@@ -234,11 +234,11 @@ database.date:
 
 
 %.$(LNKEXT) %.$(FASLEXT): %.boot
-	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(oa_target_libdir) \
 		--compile --output=$@ --load-directory=. $<
 
 %.$(LNKEXT) %.$(FASLEXT): %.lisp
-	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(oa_target_libdir) \
 		--compile --output=$@ --load-directory=. $<
 
 ## Translation to Fortran
@@ -388,6 +388,6 @@ io.$(FASLEXT): sys-constants.$(FASLEXT)
 types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 
-$(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
+$(oa_build_texdir)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
 	@cp -p $< $@
 

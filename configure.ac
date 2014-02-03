@@ -77,7 +77,7 @@ OPENAXIOM_SHELLS
 ## cross build.  Consequently, in the build tree, we sequester
 ## tools that we build and use on the build platform,
 ## in  sub-directories different from others.
-axiom_build_sharedir=$axiom_builddir/share
+oa_build_sharedir=$oa_builddir/share
 
 ## We have now almost switched entirely to C++.
 AC_LANG([C++])

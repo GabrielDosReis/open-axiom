@@ -57,7 +57,7 @@ boot_SOURCES = utility.boot tokens.boot includer.boot scanner.boot \
 boot_clisp = $(boot_SOURCES:.boot=.clisp)
 boot_objects = $(boot_SOURCES:.boot=.$(LNKEXT))
 
-oa_target_bootdir = $(axiom_targetdir)/boot
+oa_target_bootdir = $(oa_targetdir)/boot
 ifeq (@axiom_lisp_flavor@,ecl)
 oa_boot_linkset = $(oa_target_bootdir)/linkset
 else
@@ -75,11 +75,11 @@ subdir = src/boot/
 .PHONY: all-boot
 all: all-boot
 
-all-boot: $(axiom_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
+all-boot: $(oa_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
 
 ## The final `bootsys' image.
-$(axiom_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
-	$(mkdir_p) $(axiom_target_bindir)
+$(oa_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
+	$(mkdir_p) $(oa_target_bindir)
 	cp -p $< $@
 
 $(oa_boot_linkset): $(addprefix $(oa_target_bootdir)/, $(boot_objects))
@@ -112,7 +112,7 @@ strap/stamp: strap/bootsys$(EXEEXT)
 
 strap/bootsys$(EXEEXT): $(strap_boot_objects)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|"\
-		--system=$(axiom_targetdir) \
+		--system=$(oa_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		 --output=$@ --load-directory=strap $(strap_boot_objects)
 
@@ -138,7 +138,7 @@ stage1/stamp: stage1/bootsys$(EXEEXT)
 
 stage1/bootsys$(EXEEXT): $(stage1_boot_objects)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|" \
-		--system=$(axiom_targetdir) \
+		--system=$(oa_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		 --output=$@ --load-directory=stage1 $(stage1_boot_objects)
 
@@ -165,7 +165,7 @@ stage2/stamp: stage2/bootsys$(EXEEXT)
 
 stage2/bootsys$(EXEEXT): $(stage2_boot_objects)
 	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|" \
-		--system=$(axiom_targetdir) \
+		--system=$(oa_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		--output=$@ --load-directory=stage2 $(stage2_boot_objects)
 
@@ -218,7 +218,7 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 ##
 
 mostlyclean-local:
-	@rm -f $(axiom_target_bindir)/bootsys$(EXEEXT)
+	@rm -f $(oa_target_bindir)/bootsys$(EXEEXT)
 	@rm -rf prev-stage
 	@rm -rf strap stage1 stage2
 	@rm -rf $(oa_target_bootdir)
