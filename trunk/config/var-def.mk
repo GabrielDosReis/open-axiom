@@ -98,7 +98,6 @@ endif
 oa_shrobj_flags = @oa_shrobj_flags@
 oa_shrlib_flags = @oa_shrlib_flags@
 
-AUTOCONF = autoconf
 AWK = @AWK@
 INSTALL = @INSTALL@
 install_sh = @install_sh@
@@ -115,7 +114,6 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 ##         we are explicitly overrding that value here.
 LN_S = ln -s
 mkinstalldirs = $(top_srcdir)/config/mkinstalldirs
-PATCH = @PATCH@
 RANLIB = @RANLIB@
 TOUCH = @TOUCH@
 
@@ -154,34 +152,21 @@ oa_standard_linking = @oa_standard_linking@
 ## Notice, this is the src/ directory within the toplevel source
 ## directory 
 
-axiom_src_srcdir = $(top_srcdir)/src
-axiom_src_docdir = $(axiom_src_srcdir)/doc
-axiom_src_datadir = $(axiom_src_srcdir)/share
-axiom_src_algdir = $(axiom_src_srcdir)/algebra
-axiom_src_texdir =  $(axiom_src_datadir)/tex
+oa_src_srcdir = $(top_srcdir)/src
+oa_src_docdir = $(oa_src_srcdir)/doc
+oa_src_datadir = $(oa_src_srcdir)/share
+oa_src_algdir = $(oa_src_srcdir)/algebra
+oa_src_texdir =  $(oa_src_datadir)/tex
 
 ## Where tools for the build machine are built
-# Tools that we occasionally build don't know
-# much about Autoconf and related infrastructure.  Therefore
-# we do lot by "hand". For the moment, things work if we specify
-# paths as absolute, as opposed to relative.  Other parts of
-# OpenAxiom also expect absolute paths.
-axiom_abs_top_builddir = $(abs_top_builddir)
-axiom_abs_builddir = $(abs_top_builddir)/build/$(build)
-axiom_abs_build_bindir = $(axiom_abs_builddir)/bin
-axiom_abs_build_libdir = $(axiom_abs_builddir)/lib
-axiom_abs_build_mandir = $(axiom_abs_builddir)/man
-axiom_abs_build_datadir = $(axiom_abs_builddir)/share
-axiom_abs_build_texdir = $(axiom_abs_build_datadir)/texmf/tex
-
 axiom_top_builddir = $(top_builddir)/build
-axiom_builddir = $(axiom_top_builddir)/$(build)
-axiom_build_bindir = $(axiom_builddir)/bin
-axiom_build_libdir = $(axiom_builddir)/lib
-axiom_build_mandir = $(axiom_builddir)/man
-axiom_build_docdir = $(axiom_builddir)/doc
-axiom_build_datadir = $(axiom_builddir)/share
-axiom_build_texdir = $(axiom_build_datadir)/texmf/tex
+oa_builddir = $(axiom_top_builddir)/$(build)
+oa_build_bindir = $(oa_builddir)/bin
+oa_build_libdir = $(oa_builddir)/lib
+oa_build_mandir = $(oa_builddir)/man
+oa_build_docdir = $(oa_builddir)/doc
+oa_build_datadir = $(oa_builddir)/share
+oa_build_texdir = $(oa_build_datadir)/texmf/tex
 
 axiom_configdir = $(top_builddir)/config
 axiom_c_macros = $(axiom_configdir)/axiom-c-macros.h
@@ -189,14 +174,14 @@ axiom_c_macros = $(axiom_configdir)/axiom-c-macros.h
 LATEX = @LATEX@
 
 ## Staging directory for the target DESTDIR
-axiom_targetdir = $(top_builddir)/$(target)
-axiom_target_bindir = $(axiom_targetdir)/bin
-axiom_target_libdir = $(axiom_targetdir)/lib
-axiom_target_srcdir = $(axiom_targetdir)/src
-axiom_target_docdir = $(axiom_targetdir)/doc
-axiom_target_datadir = $(axiom_targetdir)/share
-axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
-oa_target_includedir = $(axiom_targetdir)/include
+oa_targetdir = $(top_builddir)/$(target)
+oa_target_bindir = $(oa_targetdir)/bin
+oa_target_libdir = $(oa_targetdir)/lib
+oa_target_srcdir = $(oa_targetdir)/src
+oa_target_docdir = $(oa_targetdir)/doc
+oa_target_datadir = $(oa_targetdir)/share
+oa_target_texdir = $(oa_target_datadir)/texmf/tex
+oa_target_includedir = $(oa_targetdir)/include
 
 
 ## The final directory where OpenAxiom is installed.  This is usually
@@ -219,13 +204,13 @@ axiom_use_x = @axiom_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 
 AXIOM_X11_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@
 
-axiom_includes = -I$(axiom_src_srcdir)/include -I$(axiom_configdir)
+axiom_includes = -I$(oa_src_srcdir)/include -I$(axiom_configdir)
 
 ## Where the staging build directory is found
 AXIOM = $(top_builddir)/$(target)
 
 ## Where to find OpenAxiom data bases.
-DAASE = $(axiom_src_datadir)
+DAASE = $(oa_src_datadir)
 
 ## -------------------------------------------
 ## -- Files generated for the build machine --
@@ -249,12 +234,6 @@ endif
 # Qt utilities
 OA_QT_MOC = @OA_QT_MOC@
 OA_QT_QMAKE = @OA_QT_QMAKE@
-
-##
-AXIOMXLROOT=${AXIOM}/compiler
-
-## Lisp command to end a session.
-BYE=bye
 
 ## Clear suffix-based implicit rule table.
 .SUFFIXES:

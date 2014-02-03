@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,16 +34,16 @@ DRIVER = ../driver/open-axiom$(EXEEX)
 INTERPSYS = \
 	$(DRIVER) --execpath=../interp/interpsys$(EXEEXT) \
 		--system="$(AXIOM)" \
-		--sysdb="$(axiom_src_datadir)/algebra/"
+		--sysdb="$(oa_src_datadir)/algebra/"
 
 openaxiom_databases = \
-	$(addprefix $(axiom_targetdir)/algebra/, \
+	$(addprefix $(oa_targetdir)/algebra/, \
 		compress.daase interp.daase browse.daase categor.daase \
 		operation.daase libdb.text comb.text \
 		USERS.DAASE/index.KAF  DEPENDENTS.DAASE/index.KAF)
 
 openaxiom_glossfiles = \
-	$(addprefix $(axiom_targetdir)/algebra/, \
+	$(addprefix $(oa_targetdir)/algebra/, \
 		glosskey.text gloss.ht glossdef.text)
 
 subdir = src/etc/
@@ -63,9 +63,9 @@ all: all-ax
 all-ax all-asq: stamp
 	@echo finished $(builddir)
 
-stamp: stamp-databases $(axiom_target_bindir)/asq$(EXEEXT) \
-		$(axiom_target_libdir)/summary \
-		$(axiom_target_libdir)/copyright
+stamp: stamp-databases $(oa_target_bindir)/asq$(EXEEXT) \
+		$(oa_target_libdir)/summary \
+		$(oa_target_libdir)/copyright
 	rm -f stamp
 	$(STAMP) stamp
 
@@ -76,24 +76,24 @@ stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT) ../doc/gloss.text
 	@ echo rebuilding databases...
 	rm -f stamp-databases
 	rm -f ../algebra/topics.data
-	rm -f $(axiom_targetdir)/*.daase
-	rm -f $(axiom_targetdir)/libdb.text
-	rm -f $(axiom_targetdir)/comdb.text
-	rm -rf $(axiom_targetdir)/algebra/USERS.DAASE
-	rm -rf $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
-	cp $(axiom_src_docdir)/topics.data ../algebra
+	rm -f $(oa_targetdir)/*.daase
+	rm -f $(oa_targetdir)/libdb.text
+	rm -f $(oa_targetdir)/comdb.text
+	rm -rf $(oa_targetdir)/algebra/USERS.DAASE
+	rm -rf $(oa_targetdir)/algebra/DEPENDENTS.DAASE
+	cp $(oa_src_docdir)/topics.data ../algebra
 	(cd ../algebra && $(INTERPSYS) --build-databases)
-	cp -p ../algebra/*.daase $(axiom_targetdir)/algebra
-	cp -p ../algebra/libdb.text $(axiom_targetdir)/algebra
-	cp -p ../algebra/comdb.text $(axiom_targetdir)/algebra
-	mkdir -p $(axiom_targetdir)/algebra/USERS.DAASE
+	cp -p ../algebra/*.daase $(oa_targetdir)/algebra
+	cp -p ../algebra/libdb.text $(oa_targetdir)/algebra
+	cp -p ../algebra/comdb.text $(oa_targetdir)/algebra
+	mkdir -p $(oa_targetdir)/algebra/USERS.DAASE
 	cp -p ../algebra/USERS.DAASE/index.KAF \
-		$(axiom_targetdir)/algebra/USERS.DAASE
-	mkdir -p $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
+		$(oa_targetdir)/algebra/USERS.DAASE
+	mkdir -p $(oa_targetdir)/algebra/DEPENDENTS.DAASE
 	cp -p ../algebra/DEPENDENTS.DAASE/index.KAF \
-		$(axiom_targetdir)/algebra/DEPENDENTS.DAASE
-	cp -p ../algebra/glosskey.text $(axiom_target_docdir)
-	cp -p ../algebra/glossdef.text $(axiom_target_docdir)
+		$(oa_targetdir)/algebra/DEPENDENTS.DAASE
+	cp -p ../algebra/glosskey.text $(oa_target_docdir)
+	cp -p ../algebra/glossdef.text $(oa_target_docdir)
 
 bin_PROGRAMS = asq$(EXEEXT)
 asq_sources = asq.c
@@ -101,8 +101,8 @@ asq_SOURCES = $(addsuffix .pamphlet, $(asq_sources))
 asq_objects = $(asq_sources:.c=.$(OBJEXT))
 asq_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 
-$(axiom_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
-	cp -p $< $(axiom_target_bindir)
+$(oa_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
+	cp -p $< $(oa_target_bindir)
 
 asq$(EXEEXT): $(asq_objects)
 	$(CXXLINK) -o $@ $(asq_objects) $(asq_LDADD)
@@ -114,13 +114,13 @@ asq$(EXEEXT): $(asq_objects)
 asq.c: $(srcdir)/asq.c.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
 
-$(axiom_target_libdir)/summary: $(srcdir)/summary
+$(oa_target_libdir)/summary: $(srcdir)/summary
 	cp -p $< $@ 
 
-$(axiom_target_libdir)/copyright: $(srcdir)/copyright
+$(oa_target_libdir)/copyright: $(srcdir)/copyright
 	cp -p $< $@ 
 
-../doc/gloss.text: $(axiom_src_docdir)/gloss.text
+../doc/gloss.text: $(oa_src_docdir)/gloss.text
 	cp $< cp $@
 
 mostlyclean-local:
@@ -130,8 +130,8 @@ mostlyclean-local:
 	rm -f stamp
 
 clean-local: mostlyclean-local
-	rm -f $(axiom_target_libdir)/summary
-	rm -f $(axiom_target_libdir)/copyright
-	rm -f $(axiom_target_bindir)/asq$(EXEEXT)
+	rm -f $(oa_target_libdir)/summary
+	rm -f $(oa_target_libdir)/copyright
+	rm -f $(oa_target_bindir)/asq$(EXEEXT)
 
 distclean-local: clean-local

@@ -737,6 +737,10 @@ LDFLAGS
 CFLAGS
 CC
 oa_delay_ffi
+OA_STANDARD_LINKING_FALSE
+OA_STANDARD_LINKING_TRUE
+OA_ECL_RT_FALSE
+OA_ECL_RT_TRUE
 oa_standard_linking
 axiom_lisp_flavor
 AXIOM_LISP
@@ -3750,7 +3754,7 @@ esac
 ## cross build.  Consequently, in the build tree, we sequester
 ## tools that we build and use on the build platform,
 ## in  sub-directories different from others.
-axiom_build_sharedir=$axiom_builddir/share
+oa_build_sharedir=$oa_builddir/share
 
 ## We have now almost switched entirely to C++.
 ac_ext=cpp
@@ -3915,7 +3919,7 @@ case $oa_include_gcl,$AXIOM_LISP in
        ## User may explicilty specify --enable-gcl, but may be missing
        ## the dependency tarball.
        if test -d ${srcdir}/gcl; then
-	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
+	  AXIOM_LISP='$(oa_build_bindir)/gcl'
 	  oa_include_gcl=yes
        elif test -z "$oa_include_gcl"; then
 	  as_fn_error $? "OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website." "$LINENO" 5
@@ -3973,6 +3977,22 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $axiom_lisp_flavor" >&5
 $as_echo "$axiom_lisp_flavor" >&6; }
+ if test $axiom_lisp_flavor = ecl; then
+  OA_ECL_RT_TRUE=
+  OA_ECL_RT_FALSE='#'
+else
+  OA_ECL_RT_TRUE='#'
+  OA_ECL_RT_FALSE=
+fi
+
+ if test $oa_standard_linking = yes; then
+  OA_STANDARD_LINKING_TRUE=
+  OA_STANDARD_LINKING_FALSE='#'
+else
+  OA_STANDARD_LINKING_TRUE='#'
+  OA_STANDARD_LINKING_FALSE=
+fi
+
 
 
 cat >>confdefs.h <<_ACEOF
@@ -20204,6 +20224,14 @@ else
   am__EXEEXT_FALSE=
 fi
 
+if test -z "${OA_ECL_RT_TRUE}" && test -z "${OA_ECL_RT_FALSE}"; then
+  as_fn_error $? "conditional \"OA_ECL_RT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OA_STANDARD_LINKING_TRUE}" && test -z "${OA_STANDARD_LINKING_FALSE}"; then
+  as_fn_error $? "conditional \"OA_STANDARD_LINKING\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error $? "conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5

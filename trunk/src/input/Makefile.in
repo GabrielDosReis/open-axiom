@@ -1,6 +1,6 @@
 ## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ## All rights reserved.
-## Copyright (C) 2007-2010, Gabriel Dos Reis.
+## Copyright (C) 2007-2014, Gabriel Dos Reis.
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,10 @@
 
 subdir = src/input/
 
-IN=$(axiom_src_srcdir)/input
+IN=$(oa_src_srcdir)/input
 MID=./$(top_builddir)/int/input
-OUT=$(axiom_targetdir)/input
-DOC=$(axiom_target_docdir)/src/input
+OUT=$(oa_targetdir)/input
+DOC=$(oa_target_docdir)/src/input
 
 NAGLIB=${OUT}/c02aff.input   ${OUT}/c02agf.input     ${OUT}/c05adf.input \
        ${OUT}/c05nbf.input   ${OUT}/c05pbf.input     ${OUT}/c06eaf.input \
@@ -572,9 +572,9 @@ distclean-local: clean-local
 DRIVER = ../driver/open-axiom$(EXEEXT)
  
 TESTSYS= \
-	$(DRIVER) --execpath=$(axiom_target_bindir)/AXIOMsys$(EXEEXT) \
+	$(DRIVER) --execpath=$(oa_target_bindir)/AXIOMsys$(EXEEXT) \
 		--system="$(AXIOM)" \
-		--sysalg="$(axiom_targetdir)/algebra/" \
+		--sysalg="$(oa_targetdir)/algebra/" \
 		--test
  
 SKIP= antoine.output as-eg1.output as-eg2.output    \

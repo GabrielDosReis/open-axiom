@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,28 +32,28 @@
 
 
 
-IN=	$(axiom_src_srcdir)/graph/Gdraws
-OUT=	$(axiom_target_libdir)
-PS=	$(axiom_target_libdir)/graph
-DOC=    $(axiom_target_docdir)/src/graph
+IN=	$(oa_src_srcdir)/graph/Gdraws
+OUT=	$(oa_target_libdir)
+PS=	$(oa_target_libdir)/graph
+DOC=    $(oa_target_docdir)/src/graph
 
 # local include files shared by graphics
-LINC=	$(axiom_src_srcdir)/graph/include
+LINC=	$(oa_src_srcdir)/graph/include
 
 # global include files shared by everyone
-GINC=	$(axiom_src_srcdir)/include
+GINC=	$(oa_src_srcdir)/include
 
 # include files in Hyperdoc
-HINC=	$(axiom_src_srcdir)/hyper
+HINC=	$(oa_src_srcdir)/hyper
 
 # bitmaps for cursors
-BIT=	$(axiom_src_srcdir)/graph/include/bitmaps
+BIT=	$(oa_src_srcdir)/graph/include/bitmaps
 
 # a .h file stuck in a really wierd place
-DOTH=	$(axiom_src_srcdir)/graph/viewman
+DOTH=	$(oa_src_srcdir)/graph/viewman
 
 # a .c file in the library subdirectory
-DOTC=	$(axiom_src_srcdir)/lib
+DOTC=	$(oa_src_srcdir)/lib
 
 AXIOM_CFLAGS = ${CXXFLAGS)} -I${LINC} -I${GINC} -I$(srcdir) -I${HINC} \
 		$(axiom_includes) ${AXIOM_X11_CFLAGS}
@@ -79,7 +79,7 @@ PSFiles= ${PS}/colorpoly.ps ${PS}/colorwol.ps  ${PS}/draw.ps      \
 .PHONY: all all-ax all-Gdraws
 all: all-ax
 all-ax all-Gdraws: stamp
-	@ echo finished making $(axiom_src_srcdir)/Gdraws
+	@ echo finished making $(oa_src_srcdir)/Gdraws
 
 .PHONY: PSfiles.post
 stamp:  Gfun.$(OBJEXT) $(PSfiles)
@@ -87,7 +87,7 @@ stamp:  Gfun.$(OBJEXT) $(PSfiles)
 	$(STAMP) stamp
 
 $(PS)/%.ps: $(srcdir)/psFiles.pamphlet
-	$(axiom_build_document) --tangle=$* --output=$@ $<
+	$(oa_build_document) --tangle=$* --output=$@ $<
 
 Gfun.$(OBJEXT): ${HEADERS}
 

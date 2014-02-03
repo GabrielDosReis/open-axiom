@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2011, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,11 @@
 subdir = src/sman/
 
 # this is where to put the various commands
-OUT=	$(axiom_target_bindir)
-OUTLIB=	$(axiom_target_libdir)
+OUT=	$(oa_target_bindir)
+OUTLIB=	$(oa_target_libdir)
 
 # this is where the include files live
-INC=    $(axiom_src_srcdir)/include
+INC=    $(oa_src_srcdir)/include
 
 build_libdir = $(top_builddir)/src/lib
 

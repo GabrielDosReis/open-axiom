@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-IN=$(axiom_src_srcdir)/doc
-OUT=$(axiom_target_docdir)
+IN=$(oa_src_srcdir)/doc
+OUT=$(oa_target_docdir)
 STY=${OUT}/tex
 
 subdir = src/doc/

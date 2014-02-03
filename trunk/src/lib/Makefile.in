@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -58,9 +58,9 @@ libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.lo)
 endif
 libspad_objects = $(libspad_SOURCES:.c=.lo)
 
-oa_installed_corelib = $(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT)
+oa_installed_corelib = $(oa_target_libdir)/libopen-axiom-core.$(LIBEXT)
 ifeq (@oa_use_dynamic_lib@,yes)
-oa_installed_corelib += $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+oa_installed_corelib += $(oa_target_libdir)/libopen-axiom-core$(SHREXT)
 endif
 
 subdir = src/lib/
@@ -76,16 +76,16 @@ stamp: $(oa_installed_corelib) libspad.$(LIBEXT)
 	rm -f stamp
 	$(STAMP) stamp
 
-$(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT): \
+$(oa_target_libdir)/libopen-axiom-core.$(LIBEXT): \
 	libopen-axiom-core.$(LIBEXT)
-	$(mkdir_p) $(axiom_target_libdir)
+	$(mkdir_p) $(oa_target_libdir)
 	cp -p $< $@
 
 # Don't put the shared lib here -- place it directly in its final home;
 # we don't want to pick it accidently.
-$(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
+$(oa_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
-	$(mkdir_p) $(axiom_target_libdir)
+	$(mkdir_p) $(oa_target_libdir)
 	$(CXXLINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
 		$(libopen_axiom_core_objects) \
 		@oa_c_runtime_extra@ -lm
@@ -109,7 +109,7 @@ mostlyclean-local:
 	@rm -f *.$(OBJEXT) *.lo
 
 clean-local: mostlyclean-local
-	@rm -f $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+	@rm -f $(oa_target_libdir)/libopen-axiom-core$(SHREXT)
 	@rm -f libopen-axiom-core.$(LIBEXT)
 	@rm -f libspad.$(LIBEXT)
 	@rm -fr .libs _libs

@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,16 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-IN=	$(axiom_src_srcdir)/graph/view3D
+IN=	$(oa_src_srcdir)/graph/view3D
 
 # local include files shared by graphics
-LINC=	$(axiom_src_srcdir)/graph/include
+LINC=	$(oa_src_srcdir)/graph/include
 
 # global include files shared by everyone 
-GINC=	$(axiom_src_srcdir)/include
+GINC=	$(oa_src_srcdir)/include
 
 # bitmaps for cursors
-BIT=	$(axiom_src_srcdir)/graph/include/purty
+BIT=	$(oa_src_srcdir)/graph/include/purty
 
 build_libdir = $(top_builddir)/src/lib
 
@@ -75,11 +75,11 @@ all: all-ax
 all-ax all-view3D: stamp
 	@echo finished $(srcdir)
 
-stamp: $(axiom_target_libdir)/view3D$(EXEEXT)
+stamp: $(oa_target_libdir)/view3D$(EXEEXT)
 	@rm -f stamp
 	$(STAMP) stamp
 
-$(axiom_target_libdir)/view3D$(EXEEXT): $(view3D_objects) $(view3D_DEPENDENCIES)
+$(oa_target_libdir)/view3D$(EXEEXT): $(view3D_objects) $(view3D_DEPENDENCIES)
 	$(CXXLINK) -o $@ $(view3D_objects) $(Gfun_objects) \
 		$(view3D_LDADD) $(AXIOM_X11_LDFLAGS) -lm
 
