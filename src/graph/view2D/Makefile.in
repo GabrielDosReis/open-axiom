@@ -55,7 +55,7 @@ view2D_DEPENDENCIES = $(Gfun_objects)
 subdir = src/graph/view2D/
 
 AXIOM_CFLAGS  = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I$(srcdir) \
-			$(axiom_includes)
+			$(oa_includes)
 
 GDRAW_OBJS = ../Gdraws/Gfun.lo
 
@@ -81,7 +81,7 @@ $(oa_target_libdir)/view2D$(EXEEXT): $(view2D_objects) $(view2D_DEPENDENCIES)
 
 %.$(OBJEXT): $(HEADERS)
 
-%.lo: $(builddir)/%.c $(axiom_c_macros.h)
+%.lo: $(builddir)/%.c $(oa_c_macros.h)
 	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 mostlyclean-local:

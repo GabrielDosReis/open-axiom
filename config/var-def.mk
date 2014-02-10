@@ -168,8 +168,8 @@ oa_build_docdir = $(oa_builddir)/doc
 oa_build_datadir = $(oa_builddir)/share
 oa_build_texdir = $(oa_build_datadir)/texmf/tex
 
-axiom_configdir = $(top_builddir)/config
-axiom_c_macros = $(axiom_configdir)/axiom-c-macros.h
+oa_configdir = $(top_builddir)/config
+oa_c_macros = $(oa_configdir)/axiom-c-macros.h
 
 LATEX = @LATEX@
 
@@ -204,7 +204,7 @@ oa_use_x = @oa_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 
 AXIOM_X11_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@
 
-axiom_includes = -I$(oa_src_srcdir)/include -I$(axiom_configdir)
+oa_includes = -I$(oa_src_srcdir)/include -I$(oa_configdir)
 
 ## Where the staging build directory is found
 AXIOM = $(top_builddir)/$(target)

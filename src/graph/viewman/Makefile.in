@@ -58,7 +58,7 @@ viewman_LDADD = -L$(build_libdir) -lspad $(AXIOM_X11_LDFLAGS) $(oa_c_libs)
 subdir = src/graph/viewman/
 
 AXIOM_CFLAGS = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I$(srcdir) \
-			$(axiom_includes)
+			$(oa_includes)
 
 .PHONY: all all-ax all-viewman
 all: all-ax
@@ -75,7 +75,7 @@ stamp: $(oa_target_libdir)/viewman$(EXEEXT)
 
 %.lo: $(viewman_HEADERS)
 
-%.lo: %.c $(axiom_c_macros_h)
+%.lo: %.c $(oa_c_macros_h)
 	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 $(oa_target_libdir)/viewman$(EXEEXT): $(viewman_objects) $(viewman_DEPENDENCIES)

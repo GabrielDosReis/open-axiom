@@ -87,7 +87,7 @@ stamp:	$(OUTLIB)/session$(EXEEXT) \
 .PRECIOUS: %.lo %.obj
 
 %.lo: %.c 
-	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(axiom_includes) -I$(srcdir) $<
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ $(oa_includes) -I$(srcdir) $<
 
 ${OUTLIB}/session$(EXEEXT): $(session_objects) $(session_DEPENDENCIES)
 	$(CXXLINK) -o $@ $(session_objects) $(session_LDADD)
@@ -96,12 +96,12 @@ ${OUTLIB}/spadclient$(EXEEXT): $(spadclient_objects) $(spadclient_DEPENDENCIES)
 	$(CXXLINK) -o $@ $(spadclient_objects) $(spadclient_LDADD)
 
 spadclient.$(OBJEXT): ${INC}/useproto.h ${INC}/spadclient.H1 \
-			$(axiom_configdir)/axiom-c-macros.h
+			$(oa_configdir)/axiom-c-macros.h
 
 ${OUT}/sman$(EXEEXT): $(sman_objects) $(sman_DEPENDENCIES)
 	$(CXXLINK) -o $@ $(sman_objects) $(sman_LDADD)
 
-$(sman_objects): sman.h $(axiom_c_macros_h)
+$(sman_objects): sman.h $(oa_c_macros_h)
 
 mostlyclean-local:
 	@rm -f $(session_objects)

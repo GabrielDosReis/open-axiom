@@ -107,8 +107,8 @@ $(oa_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
 asq$(EXEEXT): $(asq_objects)
 	$(CXXLINK) -o $@ $(asq_objects) $(asq_LDADD)
 
-%.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(CXXCOMPILE) $(CXXCFLAGS) $(axiom_includes) -o $@ $<
+%.$(OBJEXT) %.lo: %.c $(oa_c_macros_h)
+	$(CXXCOMPILE) $(CXXCFLAGS) $(oa_includes) -o $@ $<
 
 
 asq.c: $(srcdir)/asq.c.pamphlet
