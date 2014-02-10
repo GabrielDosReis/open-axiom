@@ -29,13 +29,13 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-openaxiom_host_has_regex = @openaxiom_host_has_regex@
+oa_host_has_regex = @oa_host_has_regex@
 
 bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
-ifeq ($(strip $(openaxiom_host_has_regex)),yes)
+ifeq ($(strip $(oa_host_has_regex)),yes)
 bin_PROGRAMS += hthits$(EXEEXT) htsearch$(EXEEXT)
 endif
-ifeq ($(strip $(axiom_use_x)),yes)
+ifeq ($(strip $(oa_use_x)),yes)
 bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
 endif
 

@@ -58,7 +58,7 @@ boot_clisp = $(boot_SOURCES:.boot=.clisp)
 boot_objects = $(boot_SOURCES:.boot=.$(LNKEXT))
 
 oa_target_bootdir = $(oa_targetdir)/boot
-ifeq (@axiom_lisp_flavor@,ecl)
+ifeq (@oa_lisp_flavor@,ecl)
 oa_boot_linkset = $(oa_target_bootdir)/linkset
 else
 oa_boot_linkset = 

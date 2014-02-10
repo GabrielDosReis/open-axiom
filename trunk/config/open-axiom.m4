@@ -1,5 +1,19 @@
+dnl ------------------------
+dnl -- OPENAXIOM_MAKEFILE --
+dnl ------------------------
 AC_DEFUN([OPENAXIOM_MAKEFILE],
 [AC_CONFIG_FILES([$1:config/var-def.mk:$1.in:config/setup-dep.mk])])
+
+dnl --------------------------------
+dnl -- OPENAXIOM_CANONICAL_SYSTEM --
+dnl --------------------------------
+AC_DEFUN([OPENAXIOM_CANONICAL_SYSTEM],[
+AC_CANONICAL_SYSTEM
+oa_targetdir=$top_builddir/$target
+oa_target_bindir=$oa_targetdir/bin
+oa_target_libdir=$oa_targetdir/lib
+oa_target_includedir=$oa_targetdir/include
+])
 
 dnl --------------------------------------
 dnl -- OPENAXIOM_STANDARD_INTEGER_TYPES --
@@ -44,21 +58,21 @@ if test x"$oa_include_gcl" != xyes; then
    case $AXIOM_LISP in
       *gcl*)
 	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 openaxiom_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-	 AC_MSG_RESULT([$openaxiom_lisp_version])
-	 case $openaxiom_lisp_version in
+	 oa_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 AC_MSG_RESULT([$oa_lisp_version])
+	 case $oa_lisp_version in
 	   *2.6.7*|*2.6.8*|*2.6.9*|*2.6.10*) ;;         # OK
 	   *)
-	     AC_MSG_WARN([$openaxiom_lisp_version is not supported by this version of OpenAxiom.])
+	     AC_MSG_WARN([$oa_lisp_version is not supported by this version of OpenAxiom.])
 	     ;;
 	 esac
 	 ;;
       # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
       *sbcl*)
 	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 openaxiom_lisp_version=`$AXIOM_LISP --version`
-	 AC_MSG_RESULT([$openaxiom_lisp_version])
-	 case $openaxiom_lisp_version in
+	 oa_lisp_version=`$AXIOM_LISP --version`
+	 AC_MSG_RESULT([$oa_lisp_version])
+	 case $oa_lisp_version in
 	   *1.0.29)
 	      AC_MSG_ERROR([This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher.])
 	      ;;
@@ -140,8 +154,8 @@ dnl Determine the flavor of the host Lisp system.
 AC_DEFUN([OPENAXIOM_LISP_FLAVOR],[
 OPENAXIOM_CHECK_GCL_INCLUSION
 
-axiom_lisp_flavor=unknown
-AC_SUBST(axiom_lisp_flavor)
+oa_lisp_flavor=unknown
+AC_SUBST(oa_lisp_flavor)
  
 ## Most Lisp systems don't use conventional methods for building programs.
 oa_standard_linking=no
@@ -151,18 +165,18 @@ AC_SUBST(oa_standard_linking)
 ##  ECL, GCL, SBCL, CLisp, and Clozure CL all exit at end of standard input.
 AC_MSG_CHECKING([which flavor of Lisp])
 if test x"$oa_include_gcl" = xyes; then
-   axiom_lisp_flavor=gcl
+   oa_lisp_flavor=gcl
 else
    case `echo '(lisp-implementation-type)' | $AXIOM_LISP` in
        *GCL*) 
-	   axiom_lisp_flavor=gcl
+	   oa_lisp_flavor=gcl
 	   ;;
        *"ECL"*) 
-	   axiom_lisp_flavor=ecl 
+	   oa_lisp_flavor=ecl 
 	   oa_standard_linking=yes
 	   ;;
        *"SBCL"*) 
-	   axiom_lisp_flavor=sbcl 
+	   oa_lisp_flavor=sbcl 
 	   ;;
        *"CLISP"*)
 	   ## Not all variants of CLisp have FFI support.  FFI is used
@@ -171,22 +185,22 @@ else
 	   then
 	     AC_MSG_ERROR([$AXIOM_LISP does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
 	   fi
-	   axiom_lisp_flavor=clisp
+	   oa_lisp_flavor=clisp
 	   ;;
        *"Armed Bear Common Lisp"*) 
-	   axiom_lisp_flavor=abcl 
+	   oa_lisp_flavor=abcl 
 	   ;;
        *"Clozure Common Lisp"*)
-	   axiom_lisp_flavor=clozure
+	   oa_lisp_flavor=clozure
 	   ;;
    esac
 fi
-AC_MSG_RESULT([$axiom_lisp_flavor])
-AM_CONDITIONAL([OA_ECL_RT],[test $axiom_lisp_flavor = ecl])
+AC_MSG_RESULT([$oa_lisp_flavor])
+AM_CONDITIONAL([OA_ECL_RT],[test $oa_lisp_flavor = ecl])
 AM_CONDITIONAL([OA_STANDARD_LINKING],[test $oa_standard_linking = yes])
 
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
-                   [Runtime::${axiom_lisp_flavor}],
+                   [Runtime::${oa_lisp_flavor}],
                    [The kind of base runtime system for this build.])
 ])
 
@@ -197,7 +211,7 @@ dnl Check whether loading modules for dynamic FFI support
 dnl should be delayed to runtime.  This is needed for Lisp
 dnl systems that have trouble with DLLs.
 AC_DEFUN([OPENAXIOM_CHECK_DELAYED_FFI], [
-case ${axiom_lisp_flavor},$host in
+case ${oa_lisp_flavor},$host in
   sbcl,* | clozure,* | clisp,*) 
      oa_delay_ffi=yes
      ;;
@@ -262,10 +276,10 @@ if test x$GCC = xyes || test x$GXX = xyes; then
 fi
 ## Augment C and C++ compiler flags with ABI directives as appropriate
 ## before we proceed to infer other host datatype properties.
-if test -n "$openaxiom_host_lisp_precision"; then
+if test -n "$oa_host_lisp_precision"; then
    if test x$oa_gnu_compiler = xyes; then
-     CPPFLAGS="$CPPFLAGS -m$openaxiom_host_lisp_precision"
-     LDFLAGS="$LDFLAGS -m$openaxiom_host_lisp_precision"
+     CPPFLAGS="$CPPFLAGS -m$oa_host_lisp_precision"
+     LDFLAGS="$LDFLAGS -m$oa_host_lisp_precision"
    ## else, cross fingers and pray.
    fi
 fi
@@ -282,16 +296,16 @@ dnl GCL assumes that the C compiler is from GNU.
 AC_DEFUN([OPENAXIOM_SATISFY_GCL_NEEDS],[
 ## If we are using GCL as the base runtime system, then we do really need
 ## a C compiler from GNU.  Well, at least for the moment.
-case $axiom_lisp_flavor,$oa_gnu_compiler in
+case $oa_lisp_flavor,$oa_gnu_compiler in
    gcl,yes)
-       axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
+       oa_cflags="-O2 -Wall -D_GNU_SOURCE"
        ;;
    
    gcl,*)
        AC_MSG_ERROR([We need a GNU C compiler])
        ;;
 esac
-AC_SUBST(axiom_cflags)
+AC_SUBST(oa_cflags)
 ])
 
 dnl ---------------------------------
@@ -336,8 +350,8 @@ dnl Determine how to invoke the host Lisp system in batch mode.
 dnl We also take the opportunity to determine whether we can use
 dnl dynamically loaded modules.
 AC_DEFUN([OPENAXIOM_LISP_FLAGS],[
-AC_SUBST(axiom_quiet_flags)
-AC_SUBST(axiom_eval_flags)
+AC_SUBST(oa_quiet_flags)
+AC_SUBST(oa_eval_flags)
 
 ## Can we use dynamically linked libraries?  
 ## Tentatively answer `yes' -- this is modern time.
@@ -346,28 +360,28 @@ AC_SUBST(oa_use_dynamic_lib)
 
 ## How are we supposed to tell the Lisp system to eval an expression
 ## in batch mode?  What is the extension of a compiled Lisp file?
-case $axiom_lisp_flavor in
+case $oa_lisp_flavor in
     gcl) 
-       axiom_quiet_flags='-batch'
-       axiom_eval_flags='-eval'
+       oa_quiet_flags='-batch'
+       oa_eval_flags='-eval'
        oa_use_dynamic_lib=no  
        ;;
     ecl) 
-       axiom_quiet_flags=
-       axiom_eval_flags='-norc -eval'
+       oa_quiet_flags=
+       oa_eval_flags='-norc -eval'
        oa_use_dynamic_lib=no  
        ;;
     sbcl) 
-       axiom_quiet_flags='--noinform --noprint'
-       axiom_eval_flags='--no-sysinit --no-userinit --eval'
+       oa_quiet_flags='--noinform --noprint'
+       oa_eval_flags='--no-sysinit --no-userinit --eval'
        ;;
     clisp) 
-       axiom_quiet_flags='--quiet'
-       axiom_eval_flags='-norc -x'
+       oa_quiet_flags='--quiet'
+       oa_eval_flags='-norc -x'
        ;;
     clozure)
-       axiom_quiet_flags='--quiet --no-init'
-       axiom_eval_flags='--eval'
+       oa_quiet_flags='--quiet --no-init'
+       oa_eval_flags='--eval'
        ;;
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $AXIOM_LISP]) ;;
 esac
@@ -379,28 +393,28 @@ dnl -- OPENAXIOM_FILE_EXTENSIONS --
 dnl -------------------------------
 dnl Compute various file extensions used by the build system.
 AC_DEFUN([OPENAXIOM_FILE_EXTENSIONS],[
-AC_SUBST(axiom_fasl_type)
+AC_SUBST(oa_fasl_type)
 AC_MSG_CHECKING([compiled Lisp file extension])
 if test x"$oa_include_gcl" = xyes; then
-   axiom_fasl_type=o
+   oa_fasl_type=o
 else
    ## We set the IFS to <space> as we don't want automatic
    ## replacement of <newline> by <space>.
    openaxiom_save_IFS=$IFS
    IFS=' '
-   axiom_fasl_type=`$AXIOM_LISP $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
+   oa_fasl_type=`$AXIOM_LISP $oa_quiet_flags $oa_eval_flags '(progn (format t "oa_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
 
    ## Now pull out the fasl type.  ECL has the habit of spitting noise
    ## about internal loading.  Therefore, we must look only for a line that
-   ## begins with axiom_fasl_type.
-   axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
+   ## begins with oa_fasl_type.
+   oa_fasl_type=`echo $oa_fasl_type | grep '^oa_fasl_type'`
    IFS=$openaxiom_save_IFS
-   axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-   if test -z "$axiom_fasl_type"; then
+   oa_fasl_type=`echo $oa_fasl_type | sed -e 's/oa_fasl_type=//'`
+   if test -z "$oa_fasl_type"; then
        AC_MSG_ERROR([Could not determine extension for compiled Lisp files])
    fi
 fi
-AC_MSG_RESULT([$axiom_fasl_type])
+AC_MSG_RESULT([$oa_fasl_type])
 
 ## What is the extension of object and executable files on this platform?
 AC_OBJEXT
@@ -422,7 +436,7 @@ AC_SUBST(double_type)
 AC_SUBST(string_type)
 AC_SUBST(pointer_type)
 
-case $axiom_lisp_flavor in
+case $oa_lisp_flavor in
    gcl)
       void_type='void'
       char_type='char'
@@ -430,7 +444,7 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='string'
-      case $openaxiom_host_lisp_precision,$openaxiom_gcl_version in
+      case $oa_host_lisp_precision,$openaxiom_gcl_version in
          64,*2.6.7*|64,*2.6.8*) pointer_type='(signed-integer 64)' ;;
          *) pointer_type='fixnum' ;;
       esac
@@ -484,7 +498,7 @@ dnl ---------------------------------------
 dnl -- OPENAXIOM_HOST_LISP_CPU_PRECISION --
 dnl ---------------------------------------
 dnl Determine the register precision as seen by the host Lisp system, and
-dnl set the global variable openaxiom_host_lisp_precision.
+dnl set the global variable oa_host_lisp_precision.
 AC_DEFUN([OPENAXIOM_HOST_LISP_CPU_PRECISION], [
 if test x"$oa_include_gcl" != xyes; then
    AC_MSG_CHECKING([CPU precision as seen by $AXIOM_LISP])
@@ -494,15 +508,15 @@ if test x"$oa_include_gcl" != xyes; then
      *X86-64*|*X86_64*|*WORD-SIZE=64*|*64-BIT*)
 	# PORTME: the pattern above covers only the supported free Lisps, i.e.
 	# GCL, SBCL, CLisp, ECL and Clozure CL.
-	openaxiom_host_lisp_precision=64
+	oa_host_lisp_precision=64
 	;;
      *)
 	# assume everything else is 32-bit
 	# FIXME: this is bold assumption.
-	openaxiom_host_lisp_precision=32
+	oa_host_lisp_precision=32
 	;;
    esac
-   AC_MSG_RESULT([$openaxiom_host_lisp_precision])
+   AC_MSG_RESULT([$oa_host_lisp_precision])
 fi
 ])
 
@@ -517,13 +531,13 @@ OPENAXIOM_STANDARD_INTEGER_TYPES
 AC_CHECK_SIZEOF([void*])
 if test x"$oa_include_gcl" = xyes; then
    ## PORTME: does GCL really care about system where CHAR_BITS is not 8?
-   openaxiom_host_lisp_precision=`expr "$ac_cv_sizeof_voidp * 8"`
+   oa_host_lisp_precision=`expr "$ac_cv_sizeof_voidp * 8"`
 fi
 
 ## Now that we have full knowledge of the host Lisp to use, tell
 ## the rest of the runtime about the host natural integer precision.
 AC_DEFINE_UNQUOTED([OPENAXIOM_HOST_LISP_PRECISION],
-                   [$openaxiom_host_lisp_precision],
+                   [$oa_host_lisp_precision],
                    [The width of the host Lisp and CPU registers.])
 ])
 
@@ -657,7 +671,7 @@ AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
 # GNU compilers want hints about multithreading.
 case $oa_gnu_compiler,$oa_enable_threads in
    yes,yes)
-     axiom_cflags="$axiom_cflags -pthread"
+     oa_cflags="$oa_cflags -pthread"
 esac
 AC_SUBST(oa_enable_threads)
 
@@ -690,7 +704,7 @@ AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
                   *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
                esac])
 if test x"$oa_enable_checking" = xyes; then
-   case $axiom_lisp_flavor in
+   case $oa_lisp_flavor in
      gcl) # GCL-2.6.x does not understand debug.
         oa_optimize_options="$oa_optimize_options safety" 
         ;;
@@ -735,17 +749,17 @@ AC_DEFUN([OPENAXIOM_CHECK_SOCKETS],[
 case $host in
     *mingw*)
 	AC_CHECK_HEADERS([winsock2.h],
-	                [axiom_host_has_socket=yes],
+	                [oa_host_has_socket=yes],
 			[])
 	oa_c_runtime_extra="-lwsock32"
 	;;
     *)
         AC_CHECK_HEADERS([sys/socket.h], 
-                         [axiom_host_has_socket=yes],
+                         [oa_host_has_socket=yes],
 		         [])
 	;;
 esac
-if test x$axiom_host_has_socket != xyes; then \
+if test x$oa_host_has_socket != xyes; then \
     AC_MSG_ERROR([OpenAxiom needs suport for sockets.])
 fi
 ## solaris-based systems tend to hide the socket library.
@@ -943,16 +957,16 @@ X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
-axiom_use_x=no
+oa_use_x=no
 if test x"$no_x" = xyes; then
     AC_MSG_NOTICE([The Graphics component is disabled.])
 else
     AC_CHECK_HEADERS([X11/xpm.h],[],
       [AC_MSG_ERROR([The header <X11/xpm.h> could not be found.  Install Xpm development package and re-start the configuration process.])])
-    axiom_use_x=yes
+    oa_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
 fi
-AC_SUBST(axiom_use_x)
+AC_SUBST(oa_use_x)
 ])
 
 dnl ------------------------
@@ -993,11 +1007,11 @@ dnl See \File{src/hyper/Makefile} for more details.  Note that is we don't
 dnl build the HyperDoc component, the compilation of algebra files are
 dnl drawn in [[Unexpected HT command]] noise.
 AC_DEFUN([OPENAXIOM_CHECK_BROWSER_SUPPORT],[
-openaxiom_host_has_regex=
+oa_host_has_regex=
 AC_CHECK_HEADER([regex.h], 
-		[openaxiom_host_has_regex=yes],
-		[openaxiom_host_has_regex=no])
-AC_SUBST(openaxiom_host_has_regex)
+		[oa_host_has_regex=yes],
+		[oa_host_has_regex=no])
+AC_SUBST(oa_host_has_regex)
 ])
 
 dnl ------------------------------
