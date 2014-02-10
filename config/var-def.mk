@@ -139,8 +139,8 @@ STAMP = echo timestamp >
 ## -- OpenAxiom variables --
 ## -------------------------
 
-quiet_flags = @axiom_quiet_flags@
-eval_flags = @axiom_eval_flags@
+quiet_flags = @oa_quiet_flags@
+eval_flags = @oa_eval_flags@
 oa_standard_linking = @oa_standard_linking@
 
 
@@ -159,8 +159,8 @@ oa_src_algdir = $(oa_src_srcdir)/algebra
 oa_src_texdir =  $(oa_src_datadir)/tex
 
 ## Where tools for the build machine are built
-axiom_top_builddir = $(top_builddir)/build
-oa_builddir = $(axiom_top_builddir)/$(build)
+oa_top_builddir = $(top_builddir)/build
+oa_builddir = $(oa_top_builddir)/$(build)
 oa_build_bindir = $(oa_builddir)/bin
 oa_build_libdir = $(oa_builddir)/lib
 oa_build_mandir = $(oa_builddir)/man
@@ -200,7 +200,7 @@ oa_enable_lisp_profiling = \
 
 oa_enable_threads = @oa_enable_threads@
 
-axiom_use_x = @axiom_use_x@
+oa_use_x = @oa_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 
 AXIOM_X11_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@
 
@@ -219,12 +219,12 @@ oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file
-FASLEXT = @axiom_fasl_type@
+FASLEXT = @oa_fasl_type@
 
 # Extension of compiled FASLs appropriate for linking into executable
 # programs.  For most Lisp systems, it is the same as FASLEXT because
 # they build programs by dumping images.
-ifeq (@axiom_lisp_flavor@,ecl)
+ifeq (@oa_lisp_flavor@,ecl)
 LNKEXT = $(OBJEXT)
 else
 LNKEXT = $(FASLEXT)

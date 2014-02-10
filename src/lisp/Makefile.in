@@ -57,7 +57,7 @@ fasl_ext = $(if $(findstring mingw, $(target)),.lisp,.$(FASLEXT))
 FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
 
 
-ifeq (@axiom_lisp_flavor@,ecl)
+ifeq (@oa_lisp_flavor@,ecl)
 base_lisp_objects = ("core.$(LNKEXT)")
 oa_base_lisp_linkset = $(oa_target_lispdir)/linkset
 else
@@ -95,7 +95,7 @@ lisp_c_objects = \
 ## therefore forcing us to use brittle tricks to guess what the linker is.
 
 $(OUT)/lisp$(EXEEXT): base-lisp$(EXEEXT)
-ifeq (@axiom_lisp_flavor@,gcl)
+ifeq (@oa_lisp_flavor@,gcl)
 	echo '(let* ((sys-cc compiler::*cc*) ' \
 	     '       (sys-ld compiler::*ld*) ' \
 	     '      (compiler::*cc* (concatenate (quote string) ' \
@@ -176,7 +176,7 @@ core.lisp: $(srcdir)/core.lisp.in
 	$(top_srcdir)/config/move-if-change $@.tmp $@
 
 core.$(FASLEXT): core.lisp
-ifeq (@axiom_lisp_flavor@,ecl)
+ifeq (@oa_lisp_flavor@,ecl)
 	$(AXIOM_LISP) $(quiet_flags) \
 		$(eval_flags) '(require (quote cmp))' \
 		$(eval_flags) '(compile-file "$<" :system-p t)' \

@@ -1,3 +1,8 @@
+2014-02-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>>
+
+	* config/open-axiom.m4: Clean up global variable names.
+	* configure.ac: Likewise.
+
 2014-02-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4: Clean up global variable names.

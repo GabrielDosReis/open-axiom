@@ -97,7 +97,7 @@ INPUT=../input
 STAMP = echo timestamp >
 
 # Extension of the output file name returned by compile-file
-FASLEXT = @axiom_fasl_type@
+FASLEXT = @oa_fasl_type@
 
 oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
