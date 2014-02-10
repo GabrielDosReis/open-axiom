@@ -58,7 +58,7 @@ BINFILES = $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 HEADERS = display.h event.h extent.h node.h \
 	group.h hyper.h initx.h keyin.h lex.h \
 	parse.h parse-paste.h parse-types.h scrollbar.h \
-	titlebar.h token.h $(axiom_c_macros_h)
+	titlebar.h token.h $(oa_c_macros_h)
 
 build_libdir = $(top_builddir)/src/lib
 
@@ -141,10 +141,10 @@ distclean-local: clean-local
 .PRECIOUS: %.lo %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
-	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 %.$(OBJEXT) %.lo: %.cc $(HEADERS)
-	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(oa_src_srcdir)/pages directory

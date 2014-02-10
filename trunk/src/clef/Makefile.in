@@ -65,10 +65,10 @@ $(oa_target_bindir)/clef$(EXEEXT): $(clef_objects) $(clef_DEPENDENCIES)
 .PRECIOUS: %.lo
 
 %.lo: ${INC}/useproto.h ${INC}/edible.h \
-	$(axiom_configdir)/openaxiom-c-macros.h
+	$(oa_configdir)/openaxiom-c-macros.h
 
-%.lo: %.c $(axiom_c_macros_h)
-	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $<
+%.lo: %.c $(oa_c_macros_h)
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $<
 
 mostlyclean-local:
 	@rm -f $(clef_objects)

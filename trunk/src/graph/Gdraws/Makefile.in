@@ -56,7 +56,7 @@ DOTH=	$(oa_src_srcdir)/graph/viewman
 DOTC=	$(oa_src_srcdir)/lib
 
 AXIOM_CFLAGS = ${CXXFLAGS)} -I${LINC} -I${GINC} -I$(srcdir) -I${HINC} \
-		$(axiom_includes) ${AXIOM_X11_CFLAGS}
+		$(oa_includes) ${AXIOM_X11_CFLAGS}
 
 
 subdir = src/graph/Gdraws/
@@ -64,7 +64,7 @@ subdir = src/graph/Gdraws/
 pamphlets = psFiles.pamphlet
 
 HEADERS = ${IN}/Gdraws0.h ${LINC}/G.h     ${LINC}/Gfun.H1    \
-          ${GINC}/hash.h  $(axiom_c_macros_h)
+          ${GINC}/hash.h  $(oa_c_macros_h)
 
 PSFiles= ${PS}/colorpoly.ps ${PS}/colorwol.ps  ${PS}/draw.ps      \
          ${PS}/drawIstr.ps  ${PS}/drawarc.ps   ${PS}/drawcolor.ps \

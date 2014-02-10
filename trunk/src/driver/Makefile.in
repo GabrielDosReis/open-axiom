@@ -65,7 +65,7 @@ stamp: $(bin_PROGRAMS)
 %.lo: %.cc 
 	$(CXXCOMPILE) ${CXXFLAGS} -o $@ \
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
-		$(axiom_includes) $<
+		$(oa_includes) $<
 
 main.lo: open-axiom.h
 
