@@ -1,4 +1,4 @@
-# Copyright (C) 2013, Gabriel Dos Reis.
+# Copyright (C) 2013-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,7 @@ noinst_LIBRARIES = libsyntax.a
 
 libsyntax_a_SOURCES = token.cc sexpr.cc
 
-oa_target_incdir = $(top_builddir)/$(target)/include
-
-libsyntax_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
+libsyntax_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_includedir)
 
 
 .PHONY: all-syntax

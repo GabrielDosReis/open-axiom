@@ -1,6 +1,6 @@
 # Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 # All rights reserved.
-# Copyright (C) 2007-2013, Gabriel Dos Reis.
+# Copyright (C) 2007-2014, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -68,23 +68,6 @@
 # Compile order is important. Here we try to define the ordered lattice
 # of spad file dependencies. However this is, in reality, a graph rather
 # than a lattice.
-#
-
-oa_targetdir = $(top_builddir)/$(target)
-oa_target_bindir = $(oa_targetdir)/bin
-oa_target_libdir = $(oa_targetdir)/lib
-oa_target_docdir = $(oa_targetdir)/doc
-oa_target_srcdir = $(oa_targetdir)/src
-oa_target_datadir = $(oa_targetdir)/share
-
-oa_src_srcdir = $(top_srcdir)/src
-oa_src_docdir = $(top_srcdir)/doc
-oa_src_datadir = $(oa_src_srcdir)/share
-
-oa_builddir = $(top_builddir)/build-$(build)
-oa_build_bindir = $(oa_builddir)/bin
-oa_build_texdir = $(oa_builddir)/texmf/tex
-oa_build_docdir = $(oa_builddir)/doc
 
 top_confdir = $(top_srcdir)/config
 
@@ -2465,8 +2448,8 @@ $(DOC):
 $(DOC)/%.dvi: $(builddir)/%.dvi
 	@cp -p $< $@
 
-$(builddir)/%.dvi: $(oa_build_texdir)/diagrams.tex \
-		   $(oa_build_texdir)/axiom.sty
+$(builddir)/%.dvi: $(oa_target_texdir)/diagrams.tex \
+		   $(oa_target_texdir)/axiom.sty
 
 $(builddir)/%.dvi: $(builddir)/%.tex
 	$(oa_hammer) --latex $<
@@ -2474,7 +2457,7 @@ $(builddir)/%.dvi: $(builddir)/%.tex
 $(builddir)/%.tex: $(srcdir)/%.pamphlet
 	$(oa_hammer) --weave --output=$@ $<
 
-$(oa_build_texdir)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
+$(oa_target_texdir)/diagrams.tex: $(oa_src_docdir)/diagrams.tex
 	@cp -p $< $@
 
 $(INPUT)/TESTFR.input: $(srcdir)/fr.spad.pamphlet

@@ -34,9 +34,7 @@ noinst_LIBRARIES = libio.a
 
 libio_a_SOURCES = Input.cc std-streams.cc
 
-oa_target_incdir = $(top_builddir)/$(target)/include
-
-libio_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
+libio_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_includedir)
 
 
 .PHONY: all-io

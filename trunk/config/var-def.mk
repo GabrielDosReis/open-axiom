@@ -152,36 +152,26 @@ oa_standard_linking = @oa_standard_linking@
 ## Notice, this is the src/ directory within the toplevel source
 ## directory 
 
-oa_src_srcdir = $(top_srcdir)/src
-oa_src_docdir = $(oa_src_srcdir)/doc
-oa_src_datadir = $(oa_src_srcdir)/share
-oa_src_algdir = $(oa_src_srcdir)/algebra
-oa_src_texdir =  $(oa_src_datadir)/tex
+oa_src_srcdir = @oa_src_srcdir@
+oa_src_docdir = @oa_src_docdir@
+oa_src_datadir = @oa_src_datadir@
+oa_src_algdir = @oa_src_algdir@
+oa_src_texdir = @oa_src_texdir@
 
-## Where tools for the build machine are built
-oa_top_builddir = $(top_builddir)/build
-oa_builddir = $(oa_top_builddir)/$(build)
-oa_build_bindir = $(oa_builddir)/bin
-oa_build_libdir = $(oa_builddir)/lib
-oa_build_mandir = $(oa_builddir)/man
-oa_build_docdir = $(oa_builddir)/doc
-oa_build_datadir = $(oa_builddir)/share
-oa_build_texdir = $(oa_build_datadir)/texmf/tex
-
-oa_configdir = $(top_builddir)/config
-oa_c_macros = $(oa_configdir)/axiom-c-macros.h
+oa_configdir = @oa_configdir@
+oa_c_macros = @oa_c_macros@
 
 LATEX = @LATEX@
 
 ## Staging directory for the target DESTDIR
-oa_targetdir = $(top_builddir)/$(target)
-oa_target_bindir = $(oa_targetdir)/bin
-oa_target_libdir = $(oa_targetdir)/lib
-oa_target_srcdir = $(oa_targetdir)/src
-oa_target_docdir = $(oa_targetdir)/doc
-oa_target_datadir = $(oa_targetdir)/share
-oa_target_texdir = $(oa_target_datadir)/texmf/tex
-oa_target_includedir = $(oa_targetdir)/include
+oa_targetdir = @oa_targetdir@
+oa_target_bindir = @oa_target_bindir@
+oa_target_libdir = @oa_target_libdir@
+oa_target_srcdir = @oa_target_srcdir@
+oa_target_docdir = @oa_target_docdir@
+oa_target_datadir = @oa_target_datadir@
+oa_target_texdir = @oa_target_texdir@
+oa_target_includedir = @oa_target_includedir@
 
 
 ## The final directory where OpenAxiom is installed.  This is usually

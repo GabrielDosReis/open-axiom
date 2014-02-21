@@ -775,14 +775,19 @@ INSTALL_SCRIPT
 INSTALL_PROGRAM
 oa_c_macros
 oa_configdir
-oa_build_texdir
-oa_build_datadir
-oa_build_docdir
-oa_build_mandir
-oa_build_libdir
-oa_build_bindir
-oa_builddir
-oa_top_builddir
+oa_target_includedir
+oa_target_texdir
+oa_target_datadir
+oa_target_docdir
+oa_target_srcdir
+oa_target_libdir
+oa_target_bindir
+oa_targetdir
+oa_src_texdir
+oa_src_algdir
+oa_src_datadir
+oa_src_docdir
+oa_src_srcdir
 target_os
 target_vendor
 target_cpu
@@ -3096,26 +3101,34 @@ test -n "$target_alias" &&
   program_prefix=${target_alias}-
 
 
-oa_targetdir=$top_builddir/$target
-oa_target_bindir=$oa_targetdir/bin
-oa_target_libdir=$oa_targetdir/lib
-oa_target_includedir=$oa_targetdir/include
 
-oa_top_builddir='$(top_builddir)/build'
+oa_src_srcdir='$(top_srcdir)/src'
 
-oa_builddir='$(oa_top_builddir)/$(build)'
+oa_src_docdir='$(oa_src_srcdir)/doc'
 
-oa_build_bindir='$(oa_builddir)/bin'
+oa_src_datadir='$(oa_src_srcdir)/share'
 
-oa_build_libdir='$(oa_builddir)/lib'
+oa_src_algdir='$(oa_src_srcdir)/algebra'
 
-oa_build_mandir='$(oa_builddir)/man'
+oa_src_texdir='$(oa_src_datadir)/tex'
 
-oa_build_docdir='$(oa_builddir)/doc'
 
-oa_build_datadir='$(oa_builddir)/share'
+oa_targetdir='$(top_builddir)/$(target)'
 
-oa_build_texdir='$(oa_build_datadir)/texmf/tex'
+oa_target_bindir='$(oa_targetdir)/bin'
+
+oa_target_libdir='$(oa_targetdir)/lib'
+
+oa_target_srcdir='$(oa_targetdir)/src'
+
+oa_target_docdir='$(oa_targetdir)/doc'
+
+oa_target_datadir='$(oa_targetdir)/share'
+
+oa_target_texdir='$(oa_target_datadir)/texmf/tex'
+
+oa_target_includedir='$(oa_targetdir)/include'
+
 
 oa_configdir='$(top_builddir)/config'
 
