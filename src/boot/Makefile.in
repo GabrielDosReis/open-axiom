@@ -48,7 +48,7 @@
 ## entire bootstrap process.
 
 DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
-AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
+AXIOM_LOCAL_LISP = $(oa_target_bindir)/lisp$(EXEEXT)
 
 
 ## FASLs that comprises `bootsys'
@@ -79,7 +79,6 @@ all-boot: $(oa_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
 
 ## The final `bootsys' image.
 $(oa_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
-	$(mkdir_p) $(oa_target_bindir)
 	cp -p $< $@
 
 $(oa_boot_linkset): $(addprefix $(oa_target_bootdir)/, $(boot_objects))

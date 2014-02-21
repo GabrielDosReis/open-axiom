@@ -203,7 +203,7 @@ $(SAVESYS): database.date $(oa_target_datadir)/msgs/s2-us.msgs $(OBJS) $(oa_targ
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS)
-	$(mkdir_p) $(oa_target_bindir)
+
 .PHONY: all-axiomsys
 
 all-axiomsys: ${AXIOMSYS}

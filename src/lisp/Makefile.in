@@ -30,7 +30,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-OUT = $(oa_build_bindir)
+OUT = $(oa_target_bindir)
 oa_target_lispdir = $(oa_targetdir)/lisp
 
 subdir = src/lisp/

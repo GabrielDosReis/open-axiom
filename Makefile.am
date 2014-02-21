@@ -45,7 +45,6 @@ ACLOCAL_AMFLAGS = -I config #--install --output=config/aclocal.m4
 
 DIST_SUBDIRS = src
 
-oa_builddir = $(abs_top_builddir)/build/$(target)
 oa_installdir = @open_axiom_installdir@
 
 # Configure options to GCL.
@@ -93,13 +92,13 @@ $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $(AM_MAKEFLAGS) $@
 
 .PHONY: all-gcl
-all-gcl: $(oa_builddir)/bin/gcl$(EXEEXT)
+all-gcl: $(oa_target_bindir)/gcl$(EXEEXT)
 
-$(oa_builddir)/bin/gcl$(EXEEXT):
+$(oa_target_bindir)/gcl$(EXEEXT):
 	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
 	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
 	fi; cd gcl; \
-	./configure --prefix="$(oa_builddir)" ${GCLOPTS} && \
+	./configure --prefix="$(abs_top_builddir)/$(target)" ${GCLOPTS} && \
 		$(MAKE) $(AM_MAKEFLAGS) && $(MAKE) $(AM_MAKEFLAGS) install
 
 install:

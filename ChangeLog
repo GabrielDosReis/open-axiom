@@ -1,6 +1,12 @@
 2014-02-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_CANONICAL_SYSTEM): Set derived
+	OpenAxiom-specified src and target directory variables too.
+	Remove most build directory variables.
+
+2014-02-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_CANONICAL_SYSTEM): Set derived
 	OpenAxiom-specified build directories too.
 
 2014-02-10  Gabriel Dos Reis  <gdr@integrable-solutions.net>>
