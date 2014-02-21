@@ -13,6 +13,17 @@ oa_targetdir=$top_builddir/$target
 oa_target_bindir=$oa_targetdir/bin
 oa_target_libdir=$oa_targetdir/lib
 oa_target_includedir=$oa_targetdir/include
+
+AC_SUBST(oa_top_builddir,'$(top_builddir)/build')
+AC_SUBST(oa_builddir,'$(oa_top_builddir)/$(build)')
+AC_SUBST(oa_build_bindir,'$(oa_builddir)/bin')
+AC_SUBST(oa_build_libdir,'$(oa_builddir)/lib')
+AC_SUBST(oa_build_mandir,'$(oa_builddir)/man')
+AC_SUBST(oa_build_docdir,'$(oa_builddir)/doc')
+AC_SUBST(oa_build_datadir,'$(oa_builddir)/share')
+AC_SUBST(oa_build_texdir,'$(oa_build_datadir)/texmf/tex')
+AC_SUBST(oa_configdir,'$(top_builddir)/config')
+AC_SUBST(oa_c_macros,'$(oa_configdir)/axiom-c-macros.h')
 ])
 
 dnl --------------------------------------

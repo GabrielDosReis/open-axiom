@@ -773,6 +773,16 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+oa_c_macros
+oa_configdir
+oa_build_texdir
+oa_build_datadir
+oa_build_docdir
+oa_build_mandir
+oa_build_libdir
+oa_build_bindir
+oa_builddir
+oa_top_builddir
 target_os
 target_vendor
 target_cpu
@@ -3090,6 +3100,27 @@ oa_targetdir=$top_builddir/$target
 oa_target_bindir=$oa_targetdir/bin
 oa_target_libdir=$oa_targetdir/lib
 oa_target_includedir=$oa_targetdir/include
+
+oa_top_builddir='$(top_builddir)/build'
+
+oa_builddir='$(oa_top_builddir)/$(build)'
+
+oa_build_bindir='$(oa_builddir)/bin'
+
+oa_build_libdir='$(oa_builddir)/lib'
+
+oa_build_mandir='$(oa_builddir)/man'
+
+oa_build_docdir='$(oa_builddir)/doc'
+
+oa_build_datadir='$(oa_builddir)/share'
+
+oa_build_texdir='$(oa_build_datadir)/texmf/tex'
+
+oa_configdir='$(top_builddir)/config'
+
+oa_c_macros='$(oa_configdir)/axiom-c-macros.h'
+
 
 
 am__api_version='1.14'
