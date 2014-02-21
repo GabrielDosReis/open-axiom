@@ -69,10 +69,10 @@ dnl ----------------------------------
 dnl Check for Lisp systems we know are just too buggy for use.
 AC_DEFUN([OPENAXIOM_REJECT_ROTTED_LISP],[
 if test x"$oa_include_gcl" != xyes; then
-   case $AXIOM_LISP in
+   case $OA_LISP in
       *gcl*)
-	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 oa_lisp_version=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+	 AC_MSG_CHECKING([$OA_LISP version])
+	 oa_lisp_version=`$OA_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
 	 AC_MSG_RESULT([$oa_lisp_version])
 	 case $oa_lisp_version in
 	   *2.6.7*|*2.6.8*|*2.6.9*|*2.6.10*) ;;         # OK
@@ -83,8 +83,8 @@ if test x"$oa_include_gcl" != xyes; then
 	 ;;
       # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
       *sbcl*)
-	 AC_MSG_CHECKING([$AXIOM_LISP version])
-	 oa_lisp_version=`$AXIOM_LISP --version`
+	 AC_MSG_CHECKING([$OA_LISP version])
+	 oa_lisp_version=`$OA_LISP --version`
 	 AC_MSG_RESULT([$oa_lisp_version])
 	 case $oa_lisp_version in
 	   *1.0.29)
@@ -120,12 +120,12 @@ AC_ARG_ENABLE([gcl], [  --enable-gcl            build GCL from OpenAxiom source]
 	       esac])
 
 ## If nothing was said about preferred Lisp, guess one.
-AC_SUBST(AXIOM_LISP)
+AC_SUBST(OA_LISP)
 if test -n "$oa_user_lisp"; then
     ## Honor use of Lisp image specified on command line
-    AXIOM_LISP=$oa_user_lisp
+    OA_LISP=$oa_user_lisp
 elif test -z "$oa_include_gcl"; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl64 ccl32 ccl])
+    AC_CHECK_PROGS([OA_LISP], [sbcl gcl ecl clisp ccl64 ccl32 ccl])
 fi
 ])
 
@@ -134,7 +134,7 @@ dnl -- OPENAXIOM_CHECK_GCL_INCLUSION --
 dnl -----------------------------------
 dnl Check for consistency of configure options when GCL is requested.
 AC_DEFUN([OPENAXIOM_CHECK_GCL_INCLUSION],[
-case $oa_include_gcl,$AXIOM_LISP in
+case $oa_include_gcl,$OA_LISP in
     no,)
        ## It doesn't make sense not to include GCL when no Lisp image
        ## is available.  Give up.
@@ -147,7 +147,7 @@ case $oa_include_gcl,$AXIOM_LISP in
        ## User may explicilty specify --enable-gcl, but may be missing
        ## the dependency tarball.
        if test -d ${srcdir}/gcl; then
-	  AXIOM_LISP='$(oa_build_bindir)/gcl'
+	  OA_LISP='$(oa_build_bindir)/gcl'
 	  oa_include_gcl=yes
        elif test -z "$oa_include_gcl"; then
 	  AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website.])
@@ -156,7 +156,7 @@ case $oa_include_gcl,$AXIOM_LISP in
        fi
        ;;
     yes,*)
-       AC_MSG_ERROR([--with-lisp=$AXIOM_LISP conflicts with --enable-gcl])
+       AC_MSG_ERROR([--with-lisp=$OA_LISP conflicts with --enable-gcl])
        ;;
 esac
 ])
@@ -181,7 +181,7 @@ AC_MSG_CHECKING([which flavor of Lisp])
 if test x"$oa_include_gcl" = xyes; then
    oa_lisp_flavor=gcl
 else
-   case `echo '(lisp-implementation-type)' | $AXIOM_LISP` in
+   case `echo '(lisp-implementation-type)' | $OA_LISP` in
        *GCL*) 
 	   oa_lisp_flavor=gcl
 	   ;;
@@ -195,9 +195,9 @@ else
        *"CLISP"*)
 	   ## Not all variants of CLisp have FFI support.  FFI is used
 	   ## internally used by OpenAxiom in essential way.
-	   if ! $AXIOM_LISP -q -x '*features*' | grep ':FFI' > /dev/null
+	   if ! $OA_LISP -q -x '*features*' | grep ':FFI' > /dev/null
 	   then
-	     AC_MSG_ERROR([$AXIOM_LISP does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
+	     AC_MSG_ERROR([$OA_LISP does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
 	   fi
 	   oa_lisp_flavor=clisp
 	   ;;
@@ -397,7 +397,7 @@ case $oa_lisp_flavor in
        oa_quiet_flags='--quiet --no-init'
        oa_eval_flags='--eval'
        ;;
-    *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $AXIOM_LISP]) ;;
+    *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $OA_LISP]) ;;
 esac
 ])
 
@@ -416,7 +416,7 @@ else
    ## replacement of <newline> by <space>.
    openaxiom_save_IFS=$IFS
    IFS=' '
-   oa_fasl_type=`$AXIOM_LISP $oa_quiet_flags $oa_eval_flags '(progn (format t "oa_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
+   oa_fasl_type=`$OA_LISP $oa_quiet_flags $oa_eval_flags '(progn (format t "oa_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
 
    ## Now pull out the fasl type.  ECL has the habit of spitting noise
    ## about internal loading.  Therefore, we must look only for a line that
@@ -515,10 +515,10 @@ dnl Determine the register precision as seen by the host Lisp system, and
 dnl set the global variable oa_host_lisp_precision.
 AC_DEFUN([OPENAXIOM_HOST_LISP_CPU_PRECISION], [
 if test x"$oa_include_gcl" != xyes; then
-   AC_MSG_CHECKING([CPU precision as seen by $AXIOM_LISP])
+   AC_MSG_CHECKING([CPU precision as seen by $OA_LISP])
    # All Lisp systems we support put the relevant information
    # on the *FEATURES* list. 
-   case `echo '*features*' | $AXIOM_LISP` in
+   case `echo '*features*' | $OA_LISP` in
      *X86-64*|*X86_64*|*WORD-SIZE=64*|*64-BIT*)
 	# PORTME: the pattern above covers only the supported free Lisps, i.e.
 	# GCL, SBCL, CLisp, ECL and Clozure CL.
