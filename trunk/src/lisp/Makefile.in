@@ -35,8 +35,6 @@ oa_target_lispdir = $(oa_targetdir)/lisp
 
 subdir = src/lisp/
 
-pamphlets = Makefile.pamphlet
-
 build_libdir = ./$(top_builddir)/src/lib
 
 ## Ideally, we would like to use Libtool for producing, and linking with,
