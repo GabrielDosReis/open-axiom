@@ -207,7 +207,7 @@ DAASE = $(oa_src_datadir)
 ## -------------------------------------------
 oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
-AXIOM_LISP = @AXIOM_LISP@
+OA_LISP = @OA_LISP@
 # Extension of the output file name returned by compile-file
 FASLEXT = @oa_fasl_type@
 

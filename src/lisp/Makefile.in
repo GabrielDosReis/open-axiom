@@ -121,7 +121,7 @@ else
 endif
 
 base-lisp$(EXEEXT): core.$(FASLEXT)  $(oa_base_lisp_linkset)
-	$(AXIOM_LISP) \
+	$(OA_LISP) \
 		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
 
@@ -175,13 +175,13 @@ core.lisp: $(srcdir)/core.lisp.in
 
 core.$(FASLEXT): core.lisp
 ifeq (@oa_lisp_flavor@,ecl)
-	$(AXIOM_LISP) $(quiet_flags) \
+	$(OA_LISP) $(quiet_flags) \
 		$(eval_flags) '(require (quote cmp))' \
 		$(eval_flags) '(compile-file "$<" :system-p t)' \
 		$(eval_flags) '(c::build-fasl "$@" :lisp-files (quote ("core.$(LNKEXT)")))' \
 		$(eval_flags) '(quit)'
 else
-	$(AXIOM_LISP) $(quiet_flags) \
+	$(OA_LISP) $(quiet_flags) \
 		$(eval_flags) '(progn (compile-file "$<") (quit))'
 endif
 
