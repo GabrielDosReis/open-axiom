@@ -79,9 +79,6 @@ INPUT=../input
 
 STAMP = echo timestamp >
 
-# Extension of the output file name returned by compile-file
-FASLEXT = @oa_fasl_type@
-
 oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 # Name of the driver to launch the compiler

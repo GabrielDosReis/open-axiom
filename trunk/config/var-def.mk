@@ -209,7 +209,7 @@ oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 OA_LISP = @OA_LISP@
 # Extension of the output file name returned by compile-file
-FASLEXT = @oa_fasl_type@
+FASLEXT = @FASLEXT@
 
 # Extension of compiled FASLs appropriate for linking into executable
 # programs.  For most Lisp systems, it is the same as FASLEXT because

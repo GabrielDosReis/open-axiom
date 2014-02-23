@@ -211,6 +211,7 @@ else
 fi
 AC_MSG_RESULT([$oa_lisp_flavor])
 AM_CONDITIONAL([OA_ECL_RT],[test $oa_lisp_flavor = ecl])
+AM_CONDITIONAL([OA_GCL_RT],[test $oa_lisp_flavor = gcl])
 AM_CONDITIONAL([OA_STANDARD_LINKING],[test $oa_standard_linking = yes])
 
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
@@ -407,7 +408,12 @@ dnl -- OPENAXIOM_FILE_EXTENSIONS --
 dnl -------------------------------
 dnl Compute various file extensions used by the build system.
 AC_DEFUN([OPENAXIOM_FILE_EXTENSIONS],[
-AC_SUBST(oa_fasl_type)
+# What is the extension of object and executable files on this platform?
+AC_OBJEXT
+AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
+                   [Extension of executable file.])
+
+oa_fasl_type=
 AC_MSG_CHECKING([compiled Lisp file extension])
 if test x"$oa_include_gcl" = xyes; then
    oa_fasl_type=o
@@ -429,11 +435,7 @@ else
    fi
 fi
 AC_MSG_RESULT([$oa_fasl_type])
-
-## What is the extension of object and executable files on this platform?
-AC_OBJEXT
-AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
-                   [Extension of executable file.])
+AC_SUBST(FASLEXT,$oa_fasl_type)
 ])
 
 dnl ------------------------------

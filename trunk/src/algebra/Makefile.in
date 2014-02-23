@@ -420,6 +420,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FASLEXT = @FASLEXT@
 FGREP = @FGREP@
 GCLOPTS = @GCLOPTS@
 GREP = @GREP@
@@ -532,7 +533,6 @@ oa_enable_checking = @oa_enable_checking@
 oa_enable_profiling = @oa_enable_profiling@
 oa_enable_threads = @oa_enable_threads@
 oa_eval_flags = @oa_eval_flags@
-oa_fasl_type = @oa_fasl_type@
 oa_host_has_regex = @oa_host_has_regex@
 oa_keep_files = @oa_keep_files@
 oa_lisp_flavor = @oa_lisp_flavor@
@@ -585,9 +585,6 @@ DOC = $(oa_target_docdir)/src/algebra
 OUTSRC = $(oa_target_srcdir)/algebra
 INPUT = ../input
 STAMP = echo timestamp >
-
-# Extension of the output file name returned by compile-file
-FASLEXT = @oa_fasl_type@
 oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 # Name of the driver to launch the compiler
