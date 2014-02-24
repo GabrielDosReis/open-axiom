@@ -63,14 +63,14 @@ stamp: $(bin_PROGRAMS)
 .PRECIOUS: %.lo %.obj
 
 %.lo: %.cc 
-	$(CXXCOMPILE) ${CXXFLAGS} -o $@ \
+	$(COMPILE) ${CXXFLAGS} -o $@ \
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(oa_includes) $<
 
 main.lo: open-axiom.h
 
 open-axiom$(EXEEXT): $(open_axiom_objects)
-	$(CXXLINK) -all-static -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
+	$(LINK) -all-static -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
 
 mostlyclean-local:
 	@rm -f $(open_axiom_objects)

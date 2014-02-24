@@ -94,13 +94,13 @@ stamp-headers: $(libOpenAxiom_HEADERS) Makefile
 	$(STAMP) stamp-headers
 
 hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
-	$(CXXLINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
+	$(LINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
 
 libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
-	$(CXXLINK) -o $@ $(libOpenAxiom_OBJECTS)
+	$(LINK) -o $@ $(libOpenAxiom_OBJECTS)
 
 %.lo: %.cc stamp-headers
-	$(CXXCOMPILE) ${CXXFLAGS} $(oa_include_flags) -o $@ $<
+	$(COMPILE) ${CXXFLAGS} $(oa_include_flags) -o $@ $<
 
 
 mostlyclean-local:

@@ -74,7 +74,7 @@ stamp: $(oa_target_libdir)/view2D$(EXEEXT)
 	$(STAMP) stamp
 
 $(oa_target_libdir)/view2D$(EXEEXT): $(view2D_objects) $(view2D_DEPENDENCIES)
-	$(CXXLINK) -o $@ $(view2D_objects) $(Gfun_objects) \
+	$(LINK) -o $@ $(view2D_objects) $(Gfun_objects) \
 	    $(view2D_LDADD) $(AXIOM_X11_LDFLAGS) -lm 
 
 .PRECIOUS: %.lo
@@ -82,7 +82,7 @@ $(oa_target_libdir)/view2D$(EXEEXT): $(view2D_objects) $(view2D_DEPENDENCIES)
 %.$(OBJEXT): $(HEADERS)
 
 %.lo: $(builddir)/%.c $(oa_c_macros.h)
-	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 mostlyclean-local:
 

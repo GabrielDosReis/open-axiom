@@ -68,14 +68,14 @@ stamp: $(oa_target_bindir)/viewAlone$(EXEEXT)
 
 $(oa_target_bindir)/viewAlone$(EXEEXT): $(viewAlone_objects) \
 		 $(viewAlone_DEPENDENCIES)
-	$(CXXLINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
+	$(LINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
 
 .PRECIOUS: %.lo
 
 %.lo: $(HEADERS)
 
 %.lo: %.c $(oa_c_macros_h)
-	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 mostlyclean-local:
 

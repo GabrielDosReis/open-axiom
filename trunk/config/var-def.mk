@@ -71,16 +71,14 @@ PACKAGE_STRING = @PACKAGE_STRING@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIBTOOL = $(top_builddir)/libtool
 
-## Command used to compile a C program 
-COMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) -c $(CPPFLAGS) $(CFLAGS)
-CXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS) $(CXXFLAGS)
+## Command used to compile a C++ program 
+COMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS) $(CXXFLAGS)
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries
 ## and dynamic linking.  So, we build static programs.
 ## This situation is to be fixed when I have time.
-LINK = $(LIBTOOL) --tag=CC --mode=link $(CC) -static $(LDFLAGS)
-CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) -static $(LDFLAGS)
+LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) -static $(LDFLAGS)
 
 ## Libtool is a disaster for building DLLs on Cygwin, and insists
 ## on adding silly extensions where it should not on MinGW, so we have

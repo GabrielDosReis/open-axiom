@@ -92,7 +92,7 @@ $(PS)/%.ps: $(srcdir)/psFiles.pamphlet
 Gfun.$(OBJEXT): ${HEADERS}
 
 Gfun.$(OBJEXT): $(builddir)/Gfun.c 
-	${CXXCOMPILE} -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	${COMPILE} -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 
 mostlyclean-local:

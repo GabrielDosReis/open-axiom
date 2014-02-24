@@ -141,10 +141,10 @@ distclean-local: clean-local
 .PRECIOUS: %.lo %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
-	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(COMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 %.$(OBJEXT) %.lo: %.cc $(HEADERS)
-	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(COMPILE) -o $@ $(CXXFLAGS) $(oa_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(oa_src_srcdir)/pages directory
@@ -165,19 +165,19 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@ # cp -pr "$(srcdir)"/viewports "$(oa_target_datadir)"
 
 ${OUTLIB}/htsearch$(EXEEXT): $(htsearch_objects) $(htsearch_DEPENDENCIES)
-	${CXXLINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
+	${LINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
-	${CXXLINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
+	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
 
 $(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
-	${CXXLINK} -o $@ $(htadd_objects) $(htadd_LDADD)
+	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD)
 
 ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
-	${CXXLINK} -o $@ $(hthits_objects) $(hthits_LDADD)
+	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD)
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
-	 ${CXXLINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
+	 ${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
 
 ${OUTLIB}/spadbuf$(EXEEXT): $(spadbuf_objects) $(spadbuf_DEPENDENCIES)
-	${CXXLINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)
+	${LINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)
