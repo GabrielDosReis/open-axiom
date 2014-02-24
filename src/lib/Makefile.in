@@ -91,15 +91,15 @@ $(oa_target_libdir)/libopen-axiom-core$(SHREXT): \
 		@oa_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
-	$(CXXLINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
+	$(LINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
 
 libspad.$(LIBEXT): $(libspad_objects)
-	$(CXXLINK) -o $@ $(libspad_objects)
+	$(LINK) -o $@ $(libspad_objects)
 
 .PRECIOUS: %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(oa_c_macros_h)
-	$(CXXCOMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
+	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
 		$(oa_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and

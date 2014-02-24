@@ -80,7 +80,7 @@ stamp: $(oa_target_libdir)/view3D$(EXEEXT)
 	$(STAMP) stamp
 
 $(oa_target_libdir)/view3D$(EXEEXT): $(view3D_objects) $(view3D_DEPENDENCIES)
-	$(CXXLINK) -o $@ $(view3D_objects) $(Gfun_objects) \
+	$(LINK) -o $@ $(view3D_objects) $(Gfun_objects) \
 		$(view3D_LDADD) $(AXIOM_X11_LDFLAGS) -lm
 
 .PRECIOUS: %.lo
@@ -88,7 +88,7 @@ $(oa_target_libdir)/view3D$(EXEEXT): $(view3D_objects) $(view3D_DEPENDENCIES)
 %.lo: $(HEADERS)
 
 %.lo: %.c
-	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 mostly-clean:
 

@@ -45,7 +45,7 @@ build_libdir = ./$(top_builddir)/src/lib
 ## Consequently we temporarily give up here, e.g., we don't
 ## instruct GCL to use Libtool on Windows.
 GCL_LTCC = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --tag=CC --mode=compile ")
-GCL_LTLD = $(if $(findstring mingw, $(target)),"$(CXX) $(LDFLAGS) ","$(CXXLINK) ")
+GCL_LTLD = $(if $(findstring mingw, $(target)),"$(CXX) $(LDFLAGS) ","$(LINK) ")
 
 ## Again, ideally, we would like GCL to link with the compiled Lisp
 ## code from core.lisp.  However, the general interface compiler::link
