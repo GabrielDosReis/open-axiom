@@ -388,7 +388,7 @@ case $oa_lisp_flavor in
        ;;
     sbcl) 
        oa_quiet_flags='--noinform --noprint'
-       oa_eval_flags='--no-sysinit --no-userinit --eval'
+       oa_eval_flags='--no-sysinit --no-userinit --disable-debugger --eval'
        ;;
     clisp) 
        oa_quiet_flags='--quiet'
