@@ -1,0 +1,148 @@
+============
+=== TODO ===
+============
+
+* Retargetto Poly/ML abstract machine.
+* Add exception handling in the interpreter.
+* Fix parse tree transformation (e.g. typed definitions.)
+* Cleanup commuting coercion facility.
+* Improve efficiency of array operations.
+* Finish network communication support.
+* Finish Bemol backend.
+* Finish JVM backend.
+* Add support for concurrency.
+* Generate better codes for scripts.
+* Fix STREAM implementation (dynamic semantics rules violation).
+* Fix compilation of domain where withon is empty.
+* Improve overload resolution routines.
+* Have an option to build OpenAxiom as a Firefox-based standalone
+  application (or as a Firefox extension)
+* Make highlighting more configurable
+* Build domains for theorem proving and proof checking facilities.
+* Modernize algebras
+* Better documentations
+* Interfaces to mainstream programming languages
+* Improve Boot, Spad
+* Integrate to development environments
+* Move rule semantics transformation from the ParseForm -> SExpression
+  transformer to the interpreter.
+* Audit all codes that manipulate sockets.
+* Find a better of structuring for PLF, CCF, LDF, LISP.
+* Have OpenAxiom configure pass options specified on the
+  invokation line down to GCL.
+* Properly document the new build in a very intelligible way
+* Improve Boot documentation
+* Audit cleanup rules
+* Audit file copying.
+* Document the installation structure.
+
+============
+=== DONE ===
+============
+
+* Add exception handling in library.
+
+* Automate the process of "optimized" OpenAxiom.
+
+* Better support on Windows platform (MinGW/MSYS)
+
+* Reduce the number of bar Lisp codes to the minimum residual.
+
+* Rework subsumption: subsumption is almost inexistent.
+
+* Remove dependency on noweb.
+
+* The installed system no longer requires AWK.
+
+* Find better documentation tools and formats that do not get in
+  the way of building the system on more platforms.
+
+* Document src/scripts/document.in.  Remove and replaced by a C++
+  program (src/hammer.cc)
+
+* FFI support for Spad
+
+* Revisit the underlying definition of the types DFlo in foam
+  interface, and DoubleFloat in OpenAxiom.  Now, we ensure that
+  SingleFloat is 32-bit, and DoubleFloat is 64-bit.
+
+* Support more Lisp systems (GCL, SBCL, CLisp)
+
+* cleanup the Makefile pamphlets
+
+* Fix codes in src/interp, src/hyper, and src/hyper/pages/util.ht that 
+  hardcode pathnames.
+  In general, the OpenAxiom system should be able to work properly with
+  relative paths to that it can be "moved" around seamlessly. 
+
+* Support out-of-source build.
+
+* Support parallel build.
+  Notice that GCL does not support parallel build.  So we can punt
+  on build of GCL.  We should work with Camm to fix GCL build upstream.
+
+* Convince GCL to find its internal header files. 
+  -- it turns out to be a bug in OpenAxiom.
+
+* Fix Makefile generation dependencies.
+  -- This turns out to be a bug in Autoconf 2.59 whereby the value of
+  -- @top_builddir@ is empty.  Work around the bug by using
+  -- $(abs_top_builddir).
+
+* Have an automated, smooth bootstrapping process for boot.
+
+* Implement framework for recursive rules in Makefiles.
+
+* Fix fall-outs of missed DVI files.
+  This is believed to be fixed with the recursive rule support.
+
+* Reorganize the makefile pamphlets so that OpenAxiom can build without
+  LaTeX or X11.
+
+* Support standard "clean", "mostlyclean", and "distclean" Makefile
+  targets
+
+* Add support for --with-lisp=lisp-image for building OpenAxiom with
+  a specific lisp-image.
+
+* --enable-gcl uses the GCL from OpenAxiom repository to build OpenAxiom.
+
+* src/boot can be built with Lisp images other than GCL:
+     --with-lisp=sbcl
+     --with-lisp=clisp
+
+* Build on Windows platforms, more specifically MSYS/MinGW, is
+  supported.
+
+* Components known to build with various Lisp implementations:
+   + bootsys: GCL, SBCL, CLISP
+   + depsys: GCL, CLISP
+   + interpsys: GCL
+   + AXIOMsys: GCL
+
+* Use Libtool to build the C part of the OpenAxiom system.  In particular,
+  this facilitates support for Lisps that rely on dynamic loading
+  (e.g. SBCL, ECL).
+
+* Have OpenAxiom use bootsys compile all Boot codes in src/interp. This
+  requires auditing the code for uses of special functions which
+  act differently in boot and shoe (like MEMBER). 
+
+* Eliminate the shell script driver in favor of a native executable.
+
+================================================
+=== New Boot vs. Old Boot compatibility notes ==
+================================================
+
+The Old Boot translator renames some LISP identifiers
+(i.e. identifiers, used in Boot codes, that consist of only
+capital letters), a renaming not done by the New Boot translator.
+Consequently, when converting a Boot program to the New Boot
+translator, special care must be given to those identifiers
+so as to preserve meanings.
+
+* As of today, the following identifiers are no longer used in
+  Boot programs found in src/interp:
+  
+  REMOVE  GET  RASSOC  DELETE  INTERSECTION  UNION
+

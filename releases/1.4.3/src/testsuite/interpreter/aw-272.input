@@ -1,0 +1,18 @@
+++ Contributed by <unknown>
+-- Issue: variables local to unnamed functions incorrectly handled.
+
+f x == 
+  a := 3 
+  x + a
+
+f 3
+
+
+g := x +-> (x+2 ; x+a)
+
+g 3
+
+h := x +-> (a := 3 ; x+a)
+
+h 3
+

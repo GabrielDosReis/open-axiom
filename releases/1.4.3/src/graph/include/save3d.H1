@@ -1,0 +1,3 @@
+extern int makeSavePanel(void);
+extern void drawSavePanel(void);
+

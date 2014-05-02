@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input POLY.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from PolynomialXmpPage
+)clear all
+
+x + 1
+z - 2.3
+y**2 - z + 3/4
+y **2 + x*y + y
+% :: DMP([y,x],INT)
+p := (y-1)**2 * x * z
+q := (y-1) * x * (z+5)
+factor(q)
+p - q**2
+gcd(p,q)
+factor %
+lcm(p,q)
+content p
+resultant(p,q,z)
+resultant(p,q,x)
+mainVariable p
+mainVariable(1 :: POLY INT)
+ground? p
+ground?(1 :: POLY INT)
+variables p
+degree(p,x)
+degree(p,y)
+degree(p,z)
+degree(p,[x,y,z])
+minimumDegree(p,z)
+totalDegree p
+leadingMonomial p
+reductum p
+p - leadingMonomial p - reductum p
+leadingCoefficient p
+p
+eval(p,x,w)
+eval(p,x,1)
+eval(p,x,y**2 - 1)
+D(p,x)
+D(p,y)
+D(p,z)
+integrate(p,y)
+qr := monicDivide(p,x+1,x)
+qr.remainder
+p - ((x+1) * qr.quotient + qr.remainder)
+p/q
+(2/3) * x**2 - y + 4/5
+% :: FRAC POLY INT
+% :: POLY FRAC INT
+map(numeric,%)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

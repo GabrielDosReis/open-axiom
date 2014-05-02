@@ -1,0 +1,4 @@
+-- Contributed by Martin Rubey
+-- Also similar to AW/442
+integrate(log(1-z^3)*(%i*z)^(1/2),z)
+integrate(csc(z)*(1-1/(%iz)^(1/2))^(1/2),z)

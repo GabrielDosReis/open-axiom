@@ -1,0 +1,118 @@
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
+
+terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
+
+graphics_SOURCES = \
+		pixmap.c \
+		spadcolors.c \
+		util.c \
+		XDither.c \
+		XShade.c \
+		XSpadFill.c
+
+libspad_SOURCES = $(foreach comp, \
+			 $(addsuffix _SOURCES, @oa_c_runtime@), \
+			 $($(comp))) \
+		halloc.c hash.c 
+
+unused_SOURCES = emupty.c
+
+libopen_axiom_core_SOURCES = $(core_SOURCES)
+ifeq (@oa_use_libtool_for_shared_lib@,no)
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.$(OBJEXT))
+else
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.lo)
+endif
+libspad_objects = $(libspad_SOURCES:.c=.lo)
+
+oa_installed_corelib = $(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT)
+ifeq (@oa_use_dynamic_lib@,yes)
+oa_installed_corelib += $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+endif
+
+subdir = src/lib/
+
+.PHONY: all all-lib
+.SUFFIXES:
+.SUFFIXES: .o .lib .obj .c .h
+
+all: all-ax
+
+all-ax all-lib: stamp
+stamp: $(oa_installed_corelib) libspad.$(LIBEXT)
+	rm -f stamp
+	$(STAMP) stamp
+
+$(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT): \
+	libopen-axiom-core.$(LIBEXT)
+	$(mkdir_p) $(axiom_target_libdir)
+	cp -p $< $@
+
+# Don't put the shared lib here -- place it directly in its final home;
+# we don't want to pick it accidently.
+$(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
+	$(libopen_axiom_core_objects)
+	$(mkdir_p) $(axiom_target_libdir)
+	$(CXXLINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
+		$(libopen_axiom_core_objects) \
+		@oa_c_runtime_extra@ -lm
+
+libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
+	$(CXXLINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
+
+libspad.$(LIBEXT): $(libspad_objects)
+	$(CXXLINK) -o $@ $(libspad_objects)
+
+.PRECIOUS: %.$(OBJEXT)
+
+%.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
+	$(CXXCOMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
+		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
+
+# This is a support library, so it does not change often and
+# we don't need to remove the produced objects in mostlyclean.
+# The remoal is done by clean.
+mostlyclean-local:
+	@rm -f *.$(OBJEXT) *.lo
+
+clean-local: mostlyclean-local
+	@rm -f $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+	@rm -f libopen-axiom-core.$(LIBEXT)
+	@rm -f libspad.$(LIBEXT)
+	@rm -fr .libs _libs
+	@rm -f stamp
+
+distclean-local: clean-local

@@ -1,0 +1,137 @@
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+DRIVER = ../driver/open-axiom$(EXEEX)
+
+INTERPSYS = \
+	$(DRIVER) --execpath=../interp/interpsys$(EXEEXT) \
+		--system="$(AXIOM)" \
+		--sysdb="$(axiom_src_datadir)/algebra/"
+
+openaxiom_databases = \
+	$(addprefix $(axiom_targetdir)/algebra/, \
+		compress.daase interp.daase browse.daase categor.daase \
+		operation.daase libdb.text comb.text \
+		USERS.DAASE/index.KAF  DEPENDENTS.DAASE/index.KAF)
+
+openaxiom_glossfiles = \
+	$(addprefix $(axiom_targetdir)/algebra/, \
+		glosskey.text gloss.ht glossdef.text)
+
+subdir = src/etc/
+
+pamphlets = Makefile.pamphlet $(asq_SOURCES)
+
+build_libdir = $(top_builddir)/src/lib
+
+libspad_la = -L$(build_libdir) -lspad
+
+openaxiom_c_libs = -lopen-axiom-core @oa_c_runtime_extra@ -lm
+
+
+.PHONY: all all-asq
+all: all-ax
+
+all-ax all-asq: stamp
+	@echo finished $(builddir)
+
+stamp: stamp-databases $(axiom_target_bindir)/asq$(EXEEXT) \
+		$(axiom_target_libdir)/summary \
+		$(axiom_target_libdir)/copyright
+	rm -f stamp
+	$(STAMP) stamp
+
+.PHONY: all-databases
+all-databases:  stamp-databases
+
+stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT) ../doc/gloss.text
+	@ echo rebuilding databases...
+	rm -f stamp-databases
+	rm -f ../algebra/topics.data
+	rm -f $(axiom_targetdir)/*.daase
+	rm -f $(axiom_targetdir)/libdb.text
+	rm -f $(axiom_targetdir)/comdb.text
+	rm -rf $(axiom_targetdir)/algebra/USERS.DAASE
+	rm -rf $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
+	cp $(axiom_src_docdir)/topics.data ../algebra
+	(cd ../algebra && $(INTERPSYS) --build-databases)
+	cp -p ../algebra/*.daase $(axiom_targetdir)/algebra
+	cp -p ../algebra/libdb.text $(axiom_targetdir)/algebra
+	cp -p ../algebra/comdb.text $(axiom_targetdir)/algebra
+	mkdir -p $(axiom_targetdir)/algebra/USERS.DAASE
+	cp -p ../algebra/USERS.DAASE/index.KAF \
+		$(axiom_targetdir)/algebra/USERS.DAASE
+	mkdir -p $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
+	cp -p ../algebra/DEPENDENTS.DAASE/index.KAF \
+		$(axiom_targetdir)/algebra/DEPENDENTS.DAASE
+	cp -p ../algebra/glosskey.text $(axiom_target_docdir)
+	cp -p ../algebra/glossdef.text $(axiom_target_docdir)
+
+bin_PROGRAMS = asq$(EXEEXT)
+asq_sources = asq.c
+asq_SOURCES = $(addsuffix .pamphlet, $(asq_sources))
+asq_objects = $(asq_sources:.c=.$(OBJEXT))
+asq_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+
+$(axiom_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
+	cp -p $< $(axiom_target_bindir)
+
+asq$(EXEEXT): $(asq_objects)
+	$(CXXLINK) -o $@ $(asq_objects) $(asq_LDADD)
+
+%.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
+	$(CXXCOMPILE) $(CXXCFLAGS) $(axiom_includes) -o $@ $<
+
+
+asq.c: $(srcdir)/asq.c.pamphlet
+	$(oa_hammer) --tangle --output=$@ $<
+
+$(axiom_target_libdir)/summary: $(srcdir)/summary
+	cp -p $< $@ 
+
+$(axiom_target_libdir)/copyright: $(srcdir)/copyright
+	cp -p $< $@ 
+
+../doc/gloss.text: $(axiom_src_docdir)/gloss.text
+	cp $< cp $@
+
+mostlyclean-local:
+	rm -f $(asq_sources) $(asq_objects) $(bin_PROGRAMS)
+	rm -f $(openaxiom_databases)
+	rm -f $(openaxiom_glossfiles)
+	rm -f stamp
+
+clean-local: mostlyclean-local
+	rm -f $(axiom_target_libdir)/summary
+	rm -f $(axiom_target_libdir)/copyright
+	rm -f $(axiom_target_bindir)/asq$(EXEEXT)
+
+distclean-local: clean-local

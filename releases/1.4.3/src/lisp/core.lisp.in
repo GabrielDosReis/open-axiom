@@ -1,0 +1,1486 @@
+;; O Emacs, this is a -*- Lisp -*- file, despite appearance
+;; 
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+;; All rights reserved.
+;; 
+;; Copyright (C) 2007-2012, Gabriel Dos Reis.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are
+;; met:
+;;
+;;     - Redistributions of source code must retain the above copyright
+;;       notice, this list of conditions and the following disclaimer.
+;;
+;;     - Redistributions in binary form must reproduce the above copyright
+;;       notice, this list of conditions and the following disclaimer in
+;;       the documentation and/or other materials provided with the
+;;       distribution.
+;;
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+;;       names of its contributors may be used to endorse or promote products
+;;       derived from this software without specific prior written permission.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+;; IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+;; TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+;; PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+;; OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+;; EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+;; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;; PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+;; 
+;; -*- Abstract -*-
+;; 
+;;  This file defines the core of the system utilities for building
+;;  Boot and OpenAxiom executable.  It essentially etablishes a namespace
+;;  (package AxiomCore) and defines some macros and functions
+;;  that need to be present during compilation and executable
+;;  image construction.
+;; 
+
+(defpackage "AxiomCore"
+  #+:common-lisp (:use "COMMON-LISP")
+  #-:common-lisp (:use "LISP" "USER")
+  #+(and :SBCL :SB-THREAD) (:use "SB-THREAD")
+  #+(and :ECL :THREADS) (:use "MP")
+  #+(and :CLISP :MT) (:use "THREADS")
+  ;; For GCL we need to explicitly use the DEFPACKAGE, otherwise the
+  ;; image obtained from compiler link will not work.  The root cause
+  ;; is a non-ANSI compliant organization of GCL's implementation.
+  #+:gcl (:use "DEFPACKAGE")
+  ;; Clozure CL sequesters most of its useful extensions, in particular
+  ;; threads, in the CCL package.
+  ;; #+:clozure (:use "CCL")
+  #+:clozure (:import-from "CCL"
+			   external-call %get-cstring
+			   with-pointer-to-ivector with-cstrs)
+  #+:clozure (:export "CCL"
+			   external-call %get-cstring
+			   with-pointer-to-ivector with-cstrs)
+			   
+  (:export "%Thing"
+	   "%Void"
+	   "%Boolean"
+	   "%String"
+	   "%Symbol"
+	   "%Short"
+	   "%Bit"
+	   "%Byte"
+	   "%Char"
+	   "%Bignum"
+	   "%Integer"
+	   "%Number"
+	   "%IntegerSection"
+	   "%DoubleFloat"
+	   "%Atom"
+	   "%Maybe"
+	   "%Pair"
+	   "%Node"
+	   "%List"
+	   "%Vector"
+	   "%BitVector"
+	   "%SimpleArray"
+
+	   ;; Some common data structures
+	   "makeTable"	  ; construct a hash table with a given comp function
+	   "tableValue"	  ; value associated with a key in a table
+	   "tableLength"  ; number of entries in the table.
+	   "tableRemove!" ; remove an entry from a table
+	   "ref"
+	   "deref"
+
+	   ;; IO
+	   "$stdin"
+	   "$stdout"
+	   "$stdio"
+	   "$InputStream"
+	   "$OutputStream"
+	   "$ErrorStream"
+	   
+	   "inputBinaryFile"
+	   "outputBinaryFile"
+	   "inputTextFile"
+	   "outputTextFile"
+	   "closeFile"
+	   "closeStream"
+	   "eof?"
+	   "prettyPrint"
+	   "readLine"
+	   "readExpr"
+	   "readIntegerIfCan"
+	   "formatToString"
+	   "formatToStream"
+	   "formatToStdout"
+
+	   ;; compiler data structures
+	   "%Mode"
+	   "%Sig"
+	   "%Code"
+	   "%Env"
+	   "%Form"
+	   "%Triple"
+	   "%Shell"
+	   ;; functor data structures
+	   "%FunctorData"
+	   "%FunctorCoreData"
+	   "%FunctorBytecode"
+	   "%FunctorTemplate"
+	   "%FunctorPredicateIndexTable"
+	   "%FunctorOperatorDirectory"
+	   "%FunctorCategoryTable"
+	   "%FunctorAttributeTable"
+	   "%FunctorDefaultTable"
+	   "%FunctorLookupFunction"
+
+	   "primitiveLoad"
+	   "coreQuit"
+           "fatalError"
+           "internalError"
+           "coreError"
+           "errorCount"
+           "countError"
+	   "resetErrorCount"
+           "warn"
+	   "startCompileDuration"
+	   "endCompileDuration"
+           
+	   "%ByteArray"
+	   "makeByteArray"
+	   "makeBitVector"
+	   "makeString"
+	   "mkVector"
+	   "mkIntArray"
+	   "listToString"
+	   "maxIndex"
+
+           "%hasFeature"
+	   "%systemOptions"
+	   "%systemArguments"
+	   "%sysInit"
+	   "%basicSystemIsComplete"
+	   "%algebraSystemIsComplete"
+	   "%nothing"
+	   "%nullStream"
+	   "%nonNullStream"
+	   "%escapeSequenceAverseHost?"
+	   "%defaultReadAndLoadSettings"
+	   
+	   "$hostPlatform"
+	   "$buildPlatform"
+	   "$targetPlatform"
+
+	   "$faslType"
+	   "$delayedFFI"
+	   "$effectiveFaslType"
+	   "$NativeModuleExt"
+	   "$systemInstallationDirectory"
+	   "$NativeTypeTable"
+	   "$LispOptimizeOptions"
+	   "$StandardLinking"
+	   "$ECLVersionNumber"
+	   "$FilesToRetain"
+	   "$dynamicForeignFunctions"
+
+	   "getOptionValue"
+           "getCommandLineArguments"
+           "$originalLispTopLevel"
+           "link"
+           "installDriver"
+           "associateRequestWithFileType"
+           "ensureTrailingSlash"
+           "getOutputPathname"
+           "loadPathname"
+	   "loadFileIfPresent"
+           "compileLispFile"
+           "compileLispHandler"
+           "Option"
+	   "systemRootDirectory"
+	   "systemLibraryDirectory"
+
+	   "pathBasename"
+
+           "IMPORT-MODULE"
+	   "bootImport"
+	   "CONCAT"
+	   "$EditorProgram"
+
+	   "ident?"
+	   ;; numeric support
+	   "fixnum?"
+	   "double"
+	   "%fNaN?"
+           ))
+
+(in-package "AxiomCore")
+
+;; 
+;; -*- Basic data types -*-
+;; 
+
+;; Type of nothing.  Bottom of the abstract machine type lattice.
+;; Since Lisp functions always returns something, we cannot
+;; use the `nil' type specifier (the ideal answer).  Second
+;; best possibility is to have Void-returning functions
+;; systematically return `nil'.  However, until the Lisp
+;; backend is fixed, we will use the interpretation that a
+;; Void-returning function may return anything, but nobody cares.
+;; Hence, the choice below which contradicts the very first line
+;; of this description.
+(deftype |%Void| () 't)
+
+(deftype |%Thing| () 't)
+
+(deftype |%Boolean| () 'boolean)
+
+(deftype |%String| () 'string)
+
+(deftype |%Symbol| () 'symbol)
+
+(deftype |%Short| () 'fixnum)
+
+(deftype |%Bit| () 'bit)
+
+(deftype |%Byte| () '(unsigned-byte 8))
+
+(deftype |%Char| () 'character)
+
+(deftype |%Bignum| () 'bignum)
+
+(deftype |%Integer| () 'integer)
+
+(deftype |%IntegerSection| (n) `(integer ,n))
+
+(deftype |%DoubleFloat| () 'double-float)
+
+(deftype |%Number| () 'number)
+
+(deftype |%Atom| () 'atom)
+
+(deftype |%Maybe| (s) `(or null ,s))
+
+(deftype |%Pair| (u v)
+  `(cons ,u ,v))
+
+(deftype |%Node| (s)
+  `(cons ,s null))
+
+(deftype |%List| (s)
+  `(or null (cons ,s)))
+
+(deftype |%SimpleArray| (s) `(simple-array ,s))
+
+(deftype |%Vector| (s) `(vector ,s))
+
+(deftype |%BitVector| () '(simple-array bit))
+
+(deftype |%Shell| () 'simple-vector)
+
+(deftype |%Mode| () '(or symbol string cons))
+
+(deftype |%Sig| () '(or symbol cons))
+
+(deftype |%Code| () '(or |%Form| |%Char|))
+
+(deftype |%Env| () '(or null cons))
+
+(deftype |%Form| () '(or number symbol string cons))
+
+(deftype |%Triple| () 
+  '(cons |%Code| (cons |%Mode| (cons |%Env| null))))
+
+;; Functor templates
+(deftype |%FunctorTemplate| ()
+  'simple-vector)
+
+;; operator directory for functors.
+(deftype |%FunctorOperatorDirectory| ()
+  '(simple-array (or symbol fixnum)))
+
+;; List of (attribute . predicate-index) pairs for functors.
+(deftype |%FunctorAttributeTable| ()
+  'list)
+
+;; Lookup-function for functors.  For most functors, they are
+;; either lookupIncomplete or lookupComplete.
+;; Historical functors have lookupInTable.
+(deftype |%FunctorLookupFunction| ()
+  '|%Symbol|)
+
+;; Functor predicate index table
+(deftype |%FunctorPredicateIndexTable| ()
+  '(simple-array fixnum))
+
+;; vector of categories a functor instantiation may belong to.
+(deftype |%FunctorCategoryTable| ()
+  '(simple-array |%Form|))
+
+;; vector of default category packages that a functor may implicitly use.
+(deftype |%FunctorDefaultTable| ()
+  '(simple-array (|%Maybe| |%Constructor|)))
+
+;; sequence of `byte codes' for a functor
+(deftype |%FunctorBytecode| ()
+  '(simple-array fixnum))
+
+;; PredicateIndex + DefaultTable + CategoryTable + Bytecode
+(deftype |%FunctorCoreData| ()
+  '(cons |%FunctorPredicateIndexTable|
+	 (cons |%FunctorDefaultTable|
+	       (cons |%FunctorCategoryTable| |%FunctorBytecode|))))
+		     
+
+;; The essential of what is needed to instantiate a functor.
+;; This is the type of `infovec' properties of functors.
+(deftype |%FunctorData| ()
+  '(cons |%FunctorTemplate|
+	 (cons |%FunctorOperatorDirectory|
+	       (cons |%FunctorAttributeTable|
+		     (cons |%Thing|
+			   (cons |%FunctorLookupFunction| null))))))
+
+;; 
+;; -*- Configuration Constants -*-
+;; 
+
+;; The canonical triplets for host, build, and target.   For the moment,
+;; they are all identical, for we don't support cross compilation yet.
+(defconstant |$hostPlatform| "@host@")
+(defconstant |$buildPlatform| "@build@")
+(defconstant |$targetPlatform| "@target@")
+
+;; How to invoke the host C++ compiler and linker flags
+(defconstant oa-cxx "@CXX@")
+(defconstant oa-ldflags "@LDFLAGS@")
+
+;; The directory that contains the final installation directory, as
+;; specified at configuration time (or in exoteric cases, as overriden
+;; on the Make command line). 
+(defconstant |$systemInstallationDirectory| 
+  "@open_axiom_installdir@/")
+
+;; File kinds to retain.
+(defconstant |$FilesToRetain|
+  '(@oa_keep_files@))
+
+;; List of foreign function symbols to unload before saving the
+;; Lisp image.  This is meaningful only for those systems not
+;; using standard linking and that delay FFI modules to runtime.
+(defparameter |$dynamicForeignFunctions| nil)
+
+;; Lisp compiler optimization settings.
+(defconstant |$LispOptimizeOptions|
+  '(@oa_optimize_options@))
+
+(proclaim '(optimize @oa_optimize_options@))
+
+;; Enablig profiling of generated Lisp codes.
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (defconstant |$EnableLispProfiling| @oa_enable_profiling@))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn #+(and :sbcl (not :win32)) (require :sb-sprof)))
+
+;; Return true if the full OpenAxiom algebra system is completed
+;; built.
+(defun |%algebraSystemIsComplete| nil
+  (member :open-axiom-algebra-system *features*))
+
+;; Return true if the basic OpenAxiom system is complete.  This means
+;; that we have a compiler and an interpreter, but not necessarily
+;; the algebras.
+(defun |%basicSystemIsComplete| nil
+  (or (|%algebraSystemIsComplete|)
+      (member :open-axiom-basic-system *features*)))
+
+;; Return true if the Boot system is completely bootstrapped.
+(defun boot-completed-p nil
+  (or (|%basicSystemIsComplete|)
+      (member :open-axiom-boot *features*)))
+
+;; 
+;; -*- Hosting Lisp System -*-
+;;
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setq *read-default-float-format* 'double-float)
+	     (setq *load-verbose* nil)))
+
+;; True means that the base Lisp system uses conventional C-style
+;; program linking model, whereby programs are constructed by linking
+;; separately compiled units.  By constrast, many Lisp systems build
+;; executable programs by loading FASLs into core and dumping the resulting
+;; image on disk.
+(defconstant |$StandardLinking|
+  (eq '@oa_standard_linking@ 'yes))
+
+;; Almost every supported Lisp use dynamic link for FFI.
+;; ECL's support is partial.  GCL-2.6.x hasn't discovered it yet.
+(defconstant |$useDynamicLink|
+  #+:ecl (member :dffi *features*)
+  #+:gcl nil
+  #-(or :ecl :gcl) t)
+
+;; True if FFI modules were delayed till runtime.
+(defconstant |$delayedFFI|
+  (eq '@oa_delay_ffi@ 'yes))
+
+;; The top level read-eval-print loop function of the base
+;; Lisp system we are using.  This is a very brittle way
+;; of achieving something conceptually simple.  
+(defconstant |$originalLispTopLevel|
+  #+:ecl #'si::top-level
+  #+:gcl #'si::top-level
+  #+:sbcl #'sb-impl::toplevel-init
+  #+clisp #'system::main-loop
+  #+:clozure nil			; don't know, kept private
+  )
+
+;; Lisp source file extension.
+(defconstant |$LispFileType| "lisp")
+
+;; Extenstion of FASL files.
+(defconstant |$faslType|
+  (pathname-type (compile-file-pathname "foo.lisp")))
+
+(defconstant |$effectiveFaslType|
+  #+:ecl (pathname-type (compile-file-pathname "foo.lisp" :system-p t))
+  #-:ecl |$faslType|)
+
+;; Extension of file containers for native shared libraries.
+(defconstant |$NativeModuleExt|
+  (cond (|$useDynamicLink| "@SHREXT@")
+	(t ".@LIBEXT@")))
+
+;; Return true if the host is escape sequence averse.  This is notably
+;; true on windows-based builds (win32 or win64)
+(defun |%escapeSequenceAverseHost?| ()
+  (or (member :win32 *features*)
+      (member :windows *features*)))
+
+;; Some default settings
+(defmacro |%defaultReadAndLoadSettings| ()
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+	      (progn
+		(setq *read-default-float-format* 'double-float)
+		(setq *load-verbose* nil))))
+
+(defconstant |$EditorProgram| "@oa_editor@")
+
+;; Token expression to indicate absence of value or bottom value.
+;; This is also the bottom value of the Maybe domain.
+(defconstant |%nothing| :|OpenAxiomNoValue|)
+
+;; Token expression to indicate the end of a stream of values.
+(defconstant |%nullStream| :|OpenAxiomNullStream|)
+
+;; Token expression to indicate there are move to come in a stream of values.
+(defconstant |%nonNullStream| :|OpenAxiomNonNullStream|)
+
+;; Base name of the native core runtime library
+(defconstant |$CoreLibName|
+  "open-axiom-core")
+
+;; C runtime needed by the target system; e.g. -lm or -lwinsock
+(defconstant |$ExtraRuntimeLibraries|
+  '(@oa_c_runtime_extra@))
+
+(defun extra-runtime-libs nil
+  (if (boot-completed-p)
+      (append
+       (list (concatenate 'string "-L" (|systemLibraryDirectory|))
+	     (concatenate 'string "-l" |$CoreLibName|))
+       |$ExtraRuntimeLibraries|)
+    |$ExtraRuntimeLibraries|))
+
+
+#+:clisp 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setf custom:*ansi* t)
+	     (setf custom:*floating-point-contagion-ansi* t)
+	     (setf custom:*warn-on-floating-point-contagion* t)
+	     (setf custom:*trace-indent* t)
+	     (setf custom:*foreign-encoding* 
+		   (ext:make-encoding :charset charset:iso-8859-1))))
+
+
+;; ECL is a moving target, especially, in its FII support.  Track
+;; versions as poor man safeguard to portability chaos.
+(defconstant |$ECLVersionNumber|
+  #-:ecl -1
+  #+:ecl (let ((ver (find-symbol "+ECL-VERSION-NUMBER+" "EXT")))
+	   (cond (ver (symbol-value ver))
+		 (t -1))))
+
+;; -*- Hash table -*-
+(defmacro |makeTable| (cmp)
+  `(make-hash-table :test ,cmp))
+
+(defmacro |tableValue| (ht k)
+  `(gethash ,k ,ht))
+
+(defmacro |tableRemove!| (ht k)
+  `(remhash ,k ,ht))
+
+(defmacro |tableLength| (ht)
+  `(hash-table-count ,ht))
+
+;; -*- Reference -*-
+(defmacro |ref| (v)
+  `(cons ,v nil))
+
+(defmacro |deref| (r)
+  `(car ,r))
+
+;; -*- File IO -*-
+
+(defparameter |$stdout| *standard-output*)
+(defparameter |$stdin| *standard-input*)
+(defparameter |$stdio| *terminal-io*)
+
+(defparameter |$InputStream| (make-synonym-stream '*standard-input*))
+(defparameter |$OutputStream| (make-synonym-stream '*standard-output*))
+(defparameter |$ErrorStream| (make-synonym-stream '*standard-output*))
+
+(defun |inputBinaryFile| (f)
+  (open f
+	:direction :input
+	:element-type 'unsigned-byte
+	:if-does-not-exist nil))
+
+(defun |outputBinaryFile| (f)
+  (open f
+	:direction :output
+	:element-type 'unsigned-byte
+	:if-exists :supersede))
+
+(defun |inputTextFile| (f)
+  (open f
+	:direction :input
+	:if-does-not-exist nil))
+
+(defun |outputTextFile| (f)
+  (open f
+	:direction :output 
+	:if-exists :supersede))
+
+(defun |closeFile| (f)
+  (close f))
+
+(defmacro |closeStream| (s)
+  `(close ,s))
+
+(defmacro |eof?| (s)
+  `(null (peek-char nil ,s nil nil nil)))
+
+;; Read a line from the input text file.  Quietly return
+;; %nothing at end of file.
+(defmacro |readLine| (f)
+  `(read-line ,f nil |%nothing|))
+
+(defmacro |readByte| (f)
+  `(read-byte ,f nil |%nothing|))
+
+(defmacro |readExpr| (f)
+  `(read ,f nil |%nothing|))
+
+(defun |readIntegerIfCan| (s)
+  (let ((r (multiple-value-call #'cons (parse-integer s :junk-allowed t))))
+    (cond ((eql (cdr r) (length s)) (car r))
+	  (t nil))))
+
+;; Pretty-print a lisp form on a given output stream.
+(defun |prettyPrint| (x &optional (s |$OutputStream|))
+  (let ((*print-pretty* t)
+	(*print-array* t)
+	(*print-circle* t)
+	(*print-length* nil)
+	(*print-level* nil))
+    (prin1 x s)))
+
+(defmacro |formatToString| (&rest args)
+  `(format nil ,@args))
+
+(defmacro |formatToStream| (&rest x)
+  `(format ,@x))
+
+(defmacro |formatToStdout| (&rest args)
+  `(format |$stdout| ,@args))
+
+;; 
+;; -*- OpenAxiom filesystem -*-
+;; 
+
+(defconstant |$BootFileType| "boot")
+(defconstant |$LibraryFileType| "spad")
+(defconstant |$ScriptFileType| "input")
+
+;; Canonalize source file extensions
+(defun |getFileType|(file)
+  (let ((file-type (pathname-type file)))
+    (cond ((or (equal "clisp" file-type)
+               (equal "lsp" file-type))
+           |$LispFileType|)
+          (t file-type))))
+
+;; Returns the root directory of the running system.
+;; A directory specified on command line takes precedence
+;; over directory specified at configuration time.
+(defun |systemRootDirectory| nil
+  (let ((dir (assoc (|Option| "system") (|%systemOptions|))))
+    (if (not (null dir))
+	(|ensureTrailingSlash| (cdr dir))
+      |$systemInstallationDirectory|)))
+
+;; Returns the directory containing the core runtime support
+;; libraries, either as specified on command line, or as inferred
+;; from the system root directory.
+(defun |systemLibraryDirectory| nil
+  (let ((dir (assoc (|Option| "syslib") (|%systemOptions|))))
+    (if (not (null dir))
+	(|ensureTrailingSlash| (cdr dir))
+      (concatenate 'string (|systemRootDirectory|) "lib/"))))
+
+
+;; Return the list of linkable fasls in in the directory `dir'.
+(defun linkset-from (dir)
+  (mapcar #'(lambda(f) (concatenate 'string dir f))
+	  (with-open-file (stream (concatenate 'string dir "linkset"))
+			  (read stream t))))
+
+;; Return a path to the the subdirectory `subdir' within the 
+;; OpenAxiom filesystem.
+(defun system-subdirectory (subdir)
+  (concatenate 'string (|systemRootDirectory|) subdir))
+
+;; Like linkset-from when `feature' in on the features list.
+(defun linkset-from-if (dir feature)
+  (if (member feature *features*)
+      (linkset-from (system-subdirectory dir))
+    nil))
+
+;; Return a complete list of fasls as appropriate for building
+;; an executable program user thought consists only of `fasls'.
+(defun complete-fasl-list-for-link (fasls)
+  (append (linkset-from-if "lisp/" :open-axiom-base-lisp)
+	  (linkset-from-if "boot/" :open-axiom-boot)
+	  (map 'list #'|compileFilePathname| fasls)))
+
+;; 
+;; -*- OpenAxiom Driver Table -*-
+;; 
+
+;; Global map from requests  to drivers.
+;; Ideally we want to handle
+;;    --help: just print a help menu and exit
+;;    --version: Print version information and exit
+;;    --system=<dir>: specify <dir> as the root directory
+;;    --sysalg=<dir>: specify <dir> as directory containing algebras
+;;    --compile: boot or lisp files
+;;    --translate: boot files
+;;    --prologue=<lisp-code>: Run <lisp-code> just before the main entry point.
+;;    --make: boot, lisp, or fasl files
+(defparameter |$driverTable| 
+  (make-hash-table :test #'equal :size 10))
+
+
+;; Look up the driver that can handle REQUEST.  Returns nil when
+;; no driver exists.
+(defun |getDriver| (request)
+  (gethash request |$driverTable|))
+
+;; Associate DRIVER with REQUEST.
+;; There can exist at most one driver per request.
+(defun |installDriver| (request driver)
+  (when (|getDriver| request) 
+    (|internalError| "attempt to override driver"))
+  (setf (gethash request |$driverTable|) driver))
+
+(defun |useFileType?| (request)
+  (get request 'use-file-type))
+
+;; Register DRIVER for a REQUEST for a file with FILE-TYPE extension.
+(defun |associateRequestWithFileType| (request file-type driver)
+  ;; If a driver is already installed, it must be non-null. 
+  ;; We don't allow overriding at the moment.
+  (let ((key (cons request file-type)))
+    (unless (|useFileType?| request)
+      (setf (get request 'use-file-type) file-type))
+    (|installDriver| key driver)))
+
+
+;; 
+;; -*- OpenAxiom Command Line Parsing -*-
+;; 
+
+;; Return a symbol object represensing option named OPT, without leading
+;; double dash (--).
+(defun |Option| (opt)
+  (intern (string opt) (find-package "AxiomCore")))
+
+
+;; Translate option value:
+;;    "no"   -> nil
+;;    "yes"  -> t
+;;    [0-9]+ -> integer value
+;;   otherwise -> input string unmolested
+(defun translate-option-value (val)
+  (cond ((string= val "no") nil)
+	((string= val "yes") t)
+	(t (multiple-value-bind (ival idx)
+	    (parse-integer val :junk-allowed t)
+	    (cond ((null ival) val)
+		  ((eql idx (length val)) ival)
+		  (t val))))))
+				
+;; Returns a pair (name . value) if OPTION if of the form "--name=value",
+;; where name is a symbol and value is a string.  Otherwise, if
+;; OPTION is of the form "--name", returns the symbol name.
+(defun |parseOption| (option)
+  (setq option (subseq option 2))
+  (let ((p (position #\= option)))
+    (if p
+        (cons (|Option| (subseq option 0 p)) 
+	      (translate-option-value (subseq option (1+ p))))
+      (|Option| option))))
+
+;; Returns the value specified for OPTION. Otherwise, return nil
+(defun |getOptionValue| (opt &optional (options (|%systemOptions|)))
+  (let ((val (assoc (|Option| opt) options)))
+    (cond (val (cdr val))
+          (t nil))))
+
+;; Walk through the command line arguments ARGV, separating options
+;; of the form --opt or --opt=val into an a-list, and the rest
+;; of the command line into a list.  The processing stop as soon as
+;; a non-option form is encountered. OPTIONS-SO-FAR accumulates the
+;; the list of processed options.
+(defun |processCommandLine| (argv options-so-far args-so-far)
+  (cond ((null argv)
+	 ;; no more command-line argument to process
+	 (values options-so-far (nreverse args-so-far)))
+	((equal "--" (car argv))
+	 ;; end of command-line options
+	 (values options-so-far (concatenate 'list 
+					     (nreverse args-so-far)
+					     (cdr argv))))
+	((or (< (length (car argv)) 2)
+	     (not (equal "--" (subseq (car argv) 0 2))))
+	 ;; not a command-line option
+	 (|processCommandLine| (cdr argv) 
+	                       options-so-far 
+	                       (cons (car argv) args-so-far)))
+	(t (let ((option (|parseOption| (car argv))))
+	     (cond ((symbolp option)
+		    (|processCommandLine| (cdr argv)
+		                          (cons (cons option t)
+						options-so-far)
+					  args-so-far))
+		   ((consp option) 
+		    (|processCommandLine| (cdr argv) 
+		                          (cons option options-so-far)
+					  args-so-far))
+		   (t (|internalError|
+		       (format nil "processCommandLine: unknown option ~S"
+			       option))))))))
+
+;; 
+;; -*- Building New Lisp Images -*-
+;; 
+;; At many points, the build machinery makes new Lisp images that
+;; are the results of augmenting a given Lisp image with new 
+;; Lisp files (either compiled or in source form).  For most Lisp
+;; implementations, this is done by loading the Lisp files in the 
+;; current image and dumping the result on disk as an executable.
+
+
+(defun |getOutputPathname| (options)
+  (let ((output-option (assoc (|Option| "output") options)))
+    (when output-option
+        ;; If an output file name was specified on the command line, it
+        ;; is so relative to the current working directory.  In 
+        ;; particular we want to prevent overly zelous SBCL to mess
+        ;; around with the output file when we call compile-file-pathname. 
+        ;; The SBCL-specific hack below does not work all the time, but in
+        ;; most cases, it is OK.
+        #+:sbcl (merge-pathnames (cdr output-option)
+                                 *default-pathname-defaults*)
+        #-:sbcl (cdr output-option))))
+
+
+(defun |getMainEntryPoint| (options)
+  (|getOptionValue| (|Option| "main") options))
+
+(defun |getPrologue| (options)
+  (let ((prologue (|getOptionValue| (|Option| "prologue") options)))
+    (if prologue (read-from-string prologue) nil)))
+
+;; This is meaningful only for systems that delay FFI.
+;; Unbind foreign function symbols in case delaying FFI modules
+;; is needed.  Indeed, these systems should not have references to
+;; foreign symbols that cannot be guaranteed to work properly
+;; when the saved image is restarted.
+(defun unbind-foreign-function-symbols ()
+  (when |$delayedFFI|
+    (mapc #'(lambda (s)
+	      (when (fboundp s)
+		(fmakunbound s)))
+	  |$dynamicForeignFunctions|)))
+
+;; Save current image on disk as executable and quit.
+(defun |saveCore| (core-image &optional (entry-point nil))
+  ;; When building the OpenAxiom system, and in many other cases I suspect,
+  ;; the main entry point is some function in a package not known to
+  ;; the Lisp system at compile time, so we have delayed the 
+  ;; evaluation of the entry point in a form of a suspension.  At this
+  ;; point we must have all data needed to complete the evaluation.
+  (when (consp entry-point)
+    (setq entry-point (apply (car entry-point) 
+                             (cdr entry-point))))
+  (unbind-foreign-function-symbols)
+  #+:sbcl (if (null entry-point)
+              (sb-ext::save-lisp-and-die core-image :executable t)
+            (sb-ext::save-lisp-and-die core-image 
+                                       :toplevel entry-point
+                                       :executable t))
+  #+:gcl (progn 
+           (when entry-point 
+             (setq si::*top-level-hook* entry-point))
+           (system::save-system core-image))
+  #+:clisp (progn 
+             (if entry-point
+                 (ext::saveinitmem core-image 
+                                   :init-function entry-point
+                                   :executable t
+                                   :norc t
+				   :quiet t
+                                   )
+               (ext::saveinitmem core-image 
+                                 :executable t
+                                 :norc t
+                                 ))
+             (ext::quit))
+  #+:clozure (progn
+	       (ccl:save-application core-image
+				     :toplevel-function entry-point
+				     :error-handler :quit
+				     :prepend-kernel t)
+	       (return-from |saveCore|))
+  (error "don't know how to save Lisp image"))
+
+
+;; Load a module designated by `f'.
+(defmacro |primitiveLoad| (f)
+  `(load ,f))
+
+;; 
+;; -*- Program Termination -*-
+;; 
+;; When working in batch mode, we need to return so-called `exit status'
+;; to the calling shell.  Common Lisp has no provision for that ---
+;; not even exiting from the toplevel read-eval-print loop.  Most
+;; Lisp implementations provide an `exit' function as extensions, though
+;; they don't agree on the exact spelling, therefore on the API.
+
+;; The function |coreQuit| is our abstractions over those variabilties.
+;; It takes an optional small integer value, the exit status code to
+;; return to the calling shell.  When no exit status code is specified,
+;; it would return $0$, meaning that everything is OK.
+(defun |coreQuit| (&optional (status 0))
+  #+:sbcl (sb-ext:quit :unix-status status)
+  #+:clisp (ext:quit status)
+  #+:gcl (si::bye status)
+  #+:ecl (ext:quit status)
+  #+:clozure (ccl:quit status)
+  #-(or :sbcl :clisp :gcl :ecl :clozure) 
+  (error "`coreQuit' not implemented for this Lisp"))
+
+
+;; 
+;; -*- Basic Diagnostic Routines -*-
+;; 
+;;    For the most basic batch stuff, we want:
+;;       (1) fatal error: output message and exit with nonzero status
+;;       (2) internal error: same.  This is for use on reporting internal
+;;           consistency error.
+(defun |diagnosticMessage|(prefix msg)
+  (let ((text (concatenate 'string prefix ": " msg)))
+    (write-line text *error-output*)))
+
+;; Keep count of number of hard errors.
+(defparameter |$errorCount| 0)
+
+(defun |errorCount| nil
+  |$errorCount|)
+
+(defun |countError| nil
+  (setq |$errorCount| (1+ |$errorCount|)))
+
+(defun |resetErrorCount| nil
+  (setq |$errorCount| 0))
+
+;; utils
+
+;; GCL has a hard limit on the number of arguments for concatenate.
+;; However, it has a specialized versions for catenating string
+;; that seems immune to that hard limit.  Specialized accordingly.
+(defun |catenateStrings| (&rest l)
+  #+ :gcl (apply #'si::string-concatenate l)
+  #- :gcl (apply #'concatenate 'string l))
+
+(defun concat (a b &rest l)
+  (cond ((bit-vector-p a)
+	 (apply #'concatenate 'bit-vector a b l))
+	(t 
+	 (apply #'|catenateStrings| 
+		(string a)
+		(string b) 
+		(mapcar #'string l)))))
+
+(defun |fatalError| (msg)
+  (|countError|)
+  (|diagnosticMessage| "fatal error" msg)
+  (|coreQuit| 1))
+
+(defun |internalError| (msg)
+  (|countError|)
+  (|diagnosticMessage| "internal error" msg)
+  (|coreQuit| 1))
+
+(defun |coreError| (msg)
+  (|countError|)
+  (|diagnosticMessage| "error"
+   (cond ((consp msg) 
+          (reduce #'(lambda (x y)
+                      (concatenate 'string x y))
+                  msg :initial-value ""))
+         (t msg)))
+  nil)
+
+(defun |warn| (msg)
+  (|diagnosticMessage| "warning"
+   (cond ((consp msg) 
+          (reduce #'(lambda (x y)
+                      (concatenate 'string x y))
+                  msg :initial-value ""))
+         (t msg))))
+
+;; 
+;; -*- Command Line Arguments -*-
+
+(defparameter |$sysOpts| nil)
+(defparameter |$sysArgs| nil)
+
+(defun |%systemOptions| ()
+  |$sysOpts|)
+
+(defun |%systemArguments| ()
+  |$sysArgs|)
+
+;; 
+;; Ideally, we would just like to have a traditional command line
+;; passing mechanism from the shell to the application.  That 
+;; mechanism works fine with GCL.  Some Lisp implementations such as
+;; SBCL or CLISP will insist on processing the command lines.  Some
+;; such as CLISP will baffle when they hit an option they don't 
+;; understand.  Which is silly.  It seems like the only common ground,
+;; as ever, is to go with the most annoying behaviour and penalize
+;; the good "citizen", sensible, Lisp implementations interfaces.
+;; Consequently, we have standardized on the the following practice:
+;; always issue a double bash (--) after the command line, and afterwards
+;; supply options and other arguments.  The double dash has the effect
+;; of dissuading the underlying lisp implementation of trying to
+;; process whatever comes after as options.  
+
+;; Command line arguments: equivalent of traditional `argv[]' from
+;;  systems programming world.
+(defun |getCommandLineArguments| nil
+  #-(or :gcl :sbcl :clisp :ecl :clozure) 
+  (|fatalError| "don't know how to get command line args")
+  (let* ((all-args  
+	  #+:clozure ccl:*command-line-argument-list*
+          #+:ecl (ext:command-args)
+          #+:gcl si::*command-args*
+          #+:sbcl sb-ext::*posix-argv*
+          #+:clisp (coerce (ext::argv) 'list))
+         (args (member "--" all-args :test #'equal)))
+    (cons (car all-args) (if args (cdr args) args))))
+
+;; 
+;; -*- Building Standalone Executable -*-
+;; 
+;; Build a standalone excutable from LISP-FILES -- a list of
+;; pathnames designating compiled source files (either FASLs, for
+;; most Lisp systems, or object files for systems like ECL.)
+;; ENTRY-POINT is the entry point of the program.  If not supplied, or
+;; if null, then the entry entry is supposed to be the top level
+;; read-eval-print loop of original Lisp system.
+;; Note, despite the name LISP-FILEs, we do not expect bare Lisp source
+;; files here.  We do insist on FASLs.  There is no check for that at
+;; this point.  You have been warned.
+(defun |link| (core-image lisp-files 
+			  &optional (entry-point nil) (prologue nil))
+  (if (and entry-point (stringp entry-point))
+      (setq entry-point `(read-from-string ,entry-point)))
+  #-:ecl 
+  (progn
+    (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
+    (eval prologue)
+    (|saveCore| core-image entry-point))
+  #+:ecl 
+  (let* ((compiler::*ld* oa-cxx)
+	 (compiler::*ld-flags* (concatenate 'string 
+					    compiler::*ld-flags*
+					    " " oa-ldflags)))
+    (progn
+      (unless entry-point
+	(setq entry-point #'si::top-level))
+      (c:build-program core-image 
+		       :lisp-files 
+		       (complete-fasl-list-for-link lisp-files)
+		       :ld-flags (extra-runtime-libs)
+		       :epilogue-code 
+		       `(progn
+			  (pushnew :open-axiom-base-lisp *features*)
+			  ,prologue
+			  (funcall ,entry-point)))
+      (|coreQuit|))))
+
+;; 
+;; -*- Handling Command Line Arguments -*-
+;; 
+
+(defun |handleRequest| (prog-name request options args)
+  (let ((driver (|getDriver| request)))
+    (when (null driver) 
+      (|fatalError| (format nil "invalid option `--~a'" (string request))))
+    (funcall driver prog-name options args)))
+
+(defun |hasHandler?| (request)
+  (or (|getDriver| request)
+      (|useFileType?| request)))
+
+(defun run-driver (prog-name action options args)
+  (cond ((|useFileType?| (car action))
+	 ;; If the action is file-type dependent, make sure
+	 ;; we have at least one file.
+	 (unless (not (null args))
+	   (|coreError| "missing input files"))
+	 (dolist (f args t)
+	   (let* ((name (car action))
+		  (file-type (or (|getFileType| f)
+				 (|useFileType?| name)))
+		  (request (cons name file-type)))
+	     (unless (|handleRequest| prog-name request options f)
+	       (return nil)))))
+	(t (|handleRequest| prog-name (car action) options args))))
+
+
+(defun |handleCommandLine| (prog-name options args)
+  (when (or options args)
+    (let (action)
+      (dolist (opt options)
+	(cond ((stringp (cdr opt))
+	       ;; In general, nothing is to be done for option value 
+	       ;; specifications, except when they require special handlers.
+	       (when (|hasHandler?| (car opt))
+		 (unless (|handleRequest| prog-name (car opt) options args)
+		   (return nil))))
+
+	      ;; Don't allow for more than one driver request.
+	      ((|hasHandler?| (car opt))
+	       (if (not (null action))
+		   (|coreError| "multiple driver request")
+		 (setq action opt)))))
+      ;; By now, we hope to have figured out what action to perform.
+      (cond ((consp action)
+	     (run-driver prog-name action options args))
+	    (t nil)))))
+
+;; 
+;; -*- --help Handler -*-
+;; 
+
+;; Print help screen
+(defun |printUsage| (prog-name)
+  (write-line "usage:")
+  (write-line 
+   (concatenate 'string prog-name " -- [options] [files]"))
+  (write-line "option:")
+  (write-line "   --help                   print this message")
+  (write-line "   --system=<dir>           set <dir> to the root directory of running system")
+  (write-line "   --sysalg=<dir>           set <dir> to the algebra directory of running system")
+  (write-line "   --compile                compile file")
+  (write-line "   --output=<out>           set output file to <out>")
+  (write-line "   --load-directory=<dir>   use <dir> as search path for modules")
+  (write-line "   --make                   create an executable"))
+
+(defun |helpHandler|(prog-name options args)
+  (declare (ignore options args))
+  (|printUsage| prog-name)
+  (|coreQuit|))
+
+(|installDriver| (|Option| "help") #'|helpHandler|)
+
+
+;; 
+;; -*- --make Handler -*-
+;; 
+
+(defun |makeHandler| (prog-name options args)
+  (declare (ignore prog-name))
+  (unless (> (length args) 0)
+    (|fatalError| "--make requires at least one file"))
+
+  (|link| (or (|getOutputPathname| options) "a.out") 
+          args 
+          (|getMainEntryPoint| options)
+	  (|getPrologue| options))
+  (|coreQuit|))
+
+(|installDriver| (|Option| "make") #'|makeHandler|)
+
+
+;; 
+;; -*- --load-directory Handler -*-
+;; 
+
+;; Remember value specified for the --load-dircetory option.  Notice
+;; that this is the direct handler for that option.  Consequently, it
+;; passed all three arguments: PROG-NAME OPTIONS ARGS.  Only the second
+;; argument is of interest.
+(defun |recordLoadDirectory| (prog-name options args)
+  (declare (ignore prog-name args)
+           (special |$LoadDirectories|))
+  (let ((load-option (assoc (|Option| "load-directory") options)))
+    (unless load-option
+      (|internalError| "`recordLoadDirectory' called without option"))
+    (unless (cdr load-option)
+      (|fatalError| "--load-directory option without value"))
+    (pushnew (cdr load-option) |$LoadDirectories| :test #'equal)
+    ))
+
+(|installDriver| (|Option| "load-directory")  #'|recordLoadDirectory|)
+
+;; 
+;; -*- --compile Handler for Lisp Source Files -*-
+;; 
+(declaim (inline |compileFilePathname|))
+(defun |compileFilePathname| (file)
+  #-:ecl (compile-file-pathname file)
+  #+:ecl (compile-file-pathname file :type :object))
+
+(defun |currentDirectoryName| nil
+  (let* ((dir (namestring (truename "")))
+         (n (1- (length dir))))
+    (if (char= (char dir n) #\/)
+        (subseq dir 0 n)
+      dir)))    
+
+;; Compile Lisp source files to target object code.  Most of the time
+;; this function is called externally to accomplish just that: compile
+;; a Lisp file.  So, by default, we exit the read-eval-print loop after
+;; the task is done.
+;; 
+;; NOTE: The Lisp system ECL has an interesting compilation and program
+;; build model.  It distinguishes between FASL files (results of 
+;; compilation usable as operand to LOAD) and object files (result of
+;; compilation usable to build standalone programs).  We are primarily
+;; interested in producing compiled files that can be used to produce
+;; standalone programs.  Consequently we must convince ECL to produce
+;; object files.  Notice that when program components require that
+;; previously compiled files be loaded in the startup environment, 
+;; the system will load the FASL file.  So, we end up with a 2-step
+;; compilation process for ECL:
+;;   (1) compile as object code;
+;;   (2) build a FASL from the result of (1).
+
+(defun |compileLispFile| (file out-file)
+  ;; When OUT-FILE does not have a specified parent directory, it is
+  ;; implied that the compiled file is placed in the current directory.
+  ;; This is a very common convention on traditional systems and
+  ;; environments.  However GCL would insist to pick the parent
+  ;; directory from FILE, which clearly is bogus.  
+  ;; Consequently, we must convince GCL to do what we expected.
+  #+gcl (when (and (pathname-directory file)
+                   (not (pathname-directory out-file)))
+          (setq out-file 
+                (make-pathname :name (pathname-name out-file)
+                               :type (pathname-type out-file)
+                               :directory (list (|currentDirectoryName|)))))
+  (unwind-protect
+      (progn
+	(|startCompileDuration|)
+	(multiple-value-bind (result warning-p failure-p) 
+	 #-:ecl (compile-file file :output-file out-file)
+	 #+:ecl (if |$EnableLispProfiling|
+		    (compile-file file :output-file out-file :system-p t
+				  :c-file t :h-file t)
+		  (compile-file file :output-file out-file :system-p t))
+	 #+:ecl 
+	 (let ((compiler::*ld* oa-cxx))
+	   (if (and result (not failure-p)
+		    (null (c::build-fasl (compile-file-pathname out-file)
+					 :lisp-files `(,out-file)
+					 :ld-flags (extra-runtime-libs))))
+	       (setq result nil)))
+	 (cond ((null result) 
+		(|coreError| "compilation of Lisp code failed"))
+	       (failure-p
+		;; Since we believe the source code must
+		;; be fixed, we don't want to leave
+		;; the generated FASL behing us, as that
+		;; would confuse both users and tools.
+		(delete-file result)
+		(|coreError| "Lisp code contained errors"))
+	       (warning-p
+		(|warn| "Lisp code contained warnings")))
+	 result))
+    (|endCompileDuration|)))
+
+(defun |compileLispHandler| (prog-name options in-file)
+  (declare (ignore prog-name))
+  (let ((out-file (|compileFilePathname| (or (|getOutputPathname| options)
+					     in-file))))
+    (|compileLispFile| in-file out-file)))
+
+(|associateRequestWithFileType| (|Option| "compile") |$LispFileType|
+ #'|compileLispHandler|)
+
+;; 
+;; -*- Predefined System Entry Point -*-
+;; 
+
+;; The top level entry point to most saved Lisp image.
+(defun |topLevel|()
+  (let ((*package* (find-package "AxiomCore"))
+	(command-args (|getCommandLineArguments|)))
+    (when (null command-args) 
+      (|internalError| "empty command line args"))
+    ;; Existing system programming practive, and POSIX, have it
+    ;; that the first argument on the command line is the name
+    ;; of the current instantiation of the program.
+    ;; We require at least two arguments:
+    ;;    (0) the program name
+    ;;    (1) either one of --help or --version, or
+    ;;        a filename.
+    (multiple-value-bind 
+     (options args) (|processCommandLine| (cdr command-args) nil nil)
+
+     (setq |$sysOpts| options)
+     (setq |$sysArgs| args)
+                        
+     ;; Run the system-specific initialization.
+     (when (fboundp '|%sysInit|)
+       (funcall (symbol-function '|%sysInit|)))
+     
+     (when (|handleCommandLine| (car command-args) options args)
+       (|coreQuit| (if (> (|errorCount|) 0) 1 0))))))
+
+
+;; 
+;; -*- Filesystem Utilities -*-
+;; 
+
+;; Make sure that directory name DIR ends with a slash.
+(defun |ensureTrailingSlash| (dir)
+  (let ((l (length dir)))
+    (unless (> l 0)
+      (|fatalError| "null directory name"))
+    (if (char= (char dir (- l 1)) #\/)
+        dir
+      (concatenate 'string dir "/"))))
+
+
+;; Return the basename (without extension) of a file.
+(defun |pathBasename| (file)
+  (pathname-name file))
+
+;; 
+;; -*- Modules in OpenAxiom -*-
+;; 
+
+;; List of directories to search for FASLs.
+(defparameter |$LoadDirectories| nil)
+;; List of FASLs imported
+
+(defparameter |$ImportedModules| nil)
+;; Return true if MODULE is known to have been imported or loaded.
+
+(defun |getModuleInternalSymbol| (module)
+  (intern module (find-package "AxiomCore")))
+
+(defun |alreadyLoaded?| (module)
+  (get (|getModuleInternalSymbol| (namestring module))
+       '|AxiomCore.loaded|))
+
+;; Remember that MODULE was imported or loaded.
+(defun |noteUnitLoaded| (module)
+  (setf (get (|getModuleInternalSymbol| (namestring module))
+	     '|AxiomCore.loaded|) t))
+
+;; We are searching for MODULE (currently a FASL) in DIRECTORY.  So, this
+;; function returns a (tentative) pathname designating that module.
+(defun |loadPathname| (module dir)
+  (setq dir (|ensureTrailingSlash| dir))
+  (make-pathname :directory (pathname-directory dir)
+                 :name module
+                 #-:ecl :type #-:ecl |$faslType|))
+
+(defun |btxPthaname| (module dir)
+  (setq dir (|ensureTrailingSlash| dir))
+  (make-pathname :directory (pathname-directory dir)
+                 :name module
+		 :type "btx"))
+
+(defun |loadFileIfPresent| (file)
+  (load file :if-does-not-exist nil))
+
+(defun |loadIfPresent| (module)
+  (if (|alreadyLoaded?| module)
+      module
+    (when (|loadFileIfPresent| module)
+      (|noteUnitLoaded| module)
+      module)))
+
+(defun |loadOrElse| (module)
+  (if (|alreadyLoaded?| module)
+      module
+    (when (load module :if-does-not-exist :error)
+      (|noteUnitLoaded| module)
+      module)))
+
+(defun import-module-if-present (module dir)
+  (or (|loadIfPresent| (|btxPthaname| module dir))
+      (|loadIfPresent| (|loadPathname| module dir))))
+
+(defun do-import-module (module directories)
+  (cond ((null directories)
+	 (|fatalError| 
+	  (format nil 
+		  "module ~S not found in search path ~S"
+		  module 
+		  |$LoadDirectories|)))
+	(t
+	 (unless (import-module-if-present module (car directories))
+	   (do-import-module module (cdr directories))))))
+
+(defun |importModule| (module)
+  (do-import-module module |$LoadDirectories|))
+
+(defmacro import-module (module)
+  `(progn (eval-when 
+           #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+           #-:common-lisp (compile load eval)
+	   (if (compile-time-p)
+	       (|importModule| ,module)))))
+
+(defmacro |bootImport| (module)
+  `(|importModule| ,module))
+
+;; 
+;; -*- Feature Tests in Boot -*-
+;; 
+
+(defun |%hasFeature| (f)
+  (member f *features* :test #'eq))
+
+(defun |startCompileDuration| nil
+  (push :open-axiom-compile-time *features*))
+
+(defun |endCompileDuration| nil
+  (delete :open-axiom-compile-time *features*))
+
+(defun compile-time-p nil
+  (member :open-axiom-compile-time *features*))
+
+;; -*- Lisp Implementatiom-dependent Supports -*-
+
+#+(and :sbcl (not :win32))
+(require "sb-posix")
+
+#+ :sbcl
+(defun shoe-provide-module(name)
+  (load name)
+  (provide name))
+
+#+ :sbcl
+(eval-when (:load-toplevel :execute)
+   (pushnew #'shoe-provide-module sb-ext:*module-provider-functions*))
+
+;; Return true if `x' designates an identifier.
+(defun |ident?| (x)
+  (and (symbolp x)
+       (not (null x))))
+
+;; 
+;; -*-* Numerics support -*-
+;; 
+(defmacro |fixnum?| (x)
+  `(typep ,x 'fixnum))
+
+(defmacro |%fNaN?| (x)
+  #+:sbcl `(sb-ext:float-nan-p ,x)
+  #+:ecl `(ext:float-nan-p ,x)
+  #-(or :sbcl :ecl) `(/= ,x ,x))
+
+;; convert an integer to double-float
+(defmacro |double| (x)
+  `(float ,x 1.0d0))
+
+;; 
+;; -*- Native Datatype correspondance -*-
+;; 
+
+(defmacro |maxIndex| (x)
+  `(1- (length ,x)))
+
+
+;; Datatype for buffers mostly used for transmitting data between
+;; the Lisp world and Native World.
+(deftype |%ByteArray| ()
+  '(simple-array (unsigned-byte 8)))
+
+(declaim (ftype (function (fixnum) |%ByteArray|) |makeByteArray|))
+(defun |makeByteArray| (n)
+  (make-array n 
+	       :element-type '(unsigned-byte 8)
+	       :initial-element 0))
+
+(defmacro |makeBitVector| (n)
+  `(make-array ,n :element-type 'bit :initial-element 0))
+
+(defun |makeString| (n &optional (c (code-char 0)))
+  (make-string n :initial-element c))
+
+(defun |listToString| (l)
+  (let ((s (|makeString| (list-length l))))
+    (do ((i 0 (1+ i)))
+	((null l))
+	(setf (schar s i) (car l))
+	(setq l (cdr l)))
+    s))
+
+(defmacro |mkVector| (n)
+  `(make-array ,n :initial-element nil))
+
+(defmacro |mkIntArray| (n)
+  `(make-array ,n :initial-element 0))
+
+;; native data type translation table
+(defconstant |$NativeTypeTable|
+  '((|void|    . @void_type@)
+    (|char|    . @char_type@)
+    (|int|     . @int_type@)
+    (|float|   . @float_type@)
+    (|double|  . @double_type@)
+    (|string|  . @string_type@)))
+

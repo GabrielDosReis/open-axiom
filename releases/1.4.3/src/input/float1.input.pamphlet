@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FLOAT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FloatXmpPage
+)clear all
+
+
+-- Input generated from ugxFloatIntroPage
+)clear all
+
+1.234
+1.234E2
+sqrt(1.2 + 2.3 / 3.4 ** 4.5)
+
+-- Input generated from ugxFloatConvertPage
+)clear all
+
+i := 3 :: Float
+i :: Integer
+i :: Fraction Integer
+r := 3/7 :: Float
+r :: Fraction Integer
+r :: Integer
+truncate 3.6
+round 3.6
+truncate(-3.6)
+round(-3.6)
+fractionPart 3.6
+digits 40
+sqrt 0.2
+pi()$Float
+digits 500
+pi()$Float
+digits 20
+
+-- Input generated from ugxFloatOutputPage
+)clear all
+
+outputSpacing 0; x := sqrt 0.2
+outputSpacing 5; x
+y := x/10**10
+outputFloating(); x
+outputFixed(); y
+outputFloating 2; y
+outputFixed 2; x
+outputGeneral()
+
+-- Input generated from ugxFloatHilbertPage
+)clear all
+
+a: Matrix Fraction Integer := matrix [[1/(i+j+1) for j in 0..9] for i in 0..9]
+d:= determinant a
+d :: Float
+b: Matrix DoubleFloat := matrix [[1/(i+j+1$DoubleFloat) for j in 0..9] for i in 0..9];
+determinant b
+digits 40
+c: Matrix Float := matrix [[1/(i+j+1$Float) for j in 0..9] for i in 0..9];
+determinant c
+digits 20
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

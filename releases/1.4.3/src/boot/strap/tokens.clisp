@@ -1,0 +1,293 @@
+(PROCLAIM '(OPTIMIZE SPEED))
+(IMPORT-MODULE "utility")
+
+(IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "tokens")
+
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT '(|$InteractiveMode| |char| |subString|)))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Char|) |char|))
+
+(DEFPARAMETER |$InteractiveMode| NIL)
+
+(DEFSTRUCT (|%Token| (:COPIER |copy%Token|)) |cls| |val| |pos|)
+
+(DEFMACRO |mk%Token| (|cls| |val| |pos|)
+  (LIST '|MAKE-%Token| :|cls| |cls| :|val| |val| :|pos| |pos|))
+
+(DEFMACRO |tokenClass| (|bfVar#1|) (LIST '|%Token-cls| |bfVar#1|))
+
+(DEFMACRO |tokenValue| (|bfVar#1|) (LIST '|%Token-val| |bfVar#1|))
+
+(DEFMACRO |tokenPosition| (|bfVar#1|) (LIST '|%Token-pos| |bfVar#1|))
+
+(DEFUN |makeToken| (|lp| |b| |n|)
+  (|mk%Token| (CAR |b|) (CADR |b|) (CONS |lp| |n|)))
+
+(DEFUN |char| (|x|) (SCHAR (SYMBOL-NAME |x|) 0))
+
+(DEFUN |shoeStartsId| (|x|)
+  (OR (ALPHA-CHAR-P |x|)
+      (|charMember?| |x| (LIST (|char| '$) (|char| '?) (|char| '%)))))
+
+(DEFUN |shoeIdChar| (|x|)
+  (OR (ALPHANUMERICP |x|)
+      (|charMember?| |x|
+                     (LIST (|char| '|'|) (|char| '?) (|char| '%) (|char| '!)
+                           (|char| '&)))))
+
+(DEFUN |subString| (|s| |f| &OPTIONAL (|n| NIL))
+  (COND ((NULL |n|) (SUBSEQ |s| |f|)) (T (SUBSEQ |s| |f| (+ |f| |n|)))))
+
+(DEFCONSTANT |shoeKeyWords|
+  (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
+        (LIST "catch" 'CATCH) (LIST "cross" 'CROSS) (LIST "do" 'DO)
+        (LIST "else" 'ELSE) (LIST "finally" 'FINALLY) (LIST "for" 'FOR)
+        (LIST "forall" 'FORALL) (LIST "function" 'FUNCTION) (LIST "has" 'HAS)
+        (LIST "if" 'IF) (LIST "import" 'IMPORT) (LIST "in" 'IN) (LIST "is" 'IS)
+        (LIST "isnt" 'ISNT) (LIST "leave" 'LEAVE) (LIST "macro" 'MACRO)
+        (LIST "module" 'MODULE) (LIST "namespace" 'NAMESPACE) (LIST "of" 'OF)
+        (LIST "or" 'OR) (LIST "rem" 'REM) (LIST "repeat" 'REPEAT)
+        (LIST "return" 'RETURN) (LIST "quo" 'QUO) (LIST "structure" 'STRUCTURE)
+        (LIST "then" 'THEN) (LIST "throw" 'THROW) (LIST "try" 'TRY)
+        (LIST "until" 'UNTIL) (LIST "with" 'WITH) (LIST "where" 'WHERE)
+        (LIST "while" 'WHILE) (LIST "." 'DOT) (LIST ":" 'COLON)
+        (LIST "::" 'COLON-COLON) (LIST "@" 'AT) (LIST "," 'COMMA)
+        (LIST ";" 'SEMICOLON) (LIST "*" 'TIMES) (LIST "**" 'POWER)
+        (LIST "/" 'SLASH) (LIST "+" 'PLUS) (LIST "-" 'MINUS) (LIST "<" 'LT)
+        (LIST ">" 'GT) (LIST "<=" 'LE) (LIST ">=" 'GE) (LIST "=" 'SHOEEQ)
+        (LIST "~=" 'SHOENE) (LIST ".." 'SEG) (LIST "#" 'LENGTH)
+        (LIST "=>" 'EXIT) (LIST "->" 'ARROW) (LIST "<-" 'LARROW)
+        (LIST ":=" 'BEC) (LIST "+->" 'GIVES) (LIST "==" 'DEF)
+        (LIST "<=>" 'TDEF) (LIST "(" 'OPAREN) (LIST ")" 'CPAREN)
+        (LIST "[" 'OBRACK) (LIST "]" 'CBRACK) (LIST "'" 'QUOTE)
+        (LIST "|" 'BAR)))
+
+(DEFUN |shoeKeyTableCons| ()
+  (LET* (|KeyTable|)
+    (PROGN
+     (SETQ |KeyTable| (|makeTable| #'EQUAL))
+     (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
+       (LOOP
+        (COND
+         ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
+          (RETURN NIL))
+         (T (SETF (|tableValue| |KeyTable| (CAR |st|)) (CADR |st|))))
+        (SETQ |bfVar#1| (CDR |bfVar#1|))))
+     |KeyTable|)))
+
+(DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
+
+(DEFUN |keywordId| (|t|)
+  (LET* (|s|)
+    (COND
+     ((SETQ |s|
+              (WITH-HASH-TABLE-ITERATOR (#1=#:G719 |shoeKeyTable|)
+                (LET ((|bfVar#1| NIL))
+                  (LOOP
+                   (MULTIPLE-VALUE-BIND (#2=#:G720 |k| |v|)
+                       (#1#)
+                     (COND ((NOT #2#) (RETURN |bfVar#1|))
+                           (T
+                            (AND (EQ |v| |t|)
+                                 (PROGN
+                                  (SETQ |bfVar#1| |k|)
+                                  (COND
+                                   (|bfVar#1| (RETURN |bfVar#1|))))))))))))
+      (INTERN |s|))
+     (T |t|))))
+
+(DEFUN |shoeInsert| (|s| |d|)
+  (LET* (|v| |k| |n| |u| |h| |l|)
+    (PROGN
+     (SETQ |l| (LENGTH |s|))
+     (SETQ |h| (CHAR-CODE (SCHAR |s| 0)))
+     (SETQ |u| (ELT |d| |h|))
+     (SETQ |n| (LENGTH |u|))
+     (SETQ |k| 0)
+     (LOOP
+      (COND ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
+            (T (SETQ |k| (+ |k| 1)))))
+     (SETQ |v| (MAKE-ARRAY (+ |n| 1)))
+     (LET ((|bfVar#1| (- |k| 1)) (|i| 0))
+       (LOOP
+        (COND ((> |i| |bfVar#1|) (RETURN NIL))
+              (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
+        (SETQ |i| (+ |i| 1))))
+     (SETF (ELT |v| |k|) |s|)
+     (LET ((|bfVar#2| (- |n| 1)) (|i| |k|))
+       (LOOP
+        (COND ((> |i| |bfVar#2|) (RETURN NIL))
+              (T (SETF (ELT |v| (+ |i| 1)) (ELT |u| |i|))))
+        (SETQ |i| (+ |i| 1))))
+     (SETF (ELT |d| |h|) |v|)
+     |s|)))
+
+(DEFUN |shoeDictCons| ()
+  (LET* (|d| |b| |a|)
+    (PROGN
+     (SETQ |d|
+             (PROGN
+              (SETQ |a| (MAKE-ARRAY 256))
+              (SETQ |b| (MAKE-ARRAY 1))
+              (SETF (ELT |b| 0) (|makeString| 0))
+              (LET ((|i| 0))
+                (LOOP
+                 (COND ((> |i| 255) (RETURN NIL)) (T (SETF (ELT |a| |i|) |b|)))
+                 (SETQ |i| (+ |i| 1))))
+              |a|))
+     (WITH-HASH-TABLE-ITERATOR (#1=#:G721 |shoeKeyTable|)
+       (LOOP
+        (MULTIPLE-VALUE-BIND (#2=#:G722 |s| #:G723)
+            (#1#)
+          (COND ((NOT #2#) (RETURN NIL)) (T (|shoeInsert| |s| |d|))))))
+     |d|)))
+
+(DEFPARAMETER |shoeDict| (|shoeDictCons|))
+
+(DEFUN |shoePunCons| ()
+  (LET* (|a|)
+    (PROGN
+     (SETQ |a| (|makeBitVector| 256))
+     (LET ((|i| 0))
+       (LOOP (COND ((> |i| 255) (RETURN NIL)) (T (SETF (SBIT |a| |i|) 0)))
+             (SETQ |i| (+ |i| 1))))
+     (WITH-HASH-TABLE-ITERATOR (#1=#:G724 |shoeKeyTable|)
+       (LOOP
+        (MULTIPLE-VALUE-BIND (#2=#:G725 |k| #:G726)
+            (#1#)
+          (COND ((NOT #2#) (RETURN NIL)) ((|shoeStartsId| (SCHAR |k| 0)) NIL)
+                (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1))))))
+     |a|)))
+
+(DEFPARAMETER |shoePun| (|shoePunCons|))
+
+(LET ((|bfVar#1| (LIST 'NOT 'LENGTH)) (|i| NIL))
+  (LOOP
+   (COND
+    ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+     (RETURN NIL))
+    (T (SETF (GET |i| 'SHOEPRE) T)))
+   (SETQ |bfVar#1| (CDR |bfVar#1|))))
+
+(LET ((|bfVar#1|
+       (LIST (LIST 'SHOEEQ '=) (LIST 'TIMES '*) (LIST 'REM '|rem|)
+             (LIST 'QUO '|quo|) (LIST 'PLUS '+) (LIST 'IS '|is|)
+             (LIST 'ISNT '|isnt|) (LIST 'AND '|and|) (LIST 'OR '|or|)
+             (LIST 'SLASH '/) (LIST 'POWER '**) (LIST 'MINUS '-) (LIST 'LT '<)
+             (LIST 'GT '>) (LIST 'LE '<=) (LIST 'GE '>=) (LIST 'SHOENE '~=)))
+      (|i| NIL))
+  (LOOP
+   (COND
+    ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+     (RETURN NIL))
+    (T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
+   (SETQ |bfVar#1| (CDR |bfVar#1|))))
+
+(LET ((|bfVar#1|
+       (LIST (LIST '+ 0) (LIST '|gcd| 0) (LIST '|lcm| 1) (LIST 'STRCONC "")
+             (LIST '|strconc| "") (LIST 'CONCAT "") (LIST 'MAX (- 999999))
+             (LIST 'MIN 999999) (LIST '* 1) (LIST '|times| 1) (LIST 'CONS NIL)
+             (LIST '|append| NIL) (LIST '|append!| NIL) (LIST 'UNION NIL)
+             (LIST '|setUnion| NIL) (LIST '|union| NIL) (LIST '|and| T)
+             (LIST '|or| NIL) (LIST 'AND T) (LIST 'OR NIL)))
+      (|i| NIL))
+  (LOOP
+   (COND
+    ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+     (RETURN NIL))
+    (T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
+   (SETQ |bfVar#1| (CDR |bfVar#1|))))
+
+(LET ((|bfVar#1|
+       (LIST (LIST '|abs| 'ABS) (LIST '|abstractChar| 'CODE-CHAR)
+             (LIST '|alphabetic?| 'ALPHA-CHAR-P)
+             (LIST '|alphanumeric?| 'ALPHANUMERICP) (LIST '|and| 'AND)
+             (LIST '|apply| 'APPLY) (LIST '|array?| 'ARRAYP)
+             (LIST '|arrayRef| 'AREF) (LIST '|atom| 'ATOM)
+             (LIST '|bitref| 'SBIT) (LIST '|canonicalFilename| 'PROBE-FILE)
+             (LIST '|charByName| 'NAME-CHAR)
+             (LIST '|charDowncase| 'CHAR-DOWNCASE) (LIST '|charEq?| 'CHAR=)
+             (LIST '|charUpcase| 'CHAR-UPCASE) (LIST '|charString| 'STRING)
+             (LIST '|char?| 'CHARACTERP) (LIST '|codePoint| 'CHAR-CODE)
+             (LIST '|cons?| 'CONSP) (LIST '|copy| 'COPY)
+             (LIST '|copyString| 'COPY-SEQ) (LIST '|copyVector| 'COPY-SEQ)
+             (LIST '|croak| 'CROAK) (LIST '|digit?| 'DIGIT-CHAR-P)
+             (LIST '|exit| 'EXIT) (LIST '|false| 'NIL) (LIST '|fifth| 'FIFTH)
+             (LIST '|first| 'CAR) (LIST '|float?| 'FLOATP)
+             (LIST '|flushOutput| 'FORCE-OUTPUT) (LIST '|fourth| 'CADDDR)
+             (LIST '|freshLine| 'FRESH-LINE) (LIST '|function?| 'FUNCTIONP)
+             (LIST '|functionSymbol?| 'FBOUNDP) (LIST '|gensym| 'GENSYM)
+             (LIST '|genvar| 'GENVAR) (LIST '|integer?| 'INTEGERP)
+             (LIST 'LAST '|last|) (LIST '|list| 'LIST) (LIST '|listEq?| 'EQUAL)
+             (LIST '|lowerCase?| 'LOWER-CASE-P) (LIST '|makeSymbol| 'INTERN)
+             (LIST '|mkpf| 'MKPF) (LIST '|newVector| 'MAKE-ARRAY)
+             (LIST '|nil| NIL) (LIST '|not| 'NOT) (LIST '|null| 'NULL)
+             (LIST '|odd?| 'ODDP) (LIST '|or| 'OR) (LIST '|otherwise| 'T)
+             (LIST '|property| 'GET) (LIST '|readInteger| 'PARSE-INTEGER)
+             (LIST '|readLispFromString| 'READ-FROM-STRING)
+             (LIST '|readOnly?| 'CONSTANTP) (LIST '|removeDuplicates| 'REMDUP)
+             (LIST '|rest| 'CDR) (LIST '|sameObject?| 'EQ)
+             (LIST '|scalarEq?| 'EQL) (LIST '|scalarEqual?| 'EQL)
+             (LIST '|second| 'CADR) (LIST '|setPart| 'SETELT)
+             (LIST '|strconc| 'CONCAT) (LIST '|stringChar| 'SCHAR)
+             (LIST '|stringDowncase| 'STRING-DOWNCASE)
+             (LIST '|string?| 'STRINGP) (LIST '|stringEq?| 'STRING=)
+             (LIST '|stringUpcase| 'STRING-UPCASE)
+             (LIST '|subSequence| 'SUBSEQ) (LIST '|symbolBinding| 'FIND-SYMBOL)
+             (LIST '|symbolScope| 'SYMBOL-PACKAGE) (LIST '|symbolEq?| 'EQ)
+             (LIST '|symbolFunction| 'SYMBOL-FUNCTION)
+             (LIST '|symbolGlobal?| 'BOUNDP) (LIST '|symbolName| 'SYMBOL-NAME)
+             (LIST '|symbolValue| 'SYMBOL-VALUE) (LIST '|symbol?| 'SYMBOLP)
+             (LIST '|third| 'CADDR) (LIST '|toString| 'WRITE-TO-STRING)
+             (LIST '|true| 'T) (LIST '|upperCase?| 'UPPER-CASE-P)
+             (LIST '|valueEq?| 'EQUAL) (LIST '|vector?| 'SIMPLE-VECTOR-P)
+             (LIST '|vectorRef| 'SVREF) (LIST '|writeByte| 'WRITE-BYTE)
+             (LIST '|writeChar| 'WRITE-CHAR) (LIST '|writeInteger| 'PRINC)
+             (LIST '|writeLine| 'WRITE-LINE) (LIST '|writeNewline| 'TERPRI)
+             (LIST '|writeString| 'WRITE-STRING) (LIST 'PLUS '+)
+             (LIST 'MINUS '-) (LIST 'TIMES '*) (LIST 'POWER 'EXPT)
+             (LIST 'QUO 'TRUNCATE) (LIST 'SLASH '/) (LIST 'LT '<) (LIST 'GT '>)
+             (LIST 'LE '<=) (LIST 'GE '>=) (LIST 'SHOEEQ 'EQUAL)
+             (LIST 'SHOENE '/=) (LIST 'T 'T$)))
+      (|i| NIL))
+  (LOOP
+   (COND
+    ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+     (RETURN NIL))
+    (T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
+   (SETQ |bfVar#1| (CDR |bfVar#1|))))
+
+(LET ((|bfVar#1|
+       (LIST (LIST '|absKind| 'CAR) (LIST '|absParms| 'CADR)
+             (LIST '|absBody| 'CADDR) (LIST '|loopBody| '|loopBody|)
+             (LIST '|loopExit| '|last|) (LIST '|setName| 0)
+             (LIST '|setLabel| 1) (LIST '|setLevel| 2) (LIST '|setType| 3)
+             (LIST '|setVar| 4) (LIST '|setLeaf| 5) (LIST '|setDef| 6)
+             (LIST '|aGeneral| 4) (LIST '|aMode| 1) (LIST '|aModeSet| 3)
+             (LIST '|aTree| 0) (LIST '|aValue| 2) (LIST '|args| 'CDR)
+             (LIST '|attributes| 'CADDR) (LIST '|cacheCount| 'CADDDDR)
+             (LIST '|cacheName| 'CADR) (LIST '|cacheReset| 'CADDDR)
+             (LIST '|cacheType| 'CADDR) (LIST '|env| 'CADDR)
+             (LIST '|expr| 'CAR) (LIST 'CAR 'CAR) (LIST '|mmCondition| 'CAADR)
+             (LIST '|mmDC| 'CAAR) (LIST '|mmImplementation| 'CADADR)
+             (LIST '|mmSignature| 'CDAR) (LIST '|mmTarget| 'CADAR)
+             (LIST '|mmSource| 'CDDAR) (LIST '|mapOpsig| 'CAR)
+             (LIST '|mapOperation| 'CAAR) (LIST '|mapSignature| 'CADAR)
+             (LIST '|mapTarget| 'CAADAR) (LIST '|mapSource| 'CDADAR)
+             (LIST '|mapPredicate| 'CADR) (LIST '|mapImpl| 'CADDR)
+             (LIST '|mapKind| 'CAADDR) (LIST '|mode| 'CADR) (LIST '|op| 'CAR)
+             (LIST '|opcode| 'CADR) (LIST '|opSig| 'CADR) (LIST 'CDR 'CDR)
+             (LIST '|sig| 'CDDR) (LIST '|source| 'CDR)
+             (LIST '|streamCode| 'CADDDR) (LIST '|streamDef| 'CADDR)
+             (LIST '|streamName| 'CADR) (LIST '|target| 'CAR)))
+      (|i| NIL))
+  (LOOP
+   (COND
+    ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |i| (CAR |bfVar#1|)) NIL))
+     (RETURN NIL))
+    (T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
+   (SETQ |bfVar#1| (CDR |bfVar#1|))))
+

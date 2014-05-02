@@ -1,0 +1,3 @@
+++ Contributed by Luke Wagner
+-- Exposed a `missing function' bug.
+sqrt 2

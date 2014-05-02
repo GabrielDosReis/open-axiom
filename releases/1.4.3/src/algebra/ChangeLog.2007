@@ -1,0 +1,263 @@
+2007-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	SF/1850100
+	* bags.spad.pamphlet (parts$Stack): Implement.
+	(map$Stack): Likewise.
+	(map!$Stack): Likewise.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* domain.spad (showSummary$Domain): New.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (case$Syntax): Add four overloads with flag
+	parameters. Remove previous declaration.
+	(conver$Syntax): Use cases to filter out erroneous input.
+	(getOperator$Syntax): Remove dead code.	
+
+2007-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (nil?$Syntax): New predicate.
+
+2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (Syntax): Add explicit conversion functions from 
+	Syntax to Integer, DoubleFloat, Symbol, and String.
+
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (Syntax): Conversions to Integer, DoubleFloat,
+	Symbol, and String are not implicit.
+	(case$Syntax): New function.
+	(getOperator$Syntax): Adjust.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* script-parser.spad: New.
+	* Makefile.pamphlet (axiom_algebra_layer_19): Include PARSER.o
+	(PARSER.NRLIB/code.$(FASLEXT)): New rule.
+	* exposed.lsp.pamphlet: Expose Parser constructor.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* aggcat.spad.pamphlet: Update cached Lisp translations.
+
+2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bags.spad.pamphlet (Stack): Relax requirement element type S.
+	(coerce$Stack: % -> OutputForm): Define only if S has CoercibleTo
+	OutputForm. 
+	(=$Stack: (%, %) -> Boolean): Define only if S has SetCategory.
+
+2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (buildSyntax): Overload on first argument type.
+
+2007-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (axiom_algebra_layer_19): Include SPADPRSR.o
+	(SPADPRSR.NRLIB/code.$(FASLEXT)): New rule.
+	* spad-parser.spad: New file.
+
+2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (SYNTAX.NRLIB/code.$(FASLEXT)): New rule.
+	(axiom_algebra_layer_14): Include SYNTAX.o.
+	* syntax.spad: New algebra file.
+	* domain.spad (Domain$reify): New.
+
+2007-11-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* mappkg.spad.pamphlet: Through use "import" for importing packages.
+
+2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mostlyclean-local): Remove stamp files and
+	strap/ directory too.
+	(clean-local): Remove database directories too.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* mkfunc.spad.pamphlet (InputForm$interpret): Use objNew.
+
+2007-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1790912 
+	* domain.spad: New.
+	* Makefile.pamphlet (axiom_algebra_layer_23): Include DOMAIN.o
+	(DOMAIN.NRLIB/code.$(FASLEXT)): New rule.
+
+2007-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1795259
+	* aggcat.spad.pamphlet (HomogeneousAggregate): Make
+	CoercibleTo(OutputForm) if argument is of that category.
+	(BinaryRecursiveAggregate): Weaken condition for coercion to
+	OutputForm. 
+	(OneDimensionalArrayAggregate): Likewise.
+	(Tuple): Likewise.
+	(IndexedList): Likewise.
+	* tree.spad.pamphlet: Likewise.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (INTERPSYS): Now take system root directory
+	and algebra directory as arguments.
+	* Makefile.in: Regenerate.
+
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEPSYS): Remove.
+	(COMPILE_LISP): New.
+	(strap/%.o): Use it to compile cached Lisp files.
+
+2007-09-16  Alfredo Portes <alfredo.portes@gmail.com>
+	    Alasdair McAndrew <amca01@gmail.com>
+
+	* newdata.spad.pamphlet: Call FORCE_-OUTPUT
+	function instead of FLUSH.
+
+2007-08-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (strap/%.o): Tidy.  Don't pipe command
+          into $(DEPSYS); directly invoke the compiler in batch mode
+	  so that Makefile can see the real exit status.
+
+	* Makefile.in: Regenerate.
+
+2007-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mkdir-output-directory): Use $(mkinstalldirs).
+	(${OUT}/%.o): Be verbose.
+	(mk-target-src-algabra-dir): New target.
+	($(OUTSRC)/%.spad): Make it a prerequisite.
+	(mk-target-doc-dir): New target.
+	($(DOC)/%.dvi): Make it a prerequisite.
+	* Makefile.in: Regenerate.
+
+2007-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (%.NRLIB/code.o): Don't use NOISE.
+	(strap/%.o): Likewise.
+	($(builddir)/%.dvi): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEPSYS): Adjust path.
+	(INTERPSYS): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (MID): Remove.
+	(INPUT): Adjust value.
+	* Makefile.in: Regenerate.
+
+2006-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Restructure.
+	Compile algebra bootstrap files to strap/ sub-directory.
+	Write out the dependency between layers.
+	Avoid chaging to distant directories.
+	* Makefile.in: Regenerate.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (INTERPSYS): Point DAASE to databases included
+	in the source files.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (MID): Adjust definition.
+	(INPUT): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (EXTRACT_BOOTSTRAP_FILE): New variable.
+	Encapsulate rules for extracting algebra bootstrap files.
+	(${MID}/%.o): Take prerequisites from current build directory.
+	(<<findAlgebraFiles>>): Remove.  	
+	* Makefile.in: Regenerate.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Mark as not adequate for parallel build.
+	(all-algebra): New phony target.
+	* Makefile.in: Regenerate.
+
+2006-10-26  Bill Page  <Bill.Page@drdc-rddc.gc.ca>
+
+	* Makefile.pamphlet (${MID}/%.NRLIB/code.o): Fix tabs.
+	(<<findSpadFiles>>): Don't escape dollar sign inside AWK expression.
+	(<<findBootstrapFiles>>): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-10-25  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* Makefile.pamphlet (libdb.text): remove
+	* Makefile.in: Regenerate.
+
+2006-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove commented codes. Remove references to 
+	${MNT}.
+	(OUTSRC): New rule.
+	(all): Depend on it.
+	(clean-local): Rename from clean.
+	(mostlyclean-local, distclean-local): New.
+
+2006-10-07  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* Makefile.pamphlet (${MID}/%.NRLIB/code.o): Remove old NRLIB
+	* Makefile.in: Regenerate.
+
+2006-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (document): Remove.
+
+2006-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEPSYS): Set dirname to $(axiom_build_bindir)
+	(INTERPSYS): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Create stamp file.
+
+2006-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Don't build $(DOCFILES) yet.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (subdir): New.
+	* Makefile.in: Regenerate.
+
+2006-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use $(axiom_build_document) to tangle
+	pamphlets.  Add support for out-of-source build.
+	* Makefile.in: Regenerate.
+
+2006-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Rework generic rules for building docs.
+	* Makefile.in: Regenerate.
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.in: New.
+
+2006-09-02  Vanuxem Grégory <g.vanuxem@wanadoo.fr>
+
+	* attreg.spad.pamphlet: Fix typo.
+	* clifford.spad.pamphlet: Likewise.
+
+2006-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Don't overwite $(TMP)/trace; append instead.
+

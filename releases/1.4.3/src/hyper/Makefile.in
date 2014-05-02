@@ -1,0 +1,183 @@
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+openaxiom_host_has_regex = @openaxiom_host_has_regex@
+
+bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
+ifeq ($(strip $(openaxiom_host_has_regex)),yes)
+bin_PROGRAMS += hthits$(EXEEXT) htsearch$(EXEEXT)
+endif
+ifeq ($(strip $(axiom_use_x)),yes)
+bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
+endif
+
+# this is where to put the various commands
+OUTLIB = $(axiom_target_libdir)
+
+# this is where the include files live
+INC = $(axiom_src_srcdir)/include
+
+# this is where the hypertex documentation files are
+HYPER=$(axiom_target_datadir)/hypertex
+
+HTADD = $(OUTLIB)/htadd
+
+BITMAPS = mouse11.bitmap mouse11.mask sdown3d.bitmap sdown3dpr.bitmap \
+	sdown.bitmap sup3d.bitmap sup3dpr.bitmap sup.bitmap ht_icon
+
+BINFILES = $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
+
+HEADERS = display.h event.h extent.h node.h \
+	group.h hyper.h initx.h keyin.h lex.h \
+	parse.h parse-paste.h parse-types.h scrollbar.h \
+	titlebar.h token.h $(axiom_c_macros_h)
+
+build_libdir = $(top_builddir)/src/lib
+
+hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
+		extent2.c form-ext.c group.c \
+		htinp.c hyper.c initx.c input.c item.c keyin.c lex.c \
+		macro.c mem.c parse.c parse-aux.c parse-input.c \
+		parse-paste.c parse-types.c ReadBitmap.c scrollbar.c \
+		show-types.c spadint.c titlebar.c
+
+libspad_la = -L$(build_libdir) -lspad
+
+hypertex_objects = $(hypertex_SOURCES:.c=.$(OBJEXT))
+hypertex_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+			$(AXIOM_X11_LDFLAGS) -lm
+hypertex_DEPENDENCIES =
+
+htadd_SOURCES = addfile.c htadd.c lex.c
+htadd_objects = $(htadd_SOURCES:.c=.$(OBJEXT))
+htadd_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+		-lm
+htadd_DEPENDENCIES =
+
+spadbuf_SOURCES = spadbuf.c
+spadbuf_objects = $(spadbuf_SOURCES:.c=.$(OBJEXT))
+spadbuf_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+			$(AXIOM_X11_LDFLAGS) -lm
+spadbuf_DEPENDENCIES =
+
+hthits_SOURCES = hthits.c
+hthits_objects = $(hthits_SOURCES:.c=.$(OBJEXT))
+hthits_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
+hthits_DEPENDENCIES =
+
+ex2ht_SOURCES = ex2ht.c
+ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
+ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
+ex2ht_DEPENDENCIES =
+
+htsearch_SOURCES = htsearch.cc
+htsearch_objects = $(htsearch_SOURCES:.cc=.$(OBJEXT))
+htsearch_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
+htsearch_DEPENDENCIES =
+
+subdir = src/hyper/
+
+.PHONY: all all-hyper all-hyper-pre all-hyper-post
+.SUFFIXES:
+.SUFFIXES: .c .cc .$(OBJEXT) .h
+
+all: all-ax
+
+all-ax all-hyper: stamp
+	@ echo finished $(builddir)
+
+stamp: all-hyper-post
+	-rm -f stamp
+	$(STAMP) stamp
+
+all-hyper-pre: $(BINFILES) $(HYPER)/pages/util.ht
+
+$(HYPER)/pages/util.ht: $(srcdir)/pages/util.ht
+	rm -f $@
+	mkdir -p $(HYPER)/pages
+	cp -p $< $@
+
+all-hyper-post: all-hyper-pre $(HYPER)/pages/ht.db
+
+mostclean-local:
+	$(LIBTOOL) --mode=clean rm -f $(hypertex_objects) $(htadd_objects) \
+		$(spadbuf_objects) $(hthits_objects) $(ex2ht_objects) $(htsearch_objects)
+
+clean-local: mostclean-local
+	-rm -f $(BINFILES)
+	-rm -rf $(HYPER)/pages
+	-rm -f stamp
+
+distclean-local: clean-local
+
+.PRECIOUS: %.lo %.$(OBJEXT)
+
+%.$(OBJEXT) %.lo: %.c $(HEADERS)
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+
+%.$(OBJEXT) %.lo: %.cc $(HEADERS)
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+
+${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
+	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
+	@ mkdir -p "${HYPER}"/pages
+	@ cp "$(srcdir)"/pages/*.ht "$(HYPER)"/pages/
+	@ for A in `ls "$(srcdir)"/pages/*.pht`; do \
+	     LC_CTYPE=C sed 's,/doc/viewports/,/share/viewports/,g' $$A \
+			> ${HYPER}/pages/`basename $$A`; \
+	     done
+	@ rm -f "${HYPER}"/pages/ht.db
+	@ rm -f "${HYPER}"/pages/*~
+	@ touch "${HYPER}"/pages/ht.db
+	for f in `ls "${HYPER}"/pages/*.ht "${HYPER}"/pages/*.pht`; do \
+             AXIOM="$(AXIOM)" $(HTADD) -s $$f || exit 1; done
+	@ mkdir -p "$(HYPER)"/bitmaps
+	@ for f in `ls "$(srcdir)"/bitmaps/*.bitmap "$(srcdir)"/bitmaps/*.xbm`; do\
+	    cp -p $$f "$(HYPER)"/bitmaps; done
+	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
+
+${OUTLIB}/htsearch$(EXEEXT): $(htsearch_objects) $(htsearch_DEPENDENCIES)
+	${CXXLINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
+
+${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
+	${CXXLINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
+
+$(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
+	${CXXLINK} -o $@ $(htadd_objects) $(htadd_LDADD)
+
+${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
+	${CXXLINK} -o $@ $(hthits_objects) $(hthits_LDADD)
+
+$(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
+	 ${CXXLINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
+
+${OUTLIB}/spadbuf$(EXEEXT): $(spadbuf_objects) $(spadbuf_DEPENDENCIES)
+	${CXXLINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)

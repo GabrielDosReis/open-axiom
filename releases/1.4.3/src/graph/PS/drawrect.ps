@@ -1,0 +1,18 @@
+% operand stack configuration in order to use psDrawRect:
+%		psDrawRect
+%		y
+%		x
+%		height
+%		width
+%		graphics-context dictionary
+% this draws an outline of a rectangle whose origin is at (x,y) and is width
+% + 1 wide and height + 1 tall.
+
+/psDrawRect
+        {	gsave
+                newpath
+                rectangle
+		begin installGC stroke end
+		grestore }
+        def
+

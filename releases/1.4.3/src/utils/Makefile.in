@@ -1,0 +1,116 @@
+# Copyright (C) 2011, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+subdir = src/utils/
+
+bin_PROGRAMS = hammer$(EXEEXT)
+hammer_SOURCES = hammer.cc
+hammer_OBJECTS = $(hammer_SOURCES:.cc=.lo)
+hammer_LDADD = -L. -lOpenAxiom
+
+libOpenAxiom_HEADERS = storage.H hash-table.H string-pool.H sexpr.H vm.H
+libOpenAxiom_SOURCES = \
+	storage.cc string-pool.cc sexpr.cc command.cc \
+	filesystem.cc vm.cc
+
+libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
+
+oa_public_headers = storage hash-table string-pool sexpr vm
+
+## Where we store public header files
+oa_target_headerdir = $(oa_target_includedir)/open-axiom
+
+oa_include_flags = -I. -I$(oa_target_includedir) \
+	-I$(top_builddir)/config \
+	-I$(top_srcdir)/src/include \
+	-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\""
+
+oa_target_oalib = $(axiom_target_libdir)/libOpenAxiom.$(LIBEXT)
+
+.PHONY: all all-ax all-utils
+.SUFFIXES:
+.SUFFIXES: .cc .H .$(OBJEXT) .$(LIBEXT)
+.PRECIOUS: %.lo %.$(OBJEXT)
+
+
+all: all-ax
+
+all-ax all-utils: stamp
+
+stamp: $(oa_target_oalib) $(bin_PROGRAMS)
+	-rm -f stamp
+	$(STAMP) stamp
+
+$(oa_target_oalib): libOpenAxiom.$(LIBEXT)
+	if [ ! -d $(axiom_target_libdir) ]; then \
+	   mkdir -p $(axiom_target_libdir); \
+	fi
+	cp $< $@
+
+stamp-headers: $(libOpenAxiom_HEADERS) Makefile
+	rm -f stamp-headers
+	if [ ! -d $(oa_target_headerdir) ]; then \
+	   mkdir -p -- $(oa_target_headerdir) || exit 1; \
+	fi ; \
+	c1=$(top_builddir)/config/openaxiom-c-macros.h; \
+	c2=$(oa_target_headerdir)/config; \
+	if [ ! -r $$c2 ] || ! cmp -s $$c1 $$c2 ; then \
+	   cp -p $$c1 $$c2; \
+	fi ; \
+	for h in $(oa_public_headers); do \
+           f1=$(srcdir)/$$h.H; f2=$(oa_target_headerdir)/$$h; \
+	   if [ ! -r $$f2 ] || ! cmp -s $$f1 $$f2 ; then \
+	      cp -p $$f1 $$f2; \
+	   fi; \
+	done ; \
+	$(STAMP) stamp-headers
+
+hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
+	$(CXXLINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
+
+libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
+	$(CXXLINK) -o $@ $(libOpenAxiom_OBJECTS)
+
+%.lo: %.cc stamp-headers
+	$(CXXCOMPILE) ${CXXFLAGS} $(oa_include_flags) -o $@ $<
+
+
+mostlyclean-local:
+	@rm -rf .libs
+	@rm -rf $(oa_include_headerdir) stamp-headers
+	@rm -f $(oa_target_oalib)
+	@rm -f $(libOpenAxiom_OBJECTS)
+	@rm -f *~ core
+
+clean-local: mostlyclean-local
+
+distclean-local: clean-local
+

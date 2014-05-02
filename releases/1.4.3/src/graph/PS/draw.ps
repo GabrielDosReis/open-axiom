@@ -1,0 +1,22 @@
+% operand stack configuration in order to use psDraw:
+%		psDraw
+%		vlist[0].y
+%		vlist[0].x
+%		n
+%		...
+%		vlist[n].y
+%		vlist[n].x
+%		graphics-context dictionary
+% to draw lines connecting points in vlist[0] to vlist[n]
+
+/psDraw
+        {	gsave
+                newpath
+                yVal moveto		%% set currentpoint
+                1 sub {			%% loop to draw lines.
+                        yVal lineto
+                } repeat
+		begin installGC stroke end  %% draw in foreground color
+                grestore }
+        def
+

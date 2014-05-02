@@ -1,0 +1,1923 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{domain Syntax}
+
+<<domain SYNTAX Syntax>>=
+import UnionType
+import SetCategory
+import Boolean
+import Integer
+import DoubleFloat
+import Identifier
+import SExpression
+)abbrev domain SYNTAX Syntax
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Updated: April 20, 2009
+++ Description:  This domain provides a simple domain, general enough for
+++   building complete representation of Spad programs as objects 
+++   of a term algebra built from ground terms of type integers, foats, 
+++   identifiers, and strings.  
+++   This domain differs from InputForm in that it represents
+++   any entity in a Spad program, not just expressions.  Furthermore,
+++   while InputForm may contain atoms like vectors and other Lisp
+++   objects, the Syntax domain is supposed to contain only that
+++   initial algebra build from the primitives listed above.
+++ Related Constructors: 
+++   Integer, DoubleFloat, Identifier, String, SExpression.
+++ See Also: SExpression, InputForm.
+++ The equality supported by this domain is structural.
+Syntax(): Public == Private where
+  Public == Join(UnionType, SetCategory, RetractableTo Integer,
+              RetractableTo DoubleFloat, RetractableTo Identifier,
+                RetractableTo String, CoercibleTo InputForm) with
+    convert: % -> SExpression
+      ++ convert(s) returns the s-expression representation of a syntax.
+
+    convert: SExpression -> %
+      ++ convert(s) converts an s-expression to Syntax.  Note, when `s'
+      ++ is not an atom, it is expected that it designates a proper list,
+      ++ e.g. a sequence of cons cells ending with nil.
+
+    coerce: % -> Integer
+      ++ coerce(s) extracts and integer value from the syntax `s'
+    autoCoerce: % -> Integer
+      ++ autoCoerce(s) forcibly extracts an integer value from
+      ++ the syntax `s'; no check performed.  To be called only
+      ++ at the discretion of the compiler.
+
+    coerce: % -> DoubleFloat
+      ++ coerce(s) extracts a float value from the syntax `s'.
+    autoCoerce: % -> DoubleFloat
+      ++ autoCoerce(s) forcibly extracts a float value from the syntax `s';
+      ++ no check performed.  To be called only at the discretion of
+      ++ the compiler
+
+    coerce: % -> Identifier
+      ++ coerce(s) extracts an identifier from the syntax `s'.
+    autoCoerce: % -> Identifier
+      ++ autoCoerce(s) forcibly extracts an identifier from the Syntax
+      ++ domain `s'; no check performed.  To be called only at
+      ++ at the discretion of the compiler.
+
+    coerce: % -> String
+      ++ coerce(s) extracts a string value from the syntax `s'.
+    autoCoerce: % -> String
+      ++ autoCoerce(s) forcibly extracts a string value from
+      ++ the syntax `s'; no check performed.  To be called only at
+      ++ the discretion of the compiler.
+
+    buildSyntax: (Identifier, List %) -> %
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
+  
+    buildSyntax: (%, List %) -> %
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
+
+    nil?: % -> Boolean
+      ++ nil?(s) is true when `s' is a syntax for the constant nil.
+
+    getOperator: % -> Union(Integer, DoubleFloat, Identifier, String, %)
+      ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
+      ++ The value returned is itself a syntax if `x' really is an 
+      ++ application of a function symbol as opposed to being an
+      ++ atomic ground term.
+ 
+    getOperands: % -> List %
+      ++ getOperands(x) returns the list of operands to the operator in `x'.
+
+    compound?: % -> Boolean
+      ++ compound? x is true when `x' is not an atomic syntax.
+
+    case: (%, [|Integer|]) -> Boolean
+      ++ x case Integer is true if `x' really is an Integer 
+
+    case: (%, [|DoubleFloat|]) -> Boolean
+      ++ x case DoubleFloat is true if `x' really is a DoubleFloat
+
+    case: (%, [|Identifier|]) -> Boolean
+      ++ x case Identifier is true if `x' really is an Identifier
+
+    case: (%, [|String|]) -> Boolean
+      ++ x case String is true if `x' really is a String
+
+  Private == add
+    import %nil: %                   from Foreign Builtin
+    import %peq: (%,%) -> Boolean    from Foreign Builtin
+    import %integer?: % -> Boolean   from Foreign Builtin
+    import %float?: % -> Boolean     from Foreign Builtin
+    import %string?: % -> Boolean    from Foreign Builtin
+    import %ident?: % -> Boolean     from Foreign Builtin
+    import %pair?: % -> Boolean      from Foreign Builtin
+    import %equal: (%,%) -> Boolean  from Foreign Builtin
+    import %head: % -> %             from Foreign Builtin
+    import %tail: % -> List %        from Foreign Builtin
+
+    x = y ==
+      %equal(x,y)
+   
+    s case Integer ==
+      %integer? s
+
+    s case DoubleFloat ==
+      %float? s
+
+    s case String ==
+      %string? s
+
+    s case Identifier ==
+      %ident? s
+
+    coerce(x: %): OutputForm ==
+      -- For the moment, print syntax as s-expression.
+      import SExpression
+      (x pretend SExpression)::OutputForm
+
+    convert(x: %): SExpression ==
+      x : SExpression
+
+    convert(x: SExpression): % ==
+      x pretend %
+
+    --% Integer 
+    coerce(i: Integer): % ==
+      i pretend %
+
+    autoCoerce(i: %): Integer ==                -- used for hard coercion
+      i : Integer
+
+    retractIfCan(x: %): Union(Integer,"failed") ==
+      x case Integer => x@Integer
+      "failed"
+
+    coerce(i: %): Integer == 
+      retract(i)@Integer
+  
+    --% DoubleFloat
+    coerce(f: DoubleFloat): % ==
+      f pretend %
+
+    autoCoerce(f: %): DoubleFloat ==            -- used for hard coercion
+      f : DoubleFloat
+
+    retractIfCan(x: %): Union(DoubleFloat,"failed") ==
+      x case DoubleFloat => x@DoubleFloat
+      "failed"
+
+    coerce(f: %): DoubleFloat ==
+      retract(f)@DoubleFloat
+
+    --% Identifier
+    coerce(s: Identifier): % ==
+      s pretend %
+
+    autoCoerce(s: %): Identifier ==            -- used for hard coercion
+      s : Identifier
+
+    coerce(s: %): Identifier ==
+      retract(s)@Identifier
+
+    retractIfCan(x: %): Union(Identifier,"failed") ==
+      x case Identifier => x@Identifier
+      "failed"
+
+    --% String
+    coerce(s: String): % ==
+      s pretend %
+
+    autoCoerce(s: %): String ==                 -- used for hard coercion
+      s : String
+
+    retractIfCan(x: %): Union(String,"failed") ==
+      x case String => x@String
+      "failed"
+
+    coerce(s: %): String ==
+      retract(s)@String
+
+    --% syntax construction
+    buildSyntax(s: Identifier, l: List %): % ==
+      %pair(s,l)$Foreign(Builtin)
+
+    buildSyntax(op: %, l: List %): % ==
+      %pair(op,l)$Foreign(Builtin)
+
+    nil? x ==
+      %peq(x,%nil)
+
+    atom?(x: %): Boolean ==
+      not %pair? x
+
+    getOperator x ==
+      atom? x => userError "atom as operand to getOperator"
+      case (op := %head x) is
+        s@Identifier => s
+        i@Integer => i
+        d@DoubleFloat => d
+        s@String => s
+        otherwise => op
+   
+    compound? x ==
+      %pair? x
+
+    getOperands x ==
+      atom? x => []
+      %tail x
+
+    coerce(x: %): InputForm ==
+      x : InputForm
+@
+
+
+
+\section{domain ElaboratedExpression}
+
+<<domain ELABEXPR ElaboratedExpression>>=
+import Boolean
+import Identifier
+import ConstructorCall
+import List
+import SExpression
+)abbrev domain ELABEXPR ElaboratedExpression
+++ Author: Gabriel Dos Reis
+++ Date Created: January 19, 2008
+++ Date Last Updated: April 20, 2009
+++ Description: This domains an expresion as elaborated by the interpreter.
+++ See Also: 
+ElaboratedExpression(): Public == Private where
+  Public ==> CoercibleTo OutputForm with
+    type: % -> Syntax
+      ++ type(e) returns the type of the expression as computed by
+      ++ the interpreter.
+    constant?: % -> Boolean
+      ++ constant?(e) returns true if `e' is a constant.
+    getConstant: % -> Union(SExpression,"failed")
+      ++ getConstant(e) retrieves the constant value of `e'e.
+    variable?: % -> Boolean
+      ++ variable?(e) returns true if `e' is a variable.
+    getIdentifier: % -> Union(Identifier,"failed")
+      ++ getIdentifier(e) retrieves the name of the variable `e'.
+    callForm?: % -> Boolean
+      ++ callForm?(e) is true when `e' is a call expression.
+    getOperator: % -> Union(Identifier, "failed")
+      ++ getOperator(e) retrieves the operator being invoked in `e',
+      ++ when `e' is an expression.  
+    getOperands: % -> Union(List %, "failed")
+      ++ getOperands(e) returns the list of operands in `e', assuming it
+      ++ is a call form.
+
+  Private == add
+    import %peq: (%,%) -> Boolean from Foreign Builtin
+    import %pair?: % -> Boolean  from Foreign Builtin
+    isAtomic(x: %): Boolean ==
+      not %pair? x
+
+    type x ==
+      getMode(x)$Lisp
+
+    callForm? x ==
+      %pair? x
+
+    getOperator x ==
+      op: SExpression := getUnnameIfCan(x)$Lisp
+      null? op => "failed"
+      op pretend Identifier
+
+    constant? x ==
+      isAtomic x and 
+        %peq(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)
+
+    getConstant x ==
+      constant? x => getValue(x)$Lisp @ SExpression
+      "failed"
+
+    variable? x ==
+      isAtomic x and not constant? x
+   
+    getIdentifier x ==
+      variable? x =>  (getUnname(x)$Lisp@Identifier)
+      "failed"
+@
+
+\section{SpadAbstractSyntaxCategory}
+
+<<category ASTCAT AbstractSyntaxCategory>>=
+import SetCategory
+import CoercibleTo Syntax
+)abbrev category ASTCAT AbstractSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 21, 2008
+++ Description: This is the category of Spad abstract syntax trees.
+AbstractSyntaxCategory(): Category == 
+    Join(SetCategory, HomotopicTo Syntax)
+  add
+    coerce(x: %): Syntax ==
+      x pretend Syntax
+    coerce(x: Syntax): % ==
+      x pretend %
+    coerce(x: %): OutputForm ==
+      x::Syntax::OutputForm 
+@
+
+\section{The SpadSyntaxCategory category}
+
+<<category SASTCAT SpadSyntaxCategory>>=
+)abbrev category SASTCAT SpadSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 3, 2008
+++ Description: This is the category of Spad syntax objects.
+SpadSyntaxCategory(): Category == AbstractSyntaxCategory
+@
+
+\subsection{The Exports of SpadAst}
+
+<<category SPADXPT SpadAstExports>>=
+)abbrev category SPADXPT SpadAstExports
+++ Author: Gabriel Dos Reis
+++ Date Created: September 20, 2008
+++ Date Last Modified: September 21, 2008
+++ Description: This category describes the exported
+++   signatures of the SpadAst domain.
+SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
+  case: (%, [|ImportAst|]) -> Boolean
+    ++ s case ImportAst holds if `s' represents an `import' statement.
+  autoCoerce: % -> ImportAst
+    ++ autoCoerce(s) returns the ImportAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|DefinitionAst|]) -> Boolean
+    ++ s case DefinitionAst holds if `s' represents a definition.
+  autoCoerce: % -> DefinitionAst()
+    ++ autoCoerce(s) returns the DefinitionAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|MacroAst|]) -> Boolean
+    ++ s case MacroAst holds if `s' represents a macro definition.
+  autoCoerce: % -> MacroAst
+    ++ autoCoerce(s) returns the MacroAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|WhereAst|]) -> Boolean
+    ++ s case WhereAst holds if `s' represents an expression with
+    ++ local definitions.
+  autoCoerce: % -> WhereAst
+    ++ autoCoerce(s) returns the WhereAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|CategoryAst|]) -> Boolean
+    ++ s case CategoryAst holds if `s' represents an unnamed category.
+  autoCoerce: % -> CategoryAst
+    ++ autoCoerce(s) returns the CategoryAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|JoinAst|]) -> Boolean
+    ++ \spad{s case JoinAst} holds is the syntax object \spad{s}
+    ++ denotes the join of several categories.
+  autoCoerce: % -> JoinAst
+    ++ \spad{autoCoerce(s)} returns the \spadype{JoinAst} view of of
+    ++ the AST object \spad{s}.  Left at the discretion of the compiler.
+
+  case: (%, [|CapsuleAst|]) -> Boolean
+    ++ s case CapsuleAst holds if `s' represents a domain capsule.
+  autoCoerce: % -> CapsuleAst
+    ++ autoCoerce(s) returns the CapsuleAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|SignatureAst|]) -> Boolean
+    ++ s case SignatureAst holds if `s' represents a signature export.
+  autoCoerce: % -> SignatureAst()
+    ++ autoCoerce(s) returns the SignatureAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|AttributeAst|]) -> Boolean
+    ++ s case AttributeAst holds if `s' represents an attribute.
+  autoCoerce: % -> AttributeAst()
+    ++ autoCoerce(s) returns the AttributeAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|MappingAst|]) -> Boolean
+    ++ s case MappingAst holds if `s' represents a mapping type.
+  autoCoerce: % -> MappingAst
+    ++ autoCoerce(s) returns the MappingAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|IfAst|]) -> Boolean
+    ++ s case IfAst holds if `s' represents an if-statement.
+  autoCoerce: % -> IfAst
+    ++ autoCoerce(s) returns the IfAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|RepeatAst|]) -> Boolean
+    ++ s case RepeatAst holds if `s' represents an repeat-loop.
+  autoCoerce: % -> RepeatAst
+    ++ autoCoerce(s) returns the RepeatAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|WhileAst|]) -> Boolean
+    ++ s case WhileAst holds if `s' represents a while-iterator
+  autoCoerce: % -> WhileAst
+    ++ autoCoerce(s) returns the WhileAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|InAst|]) -> Boolean
+    ++ s case InAst holds if `s' represents a in-iterator
+  autoCoerce: % -> InAst
+    ++ autoCoerce(s) returns the InAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|StepAst|]) -> Boolean
+    ++ \spad{s case StepAst} holds if \spad{s} represents an
+    ++ arithmetic progression iterator.
+  autoCoerce: % -> StepAst
+    ++ \spad{autoCoerce(s)} returns the InAst view of \spad{s}.  Left
+    ++ at the discretion of the compiler.
+
+  case: (%, [|CollectAst|]) -> Boolean
+    ++ s case CollectAst holds if `s' represents a list-comprehension.
+  autoCoerce: % -> CollectAst
+    ++ autoCoerce(s) returns the CollectAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|ConstructAst|]) -> Boolean
+    ++ s case ConstructAst holds if `s' represents a list-expression.
+  autoCoerce: % -> ConstructAst
+    ++ autoCoerce(s) returns the ConstructAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|ExitAst|]) -> Boolean
+    ++ s case ExitAst holds if `s' represents an exit-expression.
+  autoCoerce: % -> ExitAst
+    ++ autoCoerce(s) returns the ExitAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|ReturnAst|]) -> Boolean
+    ++ s case ReturnAst holds if `s' represents a return-statement.
+  autoCoerce: % -> ReturnAst
+    ++ autoCoerce(s) returns the ReturnAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|CoerceAst|]) -> Boolean
+    ++ s case ReturnAst holds if `s' represents a coerce-expression.
+  autoCoerce: % -> CoerceAst
+    ++ autoCoerce(s) returns the CoerceAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|PretendAst|]) -> Boolean
+    ++ s case PretendAst holds if `s' represents a pretend-expression.
+  autoCoerce: % -> PretendAst
+    ++ autoCoerce(s) returns the PretendAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|RestrictAst|]) -> Boolean
+    ++ s case RestrictAst holds if `s' represents a restrict-expression.
+  autoCoerce: % -> RestrictAst
+    ++ autoCoerce(s) returns the RestrictAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|SegmentAst|]) -> Boolean
+    ++ s case SegmentAst holds if `s' represents a segment-expression.
+  autoCoerce: % -> SegmentAst
+    ++ autoCoerce(s) returns the SegmentAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|SequenceAst|]) -> Boolean
+    ++ s case SequenceAst holds if `s' represents a sequence-of-statements.
+  autoCoerce: % -> SequenceAst
+    ++ autoCoerce(s) returns the SequenceAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|LetAst|]) -> Boolean
+    ++ s case LetAst holds if `s' represents an assignment-expression.
+  autoCoerce: % -> LetAst
+    ++ autoCoerce(s) returns the LetAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|SuchThatAst|]) -> Boolean
+    ++ s case SuchThatAst holds if `s' represents a qualified-expression.
+  autoCoerce: % -> SuchThatAst
+    ++ autoCoerce(s) returns the SuchThatAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|ColonAst|]) -> Boolean
+    ++ s case ColonAst holds if `s' represents a colon-expression.
+  autoCoerce: % -> ColonAst
+    ++ autoCoerce(s) returns the ColoonAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+ 
+  case: (%, [|CaseAst|]) -> Boolean
+    ++ s case CaseAst holds if `s' represents a case-expression.
+  autoCoerce: % -> CaseAst
+    ++ autoCoerce(s) returns the CaseAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+ 
+  case: (%, [|HasAst|]) -> Boolean
+    ++ s case HasAst holds if `s' represents a has-expression.
+  autoCoerce: % -> HasAst
+    ++ autoCoerce(s) returns the HasAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+ 
+  case: (%, [|IsAst|]) -> Boolean
+    ++ s case IsAst holds if `s' represents an is-expression.
+  autoCoerce: % -> IsAst
+    ++ autoCoerce(s) returns the IsAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|Identifier|]) -> Boolean
+    ++ s case Identifier holds if `s' represents an identifier.
+  autoCoerce: % -> Identifier
+    ++ autoCoerce(s) returns the Identifier view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|String|]) -> Boolean
+    ++ s case String holds if `s' represents a string literal.
+  autoCoerce: % -> String
+    ++ autoCoerce(s) returns the String view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  case: (%, [|Integer|]) -> Boolean
+    ++ s case Integer holds if `s' represents an integer literal.
+  autoCoerce: % -> Integer
+    ++ autoCoerce(s) returns the Integer view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+@
+
+
+\subsection{The Literal domain}
+
+<<domain LITERAL Literal>>=
+)abbrev domain LITERAL Literal
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 1, 2008
+++ Description: This domain represents AST for Spad literals.
+Literal(T: SetCategory): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo T)
+  Private == add
+    Rep == T
+    coerce(x: %): T == rep x
+    coerce(x: %): OutputForm == x::T::OutputForm
+    
+@
+
+\subsection{The Identifier domain}
+
+<<domain IDENT Identifier>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 7, 2011
+++ Description: 
+++   This domain provides representation for plain identifiers.
+++   It differs from Symbol in that it does not support any form
+++   of scripting.  It is a plain basic data structure.
+++       
+)abbrev domain IDENT Identifier
+Identifier(): Public == Private where
+  Public == SetCategory with
+    gensym: () -> %  
+      ++ \spad{gensym()} returns a new identifier, different from 
+      ++ any other identifier in the running system
+  Private == add
+    import %peq: (%,%) -> Boolean from Foreign Builtin
+    import %gensym: () -> %       from Foreign Builtin
+    gensym() == %gensym()
+    x = y == %peq(x,y)
+    coerce(x: %): OutputForm == x : OutputForm
+
+@
+
+\subsection{The ParameterAst domain}
+
+<<domain PARAMAST ParameterAst>>=
+)abbrev domain PARAMAST ParameterAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 08, 2009
+++ Date Last Modified: November 08, 2009
+++ Description:
+++   Representation of parameters to functions or constructors.
+++   For the most part, they are Identifiers.  However, in very
+++   cases, they are "flags", e.g. string literals.
+ParameterAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, UnionType) with
+    case: (%, [| Identifier |]) -> Boolean
+      ++ \spad{x case Identifier} if the parameter AST object
+      ++ \spad{x} designates an \spadtype{Identifier}.
+    autoCoerce: % -> Identifier
+      ++ \spad{autoCoerce(x)@Identifier} implicitly coerce the 
+      ++ object \spad{x} to \spadtype{Identifier}.  This function
+      ++ is left at the discretion of the compiler.
+    case: (%, [| String |]) -> Boolean
+      ++ \spad{x case String} if the parameter AST object
+      ++ \spad{x} designates a flag.
+    autoCoerce: % -> String
+      ++ \spad{autoCoerce(x)@String} implicitly coerce the 
+      ++ object \spad{x} to \spadtype{String}.  This function
+      ++ is left at the discretion of the compiler.
+  Private == add
+    import %string?: % -> Boolean   from Foreign Builtin
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+    import %ident?: % -> Boolean    from Foreign Builtin
+
+    x case Identifier ==
+      %ident? x
+
+    autoCoerce(x: %): Identifier ==
+      x : Identifier
+
+    x case String ==
+      %string? x
+
+    autoCoerce(x: %): String ==
+      x : String
+
+    x = y ==
+      %equal(x,y)
+
+    coerce(x: %): OutputForm ==
+      case x is 
+        y@String => y::OutputForm
+        otherwise => x pretend OutputForm
+@
+
+
+\subsection{The HeadAst domain}
+
+<<domain HEADAST HeadAst>>=
+import AbstractSyntaxCategory
+import Identifier
+import List Identifier
+)abbrev domain HEADAST HeadAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: November 08, 2009
+++ Description: This domain represents the header of a definition.
+HeadAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    headAst: (Identifier,List ParameterAst) -> %
+      ++ headAst(f,[x1,..,xn]) constructs a function definition header.
+    name: % -> Identifier
+      ++ name(h) returns the name of the operation defined defined.
+    parameters: % -> List ParameterAst
+      ++ parameters(h) gives the parameters specified in the
+      ++ definition header `h'.
+  Private == add
+    Rep == Pair(Identifier, List ParameterAst)
+    headAst(op,args) == per pair(op,args)
+    name h == first rep h
+    parameters h == second rep h
+    coerce(x: %): OutputForm ==
+      elt('HeadAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm,
+          'parameters::OutputForm = parameters(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The TypeAst domain}
+
+<<domain TYPEAST TypeAst>>=
+SpadAst(): SpadAstExports
+
+import AbstractSyntaxCategory
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a type AST.
+TypeAst(): Public == Private where
+  Public == SpadSyntaxCategory
+  Private == add
+    coerce(x: %): OutputForm == (x : SpadAst)::OutputForm
+
+@
+
+\subsection{The ImportAst domain}
+
+<<domain IMPTAST ImportAst>>=
+import List
+import TypeAst
+)abbrev domain IMPTAST ImportAst
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents an `import' of types.
+ImportAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    coerce: List TypeAst -> %
+      ++ ts::ImportAst constructs an ImportAst for the list if types `ts'.
+    imports: % -> List TypeAst
+      ++ imports(x) returns the list of imported types.
+  Private == add
+    Rep == Pair(Identifier, List TypeAst)
+    coerce(ts: List TypeAst): % == per pair('_import,ts)
+    imports x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ImportAst::OutputForm,
+        ['imports::OutputForm = imports(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The MappingAst domain}
+
+<<domain MAPPAST MappingAst>>=
+)abbrev domain MAPPAST MappingAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents a mapping type AST.  A mapping AST
+++   is a syntactic description of a function type, e.g. its result 
+++   type and the list of its argument types.
+MappingAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: Signature -> %
+      ++ sig::MappingAst builds a MappingAst from the Signature `sig'.
+    mappingAst: (List TypeAst, TypeAst) -> %
+      ++ mappingAst(s,t) builds the mapping AST s -> t
+    source: % -> List TypeAst
+      ++ source(s) returns the parameter type AST list of `s'.
+    target: % -> TypeAst
+      ++ target(s) returns the result type AST for `s'.
+  Private == add
+    Rep == Pair(Identifier,Signature)
+    coerce(sig: Signature): % == per pair('Mapping,sig)
+    mappingAst(s,t) == 
+      per pair('Mapping,cons(t,s) : Signature)
+    source x == source(second rep x)$Signature : List(TypeAst)
+    target x == target(second rep x)$Signature : TypeAst
+    coerce(x: %): TypeAst == x : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('MappingAst::OutputForm,
+        ['source::OutputForm = source(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The SignatureAst domain}
+
+<<domain SIGAST SignatureAst>>=
+)abbrev domain SIGAST SignatureAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents a signature AST.  A signature AST
+++   is a description of an exported operation, e.g. its name, result
+++   type, and the list of its argument types.
+SignatureAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    signatureAst: (Identifier, Signature) -> %
+      ++ signatureAst(n,s,t) builds the signature AST n: s -> t
+    name: % -> Identifier
+      ++ name(s) returns the name of the signature `s'.
+    signature: % -> Signature
+      ++ signature(s) returns AST of the declared signature for `s'.
+  Private == add
+    Rep == Pair(Identifier, Pair(Identifier,List Signature))
+    signatureAst(n,sig) == 
+      per pair('SIGNATURE,pair(n,[sig]))
+    name x == first second rep x
+    signature x == value second second rep x
+    coerce(x: %): OutputForm ==
+      elt('SignatureAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm,
+          'signature::OutputForm = signature(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The AttributeAst domain}
+
+<<domain ATTRAST AttributeAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain ATTRAST AttributeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the syntax of an attribute in
+++   a category expression.
+AttributeAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    name: % -> SpadAst
+      ++ name(a) returns the name of the attribute `a'.  Note, this
+      ++ name may be domain name, not just an identifier. 
+  Private == add
+    Rep == Pair(Identifier,SpadAst)
+    name x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('AttributeAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm])$OutputForm
+@
+
+\subsection{The JoinAst domain}
+
+<<domain JOINAST JoinAst>>=
+)abbrev domain JOINAST JoinAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the join of categories ASTs.
+JoinAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: List TypeAst -> %
+      ++ ts::JoinAst construct the AST for a join of the types `ts'.
+    categories: % -> List TypeAst
+      ++ catehories(x) returns the types in the join `x'.
+  Private == add
+    Rep == Pair(Identifier, List TypeAst)
+    categories x == second rep x
+    coerce(cats: List TypeAst): % == per pair('Join,cats)
+    coerce(x: %): TypeAst == x : TypeAst
+
+@
+
+
+\subsection{The IfAst domain}
+
+<<domain IFAST IfAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain IFAST IfAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents AST for conditional expressions.
+IfAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> SpadAst
+      ++ condition(e) returns the condition of the if-expression `e'.
+    thenBranch: % -> SpadAst
+      ++ thenBranch(e) returns the `then-branch' of `e'.
+    elseBranch: % -> SpadAst
+      ++ thenBranch(e) returns the `else-branch' of `e'.
+  Private == add
+    Rep == List SpadAst
+    condition x == second rep x
+    thenBranch x == third rep x
+    elseBranch x == last rep x
+    coerce(x: %): OutputForm ==
+      elt('IfAst::OutputForm,
+        ['condition::OutputForm = condition(x)::OutputForm, 
+          'thenBranch::OutputForm = thenBranch(x)::OutputForm,
+           'elseBranch::OutputForm = elseBranch(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The RepeatAst domain}
+
+<<domain RPTAST RepeatAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain RPTAST RepeatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the `repeat' iterator syntax.
+RepeatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List SpadAst
+      ++ iterators(e) returns the list of iterators controlling the loop `e'.
+    body: % -> SpadAst
+      ++ body(e) returns the body of the loop `e'.
+  Private == add
+    Rep == List SpadAst
+    iterators x == 
+      s := rep x
+      s.(2..(#s - 1))
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+      elt('RepeatAst::OutputForm,
+        ['iterators::OutputForm = iterators(x)::OutputForm, 
+          'body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+\subsection{The WhileAst domain}
+
+<<domain WHILEAST WhileAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain WHILEAST WhileAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the `while' iterator syntax.
+WhileAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> SpadAst
+      ++ condition(i) returns the condition of the while iterator `i'.
+  Private == add
+    Rep == Pair(Identifier,SpadAst)
+    condition x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('WhileAst::OutputForm,
+        ['condition::OutputForm = condition(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The InAst domain}
+
+<<domain INAST InAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain INAST InAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the `in' iterator syntax.
+InAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterationVar: % -> Identifier
+      ++ iterationVar(i) returns the name of the iterating 
+      ++ variable of the `in' iterator 'i'
+    sequence: % -> SpadAst
+      ++ sequence(i) returns the sequence expression being 
+      ++ iterated over by `i'.
+  Private == add
+    Rep == List Syntax
+    iterationVar x == (second rep x)::Identifier
+    sequence x == (last rep x) : SpadAst
+    coerce(x: %): OutputForm ==
+      elt('InAst::OutputForm,
+        ['iterationVar::OutputForm = iterationVar(x)::OutputForm,
+           'sequence::OutputForm = sequence(x)::OutputForm])$OutputForm
+
+@
+
+\subection{The StepAst domain}
+
+<<domain STEPAST StepAst>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: November 16, 2009
+++ Date Last Modified: November 16, 2009
+++ Description:
+++   This domain represents an arithmetic progression iterator syntax.
+)abbrev domain STEPAST StepAst
+StepAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterationVar: % -> Identifier
+      ++ \spad{iterationVar(i)} returns the name of the iterating 
+      ++ variable of the arithmetic progression iterator \spad{i}.
+    lowerBound: % -> SpadAst
+      ++ \spad{lowerBound(i)} returns the lower bound on the values
+      ++ assumed by the iteration variable.
+    upperBound: % -> Maybe SpadAst
+      ++ If the set of values assumed by the iteration variable is
+      ++ bounded from above, \spad{upperBound(i)} returns the
+      ++ upper bound.  Otherwise, its returns \spad{nothing}.
+    step: % -> SpadAst
+      ++ \spad{step(i)} returns the Spad AST denoting the step
+      ++ of the arithmetic progression represented by the
+      ++ iterator \spad{i}.
+  Private == add
+    Rep == Pair(Identifier, List SpadAst)
+    import List SpadAst
+    iterationVar x == first(second rep x)::Identifier
+    step x == third second rep x
+    lowerBound x == second second rep x
+    upperBound x ==
+      a := second rep x
+      #a = 3 => nothing$Maybe(SpadAst)
+      just qelt(a, 4)
+    coerce(x: %): OutputForm ==
+      v := iterationVar(x)::OutputForm
+      i := step(x)::OutputForm
+      l := lowerBound(x)::OutputForm
+      u := upperBound x
+      u case nothing =>
+        elt('StepAst::OutputForm,
+            ['iterationVar::OutputForm = v,
+              'step::OutputForm = i, 'lowerBound::OutputForm = l])$OutputForm
+      elt('StepAst::OutputForm,
+         ['iterationVar::OutputForm = v, 'step::OutputForm = i,
+           'lowerBound::OutputForm = l,
+             'upperBound::OutputForm = (u@SpadAst)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The CollectAst domain}
+
+<<domain CLLCTAST CollectAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain CLLCTAST CollectAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents list comprehension syntax.
+CollectAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List SpadAst
+      ++ iterators(e) returns the list of the iterators of
+      ++ the list comprehension `e'.
+    body: % -> SpadAst
+      ++ body(e) return the expression being
+      ++ collected by the list comprehension `e'.
+  Private == add
+    Rep == List SpadAst
+    body x == last rep x
+    iterators x ==
+      s := rep x
+      s.(2..(#s -1))
+    coerce(x: %): OutputForm ==
+      elt('CollectAst::OutputForm,
+        ['iterators::OutputForm = iterators(x)::OutputForm, 
+           'body::OutputForm = body(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The ReduceAst domain}
+
+<<domain RDUCEAST ReduceAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain RDUCEAST ReduceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents list reduction syntax.
+ReduceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    operator: % -> SpadAst
+      ++ operator(e) returns the magma operation being applied.
+    body: % -> SpadAst
+      ++ body(e) return the list of expressions being redcued.
+  Private == add
+    Rep == List SpadAst
+    operator x == second rep x
+    body x == third rep x
+
+@
+
+\subsection{The ConstructAst domain}
+
+<<domain LSTAST ConstructAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain LSTAST ConstructAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents `literal sequence' syntax.
+ConstructAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    elements: % -> List SpadAst
+      ++ elements(e) returns the list of expressions in the
+      ++ `literal' list `e'.
+  Private == add
+    Rep == Pair(Identifier, List SpadAst)
+    elements x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ConstructAst::OutputForm,
+        ['elements::OutputForm = elements(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The ExitAst domain}
+
+<<domain EXITAST ExitAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain EXITAST ExitAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents exit expressions.
+ExitAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the exit expression of `e'.
+    level: % -> Integer
+      ++ level(e) returns the nesting exit level of `e'
+  Private == add
+    Rep == List SpadAst
+    expression x == third rep x
+    level x == (second rep x) : Integer
+    coerce(x: %): OutputForm ==
+      elt('ExitAst::OutputForm,
+        ['level::OutputForm = level(x)::OutputForm,
+           'expression::OutputForm = expression(x)::OutputForm])$OutputForm
+@
+
+
+\subsection{The ReturnAst domain}
+
+<<domain RETAST ReturnAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain RETAST ReturnAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents `return' expressions.
+ReturnAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression returned by `e'.
+  Private == add
+    Rep == Pair(Identifier,SpadAst)
+    expression x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ReturnAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The SequenceAst domain}
+
+<<domain SEQAST SequenceAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain SEQAST SequenceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents a block of expressions.
+SequenceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(e) returns the list of expressions in the sequence
+      ++ of instruction `e'.
+    last: % -> SpadAst
+      ++ last(e) returns the last instruction in `e'.
+  Private == add
+    Rep == Pair(Identifier,List SpadAst)
+    body x == second rep x
+    last x == last(second rep x)$List(SpadAst)
+    coerce(x: %): OutputForm ==
+      elt('SequenceAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+\subsection{The LetAst domain}
+
+<<domain LETAST LetAst>>=
+SpadAst(): SpadAstExports
+import List
+)abbrev domain LETAST LetAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents assignment expressions.
+LetAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the assignment expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the assignment expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('LetAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The PretendAst domain}
+
+<<domain PRTDAST PretendAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain PRTDAST PretendAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `pretend' expressions.
+PretendAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == (second rep x) : SpadAst
+    target x == (third rep x) : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('PretendAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The CoerceAst domain}
+
+<<domain CRCEAST CoercedAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain CRCEAST CoerceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `coerce' expressions.
+CoerceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == (second rep x) : SpadAst
+    target x == (third rep x) : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('CoerceAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The RestrictAst domain}
+
+<<domain RSTRCAST RestrictAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain RSTRCAST RestrictAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `restrict' expressions.
+RestrictAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == (second rep x) : SpadAst
+    target x == (third rep x) : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('RestrictAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The CallAst domain}
+
+<<domain CALLAST CallAst>>=
+SpadAst(): SpadAstExports
+
+import List
+)abbrev domain CALLAST CallAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents calls.
+CallAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    operator: % -> SpadAst
+      ++ operation(e) returns the operation being called in `e'.
+    operands: % -> List SpadAst
+      ++ arguments(e) returns the argument list used in the call `e'.
+  Private == add
+    Rep == List SpadAst
+    operator x == first rep x
+    operands x == rest rep x
+    coerce(x: %): OutputForm ==
+      elt('CallAst::OutputForm,
+        ['operator::OutputForm = operator(x)::OutputForm,
+          'operands::OutputForm = operands(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The SegmentAst domain}
+
+<<domain SEGAST SegmentAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain SEGAST SegmentAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents segement expressions.
+SegmentAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    bounds: % -> List SpadAst
+      ++ bounds(s) returns the bounds of the segment `s'.  If
+      ++ `s' designates an infinite interval, then the returns
+      ++ list a singleton list.
+  Private == add
+    Rep == List SpadAst
+    bounds x == rest rep x
+    coerce(x: %): OutputForm ==
+      elt('SegmentAst::OutputForm,
+        ['bounds::OutputForm = bounds(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The SuchThatAst domain}
+
+<<domain SUCHTAST SuchThatAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain SUCHTAST SuchThatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the filter iterator syntax.
+SuchThatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    predicate: % -> SpadAst
+      ++ predicate(e) returns the syntax object for the predicate
+      ++ in the filter iterator syntax `e'.
+  Private == add
+    Rep == List SpadAst
+    predicate e == second rep e
+    coerce(x: %): OutputForm ==
+      elt('SuchThatAst::OutputForm, 
+        ['predicate::OutputForm = predicate(x)::OutputForm])$OutputForm
+@
+
+\subsection{The ColonAst domain}
+
+<<domain COLONAST ColonAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain COLONAST ColonAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents type specification 
+++   for an identifier or expression.
+ColonAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the colon expression `e'.
+    rhs: % -> TypeAst
+      ++ rhs(e) returns the right hand side of the colon expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == (second rep x) : SpadAst
+    rhs x == (third rep x) : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('ColonAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm, 
+           'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+@
+
+\subsection{The AddAst domain}
+
+<<domain ADDAST AddAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain ADDAST AddAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax for an add-expression.
+AddAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    base: % -> SpadAst
+      ++ base(d) returns the base domain(s) of the add-domain expression.
+    body: % -> SpadAst
+      ++ base(d) returns the actual body of the add-domain expression `d'.
+  Private == add
+    Rep == List SpadAst
+    base x == second rep x
+    body x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('AddAst::OutputForm,
+        ['base::OutputForm = base(x)::OutputForm,
+          'body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+
+\subsection{The CapsuleAst domain}
+
+<<domain CAPSLAST CapsuleAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain CAPSLAST CapsuleAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the capsule of a domain definition.
+CapsuleAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(c) returns the list of top level expressions appearing in `c'.
+  Private == add
+    Rep == Pair(Identifier, List SpadAst)
+    body x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('CapsuleAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+\subsection{The CaseAst domain}
+
+<<domain CASEAST CaseAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain CASEAST CaseAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a `case' expression.
+CaseAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the case expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the case expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('CaseAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+@
+
+
+\subsection{The HasAst domain}
+
+<<domain HASAST HasAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain HASAST HasAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a `has' expression.
+HasAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the has expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the case expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('HasAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+@
+
+\subsection{The IsAst domain}
+
+<<domain ISAST IsAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain ISAST IsAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a `has' expression.
+IsAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the is expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the is expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('IsAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+@
+
+\subsection{The CategoryAst domain}
+
+<<domain CATAST CategoryAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain CATAST CategoryAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents the unnamed category defined
+++   by a list of exported signatures
+CategoryAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    kind: % -> ConstructorKind
+      ++ kind(c) returns the kind of unnamed category, either
+      ++ 'domain' or 'package'.
+    body: % -> List SpadAst
+      ++ body(c) returns the list of exports in category syntax `c'.
+  Private == add
+    Rep == List SpadAst
+    kind x == (second rep x) : ConstructorKind
+    body x == rest rest rep x
+    coerce(x: %): OutputForm ==
+      elt('CategoryAst::OutputForm,
+        ['kind::OutputForm = kind(x)::OutputForm, 
+          'body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+\subsection{The WhereAst domain}
+
+<<domain WHEREAST WhereAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain WHEREAST WhereAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a `where' expression.
+WhereAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    mainExpression: % -> SpadAst
+      ++ mainExpression(e) returns the main expression of the 
+      ++ `where' expression `e'.
+    qualifier: % -> SpadAst
+      ++ qualifier(e) returns the qualifier of the expression `e'.
+  Private == add
+    Rep == List SpadAst
+    mainExpression x == second rep x
+    qualifier x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('WhereAst::OutputForm,
+        ['mainExpression::OutputForm = mainExpression(x)::OutputForm,
+          'qualifier::OutputForm = qualifier(x)::OutputForm])$OutputForm
+@
+
+\subsection{The CommaAst domain}
+
+<<domain COMMAAST CommaAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain COMMAAST CommaAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a comma-separated
+++   list of expressions.
+CommaAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(e) returns the list of expressions making up `e'.
+  Private == add
+    Rep == List SpadAst
+    body x == rest rep x
+    coerce(x: %): OutputForm ==
+      elt('CommaAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm
+@
+
+
+\subsection{The QuasiquoteAst domain}
+
+<<domain QQUTAST QuasiquoteAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain QQUTAST QuasiquoteAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a quasiquote
+++   expression.
+QuasiquoteAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the syntax for the expression being quoted.
+  Private == add
+    Rep == List SpadAst
+    expression x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('QuasiquoteAst::OutputForm, 
+        ['expression::OutputForm = expression(x)::OutputForm])$OutputForm
+@
+
+
+\subsection{The DefinitionAst domain}
+
+<<domain DEFAST DefinitionAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain DEFAST DefinitionAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a definition.
+DefinitionAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> HeadAst
+      ++ head(d) returns the head of the definition `d'.  This is a 
+      ++ list of identifiers starting with the name of the operation
+      ++ followed by the name of the parameters, if any.
+    signature: % -> Signature
+      ++ signature(d) returns the signature of the operation being
+      ++ defined.  Note that this list may be partial in that it
+      ++ contains only the types actually specified in the definition.
+    body: % -> SpadAst
+      ++ body(d) returns the right hand side of the definition `d'.
+  Private == add
+    Rep == List SpadAst
+    head x == (second rep x) : HeadAst
+    signature x == (third rep x) : Signature
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+     elt('DefinitionAst::OutputForm,
+       ['head::OutputForm = head(x)::OutputForm,
+         'signature::OutputForm = signature(x)::OutputForm,
+           'body::OutputForm = body(x)::OutputForm])$OutputForm
+
+@
+
+
+\subsection{The MacroAst domain}
+
+<<domain MACROAST MacroAst>>=
+SpadAst(): SpadAstExports
+
+)abbrev domain MACROAST MacroAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a macro definition.
+MacroAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> HeadAst
+      ++ head(m) returns the head of the macro definition `m'.  This is a 
+      ++ list of identifiers starting with the name of the macro
+      ++ followed by the name of the parameters, if any.
+    body: % -> SpadAst
+      ++ body(m) returns the right hand side of the definition `m'.
+  Private == add
+    Rep == List SpadAst
+    head x ==
+      z := second rep x
+      z case Identifier => [z] : HeadAst
+      z : HeadAst
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+     elt('MacroAst::OutputForm,
+       ['head::OutputForm = head(x)::OutputForm,
+         'body::OutputForm = body(x)::OutputForm])$OutputForm
+
+@
+
+\subsection{The SpadAst domain}
+<<domain SPADAST SpadAst>>=
+)abbrev domain SPADAST SpadAst
+++ Author: Gabriel Dos Reis
+++ Date Created: September 21, 2008
+++ Date Last Modified: April 20, 2009
+++ Description: This domain represents a kind of base domain
+++   for Spad syntax domain.  It merely exists as a kind of
+++   of abstract base in object-oriented programming language.
+++   However, this is not an abstract class.  
+SpadAst(): SpadAstExports() == add
+  isAst(x: %, tag: Identifier): Boolean ==
+    (op := getOperator(x::Syntax)) case Identifier and op = tag
+
+  x case ImportAst == isAst(x,'_import)
+  autoCoerce(x: %): ImportAst == x : ImportAst
+
+  x case DefinitionAst == isAst(x,'DEF)
+  autoCoerce(x: %): DefinitionAst == x : DefinitionAst
+
+  x case MacroAst == isAst(x,'MDEF)
+  autoCoerce(x: %): MacroAst == x : MacroAst
+
+  x case WhereAst == isAst(x,'_where)
+  autoCoerce(x: %): WhereAst == x : WhereAst
+
+  x case CategoryAst == isAst(x,'CATEGORY)
+  autoCoerce(x: %): CategoryAst == x : CategoryAst
+
+  x case JoinAst == isAst(x,'Join)
+  autoCoerce(x: %): JoinAst == x : JoinAst
+
+  x case CapsuleAst == isAst(x,'CAPSULE)
+  autoCoerce(x: %): CapsuleAst == x : CapsuleAst
+
+  x case SignatureAst == isAst(x,'SIGNATURE)
+  autoCoerce(x: %): SignatureAst == x : SignatureAst
+
+  x case AttributeAst == isAst(x,'ATTRIBUTE)
+  autoCoerce(x: %): AttributeAst == x : AttributeAst
+
+  x case MappingAst == isAst(x,'Mapping)
+  autoCoerce(x: %): MappingAst == x : MappingAst
+
+  x case IfAst == isAst(x,'IF)
+  autoCoerce(x: %): IfAst == x : IfAst
+
+  x case RepeatAst == isAst(x,'REPEAT)
+  autoCoerce(x: %): RepeatAst == x : RepeatAst
+
+  x case WhileAst == isAst(x,'WHILE)
+  autoCoerce(x: %): WhileAst == x : WhileAst
+
+  x case InAst == isAst(x,'IN)
+  autoCoerce(x: %): InAst == x : InAst
+
+  x case StepAst == isAst(x,'STEP)
+  autoCoerce(x: %): StepAst == x : StepAst
+
+  x case CollectAst == isAst(x,'COLLECT)
+  autoCoerce(x: %): CollectAst == x : CollectAst
+
+  x case ConstructAst == isAst(x,'construct)
+  autoCoerce(x: %): ConstructAst == x : ConstructAst
+
+  x case ExitAst == isAst(x,'_exit)
+  autoCoerce(x: %): ExitAst == x : ExitAst
+
+  x case ReturnAst == isAst(x,'_return)
+  autoCoerce(x: %): ReturnAst == x : ReturnAst
+
+  x case CoerceAst == isAst(x,'_:_:)
+  autoCoerce(x: %): CoerceAst == x : CoerceAst
+
+  x case PretendAst == isAst(x,'_pretend)
+  autoCoerce(x: %): PretendAst == x : PretendAst
+
+  x case RestrictAst == isAst(x,'_@)
+  autoCoerce(x: %): RestrictAst == x : RestrictAst
+
+  x case SegmentAst == isAst(x,'SEGMENT)
+  autoCoerce(x: %): SegmentAst == x : SegmentAst
+
+  x case SequenceAst == isAst(x,'SEQ)
+  autoCoerce(x: %): SequenceAst == x : SequenceAst
+
+  x case LetAst == isAst(x,'_%LET) or isAst(x,'_:_=)
+  autoCoerce(x: %): LetAst == x : LetAst
+
+  x case SuchThatAst == isAst(x,'_|)
+  autoCoerce(x: %): SuchThatAst == x : SuchThatAst
+
+  x case ColonAst == isAst(x,'_:)
+  autoCoerce(x: %): ColonAst == x : ColonAst
+
+  x case CaseAst == isAst(x,'_case)
+  autoCoerce(x: %): CaseAst == x : CaseAst
+
+  x case HasAst == isAst(x,'_has)
+  autoCoerce(x: %): HasAst == x : HasAst
+
+  x case IsAst == isAst(x,'_is)
+  autoCoerce(x: %): IsAst == x : IsAst
+
+  x case Identifier == (x::Syntax) case Identifier
+  autoCoerce(x: %): Identifier == x:Identifier
+
+  x case String == (x::Syntax) case String
+  autoCoerce(x: %): String == x : String
+
+  x case Integer == (x::Syntax) case Integer
+  autoCoerce(x: %): Integer == x : Integer
+
+  coerce(x: %): OutputForm ==
+    x' := x : Syntax
+    compound? x' and ((op := getOperator x') case Identifier) =>
+      op = 'IF => x:IfAst::OutputForm
+      op = 'REPEAT => x:RepeatAst::OutputForm
+      op = 'WHILE => x:WhileAst::OutputForm
+      op = 'IN => x:InAst::OutputForm
+      op = 'STEP => x:StepAst::OutputForm
+      op = 'COLLECT => x:CollectAst::OutputForm
+      op = 'construct => x:ConstructAst::OutputForm
+      op = '_exit => x:ExitAst::OutputForm
+      op = '_return => x:ReturnAst::OutputForm
+      op = 'SEQ => x:SequenceAst::OutputForm
+      op = '%LET or op = '_:_= => x:LetAst::OutputForm
+      op = '_pretend => x:PretendAst::OutputForm
+      op = '_:_: => x:CoerceAst::OutputForm
+      op = '_@ => x:RestrictAst::OutputForm
+      op = 'SEGMENT => x:SegmentAst::OutputForm
+      op = '_| => x:SuchThatAst::OutputForm
+      op = '_: => x:ColonAst::OutputForm
+      op = '_add => x:AddAst::OutputForm
+      op = '_case => x:CaseAst::OutputForm
+      op = '_has => x:CaseAst::OutputForm
+      op = '_is => x:CaseAst::OutputForm
+      op = '_where => x:WhereAst::OutputForm
+      op = '%Comma => x:CommaAst::OutputForm
+      op = 'Mapping => x:MappingAst::OutputForm
+      op = 'DEF => x:DefinitionAst::OutputForm
+      op = 'MDEF => x:MacroAst::OutputForm
+      op = 'SIGNATURE => x:SignatureAst::OutputForm
+      op = 'ATTRIBUTE => x:AttributeAst::OutputForm
+      op = 'CATEGORY => x:CategoryAst::OutputForm
+      op = 'Join => x:JoinAst::OutputForm
+      op = 'CAPSULE => x:CapsuleAst::OutputForm
+      op = '_import => x:ImportAst::OutputForm
+      x'::OutputForm
+    x'::OutputForm
+  
+@
+
+
+
+\section{License}
+
+<<license>>=
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@
+
+<<*>>=
+<<license>>
+<<domain SYNTAX Syntax>>
+<<domain ELABEXPR ElaboratedExpression>>
+
+<<category ASTCAT AbstractSyntaxCategory>>
+<<category SASTCAT SpadSyntaxCategory>>
+<<category SPADXPT SpadAstExports>>
+
+<<domain LITERAL Literal>>
+<<domain PARAMAST ParameterAst>>
+<<domain HEADAST HeadAst>>
+<<domain TYPEAST TypeAst>>
+<<domain ATTRAST AttributeAst>>
+<<domain IMPTAST ImportAst>>
+<<domain MAPPAST MappingAst>>
+<<domain SIGAST SignatureAst>>
+<<domain JOINAST JoinAst>>
+
+<<domain IFAST IfAst>>
+<<domain RPTAST RepeatAst>>
+<<domain WHILEAST WhileAst>>
+<<domain INAST InAst>>
+<<domain STEPAST StepAst>>
+<<domain CLLCTAST CollectAst>>
+<<domain LSTAST ConstructAst>>
+<<domain EXITAST ExitAst>>
+<<domain RETAST ReturnAst>>
+<<domain SEGAST SegmentAst>>
+<<domain SEQAST SequenceAst>>
+<<domain PRTDAST PretendAst>>
+<<domain CRCEAST CoercedAst>>
+<<domain RSTRCAST RestrictAst>>
+<<domain LETAST LetAst>>
+
+<<domain RDUCEAST ReduceAst>>
+<<domain SUCHTAST SuchThatAst>>
+<<domain COLONAST ColonAst>>
+<<domain ADDAST AddAst>>
+<<domain CAPSLAST CapsuleAst>>
+<<domain CASEAST CaseAst>>
+<<domain HASAST HasAst>>
+<<domain ISAST IsAst>>
+<<domain CATAST CategoryAst>>
+<<domain WHEREAST WhereAst>>
+<<domain COMMAAST CommaAst>>
+<<domain QQUTAST QuasiquoteAst>>
+<<domain DEFAST DefinitionAst>>
+<<domain MACROAST MacroAst>>
+
+@
+
+\end{document}

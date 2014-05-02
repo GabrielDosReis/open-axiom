@@ -1,0 +1,53 @@
+++ Contibuted by Yixin Cao
+)abbrev domain TD TestDomain
+import OutputPackage
+TestDomain :Public == Private where
+  Public == with
+    testCase: Syntax -> Boolean
+    testCoerceTo: Symbol -> Syntax
+    testCoerceFrom: Syntax -> Symbol
+    testBuildSyntax: () -> Syntax
+    testGetOperator: Syntax -> Syntax
+    testGetOperator: () -> Syntax
+    test: Syntax -> Boolean
+    test: () -> Boolean
+
+  Private == add
+    testBuildSyntax ==
+      b:=("b")::Symbol
+      a:=("a")::Symbol
+      m:=("-")::Symbol
+      c:=buildSyntax('_*, [a::Syntax, 3::Syntax])
+      d:=buildSyntax(m::Syntax, [b::Syntax, c])
+      d:=buildSyntax('_-, [3::Syntax, 2::Syntax])
+      d
+
+    testCase(x) ==
+      x case Symbol
+
+    testCoerceFrom x ==
+      x case Symbol => coerce(x)@Symbol
+
+    testCoerceTo s ==
+      error "not implemented yet"
+
+    testGetOperator  ==
+      (getOperator testBuildSyntax())::Syntax    
+
+    test ==
+      test testBuildSyntax()
+
+    test x ==
+      output "testing case function"
+      testCase x
+      output "case function works"
+
+      output "testing coerce from Syntax to Symbol"
+      testCoerceFrom x
+      output "coerce (from) function works"
+
+      output "testing getOperator function"
+      testGetOperator()
+      output "getOperator function works"
+
+      true

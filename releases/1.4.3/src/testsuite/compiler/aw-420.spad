@@ -1,0 +1,8 @@
+)abbrev domain MOO Moo
+Moo(): Public == Private where
+  Public ==> with
+    coerce: Tuple Type -> %
+  Private ==> add
+    Rep == Tuple Type
+    coerce(x: Tuple Type) == per x
+

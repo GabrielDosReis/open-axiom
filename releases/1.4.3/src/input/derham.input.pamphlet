@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input DERHAM.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from DeRhamComplexXmpPage
+)clear all
+
+coefRing := Integer
+lv : List Symbol := [x,y,z]
+der := DERHAM(coefRing,lv)
+R := Expression coefRing
+f : R := x**2*y*z-5*x**3*y**2*z**5
+g : R := z**2*y*cos(z)-7*sin(x**3*y**2)*z**2
+h : R :=x*y*z-2*x**3*y*z**2
+dx : der := generator(1)
+dy : der := generator(2)
+dz : der := generator(3)
+[dx,dy,dz] := [generator(i)$der for i in 1..3]
+alpha : der := f*dx + g*dy + h*dz
+beta  : der := cos(tan(x*y*z)+x*y*z)*dx + x*dy
+exteriorDifferential alpha
+exteriorDifferential %
+gamma := alpha * beta
+exteriorDifferential(gamma) - (exteriorDifferential(alpha)*beta - alpha * exteriorDifferential(beta))
+a : BOP := operator('a)
+b : BOP := operator('b)
+c : BOP := operator('c)
+sigma := a(x,y,z) * dx + b(x,y,z) * dy + c(x,y,z) * dz
+theta  := a(x,y,z) * dx * dy + b(x,y,z) * dx * dz + c(x,y,z) * dy * dz
+totalDifferential(a(x,y,z))$der
+exteriorDifferential sigma
+exteriorDifferential theta
+one : der := 1
+g1 : der := a([x,t,y,u,v,z,e]) * one
+h1 : der := a([x,y,x,t,x,z,y,r,u,x]) * one
+exteriorDifferential g1
+exteriorDifferential h1
+coefficient(gamma, dx*dy)
+coefficient(gamma, one)
+coefficient(g1,one)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

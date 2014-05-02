@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input INT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from IntegerXmpPage
+)clear all
+
+
+-- Input generated from ugxIntegerBasicPage
+)clear all
+
+2**(5678 - 4856 + 2 * 17)
+x := -101
+abs(x)
+sign(x)
+x < 0
+x <= -1
+negative?(x)
+x > 0
+x >= 1
+positive?(x)
+zero?(x)
+one?(x)
+(x = -101)@Boolean
+odd?(x)
+even?(x)
+gcd(56788,43688)
+lcm(56788,43688)
+max(678,567)
+min(678,567)
+reduce(max,[2,45,-89,78,100,-45])
+reduce(min,[2,45,-89,78,100,-45])
+reduce(gcd,[2,45,-89,78,100,-45])
+reduce(lcm,[2,45,-89,78,100,-45])
+13 / 4
+13 quo 4
+13 rem 4
+zero?(167604736446952 rem 2003644)
+d := divide(13,4)
+d.quotient
+d.remainder
+
+-- Input generated from ugxIntegerPrimesPage
+)clear all
+
+factor 102400
+prime? 7
+prime? 8
+nextPrime 100
+prevPrime 100
+primes(100,175)
+factor(2 :: Complex Integer)
+
+-- Input generated from ugxIntegerNTPage
+)clear all
+
+[fibonacci(k) for k in 0..]
+[legendre(i,11) for i in 0..10]
+[jacobi(i,15) for i in 0..9]
+[eulerPhi i for i in 1..]
+[moebiusMu i for i in 1..]
+a := roman(78)
+b := roman(87)
+a + b
+a * b
+b rem a
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

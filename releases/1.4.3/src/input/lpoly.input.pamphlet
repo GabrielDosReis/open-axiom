@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input LPOLY.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+)cl all
+
+RN    := Fraction Integer
+Lpoly := LiePolynomial(Symbol,RN)
+Dpoly := XDPOLY(Symbol,RN)
+Lword := LyndonWord Symbol
+a:Symbol := 'a
+b:Symbol := 'b
+c:Symbol := 'c
+aa: Lpoly := a
+bb: Lpoly := b
+cc: Lpoly := c
+p : Lpoly := [aa,bb]
+q : Lpoly := [p,bb]
+liste : List Lword := LyndonWordsList([a,b], 4)
+r: Lpoly := p + q + 3*LiePoly(liste.4)$Lpoly
+s:Lpoly := [p,r]
+t:Lpoly  := s  + 2*LiePoly(liste.3) - 5*LiePoly(liste.5)
+degree t
+mirror t
+Jacobi(p: Lpoly, q: Lpoly, r: Lpoly): Lpoly == [[p,q]$Lpoly, r] + [[q,r]$Lpoly, p] + [[r,p]$Lpoly, q]
+test: Lpoly := Jacobi(a,b,b)
+test: Lpoly := Jacobi(p,q,r)
+test: Lpoly := Jacobi(r,s,t)
+eval(p, a, p)$Lpoly
+eval(p, [a,b], [2*bb, 3*aa])$Lpoly
+r: Lpoly := [p,c]
+r1: Lpoly := eval(r, [a,b,c], [bb, cc, aa])$Lpoly
+r2: Lpoly := eval(r, [a,b,c], [cc, aa, bb])$Lpoly
+r + r1 + r2
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

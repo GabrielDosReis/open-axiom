@@ -1,0 +1,49 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.19.  )quit
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )quit
+  - )set quit protected | unprotected
+ 
+Command Description: 
+ 
+This command is used to terminate OpenAxiom and return to the operating system.
+Other than by redoing all your computations or by using the )history )restore
+command to try to restore your working environment, you cannot return to
+OpenAxiom in the same state.
+ 
+)quit differs from the )pquit in that it asks for confirmation only if the
+command
+ 
+)set quit protected
+ 
+has been issued. Otherwise, )quit will make OpenAxiom terminate and
+return you to the operating system (or the environment from which you
+invoked the system). 
+ 
+The default setting is )set quit protected so that )quit and )pquit behave in
+the same way. If you do issue
+ 
+)set quit unprotected
+ 
+we suggest that you do not (somehow) assign )quit to be executed when you
+press, say, a function key.
+ 
+Also See: 
+o )fin
+o )history
+o )close
+o )pquit
+o )system
+ 

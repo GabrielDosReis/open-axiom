@@ -1,0 +1,5 @@
+--
+-- AW/83
+a := 1::DMP(['x],INT)
+a :: POLY INT                      -- used to cause trouble
+

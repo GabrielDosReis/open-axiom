@@ -1,0 +1,120 @@
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* axiom.in (AXIOM): Use value substituted by Autoconf.
+	Remove dead code.
+
+2007-09-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (TANGLE): New environment variable.  Use in place
+	nacked notangle.
+	(WEAVE): New environment variable. Use in place of noweave.
+
+2007-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (check_mode_value): Remove save-image support.
+	(compile_lisp_file): Add support for ECL.
+	(load_lisp_and_save_image): Remove.
+	(make_program): Tidy.  Add support for ECL.
+	(translate_boot_file): Likewise.
+
+2007-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Throughout, capitalize boottran.
+	Use new interface functions compfile-lisp-file,
+	translate-boot-to-lisp. 
+
+2007-05-08  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* axiom.in: New.  Supercede src/etc/axiom.
+
+2007-04-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (load_lisp_and_save_image): Push into BOOTTRAN after
+	the load.
+
+2007-04-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Don't use full internal name of symbols in package
+	boottran.  Push into that package first, and use short name.
+
+2007-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (load_lisp_and_save_image): Proclaim safety if
+	runtime checking is requested.
+
+2007-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (make_program): Don't use quiet.
+
+2007-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (load_lisp_and_save_image): Don't use quiet mode.
+
+2007-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (lisp_flavor): Don't print debug information.
+
+2007-03-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Support for --mode=save-image, and --use=.
+	(quiet): New.
+	(eval_flags): Likewise.
+	(lisp_flavor): Likewise.
+	(compile_lisp_file): New
+	(load_lisp_and_save_image): Likewise.
+	(make_program): Likewise.
+
+2007-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Don't set TEXINPUTS and BIBINPUTS here.  Too brittle
+	to get right.  
+
+2006-12-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Tidy.
+
+2006-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (--tangle): Remove yucky hack.
+
+2006-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (--tangle): Go through contorsions to support
+	chunk names with embedded blank.
+
+o2006-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Extend to handle --mode, and --tag for translation
+	and compilation of Boot and Lisp codes.
+
+2006-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Fix thinko.
+
+2006-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Support --tangle= and --output=
+
+2006-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Support --tangle.  Fix thinko.  Summarize usage.
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Add support for --weave and --latex.
+
+2006-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pmaphelt: Delete.
+
+2006-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in: Rename from document.
+	* boxup.in: Remove.
+
+2006-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${OUT}/Makefile.pamphlet): Copy only showdvi.
+
+	* boxup.in: Rename from boxup.  Fix bogus hardcoded file names.
+

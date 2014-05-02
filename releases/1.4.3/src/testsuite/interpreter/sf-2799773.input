@@ -1,0 +1,5 @@
+-- Contributed by Yue Li
+-- Issue: OpenAxiom failed to check for duplicate fields
+--        in Record or Unions.
+
+r : Record(a: Integer, a: Symbol) := [1, 's]  --- expectred: error

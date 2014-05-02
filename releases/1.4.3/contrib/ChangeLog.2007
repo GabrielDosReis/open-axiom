@@ -1,0 +1,6 @@
+2007-09-27  Alfredo Portes  <alfredo.portes@gmail.com>
+            Dan Martens     <dan_martens@lycos.com>
+            Bill Page      <bill.page1@sympatico.ca>
+        
+        * Add openaxiom.nsis script to create the
+          Windows installer for OpenAxiom.

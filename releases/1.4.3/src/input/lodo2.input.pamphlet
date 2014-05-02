@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input LODO2.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from LinearOrdinaryDifferentialOperatorTwoXmpPage
+)clear all
+
+
+-- Input generated from ugxLinearOrdinaryDifferentialOperatorTwoConstPage
+)clear all
+
+Q  := Fraction Integer
+PQ := UnivariatePolynomial('x, Q)
+x: PQ := 'x
+Dx: LODO2(Q, PQ) := D()
+a := Dx  + 1
+b := a + 1/2*Dx**2 - 1/2
+p := 4*x**2 + 2/3
+a p
+(a * b) p = a b p
+c := (1/9)*b*(a + b)**2
+(a**2 - 3/4*b + c) (p + 1)
+
+-- Input generated from ugxLinearOrdinaryDifferentialOperatorTwoMatrixPage
+)clear all
+
+PZ   := UnivariatePolynomial(x,Integer)
+x:PZ := 'x
+Mat  := SquareMatrix(3,PZ)
+Vect := DPMM(3, PZ, Mat, PZ)
+Modo := LODO2(Mat, Vect)
+m:Mat := matrix [[x**2,1,0],[1,x**4,0],[0,0,4*x**2]]
+p:Vect := directProduct [3*x**2+1,2*x,7*x**3+2*x]
+q: Vect := m * p
+Dx : Modo := D()
+a : Modo := Dx  + m
+b : Modo := m*Dx  + 1
+c := a*b
+a p
+b p
+(a + b + c) (p + q)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

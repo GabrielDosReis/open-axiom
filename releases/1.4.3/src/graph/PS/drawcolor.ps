@@ -1,0 +1,22 @@
+% operand stack configuration in order to use psDrawColor:
+%		psDraw
+%		vlist[0].y
+%		vlist[0].x
+%		n
+%		...
+%		vlist[n].y
+%		vlist[n].x
+%		graphics-context dictionary
+% to draw lines connecting points in vlist[0] to vlist[n]
+
+/psDrawColor
+        {	gsave
+                newpath
+                yVal moveto		%% set currentpoint
+                1 sub {			%% loop to draw lines.
+                        yVal lineto
+                } repeat
+		stroke %% draw in foreground color
+                grestore }
+        def
+

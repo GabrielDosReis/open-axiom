@@ -1,0 +1,2301 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\title{\$SPAD/src/algebra catdef.spad}
+\author{James Davenport, Lalo Gonzalez-Vega, Gabriel Dos~Reis}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+\end{abstract}
+\tableofcontents
+\eject
+
+\section{Binary operations}
+
+<<category BINOPC BinaryOperatorCategory>>=
+)abbrev category BINOPC BinaryOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement binary operations.
+BinaryOperatorCategory(T: Type): Category == MappingCategory(T,T,T)
+
+@
+
+<<domain BINOP BinaryOperation>>=
+)abbrev domain BINOP BinaryOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements binary operations.
+BinaryOperation(T: Type): Join(BinaryOperatorCategory T, SetCategory) with
+    binaryOperation: ((T,T) -> T) -> %
+      ++ \spad{binaryOperation f} constructs a binary operation value
+      ++ out of any homogeneous mapping of arity 2.
+  == (T,T) -> T add
+    binaryOperation f == per f
+    elt(f,x,y) == rep(f)(x,y)
+
+@
+
+
+\section{Idempotent operations}
+
+<<category IDEMOPC IdempotentOperatorCategory>>=
+)abbrev category IDEMOPC IdempotentOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement idempotent operations.
+IdempotentOperatorCategory(T: BasicType): Category ==
+  BinaryOperatorCategory T with
+    assume idempotence ==
+      forall(f: %, x: T) . f(x,x) = x
+@
+
+
+\section{Semigroup operations}
+
+<<category SGPOPC SemiGroupOperatorCategory>>=
+)abbrev category SGPOPC SemiGroupOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement semigroup operations
+SemiGroupOperatorCategory(T: BasicType): Category ==
+  BinaryOperatorCategory T with
+    assume associativity ==
+      forall(f: %, x: T, y:T, z: T) . f(f(x,y),z) = f(x,f(y,z))
+
+@
+
+<<domain SGPOP SemiGroupOperation>>=
+)abbrev domain SGPOP SemiGroupOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements semigroup operations.
+SemiGroupOperation(T: BasicType): Public == Private where
+  Public == Join(SemiGroupOperatorCategory T,SetCategory) with
+    semiGroupOperation: ((T,T) -> T) -> %
+      ++ \spad{semiGroupOperation f} constructs a semigroup operation
+      ++ out of a binary homogeneous mapping known to be associative.
+  Private == BinaryOperation T
+
+@
+
+
+\section{Monoid operations}
+
+<<category MONOPC MonoidOperatorCategory>>=
+)abbrev category MONOPC MonoidOperatorCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This is the category of all domains that implement monoid operations
+MonoidOperatorCategory(T: BasicType): Category ==
+  SemiGroupOperatorCategory T with
+    neutralValue: % -> T
+      ++ \spad{neutralValue f} returns the neutral value of the
+      ++ monoid operation \spad{f}.
+    assume neutrality ==
+      forall(f: %, x: T) .
+         f(x, neutralValue f) = x
+         f(neutralValue f, x) = x
+
+@
+
+<<domain MONOP MonoidOperation>>=
+)abbrev domain MONOP MonoidOperation
+++ Author: Gabriel Dos Reis
+++ Date Created: February 24, 2012
+++ Date Last Modified: February 24, 2012
+++ Description:
+++   This domain implements monoid operations.
+MonoidOperation(T: BasicType): Public == Private where
+  Public == Join(MonoidOperatorCategory T,SetCategory,_
+              CoercibleTo SemiGroupOperation T) with
+    monoidOperation: ((T,T) -> T, T) -> %
+      ++ \spad{monoidOperation(f,e)} constructs a operation from
+      ++ the binary mapping \spad{f} with neutral value \spad{e}.
+  Private == Pair(SemiGroupOperation T,T) add
+    monoidOperation(f,e) == per pair(semiGroupOperation f,e)
+    elt(op,x,y) == first(rep op)(x,y)
+    neutralValue op == second rep op
+    coerce(f: %): SemiGroupOperation T == first rep f
+
+@
+
+
+\section{Linear sets}
+
+<<category LLINSET LeftLinearSet>>=
+)abbrev category LLINSET LeftLinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{S}-left linear set if it is stable by left-dilation
+++   by elements in the semigroup \spad{S}.  
+++ See Also: RightLinearSet.
+LeftLinearSet(S: SemiGroup): Category == SetCategory with
+   *: (S,%) -> %       
+     ++ \spad{s*x} is the left-dilation of \spad{x} by \spad{s}.
+
+@
+
+<<category RLINSET RightLinearSet>>=
+)abbrev category RLINSET RightLinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{S}-right linear set if it is stable by right-dilation
+++   by elements in the semigroup \spad{S}.
+++ See Also: LeftLinearSet.
+RightLinearSet(S: SemiGroup): Category == SetCategory with
+   *: (%,S) -> %       
+     ++ \spad{x*s} is the right-dilation of \spad{x} by \spad{s}.
+
+@
+
+<<category LINSET LinearSet>>=
+)abbrev category LINSET LinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{S}-linear set if it is stable by dilation
+++   by elements in the semigroup \spad{S}.
+++ See Also: LeftLinearSet, RightLinearSet.
+LinearSet(S: SemiGroup): Category == Join(LeftLinearSet S, RightLinearSet S)
+
+@
+
+
+\section{category ABELGRP AbelianGroup}
+<<category ABELGRP AbelianGroup>>=
+)abbrev category ABELGRP AbelianGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of abelian groups, i.e. additive monoids where
+++ each element has an additive inverse.
+++
+++ Axioms:
+++   \spad{-(-x) = x}
+++   \spad{x+(-x) = 0}
+-- following domain must be compiled with subsumption disabled
+AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Integer) with
+      -: % -> %           ++ \spad{-x} is the additive inverse of \spad{x}    
+      "-": (%,%) -> %     ++ \spad{x-y} is the difference of \spad{x} 
+                          ++ and \spad{y} i.e. \spad{x + (-y)}.
+    add
+      (x:% - y:%):% == x+(-y)
+      subtractIfCan(x:%, y:%):Union(%, "failed") == (x-y) :: Union(%,"failed")
+      n:NonNegativeInteger * x:% == (n::Integer) * x
+      import RepeatedDoubling(%)
+      if not (% has Ring) then
+        n:Integer * x:% ==
+          zero? n => 0
+          positive? n => double(n pretend PositiveInteger,x)
+          double((-n) pretend PositiveInteger,-x)
+
+@
+
+\section{category ABELMON AbelianMonoid}
+<<category ABELMON AbelianMonoid>>=
+)abbrev category ABELMON AbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of multiplicative monoids, i.e. semigroups with an
+++ additive identity element.
+++
+++ Axioms:
+++   \spad{leftIdentity("+":(%,%)->%,0)}\tab{30}\spad{ 0+x=x }
+++   \spad{rightIdentity("+":(%,%)->%,0)}\tab{30}\spad{ x+0=x }
+-- following domain must be compiled with subsumption disabled
+-- define SourceLevelSubset to be EQUAL
+AbelianMonoid(): Category == AbelianSemiGroup with
+    --operations
+      0: % 
+	++ 0 is the additive identity element.
+      sample: %
+	++ sample yields a value of type %
+      zero?: % -> Boolean
+	++ zero?(x) tests if x is equal to 0.
+      *: (NonNegativeInteger,%) -> %
+        ++ n * x is left-multiplication by a non negative integer
+    add
+      import RepeatedDoubling(%)
+      zero? x == x = 0
+      n:PositiveInteger * x:% == (n::NonNegativeInteger) * x
+      sample() == 0
+      if not (% has Ring) then
+        n:NonNegativeInteger * x:% ==
+          zero? n => 0
+          double(n pretend PositiveInteger,x)
+
+@
+
+
+\section{category ABELSG AbelianSemiGroup}
+
+<<category ABELSG AbelianSemiGroup>>=
+import PositiveInteger
+)abbrev category ABELSG AbelianSemiGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ the class of all additive (commutative) semigroups, i.e.
+++ a set with a commutative and associative operation \spadop{+}.
+++
+++ Axioms:
+++   \spad{associative("+":(%,%)->%)}\tab{30}\spad{ (x+y)+z = x+(y+z) }
+++   \spad{commutative("+":(%,%)->%)}\tab{30}\spad{ x+y = y+x }
+AbelianSemiGroup(): Category == SetCategory with
+    --operations
+      +: (%,%) -> %                  ++ x+y computes the sum of x and y.
+      *: (PositiveInteger,%) -> %
+        ++ n*x computes the left-multiplication of x by the positive integer n.
+        ++ This is equivalent to adding x to itself n times.
+    add
+      import RepeatedDoubling(%)
+      if not (% has Ring) then
+        n:PositiveInteger * x:% == double(n,x)
+
+@
+
+\section{category ALGEBRA Algebra}
+<<category ALGEBRA Algebra>>=
+)abbrev category ALGEBRA Algebra
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of associative algebras (modules which are themselves rings).
+++
+++ Axioms:
+++   \spad{(b+c)::% = (b::%) + (c::%)}
+++   \spad{(b*c)::% = (b::%) * (c::%)}
+++   \spad{(1::R)::% = 1::%}
+++   \spad{b*x = (b::%)*x}
+++   \spad{r*(a*b) = (r*a)*b = a*(r*b)}
+Algebra(R:CommutativeRing): Category ==
+  Join(Ring, Module R, CoercibleFrom R)
+ add
+  coerce(x:R):% == x * 1$%
+
+@
+
+\section{category BASTYPE BasicType}
+
+<<category BASTYPE BasicType>>=
+import Boolean
+)abbrev category BASTYPE BasicType
+--% BasicType
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{BasicType} is the basic category for describing a collection
+++ of elements with \spadop{=} (equality).
+BasicType(): Category == Type with
+      =: (%,%) -> Boolean    ++ x=y tests if x and y are equal.
+      ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
+      before?: (%,%) -> Boolean
+        ++ \spad{before?(x,y)} holds if the system representation
+        ++ of \spad{x} comes before that of \spad{y} in a
+        ++ an implementation defined manner.
+   add
+      x = y == not before?(x,y) and not before?(y,x)
+      x:% ~= y:% == not(x=y)
+      before?(x,y) == %before?(x,y)$Foreign(Builtin)
+
+@
+
+\section{Ordered Types}
+
+<<category ORDTYPE OrderedType>>=
+)abbrev category ORDTYPE OrderedType
+++ Author: Gabriel Dos Reis
+++ Date Created: June 28, 2010
+++ Date Last Modified: June 28, 2010
+++ See Also: OrderedSet
+++ Description:
+++   Category of types equipped with a total ordering.
+++ Axioms:
+++   forall(x,y)
+++     x > y  <=> y < x
+++     x <= y <=> not(y > x)
+++     x >= y <=> not(x < y)
+++     x <= y and x >= y => x = y
+OrderedType(): Category == BasicType with
+    <  : (%,%) -> Boolean
+      ++ \spad{x < y} holds if \spad{x} is less than \spad{y} in the
+      ++ current domain.
+    >  : (%,%) -> Boolean
+      ++ \spad{x > y} holds if \spad{x} is greater than \spad{y} in the
+      ++ current domain.
+    <= : (%,%) -> Boolean
+      ++ \spad{x <= y} holds if \spad{x} is less or equal than \spad{y}
+      ++ in the current domain.
+    >= : (%,%) -> Boolean
+      ++ \spad{x <= y} holds if \spad{x} is greater or equal than \spad{y}
+      ++ in the current domain.
+    max: (%,%) -> %
+      ++ \spad{max(x,y)} returns the maximum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
+    min: (%,%) -> %
+      ++ \spad{min(x,y)} returns the minimum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
+  add
+    x > y  == y < x
+    x <= y == not(y < x)
+    x >= y == not(x < y)
+    x = y  == not(x < y or y < x)
+    max(x,y) ==
+      x < y => y
+      x
+    min(x,y) ==
+      x < y => x
+      y
+    before?(x,y) == x < y
+
+@
+
+\section{Ordered Structure}
+
+<<domain ORDSTRCT OrderedStructure>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: June 28, 2010
+++ Date Last Modified: June 28, 2010
+++ See Also: OrderedType
+++ Description:
+++   This domain turns any total ordering \spad{f} on a type \spad{T} into
+++   a model of the category \spadtype{OrderedType}.
+)abbrev domain ORDSTRCT OrderedStructure
+OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
+  Public == Join(OrderedType,HomotopicTo T) with
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
+  Private == add
+    Rep == T
+    coerce(x: %): T == rep x
+    coerce(y: T): % == per y
+    x < y  == f(rep x,rep y)
+    if T has CoercibleTo OutputForm then
+      coerce(x: %): OutputForm == rep(x)::OutputForm
+
+@
+
+
+
+\section{category BMODULE BiModule}
+
+<<category BMODULE BiModule>>=
+)abbrev category BMODULE BiModule
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A \spadtype{BiModule} is both a left and right module with respect
+++ to potentially different rings.
+++
+++ Axiom:
+++   \spad{ r*(x*s) = (r*x)*s }
+BiModule(R:Ring,S:Ring):Category ==
+  Join(LeftModule(R),RightModule(S)) with
+     leftUnitary ++ \spad{1 * x = x}
+     rightUnitary ++ \spad{x * 1 = x}
+
+@
+\section{category CABMON CancellationAbelianMonoid}
+<<category CABMON CancellationAbelianMonoid>>=
+)abbrev category CABMON CancellationAbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Davenport & Trager I
+++ Description:
+++ This is an \spadtype{AbelianMonoid} with the cancellation property, i.e.
+++ \spad{ a+b = a+c => b=c }.
+++ This is formalised by the partial subtraction operator,
+++ which satisfies the axioms listed below:
+++
+++ Axioms:
+++   \spad{c = a+b <=> c-b = a}
+CancellationAbelianMonoid(): Category == AbelianMonoid with
+    --operations
+      subtractIfCan: (%,%) -> Union(%,"failed")
+         ++ subtractIfCan(x, y) returns an element z such that \spad{z+y=x}
+         ++ or "failed" if no such element exists.
+
+@
+
+\section{category CHARNZ CharacteristicNonZero}
+<<category CHARNZ CharacteristicNonZero>>=
+)abbrev category CHARNZ CharacteristicNonZero
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Rings of Characteristic Non Zero
+CharacteristicNonZero():Category == Ring with
+    charthRoot: % -> Maybe %
+       ++ charthRoot(x) returns the pth root of x
+       ++ where p is the characteristic of the ring.
+
+@
+\section{category CHARZ CharacteristicZero}
+<<category CHARZ CharacteristicZero>>=
+)abbrev category CHARZ CharacteristicZero
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Rings of Characteristic Zero.
+CharacteristicZero():Category == Ring
+
+@
+\section{category COMRING CommutativeRing}
+<<category COMRING CommutativeRing>>=
+)abbrev category COMRING CommutativeRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of commutative rings with unity, i.e. rings where
+++ \spadop{*} is commutative, and which have a multiplicative identity.
+++ element.
+--CommutativeRing():Category == Join(Ring,BiModule(%:Ring,%:Ring)) with
+CommutativeRing():Category == Join(Ring,BiModule(%,%)) with
+    commutative("*")  ++ multiplication is commutative.
+
+@
+
+\section{Differential Domain}
+
+<<category DIFFDOM DifferentialDomain>>=
+)abbrev category DIFFDOM DifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 13, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate}.  Usually, additional properties
+++   are wanted.  For example, that it obeys the usual Leibniz identity
+++   of differentiation of product, in case of differential rings. One
+++   could also want \spad{differentiate} to obey the chain rule when
+++   considering differential manifolds.
+++   The lack of specific requirement in this category is an implicit
+++   admission that currently \Language{} is not expressive enough to
+++   express the most general notion of differentiation in an adequate
+++   manner, suitable for computational purposes.
+DifferentialDomain(T: Type): Category == Type with
+    differentiate: % -> T
+      ++ \spad{differentiate x} compute the derivative of \spad{x}.
+    D: % -> T
+      ++ \spad{D x} is a shorthand for \spad{differentiate x}
+  add
+    D x ==
+      differentiate x
+
+@
+
+\section{Differential Space}
+
+<<category DIFFSPC DifferentialSpace>>=
+)abbrev category DIFFSPC DifferentialSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 15, 2010
+++ Description:
+++   This category is like \spadtype{DifferentialDomain} where the
+++   target of the differentiation operator is the same as its source.
+DifferentialSpace(): Category == DifferentialDomain % with
+    differentiate: (%, NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,n)} returns the \spad{n}-th
+      ++ derivative of \spad{x}.
+    D: (%, NonNegativeInteger) -> %
+      ++ \spad{D(x, n)} returns the \spad{n}-th derivative of \spad{x}.
+  add
+    differentiate(r, n) ==
+      for i in 1..n repeat r := differentiate r
+      r
+    D(r,n) ==
+      differentiate(r,n)
+
+@
+
+
+\section{Differential Space Extension}
+
+<<category DSEXT DifferentialSpaceExtension>>=
+)abbrev category DSEXT DifferentialSpaceExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   Extension of a base differential space with a derivation.
+++
+DifferentialSpaceExtension(R: Type): Category == Type with
+    differentiate: (%,R -> R) -> %
+      ++ \spad{differentiate(x,d)} computes the derivative of
+      ++ \spad{x}, extending differentiation \spad{d} on \spad{R}.
+    differentiate: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,d,n)} computes the \spad{n}-th derivative
+      ++ of \spad{x} using a derivation extending \spad{d} on \spad{R}.
+    D: (%,R -> R) -> %
+      ++ \spad{D(x,d)} is a shorthand for \spad{differentiate(x,d)}.
+    D: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{D(x,d,n)} is a shorthand for \spad{differentiate(x,d,n)}.
+    if R has DifferentialSpace then DifferentialSpace
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialSpace Symbol
+  add
+    differentiate(x: %, d: R -> R, n: NonNegativeInteger):% ==
+      for i in 1..n repeat x := differentiate(x,d)
+      x
+
+    D(x: %, d: R -> R) ==
+      differentiate(x, d)
+
+    D(x: %, d: R -> R, n: NonNegativeInteger) ==
+      differentiate(x,d,n)
+
+    if R has DifferentialSpace then
+      differentiate x == differentiate(x, differentiate$R)
+
+    if R has PartialDifferentialSpace Symbol then
+      differentiate(x:%, v: Symbol):% ==
+        differentiate(x, differentiate(#1, v)$R)
+
+@
+
+
+\section{category DIFRING DifferentialRing}
+<<category DIFRING DifferentialRing>>=
+)abbrev category DIFRING DifferentialRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An ordinary differential ring, that is, a ring with an operation
+++ \spadfun{differentiate}.
+++
+++ Axioms:
+++   \spad{differentiate(x+y) = differentiate(x)+differentiate(y)}
+++   \spad{differentiate(x*y) = x*differentiate(y) + differentiate(x)*y}
+
+DifferentialRing(): Category == Join(Ring,DifferentialSpace)
+
+@
+
+
+\section{Differential Module}
+
+<<category DIFFMOD DifferentialModule>>=
+)abbrev category DIFFMOD DifferentialModule
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 14, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   An R-module equipped with a distinguised differential operator.
+++   If R is a differential ring, then differentiation on the module
+++   should extend differentiation on the differential ring R.  The
+++   latter can be the null operator. In that case, the differentiation
+++   operator on the module is just an R-linear operator.  For that
+++   reason, we do not require that the ring R be a DifferentialRing; 
+++
+++ Axioms:
+++   \spad{differentiate(x + y) = differentiate(x) + differentiate(x)}
+++   \spad{differentiate(r*y) = r*differentiate(y) + differentiate(r)*y}
+
+DifferentialModule(R: Ring): Category ==
+  Join(BiModule(R,R), DifferentialSpace) with
+    if R has CommutativeRing then Module R
+@
+
+
+\section{category DIFEXT DifferentialExtension}
+<<category DIFEXT DifferentialExtension>>=
+)abbrev category DIFEXT DifferentialExtension
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Differential extensions of a ring R.
+++ Given a differentiation on R, extend it to a differentiation on %.
+
+DifferentialExtension(R:Ring): Category ==
+  Join(Ring,DifferentialSpaceExtension R) with
+    if R has DifferentialRing then DifferentialRing
+    if R has PartialDifferentialRing(Symbol) then
+             PartialDifferentialRing(Symbol)
+
+@
+
+\section{Differential Module Extension}
+
+<<category DMEXT DifferentialModuleExtension>>=
+)abbrev category DMEXT DifferentialModuleExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpaceExtension
+++ Also See:
+++   DifferentialExtension
+++ Description:
+++   Category of modules that extend differential rings.
+++
+DifferentialModuleExtension(R: Ring): Category ==
+  Join(BiModule(R,R),DifferentialSpaceExtension R) with
+    if R has DifferentialSpace then DifferentialModule R
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialModule(R,Symbol)
+@
+
+
+\section{category DIVRING DivisionRing}
+<<category DIVRING DivisionRing>>=
+)abbrev category DIVRING DivisionRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A division ring (sometimes called a skew field),
+++ i.e. a not necessarily commutative ring where
+++ all non-zero elements have multiplicative inverses.
+
+DivisionRing(): Category ==
+ Join(EntireRing, Algebra Fraction Integer) with
+      **: (%,Integer) -> %
+          ++ x**n returns x raised to the integer power n.
+      inv : % -> %
+          ++ inv x returns the multiplicative inverse of x.
+          ++ Error: if x is 0.
+-- Q-algebra is a lie, should be conditional on characteristic 0,
+-- but knownInfo cannot handle the following commented
+--    if % has CharacteristicZero then Algebra Fraction Integer
+    add
+      n: Integer
+      x: %
+      import RepeatedSquaring(%)
+      x ** n: Integer ==
+         zero? n => 1
+         zero? x =>
+            negative? n => error "division by zero"
+            x
+         negative? n =>
+            expt(inv x,(-n) pretend PositiveInteger)
+         expt(x,n pretend PositiveInteger)
+--    if % has CharacteristicZero() then
+      q:Fraction(Integer) * x:% == numer(q) * inv(denom(q)::%) * x
+
+@
+
+\section{category ENTIRER EntireRing}
+<<category ENTIRER EntireRing>>=
+)abbrev category ENTIRER EntireRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Entire Rings (non-commutative Integral Domains), i.e. a ring
+++ not necessarily commutative which has no zero divisors.
+++
+++ Axioms:
+++   \spad{ab=0 => a=0 or b=0}  -- known as noZeroDivisors
+++   \spad{not(1=0)}
+EntireRing():Category == Join(Ring,BiModule(%,%)) with
+      noZeroDivisors  ++ if a product is zero then one of the factors
+                      ++ must be zero.
+
+@
+
+\section{category EUCDOM EuclideanDomain}
+<<category EUCDOM EuclideanDomain>>=
+)abbrev category EUCDOM EuclideanDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A constructive euclidean domain, i.e. one can divide producing
+++ a quotient and a remainder where the remainder is either zero
+++ or is smaller (\spadfun{euclideanSize}) than the divisor.
+++
+++ Conditional attributes:
+++   multiplicativeValuation\tab{25}\spad{Size(a*b)=Size(a)*Size(b)}
+++   additiveValuation\tab{25}\spad{Size(a*b)=Size(a)+Size(b)}
+
+EuclideanDomain(): Category == PrincipalIdealDomain with
+    --operations
+      sizeLess?: (%,%) -> Boolean
+         ++ sizeLess?(x,y) tests whether x is strictly
+         ++ smaller than y with respect to the \spadfunFrom{euclideanSize}{EuclideanDomain}.
+      euclideanSize: % -> NonNegativeInteger
+         ++ euclideanSize(x) returns the euclidean size of the element x.
+         ++ Error: if x is zero.
+      divide: (%,%) -> Record(quotient:%,remainder:%)
+         ++ divide(x,y) divides x by y producing a record containing a
+         ++ \spad{quotient} and \spad{remainder},
+         ++ where the remainder is smaller (see \spadfunFrom{sizeLess?}{EuclideanDomain})
+         ++ than the divisor y.
+      quo : (%,%) -> %
+         ++ x quo y is the same as \spad{divide(x,y).quotient}.
+         ++ See \spadfunFrom{divide}{EuclideanDomain}.
+      rem: (%,%) -> %
+         ++ x rem y is the same as \spad{divide(x,y).remainder}.
+         ++ See \spadfunFrom{divide}{EuclideanDomain}.
+      extendedEuclidean: (%,%) -> Record(coef1:%,coef2:%,generator:%)
+                     -- formerly called princIdeal
+            ++ extendedEuclidean(x,y) returns a record rec where
+            ++ \spad{rec.coef1*x+rec.coef2*y = rec.generator} and
+            ++ rec.generator is a gcd of x and y.
+            ++ The gcd is unique only
+            ++ up to associates if \spadatt{canonicalUnitNormal} is not asserted.
+            ++ \spadfun{principalIdeal} provides a version of this operation
+            ++ which accepts an arbitrary length list of arguments.
+      extendedEuclidean: (%,%,%) -> Union(Record(coef1:%,coef2:%),"failed")
+                     -- formerly called expressIdealElt
+          ++ extendedEuclidean(x,y,z) either returns a record rec
+          ++ where \spad{rec.coef1*x+rec.coef2*y=z} or returns "failed"
+          ++ if z cannot be expressed as a linear combination of x and y.
+      multiEuclidean: (List %,%) -> Union(List %,"failed")
+          ++ multiEuclidean([f1,...,fn],z) returns a list of coefficients
+          ++ \spad{[a1, ..., an]} such that
+          ++ \spad{ z / prod fi = sum aj/fj}.
+          ++ If no such list of coefficients exists, "failed" is returned.
+    add
+      -- declarations
+      x,y,z: %
+      l: List %
+      -- definitions
+      sizeLess?(x,y) ==
+            zero? y => false
+            zero? x => true
+            euclideanSize(x)<euclideanSize(y)
+      x quo y == divide(x,y).quotient --divide must be user-supplied
+      x rem y == divide(x,y).remainder
+      x exquo y ==
+         zero? x => 0
+         zero? y => "failed"
+         qr:=divide(x,y)
+         zero?(qr.remainder) => qr.quotient
+         "failed"
+      gcd(x,y) ==                --Euclidean Algorithm
+         x:=unitCanonical x
+         y:=unitCanonical y
+         while not zero? y repeat
+            (x,y):= (y,x rem y)
+            y:=unitCanonical y             -- this doesn't affect the
+                                           -- correctness of Euclid's algorithm,
+                                           -- but
+                                           -- a) may improve performance
+                                           -- b) ensures gcd(x,y)=gcd(y,x)
+                                           --    if canonicalUnitNormal
+         x
+      IdealElt ==> Record(coef1:%,coef2:%,generator:%)
+      unitNormalizeIdealElt(s:IdealElt):IdealElt ==
+         (u,c,a):=unitNormal(s.generator)
+         one? a => s
+         [a*s.coef1,a*s.coef2,c]$IdealElt
+      extendedEuclidean(x,y) ==         --Extended Euclidean Algorithm
+         s1:=unitNormalizeIdealElt([1$%,0$%,x]$IdealElt)
+         s2:=unitNormalizeIdealElt([0$%,1$%,y]$IdealElt)
+         zero? y => s1
+         zero? x => s2
+         while not zero?(s2.generator) repeat
+            qr:= divide(s1.generator, s2.generator)
+            s3:=[s1.coef1 - qr.quotient * s2.coef1,
+                 s1.coef2 - qr.quotient * s2.coef2, qr.remainder]$IdealElt
+            s1:=s2
+            s2:=unitNormalizeIdealElt s3
+         if not(zero?(s1.coef1)) and not sizeLess?(s1.coef1,y)
+           then
+              qr:= divide(s1.coef1,y)
+              s1.coef1:= qr.remainder
+              s1.coef2:= s1.coef2 + qr.quotient * x
+              s1 := unitNormalizeIdealElt s1
+         s1
+
+      TwoCoefs ==> Record(coef1:%,coef2:%)
+      extendedEuclidean(x,y,z) ==
+         zero? z => [0,0]$TwoCoefs
+         s:= extendedEuclidean(x,y)
+         (w:= z exquo s.generator) case "failed" => "failed"
+         zero? y =>
+            [s.coef1 * w, s.coef2 * w]$TwoCoefs
+         qr:= divide((s.coef1 * w), y)
+         [qr.remainder, s.coef2 * w + qr.quotient * x]$TwoCoefs
+      principalIdeal l ==
+         l = [] => error "empty list passed to principalIdeal"
+         rest l = [] =>
+              uca:=unitNormal(first l)
+              [[uca.unit],uca.canonical]
+         rest rest l = [] =>
+             u:= extendedEuclidean(first l,second l)
+             [[u.coef1, u.coef2], u.generator]
+         v:=principalIdeal rest l
+         u:= extendedEuclidean(first l,v.generator)
+         [[u.coef1,:[u.coef2*vv for vv in v.coef]],u.generator]
+      expressIdealMember(l,z) ==
+         zero? z => just [0 for v in l]
+         pid := principalIdeal l
+         (q := z exquo (pid.generator)) case "failed" => nothing
+         just [q*v for v in pid.coef]
+      multiEuclidean(l,z) ==
+         n := #l
+         zero? n => error "empty list passed to multiEuclidean"
+         one? n => [z]
+         l1 := copy l
+         l2 := split!(l1, n quo 2)
+         u:= extendedEuclidean(*/l1, */l2, z)
+         u case "failed" => "failed"
+         v1 := multiEuclidean(l1,u.coef2)
+         v1 case "failed" => "failed"
+         v2 := multiEuclidean(l2,u.coef1)
+         v2 case "failed" => "failed"
+         concat(v1,v2)
+
+@
+
+\section{category FIELD Field}
+
+<<category FIELD Field>>=
+)abbrev category FIELD Field
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of commutative fields, i.e. commutative rings
+++ where all non-zero elements have multiplicative inverses.
+++ The \spadfun{factor} operation while trivial is useful to have defined.
+++
+++ Axioms:
+++   \spad{a*(b/a) = b}
+++   \spad{inv(a) = 1/a}
+
+Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
+  DivisionRing) with
+    --operations
+      /: (%,%) -> %
+        ++ x/y divides the element x by the element y.
+        ++ Error: if y is 0.
+      canonicalUnitNormal  ++ either 0 or 1.
+      canonicalsClosed     ++ since \spad{0*0=0}, \spad{1*1=1}
+    add
+      --declarations
+      x,y: %
+      n: Integer
+      -- definitions
+      UCA ==> Record(unit:%,canonical:%,associate:%)
+      unitNormal(x) ==
+          if zero? x then [1$%,0$%,1$%]$UCA else [x,1$%,inv(x)]$UCA
+      unitCanonical(x) == if zero? x then x else 1
+      associates?(x,y) == if zero? x then zero? y else not(zero? y)
+      inv x ==((u:=recip x) case "failed" => error "not invertible"; u)
+      x exquo y == (zero? y => "failed"; x / y)
+      gcd(x,y) == 1
+      euclideanSize(x) == 0
+      prime? x == false
+      squareFree x == x::Factored(%)
+      factor x == x::Factored(%)
+      x / y == (zero? y => error "catdef: division by zero"; x * inv(y))
+      divide(x,y) == [x / y,0]
+
+@
+\section{category FINITE Finite}
+<<category FINITE Finite>>=
+)abbrev category FINITE Finite
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of domains composed of a finite set of elements.
+++ We include the functions \spadfun{lookup} and \spadfun{index} to give a bijection
+++ between the finite set and an initial segment of positive integers.
+++
+++ Axioms:
+++   \spad{lookup(index(n)) = n}
+++   \spad{index(lookup(s)) = s}
+
+Finite(): Category == SetCategory with
+      size: () ->  NonNegativeInteger
+        ++ size() returns the number of elements in the set.
+      index: PositiveInteger -> %
+        ++ index(i) takes a positive integer i less than or equal
+        ++ to \spad{size()} and
+        ++ returns the \spad{i}-th element of the set. This operation establishs a bijection
+        ++ between the elements of the finite set and \spad{1..size()}.
+      lookup: % -> PositiveInteger
+        ++ lookup(x) returns a positive integer such that
+        ++ \spad{x = index lookup x}.
+      random: () -> %
+        ++ random() returns a random element from the set.
+  add
+      --FIXME: Tthe only purpose of this local function is to bring
+      --FIXME: the compiler to admission that the successor of a
+      --FIXME: nonnegative integer has positive value.
+      --FIXME: Take it out when the its logic is sufficiently advanced.
+      succ(x: NonNegativeInteger): PositiveInteger ==
+        (1 + x) : PositiveInteger
+      random() ==
+        index succ random(size())$NonNegativeInteger
+@
+\section{category FLINEXP FullyLinearlyExplicitRingOver}
+<<category FLINEXP FullyLinearlyExplicitRingOver>>=
+)abbrev category FLINEXP FullyLinearlyExplicitRingOver
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ S is \spadtype{FullyLinearlyExplicitRingOver R} means that S is a
+++ \spadtype{LinearlyExplicitRingOver R} and, in addition, if R is a
+++ \spadtype{LinearlyExplicitRingOver Integer}, then so is S
+FullyLinearlyExplicitRingOver(R:Ring):Category ==
+  LinearlyExplicitRingOver R with
+    if (R has LinearlyExplicitRingOver Integer) then
+            LinearlyExplicitRingOver Integer
+ add
+  if not(R is Integer) then
+    if (R has LinearlyExplicitRingOver Integer) then
+      reducedSystem(m:Matrix %):Matrix(Integer) ==
+        reducedSystem(reducedSystem(m)@Matrix(R))
+
+      reducedSystem(m:Matrix %, v:Vector %):
+        Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
+          rec := reducedSystem(m, v)@Record(mat:Matrix R, vec:Vector R)
+          reducedSystem(rec.mat, rec.vec)
+
+@
+\section{category GCDDOM GcdDomain}
+<<category GCDDOM GcdDomain>>=
+)abbrev category GCDDOM GcdDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Davenport & Trager 1
+++ Description:
+++ This category describes domains where
+++ \spadfun{gcd} can be computed but where there is no guarantee
+++ of the existence of \spadfun{factor} operation for factorisation into irreducibles.
+++ However, if such a \spadfun{factor} operation exist, factorization will be
+++ unique up to order and units.
+
+GcdDomain(): Category == IntegralDomain with
+    --operations
+      gcd: (%,%) -> %
+            ++ gcd(x,y) returns the greatest common divisor of x and y.
+            -- gcd(x,y) = gcd(y,x) in the presence of canonicalUnitNormal,
+            -- but not necessarily elsewhere
+      gcd: List(%) -> %
+            ++ gcd(l) returns the common gcd of the elements in the list l.
+      lcm: (%,%) -> %
+            ++ lcm(x,y) returns the least common multiple of x and y.
+            -- lcm(x,y) = lcm(y,x) in the presence of canonicalUnitNormal,
+            -- but not necessarily elsewhere
+      lcm: List(%) -> %
+            ++ lcm(l) returns the least common multiple of the elements of the list l.
+      gcdPolynomial: (SparseUnivariatePolynomial %, SparseUnivariatePolynomial %) ->
+           SparseUnivariatePolynomial %
+	    ++ gcdPolynomial(p,q) returns the greatest common divisor (gcd) of 
+	    ++ univariate polynomials over the domain
+    add
+      lcm(x: %,y: %) ==
+        zero? y => 0
+        zero? x => 0
+        LCM : Union(%,"failed") := y exquo gcd(x,y)
+        LCM case % =>  x * LCM
+        error "bad gcd in lcm computation"
+      lcm(l:List %) == reduce(lcm,l,1,0)
+      gcd(l:List %) == reduce(gcd,l,0,1)
+      SUP ==> SparseUnivariatePolynomial
+      gcdPolynomial(p1,p2) ==
+        zero? p1 => unitCanonical p2
+        zero? p2 => unitCanonical p1
+        c1:= content(p1); c2:= content(p2)
+        p1:= (p1 exquo c1)::SUP %
+        p2:= (p2 exquo c2)::SUP %
+        if positive?(e1:=minimumDegree p1) then
+          p1:=(p1 exquo monomial(1,e1))::SUP %
+        if positive?(e2:=minimumDegree p2) then
+          p2:=(p2 exquo monomial(1,e2))::SUP %
+        e1:=min(e1,e2); c1:=gcd(c1,c2)
+        p1:=
+           zero? degree p1 or zero? degree p2 => monomial(c1,0)
+           p:= subResultantGcd(p1,p2)
+           zero? degree p => monomial(c1,0)
+           c2:= gcd(leadingCoefficient p1,leadingCoefficient p2)
+           unitCanonical(c1 * primitivePart(((c2*p) exquo leadingCoefficient p)::SUP %))
+        zero? e1 => p1
+        monomial(1,e1)*p1
+
+@
+
+\section{category GROUP Group}
+<<category GROUP Group>>=
+)abbrev category GROUP Group
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of multiplicative groups, i.e. monoids with
+++ multiplicative inverses.
+++
+++ Axioms:
+++   \spad{leftInverse("*":(%,%)->%,inv)}\tab{30}\spad{ inv(x)*x = 1 }
+++   \spad{rightInverse("*":(%,%)->%,inv)}\tab{30}\spad{ x*inv(x) = 1 }
+Group(): Category == Monoid with
+    --operations
+      inv: % -> %             ++ inv(x) returns the inverse of x.
+      /: (%,%) -> %           ++ x/y is the same as x times the inverse of y.
+      **: (%,Integer) -> %    ++ x**n returns x raised to the integer power n.
+      unitsKnown                ++ unitsKnown asserts that recip only returns
+                                ++ "failed" for non-units.
+      conjugate: (%,%) -> %
+        ++ conjugate(p,q) computes \spad{inv(q) * p * q}; this is 'right action
+        ++ by conjugation'.
+      commutator: (%,%) -> %
+        ++ commutator(p,q) computes \spad{inv(p) * inv(q) * p * q}.
+    add
+      import RepeatedSquaring(%)
+      x:% / y:% == x*inv(y)
+      recip(x:%) == inv(x)
+      x:% ** n:Integer ==
+         zero? n => 1
+         negative? n => expt(inv(x),(-n) pretend PositiveInteger)
+         expt(x,n pretend PositiveInteger)
+      conjugate(p,q) == inv(q) * p * q
+      commutator(p,q) == inv(p) * inv(q) * p * q
+
+@
+\section{category INTDOM IntegralDomain}
+<<category INTDOM IntegralDomain>>=
+)abbrev category INTDOM IntegralDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Davenport & Trager I
+++ Description:
+++ The category of commutative integral domains, i.e. commutative
+++ rings with no zero divisors.
+++
+++ Conditional attributes:
+++   canonicalUnitNormal\tab{20}the canonical field is the same for all associates
+++   canonicalsClosed\tab{20}the product of two canonicals is itself canonical
+
+IntegralDomain(): Category ==
+--  Join(CommutativeRing, Algebra(%:CommutativeRing), EntireRing) with
+  Join(CommutativeRing, Algebra(%), EntireRing) with
+    --operations
+      exquo: (%,%) -> Union(%,"failed")
+            ++ exquo(a,b) either returns an element c such that
+            ++ \spad{c*b=a} or "failed" if no such element can be found.
+      unitNormal: % -> Record(unit:%,canonical:%,associate:%)
+            ++ unitNormal(x) tries to choose a canonical element
+            ++ from the associate class of x.
+            ++ The attribute canonicalUnitNormal, if asserted, means that
+            ++ the "canonical" element is the same across all associates of x
+            ++ if \spad{unitNormal(x) = [u,c,a]} then
+            ++ \spad{u*c = x}, \spad{a*u = 1}.
+      unitCanonical: % -> %
+            ++ \spad{unitCanonical(x)} returns \spad{unitNormal(x).canonical}.
+      associates?: (%,%) -> Boolean
+        ++ associates?(x,y) tests whether x and y are associates, i.e.
+        ++ differ by a unit factor.
+      unit?: % -> Boolean
+        ++ unit?(x) tests whether x is a unit, i.e. is invertible.
+ add
+      -- declaration
+      x,y: %
+      -- definitions
+      UCA ==> Record(unit:%,canonical:%,associate:%)
+      if not (% has Field) then
+        unitNormal(x) == [1$%,x,1$%]$UCA -- the non-canonical definition
+      unitCanonical(x) == unitNormal(x).canonical -- always true
+      recip(x) == if zero? x then "failed" else 1$% exquo x
+      unit?(x) == (recip x case "failed" => false; true)
+      if % has canonicalUnitNormal then
+         associates?(x,y) ==
+           (unitNormal x).canonical = (unitNormal y).canonical
+       else
+         associates?(x,y) ==
+           zero? x => zero? y
+           zero? y => false
+           x exquo y case "failed" => false
+           y exquo x case "failed" => false
+           true
+
+@
+
+
+\section{category LMODULE LeftModule}
+<<category LMODULE LeftModule>>=
+)abbrev category LMODULE LeftModule
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of left modules over an rng (ring not necessarily with unit).
+++ This is an abelian group which supports left multiplation by elements of
+++ the rng.
+++
+++ Axioms:
+++   \spad{ (a*b)*x = a*(b*x) }
+++   \spad{ (a+b)*x = (a*x)+(b*x) }
+++   \spad{ a*(x+y) = (a*x)+(a*y) }
+LeftModule(R:Rng):Category == Join(AbelianGroup, LeftLinearSet R)
+
+@
+
+\section{category LINEXP LinearlyExplicitRingOver}
+<<category LINEXP LinearlyExplicitRingOver>>=
+)abbrev category LINEXP LinearlyExplicitRingOver
+++ Author:
+++ Date Created:
+++ Date Last Updated: June 18, 2010
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    An extension of left-module with an explicit linear dependence test.
+LinearlyExplicitRingOver(R:Ring): Category == LeftModule R with
+  leftReducedSystem: Vector % -> Matrix R
+    ++ \spad{leftReducedSystem [v1,...,vn]} returns a matrix \spad{M}
+    ++ with coefficients in \spad{R} such that the system of equations
+    ++ \spad{c1*v1 + ... + cn*vn = 0$%} has the same solution as
+    ++ \spad{c * M = 0} where \spad{c} is the row vector \spad{[c1,...cn]}.
+  leftReducedSystem: (Vector %,%) -> Record(mat: Matrix R,vec: Vector R)
+    ++ \spad{reducedSystem([v1,...,vn],u)} returns a matrix \spad{M}
+    ++ with coefficients in \spad{R} and a vector \spad{w} such
+    ++ that the system of equations \spad{c1*v1 + ... + cn*vn = u}
+    ++ has the same solution as \spad{c * M = w} where \spad{c}
+    ++ is the row vector \spad{[c1,...cn]}.
+  reducedSystem: Matrix % -> Matrix R
+    ++ reducedSystem(A) returns a matrix B such that \spad{A x = 0} and \spad{B x = 0}
+    ++ have the same solutions in R.
+  reducedSystem: (Matrix %,Vector %) -> Record(mat:Matrix R,vec:Vector R)
+    ++ reducedSystem(A, v) returns a matrix B and a vector w such that
+    ++ \spad{A x = v} and \spad{B x = w} have the same solutions in R.
+
+@
+\section{category MODULE Module}
+<<category MODULE Module>>=
+)abbrev category MODULE Module
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of modules over a commutative ring.
+++
+++ Axioms:
+++   \spad{1*x = x}
+++   \spad{(a*b)*x = a*(b*x)}
+++   \spad{(a+b)*x = (a*x)+(b*x)}
+++   \spad{a*(x+y) = (a*x)+(a*y)}
+Module(R:CommutativeRing): Category == Join(BiModule(R,R), LinearSet R)
+  add
+    if not(R is %) then x:%*r:R == r*x
+
+@
+\section{category MONOID Monoid}
+<<category MONOID Monoid>>=
+)abbrev category MONOID Monoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of multiplicative monoids, i.e. semigroups with a
+++ multiplicative identity element.
+++
+++ Axioms:
+++    \spad{leftIdentity("*":(%,%)->%,1)}\tab{30}\spad{1*x=x}
+++    \spad{rightIdentity("*":(%,%)->%,1)}\tab{30}\spad{x*1=x}
+++
+++ Conditional attributes:
+++    unitsKnown\tab{15}\spadfun{recip} only returns "failed" on non-units
+Monoid(): Category == SemiGroup with
+    --operations
+      1:              %                   ++ 1 is the multiplicative identity.
+      sample:             %               ++ sample yields a value of type %
+      one?: % -> Boolean                  ++ one?(x) tests if x is equal to 1.
+      **: (%,NonNegativeInteger) -> %     ++ x**n returns the repeated product
+                                          ++ of x n times, i.e. exponentiation.
+      recip: % -> Union(%,"failed")
+          ++ recip(x) tries to compute the multiplicative inverse for x
+          ++ or "failed" if it cannot find the inverse (see unitsKnown).
+    add
+      import RepeatedSquaring(%)
+      one? x == x = 1
+      sample() == 1
+      recip x ==
+       one? x => x
+       "failed"
+      x:% ** n:NonNegativeInteger ==
+         zero? n => 1
+         expt(x,n pretend PositiveInteger)
+
+@
+
+\section{category OAGROUP OrderedAbelianGroup}
+<<category OAGROUP OrderedAbelianGroup>>=
+)abbrev category OAGROUP OrderedAbelianGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated: March 10, 2011
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also abelian groups, such that the addition preserves
+++ the ordering.
+
+OrderedAbelianGroup(): Category ==
+    Join(OrderedCancellationAbelianMonoid, AbelianGroup) with
+      negative?: % -> Boolean
+        ++ \spad{negative?(x)} holds when \spad{x} is less than \spad{0}.
+      sign: % -> Integer
+        ++ \spad{sign(x)} is \spad{1} if \spad{x} is positive,
+        ++ \spad{-1} if \spad{x} is negative, and \spad{0} otherwise.
+      abs: % -> %
+        ++ \spad{abs(x)} returns the absolute value of \spad{x}.
+  add
+    negative? x == x < 0
+    sign x ==
+      positive? x => 1
+      negative? x => -1
+      0
+    abs x ==
+      positive? x => x
+      negative? x => -x
+      0
+@
+
+\section{category OAMON OrderedAbelianMonoid}
+<<category OAMON OrderedAbelianMonoid>>=
+)abbrev category OAMON OrderedAbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also abelian monoids, such that the addition
+++ preserves the ordering.
+
+OrderedAbelianMonoid(): Category ==
+    Join(OrderedAbelianSemiGroup, AbelianMonoid) with
+      positive?: % -> Boolean
+        ++ \spad{positive?(x)} holds when \spad{x} is greater
+        ++ than \spad{0}.
+  add    
+    positive? x == 0 < x
+
+@
+\section{category OAMONS OrderedAbelianMonoidSup}
+<<category OAMONS OrderedAbelianMonoidSup>>=
+)abbrev category OAMONS OrderedAbelianMonoidSup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain is an OrderedAbelianMonoid with a \spadfun{sup} operation added.
+++ The purpose of the \spadfun{sup} operator in this domain is to act as a supremum
+++ with respect to the partial order imposed by \spadop{-}, rather than with respect to
+++ the total \spad{>} order (since that is "max").
+++
+++ Axioms:
+++   \spad{sup(a,b)-a \~~= "failed"}
+++   \spad{sup(a,b)-b \~~= "failed"}
+++   \spad{x-a \~~= "failed" and x-b \~~= "failed" => x >= sup(a,b)}
+
+OrderedAbelianMonoidSup(): Category == OrderedCancellationAbelianMonoid with
+    --operation
+      sup: (%,%) -> %
+        ++ sup(x,y) returns the least element from which both
+        ++ x and y can be subtracted.
+
+@
+\section{category OASGP OrderedAbelianSemiGroup}
+<<category OASGP OrderedAbelianSemiGroup>>=
+)abbrev category OASGP OrderedAbelianSemiGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also abelian semigroups, such that the addition
+++ preserves the ordering.
+++   \spad{ x < y => x+z < y+z}
+
+OrderedAbelianSemiGroup(): Category == Join(OrderedSet, AbelianSemiGroup)
+
+@
+
+\section{The Ordered Semigroup Category}
+<<category OSGROUP OrderedSemiGroup>>=
+)abbrev category OSGROUP OrderedSemiGroup
+++ Author: Gabriel Dos Reis
+++ Date Create May 25, 2008
+++ Date Last Updated: May 25, 2008
+++ Description:  Semigroups with compatible ordering.
+OrderedSemiGroup(): Category == Join(OrderedSet, SemiGroup)
+@
+
+\section{category OCAMON OrderedCancellationAbelianMonoid}
+<<category OCAMON OrderedCancellationAbelianMonoid>>=
+)abbrev category OCAMON OrderedCancellationAbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also abelian cancellation monoids, such that the addition
+++ preserves the ordering.
+
+OrderedCancellationAbelianMonoid(): Category ==
+        Join(OrderedAbelianMonoid, CancellationAbelianMonoid)
+
+@
+\section{category ORDFIN OrderedFinite}
+<<category ORDFIN OrderedFinite>>=
+)abbrev category ORDFIN OrderedFinite
+++ Author:
+++ Date Created:
+++ Date Last Updated: December 27, 2008
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered finite sets.
+
+OrderedFinite(): Category == Join(OrderedSet, Finite) with
+     min: % ++ \spad{min} is the minimum value of %.
+     max: % ++ \spad{max} is the maximum value of %.
+
+@
+\section{category OINTDOM OrderedIntegralDomain}
+<<category OINTDOM OrderedIntegralDomain>>=
+)abbrev category OINTDOM OrderedIntegralDomain
+++ Author: JH Davenport (after L Gonzalez-Vega)
+++ Date Created: 30.1.96
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Description:
+++ The category of ordered commutative integral domains, where ordering
+++ and the arithmetic operations are compatible
+++
+
+OrderedIntegralDomain(): Category ==
+  Join(IntegralDomain, OrderedRing) 
+
+@
+
+\section{category ORDMON OrderedMonoid}
+<<category ORDMON OrderedMonoid>>=
+)abbrev category ORDMON OrderedMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated: May 28, 2008
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also monoids, such that multiplication
+++ preserves the ordering.
+++
+++ Axioms:
+++   \spad{x < y => x*z < y*z}
+++   \spad{x < y => z*x < z*y}
+
+OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
+
+@
+\section{category ORDRING OrderedRing}
+<<category ORDRING OrderedRing>>=
+)abbrev category ORDRING OrderedRing
+++ Author:
+++ Date Created:
+++ Date Last Updated: March 10, 2011
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also rings, that is, domains where the ring
+++ operations are compatible with the ordering.
+++
+++ Axiom:
+++   \spad{0<a and b<c => ab< ac}
+
+OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid)
+
+@
+
+\section{category ORDSET OrderedSet}
+
+<<category ORDSET OrderedSet>>=
+import Boolean
+)abbrev category ORDSET OrderedSet
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of totally ordered sets, that is, sets such that for each pair of elements \spad{(a,b)}
+++ exactly one of the following relations holds \spad{a<b or a=b or b<a}
+++ and the relation is transitive, i.e.  \spad{a<b and b<c => a<c}.
+
+OrderedSet(): Category == Join(SetCategory,OrderedType) 
+
+@
+
+\section{Partial Differential Domain}
+
+<<category PDDOM PartialDifferentialDomain>>=
+)abbrev category PDDOM PartialDifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Modified: June 16, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate} for partial differentiation with
+++   respect to some domain of variables.
+++ See Also:
+++   DifferentialDomain, PartialDifferentialSpace
+PartialDifferentialDomain(T: Type, S: Type): Category == Type with
+    differentiate: (%,S) -> T
+      ++ \spad{differentiate(x,v)} computes the partial derivative
+      ++ of \spad{x} with respect to \spad{v}.
+    D: (%,S) -> T
+      ++ \spad{D(x,v)} is a shorthand for \spad{differentiate(x,v)}
+  add
+    D(x,v) ==
+      differentiate(x,v)
+
+@
+
+\section{Partial Differential Space}
+
+<<category PDSPC PartialDifferentialSpace>>=
+)abbrev category PDSPC PartialDifferentialSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Modified: June 16, 2010
+++ Description:
+++   This category captures the interface of domains stable by partial
+++   differentiation with respect to variables from some domain.
+++ See Also:
+++   PartialDifferentialDomain
+PartialDifferentialSpace(S: SetCategory): Category ==
+    PartialDifferentialDomain(%,S) with
+      differentiate: (%,List S) -> %
+        ++ \spad{differentiate(x,[s1,...sn])} computes successive
+        ++ partial derivatives, i.e.
+        ++ \spad{differentiate(...differentiate(x, s1)..., sn)}.
+      differentiate: (%,S,NonNegativeInteger) -> %
+        ++ \spad{differentiate(x,s,n)} computes multiple partial
+        ++ derivatives, i.e. \spad{n}-th derivative of \spad{x}
+        ++ with respect to \spad{s}.
+      differentiate: (%,List S,List NonNegativeInteger) -> %
+        ++ \spad{differentiate(x,[s1,...,sn],[n1,...,nn])} computes
+        ++ multiple partial derivatives, i.e.
+      D: (%,List S) -> %
+        ++ \spad{D(x,[s1,...sn])} is a shorthand for
+        ++ \spad{differentiate(x,[s1,...sn])}.
+      D: (%,S,NonNegativeInteger) -> %
+        ++ \spad{D(x,s,n)} is a shorthand for \spad{differentiate(x,s,n)}.
+      D: (%,List S,List NonNegativeInteger) -> %
+        ++ \spad{D(x,[s1,...,sn],[n1,...,nn])} is a shorthand for
+        ++ \spad{differentiate(x,[s1,...,sn],[n1,...,nn])}.
+  add
+    differentiate(r: %,l: List S) ==
+      for s in l repeat r := differentiate(r, s)
+      r
+
+    differentiate(r: %,s: S,n: NonNegativeInteger) ==
+      for i in 1..n repeat r := differentiate(r, s)
+      r
+
+    differentiate(r: %,ls: List S,ln: List NonNegativeInteger) ==
+      for s in ls for n in ln repeat r := differentiate(r, s, n)
+      r
+
+    D(r: %,v: S) ==
+      differentiate(r,v)
+
+    D(r: %,lv: List S) ==
+      differentiate(r,lv)
+    D(r: %,v: S,n: NonNegativeInteger) ==
+      differentiate(r,v,n)
+    D(r: %,lv: List S,ln: List NonNegativeInteger) ==
+      differentiate(r, lv, ln)
+
+@
+
+\section{category PDRING PartialDifferentialRing}
+<<category PDRING PartialDifferentialRing>>=
+)abbrev category PDRING PartialDifferentialRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A partial differential ring with differentiations indexed by a parameter type S.
+++
+++ Axioms:
+++   \spad{differentiate(x+y,e) = differentiate(x,e)+differentiate(y,e)}
+++   \spad{differentiate(x*y,e) = x*differentiate(y,e) + differentiate(x,e)*y}
+
+PartialDifferentialRing(S:SetCategory): Category ==
+  Join(Ring,PartialDifferentialSpace S)
+
+@
+
+\section{Partial Differential Module}
+
+<<category PDMOD PartialDifferentialModule>>=
+)abbrev category PDMOD PartialDifferentialModule
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: June 18, 2010
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   A partial differential R-module with differentiations
+++   indexed by a parameter type S.
+++
+++ Axioms:
+++   \spad{differentiate(x+y,e) = differentiate(x,e)+differentiate(y,e)}
+++   \spad{differentiate(r*x,e) = r*differentiate(x,e) + differentiate(r,e)*x}
+++   \spad{differentiate(x*r,e) = x*differentiate(r,e) + differentiate(x,e)*r}
+
+PartialDifferentialModule(R: Ring,S: SetCategory): Category ==
+  Join(BiModule(R,R),PartialDifferentialSpace S) with
+     if R has CommutativeRing then Module R
+
+@
+
+
+\section{category PFECAT PolynomialFactorizationExplicit}
+<<category PFECAT PolynomialFactorizationExplicit>>=
+)abbrev category PFECAT PolynomialFactorizationExplicit
+++ Author: James Davenport
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This is the category of domains that know "enough" about
+++ themselves in order to factor univariate polynomials over themselves.
+++ This will be used in future releases for supporting factorization
+++ over finitely generated coefficient fields, it is not yet available
+++ in the current release of axiom.
+
+PolynomialFactorizationExplicit(): Category == Definition where
+  P ==> SparseUnivariatePolynomial %
+  Definition ==>
+    UniqueFactorizationDomain with
+    -- operations
+       squareFreePolynomial: P -> Factored(P)
+              ++ squareFreePolynomial(p) returns the
+              ++ square-free factorization of the
+              ++ univariate polynomial p.
+       factorPolynomial: P -> Factored(P)
+              ++ factorPolynomial(p) returns the factorization
+              ++ into irreducibles of the univariate polynomial p.
+       factorSquareFreePolynomial: P -> Factored(P)
+              ++ factorSquareFreePolynomial(p) factors the
+              ++ univariate polynomial p into irreducibles
+              ++ where p is known to be square free
+              ++ and primitive with respect to its main variable.
+       gcdPolynomial: (P, P) -> P
+              ++ gcdPolynomial(p,q) returns the gcd of the univariate
+              ++ polynomials p qnd q.
+              -- defaults to Euclidean, but should be implemented via
+              -- modular or p-adic methods.
+       solveLinearPolynomialEquation: (List P, P) -> Union(List P,"failed")
+              ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+              ++ (where the fi are relatively prime to each other)
+              ++ returns a list of ai such that
+              ++ \spad{g/prod fi = sum ai/fi}
+              ++ or returns "failed" if no such list of ai's exists.
+       if % has CharacteristicNonZero then
+         conditionP: Matrix % -> Union(Vector %,"failed")
+              ++ conditionP(m) returns a vector of elements, not all zero,
+              ++ whose \spad{p}-th powers (p is the characteristic of the domain)
+              ++ are a solution of the homogenous linear system represented
+              ++ by m, or "failed" is there is no such vector.
+         charthRoot: % -> Maybe %
+              ++ charthRoot(r) returns the \spad{p}-th root of r, or
+              ++ \spad{nothing} if none exists in the domain.
+              -- this is a special case of conditionP, but often the one we want
+      add
+        gcdPolynomial(f,g) ==
+           zero? f => g
+           zero? g => f
+           cf:=content f
+           if not one? cf then f:=(f exquo cf)::P
+           cg:=content g
+           if not one? cg then g:=(g exquo cg)::P
+           ans:=subResultantGcd(f,g)$P
+           gcd(cf,cg)*(ans exquo content ans)::P
+        if % has CharacteristicNonZero then
+          charthRoot f ==
+             -- to take p'th root of f, solve the system X-fY=0,
+             -- so solution is [x,y]
+             -- with x^p=X and y^p=Y, then (x/y)^p = f
+             zero? f => just 0
+             m:Matrix % := matrix [[1,-f]]
+             ans:= conditionP m
+             ans case "failed" => nothing
+             r := (ans.1) exquo (ans.2)
+             r case "failed" => nothing
+             just r
+        if % has Field then
+          solveLinearPolynomialEquation(lf,g) ==
+            multiEuclidean(lf,g)$P
+        else solveLinearPolynomialEquation(lf,g) ==
+               LPE ==> LinearPolynomialEquationByFractions %
+               solveLinearPolynomialEquationByFractions(lf,g)$LPE
+
+@
+\section{category PID PrincipalIdealDomain}
+<<category PID PrincipalIdealDomain>>=
+)abbrev category PID PrincipalIdealDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of constructive principal ideal domains, i.e.
+++ where a single generator can be constructively found for
+++ any ideal given by a finite set of generators.
+++ Note that this constructive definition only implies that
+++ finitely generated ideals are principal. It is not clear
+++ what we would mean by an infinitely generated ideal.
+
+PrincipalIdealDomain(): Category == GcdDomain with
+    --operations
+      principalIdeal: List % -> Record(coef:List %,generator:%)
+         ++ principalIdeal([f1,...,fn]) returns a record whose
+         ++ generator component is a generator of the ideal
+         ++ generated by \spad{[f1,...,fn]} whose coef component satisfies
+         ++ \spad{generator = sum (input.i * coef.i)}
+      expressIdealMember: (List %,%) -> Maybe List %
+         ++ \spad{expressIdealMember([f1,...,fn],h)} returns a representation
+         ++ of h as a linear combination of the fi or \spad{nothing} if h
+         ++ is not in the ideal generated by the fi.
+
+@
+\section{category RMODULE RightModule}
+<<category RMODULE RightModule>>=
+)abbrev category RMODULE RightModule
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of right modules over an rng (ring not necessarily with unit).
+++ This is an abelian group which supports right multiplation by elements of
+++ the rng.
+++
+++ Axioms:
+++   \spad{ x*(a*b) = (x*a)*b }
+++   \spad{ x*(a+b) = (x*a)+(x*b) }
+++   \spad{ (x+y)*x = (x*a)+(y*a) }
+RightModule(R:Rng):Category == Join(AbelianGroup, RightLinearSet R)
+
+@
+
+\section{category SRING SemiRing}
+<<category SRING SemiRing>>=
+)abbrev category SRING SemiRing
+++ Author: Gabriel Dos Reis
+++ Date Created: March 7, 2011
+++ Date Last Modified: March 7, 2011
+++ Description:
+++   The category of all semiring structures, e.g. triples (D,+,*)
+++   such that (D,+) is an Abelian monoid and (D,*) is a monoid
+++   with the following laws:
+++ Axioms:
+++    a * (b + c) = (a * b) + (a * c)
+++    (b + c) * a = (b * a) + (c * a)
+++    0 * a = 0
+++    a * 0 = 0
+SemiRing(): Category == Join(AbelianMonoid,Monoid)
+@
+
+\section{category RING Ring}
+<<category RING Ring>>=
+)abbrev category RING Ring
+++ Author:
+++ Date Created:
+++ Date Last Updated: February 14, 2012
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of rings with unity, always associative, but
+++ not necessarily commutative.
+
+Ring(): Category == Join(Rng,SemiRing,LeftModule(%),CoercibleFrom Integer) with
+    --operations
+      characteristic: NonNegativeInteger
+        ++ characteristic() returns the characteristic of the ring
+        ++ this is the smallest positive integer n such that
+        ++ \spad{n*x=0} for all x in the ring, or zero if no such n
+        ++ exists.
+        --We can not make this a constant, since some domains are mutable
+      unitsKnown
+        ++ recip truly yields
+        ++ reciprocal or "failed" if not a unit.
+        ++ Note: \spad{recip(0) = "failed"}.
+   add
+      n:Integer
+      coerce(n) == n * 1$%
+
+@
+
+\section{Dioid category}
+
+<<category DIOID Dioid>>=
+)abbrev category DIOID Dioid
+++ Author: Gabriel Dos Reis
+++ Date Created: February 14, 2012
+++ Date Last Modified: February 14, 2012
+++ Description:
+++   Dioid is the class of semirings where the addition operation
+++   induces a canonical order relation.
+Dioid(): Category == Join(OrderedAbelianMonoid,SemiRing)
+
+@
+
+\section{category RNG Rng}
+<<category RNG Rng>>=
+)abbrev category RNG Rng
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of associative rings, not necessarily commutative, and not
+++ necessarily with a 1. This is a combination of an abelian group
+++ and a semigroup, with multiplication distributing over addition.
+++
+++ Axioms:
+++   \spad{ x*(y+z) = x*y + x*z}
+++   \spad{ (x+y)*z = x*z + y*z }
+++
+++ Conditional attributes:
+++   \spadnoZeroDivisors\tab{25}\spad{  ab = 0 => a=0 or b=0}
+Rng(): Category == Join(AbelianGroup,SemiGroup)
+
+@ 
+
+\section{category SGROUP SemiGroup}
+
+<<category SGROUP SemiGroup>>=
+import PositiveInteger
+)abbrev category SGROUP SemiGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ the class of all multiplicative semigroups, i.e. a set
+++ with an associative operation \spadop{*}.
+++
+++ Axioms:
+++    \spad{associative("*":(%,%)->%)}\tab{30}\spad{ (x*y)*z = x*(y*z)}
+++
+++ Conditional attributes:
+++    \spad{commutative("*":(%,%)->%)}\tab{30}\spad{ x*y = y*x }
+SemiGroup(): Category == SetCategory with
+    --operations
+      *: (%,%) -> %                  ++ x*y returns the product of x and y.
+      **: (%,PositiveInteger) -> %   ++ x**n returns the repeated product
+                                     ++ of x n times, i.e. exponentiation.
+    add
+      import RepeatedSquaring(%)
+      x:% ** n:PositiveInteger == expt(x,n)
+
+@
+\section{category SETCAT SetCategory}
+<<category SETCAT SetCategory>>=
+)abbrev category SETCAT SetCategory
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++   09/09/92   RSS   added latex and hash
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{SetCategory} is the basic category for describing a collection
+++ of elements with \spadop{=} (equality) and \spadfun{coerce} to output form.
+++
+++ Conditional Attributes:
+++    canonical\tab{15}data structure equality is the same as \spadop{=}
+SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
+    --operations
+      hash: % -> SingleInteger  ++ hash(s) calculates a hash code for s.
+      latex: % -> String       ++ latex(s) returns a LaTeX-printable output
+                               ++ representation of s.
+  add
+      import %hash: % -> SingleInteger from Foreign Builtin
+
+      hash(s : %):  SingleInteger == %hash s
+      latex(s : %): String       == "\mbox{\bf Unimplemented}"
+@
+
+\section{category STEP StepThrough}
+<<category STEP StepThrough>>=
+)abbrev category STEP StepThrough
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A class of objects which can be 'stepped through'.
+++ Repeated applications of \spadfun{nextItem} is guaranteed never to
+++ return duplicate items and only return "failed" after exhausting
+++ all elements of the domain.
+++ This assumes that the sequence starts with \spad{init()}.
+++ For non-fiinite domains, repeated application
+++ of \spadfun{nextItem} is not required to reach all possible domain elements
+++ starting from any initial element.
+++
+StepThrough(): Category == SetCategory with
+    --operations
+      init:             %
+        ++ init() chooses an initial object for stepping.
+      nextItem: % -> Maybe %
+        ++ \spad{nextItem(x)} returns the next item, or \spad{failed}
+        ++ if domain is exhausted.
+
+@
+\section{category UFD UniqueFactorizationDomain}
+<<category UFD UniqueFactorizationDomain>>=
+)abbrev category UFD UniqueFactorizationDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A constructive unique factorization domain, i.e. where
+++ we can constructively factor members into a product of
+++ a finite number of irreducible elements.
+
+UniqueFactorizationDomain(): Category == GcdDomain with
+    --operations
+      prime?: % -> Boolean
+            ++ prime?(x) tests if x can never be written as the product of two
+            ++ non-units of the ring,
+            ++ i.e., x is an irreducible element.
+      squareFree    : % -> Factored(%)
+            ++ squareFree(x) returns the square-free factorization of x
+            ++ i.e. such that the factors are pairwise relatively prime
+            ++ and each has multiple prime factors.
+      squareFreePart: % -> %
+            ++ squareFreePart(x) returns a product of prime factors of
+            ++ x each taken with multiplicity one.
+      factor: % -> Factored(%)
+            ++ factor(x) returns the factorization of x into irreducibles.
+ add
+  squareFreePart x ==
+    unit(s := squareFree x) * _*/[f.factor for f in factors s]
+
+  prime? x == one?(# factorList factor x)
+
+@
+
+\section{category VSPACE VectorSpace}
+
+<<category VSPACE VectorSpace>>=
+)abbrev category VSPACE VectorSpace
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Vector Spaces (not necessarily finite dimensional) over a field.
+
+VectorSpace(S:Field): Category ==  Module(S) with
+    /      : (%, S) -> %
+      ++ x/y divides the vector x by the scalar y.
+    dimension: () -> CardinalNumber
+      ++ dimension() returns the dimensionality of the vector space.
+  add
+    (v:% / s:S):% == inv(s) * v
+
+@
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2012, Gabriel Dos Reis.
+--All rights reversed.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<category BINOPC BinaryOperatorCategory>>
+<<domain BINOP BinaryOperation>>
+<<category IDEMOPC IdempotentOperatorCategory>>
+<<category SGPOPC SemiGroupOperatorCategory>>
+<<domain SGPOP SemiGroupOperation>>
+<<category MONOPC MonoidOperatorCategory>>
+<<domain MONOP MonoidOperation>>
+
+<<category BASTYPE BasicType>>
+<<category ORDTYPE OrderedType>>
+<<domain ORDSTRCT OrderedStructure>>
+<<category SETCAT SetCategory>>
+<<category STEP StepThrough>>
+<<category SGROUP SemiGroup>>
+<<category MONOID Monoid>>
+<<category GROUP Group>>
+<<category ABELSG AbelianSemiGroup>>
+<<category ABELMON AbelianMonoid>>
+<<category CABMON CancellationAbelianMonoid>>
+<<category ABELGRP AbelianGroup>>
+<<category RNG Rng>>
+<<category LLINSET LeftLinearSet>>
+<<category RLINSET RightLinearSet>>
+<<category LINSET LinearSet>>
+<<category LMODULE LeftModule>>
+<<category RMODULE RightModule>>
+<<category SRING SemiRing>>
+<<category RING Ring>>
+<<category DIOID Dioid>>
+<<category BMODULE BiModule>>
+<<category ENTIRER EntireRing>>
+<<category CHARZ CharacteristicZero>>
+<<category CHARNZ CharacteristicNonZero>>
+<<category COMRING CommutativeRing>>
+<<category MODULE Module>>
+<<category ALGEBRA Algebra>>
+<<category LINEXP LinearlyExplicitRingOver>>
+<<category FLINEXP FullyLinearlyExplicitRingOver>>
+<<category INTDOM IntegralDomain>>
+<<category GCDDOM GcdDomain>>
+<<category UFD UniqueFactorizationDomain>>
+<<category PFECAT PolynomialFactorizationExplicit>>
+<<category PID PrincipalIdealDomain>>
+<<category EUCDOM EuclideanDomain>>
+<<category DIVRING DivisionRing>>
+<<category FIELD Field>>
+<<category FINITE Finite>>
+<<category VSPACE VectorSpace>>
+<<category ORDSET OrderedSet>>
+<<category ORDFIN OrderedFinite>>
+<<category OSGROUP OrderedSemiGroup>>
+<<category ORDMON OrderedMonoid>>
+<<category OASGP OrderedAbelianSemiGroup>>
+<<category OAMON OrderedAbelianMonoid>>
+<<category OCAMON OrderedCancellationAbelianMonoid>>
+<<category OAGROUP OrderedAbelianGroup>>
+<<category ORDRING OrderedRing>>
+<<category OINTDOM OrderedIntegralDomain>>
+<<category OAMONS OrderedAbelianMonoidSup>>
+<<category DIFFDOM DifferentialDomain>>
+<<category DIFFSPC DifferentialSpace>>
+<<category DIFRING DifferentialRing>>
+<<category DIFFMOD DifferentialModule>>
+<<category DMEXT DifferentialModuleExtension>>
+<<category PDDOM PartialDifferentialDomain>>
+<<category PDSPC PartialDifferentialSpace>>
+<<category PDRING PartialDifferentialRing>>
+<<category PDMOD PartialDifferentialModule>>
+<<category DIFEXT DifferentialExtension>>
+<<category DSEXT DifferentialSpaceExtension>>
+@
+
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input TABLE.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from TableXmpPage
+)clear all
+
+t: Table(Polynomial Integer, String) := table()
+setelt(t, x**2 - 1, "Easy to factor")
+t(x**3 + 1) := "Harder to factor"
+t(x)        := "The easiest to factor"
+elt(t, x)
+t.x
+t x
+t.(x**2 - 1)
+t (x**3 + 1)
+keys t
+search(x, t)
+search(x**2, t)
+search(x**2, t) case "failed"
+remove!(x**2-1, t)
+remove!(x-1, t)
+#t
+members t
+count(s: String +-> prefix?("Hard", s), t)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

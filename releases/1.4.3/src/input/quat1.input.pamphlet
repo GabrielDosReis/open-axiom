@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input QUAT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from QuaternionXmpPage
+)clear all
+
+q := quatern(2/11,-8,3/4,1)
+[real q, imagI q, imagJ q, imagK q]
+inv q
+q**6
+r := quatern(-2,3,23/9,-89); q + r
+q * r - r * q
+i:=quatern(0,1,0,0); j:=quatern(0,0,1,0); k:=quatern(0,0,0,1)
+[i*i, j*j, k*k, i*j, j*k, k*i, q*i]
+norm q
+conjugate q
+q * %
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

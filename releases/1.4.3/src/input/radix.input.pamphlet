@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input RADIX.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from RadixExpansionXmpPage
+)clear all
+
+111::RadixExpansion(5)
+(5/24)::RadixExpansion(2)
+(5/24)::RadixExpansion(3)
+(5/24)::RadixExpansion(8)
+(5/24)::RadixExpansion(10)
+(5/24)::RadixExpansion(12)
+(5/24)::RadixExpansion(16)
+(5/24)::RadixExpansion(36)
+(5/24)::RadixExpansion(38)
+a := (76543/210)::RadixExpansion(8)
+w := wholeRagits a
+f0 := prefixRagits a
+f1 := cycleRagits a
+u:RadixExpansion(8):=wholeRadix(w)+fractRadix(f0,f1)
+v: RadixExpansion(12) := fractRadix([1,2,3,11], [0])
+fractRagits(u)
+a :: Fraction(Integer)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,28 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.10.  )fin
+==============================================================================
+ 
+User Level Required:  development
+ 
+Command Syntax: 
+ 
+  -  )fin
+ 
+Command Description: 
+ 
+This command is used by OpenAxiom developers to leave the OpenAxiom system
+and return to the underlying Lisp system. To return to OpenAxiom, issue
+the ``(|spad|)'' function call to Lisp.  This command is deprecated and
+may be removed from future versions of OpenAxiom.
+ 
+Also See: 
+o )pquit
+o )quit
+ 

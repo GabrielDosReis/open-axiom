@@ -1,0 +1,37 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.23.  )spool
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )spool [fileName]
+  - )spool
+ 
+Command Description: 
+ 
+This command is used to save (spool) all OpenAxiom input and output into a
+file, called a spool file. You can only have one spool file active at
+a time. To start spool, issue this command with a filename. For example,
+ 
+)spool integrate.out
+ 
+To stop spooling, issue )spool with no filename.
+ 
+If the filename is qualified with a directory, then the output will be placed
+in that directory. If no directory information is given, the spool file will
+be placed in the current directory. The current directory is the directory
+from which you started OpenAxiom or is the directory you specified using the
+)cd command.
+ 
+Also See: 
+o )cd
+ 

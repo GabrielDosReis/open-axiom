@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input SINT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from SingleIntegerXmpPage
+)clear all
+
+min()$SingleInteger
+max()$SingleInteger
+a := 1234 :: SingleInteger
+b := 124@SingleInteger
+gcd(a,b)
+lcm(a,b)
+mulmod(5,6,13)$SingleInteger
+positiveRemainder(37,13)$SingleInteger
+(3 /\ 4)$SingleInteger
+shift(1,4)$SingleInteger
+shift(31,-1)$SingleInteger
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

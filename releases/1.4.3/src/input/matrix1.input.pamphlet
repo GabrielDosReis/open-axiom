@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input MATRIX.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from MatrixXmpPage
+)clear all
+
+
+-- Input generated from ugxMatrixCreatePage
+)clear all
+
+m : Matrix(Integer) := new(3,3,0)
+setelt(m,2,3,5)
+m(1,2) := 10
+m
+matrix [[1,2,3,4],[0,9,8,7]]
+dm := diagonalMatrix [1,x**2,x**3,x**4,x**5]
+setRow!(dm,5,vector [1,1,1,1,1])
+setColumn!(dm,2,vector [y,y,y,y,y])
+cdm := copy(dm)
+setelt(dm,4,1,1-x**7)
+[dm,cdm]
+subMatrix(dm,2,3,2,4)
+d := diagonalMatrix [1.2,-1.3,1.4,-1.5]
+e := matrix [[6.7,9.11],[-31.33,67.19]]
+setsubMatrix!(d,1,2,e)
+d
+a := matrix [[1/2,1/3,1/4],[1/5,1/6,1/7]]
+b := matrix [[3/5,3/7,3/11],[3/13,3/17,3/19]]
+horizConcat(a,b)
+vab := vertConcat(a,b)
+transpose vab
+
+-- Input generated from ugxMatrixOpsPage
+)clear all
+
+m := matrix [[1,2],[3,4]]
+4 * m * (-5)
+n := matrix([[1,0,-2],[-3,5,1]])
+m * n
+vec := column(n,3)
+vec * m
+m * vec
+hilb := matrix([[1/(i + j) for i in 1..3] for j in 1..3])
+inverse(hilb)
+mm := matrix([[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]])
+inverse(mm)
+determinant(mm)
+trace(mm)
+rank(mm)
+nullity(mm)
+nullSpace(mm)
+rowEchelon(mm)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

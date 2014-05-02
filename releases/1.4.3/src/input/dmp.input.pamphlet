@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input DMP.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+
+-- Input generated from DistributedMultivariatePolynomialXmpPage
+)clear all
+
+(d1,d2,d3) : DMP([z,y,x],FRAC INT)
+d1 := -4*z + 4*y**2*x + 16*x**2 + 1
+d2 := 2*z*y**2 + 4*x + 1
+d3 := 2*z*x**2 - 2*y**2 - x
+groebner [d1,d2,d3]
+(n1,n2,n3) : HDMP([z,y,x],FRAC INT)
+(n1,n2,n3) := (d1,d2,d3)
+groebner [n1,n2,n3]
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

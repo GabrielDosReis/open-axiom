@@ -1,0 +1,42 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.25.  )system
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )system cmdExpression
+ 
+Command Description: 
+ 
+This command may be used to issue commands to the operating system while
+remaining in OpenAxiom. The cmdExpression is passed to the operating system for
+execution.
+ 
+To get an operating system shell, issue, for example, )system sh. When you
+enter the key combination, Ctrl-D (pressing and holding the Ctrl key and then
+pressing the D key) the shell will terminate and you will return to OpenAxiom. We
+do not recommend this way of creating a shell because Lisp may field some
+interrupts instead of the shell. If possible, use a shell running in another
+window.
+ 
+If you execute programs that misbehave you may not be able to return to
+OpenAxiom. If this happens, you may have no other choice than to
+restart OpenAxiom and restore the environment via )history )restore,
+if possible. 
+ 
+Also See: 
+o )boot
+o )fin
+o )lisp
+o )pquit
+o )quit
+ 

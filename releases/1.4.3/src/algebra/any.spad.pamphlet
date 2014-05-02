@@ -1,0 +1,577 @@
+\documentclass{article}
+\usepackage{open-axiom}
+\begin{document}
+\title{src/algebra any.spad}
+\author{Robert S. Sutor \and Gabriel Dos~Reis}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{domain NONE None}
+
+<<domain NONE None>>=
+import SetCategory
+import OutputForm
+)abbrev domain NONE None
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: NoneFunctions1
+++ Also See: Any
+++ AMS Classification:
+++ Keywords: none, empty
+++ Description:
+++    \spadtype{None} implements a type with no objects. It is mainly
+++    used in technical situations where such a thing is needed (e.g.
+++    the interpreter and some of the internal \spadtype{Expression}
+++    code).
+
+None():SetCategory == add
+    coerce(none:%):OutputForm == "NONE" :: OutputForm
+    x:% = y:% == %peq(x,y)$Foreign(Builtin)
+
+@
+
+
+\section{domain RTVALUE RuntimeValue}
+
+<<domain RTVALUE RuntimeValue>>=
+)abbrev domain RTVALUE RuntimeValue
+++ Author: Gabriel Dos Reis
+++ Date Created: May 14, 2009
+++ Date Last Changed: May 14, 2009
+++ Description:
+++   This is the datatype of OpenAxiom runtime values.  It exists
+++   solely for internal purposes.
+RuntimeValue(): Type with
+    eq: (%,%) -> Boolean
+      ++ \spad{eq(x,y)} holds if both values \spad{x} and \spad{y}
+      ++ resides at the same address in memory.
+  == add
+    eq(x,y) == %peq(x,y)$Foreign(Builtin)
+@
+
+
+\section{The Maybe domain}
+
+<<domain MAYBE Maybe>>=
+import CoercibleTo OutputForm
+import Boolean
+)abbrev domain MAYBE Maybe
+++ Author: Gabriel Dos Reis
+++ Date Created: August 20, 2008
+++ Date Last Modified: January 06, 2009
+++ Description:
+++   This domain implements the notion of optional value, where
+++   a computation may fail to produce expected value.
+Maybe(T: CoercibleTo OutputForm): Public == Private where
+  Public == Join(UnionType,RetractableTo T, CoercibleTo OutputForm) with
+    just: T -> %
+      ++ \spad{just x} injects the value `x' into %.
+    case: (%,[| T |]) -> Boolean
+      ++ \spad{x case T} returns true if \spad{x} is actually a data of 
+      ++ type \spad{T}.
+    case: (%,[| nothing |]) -> Boolean
+      ++ \spad{x case nothing} holds if the value for \spad{x} is missing.
+    autoCoerce: % -> T
+      ++ \spad{autoCoerce} is a courtesy coercion function used by the
+      ++ compiler in case it knows that `x' really is a \spadtype{T}.
+    nothing: %
+      ++ \spad{nothing} represents failure or absence of value.
+  Private == add
+    import %nothing: %            from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
+    nothing == %nothing
+    just x == x : %
+    x case nothing == %peq(x,%nothing)
+    x case T == not(x case nothing)
+    autoCoerce x == x : T
+    coerce(x: T): % == just x
+    retractIfCan x ==
+      x case T => x@T
+      "failed"
+    coerce(x: %): OutputForm == 
+      x case nothing => paren(empty()$OutputForm)$OutputForm
+      (x@T)::OutputForm
+      
+@
+
+
+
+\section{package NONE1 NoneFunctions1}
+
+<<package NONE1 NoneFunctions1>>=
+import Type
+import None
+)abbrev package NONE1 NoneFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: None
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{NoneFunctions1} implements functions on \spadtype{None}.
+++   It particular it includes a particulary dangerous coercion from
+++   any other type to \spadtype{None}.
+
+NoneFunctions1(S:Type): Exports == Implementation where
+  Exports ==> with
+    coerce: S -> None
+      ++ coerce(x) changes \spad{x} into an object of type
+      ++ \spadtype{None}.
+
+  Implementation ==> add
+    coerce(s:S):None == s pretend None
+
+@
+
+\section{domain ANY Any}
+
+<<domain ANY Any>>=
+import SetCategory
+import Boolean
+import String
+import OutputForm
+import SExpression
+import None
+)abbrev domain ANY Any
+++ Author: Robert S. Sutor
+++ Date Created:
+++ Date Last Updated: June 14, 2009.
+++ Change History:
+++ Basic Functions: any, dom, obj
+++ Related Constructors: AnyFunctions1
+++ Also See: None
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{Any} implements a type that packages up objects and their
+++   types in objects of \spadtype{Any}. Roughly speaking that means
+++   that if \spad{s : S} then when converted to \spadtype{Any}, the new
+++   object will include both the original object and its type. This is
+++   a way of converting arbitrary objects into a single type without
+++   losing any of the original information. Any object can be converted
+++   to one of \spadtype{Any}.  The original object can be recovered
+++   by `is-case' pattern matching as exemplified here and AnyFunctions1.
+
+Any(): SetCategory with
+        any             : (SExpression, None) -> %
+          ++ any(type,object) is a technical function for creating
+          ++ an object of \spadtype{Any}. Arugment \spad{type} is a \spadgloss{LISP} form
+          ++ for the type of \spad{object}.
+        dom             : % -> SExpression
+          ++ dom(a) returns a \spadgloss{LISP} form of the type of the
+          ++ original object that was converted to \spadtype{Any}.
+        obj             : % -> None
+          ++ obj(a) essentially returns the original object that was
+          ++ converted to \spadtype{Any} except that the type is forced
+          ++ to be \spadtype{None}.
+
+ == add
+     Rep == Record(dm: SExpression, ob: None)
+
+     obj x      == rep(x).ob
+     dom x      == rep(x).dm
+     x = y      == 
+       case (x,y) is 
+         (x': exist(S: BasicType) . S, y': S) => x' = y'
+         otherwise => %peq(x,y)$Foreign(Builtin)
+
+     coerce(x):OutputForm ==
+       case x is
+         x': exist(S: CoercibleTo OutputForm) . S => x'::OutputForm
+         otherwise => (rep(x).ob pretend SExpression)::OutputForm
+
+     any(domain, object) ==
+       isValidType(domain)$Foreign(Builtin) => per [domain, object]
+       domain := devaluate(domain)$Foreign(Builtin)
+       isValidType(domain)$Foreign(Builtin) => per [domain, object]
+       error "function any must have a domain as first argument"
+
+@
+
+\section{package ANY1 AnyFunctions1}
+
+<<package ANY1 AnyFunctions1>>=
+import Type
+import Boolean
+import Any
+)abbrev package ANY1 AnyFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions:  coerce, retractIfCan, retractable?, retract
+++ Date Last Updated: June 13, 2009.
+++ Related Constructors: Any
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{AnyFunctions1} implements several utility functions for
+++   working with \spadtype{Any}. These functions are used to go back
+++   and forth between objects of \spadtype{Any} and objects of other
+++   types.
+
+AnyFunctions1(S:Type): with
+        coerce      : S -> Any
+          ++ coerce(s) creates an object of \spadtype{Any} from the
+          ++ object \spad{s} of type \spad{S}.
+        retractIfCan: Any -> Union(S, "failed")
+          ++ retractIfCan(a) tries change \spad{a} into an object
+          ++ of type \spad{S}. If it can, then such an object is
+          ++ returned. Otherwise, "failed" is returned.
+        retractable?: Any -> Boolean
+          ++ retractable?(a) tests if \spad{a} can be converted
+          ++ into an object of type \spad{S}.
+        retract     : Any -> S
+          ++ retract(a) tries to convert \spad{a} into an object of
+          ++ type \spad{S}. If possible, it returns the object.
+          ++ Error: if no such retraction is possible.
+
+    == add
+        import NoneFunctions1(S)
+
+        Sexpr:SExpression := devaluate(S)$Foreign(Builtin)
+
+        coerce(s:S):Any == any(Sexpr, s::None)
+
+        retractable? a ==
+          case a is
+            s: S => true
+            otherwise => false
+
+        retractIfCan a ==
+          case a is
+            s: S => s
+            otherwise => "failed"
+
+        retract a ==
+          case a is
+            s: S => s
+            otherwise => error "Cannot retract value."
+
+@
+
+\section{domain PROPERTY Property}
+
+<<domain PROPERTY Property>>=
+import Identifier
+import SExpression
+)abbrev domain PROPERTY Property
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ An `Property' is a pair of name and value.  
+Property(): Public == Private where
+  Public == CoercibleTo(OutputForm) with
+    name: % -> Identifier         
+      ++ name(p) returns the name of property p
+    value: % -> SExpression   
+      ++ value(p) returns value of property p
+    property: (Identifier, SExpression) -> %
+      ++ property(n,val) constructs a property with name `n' and
+      ++ value `val'.
+  
+  Private == add
+    import Boolean
+    Rep == Pair(Identifier,SExpression)
+    inline Rep
+
+    name x == 
+      first rep x
+
+    value x ==
+      second rep x
+
+    property(n,val) ==
+      per pair(n,val)
+ 
+    coerce x ==
+      v := value x
+      val := 
+         null? v => false::OutputForm
+         %peq(v,'T)$Foreign(Builtin) => true::OutputForm
+         v::OutputForm
+      
+      bracket(infix(outputForm '_=_>, name(x)::OutputForm, 
+                val)$OutputForm)$OutputForm
+
+@
+
+\section{domain BINDING Binding}
+
+<<domain BINDING Binding>>=
+import CoercibleTo OutputForm
+import Symbol
+import List Property
+)abbrev domain BINDING Binding
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Binding' is a name asosciated with a collection of properties.
+Binding(): Public == Private where
+  Public == CoercibleTo(OutputForm) with
+    name: % -> Identifier               
+      ++ name(b) returns the name of binding b
+    properties: % -> List Property  
+      ++ properties(b) returns the properties associated with binding b.
+    binding: (Identifier, List Property) -> %
+      ++ binding(n,props) constructs a binding with name `n' and 
+      ++ property list `props'.
+
+  Private == add
+    Rep == Pair(Identifier, List Property)
+    import List Property
+    inline Rep
+
+    name b ==
+      first rep b
+
+    properties b ==
+      second rep b
+
+    binding(n,props) ==
+      per pair(n,props)
+
+    coerce b ==
+      rarrow(name(b)::OutputForm, (properties b)::OutputForm)$OutputForm
+@
+
+\section{domain CONTOUR Contour}
+
+<<domain CONTOUR Contour>>=
+import CoercibleTo OutputForm
+import Symbol
+import Binding
+import List Binding
+)abbrev domain CONTOUR Contour
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Contour' a list of bindings making up a `virtual scope'.
+Contour(): Public == Private where
+  Public == CoercibleTo(OutputForm) with
+    bindings: % -> List Binding     
+      ++ bindings(c) returns the list of bindings in countour c.
+    push: (Binding,%) -> %
+      ++ push(c,b) augments the contour with binding `b'.
+    findBinding: (Identifier,%) -> Maybe Binding
+      ++ findBinding(c,n) returns the first binding associated with `n'.
+      ++ Otherwise `nothing.
+
+  Private == add
+    bindings c ==
+      c pretend List(Binding)
+
+    findBinding(n,c) ==
+      for b in bindings c repeat
+        %peq(n, name b)$Foreign(Builtin) => return just b
+      nothing
+
+    push(b,c) ==
+      %pair(b,c)$Foreign(Builtin)
+
+    coerce c ==
+      (bindings c)::OutputForm
+@
+
+\section{domain SCOPE Scope}
+
+<<domain SCOPE Scope>>=
+import CoercibleTo OutputForm
+import Binding
+import List Contour
+)abbrev domain SCOPE Scope
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Scope' is a sequence of contours.
+Scope(): Public == Private where
+  Public == CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() returns an empty scope.
+    contours: % -> List Contour     
+      ++ contours(s) returns the list of contours in scope s.
+    findBinding: (Identifier,%) -> Maybe Binding
+      ++ findBinding(n,s) returns the first binding of `n' in `s'; 
+      ++ otherwise `nothing'.
+    pushNewContour: (Binding,%) -> %
+      ++ pushNewContour(b,s) pushs a new contour with sole binding `b'.
+    currentScope: () -> %
+      ++ currentScope() returns the scope currently in effect
+    currentCategoryFrame: () -> %
+      ++ currentCategoryFrame() returns the category frame currently
+      ++ in effect.
+
+  Private == add
+    import Contour
+    Rep == List Contour
+    empty() ==
+      per %nil$Foreign(Builtin)
+
+    contours s ==
+      rep s
+
+    findBinding(n,s) ==
+      for c in contours s repeat
+        b := findBinding(n,c)$Contour
+        b case Binding => return b
+      nothing
+
+    pushNewContour(b,s) ==
+      %pair(%list(b)$Foreign(Builtin),s)$Foreign(Builtin)
+
+    currentScope() ==
+      %head(_$e$Lisp)$Foreign(Builtin)
+
+    currentCategoryFrame() ==
+      %head(_$CategoryFrame$Lisp)$Foreign(Builtin)
+
+    coerce s ==
+      (contours s)::OutputForm
+@
+
+\section{domain ENV Environment}
+
+<<domain ENV Environment>>=
+import CoercibleTo OutputForm
+import Symbol
+import List Scope
+import List Property
+)abbrev domain ENV Environment
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: March 18, 2010.
+++ An `Environment' is a stack of scope.
+Environment(): Public == Private where
+  Public == CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ \spad{empty()} constructs an empty environment
+    scopes: % -> List Scope     
+      ++ \spad{scopes(e)} returns the stack of scopes in environment \spad{e}.
+    getProperty: (Identifier, Identifier, %) -> Maybe SExpression
+      ++ \spad{getProperty(n,p,e)} returns the value of property with name
+      ++ \spad{p} for the symbol \spad{n} in environment \spad{e}.
+      ++ Otherwise, \spad{nothing}.
+    putProperty: (Identifier, Identifier, SExpression, %) -> %
+      ++ \spad{putProperty(n,p,v,e)} binds the property \spad{(p,v)} to
+      ++ \spad{n} in the topmost scope of \spad{e}.
+    getProperties: (Identifier, %) -> List Property
+      ++ \spad{getBinding(n,e)} returns the list of properties of
+      ++ \spad{n} in \spad{e}.
+    putProperties: (Identifier, List Property, %) -> %
+      ++ \spad{putProperties(n,props,e)} set the list of properties of
+      ++ \spad{n} to \spad{props} in \spad{e}.
+    currentEnv: () -> %        
+      ++ the current normal environment in effect.
+    interactiveEnv: () -> %        
+      ++ the current interactive environment in effect.
+    categoryFrame: () -> %  
+       ++ the current category environment in the interpreter.
+
+  Private == add
+    Rep == List Scope
+    empty() ==
+      per %nil$Foreign(Builtin)
+
+    scopes e ==
+      rep e
+
+    getProperty(n,p,e) ==
+      v: SExpression := get(n,p,e)$Lisp
+      null? v => nothing
+      just v 
+
+    putProperty(n,p,v,e) ==
+      put(n,p,v,e)$Lisp
+
+    getProperties(n,e) ==
+      getProplist(n,e)$Lisp
+
+    putProperties(n,b,e) ==
+      addBinding(n,b,e)$Lisp
+
+    currentEnv() ==
+      _$e$Lisp
+
+    interactiveEnv() ==
+      _$InteractiveFrame$Lisp
+
+    categoryFrame() ==
+      _$CategoryFrame$Lisp
+
+    coerce e ==
+      (scopes e)::OutputForm
+@
+
+
+\section{License}
+
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+-- Any and None complete the type lattice. They are also used in the
+-- interpreter in various situations. For example, it is always possible
+-- to resolve two types in the interpreter because at worst the answer
+-- may be Any.
+
+<<domain NONE None>>
+<<domain RTVALUE RuntimeValue>>
+<<domain MAYBE Maybe>>
+<<package NONE1 NoneFunctions1>>
+<<domain ANY Any>>
+<<package ANY1 AnyFunctions1>>
+
+<<domain PROPERTY Property>>
+<<domain BINDING Binding>>
+<<domain CONTOUR Contour>>
+<<domain SCOPE Scope>>
+<<domain ENV Environment>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

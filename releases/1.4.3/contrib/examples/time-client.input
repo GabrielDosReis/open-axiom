@@ -1,0 +1,29 @@
+#!/usr/bin/env open-axiom
+
+-- This little script is a simple example of how to use
+-- the client socket domain in OpenAxiom.
+-- It connects to a time server, read the time and print it 
+-- on the standard output.
+-- Contributed by Gabriel Dos Reis.
+
+s := connectTo(host "time-a.nist.gov", port 13)$INETCLTS
+
+-- Give up if conection failed.  We try only once.
+s case nothing => 
+  print message("connection failed")$OutputForm
+
+-- Read initial linefeed character
+readByte! s case nothing => 
+  messagePrint("could not read first linefeed character")$OutputForm
+
+text := empty()$ByteBuffer   -- container of the actual line
+buf := byteBuffer 256        -- temporary buffer to read into
+
+-- Accumulate data until end of input.
+while readBytes!(s::INETCLTS,buf) > 0 repeat
+  text := concat(text,buf)
+close! s
+
+-- Show what we got.  We should actually try to remove last
+-- linefeed character.
+messagePrint(text::String)$OutputForm

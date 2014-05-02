@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input exlimit.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input for page ExLimitBasic
+)clear all
+
+limit((x**2 - 3*x + 2)/(x**2 - 1),x = 1)
+
+-- Input for page ExLimitComplexInfinite
+)clear all
+
+complexLimit((2 + z)/(1 - z),z = %infinity)
+limit(sin(x)/x,x = %plusInfinity)
+complexLimit(sin(x)/x,x = %infinity)
+
+-- Input for page ExLimitOneSided
+)clear all
+
+limit(x * log(x),x = 0,"right")
+limit(x * log(x),x = 0)
+
+-- Input for page ExLimitTwoSided
+)clear all
+
+limit(sqrt(y**2)/y,y = 0)
+limit(sqrt(1 - cos(t))/t,t = 0)
+
+-- Input for page ExLimitInfinite
+)clear all
+
+limit(sqrt(3*x**2 + 1)/(5*x),x = %plusInfinity)
+limit(sqrt(3*x**2 + 1)/(5*x),x = %minusInfinity)
+
+-- Input for page ExLimitParameter
+)clear all
+
+limit(sinh(a*x)/tan(b*x),x = 0)
+
+-- Input for page ExLimitRealComplex
+)clear all
+
+limit(z * sin(1/z),z = 0)
+complexLimit(z * sin(1/z),z = 0)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

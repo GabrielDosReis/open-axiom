@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input COMPLEX.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+<<*>>=
+
+-- Input generated from ComplexXmpPage
+)clear all
+
+a := complex(4/3,5/2)
+b := complex(4/3,-5/2)
+a + b
+a - b
+a * b
+a / b
+% :: Fraction Complex Integer
+3.4 + 6.7 * %i
+conjugate a
+norm a
+real a
+imag a
+gcd(13 - 13*%i,31 + 27*%i)
+lcm(13 - 13*%i,31 + 27*%i)
+factor(13 - 13*%i)
+factor complex(2,0)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

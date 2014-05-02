@@ -1,0 +1,10 @@
+Domain has Category
+Category has Category    -- 'true', but it probably should be 'no'.
+Category has Type
+
+ST(x: Integer): Category ==
+  x=0 => SetCategory
+  Type
+
+ST 0
+ST 1

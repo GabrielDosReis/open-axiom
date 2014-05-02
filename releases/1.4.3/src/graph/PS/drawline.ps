@@ -1,0 +1,18 @@
+% operand stack configuration in order to use psDrawLine:
+%		psDrawLine
+%		y0
+%		x0
+%		y1
+%		x1
+%		graphics-context dictionary
+% this draws a line from (x0, y0) to (x1, y1).
+
+/psDrawLine
+        {	gsave
+                newpath
+                yVal moveto
+                yVal lineto
+		begin installGC stroke end
+		grestore }
+        def
+

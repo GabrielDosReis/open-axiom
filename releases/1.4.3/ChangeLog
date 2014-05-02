@@ -1,0 +1,5 @@
+2014-05-02  Orivej Desh <orivej@gmx.fr>
+
+	* config/open-axiom.m4 (OPENAXIOM_LISP_FLAGS): Invoke SBCL with
+	--disable-debugger. 
+

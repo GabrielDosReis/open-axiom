@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CCLASS.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from CharacterClassXmpPage
+)clear all
+
+cl1 := charClass [char "a", char "e", char "i", char "o", char "u", char "y"]
+cl2 := charClass "bcdfghjklmnpqrstvwxyz"
+digit()
+hexDigit()
+upperCase()
+lowerCase()
+alphabetic()
+alphanumeric()
+member?(char "a", cl1)
+member?(char "a", cl2)
+intersect(cl1, cl2)
+union(cl1,cl2)
+difference(cl1,cl2)
+intersect(complement(cl1),cl2)
+insert!(char "a", cl2)
+remove!(char "b", cl2)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

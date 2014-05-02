@@ -1,0 +1,24 @@
+% operand stack configuration in order to use psDrawFilled:
+%		psFillPoly
+%		XPoint[0].y
+%		XPoint[0].x
+%		n
+%		...
+%		XPoint[n].y
+%		XPoint[n].x
+%		graphics-context dictionary
+% this draws a polygon by connecting all the points and fills the
+% region with foreground color
+
+/psFillPoly
+        {	gsave
+                newpath
+                yVal moveto
+                1 sub {
+                        yVal lineto
+                } repeat
+		closepath
+		begin installGC fill end	%% fills with foreground color
+                grestore }
+        def
+

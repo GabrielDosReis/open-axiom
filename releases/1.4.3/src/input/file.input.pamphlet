@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FILE.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FileXmpPage
+)clear all
+
+ifile:File List Integer:=open("/tmp/jazz1","output")
+write!(ifile, [-1,2,3])
+write!(ifile, [10,-10,0,111])
+write!(ifile, [7])
+reopen!(ifile, "input")
+read! ifile
+read! ifile
+readIfCan! ifile
+readIfCan! ifile
+iomode ifile
+name ifile
+close! ifile
+)system rm /tmp/jazz1
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,2 @@
+extern int superSelect(int n , fd_set * rd , fd_set * wr , fd_set * ex , timeval * timeout);
+

@@ -1,0 +1,219 @@
+\documentclass{article}
+\usepackage{open-axiom}
+\begin{document}
+
+\title{src/algebra prtition.spad}
+\author{William H. Burge}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+\tableofcontents
+\eject
+
+\section{domain PRTITION Partition}
+
+<<domain PRTITION Partition>>=
+import Integer
+import List
+)abbrev domain PRTITION Partition
+++ Domain for partitions of positive integers
+++ Author: William H. Burge
+++ Date Created: 29 October 1987
+++ Date Last Updated: April 17, 2010
+++ Description:
+++   Partition is an OrderedCancellationAbelianMonoid which is used
+++   as the basis for symmetric polynomial representation of the
+++   sums of powers in SymmetricPolynomial.  Thus, \spad{(5 2 2 1)} will
+++   represent \spad{s5 * s2**2 * s1}.
+++ Keywords:
+++ Examples:
+++ References:
+Partition(): Exports == Implementation where
+  macro L == List
+  macro I == Integer
+  macro PI == PositiveInteger
+  macro OUT == OutputForm
+  macro NNI == NonNegativeInteger
+  macro UN == Union(%,"failed")
+
+  Exports == Join(OrderedCancellationAbelianMonoid, CoercibleTo L PI) with
+    partition: L PI -> %
+      ++ partition(li) converts a list of integers li to a partition
+    parts: % -> L PI
+      ++ \spad{parts x} returns the list of decreasing integer sequence
+      ++ making up the partition \spad{x}.
+    #: % -> NNI
+      ++ \spad{#x} returns the sum of all parts of the partition \spad{x}.
+    partitions: NNI -> Stream %
+      ++ \spad{partitions n} returns the stream of all partitions of
+      ++ size \spad{n}.
+    powers: % -> List Pair(PI,PI)
+      ++ powers(x) returns a list of pairs.  The second component of
+      ++ each pair is the multiplicity with which the first component
+      ++ occurs in li. 
+    pdct: % -> PI
+      ++ \spad{pdct(a1**n1 a2**n2 ...)} returns 
+      ++ \spad{n1! * a1**n1 * n2! * a2**n2 * ...}.
+      ++ This function is used in the package \spadtype{CycleIndicators}.
+    conjugate: % -> %
+      ++ conjugate(p) returns the conjugate partition of a partition p
+ 
+  Implementation == add
+    Rep == L PI
+
+    0 == per nil
+    coerce(s: %): L PI == rep s
+    partition list == per sort(#2 < #1,list)
+    parts x == rep x
+
+    #x ==
+      empty? rep x => 0
+      +/[n for n in rep x]
+
+    allPartitions(n: NNI, k: NNI): Stream % ==
+      zero? n => cons(0,empty()$Stream(%))
+      zero? k => empty()$Stream(%)
+      one? k => cons(partition [1 for i in 1..n], empty()$Stream(%))
+      s :=
+        n < k => empty()$Stream(%)
+        allPartitions((n-k)::NNI,k)
+      concat(map(per(cons(k::PI, rep #1)),s), allPartitions(n,(k-1)::NNI))
+
+    partitions n == allPartitions(n,n)
+
+    zero? x == empty? rep x
+    x < y == rep x < rep y
+    x = y == rep x = rep y
+    x + y == per merge(#2 < #1, rep x, rep y)$Rep
+
+    n:NNI * x:% ==
+      zero? n => 0
+      x + (subtractIfCan(n,1) :: NNI) * x
+ 
+    remv(i: PI,x: %): UN ==
+      member?(i,rep x) => per remove(i, rep x)$Rep
+      "failed"
+ 
+    subtractIfCan(x, y) ==
+      zero? x =>
+        zero? y => 0
+        "failed"
+      zero? y => x
+      (aa := remv(first rep y,x)) case "failed" => "failed"
+      subtractIfCan((aa :: %), per rest rep y)
+ 
+    powers x ==
+      l := rep x
+      r: List Pair(PI,PI) := nil
+      while not empty? l repeat
+        i := first l
+        -- Now, count how many times the item `i' appears in `l'.
+        -- Since parts of partitions are stored in decreasing
+        -- order, we only need to scan the rest of the list until
+        -- we hit a different number.
+        n: PI := 1
+        while not empty?(l := rest l) and i = first l repeat
+          n := n + 1
+        r := cons(pair(i,n), r)
+      reverse! r
+ 
+    conjugate x == per conjugate(rep x)$PartitionsAndPermutations
+ 
+    mkterm(i1: I,i2: I): OUT ==
+      i2 = 1 => (i1 :: OUT) ** (" " :: OUT)
+      (i1 :: OUT) ** (i2 :: OUT)
+ 
+    mkexp1(lli: L Pair(PI,PI)): L OUT ==
+      empty? lli => nil
+      li := first lli
+      empty?(rest lli) and second(li) = 1 =>
+        [first(li) :: OUT]
+      cons(mkterm(first li,second li),mkexp1(rest lli))
+ 
+    coerce(x:%):OUT == 
+        empty? rep x => rep(x)::OUT
+        paren(reduce("*",mkexp1(powers x)))
+ 
+    pdct x ==
+      */[factorial(second a) * (first(a) ** second(a))
+                 for a in powers x] :: PI
+
+@
+\section{domain SYMPOLY SymmetricPolynomial}
+<<domain SYMPOLY SymmetricPolynomial>>=
+)abbrev domain SYMPOLY SymmetricPolynomial
+++ Description:
+++ This domain implements symmetric polynomial
+SymmetricPolynomial(R:Ring) == PolynomialRing(R,Partition) add
+       Term ==  Record(k:Partition,c:R)
+       Rep:=  List Term
+
+-- override PR implementation because coeff. arithmetic too expensive (??)
+
+       if R has EntireRing then
+         (p1:%) * (p2:%)  ==
+            null p1 => 0
+            null p2 => 0
+            zero?(p1.first.k) => p1.first.c * p2
+            one? p2 => p1
+            +/[[[t1.k+t2.k,t1.c*t2.c]$Term for t2 in p2]
+                   for t1 in reverse(p1)]
+                   -- This 'reverse' is an efficiency improvement:
+                   -- reduces both time and space [Abbott/Bradford/Davenport]
+        else
+         (p1:%) * (p2:%)  ==
+            null p1 => 0
+            null p2 => 0
+            zero?(p1.first.k) => p1.first.c * p2
+            one? p2 => p1
+            +/[[[t1.k+t2.k,r]$Term for t2 in p2 | (r:=t1.c*t2.c) ~= 0]
+                 for t1 in reverse(p1)]
+                  -- This 'reverse' is an efficiency improvement:
+                  -- reduces both time and space [Abbott/Bradford/Davenport]
+
+@
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+ 
+<<domain PRTITION Partition>>
+<<domain SYMPOLY SymmetricPolynomial>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

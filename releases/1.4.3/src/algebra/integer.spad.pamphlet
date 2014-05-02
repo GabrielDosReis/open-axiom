@@ -1,0 +1,371 @@
+\documentclass{article}
+\usepackage{open-axiom}
+\begin{document}
+\title{\$SPAD/src/algebra integer.spad}
+\author{James Davenport}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{package INTSLPE IntegerSolveLinearPolynomialEquation}
+<<package INTSLPE IntegerSolveLinearPolynomialEquation>>=
+)abbrev package INTSLPE IntegerSolveLinearPolynomialEquation
+++ Author: Davenport
+++ Date Created: 1991
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package provides the implementation for the
+++ \spadfun{solveLinearPolynomialEquation}
+++ operation over the integers. It uses a lifting technique
+++ from the package GenExEuclid
+IntegerSolveLinearPolynomialEquation(): C ==T
+ where
+  ZP ==> SparseUnivariatePolynomial Integer
+  C == with
+      solveLinearPolynomialEquation: (List ZP,ZP) -> Union(List ZP,"failed")
+           ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+           ++ (where the fi are relatively prime to each other)
+           ++ returns a list of ai such that
+           ++ \spad{g/prod fi = sum ai/fi}
+           ++ or returns "failed" if no such list of ai's exists.
+  T == add
+      oldlp:List ZP := []
+      slpePrime:Integer:=(2::Integer)
+      oldtable:Vector List ZP := empty()
+      solveLinearPolynomialEquation(lp,p) ==
+         if (oldlp ~= lp) then
+            -- we have to generate a new table
+            deg:= +/[degree u for u in lp]
+            ans:Union(Vector List ZP,"failed"):="failed"
+            slpePrime:=2147483647::Integer   -- 2**31 -1 : a prime
+                 -- a good test case for this package is
+                 --  ([x**31-1,x-2],2)
+            while (ans case "failed") repeat
+              ans:=tablePow(deg,slpePrime,lp)$GenExEuclid(Integer,ZP)
+              if (ans case "failed") then
+                 slpePrime:= prevPrime(slpePrime)$IntegerPrimesPackage(Integer)
+            oldtable:=(ans:: Vector List ZP)
+         answer:=solveid(p,slpePrime,oldtable)
+         answer
+
+@
+\section{domain INT Integer}
+
+<<domain INT Integer>>=
+)abbrev domain INT Integer
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++ Related Constructors:
+++ Keywords: integer
+++ Description: \spadtype{Integer} provides the domain of arbitrary precision
+++ integers.
+
+Integer: IntegerNumberSystem with
+    canonical
+      ++ mathematical equality is data structure equality.
+    canonicalsClosed
+      ++ two positives multiply to give positive.
+    noetherian
+      ++ ascending chain condition on ideals.
+ == add
+      ZP ==> SparseUnivariatePolynomial %
+      ZZP ==> SparseUnivariatePolynomial Integer
+      import %icst0: %                 from Foreign Builtin
+      import %icst1: %                 from Foreign Builtin
+      import %ineg: % -> %             from Foreign Builtin
+      import %iabs: % -> %             from Foreign Builtin
+      import %irandom: % -> %          from Foreign Builtin
+      import %iodd?: % -> Boolean      from Foreign Builtin
+      import %ieven?: % -> Boolean     from Foreign Builtin
+      import %hash: % -> SingleInteger from Foreign Builtin
+      import %iadd: (%,%) -> %         from Foreign Builtin
+      import %iaddmod: (%,%,%) -> %    from Foreign Builtin
+      import %isub: (%,%) -> %         from Foreign Builtin
+      import %isubmod: (%,%,%) -> %    from Foreign Builtin
+      import %imul: (%,%) -> %         from Foreign Builtin
+      import %imulmod: (%,%,%) -> %    from Foreign Builtin
+      import %irem: (%,%) -> %         from Foreign Builtin
+      import %iquo: (%,%) -> %         from Foreign Builtin
+      import %ilshift: (%,%) -> %      from Foreign Builtin
+      import %imax: (%,%) -> %         from Foreign Builtin
+      import %imin: (%,%) -> %         from Foreign Builtin
+      import %igcd: (%,%) -> %         from Foreign Builtin
+      import %ieq: (%,%) -> Boolean    from Foreign Builtin
+      import %ilt: (%,%) -> Boolean    from Foreign Builtin
+      import %ile: (%,%) -> Boolean    from Foreign Builtin
+      import %igt: (%,%) -> Boolean    from Foreign Builtin
+      import %ige: (%,%) -> Boolean    from Foreign Builtin
+      import %ilength: % -> %          from Foreign Builtin
+      import %i2s: % -> String         from Foreign Builtin
+      import %strconc: (String,String) -> String from Foreign Builtin
+
+      x,y: %
+      n: NonNegativeInteger
+
+      zero? x == x = %icst0
+      one? x == x = %icst1
+      0 == %icst0
+      1 == %icst1
+      base()  == 2 pretend %
+      copy x  == x
+      inc  x  == x + %icst1
+      dec  x  == x - %icst1
+      hash x == %hash x
+      negative? x == x < %icst0
+      positive? x == %icst0 < x
+      coerce(x):OutputForm == outputForm(x pretend Integer)
+      coerce(m:Integer):% == m pretend %
+      convert(x:%):Integer == x pretend Integer
+      length a == %ilength a
+      addmod(a, b, p) == %iaddmod(a,b,p)
+      submod(a, b, p) == %isubmod(a,b,p)
+      mulmod(a, b, p) == %imulmod(a,b,p)
+      convert(x:%):Float       == coerce(x)$Float
+      convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
+      convert(x:%):InputForm   == convert(x)$InputForm
+
+      latex(x:%):String ==
+        s := %i2s x
+        -%icst1 < x and x < 10 => s
+        %strconc("{", %strconc(s, "}"))
+
+      positiveRemainder(a, b) ==
+        negative?(r := a rem b) =>
+           negative? b => r - b
+           r + b
+        r
+
+      reducedSystem(m:Matrix %):Matrix(Integer) ==
+        m pretend Matrix(Integer)
+
+      reducedSystem(m:Matrix %, v:Vector %):
+       Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
+        [m pretend Matrix(Integer), v pretend Vector(Integer)]
+
+      abs(x) == %iabs x
+      random() == random()$Lisp
+      random(x) == %irandom x
+      x = y == %ieq(x,y)
+      x < y == %ilt(x,y)
+      x > y == %igt(x,y)
+      x <= y == %ile(x,y)
+      x >= y == %ige(x,y)
+      - x == %ineg x
+      x + y == %iadd(x,y)
+      x - y == %isub(x,y)
+      x * y == %imul(x,y)
+      (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
+      x ** n == %ipow(x,n)$Foreign(Builtin)
+      odd? x == %iodd? x
+      even? x == %ieven? x
+      max(x,y) == %imax(x,y)
+      min(x,y) == %imin(x,y)
+      divide(x,y) == %idivide(x,y)$Foreign(Builtin)
+      x quo y == %iquo(x,y)
+      x rem y == %irem(x,y)
+      shift(x, y) == %ilshift(x,y)
+      recip(x) == if one? x or x=-1 then x else "failed"
+      gcd(x,y) == %igcd(x,y)
+      UCA ==> Record(unit:%,canonical:%,associate:%)
+      unitNormal x ==
+         negative? x => [-%icst1,-x,-%icst1]$UCA
+         [%icst1,x,%icst1]$UCA
+      unitCanonical x == abs x
+      solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
+         solveLinearPolynomialEquation(lp pretend List ZZP,
+               p pretend ZZP)$IntegerSolveLinearPolynomialEquation pretend
+                     Union(List ZP,"failed")
+      squareFreePolynomial(p:ZP):Factored ZP ==
+        squareFree(p)$UnivariatePolynomialSquareFree(%,ZP)
+      factorPolynomial(p:ZP):Factored ZP ==
+         -- GaloisGroupFactorizer doesn't factor the content
+         -- so we have to do this by hand
+         pp:=primitivePart p
+         leadingCoefficient pp = leadingCoefficient p =>
+             factor(p)$GaloisGroupFactorizer(ZP)
+         mergeFactors(factor(pp)$GaloisGroupFactorizer(ZP),
+                        map(#1::ZP,
+                            factor((leadingCoefficient p exquo
+                                    leadingCoefficient pp)
+                                   ::%))$FactoredFunctions2(%,ZP)
+                                     )$FactoredFunctionUtilities(ZP)
+      factorSquareFreePolynomial(p:ZP):Factored ZP ==
+           factorSquareFree(p)$GaloisGroupFactorizer(ZP)
+      gcdPolynomial(p:ZP, q:ZP):ZP ==
+         zero? p => unitCanonical q
+         zero? q => unitCanonical p
+         gcd([p,q])$HeuGcd(ZP)
+--    myNextPrime: (%,NonNegativeInteger) -> %
+--    myNextPrime(x,n) ==
+--       nextPrime(x)$IntegerPrimesPackage(%)
+--    TT:=InnerModularGcd(%,ZP,67108859 pretend %,myNextPrime)
+--    gcdPolynomial(p,q) == modularGcd(p,q)$TT
+
+@
+
+
+\section{domain NNI NonNegativeInteger}
+
+<<domain NNI NonNegativeInteger>>=
+)abbrev domain NNI NonNegativeInteger
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++ Related Constructors:
+++ Keywords: integer
+++ Description: \spadtype{NonNegativeInteger} provides functions for non
+++   negative integers.
+NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
+            quo : (%,%) -> %
+              ++ a quo b returns the quotient of \spad{a} and b, forgetting
+              ++ the remainder.
+            rem : (%,%) -> %
+              ++ a rem b returns the remainder of \spad{a} and b.
+            gcd  : (%,%) -> %
+              ++ gcd(a,b) computes the greatest common divisor of two
+              ++ non negative integers \spad{a} and b.
+            divide: (%,%) -> Record(quotient:%,remainder:%)
+              ++ divide(a,b) returns a record containing both
+              ++ remainder and quotient.
+            exquo: (%,%) -> Union(%,"failed")
+              ++ exquo(a,b) returns the quotient of \spad{a} and b, or "failed"
+              ++ if b is zero or \spad{a} rem b is zero.
+            shift: (%, Integer) -> %
+              ++ shift(a,i) shift \spad{a} by i bits.
+            random   : % -> %
+              ++ random(n) returns a random integer from 0 to \spad{n-1}.
+            commutative("*")
+              ++ commutative("*") means multiplication is commutative : \spad{x*y = y*x}.
+
+  == SubDomain(Integer,#1 >= 0) add
+      x,y:%
+      sup(x,y) == %imax(x,y)$Foreign(Builtin)
+      shift(x:%, n:Integer):% == ASH(x,n)$Lisp
+      subtractIfCan(x, y) ==
+        c:Integer := rep x - rep y
+        negative? c => "failed"
+        per c
+
+@
+
+\section{domain PI PositiveInteger}
+<<domain PI PositiveInteger>>=
+)abbrev domain PI PositiveInteger
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++ Related Constructors:
+++ Keywords: positive integer
+++ Description: \spadtype{PositiveInteger} provides functions for
+++   positive integers.
+PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
+            gcd: (%,%) -> %
+              ++ gcd(a,b) computes the greatest common divisor of two
+              ++ positive integers \spad{a} and b.
+            commutative("*")
+              ++ commutative("*") means multiplication is commutative : x*y = y*x
+ == SubDomain(NonNegativeInteger,#1 > 0)
+
+@
+
+
+\section{domain ROMAN RomanNumeral}
+<<domain ROMAN RomanNumeral>>=
+)abbrev domain ROMAN RomanNumeral
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++   convert, roman
+++ Related Constructors:
+++ Keywords: roman numerals
+++ Description:  \spadtype{RomanNumeral} provides functions for converting
+++   integers to roman numerals.
+RomanNumeral(): Join(IntegerNumberSystem,ConvertibleFrom Symbol) with
+    canonical
+      ++ mathematical equality is data structure equality.
+    canonicalsClosed
+      ++ two positives multiply to give positive.
+    noetherian
+      ++ ascending chain condition on ideals.
+    roman  : Symbol  -> %
+      ++ roman(n) creates a roman numeral for symbol n.
+    roman  : Integer -> %
+      ++ roman(n) creates a roman numeral for n.
+
+  == Integer add
+        import NumberFormats()
+
+        roman(n:Integer) == n::%
+        roman(sy:Symbol) == convert sy
+        convert(sy:Symbol):%    == ScanRoman(string sy)::%
+
+        coerce(r:%):OutputForm ==
+            n := convert(r)@Integer
+            -- okay, we stretch it
+            zero? n => n::OutputForm
+            negative? n => - ((-r)::OutputForm)
+            FormatRoman(n::PositiveInteger)::Symbol::OutputForm
+
+@
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<package INTSLPE IntegerSolveLinearPolynomialEquation>>
+<<domain INT Integer>>
+<<domain NNI NonNegativeInteger>>
+<<domain PI PositiveInteger>>
+<<domain ROMAN RomanNumeral>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

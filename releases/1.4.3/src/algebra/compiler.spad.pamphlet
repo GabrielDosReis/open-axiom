@@ -1,0 +1,291 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+
+\section{Compiler Intermediate Form}
+
+<<domain IRFORM InternalRepresentationForm>>=
+)abbrev domain IRFORM InternalRepresentationForm
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This domain provides representations for the intermediate
+++   form data structure used by the Spad elaborator.
+InternalRepresentationForm(): Public == Private where
+  Public == Join(SetCategory, HomotopicTo Syntax) with
+     irVar: (Identifier, InternalTypeForm) -> %
+       ++ \spad{irVar(x,t)} returns an IR for a variable reference
+       ++ of type designated by the type form \spad{t}
+     irCtor: (Identifier, InternalTypeForm) -> %
+       ++ \spad{irCtor(n,t)} returns an IR for a constructor reference
+       ++ of type designated by the type form \spad{t}
+     irDef: (Identifier, InternalTypeForm, %) -> %
+       ++ \spad{irDef(f,ts,e)} returns an IR representation for a definition
+       ++ of a function named \spad{f}, with signature \spad{ts}
+       ++ and body \spad{e}.
+  Private == Syntax add
+    coerce(x: %): Syntax == rep x
+
+    coerce(x: Syntax): % == per x
+
+    irVar(x,t) ==
+      buildSyntax('%irVar,[x::Syntax,t::Syntax])::%
+
+    irCtor(x,t) ==
+      buildSyntax('%irCtor,[x::Syntax,t::Syntax])::%
+
+    irDef(f,ts,e) ==
+      buildSyntax('%irDef,[f::Syntax, ts::Syntax, e::Syntax])::%
+
+@
+
+<<domain ITFORM InternalTypeForm>>=
+)abbrev domain ITFORM InternalTypeForm
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This domain provides representations for internal type form.
+InternalTypeForm(): Public == Private where
+  Public == Join(SetCategory, HomotopicTo Syntax) with
+    jokerMode: %
+      ++ \spad{jokerMode} is a constant that stands for any mode
+      ++ in a type inference context
+    noValueMode: %
+      ++ \spad{noValueMode} is a constant mode that indicates that
+      ++ the value of an expression is to be ignored.
+    voidMode: %
+      ++ \spad{voidMode} is a constant mode denoting Void.
+    categoryMode: %
+      ++ \spad{categoryMode} is a constant mode denoting Category.
+    mappingMode: (%, List %) -> %
+      ++ \spad{mappingMode(r,ts)} returns a mapping mode with return
+      ++ mode \spad{r}, and parameter modes \spad{ts}.
+  Private == InternalRepresentationForm add
+    jokerMode == _$EmptyMode$Foreign(Builtin)
+    noValueMode == _$NoValueMode$Foreign(Builtin)
+    voidMode == _$Void$Foreign(Builtin)
+
+    mappingMode(r,ts) == 
+      buildSyntax('Mapping,cons(r::Syntax, ts : List(Syntax)))::%
+
+@
+
+\section{Elaboration domain}
+<<domain ELABOR Elaboration>>=
+)abbrev domain ELABOR Elaboration
+Elaboration(): Public == Private where
+  Public == CoercibleTo OutputForm with
+    elaboration: (InternalRepresentationForm, InternalTypeForm, Environment) -> %
+      ++ \spad{elaboration(ir,ty,env)} construct an elaboration object for
+      ++ for the internal representation form \spad{ir}, with type \spad{ty},
+      ++ and environment \spad{env}.
+    irForm: % -> InternalRepresentationForm
+      ++ \spad{irForm(x)} returns the internal representation form of
+      ++ the elaboration \spad{x}.
+    typeForm: % -> InternalTypeForm
+      ++ \spad{typeForm(x)} returns the type form of the elaboration \spad{x}.
+    environment: % -> Environment
+      ++ \spad{environment(x)} returns the environment of the
+      ++ elaboration \spad{x}.
+  Private == add
+    Rep == Record(ir: InternalRepresentationForm,
+              type: InternalTypeForm, env: Environment)
+    irForm x == rep(x).ir
+    typeForm x == rep(x).type
+    environment x == rep(x).env
+    coerce(x: %): OutputForm ==
+      bracket([irForm(x)::OutputForm, typeForm(x)::OutputForm,
+                  environment(x)::OutputForm])$OutputForm
+@
+
+\section{Compilation Context}
+
+<<domain CMPCTXT CompilationContext>>=
+)abbrev domain CMPCTXT CompilationContext
+CompilationContext(): Public == Private where
+  Public == SetCategory with
+    getExitMode: (%,Integer) -> InternalTypeForm
+    pushExitMode!: (%, InternalTypeForm) -> %
+  Private == add
+    Rep == Record(exitModes: List Integer)
+@
+
+\section{A Package for the Spad Compiler}
+
+<<package COMPILER CompilerPackage>>=
+)abbrev package COMPILER CompilerPackage
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This package implements a Spad compiler.
+CompilerPackage(): Public == Private where
+  Public == Type with
+     macroExpand: (SpadAst, Environment) -> SpadAst
+       ++ \spad{macroExpand(s,e)} traverses the syntax object \spad{s}
+       ++ replacing all (niladic) macro invokations with the
+       ++ corresponding substitution.
+     elaborate: SpadAst -> Maybe Elaboration
+       ++ \spad{elaborate(s)} returns the elaboration of the syntax
+       ++ object \spad{s} in the empty environement.
+     elaborateFile: String -> List Maybe Elaboration
+  Private == add
+     macro IR == InternalRepresentationForm
+     macro TFORM == InternalTypeForm
+     macro RESULT == Maybe Elaboration
+     macro ENV == Environment
+     import ENV
+     import IR
+     import RESULT
+     inline RESULT
+
+     -- forward declaration
+     doElaborate: (SpadAst,TFORM,ENV) -> RESULT
+
+     macroExpand(s,e) ==
+       -- FIXME: this is a short-term stopgap.
+       macroExpand(s,e)$Foreign(Builtin)
+
+     -- fecth the active definition of 'x', if any from environment `e'.
+     getValue(x: Identifier, e: ENV): RESULT ==
+       case getProperty(x,'value,e) is
+         val@SExpression =>
+           T := destruct(val)$SExpression
+           just elaboration(first(T) : IR, second(T) : TFORM, e)
+         otherwise => nothing                 -- not defined
+ 
+     -- fetch the active declaration of 'x', if any from environment `e'.
+     getMode(x: Identifier, e: ENV): Maybe TFORM ==
+       val := getValue(x,e)
+       val case nothing =>                    -- symbol is not defined
+         decl := getProperty(x,'mode,e)
+         decl case nothing => nothing         -- nor declared
+         T := destruct(decl)$SExpression
+         just(second(T) : TFORM)
+       just typeForm(val@Elaboration)
+
+     -- simply coerce the elaboration `T' to mode `m'.
+     coerceSimply(T: RESULT, m: TFORM): RESULT ==
+       T case nothing => T
+       t := typeForm(T@Elaboration)
+       m = jokerMode or t = m => T
+       m = noValueMode or m = voidMode or t = jokerMode => 
+          just elaboration(irForm T, m, environment T)
+       nothing
+    
+     -- implicitly coerce the eloboration `T' to one that is
+     -- valid in a mode context `m'.
+     coerceTo(T: RESULT, m:TFORM): RESULT ==
+       coerceSimply(T,m)
+
+     -- elaborate an identifier in the current environment.
+     elaborateIdentifier(x: Identifier, t: TFORM, e: ENV): RESULT ==
+       r := 
+         case getValue(x,e) is
+           v@Elaboration => just v
+           otherwise => 
+             case getMode(x,e) is
+               m@TFORM => just elaboration(irVar(x,m), m, e)
+               otherwise => nothing$RESULT
+       coerceTo(r, t)
+
+     -- elaborate a form designating a mode
+     elaborateMode(x: SpadAst, e: ENV): Maybe TFORM ==
+       t := doElaborate(x,jokerMode,e)
+       t case nothing => nothing
+       just(t : TFORM) -- FIXME: use conversion.
+
+     -- elaborate a definition.
+     elaborateDefinition(x: DefinitionAst, m: TFORM, e: ENV): RESULT ==
+       import HeadAst
+       e' := e
+       parms := parameters head x
+       n := name head x
+       srcSig := signature x
+       irSig := nil$List(TFORM)
+       -- elaborate parameters and push them in scope.
+       for p in parms for t in source srcSig repeat
+         nil? t => return nothing            -- FIXME: should infer first
+         irT := elaborateMode(t::SpadAst,e)
+         irT case nothing => return nothing
+         irSig := cons(irT@TFORM,irSig)
+       -- elaborate return type.
+       ret := target srcSig
+       nil? ret => nothing                   -- FIXME: should infer first
+       irRet := elaborateMode(ret::SpadAst,e)
+       irRet case nothing => nothing
+       -- elaborate the body.
+       b := doElaborate(body x, irRet@TFORM, e)
+       b case nothing => nothing
+       t := mappingMode(irRet@TFORM, reverse irSig)
+       just elaboration(irDef(n,t,irForm b),t,e')
+
+     -- elaborate a syntax `s' under context `m', in the envionment `e'.
+     doElaborate(s: SpadAst, t: TFORM, e: ENV): RESULT ==
+       case s is
+         id@Identifier => elaborateIdentifier(id,t,e)
+         otherwise => nothing
+
+     elaborate s == 
+       doElaborate(s,jokerMode,empty()$ENV)
+
+     elaborateFile f ==
+       [elaborate(s::SpadAst) for s in parse(f)$SpadParser]
+
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+
+
+<<*>>=
+<<license>>
+
+<<domain IRFORM InternalRepresentationForm>>
+<<package COMPILER CompilerPackage>>
+
+@

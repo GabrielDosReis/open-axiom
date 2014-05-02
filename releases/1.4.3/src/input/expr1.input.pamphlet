@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input EXPR.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from ExpressionXmpPage
+)clear all
+
+sin(x) + 3*cos(x)**2
+tan(x) - 3.45*x
+(tan sqrt 7 - sin sqrt 11)**2 / (4 - cos(x - y))
+log(exp  x)@Expression(Integer)
+log(exp  x)@Expression(Complex Integer)
+sqrt 3 + sqrt(2 + sqrt(-5))
+% :: Expression Integer
+height mainKernel sin(x + 4)
+e := (sin(x) - 4)**2 / ( 1 - 2*y*sqrt(- y) )
+numer e
+denom e
+D(e, x)
+D(e, [x, y], [1, 2])
+complexNumeric(cos(2 - 3*%i))
+numeric(tan 3.8)
+e2 := cos(x**2 - y + 3)
+e3 := asin(e2) - %pi/2
+e3 :: Polynomial Integer
+e3 :: DMP([x, y], Integer)
+sin %pi
+cos(%pi / 4)
+tan(x)**6 + 3*tan(x)**4 + 3*tan(x)**2 + 1
+simplify %
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

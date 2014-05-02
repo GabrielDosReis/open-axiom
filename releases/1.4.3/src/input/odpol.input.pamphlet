@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input ODPOL.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from OrderlyDifferentialPolynomialXmpPage
+)clear all
+
+dpol:= ODPOL(FRAC INT)
+w := makeVariable('w)$dpol
+z := makeVariable('z)$dpol
+w.5
+w 0
+[z.i for i in 1..5]
+f:= w.4 - w.1 * w.1 * z.3
+g:=(z.1)**3 * (z.2)**2 - w.2
+D(f)
+D(f,4)
+df:=makeVariable(f)$dpol
+df.4
+order(g)
+order(g, 'w)
+differentialVariables(g)
+degree(g)
+degree(g, 'w)
+weights(g)
+weights(g,'w)
+weight(g)
+isobaric?(g)
+eval(g,['w::Symbol],[f])
+eval(g,variables(w.0),[f])
+monomials(g)
+variables(g)
+gcd(f,g)
+groebner([f,g])
+lg:=leader(g)
+sg:=separant(g)
+ig:=initial(g)
+g1 := D g
+lg1:= leader g1
+pdf:=D(f, lg1)
+prf:=sg * f- pdf * g1
+lcf:=leadingCoefficient univariate(prf, lg)
+ig * prf - lcf * g * lg
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

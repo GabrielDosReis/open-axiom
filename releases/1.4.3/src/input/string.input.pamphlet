@@ -1,0 +1,57 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input STRING.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from StringXmpPage
+)clear all
+
+hello := "Hello, I'm AXIOM!"
+said  := "Jane said, _"Look!_""
+saw   := "She saw exactly one underscore: __."
+gasp: String := new(32, char "x")
+#gasp
+hello.2
+hello 2
+hello(2)
+hullo := copy hello
+hullo.2 := char "u"; [hello, hullo]
+saidsaw := concat ["alpha","---","omega"]
+concat("hello ","goodbye")
+"This " "is " "several " "strings " "concatenated."
+hello(1..5)
+hello(8..)
+split(hello, char " ")
+other := complement alphanumeric();
+split(saidsaw, other)
+trim     ("## ++ relax ++ ##", char "#")
+trim     ("## ++ relax ++ ##", other)
+leftTrim ("## ++ relax ++ ##", other)
+rightTrim("## ++ relax ++ ##", other)
+upperCase hello
+lowerCase hello
+prefix?("He", "Hello")
+prefix?("Her", "Hello")
+suffix?("", "Hello")
+suffix?("LO", "Hello")
+substring?("ll", "Hello", 3)
+substring?("ll", "Hello", 4)
+n := position("nd", "underground",   1)
+n := position("nd", "underground", n+1)
+n := position("nd", "underground", n+1)
+position(char "d", "underground", 1)
+position(hexDigit(), "underground", 1)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,33 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.3.  )boot
+==============================================================================
+ 
+User Level Required:  development
+ 
+Command Syntax: 
+ 
+  -  )boot bootExpression
+ 
+Command Description: 
+ 
+This command is used by OpenAxiom system developers to execute expressions
+written in the Boot language. For example,
+ 
+)boot times3(x) == 3*x
+ 
+creates and compiles the Lisp function ``times3'' obtained by translating the
+Boot code.
+ 
+Also See: 
+o )fin
+o )lisp
+o )set
+o )system
+ 

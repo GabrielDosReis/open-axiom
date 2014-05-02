@@ -1,0 +1,111 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove.
+
+2007-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* msgs/s2-us.msgs: Consistently use OpenAxiom.
+
+2007-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DVI}/book.dvi): Don't use NOISE.
+	(${DVI}/endpaper.dvi): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (MID, DOC): Adjust definition.
+	* Makefile.in: Regenerate.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-doc): New phony target.
+	* Makefile.in: Regenerate.
+
+2006-10-28  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* bookvol1.pdf, french/*.pdf: Backport from trunk. Remove
+	svn:eol-style property, set svn:mime-type to
+	'application/octet-stream'
+
+2006-10-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* axiom.sty.pamphlet (\section{More Macros for Pamphlet Files}):
+	New.  Add more support macros.
+	* Makefile.pamphlet (pamphlets): Include axiom.sty.pamphlet.
+	* Makefile.in: Generate.
+
+2006-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* axiom.sty.pamphlet: Put space before and after section headings.
+
+22006-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* booklet.c.pamphlet: Include axiom instead of noweb.
+
+2006-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove references to ${MNT}.
+	(booklet_sources, booklet_SOURCES, booklet_objects): New.
+	(mostlyclean-local, distclean-local): Tidy.
+	* Makefile.in: Regenerate.
+
+2006-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<DeveloperNotes>>): Remove
+	(<<Rosetta>>): Likewise.
+	(dvi-local): New target.
+	(all): Move $(FILES) prerequisite to dvi-local.
+	(FILES): Don't include DeveloperNotes.dvi and Rosetta.dvi.
+	(document): Remove.
+	(mostlyclean-local): New.
+	(clean-local): Rename from clean.
+
+2006-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Create stamp file.
+	* Makefile.in: Regenerate.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (subdir): New.
+	* Makefile.in: Regenerate.
+
+2006-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use $(axiom_build_document) to tangle
+	pamphlets.  Add support for out-of-source build.
+	* Makefile.in: Regenerate.
+	*axiom.bib.pamphlet: Adjust path to LaTeX package "axiom"
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.in: New.
+
+2006-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${STY}/axiom.sty): Depend on ${STY}.
+	(${STY}): New rule.
+
+2006-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DVI}/book.dvi, ${DVI}/bookvol1.dvi,
+	${DVI}/endpaper.dvi, ${DVI}/Rosetta.dvi): Don't overwrite
+	$(TMP)/trace; append instead.
+
+2006-08-01  Ralf Hemmecke  <ralf@hemmecke.de>
+
+	* bookvol1.pamphlet: Removed conflicting explicit
+	definitions of \spadgraph and \spadfunFrom since they are already
+	defined in exactly the same way in src/doc/axiom.sty.pamplet.
+
+	* Makefile.pamplet: There is no need to copy src/doc/ps
+	recursively to either int/doc or ${MNT}/${SYS}/doc since the ps
+	directory does not contain subdirectories. Avoiding the recursive
+	copy avoids to copy a .svn directory from a subversion working
+	copy.
+	
+	* Makefile.pamplet: The 'if' for [[${NOISE}]] was wrong.
+	It used to redirect the output to ${tmp}/trace if [[${NOISE}]] was
+	empty.
+	

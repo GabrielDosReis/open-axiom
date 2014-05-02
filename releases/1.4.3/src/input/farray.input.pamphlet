@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FARRAY.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FlexibleArrayXmpPage
+)clear all
+
+flexibleArray [i for i in 1..6]
+f : FARRAY INT := new(6,0)
+for i in 1..6 repeat f.i := i; f
+physicalLength f
+concat!(f,11)
+physicalLength f
+physicalLength!(f,15)
+concat!(f,f)
+insert!(22,f,1)
+g := f(10..)
+insert!(g,f,1)
+merge!(sort! f, sort! g)
+removeDuplicates! f
+select!(i +-> even? i,f)
+physicalLength f
+shrinkable(false)$FlexibleArray(Integer)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

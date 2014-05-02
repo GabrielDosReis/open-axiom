@@ -1,0 +1,11 @@
+-- Issue AW/193
+4 - %e < 0                               -- currently error
+
+4 - %e::EXPR INT < 0                     -- likewise
+
+(exp(1)^2 - exp(2) = 0)@Boolean          -- expected failure
+
+
+(4 - %e)::EXPR FLOAT < 0                 -- result: false
+
+sqrt(2) < sqrt(3/2)                      -- currently error

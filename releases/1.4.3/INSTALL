@@ -1,0 +1,145 @@
+Requirements
+============
+
+OpenAxiom currenly requires a Lisp system for its runtime support.
+OpenAxiom is known to build with the GNU Common Lisp (GCL versions 2.6.7
+or 2.6.8), Steel Bank Common Lisp (SBCL version 1.0.22 or higher,
+except 1.0.29), CLisp (version 2.44.x or higher), and ECL (version
+higher than 11.1.1), Clozure CL (version 1.3 or higher).  So, if you
+already have any of the above mentioned Lisp systems, your are good to
+go.  Otherwise, you would need to install any of the Lisp environment
+mentioned above -- SBCL is the default Lisp system used by OpenAxiom
+developers. 
+
+Note that a functional Lisp system (e.g. SBCL, GCL, CLisp, ECL, or
+Clozure CL) is needed only to build OpenAxiom.  They are not needed
+once the system is installed. 
+
+Finally, you would need a C++ compiler.  It is also recommended
+that you install X11 development headers and libraries, especially
+Xpm, and QT development headers and libraries.  Windows (MingW/MSYS) 
+users do not need X11 components, but they would need a functional
+QT SDK (version 4.6 or higher.)
+
+Ah, one more note:  OpenAxiom requires GNU Make.
+
+1. Lisp prerequisite
+   -----------------
+
+If you are missing a Lisp system, you need to get one.
+
+2. Building OpenAxiom
+   ------------------
+
+It is assumed you have already downloaded open-axiom source tarball,
+e.g. open-axiom-1.4.2.tar.bz2.  
+
+2.a. Decompress the OpenAxiom source tarball
+
+      tar jfxv open-axiom-1.4.2.tar.bz2
+
+2.b. Configure OpenAxiom
+
+It is highly recommended that you build OpenAxiom in a directory
+different from the one that contains its sources.  For example, you
+may create a directory sibling to open-axiom-1.4.2 and build the
+system from there:
+
+      mkdir oa-build
+      cd oa-build
+      ../open-axiom-1.4.2/configure
+
+It is possible to tell configure where to put the final OpenAxiom
+executables.  By default, when you just type in configure like above,
+it will configure the system with prefix /usr/local.  You can instead
+say where you want it to be installed, let's say /banana/space.  You
+would then have typed
+
+     ../open-axiom-1.4.2/configure --prefix=/banana/space
+
+
+If you want to compile OpenAxiom with a specific Lisp system then you
+should supply the option 
+
+         --with-lisp=<your-lisp>
+
+where <your-lisp> stands for the executable name of the Lisp of your
+choice.  For example, you might want to add
+
+         --with-lisp=sbcl
+
+to the configuration line if you plan to use the SBCL system; or you
+can specify 
+
+         --with-lisp=ecl
+
+if you want to use the ECL system.
+
+Note also that OpenAxiom can coexist with other flavours of AXIOM.
+
+2.c. Make the system
+
+Just type
+
+       make
+
+or
+
+       make 2>&1 | tee build.log
+
+if you would like to inspect the build messages later on -- but most
+users probably don't.
+
+2.d.  Have some coffee
+
+2.e.  Have more coffee
+
+It can take from 20min to more than 2 hours to build, depending on the
+compute power of the build machine and the base Lisp system.
+
+3. Installing OpenAxiom   
+   --------------------
+
+Once the build (step 2.) has gone successfully, you may optionally try
+to regress-test the system -- it can take hours.
+
+3.a. [optional]
+
+       make check 2>&1 | tee tests.log
+
+3.b. The system is ready to install
+
+If you configured the system to install in a place that needs special
+privilege, e.g. /usr/local that requires administrator write, please
+make sure that you've gained the adequate privileges.  Then, type:
+
+      make install
+
+3.c. The system is ready for use
+
+After step 3.b., your should have a script called `open-axiom', in
+/usr/local/bin or /banana/space/bin or /whichever/prefix/you/used/bin,
+ready for use.  
+
+4.  Enjoy
+    -----
+
+We would like to hear from you.  Send us comments and suggestions at
+
+           open-axiom-help@lists.sf.net
+
+
+About Make
+==========
+
+OpenAxiom build system requires GNU Make.  It might theoretically be
+possible to cram the Makefiles so that they can work with a large set 
+of Make programs.  However, doing so will not be cost effective.  GNU 
+Make has been ported to virtually any system current OpenAxiom can build
+one.  Consequently, the GNU Make requirement is not a stringent
+requirement.  It just reflects reality.
+
+So, if you're using a system where "make" is not GNU Make, then try
+"gmake" instead. 
+
+Gabriel Dos Reis

@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input BOP.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{bugs}
+\subsection{bug1}
+|LinearOrdinaryDifferentialOperator| is invalid as a function
+<<bug1>>=
+solve(deq, y, x)
+@
+<<bugs>>=
+-- Input generated from BasicOperatorXmpPage
+)clear all
+
+y := operator 'y
+deq := D(y x, x, 2) + D(y x, x) + y x = 0
+<<bug1>>
+nary? y
+unary? y
+opOne := operator('opOne, 1)
+nary? opOne
+unary? opOne
+arity opOne
+name opOne
+is?(opOne, 'z2)
+is?(opOne, "opOne")
+properties y
+setProperty(y, "use", "unknown function" :: None )
+properties y
+property(y, "use") :: None pretend String
+deleteProperty!(y, "use")
+properties y
+@
+<<*>>=
+-- Input generated from BasicOperatorXmpPage
+)clear all
+
+y := operator 'y
+deq := D(y x, x, 2) + D(y x, x) + y x = 0
+nary? y
+unary? y
+opOne := operator('opOne, 1)
+nary? opOne
+unary? opOne
+arity opOne
+name opOne
+is?(opOne, 'z2)
+is?(opOne, "opOne")
+properties y
+setProperty(y, "use", "unknown function" :: None )
+properties y
+property(y, "use") :: None pretend String
+deleteProperty!(y, "use")
+properties y
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

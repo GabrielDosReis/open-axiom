@@ -1,0 +1,544 @@
+\documentclass{article}
+\usepackage{open-axiom}
+\begin{document}
+\title{\$SPAD/src/algebra string.spad}
+\author{Stephen M. Watt, Michael Monagan, Manuel Bronstein}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{domain CHAR Character}
+<<domain CHAR Character>>=
+)abbrev domain CHAR Character
+++ Author: Stephen M. Watt
+++ Date Created: July 1986
+++ Date Last Updated: June 20, 1991
+++ Basic Operations: char
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: character, string
+++ Examples:
+++ References:
+++ Description:
+++   This domain provides the basic character data type.
+
+Character: OrderedFinite() with
+	ord: % -> NonNegativeInteger
+	    ++ ord(c) provides an integral code corresponding to the
+	    ++ character c.  It is always true that \spad{char ord c = c}.
+	char: NonNegativeInteger  -> %
+	    ++ char(i) provides a character corresponding to the integer
+	    ++ code i.	It is always true that \spad{ord char i = i}.
+	char: String   -> %
+	    ++ char(s) provides a character from a string s of length one.
+	space: %
+	    ++ \spad{space} provides the blank character.
+	quote: %
+	    ++ \spad{quote} provides the string quote character, \spad{"}.
+	underscore: %
+	    ++ \spad{underscore} designates the underbar character.
+        newline: %
+            ++ \spad{newline} designates the new line character.
+        carriageReturn: %
+            ++ \spad{carriageReturn} designates carriage return.
+        linefeed: %
+            ++ \spad{linefeed} designates the line feed character.
+        formfeed: %
+            ++ \spad{formfeed} designates the form feed character.
+        backspace: %
+            ++ \spad{backspace} designates the backspace character.
+        horizontalTab: %
+            ++ \spad{horizontalTab} designates horizontal tab.
+        verticalTab: %
+            ++ \spad{verticalTab} designates vertical tab.
+        escape: %
+            ++ \spad{escape} designate the escape character.
+	upperCase: % -> %
+	    ++ upperCase(c) converts a lower case letter to the corresponding
+	    ++ upper case letter.  If c is not a lower case letter, then
+	    ++ it is returned unchanged.
+	lowerCase: % -> %
+	    ++ lowerCase(c) converts an upper case letter to the corresponding
+	    ++ lower case letter.  If c is not an upper case letter, then
+	    ++ it is returned unchanged.
+	digit?: % -> Boolean
+	    ++ digit?(c) tests if c is a digit character,
+	    ++ i.e. one of 0..9.
+	hexDigit?: % -> Boolean
+	    ++ hexDigit?(c) tests if c is a hexadecimal numeral,
+	    ++ i.e. one of 0..9, a..f or A..F.
+	alphabetic?: % -> Boolean
+	    ++ alphabetic?(c) tests if c is a letter,
+	    ++ i.e. one of a..z or A..Z.
+	upperCase?: % -> Boolean
+	    ++ upperCase?(c) tests if c is an upper case letter,
+	    ++ i.e. one of A..Z.
+	lowerCase?: % -> Boolean
+	    ++ lowerCase?(c) tests if c is an lower case letter,
+	    ++ i.e. one of a..z.
+	alphanumeric?: % -> Boolean
+	    ++ alphanumeric?(c) tests if c is either a letter or number,
+	    ++ i.e. one of 0..9, a..z or A..Z.
+
+    == add
+        -- We use the base Lisp's system base-char as a
+        -- the representation for this class.
+	CC ==> CharacterClass()
+        NNI ==> NonNegativeInteger
+	import CC
+        import %ccstmax: NonNegativeInteger from Foreign Builtin
+        import %ceq: (%,%) -> Boolean from Foreign Builtin
+        import %clt: (%,%) -> Boolean from Foreign Builtin
+        import %cle: (%,%) -> Boolean from Foreign Builtin
+        import %cgt: (%,%) -> Boolean from Foreign Builtin
+        import %cge: (%,%) -> Boolean from Foreign Builtin
+        import %cup: % -> %           from Foreign Builtin
+        import %cdown: % -> %         from Foreign Builtin
+        import %c2i: % -> NNI         from Foreign Builtin
+        import %i2c: NNI -> %         from Foreign Builtin
+        import %iinc: NNI -> PositiveInteger from Foreign Builtin
+        import %idec: PositiveInteger -> NNI from Foreign Builtin
+        import %ccst: String -> %     from Foreign Builtin
+        import %s2c: String -> %      from Foreign Builtin
+        import %c2s: % -> String      from Foreign Builtin
+        import %strconc: (String,String) -> String from Foreign Builtin
+
+	a = b		       == %ceq(a,b)
+	a < b		       == %clt(a,b)
+	a > b		       == %cgt(a,b)
+	a <= b		       == %cle(a,b)
+	a >= b		       == %cge(a,b)
+	size()		       == %ccstmax
+	index n		       == char %idec n
+	lookup c	       == %iinc ord c
+	char(n: NNI)	       == %i2c n
+	ord c		       == %c2i c
+	random()	       == char(random(size())$NNI)
+	space		       == %ccst " "
+	quote		       == %ccst "_""
+	underscore	       == %ccst "__"
+        newline                == %ccst "\n"
+        carriageReturn         == %i2c 13
+        linefeed               == %i2c 10
+        formfeed               == %i2c 12
+        backspace              == %i2c 8
+        horizontalTab          == %i2c 9
+        verticalTab            == %i2c 11
+        escape                 == %i2c 27
+	coerce(c:%):OutputForm == c : OutputForm
+	digit? c	       == member?(c, digit())
+	hexDigit? c	       == member?(c, hexDigit())
+	upperCase? c	       == member?(c, upperCase())
+	lowerCase? c	       == member?(c, lowerCase())
+	alphabetic? c	       == member?(c, alphabetic())
+	alphanumeric? c	       == member?(c, alphanumeric())
+
+	latex c ==
+	  %strconc("\mbox{`", %strconc(%c2s c, "'}"))
+
+	char(s: String) ==
+          %s2c s
+
+	upperCase c ==
+          %cup c
+
+	lowerCase c ==
+          %cdown c
+
+@
+
+\section{domain CCLASS CharacterClass}
+<<domain CCLASS CharacterClass>>=
+import Character
+import String
+import List
+)abbrev domain CCLASS CharacterClass
+++ Author: Stephen M. Watt
+++ Date Created: July 1986
+++ Date Last Updated: June 20, 1991
+++ Basic Operations: charClass
+++ Related Domains: Character, Bits
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++   This domain allows classes of characters to be defined and manipulated
+++   efficiently.
+
+
+CharacterClass: Join(SetCategory, ConvertibleTo String,
+  FiniteSetAggregate Character, ConvertibleTo List Character) with
+	charClass: String -> %
+	    ++ charClass(s) creates a character class which contains
+	    ++ exactly the characters given in the string s.
+	charClass: List Character -> %
+	    ++ charClass(l) creates a character class which contains
+	    ++ exactly the characters given in the list l.
+	digit:	constant -> %
+	    ++ digit() returns the class of all characters
+	    ++ for which \spadfunFrom{digit?}{Character} is true.
+	hexDigit: constant -> %
+	    ++ hexDigit() returns the class of all characters for which
+	    ++ \spadfunFrom{hexDigit?}{Character} is true.
+	upperCase: constant -> %
+	    ++ upperCase() returns the class of all characters for which
+	    ++ \spadfunFrom{upperCase?}{Character} is true.
+	lowerCase:  constant -> %
+	    ++ lowerCase() returns the class of all characters for which
+	    ++ \spadfunFrom{lowerCase?}{Character} is true.
+	alphabetic  :  constant -> %
+	    ++ alphabetic() returns the class of all characters for which
+	    ++ \spadfunFrom{alphabetic?}{Character} is true.
+	alphanumeric:  constant -> %
+	    ++ alphanumeric() returns the class of all characters for which
+	    ++ \spadfunFrom{alphanumeric?}{Character} is true.
+
+    == add
+        import %iinc: Integer -> Integer from Foreign Builtin
+        import %idec: Integer -> Integer from Foreign Builtin
+
+	Rep := IndexedBits(0)
+	N   := size()$Character
+
+	a, b: %
+
+	digit()		== charClass "0123456789"
+	hexDigit()	== charClass "0123456789abcdefABCDEF"
+	upperCase()	== charClass "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	lowerCase()	== charClass "abcdefghijklmnopqrstuvwxyz"
+	alphabetic()	== union(upperCase(), lowerCase())
+	alphanumeric()	== union(alphabetic(), digit())
+
+	a = b		== a =$Rep b
+
+	member?(c, a)	== a(ord c)
+	union(a,b)	== a \/ b
+	intersect (a,b) == a /\ b
+	difference(a,b) == a /\ (~b)
+	complement a	== ~a
+
+	convert(cl):String ==
+	  construct(convert(cl)@List(Character))
+	convert(cl:%):List(Character) ==
+	  [char(i) for i in 0..%idec N | cl.i]
+
+	charClass(s: String) ==
+	  cl := new(N, false)
+	  for i in minIndex(s)..maxIndex(s) repeat cl(ord s.i) := true
+	  cl
+
+	charClass(l: List Character) ==
+	  cl := new(N, false)
+	  for c in l repeat cl(ord c) := true
+	  cl
+
+	coerce(cl):OutputForm == (convert(cl)@String)::OutputForm
+
+	-- Stuff to make a legal SetAggregate view
+	# a == (n := 0; for i in 0..%idec N | a.i repeat n := %iinc n; n)
+	empty():%	== charClass []
+	brace():%	== charClass []
+
+	insert!(c, a)	== (a(ord c) := true; a)
+	remove!(c: Character, a:%) == (a(ord c) := false; a)
+
+	inspect(a) ==
+	    for i in 0..%idec N | a.i repeat
+		 return char i
+	    error "Cannot take a character from an empty class."
+	extract!(a) ==
+	    for i in 0..%idec N | a.i repeat
+		 a.i := false
+		 return char i
+	    error "Cannot take a character from an empty class."
+
+	map(f, a) ==
+	    b := new(N, false)
+	    for i in 0..%idec N | a.i repeat b(ord f char i) := true
+	    b
+
+	temp: % := new(N, false)$Rep
+	map!(f, a) ==
+	    fill!(temp, false)
+	    for i in 0..%idec N | a.i repeat temp(ord f char i) := true
+	    copyInto!(a, temp, 0)
+
+	parts a ==
+	    [char i for i in 0..%idec N | a.i]
+
+@
+
+\section{domain STRING String}
+<<domain STRING String>>=
+)abbrev domain STRING String
+++ Description:
+++   This is the domain of character strings.
+++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
+
+String(): Public == Private where
+  Public == StringAggregate with
+    string: Integer -> %
+      ++ \spad{string i} returns the decimal representation of
+      ++ \spad{i} in a string
+    string: DoubleFloat -> %
+      ++ \spad{string f} returns the decimal representation of
+      ++ \spad{f} in a string
+    string: Identifier -> %
+      ++ \spad{string id} is the string representation of the
+      ++ identifier \spad{id}
+  Private == add
+    macro B == Boolean
+    macro C == Character
+    macro I == Integer
+    macro N == NonNegativeInteger
+    macro U == UniversalSegment Integer
+
+    import %icst0: N                  from Foreign Builtin
+    import %icst1: N                  from Foreign Builtin
+    import %i2s: I -> %               from Foreign Builtin
+    import %iinc: I -> I              from Foreign Builtin
+    import %idec: I -> I              from Foreign Builtin
+    import %f2s: DoubleFloat -> %     from Foreign Builtin
+    import %sname: Identifier -> %    from Foreign Builtin
+    import %strlength: % -> N         from Foreign Builtin
+    import %streq: (%,%) -> B         from Foreign Builtin
+    import %strlt: (%,%) -> B         from Foreign Builtin
+    import %ceq: (C, C) -> B          from Foreign Builtin
+    import %schar: (%,I) -> C         from Foreign Builtin
+    import %strconc: (%,%) -> %       from Foreign Builtin
+    import %strcopy: % -> %           from Foreign Builtin
+    import %strstc: (%,I,C) -> Void   from Foreign Builtin
+    import %hash : % -> SingleInteger from Foreign Builtin
+
+    string(n: I) == %i2s n
+    string(f: DoubleFloat) == %f2s f
+    string(id: Identifier) == %sname id
+
+    c:	Character
+    cc: CharacterClass
+
+--  new n		   == makeString(n, space$C)$Lisp
+    new(n, c)		   == makeString(n, c)$Lisp
+    empty()		   == makeString(0@I)$Lisp
+    empty?(s)		   == zero? %strlength s
+    #s			   == %strlength s
+    s = t		   == %streq(s,t)
+    s < t		   == %strlt(s,t)
+    concat(s:%,t:%)	   == %strconc(s,t)
+    copy s		   == %strcopy s
+    insert(s:%, t:%, i:I)  == concat(concat(s(1..%idec i), t), s(i..))
+    coerce(s:%):OutputForm == outputForm(s pretend String)
+    minIndex s		   == %icst1
+    upperCase! s	   == map!(upperCase, s)
+    lowerCase! s	   == map!(lowerCase, s)
+
+    latex s		   ==
+      concat("\mbox{``", concat(s pretend String, "''}"))
+
+    replace(s, sg, t) ==
+	l := %idec lo(sg)
+	m := #s
+	n := #t
+	h:I := if hasHi sg then %idec hi(sg) else %idec maxIndex s
+	negative? l or h >= m or h < %idec l => error "index out of range"
+	r := new((m-%iinc(h-l)+n)::N, space$C)
+        k: NonNegativeInteger := %icst0
+	for i in %icst0..%idec l repeat
+          %strstc(r, k, %schar(s, i))
+          k := %iinc(k) : N
+	for i in %icst0..%idec n repeat
+          %strstc(r, k, %schar(t, i))
+          k := %iinc(k) : N
+	for i in %iinc h..%idec m repeat
+          %strstc(r, k, %schar(s, i))
+          k := %iinc(k) : N
+	r
+
+    setelt(s:%, i:I, c:C) ==
+	i < 1 or i > maxIndex(s) => error "index out of range"
+	%strstc(s, %idec i, c)
+	c
+
+    substring?(part, whole, startpos) ==
+	np:I := %strlength part
+	nw:I := %strlength whole
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	np > nw - startpos => false
+	for ip in %icst0..%idec np for iw in startpos.. repeat
+	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
+	true
+
+    position(s:%, t:%, startpos:I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
+	%peq(r, NIL$Lisp)$Foreign(Builtin) => %icst0
+	%iinc r
+    position(c: Character, t: %, startpos: I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	for r in startpos..%idec %strlength t repeat
+	    if %ceq(%schar(t, r), c) then return %iinc r
+	%icst0
+    position(cc: CharacterClass, t: %, startpos: I) ==
+	negative?(startpos := %idec startpos) => error "index out of bounds"
+	startpos >= %strlength t => %icst0
+	for r in startpos..%idec %strlength t repeat
+	    if member?(%schar(t,r), cc) then return %iinc r
+	%icst0
+
+    suffix?(s, t) ==
+	(m := maxIndex s) > (n := maxIndex t) => false
+	substring?(s, t, %iinc(n - m))
+
+    split(s, c) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and s.i = c repeat i := %iinc i
+	l := empty()$List(%)
+	j:Integer -- j is conditionally intialized
+	while i <= n and (j := position(c, s, i)) >= %icst1 repeat
+	    l := concat(s(i..%idec j), l)
+            i := j
+	    while i <= n and s.i = c repeat i := %iinc i
+	if i <= n then l := concat(s(i..n), l)
+	reverse! l
+
+    split(s, cc) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and member?(s.i,cc) repeat i := %iinc i
+	l := empty()$List(%)
+	j:Integer -- j is conditionally intialized
+	while i <= n and (j := position(cc, s, i)) >= 1 repeat
+	    l := concat(s(i..%idec j), l)
+            i := j
+	    while i <= n and member?(s.i,cc) repeat i := %iinc i
+	if i <= n then l := concat(s(i..n), l)
+	reverse! l
+
+    leftTrim(s, c) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and s.i = c repeat i := %iinc i
+	s(i..n)
+
+    leftTrim(s, cc) ==
+	n := maxIndex s
+        i := %icst1
+	while i <= n and member?(s.i,cc) repeat i := %iinc i
+	s(i..n)
+
+    rightTrim(s, c) ==
+        j := maxIndex s
+	while j >=  1 and s.j = c repeat j := %idec j
+	s(minIndex(s)..j)
+
+    rightTrim(s, cc) ==
+        j := maxIndex s
+	while j >= %icst1 and member?(s.j, cc) repeat j := %idec j
+	s(minIndex(s)..j)
+
+    concat l ==
+	t := new(+/[#s for s in l], space$C)
+	i := %icst1
+	for s in l repeat
+	    copyInto!(t, s, i)
+	    i := i + #s
+	t
+
+    copyInto!(y, x, s) ==
+	m := #x
+	n := #y
+	s := %idec s
+	negative? s or s+m > n => error "index out of range"
+	RPLACSTR(y, s, m, x, %icst0, m)$Lisp
+	y
+
+    elt(s:%, i:I) ==
+	i < %icst1 or i > maxIndex(s) => error "index out of range"
+	%schar(s, %idec i)
+
+    elt(s:%, sg:U) ==
+	l := %idec lo(sg)
+	h := if hasHi sg then %idec hi(sg) else %idec maxIndex s
+	negative? l or h >= #s => error "index out of bound"
+	SUBSTRING(s, l, max(%icst0, %iinc(h-l)))$Lisp
+
+    hash s ==
+        %hash s
+
+    match(pattern,target,wildcard) ==
+      stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
+ 
+    match?(pattern, target, dontcare) ==
+	n := maxIndex pattern
+	p := position(dontcare, pattern, m := minIndex pattern)::N
+	p = %idec m => pattern = target
+	(p ~= m) and not prefix?(pattern(m..%idec p), target) => false
+	i := p	-- index into target
+	q := position(dontcare, pattern, %iinc p)::N
+	while q ~= %idec m repeat
+	   s := pattern(%iinc p..%idec q)
+	   i := position(s, target, i)::N
+	   i = %idec m => return false
+	   i := i + #s
+	   p := q
+	   q := position(dontcare, pattern, %iinc q)::N
+	(p ~= n) and not suffix?(pattern(%iinc p..n), target) => false
+	true
+
+@
+
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<domain CHAR Character>>
+<<domain CCLASS CharacterClass>>
+<<domain STRING String>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

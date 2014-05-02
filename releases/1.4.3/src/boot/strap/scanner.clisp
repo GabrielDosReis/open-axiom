@@ -1,0 +1,568 @@
+(PROCLAIM '(OPTIMIZE SPEED))
+(IMPORT-MODULE "tokens")
+
+(IMPORT-MODULE "includer")
+
+(IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "scanner")
+
+(DEFCONSTANT |shoeTAB| (CODE-CHAR 9))
+
+(DEFUN |dqUnit| (|s|)
+  (LET* (|a|)
+    (PROGN (SETQ |a| (LIST |s|)) (CONS |a| |a|))))
+
+(DEFUN |dqAppend| (|x| |y|)
+  (COND ((NULL |x|) |y|) ((NULL |y|) |x|)
+        (T (RPLACD (CDR |x|) (CAR |y|)) (RPLACD |x| (CDR |y|)) |x|)))
+
+(DEFUN |dqConcat| (|ld|)
+  (COND ((NULL |ld|) NIL) ((NULL (CDR |ld|)) (CAR |ld|))
+        (T (|dqAppend| (CAR |ld|) (|dqConcat| (CDR |ld|))))))
+
+(DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) (T (CAR |s|))))
+
+(DEFSTRUCT (|%Lexer| (:COPIER |copy%Lexer|)) |line| |pos|)
+
+(DEFMACRO |mk%Lexer| (|line| |pos|)
+  (LIST '|MAKE-%Lexer| :|line| |line| :|pos| |pos|))
+
+(DEFMACRO |lexerLineString| (|bfVar#1|) (LIST '|%Lexer-line| |bfVar#1|))
+
+(DEFMACRO |lexerCurrentPosition| (|bfVar#1|) (LIST '|%Lexer-pos| |bfVar#1|))
+
+(DEFUN |makeLexer| () (|mk%Lexer| NIL NIL))
+
+(DEFMACRO |lexerRefresh?| (|lex|)
+  (LIST 'NULL (LIST '|lexerCurrentPosition| |lex|)))
+
+(DEFMACRO |lexerLineLength| (|lex|)
+  (LIST 'LENGTH (LIST '|lexerLineString| |lex|)))
+
+(DEFUN |lexerSetLine!| (|lex| |line|)
+  (PROGN
+   (SETF (|lexerLineString| |lex|) |line|)
+   (SETF (|lexerCurrentPosition| |lex|) 0)))
+
+(DEFUN |lexerSkipBlank!| (|lex|)
+  (SETF (|lexerCurrentPosition| |lex|)
+          (|firstNonblankPosition| (|lexerLineString| |lex|)
+                                   (|lexerCurrentPosition| |lex|))))
+
+(DEFUN |lexerAdvancePosition!| (|lex| &OPTIONAL (|n| 1))
+  (SETF (|lexerCurrentPosition| |lex|) (+ (|lexerCurrentPosition| |lex|) |n|)))
+
+(DEFUN |lexerSkipToEnd!| (|lex|)
+  (SETF (|lexerCurrentPosition| |lex|) (|lexerLineLength| |lex|)))
+
+(DEFUN |lexerPosition!| (|lex| |k|) (SETF (|lexerCurrentPosition| |lex|) |k|))
+
+(DEFUN |lexerCharCountToCompleteTab| (|lex|)
+  (- 7 (REM (|lexerCurrentPosition| |lex|) 8)))
+
+(DEFMACRO |lexerCurrentChar| (|lex|)
+  (LIST 'SCHAR (LIST '|lexerLineString| |lex|)
+        (LIST '|lexerCurrentPosition| |lex|)))
+
+(DEFMACRO |lexerCharacterAt| (|lex| |k|)
+  (LIST 'SCHAR (LIST '|lexerLineString| |lex|) |k|))
+
+(DEFUN |lexerCharPosition| (|lex| |c|)
+  (|charPosition| |c| (|lexerLineString| |lex|) (|lexerCurrentPosition| |lex|)))
+
+(DEFUN |lexerEol?| (|lex|)
+  (NOT (< (|lexerCurrentPosition| |lex|) (|lexerLineLength| |lex|))))
+
+(DEFUN |lexerReadLisp| (|lex|)
+  (|shoeReadLispString| (|lexerLineString| |lex|)
+                        (|lexerCurrentPosition| |lex|)))
+
+(DEFUN |shoeNextLine| (|lex| |s|)
+  (LET* (|s1| |a|)
+    (DECLARE (SPECIAL |$r| |$f| |$linepos|))
+    (COND ((|bStreamNull| |s|) NIL)
+          (T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|)) (SETQ |$r| (CDR |s|))
+           (|lexerSetLine!| |lex| (|sourceLineString| |$f|))
+           (|lexerSkipBlank!| |lex|)
+           (COND ((|lexerRefresh?| |lex|) T)
+                 ((EQUAL (|lexerCurrentChar| |lex|) |shoeTAB|)
+                  (SETQ |a|
+                          (|makeString| (|lexerCharCountToCompleteTab| |lex|)
+                                        (|char| '| |)))
+                  (SETF (|lexerCurrentChar| |lex|) (|char| '| |))
+                  (SETF (|lexerLineString| |lex|)
+                          (CONCAT |a| (|lexerLineString| |lex|)))
+                  (SETQ |s1|
+                          (CONS
+                           (|makeSourceLine| (|lexerLineString| |lex|)
+                                             (|sourceLineNumber| |$f|))
+                           |$r|))
+                  (|shoeNextLine| |lex| |s1|))
+                 (T T))))))
+
+(DEFUN |shoeLineToks| (|s|)
+  (LET* ((|$f| NIL)
+         (|$r| NIL)
+         (|$floatok| T)
+         (|$linepos| |s|)
+         |toks|
+         |dq|
+         |command|
+         |lex|)
+    (DECLARE (SPECIAL |$f| |$r| |$floatok| |$linepos|))
+    (PROGN
+     (SETQ |lex| (|makeLexer|))
+     (COND ((NOT (|shoeNextLine| |lex| |s|)) (CONS NIL NIL))
+           ((|lexerRefresh?| |lex|) (|shoeLineToks| |$r|))
+           ((CHAR= (|lexerCharacterAt| |lex| 0) (|char| '|)|))
+            (COND
+             ((SETQ |command| (|shoeLine?| (|lexerLineString| |lex|)))
+              (SETQ |dq|
+                      (|dqUnit|
+                       (|makeToken| |$linepos| (|shoeLeafLine| |command|) 0)))
+              (CONS (LIST |dq|) |$r|))
+             ((SETQ |command| (|shoeLisp?| (|lexerLineString| |lex|)))
+              (|shoeLispToken| |lex| |$r| |command|))
+             (T (|shoeLineToks| |$r|))))
+           (T (SETQ |toks| NIL)
+            (LOOP
+             (COND ((|lexerEol?| |lex|) (RETURN NIL))
+                   (T (SETQ |toks| (|dqAppend| |toks| (|shoeToken| |lex|))))))
+            (COND ((NULL |toks|) (|shoeLineToks| |$r|))
+                  (T (CONS (LIST |toks|) |$r|))))))))
+
+(DEFUN |shoeLispToken| (|lex| |s| |string|)
+  (LET* (|dq| |st| |r| |LETTMP#1| |linepos| |ln|)
+    (DECLARE (SPECIAL |$linepos|))
+    (PROGN
+     (COND
+      ((OR (EQL (LENGTH |string|) 0) (CHAR= (SCHAR |string| 0) (|char| '|;|)))
+       (SETQ |string| "")))
+     (SETQ |ln| (|lexerLineString| |lex|))
+     (SETQ |linepos| |$linepos|)
+     (SETQ |LETTMP#1| (|shoeAccumulateLines| |lex| |s| |string|))
+     (SETQ |r| (CAR |LETTMP#1|))
+     (SETQ |st| (CDR |LETTMP#1|))
+     (SETQ |dq| (|dqUnit| (|makeToken| |linepos| (|shoeLeafLisp| |st|) 0)))
+     (CONS (LIST |dq|) |r|))))
+
+(DEFUN |shoeAccumulateLines| (|lex| |s| |string|)
+  (LET* (|a| |command|)
+    (DECLARE (SPECIAL |$r|))
+    (COND ((NOT (|shoeNextLine| |lex| |s|)) (CONS |s| |string|))
+          ((|lexerRefresh?| |lex|) (|shoeAccumulateLines| |lex| |$r| |string|))
+          ((EQL (|lexerLineLength| |lex|) 0)
+           (|shoeAccumulateLines| |lex| |$r| |string|))
+          ((CHAR= (|lexerCharacterAt| |lex| 0) (|char| '|)|))
+           (SETQ |command| (|shoeLisp?| (|lexerLineString| |lex|)))
+           (COND
+            ((AND |command| (PLUSP (LENGTH |command|)))
+             (COND
+              ((CHAR= (SCHAR |command| 0) (|char| '|;|))
+               (|shoeAccumulateLines| |lex| |$r| |string|))
+              ((SETQ |a| (|findChar| (|char| '|;|) |command|))
+               (|shoeAccumulateLines| |lex| |$r|
+                                      (CONCAT |string|
+                                              (|subString| |command| 0
+                                                           (- |a| 1)))))
+              (T
+               (|shoeAccumulateLines| |lex| |$r|
+                                      (CONCAT |string| |command|)))))
+            (T (|shoeAccumulateLines| |lex| |$r| |string|))))
+          (T (CONS |s| |string|)))))
+
+(DEFUN |shoeCloser| (|t|)
+  (|symbolMember?| (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
+
+(DEFUN |shoeToken| (|lex|)
+  (LET* (|b| |ch| |n| |linepos|)
+    (DECLARE (SPECIAL |$linepos|))
+    (PROGN
+     (SETQ |linepos| |$linepos|)
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (SETQ |ch| (|lexerCurrentChar| |lex|))
+     (SETQ |b|
+             (COND ((|shoeStartsComment| |lex|) (|shoeComment| |lex|) NIL)
+                   ((|shoeStartsNegComment| |lex|) (|shoeNegComment| |lex|)
+                    NIL)
+                   ((CHAR= |ch| (|char| '!)) (|shoeLispEscape| |lex|))
+                   ((|shoePunctuation| (CHAR-CODE |ch|)) (|shoePunct| |lex|))
+                   ((|shoeStartsId| |ch|) (|shoeWord| |lex| NIL))
+                   ((CHAR= |ch| (|char| '| |)) (|shoeSpace| |lex|) NIL)
+                   ((CHAR= |ch| (|char| '|"|)) (|shoeString| |lex|))
+                   ((DIGIT-CHAR-P |ch|) (|shoeNumber| |lex|))
+                   ((CHAR= |ch| (|char| '_)) (|shoeEscape| |lex|))
+                   ((EQUAL |ch| |shoeTAB|) (|lexerAdvancePosition!| |lex|) NIL)
+                   (T (|shoeError| |lex|))))
+     (COND ((NULL |b|) NIL) (T (|dqUnit| (|makeToken| |linepos| |b| |n|)))))))
+
+(DEFUN |shoeLeafId| (|x|) (LIST 'ID (INTERN |x|)))
+
+(DEFUN |shoeLeafKey| (|x|) (LIST 'KEY (|shoeKeyWord| |x|)))
+
+(DEFUN |shoeLeafInteger| (|x|) (LIST 'INTEGER (|shoeIntValue| |x|)))
+
+(DEFUN |shoeLeafFloat| (|a| |w| |e|)
+  (LET* (|c| |b|)
+    (PROGN
+     (SETQ |b| (|shoeIntValue| (CONCAT |a| |w|)))
+     (SETQ |c| (* (|double| |b|) (EXPT (|double| 10) (- |e| (LENGTH |w|)))))
+     (LIST 'FLOAT |c|))))
+
+(DEFUN |shoeLeafString| (|x|) (LIST 'STRING |x|))
+
+(DEFUN |shoeLeafLisp| (|x|) (LIST 'LISP |x|))
+
+(DEFUN |shoeLeafLispExp| (|x|) (LIST 'LISPEXP |x|))
+
+(DEFUN |shoeLeafLine| (|x|) (LIST 'LINE |x|))
+
+(DEFUN |shoeLeafComment| (|x|) (LIST 'COMMENT |x|))
+
+(DEFUN |shoeLeafNegComment| (|x|) (LIST 'NEGCOMMENT |x|))
+
+(DEFUN |shoeLeafError| (|x|) (LIST 'ERROR |x|))
+
+(DEFUN |shoeLeafSpaces| (|x|) (LIST 'SPACES |x|))
+
+(DEFUN |shoeLispEscape| (|lex|)
+  (LET* (|n| |exp| |a|)
+    (DECLARE (SPECIAL |$linepos|))
+    (PROGN
+     (|lexerAdvancePosition!| |lex|)
+     (COND
+      ((|lexerEol?| |lex|)
+       (|SoftShoeError| (CONS |$linepos| (|lexerCurrentPosition| |lex|))
+                        "lisp escape error")
+       (|shoeLeafError| (|lexerCurrentChar| |lex|)))
+      (T (SETQ |a| (|lexerReadLisp| |lex|))
+       (COND
+        ((NULL |a|)
+         (|SoftShoeError| (CONS |$linepos| (|lexerCurrentPosition| |lex|))
+                          "lisp escape error")
+         (|shoeLeafError| (|lexerCurrentChar| |lex|)))
+        (T (SETQ |exp| (CAR |a|)) (SETQ |n| (CADR |a|))
+         (COND ((NULL |n|) (|lexerSkipToEnd!| |lex|) (|shoeLeafLispExp| |exp|))
+               (T (|lexerPosition!| |lex| |n|)
+                (|shoeLeafLispExp| |exp|))))))))))
+
+(DEFUN |shoeEscape| (|lex|)
+  (PROGN
+   (|lexerAdvancePosition!| |lex|)
+   (COND ((|shoeEsc| |lex|) (|shoeWord| |lex| T)) (T NIL))))
+
+(DEFUN |shoeEsc| (|lex|)
+  (LET* (|n1|)
+    (DECLARE (SPECIAL |$r|))
+    (COND
+     ((|lexerEol?| |lex|)
+      (COND
+       ((|shoeNextLine| |lex| |$r|)
+        (LOOP
+         (COND ((NOT (|lexerRefresh?| |lex|)) (RETURN NIL))
+               (T (|shoeNextLine| |lex| |$r|))))
+        (|shoeEsc| |lex|) NIL)
+       (T NIL)))
+     (T
+      (SETQ |n1|
+              (|firstNonblankPosition| (|lexerLineString| |lex|)
+                                       (|lexerCurrentPosition| |lex|)))
+      (COND
+       ((NULL |n1|) (|shoeNextLine| |lex| |$r|)
+        (LOOP
+         (COND ((NOT (|lexerRefresh?| |lex|)) (RETURN NIL))
+               (T (|shoeNextLine| |lex| |$r|))))
+        (|shoeEsc| |lex|) NIL)
+       (T T))))))
+
+(DEFUN |shoeStartsComment| (|lex|)
+  (LET* (|www|)
+    (COND
+     ((NOT (|lexerEol?| |lex|))
+      (COND
+       ((CHAR= (|lexerCurrentChar| |lex|) (|char| '+))
+        (SETQ |www| (+ (|lexerCurrentPosition| |lex|) 1))
+        (COND ((NOT (< |www| (|lexerLineLength| |lex|))) NIL)
+              (T (CHAR= (|lexerCharacterAt| |lex| |www|) (|char| '+)))))
+       (T NIL)))
+     (T NIL))))
+
+(DEFUN |shoeStartsNegComment| (|lex|)
+  (LET* (|www|)
+    (COND
+     ((NOT (|lexerEol?| |lex|))
+      (COND
+       ((CHAR= (|lexerCurrentChar| |lex|) (|char| '-))
+        (SETQ |www| (+ (|lexerCurrentPosition| |lex|) 1))
+        (COND ((NOT (< |www| (|lexerLineLength| |lex|))) NIL)
+              (T (CHAR= (|lexerCharacterAt| |lex| |www|) (|char| '-)))))
+       (T NIL)))
+     (T NIL))))
+
+(DEFUN |shoeNegComment| (|lex|)
+  (LET* (|n|)
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (|lexerSkipToEnd!| |lex|)
+     (|shoeLeafNegComment| (|subString| (|lexerLineString| |lex|) |n|)))))
+
+(DEFUN |shoeComment| (|lex|)
+  (LET* (|n|)
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (|lexerSkipToEnd!| |lex|)
+     (|shoeLeafComment| (|subString| (|lexerLineString| |lex|) |n|)))))
+
+(DEFUN |shoePunct| (|lex|)
+  (LET* (|sss|)
+    (PROGN
+     (SETQ |sss| (|shoeMatch| |lex|))
+     (|lexerAdvancePosition!| |lex| (LENGTH |sss|))
+     (|shoeKeyTr| |lex| |sss|))))
+
+(DEFUN |shoeKeyTr| (|lex| |w|)
+  (DECLARE (SPECIAL |$floatok|))
+  (COND
+   ((EQ (|shoeKeyWord| |w|) 'DOT)
+    (COND (|$floatok| (|shoePossFloat| |lex| |w|)) (T (|shoeLeafKey| |w|))))
+   (T (SETQ |$floatok| (NOT (|shoeCloser| |w|))) (|shoeLeafKey| |w|))))
+
+(DEFUN |shoePossFloat| (|lex| |w|)
+  (COND
+   ((OR (|lexerEol?| |lex|) (NOT (DIGIT-CHAR-P (|lexerCurrentChar| |lex|))))
+    (|shoeLeafKey| |w|))
+   (T (SETQ |w| (|shoeInteger| |lex|)) (|shoeExponent| |lex| "0" |w|))))
+
+(DEFUN |shoeSpace| (|lex|)
+  (LET* (|n|)
+    (DECLARE (SPECIAL |$floatok|))
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (|lexerSkipBlank!| |lex|)
+     (SETQ |$floatok| T)
+     (COND
+      ((|lexerRefresh?| |lex|) (|shoeLeafSpaces| 0) (|lexerSkipToEnd!| |lex|))
+      (T (|shoeLeafSpaces| (- (|lexerCurrentPosition| |lex|) |n|)))))))
+
+(DEFUN |shoeString| (|lex|)
+  (DECLARE (SPECIAL |$floatok|))
+  (PROGN
+   (|lexerAdvancePosition!| |lex|)
+   (SETQ |$floatok| NIL)
+   (|shoeLeafString| (|shoeS| |lex|))))
+
+(DEFUN |shoeS| (|lex|)
+  (LET* (|b| |a| |str| |mn| |escsym| |strsym| |n|)
+    (DECLARE (SPECIAL |$linepos|))
+    (COND
+     ((|lexerEol?| |lex|)
+      (|SoftShoeError| (CONS |$linepos| (|lexerCurrentPosition| |lex|))
+                       "quote added")
+      "")
+     (T (SETQ |n| (|lexerCurrentPosition| |lex|))
+      (SETQ |strsym| (|lexerCharPosition| |lex| (|char| '|"|)))
+      (SETQ |escsym| (|lexerCharPosition| |lex| (|char| '_)))
+      (SETQ |mn| (MIN |strsym| |escsym|))
+      (COND
+       ((EQUAL |mn| (|lexerLineLength| |lex|)) (|lexerSkipToEnd!| |lex|)
+        (|SoftShoeError| (CONS |$linepos| (|lexerCurrentPosition| |lex|))
+                         "quote added")
+        (|subString| (|lexerLineString| |lex|) |n|))
+       ((EQUAL |mn| |strsym|) (|lexerPosition!| |lex| (+ |mn| 1))
+        (|subString| (|lexerLineString| |lex|) |n| (- |mn| |n|)))
+       (T (SETQ |str| (|subString| (|lexerLineString| |lex|) |n| (- |mn| |n|)))
+        (|lexerPosition!| |lex| (+ |mn| 1)) (SETQ |a| (|shoeEsc| |lex|))
+        (SETQ |b|
+                (COND
+                 (|a|
+                  (SETQ |str|
+                          (CONCAT |str| (STRING (|lexerCurrentChar| |lex|))))
+                  (|lexerAdvancePosition!| |lex|) (|shoeS| |lex|))
+                 (T (|shoeS| |lex|))))
+        (CONCAT |str| |b|)))))))
+
+(DEFUN |shoeIdEnd| (|lex|)
+  (LET* (|n|)
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (LOOP
+      (COND
+       ((NOT
+         (AND (< |n| (|lexerLineLength| |lex|))
+              (|shoeIdChar| (|lexerCharacterAt| |lex| |n|))))
+        (RETURN NIL))
+       (T (SETQ |n| (+ |n| 1)))))
+     |n|)))
+
+(DEFUN |shoeW| (|lex| |b|)
+  (LET* (|bb| |a| |str| |endid| |l| |n1|)
+    (PROGN
+     (SETQ |n1| (|lexerCurrentPosition| |lex|))
+     (|lexerAdvancePosition!| |lex|)
+     (SETQ |l| (|lexerLineLength| |lex|))
+     (SETQ |endid| (|shoeIdEnd| |lex|))
+     (COND
+      ((OR (EQUAL |endid| |l|)
+           (NOT (CHAR= (|lexerCharacterAt| |lex| |endid|) (|char| '_))))
+       (|lexerPosition!| |lex| |endid|)
+       (LIST |b|
+             (|subString| (|lexerLineString| |lex|) |n1| (- |endid| |n1|))))
+      (T
+       (SETQ |str|
+               (|subString| (|lexerLineString| |lex|) |n1| (- |endid| |n1|)))
+       (|lexerPosition!| |lex| (+ |endid| 1)) (SETQ |a| (|shoeEsc| |lex|))
+       (SETQ |bb| (COND (|a| (|shoeW| |lex| T)) (T (LIST |b| ""))))
+       (LIST (OR (ELT |bb| 0) |b|) (CONCAT |str| (ELT |bb| 1))))))))
+
+(DEFUN |shoeWord| (|lex| |esp|)
+  (LET* (|w| |aaa|)
+    (DECLARE (SPECIAL |$floatok|))
+    (PROGN
+     (SETQ |aaa| (|shoeW| |lex| NIL))
+     (SETQ |w| (ELT |aaa| 1))
+     (SETQ |$floatok| NIL)
+     (COND ((OR |esp| (ELT |aaa| 0)) (|shoeLeafId| |w|))
+           ((|shoeKeyWordP| |w|) (SETQ |$floatok| T) (|shoeLeafKey| |w|))
+           (T (|shoeLeafId| |w|))))))
+
+(DEFUN |shoeInteger| (|lex|) (|shoeInteger1| |lex| NIL))
+
+(DEFUN |shoeInteger1| (|lex| |zro|)
+  (LET* (|bb| |a| |str| |n|)
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (LOOP
+      (COND
+       ((NOT
+         (AND (NOT (|lexerEol?| |lex|))
+              (DIGIT-CHAR-P (|lexerCurrentChar| |lex|))))
+        (RETURN NIL))
+       (T (|lexerAdvancePosition!| |lex|))))
+     (COND
+      ((OR (|lexerEol?| |lex|)
+           (NOT (CHAR= (|lexerCurrentChar| |lex|) (|char| '_))))
+       (COND ((AND (EQUAL |n| (|lexerCurrentPosition| |lex|)) |zro|) "0")
+             (T
+              (|subString| (|lexerLineString| |lex|) |n|
+                           (- (|lexerCurrentPosition| |lex|) |n|)))))
+      (T
+       (SETQ |str|
+               (|subString| (|lexerLineString| |lex|) |n|
+                            (- (|lexerCurrentPosition| |lex|) |n|)))
+       (|lexerAdvancePosition!| |lex|) (SETQ |a| (|shoeEsc| |lex|))
+       (SETQ |bb| (|shoeInteger1| |lex| |zro|)) (CONCAT |str| |bb|))))))
+
+(DEFUN |shoeIntValue| (|s|)
+  (LET* (|d| |ival| |ns|)
+    (PROGN
+     (SETQ |ns| (LENGTH |s|))
+     (SETQ |ival| 0)
+     (LET ((|bfVar#1| (- |ns| 1)) (|i| 0))
+       (LOOP
+        (COND ((> |i| |bfVar#1|) (RETURN NIL))
+              (T (SETQ |d| (DIGIT-CHAR-P (SCHAR |s| |i|)))
+               (SETQ |ival| (+ (* 10 |ival|) |d|))))
+        (SETQ |i| (+ |i| 1))))
+     |ival|)))
+
+(DEFUN |shoeNumber| (|lex|)
+  (LET* (|w| |n| |a|)
+    (DECLARE (SPECIAL |$floatok|))
+    (PROGN
+     (SETQ |a| (|shoeInteger| |lex|))
+     (COND ((|lexerEol?| |lex|) (|shoeLeafInteger| |a|))
+           ((AND |$floatok| (CHAR= (|lexerCurrentChar| |lex|) (|char| '|.|)))
+            (SETQ |n| (|lexerCurrentPosition| |lex|))
+            (|lexerAdvancePosition!| |lex|)
+            (COND
+             ((AND (NOT (|lexerEol?| |lex|))
+                   (CHAR= (|lexerCurrentChar| |lex|) (|char| '|.|)))
+              (|lexerPosition!| |lex| |n|) (|shoeLeafInteger| |a|))
+             (T (SETQ |w| (|shoeInteger1| |lex| T))
+              (|shoeExponent| |lex| |a| |w|))))
+           (T (|shoeLeafInteger| |a|))))))
+
+(DEFUN |shoeExponent| (|lex| |a| |w|)
+  (LET* (|c1| |e| |c| |n|)
+    (COND ((|lexerEol?| |lex|) (|shoeLeafFloat| |a| |w| 0))
+          (T (SETQ |n| (|lexerCurrentPosition| |lex|))
+           (SETQ |c| (|lexerCurrentChar| |lex|))
+           (COND
+            ((OR (CHAR= |c| (|char| 'E)) (CHAR= |c| (|char| '|e|)))
+             (|lexerAdvancePosition!| |lex|)
+             (COND
+              ((|lexerEol?| |lex|) (|lexerPosition!| |lex| |n|)
+               (|shoeLeafFloat| |a| |w| 0))
+              ((DIGIT-CHAR-P (|lexerCurrentChar| |lex|))
+               (SETQ |e| (|shoeInteger| |lex|)) (SETQ |e| (|shoeIntValue| |e|))
+               (|shoeLeafFloat| |a| |w| |e|))
+              (T (SETQ |c1| (|lexerCurrentChar| |lex|))
+               (COND
+                ((OR (CHAR= |c1| (|char| '+)) (CHAR= |c1| (|char| '-)))
+                 (|lexerAdvancePosition!| |lex|)
+                 (COND
+                  ((|lexerEol?| |lex|) (|lexerPosition!| |lex| |n|)
+                   (|shoeLeafFloat| |a| |w| 0))
+                  ((DIGIT-CHAR-P (|lexerCurrentChar| |lex|))
+                   (SETQ |e| (|shoeInteger| |lex|))
+                   (SETQ |e| (|shoeIntValue| |e|))
+                   (|shoeLeafFloat| |a| |w|
+                                    (COND ((CHAR= |c1| (|char| '-)) (- |e|))
+                                          (T |e|))))
+                  (T (|lexerPosition!| |lex| |n|)
+                   (|shoeLeafFloat| |a| |w| 0))))))))
+            (T (|shoeLeafFloat| |a| |w| 0)))))))
+
+(DEFUN |shoeError| (|lex|)
+  (LET* (|n|)
+    (DECLARE (SPECIAL |$linepos|))
+    (PROGN
+     (SETQ |n| (|lexerCurrentPosition| |lex|))
+     (|lexerAdvancePosition!| |lex|)
+     (|SoftShoeError| (CONS |$linepos| |n|)
+                      (CONCAT "The character whose number is "
+                              (WRITE-TO-STRING
+                               (CHAR-CODE (|lexerCharacterAt| |lex| |n|)))
+                              " is not a Boot character"))
+     (|shoeLeafError| (|lexerCharacterAt| |lex| |n|)))))
+
+(DEFUN |shoeKeyWord| (|st|) (|tableValue| |shoeKeyTable| |st|))
+
+(DEFUN |shoeKeyWordP| (|st|) (|tableValue| |shoeKeyTable| |st|))
+
+(DEFUN |shoeMatch| (|lex|)
+  (|shoeSubStringMatch| (|lexerLineString| |lex|) |shoeDict|
+                        (|lexerCurrentPosition| |lex|)))
+
+(DEFUN |shoeSubStringMatch| (|l| |d| |i|)
+  (LET* (|eql| |ls| |s| |s1| |done| |ll| |u| |h|)
+    (PROGN
+     (SETQ |h| (CHAR-CODE (SCHAR |l| |i|)))
+     (SETQ |u| (ELT |d| |h|))
+     (SETQ |ll| (LENGTH |l|))
+     (SETQ |done| NIL)
+     (SETQ |s1| "")
+     (LET ((|bfVar#1| (- (LENGTH |u|) 1)) (|j| 0))
+       (LOOP
+        (COND ((OR (> |j| |bfVar#1|) |done|) (RETURN NIL))
+              (T (SETQ |s| (ELT |u| |j|)) (SETQ |ls| (LENGTH |s|))
+               (SETQ |done|
+                       (COND ((< |ll| (+ |ls| |i|)) NIL)
+                             (T (SETQ |eql| T)
+                              (LET ((|bfVar#2| (- |ls| 1)) (|k| 1))
+                                (LOOP
+                                 (COND
+                                  ((OR (> |k| |bfVar#2|) (NOT |eql|))
+                                   (RETURN NIL))
+                                  (T
+                                   (SETQ |eql|
+                                           (CHAR= (SCHAR |s| |k|)
+                                                  (SCHAR |l| (+ |k| |i|))))))
+                                 (SETQ |k| (+ |k| 1))))
+                              (COND (|eql| (SETQ |s1| |s|) T) (T NIL)))))))
+        (SETQ |j| (+ |j| 1))))
+     |s1|)))
+
+(DEFUN |shoePunctuation| (|c|) (EQL (ELT |shoePun| |c|) 1))
+

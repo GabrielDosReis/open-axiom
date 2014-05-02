@@ -1,0 +1,56 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.22.  )show
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )show nameOrAbbrev
+  - )show nameOrAbbrev )operations
+  - )show nameOrAbbrev )attributes
+ 
+Command Description: 
+This command displays information about OpenAxiom domain, package and category
+constructors. If no options are given, the )operations option is assumed. For
+example,
+ 
+)show POLY
+)show POLY )operations
+)show Polynomial
+)show Polynomial )operations
+ 
+each display basic information about the Polynomial domain constructor and
+then provide a listing of operations. Since Polynomial requires a Ring (for
+example, Integer) as argument, the above commands all refer to a unspecified
+ring R. In the list of operations, $ means Polynomial(R).
+ 
+The basic information displayed includes the signature of the constructor
+(the name and arguments), the constructor abbreviation, the exposure status
+of the constructor, and the name of the library source file for the
+constructor.
+ 
+If operation information about a specific domain is wanted, the full or
+abbreviated domain name may be used. For example,
+ 
+)show POLY INT
+)show POLY INT )operations
+)show Polynomial Integer
+)show Polynomial Integer )operations
+ 
+are among the combinations that will display the operations exported by the
+domain Polynomial(Integer) (as opposed to the general domain constructor
+Polynomial). Attributes may be listed by using the )attributes option.
+ 
+Also See: 
+o )display
+o )set
+o )what
+ 

@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CARTEN.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from CartesianTensorXmpPage
+)clear all
+
+CT := CARTEN(i0 := 1, 2, Integer)
+t0: CT := 8
+rank t0
+v: DirectProduct(2, Integer) := directProduct [3,4]
+Tv: CT := v
+m: SquareMatrix(2, Integer) := matrix [[1,2],[4,5]]
+Tm: CT := m
+n: SquareMatrix(2, Integer) := matrix [[2,3],[0,1]]
+Tn: CT := n
+t1: CT := [2, 3]
+rank t1
+t2: CT := [t1, t1]
+t3: CT := [t2, t2]
+tt: CT := [t3, t3]; tt := [tt, tt]
+rank tt
+Tmn := product(Tm, Tn)
+Tmv := contract(Tm,2,Tv,1)
+Tm*Tv
+Tmv = m * v
+t0()
+t1(1+1)
+t2(2,1)
+t3(2,1,2)
+Tmn(2,1,2,1)
+t0[]
+t1[2]
+t2[2,1]
+t3[2,1,2]
+Tmn[2,1,2,1]
+cTmn := contract(Tmn,1,2)
+trace(m) * n
+contract(Tmn,1,2) = trace(m) * n
+contract(Tmn,1,3) = transpose(m) * n
+contract(Tmn,1,4) = transpose(m) * transpose(n)
+contract(Tmn,2,3) = m * n
+contract(Tmn,2,4) = m * transpose(n)
+contract(Tmn,3,4) = trace(n) * m
+tTmn := transpose(Tmn,1,3)
+transpose Tmn
+transpose Tm = transpose m
+rTmn := reindex(Tmn, [1,4,2,3])
+tt := transpose(Tm)*Tn - Tn*transpose(Tm)
+Tv*(tt+Tn)
+reindex(product(Tn,Tn),[4,3,2,1])+3*Tn*product(Tm,Tm)
+delta:  CT := kroneckerDelta()
+contract(Tmn, 2, delta, 1) = reindex(Tmn, [1,3,4,2])
+epsilon:CT := leviCivitaSymbol()
+contract(epsilon*Tm*epsilon, 1,2) = 2 * determinant m
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

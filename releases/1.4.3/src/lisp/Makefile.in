@@ -1,0 +1,202 @@
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     - Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     - Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+OUT = $(axiom_build_bindir)
+oa_target_lispdir = $(axiom_targetdir)/lisp
+
+subdir = src/lisp/
+
+pamphlets = Makefile.pamphlet
+
+build_libdir = ./$(top_builddir)/src/lib
+
+## Ideally, we would like to use Libtool for producing, and linking with,
+## object files from C codes.  That means any C source code
+## explicitly included in OpenAxiom, or produced internally by a Lisp
+## compiler.  However, the SYSTEM calls by GCL on Windows is very tricky
+## to convince to properly resolve path names to executables.
+## Consequently we temporarily give up here, e.g., we don't
+## instruct GCL to use Libtool on Windows.
+GCL_LTCC = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --tag=CC --mode=compile ")
+GCL_LTLD = $(if $(findstring mingw, $(target)),"$(CXX) $(LDFLAGS) ","$(CXXLINK) ")
+
+## Again, ideally, we would like GCL to link with the compiled Lisp
+## code from core.lisp.  However, the general interface compiler::link
+## that GCL provides for that task is unsupported on Windows platforms.
+## So, we instruct GCL so load the source file instead.
+fasl_ext = $(if $(findstring mingw, $(target)),.lisp,.$(FASLEXT))
+FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
+
+
+ifeq (@axiom_lisp_flavor@,ecl)
+base_lisp_objects = ("core.$(LNKEXT)")
+oa_base_lisp_linkset = $(oa_target_lispdir)/linkset
+else
+base_lisp_objects = nil
+oa_base_lisp_linkset =
+endif
+
+
+.PHONY: all all-lisp
+all: all-ax all-lisp
+
+all-ax all-lisp: stamp
+
+stamp: $(OUT)/lisp$(EXEEXT)
+	@rm -f stamp
+	$(STAMP) $@
+
+$(oa_target_lispdir)/core.$(LNKEXT): core.$(LNKEXT)
+	$(mkdir_p) $(oa_target_lispdir)/
+	cp $< $@
+
+
+## Create a fresh image for building interpsys and AXIOMsys
+## These objects files are the C runtime support
+## and must be compiled into the Lisp image,
+## as they must be present in the final interpreter
+## and image.
+lisp_c_objects = \
+		$(build_libdir)/bsdsignal.$(OBJEXT) \
+		$(build_libdir)/cfuns-c.$(OBJEXT) \
+		$(build_libdir)/sockio-c.$(OBJEXT)
+
+## The splitting shenaningan below about GCL's COMPILER::*LD* is because
+## GCL does not -- currently -- separate the linker proper from arguments,
+## therefore forcing us to use brittle tricks to guess what the linker is.
+
+$(OUT)/lisp$(EXEEXT): base-lisp$(EXEEXT)
+ifeq (@axiom_lisp_flavor@,gcl)
+	echo '(let* ((sys-cc compiler::*cc*) ' \
+	     '       (sys-ld compiler::*ld*) ' \
+	     '      (compiler::*cc* (concatenate (quote string) ' \
+	     '                                   $(GCL_LTCC)    ' \
+	     '                                   sys-cc))       ' \
+	     '      (compiler::*ld*                             ' \
+	     '         (concatenate (quote string)              ' \
+	     '            $(GCL_LTLD)                           ' \
+	     '            (subseq sys-ld                        ' \
+	     '            (position (character " ") sys-ld))))) ' \
+             '(compiler::link (quote ($(FASLS))) "lisp$(EXEEXT)" ' \
+             ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
+                                        ' (si::*load-types* ~S)))' \
+                                  ' (when (fboundp (quote si::sgc-on))' \
+                                        ' (si::sgc-on nil))' \
+				  ' (setq si::*top-level-hook* (read-from-string \"|AxiomCore|::|topLevel|\")))"' \
+                      ' si::*system-directory* (quote (list ".lsp")))' \
+               '  "$(lisp_c_objects) $(oa_c_runtime_extra)"))' \
+            | ./base-lisp$(EXEEXT)
+	$(mkdir_p) $(OUT)
+	cp -p lisp$(EXEEXT) $(OUT)
+else
+	$(mkdir_p) $(OUT)
+	cp -p $< $@ && cp -p $< lisp$(EXEEXT)
+endif
+
+base-lisp$(EXEEXT): core.$(FASLEXT)  $(oa_base_lisp_linkset)
+	$(AXIOM_LISP) \
+		$(eval_flags) '(load "core")' \
+		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
+
+$(oa_target_lispdir)/linkset: $(oa_target_lispdir)/core.$(LNKEXT)
+	rm -f $@
+	echo '$(base_lisp_objects)' > $@
+
+oa_optimize_options = @oa_optimize_options@
+oa_delay_ffi = @oa_delay_ffi@
+
+oa_editor = @oa_editor@
+
+void_type = @void_type@
+char_type = @char_type@
+int_type = @int_type@
+float_type = @float_type@
+double_type = @double_type@
+string_type = @string_type@
+
+oa_comma =,
+
+oa_keep_files = $(patsubst %,|%|,$(subst $(oa_comma), ,@oa_keep_files@))
+
+edit = sed \
+	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
+	-e 's|@oa_optimize_options[@]|$(oa_optimize_options)|g' \
+	-e 's|@CXX[@]|$(CXX)|g' \
+	-e 's|@LDFLAGS[@]|$(LDFLAGS)|g' \
+	-e 's|@oa_editor[@]|$(oa_editor)|g' \
+	-e 's/@oa_keep_files[@]/$(oa_keep_files)/g' \
+	-e 's|@host[@]|$(host)|g' \
+	-e 's|@build[@]|$(build)|g' \
+	-e 's|@target[@]|$(target)|g' \
+	-e 's|@SHREXT[@]|$(SHREXT)|g' \
+	-e 's|@LIBEXT[@]|$(LIBEXT)|g' \
+	-e 's|@oa_c_runtime_extra[@]|$(patsubst %,"%",$(oa_c_runtime_extra))|g' \
+	-e 's|@oa_standard_linking[@]|$(oa_standard_linking)|g' \
+	-e 's|@oa_enable_profiling[@]|$(oa_enable_lisp_profiling)|g' \
+	-e 's|@oa_delay_ffi[@]|$(oa_delay_ffi)|g' \
+	-e 's|@void_type[@]|$(void_type)|g' \
+	-e 's|@char_type[@]|$(char_type)|g' \
+	-e 's|@int_type[@]|$(int_type)|g' \
+	-e 's|@float_type[@]|$(float_type)|g' \
+	-e 's|@double_type[@]|$(double_type)|g' \
+	-e 's|@string_type[@]|$(string_type)|g'
+
+core.lisp: $(srcdir)/core.lisp.in
+	@echo "oa_enable_lisp_profiling= ${oa_enable_lisp_profiling}"
+	$(edit) $< > $@.tmp
+	$(top_srcdir)/config/move-if-change $@.tmp $@
+
+core.$(FASLEXT): core.lisp
+ifeq (@axiom_lisp_flavor@,ecl)
+	$(AXIOM_LISP) $(quiet_flags) \
+		$(eval_flags) '(require (quote cmp))' \
+		$(eval_flags) '(compile-file "$<" :system-p t)' \
+		$(eval_flags) '(c::build-fasl "$@" :lisp-files (quote ("core.$(LNKEXT)")))' \
+		$(eval_flags) '(quit)'
+else
+	$(AXIOM_LISP) $(quiet_flags) \
+		$(eval_flags) '(progn (compile-file "$<") (quit))'
+endif
+
+
+mostlyclean-local:
+	rm -f core.$(FASLEXT) core.$(OBJEXT) core.lisp 
+	@if test -n "$(oa_base_lisp_linkset)"; then \
+		rm -f $(oa_base_lisp_linkset); fi
+	@rm -f $(OUT)/lisp$(EXEEXT) lisp$(EXEEXT) base-lisp$(EXEEXT)
+	rm -rf $(oa_target_lispdir)
+	@rm -f stamp
+
+clean-local: mostlyclean
+
+distclean-local: clean-local
+	@rm -f Makefile

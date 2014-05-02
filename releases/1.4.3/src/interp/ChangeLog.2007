@@ -1,0 +1,3414 @@
+2007-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (deltaTran): Fix thinko; handle the case where the
+	domain of computation is the add form.
+
+2007-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot: Remove dead code.
+
+2007-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (NOTES): Encode quasiquoted values too.
+	($lookupDefaults): Define.
+	(newLookupInDomain): Look up in the add-chain first.
+	(newLookupInCategories): Likewise.
+	(lazyMatch): Quasiquote is now like a Mapping.
+	(newExpandLocalTypeForm): Quasiquote is no longer like QUOTE.
+	* nrungo.boot (lookupInDomainAndDefaults): New.
+	(compiledLookup): Use it.
+
+2007-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (buildFunctor): Use $NRTbase instead of hardcoded
+	constant 6.
+	(NRTcheckVector): Likewise.
+	(deepChaseInferences): Likewise.
+
+2007-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (deltaTran): Use NRTaddIndex.
+	(deltaTran): Likewise.
+	(genDeltaEntry): Likewise.
+	(genDeltaSpecialSig): Likewise.
+	(NRTassignCapsuleFunctionSlot): Likewise.
+	(genSlotSig): Likewise.
+	(NRTassocIndexAdd): Remove.
+
+2007-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-util.boot (isAlmostSimple): A `case' expresion with a simple
+	identified as first operand is a simple-expression.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* parse.boot: Register parsers by name, not by pointers.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* define.boot (compDefineFunctor1): Don't set $NRTbase here.
+	* nruncomp.boot ($NRTbase):  Define as a constant.
+	* setq.lisp: Don't set it.
+	
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* buildom.boot: Use $OutputForm instead of $Expression
+	throughout. 
+	* compiler.boot (compAtom): Use $OutputForm instead of $Expression.
+	(compSymbol): Likewise.
+	(outputComp): Likewise.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot (comp3): Use isQuasiquote.
+	(compSymbol): Use condition type view for non Union objects.
+	(getUniqueCaseView): New. Subroutine of compSymbol.
+	(compForm2): Don't infer type for flag parameter through
+	unique compilcation. 
+	(checkCallingConvention): New.
+	(compileQuasiquote): coerce, don't convert.
+	(compCase1): Handle non Union type object through modemap
+	selection.
+	(maybeSpliceMode): New.  Subroutine of compCase1.
+	Register special form compiler with their names, not pointers.
+	* define.boot (candidateSignatures): New.
+	(hasSigInTargetCategory): Use it.  Tidy.
+	(checkAndDeclare): Use isQuasiquote.
+	(spadCompileorSetq): Rename non atomic parameters before calling
+	LISP compiler.
+	* g-util.boot (quasiquote): New.
+	(isQuasiquote): Likewise.
+	* i-intern.boot (flagArguments): New.
+	(signatureFromModemap): Likewise.
+	(mkAtree3): Use them.  Handle functions taking flag arguments.
+	* i-object.boot (getFlagArgsPos): New.
+	* i-spec1.boot (userDefinedCase): Now prepare form and hands back
+	to bottomUp.
+	(upcase): Adjust call to userDefinedCase.
+	* modemap.boot (addDomain): Don't add flag domains to the
+	environment. 
+	* nruncomp.boot (NRTencode): Handle flag values.
+	(NRTgetLocalIndex1): Likewise.
+	* nrunfast.boot (lazyMatch): Likewise.
+	(newExpandLocalTypeForm): Likewise.
+	* sys-constants.boot ($DummyFunctorNames): Include quasiquote
+	constructor. 
+	* template.boot (NRTaddInner): Handle flag values.
+	
+2007-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-saturn.boot (compDefineCapsuleFunction): Remove.
+	(postSignature): Likewise.
+	(postDoubleSharp): Likewise.
+
+2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for quasiquotation.
+	* compiler.boot (compileQuasiquote): New function.
+	* fnewmeta.lisp (|PARSE-Enclosure|): Parse quasiquotes too.
+	* i-intern.boot (mkAtree3): Don't evaluate arguments to
+	quasiquote. 
+	* i-spec1.boot ($specialOps): Register [||].
+	(up[||]): Handle quasiquotes.
+	* newaux.lisp: Register `[|' and `|]' as new glyphs.
+	* pf2sex.boot ($insideApplication): Now count the nesting level of
+	application forms.
+	($insideQuasiquote): New.  Count nesting level of quasiquotes.
+	(pfFinishApplication): Ensure application form nesting level is
+	properly decreased.
+	(pfApplication2Sex): Use it.
+	(pfQuasiquotation2Sex): Transform quasiquote forms.
+	(pf2Sex1): Use it.
+	* sys-constants.boot ($Syntax): New.
+
+2007-12-08  Alfredo Portes  <alfredo.portes@gmail.com>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1846477
+	* i-syscmd.boot (printSynonyms): Eval commands in suspension
+	before printing.
+	(processSynonyms): Fully eval commands in suspension.
+	* setvars.boot ($InitialCommandSynonymAlist): Tidy.
+
+2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bc-util.boot ($newConstructorList): Move from setq.lisp to here.
+	($createLocalLibDb): Likewise.
+	* clam.boot ($hashNode): Likewise.
+	* comp.lisp (|$compileDontDefineFunctions|): Likewise.
+	* compiler.boot ($compileOnlyCertainItems): Likewise.
+	* database.boot ($globalExposureGroupAlist): Likewise.
+	* define.boot ($newCompCompare): Likewise.
+	* format.boot ($permitWhere): Likewise.
+	* g-boot.boot ($inDefLET): Likewise.
+	($inDefIS): Likewise.
+	($letGenVarCounter): Likewise.
+	($isGenVarCounter): Likewise.
+	* g-error.boot ($ReadingFile): Likewise.
+	(handleLispBreakLoop): Remove special case on $cclSystem.
+	* g-timer.boot (computeElapsedTime): Likewise.
+	* g-util.boot ($interpOnly): Move from setq.lisp to here.
+	* i-funsel.boot ($domPvar): Likewise.
+	* i-object.boot ($immediateDataSymbol): Likewise.
+	* i-output.boot ($algebraOutputStream): Likewise.
+	(ERROROUTSTREAM): Likewise.
+	(ERRORINSTREAM): Likewise.
+	* i-spec2.boot ($InterpreterMacroAlist): Likewise.
+	* i-syscmd.boot ($NonNullStream): Likewise.
+	($NullStream): Likewise.
+	($localExposureDataDefault): Likewise.
+	($localExposureData): Likewise.
+	* lisplib.boot ($functionLocations): Likewise.
+	* msgdb.boot ($testingSystem): Likewise.
+	* nlib.lisp (get-directory-list): Tidy.
+	* nruncomp.boot ($devaluateList): Move from setq.lisp to here.
+	($functorLocalParameters): Likewise.
+	($insideCategoryPackageIfTrue): Likewise.
+	($profileCompiler): Likewise.
+	* nrunfast.boot ($doNotCompressHashTableIfTrue): Likewise.
+	* nrungo.boot ($insideCompileBodyIfTrue): Likewise.
+	* setvars.boot ($InitialCommandSynonymAlist): Likewise.
+	($CommandSynonymAlist): Likewise.
+	(setOutputLibrary): Simplify.
+	* spad.lisp (|$newCompCompare|): Don't set here.
+	(|$compileOnlyCertainItems|): Likewise.
+	* sys-constants.boot ($BasicPredicates): Include SYMBOLP.
+	($TriangleVariableList): Move from setq.lisp to here.
+	($Any): Likewise.
+	($Boolean): Likewise.
+	($SingleInteger): Likewise.
+	($QuotientField): Likewise.
+	($ComplexInteger): Likewise.
+	($OutputForm): Likewise.
+	($FunctionalExpression): Likewise.
+	($Expression): Likewise.
+	($AnonymousFunction): Likewise.
+	* sys-globals.boot (INPUT_-LIBRARIES): Likewise.
+	(OUTPUT_-LIBRARY): Likewise.
+	($newConlist): Likewise.
+	($compilingInputFile): Likewise.
+	($minivectorNames): Likewise.
+
+2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisplib.boot (getSlotFromDomain): Use pointer to function Undef
+	directly, instead of variable Undef.
+	* i-syscmd.boot (cd): Move from patches.lisp to here.
+	* g-timer.boot (printTimeIfTrue): Move from patches.lisp to here.
+	* patches.lisp (Undef): Remove.
+	($printTimeIfTrue): Move to g-timer.boot.
+	(cd): Move to i-syscmd.boot.
+	(nullstream): Remove.
+	(nononullstream): Likewise.
+	(/MAJOR-VERSION): Move to sys-constants.boot.
+	* setq.lisp (/MAJOR-VERSION): Remove.
+
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (xruncomp.$(FASLEXT)): Remove rule.
+	(OCOBJS): Don't include xruncomp.$(FASLEXT) anymore.
+	* xruncomp.boot: Remove.
+	* compiler.boot (getFormModemaps): Merge from xruncomp.boot.
+	* functor.boot (LookUpSigSlots): Likewise.
+	* info.boot (actOnInfo): Likewise.
+	* modemap.boot (addModemap1): Likewise.
+	(evalAndSub): Likewise.
+	(substNames): Likewise.
+	(addConstructorModemaps): Likewise.
+	* nruncomp.boot (NRTencode): Likewise.
+	(genDeltaEntry): Likewise.
+	(NRTassignCapsuleFunctionSlot): Likewise.
+	(consDomainName): Likewise.
+	(changeDirectoryInSlot1): Likewise.
+
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp (|$highlightAllowed|): Remove.
+	(|$lightlightFontOn|): Likewise.
+	(|$highlightFontOff|): Likewise.
+	* patches.lisp (|$highlightAllowed|): Move to sys-globals.boot.
+	(|$lightlightFontOn|): Move to sys-constants.boot
+	(|$lightlightFontOff|): Likewise.
+	* setvart.boot ($setOptions): Make highlighting default.
+
+2007-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* patches.lisp (|cd|): Make sure *default-pathname-defaults*
+	stores the new directory name with a trailing slash.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support library function case.
+	* i-spec1.boot (userDefinedCase): New.
+	(upcase): Use it.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp (CGREATERP): Return canonical truthvalue.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* pf2sex.boot (pf2Sex1): Be talkative about why a parse form is Wrong.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-parser.boot: New.
+	* Makefile.pamphlet (i-parser.$(FASLEXT)): New rule.
+	(OBJS): Include i-parser.$(FASLEXT).
+
+2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (INOBJS): Lose varini.$(FASLEXT).
+	(varini.$(FASLEXT)): Remove rule.
+	* compiler.boot (compileSpad2Cmd): Don't set $ncConverse; it is
+	unused.  Don't set $newcomMode and $newComp.
+	(compTopLevel): There is no function newComp.  So simplify.
+	* cattable.boot (updateCategoryTable): Remove test for $newcompMode.
+	* database.boot (updateDatabase): Likewise.
+	* int-top.boot (SpadInterpretStream): Don't set $newcompMode.
+	($ncmParse): Move from varini.boot.
+	($ncmMacro): Likewise.
+	* bookvol5.pamphlet: Remove reference to $newcompMode.
+	* define.boot (compDefineCapsuleFunction): Simplify.
+	* msg.boot: Move diagnostic related variables from varini.boot to here.
+	* posit.boot ($nopos): Move from varini.boot to here.
+	* setq.lisp ($newcompMode): Don't set here
+	($newComp): Likewise.
+	($LINELENGTH): Likewise.
+	* spad.lisp ($newComp): Likewise.
+	($LINELENGTH): Likewise.
+	* varinit.boot: Remove.
+
+2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (NAGBROBJS): Remove.
+	(makeint.lisp): Don't depend on it, don't use it.
+	(UNUSED): Remove reference to anna.boot.
+	(nag-s.$(FASLEXT)): Remove.
+	(nag-f07.$(FASLEXT)): Likewise.
+	(nag-f04.$(FASLEXT)): Likewise.
+	(nag-f02.$(FASLEXT)): Likewise.
+	(nag-f01.$(FASLEXT)): Likewise.
+	(nag-e04.$(FASLEXT)): Likewise.
+	(nag-e02.$(FASLEXT)): Likewise.
+	(nag-e02b.$(FASLEXT)): Likewise.
+	(nag-e01.$(FASLEXT)): Likewise.
+	(nag-d03.$(FASLEXT)): Likewise.
+	(nag-d02.$(FASLEXT)): Likewise.
+	(nag-d01.$(FASLEXT)): Likewise.
+	(nag-c06.$(FASLEXT)): Likewise.
+	(nag-c05.$(FASLEXT)): Likewise.
+	(nag-c02.$(FASLEXT)): Likewise.
+	anna.boot: Remove.
+	nag-s.boot: Likewise.
+	nag-f07.boot: Likewise.
+	nag-f04.boot: Likewise.
+	nag-f02.boot: Likewise.
+	nag-f01.boot: Likewise.
+	nag-e04.boot: Likewise.
+	nag-e02.boot: Likewise.
+	nag-e02b.boot: Likewise.
+	nag-e01.boot: Likewise.
+	nag-d03.boot: Likewise.
+	nag-d02.boot: Likewise.
+	nag-d01.boot: Likewise.
+	nag-c06.boot: Likewise.
+	nag-c05.boot: Likewise.
+	nag-c02.boot: Likewise.
+	* setq.lisp (|$localExposureDataDefault|): Remove reference to naglink.
+	(|$localExposureData|): Likewise.
+	(|$InitialCommandSynonymAlist|): Remove startNAGLink and stopNAGLink.
+	* setvars.boot (setNagHost): Remove.
+	(describeSetNagHost): Likewise.
+	(setFortPers): Likewise.
+	(describeSetFortPers): Likewise.
+	* setvart.boot: Remove naglink option.
+	* sockio.lisp (NAGLinkServer): Remove.
+	* util.lisp (anna-functions): Likewise.
+	(nagbr-functions): Likewise.
+	(build-interpsys): Lose nagbr-files parameter.
+	(setNAGBootAutoloadProperties): Remove.
+	(get-NAG-chapter): Likewise.
+	(nag-files): Likewise.
+	(chapter-name): Likewise.
+	(sourcepath): Don't set naglink.
+
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (INOBJS): Don't include intint.$(FASLEXT).
+	(intint.$(FASLEXT)): Remove rule.
+	* intint.lisp: Move essential content to i-toplev.boot.  Remove.
+
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* postprop.$(FASLEXT): Remove rule.
+	* Makefile.pamphlet (OPOBJS): Don't include it anymore.
+	(postpar.$(FASLEXT)): Update requirement.
+	* mark.boot: Move setting of special compiler functions from
+	postprop.lisp to here.
+	* postprop.lisp: Remove.
+	* parse.boot: Register special parser for "xor".
+
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (compiler.$(FASLEXT)): Update requirement.
+	* compiler.boot: Import "define" and "iterator".
+	Move setting of special compiler functions from property.lisp to
+	here. 
+	* iterator.boot (compCollectV): Uncomment.
+	(compIteratorV): Likewise.
+	(computeMaxIndex): Likewise.
+	(exprDifference): Likewise.
+	* parse.boot: Move setting of special parsing functions from
+	property.lisp to here.
+	* postpar.boot: Move setting of special parsing transformers from
+	property.lisp to here.
+	* property.lisp: Move setting of special compiler functions and
+	parsers to appropriate files.
+
+2007-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp (create-sbc): Remove.
+	* property.lisp: Don't use it anymore.
+	* g-opt.boot: Likewise.
+	* i-spec2.boot: Likewise.
+
+2007-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot (compileNot): New.
+	* nspadaux.lisp: Don't register special parser for `not'-form.
+	* postprop.lisp: Likewise.
+	* property.lisp: Likewise.  
+	Register compileNot as special handler for `not'-forms.
+	* parse.boot (parseNot): Remove.
+
+2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Remove depsys from OpenAxiom.
+	* Makefile.pamphlet: Remove references to depsys.
+	* macros.lisp (BRIGHPRINT): Remove.
+	(BRIGHPRINT-0): Likewise.
+	* util.lisp (build-depsys): Likewise.
+	(processSynonyms): Likewise.
+
+2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (util.$(FASLEXT)): Move down.
+	(bookvol5.$(FASLEXT)): Likewise.
+	(<<depsys>>): Don't extract.
+	(makeint.lisp): Don't depend on $(DEPSYS).
+	(all-interpsys): Don't dependen on all-depsys.
+	(all-axiomsys): Likewise.  Now depend on all-interpsys.
+	(apply.$(FASLEXT)): New rule.
+	(lisplib.$(FASLEXT)): Likewise.
+	(spad.$(FASLEXT)): Likewise.
+	(axext_l.$(FASLEXT)): Likewise.
+	(foam_l.$(FASLEXT)): Likewise.
+
+2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (patches.$(FASLEXT)): New rule.
+	(setvars.$(FASLEXT)): Likewise.
+	(osyscmd.$(FASLEXT)): Likewise.
+	(intint.$(FASLEXT)): Likewise.
+	(int-top.$(FASLEXT)): Likewise.
+	(wi2.$(FASLEXT)): Likewise.
+	(wi1.$(FASLEXT)): Likewise.
+	(template.$(FASLEXT)): Likewise.
+	(package.$(FASLEXT)): Likewise.
+	(xruncomp.$(FASLEXT)): Likewise.
+	(interop.$(FASLEXT)): Likewise.
+	(mark.$(FASLEXT)): Likewise.
+	(daase.$(FASLEXT)): Likewise.
+	(monitor.$(FASLEXT)): Likewise.
+	(hashcode.$(FASLEXT)): Likewise.
+	(pspad2.$(FASLEXT)): Likewise.
+	(pspad1.$(FASLEXT)): Likewise.
+	(nocompil.$(FASLEXT)): Likewise.
+	(fname.$(FASLEXT)): Likewise.
+
+2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nrungo.boot (lazyCompareSigEqual): If template slot is "$" then
+	compare with reified dollar.
+
+2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (cfuns.$(FASLEXT)): New rule.
+	(obey.$(FASLEXT)): Likewise.
+	(setq.$(FASLEXT)): Likewise.
+	(spaderror.$(FASLEXT)): Likewise.
+	(debug.$(FASLEXT)): Likewise.
+	(property.$(FASLEXT)): Likewise.
+	(nspadaux.$(FASLEXT)): Likewise.
+	(sockio.$(FASLEXT)): Likewise.
+	(sfsfun-l.$(FASLEXT)): Likewise.
+	(varini.$(FASLEXT)): Likewise.
+	(trace.$(FASLEXT)): Likewise.
+	(termrw.$(FASLEXT)): Likewise.
+	(showimp.$(FASLEXT)): Likewise.
+	(sfsfun.$(FASLEXT)): Likewise.
+
+2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (topics.$(FASLEXT)): New rule.
+	(alql.$(FASLEXT)): Likewise.
+	(br-prof.$(FASLEXT)): Likewise.
+	(packtran.$(FASLEXT)): Likewise.
+	(macex.$(FASLEXT)): Likewise.
+	(intfile.$(FASLEXT)): Likewise.
+	(compress.$(FASLEXT)): Likewise.
+	(msg.$(FASLEXT)): Likewise
+
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nag-s.$(FASLEXT)): New rule.
+	(nag-f07.$(FASLEXT)): Likewise.
+	(nag-f04.$(FASLEXT)): Likewise.
+	(nag-f02.$(FASLEXT)): Likewise.
+	(nag-f01.$(FASLEXT)): Likewise.
+	(nag-e04.$(FASLEXT)): Likewise.
+	(nag-e02.$(FASLEXT)): Likewise.
+	(nag-e02b.$(FASLEXT)): Likewise.
+	(nag-e01.$(FASLEXT)): Likewise.
+	(nag-d03.$(FASLEXT)): Likewise.
+	(nag-d02.$(FASLEXT)): Likewise.
+	(nag-d01.$(FASLEXT)): Likewise.
+	(nag-c06.$(FASLEXT)): Likewise.
+	(nag-c05.$(FASLEXT)): Likewise.
+	(nag-c02.$(FASLEXT)): Likewise.
+
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-analy.boot: Globally substtitue %noMapVal for noMapVal.
+	* i-intern.boot: Likewise.
+	* i-map.boot: Likewise.
+	* i-spec2.boot: Likewise.
+	* i-spec1.boot: Likewise.
+
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* as.boot: Globally substitute %noBranch for noBranch.
+	* ax.boot: Likewise.
+	* cattable.boot: Likewise.
+	* compiler.boot: Likewise.
+	* def.lisp: Likewise.
+	* define.boot: Likewise.
+	* functor.boot: Likewise.
+	* g-opt.boot: Likewise.
+	* i-analy.boot: Likewise.
+	* i-intern.boot: Likewise.
+	* i-map.boot: Likewise.
+	* i-object.boot: Likewise.
+	* i-output.boot: Likewise.
+	* i-spec2.boot: Likewise.
+	* info.boot: Likewise.
+	* mark.boot: Likewise.
+	* nrunopt.boot: Likewise.
+	* package.boot: Likewise.
+	* parse.boot: Likewise.
+	* pf2atree.boot: Likewise.
+	* pf2sex.boot: Likewise.
+	* postpar.boot: Likewise.
+	* pspad2.boot: Likewise.
+	* wi2.boot: Likewise.
+
+2007-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nrunopt.$(FASLEXT)): New rule.
+	(<<nrunopt.clisp>>): Remove.
+	* define.boot: Fix syntax.
+	* nruncomp.boot: Likewise.
+	* nrunopt.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* wi2.boot: Fix syntax.
+
+2007-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (clammed.$(FASLEXT)): New rule.
+	(<<clammed.clisp>>): Remove.
+	* clammed.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+
+2007-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot ($coreDiagnosticFunctions): New.
+	(compForm1): Use it in checking for error functions.
+
+2007-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* daase.lisp (getdatabase): Fix path to source file and object file.
+
+2007-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Include spad-parser.$(FASLEXT).
+	(spad-parser.$(FASLEXT)): New rule.
+	* spad-parser.boot: New file.
+
+2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (br-search.$(FASLEXT)): New rule.
+	(br-saturn.$(FASLEXT)): Likewise.
+	(br-op2.$(FASLEXT)): Likewise.
+	(br-op1.$(FASLEXT)): Likewise.
+	(br-con.$(FASLEXT)): Likewise.
+	(br-data.$(FASLEXT)): Likewise.
+	(br-util.$(FASLEXT)): Likewise.
+	(<<br-search.clisp>>): Remove.
+	(<<br-saturn.clisp>>): Likewise.
+	(<<br-op2.clisp>>): Likewise.
+	(<<br-op1.clisp>>): Likewise.
+	(<<br-con.clisp>>): Likewise.
+	(<<br-data.clisp>>): Likewise.
+	(<<br-util.clisp>>): Likewise.
+	* br-search.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* br-saturn.boot.pamphlet: Likewise.
+	* br-op2.boot.pamphlet: Likewise.
+	* br-op1.boot.pamphlet: Likewise.
+	* br-con.boot.pamphlet: Likewise.
+	* br-data.boot.pamphlet: Likewise.
+	* br-util.boot.pamphlet: Likewise.
+
+2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-funsel.boot (selectMms): Don't reject modemaps involving
+	Domain. 
+
+2007-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nrunfast.$(FASLEXT)): New rule.
+	(nruncomp.$(FASLEXT)): Likewise.
+	(<<nrunfast.clisp>>): Remove
+	(<<nruncomp.clisp>>): Likewise.
+	* nruncomp.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* nrunfast.boot.pamphlet: Likewise.
+
+2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nrungo.$(FASLEXT)): New rule.
+	(nruntime.$(FASLEXT)): Likewise.
+	(<<nrungo.clisp>>): Remove.
+	(<<nruntime.clisp>>): Likewise.
+	* nrungo.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* nruntime.boot.pamphlet: Push into package "BOOT".
+
+2007-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (i-toplev.$(FASLEXT)): New rule.
+	(i-syscmd.$(FASLEXT)): Likewise.
+	(i-spec2.$(FASLEXT)): Likewise.
+	(i-spec1.$(FASLEXT)): Likewise.
+	(i-funsel.$(FASLEXT)): Likewise.
+	(i-map.$(FASLEXT)): Likewise.
+	(i-eval.$(FASLEXT)): Likewise.
+	(i-coerfn.$(FASLEXT)): Likewise.
+	(i-coerce.$(FASLEXT)): Likewise.
+	(i-resolv.$(FASLEXT)): Likewise.
+	(i-analy.$(FASLEXT)): Likewise.
+	(i-code.$(FASLEXT)): Likewise.
+	(i-intern.$(FASLEXT)): Likewise.
+	(<<i-analy.clisp>>): Remove.
+	(<<i-code.clisp>>): Likewise.
+	(<<i-coerce.clisp>>): Likewise.
+	(<<i-coerfn.clisp>>): Likewise.
+	(<<i-eval.clisp>>): Likewise.
+	(<<i-funsel.clisp>>): Likewise.
+	(<<i-intern.clisp>>): Likewise.
+	(<<i-map.clisp>>): Likewise.
+	(<<i-resolv.clisp>>): Likewise.
+	(<<i-spec1.clisp>>): Likewise.
+	(<<i-spec2.clisp>>): Likewise.
+	(<<i-syscmd.clisp>>): Likewise.
+	(<<i-toplev.clisp>>): Likewise.
+	(<<i-util.clisp>>): Likewise.
+	* apply.boot (compFormWithModemap): Fix syntax.
+	* i-analy.boot.pamphlet: Push into package "BOOT".
+	* i-code.boot.pamphlet: Likewise.
+	* i-coerce.boot.pamphlet: Likewise.
+	* i-coerfn.boot.pamphlet: Likewise.
+	* i-eval.boot.pamphlet: Likewise.
+	* i-funsel.boot.pamphlet: Likewise.
+	* i-intern.boot.pamphlet: Likewise.
+	* i-map.boot.pamphlet: Likewise.
+	* i-resolv.boot.pamphlet: Likewise.
+	* i-spec1.boot.pamphlet: Likewise.
+	* i-spec2.boot.pamphlet: Likewise.
+	* i-syscmd.bot.pamphlet: Likewise.
+	* i-toplev.boot.pamphlet: Likewise.
+	* i-util.boot.pamphlet: Likewise.
+
+2007-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (compiler.$(FASLEXT)): New rule.
+	(c-doc.$(FASLEXT)): Likewise.
+	(<<c-doc.clisp>>): Likewise.
+	(<<compiler.clisp>>): Likewise.
+	* c-doc.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	Document functions.  Remove dead codes.
+	* compiler.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+
+2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (iterator.$(FASLEXT)): New rule.
+	(modemap.$(FASLEXT)): Likewise.
+	(info.$(FASLEXT)): Likewise.
+	(msgdb.$(FASLEXT)): Likewise.
+	(<<info.clisp>>): Remove.
+	(<<iterator.clisp>>): Likewise.
+	(<<modemap.clisp>>): Likewise.
+	(<<msgdb.clisp>>): Likewise.
+	* c-util.boot (intersectionContour): Change setIntersection to
+	intersection.  Change SetUnion to union.
+	* database.boot (insertModemap): Move to modemap.boot.pamphlet.
+	* i-util.boot.pamphlet (addModemap): Likewise.
+	* info.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* iterator.boot.pamphlet: Push into package "BOOT".
+	* modemap.boot.pamphlet: Likewise.
+	* msgdb.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* sys-globals.boot (*BUILD-VERSION*): Define.
+	(*YEARWEEK*): Likewise.
+
+2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (record.$(FASLEXT)): New rule.
+	(newfort.$(FASLEXT)): Likewise.
+	(<<record.clisp>>): Remove.
+	(<<newfort.clisp>>): Likewise.
+	* newfort.boot.pamphlet: Push into package "BOOT".
+
+2007-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (database.$(FASLEXT)): New rule.
+	* database.boot.pamphlet: Push into package "BOOT".
+
+2007-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (functor.$(FASLEXT)): New rule.
+	(<<functor.clisp>>): Remove.
+	* functor.boot.pamphlet: Push into package "BOOT".
+
+2007-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	    Waldek Hebisch <hebisch@math.uni.wroc.pl>
+
+	* int-top.boot (ncParseFromString): Fix thinko.
+
+2007-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (compat.$(FASLEXT)): New rule.
+	(pathname.$(FASLEXT)): Likewise.
+	(<<compat.clisp>>): Remove.
+	(<<define.clisp>>): Likewise.
+	* compat.boot.pamphlet: Push into package "BOOT".
+	* pathname.boot: Import "nlib".
+
+2007-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (define.$(FASLEXT)): New rule.
+	(<<define.clisp>>): Remove.
+	* c-util.boot (CONTINUE): Comment out.
+	* define.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* i-intern.boot.pamphlet (put): Move to g-util.boot
+	(get): Likewise.
+	(get0): Likewise.
+	(get1): Likewise.
+	(get2): Likewise.
+	* setq.lisp (/EDITFILE): Don't set here.  Define it in
+	sys-globals.boot. 
+	(NRTPARSE): Don't set here.  Define in define.boot.
+
+2007-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	* Makefile.pamphlet (cattable.$(FASLEXT)): New rule.
+	(simpbool.$(FASLEXT)): Likewise.
+	(<<cattable.clisp>>): Remove.
+	(<<simpbool.clisp>>): Likewise.
+	* cattable.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* simpbool.boot: Likewise.
+
+2007-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (category.$(FASLEXT)): New rule.
+	(<<category.clisp>>): Remove.
+	* category.boot.pamphlet: Push into package "BOOT".
+	Replace ASSOC with assoc throughout.
+	(mkCategory): Fix syntax.
+	* i-coerce.boot.pamphlet (stripUnionTags): Move to g-util.boot.
+	(isTaggeUnion): Likewise.
+	(getUnionOrRecordTags): Likewise.
+	* i-util.boot.pamphlet (wrap): Move to i-object.boot.
+	(isWrapped): Likewise.
+	(unwrap): Likewise.
+	(wrapped2Quote): Likewise.
+	(quote2Wrapped): Likewise.
+	(removeQuote): Likewise.
+	(TruthP): Move to g-util.boot.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-util.boot (formatUnabbreviatedSig): Translate '$' to '%'
+	before printing.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-doc.boot.pamphlet (escapePercent): New.
+	(transformAndRecheckComments): Use it.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-data.boot.pamphlet (getImports): Rename `import' to `doImport'.
+	* define.boot.pamphlet (hasSigInTargetCategory): Pretty-print
+	signature in diagnostics.
+	* i-syscmd.boot.pamphlet: Fix syntax.
+	* mark.boot: Likewise.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-object.boot (mkObj): Remove.
+	(mkObjWrap): Likewise.
+	(mkObjCode): Likewise.
+	* g-util.boot (str2Tex): Use objNew.
+	* i-code.boot.pamphlet (intCodeGenCoerce1): Likewise.
+	* i-coerce.boot.pamphlet (coerceByFunction): Likewise.
+	* i-coerfn.boot.pamphlet (L2Tuple): Likewise.
+	* i-intern.boot.pamphlet (mkAtree2): Likewise.
+	* i-output.boot (outputTran): Likewise.
+	* msgdb.boot.pamphlet (throwKeyedMsgCannotCoerceWithValue): Likewise.
+	* slam.boot (clearLocalModemaps): Likewise.
+
+2007-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<fortcall.clisp>>): Remove.
+	(<<match.clisp>>): Likewise.
+	(fortcall.$(FASLEXT)): New rule.
+	(match.$(FASLEXT)): Likewise.
+	* fortcall.boot.pamphlet: Push into package "BOOT".  Import
+	"sys-macros". Fix syntax.
+	* match.boot.pamphlet: Likewise.
+	* patches.lisp (|makeVector): Move to fortcall.boot.
+	(|makeList|): Likewise.
+
+2007-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Include i-object.$(FASLEXT).
+	(i-object.$(FASLEXT)): New rule.
+	* i-object.boot: New.
+	* i-analy.boot.pamphlet (getBasicMode): Move to i-object.boot.
+	(getBasicMode0): Likewise.
+	(getBasicObject): Likewise.
+	* i-intern.boot.pamphlet (mkObj): Likewise.
+	(mkObjWrap): Likewise.
+	(mkObjCode): Likewise.
+	(objNew): Likewise.
+	(objNewWrap): Likewise.
+	(objNewCode): Likewise.
+	(objSetVal): Likewise.
+	(objSetMode): Likewise.
+	(objVal): Likewise.
+	(objValUnwrap): Likewise.
+	(objMode): Likewise.
+	(objEnv): Likewise.
+	(objCodeVal): Likewise.
+	(objCodeMode): Likewise.
+	(asTupleNew): Likewise.
+	(asTupleNew0): Likewise.
+	(asTupleNewCode): Likewise.
+	(asTupleNewCode0): Likewise.
+	(asTupleSize): Likewise.
+	(asTupleAsVector): Likewise.
+	(asTupleAsList): Likewise.
+
+2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-util.boot (isDomain): Merge with version in interop.boot.pamphlet.
+	* i-funsel.boot.pamphlet (getFunctionFromDomain): Likewise.
+	* interop.boot.pamphlet (devaluate): Remove.
+	(isDomain): Likewise.
+	(NRTcompiledLookup): Likewise.
+	(compiledLookup): Likewise.
+	(basicLookup): Likewise.
+	(lookupInDomainVector): Likewise.
+	(lookupComplete): Likewise.
+	(lookupIncomplete): Likewise.
+	(lookupInCompactTable): Likewise.
+	(lazyMatchArg2): Likewise.
+	(getOpCode): Likewise.
+	(newExpandLocalType): Likewise.
+	(replaceGoGetSlot): Likewise.
+	(lazyMatchAssocV): Likewise.
+	(lazyDomainSet): Likewise.
+	(evalSlotDomain): Likewise.
+	(domainEqual): Likewise.
+	(coerceConvertMmSelection): Likewise.
+	(getFunctionFromDomain): Likewise.
+
+2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1814510
+	* i-output.boot.pamphlet (putWidth): Use GETL.
+	* Makefile.pamphlet (i-output.$(FASLEXT)): New rule.
+
+2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (INOBJS): Lose xrun.$(FASLEXT).
+	* clammed.boot.pamphlet (coerceConvertMmSelection): Merge
+	modification in late xrun.boot.
+	* i-coerce.boot.pamphlet (equalOne): Likewise.
+	(equalZero): Likewise.
+	(algEqual): Likewise.
+	(coerceByFunction): Likewise.
+	* i-eval.boot.pamphlet (evalFrom): Likewise.
+	(findFunctionInDomain): Likewise.
+	(findFunctionInDomain1): Likewise.
+	(findFunctionInCategory): Likewise.
+	* nrunfast.boot.pamphlet (replaceGoGetSlot): Likewise.
+	(lazyMatchArg2): Likewise.
+	(newExpandTypeSlot): Likewise.
+	(newExpandLocalTypeForm): Likewise.
+	(newExpandLocalTypeArgs): Likewise.
+	(sigDomainVal): Likewise.
+	* nrungo.boot.pamphlet (lazyCompareSigEqual): Likewise.
+	* nrunopt.boot.pamphlet (NRTmakeCategoryAlist): Likewise.
+	* sys-globals.boot ($noSubsumption): Likewise.
+	* template.boot (evalSlotDomain): Likewise.
+	* xrun.boot: Remove.
+
+2007-10-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<server.clisp>>): Remove.
+	(server.$(FASLEXT)): New rule.
+	* as.boot.pamphlet (asytran): Use VMREAD.
+	* c-util.boot.pamphlet (intersectionContour): Use assoc.
+	* g-error.boot.pamphlet (argumentDataError): Use read_-line.
+	* g-opt.boot.pamphlet: Use assoc.
+	* ht-util.boot.pamphlet: Likewise.
+	* htsertvar.boot.pamphlet: Likewise.
+	* server.boot.pamphlet: User read_-line.
+
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp (SETANDFILE): Use defparameter, not setq.
+
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Depend on g-error.$(FASLEXT),
+	g-boot.$(FASLEXT), c-util.$(FASLEXT), clam.$(FASLEXT),
+	slam.$(FASLEXT).  
+	(slam.$(FASLEXT)): New rule.
+	(clam.$(FASLEXT)): Likewise.
+	(g-boot.$(FASLEXT)): Likewise.
+	(g-error.$(FASLEXT)): Likewise.
+	(c-util.$(FASLEXT)): Likewise.
+	(<<c-util.lisp (OUT from IN)>>): Remove.
+	(<<c-util.clisp>>): Likewise.
+	* c-util.boot.pamphlet: Remove cached Lisp translation.
+	Push into package "BOOT". Fix syntax. Remove unused functions.
+	* clam.boot.pamphlet: Push into package "BOOT". Fix syntax.
+	* g-error.boot.package: Likewise.
+	* g-boot.boot.pamphlet: Push into package "BOOT".
+	* slam.boot.pamphlet: Likewise.
+	* sys-global.boot (CHR): Define.
+	(TOK): Likewise.
+
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Compile Boot code with --boot=old.
+	(bc-solve.$(FASLEXT)): New rule.
+	(bc-matrix.$(FASLEXT)): Likewise.
+	(bc-misc.$(FASLEXT)): Likewise.
+	(bc-util.$(FASLEXT)): Likewise.
+	(ax.$(FASLEXT)): Likewise.
+	(as.$(FASLEXT)): Likewise.
+	(<<as.clisp>>): Remove.
+	(<<ax.clisp>>): Likewise.
+	(<<bc-misc.clisp>>): Likewise.
+	(<<bc-solve.clisp>>): Likewise.
+	(<<format.clisp>>): Likewise.
+	* as.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* ax.boot.pamphlet: Likewise.
+	* bc-matrix.boot.pamphlet: Import "bc-util".
+	* bc-solve.boot.pamphlet: Make compilable by bootsys.
+	* bc-util.boot.pamphlet: Import "ht-util".
+	* format.boot.pamphlet: Make compilable by bootsys.
+	* g-util.boot.pamphlet (freeOfShapVars): Use union.
+	* setq.lisp (BLANK): Move definition to sys-constant.boot.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Depend on g-util.$(FASLEXT).
+	Load explicitly.
+	(<<profile.clisp>>): Remove.
+	(<<g-cndata.clisp>>): Likewise.
+	(<<g-opt.clisp>>): Likewise.
+	(<<g-timer.clisp>>): Likewise.
+	(<<hypertex.clisp>>): Likewise.
+	(<<rulesets.clisp>>): Likewise.
+	(<<ht-util.clisp>>): Likewise.
+	(<<htsetvar.clisp>>): Likewise.
+	(<<ht-root.clisp>>): Likewise.
+	(<<htcheck.clisp>>): Likewise.
+	(ht-root.$(FASLEXT)): New rule.
+	(htcheck.$(FASLEXT)): Likewise.
+	(ht-util.$(FASLEXT)): Likewise.
+	(htsetvar.$(FASLEXT)): Likewise.
+	(hypertex.$(FASLEXT)): Likewise.
+	(profile.$(FASLEXT)): Likewise.
+	(rulesets.$(FASLEXT)): Likewise.
+	(g-opt.$(FASLEXT)): Likewise.
+	(g-timer.$(FASLEXT)): Likewise.
+	(g-util.$(FASLEXT)): Likewise.
+	(g-cndata.$(FASLEXT)): Likewise.
+	* daase.lisp.pamphlet (*attributes*): Move definition to
+	sys-constants.boot.
+	* g-cndata.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* g-opt.boot.pamphlet: Likewise.
+	(EqualBarGensym): Fix thinko.
+	* g-timer.boot.pamphlet: Push into package "BOOT".
+	* g-util.boot.pamphlet: Likewise.
+	* ht-root.boot.pamphlet: Likewise.  Fix syntax.
+	* ht-util.boot.pamphlet: Push into package "BOOT".
+	* htcheck.boot.pamphlet: Likewise.
+	* htsetvar.boot.pamphlet: Likewise.
+	* hypertex.boot.pamphlet: Likewise. Fix syntax.
+	* profile.boot.pamphlet: Likewise.
+	* rulesets.boot.pamphlet: Likewise.
+	* setq.lisp.pamphlet (/VERSION): Move definition to sys-globals.boot.
+	* spad.lisp.pamphlet (/WSNAME): Likewise.
+	(|rplac|): Move to sys-macros.boot.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<nag-c02.clisp>>): Remove.
+	(<<nag-c05.clisp>>): Likewise.
+	(<<nag-c06.clisp>>): Likewise.
+	(<<nag-d01.clisp>>): Likewise.
+	(<<nag-d02.clisp>>): Likewise.
+	(<<nag-d03.clisp>>): Likewise.
+	(<<nag-e01.clisp>>): Likewise.
+	(<<nag-e02.clisp>>): Likewise.
+	(<<nag-e04.clisp>>): Likewise.
+	(<<nag-f01.clisp>>): Likewise.
+	(<<nag-f02.clisp>>): Likewise.
+	(<<nag-f04.clisp>>): Likewise.
+	(<<nag-f07.clisp>>): Likewise.
+	(<<nag-s.clisp>>): Likewise.
+	* bc-matrix.boot.pamphlet (bcInputExplicitMatrix): Fix thinko.
+	* showimp.boot.pamphlet (getCategoriesOfDomain): Likewise.
+	* nag-c02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-c05.boot.pamphlet: Likewise.
+ 	* nag-c06.boot.pamphlet: Likewise. Fix thinko.
+ 	* nag-d01.boot.pamphlet: Likewise.
+ 	* nag-d02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-d03.boot.pamphlet: Likewise.
+ 	* nag-e01.boot.pamphlet: Likewise. Fix thinko.
+ 	* nag-e02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-e02b.boot.pamphlet: Likewise.
+ 	* nag-e04.boot.pamphlet: Likewise. Make compilable by bootsys.
+ 	* nag-f01.boot.pamphlet: Push into package "BOOT".
+ 	* nag-f02.boot.pamphlet: Likewise.
+ 	* nag-f04.boot.pamphlet: Likewise.
+ 	* nag-f07.boot.pamphlet: Likewise.  Fix thinko.
+ 	* nag-s.boot.pamphlet: Likewise.
+	* showimp.boot.pamphlet: Fix thinko.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (|loadExposureGroupData|): Define
+	unconditionally.  Don't use "AXIOM" variable.
+	* as.boot.pamphlet (as): Remove dead code.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<lisplib.clisp>>): Remove.
+	* lisplib.boot.pamphlet: Push into package "BOOT".
+	(findConstructorSlotNumber): Tidy.
+	(sigsMatch): Likewise.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-search.boot.pamphlet: Replace uses of $SPAROOT with
+	systemRootDirectory. 
+	* construc.lisp.pamphlet: Likewise.
+	* daase.lisp.pamphlet: Likewise.
+	* i-toplev.boot.pamphlet: Likewise.
+	* patches.lisp.pamphlet: Likewise.
+	* pathname.boot.pamphlet: Likewise.
+	* util.lisp.pamphlet: Likewise.
+	* bookvol5.pamphlet: Remove $spadroot throughout.
+	(initroot): Remove.
+	(reroot): Lose argument.
+	* Makefile.pamphlet (makeint.lisp): Depend on
+	sys-driver.$(FASLEXT).  Explicitly load it.
+	Miscellaneous cleanup.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (initroot): Use |systemRootDirectory| instead
+	of environment variable AXIOM.
+	(|loadExposureGroupData|): Likewise.
+	* br-data.boot.pamphlet (dbHasExamplePage): Likewise.
+	(dbRead): Likewise.
+	(dbReadComments): Likewise.
+	(buildGloss): Likewise.
+	* br-saturn.boot.pamphlet (getSaturnExampleList): Likewise.
+	* br-search.boot.pamphlet (grepSplit): Likewise.
+	* daase.lisp.pamphlet (asharp): Likewise.
+	(initial-getdatabase): Likewise.
+	(DaaseName): Likewise.
+	(create-initializers): Likewise.
+	* ht-root.boot.pamphlet (htGlossPage): Likewise.
+	* htcheck.boot.pamphlet (buildHtMacroTable): Likewise.
+	* i-syscmd.boot.pamphlet (summary): Likewise.
+	(copyright): Likewise.
+	* patches.lisp.pamphlet (restart0): Likewise.
+	* util.lisp.pamphlet (sourcepath): Likewise.
+	* Makefile.pamphlet (OBJS): Include sys-driver.$(FASLEXT).
+	(${SAVESYS}): Tidy.
+	(${AXIOMSYS}): Likewise.
+	(${DEPSYS}): Depend on sys-driver.$(FASLEXT).  Load it.
+	(sys-driver.$(FASLEXT)): New rule.
+	* Makefile.in: Regenerate.
+	* sys-driver.boot: New.
+
+2007-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<bc-matrix.clisp>>): Remove.
+	(<<bc-util.clisp>>): Likewise.
+	(<<br-prof.clisp>>): Likewise.
+	* bc-matrix.boot.pamphlet: Push into BOOT package.
+	* bc-util.boot.pamphlet: Likewise.
+	* br-prof.boot.pamphlet: Likewise.
+
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet (half): New macro.
+	(bigopAppAux): Use it.
+	(charyTop): Likewise.
+	(binomApp): Likewise.
+
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (restart): Simplify.  Handle command line
+	arguments.
+
+2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Now depend on the compiled form
+	of parse.  Load it.
+	(parse.$(FASLEXT)): New rule.
+	* parse.boot: New.  Import "postpar".
+	* parse.boot.pamphlet: Move content to parse.boot.pamphlet.  Remove.
+
+2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet ($directory-list): Move to sys-globals.boot.
+	($library-directory-list): Likewise.
+	* spad.lisp.pamphlet: Import "bootlex".
+	* preparse.lisp.pamphlet: Import "fnewmeta".
+	* postprop.lisp: Import "macros".
+	* postpar.boot.pamphlet: Import "postprop".
+	* nlib.lisp.pamphlet (rdefiostream): Define unconditionally.
+	(get-io-index-stream): Likewise.
+	(makedir): Likewise.
+	(get-directory-list): Don't use $current-diretory.
+	($filetype-table): Move to sys-constants.boot.
+	* patches.lisp.pamphlet ($current-directory): Remove.
+	(|cd|): Simplify implementation.
+	* newaux.lisp.pamphlet: Import "macros".
+	(|PARSE-NewKEY|): Define.
+	* metalex.lisp: Move various file, line, stack, character
+	utilities to here.
+	* macros.lisp.pamphlet (NREVERSE0): Move to sys-macros.lisp.  Tidy.
+	* fnewmeta.lisp.pamphlet: Import "parsing".
+	* comp.lisp: Import "macros".
+	* def.lisp: Likewise.
+	(B-MDEF): Fix thinko.
+	* bootlex.lisp: Import "preparse", "def", and "nlib".
+	(BOOT-LINE-STACK): Move to metalex.lisp.
+	(NEXT-LINES-CLEAR): Likewise.
+	(NEXT-LINES-SHOW): Likewise.
+	(XCAPE): Likewise.
+	(KEYWORDS): Likewise.
+	* Makefile.pamphlet (${DEPSYS}): Now have all Lisp in compiled
+	form and load them.  
+	* bookvol5.pamphlet ($current-directory): Remove.
+
+2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1792002
+	* util.lisp.pamphlet (build-interpsys): Lose parse-files,
+	comp-files and browse-files parameters.  Don't set AutoLoad
+	properties for those files anymore.
+	(parse-functions): Remove definition.
+	(comp-functions): Likewise.
+	(browse-functions): Likewise.
+	(|tr|): Don't call |oldCompilerAutoloadOnceTrigger| and
+	|browserAutloadOnceTrigger| anymore.
+	* daase.lisp.pamphlet (make-databases): Don't call
+	|oldCompilerAutoloadOnceTrigger| anymore.
+	* compiler.boot.pamphlet (compileSpad2Cmd): Don't call
+	oldParserAutoloadOnceTrigger anymore.
+	* bootlex.lisp (|oldParserAutoloadOnceTrigger|): Remove.
+	* Makefile.pamphlet (OBJS): Include $(OPOBJS), $(OCOBJS) and
+	$(BROBJS).
+	(OPOBJS): Objects are not in autoload directory anymore.
+	(OCOBJS): Likewise.
+	(BROBJS): Likewise.
+	(makeint.lisp): Remove explicit dependency on $(OCOBJS), $(OPOBJS)
+	and $(BROBJS).  Don't call build-interpsys with those arguments
+	anymore.
+	* Makefile.in: Regenerate.
+
+2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-spec1.boot.pamphlet (mkAndApplyZippedPredicates): Fix typo.
+	(mkIterZippedFun): Use indexList, not the global $indexVars.
+
+2007-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix Bug SF/1790563
+	* i-output.boot.pamphlet (outputDomainConstructor): Devaluate
+	domain form only if it is in vector representation.
+
+2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($insideCoerceInteracticve): Define.
+	($insideEvalMmCondIfTrue): Likewise.
+
+2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet: Don't define package VMLISP.  Remove
+	export declarations.  Import "boot-pkg".
+	* sys-macros.lisp (EQUABLE): Remove definition.
+	* sys-constants.boot ($true): Define as twice quoted T.
+	* hash.lisp.pamphlet: Push into package BOOT, VMLISP.
+	* ggreater.lisp: Likewise.
+	* nlib.lisp.pamphlet: Likewise.
+	* obey.lisp: Likewise.
+	* construc.lisp.pamphlet: Remove reference to VMLISP package.
+	* daase.lisp.pamphlet: Likewise.
+	* debug.lisp.pamphlet: Likewise.
+	* util.lisp.pamphlet: Likewise.
+	* cformat.boot: Remove hack for GCL limitation.
+	* scan.boot: Likewise.
+	* incl.boot: Likewise.
+	* parsing.lisp: Likewise.
+	* bootlex.lisp: Remove reference to VMLISP package.
+	* union.lisp: Likewise.
+	* boot-pkg.lisp: Remove hack for GCL limitation.  Don't import 
+	"vmlisp" anymore.
+	* bookvol5.pamphlet (vmlisp::$current-directory): Remove.
+	* patches.lisp.pamphlet: Likewise.
+	* astr.boot: Import "vmlisp" instead of "boot-pkg".
+	* Makefile.pamphlet (boot-pkg.$(FASLEXT)): Don't depend on
+	vmlisp.$(FASLEXT). 
+	(vmlisp.$(FASLEXT)): Depend on boot=pkg.$(FASLEXT).
+
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Don't include ptrop.$(FASLEXT).
+	(ptrees.$(FASLEXT)): New rule.
+	(cparse.$(FASLEXT)): Likewise.
+	* ptrop.boot.pamphlet: Move content to ptrees.boot.pamphlet.
+	* ptrees.boot.pamphlet: Import posit, serror.
+	* cparse.boot: New. Import ptrees.
+	* cparse.boot.pamphlet: Move content to cparse.boot.  Remove.
+	* serror.boot: New.
+	(pfSourceStok): Move to posit.boot.
+	(npMissingMate): Move to cparse.boot.
+	(npMissing): Likewise.
+	(npCompMissing): Likewise.
+	(npRecorverTrap): Likewise.
+	(npListAndRecover): Likewise.
+	(npMoveTo): Likewise.
+	* serror.boot.pamphlet: Move content to serror.boot.  Remove.
+
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet (exptNeedsPren): Use GETL, not GET.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (scan.$(FASLEXT)): New rule.
+	(pile.$(FASLEXT)): Likewise.
+	(INOBJS): Don't include parini.$(FASLEXT).
+	* pile.boot: New.  Import scan.
+	* pile.boot.pamphlet: Move content to pile.boot.  Remove.
+	* vmlisp.lisp.pamphlet (|startsId?|): Move to sys-macros.lisp.
+	* parini.boot.pamphlet:  Move content to scan.boot.  Remove.
+	* scan.boot: New. Import bits, dq, incl.  Add workaround for GCL
+	bug. 
+	($SPACE): Rename from SPACE to avoid conflict with CL name.
+	* scan.boot.pamphlet: Move content to scan.boot.  Remove.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* posit.boot: New.  Import sys-macros, astr.
+	(tokConstruct): Move from ptrees.boot.pamphlet.
+	(tokType): Likewise.
+	(tokPart): Likewise.
+	(tokPosn): Likewise.
+	(pfAbSynOp): Likewise.
+	(pfAbSynOp?): Likewise.
+	(pfLeaf?): Likewise.
+	(pfLeaf): Likewise.
+	(pfLeafToken): Likewise.
+	(pfLeafPosition): Likewise.
+	(pfTree): Likewise.
+	(pfParts): Likewise.
+	(pfFirst): Likewise.
+	(pfSecond): Likewise.
+	* astr.boot: New.  Import boot-pkg.
+	* sys-constants.boot (IDENTITY): Define.
+	* patches.lisp.pamphlet (identity): Move definition to sys-constants.
+	* cformat.boot: New.  Import unlisp, posit.  Add ugly workwound
+	for GCL bug. 
+	* incl.boot: New.  Import unlisp, cstream, cformat.  Tweak.
+	Add ugly workwound for GCL bug.
+	(incLude1): Fix thinko
+	* Makefile.pamphlet (incl.$(FASLEXT)): New rule.
+	(cformat.$(FASLEXT)): Likewise.
+	(posit.$(FASLEXT)): Likewise.
+	(astr.$(FASLEXT)): Likewise.
+	(DEP): Don't include bits.lisp.
+	(${DEPSYS}): Explicitly load "bits" here.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* unlisp.lisp.pamphlet: Import sys-macros.
+	(|CsetString|): Use code-char.
+	(|WriteLispExpr|): Remove.  It is unused.
+	(|ReadLispExpr|): Likewise.
+	(|LispCompileFileQuietlyToObject|): Likewise.
+	* Makefile.pamphlet (unlisp.$(FASLEXT)): New rule.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bits.lisp: New. Import boot-pkg.
+	* bits.lisp.pamphlet: Move content to bits.lisp.  Remove.
+	* Makefile.pamphlet (bits.$(FASLEXT)): New rule.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (cstream.$(FASLEXT)): New rule.
+	* cstream.boot.pamphlet: Import sys-macros.
+	* sys-macros.lisp (|shoeConsole|): Move from macros.lisp.pamphlet.
+	(|shoeInputFile|): Likewise.
+	(|shoeread-line|): Likewise.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* dq.boot: New.
+	* dq.boot.pamphlet: Move content to dq.boot.pamphlet.  Remove.
+	* vmlisp.lisp.pamphlet (BPINAME): Define for SBCL.
+	* Makefile.pamphlet (dq.$(FASLEXT)): New rule.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ggreater.lisp: New.
+	* ggreater.lisp.pamphlet: Move content to ggreater.lisp.  Remove.
+
+2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* template.boot: New.
+	* template.boot.pamphlet: Move content to template.boot.  Remove.
+	* termrw.boot: New.
+	* termrw.boot.pamphlet: Move content to template.boot.  Remove.
+	* topics.boot: New.
+	* topics.boot.pamphlet: Move content to topics.boot.  Remove.
+	* trace.boot: New.
+	* trace.boot.pamphlet: Move content to trace.boot.  Remove.
+	* varini.boot: New.
+	* varini.boot.pamphlet: Move content to varini.boot.  Remove.
+	* xrun.boot: New.
+	* xrun.boot.pamphlet: Move content to xrun.boot.  Remove
+	* xruncomp.boot: New.
+	* xruncomp.boot.pamphlet: Move content to xruncomp.boot.  Remove.
+	* Makefile.pamphlet (<<xruncomp.clisp>>): Remove.
+	(<<trace.lisp>>): Likewise.
+	(<<topics.clisp>>): Likewise.
+	(<<template.clisp>>): Likewise.
+	(<<termrw.clisp>>): Likewise.
+
+2007-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet ($defaultSpecialCharacters): Define as
+	constant. 
+	($plainSpecialCharacters0): Likewise.
+	($plainSpecialCharacters1): Likewise.
+	($plainSpecialCharacters2): Likewise.
+	($plainSpecialCharacters3): Likewise.
+	($plainRTspecialCharacters): Likewise.
+	($RTspecialCharacters): Likewise.
+	($specialCharacterAlist): Likewise.
+	(makeCharacter): Define as macro.
+	(leftBindingPowerOf): Move from macros.lisp.pamphlet.  Define as
+	Boot code.
+	(rightBindingPowerOf): Likewise.
+	* patches.lisp.pamphlet (|$specialCharacters|): Don't set here.
+	* Makefile.pamphlet (<<i-output.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+	* macros.lisp.pamphlet (ELEMN): Move to g-util.boot.pamphlet.
+	(|leftBindingPowerOf|): Move to i-output.boot.pamphlet.
+	(|rightBindingPowerOf|): Likewise.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp.pamphlet (CROAK): Move to diagnostics.boot.
+	(SAY): Likewise.
+	(MESSAGEPRINT): Likewise.
+	(MESSAGEPRINT-1): Likewise.
+	(MESSAGEPRINT-2): Likewise.
+	(|shoeConsole|): Move to sys-macros.lisp.
+	(|shoeInputFile|): Likewise.
+	(|shoeread-line|): Likewise.
+	(ELEMN): Move to fnewmeta.lisp.pamphlet.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEP): Adjust path to comp.lisp.
+	(${DEPSYS}): Likewise for def.lisp, bootlex.lisp, postprop.lisp,
+	metalex.lisp.  Use |compileLispFile| instead of COMPILE-FILE.
+	* Makefile.in: Regenerate.
+	* union.lisp: New.
+	* union.lisp.pamphlet: Move content to union.lisp.  Remove.
+	* obey.lisp: New.
+	* obey.lisp.pamphlet: Move content to obey.lisp.  Remove.
+	* nspadaux.lisp: New.
+	* nspadaux.lisp.pamphlet: Move content to nspadaux.lisp.  Remove.
+	* fname.lisp: New.
+	* fname.lisp.pamphlet: Move content to fname.lisp.  Remove.
+	* def.lisp: New.
+	* def.lisp.pamphlet: Move content to def.lisp.  Remove.
+	* comp.lisp: New.
+	* comp.lisp.pamphlet: Move content to comp.lisp.  Remove.
+	* bootlex.lisp: New.
+	* bootlex.lisp.pamphlet: Move content to bootlex.lisp.  Remove.
+	* postprop.lisp: New.
+	* postprop.lisp.pamphlet: Move content to postprop.lisp.  Remove.
+	* metalex.lisp: New.
+	* metalex.lisp.pamphlet: Move content to metalex.lisp.  Remove.
+	* parsing.lisp: New.
+	* parsing.lisp.pamphlet: Move content to parsing.lisp. Remove.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-macros.lisp: Add ugly work-around about infamous GCL bug.
+	* vmlisp.lisp.pamphlet: Export WRAP.
+	* Makefile.pamphlet (<<buildom.clisp>>): Remove.
+	(buildom.$(FASLEXT)): New rule, setup dependency.
+	* Makefile.in: Regenerate.
+	* buildom.boot.pamphlet: Make compilable by bootsys.  Import
+	sys-constants. 
+	* setq.lisp.pamphlet (|$Primitives|): Move to sys-constants.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-macros.lisp: New.
+	* sys-globals.boot: Import sys-constants.
+	* macros.lisp.pamphlet (|$compilingMape): Move to sys-globals.boot.
+	(|$definingMap|): Likewise.
+	($TRACELETFLAG): Likewise.
+	($NEWSPAD): Likewise.
+	($BOOT): Likewise.
+	(MOAN): Move to diagnostic.boot
+	(FAIL): Likewise.
+	(KAR): move to sys-macros.lisp
+	(KDR): Likewise.
+	(KADR): Likewise.
+	(KADDR): Likewise.
+	(|function|): Likewise.
+	(|dispatchFunction|): Likewise.
+	(QEQCAR): Likewise.
+	(BOOT-EQUAL): Likewise.
+	(IDENT-CHAR-LIT): Likewise.
+	(EQQUAL): Likewise.
+	(NEQUAL): Likewise.
+	(EQUABLE): Likewise.
+	(MKQ): Likewise.
+	(IS): Likewise.
+	(LETT): Likewise.
+	(SPADLET): Likewise.
+	(RPLAC): Likewise.
+	(CARCDREXPAND): Likewise.
+	(RENAME): Likewise.
+	(CARCDRX1): Likewise.
+	(APPLYR): Likewise.
+	(REPEAT): Likewise.
+	(REPEAT-TRAN): Likewise.
+	(MKPF): Likewise.
+	(MKPFFLATTEN): Likewise.
+	(MKPFFLATTEN-1): Likewise.
+	(MKPF1): Likewise.
+	(-REPEAT): Likewise.
+	(SEQOPT): Likewise.
+	(SUCHTHATCLAUSE): Likewise.
+	(SPADDO): Likewise.
+	(SPAD_LET): Likewise.
+	(COLLECT): Likewise.
+	(COLLECTVEC): Likewise.
+	(COLLECTV): Likewise.
+	(MKQSADD1): Likewise.
+	(YIELD): Likewise.
+	(REMFLAG): Likewise.
+	(FLAGP): Likewise.
+	(INTERNL): Likewise.
+	(SPADCATCH): Likewise.
+	(SPADTHROW): Likewise.
+	(IEQUAL): Likewise.
+	(GE): Likewise.
+	(GT): Likewise.
+	(LE): Likewise.
+	(LT): Likewise.
+	(QSADDMOD): Likewise.
+	(QSDIFMOD): Likewise.
+	(QSMULTMOD): Likewise.
+	(NLIST): Likewise.
+	(SPADREDUCE): Likewise.
+	(AND2): Likewise.
+	(OR2): Likewise.
+	(REDUCE-1): Likewise.
+	(-REDUCE): Likewise.
+	(-REDUCE-OP): Likewise.
+	(NREVERSE-N): Likewise.
+	(CONS-N): Likewise.
+	(APPEND-N): Likewise.
+	(REDUCE-N): Likewise.
+	(REDUCE-N-1): Likewise.
+	(REDUCE-N-2): Likewise.
+	(THETA): Likewise.
+	(THETA1): Likewise.
+	(THETA_ERROR): Likewise.
+	(SPADFIRST): Likewise.
+	(FIRST-ERROR): Likewise.
+	(ELEM): Likewise.
+	(TAIL): Likewise.
+	(PARTCODET): Likewise.
+	(SPADCALL): Likewise.
+	(S+): Likewise.
+	(S*): Likewise.
+	(S-): Likewise.
+	(DELASC): Likewise.
+	(|char|): Likewise.
+	(MAKE-BF): Likewise.
+	(MAKE-FLOAT): Likewise.
+	* def.lisp.pamphlet (MK_LEFORM): Move to sys-macros.lisp.
+	(MK_LEFORM-CONS): Likewise.
+	* Makefile.pamphlet (${DEPSYS}): Depend on sys-macros.lisp.
+	(sys-globals.$(FASLEXT)): New rule.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (makeint.lisp): Don't print SYS, LISP, BYE.
+	(DEBUGSYS): Remove.
+	(all-debugsys): Likewise.
+	(<<debugsys.lisp>>): Likewise.
+	* debugsys.lisp.pamphlet: Remove.
+
+2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Don't include nci.
+	(AXIOMsys_compiled_lisp_sources): Likewise.
+	* Makefile.in: Regenerate.
+	* nci.lisp.pamphlet (|ncParseAndInterpretString|): Move to
+	int-top.boot.pamphlet. 
+	(|ncParseFromString|): Likewise.
+	(|ncINTERPFILE|): Likewise.
+	(|ncGetFunction|): Likewise.
+	(|ncSetCurrentLine|): Likewise.
+	(|applyInPackage|): Likewise.
+	(|clearMacroTable|): Likewise.
+	(|getParserMacros|): Likewise.
+	(|displayParserMacro|): Likewise.
+	(|intloopInclude|): Likewise.
+	(|ncloopInclude|): Likewise.
+	Remove file.
+
+2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* patches.lisp.pamphlet (reset-highlight): Move to i-syscmd.boot.
+	(clear-highlight): Likewise.
+	(|spool|): Likewise.
+	* i-syscmd.boot.pamphlet (clearHighlight): Move from
+	patches.lisp.pamphlet. Rename from clear-highlight.  Implement as
+	Boot code.
+	(resetHighlight): Move from patches.lisp.pamphlet.  Rename from
+	clear-highlight. Implement as Boot code.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (boot-pkg.lisp): Remove rule.
+	(diagnostics.boot): Likewise.
+	(sys-globals.boot): Likewise.
+	(sys-constants.boot): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (getenviron): Remove.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (depsys_lisp_macro_sources): Remove
+	bootfuns.lisp from the list.
+	(OBJS): Likewise.
+	(AXIOMsys_noncompiled_lisp_sources): Likewise.
+	(${DEPSYS}): Don't depend on bootfuns.  Don't load it.
+	(bootfuns.$(FASLEXT)): Remove.
+	* Makefile.in: Regenerate.
+	* setq.lisp.pamphlet: Move to sys-globals.boot.
+	* bootfuns.lisp.pamphlet: Remove.
+
+2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (|$CategoryFrame|): Move to sys-globals.boot.
+	* setq.lisp.pamphlet (|$CategoryFrame|): Don't set here.
+
+2007-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($LISPLIB): Move to sys-globals.boot.
+	* setq.lisp.pamphlet ($LISPLIB): Don't set here.
+
+2007-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-syscmd.boot.pamphlet ($reportCompilation): Don't define here.
+
+	* bootfuns.lisp.pamphlet (|$PrintOnly|): Move to sys-globals.boot.
+	(|$QuickCode|): Likewise.
+	(|$QuickLet|): Likewise.
+	(|$reportBottomUpFlag|): Likewise.
+	(|$reportFlag|): Likewise.
+	(|$returnMode|): Likewise.
+	(|$SetFunctions|): Likewise.
+	(|$slamFlag|): Likewise.
+	(|$sourceFileTypes|): Likewise.
+	(|$printLoadMsgs|): Likewise.
+	(|$reportCompilation|): Likewise.
+	(|$reportCoerceIfTrue|): Move to setvart.boot.pamphlet.
+	(|$SystemSynonyms|): Remove.
+	(|$QuietIfNil|): Remove.
+	(|$readingFile|): Likewise.
+	(|$reportCoerce|): Likewise.
+	(|$reportCompilation|): Likewise.
+	(|$reportSpadTrace|): Likewise.
+	(|$resolveFlag|): Likewise.
+	(|$scanModeFlag|): Likewise.
+	(|OptionList|): Likewise.
+	(def-boot-var): Likewise.
+	* setq.lisp.pamphlet (|$QuickCode|): Don't set here.
+	(|$QuickLet|): Likewise.
+	(|$reportCoerce|): Likewise.
+	* bookvol5.pamphlet (restart): Don't $printLodMsgs here.
+
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($TOP_LEVEL): Move to sys-globals.boot.
+	($TOKSTACK): Likewise.
+	($function): Likewise.
+	($FUNNAME): Likewise.
+	($FunName_Tail): Likewise.
+	($lastprefix): Likewise.
+	($linestack): Likewise.
+	($maxlinenumber): Likewise.
+	($OLDLINE): Likewise.
+	($SPAD): Likewise.
+	($delay): Move to debug.lisp.pamphlet.
+	($LINENUMBER): Likewise.
+	($Directory): Remove.
+	($top_stack): Remove.
+	($DISPLAY): Likewise.
+	(|$gauss01|): Likewise.
+	($NBOOT): Likewise.
+	($NEWLINSTACK): Likewise.
+	($num_of_meta_errors): Move to metalex.lisp.pamphlet.
+	* setq.lisp.pamphlet ($TOP_LEVEL): Don't set here.
+	($DISPLAY): Likewise.
+	($FUNNAME): Likewise.
+	($FUNNAME_TAIL): Likewise.
+	(|$gauss01|): Likewise.
+	($LASTPREFIX): Likewise.
+	($NBOOT): Likewise.
+	($OLDLINE): Likewise.
+	* spad.lisp.pamphlet ($linestack): Likewise.
+	($maxlinenumber): Likewise.
+	(|New,ENTRY,1|): Don't bind here.
+
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot.pamphlet (tc): Don't set $tripleCache.
+	* define.boot.pamphlet (compDefine): Likewise.
+	* wi1.boot.pamphlet (compDefine): Likewise.
+	* c-util.boot.pamphlet (displayComp): Likewise.
+	* spad.lisp.pamphlet (/TRANSPAD): Likewise.
+	* bootfuns.lisp.pamphlet (|$useDCQnotLET|): Move to
+	sys-globals.boot. 
+	(|$updateCatTableIfTrue|): Likewise.
+	(|$updateIfTrue|): Remove.
+	(|$streamCount|): Likewise.
+	(|$tripleCache|): Remove.
+	(|$TranslateOnly|): Likewise.
+	(|$topOp|): Likewise.
+	(|$streamIndexing|): Remove.
+	(|$streamAlist|): Likewise.
+	* setq.lisp.pamphlet (|$useDCQnotLET|): Don't set here.
+	($streamAlist): Likewise.
+	(|$updateCatTableIfTrue|): Likewise.
+	(|$streamIndexing|): Likewise.
+	(|$streamCount|): Likewise.
+
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($VariableCount): Move from
+	bootfuns.lisp.pamphlet.
+	($suffix): Likewise.
+	($useBFasDefault): Likewise.
+	($semanticErrorStack): Likewise.
+	($tracedModemap): Likewise.
+	($tracedSpadModemap): Likewise.
+	($traceletFunctions): Likewise.
+	* bootfuns.lisp.pamphlet (|$VariableCount|): Move to
+	sys-globals.boot. 
+	(|$suffix|): Likewise.
+	(|$useBFasDefault|): Likewise.
+	(|$semanticErrorStack|): Likewise.
+	(|$tracedModemap|): Likewise.
+	(|$tracedSpadModemap|): Likewise.
+	(|$traceletFunctions|): Likewise.
+	(|$TraceFlag|): Move to debug.lisp.pamphlet.
+	(|$traceDomains|): Likewise.
+	(|$systemLastChanged|): Remove.
+	(|$systemCreation|): Likewise.
+	(|$StreamIndex|): Remove.
+	(|$spadSystemDisks|): Likewise.
+	(|$spadOpList|): Likewise.
+	(|$traceNoisely|): Remove from here.
+	(|$timerOn|): Move to debug.lisp.pamphlet.
+	* setq.lisp.pamphlet (|$systemLastChanged|): Remove.
+	(|$systemCreation|): Likewise.
+	* setq.lisp.pamphlet (|$useBFasDefault|): Don't set here.
+	* setq.lisp.pamphlet (|$reportExitModeStack|): Likewise.
+	* setq.lisp.pamphlet (|$spadSystemDisks|): Likewise.
+	* spad.lisp.pamphlet (|$useBFasDefault|): Likewise.
+
+2007-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($prefix): Move from bootfuns.lisp.pamphlet.
+	($PrettyPrint): Likewise.
+	($previousTime): Likewise.
+
+	* bootfuns.lisp.pamphlet (|$prefix|): Move to sys-globals.boot.
+	(|$PrettyPrint|): Likewise.
+	(|$previousTime|): Likewise.
+	(|$postStack|): Move to postpar.boot.pamphlet.
+	(|$OneCoef|): Remove.
+	(|$operationNameList|): Likewise.
+	(|$opFilter|): Likewise.
+	(|$optionAlist|): Likewise.
+	(|$OutsideStringIfTrue|): Likewise.
+	(|$PolyMode|): Likewise.
+	(|$Polvar|): Likewise.
+	(|$optimizableDomainNames|): Likewise.
+	(|$PrintBox|): Likewise.
+	(|$PrintCompilerMessagesIfTrue|): Likewise.
+	(|$printConStats|): Likewise.
+	
+	* setq.lisp.pamphlet (|$opFilter|): Remove.
+	(|$OneCoef|): Likewise.
+	(|$Polvar|): Likewise.
+	(|$PrintCompilerMessagesIfTrue|): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind |$postStack|.  Set it
+	to nil.
+	
+	* debug.lisp.pamphlet (|$oldTime|): Move from bootfuns.lisp.pamphlet.
+
+	* bootfuns.lisp.pamphlet (|$oldTime|): Move to debug.lisp.pamphlet.
+	* setvars.boot.pamphlet (resetWorkspaceVariables): Don't set
+	$operationNameList anymore.
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $PolyMode anymore.
+
+2007-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($leaveLevelStack): Move from
+	bootfuns.lisp.pamphlet. 
+	($letAssoc): Likewise.
+	($libFile): Likewise.
+	($lisplibForm): Likewise.
+	($lisplibKind): Likewise.
+	($lisplibModemapAlist): Likewise.
+	($lisplibModemap): Likewise.
+	($lisplibOperationAlist): Likewise.
+	($lisplibSignatureAlist): Likewise.
+	($lisplibVariableAlist): Likewise.
+	($mapSubNameAlist): Likewise.
+	($mathTrace): Lilkewise.
+	($mathTraceList): Likewise.
+
+	* sys-constants.boot ($exitMode): Likewise.
+	($leaveMode): Likewise.
+	($noEnv): Likewise.
+
+	* trace.boot.pamphlet ($lastUntraced): Likewise.
+
+	* spad.lisp.pamphlet (|$leaveMode|): Don't bind here.
+
+	* setq.lisp.pamphlet (|$Lisp|): Remove.
+	(|$noEnv|): Don't set here.
+	(|$lastUntraced|): Likewise.
+	(|$mostRecentOpAlist|): Likewise.
+	(|$mathTraceList|): Likewise.
+	(|$letAssoc|): Likewise.
+
+	* bootfuns.lisp.pamphlet (|$noEnv|): Move to sys-constants.boot.
+	(|$leaveMode|): Likewise.
+	(|$lastUntraced|): Move to trace.boot.pamphlet.
+	(|$leaveLevelStack|): Move to sys-globals.boot.
+	(|$letAssoc|): Likewise.
+	(|$libFile|): Likewise.
+	(|$lisplibDomainDependents|): Likewise.
+	(|$lisplibForm|): Likewise.
+	(|$lisplibKind|): Likewise.
+	(|$lisplibModemapAlist|): Likewise.
+	(|$lisplibModemap|): Likewise.
+	(|$lisplibOperationAlist|): Likewise.
+	(|$lisplibSignatureAlist|): Likewise.
+	(|$lisplibVariableAlist|): Likewise.
+	(|$mapSubNameAlist|): Likewise.
+	(|$mathTrace|): Likewise.
+	(|$mathTraceList|): Likewise.
+
+	(|$Lisp|): Remove.
+	(|$lisplibDependentCategories|): Likewise.
+	(|$lisp2lispRenameAssoc|): Likewise.
+	(|$ModemapFrame|): Likewise.
+	(|$mostRecentOpAlist|): Likewise.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (|$forceDatabaseUpdate|): Move to
+	sys-globals.boot.
+	(|$form|): Likewise.
+	(|$fromSpadTrace|): Likewise
+	(|$genSDVar|): Likewise.
+	(|$Index|): Likewise.
+	(|$inLispVM|): Likewise.
+	(|$insideCapsuleFunctionIfTrue|): Likewise.
+	(|$insideCategoryIfTrue|): Likewise.
+	(|$insideCoerceInteractiveHardIfTrue|): Likewise.
+	(|$insideCompTypeOf|): Likewise.
+	(|$insideConstructIfTrue|): Likewise.
+	(|$insideExpressionIfTrue|): Likewise.
+	(|$insideFunctorIfTrue|): Likewise.
+	(|$insideWhereIfTrue|): Likewise.
+	(|$instantRecord|): Likewise.
+	(|$InteractiveFrame|): Likewise.
+	(|$InteractiveMode|): Likewise.
+	(|$InteractiveTimingStatsIfTrue|): Likewise.
+
+	(|$genFVar|): Remove.
+	(|$ignoreCommentsIfTrue|): Likewise.
+	(|$InteractiveModemapFrame|): Likewise.
+
+	* setq.lisp.pamphlet (|$inLispVM|): Remove.
+	(|$InteractiveMode|): Likewise.
+	(|$forceDatabaseUpdate|): Likewise.
+	(|$InteractiveFrame|): Likewise.
+	(|$form|): Likewise.
+	(|$Index|): Likewise.
+
+	* sys-constants.boot ($ExitMode): Define.
+	($exitMode): Move from bootfuns.lisp.pamphlet.
+
+	* sys-globals.boot ($form): Likewise.
+	($fromSpadTrace): Likewise.
+	($genSDVar): Likewise.
+	($Index): Likewise.
+	($inLispVM): Likewise.
+	($insideCapsuleFunctionIfTrue): Likewise.
+	($insideCategoryIfTrue): Likewise.
+	($insideCoerceInteractiveHardIfTrue): Likewise.
+	($insideConstructIfTrue): Likewise.
+	($insideExpressionIfTrue): Likewise.
+	($insideFunctorIfTrue): Likewise.
+	($insideWhereIfTrue): Likewise.
+	($instantRecord): Likewise.
+	($InteractiveFrame): Likewise.
+	($(InteractiveMode): Likewise.
+	($InteractiveTimingStatsIftrue): Likewise.
+	($forceDatabaseUpdate): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $exitMode here.
+
+	* bootfuns.lisp.pamphlet (|$exitMode|): Move to sys-constants.boot
+
+	* wi2.boot.pamphlet (compDefineFunctor1): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Likewise.
+
+	* define.boot.pamphlet (compDefineFunctor1): Remove unused
+	$genFVar. 
+
+	* varini.boot.pamphlet ($ExitMode): Don't double define here.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($IOindex): Move from bootfuns.lisp.pamphlet.
+	($inputPromptType): Likewise.
+	($whereList): Likewise.
+	($warningStack): Likewise.
+
+	* patches.lisp.pamphlet (|$inputPromptType|): Don't set here.
+
+	* bootfuns.lisp.pamphlet ($Type): Remove.
+	(|$warningStack|): Move to sys-globals.boot.
+	(|$whereList|): Likewise.
+	(|$inputPromptType|): Likewise.
+	(|$IOindex|): Likewise.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<apply.o (AUTO from OUT)>>): Remove.
+	(<<bootlex.o (AUTO from OUT)>>): Likewise.
+	(<<def.o (AUTO from OUT)>>): Likewise.
+	(<<fnewmeta.o (AUTO from OUT)>>): Likewise.
+	(<<metalex.o (AUTO from OUT)>>): Likewise.
+	(<<nspadaux.o (AUTO from OUT)>>): Likewise.
+	(<<parsing.o (AUTO from OUT)>>): Likewise.
+	(<<postprop.o (AUTO from OUT)>>): Likewise.
+	(<<preparse.o (AUTO from OUT)>>): Likewise.
+	(<<c-util.o (AUTO from OUT)>>): Likewise.
+	(<<nag-c02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-c05.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d03.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e04.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f04.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f07.o (AUTO from OUT)>>): Likewise.
+	(<<nag-s.o (AUTO from OUT)>>): Likewise.
+	(<<category.o (AUTO from OUT)>>): Likewise.
+	(<<c-doc.o (AUTO from OUT)>>): Likewise.
+	(<<compiler.o (AUTO from OUT)>>): Likewise.
+	(<<profile.o (AUTO from OUT)>>): Likewise.
+	(<<define.o (AUTO from OUT)>>): Likewise.
+	(<<functor.o (AUTO from OUT)>>): Likewise.
+	(<<info.o (AUTO from OUT)>>): Likewise.
+	(<<iterator.o (AUTO from OUT)>>): Likewise.
+	(<<modemap.o (AUTO from OUT)>>): Likewise.
+	(<<nruncomp.o (AUTO from OUT)>>): Likewise.
+	(<<package.o (AUTO from OUT)>>): Likewise.
+	(<<parse.o (AUTO from OUT)>>): Likewise.
+	(<<postpar.o (AUTO from OUT)>>): Likewise.
+	(<<bc-matrix.o (AUTO from OUT)>>): Likewise.
+	(<<bc-misc.o (AUTO from OUT)>>): Likewise.
+	(<<bc-solve.o (AUTO from OUT)>>): Likewise.
+	(<<bc-util.o (AUTO from OUT)>>): Likewise.
+	(<<ht-util.o (AUTO from OUT)>>): Likewise.
+	(<<htsetvar.o (AUTO from OUT)>>): Likewise.
+	(<<ht-root.o (AUTO from OUT)>>): Likewise.
+	(<<htcheck.o (AUTO from OUT)>>): Likewise.
+	(<<xruncomp.o (AUTO from OUT)>>): Likewise.
+	(<<ax.o (AUTO from OUT)>>): Likewise.
+	(<<br-con.o (AUTO from OUT)>>): Likewise.
+	(<<br-search.o (AUTO from OUT)>>): Likewise.
+	(<<br-op1.o (AUTO from OUT)>>): Likewise.
+	(<<br-op2.o (AUTO from OUT)>>): Likewise.
+	(<<br-data.o (AUTO from OUT)>>): Likewise.
+	(<<br-util.o (AUTO from OUT)>>): Likewise.
+	(<<br-saturn.o (AUTO from OUT)>>): Likewise.
+	(<<topics.o (AUTO from OUT)>>): Likewise.
+	(<<br-prof.o (AUTO from OUT)>>): Likewise.
+	(<<showimp.o (AUTO from OUT)>>): Likewise.
+	(<<wi1.o (AUTO from OUT)>>): Likewise.
+	(<<wi2.o (AUTO from OUT)>>): Likewise.
+	(<<pspad1.o (AUTO from OUT)>>): Likewise.
+	(<<pspad2.o (AUTO from OUT)>>): Likewise.
+	(<<mark.o (AUTO from OUT)>>): Likewise.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (|$constructorsNotInDatabase|): Remove.
+	(|$DomainFrame|): Remove.
+	(|$eltIfNil|): Remove.
+	(|$compileMapFlag|): Remove.
+	(|$evalDomain|): Don't set here.
+	(|$false|): Move to sys-constants.boot.
+	(|$domainTraceNameAssoc|): Move to sys-globals.boot. 
+	(|$evalDomain|): Move to sys-globals.boot.
+	(|$exitModeStack|): Move to sys-globals.boot
+	* pspad1.boot.pamphlet (lisp2Boot): Don't declare $eltIfNil anymore.
+	* setvars.boot.pamphlet (resetWorkspaceVariables): Don't set
+	anymore. 
+	* setq.lisp.pamphlet (|$domainTraceNameAssoc|): Don't set here.
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind |$DomainFrame| anymore.
+	(S-PROCESS): Set $exitModeStack to nil.
+	(|$false|): Don't set here.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ccl-depsys.lsp.pamphlet: Remove.
+
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* setvart.boot.pamphlet (quit): Set value to unprotected,
+	as documented.
+
+2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* vmlisp.lisp.pamphlet (getl): Rewrite to accept list of symbols
+	of lists too.
+
+2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (|$algebraList|): Remove unused variable.
+	(|$xyStack|): Likewise.
+	(|$xyMin|): Likewise.
+	(|$xyMax|): Likewise.
+	(|$xyInitial|): Likewise.
+	(|$xyCurrent|): Likewise.
+	(|$xeditIsConsole|): Likewise.
+	(|$xCount|): Likewise.
+	(|$BasicDomains|): Likewise.
+	(|$FontTable|): Likewise.
+	(|$CommonDomains|): Likewise.
+	(|$PolyDomains|): Likewise.
+	(|$leftPren|): Likewise.
+	(|$rightPren|): Likewise.
+	(|$tempCategoryTable|): Likewise.
+	(|$domainsWithUnderDomains|): Likewise.
+	(|$hasCategoryTable|): Likewise.
+	(|$hasYield|): Likewise.
+	(|$LastCxArg|): Likewise.
+	(|$NETail|): Likewise.
+	(|$polyDefaultAssoc|): Likewise.
+	(|$brightenCommentsFlag|): Likewise.
+	(|$brightenCommentsIfTrue|): Likewise.
+	(|$UserSynonyms|): Likewise.
+	(|$report3|): Likewise.
+	(|$croakIfTrue|): Likewise.
+	* setq.lisp.pamphlet (|$xeditIsConsole|): Likewise.
+	(|$BasicDomains|): Likewise.
+	(|$FontTable|): Likewise.
+	(|$leftPren|): Likewise.
+	(|$rightPren|): Likewise.
+	(|$NETail|): Likewise.
+	(|$croakIfTrue|): Likewise.
+
+2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($bootStrapMode): Move to sys-globals.boot.
+	($BreakMode): Likewise.
+	($cacheAlist): Likewise.
+	($cacheCount): Likewise.
+	($clamList): Likewise.
+	($compCount): Likewise.
+	($compUniquelyIfTrue): Likewise.
+	($ConstructorCache): Likewise.
+	($createUpdateFiles): Likewise.
+	($currentFunction): Likewise.
+	($currentLine): Likewise.
+	* setq.lisp.pamphlet: Merge the definitions of the above mentioned
+	variables into sys-globals.boot.
+
+	* Makefile.pamphlet (sys-globals.$(FASLEXT)): Require
+	hash.$(FASLEXT). 
+	* Makefile.in: Regenerate.
+
+2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($SPAD_ERRORS): Don't define here.
+
+2007-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-error.boot.pamphlet: Import "diagnostics.
+	(errorSupervisor1): Call BUMPERRORCOUNT, not BUMPCOMPERRORCOUNT.
+	The latter no longer exists.
+	* msgdb.boot.pamphlet (throwKeyedErrorMsg): Likewise.
+
+	* Makefile.pamphlet (${DEPSYS}): Depend also on
+	sys-constant.$(FASLEXT), sys-globals.$(FASLEXT), and
+	diagnostics.$(FASLEXT). 
+	(bootfuns.$(FASLEXT)): Likewise.
+	(diagnostics.boot): New rule.
+	(sys-globals.boot): Likewise.
+	(sys-constants.boot): Likewise.
+	* Makefile.in: Regenerate.
+
+	* diagnostics.boot: New.
+	(BUMPERRORCOUNT): Move from bootlex.lisp.pamphlet.  Rewrite as
+	Boot code.
+
+	* sys-constants.boot: New.
+	* sys-globals.boot: Likewise.
+
+	* bootlex.lisp.pamphlet (BUMPERRORCOUNT): Move to diagnostics.boot.
+	* varini.boot.pamphlet ($NoValueMode): Don't duplicate define.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $LocalFrame here.
+
+	* patches.lisp.pamphlet: Tidy.
+
+	* nag-f01.boot.pamphlet (f01mafSolve): Use $EmptyMode to refer to
+	the wildcar type.
+	(f01brfSolve): Likewise.
+
+
+	* setq.lisp.pamphlet: Move variables already defined in
+	bootfuns.lisp.pamphlet to sys-contants, and merge initial values.
+
+	($SPAD_ERRORS): Move to sys-globals.boot.
+
+	* bootfuns.lisp.pamphlet: Now import both "sys-constants" and
+	"sys-globals".
+	(|$timerTicksPerSecond|): Move to sys-constants.boot.
+	(|$quadSymbol|): Likewise.
+	($escapeString): Likewise.
+	($boxString): Likewise.
+	($boldString): Likewise.
+	($normalString): Likewise.
+	($reverseVideoString): Likewise.
+	($underlineString): Likewise.
+	($COMPILE): Likewise.
+	($BasicPredicates): Likewise.
+	($BFTag): Likewise.
+	($BigFloat): Likewise.
+	($Boolean): Likewise.
+	($Category): Likewise.
+	($CategoryNames): Likewise.
+	($Domain): Likewise.
+	($DomainNames): Likewise.
+	($DomainsInScope): Likewise.
+	($DoubleQuote): Likewise.
+	($DummyFunctorNames): Likewise.
+	($EmptyEnvironment): Likewise.
+	($EmptyList): Likewise.
+	($EmptyMode): Likewise.
+	($EmptyString): Likewise.
+	($EmptyVector): Likewise.
+	($Expression): Likewise.
+	($Exit): Likewise.
+	($failure): Likewise.
+	($Float): Likewise.
+	($FormalMapVariableList): Likewise.
+	($ConstructorNames): Likewise.
+	($InitialDomainsInScope): Likewise.
+	($InitialModemapFrame): Likewise.
+	($Integer): Likewise.
+	($LocalFrame): Likewise.
+	($NegativeInteger): Likewise.
+	($NonNegativeInteger): Likewise.
+	($NonPositiveInteger): Likewise.
+	($NonMentionableDomainNames): Likewise.
+	($noParseCommands): Likewise.
+	($NoValueMode): Likewise.
+	($NoValue): Likewise.
+	($Mode): Likewise.
+	($ModeVariableList): Likewise.
+	($One): Likewise.
+	($PatternVariableList): Likewise.
+	($PositiveInteger): Likewise.
+	($PrimitiveDomainNames): Likewise.
+	($RationalNumber): Likewise.
+	($SideEffectFreeFunctionList): Likewise.
+	($SmallInteger): Likewise.
+	($SpecialDomainNames): Likewise.
+	($StringCategory): Likewise.
+	($String): Likewise.
+	($Symbol): Likewise.
+	($systemCommands): Likewise.
+	($ThrowAwayMode): Likewise.
+	($tokenCommands): Likewise.
+	($true): Likeiwse.
+	($underDomainAlist): Likewise.
+	($Void): Likewise.
+	($Zero): Likewise.
+	(|$DomainVariableList|): Likewise.
+	
+	(|$quadSym|): Remove.
+	($BigFloatOpt): Likewise.
+	($BooleanOpt): Likewise.
+	($EM): Likewise.
+	($ExpressionOpt): Likewise.
+	($FloatOpt): Likewise.
+	($FormalMapVariableList2): Likewise.
+	($IntegerOpt): Likewise.
+	($NegativeIntegerOpt): Likewise.
+	($NonNegativeIntegerOpt): Likewise.
+	($NonPositiveIntegerOpt): Likewise.
+	($PositiveIntegerOpt): Likewise.
+	($RationalNumberOpt): Likewise.
+	($SmallIntegerOpt): Likewise.
+	($StringOpt): Likewise.
+	($SymbolOpt): Likewise.
+
+	* setq.lisp.pamphlet (|$timerTicksPerSecond|): Remove.
+	(|$quadSymbol|): Likewise.
+	($escapeString): Likewise.
+	($boxString): Likewise.
+	($boldString): Likewise.
+	($normalString): Likewise.
+	($reverseVideoString): Likewise.
+	($underlineString): Likewise.
+	($COMPILE): Likewise.
+	($BasicPredicates): Likewise.
+	($BFTag): Likewise.
+	($BigFloat): Likewise.
+	($Boolean): Likewise.
+	($Category): Likewise.
+	($CategoryNames): Likewise.
+	($Domain): Likewise.
+	($DomainNames): Likewise.
+	($DomainsInScope): Likewise.
+	($DoubleQuote): Likewise.
+	($DummyFunctorNames): Likewise.
+	($EmptyEnvironment): Likewise.
+	($EmptyList): Likewise.
+	($EmptyMode): Likewise.
+	($EmptyString): Likewise.
+	($EmptyVector): Likewise.
+	($Expression): Likewise.
+	($Exit): Likewise.
+	($failure): Likewise.
+	($Float): Likewise.
+	($FormalMapVariableList): Likewise.
+	($ConstructorNames): Likewise.
+	($InitialDomainsInScope): Likewise.
+	($InitialModemapFrame): Likewise.
+	($Integer): Likewise.
+	($LocalFrame): Likewise.
+	($NegativeInteger): Likewise.
+	($NonNegativeInteger): Likewise.
+	($NonPositiveInteger): Likewise.
+	($NonMentionableDomainNames): Likewise.
+	($noParseCommands): Likewise.
+	($NoValueMode): Likewise.
+	($NoValue): Likewise.
+	($Mode): Likewise.
+	($ModeVariableList): Likewise.
+	($One): Likewise.
+	($PatternVariableList): Likewise.
+	($PositiveInteger): Likewise.
+	($PrimitiveDomainNames): Likewise.
+	($RationalNumber): Likewise.
+	($SideEffectFreeFunctionList): Likewise.
+	($SmallInteger): Likewise.
+	($SpecialDomainNames): Likewise.
+	($StringCategory): Likewise.
+	($String): Likewise.
+	($Symbol): Likewise.
+	($systemCommands): Likewise.
+	($ThrowAwayMode): Likewise.
+	($tokenCommands): Likewise.
+	($true): Likeiwse.
+	($underDomainAlist): Likewise.
+	($Void): Likewise.
+	($Zero): Likewise.
+	(|$DomainVariableList|): Likewise.
+	
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot-pkg.lisp: New.
+
+	* Makefile.pamphlet (${DEPSYS}): Depend on it
+	(parsing.$(FASLEXT)): Likewise.
+	(bookvol5.$(FASLEXT)): Likewise.
+	(nocompil.$(FASLEXT)): Likewise.
+	(bootfuns.$(FASLEXT)): Likewise.
+	(boot-pkg.$(FASLEXT)): New rule.
+	(boot-pkg.lisp): New rule; work around GCL+VPATH voodoo.
+	(VPATH): Clear.
+	* Makefile.in: Regenerate.
+
+	* bootfuns.lisp.pamphlet: Don't define package "BOOT" here.
+	Import "boot-pkg".
+	(|printLoadMessages|): Move to setvart.boot.pamphlet.
+	Move special functions to boot-pkg.lisp.
+	Move get-current-directory to daase.lisp.pamphlet.
+
+	* setvart.boot.pamphlet (printLoadMessages): Move from
+	bootfuns.lisp.pamphlet. Write as Boot code.
+
+	* daase.lisp.pamphlet (get-current-directory): Move from 
+        bootfuns.lisp.pamphlet
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-syscmd.boot.pamphlet (SPADRWRITE): Don't confuse Boot comments
+	with Lisp comments.
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (def-boot-fun): Remove.
+	(|initializeSetVariables|): Likewise.
+	(|updateSourceFiles|): Likewise.
+	(|bootUnionPrint|): Likewise.
+	(|break|): Likewise.
+	(|breaklet|): Likewise.
+	(BUMPCOMPERRORCOUNT): Likewise.
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-util.boot.pamphlet (addContour): Remove trailing semicolon.
+
+2007-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootlex.lisp.pamphlet (|boot-LEXPR|): Remove
+
+	* spad.lisp.pamphlet (BOOT-LEXPR): Remove.
+	(NBOOT-LEXPR): Likewise.
+	(New-LEXPR): Likewise.
+	(New-LEXPR1): Likewise.
+	(New-LEXPR-Interactive): Likewise.
+	(|getTranslation|): Likewise.
+	(|New-LEXPR|): Likewise.
+	(|boot2Lisp|): Likewise.
+	(|boot2LispError|): Likewise.
+	(|New,ENTRY|): Likewise.
+	(new): Likewise.
+	(newpo): Likewise.
+	(|New,ENTRY,SYS|): Likewise.
+	(|New,ENTRY1|): Likewise.
+	(/cx): Likewise.
+	(/foobar): Likewise.
+	(|/cxd|): Likewise.
+	(|/rx|): Likewise.
+	(|/ry|): Likewise.
+	(|/tb|): Likewise.
+	(|$lisp2lispRenameAssoc|): Likewise..
+	(|$spadOpList|): Likewise.
+	(SPAD-MDTR-1): Likewise.
+	(SPAD-MDTR-2): Likewise.
+	(foobar): Likewise.
+
+	* metalex.lisp.pamphlet (in-meta): Remove.
+	(newrule): Likewise.
+	(meta): Likrwise.
+
+	* spad.lisp.pamphlet (/TRANSMETA): Remove.
+	(/TRANSBOOT): Likewise.
+	(/TRANSNBOOT): Likewise.
+
+	* debug.lisp.pamphlet (META): Don't set property.
+
+	* Makefile.pamphlet (depsys_lisp_compiled_sources): Don't include
+	metameta.lisp
+	(OPOBJS): Likewise.
+	(depsys_lisp_sources): Likewise.
+	(depsys_objects): Likewise.
+	(${DEPSYS}): Don't depend on it.  Don't load it.
+	(${AUTO}/metameta.$(FASLEXT)): Remove.
+
+	* metameta.lisp.pamphlet: Remove.
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* msg.boot.pamphlet (putDatabaseStuff): Fix thinko.
+	(setMsgCatlessAttr): Quote catless.
+	(posPointers): Fix thinko.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (define-function): Define in all situations.
+	* parsing.lisp.pamphlet: Import "bootfuns".
+	* util.lisp.pamphlet: Import "vmlisp" and "parsing".
+	* bootfuns.lisp.pamphlet: Add GCL-specific bug workaround.
+	* Makefile.pamphlet (${DEPSYS}): Load "parsing" before "util".
+	(util.$(FASLEXT)): Has parsing.$(FASLEXT) as prerequisite.
+	(parsing.$(FASLEXT)): New rule.
+	* Makefile.in: Regenerate.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ggreater.lisp.pamphlet (VGREATERP): Initialize I, L1 and L2
+	with appropriate values.
+	(LEXVGREATERP): Likewise.
+
+2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet:  Use ANSI eval-when situation syntax for
+	Common Lisps.  
+	(QUOTIENT): Define unconditionaly.  Remove
+	reference to Lisp package.
+	(rplacstr): Remove CCL-dependent code.  Remove reference to Lisp
+	package. 
+	(EBCDIC): Use code-char, not int-char.
+
+2007-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* union.lisp.pamphlet: Import vmlisp.
+	* ggreater.lisp.pamphlet ("vmlisp"): Import vmlisp.
+	* Makefile.pamphlet 
+	(DEP): Remove ggreater.lisp, hash.lisp, and union.lisp.
+	(ggreater.$(FASLEXT)): New rule.
+	(union.$(FASLEXT)): Likewise.
+	(${DEPSYS}): Load compiled form of ggreater and union.
+	* Makefile.in: Regenerate.
+
+2007-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet: Import vmlisp.
+	* Makefile.pamphlet (depsys_lisp_noncompiled_sources): Remove.
+	(${DEPSYS}): Load compiled form of util.
+	(util.$(FASLEXT)): New rule.
+	* Makefile.in: Regenerate.
+	
+2007-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (spad, runspad, ncToplevel, ncIntLoop,
+	intloop, SpadInterpretStream, intloopReadConsole): Move original
+	Boot code into int-top.boot.pamphlet.  Delete translated Lisp
+	code.
+	(makeInitialModemapFrame,$historyFileType, $oldHistoryFileName,
+	$internalHistoryTable, $useInternalHistoryTable, makeHistFileName,
+	oldHistFileName, histFileName, histInputFileName, initHist,
+	initHistList, history, historySpad2Cmd, setHistoryCore,
+	writeInputLines, resetInCoreHist, changeHistListLen, updateHist,
+	updateInCoreHist, putHist, recordNewValue, recordNewValue0,
+	recordOldValue, recordOldValue0, undoInCore, undoChanges,
+	undoFromFile, saveHistory, restoreHistory, showHistory,
+	setIOIndex, showInput, showInOut, fetchOutput, readHifi,
+	writeHifi, disableHist, writeHistModesAndValues, SPADWRITE0,
+	SPADWRITE, SPADREAD, unwritable? writifyComplain, safeWritify,
+	writify, spadClosure?, dewritify, ScanOrPairVec, histFileErase,
+	frameName, frameNames, frameEnvironment, emptyInterpreterFrame,
+	createCurrentInterpreterFrame, updateFromCurrentInterpreterFrame,
+	findFrameInRing, updateCurrentInterpreterFrame,
+	initializeInterpreterFrame, nextInterpreterFrame,
+	changeToNamedInterpreterFrame, previousInterpreterFrame,
+	addNewInterpreterFrame, closeInterpreterFrame, displayFrameNames,
+	importFromFrame, frame, frameSpad2Cmd, $undoFlag, $frameRecord,
+	$previousBindings, undo, recordFrame, diffAlist, reportUndo,
+	clearFrame, undoCount, undoSteps, undoSingleStep,
+	undoLocalModemapHack, removeUndoLines): Move original Boot code
+	back to i-syscmd.boot.pamphlet.  Delete translated Lisp code. 
+	(charDigitVal, gensymInt): Move original Boot code to
+	g-util.boot.pamphlet. 
+
+	* g-util.boot.pamphlet (charDigitVal, gensymInt): Move Boot code
+	from bookvol5.pamphlet.
+
+	* i-syscmd.boot.pamphlet (makeInitialModemapFrame,
+	$historyFileType, $oldHistoryFileName, 
+	$internalHistoryTable, $useInternalHistoryTable, makeHistFileName,
+	oldHistFileName, histFileName, histInputFileName, initHist,
+	initHistList, history, historySpad2Cmd, setHistoryCore,
+	writeInputLines, resetInCoreHist, changeHistListLen, updateHist,
+	updateInCoreHist, putHist, recordNewValue, recordNewValue0,
+	recordOldValue, recordOldValue0, undoInCore, undoChanges,
+	undoFromFile, saveHistory, restoreHistory, showHistory,
+	setIOIndex, showInput, showInOut, fetchOutput, readHifi,
+	writeHifi, disableHist, writeHistModesAndValues, SPADWRITE0,
+	SPADWRITE, SPADREAD, unwritable? writifyComplain, safeWritify,
+	writify, spadClosure?, dewritify, ScanOrPairVec, histFileErase,
+	frameName, frameNames, frameEnvironment, emptyInterpreterFrame,
+	createCurrentInterpreterFrame, updateFromCurrentInterpreterFrame,
+	findFrameInRing, updateCurrentInterpreterFrame,
+	initializeInterpreterFrame, nextInterpreterFrame,
+	changeToNamedInterpreterFrame, previousInterpreterFrame,
+	addNewInterpreterFrame, closeInterpreterFrame, displayFrameNames,
+	importFromFrame, frame, frameSpad2Cmd, $undoFlag, $frameRecord,
+	$previousBindings, undo, recordFrame, diffAlist, reportUndo,
+	clearFrame, undoCount, undoSteps, undoSingleStep,
+	undoLocalModemapHack, removeUndoLines): Move Boot code from
+	bookvol5.pamphlet. 
+
+	* Makefile.pamphlet (${DEPSYS}): Load compiled form of bookvol5.
+	(bookvol5.$(FASLEXT)): New.
+	* Makefile.in: Regenerate.
+
+2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Load compiled form of nocompil.
+	* Makefile.in: Regenerate.
+
+2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Replace setq.lisp and property.lisp
+	with their compiled forms, thus making all codes in interpsys and
+	AXIOMsys compiled.
+	(interpsys_modules, IN_modules, AS_modules): New.
+	(makeint.lisp): Use them.
+	* Makefile.in: Regenerate.
+
+	* util.lisp.pamphlet (build-interpsys): Use importModule instead
+	of pain LOAD.
+
+2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet: Stop hijacking BOOTTRAN::BOOTTOCL.
+	(OLD-BOOT::BOOT): Rename from BOOTTRAN::BOOTTOCL.  Unconditionally
+	define. 
+	(build-depsys): Don't push :OLDBOOT.  It is no longer needed.
+	(build-interpsys): Likewise.
+	* Makefile.pamphlet: Rename BOOTTRAN::BOOTTOCL to OLD-BOOT::BOOT
+	throughout. 
+	(${DEPSYS}): Don't push :OLDBOOT.
+	* Makefile.in: Regenerate.
+
+2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet ("VMLISP"): Use AxiomCore.
+	(EQUABLE): Defin in compile, load, and execution situations.
+	Needed to compile macro EQCAR.
+	* hash.lisp.pamphlet: Import "vmlisp".
+	* g-util.boot.pamphlet (AxiomCore::$sysScope): New.
+	* bootfuns.lisp.pamphlet ("BOOT"): Import "hash.  Use VMLISP and
+	AxiomCore.
+	* Makefile.pamphlet (BOOT_TO_LISP, COMPILE_LISP): Simplify.
+	(<<save depsys image>>): Now use --load-directory to resolve
+	dependencies.
+	(${DEPSYS}): Now depend on vmlisp.$(FASLEXT), hash.$(FASLEXT), and
+	bootfuns.$(FASLEXT).  Use them instead of source form.
+	(bootfuns.$(FASLEXT)): New rule.  Compile with $(BOOTSYS) instead
+	of $(DEPSYS).	
+	(hash.$(FASLEXT)): Likewise.
+	(vmlisp.$(FASLEXT)): Likewise.
+	(makeint.lisp): Use |importModule| instead of plain load.
+	(${SAVESYS}): Use --load-directory to resolve dependencies.
+	(${AXIOMSYS}): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-08-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Remove existing makedep.lisp.
+	(makeint.lisp): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hypertex.boot.pamphlet ($SendXEventToHyperTeX): Don't set
+	here.  It is a constant variable.
+
+	* Makefile.pamphlet (${SAVESYS}): Tidy.
+	(${AXIOMSYS}): Likewise.
+	(<<save depsys image>>): Likewise.
+	(${DEBUGSYS}): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (depsys_lisp_noncompiled_sources): Dont'
+	reference sys-pkg.lisp.
+	(PROCLAIMS): Remove.
+	(${DEPSYS}): Don't depend on sys-pkg.lisp.  Explicitly load
+	vmlisp.lisp, hash.lisp, and bootfuns.lisp.
+	(makeint.lisp): Don't depend on sys-pkg.lisp.
+	(DEP): Remove vmlisp.lisp, bootfuns.lisp, and hash.lisp.
+	(makeint.lisp): Explicitly load "vmlisp", "hash", and "bootfuns".
+	* Makefile.in: Regenerate.
+	* sys-pkg.lisp.pamphlet: Move BOOT package definition to
+	bootfuns.lisp.pamphlet.
+	Move VMLISP package definition to vmlisp.lisp.pamphlet.
+	Delete.
+	* bootfuns.lisp.pamphlet: Define package BOOT.
+	* vmlisp.lisp.pamphlet: Define package VMLISP.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet: Remove BOOT imports and exports.  Add
+	more VMLISP export. 
+	* nlib.lisp.pamphlet (directory?): Explicilty qualify directoryp
+	by BOOT.
+	* bookvol5.pamphlet (spad-save): Don't define in package "USER".
+	* Makefile.pamphlet (${AXIOMSYS}): User boot::spad-save, not
+	user::spad-save. 
+	(${DEBUGSYS}): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (<<Missing DFLOAT Transcendental
+	functions>>, <<manexp>>, <<acot>>, <<cot>>, <<getCD>>): Move
+	to... 
+	* bootfuns.lisp.pamphlet(<<Missing DFLOAT Transcendental
+	functions>>, <<manexp>>, <<acot>>, <<cot>>, <<getCD>>): ...here.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* unlisp.lisp.pamphlet (|ListMember?|): Move to...
+	* msg.boot.pamphlet (ListMember?): ...here.  Rewrite in Boot.
+	* vmlisp.lisp.pamphlet (|ListMember?|): Remove duplicate.
+	(|stringLE1|, |sortCarString|, |insertString|): Remove unused
+	functions.
+	(|AlistAssocQ|): Remove duplicate.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet ("FOAM", "FOAM-USER"): Move to ...
+	* foam_l.lisp.pamphlet ("FOAM", "FOAM-USER"): ...here.
+	* cparse.boot.pamphlet: Tidy.
+	* Makefile.pamphlet (OBJS): Include foam_l.$(FASLEXT) because
+	daase.lisp references it.
+	(PROCLAIMS): Disable cached proclaims for now.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet ($npPParg, npPPff, npPPf, npPPg, npPP,
+	$npPCff, npPCff, npPCg, npPC): Move to ...
+	* cparse.boot.pamphlet ($npPParg, npPPff, npPPf, npPPg, npPP,
+	$npPCff, npPCff, npPCg, npPC):  ... here. Rewrite back in Boot.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (|$npPCff|): Rename from *npPCff*.
+	(npPCff): Adjust.
+
+2007-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* cparse.boot.pamphlet: Tidy formatting.
+	* vmlisp.lisp.pamphlet (|$npPParg|): Rename from *npPParg* to
+	follow general Boot naming convention.
+	(npPPff, |npPP|): Adjust.
+
+2007-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet: Push into user package before defining
+	packages.  That way, we don't suffer from suddenly hidden
+	symbols such as defpackage::defpackage in inventive Lisps.  Create
+	packages with defpackage.
+
+2007-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet: Remove imports that have been commented
+	out. 
+
+2007-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp.pamphlet (|shoeConsole|): Move from
+	vmlisp.lisp.pamphlet.
+	(|shoeInputFile|): Likewise.
+	(|shoeread-line|): Likewise.
+	* sys-pkg.lisp.pamphlet (vmlisp::|shoeConsole|): Don't import into
+	BOOT anymore.
+	(vmlisp::|shoeread-line|): Likewise.
+	(vmlisp::|shoeInputFile|): Likewise.
+
+2007-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp.pamphlet: Tidy formatting.
+	* foam_l.lisp.pamphlet: Likewise.
+	* nlib.lisp.pamphlet: Likewise.
+	* ggreater.lisp.pamphlet: Likewise.
+	* union.lisp.pamphlet: Likewise.
+	* comp.lisp.pamphlet: Likewise.
+	* spaderror.lisp.pamphlet: Likewise.
+	* spad.lisp.pamphlet: Likewise.
+	* bits.lisp.pamphlet: Likewise.
+	* unlisp.lisp.pamphlet: Likewise.
+	* axext_l.lisp.pamphlet: Likewise.
+
+2007-07-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (MACRO-MISSINGARGS): Fix thinko in case
+	statement. 
+
+2007-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (MACRO-MISSINGARGS): Fix thinko.
+
+2007-06-25  Gabriel Dos Reis  <gdr@cs.tamu.net>
+
+	* Makefile.pamphlet (${SAVESYS}): Use --mode=link to produce
+	executable. 
+	(<<save depsts image>>): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-data.boot.pamphlet (dbHasExamplePage): Fix HyperTex page
+	pathname. 
+	* ht-root.boot.pamphlet (htTutorialSearch): Likewise.
+	* htcheck.boot.pamphlet (buildHtMacroTable): Likewise.
+	* util.lisp.pamphlet ($relative-directory-list): Fix path to catalogs.
+
+2007-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove use of NOISE throughout.
+	* Makefile.in: Regenerate.
+
+2007-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* spad.lisp.pamphlet (S-PROCESS): Reformat.  Enable Lisp pretty
+	printing.
+
+2007-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* metalex.lisp.pamphlet (make-adjustable-string): Use character as
+	string element type, not string-char.
+	* parsing.lisp.pamphlet (underscore, make-string-adjustable):
+	Likewise. 
+	* unlisp.lisp.pamphlet (c-to-lisp-string, |ByteFileReadLine|,
+	|FullString|): Likewise.
+	* vmlisp.lisp.pamphlet (make-cvec): Likewise.
+
+2007-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet: Work around non-portable codes.
+	* foam_l.lisp.pamphlet: Replace type "string-char" with type
+	"character".
+	Replace "0.0d0" with "0.0l0" because DFlo is actually long-float,
+	not double-float.  Revisit the definition of DFlo in a broader
+	context. 
+
+2007-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet (equable): Move definition before use.
+	Spell BOOT package name in all caps.
+
+2007-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-doc.boot.pamphlet (checkRecordHash): Use GET instead of GETL.
+	(checkTransformFirsts): Likewise.
+	* format.boot.pamphlet (formatOpSymbol): Likewise.
+	* i-output.boot.pamphlet (exptNeedsPren): Likewise.
+	(charyTrouble1): Likewise.
+	* postpar.boot.pamphlet (postForm): Likewise.
+	* pspad1.boot.pamphlet (format, getOp, formatSelectionOp,
+	formatPrefixOp):  Likewise.
+	* pspad2.boot.pamphlet (isNewspadOperator): Likewise.
+	* i-map.boot.pamphlet (getUserIdentifiersIn): Likewise.
+	Non-atomic objects don't have Nud or Led properties.
+
+2007-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* as.boot.pamphlet: Replace UNION with union
+	* br-con.boot.pamphlet: Likewise.
+	* br-data.boot.pamphlet: Likewise.
+	* br-saturn.boot.pamphlet: Likewise.
+	* br-search.boot.pamphlet: Likewise.
+	* category.boot.pamphlet: Likewise.
+	* database.boot.pamphlet: Likewise.
+	* define.boot.pamphlet: Likewise.
+	* functor.boot.pamphlet: Likewise.
+	* i-map.boot.pamphlet: Likewise.
+	* i-resolv.boot.pamphlet: Likewise.
+	* lisplib.boot.pamphlet: Likewise.
+	* mark.boot.pamphlet: Likewise.
+	* nruncomp.boot.pamphlet: Likewise.
+	* nrunopt.boot.pamphlet: Likewise.
+	* package.boot.pamphlet: Likewise.
+	* pspad1.boot.pamphlet: Likewise.
+	* showimp.boot.pamphlet: Likewise.
+	* trace.boot.pamphlet: Likewise.
+	* wi1.boot.pamphlet: Likewise.
+
+2007-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* database.boot.pamphlet: Replace INTERSECTION with intersection.
+	* i-coerfn.boot.pamphlet: Likewise.
+	* i-resolv.boot.pamphlet: Likewise.
+	* mark.boot.pamphlet: Likewise.
+	* topics.boot.pamphlet: Likewise.
+	* trace.boot.pamphlet: Likewise.
+
+2007-04-30  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* Makefile.pamphlet (<<package.clisp>>): Remove.
+	* interop.boot.pamphlet (<<interop.clisp>>): Likewise.
+
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* apply.boot.pamphlet: Replace MEMBER with member. 
+	* br-con.boot.pamphlet: Likewise.
+	* br-op1.boot.pamphlet: Likewise.
+	* br-op2.boot.pamphlet: Likewise.
+	* br-saturn.boot.pamphlet: Likewise.
+	* br-search.boot.pamphlet: Likewise.
+	* br-util.boot.pamphlet: Likewise.
+	* category.boot.pamphlet: Likewise.
+	* cattable.boot.pamphlet: Likewise.
+	* c-doc.boot.pamphlet: Likewise.
+	* compiler.boot.pamphlet: Likewise.
+	* c-util.boot.pamphlet: Likewise.
+	* database.boot.pamphlet: Likewise.
+	* define.boot.pamphlet: Likewise.
+	* functor.boot.pamphlet: Likewise.
+	* g-error.boot.pamphlet: Likewise.
+	* g-util.boot.pamphlet: Likewise.
+	* htcheck.boot.pamphlet: Likewise.
+	* i-coerce.boot.pamphlet: Likewise.
+	* i-coerfn.boot.pamphlet: Likewise.
+	* i-funsel.boot.pamphlet: Likewise.
+	* i-map.boot.pamphlet: Likewise.
+	* incl.boot.pamphlet: Likewise.
+	* info.boot.pamphlet: Likewise.
+	* interop.boot.pamphlet: Likewise.
+	* i-output.boot.pamphlet: Likewise.
+	* i-resolv.boot.pamphlet: Likewise.
+	* i-syscmd.boot.pamphlet: Likewise.
+	* iterator.boot.pamphlet: Likewise.
+	* i-util.boot.pamphlet: Likewise.
+	* mark.boot.pamphlet: Likewise.
+	* modemap.boot.pamphlet: Likewise.
+	* msg.boot.pamphlet: Likewise.
+	* msgdb.boot.pamphlet: Likewise.
+	* nruncomp.boot.pamphlet: Likewise.
+	* nrunopt.boot.pamphlet: Likewise.
+	* record.boot.pamphlet: Likewise.
+	* trace.boot.pamphlet: Likewise.
+	* wi1.boot.pamphlet: Likewise.
+	* wi2.boot.pamphlet: Likewise.
+	* xruncomp.boot.pamphlet: Likewise.
+	
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* apply.boot.pamphlet (compApplication, applyMapping,
+	compApplyModemap, compMapCond''): Use lower case member instead of
+	uppercase MEMBER.
+	* g-error.boot.pamphlet (errorSupervisor1): Likewise.
+	* incl.boot.pamphlet (incActive?, incNConsoles): Likewise.
+	* interop.boot.pamphlet (isDomain, getFunctionFromDomain): Likewise.
+	* mark.boot.pamphlet (markCoerceByModemap, markFinish1,
+	markExtractLeadingMacros, markRemImportsAndLeadingMacros,
+	buildNewDefinition): Likewise.
+	* msg.boot.pamphlet (redundant, initToWhere, getMsgTag?,
+	getMsgFTTag?): Likewise.
+	* wi1.boot.pamphlet (compAtom, compSymbol, compColon,
+	coerceExtraHard, comp3): Likewise.
+	* wi2.boot.pamphlet (compDefineCapsuleFunction, mkUnion,
+	getInverseEnvironment, applyMapping, compApplyModemap,
+	compMapCond'', genDeltaEntry, chaseInferences, doItLet1): Likewise.
+
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-con.boot.pamphlet (domainDescendantsOf): Use uppercase delete
+	instead of uppercase DELETE.
+	* br-op2.boot.pamphlet (dbChooseOperandName): Likewise.
+	* category.boot.pamphlet (mkCategory, SigListUnion, mkOr2,
+	mkAnd2, FindFundAncs, JoinInner): Likewise. 
+	* compiler.boot.pamphlet (getInverseEnvironment, modeEqual): Likewise.
+	* database.boot.pamphlet (orderPredTran): 
+	* define.boot.pamphlet (compDefWhereClause, getSignature): Likewise.
+	* format.boot.pamphlet (findSubstitutionOrder?, removeIsDomainD):
+	Likewise. 
+	* functor.boot.pamphlet (DescendCodeAdd1, ICformat): Likewise.
+	* i-coerfn.boot.pamphlet (Mp2Up): Likewise.
+	* i-map.boot.pamphlet (clearDep1): Likewise.
+	* info.boot.pamphlet (chaseInferences): Likewise.
+	* i-spec1.boot.pamphlet (checkForFreeVariables): Likewise.
+	* i-syscmd.boot.pamphlet (workfilesSpad2Cmd): Likewise.
+	* mark.boot.pamphlet (markFinish1, moveTruePred2End): Likewise.
+	* modemap.boot.pamphlet (putDomainsInScope): Likewise.
+	* nrunopt.boot.pamphlet (orderByContainment, depthAssocList): Likewise.
+	* setvars.boot.pamphlet (setExposeAddConstr, setExposeDropGroup,
+	setExposeDropConstr): Likewise. 
+	* trace.boot.pamphlet (trace1, untraceDomainConstructor, tracelet,
+	breaklet): Likewise.
+	* wi2.boot.pamphlet (getInverseEnvironment, chaseInferences): Likewise.
+
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-doc.boot.pamphlet (checkBalance): Use lowercase rassoc instead
+	of uppercase RASSOC.
+	* c-util.boot.pamphlet (sublisR): Likewise.
+	* database.boot.pamphlet (modemapPattern): Likewise.
+	* mark.boot.pamphlet (reduceImports1): Likewise.
+	* pspad2.boot.pamphlet (formatDeftranIf): Likewise.
+	* trace.boot.pamphlet (saveMapSig, rassocSub): Likewise.
+
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* as.boot.pamphlet (asytranForm1, asyTypeUnit): Replace GET with
+	GETL. 
+	* br-con.boot.pamphlet (dbShowConsDoc1, dbSpecialOperations,
+	dbSpecialExports):  Likewise.
+	* br-op1.boot.pamphlet (niladicHack): Likewise.
+	* br-util.boot.pamphlet (dbInfovec, isLoaded?): Likewise.
+	* buildom.boot.pamphlet (constructorCategory): Likewise.
+	* category.boot.pamphlet (SourceLevelSubset, MachineLevelSubset):
+	Likewise. 
+	* c-doc.boot.pamphlet (checkRecordHash, checkTransformFirsts):
+	Likewise. 
+	* clam.boot.pamphlet (clearClam, reportCircularCacheStats,
+	reportHashCacheStats, clamStats): Likewise.
+	* cparse.boot.pamphlet (npPushId, npInfixOp): Likewise.
+	* c-util.boot.pamphlet (isFunction,, isSubset): Likewise.
+	* database.boot.pamphlet (updateDatabase): Likewise.
+	* define.boot.pamphlet (mustInstantiate): Likewise.
+	* format.boot.pamphlet (formatOpSymbol): Likewise.
+	* g-opt.boot.pamphlet (optimize, optSpecialCall): Likewise.
+	* g-timer.boot.pamphlet (printNamedStatsByProperty,
+	makeLongStatStringByProperty, updateTimedName,
+	computeElapsedTime): Likewise. 
+	* i-analy.boot.pamphlet (bottomUp): Likewise.
+	* i-coerce.boot.pamphlet (coerceRetract, coerceIntCommute): Likewise.
+	* i-funsel.boot.pamphlet (findFunctionInCategory): Likewise.
+	* i-map.boot.pamphlet (getUserIdentifiersIn): Likewise.
+	* interop.boot.pamphlet (instantiate, hashNewLookupInCategories):
+	Likewise. 
+	* i-output.boot.pamphlet (APP, exptNeedsPren, needStar, appSum,
+	appInfix, putWidth, opWidth, outputOp, charyTrouble1, split2,
+	subspan, superspan): Likewise.
+	* i-syscmd.boot.pamphlet(reportOpsFromUnitDirectly): Likewise.
+	* iterator.boot.pamphlet (getIdentity): Likewise.
+	* i-util.boot.pamphlet (mkPredList): Likewise.
+	* lisplib.boot.pamphlet (loadLibIfNotLoaded, loadLibIfNecessary,
+	autoLoad, augModemapsFromDomain1): Likewise.
+	* mark.boot.pamphlet (markPathsEqual, markPartOp?, markWrapPart):
+	Likewise. 
+	* modemap.boot.pamphlet (compCat, addConstructorModemaps): Likewise.
+	* nruncomp.boot.pamphlet (NOTES): Likewise.
+	* nrunfast.boot.pamphlet (newLookupInCategories,
+	newLookupInCategories1): Likewise. 
+	* nrunopt.boot.pamphlet (stuffDomainSlots, getInfovec, dcSizeAll):
+	Likewise. 
+	* parse.boot.pamphlet (parseTran): Likewise.
+	* pathname.boot.pamphlet (getFunctionSourceFile1): Likewise.
+	* postpar.boot.pamphlet (postTran, postForm): Likewise.
+	* pspad1.boot.pamphlet (format, getOp, formatDollar,
+	formatDollar1, formatFunctionCall1, formatSelectionOp,
+	formatPrefixOp, formatOpBindingPower): Likewise.
+	* pspad2.boot.pamphlet (isNewspadOperator): Likewise.
+	* wi1.boot.pamphlet (compExpression): Likewise.
+	* wi2.boot.pamphlet (optDeltaEntry): Likewise.
+	* xrun.boot.pamphlet (findFunctionInCategory): Likewise.
+	* xruncomp.boot.pamphlet (addConstructorModemaps): Likewise.
+
+2007-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-coerfn.boot.pamphlet (Dmp2Up): Use lowercase "remove" instead
+	or uppercase REMOVE.
+
+2007-04-28  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* interop.boot.pamphlet (hashNewLookupInTable): Instead
+	^= instead of NE.
+
+2007-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<parse.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+
+2007-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* parse.boot.pamphlet: Push into package BOOT.  Consistently
+	double-quote AST tags.  Remove cached Lisp translation.
+
+2007-04-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* postpar.boot.pamphlet: Double-qoute AST tags.
+	(<<postpar.clisp>>): Remove.
+	* Makefile.pamphlet (<<postpar.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+
+2007-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet (checkArgs): Remove bogus comments.
+
+2007-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<pathname.clisp>>): Delete.
+	(<<package.clisp>>): Likewise.
+	* Makefile.in: Regenerate.
+
+	* pathname.boot.pamphlet: Push into package BOOT. 
+	(pathnameDirectory): Use LispKeyword.
+	* package.boot.pamphlet: Push into package BOOT.  Use
+	lowercase for DELETE, NREVERSE.
+
+2007-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<simpbool.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+	* simpbool.boot.pamphlet: Push into package "BOOT".
+	Use lowercase for NREVERSE, MKPF, MEMBER.
+
+2007-04-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compress.boot.pamphlet: Push into package "BOOT".
+	* Makefile.pamphlet: Remove explicit stanzas for translating and
+	compiling compress.boot.
+	* Makefile.in: Regenerate.
+
+2007-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<applu.clisp>>): Remove.
+	(<<hashcode.clisp>>): Likewise.
+	(<<interop.clisp>>): Likewise.
+	(<<xrun.clisp>>): Likewise.
+	(<<wi1.clisp>>): Likewise.
+	(<<wi2.clisp>>): Likewise.
+	(<<pspad1.clisp>>): Likewise.
+	(<<pspad2.clisp>>): Likewise.
+	(<<mark.clisp>>): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* setvars.boot.pamphlet: Push into package "BOOT".
+	Remove cached Lisp translation.
+	* Makefile.pamphlet (<<newaux.lisp (OUT from MID)>>): Remove
+	(<<newaux.${LISP}>>): Likewise.
+	(<<setvars.lisp (OUT from MID)>>): Likewise
+	(<<setvars.clisp>>): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Require g-boot.clisp.
+	<<g-boot.clisp>>: Remove.
+	<<g-boot.lisp (OUT from IN)>>: Likewise.
+	* Makefile.in: Regenerate.
+	* g-boot.boot.pamphlet: Push into package BOOT.
+	Remove cached Lisp translation.
+
+2007-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Require clam.clisp.  Remove
+	reference to clam.${LISP}.
+	<<clam.clisp>>: Remove.
+	<<clam.lisp>>: Likewise.
+	* clam.boot.pamphlet: Push into package "BOOT".  Remove cached
+	Lisp translation.
+
+2007-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEPSYS): Point to depsys in build-dir.
+	(SAVESYS): Likewise
+	(${AUTO}/wi1.$(FASLEXT)): Copy from build-dir version.
+	(${AUTO}/wi2.$(FASLEXT)): Likewise.
+	(${AUTO}/pspad1.$(FASLEXT)): Likewise.
+	(${AUTO}/pspad2.$(FASLEXT)): Likewise.
+	(${AUTO}/mark.$(FASLEXT)): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Remove fasl file after depsys it
+	built. 
+	* Makefile.in: Regenerate.
+
+2007-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-error.boot.pamphlet: Explicitly puch into package "BOOT".
+
+	* Makefile.pamphlet (${DEPSYS}): Add g-error.clisp to
+	requirements.  Load it g-error.$(FASLEXT) too.
+	(depsys_objects): Include g-error.$(FASLEXT).
+	(depsys_boot_sources): Icnlude g-error.boot.
+	(<<g-error.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+
+2007-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-util.boot.pamphlet: Remove cached Lisp translation.  Push into
+	package "BOOT" at the beginning.
+	* Makefile.pamphlet (${DEPSYS}): Require g-util.clisp, not
+	g-util.${LISP}.
+	Remove explicit stanzas for g-util.clisp and g-util.{LISP}.
+	* Makefile.in: Regenerate.
+
+2007-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* slam.boot.pamphlet: Remove cached Lisp translation.  Push into
+	package "BOOT" at the beginning.
+	* Makefile.pamphlet (${DEPSYS}): Require slam.clisp, not
+	slam.${LISP}.
+	Remove explicit stanzas for slam.clisp and slam.{LISP}.
+	* Makefile.in: Regenerate.
+
+2007-03-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* def.lisp.pamphlet (|defLETdcq|): Use a gensym'd variable name
+	instead of special character control-b.
+
+2007-03-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mostlyclean-local): Remove .lib files too.
+	* Makefile.in: Regenerate.
+	* vmlisp.lisp.pamphlet: Fix various typos.
+	* nocompil.lisp.pamphlet: Fix trailing parenthesis typo.
+
+2007-03-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Replace $(OBJECT) with $(FASLEXT).
+	* Makefile.in: Regenerate.
+
+2007-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet (GCL.PNAME): Remove.
+
+2007-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-pkg.lisp.pamphlet (GCL.MEMQ): Remove.
+
+2007-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet (boottocl): Remove prefix.  Do pretty print
+	translations.
+	* sys-pkg.lisp.pamphlet (BOOTTRAN): Don't define here.
+	* interp-proclaims.lisp (BOOT::|findStringInFile|): Comment out
+	proclamation. 
+	* cfuns.lisp.pamphlet (|findString|): Comment out external linkage
+	declaration. 
+	(|findStringInFile|): Comment out definition.	
+	* Makefile.pamphlet:  Use implicit rules to compiler .clisp files
+	to native object codes.  Remove redundant special cased rules.
+	(YEARWEEK): Qualify symbols names.
+	(<<save depsys image>>): Use local Lisp image.
+	(makeint.lisp): Remove in-package declaration.  Qualify symbol
+	names. Turn on stratified garbage collection.
+	(${SAVESYS}): Use axiom_build_document to build interpsys.
+	(${AXIOMSYS}): Garbage collection is already turned on in
+	makeint.lisp. 
+	* Makefile.in: Regenerate.
+
+2007-03-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Adjust call to build-depsys.
+	* Makefile.in: Regenerate.
+	* util.lisp.pamphlet (make-depsys): Remove.
+	(build-depsys): Adjust.
+
+2007-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Document Lisp files needed
+	to make depsys.
+	Remove obsolete Make rules for building documentation.
+	* Makefile.in: Regenerate.
+
+	* vmlisp.lisp.pamphlet (define-macro): Likewise.
+	* sys-pkg.lisp.pamphlet: Remove dead packages SCRATCHPAD_COMPILER
+	and SPECFNSF.
+	(define-macro): Remove.
+	Remove explicit import of GCL's system::getenv.
+
+2007-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${DEPSYS}): Don't load proclamations.
+	* Makefile.in: Regenerate.
+
+2007-03-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (BOOT_TO_LISP): Adjust.
+	(COMPILE_LISP): Likewise.
+	* Makefile.in: Regenerate.
+
+2007-01-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ptrees.boot.pamphlet (pfExpr?): Don't duplicate test for
+	Typing and Sequence.  They are part of DeclPart.
+
+2006-12-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Eradicate use of ENV.
+
+2006-12-21  Vanuxem Gregory  <g.vanuxem@wanadoo.fr>
+
+	* patches.lisp.pamphlet: Set $saturn to nil on Windows too.
+
+2006-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (warm.data): Extract into ../algebra.
+	(makeint.lisp): Adjust dependency.
+
+2006-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use general implicit rules to extract Boot
+	source code from pamphlets.  Refrain from excessive sub-shells
+	creation. 
+	* Makefile.in: Regenerate.
+
+2006-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* alql.boot.pamphlet (getBrowseDatabase): Directly call member.
+
+2006-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet (gazonk-name): Special-case Win32 too.
+
+	* patches.lisp.pamphlet (|xdrOpen|): Special-case for DOS and
+	Windows platforms when using GCL.
+	(|xrdRead|): Likewise.
+	(|xrdWrite|): Likewise.
+
+2006-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Put object files in the current build
+	directory. 
+	* Makefile.in: Regenerate.
+2006-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Extract source code into current build
+	directory.
+	* Makefile.in: Regenerate.
+
+2006-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet (boottran::boottocl): Create the file
+	containing the translated program in the same directory as the
+	input file.
+
+2006-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (YEARWEEK): Use PACKAGE_STRING.
+	* Makefile.in: Regenerate.
+
+2006-12-01  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* src/interp/alql.boot.pamphlet: Add FUNCALL to fix problem
+	with previous patch.
+	
+2006-12-01  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	Port from wh-sandbox.
+	* src/interp/alql.boot.pamphlet: Add package declaration,
+	getBrowseDatabase: modify to work with shoe.
+		
+2006-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Add support for OS that require extension for
+	exectuble files.
+	* Makefile.in: Regenerate.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-axiomsys): Rename from axiomsys.
+	(all-debugsys, all-depsys): Likewise.
+	* Makefile.in: Regenerate.
+
+2006-11-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ccl-debugsys.lsp.pamphlet: Move from ../boot.
+
+2006-11-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (BOOT_TO_LISP): Use $(axiom_build_document)
+	for translation from Boot.
+	(COMPILE_LISP): Use $(axiom_build_document) to compile Lisp code.
+	* Makefile.in: Regenerate.
+
+2006-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* as.boot.pamphlet (displayDatabase): Properly escape end-of-line
+	in multi-line list.
+
+2006-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (alql.boot): Translate with bootsys.
+	* Makefile.in: Regenerate.
+
+2006-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (BOOT_TO_LISP): Use boottoclc.
+
+2006-11-15  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* daase.lisp.pamphlet: Document preloading of databases.
+	* Makefile.pamphlet (axiomsys): Add separate rule needed
+	to implement it.
+	* Makefile.in: Regenerate.
+	
+2006-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* daase.lisp.pamphlet: Sync with silver (revision 247).
+	* setq.lisp.pamphlet: Likewise.
+
+2006-11-05  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* libdb.text, temp.text: remove
+	
+2006-11-03  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* sockio.lisp.pamphlet (sock_get_string_buf_wrapper): new
+	function
+	(sock_get_string_buf): call it
+
+2006-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Make extracted Boot .PRECIOUS.
+	* Makefile.in: Regenerate.
+
+2006-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* trace.boot.pamphlet (ptimers): Fix string literals that
+	accidently spreads over two lines.
+
+2006-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Explain why def.$(OBJEXT) may be loaded
+	twice. 
+
+2006-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* newfort.boot.pamphlet (updateSymbolTable): Escape ! in names.
+
+2006-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* debugsys.lisp.pamphlet: Adjust path to Common Lisp source files,
+	to reflect changes in Makefile.
+
+	* Makefile.pamphlet (depsys_lisp_noncompiled_sources): Fix typo.
+	(DEP): Adjust paths to Lisp source files.
+	(OBJS): Have Lisp source filenames end with the extension .lisp.
+	(AXIOMsys_noncompiled_lisp_sources): New.
+	(AXIOMsys_compiled_lisp_sources): Likewise.
+	(OPOBJS): Use compiled form of postprop.
+	(<<extract source codes>>): New.
+	(PROCLAIMS): Adjust path to sys-pkg.
+	(${DEPSYS}): Adjust path to Lisp source files.
+	(${SAVESYS}): Likewise.
+
+	Remove indivudial rules for compiling Common Lisp source files.
+	We now use the implicit rules from <<extract source codes>>.
+
+2006-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* debugsys.lisp.pamphlet (build-interpsys): Load def.lisp only once.
+
+2006-10-26  Vanuexm Grégory  <g.vanuxem@wanadoo.fr>
+
+	* bookvol5.pamphlet (|importFromFrame|): Fix typo.
+
+2006-10-26  Camm Maguire  <camm@enhanced.com>
+
+	* sockio.lisp.pamphlet: Fix second argument-type for
+	sock_send_float defentry.
+
+2006-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* debugsys.lisp.pamphlet (build-interpsys): Adjust pathname to
+	files that are local to the current build directory.
+
+	* Makefile.pamphlet: Remove individual rules for making object
+	codes out of Boot pamphlet using bootsys.
+	(BOOT_TO_LISP, COMPILE_LISP): New.
+	(AXIOMsys_boot_sources): Likewise.  List core Boot files here.
+	(<<extract source codes>>): New chunk.  Abstract over special
+	individual rules to translate Boot to object code, using bootsys.
+	* Makefile.in: Regenerate.
+
+2006-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (\subsection{*default-pathname-defaults*}): Remove.
+	(restart): Don't set *default-pathname-defaults*.
+	(reroot): Likewise.
+	* patches.lisp.pamphlet (|cd|): Likewise.
+
+2006-10-20  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* Makefile.pamphlet: Correct misleading information about
+	TRANOBJS
+
+2006-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-util.boot.pamphlet (str2Tex): Change local variable name "of"
+	to "outf".
+
+2006-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (depsys_lisp_noncompiled_sources, 
+	depsys_lisp_compiled_sources): New.
+	(depsys_lisp_sources): USe them.
+	(depsys_boot_sources): New.
+	(depsys_lisp_macro_sources): Rename from depsys_lisp_sources.
+	(makedep.lisp): Create in builddir.
+
+2006-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-ax): Depend on $(MID) and $(AUTO).
+
+2006-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove references to ${MNT} throughout.
+	* Makefile.in: Regenerate.
+
+2006-10-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<document>>): Remove.
+
+2006-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Rework.  Always keep stamp up-to-date
+	with respect to dependencies.
+	* Makefile.in: Regenerate.
+
+2006-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* debugsys.lisp.pamphlet: Fix misplaced parenthesis.
+
+2006-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (AXIOMSYS): Leave dirname to ${MNT}/${SYS}/bin
+	for the moment.
+	* Makefile.in: Regenerate.
+
+2006-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (BOOTSYS): Adjust definition.
+	(SAVESYS, AXIOMSYS): Likewise.
+	(<<save depsys image>>): Use "$@".
+	($(DEPSYS), $(SAVESYS)): Add dependency on $(axiom_build_bindir).
+	* Makefile.in: Regenerate.
+
+2006-09-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet (build-depsys): Replace last six parameters
+	with only indicating the build directory.
+	(make_depsys): Likewise.
+	(build-interpsys): Lose last six parameters.
+	* Makefile.pamphlet (${DEPSYS}): Adjust call to build-depsys.
+	($(SAVESYS)) Adjust call to build-interpsys.
+	* debugsys.lisp.pamphlet: Likewise.
+
+2006-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Create stamp file.
+	* Makefile.in: Regenerate.
+
+2006-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* debugsys.lisp.pamphlet: Don't load interp/sockio.o twice.
+
+2006-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Don't build $(DOCFILES) yet.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (subdir): New.
+	* Makefile.in: Regenerate.
+
+2006-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (LISPSYS, LOADSYS): Point to
+	$(axiom_build_bindir)/lisp. 
+	* Makefile.in: Regenerate.
+
+2006-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Throughout replace {O} with (OBJEXT).  OBJEXT
+	is Autoconf-detected.
+	* Makefile.in: Regenerate.
+
+2006-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${SAVESYS}): Don't set
+	si::*system-directory*. 
+	* Makefile.in: Regenerate.
+	
+2006-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet:  Throughout, substitute $(srcdir) for ${IN}.
+	Use $(axiom_build_document) --tangle in lieu of ${TANGLE}.
+	Use $(axiom_src_srcdir) in lieu of ${SRC}.
+	Use simplify ${SRC}/doc to $(axiom_src_docdir).
+	
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Throughout, remove special rules for making
+	DVI files.  Use generic rules.
+	* Makefile.in: New.
+
+2006-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Don't overwrite $(TMP)/trace; append instead.
+
+2006-08-26  Camm Maguire  <camm@enhanced.com>
+
+	* hash.lisp.pamphlet (mem_value): no longer static.
+	* sockio.lisp.pamphlet (sock_get_float): Value type is now a double.
+	* cfuns.lisp.pamphlet (MYCOMBINE): Now take ints and return an int.
+

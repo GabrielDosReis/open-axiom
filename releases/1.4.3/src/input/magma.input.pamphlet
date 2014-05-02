@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input MAGMA.input}
+\author{Michel Petitot}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+)cl all
+
+x:Symbol :='x
+y:Symbol :='y
+z:Symbol :='z
+word := OrderedFreeMonoid(Symbol)
+tree := Magma(Symbol)
+a:tree := x*x
+b:tree := y*y
+c:tree := a*b
+left c
+right c
+length c
+c::word
+a < b
+a < c
+b < c
+first c
+rest c
+rest rest c
+ax:tree := a*x
+xa:tree := x*a
+xa < ax
+lexico(xa,ax)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

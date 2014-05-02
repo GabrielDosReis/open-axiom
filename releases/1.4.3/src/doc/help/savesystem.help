@@ -1,0 +1,44 @@
+Copyright The Numerical Algorithms Group Limited 1992.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information. 
+Section numbers refer to the book 
+AXIOM: The System for Scientific Computation. 
+ 
+==============================================================================
+A.8.  )savesystem
+==============================================================================
+ 
+ 
+ 
+ 
+ 
+User Level Required:  interpreter
+ 
+ 
+Command Syntax: 
+ 
+  - )savesystem filename
+ 
+Command Description: 
+ 
+ This command is used to save an OpenAxiom image to disk.  This creates an
+executable file which, when started, has everything loaded into it
+that was there when the image was saved.  This command does not work
+with general Common Lisp.  It works only with GCL- and SBCL-based
+OpenAxiom.  In general, this command should be considered as deprecared.
+
+Thus, after executing commands which cause the loading of some
+packages, the command: 
+ 
+)savesystem /tmp/savesys
+
+will create an image that can be restarted  with the UNIX command:
+
+axiom -ws /tmp/savesys
+
+This new system will not need to reload the packages and domains that
+were already loaded when the system was saved.
+
+There is currently a restriction that only systems started with the 
+command "AXIOMsys" may be saved.

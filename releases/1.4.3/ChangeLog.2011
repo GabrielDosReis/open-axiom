@@ -1,0 +1,79 @@
+2011-12-15  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* config/open-axiom.m4 (OPENAXIOM_DYNAMIC_MODULE_SUPPORT): Fix
+	linker flags when building for Windows.
+
+2011-12-03  Alfredo Portes  <doyenatccny@gmail.com>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (CXX): Define as substituted.
+	(LD): Likewise.
+
+2011-09-03  Igor Pashev  <pashev.igor@gmail.com>
+	    Gabriel Dos Reis <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_X11): Check for <X11/xpm.h>.
+
+2011-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.am (OA_SRC_TARGETS): Include all-algstrap
+	(all-algstrap): Require all-interpsys, and all-gcl if building GCL.
+
+2011-07-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.4.1 released.
+
+2011-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (ac_default_prefix): Set to C:/OpenAxiom on
+	Windows platforms.
+
+2011-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Don't test for GMP, just yet.
+
+2011-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Use macx-g++ spec for QT when building for darwin
+	host using C++ compiler for GNU.
+
+2011-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_GMP): New.
+	(OPENAXIOM_CHECK_CORE_SUPPORT): Use it.
+
+2011-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.4.0 has been released.
+
+2011-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Remove --enable-locbfd from
+	oa_gcl_bfd_option.
+	(oa_gcl_emacs): Remove.
+
+2011-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* TODO: Update.
+
+2011-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_HOST_COMPILERS): Set
+	oa_gnu_compiler right after test for C and C++ compilers.
+
+2011-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4: Check for uid_t.
+
+2011-04-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_HOST_LISP_CPU_PRECISION):
+	Special-case for detecting binary personality. 
+	* configure.ac: ECL now provides (at last!) way to gather
+	information about binary personality.
+
+2011-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Reject ECL on Mac OS X as it cannot give reliable
+	information about its binary personality.
+

@@ -1,0 +1,45 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.5.  )close
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )close
+  - )close )quietly
+ 
+Command Description: 
+ 
+This command is used to close down interpreter client processes. Such
+processes are started by HyperDoc to run OpenAxiom examples when you click on
+their text. When you have finished examining or modifying the example and you
+do not want the extra window around anymore, issue
+ 
+)close
+ 
+to the OpenAxiom prompt in the window.
+ 
+If you try to close down the last remaining interpreter client process, 
+OpenAxiom will offer to close down the entire AXIOM session and return
+you to the operating system by displaying something like
+ 
+   This is the last OpenAxiom session. Do you want to kill OpenAxiom?
+ 
+Type "y" (followed by the Return key) if this is what you had in mind. Type
+"n" (followed by the Return key) to cancel the command.
+ 
+You can use the )quietly option to force OpenAxiom to close down the
+interpreter client process without closing down the entire OpenAxiom session.
+ 
+Also See: 
+o )quit
+o )pquit
+ 

@@ -1,0 +1,265 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove.
+
+2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in ("AxiomCore"): Don't use SYSTEM package.
+
+2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (base_lisp_objects): New. Abstract over
+	Lisp compilation models.
+	(core.$(FASLEXT)): Tidy.
+	* core.lisp.in (|getOutputPathname|): Make unary.
+	(|link|): Make sure object files are used to construct ECL
+	programs. 
+	(|makeHandler|): Adjust.
+	(|compileLispFile|): Likewise.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|%systemOptions|): New.
+	(|%systemArguments|): Likewise.
+	(|$systemInstallationDirectory|): Likewise.
+	(|$sysOpts|): Likewise.
+	(|$sysArgs|): Likewise.
+	(|handleCommandLine|): Tidy.
+	(|printUsage|): Update.
+	* Makefile.pamphlet (core.lisp): Instantiate here.
+
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|handleCommandLine|): Return truthvalue on success.
+	Don't call $originalLispTopLevel.
+	(|compileLispHandler|): Rename file to in-file.
+	(|topLevel|): Exit only whne handleCommandLine indicates so.
+
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (core.lisp): Fix thinko.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|coreQuit|): Rename from |quit|.  Adjust calles.
+
+2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|coreError|): Rename from |error|.  Adjust callers.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (fasl_ext): New.  Factor out the logic
+	for computing file extensions.
+	(FASLS): Rename from CORE.  Use it to compute the list of files to
+	load. 
+	($(OUT)/lisp$(EXEEXT)): Adjust.
+	(base-lisp$(EXEEXT)): sb-cltl2 module is no longer need.
+	(core.lisp): Now depend on core.lisp.in.  Regenerate if necessary.
+	(mostlyclean-local): Remove FASLs too.
+	* Makefile.in: Regenerate.
+	* core.lisp.in: New.
+	* core.lisp.pamphlet: Move content to core.lisp.in.  Remove.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|%hasFeature|): New.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|compileLispFile|): Tidy.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|compileLispFile|): Don't leave a FASL if
+	source code compilation has FAILURE-P.
+
+2007-09-04  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+            Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Don't pretend this is the
+	system GCL.
+	* Makefile.in: Regenerate.
+	
+2007-08-22  Alfredo Portes  <doeynatccny@gmail.com>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Turn off SGC.
+	* Makefile.in Regenerate.
+
+2007-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|quit|)[GCL]: Don't quit, say si::bye.
+	(import-module): Simplify.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (GCL_LTCC): New variable.
+	(GCL_LTLD): Likewise.
+	(COBJEXT): Likewise.
+	(CORE): Likewise.
+	($(OUT)/lisp$(EXEEXT)): Tidy.
+	* Makefile.in: Regenerate.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Create $(OUT)
+	directory before installing lisp executable.
+	* Makefile.in: Regenerate.
+
+2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|topLevel|): Push into system's preferred
+	scope before handling command lines.
+
+2007-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet: Tidy.
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Require base-lisp. Tidy.
+	(base-lisp$(EXEEXT)): New rule.
+	(core.lisp): Likewise.
+	(core.$(FASLEXT)): Likewise.
+	(all-ax all-lisp): Depend on stamp.
+	(stamp): New rule.
+	(mostlyclean-local): Tidy.
+	* Makefile.in: Regenerate.
+
+2007-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet: New.
+
+2007-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Propagate libtoolization changes.
+	* Makefile.in: Regenerate.
+
+2007-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEXT)): Set the resumption
+	entry-point. 
+	* Makefile.in: Regenerate.
+
+2007-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Dont' depend on
+	$(AXIOM_LISP).  Load ../boot/initial-env.lisp before saving to
+	disk. Remove obsolete GCL build description.
+	(mostlyclean-local): Remove saved Lisp image.
+	* Makefile.in: Regenerate.
+
+2007-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Conditionally depend
+	on GCL.
+	* Makefile.in: Regenerate.
+
+2006-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Run GCL/rsym hack
+	work-around commands if necessary.
+	* Makefile.in: Regenerate.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Add extra libraries if
+	necessary. 
+	* Makefile.in: Regenerate.
+
+2006-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Build "lisp" image in
+	the build directory, then copy over to the destination dir.
+	* Makefile.in: Regenerate.
+
+2006-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (lisp_c_objects): New variable.
+	($(OUT)/lisp$(EXEEXT)): Use it.  Don't include libspad.a.
+	* Makefile.in: Regenerate.
+
+2006-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Add support OSs that require file extension
+	for executable binaries.
+	* Makefile.in: Regenerate.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<gcl-2.6.8pre.socket.patch>>): Remove, as no
+	longer used.
+	(<<gcl-2.6.8pre.libspad.patch>>): Likewise.
+	(<<gcl-2.6.8pre.collectfn.fix>>): Likewise.
+
+2006-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mostlyclean-local): Don't remove GCL build
+	directory.
+	(clean-local): Do it.
+
+2006-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(axiom_build_bindir)/gcl): Don't apply
+	toploop.patch anymore.
+	(<<gcl-2.6.8pre.toploop.patch>>): Remove.
+	* Makefile.in: Regenerate.
+
+2006-10-02  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	* Makefile.pamphlet: Keep backlash newlines outside
+	of quotes.
+	* Makefile.in: Regenerate.
+
+2006-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(GCLVERSION)): New rule.
+	($(axiom_build_bindir)/gcl): Use it as prerequisite.
+	* Makefile.in: Regenerate.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use $(axiom_builddir) to store GCL image. 
+	Leave obejcts files there.
+	($(OUT)/lisp): Record dependencies.
+	(subdir): New.
+	(pamphlets): Likewise.
+	(lisp_DEPENDENCIES): Likewise.
+	(document): Remove.
+	(clean-local): Rename from clean.
+	(mostlyclean-local, distclean-local): New.
+	* Makefile.in: Regenerate.
+
+2006-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Build GCL from Axiom source as if we were
+	building for a system-wide installation.  Don't apply custom
+	patches.  Remove stamp-gcldir as target.  Set GCLVERSION here.
+	* Makefile.in: Regenerate.
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (${LSP}/ccl/Makefile): Remove.
+	(ccldir): Dependent on Makefile from builddir, not LSP.
+	* Makefile.in: Regenerate.
+
+2006-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<gclConfigureMake>>=): Configure GCL with
+	--disable-xgcl.
+	* Makefile.in: Regenerate.
+
+2006-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Rework.  Factorize stanzas.
+	(gcl-2.6.8predir): Rename from gcl-2.6.8pre.
+	(gcl-systemdir): Rename from gcl-system.
+	(stamp-gcldir): Rename from all.
+	* Makefile.in: Generate.
+
+2006-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove support for 2.6.7.
+
+2006-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove stanzas prior to gcl-2.6.7.
+

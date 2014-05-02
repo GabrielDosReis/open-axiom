@@ -1,0 +1,23 @@
+% operand stack configuration in order to use psDrawFilled:
+%		psDrawFilled
+%		vlist[0].y
+%		vlist[0].x
+%		n
+%		...
+%		vlist[n].y
+%		vlist[n].x
+%		graphics-context dictionary
+% this draws lines connecting all the points and fills the
+% region with background color (default: 1, or white).
+
+/psDrawFilled
+        {	gsave
+                newpath
+                yVal moveto
+                1 sub {
+                        yVal lineto
+                } repeat
+		begin installGC fill end	%% fills with foreground color
+                grestore }
+        def
+

@@ -1,0 +1,483 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{The Byte domain}
+
+<<domain BYTE Byte>>=
+import NonNegativeInteger
+import OutputForm
+)abbrev domain BYTE Byte
+++ Author: Gabriel Dos Reis
+++ Date Created: April 19, 2008
+++ Date Last Updated: July 18, 2010
+++ Basic Operations: byte, bitand, bitor, bitxor
+++ Related Constructor: NonNegativeInteger
+++ Description:
+++   Byte is the datatype of 8-bit sized unsigned integer values.
+Byte(): Public == Private where
+  Public == Join(OrderedFinite,Logic) with
+    byte: NonNegativeInteger -> %
+      ++ byte(x) injects the unsigned integer value `v' into
+      ++ the Byte algebra.  `v' must be non-negative and less than 256.
+    bitand: (%,%) -> %
+      ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
+    bitior: (%,%) -> %
+      ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
+    sample: %
+      ++ \spad{sample} gives a sample datum of type Byte.
+  Private == SubDomain(NonNegativeInteger, #1 < 256) add
+    import %icst0: %              from Foreign Builtin
+    import %beq: (%,%) -> Boolean from Foreign Builtin
+    import %blt: (%,%) -> Boolean from Foreign Builtin
+    import %bgt: (%,%) -> Boolean from Foreign Builtin
+    import %ble: (%,%) -> Boolean from Foreign Builtin
+    import %bge: (%,%) -> Boolean from Foreign Builtin
+    import %bitand: (%,%) -> %    from Foreign Builtin
+    import %bitior: (%,%) -> %    from Foreign Builtin
+    import %bcompl: % -> %        from Foreign Builtin
+
+    byte(x: NonNegativeInteger): % == per x
+    sample == %icst0
+    x = y == %beq(x,y)
+    x < y == %blt(x,y)
+    x > y == %bgt(x,y)
+    x <= y == %ble(x,y)
+    x >= y == %bge(x,y)
+    min() == %icst0
+    max() == per 255
+    size() == 256
+    index n == byte((n - 1) pretend NonNegativeInteger)
+    lookup x == (rep x + 1) pretend PositiveInteger
+    random() == byte random(size())$NonNegativeInteger
+    bitand(x,y) == %bitand(x,y)
+    bitior(x,y) == %bitior(x,y)
+    x /\ y == bitand(x,y)
+    x \/ y == bitior(x,y)
+    ~ x == %bcompl x
+
+@
+
+<<domain BYTEORD ByteOrder>>=
+)abbrev domain BYTEORD ByteOrder
+++ Author: Gabriel Dos Reis
+++ Date Created: February 06, 2009
+++ Date Last Modified:
+++ Description:
+++   This datatype describes byte order of machine values stored memory.
+ByteOrder(): Public == Private where
+  Public == SetCategory with
+    littleEndian: %   ++ \spad{littleEndian} describes little endian host
+    bigEndian: %      ++ \spad{bigEndian} describes big endian host
+    unknownEndian: %  ++ \spad{unknownEndian} for none of the above.
+  Private == add
+    unknownEndian == %unknownEndian$Foreign(Builtin)
+    littleEndian == %littleEndian$Foreign(Builtin)
+    bigEndian == %bigEndian$Foreign(Builtin)
+    x = y == %peq(x,y)$Foreign(Builtin)
+    coerce(x: %): OutputForm ==
+      outputForm
+        x = littleEndian => 'litteEndian
+        x = bigEndian => 'bigEndian
+        'unknownEndian
+
+@
+
+
+\section{Sized System Integer datatypes}
+
+<<domain SYSINT SystemInteger>>=
+)abbrev domain SYSINT SystemInteger
+++ Author: Gabriel Dos Reis
+++ Date Created: December 26, 2008
+++ Date Last Modified: December 27, 2008
+++ Description:
+++   This domain implements sized (signed) integer datatypes parameterized
+++   by the precision (or width) of the underlying representation.
+++   The intent is that they map directly to the hosting hardware
+++   natural integer datatypes.  Consequently, natural values for
+++   N are: 8, 16, 32, 64, etc.  These datatypes are mostly useful
+++   for system programming tasks, i.e. interfacting with the hosting
+++   operating system, reading/writing external binary format files.
+SystemInteger(N: PositiveInteger): Public == Private where
+  Public == OrderedFinite with
+    sample: % ++ \spad{sample} gives a sample datum of this type.
+  Private == SubDomain(Integer, length #1 <= N) add
+    import %icst0: % from Foreign Builtin
+    sample == %icst0
+    min: % == per(-shift(1,N-1))
+    max: % == per(shift(1,N-1)-1)
+    size() == (rep max - rep min + 1)::NonNegativeInteger
+    index i == per (i + rep min - 1)
+    lookup x == (rep x - rep min + 1)::PositiveInteger
+    random() == per random(rep max)$Integer
+
+@
+
+<<domain INT8 Int8>>=
+)abbrev domain INT8 Int8
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 8 bits.
+Int8() == SystemInteger 8
+
+@
+
+<<domain INT16 Int16>>=
+)abbrev domain INT16 Int16
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 16 bits.
+Int16() == SystemInteger 16
+
+@
+
+<<domain INT32 Int32>>=
+)abbrev domain INT32 Int32
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 32 bits.
+Int32() == SystemInteger 32
+
+@
+
+<<domain INT64 Int64>>=
+)abbrev domain INT64 Int64
+++ Author: Gabriel Dos Reis
+++ Date Created: March 25, 2009
+++ Date Last Modified: March 25, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 64 bits.
+Int64() == SystemInteger 64
+
+@
+
+
+<<domain SYSNNI SystemNonNegativeInteger>>=
+)abbrev domain SYSNNI SystemNonNegativeInteger
+++ Author: Gabriel Dos Reis
+++ Date Created: December 26, 2008
+++ Date Last Modified: December 27, 2008
+++ Description:
+++   This domain implements sized (unsigned) integer datatypes 
+++   parameterized by the precision (or width) of the underlying
+++   representation. The intent is that they map directly to the
+++   hosting hardware natural integer datatypes.  Consequently,
+++   natural values for N are: 8, 16, 32, 64, etc.  These datatypes
+++   are mostly useful for system programming tasks, i.e. interfacting
+++   with the hosting operating system, reading/writing external 
+++   binary format files.
+SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
+  Public == Join(OrderedFinite,Logic) with
+    bitand: (%,%) -> %
+      ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
+    bitior: (%,%) -> %
+      ++ bitior(x,y) returns the bitwise `inclusive or' of `x' and `y'.
+    sample: %
+      ++ \spad{sample} gives a sample datum of type Byte.
+  Private == SubDomain(NonNegativeInteger, length #1 <= N) add
+    import %icst0: %           from Foreign Builtin
+    import %bitand: (%,%) -> % from Foreign Builtin
+    import %bitior: (%,%) -> % from Foreign Builtin
+    import %bitnot: % -> %     from Foreign Builtin
+
+    min: % == %icst0
+    max: % == per((shift(1,N)-1) : NonNegativeInteger)
+    sample == min
+    bitand(x,y) == %bitand(x,y)
+    bitior(x,y) == %bitior(x,y)
+    x /\ y == bitand(x,y)
+    x \/ y == bitior(x,y)
+    ~ x == per((shift(1,N) + rep %bitnot x) : NonNegativeInteger)
+
+@
+
+<<domain UINT8 UInt8>>=
+)abbrev domain UINT8 UInt8
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 8 bits.
+UInt8() == SystemNonNegativeInteger 8
+
+@
+
+<<domain UINT16 UInt16>>=
+)abbrev domain UINT16 UInt16
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 16 bits.
+UInt16() == SystemNonNegativeInteger 16
+
+@
+
+<<domain UINT32 UInt32>>=
+)abbrev domain UINT32 UInt32
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 32 bits.
+UInt32() == SystemNonNegativeInteger 32
+
+@
+
+<<domain UINT64 UInt64>>=
+)abbrev domain UINT64 UInt64
+++ Author: Gabriel Dos Reis
+++ Date Created: March 25, 2009
+++ Date Last Modified: March 25, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 64 bits.
+UInt64() == SystemNonNegativeInteger 64
+
+@
+
+\section{System-level Pointer Datatype.}
+
+<<domain SYSPTR SystemPointer>>=
+)abbrev domain SYSPTR SystemPointer
+++ Author: Gabriel Dos Reis
+++ Date Created: September 8, 2009
+++ Date Last Modified: September 8, 2009
+++ Description:
+++   This domain is a datatype system-level pointer values.
+SystemPointer(): SetCategory
+  == add
+    import %sptreq: (%,%) -> Boolean from Foreign Builtin
+    x = y == %sptreq(x,y)
+    coerce(x:%): OutputForm ==
+      FORMAT(NIL$Foreign(Builtin),"~A",x)$Foreign(Builtin)
+@
+
+
+\section{The ByteBuffer domain}
+
+<<domain BYTEBUF ByteBuffer>>=
+import Byte
+)abbrev domain BYTEBUF ByteBuffer
+++ Author: Gabriel Dos Reis
+++ Date Created: April 19, 2008
+++ Date Last Modified: February 15, 2009
+++ Related Constructor:
+++ Description:
+++   ByteBuffer provides datatype for buffers of bytes.  This domain
+++   differs from PrimitiveArray Byte in that it is not as rigid
+++   as  PrimitiveArray Byte.  That is, the typical use of
+++   ByteBuffer is to pre-allocate a vector of Byte of some capacity
+++   `n'.  The array can then store up to `n' bytes.   The actual
+++   interesting bytes count (the length of the buffer) is therefore 
+++   different from the capacity.  The length is no more than the 
+++   capacity, but it can be set dynamically as needed.  This 
+++   functionality is used for example when reading bytes from
+++   input/output devices where we use buffers to transfer data in and 
+++   out of the system.
+++   Note: a value of type ByteBuffer is 0-based indexed, as opposed
+++         Vector, but not unlike PrimitiveArray Byte.
+ByteBuffer(): Public == Private where
+  macro NNI == NonNegativeInteger
+  Public == Join(OneDimensionalArrayAggregate Byte,_
+              CoercibleTo PrimitiveArray Byte,CoercibleTo String) with
+    byteBuffer: NNI -> %
+      ++ byteBuffer(n) creates a buffer of capacity n, and length 0.
+    capacity: % -> NNI
+      ++ capacity(buf) returns the pre-allocated maximum size of `buf'.
+    setLength!: (%,NNI) -> NNI
+      ++ setLength!(buf,n) sets the number of active bytes in the
+      ++ `buf'.  Error if `n' is more than the capacity.
+    finiteAggregate  ++ A ByteBuffer object is a finite aggregate
+  Private == add
+    import %bytevec2str: PrimitiveArray Byte -> String
+      from Foreign Builtin
+
+    -- A buffer object is a pair of a simple array, and the count
+    -- of active number in the array.  Note that we cannot use
+    -- Lisp-level fill pointers because that would not guarantee that
+    -- the implementation uses a simple representation, therefore
+    -- complicating FFI interface.
+    Rep == Record(ary: PrimitiveArray Byte, sz: NNI)
+
+    makeByteBuffer(n: NNI): % ==
+      per [makeByteBuffer(n)$Foreign(Builtin),n]$Rep
+
+    byteBuffer n == makeByteBuffer n
+
+    empty() == byteBuffer 0
+
+    new(n,b) == per [makeByteBuffer(n,b)$Foreign(Builtin),n]$Rep
+
+    # buf == rep(buf).sz
+
+    capacity buf == # rep(buf).ary
+
+    qelt(buf,i) == qelt(rep(buf).ary,i)$PrimitiveArray(Byte)
+
+    elt(buf: %,i: Integer) == 
+      i >= # buf => error "index out of range"
+      qelt(buf,i)
+
+    qsetelt!(buf,i,b) ==
+      qsetelt!(rep(buf).ary,i,b)$PrimitiveArray(Byte)
+
+    setelt(buf: %,i: Integer, b: Byte) == 
+      i >= # buf => error "index out of range"
+      qsetelt!(rep(buf).ary,i,b)
+
+    minIndex buf == 0
+
+    maxIndex buf == (# buf)::Integer - 1
+
+    x = y == rep x = rep y
+
+    setLength!(buf,n) == 
+      n > capacity buf => 
+        error "attempt to set length higher than capacity"
+      rep(buf).sz := n
+
+    coerce(buf: %): PrimitiveArray Byte ==
+      rep(buf).ary
+
+    coerce(buf: %): String ==
+      %bytevec2str rep(buf).ary
+
+    construct l ==
+      buf := makeByteBuffer(#l)
+      for b in l for i in 0.. repeat
+        buf.i := b
+      buf
+
+    concat(x: %, y:%) ==
+      nx := #x
+      ny := #y
+      buf := makeByteBuffer(nx + ny)
+      for i in 0..(nx - 1) repeat
+        buf.i := x.i
+      for i in 0..(ny - 1) repeat
+        buf.(nx + i) := y.i
+      buf
+
+@
+
+
+\section{The DataArray domain}
+
+<<domain DATAARY DataArray>>=
+)abbrev domain DATAARY DataArray
+++ Author: Gabriel Dos Reis
+++ Date Created: August 23, 2008
+++ Description:
+++   This domain provides for a fixed-sized homogeneous data buffer.
+DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
+  Public == SetCategory with
+    new: () -> %
+      ++ new() returns a fresly allocated data buffer or length N.
+    qelt: (%,NonNegativeInteger) -> T
+      ++ elt(b,i) returns the ith element in buffer `b'.  Indexing
+      ++ is 0-based.
+    qsetelt: (%,NonNegativeInteger,T) -> T
+      ++ setelt(b,i,x) sets the ith entry of data buffer `b' to `x'.
+      ++ Indexing is 0-based.
+  Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
+    new() == 
+      makeSimpleArray(getVMType(T)$Foreign(Builtin),N)$Foreign(Builtin)
+
+    qelt(b,i) == 
+      getSimpleArrayEntry(b,i)$Foreign(Builtin)
+
+    qsetelt(b,i,x) ==
+      setSimpleArrayEntry(b,i,x)$Foreign(Builtin)
+
+    x = y ==
+      %equal(x,y)
+
+    coerce(b: %): OutputForm ==
+      bracket([qelt(b,i)::OutputForm for i in 0..(N-1)])
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+
+
+<<*>>=
+<<license>>
+<<domain BYTE Byte>>
+<<domain BYTEBUF ByteBuffer>>
+<<domain DATAARY DataArray>>
+
+<<domain SYSINT SystemInteger>>
+<<domain INT8 Int8>>
+<<domain INT16 Int16>>
+<<domain INT32 Int32>>
+<<domain INT64 Int64>>
+
+<<domain SYSNNI SystemNonNegativeInteger>>
+<<domain UINT8 UInt8>>
+<<domain UINT16 UInt16>>
+<<domain UINT32 UInt32>>
+<<domain UINT64 UInt64>>
+
+<<domain SYSPTR SystemPointer>>
+
+@
+
+\end{document}

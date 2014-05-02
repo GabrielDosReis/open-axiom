@@ -1,0 +1,18 @@
+-- Test for `T has sig'
+--
+
+-- expected: true
+Integer has random: Integer -> Integer
+
+-- expected: false
+Float has random: Float -> Float
+
+-- expected: true
+Boolean has true: Boolean
+
+
+-- expected: true
+Boolean has false: Boolean
+
+-- expected: false
+Boolean has fals: Boolean

@@ -1,0 +1,514 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{The Conduit category}
+
+<<category CONDUIT Conduit>>=
+)abbrev category CONDUIT Conduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category is the root of the I/O conduits.
+Conduit(): Category == with
+    close!: % -> %
+      ++ close!(c) closes the conduit c, changing its state to one
+      ++ that is invalid for future read or write operations.
+
+@
+
+\subsection{The InputByteConduit category}
+
+<<category INBCON InputByteConduit>>=
+)abbrev category INBCON InputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: January 06, 2009
+++ Description:
+++   This category describes input byte stream conduits.
+InputByteConduit(): Category == Conduit with
+    readByte!: % -> Maybe Byte
+      ++ readByte!(cond) attempts to read a byte from the
+      ++ input conduit `cond'.  Returns the read byte if successful,
+      ++ otherwise \spad{nothing}.
+    readInt8!: % -> Maybe Int8
+      ++ readInt8!(cond) attempts to read an Int8 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt8!: % -> Maybe UInt8
+      ++ readUInt8!(cond) attempts to read a UInt8 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readInt16!: % -> Maybe Int16
+      ++ readInt16!(cond) attempts to read an Int16 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt16!: % -> Maybe UInt16
+      ++ readUInt16!(cond) attempts to read a UInt16 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readInt32!: % -> Maybe Int32
+      ++ readInt32!(cond) attempts to read an Int32 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt32!: % -> Maybe UInt32
+      ++ readUInt32!(cond) attempts to read a UInt32 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readBytes!: (%,ByteBuffer) -> NonNegativeInteger
+      ++ readBytes!(c,b) reads byte sequences from conduit `c' into
+      ++ the byte buffer `b'.  The actual number of bytes written
+      ++ is returned, and the length of `b' is set to that amount.
+  add
+    NNI == NonNegativeInteger
+    nni(b: UInt8): NNI == b::NNI
+
+    readInt8! cond ==
+      -- OK, because we are using two's complement.
+      readByte!(cond) pretend Maybe(Int8)
+
+    readUInt8! cond ==
+      -- UInt8 and Byte are representationally conformant.
+      readByte!(cond) pretend Maybe(UInt8)
+
+    readUInt16! cond ==
+      (b1 := readUInt8! cond) case nothing => nothing
+      (b0 := readUInt8! cond) case nothing => nothing
+      just((shift(nni b1,8) + nni b0)::UInt16)
+
+    readInt16! cond ==
+      readUInt16!(cond) pretend Maybe(Int16)
+
+    readUInt32! cond ==
+      (b3 := readUInt8! cond) case nothing => nothing
+      (b2 := readUInt8! cond) case nothing => nothing
+      (b1 := readUInt8! cond) case nothing => nothing
+      (b0 := readUInt8! cond) case nothing => nothing
+      just((shift(nni b3,24) + shift(nni b2,16) 
+             + shift(nni b1,8) + nni b0)::UInt32)
+
+    readInt32! cond ==
+      readUInt32!(cond) pretend Maybe(Int32)
+
+    readBytes!(cond,buf) ==
+      count := 0@NonNegativeInteger
+      while count < capacity buf repeat
+        case readByte! cond is
+          b@Byte =>
+            qsetelt!(buf,count,b)
+            count := count + 1
+          otherwise => break
+      setLength!(buf,count)
+
+@
+
+\subsection{The OutputByteConduit category}
+
+<<category OUTBCON OutputByteConduit>>=
+)abbrev category OUTBCON OutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: January 06, 2008
+++ Description:
+++   This category describes output byte stream conduits.
+OutputByteConduit(): Category == Conduit with
+    writeByte!: (%,Byte) -> Maybe Byte
+      ++ writeByte!(c,b) attempts to write the byte `b' on
+      ++ the conduit `c'.  Returns the written byte if successful,
+      ++ otherwise, returns \spad{nothing}.
+    writeInt8!: (%,Int8) -> Maybe Int8
+      ++ writeInt8!(c,b) attempts to write the 8-bit value `v' on
+      ++ the conduit `c'.  Returns the written value if successful,
+      ++ otherwise, returns \spad{nothing}.
+    writeUInt8!: (%,UInt8) -> Maybe UInt8
+      ++ writeUInt8!(c,b) attempts to write the unsigned 8-bit value `v'
+      ++ on the conduit `c'.  Returns the written value if successful,
+      ++ otherwise, returns \spad{nothing}.
+    writeBytes!: (%,ByteBuffer) -> NonNegativeInteger
+      ++ writeBytes!(c,b) write bytes from buffer `b' 
+      ++ onto the conduit `c'.  The actual number of written 
+      ++ bytes is returned.
+  add
+    writeInt8!(cond,val) ==
+      writeByte!(cond, val pretend Byte) pretend Maybe(Int8)
+
+    writeUInt8!(cond,val) ==
+      writeByte!(cond, val pretend Byte) pretend Maybe(UInt8)
+
+    writeBytes!(cond,buf) ==
+      count := 0@NonNegativeInteger
+      while count < capacity buf and 
+        writeByte!(cond,qelt(buf,count)) case Byte repeat
+          count := count + 1
+      count
+
+@
+
+\subsection{The InputOutputByteConduit category}
+
+<<category IOBCON InputOutputByteConduit>>=
+)abbrev category IOBCON InputOutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ See Also: InputByteConduit, OutputByteConduit.
+++ Description:
+++   This category describes byte stream conduits supporting
+++   both input and output operations.
+InputOutputByteConduit(): Category ==
+    Join(InputByteConduit,OutputByteConduit)
+
+@
+
+
+\subsection{The InputBinaryFile domain}
+
+<<domain INBFILE InputBinaryFile>>=
+)abbrev domain INBFILE InputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+InputBinaryFile(): Public == Private where
+  Public == Join(InputByteConduit, CoercibleTo OutputForm) with
+    inputBinaryFile: FileName -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    inputBinaryFile: String -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    eof?: % -> Boolean
+      ++ eof?(ifile) holds when the last read reached end of file.
+    isOpen?: % -> Boolean
+      ++ isOpen?(ifile) holds if `ifile' is in open state.
+    position: % -> SingleInteger
+      ++ position(f) returns the current byte-position in the file `f'.
+    position!: (%,SingleInteger) -> SingleInteger
+      ++ position(f,p) sets the current byte-position to `i'.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName, eof: Boolean)
+
+    inputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,input$IOMode)$Lisp,f,false]
+    inputBinaryFile(f: String) ==
+      per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName,false]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    readByte! ifile ==
+      isOpen? ifile => 
+        b: Maybe Byte := readByte(rep(ifile).stream)$Lisp
+        if b case nothing then 
+          rep(ifile).eof := true
+        b
+      error "file is not open"
+    eof? ifile ==
+      isOpen? ifile => rep(ifile).eof
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeStream(rep(ifile).stream)$Foreign(Builtin)
+        rep(ifile).eof := true
+      ifile
+    position ifile ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream)$Lisp
+      error "file is not open"
+    position!(ifile,p) ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream,p)$Lisp
+      error "file is not open"
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm
+@
+
+\subsection{The OutputBinaryFile domain}
+
+<<domain OUTBFILE OutputBinaryFile>>=
+)abbrev domain OUTBFILE OutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for output operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+OutputBinaryFile(): Public == Private where
+  Public == Join(OutputByteConduit, CoercibleTo OutputForm) with
+    outputBinaryFile: FileName -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    outputBinaryFile: String -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ open?(ifile) holds if `ifile' is in open state.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName)
+    outputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,output$IOMode)$Lisp,f]
+    outputBinaryFile(f: String) ==
+      per [openBinaryFile(f,output$IOMode)$Lisp,f::FileName]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    writeByte!(ifile,b) ==
+      isOpen? ifile => writeByteToFile(rep(ifile).stream,b)$Lisp
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeStream(rep(ifile).stream)$Foreign(Builtin)
+      ifile
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm
+@
+
+\subsection{The InputOutputBinaryFile domain}
+
+<<domain IOBFILE InputOutputBinaryFile>>=
+)abbrev domain IOBFILE InputOutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: October 21, 2008
+++ Date Last Modified: October 21, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input and output operations.
+++ See Also: InputBinaryFile, OutputBinaryFile
+InputOutputBinaryFile(): Public == Private where
+  Public == Join(InputOutputByteConduit, CoercibleTo OutputForm) with
+    inputOutputBinaryFile: FileName -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file designated by `f' as a binary file.
+    inputOutputBinaryFile: String -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ isOpen?(f) holds if `f' is in open state.
+  Private == (InputBinaryFile, OutputBinaryFile) add
+    Rep == Record(stream: SExpression, filename: FileName)
+    inputOutputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,bothWays$IOMode)$Lisp,f]
+    inputOutputBinaryFile(f: String) ==
+      per [openBinaryFile(f,bothWays$IOMode)$Lisp,f::FileName]
+@
+
+
+\section{The Hostname domain}
+
+<<domain HOSTNAME Hostname>>=
+)abbrev domain HOSTNAME Hostname
+++ Author: Gabriel Dos Reis
+++ Date Created: August 23, 2008
+++ Date Last Modified: August 23, 2008
+++ References: RFC 1034, RFC 1035
+++ Description:  
+++   This domain represents hostnames on computer network.
+Hostname(): Public == Private where
+  Public == Join(SetCategory, CoercibleTo String) with
+    host: String -> %
+      ++ host(n) constructs a Hostname from the name `n'.
+  Private == add
+    Rep == String
+    host n == per n
+    x = y == rep x = rep y
+    coerce(x: %): String == rep x
+    coerce(x: %): OutputForm == rep(x)::OutputForm
+
+@
+
+\section{The PortNumber domain}
+<<domain PORTNUM PortNumber>>=
+)abbrev domain PORTNUM PortNumber
+++ Author: Gabriel Dos Reis
+++ Date Created: August 23, 2008
+++ Date Last Modified: August 23, 2008
+++ Description:  
+++   This domain represents network port numbers (notable TCP and UDP).
+PortNumber(): Public == Private where
+  Public == Join(SetCategory,CoercibleTo SingleInteger) with
+    port: SingleInteger -> %
+      ++ port(n) constructs a PortNumber from the integer `n'.
+  Private == add
+    Rep == SingleInteger
+    port n == per n
+    x = y == rep x = rep y
+    coerce(x: %): SingleInteger == rep x
+    coerce(x: %): OutputForm == rep(x)::OutputForm
+
+@
+
+\section{The IP4Address domain}
+
+<<domain IP4ADDR IP4Address>>=
+)abbrev domain IP4ADDR IP4Address
+++ Author: Gabriel Dos Reis
+++ Date Created: October 22, 2008
+++ Date Last Modified: October 22, 2008
+++ Description:  
+++   This domain provides representation for ARPA Internet IP4 addresses.
+IP4Address(): Public == Private where
+  Public == SetCategory with
+    ip4Address: String -> %
+      ++ ip4Address(a) builds a numeric address out of the ASCII form `a'.
+    bytes: % -> DataArray(4,Byte)
+      ++ bytes(x) returns the bytes of the numeric address `x'.
+    resolve: Hostname -> Maybe %
+      ++ resolve(h) returns the IP4 address of host `h'.
+  Private == add
+    Rep == DataArray(4,Byte)
+    ip4Address a ==
+      n := new()$Rep
+      presentationToNumeric(a,4,n)$Lisp = 0@SingleInteger => per n
+      userError "invalid Internet IP4 address"
+    resolve h ==
+      n := new()$Rep
+      hostnameToNumeric(h::String,4,n)$Lisp = 0@SingleInteger => just per n
+      nothing
+    bytes x == rep x
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm == 
+      infix('_.::OutputForm, 
+        [qelt(rep x,i)::OutputForm for i in 0..3])$OutputForm
+@
+
+
+\section{The NetworkClientSocket category}
+
+<<category NETCLT NetworkClientSocket>>=
+)abbrev category NETCLT NetworkClientSocket
+NetworkClientSocket(T: SetCategory): Category == InputOutputByteConduit with
+   connectTo: (T, PortNumber) -> Maybe %
+   isConnected?: % -> Boolean
+@
+
+
+\section{The InetClientStreamSocket domain}
+
+<<domain INETCLTS InetClientStreamSocket>>=
+)abbrev domain INETCLTS InetClientStreamSocket
+InetClientStreamSocket(): Public == Private where
+  Public == Join(NetworkClientSocket IP4Address, CoercibleTo OutputForm) with
+    connectTo: (Hostname, PortNumber) -> Maybe %
+  Private == add
+    Host == Union(IP4Address,Hostname)
+    -- we hope that a small integer is OK on all platforms
+    Rep == Record(%host: Host, %port: PortNumber, %sock: Maybe SingleInteger)
+
+    connectTo(ip: IP4Address, p: PortNumber) ==
+      s: Maybe SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
+      s case nothing => nothing
+      just per [ip::Host,p,s]
+
+    connectTo(h: Hostname, p: PortNumber) ==
+      (ip := resolve(h)$IP4Address) case nothing => nothing
+      s: Maybe SingleInteger := connectToHostAndPort(ip@IP4Address,4,p)$Lisp
+      s case nothing => nothing
+      just per [h::Host,p,s]
+
+    isConnected? s ==
+      rep(s).%sock case SingleInteger
+
+    readBytes!(x,b) ==
+      not isConnected? x => error "socket is not connected"
+      n: NonNegativeInteger := 
+          readFromStreamSocket(rep(x).%sock,b::PrimitiveArray(Byte),
+                                 capacity b)$Lisp
+      setLength!(b,n)
+
+    readByte! x ==
+      not isConnected? x => error "socket is not connected"
+      readByteFromStreamSocket(rep(x).%sock)$Lisp
+
+    writeBytes!(x,b) ==
+      not isConnected? x => error "socket is not connected"
+      writeToStreamSocket(rep(x).%sock,b::PrimitiveArray(Byte), #b)$Lisp
+
+    writeByte!(x,b) ==
+      not isConnected? x => error "socket is not connected"
+      writeByteToStreamSocket(rep(x).%sock,b)$Lisp
+
+    close! x ==
+      closeSocket(rep(x).%sock)$Lisp
+      rep(x).%sock := nothing
+      x
+
+    coerce(x: %): OutputForm ==
+      x' := rep x
+      h := 
+        x'.%host case IP4Address => x'.%host::IP4Address::OutputForm
+        x'.%host::Hostname::OutputForm
+      infix('_:::OutputForm,h,x'.%port::OutputForm)$OutputForm
+      
+@
+
+
+
+\section{License}
+
+<<license>>=
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- All rights reserved.
+-- 
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are
+-- met:
+-- 
+--     - Redistributions of source code must retain the above copyright
+--       notice, this list of conditions and the following disclaimer.
+-- 
+--     - Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in
+--       the documentation and/or other materials provided with the
+--       distribution.
+-- 
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--       names of its contributors may be used to endorse or promote products
+--       derived from this software without specific prior written permission.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+-- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+-- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+-- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@
+
+<<*>>=
+<<license>>
+
+<<category CONDUIT Conduit>>
+<<category INBCON InputByteConduit>>
+<<category OUTBCON OutputByteConduit>>
+<<category IOBCON InputOutputByteConduit>>
+<<category NETCLT NetworkClientSocket>>
+
+<<domain INBFILE InputBinaryFile>>
+<<domain OUTBFILE OutputBinaryFile>>
+<<domain IOBFILE InputOutputBinaryFile>>
+
+<<domain HOSTNAME Hostname>>
+<<domain PORTNUM PortNumber>>
+<<domain IP4ADDR IP4Address>>
+
+<<domain INETCLTS InetClientStreamSocket>>
+
+@
+
+\end{document}

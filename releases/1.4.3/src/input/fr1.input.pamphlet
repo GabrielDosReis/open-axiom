@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FR.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FactoredXmpPage
+)clear all
+
+
+-- Input generated from ugxFactoredDecompPage
+)clear all
+
+g := factor(4312)
+unit(g)
+numberOfFactors(g)
+[nthFactor(g,i) for i in 1..numberOfFactors(g)]
+[nthExponent(g,i) for i in 1..numberOfFactors(g)]
+[nthFlag(g,i) for i in 1..numberOfFactors(g)]
+factorList(g)
+factors(g)
+first(%).factor
+
+-- Input generated from ugxFactoredExpandPage
+)clear all
+
+g := factor(4312)
+expand(g)
+reduce(*,[t.factor for t in factors(g)])
+
+-- Input generated from ugxFactoredArithPage
+)clear all
+
+g := factor(4312)
+f := factor(246960)
+f * g
+f**500
+gcd(f,g)
+lcm(f,g)
+f + g
+f - g
+zero?(factor(0))
+zero?(g)
+one?(factor(1))
+one?(f)
+0$Factored(Integer)
+1$Factored(Integer)
+
+-- Input generated from ugxFactoredNewPage
+)clear all
+
+nilFactor(24,2)
+nthFlag(%,1)
+sqfrFactor(30,2)
+irreducibleFactor(13,10)
+primeFactor(11,5)
+h := factor(-720)
+h - makeFR(unit(h),factorList(h))
+
+-- Input generated from ugxFactoredVarPage
+)clear all
+
+p := (4*x*x-12*x+9)*y*y + (4*x*x-12*x+9)*y + 28*x*x - 84*x + 63
+fp := factor(p)
+D(p,x)
+D(fp,x)
+numberOfFactors(%)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

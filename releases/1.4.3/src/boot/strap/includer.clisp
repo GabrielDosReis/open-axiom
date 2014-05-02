@@ -1,0 +1,279 @@
+(PROCLAIM '(OPTIMIZE SPEED))
+(IMPORT-MODULE "tokens")
+
+(IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "includer")
+
+(DEFUN PNAME (|x|)
+  (COND ((SYMBOLP |x|) (SYMBOL-NAME |x|)) ((CHARACTERP |x|) (STRING |x|))
+        (T NIL)))
+
+(DEFUN |shoeNotFound| (|fn|) (PROGN (|coreError| (LIST |fn| " not found")) NIL))
+
+(DEFUN |shoeReadLispString| (|s| |n|)
+  (LET* (|l|)
+    (PROGN
+     (SETQ |l| (LENGTH |s|))
+     (COND ((NOT (< |n| |l|)) NIL)
+           (T
+            (READ-FROM-STRING
+             (CONCAT "(" (|subString| |s| |n| (- |l| |n|)) ")")))))))
+
+(DEFUN |shoeConsole| (|line|)
+  (DECLARE (SPECIAL |$stdio|))
+  (WRITE-LINE |line| |$stdio|))
+
+(DEFUN |shoeSpaces| (|n|) (|makeString| |n| (|char| '|.|)))
+
+(DEFUN |diagnosticLocation| (|tok|)
+  (LET* (|pos|)
+    (PROGN
+     (SETQ |pos| (|tokenPosition| |tok|))
+     (CONCAT "line " (WRITE-TO-STRING (|lineNo| |pos|)) ", column "
+             (WRITE-TO-STRING (|lineCharacter| |pos|))))))
+
+(DEFUN |SoftShoeError| (|posn| |key|)
+  (PROGN
+   (|coreError| (LIST "in line " (WRITE-TO-STRING (|lineNo| |posn|))))
+   (|shoeConsole| (|lineString| |posn|))
+   (|shoeConsole| (CONCAT (|shoeSpaces| (|lineCharacter| |posn|)) "|"))
+   (|shoeConsole| |key|)))
+
+(DEFSTRUCT (|%SourceLine| (:COPIER |copy%SourceLine|)) |str| |num|)
+
+(DEFMACRO |mk%SourceLine| (|str| |num|)
+  (LIST '|MAKE-%SourceLine| :|str| |str| :|num| |num|))
+
+(DEFMACRO |sourceLineString| (|bfVar#1|) (LIST '|%SourceLine-str| |bfVar#1|))
+
+(DEFMACRO |sourceLineNumber| (|bfVar#1|) (LIST '|%SourceLine-num| |bfVar#1|))
+
+(DEFMACRO |makeSourceLine| (|s| |n|) (LIST '|mk%SourceLine| |s| |n|))
+
+(DEFUN |lineNo| (|p|) (|sourceLineNumber| (CAAR |p|)))
+
+(DEFUN |lineString| (|p|) (|sourceLineString| (CAAR |p|)))
+
+(DEFUN |lineCharacter| (|p|) (CDR |p|))
+
+(DEFCONSTANT |$bStreamNil| (LIST '|nullstream|))
+
+(DEFUN |bStreamNull| (|x|)
+  (LET* (|st| |args| |op| |ISTMP#1|)
+    (COND ((OR (NULL |x|) (AND (CONSP |x|) (EQ (CAR |x|) '|nullstream|))) T)
+          (T
+           (LOOP
+            (COND
+             ((NOT
+               (AND (CONSP |x|) (EQ (CAR |x|) '|nonnullstream|)
+                    (PROGN
+                     (SETQ |ISTMP#1| (CDR |x|))
+                     (AND (CONSP |ISTMP#1|)
+                          (PROGN
+                           (SETQ |op| (CAR |ISTMP#1|))
+                           (SETQ |args| (CDR |ISTMP#1|))
+                           T)))))
+              (RETURN NIL))
+             (T (SETQ |st| (APPLY |op| |args|)) (RPLACA |x| (CAR |st|))
+              (RPLACD |x| (CDR |st|)))))
+           (AND (CONSP |x|) (EQ (CAR |x|) '|nullstream|))))))
+
+(DEFUN |bMap| (|f| |x|) (|bDelay| #'|bMap1| (LIST |f| |x|)))
+
+(DEFUN |bMap1| (|f| |x|)
+  (COND ((|bStreamNull| |x|) |$bStreamNil|)
+        (T (CONS (APPLY |f| (LIST (CAR |x|))) (|bMap| |f| (CDR |x|))))))
+
+(DEFUN |bDelay| (|f| |x|) (CONS '|nonnullstream| (CONS |f| |x|)))
+
+(DEFUN |bAppend| (|x| |y|) (|bDelay| #'|bAppend1| (LIST |x| |y|)))
+
+(DEFUN |bAppend1| (|x| |y|)
+  (COND
+   ((|bStreamNull| |x|)
+    (COND ((|bStreamNull| |y|) (LIST '|nullstream|)) (T |y|)))
+   (T (CONS (CAR |x|) (|bAppend| (CDR |x|) |y|)))))
+
+(DEFUN |bNext| (|f| |s|) (|bDelay| #'|bNext1| (LIST |f| |s|)))
+
+(DEFUN |bNext1| (|f| |s|)
+  (LET* (|h|)
+    (COND ((|bStreamNull| |s|) (LIST '|nullstream|))
+          (T (SETQ |h| (APPLY |f| (LIST |s|)))
+           (|bAppend| (CAR |h|) (|bNext| |f| (CDR |h|)))))))
+
+(DEFUN |bRgen| (|s|) (|bDelay| #'|bRgen1| (LIST |s|)))
+
+(DEFUN |bRgen1| (|s|)
+  (LET* (|a|)
+    (PROGN
+     (SETQ |a| (|readLine| |s|))
+     (COND ((NOT (EQ |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
+           (T (LIST '|nullstream|))))))
+
+(DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
+
+(DEFUN |bIgen1| (|n|) (PROGN (SETQ |n| (+ |n| 1)) (CONS |n| (|bIgen| |n|))))
+
+(DEFUN |bAddLineNumber| (|f1| |f2|)
+  (|bDelay| #'|bAddLineNumber1| (LIST |f1| |f2|)))
+
+(DEFUN |bAddLineNumber1| (|f1| |f2|)
+  (COND ((|bStreamNull| |f1|) (LIST '|nullstream|))
+        ((|bStreamNull| |f2|) (LIST '|nullstream|))
+        (T
+         (CONS (|makeSourceLine| (CAR |f1|) (CAR |f2|))
+               (|bAddLineNumber| (CDR |f1|) (CDR |f2|))))))
+
+(DEFUN |shoePrefixLisp| (|x|) (CONCAT ")lisp" |x|))
+
+(DEFUN |shoePrefixLine| (|x|) (CONCAT ")line" |x|))
+
+(DEFUN |shoePrefix?| (|prefix| |whole|)
+  (LET* (|good|)
+    (COND ((< (LENGTH |whole|) (LENGTH |prefix|)) NIL)
+          (T (SETQ |good| T)
+           (LET ((|bfVar#1| (- (LENGTH |prefix|) 1)) (|i| 0) (|j| 0))
+             (LOOP
+              (COND ((OR (> |i| |bfVar#1|) (NOT |good|)) (RETURN NIL))
+                    (T
+                     (SETQ |good|
+                             (CHAR= (SCHAR |prefix| |i|)
+                                    (SCHAR |whole| |j|)))))
+              (SETQ |i| (+ |i| 1))
+              (SETQ |j| (+ |j| 1))))
+           (COND (|good| (|subString| |whole| (LENGTH |prefix|)))
+                 (T |good|))))))
+
+(DEFUN |shoePlainLine?| (|s|)
+  (COND ((EQL (LENGTH |s|) 0) T) (T (NOT (CHAR= (SCHAR |s| 0) (|char| '|)|))))))
+
+(DEFUN |shoeSay?| (|s|) (|shoePrefix?| ")say" |s|))
+
+(DEFUN |shoeEval?| (|s|) (|shoePrefix?| ")eval" |s|))
+
+(DEFUN |shoeFin?| (|s|) (|shoePrefix?| ")fin" |s|))
+
+(DEFUN |shoeIf?| (|s|) (|shoePrefix?| ")if" |s|))
+
+(DEFUN |shoeEndIf?| (|s|) (|shoePrefix?| ")endif" |s|))
+
+(DEFUN |shoeElse?| (|s|) (|shoePrefix?| ")else" |s|))
+
+(DEFUN |shoeElseIf?| (|s|) (|shoePrefix?| ")elseif" |s|))
+
+(DEFUN |shoeLisp?| (|s|) (|shoePrefix?| ")lisp" |s|))
+
+(DEFUN |shoeLine?| (|s|) (|shoePrefix?| ")line" |s|))
+
+(DEFUN |shoeInclude| (|s|) (|bDelay| #'|shoeInclude1| (LIST |s|)))
+
+(DEFUN |shoeInclude1| (|s|)
+  (LET* (|command| |string| |t| |h|)
+    (COND ((|bStreamNull| |s|) |s|)
+          (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
+           (SETQ |string| (|sourceLineString| |h|))
+           (COND ((SETQ |command| (|shoeFin?| |string|)) |$bStreamNil|)
+                 ((SETQ |command| (|shoeIf?| |string|))
+                  (|shoeThen| (LIST T) (LIST (STTOMC |command|)) |t|))
+                 (T (|bAppend| (|shoeSimpleLine| |h|) (|shoeInclude| |t|))))))))
+
+(DEFUN |shoeSimpleLine| (|h|)
+  (LET* (|command| |string|)
+    (PROGN
+     (SETQ |string| (|sourceLineString| |h|))
+     (COND ((|shoePlainLine?| |string|) (LIST |h|))
+           ((SETQ |command| (|shoeLisp?| |string|)) (LIST |h|))
+           ((SETQ |command| (|shoeLine?| |string|)) (LIST |h|))
+           ((SETQ |command| (|shoeSay?| |string|)) (|shoeConsole| |command|)
+            NIL)
+           ((SETQ |command| (|shoeEval?| |string|)) (STTOMC |command|) NIL)
+           (T (|shoeLineSyntaxError| |h|) NIL)))))
+
+(DEFUN |shoeThen| (|keep| |b| |s|)
+  (|bDelay| #'|shoeThen1| (LIST |keep| |b| |s|)))
+
+(DEFUN |shoeThen1| (|keep| |b| |s|)
+  (LET* (|b1| |keep1| |command| |string| |t| |h|)
+    (COND ((|bPremStreamNull| |s|) |s|)
+          (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
+           (SETQ |string| (|sourceLineString| |h|))
+           (COND
+            ((SETQ |command| (|shoeFin?| |string|)) (|bPremStreamNil| |h|))
+            (T (SETQ |keep1| (CAR |keep|)) (SETQ |b1| (CAR |b|))
+             (COND
+              ((SETQ |command| (|shoeIf?| |string|))
+               (COND
+                ((AND |keep1| |b1|)
+                 (|shoeThen| (CONS T |keep|) (CONS (STTOMC |command|) |b|)
+                             |t|))
+                (T (|shoeThen| (CONS NIL |keep|) (CONS NIL |b|) |t|))))
+              ((SETQ |command| (|shoeElseIf?| |string|))
+               (COND
+                ((AND |keep1| (NOT |b1|))
+                 (|shoeThen| (CONS T (CDR |keep|))
+                             (CONS (STTOMC |command|) (CDR |b|)) |t|))
+                (T
+                 (|shoeThen| (CONS NIL (CDR |keep|)) (CONS NIL (CDR |b|))
+                             |t|))))
+              ((SETQ |command| (|shoeElse?| |string|))
+               (COND
+                ((AND |keep1| (NOT |b1|))
+                 (|shoeElse| (CONS T (CDR |keep|)) (CONS T (CDR |b|)) |t|))
+                (T
+                 (|shoeElse| (CONS NIL (CDR |keep|)) (CONS NIL (CDR |b|))
+                             |t|))))
+              ((SETQ |command| (|shoeEndIf?| |string|))
+               (COND ((NULL (CDR |b|)) (|shoeInclude| |t|))
+                     (T (|shoeThen| (CDR |keep|) (CDR |b|) |t|))))
+              ((AND |keep1| |b1|)
+               (|bAppend| (|shoeSimpleLine| |h|) (|shoeThen| |keep| |b| |t|)))
+              (T (|shoeThen| |keep| |b| |t|)))))))))
+
+(DEFUN |shoeElse| (|keep| |b| |s|)
+  (|bDelay| #'|shoeElse1| (LIST |keep| |b| |s|)))
+
+(DEFUN |shoeElse1| (|keep| |b| |s|)
+  (LET* (|keep1| |b1| |command| |string| |t| |h|)
+    (COND ((|bPremStreamNull| |s|) |s|)
+          (T (SETQ |h| (CAR |s|)) (SETQ |t| (CDR |s|))
+           (SETQ |string| (|sourceLineString| |h|))
+           (COND
+            ((SETQ |command| (|shoeFin?| |string|)) (|bPremStreamNil| |h|))
+            (T (SETQ |b1| (CAR |b|)) (SETQ |keep1| (CAR |keep|))
+             (COND
+              ((SETQ |command| (|shoeIf?| |string|))
+               (COND
+                ((AND |keep1| |b1|)
+                 (|shoeThen| (CONS T |keep|) (CONS (STTOMC |command|) |b|)
+                             |t|))
+                (T (|shoeThen| (CONS NIL |keep|) (CONS NIL |b|) |t|))))
+              ((SETQ |command| (|shoeEndIf?| |string|))
+               (COND ((NULL (CDR |b|)) (|shoeInclude| |t|))
+                     (T (|shoeThen| (CDR |keep|) (CDR |b|) |t|))))
+              ((AND |keep1| |b1|)
+               (|bAppend| (|shoeSimpleLine| |h|) (|shoeElse| |keep| |b| |t|)))
+              (T (|shoeElse| |keep| |b| |t|)))))))))
+
+(DEFUN |shoeLineSyntaxError| (|h|)
+  (PROGN
+   (|shoeConsole|
+    (CONCAT "INCLUSION SYNTAX ERROR IN LINE "
+            (WRITE-TO-STRING (|sourceLineNumber| |h|))))
+   (|shoeConsole| (|sourceLineString| |h|))
+   (|shoeConsole| "LINE IGNORED")))
+
+(DEFUN |bPremStreamNil| (|h|)
+  (PROGN
+   (|shoeConsole|
+    (CONCAT "UNEXPECTED )fin IN LINE "
+            (WRITE-TO-STRING (|sourceLineNumber| |h|))))
+   (|shoeConsole| (|sourceLineString| |h|))
+   (|shoeConsole| "REST OF FILE IGNORED")
+   |$bStreamNil|))
+
+(DEFUN |bPremStreamNull| (|s|)
+  (COND ((|bStreamNull| |s|) (|shoeConsole| "FILE TERMINATED BEFORE )endif") T)
+        (T NIL)))
+

@@ -1,0 +1,27 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.17.  )ltrace
+==============================================================================
+ 
+User Level Required:  development
+ 
+Command Syntax: 
+ 
+This command has the same arguments as options as the )trace command.
+ 
+Command Description: 
+ 
+This command is used by OpenAxiom system developers to trace Lisp or BOOT
+functions. It is not supported for general use.
+ 
+Also See: 
+o )boot
+o )lisp
+o )trace
+ 

@@ -1,0 +1,5 @@
+)co sf-2910351
+
+x : Identifier := 'PlaneAlgebraicCurvePlot
+
+getCtorKindInString(x)$Bug

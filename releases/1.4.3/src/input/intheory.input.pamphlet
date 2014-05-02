@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input INTHEORY.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+
+-- Input generated from IntegerNumberTheoryFunctionsXmpPage
+)clear all
+
+div144 := divisors(144)
+#(div144)
+reduce(+,div144)
+numberOfDivisors(144)
+sumOfDivisors(144)
+f1(n) == reduce(+,[moebiusMu(d) * numberOfDivisors(quo(n,d)) for d in divisors(n)])
+f1(200)
+f1(846)
+f2(n) == reduce(+,[moebiusMu(d) * sumOfDivisors(quo(n,d)) for d in divisors(n)])
+f2(200)
+f2(846)
+fibonacci(25)
+[fibonacci(n) for n in 1..15]
+fib(n) == reduce(+,[binomial(n-1-k,k) for k in 0..quo(n-1,2)])
+fib(25)
+[fib(n) for n in 1..15]
+legendre(3,5)
+legendre(23,691)
+h(d) == quo(reduce(+, [jacobi(d,k) for k in 1..quo(-d, 2)]), 2 - jacobi(d,2))
+h(-163)
+h(-499)
+h(-1832)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

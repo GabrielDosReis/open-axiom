@@ -1,0 +1,145 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.13.  )history
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )history )on
+  - )history )off
+  - )history )write historyInputFileName
+  - )history )show [n] [both]
+  - )history )save savedHistoryName
+  - )history )restore [savedHistoryName]
+  - )history )reset
+  - )history )change n
+  - )history )memory
+  - )history )file
+  - %
+  - %%(n)
+  - )set history on | off
+ 
+Command Description: 
+ 
+The history facility within OpenAxiom allows you to restore your
+environment to that of another session and recall previous
+computational results. Additional commands allow you to review
+previous input lines and to create an .input file of the lines typed
+to OpenAxiom. 
+ 
+OpenAxiom saves your input and output if the history facility is
+turned on (which is the default). This information is saved if either of
+ 
+)set history on
+)history )on
+ 
+has been issued. Issuing either
+ 
+)set history off
+)history )off
+ 
+will discontinue the recording of information.
+ 
+Whether the facility is disabled or not, the value of % in OpenAxiom always
+refers to the result of the last computation. If you have not yet entered
+anything, % evaluates to an object of type Variable('%). The function %% may
+be used to refer to other previous results if the history facility is
+enabled. In that case, %%(n) is the output from step n if n > 0. If n < 0,
+the step is computed relative to the current step. Thus %%(-1) is also the
+previous step, %%(-2), is the step before that, and so on. If an invalid step
+number is given, OpenAxiom will signal an error.
+ 
+The environment information can either be saved in a file or entirely in
+memory (the default). Each frame ( description of command )frame ) has its
+own history database. When it is kept in a file, some of it may also be kept
+in memory for efficiency. When the information is saved in a file, the name
+of the file is of the form FRAME.axh where ``FRAME'' is the name of the
+current frame. The history file is placed in the current working directory
+(see description of command )cd ). Note that these history database files are
+not text files (in fact, they are directories themselves), and so are not in
+human-readable format.
+ 
+The options to the )history command are as follows:
+ 
+  )change n
+    will set the number of steps that are saved in memory to n. This option
+    only has effect when the history data is maintained in a file. If you
+    have issued )history )memory (or not changed the default) there is no
+    need to use )history )change.
+ 
+  )on
+    will start the recording of information. If the workspace is not empty,
+    you will be asked to confirm this request. If you do so, the workspace
+    will be cleared and history data will begin being saved. You can also
+    turn the facility on by issuing )set history on.
+ 
+  )off
+    will stop the recording of information. The )history )show command will
+    not work after issuing this command. Note that this command may be issued
+    to save time, as there is some performance penalty paid for saving the
+    environment data. You can also turn the facility off by issuing )set
+    history off.
+ 
+  )file
+    indicates that history data should be saved in an external file on disk.
+ 
+  )memory
+    indicates that all history data should be kept in memory rather than
+    saved in a file. Note that if you are computing with very large objects
+    it may not be practical to kept this data in memory.
+ 
+  )reset
+    will flush the internal list of the most recent workspace calculations so
+    that the data structures may be garbage collected by the underlying Lisp
+    system. Like )history )change, this option only has real effect when
+    history data is being saved in a file.
+ 
+  )restore [savedHistoryName]
+    completely clears the environment and restores it to a saved session, if
+    possible. The )save option below allows you to save a session to a file
+    with a given name. If you had issued )history )save jacobi the command
+    )history )restore jacobi would clear the current workspace and load the
+    contents of the named saved session. If no saved session name is
+    specified, the system looks for a file called last.axh.
+ 
+  )save savedHistoryName
+    is used to save a snapshot of the environment in a file. This file is
+    placed in the current working directory (see description of command )cd
+    ). Use )history )restore to restore the environment to the state
+    preserved in the file. This option also creates an input file containing
+    all the lines of input since you created the workspace frame (for
+    example, by starting your OpenAxiom session) or last did a )clear all or
+    )clear completely.
+ 
+  )show [n] [both]
+    can show previous input lines and output results. )show will display up
+    to twenty of the last input lines (fewer if you haven't typed in twenty
+    lines). )show n will display up to n of the last input lines. )show both
+    will display up to five of the last input lines and output results. )show
+    n both will display up to n of the last input lines and output results.
+ 
+  )write historyInputFile
+    creates an .input file with the input lines typed since the start of the
+    session/frame or the last )clear all or )clear completely. If
+    historyInputFileName does not contain a period (``.'') in the filename,
+    .input is appended to it. For example, )history )write chaos and )history
+    )write chaos.input both write the input lines to a file called
+    chaos.input in your current working directory. If you issued one or more
+    )undo commands, )history )write eliminates all input lines backtracked
+    over as a result of )undo. You can edit this file and then use )read to
+    have OpenAxiom process the contents.
+ 
+Also See: 
+o )frame
+o )read
+o )set
+o )undo
+ 

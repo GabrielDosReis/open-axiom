@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FRAC.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FractionXmpPage
+)clear all
+
+a := 11/12
+b := 23/24
+3 - a*b**2 + a + b/a
+numer(a)
+denom(b)
+r := (x**2 + 2*x + 1)/(x**2 - 2*x + 1)
+factor(r)
+map(factor,r)
+continuedFraction(7/12)
+partialFraction(7,12)
+g := 2/3 + 4/5*%i
+g :: FRAC COMPLEX INT
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

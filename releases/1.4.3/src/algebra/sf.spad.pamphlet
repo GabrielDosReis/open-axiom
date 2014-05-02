@@ -1,0 +1,560 @@
+\documentclass{article}
+\usepackage{open-axiom}
+\begin{document}
+\title{\$SPAD/src/algebra sf.spad}
+\author{Michael Monagan, Stephen M. Watt}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{category REAL RealConstant}
+<<category REAL RealConstant>>=
+)abbrev category REAL RealConstant
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of real numeric domains, i.e. convertible to floats.
+RealConstant(): Category ==
+  Join(ConvertibleTo DoubleFloat, ConvertibleTo Float)
+
+@
+\section{category RADCAT RadicalCategory}
+<<category RADCAT RadicalCategory>>=
+)abbrev category RADCAT RadicalCategory
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: nthRoot, sqrt, **
+++ Related Constructors:
+++ Keywords: rational numbers
+++ Description: The \spad{RadicalCategory} is a model for the rational numbers.
+RadicalCategory(): Category == with
+  sqrt   : % -> %
+      ++ sqrt(x) returns the square root of x.
+  nthRoot: (%, Integer) -> %
+      ++ nthRoot(x,n) returns the nth root of x.
+  **   : (%, Fraction Integer) -> %
+      ++ x ** y is the rational exponentiation of x by the power y.
+ add
+  sqrt x        == x ** inv(2::Fraction(Integer))
+  nthRoot(x, n) == x ** inv(n::Fraction(Integer))
+
+@
+\section{category RNS RealNumberSystem}
+<<category RNS RealNumberSystem>>=
+)abbrev category RNS RealNumberSystem
+++ Author: Michael Monagan and Stephen M. Watt
+++ Date Created:
+++   January 1988
+++ Change History:
+++ Basic Operations: abs, ceiling, wholePart, floor, fractionPart, norm, round, truncate
+++ Related Constructors:
+++ Keywords: real numbers
+++ Description:  
+++ The real number system category is intended as a model for the real
+++ numbers.  The real numbers form an ordered normed field.  Note that
+++ we have purposely not included \spadtype{DifferentialRing} or the elementary
+++ functions (see \spadtype{TranscendentalFunctionCategory}) in the definition.
+RealNumberSystem(): Category ==
+  Join(Field, OrderedRing, RealConstant, RetractableTo Integer,
+       RetractableTo Fraction Integer, RadicalCategory,
+        ConvertibleTo Pattern Float, PatternMatchable Float,
+          CharacteristicZero) with
+    norm : % -> %
+      ++ norm x returns the same as absolute value.
+    ceiling : % -> %
+      ++ ceiling x returns the small integer \spad{>= x}.
+    floor: % -> %
+      ++ floor x returns the largest integer \spad{<= x}.
+    wholePart  : % -> Integer
+      ++ wholePart x returns the integer part of x.
+    fractionPart : % -> %
+      ++ fractionPart x returns the fractional part of x.
+    truncate: % -> %
+      ++ truncate x returns the integer between x and 0 closest to x.
+    round: % -> %
+      ++ round x computes the integer closest to x.
+
+ add
+   characteristic == 0
+   fractionPart x           == x - truncate x
+   truncate x          == (negative? x => -floor(-x); floor x)
+   round x          == (negative? x => truncate(x-1/2::%); truncate(x+1/2::%))
+   norm x           == abs x
+   coerce(x:Fraction Integer):% == numer(x)::% / denom(x)::%
+   convert(x:%):Pattern(Float)  == convert(x)@Float :: Pattern(Float)
+
+   floor x ==
+      x1 := (wholePart x) :: %
+      x = x1 => x
+      negative? x => (x1 - 1)
+      x1
+
+   ceiling x ==
+      x1 := (wholePart x)::%
+      x = x1 => x
+      x >= 0 => (x1 + 1)
+      x1
+
+   patternMatch(x, p, l) ==
+     generic? p => addMatch(p, x, l)
+     constant? p =>
+       (r := retractIfCan(p)@Union(Float, "failed")) case Float =>
+         convert(x)@Float = r::Float => l
+         failed()
+       failed()
+     failed()
+
+@
+
+\section{category FPS FloatingPointSystem}
+<<category FPS FloatingPointSystem>>=
+)abbrev category FPS FloatingPointSystem
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: approximate, base, bits, digits, exponent, float,
+++    mantissa, order, precision, round?
+++ Related Constructors:
+++ Keywords: float, floating point
+++ Description:  
+++ This category is intended as a model for floating point systems.
+++ A floating point system is a model for the real numbers.  In fact,
+++ it is an approximation in the sense that not all real numbers are
+++ exactly representable by floating point numbers.
+++ A floating point system is characterized by the following:
+++
+++   1: \spadfunFrom{base}{FloatingPointSystem} of the \spadfunFrom{exponent}{FloatingPointSystem}.
+++          (actual implemenations are usually binary or decimal)
+++   2: \spadfunFrom{precision}{FloatingPointSystem} of the \spadfunFrom{mantissa}{FloatingPointSystem} (arbitrary or fixed)
+++   3: rounding error for operations
+--++   4:  when, and what happens if exponent overflow/underflow occurs
+++
+++ Because a Float is an approximation to the real numbers, even though
+++ it is defined to be a join of a Field and OrderedRing, some of
+++ the attributes do not hold.  In particular associative("+")
+++ does not hold.  Algorithms defined over a field need special
+++ considerations when the field is a floating point system.
+FloatingPointSystem(): Category == RealNumberSystem() with
+   approximate
+      ++ \spad{approximate} means "is an approximation to the real numbers".
+   float: (Integer,Integer) -> %
+      ++ float(a,e) returns \spad{a * base() ** e}.
+   float: (Integer,Integer,PositiveInteger) -> %
+      ++ float(a,e,b) returns \spad{a * b ** e}.
+   order: % -> Integer
+      ++ order x is the order of magnitude of x.
+      ++ Note: \spad{base ** order x <= |x| < base ** (1 + order x)}.
+   base: () -> PositiveInteger
+      ++ base() returns the base of the \spadfunFrom{exponent}{FloatingPointSystem}.
+   exponent: % -> Integer
+      ++ exponent(x) returns the \spadfunFrom{exponent}{FloatingPointSystem} part of x.
+   mantissa: % -> Integer
+      ++ mantissa(x) returns the mantissa part of x.
+  -- round?: () -> B
+  --    ++ round?() returns the rounding or chopping.
+
+   bits: () -> PositiveInteger
+      ++ bits() returns ceiling's precision in bits.
+   digits: () -> PositiveInteger
+      ++ digits() returns ceiling's precision in decimal digits.
+   precision: () -> PositiveInteger
+      ++ precision() returns the precision in digits base.
+
+   if % has arbitraryPrecision then
+      bits: PositiveInteger -> PositiveInteger
+        ++ bits(n) set the \spadfunFrom{precision}{FloatingPointSystem} to n bits.
+      digits: PositiveInteger -> PositiveInteger
+        ++ digits(d) set the \spadfunFrom{precision}{FloatingPointSystem} to d digits.
+      precision: PositiveInteger -> PositiveInteger
+        ++ precision(n) set the precision in the base to n decimal digits.
+      increasePrecision: Integer -> PositiveInteger
+        ++ increasePrecision(n) increases the current
+        ++ \spadfunFrom{precision}{FloatingPointSystem} by n decimal digits.
+      decreasePrecision: Integer -> PositiveInteger
+        ++ decreasePrecision(n) decreases the current
+        ++ \spadfunFrom{precision}{FloatingPointSystem} precision by n decimal digits.
+   if not (% has arbitraryExponent) then
+    --  overflow: (()->Exit) -> Void
+    --    ++ overflow() returns the Exponent overflow of float
+    --  underflow: (()->Exit) -> Void
+    --    ++ underflow() returns the Exponent underflow of float
+    --  maxExponent: () -> Integer
+    --    ++ maxExponent() returns the max Exponent of float
+      if not (% has arbitraryPrecision) then
+         min: () -> %
+          ++ min() returns the minimum floating point number.
+         max: () -> %
+          ++ max() returns the maximum floating point number.
+ add
+   float(ma, ex) == float(ma, ex, base())
+   digits() == max(1,4004 * (bits()-1) quo 13301)::PositiveInteger
+
+@
+
+\section{domain DFLOAT DoubleFloat}
+
+\end{quote}
+<<domain DFLOAT DoubleFloat>>=
+)abbrev domain DFLOAT DoubleFloat
+++ Author: Michael Monagan
+++ Date Created:
+++   January 1988
+++ Date Last Modified: June 26, 2011.
+++ Change History:
+++ Basic Operations: exp1, hash, log2, log10, rationalApproximation, / , **
+++ Related Constructors:
+++ Keywords: small float
+++ Description:  \spadtype{DoubleFloat} is intended to make accessible
+++ hardware floating point arithmetic in \Language{}, either native double
+++ precision, or IEEE. On most machines, there will be hardware support for
+++ the arithmetic operations:
+++ \spadfunFrom{+}{DoubleFloat}, \spadfunFrom{*}{DoubleFloat},
+++ \spadfunFrom{/}{DoubleFloat} and possibly also the
+++ \spadfunFrom{sqrt}{DoubleFloat} operation.
+++ The operations \spadfunFrom{exp}{DoubleFloat},
+++ \spadfunFrom{log}{DoubleFloat}, \spadfunFrom{sin}{DoubleFloat},
+++ \spadfunFrom{cos}{DoubleFloat},
+++ \spadfunFrom{atan}{DoubleFloat} are normally coded in
+++ software based on minimax polynomial/rational approximations.
+++ Note that under Lisp/VM, \spadfunFrom{atan}{DoubleFloat}
+++ is not available at this time.
+++ Some general comments about the accuracy of the operations:
+++ the operations \spadfunFrom{+}{DoubleFloat},
+++ \spadfunFrom{*}{DoubleFloat}, \spadfunFrom{/}{DoubleFloat} and
+++ \spadfunFrom{sqrt}{DoubleFloat} are expected to be fully accurate.
+++ The operations \spadfunFrom{exp}{DoubleFloat},
+++ \spadfunFrom{log}{DoubleFloat}, \spadfunFrom{sin}{DoubleFloat},
+++ \spadfunFrom{cos}{DoubleFloat} and
+++ \spadfunFrom{atan}{DoubleFloat} are not expected to be
+++ fully accurate.  In particular, \spadfunFrom{sin}{DoubleFloat}
+++ and \spadfunFrom{cos}{DoubleFloat}
+++ will lose all precision for large arguments.
+++
+++ The \spadtype{Float} domain provides an alternative to the \spad{DoubleFloat} domain.
+++ It provides an arbitrary precision model of floating point arithmetic.
+++ This means that accuracy problems like those above are eliminated
+++ by increasing the working precision where necessary.  \spadtype{Float}
+++ provides some special functions such as \spadfunFrom{erf}{DoubleFloat},
+++ the error function
+++ in addition to the elementary functions.  The disadvantage of
+++ \spadtype{Float} is that it is much more expensive than small floats when the latter can be used.
+-- I've put some timing comparisons in the notes for the Float
+-- domain about the difference in speed between the two domains.
+DoubleFloat(): Join(FloatingPointSystem, DifferentialRing,
+   TranscendentalFunctionCategory, ConvertibleTo InputForm) with
+      /   : (%, Integer) -> %
+        ++ x / i computes the division from x by an integer i.
+      ** : (%,%) -> %
+        ++ x ** y returns the yth power of x (equal to \spad{exp(y log x)}).
+      exp1 : () -> %
+        ++ exp1() returns the natural log base \spad{2.718281828...}.
+      log2 :  % -> %
+        ++ log2(x) computes the logarithm with base 2 for x.
+      log10: % -> %
+        ++ log10(x) computes the logarithm with base 10 for x.
+      atan : (%,%) -> %
+        ++ atan(x,y) computes the arc tangent from x with phase y.
+      Gamma: % -> %
+        ++ Gamma(x) is the Euler Gamma function.
+      Beta : (%,%) -> %
+        ++ Beta(x,y) is \spad{Gamma(x) * Gamma(y)/Gamma(x+y)}.
+      rationalApproximation: (%, NonNegativeInteger) -> Fraction Integer
+        ++ rationalApproximation(f, n) computes a rational approximation
+        ++ r to f with relative error \spad{< 10**(-n)}.
+      rationalApproximation: (%, NonNegativeInteger, NonNegativeInteger) -> Fraction Integer
+         ++ rationalApproximation(f, n, b) computes a rational
+         ++ approximation r to f with relative error \spad{< b**(-n)}
+         ++ (that is, \spad{|(r-f)/f| < b**(-n)}).
+      nan?: % -> Boolean
+         ++ \spad{nan? x} holds if \spad{x} is a Not a Number floating
+         ++ point data in the IEEE 754 sense.
+
+ == add
+   macro MER == Record(MANTISSA:Integer,EXPONENT:Integer)
+   import %hash: % -> SingleInteger     from Foreign Builtin
+   import %fminval: () -> %             from Foreign Builtin
+   import %fmaxval: () -> %             from Foreign Builtin
+   import %fbase: () -> PositiveInteger from Foreign Builtin
+   import %fprec: () -> PositiveInteger from Foreign Builtin
+   import %i2f: Integer -> %            from Foreign Builtin
+   import %fabs: % -> %                 from Foreign Builtin
+   import %fneg: % -> %                 from Foreign Builtin
+   import %ftrunc: % -> Integer         from Foreign Builtin
+   import %fmul: (%,%) -> %             from Foreign Builtin
+   import %imulf: (Integer,%) -> %      from Foreign Builtin
+   import %fadd: (%,%) -> %             from Foreign Builtin
+   import %fsub: (%,%) -> %             from Foreign Builtin
+   import %fdiv: (%,%) -> %             from Foreign Builtin
+   import %fdivi: (%,Integer) -> %      from Foreign Builtin
+   import %fmin: (%,%) -> %             from Foreign Builtin
+   import %fmax: (%,%) -> %             from Foreign Builtin
+   import %feq: (%,%) -> Boolean        from Foreign Builtin
+   import %flt: (%,%) -> Boolean        from Foreign Builtin
+   import %fle: (%,%) -> Boolean        from Foreign Builtin
+   import %fgt: (%,%) -> Boolean        from Foreign Builtin
+   import %fge: (%,%) -> Boolean        from Foreign Builtin
+   import %fpowi: (%,Integer) -> %      from Foreign Builtin
+   import %fpowf: (%,%) -> %            from Foreign Builtin
+   import %fsqrt: % -> %                from Foreign Builtin
+   import %fexp: % -> %                 from Foreign Builtin
+   import %flog: % -> %                 from Foreign Builtin
+   import %flog2: % -> %                from Foreign Builtin
+   import %flog10: % -> %               from Foreign Builtin
+   import %fsin: % -> %                 from Foreign Builtin
+   import %fcos: % -> %                 from Foreign Builtin
+   import %ftan: % -> %                 from Foreign Builtin
+   import %fcot: % -> %                 from Foreign Builtin
+   import %fasin: % -> %                from Foreign Builtin
+   import %facos: % -> %                from Foreign Builtin
+   import %fatan: % -> %                from Foreign Builtin
+   import %facot: % -> %                from Foreign Builtin
+   import %fsinh: % -> %                from Foreign Builtin
+   import %fcosh: % -> %                from Foreign Builtin
+   import %ftanh: % -> %                from Foreign Builtin
+   import %fasinh: % -> %               from Foreign Builtin
+   import %facosh: % -> %               from Foreign Builtin
+   import %fatanh: % -> %               from Foreign Builtin
+   import %fcstpi: () -> %              from Foreign Builtin
+   import %fNaN?: % -> Boolean          from Foreign Builtin
+   import %fdecode: % -> List Integer   from Foreign Builtin
+   import %lfirst: List Integer -> Integer from Foreign Builtin
+   import %lsecond: List Integer -> Integer from Foreign Builtin
+   import %lthird: List Integer -> Integer from Foreign Builtin
+
+   base()           == %fbase()
+   mantissa x       ==
+     fp := %fdecode x
+     %lfirst fp * %lthird fp
+   exponent x       == %lsecond %fdecode x
+   precision()      == %fprec()
+   bits()           ==
+     base() = 2 => precision()
+     base() = 16 => 4*precision()
+     wholePart(precision() * log2 %i2f base())::PositiveInteger
+   max()            == %fmaxval()
+   min()            == %fminval()
+   order(a) == precision() + exponent a - 1
+   0                == %i2f(0@Integer)
+   1                == %i2f(1@Integer)
+   -- rational approximation to e accurate to 23 digits
+   exp1()           == %i2f(534625820200) / %i2f(196677847971)
+   pi()             == %fcstpi()
+   coerce(x:%):OutputForm == outputForm x
+   convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
+   x < y            == %flt(x,y)
+   x > y            == %fgt(x,y)
+   x <= y           == %fle(x,y)
+   x >= y           == %fge(x,y)
+   - x              == %fneg x
+   x + y            == %fadd(x,y)
+   x:% - y:%        == %fsub(x,y)
+   x:% * y:%        == %fmul(x,y)
+   i:Integer * x:%  == %imulf(i,x)
+   max(x,y)         == %fmax(x,y)
+   min(x,y)         == %fmin(x,y)
+   x = y            == %feq(x,y)
+   x:% / i:Integer  == %fdivi(x,i)
+   sqrt x           == %fsqrt x
+   log10 x          == %flog10 x
+   x:% ** i:Integer == %fpowi(x,i)
+   x:% ** y:%       == %fpowf(x,y)
+   coerce(i:Integer):% == %i2f i
+   exp x            == %fexp x
+   log x            == %flog x
+   log2 x           == %flog2 x
+   sin x            == %fsin x
+   cos x            == %fcos x
+   tan x            == %ftan x
+   cot x            == %fcot x
+   sec x            == 1/cos(x)
+   csc x            == 1/sin(x)
+   asin x           == %fasin x
+   acos x           == %facos x
+   atan x           == %fatan x
+   acsc x           == asin(1/x)
+   acot x           == %facot x
+   asec x           == acos(1/x)
+   sinh x           == %fsinh x
+   cosh x           == %fcosh x
+   tanh x           == %ftanh x
+   csch x           == 1/sinh(x)
+   coth x           == 1/tanh(x)
+   sech x           == 1/cosh(x)
+   asinh x          == %fasinh x
+   acosh x          == %facosh x
+   atanh x          == %fatanh x
+   acsch x          == asinh(1/x)
+   acoth x          == atanh(1/x)
+   asech x          == acosh(1/x)
+   x:% / y:%        == %fdiv(x,y)
+   negative? x      == sign x < 0
+   zero? x          == x = 0
+   one? x           == x = 1
+   hash x           == %hash x
+   recip(x)         == (zero? x => "failed"; 1 / x)
+   differentiate x  == 0
+
+   SFSFUN           ==> DoubleFloatSpecialFunctions()
+   sfx              ==> x pretend DoubleFloat
+   sfy              ==> y pretend DoubleFloat
+   Gamma x          == Gamma(sfx)$SFSFUN pretend %
+   Beta(x,y)        == Beta(sfx,sfy)$SFSFUN pretend %
+
+   wholePart x      == %ftrunc x
+   float(ma,ex,b)   == ma * %i2f(b)**ex
+   convert(x:%):DoubleFloat == x pretend DoubleFloat
+   convert(x:%):Float == convert(x pretend DoubleFloat)$Float
+   rationalApproximation(x, d) == rationalApproximation(x, d, 10)
+
+   atan(x,y) ==
+      zero? x =>
+         positive? y => pi()/2
+         negative? y => -pi()/2
+         0
+      -- Only count on first quadrant being on principal branch.
+      theta := atan abs(y/x)
+      if negative? x then theta := pi() - theta
+      if negative? y then theta := - theta
+      theta
+
+   retract(x:%):Fraction(Integer) ==
+     rationalApproximation(x, (precision() - 1)::NonNegativeInteger, base())
+
+   retractIfCan(x:%):Union(Fraction Integer, "failed") ==
+     rationalApproximation(x, (precision() - 1)::NonNegativeInteger, base())
+
+   retract(x:%):Integer ==
+     x = (%i2f(n := wholePart x)) => n
+     error "Not an integer"
+
+   retractIfCan(x:%):Union(Integer, "failed") ==
+     x = (%i2f(n := wholePart x)) => n
+     "failed"
+
+   sign(x) == %lthird %fdecode x
+   abs x   == %fabs x
+   positive? x == sign x > 0
+   manexp(x: %): MER ==
+      fp := %fdecode x
+      m := %lfirst fp
+      zero? m => [m,0]
+      [%lfirst fp * %lthird fp, %lsecond fp]
+
+-- rationalApproximation(y,d,b) ==
+--    this is the quotient remainder algorithm (requires wholePart operation)
+--    x := y
+--    if b < 2 then error "base must be > 1"
+--    tol := (b::%)**d
+--    p0,p1,q0,q1 : Integer
+--    p0 := 0; p1 := 1; q0 := 1; q1 := 0
+--    repeat
+--       a := wholePart x
+--       x := fractionPart x
+--       p2 := p0+a*p1
+--       q2 := q0+a*q1
+--       if x = 0 or tol*abs(q2*y-(p2::%)) < abs(q2*y) then
+--          return (p2/q2)
+--       (p0,p1) := (p1,p2)
+--       (q0,q1) := (q1,q2)
+--       x := 1/x
+
+   rationalApproximation(f,d,b) ==
+      -- this algorithm expresses f as n / d where d = BASE ** k
+      -- then all arithmetic operations are done over the integers
+      (nu, ex) := manexp f
+      BASE := base()
+      ex >= 0 => (nu * BASE ** (ex::NonNegativeInteger))::Fraction(Integer)
+      de :Integer := BASE**((-ex)::NonNegativeInteger)
+      b < 2 => error "base must be > 1"
+      tol := b**d
+      s := nu; t := de
+      p0:Integer := 0; p1:Integer := 1; q0:Integer := 1; q1:Integer := 0
+      repeat
+         (q,r) := divide(s, t)
+         p2 := q*p1+p0
+         q2 := q*q1+q0
+         r = 0 or tol*abs(nu*q2-de*p2) < de*abs(p2) => return(p2/q2)
+         (p0,p1) := (p1,p2)
+         (q0,q1) := (q1,q2)
+         (s,t) := (t,r)
+
+   x:% ** r:Fraction Integer ==
+      zero? x =>
+         zero? r => error "0**0 is undefined"
+         negative? r => error "division by 0"
+         0
+      zero? r or one? x => 1
+      one?  r => x
+      n := numer r
+      d := denom r
+      negative? x =>
+         odd? d =>
+            odd? n => return -((-x)**r)
+            return ((-x)**r)
+         error "negative root"
+      d = 2 => sqrt(x) ** n
+      x ** (n::% / d::%)
+
+   nan? x == %fNaN? x
+@
+
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<category REAL RealConstant>>
+<<category RADCAT RadicalCategory>>
+<<category RNS RealNumberSystem>>
+<<category FPS FloatingPointSystem>>
+<<domain DFLOAT DoubleFloat>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} Steele, Guy L. Jr. ``Common Lisp The Language''
+Second Edition 1990 ISBN 1-55558-041-6 Digital Press
+\end{thebibliography}
+\end{document}

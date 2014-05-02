@@ -1,0 +1,10 @@
+++ Contibuted by Yixin Cao
+)abbrev domain TD TestDomain
+TestDomain :Public == Private where
+  Public == with
+    test: Syntax -> Boolean
+
+  Private == add
+    test(x) ==
+      if x case Symbol then coerce(x)@Symbol
+      x case Symbol

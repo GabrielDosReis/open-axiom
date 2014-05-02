@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CYCLES.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from CycleIndicatorsXmpPage
+)clear all
+
+)expose EVALCYC
+complete 1
+complete 2
+complete 3
+complete 7
+elementary 7
+alternating 7
+cyclic 7
+dihedral 7
+graphs 5
+cap(complete 2**2, complete 2*complete 1**2)
+cap(elementary 2**2, complete 2*complete 1**2)
+cap(complete 3*complete 2*complete 1,complete 2**2*complete 1**2)
+cap(elementary 3*elementary 2*elementary 1,complete 2**2*complete 1**2)
+cap(complete 3*complete 2*complete 1,elementary 2**2*elementary 1**2)
+eval(cup(complete 3*complete 2*complete 1, cup(complete 2**2*complete 1**2,complete 2**3)))
+square:=dihedral 4
+cap(complete 2**2,square)
+cap(complete 3*complete 2**2,dihedral 7)
+cap(graphs 5,complete 7*complete 3)
+s(x) == powerSum(x)
+cube:=(1/24)*(s 1**8+9*s 2**4 + 8*s 3**2*s 1**2+6*s 4**2)
+cap(complete 4**2,cube)
+cap(complete 2**3*complete 1**2,wreath(elementary 4,elementary 2))
+cap(complete 2**3*complete 1**2,wreath(elementary 4,complete 2))
+cap(complete 2**3*complete 1**2,wreath(complete 4,elementary 2))
+cap(complete 2**3*complete 1**2,wreath(complete 4,complete 2))
+x: ULS(FRAC INT,'x,0) := 'x
+ZeroOrOne: INT -> ULS(FRAC INT, 'x, 0)
+Integers: INT -> ULS(FRAC INT, 'x, 0)
+ZeroOrOne n == 1+x**n
+ZeroOrOne 5
+Integers n == 1/(1-x**n)
+Integers 5
+eval(ZeroOrOne, graphs 5)
+eval(ZeroOrOne,dihedral 8)
+eval(Integers,complete 4)
+eval(Integers,elementary 4)
+eval(ZeroOrOne,cube)
+eval(Integers,cube)
+eval(Integers,graphs 5)
+eval(ZeroOrOne ,graphs 15)
+cap(dihedral 30,complete 7*complete 8*complete 5*complete 10)
+sf3221:= SFunction [3,2,2,1]
+cap(sf3221,complete 2**4)
+cap(sf3221, powerSum 1**8)
+eval(Integers, sf3221)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
