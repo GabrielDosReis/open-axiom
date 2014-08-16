@@ -1,3 +1,8 @@
+2014-08-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4: Do not waste time checking for standard
+	integer types since we are requiring at least C++11.
+
 2014-02-21  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_CANONICAL_SYSTEM): Set derived

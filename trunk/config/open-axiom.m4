@@ -29,26 +29,6 @@ AC_SUBST(oa_configdir,'$(top_builddir)/config')
 AC_SUBST(oa_c_macros,'$(oa_configdir)/axiom-c-macros.h')
 ])
 
-dnl --------------------------------------
-dnl -- OPENAXIOM_STANDARD_INTEGER_TYPES --
-dnl --------------------------------------
-dnl Check for availability of standard sized integer types.
-AC_DEFUN([OPENAXIOM_STANDARD_INTEGER_TYPES], [
-AC_CHECK_TYPES([int8_t],[],[AC_TYPE_INT8_T])
-AC_CHECK_TYPES([uint8_t],[],[AC_TYPE_UINT8_T])
-AC_CHECK_TYPES([int16_t],[],[AC_TYPE_INT16_T])
-AC_CHECK_TYPES([uint16_t],[][AC_TYPE_UINT16_T])
-AC_CHECK_TYPES([int32_t],[],[AC_TYPE_INT32_T])
-AC_CHECK_TYPES([uint32_t],[],[AC_TYPE_UINT32_T])
-AC_CHECK_TYPES([int64_t],[],[AC_TYPE_INT64_T])
-AC_CHECK_TYPES([uint64_t],[],[AC_TYPE_UINT64_T])
-AC_CHECK_TYPES([intptr_t],[],[AC_TYPE_INTPTR_T])
-AC_CHECK_TYPES([uintptr_t],[],[AC_TYPE_UINTPTR_T])
-AC_CHECK_TYPES([intmax_t],[],[AC_TYPE_INTMAX_T])
-AC_CHECK_TYPES([uintmax_t],[],[AC_TYPE_UINTMAX_T])
-AC_TYPE_UID_T
-])
-
 dnl ----------------------
 dnl -- OPENAXIOM_SHELLS --
 dnl ----------------------
@@ -543,7 +523,6 @@ dnl ------------------------------------
 AC_DEFUN([OPENAXIOM_HOST_DATA_PROPERTIES],[
 ## Byte order of the host.
 AC_C_BIGENDIAN
-OPENAXIOM_STANDARD_INTEGER_TYPES
 AC_CHECK_SIZEOF([void*])
 if test x"$oa_include_gcl" = xyes; then
    ## PORTME: does GCL really care about system where CHAR_BITS is not 8?

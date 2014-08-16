@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2013, Gabriel Dos Reis.
+  Copyright (C) 2007-2014, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,6 @@ static void read_from_manager(int);
 static void manage_spad_io(int);
 static SpadProcess* find_child(int);
 static void kill_all_children(void);
-static void clean_up_terminal(void);
 static void monitor_children(void);
 
 /* System defined pointer to array or environment variables.  */
@@ -638,7 +637,7 @@ read_from_manager(int ptcNum)
 static void
 manage_spad_io(int ptcNum)
 {
-  int ret_code, i, p;
+  int ret_code, p;
   fd_set rd;
   while (1) {
     rd = socket_mask;
@@ -706,12 +705,6 @@ kill_all_children(void)
   sprintf(name, "/tmp/hyper%d.input",server_num);
   unlink(name);
 
-}
-
-static void
-clean_up_terminal(void)
-{
-  tcsetattr(0, TCSAFLUSH, &oldbuf);
 }
 
 static void

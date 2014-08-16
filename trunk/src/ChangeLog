@@ -1,3 +1,13 @@
+2014-08-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* lisp/core.lisp.in (coreQuit) [SBCL]: Use sb-ext:exit since
+	sb-ext:quit is deprecated.
+	* clef/edible.c (flip_canonical): Remove as unused.
+	(flip_raw): Likewise.
+	(check_flip): Likewise.
+	* include/open-axiom.h: Unceremonially #include <stdint.h>.
+	* sman/sman.c (clean_up_terminal): Remove as unused.
+
 2014-02-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* boot/Makefile.in: Fix global variable names.
