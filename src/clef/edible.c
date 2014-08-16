@@ -1,7 +1,7 @@
 /*
     Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2010, Gabriel Dos Reis.
+    Copyright (C) 2007-2014, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -73,8 +73,6 @@ static void check_flip(void);
 static void catch_signals(void);
 static void init_parent(void);
 static void set_function_chars(void);
-static void flip_canonical(int );
-static void flip_raw(int );
 
 
 #ifdef siglog
@@ -286,7 +284,6 @@ main(int argc, char *argv[])
     code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
     for(; code < 0 ;) {
       if(errno == EINTR) {
-        check_flip();
         code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
       }
       else  {
@@ -322,7 +319,6 @@ main(int argc, char *argv[])
         write(logfd, "IN<<<<<", strlen("IN<<<<<"));
         write(logfd, in_buff, num_read);
 #endif
-        check_flip();
         if(MODE == CLEFRAW ) 
           write(contNum, in_buff, num_read);
         else 
@@ -502,67 +498,6 @@ catch_signals(void)
   bsdSignal(SIGINT, interrupt_handler,RestartSystemCalls); 
   bsdSignal(SIGALRM, alarm_handler,RestartSystemCalls);
   alarm(60);
-}
-
-/* Here is where I check the child's termio settings, and try to copy them.
-   I simply trace through the main modes (CLEFRAW,  CLEFCANONICAL) and
-   try to simulate them */
-static void 
-check_flip(void)
-{
-  return;
-  
-#if 0
-  /*simply checks the termio structure of the child */
-  
-  if(tcgetattr(contNum, &childbuf) == -1) {
-    perror("clef parent getting child's terminal in check_termio");
-  }
-  if(childbuf.c_lflag & ICANON) {
-    if(MODE != CLEFCANONICAL) {
-      flip_canonical(contNum);
-      MODE = CLEFCANONICAL;
-    }
-  }
-  else {
-    if(MODE != CLEFRAW) {
-      flip_raw(contNum);
-      MODE = CLEFRAW;
-    }
-  }
-  /* While I am here, lets set the echo */
-  if(childbuf.c_lflag & ECHO) ECHOIT = 1;
-  else ECHOIT = 0;
-#endif
-}
-
-
-
-static void
-flip_raw(int chann)
-{
-  
-  if(MODE == CLEFCANONICAL) 
-    send_buff_to_child(chann);
-  
-  if(tcsetattr(0, TCSAFLUSH, &rawbuf) == -1) {
-    perror("clef resetting parent to raw ");
-    exit(-1);
-  }
-}
-
-
-static void
-flip_canonical(int chann)
-{
-  if(tcsetattr(0, TCSAFLUSH, &canonbuf) == -1) {
-    perror("clef resetting parent to canonical ");
-    exit(-1);
-  }
-  if(INS_MODE) 
-    Cursor_shape(5);
-  else 
-    Cursor_shape(2);
 }
 
 #define etc_whitespace(c) ((c == ' ' || c == '\t')?(1):(0))

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2013, Gabriel Dos Reis.
+  Copyright (C) 2007-2014, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -63,11 +63,7 @@
 
 #define OPENAXIOM_C_EXPORT OPENAXIOM_C_CALL OPENAXIOM_EXPORT
 
-#if defined(HAVE_STDINT_H)
-#  include <stdint.h>
-#elif defined (HAVE_INTTYPES_H)
-#  include <inttypes.h>
-#endif
+#include <stdint.h>
 
 #if defined(__WIN32__)
 #  include <windows.h>
