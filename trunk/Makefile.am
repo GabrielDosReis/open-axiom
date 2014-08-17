@@ -74,6 +74,7 @@ OA_SRC_TARGETS = \
 	all-databases \
 	all-utils \
 	all-io \
+	all-rt \
 	all-syntax
 
 .PHONY: $(OA_SRC_TARGETS)
