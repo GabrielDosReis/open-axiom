@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -47,7 +47,8 @@ namespace OpenAxiom {
             auto x = reader.read();
             auto offset = Lisp::retract_to_fixnum
                (Lisp::retract_to_pair(ctx.make_value(x))->head);
-            reader.position(offset);
+            auto n = FixnumBits(offset);
+            reader.position(n);
             toc = Lisp::retract_to_pair(ctx.make_value(reader.read()));
          }
          else if (auto data = Lisp::assoc(key, toc))

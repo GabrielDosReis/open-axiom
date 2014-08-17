@@ -44,10 +44,10 @@ namespace OpenAxiom {
 
       Fixnum
       count_nodes(Pair p) {
-         Fixnum n = 1;
+         FixnumBits n = 1;
          for (; auto q = to_pair_if_can(p->tail); p = q)
             ++n;
-         return n;
+         return Fixnum(n);
       }
 
       // -- BasicContext --

@@ -166,24 +166,27 @@ namespace OpenAxiom {
       // VM integers are divided into classes: small numbers,
       // and large numbers.  A small number fits entirely in a register.
       // A large number is allocated and represented by its address.
-      using Fixnum = intptr_t;
+      using FixnumBits = intptr_t;
+      enum class Fixnum : FixnumBits {
+         minimum = FixnumBits(~(~ValueBits() >> 2)),
+         zero = FixnumBits(0),
+         one = FixnumBits(1),
+         maximum = FixnumBits(~ValueBits() >> 2),
+      };
 
       constexpr ValueBits fix_tag = 0x1;
 
       constexpr bool is_fixnum(Value v) {
-         return (v & 0x1) == fix_tag;
+         return (ValueBits(v) & 0x1) == fix_tag;
       }
 
       constexpr Fixnum to_fixnum(Value v) {
-         return Fixnum(v >> 1);
+         return Fixnum(FixnumBits(v) >> 1);
       }
 
       constexpr Value from_fixnum(Fixnum i) {
-         return (Fixnum(i) << 1 ) | fix_tag;
+         return (ValueBits(i) << 1 ) | fix_tag;
       }
-
-      constexpr Fixnum fixnum_maximum = to_fixnum(~Value{ });
-      constexpr Fixnum fixnum_minimum = -fixnum_maximum - 1;
 
       // ------------
       // -- String --
@@ -262,7 +265,7 @@ namespace OpenAxiom {
       inline Fixnum count_nodes(Value v) {
          if (auto p = to_pair_if_can(v))
             return count_nodes(p);
-         return 0;
+         return Fixnum::zero;
       }
 
       // ---------------

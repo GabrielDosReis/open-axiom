@@ -77,17 +77,17 @@ namespace OpenAxiom {
       integer_too_large(const Sexpr::IntegerSyntax& x) {
          std::string s { x.lexeme().begin(), x.lexeme().end() };
          throw IntegerOverflow{ s + " is too large for Fixnum; max value is "
-               + std::to_string(fixnum_maximum) };
+               + std::to_string(FixnumBits(Fixnum::maximum)) };
       }
 
-      constexpr auto fixmax_by_ten = fixnum_maximum / 10;
-      constexpr auto fixmax_lsd = fixnum_maximum % 10;
+      constexpr auto fixmax_by_ten = FixnumBits(Fixnum::maximum) / 10;
+      constexpr auto fixmax_lsd = FixnumBits(Fixnum::maximum) % 10;
 
       static Value
       construct(Evaluator* ctx, const Sexpr::IntegerSyntax& x) {
          bool neg = false;
          auto cur = x.lexeme().begin();
-         Fixnum val = 0;
+         FixnumBits val = 0;
          switch (*cur) {
          case '-': neg = true;
          case '+': ++cur;
@@ -102,12 +102,12 @@ namespace OpenAxiom {
                   val = 10 * val + d;
             }
             if (neg) {
-               if (val > fixnum_maximum)
+               if (val > FixnumBits(Fixnum::maximum))
                   integer_too_large(x);
                val = -val;
             }
          }
-         return VM::from_fixnum(val);
+         return VM::from_fixnum(Fixnum(val));
       }
 
       static Value
@@ -250,7 +250,7 @@ namespace OpenAxiom {
          if (v == nil)
             os << "NIL";
          else if (is_fixnum(v))
-            os << to_fixnum(v);
+            os << FixnumBits(to_fixnum(v));
          else if (auto p = to_pair_if_can(v))
             format(p, os);
          else if (auto s = to_string_if_can(v))
