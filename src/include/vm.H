@@ -155,7 +155,7 @@ namespace OpenAxiom {
       // All VM values fit in a universal value datatype.
       using ValueBits = uintptr_t;
       using ValueMask = ValueBits;
-      using Value = ValueBits;
+      enum class Value : ValueBits { };
 
       // The distinguished `nil' value.
       constexpr Value nil { };
@@ -185,7 +185,7 @@ namespace OpenAxiom {
       }
 
       constexpr Value from_fixnum(Fixnum i) {
-         return (ValueBits(i) << 1 ) | fix_tag;
+         return Value((ValueBits(i) << 1 ) | fix_tag);
       }
 
       // ------------
@@ -196,15 +196,16 @@ namespace OpenAxiom {
       constexpr ValueBits str_tag = 0x4;
 
       constexpr bool is_string(Value v) {
-         return (v & 0x7) == str_tag;
+         return (ValueBits(v) & 0x7) == str_tag;
       }
 
       inline BasicString to_string(Value v) {
-         return reinterpret_cast<BasicString>(v & ~Value(0x7));
+         return reinterpret_cast<BasicString>
+            (ValueBits(v) & ~ValueBits(0x7));
       }
 
       inline Value from_string(BasicString s) {
-         return Value(s) | str_tag;
+         return Value(ValueBits(s) | str_tag);
       }
 
       inline BasicString to_string_if_can(Value v) {
@@ -220,15 +221,15 @@ namespace OpenAxiom {
       constexpr ValueBits ptr_tag = 0x0;
 
       constexpr bool is_pointer(Value v) {
-         return (v & 0x7) == ptr_tag;
+         return (ValueBits(v) & 0x7) == ptr_tag;
       }
 
       inline Pointer to_pointer(Value v) {
-         return Pointer(v);
+         return Pointer(ValueBits(v));
       }
 
       inline Value from_pointer(Pointer p) {
-         return Value(p);
+         return Value(ValueBits(p) | ptr_tag);
       }
 
       // ----------
@@ -244,15 +245,15 @@ namespace OpenAxiom {
       constexpr ValueBits pair_tag = 0x2;
 
       constexpr bool is_pair(Value v) {
-         return (v & 0x7) == pair_tag;
+         return (ValueBits(v) & 0x7) == pair_tag;
       }
 
       inline Pair to_pair(Value v) {
-         return Pair(v & ~0x7);
+         return Pair(ValueBits(v) & ~0x7);
       }
 
       inline Value from_pair(Pair p) {
-         return Value(p) | pair_tag;
+         return Value(ValueBits(p) | pair_tag);
       }
 
       // If `v' designates a pair, return a pointer to its
@@ -278,15 +279,15 @@ namespace OpenAxiom {
       constexpr ValueBits char_tag = 0xE;
 
       constexpr bool is_character(Value v) {
-         return (v & 0xF) == char_tag;
+         return (ValueBits(v) & 0xF) == char_tag;
       }
 
       constexpr Character to_character(Value v) {
-         return Character(v >> 4);
+         return Character(ValueBits(v) >> 4);
       }
 
       constexpr Value from_character(Character c) {
-         return (Value(c) << 4) | char_tag;
+         return Value((ValueBits(c) << 4) | char_tag);
       }
 
       // -- Object --
@@ -308,21 +309,21 @@ namespace OpenAxiom {
       constexpr ValueBits dyn_tag = 0x6;
 
       constexpr bool is_dynamic(Value v) {
-         return (v & 0xF) == dyn_tag;
+         return (ValueBits(v) & 0xF) == dyn_tag;
       }
 
       inline Dynamic* to_dynamic(Value v) {
-         return reinterpret_cast<Dynamic*>(v & ~0xF);
+         return reinterpret_cast<Dynamic*>(ValueBits(v) & ~0xF);
       }
 
       inline Dynamic* to_dynamic_if_can(Value v) {
          return is_dynamic(v)
-            ? reinterpret_cast<Dynamic*>(v & ~0xF)
+            ? reinterpret_cast<Dynamic*>(ValueBits(v) & ~0xF)
             : nullptr;
       }
 
       inline Value from_dynamic(const Dynamic* o) {
-         return Value(o) | dyn_tag;
+         return Value(ValueBits(o) | dyn_tag);
       }
 
       struct Scope;
