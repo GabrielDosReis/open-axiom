@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013, Gabriel Dos Reis.
+// Copyright (C) 2011-2014, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,11 @@ namespace OpenAxiom {
       // --%
       // --% Value representation
       // --%
-      // A far reaching design decision is to provide a uniform
+      // A far reaching design decision is that of providing a uniform
       // representation for values.  That is all values, irrespective
       // of type have fit in a fixed format, i.e. a scalar register.
       // This means that values that are more complicated than a scalar,
-      // that is the vast majority and most interesting values, have to
+      // i.e. the vast majority and most interesting values, have to
       // be stored in allocated objects and addresses of their container
       // objects used in place of the actual values.  This is folklore
       // in the communities of garbage collected languages.
@@ -146,14 +146,16 @@ namespace OpenAxiom {
       //
       // Note: These choices do not fully satisfy constraint 4.  This is 
       //     because we restrict foreign pointers to address aligned
-      //     to 8-byte boundaries.
+      //     to 8-byte boundaries.  A modest constraint.
 
 
       // -----------
       // -- Value --
       // -----------
       // All VM values fit in a universal value datatype.
-      using Value = uintptr_t;
+      using ValueBits = uintptr_t;
+      using ValueMask = ValueBits;
+      using Value = ValueBits;
 
       // The distinguished `nil' value.
       constexpr Value nil { };
@@ -166,7 +168,7 @@ namespace OpenAxiom {
       // A large number is allocated and represented by its address.
       using Fixnum = intptr_t;
 
-      constexpr Value fix_tag = 0x1;
+      constexpr ValueBits fix_tag = 0x1;
 
       constexpr bool is_fixnum(Value v) {
          return (v & 0x1) == fix_tag;
@@ -188,7 +190,7 @@ namespace OpenAxiom {
       // ------------
       using String = BasicString;
 
-      constexpr Value str_tag = 0x4;
+      constexpr ValueBits str_tag = 0x4;
 
       constexpr bool is_string(Value v) {
          return (v & 0x7) == str_tag;
@@ -212,7 +214,7 @@ namespace OpenAxiom {
       // Allocated objects are represented by their addresses.
       using Memory::Pointer;
 
-      constexpr Value ptr_tag = 0x0;
+      constexpr ValueBits ptr_tag = 0x0;
 
       constexpr bool is_pointer(Value v) {
          return (v & 0x7) == ptr_tag;
@@ -236,9 +238,9 @@ namespace OpenAxiom {
 
       using Pair = ConsCell*;
 
-      constexpr Value pair_tag = 0x2;
+      constexpr ValueBits pair_tag = 0x2;
 
-      inline bool is_pair(Value v) {
+      constexpr bool is_pair(Value v) {
          return (v & 0x7) == pair_tag;
       }
 
@@ -268,9 +270,9 @@ namespace OpenAxiom {
       // ---------------
       // This datatype is prepared for Uncode characters even if
       // we do not handle UCN characters at the moment.
-      using Character = Value;
+      enum class Character : ValueBits { };
 
-      constexpr Value char_tag = 0xE;
+      constexpr ValueBits char_tag = 0xE;
 
       constexpr bool is_character(Value v) {
          return (v & 0xF) == char_tag;
@@ -300,7 +302,7 @@ namespace OpenAxiom {
          virtual ~Dynamic();
       };
 
-      constexpr Value dyn_tag = 0x6;
+      constexpr ValueBits dyn_tag = 0x6;
 
       constexpr bool is_dynamic(Value v) {
          return (v & 0xF) == dyn_tag;
