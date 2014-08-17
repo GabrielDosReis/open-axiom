@@ -51,8 +51,11 @@ namespace OpenAxiom {
             reader.position(n);
             toc = Lisp::retract_to_pair(ctx.make_value(reader.read()));
          }
-         else if (auto data = Lisp::assoc(key, toc))
-            return dict.insert({ key, data }).first->second;
+         else {
+            auto data = Lisp::assoc(key, toc);
+            if (data != nil)
+               return dict.insert({ key, data }).first->second;
+         }
          return nil;
       }
    }
