@@ -154,7 +154,7 @@ AC_SUBST(oa_lisp_flavor)
 ## Most Lisp systems don't use conventional methods for building programs.
 oa_standard_linking=no
 AC_SUBST(oa_standard_linking)
-
+oa_lnkext='$(FASLEXT)'
 ## The pipe below is OK, for as of this writting, the free Lisp systems
 ##  ECL, GCL, SBCL, CLisp, and Clozure CL all exit at end of standard input.
 AC_MSG_CHECKING([which flavor of Lisp])
@@ -168,6 +168,7 @@ else
        *"ECL"*) 
 	   oa_lisp_flavor=ecl 
 	   oa_standard_linking=yes
+	   oa_lnkext='$(OBJEXT)'
 	   ;;
        *"SBCL"*) 
 	   oa_lisp_flavor=sbcl 
@@ -197,6 +198,7 @@ AM_CONDITIONAL([OA_STANDARD_LINKING],[test $oa_standard_linking = yes])
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [Runtime::${oa_lisp_flavor}],
                    [The kind of base runtime system for this build.])
+AC_SUBST(LNKEXT,[$oa_lnkext])
 ])
 
 dnl ---------------------------------

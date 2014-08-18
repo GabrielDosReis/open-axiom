@@ -134,7 +134,6 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/src/hyper/Makefile.in \
 	$(top_srcdir)/src/driver/Makefile.in \
 	$(top_srcdir)/src/lisp/Makefile.in \
-	$(top_srcdir)/src/boot/Makefile.in \
 	$(top_srcdir)/src/interp/Makefile.in \
 	$(top_srcdir)/src/share/Makefile.in \
 	$(top_srcdir)/src/input/Makefile.in \
@@ -171,12 +170,12 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/openaxiom-c-macros.h
 CONFIG_CLEAN_FILES = src/lib/Makefile src/utils/Makefile \
 	src/hyper/Makefile src/driver/Makefile src/lisp/Makefile \
-	src/boot/Makefile src/interp/Makefile src/share/Makefile \
-	src/input/Makefile src/etc/Makefile src/doc/Makefile \
-	src/clef/Makefile src/sman/Makefile src/graph/Makefile \
-	src/graph/Gdraws/Makefile src/graph/view2D/Makefile \
-	src/graph/view3D/Makefile src/graph/viewAlone/Makefile \
-	src/graph/viewman/Makefile src/gui/gui.pro
+	src/interp/Makefile src/share/Makefile src/input/Makefile \
+	src/etc/Makefile src/doc/Makefile src/clef/Makefile \
+	src/sman/Makefile src/graph/Makefile src/graph/Gdraws/Makefile \
+	src/graph/view2D/Makefile src/graph/view3D/Makefile \
+	src/graph/viewAlone/Makefile src/graph/viewman/Makefile \
+	src/gui/gui.pro
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -323,6 +322,7 @@ LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIPO = @LIPO@
+LNKEXT = @LNKEXT@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKE = @MAKE@
@@ -556,8 +556,6 @@ src/hyper/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.m
 src/driver/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/driver/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/lisp/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/lisp/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/boot/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/boot/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/interp/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/interp/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
