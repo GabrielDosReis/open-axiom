@@ -67,117 +67,117 @@ namespace OpenAxiom {
       }
 
       // -- Abstract values of tokens.
-      enum Value {
-         unknown_tv             = value(""),
-         bar_tv                 = value("|"),
-         dot_tv                 = value("."),
-         dot_dot_tv             = value(".."),
-         colon_tv               = value(":"),
-         colon_colon_tv         = value("::"),
-         colon_dash_tv          = value(":-"),
-         colon_eq_tv            = value(":="),
-         at_tv                  = value("@"),
-         comma_tv               = value(","),
-         semicolon_tv           = value(";"),
-         star_tv                = value("*"),
-         plus_tv                = value("+"),
-         minus_tv               = value("-"),
-         slash_tv               = value("/"),
-         backslash_tv           = value("\\"),
-         slash_slash_tv         = value("//"),
-         backslash_backslash_tv = value("\\\\"),
-         backslash_slash_tv     = value("\\/"),
-         slash_backslash_tv     = value("/\\"),
-         less_tv                = value("<"),
-         less_eq_tv             = value("<="),
-         greater_tv             = value(">"),
-         greater_eq_tv          = value(">="),
-         eq_tv                  = value("="),
-         eq_eq_tv               = value("=="),
-         tilde_tv               = value("~"),
-         tilde_eq_tv            = value("~="),
-         caret_tv               = value("^"),
-         pound_tv               = value("#"),
-         dollar_tv              = value("$"),
-         ampersand_tv           = value("&"),
-         open_paren_tv          = value("("),
-         close_paren_tv         = value(")"),
-         open_bracket_tv        = value("["),
-         close_bracket_tv       = value("]"),
-         open_brace_tv          = value("{"),
-         close_brace_tv         = value("}"),
-         open_meta_paren_tv     = value("(|"),
-         close_meta_paren_tv    = value("|)"),
-         open_meta_bracket_tv   = value("[|"),
-         close_meta_bracket_tv  = value("|]"),
-         open_meta_brace_tv     = value("{|"),
-         close_meta_brace_tv    = value("|}"),
-         apostrophe_tv          = value("'"),
-         backquote_tv           = value("`"),
-         star_star_tv           = value("**"),
-         implies_tv             = value("=>"),
-         right_arrow_tv         = value("->"),
-         left_arrow_tv          = value("<-"),
-         open_chevron_tv        = value("<<"),
-         close_chevron_tv       = value(">>"),
-         fat_arrow_tv           = value("==>"),
-         equiv_tv               = value("<=>"),
-         mapsto_tv              = value("+->"),
+      enum Value : base_type {
+         Unknown                = value(""),
+         Bar                    = value("|"),
+         Dot                    = value("."),
+         DotDot                 = value(".."),
+         Colon                  = value(":"),
+         ColonColon             = value("::"),
+         ColonDash              = value(":-"),
+         ColonEq                = value(":="),
+         At                     = value("@"),
+         Comma                  = value(","),
+         Semicolon              = value(";"),
+         Star                   = value("*"),
+         Plus                   = value("+"),
+         Minus                  = value("-"),
+         Slash                  = value("/"),
+         Backslash              = value("\\"),
+         SlashSlash             = value("//"),
+         BackslashBackslash     = value("\\\\"),
+         BackslashSlash         = value("\\/"),
+         SlashBackslash         = value("/\\"),
+         Less                   = value("<"),
+         LessEq                 = value("<="),
+         Greater                = value(">"),
+         GreaterEq              = value(">="),
+         Eq                     = value("="),
+         EqEq                   = value("=="),
+         Tilde                  = value("~"),
+         TildeEq                = value("~="),
+         Caret                  = value("^"),
+         Pound                  = value("#"),
+         Dollar                 = value("$"),
+         Ampersand              = value("&"),
+         OpenParen              = value("("),
+         CloseParen             = value(")"),
+         OpenBracket            = value("["),
+         CloseBracket           = value("]"),
+         OpenBrace              = value("{"),
+         CloseBrace             = value("}"),
+         OpenMetParen           = value("(|"),
+         CloseMetaParen         = value("|)"),
+         OpenMetaBracket        = value("[|"),
+         CloseMetaBracket       = value("|]"),
+         OpenMetaBrace          = value("{|"),
+         CloseMetaBrace         = value("|}"),
+         Apostrophe             = value("'"),
+         Backquote              = value("`"),
+         StarStar               = value("**"),
+         Implies                = value("=>"),
+         RightArrow             = value("->"),
+         LeftArrow              = value("<-"),
+         OpenChevron            = value("<<"),
+         CloseChevron           = value(">>"),
+         FatArrow               = value("==>"),
+         Equiv                  = value("<=>"),
+         MapsTo                 = value("+->"),
 
-         add_tv                 = value("add"),
-         and_tv                 = value("and"),
-         by_tv                  = value("by"),
-         do_tv                  = value("do"),
-         for_tv                 = value("for"),
-         has_tv                 = value("has"),
-         if_tv                  = value("if"),
-         in_tv                  = value("in"),
-         is_tv                  = value("is"),
-         mod_tv                 = value("mod"),
-         of_tv                  = value("of"),    // -- Boot only
-         or_tv                  = value("or"),
-         quo_tv                 = value("quo"),
-         rem_tv                 = value("rem"),
-         try_tv                 = value("try"),
-         last_trigraph_tv       = value("\xff\xff\xff"),
+         Add                    = value("add"),
+         And                    = value("and"),
+         By                     = value("by"),
+         Do                     = value("do"),
+         For                    = value("for"),
+         Has                    = value("has"),
+         If                     = value("if"),
+         In                     = value("in"),
+         Is                     = value("is"),
+         Mod                    = value("mod"),
+         Of                     = value("of"),    // -- Boot only
+         Or                     = value("or"),
+         Quo                    = value("quo"),
+         Rem                    = value("rem"),
+         Try                    = value("try"),
+         LastTrigraph           = 0xffffff,
 
-         assume_tv,             // "assume"
-         break_tv,              // "break"
-         case_tv,               // "case"
-         catch_tv,              // "catch"
-         cross_tv,              // "cross"
-         else_tv,               // "else"
-         exist_tv,              // "exist"
-         finally_tv,            // "finally"
-         from_tv,               // "from"
-         forall_tv,             // "forall"
-         function_tv,           // "function" -- Boot only
-         import_tv,             // "import"
-         inline_tv,             // "inline"
-         isnt_tv,               // "isnt"
-         iterate_tv,            // "iterate"
-         leave_tv,              // "leave"
-         macro_tv,              // "macro"
-         module_tv,             // "module"   -- Boot only
-         namespace_tv,          // "namespace" -- Boot only
-         pretend_tv,            // "pretend"
-         repeat_tv,             // "repeat"
-         return_tv,             // "return"
-         rule_tv,               // "rule"
-         structure_tv,          // "structure" -- Boot only
-         then_tv,               // "then"
-         throw_tv,              // "throw"
-         until_tv,              // "until"
-         with_tv,               // "with"
-         where_tv,              // "where"
-         while_tv,              // "while"
+         Assume,             // "assume"
+         Break,              // "break"
+         Case,               // "case"
+         Catch,              // "catch"
+         Cross,              // "cross"
+         Else,               // "else"
+         Exists,             // "exists"
+         Finally,            // "finally"
+         From,               // "from"
+         Forall,             // "forall"
+         Function,           // "function" -- Boot only
+         Import,             // "import"
+         Inline,             // "inline"
+         Isnt,               // "isnt"
+         Iterate,            // "iterate"
+         Leave,              // "leave"
+         Macro,              // "macro"
+         Module,             // "module"   -- Boot only
+         Namespace,          // "namespace" -- Boot only
+         Pretend,            // "pretend"
+         Repeat,             // "repeat"
+         Return,             // "return"
+         Rule,               // "rule"
+         Structure,          // "structure" -- Boot only
+         Then,               // "then"
+         Throw,              // "throw"
+         Until,              // "until"
+         With,               // "with"
+         Where,              // "where"
+         While,              // "while"
 
-         integer_literal_tv,    // integer literal
-         string_literal_tv,     // string literal
-         fp_literal_tv,         // floating point literal
-         indent_tv,             // new line indentation, greater than previous
-         unindent_tv,           // new line indentation, less than previous
-         justify_tv,            // align indentation with preceding line.
+         IntegerLiteral,     // integer literal
+         StringLiteral,      // string literal
+         FPLiteral,          // floating point literal
+         Indent,             // new line indentation, greater than previous
+         Unindent,           // new line indentation, less than previous
+         Justify,            // align indentation with preceding line.
       };
    }
 }
