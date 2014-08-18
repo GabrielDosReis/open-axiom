@@ -85,6 +85,7 @@ AC_LANG([C++])
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_REQUIRE_CXX11
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
+AM_CONDITIONAL([OA_ECL_RT], [test x$oa_lisp_flavor = xecl])
 AM_CONDITIONAL([OA_DELAYED_FFI], [test x$oa_delay_ffi = xyes])
 
 OPENAXIOM_HOST_DATA_PROPERTIES
@@ -116,13 +117,13 @@ AC_CONFIG_FILES([
   src/io/Makefile
   src/syntax/Makefile
   src/rt/Makefile
+  src/boot/Makefile
   src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])
 OPENAXIOM_MAKEFILE([src/driver/Makefile])
 OPENAXIOM_MAKEFILE([src/lisp/Makefile])
-OPENAXIOM_MAKEFILE([src/boot/Makefile])
 OPENAXIOM_MAKEFILE([src/interp/Makefile])
 OPENAXIOM_MAKEFILE([src/share/Makefile])
 OPENAXIOM_MAKEFILE([src/input/Makefile])

@@ -737,6 +737,7 @@ LDFLAGS
 CFLAGS
 CC
 oa_delay_ffi
+LNKEXT
 OA_STANDARD_LINKING_FALSE
 OA_STANDARD_LINKING_TRUE
 OA_GCL_RT_FALSE
@@ -3807,7 +3808,7 @@ oa_lisp_flavor=unknown
 ## Most Lisp systems don't use conventional methods for building programs.
 oa_standard_linking=no
 
-
+oa_lnkext='$(FASLEXT)'
 ## The pipe below is OK, for as of this writting, the free Lisp systems
 ##  ECL, GCL, SBCL, CLisp, and Clozure CL all exit at end of standard input.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking which flavor of Lisp" >&5
@@ -3822,6 +3823,7 @@ else
        *"ECL"*)
 	   oa_lisp_flavor=ecl
 	   oa_standard_linking=yes
+	   oa_lnkext='$(OBJEXT)'
 	   ;;
        *"SBCL"*)
 	   oa_lisp_flavor=sbcl
@@ -3874,6 +3876,8 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define OPENAXIOM_BASE_RTS Runtime::${oa_lisp_flavor}
 _ACEOF
+
+LNKEXT=$oa_lnkext
 
 
 
@@ -5651,6 +5655,14 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 else
   OA_BUILD_GCL_TRUE='#'
   OA_BUILD_GCL_FALSE=
+fi
+
+ if test x$oa_lisp_flavor = xecl; then
+  OA_ECL_RT_TRUE=
+  OA_ECL_RT_FALSE='#'
+else
+  OA_ECL_RT_TRUE='#'
+  OA_ECL_RT_FALSE=
 fi
 
  if test x$oa_delay_ffi = xyes; then
@@ -19446,7 +19458,7 @@ esac
 
 
 ## We are ready to instantiate makefiles.
-ac_config_files="$ac_config_files Makefile src/Makefile src/io/Makefile src/syntax/Makefile src/rt/Makefile src/algebra/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/io/Makefile src/syntax/Makefile src/rt/Makefile src/boot/Makefile src/algebra/Makefile"
 
 ac_config_files="$ac_config_files src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk"
 
@@ -19457,8 +19469,6 @@ ac_config_files="$ac_config_files src/hyper/Makefile:config/var-def.mk:src/hyper
 ac_config_files="$ac_config_files src/driver/Makefile:config/var-def.mk:src/driver/Makefile.in:config/setup-dep.mk"
 
 ac_config_files="$ac_config_files src/lisp/Makefile:config/var-def.mk:src/lisp/Makefile.in:config/setup-dep.mk"
-
-ac_config_files="$ac_config_files src/boot/Makefile:config/var-def.mk:src/boot/Makefile.in:config/setup-dep.mk"
 
 ac_config_files="$ac_config_files src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk"
 
@@ -19640,6 +19650,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OA_BUILD_GCL_TRUE}" && test -z "${OA_BUILD_GCL_FALSE}"; then
   as_fn_error $? "conditional \"OA_BUILD_GCL\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OA_ECL_RT_TRUE}" && test -z "${OA_ECL_RT_FALSE}"; then
+  as_fn_error $? "conditional \"OA_ECL_RT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OA_DELAYED_FFI_TRUE}" && test -z "${OA_DELAYED_FFI_FALSE}"; then
@@ -20638,13 +20652,13 @@ do
     "src/io/Makefile") CONFIG_FILES="$CONFIG_FILES src/io/Makefile" ;;
     "src/syntax/Makefile") CONFIG_FILES="$CONFIG_FILES src/syntax/Makefile" ;;
     "src/rt/Makefile") CONFIG_FILES="$CONFIG_FILES src/rt/Makefile" ;;
+    "src/boot/Makefile") CONFIG_FILES="$CONFIG_FILES src/boot/Makefile" ;;
     "src/algebra/Makefile") CONFIG_FILES="$CONFIG_FILES src/algebra/Makefile" ;;
     "src/lib/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk" ;;
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile:config/var-def.mk:src/utils/Makefile.in:config/setup-dep.mk" ;;
     "src/hyper/Makefile") CONFIG_FILES="$CONFIG_FILES src/hyper/Makefile:config/var-def.mk:src/hyper/Makefile.in:config/setup-dep.mk" ;;
     "src/driver/Makefile") CONFIG_FILES="$CONFIG_FILES src/driver/Makefile:config/var-def.mk:src/driver/Makefile.in:config/setup-dep.mk" ;;
     "src/lisp/Makefile") CONFIG_FILES="$CONFIG_FILES src/lisp/Makefile:config/var-def.mk:src/lisp/Makefile.in:config/setup-dep.mk" ;;
-    "src/boot/Makefile") CONFIG_FILES="$CONFIG_FILES src/boot/Makefile:config/var-def.mk:src/boot/Makefile.in:config/setup-dep.mk" ;;
     "src/interp/Makefile") CONFIG_FILES="$CONFIG_FILES src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk" ;;
     "src/share/Makefile") CONFIG_FILES="$CONFIG_FILES src/share/Makefile:config/var-def.mk:src/share/Makefile.in:config/setup-dep.mk" ;;
     "src/input/Makefile") CONFIG_FILES="$CONFIG_FILES src/input/Makefile:config/var-def.mk:src/input/Makefile.in:config/setup-dep.mk" ;;

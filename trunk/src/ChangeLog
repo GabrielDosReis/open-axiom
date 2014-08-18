@@ -1,3 +1,8 @@
+2014-08-17  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* boot/Makefile.am: New.
+	* boot/Makefile.in: Regenerate.
+
 2014-08-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* lisp/core.lisp.in (coreQuit) [SBCL]: Use sb-ext:exit since

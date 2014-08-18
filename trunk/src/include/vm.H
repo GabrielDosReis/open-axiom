@@ -127,7 +127,7 @@ namespace OpenAxiom {
       // Next,
       //   II. All foreign pointers that are aligned on 8-boundary are
       //       directly represented.  Any foreign pointer not meeting
-      //       this condition is allocated in internal obejcts.  As a
+      //       this condition is stored in an internal object.  As a
       //       consequence, the last four bits of all foreign addresses 
       //       directly represented follow the pattern 0bx000.
       // 
