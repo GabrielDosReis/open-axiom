@@ -1,4 +1,9 @@
-2014-08-26  Gabriel Dos Reis  <gdr@axiomatics.org>
+2014-08-26  Raoul B.  <raoulb@bluewin.ch>
+
+	* algebra/combfunc.spad.pamphlet
+	(iBesselKGrad)[FunctionalSpecialFunction]:  Fix thinko.
+
+2014-08-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* Makefile.am (oa_src_include_headers): Remove.  These headers are
 	now linked by configure.

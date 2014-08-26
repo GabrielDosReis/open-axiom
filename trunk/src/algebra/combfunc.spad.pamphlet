@@ -768,7 +768,7 @@ FunctionalSpecialFunction(R, F): Exports == Implementation where
         ahalf * (besselI (n-1,x) + besselI (n+1,x))
     iBesselKGrad(l: List F): F ==
         n := first l; x := second l
-        ahalf * (besselK (n-1,x) + besselK (n+1,x))
+        ahalf * (-besselK (n-1,x) - besselK (n+1,x))
     ipolygammaGrad(l: List F): F ==
         n := first l; x := second l
         polygamma(n+1, x)
