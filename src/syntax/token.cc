@@ -31,58 +31,82 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <open-axiom/token>
+#include <ostream>
+#include <iostream>
 
 namespace OpenAxiom {
-   namespace token {
-      struct Keyword {
-         const char* const key;
-         const Value value;
-      };
+   std::ostream&
+   operator<<(std::ostream& os, TokenCategory tc) {
+      switch (tc) {
+      case TokenCategory::Unclassified: os << "UNCLASSIFIED"; break;
+      case TokenCategory::Whitespace: os << "WHITESPACE"; break;
+      case TokenCategory::Comment: os << "COMMENT"; break;
+      case TokenCategory::Punctuator: os << "PUNCTUATOR"; break;
+      case TokenCategory::Operator: os << "OPERATOR"; break;
+      case TokenCategory::Integer: os << "INTEGER"; break;
+      case TokenCategory::FloatingPoint: os << "FLOATINGPOINT"; break;
+      case TokenCategory::String: os << "STRING"; break;
+      case TokenCategory::Keyword: os << "KEYWORD"; break;
+      case TokenCategory::Identifier: os << "IDENTIFIER"; break;
+      case TokenCategory::Formatting: os << "FORMATTING"; break;
+      case TokenCategory::Junk: os << "JUNK"; break;
+      default: os << "????"; break;
+      }
+      return os;
+   }
 
-      const Keyword keyword_map[] = {
-         { "add", Value::Add },
-         { "and", Value::And },
-         { "assume", Value::Assume },
-         { "break", Value::Break },
-         { "by", Value::By },
-         { "case", Value::Case },
-         { "catch", Value::Catch },
-         { "do", Value::Do },
-         { "else", Value::Else },
-         { "exist", Value::Exists },
-         { "finally", Value::Finally },
-         { "for", Value::For },
-         { "from", Value::From },
-         { "function", Value::Function },
-         { "has", Value::Has },
-         { "if", Value::If },
-         { "import", Value::Import },
-         { "in", Value::In },
-         { "inline", Value::Inline },
-         { "is", Value::Is },
-         { "isnt", Value::Isnt },
-         { "iterate", Value::Iterate },
-         { "leave", Value::Leave },
-         { "macro", Value::Macro },
-         { "mod", Value::Mod },
-         { "module", Value::Module },
-         { "namespace", Value::Namespace },
-         { "of", Value::Of },
-         { "or", Value::Or },
-         { "pretend", Value::Pretend },
-         { "quo", Value::Quo },
-         { "rem", Value::Rem },
-         { "repeat", Value::Repeat },
-         { "return", Value::Return },
-         { "rule", Value::Rule },
-         { "structure", Value::Structure },
-         { "then", Value::Then },
-         { "throw", Value::Throw },
-         { "try", Value::Try },
-         { "until", Value::Until },
-         { "with", Value::With },
-         { "where", Value::Where },
-         { "while", Value::While }
+
+   bool separator_or_punctuator(uint8_t c) {
+      switch (c) {
+      case '.': case '`': case '^': case '&': case '~': case '*':
+      case '-': case '+': case ';': case ',': case '@': case '|':
+      case '\'': case ':': case '=': case '\\': case '"': case '/':
+      case '(': case ')': case '{': case '}': case '[': case ']':
+      case '<': case '>': case '#': case ' ':
+         return true;
+      default:
+         return false;
+      }
+   }
+
+   namespace {
+      struct TokenMapEntry {
+         const char* const text;
+         const TokenCategory category;
+         const TokenValue value;
+         const Language dialect; //  = Language::Spad
       };
    }
+
+   const TokenMapEntry token_map[] {
+#undef OPENAXIOM_DEFINE_TOKEN
+#define OPENAXIOM_DEFINE_TOKEN(T, N, C, ...)        \
+      { N, TokenCategory::C, TokenValue::T, __VA_ARGS__ },
+#include <open-axiom/token-value>
+#undef OPENAXIOM_DEFINE_TOKEN      
+   };
+
+   TokenClassification
+   classify(const std::string& s) {
+      for (auto& t : token_map) {
+         if (t.text == s)
+            return { t.category, t.value };
+      }
+      return { TokenCategory::Unclassified, TokenValue::Unknown };
+   }
+
+   std::ostream&
+   operator<<(std::ostream& os, TokenValue tv) {
+      if (tv < TokenValue::Artificial)
+         os << token_map[uint8_t(tv)].text;
+      else switch (tv) {
+         case TokenValue::Indent: os << "%INDENT"; break;
+         case TokenValue::Unindent: os << "%UNIDENT"; break;
+         case TokenValue::Justify: os << "%JUSTIFY"; break;
+         default: os << "%ALIEN"; break;
+         }
+         
+      return os;
+   }
+
 }

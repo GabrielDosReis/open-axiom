@@ -36,7 +36,6 @@ hammer_SOURCES = hammer.cc
 hammer_OBJECTS = $(hammer_SOURCES:.cc=.lo)
 hammer_LDADD = -L. -lOpenAxiom
 
-libOpenAxiom_HEADERS = hash-table.H string-pool.H
 libOpenAxiom_SOURCES = \
 	storage.cc string-pool.cc command.cc \
 	filesystem.cc
@@ -75,37 +74,18 @@ $(oa_target_oalib): libOpenAxiom.$(LIBEXT)
 	fi
 	cp $< $@
 
-stamp-headers: $(libOpenAxiom_HEADERS) Makefile
-	rm -f stamp-headers
-	if [ ! -d $(oa_target_headerdir) ]; then \
-	   mkdir -p -- $(oa_target_headerdir) || exit 1; \
-	fi ; \
-	c1=$(top_builddir)/config/openaxiom-c-macros.h; \
-	c2=$(oa_target_headerdir)/config; \
-	if [ ! -r $$c2 ] || ! cmp -s $$c1 $$c2 ; then \
-	   cp -p $$c1 $$c2; \
-	fi ; \
-	for h in $(oa_public_headers); do \
-           f1=$(srcdir)/$$h.H; f2=$(oa_target_headerdir)/$$h; \
-	   if [ ! -r $$f2 ] || ! cmp -s $$f1 $$f2 ; then \
-	      cp -p $$f1 $$f2; \
-	   fi; \
-	done ; \
-	$(STAMP) stamp-headers
-
 hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
 	$(LINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
 
 libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
 	$(LINK) -o $@ $(libOpenAxiom_OBJECTS)
 
-%.lo: %.cc stamp-headers
+%.lo: %.cc 
 	$(COMPILE) ${CXXFLAGS} $(oa_include_flags) -o $@ $<
 
 
 mostlyclean-local:
 	@rm -rf .libs
-	@rm -rf $(oa_include_headerdir) stamp-headers
 	@rm -f $(oa_target_oalib)
 	@rm -f $(libOpenAxiom_OBJECTS)
 	@rm -f *~ core

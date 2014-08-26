@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2013, Gabriel Dos Reis.
+// Copyright (C) 2010-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -55,28 +55,27 @@ namespace OpenAxiom {
       struct Lexeme {
          enum Type {
             unknown,                 // unidentified token
-            semicolon        = token::value(";"), // comment
-            dot              = token::value("."),
-            comma            = token::value(","),
-            open_paren       = token::value("("),
-            close_paren      = token::value(")"),
-            apostrophe       = token::value("'"),
-            backquote        = token::value("`"),
-            backslash        = token::value("\\"),
-            sharp_open_paren = token::value("#("),
-            sharp_apostrophe = token::value("#'"),
-            sharp_colon      = token::value("#:"),
-            sharp_plus       = token::value("#+"),
-            sharp_minus      = token::value("#-"),
-            sharp_dot        = token::value("#."),
-            comma_at         = token::value(",@"),
-            digraph_end      = token::value(0xff,0xff),
-            integer,                // integer literal
-            character,              // character literal
-            string,                 // string literal
-            identifier,             // plain identifier
-            sharp_integer_equal,    // anchor definition, #n=<form>
-            sharp_integer_sharp     // back reference, #n#
+            semicolon,               // ";" for comment
+            dot,                     // "."
+            comma,                   // ","
+            open_paren,              // "("
+            close_paren,             // ")"
+            apostrophe,              // "'"
+            backquote,               // "`"
+            backslash,               // "\\"
+            sharp_open_paren ,       // "#("
+            sharp_apostrophe,        // "#'"
+            sharp_colon,             // "#:"
+            sharp_plus,              // "#+"
+            sharp_minus,             // "#-"
+            sharp_dot,               // "#."
+            comma_at,                // ",@"
+            integer,                 // integer literal
+            character,               // character literal
+            string,                  // string literal
+            identifier,              // plain identifier
+            sharp_integer_equal,     // anchor definition, #n=<form>
+            sharp_integer_sharp      // back reference, #n#
          };
 
          std::pair<const Byte*, const Byte*> boundary;

@@ -58,7 +58,7 @@ LISP_LINK = \
 
 # We use a noinst_ primary because we take care of installation
 # procedure ourselves.
-noinst_PROGRAMS = bootsys
+noinst_PROGRAMS = bootsys bemol
 
 bootsys_SOURCES = \
 	utility.boot \
@@ -69,6 +69,14 @@ bootsys_SOURCES = \
 	ast.boot \
 	parser.boot \
 	translator.boot
+
+bemol_SOURCES = \
+	bemol.cc
+
+bemol_LDADD = \
+	-L$(oa_target_libdir) -lOpenAxiom \
+	-L$(top_builddir)/src/syntax -lsyntax \
+	-L$(top_builddir)/src/io -lio
 
 oa_target_bootdir = $(oa_targetdir)/boot
 if OA_ECL_RT
@@ -89,11 +97,19 @@ bootsys_fn = $(bootsys_SOURCES:.boot=.fn)
 
 STAMP = touch
 
+AM_CXXFLAGS = \
+	-I$(top_srcdir)/src/include \
+	-I$(oa_target_includedir) \
+	-I$(top_builddir)/config \
+	-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\""
+
+
 # Make rule toplevel entry points.
 .PHONY: all-boot
 
 all-am: all-boot
 all-boot: $(oa_target_bindir)/bootsys$(EXEEXT) $(oa_bootsys_linkset)
+all-boot: bemol$(EXEEXT)
 
 # The final `bootsys' image.
 $(oa_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)

@@ -175,7 +175,7 @@ list3 l ==
 orDel(a,l) ==
   l is [h,:t] =>
     a = h => t
-    ?ORDER(a,h) => [a,:l]
+    _?ORDER(a,h) => [a,:l]
     [h,:orDel(a,t)]
   [a]
 ordList l ==
@@ -185,7 +185,7 @@ ordUnion(a,b) ==
   a isnt [c,:r] => b
   b isnt [d,:s] => a
   c=d => [c,:ordUnion(r,s)]
-  ?ORDER(a,b) => [c,:ordUnion(r,b)]
+  _?ORDER(a,b) => [c,:ordUnion(r,b)]
   [d,:ordUnion(s,a)]
 ordIntersection(a,b) ==
   a isnt [h,:t] => nil

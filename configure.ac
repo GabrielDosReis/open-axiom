@@ -33,13 +33,17 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.5.0-2014-08-16], 
+AC_INIT([OpenAxiom], [1.5.0-2014-08-26], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
 dnl located in the subdirectory config/
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([config])
+
+AH_TOP([#ifndef OPENAXIOM_CONFIG_included]
+[#define OPENAXIOM_CONFIG_included])
+AH_BOTTOM([#endif // OPENAXIOM_CONFIG_included])
 
 dnl Put all configuration macros here
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
@@ -109,6 +113,7 @@ OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
 OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
+OPENAXIOM_LINK_FILES
 
 ## We are ready to instantiate makefiles.
 AC_CONFIG_FILES([
@@ -138,6 +143,10 @@ OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 AC_CONFIG_FILES([src/gui/gui.pro])
+
+AC_CONFIG_COMMANDS([$target/include/open-axiom/config],
+  [cp -p config/openaxiom-c-macros.h $target/include/open-axiom/config],
+  [target=$target])
 
 AC_OUTPUT
 

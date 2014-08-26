@@ -1,4 +1,20 @@
-2014-08-17  Gabriel Dos Reis  <gdr@axiomatics.org>
+2014-08-26  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* Makefile.am (oa_src_include_headers): Remove.  These headers are
+	now linked by configure.
+	* boot/Makefile.am (noinst_PROGRAMS): Add bemol.
+	(bemol_SOURCES): New.
+	(bemol_LDADD): Likewise.
+	(AM_CXXFLAGS): Set.
+	* boot/bemol.cc: New file.  Initial tokenizer.
+	* include/sexpr.H: Tidy.
+	* include/token-value.def: New file.
+	* include/token.H: Expand.  Add generic tokenizer.
+	* syntax/token.cc: Rework.
+	* interp/simpbool.boot (list1): Escape leading question mark of ?ORDER.
+	(ordUnion): Likewise.
+
+2014-08-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* boot/Makefile.am: New.
 	* boot/Makefile.in: Regenerate.

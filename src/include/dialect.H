@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -36,7 +36,11 @@
 namespace OpenAxiom {
    // Languages for which we have parsers.
    enum class Language {
-      Spad, Boot, Lisp
+      Spad = 0x1,
+      Boot = 0x2,
+      Lisp = 0x4,
+      BootSpad = Spad | Boot,
+      All = Spad | Boot | Lisp,
    };
 }
 

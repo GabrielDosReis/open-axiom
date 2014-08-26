@@ -44,27 +44,6 @@ subdirs = \
 
 oa_targetdir = $(top_builddir)/$(target)
 
-## Where do we put installed include header files?
-oa_incdir = $(oa_targetdir)/include/open-axiom
-
-oa_src_include_headers = \
-	defaults.H \
-	structure.H \
-	iterator.H \
-	storage.H \
-	Charset.H \
-	FileMapping.H \
-	SourceFile.H \
-	Input.H    \
-	diagnostics.H \
-	dialect.H \
-	vm.H \
-	token.H \
-	sexpr.H \
-	Lisp.H \
-	Constructor.H \
-	Database.H
-
 if OA_BUILD_SMAN
 OA_SMAN_TARGETS = all-sman all-clef
 endif
@@ -138,7 +117,7 @@ all-lib: stamp-subdirs all-utils
 all-lisp: all-lib all-driver
 	cd lisp && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-boot: all-lisp
+all-boot: all-syntax all-lisp
 	cd boot && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-interpsys: all-boot all-hyper-pre all-utils
@@ -183,22 +162,11 @@ all-hyper-post: all-algebra  all-doc
 all-graph: all-lib all-utils
 	cd graph && $(MAKE) $(AM_MAKEFLAGS) $@
 
-## Install include headers
-.PHONY: all-headers
-all-headers: $(patsubst %.H,$(oa_incdir)/%,$(oa_src_include_headers))
-
-$(oa_incdir)/%: $(srcdir)/include/%.H | $(oa_incdir)
-	$(RM) $@ && cp -p $< $@
-
-$(oa_incdir):
-	$(MKDIR_P) $@
-
 .PHONY: all-check
 all-check:
 	cd input && $(MAKE) $(AM_MAKEFLAGS) all-check
 
 mostlyclean-local:
-	rm -fr $(oa_incdir)
 	for d in $(subdirs); do \
 	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) mostlyclean); \
 	done

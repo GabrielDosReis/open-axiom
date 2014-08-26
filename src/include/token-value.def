@@ -1,0 +1,138 @@
+// Copyright (C) 2014, Gabriel Dos Reis.
+// All rights reserved.
+// Written by Gabriel Dos Reis.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     - Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     - Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in
+//       the documentation and/or other materials provided with the
+//       distribution.
+//
+//     - Neither the name of OpenAxiom. nor the names of its contributors
+//       may be used to endorse or promote products derived from this
+//       software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+// OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+OPENAXIOM_DEFINE_TOKEN(Unknown, "<unknown>", Unclassified, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Apostrophe, "'", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Backquote, "`", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Bar, "|", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Dot, ".", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(DotDot, "..", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Colon, ":", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(ColonColon, "::", Operator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(ColonDash, ":-", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(ColonEq, ":=", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(At, "@", Operator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Exclamation, "!", Punctuator, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(Comma, ",", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Semicolon, ";", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Star, "*", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(StarStar, "**", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Plus, "+", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Minus, "-", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Slash, "/", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(SlashSlash, "//", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(SlashBackslash, "/\\", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Backslash, "\\", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(BackslashSlash, "\\/", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(BackslashBackslash, "\\\\", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Less, "<", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(LessEq, "<=", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Greater, ">", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(GreaterEq, ">=", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Eq, "=", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(EqEq, "==", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Tilde, "~", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(TildeEq, "~=", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Caret, "^", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Pound, "#", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Dollar, "$", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Ampersand, "&", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(RightArrow, "->", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(LeftArrow, "<-", Operator, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(Implies, "=>", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Equiv, "<=>", Keyword, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(MapsTo, "+->", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(FatArrow, "==>", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(OpenParen, "(", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(CloseParen, ")", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(OpenMetaParen, "(|", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(CloseMetaParen, "|)", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(OpenBracket, "[", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(CloseBracket, "]", Punctuator, Language::All)
+OPENAXIOM_DEFINE_TOKEN(OpenMetaBracket, "[|", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(CloseMetaBracket, "|]", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(OpenBrace, "{", Punctuator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(CloseBrace, "}", Punctuator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(OpenMetaBrace, "{|", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(CloseMetaBrace, "|}", Punctuator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(OpenChevron, "<<", Operator, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(CloseChevron, ">>", Operator, Language::Spad)
+
+OPENAXIOM_DEFINE_TOKEN(Wisecrack, "--", Comment, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Commentary, "++", Comment, Language::BootSpad)
+
+OPENAXIOM_DEFINE_TOKEN(Add, "add", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(And, "and", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Assume, "assume", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Break, "break", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(By, "by", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Case, "case", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Catch, "catch", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Cross, "cross", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Do, "do", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Else, "else", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Exists, "exists", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Finally, "finally", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(For, "for", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Forall, "forall", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(From, "from", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Function, "function", Keyword, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(Has, "has", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(If, "if", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Import, "import", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(In, "in", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Inline, "inline", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Is, "is", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Isnt, "isnt", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Iterate, "iterate", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Leave, "leave", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Macro, "macro", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Mod, "mod", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Namespace, "namespace", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Of, "of", Keyword, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(Or, "or", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Pretend, "pretend", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Quo, "quo", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Rem, "rem", Operator, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Repeat, "repeat", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Return, "return", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Rule, "rule", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Structure, "structure", Keyword, Language::Boot)
+OPENAXIOM_DEFINE_TOKEN(Then, "then", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(Throw, "throw", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Try, "try", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Until, "until", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(With, "with", Keyword, Language::Spad)
+OPENAXIOM_DEFINE_TOKEN(Where, "where", Keyword, Language::BootSpad)
+OPENAXIOM_DEFINE_TOKEN(While, "while", Keyword, Language::BootSpad)
