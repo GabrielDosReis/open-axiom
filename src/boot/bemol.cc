@@ -74,6 +74,20 @@ struct Fragment : std::vector<Line> {
    ColumnIndex last_indent() const {
       return empty() ? 0 : back().indent;
    }
+   using std::vector<Line>::operator[];
+   const Line& operator()(const OpenAxiom::FragmentCursor& pos) const {
+      return (*this)[pos.line];
+   }
+   uint8_t operator[](const OpenAxiom::FragmentCursor& pos) const {
+      return (*this)[pos.line][pos.column];
+   }
+   uint8_t advance(OpenAxiom::FragmentCursor& pos) const {
+      return (*this)[pos.line][pos.column++];
+   }
+
+   bool covering(const OpenAxiom::FragmentCursor& pos) const {
+      return pos.column < (*this)[pos.line].size();
+   }
 };
 
 // Formatting program fragments.
