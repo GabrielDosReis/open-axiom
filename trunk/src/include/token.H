@@ -92,6 +92,17 @@ namespace OpenAxiom {
    using LineNumber = std::size_t;
    using ColumnIndex = std::size_t;
 
+   // Cursor into a fragment.
+   struct FragmentCursor {
+      std::size_t line;         // index of a line in a fragment
+      std::size_t column;       // column number at line.
+   };
+
+   inline FragmentCursor& operator++(FragmentCursor& p) {
+      ++p.column;
+      return p;
+   }
+
    // -- Exception types
    struct EndOfStringUnseen {
       LineNumber line;
@@ -109,42 +120,40 @@ namespace OpenAxiom {
    struct TokenStream {
       TokenStream(Frag& f)
             : frag(f),
-              line(),
-              idx(frag.front().indent)
+              pos{ 0, frag.front().indent }
       {
-         indents.push(idx);
+         indents.push(pos.column);
       }
 
       bool eos() const {
-         return line >= frag.size()
-            or (line + 1 == frag.size() and idx >= frag.back().size());
+         return pos.line >= frag.size()
+            or (pos.line + 1 == frag.size() and pos.column >= frag.back().size());
       }
 
       Tok get(Language = Language::Spad);
    private:
       Frag& frag;
-      std::size_t line;
-      std::size_t idx;
+      FragmentCursor pos;
       std::stack<ColumnIndex> indents;
 
-      std::size_t line_length() const { return frag[line].size(); }
+      std::size_t line_length() const { return frag(pos).size(); }
       LineNumber next_line_number() const {
-         return line + 1 < frag.size()
-            ? frag[line + 1].number
+         return pos.line + 1 < frag.size()
+            ? frag[pos.line + 1].number
             : frag.back().number + 1;
       }
       ColumnIndex next_indentation() const {
-         return line + 1 < frag.size() ? frag[line + 1].indent : 0;
+         return pos.line + 1 < frag.size() ? frag[pos.line + 1].indent : 0;
       }
 
       LineNumber line_number() const {
-         return line < frag.size()
-            ? frag[line].number
+         return pos.line < frag.size()
+            ? frag(pos).number
             : frag.back().number + 1;
       }
 
       ColumnIndex column_number() const {
-         return line < frag.size() ? idx : 0;
+         return pos.line < frag.size() ? pos.column : 0;
       }
 
       using Locus = typename Tok::Location;
@@ -154,6 +163,24 @@ namespace OpenAxiom {
    };
 
    bool separator_or_punctuator(uint8_t);
+
+   template<typename T>
+   inline void comment_token(T& t, TokenValue v) {
+      t.category = TokenCategory::Comment;
+      t.value = v;
+   }
+
+   template<typename T>
+   inline void operator_token(T& t, TokenValue v) {
+      t.category = TokenCategory::Operator;
+      t.value = v;
+   }
+
+   template<typename T>
+   inline void punctuator_token(T& t, TokenValue v) {
+      t.category = TokenCategory::Punctuator;
+      t.value = v;
+   }
 
    template<typename L, typename T>
    static void junk(L& line, ColumnIndex& idx, T& t) {
@@ -169,12 +196,12 @@ namespace OpenAxiom {
          ++idx;
    }
 
-   template<typename L, typename T>
-   void string(L& line, ColumnIndex& idx, T& t) {
+   template<typename Frag, typename Tok>
+   void string_literal(Frag& frag, FragmentCursor& pos, Tok& t) {
       bool done = false;
       bool escape = false;
-      while (idx < line.size() && not done) {
-         switch (line[idx++]) {
+      while (frag.covering(pos) && not done) {
+         switch (frag(pos)[pos.column++]) {
          case '_': escape = !escape; break;
          case '"': done = !escape;
             // fallthrough
@@ -182,7 +209,7 @@ namespace OpenAxiom {
          }
       }
       if (not done)
-         throw EndOfStringUnseen{ line.number, idx };
+         throw EndOfStringUnseen{ frag(pos).number, pos.column };
       t.category = TokenCategory::String;
    }
 
@@ -274,6 +301,211 @@ namespace OpenAxiom {
    }
 
    template<typename Frag, typename Tok>
+   static void
+   left_paren_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      punctuator_token(t, TokenValue::OpenParen);
+      if (frag.covering(pos) and frag[pos] == '|') {
+         ++pos;
+         t.value = TokenValue::OpenMetaParen;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   left_brace_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      punctuator_token(t, TokenValue::OpenBrace);
+      if (frag.covering(pos) and frag[pos] == '|') {
+         ++pos;
+         t.value = TokenValue::OpenMetaBrace;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   left_bracket_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      punctuator_token(t, TokenValue::OpenBracket);
+      if (frag.covering(pos) and frag[pos] == '|') {
+         ++pos;
+         t.value = TokenValue::OpenMetaBracket;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   colon_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Colon);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case ':': t.value = TokenValue::ColonColon; ++pos; break;
+         case '=': t.value = TokenValue::ColonEq; ++pos; break;
+         case '-': t.value = TokenValue::ColonDash; ++pos; break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   star_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Star);
+      if (frag.covering(pos) and frag[pos] == '*') {
+         t.value = TokenValue::StarStar;
+         ++pos;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   slash_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Slash);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '/': t.value = TokenValue::SlashSlash; ++pos; break;
+         case '\\': t.value = TokenValue::SlashBackslash; ++pos; break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   backslash_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Backslash);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '\\': t.value = TokenValue::BackslashBackslash; ++pos; break;
+         case '/': t.value = TokenValue::BackslashSlash; ++pos; break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   less_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Less);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '-': t.value = TokenValue::LeftArrow; ++pos; break;
+         case '<': t.value = TokenValue::OpenChevron; ++pos; break;
+         case '=':
+            t.value = TokenValue::LessEq;
+            if (frag.covering(++pos) and frag[pos] == '>') {
+               t.value = TokenValue::Equiv;
+               ++pos;
+            }
+            break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   equal_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Eq);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '>': t.value = TokenValue::Implies; ++pos; break;
+         case '=':
+            t.value = TokenValue::EqEq;
+            if (frag.covering(++pos) and frag[pos] == '>') {
+               t.value = TokenValue::FatArrow;
+               ++pos;
+            }
+            break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   tilde_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Tilde);
+      if (frag.covering(pos) and frag[pos] == '=') {
+         t.value = TokenValue::TildeEq;
+         ++pos;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   greater_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Greater);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '=': t.value = TokenValue::GreaterEq; ++pos; break;
+         case '>': t.value = TokenValue::CloseChevron; ++pos; break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   bar_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      punctuator_token(t, TokenValue::Bar);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case ']': t.value = TokenValue::CloseMetaBracket; ++pos; break;
+         case '}': t.value = TokenValue::CloseMetaBrace; ++pos; break;
+         case ')': t.value = TokenValue::CloseMetaParen; ++pos; break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   minus_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Minus); 
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '>': t.value = TokenValue::RightArrow; ++pos; break;
+         case '-':
+            comment_token(t, TokenValue::Wisecrack);
+            pos.column = frag(pos).size();
+            break;
+         }
+   }
+
+
+   template<typename Frag, typename Tok>
+   static void
+   plus_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Plus);
+      if (frag.covering(pos))
+         switch (frag[pos]) {
+         case '+':
+            comment_token(t, TokenValue::Commentary);
+            pos.column = frag(pos).size();
+            break;
+         case '-':
+            if (pos.column + 1 < frag(pos).size()
+                and frag(pos)[pos.column + 1] == '>') {
+               t.value = TokenValue::MapsTo;
+               pos.column += 2;
+            }
+            break;
+         default: break;
+         }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   dot_et_al(Frag& frag, FragmentCursor& pos, Tok& t) {
+      operator_token(t, TokenValue::Dot);
+      if (frag.covering(pos) and frag[pos] == '.') {
+         t.value = TokenValue::DotDot;
+         ++pos;
+      }
+   }
+
+   template<typename Frag, typename Tok>
+   static void
+   dollar_et_al(Frag& frag, FragmentCursor& pos, Tok& t, Language dialect) {
+      if (dialect != Language::Boot or not frag.covering(pos)
+          or separator_or_punctuator(frag[pos]))
+         operator_token(t, TokenValue::Dollar);
+      else
+         identifier(frag(pos), pos.column, t, dialect);
+   }
+
+
+   template<typename Frag, typename Tok>
    Tok TokenStream<Frag, Tok>::get(Language dialect) {
       Tok t { };
       t.start = current_locus();
@@ -283,24 +515,24 @@ namespace OpenAxiom {
          t.end = current_locus();
          return t;
       }
-      else if (isspace(frag[line][idx])) {
-         skip_whitespace(frag[line], idx);
+      else if (isspace(frag[pos])) {
+         skip_whitespace(frag(pos), pos.column);
          t.category = TokenCategory::Whitespace;
          t.end = current_locus();
          return t;
       }
-      else if (idx == line_length() - 1 and frag[line].back() == '_') {
-         ++line;
-         idx = frag[line].indent;
+      else if (pos.column == line_length() - 1 and frag(pos).back() == '_') {
+         ++pos.line;
+         pos.column = frag(pos).indent;
       }
-      else if (idx == line_length()) {
+      else if (pos.column == line_length()) {
          auto indent = indents.top();
          auto next_indent = next_indentation();
          t.start = t.end = { next_line_number(), next_indent };
          if (indent < next_indent) {
             indents.push(next_indent);
-            ++line;
-            idx = next_indent;
+            ++pos.line;
+            pos.column = next_indent;
             t.category = TokenCategory::Formatting;
             t.value = TokenValue::Indent;
          }
@@ -310,279 +542,56 @@ namespace OpenAxiom {
             t.value = TokenValue::Unindent;
          }
          else {
-            ++line;
-            idx = next_indent;
+            ++pos.line;
+            pos.column = next_indent;
             t.category = TokenCategory::Formatting;
             t.value = TokenValue::Justify;
          }
          return t;
       }
 
-      switch (auto c = frag[line][idx++]) {
-      case '#':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Pound;
-         break;
-
-      case '@':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::At;
-         break;
-
-      case '^':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Caret;
-         break;
-
-      case '&':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Ampersand;
-         break;
-         
-      case '!':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Exclamation;
-         break;
-         
-      case '\'':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Apostrophe;
-         break;
-      case ',':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Comma;
-         break;
-         
-      case ';':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Semicolon;
-         break;
-         
-      case '`':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Backquote;
-         break;
-         
-      case '(':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::OpenParen;
-         if (idx < line_length() and frag[line][idx] == '|') {
-            ++idx;
-            t.value = TokenValue::OpenMetaParen;
-         }
-         break;
-         
-      case ')':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::CloseParen;
-         break;
-         
-      case '{':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::OpenBrace;
-         if (idx < line_length() and frag[line][idx] == '|') {
-            ++idx;
-            t.value = TokenValue::OpenMetaBrace;
-         }
-         break;
-
-      case '}':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::CloseBrace;
-         break;
-
-      case '[':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::OpenBracket;
-         if (idx < line_length() and frag[line][idx] == '|') {
-            ++idx;
-            t.value = TokenValue::OpenMetaBracket;
-         }
-         break;
-         
-      case ']':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::CloseBracket;
-         break;
-         
-      case ':':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Colon; 
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case ':': t.value = TokenValue::ColonColon; ++idx; break;
-            case '=': t.value = TokenValue::ColonEq; ++idx; break;
-            case '-': t.value = TokenValue::ColonDash; ++idx; break;
-            default: break;
-            }
-         break;
-         
-      case '*':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Star;
-         if (idx < line_length() and frag[line][idx] == '*') {
-            t.value = TokenValue::StarStar;
-            ++idx;
-         }
-         break;
-         
-      case '/':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Slash;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '/': t.value = TokenValue::SlashSlash; ++idx; break;
-            case '\\': t.value = TokenValue::SlashBackslash; ++idx; break;
-            default: break;
-            }
-         break;
-
-      case '\\':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Backslash;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '\\': t.value = TokenValue::BackslashBackslash; ++idx; break;
-            case '/': t.value = TokenValue::BackslashSlash; ++idx; break;
-            default: break;
-            }
-         break;
-         
-      case '<':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Less;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '-': t.value = TokenValue::LeftArrow; ++idx; break;
-            case '<': t.value = TokenValue::OpenChevron; ++idx; break;
-            case '=':
-               t.value = TokenValue::LessEq;
-               if (++idx < line_length() and frag[line][idx] == '>') {
-                  t.value = TokenValue::Equiv;
-                  ++idx;
-               }
-               break;
-            default: break;
-            }
-         break;
-         
-      case '=':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Eq;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '>': t.value = TokenValue::Implies; ++idx; break;
-            case '=':
-               t.value = TokenValue::EqEq;
-               if (++idx < line_length() and frag[line][idx] == '>') {
-                  t.value = TokenValue::FatArrow;
-                  ++idx;
-               }
-               break;
-            default: break;
-            }
-         break;
-         
-      case '~':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Tilde;
-         if (idx < line_length() and frag[line][idx] == '=') {
-            t.value = TokenValue::TildeEq;
-            ++idx;
-         }
-         break;
-
-      case '>':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Greater;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '=': t.value = TokenValue::GreaterEq; ++idx; break;
-            case '>': t.value = TokenValue::CloseChevron; ++idx; break;
-            }
-         break;
-
-      case '|':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Bar;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case ']': t.value = TokenValue::CloseMetaBracket; ++idx; break;
-            case '}': t.value = TokenValue::CloseMetaBrace; ++idx; break;
-            case ')': t.value = TokenValue::CloseMetaParen; ++idx; break;
-            default: break;
-            }
-         break;
-
-      case '-':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Minus; 
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '>': t.value = TokenValue::RightArrow; ++idx; break;
-            case '-':
-               t.category = TokenCategory::Comment;
-               t.value = TokenValue::Wisecrack;
-               idx = frag[line].size();
-               break;
-            }
-         break;
-
-      case '+':
-         t.category = TokenCategory::Operator;
-         t.value = TokenValue::Plus;
-         if (idx < line_length())
-            switch (frag[line][idx]) {
-            case '+':
-               t.category = TokenCategory::Comment;
-               t.value = TokenValue::Commentary;
-               idx = frag[line].size();
-               break;
-            case '-':
-               if (idx + 1 < line_length() and frag[line][idx+1] == '>') {
-                  t.value = TokenValue::MapsTo;
-                  idx += 2;
-               }
-               break;
-            default: break;
-            }
-         break;
-
-      case '.':
-         t.category = TokenCategory::Punctuator;
-         t.value = TokenValue::Dot;
-         if (idx < line_length() and frag[line][idx] == '.') {
-            t.category = TokenCategory::Operator;
-            t.value = TokenValue::DotDot;
-            ++idx;
-         }
-         break;
-
-      case '"':
-         string(frag[line], idx, t);
-         break;
-
-      case '$':
-         if (dialect != Language::Boot or idx >= line_length()
-             or separator_or_punctuator(frag[line][idx])) {
-            t.category = TokenCategory::Operator;
-            t.value = TokenValue::Dollar;
-         }
-         else
-            identifier(frag[line], idx, t, dialect);
-         break;
+      switch (auto c = frag.advance(pos)) {
+      case '#': operator_token(t, TokenValue::Pound); break;
+      case '@': operator_token(t, TokenValue::At); break;
+      case '^': operator_token(t, TokenValue::Caret); break;
+      case '&': punctuator_token(t, TokenValue::Ampersand); break;         
+      case '!': punctuator_token(t, TokenValue::Exclamation); break;
+      case '\'': punctuator_token(t, TokenValue::Apostrophe); break;
+      case ',': punctuator_token(t, TokenValue::Comma); break;
+      case ';': punctuator_token(t, TokenValue::Semicolon); break;
+      case '`': punctuator_token(t, TokenValue::Backquote); break;
+      case '(': left_paren_et_al(frag, pos, t); break;
+      case ')': punctuator_token(t, TokenValue::CloseParen); break;
+      case '{': left_brace_et_al(frag, pos, t); break;
+      case '}': punctuator_token(t, TokenValue::CloseBrace); break;
+      case '[': left_bracket_et_al(frag, pos, t); break;
+      case ']': punctuator_token(t, TokenValue::CloseBracket); break;
+      case ':': colon_et_al(frag, pos, t); break;
+      case '*': star_et_al(frag, pos, t); break;
+      case '/': slash_et_al(frag, pos, t); break;
+      case '\\': backslash_et_al(frag, pos, t); break;
+      case '<': less_et_al(frag, pos, t); break;
+      case '=': equal_et_al(frag, pos, t); break;
+      case '~': tilde_et_al(frag, pos, t); break;
+      case '>': greater_et_al(frag, pos, t); break;
+      case '|': bar_et_al(frag, pos, t); break;
+      case '-': minus_et_al(frag, pos, t); break;
+      case '+': plus_et_al(frag, pos, t); break;
+      case '.': dot_et_al(frag, pos, t); break;
+      case '"': string_literal(frag, pos, t); break;
+      case '$': dollar_et_al(frag, pos, t, dialect); break;
 
       default:
          if (isdigit(c))
-            number(frag[line], idx, t);
+            number(frag(pos), pos.column, t);
          else if (identifier_head(c))
-            identifier(frag[line], idx, t, dialect);
+            identifier(frag(pos), pos.column, t, dialect);
          else
-            junk(frag[line], idx, t);
+            junk(frag(pos), pos.column, t);
          break;
       }
 
-      t.end = { frag[line].number, idx };
+      t.end = { frag(pos).number, pos.column };
       return t;
    }
 }
