@@ -117,8 +117,8 @@ namespace OpenAxiom {
    // Object of this datatype decompose a program fragment into a
    // token stream.  The tokens are of type indicated by Tok.
    template<typename Frag, typename Tok>
-   struct TokenStream {
-      TokenStream(Frag& f)
+   struct Tokenizer {
+      Tokenizer(Frag& f)
             : frag(f),
               pos{ 0, frag.front().indent }
       {
@@ -202,10 +202,18 @@ namespace OpenAxiom {
       bool escape = false;
       while (frag.covering(pos) && not done) {
          switch (frag(pos)[pos.column++]) {
-         case '_': escape = !escape; break;
          case '"': done = !escape;
             // fallthrough
          default: escape = false; break;
+         case '_':
+            if (pos.column == frag(pos).size()
+                and pos.line < frag.size() - 1) {
+               ++pos.line;
+               pos.column = 0;
+            }
+            else
+               escape = !escape;
+            break;
          }
       }
       if (not done)
@@ -506,7 +514,7 @@ namespace OpenAxiom {
 
 
    template<typename Frag, typename Tok>
-   Tok TokenStream<Frag, Tok>::get(Language dialect) {
+   Tok Tokenizer<Frag, Tok>::get(Language dialect) {
       Tok t { };
       t.start = current_locus();
       
@@ -594,6 +602,17 @@ namespace OpenAxiom {
       t.end = { frag(pos).number, pos.column };
       return t;
    }
+
+   // -- Token streams.
+   template<typename T>
+   struct TokenStream : std::vector<T> {
+      template<typename Frag>
+      explicit TokenStream(Frag& f, Language dialect = Language::Spad) {
+         Tokenizer<Frag, T> lex { f };
+         while (auto t = lex.get(dialect))
+            this->push_back(t);
+      }
+   };
 }
 
 #endif  // OPENAXIOM_TOKEN_included
