@@ -103,6 +103,17 @@ namespace OpenAxiom {
       return p;
    }
 
+   inline FragmentCursor operator++(FragmentCursor& p, int) {
+      auto q = p;
+      ++p;
+      return q;
+   }
+
+   inline FragmentCursor& operator--(FragmentCursor& p) {
+      --p.column;
+      return p;
+   }
+
    // -- Exception types
    struct EndOfStringUnseen {
       LineNumber line;
@@ -512,6 +523,23 @@ namespace OpenAxiom {
          identifier(frag(pos), pos.column, t, dialect);
    }
 
+   template<typename Frag, typename Tok>
+   static void
+   sharp_et_al(Frag& frag, FragmentCursor& pos, Tok& t, Language dialect) {
+      if (dialect != Language::Lisp)
+         operator_token(t, TokenValue::Sharp);
+      else if (frag.covering(pos))
+         switch (frag[pos++]) {
+         case '(': punctuator_token(t, TokenValue::SharpLeftParen); break;
+         case '\'': operator_token(t, TokenValue::SharpApostrophe); break;
+         case ':': operator_token(t, TokenValue::SharpColon); break;
+         case '+': punctuator_token(t, TokenValue::SharpPlus); break;
+         case '-': punctuator_token(t, TokenValue::SharpMinus); break;
+         case '.': operator_token(t, TokenValue::SharpDot); break;
+         default: --pos; break;
+         }
+   }
+
 
    template<typename Frag, typename Tok>
    Tok Tokenizer<Frag, Tok>::get(Language dialect) {
@@ -559,7 +587,7 @@ namespace OpenAxiom {
       }
 
       switch (auto c = frag.advance(pos)) {
-      case '#': operator_token(t, TokenValue::Pound); break;
+      case '#': sharp_et_al(frag, pos, t, dialect); break;
       case '@': operator_token(t, TokenValue::At); break;
       case '^': operator_token(t, TokenValue::Caret); break;
       case '&': punctuator_token(t, TokenValue::Ampersand); break;         
