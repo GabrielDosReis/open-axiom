@@ -231,14 +231,18 @@ operator<<(std::ostream& os, const BemolToken& t) {
    return os;
 }
 
+using TokenSequence = OpenAxiom::TokenStream<BemolToken>;
+
+// --
+
 static void
 translate_source_file(SourceInput& src, std::ostream& out, const char* path) {
    while (auto f = src.get()) {
       out << "================================================\n";
       out << f;
-      OpenAxiom::TokenStream<Fragment, BemolToken> ts { f };
       try {
-         while (auto t = ts.get(OpenAxiom::Language::Boot)) {
+         TokenSequence ts { f, OpenAxiom::Language::Boot };
+         for (auto& t : ts) {
             out << '\t' << t;
             switch (t.category) {
             case TokenCategory::Junk:
