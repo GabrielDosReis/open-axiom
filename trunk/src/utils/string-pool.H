@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2013, Gabriel Dos Reis.
+// Copyright (C) 2010-2014, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ namespace OpenAxiom {
       const Byte* make_copy(const Byte*, size_t);
    };
 
-   typedef const StringPool::EntryType* BasicString;
+   typedef const StringPool::EntryType* InternedString;
 }
 
 #endif  // OPENAXIOM_STRING_POOL_INCLUDED
