@@ -191,7 +191,7 @@ namespace OpenAxiom {
       // ------------
       // -- String --
       // ------------
-      using String = BasicString;
+      using String = InternedString;
 
       constexpr ValueBits str_tag = 0x4;
 
@@ -199,16 +199,16 @@ namespace OpenAxiom {
          return (ValueBits(v) & 0x7) == str_tag;
       }
 
-      inline BasicString to_string(Value v) {
-         return reinterpret_cast<BasicString>
+      inline InternedString to_string(Value v) {
+         return reinterpret_cast<InternedString>
             (ValueBits(v) & ~ValueBits(0x7));
       }
 
-      inline Value from_string(BasicString s) {
+      inline Value from_string(InternedString s) {
          return Value(ValueBits(s) | str_tag);
       }
 
-      inline BasicString to_string_if_can(Value v) {
+      inline InternedString to_string_if_can(Value v) {
          return is_string(v) ? to_string(v) : nullptr;
       }
 
@@ -353,12 +353,12 @@ namespace OpenAxiom {
       // -- Scope --
       // -----------
       struct Scope : Dynamic, private std::map<Symbol*, Value> {
-         explicit Scope(BasicString n) : id(n) { }
-         BasicString name() const { return id; }
+         explicit Scope(InternedString n) : id(n) { }
+         InternedString name() const { return id; }
          Value* lookup(Symbol*) const;
          Value* define(Symbol*, Value);
       private:
-         const BasicString id;
+         const InternedString id;
       };
 
       // --------------
