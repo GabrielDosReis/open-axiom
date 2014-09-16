@@ -38,10 +38,8 @@
 #define OPENAXIOM_VM_included
 
 #include <open-axiom/storage>
-#if HAVE_STDINT_H
-#  include <stdint.h>
-#endif 
 #include <open-axiom/string-pool>
+#include <stdint.h>
 #include <utility>
 #include <map>
 #include <set>
