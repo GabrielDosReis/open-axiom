@@ -139,10 +139,10 @@ namespace OpenAxiom {
       // ------------------
       struct SymbolSyntax : AtomSyntax {
          enum Kind {
-            uninterned,         // uninterned symbol
-            ordinary,           // an interned symbol
-            absolute,           // case-sensitive symbol
-            keyword             // a keyword symbol
+            ordinary   = 0x0,   // an interned symbol
+            uninterned = 0x1,   // uninterned symbol
+            absolute   = 0x2,   // case-sensitive symbol
+            keyword    = 0x4,   // a keyword symbol
          };
          SymbolSyntax(const Lexeme&, Kind);
          Kind kind() const { return sort; }
@@ -186,6 +186,17 @@ namespace OpenAxiom {
          unary_form(const Syntax* f) : form(f) { }
       private:
          const Syntax* const form;
+      };
+
+      template<typename T>
+      struct binary_form : Syntax {
+         const Syntax* first() const { return rep.first; }
+         const Syntax* second() const { return rep.second; }
+         void accept(Visitor&) const;
+      protected:
+         binary_form(const Syntax* f, const Syntax* s) : rep(f, s) { }
+      private:
+         std::pair<const Syntax*, const Syntax*> rep;
       };
 
       // -----------------
@@ -240,16 +251,16 @@ namespace OpenAxiom {
       // -- Include --
       // -------------
       // Conditional inclusion syntax object
-      struct Include : unary_form<Include> {
-         explicit Include(const Syntax*);
+      struct Include : binary_form<Include> {
+         Include(const Syntax*, const Syntax*);
       };
 
       // -------------
       // -- Exclude --
       // -------------
       // Conditional exclusion syntax object
-      struct Exclude : unary_form<Exclude> {
-         explicit Exclude(const Syntax*);
+      struct Exclude : binary_form<Exclude> {
+         Exclude(const Syntax*, const Syntax*);
       };
 
       // ----------------
@@ -322,6 +333,12 @@ namespace OpenAxiom {
          v.visit(static_cast<const T&>(*this));
       }
 
+      template<typename T>
+      void
+      binary_form<T>::accept(Visitor& v) const {
+         v.visit(static_cast<const T&>(*this));
+      }
+
       // ---------------
       // -- Allocator --
       // ---------------
@@ -342,8 +359,8 @@ namespace OpenAxiom {
          const Eval* make_eval(const Syntax*);
          const Splice* make_splice(const Syntax*);
          const Function* make_function(const Syntax*);
-         const Include* make_include(const Syntax*);
-         const Exclude* make_exclude(const Syntax*);
+         const Include* make_include(const Syntax*, const Syntax*);
+         const Exclude* make_exclude(const Syntax*, const Syntax*);
          const ListSyntax* make_list(const std::vector<const Syntax*>&, bool = false);
          const VectorSyntax* make_vector(const std::vector<const Syntax*>&);
          

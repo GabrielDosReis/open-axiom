@@ -1,3 +1,33 @@
+2014-09-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* rt/vm.cc (VM::Environment::Environment): Define.
+	(VM::Environment::~Environment): Likewise.
+	(VM::Symbol::Symbol): Rework.
+	(VM::BasicContext::make_package): Define.
+	(VM::BasicContext::make_keyword): Likewise.
+	(VM:BasicContext::make_symbol): Remove.
+	(VM::BasicContext::make_operator): Tidy.
+	* include/vm.H (VM::to_bool): New.
+	(VM::to_value): Likewise.
+	(VM::SymbolAttribute): Likewise.
+	(VM::Symbol): Rework.
+	(VM::CmpByName): New helper class.
+	(VM::setf_symbol_function): New helper function.
+	(VM::Environment): Move from Lisp.H.
+	(VM::FunctionBase): Derive from VM::Callable.
+	* include/sexpr.H (Sexpr::SymbolSyntax::Kind): Now bitmask type.
+	(Sexpr::binary_form): New.
+	(Sexpr::Include): Derive from it.
+	(Sexpr::Exclude): Likewise.
+	(Sexpr::Allocator): Adjust.
+	* syntax/sexpr.cc (Sexpr::finish_include): New.
+	(Sexpr::finish_exclude): Likewise.
+	(Sexpr::read_sharp_et_al): Use them.
+	* include/Lisp.H: Adjust.  Move Environment to vm.H.
+	(Lisp::Evaluator): Tidy.
+	* rt/Lisp.cc (define_special_value_constants): New.
+	(Lisp::Evaluator::Evaluator): Call it.
+
 2014-08-26  Raoul B.  <raoulb@bluewin.ch>
 
 	* algebra/combfunc.spad.pamphlet

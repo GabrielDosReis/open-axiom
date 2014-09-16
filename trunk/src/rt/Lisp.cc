@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -37,6 +37,30 @@
 
 namespace OpenAxiom {
    namespace Lisp {
+      namespace {
+         template<typename T>
+         struct NamedConstant {
+            const char* const name;
+            const T value;
+         };
+      }
+
+      constexpr NamedConstant<Value> value_constants[] = {
+         { "NIL", Value::nil },
+         { "T", Value::t },
+         { "MOST-NEGATIVE-FIXNUM", from_fixnum(Fixnum::minimum) },
+         { "MOST-POSITIVE-FIXNUM", from_fixnum(Fixnum::maximum) },
+      };
+
+      static void define_special_value_constants(Evaluator* ctx) {
+         auto core = ctx->core_package();
+         for (auto& x : value_constants) {
+            auto sym = core->make_symbol(ctx->intern(x.name));
+            sym->value = x.value;
+            sym->attributes = SymbolAttribute::SpecialConstant;
+         }
+      }
+
       Unimplemented::Unimplemented(const std::string& s)
             : BasicError(s)
       { }
@@ -134,13 +158,13 @@ namespace OpenAxiom {
          auto s = ctx->intern(x.lexeme().begin(), x.lexeme().size());
          switch (x.kind()) {
          case Sexpr::SymbolSyntax::uninterned:
-            return from_symbol(ctx->make_symbol(s, nullptr));
+            return to_value(ctx->homeless_package()->make_symbol(s));
 
          case Sexpr::SymbolSyntax::keyword:
-            return from_symbol(ctx->make_symbol(s, ctx->keyword_namespace()));
+            return to_value(ctx->make_keyword(s));
 
          default:
-            return from_symbol(ctx->make_symbol(s, ctx->active_namespace()));
+            return to_value(ctx->current_package()->make_symbol(s));
          }
       }
 
@@ -199,7 +223,11 @@ namespace OpenAxiom {
          return v;
       }
 
-      Evaluator::Evaluator() : keys(intern("KEYWORD")), ns() {
+      Evaluator::Evaluator()
+            : core(make_package(intern("AxiomCore"))),
+              ns(core)
+      {
+         define_special_value_constants(this);
          env_stack.push_back(Environment{ });
       }
 
@@ -242,7 +270,7 @@ namespace OpenAxiom {
 
       static void format(const Symbol* s, std::ostream& os) {
          // FIXME: Handle escapes.
-         auto n = s->name();
+         auto n = s->name;
          std::copy(n->begin(), n->end(), std::ostream_iterator<char>(os));
       }
       

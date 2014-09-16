@@ -47,21 +47,21 @@
 
 namespace std {
    template<>
-   struct hash<OpenAxiom::VM::Scope>  {
+   struct hash<OpenAxiom::VM::Package>  {
       hash<OpenAxiom::VM::String>::result_type
-      operator()(const OpenAxiom::VM::Scope& s) const {
-         return h(s.name());
+      operator()(const OpenAxiom::VM::Package& s) const {
+         return h(s.name);
       }
       hash<OpenAxiom::VM::String> h;
    };
 
    template<>
-   struct equal_to<OpenAxiom::VM::Scope> {
-      using arg_type = OpenAxiom::VM::Scope;
+   struct equal_to<OpenAxiom::VM::Package> {
+      using arg_type = OpenAxiom::VM::Package;
       bool operator()(const arg_type& x, const arg_type& y) const {
-         return p(x.name(), y.name());
+         constexpr equal_to<OpenAxiom::VM::String> eq { };
+         return eq(x.name, y.name);
       }
-         equal_to<OpenAxiom::VM::String> p;
    };
 }
 
@@ -79,24 +79,20 @@ namespace OpenAxiom {
          explicit IntegerOverflow(const std::string&);
       };
       
-      // -- Environments.
-      using Environment = std::map<Symbol*, Value>;
-
       // -- Anchor maps
       using AnchorTable = std::map<Ordinal, Value>;
 
       // -- Evaluator --
       struct Evaluator : VM::BasicContext {
          Evaluator();
-         Scope* keyword_namespace() { return &keys; }
-         Scope* active_namespace() { return ns; }
+         Package* core_package() { return core; }
+         Package* current_package() { return ns; }
          Value toplevel_form(const Sexpr::Syntax*);
          Value make_value(const Sexpr::Syntax*);
          Environment* global_environment();
       private:
-         Scope keys;
-         std::unordered_set<Scope> packages;
-         Scope* ns;
+         Package* core;
+         Package* ns;
          std::list<Environment> env_stack;
          AnchorTable anchor_map;
       };

@@ -223,10 +223,14 @@ namespace OpenAxiom {
       Function::Function(const Syntax* s) : unary_form<Function>(s) { }
 
       // -- Include --
-      Include::Include(const Syntax* s) : unary_form<Include>(s) { }
+      Include::Include(const Syntax* c, const Syntax* s)
+            : binary_form<Include>(c, s)
+      { }
 
       // -- Exclude --
-      Exclude::Exclude(const Syntax* s) : unary_form<Exclude>(s) { }
+      Exclude::Exclude(const Syntax* c, const Syntax* s)
+            : binary_form<Exclude>(c, s)
+      { }
 
       // -- ListSyntax --
       ListSyntax::ListSyntax() : dot(false) { }
@@ -325,13 +329,13 @@ namespace OpenAxiom {
       }
 
       const Include*
-      Allocator::make_include(const Syntax* s) {
-         return incs.make(s);
+      Allocator::make_include(const Syntax* c, const Syntax* s) {
+         return incs.make(c, s);
       }
 
       const Exclude*
-      Allocator::make_exclude(const Syntax* s) {
-         return excs.make(s);
+      Allocator::make_exclude(const Syntax* c, const Syntax* s) {
+         return excs.make(c, s);
       }
 
       const ListSyntax*
@@ -553,6 +557,22 @@ namespace OpenAxiom {
       }
 
       static const Syntax*
+      finish_include(Reader::State& s) {
+         ++s.cur;
+         auto cond = read_sexpr(s);
+         auto form = read_sexpr(s);
+         return s.alloc.make_include(cond, form);
+      }
+
+      static const Syntax*
+      finish_exclude(Reader::State& s) {
+         ++s.cur;
+         auto cond = read_sexpr(s);
+         auto form = read_sexpr(s);
+         return s.alloc.make_exclude(cond, form);
+      }
+
+      static const Syntax*
       read_sharp_et_al(Reader::State& s) {
          if (++s.cur >= s.end)
             syntax_error("end-of-input reached after sharp sign");
@@ -562,6 +582,8 @@ namespace OpenAxiom {
          case ':': return finish_uninterned_symbol(s);
          case '.': return finish_readtime_eval(s);
          case '\\': return finish_character(s);
+         case '+': return finish_include(s);
+         case '-': return finish_exclude(s);
 
          default:
             if (isdigit(*s.cur))
