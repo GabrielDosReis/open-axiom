@@ -757,7 +757,7 @@ all-io: all-utils
 all-syntax: all-io
 	cd syntax && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-rt: all-utils
+all-rt: all-utils all-syntax
 	cd rt && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-clef: all-lib
@@ -766,7 +766,7 @@ all-clef: all-lib
 all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-gui: all-driver all-io all-rt all-syntax
+all-gui: all-driver all-io all-rt
 	cd gui && $(MAKE) $(AM_MAKEFLAGS)
 
 all-hyper: all-lib all-io
@@ -785,7 +785,7 @@ all-lib: stamp-subdirs all-utils
 all-lisp: all-lib all-driver
 	cd lisp && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-boot: all-syntax all-lisp
+all-boot: all-rt all-lisp
 	cd boot && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-interpsys: all-boot all-hyper-pre all-utils
