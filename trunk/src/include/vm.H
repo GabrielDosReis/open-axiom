@@ -43,6 +43,7 @@
 #include <utility>
 #include <map>
 #include <set>
+#include <type_traits>
 
 #define internal_type struct alignas(16)
 #define internal_data alignas(16)
@@ -145,6 +146,10 @@ namespace OpenAxiom {
       // Note: These choices do not fully satisfy constraint 4.  This is 
       //     because we restrict foreign pointers to address aligned
       //     to 8-byte boundaries.  A modest constraint.
+      //
+      // Special Constants:
+      //     NIL    0x00
+      //     T      0x10
 
 
       // -----------
@@ -153,11 +158,62 @@ namespace OpenAxiom {
       // All VM values fit in a universal value datatype.
       using ValueBits = uintptr_t;
       using ValueMask = ValueBits;
-      enum class Value : ValueBits { };
+      enum class Value : ValueBits {
+         nil = 0x00,            // distinguished NIL value
+         t   = 0x10,            // distinguished T value
+      };
 
-      // The distinguished `nil' value.
-      constexpr Value nil { };
+      template<typename>
+      struct ValueTrait {
+      };
 
+      // Return the tag of an abstract value, when viewed as a potential
+      // T-value.
+      template<typename T>
+      constexpr ValueBits tag(Value v) {
+         return ValueBits(v) & ValueTrait<T>::tag_mask;
+      }
+
+      // Return true if the abstract value is, in fact, a T-value.
+      template<typename T>
+      constexpr bool is(Value v) {
+         return tag<T>(v) == ValueTrait<T>::tag;
+      }
+
+      // Return the pristine bits of an abstract value without its tag.
+      template<typename T>
+      constexpr ValueBits native(Value v) {
+         return ValueBits(v) & ~ValueTrait<T>::tag_mask;
+      }
+
+      // -------------
+      // -- Dynamic --
+      // -------------
+      // Any internal value is of a class derived from this.
+      internal_type Dynamic {
+         virtual ~Dynamic();
+      };
+
+      template<>
+      struct ValueTrait<Dynamic> {
+         enum Tag : ValueBits { tag = 0x6 };
+         enum Mask : ValueBits { tag_mask = 0xF };
+      };
+
+      inline Dynamic* to_dynamic(Value v) {
+         return reinterpret_cast<Dynamic*>(native<Dynamic>(v));
+      }
+
+      inline Dynamic* to_dynamic_if_can(Value v) {
+         return is<Dynamic>(v) ? to_dynamic(v) : nullptr;
+      }
+
+      inline Value from_dynamic(const Dynamic* o) {
+         return Value(ValueBits(o) | ValueTrait<Dynamic>::tag);
+      }
+
+      struct Scope;
+      
       // -------------
       // -- Fixnum ---
       // -------------
@@ -172,18 +228,18 @@ namespace OpenAxiom {
          maximum = FixnumBits(~ValueBits() >> 2),
       };
 
-      constexpr ValueBits fix_tag = 0x1;
-
-      constexpr bool is_fixnum(Value v) {
-         return (ValueBits(v) & 0x1) == fix_tag;
-      }
+      template<>
+      struct ValueTrait<Fixnum> {
+         enum Tag : ValueBits { tag = 0x1  };
+         enum Mask : ValueBits { tag_mask = 0x1 };
+      };
 
       constexpr Fixnum to_fixnum(Value v) {
          return Fixnum(FixnumBits(v) >> 1);
       }
 
       constexpr Value from_fixnum(Fixnum i) {
-         return Value((ValueBits(i) << 1 ) | fix_tag);
+         return Value((ValueBits(i) << 1 ) | ValueTrait<Fixnum>::tag);
       }
 
       // ------------
@@ -191,23 +247,22 @@ namespace OpenAxiom {
       // ------------
       using String = InternedString;
 
-      constexpr ValueBits str_tag = 0x4;
-
-      constexpr bool is_string(Value v) {
-         return (ValueBits(v) & 0x7) == str_tag;
-      }
+      template<>
+      struct ValueTrait<String> {
+         enum Tag : ValueBits { tag = 0x4 };
+         enum Mask : ValueBits { tag_mask = 0x7 };
+      };
 
       inline InternedString to_string(Value v) {
-         return reinterpret_cast<InternedString>
-            (ValueBits(v) & ~ValueBits(0x7));
+         return reinterpret_cast<String>(native<String>(v));
       }
 
       inline Value from_string(InternedString s) {
-         return Value(ValueBits(s) | str_tag);
+         return Value(ValueBits(s) | ValueTrait<String>::tag);
       }
 
       inline InternedString to_string_if_can(Value v) {
-         return is_string(v) ? to_string(v) : nullptr;
+         return is<String>(v) ? to_string(v) : nullptr;
       }
 
       // -------------
@@ -216,48 +271,48 @@ namespace OpenAxiom {
       // Allocated objects are represented by their addresses.
       using Memory::Pointer;
 
-      constexpr ValueBits ptr_tag = 0x0;
-
-      constexpr bool is_pointer(Value v) {
-         return (ValueBits(v) & 0x7) == ptr_tag;
-      }
+      template<>
+      struct ValueTrait<Memory::Pointer> {
+         enum Tag : ValueBits { tag = 0x0 };
+         enum Mask : ValueBits { tag_mask = 0x7 };
+      };
 
       inline Pointer to_pointer(Value v) {
          return Pointer(ValueBits(v));
       }
 
       inline Value from_pointer(Pointer p) {
-         return Value(ValueBits(p) | ptr_tag);
+         return Value(ValueBits(p) | ValueTrait<Memory::Pointer>::tag);
       }
 
       // ----------
       // -- Pair --
       // ----------
-      struct ConsCell {
+      struct alignas(8) ConsCell {
          Value head;
          Value tail;
       };
 
       using Pair = ConsCell*;
 
-      constexpr ValueBits pair_tag = 0x2;
-
-      constexpr bool is_pair(Value v) {
-         return (ValueBits(v) & 0x7) == pair_tag;
-      }
+      template<>
+      struct ValueTrait<Pair> {
+         enum Tag : ValueBits { tag = 0x2 };
+         enum Mask : ValueBits { tag_mask = 0x7 };
+      };
 
       inline Pair to_pair(Value v) {
-         return Pair(ValueBits(v) & ~0x7);
+         return reinterpret_cast<Pair>(native<Pair>(v));
       }
 
       inline Value from_pair(Pair p) {
-         return Value(ValueBits(p) | pair_tag);
+         return Value(ValueBits(p) | ValueTrait<Pair>::tag);
       }
 
       // If `v' designates a pair, return a pointer to its
       // concrete representation.
       inline Pair to_pair_if_can(Value v) {
-         return is_pair(v) ? to_pair(v) : nullptr;
+         return is<Pair>(v) ? to_pair(v) : nullptr;
       }
 
       Fixnum count_nodes(Pair);
@@ -274,18 +329,18 @@ namespace OpenAxiom {
       // we do not handle UCN characters at the moment.
       enum class Character : ValueBits { };
 
-      constexpr ValueBits char_tag = 0xE;
-
-      constexpr bool is_character(Value v) {
-         return (ValueBits(v) & 0xF) == char_tag;
-      }
+      template<>
+      struct ValueTrait<Character> {
+         enum Tag : ValueBits { tag = 0xE };
+         enum Mask : ValueBits { tag_mask = 0xF };
+      };
 
       constexpr Character to_character(Value v) {
          return Character(ValueBits(v) >> 4);
       }
 
       constexpr Value from_character(Character c) {
-         return Value((ValueBits(c) << 4) | char_tag);
+         return Value((ValueBits(c) << 4) | ValueTrait<Character>::tag);
       }
 
       // -- Object --
@@ -296,36 +351,6 @@ namespace OpenAxiom {
          const Type* type;
       };
 
-      // -------------
-      // -- Dynamic --
-      // -------------
-      // Any internal value is of a class derived from this.
-      internal_type Dynamic {
-         virtual ~Dynamic();
-      };
-
-      constexpr ValueBits dyn_tag = 0x6;
-
-      constexpr bool is_dynamic(Value v) {
-         return (ValueBits(v) & 0xF) == dyn_tag;
-      }
-
-      inline Dynamic* to_dynamic(Value v) {
-         return reinterpret_cast<Dynamic*>(ValueBits(v) & ~0xF);
-      }
-
-      inline Dynamic* to_dynamic_if_can(Value v) {
-         return is_dynamic(v)
-            ? reinterpret_cast<Dynamic*>(ValueBits(v) & ~0xF)
-            : nullptr;
-      }
-
-      inline Value from_dynamic(const Dynamic* o) {
-         return Value(ValueBits(o) | dyn_tag);
-      }
-
-      struct Scope;
-      
       // ------------
       // -- Symbol --
       // ------------
@@ -365,7 +390,7 @@ namespace OpenAxiom {
       struct FunctionBase : Dynamic {
          const Symbol name;
          Value type;
-         FunctionBase(Symbol n, Value t = nil)
+         FunctionBase(Symbol n, Value t = Value::nil)
                : name(n), type(t) { }
       };
 
