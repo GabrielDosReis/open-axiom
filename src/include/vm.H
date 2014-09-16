@@ -41,8 +41,8 @@
 #include <open-axiom/string-pool>
 #include <stdint.h>
 #include <utility>
-#include <map>
 #include <set>
+#include <vector>
 #include <type_traits>
 
 #define internal_type struct alignas(16)
@@ -163,6 +163,14 @@ namespace OpenAxiom {
          t   = 0x10,            // distinguished T value
       };
 
+      constexpr bool to_bool(Value v) {
+         return v != Value::nil;
+      }
+
+      constexpr Value to_value(bool b) {
+         return b ? Value::t : Value::nil;
+      }
+
       template<typename>
       struct ValueTrait {
       };
@@ -208,11 +216,18 @@ namespace OpenAxiom {
          return is<Dynamic>(v) ? to_dynamic(v) : nullptr;
       }
 
-      inline Value from_dynamic(const Dynamic* o) {
+      template<typename T>
+      using IfDynamic = typename
+         std::enable_if<std::is_base_of<Dynamic, T>::value, Value>::type;
+
+      template<typename T>
+      inline IfDynamic<T> to_value(const T* o) {
          return Value(ValueBits(o) | ValueTrait<Dynamic>::tag);
       }
 
-      struct Scope;
+      // -- Callable --
+      struct Callable : Dynamic {
+      };
       
       // -------------
       // -- Fixnum ---
@@ -351,13 +366,27 @@ namespace OpenAxiom {
          const Type* type;
       };
 
+      struct Package;
+
+      enum class SymbolAttribute {
+         None             = 0x0,    // No particular attribute.
+         Constant         = 0x1,    // Symbol defined constant.
+         SpecialBinding   = 0x2,    // Symbol declared special.
+         Keyword          = 0x4,    // A keyword symbol.
+         SpecialConstant  = Constant | SpecialBinding,
+      };
+
       // ------------
       // -- Symbol --
       // ------------
-      struct Symbol : Dynamic, std::pair<String, Scope*> {
-         Symbol(String, Scope*);
-         String name() const { return first; }
-         Scope* scope() const { return second; }
+      struct Symbol : Dynamic {
+         const InternedString name;
+         Value value;
+         const Callable* function;
+         Pair properties;
+         Package* package;
+         SymbolAttribute attributes;
+         explicit Symbol(InternedString);
       };
 
       inline Symbol* to_symbol_if_can(Value v) {
@@ -368,29 +397,53 @@ namespace OpenAxiom {
          return to_symbol_if_can(v) != nullptr;
       }
 
-      inline Value from_symbol(const Symbol* s) {
-         return from_dynamic(s);
-      }
+      struct CmpByName {
+         template<typename T>
+         bool operator()(const T& x, const T& y) const {
+            return std::less<String>()(x.name, y.name);
+         }
+      };
 
-      // -----------
-      // -- Scope --
-      // -----------
-      struct Scope : Dynamic, private std::map<Symbol*, Value> {
-         explicit Scope(InternedString n) : id(n) { }
-         InternedString name() const { return id; }
-         Value* lookup(Symbol*) const;
-         Value* define(Symbol*, Value);
+      template<typename T>
+      inline const T* setf_symbol_function(Symbol* sym, const T* fun) {
+         sym->function = fun;
+         return fun;
+      }
+      
+      // -- Environments.
+      struct Environment {
+         struct Binding {
+            Symbol* symbol;
+            Value value;
+         };
+
+         Environment();
+         ~Environment();
+
+         void bind(Symbol*, Value);
       private:
-         const InternedString id;
+         std::vector<Binding> lexical;
+         std::vector<Binding> dynamic;
+      };
+
+      // -------------
+      // -- Package --
+      // -------------
+      struct Package : Dynamic {
+         const InternedString name;
+         std::set<Symbol, CmpByName> symbols;
+
+         explicit Package(InternedString);
+         Symbol* make_symbol(InternedString);
       };
 
       // --------------
       // -- Function --
       // --------------
-      struct FunctionBase : Dynamic {
-         const Symbol name;
+      struct FunctionBase : Callable {
+         const Symbol* name;
          Value type;
-         FunctionBase(Symbol n, Value t = Value::nil)
+         FunctionBase(const Symbol* n, Value t = Value::nil)
                : name(n), type(t) { }
       };
 
@@ -407,7 +460,9 @@ namespace OpenAxiom {
       template<typename Code>
       struct BuiltinFunction : FunctionBase {
          Code code;
-         BuiltinFunction(Symbol n, Code c) : FunctionBase(n), code(c) { }
+         BuiltinFunction(const Symbol* n, Code c)
+               : FunctionBase(n), code(c)
+         { }
       };
 
       using NullaryOperator = BuiltinFunction<NullaryCode>;
@@ -423,20 +478,26 @@ namespace OpenAxiom {
          BasicContext();
          ~BasicContext();
 
+         Package* make_package(InternedString);
+         Symbol* make_keyword(InternedString);
          Pair make_pair(Value, Value);
-         const Symbol* make_symbol(String, Scope*);
-         const NullaryOperator* make_operator(Symbol, NullaryCode);
-         const UnaryOperator* make_operator(Symbol, UnaryCode);
-         const BinaryOperator* make_operator(Symbol, BinaryCode);
-         const TernaryOperator* make_operator(Symbol, TernaryCode);
+         const NullaryOperator* make_operator(Symbol*, NullaryCode);
+         const UnaryOperator* make_operator(Symbol*, UnaryCode);
+         const BinaryOperator* make_operator(Symbol*, BinaryCode);
+         const TernaryOperator* make_operator(Symbol*, TernaryCode);
+
+         Package* keyword_package() const { return keywords; }
+         Package* homeless_package() const { return homeless; }
 
       protected:
-         std::set<Symbol> syms;
+         std::set<Package, CmpByName> packages;
          Memory::Factory<ConsCell> conses;
          Memory::Factory<NullaryOperator> nullaries;
          Memory::Factory<UnaryOperator> unaries;
          Memory::Factory<BinaryOperator> binaries;
          Memory::Factory<TernaryOperator> ternaries;
+         Package* keywords;
+         Package* homeless;
       };
    };
 }

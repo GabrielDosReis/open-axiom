@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013, Gabriel Dos Reis.
+// Copyright (C) 2011-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -36,11 +36,40 @@
 
 namespace OpenAxiom {
    namespace VM {
+      // -- Environement
+      Environment::Environment() = default;
+
+      Environment::~Environment() {
+         // Restore value of special variables bound in this environment.
+         const auto end = dynamic.rend();
+         for (auto p = dynamic.rbegin(); p != end; ++p)
+            p->symbol->value = p->value;
+      }
+
+      // -- Dynamic
       Dynamic::~Dynamic() { }
 
-      Symbol::Symbol(String n, Scope* s)
-            : std::pair<String, Scope*>(n, s)
+      // -- Symbol
+      Symbol::Symbol(InternedString s)
+            : name(s),
+              value(),
+              function(),
+              properties(),
+              package(),
+              attributes()
       { }
+
+      // -- Package
+      Package::Package(InternedString s)
+            : name(s)
+      { }
+
+      Symbol*
+      Package::make_symbol(InternedString s) {
+         auto sym = const_cast<Symbol*>(&*symbols.insert(Symbol(s)).first);
+         sym->package = this;
+         return sym;
+      }
 
       Fixnum
       count_nodes(Pair p) {
@@ -51,36 +80,48 @@ namespace OpenAxiom {
       }
 
       // -- BasicContext --
+      Package*
+      BasicContext::make_package(InternedString n) {
+         auto p = &*packages.insert(Package(n)).first;
+         return const_cast<Package*>(p);
+      }
+
+      Symbol*
+      BasicContext::make_keyword(InternedString n) {
+         auto sym = keyword_package()->make_symbol(n);
+         sym->value = to_value(sym);
+         sym->attributes = SymbolAttribute::Keyword;
+         return sym;
+      }
+
       Pair BasicContext::make_pair(Value h, Value t) {
          return conses.make(h, t);
       }
 
-      const Symbol*
-      BasicContext::make_symbol(String n, Scope* s) {
-         return &*syms.insert({ n, s }).first;
-      }
-
       const NullaryOperator*
-      BasicContext::make_operator(Symbol n, NullaryCode c) {
-         return nullaries.make(n, c);
+      BasicContext::make_operator(Symbol* n, NullaryCode c) {
+         return setf_symbol_function(n, nullaries.make(n, c));
       }
       
       const UnaryOperator*
-      BasicContext::make_operator(Symbol n, UnaryCode c) {
-         return unaries.make(n, c);
+      BasicContext::make_operator(Symbol* n, UnaryCode c) {
+         return setf_symbol_function(n, unaries.make(n, c));
       }
       
       const BinaryOperator*
-      BasicContext::make_operator(Symbol n, BinaryCode c) {
-         return binaries.make(n, c);
+      BasicContext::make_operator(Symbol* n, BinaryCode c) {
+         return setf_symbol_function(n, binaries.make(n, c));
       }
       
       const TernaryOperator*
-      BasicContext::make_operator(Symbol n, TernaryCode c) {
-         return ternaries.make(n, c);
+      BasicContext::make_operator(Symbol* n, TernaryCode c) {
+         return setf_symbol_function(n, ternaries.make(n, c));
       }
       
-      BasicContext::BasicContext() {
+      BasicContext::BasicContext()
+            : keywords(make_package(intern("KEYWORD"))),
+              homeless(make_package(nullptr))
+      {
       }
 
       BasicContext::~BasicContext() {
