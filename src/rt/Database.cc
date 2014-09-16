@@ -53,10 +53,10 @@ namespace OpenAxiom {
          }
          else {
             auto data = Lisp::assoc(key, toc);
-            if (data != nil)
+            if (data != Value::nil)
                return dict.insert({ key, data }).first->second;
          }
-         return nil;
+         return Value::nil;
       }
    }
 }

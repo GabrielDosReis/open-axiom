@@ -54,14 +54,14 @@ namespace OpenAxiom {
 
       Fixnum
       retract_to_fixnum(Value v) {
-         if (not is_fixnum(v))
+         if (not is<Fixnum>(v))
             throw Diagnostics::BasicError(show(v) + " is not a fixnum");
          return to_fixnum(v);
       }
 
       Pair
       retract_to_pair(Value v) {
-         if (not is_pair(v))
+         if (not is<Pair>(v))
             throw Diagnostics::BasicError(show(v) + " is not a pair");
          return to_pair(v);
       }
@@ -113,8 +113,8 @@ namespace OpenAxiom {
       static Value
       construct(Evaluator* ctx, const Sexpr::ListSyntax& x) {
          if (x.empty())
-            return nil;
-         auto result = nil;
+            return Value::nil;
+         auto result = Value::nil;
          auto p = x.rbegin();
          if (x.dotted())
             result = ctx->make_value(*p++);
@@ -150,7 +150,7 @@ namespace OpenAxiom {
          struct V : Sexpr::Syntax::Visitor {
             Evaluator* ctx;
             Value result;
-            V(Evaluator* e) : ctx(e), result(nil) { }
+            V(Evaluator* e) : ctx(e), result(Value::nil) { }
             void visit(const IntegerSyntax& x) { result = construct(ctx, x); }
             void visit(const CharacterSyntax& x) { unimplemented(x); }
             void visit(const StringSyntax& x) { result = construct(ctx, x); }
@@ -165,7 +165,7 @@ namespace OpenAxiom {
             }
             void visit(const AnchorSyntax& x) {
                auto& v = ctx->anchor_map[x.ref()];
-               if (v != nil)
+               if (v != Value::nil)
                   throw Diagnostics::BasicError{
                      "duplicate anchor " + std::to_string(x.ref())
                         };
@@ -184,7 +184,7 @@ namespace OpenAxiom {
          };
 
          if (x == nullptr)
-            return nil;
+            return Value::nil;
          V v { this };
          x->accept(v);
          return v.result;
@@ -216,7 +216,7 @@ namespace OpenAxiom {
          while (true) {
             format(p->head, os);
             auto v = p->tail;
-            if (v == nil)
+            if (v == Value::nil)
                break;
             os << ' ';
             if (auto q = to_pair_if_can(v)) {
@@ -247,9 +247,9 @@ namespace OpenAxiom {
       }
       
       void format(Value v, std::ostream& os) {
-         if (v == nil)
+         if (v == Value::nil)
             os << "NIL";
-         else if (is_fixnum(v))
+         else if (is<Fixnum>(v))
             os << FixnumBits(to_fixnum(v));
          else if (auto p = to_pair_if_can(v))
             format(p, os);
@@ -267,11 +267,11 @@ namespace OpenAxiom {
             auto entry = retract_to_pair(al->head);
             if (entry->head == key)
                return entry->tail;
-            else if (al->tail == nil)
-               return nil;
+            else if (al->tail == Value::nil)
+               return Value::nil;
             al = retract_to_pair(al->tail);
          }
-         return nil;
+         return Value::nil;
       }
    }
 }
