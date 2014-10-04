@@ -1,4 +1,4 @@
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -53,7 +53,7 @@ namespace OpenAxiom {
 
    void
    Server::input(const QString& s) {
-      write(s.toAscii());
+      write(s.toLatin1());
       write("\n");
    }
 

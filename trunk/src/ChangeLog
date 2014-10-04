@@ -1,3 +1,8 @@
+2014-10-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* gui/server.cc (Server::input): Replace toAscii() with toLatin1()
+	for Qt5-compat.
+
 2014-09-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* rt/vm.cc (VM::Environment::Environment): Define.
