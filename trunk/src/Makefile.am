@@ -40,7 +40,7 @@ DIST_SUBDIRS = \
 subdirs = \
 	algebra boot clef doc driver \
 	etc graph hyper input interp \
-	lib io lisp share sman
+	lib lisp share sman
 
 oa_targetdir = $(top_builddir)/$(target)
 
@@ -60,8 +60,8 @@ OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 
 all-local: all-src
 
-.PHONY: all-src all-io all-headers all-syntax $(OA_GRAPHICS_TARGETS)
-all-src: all-lib all-utils all-driver all-lisp all-boot all-io all-syntax \
+.PHONY: all-src all-headers all-syntax $(OA_GRAPHICS_TARGETS)
+all-src: all-lib all-utils all-driver all-lisp all-boot all-syntax \
 	all-rt all-interpsys all-algebra all-axiomsys all-share \
 	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
 
@@ -83,10 +83,7 @@ all-driver: all-utils all-lib
 all-utils: stamp-subdirs all-headers
 	cd utils && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-io: all-utils
-	cd io && $(MAKE) $(AM_MAKEFLAGS) $@
-
-all-syntax: all-io
+all-syntax: all-utils
 	cd syntax && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-rt: all-utils all-syntax
@@ -98,10 +95,10 @@ all-clef: all-lib
 all-sman: all-lib all-driver
 	cd sman && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-gui: all-driver all-io all-rt
+all-gui: all-driver all-utils all-rt
 	cd gui && $(MAKE) $(AM_MAKEFLAGS)
 
-all-hyper: all-lib all-io
+all-hyper: all-lib all-utils
 	cd hyper && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-share:

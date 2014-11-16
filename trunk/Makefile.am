@@ -73,7 +73,6 @@ OA_SRC_TARGETS = \
 	all-driver \
 	all-databases \
 	all-utils \
-	all-io \
 	all-rt \
 	all-syntax
 
