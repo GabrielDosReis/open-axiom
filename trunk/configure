@@ -19539,7 +19539,7 @@ ac_config_links="$ac_config_links $oa_incdir/hash-table:src/utils/hash-table.H $
 
 
 ## We are ready to instantiate makefiles.
-ac_config_files="$ac_config_files Makefile src/Makefile src/syntax/Makefile src/utils/Makefile src/rt/Makefile src/boot/Makefile src/algebra/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/utils/Makefile src/rt/Makefile src/boot/Makefile src/algebra/Makefile"
 
 ac_config_files="$ac_config_files src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk"
 
@@ -20759,7 +20759,6 @@ do
     "$oa_incdir/Database") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Database:src/include/Database.H" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/syntax/Makefile") CONFIG_FILES="$CONFIG_FILES src/syntax/Makefile" ;;
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
     "src/rt/Makefile") CONFIG_FILES="$CONFIG_FILES src/rt/Makefile" ;;
     "src/boot/Makefile") CONFIG_FILES="$CONFIG_FILES src/boot/Makefile" ;;

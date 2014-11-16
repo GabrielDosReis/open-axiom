@@ -120,7 +120,6 @@ OPENAXIOM_LINK_FILES
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  src/syntax/Makefile
   src/utils/Makefile
   src/rt/Makefile
   src/boot/Makefile
