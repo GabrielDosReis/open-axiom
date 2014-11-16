@@ -254,6 +254,26 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
   [AC_MSG_ERROR([OpenAxiom requires a C++11 compiler])])
 ])
 
+dnl --------------------------
+dnl -- OPENAXIOM_CHECK_LLVM --
+dnl --------------------------
+dnl Do we have recent enough LLVM?
+AC_DEFUN([OPENAXIOM_CHECK_LLVM],[
+oa_use_llvm=no
+AC_CHECK_PROGS([LLVM_CONFIG],[llvm-config])
+if test -n "$LLVM_CONFIG"; then
+  case `$LLVM_CONFIG --version` in
+    3.[[5-9]].*)
+      oa_use_llvm=yes
+      ;;
+    *)
+       ;;
+  esac
+  AC_DEFINE_UNQUOTED([OPENAXIOM_HOST_HAS_LLVM],[],[Host has LLVM.])
+fi
+AC_SUBST(oa_use_llvm)
+])
+
 dnl ------------------------------
 dnl -- OPENAXIOM_HOST_COMPILERS --
 dnl ------------------------------
@@ -284,6 +304,7 @@ OPENAXIOM_SATISFY_GCL_NEEDS
 AC_PROG_CPP
 AC_PROG_CXXCPP
 OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS
+OPENAXIOM_CHECK_LLVM
 ])
 
 dnl ---------------------------------

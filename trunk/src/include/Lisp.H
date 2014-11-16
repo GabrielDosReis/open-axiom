@@ -78,6 +78,16 @@ namespace OpenAxiom {
       struct IntegerOverflow : Diagnostics::BasicError {
          explicit IntegerOverflow(const std::string&);
       };
+
+      // -- Unbound symbol
+      struct UnboundSymbol : Diagnostics::BasicError {
+         explicit UnboundSymbol(const std::string&);
+      };
+
+      // -- Unbound functiom symbol
+      struct UnboundFunctionSymbol : Diagnostics::BasicError {
+         explicit UnboundFunctionSymbol(const std::string&);
+      };
       
       // -- Anchor maps
       using AnchorTable = std::map<Ordinal, Value>;
@@ -85,14 +95,17 @@ namespace OpenAxiom {
       // -- Evaluator --
       struct Evaluator : VM::BasicContext {
          Evaluator();
+         Value eval(const Sexpr::Syntax*);
          Package* core_package() { return core; }
          Package* current_package() { return ns; }
          Value toplevel_form(const Sexpr::Syntax*);
          Value make_value(const Sexpr::Syntax*);
+         Value* lexical_binding(String);
          Environment* global_environment();
       private:
          Package* core;
          Package* ns;
+         Symbol* feature_list;
          std::list<Environment> env_stack;
          AnchorTable anchor_map;
       };

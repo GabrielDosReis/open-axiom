@@ -44,7 +44,7 @@ namespace OpenAxiom {
    namespace Sexpr {
       static void
       invalid_character(Reader::State& s) {
-         auto line = std::to_string(s.lineno);
+         auto line = std::to_string(s.bytes.lineno);
          auto column = std::to_string(s.cur - s.line);
          auto msg = "invalid character on line " + line +
             " and column " + column;
@@ -77,10 +77,10 @@ namespace OpenAxiom {
       // return true if there are more input characters to consider.
       static bool
       skip_blank(Reader::State& s) {
-         for (bool done = false; s.cur < s.end and not done; )
+         for (bool done = false; s.cur < s.bytes.end and not done; )
             switch (*s.cur) {
             case '\n':
-               ++s.lineno;
+               ++s.bytes.lineno;
                s.line = ++s.cur;
                break;
             case ' ': case '\t': case '\v': case '\r': case '\f':
@@ -88,14 +88,14 @@ namespace OpenAxiom {
                break;
             default: done = true; break;
             }
-         return s.cur < s.end;
+         return s.cur < s.bytes.end;
       }
 
       // Move `cur' to end-of-line marker.
       static void
       skip_to_eol(Reader::State& s) {
          // FIXME: properly handle CR+LF.
-         while (s.cur < s.end and *s.cur != '\n')
+         while (s.cur < s.bytes.end and *s.cur != '\n')
             ++s.cur;
       }
 
@@ -103,7 +103,7 @@ namespace OpenAxiom {
       // Return true if the character was seen.
       static bool
       skip_to_nonescaped_char(Reader::State& s, char c) {
-         for (bool saw_escape = false; s.cur < s.end; ++s.cur)
+         for (bool saw_escape = false; s.cur < s.bytes.end; ++s.cur)
             if (saw_escape)
                saw_escape = false;
             else if (*s.cur == '\\')
@@ -125,9 +125,9 @@ namespace OpenAxiom {
       template<typename Pred>
       static bool
       advance_while(Reader::State& s, Pred p) {
-         while (s.cur < s.end and p(*s.cur))
+         while (s.cur < s.bytes.end and p(*s.cur))
             ++s.cur;
-         return s.cur < s.end;
+         return s.cur < s.bytes.end;
       }
 
       // Return true if the character `c' be part of a non-absolute
@@ -365,7 +365,11 @@ namespace OpenAxiom {
 
       // -- Reader --
       Reader::Reader(const Byte* f, const Byte* l)
-            : st{ f, l, f, f, 1, }
+            : st{ { f, l, 1 }, f, f }
+      { }
+
+      Reader::Reader(const RawInput& ri)
+            : st { ri, ri.start, ri.start }
       { }
 
       static const Syntax* read_sexpr(Reader::State&);
@@ -376,7 +380,7 @@ namespace OpenAxiom {
          auto start = s.cur++;
          if (not skip_to_quote(s))
             syntax_error("missing closing quote sign for string literal");
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_string(t);
       }
 
@@ -386,7 +390,7 @@ namespace OpenAxiom {
          auto start = ++s.cur;
          if (not skip_to_nonescaped_char(s, '|'))
             syntax_error("missing closing bar sign for an absolute symbol");
-         Lexeme t = { { start, s.cur - 1 }, s.lineno };
+         Lexeme t = { { start, s.cur - 1 }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::absolute, t);
       }
 
@@ -395,12 +399,12 @@ namespace OpenAxiom {
       read_maybe_natural(Reader::State& s) {
          auto start = s.cur;
          advance_while (s, isdigit);
-         if (s.cur >= s.end or is_delimiter(*s.cur)) {
-            Lexeme t = { { start, s.cur }, s.lineno };
+         if (s.cur >= s.bytes.end or is_delimiter(*s.cur)) {
+            Lexeme t = { { start, s.cur }, s.bytes.lineno };
             return s.alloc.make_integer(t);
          }
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
@@ -409,7 +413,7 @@ namespace OpenAxiom {
       read_identifier(Reader::State& s) {
          auto start = s.cur;
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
@@ -418,15 +422,15 @@ namespace OpenAxiom {
       static const Syntax*
       read_maybe_signed_number(Reader::State& s) {
          auto start = s.cur++;
-         if (s.cur < s.end and isdigit(*s.cur)) {
+         if (s.cur < s.bytes.end and isdigit(*s.cur)) {
             advance_while(s, isdigit);
-            if (s.cur >= s.end or is_delimiter(*s.cur)) {
-               Lexeme t = { { start, s.cur }, s.lineno };
+            if (s.cur >= s.bytes.end or is_delimiter(*s.cur)) {
+               Lexeme t = { { start, s.cur }, s.bytes.lineno };
                return s.alloc.make_integer(t);
             }
          }
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::ordinary, t);
       }
 
@@ -434,7 +438,7 @@ namespace OpenAxiom {
       read_keyword(Reader::State& s) {
          auto start = s.cur++;
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::keyword, t);
       }
 
@@ -491,7 +495,7 @@ namespace OpenAxiom {
             else
                syntax_error("syntax error while reading vector elements");
          }
-         if (s.cur >= s.end)
+         if (s.cur >= s.bytes.end)
             syntax_error("unfinished literal vector");
          else
             ++s.cur;
@@ -504,12 +508,12 @@ namespace OpenAxiom {
       finish_anchor_or_reference(Reader::State& s) {
          auto start = s.cur;
          advance_while(s, isdigit);
-         if (s.cur >= s.end)
+         if (s.cur >= s.bytes.end)
             syntax_error("end-of-input after sharp-number sign");
          const Byte c = *s.cur;
          if (c != '#' and c != '=')
             syntax_error("syntax error after sharp-number-equal sign");
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          auto n = natural_value(start, s.cur);
          ++s.cur;
          if (c == '#')
@@ -534,7 +538,7 @@ namespace OpenAxiom {
          ++s.cur;               // skip colon sign.
          auto start = s.cur;
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_symbol(SymbolSyntax::uninterned, t);
       }
 
@@ -552,7 +556,7 @@ namespace OpenAxiom {
          ++s.cur;               // skip backslash sign
          auto start = s.cur;
          advance_while(s, identifier_part);
-         Lexeme t = { { start, s.cur }, s.lineno };
+         Lexeme t = { { start, s.cur }, s.bytes.lineno };
          return s.alloc.make_character(t);
       }
 
@@ -574,7 +578,7 @@ namespace OpenAxiom {
 
       static const Syntax*
       read_sharp_et_al(Reader::State& s) {
-         if (++s.cur >= s.end)
+         if (++s.cur >= s.bytes.end)
             syntax_error("end-of-input reached after sharp sign");
          switch (*s.cur) {
          case '(':  return finish_literal_vector(s);
@@ -655,7 +659,7 @@ namespace OpenAxiom {
 
       const Byte*
       Reader::position(Ordinal p) {
-         st.cur = st.start + p;
+         st.cur = st.bytes.start + p;
          st.line = st.cur;
          // while (st.line > st.start and st.line[-1] != '\n')
          //    --st.line;

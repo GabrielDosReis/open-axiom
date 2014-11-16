@@ -146,6 +146,10 @@ namespace OpenAxiom {
          };
          SymbolSyntax(const Lexeme&, Kind);
          Kind kind() const { return sort; }
+         const Byte* begin() const { return lexeme().begin(); }
+         const Byte* end() const { return lexeme().end(); }
+         std::size_t size() const { return lexeme().size(); }
+         Byte operator[](std::size_t i) const { return begin()[i]; }
          void accept(Visitor&) const;
       private:
          const Kind sort;
@@ -386,19 +390,24 @@ namespace OpenAxiom {
       };
 
       // -- Reader --
+      struct RawInput {
+         const Byte* start;
+         const Byte* end;
+         Ordinal lineno;
+      };
+
       struct Reader {
          struct State {
-            const Byte* start;
-            const Byte* end;
+            RawInput bytes;
             const Byte* cur;
             const Byte* line;
-            Ordinal lineno;
             Allocator alloc;
          };
 
+         explicit Reader(const RawInput&);
          Reader(const Byte*, const Byte*);
          const Byte* position(Ordinal);
-         bool at_start() const { return st.cur == st.start; }
+         bool at_start() const { return st.cur == st.bytes.start; }
          const Syntax* read();
       private:
          State st;

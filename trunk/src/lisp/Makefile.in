@@ -131,6 +131,7 @@ $(oa_target_lispdir)/linkset: $(oa_target_lispdir)/core.$(LNKEXT)
 
 oa_optimize_options = @oa_optimize_options@
 oa_delay_ffi = @oa_delay_ffi@
+oa_use_llvm = @oa_use_llvm@
 
 oa_editor = @oa_editor@
 
@@ -161,6 +162,7 @@ edit = sed \
 	-e 's|@oa_standard_linking[@]|$(oa_standard_linking)|g' \
 	-e 's|@oa_enable_profiling[@]|$(oa_enable_lisp_profiling)|g' \
 	-e 's|@oa_delay_ffi[@]|$(oa_delay_ffi)|g' \
+	-e 's|@oa_use_llvm[@]|$(oa_use_llvm)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \
 	-e 's|@int_type[@]|$(int_type)|g' \

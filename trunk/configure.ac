@@ -87,6 +87,7 @@ oa_build_sharedir=$oa_builddir/share
 AC_LANG([C++])
 
 OPENAXIOM_HOST_COMPILERS
+AM_CONDITIONAL([OA_USE_LLVM], [test -n $oa_use_llvm])
 OPENAXIOM_REQUIRE_CXX11
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
 AM_CONDITIONAL([OA_ECL_RT], [test x$oa_lisp_flavor = xecl])

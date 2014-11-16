@@ -180,6 +180,7 @@
 
 	   "$faslType"
 	   "$delayedFFI"
+	   "$useLLVM"
 	   "$effectiveFaslType"
 	   "$NativeModuleExt"
 	   "$systemInstallationDirectory"
@@ -436,6 +437,10 @@
 ;; True if FFI modules were delayed till runtime.
 (defconstant |$delayedFFI|
   (eq '@oa_delay_ffi@ 'yes))
+
+;; True if the host has usable framework
+(defconstant |$useLLVM|
+  (eq '@oa_use_llvm@ 'yes))
 
 ;; The top level read-eval-print loop function of the base
 ;; Lisp system we are using.  This is a very brittle way
