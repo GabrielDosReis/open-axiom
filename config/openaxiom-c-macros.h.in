@@ -152,6 +152,9 @@
 /* Extension of executable file. */
 #undef OPENAXIOM_EXEEXT
 
+/* Host has LLVM. */
+#undef OPENAXIOM_HOST_HAS_LLVM
+
 /* The width of the host Lisp and CPU registers. */
 #undef OPENAXIOM_HOST_LISP_PRECISION
 

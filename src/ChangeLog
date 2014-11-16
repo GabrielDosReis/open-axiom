@@ -1,3 +1,7 @@
+2014-11-15  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* llvm/: New directory.
+
 2014-10-03  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* gui/server.cc (Server::input): Replace toAscii() with toLatin1()

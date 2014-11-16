@@ -163,13 +163,21 @@ namespace OpenAxiom {
          t   = 0x10,            // distinguished T value
       };
 
-      constexpr bool to_bool(Value v) {
-         return v != Value::nil;
+      // -- Testing for nil value.
+      constexpr Value null(Value v) {
+         return v == Value::nil ? Value::t : Value::nil;
       }
 
+      // -- Convert VM Boolean value to C++ view
+      constexpr bool to_bool(Value v) { return v != Value::nil; }
+
+      // -- Convert a C++ Boolean value to VM view.
       constexpr Value to_value(bool b) {
          return b ? Value::t : Value::nil;
       }
+
+      // -- Identity equality.
+      constexpr Value eq(Value x, Value y) { return to_value(x == y); }
 
       template<typename>
       struct ValueTrait {
@@ -194,12 +202,23 @@ namespace OpenAxiom {
          return ValueBits(v) & ~ValueTrait<T>::tag_mask;
       }
 
+      // -- Arity: number of arguments or forms taken by a function
+      //           or a special operator.
+      enum class Arity : intptr_t {
+         variable = -1,         // Any number of arguments.
+         zero     = 0,          // Exactly no argument.
+         one      = 1,          // Exactly one argument.
+         two      = 2,          // Exactly two arguments.
+         three    = 3,          // Exactly three arguments.
+      };
+
       // -------------
       // -- Dynamic --
       // -------------
       // Any internal value is of a class derived from this.
       internal_type Dynamic {
          virtual ~Dynamic();
+         virtual void format_on(std::ostream&) const = 0;
       };
 
       template<>
@@ -324,10 +343,19 @@ namespace OpenAxiom {
          return Value(ValueBits(p) | ValueTrait<Pair>::tag);
       }
 
+      // Return true if argument designates a pair.
+      constexpr Value consp(Value v) {
+         return to_value(v != Value::nil and v != Value::t and is<Pair>(v));
+      }
+
+      inline Value atom(Value v) {
+         return null(consp(v));
+      }
+
       // If `v' designates a pair, return a pointer to its
       // concrete representation.
       inline Pair to_pair_if_can(Value v) {
-         return is<Pair>(v) ? to_pair(v) : nullptr;
+         return consp(v) == Value::t ? to_pair(v) : nullptr;
       }
 
       Fixnum count_nodes(Pair);
@@ -368,13 +396,18 @@ namespace OpenAxiom {
 
       struct Package;
 
-      enum class SymbolAttribute {
+      enum class SymbolAttribute : ValueBits {
          None             = 0x0,    // No particular attribute.
          Constant         = 0x1,    // Symbol defined constant.
-         SpecialBinding   = 0x2,    // Symbol declared special.
+         Special          = 0x2,    // Symbol declared special.
          Keyword          = 0x4,    // A keyword symbol.
-         SpecialConstant  = Constant | SpecialBinding,
+         SpecialConstant  = Constant | Special,
       };
+
+      constexpr SymbolAttribute
+      operator&(SymbolAttribute x, SymbolAttribute y) {
+         return SymbolAttribute(ValueBits(x) & ValueBits(y));
+      }
 
       // ------------
       // -- Symbol --
@@ -387,6 +420,8 @@ namespace OpenAxiom {
          Package* package;
          SymbolAttribute attributes;
          explicit Symbol(InternedString);
+         void format_on(std::ostream&) const override;
+         bool has(SymbolAttribute x) const { return (attributes & x) == x; }
       };
 
       inline Symbol* to_symbol_if_can(Value v) {
@@ -395,6 +430,18 @@ namespace OpenAxiom {
 
       inline bool is_symbol(Value v) {
          return to_symbol_if_can(v) != nullptr;
+      }
+
+      // -- Test if a value is a symbol.
+      inline Value symbolp(Value v) {
+         return to_value(v == Value::nil or v == Value::t or is_symbol(v));
+      }
+
+      // -- Test if a value is a keyword symbol.
+      inline Value keywordp(Value v) {
+         if (auto sym = to_symbol_if_can(v))
+            return to_value(sym->has(SymbolAttribute::Keyword));
+         return Value::nil;
       }
 
       struct CmpByName {
@@ -421,6 +468,7 @@ namespace OpenAxiom {
          ~Environment();
 
          void bind(Symbol*, Value);
+         Binding* lookup(InternedString);
       private:
          std::vector<Binding> lexical;
          std::vector<Binding> dynamic;
@@ -434,7 +482,9 @@ namespace OpenAxiom {
          std::set<Symbol, CmpByName> symbols;
 
          explicit Package(InternedString);
+         void format_on(std::ostream&) const override;
          Symbol* make_symbol(InternedString);
+         Symbol* find_symbol(InternedString);
       };
 
       // --------------
@@ -445,6 +495,7 @@ namespace OpenAxiom {
          Value type;
          FunctionBase(const Symbol* n, Value t = Value::nil)
                : name(n), type(t) { }
+         void format_on(std::ostream&) const override;
       };
 
       // ------------------------
@@ -452,10 +503,13 @@ namespace OpenAxiom {
       // ------------------------
       // Types for native implementation of builtin operators.
       struct BasicContext;
-      using NullaryCode = Value (*)(BasicContext*);
-      using UnaryCode = Value (*)(BasicContext*, Value);
-      using BinaryCode = Value (*)(BasicContext*, Value, Value);
-      using TernaryCode = Value (*)(BasicContext*, Value, Value, Value);
+
+      template<typename... Ts>
+      using RuntimeOperation = Value(*)(BasicContext*, Ts...);
+      using NullaryCode = RuntimeOperation<>;
+      using UnaryCode = RuntimeOperation<Value>;
+      using BinaryCode = RuntimeOperation<Value, Value>;
+      using TernaryCode = RuntimeOperation<Value, Value, Value>;
 
       template<typename Code>
       struct BuiltinFunction : FunctionBase {
@@ -469,6 +523,23 @@ namespace OpenAxiom {
       using UnaryOperator = BuiltinFunction<UnaryCode>;
       using BinaryOperator = BuiltinFunction<BinaryCode>;
       using TernaryOperator = BuiltinFunction<TernaryCode>;
+
+      // -- Operand stack.
+      struct OperandStack : private std::vector<Value> {
+         using super = std::vector<Value>;
+         using iterator = std::reverse_iterator<super::iterator>;
+         using super::size;
+         using super::empty;
+         iterator begin() { return rbegin(); }
+         iterator end() { return rend(); }
+         Value top() { return back(); }
+         void push(Value v) { push_back(v); }
+         Value pop() { auto v = back(); pop_back(); return v; }
+         void operator-=(std::size_t i) { resize(size() - i); }
+         Value operator[](std::size_t i) {
+            return super::operator[](size() - i - 1);
+         }
+      };
 
       // ------------------
       // -- BasicContext --

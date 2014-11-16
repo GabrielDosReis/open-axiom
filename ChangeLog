@@ -1,3 +1,8 @@
+2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_LLVM): New.
+	(OPENAXIOM_HOST_COMPILERS): Call it.
+
 2014-08-26  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_LINK_FILES): New.

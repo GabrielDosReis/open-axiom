@@ -33,6 +33,9 @@
 // --% Author: Gabriel Dos Reis
 
 #include <open-axiom/vm>
+#include <iterator>
+#include <algorithm>
+#include <ostream>
 
 namespace OpenAxiom {
    namespace VM {
@@ -44,6 +47,15 @@ namespace OpenAxiom {
          const auto end = dynamic.rend();
          for (auto p = dynamic.rbegin(); p != end; ++p)
             p->symbol->value = p->value;
+      }
+
+      Environment::Binding*
+      Environment::lookup(InternedString name) {
+         for (auto& b : lexical) {
+            if (b.symbol->name == name)
+               return &b;
+         }
+         return nullptr;
       }
 
       // -- Dynamic
@@ -59,10 +71,23 @@ namespace OpenAxiom {
               attributes()
       { }
 
+      void Symbol::format_on(std::ostream& os) const {
+         // FIXME: handle escapes.
+         std::copy(name->begin(), name->end(),
+                   std::ostream_iterator<char>(os));
+      }
+
       // -- Package
       Package::Package(InternedString s)
             : name(s)
       { }
+
+      void Package::format_on(std::ostream& os) const {
+         os << "#<PACKAGE \"";
+         std::copy(name->begin(), name->end(),
+                   std::ostream_iterator<char>(os));
+         os << '"' << '>';
+      }
 
       Symbol*
       Package::make_symbol(InternedString s) {
@@ -70,6 +95,19 @@ namespace OpenAxiom {
          sym->package = this;
          return sym;
       }
+
+      Symbol*
+      Package::find_symbol(InternedString s) {
+         auto p = symbols.find(Symbol(s));
+         return p == symbols.end() ? nullptr : const_cast<Symbol*>(&*p);
+      }
+
+      // -- FunctionBase
+      void FunctionBase::format_on(std::ostream& os) const {
+         os << "#<FUNCTION ";
+         name->format_on(os);
+         os << '>';
+      }      
 
       Fixnum
       count_nodes(Pair p) {
