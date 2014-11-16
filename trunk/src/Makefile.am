@@ -40,7 +40,7 @@ DIST_SUBDIRS = \
 subdirs = \
 	algebra boot clef doc driver \
 	etc graph hyper input interp \
-	lib io lisp share sman utils
+	lib io lisp share sman
 
 oa_targetdir = $(top_builddir)/$(target)
 
