@@ -60,8 +60,8 @@ OA_GRAPHICS_TARGETS = $(OA_GRAPHICS_GRAPH_TARGET)  $(OA_GRAPHICS_GUI_TARGET)
 
 all-local: all-src
 
-.PHONY: all-src all-headers all-syntax $(OA_GRAPHICS_TARGETS)
-all-src: all-lib all-utils all-driver all-lisp all-boot all-syntax \
+.PHONY: all-src all-headers $(OA_GRAPHICS_TARGETS)
+all-src: all-lib all-utils all-driver all-lisp all-boot \
 	all-rt all-interpsys all-algebra all-axiomsys all-share \
 	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
 
@@ -83,10 +83,7 @@ all-driver: all-utils all-lib
 all-utils: stamp-subdirs all-headers
 	cd utils && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-syntax: all-utils
-	cd syntax && $(MAKE) $(AM_MAKEFLAGS) $@
-
-all-rt: all-utils all-syntax
+all-rt: all-utils
 	cd rt && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-clef: all-lib

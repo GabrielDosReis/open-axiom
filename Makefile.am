@@ -73,8 +73,7 @@ OA_SRC_TARGETS = \
 	all-driver \
 	all-databases \
 	all-utils \
-	all-rt \
-	all-syntax
+	all-rt
 
 .PHONY: $(OA_SRC_TARGETS)
 

@@ -139,7 +139,8 @@ libOpenAxiom_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libOpenAxiom_a_OBJECTS = storage.$(OBJEXT) string-pool.$(OBJEXT) \
 	command.$(OBJEXT) filesystem.$(OBJEXT) ../io/Input.$(OBJEXT) \
-	../io/std-streams.$(OBJEXT)
+	../io/std-streams.$(OBJEXT) ../syntax/token.$(OBJEXT) \
+	../syntax/sexpr.$(OBJEXT)
 libOpenAxiom_a_OBJECTS = $(am_libOpenAxiom_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_hammer_OBJECTS = hammer.$(OBJEXT)
@@ -409,7 +410,9 @@ libOpenAxiom_a_SOURCES = \
 	storage.cc string-pool.cc command.cc \
 	filesystem.cc \
 	../io/Input.cc \
-	../io/std-streams.cc
+	../io/std-streams.cc \
+	../syntax/token.cc \
+	../syntax/sexpr.cc 
 
 oa_public_headers = hash-table string-pool
 oa_target_headerdir = $(oa_target_includedir)/open-axiom
@@ -468,6 +471,16 @@ clean-noinstLIBRARIES:
 	../io/$(DEPDIR)/$(am__dirstamp)
 ../io/std-streams.$(OBJEXT): ../io/$(am__dirstamp) \
 	../io/$(DEPDIR)/$(am__dirstamp)
+../syntax/$(am__dirstamp):
+	@$(MKDIR_P) ../syntax
+	@: > ../syntax/$(am__dirstamp)
+../syntax/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../syntax/$(DEPDIR)
+	@: > ../syntax/$(DEPDIR)/$(am__dirstamp)
+../syntax/token.$(OBJEXT): ../syntax/$(am__dirstamp) \
+	../syntax/$(DEPDIR)/$(am__dirstamp)
+../syntax/sexpr.$(OBJEXT): ../syntax/$(am__dirstamp) \
+	../syntax/$(DEPDIR)/$(am__dirstamp)
 
 libOpenAxiom.a: $(libOpenAxiom_a_OBJECTS) $(libOpenAxiom_a_DEPENDENCIES) $(EXTRA_libOpenAxiom_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libOpenAxiom.a
@@ -490,12 +503,15 @@ hammer$(EXEEXT): $(hammer_OBJECTS) $(hammer_DEPENDENCIES) $(EXTRA_hammer_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../io/*.$(OBJEXT)
+	-rm -f ../syntax/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../io/$(DEPDIR)/Input.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../io/$(DEPDIR)/std-streams.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../syntax/$(DEPDIR)/sexpr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../syntax/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filesystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hammer.Po@am__quote@
@@ -646,6 +662,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ../io/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../io/$(am__dirstamp)
+	-rm -f ../syntax/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../syntax/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -656,7 +674,7 @@ clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../io/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../io/$(DEPDIR) ../syntax/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -702,7 +720,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../io/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ../io/$(DEPDIR) ../syntax/$(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

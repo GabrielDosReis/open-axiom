@@ -1,4 +1,9 @@
-2014-11-16  Gabriel Dos Reis  <gdr@axiomatics.org>
+2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* syntax/Makefile.in: Remove.
+	* syntax/Makefile.am: Likewise.
+
+2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* io/Makefile.in: Remove.
 	* io/Makefile.am: Likewise.
