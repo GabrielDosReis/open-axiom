@@ -37,6 +37,26 @@
 
 namespace OpenAxiom {
    namespace Lisp {
+      // -- UnboundSymbol
+      UnboundSymbol::UnboundSymbol(const std::string& s)
+            : BasicError(s)
+      { }
+
+      static void unbound_symbol_error(const std::string& s) {
+         throw UnboundSymbol(s + " has no value binding");
+      }
+         
+
+      // -- UnboundFunctiom
+      UnboundFunctionSymbol::UnboundFunctionSymbol(const std::string& s)
+            : BasicError(s)
+      { }
+
+      static void unbound_function_symbol_error(const Symbol* sym) {
+         std::string s { sym->name->begin(), sym->name->end() };
+         throw UnboundFunctionSymbol(s + " has no function definition");
+      }
+      
       namespace {
          template<typename T>
          struct NamedConstant {
@@ -52,7 +72,7 @@ namespace OpenAxiom {
          { "MOST-POSITIVE-FIXNUM", from_fixnum(Fixnum::maximum) },
       };
 
-      static void define_special_value_constants(Evaluator* ctx) {
+      static void define_special_constants(Evaluator* ctx) {
          auto core = ctx->core_package();
          for (auto& x : value_constants) {
             auto sym = core->make_symbol(ctx->intern(x.name));
@@ -214,6 +234,95 @@ namespace OpenAxiom {
          return v.result;
       }
 
+      static std::string
+      canonical_name(const Sexpr::SymbolSyntax& x) {
+         if (x.kind() & Sexpr::SymbolSyntax::absolute)
+            return { x.begin(), x.end() };
+         const auto sz = x.size();
+         std::string s(sz, char{ });
+         for (std::size_t i = 0; i < sz; ++i)
+            s[i] = toupper(x[i]);
+         return s;
+      }
+
+      // Return the (global) symbol value
+      static Symbol*
+      retrieve_symbol(Evaluator* ctx, const Sexpr::SymbolSyntax& x) {
+         const auto s = canonical_name(x);
+         auto name = ctx->intern(s.c_str());
+         if (x.kind() & Sexpr::SymbolSyntax::keyword)
+            return ctx->make_keyword(name);
+         // Note: Uninterned symbols are always distincts;
+         else if (x.kind() & Sexpr::SymbolSyntax::uninterned)
+            unbound_symbol_error(s);
+         // FIXME: if this is a qualified symbol, lookup in its home.
+         else if (auto symbol = ctx->current_package()->find_symbol(name))
+            return symbol;
+         unbound_symbol_error(s);
+         return nullptr;
+      }
+
+      // Return the value designated by this symbol.
+      static Value
+      evaluate(Evaluator* ctx, const Sexpr::SymbolSyntax& x) {
+         const auto s = canonical_name(x);
+         auto name = ctx->intern(s.c_str());
+         if (x.kind() & Sexpr::SymbolSyntax::keyword)
+            return to_value(ctx->make_keyword(name));
+         else if (x.kind() & Sexpr::SymbolSyntax::uninterned)
+            unbound_symbol_error(s);
+         else if (auto p = ctx->lexical_binding(name))
+            return *p;
+         auto symbol = ctx->current_package()->find_symbol(name);
+         if (symbol == nullptr or not symbol->has(SymbolAttribute::Special))
+            unbound_symbol_error(s);
+         return symbol->value;
+      }
+
+      // Return the denotation of a sharp-apostrophe syntax.
+      static Value
+      evaluate(Evaluator* ctx, const Sexpr::Function& x) {
+         auto s = dynamic_cast<const Sexpr::SymbolSyntax*>(x.body());
+         if (s == nullptr)
+            throw Unimplemented("FUNCTION of non-symbol expression");
+         auto sym = retrieve_symbol(ctx, *s);
+         if (sym->function == nullptr)
+            unbound_function_symbol_error(sym);
+         return to_value(sym->function);
+      }
+
+      Value
+      Evaluator::eval(const Sexpr::Syntax* x) {
+         using namespace Sexpr;
+         struct V : Syntax::Visitor {
+            Evaluator* ctx;
+            Value result;
+            V(Evaluator* e) : ctx(e), result(Value::nil) { }
+            void visit(const IntegerSyntax& x) { result = construct(ctx, x); }
+            void visit(const CharacterSyntax& x) { unimplemented(x); }
+            void visit(const StringSyntax& x) { result = construct(ctx, x); }
+            void visit(const SymbolSyntax& x) { result = evaluate(ctx, x); }
+            void visit(const ReferenceSyntax& x) { unimplemented(x); }
+            void visit(const AnchorSyntax& x) { unimplemented(x); }
+            void visit(const QuoteSyntax& x) { unimplemented(x); }
+            void visit(const AntiquoteSyntax& x) { unimplemented(x); }
+            void visit(const Expand& x) { unimplemented(x); }
+            void visit(const Eval& x) { unimplemented(x); }
+            void visit(const Splice& x) { unimplemented(x); }
+            void visit(const Function& x) { result = evaluate(ctx, x); }
+            void visit(const Include& x) { unimplemented(x); }
+            void visit(const Exclude& x) { unimplemented(x); }
+            void visit(const ListSyntax& x) { unimplemented(x); }
+            void visit(const VectorSyntax& x) { unimplemented(x); }
+         };
+         
+         if (x == nullptr)
+            return Value::nil;
+         V v { this };
+         x->accept(v);
+         return v.result;
+      }
+
       Value
       Evaluator::toplevel_form(const Sexpr::Syntax* x) {
          auto anchors = std::move(anchor_map);
@@ -227,7 +336,7 @@ namespace OpenAxiom {
             : core(make_package(intern("AxiomCore"))),
               ns(core)
       {
-         define_special_value_constants(this);
+         define_special_constants(this);
          env_stack.push_back(Environment{ });
       }
 
