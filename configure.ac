@@ -51,7 +51,7 @@ AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 OPENAXIOM_CANONICAL_SYSTEM
 
 dnl Page Automake
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AC_PREREQ([2.62])
 
 dnl Simple sanity check.
@@ -120,7 +120,6 @@ OPENAXIOM_LINK_FILES
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  src/io/Makefile
   src/syntax/Makefile
   src/utils/Makefile
   src/rt/Makefile

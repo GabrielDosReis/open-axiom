@@ -37,7 +37,9 @@ noinst_LIBRARIES = libOpenAxiom.a
 
 libOpenAxiom_a_SOURCES = \
 	storage.cc string-pool.cc command.cc \
-	filesystem.cc
+	filesystem.cc \
+	../io/Input.cc \
+	../io/std-streams.cc
 
 oa_public_headers = hash-table string-pool
 

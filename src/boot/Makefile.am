@@ -75,8 +75,7 @@ bemol_SOURCES = \
 
 bemol_LDADD = \
 	-L$(oa_target_libdir) -lOpenAxiom \
-	-L$(top_builddir)/src/syntax -lsyntax \
-	-L$(top_builddir)/src/io -lio
+	-L$(top_builddir)/src/syntax -lsyntax
 
 oa_target_bootdir = $(oa_targetdir)/boot
 if OA_ECL_RT
