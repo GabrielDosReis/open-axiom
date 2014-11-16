@@ -1,4 +1,8 @@
-2014-11-15  Gabriel Dos Reis  <gdr@axiomatics.org>
+2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* utils/Makefile.am: New.
+
+2014-11-15  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* llvm/: New directory.
 

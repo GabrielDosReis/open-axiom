@@ -408,7 +408,7 @@ DIST_SUBDIRS = \
 subdirs = \
 	algebra boot clef doc driver \
 	etc graph hyper input interp \
-	lib io lisp share sman utils
+	lib io lisp share sman
 
 @OA_BUILD_SMAN_TRUE@OA_SMAN_TARGETS = all-sman all-clef
 @OA_BUILD_GRAPHICS_TRUE@OA_GRAPHICS_GRAPH_TARGET = all-graph
