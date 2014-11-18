@@ -1,3 +1,7 @@
+2014-11-17  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* boot/bemol.cc: New.
+
 2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* syntax/Makefile.in: Remove.

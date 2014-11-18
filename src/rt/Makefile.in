@@ -111,6 +111,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+noinst_PROGRAMS = lisp$(EXEEXT)
 subdir = src/rt
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/mkinstalldirs \
@@ -128,17 +129,14 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/openaxiom-c-macros.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libruntime_a_AR = $(AR) $(ARFLAGS)
-libruntime_a_LIBADD =
-am_libruntime_a_OBJECTS = libruntime_a-vm.$(OBJEXT) \
-	libruntime_a-Lisp.$(OBJEXT) libruntime_a-Database.$(OBJEXT)
-libruntime_a_OBJECTS = $(am_libruntime_a_OBJECTS)
+PROGRAMS = $(noinst_PROGRAMS)
+am_lisp_OBJECTS = driver.$(OBJEXT)
+lisp_OBJECTS = $(am_lisp_OBJECTS)
+lisp_DEPENDENCIES = $(oa_target_libdir)/libOpenAxiom.a
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -155,10 +153,6 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
-AM_V_lt = $(am__v_lt_@AM_V@)
-am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -177,8 +171,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libruntime_a_SOURCES)
-DIST_SOURCES = $(libruntime_a_SOURCES)
+SOURCES = $(lisp_SOURCES)
+DIST_SOURCES = $(lisp_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -395,10 +389,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
-noinst_LIBRARIES = libruntime.a
-libruntime_a_SOURCES = vm.cc Lisp.cc Database.cc
-oa_target_incdir = $(top_builddir)/$(target)/include
-libruntime_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
+lisp_SOURCES = driver.cc
+lisp_LDADD = $(oa_target_libdir)/libOpenAxiom.a
+AM_CXXFLAGS = \
+	-I$(top_srcdir)/src/include \
+	-I$(oa_target_includedir) \
+	-I$(top_builddir)/config
+
 all: all-am
 
 .SUFFIXES:
@@ -434,13 +431,18 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
-libruntime.a: $(libruntime_a_OBJECTS) $(libruntime_a_DEPENDENCIES) $(EXTRA_libruntime_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libruntime.a
-	$(AM_V_AR)$(libruntime_a_AR) libruntime.a $(libruntime_a_OBJECTS) $(libruntime_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libruntime.a
+lisp$(EXEEXT): $(lisp_OBJECTS) $(lisp_DEPENDENCIES) $(EXTRA_lisp_DEPENDENCIES) 
+	@rm -f lisp$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(lisp_OBJECTS) $(lisp_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -448,9 +450,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libruntime_a-Database.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libruntime_a-Lisp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libruntime_a-vm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driver.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -475,48 +475,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
-
-libruntime_a-vm.o: vm.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-vm.o -MD -MP -MF $(DEPDIR)/libruntime_a-vm.Tpo -c -o libruntime_a-vm.o `test -f 'vm.cc' || echo '$(srcdir)/'`vm.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-vm.Tpo $(DEPDIR)/libruntime_a-vm.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='vm.cc' object='libruntime_a-vm.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-vm.o `test -f 'vm.cc' || echo '$(srcdir)/'`vm.cc
-
-libruntime_a-vm.obj: vm.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-vm.obj -MD -MP -MF $(DEPDIR)/libruntime_a-vm.Tpo -c -o libruntime_a-vm.obj `if test -f 'vm.cc'; then $(CYGPATH_W) 'vm.cc'; else $(CYGPATH_W) '$(srcdir)/vm.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-vm.Tpo $(DEPDIR)/libruntime_a-vm.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='vm.cc' object='libruntime_a-vm.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-vm.obj `if test -f 'vm.cc'; then $(CYGPATH_W) 'vm.cc'; else $(CYGPATH_W) '$(srcdir)/vm.cc'; fi`
-
-libruntime_a-Lisp.o: Lisp.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-Lisp.o -MD -MP -MF $(DEPDIR)/libruntime_a-Lisp.Tpo -c -o libruntime_a-Lisp.o `test -f 'Lisp.cc' || echo '$(srcdir)/'`Lisp.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-Lisp.Tpo $(DEPDIR)/libruntime_a-Lisp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lisp.cc' object='libruntime_a-Lisp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-Lisp.o `test -f 'Lisp.cc' || echo '$(srcdir)/'`Lisp.cc
-
-libruntime_a-Lisp.obj: Lisp.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-Lisp.obj -MD -MP -MF $(DEPDIR)/libruntime_a-Lisp.Tpo -c -o libruntime_a-Lisp.obj `if test -f 'Lisp.cc'; then $(CYGPATH_W) 'Lisp.cc'; else $(CYGPATH_W) '$(srcdir)/Lisp.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-Lisp.Tpo $(DEPDIR)/libruntime_a-Lisp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lisp.cc' object='libruntime_a-Lisp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-Lisp.obj `if test -f 'Lisp.cc'; then $(CYGPATH_W) 'Lisp.cc'; else $(CYGPATH_W) '$(srcdir)/Lisp.cc'; fi`
-
-libruntime_a-Database.o: Database.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-Database.o -MD -MP -MF $(DEPDIR)/libruntime_a-Database.Tpo -c -o libruntime_a-Database.o `test -f 'Database.cc' || echo '$(srcdir)/'`Database.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-Database.Tpo $(DEPDIR)/libruntime_a-Database.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Database.cc' object='libruntime_a-Database.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-Database.o `test -f 'Database.cc' || echo '$(srcdir)/'`Database.cc
-
-libruntime_a-Database.obj: Database.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libruntime_a-Database.obj -MD -MP -MF $(DEPDIR)/libruntime_a-Database.Tpo -c -o libruntime_a-Database.obj `if test -f 'Database.cc'; then $(CYGPATH_W) 'Database.cc'; else $(CYGPATH_W) '$(srcdir)/Database.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libruntime_a-Database.Tpo $(DEPDIR)/libruntime_a-Database.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Database.cc' object='libruntime_a-Database.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libruntime_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libruntime_a-Database.obj `if test -f 'Database.cc'; then $(CYGPATH_W) 'Database.cc'; else $(CYGPATH_W) '$(srcdir)/Database.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -608,7 +566,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(PROGRAMS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -642,7 +600,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -714,7 +672,7 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES cscopelist-am ctags \
+	clean-libtool clean-noinstPROGRAMS cscopelist-am ctags \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \

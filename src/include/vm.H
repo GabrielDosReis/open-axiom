@@ -217,9 +217,15 @@ namespace OpenAxiom {
       // -------------
       // Any internal value is of a class derived from this.
       internal_type Dynamic {
+         struct Visitor;
          virtual ~Dynamic();
-         virtual void format_on(std::ostream&) const = 0;
+         virtual void accept(Visitor&) const = 0;
       };
+
+      // Provide an S-view of a T-typed expression, assuming the type T
+      // derives from S.
+      template<typename S, typename T>
+      inline const S& as(const T& t) { return t; }
 
       template<>
       struct ValueTrait<Dynamic> {
@@ -420,7 +426,7 @@ namespace OpenAxiom {
          Package* package;
          SymbolAttribute attributes;
          explicit Symbol(InternedString);
-         void format_on(std::ostream&) const override;
+         void accept(Visitor&) const override;
          bool has(SymbolAttribute x) const { return (attributes & x) == x; }
       };
 
@@ -456,6 +462,14 @@ namespace OpenAxiom {
          sym->function = fun;
          return fun;
       }
+
+      // -- Argument binding as value.
+      // Binding a parameter to a value in a call.
+      struct Binding : Dynamic {
+         Symbol* symbol;
+         Value value;
+         void accept(Visitor&) const override;
+      };
       
       // -- Environments.
       struct Environment {
@@ -482,7 +496,8 @@ namespace OpenAxiom {
          std::set<Symbol, CmpByName> symbols;
 
          explicit Package(InternedString);
-         void format_on(std::ostream&) const override;
+         void accept(Visitor&) const override;
+         void format_on(std::ostream&) const;
          Symbol* make_symbol(InternedString);
          Symbol* find_symbol(InternedString);
       };
@@ -495,7 +510,7 @@ namespace OpenAxiom {
          Value type;
          FunctionBase(const Symbol* n, Value t = Value::nil)
                : name(n), type(t) { }
-         void format_on(std::ostream&) const override;
+         void accept(Visitor&) const override;
       };
 
       // ------------------------
@@ -517,6 +532,7 @@ namespace OpenAxiom {
          BuiltinFunction(const Symbol* n, Code c)
                : FunctionBase(n), code(c)
          { }
+         void accept(Visitor&) const override;
       };
 
       using NullaryOperator = BuiltinFunction<NullaryCode>;
@@ -540,6 +556,20 @@ namespace OpenAxiom {
             return super::operator[](size() - i - 1);
          }
       };
+
+      // -- Dynamic::Visitor --
+      struct Dynamic::Visitor {
+         virtual void visit(const Symbol&) = 0;
+         virtual void visit(const Binding&) = 0;
+         virtual void visit(const Package&) = 0;
+         virtual void visit(const FunctionBase&) = 0;
+         virtual void visit(const NullaryOperator&);
+         virtual void visit(const UnaryOperator&);
+         virtual void visit(const BinaryOperator&);
+      };
+
+      template<typename Code>
+      void BuiltinFunction<Code>::accept(Visitor& v) const { v.visit(*this); }
 
       // ------------------
       // -- BasicContext --

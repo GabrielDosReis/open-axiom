@@ -39,6 +39,20 @@
 
 namespace OpenAxiom {
    namespace VM {
+      void Dynamic::Visitor::visit(const NullaryOperator& x) {
+         visit(as<FunctionBase>(x));
+      }
+      
+      void Dynamic::Visitor::visit(const UnaryOperator& x) {
+         visit(as<FunctionBase>(x));
+      }
+      
+      void Dynamic::Visitor::visit(const BinaryOperator& x) {
+         visit(as<FunctionBase>(x));
+      }
+
+      void FunctionBase::accept(Visitor& v) const { v.visit(*this); }
+      
       // -- Environement
       Environment::Environment() = default;
 
@@ -59,7 +73,7 @@ namespace OpenAxiom {
       }
 
       // -- Dynamic
-      Dynamic::~Dynamic() { }
+      Dynamic::~Dynamic() = default;
 
       // -- Symbol
       Symbol::Symbol(InternedString s)
@@ -71,11 +85,10 @@ namespace OpenAxiom {
               attributes()
       { }
 
-      void Symbol::format_on(std::ostream& os) const {
-         // FIXME: handle escapes.
-         std::copy(name->begin(), name->end(),
-                   std::ostream_iterator<char>(os));
-      }
+      void Symbol::accept(Visitor& v) const { v.visit(*this); }
+
+      // -- Binding
+      void Binding::accept(Visitor& v) const { v.visit(*this); }
 
       // -- Package
       Package::Package(InternedString s)
@@ -102,12 +115,7 @@ namespace OpenAxiom {
          return p == symbols.end() ? nullptr : const_cast<Symbol*>(&*p);
       }
 
-      // -- FunctionBase
-      void FunctionBase::format_on(std::ostream& os) const {
-         os << "#<FUNCTION ";
-         name->format_on(os);
-         os << '>';
-      }      
+      void Package::accept(Visitor& v) const { v.visit(*this); }
 
       Fixnum
       count_nodes(Pair p) {
@@ -116,6 +124,7 @@ namespace OpenAxiom {
             ++n;
          return Fixnum(n);
       }
+
 
       // -- BasicContext --
       Package*

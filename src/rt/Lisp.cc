@@ -280,15 +280,54 @@ namespace OpenAxiom {
       }
 
       // Return the denotation of a sharp-apostrophe syntax.
+
+      static const Callable*
+      symbol_function(Evaluator* ctx, const Sexpr::SymbolSyntax& s) {
+         auto sym = retrieve_symbol(ctx, s);
+         if (sym->function == nullptr)
+            unbound_function_symbol_error(sym);
+         return sym->function;
+      }
+      
       static Value
       evaluate(Evaluator* ctx, const Sexpr::Function& x) {
          auto s = dynamic_cast<const Sexpr::SymbolSyntax*>(x.body());
          if (s == nullptr)
             throw Unimplemented("FUNCTION of non-symbol expression");
-         auto sym = retrieve_symbol(ctx, *s);
-         if (sym->function == nullptr)
-            unbound_function_symbol_error(sym);
-         return to_value(sym->function);
+         return to_value(symbol_function(ctx, *s));
+      }
+
+      static Value
+      evaluate(Evaluator* ctx, const Sexpr::QuoteSyntax& x) {
+         return ctx->make_value(x.body());
+      }
+
+      // -- special operators
+      using SpecialOperator = Value (*)(Evaluator*, const Sexpr::Syntax&);
+      const NamedConstant<SpecialOperator> special_ops[] = {
+      };      
+
+      static SpecialOperator
+      special_operator(const Sexpr::SymbolSyntax& s) {
+         auto name = canonical_name(s);
+         for (auto& x : special_ops) {
+            if (x.name == name)
+               return x.value;
+         }
+         return nullptr;
+      }
+
+      static Value
+      evaluate(Evaluator* ctx, const Sexpr::ListSyntax& x) {
+         if (x.empty())
+            return Value::nil;
+         auto s = dynamic_cast<const Sexpr::SymbolSyntax*>(x.front());
+         if (s == nullptr)
+            // FIXME: real error
+            unimplemented(x);
+         if (auto op = special_operator(*s))
+            return op(ctx, x);
+         auto fun = symbol_function(ctx, *s);
       }
 
       Value
@@ -304,7 +343,7 @@ namespace OpenAxiom {
             void visit(const SymbolSyntax& x) { result = evaluate(ctx, x); }
             void visit(const ReferenceSyntax& x) { unimplemented(x); }
             void visit(const AnchorSyntax& x) { unimplemented(x); }
-            void visit(const QuoteSyntax& x) { unimplemented(x); }
+            void visit(const QuoteSyntax& x) { result = evaluate(ctx, x); }
             void visit(const AntiquoteSyntax& x) { unimplemented(x); }
             void visit(const Expand& x) { unimplemented(x); }
             void visit(const Eval& x) { unimplemented(x); }
@@ -312,7 +351,7 @@ namespace OpenAxiom {
             void visit(const Function& x) { result = evaluate(ctx, x); }
             void visit(const Include& x) { unimplemented(x); }
             void visit(const Exclude& x) { unimplemented(x); }
-            void visit(const ListSyntax& x) { unimplemented(x); }
+            void visit(const ListSyntax& x) { result = evaluate(ctx, x); }
             void visit(const VectorSyntax& x) { unimplemented(x); }
          };
          
@@ -321,6 +360,15 @@ namespace OpenAxiom {
          V v { this };
          x->accept(v);
          return v.result;
+      }
+
+      Value*
+      Evaluator::lexical_binding(String name) {
+         if (env_stack.empty())
+            return nullptr;
+         else if (auto b = env_stack.back().lookup(name))
+            return &b->value;
+         return nullptr;
       }
 
       Value
@@ -332,11 +380,64 @@ namespace OpenAxiom {
          return v;
       }
 
+      template<typename... Ts>
+      using Operation = Value (*)(Ts...);
+
+      template<Operation<Value> fun>
+      RuntimeOperation<Value> runtime() {
+         return [](BasicContext*, Value x) { return fun(x); };
+      }
+
+      const NamedConstant<UnaryCode> unary_builtins[] = {
+         { "CONSP", runtime<consp>() },
+         { "ATOM", runtime<atom>() },
+         { "SYMBOLP", runtime<symbolp>() },
+         { "KEYWORDP", runtime<keywordp>() },
+      };
+
+      template<typename T>
+      static void
+      define_builtin_operator(Evaluator* ctx, const char* s, T t) {
+         auto name = ctx->intern(s);
+         auto sym = ctx->current_package()->make_symbol(name);
+         sym->function = ctx->make_operator(sym, t);
+      }
+
+      static void
+      define_builtin_operators(Evaluator* ctx) {
+         for (auto& x : unary_builtins)
+            define_builtin_operator(ctx, x.name, x.value);
+      }
+
+      static Symbol*
+      make_special_symbol(Evaluator* ctx, const char* s) {
+         auto name = ctx->intern(s);
+         auto sym = ctx->current_package()->make_symbol(name);
+         sym->attributes = SymbolAttribute::Special;
+         return sym;
+      }
+
+      static Symbol*
+      define_features(Evaluator* ctx) {
+         auto sym = make_special_symbol(ctx, "*FEATURES*");
+         sym->value = Value::nil;
+         return sym;
+      }
+
+      static void
+      define_current_package(Evaluator* ctx) {
+         auto sym = make_special_symbol(ctx, "*PACKAGE*");
+         sym->value = to_value(ctx->current_package());
+      }
+
       Evaluator::Evaluator()
             : core(make_package(intern("AxiomCore"))),
-              ns(core)
+              ns(core),
+              feature_list(define_features(this))
       {
          define_special_constants(this);
+         define_builtin_operators(this);
+         define_current_package(this);
          env_stack.push_back(Environment{ });
       }
 
@@ -377,27 +478,58 @@ namespace OpenAxiom {
          os << '"';
       }
 
-      static void format(const Symbol* s, std::ostream& os) {
-         // FIXME: Handle escapes.
-         auto n = s->name;
-         std::copy(n->begin(), n->end(), std::ostream_iterator<char>(os));
-      }
-      
+      static void format(const Dynamic*, std::ostream&);
+
       void format(Value v, std::ostream& os) {
          if (v == Value::nil)
             os << "NIL";
+         else if (v == Value::t)
+            os << "T";
          else if (is<Fixnum>(v))
             os << FixnumBits(to_fixnum(v));
-         else if (auto p = to_pair_if_can(v))
-            format(p, os);
-         else if (auto s = to_string_if_can(v))
-            format(s, os);
-         else if (auto s = to_symbol_if_can(v))
-            format(s, os);
+         else if (is<Pair>(v))
+            format(to_pair(v), os);
+         else if (is<String>(v))
+            format(to_string(v), os);
+         else if (is<Dynamic>(v))
+            format(to_dynamic(v), os);
          else
-            os << "<unprintable>";
+            os << "#<unprintable>";
       }
 
+      static void format(const Dynamic* x, std::ostream& os) {
+         struct V : Dynamic::Visitor {
+            std::ostream& os;
+            V(std::ostream& s) : os(s) { }
+            void visit(const Symbol& s) {
+               // FIXME: handle escapes.
+               std::copy(s.name->begin(), s.name->end(),
+                         std::ostream_iterator<char>(os));
+            }
+            void visit(const Package& p) {
+               os << "#<PACKAGE ";
+               std::copy(p.name->begin(), p.name->end(),
+                         std::ostream_iterator<char>(os));
+               os << '>';
+            }
+            void visit(const FunctionBase& f) {
+               os << "#<FUNCTION ";
+               visit(*f.name);
+               os << '>';
+            }
+            void visit(const Binding& b) {
+               os << '(';
+               visit(*b.symbol);
+               os << ' ';
+               format(b.value, os);
+               os << ')';
+            }
+         };
+         
+         V v { os };
+         x->accept(v);
+      }
+      
       // -- assoc: (T, List Pair(T, S)) -> S
       Value assoc(Value key, Pair al) {
          while (al != nullptr) {
