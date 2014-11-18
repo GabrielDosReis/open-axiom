@@ -41,7 +41,10 @@ libOpenAxiom_a_SOURCES = \
 	../io/Input.cc \
 	../io/std-streams.cc \
 	../syntax/token.cc \
-	../syntax/sexpr.cc 
+	../syntax/sexpr.cc \
+	../rt/vm.cc \
+	../rt/Lisp.cc \
+	../rt/Database.cc
 
 oa_public_headers = hash-table string-pool
 

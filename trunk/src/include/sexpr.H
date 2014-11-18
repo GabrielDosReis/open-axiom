@@ -280,6 +280,7 @@ namespace OpenAxiom {
          using base::rend;
          using base::size;
          using base::empty;
+         using base::front;
 
          ListSyntax();
          ListSyntax(const base&, bool);

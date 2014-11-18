@@ -30,14 +30,14 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-noinst_LIBRARIES = libruntime.a
+noinst_PROGRAMS = lisp
+lisp_SOURCES = driver.cc
+lisp_LDADD = $(oa_target_libdir)/libOpenAxiom.a
 
-libruntime_a_SOURCES = vm.cc Lisp.cc Database.cc
-
-oa_target_incdir = $(top_builddir)/$(target)/include
-
-libruntime_a_CPPFLAGS = -I$(top_srcdir)/src/include -I$(oa_target_incdir)
-
+AM_CXXFLAGS = \
+	-I$(top_srcdir)/src/include \
+	-I$(oa_target_includedir) \
+	-I$(top_builddir)/config
 
 .PHONY: all-rt
 all-rt: all-am
