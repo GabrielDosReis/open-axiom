@@ -95,13 +95,6 @@ namespace OpenAxiom {
             : name(s)
       { }
 
-      void Package::format_on(std::ostream& os) const {
-         os << "#<PACKAGE \"";
-         std::copy(name->begin(), name->end(),
-                   std::ostream_iterator<char>(os));
-         os << '"' << '>';
-      }
-
       Symbol*
       Package::make_symbol(InternedString s) {
          auto sym = const_cast<Symbol*>(&*symbols.insert(Symbol(s)).first);

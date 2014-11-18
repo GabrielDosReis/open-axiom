@@ -497,7 +497,6 @@ namespace OpenAxiom {
 
          explicit Package(InternedString);
          void accept(Visitor&) const override;
-         void format_on(std::ostream&) const;
          Symbol* make_symbol(InternedString);
          Symbol* find_symbol(InternedString);
       };
