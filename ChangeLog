@@ -1,3 +1,8 @@
+2014-11-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
+	* config/open-axiom.m4 (OPENAXIOM_HOST_COMPILERS): Force Clang
+	family of compilers on Mac OS X.  Restore full build on Mac.
+
 2014-11-16  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
 	* config/open-axiom.m4 (OPENAXIOM_CHECK_LLVM): New.

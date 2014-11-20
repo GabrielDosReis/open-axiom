@@ -284,17 +284,31 @@ OPENAXIOM_LISP_FLAVOR
 OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
 OPENAXIOM_CHECK_DELAYED_FFI
+## Force Clang on Apple platforms; that is the only way we get
+## anything sane going on on this fine platform.
+case $host in
+   *apple*)
+       AC_PROG_CC([clang])
+       AC_PROG_CXX([clang++])
+       ;;
+   *)
+       AC_PROG_CC
+       AC_PROG_CXX([g++ clang++ icpc icc CC xlC c++])
+       ;;
+esac
 ## Where are the compilers coming from?  GNU? Clang?
 oa_cxx_compiler_lineage=unknown
-AC_PROG_CC
-AC_PROG_CXX([g++ clang++ icpc icc CC xlC c++])
-if test x$GCC = xyes || test x$GXX = xyes; then
-  oa_cxx_compiler_lineage=gnu
-else
-  case `$CXX -v` in
-    *clang*) oa_cxx_compiler_lineage=clang ;;
-  esac
-fi
+case `$CXX -v` in
+   *clang*) 
+       oa_cxx_compiler_lineage=clang
+       ;;
+   *)
+       if test x$GCC = xyes || test x$GXX = xyes; then
+          oa_cxx_compiler_lineage=gnu
+       fi
+       ;;
+esac
+   
 ## Augment C and C++ compiler flags with ABI directives as appropriate
 ## before we proceed to infer other host datatype properties.
 if test -n "$oa_host_lisp_precision"; then
