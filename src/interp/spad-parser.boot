@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2014, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1065,7 +1065,7 @@ parseSpadFile sourceFile ==
   FILE_-CLOSED : local := false          -- current stream closed?
   try
     -- noise to standard output  
-    $OutputStream: local := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+    $OutputStream: local := forkStreamByName "*STANDARD-OUTPUT*"
     -- we need to tell the post-parsing transformers that we're compiling
     -- Spad because few parse forms have slightly different representations
     -- depending on whether we are interpreter mode or compiler mode.

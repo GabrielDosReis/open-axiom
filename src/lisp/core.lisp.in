@@ -113,6 +113,7 @@
 	   "closeFile"
 	   "closeStream"
 	   "eof?"
+	   "forkStreamByName"
 	   "prettyPrint"
 	   "readLine"
 	   "readExpr"
@@ -606,6 +607,10 @@
 
 (defmacro |eof?| (s)
   `(null (peek-char nil ,s nil nil nil)))
+
+;; Make a new stream object, duplicate of the denotation of argument.
+(defmacro |forkStreamByName| (s)
+  `(make-synonym-stream ,s))
 
 ;; Read a line from the input text file.  Quietly return
 ;; %nothing at end of file.
