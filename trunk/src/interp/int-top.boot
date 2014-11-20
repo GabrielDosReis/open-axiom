@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2014, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -92,8 +92,8 @@ ncTopLevel() ==
 
 
 ncIntLoop() ==
-  $InputStream : local := MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
-  $OutputStream : local := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+  $InputStream : local := forkStreamByName "*STANDARD-INPUT*"
+  $OutputStream : local := forkStreamByName "*STANDARD-OUTPUT*"
   intloop()
 
 

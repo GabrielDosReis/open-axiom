@@ -1,5 +1,16 @@
 2014-11-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
 
+	* lisp/core.lisp.in (forkStreamByName): New.
+	* interp/int-top.boot (ncIntLoop): Use it.
+	* interp/spad-parser.boot (parseSpadFile): Likewise.
+	* interp/sys-globals.boot: Likewise.
+	* interp/sys-macros.lisp (quietlyIfInteractive): Likewise.
+	* interp/vmlisp.lisp (MAKE-INSTREAM): Likewise.
+	(MAKE-OUTSTREAM): Likewise.
+	(DEFIOSTREAM): Likewise.
+
+2014-11-20  Gabriel Dos Reis  <gdr@integrable-solutions.net>
+
 	* algebra/files.spad.pamphlet (endOfFile?)[TextFile]: Use builtin eof?
 	* interp/br-data.boot (dbAugmentConstructorDataTable): Likewise.
 	* interp/topics.boot (mkTopicHashTable): Likewise.

@@ -912,13 +912,13 @@
 
 (defun MAKE-INSTREAM (filespec &optional (recnum 0))
  (declare (ignore recnum))
-   (cond ((numberp filespec) (make-synonym-stream '*standard-input*))
+   (cond ((numberp filespec) (|forkStreamByName| '*standard-input*))
          ((null filespec) (error "not handled yet"))
          (t (|inputTextFile| (|makeInputFilename| filespec)))))
 
 (defun MAKE-OUTSTREAM (filespec &optional (width nil) (recnum 0))
  (declare (ignore width) (ignore recnum))
-   (cond ((numberp filespec) (make-synonym-stream '*standard-output*))
+   (cond ((numberp filespec) (|forkStreamByName| '*standard-output*))
          ((null filespec) (error "not handled yet"))
          (t (|outputTextFile| (|makeFilename| filespec)))))
 
@@ -926,7 +926,7 @@
  "fortran support"
  (declare (ignore width) (ignore recnum))
  (cond 
-  ((numberp filespec) (make-synonym-stream '*standard-output*))
+  ((numberp filespec) (|forkStreamByName| '*standard-output*))
   ((null filespec) (error "make-appendstream: not handled yet"))
   ('else (open (|makeFilename| filespec) :direction :output
           :if-exists :append :if-does-not-exist :create))))
@@ -938,8 +938,8 @@
          (dev (cdr (assoc 'DEVICE stream-alist))))
       (if (EQ dev 'CONSOLE)
 	  (case mode
-		((OUTPUT O) (make-synonym-stream '*standard-output*))
-		((INPUT I) (make-synonym-stream '*standard-input*)))
+		((OUTPUT O) (|forkStreamByName| '*standard-output*))
+		((INPUT I) (|forkStreamByName| '*standard-input*)))
         (let ((strm (case mode
                           ((OUTPUT O) (open (|makeFilename| filename)
                                             :direction :output))

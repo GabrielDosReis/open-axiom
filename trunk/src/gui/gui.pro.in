@@ -7,9 +7,6 @@ oa_targetdir = @top_builddir@/@target@
 
 OA_INC = $${oa_targetdir}/include
 OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
-OA_IOLIB = -L@top_builddir@/src/io -lio
-OA_SYNTAX_LIB = -L@top_builddir@/src/syntax -lsyntax
-OA_RT_LIB = -L@top_builddir@/src/rt -lruntime
 
 ## We build in release mode.
 CONFIG += release
@@ -23,14 +20,22 @@ macx-g++ {
   QMAKE_CFLAGS_X86_64 -= -Xarch_x86_64
 
   QMAKE_CXXFLAGS -= -Xarch_x86_64
+  QMAKE_CXXFLAGS += -stdlib=libc++
   QMAKE_CXXFLAGS_X86_64 -= -Xarch_x86_64
+  QMAKE_CXXFLAGS_X86_64 += -stdlib=libc++
 
   QMAKE_LFLAGS -= -Xarch_x86_64
+  QMAKE_LFLAGS += -stdlib=libc++
   QMAKE_LFLAGS_X86_64 -= -Xarch_x86_64
+  QMAKE_LFLAGS_X86_64 += -stdlib=libc++
 }
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 ## We are building a GUI application.
 TEMPLATE = app
+
+QT += core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 ## Put the executable directly in the staged bin directory.
 DESTDIR = @top_builddir@/@target@/bin
@@ -51,7 +56,7 @@ DEPENDPATH += @srcdir@
 SOURCES += server.cc conversation.cc main-window.cc debate.cc main.cc
 
 ## Additional support libraries
-LIBS += $$OA_RT_LIB $$OA_SYNTAX_LIB $$OA_LIB $$OA_IOLIB
+LIBS += $$OA_LIB
 
 ## C++ compiler
 QMAKE_CXX = @CXX@
