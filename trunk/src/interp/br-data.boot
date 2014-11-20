@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2014, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -221,7 +221,7 @@ buildLibAttr(name,argl,pred) ==
 
 dbAugmentConstructorDataTable() ==
   instream := MAKE_-INSTREAM '"libdb.text"
-  while not EOFP instream repeat
+  while not eof? instream repeat
     fp   := FILE_-POSITION instream
     line := readLine instream
     cname := makeSymbol dbName line

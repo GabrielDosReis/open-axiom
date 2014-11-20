@@ -272,8 +272,7 @@ TextFile: Cat == Def where
             x
         endOfFile? f ==
           f.fileIOmode = "output" => false
-          (EOFP(f.fileState)$Lisp pretend Boolean) => true
-          false
+          eof?(f.fileState)$Lisp
 
 @
 

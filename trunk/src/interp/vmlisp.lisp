@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2013, Gabriel Dos Reis.
+;; Copyright (C) 2007-2014, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -914,15 +914,13 @@
  (declare (ignore recnum))
    (cond ((numberp filespec) (make-synonym-stream '*standard-input*))
          ((null filespec) (error "not handled yet"))
-         (t (open (|makeInputFilename| filespec)
-                  :direction :input :if-does-not-exist nil))))
+         (t (|inputTextFile| (|makeInputFilename| filespec)))))
 
 (defun MAKE-OUTSTREAM (filespec &optional (width nil) (recnum 0))
  (declare (ignore width) (ignore recnum))
    (cond ((numberp filespec) (make-synonym-stream '*standard-output*))
          ((null filespec) (error "not handled yet"))
-         (t (open (|makeFilename| filespec) :direction :output
-		  :if-exists :supersede))))
+         (t (|outputTextFile| (|makeFilename| filespec)))))
 
 (defun MAKE-APPENDSTREAM (filespec &optional (width nil) (recnum 0))
  "fortran support"
@@ -953,8 +951,6 @@
 
 (defun shut (st) (if (|ioTerminal?| st) st
                    (if (streamp st) (close st) -1)))
-
-(defun EOFP (stream) (null (peek-char nil stream nil nil)))
 
 ; 28.0 Key addressed I/O
 
