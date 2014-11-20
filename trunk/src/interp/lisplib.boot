@@ -587,8 +587,7 @@ lisplibDoRename db ==
     modpath := filePathString
       makeFilePath(type <- $faslType,defaults <- filePath libCodeStream lib)
     do
-      renameFile(modpath,output) = 0 => nil
-      copyFile(modpath,output)
+      renameFile(modpath,output) = 0 or copyFile(modpath,output)
       removeFile libStationaryDirname lib
     output
   removeFile libDirname lib
