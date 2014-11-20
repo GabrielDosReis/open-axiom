@@ -284,17 +284,21 @@ OPENAXIOM_LISP_FLAVOR
 OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
 OPENAXIOM_CHECK_DELAYED_FFI
-## Are we using compilers from GNU?
-oa_gnu_compiler=no
+## Where are the compilers coming from?  GNU? Clang?
+oa_cxx_compiler_lineage=unknown
 AC_PROG_CC
 AC_PROG_CXX([g++ clang++ icpc icc CC xlC c++])
 if test x$GCC = xyes || test x$GXX = xyes; then
-  oa_gnu_compiler=yes
+  oa_cxx_compiler_lineage=gnu
+else
+  case `$CXX -v` in
+    *clang*) oa_cxx_compiler_lineage=clang ;;
+  esac
 fi
 ## Augment C and C++ compiler flags with ABI directives as appropriate
 ## before we proceed to infer other host datatype properties.
 if test -n "$oa_host_lisp_precision"; then
-   if test x$oa_gnu_compiler = xyes; then
+   if test $oa_cxx_compiler_lineage = gnu; then
      CPPFLAGS="$CPPFLAGS -m$oa_host_lisp_precision"
      LDFLAGS="$LDFLAGS -m$oa_host_lisp_precision"
    ## else, cross fingers and pray.
@@ -314,8 +318,8 @@ dnl GCL assumes that the C compiler is from GNU.
 AC_DEFUN([OPENAXIOM_SATISFY_GCL_NEEDS],[
 ## If we are using GCL as the base runtime system, then we do really need
 ## a C compiler from GNU.  Well, at least for the moment.
-case $oa_lisp_flavor,$oa_gnu_compiler in
-   gcl,yes)
+case $oa_lisp_flavor,$oa_cxx_compiler_lineage in
+   gcl,gnu)
        oa_cflags="-O2 -Wall -D_GNU_SOURCE"
        ;;
    
@@ -687,8 +691,8 @@ AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
                   *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
                esac])
 # GNU compilers want hints about multithreading.
-case $oa_gnu_compiler,$oa_enable_threads in
-   yes,yes)
+case $oa_cxx_compiler_lineage,$oa_enable_threads in
+   gnu,yes)
      oa_cflags="$oa_cflags -pthread"
 esac
 AC_SUBST(oa_enable_threads)
@@ -1134,8 +1138,8 @@ dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
 OPENAXIOM_ALIGNMENT_OPERATOR
 OPENAXIOM_ALIGNAS_SPECIFIER
-case $oa_gnu_compiler in
-  yes)
+case $oa_cxx_compiler_lineage in
+  gnu|clang)
      CFLAGS="$CFLAGS -O2 -Wall"
      CXXFLAGS="$CXXFLAGS -O2 -Wall"
      ;;
