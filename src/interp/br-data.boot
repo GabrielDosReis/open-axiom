@@ -222,7 +222,7 @@ buildLibAttr(name,argl,pred) ==
 dbAugmentConstructorDataTable() ==
   instream := MAKE_-INSTREAM '"libdb.text"
   while not eof? instream repeat
-    fp   := FILE_-POSITION instream
+    fp   := getFileCursor instream
     line := readLine instream
     cname := makeSymbol dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
@@ -245,7 +245,7 @@ dbHasExamplePage conname ==
 
 dbRead(n) ==
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(), '"/algebra/libdb.text")
-  FILE_-POSITION(instream,n)
+  setFileCursor(instream,n)
   line := readLine instream
   SHUT instream
   line ~= %nothing => line
@@ -254,7 +254,7 @@ dbRead(n) ==
 dbReadComments(n) ==
   n = 0 => '""
   instream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"/algebra/comdb.text")
-  FILE_-POSITION(instream,n)
+  setFileCursor(instream,n)
   line := readLine instream
   k := dbTickIndex(line,1,1)
   line := subString(line,k + 1)
@@ -262,7 +262,7 @@ dbReadComments(n) ==
     (k := maxIndex x) and (j := dbTickIndex(x,1,1)) and (j < k) and
       x.(j := j + 1) = char "-" and x.(j := j + 1) = char "-" repeat
         xtralines := [subString(x,j + 1),:xtralines]
-  SHUT instream
+  closeFile instream
   strconc(line, strconc/reverse! xtralines)
 
 dbSplitLibdb() ==
@@ -273,8 +273,8 @@ dbSplitLibdb() ==
   writeChar($tick,comstream)
   writeLine('"",  comstream)
   while (line := readLine instream) ~= %nothing repeat
-    outP := FILE_-POSITION outstream
-    comP := FILE_-POSITION comstream
+    outP := getFileCursor outstream
+    comP := getFileCursor comstream
     [prefix,:comments] := dbSplit(line,6,1)
     PRINC(prefix,outstream)
     writeChar($tick ,outstream)
@@ -334,8 +334,8 @@ buildGloss() ==  --called by buildDatabase (database.boot)
   pairs := getGlossLines instream
   writeString('"\begin{page}{GlossaryPage}{G l o s s a r y}\beginscroll\beginmenu",htstream)
   for [name,:line] in pairs repeat
-    outP  := FILE_-POSITION outstream
-    defP  := FILE_-POSITION defstream
+    outP  := getFileCursor outstream
+    defP  := getFileCursor defstream
     lines := spreadGlossText transformAndRecheckComments(name,[line])
     PRINC(name, outstream)
     writeChar($tick,outstream)

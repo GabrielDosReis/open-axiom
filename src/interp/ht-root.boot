@@ -169,7 +169,7 @@ gatherGlossLines(results,defstream) ==
     n := charPosition($tick,keyline,0)
     keyAndTick := subString(keyline,0,n + 1)
     byteAddress := string2Integer subString(keyline,n + 1)
-    FILE_-POSITION(defstream,byteAddress)
+    setFileCursor(defstream,byteAddress)
     line := readLine defstream
     k := charPosition($tick,line,1)
     pointer := subString(line,0,k)

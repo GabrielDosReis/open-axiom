@@ -215,7 +215,7 @@ grepSplit(lines,doc?) ==
     if doc? then
         N:=readInteger dbPart(line,1,-1)
         if integer? N then 
-           FILE_-POSITION(instream2,N)
+           setFileCursor(instream2,N)
            line := readLine instream2
     kind := dbKind line
     not $includeUnexposed? and not dbExposed?(line,kind) => 'skip
@@ -940,7 +940,7 @@ dbGetCommentOrigin line ==
   key := makeSymbol subString(firstPart,0,1)    --extract this and throw away
   address := subString(firstPart, 1)        --address in libdb
   instream := inputTextFile grepSource key   --this always returns libdb now
-  FILE_-POSITION(instream,readInteger address)
+  setFileCursor(instream,readInteger address)
   line := readLine instream
   closeStream instream
   line
