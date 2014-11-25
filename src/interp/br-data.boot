@@ -409,7 +409,7 @@ getGlossLines instream ==
 -- function getUsersOfConstructor. See functions whoUses and kcuPage in browser.
 --============================================================================
 mkUsersHashTable() ==  --called by buildDatabase (database.boot)
-  $usersTb := MAKE_-HASH_-TABLE()
+  $usersTb := makeTable function scalarEq?
   for x in allConstructors() repeat
     for conform in getImports x repeat
       name := opOf conform
@@ -437,7 +437,7 @@ getDefaultPackageClients con ==  --called by mkUsersHashTable
 -- dependents of a constructor.
 --============================================================================
 mkDependentsHashTable() == --called by buildDatabase (database.boot)
-  $depTb := MAKE_-HASH_-TABLE()
+  $depTb := makeTable function scalarEq?
   for nam in allConstructors() | not builtinConstructor? nam repeat
     for con in getArgumentConstructors nam repeat
       tableValue($depTb,con) := [nam,:tableValue($depTb,con)]
@@ -690,7 +690,7 @@ sublisFormal(args,exp,:options) == main where
 --=======================================================================
 
 buildDefaultPackageNamesHT() ==
-  $defaultPackageNamesHT := MAKE_-HASH_-TABLE()
+  $defaultPackageNamesHT := makeTable function scalarEq?
   for nam in allConstructors() | isDefaultPackageName nam repeat
     tableValue($defaultPackageNamesHT,nam) := true
   $defaultPackageNamesHT
