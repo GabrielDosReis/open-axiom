@@ -1568,12 +1568,12 @@ mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 --  PRINC('"",  comstream)
 --  finishLine(comstream)
 --  while (line := readLine instream) ~= %nothing repeat
---    comP := FILE_-POSITION comstream
+--    comP := getFileCursor comstream
 --    if key ~= line.0 then
 --      if outstream then SHUT outstream
 --      key := line . 0
 --      outstream := MAKE_-OUTSTREAM strconc(STRINGIMAGE key,'"libdb.text")
---    outP := FILE_-POSITION outstream
+--    outP := getFileCursor outstream
 --    [prefix,:comments] := dbSplit(line,6,1)
 --    PRINC(prefix,outstream)
 --    PRINC($tick ,outstream)

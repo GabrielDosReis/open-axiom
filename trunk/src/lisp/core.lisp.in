@@ -113,6 +113,8 @@
 	   "closeFile"
 	   "closeStream"
 	   "eof?"
+	   "getFileCursor"
+	   "setFileCursor"
 	   "forkStreamByName"
 	   "prettyPrint"
 	   "readLine"
@@ -607,6 +609,12 @@
 
 (defmacro |eof?| (s)
   `(null (peek-char nil ,s nil nil nil)))
+
+(defmacro |getFileCursor| (s)
+  `(file-position ,s))
+
+(defmacro |setFileCursor| (s n)
+  `(file-position ,s ,n))
 
 ;; Make a new stream object, duplicate of the denotation of argument.
 (defmacro |forkStreamByName| (s)
