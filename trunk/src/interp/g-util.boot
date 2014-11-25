@@ -987,10 +987,10 @@ intern x ==
 
 -- variables used by browser
 
-$htHash      := MAKE_-HASH_-TABLE()
-$glossHash   := MAKE_-HASH_-TABLE()
-$lispHash    := MAKE_-HASH_-TABLE()
-$sysHash     := MAKE_-HASH_-TABLE()
+$htHash      := makeTable function scalarEq?
+$glossHash   := makeTable function scalarEq?
+$lispHash    := makeTable function scalarEq?
+$sysHash     := makeTable function scalarEq?
 $htSystemCommands := '(
  (boot . development) clear display (fin . development) edit help
  frame history load quit read set show synonym system

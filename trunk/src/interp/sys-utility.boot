@@ -243,7 +243,7 @@ hashTable cmp ==
     cmp = 'EQL => function scalarEq?
     cmp = 'EQUAL => function EQUAL
     error '"bad arg to hashTable"
-  MAKE_-HASH_-TABLE(test <- testFun)
+  makeTable testFun
 
 --% Trees to Graphs
 

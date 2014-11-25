@@ -47,7 +47,7 @@ profileWrite lib ==  --called from finalizeLisplib
   SHUT outStream
 
 profileTran alist ==
-  $profileHash := MAKE_-HASH_-TABLE()
+  $profileHash := makeTable function scalarEq?
   for [opSig,:info] in alist repeat 
     op := opOf opSig
     sig := KAR KDR opSig
