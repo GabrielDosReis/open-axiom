@@ -720,9 +720,9 @@ protectedNagCall(objFiles,nfile,data,results) ==
 
 
 cleanUpAfterNagman(f1,f2,listf)==
-  PROBE_-FILE(f1) and DELETE_-FILE(f1)
-  PROBE_-FILE(f2) and DELETE_-FILE(f2)
-  for fn in listf repeat PROBE_-FILE(fn) and DELETE_-FILE(fn)
+  removeFile f1
+  removeFile f2
+  for fn in listf repeat removeFile fn
 
 sendNagmanErrorSignal()==
 -- excite nagman's signal handler!

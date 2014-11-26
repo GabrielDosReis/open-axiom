@@ -386,15 +386,15 @@ float2Sex num ==
   mantPart :=
     eIndex => subSequence(num, 0, eIndex)
     num
-  expPart := (eIndex => READ_-FROM_-STRING subSequence(num, eIndex+1); 0)
+  expPart := (eIndex => readLispFromString subSequence(num, eIndex+1); 0)
   dotIndex := findChar(char ".", mantPart)
   intPart :=
-    dotIndex => READ_-FROM_-STRING subSequence(mantPart, 0, dotIndex)
-    READ_-FROM_-STRING mantPart
+    dotIndex => readLispFromString subSequence(mantPart, 0, dotIndex)
+    readLispFromString mantPart
   fracPartString :=
     dotIndex => subSequence(mantPart, dotIndex+1)
     '"0"
-  bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
+  bfForm := MAKE_-FLOAT(intPart, readLispFromString fracPartString,
     # fracPartString, expPart)
   $useBFasDefault =>
     [., frac, :exp] := bfForm

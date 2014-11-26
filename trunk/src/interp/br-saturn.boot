@@ -1713,16 +1713,6 @@ purgeLocalLibdb() ==   --called by the user through a clear command?
   $newConstructorList := nil
   removeFile '"libdb.text"
 
---moveFile(before,after) ==
---  $saturn => MOVE_-FILE(before, after)
---  RENAME_-FILE(before, after)
---  --obey strconc('"mv ", before, '" ", after)
-
--- deleted JHD/MCD, since already one in pathname.boot
---removeFile fn ==
---  $saturn => DELETE_-FILE fn
---  obey strconc('"rm ",fn)
-
 --=======================================================================
 --            from DAASE.LISP
 --=======================================================================

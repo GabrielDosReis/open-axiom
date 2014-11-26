@@ -88,12 +88,12 @@ inputFile2RecordFile(pathname,:option) ==
   $mkTestOutputStack: local := nil
   $mkTestOutputType: local := nil
   $currentLine: local := nil
-  if isExistingFile opathname then DELETE_-FILE opathname
-  $testStream := MAKE_-OUTSTREAM opathname
+  removeFile opathname
+  $testStream := outputTextFile opathname
   CATCH($SpadReaderTag,_/READ(pathname,nil))
   --for trailing system commands
   if not null $currentLine then recordAndPrintTest '(ForSystemCommands)
-  SHUT $testStream
+  closeFile $testStream
   opathname 
 --=======================================================================
 --                Function for Displaying a `record' file
@@ -180,16 +180,16 @@ testInput2Output(lines,n) ==
   [prefix2String typ,:output]
 
 evaluateLines lines ==
-  file := MAKE_-OUTSTREAM '"/tmp/temp.input"
+  file := outputTextFile '"/tmp/temp.input"
   for line in lines repeat
     stringPrefix?('")r",line) => 'skip
     stringPrefix?('")undo )redo",line) => 'skip
     writeLine(line, file)
-  SHUT file
+  closeFile file
   $editFile: local := '"/tmp/temp.input"
   _/RF()
     -- can't use $editFile since it might be reset
-  DELETE_-FILE '"/tmp/temp.input"
+  removeFile '"/tmp/temp.input"
 
 
 wasIs(old,new,:typePart) ==
@@ -214,11 +214,11 @@ htFile2InputFile(pathname,:option) ==
   opath := KAR option or pathname
   odirect := pathnameDirectory opath
   opathname := htMkPath(odirect,ifn,'"input")
-  if isExistingFile opathname then DELETE_-FILE opathname
+  removeFile opathname
   $htStream : local := MAKE_-INSTREAM pathname
   alist := [[htGetPageName u,:htGetSpadCommands()] 
               while (u := htExampleFind '"\begin{page}")]
-  SHUT $htStream
+  closeFile $htStream
   outStream := MAKE_-OUTSTREAM opathname
   for [pageName,:commands] in alist repeat
     writeString('"-- ",outStream)
@@ -229,7 +229,7 @@ htFile2InputFile(pathname,:option) ==
       PRINC(htCommandToInputLine x,outStream)
       writeNewline outStream
     writeNewline outStream
-  SHUT outStream
+  closeFile outStream
   opathname
  
 htCommandToInputLine s == fn(s,0) where fn(s,init) ==

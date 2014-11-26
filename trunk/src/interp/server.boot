@@ -79,7 +79,7 @@ serverReadLine(stream) ==
      action = $LispCommand =>
        $NeedToSignalSessionManager := true
        buf := sockGetString $MenuServer
-       form := unescapeStringsInForm READ_-FROM_-STRING buf
+       form := unescapeStringsInForm readLispFromString buf
        protectedEVAL form
      action = $QuietSpadCommand =>
        $NeedToSignalSessionManager := true
