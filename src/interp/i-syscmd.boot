@@ -1809,7 +1809,7 @@ writify ob ==
                 sameObject?(ob, %nonNullStream) => ['WRITIFIED!!, 'NONNULLSTREAM]
                 ob
             float? ob =>
-                ob = READ_-FROM_-STRING STRINGIMAGE ob => ob
+                ob = readLispFromString STRINGIMAGE ob => ob
                 ['WRITIFIED!!, 'FLOAT, ob,:
                    MULTIPLE_-VALUE_-LIST INTEGER_-DECODE_-FLOAT ob]
             ob
@@ -2819,7 +2819,7 @@ stripLisp str ==
 
 
 nplisp str ==
-  $ans := eval READ_-FROM_-STRING str
+  $ans := eval readLispFromString str
   formatToStdout('"~&Value = ~S~%", $ans)
 
 npsystem(unab, str) ==
@@ -2843,7 +2843,7 @@ tokenSystemCommand(unabr, tokList) ==
 tokTran tok ==
   string? tok =>
     #tok = 0 => nil
-    isIntegerString tok => READ_-FROM_-STRING tok
+    isIntegerString tok => readLispFromString tok
     stringChar(tok,0) = char "_"" => subSequence(tok, 1, #tok-1)
     makeSymbol tok
   tok

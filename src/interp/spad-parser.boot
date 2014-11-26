@@ -382,7 +382,7 @@ floatExponent x ==
     s := symbolName x
     charUpcase stringChar(s,0) = char "E" and #s > 1
       and (and/[DIGITP stringChar(s,i) for i in 1..maxIndex s]) =>
-        READ_-FROM_-STRING(s,true,nil,start <- 1)
+        readLispFromString(s,true,nil,start <- 1)
     nil
   nil
 
