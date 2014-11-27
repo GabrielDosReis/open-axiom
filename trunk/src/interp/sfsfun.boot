@@ -418,7 +418,7 @@ PsiIntpart(x) ==
 
 cotdiffeval(n,z,skipit) ==
 ---skip=1 if arg z is known to be an exact multiple of Pi/2
-        a := MAKE_-ARRAY(n+2)
+        a := newVector(n+2)
         AREF(a,0) := 0.0
         AREF(a,1) := 1.0
         for i in 2..n repeat
@@ -523,7 +523,7 @@ chebf01 (c,z) ==
         a1 := start     -- arbitrary starting value
         z1 := four/w
         ncount := n1
-        arr := MAKE_-ARRAY(n2)
+        arr := newVector(n2)
         AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
@@ -616,7 +616,7 @@ chebf01coefmake (c,w,n) ==
         a1 := start     -- arbitrary starting value
         z1 := four/w
         ncount := n1
-        arr := MAKE_-ARRAY(n2)
+        arr := newVector(n2)
         AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
@@ -828,7 +828,7 @@ BesselIBackRecur(largev,argm,v,z,type,n) ==
         start := EXPT(10.0,-40)
         z2 := two/z
         m2 := n+3
-        w:=MAKE_-ARRAY(m2+1)
+        w := newVector(m2+1)
         AREF(w,m2) := zero --- start off
         if type = '"I"
         then

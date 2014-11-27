@@ -224,7 +224,7 @@ dbLocateModule db ==
     getConstructorModuleFromDB dbConstructor db
   existingFile? m => m
   strap := algebraBootstrapDir() =>
-    m := strconc(strap,PATHNAME_-NAME m,'".",$faslType)
+    m := strconc(strap,filePathName m,'".",$faslType)
     existingFile? m => m
     nil
   nil
@@ -757,7 +757,7 @@ getAllIndexPathnames dir ==
   -- a list of drirectories AND files.  Pretty much like `ls *'.
   -- Everybody else strips out directories.
 )if %hasFeature KEYWORD::GCL
-  [getIndexPathname NAMESTRING d for d in DIRECTORY strconc(dir,'"*.NRLIB")]
+  [getIndexPathname filePathString d for d in DIRECTORY strconc(dir,'"*.NRLIB")]
 )else
   DIRECTORY strconc(dir,'"*.NRLIB/",$IndexFilename)
 )endif
@@ -769,9 +769,9 @@ getAllAldorObjectFiles dir ==
   asos := DIRECTORY strconc(dir,'"*.ao")
   -- don't include both a `x.asy' and `x.ao', and retain
   -- only sensical .asy files.
-  dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
+  dupAOs := MAPCAN(function filePathName,asys)
   [asys,[f for f in asos 
-          | PATHNAME_-NAME f is '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+          | filePathName f is '"ao" and not member(filePathName f,dupAOs)]]
     
 
 

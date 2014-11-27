@@ -45,25 +45,25 @@ namespace BOOT
 --% Common Lisp Pathname Functions
  
 pathname? p == 
-  null p or PATHNAMEP p
+  null p or filePath? p
  
 pathname p ==
   pathname? p => p
-  p isnt [.,:.] => PATHNAME p
+  p isnt [.,:.] => filePath p
   if #p>2 then p:=[p.0,p.1]
-  PATHNAME apply(function makeFilename, p)
+  filePath apply(function makeFilename, p)
  
 namestring p == 
   null p => nil
-  NAMESTRING pathname p
+  filePathString pathname p
  
 pathnameName p == 
   null p => nil
-  PATHNAME_-NAME pathname p
+  filePathName pathname p
  
 pathnameType p == 
   null p => nil
-  PATHNAME_-TYPE pathname p
+  filePathType pathname p
  
 pathnameTypeId p == 
   null p => nil
@@ -71,7 +71,7 @@ pathnameTypeId p ==
  
 pathnameDirectory p ==
    null p => nil
-   NAMESTRING MAKE_-PATHNAME(directory <- PATHNAME_-DIRECTORY pathname p)
+   filePathString makeFilePath(directory <- filePathDirectory pathname p)
  
 isExistingFile f ==
 --  p := pathname f
@@ -85,8 +85,6 @@ isExistingFile f ==
 --% Scratchpad II File Name Functions
  
 makePathname(name,type,dir) ==
-  -- Common Lisp version of this will have to be written
-  -- using MAKE-PATHNAME and the optional args.
   pathname [object2String name,object2String type]
  
 mergePathnames(a,b) ==

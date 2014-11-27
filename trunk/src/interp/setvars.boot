@@ -579,7 +579,7 @@ setFortTmpDir arg ==
 
 
 validateOutputDirectory x ==
-  AND(PATHNAME_-DIRECTORY(PROBE_-FILE(first(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(first(x)))) =>
+  AND(filePathDirectory(PROBE_-FILE(first(x))), null filePathName(PROBE_-FILE(first(x)))) =>
     first(x)
   nil
 

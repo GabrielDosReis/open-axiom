@@ -255,10 +255,10 @@ listConstructorAbbreviations() ==
 
 cd args ==
   dir := TRUENAME STRING(first args or '"")
-  changeDirectory NAMESTRING dir
+  changeDirectory filePathString dir
   SETF(_*DEFAULT_-PATHNAME_-DEFAULTS_*, 
-    PATHNAME ensureTrailingSlash NAMESTRING dir)
-  sayKeyedMsg("S2IZ0070", [NAMESTRING _*DEFAULT_-PATHNAME_-DEFAULTS_*]) 
+    filePath ensureTrailingSlash filePathString dir)
+  sayKeyedMsg("S2IZ0070", [filePathString _*DEFAULT_-PATHNAME_-DEFAULTS_*]) 
 
 
 --% )clear
@@ -435,11 +435,11 @@ compiler args ==
     aft := pathnameType af
     haveOld or (aft = '"spad") =>
         not (af1 := findFile(af, '(spad))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
+            throwKeyedMsg("S2IL0003",[filePathString af])
         compileSpad2Cmd  [af1]
     aft = '"NRLIB"  =>
         not (af1 := findFile(af, '(NRLIB))) =>
-            throwKeyedMsg("S2IL0003",[NAMESTRING af])
+            throwKeyedMsg("S2IL0003",[filePathString af])
         compileSpadLispCmd [af1]
 
     -- see if we something with the appropriate file extension
