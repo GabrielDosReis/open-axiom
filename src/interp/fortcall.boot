@@ -39,7 +39,7 @@ namespace BOOT
 $nagMessages := nil
 
 makeVector(elts, t) ==
-  MAKE_-ARRAY(#elts, element_-type <- t or true, initial_-contents <- elts)
+  newVector(#elts, element_-type <- t or true, initial_-contents <- elts)
 
 makeList(n, e) ==
   MAKE_-LIST(n, initial_-element <- e)

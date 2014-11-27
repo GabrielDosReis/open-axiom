@@ -76,7 +76,7 @@ $mkTestOutputType := nil     -- saves the type for $testStream
 --                Function for Creating a `record' file
 --=======================================================================
 inputFile2RecordFile(pathname,:option) ==
-  ifn := PATHNAME_-NAME pathname
+  ifn := filePathName pathname
   not isExistingFile pathname => throwKeyedMsg("S2IL0003",[namestring ifn])
   opath := KAR option or pathname
   odirect := pathnameDirectory opath
@@ -144,7 +144,7 @@ verbatimize u ==
 --                Function for Verifying a `record' file
 --=======================================================================
 verifyRecordFile(pathname) ==
-  ifn := PATHNAME_-NAME pathname
+  ifn := filePathName pathname
   sayBrightly ['"Verifying",:bright ifn]
   not isExistingFile pathname => throwKeyedMsg("S2IL0003",[namestring ifn])
   stream := MAKE_-INSTREAM pathname

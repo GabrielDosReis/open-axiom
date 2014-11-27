@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2012 Gabriel Dos Reis
+-- Copyright (C) 2007-2014 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ REROOT() ==
     [makeAbsoluteFilename d for d in $RELATIVE_-DIRECTORY_-LIST]
   $LIBRARY_-DIRECTORY_-LIST :=
       [makeAbsoluteFilename d for d in $RELATIVE_-LIBRARY_-DIRECTORY_-LIST]
-  $defaultMsgDatabaseName := PATHNAME
+  $defaultMsgDatabaseName := filePath
     makeAbsoluteFilename '"share/msgs/s2-us.msgs"
   $msgDatabaseName := nil
 
@@ -283,7 +283,7 @@ executeSpadScript(progname,options,file) ==
   -- Accomodate for testsuite stream.
   if testing then
     set ["message","testing","on"]
-    sayKeyedMsg('S2IZ0100,[NAMESTRING canonicalFilename file])
+    sayKeyedMsg('S2IZ0100,[filePathString canonicalFilename file])
   CATCH($intCoerceFailure,
     CATCH($SpadReaderTag,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)

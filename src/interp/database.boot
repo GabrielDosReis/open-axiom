@@ -831,7 +831,7 @@ printAllInitdbInfo(srcdir,dbfile) ==
     prettyPrint(['IN_-PACKAGE,'"BOOT"],out)
     writeNewline out
     for path in paths repeat
-      printInitdbInfo(NAMESTRING path,out)
+      printInitdbInfo(filePathString path,out)
   finally closeStream out
 
 --%

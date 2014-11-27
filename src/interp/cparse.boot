@@ -1106,9 +1106,9 @@ _/RQ_,LIB(:x) ==
 _/RF_-1 x ==
   ifile := makeInputFilename $editFile
   lfile := nil
-  type := PATHNAME_-TYPE ifile
+  type := filePathType ifile
   type = '"boot" =>
-    lfile := MAKE_-PATHNAME(type <- '"lisp",defaults <- ifile)
+    lfile := makeFilePath(type <- '"lisp",defaults <- ifile)
     BOOT(ifile,lfile)
     LOAD lfile
   type = '"lisp" => LOAD ifile

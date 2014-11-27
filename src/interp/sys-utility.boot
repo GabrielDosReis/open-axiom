@@ -318,7 +318,7 @@ writeByteToStreamSocket(s,b) ==
 
 --%
 makeByteBuffer(n,b == 0) ==
-  MAKE_-ARRAY(n,element_-type <- "%Byte",initial_-element <- b)
+  newVector(n,element_-type <- "%Byte",initial_-element <- b)
 
 ++ Return the position of the symbol `s' in the list `l', if present.
 ++ Otherwise return nil.
