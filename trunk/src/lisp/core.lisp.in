@@ -223,6 +223,7 @@
 	   "fixnum?"
 	   "double"
 	   "%fNaN?"
+	   "integerAndFractionalParts"
            ))
 
 (in-package "AxiomCore")
@@ -1477,6 +1478,9 @@
 ;; convert an integer to double-float
 (defmacro |double| (x)
   `(float ,x 1.0d0))
+
+(defmacro |integerAndFractionalParts| (x)
+  `(multiple-value-list (floor ,x)))
 
 ;; 
 ;; -*- Native Datatype correspondance -*-

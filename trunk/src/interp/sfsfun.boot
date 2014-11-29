@@ -80,10 +80,10 @@ nangenericcomplex () ==
 
 
 fracpart(x) ==
-        second(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
+        second integerAndFractionalParts x
 
 intpart(x) ==
-        first(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
+        first integerAndFractionalParts x
 
 negintp(x) ==
         if ZEROP IMAGPART(x) and x<0.0 and ZEROP fracpart(x)
@@ -155,7 +155,7 @@ gammaRatapprox (x) ==
                      result := gammaRatapprox(reducedarg)/prod
                  else
                         Pi := PI
-                        lx := MULTIPLE_-VALUE_-LIST(FLOOR(x))
+                        lx := integerAndFractionalParts x
                         intpartx := first(lx)+1
                         restx := second(lx)
                         if ZEROP restx  -- case of negative non-integer value
@@ -237,7 +237,7 @@ cgammaG(z1,z2) ==
         LOG(2*PI) + PI*z2 - COMPLEX(0.0,1.0)*PI*(z1-.5)
 
 logH(z1,z2,z) ==
-        z1bar := second(MULTIPLE_-VALUE_-LIST(FLOOR(z1))) ---frac part of z1
+        z1bar := second integerAndFractionalParts z1 ---frac part of z1
         piz1bar := PI*z1bar
         piz2 := PI*z2
         twopiz2 := 2.0*piz2
@@ -809,7 +809,7 @@ besselIcheb(z,v,n) ==
 besselIback(v,z) ==
         ipv := IMAGPART(v)
         rpv := REALPART(v)
-        lm := MULTIPLE_-VALUE_-LIST(FLOOR(rpv))
+        lm := integerAndFractionalParts rpv
         m := first(lm)    --- floor of real part of v
         n := 2*MAX(20,m+10)  --- how large the back recurrence should be
         tv := second(lm)+(v-rpv) ---  fractional part of real part of v

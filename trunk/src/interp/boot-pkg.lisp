@@ -69,9 +69,6 @@
 (defmacro |conjugate| (z)
   `(conjugate ,z))
 
-(defmacro |integerAndFractionalParts| (x)
-  `(multiple-value-list (floor ,x)))
-
 (defmacro |sqrt| (x)
   `(sqrt ,x))
 
