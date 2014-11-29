@@ -40,6 +40,7 @@ libOpenAxiom_a_SOURCES = \
 	filesystem.cc \
 	../io/Input.cc \
 	../io/std-streams.cc \
+	../io/InputFragment.cxx \
 	../syntax/token.cc \
 	../syntax/sexpr.cc \
 	../rt/vm.cc \

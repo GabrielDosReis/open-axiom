@@ -35,7 +35,7 @@
 // --% Description:
 
 #include <open-axiom/diagnostics>
-#include <open-axiom/token>
+#include <open-axiom/InputFragment>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -50,59 +50,11 @@ using namespace OpenAxiom;
 // -- Reading input source files --
 // 
 
-// A physical line is just raw text, with coupled with location
-// information such as line and indentation column.
-struct Line : std::string {
-   LineNumber number;
-   ColumnIndex indent;
-   Line() : number(), indent() { }
-
-   std::string sub_string(ColumnIndex s, ColumnIndex e) const {
-      return substr(s, e - s);
-   }
-};
-
-// A program fragment is a logical line, composed of possibly
-// several physical lines subject to the off-side rule.  As a
-// special case, a line ending with the underbar character
-// continues to the next next with disregard to the off-side rule.
-struct Fragment : std::vector<Line> {
-   explicit operator bool() const { return not empty(); }
-   bool line_continuation() const {
-      return not empty() and back().back() == '_';
-   }
-   ColumnIndex last_indent() const {
-      return empty() ? 0 : back().indent;
-   }
-   using std::vector<Line>::operator[];
-   const Line& operator()(const OpenAxiom::FragmentCursor& pos) const {
-      return (*this)[pos.line];
-   }
-   uint8_t operator[](const OpenAxiom::FragmentCursor& pos) const {
-      return (*this)[pos.line][pos.column];
-   }
-   uint8_t advance(OpenAxiom::FragmentCursor& pos) const {
-      return (*this)[pos.line][pos.column++];
-   }
-
-   bool covering(const OpenAxiom::FragmentCursor& pos) const {
-      return pos.column < (*this)[pos.line].size();
-   }
-};
-
-// Formatting program fragments.
-static std::ostream&
-operator<<(std::ostream& os, const Fragment& f) {
-   std::copy(f.begin(), f.end(),
-             std::ostream_iterator<std::string>(std::cout, "\n"));
-   return os;
-}
-
-
 // A source input transform a character stream into a program fragment
 // stream, delivering a fragment one at a time.
 struct SourceInput {
    SourceInput(std::istream& is) : input(is) { }
+   // Return the next program fragment from this input source.
    Fragment get();
 
 private:
@@ -232,6 +184,14 @@ operator<<(std::ostream& os, const BemolToken& t) {
 }
 
 using TokenSequence = OpenAxiom::TokenStream<BemolToken>;
+
+// --
+
+namespace {
+   struct Parser {
+      TokenSequence* tokens;
+   };
+}
 
 // --
 

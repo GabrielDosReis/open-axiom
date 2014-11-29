@@ -75,6 +75,10 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, TokenValue);
 
+   // Datatypes for locating lines and columns.
+   using LineNumber = std::size_t;
+   using ColumnIndex = std::size_t;
+
    // Given a symbolic or alphabetic token, retrieve its category
    // and associated abstract value.
    struct TokenClassification {
@@ -88,31 +92,33 @@ namespace OpenAxiom {
 
    TokenClassification classify(const std::string&);
 
-   // Datatypes for locating lines and columns.
-   using LineNumber = std::size_t;
-   using ColumnIndex = std::size_t;
-
    // Cursor into a fragment.
    struct FragmentCursor {
       std::size_t line;         // index of a line in a fragment
       std::size_t column;       // column number at line.
+
+      inline FragmentCursor& operator++() {
+         ++column;
+         return *this;
+      }
+
+      inline FragmentCursor operator++(int) {
+         auto tmp = *this;
+         ++*this;
+         return tmp;
+      }
+
+      inline FragmentCursor& operator--() {
+         --column;
+         return *this;
+      }
+
+      inline FragmentCursor operator--(int) {
+         auto tmp = *this;
+         --*this;
+         return tmp;
+      }
    };
-
-   inline FragmentCursor& operator++(FragmentCursor& p) {
-      ++p.column;
-      return p;
-   }
-
-   inline FragmentCursor operator++(FragmentCursor& p, int) {
-      auto q = p;
-      ++p;
-      return q;
-   }
-
-   inline FragmentCursor& operator--(FragmentCursor& p) {
-      --p.column;
-      return p;
-   }
 
    // -- Exception types
    struct EndOfStringUnseen {

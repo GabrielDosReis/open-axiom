@@ -162,6 +162,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/src/include/vm.H \
 	$(top_srcdir)/src/include/sexpr.H \
 	$(top_srcdir)/src/include/Lisp.H \
+	$(top_srcdir)/src/include/InputFragment.h \
 	$(top_srcdir)/src/include/Constructor.H \
 	$(top_srcdir)/src/include/Database.H AUTHORS COPYING ChangeLog \
 	INSTALL NEWS README TODO config/compile config/config.guess \

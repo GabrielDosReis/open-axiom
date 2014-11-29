@@ -1,0 +1,90 @@
+// -*- C++ -*-
+// Copyright (C) 2014, Gabriel Dos Reis.
+// All rights reserved.
+// Written by Gabriel Dos Reis.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     - Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//
+//     - Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in
+//       the documentation and/or other materials provided with the
+//       distribution.
+//
+//     - Neither the name of OpenAxiom. nor the names of its contributors
+//       may be used to endorse or promote products derived from this
+//       software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+// OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// --% Author: Gabriel Dos Reis
+
+#ifndef OPENAXIOM_INPUTFRAGMENT_included
+#define OPENAXIOM_INPUTFRAGMENT_included
+
+#include <open-axiom/token>
+
+namespace OpenAxiom {
+   // A physical line is just raw text, coupled with location
+   // information such as line and indentation column.
+   struct Line : std::string {
+      LineNumber number;
+      ColumnIndex indent;
+      Line() : number(), indent() { }
+      
+      std::string sub_string(ColumnIndex s, ColumnIndex e) const {
+         return substr(s, e - s);
+      }
+   };
+
+   // A program fragment is a logical line, composed of possibly
+   // several physical lines subject to the off-side rule.  As a
+   // special case, a line ending with the underbar character
+   // continues to the next line with disregard to the off-side rule.
+   struct Fragment : std::vector<Line> {
+      explicit operator bool() const { return not empty(); }
+      // Holds if the last physical line ends with line continuation marker.
+      bool line_continuation() const {
+         return not empty() and back().back() == '_';
+      }
+      // Return the indentation of the last physical line of this fragment.
+      ColumnIndex last_indent() const {
+         return empty() ? 0 : back().indent;
+      }
+      using std::vector<Line>::operator[];
+      // Reference a line given by a position into this fragment.
+      const Line& operator()(const OpenAxiom::FragmentCursor& pos) const {
+         return (*this)[pos.line];
+      }
+      // Reference a character code unit at the position into this fragment.
+      uint8_t operator[](const OpenAxiom::FragmentCursor& pos) const {
+         return (*this)[pos.line][pos.column];
+      }
+      // Advance the cursor position to the next character code unit.
+      uint8_t advance(OpenAxiom::FragmentCursor& pos) const {
+         return (*this)[pos.line][pos.column++];
+      }
+      // This predicate holds if this fragment covers the cursor position.
+      bool covering(const OpenAxiom::FragmentCursor& pos) const {
+         return pos.column < (*this)[pos.line].size();
+      }
+   };
+
+   std::ostream& operator<<(std::ostream&, const Fragment&);
+}
+
+#endif  // OPENAXIOM_INPUTFRAGMENT_included

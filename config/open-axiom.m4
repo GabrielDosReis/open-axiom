@@ -1184,6 +1184,7 @@ AC_CONFIG_LINKS([
   $oa_incdir/vm:src/include/vm.H
   $oa_incdir/sexpr:src/include/sexpr.H
   $oa_incdir/Lisp:src/include/Lisp.H
+  $oa_incdir/InputFragment:src/include/InputFragment.h
   $oa_incdir/Constructor:src/include/Constructor.H
   $oa_incdir/Database:src/include/Database.H
 ])
