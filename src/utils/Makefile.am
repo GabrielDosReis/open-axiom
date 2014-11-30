@@ -31,7 +31,8 @@
 
 noinst_PROGRAMS = hammer$(EXEEXT)
 hammer_SOURCES = hammer.cc
-hammer_LDADD = -L. -lOpenAxiom
+hammer_LDADD = \
+	$(oa_target_libdir)/libOpenAxiom.a
 
 noinst_LIBRARIES = libOpenAxiom.a
 

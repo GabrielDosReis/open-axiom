@@ -149,7 +149,7 @@ CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_bemol_OBJECTS = bemol.$(OBJEXT)
 bemol_OBJECTS = $(am_bemol_OBJECTS)
-bemol_DEPENDENCIES =
+bemol_DEPENDENCIES = $(oa_target_libdir)/libOpenAxiom.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -450,7 +450,7 @@ bemol_SOURCES = \
 	bemol.cc
 
 bemol_LDADD = \
-	-L$(oa_target_libdir) -lOpenAxiom
+	$(oa_target_libdir)/libOpenAxiom.a
 
 oa_target_bootdir = $(oa_targetdir)/boot
 @OA_ECL_RT_FALSE@oa_bootsys_linkset = 

@@ -74,7 +74,7 @@ bemol_SOURCES = \
 	bemol.cc
 
 bemol_LDADD = \
-	-L$(oa_target_libdir) -lOpenAxiom
+	$(oa_target_libdir)/libOpenAxiom.a
 
 oa_target_bootdir = $(oa_targetdir)/boot
 if OA_ECL_RT

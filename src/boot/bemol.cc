@@ -155,35 +155,13 @@ SourceInput::get() {
 // -- Decomposing source files into lexical units of information --
 // 
 
-struct Locus {
-   OpenAxiom::LineNumber line;
-   OpenAxiom::ColumnIndex column;
-};
-
 static std::ostream&
-operator<<(std::ostream& os, const Locus& l)
-{
-   os << '{' << l.line << ", " << l.column << '}';
-   return os;
-}
-
-struct BemolToken {
-   using Location = ::Locus;
-   OpenAxiom::TokenCategory category;
-   OpenAxiom::TokenValue value;
-   Locus start;
-   Locus end;
-
-   explicit operator bool() const { return category != TokenCategory::EOS; }
-};
-
-static std::ostream&
-operator<<(std::ostream& os, const BemolToken& t) {
+operator<<(std::ostream& os, const Token& t) {
    os << t.category << '{' << t.start << '-' << t.end << '}';
    return os;
 }
 
-using TokenSequence = OpenAxiom::TokenStream<BemolToken>;
+using TokenSequence = OpenAxiom::TokenStream<Token>;
 
 // --
 
