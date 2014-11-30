@@ -79,6 +79,19 @@ namespace OpenAxiom {
    using LineNumber = std::size_t;
    using ColumnIndex = std::size_t;
 
+   struct Locus {
+      LineNumber line;
+      ColumnIndex column;
+   };
+
+   std::ostream& operator<<(std::ostream&, const Locus&);
+
+   // Program text region
+   struct Region {
+      Locus start;
+      Locus end;
+   };
+
    // Given a symbolic or alphabetic token, retrieve its category
    // and associated abstract value.
    struct TokenClassification {
@@ -91,6 +104,11 @@ namespace OpenAxiom {
    };
 
    TokenClassification classify(const std::string&);
+
+   // Token data structure: a region of text with a classification.
+   struct Token : TokenClassification, Region {
+      using Location = Locus;
+   };
 
    // Cursor into a fragment.
    struct FragmentCursor {

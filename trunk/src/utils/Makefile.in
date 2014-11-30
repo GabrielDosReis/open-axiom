@@ -147,7 +147,7 @@ libOpenAxiom_a_OBJECTS = $(am_libOpenAxiom_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_hammer_OBJECTS = hammer.$(OBJEXT)
 hammer_OBJECTS = $(am_hammer_OBJECTS)
-hammer_DEPENDENCIES =
+hammer_DEPENDENCIES = $(oa_target_libdir)/libOpenAxiom.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -406,7 +406,9 @@ top_srcdir = @top_srcdir@
 void_type = @void_type@
 noinst_PROGRAMS = hammer$(EXEEXT)
 hammer_SOURCES = hammer.cc
-hammer_LDADD = -L. -lOpenAxiom
+hammer_LDADD = \
+	$(oa_target_libdir)/libOpenAxiom.a
+
 noinst_LIBRARIES = libOpenAxiom.a
 libOpenAxiom_a_SOURCES = \
 	storage.cc string-pool.cc command.cc \

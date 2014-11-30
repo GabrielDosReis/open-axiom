@@ -35,6 +35,10 @@
 #include <iostream>
 
 namespace OpenAxiom {
+   std::ostream& operator<<(std::ostream& os, const Locus& l) {
+      return os << '{' << l.line << ", " << l.column << '}';
+   }
+
    std::ostream&
    operator<<(std::ostream& os, TokenCategory tc) {
       switch (tc) {
