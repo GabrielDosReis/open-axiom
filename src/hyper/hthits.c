@@ -98,7 +98,7 @@ badDB(void)
 static void 
 untexbuf(register char* s)
 {
-   register char *d = s;
+   char *d = s;
    
    while (*s)
       switch (*s) {
@@ -176,7 +176,7 @@ splitpage(char* buf, char** ptitle, char** pbody)
 static void 
 squirt(char* s, int n)
 {
-   register char *t, *e;
+   char *t, *e;
    int c;
    
    c = s[n];

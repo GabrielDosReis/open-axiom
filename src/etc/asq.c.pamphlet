@@ -1356,7 +1356,7 @@ int pprintcond(int seekpt,char *path);
   return(0);
 }
 
-/*defun*/ int pprintinfo(char *property)
+/*defun*/ int pprintinfo(const char* property)
 /* prettyprint the information from the database files      */
 { int pretty = 1; /* print pretty form for any option   */
   int all  = 0; /* only print the option specificed */ 
@@ -1402,37 +1402,37 @@ int pprintcond(int seekpt,char *path);
   return(0);
 }
 
-/*defun*/ char *fullname(char *property, char *progname)
+/*defun*/ const char* fullname(char *property, char *progname)
 /* expand an abbreviation to the full name */
-{     if (strncmp(property,"ab",2) == 0) return("abbreviation");
- else if (strncmp(property,"al",2) == 0) return("all");
- else if (strncmp(property,"an",2) == 0) return("ancestors");
- else if (strncmp(property,"at",2) == 0) return("attributes");
- else if (strncmp(property,"ca",2) == 0) return("constructorcategory");
- else if (strncmp(property,"cc",2) == 0) return("constructorcategory");
- else if (strncmp(property,"cf",2) == 0) return("constructorform");
- else if (strncmp(property,"fo",2) == 0) return("constructorform");
- else if (strncmp(property,"ck",2) == 0) return("constructorkind");
- else if (strncmp(property,"ki",2) == 0) return("constructorkind");
- else if (strncmp(property,"cm",2) == 0) return("constructormodemap");
- else if (strncmp(property,"con",3) == 0) return("constructor");
- else if (strncmp(property,"cos",3) == 0) return("cosig");
- else if (strncmp(property,"de",2) == 0) return("defaultdomain");
- else if (strncmp(property,"dom",3) == 0) return("domain");
- else if (strncmp(property,"doc",3) == 0) return("documentation");
- else if (strncmp(property,"mo",2) == 0) return("modemaps");
- else if (strncmp(property,"ni",2) == 0) return("niladic");
- else if (strncmp(property,"ob",2) == 0) return("object");
- else if (strncmp(property,"op",2) == 0) return("operationalist");
- else if (strncmp(property,"pr",2) == 0) return("predicates");
- else if (strncmp(property,"sh",2) == 0) return("short");
+{     if (strncmp(property,"ab",2) == 0) return "abbreviation";
+ else if (strncmp(property,"al",2) == 0) return "all";
+ else if (strncmp(property,"an",2) == 0) return "ancestors";
+ else if (strncmp(property,"at",2) == 0) return "attributes";
+ else if (strncmp(property,"ca",2) == 0) return "constructorcategory";
+ else if (strncmp(property,"cc",2) == 0) return "constructorcategory";
+ else if (strncmp(property,"cf",2) == 0) return "constructorform";
+ else if (strncmp(property,"fo",2) == 0) return "constructorform";
+ else if (strncmp(property,"ck",2) == 0) return "constructorkind";
+ else if (strncmp(property,"ki",2) == 0) return "constructorkind";
+ else if (strncmp(property,"cm",2) == 0) return "constructormodemap";
+ else if (strncmp(property,"con",3) == 0) return "constructor";
+ else if (strncmp(property,"cos",3) == 0) return "cosig";
+ else if (strncmp(property,"de",2) == 0) return "defaultdomain";
+ else if (strncmp(property,"dom",3) == 0) return "domain";
+ else if (strncmp(property,"doc",3) == 0) return "documentation";
+ else if (strncmp(property,"mo",2) == 0) return "modemaps";
+ else if (strncmp(property,"ni",2) == 0) return "niladic";
+ else if (strncmp(property,"ob",2) == 0) return "object";
+ else if (strncmp(property,"op",2) == 0) return "operationalist";
+ else if (strncmp(property,"pr",2) == 0) return "predicates";
+ else if (strncmp(property,"sh",2) == 0) return "short";
  else if (strncmp(property,"so",2) == 0) return("sourcefile");
  printf("I don't know what %s means. I'll use 'short'\n",property);
  printf("type %s with no arguments to get the usage page\n",progname);
- return("short");
+ return "short";
 }
 
-/*defun*/ int printhelp(char *arg)
+/*defun*/ int printhelp(const char* arg)
 {printf("%s -property searchkey \n\n",arg);
  printf("property is one of the following flags: \n");
  printf(" (al)    all (default)         (sh)    short\n");
@@ -1455,8 +1455,8 @@ int pprintcond(int seekpt,char *path);
 /*defun*/ int main(int argc, char *argv[])
 {
 /*  FILE *test;         when testing we leave tombstones     */
-  const char *ssearch =""; /* the domain or abbreviation           */
-  char *property=""; /* the property we want (e.g. niladic)  */
+  const char* ssearch =""; /* the domain or abbreviation           */
+  const char* property=""; /* the property we want (e.g. niladic)  */
   int found=1;       /* did we find the domain? print if yes */
   char c;            /* a temporary                          */
   int i;             /* a temporary                          */
