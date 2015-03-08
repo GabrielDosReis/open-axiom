@@ -253,7 +253,7 @@ fprintf(stderr,"menu:SwitchFrames\n");
     send_int(spad_server, SwitchFrames);
     send_int(spad_server, frame);
     for(i=0,pSock=plSock; pSock != (Sock_List *) 0 ; i++,pSock=pSock->next)
-      if ((pSock->Socket.frame == frame)) {
+      if (pSock->Socket.frame == frame) {
         active_session = (openaxiom_sio *)pSock;
         reading_output = 1;
         break;

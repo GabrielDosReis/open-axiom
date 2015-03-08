@@ -873,8 +873,7 @@ oa_substr(const char* str, const size_t begin, const size_t end)
    int len;
 
    if (str == NULL || strlen(str) == 0 ||
-      strlen(str) < begin || end >= strlen(str) ||
-      begin > end || begin < 0 || end < 0)
+      strlen(str) < begin || end >= strlen(str) || begin > end)
          return NULL;
 
    len = (end - begin) + 2;
