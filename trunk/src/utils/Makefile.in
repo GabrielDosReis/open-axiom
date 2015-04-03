@@ -439,7 +439,8 @@ AM_CXXFLAGS = \
 	-I. -I$(oa_target_includedir) \
 	-I$(top_builddir)/config \
 	-I$(top_srcdir)/src/include \
-	-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\""
+	-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
+	@oa_extra_cxxflags@
 
 oa_target_oalib = $(oa_target_libdir)/libOpenAxiom.a
 SUFFIXES = .cc .cxx .H .hxx
