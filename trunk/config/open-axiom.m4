@@ -254,6 +254,31 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
   [AC_MSG_ERROR([OpenAxiom requires a C++11 compiler])])
 ])
 
+dnl -------------------------------
+dnl -- OPENAXIOM_CXX_GROK_OPTION --
+dnl -------------------------------
+dnl Check whether the C++ compiler accepts a given option.
+dnl In case of success, augment the accumulator passed in
+dnl (optional) second argument -- default: CXXFLAGS.
+AC_DEFUN([OPENAXIOM_CXX_GROK_OPTION], [
+opt=$1				      # mandatory
+accumulator=$2			      # optional
+if test -z $accumulator; then
+   accumulator=CXXFLAGS
+fi
+current_options=\$${accumulator}
+oa_saved_cxxflags="$CXXFLAGS"
+AC_MSG_CHECKING([whether $CXX supports "$opt"])
+CXXFLAGS="$CXXFLAGS $opt"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+	[AC_MSG_RESULT([yes])]
+	[CXXFLAGS=$oa_saved_cxxflags]
+	[eval "$accumulator=\"$current_options $opt\""],
+	[AC_MSG_RESULT([no])]
+	[CXXFLAGS=$oa_saved_cxxflags])
+])
+
+
 dnl --------------------------
 dnl -- OPENAXIOM_CHECK_LLVM --
 dnl --------------------------
@@ -323,6 +348,17 @@ AC_PROG_CPP
 AC_PROG_CXXCPP
 OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS
 OPENAXIOM_CHECK_LLVM
+])
+
+dnl ---------------------------------
+dnl -- OPENAXIOM_CXX_EXTRA_OPTIONS --
+dnl ---------------------------------
+AC_DEFUN([OPENAXIOM_EXTRA_CXX_OPTIONS], [
+oa_extra_cxxflags=
+OPENAXIOM_CXX_GROK_OPTIONS([-Wno-mismatch-tags],[oa_extra_cxxflags])
+OPENAXIOM_CXX_GROK_OPTIONS([-Wno-string-plus-int],[oa_extra_cxxflags])
+
+AC_SUBST(oa_extra_cxxflags)
 ])
 
 dnl ---------------------------------
