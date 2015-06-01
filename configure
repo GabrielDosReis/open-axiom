@@ -710,6 +710,7 @@ OA_DELAYED_FFI_FALSE
 OA_DELAYED_FFI_TRUE
 OA_BUILD_GCL_FALSE
 OA_BUILD_GCL_TRUE
+oa_extra_cxxflags
 OA_USE_LLVM_FALSE
 OA_USE_LLVM_TRUE
 oa_use_llvm
@@ -6660,7 +6661,79 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
-OPENAXIOM_CXX_EXTRA_OPTIONS
+
+oa_extra_cxxflags=
+
+opt=-Wno-mismatch-tags				      # mandatory
+accumulator=oa_extra_cxxflags			      # optional
+if test -z $accumulator; then
+   accumulator=CXXFLAGS
+fi
+current_options=\$${accumulator}
+oa_saved_cxxflags="$CXXFLAGS"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports \"$opt\"" >&5
+$as_echo_n "checking whether $CXX supports \"$opt\"... " >&6; }
+CXXFLAGS="$CXXFLAGS $opt"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	CXXFLAGS=$oa_saved_cxxflags
+	eval "$accumulator=\"$current_options $opt\""
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	CXXFLAGS=$oa_saved_cxxflags
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+
+opt=-Wno-string-plus-int				      # mandatory
+accumulator=oa_extra_cxxflags			      # optional
+if test -z $accumulator; then
+   accumulator=CXXFLAGS
+fi
+current_options=\$${accumulator}
+oa_saved_cxxflags="$CXXFLAGS"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports \"$opt\"" >&5
+$as_echo_n "checking whether $CXX supports \"$opt\"... " >&6; }
+CXXFLAGS="$CXXFLAGS $opt"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	CXXFLAGS=$oa_saved_cxxflags
+	eval "$accumulator=\"$current_options $opt\""
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	CXXFLAGS=$oa_saved_cxxflags
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+
+
+
  if test x$oa_include_gcl = xyes; then
   OA_BUILD_GCL_TRUE=
   OA_BUILD_GCL_FALSE='#'
