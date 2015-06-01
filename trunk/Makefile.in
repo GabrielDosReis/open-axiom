@@ -448,6 +448,7 @@ oa_enable_checking = @oa_enable_checking@
 oa_enable_profiling = @oa_enable_profiling@
 oa_enable_threads = @oa_enable_threads@
 oa_eval_flags = @oa_eval_flags@
+oa_extra_cxxflags = @oa_extra_cxxflags@
 oa_host_has_regex = @oa_host_has_regex@
 oa_keep_files = @oa_keep_files@
 oa_lisp_flavor = @oa_lisp_flavor@

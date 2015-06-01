@@ -355,8 +355,8 @@ dnl -- OPENAXIOM_CXX_EXTRA_OPTIONS --
 dnl ---------------------------------
 AC_DEFUN([OPENAXIOM_EXTRA_CXX_OPTIONS], [
 oa_extra_cxxflags=
-OPENAXIOM_CXX_GROK_OPTIONS([-Wno-mismatch-tags],[oa_extra_cxxflags])
-OPENAXIOM_CXX_GROK_OPTIONS([-Wno-string-plus-int],[oa_extra_cxxflags])
+OPENAXIOM_CXX_GROK_OPTION([-Wno-mismatch-tags],[oa_extra_cxxflags])
+OPENAXIOM_CXX_GROK_OPTION([-Wno-string-plus-int],[oa_extra_cxxflags])
 
 AC_SUBST(oa_extra_cxxflags)
 ])
