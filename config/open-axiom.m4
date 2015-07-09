@@ -313,14 +313,16 @@ OPENAXIOM_CHECK_DELAYED_FFI
 ## anything sane going on on this fine platform.
 case $host in
    *apple*)
-       AC_PROG_CC([clang])
-       AC_PROG_CXX([clang++])
+        oa_cc_list="clang"
+        oa_cxx_list="clang++"
        ;;
    *)
-       AC_PROG_CC
-       AC_PROG_CXX([g++ clang++ icpc icc CC xlC c++])
+        oa_cc_list="gcc clang cc"
+        oa_cxx_list="g++ clang++ CC c++"
        ;;
 esac
+AC_PROG_CC([$oa_cc_list])
+AC_PROG_CXX([$oa_cxx_list])
 ## Where are the compilers coming from?  GNU? Clang?
 oa_cxx_compiler_lineage=unknown
 case `$CXX -v` in
