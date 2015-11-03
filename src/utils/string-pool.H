@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2014, Gabriel Dos Reis.
+// Copyright (C) 2010-2015, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ namespace OpenAxiom {
    protected:
       const Byte* text;         // pointer to the byte sequence
       size_t length;            // number of bytes in this string
-      friend class StringPool;
+      friend StringPool;
       StringItem() : text(), length() { }
    };
 
