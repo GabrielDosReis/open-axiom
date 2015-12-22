@@ -5,7 +5,7 @@ For general information about OpenAxiom, please visit:
 
          http://www.open-axiom.org/
 
-To report problems in OpenAxiom, please visit:
+To report problems with OpenAxiom, please visit:
 
          http://www.open-axiom.org/bugs.html
 
@@ -14,9 +14,6 @@ Each sub-item in the list below is sorted in (lastname) alpabetical order.
 
 
             Release Manager
-Gabriel Dos Reis                     gdr at integrable-solutions.net
-
-	    Blanket Write Privilege
 Gabriel Dos Reis                     gdr at integrable-solutions.net
 
 
@@ -40,14 +37,7 @@ Bill Page                            bill.page at newsynthesis.org
             Port Maintainers
 Gabriel Dos Reis     (Windows)       gdr at integrable-solutions.net
 Bill Page            (Windows)       bill.page at newsynthesis.org
-Igor Pashev          (Debian,Ubuntu) pashev.igor at gmail,com
+Igor Pashev          (Debian,Ubuntu) pashev.igor at gmail.com
 Alfredo Portes       (Windows)       alfredo.portes at gmail.com
 Aleksej Saushev      (NetBSD)        asau at inbox.ru
 Stephen Montgomery-Smith (FreeBSD)   stephen at math.missouri.edu
-
-
-	    Write After Approval
-Ralf Hemmecke                        ralf at hemmecke.de
-Igor Pashev                          pashev.igor at gmail,com
-Alfredo Portes                       alfredo.portes at gmail.com
-

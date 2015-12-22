@@ -1,9 +1,12 @@
 This is OpenAxiom, the open scientific computation system.
 
-OpenAxiom is a free software for symbolic and algebraic computations. It
-offers an interactive environment, including  an expressive programming
-language, a compiler, a large set of libraries (algebras) of interest to
-researchers and practitioners of computational sciences. 
+OpenAxiom is a BSD-licensed free software for symbolic and algebraic
+computations. It offers an interactive environment, including  an
+expressive programming language, a compiler, a large set of libraries
+(algebras) of interest to researchers and practitioners of computational
+sciences.  It is based on the original AXIOM system open sourced by
+NAG in 2002, which was previsouly developed at the IBM TJ Watson
+Research center.  
 
 OpenAxiom strives to support ubiquitous, advanced, high quality
 open source computer algebra on major operating systems, in particular
@@ -20,6 +23,4 @@ experience with us at open-axiom-help@lists.sf.net.
 
 Enjoy,
 
-April 2013
 Gabriel Dos Reis
-College Station, Texas; USA.
