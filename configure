@@ -19435,12 +19435,6 @@ case $oa_cxx_compiler_lineage in
 esac
 
 
-oa_incdir=$target/include/open-axiom
-ac_config_links="$ac_config_links $oa_incdir/hash-table:src/utils/hash-table.H $oa_incdir/string-pool:src/utils/string-pool.H $oa_incdir/diagnostics:src/include/diagnostics.H $oa_incdir/dialect:src/include/dialect.H $oa_incdir/token-value:src/include/token-value.def $oa_incdir/token:src/include/token.H $oa_incdir/defaults:src/include/defaults.H $oa_incdir/structure:src/include/structure.H $oa_incdir/iterator:src/include/iterator.H $oa_incdir/storage:src/include/storage.H $oa_incdir/Charset:src/include/Charset.H $oa_incdir/FileMapping:src/include/FileMapping.H $oa_incdir/SourceFile:src/include/SourceFile.H $oa_incdir/Input:src/include/Input.H $oa_incdir/vm:src/include/vm.H $oa_incdir/sexpr:src/include/sexpr.H $oa_incdir/Lisp:src/include/Lisp.H $oa_incdir/InputFragment:src/include/InputFragment.h $oa_incdir/Constructor:src/include/Constructor.H $oa_incdir/Database:src/include/Database.H"
-
-
-
-
 ## We are ready to instantiate makefiles.
 ac_config_files="$ac_config_files Makefile src/Makefile src/utils/Makefile src/rt/Makefile src/boot/Makefile src/algebra/Makefile"
 
@@ -20086,7 +20080,6 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
-config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -20116,9 +20109,6 @@ $config_files
 
 Configuration headers:
 $config_headers
-
-Configuration links:
-$config_links
 
 Configuration commands:
 $config_commands
@@ -20641,26 +20631,6 @@ do
     "config/openaxiom-c-macros.h") CONFIG_HEADERS="$CONFIG_HEADERS config/openaxiom-c-macros.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
-    "$oa_incdir/hash-table") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/hash-table:src/utils/hash-table.H" ;;
-    "$oa_incdir/string-pool") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/string-pool:src/utils/string-pool.H" ;;
-    "$oa_incdir/diagnostics") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/diagnostics:src/include/diagnostics.H" ;;
-    "$oa_incdir/dialect") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/dialect:src/include/dialect.H" ;;
-    "$oa_incdir/token-value") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/token-value:src/include/token-value.def" ;;
-    "$oa_incdir/token") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/token:src/include/token.H" ;;
-    "$oa_incdir/defaults") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/defaults:src/include/defaults.H" ;;
-    "$oa_incdir/structure") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/structure:src/include/structure.H" ;;
-    "$oa_incdir/iterator") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/iterator:src/include/iterator.H" ;;
-    "$oa_incdir/storage") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/storage:src/include/storage.H" ;;
-    "$oa_incdir/Charset") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Charset:src/include/Charset.H" ;;
-    "$oa_incdir/FileMapping") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/FileMapping:src/include/FileMapping.H" ;;
-    "$oa_incdir/SourceFile") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/SourceFile:src/include/SourceFile.H" ;;
-    "$oa_incdir/Input") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Input:src/include/Input.H" ;;
-    "$oa_incdir/vm") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/vm:src/include/vm.H" ;;
-    "$oa_incdir/sexpr") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/sexpr:src/include/sexpr.H" ;;
-    "$oa_incdir/Lisp") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Lisp:src/include/Lisp.H" ;;
-    "$oa_incdir/InputFragment") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/InputFragment:src/include/InputFragment.h" ;;
-    "$oa_incdir/Constructor") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Constructor:src/include/Constructor.H" ;;
-    "$oa_incdir/Database") CONFIG_LINKS="$CONFIG_LINKS $oa_incdir/Database:src/include/Database.H" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
@@ -20699,7 +20669,6 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
-  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -20997,7 +20966,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -21274,38 +21243,7 @@ $as_echo X"$_am_arg" |
 	  }
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
-  :L)
-  #
-  # CONFIG_LINK
-  #
 
-  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
-    :
-  else
-    # Prefer the file from the source tree if names are identical.
-    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
-      ac_source=$srcdir/$ac_source
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
-$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
-
-    if test ! -r "$ac_source"; then
-      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
-    fi
-    rm -f "$ac_file"
-
-    # Try a relative symlink, then a hard link, then a copy.
-    case $ac_source in
-    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
-	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
-    esac
-    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
-      ln "$ac_source" "$ac_file" 2>/dev/null ||
-      cp -p "$ac_source" "$ac_file" ||
-      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
-  fi
- ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;

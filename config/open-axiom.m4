@@ -1197,34 +1197,3 @@ case $oa_cxx_compiler_lineage in
      ;;
 esac
 ])
-
-
-dnl --------------------------
-dnl -- OPENAXIOM_LINK_FILES --
-dnl --------------------------
-AC_DEFUN([OPENAXIOM_LINK_FILES],[
-oa_incdir=$target/include/open-axiom
-AC_CONFIG_LINKS([
-  $oa_incdir/hash-table:src/utils/hash-table.H
-  $oa_incdir/string-pool:src/utils/string-pool.H
-  $oa_incdir/diagnostics:src/include/diagnostics.H
-  $oa_incdir/dialect:src/include/dialect.H
-  $oa_incdir/token-value:src/include/token-value.def
-  $oa_incdir/token:src/include/token.H
-  $oa_incdir/defaults:src/include/defaults.H
-  $oa_incdir/structure:src/include/structure.H
-  $oa_incdir/iterator:src/include/iterator.H
-  $oa_incdir/storage:src/include/storage.H
-  $oa_incdir/Charset:src/include/Charset.H
-  $oa_incdir/FileMapping:src/include/FileMapping.H
-  $oa_incdir/SourceFile:src/include/SourceFile.H
-  $oa_incdir/Input:src/include/Input.H
-  $oa_incdir/vm:src/include/vm.H
-  $oa_incdir/sexpr:src/include/sexpr.H
-  $oa_incdir/Lisp:src/include/Lisp.H
-  $oa_incdir/InputFragment:src/include/InputFragment.h
-  $oa_incdir/Constructor:src/include/Constructor.H
-  $oa_incdir/Database:src/include/Database.H
-])
-
-])

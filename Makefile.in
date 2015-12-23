@@ -233,31 +233,13 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/compile \
 	$(top_srcdir)/src/graph/viewman/Makefile.in \
 	$(top_srcdir)/src/gui/gui.pro.in \
 	$(top_srcdir)/src/hyper/Makefile.in \
-	$(top_srcdir)/src/include/Charset.H \
-	$(top_srcdir)/src/include/Constructor.H \
-	$(top_srcdir)/src/include/Database.H \
-	$(top_srcdir)/src/include/FileMapping.H \
-	$(top_srcdir)/src/include/Input.H \
-	$(top_srcdir)/src/include/InputFragment.h \
-	$(top_srcdir)/src/include/Lisp.H \
-	$(top_srcdir)/src/include/SourceFile.H \
-	$(top_srcdir)/src/include/defaults.H \
-	$(top_srcdir)/src/include/diagnostics.H \
-	$(top_srcdir)/src/include/dialect.H \
-	$(top_srcdir)/src/include/iterator.H \
-	$(top_srcdir)/src/include/sexpr.H \
-	$(top_srcdir)/src/include/storage.H \
-	$(top_srcdir)/src/include/structure.H \
-	$(top_srcdir)/src/include/token-value.def \
-	$(top_srcdir)/src/include/token.H \
-	$(top_srcdir)/src/include/vm.H \
 	$(top_srcdir)/src/input/Makefile.in \
 	$(top_srcdir)/src/interp/Makefile.in \
 	$(top_srcdir)/src/lib/Makefile.in \
 	$(top_srcdir)/src/lisp/Makefile.in \
 	$(top_srcdir)/src/share/Makefile.in \
 	$(top_srcdir)/src/sman/Makefile.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README TODO config/compile config/config.guess \
+	INSTALL NEWS TODO config/compile config/config.guess \
 	config/config.sub config/depcomp config/install-sh \
 	config/ltmain.sh config/missing config/mkinstalldirs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
