@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -584,10 +584,17 @@ finalizeLisplib(db,libName) ==
 lisplibDoRename db ==
   lib := dbLibstream db
   output := dbOutputPath db =>
+    codepath := filePath libCodeStream lib
     modpath := filePathString
-      makeFilePath(type <- $faslType,defaults <- filePath libCodeStream lib)
+      makeFilePath(type <- $faslType,defaults <- codepath)
     do
       renameFile(modpath,output) = 0 or copyFile(modpath,output)
+      -- Retain genetared Lisp code for inspection, if possible.
+      if retainFile? 'lisp then
+         lsp := filePathString codepath
+         dst := filePathString
+           makeFilePath(type <- $LispFileType,defaults <- output)
+         renameFile(lsp,dst) = 0 or copyFile(lsp,dst)
       removeFile libStationaryDirname lib
     output
   removeFile libDirname lib
