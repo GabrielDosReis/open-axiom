@@ -18,7 +18,8 @@
    '(|objectMember?| |symbolMember?| |stringMember?| |charMember?|
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
-                     |substitute!| |setDifference| |setUnion| |setIntersection|
+                     |substitute!| |listMap| |listMap!| |butLast| |butLast!|
+                     |lastItem| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
                      |objectAssoc| |invertSubst| |substTarget| |substSource|
                      |remove| |removeSymbol| |atomic?| |every?| |any?| |take|
@@ -42,6 +43,12 @@
 (DECLAIM
  (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%Maybe| (|%Node| |%Thing|)))
   |lastNode|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) |%Thing|) |lastItem|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%List| |%Thing|)) |butLast|))
+
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%List| |%Thing|)) |butLast!|))
 
 (DECLAIM
  (FTYPE (FUNCTION ((|%List| |%Thing|) |%Symbol|) (|%List| |%Thing|))
@@ -120,7 +127,7 @@
      (COND
       ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
        (RETURN |bfVar#2|))
-      (T (SETQ |bfVar#2| (APPLY |f| |x| NIL))
+      (T (SETQ |bfVar#2| (FUNCALL |f| |x|))
        (COND ((NOT |bfVar#2|) (RETURN NIL)))))
      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
@@ -130,7 +137,7 @@
      (COND
       ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
        (RETURN |bfVar#2|))
-      (T (SETQ |bfVar#2| (APPLY |f| |x| NIL))
+      (T (SETQ |bfVar#2| (FUNCALL |f| |x|))
        (COND (|bfVar#2| (RETURN |bfVar#2|)))))
      (SETQ |bfVar#1| (CDR |bfVar#1|)))))
 
@@ -159,7 +166,7 @@
     (LOOP
      (COND
       ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL)
-           (NOT (APPLY |f| |x| NIL)))
+           (NOT (FUNCALL |f| |x|)))
        (RETURN |bfVar#2|))
       ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS |x| NIL))
        (SETQ |bfVar#3| |bfVar#2|))
@@ -254,6 +261,29 @@
        (T (SETQ |l| |l'|))))
      |l|)))
 
+(DEFUN |lastItem| (|l|) (CAR (|lastNode| |l|)))
+
+(DEFUN |butLast| (|l|)
+  (LET* (|xs| |LETTMP#1|)
+    (COND ((NOT (CONSP |l|)) NIL)
+          (T (SETQ |LETTMP#1| (|reverse| |l|))
+           (SETQ |xs| (|reverse!| (CDR |LETTMP#1|))) |xs|))))
+
+(DEFUN |butLast!| (|l|)
+  (LET* (|ISTMP#1|)
+    (COND ((OR (NOT (CONSP |l|)) (NULL (CDR |l|))) NIL)
+          (T
+           (LET ((|xs| |l|))
+             (LOOP
+              (COND ((NOT (CONSP |xs|)) (RETURN NIL))
+                    ((AND (CONSP |xs|)
+                          (PROGN
+                           (SETQ |ISTMP#1| (CDR |xs|))
+                           (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+                     (IDENTITY (RETURN (RPLACD |xs| NIL)))))
+              (SETQ |xs| (CDR |xs|))))
+           |l|))))
+
 (DEFUN |copyList| (|l|)
   (LET* (|l'| |t|)
     (COND ((NOT (CONSP |l|)) |l|)
@@ -270,6 +300,26 @@
         (T (RPLACD (|lastNode| |x|) |y|) |x|)))
 
 (DEFUN |append| (|x| |y|) (|append!| (|copyList| |x|) |y|))
+
+(DEFUN |listMap| (|l| |fun|)
+  (LET ((|bfVar#2| NIL) (|bfVar#3| NIL) (|bfVar#1| |l|) (|x| NIL))
+    (LOOP
+     (COND
+      ((OR (NOT (CONSP |bfVar#1|)) (PROGN (SETQ |x| (CAR |bfVar#1|)) NIL))
+       (RETURN |bfVar#2|))
+      ((NULL |bfVar#2|) (SETQ |bfVar#2| #1=(CONS (FUNCALL |fun| |x|) NIL))
+       (SETQ |bfVar#3| |bfVar#2|))
+      (T (RPLACD |bfVar#3| #1#) (SETQ |bfVar#3| (CDR |bfVar#3|))))
+     (SETQ |bfVar#1| (CDR |bfVar#1|)))))
+
+(DEFUN |listMap!| (|l| |fun|)
+  (PROGN
+   (LET ((|xs| |l|))
+     (LOOP
+      (COND ((NOT (CONSP |xs|)) (RETURN NIL))
+            (T (RPLACA |xs| (FUNCALL |fun| (CAR |xs|)))))
+      (SETQ |xs| (CDR |xs|))))
+   |l|))
 
 (DEFUN |symbolAssoc| (|s| |l|)
   (LET* (|x|)

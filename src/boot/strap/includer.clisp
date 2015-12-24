@@ -83,7 +83,7 @@
 
 (DEFUN |bMap1| (|f| |x|)
   (COND ((|bStreamNull| |x|) |$bStreamNil|)
-        (T (CONS (APPLY |f| (LIST (CAR |x|))) (|bMap| |f| (CDR |x|))))))
+        (T (CONS (FUNCALL |f| (CAR |x|)) (|bMap| |f| (CDR |x|))))))
 
 (DEFUN |bDelay| (|f| |x|) (CONS '|nonnullstream| (CONS |f| |x|)))
 
@@ -100,7 +100,7 @@
 (DEFUN |bNext1| (|f| |s|)
   (LET* (|h|)
     (COND ((|bStreamNull| |s|) (LIST '|nullstream|))
-          (T (SETQ |h| (APPLY |f| (LIST |s|)))
+          (T (SETQ |h| (FUNCALL |f| |s|))
            (|bAppend| (CAR |h|) (|bNext| |f| (CDR |h|)))))))
 
 (DEFUN |bRgen| (|s|) (|bDelay| #'|bRgen1| (LIST |s|)))

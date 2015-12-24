@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2014, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 
 import includer
 namespace BOOTTRAN
-module ast (quote)
+module ast (quote, translateForm)
 
 ++ True means that Boot functions should be translated to use
 ++ hash tables to remember values.  By default, functions are
@@ -1470,6 +1470,23 @@ backquote(form,params) ==
 genTypeAlias(head,body) ==
   [op,:args] := head
   ["DEFTYPE",op,args,backquote(body,args)]
+
+translateForm x ==
+  x isnt [.,:.] => x
+  x.op is 'QUOTE => x
+  x.op is 'APPLY and x.args is [fun,:args] =>
+    lastItem args = 'NIL =>
+      ['FUNCALL,translateForm fun,:listMap!(butLast! args,function translateForm)]
+    args is [['LIST,:ys]] =>
+      ['FUNCALL,translateForm fun,:listMap!(ys, function translateForm)]
+    listMap!(x,function translateForm)
+  x.op is 'LET =>
+    bindings := [[var, translateForm init] for [var,init] in first x.args]
+    [x.op,bindings,translateForm second x.args]
+  x is ['L%T,var,init] => [x.op,var,translateForm init]
+  x.op in '(PROGN LOOP RETURN) =>
+    [x.op,:listMap!(x.args, function translateForm)]
+  listMap!(x,function translateForm)
 
 --%
 --% Native Interface Translation

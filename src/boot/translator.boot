@@ -433,7 +433,8 @@ translateToplevel(ps,b,export?) ==
   b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
     %Signature(op,t) => [genDeclaration(op,t)]
-    %Definition(op,args,body) => bfDef(parserLoadUnit ps,op,args,body).args
+    %Definition(op,args,body) =>
+      bfDef(parserLoadUnit ps,op,args,translateForm body).args
 
     %Module(m,ns,ds) =>
       $currentModuleName := m 
@@ -460,7 +461,7 @@ translateToplevel(ps,b,export?) ==
         sig := genDeclaration(n,t)
         lhs := n
       $constantIdentifiers := [lhs,:$constantIdentifiers]
-      [["DEFCONSTANT",lhs,rhs]]
+      [["DEFCONSTANT",lhs,translateForm rhs]]
 
     %Assignment(lhs,rhs) =>
       sig := nil
@@ -468,9 +469,10 @@ translateToplevel(ps,b,export?) ==
         sig := genDeclaration(n,t)
         lhs := n
       $InteractiveMode => [["SETF",lhs,rhs]]
-      [["DEFPARAMETER",lhs,rhs]]
+      [["DEFPARAMETER",lhs,translateForm rhs]]
 
-    %Macro(op,args,body) => bfMDef(parserLoadUnit ps,op,args,body)
+    %Macro(op,args,body) =>
+      bfMDef(parserLoadUnit ps,op,args,translateForm body)
 
     %Structure(t,alts) =>
       alts is ['%Record,fields,accessors] =>
@@ -485,7 +487,7 @@ translateToplevel(ps,b,export?) ==
     %Lisp s => shoeReadLispString(s,0)
 
     otherwise =>
-      [translateToplevelExpression b]
+      [translateToplevelExpression translateForm b]
 
 shoeAddbootIfNec s ==
   ext := '".boot"

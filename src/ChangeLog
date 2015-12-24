@@ -1,3 +1,10 @@
+2015-12-24  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* boot/ast.boot (translateForm): New.
+	* boot/translator.boot (translateToplevel): Use it.
+	* boot/utility.boot (lastItem, lispMap, lispMap!, butLast,
+	butLast!): New. 
+
 2015-12-23  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/lisplib.boot (lisplibDoRename): Retain generated Lisp

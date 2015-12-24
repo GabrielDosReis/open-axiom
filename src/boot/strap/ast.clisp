@@ -5,7 +5,8 @@
 
 (PROVIDE "ast")
 
-(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE) (EXPORT '|quote|))
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT '(|quote| |translateForm|)))
 
 (DEFPARAMETER |$bfClamming| NIL)
 
@@ -1282,7 +1283,7 @@
              ((OR (NOT (CONSP |bfVar#1|))
                   (PROGN (SETQ |y| (CAR |bfVar#1|)) NIL))
               (RETURN |bfVar#2|))
-             (T (SETQ |bfVar#2| (APPLY |pred| |y| NIL))
+             (T (SETQ |bfVar#2| (FUNCALL |pred| |y|))
               (COND ((NOT |bfVar#2|) (RETURN NIL)))))
             (SETQ |bfVar#1| (CDR |bfVar#1|)))))))
 
@@ -2858,6 +2859,75 @@
      (SETQ |op| (CAR |head|))
      (SETQ |args| (CDR |head|))
      (LIST 'DEFTYPE |op| |args| (|backquote| |body| |args|)))))
+
+(DEFUN |translateForm| (|x|)
+  (LET* (|ISTMP#2| |bindings| |init| |var| |ys| |args| |fun| |ISTMP#1|)
+    (COND ((NOT (CONSP |x|)) |x|) ((EQ (CAR |x|) 'QUOTE) |x|)
+          ((AND (EQ (CAR |x|) 'APPLY)
+                (PROGN
+                 (SETQ |ISTMP#1| (CDR |x|))
+                 (AND (CONSP |ISTMP#1|)
+                      (PROGN
+                       (SETQ |fun| (CAR |ISTMP#1|))
+                       (SETQ |args| (CDR |ISTMP#1|))
+                       T))))
+           (COND
+            ((EQ (|lastItem| |args|) 'NIL)
+             (CONS 'FUNCALL
+                   (CONS (|translateForm| |fun|)
+                         (|listMap!| (|butLast!| |args|) #'|translateForm|))))
+            ((AND (CONSP |args|) (NULL (CDR |args|))
+                  (PROGN
+                   (SETQ |ISTMP#1| (CAR |args|))
+                   (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'LIST)
+                        (PROGN (SETQ |ys| (CDR |ISTMP#1|)) T))))
+             (CONS 'FUNCALL
+                   (CONS (|translateForm| |fun|)
+                         (|listMap!| |ys| #'|translateForm|))))
+            (T (|listMap!| |x| #'|translateForm|))))
+          ((EQ (CAR |x|) 'LET)
+           (SETQ |bindings|
+                   (LET ((|bfVar#3| NIL)
+                         (|bfVar#4| NIL)
+                         (|bfVar#2| (CAR (CDR |x|)))
+                         (|bfVar#1| NIL))
+                     (LOOP
+                      (COND
+                       ((OR (NOT (CONSP |bfVar#2|))
+                            (PROGN (SETQ |bfVar#1| (CAR |bfVar#2|)) NIL))
+                        (RETURN |bfVar#3|))
+                       (T
+                        (AND (CONSP |bfVar#1|)
+                             (PROGN
+                              (SETQ |var| (CAR |bfVar#1|))
+                              (SETQ |ISTMP#1| (CDR |bfVar#1|))
+                              (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                                   (PROGN (SETQ |init| (CAR |ISTMP#1|)) T)))
+                             (COND
+                              ((NULL |bfVar#3|)
+                               (SETQ |bfVar#3|
+                                       #1=(CONS
+                                           (LIST |var|
+                                                 (|translateForm| |init|))
+                                           NIL))
+                               (SETQ |bfVar#4| |bfVar#3|))
+                              (T (RPLACD |bfVar#4| #1#)
+                               (SETQ |bfVar#4| (CDR |bfVar#4|)))))))
+                      (SETQ |bfVar#2| (CDR |bfVar#2|)))))
+           (LIST (CAR |x|) |bindings| (|translateForm| (CADR (CDR |x|)))))
+          ((AND (CONSP |x|) (EQ (CAR |x|) 'L%T)
+                (PROGN
+                 (SETQ |ISTMP#1| (CDR |x|))
+                 (AND (CONSP |ISTMP#1|)
+                      (PROGN
+                       (SETQ |var| (CAR |ISTMP#1|))
+                       (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
+                            (PROGN (SETQ |init| (CAR |ISTMP#2|)) T))))))
+           (LIST (CAR |x|) |var| (|translateForm| |init|)))
+          ((|symbolMember?| (CAR |x|) '(PROGN LOOP RETURN))
+           (CONS (CAR |x|) (|listMap!| (CDR |x|) #'|translateForm|)))
+          (T (|listMap!| |x| #'|translateForm|)))))
 
 (DEFCONSTANT |$NativeSimpleDataTypes|
   '(|char| |byte| |int| |pointer| |int8| |uint8| |int16| |uint16| |int32|

@@ -84,7 +84,7 @@
    (SETF (|parserTokens| |ps|) (CDR (|parserTokens| |ps|)))
    (|bpFirstToken| |ps|)))
 
-(DEFUN |bpRequire| (|ps| |f|) (OR (APPLY |f| |ps| NIL) (|bpTrap| |ps|)))
+(DEFUN |bpRequire| (|ps| |f|) (OR (FUNCALL |f| |ps|) (|bpTrap| |ps|)))
 
 (DEFUN |bpState| (|ps|)
   (LIST (|parserTokens| |ps|) (|parserTrees| |ps|) (|parserNesting| |ps|)
@@ -140,7 +140,7 @@
             (SETF (|parserNesting| |ps|) (+ (|parserNesting| |ps|) 1))
             (|bpNext| |ps|)
             (COND
-             ((AND (APPLY |f| |ps| NIL) (|bpFirstTok| |ps|)
+             ((AND (FUNCALL |f| |ps|) (|bpFirstTok| |ps|)
                    (OR (|bpEqPeek| |ps| 'CPAREN) (|bpParenTrap| |ps| |a|)))
               (SETF (|parserNesting| |ps|) (- (|parserNesting| |ps|) 1))
               (|bpNextToken| |ps|)
@@ -167,7 +167,7 @@
      (COND
       ((|bpEqKey| |ps| 'OPAREN)
        (COND
-        ((AND (APPLY |f| |ps| NIL)
+        ((AND (FUNCALL |f| |ps|)
               (OR (|bpEqKey| |ps| 'CPAREN) (|bpParenTrap| |ps| |a|)))
          T)
         ((|bpEqKey| |ps| 'CPAREN) (|bpPush| |ps| (|bfTuple| NIL)) T)
@@ -181,7 +181,7 @@
      (COND
       ((|bpEqKey| |ps| 'OBRACK)
        (COND
-        ((AND (APPLY |f| |ps| NIL)
+        ((AND (FUNCALL |f| |ps|)
               (OR (|bpEqKey| |ps| 'CBRACK) (|bpBrackTrap| |ps| |a|)))
          (|bpPush| |ps| (|bfBracket| (|bpPop1| |ps|))))
         ((|bpEqKey| |ps| 'CBRACK) (|bpPush| |ps| NIL))
@@ -192,7 +192,7 @@
   (COND
    ((|bpEqKey| |ps| 'SETTAB)
     (COND ((|bpEqKey| |ps| 'BACKTAB) T)
-          ((AND (APPLY |f| |ps| NIL)
+          ((AND (FUNCALL |f| |ps|)
                 (OR (|bpEqKey| |ps| 'BACKTAB) (|bpPileTrap| |ps|)))
            (|bpPush| |ps| (|bfPile| (|bpPop1| |ps|))))
           (T NIL)))
@@ -201,7 +201,7 @@
 (DEFUN |bpListof| (|ps| |f| |str1| |g|)
   (LET* (|a|)
     (COND
-     ((APPLY |f| |ps| NIL)
+     ((FUNCALL |f| |ps|)
       (COND
        ((AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|))
         (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
@@ -222,14 +222,13 @@
 (DEFUN |bpListofFun| (|ps| |f| |h| |g|)
   (LET* (|a|)
     (COND
-     ((APPLY |f| |ps| NIL)
+     ((FUNCALL |f| |ps|)
       (COND
-       ((AND (APPLY |h| |ps| NIL) (|bpRequire| |ps| |f|))
+       ((AND (FUNCALL |h| |ps|) (|bpRequire| |ps| |f|))
         (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
         (LOOP
          (COND
-          ((NOT (AND (APPLY |h| |ps| NIL) (|bpRequire| |ps| |f|)))
-           (RETURN NIL))
+          ((NOT (AND (FUNCALL |h| |ps|) (|bpRequire| |ps| |f|))) (RETURN NIL))
           (T NIL)))
         (SETF (|parserTrees| |ps|)
                 (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
@@ -243,7 +242,7 @@
 (DEFUN |bpList| (|ps| |f| |str1|)
   (LET* (|a|)
     (COND
-     ((APPLY |f| |ps| NIL)
+     ((FUNCALL |f| |ps|)
       (COND
        ((AND (|bpEqKey| |ps| |str1|) (|bpRequire| |ps| |f|))
         (SETQ |a| (|parserTrees| |ps|)) (SETF (|parserTrees| |ps|) NIL)
@@ -263,15 +262,15 @@
 (DEFUN |bpOneOrMore| (|ps| |f|)
   (LET* (|a|)
     (COND
-     ((APPLY |f| |ps| NIL) (SETQ |a| (|parserTrees| |ps|))
+     ((FUNCALL |f| |ps|) (SETQ |a| (|parserTrees| |ps|))
       (SETF (|parserTrees| |ps|) NIL)
-      (LOOP (COND ((NOT (APPLY |f| |ps| NIL)) (RETURN NIL)) (T NIL)))
+      (LOOP (COND ((NOT (FUNCALL |f| |ps|)) (RETURN NIL)) (T NIL)))
       (SETF (|parserTrees| |ps|) (CONS (|reverse!| (|parserTrees| |ps|)) |a|))
       (|bpPush| |ps| (CONS (|bpPop2| |ps|) (|bpPop1| |ps|))))
      (T NIL))))
 
 (DEFUN |bpAnyNo| (|ps| |s|)
-  (PROGN (LOOP (COND ((NOT (APPLY |s| |ps| NIL)) (RETURN NIL)) (T NIL))) T))
+  (PROGN (LOOP (COND ((NOT (FUNCALL |s| |ps|)) (RETURN NIL)) (T NIL))) T))
 
 (DEFUN |bpAndOr| (|ps| |keyword| |p| |f|)
   (AND (|bpEqKey| |ps| |keyword|) (|bpRequire| |ps| |p|)
@@ -388,9 +387,8 @@
       (COND (|done| (RETURN NIL))
             (T
              (SETQ |found|
-                     (LET ((#1=#:G727
-                            (CATCH :OPEN-AXIOM-CATCH-POINT
-                              (APPLY |f| |ps| NIL))))
+                     (LET ((#1=#:G392
+                            (CATCH :OPEN-AXIOM-CATCH-POINT (FUNCALL |f| |ps|))))
                        (COND
                         ((AND (CONSP #1#)
                               (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
@@ -730,7 +728,7 @@
     (PROGN
      (SETQ |a| (|bpState| |ps|))
      (COND
-      ((APPLY |p| |ps| NIL)
+      ((FUNCALL |p| |ps|)
        (LOOP
         (COND
          ((NOT
@@ -746,7 +744,7 @@
 
 (DEFUN |bpLeftAssoc| (|ps| |operations| |parser|)
   (COND
-   ((APPLY |parser| |ps| NIL)
+   ((FUNCALL |parser| |ps|)
     (LOOP
      (COND
       ((NOT
@@ -1057,9 +1055,8 @@
 (DEFUN |bpCompoundDefinitionTail| (|ps| |f|)
   (AND (|bpVariable| |ps|) (|bpEqKey| |ps| 'DEF) (|bpRequire| |ps| #'|bpWhere|)
        (|bpPush| |ps|
-                 (APPLY |f|
-                        (LIST (|bpPop3| |ps|) (|bpPop2| |ps|)
-                              (|bpPop1| |ps|))))))
+                 (FUNCALL |f| (|bpPop3| |ps|) (|bpPop2| |ps|)
+                          (|bpPop1| |ps|)))))
 
 (DEFUN |bpDefTail| (|ps| |f|)
   (OR (|bpSimpleDefinitionTail| |ps|) (|bpCompoundDefinitionTail| |ps| |f|)))
@@ -1378,7 +1375,7 @@
      (SETQ |op| (|enclosingFunction| (|parserLoadUnit| |ps|)))
      (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
      (UNWIND-PROTECT
-         (LET ((#1=#:G728
+         (LET ((#1=#:G393
                 (CATCH :OPEN-AXIOM-CATCH-POINT
                   (PROGN
                    (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) NIL)

@@ -16,7 +16,7 @@
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
   (EXPORT
    '(|evalBootFile| |loadNativeModule| |loadSystemRuntimeCore|
-                    |string2BootTree| |genImportDeclaration|)))
+                    |string2BootTree| |genImportDeclaration| |retainFile?|)))
 
 (DEFPARAMETER |$currentModuleName| NIL)
 
@@ -416,7 +416,7 @@
      (SETQ |ps| (|makeParserState| |toks|))
      (|bpFirstTok| |ps|)
      (SETQ |found|
-             (LET ((#1=#:G736
+             (LET ((#1=#:G401
                     (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem| |ps|))))
                (COND
                 ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
@@ -585,7 +585,9 @@
               (LET ((|op| (CADR |b|))
                     (|args| (CADDR |b|))
                     (|body| (CADDDR |b|)))
-                (CDR (|bfDef| (|parserLoadUnit| |ps|) |op| |args| |body|))))
+                (CDR
+                 (|bfDef| (|parserLoadUnit| |ps|) |op| |args|
+                          (|translateForm| |body|)))))
              (|%Module|
               (LET ((|m| (CADR |b|)) (|ns| (CADDR |b|)) (|ds| (CADDDR |b|)))
                 (PROGN
@@ -659,7 +661,7 @@
                     (SETQ |sig| (|genDeclaration| |n| |t|)) (SETQ |lhs| |n|)))
                   (SETQ |$constantIdentifiers|
                           (CONS |lhs| |$constantIdentifiers|))
-                  (LIST (LIST 'DEFCONSTANT |lhs| |rhs|))))))
+                  (LIST (LIST 'DEFCONSTANT |lhs| (|translateForm| |rhs|)))))))
              (|%Assignment|
               (LET ((|lhs| (CADR |b|)) (|rhs| (CADDR |b|)))
                 (PROGN
@@ -676,12 +678,16 @@
                                     (PROGN (SETQ |t| (CAR |ISTMP#2|)) T))))))
                    (SETQ |sig| (|genDeclaration| |n| |t|)) (SETQ |lhs| |n|)))
                  (COND (|$InteractiveMode| (LIST (LIST 'SETF |lhs| |rhs|)))
-                       (T (LIST (LIST 'DEFPARAMETER |lhs| |rhs|)))))))
+                       (T
+                        (LIST
+                         (LIST 'DEFPARAMETER |lhs|
+                               (|translateForm| |rhs|))))))))
              (|%Macro|
               (LET ((|op| (CADR |b|))
                     (|args| (CADDR |b|))
                     (|body| (CADDDR |b|)))
-                (|bfMDef| (|parserLoadUnit| |ps|) |op| |args| |body|)))
+                (|bfMDef| (|parserLoadUnit| |ps|) |op| |args|
+                          (|translateForm| |body|))))
              (|%Structure|
               (LET ((|t| (CADR |b|)) (|alts| (CADDR |b|)))
                 (COND
@@ -733,7 +739,8 @@
              (|%Lisp|
               (LET ((|s| (CADR |b|)))
                 (|shoeReadLispString| |s| 0)))
-             (T (LIST (|translateToplevelExpression| |b|))))))))
+             (T
+              (LIST (|translateToplevelExpression| (|translateForm| |b|)))))))))
 
 (DEFUN |shoeAddbootIfNec| (|s|)
   (LET* (|n2| |n1| |ext|)
