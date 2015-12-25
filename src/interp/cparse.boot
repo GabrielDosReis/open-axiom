@@ -141,7 +141,7 @@ npParenthesized f ==
 npParenthesize (open,close,f)==
   a := $stok
   npEqKey open =>
-    apply(f,nil) and (npEqKey close or npMissingMate(close,a)) => true
+    apply(f,[]) and (npEqKey close or npMissingMate(close,a)) => true
     npEqKey close => npPush []
     npMissingMate(close,a)
   false
@@ -153,7 +153,7 @@ npEnclosed(open,close,fn,f)==
   a := $stok
   npEqKey open =>
     npEqKey close  => npPush apply(fn,[a,pfTuple pfListOf []])
-    apply(f,nil) and (npEqKey close or npMissingMate(close,a)) =>
+    apply(f,[]) and (npEqKey close or npMissingMate(close,a)) =>
       npPush apply(fn,[a,pfEnSequence npPop1()])
     false
   false
@@ -190,7 +190,7 @@ npBracketed f==
 npPileBracketed f==
   npEqKey "SETTAB" =>
     npEqKey "BACKTAB" => npPush pfNothing()     -- never happens
-    apply(f,nil) and (npEqKey "BACKTAB" or npMissing "backtab") =>
+    apply(f,[]) and (npEqKey "BACKTAB" or npMissing "backtab") =>
       npPush pfPile npPop1()
     false
   false
@@ -199,11 +199,11 @@ npPileBracketed f==
 ++ of syntax `f' separated by syntax `g'. In case of a sequence, use
 ++ `g' to build the resulting parse tree.
 npListofFun(f,h,g)==
-  apply(f,nil) =>
-    apply(h,nil) and (apply(f,nil) or npTrap()) =>
+  apply(f,[]) =>
+    apply(h,[]) and (apply(f,[]) or npTrap()) =>
       a := $stack
       $stack := nil
-      while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
+      while apply(h,[]) and (apply(f,[]) or npTrap()) repeat 0
       $stack := [reverse! $stack,:a]
       npPush apply(g, [[npPop3(),npPop2(),:npPop1()]])
     true
@@ -212,13 +212,13 @@ npListofFun(f,h,g)==
 ++ Parse combinator: parse a sequence of syntax `f' separated by
 ++ token `str1'.  Build the resulting parse tree with `g'.
 npList(f,str1,g)== -- always produces a list, g is applied to it
-  apply(f,nil) =>
+  apply(f,[]) =>
     npEqKey str1 and (npEqKey "BACKSET" or true)
-                   and (apply(f,nil) or npTrap()) =>
+                   and (apply(f,[]) or npTrap()) =>
       a := $stack
       $stack := nil
       while npEqKey str1 and (npEqKey "BACKSET" or true) and
-                         (apply(f,nil) or npTrap()) repeat 0
+                         (apply(f,[]) or npTrap()) repeat 0
       $stack := [reverse! $stack,:a]
       npPush apply(g,[[npPop3(),npPop2(),:npPop1()]])
     npPush apply(g,[[npPop1()]])
@@ -258,13 +258,13 @@ npPC(f) ==
 ++ it is possible.  Note that `s' transforms the the top of the
 ++ parse tree stack.
 npAnyNo s ==
-  while apply(s,nil) repeat 0
+  while apply(s,[]) repeat 0
   true
 
 ++ Parser combinator: parse `keyword' followed by the syntax `p',
 ++ and build the resulting parse tree with `f'.
 npAndOr(keyword,p,f)==
-  npEqKey keyword and (apply(p,nil) or npTrap()) and
+  npEqKey keyword and (apply(p,[]) or npTrap()) and
     npPush apply(f,[npPop1()])
 
 ++ Parser combinator: parse a right-associative syntax with operand
@@ -273,7 +273,7 @@ npAndOr(keyword,p,f)==
 ++ p o p o = (p o p) o
 npRightAssoc(o,p)==
   a := npState()
-  apply(p,nil) =>
+  apply(p,[]) =>
     while npInfGeneric o and (npRightAssoc(o,p)
             or (npPush pfApplication(npPop2(),npPop1());false)) repeat
       npPush pfInfApplication(npPop2(),npPop2(),npPop1())
@@ -286,9 +286,9 @@ npRightAssoc(o,p)==
 ++ p o p o p o p = (((p o p) o p) o p)
 ++ p o p o = (p o p) o
 npLeftAssoc(operations,parser) ==
-  apply(parser,nil) =>
+  apply(parser,[]) =>
     while npInfGeneric(operations) and
-           (apply(parser,nil) or
+           (apply(parser,[]) or
                (npPush pfApplication(npPop2(),npPop1());false)) repeat
       npPush pfInfApplication(npPop2(),npPop2(),npPop1())
     true
@@ -343,16 +343,16 @@ npConditional f ==
                    (npEqKey "BACKSET" or true) =>
     npEqKey "SETTAB" =>
       npEqKey "THEN" =>
-        (apply(f,nil) or npTrap()) and npElse f and npEqKey "BACKTAB"
+        (apply(f,[]) or npTrap()) and npElse f and npEqKey "BACKTAB"
       npMissing "then"
-    npEqKey "THEN" => (apply(f,nil) or npTrap()) and npElse f
+    npEqKey "THEN" => (apply(f,[]) or npTrap()) and npElse f
     npMissing "then"
   false
 
 npElse f ==
   a := npState()
   npBacksetElse() =>
-    (apply(f,nil) or npTrap()) and
+    (apply(f,[]) or npTrap()) and
         npPush pfIf(npPop3(),npPop2(),npPop1())
   npRestore a
   npPush pfIfThenOnly(npPop2(),npPop1())
@@ -372,7 +372,7 @@ npQuantified f ==
   npEqPeek "EXIST" =>
     npQuantifierVariable "EXIST" and npQuantified f and
       npPush %Exist(npPop2(), npPop1())
-  apply(f,nil)  
+  apply(f,[])  
 
 -- Parsing functions
 
@@ -456,7 +456,7 @@ npPrefixColon() ==
 -- silly
 
 npEncAp f ==
-  apply(f,nil) and npAnyNo function npEncl and npFromdom()
+  apply(f,[]) and npAnyNo function npEncl and npFromdom()
 
 npEncl()==
   npBDefinition() and npPush pfApplication(npPop2(),npPop1())
@@ -476,7 +476,7 @@ npPrimary()==
   npPrimary1() or npPrimary2()
 
 npDotted f ==
-  apply(f,nil) and npAnyNo function npSelector
+  apply(f,[]) and npAnyNo function npSelector
 
 npSelector()==
   npEqKey "DOT" and (npPrimary() or npTrap()) and
@@ -624,10 +624,10 @@ npExpress()==
           npPush pfCollect (npPop2(),pfListOf npPop1()) or true)
 
 npZeroOrMore f==
-  apply(f,nil)=>
+  apply(f,[])=>
     a := $stack
     $stack := nil
-    while apply(f,nil) repeat 0
+    while apply(f,[]) repeat 0
     $stack := [reverse! $stack,:a]
     npPush [npPop2(),:npPop1()]
   npPush nil
@@ -668,10 +668,10 @@ npStatement() ==
 
 npBackTrack(p1,p2,p3) ==
   a := npState()
-  apply(p1,nil) =>
+  apply(p1,[]) =>
     npEqPeek p2   =>
       npRestore a
-      apply(p3,nil) or npTrap()
+      apply(p3,[]) or npTrap()
     true
   false
 
@@ -1050,7 +1050,7 @@ npListAndRecover(f)==
   done := false
   c := $inputStream
   while not done repeat
-    found:=CATCH("TRAPPOINT",apply(f,nil))
+    found:=CATCH("TRAPPOINT",apply(f,[]))
     if found="TRAPPED" then
        $inputStream:=c
        npRecoverTrap()

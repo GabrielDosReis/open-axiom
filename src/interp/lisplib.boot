@@ -300,7 +300,7 @@ genericLoadDB(db,f) ==
     dbLoaded? db => db
     ctor := dbConstructor db
     builtinConstructor? ctor => nil
-    lib := apply(f,db,nil) or return nil
+    lib := apply(f,[db]) or return nil
     loadModule(lib,ctor)
     dbLoadPath(db) := lib
     db

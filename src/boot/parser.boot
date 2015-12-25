@@ -208,7 +208,7 @@ bpListof(ps,f,str1,g)==
       parserTrees(ps) := nil
       while bpEqKey(ps,str1) and bpRequire(ps,f) repeat nil
       parserTrees(ps) := [reverse! parserTrees ps,:a]
-      bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
+      bpPush(ps,apply(g,[[bpPop3 ps,bpPop2 ps,:bpPop1 ps]]))
     true
   false
  
@@ -221,7 +221,7 @@ bpListofFun(ps,f,h,g)==
       parserTrees(ps) := nil
       while apply(h,[ps]) and bpRequire(ps,f) repeat nil
       parserTrees(ps) := [reverse! parserTrees ps,:a]
-      bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
+      bpPush(ps,apply(g,[[bpPop3 ps,bpPop2 ps,:bpPop1 ps]]))
     true
   false
  
@@ -255,7 +255,7 @@ bpAnyNo(ps,s) ==
 -- AndOr(k,p,f)= k p
 bpAndOr(ps,keyword,p,f)==
   bpEqKey(ps,keyword) and bpRequire(ps,p)
-    and bpPush(ps,FUNCALL(f,parserLoadUnit ps,bpPop1 ps))
+    and bpPush(ps,apply(f,[parserLoadUnit ps,bpPop1 ps]))
  
 bpConditional(ps,f) ==
   bpEqKey(ps,"IF") and bpRequire(ps,function bpWhere) and (bpEqKey(ps,"BACKSET") or true) =>

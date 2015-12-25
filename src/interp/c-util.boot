@@ -1322,7 +1322,7 @@ middleEndExpand x ==
   atomic? x => x
   [op,:args] := x
   ident? op and (fun := getOpcodeExpander op) =>
-    middleEndExpand apply(fun,x,nil)
+    middleEndExpand apply(fun,[x])
   a := middleEndExpand op
   b := middleEndExpand args
   sameObject?(a,op) and sameObject?(b,args) => x

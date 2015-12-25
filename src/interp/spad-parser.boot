@@ -317,7 +317,7 @@ macro compulsorySyntax(rd,s) ==
 repeatedSyntax(rd,l,p) ==
   n := stackSize $reduceStack
   once := false
-  while apply(p,rd,nil) repeat
+  while apply(p,[rd]) repeat
     once := true
   not once => nil
   x := nil
@@ -594,7 +594,7 @@ parseRightBindingPowerOf(x,p) ==
 parseGetSemanticForm(rd,x,p,y) ==
   z :=
     y = nil => nil
-    apply(y,rd,nil)
+    apply(y,[rd])
   z ~= nil => z
   p = "Nud" => parsePrefix rd
   p = "Led" => parseInfix rd
@@ -1030,7 +1030,7 @@ parseSpecialCommand rd ==
     pushReduction('parseSpecialCommand,["show",popStack1()])
     compulsorySyntax(rd,parseCommandTail rd)
   symbolMember?(currentSymbol rd,$noParseCommands) =>
-    apply(currentSymbol rd,nil)
+    apply(currentSymbol rd,[])
     true
   symbolMember?(currentSymbol rd,$tokenCommands) and parseTokenList rd =>
     compulsorySyntax(rd,parseTokenCommandTail rd)

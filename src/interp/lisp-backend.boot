@@ -755,7 +755,7 @@ expandToVMForm x ==
   ident? x and (x' := x has %Rename) => x'
   atomic? x => x
   [op,:args] := x
-  ident? op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
+  ident? op and (fun:= getOpcodeExpander op) => apply(fun,[x])
   op' := expandToVMForm op
   args' := expandToVMForm args
   sameObject?(op,op') and sameObject?(args,args') => x

@@ -554,7 +554,7 @@ optCall (x is ['%call,:u]) ==
   fn is ['%external,op] =>
     x.first := op
     x.rest := a
-    opt := op has OPTIMIZE => resetTo(x,apply(opt,x,nil))
+    opt := op has OPTIMIZE => resetTo(x,apply(opt,[x]))
     x
   fn is ['ELT,:.] => emitIndirectCall(fn,a,x)
   fn is ['CONST,R,n] => ['spadConstant,R,n]

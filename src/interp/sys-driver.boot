@@ -353,8 +353,8 @@ systemMain() ==
     restart()
 )if %hasFeature KEYWORD::ECL
     SI::_*LISP_-INITIALIZED_* : local := true
-    apply($originalLispTopLevel,nil)
+    apply($originalLispTopLevel,[])
 )elseif %hasFeature KEYWORD::SBCL 
-    apply($originalLispTopLevel,nil)
+    apply($originalLispTopLevel,[])
 )endif
   fatalError '"fell off systemMain"

@@ -155,11 +155,11 @@ walkWith!(x,f) ==
     x
   for ys in tails x | not atomic? first ys repeat
     ys.first := walkWith!(first ys,f)
-  apply(f,x,nil)
+  apply(f,[x])
 
 prefixWalk!(x,f) ==
   atomic? x => x
-  x := apply(f,x,nil)
+  x := apply(f,[x])
   atomic? x => x
   for xs in tails x | not atomic? first xs repeat
     xs.first := prefixWalk!(first xs,f)
