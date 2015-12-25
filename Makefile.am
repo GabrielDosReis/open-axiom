@@ -1,4 +1,4 @@
-# Copyright (C) 2012, Gabriel Dos Reis.
+# Copyright (C) 2012-2015, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -118,8 +118,6 @@ mostlyclean-local:
 
 clean-local:
 	cd src && $(MAKE) $(AM_MAKEFLAGS) clean
-	@-rm -rf $(target)
-	@-rm -rf build
 
 distclean-local:
 	cd src && $(MAKE) $(AM_MAKEFLAGS) distclean
