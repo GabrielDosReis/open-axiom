@@ -113,7 +113,7 @@ htSystemVariables() == main where
 
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
-  if string? value and fun then value := FUNCALL(fun,value)
+  if string? value and fun then value := apply(fun,[value])
 --SCM::what to do???  if not integer? value then userError ???
   symbolValue(variable) := value
   htSystemVariables ()

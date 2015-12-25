@@ -130,7 +130,7 @@ htpLabelFilteredInputString(htPage, label) ==
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
     #props > 5 and props.6 =>
-      FUNCALL(symbolFunction props.6, props.0)
+      apply(symbolFunction props.6,[props.0])
     replacePercentByDollar props.0
   nil
 
@@ -494,7 +494,7 @@ typeCheckInputAreas htPage ==
 
 checkCondition(s1, string, condList) ==
   condList is [['Satisfies, pvar, pred]] =>
-    val := FUNCALL(pred, string)
+    val := apply(pred,[string])
     string? val => val
     ['(String), :wrap s1]
   condList isnt [['isDomain, pvar, pattern]] =>

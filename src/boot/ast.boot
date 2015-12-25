@@ -608,11 +608,11 @@ defSheepAndGoats(tu,x)==
         bfTupleP args => rest args
 	[args]
       argl = nil =>
-	opassoc := [[op,:body]]
+	opassoc := [[op,:translateForm body]]
 	[opassoc,[],[]]
       op1 := makeSymbol strconc(symbolName enclosingFunction tu,'",",symbolName op)
       opassoc := [[op,:op1]]
-      defstack := [[op1,args,body]]
+      defstack := [[op1,args,translateForm body]]
       [opassoc,defstack,[]]
     %Pile defs => defSheepAndGoatsList(tu,defs)
     otherwise => [[],[],[x]]
@@ -837,7 +837,7 @@ bfReName x==
 
 sequence?(x,pred) ==
   x is ['QUOTE,seq] and cons? seq and
-    "and"/[apply(pred,y,nil) for y in seq]
+    "and"/[apply(pred,[y]) for y in seq]
 
 idList? x ==
   x is ["LIST",:.] and "and"/[defQuoteId arg for arg in x.args]

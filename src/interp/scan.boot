@@ -525,7 +525,7 @@ spleI(dig) ==
 spleI1(dig,zro) ==
   n := $n
   l := $sz
-  while $n<l and FUNCALL(dig,($ln.$n)) repeat
+  while $n<l and apply(dig,[$ln.$n]) repeat
     $n := $n+1
   $n = l or stringChar($ln,$n) ~= char "__" =>
      n = $n and zro => '"0"

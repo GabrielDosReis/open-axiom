@@ -111,7 +111,7 @@ bpNextToken ps ==
   bpFirstToken ps
  
 bpRequire(ps,f) ==
-  apply(f,ps,nil) or bpTrap ps
+  apply(f,[ps]) or bpTrap ps
 
 bpState ps ==
   [parserTokens ps,parserTrees ps,parserNesting ps,parserScope ps]
@@ -154,7 +154,7 @@ bpIndentParenthesized(ps,f) ==
     bpEqPeek(ps,"OPAREN") =>
       parserNesting(ps) := parserNesting ps + 1
       bpNext ps
-      apply(f,ps,nil) and bpFirstTok ps and
+      apply(f,[ps]) and bpFirstTok ps and
               (bpEqPeek(ps,"CPAREN") or bpParenTrap(ps,a)) =>
         parserNesting(ps) := parserNesting ps - 1
         bpNextToken ps
@@ -177,7 +177,7 @@ bpIndentParenthesized(ps,f) ==
 bpParenthesized(ps,f) ==
   a := parserCurrentToken ps
   bpEqKey(ps,"OPAREN") =>
-    apply(f,ps,nil) and (bpEqKey(ps,"CPAREN") or bpParenTrap(ps,a)) => true
+    apply(f,[ps]) and (bpEqKey(ps,"CPAREN") or bpParenTrap(ps,a)) => true
     bpEqKey(ps,"CPAREN") =>
       bpPush(ps,bfTuple [])
       true
@@ -187,7 +187,7 @@ bpParenthesized(ps,f) ==
 bpBracket(ps,f) ==
   a := parserCurrentToken ps
   bpEqKey(ps,"OBRACK") =>
-    apply(f,ps,nil) and (bpEqKey(ps,"CBRACK") or bpBrackTrap(ps,a)) =>
+    apply(f,[ps]) and (bpEqKey(ps,"CBRACK") or bpBrackTrap(ps,a)) =>
       bpPush(ps,bfBracket bpPop1 ps)
     bpEqKey(ps,"CBRACK") => bpPush(ps,[])
     bpBrackTrap(ps,a)
@@ -196,13 +196,13 @@ bpBracket(ps,f) ==
 bpPileBracketed(ps,f) ==
   bpEqKey(ps,"SETTAB") => 
     bpEqKey(ps,"BACKTAB") => true
-    apply(f,ps,nil) and (bpEqKey(ps,"BACKTAB") or bpPileTrap ps) =>
+    apply(f,[ps]) and (bpEqKey(ps,"BACKTAB") or bpPileTrap ps) =>
       bpPush(ps,bfPile bpPop1 ps)
     false
   false
  
 bpListof(ps,f,str1,g)==
-  apply(f,ps,nil) =>
+  apply(f,[ps]) =>
     bpEqKey(ps,str1) and bpRequire(ps,f) =>
       a := parserTrees ps
       parserTrees(ps) := nil
@@ -215,18 +215,18 @@ bpListof(ps,f,str1,g)==
  
 -- to do ,<backset>
 bpListofFun(ps,f,h,g)==
-  apply(f,ps,nil) =>
-    apply(h,ps,nil) and bpRequire(ps,f) =>
+  apply(f,[ps]) =>
+    apply(h,[ps]) and bpRequire(ps,f) =>
       a := parserTrees ps
       parserTrees(ps) := nil
-      while apply(h,ps,nil) and bpRequire(ps,f) repeat nil
+      while apply(h,[ps]) and bpRequire(ps,f) repeat nil
       parserTrees(ps) := [reverse! parserTrees ps,:a]
       bpPush(ps,FUNCALL(g, [bpPop3 ps,bpPop2 ps,:bpPop1 ps]))
     true
   false
  
 bpList(ps,f,str1)==
-  apply(f,ps,nil) =>
+  apply(f,[ps]) =>
     bpEqKey(ps,str1) and bpRequire(ps,f) =>
       a := parserTrees ps
       parserTrees(ps) := nil
@@ -237,10 +237,10 @@ bpList(ps,f,str1)==
   bpPush(ps,nil)
  
 bpOneOrMore(ps,f) ==
-  apply(f,ps,nil)=>
+  apply(f,[ps])=>
     a := parserTrees ps
     parserTrees(ps) := nil
-    while apply(f,ps,nil) repeat nil
+    while apply(f,[ps]) repeat nil
     parserTrees(ps) := [reverse! parserTrees ps,:a]
     bpPush(ps,[bpPop2 ps,:bpPop1 ps])
   false
@@ -248,7 +248,7 @@ bpOneOrMore(ps,f) ==
  
 -- s must transform the head of the stack
 bpAnyNo(ps,s) ==
-  while apply(s,ps,nil) repeat nil
+  while apply(s,[ps]) repeat nil
   true
  
  
@@ -341,7 +341,7 @@ bpListAndRecover(ps,f)==
   c := parserTokens ps
   while not done repeat
     found :=
-      try apply(f,ps,nil)
+      try apply(f,[ps])
       catch(e: BootParserException) => e
     if found is "TRAPPED"
     then
@@ -721,7 +721,7 @@ bpInfGeneric(ps,s) ==
  
 bpRightAssoc(ps,o,p)==
   a := bpState ps
-  apply(p,ps,nil) =>
+  apply(p,[ps]) =>
     while  bpInfGeneric(ps,o) and (bpRightAssoc(ps,o,p) or bpTrap ps) repeat
       bpPush(ps,bfInfApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))
     true
@@ -729,7 +729,7 @@ bpRightAssoc(ps,o,p)==
   false
  
 bpLeftAssoc(ps,operations,parser)==
-  apply(parser,ps,nil) =>
+  apply(parser,[ps]) =>
     while bpInfGeneric(ps,operations) and bpRequire(ps,parser)
      repeat
        bpPush(ps,bfInfApplication(bpPop2 ps,bpPop2 ps,bpPop1 ps))

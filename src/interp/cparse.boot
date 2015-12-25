@@ -152,9 +152,9 @@ npParenthesize (open,close,f)==
 npEnclosed(open,close,fn,f)==
   a := $stok
   npEqKey open =>
-    npEqKey close  => npPush FUNCALL(fn,a,pfTuple pfListOf [])
+    npEqKey close  => npPush apply(fn,[a,pfTuple pfListOf []])
     apply(f,nil) and (npEqKey close or npMissingMate(close,a)) =>
-      npPush FUNCALL (fn,a,pfEnSequence npPop1())
+      npPush apply(fn,[a,pfEnSequence npPop1()])
     false
   false
 
@@ -205,7 +205,7 @@ npListofFun(f,h,g)==
       $stack := nil
       while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
       $stack := [reverse! $stack,:a]
-      npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
+      npPush apply(g, [[npPop3(),npPop2(),:npPop1()]])
     true
   false
 
@@ -220,13 +220,13 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
       while npEqKey str1 and (npEqKey "BACKSET" or true) and
                          (apply(f,nil) or npTrap()) repeat 0
       $stack := [reverse! $stack,:a]
-      npPush FUNCALL(g,[npPop3(),npPop2(),:npPop1()])
-    npPush FUNCALL(g, [npPop1()])
-  npPush FUNCALL(g, [])
+      npPush apply(g,[[npPop3(),npPop2(),:npPop1()]])
+    npPush apply(g,[[npPop1()]])
+  npPush apply(g,[nil])
 
 
 npPPff f ==
-  FUNCALL f and npPush [npPop1()]
+  apply(f,[]) and npPush [npPop1()]
 
 npPPf f ==
   npSemiListing function (() +-> npPPff f)
@@ -239,10 +239,10 @@ npPP(f) ==
   npParened function (() +-> npPPf f)
     or npPileBracketed function (() +-> npPPg f) and
       npPush pfEnSequence npPop1()
-        or FUNCALL f
+        or apply(f,[])
 
 npPCff f ==
-  FUNCALL f and npPush [npPop1()]
+  apply(f,[]) and npPush [npPop1()]
 
 npPCg f ==
   npListAndRecover function (() +-> npPCff f)
@@ -251,7 +251,7 @@ npPCg f ==
 npPC(f) ==
   npPileBracketed function (() +-> npPCg f) and
     npPush pfEnSequence npPop1()
-      or FUNCALL f
+      or apply(f,[])
 
 
 ++ Parser combinator: Apply the parser `s' any number of time it
@@ -265,7 +265,7 @@ npAnyNo s ==
 ++ and build the resulting parse tree with `f'.
 npAndOr(keyword,p,f)==
   npEqKey keyword and (apply(p,nil) or npTrap()) and
-    npPush FUNCALL(f, npPop1())
+    npPush apply(f,[npPop1()])
 
 ++ Parser combinator: parse a right-associative syntax with operand
 ++ syntax `p', and operator `o'.
@@ -495,14 +495,14 @@ npApplication2() ==
 
 npTypedForm1(sy,fn) ==
      npEqKey sy  and (npType() or npTrap()) and
-        npPush FUNCALL(fn,npPop2(),npPop1())
+        npPush apply(fn,[npPop2(),npPop1()])
 
 npQuiver() ==
   npRightAssoc('(ARROW LARROW),function npApplication)
 
 npTypedForm(sy,fn) ==
      npEqKey sy  and (npQuiver() or npTrap()) and
-        npPush FUNCALL(fn,npPop2(),npPop1())
+        npPush apply(fn,[npPop2(),npPop1()])
 
 npRestrict() ==
   npTypedForm("AT",function pfRestrict)
@@ -907,7 +907,7 @@ npListing p ==
   npList(p,"COMMA",function pfListOf)
 
 npQualified(f)==
-  FUNCALL f => 
+  apply(f,[]) => 
     while npEqKey "WHERE" and (npDefinition() or npTrap()) repeat
       npPush pfWhere(npPop1(),npPop1())
     true
@@ -917,7 +917,7 @@ npLetQualified f==
   npEqKey "%LET" and
     (npDefinition() or npTrap()) and
       npCompMissing "IN"  and
-        (FUNCALL f or npTrap()) and
+        (apply(f,[]) or npTrap()) and
           npPush pfWhere(npPop2(),npPop1())
 
 npQualifiedDefinition()==

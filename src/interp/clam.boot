@@ -277,7 +277,7 @@ listTruncate(l,n) ==
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
   while cons? y repeat
-    FUNCALL(fn,x,first first y) => return (result := first y)
+    apply(fn,[x,first first y]) => return (result := first y)
     y:= rest y
   result =>
     if not sameObject?(y,l) then

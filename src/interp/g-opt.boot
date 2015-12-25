@@ -447,7 +447,7 @@ simplifyVMForm x ==
       x
     for args in tails x.args repeat
       args.first := simplifyVMForm first args
-    opt := subrname x.op has OPTIMIZE => resetTo(x,FUNCALL(opt,x))
+    opt := subrname x.op has OPTIMIZE => resetTo(x,apply(opt,[x]))
     x
   for xs in tails x repeat
     xs.first := simplifyVMForm first xs
@@ -537,7 +537,7 @@ optCall (x is ['%call,:u]) ==
     resetTo(x,doInlineCall(args,vars,body))
   [fn,:a] := u
   fn isnt [.,:.] =>
-    opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
+    opt := fn has OPTIMIZE => resetTo(x,apply(opt,[u]))
     resetTo(x,u)
   fn is ['%apply,name] =>
     do

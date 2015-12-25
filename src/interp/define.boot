@@ -1388,7 +1388,7 @@ addConstructorModemaps(name,form is [functorName,:.],e) ==
   $InteractiveMode: local:= nil
   e:= putDomainsInScope(name,e) --frame
   fn := property(functorName,"makeFunctionList")
-  [funList,e]:= FUNCALL(fn,name,form,e)
+  [funList,e]:= apply(fn,[name,form,e])
   for [op,sig,opcode] in funList repeat
     if opcode is [sel,dc,n] and sel='ELT then
           nsig := substitute("$$$",name,sig)

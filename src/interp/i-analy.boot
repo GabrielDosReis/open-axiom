@@ -240,7 +240,7 @@ bottomUp t ==
     -- call a special handler if we are not being package called
     dol := getAtree(op,'dollar) and (opName ~= 'construct)
 
-    (null dol) and (fn:= property(opName,"up")) and (u:= FUNCALL(fn, t)) => u
+    (null dol) and (fn:= property(opName,"up")) and (u:= apply(fn,[t])) => u
     nargs := #argl
     if opName then for x in argl for i in 1.. repeat
       putCallInfo(x,opName,i,nargs)

@@ -84,7 +84,7 @@ htShowCount s == --# discounting {\em .. }
 
 htShowSetTreeValue(setData) ==
   st := setData.setType
-  st = 'FUNCTION => object2String FUNCALL(setData.setVar,"%display%")
+  st = 'FUNCTION => object2String apply(setData.setVar,["%display%"])
   st = 'INTEGER  => object2String eval setData.setVar
   st = 'STRING  => object2String eval setData.setVar
   st = 'LITERALS =>
@@ -176,7 +176,7 @@ htSetInteger(htPage) ==
   htKill(htPage,val)
 
 htShowFunctionPage(htPage,setData) ==
-  fn := setData.setDef => FUNCALL(fn,htPage)
+  fn := setData.setDef => apply(fn,[htPage])
   htpSetProperty(htPage,'setData,setData)
   htpSetProperty(htPage,'parts, setData.setLeaf)
   htShowFunctionPageContinued(htPage)
@@ -267,7 +267,7 @@ htDoNothing(htPage,command) == nil
 
 htCheck(checker,value) ==
   cons? checker => htCheckList(checker,parseWord value)
-  FUNCALL(checker,value)
+  apply(checker,[value])
 
 parseWord x ==
   string? x =>

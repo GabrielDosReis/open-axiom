@@ -504,7 +504,7 @@ APP(u,x,y,d) ==
     GETL(op,'isSuffix) => appChar(s,x+WIDTH a,y,APP(a,x,y,d))
     APP(a,x+#s,y,appChar(s,x,y,d))
   u is [[id,:.],:.] =>
-    fn := GETL(id,'APP) => FUNCALL(fn,u,x,y,d)
+    fn := GETL(id,'APP) => apply(fn,[u,x,y,d])
     not integer? id and (d':= appInfix(u,x,y,d))=> d'
     appelse(u,x,y,d)
   appelse(u,x,y,d)
@@ -1174,7 +1174,7 @@ putWidth u ==
   newFirst:=
     (oldFirst:= first u) isnt [.,:.] =>
       fn:= GETL(oldFirst,"WIDTH") =>
-        [oldFirst,:FUNCALL(fn,[oldFirst,:l])]
+        [oldFirst,:apply(fn,[[oldFirst,:l]])]
       if l then ll := rest l else ll := nil
       [oldFirst,:opWidth(oldFirst,ll)+argsWidth]
     [putWidth oldFirst,:2+WIDTH oldFirst+argsWidth]

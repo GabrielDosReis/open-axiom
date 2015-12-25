@@ -74,7 +74,7 @@ incZip(g,f1,f2)==
 incZip1(g,f1,f2) ==
   StreamNull f1 => StreamNil
   StreamNull f2 => StreamNil
-  [FUNCALL(g,first f1,first f2),:incZip(g,rest f1,rest f2)]
+  [apply(g,[first f1,first f2]),:incZip(g,rest f1,rest f2)]
  
 incAppend(x,y) ==
   Delay(function incAppend1,[x,y])

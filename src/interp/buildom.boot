@@ -434,7 +434,7 @@ UnionEqual(x, y, dom) ==
   same := false
   for b in stripTags branches for p in predlist while not same repeat
     typeFun := eval ['%lambda,'(_#1),p]
-    FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
+    apply(typeFun,[x]) and apply(typeFun,[y]) =>
       string? b => same := (x = y)
       if p is ['%ieq,['%head,.],:.] then (x := rest x; y := rest y)
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
@@ -449,7 +449,7 @@ coerceUn2E(x,source) ==
   byGeorge := byJane := gensym()
   for b in stripTags branches for p in predlist  repeat
     typeFun := eval ['%lambda,'(_#1),p]
-    if FUNCALL(typeFun,x) then return
+    if apply(typeFun,[x]) then return
       if p is ['%ieq,['%head,.],:.] then x := rest x
 --    string? b => return x  -- to catch "failed" etc.
       string? b => byGeorge := x  -- to catch "failed" etc.
@@ -567,7 +567,7 @@ UnionCategory(:"x") == constructorCategory ["Union",:x]
 constructorCategory (title is [op,:.]) ==
   constructorFunction:= property(op,"makeFunctionList") or
               systemErrorHere ['"constructorCategory",title]
-  [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
+  [funlist,.]:= apply(constructorFunction,["$",title,$CategoryFrame])
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],

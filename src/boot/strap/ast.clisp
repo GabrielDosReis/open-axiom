@@ -851,7 +851,8 @@
           (SETQ |argl|
                   (COND ((|bfTupleP| |args|) (CDR |args|)) (T (LIST |args|))))
           (COND
-           ((NULL |argl|) (SETQ |opassoc| (LIST (CONS |op| |body|)))
+           ((NULL |argl|)
+            (SETQ |opassoc| (LIST (CONS |op| (|translateForm| |body|))))
             (LIST |opassoc| NIL NIL))
            (T
             (SETQ |op1|
@@ -859,7 +860,8 @@
                      (CONCAT (SYMBOL-NAME (|enclosingFunction| |tu|)) ","
                              (SYMBOL-NAME |op|))))
             (SETQ |opassoc| (LIST (CONS |op| |op1|)))
-            (SETQ |defstack| (LIST (LIST |op1| |args| |body|)))
+            (SETQ |defstack|
+                    (LIST (LIST |op1| |args| (|translateForm| |body|))))
             (LIST |opassoc| |defstack| NIL))))))
       (|%Pile|
        (LET ((|defs| (CADR |x|)))

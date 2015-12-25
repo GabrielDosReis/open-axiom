@@ -733,7 +733,7 @@ constructorSearchGrep(filter,key,kind) ==
 
 grepSearchJump(htPage,yes) ==
   [filter,key,kind,fn] := htpProperty(htPage,'items)
-  FUNCALL(fn,filter,key,kind)
+  apply(fn,[filter,key,kind])
 
 --=======================================================================
 --            Branch Functions After Database Search

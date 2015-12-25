@@ -417,7 +417,7 @@ getLookupFun infovec ==
   'lookupIncomplete
 
 makeSpadConstant [fn,dollar,slot] ==
-  val := FUNCALL(fn,dollar)
+  val := apply(fn,[dollar])
   u := domainRef(dollar,slot)
   u.first := function IDENTITY
   u.rest := val

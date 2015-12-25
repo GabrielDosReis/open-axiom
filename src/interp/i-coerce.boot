@@ -271,7 +271,7 @@ coerceRetract(object,t2) ==
            makeSymbol strconc('"retract",STRINGIMAGE D)
     functionp fun =>
       property(D,'retract) := fun
-      c := CATCH('coerceFailure,FUNCALL(fun,object,t2))
+      c := CATCH('coerceFailure,apply(fun,[object,t2]))
       (c = $coerceFailure) => nil
       c
     nil
@@ -608,7 +608,7 @@ canCoerceLocal(t1,t2) ==
     tag='partial => nil
     tag='total   => true
     (functionp(fun) and
-       (v:=CATCH('coerceFailure,FUNCALL(fun,'_$fromCoerceable_$,t1,t2)))
+       (v:=CATCH('coerceFailure,apply(fun,['_$fromCoerceable_$,t1,t2])))
          and v ~= $coerceFailure)  or  canCoerceByFunction(t1,t2)
   canCoerceByFunction(t1,t2)
 
@@ -921,7 +921,7 @@ coerceSubDomain(val, tSuper, tSub) ==
   val = '_$fromCoerceable_$ => nil
   pred := isSubDomain(tSub,tSuper) =>
     predFun := getSubDomainPredicate(tSuper,tSub,pred)
-    FUNCALL(predFun,val) => objNew(val,tSub)
+    apply(predFun,[val]) => objNew(val,tSub)
   nil
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
@@ -1171,7 +1171,7 @@ coerceIntCommute(obj,target) ==
     functionp fun =>
       property(D,'coerceCommute) := fun
       u := objValUnwrap obj
-      c := CATCH('coerceFailure,FUNCALL(fun,u,source,S,target,T))
+      c := CATCH('coerceFailure,apply(fun,[u,source,S,target,T]))
       (c = $coerceFailure) => nil
       u = "$fromCoerceable$" => c
       objNewWrap(c,target)
@@ -1285,7 +1285,7 @@ coerceByTable(fn,x,t1,t2,isTotalCoerce) ==
   t2 = $OutputForm and not (newType? t1) => nil
   isWrapped x =>
     x:= unwrap x
-    c:= CATCH('coerceFailure,FUNCALL(fn,x,t1,t2))
+    c:= CATCH('coerceFailure,apply(fn,[x,t1,t2]))
     c=$coerceFailure => nil
     objNewWrap(c,t2)
   isTotalCoerce => objNew([fn,x,MKQ t1,MKQ t2],t2)
@@ -1293,7 +1293,7 @@ coerceByTable(fn,x,t1,t2,isTotalCoerce) ==
 
 catchCoerceFailure(fn,x,t1,t2) ==
   -- compiles a catchpoint for compiling boot coercions
-  c:= CATCH('coerceFailure,FUNCALL(fn,x,t1,t2))
+  c:= CATCH('coerceFailure,apply(fn,[x,t1,t2]))
   c = $coerceFailure =>
     throwKeyedMsgCannotCoerceWithValue(wrap unwrap x,t1,t2)
   c

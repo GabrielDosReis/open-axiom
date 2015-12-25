@@ -484,7 +484,7 @@ htDoneButton(func, htPage, :optionalArgs) ==
     htMakeErrorPage htPage
   not functionSymbol? func =>
     systemError ['"unknown function", func]
-  FUNCALL(symbolFunction func, htPage)
+  apply(symbolFunction func, [htPage])
 
 htBcLinks(links,:options) ==
   skipStateInfo? := IFCAR options
@@ -1002,7 +1002,7 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
     if cons? thing then
       if constructorIfTrue then htSay('" {\em ",dbShowKind thing,'"}")
       htSay '" "
-      FUNCALL(fn,thing)
+      apply(fn,[thing])
     htSay('":\newline ")
     dbShowOpSigList(which,items,(1 + bincount) * 8192)
     bincount := bincount + 1

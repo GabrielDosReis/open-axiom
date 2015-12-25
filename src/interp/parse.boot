@@ -76,7 +76,7 @@ parseTran x ==
     r:= parseConstruct ["construct",:argl]
     op is ["elt",:.] => [parseTran op,:rest r]
     r
-  symbol? u and (fn:= property(u,'parseTran)) => FUNCALL(fn,x)
+  symbol? u and (fn:= property(u,'parseTran)) => apply(fn,[x])
   [parseTran op,:parseTranList argl]
 
 parseType t ==

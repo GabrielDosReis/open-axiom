@@ -94,11 +94,11 @@ atomic? x ==
 ++ Return the last image of `f' if all images of elements in `l'
 ++ are non-nil.  Otherwise return nil.
 every?(f,l) ==
-  and/[apply(f,x,nil) for x in l]
+  and/[apply(f,[x]) for x in l]
 
 ++ Return the first non-nil image of `f' of elements in `l'.
 any?(f,l) ==
-  or/[apply(f,x,nil) for x in l]
+  or/[apply(f,[x]) for x in l]
 
 ++ Return the `n' node prefixes of the list `l'.  If `n' is negative,
 ++ take from the end of the list.
@@ -108,7 +108,7 @@ take(n,l) ==
 
 ++ Return the sublist of `l' whose elements have non-nil image by `f'.
 takeWhile(f,l) ==
-  [x for x in l while apply(f,x,nil)]
+  [x for x in l while apply(f,[x])]
 
 ++ Return the `n+1'th node and its successors of the list `l'.
 ++ If `n' is negative, drop from the end.

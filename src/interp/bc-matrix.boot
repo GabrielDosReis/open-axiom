@@ -93,7 +93,7 @@ bcInputMatrixByFormula(htPage,junk) ==
   htShowPage()
 
 bcInputMatrixByFormulaGen htPage ==
-  fun :=  htpProperty(htPage,'exitFunction) => FUNCALL(fun, htPage)
+  fun :=  htpProperty(htPage,'exitFunction) => apply(fun, [htPage])
   formula := htpLabelInputString(htPage,'formula)
   rowVar := htpLabelInputString(htPage,'rowVar)
   colVar := htpLabelInputString(htPage,'colVar)
@@ -134,7 +134,7 @@ bcInputExplicitMatrix(htPage,junk) ==
 
 bcGenExplicitMatrix htPage == 
   htpSetProperty(htPage,'matrix,htpInputAreaAlist htPage)
-  fun :=  htpProperty(htPage,'exitFunction) => FUNCALL(fun, htPage)
+  fun :=  htpProperty(htPage,'exitFunction) => apply(fun, [htPage])
   bcGen bcMatrixGen htPage
 
 bcMatrixGen htPage ==

@@ -356,7 +356,7 @@ compExpression(db,x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
   (op := x.op) and ident? op and (fn := property(op,'SPECIAL)) =>
-    FUNCALL(fn,x,m,e)
+    apply(fn,[x,m,e])
   compForm(db,x,m,e)
 
 ++ Subroutine of compAtomWithModemap.
@@ -2022,7 +2022,7 @@ modeEqualSubst(m1,m,e) ==
 compBuiltinDomain(form is [functorName,:argl],m,e) ==
   fn := property(functorName,"makeFunctionList") or return nil
   diagnoseUnknownType(form,e)
-  [funList,e]:= FUNCALL(fn,form,form,e)
+  [funList,e]:= apply(fn,[form,form,e])
   exports := [cat for x in parentsOfBuiltinInstance form]
     where cat() ==
             x.rest is true => x.first

@@ -186,7 +186,7 @@ intloopProcess(n,interactive,s)==
      [lines,ptree]:=first s
      pfAbSynOp?(ptree,"command")=>
             if interactive then setCurrentLine tokPart ptree
-            FUNCALL($systemCommandFunction, tokPart ptree)
+            apply($systemCommandFunction,[tokPart ptree])
             intloopProcess(n ,interactive ,rest s)
      intloopProcess(intloopSpadProcess(n,lines,ptree,interactive)
                  ,interactive ,rest s)
@@ -286,7 +286,7 @@ nonBlank str ==
 ncloopCommand (line,n) ==
          a:=ncloopPrefix?('")include",line)=>
                   ncloopInclude1( a,n)
-         FUNCALL($systemCommandFunction,line)
+         apply($systemCommandFunction,[line])
          n
 
 ncloopEscaped x==
@@ -431,7 +431,7 @@ PullAndExecuteSpadSystemCommand stream ==
     rest stream
 
 ExecuteSpadSystemCommand string ==
-  FUNCALL($systemCommandFunction, string)
+  apply($systemCommandFunction,[string])
 
 
 clearMacroTable() ==

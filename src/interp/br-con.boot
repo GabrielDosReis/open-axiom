@@ -473,7 +473,7 @@ kcaPage1(htPage,kind,article,whichever,fn, isCatDescendants?) ==
     htpSetProperty(htPage,'heading,heading)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
-  ancestors := FUNCALL(fn, conform, domname)
+  ancestors := apply(fn, [conform, domname])
   if whichever ~= '"ancestor" then
     ancestors := augmentHasArgs(ancestors,conform)
   ancestors := listSort(function GLESSEQP,ancestors)
@@ -760,7 +760,7 @@ koaPageFilterByName(htPage,functionToCall) ==
   opAlist :=
       [x for x in htpProperty(htPage,'opAlist) | superMatch?(filter,DOWNCASE STRINGIMAGE first x)]
   htpSetProperty(htPage,'opAlist,opAlist)
-  FUNCALL(functionToCall,htPage,nil)
+  apply(functionToCall,[htPage,nil])
 
 --=======================================================================
 --                  Get Constructor Documentation

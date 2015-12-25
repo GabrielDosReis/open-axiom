@@ -1007,7 +1007,7 @@ listOfIdentifiersIn x ==
   x is [op,:l] => removeDuplicates ("append"/[listOfIdentifiersIn y for y in l])
   nil
  
-mapInto(x,fn) == [FUNCALL(fn,y) for y in x]
+mapInto(x,fn) == [apply(fn,[y]) for y in x]
  
 numOfOccurencesOf(x,y) ==
   fn(x,y,0) where
@@ -1295,7 +1295,7 @@ mutateConditionalFormWithUnaryFunction(form,fun) ==
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
-      subForms.first := FUNCALL(fun, first subForms)
+      subForms.first := apply(fun,[first subForms])
   form
 
 ++ Walk VM a binding-form mutating enclosed expression forms with
@@ -1307,9 +1307,9 @@ mutateBindingFormWithUnaryFunction(form,fun) ==
   for defs in tails inits repeat
     def := first defs
     def isnt [.,:.] => nil -- no initializer
-    def.rest.first := FUNCALL(fun, second def)
+    def.rest.first := apply(fun,[second def])
   for stmts in tails body repeat
-    stmts.first := FUNCALL(fun, first stmts)
+    stmts.first := apply(fun,[first stmts])
   form
 
 --% 

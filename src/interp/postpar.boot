@@ -80,7 +80,7 @@ postTran x ==
   x isnt [.,:.] => postAtom x
   op := first x
   op is 'QUOTE => x
-  symbol? op and (f:= property(op,'postTran)) => FUNCALL(f,x)
+  symbol? op and (f:= property(op,'postTran)) => apply(f,[x])
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]

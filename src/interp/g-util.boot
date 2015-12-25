@@ -404,7 +404,7 @@ ScanOrPairVec(f, ob) ==
                 tableValue($seen, ob) := true
                 for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
                 nil
-            FUNCALL(f, ob) =>
+            apply(f,[ob]) =>
                 THROW('ScanOrPairVecAnswer, true)
             nil
 
@@ -803,18 +803,18 @@ mergeInPlace(f,g,p,q) ==
    -- merge the two sorted lists p and q
    if null p then return p
    if null q then return q
-   if FUNCALL(f,FUNCALL(g, first p),FUNCALL(g, first q))
+   if apply(f,[apply(g,[first p]),apply(g,[first q])])
    then (r := t := p; p := rest p)
    else (r := t := q; q := rest q)
    while not null p and not null q repeat
-      if FUNCALL(f,FUNCALL(g,first p),FUNCALL(g,first q))
+      if apply(f,[apply(g,[first p]),apply(g,[first q])])
       then (t.rest := p; t := p; p := rest p)
       else (t.rest := q; t := q; q := rest q)
    if null p then t.rest := q else t.rest := p
    r
 
 mergeSort(f,g,p,n) ==
-   if n=2 and FUNCALL(f,FUNCALL(g,second p),FUNCALL(g,first p)) then
+   if n=2 and apply(f,[apply(g,[second p]),apply(g,[first p])]) then
       t := p
       p := rest p
       p.rest := t

@@ -105,7 +105,7 @@ systemCommand [[op,:argl],:options] ==
     helpSpad2Cmd [fun]
   fun := selectOption(fun,commandsForUserLevel $systemCommands,
     'commandUserLevelError)
-  FUNCALL(fun, argl)
+  apply(fun,[argl])
 
 commandsForUserLevel l == --[a for [a,:b] in l | satisfiesUserLevel(a)]
   c := nil
@@ -154,11 +154,11 @@ selectOptionLC(x,l,errorFunction) ==
 selectOption(x,l,errorFunction) ==
   member(x,l) => x                   --exact spellings are always OK
   not ident? x =>
-    errorFunction => FUNCALL(errorFunction,x,u)
+    errorFunction => apply(errorFunction,[x,u])
     nil
   u := [y for y in l | stringPrefix?(PNAME x,PNAME y)]
   u is [y] => y
-  errorFunction => FUNCALL(errorFunction,x,u)
+  errorFunction => apply(errorFunction,[x,u])
   nil
 
 terminateSystemCommand() ==
@@ -2155,8 +2155,8 @@ reportOpsFromUnitDirectly unitForm ==
         then
           constructorFunction:= GETL(top,"makeFunctionList") or
             systemErrorHere ["reportOpsFromUnitDirectly",top]
-          [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
-            $CategoryFrame)
+          [funlist,.]:= apply(constructorFunction,["$",unitForm,
+            $CategoryFrame])
           sigList := removeDuplicates MSORT
                       [[[a,b],true,slot c] for [a,b,c] in funlist]
                              where slot c == (c isnt [.,:.] => [c,0,1]; c)
@@ -2631,7 +2631,7 @@ filterListOfStringsWithFn(patterns,names,fn) ==
   (null patterns) or (null names) => names
   names' := nil
   for name in reverse names repeat
-    satisfiesRegularExpressions(FUNCALL(fn,name),patterns) =>
+    satisfiesRegularExpressions(apply(fn,[name]),patterns) =>
       names' := [name,:names']
   names'
 
@@ -2708,7 +2708,7 @@ zsystemdevelopment1(l,im) ==
       upf := [KAR optargs or _/VERSION, KADR optargs or _/WSNAME,
               KADDR optargs or '_*]
       fun := (opt is "patch" => '_/UPDATE_-LIB_-1; '_/UPDATE_-1)
-      CATCH('FILENAM, FUNCALL(fun, upf))
+      CATCH('FILENAM, apply(fun,[upf]))
       sayMessage '"   Update/patch is completed."
     null optargs =>
       sayBrightly ['"   An argument is required for",:bright opt]
@@ -2790,7 +2790,7 @@ handleNoParseCommands(unab, string) ==
   unab is "synonym" =>
     npsynonym(unab, (null spaceIndex => '""; subSequence(string, spaceIndex+1)))
   null spaceIndex =>
-    FUNCALL unab
+    apply(unab,[])
   unab in '( quit     _
              fin      _
              pquit    _
@@ -2799,7 +2799,7 @@ handleNoParseCommands(unab, string) ==
     sayKeyedMsg("S2IV0005", nil)
     nil
   funName := makeSymbol strconc('"np",STRING unab)
-  FUNCALL(funName, subSequence(string, spaceIndex+1))
+  apply(funName,[subSequence(string, spaceIndex+1)])
 
 
 npboot str ==

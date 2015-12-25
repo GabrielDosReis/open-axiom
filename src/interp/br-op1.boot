@@ -162,7 +162,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   -- the only place where specialMessage property is set seems to be commented. out
   if u := htpProperty(page,'specialMessage) then apply(first u,rest u)
   htSayStandard('"\beginscroll ")
-  FUNCALL(fn,page,opAlist,which,data) --apply branch function
+  apply(fn,[page,opAlist,which,data]) --apply branch function
   dbOpsExposureMessage()
   htSayStandard("\endscroll ")
   dbPresentOps(page,which,branch)
@@ -356,7 +356,7 @@ dbGatherData(htPage,opAlist,which,key) ==
   --create data, a list of the form ((entry,exposeFlag,:entries)...)
   for [op,:alist] in opAlist repeat
     for item in alist repeat
-      entry := FUNCALL(dataFunction,op,item)--get key item
+      entry := apply(dataFunction,[op,item])--get key item
       exposeFlag :=                         --is the current op-sig exposed?
         null (r := rest rest item) => true  --not given, assume yes
         r . 1                               --is  given, use value
@@ -465,7 +465,7 @@ dbReduceByForm(opAlist,form) ==
 dbReduceBySelection(opAlist,key,fn) ==
   acc := nil
   for [op,:alist] in opAlist repeat
-    items := [x for x in alist | FUNCALL(fn,x) = key] =>
+    items := [x for x in alist | apply(fn,[x]) = key] =>
       acc := [[op,:items],:acc]
   reverse! acc
 

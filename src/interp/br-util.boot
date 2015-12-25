@@ -464,7 +464,7 @@ bcNameCountTable(u,fn,gn,:options) ==
     if firstTime then firstTime := false
     else htSaySaturn '"&"
     htSay '"{"
-    htMakePage [[linkFunction,[FUNCALL(fn,x),'"",gn,i]]]
+    htMakePage [[linkFunction,[apply(fn,[x]),'"",gn,i]]]
     htSay '"}"
   htEndTable()
 

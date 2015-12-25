@@ -123,7 +123,7 @@ initializeSetVariables (setTree) ==
     st = 'FUNCTION =>
       -- here setVar is really the name of a function to call
       if functionp(setData.setVar)
-        then FUNCALL( setData.setVar,"%initialize%")
+        then apply(setData.setVar,["%initialize%"])
         else sayMSG '"   Function not implemented."
     st = 'INTEGER  =>
       symbolValue(setData.setVar) := setData.setDef
@@ -205,7 +205,7 @@ set1(l,setTree) ==
 --    (arg2 := selectOption(l.1,['default],nil)) => "%initialize%"
       KDR l
     if functionp(setData.setVar)
-      then FUNCALL( setData.setVar,setfunarg)
+      then apply(setData.setVar,[setfunarg])
       else sayMSG '"   Function not implemented."
     -- if so set, then show option information
     if $displaySetValue then displaySetOptionInformation(arg,setData)
@@ -279,7 +279,7 @@ displaySetOptionInformation(arg,setData) ==
   st = 'FUNCTION =>
     finishLine $OutputStream
     if functionp(setData.setVar)
-      then FUNCALL(setData.setVar,"%describe%")
+      then apply(setData.setVar,["%describe%"])
       else sayMSG '"   Function not implemented."
 
   st = 'INTEGER  =>
@@ -330,7 +330,7 @@ displaySetVariableSettings(setTree,label) ==
     st := setData.setType
     st = 'FUNCTION =>
       opt :=
-        functionp(setData.setVar) => FUNCALL( setData.setVar,"%display%")
+        functionp(setData.setVar) => apply(setData.setVar,["%display%"])
         '"unimplemented"
       if cons? opt then opt := [:[o,'" "] for o in opt]
       sayBrightly concat(setOption,'"%b",opt,'"%d")

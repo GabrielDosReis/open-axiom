@@ -207,7 +207,7 @@ bcMakeLinearEquations(i,number)==
       
 
 bcInputEquationsEnd htPage ==
-  fun := htpProperty(htPage, 'exitFunction) => FUNCALL(fun,htPage)
+  fun := htpProperty(htPage, 'exitFunction) => apply(fun,[htPage])
   systemError nil
 
 bcSolveEquationsNumerically(htPage,p) ==
