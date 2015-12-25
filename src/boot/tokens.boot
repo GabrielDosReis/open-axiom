@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2014, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -261,7 +261,6 @@ for i in [ _
   ["alphabetic?", "ALPHA-CHAR-P"], _
   ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
-  ["apply",      "APPLY"]  , _
   ["array?",    "ARRAYP"]  , _
   ["arrayRef",    "AREF"]  , _
   ["atom",        "ATOM"]  , _

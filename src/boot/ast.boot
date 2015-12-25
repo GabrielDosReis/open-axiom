@@ -1474,12 +1474,12 @@ genTypeAlias(head,body) ==
 translateForm x ==
   x isnt [.,:.] => x
   x.op is 'QUOTE => x
-  x.op is 'APPLY and x.args is [fun,:args] =>
+  x.op is 'apply and x.args is [fun,:args] =>
     lastItem args = 'NIL =>
-      ['FUNCALL,translateForm fun,:listMap!(butLast! args,function translateForm)]
+      ['FUNCALL,:listMap!(butLast! x.args,function translateForm)]
     args is [['LIST,:ys]] =>
       ['FUNCALL,translateForm fun,:listMap!(ys, function translateForm)]
-    listMap!(x,function translateForm)
+    ['APPLY,:listMap!(x.args,function translateForm)]
   x.op is 'LET =>
     bindings := [[var, translateForm init] for [var,init] in first x.args]
     [x.op,bindings,translateForm second x.args]

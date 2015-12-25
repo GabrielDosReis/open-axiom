@@ -1,3 +1,7 @@
+2015-12-25  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* boot/tokens.boot: Do not rename 'apply'.
+
 2015-12-24  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* boot/ast.boot (translateForm): New.

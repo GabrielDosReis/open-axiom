@@ -2865,7 +2865,7 @@
 (DEFUN |translateForm| (|x|)
   (LET* (|ISTMP#2| |bindings| |init| |var| |ys| |args| |fun| |ISTMP#1|)
     (COND ((NOT (CONSP |x|)) |x|) ((EQ (CAR |x|) 'QUOTE) |x|)
-          ((AND (EQ (CAR |x|) 'APPLY)
+          ((AND (EQ (CAR |x|) '|apply|)
                 (PROGN
                  (SETQ |ISTMP#1| (CDR |x|))
                  (AND (CONSP |ISTMP#1|)
@@ -2876,8 +2876,7 @@
            (COND
             ((EQ (|lastItem| |args|) 'NIL)
              (CONS 'FUNCALL
-                   (CONS (|translateForm| |fun|)
-                         (|listMap!| (|butLast!| |args|) #'|translateForm|))))
+                   (|listMap!| (|butLast!| (CDR |x|)) #'|translateForm|)))
             ((AND (CONSP |args|) (NULL (CDR |args|))
                   (PROGN
                    (SETQ |ISTMP#1| (CAR |args|))
@@ -2886,7 +2885,7 @@
              (CONS 'FUNCALL
                    (CONS (|translateForm| |fun|)
                          (|listMap!| |ys| #'|translateForm|))))
-            (T (|listMap!| |x| #'|translateForm|))))
+            (T (CONS 'APPLY (|listMap!| (CDR |x|) #'|translateForm|)))))
           ((EQ (CAR |x|) 'LET)
            (SETQ |bindings|
                    (LET ((|bfVar#3| NIL)
