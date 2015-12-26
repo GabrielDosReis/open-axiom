@@ -660,24 +660,21 @@ vectorLocation(db,op,sig,kind) ==
 -----------------------------SLOT1 DATABASE------------------------------------
 
 NRTputInLocalReferences(db,bod) ==
-  NRTputInHead(db,bod)
-
-NRTputInHead(db,bod) ==
   ident? bod and (k := assocIndex(db,dom)) => ['%tref,'$,k]
   do
     bod isnt [.,:.] => nil
-    bod is ['SPADCALL,:args,fn] =>
-      NRTputInTail(db,rest bod) --NOTE: args = copyTree of rest bod
+    bod is ['SPADCALL,:.] =>
+      NRTputInTail(db,bod.args)
+      fn := lastItem bod.args
       -- The following test allows function-returning expressions
       fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
         k := assocIndex(db,dom) => lastNode(bod).first := ['%tref,'_$,k]
-      NRTputInHead(db,fn)
     bod.op is '%when =>
       for cc in bod.args repeat NRTputInTail(db,cc)
     bod.op in '(QUOTE CLOSEDFN) => nil
     abstraction? bod =>
-      bod.absBody := NRTputInHead(db,bod.absBody)
-    NRTputInHead(db,first bod)
+      bod.absBody := NRTputInLocalReferences(db,bod.absBody)
+    NRTputInLocalReferences(db,first bod)
     NRTputInTail(db,rest bod)
   bod
 
@@ -691,7 +688,7 @@ NRTputInTail(db,x) ==
         y.first := ['SPADCHECKELT,'_$,k]
       --this reference must check that slot is a vector
       nil
-    NRTputInHead(db,u)
+    NRTputInLocalReferences(db,u)
   x
 
 
