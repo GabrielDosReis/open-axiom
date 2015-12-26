@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -600,10 +600,6 @@ $exitMode ==
 ++
 $leaveMode == 
   $EmptyMode
-
-++
-IDENTITY == 
-  function IDENTITY
 
 +++
 $IndexFilename ==
