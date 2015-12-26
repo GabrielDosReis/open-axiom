@@ -143,8 +143,8 @@ OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
 OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 AC_CONFIG_FILES([src/gui/gui.pro])
 
-AC_CONFIG_COMMANDS([$target/include/open-axiom/config],
-  [cp -p config/openaxiom-c-macros.h $target/include/open-axiom/config],
+AC_CONFIG_LINKS([${target}/include/open-axiom/config:config/openaxiom-c-macros.h],
+  [],
   [target=$target])
 
 AC_OUTPUT

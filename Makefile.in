@@ -155,7 +155,7 @@ CONFIG_CLEAN_FILES = src/lib/Makefile src/hyper/Makefile \
 	src/graph/Makefile src/graph/Gdraws/Makefile \
 	src/graph/view2D/Makefile src/graph/view3D/Makefile \
 	src/graph/viewAlone/Makefile src/graph/viewman/Makefile \
-	src/gui/gui.pro
+	src/gui/gui.pro ${target}/include/open-axiom/config
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)

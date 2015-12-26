@@ -19475,7 +19475,7 @@ ac_config_files="$ac_config_files src/graph/viewman/Makefile:config/var-def.mk:s
 ac_config_files="$ac_config_files src/gui/gui.pro"
 
 
-ac_config_commands="$ac_config_commands $target/include/open-axiom/config"
+ac_config_links="$ac_config_links ${target}/include/open-axiom/config:config/openaxiom-c-macros.h"
 
 
 cat >confcache <<\_ACEOF
@@ -20080,6 +20080,7 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
+config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -20109,6 +20110,9 @@ $config_files
 
 Configuration headers:
 $config_headers
+
+Configuration links:
+$config_links
 
 Configuration commands:
 $config_commands
@@ -20655,7 +20659,7 @@ do
     "src/graph/viewAlone/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewAlone/Makefile:config/var-def.mk:src/graph/viewAlone/Makefile.in:config/setup-dep.mk" ;;
     "src/graph/viewman/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewman/Makefile:config/var-def.mk:src/graph/viewman/Makefile.in:config/setup-dep.mk" ;;
     "src/gui/gui.pro") CONFIG_FILES="$CONFIG_FILES src/gui/gui.pro" ;;
-    "$target/include/open-axiom/config") CONFIG_COMMANDS="$CONFIG_COMMANDS $target/include/open-axiom/config" ;;
+    "${target}/include/open-axiom/config") CONFIG_LINKS="$CONFIG_LINKS ${target}/include/open-axiom/config:config/openaxiom-c-macros.h" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -20669,6 +20673,7 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
+  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -20966,7 +20971,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -21243,7 +21248,38 @@ $as_echo X"$_am_arg" |
 	  }
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
+  :L)
+  #
+  # CONFIG_LINK
+  #
 
+  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
+    :
+  else
+    # Prefer the file from the source tree if names are identical.
+    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
+      ac_source=$srcdir/$ac_source
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
+$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
+
+    if test ! -r "$ac_source"; then
+      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
+    fi
+    rm -f "$ac_file"
+
+    # Try a relative symlink, then a hard link, then a copy.
+    case $ac_source in
+    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
+	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
+    esac
+    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
+      ln "$ac_source" "$ac_file" 2>/dev/null ||
+      cp -p "$ac_source" "$ac_file" ||
+      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
+  fi
+ ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
@@ -22149,7 +22185,6 @@ compiler_lib_search_path=$lt_compiler_lib_search_path_CXX
 _LT_EOF
 
  ;;
-    "$target/include/open-axiom/config":C) cp -p config/openaxiom-c-macros.h $target/include/open-axiom/config ;;
 
   esac
 done # for ac_tag
