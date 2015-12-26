@@ -1300,8 +1300,6 @@
  
 (defmacro TL (&rest L) `(tail . ,L))
  
-(DEFUN LASTELEM (X) (car (|lastNode| X)))
- 
 (defun LISTOFATOMS (X)
   (COND ((NULL X) NIL)
         ((ATOM X) (LIST X))

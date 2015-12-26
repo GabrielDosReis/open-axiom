@@ -1,5 +1,9 @@
 2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/vmlisp.lisp (LASTELEM): Remove as unused.
+
+2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* interp/vmlisp.lisp (dispatchFunction): Remove.  Adjust users.
 	* interp/c-util.boot (lookupDefiningFunction): Use opcode
 	'%function' in lieu of 'dispatchFunction'.
