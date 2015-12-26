@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -365,7 +365,7 @@ dcOpPrint(op,index) ==
     name := $infovec.0.slotNumber
     name isnt [.,:.] => name
     name is ["CONS",'%constant,
-              ["FUNCALL", ["dispatchFunction", impl],"$"]] =>
+              ["FUNCALL", ['%function, impl],"$"]] =>
       kind := 'CONST
       impl
     '"looked up"

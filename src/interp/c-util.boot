@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1767,7 +1767,7 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 6. We have a location to a function descriptor.
   fun := domainRef(shell,loc)
   -- 6.1. A constant producing functions?
-  fun is [.,.,[.,['dispatchFunction,fun'],.]] => fun'
+  fun is [.,'%constant,[.,['%function,fun'],.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
     not integer? idx => nil          -- a UFO?

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -2426,7 +2426,7 @@ doIt(item,$predl) ==
         --Note that DescendCode, in CodeDefine, is looking for this
     second(item) := [op,$signatureOfForm]
       --This is how the signature is updated for buildFunctor to recognise
-    third(item) := ['dispatchFunction,t.expr]
+    third(item) := ['%function,t.expr]
     item.rest.rest.rest := nil
   u := compOrCroak(item,$EmptyMode,$e) =>
     ([code,.,$e]:= u; item.first := first code; item.rest := rest code)

@@ -231,9 +231,6 @@
 (defmacro |function| (name)
   `(FUNCTION ,name))
 
-(defmacro |dispatchFunction| (name)
-  `(FUNCTION ,name))
-
 (defmacro SPADCALL (&rest L)
   (let ((args (butlast l))
 	(fn (car (|lastNode| l)))
