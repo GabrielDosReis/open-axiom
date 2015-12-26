@@ -1304,7 +1304,7 @@ Sy2Dmp(u,source,target is [dmp,vl,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    u:= wrap LIST [vector [(n=i => 1; 0) for i in 0..len-1],:1]
+    u:= wrap [[vector [(n=i => 1; 0) for i in 0..len-1],:1]]
     objValUnwrap(coerceInt(objNew(u,[dmp,vl,$Integer]),target))
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
@@ -1320,7 +1320,7 @@ Sy2NDmp(u,source,target is [ndmp,vl,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    u:= wrap LIST [vector [(n=i => 1; 0) for i in 0..len-1],:1]
+    u:= wrap [[vector [(n=i => 1; 0) for i in 0..len-1],:1]]
     objValUnwrap(coerceInt(objNew(u,[ndmp,vl,$Integer]),target))
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
@@ -1528,8 +1528,8 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
 
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
-    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain($One,S)]
+    [[vector [(n=i => 1; 0) for i in 0..len-1],
+      :getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1539,8 +1539,8 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
 
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
-    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain($One,S)]
+    [[vector [(n=i => 1; 0) for i in 0..len-1],
+      :getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1558,8 +1558,8 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
 
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
-    LIST [vector [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain($One,S)]
+    [[vector [(n=i => 1; 0) for i in 0..len-1],
+      :getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
 

@@ -41,7 +41,7 @@ sayFunctionSelection(op,args,target,dc,func) ==
   $abbreviateTypes : local := true
   startTimingProcess 'debug
   fsig := formatSignatureArgs args
-  if not LISTP fsig then fsig := LIST fsig
+  if not LISTP fsig then fsig := [fsig]
   if func then func := bright ['"by ",func]
   sayMSG concat ['"%l",:bright '"Function Selection for",op,:func,'"%l",
     '"      Arguments:",:bright fsig]

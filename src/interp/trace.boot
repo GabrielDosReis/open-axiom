@@ -130,7 +130,7 @@ trace1 l ==
       x is [domain,:opList] and vector? domain =>
         sayKeyedMsg("S2IT0003",[devaluate domain])
       $options:= [:newOptions,:LASSOC(x,$optionAlist)]
-      trace1 LIST x
+      trace1 [x]
   null l => nil
   l is ["?"] => _?t()
   traceList:= [transTraceItem x for x in l] or return nil

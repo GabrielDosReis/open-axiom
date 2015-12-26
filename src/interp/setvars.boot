@@ -618,7 +618,7 @@ setFortDir arg ==
 
 
 describeSetFortDir() ==
-  sayBrightly LIST (
+  sayBrightly [
    '"%b",'")set fortran calling directory",'"%d",_
    '" is used to tell OpenAxiom where",'"%l",_
    '" to place generated FORTRAN files. This must be the name ",'"%l",_
@@ -626,7 +626,7 @@ describeSetFortDir() ==
    '" to write (including the final slash).",'"%l",'"%l",_
    '" Syntax:",'"%l",_
    '"   )set fortran calling directory DIRECTORYNAME",'"%l",'"%l",_
-   '" The current setting is",'"%b",$fortranDirectory,'"%d")
+   '" The current setting is",'"%b",$fortranDirectory,'"%d"]
 
 
 setLinkerArgs arg ==

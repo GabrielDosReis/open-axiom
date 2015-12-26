@@ -2417,7 +2417,7 @@ undoSteps(m,beforeOrAfter) ==
   if beforeOrAfter = 'before then  --do one additional undo for )before
     env := undoSingleStep(second lastTailSeen,env)
   $frameRecord := rest $frameRecord --flush the effect of extra recordFrame
-  $InteractiveFrame := LIST LIST env
+  $InteractiveFrame := [[env]]
 
 
 undoSingleStep(changes,env) ==

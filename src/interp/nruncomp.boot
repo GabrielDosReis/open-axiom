@@ -399,7 +399,7 @@ stuffDomainSlots dollar ==
   for i in (6 + # rest domname)..maxIndex template
     | item := vectorRef(template,i) repeat
       stuffSlot(dollar,i,item)
-  domainDirectory(dollar) := LIST(lookupFunction,dollar,infovec.1)
+  domainDirectory(dollar) := [lookupFunction,dollar,infovec.1]
   domainAttributes(dollar) := infovec.2
   proto4 := infovec.3
   domainData(dollar) := 

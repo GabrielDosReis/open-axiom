@@ -159,7 +159,7 @@ SigListUnion(extra,original,principal,tbl) ==
     [esig,epred,:.]:= e
     eimplem:=[]
     for x in SigListOpSubsume(e,original) repeat
-        --PRETTYPRINT(LIST("SigListOpSubsume",e,x))
+        --PRETTYPRINT(["SigListOpSubsume",e,x])
       not MachineLevelSubsume(first e,first x) =>
         --systemError '"Source level subsumption not implemented"
         original:= [e,:original]
