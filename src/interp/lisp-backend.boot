@@ -1,4 +1,4 @@
--- Copyright (C) 2011-2013, Gabriel Dos Reis.
+-- Copyright (C) 2011-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -661,6 +661,7 @@ for x in [
     ['%exit,     :'EXIT],
     ['%when,     :'COND],
     ['%scope,    :'BLOCK],
+    ['%constant, :['FUNCTION,'IDENTITY]],
 
     -- I/O stream functions
     ['%writeString,  :'WRITE_-STRING],

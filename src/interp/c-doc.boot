@@ -1043,7 +1043,7 @@ checkSayBracket x ==
 checkBeginEnd u ==
   beginEndStack := nil
   while u repeat
-    IDENTITY
+    do
       x := first u
       string? x and x.0 = $charBack and #x > 2 and not tableValue($htMacroTable,x)
         and not (x is '"\spadignore") and IFCAR IFCDR u = $charLbrace

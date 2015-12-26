@@ -527,7 +527,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   for catImplem in findOperatorImplementations sig repeat
     catImplem is [q,.,index] and q in '(ELT CONST) =>
       if q = 'CONST and body is ['CONS,a,b] then
-         body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
+         body := ['CONS,'%constant,['FUNCALL,a,b]]
       body:= ['%store,['%tref,'$,index],body]
       not vector? $SetFunctions => nil --packages don't set it
       TruthP vectorRef($SetFunctions,index) =>   -- the function was already assigned

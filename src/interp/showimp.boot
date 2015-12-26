@@ -364,7 +364,7 @@ dcOpPrint(op,index) ==
     slotNumber = 1 => '"missing"
     name := $infovec.0.slotNumber
     name isnt [.,:.] => name
-    name is ["CONS","IDENTITY",
+    name is ["CONS",'%constant,
               ["FUNCALL", ["dispatchFunction", impl],"$"]] =>
       kind := 'CONST
       impl
