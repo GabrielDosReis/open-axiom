@@ -283,7 +283,7 @@ dcSlots con ==
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
     null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",toString(i - 5))]
     item isnt [.,:.] => sayBrightly ['"fun  ",item]
-    item is ['%closure,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
+    item is ['%constant,[a,.]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
  
 dcOpLatchPrint(op,index) ==
@@ -364,8 +364,7 @@ dcOpPrint(op,index) ==
     slotNumber = 1 => '"missing"
     name := $infovec.0.slotNumber
     name isnt [.,:.] => name
-    name is ['%closure,'%constant,
-              ["FUNCALL", ['%function, impl],"$"]] =>
+    name is ['%constant,[impl,"$"]] =>
       kind := 'CONST
       impl
     '"looked up"

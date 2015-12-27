@@ -954,7 +954,6 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
           [f,:r] := cell
           f is 'nowhere => 'nowhere           --see replaceGoGetSlot
           f is 'makeSpadConstant => 'constant
-          f is '%constant => 'constant
           f is 'newGoGet => substitute('_$,domname,devaluate first r)
           not vector? r => systemError devaluateList r
           substitute('_$,domname,devaluate r)

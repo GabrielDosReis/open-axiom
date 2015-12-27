@@ -1766,8 +1766,8 @@ lookupDefiningFunction(op,sig,dc) ==
 
   -- 6. We have a location to a function descriptor.
   fun := domainRef(shell,loc)
-  -- 6.1. A constant producing functions?
-  fun is [.,'%constant,[.,['%function,fun'],.]] => fun'
+  -- 6.1. A constant producing function?
+  fun is ['%constant,[fun',.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
     not integer? idx => nil          -- a UFO?
