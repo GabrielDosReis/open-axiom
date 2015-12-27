@@ -480,7 +480,7 @@ DescendCode(db,code,flag,viewAssoc,e) ==
     dom :=
       u := symbolTarget('$,viewAssoc) => ['getDomainView,'$,u]
       '$
-    body:= ['CONS,implem,dom]
+    body:= ['%closure,implem,dom]
     SetFunctionSlots(sig,body,flag,'original)
   code is ['_:,:.] => (code.first := '%list; code.rest := nil)
       --Yes, I know that's a hack, but how else do you kill a line?
@@ -520,8 +520,8 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   null body => return nil
   for catImplem in findOperatorImplementations sig repeat
     catImplem is [q,.,index] and q in '(ELT CONST) =>
-      if q = 'CONST and body is ['CONS,a,b] then
-         body := ['CONS,'%constant,['FUNCALL,a,b]]
+      if q = 'CONST and body is ['%closure,a,b] then
+         body := ['%closure,'%constant,['FUNCALL,a,b]]
       body:= ['%store,['%tref,'$,index],body]
       not vector? $SetFunctions => nil --packages don't set it
       TruthP vectorRef($SetFunctions,index) =>   -- the function was already assigned

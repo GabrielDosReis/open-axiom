@@ -463,7 +463,7 @@ getImports conname == --called by mkUsersHashTable
   u := [doImport(i,template)
           for i in 5..(maxIndex template) | test]  where
     test() == template.i is [op,:.] and ident? op
-              and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
+              and not (op in '(Mapping Union Record Enumeration CONS QUOTE local %closure))
     doImport(x,template) ==
       x is [op,:args] =>
         op = 'QUOTE or op = '%eval => first args

@@ -334,7 +334,7 @@ descendCodeTran(db,u,condList) ==
   null u => nil
   u is ['%list] => nil
   u is ['%store,['%tref,.,i],a] =>
-    null condList and a is ['CONS,fn,:.] =>
+    null condList and a is ['%closure,fn,:.] =>
       u.first := '%list
       u.rest := nil
       domainRef(dbTemplate db,i) :=
@@ -379,7 +379,7 @@ stuffSlot(dollar,i,item) ==
   vectorRef(dollar,i) :=
     item isnt [.,:.] => [symbolFunction item,:dollar]
     item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
-    item is ['CONS,.,['FUNCALL,a,b]] =>
+    item is ['%closure,.,['FUNCALL,a,b]] =>
       b is '$ => ['makeSpadConstant,eval a,dollar,i]
       sayBrightlyNT '"Unexpected constant environment!!"
       pp devaluate b
