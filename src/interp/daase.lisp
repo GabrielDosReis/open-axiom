@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2013, Gabriel Dos Reis.
+;; Copyright (C) 2007-2015, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -223,6 +223,7 @@
                             ; for a functor, this is the template.
  lookup-function	    ; for a functor, lookup function.  For category
                             ; constructor, default package constructor.
+ optable                    ; for a functor, operation table.
  ) ; database structure
 
 (deftype |%Database| nil 'database)
@@ -298,6 +299,9 @@
 
 (defmacro |dbTemplate| (db)
   `(database-template ,db))
+
+(defmacro |dbOperationTable| (db)
+  `(database-optable ,db))
 
 (defmacro |dbLookupFunction| (db)
   `(database-lookup-function ,db))

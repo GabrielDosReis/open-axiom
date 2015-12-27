@@ -1,3 +1,11 @@
+2015-12-27  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/daase.lisp (DATABASE): Add new field 'optable'.
+	(dbOperationTable): New accessor macro.
+	* interp/define.boot (makeCompactDirect): Tidy.  Set dbOperationTable.
+	* interp/lisplib.boot (writeOperationTable): New.
+	(finalizeLisplib): Call it.
+
 2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/nruncomp.boot (buildFunctor): Remove use of

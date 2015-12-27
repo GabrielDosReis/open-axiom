@@ -407,9 +407,10 @@ makeCompactDirect(db,u) ==
   $byteVecAcc: local := nil
   [nam,[addForm,:opList]] := u
   --pp opList 
-  d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(db,op,items)]
+  d := [:[op,y] for [op,:items] in opList
+          | y := makeCompactDirect1(db,op,items)]
   dbByteList(db) := [:dbByteList db,:"append"/reverse! $byteVecAcc]
-  vector("append"/d)
+  dbOperationTable(db) := vector d
  
 makeCompactDirect1(db,op,items) ==
 --NOTES: creates byte codes for ops implemented by the domain

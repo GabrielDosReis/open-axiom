@@ -473,6 +473,10 @@ writeTemplate db ==
   dbConstructorKind db = 'category => nil
   writeLoadInfo(db,dbTemplate db,'template,'dbTemplate)
 
+writeOperationTable db ==
+  dbConstructorKind db = 'category => nil
+  writeLoadInfo(db,dbOperationTable db,'optable,'dbOperationTable)
+
 writeLookupFunction db ==
   fun := dbLookupFunction db =>
     writeLoadInfo(db,quote fun,'lookupFunction,'dbLookupFunction)
@@ -569,6 +573,7 @@ finalizeLisplib(db,libName) ==
      $NRTslot1PredicateList : local := []
      genInitialAttributeAlist(db,rest opsAndAtts)
   writeSuperDomain db
+  writeOperationTable db
   writeCapsuleLevelDefinitions db
   writeAttributes db
   writePredicates db
