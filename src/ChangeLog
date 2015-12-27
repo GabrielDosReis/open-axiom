@@ -1,5 +1,13 @@
 2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/nruncomp.boot (buildFunctor): Remove use of
+	$ConstantAssignments. 
+	* interp/functor.boot (DescendCode): Remove dead and bogus code
+	for constant creation.
+	(ConstantCreator): Remove.
+
+2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* interp/functor.boot (addConditionToGuard): New.  Split out of
 	DescendCode. 
 	(viewsUnderCondition): Likewise.

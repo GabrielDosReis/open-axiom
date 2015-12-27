@@ -449,7 +449,6 @@ buildFunctor(db,sig,code,$locals,$e) ==
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
-  $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
   $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
   $extraParms:local := nil  --Set in DomainSubstitutionFunction
@@ -515,9 +514,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
       [addToSlam($definition,"$")]
 
   --CODE: part 3
-  $ConstantAssignments :=
-      [NRTputInLocalReferences(db,code) for code in $ConstantAssignments]
-  codePart3 := [:$ConstantAssignments,:$epilogue]
+  codePart3 := $epilogue
   ans := ["%bind",bindings,
            ['%seq,:washFunctorBody optFunctorBody
               [:codePart1,:codePart2,:codePart3],"$"]]
