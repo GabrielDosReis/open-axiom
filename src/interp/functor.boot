@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -421,6 +421,19 @@ DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes) ==
       code:=[v,:code]
   [["%LET",instantiatedBase,base],:code]
  
+++ In a conditional branch, 'cond' is the new condition guarding
+++ a branch; return an updated predicate taking into account the
+++ logical combination of preceding guards and an updated
+++ 'continuation predicate reflecting the new condition.
+addConditionToGuard(cond,existing) ==
+  TruthP cond => [existing,:existing]
+  TruthP existing => [cond,:['NOT,cond]]
+  [['AND,existing,cond],:['AND,existing,['NOT,cond]]]
+
+viewsUnderCondition(views,cond) ==
+  cond is ['HasCategory,dom,cat] => [[dom,:cat],:views]
+  views
+
 DescendCode(db,code,flag,viewAssoc,e) ==
   -- flag = true if we are walking down code always executed;
   -- otherwise set to conditions in which
@@ -440,17 +453,9 @@ DescendCode(db,code,flag,viewAssoc,e) ==
   code is ['%when,:condlist] =>
     c:= [[u2:= ProcessCond(db,first u,e),:q] for u in condlist] where q() ==
           null u2 => nil
-          f:=
-            TruthP u2 => flag;
-            TruthP flag =>
-               flag := ['NOT,u2]
-               u2
-            flag := ['AND,flag,['NOT,u2]];
-            ['AND,flag,u2]
-          [DescendCode(db,v, f,
-            if first u is ['HasCategory,dom,cat]
-              then [[dom,:cat],:viewAssoc]
-              else viewAssoc,e) for v in rest u]
+          [f,:flag] := addConditionToGuard(u2,flag)
+          [DescendCode(db,v,f,viewsUnderCondition(viewAssoc,first u),e)
+             for v in rest u]
     TruthP CAAR c => ['%seq,:CDAR c]
     while (c and (last c is [c1] or last c is [c1,[]]) and
             (c1 = '%true or c1 is ['HasAttribute,:.])) repeat

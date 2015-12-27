@@ -1,5 +1,10 @@
 2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/functor.boot (addConditionToGuard): New.  Split out of
+	DescendCode. 
+	(viewsUnderCondition): Likewise.
+
+2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 	* interp/vmlisp.lisp (LASTELEM): Remove as unused.
 
 2015-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
