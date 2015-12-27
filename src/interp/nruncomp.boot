@@ -665,7 +665,7 @@ NRTputInLocalReferences(db,bod) ==
     bod isnt [.,:.] => nil
     bod is ['SPADCALL,:.] =>
       NRTputInTail(db,bod.args)
-      fn := lastItem bod.args
+      fn := last bod.args
       -- The following test allows function-returning expressions
       fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
         k := assocIndex(db,dom) => lastNode(bod).first := ['%tref,'_$,k]

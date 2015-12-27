@@ -379,10 +379,6 @@ displayTextFile f ==
     stream ~= nil => closeStream stream
 
 --%
-macro last x ==
-  lastNode(x).first
-
---%
 macro loopBody x ==
   take(-2,x).first
 

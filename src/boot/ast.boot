@@ -1475,7 +1475,7 @@ translateForm x ==
   x isnt [.,:.] => x
   x.op is 'QUOTE => x
   x.op is 'apply and x.args is [fun,:args] =>
-    lastItem args = 'NIL =>
+    last args = 'NIL =>
       ['FUNCALL,:listMap!(butLast! x.args,function translateForm)]
     args is [['LIST,:ys]] =>
       ['FUNCALL,translateForm fun,:listMap!(ys, function translateForm)]

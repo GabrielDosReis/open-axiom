@@ -46,7 +46,7 @@ namespace BOOTTRAN
 module utility (objectMember?, symbolMember?, stringMember?,
   charMember?, scalarMember?, listMember?, reverse, reverse!,
   lastNode, append, append!, copyList, substitute, substitute!,
-  listMap, listMap!, butLast, butLast!, lastItem,
+  listMap, listMap!, butLast, butLast!, last,
   setDifference, setUnion, setIntersection,
   symbolAssoc, applySubst, applySubst!, applySubstNQ, objectAssoc,
   invertSubst, substTarget, substSource,
@@ -59,7 +59,7 @@ module utility (objectMember?, symbolMember?, stringMember?,
     append!: (%List %Thing,%List %Thing) -> %List %Thing
     copyList: %List %Thing -> %List %Thing
     lastNode: %List %Thing -> %Maybe %Node %Thing
-    lastItem: %List %Thing -> %Thing
+    last: %List %Thing -> %Thing
     butLast: %List %Thing -> %List %Thing
     butLast!: %List %Thing -> %List %Thing
     removeSymbol: (%List %Thing, %Symbol) -> %List %Thing
@@ -200,7 +200,7 @@ lastNode l ==
   l
 
 --% return the content of the last item in the list `l'.
-lastItem l ==
+last l ==
   first lastNode l
 
 --% return a copy of the input list except the last cons-cell.
