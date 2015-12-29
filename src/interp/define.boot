@@ -489,11 +489,11 @@ makeCategoryAlist(db,e) ==
   pcAlist := [:[[x,:true] for x in $uncondAlist],:$condAlist]
   levelAlist := depthAssocList(substSource pcAlist,hashTable 'EQUAL)
   opcAlist := sortBy(function(x +-> LASSOC(first x,levelAlist)),pcAlist)
-  newPairlis := [[i,:b] for [.,:b] in dbFormalSubst db for i in 6..]
+  newPairlis := [[i,:b] for [.,:b] in dbFormalSubst db for i in $NRTbase..]
   slot1 := [[a,:k] for [a,:b] in dbSubstituteAllQuantified(db,opcAlist)
                    | (k := predicateBitIndex(db,b,e)) ~= -1]
   slot0 := [getCategoryConstructorDefault a.op for [a,:.] in slot1]
-  sixEtc := [5 + i for i in 1..dbArity db]
+  sixEtc := [$AddChainIndex + i for i in 1..dbArity db]
   formals := substTarget dbFormalSubst db
   for x in slot1 repeat
     x.first := applySubst(pairList(['$,:formals],["$$",:sixEtc]),first x)
@@ -602,7 +602,7 @@ extendsCategoryBasic(dom,u,v,tbl,env) ==
   isCategoryForm(v,env) => catExtendsCat?(u,v,tbl,env)
   v is ['SIGNATURE,op,sig,:.] =>
     uVec := getCategoryObjectIfCan(tbl,u,env) or return false
-    or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in 6..maxIndex uVec]
+    or/[categoryRef(uVec,i) is [[=op,=sig],:.] for i in $NRTbase..maxIndex uVec]
   u is ['CATEGORY,.,:l] =>
     v is ['IF,:.] => listMember?(v,l)
     false

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
 
 import sys_-macros
 import c_-util
+import nruncomp
 namespace BOOT
 
 $noCategoryDomains == '(Mode SubDomain)
@@ -251,7 +252,7 @@ lookupInCategories(op,sig,dom,dollar) ==
               eval applySubst(pairList(varList,valueList),catform),dollar)
         for catform in catformList | catform ~= nil ] where
            valueList() ==
-              [MKQ dom,:[MKQ domainRef(dom,5+i) for i in 1..(#rest catform)]]
+              [MKQ dom,:[MKQ domainRef(dom,$AddChainIndex+i) for i in 1..(#rest catform)]]
   r or lookupDisplay(op,sig,'"category defaults",'"-- not found")
 
 --=======================================================

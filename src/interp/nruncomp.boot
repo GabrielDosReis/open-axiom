@@ -37,12 +37,15 @@ import profile
 import functor
 namespace BOOT
 
+++ The "add-chain" index for a functor instance.
+$AddChainIndex == 5
 
 ++ The base index for encoding items into a functor template 
 ++ (e.g. domainShell).  This is also the minimum length that a
 ++ template could possibly have.
-$NRTbase ==
-  6
+++ Note: This is the index right after $AddChainIndex.
+++ Note: It is equal to $FirstParamSlot.
+$NRTbase == $AddChainIndex + 1
 
 ++
 $devaluateList := []
@@ -77,7 +80,7 @@ addDeltaCode db ==
   for i in $NRTbase..
     for [item,:compItem] in reverse dbUsedEntities db repeat
       domainRef(dbTemplate db,i) := deltaTran(db,item,compItem)
-  domainRef(dbTemplate db,5) :=
+  domainRef(dbTemplate db,$AddChainIndex) :=
     $NRTaddForm =>
       $NRTaddForm is ["%Comma",:y] => reverse! y
       NRTencode(db,$NRTaddForm,$addForm)
@@ -238,7 +241,7 @@ assocIndex: (%Thing,%Form) -> %Maybe %Short
 assocIndex(db,x) ==
   x = nil => x
   x is '$ => 0
-  x = $NRTaddForm => 5
+  x = $NRTaddForm => $AddChainIndex
   dbEntitySlot(db,['%domain,x])
 
 getLocalIndex: (%Thing,%Form) -> %Short
@@ -391,9 +394,9 @@ stuffDomainSlots dollar ==
   infovec := property(opOf domname,'infovec)
   lookupFunction := symbolFunction getLookupFun infovec
   template := infovec.0
-  if vectorRef(template,5) then
-    stuffSlot(dollar,5,vectorRef(template,5))
-  for i in (6 + # rest domname)..maxIndex template
+  if vectorRef(template,$AddChainIndex) then
+    stuffSlot(dollar,$AddChainIndex,vectorRef(template,$AddChainIndex))
+  for i in ($NRTbase + # rest domname)..maxIndex template
     | item := vectorRef(template,i) repeat
       stuffSlot(dollar,i,item)
   domainDirectory(dollar) := [lookupFunction,dollar,infovec.1]
@@ -489,7 +492,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
 	for arg in args]
     if symbolMember?($NRTaddForm,$locals) then
        addargname := $FormalMapVariableList.(symbolPosition($NRTaddForm,$locals))
-       argStuffCode := [['%store,['%tref,'$,5],addargname],:argStuffCode]
+       argStuffCode := [['%store,['%tref,'$,$AddChainIndex],addargname],:argStuffCode]
     [['stuffDomainSlots,'$],:argStuffCode,
        :predBitVectorCode2,storeOperationCode]
 

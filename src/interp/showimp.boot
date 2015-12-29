@@ -33,6 +33,7 @@
 
 
 import c_-util
+import nruncomp
 namespace BOOT
 
 $returnNowhereFromGoGet := false
@@ -228,7 +229,7 @@ showAttributes dom ==
 
 showGoGet dom ==
   numvec := CDDR vectorRef(dom,4)
-  for i in 6..maxIndex dom | (slot := vectorRef(dom,i)) is ['newGoGet,dol,index,:op] repeat
+  for i in $NRTbase..maxIndex dom | (slot := vectorRef(dom,i)) is ['newGoGet,dol,index,:op] repeat
     numOfArgs := arrayRef(numvec,index)
     whereNumber := arrayRef(numvec,index := index + 1)
     signumList := 
@@ -277,7 +278,7 @@ dcSlots con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   template := $infovec.0
-  for i in 5..maxIndex template repeat
+  for i in $AddChainIndex..maxIndex template repeat
     sayBrightlyNT bright i
     item := template.i
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
@@ -469,7 +470,7 @@ dcSize(:options) ==
   lazy  := 0  --# of lazy domain slots
   fun   := 0  --# of function slots
   lazyNodes := 0 --# of nodes needed for lazy domain slots
-  for i in 5..maxindex repeat
+  for i in $AddChainIndex..maxindex repeat
     (item := template.i) isnt [.,:.] =>   fun := fun + 1
     integer? first item    => latch := latch + 1
     'T                 =>  

@@ -53,7 +53,7 @@ CategoryPrint(D,$e) ==
     SAY("This has an alternate view: slot ",rest u," corresponds to ",first u)
   for u in third categoryRef(D,4) repeat
     SAY("This has a local domain: slot ",rest u," corresponds to ",first u)
-  for j in 6..maxIndex D repeat
+  for j in $NRTbase..maxIndex D repeat
     u := categoryRef(D,j)
     null u => SAY "another domain"
     first u isnt [.,:.] => SAY("Alternate View corresponding to: ",u)
@@ -115,7 +115,7 @@ DomainPrint1(D,brief,$e) ==
           vv.j := name
     if i>1 then
       uu.1 := uu.2 := uu.5 := '"As in first view"
-    for i in 6..maxIndex uu repeat
+    for i in $NRTbase..maxIndex uu repeat
       uu.i := DomainPrintSubst(uu.i,Sublis)
       if vector? uu.i then
         name := DPname()
@@ -382,7 +382,7 @@ DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes) ==
   n:=maxIndex cat
   code:=
     [u
-      for i in 6..n | cons? cat.i and cons? (sig:= first cat.i)
+      for i in $NRTbase..n | cons? cat.i and cons? (sig:= first cat.i)
          and
           (u:=
             SetFunctionSlots(applySubst(slist,sig),['ELT,instantiatedBase,i],flag,
@@ -399,7 +399,7 @@ DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes) ==
           true
       code is ['%store,['%tref,name,number],u'] =>
         update(u',copyvec,[[name,:number],:sofar])
-  for i in 6..n repeat
+  for i in $NRTbase..n repeat
     for u in copyvec.i repeat
       [name,:count]:=u
       j:=i+1
@@ -468,7 +468,7 @@ DescendCode(db,code,flag,viewAssoc,e) ==
     u := member(name,$locals) =>
         CONTAINED('$,body) and isDomainForm(body,e) =>
           --instantiate domains which depend on $ after constants are set
-          code:=['%store,['%tref,['%tref,'$,5],#$locals-#u],code]
+          code:=['%store,['%tref,['%tref,'$,$AddChainIndex],#$locals-#u],code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
             [['%when,[ProcessCond(db,flag,e),code]],:$epilogue]
@@ -726,7 +726,7 @@ getViewsConditions(u,tbl) ==
  
 DescendCodeVarAdd(db,base,flag) ==
    [SetFunctionSlots(sig,implem,flag,'adding) repeat
-       for i in 6..maxIndex dbDomainShell db |
+       for i in $NRTbase..maxIndex dbDomainShell db |
          categoryRef(dbDomainShell db,i) is [sig:=[op,types],:.] and
            LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
                   [[pred,implem]]]

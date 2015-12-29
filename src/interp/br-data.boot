@@ -33,6 +33,7 @@
 
 
 import bc_-util
+import nruncomp
 namespace BOOT
 
 lefts u ==
@@ -461,7 +462,7 @@ getImports conname == --called by mkUsersHashTable
   infovec := dbInfovec conname or return nil
   template := infovec.0
   u := [doImport(i,template)
-          for i in 5..(maxIndex template) | test]  where
+          for i in $AddChainIndex..(maxIndex template) | test]  where
     test() == template.i is [op,:.] and ident? op
               and not (op in '(Mapping Union Record Enumeration CONS QUOTE local %constant))
     doImport(x,template) ==

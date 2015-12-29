@@ -116,7 +116,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,principal) ==
   categoryAttributes(v) := attList
   categoryRef(v,3) := $Category
   if principal ~= nil then
-    for x in 6..#principal-1 repeat 
+    for x in $NRTbase..#principal-1 repeat 
       categoryRef(v,x) := categoryRef(principal,x)
     categoryAssociatedTypes(v) :=
       [categoryPrincipals principal,
