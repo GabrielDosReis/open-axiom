@@ -389,10 +389,7 @@ stuffSlot(dollar,i,item) ==
 stuffDomainSlots dollar ==
   domname := devaluate dollar
   infovec := property(opOf domname,'infovec)
-  lookupFunction := getLookupFun infovec
-  lookupFunction :=
-    lookupFunction is 'lookupIncomplete => function lookupIncomplete
-    function lookupComplete
+  lookupFunction := symbolFunction getLookupFun infovec
   template := infovec.0
   if vectorRef(template,5) then
     stuffSlot(dollar,5,vectorRef(template,5))
