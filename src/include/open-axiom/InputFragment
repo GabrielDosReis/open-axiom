@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014, Gabriel Dos Reis.
+// Copyright (C) 2014-2015, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -42,9 +42,8 @@ namespace OpenAxiom {
    // A physical line is just raw text, coupled with location
    // information such as line and indentation column.
    struct Line : std::string {
-      LineNumber number;
-      ColumnIndex indent;
-      Line() : number(), indent() { }
+      LineNumber number { };
+      ColumnIndex indent { };
       
       std::string sub_string(ColumnIndex s, ColumnIndex e) const {
          return substr(s, e - s);

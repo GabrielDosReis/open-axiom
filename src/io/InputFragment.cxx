@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014, Gabriel Dos Reis.
+// Copyright (C) 2014-2015, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -35,7 +35,10 @@
 #include <open-axiom/InputFragment>
 #include <algorithm>
 #include <iterator>
+#include <istream>
 #include <ostream>
+#include <iostream>
+#include <open-axiom/SourceInput>
 
 namespace OpenAxiom {
    // Formatting program fragments.
@@ -43,5 +46,87 @@ namespace OpenAxiom {
       std::copy(f.begin(), f.end(),
                 std::ostream_iterator<std::string>(os, "\n"));
       return os;
+   }
+   
+   // Return the indentation level of a line.
+   // FIXME: reject or expand tabs as appropriate.
+   static ColumnIndex indentation(const Line& line) {
+      ColumnIndex idx { };
+      for (auto c : line) {
+         if (not isblank(c))
+            break;
+         ++idx;
+      }
+      return idx;
+   }
+
+   // Remove trailing white-space characters from the line.
+   static Line& trim_right(Line& line) {
+      auto n = line.length();
+      while (n > 0 and isblank(line[n-1]))
+         --n;
+      line.resize(n);
+      return line;
+   }
+   
+   // Clean up and dress up the line with indentation information.
+   static Line& prop_up(Line& line) {
+      line.indent = indentation(trim_right(line));
+      return line;
+   }
+
+   // Return true if line is entirely a positive comment, i.e. a description.
+   static bool positive_comment(const Line& line) {
+      if (line.indent + 1 >= line.length())
+         return false;
+      return line[line.indent] == '+' and line[line.indent + 1] == '+';
+   }
+
+   // Return true if line is entirely a negative comment.
+   static bool negative_comment(const Line& line) {
+      if (line.indent + 1 >= line.length())
+         return false;
+      return line[line.indent] == '-' and line[line.indent + 1] == '-';
+   }
+
+   // Return true if line is either empty or a negative comment.
+   static bool blank(const Line& line) {
+      return line.empty() or negative_comment(line);
+   }
+
+   // Decompose the input souce file into fragments, and return one
+   // fragment at a time.
+   Fragment SourceInput::get() {
+      Fragment fragment;
+      std::stack<ColumnIndex> indents;
+
+      if (not line.empty()) {
+         indents.push(line.indent);
+         fragment.push_back(line);
+      }
+
+      while (std::getline(input, line)) {
+         ++line.number;
+         if (blank(prop_up(line)))
+            continue;              // Don't bother with ignorable comments.
+         else if (fragment.line_continuation())
+            ;
+         else if (indents.empty()) {
+            if (fragment.empty() and line.indent != 0)
+               std::cerr << "warning: white space at begining of fragment"
+                         << " on line " << line.number << '\n';
+            indents.push(line.indent);
+         }
+         else if (line.indent == 0 and not positive_comment(fragment.back()))
+            break;                 // A completely new line; save for later.
+         else if (line.indent > indents.top())
+            indents.push(line.indent);
+         else {
+            while (line.indent < indents.top())
+               indents.pop();
+         }
+         fragment.push_back(line);
+      }
+      return fragment;
    }
 }
