@@ -287,8 +287,6 @@ ThreeSpaceCategory(R:Ring): Exports == Implementation where
     subspace     : % -> SUBSPACE
       ++ subspace(s) returns the \spadtype{SubSpace} which holds all the point
       ++ information in the \spadtype{ThreeSpace}, s.
-    coerce       : % -> O
-      ++ coerce(s) returns the \spadtype{ThreeSpace} s to Output format.
 
 @
 \section{domain SPACE3 ThreeSpace}

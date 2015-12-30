@@ -46,8 +46,6 @@ OrderedVariableList(VariableList:List Symbol):
 ++ Description:
 ++ This domain implements variables
 Variable(sym:Symbol): Join(SetCategory, CoercibleTo Symbol) with
-        coerce  : % -> Symbol
-		++ coerce(x) returns the symbol
         variable: () -> Symbol
 		++ variable() returns the symbol
     == add

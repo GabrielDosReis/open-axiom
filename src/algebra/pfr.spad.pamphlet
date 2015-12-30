@@ -43,11 +43,7 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
   FRR  ==> Factored R
   SUPR ==> SparseUnivariatePolynomial R
 
-  Cat == Join(Field, Algebra R) with
-    coerce: % -> Fraction R
-      ++ coerce(p) sums up the components of the partial fraction and
-      ++ returns a single fraction.
-
+  Cat == Join(Field, Algebra R,CoercibleTo Fraction R) with
     coerce:  Fraction FRR -> %
       ++ coerce(f) takes a fraction with numerator and denominator in
       ++ factored form and creates a partial fraction.  It is

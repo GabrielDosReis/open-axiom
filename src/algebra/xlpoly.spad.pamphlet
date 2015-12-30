@@ -35,12 +35,9 @@ Magma(VarSet:OrderedSet):Public == Private where
    WORD ==> OrderedFreeMonoid(VarSet)
    EX   ==> OutputForm
 
-   Public == Join(OrderedSet,RetractableTo VarSet) with
+   Public == Join(OrderedSet,RetractableTo VarSet,CoercibleTo WORD) with
       *           : ($,$) -> $
         ++ \axiom{x*y} returns the tree \axiom{[x,y]}.
-      coerce        : $ -> WORD
-        ++ \axiom{coerce(x)} returns the element of \axiomType{OrderedFreeMonoid}(VarSet) 
-        ++ corresponding to \axiom{x} by removing parentheses.
       first         : $ -> VarSet
         ++ \axiom{first(x)} returns the first entry of the tree \axiom{x}.
       left          : $ -> $
@@ -204,7 +201,7 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
    OF    ==> OutputForm
    ARRAY1==> OneDimensionalArray
 
-   Public == Join(OrderedSet,RetractableTo VarSet) with
+   Public == Join(OrderedSet,RetractableTo VarSet,CoercibleTo OFMON,CoercibleTo Magma VarSet) with
       retractable?  : $ -> Boolean
         ++ \axiom{retractable?(x)} tests if \axiom{x} is a tree with only one entry.
       left          : $ -> $
@@ -218,12 +215,6 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
       lexico :  ($,$) -> Boolean 
         ++ \axiom{lexico(x,y)} returns \axiom{true} iff  \axiom{x} is smaller than 
         ++ \axiom{y} w.r.t. the lexicographical ordering induced by \axiom{VarSet}. 
-      coerce :  $ -> OFMON
-        ++ \axiom{coerce(x)} returns the element of \axiomType{OrderedFreeMonoid}(VarSet) 
-        ++ corresponding to \axiom{x}.
-      coerce :  $ -> Magma VarSet
-        ++ \axiom{coerce(x)} returns the element of \axiomType{Magma}(VarSet)
-        ++ corresponding to \axiom{x}.
       factor :  OFMON -> List $  
         ++ \axiom{factor(x)} returns the decreasing factorization into Lyndon words. 
       lyndon?:  OFMON -> Boolean
@@ -395,16 +386,12 @@ FreeLieAlgebra(VarSet:OrderedSet, R:CommutativeRing) :Category == CatDef where
    RN      ==> Fraction Integer
    LWORD   ==> LyndonWord(VarSet)
 
-   CatDef ==  Join(LieAlgebra(R)) with
+   CatDef ==  Join(LieAlgebra(R),CoercibleTo XDPOLY,CoercibleTo XRPOLY) with
       coef      : (XRPOLY , $) -> R
          ++ \axiom{coef(x,y)} returns the scalar product of \axiom{x} by \axiom{y},
          ++ the set of words being regarded as an orthogonal basis.
       coerce    : VarSet -> $
          ++ \axiom{coerce(x)} returns \axiom{x} as a Lie polynomial.
-      coerce    : $ -> XDPOLY
-         ++ \axiom{coerce(x)} returns \axiom{x} as distributed polynomial.
-      coerce    : $ -> XRPOLY 
-         ++ \axiom{coerce(x)} returns \axiom{x} as a recursive polynomial.
       degree    : $ -> NonNegativeInteger
          ++ \axiom{degree(x)} returns the greatest length of a word in the support of \axiom{x}.
       --if R has Module(RN) then
@@ -743,12 +730,9 @@ PoincareBirkhoffWittLyndonBasis(VarSet: OrderedSet): Public == Private where
    NNI     ==> NonNegativeInteger
    EX      ==> OutputForm
 
-   Public == Join(OrderedSet, RetractableTo LWORD) with
+   Public == Join(OrderedSet, RetractableTo LWORD,CoercibleTo WORD) with
       1: constant -> %
          ++ \spad{1} returns the empty list.
-      coerce       : $ -> WORD
-         ++ \spad{coerce([l1]*[l2]*...[ln])} returns the word \spad{l1*l2*...*ln},
-         ++ where \spad{[l_i]} is the backeted form of the Lyndon word \spad{l_i}.
       coerce       : VarSet -> $
          ++ \spad{coerce(v)} return \spad{v}
       first        : $ -> LWORD
@@ -866,13 +850,9 @@ XPBWPolynomial(VarSet:OrderedSet,R:CommutativeRing): XDPcat == XDPdef where
   I      ==> Integer
   RN     ==> Fraction(Integer)
 
-  XDPcat == Join(XPolynomialsCat(VarSet,R), FreeModuleCat(R, BASIS)) with
+  XDPcat == Join(XPolynomialsCat(VarSet,R), FreeModuleCat(R, BASIS),CoercibleTo XDPOLY,CoercibleTo XRPOLY) with
     coerce      : LPOLY -> $
       ++ \axiom{coerce(p)} returns \axiom{p}. 
-    coerce      : $ -> XDPOLY
-      ++ \axiom{coerce(p)} returns \axiom{p} as a distributed polynomial. 
-    coerce      : $ -> XRPOLY
-      ++ \axiom{coerce(p)} returns \axiom{p} as a recursive polynomial.
     LiePolyIfCan: $ -> Union(LPOLY,"failed")
       ++ \axiom{LiePolyIfCan(p)} return  \axiom{p} if \axiom{p} is a Lie polynomial.
     product     : ($,$,NNI) -> $           -- produit tronque a l'ordre n
@@ -1111,17 +1091,13 @@ LieExponentials(VarSet, R, Order): XDPcat == XDPdef where
   TERM1  ==> Record(k:LWORD, c:R)
   EQ     ==> Equation(R)
 
-  XDPcat == Group with
+  XDPcat == Join(Group,CoercibleTo XDPOLY,CoercibleTo PBWPOLY) with
     exp         : LPOLY -> $
       ++ \axiom{exp(p)} returns the exponential of \axiom{p}.
     log         : $ -> LPOLY
       ++ \axiom{log(p)} returns the logarithm of \axiom{p}.
     ListOfTerms : $ -> LTERMS
       ++ \axiom{ListOfTerms(p)} returns the internal representation of \axiom{p}.
-    coerce      : $ -> XDPOLY
-      ++ \axiom{coerce(g)} returns the internal representation of \axiom{g}.
-    coerce      : $ -> PBWPOLY
-      ++ \axiom{coerce(g)} returns the internal representation of \axiom{g}.
     mirror      : $ -> $
       ++ \axiom{mirror(g)} is the mirror of the internal representation of \axiom{g}.
     varList     : $ -> List VarSet

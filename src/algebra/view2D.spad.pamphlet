@@ -163,9 +163,6 @@ GraphImage (): Exports == Implementation where
       ++ \spadfun{pointSizeDefault}.  The graph data is then sent to the 
       ++ viewport manager where it waits to be included in a two-dimensional
       ++ viewport window.
-    coerce          :  $                                         -> E
-      ++ coerce(gi) returns the indicated graph, \spad{gi}, of domain
-      ++ \spadtype{GraphImage} as output of the domain \spadtype{OutputForm}.
     putColorInfo    : (L L P,L PAL)                              -> L L P
       ++ putColorInfo(llp,lpal) takes a list of list of points, \spad{llp},
       ++ and returns the points with their hue and shade components
@@ -748,10 +745,6 @@ TwoDimensionalViewport ():Exports == Implementation where
     key            :  $                                     -> I
       ++ key(v) returns the process ID number of the given two-dimensional
       ++ viewport, v, which is of domain \spadtype{TwoDimensionalViewport}.
-    coerce         :  $                                     -> E
-      ++ coerce(v) returns the given two-dimensional viewport, v, which
-      ++ is of domain \spadtype{TwoDimensionalViewport} as output of
-      ++ the domain \spadtype{OutputForm}.
 
   Implementation ==> add
 

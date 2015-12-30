@@ -26,7 +26,7 @@
 ++ basic FORTRAN data types: REAL, INTEGER, COMPLEX, LOGICAL and CHARACTER
 FortranScalarType() : exports == implementation where
 
-  exports == CoercibleTo OutputForm with
+  exports == Join(CoercibleTo OutputForm,CoercibleTo Symbol,CoercibleTo SExpression) with
     coerce : String -> $     
       ++ coerce(s) transforms the string s into an element of 
       ++ FortranScalarType provided s is one of "real", "double precision",
@@ -38,10 +38,6 @@ FortranScalarType() : exports == implementation where
       ++ FortranScalarType provided s is one of real, complex,double precision,
       ++ logical, integer, character, REAL, COMPLEX, LOGICAL,
       ++ INTEGER, CHARACTER, DOUBLE PRECISION
-    coerce : $ -> Symbol
-      ++ coerce(x) returns the symbol associated with x
-    coerce : $ -> SExpression
-      ++ coerce(x) returns the s-expression associated with x
     real?  : $ -> Boolean
       ++ real?(t) tests whether t is equivalent to the FORTRAN type REAL.
     double? : $ -> Boolean
@@ -294,9 +290,7 @@ SymbolTable() : exports == implementation where
   L   ==> List
   FSTU ==> Union(fst:FortranScalarType,void:"void")
 
-  exports ==> CoercibleTo OutputForm with
-    coerce : $ -> Table(Symbol,FortranType)
-      ++ coerce(x) returns a table view of x
+  exports ==> Join(CoercibleTo OutputForm,CoercibleTo Table(Symbol,FortranType)) with
     empty  : () -> $
       ++ empty() returns a new, empty symbol table
     declare! : (L Symbol,FortranType,$) -> FortranType

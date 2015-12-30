@@ -34,11 +34,9 @@ ModularRing(R,Mod,reduction:(R,Mod) -> R,
   R    :  CommutativeRing
   Mod  :  AbelianMonoid
 
-  C == Ring with
+  C == Join(Ring,CoercibleTo R) with
                 modulus :   %     -> Mod
 			++ modulus(x) \undocumented
-                coerce  :   %     -> R
-			++ coerce(x) \undocumented
                 reduce  : (R,Mod) -> %
 			++ reduce(r,m) \undocumented
                 exQuo   :  (%,%)  -> Union(%,"failed")
@@ -114,11 +112,9 @@ EuclideanModularRing(S,R,Mod,reduction:(R,Mod) -> R,
   R    :  UnivariatePolynomialCategory S
   Mod  :  AbelianMonoid
 
-  C == Join(EuclideanDomain, Eltable(R,R)) with
+  C == Join(EuclideanDomain, Eltable(R,R),CoercibleTo R) with
                 modulus :   %     -> Mod
 			++ modulus(x) \undocumented
-                coerce  :   %     -> R
-			++ coerce(x) \undocumented
                 reduce  : (R,Mod) -> %
 			++ reduce(r,m) \undocumented
                 exQuo   :  (%,%)  -> Union(%,"failed")
@@ -208,11 +204,9 @@ ModularField(R,Mod,reduction:(R,Mod) -> R,
   R    :  CommutativeRing
   Mod  :  AbelianMonoid
 
-  C == Field with
+  C == Join(Field,CoercibleTo R) with
                 modulus :   %     -> Mod
 			++ modulus(x) \undocumented
-                coerce  :   %     -> R
-			++ coerce(x) \undocumented
                 reduce  : (R,Mod) -> %
 			++ reduce(r,m) \undocumented
                 exQuo   :  (%,%)  -> Union(%,"failed")

@@ -539,7 +539,7 @@ ComplexRootFindingPackage(R, UP): public == private where
          num : I := approxNthRoot(globalDigits * numer r ,n)$IntegerRoots(I)
          num/den
        -- the following doesn't compile
-       --R has coerce: % -> Fraction Integer =>
+       --R has CoercibleTo Fraction Integer =>
        --  q : Fraction Integer := coerce(r)@Fraction(Integer)
        --  den : I := approxNthRoot(globalDigits * denom q ,n)$IntegerRoots(I)
        --  num : I := approxNthRoot(globalDigits * numer q ,n)$IntegerRoots(I)
