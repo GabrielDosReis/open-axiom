@@ -294,12 +294,12 @@ setvart.$(FASLEXT): sys-macros.$(FASLEXT)
 ## OpenAxiom's compiler
 compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
-nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) functor.$(FASLEXT)
+nruncomp.$(FASLEXT): profile.$(FASLEXT) simpbool.$(FASLEXT) nrunfast.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT) \
 		c-util.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) lisplib.$(FASLEXT) nrunfast.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) lisplib.$(FASLEXT) nruncomp.$(FASLEXT)
 category.$(FASLEXT): c-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) c-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)

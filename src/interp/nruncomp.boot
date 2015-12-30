@@ -34,7 +34,7 @@
 
 import simpbool
 import profile
-import functor
+import nrunfast
 namespace BOOT
 
 ++ The "add-chain" index for a functor instance.

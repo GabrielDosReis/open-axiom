@@ -73,10 +73,6 @@ IntegerSolveLinearPolynomialEquation(): C ==T
 Integer: IntegerNumberSystem with
     canonical
       ++ mathematical equality is data structure equality.
-    canonicalsClosed
-      ++ two positives multiply to give positive.
-    noetherian
-      ++ ascending chain condition on ideals.
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer
@@ -298,10 +294,6 @@ PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
 RomanNumeral(): Join(IntegerNumberSystem,ConvertibleFrom Symbol) with
     canonical
       ++ mathematical equality is data structure equality.
-    canonicalsClosed
-      ++ two positives multiply to give positive.
-    noetherian
-      ++ ascending chain condition on ideals.
     roman  : Symbol  -> %
       ++ roman(n) creates a roman numeral for symbol n.
     roman  : Integer -> %

@@ -201,8 +201,6 @@ LieSquareMatrix(n,R): Exports == Implementation where
 --    symdecomp : % -> Record(sym:%,antisym:%)
 --    if R has commutative("*") then
 --      minorsVect: -> Vector(Union(R,"uncomputed")) --range: 1..2**n-1
---    if R has commutative("*") then central
---    if R has commutative("*") and R has unitsKnown then unitsKnown
 
 @
 \section{License}

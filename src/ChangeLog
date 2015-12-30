@@ -1,3 +1,11 @@
+2015-12-30  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* algebra/attreg.spad.pamphlet (AttributeRegistry): Remove
+	unitsKnown, leftUnitary, rightUnitary, canonicalsClosed,
+	central, noetherian, NullSquare, JacobiIdentity.
+	Adjust users.
+	* interp/sys-constants.boot ($BuiltinAttributes): Likewise.
+
 2015-12-29  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/nruncomp.boot ($AddChainIndex): Define.

@@ -33,7 +33,7 @@
 
 
 import lisplib
-import nrunfast
+import nruncomp
 import category
 namespace BOOT
 

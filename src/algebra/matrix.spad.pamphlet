@@ -310,13 +310,6 @@ SquareMatrix(ndim,R): Exports == Implementation where
 --  if R has commutative("*") then
 --    minorsVect: -> Vector(Union(R,"uncomputed")) --range: 1..2**n-1
 --      ++ \spad{minorsVect(m)} returns a vector of the minors of the matrix m
-    if R has commutative("*") then central
-      ++ the elements of the Ring R, viewed as diagonal matrices, commute
-      ++ with all matrices and, indeed, are the only matrices which commute
-      ++ with all matrices.
-    if R has commutative("*") and R has unitsKnown then unitsKnown
-      ++ the invertible matrices are simply the matrices whose determinants
-      ++ are units in the Ring R.
     if R has ConvertibleTo InputForm then ConvertibleTo InputForm
  
   Implementation ==> Matrix R add

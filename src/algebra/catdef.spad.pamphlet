@@ -489,9 +489,7 @@ OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
 ++ Axiom:
 ++   \spad{ r*(x*s) = (r*x)*s }
 BiModule(R:Ring,S:Ring):Category ==
-  Join(LeftModule(R),RightModule(S)) with
-     leftUnitary ++ \spad{1 * x = x}
-     rightUnitary ++ \spad{x * 1 = x}
+  Join(LeftModule(R),RightModule(S)) 
 
 @
 \section{category CABMON CancellationAbelianMonoid}
@@ -1033,7 +1031,6 @@ Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
         ++ x/y divides the element x by the element y.
         ++ Error: if y is 0.
       canonicalUnitNormal  ++ either 0 or 1.
-      canonicalsClosed     ++ since \spad{0*0=0}, \spad{1*1=1}
     add
       --declarations
       x,y: %
@@ -1224,8 +1221,6 @@ Group(): Category == Monoid with
       inv: % -> %             ++ inv(x) returns the inverse of x.
       /: (%,%) -> %           ++ x/y is the same as x times the inverse of y.
       **: (%,Integer) -> %    ++ x**n returns x raised to the integer power n.
-      unitsKnown                ++ unitsKnown asserts that recip only returns
-                                ++ "failed" for non-units.
       conjugate: (%,%) -> %
         ++ conjugate(p,q) computes \spad{inv(q) * p * q}; this is 'right action
         ++ by conjugation'.
@@ -1261,7 +1256,6 @@ Group(): Category == Monoid with
 ++
 ++ Conditional attributes:
 ++   canonicalUnitNormal\tab{20}the canonical field is the same for all associates
-++   canonicalsClosed\tab{20}the product of two canonicals is itself canonical
 
 IntegralDomain(): Category ==
   Join(CommutativeRing, Algebra(%), EntireRing) with
@@ -1411,8 +1405,6 @@ Module(R:CommutativeRing): Category == Join(BiModule(R,R), LinearSet R)
 ++    \spad{leftIdentity("*":(%,%)->%,1)}\tab{30}\spad{1*x=x}
 ++    \spad{rightIdentity("*":(%,%)->%,1)}\tab{30}\spad{x*1=x}
 ++
-++ Conditional attributes:
-++    unitsKnown\tab{15}\spadfun{recip} only returns "failed" on non-units
 Monoid(): Category == SemiGroup with
     --operations
       1:              %                   ++ 1 is the multiplicative identity.
@@ -1422,7 +1414,7 @@ Monoid(): Category == SemiGroup with
                                           ++ of x n times, i.e. exponentiation.
       recip: % -> Union(%,"failed")
           ++ recip(x) tries to compute the multiplicative inverse for x
-          ++ or "failed" if it cannot find the inverse (see unitsKnown).
+          ++ or "failed" if it cannot find the inverse.
     add
       import RepeatedSquaring(%)
       one? x == x = 1
@@ -2012,10 +2004,6 @@ Ring(): Category == Join(Rng,SemiRing,LeftModule(%),CoercibleFrom Integer) with
         ++ \spad{n*x=0} for all x in the ring, or zero if no such n
         ++ exists.
         --We can not make this a constant, since some domains are mutable
-      unitsKnown
-        ++ recip truly yields
-        ++ reciprocal or "failed" if not a unit.
-        ++ Note: \spad{recip(0) = "failed"}.
    add
       n:Integer
       coerce(n) == n * 1$%

@@ -536,7 +536,6 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
 
     --assertions
       if R has noZeroDivisors then noZeroDivisors
-      if R has unitsKnown then unitsKnown
       if R has canonicalUnitNormal then canonicalUnitNormal
           ++ canonicalUnitNormal guarantees that the function
           ++ unitCanonical returns the same representative for all

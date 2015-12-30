@@ -18,15 +18,6 @@ AttributeRegistry(): Category == with
   commutative("*")
     ++ \spad{commutative("*")} is true if it has an operation
     ++ \spad{"*": (D,D) -> D} which is commutative.
-  unitsKnown
-    ++ \spad{unitsKnown} is true if a monoid (a multiplicative semigroup 
-    ++ with a 1) has \spad{unitsKnown} means that
-    ++ the operation \spadfun{recip} can only return "failed" 
-    ++ if its argument is not a unit.
-  leftUnitary
-    ++ \spad{leftUnitary} is true if \spad{1 * x = x} for all x.
-  rightUnitary
-    ++ \spad{rightUnitary} is true if \spad{x * 1 = x} for all x.
   noZeroDivisors
     ++ \spad{noZeroDivisors} is true if \spad{x * y \~~= 0} implies 
     ++ both x and y are non-zero.
@@ -35,37 +26,17 @@ AttributeRegistry(): Category == with
     ++ representative for each class of associate elements, that is
     ++ \spad{associates?(a,b)} returns true if and only if 
     ++ \spad{unitCanonical(a) = unitCanonical(b)}.
-  canonicalsClosed
-    ++ \spad{canonicalsClosed} is true if 
-    ++ \spad{unitCanonical(a)*unitCanonical(b) = unitCanonical(a*b)}.
-  arbitraryPrecision
-    ++ \spad{arbitraryPrecision} means the user can set the 
-    ++ precision for subsequent calculations.
   partiallyOrderedSet
     ++ \spad{partiallyOrderedSet} is true if
     ++ a set with \spadop{<} which is transitive, 
     ++ but \spad{not(a < b or a = b)}
     ++ does not necessarily imply \spad{b<a}.
-  central
-    ++ \spad{central} is true if, given an algebra over a ring R,
-    ++ the image of R is the center
-    ++ of the algebra, i.e. the set of members of the algebra which commute
-    ++ with all others is precisely the image of R in the algebra.
-  noetherian
-    ++ \spad{noetherian} is true if all of its ideals are finitely generated.
   additiveValuation
     ++ \spad{additiveValuation} implies
     ++ \spad{euclideanSize(a*b)=euclideanSize(a)+euclideanSize(b)}.
   multiplicativeValuation
     ++ \spad{multiplicativeValuation} implies
     ++ \spad{euclideanSize(a*b)=euclideanSize(a)*euclideanSize(b)}.
-  NullSquare
-    ++ \axiom{NullSquare} means that \axiom{[x,x] = 0} holds.
-    ++ See \axiomType{LieAlgebra}.
-  JacobiIdentity
-    ++ \axiom{JacobiIdentity} means that 
-    ++ \axiom{[x,[y,z]]+[y,[z,x]]+[z,[x,y]] = 0} holds.
-    ++ See \axiomType{LieAlgebra}.
   canonical
     ++ \spad{canonical} is true if and only if distinct elements have 
     ++ distinct data structures. For example, a domain of mathematical objects 

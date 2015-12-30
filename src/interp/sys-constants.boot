@@ -627,11 +627,11 @@ $FILETYPE_-TABLE ==
 
 +++
 $BuiltinAttributes ==
- '(nil infinite arbitraryExponent approximate complex
-   canonical noetherian central
-   partiallyOrderedSet arbitraryPrecision canonicalsClosed
-   noZeroDivisors rightUnitary leftUnitary
-   additiveValuation unitsKnown canonicalUnitNormal
+ '(nil arbitraryExponent approximate complex
+   canonical
+   partiallyOrderedSet arbitraryPrecision
+   noZeroDivisors
+   additiveValuation canonicalUnitNormal
    multiplicativeValuation commutative)
 
 +++

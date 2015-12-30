@@ -78,8 +78,6 @@ Monad(): Category == SetCategory with
 ++ Axioms
 ++    leftIdentity("*":(%,%)->%,1)   \tab{30} 1*x=x
 ++    rightIdentity("*":(%,%)->%,1)  \tab{30} x*1=x
-++ Common Additional Axioms
-++    unitsKnown---if "recip" says "failed", that PROVES input wasn't a unit
 MonadWithUnit(): Category == Monad with
     --constants
       1: constant ->  %
@@ -102,15 +100,15 @@ MonadWithUnit(): Category == Monad with
         ++ recip(a) returns an element, which is both a left and a right
         ++ inverse of \spad{a},
         ++ or \spad{"failed"} if such an element doesn't exist or cannot
-        ++ be determined (see unitsKnown).
+        ++ be determined.
       leftRecip: % -> Union(%,"failed")
         ++ leftRecip(a) returns an element, which is a left inverse of \spad{a},
         ++ or \spad{"failed"} if such an element doesn't exist or cannot
-        ++ be determined (see unitsKnown).
+        ++ be determined.
       rightRecip: % -> Union(%,"failed")
         ++ rightRecip(a) returns an element, which is a right inverse of
         ++ \spad{a}, or \spad{"failed"} if such an element doesn't exist
-        ++ or cannot be determined (see unitsKnown).
+        ++ or cannot be determined.
     add
       import RepeatedSquaring(%)
       one? x == x = 1
@@ -404,16 +402,16 @@ FiniteRankNonAssociativeAlgebra(R:CommutativeRing):
         ++ recip(a) returns an element, which is both a left and a right
         ++ inverse of \spad{a},
         ++ or \spad{"failed"} if there is no unit element, if such an
-        ++ element doesn't exist or cannot be determined (see unitsKnown).
+        ++ element doesn't exist or cannot be determined.
       leftRecip: % -> Union(%,"failed")
         ++ leftRecip(a) returns an element, which is a left inverse of \spad{a},
         ++ or \spad{"failed"} if there is no unit element, if such an
-        ++ element doesn't exist or cannot be determined (see unitsKnown).
+        ++ element doesn't exist or cannot be determined.
       rightRecip: % -> Union(%,"failed")
         ++ rightRecip(a) returns an element, which is a right inverse of
         ++ \spad{a},
         ++ or \spad{"failed"} if there is no unit element, if such an
-        ++ element doesn't exist or cannot be determined (see unitsKnown).
+        ++ element doesn't exist or cannot be determined.
       associatorDependence:() -> List Vector R
         ++ associatorDependence() looks for the associator identities, i.e.
         ++ finds a basis of the solutions of the linear combinations of the
@@ -450,13 +448,6 @@ FiniteRankNonAssociativeAlgebra(R:CommutativeRing):
       -- about characteristic
       -- if R has CharacteristicZero then CharacteristicZero
       -- if R has CharacteristicNonZero then CharacteristicNonZero
-      unitsKnown
-        ++ unitsKnown means that \spadfun{recip} truly yields reciprocal
-        ++ or \spad{"failed"} if not a unit,
-        ++ similarly for \spadfun{leftRecip} and
-        ++ \spadfun{rightRecip}. The reason is that we use left, respectively
-        ++ right, minimal polynomials to decide this question.
-
   add
     --n := rank()
     --b := someBasis()

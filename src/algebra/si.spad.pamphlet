@@ -182,12 +182,6 @@ IntegerNumberSystem(): Category ==
 SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
-   canonicalsClosed
-      ++ \spad{canonicalClosed} means two positives multiply to give positive.
-   noetherian
-      ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
-
-   -- bit operations
    xor: (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.

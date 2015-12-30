@@ -238,7 +238,6 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
          if R has Monoid then LinearSet R
          if R has Finite then Finite
          if R has CommutativeRing then Module R
-         if R has unitsKnown then unitsKnown
          if R has OrderedSet then OrderedSet
          if R has OrderedAbelianMonoidSup then OrderedAbelianMonoidSup
          if R has Field then VectorSpace R
