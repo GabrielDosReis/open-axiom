@@ -1,3 +1,4 @@
+// -*- C++ -*-
 // Copyright (C) 2013-2014, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
@@ -99,7 +100,7 @@ namespace OpenAxiom {
       TokenValue value;
 
       explicit operator bool() const {
-         return category != TokenCategory::Unclassified;
+         return category != TokenCategory::EOS;
       }
    };
 
@@ -227,7 +228,7 @@ namespace OpenAxiom {
    template<typename L>
    inline void
    skip_whitespace(L& line, ColumnIndex& idx) {
-      while (idx < line.size() and isspace(line[idx]))
+      while (idx < line.size() and isblank(line[idx]))
          ++idx;
    }
 
@@ -334,11 +335,12 @@ namespace OpenAxiom {
       while (idx < line.size() and identifier_suffix(line[idx]))
          ++idx;
 
-      if (saw_escape)
-         t.category = TokenCategory::Identifier;
-      else if (auto info = classify(line.sub_string(start, idx))) {
-         t.category = info.category;
-         t.value = info.value;
+      if (!saw_escape) {
+         auto info = classify(line.sub_string(start, idx));
+         if (info.category != TokenCategory::Identifier) {
+            t.category = info.category;
+            t.value = info.value;
+         }
       }
       return t;
    }
@@ -575,7 +577,7 @@ namespace OpenAxiom {
          t.end = current_locus();
          return t;
       }
-      else if (isspace(frag[pos])) {
+      else if (isblank(frag[pos])) {
          skip_whitespace(frag(pos), pos.column);
          t.category = TokenCategory::Whitespace;
          t.end = current_locus();

@@ -96,7 +96,7 @@ namespace OpenAxiom {
          if (t.text == s)
             return { t.category, t.value };
       }
-      return { TokenCategory::Unclassified, TokenValue::Unknown };
+      return { TokenCategory::Identifier, TokenValue::Unknown };
    }
 
    std::ostream&
