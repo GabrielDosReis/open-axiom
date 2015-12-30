@@ -273,9 +273,6 @@ CliffordAlgebra(n, K, Q): T == Impl where
         coefficient:  (%, List PI) -> K
           ++ coefficient(x,[i1,i2,...,iN])  extracts the coefficient of
           ++ \spad{e(i1)*e(i2)*...*e(iN)} in x.
-        recip: % -> Union(%, "failed")
-          ++ recip(x) computes the multiplicative inverse of x or "failed"
-          ++ if x is not invertible.
  
     Impl ==> add
         Qeelist :=  [Q unitVector(i::PositiveInteger) for i in 1..n]
@@ -402,7 +399,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
 
 	Pn:List List PI := powerSets(n)
 
-	recip(x: %): Union(%, "failed") ==
+	recip x ==
 	  one:% := 1
 	  -- tmp:c := x*yC - 1$C
 	  rhsEqs : List K := []
