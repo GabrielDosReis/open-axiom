@@ -43,8 +43,6 @@ ModularRing(R,Mod,reduction:(R,Mod) -> R,
 			++ reduce(r,m) \undocumented
                 exQuo   :  (%,%)  -> Union(%,"failed")
 			++ exQuo(x,y) \undocumented
-                recip   :    %    -> Union(%,"failed")
-			++ recip(x) \undocumented
                 inv     :    %    -> %
 			++ inv(x) \undocumented
 
@@ -125,8 +123,6 @@ EuclideanModularRing(S,R,Mod,reduction:(R,Mod) -> R,
 			++ reduce(r,m) \undocumented
                 exQuo   :  (%,%)  -> Union(%,"failed")
 			++ exQuo(x,y) \undocumented
-                recip   :    %    -> Union(%,"failed")
-			++ recip(x) \undocumented
                 inv     :    %    -> %
 			++ inv(x) \undocumented
 
