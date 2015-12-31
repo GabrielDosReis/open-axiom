@@ -74,8 +74,9 @@ Integer: IntegerNumberSystem with
     canonical
       ++ mathematical equality is data structure equality.
  == add
-      ZP ==> SparseUnivariatePolynomial %
-      ZZP ==> SparseUnivariatePolynomial Integer
+      macro ZP == SparseUnivariatePolynomial %
+      macro ZZP == SparseUnivariatePolynomial Integer
+      macro NNI == NonNegativeInteger
       import %icst0: %                 from Foreign Builtin
       import %icst1: %                 from Foreign Builtin
       import %ineg: % -> %             from Foreign Builtin
@@ -105,20 +106,17 @@ Integer: IntegerNumberSystem with
       import %i2s: % -> String         from Foreign Builtin
       import %strconc: (String,String) -> String from Foreign Builtin
 
-      x,y: %
-      n: NonNegativeInteger
-
-      zero? x == x = %icst0
-      one? x == x = %icst1
+      zero? x == x = 0$%
+      one? x == x = 1$%
       0 == %icst0
       1 == %icst1
       base()  == 2 pretend %
       copy x  == x
-      inc  x  == x + %icst1
-      dec  x  == x - %icst1
+      inc  x  == x + 1$%
+      dec  x  == x - 1$%
       hash x == %hash x
-      negative? x == x < %icst0
-      positive? x == %icst0 < x
+      negative? x == x < 0$%
+      positive? x == 0$% < x
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
@@ -132,7 +130,7 @@ Integer: IntegerNumberSystem with
 
       latex(x:%):String ==
         s := %i2s x
-        -%icst1 < x and x < 10 => s
+        -1$% < x and x < 10 => s
         %strconc("{", %strconc(s, "}"))
 
       positiveRemainder(a, b) ==
@@ -159,9 +157,9 @@ Integer: IntegerNumberSystem with
       - x == %ineg x
       x + y == %iadd(x,y)
       x - y == %isub(x,y)
-      x * y == %imul(x,y)
+      x:% * y:% == %imul(x,y)
       (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
-      x ** n == %ipow(x,n)$Foreign(Builtin)
+      x:% ** n:NNI == %ipow(x,n)$Foreign(Builtin)
       odd? x == %iodd? x
       even? x == %ieven? x
       max(x,y) == %imax(x,y)
@@ -170,12 +168,12 @@ Integer: IntegerNumberSystem with
       x quo y == %iquo(x,y)
       x rem y == %irem(x,y)
       shift(x, y) == %ilshift(x,y)
-      recip(x) == if one? x or x=-1 then x else "failed"
+      recip(x) == if one? x or x=-1$% then x else "failed"
       gcd(x,y) == %igcd(x,y)
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==
-         negative? x => [-%icst1,-x,-%icst1]$UCA
-         [%icst1,x,%icst1]$UCA
+         negative? x => [-1$%,-x,-1$%]$UCA
+         [1$%,x,1$%]$UCA
       unitCanonical x == abs x
       solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
          solveLinearPolynomialEquation(lp pretend List ZZP,
