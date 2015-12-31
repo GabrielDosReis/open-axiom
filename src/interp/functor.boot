@@ -219,9 +219,7 @@ compCategories(db,u,e) ==
     -- There is no modemap property for these guys so do it by hand.
     [u.op, :[compCategories1(db,a,$SetCategory,e) for a in u.args]]
   u is ['SubDomain,D,.] => compCategories(db,D,e)
-  v :=
-    u.op = dbConstructor db => dbConstructorModemap db
-    get(u.op,'modemap,e)
+  v := get(u.op,'modemap,e)
   v isnt [.,:.] =>
     error ['"compCategories: could not get proper modemap for operator",u.op]
   if rest v then
