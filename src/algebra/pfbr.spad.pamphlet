@@ -199,7 +199,7 @@ PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
         randomCount
    else if R has random: -> R then
       randomR() == random()
-   else randomR() == (random()$Integer rem 100)::R
+   else randomR() == (random(100)$Integer)::R
    factorByRecursion pp ==
      and/[zero? degree u for u in coefficients pp] =>
          map(raise,factorPolynomial lower pp)

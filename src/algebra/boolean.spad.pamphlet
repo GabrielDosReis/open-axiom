@@ -101,7 +101,7 @@ Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
       a => 1
       2
     random()      ==
-      even?(random()$Integer) => %false
+      zero? random(2)$Integer => %false
       %true
 
     convert(x:%):InputForm ==

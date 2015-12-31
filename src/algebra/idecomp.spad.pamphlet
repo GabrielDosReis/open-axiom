@@ -146,7 +146,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        pv:DPoly:=0
        pw:DPoly:=0
        while not one? degree(lf,y) repeat
-         val:=random()$Z rem 23
+         val:=random(23)$Z
          pv:=px+val*py
          pw:=px-val*py
 	 Id:=groebner([(univariate(h,x)).pv for h in Id])
@@ -316,7 +316,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        ----  put the ideal in general position  ----
      genPosLastVar(J:FIdeal,truelist:List OV):GenPos ==
        x := last truelist ;lv1:List OV :=remove(x,truelist)
-       ranvals:List(Z):=[(random()$Z rem 23) for vv in lv1]
+       ranvals:List(Z):=[random(23)$Z for vv in lv1]
        val:=+/[rv*(vv::DPoly)  for vv in lv1 for rv in ranvals]
        val:=val+(x::DPoly)
        [ranvals,groebnerIdeal(groebner([(univariate(p,x)).val

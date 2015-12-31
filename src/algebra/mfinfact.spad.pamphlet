@@ -331,7 +331,7 @@ MultFiniteFactorize(OV,E,F,PG) : C == T
 
     -- This function has to be added to Eucliden domain
     ran(k1:Z) : R ==
-      --if R case Integer then random()$R rem (2*k1)-k1
+      --if R case Integer then random(2*k1)$R-k1
       --else
       +/[monomial(random()$F,i)$R for i in 0..k1]
 

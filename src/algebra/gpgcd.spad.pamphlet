@@ -153,7 +153,7 @@ GeneralPolynomialGcdPackage(E,OV,R,P):C == T where
             randomCount:=init()
             randomCount
       else
-            randomR() == (random()$Integer rem 100)::R
+            randomR() == (random(100)$Integer)::R
                      ---- JHD's local functions ---
       gcdSameVariables(p1:SUPP,p2:SUPP,lv:List OV) ==
             -- two non-trivial primitive (or, at least, we don't care
@@ -299,7 +299,7 @@ GeneralPolynomialGcdPackage(E,OV,R,P):C == T where
 --JHD        range:I:=8
 --JHD        for i in 1..  repeat
 --JHD          range:=2*range
---JHD          lval:=[(random()$I rem (2*range) - range)::R  for i in 1..nvr]
+--JHD          lval:=[(random(2*range)$I - range)::R  for i in 1..nvr]
 --JHD          uf1:SUPR:=univariate eval(p1,lvr,lval)
 --JHD          degree uf1 ~= d1 => "new point"
 --JHD          uf2:SUPR:=univariate eval(p2,lvr,lval)
@@ -337,7 +337,7 @@ GeneralPolynomialGcdPackage(E,OV,R,P):C == T where
 --JHD        ltry:List List R:=[]
 --JHD        while true repeat
 --JHD          range:=2*range
---JHD          lval:=[(random()$I rem (2*range) -range)::R  for i in 1..nvr]
+--JHD          lval:=[(random(2*range)$I -range)::R  for i in 1..nvr]
 --JHD          member?(lval,ltry) => "new point"
 --JHD          ltry:=cons(lval,ltry)
 --JHD          uf:=univariate eval(f,lvr,lval)

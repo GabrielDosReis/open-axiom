@@ -132,7 +132,7 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
               res := res + co * p ** ex
             res pretend PositiveInteger
 
-          random() == index( (1+(random()$Integer rem size()$%) )_
+          random() == index( (1 + random(size()$%)$Integer )_
             pretend PositiveInteger)$%
 
         0                   == empty()
