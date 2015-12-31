@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2015, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ compOrCroak1: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp2: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 comp3: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
-compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
+compAtom: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
@@ -63,7 +63,7 @@ compForm3: (%Maybe %Database,%Form,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
 compArgumentsAndTryAgain: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 compWithMappingMode: (%Form,%Mode,%Env) -> %Maybe %Triple
 compFormMatch: (%Modemap,%List %Mode) -> %Boolean
-compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
+compFormWithModemap: (%Maybe %Database,%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
 compToApply: (%Form,%List %Form,%Mode,%Env) -> %Maybe %Triple
 compApplication: (%Form,%List %Form,%Mode,%Triple) -> %Maybe %Triple
 
@@ -179,7 +179,7 @@ comp3(db,x,m,$e) ==
   (y := isQuasiquote m) =>
      y = x => [quote x, m, $e]
      nil
-  x isnt [.,:.] => compAtom(x,m,e)
+  x isnt [.,:.] => compAtom(db,x,m,e)
   op:= x.op
   ident? op and getXmode(op,e) is ["Mapping",:ml]
     and (T := applyMapping(x,m,e,ml)) => T
@@ -371,8 +371,8 @@ mostSpecificTriple(Ts,e) ==
       nil
 
 ++ Elaborate use of an overloaded constant.
-compAtomWithModemap: (%Symbol,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
-compAtomWithModemap(x,m,e,mmList) ==
+compAtomWithModemap: (%Maybe %Database,%Symbol,%Mode,%Env,%List %Modemap) -> %Maybe %Triple
+compAtomWithModemap(db,x,m,e,mmList) ==
   mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
   mmList = nil => nil
   name := -- constant name displayed in diagnostics.
@@ -381,7 +381,7 @@ compAtomWithModemap(x,m,e,mmList) ==
   -- Try constants with exact type matches, first.
   Ts := [[['%call,first y],mm.mmTarget,e] for mm in mmList |
              mm.mmTarget = m and
-               (y := compViableModemap(x,nil,mm,e))]
+               (y := compViableModemap(db,x,nil,mm,e))]
   Ts is [T] => T            -- Only one possibility, take it.
   Ts ~= nil =>              -- Ambiguous constant.
     stackMessage('"Too many (%1b) constants named %2b with type %3pb",
@@ -389,7 +389,7 @@ compAtomWithModemap(x,m,e,mmList) ==
   -- Fallback to constants that are coercible to the target.
   Ts := [[['%call,first y],mm.mmTarget,nil] for mm in mmList |
              coerceable(mm.mmTarget,m,e) and
-               (y := compViableModemap(x,nil,mm,e))]
+               (y := compViableModemap(db,x,nil,mm,e))]
   Ts = nil =>
     stackMessage('"No viable constant named %1b in %2pb context",[name,m])
   Ts is [T] or (T := mostSpecificTriple(Ts,e)) =>
@@ -403,15 +403,15 @@ formatConstantCandidates(op,Ts) ==
 
 ++ Attempt to elaborate the integer literal `x' as an exported operator
 ++ in the type context `m' and assumption environment `e'.
-compIntegerLiteral(x,m,e) ==
+compIntegerLiteral(db,x,m,e) ==
   x := internalName x
-  compAtomWithModemap(x,m,e,get(x,'modemap,e))
+  compAtomWithModemap(db,x,m,e,get(x,'modemap,e))
 
-compAtom(x,m,e) ==
+compAtom(db,x,m,e) ==
   x is "break" => compBreak(x,m,e)
   x is "iterate" => compIterate(x,m,e)
-  T := ident? x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
-  T := integer? x and x > 1 and compIntegerLiteral(x,m,e) => T
+  T := ident? x and compAtomWithModemap(db,x,m,e,get(x,"modemap",e)) => T
+  T := integer? x and x > 1 and compIntegerLiteral(db,x,m,e) => T
   t :=
     ident? x => compSymbol(x,m,e) or return nil
     listMember?(m,$IOFormDomains) and primitiveType x => [x,m,e]
@@ -573,16 +573,16 @@ compFormPartiallyBottomUp(db,form,m,e,modemapList,partialModeList) ==
 compForm3(db,form is [op,:argl],m,e,modemapList) ==
   T :=
     or/
-      [compFormWithModemap(form,m,e,first (mml:= ml))
+      [compFormWithModemap(db,form,m,e,first (mml:= ml))
         for ml in tails modemapList]
   $compUniquelyIfTrue =>
-    or/[compFormWithModemap(form,m,e,mm) for mm in rest mml] =>
+    or/[compFormWithModemap(db,form,m,e,mm) for mm in rest mml] =>
       THROW("compUniquely",nil)
     T
   T
 
 
-compFormWithModemap(form,m,e,modemap) ==
+compFormWithModemap(db,form,m,e,modemap) ==
   [map:= [.,target,:sig],[pred,impl]]:= modemap
   [op,:argl] := form := reshapeArgumentList(form,sig)
   if isCategoryForm(target,e) and isFunctor op then
@@ -597,7 +597,7 @@ compFormWithModemap(form,m,e,modemap) ==
         [map:= [.,target,:.],:cexpr]:= modemap :=SUBST(x,ss,modemap)
         -- SAY ["new map is",map]
   not coerceable(target,m,e) => nil
-  [f,Tl] := compApplyModemap(form,modemap,e) or return nil
+  [f,Tl] := compApplyModemap(db,form,modemap,e) or return nil
 
   --generate code; return
   T :=
@@ -1340,7 +1340,7 @@ compElt(form,m,E) ==
       mmList.0
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
-    val := genDeltaEntry(opOf anOp,modemap,E)
+    val := genDeltaEntry(db,opOf anOp,modemap,E)
     coerce([['%call,val],second sig,E], m)
   compForm(db,form,m,E)
 
@@ -1607,6 +1607,7 @@ compForeignPackageCall(lang,op,args,m,e) ==
 ++ Compile a logical negation form `(not ...)'.
 compLogicalNot: (%Form,%Mode,%Env) -> %Maybe %Triple
 compLogicalNot(x,m,e) ==
+  db := currentDB e
   x isnt ["not", y] => nil
   -- ??? For the time being compiler values cannot handle operations
   -- ??? selected through general modemaps, and their semantics
@@ -1618,23 +1619,24 @@ compLogicalNot(x,m,e) ==
   yT := comp(y,yTarget,e) or return nil
   yT.mode = $Boolean and yTarget = $Boolean => 
     [["%not",yT.expr],yT.mode,yT.env]
-  compResolveCall("not",[yT],m,yT.env)
+  compResolveCall(db,"not",[yT],m,yT.env)
 
 
 ++ Compile an exclusive `xor' expression.
 compExclusiveOr: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExclusiveOr(x,m,e) ==
+  db := currentDB e
   x isnt ["xor",a,b] => nil
   aT := comp(a,$EmptyMode,e) or return nil
   e := 
     aT.mode = $Boolean => getSuccessEnvironment(a,aT.env)
     aT.env
   bT := comp(b,$EmptyMode,e) or return nil
-  compResolveCall("xor",[aT,bT],m,bT.env)
+  compResolveCall(db,"xor",[aT,bT],m,bT.env)
 
 --% Case
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
-compCase1: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCase1: (%Database,%Form,%Mode,%Env) -> %Maybe %Triple
 
 getModemapList(op,nargs,e) ==
   op is ['elt,D,op'] => getModemapListFromDomain(internalName op',nargs,D,e)
@@ -1651,18 +1653,19 @@ getModemapList(op,nargs,e) ==
 --                An angry JHD - August 15th., 1984
 
 compCase(["case",x,m'],m,e) ==
-  e:= addDomain(currentDB e,m',e)
-  T:= compCase1(x,m',e) => coerce(T,m)
+  db := currentDB e
+  e:= addDomain(db,m',e)
+  T:= compCase1(db,x,m',e) => coerce(T,m)
   nil
 
-compCase1(x,m,e) ==
+compCase1(db,x,m,e) ==
   [x',m',e'] := comp(x,$EmptyMode,e) or return nil
   u :=
     [mm for mm in getModemapList("case",2,e') 
       | mm.mmSignature is [=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
             and modeEqual(s,m')] or return nil
   fn := (or/[mm for mm in u | mm.mmCondition = true]) or return nil
-  fn := genDeltaEntry("case",fn,e)
+  fn := genDeltaEntry(db,"case",fn,e)
   [['%call,fn,x',MKQ m],$Boolean,e']
 
 
@@ -1771,11 +1774,12 @@ tryCourtesyCoercion(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
+  db := currentDB T.env
   if $useRepresentationHack then
     T.rest.first := MSUBST("$",$Rep,second T)
   T' := coerceEasy(T,m) => T'
   T' := coerceSubset(T,m) => T'
-  T' := coerceHard(T,m) => T'
+  T' := coerceHard(db,T,m) => T'
   nil
 
 coerce(T,m) ==
@@ -1831,8 +1835,8 @@ coerceSubset([x,m,e],m') ==
     nil
   nil
 
-coerceHard: (%Triple,%Mode) -> %Maybe %Triple
-coerceHard(T,m) ==
+coerceHard: (%Maybe %Database,%Triple,%Mode) -> %Maybe %Triple
+coerceHard(db,T,m) ==
   $e: local:= T.env
   m':= T.mode
   string? m' and modeEqual(m,$String) => [T.expr,m,$e]
@@ -1844,28 +1848,28 @@ coerceHard(T,m) ==
   string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode => [T.expr,m,$e]
-      extendsCategoryForm(currentDB $e,T.expr,T.mode,m) => [T.expr,m,$e]
-      coerceExtraHard(T,m)
+      extendsCategoryForm(db,T.expr,T.mode,m) => [T.expr,m,$e]
+      coerceExtraHard(db,T,m)
   (m' is "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>
     [T.expr,m,$e]
-  coerceExtraHard(T,m)
+  coerceExtraHard(db,T,m)
 
-coerceExtraHard: (%Triple,%Mode) -> %Maybe %Triple
-coerceExtraHard(T is [x,m',e],m) ==
+coerceExtraHard: (%Maybe %Database,%Triple,%Mode) -> %Maybe %Triple
+coerceExtraHard(db,T is [x,m',e],m) ==
   -- Allow implicit injection into Union, if that is
   -- clear from the context
   isUnionMode(m,e) is ['Union,:l] and listMember?(m',l) =>
-    autoCoerceByModemap(T,m)
+    autoCoerceByModemap(db,T,m)
   -- For values from domains satisfying Union-like properties, apply
   -- implicit retraction if clear from context.
   (t := hasType(x,e)) and unionLike?(m',e) is ['UnionCategory,:l]
      and listMember?(t,l) =>
-       T' := autoCoerceByModemap(T,t) => coerce(T',m)
+       T' := autoCoerceByModemap(db,T,t) => coerce(T',m)
        nil
   -- Give it one last chance.
   -- FIXME: really, we shouldn't.  Codes relying on this are
   -- FIXME: inherently difficult to comprehend and likely broken.
-  T' := autoCoerceByModemap(T,m) => T'
+  T' := autoCoerceByModemap(db,T,m) => T'
   m' is ['Record,:.] and m = $OutputForm =>
       [['coerceRe2E,x,['ELT,copyTree m',0]],m,e]
   -- Domain instantiations are first class objects
@@ -1893,15 +1897,16 @@ compAtSign(["@",x,m'],m,e) ==
   coerce(T,m)
 
 compCoerce: (%Form,%Mode,%Env) -> %Maybe %Triple
-compCoerce1: (%Form,%Mode,%Env) -> %Maybe %Triple
-coerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
-autoCoerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+compCoerce1: (%Database,%Form,%Mode,%Env) -> %Maybe %Triple
+coerceByModemap: (%Database,%Maybe %Triple,%Mode) -> %Maybe %Triple
+autoCoerceByModemap: (%Database,%Maybe %Triple,%Mode) -> %Maybe %Triple
 
 compCoerce(["::",x,m'],m,e) ==
-  e:= addDomain(currentDB e,m',e)
-  T:= compCoerce1(x,m',e) => coerce(T,m)
+  db := currentDB e
+  e:= addDomain(db,m',e)
+  T:= compCoerce1(db,x,m',e) => coerce(T,m)
   ident? m' and getXmode(m',e) is ["Mapping",["UnionCategory",:l]] =>
-    T:= (or/[compCoerce1(x,m1,e) for m1 in l]) or return nil
+    T:= (or/[compCoerce1(db,x,m1,e) for m1 in l]) or return nil
     coerce([T.expr,m',T.env],m)
 
 ++ Subroutine of compCoerce1.  If `T' is a triple whose mode is
@@ -1917,7 +1922,7 @@ coerceSuperset(T,sub) ==
     [["%retract",T.expr,sub,pred],sub,T.env]
   nil
 
-compCoerce1(x,m',e) ==
+compCoerce1(db,x,m',e) ==
   T:= comp(x,m',e) or comp(x,$EmptyMode,e) or return nil
   m1:=
     string? T.mode => $String
@@ -1925,11 +1930,11 @@ compCoerce1(x,m',e) ==
   m':=resolve(m1,m')
   T:=[T.expr,m1,T.env]
   T':= coerce(T,m') => T'
-  T':= coerceByModemap(T,m') => T'
+  T':= coerceByModemap(db,T,m') => T'
   T' := coerceSuperset(T,m') => T'
   nil
 
-coerceByModemap([x,m,e],m') ==
+coerceByModemap(db,[x,m,e],m') ==
   u :=
     [mm for mm in getModemapList("coerce",1,e)
       | mm.mmSignature is [t,s] and (modeEqual(t,m') or isSubset(t,m',e))
@@ -1937,10 +1942,10 @@ coerceByModemap([x,m,e],m') ==
 
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
   mm:=first u  -- patch for non-trival conditons
-  fn := genDeltaEntry('coerce,mm,e)
+  fn := genDeltaEntry(db,'coerce,mm,e)
   [['%call,fn,x],m',e]
 
-autoCoerceByModemap([x,source,e],target) ==
+autoCoerceByModemap(db,[x,source,e],target) ==
   u :=
     [mm for mm in getModemapList("autoCoerce",1,e)
       | mm.mmSignature is [t,s] and modeEqual(t,target) 
@@ -1949,11 +1954,11 @@ autoCoerceByModemap([x,source,e],target) ==
 
   source is ["Union",:l] and listMember?(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [['%call,genDeltaEntry("autoCoerce",fn,e),x],target,e]
+       => [['%call,genDeltaEntry(db,"autoCoerce",fn,e),x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
-  [['%call,genDeltaEntry("autoCoerce",fn,e),x],target,e]
+  [['%call,genDeltaEntry(db,"autoCoerce",fn,e),x],target,e]
 
 
 ++ Compile a comma separated expression list. These typically are
@@ -2039,7 +2044,7 @@ compBuiltinDomain(form is [functorName,:argl],m,e) ==
 ++ `op' has been selected as a viable candidate exported operation, 
 ++ for argument triple list `argTl', modemap `mm'.
 ++ Return the most refined implementation that makes the call successful.
-compViableModemap(op,argTl,mm,e) ==
+compViableModemap(db,op,argTl,mm,e) ==
   [[dc,.,:margl],fnsel] := mm
   -- 1. Give up if the call is hopeless.
   argTl := [coerce(x,m) or return "failed" for x in argTl for m in margl]
@@ -2054,10 +2059,10 @@ compViableModemap(op,argTl,mm,e) ==
   -- information which is no longer valid; thus ignore this index and
   -- store the signature instead.
   f is [op1,.,.] and op1 in '(ELT CONST Subsumed) =>
-    [genDeltaEntry(op,mm,e),argTl]
+    [genDeltaEntry(db,op,mm,e),argTl]
   [f,argTl]
 
-compApplyModemap(form,modemap,$e) ==
+compApplyModemap(db,form,modemap,$e) ==
   [op,:argl] := form                   --form to be compiled
   [[mc,mr,:margl],fnsel] := modemap    --modemap we are testing
 
@@ -2074,7 +2079,7 @@ compApplyModemap(form,modemap,$e) ==
   lt="failed" => return nil
 
   -- 2. Select viable modemap implementation.
-  compViableModemap(op,lt,modemap,$e)
+  compViableModemap(db,op,lt,modemap,$e)
 
 compMapCond': (%Form,%Mode,%Env) -> %Boolean
 compMapCond'(cexpr,dc,env) ==
@@ -2101,12 +2106,12 @@ compMapCond(dc,[cexpr,fnexpr],env) ==
 
 --%
 
-compResolveCall(op,argTs,m,$e) ==
+compResolveCall(db,op,argTs,m,$e) ==
   outcomes := 
     [t for mm in getModemapList(op,#argTs,$e) | t := tryMM] where
        tryMM() ==
          not coerceable(mm.mmTarget,m,$e) =>nil
-         compViableModemap(op,argTs,mm,$e) isnt [f,Ts] => nil
+         compViableModemap(db,op,argTs,mm,$e) isnt [f,Ts] => nil
          coerce([['%call,f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
   #outcomes ~= 1 => nil
   first outcomes

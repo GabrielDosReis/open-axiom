@@ -2334,7 +2334,7 @@ compCapsuleInner(db,itemList,m,e) ==
            --puts a new 'special' property of $Information
   data := ["PROGN",:itemList]
       --RPLACd by compCapsuleItems and Friends
-  e := compCapsuleItems(itemList,nil,e)
+  e := compCapsuleItems(db,itemList,nil,e)
   localParList:= $functorLocalParameters
   if $addForm ~= nil then
     data := ['add,$addForm,data]
@@ -2345,15 +2345,15 @@ compCapsuleInner(db,itemList,m,e) ==
  
 --% PROCESS FUNCTOR CODE
  
-compCapsuleItems(itemlist,$predl,$e) ==
+compCapsuleItems(db,itemlist,$predl,$e) ==
   $signatureOfForm: local := nil
   $suffix: local:= 0
   for item in itemlist repeat 
-    $e:= compSingleCapsuleItem(item,$predl,$e)
+    $e:= compSingleCapsuleItem(db,item,$predl,$e)
   $e
  
-compSingleCapsuleItem(item,$predl,$e) ==
-  doIt(macroExpandInPlace(item,$e),$predl)
+compSingleCapsuleItem(db,item,$predl,$e) ==
+  doIt(db,macroExpandInPlace(item,$e),$predl)
   $e
  
 
@@ -2362,12 +2362,12 @@ mutateToNothing item ==
   item.op := 'PROGN
   item.rest := nil
 
-doIt(item,$predl) ==
+doIt(db,item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
     item.op := "PROGN"
     lastNode(item).first := x
-    for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
+    for it1 in rest item repeat $e:= compSingleCapsuleItem(db,it1,$predl,$e)
         --This will RPLAC as appropriate
   isDomainForm(item,$e) =>
     -- convert naked top level domains to import.
@@ -2378,7 +2378,7 @@ doIt(item,$predl) ==
     stackWarning('"Use: import %1p",[[first item,:rest item]])
     item.op := u.op
     item.rest := rest u
-    doIt(item,$predl)
+    doIt(db,item,$predl)
   item is [":=",lhs,rhs,:.] =>
     compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
@@ -2416,7 +2416,7 @@ doIt(item,$predl) ==
   item is ["%SignatureImport",:.] =>
     [.,.,$e] := compSignatureImport(item,$EmptyMode,$e)
     mutateToNothing item
-  item is ["IF",p,x,y] => doItConditionally(item,$predl)
+  item is ["IF",p,x,y] => doItConditionally(db,item,$predl)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ['DEF,lhs,:.] =>
@@ -2444,35 +2444,35 @@ isMacro(x,e) ==
 ++ In particular, a negation is positively interpretated by swapping
 ++ branches, and- and or-expressions are decomposed into nested
 ++ IF-expressions.  -- gdr, 2009-06-15.
-doItConditionally(item,predl) ==
+doItConditionally(db,item,predl) ==
   item isnt ["IF",p,x,y] => systemErrorHere ["doItConditionally",item]
   p is ["not",p'] =>
     -- swap branches and recurse for positive interpretation.
     item.rest.first := p'
     item.rest.rest.first := y
     item.rest.rest.rest.first := x
-    doItConditionally(item,predl)
+    doItConditionally(db,item,predl)
   p is ["and",p',p''] =>
     item.rest.first := p'
     item.rest.rest.first := ["IF",p'',x,copyTree y]
-    doItConditionally(item,predl)
+    doItConditionally(db,item,predl)
   p is ["or",p',p''] =>
     item.rest.first := p'
     item.rest.rest.rest.first := ["IF",p'',copyTree x,y]
-    doItConditionally(item,predl)
-  doItIf(item,predl,$e)
+    doItConditionally(db,item,predl)
+  doItIf(db,item,predl,$e)
     
  
-doItIf(item is [.,p,x,y],$predl,$e) ==
+doItIf(db,item is [.,p,x,y],$predl,$e) ==
   olde:= $e
   [p',.,$e]:= compCompilerPredicate(p,$e) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
   if x~="%noBranch" then
-    compSingleCapsuleItem(x,[p,:$predl],getSuccessEnvironment(p,$e))
+    compSingleCapsuleItem(db,x,[p,:$predl],getSuccessEnvironment(p,$e))
     x':=localExtras(oldFLP)
   oldFLP:=$functorLocalParameters
   if y~="%noBranch" then
-    compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
+    compSingleCapsuleItem(db,y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   item.op := '%when
   item.args := [[p',x,:x'],['%otherwise,y,:y']]

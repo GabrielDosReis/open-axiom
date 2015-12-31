@@ -1096,7 +1096,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  
 ;  by having no transform for the 3rd argument, it is simply not printed
  
-(MAKEPROP '|compFormWithModemap| '/TRANSFORM '(& * * & *))
+(MAKEPROP '|compFormWithModemap| '/TRANSFORM '(& & * * & *))
  
 (defun UNVEC (X)
   (COND ((simple-vector-p X) (CONS '$ (VEC_TO_TREE X)))

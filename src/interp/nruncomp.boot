@@ -194,7 +194,7 @@ optDeltaEntry(op,sig,dc,kind,e) ==
 ++ slot number in the template vector.
 $onlyAbstractSlot := false
 
-genDeltaEntry(op,mm,e) ==
+genDeltaEntry(db,op,mm,e) ==
   if mm.mmDC is 'Rep then
     mm := substitute(getRepresentation e,'Rep,mm)
   else if (x := get('$,'%dc,e)) and x = mm.mmDC then
