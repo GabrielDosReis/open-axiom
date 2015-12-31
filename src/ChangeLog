@@ -1,5 +1,10 @@
 2015-12-30  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/functor.boot (compCategories): Use the DB parameter is
+	asking for modemaps of current constructor.
+
+2015-12-30  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* algebra/attreg.spad.pamphlet (AttributeRegistry): Remove
 	unitsKnown, leftUnitary, rightUnitary, canonicalsClosed,
 	central, noetherian, NullSquare, JacobiIdentity.
