@@ -127,7 +127,6 @@
 
 (define-function '|not| #'NOT)
 
-(defun |random| () (random (expt 2 26)))
 (defun \,plus (x y) (+ x y))
 (defun \,times (x y) (* x y))
 (defun \,difference (x y) (- x y))

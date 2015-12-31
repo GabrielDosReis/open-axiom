@@ -276,6 +276,9 @@ expandIlt ['%ilt,x,y] ==
 expandIgt ['%igt,x,y] ==
   expandIlt ['%ilt,y,x]
 
+expandIbigrandom ['%ibigrandom] ==
+  ['RANDOM,['GET_-INTERNAL_-REAL_-TIME]]
+
 -- Floating point support
 
 expandFbase ['%fbase] ==
@@ -689,6 +692,7 @@ for x in [
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
    ['%idivide, :function expandIdivide],
+   ['%ibigrandom, :function expandIbigrandom],
 
    ['%i2f,     :function expandI2f],
    ['%fdecode, :function expandFdecode],

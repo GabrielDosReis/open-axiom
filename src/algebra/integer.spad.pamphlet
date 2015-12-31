@@ -81,6 +81,8 @@ Integer: IntegerNumberSystem with
       import %icst1: %                 from Foreign Builtin
       import %ineg: % -> %             from Foreign Builtin
       import %iabs: % -> %             from Foreign Builtin
+      import %iinc: % -> %             from Foreign Builtin
+      import %idec: % -> %             from Foreign Builtin
       import %irandom: % -> %          from Foreign Builtin
       import %iodd?: % -> Boolean      from Foreign Builtin
       import %ieven?: % -> Boolean     from Foreign Builtin
@@ -103,17 +105,18 @@ Integer: IntegerNumberSystem with
       import %igt: (%,%) -> Boolean    from Foreign Builtin
       import %ige: (%,%) -> Boolean    from Foreign Builtin
       import %ilength: % -> %          from Foreign Builtin
+      import %ibigrandom: () -> %      from Foreign Builtin
       import %i2s: % -> String         from Foreign Builtin
       import %strconc: (String,String) -> String from Foreign Builtin
 
-      zero? x == x = 0$%
-      one? x == x = 1$%
       0 == %icst0
       1 == %icst1
+      zero? x == x = 0$%
+      one? x == x = 1$%
       base()  == 2 pretend %
       copy x  == x
-      inc  x  == x + 1$%
-      dec  x  == x - 1$%
+      inc  x  == %iinc x
+      dec  x  == %idec x
       hash x == %hash x
       negative? x == x < 0$%
       positive? x == 0$% < x
@@ -147,7 +150,7 @@ Integer: IntegerNumberSystem with
         [m pretend Matrix(Integer), v pretend Vector(Integer)]
 
       abs(x) == %iabs x
-      random() == random()$Lisp
+      random() == %ibigrandom()
       random(x) == %irandom x
       x = y == %ieq(x,y)
       x < y == %ilt(x,y)
