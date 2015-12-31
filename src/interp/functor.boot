@@ -211,15 +211,17 @@ CategoriesFromGDC x ==
     union([[a']],"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
-compCategories(u,e) ==
+compCategories(db,u,e) ==
   u isnt [.,:.] => u
-  cons? u.op =>
+  u.op is [.,:.] =>
     error ['"compCategories: need an atom in operator position", u.op]
   u.op in '(Record Union Mapping) =>
     -- There is no modemap property for these guys so do it by hand.
-    [u.op, :[compCategories1(a,$SetCategory,e) for a in u.args]]
-  u is ['SubDomain,D,.] => compCategories(D,e)
-  v := get(u.op,'modemap,e)
+    [u.op, :[compCategories1(db,a,$SetCategory,e) for a in u.args]]
+  u is ['SubDomain,D,.] => compCategories(db,D,e)
+  v :=
+    u.op = dbConstructor db => dbConstructorModemap db
+    get(u.op,'modemap,e)
   v isnt [.,:.] =>
     error ['"compCategories: could not get proper modemap for operator",u.op]
   if rest v then
@@ -232,13 +234,13 @@ compCategories(u,e) ==
     v := rest v
   v := resolvePatternVars(first(v).mmSource, u.args) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
-  [u.op,:[compCategories1(a,b,e) for a in u.args for b in v]]
+  [u.op,:[compCategories1(db,a,b,e) for a in u.args for b in v]]
  
-compCategories1(u,v,e) ==
+compCategories1(db,u,v,e) ==
 -- v is the mode of u
   u isnt [.,:.] => u
-  u is [":",x,t] => [u.op,x,compCategories1(t,v,e)]
-  isCategoryForm(v,e) => compCategories(u,e)
+  u is [":",x,t] => [u.op,x,compCategories1(db,t,v,e)]
+  isCategoryForm(v,e) => compCategories(db,u,e)
   [c,:.] := comp(macroExpand(u,e),v,e) => c
   error 'compCategories1
  

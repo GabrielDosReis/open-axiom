@@ -463,7 +463,7 @@ buildFunctor(db,sig,code,$locals,$e) ==
   [catsig,:argsig] := sig
   catvecListMaker := removeDuplicates
     [comp(catsig,$EmptyMode,$e).expr,
-      :[compCategories(u,$e) for [u,:.] in categoryAncestors dbDomainShell db]]
+      :[compCategories(db,u,$e) for [u,:.] in categoryAncestors dbDomainShell db]]
   tbl := makeTable function valueEq?
   condCats := InvestigateConditions(db,[catsig,:rest catvecListMaker],tbl,$e)
   -- a list, one %for each element of catvecListMaker

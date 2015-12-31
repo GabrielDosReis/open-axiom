@@ -863,9 +863,13 @@ isLiteral(x,e) ==
 registerConstructor(x,e) ==
   put('%compilerData,'%ctor,x,e)
 
+++ Retrieve the most recent defining constructor.
+currentConstructor e ==
+  get('%compilerData,'%ctor,e)
+
 ++ Retrieve the DB of the constructor definition being processed.
 currentDB e ==
-  ctor := get('%compilerData,'%ctor,e) => constructorDB ctor
+  ctor := currentConstructor e => constructorDB ctor
   nil
 
 makeLiteral: (%Symbol,%Env) -> %Thing
