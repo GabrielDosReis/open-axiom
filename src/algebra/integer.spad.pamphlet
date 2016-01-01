@@ -113,7 +113,7 @@ Integer: IntegerNumberSystem with
       1 == %icst1
       zero? x == x = 0$%
       one? x == x = 1$%
-      base()  == 2 pretend %
+      base()  == 2@%
       copy x  == x
       inc  x  == %iinc x
       dec  x  == %idec x
@@ -133,7 +133,7 @@ Integer: IntegerNumberSystem with
 
       latex(x:%):String ==
         s := %i2s x
-        -1$% < x and x < 10 => s
+        -1$% < x and x < 10@% => s
         %strconc("{", %strconc(s, "}"))
 
       positiveRemainder(a, b) ==

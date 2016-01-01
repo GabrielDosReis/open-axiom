@@ -67,7 +67,7 @@ compFormWithModemap: (%Maybe %Database,%Form,%Mode,%Env,%Modemap) -> %Maybe %Tri
 compToApply: (%Form,%List %Form,%Mode,%Env) -> %Maybe %Triple
 compApplication: (%Form,%List %Form,%Mode,%Triple) -> %Maybe %Triple
 
-primitiveType: %Form -> %Mode
+primitiveType: (%Maybe %Database,%Form,%Mode) -> %Mode
 modeEqual: (%Form,%Form) -> %Boolean
 hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
@@ -414,17 +414,23 @@ compAtom(db,x,m,e) ==
   T := integer? x and x > 1 and compIntegerLiteral(db,x,m,e) => T
   t :=
     ident? x => compSymbol(x,m,e) or return nil
-    listMember?(m,$IOFormDomains) and primitiveType x => [x,m,e]
+    listMember?(m,$IOFormDomains) and primitiveType(db,x,m) => [x,m,e]
     string? x => [x,x,e]
-    [x,primitiveType x or return nil,e]
+    [x,primitiveType(db,x,m) or return nil,e]
   convert(t,m)
 
-primitiveType x ==
+modeIfTypeBeingDefined(db,t,m) ==
+  db = nil or m = $EmptyMode => t
+  substitute(dbConstructorForm db,'$,m) = t => m
+  t
+  
+primitiveType(db,x,m) ==
   x is nil => $EmptyMode
-  string? x => $String
+  string? x => modeIfTypeBeingDefined(db,$String,m)
   integer? x =>
-    x = 0 => $NonNegativeInteger
-    x > 0 => $PositiveInteger
+    db ~= nil and substitute(dbConstructorForm db,'$,m) = $Integer => m
+    x = 0 => modeIfTypeBeingDefined(db,$NonNegativeInteger,m)
+    x > 0 => modeIfTypeBeingDefined(db,$PositiveInteger,m)
     $Integer
   float? x => $DoubleFloat
   nil

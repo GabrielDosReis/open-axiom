@@ -1,3 +1,9 @@
+2015-12-31  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/compiler.boot (modeIfTypeBeingDefined): New.
+	(primitiveType): Add DB parameter as first.  Don't unconditionally
+	reference primitive types if they are being defined.
+
 2015-12-30  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/functor.boot (compCategories): Use the DB parameter is
