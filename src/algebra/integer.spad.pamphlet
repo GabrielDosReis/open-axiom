@@ -120,9 +120,9 @@ Integer: IntegerNumberSystem with
       hash x == %hash x
       negative? x == x < 0$%
       positive? x == 0$% < x
-      coerce(x):OutputForm == outputForm(x pretend Integer)
+      coerce(x):OutputForm == outputForm x
       coerce(m:Integer):% == m pretend %
-      convert(x:%):Integer == x pretend Integer
+      convert(x:%):Integer == x
       length a == %ilength a
       addmod(a, b, p) == %iaddmod(a,b,p)
       submod(a, b, p) == %isubmod(a,b,p)
@@ -142,12 +142,10 @@ Integer: IntegerNumberSystem with
            r + b
         r
 
-      reducedSystem(m:Matrix %):Matrix(Integer) ==
-        m pretend Matrix(Integer)
+      reducedSystem(m:Matrix %):Matrix(Integer) == m
 
       reducedSystem(m:Matrix %, v:Vector %):
-       Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
-        [m pretend Matrix(Integer), v pretend Vector(Integer)]
+       Record(mat:Matrix(Integer), vec:Vector(Integer)) == [m, v]
 
       abs(x) == %iabs x
       random() == %ibigrandom()
@@ -179,8 +177,8 @@ Integer: IntegerNumberSystem with
          [1$%,x,1$%]$UCA
       unitCanonical x == abs x
       solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
-         solveLinearPolynomialEquation(lp pretend List ZZP,
-               p pretend ZZP)$IntegerSolveLinearPolynomialEquation pretend
+         solveLinearPolynomialEquation(lp @ List ZZP,
+               p @ ZZP)$IntegerSolveLinearPolynomialEquation pretend
                      Union(List ZP,"failed")
       squareFreePolynomial(p:ZP):Factored ZP ==
         squareFree(p)$UnivariatePolynomialSquareFree(%,ZP)

@@ -1,5 +1,11 @@
 2015-12-31  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/compiler.boot (coerceEasy): Allow expansion of current
+	domain in target mode.
+	(coerceHard): Remove bidirectional expansion of current domain.
+
+2015-12-31  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* interp/compiler.boot (modeIfTypeBeingDefined): New.
 	(primitiveType): Add DB parameter as first.  Don't unconditionally
 	reference primitive types if they are being defined.

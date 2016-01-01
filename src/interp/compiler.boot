@@ -1782,9 +1782,9 @@ tryCourtesyCoercion(T,m) ==
       '"function coerce called from the interpreter."])
   db := currentDB T.env
   if $useRepresentationHack then
-    T.rest.first := MSUBST("$",$Rep,second T)
-  T' := coerceEasy(T,m) => T'
-  T' := coerceSubset(T,m) => T'
+    T.mode := MSUBST("$",$Rep,second T)
+  T' := coerceEasy(db,T,m) => T'
+  T' := coerceSubset(db,T,m) => T'
   T' := coerceHard(db,T,m) => T'
   nil
 
@@ -1795,8 +1795,8 @@ coerce(T,m) ==
     [T.expr,T.mode,m])
 
 
-coerceEasy: (%Triple,%Mode) -> %Maybe %Triple
-coerceEasy(T,m) ==
+coerceEasy: (%Maybe %Database,%Triple,%Mode) -> %Maybe %Triple
+coerceEasy(db,T,m) ==
   m=$EmptyMode => T
   m=$NoValueMode or m=$Void => [T.expr,m,T.env]
   T.mode =m => T
@@ -1804,6 +1804,10 @@ coerceEasy(T,m) ==
       [['%seq,T.expr,["userError", '"Did not really exit."]],m,T.env]
   T.mode=$EmptyMode or modeEqualSubst(T.mode,m,T.env) =>
     [T.expr,m,T.env]
+  -- It is OK to expand current domain in target mode.
+  db ~= nil and substitute(dbConstructorForm db,'$,T.mode) = m =>
+    [T.expr,m,T.env]
+  nil
 
 ++ Return true if the VM constant form `val' is known to satisfy
 ++ the predicate `pred'.  Note that this is a fairly conservatism
@@ -1832,8 +1836,8 @@ commonSuperType(m,m') ==
 ++ Coerce value `x' of mode `m' to mode `m'', if m is a subset of
 ++ of m'.  A special case is made for cross-subdomain conversion
 ++ for integral literals.
-coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
-coerceSubset([x,m,e],m') ==
+coerceSubset: (%Maybe %Database,%Triple,%Mode) -> %Maybe %Triple
+coerceSubset(db,[x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
   integer? x and (m'' := commonSuperType(m,m')) =>
     -- obviously this is temporary
@@ -1856,8 +1860,6 @@ coerceHard(db,T,m) ==
       $bootStrapMode => [T.expr,m,$e]
       extendsCategoryForm(db,T.expr,T.mode,m) => [T.expr,m,$e]
       coerceExtraHard(db,T,m)
-  (m' is "$" and m = $functorForm) or (m' = $functorForm and m = "$") =>
-    [T.expr,m,$e]
   coerceExtraHard(db,T,m)
 
 coerceExtraHard: (%Maybe %Database,%Triple,%Mode) -> %Maybe %Triple
@@ -1922,7 +1924,7 @@ coerceSuperset: (%Triple, %Mode) -> %Maybe %Triple
 coerceSuperset(T,sub) ==
   sub is "$" =>
     T' := coerceSuperset(T,$functorForm) or return nil
-    T'.rest.first := "$"
+    T'.mode := "$"
     T'
   pred := isSubset(sub,T.mode,T.env) =>
     [["%retract",T.expr,sub,pred],sub,T.env]
@@ -2740,7 +2742,7 @@ compPer(["per",x],m,e) ==
         [T.expr,"$",e]
       coerceSuperset(T,"$") or return nil
   else 
-    T.rest.first := "$"
+    T.mode := "$"
   coerce(T,m)
 
 ++ Compile the form `rep x' under the mode `m'.
@@ -2749,7 +2751,7 @@ compPer(["per",x],m,e) ==
 compRep(["rep",x],m,e) ==
   $useRepresentationHack => nil
   T := comp(x,"$",e) or return nil
-  T.rest.first := getRepresentation e or return nil
+  T.mode := getRepresentation e or return nil
   coerce(T,m)
 
 --% Lambda expressions
