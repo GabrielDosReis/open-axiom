@@ -1,6 +1,6 @@
 # Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 # All rights reserved.
-# Copyright (C) 2007-2014, Gabriel Dos Reis.
+# Copyright (C) 2007-2016, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -413,7 +413,8 @@ strap-0/NORMRETR.$(FASLEXT): strap-0/FAXF.$(FASLEXT)
 strap-0/FAXF.$(FASLEXT): strap-0/XF.$(FASLEXT)
 strap-0/COMPLEX.$(FASLEXT): strap-0/COMPCAT.$(FASLEXT)
 strap-0/COMPCAT.$(FASLEXT): strap-0/COMRING.$(FASLEXT) 
-
+strap-0/MSET.$(FASLEXT): strap-0/MSETAGG.$(FASLEXT)
+strap-0/MSETAGG.$(FASLEXT): strap-0/MDAGG.$(FASLEXT)
 
 # Bootstrap stage 1 dependencies.
 # At this stage, we attempt to compile domains essential for completing
@@ -894,15 +895,19 @@ strap-1/CATCTOR.$(FASLEXT): strap-1/CTORCAT.$(FASLEXT) \
 strap-1/SAOS.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
 	strap-1/KONVERT.$(FASLEXT) strap-0/SYMBOL.$(FASLEXT)
 
-strap-1/STREAM.$(FASLEXT): strap-1/LZSTAGG.$(FASLEXT) strap-1/SMAGG.$(FASLEXT)
+strap-1/STREAM.$(FASLEXT): strap-1/LZSTAGG.$(FASLEXT) \
+	strap-1/SMAGG.$(FASLEXT) strap-0/STREAM2.$(FASLEXT) \
+	strap-1/STREAM3.$(FASLEXT)
 
-strap-1/LZSTAGG.$(FASLEXT): strap-1/STAGG.$(FASLEXT)
+strap-1/LZSTAGG.$(FASLEXT): strap-1/STAGG.$(FASLEXT) \
+	strap-0/CSTTOOLS.$(FASLEXT)
 
 strap-1/BOP.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) strap-1/OPERCAT.$(FASLEXT) \
 	strap-0/SYMBOL.$(FASLEXT) strap-0/NNI.$(FASLEXT) \
 	strap-0/BOOLEAN.$(FASLEXT) strap-0/MAYBE.$(FASLEXT) \
 	strap-0/LIST.$(FASLEXT) strap-0/ALIST.$(FASLEXT) \
-	strap-0/OUTFORM.$(FASLEXT) strap-0/INFORM.$(FASLEXT)
+	strap-0/OUTFORM.$(FASLEXT) strap-0/INFORM.$(FASLEXT) \
+	strap-0/ARITY.$(FASLEXT) strap-0/NONE.$(FASLEXT)
 
 strap-1/ES.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/RETRACT.$(FASLEXT) \
 	strap-1/IEVALAB.$(FASLEXT) strap-1/REF.$(FASLEXT) \
@@ -930,7 +935,9 @@ strap-1/FR.$(FASLEXT): strap-1/INTDOM.$(FASLEXT) strap-1/DIFEXT.$(FASLEXT) \
 	strap-0/LIST.$(FASLEXT)
 
 strap-1/INFORM.$(FASLEXT): strap-1/SEXCAT.$(FASLEXT) \
-	strap-1/KONVERT.$(FASLEXT) strap-0/STRING.$(FASLEXT) \
+	strap-1/KONVERT.$(FASLEXT) strap-1/REF.$(FASLEXT) \
+	strap-1/ALIST.$(FASLEXT) strap-1/PRIMARR.$(FASLEXT) \
+	strap-0/STRING.$(FASLEXT) \
 	strap-0/SYMBOL.$(FASLEXT) strap-0/INT.$(FASLEXT) \
 	strap-0/DFLOAT.$(FASLEXT) strap-0/OUTFORM.$(FASLEXT) \
 	strap-0/ANY.$(FASLEXT)
@@ -972,7 +979,39 @@ strap-1/FFP.$(FASLEXT): strap-1/FFIELDC.$(FASLEXT) strap-1/SUP.$(FASLEXT) \
 	strap-1/FAXF.$(FASLEXT)
 strap-1/FAXF.$(FASLEXT): strap-1/XF.$(FASLEXT) strap-0/SAE.$(FASLEXT)
 strap-1/MATLIN.$(FASLEXT): strap-0/IMATLIN.$(FASLEXT) strap-0/IMATQF.$(FASLEXT)
+strap-1/GALFACT.$(FASLEXT): strap-1/GALFACTU.$(FASLEXT) \
+	strap-1/GALPOLYU.$(FASLEXT) strap-0/MDDFACT.$(FASLEXT) \
+	strap-0/UPDECOMP.$(FASLEXT) strap-0/BRILL.$(FASLEXT) \
+	strap-0/CYCLOTOM.$(FASLEXT)
+strap-1/GALFACTU.$(FASLEXT): strap-1/FPS.$(FASLEXT) strap-1/RING.$(FASLEXT) \
+	strap-1/UPOLYC.$(FASLEXT) strap-1/GALUTIL.$(FASLEXT)
+strap-1/GALUTIL.$(FASLEXT): strap-1/RING.$(FASLEXT)
+strap-1/GALPOLYU.$(FASLEXT): strap-1/UPOLYC.$(FASLEXT) \
+	strap-1/RING.$(FASLEXT) strap-0/MSET.$(FASLEXT)
+strap-1/HEUGCD.$(FASLEXT): strap-1/INMODGCD.$(FASLEXT)
+strap-1/INMODGCD.$(FASLEXT): strap-0/EUCDOM.$(FASLEXT) \
+	strap-0/UPOLYC.$(FASLEXT) strap-0/EMR.$(FASLEXT)
+strap-1/ANY1.$(FASLEXT): strap-1/NONE1.$(FASLEXT)
+strap-1/POLY.$(FASLEXT): strap-1/SMP.$(FASLEXT) strap-0/UDPO.$(FASLEXT)
+strap-1/MULTFACT.$(FASLEXT): strap-0/MRATFAC.$(FASLEXT) \
+	strap-0/MPRFF.$(FASLEXT) strap-0/INNMFACT.$(FASLEXT) \
+	strap-0/GENUFACT.$(FASLEXT)
+strap-1/INDE.$(FASLEXT): strap-1/IDPOAMS.$(FASLEXT) strap-1/IDPC.$(FASLEXT)
+strap-1/IDPOAMS.$(FASLEXT): strap-1/IDPOAM.$(FASLEXT)
+strap-1/IDPC.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/FUNCTOR.$(FASLEXT)
+strap-1/GENEEZ.$(FASLEXT): strap-1/VECTOR2.$(FASLEXT)
+strap-1/MLIFT.$(FASLEXT): strap-1/NPCOEF.$(FASLEXT) strap-1/SUP2.$(FASLEXT) \
+	strap-1/PGCD.$(FASLEXT) strap-1/FACUTIL.$(FASLEXT)
 
+strap-1/PMDOWN.$(FASLEXT): strap-1/PATRES2.$(FASLEXT)
+strap-1/BOP1.$(FASLEXT): strap-1/NONE.$(FASLEXT) strap-1/ARITY.$(FASLEXT)
+strap-1/KERNEL.$(FASLEXT): strap-1/CACHSET.$(FASLEXT) strap-1/SCACHE.$(FASLEXT)
+strap-1/UPDECOMP.$(FASLEXT): strap-0/UPDIVP.$(FASLEXT)
+strap-1/COMPLEX.$(FASLEXT): strap-1/COMPCAT.$(FASLEXT)
+strap-1/COMPCAT.$(FASLEXT): strap-0/CINTSLPE.$(FASLEXT) \
+	strap-0/COMPLPAT.$(FASLEXT) strap-0/CPMATCH.$(FASLEXT)
+strap-1/MONOGEN.$(FASLEXT): strap-0/CPIMA.$(FASLEXT)
+strap-1/ALIST.$(FASLEXT): strap-1/ALAGG.$(FASLEXT)
 
 
 # Bootstrap stage 2 dependencies.
@@ -1005,7 +1044,7 @@ strap-2/RLINSET.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
 strap-2/LINSET.$(FASLEXT): strap-2/LLINSET.$(FASLEXT) \
 	strap-2/RLINSET.$(FASLEXT)
 strap-2/SGROUP.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
-	strap-1/REPSQ.$(FASLEXT)
+	strap-1/REPSQ.$(FASLEXT) strap-1/PI.$(FASLEXT)
 strap-2/ABELSG.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
 	strap-1/PI.$(FASLEXT) strap-1/REPDB.$(FASLEXT)
 strap-2/MONOID.$(FASLEXT): strap-2/SGROUP.$(FASLEXT)
@@ -1217,7 +1256,9 @@ strap-2/OAMONS.$(FASLEXT): strap-2/OCAMON.$(FASLEXT)
 strap-2/INT.$(FASLEXT): strap-2/INS.$(FASLEXT) \
 	strap-2/SUP.$(FASLEXT) strap-2/MATRIX.$(FASLEXT) \
 	strap-2/VECTOR.$(FASLEXT) strap-2/DFLOAT.$(FASLEXT) \
-	strap-2/FLOAT.$(FASLEXT)
+	strap-1/FLOAT.$(FASLEXT) strap-1/INTSLPE.$(FASLEXT) \
+	strap-1/GALFACT.$(FASLEXT) strap-1/FRUTIL.$(FASLEXT) \
+	strap-1/HEUGCD.$(FASLEXT)
 strap-2/DFLOAT.$(FASLEXT): strap-2/FPS.$(FASLEXT) \
 	strap-2/DIFRING.$(FASLEXT) strap-2/TRANFUN.$(FASLEXT) \
 	strap-2/KONVERT.$(FASLEXT) strap-1/DFSFUN.$(FASLEXT)
@@ -1265,7 +1306,10 @@ strap-2/INFORM.$(FASLEXT): strap-2/SEXCAT.$(FASLEXT) \
 	strap-2/SYMBOL.$(FASLEXT)
 strap-2/LIST.$(FASLEXT): strap-2/LSAGG.$(FASLEXT)
 strap-2/SEX.$(FASLEXT): strap-2/SEXOF.$(FASLEXT)
-strap-2/OUTFORM.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
+strap-2/OUTFORM.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
+	strap-1/NUMFMT.$(FASLEXT) strap-1/VOID.$(FASLEXT) \
+	strap-1/DFLOAT.$(FASLEXT) strap-1/SYMBOL.$(FASLEXT) \
+	strap-1/LIST.$(FASLEXT)
 strap-2/SEXOF.$(FASLEXT): strap-2/SEXCAT.$(FASLEXT)
 strap-2/ANY.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
 	strap-2/SEX.$(FASLEXT) strap-2/NONE.$(FASLEXT)
@@ -1276,7 +1320,7 @@ strap-2/SYMBOL.$(FASLEXT): strap-2/ORDSET.$(FASLEXT) \
 	strap-2/PATMAB.$(FASLEXT) strap-2/VOID.$(FASLEXT) \
 	strap-2/BOOLEAN.$(FASLEXT) strap-2/ALIST.$(FASLEXT) \
 	strap-2/PRIMARR.$(FASLEXT) strap-2/REF.$(FASLEXT) \
-	strap-2/STRING.$(FASLEXT)
+	strap-2/STRING.$(FASLEXT) strap-1/PMSYM.$(FASLEXT)
 strap-2/ALIST.$(FASLEXT): strap-2/ALAGG.$(FASLEXT) strap-2/REF.$(FASLEXT)
 strap-2/REF.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
 strap-2/STRING.$(FASLEXT): strap-2/SRAGG.$(FASLEXT) \
@@ -1312,7 +1356,9 @@ strap-2/EQ.$(FASLEXT): strap-2/FUNCTOR.$(FASLEXT) strap-2/SETCAT.$(FASLEXT) \
 	strap-2/COMRING.$(FASLEXT) strap-2/MODULE.$(FASLEXT) \
 	strap-2/INTDOM.$(FASLEXT) strap-2/PDRING.$(FASLEXT) \
 	strap-2/FIELD.$(FASLEXT) strap-2/VSPACE.$(FASLEXT) \
-	strap-2/ES.$(FASLEXT) strap-2/GROUP.$(FASLEXT)
+	strap-2/ES.$(FASLEXT) strap-2/GROUP.$(FASLEXT) \
+	strap-1/POLY.$(FASLEXT) strap-1/MULTFACT.$(FASLEXT) \
+	strap-1/INDE.$(FASLEXT) strap-1/CARD.$(FASLEXT)
 
 strap-2/VSPACE.$(FASLEXT): strap-2/FIELD.$(FASLEXT) strap-2/MODULE.$(FASLEXT)
 
@@ -1321,7 +1367,9 @@ strap-2/GROUP.$(FASLEXT): strap-2/MONOID.$(FASLEXT)
 strap-2/ES.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) strap-2/RETRACT.$(FASLEXT) \
 	strap-2/IEVALAB.$(FASLEXT) strap-2/EVALAB.$(FASLEXT) \
 	strap-2/RING.$(FASLEXT) strap-2/RETRACT.$(FASLEXT) \
-	strap-2/CACHSET.$(FASLEXT)
+	strap-2/CACHSET.$(FASLEXT) strap-1/BOP1.$(FASLEXT) \
+	strap-1/KERNEL.$(FASLEXT) strap-1/COMMONOP.$(FASLEXT) \
+	strap-1/BOP.$(FASLEXT)
 
 strap-2/CACHSET.$(FASLEXT): strap-2/SETCAT.$(FASLEXT)
 
@@ -1335,7 +1383,9 @@ strap-2/UNISEG.$(FASLEXT): strap-2/SEGCAT.$(FASLEXT) \
 
 strap-2/PATTERN.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
 	strap-2/RETRACT.$(FASLEXT) strap-1/BOP.$(FASLEXT) \
-	strap-1/NNI.$(FASLEXT) strap-1/ABELMON.$(FASLEXT)
+	strap-1/NNI.$(FASLEXT) strap-1/ABELMON.$(FASLEXT) \
+	strap-1/ANY1.$(FASLEXT) strap-1/ANY.$(FASLEXT) \
+	strap-1/PATTERN1.$(FASLEXT)
 
 strap-2/FR.$(FASLEXT): strap-2/INTDOM.$(FASLEXT) strap-2/INTDOM.$(FASLEXT) \
 	strap-2/DIFEXT.$(FASLEXT) strap-2/ALGEBRA.$(FASLEXT) \
@@ -1349,6 +1399,29 @@ strap-2/FR.$(FASLEXT): strap-2/INTDOM.$(FASLEXT) strap-2/INTDOM.$(FASLEXT) \
 	strap-1/INTFACT.$(FASLEXT) strap-1/SET.$(FASLEXT) \
 	strap-1/UNISEG.$(FASLEXT) strap-1/REF.$(FASLEXT) \
 	strap-1/ALIST.$(FASLEXT) strap-1/PRIMARR.$(FASLEXT)
+
+strap-2/KERNEL.$(FASLEXT): strap-1/CACHSET.$(FASLEXT) \
+	strap-1/SCACHE.$(FASLEXT) strap-1/ARITY.$(FASLEXT) \
+	strap-1/NONE.$(FASLEXT)
+
+strap-2/PFBR.$(FASLEXT): strap-1/COMMUPC.$(FASLEXT)
+strap-2/MULTSQFR.$(FASLEXT): strap-1/GENEEZ.$(FASLEXT) \
+	strap-1/MLIFT.$(FASLEXT)
+strap-2/PMPLCAT.$(FASLEXT): strap-1/PMTOOLS.$(FASLEXT) \
+	strap-1/PMDOWN.$(FASLEXT)
+
+strap-2/GALFACT.$(FASLEXT): strap-1/GALFACTU.$(FASLEXT) \
+	strap-1/GALPOLYU.$(FASLEXT) strap-1/MDDFACT.$(FASLEXT) \
+	strap-1/UPDECOMP.$(FASLEXT) strap-1/BRILL.$(FASLEXT) \
+	strap-1/CYCLOTOM.$(FASLEXT) strap-1/MSET.$(FASLEXT) \
+	strap-1/GHENSEL.$(FASLEXT)
+
+strap-2/DFSFUN.$(FASLEXT): strap-1/COMPLEX.$(FASLEXT) \
+	strap-1/INTRET.$(FASLEXT) strap-1/MONOGEN.$(FASLEXT) \
+	strap-1/FRAMALG.$(FASLEXT) strap-1/FINRALG.$(FASLEXT)
+
+strap-2/POLY.$(FASLEXT): strap-2/UDPO.$(FASLEXT)
+
 
 #
 #
@@ -1509,7 +1582,10 @@ $(OUT)/PI.$(FASLEXT): $(OUT)/NNI.$(FASLEXT)
 $(OUT)/INT.$(FASLEXT): $(OUT)/INS.$(FASLEXT) \
 	strap-2/SUP.$(FASLEXT) strap-2/STRING.$(FASLEXT) \
 	strap-2/MATRIX.$(FASLEXT) strap-2/VECTOR.$(FASLEXT) \
-	strap-2/FR.$(FASLEXT)
+	strap-2/FR.$(FASLEXT) strap-2/INTSLPE.$(FASLEXT) \
+	strap-2/UPSQFREE.$(FASLEXT) strap-2/GALFACT.$(FASLEXT) \
+	strap-2/FRUTIL.$(FASLEXT) strap-2/FR2.$(FASLEXT) \
+	strap-2/HEUGCD.$(FASLEXT)
 
 $(OUT)/BINOPC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
@@ -1522,6 +1598,7 @@ $(OUT)/EVALAB.$(FASLEXT): $(OUT)/IEVALAB.$(FASLEXT) \
 $(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 $(OUT)/SETCAT.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT) \
+	strap-2/OUTFORM.$(FASLEXT) \
 	strap-2/SINT.$(FASLEXT) strap-2/STRING.$(FASLEXT)
 
 $(OUT)/UTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -1554,13 +1631,15 @@ $(OUT)/ORDSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 $(OUT)/FILECAT.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/STEP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/PATMAB.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
-$(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT)
+$(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT) \
+	strap-2/FLOAT.$(FASLEXT)
 
 $(OUT)/LOGIC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BOOLE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
 $(OUT)/SGROUP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
-	strap-2/PI.$(FASLEXT)
+	strap-2/PI.$(FASLEXT) strap-2/REPSQ.$(FASLEXT)
+
 $(OUT)/ABELSG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
 	$(OUT)/LLINSET.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
@@ -1590,11 +1669,13 @@ $(OUT)/SYSPTR.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
 
 $(OUT)/DIFFDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
-$(OUT)/DIFFSPC.$(FASLEXT): $(OUT)/DIFFDOM.$(FASLEXT)
+$(OUT)/DIFFSPC.$(FASLEXT): $(OUT)/DIFFDOM.$(FASLEXT) \
+	strap-2/PI.$(FASLEXT)
 $(OUT)/DIFFMOD.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/PDDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/PDSPC.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/DSEXT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT)
+$(OUT)/DSEXT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT) \
+	strap-2/SYMBOL.$(FASLEXT)
 $(OUT)/ORDTYPE.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
 $(OUT)/ORDSTRCT.$(FASLEXT): $(OUT)/ORDTYPE.$(FASLEXT) $(OUT)/HOMOTOP.$(FASLEXT)
 
@@ -1630,7 +1711,9 @@ $(OUT)/INS.$(FASLEXT): $(OUT)/UFD.$(FASLEXT) $(OUT)/EUCDOM.$(FASLEXT) \
 	strap-2/FLOAT.$(FASLEXT) strap-2/DFLOAT.$(FASLEXT) \
 	strap-2/INFORM.$(FASLEXT) strap-2/SEXCAT.$(FASLEXT) \
 	strap-2/PATTERN.$(FASLEXT) strap-2/PI.$(FASLEXT) \
-	strap-2/NNI.$(FASLEXT)
+	strap-2/NNI.$(FASLEXT) strap-2/INTFACT.$(FASLEXT) \
+	strap-2/PRIMES.$(FASLEXT) strap-2/COMBINAT.$(FASLEXT) \
+	strap-2/PATRES.$(FASLEXT) strap-2/PMINS.$(FASLEXT)
 
 $(OUT)/CHARZ.$(FASLEXT): $(OUT)/RING.$(FASLEXT)
 $(OUT)/CHARNZ.$(FASLEXT): $(OUT)/RING.$(FASLEXT)
@@ -1666,12 +1749,17 @@ $(OUT)/ENTIRER.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/BMODULE.$(FASLEXT)
 $(OUT)/INTDOM.$(FASLEXT): $(OUT)/COMRING.$(FASLEXT) $(OUT)/ALGEBRA.$(FASLEXT) \
 	$(OUT)/ENTIRER.$(FASLEXT) strap-2/FIELD.$(FASLEXT)
 $(OUT)/OINTDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT) $(OUT)/ORDRING.$(FASLEXT)
-$(OUT)/GCDDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT)
-$(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT) $(OUT)/ES.$(FASLEXT)
+$(OUT)/GCDDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT) \
+	strap-2/LIST.$(FASLEXT)
+$(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT) strap-2/ES.$(FASLEXT)
 $(OUT)/ES.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/CACHSET.$(FASLEXT) \
-	$(OUT)/PATAB.$(FASLEXT) strap-2/PRIMARR.$(FASLEXT) \
+	$(OUT)/PATAB.$(FASLEXT) strap-2/IDENT.$(FASLEXT) \
+	$(OUT)/MAYBE.$(FASLEXT) strap-2/PRIMARR.$(FASLEXT) \
 	strap-2/REF.$(FASLEXT) strap-2/ALIST.$(FASLEXT) \
-	$(OUT)/MAYBE.$(FASLEXT)
+	strap-2/NONE.$(FASLEXT) strap-2/KERNEL.$(FASLEXT) \
+	strap-2/COMMONOP.$(FASLEXT) strap-2/SYMBOL.$(FASLEXT) \
+	strap-2/BOP.$(FASLEXT) strap-2/EQ.$(FASLEXT) \
+	strap-2/ARITY.$(FASLEXT) strap-2/BOP1.$(FASLEXT)
 $(OUT)/CACHSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/BOOLEAN.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
@@ -1707,8 +1795,11 @@ $(OUT)/POLYCAT.$(FASLEXT): $(OUT)/PDRING.$(FASLEXT) \
 	$(OUT)/FAMR.$(FASLEXT) $(OUT)/EVALAB.$(FASLEXT) \
 	$(OUT)/RETRACT.$(FASLEXT) $(OUT)/FLINEXP.$(FASLEXT) \
 	strap-2/VECTOR.$(FASLEXT) strap-2/MATRIX.$(FASLEXT) \
-	strap-2/LIST.$(FASLEXT) strap-1/SUP.$(FASLEXT) \
-	strap-2/INFORM.$(FASLEXT)
+	strap-2/LIST.$(FASLEXT) strap-2/SUP.$(FASLEXT) \
+	strap-2/INFORM.$(FASLEXT) strap-2/GENPGCD.$(FASLEXT)  \
+	strap-2/PFBR.$(FASLEXT) strap-2/MULTSQFR.$(FASLEXT) \
+	strap-2/PSQFR.$(FASLEXT) strap-2/PMPLCAT.$(FASLEXT) \
+	strap-2/POLYLIFT.$(FASLEXT) strap-2/UNISEG.$(FASLEXT)
 
 $(OUT)/QFCAT.$(FASLEXT): $(OUT)/ALGEBRA.$(FASLEXT) \
 	$(OUT)/RETRACT.$(FASLEXT) \
@@ -1718,11 +1809,14 @@ $(OUT)/QFCAT.$(FASLEXT): $(OUT)/ALGEBRA.$(FASLEXT) \
 	$(OUT)/OINTDOM.$(FASLEXT) $(OUT)/REAL.$(FASLEXT) \
 	$(OUT)/KONVERT.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT) \
 	$(OUT)/CHARNZ.$(FASLEXT) $(OUT)/EUCDOM.$(FASLEXT) \
-	$(OUT)/PFECAT.$(FASLEXT) $(OUT)/FIELD.$(FASLEXT) 
+	$(OUT)/PFECAT.$(FASLEXT) $(OUT)/FIELD.$(FASLEXT) \
+	strap-2/MCDEN.$(FASLEXT) strap-2/PMQFCAT.$(FASLEXT)
+
 
 $(OUT)/PDRING.$(FASLEXT): $(OUT)/PDSPC.$(FASLEXT)
 $(OUT)/DIFEXT.$(FASLEXT): $(OUT)/DSEXT.$(FASLEXT)
-$(OUT)/PFECAT.$(FASLEXT): $(OUT)/UFD.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT)
+$(OUT)/PFECAT.$(FASLEXT): $(OUT)/UFD.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT) \
+	strap-2/LPEFRAC.$(FASLEXT)
 
 $(OUT)/FAMR.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/OAMON.$(FASLEXT) \
 	$(OUT)/AMR.$(FASLEXT) $(OUT)/FRETRCT.$(FASLEXT)
@@ -1749,7 +1843,8 @@ $(OUT)/PDSPC.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT) \
 
 $(OUT)/DFLOAT.$(FASLEXT): $(OUT)/FPS.$(FASLEXT) \
 	$(OUT)/DIFRING.$(FASLEXT) $(OUT)/TRANFUN.$(FASLEXT) \
-	$(OUT)/KONVERT.$(FASLEXT)
+	$(OUT)/KONVERT.$(FASLEXT) \
+	strap-2/DFSFUN.$(FASLEXT)
 
 $(OUT)/TRANFUN.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/FIELD.$(FASLEXT) \
 	strap-2/TRIGCAT.$(FASLEXT) \
@@ -1762,7 +1857,7 @@ $(OUT)/SYMBOL.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT) \
 	$(OUT)/PATMAB.$(FASLEXT) strap-2/VOID.$(FASLEXT) \
 	strap-2/BOOLEAN.$(FASLEXT) strap-2/ALIST.$(FASLEXT) \
 	strap-2/PRIMARR.$(FASLEXT) strap-2/REF.$(FASLEXT) \
-	strap-2/STRING.$(FASLEXT)
+	strap-2/STRING.$(FASLEXT) strap-2/PMSYM.$(FASLEXT)
 
 $(OUT)/COMOPC.$(FASLEXT): $(OUT)/BINOPC.$(FASLEXT)
 
@@ -1819,7 +1914,11 @@ $(OUT)/BYTEORD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT) $(OUT)/PAIR.$(FASLEXT)
 $(OUT)/BINDING.$(FASLEXT): $(OUT)/PROPERTY.$(FASLEXT)
 $(OUT)/OPERCAT.$(FASLEXT): $(OUT)/ARITY.$(FASLEXT)
-$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
+$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT) \
+	strap-2/STREAM2.$(FASLEXT) strap-2/STREAM3.$(FASLEXT)
+$(OUT)/LZSTAGG.$(FASLEXT): $(OUT)/STAGG.$(FASLEXT) \
+	strap-2/CSTTOOLS.$(FASLEXT)
+
 
 $(OUT)/MONOP.$(FASLEXT): $(OUT)/MONOPC.$(FASLEXT) $(OUT)/PAIR.$(FASLEXT) \
 	$(OUT)/SETCAT.$(FASLEXT)
@@ -1879,11 +1978,11 @@ $(OUT)/MDAGG.$(FASLEXT): $(OUT)/DIOPS.$(FASLEXT)
 $(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
 
 oa_algebra_layer_1 = \
-  ITUPLE    IDPT    ITFUN2   SEGCAT   VOID      \
-  FILECAT  SMAGG    MKBCFUNC MKRECORD MKUCFUNC \
+  ITUPLE    IDPT    ITFUN2   SEGCAT   VOID      EXIT     \
+  FILECAT  SMAGG    MKRECORD MKFUNC   \
   PPCURVE  PSCURVE  RESLATC            \
   IDENT    OUTFORM  BINDING           BOOLEAN            \
-  DROPT1   PLOT1    IARRAY1  \
+  IARRAY1  \
   DATAARY  PROPLOG  BYTEORD  \
   AGG      AGG-     ELTAGG   ELTAGG-  IXAGG    IXAGG-   \
   BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    ELAGG-   \
@@ -1898,7 +1997,7 @@ oa_algebra_layer_1 = \
   PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
   COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND \
   PDMOD    DMEXT    LZSTAGG  LZSTAGG- MSETAGG   \
-  ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
+  ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     \
   ALIST   LIST      RTVALUE  SYSPTR   ATTREG   REF       
 
 oa_algebra_layer_1_nrlibs = \
@@ -1907,16 +2006,21 @@ oa_algebra_layer_1_nrlibs = \
 oa_algebra_layer_1_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_1)))
+
+$(OUT)/OUTFORM.$(FASLEXT): strap-2/NUMFMT.$(FASLEXT)
+$(OUT)/FLAGG.$(FASLEXT): strap-2/FLASORT.$(FASLEXT)
+
 oa_algebra_layer_2 = \
-  SYNTAX   INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-  COMMONOP          FNCAT   SCACHE   BOP     BOP1     \
-  DOMTMPLT FCTRDATA
+  SYNTAX   INTRET   SEGXCAT CONTOUR  LIST3   MKUCFUNC \
+  FNCAT    SCACHE   SET     IFARRAY  FARRAY  SIG \
+  FUNDESC  DOMTMPLT MKBCFUNC RNGBIND SEG     OVERSET \
+  CTORCAT  CTORCAT- CTOR
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
-$(OUT)/COMMONOP.$(FASLEXT): $(OUT)/BOP.$(FASLEXT)
 $(OUT)/DOMTMPLT.$(FASLEXT): $(OUT)/SYNTAX.$(FASLEXT) $(OUT)/OAMONS.$(FASLEXT)
-$(OUT)/FCTRDATA.$(FASLEXT): $(OUT)/DOMTMPLT.$(FASLEXT)
+$(OUT)/SET.$(FASLEXT): $(OUT)/FARRAY.$(FASLEXT)
+$(OUT)/FARRAY.$(FASLEXT): $(OUT)/IFARRAY.$(FASLEXT)
 
 oa_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_2))
@@ -1925,12 +2029,15 @@ oa_algebra_layer_2_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_2)))
 oa_algebra_layer_3 = \
-   GRDEF     SCOPE    MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
-   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   
+   SCOPE    MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1   SEGBIND \
+   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   SEG2    \
+   BOP	     BOP1    COMMONOP CATCTOR  CTORCALL
 
 
 $(OUT)/MONAD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SCOPE.$(FASLEXT): $(OUT)/BINDING.$(FASLEXT)
+$(OUT)/COMMONOP.$(FASLEXT): $(OUT)/BOP.$(FASLEXT)
+$(OUT)/FCTRDATA.$(FASLEXT): $(OUT)/DOMTMPLT.$(FASLEXT)
 
 oa_algebra_layer_3_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_3))
@@ -1945,14 +2052,14 @@ $(OUT)/PALETTE.$(FASLEXT): $(OUT)/COLOR.$(FASLEXT)
 
 
 oa_algebra_layer_4 = \
-  ANON     OSI      COMM     COMPPROP EXIT     \
-  FAMONC   IDPC              NONE     \
-  COLOR             ONECOMP2          \
+  ANON     OSI      COMM     COMPPROP   SEGBIND2 \
+  FAMONC   IDPC              NONE       FCTRDATA \
+  COLOR             \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
   PARSU2            PATRES2  PATTERN1 \
-  RFDIST   RIDIST   SPACEC   SPLNODE  \
-  SUCH     TEX1     UDVO     YSTREAM           ENV      \
-  ATRIG    ATRIG-   LALG     LALG- 
+  SPACEC   SPLNODE  IDPOAM \
+  SUCH     YSTREAM           ENV      \
+  ATRIG    ATRIG-   LALG     LALG-	RANDSRC
 
 
 oa_algebra_layer_4_nrlibs = \
@@ -1967,13 +2074,13 @@ $(OUT)/DVARCAT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/IDPAM.$(FASLEXT): $(OUT)/IDPO.$(FASLEXT)
 
 oa_algebra_layer_5 = \
-                       DVARCAT  DVARCAT- ELEMFUN  \
+  CARD     DVARCAT  DVARCAT- ELEMFUN  \
   ELEMFUN- FCOMP    IDPAM    IDPO     \
   INCRMAPS KERNEL2           MODMONOM MONADWU  MONADWU- \
-  MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
-           ORDMON   PATMATCH PERMCAT  \
-  SDVAR    SUP2     TRIGCAT  TRIGCAT- UP2      \
-  ELABEXPR KERNEL
+  NARNG    NARNG-   ODVAR    PATLRES  PMLSAGG  \
+           ORDMON   PERMCAT  RFDIST   RIDIST   \
+  SDVAR    TRIGCAT  TRIGCAT- \
+  ELABEXPR KERNEL    IDPOAMS
 
 oa_algebra_layer_5_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_5))
@@ -1982,19 +2089,15 @@ oa_algebra_layer_5_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_5)))
 
-$(OUT)/PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
-$(OUT)/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT) $(OUT)/BYTE.$(FASLEXT)
-$(OUT)/PROPFUN1.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
-$(OUT)/PROPFUN2.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
-$(OUT)/BYTE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
-$(OUT)/SYSNNI.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT) $(OUT)/ORDFIN.$(FASLEXT)
-
 oa_algebra_layer_6 = \
-  PROPFRML PROPFUN1 AUTOMOR  CHARPOL  \
-              ES1      ES2     GRMOD    GRMOD-   \
+  PROPFRML PROPFUN1 AUTOMOR  CHARPOL  PATMATCH \
+  OVAR     ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT   HYPCAT-           MODRING NASRING  NASRING- \
-  SORTPAK  ZMOD     PROPFUN2                           \
-  KTVLOGIC                   BYTE    SYSINT   SYSNNI
+  SORTPAK  ZMOD     PROPFUN2 SAOS    INDE   FLAGG2   \
+  KTVLOGIC TREE     BYTE    SYSINT   SYSNNI DIRPCAT  DIRPCAT- 
+
+$(OUT)/PATMATCH.$(FASLEXT): strap-2/POLY.$(FASLEXT)
+
 
 oa_algebra_layer_6_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_6))
@@ -2002,14 +2105,13 @@ oa_algebra_layer_6_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_6)))
 
-$(OUT)/IFAMON.$(FASLEXT): $(OUT)/LMOPS.$(FASLEXT)
-$(OUT)/IDPOAM.$(FASLEXT): $(OUT)/IDPAM.$(FASLEXT)
-
 oa_algebra_layer_7 = \
-  BTCAT   BTCAT-  LMOPS             FMCAT   IDPOAM   \
-  IFAMON  GRALG   GRALG-                             \
+  BTCAT   BTCAT-  LMOPS    FMONCAT  FMCAT   DIRPROD   \
+  IFAMON  GRALG   GRALG-   SMP      INTABL  HASHTBL  \
   INT8    INT16   INT32    INT64    UINT8   UINT16   \
-  UINT32  UINT64
+  UINT32  UINT64  BTREE    FAGROUP  FGROUP  MODOP   \
+  FMONOID GDMP    PARTPERM HDP      RMATCAT  RMATCAT-  \
+  ICDEN    
 
 oa_algebra_layer_7_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_7))
@@ -2018,15 +2120,16 @@ oa_algebra_layer_7_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_7)))
 
-$(OUT)/BSTREE.$(FASLEXT): $(OUT)/BTREE.$(FASLEXT)
-$(OUT)/ITAYLOR.$(FASLEXT): $(OUT)/STREAM.$(FASLEXT)
-$(OUT)/BTREE.$(FASLEXT): $(OUT)/TREE.$(FASLEXT)
+$(OUT)/SMP.$(FASLEXT): strap-2/PGCD.$(FASLEXT)
+
 
 oa_algebra_layer_8 = \
-  BSTREE  BTOURN   CARD     FACTFUNC TREE \
-  FR2     FRAC2    FRUTIL   ITAYLOR   MLO      NAALG \
-  NAALG-  OP       ORDCOMP2 RANDSRC   UNISEG2  XALG  \
-  BTREE   POLY     SMP                ARR2CAT  ARR2CAT-
+  BSTREE   BTOURN   FACTFUNC TABLE    ONECOMP  \
+  FR2      FRUTIL   MLO      NAALG    ORDCOMP  LO       \
+  NAALG-   OP       UNISEG2  XALG     FST      RADIX \
+  POLY     OFMONOID ARR2CAT  ARR2CAT- LINDEP   STACK    \
+  PADICCT  MOEBIUS  PRTITION HDMP     MPC2     MPC3     DMP \
+  GBINTERN VARIABLE SMATCAT  SMATCAT- IMATLIN  IMATQF   MODMON   
 
 oa_algebra_layer_8_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_8))
@@ -2035,19 +2138,18 @@ oa_algebra_layer_8_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_8)))
 
-$(OUT)/FT.$(FASLEXT): $(OUT)/FST.$(FASLEXT) $(OUT)/POLY.$(FASLEXT)
-$(OUT)/IDPOAMS.$(FASLEXT): $(OUT)/IDPOAM.$(FASLEXT)
-$(OUT)/IDPAG.$(FASLEXT): $(OUT)/IDPAM.$(FASLEXT)
+$(OUT)/LINDEP.$(FASLEXT): strap-2/LSMP.$(FASLEXT) \
+	strap-2/MATCAT2.$(FASLEXT) strap-2/VECTOR2.$(FASLEXT)
+
+$(OUT)/POLY.$(FASLEXT): strap-2/INDE.$(FASLEXT)
 
 oa_algebra_layer_9 = \
-  DLP      EAB      \
-  FAGROUP  FAMONOID \
-  FSERIES  FT       IDPAG    IDPOAMS  INFINITY LA       \
-  OMLO     ORTHPOL  PRODUCT  PADICCT  \
-                    RATRET   RADUTIL   \
-  XFALG    ZLINDEP  BBTREE   TABLE    INTABL            \
-  SIG      FMONCAT  FST
-
+  DLP      EAB      IPADIC   MAGMA    QUEUE    MATLIN   \
+  FAMONOID CONTFRAC WP       PERM     PERMGRP  DDFACT   \
+  FSERIES  FT       IDPAG    INFINITY LA       FS       FS-      \
+  OMLO     ORTHPOL  PRODUCT  POLTOPOL SQMATRIX \
+  GB       RATRET   RADUTIL  UP       PINTERPA  \
+  XFALG    ZLINDEP  BBTREE   TABLEAU  MATSTOR  
 
 oa_algebra_layer_9_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_9))
@@ -2055,52 +2157,27 @@ oa_algebra_layer_9_nrlibs = \
 oa_algebra_layer_9_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_9)))
-$(OUT)/ANY.$(FASLEXT): $(OUT)/SEX.$(FASLEXT)
 
-$(OUT)/SEX.$(FASLEXT): $(OUT)/SEXOF.$(FASLEXT)
-$(OUT)/PENDTREE.$(FASLEXT): $(OUT)/TREE.$(FASLEXT)
-$(OUT)/QFORM.$(FASLEXT): $(OUT)/SQMATRIX.$(FASLEXT)
-$(OUT)/SQMATRIX.$(FASLEXT): $(OUT)/SMATCAT.$(FASLEXT) \
-	$(OUT)/MATRIX.$(FASLEXT) $(OUT)/IARRAY2.$(FASLEXT)
-$(OUT)/MATCAT.$(FASLEXT): $(OUT)/FINAGG.$(FASLEXT)
-$(OUT)/SMATCAT.$(FASLEXT): $(OUT)/RMATCAT.$(FASLEXT)
-$(OUT)/RMATCAT.$(FASLEXT): $(OUT)/DIRPROD.$(FASLEXT)
-$(OUT)/DIRPROD.$(FASLEXT): $(OUT)/DIRPCAT.$(FASLEXT)
-$(OUT)/DIRPCAT.$(FASLEXT): $(OUT)/VSPACE.$(FASLEXT)
-$(OUT)/MATRIX.$(FASLEXT): $(OUT)/MATCAT.$(FASLEXT)
-$(OUT)/BTAGG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
-$(OUT)/PATLRES.$(FASLEXT): $(OUT)/PATRES.$(FASLEXT)
-$(OUT)/PBWLB.$(FASLEXT): $(OUT)/LWORD.$(FASLEXT)
-$(OUT)/LWORD.$(FASLEXT): $(OUT)/MAGMA.$(FASLEXT)
-$(OUT)/PFR.$(FASLEXT): $(OUT)/FR.$(FASLEXT)
 
 oa_algebra_layer_10 = \
   BPADIC   ANY      LWORD    FR \
   SEXOF    CRAPACK  DEQUEUE  DLIST    \
   FLASORT  PATRES \
-  FLAGG2   FGROUP   FM       FM1      \
-  FPC      FPC-     FMONOID  INDE     \
-  IPADIC   IROOT    IR2       \
-  LIECAT   LIECAT-  LIST2    LIST2MAP \
-  SEX      HASHTBL  MAGMA    \
-  MOEBIUS  MODFIELD MODOP    \
+  FM       FM1      FPC      FPC-     \
+  IROOT    LIECAT   LIECAT-  LIST2    LIST2MAP \
+  SEX      MODFIELD \
   MRING    MTHING   NCNTFRAC NCODIV   \
-  NUMTUBE  ODR      OFMONOID ONECOMP  \
-  ORDCOMP  OREPCAT  OREPCAT- OWP      \
-  PADIC    PATTERN2 PATLRES  PARTPERM \
+  ODR      OREPCAT  OREPCAT- OWP      \
+  PADIC    PATTERN2 \
   PBWLB    PENDTREE PGE      PGROEB   \
   PINTERP  PFR      PMDOWN   \
-  PRTITION PMINS    PMLSAGG  PMTOOLS  \
-  PSCAT    PSCAT-   QFORM    QUEUE    \
-  SQMATRIX SEG      SEG2     MTSCAT   \
-  STACK    STTAYLOR TABLBUMP TABLEAU  \
-  TOPSP    TUBE     \
-  UDPO     UNISEG   VIEW     VSPACE   \
+  PMINS    PMTOOLS  ACF      ACF-    \
+  PSCAT    PSCAT-   QFORM    MTSCAT   \
+  STTAYLOR TABLBUMP UPSCAT   UPSCAT-  \
+  UDPO     UNISEG   VSPACE  OREPCTO   \
   VSPACE-  XPOLYC   XPR      BTAGG    BTAGG-  \
-  FUNDESC  SMATCAT  SMATCAT- \
-  RMATRIX  RMATCAT  RMATCAT- DIRPROD \
-  DIRPCAT  DIRPCAT- MATRIX  \
-  MATCAT   MATCAT-  IARRAY2  FFIELDC  FFIELDC-
+  RMATRIX  PTCAT    XDPOLY   XRPOLY   \
+  MATRIX  MATCAT   MATCAT-  IARRAY2  FFIELDC  FFIELDC-
 
 
 oa_algebra_layer_10_nrlibs = \
@@ -2109,26 +2186,20 @@ oa_algebra_layer_10_nrlibs = \
 oa_algebra_layer_10_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_10)))
-$(OUT)/ARRAY2.$(FASLEXT): $(OUT)/IFARRAY.$(FASLEXT)
-$(OUT)/ORESUP.$(FASLEXT): $(OUT)/PR.$(FASLEXT)
-$(OUT)/PLOT3D.$(FASLEXT): $(OUT)/POINT.$(FASLEXT)
-$(OUT)/POINT.$(FASLEXT): $(OUT)/PTCAT.$(FASLEXT)
 
 oa_algebra_layer_11 = \
-  APPLYORE ARRAY1   ARRAY12  ARRAY2   \
-  ASTACK   COMBINAT POINT    PTCAT \
-  CSTTOOLS FARRAY   \
+  APPLYORE ARRAY1   ARRAY12  ARRAY2   ONECOMP2          \
+  ASTACK   COMBINAT POINT    UDVO     \
+  CSTTOOLS MRF2     ITAYLOR   ORDCOMP2  \
   FLALG    GALUTIL  HEAP              \
-  IFARRAY  INTCAT   INTHEORY \
+  INTCAT   INTHEORY UTSCAT  UTSCAT-   \
   IRREDFFX LFCAT    LODOCAT  LODOCAT- \
-                             MATSTOR  \
-  ORESUP   OREPCTO  OREUP    PLOT3D   \
+  ORESUP   OREUP    \
   PR       PREASSOC PRIMARR2 REDORDER \
-           SYMPOLY  \
-  TS       TUPLE    UPSCAT   UPSCAT-  \
-                    XDPOLY   XEXPPKG  \
-  XF       XF-               XPOLY    \
-  XRPOLY   
+           SYMPOLY  ACFS    ACFS-    \
+  TS       TUPLE    \
+                    XEXPPKG  \
+  XF       XF-               XPOLY 
 
 oa_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_11))
@@ -2137,7 +2208,7 @@ oa_algebra_layer_11_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_11)))
 oa_algebra_layer_12 = \
-  ULSCAT                           BITS     DIRPROD2 \
+  ULSCAT   TUBE    BITS     DIRPROD2 UTS      UPXSCAT  \
            LPOLY   LSMP    LSMP1   MATCAT2           TRIMAT  \
                    SYSTEM  HOSTNAME PORTNUM
 
@@ -2148,12 +2219,6 @@ oa_algebra_layer_12_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_12)))
 
-$(OUT)/UPOLYC.$(FASLEXT): $(OUT)/PFECAT.$(FASLEXT)
-$(OUT)/SETMN.$(FASLEXT): $(OUT)/IBITS.$(FASLEXT)
-$(OUT)/LEXP.$(FASLEXT): $(OUT)/XPBWPOLY.$(FASLEXT)
-$(OUT)/XPBWPOLY.$(FASLEXT): $(OUT)/XPOLYC.$(FASLEXT) \
-	$(OUT)/PBWLB.$(FASLEXT)
-
 oa_algebra_layer_13 = \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
   UPOLYC   UPOLYC-                    \
@@ -2162,7 +2227,7 @@ oa_algebra_layer_13 = \
   FNLA     GRAY     HB       IRSN     \
   MHROWRED NUMODE   NUMQUAD  MESH     \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
-  PSEUDLIN \
+  PSEUDLIN UPXSCCA  UPXSCCA- ULSCCAT  ULSCCAT- \
   PTPACK   REP2     SETMN    PLOTTOOL          \
   SYMFUNC  VECTOR2  VECTOR   CHAR     XPBWPOLY \
   INBCON   INBCON-  OUTBCON  OUTBCON- LEXP    
@@ -2173,15 +2238,13 @@ oa_algebra_layer_13_nrlibs = \
 oa_algebra_layer_13_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_13)))
-$(OUT)/FS.$(FASLEXT): $(OUT)/UPOLYC.$(FASLEXT)
-$(OUT)/FILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT)
 
 oa_algebra_layer_14 = \
-  FS       FS-      ACF      ACF-     \
-  ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BOUNDZRO \
-  BPADICRT BRILL    CDEN     CHVAR    \
-  COMMUPC  CONTFRAC CVMP     CYCLOTOM \
-  CYCLES   DDFACT   DECIMAL           DISPLAY  DMP      \
+  PLOT3D    \
+  BALFACT  BEZOUT   BINARY   BOUNDZRO \
+  BPADICRT BRILL    CDEN     CHVAR   OPQUERY   \
+  COMMUPC  CVMP     CYCLOTOM \
+  CYCLES   DECIMAL           DISPLAY   \
   DPMO     DPOLCAT  DPOLCAT- EMR      EQ       ERROR    \
   EVALCYC  FACUTIL  FF       FFCG     \
   FFCGX    FFHOM    FFNB     FFNBX    \
@@ -2189,30 +2252,30 @@ oa_algebra_layer_14 = \
   FILE     FINAALG  FINAALG- FINRALG  \
   FINRALG-          FLOATRP  FNAME    FRAC     \
   GENEEZ   GENMFACT GENPGCD  \
-  GALFACTU GALPOLYU GB       GBEUCLID \
-  GBF      GBINTERN GHENSEL  GMODPOL  \
-  GOSPER   GRIMAGE  GROEBSOL HDMP     \
-  HDP      HEXADEC  HEUGCD   IBPTOOLS \
-  IFF               ICARD    ICDEN    \
-  IDECOMP           IMATLIN  IMATQF   \
+  GALFACTU GALPOLYU GBEUCLID \
+  GBF      GHENSEL  GMODPOL  \
+  GOSPER   GRIMAGE  GROEBSOL \
+  HEXADEC  HEUGCD   IBPTOOLS \
+  IFF               ICARD    \
+  IDECOMP           \
   INMODGCD INNMFACT INPSIGN  INTHERTR \
   INTRAT   INTRF    INTSLPE  INTTR    \
   ISUMP    LAUPOL   LEADCDET LGROBP   \
-  LIMITRF  LINDEP   LO       LPEFRAC  \
-  LSPP     MATLIN   MCDEN    MDDFACT  \
+  LIMITRF  LPEFRAC  \
+  LSPP     MCDEN    MDDFACT  \
   MFINFACT MLIFT    \
-  MMAP     MODMON   MONOTOOL MPCPF    \
-  MPC2     MPC3     MPOLY    MPRFF    \
+  MMAP     MONOTOOL MPCPF    \
+  MPOLY    MPRFF    \
   MRATFAC  MULTSQFR NORMRETR NPCOEF   \
   NSUP     NTPOLFN  ODP      ODEPRIM  \
   ODEPRRIC                    \
   PADICRAT PADICRC  PCOMP    PDECOMP  \
   PF       PFBR     PFBRU    PFOTOOLS \
-  PFRPAC   PGCD     PINTERPA PLEQN    \
+  PFRPAC   PGCD     PLEQN    \
   PMPLCAT  PMQFCAT  PNTHEORY POLUTIL  \
-  POLTOPOL POLYCATQ POLYLIFT POLYROOT \
+  POLYCATQ POLYLIFT POLYROOT \
   POLY2    POLY2UP  PRS      PSQFR    \
-  PUSHVAR  QALGSET  QFCAT2   RADIX    \
+  PUSHVAR  QALGSET  QFCAT2   \
   RATFACT  RCFIELD  RCFIELD- RDETR    \
   RDETRS   REAL0    REAL0Q   REALSOLV \
   RESRING  RETSOL   RF       RFFACTOR \
@@ -2222,10 +2285,10 @@ oa_algebra_layer_14 = \
   SPLTREE  STINPROD STTFNC   SUBRESP  \
   SUMRF    SUP      SUPFRACF TANEXP   \
   TEX      TEXTFILE          \
-  TWOFACT  UNIFACT  UP       UPCDEN   \
+  TWOFACT  UNIFACT  UPCDEN   \
   UPDECOMP UPDIVP   UPMP     UPOLYC2  \
-  UPXSCAT  UPSQFREE VIEWDEF  VIEW2D   \
-           WEIER    WP       \
+  UPSQFREE VIEWDEF  VIEW2D   \
+           WEIER    \
   EQTBL    GSTBL            \
            STBL     STRTBL\
                     SYMS     SYMTAB \
@@ -2238,22 +2301,14 @@ oa_algebra_layer_14_nrlibs = \
 oa_algebra_layer_14_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_14)))
-$(OUT)/EXPUPXS.$(FASLEXT): $(OUT)/UPXS.$(FASLEXT)
-$(OUT)/UPXS.$(FASLEXT): $(OUT)/UPXSCAT.$(FASLEXT) $(OUT)/UPXSCONS.$(FASLEXT) \
-	$(OUT)/ULS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/UPXSCONS.$(FASLEXT): $(OUT)/UPXSCCA.$(FASLEXT)
-$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/ULSCONS.$(FASLEXT): $(OUT)/ULSCCAT.$(FASLEXT)
-$(OUT)/ULSCCAT.$(FASLEXT): $(OUT)/UTS.$(FASLEXT)
-$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
+
 
 oa_algebra_layer_15 = \
-  DSMP     EXPUPXS  UPXS     UPXSCONS \
-  FRAMALG  FRAMALG- ODPOL   \
-  PLOT     RMCAT2   ROIRC    SDPOL   \
-  ULS      ULSCONS  TUBETOOL UPXSCCA \
-  UPXSCCA- JVMBCODE          BYTEBUF    OVERSET \
-  ULSCCAT  ULSCCAT- UTS      UTSCAT  UTSCAT-
+  DSMP     EXPUPXS  UPXS     UPXSCONS TEX1     SUP2     \
+  FRAMALG  FRAMALG- ODPOL    NSUP2    UP2      VIEW     \
+  PLOT     RMCAT2   ROIRC    SDPOL   FRAC2    \
+  ULS      ULSCONS  TUBETOOL JVMBCODE          BYTEBUF    \
+  GRDEF     
 
 oa_algebra_layer_15_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_15))
@@ -2261,13 +2316,12 @@ oa_algebra_layer_15_nrlibs = \
 oa_algebra_layer_15_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_15)))
-$(OUT)/SPACE3.$(FASLEXT): $(OUT)/SUBSPACE.$(FASLEXT)
 
 oa_algebra_layer_16 = \
-  DPMM     EFUPXS  FFINTBAS FRIDEAL  ULS2      \
+  DPMM     EFUPXS  FFINTBAS FRIDEAL  ULS2      IR2       \
   FRIDEAL2 FRMOD   CARTEN2  COMPLEX2 DRAWHACK  \
-  IBATOOL  INTFACT DEGRED   PMPRED   UPXS2   \
-  MONOGEN MONOGEN- NFINTBAS PMASS    PADEPAC \
+  IBATOOL  INTFACT DEGRED   PMPRED   UPXS2   NUMTUBE  \
+  MONOGEN MONOGEN- NFINTBAS PMASS    PADEPAC PLOT1 \
   SPACE3   FFF     SUBSPACE PTFUNC2  DRAWCX  DRAWPT   
 
 
@@ -2279,13 +2333,11 @@ oa_algebra_layer_16_objects = \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_16)))
 
 oa_algebra_layer_17 = \
-  CCLASS  FSAGG2  GALFACT IALGFACT CTORCAT  CTORCAT- \
+  CCLASS  FSAGG2  GALFACT IALGFACT TOPSP    \
   IBACHIN MMLFORM NORMMA  ODERED  OMSAGG    OPSIG    \
-  PERM    PERMGRP PRIMES  PWFFINTB DROPT   \
+  PRIMES  PWFFINTB DROPT   \
   RDIST   SAE     SAEFACT SAERFFC  \
-  SGCF VIEW3D 
-
-$(OUT)/VIEW3D.$(FASLEXT): $(OUT)/DROPT.$(FASLEXT)
+  SGCF VIEW3D   RPOLCAT  RPOLCAT-
 
 oa_algebra_layer_17_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_17))
@@ -2293,12 +2345,10 @@ oa_algebra_layer_17_nrlibs = \
 oa_algebra_layer_17_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_17)))
-$(OUT)/PSETCAT.$(FASLEXT): $(OUT)/RPOLCAT.$(FASLEXT)
 
 oa_algebra_layer_18 = \
-	IPF     CATCTOR DOMCTOR   CTORCALL \
-  KAFILE  TBCMPPK PSETCAT    PSETCAT-  \
-  RPOLCAT  RPOLCAT-
+  DROPT1   IPF     DOMCTOR  KAFILE  TBCMPPK PSETCAT  PSETCAT- 
+
 
 oa_algebra_layer_18_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(oa_algebra_layer_18))
@@ -2306,8 +2356,6 @@ oa_algebra_layer_18_nrlibs = \
 oa_algebra_layer_18_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_18)))
-$(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
-$(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 
 oa_algebra_layer_19 = \
   ACPLOT   ANTISYM           \
@@ -2317,22 +2365,22 @@ oa_algebra_layer_19 = \
   FFCAT    FFCAT-   FFCGP    FFNBP   \
   FFP      FLOAT    FPARFRAC         \
   FRNAALG  FRNAALG- EXPR             \
-           FUNCTION GDMP     HACKPI  \
+           FUNCTION HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
   IR       ISUPS             LIB     \
   LMDICT   LODOOPS           MKFLCFN \
   MSET                         \
   NREP     NUMFMT   OC       OC-     \
            ODERAT                    \
-                    PATTERN  OVAR    \
+                    PATTERN  \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
            QUATCAT  QUATCAT- RFFACT  \
-           ROMAN    RNGBIND \
-           RULECOLD SAOS     SEGBIND \
-  SET      SPECOUT           \
+           ROMAN    \
+           RULECOLD \
+  SPECOUT           \
                     SYSSOLP          \
-           VARIABLE WFFINTBS SPADPRSR \
+           WFFINTBS SPADPRSR \
   PARSER            TSETCAT  TSETCAT-
 
 oa_algebra_layer_19_nrlibs = \
@@ -2341,11 +2389,6 @@ oa_algebra_layer_19_nrlibs = \
 oa_algebra_layer_19_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_19)))
-$(OUT)/AN.$(FASLEXT): $(OUT)/IAN.$(FASLEXT)
-$(OUT)/IAN.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
-$(OUT)/SUTS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/OCT.$(FASLEXT): $(OUT)/QUAT.$(FASLEXT)
-$(OUT)/EXPEXPAN.$(FASLEXT): $(OUT)/UPXSSING.$(FASLEXT)
 
 oa_algebra_layer_20 = \
   AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
@@ -2384,10 +2427,6 @@ oa_algebra_layer_20_nrlibs = \
 oa_algebra_layer_20_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_20)))
-$(OUT)/FDIV.$(FASLEXT): $(OUT)/HELLFDIV.$(FASLEXT)
-$(OUT)/GSERIES.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/SULS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
-$(OUT)/SUPXS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
 
 oa_algebra_layer_21 = \
   DEFINTEF DFINTTLS DEFINTRF \
@@ -2419,8 +2458,6 @@ oa_algebra_layer_22_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_22)))
 
-$(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
-
 oa_algebra_layer_23 = \
   CPIMA    IRURPK   LAZM3PK  LEXTRIPK \
   NORMPK   QCMPACK  RURPK    SFRGCD   \
@@ -2433,8 +2470,6 @@ oa_algebra_layer_23_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_23)))
 
-$(OUT)/OUT.$(FASLEXT): $(OUT)/VOID.$(FASLEXT)
-
 oa_algebra_layer_24 =  \
 	RINTERP	 ASTCAT   ASTCAT-  SASTCAT  HEADAST  \
 	LITERAL           TYPEAST  IMPTAST  MAPPAST  ATTRAST  \
@@ -2444,7 +2479,7 @@ oa_algebra_layer_24 =  \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST  PARAMAST \
 	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC  STEPAST  \
-        CTOR     IP4ADDR  NETCLT   INETCLTS                   \
+        IP4ADDR  NETCLT   INETCLTS                   \
 	IRFORM   COMPILER MSYSCMD  PRINT   OUT      \
 	ITFORM   ELABOR   TALGOP   YDIAGRAM LINELT   DBASIS   \
 	LINFORM  LINBASIS JVMOP    JVMCFACC JVMFDACC JVMMDACC \
