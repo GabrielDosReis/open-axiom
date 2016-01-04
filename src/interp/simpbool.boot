@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -110,7 +110,7 @@ orDnf(a,b) ==                   -- or:  (dnf, dnf) -> dnf
   b = 'false => a
   a = 'true or b = 'true => 'true
   null a => b     --null list means false
-  a is [c] = coafOrDnf(c,b)
+  a is [c] => coafOrDnf(c,b)
   coafOrDnf(first a,orDnf(rest a,b))
 
 andDnf(a,b) ==                  -- and: (dnf, dnf) -> dnf
