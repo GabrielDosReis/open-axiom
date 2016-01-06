@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2015, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -918,8 +918,8 @@ giveFormalParametersValues(argl,e) ==
   e
 
 
-macroExpandInPlace: (%Form,%Env) -> %Form 
-macroExpandInPlace(x,e) ==
+macroExpand!: (%Form,%Env) -> %Form 
+macroExpand!(x,e) ==
   y:= macroExpand(x,e)
   x isnt [.,:.] or y isnt [.,:.] => y
   x.first := first y
@@ -934,7 +934,7 @@ macroExpand(x,e) ==   --not worked out yet
     u is ['%mlambda,:.] => x
     macroExpand(u,e)
   x is ['DEF,lhs,sig,rhs] =>
-    ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpand(rhs,e)]
+    ['DEF,lhs,macroExpandList(sig,e),macroExpand(rhs,e)]
   -- macros should override niladic props
   [op,:args] := x
   ident? op and args = nil and niladicConstructor? op and
@@ -2353,7 +2353,7 @@ compCapsuleItems(db,itemlist,$predl,$e) ==
   $e
  
 compSingleCapsuleItem(db,item,$predl,$e) ==
-  doIt(db,macroExpandInPlace(item,$e),$predl)
+  doIt(db,macroExpand!(item,$e),$predl)
   $e
  
 
