@@ -1152,7 +1152,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
     dbCategory(db) := formalBody
-    body := optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
+    body := optFunctorBody(db,compOrCroak(formalBody,signature'.target,e).expr)
     if $extraParms ~= nil then
       formals := nil
       actuals := nil

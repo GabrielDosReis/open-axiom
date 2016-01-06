@@ -516,8 +516,8 @@ buildFunctor(db,sig,code,$locals,$e) ==
   --CODE: part 3
   codePart3 := $epilogue
   ans := ["%bind",bindings,
-           ['%seq,:washFunctorBody optFunctorBody
-              [:codePart1,:codePart2,:codePart3],"$"]]
+           ['%seq,:washFunctorBody optFunctorBody(db,
+              [:codePart1,:codePart2,:codePart3]),"$"]]
   $getDomainCode := nil
     --if we didn't kill this, DEFINE would insert it in the wrong place
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]

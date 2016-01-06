@@ -244,22 +244,22 @@ compCategories1(db,u,v,e) ==
   [c,:.] := comp(macroExpand(u,e),v,e) => c
   error 'compCategories1
  
-optFunctorBody x ==
+optFunctorBody(db,x) ==
   atomic? x => x
   x is ['DomainSubstitutionMacro,parms,body] =>
-    optFunctorBody DomainSubstitutionFunction(parms,body)
+    optFunctorBody(db,DomainSubstitutionFunction(parms,body))
   x is ['%list,:l] =>
     null l => nil
-    l:= [optFunctorBody u for u in l]
+    l:= [optFunctorBody(db,u) for u in l]
     every?(function optFunctorBodyQuotable,l) =>
       quote [optFunctorBodyRequote u for u in l]
     ['%list,:l]
-  x is ['PROGN,:l] => ['%seq,:optFunctorPROGN l]
+  x is ['PROGN,:l] => ['%seq,:optFunctorPROGN(db,l)]
   x is ['%when,:l] =>
-    l := [v for u in l | v := relevantClause u] where
-            relevantClause u ==
+    l := [v for u in l | v := relevantClause(db,u)] where
+            relevantClause(db,u) ==
               u is [pred,:conseq] =>
-                u := [optFunctorBody pred,:optFunctorPROGN conseq]
+                u := [optFunctorBody(db,pred),:optFunctorPROGN(db,conseq)]
                 u is ['%otherwise] => nil
                 u
               nil
@@ -273,7 +273,7 @@ optFunctorBody x ==
       first pred="HasCategory" => nil
       ['%when,:l]
     ['%when,:l]
-  [optFunctorBody first x,:optFunctorBody rest x]
+  [optFunctorBody(db,first x),:optFunctorBody(db,rest x)]
  
 optFunctorBodyQuotable u ==
   u = nil or integer? u or string? u => true
@@ -286,17 +286,17 @@ optFunctorBodyRequote u ==
   u is ['QUOTE,v] => v
   systemErrorHere ["optFunctorBodyRequote",u]
  
-optFunctorPROGN l ==
+optFunctorPROGN(db,l) ==
   l is [x,:l'] =>
-    worthlessCode x => optFunctorPROGN l'
-    l':= optFunctorBody l'
-    l' is [nil] => [optFunctorBody x]
-    [optFunctorBody x,:l']
+    worthlessCode(db,x) => optFunctorPROGN(db,l')
+    l':= optFunctorBody(db,l')
+    l' is [nil] => [optFunctorBody(db,x)]
+    [optFunctorBody(db,x),:l']
   l
  
-worthlessCode x ==
-  x is ['%when,:l] => and/[x is [.,y] and worthlessCode y for x in l]
-  x is ['PROGN,:l] => optFunctorPROGN l = nil
+worthlessCode(db,x) ==
+  x is ['%when,:l] => and/[x is [.,y] and worthlessCode(db,y) for x in l]
+  x is ['PROGN,:l] => optFunctorPROGN(db,l) = nil
   x is ['%list] => true
   x = nil => true
   false
