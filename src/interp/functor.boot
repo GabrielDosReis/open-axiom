@@ -387,7 +387,7 @@ DescendCodeAdd1(db,base,flag,target,formalArgs,formalArgModes) ==
       for i in $NRTbase..n | cons? cat.i and cons? (sig:= first cat.i)
          and
           (u:=
-            SetFunctionSlots(applySubst(slist,sig),['ELT,instantiatedBase,i],flag,
+            SetFunctionSlots(db,applySubst(slist,sig),['ELT,instantiatedBase,i],flag,
               'adding))~=nil]
      --The code from here to the end is designed to replace repeated LOAD/STORE
      --combinations (SETELT ...(ELT ..)) by MVCs where this is practicable
@@ -483,7 +483,7 @@ DescendCode(db,code,flag,viewAssoc,e) ==
       u := symbolTarget('$,viewAssoc) => ['getDomainView,'$,u]
       '$
     body:= ['%closure,implem,dom]
-    SetFunctionSlots(sig,body,flag,'original)
+    SetFunctionSlots(db,sig,body,flag,'original)
   code is ['_:,:.] => (code.first := '%list; code.rest := nil)
       --Yes, I know that's a hack, but how else do you kill a line?
   code is ['%list,:.] => nil
@@ -512,15 +512,15 @@ TryGDC cond ==
     cond
   cond
  
-findOperatorImplementations opsig ==
+findOperatorImplementations(db,opsig) ==
   if $insideCategoryPackageIfTrue then
-    opsig := substitute('$,second($functorForm),opsig)
+    opsig := substitute('$,second dbConstructorForm db,opsig)
   removeDuplicates [u.mapImpl for u in $lisplibOperationAlist |
                       opsig = u.mapOpsig and u.mapImpl isnt [.,.,nil]]
  
-SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
+SetFunctionSlots(db,sig,body,flag,mode) == --mode is either "original" or "adding"
   null body => return nil
-  for catImplem in findOperatorImplementations sig repeat
+  for catImplem in findOperatorImplementations(db,sig) repeat
     catImplem is [q,.,index] and q in '(ELT CONST) =>
       if q = 'CONST and body is ['%closure,a,b] then
          body := ['%closure,'%constant,[second a,b]]
@@ -535,7 +535,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
     catImplem is ['Subsumed,:truename] =>
       mode='original =>
         truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
-        body := SetFunctionSlots(truename,body,nil,mode)
+        body := SetFunctionSlots(db,truename,body,nil,mode)
     keyedSystemError("S2OR0002",[catImplem])
   body is ['%store,:.] => body
   nil
@@ -727,7 +727,7 @@ getViewsConditions(u,tbl) ==
       --if you don't want it, rest it off
  
 DescendCodeVarAdd(db,base,flag) ==
-   [SetFunctionSlots(sig,implem,flag,'adding) repeat
+   [SetFunctionSlots(db,sig,implem,flag,'adding) repeat
        for i in $NRTbase..maxIndex dbDomainShell db |
          categoryRef(dbDomainShell db,i) is [sig:=[op,types],:.] and
            LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
