@@ -550,12 +550,14 @@ ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
          if domform then right := simpHasPred right
          right = false => nil
          [left,:right]
-  computeAncestorsOf(conform,domform)
+  -- FIXME: Handle builtin constructors such as Record and friends.
+  db := constructorDB conname
+  computeAncestorsOf(db,domform)
 
-computeAncestorsOf(conform,domform) ==
+computeAncestorsOf(db,domform) ==
   $done: local := hashTable 'EQUAL
   $if:   local := hashTable 'EQ
-  ancestorsRecur(conform,domform,true,true)
+  ancestorsRecur(dbConstructorForm db,domform,true,true)
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
     for pair in tableValue($if,op) repeat acc := [pair,:acc]

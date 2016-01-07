@@ -1176,7 +1176,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbPrincipals(db) := getParentsFor db
-    dbAncestors(db) := computeAncestorsOf(form,nil)
+    dbAncestors(db) := computeAncestorsOf(db,nil)
     dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
     [fun,$Category,e]
 
@@ -1569,7 +1569,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
  
     --  5.
     dbPrincipals(db) := getParentsFor db
-    dbAncestors(db) := computeAncestorsOf($form,nil)
+    dbAncestors(db) := computeAncestorsOf(db,nil)
     $insideFunctorIfTrue:= false
     if not $bootStrapMode then
       dbLookupFunction(db) := NRTgetLookupFunction(db,$NRTaddForm,tbl,$e)
