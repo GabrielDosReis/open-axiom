@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2015, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -224,6 +224,10 @@ macro dbSubstituteQueries(db,x) ==
 ++ Apply both query and formal variable substitutions of `db' to `x'.
 dbSubstituteAllQuantified(db,x) ==
   applySubst([:dbQuerySubst db,:dbFormalSubst db],x)
+
+++ This predicate holds if this DB is for a category constructor.  
+dbForCategory? db ==
+  db ~= nil and dbConstructorKind db is 'category
 
 --%
 $SetCategory ==

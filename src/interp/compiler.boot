@@ -1697,7 +1697,7 @@ compColon([":",f,t],m,e) ==
   t:=
     t isnt [.,:.] and (t':= assoc(t,getDomainsInScope e)) => t'
     t = $Category and categoryInstance? f => t
-    isDomainForm(t,e) and not $insideCategoryIfTrue =>
+    not dbForCategory? db and isDomainForm(t,e) =>
       e := addDomain(db,t,e)
       t
     isDomainForm(t,e) or isCategoryForm(t,e) => t

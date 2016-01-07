@@ -1,5 +1,12 @@
 2016-01-06  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* interp/c-util.boot (dbForCategory?): New.  Use in lieu of
+	removed $insideCategoryIfTrue.
+	* interp/sys-globals.boot ($insideCategoryIfTrue): Remove.  Adjust
+	users. 
+
+2016-01-06  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* interp/define.boot (macroExpand): Do not expand the definiendum,
 	except parameter types, in a definition.
 

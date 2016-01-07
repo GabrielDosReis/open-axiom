@@ -843,7 +843,6 @@ compDefine1(db,form,m,e) ==
     (sig := getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
       compDefine1(db,['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
-  if signature.target=$Category then $insideCategoryIfTrue:= true
  
 -- RDJ (11/83): when argument and return types are all declared,
 --  or arguments have types declared in the environment,
@@ -1109,7 +1108,6 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     --1. bind global variables
     $prefix: local := nil
     $op: local := form.op
-    $insideCategoryIfTrue: local := true
     $definition: local := form   --used by DomainSubstitutionFunction
     $form: local := nil
     $extraParms: local := nil
@@ -2339,7 +2337,7 @@ compCapsuleInner(db,itemList,m,e) ==
   if $addForm ~= nil then
     data := ['add,$addForm,data]
   code :=
-    $insideCategoryIfTrue and not $insideCategoryPackageIfTrue => data
+    dbForCategory? db => data
     buildFunctor(db,$signature,data,localParList,e)
   [MKPF([:$getDomainCode,code],"PROGN"),m,e]
  
