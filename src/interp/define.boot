@@ -717,7 +717,7 @@ clearCapsuleFunctionTable() ==
 ++ Note: for category packages, this list is nil.
 $exports := nil
 
-noteExport(form,pred) ==
+noteExport(db,form,pred) ==
   -- don't recheck category package exports; we just check
   -- them when defining the category.  Plus, we might actually
   -- get indirect duplicates, which is OK.
@@ -2592,75 +2592,76 @@ DomainSubstitutionFunction(parameters,body) ==
 ++ Compile exported signature `opsig' under predicate `pred' in
 ++ environment `env'. The parameters `sigs' is a reference to a list
 ++ of signatures elaborated so far.
-compSignature(opsig,pred,env,sigs) ==
+compSignature(db,opsig,pred,env,sigs) ==
   [op,:sig] := opsig
   cons? op =>
     for y in op repeat 
-      compSignature([y,:sig],pred,env,sigs)
+      compSignature(db,[y,:sig],pred,env,sigs)
   op in '(per rep) =>
     stackSemanticError(['"cannot export signature for", :bright op],nil)
     nil
-  noteExport(opsig,pred)
+  noteExport(db,opsig,pred)
   deref(sigs) := [MKQ [opsig,pred],:deref sigs]
  
 ++ Subroutine of comCategory.
 ++ Elaborate a category-level item `x' under the predicates `predl'.
 ++ The parameters `sigs' and `atts' are references to list of
 ++ signatures and attributes elaborated so far.
-compCategoryItem(x,predl,env,sigs,atts) ==
+compCategoryItem(db,x,predl,env,sigs,atts) ==
   x is nil => nil
   --1. if x is a conditional expression, recurse; otherwise, form the predicate
   x is ['%when,[p,e]] =>
     predl':= [p,:predl]
     e is ["PROGN",:l] =>
-      for y in l repeat compCategoryItem(y,predl',env,sigs,atts)
-    compCategoryItem(e,predl',env,sigs,atts)
+      for y in l repeat compCategoryItem(db,y,predl',env,sigs,atts)
+    compCategoryItem(db,e,predl',env,sigs,atts)
   x is ["IF",a,b,c] =>
-    a is ["not",p] => compCategoryItem(["IF",p,c,b],predl,env,sigs,atts)
+    a is ["not",p] => compCategoryItem(db,["IF",p,c,b],predl,env,sigs,atts)
     a is ["and",p,q] =>
-      compCategoryItem(["IF",p,["IF",q,b,c],copyTree c],predl,env,sigs,atts)
+      compCategoryItem(db,["IF",p,["IF",q,b,c],copyTree c],predl,env,sigs,atts)
     a is ["or",p,q] =>
-      compCategoryItem(["IF",p,b,["IF",q,copyTree b,c]],predl,env,sigs,atts)
+      compCategoryItem(db,["IF",p,b,["IF",q,copyTree b,c]],predl,env,sigs,atts)
     predl':= [a,:predl]
     if b~="%noBranch" then
       b is ["PROGN",:l] => 
-        for y in l repeat compCategoryItem(y,predl',env,sigs,atts)
-      compCategoryItem(b,predl',env,sigs,atts)
+        for y in l repeat compCategoryItem(db,y,predl',env,sigs,atts)
+      compCategoryItem(db,b,predl',env,sigs,atts)
     c="%noBranch" => nil
     predl':= [["not",a],:predl]
     c is ["PROGN",:l] => 
       for y in l repeat
-        compCategoryItem(y,predl',env,sigs,atts)
-    compCategoryItem(c,predl',env,sigs,atts)
+        compCategoryItem(db,y,predl',env,sigs,atts)
+    compCategoryItem(db,c,predl',env,sigs,atts)
   pred := (predl => MKPF(predl,"AND"); true)
  
   --2. if attribute, push it and return
   x is ["ATTRIBUTE",y] => 
     -- Attribute 'nil' carries no semantics.
     y = "nil" => nil
-    noteExport(y,pred)
+    noteExport(db,y,pred)
     deref(atts) := [MKQ [y,pred],:deref atts]
  
   --3. it may be a list, with PROGN as the first, and some information as the rest
   x is ["PROGN",:l] => 
     for u in l repeat 
-      compCategoryItem(u,predl,env,sigs,atts)
+      compCategoryItem(db,u,predl,env,sigs,atts)
  
   -- 4. otherwise, x gives a signature for a
   --    single operator name or a list of names; if a list of names,
   --    recurse
-  x is ["SIGNATURE",:opsig] => compSignature(opsig,pred,env,sigs)
+  x is ["SIGNATURE",:opsig] => compSignature(db,opsig,pred,env,sigs)
   systemErrorHere ["compCategoryItem",x]
 
 compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCategory(x,m,e) ==
   clearExportsTable()
+  db := currentDB e
   m := resolve(m,$Category)
   m = $Category and x is ['CATEGORY,kind,:l] =>
       sigs := ref nil
       atts := ref nil
       for x in l repeat
-        compCategoryItem(x,nil,e,sigs,atts)
+        compCategoryItem(db,x,nil,e,sigs,atts)
       rep := mkExplicitCategoryFunction(kind,deref sigs,deref atts)
     --if inside compDefineCategory, provide for category argument substitution
       [rep,m,e]

@@ -1207,31 +1207,6 @@ old2NewModemaps x ==
   x is [dcSig,[pred,:.],:.]  =>  [dcSig,pred]
   x
 
-traceUp() ==
-  $x isnt [.,:.] => sayBrightly "$x is an atom"
-  for y in rest $x repeat
-    u:= comp(y,$EmptyMode,$f) =>
-      sayBrightly [y,'" ==> mode",'"%b",u.mode,'"%d"]
-    sayBrightly [y,'" does not compile"]
- 
-traceDown() ==
-  mmList:= getFormModemaps($x,$f) =>
-    for mm in mmList repeat if u:= qModemap mm then return u
-  sayBrightly "no modemaps for $x"
- 
-qModemap mm ==
-  sayBrightly ['"%b","modemap",'"%d",:formatModemap mm]
-  [[dc,target,:sl],[pred,:.]]:= mm
-  and/[qArg(a,m) for a in rest $x for m in sl] => target
-  sayBrightly ['"%b","fails",'"%d",'"%l"]
- 
-qArg(a,m) ==
-  yesOrNo:=
-    u:= comp(a,m,$f) => "yes"
-    "no"
-  sayBrightly [a," --> ",m,'"%b",yesOrNo,'"%d"]
-  yesOrNo="yes"
- 
 displayProplist(x,alist) ==
   sayBrightly ["properties of",'"%b",x,'"%d",":"]
   fn alist where

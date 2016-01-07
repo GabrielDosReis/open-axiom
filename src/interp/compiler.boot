@@ -71,7 +71,7 @@ primitiveType: (%Maybe %Database,%Form,%Mode) -> %Mode
 modeEqual: (%Form,%Form) -> %Boolean
 hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
-getFormModemaps: (%Form,%Env) -> %List %Modemap
+getFormModemaps: (%Maybe %Database,%Form,%Env) -> %List %Modemap
 reshapeArgumentList: (%Form,%Sig) -> %Form
 applyMapping: (%Form,%Mode,%Env,%List %Mode) -> %Maybe %Triple
 
@@ -525,14 +525,14 @@ compForm1(db,form is [op,:argl],m,e) ==
     -- since addDomain refuses to add modemaps from Mapping
     (domain is ['Mapping,:.]) and
       (ans := compForm2(db,[op',:argl],m,e:= augModemapsFromDomain1(db,domain,domain,e),
-        [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain]))             => ans
+        [x for x in getFormModemaps(db,[op',:argl],e) | x.mmDC = domain]))             => ans
     ans := compForm2(db,[op',:argl],m,e:= addDomain(db,domain,e),
-      [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain])             => ans
+      [x for x in getFormModemaps(db,[op',:argl],e) | x.mmDC = domain])             => ans
     (op'="construct") and coerceable(domain,m,e) =>
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
 
-  T := compForm2(db,form,m,e,getFormModemaps(form,e)) => T
+  T := compForm2(db,form,m,e,getFormModemaps(db,form,e)) => T
   --FIXME: remove next line when the parser is fixed.
   form = $Zero or form = $One => nil
   compToApply(op,argl,m,e)
@@ -634,9 +634,9 @@ compFormWithModemap(db,form,m,e,modemap) ==
 ++ of paramter types as arguments supplied to the form.  A special
 ++ case is made for a modemap whose sole parameter type is a Tuple.
 ++ In that case, it matches any number of supplied arguments.
-getFormModemaps(form is [op,:argl],e) ==
+getFormModemaps(db,form is [op,:argl],e) ==
   op is ["elt",domain,op1] and isDomainForm(domain,e) =>
-    [x for x in getFormModemaps([op1,:argl],e) | x.mmDC = domain]
+    [x for x in getFormModemaps(db,[op1,:argl],e) | x.mmDC = domain]
   op is [.,:.] => nil
   modemapList := get(op,"modemap",e)
   -- Within default implementations, modemaps cannot mention the
