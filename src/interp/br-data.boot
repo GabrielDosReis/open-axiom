@@ -576,8 +576,8 @@ ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
     if domform and domform.args then
       newdomform := applySubst(pairList(conform.args,domform.args),newform)
       p          := applySubst(pairList(conform.args,domform.args),p)
-    newPred := quickAnd(pred,p)
-    ancestorsAdd(simpHasPred newPred,newdomform or newform)
+    newPred := simpHasPred quickAnd(pred,p)
+    ancestorsAdd(newPred,newdomform or newform)
     ancestorsRecur(newform,newdomform,newPred,false)
   tableValue($done,conform) := pred            --mark as already processed
 
