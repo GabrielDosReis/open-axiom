@@ -1,3 +1,7 @@
+2016-01-07  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/br-data.boot (parentsOf): Remove.  Adjust users.
+
 2016-01-06  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/c-util.boot (dbForCategory?): New.  Use in lieu of

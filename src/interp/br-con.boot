@@ -436,7 +436,7 @@ kcpPage(htPage,junk) ==
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
   page := htInitPage(['"Parents of ",:heading],htCopyProplist htPage)
-  parents := parentsOf conname --was listSort(function GLESSEQP, =this)
+  parents := getConstructorParentsFromDB conname
   if domname then
     parents := applySubst(pairList(conform.args,domname.args),parents)
   htpSetProperty(htPage,'cAlist,parents)

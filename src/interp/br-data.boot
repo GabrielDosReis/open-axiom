@@ -492,20 +492,11 @@ getImports conname == --called by mkUsersHashTable
 --                 Get Hierarchical Information
 --============================================================================
 
-$parentsCache := nil
-
-parentsOf con == --called by kcpPage, ancestorsRecur
-  if null $parentsCache then 
-     $parentsCache := hashTable 'EQ
-  tableValue($parentsCache,con) or
-    parents := getParentsFor loadDBIfNecessary constructorDB con
-    tableValue($parentsCache,con) := parents
-    parents
-
-++ Like `parentsOf', except that also handles builtin constructors.
+++ Like `getConstructorParentsFromDB', except that also handles
+++ builtin constructors.
 genericParentsOf form ==
   builtinConstructor? form.op => parentsOfBuiltinInstance form
-  parentsOf form.op
+  getConstructorParentsFromDB form.op
 
 parentsOfForm(form is [op,:argl]) ==
   parents := genericParentsOf form
