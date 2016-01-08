@@ -43,13 +43,13 @@ hasCat(dom,cat) ==
     or constructorHasCategoryFromDB [dom.op,:cat.op]
 
 showCategoryTable con ==
-  [[b,:val] for [[a,:b],:val] in entries _*HASCATEGORY_-HASH_*
+  [[b,:val] for [[a,:b],:val] in entries $HasCategoryTable
      | symbolEq?(a,con) and val ~= nil]
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
   SETQ($ct,hashTable 'EQ)
-  for [[a,:b],:val] in entries _*HASCATEGORY_-HASH_* repeat
+  for [[a,:b],:val] in entries $HasCategoryTable repeat
     tableValue($ct,a) := [[b,:val],:tableValue($ct,a)]
   for [id,:val] in entries $ct | null conList or symbolMember?(id,conList) repeat
     sayMSG [:bright id,'"extends:"]
@@ -57,7 +57,7 @@ displayCategoryTable(:options) ==
 
 genCategoryTable() ==
   SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
-  SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
+  $HasCategoryTable := makeTable function EQUAL
   genTempCategoryTable()
   domainTable :=
     [addDomainToTable(con,getConstrCat getConstructorCategory con)
@@ -69,11 +69,11 @@ genCategoryTable() ==
     for id in specialDs | id ~= 'Cross], :domainTable]
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
-      tableValue(_*HASCATEGORY_-HASH_*,[id,:a]) := b
+      tableValue($HasCategoryTable,[id,:a]) := b
   simpTempCategoryTable()
   -- compressHashTable _*ANCESTORS_-HASH_*
   simpCategoryTable()
-  -- compressHashTable _*HASCATEGORY_-HASH_*
+  -- compressHashTable $HasCategoryTable
 
 simpTempCategoryTable() ==
   for [id,:.] in entries _*ANCESTORS_-HASH_* repeat
@@ -82,12 +82,12 @@ simpTempCategoryTable() ==
 
 simpCategoryTable() == main where
   main() ==
-    for [key,:entry] in entries _*HASCATEGORY_-HASH_* repeat
-      null entry => tableRemove!(_*HASCATEGORY_-HASH_*,key)
+    for [key,:entry] in entries $HasCategoryTable repeat
+      null entry => tableRemove!($HasCategoryTable,key)
       change :=
         opOf entry isnt [.,:.] => simpHasPred entry
         [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
-      tableValue(_*HASCATEGORY_-HASH_*,key) := change
+      tableValue($HasCategoryTable,key) := change
 
 simpHasPred(pred,:options) == main where
   main() ==
@@ -450,15 +450,15 @@ updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
   [cname,:domainEntry]:= addDomainToTable(cname,category)
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
-    tableValue(_*HASCATEGORY_-HASH_*,[cname,:a]) := b
-  $doNotCompressHashTableIfTrue => _*HASCATEGORY_-HASH_*
-  -- compressHashTable _*HASCATEGORY_-HASH_*
+    tableValue($HasCategoryTable,[cname,:a]) := b
+  $doNotCompressHashTableIfTrue => $HasCategoryTable
+  -- compressHashTable $HasCategoryTable
 
 clearCategoryTable($cname) ==
-  MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)
+  MAPHASH('clearCategoryTable1,$HasCategoryTable)
 
 clearCategoryTable1(key,val) ==
-  (first key=$cname)=> tableRemove!(_*HASCATEGORY_-HASH_*,key)
+  (first key=$cname)=> tableRemove!($HasCategoryTable,key)
   nil
 
 clearTempCategoryTable(catNames) ==

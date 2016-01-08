@@ -530,7 +530,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
       pred := simpOrDumb(predicate,symbolTarget(conname,domOriginAlist) or true)
       domOriginAlist := insertAlist(conname,pred,domOriginAlist)
   --the following is similar to "domainsOf" but do not sort immediately
-  u := [copyTree key for [key,:.] in entries _*HASCATEGORY_-HASH_*
+  u := [copyTree key for [key,:.] in entries $HasCategoryTable
           | symbolTarget(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair

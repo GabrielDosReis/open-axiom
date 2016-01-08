@@ -407,7 +407,7 @@
 
 (defun |fillDatabasesInCore| nil
  "set all -hash* to clean values. used to clean up core before saving system"
- (setq *hascategory-hash* (make-hash-table :test #'equal))
+ (setq |$HasCategoryTable| (make-hash-table :test #'equal))
  (setq *operation-hash* (make-hash-table))
  (setq *allconstructors* nil)
  (setq *interp-stream-stamp* '(0 . 0))
@@ -531,9 +531,9 @@
       (setq pos (car stamp))
       (file-position *category-stream* pos)
       (setq keys (read *category-stream*))
-      (setq *hasCategory-hash* (make-hash-table :test #'equal))
+      (setq |$HasCategoryTable| (make-hash-table :test #'equal))
       (dolist (item keys)
-	(setf (gethash (first item) *hasCategory-hash*) (second item))))
+	(setf (gethash (first item) |$HasCategoryTable|) (second item))))
     (format t "~&")))
 
 (defun operationOpen ()
@@ -668,7 +668,7 @@
 	       (when struct
 		 (setq data (|dbModemaps| struct))))
 	      (hascategory
-	       (setq table  *hasCategory-hash*)
+	       (setq table  |$HasCategoryTable|)
 	       (setq stream *category-stream*)
 	       (setq data (gethash constructor table)))
 	      (object
@@ -726,7 +726,7 @@
 		(operation           
 		 (setf (gethash constructor *operation-hash*) data))
 		(hascategory 
-		 (setf (gethash constructor *hascategory-hash*) data))
+		 (setf (gethash constructor |$HasCategoryTable|) data))
 		(constructorkind 
 		 (setf (|dbConstructorKind| struct) data))
 		(cosig     
@@ -974,7 +974,7 @@
   (do-symbols (symbol)
    (when (|constructorDB| symbol)
     (setf (|constructorDB| symbol) nil)))
-  (setq *hascategory-hash* (make-hash-table :test #'equal))
+  (setq |$HasCategoryTable| (make-hash-table :test #'equal))
   (setq *operation-hash* (make-hash-table))
   (setq *allconstructors* nil)
   (withSpecialConstructors)
@@ -1000,7 +1000,7 @@
   (|buildGloss|)
   (write-browsedb)
   (write-operationdb)
- ; note: genCategoryTable creates a new *hascategory-hash* table
+ ; note: genCategoryTable creates a new $HasCategoryTable table
  ; this smashes the existing table and regenerates it.
  ; write-categorydb does getdatabase calls to write the new information
   (write-categorydb)
@@ -1137,7 +1137,7 @@
   (close out)))
 
 (defun write-categorydb ()
- "make category.daase from scratch. contains the *hasCategory-hash* table"
+ "make category.daase from scratch. contains the $HasCategoryTable table"
  (let (out master pos *print-pretty*)
   (print "building category.daase")
   (|genCategoryTable|)
@@ -1152,7 +1152,7 @@
       (print value out)
       (finish-output out)))
      (push (list key pos) master))
-     *hasCategory-hash*)
+     |$HasCategoryTable|)
   (setq pos (file-position out))
   (print master out)
   (finish-output out)

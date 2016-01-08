@@ -303,7 +303,7 @@ LINE := nil
 $Echo := false
 
 ++ answers x has y category questions
-_*HASCATEGORY_-HASH_* := nil
+$HasCategoryTable := nil
 
 _*ANCESTORS_-HASH_* := nil
 
