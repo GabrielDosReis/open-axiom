@@ -87,13 +87,8 @@
 
 
 ;;TTT 7/2/97
-; Regarding the 'ancestors field for a category: At database build
-; time there exists a $AncestorsTable hash table that gets filled
-; with CATEGORY (not domain) ancestor information. This later provides
-; the information that goes into interp.daase This $AncestorsTable
-; does not exist at normal runtime (it can be made by a call to
-; genCategoryTable). Note that the ancestor information in
-; $AncestorsTable (and hence interp.daase) involves #1, #2, etc
+; Regarding the 'ancestors field for a category: Note that the ancestor
+; information in interp.daase involves #1, #2, etc
 ; instead of R, Coef, etc. The latter thingies appear in all
 ; .NRLIB/index.KAF files. So we need to be careful when we )lib
 ; categories and update the ancestor info.
@@ -969,7 +964,8 @@
   (final-name (root) 
 	      (concat root ".daase"))
   )
- (let (d)
+ (let ((ancestors-table (make-hash-table :test #'eq))
+       d)
   (declare (special |$constructorList|))
   (do-symbols (symbol)
    (when (|constructorDB| symbol)
@@ -1000,10 +996,7 @@
   (|buildGloss|)
   (write-browsedb)
   (write-operationdb)
- ; note: genCategoryTable creates a new $HasCategoryTable table
- ; this smashes the existing table and regenerates it.
- ; write-categorydb does getdatabase calls to write the new information
-  (write-categorydb)
+  (write-categorydb ancestors-table)
   (dolist (con (|allConstructors|))
    (let (dbstruct)
      (when (setq dbstruct (|constructorDB| con))
@@ -1016,9 +1009,7 @@
                  (when (= (length d) (length (|dbConstructorForm| dbstruct)))
                        (format t "   ~a has a default domain of ~a~%" con (car d))
                        (setf (|dbDefaultDomain| dbstruct) (car d)))))))
-                                        ; note: genCategoryTable creates $AncestorsTable. write-interpdb
-                                        ; does gethash calls into it rather than doing a getdatabase call.
-  (write-interpdb)
+  (write-interpdb ancestors-table)
 #+:AKCL  (write-warmdata)
   (when (probe-file (final-name "interp"))
         (delete-file (final-name "interp")))
@@ -1035,9 +1026,8 @@
   (rename-file "category.build" 
                (final-name "category")))))
 
-(defun write-interpdb ()
+(defun write-interpdb (ancestors-table)
  "build interp.daase from hash tables"
- (declare (special |$AncestorsTable|))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
         concategory categorypos kind cosig abbrev defaultdomain
         ancestors ancestorspos superpos out)
@@ -1076,7 +1066,7 @@
     (setq cosig (|dbDualSignature| struct))
     (setq kind (|dbConstructorKind| struct))
     (setq defaultdomain (|dbDefaultDomain| struct))
-    (setq ancestors (gethash constructor |$AncestorsTable|)) ;cattable.boot
+    (setq ancestors (gethash constructor ancestors-table))
     (if ancestors
 	(progn
 	  (setq ancestorspos (file-position out))
@@ -1136,11 +1126,11 @@
   (finish-output out)
   (close out)))
 
-(defun write-categorydb ()
+(defun write-categorydb (ancestors-table)
  "make category.daase from scratch. contains the $HasCategoryTable table"
  (let (out master pos *print-pretty*)
   (print "building category.daase")
-  (|genCategoryTable|)
+  (|generateCategoryTable| ancestors-table)
   (setq out (open "category.build" :direction :output))
   (princ "                              " out)
   (finish-output out)

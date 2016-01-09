@@ -55,10 +55,9 @@ displayCategoryTable(:options) ==
     sayMSG [:bright id,'"extends:"]
     PRINT val
 
-genCategoryTable() ==
-  $AncestorsTable := makeTable function symbolEq?
+generateCategoryTable ancestors ==
   $HasCategoryTable := makeTable function EQUAL
-  genTempCategoryTable()
+  generateAncestorCategoryTable ancestors
   domainTable :=
     [addDomainToTable(con,getConstrCat getConstructorCategory con)
       for con in allConstructors() | not builtinFunctorName? con
@@ -70,22 +69,21 @@ genCategoryTable() ==
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
       tableValue($HasCategoryTable,[id,:a]) := b
-  simpTempCategoryTable()
+  simplifyAncestorCategoryTable ancestors
   simpCategoryTable()
 
-simpTempCategoryTable() ==
-  for [id,:.] in entries $AncestorsTable repeat
+simplifyAncestorCategoryTable ancestors ==
+  for [id,:.] in entries ancestors repeat
     for u in getConstructorAncestorsFromDB id repeat
       u.rest := simpHasPred rest u
 
-simpCategoryTable() == main where
-  main() ==
-    for [key,:entry] in entries $HasCategoryTable repeat
-      null entry => tableRemove!($HasCategoryTable,key)
-      change :=
-        opOf entry isnt [.,:.] => simpHasPred entry
-        [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
-      tableValue($HasCategoryTable,key) := change
+simpCategoryTable() ==
+  for [key,:entry] in entries $HasCategoryTable repeat
+    null entry => tableRemove!($HasCategoryTable,key)
+    change :=
+      opOf entry isnt [.,:.] => simpHasPred entry
+      [[x,:npred] for [x,:pred] in entry | npred := simpHasPred pred]
+    tableValue($HasCategoryTable,key) := change
 
 simpHasPred(pred,:options) == main where
   main() ==
@@ -186,24 +184,24 @@ addDomainToTable(id,catl) ==
 domainHput(table,key:=[id,:a],b) ==
   tableValue(table,key) := b
 
-genTempCategoryTable() ==
+generateAncestorCategoryTable ancestors ==
   --generates hashtable with key=categoryName and value of the form
   --     ((form . pred) ..) meaning that
   --           "IF pred THEN ofCategory(key,form)"
   --  where form can involve #1, #2, ... the parameters of key
   for con in allConstructors()  repeat
     getConstructorKindFromDB con is "category" =>
-      addToCategoryTable con
-  for [id,:item] in entries $AncestorsTable repeat
+      addToCategoryTable(ancestors,con)
+  for [id,:item] in entries ancestors repeat
     for u in item repeat
       u.rest := simpCatPredicate simpBool rest u
-    tableValue($AncestorsTable,id) := listSort(function GLESSEQP,item)
+    tableValue(ancestors,id) := listSort(function GLESSEQP,item)
 
-addToCategoryTable con ==
+addToCategoryTable(ancestors,con) ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
   u := getConstructorModemap(con).mmDC --domain
   alist := getCategoryExtensionAlist u
-  tableValue($AncestorsTable,first u) := alist
+  tableValue(ancestors,first u) := alist
   alist
 
 encodeCategoryAlist(id,alist) ==

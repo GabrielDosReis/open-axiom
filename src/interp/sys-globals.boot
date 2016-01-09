@@ -302,8 +302,6 @@ $Echo := false
 ++ answers x has y category questions
 $HasCategoryTable := nil
 
-$AncestorsTable := nil
-
 ++
 _*BUILD_-VERSION_* := nil
 _*YEARWEEK_* := nil

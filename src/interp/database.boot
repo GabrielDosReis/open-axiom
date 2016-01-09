@@ -302,7 +302,7 @@ buildDatabase(filemode,expensive) ==
   SAY '"Making constructor autoload"
   makeConstructorsAutoLoad()
   SAY '"Building category table"
-  genCategoryTable()
+  generateCategoryTable makeTable function symbolEq?
   SAY '"Building libdb.text"
   buildLibdb()
   SAY '"splitting libdb.text"
