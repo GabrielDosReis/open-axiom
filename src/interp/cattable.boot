@@ -77,8 +77,8 @@ genCategoryTable() ==
 
 simpTempCategoryTable() ==
   for [id,:.] in entries $AncestorsTable repeat
-    for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
-      u.rest := simpHasPred b
+    for u in getConstructorAncestorsFromDB id repeat
+      u.rest := simpHasPred rest u
 
 simpCategoryTable() == main where
   main() ==
@@ -160,7 +160,7 @@ simpCatHasAttribute(domform,attr) ==
   if KDR attr isnt [.,:.] then
     attr := IFCAR attr
   pred :=
-    u := LASSOC(attr,catval . 2) => first u
+    u := LASSOC(attr,catval.2) => first u
     return false                            --exit: not there
   pred = true => true
   eval applySubst(pairList(conform.args,domform.args),pred)
@@ -179,9 +179,10 @@ addDomainToTable(id,catl) ==
     cat is ['CATEGORY,:.] => nil
     cat is ['IF,pred,cat1,:.] =>
       newAlist:=
-        [[a,:quickAnd(pred,b)] for [a,:b] in getCategoryExtensionAlist0 cat1]
+        [[a,:quickAnd(pred,b)] for [a,:b] in
+          [[cat1,:true],:getCategoryExtensionAlist cat1]]
       alist:= [:alist,:newAlist]
-    alist:= [:alist,:getCategoryExtensionAlist0 cat]
+    alist:= [:alist,[cat,:true],:getCategoryExtensionAlist cat]
   [id,:alist]
 
 domainHput(table,key:=[id,:a],b) ==
@@ -196,8 +197,8 @@ genTempCategoryTable() ==
     getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
   for [id,:item] in entries $AncestorsTable repeat
-    for (u:=[.,:b]) in item repeat
-      u.rest := simpCatPredicate simpBool b
+    for u in item repeat
+      u.rest := simpCatPredicate simpBool rest u
     tableValue($AncestorsTable,id) := listSort(function GLESSEQP,item)
 
 addToCategoryTable con ==
@@ -259,12 +260,9 @@ simpCategoryOr(new,l) ==
 tempExtendsCat(b,c) ==
   or/[first c = a for [[a,:.],:.] in getConstructorAncestorsFromDB first b]
 
-getCategoryExtensionAlist0 cform ==
-  [[cform,:'T],:getCategoryExtensionAlist cform]
-
 getCategoryExtensionAlist cform ==
   --avoids substitution as much as possible
-  u:= getConstructorAncestorsFromDB first cform => formalSubstitute(cform,u)
+  u := getConstructorAncestorsFromDB cform.op => formalSubstitute(cform,u)
   mkCategoryExtensionAlist cform
 
 formalSubstitute(form:=[.,:argl],u) ==
@@ -276,12 +274,12 @@ isFormalArgumentList argl ==
 
 mkCategoryExtensionAlist cform ==
   not cons? cform => nil
-  cop := first cform
+  cop := cform.op
   builtinCategoryName? cop => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))
   extendsList:= nil
   for [cat,:pred] in catlist repeat
-    newList := getCategoryExtensionAlist0 cat
+    newList := [[cat,:true],:getCategoryExtensionAlist cat]
     finalList :=
       pred is 'T => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
@@ -290,16 +288,15 @@ mkCategoryExtensionAlist cform ==
 
 -- following code to handle Unions Records Mapping etc.
 mkCategoryExtensionAlistBasic cform ==
-  cop := first cform
---category:= eval cform
+  cop := cform.op
   category :=      -- changed by RSS on 7/29/87
     macrop cop => eval cform
-    apply(cop, rest cform)
+    apply(cop, cform.args)
   extendsList := [[x,:'T] for x in categoryPrincipals category]
   for [cat,pred,:.] in categoryAncestors category repeat
-    newList := getCategoryExtensionAlist0 cat
+    newList := [[cat,:true],:getCategoryExtensionAlist cat]
     finalList :=
-      pred is 'T => newList
+      pred = true => newList
       [[a,:quickAnd(b,pred)] for [a,:b] in newList]
     extendsList:= catPairUnion(extendsList,finalList,cop,cat)
   extendsList
@@ -358,7 +355,7 @@ makeCatPred(zz, cats, thePred) ==
     ats := if ats is ['PROGN,:atl] then atl else [ats]
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and cons? z3 and
-        constructor? first z3 then
+        constructor? z3.op then
           cats:= [['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],:cats]
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
@@ -381,7 +378,7 @@ categoryParts(conform,category,:options) == main where
     if addCtor? then
       res := [listSort(function GLESSEQP,$conslist),:res]
     if getConstructorKindFromDB conname is "category" then
-      tvl := take(#rest conform,$TriangleVariableList)
+      tvl := take(#conform.args,$TriangleVariableList)
       res := applySubst(pairList(tvl,$FormalMapVariableList),res)
     res
   build(item,pred) ==
@@ -443,8 +440,8 @@ updateCategoryTableForCategory(cname) ==
   clearTempCategoryTable([[cname,'category]])
   addToCategoryTable(cname)
   for [id,:.] in entries $AncestorsTable repeat
-      for (u:=[.,:b]) in getConstructorAncestorsFromDB id repeat
-        u.rest := simpCatPredicate simpBool b
+      for u in getConstructorAncestorsFromDB id repeat
+        u.rest := simpCatPredicate simpBool rest u
 
 updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
@@ -458,7 +455,7 @@ clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,$HasCategoryTable)
 
 clearCategoryTable1(key,val) ==
-  (first key=$cname)=> tableRemove!($HasCategoryTable,key)
+  key.op = $cname => tableRemove!($HasCategoryTable,key)
   nil
 
 clearTempCategoryTable(catNames) ==
@@ -467,6 +464,6 @@ clearTempCategoryTable(catNames) ==
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
-        symbolMember?(first catForm,catNames) => nil
+        symbolMember?(catForm.op,catNames) => nil
         extensions:= [extension,:extensions]
     tableValue($AncestorsTable,key) := extensions
