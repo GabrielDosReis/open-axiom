@@ -56,7 +56,7 @@ displayCategoryTable(:options) ==
     PRINT val
 
 genCategoryTable() ==
-  SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
+  $AncestorsTable := makeTable function symbolEq?
   $HasCategoryTable := makeTable function EQUAL
   genTempCategoryTable()
   domainTable :=
@@ -71,12 +71,12 @@ genCategoryTable() ==
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
       tableValue($HasCategoryTable,[id,:a]) := b
   simpTempCategoryTable()
-  -- compressHashTable _*ANCESTORS_-HASH_*
+  -- compressHashTable $AncestorsTable
   simpCategoryTable()
   -- compressHashTable $HasCategoryTable
 
 simpTempCategoryTable() ==
-  for [id,:.] in entries _*ANCESTORS_-HASH_* repeat
+  for [id,:.] in entries $AncestorsTable repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
       u.rest := simpHasPred b
 
@@ -195,16 +195,16 @@ genTempCategoryTable() ==
   for con in allConstructors()  repeat
     getConstructorKindFromDB con is "category" =>
       addToCategoryTable con
-  for [id,:item] in entries _*ANCESTORS_-HASH_* repeat
+  for [id,:item] in entries $AncestorsTable repeat
     for (u:=[.,:b]) in item repeat
       u.rest := simpCatPredicate simpBool b
-    tableValue(_*ANCESTORS_-HASH_*,id) := listSort(function GLESSEQP,item)
+    tableValue($AncestorsTable,id) := listSort(function GLESSEQP,item)
 
 addToCategoryTable con ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
   u := getConstructorModemap(con).mmDC --domain
   alist := getCategoryExtensionAlist u
-  tableValue(_*ANCESTORS_-HASH_*,first u) := alist
+  tableValue($AncestorsTable,first u) := alist
   alist
 
 encodeCategoryAlist(id,alist) ==
@@ -442,7 +442,7 @@ updateCategoryTable(cname,kind) ==
 updateCategoryTableForCategory(cname) ==
   clearTempCategoryTable([[cname,'category]])
   addToCategoryTable(cname)
-  for [id,:.] in entries _*ANCESTORS_-HASH_* repeat
+  for [id,:.] in entries $AncestorsTable repeat
       for (u:=[.,:b]) in getConstructorAncestorsFromDB id repeat
         u.rest := simpCatPredicate simpBool b
 
@@ -462,11 +462,11 @@ clearCategoryTable1(key,val) ==
   nil
 
 clearTempCategoryTable(catNames) ==
-  for [key,:.] in entries _*ANCESTORS_-HASH_* repeat
+  for [key,:.] in entries $AncestorsTable repeat
     symbolMember?(key,catNames) => nil
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
         symbolMember?(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
-    tableValue(_*ANCESTORS_-HASH_*,key) := extensions
+    tableValue($AncestorsTable,key) := extensions

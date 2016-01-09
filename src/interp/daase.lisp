@@ -88,12 +88,12 @@
 
 ;;TTT 7/2/97
 ; Regarding the 'ancestors field for a category: At database build
-; time there exists a *ancestors-hash* hash table that gets filled
+; time there exists a $AncestorsTable hash table that gets filled
 ; with CATEGORY (not domain) ancestor information. This later provides
-; the information that goes into interp.daase This *ancestors-hash*
+; the information that goes into interp.daase This $AncestorsTable
 ; does not exist at normal runtime (it can be made by a call to
 ; genCategoryTable). Note that the ancestor information in
-; *ancestors-hash* (and hence interp.daase) involves #1, #2, etc
+; $AncestorsTable (and hence interp.daase) involves #1, #2, etc
 ; instead of R, Coef, etc. The latter thingies appear in all
 ; .NRLIB/index.KAF files. So we need to be careful when we )lib
 ; categories and update the ancestor info.
@@ -1016,7 +1016,7 @@
                  (when (= (length d) (length (|dbConstructorForm| dbstruct)))
                        (format t "   ~a has a default domain of ~a~%" con (car d))
                        (setf (|dbDefaultDomain| dbstruct) (car d)))))))
-                                        ; note: genCategoryTable creates *ancestors-hash*. write-interpdb
+                                        ; note: genCategoryTable creates $AncestorsTable. write-interpdb
                                         ; does gethash calls into it rather than doing a getdatabase call.
   (write-interpdb)
 #+:AKCL  (write-warmdata)
@@ -1037,7 +1037,7 @@
 
 (defun write-interpdb ()
  "build interp.daase from hash tables"
- (declare (special *ancestors-hash*))
+ (declare (special |$AncestorsTable|))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
         concategory categorypos kind cosig abbrev defaultdomain
         ancestors ancestorspos superpos out)
@@ -1076,7 +1076,7 @@
     (setq cosig (|dbDualSignature| struct))
     (setq kind (|dbConstructorKind| struct))
     (setq defaultdomain (|dbDefaultDomain| struct))
-    (setq ancestors (gethash constructor *ancestors-hash*)) ;cattable.boot
+    (setq ancestors (gethash constructor |$AncestorsTable|)) ;cattable.boot
     (if ancestors
 	(progn
 	  (setq ancestorspos (file-position out))
