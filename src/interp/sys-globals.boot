@@ -182,9 +182,6 @@ $traceletFunctions := []
 $useDCQnotLET := false
 
 ++
-$updateCatTableIfTrue := false
-
-++
 $TranslateOnly := false
 
 ++

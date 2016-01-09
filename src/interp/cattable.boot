@@ -71,9 +71,7 @@ genCategoryTable() ==
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
       tableValue($HasCategoryTable,[id,:a]) := b
   simpTempCategoryTable()
-  -- compressHashTable $AncestorsTable
   simpCategoryTable()
-  -- compressHashTable $HasCategoryTable
 
 simpTempCategoryTable() ==
   for [id,:.] in entries $AncestorsTable repeat
@@ -427,29 +425,15 @@ compressSexpr(x,left,right) ==
   tableValue($found,x) := x
 
 updateCategoryTable(cname,kind) ==
-  $updateCatTableIfTrue =>
-    kind is 'package => nil
-    kind is 'category => updateCategoryTableForCategory(cname)
-    updateCategoryTableForDomain(cname,getConstrCat(
-      getConstructorCategory cname))
   kind is 'domain =>
     updateCategoryTableForDomain(cname,getConstrCat(
       getConstructorCategory cname))
-
-updateCategoryTableForCategory(cname) ==
-  clearTempCategoryTable([[cname,'category]])
-  addToCategoryTable(cname)
-  for [id,:.] in entries $AncestorsTable repeat
-      for u in getConstructorAncestorsFromDB id repeat
-        u.rest := simpCatPredicate simpBool rest u
 
 updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
   [cname,:domainEntry]:= addDomainToTable(cname,category)
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
     tableValue($HasCategoryTable,[cname,:a]) := b
-  $doNotCompressHashTableIfTrue => $HasCategoryTable
-  -- compressHashTable $HasCategoryTable
 
 clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,$HasCategoryTable)
@@ -457,13 +441,3 @@ clearCategoryTable($cname) ==
 clearCategoryTable1(key,val) ==
   key.op = $cname => tableRemove!($HasCategoryTable,key)
   nil
-
-clearTempCategoryTable(catNames) ==
-  for [key,:.] in entries $AncestorsTable repeat
-    symbolMember?(key,catNames) => nil
-    extensions:= nil
-    for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
-      repeat
-        symbolMember?(catForm.op,catNames) => nil
-        extensions:= [extension,:extensions]
-    tableValue($AncestorsTable,key) := extensions

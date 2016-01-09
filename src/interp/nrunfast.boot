@@ -39,9 +39,6 @@ module nrunfast where
   getOpCode: (%Symbol, %Vector %Thing, %Short) -> %Maybe %Short
 
 ++
-$doNotCompressHashTableIfTrue := false
-
-++
 $monitorNewWorld := false
 
 ++
@@ -57,8 +54,6 @@ initNewWorld() ==
   $monitorNewWorld := false
   $spadLibFT := 'NRLIB
   $NRTmonitorIfTrue := false
-  $updateCatTableIfTrue := false
-  $doNotCompressHashTableIfTrue := true
  
 getDomainByteVector dom == 
   CDDR domainData dom
