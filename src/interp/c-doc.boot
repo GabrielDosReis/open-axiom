@@ -440,12 +440,14 @@ checkIsValidType form == main where
   main() ==
     form isnt [.,:.] => 'ok
     [op,:args] := form
+    op = ":" => args is [.,t] and checkIsValidType t
+    builtinConstructor? op => and/[checkIsValidType t for t in args]
     conname := (constructor? op => op; abbreviation? op)
     null conname => nil
     fn(form,getDualSignature conname)
   fn(form,coSig) ==
     #form ~= #coSig => form
-    or/[null checkIsValidType x for x in rest form for flag in rest coSig | flag]
+    or/[null checkIsValidType x for x in form.args for flag in rest coSig | flag]
       => nil
     'ok
 

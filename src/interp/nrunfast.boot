@@ -379,17 +379,15 @@ generalizedBuiltinConstructor? s ==
   builtinConstructor? s or s is 'QUOTE or s is "[||]"
 
 lazyMatch(source,lazyt,dollar,domain) ==
-  lazyt is [op,:argl] and cons? source and op=first source
-    and #(sargl := rest source) = #argl =>
+  lazyt is [op,:argl] and source is [=op,:sargl] and #sargl = #argl =>
       builtinConstructor? op and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
       generalizedBuiltinConstructor? op =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
-      coSig := getDualSignature op
-      null coSig => error ["bad Constructor op", op]
+      coSig := getDualSignature(op).source
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
-           for s in sargl for a in argl for flag in rest coSig]
+           for s in sargl for a in argl for flag in coSig]
   string? source and lazyt is ['QUOTE,=source] => true
   integer? source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
@@ -404,17 +402,18 @@ lazyMatch(source,lazyt,dollar,domain) ==
  
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   #s ~= #d => nil
-  scoSig := getDualSignature opOf s or return nil
-  if opOf s in '(Union Mapping Record) then 
-     scoSig := [true for x in s]
-  and/[fn for x in rest s for arg in rest d for xt in rest scoSig] where
+  scoSig :=
+    s.op in '(Union Mapping Record) => [true for x in s.args]
+    getDualSignature s.op or return nil
+  and/[fn for x in s.args for arg in d.args for xt in scoSig] where
    fn() ==
     x = arg => true
-    x is ['elt,someDomain,opname] => lookupInDomainByName(opname,evalDomain someDomain,arg)
+    x is ['elt,someDomain,opname] =>
+      lookupInDomainByName(opname,evalDomain someDomain,arg)
     x is '$ and (arg = dollarName or arg = domainName) => true
     x = dollarName and arg = domainName => true
     x isnt [.,:.] or arg isnt [.,:.] => false
-    xt and first x = first arg =>
+    xt and x.op = arg.op =>
       lazyMatchArgDollarCheck(x,arg,dollarName,domainName)
     false
 
@@ -469,7 +468,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   coSig := getDualSignature functorName or
      error ["unknown constructor name", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
-        for a in argl for flag in rest coSig]]
+        for a in argl for flag in coSig.source]]
  
 newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u is '$ => u

@@ -341,7 +341,7 @@ resolveTTRed3(t) ==
     (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
   [(x isnt [.,:.] and x ) or ((not cs and x and not interpOp? x and x)
     or resolveTTRed3 x) or return nil
-      for x in t for cs in getDualSignature t.op ]
+      for x in t for cs in getDualSignature t.op ] -- FIXME: builtin ctor?
 
 interpOp?(op) ==
   cons?(op) and

@@ -624,6 +624,7 @@ kisValidType typeForm ==
 
 kCheckArgumentNumbers t ==
   [conname,:args] := t
+  builtinConstructor? conname => true
   cosig := KDR getDualSignature conname
   #cosig ~= #args => false
   and/[foo for domain? in cosig for x in args] where foo() ==

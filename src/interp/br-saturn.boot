@@ -938,7 +938,9 @@ addParameterTemplates(page, conform) ==
 kPageArgs([op,:args],[.,.,:source]) ==
   htSaySaturn '"\begin{tabular}{p{.25in}lp{0in}}"
   firstTime := true
-  coSig := rest getDualSignature op
+  coSig :=
+    builtinConstructor? op => [true for . in args]
+    rest getDualSignature op
   for x in args for t in source for pred in coSig repeat
     if firstTime then firstTime := false
                  else
@@ -1253,7 +1255,10 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSaySaturn '"{\em Arguments:}"
       htSaySaturnAmpersand()
       firstTime := true
-      coSig := KDR operationIsConstructor op  --check if op is constructor
+      coSig :=
+        builtinConstructor? op => [true for . in args]
+        not constructor? op => nil     --check if op is constructor
+        getDualSignature op
       for a in args for t in rest $sig repeat
             if not firstTime then
               htSaySaturn '"\\ "

@@ -217,9 +217,9 @@ conform2StringList(form,opFn,argFn,exception) ==
   [op1,:args] := form
   op := IFCAR tableValue($lowerCaseConTb,op1) or op1
   null args => apply(opFn,[op])
-  special := op in '(Union Record Mapping)
+  special := builtinConstructor? op
   cosig :=
-    special => ['T for x in args]
+    special => [true for x in args]
     rest getDualSignature op
   atypes :=
     special => cosig
@@ -261,7 +261,7 @@ dbMapping2StringList [target,:sl] ==
   [:sourcePart,'" -> ",:target]
 
 dbOuttran form ==
-  if LISTP form then
+  if form is [.,:.] then
     [op,:args] := form
   else
     op := form

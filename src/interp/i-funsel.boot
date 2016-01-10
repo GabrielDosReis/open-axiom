@@ -1251,12 +1251,18 @@ coerceTypeArgs(t1, t2, SL) ==
   -- if needed.
   t1 isnt [con1, :args1] or t2 isnt [con2, :args2] => t2
   con1 ~= con2 => t2
-  coSig := rest getDualSignature first t1
+  con1 = ":" =>
+    second args1 ~= second args2 => t2
+    [con1,second args1,coerceTypeArgs(third args1,third args2,SL)]
+  con1 = 'Mapping => t2
+  builtinConstructor? con1 =>
+    [con1,:[coerceTypeArgs(u,v,SL) for u in args1 for v in args2]]
+  coSig := getDualSignature(con1).source
   and/coSig => t2
   csub1 := constructSubst t1
   csub2 := constructSubst t2
-  cs1 := rest getConstructorSignature con1
-  cs2 := rest getConstructorSignature con2
+  cs1 := getConstructorSignature(con1).source
+  cs2 := getConstructorSignature(con2).source
   [con1, :
     [makeConstrArg(arg1, arg2, constrArg(c1,csub1,SL),
       constrArg(c2,csub2,SL), cs)

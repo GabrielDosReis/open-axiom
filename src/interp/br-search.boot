@@ -316,7 +316,9 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
 conform2OutputForm(form) ==
   [op,:args] := form
   null args => form
-  cosig := rest getDualSignature op
+  cosig :=
+    builtinConstructor? op => [true for . in args]
+    rest getDualSignature op
   atypes := getConstructorModemap(op).mmSource
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]

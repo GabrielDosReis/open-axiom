@@ -60,7 +60,7 @@ mkEvalable form ==
     loadIfNecessary op
     kind:= getConstructorKindFromDB op
     cosig := getDualSignature op =>
-      [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
+      [op,:[val for x in argl for typeFlag in cosig.source]] where val() ==
         typeFlag =>
           kind = "category" => MKQ x
           vector? x => MKQ x

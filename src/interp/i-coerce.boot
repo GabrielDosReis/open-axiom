@@ -1066,14 +1066,16 @@ coerceIntByMapInner(arg,[u1,:u2]) == coerceOrThrowFailure(arg,u1,u2)
 valueArgsEqual?(t1, t2) ==
   -- returns true if the object-valued arguments to t1 and t2 are the same
   -- under coercion
-  coSig := rest getDualSignature first t1
-  constrSig := rest getConstructorSignature first t1
+  coSig :=
+    builtinConstructor? t1.op => [true for . in t1.args]
+    getDualSignature(t1.op).source
+  constrSig := getConstructorSignature(t1.op).source
   tl1 := replaceSharps(constrSig, t1)
   tl2 := replaceSharps(constrSig, t2)
   not symbolMember?(nil, coSig) => true
   done := false
   value := true
-  for a1 in rest t1 for a2 in rest t2 for cs in coSig
+  for a1 in t1.args for a2 in t2.args for cs in coSig
     for m1 in tl1 for m2 in tl2 while not done repeat
           not cs =>
             trip := objNewWrap(a1, m1)

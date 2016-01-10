@@ -2250,17 +2250,16 @@ bootStrapError(functorForm,sourceFile) ==
 
 registerInlinableDomain x ==
   x is [ctor,:.] =>
-    constructor? ctor =>
-      nominateForInlining ctor
-      cosig := getDualSignature ctor or return nil
-      for a in x.args for t in cosig.source | t and a is [.,:.] repeat
-        registerInlinableDomain a
     ctor is ":" => registerInlinableDomain third x
     ctor is 'Enumeration => nil
     builtinFunctorName? ctor =>
       for t in x.args repeat
         registerInlinableDomain t
-    nil
+    constructor? ctor =>
+      nominateForInlining ctor
+      cosig := getDualSignature ctor or return nil
+      for a in x.args for t in cosig.source | t and a is [.,:.] repeat
+        registerInlinableDomain a
   nil
 
 compAdd(['add,$addForm,capsule],m,e) ==

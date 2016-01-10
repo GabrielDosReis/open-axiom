@@ -84,16 +84,16 @@ isValidType form ==
     ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
-    null mapargs => nil
+    null mapargs => false
     and/[isValidType type for type in mapargs]
   form is ['Union,:args] =>
     -- check for a tagged union
     args and first args is [":",:.] =>
       and/[isValidType type for [:.,type] in args]
-    null (and/[isValidType arg for arg in args]) => nil
+    null (and/[isValidType arg for arg in args]) => false
     ((# args) = (# removeDuplicates args)) => true
     sayKeyedMsg("S2IR0005",[form])
-    nil
+    false
 
   badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => nil
