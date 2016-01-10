@@ -403,7 +403,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   #s ~= #d => nil
   scoSig :=
-    s.op in '(Union Mapping Record) => [true for x in s.args]
+    s.op in '(Union Mapping Record _:) => [true for x in s.args]
     getDualSignature s.op or return nil
   and/[fn for x in s.args for arg in d.args for xt in scoSig] where
    fn() ==

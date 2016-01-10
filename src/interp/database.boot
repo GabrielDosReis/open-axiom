@@ -149,8 +149,10 @@ getConstructorArgsFromDB ctor ==
 ++ parameter type at the corresponding position is a category.
 getDualSignature: %Symbol -> %Form
 getDualSignature ctor ==
-  db := constructorDB ctor or return nil
-  dbDualSignature db or GETDATABASE(ctor,'COSIG)
+  db := constructorDB ctor
+  if not dbBeingDefined? db then
+    loadDBIfNecessary db
+  dbDualSignature db
 
 getConstructorPredicates: %Symbol -> %List %Thing
 getConstructorPredicates ctor ==

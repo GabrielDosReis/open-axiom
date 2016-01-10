@@ -637,12 +637,6 @@
 	      (and (eq key 'hascategory) (consp constructor)))
       (let ((struct (and (symbolp constructor) (|constructorDB| constructor))))
 	(case key
-; note that abbreviation, constructorkind and cosig are heavy hitters
-; thus they occur first in the list of things to check
-	      (cosig
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbDualSignature| struct))))
 	      (operation
 	       (setq stream *operation-stream*)
 	       (setq data (gethash constructor *operation-hash*)))
@@ -722,10 +716,6 @@
 		 (setf (gethash constructor *operation-hash*) data))
 		(hascategory 
 		 (setf (gethash constructor |$HasCategoryTable|) data))
-		(constructorkind 
-		 (setf (|dbConstructorKind| struct) data))
-		(cosig     
-		 (setf (|dbDualSignature| struct) data))
 		(constructormodemap 
 		 (setf (|dbConstructorModemap| struct) data))
 		(constructorcategory 
@@ -736,8 +726,6 @@
 		 (setf (|dbModemaps| struct) data))
 		(object    
 		 (setf (|dbModule| struct) data))
-		(abbreviation 
-		 (setf (|dbAbbreviation| struct) data))
 		(constructor 
 		 (setf (|dbConstructor| struct) data))
 		(ancestors 

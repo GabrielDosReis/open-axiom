@@ -412,7 +412,8 @@ strap-0/FINRALG.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
 strap-0/NORMRETR.$(FASLEXT): strap-0/FAXF.$(FASLEXT)
 strap-0/FAXF.$(FASLEXT): strap-0/XF.$(FASLEXT)
 strap-0/COMPLEX.$(FASLEXT): strap-0/COMPCAT.$(FASLEXT)
-strap-0/COMPCAT.$(FASLEXT): strap-0/COMRING.$(FASLEXT) 
+strap-0/COMPCAT.$(FASLEXT): strap-0/COMRING.$(FASLEXT) \
+	strap-0/MONOGEN.$(FASLEXT)
 strap-0/MSET.$(FASLEXT): strap-0/MSETAGG.$(FASLEXT)
 strap-0/MSETAGG.$(FASLEXT): strap-0/MDAGG.$(FASLEXT)
 strap-0/AN.$(FASLEXT): strap-0/ACF.$(FASLEXT)
@@ -1125,6 +1126,7 @@ strap-1/CATAST.$(FASLEXT): strap-0/CTORKIND.$(FASLEXT)
 strap-1/HEADAST.$(FASLEXT): strap-0/PARAMAST.$(FASLEXT)
 strap-1/ITFORM.$(FASLEXT): strap-0/IRFORM.$(FASLEXT)
 strap-1/LINBASIS.$(FASLEXT): strap-0/DBASIS.$(FASLEXT)
+strap-1/FR2.$(FASLEXT): strap-0/COMPLEX.$(FASLEXT)
 
 # Bootstrap stage 2 dependencies.
 # At this stage we recompile everything from stage 1, including
@@ -1689,7 +1691,7 @@ strap-2/CATAST.$(FASLEXT): strap-1/CTORKIND.$(FASLEXT)
 strap-2/TYPEAST.$(FASLEXT): strap-1/SPADAST.$(FASLEXT)
 strap-2/IRFORM.$(FASLEXT): strap-1/ITFORM.$(FASLEXT)
 strap-2/LINELT.$(FASLEXT): strap-1/LINBASIS.$(FASLEXT)
-
+strap-2/FR2.$(FASLEXT): strap-1/COMPLEX.$(FASLEXT)
 
 
 #
@@ -2170,6 +2172,9 @@ oa_algebra_layer_0_objects = \
 	$(addprefix $(OUT)/, \
            $(addsuffix .$(FASLEXT),$(oa_algebra_layer_0))) 
 
+# FIXME:
+$(OUT)/ES.$(FASLEXT): strap-2/INFORM.$(FASLEXT)
+
 $(OUT)/VOID.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
 $(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/STREAM.$(FASLEXT)
@@ -2391,6 +2396,8 @@ $(OUT)/LINDEP.$(FASLEXT): strap-2/LSMP.$(FASLEXT) \
 	strap-2/MATCAT2.$(FASLEXT) strap-2/VECTOR2.$(FASLEXT)
 
 $(OUT)/POLY.$(FASLEXT): strap-2/INDE.$(FASLEXT)
+# FIXME:
+$(OUT)/FR2.$(FASLEXT): strap-2/COMPLEX.$(FASLEXT)
 
 oa_algebra_layer_9 = \
   DLP      EAB      IPADIC   MAGMA    QUEUE    MATLIN   \
