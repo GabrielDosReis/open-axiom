@@ -2826,8 +2826,9 @@ instantiateNiladics! pf ==
       -- Note: Normally, we wouldn't want to touch the definiendum;
       --       except that some operators such as 'case' take flags,
       --       so we want to solve them if they are types.
-      if second(pf) is [.,:.] then
-        second(pf).args := instantiateNiladicsInList! second(pf).args
+      definiendum := first pf.args
+      if definiendum is ['case,:.] then
+        third(definiendum) := instantiateNiladics! third definiendum
       third(pf) := instantiateNiladicsInList! third pf
       fourth(pf) := instantiateNiladics! fourth pf
     pf.op is 'SIGNATURE => third(pf) := instantiateNiladicsInList! third pf
