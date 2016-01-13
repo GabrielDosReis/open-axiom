@@ -2429,7 +2429,9 @@ strap-1/CATCTOR.$(FASLEXT): strap-1/CTORCAT.$(FASLEXT) \
 	strap-1/KOERCE.$(FASLEXT) strap-1/CTOR.$(FASLEXT)
 
 strap-1/SAOS.$(FASLEXT): strap-1/ORDSET.$(FASLEXT) \
-	strap-1/KONVERT.$(FASLEXT) strap-0/SYMBOL.$(FASLEXT)
+	strap-1/KONVERT.$(FASLEXT) \
+	strap-0/SYMBOL.$(FASLEXT) \
+	strap-0/IDENT.$(FASLEXT)
 
 strap-1/STREAM.$(FASLEXT): strap-1/LZSTAGG.$(FASLEXT) \
 	strap-1/SMAGG.$(FASLEXT) strap-0/STREAM2.$(FASLEXT) \

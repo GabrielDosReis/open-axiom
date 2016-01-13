@@ -166,7 +166,10 @@ getConstructorParentsFromDB ctor ==
 
 getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==
-  GETDATABASE(ctor,"SUPERDOMAIN")
+  db := constructorDB ctor
+  if not dbBeingDefined? db then
+    loadDBIfNecessary db
+  dbSuperDomain db
   
 getConstructorAttributes: %Symbol -> %Form
 getConstructorAttributes ctor ==
