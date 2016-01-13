@@ -1023,14 +1023,14 @@ mkCategoryPackage(db,cat,def,e) ==
   [op,:argl] := dbConstructorForm db
   packageName:= makeDefaultPackageName symbolName op
   dbConstructorDefault(db) := packageName
-  packageAbb := makeSymbol strconc(symbolName dbAbbreviation db,'"-")
+  packageAbb := makeDefaultPackageAbbreviation db
   $options:local := []
   -- This stops the next line from becoming confused
   abbreviationsSpad2Cmd ['package,packageAbb,packageName]
   -- This is a little odd, but the parser insists on calling
   -- domains, rather than packages
-  nameForDollar := first setDifference('(S A B C D E F G H I),argl)
-  packageArgl := [nameForDollar,:argl]
+  packageArgl := makeDefaultPackageParameters db
+  nameForDollar := first packageArgl
   capsuleDefAlist := fn(def,nil) where fn(x,oplist) ==
     x isnt [.,:.] => oplist
     x is ['DEF,y,:.] => [opOf y,:oplist]

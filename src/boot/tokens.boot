@@ -283,6 +283,7 @@ for i in [ _
   ["false",        'NIL]   , _
   ["fifth",      "FIFTH"]  , _
   ["first",        "CAR"]  , _
+  ["fileNameString", "FILE-NAMESTRING" ] , _
   ["filePath",  "PATHNAME"] , _
   ["filePath?", "PATHNAMEP"] , _
   ["filePathDirectory", "PATHNAME-DIRECTORY"] , _

@@ -808,18 +808,31 @@ makeInitialDB [form,kind,abbrev,srcfile] ==
   dbSourceFile(db) := srcfile
   setAutoLoadProperty form.op
   
+makeDefaultPackageForm db ==
+  [makeDefaultPackageName symbolName dbConstructor db,
+     :makeDefaultPackageParameters db]
+
 printInitdbInfo(path,dbfile) == main(path,dbfile) where
   main(path,dbfile) ==
     for x in parseSpadFile path repeat
-      x is ['DEF,lhs,:.] => fn(lhs,path,dbfile)
-      x is ["where",['DEF,lhs,:.],:.] => fn(lhs,path,dbfile)
-  fn(lhs,path,dbfile) ==
+      x is ['DEF,lhs,.,rhs] =>
+        fn(lhs,rhs,fileNameString path,dbfile)
+      x is ["where",['DEF,lhs,.,rhs],:.] =>
+        fn(lhs,rhs,fileNameString path,dbfile)
+  fn(lhs,rhs,path,dbfile) ==
     if lhs isnt [.,:.] then lhs := [lhs]
     db := constructorDB lhs.op
     db = nil => nil
     args := [id for x in lhs.args]
               where id() == (x is [":",x',:.] => x'; x)
     data := [[lhs.op,:args],dbConstructorKind db,dbAbbreviation db,path]
+    prettyPrint(['makeInitialDB,quote data],dbfile)
+    writeNewline dbfile
+    -- If this is a category with defaults, write out the data for 
+    -- associated package.
+    dbConstructorKind db isnt 'category or rhs isnt ['add,:.] => nil
+    data := [makeDefaultPackageForm db,'package,
+               makeDefaultPackageAbbreviation db,path]
     prettyPrint(['makeInitialDB,quote data],dbfile)
     writeNewline dbfile
 
