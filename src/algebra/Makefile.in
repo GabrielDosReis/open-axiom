@@ -732,6 +732,7 @@ SPADFILES = \
  $(OUTSRC)/suls.spad $(OUTSRC)/sum.spad $(OUTSRC)/sups.spad \
  $(OUTSRC)/supxs.spad $(OUTSRC)/suts.spad $(OUTSRC)/symbol.spad \
  $(OUTSRC)/syntax.spad \
+ $(OUTSRC)/term.spad \
  $(OUTSRC)/syssolp.spad $(OUTSRC)/system.spad \
  $(OUTSRC)/tableau.spad $(OUTSRC)/table.spad $(OUTSRC)/taylor.spad \
  $(OUTSRC)/tex.spad $(OUTSRC)/tools.spad $(OUTSRC)/transsolve.spad \
@@ -2350,7 +2351,8 @@ strap-1/MAYBE.$(FASLEXT): strap-1/UTYPE.$(FASLEXT) \
 
 strap-1/DFLOAT.$(FASLEXT): strap-1/FPS.$(FASLEXT) \
 	strap-1/DIFRING.$(FASLEXT) strap-1/TRANFUN.$(FASLEXT) \
-	strap-1/KONVERT.$(FASLEXT) strap-0/DFSFUN.$(FASLEXT)
+	strap-1/KONVERT.$(FASLEXT) strap-0/DFSFUN.$(FASLEXT) \
+	strap-0/COMPLEX.$(FASLEXT)
 
 strap-1/DFSFUN.$(FASLEXT): strap-0/COMPLEX.$(FASLEXT) strap-0/INTRET.$(FASLEXT)
 
@@ -2534,7 +2536,9 @@ strap-1/INDE.$(FASLEXT): strap-1/IDPOAMS.$(FASLEXT) strap-1/IDPC.$(FASLEXT)
 strap-1/IDPOAMS.$(FASLEXT): strap-1/IDPOAM.$(FASLEXT)
 strap-1/IDPC.$(FASLEXT): strap-1/SETCAT.$(FASLEXT) strap-1/FUNCTOR.$(FASLEXT)
 strap-1/GENEEZ.$(FASLEXT): strap-1/VECTOR2.$(FASLEXT) \
-	strap-0/IROOT.$(FASLEXT)
+	strap-0/EMR.$(FASLEXT) \
+	strap-0/IROOT.$(FASLEXT) \
+	strap-0/GHENSEL.$(FASLEXT)
 strap-1/MLIFT.$(FASLEXT): strap-1/NPCOEF.$(FASLEXT) strap-1/SUP2.$(FASLEXT) \
 	strap-1/PGCD.$(FASLEXT) strap-1/FACUTIL.$(FASLEXT)
 strap-1/VECTOR2.$(FASLEXT): strap-0/FLAGG2.$(FASLEXT)
@@ -2618,7 +2622,7 @@ strap-1/PLOTTOOL.$(FASLEXT): strap-0/GRDEF.$(FASLEXT) \
 	strap-1/PLOT.$(FASLEXT) strap-1/CLIP.$(FASLEXT) \
 	strap-1/DROPT0.$(FASLEXT) strap-1/DROPT1.$(FASLEXT) \
 	strap-0/VIEW.$(FASLEXT)
-
+strap-1/CPMATCH.$(FASLEXT): strap-1/PATRES2.$(FASLEXT)
 strap-1/DROPT0.$(FASLEXT): strap-1/DROPT1.$(FASLEXT)
 strap-1/DROPT1.$(FASLEXT): strap-1/DROPT.$(FASLEXT)
 strap-1/DROPT.$(FASLEXT): strap-0/SPACE3.$(FASLEXT)
@@ -2884,12 +2888,17 @@ strap-2/URAGG.$(FASLEXT): strap-2/RCAGG.$(FASLEXT)
 strap-2/RCAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/ELAGG.$(FASLEXT): strap-2/LNAGG.$(FASLEXT) strap-2/SMAGG.$(FASLEXT)
 strap-2/SRAGG.$(FASLEXT): strap-2/A1AGG.$(FASLEXT)
-strap-2/A1AGG.$(FASLEXT): strap-2/FLAGG.$(FASLEXT) strap-2/SMAGG.$(FASLEXT) \
+strap-2/A1AGG.$(FASLEXT): strap-2/FLAGG.$(FASLEXT) \
+	strap-2/SMAGG.$(FASLEXT) \
+	strap-2/SEGCAT.$(FASLEXT) \
+	strap-2/SEGXCAT.$(FASLEXT) \
 	strap-1/FLASORT.$(FASLEXT)
 strap-2/FLAGG.$(FASLEXT): strap-2/LNAGG.$(FASLEXT) strap-2/FINAGG.$(FASLEXT)
 strap-2/FINAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/LNAGG.$(FASLEXT): strap-2/IXAGG.$(FASLEXT) \
-	strap-2/CLAGG.$(FASLEXT) strap-2/ELTAB.$(FASLEXT)
+	strap-2/CLAGG.$(FASLEXT) \
+	strap-2/ELTAB.$(FASLEXT) \
+	strap-1/UNISEG.$(FASLEXT)
 strap-2/CLAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT)
 strap-2/IXAGG.$(FASLEXT): strap-2/HOAGG.$(FASLEXT) \
 	strap-2/ELTAGG.$(FASLEXT)
@@ -2925,7 +2934,8 @@ strap-2/INT.$(FASLEXT): strap-2/INS.$(FASLEXT) \
 	strap-1/HEUGCD.$(FASLEXT)
 strap-2/DFLOAT.$(FASLEXT): strap-2/FPS.$(FASLEXT) \
 	strap-2/DIFRING.$(FASLEXT) strap-2/TRANFUN.$(FASLEXT) \
-	strap-2/KONVERT.$(FASLEXT) strap-1/DFSFUN.$(FASLEXT)
+	strap-2/KONVERT.$(FASLEXT) strap-1/DFSFUN.$(FASLEXT) \
+	strap-1/COMPLEX.$(FASLEXT)
 strap-2/FLOAT.$(FASLEXT): strap-2/FPS.$(FASLEXT) \
 	strap-2/DIFRING.$(FASLEXT) strap-2/TRANFUN.$(FASLEXT) \
 	strap-2/KONVERT.$(FASLEXT) strap-2/KVTFROM.$(FASLEXT) \
@@ -2973,7 +2983,7 @@ strap-2/SEX.$(FASLEXT): strap-2/SEXOF.$(FASLEXT)
 strap-2/OUTFORM.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
 	strap-1/NUMFMT.$(FASLEXT) strap-1/VOID.$(FASLEXT) \
 	strap-1/DFLOAT.$(FASLEXT) strap-1/SYMBOL.$(FASLEXT) \
-	strap-1/LIST.$(FASLEXT) strap-1/NNI.$(FASLEXT)
+	strap-1/LIST.$(FASLEXT) strap-1/PI.$(FASLEXT)
 strap-2/SEXOF.$(FASLEXT): strap-2/SEXCAT.$(FASLEXT)
 strap-2/ANY.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
 	strap-2/SEX.$(FASLEXT) strap-2/NONE.$(FASLEXT)
@@ -3078,6 +3088,7 @@ strap-2/GALFACT.$(FASLEXT): strap-1/GALFACTU.$(FASLEXT) \
 	strap-1/GALPOLYU.$(FASLEXT) strap-1/MDDFACT.$(FASLEXT) \
 	strap-1/UPDECOMP.$(FASLEXT) strap-1/BRILL.$(FASLEXT) \
 	strap-1/CYCLOTOM.$(FASLEXT) strap-1/MSET.$(FASLEXT) \
+	strap-1/MSETAGG.$(FASLEXT) \
 	strap-1/GHENSEL.$(FASLEXT) \
 	strap-1/IROOT.$(FASLEXT)
 
@@ -3096,6 +3107,7 @@ strap-2/MONOGEN.$(FASLEXT): strap-1/CPIMA.$(FASLEXT) \
 	strap-1/FINRALG.$(FASLEXT)
 
 strap-2/COMPCAT.$(FASLEXT): strap-2/MONOGEN.$(FASLEXT) \
+	strap-1/POLY.$(FASLEXT) \
 	strap-1/CINTSLPE.$(FASLEXT) \
 	strap-1/COMPLPAT.$(FASLEXT) \
 	strap-1/CPMATCH.$(FASLEXT)
@@ -3232,7 +3244,10 @@ strap-2/%.$(FASLEXT): %.spad initdb.$(FASLEXT) | strap-2
 $(OUT)/VOID.$(FASLEXT): strap-2/KOERCE.$(FASLEXT) \
 	strap-2/OUTFORM.$(FASLEXT)
 $(OUT)/EXIT.$(FASLEXT): strap-2/SETCAT.$(FASLEXT) \
-	strap-2/OUTFORM.$(FASLEXT)
+	strap-2/OUTFORM.$(FASLEXT) \
+	strap-2/BOOLEAN.$(FASLEXT) \
+	strap-2/STRING.$(FASLEXT) \
+	strap-2/SINT.$(FASLEXT)
 
 $(OUT)/SINT.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
 $(OUT)/NNI.$(FASLEXT): $(OUT)/INT.$(FASLEXT)
@@ -3245,17 +3260,22 @@ $(OUT)/INT.$(FASLEXT): strap-2/INT.$(FASLEXT) \
 	strap-2/FRUTIL.$(FASLEXT) \
 	strap-2/HEUGCD.$(FASLEXT) \
 	strap-2/PATRES.$(FASLEXT) \
-	strap-2/PATTERN.$(FASLEXT)
+	strap-2/PATTERN.$(FASLEXT) \
+	strap-2/FLOAT.$(FASLEXT) \
+	strap-2/INTSLPE.$(FASLEXT)
 $(OUT)/BOOLEAN.$(FASLEXT): strap-2/BOOLEAN.$(FASLEXT) \
 	strap-2/PI.$(FASLEXT) \
 	strap-2/INFORM.$(FASLEXT)
-$(OUT)/DFOAT.$(FASLEXT): strap-2/FPS.$(FASLEXT) \
-	strap-2/DFLOAT.$(FASLEXT)
+$(OUT)/DFLOAT.$(FASLEXT): strap-2/FPS.$(FASLEXT) \
+	strap-2/DFLOAT.$(FASLEXT) \
+	strap-2/DFSFUN.$(FASLEXT) \
+	strap-2/COMPLEX.$(FASLEXT)
 $(OUT)/LIST.$(FASLEXT): strap-2/LSAGG.$(FASLEXT) \
 	strap-2/LIST.$(FASLEXT)
 $(OUT)/SYMBOL.$(FASLEXT): strap-2/SYMBOL.$(FASLEXT) \
 	strap-2/PMSYM.$(FASLEXT) \
-	strap-2/UNISEG.$(FASLEXT)
+	strap-2/UNISEG.$(FASLEXT) \
+	strap-2/IDENT.$(FASLEXT)
 
 $(OUT)/STRING.$(FASLEXT): strap-2/STAGG.$(FASLEXT) \
 	strap-2/STRING.$(FASLEXT) \
@@ -3382,7 +3402,6 @@ $(OUT)/ES.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/CACHSET.$(FASLEXT) \
 	strap-2/BOP.$(FASLEXT) strap-2/EQ.$(FASLEXT) \
 	strap-2/ARITY.$(FASLEXT) strap-2/BOP1.$(FASLEXT)
 $(OUT)/CACHSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
-$(OUT)/BOOLEAN.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
 $(OUT)/IARRAY1.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
 $(OUT)/DIFRING.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
