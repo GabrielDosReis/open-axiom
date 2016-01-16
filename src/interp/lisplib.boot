@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2015, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -754,8 +754,9 @@ isFunctor x ==
     getConstructorKindFromDB op in '(domain package)
   u := get(op,'isFunctor,$CategoryFrame) => u
   builtinFunctorName? op => true
-  kind := getConstructorKindFromDB op
-  kind = nil or kind = 'category => false
+  db := constructorDB op or return false
+  dbConstructorKind db = 'category => false
+  loadDBIfNecessary db
   updateCategoryFrameForConstructor op
   get(op,'isFunctor,$CategoryFrame)
 

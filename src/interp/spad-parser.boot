@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2014, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -90,6 +90,10 @@ indentationLocation line ==
     spaceChar? line.i => loc := loc + 1
     tabChar? line.i => loc := 8 * (loc quo 8 + 1)
     return loc
+
+storeBlanks!(line,n) ==
+  #line >= n => nil
+  stringChar(line,n) := char " "
 
 skipIfBlock rs ==
   [n,:line] := z := preparseReadLine1 rs

@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2014 Gabriel Dos Reis
+-- Copyright (C) 2007-2016 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -174,10 +174,8 @@ restart() ==
 
 initializeDatabases firstTime? ==
   getOptionValue "build-initdb" => nil
-  --initdb := getOptionValue "initial-db" => LOAD initdb
-  --FIXME: Ideally we should execute the previous line.  The next line is
-  --FIXME: a short-term stopgap until build dependencies are in place.
-  if initdb := getOptionValue "initial-db" then
+  initdb := getOptionValue "initial-db" =>
+    CATEGORYOPEN()
     LOAD initdb
   not firstTime? => openDatabases()
   fillDatabasesInCore()

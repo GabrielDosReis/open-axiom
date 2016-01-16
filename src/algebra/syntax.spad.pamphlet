@@ -38,7 +38,7 @@ import SExpression
 ++   Integer, DoubleFloat, Identifier, String, SExpression.
 ++ See Also: SExpression, InputForm.
 ++ The equality supported by this domain is structural.
-Syntax(): Public == Private where
+Syntax: Public == Private where
   Public == Join(UnionType, SetCategory, RetractableTo Integer,
               RetractableTo DoubleFloat, RetractableTo Identifier,
                 RetractableTo String, CoercibleTo InputForm) with
@@ -256,7 +256,7 @@ import SExpression
 ++ Date Last Updated: April 20, 2009
 ++ Description: This domains an expresion as elaborated by the interpreter.
 ++ See Also: 
-ElaboratedExpression(): Public == Private where
+ElaboratedExpression: Public == Private where
   Public ==> CoercibleTo OutputForm with
     type: % -> Syntax
       ++ type(e) returns the type of the expression as computed by
@@ -311,7 +311,7 @@ ElaboratedExpression(): Public == Private where
       "failed"
 @
 
-\section{SpadAbstractSyntaxCategory}
+\section{AbstractSyntaxCategory}
 
 <<category ASTCAT AbstractSyntaxCategory>>=
 import SetCategory
@@ -321,7 +321,7 @@ import CoercibleTo Syntax
 ++ Date Created: July 5, 2008
 ++ Date Last Modified: September 21, 2008
 ++ Description: This is the category of Spad abstract syntax trees.
-AbstractSyntaxCategory(): Category == 
+AbstractSyntaxCategory: Category == 
     Join(SetCategory, HomotopicTo Syntax)
   add
     coerce(x: %): Syntax ==
@@ -340,7 +340,7 @@ AbstractSyntaxCategory(): Category ==
 ++ Date Created: July 5, 2008
 ++ Date Last Modified: September 3, 2008
 ++ Description: This is the category of Spad syntax objects.
-SpadSyntaxCategory(): Category == AbstractSyntaxCategory
+SpadSyntaxCategory: Category == AbstractSyntaxCategory
 @
 
 \subsection{The Exports of SpadAst}
@@ -352,7 +352,7 @@ SpadSyntaxCategory(): Category == AbstractSyntaxCategory
 ++ Date Last Modified: September 21, 2008
 ++ Description: This category describes the exported
 ++   signatures of the SpadAst domain.
-SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
+SpadAstExports: Category == Join(SpadSyntaxCategory, UnionType) with
   case: (%, [|ImportAst|]) -> Boolean
     ++ s case ImportAst holds if `s' represents an `import' statement.
   autoCoerce: % -> ImportAst
@@ -361,7 +361,7 @@ SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
 
   case: (%, [|DefinitionAst|]) -> Boolean
     ++ s case DefinitionAst holds if `s' represents a definition.
-  autoCoerce: % -> DefinitionAst()
+  autoCoerce: % -> DefinitionAst
     ++ autoCoerce(s) returns the DefinitionAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
@@ -399,13 +399,13 @@ SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
 
   case: (%, [|SignatureAst|]) -> Boolean
     ++ s case SignatureAst holds if `s' represents a signature export.
-  autoCoerce: % -> SignatureAst()
+  autoCoerce: % -> SignatureAst
     ++ autoCoerce(s) returns the SignatureAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
   case: (%, [|AttributeAst|]) -> Boolean
     ++ s case AttributeAst holds if `s' represents an attribute.
-  autoCoerce: % -> AttributeAst()
+  autoCoerce: % -> AttributeAst
     ++ autoCoerce(s) returns the AttributeAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
@@ -586,7 +586,7 @@ Literal(T: SetCategory): Public == Private where
 ++   of scripting.  It is a plain basic data structure.
 ++       
 )abbrev domain IDENT Identifier
-Identifier(): Public == Private where
+Identifier: Public == Private where
   Public == SetCategory with
     gensym: () -> %  
       ++ \spad{gensym()} returns a new identifier, different from 
@@ -611,7 +611,7 @@ Identifier(): Public == Private where
 ++   Representation of parameters to functions or constructors.
 ++   For the most part, they are Identifiers.  However, in very
 ++   cases, they are "flags", e.g. string literals.
-ParameterAst(): Public == Private where
+ParameterAst: Public == Private where
   Public == Join(SpadSyntaxCategory, UnionType) with
     case: (%, [| Identifier |]) -> Boolean
       ++ \spad{x case Identifier} if the parameter AST object
@@ -665,7 +665,7 @@ import List Identifier
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: November 08, 2009
 ++ Description: This domain represents the header of a definition.
-HeadAst(): Public == Private where
+HeadAst: Public == Private where
   Public == SpadSyntaxCategory with
     headAst: (Identifier,List ParameterAst) -> %
       ++ headAst(f,[x1,..,xn]) constructs a function definition header.
@@ -689,17 +689,16 @@ HeadAst(): Public == Private where
 \subsection{The TypeAst domain}
 
 <<domain TYPEAST TypeAst>>=
-SpadAst(): SpadAstExports
-
-import AbstractSyntaxCategory
+import SpadSyntaxCategory
 )abbrev domain TYPEAST TypeAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents a type AST.
-TypeAst(): Public == Private where
+TypeAst: Public == Private where
   Public == SpadSyntaxCategory
   Private == add
+    import SpadAst
     coerce(x: %): OutputForm == (x : SpadAst)::OutputForm
 
 @
@@ -715,7 +714,7 @@ import TypeAst
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents an `import' of types.
-ImportAst(): Public == Private where
+ImportAst: Public == Private where
   Public == SpadSyntaxCategory with
     coerce: List TypeAst -> %
       ++ ts::ImportAst constructs an ImportAst for the list if types `ts'.
@@ -741,7 +740,7 @@ ImportAst(): Public == Private where
 ++ Description: This domain represents a mapping type AST.  A mapping AST
 ++   is a syntactic description of a function type, e.g. its result 
 ++   type and the list of its argument types.
-MappingAst(): Public == Private where
+MappingAst: Public == Private where
   Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
     coerce: Signature -> %
       ++ sig::MappingAst builds a MappingAst from the Signature `sig'.
@@ -776,7 +775,7 @@ MappingAst(): Public == Private where
 ++ Description: This domain represents a signature AST.  A signature AST
 ++   is a description of an exported operation, e.g. its name, result
 ++   type, and the list of its argument types.
-SignatureAst(): Public == Private where
+SignatureAst: Public == Private where
   Public ==  SpadSyntaxCategory with
     signatureAst: (Identifier, Signature) -> %
       ++ signatureAst(n,s,t) builds the signature AST n: s -> t
@@ -801,15 +800,13 @@ SignatureAst(): Public == Private where
 \subsection{The AttributeAst domain}
 
 <<domain ATTRAST AttributeAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain ATTRAST AttributeAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the syntax of an attribute in
 ++   a category expression.
-AttributeAst(): Public == Private where
+AttributeAst: Public == Private where
   Public ==  SpadSyntaxCategory with
     name: % -> SpadAst
       ++ name(a) returns the name of the attribute `a'.  Note, this
@@ -830,7 +827,7 @@ AttributeAst(): Public == Private where
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the join of categories ASTs.
-JoinAst(): Public == Private where
+JoinAst: Public == Private where
   Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
     coerce: List TypeAst -> %
       ++ ts::JoinAst construct the AST for a join of the types `ts'.
@@ -848,14 +845,12 @@ JoinAst(): Public == Private where
 \subsection{The IfAst domain}
 
 <<domain IFAST IfAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain IFAST IfAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents AST for conditional expressions.
-IfAst(): Public == Private where
+IfAst: Public == Private where
   Public == SpadSyntaxCategory with
     condition: % -> SpadAst
       ++ condition(e) returns the condition of the if-expression `e'.
@@ -880,14 +875,12 @@ IfAst(): Public == Private where
 \subsection{The RepeatAst domain}
 
 <<domain RPTAST RepeatAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain RPTAST RepeatAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the `repeat' iterator syntax.
-RepeatAst(): Public == Private where
+RepeatAst: Public == Private where
   Public == SpadSyntaxCategory with
     iterators: % -> List SpadAst
       ++ iterators(e) returns the list of iterators controlling the loop `e'.
@@ -908,14 +901,12 @@ RepeatAst(): Public == Private where
 \subsection{The WhileAst domain}
 
 <<domain WHILEAST WhileAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain WHILEAST WhileAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the `while' iterator syntax.
-WhileAst(): Public == Private where
+WhileAst: Public == Private where
   Public == SpadSyntaxCategory with
     condition: % -> SpadAst
       ++ condition(i) returns the condition of the while iterator `i'.
@@ -931,14 +922,12 @@ WhileAst(): Public == Private where
 \subsection{The InAst domain}
 
 <<domain INAST InAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain INAST InAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the `in' iterator syntax.
-InAst(): Public == Private where
+InAst: Public == Private where
   Public == SpadSyntaxCategory with
     iterationVar: % -> Identifier
       ++ iterationVar(i) returns the name of the iterating 
@@ -966,7 +955,7 @@ InAst(): Public == Private where
 ++ Description:
 ++   This domain represents an arithmetic progression iterator syntax.
 )abbrev domain STEPAST StepAst
-StepAst(): Public == Private where
+StepAst: Public == Private where
   Public == SpadSyntaxCategory with
     iterationVar: % -> Identifier
       ++ \spad{iterationVar(i)} returns the name of the iterating 
@@ -1012,14 +1001,12 @@ StepAst(): Public == Private where
 \subsection{The CollectAst domain}
 
 <<domain CLLCTAST CollectAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain CLLCTAST CollectAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents list comprehension syntax.
-CollectAst(): Public == Private where
+CollectAst: Public == Private where
   Public == SpadSyntaxCategory with
     iterators: % -> List SpadAst
       ++ iterators(e) returns the list of the iterators of
@@ -1044,14 +1031,12 @@ CollectAst(): Public == Private where
 \subsection{The ReduceAst domain}
 
 <<domain RDUCEAST ReduceAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain RDUCEAST ReduceAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents list reduction syntax.
-ReduceAst(): Public == Private where
+ReduceAst: Public == Private where
   Public == SpadSyntaxCategory with
     operator: % -> SpadAst
       ++ operator(e) returns the magma operation being applied.
@@ -1067,14 +1052,12 @@ ReduceAst(): Public == Private where
 \subsection{The ConstructAst domain}
 
 <<domain LSTAST ConstructAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain LSTAST ConstructAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents `literal sequence' syntax.
-ConstructAst(): Public == Private where
+ConstructAst: Public == Private where
   Public == SpadSyntaxCategory with
     elements: % -> List SpadAst
       ++ elements(e) returns the list of expressions in the
@@ -1092,14 +1075,12 @@ ConstructAst(): Public == Private where
 \subsection{The ExitAst domain}
 
 <<domain EXITAST ExitAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain EXITAST ExitAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents exit expressions.
-ExitAst(): Public == Private where
+ExitAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the exit expression of `e'.
@@ -1119,14 +1100,12 @@ ExitAst(): Public == Private where
 \subsection{The ReturnAst domain}
 
 <<domain RETAST ReturnAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain RETAST ReturnAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents `return' expressions.
-ReturnAst(): Public == Private where
+ReturnAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the expression returned by `e'.
@@ -1142,14 +1121,12 @@ ReturnAst(): Public == Private where
 \subsection{The SequenceAst domain}
 
 <<domain SEQAST SequenceAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain SEQAST SequenceAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents a block of expressions.
-SequenceAst(): Public == Private where
+SequenceAst: Public == Private where
   Public == SpadSyntaxCategory with
     body: % -> List SpadAst
       ++ body(e) returns the list of expressions in the sequence
@@ -1168,14 +1145,13 @@ SequenceAst(): Public == Private where
 \subsection{The LetAst domain}
 
 <<domain LETAST LetAst>>=
-SpadAst(): SpadAstExports
 import List
 )abbrev domain LETAST LetAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents assignment expressions.
-LetAst(): Public == Private where
+LetAst: Public == Private where
   Public == SpadSyntaxCategory with
     lhs: % -> SpadAst
       ++ lhs(e) returns the left hand side of the assignment expression `e'.
@@ -1195,14 +1171,12 @@ LetAst(): Public == Private where
 \subsection{The PretendAst domain}
 
 <<domain PRTDAST PretendAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain PRTDAST PretendAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents `pretend' expressions.
-PretendAst(): Public == Private where
+PretendAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the expression being converted.
@@ -1222,14 +1196,12 @@ PretendAst(): Public == Private where
 \subsection{The CoerceAst domain}
 
 <<domain CRCEAST CoercedAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain CRCEAST CoerceAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents `coerce' expressions.
-CoerceAst(): Public == Private where
+CoerceAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the expression being converted.
@@ -1250,14 +1222,12 @@ CoerceAst(): Public == Private where
 \subsection{The RestrictAst domain}
 
 <<domain RSTRCAST RestrictAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain RSTRCAST RestrictAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents `restrict' expressions.
-RestrictAst(): Public == Private where
+RestrictAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the expression being converted.
@@ -1277,15 +1247,13 @@ RestrictAst(): Public == Private where
 \subsection{The CallAst domain}
 
 <<domain CALLAST CallAst>>=
-SpadAst(): SpadAstExports
-
 import List
 )abbrev domain CALLAST CallAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents calls.
-CallAst(): Public == Private where
+CallAst: Public == Private where
   Public == SpadSyntaxCategory with
     operator: % -> SpadAst
       ++ operation(e) returns the operation being called in `e'.
@@ -1305,14 +1273,12 @@ CallAst(): Public == Private where
 \subsection{The SegmentAst domain}
 
 <<domain SEGAST SegmentAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain SEGAST SegmentAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents segement expressions.
-SegmentAst(): Public == Private where
+SegmentAst: Public == Private where
   Public == SpadSyntaxCategory with
     bounds: % -> List SpadAst
       ++ bounds(s) returns the bounds of the segment `s'.  If
@@ -1331,14 +1297,12 @@ SegmentAst(): Public == Private where
 \subsection{The SuchThatAst domain}
 
 <<domain SUCHTAST SuchThatAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain SUCHTAST SuchThatAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the filter iterator syntax.
-SuchThatAst(): Public == Private where
+SuchThatAst: Public == Private where
   Public == SpadSyntaxCategory with
     predicate: % -> SpadAst
       ++ predicate(e) returns the syntax object for the predicate
@@ -1354,15 +1318,13 @@ SuchThatAst(): Public == Private where
 \subsection{The ColonAst domain}
 
 <<domain COLONAST ColonAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain COLONAST ColonAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents type specification 
 ++   for an identifier or expression.
-ColonAst(): Public == Private where
+ColonAst: Public == Private where
   Public == SpadSyntaxCategory with
     lhs: % -> SpadAst
       ++ lhs(e) returns the left hand side of the colon expression `e'.
@@ -1381,14 +1343,12 @@ ColonAst(): Public == Private where
 \subsection{The AddAst domain}
 
 <<domain ADDAST AddAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain ADDAST AddAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax for an add-expression.
-AddAst(): Public == Private where
+AddAst: Public == Private where
   Public == SpadSyntaxCategory with
     base: % -> SpadAst
       ++ base(d) returns the base domain(s) of the add-domain expression.
@@ -1408,14 +1368,12 @@ AddAst(): Public == Private where
 \subsection{The CapsuleAst domain}
 
 <<domain CAPSLAST CapsuleAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain CAPSLAST CapsuleAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the capsule of a domain definition.
-CapsuleAst(): Public == Private where
+CapsuleAst: Public == Private where
   Public == SpadSyntaxCategory with
     body: % -> List SpadAst
       ++ body(c) returns the list of top level expressions appearing in `c'.
@@ -1430,14 +1388,12 @@ CapsuleAst(): Public == Private where
 \subsection{The CaseAst domain}
 
 <<domain CASEAST CaseAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain CASEAST CaseAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents a `case' expression.
-CaseAst(): Public == Private where
+CaseAst: Public == Private where
   Public == SpadSyntaxCategory with
     lhs: % -> SpadAst
       ++ lhs(e) returns the left hand side of the case expression `e'.
@@ -1457,14 +1413,12 @@ CaseAst(): Public == Private where
 \subsection{The HasAst domain}
 
 <<domain HASAST HasAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain HASAST HasAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents a `has' expression.
-HasAst(): Public == Private where
+HasAst: Public == Private where
   Public == SpadSyntaxCategory with
     lhs: % -> SpadAst
       ++ lhs(e) returns the left hand side of the has expression `e'.
@@ -1483,14 +1437,12 @@ HasAst(): Public == Private where
 \subsection{The IsAst domain}
 
 <<domain ISAST IsAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain ISAST IsAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents a `has' expression.
-IsAst(): Public == Private where
+IsAst: Public == Private where
   Public == SpadSyntaxCategory with
     lhs: % -> SpadAst
       ++ lhs(e) returns the left hand side of the is expression `e'.
@@ -1509,15 +1461,13 @@ IsAst(): Public == Private where
 \subsection{The CategoryAst domain}
 
 <<domain CATAST CategoryAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain CATAST CategoryAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the unnamed category defined
 ++   by a list of exported signatures
-CategoryAst(): Public == Private where
+CategoryAst: Public == Private where
   Public == SpadSyntaxCategory with
     kind: % -> ConstructorKind
       ++ kind(c) returns the kind of unnamed category, either
@@ -1537,14 +1487,12 @@ CategoryAst(): Public == Private where
 \subsection{The WhereAst domain}
 
 <<domain WHEREAST WhereAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain WHEREAST WhereAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax of a `where' expression.
-WhereAst(): Public == Private where
+WhereAst: Public == Private where
   Public == SpadSyntaxCategory with
     mainExpression: % -> SpadAst
       ++ mainExpression(e) returns the main expression of the 
@@ -1564,15 +1512,13 @@ WhereAst(): Public == Private where
 \subsection{The CommaAst domain}
 
 <<domain COMMAAST CommaAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain COMMAAST CommaAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax of a comma-separated
 ++   list of expressions.
-CommaAst(): Public == Private where
+CommaAst: Public == Private where
   Public == SpadSyntaxCategory with
     body: % -> List SpadAst
       ++ body(e) returns the list of expressions making up `e'.
@@ -1588,15 +1534,13 @@ CommaAst(): Public == Private where
 \subsection{The QuasiquoteAst domain}
 
 <<domain QQUTAST QuasiquoteAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain QQUTAST QuasiquoteAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax of a quasiquote
 ++   expression.
-QuasiquoteAst(): Public == Private where
+QuasiquoteAst: Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> SpadAst
       ++ expression(e) returns the syntax for the expression being quoted.
@@ -1612,14 +1556,12 @@ QuasiquoteAst(): Public == Private where
 \subsection{The DefinitionAst domain}
 
 <<domain DEFAST DefinitionAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain DEFAST DefinitionAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax of a definition.
-DefinitionAst(): Public == Private where
+DefinitionAst: Public == Private where
   Public == SpadSyntaxCategory with
     head: % -> HeadAst
       ++ head(d) returns the head of the definition `d'.  This is a 
@@ -1648,14 +1590,12 @@ DefinitionAst(): Public == Private where
 \subsection{The MacroAst domain}
 
 <<domain MACROAST MacroAst>>=
-SpadAst(): SpadAstExports
-
 )abbrev domain MACROAST MacroAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: September 21, 2008
 ++ Description: This domain represents the syntax of a macro definition.
-MacroAst(): Public == Private where
+MacroAst: Public == Private where
   Public == SpadSyntaxCategory with
     head: % -> HeadAst
       ++ head(m) returns the head of the macro definition `m'.  This is a 
@@ -1687,7 +1627,7 @@ MacroAst(): Public == Private where
 ++   for Spad syntax domain.  It merely exists as a kind of
 ++   of abstract base in object-oriented programming language.
 ++   However, this is not an abstract class.  
-SpadAst(): SpadAstExports() == add
+SpadAst: SpadAstExports == add
   isAst(x: %, tag: Identifier): Boolean ==
     (op := getOperator(x::Syntax)) case Identifier and op = tag
 
@@ -1835,7 +1775,7 @@ SpadAst(): SpadAstExports() == add
 \section{License}
 
 <<license>>=
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2016, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -1878,6 +1818,7 @@ SpadAst(): SpadAstExports() == add
 <<category SASTCAT SpadSyntaxCategory>>
 <<category SPADXPT SpadAstExports>>
 
+<<domain SPADAST SpadAst>>
 <<domain LITERAL Literal>>
 <<domain PARAMAST ParameterAst>>
 <<domain HEADAST HeadAst>>

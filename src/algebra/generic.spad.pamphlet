@@ -289,7 +289,7 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
 
     generic(s: S): % == generic(s, basis()$%)
 
-)fin
+)if false
       -- variations on eval
       --coefOfa : List FPR := entries coordinates a
       --ls : List Symbol := entries symbolsForCoef
@@ -307,6 +307,7 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
       --eval(rf, ls, coefOfa)$FPR
       --le : List Equation PR := [equation(lh,rh) for lh in ls for rh in coefOfa]
 
+)endif      
 @
 \section{package CVMP CoerceVectorMatrixPackage}
 <<package CVMP CoerceVectorMatrixPackage>>=

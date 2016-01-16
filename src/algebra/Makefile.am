@@ -1711,7 +1711,8 @@ strap-2/SASTCAT.$(FASLEXT): strap-2/HOMOTOP.$(FASLEXT) \
 	strap-1/ASTCAT.$(FASLEXT) strap-1/SYNTAX.$(FASLEXT)
 
 strap-2/CATAST.$(FASLEXT): strap-1/CTORKIND.$(FASLEXT)
-strap-2/TYPEAST.$(FASLEXT): strap-1/SPADAST.$(FASLEXT)
+strap-2/TYPEAST.$(FASLEXT): strap-1/SPADAST.$(FASLEXT) \
+	strap-1/OUTFORM.$(FASLEXT)
 strap-2/IRFORM.$(FASLEXT): strap-1/ITFORM.$(FASLEXT)
 strap-2/LINELT.$(FASLEXT): strap-1/LINBASIS.$(FASLEXT)
 strap-2/FR2.$(FASLEXT): strap-1/COMPLEX.$(FASLEXT)
@@ -1853,6 +1854,10 @@ SPADFILES= \
  $(OUTSRC)/supxs.spad $(OUTSRC)/suts.spad $(OUTSRC)/symbol.spad \
  $(OUTSRC)/syntax.spad \
  $(OUTSRC)/term.spad \
+ $(OUTSRC)/data.spad \
+ $(OUTSRC)/net.spad \
+ $(OUTSRC)/compiler.spad \
+ $(OUTSRC)/java.spad \
  $(OUTSRC)/syssolp.spad $(OUTSRC)/system.spad \
  $(OUTSRC)/tableau.spad $(OUTSRC)/table.spad $(OUTSRC)/taylor.spad \
  $(OUTSRC)/tex.spad $(OUTSRC)/tools.spad $(OUTSRC)/transsolve.spad \
@@ -2057,8 +2062,6 @@ $(OUT)/INS.$(FASLEXT): $(OUT)/UFD.$(FASLEXT) $(OUT)/EUCDOM.$(FASLEXT) \
 
 $(OUT)/CHARZ.$(FASLEXT): $(OUT)/RING.$(FASLEXT)
 $(OUT)/CHARNZ.$(FASLEXT): $(OUT)/RING.$(FASLEXT)
-
-$(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 
 $(OUT)/SRING.$(FASLEXT): $(OUT)/ABELMON.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT)
 $(OUT)/RING.$(FASLEXT): $(OUT)/RNG.$(FASLEXT) $(OUT)/SRING.$(FASLEXT) \

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -690,6 +690,7 @@ getFunctionFromDomain(op,dc,args) ==
 isOpInDomain(opName,dom,nargs) ==
   -- returns true only if there is an op in the given domain with
   -- the given number of arguments
+  builtinFunctorName? dom.op => nil  -- FIXME
   mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   mmList = nil => nil
@@ -720,6 +721,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
 
 findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
+  builtinFunctorName? dom.op => nil  -- FIXME
   mmList := objectAssoc(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   mmList = nil =>
@@ -1613,6 +1615,7 @@ hasSig(dom,foo,sig,SL) ==
   -- under substitution SL
   $domPvar: local := nil
   fun:= getConstructorAbbreviationFromDB dom.op =>
+    builtinFunctorName? dom.op => nil  -- FIXME
     S0:= constructSubst dom
     p := objectAssoc(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until S isnt 'failed repeat

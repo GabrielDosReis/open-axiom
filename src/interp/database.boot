@@ -106,8 +106,10 @@ getConstructorAncestorsFromDB ctor ==
 ++ of the constructor `form'. 
 getConstructorModemap: %Symbol -> %Mode
 getConstructorModemap ctor ==
-  mm := GETDATABASE(ctor, 'CONSTRUCTORMODEMAP) => mm
-  dbConstructorModemap loadDBIfNecessary constructorDB ctor
+  db := constructorDB ctor
+  if not dbBeingDefined? db and dbConstructorModemap db isnt [.,:.] then
+    loadDBIfNecessary db
+  dbConstructorModemap db
 
 getConstructorFormFromDB: %Symbol -> %Form
 getConstructorFormFromDB ctor ==
@@ -135,7 +137,10 @@ getConstructorDocumentationFromDB ctor ==
 
 getConstructorOperationsFromDB: %Symbol -> %List %List %Form
 getConstructorOperationsFromDB ctor ==
-  GETDATABASE(ctor,"OPERATIONALIST")
+  db := constructorDB ctor
+  if not dbBeingDefined? db and dbOperations db isnt [.,:.] then
+    loadDBIfNecessary db
+  dbOperations db
 
 getConstructorFullNameFromDB: %Symbol -> %Symbol
 getConstructorFullNameFromDB ctor ==
@@ -166,6 +171,7 @@ getConstructorParentsFromDB ctor ==
 
 getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==
+  builtinConstructor? ctor => nil
   db := constructorDB ctor
   if not dbBeingDefined? db then
     loadDBIfNecessary db
@@ -811,33 +817,51 @@ makeInitialDB [form,kind,abbrev,srcfile] ==
   dbSourceFile(db) := srcfile
   setAutoLoadProperty form.op
   
-makeDefaultPackageForm db ==
-  [makeDefaultPackageName symbolName dbConstructor db,
-     :makeDefaultPackageParameters db]
+defaultPackageForm lhs ==
+  [makeDefaultPackageName symbolName lhs.op,
+     :completeDefaultPackageParameters lhs.args]
 
-printInitdbInfo(path,dbfile) == main(path,dbfile) where
-  main(path,dbfile) ==
-    for x in parseSpadFile path repeat
-      x is ['DEF,lhs,.,rhs] =>
-        fn(lhs,rhs,fileNameString path,dbfile)
-      x is ["where",['DEF,lhs,.,rhs],:.] =>
-        fn(lhs,rhs,fileNameString path,dbfile)
-  fn(lhs,rhs,path,dbfile) ==
-    if lhs isnt [.,:.] then lhs := [lhs]
-    db := constructorDB lhs.op
-    db = nil => nil
-    args := [id for x in lhs.args]
-              where id() == (x is [":",x',:.] => x'; x)
-    data := [[lhs.op,:args],dbConstructorKind db,dbAbbreviation db,path]
-    prettyPrint(['makeInitialDB,quote data],dbfile)
-    writeNewline dbfile
-    -- If this is a category with defaults, write out the data for 
-    -- associated package.
-    dbConstructorKind db isnt 'category or rhs isnt ['add,:.] => nil
-    data := [makeDefaultPackageForm db,'package,
-               makeDefaultPackageAbbreviation db,path]
-    prettyPrint(['makeInitialDB,quote data],dbfile)
-    writeNewline dbfile
+++ If `decl` is a simple macro definition for `x, return
+++ the definiens.  Otherwise, return nil.
+simpleMacro?(x,decl) ==
+  not ident? x => nil
+  decl is ['MDEF,=x,=nil,body] => body
+  decl is ['DEF,[=x],[=nil],body] => body
+  nil
+
+++ If `x` is defined as a simple macro in `decl`, return the body
+++ of that definition.
+macroDefined?(x,decl) ==
+  decl is ['SEQ,:stmts,['exit,.,val]] =>
+    or/[body for stmt in stmts | body := simpleMacro?(x,stmt)]
+      or simpleMacro?(x,val)
+  simpleMacro?(x,decl)
+
+writeMinimalDB(lhs,rhs,path,dbfile) ==
+  if lhs isnt [.,:.] then lhs := [lhs]
+  db := constructorDB lhs.op
+  db = nil => nil
+  args := [id for x in lhs.args]
+            where id() == (x is [":",x',:.] => x'; x)
+  data := [[lhs.op,:args],dbConstructorKind db,dbAbbreviation db,path]
+  prettyPrint(['makeInitialDB,quote data],dbfile)
+  writeNewline dbfile
+  -- If this is a category with defaults, write out the data for 
+  -- associated package.
+  dbConstructorKind db isnt 'category or rhs isnt ['add,:.] => nil
+  data := [defaultPackageForm lhs,'package,
+             makeDefaultPackageAbbreviation db,path]
+  prettyPrint(['makeInitialDB,quote data],dbfile)
+  writeNewline dbfile
+
+printInitdbInfo(path,dbfile) ==
+  for x in parseSpadFile path repeat
+    x is ['DEF,lhs,.,rhs] =>
+      writeMinimalDB(lhs,rhs,fileNameString path,dbfile)
+    x is ["where",['DEF,lhs,.,rhs],decl] =>
+      if ident? rhs and (body := macroDefined?(rhs,decl)) then
+        rhs := body
+      writeMinimalDB(lhs,rhs,fileNameString path,dbfile)
 
 printAllInitdbInfo(srcdir,dbfile) ==
   paths := DIRECTORY strconc(ensureTrailingSlash srcdir,'"*.spad")

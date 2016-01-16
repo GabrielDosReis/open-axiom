@@ -546,7 +546,7 @@ ComplexRootFindingPackage(R, UP): public == private where
        --  num/den
        r -- this is nonsense, perhaps a Newton iteration for x**n-r here
 
-)fin
+)if false
      -- for late use:
 
      graeffe2 p ==
@@ -590,6 +590,7 @@ ComplexRootFindingPackage(R, UP): public == private where
        ++ graeffe2 p determines q such that \spad{q(-z**2) = p(z)*p(-z)}.
        ++ Note that the roots of q are the squares of the roots of p.
 
+)endif
 @
 \section{License}
 <<license>>=

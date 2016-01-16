@@ -53,6 +53,7 @@ module c_-util where
   dbInfovec: %Symbol -> %Maybe %FunctorData
   makeDefaultPackageParameters: %Database -> %List %Symbol
   makeDefaultPackageAbbreviation: %Database -> %Symbol
+  completeDefaultPackageParameters: %List %Symbol -> %List %Symbol
 
 --% Accessors of domain and category objects
 
@@ -237,10 +238,12 @@ $SetCategory ==
   
 --%
 
-makeDefaultPackageParameters db ==
-  parms := dbConstructorForm(db).args
+completeDefaultPackageParameters parms ==
   dollar := first setDifference('(S A B C D E F G H I),parms)
   [dollar,:parms]
+
+makeDefaultPackageParameters db ==
+  completeDefaultPackageParameters dbConstructorForm(db).args
 
 makeDefaultPackageAbbreviation db ==
   makeSymbol strconc(symbolName dbAbbreviation db,'"-")

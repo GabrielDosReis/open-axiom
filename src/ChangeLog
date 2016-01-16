@@ -1,3 +1,27 @@
+2016-01-16  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/sys-driver.boot (initializeDatabase): Be frugal when
+	building the algebra.
+	* interp/i-funsel.boot (isOpInDomain): Tidy.
+	(findUniqueOpInDomain): Likewise.
+	(hasSig): Likewise.
+	* interp/i-special.boot (constantInDomain?): Likewise.
+	* interp/lisplib.boot (isFunctor): Likewise.
+	* interp/spad-parser.boot (storeBlanks!): Define.
+	* interp/database.boot (getConstructorModemap): Take directly from
+	generated code.
+	(getConstructorOperationsFromDB): Likewise.
+	(getSuperDomainFromDB): Tidy.
+	* interp/daase.lisp (GETDATABASE): Remove CONSTRUCTORMODEMAP and
+	OPERATIONALIST cases.
+	(defaultPackageForm): New.
+	(simpleMacro?): Likewise.
+	(macroDefined?): Likewise.
+	(writeMinimalDB): New.  Split out of printInitdbInfo.
+	* interp/c-util.boot (completeDefaultPackageParameters): New.
+	(makeDefaultPackageParameters): Likewise.
+	* algebra/oderf.spad.pamphlet: Fix decades-old syntax error.
+
 2016-01-07  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/br-data.boot (parentsOf): Remove.  Adjust users.

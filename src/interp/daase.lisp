@@ -640,18 +640,10 @@
 	      (operation
 	       (setq stream *operation-stream*)
 	       (setq data (gethash constructor *operation-hash*)))
-	      (constructormodemap
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbConstructorModemap| struct))))
 	      (constructorcategory
 	       (setq stream *interp-stream*)
 	       (when struct
 		 (setq data (|dbCategory| struct))))
-	      (operationalist
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbOperations| struct))))
 	      (modemaps
 	       (setq stream *interp-stream*)
 	       (when struct
@@ -712,12 +704,8 @@
 		 (setf (gethash constructor *operation-hash*) data))
 		(hascategory 
 		 (setf (gethash constructor |$HasCategoryTable|) data))
-		(constructormodemap 
-		 (setf (|dbConstructorModemap| struct) data))
 		(constructorcategory 
 		 (setf (|dbCategory| struct) data))
-		(operationalist
-		 (setf (|dbOperations| struct) data))
 		(modemaps  
 		 (setf (|dbModemaps| struct) data))
 		(object    
