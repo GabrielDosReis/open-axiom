@@ -16,7 +16,7 @@ a:Symbol :='a
 b:Symbol :='b
 c:Symbol :='c
 lword:= LyndonWord(Symbol)
-magma := Magma(Symbol)
+magma := FreeMagma(Symbol)
 word   := OrderedFreeMonoid(Symbol)
 LyndonWordsList1([a,b,c],3)$lword
 LyndonWordsList([a,b,c],3)$lword
