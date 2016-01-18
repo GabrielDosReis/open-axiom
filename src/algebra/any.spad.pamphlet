@@ -69,8 +69,8 @@ import Boolean
 ++ Description:
 ++   This domain implements the notion of optional value, where
 ++   a computation may fail to produce expected value.
-Maybe(T: CoercibleTo OutputForm): Public == Private where
-  Public == Join(UnionType,RetractableTo T, CoercibleTo OutputForm) with
+Maybe(T: Type): Public == Private where
+  Public == Join(UnionType,RetractableTo T) with
     just: T -> %
       ++ \spad{just x} injects the value `x' into %.
     case: (%,[| T |]) -> Boolean
@@ -83,6 +83,7 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
       ++ compiler in case it knows that `x' really is a \spadtype{T}.
     nothing: %
       ++ \spad{nothing} represents failure or absence of value.
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
   Private == add
     import %nothing: %            from Foreign Builtin
     import %peq: (%,%) -> Boolean from Foreign Builtin
@@ -95,9 +96,10 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
     retractIfCan x ==
       x case T => x@T
       "failed"
-    coerce(x: %): OutputForm == 
-      x case nothing => paren(empty()$OutputForm)$OutputForm
-      (x@T)::OutputForm
+    if T has CoercibleTo OutputForm then
+      coerce(x: %): OutputForm == 
+        x case nothing => paren(empty()$OutputForm)$OutputForm
+        (x@T)::OutputForm
       
 @
 
