@@ -882,7 +882,7 @@
   (|LocalAlgebra| . LA)
   (|Localize| . LO)
   (|LyndonWord| . LWORD)
-  (|Magma| . MAGMA)
+  (|FreeMagma| . FMAGMA)
   (|MakeBinaryCompiledFunction| . MKBCFUNC)
   (|MakeUnaryCompiledFunction| . MKUCFUNC)
   (|MappingPackageInternalHacks1| . MAPHACK1)

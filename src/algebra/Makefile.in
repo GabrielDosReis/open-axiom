@@ -929,7 +929,7 @@ oa_algebra_layer_8_objects = \
 	   $(addsuffix .$(FASLEXT),$(oa_algebra_layer_8)))
 
 oa_algebra_layer_9 = \
-  DLP      EAB      IPADIC   MAGMA    QUEUE    MATLIN   \
+  DLP      EAB      IPADIC   FMAGMA    QUEUE    MATLIN   \
   FAMONOID CONTFRAC WP       PERM     PERMGRP  DDFACT   \
   FSERIES  FT       IDPAG    INFINITY LA       \
   OMLO     ORTHPOL  PRODUCT  POLTOPOL SQMATRIX \

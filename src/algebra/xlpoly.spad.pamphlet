@@ -10,12 +10,12 @@
 \tableofcontents
 \eject
 
-\section{domain MAGMA Magma}
+\section{domain FMAGMA FreeMagma}
 
-<<domain MAGMA Magma>>=
+<<domain FMAGMA FreeMagma>>=
 import OrderedSet
 import RetractableTo
-)abbrev domain MAGMA Magma
+)abbrev domain FMAGMA FreeMagma
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
 ++ Date Last Updated: 7 Juillet 92
@@ -31,7 +31,7 @@ import RetractableTo
 ++ parenthesized words (binary trees over arbitrary symbols)
 ++ useful in \spadtype{LiePolynomial}. \newline Author: Michel Petitot (petitot@lifl.fr).
 
-Magma(VarSet:OrderedSet):Public == Private where
+FreeMagma(VarSet:OrderedSet):Public == Private where
    WORD ==> OrderedFreeMonoid(VarSet)
    EX   ==> OutputForm
 
@@ -42,7 +42,7 @@ Magma(VarSet:OrderedSet):Public == Private where
         ++ \axiom{first(x)} returns the first entry of the tree \axiom{x}.
       left          : $ -> $
         ++ \axiom{left(x)} returns left subtree of \axiom{x} or
-        ++ error if \axiomOpFrom{retractable?}{Magma}(\axiom{x}) is true.
+        ++ error if \axiomOpFrom{retractable?}{FreeMagma}(\axiom{x}) is true.
       length        : $ -> PositiveInteger
         ++ \axiom{length(x)} returns the number of entries in \axiom{x}.
       lexico        : ($,$) -> Boolean
@@ -52,16 +52,16 @@ Magma(VarSet:OrderedSet):Public == Private where
         ++ its arguments. Thus this is not a total ordering.
       mirror        : $ -> $
         ++ \axiom{mirror(x)} returns the reversed word of \axiom{x}. 
-        ++ That is \axiom{x} itself if \axiomOpFrom{retractable?}{Magma}(\axiom{x}) is true and
+        ++ That is \axiom{x} itself if \axiomOpFrom{retractable?}{FreeMagma}(\axiom{x}) is true and
         ++ \axiom{mirror(z) * mirror(y)} if \axiom{x} is \axiom{y*z}.
       rest          : $ -> $
         ++ \axiom{rest(x)} return \axiom{x} without the first entry or 
-        ++ error if \axiomOpFrom{retractable?}{Magma}(\axiom{x}) is true.
+        ++ error if \axiomOpFrom{retractable?}{FreeMagma}(\axiom{x}) is true.
       retractable?  : $ -> Boolean
         ++ \axiom{retractable?(x)} tests if \axiom{x} is a tree with only one entry.
       right         : $ -> $
         ++ \axiom{right(x)} returns right subtree of \axiom{x} or 
-        ++ error if \axiomOpFrom{retractable?}{Magma}(\axiom{x}) is true.
+        ++ error if \axiomOpFrom{retractable?}{FreeMagma}(\axiom{x}) is true.
       varList       : $ -> List VarSet
         ++ \axiom{varList(x)} returns the list of distinct entries of \axiom{x}.
 
@@ -120,7 +120,7 @@ Magma(VarSet:OrderedSet):Public == Private where
          first x.left
 
       rest x ==
-         x case VarSet => error "rest$Magma: inexistant rest"
+         x case VarSet => error "rest$FreeMagma: inexistant rest"
          lx:$ := x.left
          lx case VarSet => x.right
          [rest lx , x.right]$VWORD
@@ -166,7 +166,7 @@ as well, and we call $C(f)$ an acyclic orbit.
 import OrderedSet
 import RetractableTo
 import Boolean
-import Magma
+import FreeMagma
 )abbrev domain LWORD LyndonWord
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -188,7 +188,7 @@ import Magma
 ++ Parenthesized Lyndon words can be generated from symbols by using the following
 ++ rule: \axiom{[[a,b],c]} is a Lyndon word iff \axiom{a*b < c <= b} holds.
 ++ Lyndon words are internally represented by binary trees using the
-++ \spadtype{Magma} domain constructor.
+++ \spadtype{FreeMagma} domain constructor.
 ++ Two ordering are provided: lexicographic and 
 ++ length-lexicographic. \newline 
 ++ Author : Michel Petitot (petitot@lifl.fr).
@@ -201,7 +201,7 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
    OF    ==> OutputForm
    ARRAY1==> OneDimensionalArray
 
-   Public == Join(OrderedSet,RetractableTo VarSet,CoercibleTo OFMON,CoercibleTo Magma VarSet) with
+   Public == Join(OrderedSet,RetractableTo VarSet,CoercibleTo OFMON,CoercibleTo FreeMagma VarSet) with
       retractable?  : $ -> Boolean
         ++ \axiom{retractable?(x)} tests if \axiom{x} is a tree with only one entry.
       left          : $ -> $
@@ -233,9 +233,9 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
         ++ \axiom{LyndonWordsList(vl, n)} returns the list of Lyndon
         ++ words over the alphabet \axiom{vl}, up to order \axiom{n}.
 
-   Private == Magma(VarSet) add
+   Private == FreeMagma(VarSet) add
      -- Representation
-       Rep:= Magma(VarSet)
+       Rep:= FreeMagma(VarSet)
 
      -- Fonctions locales
        LetterList : OFMON -> List VarSet
@@ -290,7 +290,7 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
          lx < ly
  
        coerce(x:$):OF == bracket(x::OFMON::OF)
-       coerce(x:$):Magma VarSet == x::Rep
+       coerce(x:$):FreeMagma VarSet == x::Rep
 
        LyndonWordsList1 (vl,n) ==    -- a ameliorer !!!!!!!!!!!
             null vl => error "empty list"
@@ -520,7 +520,7 @@ import LyndonWord
 ++ (Oxford science publications). \newline Author: Michel Petitot (petitot@lifl.fr).
 
 LiePolynomial(VarSet:OrderedSet, R:CommutativeRing) : Public == Private where
-   MAGMA   ==> Magma(VarSet)
+   FMAGMA   ==> FreeMagma(VarSet)
    LWORD   ==> LyndonWord(VarSet)
    WORD    ==> OrderedFreeMonoid(VarSet)
    XDPOLY  ==> XDistributedPolynomial(VarSet,R)
@@ -618,7 +618,7 @@ LiePolynomial(VarSet:OrderedSet, R:CommutativeRing) : Public == Private where
            r
  
       --definitions locales
-        makeLyndon(u,v) == (u::MAGMA * v::MAGMA) pretend LWORD
+        makeLyndon(u,v) == (u::FMAGMA * v::FMAGMA) pretend LWORD
  
         crw(u,v) ==               -- u et v sont des mots de Lyndon
           u = v => 0
@@ -1217,7 +1217,7 @@ LieExponentials(VarSet, R, Order): XDPcat == XDPdef where
 <<*>>=
 <<license>>
 
-<<domain MAGMA Magma>>
+<<domain FMAGMA FreeMagma>>
 <<domain LWORD LyndonWord>>
 <<category LIECAT LieAlgebra>>
 <<category FLALG FreeLieAlgebra>>
