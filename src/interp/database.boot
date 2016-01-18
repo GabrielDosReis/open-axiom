@@ -165,9 +165,12 @@ getConstructorPredicates ctor ==
   dbBeingDefined? db => dbPredicates db
   dbPredicates loadDBIfNecessary db
 
-getConstructorParentsFromDB: %Symbol -> %List %Symbol
+getConstructorParentsFromDB: %Symbol -> %Alist(%Instantiation,%Code)
 getConstructorParentsFromDB ctor ==
-  GETDATABASE(ctor,"PARENTS")
+  db := constructorDB ctor
+  if not dbBeingDefined? db and dbPrincipals db isnt [.,:.] then
+    loadDBIfNecessary db
+  dbPrincipals db
 
 getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==

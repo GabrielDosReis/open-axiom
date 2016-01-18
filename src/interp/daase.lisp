@@ -680,10 +680,6 @@
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (database-documentation struct))))
-	      (parents
-	       (setq stream *browse-stream*)
-	       (when struct
-		 (setq data (|dbPrincipals| struct))))
 	      (users
 	       (setq stream *browse-stream*)
 	       (when struct
@@ -718,8 +714,6 @@
 		 (setf (|dbConstructorForm| struct) data))
 		(documentation 
 		 (setf (database-documentation struct) data))
-		(parents   
-		 (setf (|dbPrincipals| struct) data))
 		(users     
 		 (setf (database-users struct) data))
 		(dependents

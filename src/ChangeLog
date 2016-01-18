@@ -1,3 +1,9 @@
+2016-01-17  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/daase.lisp (GETDATABASE): Remove PARENTS case.
+	* interp/database.boot (getConstructorParentsFromDB): Take data
+	from compiled code.
+
 2016-01-16  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/sys-driver.boot (initializeDatabase): Be frugal when
