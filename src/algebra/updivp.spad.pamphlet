@@ -43,7 +43,7 @@ UnivariatePolynomialDivisionPackage(R,UP): Exports == Implementation where
       zero? p2 => error "divideIfCan: division by zero"
       one? (lc := leadingCoefficient p2) => monicDivide(p1,p2) 
       q: UP := 0
-      while not ((e := subtractIfCan(degree(p1),degree(p2))) case "failed")
+      while not ((e := subtractIfCan(degree(p1),degree(p2))) case nothing)
        repeat
         c := leadingCoefficient(p1) exquo lc
         c case "failed" => return "failed"

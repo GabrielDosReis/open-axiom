@@ -268,10 +268,10 @@ PolynomialSetCategory(R:Ring, E:OrderedAbelianMonoidSup,_
          r : R := 1$R
          lp1 := sort(localInf?, reverse elements(ps))
          lp2 := lp1
-         e : Union(E, "failed")
          while (not zero? a) and (not empty? lp2) repeat
            p := first lp2
-           if ((e:= subtractIfCan(degree(a),degree(p))) case E)
+           e := subtractIfCan(degree(a),degree(p))
+           if e case E
              then
                g := gcd((lca := leadingCoefficient(a)),(lcp := leadingCoefficient(p)))$R
                (lca,lcp) := (exactQuo(lca,g),exactQuo(lcp,g))

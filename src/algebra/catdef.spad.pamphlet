@@ -240,7 +240,7 @@ AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Intege
                           ++ and \spad{y} i.e. \spad{x + (-y)}.
     add
       (x:% - y:%):% == x+(-y)
-      subtractIfCan(x:%, y:%):Union(%, "failed") == (x-y) :: Union(%,"failed")
+      subtractIfCan(x:%, y:%) == just(x-y)
       n:NonNegativeInteger * x:% == (n::Integer) * x
       import RepeatedDoubling(%)
       if not (% has Ring) then
@@ -514,9 +514,9 @@ BiModule(R:Ring,S:Ring):Category ==
 ++   \spad{c = a+b <=> c-b = a}
 CancellationAbelianMonoid(): Category == AbelianMonoid with
     --operations
-      subtractIfCan: (%,%) -> Union(%,"failed")
+      subtractIfCan: (%,%) -> Maybe %
          ++ subtractIfCan(x, y) returns an element z such that \spad{z+y=x}
-         ++ or "failed" if no such element exists.
+         ++ or \spad{nothing} if no such element exists.
 
 @
 

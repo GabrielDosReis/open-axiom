@@ -298,15 +298,16 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
        Jd:=generators(groebner J)
        not one?(#(factors factor Jd.last)) => return false
        i:=subtractIfCan(#truelist,1)
-       (i case "failed") => return true
+       (i case nothing) => return true
+       k: NNI := i
        JR:=(reverse Jd);JM:=groebnerIdeal([JR.first]);JP:List(DPoly):=[]
        for f in JR.rest repeat
-         if not ismonic(f,truelist.i) then
+         if not ismonic(f,truelist.k) then
            if not inRadical?(f,JM) then return false
            JP:=cons(f,JP)
           else
-           x:=truelist.i
-           i:=(i-1)::NNI
+           x:=truelist.k
+           k := (k-1)::NNI
 	   if not testPower(univariate(f,x),x,JM) then return false
            JM :=groebnerIdeal(append(cons(f,JP),generators JM))
        true

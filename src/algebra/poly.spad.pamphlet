@@ -331,8 +331,8 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
                while not null p1 repeat
                   (a:= p1.first.c exquo p2.first.c)
                   a case "failed" => return "failed"
-                  ee:= subtractIfCan(p1.first.k, p2.first.k)
-                  ee case "failed" => return "failed"
+                  ee := subtractIfCan(p1.first.k, p2.first.k)
+                  ee case nothing => return "failed"
                   p1:= fmecg(p1.rest, ee, a, p2.rest)
                   rout:= [[ee,a], :rout]
                null p1 => reverse(rout)::%    -- nreverse?
@@ -346,8 +346,8 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
                while not null p1 repeat
                   (a:= p1.first.c exquo p2.first.c)
                   a case "failed" => return "failed"
-                  ee:= subtractIfCan(p1.first.k, p2.first.k)
-                  ee case "failed" => return "failed"
+                  ee := subtractIfCan(p1.first.k, p2.first.k)
+                  ee case nothing => return "failed"
                   p1:= fmecg(p1.rest, ee, a, p2.rest)
                   rout:= [[ee,a], :rout]
                null p1 => reverse(rout)::%    -- nreverse?
@@ -539,8 +539,8 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
         while not null p1 repeat
            (a:= p1.first.c exquo p2.first.c)
            a case "failed" => return "failed"
-           ee:= subtractIfCan(p1.first.k, p2.first.k)
-           ee case "failed" => return "failed"
+           ee := subtractIfCan(p1.first.k, p2.first.k)
+           ee case nothing => return "failed"
            p1:= fmecg(p1.rest, ee, a, p2.rest)
            rout:= [[ee,a], :rout]
         null p1 => reverse(rout)::%    -- nreverse?
@@ -554,8 +554,8 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
         while not null p1 repeat
            (a:= p1.first.c exquo p2.first.c)
            a case "failed" => return "failed"
-           ee:= subtractIfCan(p1.first.k, p2.first.k)
-           ee case "failed" => return "failed"
+           ee := subtractIfCan(p1.first.k, p2.first.k)
+           ee case nothing => return "failed"
            p1:= fmecg(p1.rest, ee, a, p2.rest)
            rout:= [[ee,a], :rout]
         null p1 => reverse(rout)::%    -- nreverse?
@@ -581,7 +581,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
      p2:=p2.rest;
      e1:=max(p1.first.k:Integer-e+1,0):NonNegativeInteger
      while not null p1 repeat
-       if (u:=subtractIfCan(p1.first.k,e)) case "failed" then leave
+       if (u:=subtractIfCan(p1.first.k,e)) case nothing then leave
        p1:=fmecg(co * p1.rest, u, p1.first.c, p2)
        e1:= (e1 - 1):NonNegativeInteger
      e1 = 0 => p1
@@ -628,7 +628,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
       rout:Rep := []
       p2 := p2.rest
       while not null p1 repeat
-         (u:=subtractIfCan(p1.first.k, n)) case "failed" => leave
+         (u:=subtractIfCan(p1.first.k, n)) case nothing => leave
          rout:=[[u, p1.first.c], :rout]
          p1:=fmecg(p1.rest, rout.first.k, rout.first.c, p2)
       [reverse!(rout),p1]
@@ -697,7 +697,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
        p2:=p2.rest
        rout:=empty()$List(Term)
        while p1 ~= 0 repeat
-          (u:=subtractIfCan(p1.first.k, n)) case "failed" => leave
+          (u:=subtractIfCan(p1.first.k, n)) case nothing => leave
           rout:=[[u, ct * p1.first.c], :rout]
           p1:=fmecg(p1.rest, rout.first.k, rout.first.c, p2)
        [reverse!(rout),p1]

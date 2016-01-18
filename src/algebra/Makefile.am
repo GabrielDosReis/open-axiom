@@ -516,7 +516,8 @@ strap-1/OASGP.$(FASLEXT): strap-1/ORDSET.$(FASLEXT)
 strap-1/OAMONS.$(FASLEXT): strap-1/OCAMON.$(FASLEXT)
 
 strap-1/ABELGRP.$(FASLEXT): strap-1/CABMON.$(FASLEXT) \
-	strap-1/LLINSET.$(FASLEXT)
+	strap-1/LLINSET.$(FASLEXT) \
+	strap-1/MAYBE.$(FASLEXT)
 
 strap-1/OAGROUP.$(FASLEXT): strap-1/OCAMON.$(FASLEXT) \
 	strap-1/ABELGRP.$(FASLEXT)

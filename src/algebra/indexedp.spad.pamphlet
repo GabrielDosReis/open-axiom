@@ -293,19 +293,19 @@ IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedS
        s: S
 
        subtractIfCan(x,y) ==
-         empty? y => x
-         empty? x => "failed"
-         x.first.k < y.first.k => "failed"
+         empty? y => just x
+         empty? x => nothing
+         x.first.k < y.first.k => nothing
          x.first.k > y.first.k =>
              t:= subtractIfCan(x.rest, y)
-             t case "failed" => "failed"
-             cons( x.first, t)
-         u:=subtractIfCan(x.first.c, y.first.c)
-         u case "failed" => "failed"
+             t case nothing => nothing
+             just cons( x.first, t)
+         u := subtractIfCan(x.first.c, y.first.c)
+         u case nothing => nothing
          zero? u => subtractIfCan(x.rest, y.rest)
-         t:= subtractIfCan(x.rest, y.rest)
-         t case "failed" => "failed"
-         cons([x.first.k,u],t)
+         t := subtractIfCan(x.rest, y.rest)
+         t case nothing => nothing
+         just cons([x.first.k,u],t)
 
        sup(x,y) ==
          empty? y => x

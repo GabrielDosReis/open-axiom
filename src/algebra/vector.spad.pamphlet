@@ -340,13 +340,13 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
  
  
       if R has CancellationAbelianMonoid then
-        subtractIfCan(u:%, v:%):Union(%,"failed") ==
+        subtractIfCan(u:%, v:%) ==
           w := new(dim,0)$Vector(R)
           for i in 1..dim repeat
-            (c := subtractIfCan(qelt(rep u, i), qelt(rep v,i))) case "failed" =>
-                    return "failed"
+            (c := subtractIfCan(qelt(rep u, i), qelt(rep v,i))) case nothing =>
+                    return nothing
             qsetelt!(w, i, c::R)
-          per w
+          just per w
  
       if R has Ring then
  

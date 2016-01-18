@@ -91,17 +91,18 @@ Partition(): Exports == Implementation where
       zero? n => 0
       x + (subtractIfCan(n,1) :: NNI) * x
  
-    remv(i: PI,x: %): UN ==
-      member?(i,rep x) => per remove(i, rep x)$Rep
-      "failed"
+    remv(i: PI,x: %): Maybe % ==
+      member?(i,rep x) => just per remove(i, rep x)$Rep
+      nothing
  
     subtractIfCan(x, y) ==
       zero? x =>
-        zero? y => 0
-        "failed"
-      zero? y => x
-      (aa := remv(first rep y,x)) case "failed" => "failed"
-      subtractIfCan((aa :: %), per rest rep y)
+        zero? y => just 0
+        nothing
+      zero? y => just x
+      aa := remv(first rep y,x)
+      aa case nothing => nothing
+      subtractIfCan(aa@%, per rest rep y)
  
     powers x ==
       l := rep x

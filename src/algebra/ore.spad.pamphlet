@@ -400,7 +400,7 @@ UnivariateSkewPolynomialCategoryOps(R, C): Exports == Implementation where
  
         termPoly(a, n, y, sigma, delta) ==
           zero? y => 0
-          (u := subtractIfCan(n, 1)) case "failed" => a * y
+          (u := subtractIfCan(n, 1)) case nothing => a * y
           n1 := u::N
           z:C := 0
           while y ~= 0 repeat
@@ -424,7 +424,7 @@ UnivariateSkewPolynomialCategoryOps(R, C): Exports == Implementation where
         localLeftDivide(a, b, sigma, b1) ==
             zero? b => error "leftDivide: division by 0"
             zero? a or
-             (n := subtractIfCan(degree(a),(m := degree b))) case "failed" =>
+             (n := subtractIfCan(degree(a),(m := degree b))) case nothing =>
                     [0,a]
             q  := monomial((sigma**(-m))(b1 * leadingCoefficient a), n::N)
             qr := localLeftDivide(a - b * q, b, sigma, b1)
@@ -435,7 +435,7 @@ UnivariateSkewPolynomialCategoryOps(R, C): Exports == Implementation where
         localRightDivide(a, b, sigma, b1) ==
             zero? b => error "rightDivide: division by 0"
             zero? a or
-              (n := subtractIfCan(degree(a),(m := degree b))) case "failed" =>
+              (n := subtractIfCan(degree(a),(m := degree b))) case nothing =>
                     [0,a]
             q := monomial(leadingCoefficient(a) * (sigma**n) b1, n::N)
             qr := localRightDivide(a - q * b, b, sigma, b1)
