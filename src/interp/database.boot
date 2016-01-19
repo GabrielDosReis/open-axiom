@@ -158,7 +158,7 @@ getConstructorArgsFromDB ctor ==
 getDualSignature: %Symbol -> %Form
 getDualSignature ctor ==
   db := constructorDB ctor
-  if not dbBeingDefined? db then
+  if not dbBeingDefined? db and dbDualSignature db isnt [.,:.] then
     loadDBIfNecessary db
   dbDualSignature db
 
@@ -179,7 +179,7 @@ getSuperDomainFromDB: %Symbol -> %Form
 getSuperDomainFromDB ctor ==
   builtinConstructor? ctor => nil
   db := constructorDB ctor
-  if not dbBeingDefined? db then
+  if not dbBeingDefined? db and dbSuperDomain db isnt [.,:.] then
     loadDBIfNecessary db
   dbSuperDomain db
   

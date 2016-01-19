@@ -447,14 +447,14 @@
 	(setq *allconstructors* (adjoin (first item) *allconstructors*))
 	(setq dbstruct (|makeDB| (first item) (ninth item) (seventh item)))
 	(setf (|dbOperations| dbstruct) (second item))
-	(setf (|dbConstructorModemap| dbstruct) (third item))
+;	(setf (|dbConstructorModemap| dbstruct) (third item))
 	(setf (|dbModemaps| dbstruct) (fourth item))
 	(setf (|dbModule| dbstruct) (fifth item))
 	(setf (|dbCategory| dbstruct) (sixth item))
 	(setf (get (seventh item) 'abbreviationfor) (first item)) ;invert
-	(setf (|dbDualSignature| dbstruct) (eighth item))
+;	(setf (|dbDualSignature| dbstruct) (eighth item))
 	(setf (|dbAncestors| dbstruct) (nth 10 item))
-	(setf (|dbSuperDomain| dbstruct) (nth 11 item))
+;	(setf (|dbSuperDomain| dbstruct) (nth 11 item))
 	))
     
     (format t "~&")))
@@ -509,9 +509,10 @@
 	(setf (|dbSourceFile| dbstruct) (second item))
 	(setf (|dbConstructorForm| dbstruct) (third item))
 	(setf (database-documentation dbstruct) (fourth item))
-	(setf (|dbAttributes| dbstruct) (fifth item))
-	(setf (|dbPredicates| dbstruct) (sixth item))
-	(setf (|dbPrincipals| dbstruct) (seventh item))))
+;	(setf (|dbAttributes| dbstruct) (fifth item))
+;	(setf (|dbPredicates| dbstruct) (sixth item))
+;	(setf (|dbPrincipals| dbstruct) (seventh item))
+	))
     (format t "~&")))
 
 (defun categoryOpen ()
@@ -640,10 +641,6 @@
 	      (operation
 	       (setq stream *operation-stream*)
 	       (setq data (gethash constructor *operation-hash*)))
-	      (constructorcategory
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbCategory| struct))))
 	      (modemaps
 	       (setq stream *interp-stream*)
 	       (when struct
@@ -700,8 +697,6 @@
 		 (setf (gethash constructor *operation-hash*) data))
 		(hascategory 
 		 (setf (gethash constructor |$HasCategoryTable|) data))
-		(constructorcategory 
-		 (setf (|dbCategory| struct) data))
 		(modemaps  
 		 (setf (|dbModemaps| struct) data))
 		(object    
