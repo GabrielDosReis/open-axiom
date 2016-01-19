@@ -90,7 +90,10 @@ getConstructorAbbreviationFromDB ctor ==
 getConstructorCategory: %Symbol -> %Form
 getConstructorCategory ctor ==
   getConstructorKindFromDB ctor = 'category =>
-    GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
+    db := constructorDB ctor
+    if not dbBeingDefined? db and dbCategory db isnt [.,:.] then
+      loadDBIfNecessary db
+    dbCategory db
   getConstructorModemap(ctor).mmTarget
 
 getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
