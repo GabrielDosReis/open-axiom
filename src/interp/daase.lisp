@@ -507,7 +507,7 @@
 	  (setq dbstruct (|makeDB| (first item)))
 	  (setq *allconstructors* (adjoin item *allconstructors*)))
 	(setf (|dbSourceFile| dbstruct) (second item))
-	(setf (|dbConstructorForm| dbstruct) (third item))
+;	(setf (|dbConstructorForm| dbstruct) (third item))
 	(setf (database-documentation dbstruct) (fourth item))
 ;	(setf (|dbAttributes| dbstruct) (fifth item))
 ;	(setf (|dbPredicates| dbstruct) (sixth item))
@@ -667,10 +667,6 @@
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (|dbSourceFile| struct))))
-	      (constructorform
-	       (setq stream *browse-stream*)
-	       (when struct
-		 (setq data (|dbConstructorForm| struct))))
 	      (constructorargs
 	       (setq data (cdr (|getConstructorFormFromDB| constructor))))
 	      (documentation
@@ -705,8 +701,6 @@
 		 (setf (|dbConstructor| struct) data))
 		(ancestors 
 		 (setf (|dbAncestors| struct) data))
-		(constructorform     
-		 (setf (|dbConstructorForm| struct) data))
 		(documentation 
 		 (setf (database-documentation struct) data))
 		(users     

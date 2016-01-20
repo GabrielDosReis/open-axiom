@@ -115,9 +115,13 @@ getConstructorModemap ctor ==
     loadDBIfNecessary db
   dbConstructorModemap db
 
-getConstructorFormFromDB: %Symbol -> %Form
+getConstructorFormFromDB: %Symbol -> %Maybe %Instantiation
 getConstructorFormFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRUCTORFORM")
+  builtinConstructor? ctor => nil
+  db := constructorDB ctor or return nil -- FIXME: catch at call sites.
+  if not dbBeingDefined? db and dbConstructorForm db isnt [.,:.] then
+    loadDBIfNecessary db
+  dbConstructorForm db
 
 ++ Return the generic instantiation form of a constructor,
 ++ where the arguments are the parameters used in its
