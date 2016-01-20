@@ -103,6 +103,7 @@ getConstructorKindFromDB ctor ==
 
 getConstructorAncestorsFromDB: %Symbol -> %List %Constructor
 getConstructorAncestorsFromDB ctor ==
+  builtinConstructor? ctor => nil   -- FIXME: catch at cal sites.
   GETDATABASE(ctor,"ANCESTORS")
 
 ++ return the modemap of the constructor or the instantiation

@@ -328,8 +328,10 @@ mergeOr(x,y) ==
     nil
   nil
 
-testExtend(a:=[op,:argl],b) ==
-  (u:= getConstructorAncestorsFromDB op) and (val:= LASSOC(b,u)) =>
+testExtend(a,b) ==
+  a is ['ATTRIBUTE,a'] =>
+    a' is [.,:.] and constructor? a'.op and testExtend(a',b)
+  (u:= getConstructorAncestorsFromDB a.op) and (val:= LASSOC(b,u)) =>
     formalSubstitute(a,val)
   nil
 
