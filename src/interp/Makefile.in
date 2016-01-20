@@ -137,6 +137,8 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 	topics.$(FASLEXT)     br-prof.$(FASLEXT)    \
 	br-saturn.$(FASLEXT)
 
+INITDB_OBJ = $(builddir)/../algebra/initdb.$(LNKEXT)
+
 TIMESTAMP=$(oa_targetdir)/timestamp
 YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
                 (setq *build-version* "$(PACKAGE_STRING)") \
@@ -211,14 +213,16 @@ all-axiomsys: ${AXIOMSYS}
 ${AXIOMSYS}: database.date \
 		$(oa_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(oa_target_datadir)/msgs/s2-us.msgs \
-		$(OBJS) $(oa_target_ffi) makeint.$(LNKEXT)
+		$(OBJS) $(oa_target_ffi) \
+		$(INITDB_OBJ) \
+		makeint.$(LNKEXT)
 	$(DRIVER) --execpath=$(BOOTSYS) \
 		--syslib=$(oa_target_libdir) \
 		--system="$(AXIOM)/" \
 		--sysalg="$(oa_targetdir)/algebra/" \
 		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
-		--load-directory=. $(OBJS) makeint.$(LNKEXT)
+		--load-directory=. $(OBJS) $(INITDB_OBJ) makeint.$(LNKEXT)
 	@ echo 6a $@ created
 exposed.lsp: $(oa_src_algdir)/exposed.lsp.pamphlet
 	$(oa_hammer) --tangle --output=$@ $<
