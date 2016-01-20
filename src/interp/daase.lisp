@@ -597,7 +597,7 @@
   (format t "~a: ~a~%" 'constructorform
 	  (|getConstructorFormFromDB| constructor))
   (format t "~a: ~a~%" 'constructorargs
-	  (|getConstructorArgsFromDB| constructor))
+	  (|getConstructorArgs| constructor))
   (format t "~a: ~a~%" 'attributes
 	  (|getConstructorAttributes| constructor))
   (format t "~a: ~%" 'predicates)
@@ -667,8 +667,6 @@
 	       (setq stream *browse-stream*)
 	       (when struct
 		 (setq data (|dbSourceFile| struct))))
-	      (constructorargs
-	       (setq data (cdr (|getConstructorFormFromDB| constructor))))
 	      (documentation
 	       (setq stream *browse-stream*)
 	       (when struct

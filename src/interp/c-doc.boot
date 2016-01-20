@@ -431,7 +431,7 @@ removeBackslashes s ==
 checkNumOfArgs conform ==
   conname := opOf conform
   constructor? conname or (conname := abbreviation? conname) =>
-    #getConstructorArgsFromDB conname
+    getConstructorArity conname
   nil  --signals error
 
 ++ returns ok if correct, form if wrong number of arguments, nil if unknown

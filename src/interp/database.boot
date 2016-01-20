@@ -154,10 +154,6 @@ getConstructorFullNameFromDB: %Symbol -> %Symbol
 getConstructorFullNameFromDB ctor ==
   GETDATABASE(ctor,"CONSTRUCTOR")
 
-getConstructorArgsFromDB: %Symbol -> %List %Symbol
-getConstructorArgsFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRUCTORARGS")
-
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
 getDualSignature: %Symbol -> %Form
@@ -216,7 +212,7 @@ getOperationModemapsFromDB op ==
 
 getConstructorArity: %Symbol -> %Short
 getConstructorArity ctor ==
-  sig := getConstructorSignature ctor => #rest sig
+  form := getConstructorFormFromDB ctor => #form.args
   -1
 
 getConstructorKind: %Symbol -> %Maybe %ConstructorKind
