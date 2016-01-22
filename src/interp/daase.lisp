@@ -453,7 +453,7 @@
 	(setf (|dbCategory| dbstruct) (sixth item))
 	(setf (get (seventh item) 'abbreviationfor) (first item)) ;invert
 ;	(setf (|dbDualSignature| dbstruct) (eighth item))
-	(setf (|dbAncestors| dbstruct) (nth 10 item))
+;	(setf (|dbAncestors| dbstruct) (nth 10 item))
 ;	(setf (|dbSuperDomain| dbstruct) (nth 11 item))
 	))
     
@@ -659,10 +659,6 @@
 	       (when (setq data (get constructor 'abbreviationfor))))
 	      (defaultdomain
 		(setq data (cadr (assoc constructor *defaultdomain-list*))))
-	      (ancestors
-	       (setq stream *interp-stream*)
-	       (when struct
-		 (setq data (|dbAncestors| struct))))
 	      (sourcefile
 	       (setq stream *browse-stream*)
 	       (when struct
@@ -697,8 +693,6 @@
 		 (setf (|dbModule| struct) data))
 		(constructor 
 		 (setf (|dbConstructor| struct) data))
-		(ancestors 
-		 (setf (|dbAncestors| struct) data))
 		(documentation 
 		 (setf (database-documentation struct) data))
 		(users     
@@ -845,12 +839,6 @@
 			   (fetchdata alist in "superDomain"))
 		     (addoperations key oldmaps)
 		     (unless make-database?
-		       (if (eq kind '|category|)
-			   (setf (|dbAncestors| dbstruct)
-				 (|applySubst| 
-                                      (|pairList| (cdr constructorform) 
-				      |$FormalMapVariableList|)
-				      (fetchdata alist in "ancestors"))))
 		       (|updateDatabase| key key systemdir?) ;makes many hashtables???
 		       (|installConstructor| key kind) ;used to be key cname ...
 		       (|updateCategoryTable| key kind)

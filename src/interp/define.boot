@@ -1176,7 +1176,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     dbConstructorModemap(db) :=
       [[parForm,:parSignature],[buildConstructorCondition db,$op]]
     dbPrincipals(db) := getParentsFor db
-    dbAncestors(db) := computeAncestorsOf(db,nil)
+    dbAncestors(db) := applySubst(pairlis,computeAncestorsOf(db,nil))
     dbModemaps(db) := modemapsFromCategory(db,[op',:sargl],formalBody,signature')
     [fun,$Category,e]
 

@@ -101,10 +101,13 @@ getConstructorKindFromDB ctor ==
   db := constructorDB ctor => dbConstructorKind db
   nil
 
-getConstructorAncestorsFromDB: %Symbol -> %List %Constructor
+getConstructorAncestorsFromDB: %Symbol -> %List %Pair(%Instantiation,%Code)
 getConstructorAncestorsFromDB ctor ==
   builtinConstructor? ctor => nil   -- FIXME: catch at cal sites.
-  GETDATABASE(ctor,"ANCESTORS")
+  db := constructorDB ctor
+  if not dbBeingDefined? db and dbAncestors db isnt [.,:.] then
+    loadDBIfNecessary db
+  dbAncestors db
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
