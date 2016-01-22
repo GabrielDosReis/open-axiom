@@ -50,7 +50,7 @@ AbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
     coefficient: (%,E) -> R
          ++ coefficient(p,e) extracts the coefficient of the monomial with
          ++ exponent e from polynomial p, or returns zero if exponent is not present.
-    if R has Field then "/": (%,R) -> %
+    if R has Field then /: (%,R) -> %
          ++ p/c divides p by the coefficient c.
     if R has CommutativeRing then
        CommutativeRing

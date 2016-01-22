@@ -12,7 +12,7 @@
 \section{package SOLVEFOR PolynomialSolveByFormulas}
 <<package SOLVEFOR PolynomialSolveByFormulas>>=
 )abbrev package SOLVEFOR PolynomialSolveByFormulas
---  Current fields with "**": (%, RationalNumber) -> % are
+--  Current fields with **: (%, RationalNumber) -> % are
 --     ComplexFloat, RadicalExtension(K) and RationalRadical
 --  SMW June 86, BMT Sept 93
 ++ Description:
@@ -24,7 +24,7 @@
 PolynomialSolveByFormulas(UP, F): PSFcat == PSFdef where
 
     UP: UnivariatePolynomialCategory F
-    F:  Field with "**": (%, Fraction Integer) -> %
+    F:  Field with **: (%, Fraction Integer) -> %
 
     L  ==> List
 

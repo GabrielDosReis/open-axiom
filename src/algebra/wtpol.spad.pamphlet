@@ -42,7 +42,7 @@ WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
                               wtlevel:NonNegativeInteger):
        Join(Ring, HomotopicTo P) with
          if R has CommutativeRing then Algebra(R)
-         if R has Field then "/": ($,$) -> Union($,"failed")
+         if R has Field then /: ($,$) -> Union($,"failed")
 	         ++ x/y division (only works if minimum weight
 	         ++ of divisor is zero, and if R is a Field)
          changeWeightLevel: NonNegativeInteger -> Void

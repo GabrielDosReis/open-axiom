@@ -93,7 +93,7 @@ MonadWithUnit(): Category == Monad with
         ++ leftPower(a,n) returns the \spad{n}-th left power of \spad{a},
         ++ i.e. \spad{leftPower(a,n) := a * leftPower(a,n-1)} and
         ++ \spad{leftPower(a,0) := 1}.
-      "**": (%,NonNegativeInteger) -> %
+      **: (%,NonNegativeInteger) -> %
         ++ \spad{a**n} returns the \spad{n}-th power of \spad{a},
         ++ defined by repeated squaring.
       recip: % -> Union(%,"failed")
