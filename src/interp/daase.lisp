@@ -655,8 +655,6 @@
 		 (setq data (|dbModule| struct))))
 	      (constructor?
 	       (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
-	      (constructor
-	       (when (setq data (get constructor 'abbreviationfor))))
 	      (defaultdomain
 		(setq data (cadr (assoc constructor *defaultdomain-list*))))
 	      (sourcefile
@@ -691,8 +689,6 @@
 		 (setf (|dbModemaps| struct) data))
 		(object    
 		 (setf (|dbModule| struct) data))
-		(constructor 
-		 (setf (|dbConstructor| struct) data))
 		(documentation 
 		 (setf (database-documentation struct) data))
 		(users     

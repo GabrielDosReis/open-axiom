@@ -153,9 +153,9 @@ getConstructorOperationsFromDB ctor ==
     loadDBIfNecessary db
   dbOperations db
 
-getConstructorFullNameFromDB: %Symbol -> %Symbol
+getConstructorFullNameFromDB: %Symbol -> %Maybe %Symbol
 getConstructorFullNameFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRUCTOR")
+  property(ctor,'ABBREVIATIONFOR)
 
 ++ returns a list of Boolean values indicating whether the 
 ++ parameter type at the corresponding position is a category.
