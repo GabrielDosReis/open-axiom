@@ -580,7 +580,7 @@ finalizeLisplib(db,libName) ==
   writeAbbreviation db
   writePrincipals db
   writeAncestors db
-  if not $bootStrapMode then
+  if not $bootStrapMode and not dbDefaultPackage? db then
     writeDocumentation(db,finalizeDocumentation db)
   if $profileCompiler then profileWrite dbLibstream db
   leaveIfErrors(libName,dbConstructorKind db)
