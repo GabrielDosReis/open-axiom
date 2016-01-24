@@ -1009,12 +1009,6 @@ dnl  4. checks for special X11R6 libraries that need to be linked before
 dnl      the flag [[-lX11]].
 AC_DEFUN([OPENAXIOM_CHECK_X11],[
 AC_PATH_XTRA
-## Output directives for the C compiler
-AC_SUBST(X_CLFAGS)
-## Output directives for the linker
-AC_SUBST(X_LIBS)
-## Output any extra libraries required by X11
-AC_SUBST(X_EXTRA_LIBS)
 
 ## Finally, output the list of libraries that need to appear before -lX11
 ## Some part of OpenAxiom depends on Xpm.  That library has kind of uncertain
@@ -1035,10 +1029,19 @@ oa_use_x=no
 if test x"$no_x" = xyes; then
     AC_MSG_NOTICE([The Graphics component is disabled.])
 else
+    oa_saved_cxxflags=$CXXFLAGS
+    oa_saved_cppflags=$CPPFLAGS
+    oa_saved_ldflags=$LDFLAGS
+    CXXFLAGS="$CXXFLAGS $X_CFLAGS"
+    CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+    LDFLAGS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS"
     AC_CHECK_HEADERS([X11/xpm.h],[],
       [AC_MSG_ERROR([The header <X11/xpm.h> could not be found.  Install Xpm development package and re-start the configuration process.])])
     oa_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
+    LDFLAGS=$oa_saved_ldflags
+    CPPFLAGS=$oa_saved_cppflags
+    CXXFLAGS=$oa_saved_cxxflags
 fi
 AC_SUBST(oa_use_x)
 ])

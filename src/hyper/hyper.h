@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -302,5 +302,14 @@ extern HyperLink *quitLink; /** a special link to the protected quit page **/
 extern GroupItem   *gTopOfGroupStack;
 
 extern HyperDocPage *gPageBeingParsed;
+
+
+// Kludge between the more correct 'array of unsigned char' incoming data,
+// and the unprincipled 'pointer to char' parameters of several X11
+// functions below.
+template<int N>
+inline const char* as_chars(const unsigned char (&ary)[N]) {
+   return reinterpret_cast<const char*>(&ary[0]);
+}
 
 #endif

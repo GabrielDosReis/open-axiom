@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -183,7 +183,7 @@ makeScrollBarWindows(void)
         sup = XCreatePixmapFromBitmapData(
                                           gXDisplay,
                                     RootWindow(gXDisplay, gXScreenNumber),
-                                          sup_bits, supwidth, supheight,
+                                          const_cast<char*>(as_chars(sup_bits)), supwidth, supheight,
                                           FORECOLOR, BACKCOLOR,
                                  DefaultDepth(gXDisplay, gXScreenNumber));
 
@@ -191,7 +191,7 @@ makeScrollBarWindows(void)
         sdown = XCreatePixmapFromBitmapData(
                                             gXDisplay,
                                     RootWindow(gXDisplay, gXScreenNumber),
-                                      sdown_bits, sdown_width, sdown_height,
+                                    const_cast<char*>(as_chars(sdown_bits)), sdown_width, sdown_height,
                                             FORECOLOR, BACKCOLOR,
                                  DefaultDepth(gXDisplay, gXScreenNumber));
 
@@ -199,13 +199,13 @@ makeScrollBarWindows(void)
         sup_pressed = XCreatePixmapFromBitmapData(
                                                   gXDisplay,
                                     RootWindow(gXDisplay, gXScreenNumber),
-                                sup3dpr_bits, sup3dpr_width, sup3dpr_height,
+                                                  const_cast<char*>(as_chars(sup3dpr_bits)), sup3dpr_width, sup3dpr_height,
                                                   FORECOLOR, BACKCOLOR,
                                  DefaultDepth(gXDisplay, gXScreenNumber));
         sdown_pressed = XCreatePixmapFromBitmapData(
                                                     gXDisplay,
                                     RootWindow(gXDisplay, gXScreenNumber),
-                          sdown3dpr_bits, sdown3dpr_width, sdown3dpr_height,
+                                    const_cast<char*>(as_chars(sdown3dpr_bits)), sdown3dpr_width, sdown3dpr_height,
                                                     FORECOLOR, BACKCOLOR,
                                  DefaultDepth(gXDisplay, gXScreenNumber));
     }

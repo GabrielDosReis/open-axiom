@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2012, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -85,6 +85,7 @@ static void open_form_window(void);
 static void open_window(Window w);
 static void set_name_and_icon(void);
 static void set_size_hints(Window w);
+
 
 static GContext server_font;
 unsigned long *spadColors;
@@ -176,11 +177,11 @@ initializeWindowSystem(void)
 /*  fprintf(stderr,"initx:initializeWindowSystem:XCreateBitmapFromData 1\n");*/
     mousebits = XCreateBitmapFromData(gXDisplay,
         RootWindow(gXDisplay, gXScreenNumber),
-        mouseBitmap_bits, mouseBitmap_width,mouseBitmap_height);
+        as_chars(mouseBitmap_bits), mouseBitmap_width,mouseBitmap_height);
 /* fprintf(stderr,"initx:initializeWindowSystem:XCreateBitmapFromData 2\n");*/
     mousemask = XCreateBitmapFromData(gXDisplay,
         RootWindow(gXDisplay, gXScreenNumber),
-        mouseMask_bits, mouseMask_width,mouseMask_height);
+        as_chars(mouseMask_bits), mouseMask_width,mouseMask_height);
 /* fprintf(stderr,"initx:initializeWindowSystem:XCreateBitmapFromData 2\n");*/
     gActiveCursor = XCreatePixmapCursor(gXDisplay,
         mousebits, mousemask, &fg, &bg,
@@ -396,7 +397,8 @@ set_name_and_icon(void)
     XStoreName(gXDisplay, gWindow->fMainWindow, "HyperDoc");
 
     /* define and assign the pixmap for the icon */
-    icon_pixmap = XCreateBitmapFromData(gXDisplay, gWindow->fMainWindow, ht_icon_bits,
+    icon_pixmap = XCreateBitmapFromData(gXDisplay, gWindow->fMainWindow,
+                                        as_chars(ht_icon_bits),
                                         ht_icon_width, ht_icon_height);
     wmhints.icon_pixmap = icon_pixmap;
     wmhints.flags = IconPixmapHint;
@@ -592,7 +594,7 @@ set_size_hints(Window w)
 
 #define stipple_width 4
 #define stipple_height 4
-static char stipple_bits[] = {
+static unsigned char stipple_bits[] = {
                               0xff, 0xff, 0xff, 0xff};
 Pixmap stipple;
 
@@ -615,7 +617,7 @@ get_GCs(HDWindow *window)
 
     stipple = XCreateBitmapFromData(gXDisplay,
         RootWindow(gXDisplay, gXScreenNumber),
-        stipple_bits, stipple_width, stipple_height);
+        as_chars(stipple_bits), stipple_width, stipple_height);
 
     values.background = gInputBackgroundColor;
     values.foreground = gInputForegroundColor;
