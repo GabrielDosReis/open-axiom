@@ -51,7 +51,7 @@ static void get_parameter_strings(int number , char * macro_name);
  * right brace then left brace
  */
 void
-scan_HyperDoc(void)
+scan_HyperDoc()
 {
     HDWindow *twin = gWindow;
     int ret_val;
@@ -208,7 +208,7 @@ push_parameters(ParameterList parms)
     return 1;
 }
 int
-pop_parameters(void)
+pop_parameters()
 {
     /** Simply pops the top of the parameter list, being good and freeing
       all the memory **/
@@ -235,7 +235,7 @@ pop_parameters(void)
 }
 
 int
-parse_macro(void)
+parse_macro()
 {
 
     /*
@@ -367,7 +367,7 @@ get_parameter_strings(int number,char * macro_name)
     return ;
 }
 void
-parse_parameters(void)
+parse_parameters()
 {
     int value;
 

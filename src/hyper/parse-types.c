@@ -54,13 +54,13 @@
 
 using namespace OpenAxiom;
 
-static void parse_condnode(void );
-static void parse_hasreturnto(void );
+static void parse_condnode();
+static void parse_hasreturnto();
 
-boolean gInButton = FALSE;
-boolean gInIf = FALSE;
-boolean gInItems = FALSE;
-boolean gInOptional = FALSE;
+bool gInButton = false;
+bool gInIf = false;
+bool gInItems = false;
+bool gInOptional = false;
 
 
 static const char* errmess[] =  {
@@ -101,7 +101,7 @@ htperror(const char* msg, int erno)
 }
 
 void
-parse_ifcond(void)
+parse_ifcond()
 {
     TextNode *ifnode = curr_node;
     TextNode *endif;
@@ -118,7 +118,7 @@ parse_ifcond(void)
         fprintf(stderr, "Longjump failed, Exiting\n");
         exit(-1);
     }
-    gInIf++;
+    gInIf = true;
     curr_node->type = openaxiom_Ifcond_token;
     curr_node->space = token.id[-1];
     curr_node->data.ifnode = alloc_ifnode();
@@ -168,11 +168,11 @@ parse_ifcond(void)
     ifnode->next = ifnode->data.ifnode->thennode;
     ifnode->width = -1;         /* A flag for compute if extents */
     curr_node = endif;
-    gInIf--;
+    gInIf = false;
 }
 
 static void
-parse_condnode(void)
+parse_condnode()
 {
     get_token();
 
@@ -206,7 +206,7 @@ parse_condnode(void)
 }
 
 static void
-parse_hasreturnto(void)
+parse_hasreturnto()
 {
     TextNode *hrt = curr_node, *arg_node = alloc_node();
 
@@ -220,7 +220,7 @@ parse_hasreturnto(void)
 }
 
 void
-parse_newcond(void)
+parse_newcond()
 {
     char label[256];
 
@@ -233,7 +233,7 @@ parse_newcond(void)
 }
 
 void
-parse_setcond(void)
+parse_setcond()
 {
     char label[256], cond[256];
 
@@ -250,7 +250,7 @@ parse_setcond(void)
 }
 
 void
-parse_begin_items(void)
+parse_begin_items()
 {
     TextNode *bi = curr_node;
 
@@ -264,9 +264,9 @@ parse_begin_items(void)
     if (token.type == openaxiom_Lsquarebrace_token) {
         bi->data.node = alloc_node();
         curr_node = bi->data.node;
-        gInOptional++;
+        gInOptional = true;
         parse_HyperDoc();
-        gInOptional--;
+        gInOptional = false;
         curr_node->type = openaxiom_Enddescription_token;
         if (token.type != openaxiom_Rsquarebrace_token) {
             fprintf(stderr, "(HyperDoc) Optional arguments must end with ].\n");
@@ -278,11 +278,11 @@ parse_begin_items(void)
     }
     else
         unget_token();
-    gInItems++;
+    gInItems = true;
 }
 
 void
-parse_item(void)
+parse_item()
 {
     if (!gInItems) {
         fprintf(stderr, "\\item found outside an items environment\n");
@@ -299,9 +299,9 @@ parse_item(void)
         curr_node->type = openaxiom_Description_token;
         curr_node->next = alloc_node();
         curr_node = curr_node->next;
-        gInOptional++;
+        gInOptional = true;
         parse_HyperDoc();
-        gInOptional--;
+        gInOptional = false;
         curr_node->type = openaxiom_Enddescription_token;
         if (token.type != openaxiom_Rsquarebrace_token) {
             fprintf(stderr, "(HyperDoc) Optional arguments must end with ].\n");
@@ -316,7 +316,7 @@ parse_item(void)
 }
 
 void
-parse_mitem(void)
+parse_mitem()
 {
     if (!gInItems) {
         fprintf(stderr, "\\mitem found outside an items environment\n");
@@ -407,7 +407,7 @@ parse_verbatim(int type)
 }
 
 void
-parse_input_pix(void)
+parse_input_pix()
 {
     TextNode *pixnode;
     char *filename;
@@ -447,7 +447,7 @@ parse_input_pix(void)
 }
 
 void
-parse_centerline(void)
+parse_centerline()
 {
     curr_node->type = token.type;
     curr_node->space = token.id[-1];
@@ -467,11 +467,11 @@ parse_centerline(void)
 }
 
 void
-parse_command(void)
+parse_command()
 {
     TextNode *link_node, *save_node, *arg_node;
 
-    gInButton++;
+    gInButton = true;
     if (gParserMode == SimpleMode) {
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
@@ -500,15 +500,15 @@ parse_command(void)
     link_node->link = make_link_window(arg_node, link_node->type, 0);
     gStringValueOk = 0;
     curr_node = save_node;
-    gInButton--;
+    gInButton = false;
 }
 
 void
-parse_button(void)
+parse_button()
 {
     TextNode *link_node, *save_node;
 
-    gInButton++;
+    gInButton = true;
     if (gParserMode == SimpleMode) {
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
@@ -543,7 +543,7 @@ parse_button(void)
     link_node->link =
         make_link_window(save_node->data.node, link_node->type, 0);
     curr_node = save_node;
-    gInButton--;
+    gInButton = false;
 }
 
 extern int example_number;
@@ -554,7 +554,7 @@ parse_spadcommand(TextNode *spad_node)
     /*TextNode *node = NULL;*/
 
     example_number++;
-    gInButton++;
+    gInButton = true;
     spad_node->type = token.type;
     spad_node->space = token.id[-1];
     get_expected_token(openaxiom_Lbrace_token);
@@ -566,7 +566,7 @@ parse_spadcommand(TextNode *spad_node)
     curr_node->type = openaxiom_Endspadcommand_token;
     cur_spadcom = NULL;
     spad_node->link = make_link_window(spad_node->next, spad_node->type, 1);
-    gInButton--;
+    gInButton = false;
 }
 
 void
@@ -577,8 +577,8 @@ parse_spadsrc(TextNode *spad_node)
     /*TextNode *node = NULL;*/
 
     example_number++;
-    gInButton++;
-    gInSpadsrc++;
+    gInButton = true;
+    gInSpadsrc = true;
     spad_node->type = openaxiom_Spadsrc_token;
     spad_node->space = token.id[-1];
 
@@ -603,8 +603,8 @@ parse_spadsrc(TextNode *spad_node)
     cur_spadcom = NULL;
     spad_node->link = make_link_window(spad_node->next,
                                        openaxiom_Spadsrc_token, 1);
-    gInButton--;
-    gInSpadsrc--;
+    gInButton = false;
+    gInSpadsrc = false;
 }
 
 void
@@ -648,7 +648,7 @@ parse_env(TextNode *node)
  */
 
 void
-parse_value1(void)
+parse_value1()
 {
     TextNode *value_node, *ocn = curr_node;
     char *s;
@@ -678,7 +678,7 @@ parse_value1(void)
  */
 
 void
-parse_value2(void)
+parse_value2()
 {
     TextNode *value_node, *ocn = curr_node;
     char *s;
@@ -706,7 +706,7 @@ parse_value2(void)
 /* parse a \table sommand */
 
 void
-parse_table(void)
+parse_table()
 {
     TextNode *tn = curr_node;
 
@@ -752,7 +752,7 @@ parse_table(void)
 }
 
 void
-parse_box(void)
+parse_box()
 {
     curr_node->type = token.type;
     curr_node->space = token.id[-1];
@@ -765,7 +765,7 @@ parse_box(void)
 }
 
 void
-parse_mbox(void)
+parse_mbox()
 {
     curr_node->type = token.type;
     curr_node->space = token.id[-1];
@@ -778,7 +778,7 @@ parse_mbox(void)
 }
 
 void
-parse_free(void)
+parse_free()
 {
     TextNode *free_node = curr_node;
 
@@ -794,7 +794,7 @@ parse_free(void)
 }
 
 void
-parse_help(void)
+parse_help()
 {
     curr_node->type = openaxiom_Noop_token;
     get_token();

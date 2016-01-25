@@ -426,7 +426,7 @@ make_special_pages(HashTable *pageHashTable)
 /* Parse the \bound{varlist} command, and add vars to dependency table */
 
 void
-add_dependencies(void)
+add_dependencies()
 {
     TextNode *bound_node = curr_node;
     TextNode *node;
@@ -509,7 +509,7 @@ parser_error(char *str)
 
 /* advance token to the next token in the input stream.  */
 int
-get_filename(void)
+get_filename()
 {
     int c, ws;
     static int seen_white = 0; /*UNUSED */
@@ -552,7 +552,7 @@ get_filename(void)
 }
 
 char *
-get_input_string(void)
+get_input_string()
 {
     char *string;
     TextNode *string_node,*save_node;

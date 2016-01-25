@@ -166,7 +166,7 @@ int gScrollbarWidth = sup_width + 2;
 
 
 void
-makeScrollBarWindows(void)
+makeScrollBarWindows()
 {
     XSetWindowAttributes at;
 
@@ -391,7 +391,7 @@ moveScroller(HDWindow * hdWindow)
 #define bothalf(y) (y/2)
 
 void
-drawScrollLines(void)
+drawScrollLines()
 {
     /* Checks the page_flags to see if we need a top, or a bottom line.   */
     /* These are the horizontal lines framing a scrolling region when the */
@@ -425,7 +425,7 @@ drawScrollLines(void)
  */
 
 void
-calculateScrollBarMeasures(void)
+calculateScrollBarMeasures()
 {
     int t;
 
@@ -497,7 +497,7 @@ calculateScrollBarMeasures(void)
 }
 
 void
-linkScrollBars(void)
+linkScrollBars()
 {
     HyperLink *uplink = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink");
     HyperLink *downlink = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink");
@@ -520,7 +520,7 @@ linkScrollBars(void)
 }
 
 void
-scrollUp(void)
+scrollUp()
 {
 
     if (gWindow->page->scroll_off == 0);       /* BeepAtTheUser(); *//* The
@@ -546,7 +546,7 @@ scrollUp(void)
 }
 
 void
-scrollUpPage(void)
+scrollUpPage()
 {
     if (gWindow->page->scroll_off == 0);       /* BeepAtTheUser(); */
     else {
@@ -562,7 +562,7 @@ scrollUpPage(void)
 }
 
 void
-scrollToFirstPage(void)
+scrollToFirstPage()
 {
     if (gWindow->page->scroll_off == 0);       /* BeepAtTheUser(); */
     else {
@@ -573,7 +573,7 @@ scrollToFirstPage(void)
 }
 
 void
-scrollDown(void)
+scrollDown()
 {
 
     if (-(gWindow->page->scroll_off) >=
@@ -601,7 +601,7 @@ scrollDown(void)
 
 
 void
-scrollDownPage(void)
+scrollDownPage()
 {
     if (gWindow->page->scrolling == NULL || (-(gWindow->page->scroll_off) >=
             (gWindow->page->scrolling->height - gWindow->scrollheight))) {

@@ -130,7 +130,7 @@ change_input_focus(HyperLink *link)
     update_inputsymbol(new_item);
 }
 void
-next_input_focus(void)
+next_input_focus()
 {
     InputItem *old_item = gWindow->page->current_item, *new_item, *trace;
 
@@ -157,7 +157,7 @@ next_input_focus(void)
     draw_inputsymbol(new_item);
 }
 void
-prev_input_focus(void)
+prev_input_focus()
 {
     InputItem *old_item = gWindow->page->current_item, *new_item, *trace;
 

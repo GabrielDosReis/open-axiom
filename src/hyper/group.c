@@ -52,7 +52,7 @@ GroupItem *gTopOfGroupStack = NULL;
 
 
 int
-pop_group_stack(void)
+pop_group_stack()
 {
     /* This routine pops the top of the current group stack */
     GroupItem *junk;
@@ -80,7 +80,7 @@ pop_group_stack(void)
 }
 
 void
-push_group_stack(void)
+push_group_stack()
 {
     /*
      * This routine makes room by pushing a new item on the stack
@@ -97,7 +97,7 @@ push_group_stack(void)
 }
 
 void
-init_group_stack(void)
+init_group_stack()
 {
     gTopOfGroupStack = (GroupItem *) halloc(sizeof(GroupItem), "Push Group Stack");
     gTopOfGroupStack->center = 0;
@@ -107,7 +107,7 @@ init_group_stack(void)
 }
 
 void
-em_top_group(void)
+em_top_group()
 {
     if (! gTopOfGroupStack->next)
         push_group_stack();
@@ -117,7 +117,7 @@ em_top_group(void)
 }
 
 void
-rm_top_group(void)
+rm_top_group()
 {
     if (! gTopOfGroupStack->next)
         push_group_stack();
@@ -128,7 +128,7 @@ rm_top_group(void)
 }
 
 void
-line_top_group(void)
+line_top_group()
 {
     if (! gTopOfGroupStack->next)
         push_group_stack();
@@ -139,7 +139,7 @@ line_top_group(void)
 }
 
 void
-bf_top_group(void)
+bf_top_group()
 {
     /*
      * Just in case the person is tryin a \em without a grouping
@@ -153,7 +153,7 @@ bf_top_group(void)
 }
 
 void
-tt_top_group(void)
+tt_top_group()
 {
     if (! gTopOfGroupStack->next)
         push_group_stack();
@@ -163,7 +163,7 @@ tt_top_group(void)
 }
 
 void
-push_active_group(void)
+push_active_group()
 {
     push_group_stack();
     gTopOfGroupStack->cur_font = gActiveFont;
@@ -172,7 +172,7 @@ push_active_group(void)
 }
 
 void
-push_spad_group(void)
+push_spad_group()
 {
     push_group_stack();
     gTopOfGroupStack->cur_font = gAxiomFont;
@@ -181,7 +181,7 @@ push_spad_group(void)
 }
 
 void
-init_top_group(void)
+init_top_group()
 {
     /* clear the group stack */
     while (pop_group_stack() >= 0)
@@ -195,14 +195,14 @@ init_top_group(void)
 }
 
 void
-center_top_group(void)
+center_top_group()
 {
     push_group_stack();
     gTopOfGroupStack->center = 1;
 }
 
 GroupItem *
-copy_group_stack(void)
+copy_group_stack()
 {
     GroupItem *newgp = NULL;
     GroupItem *first = NULL;

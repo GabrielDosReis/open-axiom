@@ -140,7 +140,7 @@ presea(char** links, int n, int cases, const char* pattern)
  * pages database.
  */
 static void
-set_variables(void) {
+set_variables() {
    const std::string systemdir(oa_getenv("AXIOM"));
    
    if (systemdir.empty()) {
@@ -206,7 +206,7 @@ htsearch(const char* pattern)
  * Display how to use the htsearch program.  
  */
 static void
-usage(void)
+usage()
 {
    std::cerr << "Usage: htsearch pattern" << std::endl;
     exit(1);

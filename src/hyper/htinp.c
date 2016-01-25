@@ -77,7 +77,7 @@ char buf_for_record_commands[256];
 
 
 void
-make_record(void)
+make_record()
 {
   int i;
   for (i=0;i<input_file_count;i++){
@@ -98,7 +98,7 @@ make_record(void)
 }
 
 void
-verify_record(void)
+verify_record()
 {
   int i;
   for (i=0;i<input_file_count;i++){
@@ -119,7 +119,7 @@ verify_record(void)
 
 
 void
-ht2_input(void)
+ht2_input()
 {
   HashTable *table;
   HashEntry *entry;
@@ -340,7 +340,7 @@ inListAndNewer(char *inputFile, char *htFile)
 }
 
 static void
-make_input_file_list(void)
+make_input_file_list()
 {
     int i;
     char buf[256], *name;

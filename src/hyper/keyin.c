@@ -267,7 +267,7 @@ handle_key(XEvent *event)
  */
 
 void
-init_keyin(void)
+init_keyin()
 {
     char *prop;
     unsigned nlm = get_modifier_mask(XK_Num_Lock);

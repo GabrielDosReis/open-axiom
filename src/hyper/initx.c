@@ -76,14 +76,14 @@ extern int gethostname(char *, int );
 using namespace OpenAxiom;
 
 static void get_GCs(HDWindow * window);
-static int get_border_properties(void);
+static int get_border_properties();
 static int get_color(const char* , const char* , int, Colormap*);
-static void ingItColors_and_fonts(void);
+static void ingItColors_and_fonts();
 static void load_font(XFontStruct * * font_info , char * fontname);
-static void mergeDatabases(void);
-static void open_form_window(void);
+static void mergeDatabases();
+static void open_form_window();
 static void open_window(Window w);
-static void set_name_and_icon(void);
+static void set_name_and_icon();
 static void set_size_hints(Window w);
 
 
@@ -130,7 +130,7 @@ int gBorderColor;     /* The Border Color */
 /* Initialize the X Window System  */
 
 void
-initializeWindowSystem(void)
+initializeWindowSystem()
 {
     char *display_name = NULL;
     XColor fg, bg;
@@ -270,7 +270,7 @@ init_top_window(const char *name)
 /* Create and initialize a form HyperDoc window */
 
 static void
-open_form_window(void)
+open_form_window()
 {
     int x, y, width, height;
     unsigned int fwidth = 0, fheight = 0;
@@ -376,7 +376,7 @@ init_form_window(char *name, int cols)
 
 
 static void
-set_name_and_icon(void)
+set_name_and_icon()
 {
     const char *icon_name = "HyperDoc";
     char *s;
@@ -410,7 +410,7 @@ set_name_and_icon(void)
 }
 
 static int
-get_border_properties(void)
+get_border_properties()
 {
     const char *bwidth;
     /*char *bc = NULL;*/
@@ -680,7 +680,7 @@ load_font(XFontStruct **font_info, char *fontname)
  */
 
 static void
-ingItColors_and_fonts(void)
+ingItColors_and_fonts()
 {
     char property[256];
     char *prop = &property[0];
@@ -707,9 +707,9 @@ ingItColors_and_fonts(void)
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:XrmGetResource\n");*/
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.RmFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True)
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     else
-        (void) strcpy(prop, RmFontDefault);
+        strcpy(prop, RmFontDefault);
 
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:load_font 1\n");*/
     load_font(&gRmFont, prop);
@@ -720,9 +720,9 @@ ingItColors_and_fonts(void)
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:XrmGetResource 2\n");*/
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.TtFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True)
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     else
-        (void) strcpy(prop, TtFontDefault);
+        strcpy(prop, TtFontDefault);
 
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:load_font 3\n");*/
     load_font(&gTtFont, prop);
@@ -732,9 +732,9 @@ ingItColors_and_fonts(void)
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:XrmGetResource 5\n");*/
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.ActiveFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True)
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     else
-        (void) strcpy(prop, ActiveFontDefault);
+        strcpy(prop, ActiveFontDefault);
 
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:load_font 4\n");*/
     load_font(&gActiveFont, prop);
@@ -744,15 +744,15 @@ ingItColors_and_fonts(void)
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:XrmGetResource 6\n");*/
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.AxiomFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True)
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     else {
         if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.SpadFont", 
                            "OpenAxiom.hyperdoc.Font", str_type, &value) == True) 
         {
-            (void) strncpy(prop, value.addr, (int) value.size);
+            strncpy(prop, value.addr, (int) value.size);
         }
         else {
-            (void) strcpy(prop, AxiomFontDefault);
+            strcpy(prop, AxiomFontDefault);
         }
     }
 
@@ -763,10 +763,10 @@ ingItColors_and_fonts(void)
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.EmphasizeFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True) 
     {
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     }
     else {
-        (void) strcpy(prop, EmphasizeFontDefault);
+        strcpy(prop, EmphasizeFontDefault);
     }
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:load_font 6\n");*/
     load_font(&gEmFont, prop);
@@ -775,10 +775,10 @@ ingItColors_and_fonts(void)
     if (XrmGetResource(rDB, "OpenAxiom.hyperdoc.BoldFont", 
                             "OpenAxiom.hyperdoc.Font", str_type, &value) == True) 
     {
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
     }
     else {
-        (void) strcpy(prop, BoldFontDefault);
+        strcpy(prop, BoldFontDefault);
     }
 /*    fprintf(stderr,"initx:ingItColors_and_fonts:load_font 7\n");*/
     load_font(&gBfFont, prop);
@@ -922,7 +922,7 @@ get_color(const char *name, const char *klass, int def, Colormap *map)
     strcat(fullclass, klass);
 
     if (XrmGetResource(rDB, fullname, fullclass, str_type, &value) == True) {
-        (void) strncpy(prop, value.addr, (int) value.size);
+        strncpy(prop, value.addr, (int) value.size);
         ret_val = XAllocNamedColor(gXDisplay, *map, prop, &color_def, &color_db);
         if (ret_val) {
 #ifdef DEBUG
@@ -950,7 +950,7 @@ get_color(const char *name, const char *klass, int def, Colormap *map)
 
 
 static void
-mergeDatabases(void)
+mergeDatabases()
 {
     XrmDatabase homeDB, serverDB, applicationDB;
     char filenamebuf[1024];
@@ -960,21 +960,21 @@ mergeDatabases(void)
 
 /*    fprintf(stderr,"initx:mergeDatabases:entered\n");*/
 /*    fprintf(stderr,"initx:mergeDatabases:XrmInitialize\n");*/
-    (void) XrmInitialize();
-    (void) strcpy(name, "/usr/lib/X11/app-defaults/");
-    (void) strcat(name, classname);
+    XrmInitialize();
+    strcpy(name, "/usr/lib/X11/app-defaults/");
+    strcat(name, classname);
 /*  fprintf(stderr,"initx:mergeDatabases:XrmGetFileDatabase name=%s\n",name);*/
     applicationDB = XrmGetFileDatabase(name);
 /*    fprintf(stderr,"initx:mergeDatabases:XrmMergeDatabases\n");*/
-    (void) XrmMergeDatabases(applicationDB, &rDB);
+    XrmMergeDatabases(applicationDB, &rDB);
 
 /*    fprintf(stderr,"initx:mergeDatabases:XrmGetStringDatabase\n");*/
     if (XResourceManagerString(gXDisplay) != NULL) {
         serverDB = XrmGetStringDatabase(XResourceManagerString(gXDisplay));
     }
     else {
-        (void) strcpy(filename, oa_getenv("HOME"));
-        (void) strcat(filename, "/.Xdefaults");
+        strcpy(filename, oa_getenv("HOME"));
+        strcat(filename, "/.Xdefaults");
 /*        fprintf(stderr,"initx:mergeDatabases:XrmGetFileDatase\n");*/
         serverDB = XrmGetFileDatabase(filename);
     }
@@ -983,13 +983,13 @@ mergeDatabases(void)
     if (oa_getenv("XENVIRONMENT") == NULL) {
         int len;
 
-        (void) strcpy(filename, oa_getenv("HOME"));
-        (void) strcat(filename, "/.Xdefaults-");
+        strcpy(filename, oa_getenv("HOME"));
+        strcat(filename, "/.Xdefaults-");
         len = strlen(filename);
-        (void) gethostname(filename + len, 1024 - len);
+        gethostname(filename + len, 1024 - len);
     }
     else {
-        (void) strcpy(filename, oa_getenv("XENVIRONMENT"));
+        strcpy(filename, oa_getenv("XENVIRONMENT"));
     }
 /*    fprintf(stderr,"initx:mergeDatabases:filename=%s\n",filename);*/
     homeDB = XrmGetFileDatabase(filename);

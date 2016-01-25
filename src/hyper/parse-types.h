@@ -61,10 +61,10 @@ extern void parse_value2(void );
 extern void parse_verbatim(int type);
 extern void show_text(TextNode * node , int Ender);
 
-extern boolean gInButton;
-extern boolean gInIf;
-extern boolean gInItems;
-extern boolean gInOptional;
+extern bool gInButton;
+extern bool gInIf;
+extern bool gInItems;
+extern bool gInOptional;
 
 
 #endif

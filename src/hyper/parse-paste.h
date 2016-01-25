@@ -39,8 +39,8 @@
 #include "openaxiom-c-macros.h"
 #include "hyper.h"
 
-extern void parse_paste(void);
-extern void parse_pastebutton(void);
+extern void parse_paste();
+extern void parse_pastebutton();
 extern HyperDocPage * parse_patch(PasteNode * paste);
 
 extern short int gInPaste;

@@ -71,7 +71,7 @@ TextNode *cur_spadcom;          /* The current OpenAxiom command   */
 short int gParserMode;           /* Parser mode flag */
 short int gParserRegion;         /* Parser Region flag scrolling etc */
 short int gStringValueOk;        /* is a string or box value ok */
-boolean gEndedPage;
+bool gEndedPage;
 
 extern int example_number;             /* sequence example number */
 
@@ -84,7 +84,7 @@ char *replace_page;             /* true if dynamic page is link to static one */
 
 
 void
-reset_connection(void)
+reset_connection()
 {
     if (spad_socket) {
         FD_CLR(spad_socket->socket, &socket_mask);
@@ -116,7 +116,7 @@ typedef struct mr_stack {
 MR_Stack *top_mr_stack = NULL;  /** Declaration for the stack  **/
 
 static void
-Push_MR(void)
+Push_MR()
 {
     MR_Stack *newStackItem = (MR_Stack *) halloc(sizeof(MR_Stack), "Mode Region Stack");
 
@@ -127,7 +127,7 @@ Push_MR(void)
 }
 
 static void
-Pop_MR(void)
+Pop_MR()
 {
     MR_Stack *old = top_mr_stack;
 
@@ -300,7 +300,7 @@ init_parse_page(HyperDocPage *page)
 {
     gEndedPage = gInDesc = gStringValueOk = gInIf =
         gInButton = gInOptional = gInVerbatim = gInPaste = gInItems =
-        gInSpadsrc = FALSE;
+        gInSpadsrc = false;
     example_number = 1;
     cur_page = page;
     gParserMode = AllMode;
@@ -327,7 +327,7 @@ init_parse_patch(HyperDocPage *page)
 {
     gEndedPage = gInDesc = gStringValueOk = gInIf =
         gInButton = gInOptional = gInVerbatim = gInPaste = gInItems =
-        gInSpadsrc = FALSE;
+        gInSpadsrc = false;
     gParserMode = AllMode;
     gParserRegion = Scrolling;
 
@@ -378,7 +378,7 @@ char *ExpectedBeginScroll =
  */
 
 void
-parse_HyperDoc(void)
+parse_HyperDoc()
 {
     TextNode *node = NULL /*, *save_node = NULL, *arg_node = NULL*/ ;
 
@@ -528,7 +528,7 @@ parse_HyperDoc(void)
           case openaxiom_EndItems_token:
             token.type = openaxiom_Enditems_token;
           case openaxiom_Enditems_token:
-            gInItems--;
+            gInItems = false;
           case openaxiom_Horizontalline_token:
           case openaxiom_Par_token:
           case openaxiom_Newline_token:
@@ -705,7 +705,7 @@ parse_HyperDoc(void)
 /* parse a page from a socket source */
 
 HyperDocPage *
-parse_page_from_socket(void)
+parse_page_from_socket()
 {
     HyperDocPage *page = alloc_page((char *) NULL);
     HyperDocPage *hpage;
@@ -750,7 +750,7 @@ parse_page_from_socket(void)
 }
 
 HyperDocPage *
-parse_page_from_unixfd(void)
+parse_page_from_unixfd()
 {
     HyperDocPage *page = alloc_page((char *) NULL);
 
@@ -780,7 +780,7 @@ parse_page_from_unixfd(void)
 }
 
 static void
-start_scrolling(void)
+start_scrolling()
 {
 
     /*
@@ -807,7 +807,7 @@ start_scrolling(void)
 }
 
 static void
-start_footer(void)
+start_footer()
 {
     /*
      * This ends the parsing of the scrolling region, and then starts to
@@ -836,7 +836,7 @@ start_footer(void)
 }
 
 static void
-end_a_page(void)
+end_a_page()
 {
     if (gParserRegion == Scrolling) {
         fprintf(stderr, "%s\n",
@@ -845,7 +845,7 @@ end_a_page(void)
         print_page_and_filename();
         jump();
     }
-    gEndedPage = TRUE;
+    gEndedPage = true;
     if (gParserRegion == Footer) {
         /* the person had all the regions, I basically just have to leave */
         curr_node->type = openaxiom_Endscrolling_token;
@@ -863,7 +863,7 @@ end_a_page(void)
 }
 
 static void
-parse_replacepage(void)
+parse_replacepage()
 {
     get_expected_token(openaxiom_Lbrace_token);
     get_token();

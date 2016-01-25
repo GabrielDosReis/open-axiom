@@ -66,6 +66,7 @@ struct InputItem;
 struct paste_node;
 struct RadioBoxes;
 struct GroupItem;
+struct PasteNode;
 
 #define Scrollupbutton     1
 #define Scrolldownbutton   2
@@ -80,7 +81,7 @@ struct GroupItem;
 
 /** I am implementing a state node stack, this is the structure I store **/
 
-typedef struct StateNode {
+struct StateNode {
    int last_ch, last_token;
    SourceInputKind input_type;
    long fpos, keyword_fpos;
@@ -89,123 +90,121 @@ typedef struct StateNode {
    char *input_string;
    FILE *cfile;
    int keyword;
-   struct StateNode *next;
-} StateNode;
+   StateNode *next;
+};
 
 /** pointer to the top of the state node graph **/
 extern StateNode *top_state_node;
 
 
 /* structure for a hyper text link */
-typedef struct HyperLink {
+struct HyperLink {
    int type;                   /* Memolink, Spadlink, Downlink etc. */
    openaxiom_window win;       /* X11 window containing active area */
    union {
-      struct TextNode *node;     /* ID of link to which link refers */
-      struct InputBox *box;
-      struct InputItem *string;
-      struct PasteNode *paste;   /* the paste node area */
+      TextNode *node;     /* ID of link to which link refers */
+      InputBox *box;
+      InputItem *string;
+      PasteNode *paste;   /* the paste node area */
    } reference;
    int x,y;                      /* relative position inside page */
-} HyperLink;
+};
 
 
-typedef struct IfNode {
-   struct TextNode *cond;                /* the condition nodes*/
-   struct TextNode *thennode;
-   struct TextNode *elsenode;
-} IfNode;
+struct IfNode {
+   TextNode *cond;                /* the condition nodes*/
+   TextNode *thennode;
+   TextNode *elsenode;
+};
 
-typedef struct ItemStack {
+struct ItemStack {
    int indent;
    int item_indent;
    int in_item;
-   struct ItemStack *next;
-} ItemStack;
+   ItemStack *next;
+};
 
-typedef struct PasteNode {
+struct PasteNode {
    char *name;
    SourceInputKind where;       /* where should I be parsing from? */
    short int hasbutton;
    short int haspaste;
-   struct GroupItem *group;
+   GroupItem *group;
    ItemStack *item_stack;
-   struct TextNode *arg_node;
-   struct TextNode *end_node;
-   struct TextNode *begin_node;
-   struct InputItem *paste_item;
-} PasteNode;
+   TextNode *arg_node;
+   TextNode *end_node;
+   TextNode *begin_node;
+   InputItem *paste_item;
+};
 
 /* Structure for formatted hypertext */
 
-typedef struct TextNode {
+struct TextNode {
    short  type;                  /* type of node (text, link, etc.) */
    int x,y, width, height;       /* relative location on screen */
    int space;                    /* was there space in front of me ? */
    union {
       char *text;                 /* piece of text to display */
-      struct TextNode *node;     /* argument text */
-      struct IfNode *ifnode;
+      TextNode *node;     /* argument text */
+      IfNode *ifnode;
    } data;
    HyperLink *link;              /* link for active text */
    union {
       openaxiom_pixmap pm;      /* pixmap for bit images */
       openaxiom_image *xi;      /* pixmap image */
    } image;
-   struct TextNode *next;       /* next node in formatted text */
-} TextNode;
+   TextNode *next;       /* next node in formatted text */
+};
 
 /** Structure used to store pixmaps and bitmaps **/
 
-typedef struct ImageStruct {
+struct ImageStruct {
    int width,height;   /** It's width and height **/
    union {
       openaxiom_pixmap pm;
       openaxiom_image *xi;
    } image;
    char *filename;       /** The filename used to reference it **/
-} ImageStruct;
+};
 
 /* Structure for locating HyperDoc pages in a source file */
 
-typedef struct FilePosition {
+struct FilePosition {
    char *name;           /* file name */
    long  pos;            /* position in file */
    int   ln;             /* the line number */
-} FilePosition;
+};
 
 /*** The structure needed for storing a macro **/
 
-typedef struct MacroStore {
+struct MacroStore {
    short int loaded;
    FilePosition fpos;
    char *name;
    char *macro_string;
    short number_parameters;
-} MacroStore;
-
-
+};
 
 /** Structure needed for storing a patch **/
-typedef struct PatchStore {
+struct PatchStore {
    short int loaded;
    FilePosition fpos;
    char *name;
    char *string;
-} PatchStore;
+};
 
 /*  Here are the structures needed for doing input to HyperDoc windows. */
 
-typedef struct LineStruct {
+struct LineStruct {
    char *buffer;
    int changed;      /* Has the line changed */
    int line_number;
    int buff_pntr;
    int len;
-   struct LineStruct *prev, *next;
-} LineStruct;
+   LineStruct *prev, *next;
+};
 
-typedef struct InputItem {
+struct InputItem {
    char *name;                   /* symbol name                **/
    int size;                      /* the length of the window   **/
    int cursor_x;                  /* x-coordinate for the cursor **/
@@ -216,45 +215,45 @@ typedef struct InputItem {
    LineStruct *lines;
    LineStruct *curr_line;         /* the current line on which the cursor */
    openaxiom_window win;
-   struct InputItem  *next;
-}  InputItem;
+   InputItem  *next;
+};
 
 
 /* structure for storing input boxes **/
-typedef struct InputBox {
+struct InputBox {
    char *name;
    ImageStruct *selected, *unselected;
    short int picked;
-   struct InputBox  *next;
-   struct RadioBoxes *rbs;
+   InputBox  *next;
+   RadioBoxes *rbs;
    openaxiom_window win;
-} InputBox;
+};
 
-typedef struct RadioBoxes {
+struct RadioBoxes {
    char *name;
    InputBox *boxes;
    ImageStruct *selected, *unselected;
    int width, height;
-   struct RadioBoxes *next;
-} RadioBoxes;
+   RadioBoxes *next;
+};
 
 /* Structure for spadcommand dependencies hash table entries */
-typedef struct spadcom_depend {
+struct SpadcomDepend {
    char *label;                  /* dependency label */
    TextNode *spadcom;            /* spadcommand defining the label */
    short executed;               /* true iff spadcommand has benn executed */
-} SpadcomDepend;
+} ;
 
-typedef struct ButtonList {
+struct ButtonList {
    int           x0,y0,x1,y1;
    HyperLink             *link;
    openaxiom_window     win;
-   struct ButtonList    *next;
-} ButtonList;
+   ButtonList    *next;
+};
 
 /* Stucture for unformatted hyper text page */
 
-typedef struct HyperDocPage {
+struct HyperDocPage {
    short type;                   /* Normal, Quitbutton, Upbutton etc.       */
    const char *name;             /* ID of page                              */
    char *filename;               /* The name of the file in which the page
@@ -277,19 +276,19 @@ typedef struct HyperDocPage {
    RadioBoxes *radio_boxes;      /* a linked list of radio boxes            */
    short page_flags;             /* A list of flags for the page            */
    char *helppage;               /* the name of the helppage                */
-} HyperDocPage;
+};
 
 /* Structure for an unloaded page */
 
-typedef struct UnloadedPage {
+struct UnloadedPage {
    short type;                   /* indicator of unloaded page */
    char *name;                   /* name of page */
    FilePosition fpos;            /* where to find the page */
-} UnloadedPage;
+};
 
 /* Structure for a HyperDoc Window */
 
-typedef struct HDWindow {
+struct HDWindow {
    openaxiom_window fMainWindow; /* The main text field window.  */
    openaxiom_window fScrollWindow; /* The scrolling area of the window.  */
    openaxiom_window fDisplayedWindow; /* The current window of the above two,*/
@@ -343,36 +342,37 @@ typedef struct HDWindow {
    openaxiom_graphic_context fCursorGC; /* Graphics context for the cursors */
    openaxiom_graphic_context fControlGC; /* Graphics context for the buttons */
    openaxiom_cursor fDisplayedCursor; /* The currently displayed cursor */
-} HDWindow;
+};
 
 /* Structure for identifying appropriate link hash tables */
 
-typedef struct LinkHashID {
+struct LinkHashID {
    int code;                     /* code of active area */
    HyperDocPage *page;           /* page for which hash table applies */
-} LinkHashID;
+};
 
 
 
-typedef struct GroupItem {
+struct GroupItem {
     int cur_color;
     openaxiom_font *cur_font;
     int center;
-    struct GroupItem *next;
-} GroupItem;
+    GroupItem *next;
+};
 
 
-typedef struct CondNode {
+struct CondNode {
    char *label;
    char *cond;
-} CondNode;
+};
 
-typedef struct parameter_list_type {
+struct parameter_list_type {
     char          **list;       /** The parameters in string form **/
     short           number;     /** How many parameters are there **/
-    struct parameter_list_type *next;
-}              *ParameterList;
+    parameter_list_type *next;
+};
 
+using ParameterList = parameter_list_type*;
 
 /*** Flags for the page ***/
 

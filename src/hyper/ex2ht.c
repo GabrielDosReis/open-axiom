@@ -87,7 +87,7 @@ emitCoverLink(const char* name, char *title)
 }
 
 static void
-closeCoverFile(void)
+closeCoverFile()
 {
     fclose(coverFile);
 #ifndef __WIN32__		/* FIXME! */
@@ -96,14 +96,14 @@ closeCoverFile(void)
 }
 
 static void
-closeCoverPage(void)
+closeCoverPage()
 {
     fprintf(coverFile, "}\\endscroll\\end{page}\n\n");
 }
 /* cover page functions */
 
 static void
-openCoverPage(void)
+openCoverPage()
 {
     coverFile = fopen("coverex.ht", "w");
     if (coverFile == NULL) {

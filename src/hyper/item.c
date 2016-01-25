@@ -46,7 +46,7 @@ ItemStack *gTopOfItemStack = NULL;
 
 
 void
-push_item_stack(void)
+push_item_stack()
 {
     ItemStack *is = (ItemStack *) halloc(sizeof(ItemStack), "Item stack");
 
@@ -58,7 +58,7 @@ push_item_stack(void)
     return;
 }
 void
-clear_item_stack(void)
+clear_item_stack()
 {
     ItemStack *is = gTopOfItemStack, *chuck;
 
@@ -70,7 +70,7 @@ clear_item_stack(void)
     return;
 }
 void
-pop_item_stack(void)
+pop_item_stack()
 {
     ItemStack *chuck;
 
@@ -87,7 +87,7 @@ pop_item_stack(void)
 }
 
 ItemStack *
-copy_item_stack(void)
+copy_item_stack()
 {
     ItemStack *stack = NULL;
     ItemStack *prev = NULL;

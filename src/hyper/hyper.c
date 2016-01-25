@@ -66,12 +66,12 @@
 
 using namespace OpenAxiom;
 
-static void init_hash(void);
-static void make_server_connections(void);
-static void check_arguments(void);
-static void init_hash(void);
-static void make_server_connections(void);
-static void check_arguments(void);
+static void init_hash();
+static void make_server_connections();
+static void check_arguments();
+static void init_hash();
+static void make_server_connections();
+static void check_arguments();
 
 /*
  * Here is a flag used to tell me whether I made a good connection to the
@@ -320,7 +320,7 @@ main(int argc, char **argv)
  */
 
 static void
-init_hash(void)
+init_hash()
 {
     hash_init(&gFileHashTable, 
               FileHashSize,
@@ -354,7 +354,7 @@ init_page_structs(HDWindow *w)
 }
 
 static void
-check_arguments(void)
+check_arguments()
 {
   int i;
   
@@ -404,7 +404,7 @@ check_arguments(void)
 }
 
 static void
-make_server_connections(void)
+make_server_connections()
 {
     int i, wait_time;
 

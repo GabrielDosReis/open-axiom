@@ -40,12 +40,12 @@
 
 extern void sigusr2_handler(int sig);
 extern void sigcld_handler(int sig);
-extern void clean_socket(void);
+extern void clean_socket();
 extern void init_page_structs(HDWindow * w);
-extern void helpForHyperDoc(void);
-extern void quitHyperDoc(void);
-extern void exitHyperDoc(void);
-extern void mainEventLoop(void);
+extern void helpForHyperDoc();
+extern void quitHyperDoc();
+extern void exitHyperDoc();
+extern void mainEventLoop();
 extern void make_window_link(char*);
 
 extern Window gActiveWindow;

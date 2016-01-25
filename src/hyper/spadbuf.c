@@ -64,9 +64,9 @@
 using namespace OpenAxiom;
 
 static void spadbuf_inter_handler(int);
-static void spadbuf_function_chars(void);
-static void interp_io(void);
-static void init_parent(void);
+static void spadbuf_function_chars();
+static void interp_io();
+static void init_parent();
 
 
 unsigned char _INTR, _QUIT, _ERASE, _KILL, _EOF, _EOL, _RES1, _RES2;
@@ -108,7 +108,7 @@ spadbuf_inter_handler(int sig)
 }
 
 static void
-spadbuf_function_chars(void)
+spadbuf_function_chars()
 {
     /** once I have that get the special characters         ****/
     _INTR = oldbuf.c_cc[VINTR];
@@ -123,7 +123,7 @@ spadbuf_function_chars(void)
 /* act as terminal session for sock connected to stdin 
    and stdout of another process */
 static void
-interp_io(void)
+interp_io()
 {
     char buf[1024];
     fd_set rd;
@@ -172,7 +172,7 @@ interp_io(void)
 }
 
 static void
-init_parent(void)
+init_parent()
 {
 
     /** get the original termio settings, so I never have to check again **/

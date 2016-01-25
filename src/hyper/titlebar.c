@@ -56,7 +56,7 @@
 
 using namespace OpenAxiom;
 
-static void readTitleBarImages(void);
+static void readTitleBarImages();
 
 extern int y_off;               /* y offset for scrolling regions */
 
@@ -99,7 +99,7 @@ int twwidth, twheight;   /* the width and height for all windows in the */
                          /* title bar */
 
 void
-makeTitleBarWindows(void)
+makeTitleBarWindows()
 {
     XSetWindowAttributes at;
     unsigned long valuemask = 0L;
@@ -140,7 +140,7 @@ makeTitleBarWindows(void)
 }
 
 void
-showTitleBar(void)
+showTitleBar()
 {
     XWindowChanges wc;
     int height, hbw = (int) gWindow->border_width / 2;
@@ -269,7 +269,7 @@ showTitleBar(void)
 }
 
 void
-linkTitleBarWindows(void)
+linkTitleBarWindows()
 {
     HyperLink *tw1link = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink"),
               *tw2link = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink"),
@@ -303,7 +303,7 @@ linkTitleBarWindows(void)
 }
 
 static void
-readTitleBarImages(void)
+readTitleBarImages()
 {
     int w, h;
     char filename[128];

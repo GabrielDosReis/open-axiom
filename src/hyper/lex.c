@@ -230,7 +230,7 @@ dumpToken(char *caller, Token t)
 
 /* initialize the parser keyword hash table */
 void
-parser_init(void)
+parser_init()
 {
     int i;
     Token *toke;
@@ -253,7 +253,7 @@ parser_init(void)
 
 /* initialize the lexical scanner to read from a file */
 void
-init_scanner(void)
+init_scanner()
 {
     if (oa_getenv("HTASCII")) {
         useAscii = (strcmp(oa_getenv("HTASCII"), "yes") == 0);
@@ -279,7 +279,7 @@ init_scanner(void)
 
 /* save the current state of the scanner */
 void
-save_scanner_state(void)
+save_scanner_state()
 {
     StateNode *new_item = (StateNode *) halloc((sizeof(StateNode)), "StateNode");
 
@@ -299,7 +299,7 @@ save_scanner_state(void)
 
 /* restore the saved scanner state */
 void
-restore_scanner_state(void)
+restore_scanner_state()
 {
     StateNode *x = top_state_node;
 
@@ -334,7 +334,7 @@ unget_char(int c)
 }
 
 int
-get_char(void)
+get_char()
 {
     int c;
 
@@ -383,7 +383,7 @@ get_char(void)
 
 /* return the next character in the input stream */
 static int
-get_char1(void)
+get_char1()
 {
     int c;
     int cmd;
@@ -460,7 +460,7 @@ Token unget_toke;
 
 /* return current token to the input stream */
 void
-unget_token(void)
+unget_token()
 {
     last_token = 1;
     unget_toke.type = token.type;
@@ -469,7 +469,7 @@ unget_token(void)
 
 
 int
-get_token(void)
+get_token()
 {
     int c, ws;
     int nls = 0;
@@ -644,7 +644,7 @@ typedef struct be_struct {
 BeStruct *top_be_stack;
 
 void
-jump(void)
+jump()
 {
     if (gWindow == NULL)
         exit(-1);
@@ -699,7 +699,7 @@ check_and_pop_be_stack(int type, const char* id)
 }
 
 int
-clear_be_stack(void)
+clear_be_stack()
 {
     BeStruct *x = top_be_stack, *y;
 
@@ -784,7 +784,7 @@ be_type(const char* which)
 
 }
 int
-begin_type(void)
+begin_type()
 {
     /*Token store;*/
     int ret_val;
@@ -821,7 +821,7 @@ begin_type(void)
 
 
 int
-end_type(void)
+end_type()
 {
     int ret;
 
@@ -945,7 +945,7 @@ token_name(int type)
 
 /* print out a token value */
 void
-print_token(void)
+print_token()
 {
     if (token.type == openaxiom_Word_token)
         printf("%s ", token.id);
@@ -957,7 +957,7 @@ print_token(void)
 }
 
 void
-print_next_ten_tokens(void)
+print_next_ten_tokens()
 {
     int i;
     int v;
@@ -973,7 +973,7 @@ print_next_ten_tokens(void)
 }
 
 void
-print_page_and_filename(void)
+print_page_and_filename()
 {
     char obuff[128];
 
@@ -1004,7 +1004,7 @@ print_page_and_filename(void)
 
 
 static int
-keyword_type(void)
+keyword_type()
 {
     Token *token_ent;
 
@@ -1068,7 +1068,7 @@ get_expected_token(int type)
 }
 
 static void
-spad_error_handler(void)
+spad_error_handler()
 {
     /* fprintf(stderr, "got a spad error\n"); */
     longjmp(jmpbuf, 1);

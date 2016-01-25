@@ -492,7 +492,7 @@ total_width(TextNode * node, int Ender)
  */
 
 void
-init_extents(void)
+init_extents()
 {
     present_line_height = line_height;
     gInLine = 0;
@@ -534,7 +534,7 @@ init_title_extents(HyperDocPage * page)
  */
 
 void
-init_text(void)
+init_text()
 {
     normal_text_height = gRmFont->ascent + gRmFont->descent;
     line_height = gRmFont->ascent + gRmFont->descent + inter_line_space;

@@ -88,7 +88,7 @@ int gverifydates=0;
 regex_t reg_pattern;
 
 static void 
-badDB(void)
+badDB()
 {
    fprintf(stderr, "%s:  bad database file %s\n", progName, htdbFName);
    exit(1);
@@ -376,7 +376,7 @@ handleFile(FILE* htdbFile)
 }
 
 static void
-handleHtdb(void)
+handleHtdb()
 {
    FILE *htdbFile;
    int c;

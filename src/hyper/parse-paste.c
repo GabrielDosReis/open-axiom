@@ -57,7 +57,7 @@ short int gInPaste;
 
 
 void
-parse_paste(void)
+parse_paste()
 {
     TextNode *pn = curr_node;
     PasteNode *paste;
@@ -142,7 +142,7 @@ parse_paste(void)
 }
 
 void
-parse_pastebutton(void)
+parse_pastebutton()
 {
     PasteNode *paste;
     TextNode *pb;

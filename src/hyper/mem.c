@@ -78,7 +78,7 @@ free_if_non_NULL(void *p)
 /* allocate an HDWindow Structure and initialize it */
 
 HDWindow *
-alloc_hd_window(void)
+alloc_hd_window()
 {
   HDWindow *w = (HDWindow *) halloc(sizeof(HDWindow), "HDWindow");
   /*char haslisp[10];*/
@@ -150,7 +150,7 @@ free_hd_window(HDWindow *w)
 /* Allocate an empty text node */
 
 TextNode *
-alloc_node(void)
+alloc_node()
 {
   TextNode *temp_node;
 
@@ -343,7 +343,7 @@ free_node(TextNode *node, short int des)
 }
 
 IfNode *
-alloc_ifnode(void)
+alloc_ifnode()
 {
   IfNode *tempif;
 
@@ -353,7 +353,7 @@ alloc_ifnode(void)
 }
 
 CondNode *
-alloc_condnode(void)
+alloc_condnode()
 {
   CondNode *temp;
 
@@ -663,7 +663,7 @@ alloc_paste_node(char *name)
 }
 
 PatchStore *
-alloc_patchstore(void)
+alloc_patchstore()
 {
   PatchStore *p = (PatchStore *) halloc(sizeof(PatchStore), "PatchStore");
 
@@ -687,7 +687,7 @@ free_patch(PatchStore *p)
 }
 
 InputBox *
-alloc_inputbox(void)
+alloc_inputbox()
 {
   InputBox *box = (InputBox *) halloc(sizeof(InputBox), "InputBox");
 
@@ -698,7 +698,7 @@ alloc_inputbox(void)
 }
 
 RadioBoxes *
-alloc_rbs(void)
+alloc_rbs()
 {
   RadioBoxes *newrb = (RadioBoxes *) halloc(sizeof(RadioBoxes), "Radio Boxes");
 
@@ -708,7 +708,7 @@ alloc_rbs(void)
 }
 
 ButtonList *
-alloc_button_list(void)
+alloc_button_list()
 {
   ButtonList *newbl = (ButtonList *) halloc(sizeof(ButtonList), "Button List");
 

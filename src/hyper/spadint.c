@@ -68,7 +68,7 @@ Sock_List *plSock = (Sock_List *) 0;
 
 /* connect to OpenAxiom , return 0 if succesful, 1 if not */
 int
-connect_spad(void)
+connect_spad()
 {
     if (!MenuServerOpened) {
         fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
@@ -89,7 +89,7 @@ connect_spad(void)
 
 /* returns true if spad is currently computing */
 int
-spad_busy(void)
+spad_busy()
 {
     if (session_server == NULL)
         return 1;
@@ -793,7 +793,7 @@ issue_unixpaste(TextNode *node)
  * called when session_server selects
  */
 void
-service_session_socket(void)
+service_session_socket()
 {
     int cmd, pid;
 
@@ -816,7 +816,7 @@ service_session_socket(void)
  * let spad know which frame to issue command via
  */
 static void
-switch_frames(void)
+switch_frames()
 {
     if (session_server == NULL) {
         fprintf(stderr, "(HyperDoc) No session manager connected!\n");

@@ -84,7 +84,7 @@ static char move_rest_back(LineStruct * line , int size);
 static int move_sym_forward(LineStruct * line , int num , int size , InputItem * sym);
 static char * mystrncpy(char * buff1 , char * buff2 , int n);
 static void overwrite_buffer(char * buffer , InputItem * item);
-static void redraw_win(void);
+static void redraw_win();
 static void tough_enter(InputItem * sym);
 
 static void

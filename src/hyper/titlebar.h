@@ -39,9 +39,9 @@
 #include "hyper.h"
 
 extern void getTitleBarMinimumSize(int * width , int * height);
-extern void linkTitleBarWindows(void);
-extern void makeTitleBarWindows(void);
-extern void showTitleBar(void);
+extern void linkTitleBarWindows();
+extern void makeTitleBarWindows();
+extern void showTitleBar();
 
 extern int  twwidth, twheight;  /* the width and height for all windows in the */
                                 /* title bar */

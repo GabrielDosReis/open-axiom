@@ -89,7 +89,7 @@ HyperDocErrorHandler(Display *display, XErrorEvent *xe)
 }
 
 static void
-set_error_handlers(void)
+set_error_handlers()
 {
     XSetErrorHandler(HyperDocErrorHandler);
 }
@@ -193,7 +193,7 @@ make_busy_cursor(HDWindow *window)
 }
 
 static void
-make_busy_cursors(void)
+make_busy_cursors()
 {
     hash_map(&gSessionHashTable, (MappableFunction)make_busy_cursor);
 }
@@ -284,7 +284,7 @@ kill_page(HyperDocPage * page)
 /* pops the memo stack */
 
 static HyperDocPage *
-returnlink(void)
+returnlink()
 {
     int i;
 
@@ -309,7 +309,7 @@ returnlink(void)
 /* pops a page if it can from the downlink stack */
 
 static HyperDocPage *
-uplink(void)
+uplink()
 {
     if (gWindow->fDownLinkStackIndex == 0)
         return returnlink();
@@ -354,7 +354,7 @@ find_page(TextNode * node)
 /* pushes a page onto the down link stack */
 
 static void
-downlink(void)
+downlink()
 {
     if (gWindow->fDownLinkStackIndex == MaxDownlinkDepth)
         fprintf(stderr, "exceeded maximum link nesting level\n");
@@ -363,7 +363,7 @@ downlink(void)
 }
 
 static void
-memolink(void)
+memolink()
 {
     if (gWindow->fMemoStackIndex == MaxMemoDepth)
         fprintf(stderr, "exceeded maximum link nesting level\n");
@@ -408,7 +408,7 @@ lispwindowlink_handler(HyperLink * link)
 }
 
 static void
-create_window(void)
+create_window()
 {
     XWindowAttributes wa;
 
@@ -728,7 +728,7 @@ handle_event(XEvent * event)
  */
 
 void
-quitHyperDoc(void)
+quitHyperDoc()
 {
     HyperDocPage *page;
 
@@ -765,7 +765,7 @@ make_window_link(char *name)
 
 
 void
-helpForHyperDoc(void)
+helpForHyperDoc()
 {
     HyperDocPage *page = NULL;
 
@@ -794,7 +794,7 @@ helpForHyperDoc(void)
 
 
 void
-exitHyperDoc(void)
+exitHyperDoc()
 {
     XEvent event;
 
@@ -834,7 +834,7 @@ exitHyperDoc(void)
 }
 
 void
-get_new_window(void)
+get_new_window()
 {
 
     int val;
@@ -974,7 +974,7 @@ init_cursor_state(HDWindow *window)
 }
 
 static void
-init_cursor_states(void)
+init_cursor_states()
 {
     hash_map(&gSessionHashTable,(MappableFunction) init_cursor_state);
 }
@@ -987,7 +987,7 @@ init_cursor_states(void)
  */
 
 void
-mainEventLoop(void)
+mainEventLoop()
 {
     XEvent event;
     int  Xcon;

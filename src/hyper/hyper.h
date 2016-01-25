@@ -49,34 +49,25 @@
 #include "node.h"
 #include "pixmap.h"
 
-#define boolean unsigned short int
-
-#ifndef TRUE
-#define TRUE   ((boolean) 0x1)
-#endif
-#ifndef FALSE
-#define FALSE  ((boolean) 0x0)
-#endif
-
 extern void sigusr2_handler(int sig);
 extern void sigcld_handler(int sig);
-extern void clean_socket(void);
+extern void clean_socket();
 extern void init_page_structs(HDWindow * w);
-extern void push_item_stack(void);
-extern void clear_item_stack(void);
-extern void pop_item_stack(void);
-extern ItemStack * copy_item_stack(void);
+extern void push_item_stack();
+extern void clear_item_stack();
+extern void pop_item_stack();
+extern ItemStack * copy_item_stack();
 extern void free_item_stack(ItemStack * is);
-extern ButtonList * alloc_button_list(void);
-extern CondNode * alloc_condnode(void);
-extern HDWindow * alloc_hd_window(void);
-extern IfNode * alloc_ifnode(void);
-extern InputBox * alloc_inputbox(void);
+extern ButtonList * alloc_button_list();
+extern CondNode * alloc_condnode();
+extern HDWindow * alloc_hd_window();
+extern IfNode * alloc_ifnode();
+extern InputBox * alloc_inputbox();
 extern LineStruct * alloc_inputline(int size);
-extern TextNode * alloc_node(void);
+extern TextNode * alloc_node();
 extern HyperDocPage * alloc_page(const char * name);
 extern PasteNode * alloc_paste_node(char * name);
-extern RadioBoxes * alloc_rbs(void);
+extern RadioBoxes * alloc_rbs();
 extern void free_button_list(ButtonList * bl);
 extern void free_hd_window(HDWindow * w);
 extern void free_input_item(InputItem * sym , short des);
@@ -86,14 +77,14 @@ extern void free_page(HyperDocPage * page);
 extern void free_patch(PatchStore * p);
 extern void free_string(char * str);
 extern char * resizeBuffer(int size , char * oldBuf , int * oldSize);
-extern PatchStore * alloc_patchstore(void);
+extern PatchStore * alloc_patchstore();
 extern InputItem * return_item(char * name);
 extern void fill_box(Window w , ImageStruct * image);
 extern void toggle_input_box(HyperLink * link);
 extern void toggle_radio_box(HyperLink * link);
 extern void change_input_focus(HyperLink * link);
-extern void next_input_focus(void);
-extern void prev_input_focus(void);
+extern void next_input_focus();
+extern void prev_input_focus();
 extern int delete_item(char * name);
 extern XImage * HTReadBitmapFile(Display * display , int screen , char * filename , int * width , int * height);
 extern ImageStruct * insert_image_struct(char * filename);
@@ -119,7 +110,7 @@ extern char * print_to_string1(TextNode * command , int * sizeBuf);
 extern int issue_serverpaste(TextNode * command);
 extern void issue_unixcommand(TextNode * node);
 extern int issue_unixpaste(TextNode * node);
-extern void service_session_socket(void);
+extern void service_session_socket();
 extern void send_lisp_command(char * command);
 extern void escape_string(char * s);
 extern void unescape_string(char * s);
@@ -278,7 +269,7 @@ extern int space_width;
 #define BeepAtTheUser()         /* (XBell(gXDisplay,  5)) */
 #define LoudBeepAtTheUser()     /* (XBell(gXDisplay, 50)) */
 
-extern int connect_spad(void);
+extern int connect_spad();
 
 
 /***      default fonts      ***/

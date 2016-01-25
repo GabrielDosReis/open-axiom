@@ -61,7 +61,7 @@ static void add_new_pages(FILE*, FILE*, char*, char*);
 static int build_db_filename(short, char*, char*);
 static void delete_db(FILE*, FILE*, char*);
 static int delete_file(char*, char*);
-static void get_filename(void);
+static void get_filename();
 static void parse_args(char**, char*, char**, short*);
 static void update_db(FILE*, FILE*, FILE*, char*, char*, int);
 
@@ -413,7 +413,7 @@ add_new_pages(FILE *temp_db, FILE *new_file, char *addname, char *fullname)
 
 
 static void
-get_filename(void)
+get_filename()
 {
     int c, ws;
     static char buffer[256];

@@ -37,7 +37,7 @@
 #define _KEYIN_H_ 1
 
 extern void handle_key(XEvent * event);
-extern void init_keyin(void);
+extern void init_keyin();
 
 extern int in_cursor_height;
 extern int in_cursor_width;

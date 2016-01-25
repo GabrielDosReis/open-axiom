@@ -164,7 +164,7 @@ initialize_default(InputItem *item,char * buff)
 
 /* Parse the input string statement * */
 void
-parse_inputstring(void)
+parse_inputstring()
 {
   TextNode *input_node = curr_node;
   char *name;
@@ -218,7 +218,7 @@ parse_inputstring(void)
 }
 
 void
-parse_simplebox(void)
+parse_simplebox()
 {
   InputBox *box;
   char *name;
@@ -309,7 +309,7 @@ parse_simplebox(void)
   return;
 }
 void
-parse_radiobox(void)
+parse_radiobox()
 {
   InputBox *box;
   char *name;
@@ -495,7 +495,7 @@ init_paste_item(InputItem *item)
   }
 }
 void
-repaste_item(void)
+repaste_item()
 {
   InputItem *trace;
 
@@ -514,7 +514,7 @@ repaste_item(void)
 }
 
 InputItem *
-current_item(void)
+current_item()
 {
   InputItem *trace = gPageBeingParsed->input_list;
 
@@ -539,7 +539,7 @@ already_there(char *name)
     return 0;
 }
 void
-parse_radioboxes(void)
+parse_radioboxes()
 {
   TextNode *return_node = curr_node;
   RadioBoxes *newrb;
