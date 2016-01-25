@@ -61,7 +61,7 @@ parse_paste(void)
 {
     TextNode *pn = curr_node;
     PasteNode *paste;
-    int where;
+    SourceInputKind where;
 
     if (gParserRegion != Scrolling) {
         fprintf(stderr, "(HyperDoc) Paste areas are only allowed in the scrolling area:");
@@ -101,8 +101,8 @@ parse_paste(void)
     if (token.type == openaxiom_Lsquarebrace_token) {
         /* user wishes to specify a where to send the command */
         where = get_where();
-        if (where == -1) {
-            paste->where = -1;
+        if (where == SourceInputKind::Error) {
+            paste->where = where;
             fprintf(stderr, "(HyperDoc) \\begin{paste} was expecting [lisp|unix|ht]\n");
             print_next_ten_tokens();
             print_page_and_filename();
@@ -113,11 +113,11 @@ parse_paste(void)
         get_token();
     }
     else
-        paste->where = openaxiom_FromFile_input;
+       paste->where = SourceInputKind::File;
 
     /* now try to get the command argument or page name */
     if (token.type != openaxiom_Lbrace_token) {
-        paste->where = 0;
+        paste->where = { };
         fprintf(stderr, "(HyperDoc) \\begin{paste} was expecting an argument\n");
         print_next_ten_tokens();
         print_page_and_filename();
@@ -216,7 +216,7 @@ parse_patch(PasteNode *paste)
     TextNode *old;
     TextNode *next_node;
     InputItem *paste_item = paste->paste_item;
-    int where = paste->where;
+    SourceInputKind where = paste->where;
     GroupItem *g = paste->group;
     ItemStack *is = paste->item_stack;
     PatchStore *patch;
@@ -233,7 +233,7 @@ parse_patch(PasteNode *paste)
     /* now read the new stuff and add it in between all this stuff */
 
     switch (where) {
-      case openaxiom_FromFile_input:
+    case SourceInputKind::File:
         patch_name = print_to_string(arg_node);
         patch = (PatchStore *) hash_find(gWindow->fPatchHashTable, patch_name);
         if (!patch) {
@@ -243,11 +243,11 @@ parse_patch(PasteNode *paste)
         }
         if (!patch->loaded)
             load_patch(patch);
-        input_type = openaxiom_FromString_input;
+        input_type = SourceInputKind::String;
         input_string = patch->string;
         break;
-      case openaxiom_FromSpadSocket_input:
-        input_type = openaxiom_FromSpadSocket_input;
+    case SourceInputKind::SpadSocket:
+       input_type = SourceInputKind::SpadSocket;
         ret_value = issue_serverpaste(arg_node);
         if (ret_value < 0) {
             paste->where = where;
@@ -259,8 +259,8 @@ parse_patch(PasteNode *paste)
             return 0;
         }
         break;
-      case openaxiom_FromUnixFD_input:
-        input_type = openaxiom_FromUnixFD_input;
+    case SourceInputKind::UnixFD:
+       input_type = SourceInputKind::UnixFD;
         issue_unixpaste(arg_node);
         break;
       default:
@@ -269,7 +269,7 @@ parse_patch(PasteNode *paste)
         break;
     }
 
-    paste->where = 0;
+    paste->where =  { };
     paste->end_node = paste->arg_node = paste->begin_node = 0;
     paste->group = 0;
     paste->item_stack = 0;
@@ -296,7 +296,7 @@ parse_patch(PasteNode *paste)
                 paste->name);
         jump();
     }
-    if (input_type == openaxiom_FromString_input) {
+    if (input_type == SourceInputKind::String) {
         get_token();
         if (token.type != openaxiom_Lbrace_token) {
             token_name(token.type);

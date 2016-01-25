@@ -81,7 +81,8 @@ struct GroupItem;
 /** I am implementing a state node stack, this is the structure I store **/
 
 typedef struct StateNode {
-   int last_ch, last_token, input_type;
+   int last_ch, last_token;
+   SourceInputKind input_type;
    long fpos, keyword_fpos;
    long page_start_fpos;
    Token token;
@@ -124,7 +125,7 @@ typedef struct ItemStack {
 
 typedef struct PasteNode {
    char *name;
-   int where;                /* where should I be parsing from? */
+   SourceInputKind where;       /* where should I be parsing from? */
    short int hasbutton;
    short int haspaste;
    struct GroupItem *group;

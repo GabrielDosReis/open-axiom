@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -234,7 +234,7 @@ parse_from_string(char *str)
     last_ch = NoChar;
     last_token = 0;
     input_string = str;
-    input_type = openaxiom_FromString_input;
+    input_type = SourceInputKind::String;
     parse_HyperDoc();
     restore_scanner_state();
 }
@@ -711,7 +711,7 @@ parse_page_from_socket(void)
     HyperDocPage *hpage;
 
     init_scanner();
-    input_type = openaxiom_FromSpadSocket_input;
+    input_type = SourceInputKind::SpadSocket;
     input_string = "";
     cur_spadcom = NULL;
     gLinkHashTable = page->fLinkHashTable;
@@ -755,7 +755,7 @@ parse_page_from_unixfd(void)
     HyperDocPage *page = alloc_page((char *) NULL);
 
     init_scanner();
-    input_type = openaxiom_FromUnixFD_input;
+    input_type = SourceInputKind::UnixFD;
     cur_spadcom = NULL;
     gLinkHashTable = page->fLinkHashTable;
     hash_init(

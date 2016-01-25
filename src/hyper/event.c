@@ -240,7 +240,7 @@ static HyperDocPage *
 paste_button(PasteNode * paste)
 {
     HyperDocPage *page = NULL;
-    int pastewhere=paste->where;
+    auto pastewhere = paste->where;
 
 
     if ( paste->end_node ==NULL || paste->begin_node==NULL || paste->arg_node==NULL ){
@@ -251,7 +251,7 @@ paste_button(PasteNode * paste)
     page=parse_patch(paste);
 /* paste has changed after this call so use pastewhere*/
 
-    if (pastewhere && page ) {
+    if (pastewhere != SourceInputKind{ } && page ) {
         if (0 == strcmp(page->name, "ErrorPage"))
             page = NULL;
     }
@@ -866,7 +866,7 @@ get_new_window(void)
         init_top_window(NULL);
         val = get_int(spad_socket);
         init_scanner();
-        input_type = openaxiom_FromSpadSocket_input;
+        input_type = SourceInputKind::SpadSocket;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         gWindow->fAxiomFrame = frame;
@@ -885,7 +885,7 @@ get_new_window(void)
         init_form_window(NULL, val);
         send_int(spad_socket, gWindow->fMainWindow);
         init_scanner();
-        input_type = openaxiom_FromSpadSocket_input;
+        input_type = SourceInputKind::SpadSocket;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         compute_form_page(gWindow->page);
@@ -935,7 +935,7 @@ get_new_window(void)
         wid = (Window) get_int(spad_socket);
         set_window(wid);
         init_scanner();
-        input_type = openaxiom_FromSpadSocket_input;
+        input_type = SourceInputKind::SpadSocket;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         display_page(gWindow->page);

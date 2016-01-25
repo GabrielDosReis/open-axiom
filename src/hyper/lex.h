@@ -67,7 +67,8 @@ extern void print_next_ten_tokens(void);
 
 extern long fpos, keyword_fpos;
 extern Token token;
-extern int last_token, input_type, last_ch;
+extern int last_token, last_ch;
+extern SourceInputKind input_type;
 extern char *input_string;
 extern FILE *cfile;
 extern short int gInSpadsrc;

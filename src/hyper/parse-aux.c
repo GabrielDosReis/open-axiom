@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reverved.
 
   Redistribution and use in source and binary forms, with or without
@@ -575,33 +575,33 @@ get_input_string(void)
  * tries to determine if there is an optional argument for where I should be
  * parsing from. If so it then tries to determine which
  */
-int
-get_where(void)
+SourceInputKind
+get_where()
 {
-    int tw;
+    SourceInputKind tw;
 
     get_token();
     if (token.type != openaxiom_Word_token)
-        return -1;
+       return SourceInputKind::Error;
 
     /* Now try to determine if it is a good type */
     if (!strcmp(token.id, "lisp")) {
-        tw = openaxiom_FromSpadSocket_input;
+       tw = SourceInputKind::SpadSocket;
     }
     else if (!strcmp(token.id, "unix")) {
-        tw = openaxiom_FromUnixFD_input;
+       tw = SourceInputKind::UnixFD;
     }
     else if (!strcmp(token.id, "ht")) {
-        tw = openaxiom_FromFile_input;
+       tw = SourceInputKind::File;
     }
     else {
-        return -1;
+       return SourceInputKind::Error;
     }
 
     /* now check to see if I got a closing square brace */
     get_token();
     if (token.type != openaxiom_Rsquarebrace_token)
-        return -1;
+       return SourceInputKind::Error;
 
     return tw;
 }

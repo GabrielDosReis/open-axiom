@@ -103,7 +103,7 @@ long page_start_fpos;           /* where the current pages fpos started      */
 long keyword_fpos;              /* fpos of beginning of most recent keyword */
 Token token;                    /* most recently read token */
 int last_token;                 /* most recently read token for unget_token */
-int input_type;                 /* indicates where to read input */
+SourceInputKind input_type;                 /* indicates where to read input */
 char *input_string;             /* input string read when from_string is true */
 int last_ch;                    /* last character read, for unget_char */
 int last_command;               /* the last socket command */
@@ -265,7 +265,7 @@ init_scanner(void)
     keyword = 0;
     last_ch = NoChar;
     last_token = 0;
-    input_type = openaxiom_FromFile_input;
+    input_type = SourceInputKind::File;
     fpos = 0;
     keyword_fpos = 0;
     last_command = -1;
@@ -396,23 +396,23 @@ get_char1(void)
         return c;
     }
     switch (input_type) {
-      case openaxiom_FromUnixFD_input:
+    case SourceInputKind::UnixFD:
         c = getc(unixfd);
         if (c == '\n')
             line_number++;
         return c;
-      case openaxiom_FromString_input:
+    case SourceInputKind::String:
         c = (*input_string ? *input_string++ : EOF);
         if (c == '\n')
             line_number++;
         return c;
-      case openaxiom_FromFile_input:
+    case SourceInputKind::File:
         c = getc(cfile);
         fpos++;
         if (c == '\n')
             line_number++;
         return c;
-      case openaxiom_FromSpadSocket_input:
+    case SourceInputKind::SpadSocket:
 AGAIN:
         if (*input_string) {
             /* this should never happen for the first character */
@@ -512,14 +512,14 @@ get_token(void)
         *buf++ = 0;
 
     keyword = 0;
-    if (input_type != openaxiom_FromSpadSocket_input && c == '%') {
+    if (input_type != SourceInputKind::SpadSocket && c == '%') {
         while ((c = get_char()) != '\n' && c != EOF);
 /* trying to fix the comment problem: a comment line forces words on either side together*/
 /* try returning the eol */
         unget_char(c);
         return get_token();
     }
-    if (input_type == openaxiom_FromFile_input && c == '$') {
+    if (input_type == SourceInputKind::File && c == '$') {
         token.type = openaxiom_Dollar_token;
         return 0;
     }

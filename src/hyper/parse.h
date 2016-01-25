@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2016, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@ extern void read_ht_db(HashTable * page_hash , HashTable * macro_hash , HashTabl
 extern int get_filename(void);
 extern int is_number(const char * str);
 extern void parser_error(char * str);
-extern int get_where(void);
+extern SourceInputKind get_where();
 extern void scan_HyperDoc(void);
 extern int number(const char * str);
 extern ParameterList init_parameter_elem(int number);

@@ -49,15 +49,15 @@
 
 /* HyperDoc parser tokens */
 
-typedef struct Token {
+struct Token {
    int type;              /* token type.  One of those listed below */
    const char *id;                  /* string value if type == Identifier */
-} Token;
+};
 
 /*
     User tokens. ie, these can be found on a page
 */
-typedef enum openaxiom_token_kind {
+enum openaxiom_token_kind {
   openaxiom_Word_token = 1,
   openaxiom_Page_token = 2,
   openaxiom_Lispcommandquit_token = 3,
@@ -236,19 +236,21 @@ typedef enum openaxiom_token_kind {
   openaxiom_Endmath_token = 4016,
   openaxiom_Endpaste_token = 4029,
   openaxiom_Endspadsrc_token = 4030
-} openaxiom_token_kind;
+};
 
 
 extern const char *token_table[];
 
 
 /* places from which input may be read */
-typedef enum openaxiom_input_kind {
-   openaxiom_FromFile_input = 1,
-   openaxiom_FromString_input = 2,
-   openaxiom_FromSpadSocket_input = 3,
-   openaxiom_FromUnixFD_input = 4
-} openaxiom_input_kind;
+enum class SourceInputKind {
+   Error = -1,
+      
+   File = 1,
+   String = 2,
+   SpadSocket = 3,
+   UnixFD = 4
+};
 
 extern FILE *unixfd;
 

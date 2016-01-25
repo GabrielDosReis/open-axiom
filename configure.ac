@@ -161,7 +161,7 @@ if test x$oa_has_qt = xyes; then
 fi
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.
-echo -n "extracting list of SPAD type definitions..."
+AS_ECHO_N(["extracting list of SPAD type definitions..."])
 egrep '<<(category|domain|package) .*>>=' \
     $srcdir/src/algebra/*.spad.pamphlet \
     | sort | uniq | \
@@ -174,7 +174,7 @@ $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
     \$(top_confdir)/move-if-change \$@.tmp \$@
 EOF
     done 
-echo done
+AC_MSG_RESULT([done])
 $srcdir/config/move-if-change \
     src/algebra/tmp-extract.mk src/algebra/extract.mk
 
