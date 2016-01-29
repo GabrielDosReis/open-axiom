@@ -92,8 +92,9 @@ indentationLocation line ==
     return loc
 
 storeBlanks!(line,n) ==
-  #line >= n => nil
-  stringChar(line,n) := char " "
+  for i in 0..(n-1) repeat
+    stringChar(line,i) := char " "
+  line
 
 skipIfBlock rs ==
   [n,:line] := z := preparseReadLine1 rs
