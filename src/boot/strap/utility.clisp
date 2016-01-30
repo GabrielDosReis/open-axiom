@@ -19,7 +19,7 @@
                      |scalarMember?| |listMember?| |reverse| |reverse!|
                      |lastNode| |append| |append!| |copyList| |substitute|
                      |substitute!| |listMap| |listMap!| |butLast| |butLast!|
-                     |lastItem| |setDifference| |setUnion| |setIntersection|
+                     |last| |setDifference| |setUnion| |setIntersection|
                      |symbolAssoc| |applySubst| |applySubst!| |applySubstNQ|
                      |objectAssoc| |invertSubst| |substTarget| |substSource|
                      |remove| |removeSymbol| |atomic?| |every?| |any?| |take|
@@ -44,7 +44,7 @@
  (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%Maybe| (|%Node| |%Thing|)))
   |lastNode|))
 
-(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) |%Thing|) |lastItem|))
+(DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) |%Thing|) |last|))
 
 (DECLAIM (FTYPE (FUNCTION ((|%List| |%Thing|)) (|%List| |%Thing|)) |butLast|))
 
@@ -261,7 +261,7 @@
        (T (SETQ |l| |l'|))))
      |l|)))
 
-(DEFUN |lastItem| (|l|) (CAR (|lastNode| |l|)))
+(DEFUN |last| (|l|) (CAR (|lastNode| |l|)))
 
 (DEFUN |butLast| (|l|)
   (LET* (|xs| |LETTMP#1|)

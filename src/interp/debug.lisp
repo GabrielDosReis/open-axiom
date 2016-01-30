@@ -560,7 +560,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                     (TRACE_OPTION_ERROR 'DEPTH))
                   T))
         (SETQ CONDITION
-              (MKPF
+              (|mkpf|
                 (LIST CONDITION WITHIN_CONDITION FROM_CONDITION COUNT_CONDITION
                       DEPTH_CONDITION )
                 'AND))

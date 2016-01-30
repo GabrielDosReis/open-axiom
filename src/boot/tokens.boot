@@ -308,7 +308,6 @@ for i in [ _
   ["makeFilePath", "MAKE-PATHNAME"] , _
   ["makeSymbol", "INTERN"] , _
   ["mergeFilePaths", "MERGE-PATHNAMES"] , _
-  ["mkpf",        "MKPF"]  , _
   ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _

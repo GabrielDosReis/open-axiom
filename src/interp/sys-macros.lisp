@@ -383,11 +383,11 @@
 		    ((EQUAL (CAR L) (CADR L))
 		     '(ZERO))
 		    ((|member| (CAR L) '(0 (ZERO)))
-		     (MKPF (CDR L) 'MINUS))
+		     (|mkpf| (CDR L) 'MINUS))
 		    ((|member| (CADR L) '(0 (ZERO)))
 		     (CAR L))
 		    ((EQCAR (CADR L) 'MINUS)
-		     (MKPF (LIST (CAR L) (CADADR L)) 'PLUS))
+		     (|mkpf| (LIST (CAR L) (CADADR L)) 'PLUS))
 		    ((CONS 'DIFFERENCE L)) ))
 	     (EXPT 
 	      (COND ((GREATERP (LENGTH L) 2)
@@ -478,10 +478,10 @@
 	  (REMFLAG (CDR L) KEY))))
    
 
-   (FLAG '(* + AND |and| OR |or| PROGN) 'NARY) ; flag for MKPF
+   (FLAG '(* + AND |and| OR |or| PROGN) 'NARY) ; flag for |mkpf|
 
 
-   (defun MKPF (L OP)
+   (defun |mkpf| (L OP)
      (if (FLAGP OP 'NARY)
 	 (SETQ L (MKPFFLATTEN-1 L OP NIL)))
      (MKPF1 L OP))
@@ -509,7 +509,7 @@
 	   ((ATOM X)
 	    (LIST 'spadDO 
 		  (|reverse!| IL) 
-		  (LIST (MKPF (|reverse!| XCL) 'OR) XV)
+		  (LIST (|mkpf| (|reverse!| XCL) 'OR) XV)
 		  (SEQOPT (CONS 'SEQ (|append!| (|reverse!| RSL)
 					    (LIST (LIST 'EXIT BD)))))))
 	   (COND ((ATOM (CAR X)) 
@@ -645,7 +645,7 @@
 		    '(EXIT RESET IN ON GSTEP ISTEP STEP 
 			   GENERAL UNTIL WHILE SUCHTHAT EXIT))
 	    (REPEAT-TRAN (CDR L) (CONS (CAR L) LP)))
-	   ((CONS (|reverse!| LP) (MKPF L 'PROGN)))))
+	   ((CONS (|reverse!| LP) (|mkpf| L 'PROGN)))))
    
    (defun MK_LEFORM (U)
      (COND ((|ident?| U) 
@@ -954,7 +954,7 @@
 		   ((NULL (EQCAR (CAR L) 'SEQ))
 		    (SETQ BODYFORMS (CONS 'SEQ L)))
 		   ((SETQ BODYFORMS (CAR L)))))
-	(SETQ EXITFORMS `(EXIT ,(MKPF EXITFORMS 'PROGN)))
+	(SETQ EXITFORMS `(EXIT ,(|mkpf| EXITFORMS 'PROGN)))
 	(AND ENDTEST 
 	     (SETQ ENDTEST (LIST 'COND (LIST ENDTEST '(GO G191)))))
 	(COND ((NULL U-VARS)

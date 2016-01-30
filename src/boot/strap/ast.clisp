@@ -2874,7 +2874,7 @@
                        (SETQ |args| (CDR |ISTMP#1|))
                        T))))
            (COND
-            ((EQ (|lastItem| |args|) 'NIL)
+            ((EQ (|last| |args|) 'NIL)
              (CONS 'FUNCALL
                    (|listMap!| (|butLast!| (CDR |x|)) #'|translateForm|)))
             ((AND (CONSP |args|) (NULL (CDR |args|))
