@@ -478,7 +478,7 @@
 	  (REMFLAG (CDR L) KEY))))
    
 
-   (FLAG '(* + AND OR PROGN) 'NARY)                ; flag for MKPF
+   (FLAG '(* + AND |and| OR |or| PROGN) 'NARY) ; flag for MKPF
 
 
    (defun MKPF (L OP)

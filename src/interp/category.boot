@@ -379,7 +379,7 @@ filterConditionalCategories(l,tbl,e) ==
       listMember?(pred,get("$Information","special",e)) =>
         --It's true, so we add it as unconditional
         unconditionals := [CatEval(at,tbl,e),:unconditionals]
-      pred isnt ["and",:.] =>
+      pred isnt ['and,:.] =>
         conditionals := [[CatEval(at,tbl,e),pred],:conditionals]
       -- Predicate is a conjunctive; decompose it.
       pred' := [x for x in pred.args |
@@ -387,7 +387,7 @@ filterConditionalCategories(l,tbl,e) ==
                     and x isnt true]
       pred' = nil => unconditionals := [CatEval(at,tbl,e),:unconditionals]
       pred' is [x] => conditionals := [[CatEval(at,tbl,e),x],:conditionals]
-      conditionals := [[CatEval(at,tbl,e),["and",:pred']],:conditionals]
+      conditionals := [[CatEval(at,tbl,e),mkpf(pred','and)],:conditionals]
   [conditionals,reverse! unconditionals]
  
 JoinInner(l,$e) ==
@@ -449,9 +449,7 @@ JoinInner(l,$e) ==
     for u in categoryAttributes first b repeat
       v := assoc(first u,attl)
       null v =>
-        attl :=
-          second u is true => [[first u,newpred],:attl]
-          [[first u,["and",newpred,second u]],:attl]
+        attl := [[first u,mkpf([newpred,second u],'and)],:attl]
       second v is true => nil
       attl := remove(attl,v)
       attl :=
@@ -463,7 +461,7 @@ JoinInner(l,$e) ==
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
             newpred is true => op
             oldpred is true => [sig,newpred,:implem]
-            [sig,mkpf([oldpred,newpred],"and"),:implem]
+            [sig,mkpf([oldpred,newpred],'and),:implem]
   FundamentalAncestors := [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
   c := categoryPrincipals bufferData principal
