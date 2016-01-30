@@ -180,7 +180,7 @@ addMap(lhs,rhs,pred) ==
   argPredList:= reverse! predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
-    MKPF((pred and (pred ~= 'T) => [:argPredList,applySubstNQ($sl,pred)]; argPredList),"and")
+    mkpf((pred and (pred ~= 'T) => [:argPredList,applySubstNQ($sl,pred)]; argPredList),"and")
   body:= applySubstNQ($sl,rhs)
   oldMap :=
     (obj := get(op,'value,$InteractiveFrame)) => objVal obj
@@ -431,7 +431,7 @@ simplifyMapPattern (x,alias) ==
       y' := applySubst(sl,y)
       pred:= unTrivialize applySubst(sl,pred) where unTrivialize x ==
         x is [op,:l] and op in '(and or) =>
-          MKPF([unTrivialize y for y in l],op)
+          mkpf([unTrivialize y for y in l],op)
         x is [op,a,=a] and op in '(_= is)=> true
         x
       rhs':= applySubst(sl,rhs)
@@ -465,8 +465,8 @@ simplifyMapConstructorRefs form ==
 
 predTran x ==
   x is ["IF",a,b,c] =>
-    c = "false" => MKPF([predTran a,predTran b],"and")
-    b = "true" => MKPF([predTran a,predTran c],"or")
+    c = "false" => mkpf([predTran a,predTran b],"and")
+    b = "true" => mkpf([predTran a,predTran c],"or")
     b = "false" and c = "true" => ["not",predTran a]
     x
   x

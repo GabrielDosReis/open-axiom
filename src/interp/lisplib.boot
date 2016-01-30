@@ -84,7 +84,7 @@ predicateBitRef(db,x,e) ==
   ['testBitVector,'pv_$,predicateBitIndex(db,x,e)]
  
 makePrefixForm(u,op) ==
-  u := MKPF(u,op)
+  u := mkpf(u,op)
   u is ''T => 'T
   u
 
@@ -114,7 +114,7 @@ makePredicateBitVector(db,pl,e) ==   --called by buildFunctor
 augmentPredCode(n,lastPl) ==
   ['%list,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
   delta := 2 ** n
-  l := [(u := MKPF([x,['augmentPredVector,"$",delta]],'AND); 
+  l := [(u := mkpf([x,['augmentPredVector,"$",delta]],'AND); 
          delta:=2 * delta; u) for x in pl]
 
 augmentPredVector(dollar,value) ==

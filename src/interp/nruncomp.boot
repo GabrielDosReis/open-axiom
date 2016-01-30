@@ -534,7 +534,7 @@ setVector4Part1(db,siglist,formlist,condlist,e) ==
   reducedConlist :=
     [[x,:y] for [x,z] in $condList| y := SETDIFFERENCE(z,reducedUncondlist)]
   revCondlist := reverseCondlist reducedConlist
-  orCondlist := [[x,:MKPF(y,'OR)] for [x,:y] in revCondlist]
+  orCondlist := [[x,:mkpf(y,'OR)] for [x,:y] in revCondlist]
   [reducedUncondlist,:orCondlist]
 
 reverseCondlist cl ==

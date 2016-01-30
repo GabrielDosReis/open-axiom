@@ -668,7 +668,7 @@ explodeIfs x == main where  --called by getParentsFor
   fn(p,a,b) ==
     [:"append"/[gn(p,y) for y in a],:"append"/[gn(['NOT,p],y) for y in b]]
   gn(p,a) ==
-    a is ['IF,q,b,:.] => fn(MKPF([p,q],'AND),b,nil)
+    a is ['IF,q,b,:.] => fn(mkpf([p,q],'AND),b,nil)
     [[a,:p]]
 
 getParentsFor db ==
@@ -732,7 +732,7 @@ clearExportsTable() ==
 
 makePredicate l ==
   null l => true
-  MKPF(l,"and")
+  mkpf(l,"and")
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
@@ -2106,7 +2106,7 @@ stripOffSubdomainConditions(margl,argl) ==
     f() ==
       x is ['SubDomain,marg,condition] =>
         pair:= assoc(i,$argumentConditionList) =>
-          (pair.rest.first := MKPF([condition,second pair],'AND); marg)
+          (pair.rest.first := mkpf([condition,second pair],'AND); marg)
         $argumentConditionList:= [[i,arg,condition],:$argumentConditionList]
         marg
       x
@@ -2338,7 +2338,7 @@ compCapsuleInner(db,itemList,m,e) ==
   code :=
     dbForCategory? db => data
     buildFunctor(db,$signature,data,localParList,e)
-  [MKPF([:$getDomainCode,code],"PROGN"),m,e]
+  [mkpf([:$getDomainCode,code],"PROGN"),m,e]
  
 --% PROCESS FUNCTOR CODE
  
@@ -2631,7 +2631,7 @@ compCategoryItem(db,x,predl,env,sigs,atts) ==
       for y in l repeat
         compCategoryItem(db,y,predl',env,sigs,atts)
     compCategoryItem(db,c,predl',env,sigs,atts)
-  pred := (predl => MKPF(predl,"AND"); true)
+  pred := (predl => mkpf(predl,"AND"); true)
  
   --2. if attribute, push it and return
   x is ["ATTRIBUTE",y] => 

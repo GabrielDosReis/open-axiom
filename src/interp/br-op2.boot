@@ -544,7 +544,7 @@ opPageFastPath opstring ==
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
   opAlist := [[op,:[item for mm in mmList]]] where item() ==
     [predList, origin, sig] := modemap2Sig(op, mm)
-    predicate := predList and MKPF(predList,'AND)
+    predicate := predList and mkpf(predList,'AND)
     exposed? := isExposedConstructor opOf origin
     [sig, predicate, origin, exposed?]
   opAlist

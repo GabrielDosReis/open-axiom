@@ -90,7 +90,7 @@ listOfPredOfTypePatternIds p ==
 removeIsDomains pred ==
   pred is ['isDomain,a,b] => true
   pred is ['AND,:predl] =>
-    MKPF([x for x in predl | x isnt ['isDomain,:.]],'AND)
+    mkpf([x for x in predl | x isnt ['isDomain,:.]],'AND)
   pred
 
 canRemoveIsDomain? pred ==

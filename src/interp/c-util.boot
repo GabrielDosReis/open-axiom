@@ -713,12 +713,12 @@ getInverseEnvironment(a,e) ==
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
     (get(x,"condition",e) is [["OR",:oldpred]]) and listMember?(a,oldpred) =>
-      put(x,"condition",[MKPF(remove(oldpred,a),"OR")],e)
+      put(x,"condition",[mkpf(remove(oldpred,a),"OR")],e)
     unionProperty(x,e) is ['UnionCategory,:l] =>
       l' := remove(l,m)
       for u in l' repeat
 	 if u is ['_:,=m,:.] then l' := remove(l',u)
-      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
+      newpred:= mkpf([["case",x,m'] for m' in l'],"OR")
       put(x,"condition",[newpred,:get(x,"condition",e)],e)
     e
   a is ["not",a'] => getSuccessEnvironment(a',e)

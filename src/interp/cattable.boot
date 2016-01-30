@@ -100,7 +100,7 @@ simpHasPred(pred,:options) == main where
         form := ["has",a := first r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
-        null (u := MKPF([simp p for p in r],op)) => nil
+        null (u := mkpf([simp p for p in r],op)) => nil
         u is '%true or u is '(QUOTE T) => true
         simpBool u
       op is 'hasArgs => ($hasArgs => $hasArgs = r; pred)
