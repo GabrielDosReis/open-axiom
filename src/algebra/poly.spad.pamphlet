@@ -31,43 +31,35 @@ FreeModule(R:Ring,S:OrderedType):
         Join(BiModule(R,R),IndexedDirectProductCategory(R,S)) with
     if R has CommutativeRing then Module(R)
  == IndexedDirectProductAbelianGroup(R,S) add
-    --representations
-       Term:=  Record(k:S,c:R)
-       Rep:=  List Term
-    --define
-       if R has EntireRing then 
-         r:R * x:%  ==
-             zero? r => 0
-             one? r => x
-           --map(r*#1,x)
-             [[u.k,r*u.c] for u in x ]
-       else
-         r:R * x:%  ==
-             zero? r => 0
-             one? r => x
-           --map(r*#1,x)
-             [[u.k,a] for u in x | (a:=r*u.c) ~= 0$R]
-       if R has EntireRing then
-         x:% * r:R  ==
-             zero? r => 0
-             one? r => x
-           --map(r*#1,x)
-             [[u.k,u.c*r] for u in x ]
-       else
-         x:% * r:R  ==
-             zero? r => 0
-             one? r => x
-           --map(r*#1,x)
-             [[u.k,a] for u in x | (a:=u.c*r) ~= 0$R]
+   if R has EntireRing then 
+     r:R * x:%  ==
+         zero? r => 0$%
+         one? r => x
+         convert [term(index u, r * coefficient u) for u in terms x ]
+   else
+     r:R * x:%  ==
+         zero? r => 0$%
+         one? r => x
+         convert [term(index u,a) for u in terms x | not zero?(a := r * coefficient u)]
+   if R has EntireRing then
+     x:% * r:R  ==
+         zero? r => 0$%
+         one? r => x
+         convert [term(index u, coefficient(u) * r) for u in terms x ]
+   else
+     x:% * r:R  ==
+         zero? r => 0$%
+         one? r => x
+         convert [term(index u,a) for u in terms x | not zero?(a := coefficient(u) * r)]
 
-       if S has CoercibleTo OutputForm then
-         coerce(x) : OutputForm ==
-           null x => (0$R) :: OutputForm
-           le : List OutputForm := nil
-           for rec in reverse x repeat
-             rec.c = 1 => le := cons(rec.k :: OutputForm, le)
-             le := cons(rec.c :: OutputForm *  rec.k :: OutputForm, le)
-           reduce("+",le)
+   if S has CoercibleTo OutputForm then
+     coerce(x) : OutputForm ==
+       zero? x => (0$R) :: OutputForm
+       le : List OutputForm := nil
+       for rec in reverse terms x repeat
+         one? coefficient rec => le := cons(index rec :: OutputForm, le)
+         le := cons(coefficient rec :: OutputForm *  index rec :: OutputForm, le)
+       reduce("+",le)
 
 @
 \section{domain PR PolynomialRing}
