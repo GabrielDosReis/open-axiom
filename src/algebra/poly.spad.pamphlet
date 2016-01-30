@@ -34,33 +34,27 @@ FreeModule(R:Ring,S:OrderedType):
     --representations
        Term:=  Record(k:S,c:R)
        Rep:=  List Term
-    --declarations
-       x,y: %
-       r: R
-       n: Integer
-       f: R -> R
-       s: S
     --define
        if R has EntireRing then 
-         r * x  ==
+         r:R * x:%  ==
              zero? r => 0
              one? r => x
            --map(r*#1,x)
              [[u.k,r*u.c] for u in x ]
        else
-         r * x  ==
+         r:R * x:%  ==
              zero? r => 0
              one? r => x
            --map(r*#1,x)
              [[u.k,a] for u in x | (a:=r*u.c) ~= 0$R]
        if R has EntireRing then
-         x * r  ==
+         x:% * r:R  ==
              zero? r => 0
              one? r => x
            --map(r*#1,x)
              [[u.k,u.c*r] for u in x ]
        else
-         x * r  ==
+         x:% * r:R  ==
              zero? r => 0
              one? r => x
            --map(r*#1,x)
