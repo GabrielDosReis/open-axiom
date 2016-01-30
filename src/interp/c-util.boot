@@ -141,18 +141,19 @@ macro domainData d ==
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
     shell: %Vector %Thing, items: %Buffer %Pair(%SourceEntity,%Code),
-      lib: %Libstream,outpath: %Pathname) with
+      sigdefs: %List %Thing, lib: %Libstream,outpath: %Pathname) with
         cdSubstitution == (.subst)
         cdImplicits == (.idata)
         cdBytes == (.bytes)
         cdShell == (.shell)
         cdItems == (.items)
+        cdSignatureDefinitions == (.sigdefs)
         cdLib == (.lib)
         cdOutput == (.outpath)
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil,nil)
+  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil,nil,nil)
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==

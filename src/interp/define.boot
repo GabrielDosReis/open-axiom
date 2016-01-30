@@ -696,21 +696,15 @@ emitSubdomainInfo(form,super,pred) ==
 ++   op:   name of the operation
 ++   sig:  signature of the operation
 ++   pred: scope predicate of the operation.
-$capsuleFunctions := nil
-
+++
 ++ record that the operation `op' with signature `sig' and predicate
 ++ `pred' is defined in the current capsule of the current domain
 ++ being compiled.
-noteCapsuleFunctionDefinition(op,sig,pred) ==
-  listMember?([op,sig,pred],$capsuleFunctions) =>
+noteCapsuleFunctionDefinition(cd,op,sig,pred) ==
+  listMember?([op,sig,pred],cdSignatureDefinitions cd) =>
     stackAndThrow('"redefinition of %1b: %2 %3",
       [op,formatUnabbreviated ["Mapping",:sig],formatIf pred])
-  $capsuleFunctions := [[op,sig,pred],:$capsuleFunctions]
-
-++ Clear the list of functions defined in the last domain capsule.
-clearCapsuleFunctionTable() ==
-  $capsuleFunctions := nil
-
+  cdSignatureDefinitions(cd) := [[op,sig,pred],:cdSignatureDefinitions cd]
 
 ++ List of exports (paireed with scope predicate) declared in
 ++ the category of the currend domain or package.
@@ -1989,7 +1983,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       :bright $op,'": ",:formattedSig]
 
     pred := makePredicate $predl
-    noteCapsuleFunctionDefinition($op,signature,pred)
+    noteCapsuleFunctionDefinition(dbCompilerData db,$op,signature,pred)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
     --  A THROW to the above CATCH occurs if too many semantic errors occur
@@ -2301,7 +2295,6 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   db := currentDB e
-  clearCapsuleFunctionTable()
   e := checkRepresentation(db,$addFormLhs,itemList,e)
   compCapsuleInner(db,itemList,m,addDomain(db,'$,e))
  
