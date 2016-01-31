@@ -56,9 +56,6 @@ compDefine1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple
 
 $doNotCompileJustPrint := false
 
-++ stack of pending capsule function definitions.
-$capsuleFunctionStack := []
-
 --%
 
 $forceAdd := false
@@ -700,11 +697,12 @@ emitSubdomainInfo(form,super,pred) ==
 ++ record that the operation `op' with signature `sig' and predicate
 ++ `pred' is defined in the current capsule of the current domain
 ++ being compiled.
-noteCapsuleFunctionDefinition(cd,op,sig,pred) ==
-  listMember?([op,sig,pred],cdSignatureDefinitions cd) =>
+noteCapsuleFunctionDefinition(db,op,sig,pred,impl) ==
+  spec := [[op,:sig],:pred]
+  assoc(spec,dbCapsuleDefinitions db) =>
     stackAndThrow('"redefinition of %1b: %2 %3",
       [op,formatUnabbreviated ["Mapping",:sig],formatIf pred])
-  cdSignatureDefinitions(cd) := [[op,sig,pred],:cdSignatureDefinitions cd]
+  dbCapsuleDefinitions(db) := [[spec,:impl],:dbCapsuleDefinitions db]
 
 ++ List of exports (paireed with scope predicate) declared in
 ++ the category of the currend domain or package.
@@ -1598,11 +1596,11 @@ compFunctorBody(db,body,m,e) ==
   $bootStrapMode => incompleteFunctorBody(db,m,body,e)
   clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
-  $capsuleFunctionStack := reverse! $capsuleFunctionStack
+  dbCapsuleIR(db) := reverse! dbCapsuleIR db
   -- ??? Don't resolve default definitions, yet.
   backendCompile(db,defs) where defs() ==
-    $insideCategoryPackageIfTrue => $capsuleFunctionStack
-    foldExportedFunctionReferences(db,$capsuleFunctionStack)
+    $insideCategoryPackageIfTrue => dbCapsuleIR db
+    foldExportedFunctionReferences(db,dbCapsuleIR db)
   clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and op in '(add CAPSULE) => T
   $NRTaddForm :=
@@ -1937,8 +1935,6 @@ encodeFunctionName(db,fun,signature,count) ==
           strconc(toString n,encodeItem x)
     encodedName:= makeSymbol strconc(symbolName dbAbbreviation db,'";",
         symbolName fun,'";",encodedSig,'";",toString count)
-    dbCapsuleDefinitions(db) :=
-      [[encodedName,signature],:dbCapsuleDefinitions db]
     encodedName
 
 compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
@@ -1979,8 +1975,6 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
 
-    pred := mkpf($predl,'and)
-    noteCapsuleFunctionDefinition(dbCompilerData db,$op,signature,pred)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
     --  A THROW to the above CATCH occurs if too many semantic errors occur
@@ -1994,6 +1988,8 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
           userError ['"%b",$op,'"%d",'" is local and exported"]
         makeSymbol strconc(symbolName $prefix,'";",symbolName $op) 
       encodeFunctionName(db,$op,signature,$suffix)
+    pred := mkpf($predl,'and)
+    noteCapsuleFunctionDefinition(db,$op,signature,pred,op')
     if n ~= nil and not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type
@@ -2149,7 +2145,7 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
 
   $insideCapsuleFunctionIfTrue => 
     $optExportedFunctionReference =>
-      $capsuleFunctionStack := [form,:$capsuleFunctionStack]
+      dbCapsuleIR(db) := [form,:dbCapsuleIR db]
       first form
     first backendCompile(db,[form])
   compileConstructor(db,form)

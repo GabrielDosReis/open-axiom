@@ -141,13 +141,13 @@ macro domainData d ==
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
     shell: %Vector %Thing, items: %Buffer %Pair(%SourceEntity,%Code),
-      sigdefs: %List %Thing, lib: %Libstream,outpath: %Pathname) with
+      capsule: %List %Thing, lib: %Libstream,outpath: %Pathname) with
         cdSubstitution == (.subst)
         cdImplicits == (.idata)
         cdBytes == (.bytes)
         cdShell == (.shell)
         cdItems == (.items)
-        cdSignatureDefinitions == (.sigdefs)
+        cdCapsule == (.capsule)
         cdLib == (.lib)
         cdOutput == (.outpath)
 
@@ -192,6 +192,9 @@ macro dbUsedEntities db ==
 ++ Number of used entities during elaboration of current functor.
 macro dbEntityCount db ==
   rest dbEntityBuffer db
+
+macro dbCapsuleIR db ==
+  cdCapsule dbCompilerData db
 
 macro dbLibstream db ==
   cdLib dbCompilerData db
@@ -1266,7 +1269,6 @@ $capsuleDirectory := nil
 
 clearCapsuleDirectory() ==
   $capsuleDirectory := nil
-  $capsuleFunctionStack := nil
 
 ++ Return the linkage name of the exported operation associated with
 ++ slot number `slot'.  A nil entry means that either the operation
