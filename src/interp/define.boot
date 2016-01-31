@@ -1142,7 +1142,7 @@ compDefineCategory2(db,form,signature,body,m,e,$formalArgList) ==
     body:=
       ["%bind",[[g:= gensym(),body]],
          ['%seq,['%store,['%tref,g,0],mkConstructor $form],g]]
-    fun := compile(db,[op',['%lambda,sargl,body]],signature')
+    fun := compileConstructorIR(db,[op',['%lambda,sargl,body]])
  
     -- 5. give operator a 'modemap property
     pairlis := pairList(form.args,$FormalMapVariableList)
@@ -1540,7 +1540,7 @@ compDefineFunctor1(db,df is ['DEF,form,signature,body],m,$e,$formalArgList) ==
     lamOrSlam :=
       dbInstanceCache db = nil => '%lambda
       '%slam
-    fun := compile(db,dbSubstituteFormals(db,[op',[lamOrSlam,form.args,body']]),signature')
+    fun := compileConstructorIR(db,dbSubstituteFormals(db,[op',[lamOrSlam,form.args,body']]))
     --The above statement stops substitutions gettting in one another's way
     operationAlist := dbSubstituteAllQuantified(db,$lisplibOperationAlist)
     dbModemaps(db) := modemapsFromFunctor(db,parForm,operationAlist)
@@ -2096,11 +2096,7 @@ putInLocalDomainReferences(db,def := [opName,[lam,varl,body]]) ==
  
  
 compile(db,u,signature) ==
-  optimizedBody := optimizeFunctionDef u
-  stuffToCompile :=
-    $insideCapsuleFunctionIfTrue =>
-      putInLocalDomainReferences(db,optimizedBody)
-    optimizedBody
+  stuffToCompile := putInLocalDomainReferences(db,optimizeFunctionDef u)
   try spadCompileOrSetq(db,stuffToCompile)
   finally
     functionStats := [0,elapsedTime()]
@@ -2108,8 +2104,7 @@ compile(db,u,signature) ==
     printStats functionStats
 
 ++ Subroutine of compile.  Called to generate backend code for
-++ items defined directly or indirectly at capsule level.   This is
-++ also used to compile functors.
+++ items defined directly or indirectly at capsule level.
 spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
   vl := cleanParameterList! vl
   if $optReplaceSimpleFunctions then
@@ -2129,15 +2124,13 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
       [nam,[lam,vl,["DECLARE",["IGNORE",last vl]],body]]
     [nam,[lam,vl,body]]
 
-  $insideCapsuleFunctionIfTrue => 
-    $optExportedFunctionReference =>
-      dbCapsuleIR(db) := [form,:dbCapsuleIR db]
-      first form
-    first backendCompile(db,[form])
-  compileConstructor(db,form)
+  $optExportedFunctionReference =>
+    dbCapsuleIR(db) := [form,:dbCapsuleIR db]
+    first form
+  first backendCompile(db,[form])
  
-compileConstructor(db,form) ==
-  u := compileConstructor1(db,form)
+compileConstructorIR(db,form) ==
+  u := compileConstructor1(db,optimizeFunctionDef form)
   clearClams()                  --clear all CLAMmed functions
   clearConstructorCache u      --clear cache for constructor
   u
