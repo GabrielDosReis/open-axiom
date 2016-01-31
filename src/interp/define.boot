@@ -724,10 +724,6 @@ noteExport(db,form,pred) ==
 clearExportsTable() ==
   $exports := nil
 
-makePredicate l ==
-  null l => true
-  mkpf(l,"and")
-
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
 ++ List of reserved identifiers for which the compiler has special
@@ -1982,7 +1978,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
 
-    pred := makePredicate $predl
+    pred := mkpf($predl,'and)
     noteCapsuleFunctionDefinition(dbCompilerData db,$op,signature,pred)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or [$ClearBodyToken,rettype,e]
