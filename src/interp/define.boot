@@ -1590,6 +1590,7 @@ compFunctorBody(db,body,m,e) ==
   -- ??? Don't resolve default definitions, yet.
   backendCompile(db,defs) where defs() ==
     $insideCategoryPackageIfTrue => dbCapsuleIR db
+    not $optExportedFunctionReference => dbCapsuleIR db
     foldExportedFunctionReferences(db,dbCapsuleIR db)
   clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and op in '(add CAPSULE) => T
@@ -2124,10 +2125,8 @@ spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
       [nam,[lam,vl,["DECLARE",["IGNORE",last vl]],body]]
     [nam,[lam,vl,body]]
 
-  $optExportedFunctionReference =>
-    dbCapsuleIR(db) := [form,:dbCapsuleIR db]
-    first form
-  first backendCompile(db,[form])
+  dbCapsuleIR(db) := [form,:dbCapsuleIR db]
+  first form
  
 compileConstructorIR(db,form) ==
   u := compileConstructor1(db,optimizeFunctionDef form)
