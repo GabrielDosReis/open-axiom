@@ -1407,9 +1407,10 @@ AMFCR_,redefined(opname,u) ==
   op = '%when => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
 
 dbClearForCompilation! db ==
-  dbTemplate(db) := nil
-  dbLookupFunction(db) := nil
-  dbCapsuleDefinitions(db) := nil
+  dbCategory(db) := nil
+  dbConstructorModemap(db) := nil
+  dbDualSignature(db) := nil
+  dbDefaultDomain(db) := nil
   dbModemaps(db) := nil
   dbDocumentation(db) := nil
   dbOperations(db) := nil
@@ -1417,11 +1418,11 @@ dbClearForCompilation! db ==
   dbPredicates(db) := nil
   dbAncestors(db) := nil
   dbPrincipals(db) := nil
-  dbCategory(db) := nil
-  dbPredicates(db) := nil
-  dbConstructorModemap(db) := nil
-  dbDefaultDomain(db) := nil
-  dbDualSignature(db) := nil
+  dbSuperDomain(db) := nil
+  dbCapsuleDefinitions(db) := nil
+  dbTemplate(db) := nil
+  dbLookupFunction(db) := nil
+  dbOperationTable(db) := nil
 
 substituteCategoryArguments(argl,catform) ==
   argl := substitute("$$","$",argl)

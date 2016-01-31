@@ -537,7 +537,8 @@ writePrincipals db ==
   writeInfo(db,dbPrincipals db,'parents,'dbPrincipals)
 
 writeCapsuleLevelDefinitions db ==
-  writeInfo(db,dbCapsuleDefinitions db,
+  dbConstructorKind db = 'category => nil  -- categories don't have capsules
+  writeLoadInfo(db,quote dbCapsuleDefinitions db,
     'signaturesAndLocals,'dbCapsuleDefinitions)
 
 ++ If compilation produces an error, issue inform user and
