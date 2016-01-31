@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2015, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -416,16 +416,7 @@ optimize x ==
   optimize! copyTree x
 
 optimizeFunctionDef(def) ==
-  if $reportOptimization then
-    sayBrightlyI bright '"Original LISP code:"
-    pp def
- 
-  expr := optimize! copyTree second def
- 
-  if $reportOptimization then
-    sayBrightlyI bright '"Intermediate VM code:"
-    pp expr
-
+  expr := optimize second def
   [first def,expr]
 
 resetTo(x,y) ==

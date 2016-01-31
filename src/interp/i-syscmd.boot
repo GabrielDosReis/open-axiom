@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2013, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -575,10 +575,6 @@ compileSpad2Cmd args ==
             fun.0       := 'c
             constructor := [unabbrev o for o in optargs]
         fullopt is "optimize" => setCompilerOptimizations first optargs
-        fullopt is "report" =>
-           null optargs => throwKeyedMsg("S2IZ0037",['")report"])
-           if "insn" in optargs then
-             $reportOptimization := true
         throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     $InteractiveMode : local := nil

@@ -1,3 +1,14 @@
+2016-01-31  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	Breaking change from previous version: No more support for command
+	line --show-insn option, and library compiler ")set )report" option.
+	* interp/g-opt.boot (optimizeFunctionDef): Remove reference to
+	$reportOptimization. 
+	* interp/g-timer.boot (timedOptimization): Likewise.
+	* interp/i-syscmd.boot (compileSpad2Cmd): Likewise.
+	($setOptions): Remove support for ")report".
+	* interp/sys-driver.boot (initializeGlobalState): Likewise.
+
 2016-01-17  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/daase.lisp (GETDATABASE): Remove PARENTS case.

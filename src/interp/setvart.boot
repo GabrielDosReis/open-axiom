@@ -1510,25 +1510,6 @@ $setOptions := '(
      (on off)
      off)
 
--- ------------------- The optimization Option -------------------
---
---  Description: show optimized LISP code
---
---  The optimization option may be followed by any one of the 
---  following:
---
---     on
---  -> off 
---
---  The current setting is indicated within the list.
-    (optimization
-     "show optimized LISP code"
-     development
-     LITERALS
-     $reportOptimization
-     (on off)
-     off)
-
 -- ------------------- The prettyprint Option --------------------
 --
 --  Description: prettyprint BOOT func's as they compile

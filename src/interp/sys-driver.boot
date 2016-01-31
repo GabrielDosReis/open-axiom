@@ -203,7 +203,6 @@ initializeGlobalState() ==
   $buildingSystemAlgebra := getOptionValue "system-algebra"
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"
-  $reportOptimization := getOptionValue "show-insn"
   $optimizeRep := getOptionValue "inline-rep"
   setCompilerOptimizations(getOptionValue "optimize" or
                              $defaultOptimizationLevel)
