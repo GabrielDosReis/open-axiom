@@ -54,8 +54,6 @@ module define where
 
 compDefine1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple 
 
-$doNotCompileJustPrint := false
-
 --%
 
 $forceAdd := false
@@ -1975,10 +1973,12 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
 
-    T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
-	 or [$ClearBodyToken,rettype,e]
-    --  A THROW to the above CATCH occurs if too many semantic errors occur
+    --  A THROW to this catch point occurs if too many semantic errors occur
     --  see stackSemanticError
+    T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
+	 or return
+              sayBrightly ['"  ",:bright $op,'" not compiled"]
+              [$ClearBodyToken,rettype,e]
     n := assignCapsuleFunctionSlot(db,$op,signature)
     -- Build a name for the implementation.
     op' :=
@@ -2109,7 +2109,6 @@ compile(db,u,signature) ==
     $insideCapsuleFunctionIfTrue =>
       putInLocalDomainReferences(db,optimizedBody)
     optimizedBody
-  $doNotCompileJustPrint => (PRETTYPRINT stuffToCompile; first u)
   $macroIfTrue => constructMacro stuffToCompile
   try spadCompileOrSetq(db,stuffToCompile)
   finally
@@ -2121,10 +2120,6 @@ compile(db,u,signature) ==
 ++ items defined directly or indirectly at capsule level.   This is
 ++ also used to compile functors.
 spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
-        --bizarre hack to take account of the existence of "known" functions
-        --good for performance (LISPLLIB size, BPI size, NILSEC)
-  CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
-
   vl := cleanParameterList! vl
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
