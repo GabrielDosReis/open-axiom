@@ -1120,11 +1120,7 @@ compVector(l,m is ["Vector",mUnder],e) ==
 
 --% MACROS
 
-++ True if we are compiling a macro definition.
-$macroIfTrue := false
-
 compMacro(form,m,e) ==
-  $macroIfTrue: local:= true
   ["MDEF",lhs,signature,rhs] := form
   if $verbose then
     prhs :=

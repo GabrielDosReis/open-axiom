@@ -52,10 +52,6 @@ module define where
 
 --%
 
-compDefine1: (%Maybe %Database,%Form,%Mode,%Env) -> %Maybe %Triple 
-
---%
-
 $forceAdd := false
 
 $functionStats := nil
@@ -736,10 +732,6 @@ checkParameterNames parms ==
   for p in parms repeat
     checkVariableName p
 
-compDefine(db,form,m,e) ==
-  $macroIfTrue: local := false
-  compDefine1(db,form,m,e)
-
 ++ We are about to process the body of a capsule.  Check the form of
 ++ `Rep' definition, and whether it is appropriate to activate the
 ++ implicitly generated morphisms
@@ -817,7 +809,7 @@ getSignatureFromMode(form,e) ==
     #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
     applySubst(pairList($FormalMapVariableList,form.args),signature)
 
-compDefine1(db,form,m,e) ==
+compDefine(db,form,m,e) ==
   $insideExpressionIfTrue: local:= false
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,rhs] := form := macroExpand(form,e)
@@ -828,7 +820,7 @@ compDefine1(db,form,m,e) ==
   null signature.target and symbol? KAR rhs and not builtinConstructor? KAR rhs and
     (sig := getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
-      compDefine1(db,['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
+      compDefine(db,['DEF,lhs,[sig.target,:signature.source],rhs],m,e)
  
 -- RDJ (11/83): when argument and return types are all declared,
 --  or arguments have types declared in the environment,
@@ -977,7 +969,7 @@ compDefineCategory1(db,df is ['DEF,form,sig,body],m,e,fal) ==
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local := makeCategoryPredicates db
     defaults := mkCategoryPackage(db,cat,categoryCapsule,e)
-    T := compDefine1(nil,defaults,$EmptyMode,e)
+    T := compDefine(nil,defaults,$EmptyMode,e)
            or return stackSemanticError(
                         ['"cannot compile defaults of",:bright opOf form],nil)
   [d,m,e]
@@ -2109,7 +2101,6 @@ compile(db,u,signature) ==
     $insideCapsuleFunctionIfTrue =>
       putInLocalDomainReferences(db,optimizedBody)
     optimizedBody
-  $macroIfTrue => constructMacro stuffToCompile
   try spadCompileOrSetq(db,stuffToCompile)
   finally
     functionStats := [0,elapsedTime()]
