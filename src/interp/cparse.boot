@@ -1102,15 +1102,19 @@ _/RQ_,LIB(:x) ==
   $Echo: local := false
   _/RF_-1 nil
 
+readBootFile file ==  
+  try
+    fasl := compileBootHandler(nil,nil,file) or return nil
+    LOAD fasl
+  finally
+    fasl = nil => nil
+    removeFile filePathString fasl
 
 _/RF_-1 x ==
   ifile := makeInputFilename $editFile
   lfile := nil
   type := filePathType ifile
-  type = '"boot" =>
-    lfile := makeFilePath(type <- '"lisp",defaults <- ifile)
-    BOOT(ifile,lfile)
-    LOAD lfile
+  type = '"boot" => readBootFile ifile
   type = '"lisp" => LOAD ifile
   type = '"input" => ncINTERPFILE(ifile,$Echo)
   SPAD ifile
