@@ -682,18 +682,20 @@ emitSubdomainInfo(form,super,pred) ==
 
 ++ List of operations defined in a given capsule
 ++ Each item on this list is of the form
-++    (op sig pred)
+++    (((op . sig) . pred) . (slot . func))
 ++ where
 ++   op:   name of the operation
 ++   sig:  signature of the operation
 ++   pred: scope predicate of the operation.
+++   slot: the slot number of the implementation of this operation.
+++   func: implementation of the signature under specified predicate.
 ++
-++ record that the operation `op' with signature `sig' and predicate
-++ `pred' is defined in the current capsule of the current domain
-++ being compiled.
-noteCapsuleFunctionDefinition(db,op,sig,pred,impl) ==
-  spec := [[op,:sig],:pred]
+++ record that the specificattion of an operation `op' with signature `sig'
+++ and predicate `pred' is implemented in a `slot' occupied by the
+++ function `func' in the capsule of the domain being compiled.
+noteCapsuleFunctionDefinition(db,spec,impl) ==
   assoc(spec,dbCapsuleDefinitions db) =>
+    [[op,:sig],:pred] := spec
     stackAndThrow('"redefinition of %1b: %2 %3",
       [op,formatUnabbreviated ["Mapping",:sig],formatIf pred])
   dbCapsuleDefinitions(db) := [[spec,:impl],:dbCapsuleDefinitions db]
@@ -1982,7 +1984,7 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
         makeSymbol strconc(symbolName $prefix,'";",symbolName $op) 
       encodeFunctionName(db,$op,signature,$suffix)
     pred := mkpf($predl,'and)
-    noteCapsuleFunctionDefinition(db,$op,signature,pred,op')
+    noteCapsuleFunctionDefinition(db,[[$op,:signature],:pred],[n,:op'])
     if n ~= nil and not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type
