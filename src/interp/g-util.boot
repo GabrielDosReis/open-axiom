@@ -51,6 +51,18 @@ module g_-util where
 
 --%
 
+++ Data structure holding a information about capsule-level function
+++ specification.
+structure %FunctionContext ==
+  Record(db: %Maybe %Database, op: %Identifier, sig: %Signature,
+    pred: %Predicate) with
+        fcDatabase == (.db)
+        fcOperator == (.op)
+        fcSignature == (.sig)
+        fcPredicate == (.pred)
+
+--%
+
 abstraction? x ==
   x is [op,:.] and ident? op and abstractionOperator? op
 

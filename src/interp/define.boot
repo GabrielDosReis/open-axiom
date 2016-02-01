@@ -1586,7 +1586,6 @@ incompleteFunctorBody(db,m,body,e) ==
 ++ for a functor definition. 
 compFunctorBody(db,body,m,e) ==
   $bootStrapMode => incompleteFunctorBody(db,m,body,e)
-  clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
   dbCapsuleIR(db) := reverse! dbCapsuleIR db
   -- ??? Don't resolve default definitions, yet.
@@ -1594,7 +1593,6 @@ compFunctorBody(db,body,m,e) ==
     $insideCategoryPackageIfTrue => dbCapsuleIR db
     not $optExportedFunctionReference => dbCapsuleIR db
     foldExportedFunctionReferences(db,dbCapsuleIR db)
-  clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and op in '(add CAPSULE) => T
   $NRTaddForm :=
     body is ["SubDomain",domainForm,predicate] => domainForm
@@ -1985,8 +1983,6 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       encodeFunctionName(db,$op,signature,$suffix)
     pred := mkpf($predl,'and)
     noteCapsuleFunctionDefinition(db,[[$op,:signature],:pred],[n,:op'])
-    if n ~= nil and not $insideCategoryPackageIfTrue then
-      updateCapsuleDirectory([n,:op'],pred)
     -- Let the backend know about this function's type
     if $optProclaim then
       proclaimCapsuleFunction(db,op',signature)
@@ -1997,7 +1993,8 @@ compDefineCapsuleFunction(db,df is ['DEF,form,signature,body],
       body' := replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body' := addArgumentConditions(body',$op)
       finalBody := ['%scope,catchTag,body']
-      compile(db,[op',['%lambda,[:argl,'$],finalBody]],signature)
+      fc := mk%FunctionContext(db,$op,signature,pred)
+      compile(fc,[op',['%lambda,[:argl,'$],finalBody]])
     $functorStats:= addStats($functorStats,$functionStats)
  
     --7. give operator a 'value property
@@ -2098,9 +2095,9 @@ putInLocalDomainReferences(db,def := [opName,[lam,varl,body]]) ==
   def
  
  
-compile(db,u,signature) ==
-  stuffToCompile := putInLocalDomainReferences(db,optimizeFunctionDef u)
-  try spadCompileOrSetq(db,stuffToCompile)
+compile(fc,u) ==
+  stuffToCompile := putInLocalDomainReferences(fcDatabase fc,optimizeFunctionDef u)
+  try spadCompileOrSetq(fc,stuffToCompile)
   finally
     functionStats := [0,elapsedTime()]
     $functionStats := addStats($functionStats,functionStats)
@@ -2108,10 +2105,11 @@ compile(db,u,signature) ==
 
 ++ Subroutine of compile.  Called to generate backend code for
 ++ items defined directly or indirectly at capsule level.
-spadCompileOrSetq(db,form is [nam,[lam,vl,body]]) ==
+spadCompileOrSetq(fc,form is [nam,[lam,vl,body]]) ==
+  db := fcDatabase fc
   vl := cleanParameterList! vl
   if $optReplaceSimpleFunctions then
-    body := replaceSimpleFunctions body
+    body := replaceSimpleFunctions(fc,body)
 
   if nam' := forwardingCall?(vl,body) then
       registerFunctionReplacement(db,nam,nam')

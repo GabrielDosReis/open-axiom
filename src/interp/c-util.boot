@@ -39,7 +39,7 @@ namespace BOOT
 module c_-util where
   makeWorkerName: %Symbol -> %Symbol
   clearReplacement: %Symbol -> %Thing
-  replaceSimpleFunctions: %Form -> %Form
+  replaceSimpleFunctions: (%FunctionContext, %Form) -> %Form
   foldExportedFunctionReferences: (%Database,%List %Code) -> %List %Code
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: %Code -> %Code
@@ -1260,55 +1260,30 @@ ambiguousSignatureError(op, sigs) ==
   stackSemanticError(['"signature of lhs not unique.  Candidates are:",
     :displayAmbiguousSignatures($op,sigs)],nil)
 
-
---% Capsule Directory Management
-
-++ Holds the list of slot number-export function pairs of 
-++ the current functor.
-$capsuleDirectory := nil
-
-clearCapsuleDirectory() ==
-  $capsuleDirectory := nil
-
-++ Return the linkage name of the exported operation associated with
-++ slot number `slot'.  A nil entry means that either the operation
-++ is not defined, or it is conditional.
-getCapsuleDirectoryEntry slot ==
-  scalarTarget(slot,$capsuleDirectory)
-
-++ Update the current capsule directory with entry controlled by 
-++ predicate `pred'.
-updateCapsuleDirectory(entry,pred) ==
-  pred isnt true => nil
-  $capsuleDirectory := [entry,:$capsuleDirectory]
-
-
-
-
 --% Tree walkers
 
 ++ Walk VM conditional forms mutating sub-forms with the unary
 ++ function `fun'
-mutateConditionalFormWithUnaryFunction(form,fun) ==
+mutateConditionalFormWithUnaryFunction(fc,form,fun) ==
   form isnt ['%when,:body] => form
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
-      subForms.first := apply(fun,[first subForms])
+      subForms.first := apply(fun,[fc,first subForms])
   form
 
 ++ Walk VM a binding-form mutating enclosed expression forms with
 ++ the unary function `fun'.  Every sub-form is visited except
 ++ local variable declarations, though their initializers
 ++ are visited.
-mutateBindingFormWithUnaryFunction(form,fun) ==
+mutateBindingFormWithUnaryFunction(fc,form,fun) ==
   form isnt [op,inits,:body] and op in '(LET %bind) => form
   for defs in tails inits repeat
     def := first defs
     def isnt [.,:.] => nil -- no initializer
-    def.rest.first := apply(fun,[second def])
+    def.rest.first := apply(fun,[fc,second def])
   for stmts in tails body repeat
-    stmts.first := apply(fun,[first stmts])
+    stmts.first := apply(fun,[fc,first stmts])
   form
 
 --% 
@@ -1366,19 +1341,19 @@ redexForm name ==
 
 ++ Attempt to resolve the indirect reference to a constant form
 ++ `[spadConstant,$,n]' to a simpler expression
-resolveConstantForm form ==
-  fun := getCapsuleDirectoryEntry third form or return form
+resolveConstantForm(fc,form) ==
+  fun := getCapsuleDirectoryEntry(fc,third form) or return form
   -- Conservatively preserve object identity and storage 
   -- consumption by not folding non-atomic constant forms.
   getFunctionReplacement fun isnt ['XLAM,=nil,body] => form
   atomic? body or isVMConstantForm body => body
   form
 
-mutateArgumentList(args,fun) ==
+mutateArgumentList(fc,args,fun) ==
   for x in tails args repeat
     arg := first x
     atomic? arg => nil
-    x.first := apply(fun,[arg])
+    x.first := apply(fun,[fc,arg])
   args
 
 inlineDirectCall call ==
@@ -1407,31 +1382,31 @@ inlineDirectCall call ==
     call
   call
 
-resolveIndirectCall form ==
+resolveIndirectCall(fc,form) ==
   fun := lastNode form
   fun isnt [['%tref,'$,n]] => form
-  op := getCapsuleDirectoryEntry n or return form
+  op := getCapsuleDirectoryEntry(fc,n) or return form
   form.op := op
   fun.first := '$
   inlineDirectCall form
     
 ++ Walk `form' and replace simple functions as appropriate.
-replaceSimpleFunctions form ==
+replaceSimpleFunctions(fc,form) ==
   atomic? form => form
   form.op is 'DECLARE => form 
   form.op is '%when =>
-    mutateConditionalFormWithUnaryFunction(form,function replaceSimpleFunctions)
+    mutateConditionalFormWithUnaryFunction(fc,form,function replaceSimpleFunctions)
   form.op in '(LET %bind) =>
-    mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
-  form is ['spadConstant,'$,.] => resolveConstantForm form
+    mutateBindingFormWithUnaryFunction(fc,form,function replaceSimpleFunctions)
+  form is ['spadConstant,'$,.] => resolveConstantForm(fc,form)
   -- process argument first.
-  mutateArgumentList(form.args,function replaceSimpleFunctions)
-  form.op is 'SPADCALL => resolveIndirectCall form
+  mutateArgumentList(fc,form.args,function replaceSimpleFunctions)
+  form.op is 'SPADCALL => resolveIndirectCall(fc,form)
   -- see if we know something about this function.
   [fun,:args] := form
   symbol? fun => inlineDirectCall form
   not cons? fun => form
-  form.first := replaceSimpleFunctions fun
+  form.first := replaceSimpleFunctions(fc,fun)
   form
 
 
@@ -1493,6 +1468,22 @@ almostPure? x ==
   ops := [:$coreDiagnosticFunctions,:$VMsideEffectFreeOperators]
   semiSimpleRelativeTo?(x,ops)
 
+++ Return a function context structure for a capsule-level function
+++ definition.
+makeCapsuleFunctionContext(db,fun) ==
+  or/[mk%FunctionContext(db,op,sig,pred)
+       for [[[op,:sig],:pred],:impl] in dbCapsuleDefinitions db
+          | symbolEq?(fun,rest impl)]
+             or systemError ['"cannot find context for",:bright fun]
+
+++ Return the linkage name of the exported operation associated with
+++ slot number `slot'.  A nil result means that either the operation
+++ is not defined, or the scope predicates don't match.
+getCapsuleDirectoryEntry(fc,slot) ==
+  pred' := fcPredicate fc
+  or/[rest impl for [[.,:pred],:impl] in dbCapsuleDefinitions fcDatabase fc
+        | first impl = slot and (pred is true or pred = pred')]
+
 ++ `defs' is a list of function definitions from the current domain.
 ++ Walk that list and replace references to unconditional operations
 ++ with their corresponding linkage names.  
@@ -1501,7 +1492,8 @@ foldExportedFunctionReferences(db,defs) ==
     fun isnt [name,lamex] => nil
     getFunctionReplacement name => nil
     lamex isnt ['%lambda,vars,body] => nil
-    body := replaceSimpleFunctions body
+    fc := makeCapsuleFunctionContext(db,name)
+    body := replaceSimpleFunctions(fc,body)
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(db,name,form)
       second(fun) := ["LAMBDA",vars,["DECLARE",["IGNORE",last vars]],body]
