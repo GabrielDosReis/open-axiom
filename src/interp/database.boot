@@ -41,9 +41,18 @@ import compat
 import daase
 namespace BOOT
 
+module database where
+  dbForCategory? : %Maybe %Database -> %Boolean
+
 $getUnexposedOperations := true
 $globalExposureGroupAlist := []
 
+
+--%
+
+++ This predicate holds if this DB is for a category constructor.  
+dbForCategory? db ==
+  db ~= nil and dbConstructorKind db = 'category
 
 --% 
 
@@ -74,13 +83,13 @@ makeConstructor(s,k == nil,a == nil) ==
 
 ++ Access to the default constructor of a category.
 ++ Note: Meaningful only for categories
-macro dbConstructorDefault db ==
-  dbLookupFunction db
+macro dbDefaultPackage db ==
+  dbSuperDomain db
 
 getCategoryConstructorDefault: %Symbol -> %Maybe %Symbol
 getCategoryConstructorDefault ctor ==
   builtinConstructor? ctor => nil
-  dbConstructorDefault loadDBIfNecessary constructorDB ctor
+  dbDefaultPackage loadDBIfNecessary constructorDB ctor
 
 getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol
 getConstructorAbbreviationFromDB ctor ==
@@ -858,7 +867,7 @@ writeMinimalDB(lhs,rhs,path,dbfile) ==
   writeNewline dbfile
   -- If this is a category with defaults, write out the data for 
   -- associated package.
-  dbConstructorKind db isnt 'category or rhs isnt ['add,:.] => nil
+  not dbForCategory? db or rhs isnt ['add,:.] => nil
   data := [defaultPackageForm lhs,'package,
              makeDefaultPackageAbbreviation db,path]
   prettyPrint(['makeInitialDB,quote data],dbfile)

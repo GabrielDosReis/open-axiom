@@ -470,11 +470,11 @@ writeLoadInfo(db,info,key,prop) ==
   printBackendStmt(dbLibstream db,expandToVMForm insn)
 
 writeTemplate db ==
-  dbConstructorKind db = 'category => nil
+  dbForCategory? db => nil
   writeLoadInfo(db,dbTemplate db,'template,'dbTemplate)
 
 writeOperationTable db ==
-  dbConstructorKind db = 'category => nil
+  dbForCategory? db => nil
   writeLoadInfo(db,dbOperationTable db,'optable,'dbOperationTable)
 
 writeLookupFunction db ==
@@ -482,10 +482,9 @@ writeLookupFunction db ==
     writeLoadInfo(db,quote fun,'lookupFunction,'dbLookupFunction)
   nil
 
-writeCategoryDefault db ==
-  pac := dbConstructorDefault db
-  insn := ['%store,['dbConstructorDefault,mkCtorDBForm db],quote pac]
-  printBackendStmt(dbLibstream db,expandToVMForm insn)
+writeDefaultPackage db ==
+  pac := dbDefaultPackage db or return nil
+  writeLoadInfo(db,quote pac,'defaultPackage,'dbDefaultPackage)
 
 writeKind db ==
   writeInfo(db,dbConstructorKind db,'constructorKind,'dbConstructorKind)
@@ -537,7 +536,7 @@ writePrincipals db ==
   writeInfo(db,dbPrincipals db,'parents,'dbPrincipals)
 
 writeCapsuleLevelDefinitions db ==
-  dbConstructorKind db = 'category => nil  -- categories don't have capsules
+  dbForCategory? db => nil  -- categories don't have capsules
   writeLoadInfo(db,quote dbCapsuleDefinitions db,
     'signaturesAndLocals,'dbCapsuleDefinitions)
 
@@ -553,27 +552,27 @@ leaveIfErrors(libName,kind) ==
 finalizeLisplib(db,libName) ==
   form := dbConstructorForm db
   writeTemplate db
-  do   -- shared slot; careful.
-    dbConstructorKind db = 'category => writeCategoryDefault db
-    writeLookupFunction db
+  writeLookupFunction db
   writeConstructorForm db
   writeKind db
   writeConstructorModemap db
   writeDualSignature db
   -- set to target of dbConstructorModemap for package/domain constructors;
   -- to the right-hand sides (the definition) for category constructors
-  if dbConstructorKind db = 'category then
+  if dbForCategory? db then
     writeCategory db
   writeSourceFile db
   writeInteractiveModemaps db
   opsAndAtts :=
-    dbConstructorKind db = 'category => getCategoryOpsAndAtts db
+    dbForCategory? db => getCategoryOpsAndAtts db
     getFunctorOpsAndAtts db
   writeOperations(db,first opsAndAtts)
-  if dbConstructorKind db = 'category then
+  if dbForCategory? db then
      $NRTslot1PredicateList : local := []
      genInitialAttributeAlist(db,rest opsAndAtts)
-  writeSuperDomain db
+  if dbForCategory? db -- careful: overloaded field.
+    then writeDefaultPackage db
+    else writeSuperDomain db
   writeOperationTable db
   writeCapsuleLevelDefinitions db
   writeAttributes db
@@ -756,7 +755,7 @@ isFunctor x ==
   u := get(op,'isFunctor,$CategoryFrame) => u
   builtinFunctorName? op => true
   db := constructorDB op or return false
-  dbConstructorKind db = 'category => false
+  dbForCategory? db => false
   loadDBIfNecessary db
   updateCategoryFrameForConstructor op
   get(op,'isFunctor,$CategoryFrame)

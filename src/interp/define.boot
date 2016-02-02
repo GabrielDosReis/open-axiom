@@ -1002,7 +1002,7 @@ mkExportFromDescription desc ==
 mkCategoryPackage(db,cat,def,e) ==
   [op,:argl] := dbConstructorForm db
   packageName:= makeDefaultPackageName symbolName op
-  dbConstructorDefault(db) := packageName
+  dbDefaultPackage(db) := packageName
   packageAbb := makeDefaultPackageAbbreviation db
   $options:local := []
   -- This stops the next line from becoming confused
@@ -2134,7 +2134,7 @@ compileConstructor1(db,form:=[fn,[key,vl,:bodyl]]) ==
 -- fn is the name of some category/domain/package constructor;
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
-  dbConstructorKind db = 'category =>
+  dbForCategory? db =>
     first compAndDefine(db,[[fn,['%slam,vl,:bodyl]]])
   dbInstanceCache db = nil =>
     first backendCompile(db,[[fn,['%lambda,vl,:bodyl]]])
@@ -2491,7 +2491,7 @@ compForMode(x,m,e) ==
   $bootStrapMode and m = $Category =>
     op := opOf x
     ident? op and (db := constructorDB op) =>
-      dbConstructorKind db = "category" => [x,m,e]
+      dbForCategory? db => [x,m,e]
       nil
     comp(x,m,e)
   comp(x,m,e)

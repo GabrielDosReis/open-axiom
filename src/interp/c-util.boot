@@ -232,10 +232,6 @@ macro dbSubstituteQueries(db,x) ==
 dbSubstituteAllQuantified(db,x) ==
   applySubst([:dbQuerySubst db,:dbFormalSubst db],x)
 
-++ This predicate holds if this DB is for a category constructor.  
-dbForCategory? db ==
-  db ~= nil and dbConstructorKind db is 'category
-
 --%
 $SetCategory ==
   '(SetCategory)

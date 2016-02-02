@@ -209,15 +209,16 @@
  parents                    ; browse.
  users                      ; browse.
  dependents                 ; browse.
- superdomain                ; interp.
+ superdomain                ; interp. overloaded field
+                            ; for domain: base domain of a subdomain
+                            ; for category: default package constructor
  instantiations		    ; nil if mutable constructor
  compiler-data		    ; holds compiler data when processing constructor
  load-path		    ; full object path name, when loaded.
  capsule-definitions	    ; capsule-level definitions
  template		    ; for a category, this is the generic instance.
                             ; for a functor, this is the template.
- lookup-function	    ; for a functor, lookup function.  For category
-                            ; constructor, default package constructor.
+ lookup-function	    ; for a functor, lookup function.
  optable                    ; for a functor, operation table.
  ) ; database structure
 
@@ -1009,7 +1010,8 @@
 	  (finish-output out))
       (setq ancestorspos nil))
     (setq superpos
-	  (let ((super (|dbSuperDomain| struct)))
+	  (let ((super (and (not (|dbForCategory?| struct))
+			    (|dbSuperDomain| struct))))
 	    (when super
 	      (prog1 (file-position out)
 		(print (list (car super) (second super)) out)
