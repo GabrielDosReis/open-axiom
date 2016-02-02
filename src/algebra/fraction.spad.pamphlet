@@ -23,7 +23,7 @@
 ++ References:
 ++ Description: Localize(M,R,S) produces fractions with numerators
 ++ from an R module M and denominators from some multiplicative subset
-++ D of R.
+++ S of R.
 Localize(M:Module R,
          R:CommutativeRing,
          S:SubsetCategory(Monoid, R)): Module R with
