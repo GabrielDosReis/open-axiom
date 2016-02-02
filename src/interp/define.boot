@@ -1593,10 +1593,6 @@ compFunctorBody(db,body,m,e) ==
     $insideCategoryPackageIfTrue => dbCapsuleIR db
     not $optExportedFunctionReference => dbCapsuleIR db
     foldExportedFunctionReferences(db,dbCapsuleIR db)
-  body is [op,:.] and op in '(add CAPSULE) => T
-  $NRTaddForm :=
-    body is ["SubDomain",domainForm,predicate] => domainForm
-    body
   T
  
 reportOnFunctorCompilation() ==
