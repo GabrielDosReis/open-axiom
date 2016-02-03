@@ -163,10 +163,6 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
        Term == IndexedProductTerm(A,S)
        import Term
 
-       r: A
-       n: NonNegativeInteger
-       f: A -> A
-       s: S
        0  == convert nil$List(Term)
        zero? x ==  null terms x
 
@@ -215,7 +211,7 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
          else qsetrest!(endcell, end)
          convert res
 
-       n * x  ==
+       n:NonNegativeInteger * x:%  ==
          zero? n => 0
          one? n => x
          convert [term(index u,a) for u in terms x
@@ -286,11 +282,8 @@ IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedS
     Join(OrderedAbelianMonoidSup,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductOrderedAbelianMonoid(A,S) add
     --representations
-       Term:=  Record(k:S,c:A)
+       Term ==  Record(k:S,c:A)
        Rep:=  List Term
-       x,y: %
-       r: A
-       s: S
 
        subtractIfCan(x,y) ==
          empty? y => just x
