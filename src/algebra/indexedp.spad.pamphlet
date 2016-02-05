@@ -40,6 +40,8 @@ IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
        ++ leadingSupport(z) returns the index of leading
        ++ (with respect to the ordering on the indexing set) monomial of z.
        ++ Error: if z has no support.
+    leadingTerm : % -> IndexedProductTerm(A,S)
+       ++ The leading term of an indexed product.
     reductum:      % -> %
        ++ reductum(z) returns a new element created by removing the
        ++ leading coefficient/support pair from the element z.
@@ -106,15 +108,12 @@ IndexedDirectProductObject(A,S): Public == Private where
     x = y == rep x = rep y
     monomial(r,s) == per [term(s,r)]
     map(f,x) == per [term(index tm,f coefficient tm) for tm in rep x]
+    leadingTerm x ==
+      null terms x => error "Cannot take the leadingTerm of an empty product"
+      first terms x
     reductum x == per rest rep x
-    leadingCoefficient x  ==
-       null rep x =>
-         error "Can't take leadingCoefficient of empty product element"
-       coefficient first rep x
-    leadingSupport x  ==
-       null rep x =>
-         error "Can't take leadingCoefficient of empty product element"
-       index first rep x
+    leadingCoefficient x  == coefficient leadingTerm x
+    leadingSupport x  == index leadingTerm x
     terms x == rep x
     convert l == per l
     combineWithIf(u, v, f, p) ==
