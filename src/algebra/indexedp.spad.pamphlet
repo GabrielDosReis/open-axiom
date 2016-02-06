@@ -280,32 +280,30 @@ IndexedDirectProductOrderedAbelianMonoid(A:OrderedAbelianMonoid,S:OrderedType):
 IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedSet):
     Join(OrderedAbelianMonoidSup,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductOrderedAbelianMonoid(A,S) add
-    --representations
-       Term ==  Record(k:S,c:A)
-       Rep:=  List Term
-
        subtractIfCan(x,y) ==
-         empty? y => just x
-         empty? x => nothing
-         x.first.k < y.first.k => nothing
-         x.first.k > y.first.k =>
-             t:= subtractIfCan(x.rest, y)
+         zero? y => just x
+         zero? x => nothing
+         leadingSupport x < leadingSupport y => nothing
+         leadingSupport x > leadingSupport y =>
+             t := subtractIfCan(reductum x, y)
              t case nothing => nothing
-             just cons( x.first, t)
-         u := subtractIfCan(x.first.c, y.first.c)
+             just convert cons(leadingTerm x, terms t)
+         u := subtractIfCan(leadingCoefficient x, leadingCoefficient y)
          u case nothing => nothing
-         zero? u => subtractIfCan(x.rest, y.rest)
-         t := subtractIfCan(x.rest, y.rest)
+         t := subtractIfCan(reductum x, reductum y)
+         zero? u => t
          t case nothing => nothing
-         just cons([x.first.k,u],t)
+         just convert cons(term(leadingSupport x,u),terms t)
 
        sup(x,y) ==
-         empty? y => x
-         empty? x => y
-         x.first.k < y.first.k => cons(y.first,sup(x,y.rest))
-         x.first.k > y.first.k => cons(x.first,sup(x.rest,y))
-         u:=sup(x.first.c, y.first.c)
-         cons([x.first.k,u],sup(x.rest,y.rest))
+         zero? y => x
+         zero? x => y
+         leadingSupport x < leadingSupport y =>
+           convert cons(leadingTerm y,terms sup(x,reductum y))
+         leadingSupport x > leadingSupport y =>
+           convert cons(leadingTerm x,terms sup(reductum x,y))
+         u := sup(leadingCoefficient x, leadingCoefficient y)
+         convert cons(term(leadingSupport x,u),terms sup(reductum x,reductum y))
 
 @
 \section{domain IDPAG IndexedDirectProductAbelianGroup}
