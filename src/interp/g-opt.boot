@@ -832,6 +832,10 @@ optNot(x is ['%not,a]) ==
   a is '%true => '%false
   a is '%false => '%true
   a is ['%not,b] => b
+  a is ['%and,:args] =>
+    optOr ['%or,:[optNot ['%not,x] for x in args]]
+  a is ['%or,:args] =>
+    optAnd ['%and,:[optNot ['%not,x] for x in args]]
   a is ['%when,:.] =>
     optCond [a.op, :[[p,optNot ['%not,c]] for [p,c] in a.args]]
   x
