@@ -58,9 +58,6 @@ $profileCompiler := false
 ++
 $NRTaddForm := nil
 
-++
-$NRTderivedTargetIfTrue := false
-
 addDeltaCode db ==
 --NOTES: This function is called from buildFunctor to initially
 --  fill slots in dbTemplate. The dbTemplate so created is stored in the
@@ -567,7 +564,7 @@ makeSlot1Info db ==
 -- a:T == b add c  --- slot1 directory has #s for entries defined in c
 -- a:T == b        --- slot1 has all slot #s = nil (see compFunctorBody)
 -- a == b add c    --- not allowed (line 7 of getTargetFromRhs)
--- a == b          --- $NRTderivedTargetIfTrue = true; set directory to nil
+-- a == b          --- set directory to empty
   pairlis :=
     $insideCategoryPackageIfTrue =>
       [[first dbParameters db,:'_$],:dbFormalSubst db]
@@ -575,7 +572,6 @@ makeSlot1Info db ==
   exports :=
     transformOperationAlist applySubst(pairlis,categoryExports dbDomainShell db)
   opList :=
-    $NRTderivedTargetIfTrue => 'derived
     $insideCategoryPackageIfTrue => slot1Filter exports
     exports
   addList := applySubst(pairlis,$NRTaddForm)

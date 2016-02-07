@@ -275,7 +275,6 @@ lookupInAddChain(op,sig,addFormDomain,dollar) ==
 --       Lookup Function in Slot 1 (via SPADCALL)
 --=======================================================
 lookupInTable(op,sig,dollar,[domain,table]) ==
-  table is "derived" => lookupInAddChain(op,sig,domain,dollar)
   success := nil             -- lookup result
   someMatch := false
   while not success for [sig1,:code] in symbolTarget(op,table) repeat

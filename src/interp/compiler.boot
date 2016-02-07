@@ -83,8 +83,6 @@ $IOFormDomains ==
 
 compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
-  -- signals that target is derived from lhs-- see makeSlot1Info
-  $NRTderivedTargetIfTrue: local := false
   $currentFunction: local := nil
   $forceAdd: local:= false
   -- start with a base list of domains we may want to inline.
