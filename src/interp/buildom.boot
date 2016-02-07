@@ -157,7 +157,7 @@ compiledLookup(op,sig,dollar) ==
   basicLookup(op,sig,dollar,dollar)
 
 lookupInDomainVector(op,sig,domain,dollar) ==
-  SPADCALL(op,sig,dollar,domainRef(domain,1))
+  SPADCALL(op,sig,dollar,domainDirectory domain)
 
 lookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := vectorRef(addFormDomain,index) =>
@@ -304,7 +304,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
       slot
   success isnt 'failed and success ~= nil => success
   subsumptionSig ~= nil and
-    (u := SPADCALL(op,subsumptionSig,dollar,domainRef(domain,1))) => u
+    (u := lookupInDomainVector(op,subsumptionSig,domain,dollar)) => u
   someMatch => lookupInAddChain(op,sig,domain,dollar)
   nil
 

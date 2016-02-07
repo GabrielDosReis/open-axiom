@@ -393,15 +393,15 @@ stuffDomainSlots dollar ==
   domname := devaluate dollar
   infovec := property(opOf domname,'infovec)
   lookupFunction := symbolFunction getLookupFun infovec
-  template := infovec.0
+  template := first infovec
   if vectorRef(template,$AddChainIndex) then
     stuffSlot(dollar,$AddChainIndex,vectorRef(template,$AddChainIndex))
-  for i in ($NRTbase + # rest domname)..maxIndex template
+  for i in ($NRTbase + # domname.args)..maxIndex template
     | item := vectorRef(template,i) repeat
       stuffSlot(dollar,i,item)
-  domainDirectory(dollar) := [lookupFunction,dollar,infovec.1]
-  domainAttributes(dollar) := infovec.2
-  proto4 := infovec.3
+  domainDirectory(dollar) := [lookupFunction,dollar,second infovec]
+  domainAttributes(dollar) := third infovec
+  proto4 := fourth infovec
   domainData(dollar) := 
     vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
     bitVector := domainPredicates dollar
