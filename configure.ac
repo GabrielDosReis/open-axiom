@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.5.0-2016-01-24], 
+AC_INIT([OpenAxiom], [1.5.0-2016-02-07], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
@@ -56,6 +56,9 @@ AC_PREREQ([2.62])
 
 dnl Simple sanity check.
 AC_CONFIG_SRCDIR(src/Makefile.in)
+
+dnl Look for PATHs to consider, on some exotic platforms.
+OPENAXIOM_CHECK_FOR_ADDITIONAL_PATHS
 
 
 open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION

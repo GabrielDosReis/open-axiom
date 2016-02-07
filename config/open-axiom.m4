@@ -43,6 +43,20 @@ case $host in
 esac
 ])
 
+dnl ------------------------------------------
+dnl -- OPENAXIOM_CHECK_FOR_ADDITIONAL_PATHS --
+dnl ------------------------------------------
+AC_DEFUN([OPENAXIOM_CHECK_FOR_ADDITIONAL_PATHS],[
+# If there is a MacPort installation of QT5, use it.
+case $host in
+     *darwin*)
+	if test -d /opt/local/libexec/qt5; then
+	   PATH=/opt/local/libexec/qt5/bin:$PATH
+	fi
+	;;
+esac
+])
+
 dnl ----------------------------------
 dnl -- OPENAXIOM_REJECT_ROTTED_LISP --
 dnl ----------------------------------
