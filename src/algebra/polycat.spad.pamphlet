@@ -630,7 +630,7 @@ PolynomialCategoryLifting(E,Vars,R,P,S): Exports == Implementation where
   Vars: OrderedSet
   R   : Ring
   P   : PolynomialCategory(R, E, Vars)
-  S   : SetCategory with
+  S   : BasicType with
            + : (%, %) -> %
            * : (%, %) -> %
            **: (%, NonNegativeInteger) -> %
