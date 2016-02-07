@@ -178,8 +178,7 @@ lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
 
 basicLookup(op,sig,domain,dollar) ==
   item := domainDirectory domain
-  cons? item and first item in '(lookupInDomain lookupInTable) => 
-    lookupInDomainVector(op,sig,domain,dollar)
+  item is ['lookupInTable,:.] => lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
   u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
   lookupInDomainAndDefaults(op,sig,domain,dollar,true)

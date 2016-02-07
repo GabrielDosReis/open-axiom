@@ -153,17 +153,19 @@ replaceGoGetSlot env ==
 --=======================================================
 
 lookupComplete(op,sig,dollar,env) == 
+  $lookupDefaults =>
+    newLookupInCategories(op,sig,first env,dollar)  --lookup first in my cats
+      or newLookupInAddChain(op,sig,first env,dollar)
   newLookupInTable(op,sig,dollar,env,false)
  
 lookupIncomplete(op,sig,dollar,env) == 
+  $lookupDefaults =>
+    newLookupInCategories(op,sig,first env,dollar)  --lookup first in my cats
+      or newLookupInAddChain(op,sig,first env,dollar)
   newLookupInTable(op,sig,dollar,env,true)
  
 newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   dollar = nil => systemError()
-  $lookupDefaults =>
-    newLookupInCategories(op,sig,domain,dollar)      --lookup first in my cats
-      or newLookupInAddChain(op,sig,domain,dollar)
-  --fast path when called from newGoGet
   success := false
   if $monitorNewWorld then
     sayLooking(concat('"---->",form2String devaluate domain,
