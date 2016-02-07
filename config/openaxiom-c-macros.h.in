@@ -139,6 +139,9 @@
 /* Define to 1 if you have the <winsock2.h> header file. */
 #undef HAVE_WINSOCK2_H
 
+/* Define to 1 if you have the <X11/Intrinsic.h> header file. */
+#undef HAVE_X11_INTRINSIC_H
+
 /* Define to 1 if you have the <X11/xpm.h> header file. */
 #undef HAVE_X11_XPM_H
 

@@ -19000,7 +19000,8 @@ fi
 ## inspired by AC_PATH_XTRA.  I don't have time to get to that
 ## complication right now.  Will fix later.
 ## But we can check for the existence of <X11/xpm.h>
-X_PRE_LIBS="-lXpm $X_PRE_LIBS"
+## Also check for Xt headers
+X_PRE_LIBS="-lXpm -Xt $X_PRE_LIBS"
 
 
 ## If the system supports X11, then build graphics
@@ -19025,6 +19026,20 @@ _ACEOF
 
 else
   as_fn_error $? "The header <X11/xpm.h> could not be found.  Install Xpm development package and re-start the configuration process." "$LINENO" 5
+fi
+
+done
+
+    for ac_header in X11/Intrinsic.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "X11/Intrinsic.h" "ac_cv_header_X11_Intrinsic_h" "$ac_includes_default"
+if test "x$ac_cv_header_X11_Intrinsic_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_X11_INTRINSIC_H 1
+_ACEOF
+
+else
+  as_fn_error $? "The header <X11/Intrinsic.h> could not be found.  Install Xt development package and re-start the configuration process." "$LINENO" 5
 fi
 
 done

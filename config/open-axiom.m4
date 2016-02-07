@@ -1035,7 +1035,8 @@ AC_PATH_XTRA
 ## inspired by AC_PATH_XTRA.  I don't have time to get to that 
 ## complication right now.  Will fix later.
 ## But we can check for the existence of <X11/xpm.h>
-X_PRE_LIBS="-lXpm $X_PRE_LIBS"
+## Also check for Xt headers
+X_PRE_LIBS="-lXpm -Xt $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
@@ -1051,6 +1052,8 @@ else
     LDFLAGS="$X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS"
     AC_CHECK_HEADERS([X11/xpm.h],[],
       [AC_MSG_ERROR([The header <X11/xpm.h> could not be found.  Install Xpm development package and re-start the configuration process.])])
+    AC_CHECK_HEADERS([X11/Intrinsic.h],[],
+      [AC_MSG_ERROR([The header <X11/Intrinsic.h> could not be found.  Install Xt development package and re-start the configuration process.])])
     oa_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
     LDFLAGS=$oa_saved_ldflags
