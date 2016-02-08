@@ -55,9 +55,6 @@ $insideCategoryPackageIfTrue := false
 ++ By default, don't generate info files
 $profileCompiler := false
 
-++
-$NRTaddForm := nil
-
 addDeltaCode db ==
 --NOTES: This function is called from buildFunctor to initially
 --  fill slots in dbTemplate. The dbTemplate so created is stored in the
@@ -78,9 +75,9 @@ addDeltaCode db ==
     for [item,:compItem] in reverse dbUsedEntities db repeat
       domainRef(dbTemplate db,i) := deltaTran(db,item,compItem)
   domainRef(dbTemplate db,$AddChainIndex) :=
-    $NRTaddForm =>
-      $NRTaddForm is ["%Comma",:y] => reverse! y
-      NRTencode(db,$NRTaddForm,$addForm)
+    base := dbBaseDomainForm db =>
+      base is ["%Comma",:y] => reverse! y
+      NRTencode(db,base,$addForm)
     nil
 
 deltaTran(db,item,compItem) ==
@@ -238,7 +235,7 @@ assocIndex: (%Thing,%Form) -> %Maybe %Short
 assocIndex(db,x) ==
   x = nil => x
   x is '$ => 0
-  x = $NRTaddForm => $AddChainIndex
+  x = dbBaseDomainForm db => $AddChainIndex
   dbEntitySlot(db,['%domain,x])
 
 getLocalIndex: (%Thing,%Form) -> %Short
@@ -487,8 +484,8 @@ buildFunctor(db,sig,code,$locals,$e) ==
     argStuffCode :=
       [['%store,['%tref,'$,i],v] for i in $NRTbase.. for v in $FormalMapVariableList
 	for arg in args]
-    if symbolMember?($NRTaddForm,$locals) then
-       addargname := $FormalMapVariableList.(symbolPosition($NRTaddForm,$locals))
+    if symbolMember?(dbBaseDomainForm db,$locals) then
+       addargname := $FormalMapVariableList.(symbolPosition(dbBaseDomainForm db,$locals))
        argStuffCode := [['%store,['%tref,'$,$AddChainIndex],addargname],:argStuffCode]
     [['stuffDomainSlots,'$],:argStuffCode,
        :predBitVectorCode2,storeOperationCode]
@@ -574,7 +571,7 @@ makeSlot1Info db ==
   opList :=
     $insideCategoryPackageIfTrue => slot1Filter exports
     exports
-  addList := applySubst(pairlis,$NRTaddForm)
+  addList := applySubst(pairlis,dbBaseDomainForm db)
   [dbConstructor db,[addList,:opList]]
 
 slot1Filter opList ==

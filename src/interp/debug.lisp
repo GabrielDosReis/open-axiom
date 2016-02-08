@@ -512,7 +512,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
                      (STRINGIMAGE FN))))
         (COND (|$fromSpadTrace|
                (if MATHTRACE (push (INTERN TRACENAME) |$mathTraceList|))
-               (SETQ LETFUNCODE `(SETQ |$currentFunction| ,(MKQ FN)))
+               (SETQ LETFUNCODE (MKQ FN))
                (SETQ BEFORE
                      (if (SETQ U (/GETTRACEOPTIONS OPTIONS 'BEFORE))
                          `(progn ,(CADR U) ,LETFUNCODE)

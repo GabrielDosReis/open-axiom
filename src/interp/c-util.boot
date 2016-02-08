@@ -141,19 +141,21 @@ macro domainData d ==
 structure %CompilationData ==
   Record(subst: %Substitution,idata: %Substitution,bytes: List %Fixnum,
     shell: %Vector %Thing, items: %Buffer %Pair(%SourceEntity,%Code),
-      capsule: %List %Thing, lib: %Libstream,outpath: %Pathname) with
-        cdSubstitution == (.subst)
-        cdImplicits == (.idata)
-        cdBytes == (.bytes)
-        cdShell == (.shell)
-        cdItems == (.items)
-        cdCapsule == (.capsule)
-        cdLib == (.lib)
-        cdOutput == (.outpath)
+      capsule: %List %Thing, base: %Thing,
+        lib: %Libstream,outpath: %Pathname) with
+            cdSubstitution == (.subst)
+            cdImplicits == (.idata)
+            cdBytes == (.bytes)
+            cdShell == (.shell)
+            cdItems == (.items)
+            cdCapsule == (.capsule)
+            cdBase == (.base)
+            cdLib == (.lib)
+            cdOutput == (.outpath)
 
 ++ Make a fresh compilation data structure.
 makeCompilationData() ==
-  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil,nil,nil)
+  mk%CompilationData(nil,nil,nil,nil,[nil,:0],nil,nil,nil,nil)
 
 ++ Subsitution that replaces parameters with formals.
 macro dbFormalSubst db ==
@@ -231,6 +233,10 @@ macro dbSubstituteQueries(db,x) ==
 ++ Apply both query and formal variable substitutions of `db' to `x'.
 dbSubstituteAllQuantified(db,x) ==
   applySubst([:dbQuerySubst db,:dbFormalSubst db],x)
+
+++ During compilation, return the base domain form of a domain defition.
+macro dbBaseDomainForm db ==
+  cdBase dbCompilerData db
 
 --%
 $SetCategory ==

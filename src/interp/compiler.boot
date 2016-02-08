@@ -83,7 +83,6 @@ $IOFormDomains ==
 
 compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
-  $currentFunction: local := nil
   $forceAdd: local:= false
   -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames

@@ -64,9 +64,6 @@ $cacheCount := 0
 $createUpdateFiles := false
 
 ++
-$currentFunction := nil
-
-++
 $currentLine := nil
 
 ++
