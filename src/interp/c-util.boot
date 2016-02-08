@@ -1478,13 +1478,20 @@ makeCapsuleFunctionContext(db,fun) ==
           | symbolEq?(fun,rest impl)]
              or systemError ['"cannot find context for",:bright fun]
 
+++ Return the list of implementations candidate for a given domain slot.
+candidatesForSlot(db,slot) ==
+  [x for x in dbCapsuleDefinitions db | x is [.,=slot,:.]]
+
 ++ Return the linkage name of the exported operation associated with
 ++ slot number `slot'.  A nil result means that either the operation
 ++ is not defined, or the scope predicates don't match.
 getCapsuleDirectoryEntry(fc,slot) ==
   pred' := fcPredicate fc
-  or/[rest impl for [[.,:pred],:impl] in dbCapsuleDefinitions fcDatabase fc
-        | first impl = slot and (pred is true or pred = pred')]
+  candidates := candidatesForSlot(fcDatabase fc ,slot) =>
+    -- FIXME: consider subsumption?  How often does this occur?
+    or/[func for [[.,:pred],.,:func] in candidates
+          | pred = pred' or pred is true]
+  nil
 
 ++ `defs' is a list of function definitions from the current domain.
 ++ Walk that list and replace references to unconditional operations
