@@ -1732,7 +1732,10 @@ lookupDefiningFunction(op,sig,dc) ==
   --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
   --      us from full evaluation.  
   args = nil and symbolMember?(ctor,$SystemInlinableConstructorNames) =>
-    compiledLookup(op,sig,dc)
+    env := compiledLookup(op,sig,dc) or return nil
+    env is ['newGoGet,:.] => nil -- FIXME: Follow the link!
+    env is ['makeSpadConstant,fun,:.] => BPINAME fun
+    BPINAME first env
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
   infovec := property(ctor,'infovec) or return nil

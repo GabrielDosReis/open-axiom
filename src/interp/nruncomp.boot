@@ -176,12 +176,6 @@ optDeltaEntry(op,sig,dc,kind,e) ==
          MKQ x
      fun := lookupDefiningFunction(op,nsig,ndc)
   fun = nil => nil
-  fun :=
-    fun is ['makeSpadConstant,:.] and
-      (fun' := getFunctionReplacement second fun) =>
-         return fun'
-    cons? fun => first fun
-    fun
   markOperation getFunctionReplacement fun
 
 ++ True if we are interested only in abstract slot, not the actual
