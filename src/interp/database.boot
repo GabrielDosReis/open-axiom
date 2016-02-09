@@ -906,5 +906,5 @@ loadDBIfNecessary db ==
   loadDB db
 
 ++ Return true if this DB is for a category default package.
-macro dbDefaultPackage? db ==
+dbDefaultPackage? db ==
   isDefaultPackageName dbConstructor db

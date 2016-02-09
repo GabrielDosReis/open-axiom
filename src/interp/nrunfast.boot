@@ -36,7 +36,7 @@ import c_-util
 namespace BOOT
 
 module nrunfast where
-  getOpCode: (%Symbol, %Vector %Thing, %Short) -> %Maybe %Short
+  getOpCode: (%Symbol, %Vector %Thing) -> %Maybe %Short
 
 ++
 $monitorNewWorld := false
@@ -72,11 +72,11 @@ getDomainCompleteCategories dom ==
     cats := [newExpandLocalType(vectorRef(vec,i),dom,dom), :cats]
   reverse! cats
  
-getOpCode(op,vec,max) ==
+getOpCode(op,vec) ==
 --search Op vector for "op" returning code if found, nil otherwise
   res := nil
-  for i in 0..max by 2 repeat
-    sameObject?(vectorRef(vec,i),op) => return (res := i + 1)
+  for i in 0..maxIndex vec by 2 repeat
+    symbolEq?(vectorRef(vec,i),op) => return (res := i + 1)
   res
 
 evalSlotDomain(u,dollar) ==
@@ -174,7 +174,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   numvec := getDomainByteVector domain
   predvec := domainPredicates domain
   max := maxIndex opvec
-  k := getOpCode(op,opvec,max) or return
+  k := getOpCode(op,opvec) or return
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   idxmax := maxIndex numvec
@@ -292,7 +292,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
         success :=
           [.,opvec,:.] := infovec
           max := maxIndex opvec
-          code := getOpCode(op,opvec,max)
+          code := getOpCode(op,opvec)
           null code => nil
           [.,.,.,[.,.,.,:byteVector],:.] := infovec
           endPos :=
@@ -425,7 +425,7 @@ lookupInDomainByName(op,domain,arg) ==
   numvec := getDomainByteVector domain
   predvec := domainPredicates domain
   max := maxIndex opvec
-  k := getOpCode(op,opvec,max) or return nil
+  k := getOpCode(op,opvec) or return nil
   idxmax := maxIndex numvec
   start := vectorRef(opvec,k)
   finish :=
