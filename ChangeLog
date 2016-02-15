@@ -1,3 +1,7 @@
+2016-02-14  Bill Page  <bill.page@newsynthesis.org>
+
+	* config/open-axiom.m4 (X_PRE_LIBS): Fix typo.
+
 2015-07-09  Igor Pashev <pashev.igor@gmail.com>
 
 	* config/open-axiom.m4 (OPENAXIOM_HOST_COMPILERS): Make sure AC_PROG_CC

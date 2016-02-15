@@ -1036,7 +1036,7 @@ AC_PATH_XTRA
 ## complication right now.  Will fix later.
 ## But we can check for the existence of <X11/xpm.h>
 ## Also check for Xt headers
-X_PRE_LIBS="-lXpm -Xt $X_PRE_LIBS"
+X_PRE_LIBS="-lXpm -lXt $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
