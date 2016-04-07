@@ -62,7 +62,7 @@ SetOfMIntegersInOneToN(m, n): Exports == Implementation where
     reallyEnumerate()      == [[b, i] for b in enum(m, n) for i in 1..]
     member?(p, s)          == s.bits.p
  
-    enumerate() ==
+    enumerate():Vector % ==
       if empty? deref all then setref(all,reallyEnumerate())
       deref all
  
