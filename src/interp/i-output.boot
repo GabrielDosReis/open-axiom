@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2012, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -529,12 +529,8 @@ appChar(string,x,y,d) ==
     if maxIndex string = 1 and stringChar(string,0) = char "%" then
       stringChar(string,1) = char "b" =>
         bumpDeltaIfTrue:= true
-        stringChar(string,0) := abstractChar 29
-        stringChar(string,1) := abstractChar 200
       stringChar(string,1) = char "d" =>
         bumpDeltaIfTrue:= true
-        stringChar(string,0) := abstractChar 29
-        stringChar(string,1) := abstractChar 65
     shiftedX:= (y=0 => x+$highlightDelta; x)
       --shift x for brightening characters -- presently only if y=0
     RPLACSTR(line,shiftedX,n:=#string,string,0,n)

@@ -1,3 +1,8 @@
+2016-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* interp/i-output.boot (appChar): Don't modify string parameter.
+	* algebra/Makefile.am (strap-1/FINITE.$(FASLEXT)): Update dependency.
+
 2016-01-31  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	Breaking change from previous version: No more support for command
