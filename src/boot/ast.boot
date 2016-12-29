@@ -61,7 +61,8 @@ structure %Ast ==
   %Module(%Symbol,%List,%List)          -- module declaration
   %Namespace(%Symbol)                   -- namespace AxiomCore
   %Import(%Ast)                         -- import module; import namespace foo
-  %ImportSignature(%Symbol,%Signature)  -- import function declaration
+  %LoadUnit(%Symbol)                    -- System.LoadUnit lib
+  %ImportSignature(%Symbol,%Signature,%Domain)  -- import function declaration
   %Record(%List,%List)                  -- Record(num: %Short, den: %Short)
   %AccessorDef(%Symbol,%Ast)            -- numerator == (.num)
   %TypeAlias(%Head, %List)              -- type alias definition
@@ -1950,11 +1951,13 @@ $ffs := nil
 ++ Generate an import declaration for `op' as equivalent of the
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
-genImportDeclaration(op, sig) ==
+genImportDeclaration(op, sig, dom) ==
   sig isnt ["%Signature", op', m] => coreError '"invalid signature"
   m isnt ["%Mapping", t, s] => coreError '"invalid function type"
   if s ~= nil and symbol? s then s := [s]
   $ffs := [op,:$ffs]
+  if dom is ["%LoadUnit",lib] and not symbolMember?(lib,$foreignLoadUnits) then
+    $foreignLoadUnits := [lib,:$foreignLoadUnits]
 
   %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')

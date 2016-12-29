@@ -61,6 +61,7 @@ CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LDFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
+oa_shrlib_prefix = @oa_shrlib_prefix@
 # this includes leading period
 SHREXT = @shared_ext@
 # extension of the archive library; this does not include period

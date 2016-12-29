@@ -632,7 +632,7 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_HOST_LISP_PRECISION],
 dnl --------------------------------------
 dnl -- OPENAXIOM_DYNAMIC_MODULE_SUPPORT --
 dnl --------------------------------------
-dnl Infer compiler flags and file extensions associated
+dnl Infer compiler flags, file prefix and extensions associated
 dnl with dynamic module support.
 dnl We need to link some C object files into in the Lisp images we
 dnl use.  Some Lisps (e.g. GCL, ECL) support inclusion of ``ordinary''
@@ -646,6 +646,7 @@ AC_DEFUN([OPENAXIOM_DYNAMIC_MODULE_SUPPORT],[
 AC_SUBST(oa_use_libtool_for_shared_lib)
 AC_SUBST(oa_shrobj_flags)
 AC_SUBST(oa_shrlib_flags)
+AC_SUBST(oa_shrlib_prefix)
 oa_use_libtool_for_shared_lib=no
 oa_shrobj_flags=
 oa_shrlib_flags=
@@ -654,6 +655,8 @@ oa_shrlib_flags=
 LT_PREREQ([2.2.6])
 LT_INIT([pic-only dlopen win32-dll shared])
 AC_SUBST([LIBTOOL_DEPS])
+# Most targets use 'lib' prefix, as in 'libOpenAxiom'.
+oa_shrlib_prefix='lib'
 # Give me extension of libraries
 AC_SUBST(shared_ext)
 AC_SUBST(libext)
@@ -663,6 +666,8 @@ case $host in
     *mingw*|*cygwin*)
        oa_shrobj_flags='-prefer-pic'
        oa_shrlib_flags="-shared -Wl,--export-all-symbols"
+       # Windows platforms don't need a prefix
+       oa_shrlib_prefix=
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'

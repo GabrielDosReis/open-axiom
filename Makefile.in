@@ -436,6 +436,7 @@ oa_lisp_flavor = @oa_lisp_flavor@
 oa_optimize_options = @oa_optimize_options@
 oa_quiet_flags = @oa_quiet_flags@
 oa_shrlib_flags = @oa_shrlib_flags@
+oa_shrlib_prefix = @oa_shrlib_prefix@
 oa_shrobj_flags = @oa_shrobj_flags@
 oa_src_algdir = @oa_src_algdir@
 oa_src_datadir = @oa_src_datadir@

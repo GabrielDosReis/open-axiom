@@ -1,3 +1,17 @@
+2016-12-29  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* lisp/core.lisp.in ($NativeModulePrefix): Define and export.
+	* boot/ast.boot (%Ast): Ad %LoadUnit alternative.
+	(genImportDeclaration): Take a third parameter.  Update caller.
+	* boot/parser.boot (bpProvenance): New.
+	(bpImport): Use it to parse load unit specification.
+	* boot/translator.boot ($foreignLoadUnits): New.
+	(translateToplevel): Update.
+	(loadNativeModule): Tidy.
+	(loadSystemRuntimeCore): Likewise.
+	* lib/Makefile.in: Tidy reference to shared library pathname.
+	* lisp/Makefile.in (edit): Translate oa_shrlib_prefix.
+
 2016-12-26  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* interp/i-output.boot (appChar): Don't modify string parameter.

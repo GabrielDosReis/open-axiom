@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2014, Gabriel Dos Reis.
+-- Copyright (C) 2007-2016, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -518,9 +518,21 @@ bpModule ps ==
     bpPush(ps,%Module(bpPop3 ps,bpPop2 ps,bpPop1 ps))
   nil
 
+++ Provenance:
+++     IN Application
+bpProvenance ps ==
+  bpEqKey(ps,"IN") =>
+    bpApplication ps or return bpTrap ps
+    x := bpPop1 ps
+    x isnt [["ELT","System","LoadUnit"],['QUOTE,lib]] =>
+      bpGeneralErrorHere ps
+    bpPush(ps,%LoadUnit lib)
+  bpPush(ps,nil)
+
 ++ Parse a module import, or a import declaration for a foreign entity.
 ++ Import:
 ++    IMPORT Signature FOR Name
+++    IMPORT Signature IN Application FOR Name
 ++    IMPORT Name
 ++    IMPORT NAMESPACE LongName
 bpImport ps ==
@@ -533,10 +545,11 @@ bpImport ps ==
     bpRequire(ps,function bpName)
     bpEqPeek(ps,"COLON") =>
       bpRestore(ps,a)
-      bpRequire(ps,function bpSignature) and 
-        (bpEqKey(ps,"FOR") or bpTrap ps) and
-           bpRequire(ps,function bpName) and
-              bpPush(ps,%ImportSignature(bpPop1 ps, bpPop1 ps))
+      bpRequire(ps,function bpSignature)
+      bpProvenance ps
+      bpEqKey(ps,"FOR") or bpTrap ps
+      bpRequire(ps,function bpName)
+      bpPush(ps,%ImportSignature(bpPop1 ps, bpPop2 ps, bpPop1 ps))
     bpPush(ps,%Import bpPop1 ps)
   false
 

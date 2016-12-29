@@ -45,6 +45,9 @@ module translator (evalBootFile, loadNativeModule, loadSystemRuntimeCore,
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
 
+++ List of foreign load units mentioned in foreign imports.
+$foreignLoadUnits := []
+
 ++ Stack of foreign definitions to cope with CLisp's odd FFI interface.
 $foreignsDefsForCLisp := []
 
@@ -53,6 +56,10 @@ reallyPrettyPrint(x,st == _*STANDARD_-OUTPUT_*) ==
   writeNewline st
 
 genModuleFinalization(stream) ==
+  loadUnits := [symbolName x for x in $foreignLoadUnits]
+  if loadUnits ~= [] then
+    loadUnitsForm := ["MAP",quote "loadNativeModule",quote loadUnits]
+    reallyPrettyPrint(atLoadOrExecutionTime loadUnitsForm,stream)
   $ffs = nil => nil
   $currentModuleName = nil => coreError '"current module has no name"
   setFFS := ["SETQ","$dynamicForeignFunctions",
@@ -448,8 +455,8 @@ translateToplevel(ps,b,export?) ==
         bootImport symbolName m
       [["IMPORT-MODULE", symbolName m]]
 
-    %ImportSignature(x, sig) =>
-      genImportDeclaration(x, sig)
+    %ImportSignature(x, sig, dom) =>
+      genImportDeclaration(x, sig, dom)
 
     %TypeAlias(lhs, rhs) => [genTypeAlias(lhs,rhs)]
 
@@ -602,6 +609,7 @@ associateRequestWithFileType(Option '"compile", '"boot",
 
 ++ Load native dynamically linked module
 loadNativeModule m ==
+  m := strconc($NativeModulePrefix,m,$NativeModuleExt)
   %hasFeature KEYWORD::SBCL =>
     apply(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),
           [m,KEYWORD::DONT_-SAVE,true])
@@ -615,4 +623,4 @@ loadNativeModule m ==
 
 loadSystemRuntimeCore() ==
   %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
-  loadNativeModule strconc('"libopen-axiom-core",$NativeModuleExt)
+  loadNativeModule '"open-axiom-core"

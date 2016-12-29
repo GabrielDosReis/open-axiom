@@ -700,6 +700,7 @@ LIBTOOL
 OBJDUMP
 DLLTOOL
 AS
+oa_shrlib_prefix
 oa_shrlib_flags
 oa_shrobj_flags
 oa_use_libtool_for_shared_lib
@@ -9280,6 +9281,7 @@ func_stripname_cnf ()
 
 
 
+
 oa_use_libtool_for_shared_lib=no
 oa_shrobj_flags=
 oa_shrlib_flags=
@@ -16755,6 +16757,8 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
+# Most targets use 'lib' prefix, as in 'libOpenAxiom'.
+oa_shrlib_prefix='lib'
 # Give me extension of libraries
 
 
@@ -16764,6 +16768,8 @@ case $host in
     *mingw*|*cygwin*)
        oa_shrobj_flags='-prefer-pic'
        oa_shrlib_flags="-shared -Wl,--export-all-symbols"
+       # Windows platforms don't need a prefix
+       oa_shrlib_prefix=
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'

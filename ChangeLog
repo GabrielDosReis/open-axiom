@@ -1,3 +1,8 @@
+2016-12-29  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* config/open-axiom.m4 (oa_shrlib_prefix): New AC_SUBST'd variable.
+	* config/var-def.mk (oa_shrlib_prefix): New.
+
 2016-02-14  Bill Page  <bill.page@newsynthesis.org>
 
 	* config/open-axiom.m4 (X_PRE_LIBS): Fix typo.
