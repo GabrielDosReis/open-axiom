@@ -1,3 +1,13 @@
+2017-01-02  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* lib/Makefile.in (core_SOURCES): Include files for IO,
+	tokenization, and parsing.
+	* include/open-axiom/Parser (boot_to_lisp): New exported entry point.
+	* boot/Makefile.am (bemol_LDADD): Add libopen-axiom-core
+	* include/open-axiom/dialect: Add documentation.
+	* syntax/Parser.cxx: New.
+	* utils/Makefile.am (libOpenAxiom_a_SOURCES): Adjust.
+
 2016-12-29  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* lisp/core.lisp.in ($NativeModulePrefix): Define and export.

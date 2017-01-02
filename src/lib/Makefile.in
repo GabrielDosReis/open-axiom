@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2016, Gabriel Dos Reis.
+# Copyright (C) 2007-2017, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,14 @@
 
 
 
-core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
+core_SOURCES = \
+	bsdsignal.cxx \
+	cfuns-c.cxx \
+	sockio-c.cxx \
+	../io/std-streams.cxx \
+	../io/InputFragment.cxx \
+	../syntax/token.cxx \
+	../syntax/Parser.cxx
 
 terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
 
@@ -52,9 +59,9 @@ unused_SOURCES = emupty.c
 
 libopen_axiom_core_SOURCES = $(core_SOURCES)
 ifeq (@oa_use_libtool_for_shared_lib@,no)
-libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.$(OBJEXT))
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.cxx=.$(OBJEXT))
 else
-libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.lo)
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.cxx=.lo)
 endif
 libspad_objects = $(libspad_SOURCES:.c=.lo)
 
@@ -67,7 +74,7 @@ subdir = src/lib/
 
 .PHONY: all all-lib
 .SUFFIXES:
-.SUFFIXES: .o .lib .obj .c .h
+.SUFFIXES: .o .lib .obj .c .h .cxx
 
 all: all-ax
 
@@ -90,13 +97,17 @@ $(oa_target_libdir)/$(oa_shrlib_prefix)open-axiom-core$(SHREXT): \
 		$(libopen_axiom_core_objects) \
 		@oa_c_runtime_extra@ -lm
 
-libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
-	$(LINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
+libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.cxx=.lo)
+	$(LINK) -o $@ $(libopen_axiom_core_SOURCES:.cxx=.lo)
 
 libspad.$(LIBEXT): $(libspad_objects)
 	$(LINK) -o $@ $(libspad_objects)
 
 .PRECIOUS: %.$(OBJEXT)
+
+%.$(OBJEXT) %.lo: %.cxx $(oa_c_macros_h)
+	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
+		$(oa_includes) $(AXIOM_X11_CFLAGS) $<
 
 %.$(OBJEXT) %.lo: %.c $(oa_c_macros_h)
 	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \

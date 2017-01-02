@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2011-2014, Gabriel Dos Reis.
+# Copyright (C) 2011-2017, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -147,10 +147,8 @@ libOpenAxiom_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libOpenAxiom_a_OBJECTS = storage.$(OBJEXT) string-pool.$(OBJEXT) \
 	command.$(OBJEXT) filesystem.$(OBJEXT) ../io/Input.$(OBJEXT) \
-	../io/std-streams.$(OBJEXT) ../io/InputFragment.$(OBJEXT) \
-	../syntax/token.$(OBJEXT) ../syntax/sexpr.$(OBJEXT) \
-	../rt/vm.$(OBJEXT) ../rt/Lisp.$(OBJEXT) \
-	../rt/Database.$(OBJEXT)
+	../syntax/sexpr.$(OBJEXT) ../rt/vm.$(OBJEXT) \
+	../rt/Lisp.$(OBJEXT) ../rt/Database.$(OBJEXT)
 libOpenAxiom_a_OBJECTS = $(am_libOpenAxiom_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_hammer_OBJECTS = hammer.$(OBJEXT)
@@ -425,9 +423,6 @@ libOpenAxiom_a_SOURCES = \
 	storage.cc string-pool.cc command.cc \
 	filesystem.cc \
 	../io/Input.cc \
-	../io/std-streams.cc \
-	../io/InputFragment.cxx \
-	../syntax/token.cc \
 	../syntax/sexpr.cc \
 	../rt/vm.cc \
 	../rt/Lisp.cc \
@@ -488,18 +483,12 @@ clean-noinstLIBRARIES:
 	@: > ../io/$(DEPDIR)/$(am__dirstamp)
 ../io/Input.$(OBJEXT): ../io/$(am__dirstamp) \
 	../io/$(DEPDIR)/$(am__dirstamp)
-../io/std-streams.$(OBJEXT): ../io/$(am__dirstamp) \
-	../io/$(DEPDIR)/$(am__dirstamp)
-../io/InputFragment.$(OBJEXT): ../io/$(am__dirstamp) \
-	../io/$(DEPDIR)/$(am__dirstamp)
 ../syntax/$(am__dirstamp):
 	@$(MKDIR_P) ../syntax
 	@: > ../syntax/$(am__dirstamp)
 ../syntax/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ../syntax/$(DEPDIR)
 	@: > ../syntax/$(DEPDIR)/$(am__dirstamp)
-../syntax/token.$(OBJEXT): ../syntax/$(am__dirstamp) \
-	../syntax/$(DEPDIR)/$(am__dirstamp)
 ../syntax/sexpr.$(OBJEXT): ../syntax/$(am__dirstamp) \
 	../syntax/$(DEPDIR)/$(am__dirstamp)
 ../rt/$(am__dirstamp):
@@ -543,13 +532,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../io/$(DEPDIR)/Input.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../io/$(DEPDIR)/InputFragment.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../io/$(DEPDIR)/std-streams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../rt/$(DEPDIR)/Database.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../rt/$(DEPDIR)/Lisp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../rt/$(DEPDIR)/vm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../syntax/$(DEPDIR)/sexpr.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@../syntax/$(DEPDIR)/token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/command.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filesystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hammer.Po@am__quote@
@@ -573,30 +559,6 @@ distclean-compile:
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cc.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
-@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
-
-.cxx.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
-
-.cxx.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-.cxx.lo:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
 @am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
 @am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo

@@ -1,6 +1,6 @@
 # Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 # All rights reserved.
-# Copyright (C) 2007-2014, Gabriel Dos Reis.
+# Copyright (C) 2007-2017, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,8 @@ bemol_SOURCES = \
 	bemol.cc
 
 bemol_LDADD = \
-	$(oa_target_libdir)/libOpenAxiom.a
+	$(oa_target_libdir)/libOpenAxiom.a \
+	$(oa_target_libdir)/libopen-axiom-core.a
 
 oa_target_bootdir = $(oa_targetdir)/boot
 if OA_ECL_RT

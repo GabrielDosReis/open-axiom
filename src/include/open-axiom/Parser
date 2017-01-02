@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2013-2017, Gabriel Dos Reis.
+// Copyright (C) 2016-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -31,20 +31,23 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef OPENAXIOM_DIALECT_included
-#define OPENAXIOM_DIALECT_included
+#ifndef OPENAXIOM_PARSER_included
+#define OPENAXIOM_PARSER_included
 
-#include <stdint.h>
+#include <string>
 
 namespace OpenAxiom {
-   // Languages for which we have parsers.
-   enum class Language : uint8_t {
-      Spad = 0x1,               // Spad programming language
-      Boot = 0x2,               // Boot programming language
-      Lisp = 0x4,               // Lisp programming language
-      BootSpad = Spad | Boot,   // Boot or Spad
-      All = Spad | Boot | Lisp, // All supported programming languages
-   };
+   // Translate a Boot input source code to a Lisp source code.
+   // Both parameters point to the pathnames of the input source file
+   // and the output source file, respectively.  Return zero on success.
+   extern "C" int boot_to_lisp(const char*, const char*);
+
+   namespace Error {
+      // Exception type for filesystem error.
+      struct CannotOpenFile {
+         std::string path;
+      };
+   }
 }
 
-#endif  // OPENAXIOM_DIALECT_included
+#endif // OPENAXIOM_PARSER_included

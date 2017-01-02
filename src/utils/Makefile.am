@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2014, Gabriel Dos Reis.
+# Copyright (C) 2011-2017, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,6 @@ libOpenAxiom_a_SOURCES = \
 	storage.cc string-pool.cc command.cc \
 	filesystem.cc \
 	../io/Input.cc \
-	../io/std-streams.cc \
-	../io/InputFragment.cxx \
-	../syntax/token.cc \
 	../syntax/sexpr.cc \
 	../rt/vm.cc \
 	../rt/Lisp.cc \
