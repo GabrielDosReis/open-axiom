@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2014, Gabriel Dos Reis.
+# Copyright (C) 2013-2017, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,9 @@
 
 noinst_PROGRAMS = lisp
 lisp_SOURCES = driver.cc
-lisp_LDADD = $(oa_target_libdir)/libOpenAxiom.a
+lisp_LDADD = \
+	$(oa_target_libdir)/libOpenAxiom.a \
+	$(oa_target_libdir)/libopen-axiom-core.a
 
 AM_CXXFLAGS = \
 	-I$(top_srcdir)/src/include \

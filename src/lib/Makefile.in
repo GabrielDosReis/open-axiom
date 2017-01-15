@@ -30,14 +30,15 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-
 core_SOURCES = \
 	bsdsignal.cxx \
 	cfuns-c.cxx \
 	sockio-c.cxx \
+	../utils/storage.cxx \
 	../io/std-streams.cxx \
 	../io/InputFragment.cxx \
 	../syntax/token.cxx \
+	../syntax/sexpr.cxx \
 	../syntax/Parser.cxx
 
 terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c

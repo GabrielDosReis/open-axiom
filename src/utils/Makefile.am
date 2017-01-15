@@ -37,10 +37,9 @@ hammer_LDADD = \
 noinst_LIBRARIES = libOpenAxiom.a
 
 libOpenAxiom_a_SOURCES = \
-	storage.cc string-pool.cc command.cc \
+	string-pool.cc command.cc \
 	filesystem.cc \
 	../io/Input.cc \
-	../syntax/sexpr.cc \
 	../rt/vm.cc \
 	../rt/Lisp.cc \
 	../rt/Database.cc
