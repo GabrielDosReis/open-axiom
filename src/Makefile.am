@@ -80,7 +80,7 @@ stamp-subdirs:
 all-driver: all-utils all-lib
 	cd driver && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-utils: stamp-subdirs all-headers
+all-utils: stamp-subdirs all-lib
 	cd utils && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-rt: all-utils
@@ -105,7 +105,7 @@ all-share:
 all-doc: stamp-subdirs
 	cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-lib: stamp-subdirs all-utils
+all-lib: stamp-subdirs all-headers
 	cd lib && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-lisp: all-lib all-driver

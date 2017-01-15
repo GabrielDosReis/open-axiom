@@ -256,11 +256,11 @@ esac
 ])
 
 dnl -----------------------------
-dnl -- OPENAXIOM_REQUIRE_CXX11 --
+dnl -- OPENAXIOM_REQUIRE_CXX14 --
 dnl -----------------------------
-AC_DEFUN([OPENAXIOM_REQUIRE_CXX11],[
+AC_DEFUN([OPENAXIOM_REQUIRE_CXX14],[
 oa_saved_cxxflags=$CXXFLAGS
-CXXFLAGS="-std=c++11"
+CXXFLAGS="-std=c++14"
 AC_MSG_CHECKING([whether $CXX supports $CXXFLAGS])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
   [AC_MSG_RESULT([yes])]

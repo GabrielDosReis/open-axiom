@@ -5542,7 +5542,7 @@ fi
 
 
 oa_saved_cxxflags=$CXXFLAGS
-CXXFLAGS="-std=c++11"
+CXXFLAGS="-std=c++14"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $CXXFLAGS" >&5
 $as_echo_n "checking whether $CXX supports $CXXFLAGS... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
