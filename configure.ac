@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.5.0-2017-01-02], 
+AC_INIT([OpenAxiom], [1.5.0-2017-01-15], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files

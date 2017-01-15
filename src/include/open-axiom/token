@@ -66,10 +66,6 @@ namespace OpenAxiom {
 #define OPENAXIOM_DEFINE_TOKEN(T, ...)  T,
 #include <open-axiom/token-value>
 #undef OPENAXIOM_DEFINE_TOKEN
-      Artificial,               // Tokens after this are artificial
-      Indent,                   // new line indentation, greater than previous
-      Unindent,                 // new line indentation, less than previous
-      Justify,                  // align indentation with preceding line.
 
       EndOfStream               // end of token stream
    };

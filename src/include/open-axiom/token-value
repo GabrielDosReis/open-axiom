@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014, Gabriel Dos Reis.
+// Copyright (C) 2014-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -144,3 +144,7 @@ OPENAXIOM_DEFINE_TOKEN(Until, "until", Keyword, Language::BootSpad)
 OPENAXIOM_DEFINE_TOKEN(With, "with", Keyword, Language::Spad)
 OPENAXIOM_DEFINE_TOKEN(Where, "where", Keyword, Language::BootSpad)
 OPENAXIOM_DEFINE_TOKEN(While, "while", Keyword, Language::BootSpad)
+
+OPENAXIOM_DEFINE_TOKEN(Indent, "<indent>", Formatting, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Unindent, "<unindent>", Formatting, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Justify, "<justify>", Formatting, Language::All)

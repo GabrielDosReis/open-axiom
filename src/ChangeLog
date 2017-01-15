@@ -1,3 +1,10 @@
+2017-01-15  Gabriel Dos Reis  <gdr@axiomatics.org>
+
+	* include/open-axiom/token (TokenValue::Indent,
+	TokenValue::Unindent, TokenValue::Justify): Move definition to..
+	* include/open-axiom/token-value: ...here.
+	* syntax/token.cxx (operator<<): Adjust.
+
 2017-01-02  Gabriel Dos Reis  <gdr@axiomatics.org>
 
 	* lib/Makefile.in (core_SOURCES): Include files for IO,

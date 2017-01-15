@@ -101,15 +101,10 @@ namespace OpenAxiom {
 
    std::ostream&
    operator<<(std::ostream& os, TokenValue tv) {
-      if (tv < TokenValue::Artificial)
+      if (tv < TokenValue::EndOfStream)
          os << token_map[uint8_t(tv)].text;
-      else switch (tv) {
-         case TokenValue::Indent: os << "%INDENT"; break;
-         case TokenValue::Unindent: os << "%UNIDENT"; break;
-         case TokenValue::Justify: os << "%JUSTIFY"; break;
-         default: os << "%ALIEN"; break;
-         }
-         
+      else
+         os << "%ALIEN";
       return os;
    }
 
