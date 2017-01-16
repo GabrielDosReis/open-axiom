@@ -1,5 +1,9 @@
 2017-01-15  Gabriel Dos Reis  <gdr@axiomatics.org>
 
+	* boot/bemol.cc: Use parser from libopen-axiom-core
+
+2017-01-15  Gabriel Dos Reis  <gdr@axiomatics.org>
+
 	* include/open-axiom/token (TokenValue::Indent,
 	TokenValue::Unindent, TokenValue::Justify): Move definition to..
 	* include/open-axiom/token-value: ...here.

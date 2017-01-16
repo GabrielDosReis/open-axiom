@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014-2015, Gabriel Dos Reis.
+// Copyright (C) 2014-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -34,93 +34,48 @@
 // --% Author: Gabriel Dos Reis
 // --% Description:
 
-#include <open-axiom/diagnostics>
-#include <open-axiom/InputFragment>
-#include <iostream>
-#include <fstream>
-#include <vector>
+#include <string.h>
 #include <string>
-#include <stack>
-#include <iterator>
-#include <ctype.h>
+#include <open-axiom/diagnostics>
 #include <open-axiom/SourceInput>
-
-using namespace OpenAxiom;
-
-// 
-// -- Decomposing source files into lexical units of information --
-// 
-
-static std::ostream&
-operator<<(std::ostream& os, const Token& t) {
-   os << t.category << '{' << t.start << '-' << t.end << '}';
-   return os;
-}
-
-using TokenSequence = OpenAxiom::TokenStream<Token>;
-
-// --
+#include <open-axiom/Parser>
 
 namespace {
-   struct Parser {
-      TokenSequence* tokens;
-   };
-}
-
-// --
-
-static void
-translate_source_file(SourceInput& src, std::ostream& out, const char* path) {
-   while (auto f = src.get()) {
-      out << "================================================\n";
-      out << f;
-      try {
-         TokenSequence ts { f, OpenAxiom::Language::Boot };
-         for (auto& t : ts) {
-            out << '\t' << t;
-            switch (t.category) {
-            case TokenCategory::Junk:
-            case TokenCategory::Unclassified:
-               out //<< f[t.start.line].sub_string(t.start.column, t.end.column)
-                   << " in file " << path
-                   << " at line " << t.start.line
-                   << ", column " << t.start.column;
-               break;
-            default:
-               break;
-            }
-            out << '\n';
-         }
-      }
-      catch(const OpenAxiom::EndOfStringUnseen& e) {
-         std::cerr << path << ": syntax error: "
-                   << "premature end of line before matching quote "
-                   << "of string literal on line " << e.line
-                   << " at column " << e.column
-                   << std::endl;
-      }
-      catch (const OpenAxiom::MissingExponent& e) {
-         std::cerr << path << ": syntax error: "
-                   << "missing exponent of floating point constant "
-                   << "on line " << e.line
-                   << ", column " << e.column
-                   << std::endl;
-      }
-      out << "================================================\n";
+   const char* path_basename(const char* begin, const char* end) {
+      while (end > begin and end[-1] != '/' and end[-1] != '\\')
+         --end;
+      return end;
    }
-   out << std::flush;
-}
 
-static void
-process_file(const char* path) {
-   std::ifstream in { path };
-   if (!in) {
-      std::cerr << "error: could not open file `" << path << "'"
-                << std::endl;
-      return;
+   const char* path_type(const char* begin, const char* end) {
+      while (end > begin and end[-1] != '.')
+         --end;
+      return end;
    }
-   SourceInput src { in };
-   translate_source_file(src, std::cout, path);
+
+   int process_file(const char* path) {
+      auto end = path + strlen(path);
+      if (path == end) {
+         std::cerr << "error: empty input file path\n";
+         return -1;
+      }
+      
+      auto base = path_basename(path, end);
+      if (base == end) {
+         std::cerr << "error: invalid input file path\n";
+         return -1;
+      }
+      
+      auto type = path_type(base, end);
+      if (base == type) {
+         std::cerr << "error: input file base without basename\n";
+         return -1;
+      }
+
+      std::string output { base, type };
+      output += "out";
+      return OpenAxiom::boot_to_lisp(path, output.c_str());
+   }
 }
 
 int main(int argc, char* argv[]) {

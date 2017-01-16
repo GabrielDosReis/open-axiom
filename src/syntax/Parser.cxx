@@ -49,6 +49,46 @@ namespace {
 
    using TokenSequence = TokenStream<Token>;
 
+   struct ParsingContext {
+      explicit ParsingContext(TokenSequence& ts)
+            : tokens{ ts }, position{ }
+      { }
+
+      bool exhausted() const {
+         return position >= tokens.size();
+      }
+
+      const Token* current_token() const {
+         if (exhausted())
+            return nullptr;
+         return &tokens[position];
+      }
+
+      void advance() { ++position; }
+
+   private:
+      TokenSequence& tokens;
+      TokenSequence::size_type position;
+   };
+
+   const Token* next_token(ParsingContext& ctx) {
+      while (auto t = ctx.current_token()) {
+         switch (t->category) {
+         case TokenCategory::Whitespace:
+            break;
+
+         case TokenCategory::Comment:
+            if (t->value == TokenValue::Wisecrack)
+               break;
+
+         default:
+            return t;
+         }
+         ctx.advance();
+      }
+      return nullptr;
+   }
+
    // Simple wrapper around standard file streams, along with the pathname
    // to the file.
    template<typename T>
@@ -75,6 +115,9 @@ namespace {
    // FIXME: This is just a stub to get a native parsing entry point
    //        into the bootsys and interpsys images.
    void transpile_boot_to_lisp(InputFile& in, OutputFile& out) {
+      out.stream << "## Input: " << in.path << '\n'
+                 << "## Output: " << out.path << '\n';
+
       SourceInput src { in.stream };
       while (auto f = src.get()) {
          out.stream << "================================================\n";
