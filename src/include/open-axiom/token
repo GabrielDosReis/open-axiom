@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2013-2014, Gabriel Dos Reis.
+// Copyright (C) 2013-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -41,6 +41,12 @@
 #include <open-axiom/dialect>
 
 namespace OpenAxiom {
+   enum class LineKind : uint8_t {
+      Ordinary,                 // Ordinary input line
+      Meta,                     // Input to the attention of the reader
+      Ignorable,                // Ignorable commentary line
+   };
+   
    // Categorization of Boot and Spad tokens.
    enum class TokenCategory : uint8_t {
       Unclassified,             // token of unknown class

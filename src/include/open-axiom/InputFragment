@@ -44,6 +44,7 @@ namespace OpenAxiom {
    struct Line : std::string {
       LineNumber number { };
       ColumnIndex indent { };
+      LineKind kind { LineKind::Ordinary };
       
       std::string sub_string(ColumnIndex s, ColumnIndex e) const {
          return substr(s, e - s);
