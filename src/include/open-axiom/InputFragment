@@ -36,9 +36,22 @@
 #ifndef OPENAXIOM_INPUTFRAGMENT_included
 #define OPENAXIOM_INPUTFRAGMENT_included
 
-#include <open-axiom/token>
+#include <vector>
+#include <string>
+#include <stack>
 
 namespace OpenAxiom {
+   // Datatypes for locating lines and columns.
+   using LineNumber = std::size_t;
+   using ColumnIndex = std::size_t;
+
+   enum class LineKind : uint8_t {
+      Ordinary,                 // Ordinary input line
+      Description,              // Documentation commentary lines.
+      Meta,                     // Input to the attention of the reader
+      Ignorable,                // Ignorable commentary line
+   };
+   
    // A physical line is just raw text, coupled with location
    // information such as line and indentation column.
    struct Line : std::string {
@@ -48,6 +61,34 @@ namespace OpenAxiom {
       
       std::string sub_string(ColumnIndex s, ColumnIndex e) const {
          return substr(s, e - s);
+      }
+   };
+
+   // Cursor into a fragment.
+   struct FragmentCursor {
+      std::size_t line;         // index of a line in a fragment
+      std::size_t column;       // column number at line.
+
+      inline FragmentCursor& operator++() {
+         ++column;
+         return *this;
+      }
+
+      inline FragmentCursor operator++(int) {
+         auto tmp = *this;
+         ++*this;
+         return tmp;
+      }
+
+      inline FragmentCursor& operator--() {
+         --column;
+         return *this;
+      }
+
+      inline FragmentCursor operator--(int) {
+         auto tmp = *this;
+         --*this;
+         return tmp;
       }
    };
 
@@ -63,19 +104,19 @@ namespace OpenAxiom {
       }
       using std::vector<Line>::operator[];
       // Reference a line given by a position into this fragment.
-      const Line& operator()(const OpenAxiom::FragmentCursor& pos) const {
+      const Line& operator()(const FragmentCursor& pos) const {
          return (*this)[pos.line];
       }
       // Reference a character code unit at the position into this fragment.
-      uint8_t operator[](const OpenAxiom::FragmentCursor& pos) const {
+      uint8_t operator[](const FragmentCursor& pos) const {
          return (*this)[pos.line][pos.column];
       }
       // Advance the cursor position to the next character code unit.
-      uint8_t advance(OpenAxiom::FragmentCursor& pos) const {
+      uint8_t advance(FragmentCursor& pos) const {
          return (*this)[pos.line][pos.column++];
       }
       // This predicate holds if this fragment covers the cursor position.
-      bool covering(const OpenAxiom::FragmentCursor& pos) const {
+      bool covering(const FragmentCursor& pos) const {
          return pos.column < (*this)[pos.line].size();
       }
    };

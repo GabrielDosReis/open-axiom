@@ -114,17 +114,14 @@ libspad.$(LIBEXT): $(libspad_objects)
 	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
 		$(oa_includes) $(AXIOM_X11_CFLAGS) $<
 
-# This is a support library, so it does not change often and
-# we don't need to remove the produced objects in mostlyclean.
-# The remoal is done by clean.
 mostlyclean-local:
 	@rm -f *.$(OBJEXT) *.lo
-
-clean-local: mostlyclean-local
 	@rm -f $(oa_target_libdir)/$(oa_shrlib_prefix)open-axiom-core$(SHREXT)
 	@rm -f libopen-axiom-core.$(LIBEXT)
 	@rm -f libspad.$(LIBEXT)
 	@rm -fr .libs _libs
 	@rm -f stamp
+
+clean-local: mostlyclean-local
 
 distclean-local: clean-local

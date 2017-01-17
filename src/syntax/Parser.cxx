@@ -42,6 +42,7 @@
 #include <open-axiom/diagnostics>
 #include <open-axiom/InputFragment>
 #include <open-axiom/SourceInput>
+#include <open-axiom/token>
 #include <open-axiom/Parser>
 
 namespace {

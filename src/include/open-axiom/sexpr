@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2010-2014, Gabriel Dos Reis.
+// Copyright (C) 2010-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -46,7 +46,7 @@
 #include <iosfwd>
 #include <vector>
 #include <open-axiom/storage>
-#include <open-axiom/token>
+#include <open-axiom/Input>
 
 namespace OpenAxiom {
    namespace Sexpr {
