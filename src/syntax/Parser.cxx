@@ -108,7 +108,10 @@ namespace {
 
    // Helper function for streaming out details of tokens.
    std::ostream& operator<<(std::ostream& os, const Token& t) {
-      os << t.category << '{' << t.start << '-' << t.end << '}';
+      os << t.category << '{'
+         << t.start << '-' << t.end
+         << ", " << t.value
+         << '}';
       return os;
    }
 

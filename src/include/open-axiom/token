@@ -110,7 +110,7 @@ namespace OpenAxiom {
    TokenClassification classify(const std::string&);
 
    // Token data structure: a region of text with a classification.
-   struct Token : TokenClassification, Region {
+   struct Token : Region, TokenClassification {
       using Location = Locus;
    };
 
@@ -199,6 +199,8 @@ namespace OpenAxiom {
       Locus current_locus() {
          return { line_number(), column_number() };
       }
+
+      Tok finish(Tok&, Language);
    };
 
    bool separator_or_punctuator(uint8_t);
@@ -569,52 +571,8 @@ namespace OpenAxiom {
          }
    }
 
-
    template<typename Frag, typename Tok>
-   Tok Tokenizer<Frag, Tok>::get(Language dialect) {
-      Tok t { };
-      t.start = current_locus();
-      
-      if (eos()) {
-         t.category = TokenCategory::EOS;
-         t.end = current_locus();
-         return t;
-      }
-      else if (isblank(frag[pos])) {
-         skip_whitespace(frag(pos), pos.column);
-         t.category = TokenCategory::Whitespace;
-         t.end = current_locus();
-         return t;
-      }
-      else if (pos.column == line_length() - 1 and frag(pos).back() == '_') {
-         ++pos.line;
-         pos.column = frag(pos).indent;
-      }
-      else if (pos.column == line_length()) {
-         auto indent = indents.top();
-         auto next_indent = next_indentation();
-         t.start = t.end = { next_line_number(), next_indent };
-         if (indent < next_indent) {
-            indents.push(next_indent);
-            ++pos.line;
-            pos.column = next_indent;
-            t.category = TokenCategory::Formatting;
-            t.value = TokenValue::Indent;
-         }
-         else if (indent > next_indent) {
-            indents.pop();
-            t.category = TokenCategory::Formatting;
-            t.value = TokenValue::Unindent;
-         }
-         else {
-            ++pos.line;
-            pos.column = next_indent;
-            t.category = TokenCategory::Formatting;
-            t.value = TokenValue::Justify;
-         }
-         return t;
-      }
-
+   Tok Tokenizer<Frag, Tok>::finish(Tok& t, Language dialect) {
       switch (auto c = frag.advance(pos)) {
       case '#': sharp_et_al(frag, pos, t, dialect); break;
       case '@': operator_token(t, TokenValue::At); break;
@@ -658,6 +616,55 @@ namespace OpenAxiom {
 
       t.end = { frag(pos).number, pos.column };
       return t;
+   }
+
+   template<typename Frag, typename Tok>
+   Tok Tokenizer<Frag, Tok>::get(Language dialect) {
+      Tok t { };
+      t.start = current_locus();
+      
+      if (eos()) {
+         t.category = TokenCategory::EOS;
+         t.end = current_locus();
+         return t;
+      }
+      else if (isblank(frag[pos])) {
+         skip_whitespace(frag(pos), pos.column);
+         t.category = TokenCategory::Whitespace;
+         t.end = current_locus();
+         return t;
+      }
+      else if (pos.column == line_length() - 1 and frag(pos).back() == '_') {
+         ++pos.line;
+         pos.column = frag(pos).indent;
+         return finish(t, dialect);
+      }
+      else if (pos.column == line_length()) {
+         auto indent = indents.top();
+         auto next_indent = next_indentation();
+         t.start = t.end = { next_line_number(), next_indent };
+         if (indent < next_indent) {
+            indents.push(next_indent);
+            ++pos.line;
+            pos.column = next_indent;
+            t.category = TokenCategory::Formatting;
+            t.value = TokenValue::Indent;
+         }
+         else if (indent > next_indent) {
+            indents.pop();
+            t.category = TokenCategory::Formatting;
+            t.value = TokenValue::Unindent;
+         }
+         else {
+            ++pos.line;
+            pos.column = next_indent;
+            t.category = TokenCategory::Formatting;
+            t.value = TokenValue::Justify;
+         }
+         return t;
+      }
+
+      return finish(t, dialect);
    }
 
    // -- Token streams.
