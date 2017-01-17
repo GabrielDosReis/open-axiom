@@ -61,10 +61,6 @@ namespace OpenAxiom {
       bool line_continuation() const {
          return not empty() and back().back() == '_';
       }
-      // Return the indentation of the last physical line of this fragment.
-      ColumnIndex last_indent() const {
-         return empty() ? 0 : back().indent;
-      }
       using std::vector<Line>::operator[];
       // Reference a line given by a position into this fragment.
       const Line& operator()(const OpenAxiom::FragmentCursor& pos) const {

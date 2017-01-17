@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014-2015, Gabriel Dos Reis.
+// Copyright (C) 2014-2017, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -72,6 +72,7 @@ namespace OpenAxiom {
    // Clean up and dress up the line with indentation information.
    static Line& prop_up(Line& line) {
       line.indent = indentation(trim_right(line));
+      line.kind = LineKind::Ordinary;
       return line;
    }
 
@@ -100,14 +101,15 @@ namespace OpenAxiom {
       Fragment fragment;
       std::stack<ColumnIndex> indents;
 
-      if (not line.empty()) {
+      if (not line.empty() and line.kind == LineKind::Ordinary) {
          indents.push(line.indent);
          fragment.push_back(line);
       }
 
       while (std::getline(input, line)) {
          ++line.number;
-         if (blank(prop_up(line)))
+         prop_up(line);
+         if (blank(line))
             continue;              // Don't bother with ignorable comments.
          else if (fragment.line_continuation())
             ;

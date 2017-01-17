@@ -41,7 +41,7 @@ namespace OpenAxiom {
    // -- A source input transform a character stream into a program fragment
    // -- stream, delivering a fragment one at a time.
    struct SourceInput {
-      SourceInput(std::istream& is) : input(is) { }
+      SourceInput(std::istream& is) : input(is), line{ } { }
       // Return the next program fragment from this input source.
       Fragment get();
       
