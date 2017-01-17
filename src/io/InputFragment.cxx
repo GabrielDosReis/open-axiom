@@ -68,13 +68,6 @@ namespace OpenAxiom {
       line.resize(n);
       return line;
    }
-   
-   // Clean up and dress up the line with indentation information.
-   static Line& prop_up(Line& line) {
-      line.indent = indentation(trim_right(line));
-      line.kind = LineKind::Ordinary;
-      return line;
-   }
 
    // Return true if line is entirely a positive comment, i.e. a description.
    static bool positive_comment(const Line& line) {
@@ -89,10 +82,19 @@ namespace OpenAxiom {
          return false;
       return line[line.indent] == '-' and line[line.indent + 1] == '-';
    }
-
-   // Return true if line is either empty or a negative comment.
-   static bool blank(const Line& line) {
-      return line.empty() or negative_comment(line);
+   
+   // Clean up and dress up the line with indentation information.
+   static Line& prop_up(Line& line) {
+      line.indent = indentation(trim_right(line));
+      if (negative_comment(line))
+         line.kind = LineKind::Ignorable;
+      else if (positive_comment(line))
+         line.kind = LineKind::Description;
+      else if (line.indent == 0 and not line.empty() and line.front() == ')')
+         line.kind = LineKind::Meta;
+      else
+         line.kind = LineKind::Ordinary;
+      return line;
    }
 
    // Decompose the input souce file into fragments, and return one
@@ -101,25 +103,35 @@ namespace OpenAxiom {
       Fragment fragment;
       std::stack<ColumnIndex> indents;
 
-      if (not line.empty() and line.kind == LineKind::Ordinary) {
-         indents.push(line.indent);
+      if (not line.empty()) {
+         if (line.kind == LineKind::Ordinary)
+            indents.push(line.indent);
          fragment.push_back(line);
       }
 
       while (std::getline(input, line)) {
          ++line.number;
          prop_up(line);
-         if (blank(line))
-            continue;              // Don't bother with ignorable comments.
+         if (line.indent >= line.length())
+            continue;              // Don't bother with entirely blank links.
          else if (fragment.line_continuation())
-            ;
+            ;                   // Line splicing does not change indentation.
+         else if (line.kind == LineKind::Ignorable)
+            ;                   // Likewise for ignorable lines.
+         else if (line.kind == LineKind::Meta)
+            ;                   // Likewise for reader lines.
+         else if (line.kind == LineKind::Description and line.indent == 0)
+            ;                   // Toplevel descriptions preceed items.
          else if (indents.empty()) {
-            if (fragment.empty() and line.indent != 0)
+            // Consecutive rows of wisecracks make up a fragment of their own.
+            if (line.indent == 0)
+               break;
+            else if (fragment.empty())
                std::cerr << "warning: white space at begining of fragment"
                          << " on line " << line.number << '\n';
             indents.push(line.indent);
          }
-         else if (line.indent == 0 and not positive_comment(fragment.back()))
+         else if (line.indent == 0)
             break;                 // A completely new line; save for later.
          else if (line.indent > indents.top())
             indents.push(line.indent);

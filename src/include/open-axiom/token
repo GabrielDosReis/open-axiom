@@ -43,6 +43,7 @@
 namespace OpenAxiom {
    enum class LineKind : uint8_t {
       Ordinary,                 // Ordinary input line
+      Description,              // Documentation commentary lines.
       Meta,                     // Input to the attention of the reader
       Ignorable,                // Ignorable commentary line
    };
