@@ -36,6 +36,7 @@
 #ifndef OPENAXIOM_INPUTFRAGMENT_included
 #define OPENAXIOM_INPUTFRAGMENT_included
 
+#include <stdint.h>
 #include <vector>
 #include <string>
 #include <stack>
@@ -43,7 +44,7 @@
 namespace OpenAxiom {
    // Datatypes for locating lines and columns.
    using LineNumber = std::size_t;
-   using ColumnIndex = std::size_t;
+   using ColumnIndex = uint16_t;
 
    enum class LineKind : uint8_t {
       Ordinary,                 // Ordinary input line
@@ -65,9 +66,11 @@ namespace OpenAxiom {
    };
 
    // Cursor into a fragment.
+   // Note: We don't expect people to write large fragements
+   //       either in length or in width.
    struct FragmentCursor {
-      std::size_t line;         // index of a line in a fragment
-      std::size_t column;       // column number at line.
+      uint16_t line;            // index of a line in a fragment
+      uint16_t column;          // column number at line.
 
       inline FragmentCursor& operator++() {
          ++column;
@@ -91,6 +94,8 @@ namespace OpenAxiom {
          return tmp;
       }
    };
+
+   std::ostream& operator<<(std::ostream&, FragmentCursor);
 
    // A program fragment is a logical line, composed of possibly
    // several physical lines subject to the off-side rule.  As a

@@ -41,6 +41,11 @@
 #include <open-axiom/SourceInput>
 
 namespace OpenAxiom {
+
+   std::ostream& operator<<(std::ostream& os, FragmentCursor cur) {
+      return os << '{' << cur.line << '-' << cur.column << '}';
+   }
+   
    // Formatting program fragments.
    std::ostream& operator<<(std::ostream& os, const Fragment& f) {
       std::copy(f.begin(), f.end(),

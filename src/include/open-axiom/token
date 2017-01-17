@@ -72,17 +72,10 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, TokenValue);
 
-   struct Locus {
-      LineNumber line;
-      ColumnIndex column;
-   };
-
-   std::ostream& operator<<(std::ostream&, const Locus&);
-
-   // Program text region
+   // Program text region, with a fragment.
    struct Region {
-      Locus start;
-      Locus end;
+      FragmentCursor start;
+      FragmentCursor end;
    };
 
    // Given a symbolic or alphabetic token, retrieve its category
@@ -99,9 +92,7 @@ namespace OpenAxiom {
    TokenClassification classify(const std::string&);
 
    // Token data structure: a region of text with a classification.
-   struct Token : Region, TokenClassification {
-      using Location = Locus;
-   };
+   struct Token : Region, TokenClassification { };
 
    // -- Exception types
    struct EndOfStringUnseen {
@@ -180,9 +171,9 @@ namespace OpenAxiom {
    }
 
    template<typename T>
-   inline T& ws_token(T& t, const Locus& loc) {
+   inline T& ws_token(T& t, FragmentCursor pos) {
       t.category = TokenCategory::Whitespace;
-      t.end = loc;
+      t.end = pos;
       return t;
    }
 
@@ -571,26 +562,20 @@ namespace OpenAxiom {
          break;
       }
 
-      t.end = { frag(pos).number, pos.column };
+      t.end = pos;
       return t;
-   }
-
-   inline Locus location(const Fragment& frag, const FragmentCursor& pos) {
-      if (pos.line < frag.size())
-         return { frag[pos.line].number, pos.column };
-      return { frag.back().number + 1, { } };
    }
 
    template<typename Tok>
    Tok Tokenizer<Tok>::get(Language dialect) {
       Tok t { };
-      t.start = location(frag, pos);
+      t.start = pos;
       
       if (eos())
          return eos_token(t);
       else if (isblank(frag[pos])) {
          skip_whitespace(frag(pos), pos.column);
-         return ws_token(t, location(frag, pos));
+         return ws_token(t, pos);
       }
       else if (line_continuation()) {
          if (next_line(frag, pos))
@@ -600,7 +585,7 @@ namespace OpenAxiom {
       else if (pos.column >= line_length()) {
          if (not next_line(frag, pos))
             return eos_token(t);
-         t.start = t.end = location(frag, pos);
+         t.start = t.end = pos;
          auto indent = indents.top();
          if (indent.column < pos.column) {
             indents.push(pos);
