@@ -107,13 +107,40 @@ namespace {
    using InputFile = FileAs<std::ifstream>;
    using OutputFile = FileAs<std::ofstream>;
 
-   // Helper function for streaming out details of tokens.
-   std::ostream& operator<<(std::ostream& os, const Token& t) {
+   void format_text(const Fragment& f, const Token& t, std::ostream& os) {
+      if (t.start.line == t.end.line) {
+         auto& line = f(t.start);
+         std::copy(line.begin() + t.start.column, line.begin() + t.end.column,
+                   std::ostream_iterator<char>(os));
+      }
+      else {
+         auto& first_line = f(t.start);
+         std::copy(first_line.begin() + t.start.column, first_line.end(),
+                   std::ostream_iterator<char>(os));
+         for (auto i = t.start.line + 1; i < t.end.line; ++i)
+            os << f[i];
+         auto& last_line = f[t.end.line];
+         std::copy(last_line.begin(), last_line.begin() + t.end.column,
+                   std::ostream_iterator<char>(os));
+      }
+   }
+
+   void format_token(const Fragment& f, const Token& t, std::ostream& os) {
       os << t.category << '{'
          << t.start << '-' << t.end
-         << ", " << t.value
-         << '}';
-      return os;
+         << ", ";
+      switch (t.category) {
+      case TokenCategory::Integer:
+      case TokenCategory::FloatingPoint:
+      case TokenCategory::String:
+      case TokenCategory::Identifier:
+         format_text(f, t, os);
+         break;
+      default:
+         os << t.value;
+         break;
+      }
+      os << '}';
    }
 
    // FIXME: This is just a stub to get a native parsing entry point
@@ -129,7 +156,8 @@ namespace {
          try {
             TokenSequence ts { f, Language::Boot };
             for (auto& t : ts) {
-               out.stream << '\t' << t;
+               out.stream << '\t';
+               format_token(f, t, out.stream);
                switch (t.category) {
                case TokenCategory::Junk:
                case TokenCategory::Unclassified:
