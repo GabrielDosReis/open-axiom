@@ -6,7 +6,7 @@
 oa_targetdir = @top_builddir@/@target@
 
 OA_INC = $${oa_targetdir}/include
-OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom
+OA_LIB = -L@top_builddir@/@target@/lib -lOpenAxiom -lopen-axiom-core
 
 ## We build in release mode.
 CONFIG += release
