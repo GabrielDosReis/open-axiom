@@ -1101,8 +1101,7 @@
 (defun MACERR (MESSAGE &rest ignore)
   (declare (ignore ignore))
       (setq MACERRORCOUNT (+ 1 (eval 'MACERRORCOUNT)))
-      (error
-        (LIST "in the expression:" MESSAGE))
+      (error (strconc "in the expression: " MESSAGE))
       ())
 
 ; 98.0 Stuff Not In The VMLisp Manual That We Like
