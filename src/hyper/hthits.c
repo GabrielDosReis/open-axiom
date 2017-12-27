@@ -96,7 +96,7 @@ badDB()
 
 
 static void 
-untexbuf(register char* s)
+untexbuf(char* s)
 {
    char *d = s;
    

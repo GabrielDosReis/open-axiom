@@ -72,6 +72,17 @@ namespace OpenAxiom {
 
    std::ostream& operator<<(std::ostream&, TokenValue);
 
+
+   enum class TokenIndex : uint32_t { };
+
+   constexpr TokenValue value(TokenIndex t) {
+      return TokenValue((uint32_t(t) & 0xFF000000) >> 24);
+   }
+
+   constexpr uint32_t index(TokenIndex t) {
+      return uint32_t(t) & 0x00FFFFFF;
+   }
+
    // Program text region, with a fragment.
    struct Region {
       FragmentCursor start;

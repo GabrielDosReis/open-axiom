@@ -1161,46 +1161,6 @@ if test x"$ac_cv_header_sys_mman_h" = xyes; then
 fi
 ])
 
-dnl ----------------------------------
-dnl -- OPENAXIOM_ALIGNMENT_OPERATOR --
-dnl ----------------------------------
-dnl Check that the C/C++ compiler understand
-dnl alignment operator, i.e. either `alignof',
-dnl or vendor lock-ins such as `__alignof'.
-AC_DEFUN([OPENAXIOM_ALIGNMENT_OPERATOR],[
-AC_MSG_CHECKING([name of alignment query operator])
-oa_alignment=
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = alignof(int);]])],
-                  [oa_alignment="alignof"],
-                  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a = __alignof(int);]])],
-                                     [oa_alignment="__alignof"],
-                                     [AC_MSG_ERROR([C++ compiler does not support alignment query operator])])])
-if test -n $oa_alignment -a $oa_alignment != "alignof"; then
-  AC_DEFINE_UNQUOTED([alignof],[$oa_alignment],[Alignment query operator])
-fi
-AC_MSG_RESULT([$oa_alignment])
-])
-
-dnl ---------------------------------
-dnl -- OPENAXIOM_ALIGNAS_SPECIFIER --
-dnl ---------------------------------
-dnl check for alignment specifier support.
-dnl Vendor lock-ins are of the attribute form.
-AC_DEFUN([OPENAXIOM_ALIGNAS_SPECIFIER],[
-AC_MSG_CHECKING([alignment boundary specifier syntax])
-oa_alignas=
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[alignas(16) int a = 42;]])],
-  [oa_alignas="alignas(N)"],
-  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[__attribute__((__aligned__(16))) int a = 42;]])],
-     [oa_alignas="__attribute__((__aligned__(N)))"],
-     [AC_MSG_ERROR([C++ compiler does not support alignment specifier])])])
-if test -n $oa_alignas -a $oa_alignas != "alignas"; then
-  AC_DEFINE_UNQUOTED([alignas(N)],[$oa_alignas],[Alignment specifier operator])
-fi
-AC_MSG_RESULT([$oa_alignas])
-])
-
-
 dnl -------------------------
 dnl -- OPENAXIOM_CHECK_GMP --
 dnl -------------------------
@@ -1213,8 +1173,6 @@ dnl --------------------------
 dnl -- OPENAXIOM_CHECK_MISC --
 dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
-OPENAXIOM_ALIGNMENT_OPERATOR
-OPENAXIOM_ALIGNAS_SPECIFIER
 case $oa_cxx_compiler_lineage in
   gnu|clang)
      CFLAGS="$CFLAGS -O2 -Wall"

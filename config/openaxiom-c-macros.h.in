@@ -226,10 +226,4 @@
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
-/* Alignment specifier operator */
-#undef alignas
-
-/* Alignment query operator */
-#undef alignof
-
 #endif // OPENAXIOM_CONFIG_included
