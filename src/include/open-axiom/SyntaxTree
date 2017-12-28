@@ -39,7 +39,7 @@
 
 namespace OpenAxiom {
    enum class SyntaxKind : uint8_t {
-      Module, Namespce, Import, Definition, Unparsed
+      Module, Namespace, Import, Definition, Unparsed
    };
    
    enum SyntaxTree : uint32_t { };
