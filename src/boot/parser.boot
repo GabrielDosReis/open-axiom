@@ -799,9 +799,6 @@ bpIs ps ==
        bpPush(ps,bfHas(bpPop2 ps, bpPop1 ps))
      true
  
-bpBracketConstruct(ps,f)==
-  bpBracket(ps,f) and bpPush(ps,bfConstruct bpPop1 ps)
- 
 bpCompare ps ==
   bpIs ps and (bpInfKey(ps,'(SHOEEQ SHOENE LT LE GT GE IN))
      and bpRequire(ps,function bpIs)
@@ -1122,8 +1119,13 @@ bpDConstruction ps ==
 --PATTERN
  
 bpPattern ps ==
-  bpBracketConstruct(ps,function bpPatternL)
-    or bpChar ps or bpName ps or bpConstTok ps
+  bpBracketPattern ps
+    or bpChar ps
+      or bpName ps
+        or bpConstTok ps
+
+bpBracketPattern ps ==
+  bpBracket(ps,function bpPatternL) and bpPush(ps,bfConstruct bpPop1 ps)
  
 bpEqual ps ==
    bpEqKey(ps,"SHOEEQ") and (bpApplication ps or bpConstTok ps or
@@ -1135,7 +1137,7 @@ bpRegularPatternItem ps ==
       bpName ps and
         ((bpEqKey(ps,"BEC") and bpRequire(ps,function bpPattern)
            and bpPush(ps,bfAssign(parserLoadUnit ps,bpPop2 ps,bpPop1 ps))) or true)
-               or bpBracketConstruct(ps,function bpPatternL)
+               or bpBracketPattern ps
  
 bpRegularPatternItemL ps ==
       bpRegularPatternItem ps and bpPush(ps,[bpPop1 ps])
@@ -1188,7 +1190,7 @@ bpRegularBVItem ps ==
   bpBVString ps 
     or bpConstTok ps 
       or (bpName ps and (bpRegularBVItemTail ps or true))
-        or bpBracketConstruct(ps,function bpPatternL)
+        or bpBracketPattern ps
  
 bpBVString ps ==
   parserTokenClass ps = "STRING" and
@@ -1216,11 +1218,12 @@ bpBoundVariablelist ps ==
 bpVariable ps ==
     bpParenthesized(ps,function bpBoundVariablelist) and
        bpPush(ps,bfTupleIf bpPop1 ps)
-         or bpBracketConstruct(ps,function bpPatternL)
+         or bpBracketPattern ps
                 or bpName ps or bpConstTok ps
  
 bpAssignVariable ps ==
-      bpBracketConstruct(ps,function bpPatternL) or bpAssignLHS ps
+  bpBracketPattern ps
+    or bpAssignLHS ps
  
 bpAssignLHS ps ==
   not bpName ps => false

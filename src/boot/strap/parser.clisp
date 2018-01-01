@@ -387,7 +387,7 @@
       (COND (|done| (RETURN NIL))
             (T
              (SETQ |found|
-                     (LET ((#1=#:G392
+                     (LET ((#1=#:G393
                             (CATCH :OPEN-AXIOM-CATCH-POINT (FUNCALL |f| |ps|))))
                        (COND
                         ((AND (CONSP #1#)
@@ -534,6 +534,42 @@
               (|%Module| (|bpPop3| |ps|) (|bpPop2| |ps|) (|bpPop1| |ps|))))
    (T NIL)))
 
+(DEFUN |bpProvenance| (|ps|)
+  (LET* (|lib| |ISTMP#6| |ISTMP#5| |ISTMP#4| |ISTMP#3| |ISTMP#2| |ISTMP#1| |x|)
+    (BLOCK NIL
+      (COND
+       ((|bpEqKey| |ps| 'IN)
+        (OR (|bpApplication| |ps|) (RETURN (|bpTrap| |ps|)))
+        (SETQ |x| (|bpPop1| |ps|))
+        (COND
+         ((NOT
+           (AND (CONSP |x|)
+                (PROGN
+                 (SETQ |ISTMP#1| (CAR |x|))
+                 (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'ELT)
+                      (PROGN
+                       (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                       (AND (CONSP |ISTMP#2|) (EQ (CAR |ISTMP#2|) '|System|)
+                            (PROGN
+                             (SETQ |ISTMP#3| (CDR |ISTMP#2|))
+                             (AND (CONSP |ISTMP#3|) (NULL (CDR |ISTMP#3|))
+                                  (EQ (CAR |ISTMP#3|) '|LoadUnit|)))))))
+                (PROGN
+                 (SETQ |ISTMP#4| (CDR |x|))
+                 (AND (CONSP |ISTMP#4|) (NULL (CDR |ISTMP#4|))
+                      (PROGN
+                       (SETQ |ISTMP#5| (CAR |ISTMP#4|))
+                       (AND (CONSP |ISTMP#5|) (EQ (CAR |ISTMP#5|) 'QUOTE)
+                            (PROGN
+                             (SETQ |ISTMP#6| (CDR |ISTMP#5|))
+                             (AND (CONSP |ISTMP#6|) (NULL (CDR |ISTMP#6|))
+                                  (PROGN
+                                   (SETQ |lib| (CAR |ISTMP#6|))
+                                   T)))))))))
+          (|bpGeneralErrorHere| |ps|))
+         (T (|bpPush| |ps| (|%LoadUnit| |lib|)))))
+       (T (|bpPush| |ps| NIL))))))
+
 (DEFUN |bpImport| (|ps|)
   (LET* (|a|)
     (COND
@@ -547,12 +583,12 @@
        (T (SETQ |a| (|bpState| |ps|)) (|bpRequire| |ps| #'|bpName|)
         (COND
          ((|bpEqPeek| |ps| 'COLON) (|bpRestore| |ps| |a|)
-          (AND (|bpRequire| |ps| #'|bpSignature|)
-               (OR (|bpEqKey| |ps| 'FOR) (|bpTrap| |ps|))
-               (|bpRequire| |ps| #'|bpName|)
-               (|bpPush| |ps|
-                         (|%ImportSignature| (|bpPop1| |ps|)
-                                             (|bpPop1| |ps|)))))
+          (|bpRequire| |ps| #'|bpSignature|) (|bpProvenance| |ps|)
+          (OR (|bpEqKey| |ps| 'FOR) (|bpTrap| |ps|))
+          (|bpRequire| |ps| #'|bpName|)
+          (|bpPush| |ps|
+                    (|%ImportSignature| (|bpPop1| |ps|) (|bpPop2| |ps|)
+                                        (|bpPop1| |ps|))))
          (T (|bpPush| |ps| (|%Import| (|bpPop1| |ps|))))))))
      (T NIL))))
 
@@ -818,9 +854,6 @@
         ((AND (|bpEqKey| |ps| 'HAS) (|bpRequire| |ps| #'|bpApplication|))
          (|bpPush| |ps| (|bfHas| (|bpPop2| |ps|) (|bpPop1| |ps|))))
         (T T))))
-
-(DEFUN |bpBracketConstruct| (|ps| |f|)
-  (AND (|bpBracket| |ps| |f|) (|bpPush| |ps| (|bfConstruct| (|bpPop1| |ps|)))))
 
 (DEFUN |bpCompare| (|ps|)
   (OR
@@ -1143,8 +1176,12 @@
         (|bpPush| |ps| (|bfDTuple| (|bpPop1| |ps|))))))
 
 (DEFUN |bpPattern| (|ps|)
-  (OR (|bpBracketConstruct| |ps| #'|bpPatternL|) (|bpChar| |ps|)
-      (|bpName| |ps|) (|bpConstTok| |ps|)))
+  (OR (|bpBracketPattern| |ps|) (|bpChar| |ps|) (|bpName| |ps|)
+      (|bpConstTok| |ps|)))
+
+(DEFUN |bpBracketPattern| (|ps|)
+  (AND (|bpBracket| |ps| #'|bpPatternL|)
+       (|bpPush| |ps| (|bfConstruct| (|bpPop1| |ps|)))))
 
 (DEFUN |bpEqual| (|ps|)
   (AND (|bpEqKey| |ps| 'SHOEEQ)
@@ -1160,7 +1197,7 @@
                            (|bfAssign| (|parserLoadUnit| |ps|) (|bpPop2| |ps|)
                                        (|bpPop1| |ps|))))
             T))
-      (|bpBracketConstruct| |ps| #'|bpPatternL|)))
+      (|bpBracketPattern| |ps|)))
 
 (DEFUN |bpRegularPatternItemL| (|ps|)
   (AND (|bpRegularPatternItem| |ps|) (|bpPush| |ps| (LIST (|bpPop1| |ps|)))))
@@ -1218,7 +1255,7 @@
 (DEFUN |bpRegularBVItem| (|ps|)
   (OR (|bpBVString| |ps|) (|bpConstTok| |ps|)
       (AND (|bpName| |ps|) (OR (|bpRegularBVItemTail| |ps|) T))
-      (|bpBracketConstruct| |ps| #'|bpPatternL|)))
+      (|bpBracketPattern| |ps|)))
 
 (DEFUN |bpBVString| (|ps|)
   (AND (EQ (|parserTokenClass| |ps|) 'STRING)
@@ -1259,11 +1296,10 @@
   (OR
    (AND (|bpParenthesized| |ps| #'|bpBoundVariablelist|)
         (|bpPush| |ps| (|bfTupleIf| (|bpPop1| |ps|))))
-   (|bpBracketConstruct| |ps| #'|bpPatternL|) (|bpName| |ps|)
-   (|bpConstTok| |ps|)))
+   (|bpBracketPattern| |ps|) (|bpName| |ps|) (|bpConstTok| |ps|)))
 
 (DEFUN |bpAssignVariable| (|ps|)
-  (OR (|bpBracketConstruct| |ps| #'|bpPatternL|) (|bpAssignLHS| |ps|)))
+  (OR (|bpBracketPattern| |ps|) (|bpAssignLHS| |ps|)))
 
 (DEFUN |bpAssignLHS| (|ps|)
   (COND ((NOT (|bpName| |ps|)) NIL) ((|bpSignatureTail| |ps|) T)
@@ -1375,7 +1411,7 @@
      (SETQ |op| (|enclosingFunction| (|parserLoadUnit| |ps|)))
      (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
      (UNWIND-PROTECT
-         (LET ((#1=#:G393
+         (LET ((#1=#:G394
                 (CATCH :OPEN-AXIOM-CATCH-POINT
                   (PROGN
                    (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) NIL)
