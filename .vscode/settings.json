@@ -33,6 +33,9 @@
 	// The default character set encoding to use when reading and writing files.
 	"files.encoding": "utf8",
 
+	// Whatever you do, please keep the file line ending with just LF.  Please.
+	"files.eol": "\n",
+
 	// When enabled, will trim trailing whitespace when you save a file.
 	"files.trimTrailingWhitespace": false,
 
