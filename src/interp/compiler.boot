@@ -1546,7 +1546,7 @@ checkExternalEntity(id,type,lang,e) ==
   type' isnt [=bootDenotation "%Mapping",:.] =>
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
   id' := encodeLocalFunctionName id
-  [def] := genImportDeclaration(id',[bootDenotation "%Signature",id,type'])
+  [def] := genImportDeclaration(id',[bootDenotation "%Signature",id,type'], ["Foreign", lang])
   apply($backend,[def])
   id'
 
