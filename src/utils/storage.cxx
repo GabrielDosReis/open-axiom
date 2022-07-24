@@ -1,4 +1,4 @@
-// Copyright (C) 2010-2013, Gabriel Dos Reis.
+// Copyright (C) 2010-2022, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -111,7 +111,7 @@ namespace OpenAxiom {
          Pointer p = os_allocate_read_write_raw_memory(nbytes);
          if (p == nullptr)
             throw SystemError("cannot acquire more memory");
-         return memset(p, nbytes, 0);
+         return memset(p, 0, nbytes);
       }
 
       void
