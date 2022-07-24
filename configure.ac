@@ -1,4 +1,4 @@
-dnl Copyright (C) 2006-2018, Gabriel Dos Reis.
+dnl Copyright (C) 2006-2022, Gabriel Dos Reis.
 dnl All rights reserved.
 dnl
 dnl Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.5.0-2018-01-01], 
-        [open-axiom-bugs@lists.sf.net])
+AC_INIT([OpenAxiom],[1.5.0-2018-01-01],[open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
 dnl located in the subdirectory config/
@@ -52,7 +51,7 @@ OPENAXIOM_CANONICAL_SYSTEM
 
 dnl Page Automake
 AM_INIT_AUTOMAKE([foreign subdir-objects])
-AC_PREREQ([2.62])
+AC_PREREQ([2.71])
 
 dnl Simple sanity check.
 AC_CONFIG_SRCDIR(src/Makefile.in)
