@@ -8,7 +8,9 @@ dnl --------------------------------
 dnl -- OPENAXIOM_CANONICAL_SYSTEM --
 dnl --------------------------------
 AC_DEFUN([OPENAXIOM_CANONICAL_SYSTEM],[
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 
 AC_SUBST(oa_src_srcdir,'$(top_srcdir)/src')
 AC_SUBST(oa_src_docdir,'$(oa_src_srcdir)/doc')
@@ -405,7 +407,7 @@ oa_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
 if test x"$oa_include_gcl" = xyes; then
     AC_CHECK_HEADER([bfd.h])
-    AC_HAVE_LIBRARY([bfd], [oa_host_has_libbfd=yes])
+    AC_CHECK_LIB([bfd], [bfd_get_mtime], [oa_host_has_libbfd=yes])
 
     oa_gcl_bfd_option=
     if test x"$ac_cv_header_bfd_h" = xyes \
