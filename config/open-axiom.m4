@@ -258,16 +258,16 @@ esac
 ])
 
 dnl -----------------------------
-dnl -- OPENAXIOM_REQUIRE_CXX14 --
+dnl -- OPENAXIOM_REQUIRE_CXX17 --
 dnl -----------------------------
-AC_DEFUN([OPENAXIOM_REQUIRE_CXX14],[
+AC_DEFUN([OPENAXIOM_REQUIRE_CXX17],[
 oa_saved_cxxflags=$CXXFLAGS
-CXXFLAGS="-std=c++14"
+CXXFLAGS="-std=c++17"
 AC_MSG_CHECKING([whether $CXX supports $CXXFLAGS])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
   [AC_MSG_RESULT([yes])]
   [CXXFLAGS="$CXXFLAGS $oa_saved_cxxflags"],
-  [AC_MSG_ERROR([OpenAxiom requires a C++11 compiler])])
+  [AC_MSG_ERROR([OpenAxiom requires a C++17 compiler])])
 ])
 
 dnl -------------------------------

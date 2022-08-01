@@ -6374,7 +6374,7 @@ fi
 
 
 oa_saved_cxxflags=$CXXFLAGS
-CXXFLAGS="-std=c++14"
+CXXFLAGS="-std=c++17"
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $CXXFLAGS" >&5
 printf %s "checking whether $CXX supports $CXXFLAGS... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -6394,7 +6394,7 @@ then :
 printf "%s\n" "yes" >&6; }
   CXXFLAGS="$CXXFLAGS $oa_saved_cxxflags"
 else $as_nop
-  as_fn_error $? "OpenAxiom requires a C++11 compiler" "$LINENO" 5
+  as_fn_error $? "OpenAxiom requires a C++17 compiler" "$LINENO" 5
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
