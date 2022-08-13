@@ -257,17 +257,17 @@ case $host in
 esac
 ])
 
-dnl -----------------------------
-dnl -- OPENAXIOM_REQUIRE_CXX17 --
-dnl -----------------------------
-AC_DEFUN([OPENAXIOM_REQUIRE_CXX17],[
+dnl ---------------------------
+dnl -- OPENAXIOM_REQUIRE_CXX --
+dnl ---------------------------
+AC_DEFUN([OPENAXIOM_REQUIRE_CXX],[
 oa_saved_cxxflags=$CXXFLAGS
-CXXFLAGS="-std=c++17"
+CXXFLAGS="-std=c++$1"
 AC_MSG_CHECKING([whether $CXX supports $CXXFLAGS])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
   [AC_MSG_RESULT([yes])]
   [CXXFLAGS="$CXXFLAGS $oa_saved_cxxflags"],
-  [AC_MSG_ERROR([OpenAxiom requires a C++17 compiler])])
+  [AC_MSG_ERROR([OpenAxiom requires a C++$1 compiler])])
 ])
 
 dnl -------------------------------
