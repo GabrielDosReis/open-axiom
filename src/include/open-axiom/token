@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2013-2017, Gabriel Dos Reis.
+// Copyright (C) 2013-2022, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -34,7 +34,7 @@
 #ifndef OPENAXIOM_TOKEN_included
 #define OPENAXIOM_TOKEN_included
 
-#include <stdint.h>
+#include <cstdint>
 #include <stack>
 #include <iosfwd>
 #include <open-axiom/dialect>
@@ -42,7 +42,7 @@
 
 namespace OpenAxiom {
    // Categorization of Boot and Spad tokens.
-   enum class TokenCategory : uint8_t {
+   enum class TokenCategory : std::uint8_t {
       Unclassified,             // token of unknown class
       Whitespace,               // sequence of white-space characters
       Comment,                  // a description of an ignorable comment
@@ -61,7 +61,7 @@ namespace OpenAxiom {
    std::ostream& operator<<(std::ostream&, TokenCategory);
 
    // The abstract value associated with a token.
-   enum class TokenValue : uint8_t {
+   enum class TokenValue : std::uint8_t {
 #undef OPENAXIOM_DEFINE_TOKEN
 #define OPENAXIOM_DEFINE_TOKEN(T, ...)  T,
 #include <open-axiom/token-value>
@@ -73,14 +73,14 @@ namespace OpenAxiom {
    std::ostream& operator<<(std::ostream&, TokenValue);
 
 
-   enum class TokenIndex : uint32_t { };
+   enum class TokenIndex : std::uint32_t { };
 
    constexpr TokenValue value(TokenIndex t) {
-      return TokenValue((uint32_t(t) & 0xFF000000) >> 24);
+      return TokenValue((std::uint32_t(t) & 0xFF000000) >> 24);
    }
 
-   constexpr uint32_t index(TokenIndex t) {
-      return uint32_t(t) & 0x00FFFFFF;
+   constexpr std::uint32_t index(TokenIndex t) {
+      return std::uint32_t(t) & 0x00FFFFFF;
    }
 
    // Program text region, with a fragment.
@@ -146,7 +146,7 @@ namespace OpenAxiom {
       Tok finish(Tok&, Language);
    };
 
-   bool separator_or_punctuator(uint8_t);
+   bool separator_or_punctuator(std::uint8_t);
 
    template<typename T>
    inline void comment_token(T& t, TokenValue v) {
@@ -271,7 +271,7 @@ namespace OpenAxiom {
    }
 
    inline bool
-   identifier_head(uint8_t c) {
+   identifier_head(std::uint8_t c) {
       return isalpha(c) or c == '%' or c == '_';
    }
 
@@ -281,17 +281,17 @@ namespace OpenAxiom {
    }
 
    inline bool
-   identifier_suffix(uint8_t c) {
+   identifier_suffix(std::uint8_t c) {
       return c == '!' or c == '?';
    }
 
-   inline bool internal_prefix(uint8_t c) {
+   inline bool internal_prefix(std::uint8_t c) {
       return c == '%' or c == '$';
    }
 
    template<typename L>
    inline void
-   skip_prefix(L& line, ColumnIndex& idx, uint8_t c) {
+   skip_prefix(L& line, ColumnIndex& idx, std::uint8_t c) {
       while (idx < line.size() and line[idx] == c)
          ++idx;
    }

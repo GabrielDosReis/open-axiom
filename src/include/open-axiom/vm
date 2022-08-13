@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2011-2014, Gabriel Dos Reis.
+// Copyright (C) 2011-2022, Gabriel Dos Reis.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,12 @@
 
 #include <open-axiom/storage>
 #include <open-axiom/string-pool>
-#include <stdint.h>
+#include <cstdint>
 #include <utility>
 #include <set>
 #include <vector>
 #include <type_traits>
+#include <concepts>
 
 #define internal_type struct alignas(16)
 #define internal_data alignas(16)
@@ -157,7 +158,7 @@ namespace OpenAxiom {
       // -- Value --
       // -----------
       // All VM values fit in a universal value datatype.
-      using ValueBits = uintptr_t;
+      using ValueBits = std::uintptr_t;
       using ValueMask = ValueBits;
       enum class Value : ValueBits {
          nil = 0x00,            // distinguished NIL value
@@ -205,7 +206,7 @@ namespace OpenAxiom {
 
       // -- Arity: number of arguments or forms taken by a function
       //           or a special operator.
-      enum class Arity : intptr_t {
+      enum class Arity : std::intptr_t {
          variable = -1,         // Any number of arguments.
          zero     = 0,          // Exactly no argument.
          one      = 1,          // Exactly one argument.
@@ -242,12 +243,8 @@ namespace OpenAxiom {
          return is<Dynamic>(v) ? to_dynamic(v) : nullptr;
       }
 
-      template<typename T>
-      using IfDynamic = typename
-         std::enable_if<std::is_base_of<Dynamic, T>::value, Value>::type;
-
-      template<typename T>
-      inline IfDynamic<T> to_value(const T* o) {
+      template<std::derived_from<Dynamic> T>
+      inline Value to_value(const T* o) {
          return Value(ValueBits(o) | ValueTrait<Dynamic>::tag);
       }
 
@@ -261,7 +258,7 @@ namespace OpenAxiom {
       // VM integers are divided into classes: small numbers,
       // and large numbers.  A small number fits entirely in a register.
       // A large number is allocated and represented by its address.
-      using FixnumBits = intptr_t;
+      using FixnumBits = std::intptr_t;
       enum class Fixnum : FixnumBits {
          minimum = FixnumBits(~(~ValueBits() >> 2)),
          zero = FixnumBits(0),
