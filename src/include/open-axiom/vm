@@ -174,7 +174,8 @@ namespace OpenAxiom {
       constexpr bool to_bool(Value v) { return v != Value::nil; }
 
       // -- Convert a C++ Boolean value to VM view.
-      constexpr Value to_value(bool b) {
+      template<std::same_as<bool> T>
+      constexpr Value to_value(T b) {
          return b ? Value::t : Value::nil;
       }
 
@@ -214,13 +215,13 @@ namespace OpenAxiom {
          three    = 3,          // Exactly three arguments.
       };
 
-      // -------------
-      // -- Dynamic --
-      // -------------
+      // -----------
+      // -- Boxed --
+      // -----------
       // Any internal value is of a class derived from this.
-      internal_type Dynamic {
+      internal_type Boxed {
          struct Visitor;
-         virtual ~Dynamic();
+         virtual ~Boxed() = default;
          virtual void accept(Visitor&) const = 0;
       };
 
@@ -230,26 +231,26 @@ namespace OpenAxiom {
       inline const S& as(const T& t) { return t; }
 
       template<>
-      struct ValueTrait<Dynamic> {
+      struct ValueTrait<Boxed> {
          enum Tag : ValueBits { tag = 0x6 };
          enum Mask : ValueBits { tag_mask = 0xF };
       };
 
-      inline Dynamic* to_dynamic(Value v) {
-         return reinterpret_cast<Dynamic*>(native<Dynamic>(v));
+      inline Boxed* to_boxed(Value v) {
+         return reinterpret_cast<Boxed*>(native<Boxed>(v));
       }
 
-      inline Dynamic* to_dynamic_if_can(Value v) {
-         return is<Dynamic>(v) ? to_dynamic(v) : nullptr;
+      inline Boxed* if_boxed(Value v) {
+         return is<Boxed>(v) ? to_boxed(v) : nullptr;
       }
 
-      template<std::derived_from<Dynamic> T>
+      template<std::derived_from<Boxed> T>
       inline Value to_value(const T* o) {
-         return Value(ValueBits(o) | ValueTrait<Dynamic>::tag);
+         return Value(ValueBits(o) | ValueTrait<Boxed>::tag);
       }
 
       // -- Callable --
-      struct Callable : Dynamic {
+      struct Callable : Boxed {
       };
       
       // -------------
@@ -276,7 +277,7 @@ namespace OpenAxiom {
          return Fixnum(FixnumBits(v) >> 1);
       }
 
-      constexpr Value from_fixnum(Fixnum i) {
+      constexpr Value to_value(Fixnum i) {
          return Value((ValueBits(i) << 1 ) | ValueTrait<Fixnum>::tag);
       }
 
@@ -295,11 +296,11 @@ namespace OpenAxiom {
          return reinterpret_cast<String>(native<String>(v));
       }
 
-      inline Value from_string(InternedString s) {
+      inline Value to_value(InternedString s) {
          return Value(ValueBits(s) | ValueTrait<String>::tag);
       }
 
-      inline InternedString to_string_if_can(Value v) {
+      inline InternedString if_string(Value v) {
          return is<String>(v) ? to_string(v) : nullptr;
       }
 
@@ -319,7 +320,7 @@ namespace OpenAxiom {
          return Pointer(ValueBits(v));
       }
 
-      inline Value from_pointer(Pointer p) {
+      inline Value to_value(Pointer p) {
          return Value(ValueBits(p) | ValueTrait<Memory::Pointer>::tag);
       }
 
@@ -343,7 +344,7 @@ namespace OpenAxiom {
          return reinterpret_cast<Pair>(native<Pair>(v));
       }
 
-      inline Value from_pair(Pair p) {
+      inline Value to_value(Pair p) {
          return Value(ValueBits(p) | ValueTrait<Pair>::tag);
       }
 
@@ -358,13 +359,13 @@ namespace OpenAxiom {
 
       // If `v' designates a pair, return a pointer to its
       // concrete representation.
-      inline Pair to_pair_if_can(Value v) {
+      inline Pair if_pair(Value v) {
          return consp(v) == Value::t ? to_pair(v) : nullptr;
       }
 
       Fixnum count_nodes(Pair);
       inline Fixnum count_nodes(Value v) {
-         if (auto p = to_pair_if_can(v))
+         if (auto p = if_pair(v))
             return count_nodes(p);
          return Fixnum::zero;
       }
@@ -386,7 +387,7 @@ namespace OpenAxiom {
          return Character(ValueBits(v) >> 4);
       }
 
-      constexpr Value from_character(Character c) {
+      constexpr Value to_value(Character c) {
          return Value((ValueBits(c) << 4) | ValueTrait<Character>::tag);
       }
 
@@ -416,7 +417,7 @@ namespace OpenAxiom {
       // ------------
       // -- Symbol --
       // ------------
-      struct Symbol : Dynamic {
+      struct Symbol : Boxed {
          const InternedString name;
          Value value;
          const Callable* function;
@@ -428,22 +429,18 @@ namespace OpenAxiom {
          bool has(SymbolAttribute x) const { return (attributes & x) == x; }
       };
 
-      inline Symbol* to_symbol_if_can(Value v) {
-         return dynamic_cast<Symbol*>(to_dynamic_if_can(v));
-      }
-
-      inline bool is_symbol(Value v) {
-         return to_symbol_if_can(v) != nullptr;
+      inline Symbol* if_symbol(Value v) {
+         return dynamic_cast<Symbol*>(if_boxed(v));
       }
 
       // -- Test if a value is a symbol.
       inline Value symbolp(Value v) {
-         return to_value(v == Value::nil or v == Value::t or is_symbol(v));
+         return to_value(v == Value::nil or v == Value::t or if_symbol(v) != nullptr);
       }
 
       // -- Test if a value is a keyword symbol.
       inline Value keywordp(Value v) {
-         if (auto sym = to_symbol_if_can(v))
+         if (auto sym = if_symbol(v))
             return to_value(sym->has(SymbolAttribute::Keyword));
          return Value::nil;
       }
@@ -463,7 +460,7 @@ namespace OpenAxiom {
 
       // -- Argument binding as value.
       // Binding a parameter to a value in a call.
-      struct Binding : Dynamic {
+      struct Binding : Boxed {
          Symbol* symbol;
          Value value;
          void accept(Visitor&) const override;
@@ -489,7 +486,7 @@ namespace OpenAxiom {
       // -------------
       // -- Package --
       // -------------
-      struct Package : Dynamic {
+      struct Package : Boxed {
          const InternedString name;
          std::set<Symbol, CmpByName> symbols;
 
@@ -554,8 +551,8 @@ namespace OpenAxiom {
          }
       };
 
-      // -- Dynamic::Visitor --
-      struct Dynamic::Visitor {
+      // -- Boxed::Visitor --
+      struct Boxed::Visitor {
          virtual void visit(const Symbol&) = 0;
          virtual void visit(const Binding&) = 0;
          virtual void visit(const Package&) = 0;

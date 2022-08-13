@@ -68,8 +68,8 @@ namespace OpenAxiom {
       constexpr NamedConstant<Value> value_constants[] = {
          { "NIL", Value::nil },
          { "T", Value::t },
-         { "MOST-NEGATIVE-FIXNUM", from_fixnum(Fixnum::minimum) },
-         { "MOST-POSITIVE-FIXNUM", from_fixnum(Fixnum::maximum) },
+         { "MOST-NEGATIVE-FIXNUM", to_value(Fixnum::minimum) },
+         { "MOST-POSITIVE-FIXNUM", to_value(Fixnum::maximum) },
       };
 
       static void define_special_constants(Evaluator* ctx) {
@@ -151,7 +151,7 @@ namespace OpenAxiom {
                val = -val;
             }
          }
-         return VM::from_fixnum(Fixnum(val));
+         return VM::to_value(Fixnum(val));
       }
 
       static Value
@@ -163,14 +163,14 @@ namespace OpenAxiom {
          if (x.dotted())
             result = ctx->make_value(*p++);
          while (p != x.rend())
-            result = from_pair(ctx->make_pair(ctx->make_value(*p++), result));
+            result = to_value(ctx->make_pair(ctx->make_value(*p++), result));
          return result;
       }
 
       static Value
       construct(Evaluator* ctx, const Sexpr::StringSyntax& x) {
          auto s = ctx->intern(x.lexeme().begin(), x.lexeme().size());
-         return from_string(s);
+         return to_value(s);
       }
 
       static Value
@@ -457,7 +457,7 @@ namespace OpenAxiom {
             if (v == Value::nil)
                break;
             os << ' ';
-            if (auto q = to_pair_if_can(v)) {
+            if (auto q = if_pair(v)) {
                p = q;
                continue;
             }
@@ -478,7 +478,7 @@ namespace OpenAxiom {
          os << '"';
       }
 
-      static void format(const Dynamic*, std::ostream&);
+      static void format(const Boxed*, std::ostream&);
 
       void format(Value v, std::ostream& os) {
          if (v == Value::nil)
@@ -491,14 +491,14 @@ namespace OpenAxiom {
             format(to_pair(v), os);
          else if (is<String>(v))
             format(to_string(v), os);
-         else if (is<Dynamic>(v))
-            format(to_dynamic(v), os);
+         else if (is<Boxed>(v))
+            format(to_boxed(v), os);
          else
             os << "#<unprintable>";
       }
 
-      static void format(const Dynamic* x, std::ostream& os) {
-         struct V : Dynamic::Visitor {
+      static void format(const Boxed* x, std::ostream& os) {
+         struct V : Boxed::Visitor {
             std::ostream& os;
             V(std::ostream& s) : os(s) { }
             void visit(const Symbol& s) {
