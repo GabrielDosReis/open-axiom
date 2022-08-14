@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2013, Gabriel Dos Reis.
+// Copyright (C) 2013-2022, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -34,15 +34,15 @@
 #ifndef OPENAXIOM_CHARSET_included
 #define OPENAXIOM_CHARSET_included
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace OpenAxiom {
    // Code point value of a UCS member.
-   using Codepoint = uint32_t;
+   using Codepoint = std::uint32_t;
 
    // Unicode character type.
    enum class Character : Codepoint {
-      NUL = Codepoint()         // The NUL character 
+      NUL = Codepoint{}          // The NUL character 
    };
 }
 

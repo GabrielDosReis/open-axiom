@@ -80,7 +80,7 @@ namespace OpenAxiom {
       const Byte* make_copy(const Byte*, size_t);
    };
 
-   typedef const StringPool::EntryType* InternedString;
+   using InternedString = const StringPool::EntryType*;
 }
 
 #endif  // OPENAXIOM_STRING_POOL_INCLUDED
