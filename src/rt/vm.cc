@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2014, Gabriel Dos Reis.
+// Copyright (C) 2011-2022, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -39,15 +39,15 @@
 
 namespace OpenAxiom {
    namespace VM {
-      void Dynamic::Visitor::visit(const NullaryOperator& x) {
+      void Boxed::Visitor::visit(const NullaryOperator& x) {
          visit(as<FunctionBase>(x));
       }
       
-      void Dynamic::Visitor::visit(const UnaryOperator& x) {
+      void Boxed::Visitor::visit(const UnaryOperator& x) {
          visit(as<FunctionBase>(x));
       }
       
-      void Dynamic::Visitor::visit(const BinaryOperator& x) {
+      void Boxed::Visitor::visit(const BinaryOperator& x) {
          visit(as<FunctionBase>(x));
       }
 
@@ -71,9 +71,6 @@ namespace OpenAxiom {
          }
          return nullptr;
       }
-
-      // -- Dynamic
-      Dynamic::~Dynamic() = default;
 
       // -- Symbol
       Symbol::Symbol(InternedString s)
@@ -113,7 +110,7 @@ namespace OpenAxiom {
       Fixnum
       count_nodes(Pair p) {
          FixnumBits n = 1;
-         for (; auto q = to_pair_if_can(p->tail); p = q)
+         for (; auto q = if_pair(p->tail); p = q)
             ++n;
          return Fixnum(n);
       }
