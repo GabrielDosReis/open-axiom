@@ -46,25 +46,22 @@
 #include <iosfwd>
 #include <unordered_set>
 
-namespace std {
-   template<>
-   struct hash<OpenAxiom::VM::Package>  {
-      hash<OpenAxiom::VM::String>::result_type
-      operator()(const OpenAxiom::VM::Package& s) const {
-         return h(s.name);
-      }
-      hash<OpenAxiom::VM::String> h;
-   };
+template<>
+struct std::hash<OpenAxiom::VM::Package>  {
+   auto operator()(const OpenAxiom::VM::Package& s) const {
+      return h(s.name);
+   }
+   hash<OpenAxiom::VM::String> h;
+};
 
-   template<>
-   struct equal_to<OpenAxiom::VM::Package> {
-      using arg_type = OpenAxiom::VM::Package;
-      bool operator()(const arg_type& x, const arg_type& y) const {
-         constexpr equal_to<OpenAxiom::VM::String> eq { };
-         return eq(x.name, y.name);
-      }
-   };
-}
+template<>
+struct std::equal_to<OpenAxiom::VM::Package> {
+   using arg_type = OpenAxiom::VM::Package;
+   bool operator()(const arg_type& x, const arg_type& y) const {
+      constexpr equal_to<OpenAxiom::VM::String> eq { };
+      return eq(x.name, y.name);
+   }
+};
 
 namespace OpenAxiom {
    namespace Lisp {
