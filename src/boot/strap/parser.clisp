@@ -183,7 +183,7 @@
        (COND
         ((AND (FUNCALL |f| |ps|)
               (OR (|bpEqKey| |ps| 'CBRACK) (|bpBrackTrap| |ps| |a|)))
-         (|bpPush| |ps| (|bfBracket| (|bpPop1| |ps|))))
+         (|bpPush| |ps| (|bpPop1| |ps|)))
         ((|bpEqKey| |ps| 'CBRACK) (|bpPush| |ps| NIL))
         (T (|bpBrackTrap| |ps| |a|))))
       (T NIL)))))
@@ -194,7 +194,7 @@
     (COND ((|bpEqKey| |ps| 'BACKTAB) T)
           ((AND (FUNCALL |f| |ps|)
                 (OR (|bpEqKey| |ps| 'BACKTAB) (|bpPileTrap| |ps|)))
-           (|bpPush| |ps| (|bfPile| (|bpPop1| |ps|))))
+           (|bpPush| |ps| (|bpPop1| |ps|)))
           (T NIL)))
    (T NIL)))
 
@@ -387,7 +387,7 @@
       (COND (|done| (RETURN NIL))
             (T
              (SETQ |found|
-                     (LET ((#1=#:G393
+                     (LET ((#1=#:G370
                             (CATCH :OPEN-AXIOM-CATCH-POINT (FUNCALL |f| |ps|))))
                        (COND
                         ((AND (CONSP #1#)
@@ -932,7 +932,7 @@
     (|bpPush| |ps| (|bfAtScope| (|bpPop2| |ps|) (|bpPop1| |ps|))))
    (T
     (AND (|bpEqKey| |ps| 'DO) (|bpRequire| |ps| #'|bpAssign|)
-         (|bpPush| |ps| (|bfDo| (|bpPop1| |ps|)))))))
+         (|bpPush| |ps| (|bpPop1| |ps|))))))
 
 (DEFUN |bpReturn| (|ps|)
   (OR
@@ -1411,7 +1411,7 @@
      (SETQ |op| (|enclosingFunction| (|parserLoadUnit| |ps|)))
      (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
      (UNWIND-PROTECT
-         (LET ((#1=#:G394
+         (LET ((#1=#:G371
                 (CATCH :OPEN-AXIOM-CATCH-POINT
                   (PROGN
                    (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) NIL)

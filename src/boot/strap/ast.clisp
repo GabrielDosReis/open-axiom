@@ -244,16 +244,6 @@
 
 (DEFUN |bfEqual| (|name|) (LIST 'EQUAL |name|))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfBracket|))
-
-(DEFUN |bfBracket| (|part|) |part|)
-
-(DECLAIM (FTYPE (FUNCTION ((|%List| |%Form|)) (|%List| |%Form|)) |bfPile|))
-
-(DEFUN |bfPile| (|part|) |part|)
-
-(DEFUN |bfDo| (|x|) |x|)
-
 (DEFUN |bfAtScope| (|s| |x|) (LIST 'LET (LIST (LIST '*PACKAGE* |s|)) |x|))
 
 (DECLAIM

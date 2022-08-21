@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2016, Gabriel Dos Reis.
+-- Copyright (C) 2007-2022, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -197,17 +197,6 @@ bfSuffixDot x ==
 bfEqual: %Form -> %Form
 bfEqual(name) == 
   ["EQUAL",name]
-
-bfBracket: %Thing -> %Thing 
-bfBracket(part) == 
-  part
- 
-bfPile: %List %Form -> %List %Form
-bfPile(part) == 
-  part
- 
-bfDo x ==
-  x
 
 bfAtScope(s,x) ==
   ["LET",[["*PACKAGE*",s]],x]
