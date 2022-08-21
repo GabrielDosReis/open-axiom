@@ -39,8 +39,9 @@ import pile
 import parser
 import ast
 namespace BOOTTRAN
-module translator (evalBootFile, loadNativeModule, loadSystemRuntimeCore,
-  compileBootHandler, string2BootTree, genImportDeclaration, retainFile?)
+module translator (evalBootFile, directoryFromCommandLine,
+  loadNativeModule, loadSystemRuntimeCore,
+    compileBootHandler, string2BootTree, genImportDeclaration, retainFile?)
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
@@ -607,9 +608,18 @@ associateRequestWithFileType(Option '"compile", '"boot",
 
 --% Runtime support
 
+++ Returns the directory name as specified through option name `opt'.
+directoryFromCommandLine opt ==
+  dir := ASSOC(Option opt, %systemOptions()) =>
+    ensureTrailingSlash rest dir
+  nil
+
 ++ Load native dynamically linked module
-loadNativeModule m ==
+loadNativeModule(m,:dir) ==
   m := strconc($NativeModulePrefix,m,$NativeModuleExt)
+  if dir ~= nil then
+     [dir] := dir
+     m := strconc(dir,m)
   %hasFeature KEYWORD::SBCL =>
     apply(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),
           [m,KEYWORD::DONT_-SAVE,true])
@@ -623,4 +633,7 @@ loadNativeModule m ==
 
 loadSystemRuntimeCore() ==
   %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
-  loadNativeModule '"open-axiom-core"
+  dir :=
+     path := directoryFromCommandLine '"syslib" => path
+     strconc(systemRootDirectory(),'"lib/")
+  loadNativeModule('"open-axiom-core",dir)

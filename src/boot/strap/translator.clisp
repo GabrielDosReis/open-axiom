@@ -15,9 +15,9 @@
 
 (EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
   (EXPORT
-   '(|evalBootFile| |loadNativeModule| |loadSystemRuntimeCore|
-                    |compileBootHandler| |string2BootTree|
-                    |genImportDeclaration| |retainFile?|)))
+   '(|evalBootFile| |directoryFromCommandLine| |loadNativeModule|
+                    |loadSystemRuntimeCore| |compileBootHandler|
+                    |string2BootTree| |genImportDeclaration| |retainFile?|)))
 
 (DEFPARAMETER |$currentModuleName| NIL)
 
@@ -443,7 +443,7 @@
      (SETQ |ps| (|makeParserState| |toks|))
      (|bpFirstTok| |ps|)
      (SETQ |found|
-             (LET ((#1=#:G402
+             (LET ((#1=#:G379
                     (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem| |ps|))))
                (COND
                 ((AND (CONSP #1#) (EQUAL (CAR #1#) :OPEN-AXIOM-CATCH-POINT))
@@ -936,21 +936,40 @@
 (|associateRequestWithFileType| (|Option| "compile") "boot"
                                 #'|compileBootHandler|)
 
-(DEFUN |loadNativeModule| (|m|)
-  (PROGN
-   (SETQ |m| (CONCAT |$NativeModulePrefix| |m| |$NativeModuleExt|))
-   (COND
-    ((|%hasFeature| :SBCL)
-     (FUNCALL (|bfColonColon| 'SB-ALIEN 'LOAD-SHARED-OBJECT) |m| :DONT-SAVE T))
-    ((|%hasFeature| :CLISP)
-     (EVAL (LIST (|bfColonColon| 'FFI 'DEFAULT-FOREIGN-LIBRARY) |m|)))
-    ((|%hasFeature| :ECL)
-     (EVAL (LIST (|bfColonColon| 'FFI 'LOAD-FOREIGN-LIBRARY) |m|)))
-    ((|%hasFeature| :CLOZURE)
-     (EVAL (LIST (|bfColonColon| 'CCL 'OPEN-SHARED-LIBRARY) |m|)))
-    (T (|coreError| "don't know how to load a dynamically linked module")))))
+(DEFUN |directoryFromCommandLine| (|opt|)
+  (LET* (|dir|)
+    (COND
+     ((SETQ |dir| (ASSOC (|Option| |opt|) (|%systemOptions|)))
+      (|ensureTrailingSlash| (CDR |dir|)))
+     (T NIL))))
+
+(DEFUN |loadNativeModule| (|m| &REST |dir|)
+  (LET* (|LETTMP#1|)
+    (PROGN
+     (SETQ |m| (CONCAT |$NativeModulePrefix| |m| |$NativeModuleExt|))
+     (COND
+      (|dir| (SETQ |LETTMP#1| |dir|) (SETQ |dir| (CAR |LETTMP#1|))
+       (SETQ |m| (CONCAT |dir| |m|))))
+     (COND
+      ((|%hasFeature| :SBCL)
+       (FUNCALL (|bfColonColon| 'SB-ALIEN 'LOAD-SHARED-OBJECT) |m| :DONT-SAVE
+                T))
+      ((|%hasFeature| :CLISP)
+       (EVAL (LIST (|bfColonColon| 'FFI 'DEFAULT-FOREIGN-LIBRARY) |m|)))
+      ((|%hasFeature| :ECL)
+       (EVAL (LIST (|bfColonColon| 'FFI 'LOAD-FOREIGN-LIBRARY) |m|)))
+      ((|%hasFeature| :CLOZURE)
+       (EVAL (LIST (|bfColonColon| 'CCL 'OPEN-SHARED-LIBRARY) |m|)))
+      (T (|coreError| "don't know how to load a dynamically linked module"))))))
 
 (DEFUN |loadSystemRuntimeCore| ()
-  (COND ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
-        (T (|loadNativeModule| "open-axiom-core"))))
+  (LET* (|dir| |path|)
+    (COND ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
+          (T
+           (SETQ |dir|
+                   (COND
+                    ((SETQ |path| (|directoryFromCommandLine| "syslib"))
+                     |path|)
+                    (T (CONCAT (|systemRootDirectory|) "lib/"))))
+           (|loadNativeModule| "open-axiom-core" |dir|)))))
 

@@ -64,7 +64,7 @@ namespace OpenAxiom {
    augment_variable(const char* name, const char* value) {
       const char* oldval = oa_getenv(name);
       const int value_length = strlen(value);
-      const int oldval_length = oldval == 0 ? 0 : strlen(oldval);
+      const int oldval_length = oldval == nullptr ? 0 : strlen(oldval);
       const int newval_length = value_length + 1 + oldval_length;
       char* newval = (char*) malloc(newval_length + 1);
       
@@ -86,7 +86,7 @@ namespace OpenAxiom {
       augment_variable("BIBINPUTS",
                        oa_concatenate_string(sysdir, OPENAXIOM_BIBINPUTS_PATH));
       const char* ldd_path = option_value(command, "--syslib");
-      if (ldd_path == 0)
+      if (ldd_path == nullptr)
          ldd_path = oa_concatenate_string(sysdir, "/lib");
 #ifdef OPENAXIOM_MS_WINDOWS_HOST
       augment_variable("PATH", ldd_path);

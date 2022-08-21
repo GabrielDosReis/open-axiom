@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2016, Gabriel Dos Reis.
+-- Copyright (C) 2007-2022, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1111,21 +1111,19 @@ aggregateApp(u,x,y,d,s) ==
 
 --% Function to compute Width
 
+widthOfString u ==
+  u = $EmptyString => 0
+  stringChar(u,0) = char "%" and
+    (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
+  #u
+
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
-  string? u =>
-    u = $EmptyString => 0
-    stringChar(u,0) = char "%" and
-      (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
-    #u
+  string? u => widthOfString u
   u isnt [.,:.] => # atom2String u
   WIDTH copyTree u
 
 WIDTH u ==
-  string? u =>
-    u = $EmptyString => 0
-    stringChar(u,0) = char "%" and
-      (stringChar(u,1) = char "b" or stringChar(u,1) = char "d") => 1
-    #u
+  string? u => widthOfString u
   integer? u => 
     if (u < 1) then 
       negative := 1

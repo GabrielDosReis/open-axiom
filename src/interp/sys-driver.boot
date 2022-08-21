@@ -75,12 +75,6 @@ symbolFunction('%sysInit) := () +->
 
 --%
 
-++ Returns the directory name as specified through option name `opt'.
-directoryFromCommandLine opt ==
-  dir := ASSOC(Option opt, %systemOptions()) =>
-    ensureTrailingSlash rest dir
-  nil
-
 ++ Returns the system algebra directory, as specified on command
 ++ line.  nil, otherwise.
 systemAlgebraDirectory() ==
