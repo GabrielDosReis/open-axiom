@@ -188,7 +188,7 @@ bpBracket(ps,f) ==
   a := parserCurrentToken ps
   bpEqKey(ps,"OBRACK") =>
     apply(f,[ps]) and (bpEqKey(ps,"CBRACK") or bpBrackTrap(ps,a)) =>
-      bpPush(ps,bfBracket bpPop1 ps)
+      bpPush(ps,bpPop1 ps)
     bpEqKey(ps,"CBRACK") => bpPush(ps,[])
     bpBrackTrap(ps,a)
   false
@@ -197,7 +197,7 @@ bpPileBracketed(ps,f) ==
   bpEqKey(ps,"SETTAB") => 
     bpEqKey(ps,"BACKTAB") => true
     apply(f,[ps]) and (bpEqKey(ps,"BACKTAB") or bpPileTrap ps) =>
-      bpPush(ps,bfPile bpPop1 ps)
+      bpPush(ps,bpPop1 ps)
     false
   false
  
@@ -871,7 +871,7 @@ bpDo ps ==
     bpRequire(ps,function bpDo)
     bpPush(ps,bfAtScope(bpPop2 ps,bpPop1 ps))
   bpEqKey(ps,"DO") and bpRequire(ps,function bpAssign) and
-    bpPush(ps,bfDo bpPop1 ps)
+    bpPush(ps,bpPop1 ps)
 
 ++ Return:
 ++   RETURN Assign
