@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2015, Gabriel Dos Reis.
+;; Copyright (C) 2007-2022, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -526,8 +526,8 @@
          (vector-push-extend id cvec)
          cvec)
         ((adjustable-array-p cvec)
-         (let ((l (length cvec)))
-           (adjust-array cvec (1+ l))
+         (let ((l (array-dimension cvec 0)))
+           (setf cvec (adjust-array cvec (1+ l)))
            (setf (elt cvec l) id)
            cvec))
         (t (concat cvec id))))
