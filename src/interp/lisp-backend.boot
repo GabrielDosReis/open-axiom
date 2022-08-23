@@ -1,4 +1,4 @@
--- Copyright (C) 2011-2015, Gabriel Dos Reis.
+-- Copyright (C) 2011-2022, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -266,10 +266,8 @@ expandIeq ['%ieq,a,b] ==
 
 expandIlt ['%ilt,x,y] ==
   integer? x and x = 0 =>
-    integer? y => y > 0
     ['PLUSP,expandToVMForm y]
   integer? y and y = 0 =>
-    integer? x => x < 0
     ['MINUSP,expandToVMForm x]
   ['_<,expandToVMForm x,expandToVMForm y]
 
