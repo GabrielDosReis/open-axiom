@@ -843,12 +843,12 @@ massageBackendCode x ==
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
-  u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
+  u in '(DCQ SPADLET SETQ %LET) =>
     if u isnt 'DCQ and u isnt 'SETQ then
       append!(x,$FUNNAME__TAIL)
       x.first := "LETT"
     massageBackendCode CDDR x
-    if not (u in '(SETQ RELET)) then
+    if u ~= "SETQ" then
       ident? second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
