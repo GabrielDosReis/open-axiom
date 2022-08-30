@@ -46,6 +46,12 @@
 (import-module "sys-macros") 
 (import-module "lexing")
 (in-package "BOOT")
+ 
+(defmacro SPADLET (A B)
+  (if (ATOM A)
+      `(SETQ ,A ,B)
+    `(OR (IS ,B ,A) 
+	 (LET_ERROR ,(MK_LEFORM A) ,(MKQ B) ))))
 
 (defvar S-SPADKEY NIL) ;" this is augmented by MAKESPADOP"
  

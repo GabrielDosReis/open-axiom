@@ -296,14 +296,6 @@
       ,var))
    ('T (ERROR "Cannot compileLET construct"))))
 
- 
-(defmacro SPADLET (A B)
-  (if (ATOM A)
-      `(SETQ ,A ,B)
-    `(OR (IS ,B ,A) 
-	 (LET_ERROR ,(MK_LEFORM A) ,(MKQ B) ))))
-
-
 ;; 
 ;; -*- Helper Functions For Iteration Control Structures -*-
 ;; 
@@ -664,7 +656,7 @@
 	    (MK_LEFORM (SECOND U)))
 	   ((EQ (FIRST U) 'EQUAL)
 	    (STRCONC "=" (MK_LEFORM (SECOND U)) ))
-	   ((EQ (FIRST U) 'SPADLET)
+	   ((EQ (FIRST U) 'SETQ)
 	    (MK_LEFORM (THIRD U)))
 	   ((ERRHUH))))
 
@@ -687,7 +679,7 @@
      (if (OR (NULL VARS) 
 	     (NULL INITS)) 
 	 NIL
-       (CONS (LIST 'SPADLET (CAR VARS) (CAR INITS))
+       (CONS (LIST 'SETQ (CAR VARS) (CAR INITS))
 	     (DO_LET (CDR VARS) (CDR INITS)))))
 
  
@@ -805,8 +797,8 @@
 	   ;; create preset of accumulate
 	   (SETQ PRESET 
 		 (COND ((EQ Y 'NO_THETA_PROPERTY)
-			(LIST 'SPADLET G (MKQ G)))
-		       ((LIST 'SPADLET G Y)) ))
+			(LIST 'SETQ G (MKQ G)))
+		       ((LIST 'SETQ G Y)) ))
 	   (SETQ EXIT 
 		 (COND ((SETQ X (ASSOC 'EXIT SPL))
 			(SETQ SPL (DELASC 'EXIT SPL))
@@ -841,7 +833,7 @@
 		 (COND ((EQ VALUE BODY)
 			RESETCODE)
 		       ((LIST 'PROGN
-			      (LIST 'SPADLET VALUE BODY)
+			      (LIST 'SETQ VALUE BODY)
 			      RESETCODE)) ))
 	   (SETQ AUX 
 		 (CONS (LIST 'EXIT EXIT)
