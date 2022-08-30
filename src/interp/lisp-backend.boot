@@ -842,11 +842,14 @@ massageBackendCode x ==
   atomic? x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
-    x.first := "MAKEPROP-SAY"
+    x.op := "MAKEPROP-SAY"
   u in '(DCQ SPADLET SETQ %LET) =>
     if u in '(SPADLET %LET) then
-      append!(x,$FUNNAME__TAIL)
-      x.first := "LETT"
+      if x.args is [y,.] and ident? y then
+        x.op := "SETQ"
+      else
+        x.op := "LETT"
+        append!(x,$FUNNAME__TAIL)
     massageBackendCode CDDR x
     if u ~= "SETQ" then
       ident? second x => pushLocalVariable second x
