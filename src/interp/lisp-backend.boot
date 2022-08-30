@@ -844,7 +844,7 @@ massageBackendCode x ==
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
   u in '(DCQ SPADLET SETQ %LET) =>
-    if u isnt 'DCQ and u isnt 'SETQ then
+    if u in '(SPADLET %LET) then
       append!(x,$FUNNAME__TAIL)
       x.first := "LETT"
     massageBackendCode CDDR x
