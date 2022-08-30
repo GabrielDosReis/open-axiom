@@ -1503,11 +1503,11 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
     (RETURN
       (SEQ (COND
              ((> 1 N) NIL)
-             ('T (SPADLET |l| (SPADDIFFERENCE (|#| |str|) 1))
+             ('T (SETQ |l| (SPADDIFFERENCE (|#| |str|) 1))
               (COND
                 ((EQL |l| 0) NIL)
-                ('T (SPADLET |n| 0) (SPADLET |word| '||)
-                 (SPADLET |inWord| NIL)
+                ('T (SETQ |n| 0) (SETQ |word| '||)
+                 (SETQ |inWord| NIL)
                  (DO ((|i| 0 (1+ |i|))) ((> |i| |l|) NIL)
                (declare (fixnum |i|))
                    (SEQ (EXIT (COND
@@ -1515,12 +1515,12 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
                                  (COND
                                    ((NULL |inWord|) NIL)
                                    ((eql |n| N) (RETURN |word|))
-                                   ('T (SPADLET |inWord| NIL))))
+                                   ('T (SETQ |inWord| NIL))))
                                 ('T
                                  (COND
                                    ((NULL |inWord|)
-                                    (SPADLET |inWord| 'T)
-                                    (SPADLET |n| (PLUS |n| 1))))
+                                    (SETQ |inWord| 'T)
+                                    (SETQ |n| (PLUS |n| 1))))
                                  (COND
                                    ((eql |n| N)
                        (cond ((eq |word| '||)

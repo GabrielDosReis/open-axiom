@@ -843,8 +843,8 @@ massageBackendCode x ==
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.op := "MAKEPROP-SAY"
-  u in '(DCQ SPADLET SETQ %LET) =>
-    if u in '(SPADLET %LET) then
+  u in '(DCQ SETQ %LET) =>
+    if u = '%LET then
       if x.args is [y,.] and ident? y then
         x.op := "SETQ"
       else
