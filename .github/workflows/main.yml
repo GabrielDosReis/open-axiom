@@ -28,7 +28,7 @@ jobs:
 
       - name: Configure & Build & Test
         run: |
-          mkdir ${{ matrix.lisp }}-build && chdir ${{ matrix.lisp }}-build
+          mkdir ${{ matrix.lisp }}-build && cd ${{ matrix.lisp }}-build
           ../configure --with-lisp=${{ matrix.lisp }}
           time make
           time make check
