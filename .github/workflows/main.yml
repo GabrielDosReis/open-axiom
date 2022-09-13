@@ -12,10 +12,10 @@ jobs:
     runs-on: $${{ matrix.os }}
     strategy:
       fail-fast: false
-    matrix:
-      os: [ ubuntu-latest ]
-      cxx: [ g++-11 ]
-      lisp: [ sbcl ]
+      matrix:
+        os: [ ubuntu-latest ]
+        cxx: [ g++-11 ]
+        lisp: [ sbcl ]
 
     steps:
       - uses: actions/checkout@v2
