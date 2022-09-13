@@ -24,7 +24,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update && sudo apt upgrade
-          sudo apt-get install build-essential ${ matrix.lisp }}
+          sudo apt-get install build-essential ${{ matrix.lisp }}
 
       - name: Configure & Build & Test
         run: |
