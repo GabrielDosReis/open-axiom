@@ -30,6 +30,7 @@ jobs:
       - name: Configure & Build & Test
         run: |
           mkdir ${{ matrix.lisp }}-build && cd ${{ matrix.lisp }}-build
+          touch ../configure && sleep 1
           ../configure --disable-maintainer-mode --with-lisp=${{ matrix.lisp }}
           time make
           time make check
