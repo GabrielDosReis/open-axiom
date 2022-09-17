@@ -51,6 +51,8 @@ OPENAXIOM_CANONICAL_SYSTEM
 
 dnl Page Automake
 AM_INIT_AUTOMAKE([foreign subdir-objects])
+dnl Do not attempt to re-configure because of perceived out of date build files
+AM_MAINTAINER_MODE([disable])
 AC_PREREQ([2.71])
 
 dnl Simple sanity check.
