@@ -1,0 +1,37 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} -x- ${{ matrix.cxx }} -x- ${{ matrix.lisp }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        cxx: [ g++-11 ]
+        lisp: [ sbcl ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Lisp and C++ compilers
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update && sudo apt upgrade -y
+          sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxpm-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11
+
+      - name: Configure & Build & Test
+        run: |
+          mkdir ${{ matrix.lisp }}-build && cd ${{ matrix.lisp }}-build
+          touch ../configure && sleep 1
+          ../configure --disable-maintainer-mode --with-lisp=${{ matrix.lisp }}
+          time make
+          time make check
+
