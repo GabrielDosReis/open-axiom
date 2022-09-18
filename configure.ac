@@ -51,6 +51,9 @@ OPENAXIOM_CANONICAL_SYSTEM
 
 dnl Page Automake
 AM_INIT_AUTOMAKE([foreign subdir-objects])
+dnl Don't attempt to re-run regenerate configuration and build
+dnl files based on perception that they might be out of date
+AM_MAINTAINER_MODE([disable])
 AC_PREREQ([2.71])
 
 dnl Simple sanity check.
