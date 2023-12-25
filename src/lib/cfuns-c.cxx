@@ -88,19 +88,11 @@ namespace OpenAxiom {
 OPENAXIOM_C_EXPORT int
 addtopath(char *dir)
 {
-    char *path, *newpath;
-
-    path = oa_getenv("PATH");
-    if (path == NULL)
-        return -1;
-
-    newpath = (char *) malloc(1 + strlen(path) + strlen(dir) + strlen("PATH=:"));
-    if (newpath == NULL)
-        return -1;
-
-    sprintf(newpath, "PATH=%s:%s", path, dir);
-
-    return putenv(newpath);
+   std::string newpath = oa_getenv("PATH");
+   if (not newpath.empty())
+      newpath += OPENAXIOM_PATH_SEPARATOR;
+   newpath += dir;
+   return setenv("PATH", copy_c_str(newpath), 1);
 }
 
 
