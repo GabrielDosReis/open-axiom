@@ -490,11 +490,18 @@ wait_for_client_write(openaxiom_sio* sock, const Byte* buf,
   }
 }
 
+// Prefix a message with a given string for diagnostic purposes.
+static std::string diagnostic(const char* prefix, const char* msg)
+{
+  std::string s = prefix;
+  s += msg;
+  return s;
+}
+
 OPENAXIOM_C_EXPORT int 
 sread(openaxiom_sio* sock, Byte* buf, int buf_size, const char *msg)
 {
   int ret_val;
-  char err_msg[256];
   errno = 0;
   do {
     ret_val = oa_socket_read(sock->socket, buf, buf_size);
@@ -507,8 +514,7 @@ sread(openaxiom_sio* sock, Byte* buf, int buf_size, const char *msg)
   }
   if (ret_val == -1) {
     if (msg) {
-      sprintf(err_msg, "reading: %s", msg);
-      perror(err_msg);
+      perror(diagnostic("reading: ", msg).c_str());
     }
     return -1;
   }
@@ -520,7 +526,6 @@ swrite(openaxiom_sio* sock, const Byte* buf, int buf_size,
        const char* msg)
 {
   int ret_val;
-  char err_msg[256];
   errno = 0;
   socket_closed = 0;
   ret_val = oa_socket_write(sock->socket, buf, buf_size);
@@ -533,8 +538,7 @@ swrite(openaxiom_sio* sock, const Byte* buf, int buf_size,
       return wait_for_client_write(sock, buf, buf_size, msg);
     } else {
       if (msg) {
-        sprintf(err_msg, "writing: %s", msg);
-        perror(err_msg);
+        perror(diagnostic("writing: ", msg).c_str());
       }
       return -1;
     }

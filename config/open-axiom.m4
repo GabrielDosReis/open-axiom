@@ -483,6 +483,9 @@ dnl -- OPENAXIOM_FILE_EXTENSIONS --
 dnl -------------------------------
 dnl Compute various file extensions used by the build system.
 AC_DEFUN([OPENAXIOM_FILE_EXTENSIONS],[
+# Path separator
+AC_DEFINE_UNQUOTED([OPENAXIOM_PATH_SEPARATOR], ["$PATH_SEPARATOR"],
+                   [Path separator on the host filesystem.])
 # What is the extension of object and executable files on this platform?
 AC_OBJEXT
 AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
