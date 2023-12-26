@@ -114,9 +114,7 @@ parse_ifcond()
     if (gInIf) {
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "\\if found within \\if \n");
-        longjmp(jmpbuf, 1);
-        fprintf(stderr, "Longjump failed, Exiting\n");
-        exit(-1);
+        throw HyperError{};
     }
     gInIf = true;
     curr_node->type = openaxiom_Ifcond_token;
@@ -150,9 +148,7 @@ parse_ifcond()
             token_name(token.type);
             curr_node->type = openaxiom_Noop_token;
             fprintf(stderr, "Expected a \\fi not a %s", ebuffer);
-            longjmp(jmpbuf, 1);
-            fprintf(stderr, "Longjump failed, Exiting\n");
-            exit(-1);
+            throw HyperError{};
         }
         curr_node->type = openaxiom_Fi_token;
         curr_node->next = endif;
@@ -161,9 +157,7 @@ parse_ifcond()
         curr_node->type = openaxiom_Noop_token;
         token_name(token.type);
         fprintf(stderr, "Expected a \\fi not a %s", ebuffer);
-        longjmp(jmpbuf, 1);
-        fprintf(stderr, "Longjump failed, Exiting\n");
-        exit(-1);
+        throw HyperError{};
     }
     ifnode->next = ifnode->data.ifnode->thennode;
     ifnode->width = -1;         /* A flag for compute if extents */
@@ -385,7 +379,7 @@ parse_verbatim(int type)
     }
     if (c == EOF) {
         fprintf(stderr, "parse_verbatim: Unexpected EOF found\n");
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     resizeVbuf();
     if (*end_string == '\n')
@@ -461,7 +455,7 @@ parse_centerline()
         fprintf(stderr, "(HyperdDoc) \\centerline was expecting a }\n");
         print_page_and_filename();
         print_next_ten_tokens();
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     curr_node->type = openaxiom_Endcenter_token;
 }
@@ -476,7 +470,7 @@ parse_command()
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     gStringValueOk = 1;
 
@@ -513,7 +507,7 @@ parse_button()
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     /* fill the node */
     curr_node->type = token.type;
@@ -714,7 +708,7 @@ parse_table()
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     curr_node->type = openaxiom_Table_token;
     get_expected_token(openaxiom_Lbrace_token);

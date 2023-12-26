@@ -35,7 +35,6 @@
 
 #include <sys/stat.h>
 #include <sys/signal.h>
-#include <setjmp.h>
 
 #include "openaxiom-c-macros.h"
 #include "debug.h"
@@ -54,7 +53,6 @@ extern char **input_file_list;
 extern int input_file_count;
 extern int make_patch_files;
 extern int kill_spad;
-extern jmp_buf jmpbuf;
 
 static void make_input_file_list(void );
 static char * make_input_file_name(char * buf , char * filename);
@@ -178,12 +176,12 @@ make_the_input_file(UnloadedPage *page)
     b = make_input_file_name(buf, page->fpos.name);
     if (inListAndNewer(b, page->fpos.name)) {
         printf("parsing: %s\n", page->name);
-        if (setjmp(jmpbuf)) {
-            printf("Syntax error!\n");
-        }
-        else {
+        try {
             load_page((HyperDocPage *)page);
             make_input_file_from_page(gWindow->page);
+        }
+        catch(const HyperError&) {
+            printf("Syntax error!\n");
         }
     }
 }

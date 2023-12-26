@@ -48,8 +48,6 @@
 #include <ctype.h>
 #include "hyper.h"
 
-#include <setjmp.h>
-
 extern void display_page(HyperDocPage * page);
 extern void init_parse_patch(HyperDocPage * page);
 extern void load_page(HyperDocPage * page);
@@ -90,7 +88,6 @@ extern int pop_parameters();
 extern int parse_macro();
 extern void parse_parameters();
 
-extern jmp_buf  jmpbuf;
 extern int      vbuff;
 
 extern TextNode *cur_spadcom;   /* spad command being parsed *** */

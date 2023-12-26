@@ -47,6 +47,8 @@
 #include "lex.h"
 #include "hyper.h"
 
+using namespace OpenAxiom;
+
 static void insert_item(InputItem * item);
 static void add_box_to_rb_list(char * name , InputBox * box);
 static int check_others(InputBox * list);
@@ -186,7 +188,7 @@ parse_inputstring()
   size = atoi(token.id);
   if (size < 0) {
     fprintf(stderr, "Illegal size in Input string\n");
-    longjmp(jmpbuf, 1);
+    throw HyperError{};
   }
 
   /* get the default value */

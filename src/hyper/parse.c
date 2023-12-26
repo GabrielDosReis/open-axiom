@@ -168,9 +168,18 @@ display_page(HyperDocPage *page)
     XUnmapSubwindows(gXDisplay, gWindow->fMainWindow);
     XUnmapSubwindows(gXDisplay, gWindow->fScrollWindow);
     XFlush(gXDisplay);
-
-    if (setjmp(jmpbuf)) {
-
+    try {
+        if (page->type == UnloadedPageType || page->type == ErrorPage) {
+            /* Gack! (page should be a union!) */
+            init_scanner();
+            new_page = format_page((UnloadedPage *)page);
+            gWindow->page = new_page;
+            /* free(page); */
+            page = new_page;
+        }
+        show_page(page);
+    }
+    catch(const HyperError&) {
         /*
          * since I did not finish formatting the page, let me get rid of what
          * I had
@@ -189,15 +198,6 @@ display_page(HyperDocPage *page)
         }
         reset_connection();
     }
-    if (page->type == UnloadedPageType || page->type == ErrorPage) {
-        /* Gack! (page should be a union!) */
-        init_scanner();
-        new_page = format_page((UnloadedPage *)page);
-        gWindow->page = new_page;
-        /* free(page); */
-        page = new_page;
-    }
-    show_page(page);
 }
 
 
@@ -447,9 +447,7 @@ parse_HyperDoc()
                 curr_node->type = openaxiom_Noop_token;
                 /* Oops I had a problem parsing this puppy */
                 fprintf(stderr, "(HyperDoc) \\fi found without macthing if?\n");
-                longjmp(jmpbuf, 1);
-                fprintf(stderr, "(HyperDoc) Longjmp failed -- Exiting \n");
-                exit(-1);
+                throw HyperError{};
             }
           case openaxiom_Else_token:
             if (gInIf)
@@ -458,9 +456,7 @@ parse_HyperDoc()
                 /* Oops I had a problem parsing this puppy */
                 curr_node->type = openaxiom_Noop_token;
                 fprintf(stderr, "(HyperDoc) \\else found without macthing if?\n");
-                longjmp(jmpbuf, 1);
-                fprintf(stderr, "(HyperDoc) Longjmp failed -- Exiting \n");
-                exit(-1);
+                throw HyperError{};
             }
           case openaxiom_Macro_token:
             parse_macro();
@@ -519,7 +515,7 @@ parse_HyperDoc()
             if (gParserMode != AllMode) {
                 curr_node->type = openaxiom_Noop_token;
                 fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
-                longjmp(jmpbuf, 1);
+                throw HyperError{};
             }
             else {
                 curr_node->type = token.type;
@@ -536,7 +532,7 @@ parse_HyperDoc()
             if (gParserMode != AllMode) {
                 curr_node->type = openaxiom_Noop_token;
                 fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
-                longjmp(jmpbuf, 1);
+                throw HyperError{};
             }
             else {
                 curr_node->type = token.type;
@@ -547,7 +543,7 @@ parse_HyperDoc()
             if (gParserMode != AllMode) {
                 curr_node->type = openaxiom_Noop_token;
                 fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
-                longjmp(jmpbuf, 1);
+                throw HyperError{};
             }
             else {
                 parse_begin_items();
@@ -657,7 +653,7 @@ parse_HyperDoc()
 
                 parser_error(ebuffer);
                 curr_node->type = openaxiom_Noop_token;
-                longjmp(jmpbuf, 1);
+                throw HyperError{};
             }
             curr_node->type = token.type;
             curr_node->space = token.id[-1];
@@ -722,13 +718,7 @@ parse_page_from_socket()
               (HashcodeFunction) window_code);
     gPageBeingParsed = page;
     replace_page = NULL;
-    if (setjmp(jmpbuf)) {
-        /* Ooops, somewhere I had an error */
-        free_page(page);
-        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "ErrorPage");
-        reset_connection();
-    }
-    else {
+    try {
         parse_page(page);
         page->type = SpadGen;
         page->filename = NULL;
@@ -739,6 +729,12 @@ parse_page_from_socket()
         else {
             hash_insert(gWindow->fPageHashTable, (char *)page, page->name);
         }
+    }
+    catch(const HyperError&) {
+        /* Ooops, somewhere I had an error */
+        free_page(page);
+        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "ErrorPage");
+        reset_connection();
     }
     if (replace_page != NULL) {
         free_page(page);
@@ -764,19 +760,18 @@ parse_page_from_unixfd()
               (EqualFunction) window_equal, 
               (HashcodeFunction) window_code);
     gPageBeingParsed = page;
-    if (setjmp(jmpbuf)) {
+    try {
+        parse_page(page);
+        page->type = Unixfd;
+        page->filename = NULL;
+    }
+    catch (const HyperError&) {
         /* Ooops, somewhere I had an error */
         free_page(page);
         page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "ErrorPage");
         reset_connection();
     }
-    else {
-        parse_page(page);
-        page->type = Unixfd;
-        page->filename = NULL;
-    }
     return page;
-
 }
 
 static void
@@ -791,8 +786,7 @@ start_scrolling()
     if (gParserRegion != Header) {
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected BeginScrollFound\n");
-        longjmp(jmpbuf, 1);
-        fprintf(stderr, "(HyperDoc) Longjump failed exiting\n");
+        throw HyperError{};
     }
     curr_node->type = openaxiom_Endheader_token;
     curr_node->next = NULL;
@@ -818,8 +812,7 @@ start_footer()
         curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected Endscroll Found\n");
         print_page_and_filename();
-        longjmp(jmpbuf, 1);
-        fprintf(stderr, "(HyperDoc) Longjump failed exiting\n");
+        throw HyperError{};
     }
 
     curr_node->type = openaxiom_Endscrolling_token;

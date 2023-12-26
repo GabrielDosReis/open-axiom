@@ -252,6 +252,11 @@ enum class SourceInputKind {
    UnixFD = 4
 };
 
+namespace OpenAxiom {
+  // Basic error type in the Hyper component.
+  struct HyperError { };
+}
+
 extern FILE *unixfd;
 
 #endif

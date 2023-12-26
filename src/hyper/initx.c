@@ -47,7 +47,6 @@
 
 #include <unistd.h>
 #include <sys/signal.h>
-#include <setjmp.h>
 #include <X11/cursorfont.h>
 #include <X11/Xresource.h>
 #include <X11/Xatom.h>

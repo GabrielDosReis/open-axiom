@@ -41,6 +41,8 @@
 #include "hyper.h"
 #include "lex.h"
 
+using namespace OpenAxiom;
+
 static char * load_macro(MacroStore * macro);
 static void get_parameter_strings(int number , char * macro_name);
 
@@ -62,7 +64,7 @@ scan_HyperDoc()
         ret_val = get_token();
         if (ret_val == EOF && number_of_left_braces) {
             fprintf(stderr, "Scan_Hypertex: Unexpected End of File\n");
-            longjmp(jmpbuf, 1);
+            throw HyperError{};
         }
         switch (token.type) {
           case openaxiom_Page_token:
@@ -121,7 +123,7 @@ load_macro(MacroStore *macro)
         /** WOW, Somehow I had the location of the wrong macro **/
         fprintf(stderr, "Expected macro name %s got insted %s in load_macro\n",
                 macro->name, token.id);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     get_expected_token(openaxiom_Rbrace_token);
 
@@ -133,7 +135,7 @@ load_macro(MacroStore *macro)
         if (!number(token.id)) {
             fprintf(stderr, "load_macro: Expected A Value Instead Got %s\n",
                     token.id);
-            longjmp(jmpbuf, 1);
+            throw HyperError{};
         }
         /** if it is a number, then I should store it in the parameter number
           member of the macro structure **/
@@ -154,7 +156,7 @@ load_macro(MacroStore *macro)
         /** The macro is not in a group, uh oh **/
         fprintf(stderr, "load_macro:Expected a Left Brace got type %d\n",
                 token.type);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
     start_fpos = fpos;
     scan_HyperDoc();
@@ -200,7 +202,7 @@ push_parameters(ParameterList parms)
 
     if (parms == NULL) {
         fprintf(stderr, "Tried pushing a null list onto the parameter stack\n");
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
 
     parms->next = parameters;
@@ -269,12 +271,12 @@ parse_macro()
         else {
             fprintf(stderr,
                     "parse_macro: Tried to pop an empty parameter stack\n");
-            longjmp(jmpbuf, 1);
+            throw HyperError{};
         }
     }
     else {
         fprintf(stderr, "parse_macro: Unknown keyword %s\n", token.id);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
 }
 
@@ -311,7 +313,7 @@ get_parameter_strings(int number,char * macro_name)
             switch (c = get_char()) {
               case EOF:
                 fprintf(stderr, "GetParameterStrings: Unexpected EOF\n");
-                longjmp(jmpbuf, 1);
+                throw HyperError{};
               case '}':
                 lbrace_counter--;
                 if (lbrace_counter)
@@ -374,14 +376,14 @@ parse_parameters()
     if (!number(token.id)) {
         fprintf(stderr,
                 "Parse_parameter: Error Expected a number, got %s instead\n", token.id);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
 
     if ((value = atoi(token.id)) > parameters->number) {
         /** had a bad parameter number **/
         fprintf(stderr,
                 "Parse_parameter: Had a bad parameter number %d\n", value);
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
 
     parse_from_string((parameters->list)[value - 1]);
