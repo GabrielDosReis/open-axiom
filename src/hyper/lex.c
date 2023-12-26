@@ -50,11 +50,6 @@
  * from the socket pointed to by spad_socket FromFD       -- It reads from a
  * file descriptor
  *
- *
- * New variable useAscii -- tells us if we we should translate 
- * graphics characters on the fly 
- * initialised in init_scanner
- *
  */
 #define _LEX_C
 #include "openaxiom-c-macros.h"
@@ -76,13 +71,8 @@
 
 using namespace OpenAxiom;
 
-static int get_char1(void );
 static void spad_error_handler(void );
 static int keyword_type(void );
-
-
-
-int useAscii;
 
 extern int gTtFontIs850;
 extern HDWindow *gWindow;
@@ -255,13 +245,6 @@ parser_init()
 void
 init_scanner()
 {
-    if (oa_getenv("HTASCII")) {
-        useAscii = (strcmp(oa_getenv("HTASCII"), "yes") == 0);
-    }
-    else {
-        if(gTtFontIs850==1) useAscii = 0;
-        else useAscii = 1;
-    }
     keyword = 0;
     last_ch = NoChar;
     last_token = 0;
@@ -333,57 +316,8 @@ unget_char(int c)
     last_ch = c;
 }
 
-int
-get_char()
-{
-    int c;
-
-    c = get_char1();
-    if (useAscii) {
-        switch (c) {
-          case 'Ä':
-            c = '-';
-            break;
-          case 'Ú':
-            c = '+';
-            break;
-          case 'Ã':
-            c = '[';
-            break;
-          case 'À':
-            c = '+';
-            break;
-          case 'Â':
-            c = '-';
-            break;
-          case 'Å':
-            c = '+';
-            break;
-          case 'Á':
-            c = '-';
-            break;
-          case '¿':
-            c = '+';
-            break;
-          case '´':
-            c = ']';
-            break;
-          case 'Ù':
-            c = '+';
-            break;
-          case '³':
-            c = '|';
-            break;
-          default:
-            break;
-        }
-    }
-    return c;
-}
-
 /* return the next character in the input stream */
-static int
-get_char1()
+int get_char()
 {
     int c;
     int cmd;
