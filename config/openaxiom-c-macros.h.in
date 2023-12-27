@@ -161,11 +161,11 @@
 /* The width of the host Lisp and CPU registers. */
 #undef OPENAXIOM_HOST_LISP_PRECISION
 
+/* IFS of the host filesystem. */
+#undef OPENAXIOM_INTERNAL_PATH_SEPARATOR
+
 /* mmap anonymous flag */
 #undef OPENAXIOM_MM_ANONYMOUS_MAP_FLAG
-
-/* Path separator on the host filesystem. */
-#undef OPENAXIOM_PATH_SEPARATOR
 
 /* Whether to use the QT-based GUI interface as driver. */
 #undef OPENAXIOM_USE_GUI
