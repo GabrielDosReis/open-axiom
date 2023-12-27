@@ -39,7 +39,6 @@
 #include "openaxiom-c-macros.h"
 
 #include <errno.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <stdlib.h>

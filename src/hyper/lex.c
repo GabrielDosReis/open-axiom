@@ -55,7 +55,6 @@
 #include "openaxiom-c-macros.h"
 
 #include <ctype.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -71,7 +70,6 @@
 
 using namespace OpenAxiom;
 
-static void spad_error_handler(void );
 static int keyword_type(void );
 
 extern int gTtFontIs850;
@@ -81,7 +79,6 @@ extern HDWindow *gWindow;
 
 StateNode *top_state_node;
 HyperDocPage *gPageBeingParsed;      /* page currently being parsed    */
-jmp_buf jmpbuf;
 char ebuffer[128];
 short int gInSpadsrc = 0;
 short int gInVerbatim;
@@ -362,7 +359,7 @@ AGAIN:
             if (cmd == EndOfPage)
                 return EOF;
             if (cmd == SpadError)
-                spad_error_handler();
+                throw HyperError{};
         }
         get_string_buf(spad_socket, sock_buf, 1023);
         /* this will be null if this is the last time*/
@@ -582,9 +579,7 @@ jump()
 {
     if (gWindow == NULL)
         exit(-1);
-    longjmp(jmpbuf, 1);
-    fprintf(stderr, "(HyperDoc) Long Jump failed, Exiting\n");
-    exit(-1);
+    throw HyperError{};
 }
 
 void
@@ -995,18 +990,6 @@ get_expected_token(int type)
             print_page_and_filename();
             print_next_ten_tokens();
         }
-        longjmp(jmpbuf, 1);
-        fprintf(stderr, "Could not jump to Error Page\n");
-        exit(-1);
+        throw HyperError{};
     }
 }
-
-static void
-spad_error_handler()
-{
-    /* fprintf(stderr, "got a spad error\n"); */
-    longjmp(jmpbuf, 1);
-    fprintf(stderr, "(HyperDoc) Fatal Error: Could not jump to Error Page.\n");
-    exit(-1);
-}
-

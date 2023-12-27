@@ -46,7 +46,6 @@
 #include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
-#include <setjmp.h>
 #include <X11/cursorfont.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -175,9 +174,6 @@ sigcld_handler(int sig)
   wait(&x);
 
 }
-
-extern jmp_buf env;
-
 
 /* Clean up spad sockets on exit */
 void

@@ -51,6 +51,8 @@
 #include "group.h"
 #include "lex.h"
 
+using namespace OpenAxiom;
+
 static void load_patch(PatchStore * patch);
 
 short int gInPaste;
@@ -276,68 +278,65 @@ parse_patch(PasteNode *paste)
     paste->haspaste = 0;
     paste->paste_item = 0;
 
+    try {
+        end_node->next = 0;
+        free_node(old, 1);
 
-    /* set the jump buffer in case it is needed */
-    if (setjmp(jmpbuf)) {
-        /*** OOOPS, an error occurred ****/
+        init_parse_patch(gWindow->page);
+        init_paste_item(paste_item);
+        get_token();
+        if (token.type != openaxiom_Patch_token) {
+            fprintf(stderr, "(HyperDoc) Pastebutton %s was expecting a patch\n",
+                    paste->name);
+            jump();
+        }
+        if (input_type == SourceInputKind::String) {
+            get_token();
+            if (token.type != openaxiom_Lbrace_token) {
+                token_name(token.type);
+                fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
+                print_page_and_filename();
+                jump();
+            }
+
+            get_token();
+            if (token.type != openaxiom_Word_token) {
+                token_name(token.type);
+                fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
+                print_page_and_filename();
+                jump();
+            }
+
+            get_token();
+            if (token.type != openaxiom_Rbrace_token) {
+                token_name(token.type);
+                fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
+                print_page_and_filename();
+                jump();
+            }
+        }
+        new_paste = alloc_node();
+        curr_node = new_paste;
+        parse_HyperDoc();
+
+        /* Once I am back, I need only reallign all the text structures */
+        curr_node->type = openaxiom_Noop_token;
+        curr_node->next = next_node;
+        begin_node->next = new_paste;
+        begin_node->type = openaxiom_Noop_token;
+        free(begin_node->data.text);
+        begin_node->data.text = 0;
+
+        gWindow->fDisplayedWindow = gWindow->fScrollWindow;
+
+        repaste_item();
+
+        paste_page(begin_node);
+    }
+    catch(const HyperError&) {
         fprintf(stderr, "(HyperDoc) Had an error parsing a patch: Goodbye!\n");
         exit(-1);
     }
-
-
-    end_node->next = 0;
-    free_node(old, 1);
-
-    init_parse_patch(gWindow->page);
-    init_paste_item(paste_item);
-    get_token();
-    if (token.type != openaxiom_Patch_token) {
-        fprintf(stderr, "(HyperDoc) Pastebutton %s was expecting a patch\n",
-                paste->name);
-        jump();
-    }
-    if (input_type == SourceInputKind::String) {
-        get_token();
-        if (token.type != openaxiom_Lbrace_token) {
-            token_name(token.type);
-            fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
-            print_page_and_filename();
-            jump();
-        }
-
-        get_token();
-        if (token.type != openaxiom_Word_token) {
-            token_name(token.type);
-            fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
-            print_page_and_filename();
-            jump();
-        }
-
-        get_token();
-        if (token.type != openaxiom_Rbrace_token) {
-            token_name(token.type);
-            fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
-            print_page_and_filename();
-            jump();
-        }
-    }
-    new_paste = alloc_node();
-    curr_node = new_paste;
-    parse_HyperDoc();
-
-    /* Once I am back, I need only reallign all the text structures */
-    curr_node->type = openaxiom_Noop_token;
-    curr_node->next = next_node;
-    begin_node->next = new_paste;
-    begin_node->type = openaxiom_Noop_token;
-    free(begin_node->data.text);
-    begin_node->data.text = 0;
-
-    gWindow->fDisplayedWindow = gWindow->fScrollWindow;
-
-    repaste_item();
-
-    paste_page(begin_node);
 
     /* so now I should just be able to disappear */
     return gWindow->page;

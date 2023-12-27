@@ -42,7 +42,6 @@
 #include <X11/cursorfont.h>
 #include <sys/types.h>
 #include <sys/signal.h>
-#include <setjmp.h>
 #include <sys/time.h>
 
 #include "debug.h"
@@ -60,7 +59,6 @@
 #include "lex.h"
 #include "sockio.h"
 
-jmp_buf env;
 Window gActiveWindow;
 int motion = 0;
 int gNeedIconName = 0;

@@ -42,6 +42,8 @@
 #include "lex.h"
 #include "hyper.h"
 
+using namespace OpenAxiom;
+
 static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , char * db_file);
 static HyperDocPage * make_special_page(int type , const char * name);
 
@@ -625,7 +627,7 @@ find_fp(FilePosition fp)
     ret_val = fseek(lfile, fp.pos, 0);
     if (ret_val == -1) {
         perror("fseeking to a page");
-        longjmp(jmpbuf, 1);
+        throw HyperError{};
     }
 
     /* now set some global values */
