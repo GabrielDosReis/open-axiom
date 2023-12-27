@@ -156,7 +156,7 @@ load_page(HyperDocPage *page)
     }
 }
 
-HyperDocPage *formatpage;
+static HyperDocPage *formatpage;
 
 /* Display a HyperDoc page with the given name, parsing it if needed */
 

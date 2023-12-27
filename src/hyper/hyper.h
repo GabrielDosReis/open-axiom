@@ -93,7 +93,6 @@ extern int window_width(int cols);
 extern void ht2_input(void );
 extern void make_record(void );
 extern void verify_record(void );
-extern char * strCopy(char * s);
 extern void print_paste_line(FILE * pfile , char * str);
 extern void get_spad_output(FILE * pfile , char * command , int com_type);
 extern void get_graph_output(char*, const char*, int);

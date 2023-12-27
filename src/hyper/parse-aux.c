@@ -249,7 +249,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                     }
                     page->fpos.pos = atoi(token.id);
                     get_token();
-                    page->fpos.ln = atoi(token.id);
+                    page->fpos.line_number = atoi(token.id);
                     page->type = UnloadedPageType;
                     hash_insert(page_hash, (char *)page, page->name);
                     pages++;
@@ -274,7 +274,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                     }
                     macro->fpos.pos = atoi(token.id);
                     get_token();
-                    macro->fpos.ln = atoi(token.id);
+                    macro->fpos.line_number = atoi(token.id);
                     macro->loaded = 0;
                     hash_insert(macro_hash, (char *)macro, macro->name);
                     break;
@@ -286,7 +286,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                     get_token();
                     patch->fpos.pos = atoi(token.id);
                     get_token();
-                    patch->fpos.ln = atoi(token.id);
+                    patch->fpos.line_number = atoi(token.id);
                     if (hash_find(patch_hash, patch->name) != NULL) {
                         fprintf(stderr, "(HyperDoc) Patch name %s  occurred twice\n", patch->name);
                         fprintf(stderr, "(HyperDoc) The version in %s is being ignored \n",
@@ -632,6 +632,6 @@ find_fp(FilePosition fp)
 
     /* now set some global values */
     page_start_fpos = fp.pos;
-    line_number = fp.ln;
+    line_number = fp.line_number;
     return lfile;
 }

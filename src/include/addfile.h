@@ -40,7 +40,7 @@
 
 extern FILE* db_file_open(char*);
 extern void extend_ht(char*);
-extern FILE* ht_file_open(char*, char*, char*);
+extern FILE* ht_file_open(char*, char*, const char*);
 extern FILE* temp_file_open(char*);
 
 extern char* gDatabasePath;

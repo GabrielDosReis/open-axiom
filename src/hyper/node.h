@@ -170,9 +170,9 @@ struct ImageStruct {
 /* Structure for locating HyperDoc pages in a source file */
 
 struct FilePosition {
-   char *name;           /* file name */
-   long  pos;            /* position in file */
-   int   ln;             /* the line number */
+   const char* name;       // file name
+   long  pos;              // offset from the beginning of the file
+   int   line_number;      // the line number
 };
 
 /*** The structure needed for storing a macro **/

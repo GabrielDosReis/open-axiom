@@ -679,7 +679,7 @@ free_patch(PatchStore *p)
     if (p->name)
       free(p->name);
     if (p->fpos.name)
-      free(p->fpos.name);
+      free(const_cast<char*>(p->fpos.name));
     if (p->string)
       free(p->string);
     free(p);
