@@ -53,8 +53,6 @@ using namespace OpenAxiom;
 static int build_ht_filename(char*, char*, const char*);
 static int pathname(const char*);
 
-char *gDatabasePath = NULL;
-
 /* Return non-zero if the string T is a postfix of S.  */
 static int
 strpostfix(const char *s, const char *t)
@@ -217,83 +215,6 @@ ht_file_open(char *fname, char *aname, const char *name)
     }
     return (ht_fp);
 }
-
-/*
- * This function is responsible for actually opening the database file. For the
- * moment it gets the $AXIOM environment variable, and appends to it
- * "share/hypertex/ht.db", and then opens it
- */
-
-/*
- * Modified on 12/3/89 to take a second argument. This argument tells the
- * open routine whether it is reading the db file, or writing it. If writing
- * is true, then I should check to insure I have proper write access.
- * -JMW
- */
-
-/*
- * Modified again on 12/9/89 so that it now uses HTPATH as the path name. Now
- * it initially loads up the path name into a static variable. Then upon
- * every trip, it gets the next ht.db found. It returns NULL when no ht.db is
- * found. -JMW
- */
-
-
-FILE *
-db_file_open(char *db_file)
-{
-    static char *db_path_trace = NULL;
-    char *db_file_trace;
-    FILE *db_fp;
-    char *spad;
-
-    /*
-     * The first time through is the only time this could be true. If so, then
-     * create the default HTPATH for gDatabasePath.
-     */
-/*    fprintf(stderr,"addfile:db_file_open: entered db_file=%s\n",db_file);*/
-    if (gDatabasePath == NULL) {
-        gDatabasePath = oa_getenv("HTPATH");
-        if (gDatabasePath == NULL) {
-            spad = oa_getenv("AXIOM");
-            if (spad == NULL) {
-/*                fprintf(stderr,
-                   "addfile:db_file_open: Cannot find ht data base path:\n");*/
-                exit(-1);
-            }
-            gDatabasePath = (char *) halloc(sizeof(char) * 1024, "db_file_open");
-            strcpy(gDatabasePath, spad);
-            strcat(gDatabasePath, "/share/hypertex/pages");
-        }
-        db_path_trace = gDatabasePath;
-    }
-/*fprintf(stderr,"addfile:db_file_open: db_path_trace=%s\n",db_path_trace);*/
-    /*
-     * Now Loop until I find one with okay filename
-     */
-
-    for (db_fp = NULL; db_fp == NULL && *db_path_trace != '\0';) {
-        for (db_file_trace = db_file; *db_path_trace != ':' &&
-             *db_path_trace != '\0'; db_path_trace++)
-            *db_file_trace++ = *db_path_trace;
-        *db_file_trace = '\0';
-        strcat(db_file_trace, "/ht.db");
-/*fprintf(stderr,"addfile:db_file_open: db_file_trace=%s\n",db_file_trace);*/
-/*fprintf(stderr,"addfile:db_file_open: db_file=%s\n",db_file);*/
-
-        db_fp = fopen(db_file, "r");
-
-        if (*db_path_trace != '\0')
-            db_path_trace++;
-    }
-/*    if (db_fp == NULL)
-      fprintf(stderr,"addfile:db_file_open: exit (null)\n");
-    else
-      fprintf(stderr,"addfile:db_file_open: exit opened\n");
-*/
-    return (db_fp);
-}
-
 
 FILE *
 temp_file_open(char *temp_db_file)

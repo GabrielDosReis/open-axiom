@@ -90,7 +90,7 @@ addtopath(char *dir)
 {
    std::string newpath = oa_getenv("PATH");
    if (not newpath.empty())
-      newpath += OPENAXIOM_PATH_SEPARATOR;
+      newpath += OPENAXIOM_INTERNAL_PATH_SEPARATOR;
    newpath += dir;
    return setenv("PATH", copy_c_str(newpath), 1);
 }

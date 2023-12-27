@@ -18158,7 +18158,7 @@ esac
 
 # Path separator
 
-printf "%s\n" "#define OPENAXIOM_PATH_SEPARATOR \"$PATH_SEPARATOR\"" >>confdefs.h
+printf "%s\n" "#define OPENAXIOM_INTERNAL_PATH_SEPARATOR \"$PATH_SEPARATOR\"" >>confdefs.h
 
 # What is the extension of object and executable files on this platform?
 

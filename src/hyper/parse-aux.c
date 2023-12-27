@@ -34,6 +34,10 @@
 */
 
 #include "openaxiom-c-macros.h"
+
+#include <vector>
+#include <string>
+
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -41,10 +45,11 @@
 #include "addfile.h"
 #include "lex.h"
 #include "hyper.h"
+#include "cfuns.h"
 
 using namespace OpenAxiom;
 
-static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , char * db_file);
+static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , const std::string& db_file);
 static HyperDocPage * make_special_page(int type , const char * name);
 
 extern int make_input_file;
@@ -87,20 +92,45 @@ window_id(Window w)
     return (ret);
 }
 
+// Sequence of directory pathnames.
+using HTDirectories = std::vector<std::string>;
+
+// Return a sequuence of pathnames for directories potentially
+// containing `ht.db` files, as indicated by the environment variables
+// `HTPATH` or `AXIOM`. The value of `HTPATH` maybe a sequence of directories
+// separated by the host's filesystem path separator.
+static HTDirectories get_ht_db_directories()
+{
+    // FIXME: Handle Windows filesystem path peculiarities.
+    constexpr auto strip_slash = [](auto cur) {
+        return *cur == '/' ? --cur : cur;
+    };
+    HTDirectories dirs {};
+    if (auto cur = oa_getenv("HTPATH")) {
+        auto start = cur;
+        while (*cur != '\0') {
+            if (*cur == OPENAXIOM_INTERNAL_PATH_SEPARATOR[0]) {
+                dirs.emplace_back(start, strip_slash(cur));
+                start = cur + 1;
+            }
+            ++cur;
+        }
+        if (start < cur)
+            dirs.emplace_back(start, strip_slash(cur));
+    }
+    else if (auto root = oa_getenv("AXIOM")) {
+        dirs.push_back(std::string{root} + "/share/hypertex/pages");
+    }
+
+    return dirs;
+}
+
 /*
- * This procedure reads the ht database. It makes repeated calls to
- * db_file_open, and while the returned pointer is not null, it continues to
- * read the presented data base files
+ * This procedure reads the ht database. 
  */
 void
 read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
 {
-    FILE *db_fp;
-    char db_file[256];
-    int i = 0;
-
-    gDatabasePath = NULL;
-
     hash_init(
               page_hash, 
               PageHashSize, 
@@ -124,19 +154,37 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
               (EqualFunction) string_equal, 
               (HashcodeFunction) string_hash);
 
-    while ((db_fp = db_file_open(db_file)) != NULL) {
-        i++;
-        read_ht_file(page_hash, macro_hash, patch_hash, db_fp, db_file);
+    int i = 0;
+    for (auto& dir : get_ht_db_directories()) {
+        auto path = dir + "/ht.db";
+        auto db_fp = fopen(path.c_str(), "r");
+        if (db_fp == nullptr)
+            continue;
+        ++i;
+        read_ht_file(page_hash, macro_hash, patch_hash, db_fp, path);
         fclose(db_fp);
     }
 
-    if (!i) {
+    if (i == 0) {
         fprintf(stderr, 
           "(HyperDoc) read_ht_db: No %s file found\n", db_file_name);
         exit(-1);
     }
 
     free_hash(&ht_gFileHashTable, (FreeFunction)free_string);
+}
+
+// If `file` is not absolute, build a pathname for it under directory `dir`.
+// Note: The argument for the `file` parameter is assumed to have been
+//       obtained via `alloc_string`, so that the return value of this
+//       function always lies in the same lifetime.
+static const char* ht_filepath_if_not_absolute(const char* file, const std::string& dir)
+{
+    // FIXME: Handle Windows filesystem path peculiarities.
+    if (file[0] == '/')
+        return file;
+    auto path = dir + '/' + file;
+    return alloc_string(path.c_str());
 }
 
 /*
@@ -148,37 +196,20 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
 
 static void
 read_ht_file(HashTable *page_hash, HashTable *macro_hash, 
-             HashTable *patch_hash, FILE *db_fp, char *db_file)
+             HashTable *patch_hash, FILE *db_fp, const std::string& db_file)
 {
-    char filename[256];
-    char *fullname = filename;
     UnloadedPage *page;
     MacroStore *macro;
     PatchStore *patch;
     int pages = 0, c, mtime, ret_val;
     struct stat fstats;
-    /*short time_ok = 1;*/
-/*    fprintf(stderr,"parse_aux:read_ht_file: dp_file=%s\n",db_file);*/
     cfile = db_fp;
     init_scanner();
-    ret_val = strlen(db_file) - 1;
-    for (; ret_val >= 0; ret_val--)
-        if (db_file[ret_val] == '/') {
-            db_file[ret_val] = '\0';
-            break;
-        }
     c = getc(db_fp);
     do {
         if (c == '\t') {
             get_filename();
-            fullname = alloc_string(token.id);
-            if (fullname[0] != '/') {
-                strcpy(filename, db_file);
-                strcat(filename, "/");
-                strcat(filename, fullname);
-                free(fullname);
-                fullname = alloc_string(filename);
-            }
+            auto fullname = ht_filepath_if_not_absolute(token.id, db_file);
 
             /*
              * Until I get a filename that I have not seen before, just keep
@@ -191,18 +222,11 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                 if (c == EOF)
                     return;
                 get_filename();
-                fullname = alloc_string(token.id);
-                if (fullname[0] != '/') {
-                    strcpy(filename, db_file);
-                    strcat(filename, "/");
-                    strcat(filename, fullname);
-                    free(fullname);
-                    fullname = alloc_string(filename);
-                }
+                fullname = ht_filepath_if_not_absolute(token.id, db_file);
             }
 /*          fprintf(stderr,"parse_aux:read_ht_file: fullname=%s\n",fullname);*/
             /* If I got here, then I must have a good filename  */
-            hash_insert(&ht_gFileHashTable, fullname, fullname);
+            hash_insert(&ht_gFileHashTable, const_cast<char*>(fullname), fullname);
 
             ret_val = stat(fullname, &fstats);
             if (ret_val == -1) {
