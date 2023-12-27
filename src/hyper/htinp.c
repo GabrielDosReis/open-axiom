@@ -55,11 +55,11 @@ extern int make_patch_files;
 extern int kill_spad;
 
 static void make_input_file_list(void );
-static char * make_input_file_name(char * buf , char * filename);
+static char * make_input_file_name(char* buf , const char* filename);
 static char * make_paste_file_name(char * buf , char * filename);
 static void make_the_input_file(UnloadedPage * page);
 static void make_input_file_from_page(HyperDocPage * page);
-static int inListAndNewer(char * inputFile , char * htFile);
+static int inListAndNewer(const char* inputFile , const char* htFile);
 static void print_paste(FILE*, char* , char*, const char*, int);
 static void print_graph_paste(FILE*, char*, char* , const char*, int);
 static void send_command(char * command , int com_type);
@@ -139,7 +139,7 @@ ht2_input()
 }
 
 static char *
-make_input_file_name(char *buf, char *filename)
+make_input_file_name(char *buf, const char *filename)
 {
     char *b, *c;
 
@@ -273,8 +273,7 @@ make_input_file_from_page(HyperDocPage *page)
   }
 }
 
-char *
-strCopy(char *s)
+static char* strCopy(const char *s)
 {
     char *b = halloc(strlen(s) + 1,"String");
 
@@ -283,7 +282,7 @@ strCopy(char *s)
 }
 
 static int
-inListAndNewer(char *inputFile, char *htFile)
+inListAndNewer(const char* inputFile, const char* htFile)
 {
     int ret_val, found = 0, i;
     struct stat htBuf, inputBuf;

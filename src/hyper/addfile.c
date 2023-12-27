@@ -50,8 +50,8 @@
 using namespace OpenAxiom;
 
 
-static int build_ht_filename(char*, char*, char*);
-static int pathname(char*);
+static int build_ht_filename(char*, char*, const char*);
+static int pathname(const char*);
 
 char *gDatabasePath = NULL;
 
@@ -86,11 +86,11 @@ extend_ht(char *name)
  */
 
 static int
-build_ht_filename(char *fname, char *aname, char *name)
+build_ht_filename(char *fname, char *aname, const char* name)
 {
     char *c_dir;
     char *HTPATH;
-    char *trace;
+    const char *trace;
     char *trace2;
     int ht_file;
 
@@ -166,10 +166,11 @@ build_ht_filename(char *fname, char *aname, char *name)
         extend_ht(aname);
         for (ht_file = -1, trace2 = HTPATH;
              ht_file == -1 && *trace2 != '\0';) {
-            for (trace = fname; *trace2 != '\0' && (*trace2 != ':');)
-                *trace++ = *trace2++;
-            *trace++ = '/';
-            *trace = 0;
+            char* ptr = fname;
+            while (*trace2 != '\0' && (*trace2 != ':'))
+                *ptr++ = *trace2++;
+            *ptr++ = '/';
+            *ptr = 0;
             if (!strcmp(fname, "./")) {
                 /** The person wishes me to check the current directory too **/
                c_dir = oa_getcwd();
@@ -186,8 +187,7 @@ build_ht_filename(char *fname, char *aname, char *name)
     }
 }
 
-static int
-pathname(char *name)
+static int pathname(const char* name)
 {
     while (*name)
         if (*name++ == '/')
@@ -199,7 +199,7 @@ pathname(char *name)
 /** This procedure opens the proper HT file **/
 
 FILE *
-ht_file_open(char *fname, char *aname, char *name)
+ht_file_open(char *fname, char *aname, const char *name)
 {
     FILE *ht_fp;
     int ret_value;
