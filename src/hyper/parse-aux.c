@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2016, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reverved.
 
   Redistribution and use in source and binary forms, with or without
@@ -156,6 +156,7 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
               (EqualFunction) string_equal, 
               (HashcodeFunction) string_hash);
     HTEnvironment env { page_hash, macro_hash, patch_hash };
+    env.ht_files.reserve(FileHashSize);
 
     int i = 0;
     for (auto& dir : get_ht_db_directories()) {
@@ -637,22 +638,22 @@ get_where()
 }
 
 
-FILE *
-find_fp(FilePosition fp)
+FILE* find_fp(const FilePosition& fp)
 {
-    FILE *lfile;
     char fullname[256], addname[256];
     int ret_val;
 
     /* find the source file in the file hash table, if not there, open it */
-    lfile = (FILE *) hash_find(&gFileHashTable, fp.name);
-    if (lfile == NULL) {
-        lfile = ht_file_open(fullname, addname, fp.name);
-        hash_insert(&gFileHashTable, (char *)lfile, fp.name);
+    FILE* file = nullptr;
+    if (auto ptr = gFileHashTable.find(fp.name); ptr != gFileHashTable.end())
+        file = ptr->second;
+    else {
+        file = ht_file_open(fullname, addname, fp.name);
+        gFileHashTable.emplace(fp.name, file);
     }
 
     /* seek to beginning fp.pos */
-    ret_val = fseek(lfile, fp.pos, 0);
+    ret_val = fseek(file, fp.pos, 0);
     if (ret_val == -1) {
         perror("fseeking to a page");
         throw HyperError{};
@@ -661,5 +662,5 @@ find_fp(FilePosition fp)
     /* now set some global values */
     page_start_fpos = fp.pos;
     line_number = fp.line_number;
-    return lfile;
+    return file;
 }

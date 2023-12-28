@@ -67,7 +67,7 @@ extern InputItem * current_item();
 extern int already_there(char * name);
 extern void parse_radioboxes();
 extern void add_dependencies(void );
-extern FILE * find_fp(FilePosition fp);
+extern FILE* find_fp(const FilePosition& fp);
 extern char * get_input_string(void );
 extern HyperLink * make_link_window(TextNode * link_node , int type , int isSubWin);
 extern HyperLink * make_paste_window(PasteNode * paste);

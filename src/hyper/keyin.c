@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -133,7 +133,6 @@ handle_key(XEvent *event)
   /*char *blank1 = "                                        ";*/
   /*char *blank2 = "                                       \n";*/
   char buffer[180];
-  FILE *filehandle;
 
   charcount = XLookupString((XKeyEvent *)event, key_buffer, key_buffer_size, &keysym ,&compstatus); /* 5 args */
 
@@ -157,9 +156,10 @@ handle_key(XEvent *event)
       filename = gWindow->page->filename;
       sprintf(buffer, "htadd -l %s\n", filename);
       system(buffer);
-      filehandle = (FILE *) hash_find(&gFileHashTable, filename);
-      fclose(filehandle);
-      hash_delete(&gFileHashTable, filename);
+      if (auto ptr = gFileHashTable.find(filename); ptr != gFileHashTable.end()) {
+          fclose(ptr->second);
+          gFileHashTable.erase(ptr);
+      }
       gWindow->fMacroHashTable =
         (HashTable *) halloc(sizeof(HashTable), "macro hash");
       hash_init(

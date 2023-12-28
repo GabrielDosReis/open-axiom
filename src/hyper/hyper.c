@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,6 @@ using namespace OpenAxiom;
 static void init_hash();
 static void make_server_connections();
 static void check_arguments();
-static void init_hash();
 static void make_server_connections();
 static void check_arguments();
 
@@ -108,7 +107,7 @@ Cursor gActiveCursor;          /* The cursor in active regions           */
 Cursor gBusyCursor;            /* The clock cursor for when I am busy    */
 
 
-HashTable gFileHashTable;            /* hash table of HyperDoc files */
+OpenAxiom::OpenHTFileTable gFileHashTable;            /* hash table of HyperDoc files */
 HashTable gImageHashTable;           /* hash table for images */
 
 
@@ -318,10 +317,7 @@ main(int argc, char **argv)
 static void
 init_hash()
 {
-    hash_init(&gFileHashTable, 
-              FileHashSize,
-              (EqualFunction)string_equal, 
-              (HashcodeFunction) string_hash);
+    gFileHashTable.reserve(FileHashSize);
     hash_init(&gSessionHashTable, 
               SessionHashSize, 
               (EqualFunction) window_equal, 
