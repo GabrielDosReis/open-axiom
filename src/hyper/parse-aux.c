@@ -638,8 +638,7 @@ get_where()
 }
 
 
-FILE *
-find_fp(FilePosition fp)
+FILE* find_fp(const FilePosition& fp)
 {
     char fullname[256], addname[256];
     int ret_val;
