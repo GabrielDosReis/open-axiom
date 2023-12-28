@@ -37,6 +37,8 @@
 
 #include <vector>
 #include <string>
+#include <unordered_set>
+#include <string_view>
 
 #include "debug.h"
 #include "halloc.h"
@@ -49,7 +51,16 @@
 
 using namespace OpenAxiom;
 
-static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , const std::string& db_file);
+namespace {
+    struct HTEnvironment {
+        HashTable* pages { };
+        HashTable* macros { };
+        HashTable* patches { };
+        std::unordered_set<std::string_view> ht_files { };
+    };
+}
+
+static void read_ht_file(HTEnvironment& env, FILE * db_fp , const std::string& db_file);
 static HyperDocPage * make_special_page(int type , const char * name);
 
 extern int make_input_file;
@@ -57,8 +68,6 @@ extern int gverify_dates;
 
 InputBox *rb_list;
 InputBox *end_rb_list;
-
-HashTable ht_gFileHashTable;
 
 #define htfhSize 100
 
@@ -146,13 +155,7 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
               PatchHashSize, 
               (EqualFunction) string_equal, 
               (HashcodeFunction) string_hash);
-
-    /* Lets initialize the FileHashTable         */
-    hash_init(
-              &ht_gFileHashTable, 
-              htfhSize, 
-              (EqualFunction) string_equal, 
-              (HashcodeFunction) string_hash);
+    HTEnvironment env { page_hash, macro_hash, patch_hash };
 
     int i = 0;
     for (auto& dir : get_ht_db_directories()) {
@@ -161,7 +164,7 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
         if (db_fp == nullptr)
             continue;
         ++i;
-        read_ht_file(page_hash, macro_hash, patch_hash, db_fp, path);
+        read_ht_file(env, db_fp, path);
         fclose(db_fp);
     }
 
@@ -170,8 +173,6 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
           "(HyperDoc) read_ht_db: No %s file found\n", db_file_name);
         exit(-1);
     }
-
-    free_hash(&ht_gFileHashTable, (FreeFunction)free_string);
 }
 
 // If `file` is not absolute, build a pathname for it under directory `dir`.
@@ -195,14 +196,17 @@ static const char* ht_filepath_if_not_absolute(const char* file, const std::stri
  */
 
 static void
-read_ht_file(HashTable *page_hash, HashTable *macro_hash, 
-             HashTable *patch_hash, FILE *db_fp, const std::string& db_file)
+read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
 {
     UnloadedPage *page;
     MacroStore *macro;
     PatchStore *patch;
     int pages = 0, c, mtime, ret_val;
     struct stat fstats;
+    auto page_hash = env.pages;
+    auto macro_hash = env.macros;
+    auto patch_hash = env.patches;
+
     cfile = db_fp;
     init_scanner();
     c = getc(db_fp);
@@ -215,7 +219,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
              * Until I get a filename that I have not seen before, just keep
              * reading
              */
-            while (hash_find(&ht_gFileHashTable, fullname) != NULL) {
+            while (env.ht_files.contains(fullname)) {
                 do {
                     c = getc(db_fp);
                 } while ((c != EOF) && (c != '\t'));
@@ -226,7 +230,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
             }
 /*          fprintf(stderr,"parse_aux:read_ht_file: fullname=%s\n",fullname);*/
             /* If I got here, then I must have a good filename  */
-            hash_insert(&ht_gFileHashTable, const_cast<char*>(fullname), fullname);
+            env.ht_files.insert(fullname);
 
             ret_val = stat(fullname, &fstats);
             if (ret_val == -1) {
