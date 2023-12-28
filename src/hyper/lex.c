@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,21 +34,25 @@
 */
 
 /*
- * Lexical analyzer stuff. Exported functions: parser_init()       --
- * initialize the parser tables with keywords init_scanner()       --
- * initialize scanner for reading a new page get_token()                   --
- * sets the "token" variable to be the next -- token in the current input
- * stream save_scanner_state(   )  -- save the current state of scanner so
- * that -- the scanner input mode may be switched restore_scanner_state() --
- * undo the saved state
+ * Lexical analyzer stuff. Exported functions: 
+ * -- parser_init(): 
+ *    initialize the parser tables with keywords 
+ * -- init_scanner():
+ *    initialize scanner for reading a new page 
+ * -- get_token():
+ *    sets the "token" variable to be the next token in the current input
+ *    stream 
+ * -- OpenAxiom::IOStateManager:
+ *    save the current state of scanner so that the scanner input mode may 
+ *    be switched and then undo the saved state
  *
  * Note: The scanner reads from three seperate input locations depending on the
  * value of the variable "input_type".  If this variable is:
  *
- * FromFile       -- it read from the file pointed to by "cfile". FromString
- * -- It reads from the string "input_string". FromSpadSocket -- It reads
- * from the socket pointed to by spad_socket FromFD       -- It reads from a
- * file descriptor
+ * -- FromFile: it read from the file pointed to by "cfile".
+ * -- FromString: It reads from the string "input_string". 
+ * -- FromSpadSocket: It reads from the socket pointed to by spad_socket.
+ * -- FromFD: It reads from a file descriptor.
  *
  */
 #define _LEX_C
@@ -57,6 +61,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stack>
+#include <vector>
 
 #include "debug.h"
 #include "sockio.h"
@@ -75,9 +81,25 @@ static int keyword_type(void );
 extern int gTtFontIs850;
 extern HDWindow *gWindow;
 
+/** I am implementing a state node stack, this is the structure I store **/
 
+struct IOState {
+   int last_ch, last_token;
+   int line_number;
+   SourceInputKind input_type;
+   long fpos, keyword_fpos;
+   long page_start_fpos;
+   Token token;
+   char *input_string;
+   FILE *cfile;
+   int keyword;
+};
 
-StateNode *top_state_node;
+using IOStateStack = std::stack<IOState, std::vector<IOState>>;
+
+/** The stack of IOStates. **/
+static IOStateStack io_states;
+
 HyperDocPage *gPageBeingParsed;      /* page currently being parsed    */
 char ebuffer[128];
 short int gInSpadsrc = 0;
@@ -258,50 +280,45 @@ init_scanner()
  */
 
 /* save the current state of the scanner */
-void
-save_scanner_state()
+OpenAxiom::IOStateManager::IOStateManager()
 {
-    StateNode *new_item = (StateNode *) halloc((sizeof(StateNode)), "StateNode");
-
+    io_states.push({});
+    auto new_item = &io_states.top();
     new_item->page_start_fpos = page_start_fpos;
     new_item->fpos = fpos;
     new_item->keyword_fpos = keyword_fpos;
+    new_item->line_number = line_number;
     new_item->last_ch = last_ch;
     new_item->last_token = last_token;
     new_item->token = token;
     new_item->input_type = input_type;
     new_item->input_string = input_string;
     new_item->cfile = cfile;
-    new_item->next = top_state_node;
     new_item->keyword = keyword;
-    top_state_node = new_item;
 }
 
 /* restore the saved scanner state */
-void
-restore_scanner_state()
+OpenAxiom::IOStateManager::~IOStateManager()
 {
-    StateNode *x = top_state_node;
-
-    if (top_state_node == NULL) {
+    if (io_states.empty()) {
         fprintf(stderr, "Restore Scanner State: State empty\n");
         exit(-1);
     }
-    top_state_node = top_state_node->next;
-    page_start_fpos = x->page_start_fpos;
-    fpos = x->fpos;
-    keyword_fpos = x->keyword_fpos;
-    last_ch = x->last_ch;
-    last_token = x->last_token;
-    token = x->token;
-    input_type = x->input_type;
-    input_string = x->input_string;
-    cfile = x->cfile;
-    keyword = x->keyword;
+    auto x = io_states.top();
+    io_states.pop();
+    page_start_fpos = x.page_start_fpos;
+    fpos = x.fpos;
+    keyword_fpos = x.keyword_fpos;
+    line_number = x.line_number;
+    last_ch = x.last_ch;
+    last_token = x.last_token;
+    token = x.token;
+    input_type = x.input_type;
+    input_string = x.input_string;
+    cfile = x.cfile;
+    keyword = x.keyword;
     if (cfile != NULL)
         fseek(cfile, fpos + page_start_fpos, 0);
-    /** Once that is done, lets throw away some memory **/
-    free(x);
 }
 
 /* return the character to the input stream. */

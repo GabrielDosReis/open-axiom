@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2016, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -230,13 +230,12 @@ format_page(UnloadedPage *ulpage)
 void
 parse_from_string(char *str)
 {
-    save_scanner_state();
+    OpenAxiom::IOStateManager save_io_state { };
     last_ch = NoChar;
     last_token = 0;
     input_string = str;
     input_type = SourceInputKind::String;
     parse_HyperDoc();
-    restore_scanner_state();
 }
 
 static void
