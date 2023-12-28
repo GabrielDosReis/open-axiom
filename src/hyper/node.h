@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -76,26 +76,6 @@ struct PasteNode;
 #define Header    2
 #define Footer    3
 #define Title     4
-
-
-
-/** I am implementing a state node stack, this is the structure I store **/
-
-struct StateNode {
-   int last_ch, last_token;
-   SourceInputKind input_type;
-   long fpos, keyword_fpos;
-   long page_start_fpos;
-   Token token;
-   char *input_string;
-   FILE *cfile;
-   int keyword;
-   StateNode *next;
-};
-
-/** pointer to the top of the state node graph **/
-extern StateNode *top_state_node;
-
 
 /* structure for a hyper text link */
 struct HyperLink {

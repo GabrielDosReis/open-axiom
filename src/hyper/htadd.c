@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -320,9 +320,11 @@ update_db(FILE *db, FILE *temp_db, FILE *new_file,
             get_token();
             mtime = atoi(token.id);
             if (strcmp(fname, addname) == 0) {
-                save_scanner_state();
-                add_new_pages(temp_db, new_file, addname, fullname);
-                restore_scanner_state();
+                // Temporarily save IO state, add the new pages, and restore.
+                {
+                    OpenAxiom::IOStateManager save_io_state { };
+                    add_new_pages(temp_db, new_file, addname, fullname);
+                }
                 file_there = 1;
                 while ((c = get_char()) != EOF) {
                     if (c == '\t')

@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -349,9 +349,8 @@ load_patch(PatchStore *patch)
     int size = 0;
     int limsize;
     char *trace;
+    OpenAxiom::IOStateManager save_io_state { };
 
-
-    save_scanner_state();
     cfile = find_fp(patch->fpos);
 
     init_scanner();
@@ -377,7 +376,6 @@ load_patch(PatchStore *patch)
         *trace++ = getc(cfile);
     *trace = '\0';
     patch->loaded = 1;
-    restore_scanner_state();
 }
 
 

@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,19 @@
 #define KEYTYPE    2    /* unrecognized keyword found in lex.c */
 #define Numerrors  2
 
+namespace OpenAxiom {
+  // Type of IO state stack.  Used to automate save/restore of IO states.
+  struct IOStateManager {
+    IOStateManager();
+    IOStateManager(const IOStateManager&) = delete;
+    IOStateManager(IOStateManager&&) = delete;
+    ~IOStateManager();
+  };
+}
+
 extern void get_expected_token(int);
 extern void parser_init();
 extern void init_scanner();
-extern void save_scanner_state();
-extern void restore_scanner_state();
 extern void unget_char(int);
 extern int get_char();
 extern void unget_token();
