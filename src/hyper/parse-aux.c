@@ -60,7 +60,7 @@ namespace {
     };
 }
 
-static void read_ht_file(HTEnvironment& env, FILE * db_fp , const std::string& db_file);
+static void read_ht_files(HTEnvironment& env, FILE * db_fp , const std::string& dir);
 static HyperDocPage * make_special_page(int type , const char * name);
 
 extern int make_input_file;
@@ -165,7 +165,7 @@ read_ht_db(HashTable *page_hash, HashTable *macro_hash, HashTable *patch_hash)
         if (db_fp == nullptr)
             continue;
         ++i;
-        read_ht_file(env, db_fp, path);
+        read_ht_files(env, db_fp, dir);
         fclose(db_fp);
     }
 
@@ -197,7 +197,7 @@ static const char* ht_filepath_if_not_absolute(const char* file, const std::stri
  */
 
 static void
-read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
+read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
 {
     UnloadedPage *page;
     MacroStore *macro;
@@ -214,7 +214,7 @@ read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
     do {
         if (c == '\t') {
             get_filename();
-            auto fullname = ht_filepath_if_not_absolute(token.id, db_file);
+            auto fullname = ht_filepath_if_not_absolute(token.id, dir);
 
             /*
              * Until I get a filename that I have not seen before, just keep
@@ -227,9 +227,8 @@ read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
                 if (c == EOF)
                     return;
                 get_filename();
-                fullname = ht_filepath_if_not_absolute(token.id, db_file);
+                fullname = ht_filepath_if_not_absolute(token.id, dir);
             }
-/*          fprintf(stderr,"parse_aux:read_ht_file: fullname=%s\n",fullname);*/
             /* If I got here, then I must have a good filename  */
             env.ht_files.insert(fullname);
 
@@ -244,7 +243,7 @@ read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
             get_token();
             mtime = atoi(token.id);
             if (gverify_dates & (fstats.st_mtime > mtime)) {
-                fprintf(stderr, "(HyperDoc) read_ht_file: HyperDoc file %s has been updated\n",
+                fprintf(stderr, "(HyperDoc) read_ht_files: HyperDoc file %s has been updated\n",
 
                         fullname);
                 fprintf(stderr, "(HyperDoc) Issue htadd %s to update database\n", fullname);
@@ -335,8 +334,6 @@ read_ht_file(HTEnvironment& env, FILE *db_fp, const std::string& db_file)
         else
             c = getc(db_fp);
     } while (c != EOF);
-/*    fprintf(stderr,
-     "parse_aux:read_ht_file:read %d pages from database\n", pages); */
 }
 
 
