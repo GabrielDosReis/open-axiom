@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2016, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,13 +41,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
-
+#include <unordered_map>
+#include <string_view>
 
 #include "com.h"
 #include "token.h"
 #include "hash.h"
 #include "node.h"
 #include "pixmap.h"
+
+namespace OpenAxiom {
+  // Mapping of HT filepath to stream handle. 
+  using OpenHTFileTable = std::unordered_map<std::string_view, FILE*>;
+}
 
 extern void sigusr2_handler(int sig);
 extern void sigcld_handler(int sig);
@@ -165,7 +171,7 @@ extern int gIsEndOfOutput;
 extern HDWindow *gWindow;
 extern OpenAxiom::openaxiom_sio *session_server;
 extern OpenAxiom::openaxiom_sio *spad_socket;
-extern HashTable gFileHashTable;
+extern OpenAxiom::OpenHTFileTable gFileHashTable;
 extern HashTable gImageHashTable;           /* A global hash table for images */
 extern openaxiom_cursor gNormalCursor; /* The normal mouse cursor. */
 extern openaxiom_cursor gActiveCursor; /* The cursor in active regions. */
