@@ -68,8 +68,6 @@ struct RadioBoxes;
 struct GroupItem;
 struct PasteNode;
 
-#define Scrollupbutton     1
-#define Scrolldownbutton   2
 #define Noopbutton         6
 
 #define Scrolling 1
@@ -79,7 +77,7 @@ struct PasteNode;
 
 /* structure for a hyper text link */
 struct HyperLink {
-   int type;                   /* Memolink, Spadlink, Downlink etc. */
+   OpenAxiom::TokenType type;                   /* Memolink, Spadlink, Downlink etc. */
    openaxiom_window win;       /* X11 window containing active area */
    union {
       TextNode *node;     /* ID of link to which link refers */
@@ -120,7 +118,7 @@ struct PasteNode {
 /* Structure for formatted hypertext */
 
 struct TextNode {
-   short  type;                  /* type of node (text, link, etc.) */
+   OpenAxiom::TokenType  type;                  /* type of node (text, link, etc.) */
    int x,y, width, height;       /* relative location on screen */
    int space;                    /* was there space in front of me ? */
    union {
@@ -234,7 +232,7 @@ struct ButtonList {
 /* Stucture for unformatted hyper text page */
 
 struct HyperDocPage {
-   short type;                   /* Normal, Quitbutton, Upbutton etc.       */
+   OpenAxiom::TokenType type;                   /* Normal, Quitbutton, Upbutton etc.       */
    const char *name;             /* ID of page                              */
    char *filename;               /* The name of the file in which the page
                                     occurs, Null if not                     */
@@ -261,7 +259,7 @@ struct HyperDocPage {
 /* Structure for an unloaded page */
 
 struct UnloadedPage {
-   short type;                   /* indicator of unloaded page */
+   OpenAxiom::TokenType type;                   /* indicator of unloaded page */
    char *name;                   /* name of page */
    FilePosition fpos;            /* where to find the page */
 };
@@ -364,16 +362,6 @@ using ParameterList = parameter_list_type*;
 #define NoChar   -9999
 #define db_file_name "ht.db"
 
-
-/* Types of HyperDoc pages */
-
-#define UlUnknownPage    9993 /*I hate this hack, but I have to know whether*/
-#define UnknownPage      9994 /*this page has been loaded or not.           */
-#define ErrorPage        9995
-#define Unixfd           9996
-#define SpadGen          9997
-#define Normal           9998
-#define UnloadedPageType 9999
 
 /* Commands from Axiom */
 

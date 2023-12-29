@@ -52,15 +52,15 @@ namespace OpenAxiom {
   };
 }
 
-extern void get_expected_token(int);
+extern void get_expected_token(OpenAxiom::TokenType);
 extern void parser_init();
 extern void init_scanner();
 extern void unget_char(int);
 extern int get_char();
 extern void unget_token();
 extern int get_token();
-extern void push_be_stack(int, const char*);
-extern void check_and_pop_be_stack(int, const char*);
+extern void push_be_stack(OpenAxiom::TokenType, const char*);
+extern void check_and_pop_be_stack(OpenAxiom::TokenType, const char*);
 extern int clear_be_stack();
 extern int be_type(const char*);
 extern int begin_type();
@@ -70,12 +70,13 @@ extern void reset_connection();
 extern void print_page_and_filename();
 extern void jump();
 extern void print_token();
-extern void token_name(int);
+extern void token_name(OpenAxiom::TokenType);
 extern void print_next_ten_tokens();
 
 extern long fpos, keyword_fpos;
 extern Token token;
-extern int last_token, last_ch;
+extern OpenAxiom::TokenType last_token;
+extern int last_ch;
 extern SourceInputKind input_type;
 extern char *input_string;
 extern FILE *cfile;

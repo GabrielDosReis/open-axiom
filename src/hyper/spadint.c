@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2013, Gabriel Dos Reis.
+   Copyright (C) 2007-2023, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -52,9 +52,9 @@ using namespace OpenAxiom;
 
 static void start_user_buffer(HyperDocPage * page);
 static void clear_execution_marks(HashTable * depend_hash);
-static void issue_dependent_commands(HyperDocPage * page , TextNode * command , int type);
+static void issue_dependent_commands(HyperDocPage * page , TextNode * command , TokenType type);
 static void send_pile(openaxiom_sio * sock , char * str);
-static void mark_as_executed(HyperDocPage * page , TextNode * command , int type);
+static void mark_as_executed(HyperDocPage * page , TextNode * command , TokenType type);
 static void accept_menu_server_connection(HyperDocPage * page);
 static void switch_frames(void );
 static void close_client(int pid);
@@ -101,7 +101,7 @@ spad_busy()
 /* issue a OpenAxiom command to the buffer associated with a page */
 void
 issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
-                  int type)
+                  TokenType type)
 {
     char *buf;
     int ret_val;
@@ -126,7 +126,7 @@ issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
         buf[strlen(buf) + 1] = '\0';
         buf[strlen(buf)] = '\n';
     }
-    if (type == openaxiom_Spadsrc_token)
+    if (type == TokenType::Spadsrc)
         send_pile(page->sock, buf);
     else
         send_string(page->sock, buf);
@@ -151,20 +151,20 @@ send_pile(openaxiom_sio *sock,char * str)
     send_string(sock, command);
 }
 static void
-issue_dependent_commands(HyperDocPage *page, TextNode *command,int type)
+issue_dependent_commands(HyperDocPage *page, TextNode *command, TokenType type)
 {
     TextNode *node, *depend_label;
     SpadcomDepend *depend;
-    int end_type = (type == openaxiom_Spadcommand_token
-                    || type == openaxiom_Spadgraph_token) ?
-    (openaxiom_Endspadcommand_token) : (openaxiom_Endspadsrc_token);
+    TokenType end_type = (type == TokenType::Spadcommand
+                    || type == TokenType::Spadgraph) ?
+    (TokenType::Endspadcommand) : (TokenType::Endspadsrc);
 
     for (node = command->next; node->type != end_type;
          node = node->next)
-        if (node->type == openaxiom_Free_token)
+        if (node->type == TokenType::Free)
             for (depend_label = node->data.node; depend_label != NULL;
                  depend_label = depend_label->next)
-                if (depend_label->type == openaxiom_Word_token) {
+                if (depend_label->type == TokenType::Word) {
                     depend = (SpadcomDepend *)
                         hash_find(page->depend_hash, depend_label->data.text);
                     if (depend == NULL) {
@@ -182,19 +182,19 @@ issue_dependent_commands(HyperDocPage *page, TextNode *command,int type)
                 }
 }
 static void
-mark_as_executed(HyperDocPage *page, TextNode *command,int type)
+mark_as_executed(HyperDocPage *page, TextNode *command, TokenType type)
 {
     TextNode *node, *depend_label;
     SpadcomDepend *depend;
-    int end_type = (type == openaxiom_Spadcommand_token
-                    || type == openaxiom_Spadgraph_token)
-    ? (openaxiom_Endspadcommand_token) : (openaxiom_Endspadsrc_token);
+    TokenType end_type = (type == TokenType::Spadcommand
+                    || type == TokenType::Spadgraph)
+    ? (TokenType::Endspadcommand) : (TokenType::Endspadsrc);
 
     for (node = command; node->type != end_type; node = node->next)
-        if (node->type == openaxiom_Bound_token)
+        if (node->type == TokenType::Bound)
             for (depend_label = node->data.node; depend_label != NULL;
                  depend_label = depend_label->next)
-                if (depend_label->type == openaxiom_Word_token) {
+                if (depend_label->type == TokenType::Word) {
                     depend = (SpadcomDepend *)
                         hash_find(page->depend_hash, depend_label->data.text);
                     if (depend == NULL) {
@@ -444,32 +444,32 @@ print_to_string1(TextNode *command,int * sizeBuf)
 
     for (node = command; node != NULL;) {
         switch (node->type) {
-          case openaxiom_Newline_token:
+          case TokenType::Newline:
             storeChar('\n');
             node = node->next;
             break;
-          case openaxiom_Ifcond_token:
+          case TokenType::Ifcond:
             if (check_condition(node->data.ifnode->cond))
                 node = node->data.ifnode->thennode;
             else
                 node = node->data.ifnode->elsenode;
             break;
-          case openaxiom_Endarg_token:
-          case openaxiom_Endspadcommand_token:
-          case openaxiom_Endspadsrc_token:
-          case openaxiom_Endpix_token:
+          case TokenType::Endarg:
+          case TokenType::Endspadcommand:
+          case TokenType::Endspadsrc:
+          case TokenType::Endpix:
             storeChar('\0');
             return p2sBuf;
-          case openaxiom_Endverbatim_token:
-          case openaxiom_Endif_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Endmacro_token:
-          case openaxiom_Endparameter_token:
-          case openaxiom_Rbrace_token:
-          case openaxiom_Endgroup_token:
+          case TokenType::Endverbatim:
+          case TokenType::Endif:
+          case TokenType::Fi:
+          case TokenType::Endmacro:
+          case TokenType::Endparameter:
+          case TokenType::Rbrace:
+          case TokenType::Endgroup:
             node = node->next;
             break;
-          case openaxiom_Punctuation_token:
+          case TokenType::Punctuation:
 
             /*
              * Simply copy the piece of text
@@ -478,7 +478,7 @@ print_to_string1(TextNode *command,int * sizeBuf)
             for (s = node->data.text; *s; s++) { storeChar(*s); }
             node = node->next;
             break;
-          case openaxiom_WindowId_token:
+          case TokenType::WindowId:
 
             /*
              * Simply copy the piece of text
@@ -488,8 +488,8 @@ print_to_string1(TextNode *command,int * sizeBuf)
             storeChar(' ');
             node = node->next;
             break;
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
 
             /*
              * Simply copy the piece of text
@@ -502,15 +502,15 @@ print_to_string1(TextNode *command,int * sizeBuf)
              */
 
             /*
-             * if(node->next && node->next->type != openaxiom_Endspadsrc_token)
+             * if(node->next && node->next->type != TokenType::Endspadsrc)
              * storeChar('\n');
              */
             node = node->next;
             break;
-          case openaxiom_Dash_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Word_token:
+          case TokenType::Dash:
+          case TokenType::Rsquarebrace:
+          case TokenType::Lsquarebrace:
+          case TokenType::Word:
 
             /*
              * Simply copy the piece of text
@@ -519,7 +519,7 @@ print_to_string1(TextNode *command,int * sizeBuf)
             for (s = node->data.text; *s; s++) { storeChar(*s); }
             node = node->next;
             break;
-          case openaxiom_BoxValue_token:
+          case TokenType::BoxValue:
             box = 
              (InputBox *) hash_find(gWindow->page->box_hash, node->data.text);
             if (box == NULL) {
@@ -539,7 +539,7 @@ print_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_StringValue_token:
+          case TokenType::StringValue:
             item = return_item(node->data.text);
             if (item != NULL) {
                 if (node->space)
@@ -574,23 +574,23 @@ print_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_Space_token:
+          case TokenType::Space:
             num_spaces = (node->data.node != NULL ?
                           atoi(node->data.node->data.text) : 1);
             for (count = 0; count < num_spaces; count++)
                 storeChar(' ');
             node = node->next;
             break;
-          case openaxiom_Titlenode_token:
-          case openaxiom_Endtitle_token:
-          case openaxiom_Center_token:
-          case openaxiom_Endcenter_token:
-          case openaxiom_BoldFace_token:
-          case openaxiom_Emphasize_token:
-          case openaxiom_Indentrel_token:
+          case TokenType::Titlenode:
+          case TokenType::Endtitle:
+          case TokenType::Center:
+          case TokenType::Endcenter:
+          case TokenType::BoldFace:
+          case TokenType::Emphasize:
+          case TokenType::Indentrel:
             node = node->next;
             break;
-          case openaxiom_Bound_token:
+          case TokenType::Bound:
             if (include_bf) {
                 int len, i;
                 TextNode *n2 = node->data.node;
@@ -602,8 +602,8 @@ print_to_string1(TextNode *command,int * sizeBuf)
                 storeChar('n');
                 storeChar('d');
                 storeChar('{');
-                for (; n2->type != openaxiom_Endarg_token; n2 = n2->next) {
-                    if (n2->type == openaxiom_Word_token) {
+                for (; n2->type != TokenType::Endarg; n2 = n2->next) {
+                    if (n2->type == TokenType::Word) {
                         len = strlen(n2->data.text);
                         for (i = 0; i < len; i++)
                             storeChar(n2->data.text[i]);
@@ -614,7 +614,7 @@ print_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_Free_token:
+          case TokenType::Free:
             if (include_bf) {
                 int len, i;
                 TextNode *n2 = node->data.node;
@@ -625,8 +625,8 @@ print_to_string1(TextNode *command,int * sizeBuf)
                 storeChar('e');
                 storeChar('e');
                 storeChar('{');
-                for (; n2->type != openaxiom_Endarg_token; n2 = n2->next) {
-                    if (n2->type == openaxiom_Word_token) {
+                for (; n2->type != TokenType::Endarg; n2 = n2->next) {
+                    if (n2->type == TokenType::Word) {
                         len = strlen(n2->data.text);
                         for (i = 0; i < len; i++)
                             storeChar(n2->data.text[i]);
@@ -637,17 +637,17 @@ print_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_Macro_token:
+          case TokenType::Macro:
             node = node->next;
             break;
-          case openaxiom_Pound_token:
+          case TokenType::Pound:
             if (node->space) { storeChar(' '); }
             node = node->next;
             break;
-          case openaxiom_Group_token:
+          case TokenType::Group:
             node = node->next;
             break;
-          case openaxiom_Indent_token:
+          case TokenType::Indent:
             num_spaces = (node->data.node != NULL ?
                           atoi(node->data.node->data.text) : 1);
             for (count = 0; count < num_spaces; count++)
@@ -694,15 +694,15 @@ issue_server_command(HyperLink *link)
     }
     switch_frames();
     switch (link->type) {
-      case openaxiom_Qspadcall_token:
-      case openaxiom_Qspadcallquit_token:
-      case openaxiom_Spadlink_token:
-      case openaxiom_Spaddownlink_token:
-      case openaxiom_Spadmemolink_token:
+      case TokenType::Qspadcall:
+      case TokenType::Qspadcallquit:
+      case TokenType::Spadlink:
+      case TokenType::Spaddownlink:
+      case TokenType::Spadmemolink:
         send_int(spad_socket, QuietSpadCommand);
         break;
-      case openaxiom_Spadcall_token:
-      case openaxiom_Spadcallquit_token:
+      case TokenType::Spadcall:
+      case TokenType::Spadcallquit:
         send_int(spad_socket, SpadCommand);
         break;
       default:
@@ -711,12 +711,12 @@ issue_server_command(HyperLink *link)
     }
     buf = print_to_string(command);
     send_string(spad_socket, buf);
-    if (link->type == openaxiom_Lispcommand_token
-        || link->type == openaxiom_Spadcall_token
-        || link->type == openaxiom_Spadcallquit_token
-        || link->type == openaxiom_Qspadcallquit_token
-        || link->type == openaxiom_Qspadcall_token
-        || link->type == openaxiom_Lispcommandquit_token)
+    if (link->type == TokenType::Lispcommand
+        || link->type == TokenType::Spadcall
+        || link->type == TokenType::Spadcallquit
+        || link->type == TokenType::Qspadcallquit
+        || link->type == TokenType::Qspadcall
+        || link->type == TokenType::Lispcommandquit)
         return NULL;
     page = parse_page_from_socket();
     return page;
@@ -935,48 +935,48 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
 
     for (node = command; node != NULL;) {
         switch (node->type) {
-          case openaxiom_Newline_token:
+          case TokenType::Newline:
             storeString("\\newline\n");
             node = node->next;
             break;
-          case openaxiom_Par_token:
+          case TokenType::Par:
             storeString("\n\n");
             node = node->next;
             break;
-          case openaxiom_Indentrel_token:
+          case TokenType::Indentrel:
             storeString("\\indentrel{");
             storeString(node->data.node->data.text);
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Tab_token:
+          case TokenType::Tab:
             storeString("\\tab{");
             storeString(node->data.node->data.text);
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Ifcond_token:
+          case TokenType::Ifcond:
             if (check_condition(node->data.ifnode->cond))
                 node = node->data.ifnode->thennode;
             else
                 node = node->data.ifnode->elsenode;
             break;
-          case openaxiom_Endarg_token:
-          case openaxiom_Endspadsrc_token:
-          case openaxiom_Endpix_token:
-          case openaxiom_Endbutton_token:
+          case TokenType::Endarg:
+          case TokenType::Endspadsrc:
+          case TokenType::Endpix:
+          case TokenType::Endbutton:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Endverbatim_token:
-          case openaxiom_Endif_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Endmacro_token:
-          case openaxiom_Endparameter_token:
-          case openaxiom_Rbrace_token:
+          case TokenType::Endverbatim:
+          case TokenType::Endif:
+          case TokenType::Fi:
+          case TokenType::Endmacro:
+          case TokenType::Endparameter:
+          case TokenType::Rbrace:
             node = node->next;
             break;
-          case openaxiom_Punctuation_token:
+          case TokenType::Punctuation:
 
             /*
              * Simply copy the piece of text
@@ -985,25 +985,25 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
             for (s = node->data.text; *s; s++) { storeChar(*s); }
             node = node->next;
             break;
-          case openaxiom_WindowId_token:
+          case TokenType::WindowId:
             storeString("\\windowid ");
             node = node->next;
             break;
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
             if (node->space) { storeChar(' '); }
             for (s = node->data.text; *s; s++) { storeChar(*s); }
             node = node->next;
             break;
-          case openaxiom_Dash_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Word_token:
+          case TokenType::Dash:
+          case TokenType::Rsquarebrace:
+          case TokenType::Lsquarebrace:
+          case TokenType::Word:
             if (node->space) { storeChar(' '); }
             for (s = node->data.text; *s; s++) { storeChar(*s); }
             node = node->next;
             break;
-          case openaxiom_BoxValue_token:
+          case TokenType::BoxValue:
             box = (InputBox *) hash_find(gWindow->page->box_hash, node->data.text);
             if (box == NULL) {
                 fprintf(stderr, "Print_to_string:Box %s Has no symbol table entry\n",
@@ -1021,7 +1021,7 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_StringValue_token:
+          case TokenType::StringValue:
             item = return_item(node->data.text);
             if (item != NULL) {
                 if (node->space) {  storeChar(' '); }
@@ -1056,78 +1056,78 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_Space_token:
+          case TokenType::Space:
             num_spaces = (node->data.node != NULL ?
                           atoi(node->data.node->data.text) : 1);
             for (count = 0; count < num_spaces; count++)
                 storeChar(' ');
             node = node->next;
             break;
-          case openaxiom_Emphasize_token:
+          case TokenType::Emphasize:
             storeString("\\em ");
             node = node->next;
             break;
-          case openaxiom_BoldFace_token:
+          case TokenType::BoldFace:
             storeString("\\bf ");
             node = node->next;
             break;
-          case openaxiom_Sl_token:
+          case TokenType::Sl:
             storeString("\\it ");
             node = node->next;
             break;
-          case openaxiom_Rm_token:
+          case TokenType::Rm:
             storeString("\\rm ");
             node = node->next;
             break;
-          case openaxiom_It_token:
+          case TokenType::It:
             storeString("\\it ");
             node = node->next;
             break;
-          case openaxiom_Tt_token:
+          case TokenType::Tt:
             storeString("\\tt ");
             node = node->next;
             break;
-          case openaxiom_Group_token:
+          case TokenType::Group:
 /* skip {} */
-            if (node->next->type==openaxiom_Endgroup_token){
+            if (node->next->type==TokenType::Endgroup){
                node=node->next->next;
                break;
                 }
             storeChar('{');
             node = node->next;
             break;
-          case openaxiom_Endgroup_token:
+          case TokenType::Endgroup:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Box_token:
+          case TokenType::Box:
             storeString("\\box{");
             node = node->next;
             break;
-          case openaxiom_Endbox_token:
+          case TokenType::Endbox:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Center_token:
+          case TokenType::Center:
             storeString("\\center{");
             node = node->next;
             break;
-          case openaxiom_Endcenter_token:
+          case TokenType::Endcenter:
             storeString("}");
             storeChar('\n');
             node = node->next;
             break;
-          case openaxiom_Titlenode_token:
-          case openaxiom_Endtitle_token:
+          case TokenType::Titlenode:
+          case TokenType::Endtitle:
             node = node->next;
             break;
-          case openaxiom_Bound_token:
+          case TokenType::Bound:
             {
                 TextNode *n2 = node->data.node;
 
                 storeString("\\bound{");
-                for (; n2->type != openaxiom_Endarg_token; n2 = n2->next) {
-                    if (n2->type == openaxiom_Word_token) {
+                for (; n2->type != TokenType::Endarg; n2 = n2->next) {
+                    if (n2->type == TokenType::Word) {
                         storeString(n2->data.text);
                         storeChar(' ');
                         }
@@ -1136,13 +1136,13 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
             }
             node = node->next;
             break;
-          case openaxiom_Free_token:
+          case TokenType::Free:
             {
                 TextNode *n2 = node->data.node;
 
                 storeString("\\free{");
-                for (; n2->type != openaxiom_Endarg_token; n2 = n2->next) {
-                    if (n2->type == openaxiom_Word_token) {
+                for (; n2->type != TokenType::Endarg; n2 = n2->next) {
+                    if (n2->type == TokenType::Word) {
                         storeString(n2->data.text);
                         storeChar(' ');
                         }
@@ -1151,141 +1151,141 @@ print_source_to_string1(TextNode *command,int * sizeBuf)
                 }
             node = node->next;
             break;
-          case openaxiom_Macro_token:
+          case TokenType::Macro:
             storeChar(' ');
             node = node->next;
             break;
-          case openaxiom_Pound_token:
+          case TokenType::Pound:
             if (node->space) { storeChar(' '); }
             node = node->next;
             break;
-          case openaxiom_Indent_token:
+          case TokenType::Indent:
             num_spaces = (node->data.node != NULL ?
                           atoi(node->data.node->data.text) : 1);
             for (count = 0; count < num_spaces; count++)
                 storeChar(' ');
             node = node->next;
             break;
-          case openaxiom_Inputbitmap_token:
+          case TokenType::Inputbitmap:
             storeString("\\inputbitmap{");
             storeString(node->data.text); 
             storeString("}\n");
             node = node->next;
             break;
-          case openaxiom_Endscrolling_token:
+          case TokenType::Endscrolling:
             storeString("\\end{scroll}\n");
             node = node->next;
             break;
-          case openaxiom_Scrollingnode_token:
+          case TokenType::Scrollingnode:
             storeString("\\begin{scroll}\n");
             storeString("% This is the scrolling area\n");
             node = node->next;
             break;
-          case openaxiom_Horizontalline_token:
+          case TokenType::Horizontalline:
             storeString("\\horizontalline\n");
             node = node->next;
             break;
-          case openaxiom_Endtable_token:
+          case TokenType::Endtable:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Table_token:
+          case TokenType::Table:
             storeString("\\table{");
             node = node->next;
             break;
-          case openaxiom_Tableitem_token:
+          case TokenType::Tableitem:
             storeChar('{');
             node = node->next;
             break;
-          case openaxiom_Endtableitem_token:
+          case TokenType::Endtableitem:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Beginitems_token:
+          case TokenType::Beginitems:
             storeString("\\begin{items}");
             node = node->next;
             break;
-          case openaxiom_Item_token:
+          case TokenType::Item:
             storeString("\n\\item");
             node = node->next;
             break;
-          case openaxiom_Enditems_token:
+          case TokenType::Enditems:
             storeString("\n\\end{items}");
             node = node->next;
             break;
 /*** LINKS ***/
 /* all these guys are ended by Endbutton 
 we close the brace then */
-          case openaxiom_Spadlink_token:
+          case TokenType::Spadlink:
             storeString("\\fauxspadlink{");
             node = node->next;
             break;
-          case openaxiom_Unixlink_token:
+          case TokenType::Unixlink:
             storeString("\\fauxunixlink{");
             node = node->next;
             break;
-          case openaxiom_Lisplink_token:
+          case TokenType::Lisplink:
             storeString("\\fauxlisplink{");
             node = node->next;
             break;
-          case openaxiom_Link_token:
+          case TokenType::Link:
             storeString("\\fauxlink{");
             node = node->next;
             break;
-          case openaxiom_LispDownLink_token:
+          case TokenType::LispDownLink:
             storeString("\\fauxlispdownlink{");
             node = node->next;
             break;
-          case openaxiom_LispMemoLink_token:
+          case TokenType::LispMemoLink:
             storeString("\\fauxlispmemolink{");
             node = node->next;
             break;
-          case openaxiom_Memolink_token:
+          case TokenType::Memolink:
             storeString("\\fauxmemolink{");
             node = node->next;
             break;
-          case openaxiom_Windowlink_token:
+          case TokenType::Windowlink:
             storeString("\\fauxwindowlink{");
             node = node->next;
             break;
-          case openaxiom_Downlink_token:
+          case TokenType::Downlink:
             storeString("\\fauxdownlink{");
             node = node->next;
             break;
 /** END OF LINKS **/
-          case openaxiom_Unixcommand_token:
+          case TokenType::Unixcommand:
             storeString("\\unixcommand{");
             node = node->next;
             break;
-          case openaxiom_Lispcommand_token:
+          case TokenType::Lispcommand:
             storeString("\\lispcommand{");
             node = node->next;
             break;
-          case openaxiom_Spadgraph_token:
+          case TokenType::Spadgraph:
             storeString("\\spadgraph{");
             node = node->next;
             break;
-          case openaxiom_Spadcommand_token:
+          case TokenType::Spadcommand:
             storeString("\\spadcommand{");
             node = node->next;
             break;
-          case openaxiom_Endspadcommand_token:
+          case TokenType::Endspadcommand:
             storeChar('}');
             node = node->next;
             break;
-          case openaxiom_Footernode_token:
+          case TokenType::Footernode:
             storeString("% This is the footer\n");
             node = node->next;
             break;
-          case openaxiom_Endfooter_token:
+          case TokenType::Endfooter:
             storeString("% This is the end of the footer\n");
             node = node->next;
             break;
-          case openaxiom_Endheader_token:
+          case TokenType::Endheader:
             storeString("% This is the end of the header\n");
             node = node->next;
             break;
-          case openaxiom_Headernode_token:
+          case TokenType::Headernode:
             storeString("% This is the header\n");
             node = node->next;
             break;

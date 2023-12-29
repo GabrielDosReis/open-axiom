@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -60,9 +60,9 @@ static char * make_paste_file_name(char * buf , char * filename);
 static void make_the_input_file(UnloadedPage * page);
 static void make_input_file_from_page(HyperDocPage * page);
 static int inListAndNewer(const char* inputFile , const char* htFile);
-static void print_paste(FILE*, char* , char*, const char*, int);
-static void print_graph_paste(FILE*, char*, char* , const char*, int);
-static void send_command(char * command , int com_type);
+static void print_paste(FILE*, char* , char*, const char*, TokenType);
+static void print_graph_paste(FILE*, char*, char* , const char*, TokenType);
+static void send_command(char * command , TokenType com_type);
 
 #define MaxInputFiles 256
 char *active_file_list[MaxInputFiles];
@@ -217,9 +217,9 @@ make_input_file_from_page(HyperDocPage *page)
     fprintf(file, ")clear all\n\n");
 
     for (node = page->scrolling; node != NULL; node = node->next)
-      if (node->type == openaxiom_Spadcommand_token
-          || node->type == openaxiom_Spadgraph_token
-          || node->type == openaxiom_Spadsrc_token) {
+      if (node->type == TokenType::Spadcommand
+          || node->type == TokenType::Spadgraph
+          || node->type == TokenType::Spadsrc) {
         if (starting_file) {
           example_number = 1;
           if (make_patch_files) {
@@ -251,8 +251,8 @@ make_input_file_from_page(HyperDocPage *page)
         buf = print_to_string(node->next);
         include_bf = 0;
         if (make_patch_files) {
-          if (node->type == openaxiom_Spadcommand_token
-              || node->type == openaxiom_Spadsrc_token)
+          if (node->type == TokenType::Spadcommand
+              || node->type == TokenType::Spadsrc)
             print_paste(pfile, com, buf, page->name, node->type);
           else
             print_graph_paste(pfile, com, buf, page->name, node->type);
@@ -383,7 +383,7 @@ print_paste_line(FILE *pfile,char *str)
 
 
 void
-get_spad_output(FILE *pfile,char *command,int com_type)
+get_spad_output(FILE *pfile,char *command, TokenType com_type)
 {
     int n, i;
     char buf[1024];
@@ -405,7 +405,7 @@ get_spad_output(FILE *pfile,char *command,int com_type)
  * health of the viewport. We do this after the (|close|).
  */
 void
-get_graph_output(char* command, const char* pagename, int com_type)
+get_graph_output(char* command, const char* pagename, TokenType com_type)
 {
     int n, i;
     char buf[1024];
@@ -425,11 +425,11 @@ get_graph_output(char* command, const char* pagename, int com_type)
     get_int(spad_socket);
 }
 static void
-send_command(char *command,int com_type)
+send_command(char *command, TokenType com_type)
 {
     char buf[1024];
 
-    if (com_type != openaxiom_Spadsrc_token) {
+    if (com_type != TokenType::Spadsrc) {
         escape_string(command);
         sprintf(buf, "(|parseAndEvalToHypertex| '\"%s\")", command);
         send_lisp_command(buf);
@@ -453,7 +453,7 @@ send_command(char *command,int com_type)
 
 static void
 print_paste(FILE* pfile, char* realcom, char* command,
-            const char* pagename, int com_type)
+            const char* pagename, TokenType com_type)
 {
     fprintf(pfile, "\\begin{patch}{%sPatch%d}\n", pagename, example_number);
     fprintf(pfile, "\\begin{paste}{%sFull%d}{%sEmpty%d}\n",
@@ -481,7 +481,7 @@ print_paste(FILE* pfile, char* realcom, char* command,
 }
 static void
 print_graph_paste(FILE* pfile, char* realcom, char* command,
-                  const char* pagename, int com_type)
+                  const char* pagename, TokenType com_type)
 {
     fprintf(pfile, "\\begin{patch}{%sPatch%d}\n", pagename, example_number);
     fprintf(pfile, "\\begin{paste}{%sFull%d}{%sEmpty%d}\n",

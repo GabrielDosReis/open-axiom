@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reversed.
 
   Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,8 @@
 #include "group.h"
 #include "event.h"
 #include "parse.h"
+
+using namespace OpenAxiom;
 
 static void free_cond(CondNode * cond);
 static void free_depend(SpadcomDepend * sd);
@@ -155,7 +157,7 @@ alloc_node()
   TextNode *temp_node;
 
   temp_node = (TextNode *) halloc(sizeof(TextNode), "Text Node");
-  temp_node->type = 0;
+  temp_node->type = {};
   temp_node->space = 0;
   temp_node->height = 0;
   temp_node->width = 0;
@@ -176,82 +178,82 @@ free_node(TextNode *node, short int des)
     return;
 
   switch (node->type) {
-  case openaxiom_Paste_token:
+  case TokenType::Paste:
     free_pastearea(node, des);
     free_node(node->next, des);
     break;
-  case openaxiom_Pastebutton_token:
+  case TokenType::Pastebutton:
     free_pastebutton(node, des);
     free_node(node->next, des);
     break;
-  case openaxiom_Ifcond_token:
+  case TokenType::Ifcond:
     free_node(node->data.ifnode->cond, des);
     free_node(node->data.ifnode->thennode, des);
     free_node(node->data.ifnode->elsenode, des);
     break;
-  case openaxiom_Dash_token:
-  case openaxiom_Lsquarebrace_token:
-  case openaxiom_Word_token:
-  case openaxiom_WindowId_token:
-  case openaxiom_Punctuation_token:
-  case openaxiom_Lbrace_token:
-  case openaxiom_Rbrace_token:
-  case openaxiom_SimpleBox_token:
-  case openaxiom_Verbatim_token:
-  case openaxiom_Math_token:
-  case openaxiom_Spadsrctxt_token:
-  case openaxiom_Spadsrc_token:
+  case TokenType::Dash:
+  case TokenType::Lsquarebrace:
+  case TokenType::Word:
+  case TokenType::WindowId:
+  case TokenType::Punctuation:
+  case TokenType::Lbrace:
+  case TokenType::Rbrace:
+  case TokenType::SimpleBox:
+  case TokenType::Verbatim:
+  case TokenType::Math:
+  case TokenType::Spadsrctxt:
+  case TokenType::Spadsrc:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case openaxiom_Inputstring_token:
+  case TokenType::Inputstring:
     if (des)
       delete_item(node->data.text);
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case openaxiom_It_token:
-  case openaxiom_Sl_token:
-  case openaxiom_Tt_token:
-  case openaxiom_Rm_token:
-  case openaxiom_Emphasize_token:
-  case openaxiom_Beep_token:
-  case openaxiom_BoldFace_token:
-  case openaxiom_Par_token:
-  case openaxiom_Newline_token:
-  case openaxiom_Horizontalline_token:
-  case openaxiom_Item_token:
-  case openaxiom_Beginscroll_token:
-  case openaxiom_Endscroll_token:
-  case openaxiom_Group_token:
-  case openaxiom_Table_token:
-  case openaxiom_Macro_token:
-  case openaxiom_Pound_token:
-  case openaxiom_Center_token:
-  case openaxiom_Box_token:
-  case openaxiom_Mbox_token:
-  case openaxiom_Tableitem_token:
-  case openaxiom_Scrollingnode_token:
-  case openaxiom_Headernode_token:
-  case openaxiom_Titlenode_token:
-  case openaxiom_Footernode_token:
-  case openaxiom_Controlbitmap_token:
-  case openaxiom_Fi_token:
-  case openaxiom_Description_token:
-  case openaxiom_Rsquarebrace_token:
-  case openaxiom_Endpaste_token:
-  case openaxiom_Endpastebutton_token:
+  case TokenType::It:
+  case TokenType::Sl:
+  case TokenType::Tt:
+  case TokenType::Rm:
+  case TokenType::Emphasize:
+  case TokenType::Beep:
+  case TokenType::BoldFace:
+  case TokenType::Par:
+  case TokenType::Newline:
+  case TokenType::Horizontalline:
+  case TokenType::Item:
+  case TokenType::Beginscroll:
+  case TokenType::Endscroll:
+  case TokenType::Group:
+  case TokenType::Table:
+  case TokenType::Macro:
+  case TokenType::Pound:
+  case TokenType::Center:
+  case TokenType::Box:
+  case TokenType::Mbox:
+  case TokenType::Tableitem:
+  case TokenType::Scrollingnode:
+  case TokenType::Headernode:
+  case TokenType::Titlenode:
+  case TokenType::Footernode:
+  case TokenType::Controlbitmap:
+  case TokenType::Fi:
+  case TokenType::Description:
+  case TokenType::Rsquarebrace:
+  case TokenType::Endpaste:
+  case TokenType::Endpastebutton:
     free_node(node->next, des);
     break;
-  case openaxiom_Inputbitmap_token:
-  case openaxiom_Inputpixmap_token:
+  case TokenType::Inputbitmap:
+  case TokenType::Inputpixmap:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case openaxiom_Quitbutton_token:
-  case openaxiom_Helpbutton_token:
-  case openaxiom_Upbutton_token:
-  case openaxiom_Returnbutton_token:
+  case TokenType::Quitbutton:
+  case TokenType::Helpbutton:
+  case TokenType::Upbutton:
+  case TokenType::Returnbutton:
     if (des && node->link->win) {
       hash_delete(gWindow->page->fLinkHashTable,(char *) &node->link->win);
       XDestroyWindow(gXDisplay, node->link->win);
@@ -259,25 +261,25 @@ free_node(TextNode *node, short int des)
     free_if_non_NULL(node->link);
     free_node(node->next, des);
     break;
-  case openaxiom_Memolink_token:
-  case openaxiom_Downlink_token:
-  case openaxiom_Windowlink_token:
-  case openaxiom_Link_token:
-  case openaxiom_Lisplink_token:
-  case openaxiom_Lispwindowlink_token:
-  case openaxiom_Spadcall_token:
-  case openaxiom_Spadcallquit_token:
-  case openaxiom_LispMemoLink_token:
-  case openaxiom_Lispcommand_token:
-  case openaxiom_Lispcommandquit_token:
-  case openaxiom_LispDownLink_token:
-  case openaxiom_Unixlink_token:
-  case openaxiom_Spadlink_token:
-  case openaxiom_Spadmemolink_token:
-  case openaxiom_Spaddownlink_token:
-  case openaxiom_Unixcommand_token:
-  case openaxiom_Spadcommand_token:
-  case openaxiom_Spadgraph_token:
+  case TokenType::Memolink:
+  case TokenType::Downlink:
+  case TokenType::Windowlink:
+  case TokenType::Link:
+  case TokenType::Lisplink:
+  case TokenType::Lispwindowlink:
+  case TokenType::Spadcall:
+  case TokenType::Spadcallquit:
+  case TokenType::LispMemoLink:
+  case TokenType::Lispcommand:
+  case TokenType::Lispcommandquit:
+  case TokenType::LispDownLink:
+  case TokenType::Unixlink:
+  case TokenType::Spadlink:
+  case TokenType::Spadmemolink:
+  case TokenType::Spaddownlink:
+  case TokenType::Unixcommand:
+  case TokenType::Spadcommand:
+  case TokenType::Spadgraph:
     if (des && node->link->win) {
       hash_delete(gWindow->page->fLinkHashTable,(char *) &node->link->win);
       XDestroyWindow(gXDisplay, node->link->win);
@@ -287,49 +289,49 @@ free_node(TextNode *node, short int des)
     free_if_non_NULL(node->link);
     free_node(node->next, des);
     break;
-  case openaxiom_Free_token:
-  case openaxiom_Indent_token:
-  case openaxiom_Indentrel_token:
-  case openaxiom_HSpace_token:
-  case openaxiom_Space_token:
-  case openaxiom_VSpace_token:
-  case openaxiom_Button_token:
-  case openaxiom_Bound_token:
-  case openaxiom_Tab_token:
+  case TokenType::Free:
+  case TokenType::Indent:
+  case TokenType::Indentrel:
+  case TokenType::HSpace:
+  case TokenType::Space:
+  case TokenType::VSpace:
+  case TokenType::Button:
+  case TokenType::Bound:
+  case TokenType::Tab:
     free_node(node->next, des);
     free_node(node->data.node, des);
     break;
-  case openaxiom_End_token:
-  case openaxiom_Endcenter_token:
-  case openaxiom_Endlink_token:
-  case openaxiom_Endgroup_token:
-  case openaxiom_Endbox_token:
-  case openaxiom_Endmbox_token:
-  case openaxiom_Endspadcommand_token:
-  case openaxiom_Endpix_token:
-  case openaxiom_Endmacro_token:
-  case openaxiom_Endparameter_token:
-  case openaxiom_Endtable_token:
-  case openaxiom_Endtableitem_token:
-  case openaxiom_Noop_token:
-  case openaxiom_Endinputbox_token:
-  case openaxiom_Enddescription_token:
-  case openaxiom_Endif_token:
-  case openaxiom_Endtitems_token:
-  case openaxiom_Enditems_token:
-  case openaxiom_Endverbatim_token:
-  case openaxiom_Endmath_token:
-  case openaxiom_Endspadsrc_token:
+  case TokenType::End:
+  case TokenType::Endcenter:
+  case TokenType::Endlink:
+  case TokenType::Endgroup:
+  case TokenType::Endbox:
+  case TokenType::Endmbox:
+  case TokenType::Endspadcommand:
+  case TokenType::Endpix:
+  case TokenType::Endmacro:
+  case TokenType::Endparameter:
+  case TokenType::Endtable:
+  case TokenType::Endtableitem:
+  case TokenType::Noop:
+  case TokenType::Endinputbox:
+  case TokenType::Enddescription:
+  case TokenType::Endif:
+  case TokenType::Endtitems:
+  case TokenType::Enditems:
+  case TokenType::Endverbatim:
+  case TokenType::Endmath:
+  case TokenType::Endspadsrc:
     free_node(node->next, des);
     break;
-  case openaxiom_Endheader_token:
-  case openaxiom_Endtitle_token:
-  case openaxiom_Endfooter_token:
-  case openaxiom_Endscrolling_token:
-  case openaxiom_Endarg_token:
+  case TokenType::Endheader:
+  case TokenType::Endtitle:
+  case TokenType::Endfooter:
+  case TokenType::Endscrolling:
+  case TokenType::Endarg:
     break;
-  case openaxiom_Endbutton_token:
-  case openaxiom_Beginitems_token:
+  case TokenType::Endbutton:
+  case TokenType::Beginitems:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
@@ -409,12 +411,12 @@ free_page(HyperDocPage *page)
     return;
 
   switch (page->type) {
-  case UlUnknownPage:
-  case UnknownPage:
-  case ErrorPage:
-  case Unixfd:
-  case SpadGen:
-  case Normal:
+  case TokenType::UlUnknownPage:
+  case TokenType::UnknownPage:
+  case TokenType::ErrorPage:
+  case TokenType::Unixfd:
+  case TokenType::SpadGen:
+  case TokenType::Normal:
 
     /*
      * if(page->name) free(page->name); if(page->filename)
@@ -445,7 +447,7 @@ free_page(HyperDocPage *page)
     free(page->helppage);
     free(page);
     break;
-  case UnloadedPageType:
+  case TokenType::UnloadedPageType:
     break;
   default:
     /* fprintf(stderr, "Unknown Page type: %d\n", page->type); */
@@ -538,17 +540,6 @@ dont_free(void  *link)
 {
   return;
 }
-
-#if 0 
------------ NOT USED
-static void
-free_link(HyperLink *link)
-{
-  printf("Link type %d\n",link->type);
-  free_if_non_NULL((char *) link);
-}
------------ NOT USED
-#endif
 
 static void
 free_lines(LineStruct *lines)

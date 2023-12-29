@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -58,8 +58,8 @@ extern void parse_spadsrc(TextNode * spad_node);
 extern void parse_table(void );
 extern void parse_value1(void );
 extern void parse_value2(void );
-extern void parse_verbatim(int type);
-extern void show_text(TextNode * node , int Ender);
+extern void parse_verbatim(OpenAxiom::TokenType type);
+extern void show_text(TextNode * node , OpenAxiom::TokenType Ender);
 
 extern bool gInButton;
 extern bool gInIf;

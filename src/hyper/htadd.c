@@ -350,9 +350,9 @@ update_db(FILE *db, FILE *temp_db, FILE *new_file,
 }
 
 #define Special(t) \
-  (( t == openaxiom_Page_token \
-    || t == openaxiom_NewCommand_token \
-    || t == openaxiom_Patch_token )?(1):(0))
+  (( t == TokenType::Page \
+    || t == TokenType::NewCommand \
+    || t == TokenType::Patch )?(1):(0))
 #define ptype(c, t) (strcpy(c, t));
 
 static void
@@ -360,7 +360,7 @@ add_new_pages(FILE *temp_db, FILE *new_file, char *addname, char *fullname)
 {
     char type[15];
     int pos;
-    int present_type;
+    TokenType present_type;
     int pages = 0;
     struct stat fstats;
 
@@ -374,28 +374,28 @@ add_new_pages(FILE *temp_db, FILE *new_file, char *addname, char *fullname)
             present_type = token.type;
             pos = keyword_fpos;
             get_token();
-            if (token.type != openaxiom_Lbrace_token) {
+            if (token.type != TokenType::Lbrace) {
                 fprintf(stderr, "missing left brace after a page, macro or patch \
                          declaration\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
             get_token();
-            if (present_type == openaxiom_Page_token
-                && token.type != openaxiom_Word_token) {
+            if (present_type == TokenType::Page
+                && token.type != TokenType::Word) {
                 fprintf(stderr, "missing page name after \\begin{page}\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
-            else if (present_type == openaxiom_Macro_token
-                     && token.type != openaxiom_Macro_token) {
+            else if (present_type == TokenType::Macro
+                     && token.type != TokenType::Macro) {
                 fprintf(stderr, "Expected a \\macro name after newcommand, got %s\n",
                         token.id);
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
-            else if (present_type == openaxiom_Patch_token
-                     && token.type != openaxiom_Word_token) {
+            else if (present_type == TokenType::Patch
+                     && token.type != TokenType::Word) {
                 fprintf(stderr, "Missing patch name after a \\begin{patch}\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
@@ -441,7 +441,7 @@ get_filename()
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = openaxiom_Word_token;
+        token.type = TokenType::Word;
         token.id = buffer;
         break;
     }
