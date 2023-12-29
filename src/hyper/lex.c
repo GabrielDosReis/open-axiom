@@ -253,7 +253,7 @@ parser_init()
               (HashcodeFunction)string_hash);
     for (i = 2; i <= openaxiom_NumberUserTokens_token; i++) {
         toke = (Token *) halloc(sizeof(Token), "Token");
-        toke->type = i;
+        toke->type = openaxiom_token_kind{i};
         toke->id = token_table[i];
         hash_insert(&tokenHashTable, (char *)toke, toke->id);
     }
@@ -473,7 +473,7 @@ get_token()
     }
     switch (c) {
       case EOF:
-        token.type = -1;
+        token.type = openaxiom_token_kind{-1};
         return EOF;
       case '\\':
         keyword_fpos = fpos - 1;
@@ -765,6 +765,11 @@ begin_type()
     return 1;
 }
 
+// Return the closing matching end token type of the argument.
+static constexpr openaxiom_token_kind matching_end(openaxiom_token_kind t)
+{
+    return openaxiom_token_kind{t + 3000};
+}
 
 int
 end_type()
@@ -793,7 +798,7 @@ end_type()
     else {
         if (gWindow != NULL && !gInVerbatim) {
             check_and_pop_be_stack(token.type, token.id);
-            token.type += 3000;
+            token.type = matching_end(token.type);
             return 1;
         }
         else {
@@ -801,11 +806,11 @@ end_type()
                 && ((gInVerbatim && token.type == openaxiom_Verbatim_token)
                     || (gInSpadsrc && token.type == openaxiom_Spadsrc_token))) {
                 check_and_pop_be_stack(token.type, token.id);
-                token.type += 3000;
+                token.type = matching_end(token.type);
                 return 1;
             }
             else {
-                token.type += 3000;
+                token.type = matching_end(token.type);
                 return 1;
             }
         }

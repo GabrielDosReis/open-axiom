@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2023, Gabriel Dos Reis.
    All right reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -47,17 +47,10 @@
 #define FRONTSPACE 0001
 #define BACKSPACE  0002
 
-/* HyperDoc parser tokens */
-
-struct Token {
-   int type;              /* token type.  One of those listed below */
-   const char *id;                  /* string value if type == Identifier */
-};
-
 /*
     User tokens. ie, these can be found on a page
 */
-enum openaxiom_token_kind {
+enum openaxiom_token_kind : int {
   openaxiom_Word_token = 1,
   openaxiom_Page_token = 2,
   openaxiom_Lispcommandquit_token = 3,
@@ -238,6 +231,11 @@ enum openaxiom_token_kind {
   openaxiom_Endspadsrc_token = 4030
 };
 
+/* HyperDoc parser tokens */
+struct Token {
+   openaxiom_token_kind type;              /* token type.  One of those listed below */
+   const char *id;                  /* string value if type == Identifier */
+};
 
 extern const char *token_table[];
 
