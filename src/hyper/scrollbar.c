@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2016, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,8 @@
 #include "initx.h"
 #include "scrollbar.h"
 #include "parse.h"
+
+using namespace OpenAxiom;
 
 /*************************************************************************
   Scrollbar Comments                                    10/08/89
@@ -506,9 +508,9 @@ linkScrollBars()
     uplink->win = gWindow->fScrollUpWindow;
     downlink->win = gWindow->fScrollDownWindow;
     barlink->win = gWindow->scrollbar;
-    uplink->type = Scrollupbutton;
-    downlink->type = Scrolldownbutton;
-    barlink->type = openaxiom_Scrollbar_token;
+    uplink->type = TokenType::Scrollupbutton;
+    downlink->type = TokenType::Scrolldownbutton;
+    barlink->type = TokenType::Scrollbar;
     barlink->x = barlink->y = 0;
     uplink->x = uplink->y = 0;
     downlink->x = downlink->y = 0;

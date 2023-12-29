@@ -84,7 +84,8 @@ extern HDWindow *gWindow;
 /** I am implementing a state node stack, this is the structure I store **/
 
 struct IOState {
-   int last_ch, last_token;
+   int last_ch;
+   TokenType last_token;
    int line_number;
    SourceInputKind input_type;
    long fpos, keyword_fpos;
@@ -111,7 +112,7 @@ long fpos;                      /* Position of pointer in file in characters */
 long page_start_fpos;           /* where the current pages fpos started      */
 long keyword_fpos;              /* fpos of beginning of most recent keyword */
 Token token;                    /* most recently read token */
-int last_token;                 /* most recently read token for unget_token */
+TokenType last_token;           /* most recently read token for unget_token */
 SourceInputKind input_type;                 /* indicates where to read input */
 char *input_string;             /* input string read when from_string is true */
 int last_ch;                    /* last character read, for unget_char */
@@ -233,7 +234,7 @@ const char* token_table[] = {
 void
 dumpToken(char *caller, Token t)
 { fprintf(stderr,"%s:dumpToken type=%s id=%s\n",
-    caller,token_table[t.type],t.id);
+    caller,token_table[OpenAxiom::rep(t.type)], t.id);
 }
 
 
@@ -251,9 +252,9 @@ parser_init()
               TokenHashSize, 
               (EqualFunction)string_equal, 
               (HashcodeFunction)string_hash);
-    for (i = 2; i <= openaxiom_NumberUserTokens_token; i++) {
+    for (i = 2; i <= OpenAxiom::rep(TokenType::NumberUserTokens); i++) {
         toke = (Token *) halloc(sizeof(Token), "Token");
-        toke->type = openaxiom_token_kind{i};
+        toke->type = TokenType{i};
         toke->id = token_table[i];
         hash_insert(&tokenHashTable, (char *)toke, toke->id);
     }
@@ -266,7 +267,7 @@ init_scanner()
 {
     keyword = 0;
     last_ch = NoChar;
-    last_token = 0;
+    last_token = {};
     input_type = SourceInputKind::File;
     fpos = 0;
     keyword_fpos = 0;
@@ -410,7 +411,7 @@ Token unget_toke;
 void
 unget_token()
 {
-    last_token = 1;
+    last_token = TokenType::Word;
     unget_toke.type = token.type;
     unget_toke.id = alloc_string(token.id - 1);
 }
@@ -425,13 +426,13 @@ get_token()
     static char buffer[1024];
     char *buf = buffer;
 
-    if (last_token) {
-        last_token = 0;
+    if (last_token != TokenType{}) {
+        last_token = {};
         token.type = unget_toke.type;
         strcpy(buffer, unget_toke.id);
         free((char*) unget_toke.id);
         token.id = buffer + 1;
-        if (token.type == EOF)
+        if (OpenAxiom::rep(token.type) == EOF)
             return EOF;
         else
             return 0;
@@ -444,7 +445,7 @@ get_token()
             seen_white++;
         if (c == '\n') {
             if (nls) {
-                token.type = openaxiom_Par_token;
+                token.type = TokenType::Par;
                 return 0;
             }
             else
@@ -468,19 +469,19 @@ get_token()
         return get_token();
     }
     if (input_type == SourceInputKind::File && c == '$') {
-        token.type = openaxiom_Dollar_token;
+        token.type = TokenType::Dollar;
         return 0;
     }
     switch (c) {
       case EOF:
-        token.type = openaxiom_token_kind{-1};
+        token.type = TokenType{-1};
         return EOF;
       case '\\':
         keyword_fpos = fpos - 1;
         c = get_char();
         if (!isalpha(c)) {
             *buf++ = c;
-            token.type = openaxiom_Word_token;
+            token.type = TokenType::Word;
             *buf = '\0';
             seen_white = 0;
         }
@@ -497,25 +498,25 @@ get_token()
         }
         break;
       case '{':
-        token.type = openaxiom_Lbrace_token;
+        token.type = TokenType::Lbrace;
         break;
       case '}':
-        token.type = openaxiom_Rbrace_token;
+        token.type = TokenType::Rbrace;
         break;
       case '[':
-        token.type = openaxiom_Lsquarebrace_token;
+        token.type = TokenType::Lsquarebrace;
         *buf++ = c;
         *buf = '\0';
         token.id = buffer + 1;
         break;
       case ']':
-        token.type = openaxiom_Rsquarebrace_token;
+        token.type = TokenType::Rsquarebrace;
         *buf++ = c;
         *buf = '\0';
         token.id = buffer + 1;
         break;
       case '#':
-        token.type = openaxiom_Pound_token;
+        token.type = TokenType::Pound;
 
         /*
          * if I get a pound then what I do is parse until I get something
@@ -539,7 +540,7 @@ get_token()
       case '"':
       case ':':
       case ';':
-        token.type = openaxiom_Punctuation_token;
+        token.type = TokenType::Punctuation;
         *buf++ = c;
         *buf = '\0';
         /** Now I should set the buffer[0] as my flag for whether I had
@@ -559,7 +560,7 @@ get_token()
         } while (((c = get_char()) != EOF) && (c == '-'));
         unget_char(c);
         *buf = '\0';
-        token.type = openaxiom_Dash_token;
+        token.type = TokenType::Dash;
         token.id = buffer + 1;
         break;
       default:
@@ -568,7 +569,7 @@ get_token()
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = openaxiom_Word_token;
+        token.type = TokenType::Word;
         token.id = buffer + 1;
         break;
     }
@@ -584,7 +585,7 @@ get_token()
  */
 
 typedef struct be_struct {
-    int type;
+    TokenType type;
     char *id;
     struct be_struct *next;
 }   BeStruct;
@@ -600,7 +601,7 @@ jump()
 }
 
 void
-push_be_stack(int type, const char* id)
+push_be_stack(TokenType type, const char* id)
 {
     BeStruct *be = (BeStruct *) halloc(sizeof(BeStruct), "BeginENd stack");
 
@@ -613,7 +614,7 @@ push_be_stack(int type, const char* id)
     return;
 }
 void
-check_and_pop_be_stack(int type, const char* id)
+check_and_pop_be_stack(TokenType type, const char* id)
 {
     BeStruct *x;
 
@@ -663,12 +664,12 @@ be_type(const char* which)
 {
     Token store;
 
-    get_expected_token(openaxiom_Lbrace_token);
-    get_expected_token(openaxiom_Word_token);
+    get_expected_token(TokenType::Lbrace);
+    get_expected_token(TokenType::Word);
     switch (token.id[0]) {
       case 't':
         if (!strcmp(token.id, "titems")) {
-            token.type = openaxiom_Begintitems_token;
+            token.type = TokenType::Begintitems;
         }
         else {
             return -1;
@@ -676,13 +677,13 @@ be_type(const char* which)
         break;
       case 'p':
         if (!strcmp(token.id, "page")) {
-            token.type = openaxiom_Page_token;
+            token.type = TokenType::Page;
         }
         else if (!strcmp(token.id, "paste")) {
-            token.type = openaxiom_Paste_token;
+            token.type = TokenType::Paste;
         }
         else if (!strcmp(token.id, "patch")) {
-            token.type = openaxiom_Patch_token;
+            token.type = TokenType::Patch;
         }
         else {
             return -1;
@@ -690,7 +691,7 @@ be_type(const char* which)
         break;
       case 'v':         /* possibly a verbatim mode */
         if (!strcmp(token.id, "verbatim")) {
-            token.type = openaxiom_Verbatim_token;
+            token.type = TokenType::Verbatim;
         }
         else {
             return -1;
@@ -698,10 +699,10 @@ be_type(const char* which)
         break;
       case 's':         /* possibly a scroll mode */
         if (!strcmp("scroll", token.id)) {
-            token.type = openaxiom_Beginscroll_token;
+            token.type = TokenType::Beginscroll;
         }
         else if (!strcmp(token.id, "spadsrc")) {
-            token.type = openaxiom_Spadsrc_token;
+            token.type = TokenType::Spadsrc;
         }
         else {
             return -1;
@@ -709,7 +710,7 @@ be_type(const char* which)
         break;
       case 'i':         /* possibly a item */
         if (!strcmp("items", token.id)) {
-            token.type = openaxiom_Beginitems_token;
+            token.type = TokenType::Beginitems;
         }
         else {
             return -1;
@@ -720,7 +721,7 @@ be_type(const char* which)
     }
     store.type = token.type;
     /* store.id = alloc_string(token.id); */
-    get_expected_token(openaxiom_Rbrace_token);
+    get_expected_token(TokenType::Rbrace);
     token.type = store.type;
 
     /*
@@ -755,8 +756,8 @@ begin_type()
     }
     else {
         if (gWindow != NULL && !gInVerbatim
-            && token.type != openaxiom_Verbatim_token
-            && token.type != openaxiom_Spadsrc_token) {
+            && token.type != TokenType::Verbatim
+            && token.type != TokenType::Spadsrc) {
             /* Now here I should push the needed info and then get */
             push_be_stack(token.type, token.id);
         }
@@ -766,9 +767,9 @@ begin_type()
 }
 
 // Return the closing matching end token type of the argument.
-static constexpr openaxiom_token_kind matching_end(openaxiom_token_kind t)
+static constexpr TokenType matching_end(TokenType t)
 {
-    return openaxiom_token_kind{t + 3000};
+    return TokenType{OpenAxiom::rep(t) + 3000};
 }
 
 int
@@ -803,8 +804,8 @@ end_type()
         }
         else {
             if (gWindow != NULL
-                && ((gInVerbatim && token.type == openaxiom_Verbatim_token)
-                    || (gInSpadsrc && token.type == openaxiom_Spadsrc_token))) {
+                && ((gInVerbatim && token.type == TokenType::Verbatim)
+                    || (gInSpadsrc && token.type == TokenType::Spadsrc))) {
                 check_and_pop_be_stack(token.type, token.id);
                 token.type = matching_end(token.type);
                 return 1;
@@ -820,76 +821,75 @@ end_type()
 
 
 void
-token_name(int type)
+token_name(TokenType type)
 {
-    if (type <= openaxiom_NumberUserTokens_token)
-        strcpy(ebuffer, token_table[type]);
+    if (type <= TokenType::NumberUserTokens)
+        strcpy(ebuffer, token_table[OpenAxiom::rep(type)]);
     else {
         switch (type) {
-          case openaxiom_Lbrace_token:
+          case TokenType::Lbrace:
             strcpy(ebuffer, "{");
             break;
-          case openaxiom_Rbrace_token:
+          case TokenType::Rbrace:
             strcpy(ebuffer, "}");
             break;
-          case openaxiom_Macro_token:
+          case TokenType::Macro:
             strcpy(ebuffer, token.id);
             break;
-          case openaxiom_Group_token:
+          case TokenType::Group:
             strcpy(ebuffer, "{");
             break;
-          case openaxiom_Pound_token:
+          case TokenType::Pound:
             strcpy(ebuffer, "#");
             break;
-          case openaxiom_Lsquarebrace_token:
+          case TokenType::Lsquarebrace:
             strcpy(ebuffer, "[");
             break;
-          case openaxiom_Rsquarebrace_token:
+          case TokenType::Rsquarebrace:
             strcpy(ebuffer, "]");
             break;
-          case openaxiom_Punctuation_token:
+          case TokenType::Punctuation:
             strcpy(ebuffer, token.id);
             break;
-          case openaxiom_Dash_token:
+          case TokenType::Dash:
             strcpy(ebuffer, token.id);
             break;
-          case openaxiom_Verbatim_token:
+          case TokenType::Verbatim:
             strcpy(ebuffer, "\\begin{verbatim}");
             break;
-          case openaxiom_Scroll_token:
+          case TokenType::Scroll:
             strcpy(ebuffer, "\\begin{scroll}");
             break;
-          case openaxiom_Dollar_token:
+          case TokenType::Dollar:
             strcpy(ebuffer, "$");
             break;
-          case openaxiom_Percent_token:
+          case TokenType::Percent:
             strcpy(ebuffer, "%");
             break;
-          case openaxiom_Carrot_token:
+          case TokenType::Carrot:
             strcpy(ebuffer, "^");
             break;
-          case openaxiom_Underscore_token:
+          case TokenType::Underscore:
             strcpy(ebuffer, "_");
             break;
-          case openaxiom_Tilde_token:
+          case TokenType::Tilde:
             strcpy(ebuffer, "~");
             break;
-          case openaxiom_Cond_token:
+          case TokenType::Cond:
             sprintf(ebuffer, "\\%s", token.id);
             break;
-          case openaxiom_Icorrection_token:
+          case TokenType::Icorrection:
             strcpy(ebuffer, "\\/");
             break;
-          case openaxiom_Paste_token:
+          case TokenType::Paste:
             strcpy(ebuffer, "\\begin{paste}");
             break;
-          case openaxiom_Patch_token:
+          case TokenType::Patch:
             strcpy(ebuffer, "\\begin{patch}");
             break;
           default:
             sprintf(ebuffer, " %d ", type);
         }
-        /*return 1;*/
     }
 }
 
@@ -898,7 +898,7 @@ token_name(int type)
 void
 print_token()
 {
-    if (token.type == openaxiom_Word_token)
+    if (token.type == TokenType::Word)
         printf("%s ", token.id);
     else {
         token_name(token.type);
@@ -928,7 +928,7 @@ print_page_and_filename()
 {
     char obuff[128];
 
-    if (gPageBeingParsed->type == Normal) {
+    if (gPageBeingParsed->type == TokenType::Normal) {
 
         /*
          * Now try to inform the user as close to possible where the error
@@ -938,11 +938,11 @@ print_page_and_filename()
                 gPageBeingParsed->name, line_number,
                 gPageBeingParsed->filename);
     }
-    else if (gPageBeingParsed->type == SpadGen) {
+    else if (gPageBeingParsed->type == TokenType::SpadGen) {
         sprintf(obuff, "While parsing %s from the Spad socket\n",
                 gPageBeingParsed->name);
     }
-    else if (gPageBeingParsed->type == Unixfd) {
+    else if (gPageBeingParsed->type == TokenType::Unixfd) {
         sprintf(obuff, "While parsing %s from a Unixpipe\n",
                 gPageBeingParsed->name);
     }
@@ -968,41 +968,41 @@ keyword_type()
          * if I am a keyword I also have to check to see if I am a begin or
          * an end
          */
-        if (token.type == openaxiom_Begin_token)
+        if (token.type == TokenType::Begin)
             return begin_type();
-        if (token.type == openaxiom_End_token)
+        if (token.type == TokenType::End)
             return end_type();
         /* next check to see if it is a macro */
     }
     else if (gWindow != NULL) {
         if (hash_find(gWindow->fMacroHashTable, token.id) != NULL)
-            token.type = openaxiom_Macro_token;
+            token.type = TokenType::Macro;
         else if (gPageBeingParsed->box_hash != NULL &&
                  hash_find(gPageBeingParsed->box_hash, token.id) != NULL)
         {
-            token.type = openaxiom_Boxcond_token;
+            token.type = TokenType::Boxcond;
         }
         else if (hash_find(gWindow->fCondHashTable, token.id) != NULL)
-            token.type = openaxiom_Cond_token;
+            token.type = TokenType::Cond;
         else                    /* We have no idea what we've got */
-            token.type = openaxiom_Unkeyword_token;
+            token.type = TokenType::Unkeyword;
     }
     else {                      /* We am probably in htadd so just return. It
                                  * is only concerned with pages anyway */
-        token.type = openaxiom_Unkeyword_token;
+        token.type = TokenType::Unkeyword;
     }
     return 0;
 }
 
 /* read a token, and report a syntax error if it has the wrong type */
 void
-get_expected_token(int type)
+get_expected_token(TokenType type)
 {
     get_token();
     if (token.type != type) {
         token_name(type);
         fprintf(stderr, "syntax error: expected a %s\n", ebuffer);
-        if (token.type == EOF) {
+        if (token.type == TokenType{EOF}) {
             print_page_and_filename();
             fprintf(stderr, "Unexpected EOF\n");
         }

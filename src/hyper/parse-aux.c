@@ -61,7 +61,7 @@ namespace {
 }
 
 static void read_ht_files(HTEnvironment& env, FILE * db_fp , const std::string& dir);
-static HyperDocPage * make_special_page(int type , const char * name);
+static HyperDocPage * make_special_page(TokenType type , const char * name);
 
 extern int make_input_file;
 extern int gverify_dates;
@@ -255,7 +255,7 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
                 ungetc(c, db_fp);
                 get_token();
                 switch (token.type) {
-                  case openaxiom_Page_token:
+                  case TokenType::Page:
                     get_token();
 
                     /*
@@ -278,11 +278,11 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
                     page->fpos.pos = atoi(token.id);
                     get_token();
                     page->fpos.line_number = atoi(token.id);
-                    page->type = UnloadedPageType;
+                    page->type = TokenType::UnloadedPageType;
                     hash_insert(page_hash, (char *)page, page->name);
                     pages++;
                     break;
-                  case openaxiom_NewCommand_token:
+                  case TokenType::NewCommand:
                     get_token();
                     macro = (MacroStore *) halloc(sizeof(MacroStore), "MacroStore");
                     macro->fpos.name = alloc_string(fullname);
@@ -306,7 +306,7 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
                     macro->loaded = 0;
                     hash_insert(macro_hash, (char *)macro, macro->name);
                     break;
-                  case openaxiom_Patch_token:
+                  case TokenType::Patch:
                     get_token();
                     patch = (PatchStore *) alloc_patchstore();
                     patch->fpos.name = alloc_string(fullname);
@@ -340,16 +340,16 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
 /* create an unmapped input-only window for an active screen area */
 
 HyperLink *
-make_link_window(TextNode *link_node, int type, int isSubWin)
+make_link_window(TextNode *link_node, TokenType type, int isSubWin)
 {
     HyperLink *link;
     XSetWindowAttributes at;
 
     if (make_input_file)
         switch (type) {
-          case openaxiom_Downlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Windowlink_token: {
+          case TokenType::Downlink:
+          case TokenType::Memolink:
+          case TokenType::Windowlink: {
                 char *name;
                 HyperDocPage *p;
 
@@ -401,7 +401,7 @@ make_paste_window(PasteNode *paste)
                                   0, 0, 100, 100, 0,
                                   0, InputOnly, CopyFromParent,
                                   CWEventMask | CWCursor, &at);
-        link->type = openaxiom_Pastebutton_token;
+        link->type = TokenType::Pastebutton;
         link->x = link->y = 0;
         link->reference.paste = paste;
         hash_insert(gLinkHashTable, (char *)link,(char *) &link->win);
@@ -415,7 +415,7 @@ make_paste_window(PasteNode *paste)
 /* create a HyperDoc page structure with the given type and name */
 
 static HyperDocPage *
-make_special_page(int type, const char *name)
+make_special_page(TokenType type, const char *name)
 {
     HyperDocPage *page = alloc_page(name);
 
@@ -436,15 +436,15 @@ void
 make_special_pages(HashTable *pageHashTable)
 {
     hash_insert(pageHashTable,
-                (char *)make_special_page(openaxiom_Quitbutton_token,
+                (char *)make_special_page(TokenType::Quitbutton,
                                           "QuitPage"),
                 "QuitPage");
     hash_insert(pageHashTable,
-                (char *)make_special_page(openaxiom_Returnbutton_token,
+                (char *)make_special_page(TokenType::Returnbutton,
                                           "ReturnPage"),
                 "ReturnPage");
     hash_insert(pageHashTable,
-                (char *)make_special_page(openaxiom_Upbutton_token, "UpPage"),
+                (char *)make_special_page(TokenType::Upbutton, "UpPage"),
                 "UpPage");
 }
 
@@ -465,12 +465,12 @@ add_dependencies()
         print_page_and_filename();
         exit(-1);
     }
-    curr_node->type = openaxiom_Bound_token;
+    curr_node->type = TokenType::Bound;
     curr_node->data.node = alloc_node();
     curr_node = curr_node->data.node;
-    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(TokenType::Lbrace);
     parse_HyperDoc();
-    curr_node->type = openaxiom_Endarg_token;
+    curr_node->type = TokenType::Endarg;
     curr_node = bound_node;
 
     if (gPageBeingParsed->depend_hash == NULL) {
@@ -483,9 +483,9 @@ add_dependencies()
                   (HashcodeFunction) string_hash);
     }
     for (node = bound_node->data.node;
-         node->type != openaxiom_Endarg_token;
+         node->type != TokenType::Endarg;
          node = node->next) {
-        if (node->type == openaxiom_Word_token) {
+        if (node->type == TokenType::Word) {
             depend = (SpadcomDepend *) halloc(sizeof(SpadcomDepend), "SpadcomDepend");
             depend->label = alloc_string(node->data.text);
             depend->spadcom = cur_spadcom;
@@ -544,8 +544,8 @@ get_filename()
     static char buffer[256];
     char *buf = buffer;
 
-    if (last_token) {
-        last_token = 0;
+    if (last_token != TokenType{}) {
+        last_token = {};
         return 0;
     }
     do {
@@ -571,7 +571,7 @@ get_filename()
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = openaxiom_Word_token;
+        token.type = TokenType::Word;
         token.id = buffer;
         seen_white = 0;
         break;
@@ -590,7 +590,7 @@ get_input_string()
     string_node = alloc_node();
     curr_node = string_node;
     parse_HyperDoc();
-    curr_node->type = openaxiom_Endarg_token;
+    curr_node->type = TokenType::Endarg;
 
     /* Once here we print to string to get the actual name */
     string = print_to_string(string_node);
@@ -609,7 +609,7 @@ get_where()
     SourceInputKind tw;
 
     get_token();
-    if (token.type != openaxiom_Word_token)
+    if (token.type != TokenType::Word)
        return SourceInputKind::Error;
 
     /* Now try to determine if it is a good type */
@@ -628,7 +628,7 @@ get_where()
 
     /* now check to see if I got a closing square brace */
     get_token();
-    if (token.type != openaxiom_Rsquarebrace_token)
+    if (token.type != TokenType::Rsquarebrace)
        return SourceInputKind::Error;
 
     return tw;

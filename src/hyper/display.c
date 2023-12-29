@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,7 @@
 #include "titlebar.h"
 #include "parse-types.h"
 
+using namespace OpenAxiom;
 
 extern ItemStack *gTopOfItemStack;
 short int gDisplayRegion = 0;
@@ -146,7 +147,7 @@ show_page(HyperDocPage *page)
     gRegionOffset = 0;
     y_off = 0;
     gDisplayRegion = Header;
-    show_text(page->header->next, openaxiom_Endheader_token);
+    show_text(page->header->next, TokenType::Endheader);
 
     if (doShowScrollBars && page->scrolling) {
         /* Show the footer  */
@@ -154,14 +155,14 @@ show_page(HyperDocPage *page)
             gDisplayRegion = Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
-            show_text(page->footer->next, openaxiom_Endfooter_token);
+            show_text(page->footer->next, TokenType::Endfooter);
             /* Show the scrolling region */
             if (page->scrolling->next)
                 gDisplayRegion = Scrolling;
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
-            show_text(page->scrolling->next, openaxiom_Endscrolling_token);
+            show_text(page->scrolling->next, TokenType::Endscrolling);
             showScrollBars(gWindow);
         }
         drawScrollLines();
@@ -188,7 +189,7 @@ expose_page(HyperDocPage *page)
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
     gRegionOffset = 0;
     gDisplayRegion = Header;
-    show_text(page->header->next, openaxiom_Endheader_token);
+    show_text(page->header->next, TokenType::Endheader);
     getScrollBarMinimumSize(&width, &height);
 
     /*
@@ -199,7 +200,7 @@ expose_page(HyperDocPage *page)
             gDisplayRegion = Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
-            show_text(page->footer->next, openaxiom_Endfooter_token);
+            show_text(page->footer->next, TokenType::Endfooter);
         }
 
         if (height > gWindow->scrollheight) {
@@ -215,7 +216,7 @@ expose_page(HyperDocPage *page)
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
-            show_text(page->scrolling->next, openaxiom_Endscrolling_token);
+            show_text(page->scrolling->next, TokenType::Endscrolling);
             if (doShowScrollBars)
                 showScrollBars(gWindow);
         }
@@ -239,7 +240,7 @@ scroll_page(HyperDocPage *page)
     gRegionOffset = 0;
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     y_off = gWindow->page->scroll_off;
-    show_text(page->scrolling->next, openaxiom_Endscrolling_token);
+    show_text(page->scrolling->next, TokenType::Endscrolling);
     moveScroller(gWindow);
     XFlush(gXDisplay);
 }
@@ -282,7 +283,7 @@ paste_page(TextNode *node)
     else
         XClearWindow(gXDisplay, gWindow->fScrollWindow);
 
-    show_text(gWindow->page->scrolling->next, openaxiom_Endscrolling_token);
+    show_text(gWindow->page->scrolling->next, TokenType::Endscrolling);
     XFlush(gXDisplay);
     hideScrollBars(gWindow);
 

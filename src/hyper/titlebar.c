@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2010, Gabriel Dos Reis.
+   Copyright (C) 2007-2023, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -216,7 +216,7 @@ showTitleBar()
 
     pop_group_stack();
 
-    show_text(gWindow->page->title->next, openaxiom_Endheader_token);
+    show_text(gWindow->page->title->next, TokenType::Endheader);
 
     /* Now draw the box around the title */
 
@@ -277,22 +277,22 @@ linkTitleBarWindows()
               *tw4link = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink");
 
     tw1link->win = gWindow->fTitleBarButton1;
-    tw1link->type = openaxiom_Quitbutton_token;
+    tw1link->type = TokenType::Quitbutton;
     tw1link->reference.node = NULL;
     tw1link->x = tw1link->y = 0;
 
     tw2link->win = gWindow->fTitleBarButton2;
-    tw2link->type = openaxiom_Helpbutton_token;
+    tw2link->type = TokenType::Helpbutton;
     tw2link->reference.node = NULL;
     tw2link->x = tw2link->y = 0;
 
     tw3link->win = gWindow->fTitleBarButton3;
-    tw3link->type = openaxiom_Returnbutton_token;
+    tw3link->type = TokenType::Returnbutton;
     tw3link->reference.node = NULL;
     tw3link->x = tw3link->y = 0;
 
     tw4link->win = gWindow->fTitleBarButton4;
-    tw4link->type = openaxiom_Upbutton_token;
+    tw4link->type = TokenType::Upbutton;
     tw4link->reference.node = NULL;
     tw4link->x = tw4link->y = 0;
 

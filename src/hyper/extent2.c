@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ using namespace OpenAxiom;
 static void center_nodes(TextNode * begin_node , TextNode * end_node);
 static int input_string_width(TextNode * node);
 static int punctuation_width(TextNode * node);
-static int text_height1(TextNode * node , int Ender);
+static int text_height1(TextNode * node , TokenType Ender);
 static int verbatim_width(TextNode * node);
 static int width_of_dash(TextNode * node);
 static int word_width(TextNode * node);
@@ -202,115 +202,115 @@ width_of_dash(TextNode * node)
  */
 
 int
-text_width(TextNode * node, int Ender)
+text_width(TextNode * node, TokenType Ender)
 {
     int twidth = 0, num_words;
 
     for (num_words = 0; node != NULL; num_words++, node = node->next) {
-        if (Ender == openaxiom_Endtokens_token) {
-            if (node->type == openaxiom_Endtokens_token)
+        if (Ender == TokenType::Endtokens) {
+            if (node->type == TokenType::Endtokens)
                 return twidth;
         }
         else if (node->type == Ender)
             return twidth;
 
         switch (node->type) {
-          case openaxiom_Macro_token:
-          case openaxiom_Pound_token:
+          case TokenType::Macro:
+          case TokenType::Pound:
             if (node->space && gInLine)
                 twidth += inter_word_space;
             break;
-          case openaxiom_Punctuation_token:
+          case TokenType::Punctuation:
             twidth += punctuation_width(node);
             break;
-          case openaxiom_Dash_token:
+          case TokenType::Dash:
             if (gInLine && node->space)
                 twidth += inter_word_space;
             twidth += width_of_dash(node);
             break;
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
             twidth += verbatim_width(node);
             break;
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Word_token:
+          case TokenType::Lsquarebrace:
+          case TokenType::Rsquarebrace:
+          case TokenType::Word:
             twidth += word_width(node);
             break;
-          case openaxiom_Box_token:
+          case TokenType::Box:
             twidth += 2 * box_space;
             break;
-          case openaxiom_Link_token:
-          case openaxiom_Downlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Windowlink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_Lispwindowlink_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Unixlink_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_Upbutton_token:
-          case openaxiom_Returnbutton_token:
-          case openaxiom_Description_token:
+          case TokenType::Link:
+          case TokenType::Downlink:
+          case TokenType::Memolink:
+          case TokenType::Windowlink:
+          case TokenType::LispMemoLink:
+          case TokenType::Lispwindowlink:
+          case TokenType::Lisplink:
+          case TokenType::Unixlink:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::LispDownLink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Spadlink:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Unixcommand:
+          case TokenType::Upbutton:
+          case TokenType::Returnbutton:
+          case TokenType::Description:
             push_active_group();
             break;
-          case openaxiom_Endbutton_token:
-          case openaxiom_Endspadcommand_token:
-          case openaxiom_Enddescription_token:
+          case TokenType::Endbutton:
+          case TokenType::Endspadcommand:
+          case TokenType::Enddescription:
             pop_group_stack();
             break;
-          case openaxiom_Endlink_token:
+          case TokenType::Endlink:
             pop_group_stack();
             break;
-          case openaxiom_Inputstring_token:
+          case TokenType::Inputstring:
             twidth += input_string_width(node);
             break;
-          case openaxiom_SimpleBox_token:
-          case openaxiom_Radiobox_token:
+          case TokenType::SimpleBox:
+          case TokenType::Radiobox:
             twidth += node->width + ((node->space) ? inter_word_space : 0);
             break;
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
             push_spad_group();
             break;
-          case openaxiom_VSpace_token:
+          case TokenType::VSpace:
             break;
-          case openaxiom_HSpace_token:
+          case TokenType::HSpace:
             twidth +=
                 (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             break;
-          case openaxiom_Space_token:
+          case TokenType::Space:
             twidth += (gTopOfGroupStack->cur_font->max_bounds.width) *
                 (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             break;
-          case openaxiom_Tab_token:
+          case TokenType::Tab:
             twidth = (gTopOfGroupStack->cur_font->max_bounds.width) *
                 (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             break;
-          case openaxiom_Table_token:
+          case TokenType::Table:
             twidth = gWindow->width - left_margin - right_margin_space;
             break;
-          case openaxiom_Tableitem_token:
-          case openaxiom_Group_token:
+          case TokenType::Tableitem:
+          case TokenType::Group:
             twidth += (node->space) ? inter_word_space : 0;
             push_group_stack();
             break;
-          case openaxiom_BoldFace_token:
+          case TokenType::BoldFace:
             if (node->space)
                 twidth += inter_word_space;
             bf_top_group();
             break;
-          case openaxiom_Emphasize_token:
+          case TokenType::Emphasize:
             if (node->space)
                 twidth += inter_word_space;
             if (gTopOfGroupStack->cur_font == gRmFont)
@@ -318,60 +318,60 @@ text_width(TextNode * node, int Ender)
             else
                 rm_top_group();
             break;
-          case openaxiom_It_token:
+          case TokenType::It:
             if (node->space)
                 twidth += inter_word_space;
             em_top_group();
             break;
-          case openaxiom_Rm_token:
-          case openaxiom_Sl_token:
-          case openaxiom_Tt_token:
+          case TokenType::Rm:
+          case TokenType::Sl:
+          case TokenType::Tt:
             if (node->space)
                 twidth += inter_word_space;
             rm_top_group();
             break;
-          case openaxiom_Endgroup_token:
+          case TokenType::Endgroup:
             pop_group_stack();
             break;
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
             if (node->width == -1)
                 insert_bitmap_file(node);
             twidth += node->width;
             break;
-          case openaxiom_Inputpixmap_token:
+          case TokenType::Inputpixmap:
             if (node->width == -1)
                 insert_pixmap_file(node);
             twidth += node->width;
             break;
-          case openaxiom_Mbox_token:
-          case openaxiom_Indent_token:
-          case openaxiom_Endmacro_token:
-          case openaxiom_Free_token:
-          case openaxiom_Bound_token:
-          case openaxiom_Beep_token:
-          case openaxiom_Item_token:
-          case openaxiom_Titem_token:
-          case openaxiom_Beginitems_token:
-          case openaxiom_Noop_token:
-          case openaxiom_Endinputbox_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Ifcond_token:
-          case openaxiom_Endif_token:
-          case openaxiom_Begintitems_token:
-          case openaxiom_Enditems_token:
-          case openaxiom_Endtitems_token:
-          case openaxiom_Endtableitem_token:
-          case openaxiom_Endtable_token:
-          case openaxiom_Endparameter_token:
-          case openaxiom_Endbox_token:
-          case openaxiom_Endheader_token:
-          case openaxiom_Endfooter_token:
-          case openaxiom_Endscrolling_token:
-          case openaxiom_Endverbatim_token:
-          case openaxiom_Endspadsrc_token:
+          case TokenType::Mbox:
+          case TokenType::Indent:
+          case TokenType::Endmacro:
+          case TokenType::Free:
+          case TokenType::Bound:
+          case TokenType::Beep:
+          case TokenType::Item:
+          case TokenType::Titem:
+          case TokenType::Beginitems:
+          case TokenType::Noop:
+          case TokenType::Endinputbox:
+          case TokenType::Fi:
+          case TokenType::Ifcond:
+          case TokenType::Endif:
+          case TokenType::Begintitems:
+          case TokenType::Enditems:
+          case TokenType::Endtitems:
+          case TokenType::Endtableitem:
+          case TokenType::Endtable:
+          case TokenType::Endparameter:
+          case TokenType::Endbox:
+          case TokenType::Endheader:
+          case TokenType::Endfooter:
+          case TokenType::Endscrolling:
+          case TokenType::Endverbatim:
+          case TokenType::Endspadsrc:
             break;
-          case openaxiom_Newline_token:
+          case TokenType::Newline:
             /* WOw, I guess I should ertunr a really big number */
             twidth += gWindow->width;
             break;
@@ -394,13 +394,13 @@ text_width(TextNode * node, int Ender)
  */
 
 int
-total_width(TextNode * node, int Ender)
+total_width(TextNode * node, TokenType Ender)
 {
     int twidth = 0;
 
     for (; (node != NULL); node = node->next) {
-        if (Ender == openaxiom_Endtokens_token) {
-            if (node->type >= openaxiom_Endtokens_token)
+        if (Ender == TokenType::Endtokens) {
+            if (node->type >= TokenType::Endtokens)
                 return twidth;
         }
         else if (node->type == Ender)
@@ -417,68 +417,68 @@ total_width(TextNode * node, int Ender)
         /*** Else depending on the node type ***/
 
         switch (node->type) {
-          case openaxiom_Noop_token:
-          case openaxiom_Endinputbox_token:
-          case openaxiom_Pound_token:
-          case openaxiom_Ifcond_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Endif_token:
+          case TokenType::Noop:
+          case TokenType::Endinputbox:
+          case TokenType::Pound:
+          case TokenType::Ifcond:
+          case TokenType::Fi:
+          case TokenType::Endif:
             break;
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Punctuation_token:
-          case openaxiom_Word_token:
-          case openaxiom_Dash_token:
+          case TokenType::Rsquarebrace:
+          case TokenType::Punctuation:
+          case TokenType::Word:
+          case TokenType::Dash:
             twidth += XTextWidth(gTopOfGroupStack->cur_font, node->data.text,
                                  strlen(node->data.text));
             break;
-          case openaxiom_Box_token:
-          case openaxiom_Link_token:
-          case openaxiom_Downlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Windowlink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_Lispwindowlink_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Unixlink_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_Inputstring_token:
-          case openaxiom_SimpleBox_token:
-          case openaxiom_Radiobox_token:
-          case openaxiom_Upbutton_token:
-          case openaxiom_Returnbutton_token:
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
-          case openaxiom_VSpace_token:
-          case openaxiom_HSpace_token:
-          case openaxiom_Space_token:
-          case openaxiom_Table_token:
-          case openaxiom_Group_token:
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
-          case openaxiom_Inputpixmap_token:
-          case openaxiom_Free_token:
-          case openaxiom_Beep_token:
-          case openaxiom_Bound_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_BoldFace_token:
-          case openaxiom_Emphasize_token:
-          case openaxiom_It_token:
-          case openaxiom_Rm_token:
-          case openaxiom_Sl_token:
-          case openaxiom_Tt_token:
-          case openaxiom_Newline_token:
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
+          case TokenType::Box:
+          case TokenType::Link:
+          case TokenType::Downlink:
+          case TokenType::Memolink:
+          case TokenType::Windowlink:
+          case TokenType::LispMemoLink:
+          case TokenType::Lispwindowlink:
+          case TokenType::Lisplink:
+          case TokenType::Unixlink:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::LispDownLink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Spadlink:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Unixcommand:
+          case TokenType::Inputstring:
+          case TokenType::SimpleBox:
+          case TokenType::Radiobox:
+          case TokenType::Upbutton:
+          case TokenType::Returnbutton:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
+          case TokenType::VSpace:
+          case TokenType::HSpace:
+          case TokenType::Space:
+          case TokenType::Table:
+          case TokenType::Group:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
+          case TokenType::Inputpixmap:
+          case TokenType::Free:
+          case TokenType::Beep:
+          case TokenType::Bound:
+          case TokenType::Lsquarebrace:
+          case TokenType::BoldFace:
+          case TokenType::Emphasize:
+          case TokenType::It:
+          case TokenType::Rm:
+          case TokenType::Sl:
+          case TokenType::Tt:
+          case TokenType::Newline:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
             return twidth;
           default:
             break;
@@ -547,7 +547,7 @@ init_text()
  */
 
 int
-text_height(TextNode * node, int Ender)
+text_height(TextNode * node, TokenType Ender)
 {
     cur_height = 0;
     return text_height1(node, Ender);
@@ -558,114 +558,114 @@ text_height(TextNode * node, int Ender)
  */
 
 static int
-text_height1(TextNode * node, int Ender)
+text_height1(TextNode * node, TokenType Ender)
 {
     for (; node != NULL; node = node->next) {
-        if (Ender == openaxiom_Endtokens_token) {
-            if (node->type > -openaxiom_Endtokens_token)
+        if (Ender == TokenType::Endtokens) {
+            if (node->type >= TokenType::Endtokens)
                 return cur_height;
         }
         else if (node->type == Ender)
             return cur_height;
         switch (node->type) {
-          case openaxiom_Center_token:
-          case openaxiom_Downlink_token:
-          case openaxiom_Link_token:
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
-          case openaxiom_Upbutton_token:
-          case openaxiom_Returnbutton_token:
-          case openaxiom_Windowlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Lispwindowlink_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Unixlink_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_SimpleBox_token:
-          case openaxiom_Radiobox_token:
-          case openaxiom_Group_token:
-          case openaxiom_Box_token:
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
-          case openaxiom_Inputpixmap_token:
-          case openaxiom_Horizontalline_token:
-          case openaxiom_Punctuation_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Word_token:
-          case openaxiom_Verbatim_token:
-          case openaxiom_Math_token:
-          case openaxiom_Spadsrctxt_token:
-          case openaxiom_Dash_token:
-          case openaxiom_Inputstring_token:
+          case TokenType::Center:
+          case TokenType::Downlink:
+          case TokenType::Link:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
+          case TokenType::Upbutton:
+          case TokenType::Returnbutton:
+          case TokenType::Windowlink:
+          case TokenType::Memolink:
+          case TokenType::Lispwindowlink:
+          case TokenType::Lisplink:
+          case TokenType::Unixlink:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::LispDownLink:
+          case TokenType::LispMemoLink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Spadlink:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Unixcommand:
+          case TokenType::SimpleBox:
+          case TokenType::Radiobox:
+          case TokenType::Group:
+          case TokenType::Box:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
+          case TokenType::Inputpixmap:
+          case TokenType::Horizontalline:
+          case TokenType::Punctuation:
+          case TokenType::Lsquarebrace:
+          case TokenType::Rsquarebrace:
+          case TokenType::Word:
+          case TokenType::Verbatim:
+          case TokenType::Math:
+          case TokenType::Spadsrctxt:
+          case TokenType::Dash:
+          case TokenType::Inputstring:
             cur_height = max(node->y, cur_height);
             break;
-          case openaxiom_Mbox_token:
-          case openaxiom_Macro_token:
-          case openaxiom_Pound_token:
-          case openaxiom_Emphasize_token:
-          case openaxiom_BoldFace_token:
-          case openaxiom_It_token:
-          case openaxiom_Rm_token:
-          case openaxiom_Sl_token:
-          case openaxiom_Tt_token:
-          case openaxiom_Endparameter_token:
-          case openaxiom_Description_token:
-          case openaxiom_Enddescription_token:
-          case openaxiom_Noop_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Ifcond_token:
-          case openaxiom_Endif_token:
-          case openaxiom_Endinputbox_token:
-          case openaxiom_Tab_token:
-          case openaxiom_Newline_token:
-          case openaxiom_Space_token:
-          case openaxiom_VSpace_token:
-          case openaxiom_HSpace_token:
-          case openaxiom_Beginitems_token:
-          case openaxiom_Begintitems_token:
-          case openaxiom_Endtitems_token:
-          case openaxiom_Titem_token:
-          case openaxiom_Enditems_token:
-          case openaxiom_Endtable_token:
-          case openaxiom_Endtableitem_token:
-          case openaxiom_Item_token:
-          case openaxiom_Par_token:
-          case openaxiom_Beep_token:
-          case openaxiom_Free_token:
-          case openaxiom_Bound_token:
-          case openaxiom_Endgroup_token:
-          case openaxiom_Endcenter_token:
-          case openaxiom_Endbutton_token:
-          case openaxiom_Endmacro_token:
-          case openaxiom_Tableitem_token:
-          case openaxiom_Endlink_token:
-          case openaxiom_Endspadcommand_token:
-          case openaxiom_Indent_token:
-          case openaxiom_Indentrel_token:
-          case openaxiom_Endbox_token:
-          case openaxiom_Endmbox_token:
-          case openaxiom_Table_token:
-          case openaxiom_Endverbatim_token:
-          case openaxiom_Endmath_token:
-          case openaxiom_Spadsrc_token:
-          case openaxiom_Endspadsrc_token:
+          case TokenType::Mbox:
+          case TokenType::Macro:
+          case TokenType::Pound:
+          case TokenType::Emphasize:
+          case TokenType::BoldFace:
+          case TokenType::It:
+          case TokenType::Rm:
+          case TokenType::Sl:
+          case TokenType::Tt:
+          case TokenType::Endparameter:
+          case TokenType::Description:
+          case TokenType::Enddescription:
+          case TokenType::Noop:
+          case TokenType::Fi:
+          case TokenType::Ifcond:
+          case TokenType::Endif:
+          case TokenType::Endinputbox:
+          case TokenType::Tab:
+          case TokenType::Newline:
+          case TokenType::Space:
+          case TokenType::VSpace:
+          case TokenType::HSpace:
+          case TokenType::Beginitems:
+          case TokenType::Begintitems:
+          case TokenType::Endtitems:
+          case TokenType::Titem:
+          case TokenType::Enditems:
+          case TokenType::Endtable:
+          case TokenType::Endtableitem:
+          case TokenType::Item:
+          case TokenType::Par:
+          case TokenType::Beep:
+          case TokenType::Free:
+          case TokenType::Bound:
+          case TokenType::Endgroup:
+          case TokenType::Endcenter:
+          case TokenType::Endbutton:
+          case TokenType::Endmacro:
+          case TokenType::Tableitem:
+          case TokenType::Endlink:
+          case TokenType::Endspadcommand:
+          case TokenType::Indent:
+          case TokenType::Indentrel:
+          case TokenType::Endbox:
+          case TokenType::Endmbox:
+          case TokenType::Table:
+          case TokenType::Endverbatim:
+          case TokenType::Endmath:
+          case TokenType::Spadsrc:
+          case TokenType::Endspadsrc:
             break;
-          case openaxiom_Beginscroll_token:
-          case openaxiom_Endscroll_token:
+          case TokenType::Beginscroll:
+          case TokenType::Endscroll:
             break;
-          case openaxiom_Endscrolling_token:
+          case TokenType::Endscrolling:
             return cur_height;
           default:
 
@@ -684,71 +684,71 @@ text_height1(TextNode * node, int Ender)
  */
 
 int
-max_x(TextNode * node, int Ender)
+max_x(TextNode * node, TokenType Ender)
 {
     max_x_value = 0;
     for (; node != NULL; node = node->next) {
-        if (Ender == openaxiom_Endtokens_token) {
-            if (node->type >= openaxiom_Endtokens_token)
+        if (Ender == TokenType::Endtokens) {
+            if (node->type >= TokenType::Endtokens)
                 return max_x_value;
         }
         else if (node->type == Ender)
             return max_x_value;
         switch (node->type) {
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Word_token:
+          case TokenType::Lsquarebrace:
+          case TokenType::Rsquarebrace:
+          case TokenType::Word:
             max_x_value = max(max_x_value, node->x + word_width(node));
             break;
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
             max_x_value = max(max_x_value, node->x + verbatim_width(node));
             break;
-          case openaxiom_Punctuation_token:
+          case TokenType::Punctuation:
             max_x_value = max(max_x_value, node->x + punctuation_width(node));
             break;
-          case openaxiom_Dash_token:
+          case TokenType::Dash:
             max_x_value = max(max_x_value, node->x + width_of_dash(node));
             break;
-          case openaxiom_HSpace_token:
+          case TokenType::HSpace:
             max_x_value = max(max_x_value, node->x +
                               (node->data.node != NULL ? atoi(node->data.node->data.text) : 1));
             break;
-          case openaxiom_Space_token:
+          case TokenType::Space:
             max_x_value = max(max_x_value, node->x +
                            (gTopOfGroupStack->cur_font->max_bounds.width) *
                               (node->data.node != NULL ? atoi(node->data.node->data.text) : 1));
             break;
-          case openaxiom_Group_token:
+          case TokenType::Group:
             push_group_stack();
             break;
-          case openaxiom_BoldFace_token:
+          case TokenType::BoldFace:
             bf_top_group();
             break;
-          case openaxiom_Emphasize_token:
+          case TokenType::Emphasize:
             if (gTopOfGroupStack->cur_font == gRmFont)
                 em_top_group();
             else
                 rm_top_group();
             break;
-          case openaxiom_It_token:
+          case TokenType::It:
             em_top_group();
             break;
-          case openaxiom_Rm_token:
-          case openaxiom_Sl_token:
-          case openaxiom_Tt_token:
+          case TokenType::Rm:
+          case TokenType::Sl:
+          case TokenType::Tt:
             rm_top_group();
             break;
-          case openaxiom_Endgroup_token:
+          case TokenType::Endgroup:
             pop_group_stack();
             break;
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
             if (node->width == -1)
                 insert_bitmap_file(node);
             max_x_value = max(max_x_value, node->x + node->width);
             break;
-          case openaxiom_Inputpixmap_token:
+          case TokenType::Inputpixmap:
             if (node->width == -1)
                 insert_pixmap_file(node);
             max_x_value = max(max_x_value, node->y + node->width);
@@ -765,42 +765,42 @@ x_value(TextNode * node)
 {
     for (; node != NULL; node = node->next) {
         switch (node->type) {
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
-          case openaxiom_Inputpixmap_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Word_token:
-          case openaxiom_Verbatim_token:
-          case openaxiom_Spadsrctxt_token:
-          case openaxiom_Dash_token:
-          case openaxiom_Punctuation_token:
-          case openaxiom_VSpace_token:
-          case openaxiom_HSpace_token:
-          case openaxiom_Horizontalline_token:
-          case openaxiom_Box_token:
-          case openaxiom_Downlink_token:
-          case openaxiom_Link_token:
-          case openaxiom_Lispwindowlink_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Unixlink_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_Space_token:
-          case openaxiom_SimpleBox_token:
-          case openaxiom_Radiobox_token:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
+          case TokenType::Inputpixmap:
+          case TokenType::Lsquarebrace:
+          case TokenType::Rsquarebrace:
+          case TokenType::Word:
+          case TokenType::Verbatim:
+          case TokenType::Spadsrctxt:
+          case TokenType::Dash:
+          case TokenType::Punctuation:
+          case TokenType::VSpace:
+          case TokenType::HSpace:
+          case TokenType::Horizontalline:
+          case TokenType::Box:
+          case TokenType::Downlink:
+          case TokenType::Link:
+          case TokenType::Lispwindowlink:
+          case TokenType::Lisplink:
+          case TokenType::Unixlink:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::LispDownLink:
+          case TokenType::LispMemoLink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Spadlink:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
+          case TokenType::Unixcommand:
+          case TokenType::Space:
+          case TokenType::SimpleBox:
+          case TokenType::Radiobox:
             return node->x;
           default:
 #ifdef DEBUG
@@ -821,8 +821,8 @@ trailing_space(TextNode * node)
 {
     int space = 0;
 
-    for (; node->type < openaxiom_Endtokens_token; node = node->next);
-    if (node->type == openaxiom_Space_token)
+    for (; node->type < TokenType::Endtokens; node = node->next);
+    if (node->type == TokenType::Space)
         space += inter_word_space *
             (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
     return space;

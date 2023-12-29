@@ -146,7 +146,7 @@ Pop_MR()
 void
 load_page(HyperDocPage *page)
 {
-    if (page->type == UnloadedPageType) {
+    if (page->type == TokenType::UnloadedPageType) {
         HyperDocPage *new_page;
         init_scanner();
         new_page = format_page((UnloadedPage *)page);
@@ -169,7 +169,7 @@ display_page(HyperDocPage *page)
     XUnmapSubwindows(gXDisplay, gWindow->fScrollWindow);
     XFlush(gXDisplay);
     try {
-        if (page->type == UnloadedPageType || page->type == ErrorPage) {
+        if (page->type == TokenType::UnloadedPageType || page->type == TokenType::ErrorPage) {
             /* Gack! (page should be a union!) */
             init_scanner();
             new_page = format_page((UnloadedPage *)page);
@@ -214,7 +214,7 @@ format_page(UnloadedPage *ulpage)
      * waisted memory
      */
     formatpage = page;
-    page->type = Normal;
+    page->type = TokenType::Normal;
     hash_replace(gWindow->fPageHashTable, (char *)page, ulpage->name);
 
     cfile = find_fp(ulpage->fpos);
@@ -232,7 +232,7 @@ parse_from_string(char *str)
 {
     OpenAxiom::IOStateManager save_io_state { };
     last_ch = NoChar;
-    last_token = 0;
+    last_token = {};
     input_string = str;
     input_type = SourceInputKind::String;
     parse_HyperDoc();
@@ -245,20 +245,20 @@ parse_title(HyperDocPage *page)
 
     Push_MR();
     gParserRegion = Title;
-    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(TokenType::Lbrace);
     node = alloc_node();
     page->title = node;
-    node->type = openaxiom_Titlenode_token;
+    node->type = TokenType::Titlenode;
     node->next = alloc_node();
     node = node->next;
-    node->type = openaxiom_Center_token;
+    node->type = TokenType::Center;
     node->next = alloc_node();
     curr_node = node->next;
     parse_HyperDoc();
-    curr_node->type = openaxiom_Endcenter_token;
+    curr_node->type = TokenType::Endcenter;
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    curr_node->type = openaxiom_Endtitle_token;
+    curr_node->type = TokenType::Endtitle;
     curr_node->next = NULL;
     if (gNeedIconName) {
         char *title = print_to_string(page->title);
@@ -266,7 +266,7 @@ parse_title(HyperDocPage *page)
         XSetIconName(gXDisplay, gWindow->fMainWindow, title);
         gNeedIconName = 0;
     }
-    if (token.type != openaxiom_Rbrace_token) {
+    if (token.type != TokenType::Rbrace) {
         fprintf(stderr, "(HyperDoc) Parse title was expecting a closing brace\n");
         print_page_and_filename();
         jump();
@@ -284,7 +284,7 @@ parse_header(HyperDocPage *page)
     gParserRegion = Header;
     node = alloc_node();
     page->header = node;
-    node->type = openaxiom_Headernode_token;
+    node->type = TokenType::Headernode;
     node->next = alloc_node();
     curr_node = node->next;
     parse_HyperDoc();
@@ -339,9 +339,9 @@ init_parse_patch(HyperDocPage *page)
 }
 
 #define end_page(t) \
-  ((t == openaxiom_Page_token \
-    || t == openaxiom_NewCommand_token \
-    ||t == openaxiom_Endpage_token) ? 1 : 0)
+  ((t == TokenType::Page \
+    || t == TokenType::NewCommand \
+    ||t == TokenType::Endpage) ? 1 : 0)
 
 static void
 parse_page(HyperDocPage *page)
@@ -350,12 +350,12 @@ parse_page(HyperDocPage *page)
 
     /* Get the name of the page */
 
-    get_expected_token(openaxiom_Page_token);
-    get_expected_token(openaxiom_Lbrace_token);
-    get_expected_token(openaxiom_Word_token);
+    get_expected_token(TokenType::Page);
+    get_expected_token(TokenType::Lbrace);
+    get_expected_token(TokenType::Word);
     if (page->name == NULL)
         page->name = alloc_string(token.id);
-    get_expected_token(openaxiom_Rbrace_token);
+    get_expected_token(TokenType::Rbrace);
     /* parse the title */
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
     parse_title(page);
@@ -388,118 +388,118 @@ parse_HyperDoc()
             return;
 
         switch (token.type) {
-          case openaxiom_Spadsrc_token:
+          case TokenType::Spadsrc:
             parse_spadsrc(curr_node);
             break;
-          case openaxiom_Helppage_token:
+          case TokenType::Helppage:
             parse_help();
             break;
-          case openaxiom_Endpatch_token:
-          case openaxiom_Endpaste_token:
-          case openaxiom_Rbrace_token:
+          case TokenType::Endpatch:
+          case TokenType::Endpaste:
+          case TokenType::Rbrace:
             return;
-          case openaxiom_Paste_token:
+          case TokenType::Paste:
             parse_paste();
             break;
-          case openaxiom_Pastebutton_token:
+          case TokenType::Pastebutton:
             parse_pastebutton();
             break;
-          case openaxiom_Endpage_token:
-          case openaxiom_NewCommand_token:
-          case openaxiom_Page_token:
+          case TokenType::Endpage:
+          case TokenType::NewCommand:
+          case TokenType::Page:
             end_a_page();
             return;
-          case openaxiom_EndScroll_token:
-            token.type = openaxiom_Endscroll_token;
-          case openaxiom_Endscroll_token:
+          case TokenType::EndScroll:
+            token.type = TokenType::Endscroll;
+          case TokenType::Endscroll:
             start_footer();
             break;
-          case openaxiom_Beginscroll_token:
+          case TokenType::Beginscroll:
             start_scrolling();
             break;
-          case openaxiom_Thispage_token:        /* it really is just a word */
-            curr_node->type = openaxiom_Word_token;
+          case TokenType::Thispage:        /* it really is just a word */
+            curr_node->type = TokenType::Word;
             curr_node->data.text = alloc_string(gPageBeingParsed->name);
             break;
-          case openaxiom_Icorrection_token:
-            node->type = openaxiom_Noop_token;
+          case TokenType::Icorrection:
+            node->type = TokenType::Noop;
             break;
-          case openaxiom_Newcond_token:
+          case TokenType::Newcond:
             parse_newcond();
             break;
-          case openaxiom_Setcond_token:
+          case TokenType::Setcond:
             parse_setcond();
             break;
-          case openaxiom_Dollar_token:
-            parse_verbatim(openaxiom_Math_token);
+          case TokenType::Dollar:
+            parse_verbatim(TokenType::Math);
             break;
-          case openaxiom_Verbatim_token:
-            parse_verbatim(openaxiom_Verbatim_token);
+          case TokenType::Verbatim:
+            parse_verbatim(TokenType::Verbatim);
             break;
-          case openaxiom_Ifcond_token:
+          case TokenType::Ifcond:
             parse_ifcond();
             break;
-          case openaxiom_Fi_token:
+          case TokenType::Fi:
             if (gInIf)
                 return;
             else {
-                curr_node->type = openaxiom_Noop_token;
+                curr_node->type = TokenType::Noop;
                 /* Oops I had a problem parsing this puppy */
                 fprintf(stderr, "(HyperDoc) \\fi found without macthing if?\n");
                 throw HyperError{};
             }
-          case openaxiom_Else_token:
+          case TokenType::Else:
             if (gInIf)
                 return;
             else {
                 /* Oops I had a problem parsing this puppy */
-                curr_node->type = openaxiom_Noop_token;
+                curr_node->type = TokenType::Noop;
                 fprintf(stderr, "(HyperDoc) \\else found without macthing if?\n");
                 throw HyperError{};
             }
-          case openaxiom_Macro_token:
+          case TokenType::Macro:
             parse_macro();
             break;
-          case openaxiom_Env_token:
+          case TokenType::Env:
             /** In this case, get the environment value, and make it a word **/
             parse_env(curr_node);
             break;
-          case openaxiom_WindowId_token:
-            curr_node->type = openaxiom_WindowId_token;
+          case TokenType::WindowId:
+            curr_node->type = TokenType::WindowId;
             curr_node->space = token.id[-1];
             curr_node->data.text = window_id(gWindow->fMainWindow);
             break;
-          case openaxiom_Punctuation_token:
-          case openaxiom_Word_token:
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Dash_token:
+          case TokenType::Punctuation:
+          case TokenType::Word:
+          case TokenType::Lsquarebrace:
+          case TokenType::Dash:
             curr_node->type = token.type;
             curr_node->space = token.id[-1];
             curr_node->data.text = alloc_string(token.id);
             break;
-          case openaxiom_Pagename_token:
+          case TokenType::Pagename:
             {
                 char *str;
 
-                curr_node->type = openaxiom_Word_token;
+                curr_node->type = TokenType::Word;
                 curr_node->space = 0;
                 str = halloc(strlen(cur_page->name) + 1, "parse");
                 sprintf(str, "%s", cur_page->name);
                 curr_node->data.text = alloc_string(str);
                 break;
             }
-          case openaxiom_Examplenumber_token:
+          case TokenType::Examplenumber:
             {
                 char *str;
 
-                curr_node->type = openaxiom_Word_token;
+                curr_node->type = TokenType::Word;
                 curr_node->space = 0;
                 str = halloc(5, "parse");
                 sprintf(str, "%d", example_number);
                 curr_node->data.text = alloc_string(str);
                 break;
             }
-          case openaxiom_Rsquarebrace_token:
+          case TokenType::Rsquarebrace:
             if (gInOptional)
                 return;
             else {
@@ -508,187 +508,187 @@ parse_HyperDoc()
                 curr_node->data.text = alloc_string(token.id);
             }
             break;
-          case openaxiom_EndTitems_token:
-            token.type = openaxiom_Endtitems_token;
-          case openaxiom_Endtitems_token:
+          case TokenType::EndTitems:
+            token.type = TokenType::Endtitems;
+          case TokenType::Endtitems:
             if (gParserMode != AllMode) {
-                curr_node->type = openaxiom_Noop_token;
-                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
+                curr_node->type = TokenType::Noop;
+                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[rep(token.type)]);
                 throw HyperError{};
             }
             else {
                 curr_node->type = token.type;
                 break;
             }
-          case openaxiom_EndItems_token:
-            token.type = openaxiom_Enditems_token;
-          case openaxiom_Enditems_token:
+          case TokenType::EndItems:
+            token.type = TokenType::Enditems;
+          case TokenType::Enditems:
             gInItems = false;
-          case openaxiom_Horizontalline_token:
-          case openaxiom_Par_token:
-          case openaxiom_Newline_token:
-          case openaxiom_Titem_token:
+          case TokenType::Horizontalline:
+          case TokenType::Par:
+          case TokenType::Newline:
+          case TokenType::Titem:
             if (gParserMode != AllMode) {
-                curr_node->type = openaxiom_Noop_token;
-                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
+                curr_node->type = TokenType::Noop;
+                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[rep(token.type)]);
                 throw HyperError{};
             }
             else {
                 curr_node->type = token.type;
                 break;
             }
-          case openaxiom_Begintitems_token:
-          case openaxiom_Beginitems_token:
+          case TokenType::Begintitems:
+          case TokenType::Beginitems:
             if (gParserMode != AllMode) {
-                curr_node->type = openaxiom_Noop_token;
-                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[token.type]);
+                curr_node->type = TokenType::Noop;
+                fprintf(stderr, "(HyperDoc) Found a bad token %s\n", token_table[rep(token.type)]);
                 throw HyperError{};
             }
             else {
                 parse_begin_items();
                 break;
             }
-          case openaxiom_Item_token:
+          case TokenType::Item:
             parse_item();
             break;
-          case openaxiom_Mitem_token:
+          case TokenType::Mitem:
             parse_mitem();
             break;
-          case openaxiom_VSpace_token:
-          case openaxiom_Tab_token:
-          case openaxiom_HSpace_token:
-          case openaxiom_Indent_token:
-          case openaxiom_Indentrel_token:
+          case TokenType::VSpace:
+          case TokenType::Tab:
+          case TokenType::HSpace:
+          case TokenType::Indent:
+          case TokenType::Indentrel:
             parse_value1();
             break;
-          case openaxiom_Space_token:
+          case TokenType::Space:
             parse_value2();
             break;
-          case openaxiom_Lbrace_token:
-            curr_node->type = openaxiom_Group_token;
+          case TokenType::Lbrace:
+            curr_node->type = TokenType::Group;
             curr_node->space = token.id[-1];
             push_group_stack();
             node = alloc_node();
             curr_node->next = node;
             curr_node = curr_node->next;
             parse_HyperDoc();
-            curr_node->type = openaxiom_Endgroup_token;
+            curr_node->type = TokenType::Endgroup;
             pop_group_stack();
             break;
-          case openaxiom_Upbutton_token:
-          case openaxiom_Returnbutton_token:
-          case openaxiom_Link_token:
-          case openaxiom_Downlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Windowlink_token:
+          case TokenType::Upbutton:
+          case TokenType::Returnbutton:
+          case TokenType::Link:
+          case TokenType::Downlink:
+          case TokenType::Memolink:
+          case TokenType::Windowlink:
             parse_button();
             break;
-          case openaxiom_Unixlink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_Lispwindowlink_token:
+          case TokenType::Unixlink:
+          case TokenType::LispMemoLink:
+          case TokenType::LispDownLink:
+          case TokenType::Lisplink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Spadlink:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Unixcommand:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::Lispwindowlink:
             parse_command();
             break;
-          case openaxiom_Controlbitmap_token:
-          case openaxiom_Inputbitmap_token:
-          case openaxiom_Inputpixmap_token:
-          case openaxiom_Inputimage_token:
+          case TokenType::Controlbitmap:
+          case TokenType::Inputbitmap:
+          case TokenType::Inputpixmap:
+          case TokenType::Inputimage:
             parse_input_pix();
             break;
-          case openaxiom_Box_token:
+          case TokenType::Box:
             parse_box();
             break;
-          case openaxiom_Mbox_token:
+          case TokenType::Mbox:
             parse_mbox();
             break;
-          case openaxiom_Free_token:
+          case TokenType::Free:
             parse_free();
             break;
-          case openaxiom_Center_token:
+          case TokenType::Center:
             parse_centerline();
             break;
-          case openaxiom_Bound_token:
+          case TokenType::Bound:
             add_dependencies();
             break;
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
             parse_spadcommand(curr_node);
             break;
-          case openaxiom_Table_token:
+          case TokenType::Table:
             parse_table();
             break;
-          case openaxiom_Beep_token:
-          case openaxiom_Emphasize_token:
-          case openaxiom_BoldFace_token:
-          case openaxiom_Rm_token:
-          case openaxiom_It_token:
-          case openaxiom_Tt_token:
-          case openaxiom_Sl_token:
+          case TokenType::Beep:
+          case TokenType::Emphasize:
+          case TokenType::BoldFace:
+          case TokenType::Rm:
+          case TokenType::It:
+          case TokenType::Tt:
+          case TokenType::Sl:
             curr_node->type = token.type;
             curr_node->space = token.id[-1];
             break;
-          case openaxiom_Inputstring_token:
+          case TokenType::Inputstring:
             parse_inputstring();
             break;
-          case openaxiom_SimpleBox_token:
+          case TokenType::SimpleBox:
             parse_simplebox();
             break;
-          case openaxiom_BoxValue_token:
-          case openaxiom_StringValue_token:
+          case TokenType::BoxValue:
+          case TokenType::StringValue:
             if (!gStringValueOk) {
                 strcpy(ebuffer,"(HyperDoc): Unexpected Value Command:");
                 strcat(ebuffer, token.id);
 
                 parser_error(ebuffer);
-                curr_node->type = openaxiom_Noop_token;
+                curr_node->type = TokenType::Noop;
                 throw HyperError{};
             }
             curr_node->type = token.type;
             curr_node->space = token.id[-1];
-            get_expected_token(openaxiom_Lbrace_token);
-            get_expected_token(openaxiom_Word_token);
+            get_expected_token(TokenType::Lbrace);
+            get_expected_token(TokenType::Word);
             curr_node->data.text = alloc_string(token.id);
-            get_expected_token(openaxiom_Rbrace_token);
+            get_expected_token(TokenType::Rbrace);
             break;
-          case openaxiom_NoLines_token:
+          case TokenType::NoLines:
             gPageBeingParsed->page_flags |= NOLINES;
             break;
-          case openaxiom_Pound_token:
-            curr_node->type = openaxiom_Pound_token;
+          case TokenType::Pound:
+            curr_node->type = TokenType::Pound;
             curr_node->space = token.id[-1];
             curr_node->next = alloc_node();
             curr_node = curr_node->next;
             parse_parameters();
             break;
-          case openaxiom_Radiobox_token:
+          case TokenType::Radiobox:
             parse_radiobox();
             break;
-          case openaxiom_Radioboxes_token:
+          case TokenType::Radioboxes:
             parse_radioboxes();
             break;
-          case openaxiom_Replacepage_token:
+          case TokenType::Replacepage:
             parse_replacepage();
             break;
           default:
             fprintf(stderr, "(HyperDoc) Keyword not currently supported: %s\n", token.id);
             print_page_and_filename();
-            curr_node->type = openaxiom_Noop_token;
+            curr_node->type = TokenType::Noop;
             break;
         }
         if (gEndedPage)
             return;
-        if (curr_node->type != openaxiom_Noop_token) {
+        if (curr_node->type != TokenType::Noop) {
             node = alloc_node();
             curr_node->next = node;
             curr_node = node;
@@ -719,7 +719,7 @@ parse_page_from_socket()
     replace_page = NULL;
     try {
         parse_page(page);
-        page->type = SpadGen;
+        page->type = TokenType::SpadGen;
         page->filename = NULL;
         /* just for kicks, let me add this thing to the hash file */
         hpage = (HyperDocPage *) hash_find(gWindow->fPageHashTable, page->name);
@@ -761,7 +761,7 @@ parse_page_from_unixfd()
     gPageBeingParsed = page;
     try {
         parse_page(page);
-        page->type = Unixfd;
+        page->type = TokenType::Unixfd;
         page->filename = NULL;
     }
     catch (const HyperError&) {
@@ -783,11 +783,11 @@ start_scrolling()
      */
 
     if (gParserRegion != Header) {
-        curr_node->type = openaxiom_Noop_token;
+        curr_node->type = TokenType::Noop;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected BeginScrollFound\n");
         throw HyperError{};
     }
-    curr_node->type = openaxiom_Endheader_token;
+    curr_node->type = TokenType::Endheader;
     curr_node->next = NULL;
     Pop_MR();
 
@@ -796,7 +796,7 @@ start_scrolling()
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     curr_node = alloc_node();
     gPageBeingParsed->scrolling = curr_node;
-    curr_node->type = openaxiom_Scrollingnode_token;
+    curr_node->type = TokenType::Scrollingnode;
 }
 
 static void
@@ -808,13 +808,13 @@ start_footer()
      */
 
     if (gParserRegion != Scrolling) {
-        curr_node->type = openaxiom_Noop_token;
+        curr_node->type = TokenType::Noop;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected Endscroll Found\n");
         print_page_and_filename();
         throw HyperError{};
     }
 
-    curr_node->type = openaxiom_Endscrolling_token;
+    curr_node->type = TokenType::Endscrolling;
     curr_node->next = NULL;
     Pop_MR();
     linkScrollBars();
@@ -822,7 +822,7 @@ start_footer()
     Push_MR();
     gParserRegion = Footer;
     curr_node = alloc_node();
-    curr_node->type = openaxiom_Footernode_token;
+    curr_node->type = TokenType::Footernode;
     gPageBeingParsed->footer = curr_node;
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
 }
@@ -840,13 +840,13 @@ end_a_page()
     gEndedPage = true;
     if (gParserRegion == Footer) {
         /* the person had all the regions, I basically just have to leave */
-        curr_node->type = openaxiom_Endscrolling_token;
+        curr_node->type = TokenType::Endscrolling;
         curr_node->next = NULL;
         Pop_MR();
     }
     else if (gParserRegion == Header) {
         /* person had a header. So just end it and return */
-        curr_node->type = openaxiom_Endheader_token;
+        curr_node->type = TokenType::Endheader;
         curr_node->next = NULL;
         Pop_MR();
         gPageBeingParsed->scrolling = NULL;
@@ -857,8 +857,8 @@ end_a_page()
 static void
 parse_replacepage()
 {
-    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(TokenType::Lbrace);
     get_token();
     replace_page = alloc_string(token.id);
-    get_expected_token(openaxiom_Rbrace_token);
+    get_expected_token(TokenType::Rbrace);
 }

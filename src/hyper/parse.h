@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2016, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ extern void parse_from_string(char * str);
 extern HyperDocPage * parse_page_from_socket(void );
 extern HyperDocPage * parse_page_from_unixfd(void );
 extern HyperLink * make_input_window(InputItem * item);
-extern HyperLink * make_box_window(InputBox * box , int type);
+extern HyperLink * make_box_window(InputBox * box , OpenAxiom::TokenType type);
 extern void initialize_default(InputItem * item , char * buff);
 extern void parse_inputstring();
 extern void parse_simplebox();
@@ -69,7 +69,7 @@ extern void parse_radioboxes();
 extern void add_dependencies(void );
 extern FILE* find_fp(const FilePosition& fp);
 extern char * get_input_string(void );
-extern HyperLink * make_link_window(TextNode * link_node , int type , int isSubWin);
+extern HyperLink * make_link_window(TextNode * link_node , OpenAxiom::TokenType type , int isSubWin);
 extern HyperLink * make_paste_window(PasteNode * paste);
 extern void make_special_pages(HashTable * pageHashTable);
 extern int window_code(Window * w , int size);

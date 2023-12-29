@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,8 @@
 #include "lex.h"
 #include "hyper.h"
 #include "sockio.h"
+
+using namespace OpenAxiom;
 
 static int check_memostack(TextNode * node);
 
@@ -120,29 +122,29 @@ check_condition(TextNode *node)
 
     /* checks the condition presented and returns a 1 or a 0 */
     switch (node->type) {
-      case openaxiom_Cond_token:
+      case TokenType::Cond:
         cond = (CondNode *) hash_find(gWindow->fCondHashTable, node->data.text);
         if (!strcmp("0", cond->cond))
             return 0;
         else
             return 1;
-      case openaxiom_Boxcond_token:
+      case TokenType::Boxcond:
         box = (InputBox *) hash_find(gWindow->page->box_hash, node->data.text);
         return (box->picked);
-      case openaxiom_Haslisp_token:
+      case TokenType::Haslisp:
         if (spad_socket != NULL) {
             ret_val = send_int(spad_socket, TestLine);
             return (ret_val + 1);
         }
         else
             return 0;
-      case openaxiom_Hasup_token:
+      case TokenType::Hasup:
         return need_up_button;
-      case openaxiom_Hasreturn_token:
+      case TokenType::Hasreturn:
         return gWindow->fMemoStackIndex;
-      case openaxiom_Hasreturnto_token:
+      case TokenType::Hasreturnto:
         return (check_memostack(node));
-      case openaxiom_Lastwindow_token:
+      case TokenType::Lastwindow:
         return (gSessionHashTable.num_entries == 1 || gParentWindow == gWindow);
       default:
         return 0;

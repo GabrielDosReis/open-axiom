@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,8 @@
 #include "group.h"
 #include "lex.h"
 #include "sockio.h"
+
+using namespace OpenAxiom;
 
 Window gActiveWindow;
 int motion = 0;
@@ -151,7 +153,7 @@ findButtonInList(HDWindow * window, int x, int y)
 {
     ButtonList *bl;
 
-    if (!window || window->page->type == UnloadedPageType)
+    if (!window || window->page->type == TokenType::UnloadedPageType)
         return NULL;
     for (bl = window->page->s_button_list; bl != NULL; bl = bl->next)
         if (x >= bl->x0 && x <= bl->x1 && y >= bl->y0 && y <= bl->y1)
@@ -272,7 +274,7 @@ static void
 kill_page(HyperDocPage * page)
 {
     page->scroll_off = 0;
-    if (page->type == SpadGen) {
+    if (page->type == TokenType::SpadGen) {
         hash_delete(gWindow->fPageHashTable, page->name);
         killAxiomPage(page);
         free_page(page);
@@ -340,10 +342,10 @@ find_page(TextNode * node)
             fprintf(stderr, "Unknown page name %s\n", page_name);
         }
         else {
-            if (page->type == UnloadedPageType)
-                page->type = UlUnknownPage;
+            if (page->type == TokenType::UnloadedPageType)
+                page->type = TokenType::UlUnknownPage;
             else
-                page->type = UnknownPage;
+                page->type = TokenType::UnknownPage;
         }
     }
     return page;
@@ -431,9 +433,9 @@ create_window()
  */
 
 #define NotSpecial(t) \
-  ((t == openaxiom_Quitbutton_token || t == openaxiom_Returnbutton_token \
-    || t == openaxiom_Upbutton_token || t == UnknownPage \
-    || t == UlUnknownPage || t == ErrorPage) \
+  ((t == TokenType::Quitbutton || t == TokenType::Returnbutton \
+    || t == TokenType::Upbutton || t == TokenType::UnknownPage \
+    || t == TokenType::UlUnknownPage || t == TokenType::ErrorPage) \
    ?(0):(1))
 
 /*
@@ -458,28 +460,28 @@ handle_button(int button, XButtonEvent * event)
     }
 
     switch (link->type) {
-      case openaxiom_Pastebutton_token:
+      case TokenType::Pastebutton:
         page = paste_button(link->reference.paste);
         break;
-      case openaxiom_Link_token:
+      case TokenType::Link:
         page_name = print_to_string(link->reference.node);
         page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, page_name);
         break;
-      case openaxiom_Helpbutton_token:
+      case TokenType::Helpbutton:
         helpForHyperDoc();
         page = NULL;
         break;
-      case openaxiom_Scrollbar_token:
+      case TokenType::Scrollbar:
         scrollScroller(event);
         break;
-      case Scrollupbutton:
+      case TokenType::Scrollupbutton:
         scrollUp();
         break;
-      case Scrolldownbutton:
+      case TokenType::Scrolldownbutton:
         scrollDown();
         break;
 
-      case openaxiom_Inputstring_token:
+      case TokenType::Inputstring:
         /* We must be changing input focus or getting a selection */
 
         change_input_focus(link);
@@ -491,34 +493,34 @@ handle_button(int button, XButtonEvent * event)
         }
         break;
 
-      case openaxiom_SimpleBox_token:
+      case TokenType::SimpleBox:
         page = NULL;
         toggle_input_box(link);
         break;
-      case openaxiom_Radiobox_token:
+      case TokenType::Radiobox:
         page = NULL;
         toggle_radio_box(link);
         break;
-      case openaxiom_Quitbutton_token:
+      case TokenType::Quitbutton:
         quitHyperDoc();
         break;
-      case openaxiom_Returnbutton_token: /* pop memo information */
+      case TokenType::Returnbutton: /* pop memo information */
         page = returnlink();
         break;
-      case openaxiom_Upbutton_token: /* pop downlink information */
+      case TokenType::Upbutton: /* pop downlink information */
         page = uplink();
         break;
-      case openaxiom_Downlink_token:
+      case TokenType::Downlink:
         page = find_page(link->reference.node);
         if (page  && NotSpecial(page->type))
             downlink();
         break;
-      case openaxiom_Memolink_token:
+      case TokenType::Memolink:
         page = find_page(link->reference.node);
         if (page && NotSpecial(page->type))
             memolink();
         break;
-      case openaxiom_Windowlink_token:
+      case TokenType::Windowlink:
         page = find_page(link->reference.node);
         if (page && NotSpecial(page->type)) {
             windowlink_handler(link->reference.node);
@@ -526,51 +528,51 @@ handle_button(int button, XButtonEvent * event)
             page = NULL;
         }
         break;
-      case openaxiom_Lispwindowlink_token:
+      case TokenType::Lispwindowlink:
         lispwindowlink_handler(link);
         gNeedIconName = 1;
         page = NULL;
         break;
-      case openaxiom_LispMemoLink_token:
-      case openaxiom_Spadmemolink_token:
+      case TokenType::LispMemoLink:
+      case TokenType::Spadmemolink:
         page = issue_server_command(link);
         if (page && NotSpecial(page->type))
             memolink();
         break;
-      case openaxiom_LispDownLink_token:
-      case openaxiom_Spaddownlink_token:
+      case TokenType::LispDownLink:
+      case TokenType::Spaddownlink:
         page = issue_server_command(link);
         if (page && NotSpecial(page->type))
             downlink();
         break;
-      case openaxiom_Spadlink_token:
-      case openaxiom_Lisplink_token:
+      case TokenType::Spadlink:
+      case TokenType::Lisplink:
         page = issue_server_command(link);
         break;
-      case openaxiom_Lispcommand_token:
-      case openaxiom_Qspadcall_token:
-      case openaxiom_Spadcall_token:
+      case TokenType::Lispcommand:
+      case TokenType::Qspadcall:
+      case TokenType::Spadcall:
         page = issue_server_command(link);
         break;
-      case openaxiom_Lispcommandquit_token:
-      case openaxiom_Spadcallquit_token:
-      case openaxiom_Qspadcallquit_token:
+      case TokenType::Lispcommandquit:
+      case TokenType::Spadcallquit:
+      case TokenType::Qspadcallquit:
         page = issue_server_command(link);
         exitHyperDoc();
         break;
-      case openaxiom_Spadcommand_token:
-      case openaxiom_Spadgraph_token:
-      case openaxiom_Spadsrc_token:
+      case TokenType::Spadcommand:
+      case TokenType::Spadgraph:
+      case TokenType::Spadsrc:
         issue_spadcommand(gWindow->page, link->reference.node,
                           button == Button1, link->type);
         break;
-      case openaxiom_Unixlink_token:
+      case TokenType::Unixlink:
         page = issue_unixlink(link->reference.node);
         if (page && NotSpecial(page->type)) {
             downlink();
         }
         break;
-      case openaxiom_Unixcommand_token:
+      case TokenType::Unixcommand:
         issue_unixcommand(link->reference.node);
         break;
       default:
@@ -579,20 +581,20 @@ handle_button(int button, XButtonEvent * event)
 
     if (page) {
         switch (page->type) {   /* check for special button types */
-          case openaxiom_Quitbutton_token:
+          case TokenType::Quitbutton:
             exitHyperDoc();
             return;
-          case openaxiom_Returnbutton_token:
+          case TokenType::Returnbutton:
             gWindow->page = returnlink();
             break;
-          case openaxiom_Upbutton_token:
+          case TokenType::Upbutton:
             gWindow->page = uplink();
             break;
-          case ErrorPage:
-          case UnknownPage:
-          case UlUnknownPage:
-            if (page->type == UlUnknownPage)
-                page->type = UnloadedPageType;
+          case TokenType::ErrorPage:
+          case TokenType::UnknownPage:
+          case TokenType::UlUnknownPage:
+            if (page->type == TokenType::UlUnknownPage)
+                page->type = TokenType::UnloadedPageType;
             downlink();
             gWindow->page = page;
             break;
@@ -600,7 +602,7 @@ handle_button(int button, XButtonEvent * event)
             gWindow->page = page;
             break;
         }
-        if (link->type != openaxiom_Pastebutton_token)
+        if (link->type != TokenType::Pastebutton)
             display_page(gWindow->page);
         gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;      /* reset the window hash */
     }

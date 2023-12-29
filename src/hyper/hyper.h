@@ -100,7 +100,7 @@ extern void ht2_input(void );
 extern void make_record(void );
 extern void verify_record(void );
 extern void print_paste_line(FILE * pfile , char * str);
-extern void get_spad_output(FILE * pfile , char * command , int com_type);
+extern void get_spad_output(FILE * pfile , char * command , OpenAxiom::TokenType com_type);
 extern void get_graph_output(char*, const char*, int);
 extern void add_buffer_to_sym(char * buffer , InputItem * sym);
 extern void dialog(XEvent * event , KeySym keysym , char * buffer);
@@ -109,7 +109,7 @@ extern void update_inputsymbol(InputItem * sym);
 extern HyperDocPage * issue_server_command(HyperLink * link);
 extern HyperDocPage * issue_unixlink(TextNode * node);
 extern char * print_to_string(TextNode * command);
-extern void issue_spadcommand(HyperDocPage * page , TextNode * command , int immediate , int type);
+extern void issue_spadcommand(HyperDocPage* page , TextNode* command , int immediate , OpenAxiom::TokenType type);
 extern OpenAxiom::openaxiom_sio * accept_menu_connection(OpenAxiom::openaxiom_sio * server_sock);
 extern char * print_to_string1(TextNode * command , int * sizeBuf);
 extern int issue_serverpaste(TextNode * command);
@@ -199,17 +199,6 @@ extern int space_width;
 
 #define NoChar   -9999
 #define db_file_name "ht.db"
-
-
-/* Types of HyperDoc pages */
-
-#define UlUnknownPage    9993 /*I hate this hack, but I have to know whether*/
-#define UnknownPage      9994 /*this page has been loaded or not.           */
-#define ErrorPage        9995
-#define Unixfd           9996
-#define SpadGen          9997
-#define Normal           9998
-#define UnloadedPageType 9999
 
 /* Commands from Axiom */
 

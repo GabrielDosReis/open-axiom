@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,8 @@
 #include "extent.h"
 #include "group.h"
 
+using namespace OpenAxiom;
+
 static void show_image(TextNode * node , GC gc);
 static void show_input(TextNode * node);
 static void show_link(TextNode * node);
@@ -64,7 +66,7 @@ static void show_spadcommand(TextNode * node);
  */
 
 void
-show_text(TextNode *node, int Ender)
+show_text(TextNode *node, TokenType Ender)
 {
     /*int twidth, len;*/
     /*int otext_x, otext_y, t;*/
@@ -73,33 +75,33 @@ show_text(TextNode *node, int Ender)
 
     for (; node != NULL; node = node->next) {
         switch (node->type) {
-          case 0:
-          case openaxiom_Beginitems_token:
-          case openaxiom_Begintitems_token:
-          case openaxiom_Bound_token:
-          case openaxiom_Center_token:
-          case openaxiom_Free_token:
-          case openaxiom_HSpace_token:
-          case openaxiom_Indent_token:
-          case openaxiom_Indentrel_token:
-          case openaxiom_Item_token:
-          case openaxiom_Macro_token:
-          case openaxiom_Mbox_token:
-          case openaxiom_Newline_token:
-          case openaxiom_Noop_token:
-          case openaxiom_Par_token:
-          case openaxiom_Pound_token:
-          case openaxiom_Rbrace_token:
-          case openaxiom_Space_token:
-          case openaxiom_Tab_token:
-          case openaxiom_Table_token:
-          case openaxiom_Titem_token:
-          case openaxiom_VSpace_token:
+          case TokenType{}:             // FIXME: Why this?
+          case TokenType::Beginitems:
+          case TokenType::Begintitems:
+          case TokenType::Bound:
+          case TokenType::Center:
+          case TokenType::Free:
+          case TokenType::HSpace:
+          case TokenType::Indent:
+          case TokenType::Indentrel:
+          case TokenType::Item:
+          case TokenType::Macro:
+          case TokenType::Mbox:
+          case TokenType::Newline:
+          case TokenType::Noop:
+          case TokenType::Par:
+          case TokenType::Pound:
+          case TokenType::Rbrace:
+          case TokenType::Space:
+          case TokenType::Tab:
+          case TokenType::Table:
+          case TokenType::Titem:
+          case TokenType::VSpace:
             break;
 
-          case openaxiom_Dash_token:
-          case openaxiom_Fi_token:
-          case openaxiom_Ifcond_token:
+          case TokenType::Dash:
+          case TokenType::Fi:
+          case TokenType::Ifcond:
             if (visible(node->y, node->height)) {
                 if (strlen(node->data.text) > 1) {
                     XDrawLine(gXDisplay, gWindow->fDisplayedWindow, gWindow->fStandardGC, node->x,
@@ -124,13 +126,13 @@ show_text(TextNode *node, int Ender)
             }
             break;
 
-          case openaxiom_Lsquarebrace_token:
-          case openaxiom_Math_token:
-          case openaxiom_Punctuation_token:
-          case openaxiom_Rsquarebrace_token:
-          case openaxiom_Spadsrctxt_token:
-          case openaxiom_WindowId_token:
-          case openaxiom_Word_token:
+          case TokenType::Lsquarebrace:
+          case TokenType::Math:
+          case TokenType::Punctuation:
+          case TokenType::Rsquarebrace:
+          case TokenType::Spadsrctxt:
+          case TokenType::WindowId:
+          case TokenType::Word:
             if (visible(node->y, node->height))
                 XDrawString(gXDisplay, gWindow->fDisplayedWindow, gWindow->fStandardGC, node->x, node->y +
                        gRegionOffset - gTopOfGroupStack->cur_font->descent + y_off,
@@ -143,7 +145,7 @@ show_text(TextNode *node, int Ender)
             }
             break;
 
-          case openaxiom_Verbatim_token:
+          case TokenType::Verbatim:
             push_group_stack();
             tt_top_group();
             if (visible(node->y, node->height))
@@ -159,7 +161,7 @@ show_text(TextNode *node, int Ender)
             pop_group_stack();
             break;
 
-          case openaxiom_Horizontalline_token:
+          case TokenType::Horizontalline:
             if (visible(node->y, node->height)) {
                 line_top_group();
                 XDrawLine(gXDisplay, gWindow->fDisplayedWindow, gWindow->fStandardGC, 0,
@@ -176,7 +178,7 @@ show_text(TextNode *node, int Ender)
             }
             break;
 
-          case openaxiom_Box_token:
+          case TokenType::Box:
             if (visible(node->y, node->height))
                 XDrawRectangle(gXDisplay, gWindow->fDisplayedWindow, gWindow->fStandardGC,
                                node->x,
@@ -192,127 +194,127 @@ show_text(TextNode *node, int Ender)
             break;
 
 
-          case openaxiom_Downlink_token:
-          case openaxiom_Link_token:
-          case openaxiom_LispDownLink_token:
-          case openaxiom_LispMemoLink_token:
-          case openaxiom_Lispcommand_token:
-          case openaxiom_Lispcommandquit_token:
-          case openaxiom_Lisplink_token:
-          case openaxiom_Lispwindowlink_token:
-          case openaxiom_Memolink_token:
-          case openaxiom_Qspadcall_token:
-          case openaxiom_Qspadcallquit_token:
-          case openaxiom_Returnbutton_token:
-          case openaxiom_Spadcall_token:
-          case openaxiom_Spadcallquit_token:
-          case openaxiom_Spaddownlink_token:
-          case openaxiom_Spadlink_token:
-          case openaxiom_Spadmemolink_token:
-          case openaxiom_Unixcommand_token:
-          case openaxiom_Unixlink_token:
-          case openaxiom_Upbutton_token:
-          case openaxiom_Windowlink_token:
+          case TokenType::Downlink:
+          case TokenType::Link:
+          case TokenType::LispDownLink:
+          case TokenType::LispMemoLink:
+          case TokenType::Lispcommand:
+          case TokenType::Lispcommandquit:
+          case TokenType::Lisplink:
+          case TokenType::Lispwindowlink:
+          case TokenType::Memolink:
+          case TokenType::Qspadcall:
+          case TokenType::Qspadcallquit:
+          case TokenType::Returnbutton:
+          case TokenType::Spadcall:
+          case TokenType::Spadcallquit:
+          case TokenType::Spaddownlink:
+          case TokenType::Spadlink:
+          case TokenType::Spadmemolink:
+          case TokenType::Unixcommand:
+          case TokenType::Unixlink:
+          case TokenType::Upbutton:
+          case TokenType::Windowlink:
             if (pix_visible(node->y, node->height))
                 show_link(node);
             break;
 
-          case openaxiom_Spadcommand_token:
-          case openaxiom_Spadgraph_token:
-          case openaxiom_Spadsrc_token:
+          case TokenType::Spadcommand:
+          case TokenType::Spadgraph:
+          case TokenType::Spadsrc:
             show_spadcommand(node);
             break;
 
-          case openaxiom_Pastebutton_token:
+          case TokenType::Pastebutton:
             if (visible(node->y, node->height))
                 show_pastebutton(node);
             break;
 
-          case openaxiom_Paste_token:
+          case TokenType::Paste:
             show_paste(node);
             break;
 
-          case openaxiom_Group_token:
-          case openaxiom_Tableitem_token:
+          case TokenType::Group:
+          case TokenType::Tableitem:
             push_group_stack();
             break;
 
-          case openaxiom_Controlbitmap_token:
+          case TokenType::Controlbitmap:
             show_image(node, gWindow->fControlGC);
             break;
 
-          case openaxiom_Inputbitmap_token:
+          case TokenType::Inputbitmap:
             show_image(node, gWindow->fStandardGC);
             break;
 
-          case openaxiom_Inputpixmap_token:
+          case TokenType::Inputpixmap:
             show_image(node, gWindow->fStandardGC);
             break;
 
-          case openaxiom_BoldFace_token:
+          case TokenType::BoldFace:
             bf_top_group();
             break;
 
-          case openaxiom_Emphasize_token:
+          case TokenType::Emphasize:
             if (gTopOfGroupStack->cur_font == gRmFont)
                 em_top_group();
             else
                 rm_top_group();
             break;
 
-          case openaxiom_It_token:
+          case TokenType::It:
             em_top_group();
             break;
 
-          case openaxiom_Sl_token:
-          case openaxiom_Rm_token:
+          case TokenType::Sl:
+          case TokenType::Rm:
             rm_top_group();
             break;
 
-          case openaxiom_Tt_token:
+          case TokenType::Tt:
             tt_top_group();
             break;
 
-          case openaxiom_Inputstring_token:
+          case TokenType::Inputstring:
             show_input(node);
             break;
 
-          case openaxiom_Radiobox_token:
-          case openaxiom_SimpleBox_token:
+          case TokenType::Radiobox:
+          case TokenType::SimpleBox:
             show_simple_box(node);
             break;
 
-          case openaxiom_Beep_token:
+          case TokenType::Beep:
             LoudBeepAtTheUser();
             break;
 
-          case openaxiom_Description_token:
+          case TokenType::Description:
             bf_top_group();
             break;
 
-          case openaxiom_Endspadsrc_token:
-          case openaxiom_Endspadcommand_token:
+          case TokenType::Endspadsrc:
+          case TokenType::Endspadcommand:
             gInAxiomCommand = 1;
-          case openaxiom_Endtableitem_token:
-          case openaxiom_Enddescription_token:
-          case openaxiom_Endpastebutton_token:
-          case openaxiom_Endlink_token:
-          case openaxiom_Endbutton_token:
-          case openaxiom_Endgroup_token:
+          case TokenType::Endtableitem:
+          case TokenType::Enddescription:
+          case TokenType::Endpastebutton:
+          case TokenType::Endlink:
+          case TokenType::Endbutton:
+          case TokenType::Endgroup:
             pop_group_stack();
-          case openaxiom_Endverbatim_token:
-          case openaxiom_Endmath_token:
-          case openaxiom_Endbox_token:
-          case openaxiom_Endtable_token:
-          case openaxiom_Endmbox_token:
-          case openaxiom_Endparameter_token:
-          case openaxiom_Endpaste_token:
-          case openaxiom_Endinputbox_token:
-          case openaxiom_Endcenter_token:
-          case openaxiom_Endmacro_token:
-          case openaxiom_Endif_token:
-          case openaxiom_Endtitems_token:
-          case openaxiom_Enditems_token:
+          case TokenType::Endverbatim:
+          case TokenType::Endmath:
+          case TokenType::Endbox:
+          case TokenType::Endtable:
+          case TokenType::Endmbox:
+          case TokenType::Endparameter:
+          case TokenType::Endpaste:
+          case TokenType::Endinputbox:
+          case TokenType::Endcenter:
+          case TokenType::Endmacro:
+          case TokenType::Endif:
+          case TokenType::Endtitems:
+          case TokenType::Enditems:
 
             /*
              * Now since I can show specific regions of the text, then at
@@ -321,10 +323,10 @@ show_text(TextNode *node, int Ender)
             if (node->type == Ender)
                 return;
             break;
-          case openaxiom_Endfooter_token:
-          case openaxiom_Endscrolling_token:
-          case openaxiom_Endheader_token:
-          case openaxiom_Endtitle_token:
+          case TokenType::Endfooter:
+          case TokenType::Endscrolling:
+          case TokenType::Endheader:
+          case TokenType::Endtitle:
 
             /*
              * regardless of what ender I have, I always terminate showing
@@ -347,7 +349,7 @@ show_link(TextNode *node)
     int active;
 
     switch (node->type) {
-      case openaxiom_Upbutton_token:
+      case TokenType::Upbutton:
         if (!need_up_button) {
             XClearArea(gXDisplay, gWindow->fDisplayedWindow, node->x,
                        node->y - node->height + gRegionOffset,
@@ -357,7 +359,7 @@ show_link(TextNode *node)
         else
             active = 1;
         break;
-      case openaxiom_Returnbutton_token:
+      case TokenType::Returnbutton:
         if (!need_return_button) {
             XClearArea(gXDisplay, gWindow->fDisplayedWindow, node->x,
                        node->y - node->height + gRegionOffset,
@@ -367,7 +369,7 @@ show_link(TextNode *node)
         else
             active = 1;
         break;
-      case openaxiom_Helpbutton_token:
+      case TokenType::Helpbutton:
         if (!need_help_button) {
             XClearArea(gXDisplay, gWindow->fDisplayedWindow, node->x,
                        node->y - node->height + gRegionOffset,
@@ -519,7 +521,7 @@ show_spadcommand(TextNode *node)
 
     push_spad_group();
     wc.x = node->x;
-    if (node->type == openaxiom_Spadsrc_token)
+    if (node->type == TokenType::Spadsrc)
         wc.y = node->y + gRegionOffset + y_off - 2 * node->height;
     else
         wc.y = node->y + gRegionOffset + y_off - node->height;
