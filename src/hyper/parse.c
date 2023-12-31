@@ -92,8 +92,7 @@ reset_connection()
         close(spad_socket->socket);
         spad_socket->socket = 0;
         spad_socket = NULL;
-        if (input_string)
-            input_string[0] = '\0';
+        input_string = nullptr;
         spad_socket->nbytes_pending = 0;
         connect_spad();
     }
@@ -228,7 +227,7 @@ format_page(UnloadedPage *ulpage)
 /* parse the HyperDoc statements in the given string */
 
 void
-parse_from_string(char *str)
+parse_from_string(const char *str)
 {
     OpenAxiom::IOStateManager save_io_state { };
     last_ch = NoChar;
@@ -365,10 +364,6 @@ parse_page(HyperDocPage *page)
      */
     parse_header(page);
 }
-
-char *ExpectedBeginScroll =
-"Parser Error: Unexpected new page, expecting a begin scroll\n", *ExpectedEndScroll =
-"Parser Error: Unexpected new page, expected an end scroll\n";
 
 /*
  * The general HyperDoc parsing function.  expects to see anything. This
@@ -707,7 +702,7 @@ parse_page_from_socket()
 
     init_scanner();
     input_type = SourceInputKind::SpadSocket;
-    input_string = "";
+    input_string = nullptr;
     cur_spadcom = NULL;
     gLinkHashTable = page->fLinkHashTable;
     hash_init(

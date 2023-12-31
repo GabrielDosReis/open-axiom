@@ -352,7 +352,10 @@ make_input_file_list()
 void
 print_paste_line(FILE *pfile,char *str)
 {
-    char *free = "\\free", *bound = "\\bound", *f = free, *b = bound;
+    const char* free = "\\free";
+    const char* bound = "\\bound";
+    const char* f = free;
+    const char* b = bound;
     int justSaw = 0;
 
     for (; *str; str++) {

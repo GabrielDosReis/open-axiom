@@ -737,7 +737,6 @@ OA_DELAYED_FFI_FALSE
 OA_DELAYED_FFI_TRUE
 OA_BUILD_GCL_FALSE
 OA_BUILD_GCL_TRUE
-oa_extra_cxxflags
 OA_USE_LLVM_FALSE
 OA_USE_LLVM_TRUE
 oa_use_llvm
@@ -6430,10 +6429,12 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 
-oa_extra_cxxflags=
+# Compiler warnings that are irrevocably errors.
+oa_enabled_cxx_policies='writable-strings'
+for f in $oa_enabled_cxx_policies; do
 
-opt=-Wno-mismatched-tags				      # mandatory
-accumulator=oa_extra_cxxflags			      # optional
+opt="-Werror=$f"				      # mandatory
+accumulator=			      # optional
 if test -z $accumulator; then
    accumulator=CXXFLAGS
 fi
@@ -6466,9 +6467,15 @@ printf "%s\n" "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
+done
 
-opt=-Wno-string-plus-int				      # mandatory
-accumulator=oa_extra_cxxflags			      # optional
+# Compiler warnings that should not be considered.
+# These flags should go after enabled policies.
+oa_disabled_cxx_policies='mismatched-tags string-plus-int'
+for f in $oa_disabled_cxx_policies; do
+
+opt="-Wno-$f"				      # mandatory
+accumulator=			      # optional
 if test -z $accumulator; then
    accumulator=CXXFLAGS
 fi
@@ -6501,8 +6508,7 @@ printf "%s\n" "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
-
-
+done
 
  if test x$oa_include_gcl = xyes; then
   OA_BUILD_GCL_TRUE=

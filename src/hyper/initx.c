@@ -383,7 +383,7 @@ set_name_and_icon()
     XWMHints wmhints;
     XClassHint ch;
 
-    ch.res_name = "HyperDoc";
+    ch.res_name = const_cast<char*>("HyperDoc");            // FIXME: Use a better API.
     ch.res_class = gArgv[0];
     for (s = gArgv[0] + strlen(gArgv[0]) - 1; s != gArgv[0]; s--) {
         if (*s == '/') {

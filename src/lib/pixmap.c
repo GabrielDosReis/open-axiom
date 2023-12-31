@@ -109,7 +109,7 @@ zzopen(char *file, const char* mode)
 
 ********************************************************************/
 void
-write_pixmap_file(Display *dsp, int scr, char  *fn, 
+write_pixmap_file(Display* dsp, int scr, const char* fn, 
                   Window wid, int x, int y, int width,int height)
 {
     XImage *xi;
@@ -301,7 +301,7 @@ read_pixmap_file(Display *display, int screen, char *filename,
 
 
 void
-write_pixmap_file(Display *dsp, int scr, char  *fn, 
+write_pixmap_file(Display* dsp, int scr, const char* fn, 
                   Window wid, int x, int y, int width,int height)
 {
   XImage *xi;

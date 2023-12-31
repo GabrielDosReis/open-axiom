@@ -52,7 +52,7 @@ extern void display_page(HyperDocPage * page);
 extern void init_parse_patch(HyperDocPage * page);
 extern void load_page(HyperDocPage * page);
 extern void parse_HyperDoc(void );
-extern void parse_from_string(char * str);
+extern void parse_from_string(const char* str);
 extern HyperDocPage * parse_page_from_socket(void );
 extern HyperDocPage * parse_page_from_unixfd(void );
 extern HyperLink * make_input_window(InputItem * item);

@@ -829,8 +829,8 @@ switch_frames()
     send_int(session_server, SwitchFrames);
     send_int(session_server, gWindow->fAxiomFrame);
 }
-void
-send_lisp_command(char *command)
+
+void send_lisp_command(const char* command)
 {
     int ret_val;
 
