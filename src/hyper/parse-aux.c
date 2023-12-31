@@ -202,7 +202,7 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
     UnloadedPage *page;
     MacroStore *macro;
     PatchStore *patch;
-    int pages = 0, c, mtime, ret_val;
+    int c, mtime, ret_val;
     struct stat fstats;
     auto page_hash = env.pages;
     auto macro_hash = env.macros;
@@ -280,7 +280,6 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
                     page->fpos.line_number = atoi(token.id);
                     page->type = TokenType::UnloadedPageType;
                     hash_insert(page_hash, (char *)page, page->name);
-                    pages++;
                     break;
                   case TokenType::NewCommand:
                     get_token();
@@ -540,7 +539,6 @@ int
 get_filename()
 {
     int c, ws;
-    static int seen_white = 0; /*UNUSED */
     static char buffer[256];
     char *buf = buffer;
 
@@ -552,8 +550,6 @@ get_filename()
         keyword_fpos = fpos;
         c = get_char();
         ws = whitespace(c);
-        if (ws)
-            seen_white = 1;
     } while (ws);
     switch (c) {
       case EOF:
@@ -573,7 +569,6 @@ get_filename()
         *buf = '\0';
         token.type = TokenType::Word;
         token.id = buffer;
-        seen_white = 0;
         break;
     }
     return 1;

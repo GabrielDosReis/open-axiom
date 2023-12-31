@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@ HTReadBitmapFile(Display *display,int screen,char * filename,
     XImage *image;
     FILE *fd;
     char Line[256], Buff[256];
-    int num_chars;
     char *ptr;
     int rch;
     int version;
@@ -134,7 +133,6 @@ HTReadBitmapFile(Display *display,int screen,char * filename,
     (image)->bytes_per_line = chars_line = (*width + 7) / 8;
     file_chars_line = chars_line + padding;
 
-    num_chars = chars_line * (*height);
     file_chars = file_chars_line * (*height);
     (image)->data = (char *) halloc((image)->bytes_per_line * (image)->height,
                                     "Read Pixmap--Image data");

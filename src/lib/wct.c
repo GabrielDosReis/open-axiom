@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2011 Gabriel Dos Reis.
+    Copyright (C) 2007-2023 Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -637,7 +637,6 @@ find_wct(void)
     char *filler = search_buff;
     int b = curr_pntr - 1;
     int e = curr_pntr;
-    int ne = 0;
     int st;
     Wix *pwix;
     int curr_len;
@@ -664,7 +663,6 @@ find_wct(void)
     /* At the same time, let me find the end of the word */
     while (e < buff_pntr && !Delimiter(buff[e])) {
         e++;
-        ne++;
     }
 
     st = b;
