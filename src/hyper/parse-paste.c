@@ -65,7 +65,7 @@ parse_paste()
     PasteNode *paste;
     SourceInputKind where;
 
-    if (gParserRegion != Scrolling) {
+    if (gParserRegion != HyperRegion::Scrolling) {
         fprintf(stderr, "(HyperDoc) Paste areas are only allowed in the scrolling area:");
         print_page_and_filename();
         jump();

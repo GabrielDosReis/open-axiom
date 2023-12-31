@@ -119,7 +119,7 @@ extern short int gParserMode;
  * Flags and defines for telling us what part of the page is being parsed.
  */
 
-extern short int gParserRegion;
+extern OpenAxiom::HyperRegion gParserRegion;
 extern short int gStringValueOk;
 extern bool   gEndedPage;
 

@@ -559,7 +559,7 @@ show_image(TextNode *node, GC gc)
     else
         src_width = node->width;
 
-    if (gDisplayRegion != Scrolling) {
+    if (gDisplayRegion != HyperRegion::Scrolling) {
         src_y = 0;
         src_height = node->image.xi->height;
     }

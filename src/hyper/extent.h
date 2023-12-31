@@ -86,12 +86,7 @@ extern int text_width(TextNode* node , OpenAxiom::TokenType Ender);
 extern int total_width(TextNode* node , OpenAxiom::TokenType Ender);
 extern int trailing_space(TextNode * node);
 
-/* next two from display.h. Reorg! */
-
-extern short int gDisplayRegion;
-extern int gRegionOffset;
-
-#define not_in_scroll (!(gDisplayRegion == Scrolling))
+#define not_in_scroll (!(gDisplayRegion == HyperRegion::Scrolling))
 
 #define visible(y, h) \
   (not_in_scroll  || ((y) + gRegionOffset + gWindow->page->scroll_off \
@@ -133,7 +128,7 @@ extern int word_off_height;            /* the diff between text height and */
  * externs from extent1.c
  */
 
-extern short int gExtentRegion;
+extern OpenAxiom::HyperRegion gExtentRegion;
 
 extern short int gInAxiomCommand;     /* true iff we are in a \spadcommand */
 extern short int gInDesc;

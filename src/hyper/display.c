@@ -68,7 +68,7 @@
 using namespace OpenAxiom;
 
 extern ItemStack *gTopOfItemStack;
-short int gDisplayRegion = 0;
+HyperRegion gDisplayRegion { };
 int gRegionOffset = 0;
 
 
@@ -146,19 +146,19 @@ show_page(HyperDocPage *page)
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
     gRegionOffset = 0;
     y_off = 0;
-    gDisplayRegion = Header;
+    gDisplayRegion = HyperRegion::Header;
     show_text(page->header->next, TokenType::Endheader);
 
     if (doShowScrollBars && page->scrolling) {
         /* Show the footer  */
         if (page->footer->next) {
-            gDisplayRegion = Footer;
+            gDisplayRegion = HyperRegion::Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
             show_text(page->footer->next, TokenType::Endfooter);
             /* Show the scrolling region */
             if (page->scrolling->next)
-                gDisplayRegion = Scrolling;
+                gDisplayRegion = HyperRegion::Scrolling;
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
@@ -188,7 +188,7 @@ expose_page(HyperDocPage *page)
     y_off = 0;
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
     gRegionOffset = 0;
-    gDisplayRegion = Header;
+    gDisplayRegion = HyperRegion::Header;
     show_text(page->header->next, TokenType::Endheader);
     getScrollBarMinimumSize(&width, &height);
 
@@ -197,7 +197,7 @@ expose_page(HyperDocPage *page)
      */
     if (page->scrolling) {
         if (page->footer->next) {
-            gDisplayRegion = Footer;
+            gDisplayRegion = HyperRegion::Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
             show_text(page->footer->next, TokenType::Endfooter);
@@ -212,7 +212,7 @@ expose_page(HyperDocPage *page)
 
         if (page->scrolling->next) {
             gRegionOffset = page->top_scroll_margin;
-            gDisplayRegion = Scrolling;
+            gDisplayRegion = HyperRegion::Scrolling;
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
@@ -236,7 +236,7 @@ scroll_page(HyperDocPage *page)
     page->s_button_list = NULL;
     /** Clear the scrolling area */
     XUnmapSubwindows(gXDisplay, gWindow->fScrollWindow);
-    gDisplayRegion = Scrolling;
+    gDisplayRegion = HyperRegion::Scrolling;
     gRegionOffset = 0;
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     y_off = gWindow->page->scroll_off;
@@ -270,7 +270,7 @@ paste_page(TextNode *node)
     /* get ready to show the scrolling area */
     gRegionOffset = 0;
     y_off = gWindow->page->scroll_off;
-    gDisplayRegion = Scrolling;
+    gDisplayRegion = HyperRegion::Scrolling;
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     if (gWindow->page->scroll_off == old_off) {
         XClearArea(gXDisplay, gWindow->fScrollWindow, 0,

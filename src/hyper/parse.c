@@ -33,6 +33,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stack>
+#include <vector>
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -69,7 +71,7 @@ HashTable *gLinkHashTable;           /* the hash table of active link windows   
 TextNode *cur_spadcom;          /* The current OpenAxiom command   */
 
 short int gParserMode;           /* Parser mode flag */
-short int gParserRegion;         /* Parser Region flag scrolling etc */
+HyperRegion gParserRegion;       /* Parser Region flag scrolling etc */
 short int gStringValueOk;        /* is a string or box value ok */
 bool gEndedPage;
 
@@ -105,40 +107,33 @@ reset_connection()
  *
  */
 
-typedef struct mr_stack {
-    /** The structure for storing parser mode and region **/
+/** The structure for storing parser mode and region **/
+struct ModeRegion {
     short int fParserMode;
-    short int fParserRegion;
-    struct mr_stack *fNext;
-}   MR_Stack;
+    HyperRegion fParserRegion;
+};
 
-MR_Stack *top_mr_stack = NULL;  /** Declaration for the stack  **/
+using ModeRegionStack = std::stack<ModeRegion, std::vector<ModeRegion>>;
 
-static void
-Push_MR()
+static ModeRegionStack mr_stack { };  /** Declaration for the stack  **/
+
+static void Push_MR()
 {
-    MR_Stack *newStackItem = (MR_Stack *) halloc(sizeof(MR_Stack), "Mode Region Stack");
-
-    newStackItem->fParserMode = gParserMode;
-    newStackItem->fParserRegion = gParserRegion;
-    newStackItem->fNext = top_mr_stack;
-    top_mr_stack = newStackItem;
+    ModeRegion mr { gParserMode, gParserRegion };
+    mr_stack.push(mr);
 }
 
-static void
-Pop_MR()
+static void Pop_MR()
 {
-    MR_Stack *old = top_mr_stack;
-
-    if (old == NULL) {
+    if (mr_stack.empty()) {
         fprintf(stderr, "(HyperDoc) Parser Error: Tried to pop empty MR Stack\n");
         exit(-1);
     }
     else {
-        gParserMode = old->fParserMode;
-        gParserRegion = old->fParserRegion;
-        top_mr_stack = old->fNext;
-        free(old);
+        auto mr = mr_stack.top();
+        mr_stack.pop();
+        gParserMode = mr.fParserMode;
+        gParserRegion = mr.fParserRegion;
     }
 }
 
@@ -243,7 +238,7 @@ parse_title(HyperDocPage *page)
     TextNode *node;
 
     Push_MR();
-    gParserRegion = Title;
+    gParserRegion = HyperRegion::Title;
     get_expected_token(TokenType::Lbrace);
     node = alloc_node();
     page->title = node;
@@ -280,7 +275,7 @@ parse_header(HyperDocPage *page)
     TextNode *node;
 
     Push_MR();
-    gParserRegion = Header;
+    gParserRegion = HyperRegion::Header;
     node = alloc_node();
     page->header = node;
     node->type = TokenType::Headernode;
@@ -327,7 +322,7 @@ init_parse_patch(HyperDocPage *page)
         gInButton = gInOptional = gInVerbatim = gInPaste = gInItems =
         gInSpadsrc = false;
     gParserMode = AllMode;
-    gParserRegion = Scrolling;
+    gParserRegion = HyperRegion::Scrolling;
 
     init_top_group();
     clear_be_stack();
@@ -777,7 +772,7 @@ start_scrolling()
      * header, and then start parsing the footer
      */
 
-    if (gParserRegion != Header) {
+    if (gParserRegion != HyperRegion::Header) {
         curr_node->type = TokenType::Noop;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected BeginScrollFound\n");
         throw HyperError{};
@@ -787,7 +782,7 @@ start_scrolling()
     Pop_MR();
 
     Push_MR();
-    gParserRegion = Scrolling;
+    gParserRegion = HyperRegion::Scrolling;
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     curr_node = alloc_node();
     gPageBeingParsed->scrolling = curr_node;
@@ -802,7 +797,7 @@ start_footer()
      * parse the footer
      */
 
-    if (gParserRegion != Scrolling) {
+    if (gParserRegion != HyperRegion::Scrolling) {
         curr_node->type = TokenType::Noop;
         fprintf(stderr, "(HyperDoc) Parser Error: Unexpected Endscroll Found\n");
         print_page_and_filename();
@@ -815,7 +810,7 @@ start_footer()
     linkScrollBars();
 
     Push_MR();
-    gParserRegion = Footer;
+    gParserRegion = HyperRegion::Footer;
     curr_node = alloc_node();
     curr_node->type = TokenType::Footernode;
     gPageBeingParsed->footer = curr_node;
@@ -825,7 +820,7 @@ start_footer()
 static void
 end_a_page()
 {
-    if (gParserRegion == Scrolling) {
+    if (gParserRegion == HyperRegion::Scrolling) {
         fprintf(stderr, "%s\n",
                 "(HyperDoc) end_a_page: Unexpected End of Page occurred \
                    inside a \beginscroll");
@@ -833,13 +828,13 @@ end_a_page()
         jump();
     }
     gEndedPage = true;
-    if (gParserRegion == Footer) {
+    if (gParserRegion == HyperRegion::Footer) {
         /* the person had all the regions, I basically just have to leave */
         curr_node->type = TokenType::Endscrolling;
         curr_node->next = NULL;
         Pop_MR();
     }
-    else if (gParserRegion == Header) {
+    else if (gParserRegion == HyperRegion::Header) {
         /* person had a header. So just end it and return */
         curr_node->type = TokenType::Endheader;
         curr_node->next = NULL;

@@ -96,7 +96,7 @@ TextNode *spad_node = NULL;
 TextNode *if_node = NULL;
 
 
-short int gExtentRegion;
+HyperRegion gExtentRegion;
 
 
 short int gInDesc;
@@ -1323,7 +1323,7 @@ compute_header_extent(HyperDocPage *page)
 
     int ty; /* UNUSED */
 
-    gExtentRegion = Header;
+    gExtentRegion = HyperRegion::Header;
     right_margin_space = non_scroll_right_margin_space;
     init_extents();
     ty = text_y = 3 * top_margin + line_height + max(page->title->height, twheight);
@@ -1348,7 +1348,7 @@ void
 compute_footer_extent(HyperDocPage * page)
 {
     if (page->footer) {
-        gExtentRegion = Footer;
+        gExtentRegion = HyperRegion::Footer;
         right_margin_space = non_scroll_right_margin_space;
         init_extents();
         present_line_height = line_height;
@@ -1380,7 +1380,7 @@ compute_scrolling_extent(HyperDocPage *page)
     noop_count = 0;
 
     /* If there is then compute all the proper locations */
-    gExtentRegion = Scrolling;
+    gExtentRegion = HyperRegion::Scrolling;
     right_margin_space = non_scroll_right_margin_space + gScrollbarWidth;
     init_extents();
     text_y = line_height;

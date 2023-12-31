@@ -210,7 +210,7 @@ showTitleBar()
               image->height);
 
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
-    gDisplayRegion = Title;
+    gDisplayRegion = HyperRegion::Title;
     gRegionOffset = 0;
     y_off = 0;
 
