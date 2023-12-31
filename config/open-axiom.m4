@@ -372,11 +372,18 @@ dnl ---------------------------------
 dnl -- OPENAXIOM_CXX_EXTRA_OPTIONS --
 dnl ---------------------------------
 AC_DEFUN([OPENAXIOM_EXTRA_CXX_OPTIONS], [
-oa_extra_cxxflags=
-OPENAXIOM_CXX_GROK_OPTION([-Wno-mismatched-tags],[oa_extra_cxxflags])
-OPENAXIOM_CXX_GROK_OPTION([-Wno-string-plus-int],[oa_extra_cxxflags])
+# Compiler warnings that are irrevocably errors.
+oa_enabled_cxx_policies='writable-strings'
+for f in $oa_enabled_cxx_policies; do
+   OPENAXIOM_CXX_GROK_OPTION(["-Werror=$f"])
+done
 
-AC_SUBST(oa_extra_cxxflags)
+# Compiler warnings that should not be considered.
+# These flags should go after enabled policies.
+oa_disabled_cxx_policies='mismatched-tags string-plus-int'
+for f in $oa_disabled_cxx_policies; do
+   OPENAXIOM_CXX_GROK_OPTION(["-Wno-$f"])
+done
 ])
 
 dnl ---------------------------------

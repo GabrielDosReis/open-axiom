@@ -38,7 +38,7 @@
 
 extern int file_exists(char * );
 extern FILE * zzopen(char *  , const char* );
-extern void write_pixmap_file(Display *  , int  , char *  , Window  , int  , int  , int  , int );
+extern void write_pixmap_file(Display*, int, const char*, Window, int, int, int, int);
 extern int read_pixmap_file(Display *  , int  , char *  , XImage * *  , int *  , int * );
 
    

@@ -756,8 +756,7 @@ quitHyperDoc()
 
 
 
-void
-make_window_link(char *name)
+void make_window_link(const char* name)
 {
     if (init_top_window(name) != -1)
 {}/*        gWindow->fWindowHashTable = gWindow->page->fLinkHashTable; */
@@ -867,7 +866,7 @@ get_new_window()
         val = get_int(spad_socket);
         init_scanner();
         input_type = SourceInputKind::SpadSocket;
-        input_string = "";
+        input_string = nullptr;
         gWindow->page = parse_page_from_socket();
         gWindow->fAxiomFrame = frame;
         XFlush(gXDisplay);
@@ -886,7 +885,7 @@ get_new_window()
         send_int(spad_socket, gWindow->fMainWindow);
         init_scanner();
         input_type = SourceInputKind::SpadSocket;
-        input_string = "";
+        input_string = nullptr;
         gWindow->page = parse_page_from_socket();
         compute_form_page(gWindow->page);
 
@@ -936,7 +935,7 @@ get_new_window()
         set_window(wid);
         init_scanner();
         input_type = SourceInputKind::SpadSocket;
-        input_string = "";
+        input_string = nullptr;
         gWindow->page = parse_page_from_socket();
         display_page(gWindow->page);
         gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;

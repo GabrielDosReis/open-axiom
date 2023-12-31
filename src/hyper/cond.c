@@ -54,7 +54,7 @@ using namespace OpenAxiom;
 static int check_memostack(TextNode * node);
 
 void
-insert_cond(char *label, char *cond)
+insert_cond(char *label, const char* cond)
 {
     CondNode *condnode = (CondNode *) hash_find(gWindow->fCondHashTable, label);
 

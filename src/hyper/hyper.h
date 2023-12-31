@@ -116,14 +116,14 @@ extern int issue_serverpaste(TextNode * command);
 extern void issue_unixcommand(TextNode * node);
 extern int issue_unixpaste(TextNode * node);
 extern void service_session_socket();
-extern void send_lisp_command(char * command);
+extern void send_lisp_command(const char* command);
 extern void escape_string(char * s);
 extern void unescape_string(char * s);
 extern char * print_source_to_string1(TextNode * command , int * sizeBuf);
 extern char * print_source_to_string(TextNode * command);
 extern void change_cond(char * label , char * newcond);
 extern int check_condition(TextNode * node);
-extern void insert_cond(char * label , char * cond);
+extern void insert_cond(char* label , const char* cond);
 
 
 #ifndef HTADD

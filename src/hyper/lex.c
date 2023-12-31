@@ -91,7 +91,7 @@ struct IOState {
    long fpos, keyword_fpos;
    long page_start_fpos;
    Token token;
-   char *input_string;
+   const char* input_string;
    FILE *cfile;
    int keyword;
 };
@@ -114,7 +114,7 @@ long keyword_fpos;              /* fpos of beginning of most recent keyword */
 Token token;                    /* most recently read token */
 TokenType last_token;           /* most recently read token for unget_token */
 SourceInputKind input_type;                 /* indicates where to read input */
-char *input_string;             /* input string read when from_string is true */
+const char* input_string = nullptr;       /* input string read when from_string is true */
 int last_ch;                    /* last character read, for unget_char */
 int last_command;               /* the last socket command */
 int keyword;                    /* the last command was a keyword, or a group */
@@ -351,7 +351,7 @@ int get_char()
             line_number++;
         return c;
     case SourceInputKind::String:
-        c = (*input_string ? *input_string++ : EOF);
+        c = (input_string != nullptr and *input_string != '\0' ? *input_string++ : EOF);
         if (c == '\n')
             line_number++;
         return c;
@@ -363,7 +363,7 @@ int get_char()
         return c;
     case SourceInputKind::SpadSocket:
 AGAIN:
-        if (*input_string) {
+        if (input_string != nullptr and *input_string != '\0') {
             /* this should never happen for the first character */
             c = *input_string++;
             if (c == '\n')

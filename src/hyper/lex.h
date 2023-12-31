@@ -78,7 +78,7 @@ extern Token token;
 extern OpenAxiom::TokenType last_token;
 extern int last_ch;
 extern SourceInputKind input_type;
-extern char *input_string;
+extern const char* input_string;
 extern FILE *cfile;
 extern short int gInSpadsrc;
 extern short int gInVerbatim;

@@ -46,7 +46,7 @@ extern void helpForHyperDoc();
 extern void quitHyperDoc();
 extern void exitHyperDoc();
 extern void mainEventLoop();
-extern void make_window_link(char*);
+extern void make_window_link(const char* );
 
 extern Window gActiveWindow;
 extern int    gNeedIconName;
