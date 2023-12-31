@@ -835,8 +835,6 @@ exitHyperDoc()
 void
 get_new_window()
 {
-
-    int val;
     char buf[128];
     int frame;
     Window wid;
@@ -859,11 +857,11 @@ get_new_window()
 
 
     frame = get_int(spad_socket);
-    val = get_int(spad_socket);
-    switch (val) {
-      case StartPage:
+    auto cmd = read_hyper_command(spad_socket);
+    switch (cmd) {
+      case HyperCommand::StartPage: {
         init_top_window(NULL);
-        val = get_int(spad_socket);
+        [[maybe_unused]] auto ncols = get_int(spad_socket);  // FIXME: Why not use the number of columns?
         init_scanner();
         input_type = SourceInputKind::SpadSocket;
         input_string = nullptr;
@@ -871,7 +869,8 @@ get_new_window()
         gWindow->fAxiomFrame = frame;
         XFlush(gXDisplay);
         break;
-      case LinkToPage:
+      }
+      case HyperCommand::LinkToPage:
         get_string_buf(spad_socket, buf, 128);
         if (init_top_window(buf) == -1) {
             fprintf(stderr, "get_new_window: Did not find page %s\n", buf);
@@ -879,8 +878,8 @@ get_new_window()
         }
         gWindow->fAxiomFrame = frame;
         break;
-      case PopUpPage:
-        val = get_int(spad_socket);
+      case HyperCommand::PopUpPage: {
+        auto val = get_int(spad_socket);
         init_form_window(NULL, val);
         send_int(spad_socket, gWindow->fMainWindow);
         init_scanner();
@@ -895,8 +894,9 @@ get_new_window()
         gWindow->fAxiomFrame = frame;
         XFlush(gXDisplay);
         break;
-      case PopUpNamedPage:
-        val = get_int(spad_socket);
+      }
+      case HyperCommand::PopUpNamedPage: {
+        auto val = get_int(spad_socket);
         get_string_buf(spad_socket, buf, 128);
 
         if (init_form_window(buf, val) == -1) {
@@ -914,7 +914,8 @@ get_new_window()
         send_int(spad_socket, gWindow->fMainWindow);
         /* fprintf(stderr, "Window Id was %d\n", gWindow->fMainWindow); */
         break;
-      case ReplaceNamedPage:
+      }
+      case HyperCommand::ReplaceNamedPage:
         wid = (Window) get_int(spad_socket);
         get_string_buf(spad_socket, buf, 128);
 
@@ -930,7 +931,7 @@ get_new_window()
         clear_exposures(gWindow->fScrollWindow);
         XFlush(gXDisplay);
         break;
-      case ReplacePage:
+      case HyperCommand::ReplacePage:
         wid = (Window) get_int(spad_socket);
         set_window(wid);
         init_scanner();
@@ -943,7 +944,7 @@ get_new_window()
         clear_exposures(gWindow->fScrollWindow);
         XFlush(gXDisplay);
         break;
-      case KillPage:
+      case HyperCommand::KillPage:
         /* Here the user wishes to kill the page */
         wid = (Window) get_int(spad_socket);
         htw = (HDWindow *) hash_find(&gSessionHashTable,(char *)&wid);
@@ -953,6 +954,7 @@ get_new_window()
             break;
           }
         break;
+    // FIXME: What about the other commands?
     }
 }
 
@@ -1032,11 +1034,10 @@ mainEventLoop()
                 }
               else if (FD_ISSET(spad_socket->socket, &rd))
                     /*
-                     * Axiom Socket do what handle_event does The 100 is
-                     * $SpadStuff in hypertex.boot
+                     * Axiom Socket do what handle_event does.
                      */
                 {
-                    if (100 == get_int(spad_socket)) {
+                    if (read_hyper_command(spad_socket) == HyperCommand::PageStuff) {
                         set_window(gParentWindow->fMainWindow);
                         make_busy_cursors();
                         get_new_window();

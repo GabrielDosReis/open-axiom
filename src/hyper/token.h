@@ -246,6 +246,22 @@ namespace OpenAxiom {
       Normal = 9998,
       UnloadedPageType = 9999,
    };
+
+   // Commands from the server.
+   // See also interp/hypertex.boot and interp/nhyper.boot
+   enum class HyperCommand : int {
+      SpadError = 90,
+      ReplaceNamedPage = 91,
+      ReplacePage = 92,
+      KillPage = 93,
+      PopUpNamedPage = 94,
+      PopUpPage = 95,          /* A pop-up page          */
+      LinkToPage = 96,
+      StartPage = 97,          /* A normal HyperDoc page */
+      SendLine = 98,
+      EndOfPage = 99,
+      PageStuff = 100,
+  };
 }
 
 /* HyperDoc parser tokens */

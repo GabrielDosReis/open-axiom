@@ -73,6 +73,7 @@
 #include "lex.h"
 #include "node.h"
 #include "cfuns.h"
+#include "hyper.h"
 
 using namespace OpenAxiom;
 
@@ -116,7 +117,7 @@ TokenType last_token;           /* most recently read token for unget_token */
 SourceInputKind input_type;                 /* indicates where to read input */
 const char* input_string = nullptr;       /* input string read when from_string is true */
 int last_ch;                    /* last character read, for unget_char */
-int last_command;               /* the last socket command */
+HyperCommand last_command;      /* the last socket command */
 int keyword;                    /* the last command was a keyword, or a group */
 int cfd;                        /* current file decriptor */
 FILE *cfile;                    /* currently active file pointer */
@@ -271,7 +272,7 @@ init_scanner()
     input_type = SourceInputKind::File;
     fpos = 0;
     keyword_fpos = 0;
-    last_command = -1;
+    last_command = HyperCommand{-1};            // FIXME: Why not default value?
     line_number = 1;
 }
 
@@ -335,7 +336,6 @@ unget_char(int c)
 int get_char()
 {
     int c;
-    int cmd;
 
     if (last_ch != NoChar) {
         c = last_ch;
@@ -370,13 +370,13 @@ AGAIN:
                 line_number++;
             return c;
         }
-        if (last_command == EndOfPage)
+        if (last_command == HyperCommand::EndOfPage)
             return EOF;
         if (spad_socket->nbytes_pending == 0) {
-            last_command = cmd = get_int(spad_socket);
-            if (cmd == EndOfPage)
+            last_command = read_hyper_command(spad_socket);
+            if (last_command == HyperCommand::EndOfPage)
                 return EOF;
-            if (cmd == SpadError)
+            if (last_command == HyperCommand::SpadError)
                 throw HyperError{};
         }
         get_string_buf(spad_socket, sock_buf, 1023);
@@ -1014,4 +1014,14 @@ get_expected_token(TokenType type)
         }
         throw HyperError{};
     }
+}
+
+namespace OpenAxiom {
+   // Read a HyperCommand from a the server socket.
+   HyperCommand read_hyper_command(openaxiom_sio* s)
+   {
+      auto val = get_int(s);
+      // FIXME: Validate val here instead of prograting invalid input.
+      return HyperCommand{val};
+   }
 }

@@ -51,8 +51,10 @@
 #include "pixmap.h"
 
 namespace OpenAxiom {
-  // Mapping of HT filepath to stream handle. 
-  using OpenHTFileTable = std::unordered_map<std::string_view, FILE*>;
+   // Mapping of HT filepath to stream handle. 
+   using OpenHTFileTable = std::unordered_map<std::string_view, FILE*>;
+
+   HyperCommand read_hyper_command(openaxiom_sio*);
 }
 
 extern void sigusr2_handler(int sig);
@@ -199,19 +201,6 @@ extern int space_width;
 
 #define NoChar   -9999
 #define db_file_name "ht.db"
-
-/* Commands from Axiom */
-
-#define EndOfPage        99
-#define SendLine         98
-#define StartPage        97          /* A normal HyperDoc page */
-#define LinkToPage       96
-#define PopUpPage        95          /* A pop-up page          */
-#define PopUpNamedPage   94
-#define KillPage         93
-#define ReplacePage      92
-#define ReplaceNamedPage 91
-#define SpadError        90
 
 /* Constants declaring size of page stacks */
 
