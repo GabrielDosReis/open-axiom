@@ -363,19 +363,6 @@ using ParameterList = parameter_list_type*;
 #define db_file_name "ht.db"
 
 
-/* Commands from Axiom */
-
-#define EndOfPage        99
-#define SendLine         98
-#define StartPage        97          /* A normal HyperDoc page */
-#define LinkToPage       96
-#define PopUpPage        95          /* A pop-up page          */
-#define PopUpNamedPage   94
-#define KillPage         93
-#define ReplacePage      92
-#define ReplaceNamedPage 91
-#define SpadError        90
-
 /* Constants declaring size of page stacks */
 
 #define MaxMemoDepth    25              /* max nesting level for memolinks */
