@@ -70,10 +70,14 @@ struct PasteNode;
 
 #define Noopbutton         6
 
-#define Scrolling 1
-#define Header    2
-#define Footer    3
-#define Title     4
+namespace OpenAxiom {
+   enum class HyperRegion : short {
+      Scrolling = 1,
+      Header = 2,
+      Footer = 3,
+      Title = 4
+   };
+}
 
 /* structure for a hyper text link */
 struct HyperLink {

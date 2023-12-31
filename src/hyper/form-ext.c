@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 #include "group.h"
 #include "scrollbar.h"
 
+using namespace OpenAxiom;
 
 static int window_height(HyperDocPage * page);
 static void form_header_extent(HyperDocPage * page);
@@ -104,7 +105,7 @@ form_header_extent(HyperDocPage *page)
      * Hopefully I will soon be able to actually compute the needed height
      * for the header here
      */
-    gExtentRegion = Header;
+    gExtentRegion = HyperRegion::Header;
     right_margin_space = non_scroll_right_margin_space;
     init_extents();
     text_y = top_margin + line_height;
@@ -119,7 +120,7 @@ static void
 form_footer_extent(HyperDocPage *page)
 {
     if (page->footer) {
-        gExtentRegion = Footer;
+        gExtentRegion = HyperRegion::Footer;
         right_margin_space = non_scroll_right_margin_space;
         init_extents();
 
@@ -150,7 +151,7 @@ form_scrolling_extent(HyperDocPage *page)
          * If there is then compute all the proper locations
          */
 
-        gExtentRegion = Scrolling;
+        gExtentRegion = HyperRegion::Scrolling;
         right_margin_space = non_scroll_right_margin_space + gScrollbarWidth;
         init_extents();
         text_y = line_height;

@@ -928,7 +928,7 @@ plh(int height)
 {
     int rheight = height;
 
-    if (gExtentRegion == Scrolling) {
+    if (gExtentRegion == HyperRegion::Scrolling) {
         for (rheight = line_height; rheight < height; rheight += line_height)
             ;
     }
