@@ -241,18 +241,12 @@ extern int space_width;
 #define KeyDefsHelpPage   "ugHyperKeysPage"
 #define InputAreaHelpPage "ugHyperInputPage"
 
-/* definitions for connecting to the Axiom server */
-
-#define Connected       0
-#define NotConnected    1
-#define SpadBusy        2
-
 /* some GUI-dependent stuff */
 
 #define BeepAtTheUser()         /* (XBell(gXDisplay,  5)) */
 #define LoudBeepAtTheUser()     /* (XBell(gXDisplay, 50)) */
 
-extern int connect_spad();
+extern OpenAxiom::SpadStatus connect_spad();
 
 
 /***      default fonts      ***/

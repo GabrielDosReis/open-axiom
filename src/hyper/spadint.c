@@ -66,25 +66,24 @@ typedef struct sock_list {      /* linked list of openaxiom_sio */
 
 Sock_List *plSock = (Sock_List *) 0;
 
-/* connect to OpenAxiom , return 0 if succesful, 1 if not */
-int
-connect_spad()
+/* Attempt to connect to OpenAxiom , return connection status. */
+SpadStatus connect_spad()
 {
     if (!MenuServerOpened) {
         fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
         LoudBeepAtTheUser();
-        return NotConnected;
+        return SpadStatus::NotConnected;
     }
     if (spad_socket == NULL) {
         spad_socket = connect_to_local_server(SpadServer, MenuServer, Forever);
         if (spad_socket == NULL) {
             fprintf(stderr, "(HyperDoc) Warning: Could not connect to OpenAxiom Server!\n");
             LoudBeepAtTheUser();
-            return NotConnected;
+            return SpadStatus::NotConnected;
         }
     }
     /* if (spad_busy()) return SpadBusy; */
-    return Connected;
+    return SpadStatus::Connected;
 }
 
 /* returns true if spad is currently computing */
@@ -104,15 +103,14 @@ issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
                   TokenType type)
 {
     char *buf;
-    int ret_val;
 
-    ret_val = connect_spad();
-    if (ret_val == NotConnected || ret_val == SpadBusy)
+    auto status = connect_spad();
+    if (status == SpadStatus::NotConnected || status == SpadStatus::SpadBusy)
         return;
 
     if (page->sock == NULL)
         start_user_buffer(page);
-    ret_val = send_int(page->sock, TestLine);
+    auto ret_val = send_int(page->sock, TestLine);
     if (ret_val == -1) {
         page->sock = NULL;
         clear_execution_marks(page->depend_hash);
@@ -675,18 +673,17 @@ HyperDocPage *
 issue_server_command(HyperLink *link)
 {
     TextNode *command = (TextNode *) link->reference.node;
-    int ret_val;
     char *buf;
     HyperDocPage *page;
 
-    ret_val = connect_spad();
-    if (ret_val == NotConnected) {
+    auto status = connect_spad();
+    if (status == SpadStatus::NotConnected) {
         page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "SpadNotConnectedPage");
         if (page == NULL)
             fprintf(stderr, "No SpadNotConnectedPage found\n");
         return page;
     }
-    if (ret_val == SpadBusy) {
+    if (status == SpadStatus::SpadBusy) {
         page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "SpadBusyPage");
         if (page == NULL)
             fprintf(stderr, "No SpadBusyPage found\n");
@@ -726,10 +723,9 @@ int
 issue_serverpaste(TextNode *command)
 {
     char *buf;
-    int ret_val;
 
-    ret_val = connect_spad();
-    if (ret_val == NotConnected || ret_val == SpadBusy)
+    auto status = connect_spad();
+    if (status == SpadStatus::NotConnected || status == SpadStatus::SpadBusy)
         return 1;
     switch_frames();
     send_int(spad_socket, LispCommand);
@@ -832,10 +828,8 @@ switch_frames()
 
 void send_lisp_command(const char* command)
 {
-    int ret_val;
-
-    ret_val = connect_spad();
-    if (ret_val == NotConnected || ret_val == SpadBusy) {
+    auto status = connect_spad();
+    if (status == SpadStatus::NotConnected || status == SpadStatus::SpadBusy) {
         return;
     }
     send_int(spad_socket, LispCommand);

@@ -77,6 +77,13 @@ namespace OpenAxiom {
       Footer = 3,
       Title = 4
    };
+
+   // Definition for connection status to the OpenAxiom server
+   enum class SpadStatus {
+      Connected = 0,
+      NotConnected = 1,
+      SpadBusy = 2,
+   };
 }
 
 /* structure for a hyper text link */
@@ -405,12 +412,6 @@ using ParameterList = parameter_list_type*;
 #define NoMoreHelpPage    "NoMoreHelpPage"
 #define KeyDefsHelpPage   "ugHyperKeysPage"
 #define InputAreaHelpPage "ugHyperInputPage"
-
-/* definitions for connecting to the Axiom server */
-
-#define Connected       0
-#define NotConnected    1
-#define SpadBusy        2
 
 /* some GUI-dependent stuff */
 

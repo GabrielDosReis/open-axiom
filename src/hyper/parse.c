@@ -93,9 +93,9 @@ reset_connection()
         purpose_table[spad_socket->purpose] = NULL;
         close(spad_socket->socket);
         spad_socket->socket = 0;
+        spad_socket->nbytes_pending = 0;
         spad_socket = NULL;
         input_string = nullptr;
-        spad_socket->nbytes_pending = 0;
         connect_spad();
     }
 }
