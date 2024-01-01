@@ -103,7 +103,6 @@ number(const char *str)
 static char *
 load_macro(MacroStore *macro)
 {
-    int ret_val;
     long start_fpos;
     int size = 0;
     char *trace;
@@ -159,7 +158,7 @@ load_macro(MacroStore *macro)
     }
     start_fpos = fpos;
     scan_HyperDoc();
-    ret_val = fseek(cfile, macro->fpos.pos + start_fpos, 0);
+    fseek(cfile, macro->fpos.pos + start_fpos, 0);
     size = fpos - start_fpos;
     macro_buff = (char *) halloc((size + 1) * sizeof(char), "Macro_buf");
     for (size = 0, trace = macro_buff; size < fpos - (start_fpos) - 1; size++)

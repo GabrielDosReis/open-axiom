@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2023, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -103,7 +103,6 @@ drawTheViewport(int dFlag)
   pointListStruct   *aList;
   pointStruct       *aPoint;
   XPoint            *anXPoint,*tempXpt;
-  XArc              *anXarc;
   Vertex            *anX10Point;
   float             jj,diffX, diffY, tickStart,oneTickUnit;
   int               i,j,k,ii,halfSize;
@@ -170,7 +169,6 @@ drawTheViewport(int dFlag)
 
       tempXpt   = anXPoint   = xPointsArray[i].xPoint;
       anX10Point = xPointsArray[i].x10Point;
-      anXarc     = xPointsArray[i].arc;
 
       for (j=0,aList=graphArray[i].listOfListsOfPoints;
            (j<graphArray[i].numberOfLists);
@@ -236,7 +234,6 @@ drawTheViewport(int dFlag)
 
           anXPoint++;
           anX10Point++;
-          anXarc++;
         }      /* for aPoint in pointList */
           
         aPoint--; /* make it legal, the last one*/

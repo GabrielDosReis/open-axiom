@@ -6430,7 +6430,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 
 # Compiler warnings that are irrevocably errors.
-oa_enabled_cxx_policies='writable-strings'
+oa_enabled_cxx_policies='writable-strings unused-but-set-variable'
 for f in $oa_enabled_cxx_policies; do
 
 opt="-Werror=$f"				      # mandatory

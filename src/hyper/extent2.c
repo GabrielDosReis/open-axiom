@@ -204,9 +204,9 @@ width_of_dash(TextNode * node)
 int
 text_width(TextNode * node, TokenType Ender)
 {
-    int twidth = 0, num_words;
+    int twidth = 0;
 
-    for (num_words = 0; node != NULL; num_words++, node = node->next) {
+    for (; node != NULL; node = node->next) {
         if (Ender == TokenType::Endtokens) {
             if (node->type == TokenType::Endtokens)
                 return twidth;

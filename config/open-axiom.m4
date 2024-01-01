@@ -373,7 +373,7 @@ dnl -- OPENAXIOM_CXX_EXTRA_OPTIONS --
 dnl ---------------------------------
 AC_DEFUN([OPENAXIOM_EXTRA_CXX_OPTIONS], [
 # Compiler warnings that are irrevocably errors.
-oa_enabled_cxx_policies='writable-strings'
+oa_enabled_cxx_policies='writable-strings unused-but-set-variable'
 for f in $oa_enabled_cxx_policies; do
    OPENAXIOM_CXX_GROK_OPTION(["-Werror=$f"])
 done
