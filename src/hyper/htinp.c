@@ -77,8 +77,7 @@ char buf_for_record_commands[256];
 void
 make_record()
 {
-  int i;
-  for (i=0;i<input_file_count;i++){
+  for (int i=0;i<input_file_count;i++){
     send_lisp_command("(|clearCmdCompletely|)");
     send_lisp_command("(setq |$testingSystem| T)");
     send_lisp_command("(setq |$printLoadMsgs| NIL)");
@@ -88,8 +87,8 @@ make_record()
     send_lisp_command(buf_for_record_commands);
   }
   if (kill_spad){
-    i = connect_spad();
-    if (i != NotConnected && i != SpadBusy)
+    auto status = connect_spad();
+    if (status != SpadStatus::NotConnected && status != SpadStatus::SpadBusy)
       send_int(spad_socket, KillLispSystem);
   }
 
@@ -98,8 +97,7 @@ make_record()
 void
 verify_record()
 {
-  int i;
-  for (i=0;i<input_file_count;i++){
+  for (int i=0;i<input_file_count;i++){
     send_lisp_command("(|clearCmdCompletely|)");
     send_lisp_command("(setq |$testingSystem| T)");
     send_lisp_command("(setq |$printLoadMsgs| NIL)");
@@ -109,8 +107,8 @@ verify_record()
     send_lisp_command(buf_for_record_commands);
   }
   if (kill_spad) {
-    i = connect_spad();
-    if (i != NotConnected && i != SpadBusy)
+    auto status = connect_spad();
+    if (status != SpadStatus::NotConnected && status != SpadStatus::SpadBusy)
       send_int(spad_socket, KillLispSystem);
   }
 }
@@ -121,19 +119,18 @@ ht2_input()
 {
   HashTable *table;
   HashEntry *entry;
-  int i;
 
   bsdSignal(SIGUSR2, SIG_IGN,RestartSystemCalls);
   gWindow = alloc_hd_window();
   init_group_stack();
   table = gWindow->fPageHashTable;
   make_input_file_list();
-  for (i = 0; i < table->size; i++)
+  for (int i = 0; i < table->size; i++)
     for (entry = table->table[i]; entry != NULL; entry = entry->next)
       make_the_input_file((UnloadedPage *) entry->data);
   if (kill_spad){
-    i = connect_spad();
-    if (i != NotConnected && i != SpadBusy)
+    auto status = connect_spad();
+    if (status != SpadStatus::NotConnected && status != SpadStatus::SpadBusy)
       send_int(spad_socket, KillLispSystem);
   }
 }
