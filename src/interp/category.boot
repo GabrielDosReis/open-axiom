@@ -354,7 +354,7 @@ descendant?(a,b,tbl,e) ==
   b is ["ATTRIBUTE",b'] =>
     (l := assoc(b',categoryAttributes a)) => TruthP second l
   listMember?(b,categoryPrincipals a) => true
-  ancestor?(b,[first u for u in categoryAncestors a],tbl,e)
+  bool ancestor?(b,[first u for u in categoryAncestors a],tbl,e)
  
 --% The implementation of Join
 
