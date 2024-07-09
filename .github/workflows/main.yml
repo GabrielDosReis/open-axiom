@@ -23,7 +23,7 @@ jobs:
       - name: Install Lisp and C++ compilers
         run: |
           sudo apt-get update && sudo apt upgrade -y
-          sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxpm-dev
+          sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxt-dev libxpm-dev texlive
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
 
       - name: Configure & Build & Test
