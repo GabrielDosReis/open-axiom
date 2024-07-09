@@ -21,7 +21,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Lisp and C++ compilers
-        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update && sudo apt upgrade -y
           sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxpm-dev
