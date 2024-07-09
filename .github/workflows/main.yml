@@ -13,19 +13,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
-        cxx: [ g++-13 ]
+        os: [ ubuntu-24.04 ]
+        cxx: [ g++-14 ]
         lisp: [ sbcl ]
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Install Lisp and C++ compilers
-        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update && sudo apt upgrade -y
-          sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxpm-dev
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 --slave /usr/bin/g++ g++ /usr/bin/g++-13 --slave /usr/bin/gcov gcov /usr/bin/gcov-13
+          sudo apt-get install build-essential ${{ matrix.cxx }} ${{ matrix.lisp }} libxt-dev libxpm-dev texlive
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14 --slave /usr/bin/gcov gcov /usr/bin/gcov-14
 
       - name: Configure & Build & Test
         run: |

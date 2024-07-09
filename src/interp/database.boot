@@ -205,7 +205,7 @@ niladicConstructor? ctor ==
   form := getConstructorFormFromDB ctor => form.args = nil
   false
 
-constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %List %Code
+constructorHasCategoryFromDB: %Pair(%Thing,%Thing) -> %Code
 constructorHasCategoryFromDB p ==
   GETDATABASE(p,"HASCATEGORY")
 
