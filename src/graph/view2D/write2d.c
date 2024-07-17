@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -62,16 +62,16 @@ writeViewport(int thingsToWrite)
   XWindowAttributes vwInfo;
 
   XGetWindowAttributes(dsply,viewport->titleWindow,&vwInfo);
-  sprintf(viewDirName,"%s%s",filename,".VIEW"); 
-  sprintf(command,"%s%s%s","rm -r ",viewDirName," >  /dev/null 2>&1");
+  sprintf(viewDirName,"%s.VIEW",filename); 
+  sprintf(command,"rm -r %s > /dev/null 2>&1", viewDirName);
   system(command);
-  sprintf(command,"%s%s%s","mkdir ",viewDirName," > /dev/null 2>&1");
+  sprintf(command,"mkdir %s > /dev/null 2>&1", viewDirName);
   if (system(command)) {
     fprintf(stderr,"   Error: Cannot create %s\n",viewDirName);
     return(-1);
   } else {
             /*** Create the data file ***/
-    sprintf(viewDataFilename,"%s%s",viewDirName,"/data");
+    sprintf(viewDataFilename,"%s/data",viewDirName);
     if ((viewDataFile = fopen(viewDataFilename,"w")) == NULL) {
       fprintf(stderr,"   Error: Cannot create %s\n",viewDataFilename);
       perror("fopen");
@@ -101,7 +101,7 @@ writeViewport(int thingsToWrite)
       fclose(viewDataFile);
       for (i=0; i<maxGraphs; i++) {
         if (graphArray[i].key) {
-          sprintf(viewDataFilename,"%s%s%d",viewDirName,"/graph",i);
+          sprintf(viewDataFilename,"%s/graph%d",viewDirName,i);
           if ((viewDataFile = fopen(viewDataFilename,"w")) == NULL) {
             fprintf(stderr,"   Error: Cannot create %s\n",viewDataFilename);
             perror("fopen");
@@ -143,7 +143,7 @@ writeViewport(int thingsToWrite)
         switch (ii) {
         case Pixmap:
             /*** Create the pixmap (bitmaps need leaf name) ***/
-          sprintf(viewBitmapFilename,"%s%s",viewDirName,"/image.xpm");
+          sprintf(viewBitmapFilename,"%s/image.xpm",viewDirName);
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
           write_pixmap_file(dsply,scrn,viewBitmapFilename,
                                    viewport->titleWindow,0,0,vwInfo.width,
@@ -151,7 +151,7 @@ writeViewport(int thingsToWrite)
           break;
         case Bitmap:
             /*** Create the bitmap (bitmaps need leaf name) ***/
-          sprintf(viewBitmapFilename,"%s%s",viewDirName,"/image.bm");
+          sprintf(viewBitmapFilename,"%s/image.bm",viewDirName);
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
           XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
@@ -159,7 +159,7 @@ writeViewport(int thingsToWrite)
           break;
         case Image:
             /*** Create the pixmap (bitmaps need leaf name) ***/
-          sprintf(viewBitmapFilename,"%s%s",viewDirName,"/image.xpm");
+          sprintf(viewBitmapFilename,"%s/image.xpm",viewDirName);
           XResizeWindow(dsply,viewport->titleWindow,300,300+titleHeight);
           XResizeWindow(dsply,viewport->viewWindow,300,300);
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
@@ -172,7 +172,7 @@ writeViewport(int thingsToWrite)
           mono = 1;
           drawViewport(Xoption);
           writeTitle();
-          sprintf(viewBitmapFilename,"%s%s%s",viewDirName,"/","image.bm");
+          sprintf(viewBitmapFilename,"%s/image.bm",viewDirName);
           XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
                                   vwInfo.height+vwInfo.border_width+20,-1,-1);
@@ -181,7 +181,7 @@ writeViewport(int thingsToWrite)
 
         case Postscript:
             /*** Create postscript output for viewport (in axiom2D.ps) ***/
-         sprintf(PSfilename,"%s%s",viewDirName,"/axiom2D.ps");
+         sprintf(PSfilename,"%s/axiom2D.ps",viewDirName);
          if (PSInit(viewport->viewWindow,viewport->titleWindow) == psError)
            return (-1);
          drawViewport(PSoption);  /* write new script file in /tmp */

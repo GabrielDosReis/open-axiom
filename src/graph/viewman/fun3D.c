@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2013, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -273,8 +273,8 @@ forkView3D(int typeOfViewport)
 #ifdef DEBUG
     fprintf(stderr,"Executing ThreeDimensionalViewport process\n");
 #endif
-    sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
-    sprintf(runView,"%s%s",envAXIOM,"/lib/view3D");
+    strcpy(envAXIOM,oa_getenv("AXIOM"));
+    sprintf(runView,"%s/lib/view3D",envAXIOM);
     check(execl(runView,runView, (char*) NULL));
     fprintf(stderr,"The viewport manager could not execute view3D.\nCheck that view3D is on your PATH.\n");
     exit(-1);

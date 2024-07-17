@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2011, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -579,7 +579,7 @@ main(void)
   /** send acknowledgement to viewport manager**/
   i = 345;
 
-  sprintf(errorStr,"sending window info to viewport manager");
+  strcpy(errorStr,"sending window info to viewport manager");
   check(write(Socket,&(viewport->viewWindow),sizeof(Window))); 
 
   viewmap = XCreatePixmap(dsply,viewport->viewWindow,

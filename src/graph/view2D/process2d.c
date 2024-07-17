@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2011, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -73,9 +73,9 @@ doPick (int i,int bKey)
     check(write(Socket,&(graphArray[currentGraph].key),intSize));
     check(write(Socket,&(graphStateArray[currentGraph]),
                 sizeof(graphStateStruct)));
-    sprintf(control->message,"%s%d","Picked up graph ",currentGraph+1);
+    sprintf(control->message,"Picked up graph %d",currentGraph+1);
   } else
-    sprintf(control->message,"%s","This graph is empty!");
+    strcpy(control->message, "This graph is empty!");
   writeControlMessage();
   
   
@@ -94,10 +94,10 @@ doDrop (int i,int bKey)
   check(write(Socket,&(vCommand),intSize));
   readViewman(&viewGoAhead,intSize);
   if (viewGoAhead < 0) {
-    sprintf(control->message,"%s%d","Couldn't drop to graph ",currentGraph+1);
+    sprintf(control->message,"Couldn't drop to graph %d", currentGraph+1);
     writeControlMessage();
   } else {
-    sprintf(control->message,"%s%d","Dropped onto graph ",currentGraph+1);
+    sprintf(control->message,"Dropped onto graph %d", currentGraph+1);
     writeControlMessage();
     freeGraph(currentGraph);
     readViewman(&(graphArray[currentGraph].key),intSize);
@@ -195,13 +195,13 @@ buttonAction (int bKey)
     
   case pick2D:
     if (viewAloned) {
-      sprintf(control->message,"%s","Cannot pick without OpenAxiom!");
+      strcpy(control->message, "Cannot pick without OpenAxiom!");
       writeControlMessage();
       XSync(dsply,False);
     }
     else {
       doit = pick2D;
-      sprintf(control->message,"%s","Click on the graph to pick");
+      strcpy(control->message, "Click on the graph to pick");
       writeControlMessage();
       XSync(dsply,False);
     }
@@ -209,12 +209,12 @@ buttonAction (int bKey)
     
   case drop2D:
     if (viewAloned) {
-      sprintf(control->message,"%s","Cannot drop without OpenAxiom!");
+      strcpy(control->message, "Cannot drop without OpenAxiom!");
       writeControlMessage();
       XSync(dsply,False);
     } else {
       doit = drop2D;
-      sprintf(control->message,"%s","Click on the graph to drop");
+      strcpy(control->message, "Click on the graph to drop");
       writeControlMessage();
       XSync(dsply,False);
     }
@@ -222,7 +222,7 @@ buttonAction (int bKey)
     
   case query2D:
     doit = query2D;
-    sprintf(control->message,"%s","Click on the graph to query");
+    strcpy(control->message, "Click on the graph to query");
     writeControlMessage();
     XSync(dsply,False);
     break;

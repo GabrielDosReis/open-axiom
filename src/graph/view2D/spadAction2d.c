@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "header2.h"
@@ -55,8 +56,7 @@ readViewman(void * info,int size)
 {
   int mold = 0;
 
-  sprintf(errorStr,"%s %d %s","read of ",size,
-          " bytes from viewport manager\n");
+  sprintf(errorStr,"read of %d bytes from viewport manager\n", size);
   mold = check(read(0,info,size));   
   return(mold);
 
@@ -109,7 +109,7 @@ spadAction(void)
     readViewman(&i1,intSize);
     readViewman(filename,i1);
     filename[i1] = '\0';
-    sprintf(errorStr,"writing of viewport data");
+    strcpy(errorStr,"writing of viewport data");
     i3 = 0;
     readViewman(&i2,intSize);
     while (i2) {
@@ -253,10 +253,10 @@ spadAction(void)
     readViewman(&i2,intSize);           /* slot to drop graph onto 0..8*/
     readViewman(&viewGoAhead,intSize);
     if (viewGoAhead < 0) {
-      sprintf(control->message,"%s%d","Couldn't put into graph ",i2+1);
+      sprintf(control->message,"Couldn't put into graph %d", i2+1);
       writeControlMessage();
     } else {
-      sprintf(control->message,"%s%d","Dropped onto graph ",i2+1);
+      sprintf(control->message,"Dropped onto graph %d", i2+1);
       writeControlMessage();
       freeGraph(i2);
       graphArray[i2].key = i1;
