@@ -450,7 +450,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* asq is a mini browser for the AXIOM databases                            */
 
-#define VERSION 7
+#define ASQ_VERSION 7
 /* 040206007 tpd fix anal compiler warnings                                 */
 /* 030710006 tpd remove share directory                                     */
 /* 940112005 tpd cleanup of printinfo                                       */
@@ -1447,7 +1447,7 @@ int pprintcond(int seekpt,char *path);
  printf("searchkey can be either a domain or its abbreviation.\n");
  printf("\n e.g. %s -so Integer\n",arg);
  printf("   will give the source file name written to stdout\n");
- printf(" (Version %d)\n",VERSION);
+ printf(" (Version %d)\n", ASQ_VERSION);
  return(0);
 }
 
