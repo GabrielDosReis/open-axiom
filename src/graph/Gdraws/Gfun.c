@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -698,77 +698,45 @@ PSGlobalInit(void)
   if ((envAXIOM = oa_getenv("DEVE")) != NULL) {  /* get env var AXIOM */
 
     psData[headerps].flag = yes;
-    sprintf(psData[headerps].filename, "%s%s", envAXIOM, "/Gdraws/PS/header.ps");
-    sprintf(psData[drawps].filename, "%s%s", envAXIOM, "/Gdraws/PS/draw.ps");
-    sprintf(psData[drawarcps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawarc.ps");
-    sprintf(psData[drawfilledps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drwfilled.ps");
-    sprintf(psData[drawcolorps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawcolor.ps");
-    sprintf(psData[fillpolyps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/fillpoly.ps");
-    sprintf(psData[colorpolyps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/colorpoly.ps");
-    sprintf(psData[fillwolps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/fillwol.ps");
-    sprintf(psData[colorwolps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/colorwol.ps");
-    sprintf(psData[drawpointps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawpoint.ps");
-    sprintf(psData[drawlineps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawline.ps");
-    sprintf(psData[drawlinesps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawlines.ps");
-    sprintf(psData[drawrectps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawrect.ps");
-    sprintf(psData[drawstrps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawstr.ps");
-    sprintf(psData[drawIstrps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/drawIstr.ps");
-    sprintf(psData[fillarcps].filename, "%s%s", envAXIOM,
-            "/Gdraws/PS/fillarc.ps");
-    sprintf(psData[setupps].filename, "%s%s", envAXIOM, "/Gdraws/PS/setup.ps");
-    sprintf(psData[endps].filename, "%s%s", envAXIOM, "/Gdraws/PS/end.ps");
+    sprintf(psData[headerps].filename, "%s/Gdraws/PS/header.ps", envAXIOM);
+    sprintf(psData[drawps].filename, "%s/Gdraws/PS/draw.ps", envAXIOM);
+    sprintf(psData[drawarcps].filename, "%s/Gdraws/PS/drawarc.ps", envAXIOM);
+    sprintf(psData[drawfilledps].filename, "%s/Gdraws/PS/drwfilled.ps", envAXIOM);
+    sprintf(psData[drawcolorps].filename, "%s/Gdraws/PS/drawcolor.ps", envAXIOM);
+    sprintf(psData[fillpolyps].filename, "%s/Gdraws/PS/fillpoly.ps", envAXIOM);
+    sprintf(psData[colorpolyps].filename, "%s/Gdraws/PS/colorpoly.ps", envAXIOM);
+    sprintf(psData[fillwolps].filename, "%s/Gdraws/PS/fillwol.ps", envAXIOM);
+    sprintf(psData[colorwolps].filename, "%s/Gdraws/PS/colorwol.ps", envAXIOM);
+    sprintf(psData[drawpointps].filename, "%s/Gdraws/PS/drawpoint.ps", envAXIOM);
+    sprintf(psData[drawlineps].filename, "%s/Gdraws/PS/drawline.ps", envAXIOM);
+    sprintf(psData[drawlinesps].filename, "%s/Gdraws/PS/drawlines.ps", envAXIOM);
+    sprintf(psData[drawrectps].filename, "%s/Gdraws/PS/drawrect.ps", envAXIOM);
+    sprintf(psData[drawstrps].filename, "%s/Gdraws/PS/drawstr.ps", envAXIOM);
+    sprintf(psData[drawIstrps].filename, "%s/Gdraws/PS/drawIstr.ps", envAXIOM);
+    sprintf(psData[fillarcps].filename, "%s/Gdraws/PS/fillarc.ps", envAXIOM);
+    sprintf(psData[setupps].filename, "%s/Gdraws/PS/setup.ps", envAXIOM);
+    sprintf(psData[endps].filename, "%s/Gdraws/PS/end.ps", envAXIOM);
   }
   else if ((envAXIOM = oa_getenv("AXIOM")) != NULL) {
     psData[headerps].flag = yes;
-    sprintf(psData[headerps].filename, "%s%s", envAXIOM,
-            "/lib/graph/header.ps");
-    sprintf(psData[drawps].filename, "%s%s", envAXIOM,
-            "/lib/graph/draw.ps");
-    sprintf(psData[drawarcps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawarc.ps");
-    sprintf(psData[drawfilledps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drwfilled.ps");
-    sprintf(psData[drawcolorps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawcolor.ps");
-    sprintf(psData[fillpolyps].filename, "%s%s", envAXIOM,
-            "/lib/graph/fillpoly.ps");
-    sprintf(psData[colorpolyps].filename, "%s%s", envAXIOM,
-            "/lib/graph/colorpoly.ps");
-    sprintf(psData[fillwolps].filename, "%s%s", envAXIOM,
-            "/lib/graph/fillwol.ps");
-    sprintf(psData[colorwolps].filename, "%s%s", envAXIOM,
-            "/lib/graph/colorwol.ps");
-    sprintf(psData[drawpointps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawpoint.ps");
-    sprintf(psData[drawlineps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawline.ps");
-    sprintf(psData[drawlinesps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawlines.ps");
-    sprintf(psData[drawrectps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawrect.ps");
-    sprintf(psData[drawstrps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawstr.ps");
-    sprintf(psData[drawIstrps].filename, "%s%s", envAXIOM,
-            "/lib/graph/drawIstr.ps");
-    sprintf(psData[fillarcps].filename, "%s%s", envAXIOM,
-            "/lib/graph/fillarc.ps");
-    sprintf(psData[setupps].filename, "%s%s", envAXIOM,
-            "/lib/graph/setup.ps");
-    sprintf(psData[endps].filename, "%s%s", envAXIOM,
-            "/lib/graph/end.ps");
+    sprintf(psData[headerps].filename, "%s/lib/graph/header.ps", envAXIOM);
+    sprintf(psData[drawps].filename, "%s/lib/graph/draw.ps", envAXIOM);
+    sprintf(psData[drawarcps].filename, "%s/lib/graph/drawarc.ps", envAXIOM);
+    sprintf(psData[drawfilledps].filename, "%s/lib/graph/drwfilled.ps", envAXIOM);
+    sprintf(psData[drawcolorps].filename, "%s/lib/graph/drawcolor.ps", envAXIOM);
+    sprintf(psData[fillpolyps].filename, "%s/lib/graph/fillpoly.ps", envAXIOM);
+    sprintf(psData[colorpolyps].filename, "%s/lib/graph/colorpoly.ps", envAXIOM);
+    sprintf(psData[fillwolps].filename, "%s/lib/graph/colorpoly.ps", envAXIOM);
+    sprintf(psData[colorwolps].filename, "%s/lib/graph/colorwol.ps", envAXIOM);
+    sprintf(psData[drawpointps].filename, "%s/lib/graph/drawpoint.ps", envAXIOM);
+    sprintf(psData[drawlineps].filename, "%s/lib/graph/drawline.ps", envAXIOM);
+    sprintf(psData[drawlinesps].filename, "%s/lib/graph/drawlines.ps", envAXIOM);
+    sprintf(psData[drawrectps].filename, "%s/lib/graph/drawrect.ps", envAXIOM);
+    sprintf(psData[drawstrps].filename, "%s/lib/graph/drawstr.ps", envAXIOM);
+    sprintf(psData[drawIstrps].filename, "%s/lib/graph/drawIstr.ps", envAXIOM);
+    sprintf(psData[fillarcps].filename, "%s/lib/graph/fillarc.ps", envAXIOM);
+    sprintf(psData[setupps].filename, "%s/lib/graph/fillarc.ps", envAXIOM);
+    sprintf(psData[endps].filename, "%s/lib/graph/end.ps", envAXIOM);
   }
   else {
     fprintf(stderr, " need environment variable AXIOM or DEVE; process aborted\n");

@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ spoonView2D(void)
   int  i,code,pipe0[2],pipe1[2],there;
   char envAXIOM[100],runView[100];
 
-  sprintf(errorStr,"%s","creating pipes");
+  strcpy(errorStr, "creating pipes");
   check(pipe(pipe0));
   check(pipe(pipe1));
   switch(fork()) {
@@ -75,7 +75,7 @@ spoonView2D(void)
      *   Child  *
      ************/
     printf("(spoon2D child) mapping of pipes to standard I/O for view2D\n");
-    sprintf(errorStr,"%s","(viewAlone) mapping of pipes to standard I/O for view2D");
+    strcpy(errorStr,"(viewAlone) mapping of pipes to standard I/O for view2D");
     check(dup2(pipe0[0],0));     
     check(dup2(pipe1[1],1));
     close(pipe0[0]);
@@ -83,9 +83,9 @@ spoonView2D(void)
     close(pipe1[0]);
     close(pipe1[1]);
     printf("(spoon2D child) start the TwoDimensionalViewport process\n");
-    sprintf(errorStr,"%s","(viewAlone) execution of the TwoDimensionalViewport process");
-    sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
-    sprintf(runView,"%s%s",envAXIOM,"/lib/view2D");
+    strcpy(errorStr,"(viewAlone) execution of the TwoDimensionalViewport process");
+    strcpy(envAXIOM,oa_getenv("AXIOM"));
+    sprintf(runView,"%s/lib/view2D",envAXIOM);
     check(execl(runView,runView, (char*)NULL));
     fprintf(stderr,"Could not execute view2D! Check that view2D is on your path variable.\n");
     exit(-1);
@@ -227,7 +227,7 @@ makeView2DFromFileData(view2DStruct *doView2D)
             "Ran out of memory (malloc) trying to get the title.\n");
     exit(-1);
   }
-  sprintf(doView2D->title,"%s",title);
+  strcpy(doView2D->title,title);
   /* put in a null terminator over the newline that the fgets reads */
   doView2D->title[strlen(doView2D->title)-1] = '\0'; 
   fscanf(viewFile,"%d %d %d %d\n",
@@ -280,7 +280,7 @@ makeView2DFromFileData(view2DStruct *doView2D)
   for (i=0; i<maxGraphs; i++) {
     if (graphArray[i].key) {
       /** OPEN FILE FOR GRAPHS **/
-      sprintf(graphFilename,"%s%s%d",pathname,"/graph",i);
+      sprintf(graphFilename,"%s/graph%d",pathname,i);
       if ((graphFile = fopen(graphFilename,"r")) == NULL) {
         fprintf(stderr,"   Error: Cannot find the file %s\n",graphFilename);
         perror("fopen");

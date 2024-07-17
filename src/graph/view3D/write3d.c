@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -69,10 +69,10 @@ writeViewport (int thingsToWrite)
                     command[80];
 
   XGetWindowAttributes(dsply,viewport->titleWindow,&vwInfo);
-  sprintf(viewDirName,"%s%s",filename,".VIEW"); 
-  sprintf(command,"%s%s%s","rm -r ",viewDirName," >  /dev/null 2>&1");
+  sprintf(viewDirName,"%s.VIEW",filename); 
+  sprintf(command,"rm -r %s > /dev/null 2>&1",viewDirName);
   system(command);
-  sprintf(command,"%s%s%s","mkdir ",viewDirName," > /dev/null 2>&1");
+  sprintf(command,"mkdir %s > /dev/null 2>&1",viewDirName);
   system(command);
   if (0) {
     fprintf(stderr,"   Error: Cannot create %s\n",viewDirName);
@@ -80,7 +80,7 @@ writeViewport (int thingsToWrite)
   } else {
 
             /*** Create the data file ***/
-    sprintf(viewDataFilename,"%s%s",viewDirName,"/data");
+    sprintf(viewDataFilename,"%s/data",viewDirName);
     if ((viewDataFile = fopen(viewDataFilename,"w")) == NULL) {
       fprintf(stderr,"   Error: Cannot create %s\n",viewDataFilename);
       perror("fopen");
@@ -140,7 +140,7 @@ writeViewport (int thingsToWrite)
         switch (ii) {
         case Bitmap:
             /*** Create the pixmap (bitmaps need leaf name) ***/
-          sprintf(viewBitmapFilename,"%s%s%s",viewDirName,"/","image.bm");
+          sprintf(viewBitmapFilename,"%s/image.bm",viewDirName);
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
           XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
@@ -149,7 +149,7 @@ writeViewport (int thingsToWrite)
 
         case Pixmap:
             /*** Create the pixmap (bitmaps need leaf name) ***/
-          sprintf(viewPixmapFilename,"%s%s%s",viewDirName,"/","image.xpm");
+          sprintf(viewPixmapFilename,"%s/image.xpm",viewDirName);
           XGetWindowAttributes(dsply,viewport->viewWindow,&vwInfo);
           write_pixmap_file(dsply,scrn,viewPixmapFilename,
                                    viewport->titleWindow,0,0,vwInfo.width,
@@ -159,7 +159,7 @@ writeViewport (int thingsToWrite)
         case Image:
             /*** Create the image (bitmaps need leaf name) ***/
           writeImage = yes;
-          sprintf(viewPixmapFilename,"%s%s%s",viewDirName,"/","image.xpm");
+          sprintf(viewPixmapFilename,"%s/image.xpm",viewDirName);
           XResizeWindow(dsply,viewport->titleWindow,300,300+titleHeight);
           XResizeWindow(dsply,viewport->viewWindow,300,300);
           viewport->hueTop = totalHues-1;  viewport->hueOffset = 0;
@@ -182,7 +182,7 @@ writeViewport (int thingsToWrite)
           firstTime = 1;
           drawViewport(Xoption);
           writeTitle();
-          sprintf(viewBitmapFilename,"%s%s%s",viewDirName,"/","image.bm");
+          sprintf(viewBitmapFilename,"%s/image.bm",viewDirName);
           XWriteBitmapFile(dsply,viewBitmapFilename,
                                   viewport->titleWindow,vwInfo.width,
                                   vwInfo.height+vwInfo.border_width+20,-1,-1);
@@ -192,7 +192,7 @@ writeViewport (int thingsToWrite)
 
         case Postscript:
             /*** Create postscript output for viewport (in axiom3D.ps) ***/
-         sprintf(PSfilename,"%s%s",viewDirName,"/axiom3D.ps");
+         sprintf(PSfilename,"%s/axiom3D.ps",viewDirName);
          if (PSInit(viewport->viewWindow,viewport->titleWindow) == psError)
            return(-1);
          drawViewport(PSoption);  /* write new script file in /tmp */

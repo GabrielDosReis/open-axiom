@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <string.h>
 
 #include "header.h"
 #include "process.h"
@@ -52,7 +53,7 @@ readViewman (void *info,int size)
 {
   int m = 0;
 
-  sprintf(errorStr,"%s","read from viewport manager\n");
+  strcpy(errorStr, "read from viewport manager\n");
   m = check(read( 0, info, size));   
 
   return(m);
@@ -343,7 +344,7 @@ spadAction (void)
     readViewman(&i1,intSize);
     readViewman(filename,i1);
     filename[i1] = '\0';
-    sprintf(errorStr,"writing of viewport data");
+    strcpy(errorStr,"writing of viewport data");
     i3 = 0;
     readViewman(&i2,intSize);
     while (i2) {
