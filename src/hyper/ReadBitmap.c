@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 */
 
 #include "openaxiom-c-macros.h"
+#include <string.h>
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -51,9 +52,9 @@ static int read_w_and_h(FILE * fd , unsigned int * width , unsigned int * height
  * XReadBitmapFile does not seeem to work to well (whatecer that means).
  */
 
-XImage *
-HTReadBitmapFile(Display *display,int screen,char * filename, 
-                 int *width, int *height)
+XImage*
+HTReadBitmapFile(Display* display, int screen, const char* filename, 
+                 int* width, int* height)
 {
     XImage *image;
     FILE *fd;
@@ -251,7 +252,7 @@ insert_image_struct(char *filename)
 
         /* strcpy(image->filename, filename); */
 
-        sprintf(image->filename, "%s", filename);
+        strcpy(image->filename, filename);
         hash_insert(&gImageHashTable,(char *) image, image->filename);
     }
     return image;

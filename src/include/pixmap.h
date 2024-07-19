@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@
 #ifndef OPENAXIOM_PIXMAP_included
 #define OPENAXIOM_PIXMAP_included
 
-extern int file_exists(char * );
-extern FILE * zzopen(char *  , const char* );
+extern int file_exists(const char*);
+extern FILE* zzopen(const char*  , const char* );
 extern void write_pixmap_file(Display*, int, const char*, Window, int, int, int, int);
 extern int read_pixmap_file(Display *  , int  , char *  , XImage * *  , int *  , int * );
 

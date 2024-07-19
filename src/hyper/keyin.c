@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
  *
  ****************************************************************************/
 
+#include <format>
 #include <X11/keysym.h>
 #include "openaxiom-c-macros.h"
 #include "debug.h"
@@ -132,8 +133,6 @@ handle_key(XEvent *event)
   /*char *head = "echo htadd -l ";*/
   /*char *blank1 = "                                        ";*/
   /*char *blank2 = "                                       \n";*/
-  char buffer[180];
-
   charcount = XLookupString((XKeyEvent *)event, key_buffer, key_buffer_size, &keysym ,&compstatus); /* 5 args */
 
   key_buffer[charcount] = '\0';
@@ -154,8 +153,7 @@ handle_key(XEvent *event)
     if (event->xkey.state & ShiftMask) {
       name = gWindow->page->name;
       filename = gWindow->page->filename;
-      sprintf(buffer, "htadd -l %s\n", filename);
-      system(buffer);
+      system(std::format("htadd -l {}\n", filename).c_str());
       if (auto ptr = gFileHashTable.find(filename); ptr != gFileHashTable.end()) {
           fclose(ptr->second);
           gFileHashTable.erase(ptr);

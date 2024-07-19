@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,8 @@
  *
  ****************************************************************************/
 
+#include <string>
+#include <format>
 #include "openaxiom-c-macros.h"
 #include "debug.h"
 #include "halloc.h"
@@ -82,18 +84,17 @@ static const char* errmess[] =  {
 static void
 htperror(const char* msg, int erno)
 {
-    char obuff[256];
-
+    std::string obuff;
     /* The first thing I do is create the error message */
 
     if (erno <= Numerrors) {
-        sprintf(obuff, "%s:%s\n", msg, errmess[erno]);
+        obuff = std::format("{}:{}\n", msg, errmess[erno]);
     }
     else {
-        sprintf(obuff, "%s:\n", msg);
+        obuff = std::format("{}:\n", msg);
         fprintf(stderr, "Unknown error type %d\n", erno);
     }
-    fprintf(stderr, "%s", obuff);
+    fprintf(stderr, "%s", obuff.c_str());
 
     print_page_and_filename();
 
@@ -190,10 +191,9 @@ parse_condnode()
         break;
       default:
         {
-            char eb[128];
             token_name(token.type);
-            sprintf(eb, "Unexpected Token %s\n", eb);
-            htperror(eb, HTCONDNODE);
+            auto eb = std::format("Unexpected Token {}\n", &ebuffer[0]); 
+            htperror(eb.c_str(), HTCONDNODE);
         }
         break;
     }

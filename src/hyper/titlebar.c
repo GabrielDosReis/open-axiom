@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2023, Gabriel Dos Reis.
+   Copyright (C) 2007-2024, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,8 @@
  ****************************************************************************/
 
 #include <stdlib.h>
+#include <string>
+#include <format>
 #include "openaxiom-c-macros.h"
 #include "debug.h"
 #include "halloc.h"
@@ -306,48 +308,46 @@ static void
 readTitleBarImages()
 {
     int w, h;
-    char filename[128];
-    char *axiomEnvVar = NULL;
-
-    axiomEnvVar = oa_getenv("AXIOM");
+    std::string filename;
+    auto axiomEnvVar = oa_getenv("AXIOM");
 
     if (axiomEnvVar)
-        sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, tw1file);
+        filename = std::format("{}/share/hypertex/bitmaps/{}", axiomEnvVar, tw1file);
     else
-        sprintf(filename, "%s", tw1file);
-    tw1image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename,
+        filename = tw1file;
+    tw1image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename.c_str(),
                                 &twwidth, &twheight);
 
     if (axiomEnvVar)
-        sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, tw2file);
+        filename = std::format("{}/share/hypertex/bitmaps/{}", axiomEnvVar, tw2file);
     else
-        sprintf(filename, "%s", tw2file);
-    tw2image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename,
+        filename = tw2file;
+    tw2image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename.c_str(),
                                 &w, &h);
     twwidth = ((twwidth >= w) ? (twwidth) : (w));
 
     if (axiomEnvVar)
-        sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, tw3file);
+        filename = std::format("{}/share/hypertex/bitmaps/{}", axiomEnvVar, tw3file);
     else
-        sprintf(filename, "%s", tw3file);
-    tw3image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename,
+        filename = tw3file;
+    tw3image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename.c_str(),
                                 &w, &h);
     twwidth = ((twwidth >= w) ? (twwidth) : (w));
 
     if (axiomEnvVar)
-        sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, tw4file);
+        filename = std::format("{}/share/hypertex/bitmaps/{}", axiomEnvVar, tw4file);
     else
-        sprintf(filename, "%s", tw4file);
-    tw4image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename,
+        filename = tw4file;
+    tw4image = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename.c_str(),
                                 &w, &h);
     twwidth = ((twwidth >= w) ? (twwidth) : (w));
 
 
     if (axiomEnvVar)
-        sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, noopfile);
+        filename = std::format("{}/share/hypertex/bitmaps/{}", axiomEnvVar, noopfile);
     else
-        sprintf(filename, "%s", noopfile);
-    noopimage = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename,
+        filename = noopfile;
+    noopimage = HTReadBitmapFile(gXDisplay, gXScreenNumber, filename.c_str(),
                                  &twwidth, &twheight);
 }
 

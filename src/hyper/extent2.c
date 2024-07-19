@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
  ****************************************************************************/
 
 #include "openaxiom-c-macros.h"
+#include <string.h>
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -862,7 +863,7 @@ insert_bitmap_file(TextNode * node)
             image->height = image->image.xi->height;
             image->filename = (char *) halloc(sizeof(char) * strlen(filename) +1,"Image Filename");
             /* strcpy(image->filename, filename); */
-            sprintf(image->filename, "%s", filename);
+            strcpy(image->filename, filename);
             hash_insert(&gImageHashTable, (char *)image, image->filename);
         }
         node->width = image->width;
@@ -909,7 +910,7 @@ insert_pixmap_file(TextNode * node)
             image->filename = (char *) halloc(sizeof(char) * strlen(filename) +1,
                                               "insert_pixmap--filename");
             /* strcpy(image->filename, filename); */
-            sprintf(image->filename, "%s", filename);
+            strcpy(image->filename, filename);
             image->image.xi = xi;
             hash_insert(&gImageHashTable, (char *)image, image->filename);
         }

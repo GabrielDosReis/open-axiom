@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reversed.
 
   Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,6 @@ alloc_hd_window()
   w->fMacroHashTable = hash_copy_table(&init_macro_hash);
 
   gWindow = w;
-  /*sprintf(haslisp, "%1d\0", MenuServerOpened);*/
   make_special_pages(w->fPageHashTable);
   w->fDisplayedCursor = 0;
   return w;
