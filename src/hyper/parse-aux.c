@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reverved.
 
   Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <string>
 #include <unordered_set>
 #include <string_view>
+#include <format>
 
 #include "debug.h"
 #include "halloc.h"
@@ -90,15 +91,8 @@ window_code(Window *w, int size)
 char *
 window_id(Window w)
 {
-    char *ret;
-    char buff[32];
-    int length;
-
-    sprintf(buff, "%ld", w);
-    length = strlen(buff);
-    ret = (char *) halloc(length * sizeof(char) + 1, "windowid");
-    strcpy(ret, buff);
-    return (ret);
+    auto buf = std::to_string(w);
+    return alloc_string(buf.c_str());
 }
 
 // Sequence of directory pathnames.
@@ -234,10 +228,8 @@ read_ht_files(HTEnvironment& env, FILE *db_fp, const std::string& dir)
 
             ret_val = stat(fullname, &fstats);
             if (ret_val == -1) {
-                char buffer[300];
-
-                sprintf(buffer, "(HyperDoc) read_ht_db: Unable To Open %s :", fullname);
-                perror(buffer);
+                auto buffer = std::format("(HyperDoc) read_ht_db: Unable To Open {} :", fullname);
+                perror(buffer.c_str());
                 exit(-1);
             }
             get_token();

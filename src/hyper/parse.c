@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,8 @@
 
 #include <stack>
 #include <vector>
+#include <string>
+#include <format>
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -469,23 +471,19 @@ parse_HyperDoc()
             break;
           case TokenType::Pagename:
             {
-                char *str;
-
                 curr_node->type = TokenType::Word;
                 curr_node->space = 0;
-                str = halloc(strlen(cur_page->name) + 1, "parse");
-                sprintf(str, "%s", cur_page->name);
+                char* str = halloc(strlen(cur_page->name) + 1, "parse");
+                strcpy(str, cur_page->name);
                 curr_node->data.text = alloc_string(str);
                 break;
             }
           case TokenType::Examplenumber:
             {
-                char *str;
-
                 curr_node->type = TokenType::Word;
                 curr_node->space = 0;
-                str = halloc(5, "parse");
-                sprintf(str, "%d", example_number);
+                char* str = halloc(5, "parse");
+                strcpy(str, std::to_string(example_number).c_str());
                 curr_node->data.text = alloc_string(str);
                 break;
             }

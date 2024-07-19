@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2013, Gabriel Dos Reis.
+    Copyright (C) 2007-2024, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
 /* returns true if the file exists */
 
 int
-file_exists(char *file)
+file_exists(const char *file)
 {
     FILE *f;
 
@@ -69,8 +69,8 @@ file_exists(char *file)
     return 0;
 }
 
-FILE *
-zzopen(char *file, const char* mode)
+FILE*
+zzopen(const char* file, const char* mode)
 {
     char com[512], zfile[512];
 

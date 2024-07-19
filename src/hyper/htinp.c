@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,8 @@
   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#include <format>
 
 #include <sys/stat.h>
 #include <sys/signal.h>
@@ -70,9 +72,6 @@ int num_active_files = 0;
 char *inactive_file_list[MaxInputFiles];
 int num_inactive_files = 0;
 int include_bf = 0;
-char buf_for_record_commands[256];
-
-
 
 void
 make_record()
@@ -82,9 +81,9 @@ make_record()
     send_lisp_command("(setq |$testingSystem| T)");
     send_lisp_command("(setq |$printLoadMsgs| NIL)");
     send_lisp_command("(setq |$BreakMode| '|resume|)");
-    sprintf(buf_for_record_commands,"(|inputFile2RecordFile| '\"%s\")",input_file_list[i]);
-    fprintf(stderr,"%s\n",buf_for_record_commands);
-    send_lisp_command(buf_for_record_commands);
+    auto cmd = std::format("(|inputFile2RecordFile| '\"{}\")", input_file_list[i]);
+    fprintf(stderr,"%s\n",cmd.c_str());
+    send_lisp_command(cmd.c_str());
   }
   if (kill_spad){
     auto status = connect_spad();
@@ -102,9 +101,9 @@ verify_record()
     send_lisp_command("(setq |$testingSystem| T)");
     send_lisp_command("(setq |$printLoadMsgs| NIL)");
     send_lisp_command("(setq |$BreakMode| '|resume|)");
-    sprintf(buf_for_record_commands,"(|verifyRecordFile| '\"%s\")",input_file_list[i]);
-    fprintf(stderr,"%s\n",buf_for_record_commands);
-    send_lisp_command(buf_for_record_commands);
+    auto cmd = std::format("(|verifyRecordFile| '\"{}\")", input_file_list[i]);
+    fprintf(stderr,"%s\n", cmd.c_str());
+    send_lisp_command(cmd.c_str());
   }
   if (kill_spad) {
     auto status = connect_spad();
@@ -416,9 +415,9 @@ get_graph_output(char* command, const char* pagename, TokenType com_type)
         get_string_buf(spad_socket, buf, 1024);
     }
     unescape_string(command);
-    sprintf(buf, "(|processInteractive| '(|write| |%s| \"%s%d\" \"image\") NIL)", "%",
+    auto cmd = std::format("(|processInteractive| '(|write| |{}| \"{}{}\" \"image\") NIL)", "%",
             pagename, example_number);
-    send_lisp_command(buf);
+    send_lisp_command(cmd.c_str());
     send_lisp_command("(|setViewportProcess|)");
     send_lisp_command("(|processInteractive| '(|close| (|%%| -3)) NIL)");
     send_lisp_command("(|waitForViewport|)");
@@ -427,27 +426,22 @@ get_graph_output(char* command, const char* pagename, TokenType com_type)
 static void
 send_command(char *command, TokenType com_type)
 {
-    char buf[1024];
-
     if (com_type != TokenType::Spadsrc) {
         escape_string(command);
-        sprintf(buf, "(|parseAndEvalToHypertex| '\"%s\")", command);
-        send_lisp_command(buf);
+        auto buf = std::format("(|parseAndEvalToHypertex| '\"{}\")", command);
+        send_lisp_command(buf.c_str());
     }
     else {
-        FILE *f;
-        char name[512], str[512]/*, *c*/;
-
-        sprintf(name, "/tmp/hyper%s.input", oa_getenv("SPADNUM"));
-        f = fopen(name, "w");
+        auto name = std::format("/tmp/hyper{}.input", oa_getenv("SPADNUM"));
+        FILE* f = fopen(name.c_str(), "w");
         if (f == NULL) {
-            fprintf(stderr, "Can't open temporary input file %s\n", name);
+            fprintf(stderr, "Can't open temporary input file %s\n", name.c_str());
             return;
         }
         fprintf(f, "%s", command);
         fclose(f);
-        sprintf(str, "(|parseAndEvalToHypertex| '\")read %s\")", name);
-        send_lisp_command(str);
+        auto str = std::format("(|parseAndEvalToHypertex| '\")read {}\")", name);
+        send_lisp_command(str.c_str());
     }
 }
 

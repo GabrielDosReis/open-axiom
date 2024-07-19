@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -94,7 +94,7 @@ extern void change_input_focus(HyperLink * link);
 extern void next_input_focus();
 extern void prev_input_focus();
 extern int delete_item(char * name);
-extern XImage * HTReadBitmapFile(Display * display , int screen , char * filename , int * width , int * height);
+extern XImage* HTReadBitmapFile(Display* display , int screen , const char* filename , int* width , int* height);
 extern ImageStruct * insert_image_struct(char * filename);
 extern void compute_form_page(HyperDocPage * page);
 extern int window_width(int cols);

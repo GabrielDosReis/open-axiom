@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -63,6 +63,7 @@
 #include <string.h>
 #include <stack>
 #include <vector>
+#include <format>
 
 #include "debug.h"
 #include "sockio.h"
@@ -876,7 +877,7 @@ token_name(TokenType type)
             strcpy(ebuffer, "~");
             break;
           case TokenType::Cond:
-            sprintf(ebuffer, "\\%s", token.id);
+            strcpy(ebuffer, std::format("\\{}", token.id).c_str());
             break;
           case TokenType::Icorrection:
             strcpy(ebuffer, "\\/");
@@ -888,7 +889,8 @@ token_name(TokenType type)
             strcpy(ebuffer, "\\begin{patch}");
             break;
           default:
-            sprintf(ebuffer, " %d ", type);
+            strcpy(ebuffer, std::format(" {} ", static_cast<int>(type)).c_str());
+            break;
         }
     }
 }
@@ -926,31 +928,27 @@ print_next_ten_tokens()
 void
 print_page_and_filename()
 {
-    char obuff[128];
-
+    std::string obuff;
     if (gPageBeingParsed->type == TokenType::Normal) {
-
         /*
          * Now try to inform the user as close to possible where the error
          * occurred
          */
-        sprintf(obuff, "(HyperDoc) While parsing %s on line %d\n\tin the file %s\n",
-                gPageBeingParsed->name, line_number,
-                gPageBeingParsed->filename);
+        obuff = std::format("(HyperDoc) While parsing {} on line {}\n\tin the file {}\n",
+                            gPageBeingParsed->name, line_number,
+                            gPageBeingParsed->filename);
     }
     else if (gPageBeingParsed->type == TokenType::SpadGen) {
-        sprintf(obuff, "While parsing %s from the Spad socket\n",
-                gPageBeingParsed->name);
+        obuff = std::format("While parsing {} from the Spad socket\n", gPageBeingParsed->name);
     }
     else if (gPageBeingParsed->type == TokenType::Unixfd) {
-        sprintf(obuff, "While parsing %s from a Unixpipe\n",
-                gPageBeingParsed->name);
+        obuff = std::format("While parsing {} from a Unixpipe\n", gPageBeingParsed->name);
     }
     else {
         /* Unknown page type */
-        sprintf(obuff, "While parsing %s\n", gPageBeingParsed->name);
+        obuff = std::format("While parsing {}\n", gPageBeingParsed->name);
     }
-    fprintf(stderr, "%s", obuff);
+    fprintf(stderr, "%s", obuff.c_str());
 }
 
 

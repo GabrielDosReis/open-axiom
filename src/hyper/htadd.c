@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 
 /* HyperDoc database file manager */
 
-
+#include <format>
 #include "openaxiom-c-macros.h"
 
 #include <errno.h>
@@ -186,7 +186,7 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
     int ret_status;
     char *SPAD;
     struct stat buff;
-    char path[256];
+    std::string path;
 
 
     if (flag & System) {
@@ -197,15 +197,15 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
             exit(-1);
         }
         sprintf(dbfilename, "%s/share/hypertex/pages/%s", SPAD, db_file_name);
-        sprintf(path, "%s/share/hypertex/pages", SPAD);
+        path = std::format("{}/share/hypertex/pages", SPAD);
     }
     else if (flag & Named) {
         sprintf(dbfilename, "%s/%s", db_dir, db_file_name);
-        strcpy(path, db_dir);
+        path = db_dir;
     }
     else {                      /* use the current directory */
         sprintf(dbfilename, "./%s", db_file_name);
-        sprintf(path, "./");
+        path = "./";
     }
 /*    fprintf(stderr,"htadd:build_db_filename:dbfilename=%s\n",dbfilename);*/
     /* Now see if I can write to the file  */
@@ -214,7 +214,7 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
     if (ret_status == -1) {
       if (errno == ENOENT) 
 	/* If the file does not exist, check the path.  */
-	ret_status = stat(path, &buff);
+	ret_status = stat(path.c_str(), &buff);
       if (ret_status == -1) {
 	perror("build_db_file");
 	exit(1);

@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2023, Gabriel Dos Reis.
+   Copyright (C) 2007-2024, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@
 /* Communication interface for external OpenAxiom buffers */
 
 #include "open-axiom.h"
+#include <string>
+#include <format>
 #include "debug.h"
 #include <signal.h>
 #include "halloc.h"
@@ -134,19 +136,16 @@ issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
 static void
 send_pile(openaxiom_sio *sock,char * str)
 {
-    FILE *f;
-    char name[512], command[512];
-
-    sprintf(name, "/tmp/hyper%s.input", oa_getenv("SPADNUM"));
-    f = fopen(name, "w");
-    if (f == NULL) {
-        fprintf(stderr, "Can't open temporary input file %s\n", name);
+    auto name = std::format("/tmp/hyper{}.input", oa_getenv("SPADNUM"));
+    FILE* f = fopen(name.c_str(), "w");
+    if (f == nullptr) {
+        fprintf(stderr, "Can't open temporary input file %s\n", name.c_str());
         return;
     }
     fprintf(f, "%s", str);
     fclose(f);
-    sprintf(command, ")read %s\n", name);
-    send_string(sock, command);
+    auto command = std::format(")read {}\n", name.c_str());
+    send_string(sock, command.c_str());
 }
 static void
 issue_dependent_commands(HyperDocPage *page, TextNode *command, TokenType type)
@@ -208,53 +207,42 @@ mark_as_executed(HyperDocPage *page, TextNode *command, TokenType type)
 static void
 start_user_buffer(HyperDocPage *page)
 {
-    char buf[1024], *title;
-    char *SPAD;
-    char spadbuf[250];
-    char complfile[250];
+    std::string buf;
     int ret_val;
 
-    SPAD = (char *) oa_getenv("AXIOM");
-    if (SPAD == NULL) {
-        sprintf(SPAD, "/spad/mnt/rios");
-    }
-    sprintf(spadbuf, "%s/lib/spadbuf", SPAD);
-    sprintf(complfile, "%s/lib/command.list", SPAD);
-    title = print_to_string(page->title);
-    if (access(complfile, R_OK) == 0)
-
+    const char* SPAD = (char *) oa_getenv("AXIOM");
+    if (SPAD == nullptr)
+        SPAD = "/spad/mnt/rios";
+    std::string spadbuf = std::format("{}/lib/spadbuf", SPAD);
+    std::string complfile = std::format("{}/lib/command.list", SPAD);
+    const char* title = print_to_string(page->title);
+    if (access(complfile.c_str(), R_OK) == 0)
         /*
          * TTT says : why not invoke with "-name axiomclient" and set any
          * defaults in the usual way
          */
 #ifdef RIOSplatform
-        sprintf(buf,
-                "aixterm -sb -sl 500 -name axiomclient -n '%s' -T '%s'  -e  %s %s %s&",
+        buf = std::format("aixterm -sb -sl 500 -name axiomclient -n '{}' -T '{}'  -e  {} {} {}&",
                 title, title, spadbuf, page->name, complfile);
     else
-        sprintf(buf,
-         "aixterm -sb -sl 500 -name axiomclient -n '%s' -T '%s' -e  %s %s&",
+        buf = std::format("aixterm -sb -sl 500 -name axiomclient -n '{}' -T '{}' -e  {} {}&",
                 title, title, spadbuf, page->name);
 #else
 #ifdef SUNplatform
-        sprintf(buf,
-        "xterm -sb -sl 500 -name axiomclient -n '%s' -T '%s' -e  %s %s %s&",
+        buf = std::format("xterm -sb -sl 500 -name axiomclient -n '{}' -T '{}' -e  {} {} {}&",
                 title, title, spadbuf, page->name, complfile);
     else
-        sprintf(buf,
-           "xterm -sb -sl 500 -name axiomclient -n '%s' -T '%s' -e  %s %s&",
+        buf = std::format("xterm -sb -sl 500 -name axiomclient -n '{}' -T '{}' -e  {} {}&",
                 title, title, spadbuf, page->name);
 #else
-        sprintf(buf,
-        "xterm -sb -sl 500 -name axiomclient -n '%s' -T '%s' -e  %s %s %s&",
+        buf = std::format("xterm -sb -sl 500 -name axiomclient -n '{}' -T '{}' -e  {} {} {}&",
                 title, title, spadbuf, page->name, complfile);
     else
-        sprintf(buf,
-         "xterm -sb -sl 500 -name axiomclient -n '%s' -T '%s' -e  %s '%s'&",
+        buf = std::format("xterm -sb -sl 500 -name axiomclient -n '{}' -T '{}' -e  {} '{}'&",
                 title, title, spadbuf, page->name);
 #endif
 #endif
-    ret_val = system(buf);
+    ret_val = system(buf.c_str());
     if (ret_val == -1 || ret_val == 127) {
 
         /*

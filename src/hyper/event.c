@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2023, Gabriel Dos Reis.
+  Copyright (C) 2007-2024, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 
 #define _EVENT_C
 
+#include <format>
 #include "openaxiom-c-macros.h"
 
 #include <X11/X.h>
@@ -264,10 +265,7 @@ paste_button(PasteNode * paste)
 static void
 killAxiomPage(HyperDocPage * page)
 {
-    char command[512];
-
-    sprintf(command, "(|htpDestroyPage| '%s)", page->name);
-    send_lisp_command(command);
+    send_lisp_command(std::format("(|htpDestroyPage| '{})", page->name).c_str());
 }
 
 static void
