@@ -34,6 +34,8 @@
 
 
 OPENAXIOM_DEFINE_TOKEN(Unknown, "<unknown>", Unclassified, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Space, "<space>", Whitespace, Language::All)
+OPENAXIOM_DEFINE_TOKEN(Tab, "<tab>", Whitespace, Language::All)
 OPENAXIOM_DEFINE_TOKEN(Apostrophe, "'", Punctuator, Language::All)
 OPENAXIOM_DEFINE_TOKEN(Backquote, "`", Punctuator, Language::All)
 OPENAXIOM_DEFINE_TOKEN(Bar, "|", Operator, Language::BootSpad)

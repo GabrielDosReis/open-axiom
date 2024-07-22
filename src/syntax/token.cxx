@@ -85,8 +85,8 @@ namespace OpenAxiom {
 #undef OPENAXIOM_DEFINE_TOKEN      
    };
 
-   TokenClassification
-   classify(const std::string& s) {
+   TokenClassification classify(std::string_view s)
+   {
       for (auto& t : token_map) {
          if (t.text == s)
             return { t.category, t.value };
