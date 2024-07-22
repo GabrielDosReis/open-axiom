@@ -37,6 +37,7 @@
 #include <cstdint>
 #include <stack>
 #include <iosfwd>
+#include <string_view>
 #include <open-axiom/dialect>
 #include <open-axiom/InputFragment>
 
@@ -44,7 +45,7 @@ namespace OpenAxiom {
    // Categorization of Boot and Spad tokens.
    enum class TokenCategory : std::uint8_t {
       Unclassified,             // token of unknown class
-      Whitespace,               // sequence of white-space characters
+      Whitespace,               // white-space characters
       Comment,                  // a description of an ignorable comment
       Punctuator,               // a punctuator character
       Operator,                 // an operator both symbolic and alphabetic
@@ -66,7 +67,6 @@ namespace OpenAxiom {
 #define OPENAXIOM_DEFINE_TOKEN(T, ...)  T,
 #include <open-axiom/token-value>
 #undef OPENAXIOM_DEFINE_TOKEN
-
       EndOfStream               // end of token stream
    };
 
@@ -100,7 +100,7 @@ namespace OpenAxiom {
       }
    };
 
-   TokenClassification classify(const std::string&);
+   TokenClassification classify(std::string_view);
 
    // Token data structure: a region of text with a classification.
    struct Token : Region, TokenClassification { };
@@ -182,8 +182,10 @@ namespace OpenAxiom {
    }
 
    template<typename T>
-   inline T& ws_token(T& t, FragmentCursor pos) {
+   inline T& ws_token(T& t, FragmentCursor pos, TokenValue v)
+   {
       t.category = TokenCategory::Whitespace;
+      t.value = v;
       t.end = pos;
       return t;
    }
@@ -196,9 +198,10 @@ namespace OpenAxiom {
    }
 
    template<typename L>
-   inline void
-   skip_whitespace(L& line, ColumnIndex& idx) {
-      while (idx < line.size() and isblank(line[idx]))
+   inline void skip_whitespace(L& line, ColumnIndex& idx)
+   {
+      auto c = line[idx];
+      while (idx < line.size() and line[idx] == c)
          ++idx;
    }
 
@@ -578,17 +581,25 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   Tok Tokenizer<Tok>::get(Language dialect) {
+   Tok Tokenizer<Tok>::get(Language dialect)
+   {
       Tok t { };
       t.start = pos;
       
       if (eos())
          return eos_token(t);
-      else if (isblank(frag[pos])) {
+      switch (frag[pos]) {
+      case ' ':
          skip_whitespace(frag(pos), pos.column);
-         return ws_token(t, pos);
+         return ws_token(t, pos, TokenValue::Space);
+      case '\t':
+         skip_whitespace(frag(pos), pos.column);
+         return ws_token(t, pos, TokenValue::Tab);
+      default:
+         break;
       }
-      else if (line_continuation()) {
+
+      if (line_continuation()) {
          if (next_line(frag, pos))
             return finish(t, dialect);
          return eos_token(t);
