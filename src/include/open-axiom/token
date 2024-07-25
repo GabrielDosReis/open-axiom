@@ -35,6 +35,7 @@
 #define OPENAXIOM_TOKEN_included
 
 #include <cstdint>
+#include <limits>
 #include <stack>
 #include <iosfwd>
 #include <string_view>
@@ -70,7 +71,7 @@ namespace OpenAxiom {
 #undef OPENAXIOM_DEFINE_TOKEN
       EndOfStream               // end of token stream
    };
-   static_assert(TokenValue::EndOfStream <= TokenValue{~std::uint8_t{}});
+   static_assert(TokenValue::EndOfStream <= TokenValue{std::numeric_limits<std::uint8_t>::max()});
 
    std::ostream& operator<<(std::ostream&, TokenValue);
 
@@ -128,7 +129,8 @@ namespace OpenAxiom {
          indents.push(pos);
       }
 
-      bool eos() const {
+      bool eos() const
+      {
          return pos.line >= frag.size();
       }
 
@@ -150,32 +152,37 @@ namespace OpenAxiom {
    bool separator_or_punctuator(std::uint8_t);
 
    template<typename T>
-   inline void comment_token(T& t, TokenValue v) {
+   inline void comment_token(T& t, TokenValue v)
+   {
       t.category = TokenCategory::Comment;
       t.value = v;
    }
 
    template<typename T>
-   inline T& formatting_token(T& t, TokenValue v) {
+   inline T& formatting_token(T& t, TokenValue v)
+   {
       t.category = TokenCategory::Formatting;
       t.value = v;
       return t;
    }
 
    template<typename T>
-   inline void operator_token(T& t, TokenValue v) {
+   inline void operator_token(T& t, TokenValue v)
+   {
       t.category = TokenCategory::Operator;
       t.value = v;
    }
 
    template<typename T>
-   inline void punctuator_token(T& t, TokenValue v) {
+   inline void punctuator_token(T& t, TokenValue v)
+   {
       t.category = TokenCategory::Punctuator;
       t.value = v;
    }
 
    template<typename T>
-   inline T& eos_token(T& t) {
+   inline T& eos_token(T& t)
+   {
       t.category = TokenCategory::EOS;
       t.value = TokenValue::EndOfStream;
       t.end = t.start;
@@ -192,7 +199,8 @@ namespace OpenAxiom {
    }
 
    template<typename L, typename T>
-   void junk(L& line, ColumnIndex& idx, T& t) {
+   void junk(L& line, ColumnIndex& idx, T& t)
+   {
       while (idx < line.size() and not separator_or_punctuator(line[idx]))
          ++idx;
       t.category = TokenCategory::Junk;
@@ -207,7 +215,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void string_literal(const Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void string_literal(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       bool done = false;
       bool escape = false;
       while (frag.covering(pos) && not done) {
@@ -232,7 +241,8 @@ namespace OpenAxiom {
    }
 
    template<typename L>
-   void skip_to_end_of_integer(L& line, ColumnIndex& idx) {
+   void skip_to_end_of_integer(L& line, ColumnIndex& idx)
+   {
       while (idx < line.size() and isdigit(line[idx]))
          ++idx;
    }
@@ -248,13 +258,15 @@ namespace OpenAxiom {
    }
 
    template<typename L, typename T>
-   void integer(L& line, ColumnIndex& idx, T& t) {
+   void integer(L& line, ColumnIndex& idx, T& t)
+   {
       skip_to_end_of_integer(line, idx);
       t.category = TokenCategory::Integer;
    }
 
    template<typename L, typename T>
-   T& number(L& line, ColumnIndex& idx, T& t) {
+   T& number(L& line, ColumnIndex& idx, T& t)
+   {
       integer(line, idx, t);
       if (idx >= line.size() or line[idx] != '.')
          return t;
@@ -276,33 +288,39 @@ namespace OpenAxiom {
    }
 
    inline bool
-   identifier_head(std::uint8_t c) {
+   identifier_head(std::uint8_t c)
+   {
       return isalpha(c) or c == '%' or c == '_';
    }
 
    inline bool
-   identifier_part(uint8_t c) {
+   identifier_part(uint8_t c)
+   {
       return identifier_head(c) or isdigit(c);
    }
 
    inline bool
-   identifier_suffix(std::uint8_t c) {
+   identifier_suffix(std::uint8_t c)
+   {
       return c == '!' or c == '?';
    }
 
-   inline bool internal_prefix(std::uint8_t c) {
+   inline bool internal_prefix(std::uint8_t c)
+   {
       return c == '%' or c == '$';
    }
 
    template<typename L>
    inline void
-   skip_prefix(L& line, ColumnIndex& idx, std::uint8_t c) {
+   skip_prefix(L& line, ColumnIndex& idx, std::uint8_t c)
+   {
       while (idx < line.size() and line[idx] == c)
          ++idx;
    }
 
    template<typename L, typename T>
-   T& identifier(L& line, ColumnIndex& idx, T& t, Language dialect) {
+   T& identifier(L& line, ColumnIndex& idx, T& t, Language dialect)
+   {
       t.category = TokenCategory::Identifier;
 
       ColumnIndex start = --idx; // idx was ahead by 1.
@@ -551,7 +569,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   Tok Tokenizer<Tok>::finish(Tok& t, Language dialect) {
+   Tok Tokenizer<Tok>::finish(Tok& t, Language dialect)
+   {
       switch (auto c = frag.advance(pos)) {
       case '#': sharp_et_al(frag, pos, t, dialect); break;
       case '@': operator_token(t, TokenValue::At); break;
