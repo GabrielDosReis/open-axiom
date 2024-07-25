@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2014, Gabriel Dos Reis.
+// Copyright (C) 2013-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -103,4 +103,12 @@ namespace OpenAxiom {
       return os;
    }
 
+   std::vector<Token> words(const Fragment& f, Language lang)
+   {
+      std::vector<Token> v { };   
+      Tokenizer<Token> lex { f };
+      while (auto t = lex.get(lang))
+         v.push_back(t);
+      return v;
+   }
 }

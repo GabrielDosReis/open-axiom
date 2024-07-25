@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2013-2022, Gabriel Dos Reis.
+// Copyright (C) 2013-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -62,6 +62,7 @@ namespace OpenAxiom {
    std::ostream& operator<<(std::ostream&, TokenCategory);
 
    // The abstract value associated with a token.
+   // Note: All token values are within the bound of an 8-bit integer.
    enum class TokenValue : std::uint8_t {
 #undef OPENAXIOM_DEFINE_TOKEN
 #define OPENAXIOM_DEFINE_TOKEN(T, ...)  T,
@@ -69,9 +70,9 @@ namespace OpenAxiom {
 #undef OPENAXIOM_DEFINE_TOKEN
       EndOfStream               // end of token stream
    };
+   static_assert(TokenValue::EndOfStream <= ~std::uint8_t{});
 
    std::ostream& operator<<(std::ostream&, TokenValue);
-
 
    enum class TokenIndex : std::uint32_t { };
 
@@ -120,7 +121,7 @@ namespace OpenAxiom {
    // token stream.  The tokens are of type indicated by Tok.
    template<typename Tok>
    struct Tokenizer {
-      Tokenizer(Fragment& f)
+      Tokenizer(const Fragment& f)
             : frag(f),
               pos{ 0, frag.front().indent }
       {
@@ -133,7 +134,7 @@ namespace OpenAxiom {
 
       Tok get(Language = Language::Spad);
    private:
-      Fragment& frag;
+      const Fragment& frag;
       FragmentCursor pos;
       std::stack<FragmentCursor> indents;
 
@@ -206,7 +207,7 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void string_literal(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void string_literal(const Fragment& frag, FragmentCursor& pos, Tok& t) {
       bool done = false;
       bool escape = false;
       while (frag.covering(pos) && not done) {
@@ -236,7 +237,8 @@ namespace OpenAxiom {
          ++idx;
    }
    
-   static bool next_line(Fragment& frag, FragmentCursor& pos) {
+   static bool next_line(const Fragment& frag, FragmentCursor& pos)
+   {
       if (++pos.line < frag.size()) {
          pos.column = frag(pos).indent;
          return true;
@@ -328,7 +330,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void left_paren_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void left_paren_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       punctuator_token(t, TokenValue::OpenParen);
       if (frag.covering(pos) and frag[pos] == '|') {
          ++pos;
@@ -337,7 +340,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void left_brace_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void left_brace_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       punctuator_token(t, TokenValue::OpenBrace);
       if (frag.covering(pos) and frag[pos] == '|') {
          ++pos;
@@ -346,7 +350,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void left_bracket_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void left_bracket_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       punctuator_token(t, TokenValue::OpenBracket);
       if (frag.covering(pos) and frag[pos] == '|') {
          ++pos;
@@ -355,7 +360,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void colon_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void colon_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Colon);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -367,7 +373,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void star_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void star_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Star);
       if (frag.covering(pos) and frag[pos] == '*') {
          t.value = TokenValue::StarStar;
@@ -376,7 +383,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void slash_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void slash_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Slash);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -387,7 +395,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void backslash_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void backslash_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Backslash);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -398,7 +407,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void less_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void less_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Less);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -416,7 +426,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void equal_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void equal_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Eq);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -433,7 +444,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void tilde_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void tilde_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Tilde);
       if (frag.covering(pos) and frag[pos] == '=') {
          t.value = TokenValue::TildeEq;
@@ -442,7 +454,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void greater_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void greater_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Greater);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -452,7 +465,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void bar_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void bar_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       punctuator_token(t, TokenValue::Bar);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -464,7 +478,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void minus_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void minus_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Minus); 
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -478,7 +493,8 @@ namespace OpenAxiom {
 
 
    template<typename Tok>
-   void plus_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void plus_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Plus);
       if (frag.covering(pos))
          switch (frag[pos]) {
@@ -498,7 +514,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void dot_et_al(Fragment& frag, FragmentCursor& pos, Tok& t) {
+   void dot_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t)
+   {
       operator_token(t, TokenValue::Dot);
       if (frag.covering(pos) and frag[pos] == '.') {
          t.value = TokenValue::DotDot;
@@ -507,8 +524,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void
-   dollar_et_al(Fragment& frag, FragmentCursor& pos, Tok& t, Language dialect) {
+   void dollar_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t, Language dialect)
+   {
       if (dialect != Language::Boot or not frag.covering(pos)
           or separator_or_punctuator(frag[pos]))
          operator_token(t, TokenValue::Dollar);
@@ -517,8 +534,8 @@ namespace OpenAxiom {
    }
 
    template<typename Tok>
-   void
-   sharp_et_al(Fragment& frag, FragmentCursor& pos, Tok& t, Language dialect) {
+   void sharp_et_al(const Fragment& frag, FragmentCursor& pos, Tok& t, Language dialect)
+   {
       if (dialect != Language::Lisp)
          operator_token(t, TokenValue::Sharp);
       else if (frag.covering(pos))
@@ -625,14 +642,8 @@ namespace OpenAxiom {
    }
 
    // -- Token streams.
-   template<typename T>
-   struct TokenStream : std::vector<T> {
-      explicit TokenStream(Fragment& f, Language dialect = Language::Spad) {
-         Tokenizer<T> lex { f };
-         while (auto t = lex.get(dialect))
-            this->push_back(t);
-      }
-   };
+   std::vector<Token> words(const Fragment&, Language);
+
 }
 
 #endif  // OPENAXIOM_TOKEN_included
