@@ -70,7 +70,7 @@ namespace OpenAxiom {
 #undef OPENAXIOM_DEFINE_TOKEN
       EndOfStream               // end of token stream
    };
-   static_assert(TokenValue::EndOfStream <= ~std::uint8_t{});
+   static_assert(TokenValue::EndOfStream <= TokenValue{~std::uint8_t{}});
 
    std::ostream& operator<<(std::ostream&, TokenValue);
 
