@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014-2017, Gabriel Dos Reis.
+// Copyright (C) 2014-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -48,10 +48,10 @@
 namespace {
    using namespace OpenAxiom;
 
-   using TokenSequence = TokenStream<Token>;
+   using TokenSequence = std::vector<Token>;
 
    struct ParsingContext {
-      explicit ParsingContext(TokenSequence& ts)
+      explicit ParsingContext(const TokenSequence& ts)
             : tokens{ ts }, position{ }
       { }
 
@@ -68,7 +68,7 @@ namespace {
       void advance() { ++position; }
 
    private:
-      TokenSequence& tokens;
+      const TokenSequence& tokens;
       TokenSequence::size_type position;
    };
 
@@ -150,12 +150,12 @@ namespace {
                  << "## Output: " << out.path << '\n';
 
       SourceInput src { in.stream };
-      while (auto f = src.get()) {
+      for (auto& f : read_source(in.stream))
+      {
          out.stream << "================================================\n";
          out.stream << f;
          try {
-            TokenSequence ts { f, Language::Boot };
-            for (auto& t : ts) {
+            for (auto& t : words(f, Language::Boot)) {
                out.stream << '\t';
                format_token(f, t, out.stream);
                switch (t.category) {

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (C) 2014-2017, Gabriel Dos Reis.
+// Copyright (C) 2014-2024, Gabriel Dos Reis.
 // All rights reserved.
 // Written by Gabriel Dos Reis.
 //
@@ -147,5 +147,14 @@ namespace OpenAxiom {
          fragment.push_back(line);
       }
       return fragment;
+   }
+
+   Prose read_source(std::istream& is)
+   {
+      Prose text { };
+      SourceInput src { is };
+      while (auto f = src.get())
+         text.push_back(f);
+      return text;
    }
 }
