@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom],[1.5.0-2024-01-01],[open-axiom-bugs@lists.sf.net])
+AC_INIT([OpenAxiom],[1.5.0-2024-07-31],[open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
 dnl located in the subdirectory config/
@@ -94,6 +94,7 @@ AC_LANG([C++])
 OPENAXIOM_HOST_COMPILERS
 AM_CONDITIONAL([OA_USE_LLVM], [test -n $oa_use_llvm])
 OPENAXIOM_REQUIRE_CXX([20])
+OPENAXIOM_BASE_CXX_OPTIONS
 OPENAXIOM_EXTRA_CXX_OPTIONS
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
 AM_CONDITIONAL([OA_ECL_RT], [test x$oa_lisp_flavor = xecl])
@@ -119,7 +120,6 @@ AM_CONDITIONAL([OA_BUILD_GUI], [test x$oa_has_qt = xyes])
 OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
 OPENAXIOM_CHECK_MM
-OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
 AC_CONFIG_FILES([

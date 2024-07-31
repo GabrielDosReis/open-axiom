@@ -1,6 +1,6 @@
 # Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 # All rights reserved.
-# Copyright (C) 2007-2017, Gabriel Dos Reis.
+# Copyright (C) 2007-2024, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ bootsys_fn = $(bootsys_SOURCES:.boot=.fn)
 
 STAMP = touch
 
-AM_CXXFLAGS = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/include \
 	-I$(oa_target_includedir) \
 	-I$(top_builddir)/config \
