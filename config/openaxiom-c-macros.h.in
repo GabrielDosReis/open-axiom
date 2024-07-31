@@ -12,55 +12,55 @@
 /* Host has AF_UNIX */
 #undef HAVE_AF_UNIX
 
-/* Define to 1 if you have the declaration of `fork', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'fork', and to 0 if you don't.
    */
 #undef HAVE_DECL_FORK
 
-/* Define to 1 if you have the declaration of `getegid', and to 0 if you
+/* Define to 1 if you have the declaration of 'getegid', and to 0 if you
    don't. */
 #undef HAVE_DECL_GETEGID
 
-/* Define to 1 if you have the declaration of `geteuid', and to 0 if you
+/* Define to 1 if you have the declaration of 'geteuid', and to 0 if you
    don't. */
 #undef HAVE_DECL_GETEUID
 
-/* Define to 1 if you have the declaration of `getgid', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'getgid', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETGID
 
-/* Define to 1 if you have the declaration of `getuid', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'getuid', and to 0 if you don't.
    */
 #undef HAVE_DECL_GETUID
 
-/* Define to 1 if you have the declaration of `kill', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'kill', and to 0 if you don't.
    */
 #undef HAVE_DECL_KILL
 
-/* Define to 1 if you have the declaration of `mkdtemp', and to 0 if you
+/* Define to 1 if you have the declaration of 'mkdtemp', and to 0 if you
    don't. */
 #undef HAVE_DECL_MKDTEMP
 
-/* Define to 1 if you have the declaration of `mkstemp', and to 0 if you
+/* Define to 1 if you have the declaration of 'mkstemp', and to 0 if you
    don't. */
 #undef HAVE_DECL_MKSTEMP
 
-/* Define to 1 if you have the declaration of `mktemp', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'mktemp', and to 0 if you don't.
    */
 #undef HAVE_DECL_MKTEMP
 
-/* Define to 1 if you have the declaration of `openpty', and to 0 if you
+/* Define to 1 if you have the declaration of 'openpty', and to 0 if you
    don't. */
 #undef HAVE_DECL_OPENPTY
 
-/* Define to 1 if you have the declaration of `sigaction', and to 0 if you
+/* Define to 1 if you have the declaration of 'sigaction', and to 0 if you
    don't. */
 #undef HAVE_DECL_SIGACTION
 
-/* Define to 1 if you have the declaration of `tempnam', and to 0 if you
+/* Define to 1 if you have the declaration of 'tempnam', and to 0 if you
    don't. */
 #undef HAVE_DECL_TEMPNAM
 
-/* Define to 1 if you have the declaration of `wait', and to 0 if you don't.
+/* Define to 1 if you have the declaration of 'wait', and to 0 if you don't.
    */
 #undef HAVE_DECL_WAIT
 
@@ -194,10 +194,10 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* The size of `void*', as computed by sizeof. */
+/* The size of 'void*', as computed by sizeof. */
 #undef SIZEOF_VOIDP
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -223,7 +223,13 @@
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
-/* Define for large files, on AIX-style hosts. */
+/* Define to 1 on platforms where this makes off_t a 64-bit type. */
 #undef _LARGE_FILES
+
+/* Number of bits in time_t, on hosts where this is settable. */
+#undef _TIME_BITS
+
+/* Define to 1 on platforms where this makes time_t a 64-bit type. */
+#undef __MINGW_USE_VC2005_COMPAT
 
 #endif // OPENAXIOM_CONFIG_included

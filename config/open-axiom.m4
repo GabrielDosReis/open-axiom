@@ -49,11 +49,11 @@ dnl ------------------------------------------
 dnl -- OPENAXIOM_CHECK_FOR_ADDITIONAL_PATHS --
 dnl ------------------------------------------
 AC_DEFUN([OPENAXIOM_CHECK_FOR_ADDITIONAL_PATHS],[
-# If there is a MacPort installation of QT5, use it.
+# If there is a MacPort installation of QT6, use it.
 case $host in
      *darwin*)
-	if test -d /opt/local/libexec/qt5; then
-	   PATH=/opt/local/libexec/qt5/bin:$PATH
+	if test -d /opt/local/libexec/qt6; then
+	   PATH=/opt/local/libexec/qt6/bin:$PATH
 	fi
 	;;
 esac
@@ -326,7 +326,7 @@ OPENAXIOM_REJECT_ROTTED_LISP
 OPENAXIOM_HOST_LISP_CPU_PRECISION
 OPENAXIOM_CHECK_DELAYED_FFI
 ## Force Clang on Apple platforms; that is the only way we get
-## anything sane going on on this fine platform.
+## anything sane going on this fine platform.
 case $host in
    *apple*)
         oa_cc_list="clang"
@@ -366,6 +366,16 @@ AC_PROG_CPP
 AC_PROG_CXXCPP
 OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS
 OPENAXIOM_CHECK_LLVM
+])
+
+dnl --------------------------------
+dnl -- OPENAXIOM_BASE_CXX_OPTIONS --
+dnl --------------------------------
+AC_DEFUN([OPENAXIOM_BASE_CXX_OPTIONS], [
+oa_base_cxx_flags='-O2 -Wall'
+for f in $oa_base_cxx_flags; do
+   OPENAXIOM_CXX_GROK_OPTION([$f])
+done
 ])
 
 dnl ---------------------------------
@@ -738,10 +748,10 @@ AC_SUBST(oa_editor)
 case $host in
     *mingw*)
         ac_default_prefix="C:/OpenAxiom"
-        AC_PATH_PROGS([oa_editor],[notepad.exe])
+        AC_PATH_PROGS([oa_editor],[code.exe notepad.exe])
 	;;
     *)  
-        AC_PATH_PROGS([oa_editor],[vi])
+        AC_PATH_PROGS([oa_editor],[code vi])
         ;;
 esac
 ])
@@ -1179,16 +1189,4 @@ dnl -------------------------
 AC_DEFUN([OPENAXIOM_CHECK_GMP],[
 AC_CHECK_HEADERS([gmp.h], [AC_CHECK_LIB([gmp],[__gmpz_init])])
 AM_CONDITIONAL([OA_HAS_GMP], [test -n $ac_cv_header_gmp_h])
-])
-
-dnl --------------------------
-dnl -- OPENAXIOM_CHECK_MISC --
-dnl --------------------------
-AC_DEFUN([OPENAXIOM_CHECK_MISC],[
-case $oa_cxx_compiler_lineage in
-  gnu|clang)
-     CFLAGS="$CFLAGS -O2 -Wall"
-     CXXFLAGS="$CXXFLAGS -O2 -Wall"
-     ;;
-esac
 ])

@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2017, Gabriel Dos Reis.
+# Copyright (C) 2011-2024, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ oa_target_headerdir = $(oa_target_includedir)/open-axiom
 ## the directory deduced or specified at configuration time.
 open_axiom_installdir = @open_axiom_installdir@
 
-AM_CXXFLAGS = \
+AM_CPPFLAGS = \
 	-I. -I$(oa_target_includedir) \
 	-I$(top_builddir)/config \
 	-I$(top_srcdir)/src/include \
