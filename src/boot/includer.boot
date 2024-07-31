@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2014, Gabriel Dos Reis.
+-- Copyright (C) 2007-2024, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,9 @@
 
 import tokens
 namespace BOOTTRAN
-module includer
+module includer (PNAME, shoeNotFound, shoeReadLispString, shoeConsole,
+          shoeSpace, lineNo, lineString, lineCharacter, bStreamNull,
+             bNext, bRgen, bIgen, bAddLineNumber, shoeInclude)
 
 -- BOOT INCLUDER
  
@@ -120,8 +122,9 @@ lineCharacter p ==
  
 -- Lazy inclusion support.
 
+++ End of stream marker.
 $bStreamNil == ["nullstream"]
- 
+
 bStreamNull x ==
   x = nil or x is ["nullstream",:.] => true
   while x is ["nonnullstream",op,:args] repeat
@@ -163,7 +166,7 @@ bRgen s ==
 bRgen1 s ==
   a := readLine s
   a ~= %nothing => [a,:bRgen s]
-  ["nullstream"]
+  $bStreamNil
  
 bIgen n ==
   bDelay(function bIgen1,[n])
@@ -176,10 +179,8 @@ bAddLineNumber(f1,f2) ==
   bDelay(function bAddLineNumber1,[f1,f2])
  
 bAddLineNumber1(f1,f2)==
-  bStreamNull f1 =>  ["nullstream"]
-  bStreamNull f2 =>  ["nullstream"]
+  bStreamNull f1 or bStreamNull f2 => $bStreamNil
   [makeSourceLine(first f1,first f2),:bAddLineNumber(rest f1,rest f2)]
-
 
 shoePrefixLisp x == 
   strconc('")lisp",x)
