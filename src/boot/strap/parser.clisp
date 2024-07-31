@@ -387,7 +387,7 @@
       (COND (|done| (RETURN NIL))
             (T
              (SETQ |found|
-                     (LET ((#1=#:G370
+                     (LET ((#1=#:G107
                             (CATCH :OPEN-AXIOM-CATCH-POINT (FUNCALL |f| |ps|))))
                        (COND
                         ((AND (CONSP #1#)
@@ -1411,7 +1411,7 @@
      (SETQ |op| (|enclosingFunction| (|parserLoadUnit| |ps|)))
      (SETQ |varno| (|parserGensymSequenceNumber| |ps|))
      (UNWIND-PROTECT
-         (LET ((#1=#:G371
+         (LET ((#1=#:G108
                 (CATCH :OPEN-AXIOM-CATCH-POINT
                   (PROGN
                    (SETF (|enclosingFunction| (|parserLoadUnit| |ps|)) NIL)

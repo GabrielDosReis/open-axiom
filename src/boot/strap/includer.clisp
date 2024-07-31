@@ -5,6 +5,12 @@
 
 (PROVIDE "includer")
 
+(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
+  (EXPORT
+   '(PNAME |shoeNotFound| |shoeReadLispString| |shoeConsole| |shoeSpace|
+           |lineNo| |lineString| |lineCharacter| |bStreamNull| |bNext| |bRgen|
+           |bIgen| |bAddLineNumber| |shoeInclude|)))
+
 (DEFUN PNAME (|x|)
   (COND ((SYMBOLP |x|) (SYMBOL-NAME |x|)) ((CHARACTERP |x|) (STRING |x|))
         (T NIL)))
@@ -110,7 +116,7 @@
     (PROGN
      (SETQ |a| (|readLine| |s|))
      (COND ((NOT (EQ |a| |%nothing|)) (CONS |a| (|bRgen| |s|)))
-           (T (LIST '|nullstream|))))))
+           (T |$bStreamNil|)))))
 
 (DEFUN |bIgen| (|n|) (|bDelay| #'|bIgen1| (LIST |n|)))
 
@@ -120,8 +126,7 @@
   (|bDelay| #'|bAddLineNumber1| (LIST |f1| |f2|)))
 
 (DEFUN |bAddLineNumber1| (|f1| |f2|)
-  (COND ((|bStreamNull| |f1|) (LIST '|nullstream|))
-        ((|bStreamNull| |f2|) (LIST '|nullstream|))
+  (COND ((OR (|bStreamNull| |f1|) (|bStreamNull| |f2|)) |$bStreamNil|)
         (T
          (CONS (|makeSourceLine| (CAR |f1|) (CAR |f2|))
                (|bAddLineNumber| (CDR |f1|) (CDR |f2|))))))
